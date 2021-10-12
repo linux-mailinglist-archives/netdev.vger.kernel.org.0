@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B98142A5A7
+	by mail.lfdr.de (Postfix) with ESMTP id 6452A42A5A8
 	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 15:26:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236760AbhJLN23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 09:28:29 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:51453 "EHLO
+        id S236923AbhJLN2a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 09:28:30 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:40649 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237027AbhJLN2T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 09:28:19 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id B9D835C0189;
-        Tue, 12 Oct 2021 09:26:17 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S237049AbhJLN2V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 09:28:21 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id C2EE65C01B7;
+        Tue, 12 Oct 2021 09:26:19 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Tue, 12 Oct 2021 09:26:17 -0400
+  by compute4.internal (MEProxy); Tue, 12 Oct 2021 09:26:19 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=PxeR2bB54Lo4z2ysBnMmKkO/xgafhQqAvjGV5o9tIAA=; b=Op5ZyONk
-        t48rSZXd2iW27PxXbZaV3d7KCnI/WRQqCdThWnV5curKQrXSpzrm+WxXX23Z69xj
-        JsvXO7Ximvy4oI5P5UBcGzamyAQgl7Rb5oy5WdGhL5ATEXPzzs3z4vDbjG/6EYPV
-        1MLz2hdcSIuG/ijl8Y57rDU/Ssoqi7NZ2+z5Db73+H4FGnpuwuttPsXt/Vr5u4CH
-        bOttlpzUMQcBzNPTZX14zczuvHy2QOA8DjaS3LTH5MhTbGN6j/y7LnAXE/Cm8svS
-        PcHluHFILsPc8SLaZbroLZurhI38SsrRH5EZz2xMW4fQ9KGguP14VEDN8o0/8nRq
-        fIZgV+QHgWyVnw==
-X-ME-Sender: <xms:-YxlYRQvTI-9rvIPMV5VPjS_vpGqsbRgmznD1-SJex4syNiVX_-NzQ>
-    <xme:-YxlYawfInzKFCgLEsGU6Zjw0xd1HSBlgTeEM0MDOR1VWDS18kJW7q4UJDfECPESb
-    jJ78G0WJccAJNM>
-X-ME-Received: <xmr:-YxlYW1c7NQu0BUvD6yUexdYBP5OsOgM6Dwpzj7luBhq5qHTAYNVXcBcNNUKIbjRqu_UsWeZy-okM6wIdUkMgWLCDJUY9RQtEvo-l4bO5dL9fQ>
+        fm1; bh=E/JsxXRB4zdVs8oZvi/IUOP88op31uOiCnLdFcyfrUo=; b=B7RmG1Tw
+        bELYcN9dT/6w5M+pQ5rFSVgxgQZm/SRCWSp87I2Z5cHEeJ6R4CbZDqCWXA5t8mCl
+        lQOnqYdaFf0aV2TfL6CcqOFHiC5qH6GWYNX0geTig4u/PeHpwPSdUow1RL7fZIJ7
+        upREDDZzhh+mljTebHXGgoGLp/dsNY24HsXW9E4wD/pRkN4Nl/eoLJE/vmW+/aEs
+        aLoJzFI164ArZi1onq4NoM4gS6ayygo16LI040Fh/squrjVZr2ll5dA5gD29PJcT
+        G4t6A4SGA69KCgSAGypUYJn6MnZXP4WlVww4IC8hX24Xqe0CnYBGqxL++jDHR7XX
+        mZryCVWMRIoZAw==
+X-ME-Sender: <xms:-4xlYdxIcqTsdePsIlZKu7N4HGSpMvGbIfogLUNi4DPV6uq9bRWF8g>
+    <xme:-4xlYdTJ5Ozx01-l8LPcJQh_uEQsP-hidHahYjx_FeLDlgtk5wpkC1AB6BAfz4uEP
+    g5Ibe7HP1iENqc>
+X-ME-Received: <xmr:-4xlYXW_jkm0vJaU5e_VhbqRbVQOhWlSJy18aa7KIxVTrgVOepWg_XZJxeL98I9dnszWX0mFSAvo06KGKOhf1ue4-kpWqUd7zzsbFoQfU6YWyw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddtkedgiedvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgepudenucfr
+    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgepjeenucfr
     rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:-YxlYZC0DAPH_XQP-G4chBKKVTlzPhGwBvrFGfnhDlpXVWZAnEJgwQ>
-    <xmx:-YxlYagFpkfcGEQQK7RfdpkMUFoqLTXV6uhOYTmK8JQOHyJJeXp-yA>
-    <xmx:-YxlYdr0ixK4cl61uF-KBStty9JvMgCDakvr7MY7yil_BmTH2LbGvA>
-    <xmx:-YxlYSewMLTmjn3hEQR5SSzse5Un_MDf2cXp_-MvO5fB6ra65lAWAA>
+X-ME-Proxy: <xmx:-4xlYfgOisyZZGcd4BZ68xN265priK3e65JxYqqq0WyO8dUBPhiH7Q>
+    <xmx:-4xlYfDzHjm772-o4ayAlJYj646Fb8oMrCq3NioE4wlQ255hdmIyXg>
+    <xmx:-4xlYYIZfqO80Cup8Klvb3D02YRlPISN5X8rMlbCCwBWNgr34Qv9-w>
+    <xmx:-4xlYa8kfGEbp4cSAP5EjZRwFSjm3FicI_QbGo2MRqn0xyHioPLlLQ>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 12 Oct 2021 09:26:16 -0400 (EDT)
+ 12 Oct 2021 09:26:17 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     mkubecek@suse.cz, popadrian1996@gmail.com, andrew@lunn.ch,
         mlxsw@nvidia.com, moshe@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH ethtool-next 12/14] sff-8636: Request specific pages for parsing in netlink path
-Date:   Tue, 12 Oct 2021 16:25:23 +0300
-Message-Id: <20211012132525.457323-13-idosch@idosch.org>
+Subject: [PATCH ethtool-next 13/14] sff-8079: Request specific pages for parsing in netlink path
+Date:   Tue, 12 Oct 2021 16:25:24 +0300
+Message-Id: <20211012132525.457323-14-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211012132525.457323-1-idosch@idosch.org>
 References: <20211012132525.457323-1-idosch@idosch.org>
@@ -63,175 +63,86 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-In the netlink path, unlike the IOCTL path, user space requests specific
-EEPROM pages from the kernel. The presence of optional pages is
-advertised via various bits in the EEPROM contents.
+Convert the SFF-8079 code to request the required EEPROM contents in the
+netlink path as was done for CMIS and SFF-8636. It will allow us to
+remove standard-specific code from the netlink code (i.e.,
+netlink/module-eeprom.c).
 
-Currently, for SFF-8636, the Lower Memory, Page 00h and the optional
-Page 03h are requested by the netlink code (i.e.,
-netlink/module-eeprom.c) and passed to the SFF-8636 code (i.e., qsfp.c)
-as two arguments for parsing.
-
-This is problematic for several reasons. First, this approach is not
-very scaleable as SFF-8636 supports a lot of optional pages. Passing
-them as separate arguments to the SFF-8636 code is not going to work.
-
-Second, the knowledge of which optional pages are available is
-encapsulated in the SFF-8636 parsing code. As such, the common netlink
-code has no business of fetching optional pages that might be invalid.
-
-Instead, pass the command context to the SFF-8636 parsing function and
-allow it to fetch only valid pages via the 'MODULE_EEPROM_GET' netlink
-message.
+In addition, in the future, it will allow the netlink path to support
+parsing of SFF-8472.
 
 Tested by making sure that the output of 'ethtool -m' does not change
 before and after the patch.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- internal.h              |  3 +--
- netlink/module-eeprom.c |  3 +--
- qsfp.c                  | 60 ++++++++++++++++++++++++++++++++---------
- 3 files changed, 49 insertions(+), 17 deletions(-)
+ internal.h              |  2 +-
+ netlink/module-eeprom.c |  2 +-
+ sfpid.c                 | 20 ++++++++++++++++++--
+ 3 files changed, 20 insertions(+), 4 deletions(-)
 
 diff --git a/internal.h b/internal.h
-index a77efd385698..2407d3c223fa 100644
+index 2407d3c223fa..0d9d816ab563 100644
 --- a/internal.h
 +++ b/internal.h
-@@ -392,8 +392,7 @@ void sff8472_show_all(const __u8 *id);
+@@ -385,7 +385,7 @@ int rxclass_rule_del(struct cmd_context *ctx, __u32 loc);
  
- /* QSFP Optics diagnostics */
- void sff8636_show_all_ioctl(const __u8 *id, __u32 eeprom_len);
--void sff8636_show_all_nl(const struct ethtool_module_eeprom *page_zero,
--			 const struct ethtool_module_eeprom *page_three);
-+int sff8636_show_all_nl(struct cmd_context *ctx);
+ /* Module EEPROM parsing code */
+ void sff8079_show_all_ioctl(const __u8 *id);
+-void sff8079_show_all_nl(const __u8 *id);
++int sff8079_show_all_nl(struct cmd_context *ctx);
  
- /* FUJITSU Extended Socket network device */
- int fjes_dump_regs(struct ethtool_drvinfo *info, struct ethtool_regs *regs);
+ /* Optics diagnostics */
+ void sff8472_show_all(const __u8 *id);
 diff --git a/netlink/module-eeprom.c b/netlink/module-eeprom.c
-index a8e2662e0b8c..f04f8e134223 100644
+index f04f8e134223..6d76b8a96461 100644
 --- a/netlink/module-eeprom.c
 +++ b/netlink/module-eeprom.c
-@@ -316,7 +316,6 @@ static int decoder_prefetch(struct nl_context *nlctx)
+@@ -321,7 +321,7 @@ static void decoder_print(struct cmd_context *ctx)
  
- static void decoder_print(struct cmd_context *ctx)
- {
--	struct ethtool_module_eeprom *page_three = cache_get(3, 0, ETH_I2C_ADDRESS_LOW);
- 	struct ethtool_module_eeprom *page_zero = cache_get(0, 0, ETH_I2C_ADDRESS_LOW);
- 	u8 module_id = page_zero->data[SFF8636_ID_OFFSET];
- 
-@@ -327,7 +326,7 @@ static void decoder_print(struct cmd_context *ctx)
+ 	switch (module_id) {
+ 	case SFF8024_ID_SFP:
+-		sff8079_show_all_nl(page_zero->data);
++		sff8079_show_all_nl(ctx);
+ 		break;
  	case SFF8024_ID_QSFP:
  	case SFF8024_ID_QSFP28:
- 	case SFF8024_ID_QSFP_PLUS:
--		sff8636_show_all_nl(page_zero, page_three);
-+		sff8636_show_all_nl(ctx);
- 		break;
- 	case SFF8024_ID_QSFP_DD:
- 	case SFF8024_ID_DSFP:
-diff --git a/qsfp.c b/qsfp.c
-index 4aa49351e6b7..e7c2f51cd9c6 100644
---- a/qsfp.c
-+++ b/qsfp.c
-@@ -55,10 +55,12 @@
-  **/
+diff --git a/sfpid.c b/sfpid.c
+index c214820226d1..621d1e86c278 100644
+--- a/sfpid.c
++++ b/sfpid.c
+@@ -8,8 +8,13 @@
+  */
+ 
  #include <stdio.h>
- #include <math.h>
 +#include <errno.h>
  #include "internal.h"
  #include "sff-common.h"
- #include "qsfp.h"
- #include "cmis.h"
 +#include "netlink/extapi.h"
++
++#define SFF8079_PAGE_SIZE	0x80
++#define SFF8079_I2C_ADDRESS_LOW	0x50
  
- struct sff8636_memory_map {
- 	const __u8 *lower_memory;
-@@ -68,6 +70,7 @@ struct sff8636_memory_map {
- };
- 
- #define SFF8636_PAGE_SIZE	0x80
-+#define SFF8636_I2C_ADDRESS	0x50
- 
- #define MAX_DESC_SIZE	42
- 
-@@ -947,36 +950,67 @@ void sff8636_show_all_ioctl(const __u8 *id, __u32 eeprom_len)
- 	sff8636_show_all_common(&map);
+ static void sff8079_show_identifier(const __u8 *id)
+ {
+@@ -445,7 +450,18 @@ void sff8079_show_all_ioctl(const __u8 *id)
+ 	sff8079_show_all_common(id);
  }
  
--static void
--sff8636_memory_map_init_pages(struct sff8636_memory_map *map,
--			      const struct ethtool_module_eeprom *page_zero,
--			      const struct ethtool_module_eeprom *page_three)
-+static void sff8636_request_init(struct ethtool_module_eeprom *request, u8 page,
-+				 u32 offset)
-+{
-+	request->offset = offset;
-+	request->length = SFF8636_PAGE_SIZE;
-+	request->page = page;
-+	request->bank = 0;
-+	request->i2c_address = SFF8636_I2C_ADDRESS;
-+	request->data = NULL;
-+}
-+
-+static int
-+sff8636_memory_map_init_pages(struct cmd_context *ctx,
-+			      struct sff8636_memory_map *map)
+-void sff8079_show_all_nl(const __u8 *id)
++int sff8079_show_all_nl(struct cmd_context *ctx)
  {
-+	struct ethtool_module_eeprom request;
+-	sff8079_show_all_common(id);
++	struct ethtool_module_eeprom request = {
++		.length = SFF8079_PAGE_SIZE,
++		.i2c_address = SFF8079_I2C_ADDRESS_LOW,
++	};
 +	int ret;
 +
- 	/* Lower Memory and Page 00h are always present.
- 	 *
- 	 * Offset into Upper Memory is between page size and twice the page
- 	 * size. Therefore, set the base address of each page to its base
--	 * address minus page size. For Page 00h, this is the address of the
--	 * Lower Memory.
-+	 * address minus page size.
- 	 */
--	map->lower_memory = page_zero->data;
--	map->page_00h = page_zero->data;
-+	sff8636_request_init(&request, 0x0, 0);
 +	ret = nl_get_eeprom_page(ctx, &request);
 +	if (ret < 0)
 +		return ret;
-+	map->lower_memory = request.data;
-+
-+	sff8636_request_init(&request, 0x0, SFF8636_PAGE_SIZE);
-+	ret = nl_get_eeprom_page(ctx, &request);
-+	if (ret < 0)
-+		return ret;
-+	map->page_00h = request.data - SFF8636_PAGE_SIZE;
- 
- 	/* Page 03h is only present when the module memory model is paged and
- 	 * not flat.
- 	 */
- 	if (map->lower_memory[SFF8636_STATUS_2_OFFSET] &
- 	    SFF8636_STATUS_PAGE_3_PRESENT)
--		return;
-+		return 0;
- 
--	map->page_03h = page_three->data - SFF8636_PAGE_SIZE;
-+	sff8636_request_init(&request, 0x3, SFF8636_PAGE_SIZE);
-+	ret = nl_get_eeprom_page(ctx, &request);
-+	if (ret < 0)
-+		return ret;
-+	map->page_03h = request.data - SFF8636_PAGE_SIZE;
-+
-+	return 0;
- }
- 
--void sff8636_show_all_nl(const struct ethtool_module_eeprom *page_zero,
--			 const struct ethtool_module_eeprom *page_three)
-+int sff8636_show_all_nl(struct cmd_context *ctx)
- {
- 	struct sff8636_memory_map map = {};
-+	int ret;
- 
--	sff8636_memory_map_init_pages(&map, page_zero, page_three);
-+	ret = sff8636_memory_map_init_pages(ctx, &map);
-+	if (ret < 0)
-+		return ret;
- 	sff8636_show_all_common(&map);
++	sff8079_show_all_common(request.data);
 +
 +	return 0;
  }
