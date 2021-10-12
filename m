@@ -2,94 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 627DF42A131
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 11:34:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B99F42A133
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 11:35:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235599AbhJLJgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 05:36:14 -0400
-Received: from host.78.145.23.62.rev.coltfrance.com ([62.23.145.78]:51392 "EHLO
-        smtpservice.6wind.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S235518AbhJLJgO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 05:36:14 -0400
-Received: from bretzel (bretzel.dev.6wind.com [10.16.0.57])
-        by smtpservice.6wind.com (Postfix) with ESMTPS id A633360047;
-        Tue, 12 Oct 2021 11:34:11 +0200 (CEST)
-Received: from dichtel by bretzel with local (Exim 4.92)
-        (envelope-from <dichtel@6wind.com>)
-        id 1maEAl-0004m8-JG; Tue, 12 Oct 2021 11:34:11 +0200
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-To:     stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Subject: [PATCH iproute2 v2] iplink: enable to specify index when changing netns
-Date:   Tue, 12 Oct 2021 11:34:05 +0200
-Message-Id: <20211012093405.18302-1-nicolas.dichtel@6wind.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211011125852.7805-1-nicolas.dichtel@6wind.com>
-References: <20211011125852.7805-1-nicolas.dichtel@6wind.com>
+        id S235677AbhJLJhJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 05:37:09 -0400
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:20520 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232657AbhJLJhJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 05:37:09 -0400
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19C9NUoh017600;
+        Tue, 12 Oct 2021 09:35:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=corp-2021-07-09;
+ bh=eE5Sp0cDVe4/GifXOgOehqR1Epg5xlkrdK+O9AF8WjQ=;
+ b=s1SkA6UlRUCRMEhT4RIaXsOcOImX9/3zRiJceJT3/+YsumeudnG9Cu/biZfg417+IVbs
+ xtcshGt8mBlj7uO23qZDdOOd4OpDk+LzsoF7/JrPU3CxuMDyeHhy5y1Uk5wXZVmv7wBa
+ gg4nlCq30fMbYIqXbweboTtD8SxkcpaGKZmNeB5MzVVBdoz6A7OMz7A+nLXrZBsUERPF
+ 346xhfbJyiNdnGRoFDNVcQKdrHQkqH+7t88Svx7iGjaS5O8RfoCx5h5cVZvUpJH7/+uf
+ o2rXAeCsIe9HgNEr6KHqTwthWzrokft+6YW9+XzRkVPdT6SHg1MUTA28dXkGT/MvTb/l 7Q== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3bmtmk4ncn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Oct 2021 09:35:01 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 19C9GOMj002992;
+        Tue, 12 Oct 2021 09:35:01 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3030.oracle.com with ESMTP id 3bkyxrd38w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Oct 2021 09:35:01 +0000
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 19C9Z0oQ071579;
+        Tue, 12 Oct 2021 09:35:00 GMT
+Received: from t460.home (dhcp-10-175-26-251.vpn.oracle.com [10.175.26.251])
+        by aserp3030.oracle.com with ESMTP id 3bkyxrd367-1;
+        Tue, 12 Oct 2021 09:35:00 +0000
+From:   Vegard Nossum <vegard.nossum@oracle.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Beniamino Galvani <b.galvani@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH v2] net: arc: select CRC32
+Date:   Tue, 12 Oct 2021 11:34:46 +0200
+Message-Id: <20211012093446.1575-1-vegard.nossum@oracle.com>
+X-Mailer: git-send-email 2.23.0.718.g5ad94255a8
+In-Reply-To: <20211012091552.32403-1-vegard.nossum@oracle.com>
+References: <20211012091552.32403-1-vegard.nossum@oracle.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: Uwm2zmYffT5-_2ZpLp-eJF2_kibW9BZk
+X-Proofpoint-ORIG-GUID: Uwm2zmYffT5-_2ZpLp-eJF2_kibW9BZk
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When an interface is moved to another netns, it's possible to specify a
-new ifindex. Let's add this support.
+Fix the following build/link error by adding a dependency on the CRC32
+routines:
 
-Link: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=eeb85a14ee34
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+  ld: drivers/net/ethernet/arc/emac_main.o: in function `arc_emac_set_rx_mode':
+  emac_main.c:(.text+0xb11): undefined reference to `crc32_le'
+
+The crc32_le() call comes through the ether_crc_le() call in
+arc_emac_set_rx_mode().
+
+[v2: moved the select to ARC_EMAC_CORE; the Makefile is a bit confusing,
+but the error comes from emac_main.o, which is part of the arc_emac module,
+which in turn is enabled by CONFIG_ARC_EMAC_CORE. Note that arc_emac is
+different from emac_arc...]
+
+Fixes: 775dd682e2b0ec ("arc_emac: implement promiscuous mode and multicast filtering")
+Cc: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Vegard Nossum <vegard.nossum@oracle.com>
 ---
+ drivers/net/ethernet/arc/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-v1 -> v2:
-  reuse index option instead adding a new option
-
- ip/iplink.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
-
-diff --git a/ip/iplink.c b/ip/iplink.c
-index 18b2ea25b7c2..1d2776c3b5c9 100644
---- a/ip/iplink.c
-+++ b/ip/iplink.c
-@@ -578,6 +578,7 @@ static int iplink_parse_vf(int vf, int *argcp, char ***argvp,
+diff --git a/drivers/net/ethernet/arc/Kconfig b/drivers/net/ethernet/arc/Kconfig
+index 37a41773dd435..92a79c4ffa2c7 100644
+--- a/drivers/net/ethernet/arc/Kconfig
++++ b/drivers/net/ethernet/arc/Kconfig
+@@ -21,6 +21,7 @@ config ARC_EMAC_CORE
+ 	depends on ARC || ARCH_ROCKCHIP || COMPILE_TEST
+ 	select MII
+ 	select PHYLIB
++	select CRC32
  
- int iplink_parse(int argc, char **argv, struct iplink_req *req, char **type)
- {
-+	bool move_netns = false;
- 	char *name = NULL;
- 	char *dev = NULL;
- 	char *link = NULL;
-@@ -683,6 +684,7 @@ int iplink_parse(int argc, char **argv, struct iplink_req *req, char **type)
- 					  IFLA_NET_NS_PID, &netns, 4);
- 			else
- 				invarg("Invalid \"netns\" value\n", *argv);
-+			move_netns = true;
- 		} else if (strcmp(*argv, "multicast") == 0) {
- 			NEXT_ARG();
- 			req->i.ifi_change |= IFF_MULTICAST;
-@@ -980,9 +982,11 @@ int iplink_parse(int argc, char **argv, struct iplink_req *req, char **type)
- 		}
- 	}
- 
--	if (!(req->n.nlmsg_flags & NLM_F_CREATE) && index) {
-+	if (index &&
-+	    (!(req->n.nlmsg_flags & NLM_F_CREATE) &&
-+	     !move_netns)) {
- 		fprintf(stderr,
--			"index can be used only when creating devices.\n");
-+			"index can be used only when creating devices or when moving device to another netns.\n");
- 		exit(-1);
- 	}
- 
-@@ -1019,6 +1023,9 @@ int iplink_parse(int argc, char **argv, struct iplink_req *req, char **type)
- 		/* Not renaming to the same name */
- 		if (name == dev)
- 			name = NULL;
-+
-+		if (index)
-+			addattr32(&req->n, sizeof(*req), IFLA_NEW_IFINDEX, index);
- 	} else {
- 		if (name != dev) {
- 			fprintf(stderr,
+ config ARC_EMAC
+ 	tristate "ARC EMAC support"
 -- 
-2.33.0
+2.23.0.718.g5ad94255a8
 
