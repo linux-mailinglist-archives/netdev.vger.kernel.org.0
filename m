@@ -2,126 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8126A42AB8B
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 20:05:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCD7842ABAF
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 20:13:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230522AbhJLSHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 14:07:10 -0400
-Received: from mail-dm6nam12on2040.outbound.protection.outlook.com ([40.107.243.40]:2144
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        id S232936AbhJLSP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 14:15:27 -0400
+Received: from mail-sn1anam02on2069.outbound.protection.outlook.com ([40.107.96.69]:5710
+        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231717AbhJLSHJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Oct 2021 14:07:09 -0400
+        id S232809AbhJLSP0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Oct 2021 14:15:26 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l10LC5DdrX1CQ4GsWdxEm+9qCJ7q8+vqs4/Cb01BWkyFs4yomii/HPlhlQPMaxsxTqXElmKGo9iXZMT3QAybP9DdnVn61daT8DZ2IIpwdxNT4d77NSnoD5my+tfeaDCjM8Za+skV/JntELhYituSAr4jy/rcVIylMIcWFosskgVRS9DdSDzn+VZqxtORlVnETmzUP4TwJakWXjfeqqn1iMB8U0a3ABrGMYGMgmvd1620PQJqAmzH7HjHWlFWPd8OiHM9bT3MrctyAY4cLuR377+MpIH001THoo9ea+mdt4Xv7SBxpEAz3LWcydt5rNOdZG57oThk6/dduUrWubqNig==
+ b=aPqFZB6x1sUOL6mkEXT3GfLuIxiGr5iGKXUdg5aaN1jl26gsx39x5FvTtyeRCw+GO9KAeFd9ugCDpo3VU1YyuullKHQdNx1ile+Gw704NjoB3dIR3YWGrizDIV2YpjFHKJIwZid9yDxlNcmf9hD/FKt/c1uK7evHffq99P6qsuklqN4zO99Xo4YOa8ujdSy0wHxoWOswq3KxxD9tTuHnMZCuK3s3MbaMGxgXFKxVW3lnqW3no8IFcapR42a78WiwfVGGDNEGQ1LfHG0RasfheKHDAtHTauLKOg3zsbO6hQcRpz/30TenEuiWF1K9m9+S1UTvXUpfiPqAzr5Kvht/6w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2PvId4TADbKNaXJvaQP7XnRUl1aoohCtMzQnaP11wdM=;
- b=nQRgc8hU66WMqXrOVhscJwXpTNOeLJ4DQhcTOJrIsc2Fh5jlIj2ZgEAEda0jCW7NDO3EBEeZbcSKtBOL6cdcV1tQXZkNbzQwcIy0uzkZaApe0IVGXcnl39rwKVXb/A2jQj5+5j0/fqd3B9d4G83o4aoSPKbfiOIj2ysnLuAGButJx6LR2/xnPh+d5AJnSFIbar2YBMuNPQDePNmkMUeq8Bt8I/DkXQFGXXvX6AonsBSBPmbu1E7eytFT7m7MnVRTdfbK0e4nRpsVNU/7UX1tQVwxK91FNEU0PJ1pf7R2UhvW9lpHXAJU7LRoe/8FdxUvwAVcCg4oVXb/Ej/9emjLtg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
+ bh=Kokyyv1+NlFulxYXpEi1ZClIPjLf3jex7angIbKZyMU=;
+ b=Wjg0g9Ka0hQPPXb6ONZqkaY4OmuT5XUC5ZdHWE9PtAqhJ1uMXfKwX0eKULkhoEjFHfIIFzw+DvNPHTZTwFX6BWrSqsdD6PGU3/cHyiWnFa17nj0422oprR2uIAStCS7Hx8uGs8DCaMmP/WevReUG7VJQutrQZ/xBBW44+3P6DGEJZN9SmQCiBMhd0n7JDF7+jq36nsLkJifoa/UDwP676+F20q4t1flq0b1TSKxTpxyygY0FjU9P8CUR3AHeJOgK4NbLYOj90X/Z95IigIKc4enQIR5EGcMDPIIsKW0wLsvn60z6aYunfWP0p2xKlgXuGnh0Ysc4r+Z+DKFhmF6Syg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2PvId4TADbKNaXJvaQP7XnRUl1aoohCtMzQnaP11wdM=;
- b=pkBM7fYbX2zxgiOJkUyHmI0IbSOWZjr05cRDgARJ78yRZe/c0vvqsbO6pdYPvp82LqObVrlaYoGEgMliGkzEcPxEUgfKFqJC0ciqiYIfU+5GN6Pg4BQsr6tJH0F5YGtVnS1f8/+3BFGv4d1tMAH1Lw1LopMZGJYy/tv7tbyPiXA=
-Received: from DM6PR08CA0041.namprd08.prod.outlook.com (2603:10b6:5:1e0::15)
- by DM5PR12MB2486.namprd12.prod.outlook.com (2603:10b6:4:b2::32) with
+ bh=Kokyyv1+NlFulxYXpEi1ZClIPjLf3jex7angIbKZyMU=;
+ b=UMD2/sR1SHA9jgv+K2BpRSLz1mx+MWG/aHrhAFtWTFpKQ9+O7Dng7IejCCdw0jwpWagyWjguFPeZ6FB2ZreHWJfqEOmzT9LJAl/7emJhYuofsqg5/vsryAIGOhhF6t0W0X3u58EiaaeJHEtTRHEl6HxZdmhSqpYB/aqMb0k9TJc=
+Authentication-Results: amd.com; dkim=none (message not signed)
+ header.d=none;amd.com; dmarc=none action=none header.from=amd.com;
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
+ by DM4PR12MB5167.namprd12.prod.outlook.com (2603:10b6:5:396::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.25; Tue, 12 Oct
- 2021 18:05:01 +0000
-Received: from DM6NAM11FT068.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:1e0:cafe::44) by DM6PR08CA0041.outlook.office365.com
- (2603:10b6:5:1e0::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.14 via Frontend
- Transport; Tue, 12 Oct 2021 18:05:01 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT068.mail.protection.outlook.com (10.13.173.67) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4587.18 via Frontend Transport; Tue, 12 Oct 2021 18:05:00 +0000
-Received: from jatayu.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.8; Tue, 12 Oct
- 2021 13:04:57 -0500
-From:   Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-To:     Tom Lendacky <thomas.lendacky@amd.com>,
+ 2021 18:13:23 +0000
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::d560:d21:cd59:9418]) by DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::d560:d21:cd59:9418%6]) with mapi id 15.20.4587.026; Tue, 12 Oct 2021
+ 18:13:23 +0000
+Subject: Re: [PATCH v2 1/2] net: amd-xgbe: Toggle PLL settings during rate
+ change
+To:     Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <Raju.Rangoju@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+Cc:     netdev@vger.kernel.org, Raju.Rangoju@amd.com,
         Sudheesh Mavila <sudheesh.mavila@amd.com>
-Subject: [PATCH v2 2/2] net: amd-xgbe: Enable RRC when auto-negotiation is enabled
-Date:   Tue, 12 Oct 2021 23:34:15 +0530
-Message-ID: <20211012180415.3454346-2-Shyam-sundar.S-k@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211012180415.3454346-1-Shyam-sundar.S-k@amd.com>
 References: <20211012180415.3454346-1-Shyam-sundar.S-k@amd.com>
+From:   Tom Lendacky <thomas.lendacky@amd.com>
+Message-ID: <62eca0fd-3aa0-395e-5309-f33dc3e0c55a@amd.com>
+Date:   Tue, 12 Oct 2021 13:13:21 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
+In-Reply-To: <20211012180415.3454346-1-Shyam-sundar.S-k@amd.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SN4PR0501CA0095.namprd05.prod.outlook.com
+ (2603:10b6:803:22::33) To DM4PR12MB5229.namprd12.prod.outlook.com
+ (2603:10b6:5:398::12)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
+Received: from [10.236.30.241] (165.204.77.1) by SN4PR0501CA0095.namprd05.prod.outlook.com (2603:10b6:803:22::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.4 via Frontend Transport; Tue, 12 Oct 2021 18:13:22 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 116e0232-f4b6-4839-0665-08d98daacefd
-X-MS-TrafficTypeDiagnostic: DM5PR12MB2486:
-X-Microsoft-Antispam-PRVS: <DM5PR12MB2486E265ADC10494F831A8569AB69@DM5PR12MB2486.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:813;
+X-MS-Office365-Filtering-Correlation-Id: 107842b8-e8cc-4e88-3170-08d98dabfa79
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5167:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM4PR12MB51672152E19D1991FABB7E92ECB69@DM4PR12MB5167.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5ykoayJgGD7+xoCWRJOAWEivagiOjqWiBPuBHfJeHz7lYFfOjKo2CNcurENbSfaYqUrlUCdXq1WCzHWH1OxKG/H8RZZbe8025pklStqf1BueWbKGnXnpuiOO1xSwn1SgfwNfOQ/qthjwaPi2xFQvO9S8IybMQwUGBa+yh+mirhlopTmLFB9V/0S0XwqsGEqzRxDWXvTz/paYU9As13z0d6uY9BmWW/x1C5MRGbVn3/J9QXe1bPnVWXxBCnMUK7TCT3FBmb6+xOtCgUGoOi+eS5dUPQ70sBpBqhyYmyE82+Ow0Cs+lpi6FDp9078n3cn1QLzywT1DC4SUdsv1w2O7dcQ/U68HGEeNRptRIb/MnO5yKnv/iuuhrp+pUYpsKdoBTKO/qwWexuTtfIn99OmjzmrwZGgmkNdXtn5qDr/rB1Ttl4j0RMSos54Ko5mPXxRGqCag+0SCfCDp7XFFMkAk5Qis/UyaCBB/rltd9fbmOfdYpuJTd7c7ZdSwPKHU1ZwgwbhHgcsM4FraauLTdADNmwmOibf1/0upcSn6ymJJS4ERRdeUKmibPYIoW2VnU+CcjfgfqW19LD8/Zg4L+KUxgSkAXjS60SUqkDoECsPMNz8QK2YCWYIGje6ZVbfyZFy1drjy882ogescSqAmXGnae2hjIZ7dCX57PG1J8zIfMUZBr4gEHzuk9Z9kdaB3Igbak1gRfC3mVWafJj9xNbjykgTdMTlvBYjOGq/v/0nfrPY=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(86362001)(54906003)(508600001)(8936002)(81166007)(7696005)(356005)(1076003)(70206006)(70586007)(36860700001)(8676002)(110136005)(4326008)(26005)(2616005)(336012)(5660300002)(426003)(2906002)(82310400003)(47076005)(36756003)(316002)(186003)(16526019)(83380400001)(6666004)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: lbKlF0C5T/YB2xwBcAS5/3LmZ83mNXK8fBzhtkKMrO7qXKGmGjTXlrTSYISAVSnFV0eT6jUcV/Kr2nXzReIzAg5w7a7OEOFaAbSH3864xhVvMT6TBBN4u6oxdQJTkbk/qFD6iGTbOgywcZqqqAbvVMJLwFniy+QKfmal92dQ90ytvnEvJa4+UK1EMWT7LvUFsrisHEGLBrG2MVGpJ3ZmNK21OsriWMGnmB1wgEfk1cFMUDLwEQKXCMeytx3Iqx9zwyQiZDUYX5DQoUVkVTdt99IJI2p1swr6bDV5GNf0itl6GohnnGxqxIfiqewvmLzX1ocKmmGcw4cXvs6AOpN3KeIaFs75qBg3Fd7mTZ1CzJyjcbEYauBPAZXNI42ZoY/ZVZVGLVDGTF54LFDp4S4xBILw3AbNH7iB61yN13To7g+PYiDjLmtRJQjqOvxFAkNsNJxVubCSE17plSj25vL9NqU+NYKN3NX1QU9o+PAz32xukGnS85rdn4ggioMvHm2tKAehodfOjMyRnNq6Lzsa0x38KmJhYpEP9kyqCoPCe6wZMQqajmrn99MPABL/cU/AplRrA+2+7wDPiN+jIIFYriVGomb9miA8CWtq8WXzfKeIvy2lFB2m4NAE+lYwapsslV1RxrL9bqxL+nweKgZLacc8wOVz7bGVPI3YE2n/spGt/KGcHdGDrCnl5z5xR4wZstrh8ZlrqQpRNrLajEJl3IlPy0sQ9OgxoxNsiyJtMheD/glNOfPvbw1kHIomtH6M
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(38100700002)(36756003)(31686004)(2906002)(26005)(508600001)(110136005)(5660300002)(53546011)(6486002)(66476007)(16576012)(186003)(8676002)(83380400001)(956004)(66556008)(2616005)(4326008)(8936002)(66946007)(31696002)(86362001)(316002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Vy9ZUEhaYnJJTTl2aUphUi83bTVDNXp3MGtUa1J6UG1ZNG1aNjQ1azBXUHlz?=
+ =?utf-8?B?YTZYNm0rUkMrRGkxVkZKdnBVOEZleitEd3ovdjhrOVFqSlhaOVh2Z1YzWDVF?=
+ =?utf-8?B?VkUyRnNKeU5Lb3RQS1JINHlhRjdSUWRQNURUS3FabnQxdSt2bWdnRkhZamJl?=
+ =?utf-8?B?YWswK21nb0hqbFZ5VEk3dk9GZ280a2ZsT2VzNkNWOUwvLzc2bTFhcVZ2N2FN?=
+ =?utf-8?B?STdnR3ozT080NnF4ZllvWk1VS21FUGhPbFA5a1hyTWwyMTFSbWovVzRuTGFk?=
+ =?utf-8?B?c1NrQlZUcGVGd0tFek8yZ3pudk0xVS8wa2RQQkc2TEhqVHRYL0JhaUhVdjVY?=
+ =?utf-8?B?RUtTMUo1MWMvbTdVRVJKZ1p4WHMwaEFOSWdWN0NQODZKQmRJWUFtMHU2YzA1?=
+ =?utf-8?B?bzdZSmg1SCtXQXh5bFlhb0o4Sjc2TkZwNW1KTmkwc1MyZDFMbU9TWlUvOVg1?=
+ =?utf-8?B?aUFsZ28ySEl0THF2NEdrbkcwdnZqaXozbnFERU9pTm5vL3lWYjBabjl2aE50?=
+ =?utf-8?B?U3FrdWJLS0xDMnNFbXlaelMwTHFOMmFheGVNbjdjK1p1WTc0ODExWHFVQ3VZ?=
+ =?utf-8?B?VGwwYzVKUHQwVW45NzVSeTJDRUdMamFZejNkUm5Ec0xETGJKUDcvNVg4ODJs?=
+ =?utf-8?B?dTdxZUtYbjFhZDBLeXlxU1RuSzRrNG5IYmNpNlMxWUJ0SnRuN0JqVXJNTUIw?=
+ =?utf-8?B?bFpzYXBJNnd5alZyR2hJNzlWYzhxMGhGd1lUNXRhQTUxN2hRMERGVmJmTlNB?=
+ =?utf-8?B?b25Ea3FwbHlIdHNQR0lJZlpOREJ4YnlERTBRRnVVQjBwOUl3ekVFQjloS1RN?=
+ =?utf-8?B?b2VLVExOajU4ZUw0dDBJOWNqcGdBd3dFWFB1YmJhOG4rRnFvMGdOdmVwcmRs?=
+ =?utf-8?B?enJJZ1htUHZUaVpncXI4Uy9tbzRtUFJHbHUxU0NQVW13N281WDhranBmbzI1?=
+ =?utf-8?B?WWYwUmNoaXlPcnVYZkFGczZ0OE44aUJDVnU1b096Y1FZc0pkbUtVVzB1cUhz?=
+ =?utf-8?B?WUZmdVRpOVViN2Zocjl4SmF5aGp4Vk84K1lqMDZxVFBka3pJdk9mUG8xZ3hV?=
+ =?utf-8?B?SWNhZFR5a3dJdmVrcTAzczd1ZkFjamcrVHpRQ3VleHBkY0dmQlJUcGxIUXUv?=
+ =?utf-8?B?elpwekVUeDhhVXY5WTJPa2pQQ3NManplVktvTkpsckRLTHU0a1lla3BRbW1E?=
+ =?utf-8?B?V0c3Z1VrcXlUcTBSWUpuRFlsQjV1Z2lnY2s0VmVITHdvcmFFeGRqdnVsVGJE?=
+ =?utf-8?B?K2ZGcGQ4VE9jVHVhQ0hKQ3ZlNFhmQm9XbDljalBUdUY0VUhwWCs1dE95UDJN?=
+ =?utf-8?B?R2Z4anQ2V1M1MmxlMDlGK0dxMitSVlhHT3dmZE1GVWFuSzhwdXlWR2xESCtJ?=
+ =?utf-8?B?VHQ5ZUVuaWphSEJHRnJmaTFZaWZmYWUwZ0d6UzBUOUtOSGZMTlRDNUtZRURP?=
+ =?utf-8?B?YVpIY2o4TDJXTVZnaGZVNXJpTlBFN3Zrb1kzY1FmTnI0SE10NTlFM0YwQjFC?=
+ =?utf-8?B?Rkh2bDVkK1kzQWk4N2l5QVNBTkEvSkp0RVVpRE9FNU44czF5L0taY2hlNkdY?=
+ =?utf-8?B?TnhkNXJHN3ZJeSthQVBWOTg1L0t1K3l6azdkaWVaNkhocVp3d2JPSU9keldD?=
+ =?utf-8?B?cXRSaEZ2ODQ4dnFkRXdhdHg1MFg1NG9VT0szNW10aWJpWWpjMU5TT2hGUkd6?=
+ =?utf-8?B?NnJCeXZHZEExWFZQVmsxbXdBNFhoWmxHOVBERjZaSDNocC9oZEZPcW1TMFNR?=
+ =?utf-8?Q?JEkr5tNc5ZvKdmtPQTx+3cbbI3X38HrR3VPqvH1?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Oct 2021 18:05:00.5461
+X-MS-Exchange-CrossTenant-Network-Message-Id: 107842b8-e8cc-4e88-3170-08d98dabfa79
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Oct 2021 18:13:23.4480
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 116e0232-f4b6-4839-0665-08d98daacefd
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT068.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB2486
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: m4MER9wbzerv/jYggaRdUWiQXgJf4yNGliqZu3Om8t2pgbADHoXIRpPKkMJ0Cxiiu2Anc0Mcd0NdtKk7SQkqIg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5167
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Receiver Reset Cycle (RRC) is only required when the
-auto-negotiation is enabled.
+On 10/12/21 1:04 PM, Shyam Sundar S K wrote:
+> For each rate change command submission, the FW has to do phy
+> power off sequence internally. For this to happen correctly, the
+> PLL re-initialization control setting has to be turned off before
+> sending mailbox commands and re-enabled once the command submission
+> is complete.
+> 
+> Co-developed-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
+> Signed-off-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
+> Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
 
-Co-developed-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
-Signed-off-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
-Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
----
-v2: no change
+With the minor change below...
 
- drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
 
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-index 4465af9b72cf..1a11407e277c 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-@@ -2642,7 +2642,9 @@ static int xgbe_phy_link_status(struct xgbe_prv_data *pdata, int *an_restart)
- 	/* No link, attempt a receiver reset cycle */
- 	if (phy_data->rrc_count++ > XGBE_RRC_FREQUENCY) {
- 		phy_data->rrc_count = 0;
--		xgbe_phy_rrc(pdata);
-+		/* RRC is required only if auto-negotiation is enabled */
-+		if (pdata->phy.autoneg == AUTONEG_ENABLE)
-+			xgbe_phy_rrc(pdata);
- 	}
- 
- 	return 0;
--- 
-2.25.1
+> ---
+> v2: add a missing Co-developed-by tag
+> 
+>   drivers/net/ethernet/amd/xgbe/xgbe-common.h |  8 ++++++++
+>   drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c | 20 +++++++++++++++++++-
+>   2 files changed, 27 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-common.h b/drivers/net/ethernet/amd/xgbe/xgbe-common.h
+> index b2cd3bdba9f8..3ac396cf94e0 100644
+> --- a/drivers/net/ethernet/amd/xgbe/xgbe-common.h
+> +++ b/drivers/net/ethernet/amd/xgbe/xgbe-common.h
+> @@ -1331,6 +1331,10 @@
+>   #define MDIO_VEND2_PMA_CDR_CONTROL	0x8056
+>   #endif
+>   
+> +#ifndef MDIO_VEND2_PMA_MISC_CTRL0
+> +#define MDIO_VEND2_PMA_MISC_CTRL0	0x8090
+> +#endif
+> +
+>   #ifndef MDIO_CTRL1_SPEED1G
+>   #define MDIO_CTRL1_SPEED1G		(MDIO_CTRL1_SPEED10G & ~BMCR_SPEED100)
+>   #endif
+> @@ -1389,6 +1393,10 @@
+>   #define XGBE_PMA_RX_RST_0_RESET_ON	0x10
+>   #define XGBE_PMA_RX_RST_0_RESET_OFF	0x00
+>   
+> +#define XGBE_PMA_PLL_CTRL_MASK		BIT(15)
+> +#define XGBE_PMA_PLL_CTRL_SET		BIT(15)
+> +#define XGBE_PMA_PLL_CTRL_CLEAR		0x0000
+> +
+>   /* Bit setting and getting macros
+>    *  The get macro will extract the current bit field value from within
+>    *  the variable
+> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+> index 18e48b3bc402..4465af9b72cf 100644
+> --- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+> +++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+> @@ -1977,12 +1977,26 @@ static void xgbe_phy_rx_reset(struct xgbe_prv_data *pdata)
+>   	}
+>   }
+>   
+> +static void xgbe_phy_pll_ctrl(struct xgbe_prv_data *pdata, bool enable)
+> +{
+> +	XMDIO_WRITE_BITS(pdata, MDIO_MMD_PMAPMD, MDIO_VEND2_PMA_MISC_CTRL0,
+> +			 XGBE_PMA_PLL_CTRL_MASK,
+> +			 enable ? XGBE_PMA_PLL_CTRL_SET
+> +			 : XGBE_PMA_PLL_CTRL_CLEAR);
 
+Please line the ":" up with the "?" above it.
+
+Thanks,
+Tom
+
+> +
+> +	/* Wait for command to complete */
+> +	usleep_range(100, 200);
+> +}
+> +
+>   static void xgbe_phy_perform_ratechange(struct xgbe_prv_data *pdata,
+>   					unsigned int cmd, unsigned int sub_cmd)
+>   {
+>   	unsigned int s0 = 0;
+>   	unsigned int wait;
+>   
+> +	/* Clear the PLL so that it helps in power down sequence */
+> +	xgbe_phy_pll_ctrl(pdata, false);
+> +
+>   	/* Log if a previous command did not complete */
+>   	if (XP_IOREAD_BITS(pdata, XP_DRIVER_INT_RO, STATUS)) {
+>   		netif_dbg(pdata, link, pdata->netdev,
+> @@ -2003,7 +2017,7 @@ static void xgbe_phy_perform_ratechange(struct xgbe_prv_data *pdata,
+>   	wait = XGBE_RATECHANGE_COUNT;
+>   	while (wait--) {
+>   		if (!XP_IOREAD_BITS(pdata, XP_DRIVER_INT_RO, STATUS))
+> -			return;
+> +			goto reenable_pll;
+>   
+>   		usleep_range(1000, 2000);
+>   	}
+> @@ -2013,6 +2027,10 @@ static void xgbe_phy_perform_ratechange(struct xgbe_prv_data *pdata,
+>   
+>   	/* Reset on error */
+>   	xgbe_phy_rx_reset(pdata);
+> +
+> +reenable_pll:
+> +	/* Re-enable the PLL control */
+> +	xgbe_phy_pll_ctrl(pdata, true);
+>   }
+>   
+>   static void xgbe_phy_rrc(struct xgbe_prv_data *pdata)
+> 
