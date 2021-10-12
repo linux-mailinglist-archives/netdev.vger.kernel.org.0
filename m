@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6704742A37C
+	by mail.lfdr.de (Postfix) with ESMTP id B52E242A37D
 	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 13:41:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236275AbhJLLnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 07:43:17 -0400
+        id S236292AbhJLLnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 07:43:18 -0400
 Received: from mail-eopbgr60075.outbound.protection.outlook.com ([40.107.6.75]:6350
         "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236289AbhJLLnL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Oct 2021 07:43:11 -0400
+        id S236177AbhJLLnM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Oct 2021 07:43:12 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=N5IRNukyEJskQLbWx7UsTmm5Y+SUM9z4yg6+N0LMrmbx3TMzxStHE0ONx5t9J7MSbLx1TF6/LX8k/FDkMvBkeHgOLSMbUCfkiJk4Nd4cq8A6rMuEY2z8BbgG6w6V1ELV5Mg+swbv/aMv9rc2k0LXIqp/d6jLnzW91Dn0oPueW8w649JLYdiXbG+6Y5gq2O1D06Z5k/2fue52+237ALEIOmgbvwY10kTt4XItRD0jO/VrGPRlHzoYJzqn90otj6vVEGKvIjrSe4aZxdz+r45yKwztcG/wbRVNJfz95DDTbAh7eVAqutT/VrOUX/1sTSN00fGKfHA1WOIJgRsw/alz7w==
+ b=H4J+Jxkn4C+S5ezz/AgLhSld65KuxvCXCOJfsf4q1EdRjD/M8tbsxGX0C6Ac+yH4Ww1juwMOP40WGq7xfcEJCyeDzC6YLzGVg9O67iyIjx0lcaJH+o/zVD53Uw0ZMWEC/H3ih2NnKrg8o1H4G6nJUQQpb7LLSmgkn2GB2/r5DR4QOWnnN7mi8MzkgeX9QT9W/9wd2Wnp4oi2aJBf8fTRnbF3j4xXclEImr9FE3FDc0AFulIDwJS4S0lUq7CegYT6L8LKqoZCr+FdfYNuwmqEiMyKsmjyJMWg3hTRd+HUxVqrlk3vw+YF4JDYW1Zng+DGRdfAcM6s2ZMbcqBx9YLRWQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yW1bfuUatZLNdn3xqiZ+L2/sgRaxmRQim9ptxJfD4Ms=;
- b=GFkdgJZ8ap2GHh9I0WvRzVx3U9Nf3Li6ki0sIb3Y6zWTOXHnGxYtKjzczthBGEm0ht2yyoRQRvX949SSbTc2dMx8mhtApOdki9eV2xZX+GdK+hS9vF4DxYn2SIjHfSJjlc3IRv5/rNEWo3+YDWIvHLC7rvtNPFcP15kI2OdfjBUZ6zU4bHs8dYn0+099SbNwEmXeIJIYXC/q6gAWQxhSKUHWVhjB0YsEqIxFb7lfyiHB8iRWW6KiDzoqsWo5e3jIeEYNyY2jrPCZR2eHcfHA/4scLHwAwa+HaJJyMZW5tyLXfjj3Hjtm7yGS7/UKjetlT5WVGiNugYXpMiLbNM3VLA==
+ bh=V7CzHZoyR0j7B76SslBhEDYT6rdHPH8S3xhEgbRpEwY=;
+ b=VRzB3SpjNNkQ5GKPWnaqZVSeWGaoq6jbjpRVLGOhxoJCVJywaUI87evS197pwUdBKIjMaldvCE+Cl4jocZF12/i2FCZjQxOdGK3Yeebem9YltFxO50ASnHtCeKdn+a2vzKvkUnEt+dKd+sjK9K0p/mtmWn9ewv+krDyueekhYsjonZlnSoAkJXeYWLmm1aVuRRhRunHyj1n8fM/AJ3213RAaX6K/1SR6GmHy3TLZkqCTuZKp8RzyUyHMwLXqhp5snX/XfsQUpL+22bgvvaUdquW1LlC4U6Ei/U27sWPgF3nXqlQsw0OYPWKGjiz3ayyRVgcrHXPhFqgP9HDb17nVsA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yW1bfuUatZLNdn3xqiZ+L2/sgRaxmRQim9ptxJfD4Ms=;
- b=ey3WGnx5bdN89RZEF1LrocQLL85ahO0z+yALKsLm3HuwnYBCnK7Vgfd/soBz0pHQscaHEE/SQ7FnHhNlwbvr4DuQyGLZGTQSufZFBkRPJlztS5Cdk3gDQQDbGWSB1LIGdztrj/+cb9jTADNS+PcRu6yPCiA2acQmVry7Anv9570=
+ bh=V7CzHZoyR0j7B76SslBhEDYT6rdHPH8S3xhEgbRpEwY=;
+ b=QeP1jqW1BRa5gHF1MS3tfiiUJM8P2UIGmjilJmDQ2xrk+2odmymlDFhT30CKvGki0N9XP6dMW0T2ku6B7DwSZp7WEDaBwzY2o7+TCPnDcfBCqbEof8NbhHXzZ4rceVLIldbLYth4DYx/r0ldwhHTLrHSks2bvMNuu4VdTAp/FLQ=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR04MB6941.eurprd04.prod.outlook.com (2603:10a6:803:12e::23) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18; Tue, 12 Oct
- 2021 11:41:03 +0000
+ 2021 11:41:05 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4587.026; Tue, 12 Oct 2021
- 11:41:03 +0000
+ 11:41:05 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, Po Liu <po.liu@nxp.com>
@@ -50,9 +50,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH v2 net 09/10] net: dsa: tag_ocelot_8021q: fix inability to inject STP BPDUs into BLOCKING ports
-Date:   Tue, 12 Oct 2021 14:40:43 +0300
-Message-Id: <20211012114044.2526146-10-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net 10/10] net: dsa: felix: break at first CPU port during init and teardown
+Date:   Tue, 12 Oct 2021 14:40:44 +0300
+Message-Id: <20211012114044.2526146-11-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211012114044.2526146-1-vladimir.oltean@nxp.com>
 References: <20211012114044.2526146-1-vladimir.oltean@nxp.com>
@@ -62,91 +62,148 @@ X-ClientProxiedBy: VI1PR07CA0150.eurprd07.prod.outlook.com
  (2603:10a6:802:16::37) To VI1PR04MB5136.eurprd04.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Received: from localhost.localdomain (188.26.53.217) by VI1PR07CA0150.eurprd07.prod.outlook.com (2603:10a6:802:16::37) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.14 via Frontend Transport; Tue, 12 Oct 2021 11:41:03 +0000
+Received: from localhost.localdomain (188.26.53.217) by VI1PR07CA0150.eurprd07.prod.outlook.com (2603:10a6:802:16::37) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.14 via Frontend Transport; Tue, 12 Oct 2021 11:41:04 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d1688596-fe96-4368-c1e9-08d98d752be8
+X-MS-Office365-Filtering-Correlation-Id: 33a18a15-d607-4566-5671-08d98d752ccf
 X-MS-TrafficTypeDiagnostic: VI1PR04MB6941:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB6941E78740EF06FD201B2B2DE0B69@VI1PR04MB6941.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB694101F33FB7F4DD948F8ED8E0B69@VI1PR04MB6941.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZgIC1i+TnBilDOeZSIsxrO/xnleclxBNAdNvNIUYud4barH/5F6KuTTpjmBXAcgQB45c503KT31I5KK17wVFhYWENtxEMBybraaBvraBxY1BjX4Svszdrho3JLJ2jldhd65yrS2fwQ3GPQv9luglKF4GYgNvwCYr/GBqxgbFCVeaqwTomfstJ6LVsevt+MiT6QbFQCXzzGc3fyH/HtVdNNBdhCL5ELBtks+w35GL/RmOROlabFimdr/7923tzHGwVnfQ7uvTIc6rUgdn4VYGcemvP3TLtzeEx2h1iP3YhVP+PkIVa9WGP0bQ/G/Hf331+MJ9APE4N8it0eOQ1RS4T0ArTSZArMvphM8uGxuP9sSWa2sqpn2HL/bwun4QhQOrv/2xZ1jFJlhx0IysTb583kte8oNYMe2NfcnitB4IuzQBNLaDneUTziUTy2J4CLbJdXo/l4VJMzPrdij/hmFTPB9wlaLcqnle4ymvetmd9YCemWx+cmnPeQzZBvVOgaWzfs+aw4XDPmuo5iAwdK59Fokl/UQGNC9aJwxEvbjv8Od6s/5jhtSw4OuzDB0GQ09b8inUQuXTrgzvdEkhoqyOC/xKbx6VYio6YyAhj8sYFiDkYVh2ChnEoo0I5//xl80VghjR8foCdGrn93/5+ObrCDpsmXUOG9UP5LN/DeL1wS+Ufj1FvWQfZSNMmKpQuyjSioW8TAAAHzU4AiBhTolOvw==
+X-Microsoft-Antispam-Message-Info: 13wIM+WMBnB/2qX0FGySxcGt3ee4mBMWzBXVDOMUYAfk+ozH+x7tXHMX0TticJwtzSNgmuN7HtEIduUsdVEwgQbodhyWxTxq+G5ghJoUw79QwYp1D0ECWBXhOMugTFgEZBuC+u7eXTibZT8LsJOnNvH+9w1epJeFuwHkhjnWqF9geZ3ZAhRIQIjMdpk84g5l8cA22Y/on2P5BqyBboTXIQhNhKsTYxIxwWPfZdJxIBvJyNxW1tIq4I0bjurEWd1UyFlpApuBf9WlFWATpgr5hFxq5/7ak5rFUELboZGMExWArwNZWOiDYymiiXjuFZ6aYwMtSHBYysi4pdEoy0B6Ese7OfDpFKJ+5K9RFPQI9x0LWloUMnasFeHdvONN9lmR3LiPnNn+rIvvna6gOc+nkI0LKEQFMDpLaQf+/0MxDtddbqxTj0n3AzQzH6UHtGuH0uQr+kS0S/Ao0WaYsWVpvANqtTRTMCOVIgs+S9xs/M6gqNuBR1ea6rmEV3xhtoln4U33Q0MIXJNrFxyP3hB6tHWaK/uh/ujBSQTaDfW9ifGNly08KJsZIdZn98OsEECLaev4r5XleXdKl8KUblcQem48O8kFij2yPKlrf7p79Wv59NUjnNN4KZ8AUBh85QbHGFAat3kA4G4XDQId13O/TVa1XEhc0WbcTnZg0axSZscOERQxrlANaA4gUUMkeO7kw1BHwdFu9BkbYGaGYsUvjw==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(5660300002)(44832011)(508600001)(110136005)(6636002)(2906002)(66556008)(66476007)(54906003)(52116002)(6512007)(4326008)(316002)(2616005)(956004)(26005)(186003)(38350700002)(6506007)(7416002)(66946007)(8936002)(6666004)(83380400001)(6486002)(86362001)(36756003)(1076003)(8676002)(38100700002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jKVSUxyIZndH7ndaanc+WE5CuXQ0pZmwtWPrzgL5atLP5QM1EM1P4PNdUQ2Y?=
- =?us-ascii?Q?bM7O5YhgQ3QxgK5GBw+qQrmV6mVaZTH/Iw0cgljt+GPG9h29eosnCY7FYeHe?=
- =?us-ascii?Q?CzQ3uBtGpw9fL6PFpqG+QUsSiE8JSAshMjXMft5t7cjb1aaCFTmu/6YBu4bo?=
- =?us-ascii?Q?Ar+fGZ6DvTOHnvQ1dtfE+Sza/qHmhE8hVPYiW6Ivh2neBDzOOyq53NmBY1d3?=
- =?us-ascii?Q?cnvXmUOHEarHXq8Fyrn20WFmiH3bNGMLk4YC11mIk+U1QR0p2g0lK20fNAcc?=
- =?us-ascii?Q?LEua3S/yZ17wFhF4s51F9ux5IyIgYK43pL/Xo5ht9S9Go5KKaErUsRDUovW8?=
- =?us-ascii?Q?qSDgy5cW/RgmMrS9PN1PabAJtp029FhJ01ndIZVmi4s+d3Fl4luS16qnWps+?=
- =?us-ascii?Q?aN8pTpDKSAfUOxeuf8ZuLknBKr2/Ne58mkE1SV6+7ph/AReORLiltbX4CiGg?=
- =?us-ascii?Q?JpGCVcW3wK2UxJ6daHh11JJ55gTamk8cpEQ0Vfa+p92cu7UheNWHbtT3fCLS?=
- =?us-ascii?Q?rDYAQE+wlf26guNJhdDY5l63Ln4ZyYm0pdE1czG3wqrwRJEPAaheFtmVFhfM?=
- =?us-ascii?Q?6UlJfgEhwwcENsTL/Bwt3kzqcn7pyiTkOots0/dxI82I/Gq2UavI2VGOYZzU?=
- =?us-ascii?Q?/9FaaJr9L5C57YqGOfDjwDjGoacCKU+cyxUKQyAPQeu7wYYTUKVZ2H1/P9Er?=
- =?us-ascii?Q?N0y3g2Ce0yj0ChW0HMOATtDHVuATp0NFudAhyjWS70MjjoNXHU0E3zuqXPUt?=
- =?us-ascii?Q?EHI/VoMfXDwPpb5QEPqUDH/i6Xyjm+hv/LAEEb7sxz/HuS5MRgHxrcRjfJtV?=
- =?us-ascii?Q?Lu0e8+wyluGlX6nUF2ZzlDxyqCR7Vqyqso21cPb8xK9zZ6kNhHNpqdy9M7M6?=
- =?us-ascii?Q?bZL27vg0MqQlmPcwTjhPX7rYpD1iFqweQQHFJ4kB6AvNg81MFsjmHYWkUxmo?=
- =?us-ascii?Q?h8xB7jBW0pY4zoKGS4yT37L06QcHjpgaq8jGn2fRrKaSNh0PTXGCrV1fKFTB?=
- =?us-ascii?Q?GVU09HsFSWG9AwaJs8FPL4rERkbLA8jMZKphm0Od1L+gMKzpoo6pZy+9pGGe?=
- =?us-ascii?Q?k4o8zN6VKx9G8LvhZ34CGwkcUj6wkeYLjf3g5rd6C7C7aEwxfAwq8IuapRo4?=
- =?us-ascii?Q?p0aR3swRw1f1/Vbd4yZcwWOZ5OHZw7qEgmwrhhlsfe+1mqj1GD81wiLJspzt?=
- =?us-ascii?Q?17EyRr8KBmrGtW+w7z1sF/LPbtGE59BfRnJuZO/mGxW4uNR3hSw02soi0R05?=
- =?us-ascii?Q?HsD4Bn4SwKPg6dhFS09ORRi3KaUubjg7V2V1NqwMtnYwvUnOvc4EoGzuz8ON?=
- =?us-ascii?Q?cvrfqShJ+OL40aPXSYz/gOZv?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hVO0NhhqhqsQEUo/nw6igOuzjOrXT62Y2KUNbA8Ud4QNhv5eJNpNbtDX/9IS?=
+ =?us-ascii?Q?bnmPLJZ5vMsXKQqRFY4mY8064PR4wsL2VtKT6bFHXrkEs/sRb9Lh4IkuGPfP?=
+ =?us-ascii?Q?onAf4KMcuGw3G57G9hAv38Ck86ninWeIRziNhtrMl3CR8dHgyCQxM8Wg709A?=
+ =?us-ascii?Q?BOSuv0tyftkW4vorZmeneqjRWZvh2FlvwqNItAiUDN5lmbJuttlM4/IuupK7?=
+ =?us-ascii?Q?2Tny4HJnATxqpf1k66L4PnIoblpMZ9MwkUx5PW9GRZ6lD0Cp5fUy5tfdVtSk?=
+ =?us-ascii?Q?dJeAnCqX6mU/0NWE4gcMpBQPfAmru4FnEWsRym2o1ao928hs4fAN6i5GGbvi?=
+ =?us-ascii?Q?honlN9UaXgWE4tQzW7hN9TUr10QHYnoZD8TtrLoY0WMi7DkPribb7CUck/we?=
+ =?us-ascii?Q?YdRyx5SGYG4GmvvXTblZZaYXCjbq9030EewE8woRqAg7uwtUzuoTvUATi3zz?=
+ =?us-ascii?Q?f5EYWqQj1e2nzBLNSaLL+dSYISAtYrRJSBROpGthIDFMxFPGYfuluOCTfRe1?=
+ =?us-ascii?Q?utIiUXLf+o+3A3Dug6I2rb+Yu/70F1SXgpYoFZawQWtA9IofIT9wc+SZUwBG?=
+ =?us-ascii?Q?onqoG+ws003srI05Zo8HSD71BaAFf1/h6XGRWR+kYNnOx4y7ug+OBEQqWZ3s?=
+ =?us-ascii?Q?/jfmcfEcyn1R+l4ekjAACZ8f5E3kJwMltg5+u6qITxfEbkyJSaBkswcjbyNj?=
+ =?us-ascii?Q?gEOLU7JreNhoHvdBR4A0IKVWWuWH89o/WeWMh5giOstpilv/vBRs1S7RIJzZ?=
+ =?us-ascii?Q?ExhPtuPZfzkR47O9TtkhfW6XZwY++Uq8OtybFot88nuW8fXUDdxn6nsa5OTL?=
+ =?us-ascii?Q?BMvIKEBueqZy6OxYwfwn3P+4Aun3kgEbKQcsq05kZ+QjOxiVDY+qfmOOfShw?=
+ =?us-ascii?Q?zx9ztC/4W0wPV7CXJlvVXQt40X3JLCwpTUagk6Nia0JELmMemP/X5kpwfs+A?=
+ =?us-ascii?Q?BziosqPjZwrWu1Qc01n4JZzn36IsyJ2ZEnLPGhTDoCkuLH+nmXYTPwfWR/D9?=
+ =?us-ascii?Q?c7o8U6lrpD4HZQoRtis4ZTlZi+YVfsLIn4XKwBWcG21vlO3TKYmkCyzZb3FQ?=
+ =?us-ascii?Q?mTE1a/lp8y3XnxjEt/d9TJKITB4ZR2t321qxLLZi5utQ5qgFrCFNgWG96FPM?=
+ =?us-ascii?Q?+rdF2WZq5vfWdEi7aX/0IwKt5CSq7LR9S1EddT3Kxo+msFB4/AHrNRzMKLjW?=
+ =?us-ascii?Q?PQvDjDaheIsqARL9SSYXvt2ybPL6OUWsJwAZ8BQ3JDXcRBHK1BIJB05snEip?=
+ =?us-ascii?Q?whM9ZnA/SJaH+1iuwDBlV6DH76aHx5Lxl7Cs4YWXtlbU8L7Tf/9Z27QxZpgX?=
+ =?us-ascii?Q?82jyLwKtwhIP/tRsX7yz+U/i?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d1688596-fe96-4368-c1e9-08d98d752be8
+X-MS-Exchange-CrossTenant-Network-Message-Id: 33a18a15-d607-4566-5671-08d98d752ccf
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Oct 2021 11:41:03.8589
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Oct 2021 11:41:05.3930
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: M+SBGt7xTQDQOoPIhBM6xZF56EdMX+pEsXTaocgxOfsrGAQV2IwhYcEvSRc/70C+4WN4pce67pnEBIz3A31Xdg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: py+m1hZW2ZkT0GQkGOu3PnYbTjo2LMvFvRI41j5pAArUacrG9CUoFJwcqqGP6ld9QfO+BMftoo7CQgDpimH6Bg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6941
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When setting up a bridge with stp_state 1, topology changes are not
-detected and loops are not blocked. This is because the standard way of
-transmitting a packet, based on VLAN IDs redirected by VCAP IS2 to the
-right egress port, does not override the port STP state (in the case of
-Ocelot switches, that's really the PGID_SRC masks).
+The NXP LS1028A switch has two Ethernet ports towards the CPU, but only
+one of them is capable of acting as an NPI port at a time (inject and
+extract packets using DSA tags).
 
-To force a packet to be injected into a port that's BLOCKING, we must
-send it as a control packet, which means in the case of this tagger to
-send it using the manual register injection method. We already do this
-for PTP frames, extend the logic to apply to any link-local MAC DA.
+However, using the alternative ocelot-8021q tagging protocol, it should
+be possible to use both CPU ports symmetrically, but for that we need to
+mark both ports in the device tree as DSA masters.
 
-Fixes: 7c83a7c539ab ("net: dsa: add a second tagger for Ocelot switches based on tag_8021q")
+In the process of doing that, it can be seen that traffic to/from the
+network stack gets broken, and this is because the Felix driver iterates
+through all DSA CPU ports and configures them as NPI ports. But since
+there can only be a single NPI port, we effectively end up in a
+situation where DSA thinks the default CPU port is the first one, but
+the hardware port configured to be an NPI is the last one.
+
+I would like to treat this as a bug, because if the updated device trees
+are going to start circulating, it would be really good for existing
+kernels to support them, too.
+
+Fixes: adb3dccf090b ("net: dsa: felix: convert to the new .change_tag_protocol DSA API")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 v1->v2: none
 
- net/dsa/tag_ocelot_8021q.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/dsa/ocelot/felix.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/net/dsa/tag_ocelot_8021q.c b/net/dsa/tag_ocelot_8021q.c
-index d05c352f96e5..3412051981d7 100644
---- a/net/dsa/tag_ocelot_8021q.c
-+++ b/net/dsa/tag_ocelot_8021q.c
-@@ -42,8 +42,9 @@ static struct sk_buff *ocelot_xmit(struct sk_buff *skb,
- 	u16 tx_vid = dsa_8021q_tx_vid(dp->ds, dp->index);
- 	u16 queue_mapping = skb_get_queue_mapping(skb);
- 	u8 pcp = netdev_txq_to_tc(netdev, queue_mapping);
-+	struct ethhdr *hdr = eth_hdr(skb);
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index 9af8f900aa56..341236dcbdb4 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -266,12 +266,12 @@ static void felix_8021q_cpu_port_deinit(struct ocelot *ocelot, int port)
+  */
+ static int felix_setup_mmio_filtering(struct felix *felix)
+ {
+-	unsigned long user_ports = 0, cpu_ports = 0;
++	unsigned long user_ports = dsa_user_ports(felix->ds);
+ 	struct ocelot_vcap_filter *redirect_rule;
+ 	struct ocelot_vcap_filter *tagging_rule;
+ 	struct ocelot *ocelot = &felix->ocelot;
+ 	struct dsa_switch *ds = felix->ds;
+-	int port, ret;
++	int cpu = -1, port, ret;
  
--	if (ocelot_ptp_rew_op(skb))
-+	if (ocelot_ptp_rew_op(skb) || is_link_local_ether_addr(hdr->h_dest))
- 		return ocelot_defer_xmit(dp, skb);
+ 	tagging_rule = kzalloc(sizeof(struct ocelot_vcap_filter), GFP_KERNEL);
+ 	if (!tagging_rule)
+@@ -284,12 +284,15 @@ static int felix_setup_mmio_filtering(struct felix *felix)
+ 	}
  
- 	return dsa_8021q_xmit(skb, netdev, ETH_P_8021Q,
+ 	for (port = 0; port < ocelot->num_phys_ports; port++) {
+-		if (dsa_is_user_port(ds, port))
+-			user_ports |= BIT(port);
+-		if (dsa_is_cpu_port(ds, port))
+-			cpu_ports |= BIT(port);
++		if (dsa_is_cpu_port(ds, port)) {
++			cpu = port;
++			break;
++		}
+ 	}
+ 
++	if (cpu < 0)
++		return -EINVAL;
++
+ 	tagging_rule->key_type = OCELOT_VCAP_KEY_ETYPE;
+ 	*(__be16 *)tagging_rule->key.etype.etype.value = htons(ETH_P_1588);
+ 	*(__be16 *)tagging_rule->key.etype.etype.mask = htons(0xffff);
+@@ -325,7 +328,7 @@ static int felix_setup_mmio_filtering(struct felix *felix)
+ 		 * the CPU port module
+ 		 */
+ 		redirect_rule->action.mask_mode = OCELOT_MASK_MODE_REDIRECT;
+-		redirect_rule->action.port_mask = cpu_ports;
++		redirect_rule->action.port_mask = BIT(cpu);
+ 	} else {
+ 		/* Trap PTP packets only to the CPU port module (which is
+ 		 * redirected to the NPI port)
+@@ -1235,6 +1238,7 @@ static int felix_setup(struct dsa_switch *ds)
+ 		 * there's no real point in checking for errors.
+ 		 */
+ 		felix_set_tag_protocol(ds, port, felix->tag_proto);
++		break;
+ 	}
+ 
+ 	ds->mtu_enforcement_ingress = true;
+@@ -1275,6 +1279,7 @@ static void felix_teardown(struct dsa_switch *ds)
+ 			continue;
+ 
+ 		felix_del_tag_protocol(ds, port, felix->tag_proto);
++		break;
+ 	}
+ 
+ 	for (port = 0; port < ocelot->num_phys_ports; port++) {
 -- 
 2.25.1
 
