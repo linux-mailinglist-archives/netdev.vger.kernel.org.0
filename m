@@ -2,34 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 435E142A8E4
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 17:55:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A20842A8F2
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 17:58:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237366AbhJLP5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 11:57:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45200 "EHLO mail.kernel.org"
+        id S237260AbhJLQAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 12:00:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47032 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234892AbhJLP5r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Oct 2021 11:57:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 68B7B60F3A;
-        Tue, 12 Oct 2021 15:55:45 +0000 (UTC)
+        id S234892AbhJLQAt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Oct 2021 12:00:49 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C5ACB610A2;
+        Tue, 12 Oct 2021 15:58:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634054146;
-        bh=mGg5pdn9UC0b6WN6sZKlvpjSE6lVd9slWpJt7h/B9TE=;
+        s=k20201202; t=1634054328;
+        bh=hhr8Za+sOqGfSog81Gg0OPIGq0DbwAaWnk+7OCHOX2s=;
         h=From:To:Cc:Subject:Date:From;
-        b=HpyaRFjb0ZzPiXoHE7jUGmas3r9Pv4/X+6Jrp/1a6XjA5YoiO3yaNtTaNYx6wsKyR
-         Fc1fcYbKOcYZt2SJzzltnQjgA+Ru+c2FW50gXJI7G//8t1Zp09zR0aN2P2D58p7i9f
-         OiQ/GaPjvSD57YNL54kdTA2zC38xugiwUicy9PLvRqb8yn2hdd5lm6zTbqWpcmoFG9
-         1lH3c0ttphcDrt84RGA9McYSK9ocL5b4/+wzDQO/bI6RVTaf2M4lOaN+CX7R1TBYOf
-         dpuKWjEG3ktISA9HU8MNrAgz6Bfhm11F7kmOPegBU9eZ6rcfVPFvHdFuLjs65HUQAU
-         9ZQ6nPAcsxEHA==
-From:   Antoine Tenart <atenart@kernel.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Antoine Tenart <atenart@kernel.org>, jonathon.reinhart@gmail.com,
-        netdev@vger.kernel.org
-Subject: [RFC net-next] net: sysctl data could be in .bss
-Date:   Tue, 12 Oct 2021 17:55:42 +0200
-Message-Id: <20211012155542.827631-1-atenart@kernel.org>
+        b=HZySk2HbvOVvlU2fI1IM3eFhqq8SgerPgIn7zOBn63OXBEYnRa8wz7KGEYNR+ICCt
+         fga7E5UrgRj2AbFob+CL43RacdQ9CVVRvNv4UI7582RNgOomZXDe+NrJTs9B1AA3+M
+         zGIsEYISxCqNQI2nQtvAKnC+3mdp1wXVS3rxg9X3Rxgi49fDCV8f6SzSb2Ben07EDa
+         EMW/ebXIhmpEUkDRbKW9fJICYHTQJnK2PGZ3qOSdh1SFw3ea/C7tvyMu2WjuiUZ4UO
+         Q9UjNmdeVcJ4pVGkl2gQFkvsmxJZnACDR72unvmKhOZnUU7vjglQw6Y2v8kJbhm9aX
+         DBuM6PB2Xe5ow==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, ralf@linux-mips.org, jreuter@yaina.de,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, jmaloy@redhat.com,
+        ying.xue@windriver.com, linux-hams@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 0/6] net: constify dev_addr passing for protocols
+Date:   Tue, 12 Oct 2021 08:58:34 -0700
+Message-Id: <20211012155840.4151590-1-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -37,86 +40,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A check is made when registering non-init netns sysctl files to ensure
-their data pointer does not point to a global data section. This works
-well for modules as the check is made against the whole module address
-space (is_module_address). But when built-in, the check is made against
-the .data section. However global variables initialized to 0 can be in
-.bss (-fzero-initialized-in-bss).
+Commit 406f42fa0d3c ("net-next: When a bond have a massive amount 
+of VLANs...") introduced a rbtree for faster Ethernet address look
+up. To maintain netdev->dev_addr in this tree we need to make all
+the writes to it got through appropriate helpers.
 
-Add an extra check to make sure the sysctl data does not point to the
-.bss section either.
+netdev->dev_addr will be made const to prevent direct writes.
+This set sprinkles const across variables and arguments in protocol
+code which are used to hold references to netdev->dev_addr.
 
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
----
+Jakub Kicinski (6):
+  ax25: constify dev_addr passing
+  rose: constify dev_addr passing
+  llc/snap: constify dev_addr passing
+  ipv6: constify dev_addr passing
+  tipc: constify dev_addr passing
+  decnet: constify dev_addr passing
 
-Hello,
+ include/net/ax25.h     | 13 +++++++------
+ include/net/datalink.h |  2 +-
+ include/net/dn.h       |  2 +-
+ include/net/llc.h      |  2 +-
+ include/net/llc_if.h   |  3 ++-
+ include/net/ndisc.h    |  2 +-
+ include/net/rose.h     |  8 ++++----
+ net/802/p8022.c        |  2 +-
+ net/802/psnap.c        |  2 +-
+ net/ax25/af_ax25.c     |  2 +-
+ net/ax25/ax25_dev.c    |  2 +-
+ net/ax25/ax25_iface.c  |  6 +++---
+ net/ax25/ax25_in.c     |  4 ++--
+ net/ax25/ax25_out.c    |  2 +-
+ net/ipv6/addrconf.c    |  4 ++--
+ net/ipv6/ndisc.c       |  4 ++--
+ net/llc/llc_c_ac.c     |  2 +-
+ net/llc/llc_if.c       |  2 +-
+ net/llc/llc_output.c   |  2 +-
+ net/llc/llc_proc.c     |  2 +-
+ net/netrom/af_netrom.c |  4 ++--
+ net/netrom/nr_dev.c    |  6 +++---
+ net/netrom/nr_route.c  |  4 ++--
+ net/rose/af_rose.c     |  5 +++--
+ net/rose/rose_dev.c    |  6 +++---
+ net/rose/rose_link.c   |  8 ++++----
+ net/rose/rose_route.c  | 10 ++++++----
+ net/tipc/bearer.c      |  4 ++--
+ net/tipc/bearer.h      |  2 +-
+ net/tipc/eth_media.c   |  2 +-
+ net/tipc/ib_media.c    |  2 +-
+ 31 files changed, 63 insertions(+), 58 deletions(-)
 
-This is sent as an RFC as I'd like a fix[1] to be merged before to
-avoid introducing a new warning. But this can be reviewed in the
-meantime.
-
-I'm not sending this as a fix to avoid possible new warnings in stable
-kernels. (The actual fixes of sysctl files should go).
-
-I think this can go through the net-next tree as kernel/extable.c
-doesn't seem to be under any subsystem and a conflict is unlikely to
-happen.
-
-Thanks!
-Antoine
-
-[1] https://lore.kernel.org/all/20211012145437.754391-1-atenart@kernel.org/T/
-
- include/linux/kernel.h | 1 +
- kernel/extable.c       | 8 ++++++++
- net/sysctl_net.c       | 2 +-
- 3 files changed, 10 insertions(+), 1 deletion(-)
-
-diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 2776423a587e..beb61d0ab220 100644
---- a/include/linux/kernel.h
-+++ b/include/linux/kernel.h
-@@ -231,6 +231,7 @@ extern char *next_arg(char *args, char **param, char **val);
- extern int core_kernel_text(unsigned long addr);
- extern int init_kernel_text(unsigned long addr);
- extern int core_kernel_data(unsigned long addr);
-+extern int core_kernel_bss(unsigned long addr);
- extern int __kernel_text_address(unsigned long addr);
- extern int kernel_text_address(unsigned long addr);
- extern int func_ptr_is_kernel_text(void *ptr);
-diff --git a/kernel/extable.c b/kernel/extable.c
-index b0ea5eb0c3b4..477a4b6c8f63 100644
---- a/kernel/extable.c
-+++ b/kernel/extable.c
-@@ -100,6 +100,14 @@ int core_kernel_data(unsigned long addr)
- 	return 0;
- }
- 
-+int core_kernel_bss(unsigned long addr)
-+{
-+	if (addr >= (unsigned long)__bss_start &&
-+	    addr < (unsigned long)__bss_stop)
-+		return 1;
-+	return 0;
-+}
-+
- int __kernel_text_address(unsigned long addr)
- {
- 	if (kernel_text_address(addr))
-diff --git a/net/sysctl_net.c b/net/sysctl_net.c
-index f6cb0d4d114c..d883cf65029f 100644
---- a/net/sysctl_net.c
-+++ b/net/sysctl_net.c
-@@ -144,7 +144,7 @@ static void ensure_safe_net_sysctl(struct net *net, const char *path,
- 		addr = (unsigned long)ent->data;
- 		if (is_module_address(addr))
- 			where = "module";
--		else if (core_kernel_data(addr))
-+		else if (core_kernel_data(addr) || core_kernel_bss(addr))
- 			where = "kernel";
- 		else
- 			continue;
 -- 
 2.31.1
 
