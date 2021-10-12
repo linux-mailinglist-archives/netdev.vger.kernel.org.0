@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E350C42A054
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 10:49:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A531B42A065
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 10:55:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235445AbhJLIvH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 04:51:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37958 "EHLO
+        id S235028AbhJLI5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 04:57:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235277AbhJLIvF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 04:51:05 -0400
-Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050::465:202])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71998C061570;
-        Tue, 12 Oct 2021 01:49:04 -0700 (PDT)
-Received: from smtp202.mailbox.org (smtp202.mailbox.org [IPv6:2001:67c:2050:105:465:1:4:0])
+        with ESMTP id S232666AbhJLI5N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 04:57:13 -0400
+Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050::465:102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2C78C061570;
+        Tue, 12 Oct 2021 01:55:11 -0700 (PDT)
+Received: from smtp102.mailbox.org (smtp102.mailbox.org [IPv6:2001:67c:2050:105:465:1:3:0])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4HT8Tn3Ln9zQkhX;
-        Tue, 12 Oct 2021 10:49:01 +0200 (CEST)
+        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4HT8cs6zClzQkBS;
+        Tue, 12 Oct 2021 10:55:09 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
-Message-ID: <fee8b431-617f-3890-3ad2-67a61d3ffca2@v0yd.nl>
-Date:   Tue, 12 Oct 2021 10:48:49 +0200
+Message-ID: <c62bcb73-778d-1958-6c14-d5bdcca85812@v0yd.nl>
+Date:   Tue, 12 Oct 2021 10:55:03 +0200
 MIME-Version: 1.0
 Subject: Re: [PATCH] mwifiex: Add quirk resetting the PCI bridge on MS Surface
  devices
 Content-Language: en-US
-To:     Bjorn Helgaas <helgaas@kernel.org>
+To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>
 Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
         Ganapathi Bhat <ganapathi017@gmail.com>,
         Xinming Hu <huxinming820@gmail.com>,
@@ -40,26 +40,23 @@ Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
         Maximilian Luz <luzmaximilian@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Johannes Berg <johannes@sipsolutions.net>,
         Brian Norris <briannorris@chromium.org>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Alex Williamson <alex.williamson@redhat.com>
-References: <20211011165301.GA1650148@bhelgaas>
+        David Laight <David.Laight@ACULAB.COM>
+References: <20211011134238.16551-1-verdre@v0yd.nl>
+ <20211011170215.3bnmi6sa5yqux2r7@pali>
 From:   =?UTF-8?Q?Jonas_Dre=c3=9fler?= <verdre@v0yd.nl>
-In-Reply-To: <20211011165301.GA1650148@bhelgaas>
+In-Reply-To: <20211011170215.3bnmi6sa5yqux2r7@pali>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 5514626E
+X-Rspamd-Queue-Id: A0E4C26E
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/11/21 18:53, Bjorn Helgaas wrote:
-> [+cc Alex]
-> 
-> On Mon, Oct 11, 2021 at 03:42:38PM +0200, Jonas Dreßler wrote:
+On 10/11/21 19:02, Pali Rohár wrote:
+> On Monday 11 October 2021 15:42:38 Jonas Dreßler wrote:
 >> The most recent firmware (15.68.19.p21) of the 88W8897 PCIe+USB card
 >> reports a hardcoded LTR value to the system during initialization,
 >> probably as an (unsuccessful) attempt of the developers to fix firmware
@@ -68,17 +65,24 @@ On 10/11/21 18:53, Bjorn Helgaas wrote:
 >> S0ix state), because the exit latency of that state would be higher than
 >> what the card can tolerate.
 > 
-> S0ix and C-State 10 are ACPI concepts that don't mean anything in a
-> PCIe context.
+> This description looks like a generic issue in 88W8897 chip or its
+> firmware and not something to Surface PCIe controller or Surface HW. But
+> please correct me if I'm wrong here.
 > 
-> I think LTR is only involved in deciding whether to enter the ASPM
-> L1.2 substate.  Maybe the system will only enter C-State 10 or S0ix
-> when the link is in L1.2?
-
-Yup, this is indeed the case, see https://01.org/blogs/qwang59/2020/linux-s0ix-troubleshooting
-(ctrl+f "IP LINK PM STATE").
-
+> Has somebody 88W8897-based PCIe card in non-Surface device and can check
+> or verify if this issue happens also outside of the Surface device?
 > 
+> It would be really nice to know if this is issue in Surface or in 8897.
+> 
+
+Fairly sure the LTR value is something that's reported by the firmware
+and will be the same on all 8897 devices (as mentioned in my reply to Bjorn
+the second-latest firmware doesn't report that fixed LTR value).
+
+The thing is I'm not sure if this hack works fine on non-Surface devices
+or maybe breaks things there (I guess the change had some effect on Marvells
+test platform at least), so this is simply the minimum risk approach.
+
 >> Turns out the card works just the same (including the firmware crashes)
 >> no matter if that hardcoded LTR value is reported or not, so it's kind
 >> of useless and only prevents us from saving power.
@@ -115,94 +119,12 @@ Yup, this is indeed the case, see https://01.org/blogs/qwang59/2020/linux-s0ix-t
 >> +	 * the firmware (latest version 15.68.19.p21) of the 88W8897 PCIe+USB
 >> +	 * card stop reporting a fixed LTR value that prevents the system from
 >> +	 * entering package C10 and S0ix powersaving states.
-> 
-> I don't believe this.  Why would resetting the root port change what
-> the downstream device reports via LTR messages?
-> 
->  From PCIe r5.0, sec 5.5.1:
-> 
->    The following rules define how the L1.1 and L1.2 substates are entered:
->      ...
->      * When in ASPM L1.0 and the ASPM L1.2 Enable bit is Set, the L1.2
->        substate must be entered when CLKREQ# is deasserted and all of
->        the following conditions are true:
-> 
->        - The reported snooped LTR value last sent or received by this
-> 	Port is greater than or equal to the value set by the
-> 	LTR_L1.2_THRESHOLD Value and Scale fields, or there is no
-> 	snoop service latency requirement.
-> 
->        - The reported non-snooped LTR last sent or received by this
-> 	Port value is greater than or equal to the value set by the
-> 	LTR_L1.2_THRESHOLD Value and Scale fields, or there is no
-> 	non-snoop service latency requirement.
-> 
->  From the LTR Message format in sec 6.18:
-> 
->    No-Snoop Latency and Snoop Latency: As shown in Figure 6-15, these
->    fields include a Requirement bit that indicates if the device has a
->    latency requirement for the given type of Request. If the
->    Requirement bit is Set, the LatencyValue and LatencyScale fields
->    describe the latency requirement. If the Requirement bit is Clear,
->    there is no latency requirement and the LatencyValue and
->    LatencyScale fields are ignored.
-> 
-> Resetting the root port might make it forget the LTR value it last
-> received.  If that's equivalent to having no service latency
-> requirement, it *might* enable L1.2 entry, although that doesn't seem
-> equivalent to the downstream device having sent an LTR message with
-> the Requirement bit cleared.
-> 
-> I think the endpoint is required to send a new LTR message before it
-> goes to a non-D0 state (sec 6.18), so the bridge will capture the
-> latency again, and we'll probably be back in the same state.
-
-Indeed that happens when suspending the device, after resuming the LTR
-value is back to the initial value. mwifiex_pcie_init_fw_port() is
-executed on resume, too though (I should probably have mentioned this
-in the commit message, will do in v2), so this is taken care of.
-
-While suspended, the device goes into D3 anyway and S0ix is achieved
-regardless of the LTR value.
-
-> 
-> This all seems fragile to me.  If we force the link to L1.2 without
-> knowing accurate exit latencies and latency tolerance, the device is
-> liable to drop packets.
-
-Yeah, I'm not saying this patch isn't an ugly hack...
-
-What I can say though is that this patch has been running in the
-linux-surface (https://github.com/linux-surface/kernel/pull/72) kernel
-for a few months now, and so far we've only received positive feedback.
-
-There's two alternatives I can think of to deal with this issue:
-
-1) Revert the cards firmware in linux-firmware back to the second-latest
-version. That firmware didn't report a fixed LTR value and also doesn't
-have any other obvious issues I know of compared to the latest one.
-
-2) Somehow interact with the PMC Core driver to make it ignore the LTR
-values reported by the card (I doubt that's possible from mwifiex).
-It can be done manually via debugfs by writing to
-/sys/kernel/debug/pmc_core/ltr_ignore.
-
-> 
 >> +	 * We need to do it here because it must happen after firmware
 >> +	 * initialization and this function is called right after that is done.
 >> +	 */
 >> +	if (card->quirks & QUIRK_DO_FLR_ON_BRIDGE)
 >> +		pci_reset_function(parent_pdev);
-> 
-> PCIe r5.0, sec 7.5.3.3, says Function Level Reset can only be
-> supported by endpoints, so I guess this will actually do some other
-> kind of reset.
-
-Interesting, I briefly searched and it doesn't seem like think
-there's public documentation available by Intel that goes into
-the specifics here, maybe someone working at Intel knows more?
-
-> 
+>> +
 >>   	/* Write the RX ring read pointer in to reg->rx_rdptr */
 >>   	if (mwifiex_write_reg(adapter, reg->rx_rdptr, card->rxbd_rdptr |
 >>   			      tx_wrap)) {
