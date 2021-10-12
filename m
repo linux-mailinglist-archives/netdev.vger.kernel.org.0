@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C712F42A5A6
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 15:26:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B98142A5A7
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 15:26:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236908AbhJLN2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 09:28:25 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:46345 "EHLO
+        id S236760AbhJLN23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 09:28:29 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:51453 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236987AbhJLN2R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 09:28:17 -0400
+        by vger.kernel.org with ESMTP id S237027AbhJLN2T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 09:28:19 -0400
 Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id D2EDD5C0198;
-        Tue, 12 Oct 2021 09:26:15 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id B9D835C0189;
+        Tue, 12 Oct 2021 09:26:17 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Tue, 12 Oct 2021 09:26:15 -0400
+  by compute1.internal (MEProxy); Tue, 12 Oct 2021 09:26:17 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=loTjH8WhKgdGMViGxW+Hbo/pSzI53gUxFuz5QItz2T8=; b=BurnbSVd
-        UhutRYnuaKXIRaZ1mgG02QYF11jjOcOlXP2uWiYQMWfhUTu1K6SZ6QP97J2T3Vgm
-        uPh36+Of01SaJj1dw/7pmp7zMOujEQiALAzF/LPdHw0ARBHsX14wsMvsGsHYPNz0
-        Rs6mK/3E6wUJqXNOf5ORmaJD/Q1onE7JWVlKE0YFND+RyuonGUoujPA4F3FejE6z
-        xt19N/33kkDef3fKmcXEhn5wWRt2uJQqVlMPEgMH2E+fjjj3EcdppQ1vAgbsnFiv
-        emUfE1AHS4i+B9csQG6+MPwWVf1MmbKqN9cELoPzFVQZWD/I2rCmSysNBlMFQUCU
-        x6DiltJTdFo2fg==
-X-ME-Sender: <xms:94xlYatDJ-Ut4trhfTPs023f-EkUay0F-rOPmloPR1E9c_F-WfgG2g>
-    <xme:94xlYfeNHcwqHVeYqdtCKcvXT8_EmXFuO-5pmyLN1LR8P9pIeXamE7nuhUeTjFLiT
-    GHr1KO2d18ccFk>
-X-ME-Received: <xmr:94xlYVy0NX_7R74X1UyzwkJ0yRZNX63LXWKx-h1QtfQVLGxXfxH8SEVl2P_jmjvO8zxmyyYYWEW4TA4uBnEijY3XEQgyddNoP2XWwqDxbvjPgA>
+        fm1; bh=PxeR2bB54Lo4z2ysBnMmKkO/xgafhQqAvjGV5o9tIAA=; b=Op5ZyONk
+        t48rSZXd2iW27PxXbZaV3d7KCnI/WRQqCdThWnV5curKQrXSpzrm+WxXX23Z69xj
+        JsvXO7Ximvy4oI5P5UBcGzamyAQgl7Rb5oy5WdGhL5ATEXPzzs3z4vDbjG/6EYPV
+        1MLz2hdcSIuG/ijl8Y57rDU/Ssoqi7NZ2+z5Db73+H4FGnpuwuttPsXt/Vr5u4CH
+        bOttlpzUMQcBzNPTZX14zczuvHy2QOA8DjaS3LTH5MhTbGN6j/y7LnAXE/Cm8svS
+        PcHluHFILsPc8SLaZbroLZurhI38SsrRH5EZz2xMW4fQ9KGguP14VEDN8o0/8nRq
+        fIZgV+QHgWyVnw==
+X-ME-Sender: <xms:-YxlYRQvTI-9rvIPMV5VPjS_vpGqsbRgmznD1-SJex4syNiVX_-NzQ>
+    <xme:-YxlYawfInzKFCgLEsGU6Zjw0xd1HSBlgTeEM0MDOR1VWDS18kJW7q4UJDfECPESb
+    jJ78G0WJccAJNM>
+X-ME-Received: <xmr:-YxlYW1c7NQu0BUvD6yUexdYBP5OsOgM6Dwpzj7luBhq5qHTAYNVXcBcNNUKIbjRqu_UsWeZy-okM6wIdUkMgWLCDJUY9RQtEvo-l4bO5dL9fQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddtkedgiedvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,20 +38,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddtkedgiedvucetufdoteggod
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgepudenucfr
     rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:94xlYVPfm7su06kpdaNspYJq68mt12K4y-AbFdtr07cV9yPpzx4VPg>
-    <xmx:94xlYa9sygJFLlhLc2OLMWJ3j0Uk5Hu6ByCFzt-yr5n38Dd2kGf3tg>
-    <xmx:94xlYdUcEIKhCTzWVQj4-wPXaIW0QcdcyYYj0tMNbXsojmjMjPxhJQ>
-    <xmx:94xlYea09Gdb0lcfVcbVsfaD6uKhRo1xXCfeHhZ51cUw7g88gwRH0g>
+X-ME-Proxy: <xmx:-YxlYZC0DAPH_XQP-G4chBKKVTlzPhGwBvrFGfnhDlpXVWZAnEJgwQ>
+    <xmx:-YxlYagFpkfcGEQQK7RfdpkMUFoqLTXV6uhOYTmK8JQOHyJJeXp-yA>
+    <xmx:-YxlYdr0ixK4cl61uF-KBStty9JvMgCDakvr7MY7yil_BmTH2LbGvA>
+    <xmx:-YxlYSewMLTmjn3hEQR5SSzse5Un_MDf2cXp_-MvO5fB6ra65lAWAA>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 12 Oct 2021 09:26:14 -0400 (EDT)
+ 12 Oct 2021 09:26:16 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     mkubecek@suse.cz, popadrian1996@gmail.com, andrew@lunn.ch,
         mlxsw@nvidia.com, moshe@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH ethtool-next 11/14] cmis: Request specific pages for parsing in netlink path
-Date:   Tue, 12 Oct 2021 16:25:22 +0300
-Message-Id: <20211012132525.457323-12-idosch@idosch.org>
+Subject: [PATCH ethtool-next 12/14] sff-8636: Request specific pages for parsing in netlink path
+Date:   Tue, 12 Oct 2021 16:25:23 +0300
+Message-Id: <20211012132525.457323-13-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211012132525.457323-1-idosch@idosch.org>
 References: <20211012132525.457323-1-idosch@idosch.org>
@@ -64,25 +64,24 @@ X-Mailing-List: netdev@vger.kernel.org
 From: Ido Schimmel <idosch@nvidia.com>
 
 In the netlink path, unlike the IOCTL path, user space requests specific
-EEPROM pages from the kernel. The presence of optional and banked pages
-is advertised via various bits in the EEPROM contents.
+EEPROM pages from the kernel. The presence of optional pages is
+advertised via various bits in the EEPROM contents.
 
-Currently, for CMIS, the Lower Memory, Page 00h and the optional Page
-01h are requested by the netlink code (i.e., netlink/module-eeprom.c)
-and passed to the CMIS code (i.e., cmis.c) as two arguments for parsing.
+Currently, for SFF-8636, the Lower Memory, Page 00h and the optional
+Page 03h are requested by the netlink code (i.e.,
+netlink/module-eeprom.c) and passed to the SFF-8636 code (i.e., qsfp.c)
+as two arguments for parsing.
 
 This is problematic for several reasons. First, this approach is not
-very scaleable as CMIS supports a lot of optional and banked pages.
-Passing them as separate arguments to the CMIS code is not going to
-work.
+very scaleable as SFF-8636 supports a lot of optional pages. Passing
+them as separate arguments to the SFF-8636 code is not going to work.
 
-Second, the knowledge of which optional and banked pages are available
-is encapsulated in the CMIS parsing code. As such, the common netlink
-code has no business of fetching optional and banked pages that might be
-invalid.
+Second, the knowledge of which optional pages are available is
+encapsulated in the SFF-8636 parsing code. As such, the common netlink
+code has no business of fetching optional pages that might be invalid.
 
-Instead, pass the command context to the CMIS parsing function and allow
-it to fetch only valid pages via the 'MODULE_EEPROM_GET' netlink
+Instead, pass the command context to the SFF-8636 parsing function and
+allow it to fetch only valid pages via the 'MODULE_EEPROM_GET' netlink
 message.
 
 Tested by making sure that the output of 'ethtool -m' does not change
@@ -90,58 +89,94 @@ before and after the patch.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- cmis.c                  | 60 ++++++++++++++++++++++++++++++++---------
- cmis.h                  |  3 +--
- netlink/module-eeprom.c |  7 +++--
- 3 files changed, 51 insertions(+), 19 deletions(-)
+ internal.h              |  3 +--
+ netlink/module-eeprom.c |  3 +--
+ qsfp.c                  | 60 ++++++++++++++++++++++++++++++++---------
+ 3 files changed, 49 insertions(+), 17 deletions(-)
 
-diff --git a/cmis.c b/cmis.c
-index eb7791dd59df..4798fd4c7d68 100644
---- a/cmis.c
-+++ b/cmis.c
-@@ -9,9 +9,11 @@
+diff --git a/internal.h b/internal.h
+index a77efd385698..2407d3c223fa 100644
+--- a/internal.h
++++ b/internal.h
+@@ -392,8 +392,7 @@ void sff8472_show_all(const __u8 *id);
  
+ /* QSFP Optics diagnostics */
+ void sff8636_show_all_ioctl(const __u8 *id, __u32 eeprom_len);
+-void sff8636_show_all_nl(const struct ethtool_module_eeprom *page_zero,
+-			 const struct ethtool_module_eeprom *page_three);
++int sff8636_show_all_nl(struct cmd_context *ctx);
+ 
+ /* FUJITSU Extended Socket network device */
+ int fjes_dump_regs(struct ethtool_drvinfo *info, struct ethtool_regs *regs);
+diff --git a/netlink/module-eeprom.c b/netlink/module-eeprom.c
+index a8e2662e0b8c..f04f8e134223 100644
+--- a/netlink/module-eeprom.c
++++ b/netlink/module-eeprom.c
+@@ -316,7 +316,6 @@ static int decoder_prefetch(struct nl_context *nlctx)
+ 
+ static void decoder_print(struct cmd_context *ctx)
+ {
+-	struct ethtool_module_eeprom *page_three = cache_get(3, 0, ETH_I2C_ADDRESS_LOW);
+ 	struct ethtool_module_eeprom *page_zero = cache_get(0, 0, ETH_I2C_ADDRESS_LOW);
+ 	u8 module_id = page_zero->data[SFF8636_ID_OFFSET];
+ 
+@@ -327,7 +326,7 @@ static void decoder_print(struct cmd_context *ctx)
+ 	case SFF8024_ID_QSFP:
+ 	case SFF8024_ID_QSFP28:
+ 	case SFF8024_ID_QSFP_PLUS:
+-		sff8636_show_all_nl(page_zero, page_three);
++		sff8636_show_all_nl(ctx);
+ 		break;
+ 	case SFF8024_ID_QSFP_DD:
+ 	case SFF8024_ID_DSFP:
+diff --git a/qsfp.c b/qsfp.c
+index 4aa49351e6b7..e7c2f51cd9c6 100644
+--- a/qsfp.c
++++ b/qsfp.c
+@@ -55,10 +55,12 @@
+  **/
  #include <stdio.h>
  #include <math.h>
 +#include <errno.h>
  #include "internal.h"
  #include "sff-common.h"
+ #include "qsfp.h"
  #include "cmis.h"
 +#include "netlink/extapi.h"
  
- struct cmis_memory_map {
+ struct sff8636_memory_map {
  	const __u8 *lower_memory;
-@@ -21,6 +23,7 @@ struct cmis_memory_map {
+@@ -68,6 +70,7 @@ struct sff8636_memory_map {
  };
  
- #define CMIS_PAGE_SIZE		0x80
-+#define CMIS_I2C_ADDRESS	0x50
+ #define SFF8636_PAGE_SIZE	0x80
++#define SFF8636_I2C_ADDRESS	0x50
  
- static void cmis_show_identifier(const struct cmis_memory_map *map)
- {
-@@ -384,36 +387,67 @@ void cmis_show_all_ioctl(const __u8 *id)
- 	cmis_show_all_common(&map);
+ #define MAX_DESC_SIZE	42
+ 
+@@ -947,36 +950,67 @@ void sff8636_show_all_ioctl(const __u8 *id, __u32 eeprom_len)
+ 	sff8636_show_all_common(&map);
  }
  
 -static void
--cmis_memory_map_init_pages(struct cmis_memory_map *map,
--			   const struct ethtool_module_eeprom *page_zero,
--			   const struct ethtool_module_eeprom *page_one)
-+static void cmis_request_init(struct ethtool_module_eeprom *request, u8 bank,
-+			      u8 page, u32 offset)
- {
+-sff8636_memory_map_init_pages(struct sff8636_memory_map *map,
+-			      const struct ethtool_module_eeprom *page_zero,
+-			      const struct ethtool_module_eeprom *page_three)
++static void sff8636_request_init(struct ethtool_module_eeprom *request, u8 page,
++				 u32 offset)
++{
 +	request->offset = offset;
-+	request->length = CMIS_PAGE_SIZE;
++	request->length = SFF8636_PAGE_SIZE;
 +	request->page = page;
-+	request->bank = bank;
-+	request->i2c_address = CMIS_I2C_ADDRESS;
++	request->bank = 0;
++	request->i2c_address = SFF8636_I2C_ADDRESS;
 +	request->data = NULL;
 +}
 +
 +static int
-+cmis_memory_map_init_pages(struct cmd_context *ctx,
-+			   struct cmis_memory_map *map)
-+{
++sff8636_memory_map_init_pages(struct cmd_context *ctx,
++			      struct sff8636_memory_map *map)
+ {
 +	struct ethtool_module_eeprom request;
 +	int ret;
 +
@@ -155,99 +190,51 @@ index eb7791dd59df..4798fd4c7d68 100644
  	 */
 -	map->lower_memory = page_zero->data;
 -	map->page_00h = page_zero->data;
-+	cmis_request_init(&request, 0, 0x0, 0);
++	sff8636_request_init(&request, 0x0, 0);
 +	ret = nl_get_eeprom_page(ctx, &request);
 +	if (ret < 0)
 +		return ret;
 +	map->lower_memory = request.data;
 +
-+	cmis_request_init(&request, 0, 0x0, CMIS_PAGE_SIZE);
++	sff8636_request_init(&request, 0x0, SFF8636_PAGE_SIZE);
 +	ret = nl_get_eeprom_page(ctx, &request);
 +	if (ret < 0)
 +		return ret;
-+	map->page_00h = request.data - CMIS_PAGE_SIZE;
++	map->page_00h = request.data - SFF8636_PAGE_SIZE;
  
- 	/* Page 01h is only present when the module memory model is paged and
+ 	/* Page 03h is only present when the module memory model is paged and
  	 * not flat.
  	 */
- 	if (map->lower_memory[CMIS_MEMORY_MODEL_OFFSET] &
- 	    CMIS_MEMORY_MODEL_MASK)
+ 	if (map->lower_memory[SFF8636_STATUS_2_OFFSET] &
+ 	    SFF8636_STATUS_PAGE_3_PRESENT)
 -		return;
 +		return 0;
-+
-+	cmis_request_init(&request, 0, 0x1, CMIS_PAGE_SIZE);
+ 
+-	map->page_03h = page_three->data - SFF8636_PAGE_SIZE;
++	sff8636_request_init(&request, 0x3, SFF8636_PAGE_SIZE);
 +	ret = nl_get_eeprom_page(ctx, &request);
 +	if (ret < 0)
 +		return ret;
-+	map->page_01h = request.data - CMIS_PAGE_SIZE;
- 
--	map->page_01h = page_one->data - CMIS_PAGE_SIZE;
-+	return 0;
- }
- 
--void cmis_show_all_nl(const struct ethtool_module_eeprom *page_zero,
--		      const struct ethtool_module_eeprom *page_one)
-+int cmis_show_all_nl(struct cmd_context *ctx)
- {
- 	struct cmis_memory_map map = {};
-+	int ret;
- 
--	cmis_memory_map_init_pages(&map, page_zero, page_one);
-+	ret = cmis_memory_map_init_pages(ctx, &map);
-+	if (ret < 0)
-+		return ret;
- 	cmis_show_all_common(&map);
++	map->page_03h = request.data - SFF8636_PAGE_SIZE;
 +
 +	return 0;
  }
-diff --git a/cmis.h b/cmis.h
-index c878e3bc5afd..911491dc5c8f 100644
---- a/cmis.h
-+++ b/cmis.h
-@@ -123,7 +123,6 @@
  
- void cmis_show_all_ioctl(const __u8 *id);
- 
--void cmis_show_all_nl(const struct ethtool_module_eeprom *page_zero,
--		      const struct ethtool_module_eeprom *page_one);
-+int cmis_show_all_nl(struct cmd_context *ctx);
- 
- #endif /* CMIS_H__ */
-diff --git a/netlink/module-eeprom.c b/netlink/module-eeprom.c
-index ee5508840157..a8e2662e0b8c 100644
---- a/netlink/module-eeprom.c
-+++ b/netlink/module-eeprom.c
-@@ -314,11 +314,10 @@ static int decoder_prefetch(struct nl_context *nlctx)
- 	return page_fetch(nlctx, &request);
- }
- 
--static void decoder_print(void)
-+static void decoder_print(struct cmd_context *ctx)
+-void sff8636_show_all_nl(const struct ethtool_module_eeprom *page_zero,
+-			 const struct ethtool_module_eeprom *page_three)
++int sff8636_show_all_nl(struct cmd_context *ctx)
  {
- 	struct ethtool_module_eeprom *page_three = cache_get(3, 0, ETH_I2C_ADDRESS_LOW);
- 	struct ethtool_module_eeprom *page_zero = cache_get(0, 0, ETH_I2C_ADDRESS_LOW);
--	struct ethtool_module_eeprom *page_one = cache_get(1, 0, ETH_I2C_ADDRESS_LOW);
- 	u8 module_id = page_zero->data[SFF8636_ID_OFFSET];
+ 	struct sff8636_memory_map map = {};
++	int ret;
  
- 	switch (module_id) {
-@@ -332,7 +331,7 @@ static void decoder_print(void)
- 		break;
- 	case SFF8024_ID_QSFP_DD:
- 	case SFF8024_ID_DSFP:
--		cmis_show_all_nl(page_zero, page_one);
-+		cmis_show_all_nl(ctx);
- 		break;
- 	default:
- 		dump_hex(stdout, page_zero->data, page_zero->length, page_zero->offset);
-@@ -524,7 +523,7 @@ int nl_getmodule(struct cmd_context *ctx)
- 		ret = decoder_prefetch(nlctx);
- 		if (ret)
- 			goto cleanup;
--		decoder_print();
-+		decoder_print(ctx);
- #endif
- 	}
- 
+-	sff8636_memory_map_init_pages(&map, page_zero, page_three);
++	ret = sff8636_memory_map_init_pages(ctx, &map);
++	if (ret < 0)
++		return ret;
+ 	sff8636_show_all_common(&map);
++
++	return 0;
+ }
 -- 
 2.31.1
 
