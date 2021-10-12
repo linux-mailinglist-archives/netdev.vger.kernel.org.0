@@ -2,87 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEB6E42A83D
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 17:27:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4178E42A861
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 17:37:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237418AbhJLP3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 11:29:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54076 "EHLO mail.kernel.org"
+        id S237167AbhJLPjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 11:39:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57836 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229633AbhJLP3H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Oct 2021 11:29:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E92EE601FF;
-        Tue, 12 Oct 2021 15:27:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634052425;
-        bh=JHsNRkImaZso/PdEhq7lyB1jAuHIPy/YNePO+70974o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tfz5lBCZzH0JKgOGsRgMim4fgUflHSc+NzJKbYotcGljbTf7PO2CDwWHuLqWloEnD
-         +osAhLbdsiFpEh1r/Ee5+G23epykAedEb9oZuKEzTgjDzoghoVjHwXJaGA6qe+39CA
-         VTpVY+qq6hXn1Xh1On+VUZVHkSEVCdVvR869EEhNbjCe+Vrl9VyIalPm17mWpCeE8i
-         LMFUAV/LGi2azLF3wmzkS73ciOLK8H4QY9vCvh81OLjBJZY+CWsUS3X+u8/Ux0blXz
-         Pv++7boIgmVd1DCPKQUz8qDrke+Hp4zsV0pD9WNp/0emfjx42PgS92v0RZMJ3EBgH4
-         w4EkG51zemCbg==
-Date:   Tue, 12 Oct 2021 08:27:03 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alvin =?UTF-8?B?xaBpcHJhZ2E=?= <alvin@pqrs.dk>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        id S237516AbhJLPio (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Oct 2021 11:38:44 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0A61A60F3A;
+        Tue, 12 Oct 2021 15:36:40 +0000 (UTC)
+Date:   Tue, 12 Oct 2021 11:36:39 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc:     David Laight <David.Laight@ACULAB.COM>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Paul <paulmck@linux.vnet.ibm.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        "Joel Fernandes, Google" <joel@joelfernandes.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alvin =?UTF-8?B?xaBpcHJhZ2E=?= <alsi@bang-olufsen.dk>,
-        Michael Rasmussen <mir@bang-olufsen.dk>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 5/6] net: dsa: realtek-smi: add rtl8365mb
- subdriver for RTL8365MB-VC
-Message-ID: <20211012082703.7b31e73b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211012123557.3547280-6-alvin@pqrs.dk>
-References: <20211012123557.3547280-1-alvin@pqrs.dk>
-        <20211012123557.3547280-6-alvin@pqrs.dk>
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, rcu <rcu@vger.kernel.org>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        coreteam <coreteam@netfilter.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [RFC][PATCH] rcu: Use typeof(p) instead of typeof(*p) *
+Message-ID: <20211012113639.4c53805e@gandalf.local.home>
+In-Reply-To: <364516086.11428.1634048283470.JavaMail.zimbra@efficios.com>
+References: <20211005094728.203ecef2@gandalf.local.home>
+        <505004021.2637.1633446912223.JavaMail.zimbra@efficios.com>
+        <4dbff8032f874a6f921ba0555c94eeaf@AcuMS.aculab.com>
+        <364516086.11428.1634048283470.JavaMail.zimbra@efficios.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Oct 2021 14:35:54 +0200 Alvin =C5=A0ipraga wrote:
-> +	{ 0, 4, 2, "dot3StatsFCSErrors" },
-> +	{ 0, 6, 2, "dot3StatsSymbolErrors" },
-> +	{ 0, 8, 2, "dot3InPauseFrames" },
-> +	{ 0, 10, 2, "dot3ControlInUnknownOpcodes" },
-...
+On Tue, 12 Oct 2021 10:18:03 -0400 (EDT)
+Mathieu Desnoyers <mathieu.desnoyers@efficios.com> wrote:
 
-You must expose counters via existing standard APIs.
+> As Linus pointed out, it might indeed be simpler to just keep declaring the structure in
+> public headers.
 
-You should implement these ethtool ops:
+I solved this by creating a separate header for the nasty structure, but
+it's still public for all references.
 
-	void	(*get_eth_phy_stats)(struct net_device *dev,
-				     struct ethtool_eth_phy_stats *phy_stats);
-	void	(*get_eth_mac_stats)(struct net_device *dev,
-				     struct ethtool_eth_mac_stats *mac_stats);
-	void	(*get_eth_ctrl_stats)(struct net_device *dev,
-				      struct ethtool_eth_ctrl_stats *ctrl_stats);
-	void	(*get_rmon_stats)(struct net_device *dev,
-				  struct ethtool_rmon_stats *rmon_stats,
-				  const struct ethtool_rmon_hist_range **ranges);
-
-> +static int rtl8365mb_setup(struct dsa_switch *ds)
-> +{
-> +	struct realtek_smi *smi =3D ds->priv;
-> +	struct rtl8365mb *mb;
-> +	int ret;
-> +	int i;
-> +
-> +	mb =3D smi->chip_data;
-
-drivers/net/dsa/rtl8365mb.c:1428:20: warning: variable =E2=80=98mb=E2=80=99=
- set but not used [-Wunused-but-set-variable]
- 1428 |  struct rtl8365mb *mb;
-      |                    ^~
+-- Steve
