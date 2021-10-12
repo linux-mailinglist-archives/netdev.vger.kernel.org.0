@@ -2,134 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E1E642A976
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 18:31:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F1A342A980
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 18:35:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230153AbhJLQdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 12:33:45 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:53561 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229565AbhJLQdp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 12:33:45 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 0223F5C017F;
-        Tue, 12 Oct 2021 12:31:43 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 12 Oct 2021 12:31:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=yXtvIh
-        zyQ3mF1lRMx2azuLdQH1oEZYIastE4ke77L2k=; b=AblIlqbtRvjMAd/NV3CtkG
-        RGLhm1qCIf3gniYOgrGZr8V4vVvqBlkvR+Tc3N1Pc2aka5sJWzF3K6XoVxgDM7nh
-        vT/B7oxOBwWbAD2uid4tn99F/HDMen3CQD/L6hCCwoVa+BqD6GEa2DNSYbt+o6b9
-        YgraCKbSkoGx7PsqOTMXE7fIHLSy0/CD2QHLjF1djOoDxWqX/k2hiZPR/XokXXA1
-        XeMCf/JAbst85ac9NOysAy/luhCd5OZPvTstRZ+bF+wX2zscWzoN/pUseY1Z87iF
-        NIAtkMJvEI9+Jje9Lmo0zOYz79yND9S//w+kMU07Bfj/eYZYed/DIQ8Znp8A5MMA
-        ==
-X-ME-Sender: <xms:brhlYe30orrFm84xbUDqbQ3RiErq3xN7iIHodKa27mY9JdiyxnDE9A>
-    <xme:brhlYRFT4XeOThKzQ7VHnI08jFBv6z-6dgNiOZqvXuGAq6Mp19XMd20C7Le1BqPLY
-    kaMIGQM4EA9u48>
-X-ME-Received: <xmr:brhlYW78ncSe4ofxIYRMtCYh2yGK6ZwOBE4ko9PVdipGxpNHqdRm3fgdBiONKlB_paMUPB_SCcc4DbK7YbTWdTvS60b27g>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddtkedgleekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedvhffgueevjeeufffhffffuddtfeeugefhfeehveduieevvdefieevkeduueeh
-    jeenucffohhmrghinheplhhinhhugihplhhumhgsvghrshgtohhnfhdrohhrghenucevlh
-    hushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhes
-    ihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:brhlYf26WgYpoZecd1u9g8dTcaY8rkb3I9fZ9VpTUvHIKM5bs-n-gA>
-    <xmx:brhlYRGwIDzYVGJwXVT1hMGNbPvdoERtJsfnVyszoBL9yyJfKcsurw>
-    <xmx:brhlYY_ZrIaCYrXXLsrjdV3JlcOFej0o0X8SS8O65GxnbtVtJN2yxw>
-    <xmx:brhlYW5vGzAcZpt696JG8Bmssr1D4krVnFNkPhJEMODf0xum4g67Ag>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 12 Oct 2021 12:31:41 -0400 (EDT)
-Date:   Tue, 12 Oct 2021 19:31:38 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     davem@davemloft.net, kuba@kernel.org, roopa@nvidia.com,
-        dsahern@kernel.org, m@lambda.lt, john.fastabend@gmail.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH net-next 4/4] net, neigh: Add NTF_MANAGED flag for
- managed neighbor entries
-Message-ID: <YWW4alF5eSUS0QVK@shredder>
-References: <20211011121238.25542-1-daniel@iogearbox.net>
- <20211011121238.25542-5-daniel@iogearbox.net>
+        id S230505AbhJLQhF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 12:37:05 -0400
+Received: from mga09.intel.com ([134.134.136.24]:1914 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229495AbhJLQhE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Oct 2021 12:37:04 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10135"; a="227102066"
+X-IronPort-AV: E=Sophos;i="5.85,368,1624345200"; 
+   d="scan'208";a="227102066"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2021 09:33:49 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,368,1624345200"; 
+   d="scan'208";a="491050676"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga008.jf.intel.com with ESMTP; 12 Oct 2021 09:33:48 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        maciej.machnikowski@intel.com, richardcochran@gmail.com
+Subject: [PATCH net-next 0/4][pull request] 100GbE Intel Wired LAN Driver Updates 2021-10-12
+Date:   Tue, 12 Oct 2021 09:31:49 -0700
+Message-Id: <20211012163153.2104212-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211011121238.25542-5-daniel@iogearbox.net>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 11, 2021 at 02:12:38PM +0200, Daniel Borkmann wrote:
-> Allow a user space control plane to insert entries with a new NTF_EXT_MANAGED
-> flag. The flag then indicates to the kernel that the neighbor entry should be
-> periodically probed for keeping the entry in NUD_REACHABLE state iff possible.
+Maciej Machnikowski says:
 
-Nice idea
+Extend the driver implementation to support PTP pins on E810-T and
+derivative devices.
 
-> 
-> The use case for this is targeting XDP or tc BPF load-balancers which use
-> the bpf_fib_lookup() BPF helper in order to piggyback on neighbor resolution
-> for their backends. Given they cannot be resolved in fast-path,
+E810-T adapters are equipped with:
+- 2 external bidirectional SMA connectors
+- 1 internal TX U.FL shared with SMA1
+- 1 internal RX U.FL shared with SMA2
 
-Out of curiosity, can you explain why that is? Because XDP is only fast
-path? At least that's what I understand from commit 87f5fc7e48dd ("bpf:
-Provide helper to do forwarding lookups in kernel FIB table") and it is
-similar to L3 offload
+The SMA and U.FL configuration is controlled by the external
+multiplexer.
 
-> a control plane inserts the L3 (without L2) entries manually into the
-> neighbor table and lets the kernel do the neighbor resolution either
-> on the gateway or on the backend directly in case the latter resides
-> in the same L2. This avoids to deal with L2 in the control plane and
-> to rebuild what the kernel already does best anyway.
+E810-T Derivatives are equipped with:
+- 2 1PPS outputs on SDP20 and SDP22
+- 2 1PPS inputs on SDP21 and SDP23
 
-Are you using 'fib_multipath_use_neigh' sysctl to avoid going through
-failed nexthops? Looking at how the bpf_fib_lookup() helper is
-implemented, seems that you can benefit from it in XDP
+The following are changes since commit 177c92353be935db555d0d08729e871145ec698c:
+  ethernet: tulip: avoid duplicate variable name on sparc
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
 
-> 
-> NTF_EXT_MANAGED can be combined with NTF_EXT_LEARNED in order to avoid GC
-> eviction. The kernel then adds NTF_MANAGED flagged entries to a per-neighbor
-> table which gets triggered by the system work queue to periodically call
-> neigh_event_send() for performing the resolution. The implementation allows
-> migration from/to NTF_MANAGED neighbor entries, so that already existing
-> entries can be converted by the control plane if needed. Potentially, we could
-> make the interval for periodically calling neigh_event_send() configurable;
-> right now it's set to DELAY_PROBE_TIME which is also in line with mlxsw which
-> has similar driver-internal infrastructure c723c735fa6b ("mlxsw: spectrum_router:
-> Periodically update the kernel's neigh table"). In future, the latter could
-> possibly reuse the NTF_MANAGED neighbors as well.
+Maciej Machnikowski (4):
+  ice: Refactor ice_aqc_link_topo_addr
+  ice: Implement functions for reading and setting GPIO pins
+  ice: Add support for SMA control multiplexer
+  ice: Implement support for SMA and U.FL on E810-T
 
-Yes, mlxsw can set this flag on neighbours used for its nexthops. Looks
-like the use cases are similar: Avoid going to slow path, either from
-XDP or HW.
+ drivers/net/ethernet/intel/ice/ice.h          |   1 +
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  20 +-
+ drivers/net/ethernet/intel/ice/ice_common.c   |  87 +++-
+ drivers/net/ethernet/intel/ice/ice_common.h   |   7 +
+ drivers/net/ethernet/intel/ice/ice_devids.h   |   2 +
+ drivers/net/ethernet/intel/ice/ice_lib.c      |  15 +
+ drivers/net/ethernet/intel/ice/ice_lib.h      |   1 +
+ drivers/net/ethernet/intel/ice/ice_ptp.c      | 370 +++++++++++++++++-
+ drivers/net/ethernet/intel/ice/ice_ptp.h      |  20 +-
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.c   | 156 ++++++++
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.h   |  22 ++
+ drivers/net/ethernet/intel/ice/ice_type.h     |   1 +
+ 12 files changed, 688 insertions(+), 14 deletions(-)
 
-In our HW the nexthop table is squashed together with the neighbour
-table, so that it provides {netdev, MAC} and not {netdev, IP} with which
-the kernel performs another lookup in its neighbour table. We want to
-avoid situations where we perform multipathing between valid and failed
-nexthop (basically, fib_multipath_use_neigh=1), so we only program valid
-nexthop. But it means that nothing will trigger the resolution of the
-failed nexthops, thus the need to probe the neighbours.
+-- 
+2.31.1
 
-> 
-> Example:
-> 
->   # ./ip/ip n replace 192.168.178.30 dev enp5s0 managed extern_learn
->   # ./ip/ip n
->   192.168.178.30 dev enp5s0 lladdr f4:8c:50:5e:71:9a managed extern_learn REACHABLE
->   [...]
-> 
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> Acked-by: Roopa Prabhu <roopa@nvidia.com>
-> Link: https://linuxplumbersconf.org/event/11/contributions/953/
-
-I was going to ask why not just default the kernel to resolve GW IPs (it
-knows them when the nexthops are configured), but then I saw slide 34. I
-guess that's what you meant by "... or on the backend directly in case
-the latter resides in the same L2"?
