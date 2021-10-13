@@ -2,99 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 616CB42BD2C
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 12:38:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB58A42BD2E
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 12:38:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229526AbhJMKkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 06:40:22 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:60969 "EHLO
+        id S229719AbhJMKkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 06:40:24 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:57011 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229524AbhJMKkV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 06:40:21 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3C05C5C018D;
-        Wed, 13 Oct 2021 06:38:18 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S229581AbhJMKkX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 06:40:23 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id A10F45C018D;
+        Wed, 13 Oct 2021 06:38:20 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Wed, 13 Oct 2021 06:38:18 -0400
+  by compute4.internal (MEProxy); Wed, 13 Oct 2021 06:38:20 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=uboDZAdUflxodDKfv
-        1im+GJQXdE6mF2I0591siJEA7Q=; b=lnJP9RnA5jS4hmmEK6f6WRsYR4hW+D8C0
-        G5UmY26TKsTw2DEEV9W5CbyHNki5nwRt360wezUeB6qBztIIuyyHwMJ5uvDMMQqd
-        Dijwpd4V41l3TGX/K8zzBeA5qf7fhm9kC7Xspq5yiQDyUAZmEvN/Um/QIoVnUAdd
-        bxUhgrLh/EZbMnd2kFR+6q6jn9LZw6EzEzqkE+sAxzqS9vNgxyn45oaQmUlJIHAC
-        wHMn1DWYRCS7P2B/6y97DbtvbDFk3q4MgcgcLL057cOXmNGBl+L6c5PHIYFcSi0t
-        GvVKYmcrreyS2Qe4P3RX8GZ0hJMHsvlgpwfLraZKEhmsWNcHhJaXw==
-X-ME-Sender: <xms:GrdmYQ4wBH1cd-zfWD79ehT0zTzFYM4lJ690v8iYPK5Mwqw3isvCZQ>
-    <xme:GrdmYR4m07beJcBL_jtM8PIhj2E_eZemgPhGKteplbYfTtm9xm_Mq192WJJl4iNOg
-    Icwl015hmsm5o8>
-X-ME-Received: <xmr:GrdmYfeGLqtWi6mcfCGfaicpb2aVkTV2gWnr704_egUEcQz97CtlJJx488FrnHVMOkWiuxUxiL04EOHE-hxSijJDpNiz42UJ9bkvHG-S2UoDkA>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; bh=2mYkutHChlBFuuAhDBmhrinZDNVLRsEXrIr54m8HBxc=; b=co9IjO05
+        EI78qt7okvVpR3JoLlRHBJm71erO5yOQKM1jEkdeJoeqJKJDpM1mbnLvKVpsoYSR
+        9qtryG/gA8YkEjWQYqnWSq9pqeNwGtF7Z6fsUCj4OselcQPYqfHlyl0ZGrP6+GLt
+        RJLA1oXqgSqsZL4NFlh3kmmH9Ddz5i48Hx66Y+cw1p7eMWsoApj+5QcFHsnI7KU2
+        jz4PiV98nCkMdu/SP2n7GnxkE2tqNOQ/4Cs467i47DR3WK/lP4gmvzNWpZyok/CN
+        jupuQZxkmLCp1iUTd0gdrOAgjiLvXLI8NqJzKiobnhmcOrOZEkgsdINz/+ir5dLi
+        GPTPHMgR0PufZA==
+X-ME-Sender: <xms:HLdmYYaHOR9jn32iPsqpAoDbBTuUWAws45ptPEfGkh_IQ8Po9UFYnw>
+    <xme:HLdmYTY0v2bd21ESgh3pnQftcbKMBy47fVc9eoEA0n8MPD6nVt6Ad-W6lNh8HZGfK
+    i69wC0kDzRrXAk>
+X-ME-Received: <xmr:HLdmYS8XenWC2850i6K1Z8GxAZjAZaqKg0yf4h3AB12L1QMvxFuBkXbQlgAwrJq9iX8M_ZL4QzYfv-FGIGLLz5Uc-ev-5iiNuBGtUYdqHSehhg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddutddgvdekucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
-    etffeikeegheevfedvgeelvdffudfhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghr
-    rghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:GrdmYVLNqJLbphzydA9NAAiE2THjsky2NDzACM2S5JgBRop_SYn6ow>
-    <xmx:GrdmYULcMrqdZ0hevFEpZCgHJEuE83GpkEExsKnkiyHv2WhuYwZV-g>
-    <xmx:GrdmYWywScOtwRdXRAHnzcsDddFOGuxH22DzjsQ7_vORUPGCS6-4jg>
-    <xmx:GrdmYZH0mvcHIbbsrh5iNqdbBQl-3ALaRGS9gLAnx0AdH_vlKUvOEQ>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
+    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
+    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgeptdenucfr
+    rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:HLdmYSqFBxzMRaaHQBuXfk17XZ7ycYrA5NRjC3_Dowk6YSpNWqGUGg>
+    <xmx:HLdmYToz0xuNiVPxBRRFHc-Ffm16MLcPN-z8carOzptjWNCJ3VNxNA>
+    <xmx:HLdmYQSIUZ9neoVnCaJa6wMHxbZLzH3Zimmz8zoL84PGleuaJXVEHQ>
+    <xmx:HLdmYUkPf-HTcdOHgvUgKMzuXTzD-TY7RuGhzR3cfeRDv4KoPjw7Fw>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 13 Oct 2021 06:38:15 -0400 (EDT)
+ 13 Oct 2021 06:38:18 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         petrm@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 0/5] mlxsw: Show per-band ECN-marked counter on qdisc
-Date:   Wed, 13 Oct 2021 13:37:43 +0300
-Message-Id: <20211013103748.492531-1-idosch@idosch.org>
+Subject: [PATCH net-next 1/5] mlxsw: reg: Fix a typo in a group heading
+Date:   Wed, 13 Oct 2021 13:37:44 +0300
+Message-Id: <20211013103748.492531-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20211013103748.492531-1-idosch@idosch.org>
+References: <20211013103748.492531-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+From: Petr Machata <petrm@nvidia.com>
 
-Petr says:
+There is no such thing as "traffic group". The group that this is a heading
+of is "per traffic class counters". Fix the heading.
 
-The RED qdisc can expose number of packets that it has marked through
-the prob_marked counter (shown in iproute2 as "marked"). This counter
-currently just shows number of packets marked in the SW datapath, which
-in a switch deployment likely means zero.
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/reg.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Spectrum-3 does support per-TC counters, and in this patchset, mlxsw
-supports this RED statistic properly.
-
-Patches #1 and #2 fix typos.
-
-Patch #3 adds a field ecn_marked_tc to the PPCNT register.
-
-Patch #4 adds the support to publish the value of ecn_marked_tc through
-the prob_marked RED qdisc counter.
-
-Patch #5 adds selftests.
-
-Petr Machata (5):
-  mlxsw: reg: Fix a typo in a group heading
-  mlxsw: reg: Rename MLXSW_REG_PPCNT_TC_CONG_TC to _CNT
-  mlxsw: reg: Add ecn_marked_tc to Per-TC Congestion Counters
-  mlxsw: spectrum_qdisc: Introduce per-TC ECN counters
-  selftests: mlxsw: RED: Test per-TC ECN counters
-
- drivers/net/ethernet/mellanox/mlxsw/reg.h     | 10 +++-
- .../net/ethernet/mellanox/mlxsw/spectrum.c    | 12 +++--
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |  1 +
- .../ethernet/mellanox/mlxsw/spectrum_qdisc.c  |  9 +++-
- .../drivers/net/mlxsw/sch_red_core.sh         | 51 +++++++++++++++----
- .../drivers/net/mlxsw/sch_red_ets.sh          | 11 ++++
- .../drivers/net/mlxsw/sch_red_root.sh         |  8 +++
- 7 files changed, 84 insertions(+), 18 deletions(-)
-
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+index ed6c3356e4eb..62b2df8a0715 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+@@ -5371,7 +5371,7 @@ MLXSW_ITEM64(reg, ppcnt, tx_pause_duration,
+ MLXSW_ITEM64(reg, ppcnt, tx_pause_transition,
+ 	     MLXSW_REG_PPCNT_COUNTERS_OFFSET + 0x70, 0, 64);
+ 
+-/* Ethernet Per Traffic Group Counters */
++/* Ethernet Per Traffic Class Counters */
+ 
+ /* reg_ppcnt_tc_transmit_queue
+  * Contains the transmit queue depth in cells of traffic class
 -- 
 2.31.1
 
