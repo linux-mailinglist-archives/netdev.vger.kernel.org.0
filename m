@@ -2,80 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1FFF42C14C
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 15:22:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F4AF42C156
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 15:23:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234707AbhJMNX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 09:23:58 -0400
-Received: from www62.your-server.de ([213.133.104.62]:57348 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234198AbhJMNX4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 09:23:56 -0400
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1maeCd-0009AO-Ud; Wed, 13 Oct 2021 15:21:52 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     roopa@nvidia.com, dsahern@kernel.org, m@lambda.lt,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH net-next 3/3] net, neigh: Reject creating NUD_PERMANENT with NTF_MANAGED entries
-Date:   Wed, 13 Oct 2021 15:21:40 +0200
-Message-Id: <20211013132140.11143-4-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20211013132140.11143-1-daniel@iogearbox.net>
-References: <20211013132140.11143-1-daniel@iogearbox.net>
+        id S234870AbhJMNZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 09:25:34 -0400
+Received: from mga17.intel.com ([192.55.52.151]:29501 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233226AbhJMNZc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Oct 2021 09:25:32 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10135"; a="208223337"
+X-IronPort-AV: E=Sophos;i="5.85,371,1624345200"; 
+   d="scan'208";a="208223337"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2021 06:23:29 -0700
+X-IronPort-AV: E=Sophos;i="5.85,371,1624345200"; 
+   d="scan'208";a="626341116"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.72.159])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2021 06:23:15 -0700
+Received: from andy by smile with local (Exim 4.95)
+        (envelope-from <andy.shevchenko@gmail.com>)
+        id 1maeDt-000LPO-Od;
+        Wed, 13 Oct 2021 16:23:09 +0300
+Date:   Wed, 13 Oct 2021 16:23:09 +0300
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Fiona Trahe <fiona.trahe@intel.com>,
+        Frederic Barrat <fbarrat@linux.ibm.com>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ido Schimmel <idosch@nvidia.com>,
+        Ingo Molnar <mingo@redhat.com>, Jack Xu <jack.xu@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jiri Olsa <jolsa@redhat.com>, Jiri Pirko <jiri@nvidia.com>,
+        Juergen Gross <jgross@suse.com>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        Marco Chiappero <marco.chiappero@intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Michael Buesch <m@bues.ch>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Oliver O'Halloran <oohall@gmail.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Russell Currey <ruscur@russell.cc>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Sathya Prakash <sathya.prakash@broadcom.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Suganath Prabu Subramani 
+        <suganath-prabu.subramani@broadcom.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tomaszx Kowalik <tomaszx.kowalik@intel.com>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Wojciech Ziemba <wojciech.ziemba@intel.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Zhou Wang <wangzhou1@hisilicon.com>,
+        linux-crypto <linux-crypto@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-perf-users@vger.kernel.org,
+        "open list:LINUX FOR POWERPC PA SEMI PWRFICIENT" 
+        <linuxppc-dev@lists.ozlabs.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        USB <linux-usb@vger.kernel.org>,
+        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
+        MPT-FusionLinux.pdl@broadcom.com, netdev <netdev@vger.kernel.org>,
+        oss-drivers@corigine.com, qat-linux@intel.com,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        xen-devel@lists.xenproject.org
+Subject: Re: [PATCH v6 00/11] PCI: Drop duplicated tracking of a pci_dev's
+ bound driver
+Message-ID: <YWbdvc7EWEZLVTHM@smile.fi.intel.com>
+References: <CAHp75Vd0uYEdfB0XaQuUV34V91qJdHR5ARku1hX_TCJLJHEjxQ@mail.gmail.com>
+ <20211013113356.GA1891412@bhelgaas>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26321/Wed Oct 13 10:21:20 2021)
+In-Reply-To: <20211013113356.GA1891412@bhelgaas>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The combination of NUD_PERMANENT + NTF_MANAGED is not supported and does
-not make sense either given the former indicates a static/fixed neighbor
-entry whereas the latter a dynamically resolved one. While it is possible
-to transition from one over to the other, we should however reject such
-creation attempts.
+On Wed, Oct 13, 2021 at 06:33:56AM -0500, Bjorn Helgaas wrote:
+> On Wed, Oct 13, 2021 at 12:26:42PM +0300, Andy Shevchenko wrote:
+> > On Wed, Oct 13, 2021 at 2:33 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > > On Mon, Oct 04, 2021 at 02:59:24PM +0200, Uwe Kleine-König wrote:
 
-Fixes: 7482e3841d52 ("net, neigh: Add NTF_MANAGED flag for managed neighbor entries")
-Suggested-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
----
- net/core/neighbour.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+...
 
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index 922b9ed0fe76..47931c8be04b 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -1999,15 +1999,20 @@ static int neigh_add(struct sk_buff *skb, struct nlmsghdr *nlh,
- 
- 	neigh = neigh_lookup(tbl, dst, dev);
- 	if (neigh == NULL) {
--		bool exempt_from_gc;
-+		bool ndm_permanent  = ndm->ndm_state & NUD_PERMANENT;
-+		bool exempt_from_gc = ndm_permanent ||
-+				      ndm_flags & NTF_EXT_LEARNED;
- 
- 		if (!(nlh->nlmsg_flags & NLM_F_CREATE)) {
- 			err = -ENOENT;
- 			goto out;
- 		}
-+		if (ndm_permanent && (ndm_flags & NTF_MANAGED)) {
-+			NL_SET_ERR_MSG(extack, "Invalid NTF_* flag for permanent entry");
-+			err = -EINVAL;
-+			goto out;
-+		}
- 
--		exempt_from_gc = ndm->ndm_state & NUD_PERMANENT ||
--				 ndm_flags & NTF_EXT_LEARNED;
- 		neigh = ___neigh_create(tbl, dst, dev,
- 					ndm_flags &
- 					(NTF_EXT_LEARNED | NTF_MANAGED),
+> > It's a bit unusual. Other to_*_dev() are not NULL-aware IIRC.
+> 
+> It is a little unusual.  I only found three of 77 that are NULL-aware:
+> 
+>   to_moxtet_driver()
+>   to_siox_driver()
+>   to_spi_driver()
+> 
+> It seems worthwhile to me because it makes the patch and the resulting
+> code significantly cleaner.
+
+I'm not objecting the change, just a remark.
+
+...
+
+> > > +       for (id = drv ? drv->id_table : NULL; id && id->vendor; id++)
+> > > +               if (id->vendor == vendor && id->device == device)
+> > 
+> > > +                       break;
+> > 
+> > return true;
+> > 
+> > >         return id && id->vendor;
+> > 
+> > return false;
+> 
+> Good cleanup for a follow-up patch, but doesn't seem directly related
+> to the objective here.
+
+True. Maybe you can bake one while not forgotten?
+
+...
+
+> > > +       return drv && drv->resume ?
+> > > +                       drv->resume(pci_dev) : pci_pm_reenable_device(pci_dev);
+> > 
+> > One line?
+> 
+> I don't think I touched that line.
+
+Then why they are both in + section?
+
+...
+
+> > > +       struct pci_driver *drv = to_pci_driver(dev->dev.driver);
+> > >         const struct pci_error_handlers *err_handler =
+> > > -                       dev->dev.driver ? to_pci_driver(dev->dev.driver)->err_handler : NULL;
+> > > +                       drv ? drv->err_handler : NULL;
+> > 
+> > Isn't dev->driver == to_pci_driver(dev->dev.driver)?
+> 
+> Yes, I think so, but not sure what you're getting at here, can you
+> elaborate?
+
+Getting pointer from another pointer seems waste of resources, why we
+can't simply
+
+	struct pci_driver *drv = dev->driver;
+
+?
+
+...
+
+> > Stray change? Or is it in a separate patch in your tree?
+> 
+> Could be skipped.  The string now fits on one line so I combined it to
+> make it more greppable.
+
+This is inconsistency in your changes, in one case you are objecting of
+doing something close to the changed lines, in the other you are doing
+unrelated change.
+
 -- 
-2.27.0
+With Best Regards,
+Andy Shevchenko
+
 
