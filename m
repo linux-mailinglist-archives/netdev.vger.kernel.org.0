@@ -2,147 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54C3342C496
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 17:12:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7652B42C49F
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 17:13:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231855AbhJMPO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 11:14:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229514AbhJMPO5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 11:14:57 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1DF6C061570
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 08:12:53 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id r19so13066079lfe.10
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 08:12:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=KeBf3L7IIF8Rv/Bp70om/1tZpd3FOupbjhm8llgp0W8=;
-        b=upCptVhN8O7PL7K/2Xmyntm8koWnqGyv185dyC0zDf2wLGIeqwnkvsk7yMCUfO0Rwm
-         lM6c+2SZ9LJBJojVFJSPXgfhPn92tnIXEX6iePeZJ8ERM3AWA5QLV0FMSXxtYiKxUwbU
-         c+r1OeF3bw05W6ouhHvp1ezmlmEwMIxH4b5ZtpadYQVs0QhBrdwHhb2KddOyC+VXP7gU
-         gP78rYq5pG7XPc7dnfMNpD5c8Ln+O2E91/A/bsu9Hoj9PbrHElK2rCxQWncYnlzRGTgr
-         BxKzio5Zmeo2SBAUBEwlyAqgvE5V7SA1GJ7HR2KHLuzdeuI9uRqVYtR7ABBfcL+B5XTt
-         FCyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=KeBf3L7IIF8Rv/Bp70om/1tZpd3FOupbjhm8llgp0W8=;
-        b=yz6Z9ZOGWwo96PetFY3yUVoUeJTfj+udg8W//iWxzFa6ziCeZU103ayesXYMHABIxG
-         13JIR+pLJhFeiGUm7zAh+rMbZ4aBq9n1ngFcK9FNNYhhn0jQupQQ6UEsJxva6v4GhmSe
-         0DDp4EVfYmMXmkTpiKf8CK8IhgvEDIHt0eNO4XLUSPLCjEopnm0tW86R+wwTvvG6Gm5J
-         wH71ql2QsaeU3NLE8iG7a25nmdeYNkmi+Qp2RWaWmTr8V6jCfOP8zaFfx07oqawrJ7fX
-         3MtiBD4/I54fLXy7VLXWfFKbwYyoMaPax37YhO7vT/IXN6Un9xiBRULNVJhIv0F9ft8u
-         ddOA==
-X-Gm-Message-State: AOAM532+PBDHfqICd1ZQHQkIsxjLazn5/KK/gJgOlOz5pbpsW3fEqdes
-        OOoP0h1zCq9PQr5IUCfTay29bXVY4n3KGSyuN/mPNQ==
-X-Google-Smtp-Source: ABdhPJxsi6yl4d+fJISK8+JZ/UaD4XqCzsHCSENtim47MqwOVR+AZEyZ64Jm3UrawMFcA93DGim4kE6c9FW1FJ1nhUM=
-X-Received: by 2002:a05:6512:1303:: with SMTP id x3mr40718274lfu.291.1634137971739;
- Wed, 13 Oct 2021 08:12:51 -0700 (PDT)
-MIME-Version: 1.0
-References: <20211012123557.3547280-1-alvin@pqrs.dk> <20211012123557.3547280-6-alvin@pqrs.dk>
-In-Reply-To: <20211012123557.3547280-6-alvin@pqrs.dk>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Wed, 13 Oct 2021 17:12:39 +0200
-Message-ID: <CACRpkdYwTUopZ_6khRpkAPFg6qiRTOgyKe=URzVRrNagK2HZMw@mail.gmail.com>
-Subject: Re: [PATCH net-next 5/6] net: dsa: realtek-smi: add rtl8365mb
- subdriver for RTL8365MB-VC
-To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alvin@pqrs.dk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        id S230045AbhJMPPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 11:15:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35618 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229748AbhJMPPp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Oct 2021 11:15:45 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B36E96112D;
+        Wed, 13 Oct 2021 15:13:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634138022;
+        bh=mP/C5aXZgunfDcHPaOn4qeOvbqTnMAzEH6s5jmYe2/g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qk5YcYx21pqRb+j6Y7+C+cVTysRuiw2gvJj1ldtnqpVL4hF8fgoa+Ufn2KNNuHu+5
+         nhPzn9KAruQySibdsx5piuZUkUtmOCW3ZEMajFS+s5ssoiE5ay/l6A++atZSC8hWOM
+         Yed4avj8KjPbHL9gRiUVCSRvt4IGELe7GIjo3c/OVly3A27aZ1Y7UELy0ODw8HWeHo
+         7zP19ANV+K+JSmfIWUVKk9/3zrP9EvkOnfNM8QngkxWkQ9mwsbBJ5xz1MqWpNyvdm7
+         nG39+R5eC3fEbnKE2YDiM0ZUHL+o5fzg40/PUxPg0qAYErpBGDyvzuVN1NO9usfQIA
+         IGV12O2U3/lKg==
+Date:   Wed, 13 Oct 2021 08:13:40 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alvin =?UTF-8?B?xaBpcHJhZ2E=?= <ALSI@bang-olufsen.dk>
+Cc:     Alvin =?UTF-8?B?xaBpcHJhZ2E=?= <alvin@pqrs.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Michael Rasmussen <mir@bang-olufsen.dk>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Michael Rasmussen <MIR@bang-olufsen.dk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 5/6] net: dsa: realtek-smi: add rtl8365mb
+ subdriver for RTL8365MB-VC
+Message-ID: <20211013081340.0ca97db1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <bde59012-8394-d31b-24c4-018cbfe0ed57@bang-olufsen.dk>
+References: <20211012123557.3547280-1-alvin@pqrs.dk>
+        <20211012123557.3547280-6-alvin@pqrs.dk>
+        <20211012082703.7b31e73b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <bde59012-8394-d31b-24c4-018cbfe0ed57@bang-olufsen.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 12, 2021 at 2:37 PM Alvin =C5=A0ipraga <alvin@pqrs.dk> wrote:
+On Wed, 13 Oct 2021 08:33:36 +0000 Alvin =C5=A0ipraga wrote:
+> On 10/12/21 5:27 PM, Jakub Kicinski wrote:
+> > On Tue, 12 Oct 2021 14:35:54 +0200 Alvin =C5=A0ipraga wrote: =20
+> >> +	{ 0, 4, 2, "dot3StatsFCSErrors" },
+> >> +	{ 0, 6, 2, "dot3StatsSymbolErrors" },
+> >> +	{ 0, 8, 2, "dot3InPauseFrames" },
+> >> +	{ 0, 10, 2, "dot3ControlInUnknownOpcodes" }, =20
+> > ...
+> >=20
+> > You must expose counters via existing standard APIs.
+> >=20
+> > You should implement these ethtool ops: =20
+>=20
+> I implement the dsa_switch_ops callback .get_ethtool_stats, using an=20
+> existing function rtl8366_get_ethtool_stats in the switch helper library=
+=20
+> rtl8366.c. It was my understanding that this is the correct way to=20
+> expose counters within the DSA framework - please correct me if that is=20
+> wrong.
 
-> This patch adds a realtek-smi subdriver for the RTL8365MB-VC 4+1 port
-> 10/100/1000M switch controller. The driver has been developed based on a
-> GPL-licensed OS-agnostic Realtek vendor driver known as rtl8367c found
-> in the OpenWrt source tree.
-(...)
-> Co-developed-by: Michael Rasmussen <mir@bang-olufsen.dk>
-> Signed-off-by: Michael Rasmussen <mir@bang-olufsen.dk>
-> Signed-off-by: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
+It's the legacy way, today we have a unified API for reporting those
+stats so user space SW doesn't have to maintain a myriad string matches
+to get to basic IEEE stats across vendors. Driver authors have a truly
+incredible ability to invent their own names for standard stats. It
+appears that your pick of names is also unique :)
 
-Overall this driver looks very good :)
+It should be trivial to plumb the relevant ethtool_ops thru to
+dsa_switch_ops if relevant dsa ops don't exist.
 
-Some minor nits below:
+You should also populate correct stats in dsa_switch_ops::get_stats64
+(see the large comment above the definition of struct
+rtnl_link_stats64 for mapping). A word of warning there, tho, that
+callback runs in an atomic context so if your driver needs to block it
+has to read the stats periodically from a async work.
 
-> +static irqreturn_t rtl8365mb_irq(int irq, void *data)
-> +{
-(...)
-> +       if (!line_changes)
-> +               goto out_none;
-> +
-> +       while (line_changes) {
-> +               int line =3D __ffs(line_changes);
-> +               int child_irq;
-> +
-> +               line_changes &=3D ~BIT(line);
-> +
-> +               child_irq =3D irq_find_mapping(smi->irqdomain, line);
-> +               handle_nested_irq(child_irq);
-> +       }
+> The structure you highlight is just some internal glue to sort out the=20
+> internal register mapping. I borrowed the approach from the existing=20
+> rtl8366rb.c Realtek SMI subdriver.
 
-What about just:
+The callbacks listed below are relatively new, they may have not
+existed when that driver was written. Also I may have missed it=20
+in review.=20
 
-for_each_set_bit(offset, &line_changes, 32) {
-  child_irq =3D irq_find_mapping(smi->irqdomain, line);
-  handle_nested_irq(child_irq);
-}
-
-?
-
-I don't know how many or which bits are valid IRQs, 16 maybe rather
-than 32.
-
-> +static struct irq_chip rtl8365mb_irq_chip =3D {
-> +       .name =3D "rtl8365mb",
-> +       /* The hardware doesn't support masking IRQs on a per-port basis =
-*/
-> +};
-
-I would rathe make this a dynamically allocated struct inside
-struct rtl8365mb, so the irqchip lives with the instance of the
-chip. (Which is nice if there would happen to be two of these
-chips in a system.)
-
-> +static int _rtl8365mb_irq_enable(struct realtek_smi *smi, bool enable)
-
-I'm personally a bit allergic to _rand_underscore_naming, as sometimes
-that means "inner function" and sometimes it means "compiler intrinsic"
-I would just name it rtl8365mb_irq_config_commit()
-
-(no strong opinion)
-
-> +       /* Configure chip interrupt signal polarity */
-> +       irq_trig =3D irqd_get_trigger_type(irq_get_irq_data(irq));
-
-Nice that you preserve this edge trigger config from the machine
-description (DT)!
-
-With this fixed or not (your preference)
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-
-Yours,
-Linus Walleij
+> > 	void	(*get_eth_phy_stats)(struct net_device *dev,
+> > 				     struct ethtool_eth_phy_stats *phy_stats);
+> > 	void	(*get_eth_mac_stats)(struct net_device *dev,
+> > 				     struct ethtool_eth_mac_stats *mac_stats);
+> > 	void	(*get_eth_ctrl_stats)(struct net_device *dev,
+> > 				      struct ethtool_eth_ctrl_stats *ctrl_stats);
+> > 	void	(*get_rmon_stats)(struct net_device *dev,
+> > 				  struct ethtool_rmon_stats *rmon_stats,
+> > 				  const struct ethtool_rmon_hist_range **ranges);
