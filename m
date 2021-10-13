@@ -2,112 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A20842C400
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 16:51:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E1A742C45D
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 17:02:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237859AbhJMOxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 10:53:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55156 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237860AbhJMOxN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 10:53:13 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCC46C061764
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 07:51:09 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id g10so11432889edj.1
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 07:51:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pqrs.dk; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qIGrxPrX/5Qdzso08VaHMbyDPIhwyDSE1YbGuKz74Ic=;
-        b=Gca8ta1WL/iPld9An4mFFTAeMO8yjMYP2PvRvYoYRKDMAcHQJ3m3g2OcHscvzDxW4o
-         1b3ywQWHHzR1j6lgrHwtPd2cMcmoftk1d7nBTwg/bMSoFRagexzN5Nmp8g6ZGxc8nxPY
-         QEsPKEV/IZ/YUgkk1yO0QlfYWMPr/ZetBUOF4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qIGrxPrX/5Qdzso08VaHMbyDPIhwyDSE1YbGuKz74Ic=;
-        b=T/S+KshxIRgAiiaq6iTgXaVzyMTULWJIlR3KY5yNffBU9uZzc+QScmDghHle6yeR/X
-         T4NI9BsHp+elDVTjcaqmUMD2Kyj2SQmh3hJuJF8gpAVw423f7PTp+T65nDokLrrDg0Gy
-         6JFtxwE+Wr0Eqy/H8RohBQDdUKs5dmaaoWqSU5bWFuyyaZOcYCjg5qMmei2+9RPXc2jq
-         g6aL6JecDtyiB7filF9nGS22RmkEotqljPsUxO931qEphQGdwV70JWsxpsnPA/QGRFqc
-         1M0Pa5F76CNxbNKVWzA4wjx0ix97p+pc0fmIDpwy/cWkjnOubUyH5psykDpivN2tPn+i
-         tzJA==
-X-Gm-Message-State: AOAM532OW7byAlCD37We3wY3ekRf+jM6AGRjKpJerQ2/VQ5TelHT4khL
-        TvYiZ60UP4u2bUu5iT/hP8X4ag==
-X-Google-Smtp-Source: ABdhPJwpLeOjWe9aVOSzKFAmwWYh7KjPb8DX+cO0BCTUCesFPom2MJE5rJ1x/BnbJNfVyBnJPT999Q==
-X-Received: by 2002:a05:6402:5187:: with SMTP id q7mr10119779edd.374.1634136668453;
-        Wed, 13 Oct 2021 07:51:08 -0700 (PDT)
-Received: from capella.. (27-reverse.bang-olufsen.dk. [193.89.194.27])
-        by smtp.gmail.com with ESMTPSA id nd22sm7535098ejc.98.2021.10.13.07.51.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Oct 2021 07:51:08 -0700 (PDT)
-From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        id S233837AbhJMPEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 11:04:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59466 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232587AbhJMPEl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Oct 2021 11:04:41 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8F91860EBB;
+        Wed, 13 Oct 2021 15:02:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634137357;
+        bh=y1Rpvv6y+NitR+8qwldmLDOxqBM7XyQANkxTD9N2zAo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Cibb7xA4JDTHogDnzQPZya8mgpOhMbe8JwTMUDzdrhPvKYcVZ16ruxdFIl63XRTt3
+         QW8H+U9u29K6LGMvIcEuHl2zJeMEOWomnQ9rXiACdq6rIj4LpIEvowxcz762DkO6uL
+         Gk97jNwxOmh4Ok9R9z1sdw5xRMp6bO3LzxO+gfxHgbHFDGfAgoG3j5EIhmrlZ8x95q
+         3iXU4/VQ9XFzVvKAtpVSbj3pEB/9q0FVyDLrjGizAgXIPul2g1unwe94PsUR57m2LN
+         k6+0q3Hsa84GrRsebIW9qTzjxOAn9++41KgE1QVcRd1ZGwggp6UPqVhugrt9K3C4FQ
+         CAuQ0D7YTf2gA==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net-next 6/6] net: phy: realtek: add support for RTL8365MB-VC internal PHYs
-Date:   Wed, 13 Oct 2021 16:50:38 +0200
-Message-Id: <20211013145040.886956-7-alvin@pqrs.dk>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211013145040.886956-1-alvin@pqrs.dk>
-References: <20211013145040.886956-1-alvin@pqrs.dk>
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Aya Levin <ayal@nvidia.com>,
+        Eran Ben Elisha <eranbe@nvidia.com>,
+        Vladyslav Tarasiuk <vladyslavt@nvidia.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: [PATCH] mlx5: allow larger xsk chunk_size
+Date:   Wed, 13 Oct 2021 17:02:13 +0200
+Message-Id: <20211013150232.2942146-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alvin Šipraga <alsi@bang-olufsen.dk>
+From: Arnd Bergmann <arnd@arndb.de>
 
-The RTL8365MB-VC ethernet switch controller has 4 internal PHYs for its
-user-facing ports. All that is needed is to let the PHY driver core
-pick up the IRQ made available by the switch driver.
+When building with 64KB pages, clang points out that xsk->chunk_size
+can never be PAGE_SIZE:
 
-Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c:19:22: error: result of comparison of constant 65536 with expression of type 'u16' (aka 'unsigned short') is always false [-Werror,-Wtautological-constant-out-of-range-compare]
+        if (xsk->chunk_size > PAGE_SIZE ||
+            ~~~~~~~~~~~~~~~ ^ ~~~~~~~~~
+
+I'm not familiar with the details of this code, but from a quick look
+I found that it gets assigned from a 32-bit variable that can be
+PAGE_SIZE, and that the layout of 'xsk' is not part of an ABI or
+a hardware structure, so extending the members to 32 bits as well
+should address both the behavior on 64KB page kernels, and the
+warning I saw.
+
+In older versions of this code, using PAGE_SIZE was the only
+possibility, so this would have never worked on 64KB page kernels,
+but the patch apparently did not address this case completely.
+
+Fixes: 282c0c798f8e ("net/mlx5e: Allow XSK frames smaller than a page")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
+ drivers/net/ethernet/mellanox/mlx5/core/en/params.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-v1 -> v2: no change
-
-RFC -> v1: no change; collect Reviewed-by
-
- drivers/net/phy/realtek.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index 11be60333fa8..a5671ab896b3 100644
---- a/drivers/net/phy/realtek.c
-+++ b/drivers/net/phy/realtek.c
-@@ -1023,6 +1023,14 @@ static struct phy_driver realtek_drvs[] = {
- 		.resume		= genphy_resume,
- 		.read_page	= rtl821x_read_page,
- 		.write_page	= rtl821x_write_page,
-+	}, {
-+		PHY_ID_MATCH_EXACT(0x001cc942),
-+		.name		= "RTL8365MB-VC Gigabit Ethernet",
-+		/* Interrupt handling analogous to RTL8366RB */
-+		.config_intr	= genphy_no_config_intr,
-+		.handle_interrupt = genphy_handle_interrupt_no_ack,
-+		.suspend	= genphy_suspend,
-+		.resume		= genphy_resume,
- 	},
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
+index 879ad46d754e..b4167350b6df 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
+@@ -7,8 +7,8 @@
+ #include "en.h"
+ 
+ struct mlx5e_xsk_param {
+-	u16 headroom;
+-	u16 chunk_size;
++	u32 headroom;
++	u32 chunk_size;
  };
  
+ struct mlx5e_lro_param {
 -- 
-2.32.0
+2.29.2
 
