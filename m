@@ -2,132 +2,274 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08D6542BCD2
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 12:30:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38B0B42BCDA
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 12:31:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239364AbhJMKcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 06:32:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50344 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239036AbhJMKcM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 06:32:12 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 615ACC061570;
-        Wed, 13 Oct 2021 03:30:08 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id y12so8221644eda.4;
-        Wed, 13 Oct 2021 03:30:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=y/rnqiiRDqzhToYNQ2Zuvuqbkbv5/WaDX5sqgB4Xrno=;
-        b=Jj86qHBhhjlKiPDP7CjiDwa3rXVoGd38psAEjP9nnnGjHqsZ6KyPzsMvLr/y1ZtBq3
-         SPap+O09GBgNCsF4KtMo0HDfjtGGHrhiIEJLH2OM+fpeNCtWsyRkenG/CNcEBgC9I5QJ
-         pF3w4/RvuVplPCiEjB2l3haCyBtqmyjEymOwsYjzj2WDzo8csLhW8WPmlpnM7Te6tFpu
-         Bf0c+bR1FkgM8wa4pMLgZa6W9RRE1HqpEm3rpZ7jmF9teFL82zYEP4IGOmjh7bhfpxFA
-         EBzuXPgODZGqfoeebSIEnlR38UhDlWimz5u2A2BCpphsOu9wsHm4FfijGEvswqMLkPxQ
-         nu2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=y/rnqiiRDqzhToYNQ2Zuvuqbkbv5/WaDX5sqgB4Xrno=;
-        b=zwqCwqw1E6hYEZpUjSVTU7uZqo/1Tfa6aXzehw/G32lYAv6XrwS0KiUI7AabLdv/AZ
-         lTc/kmMFhACzLxjGats0755rgZu4jmcsySRx2WCvpAT8sdd/wjx1W592TwVMw/2ZBgwI
-         p2unMd1BZupKCNle5uVhjohLkFfaBwaadFodUCgsC2aOE+WqORbXgm9NX41d0h0qjEIp
-         Kn9apkqN8Mip9ajzNCTiFd/HhwdQg2ai19p2thoidSFzOvEWy+FuHeAnDdM52FmBGjcL
-         UST11J8wgHFvBlup3rCKGznExWcI1h8KKbnqyJzxYk4xSFdyUmkek8Vs6H9RCmIqc37h
-         aojQ==
-X-Gm-Message-State: AOAM533tRNa/+J/mus+4tXqyM62U0/vpIts4+ggqy9Iw6octpHxNOJ2o
-        3XUCrbIh24i1+8Z3erw7pDg=
-X-Google-Smtp-Source: ABdhPJyz3L+DI2qSA77Phw1w3Asc0E2qWte8XGDO3iCC/qA5s5ah4fZ6hEl79BhG1vwc6Lx7oII4iw==
-X-Received: by 2002:a17:906:1707:: with SMTP id c7mr37987499eje.377.1634121006829;
-        Wed, 13 Oct 2021 03:30:06 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id h18sm6430351ejt.29.2021.10.13.03.30.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Oct 2021 03:30:06 -0700 (PDT)
-Date:   Wed, 13 Oct 2021 12:30:03 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        netdev@vger.kernel.org, Matthew Hagan <mnhagan88@gmail.com>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [net-next PATCH v6 15/16] dt-bindings: net: dsa: qca8k: convert
- to YAML schema
-Message-ID: <YWa1KwlM2SFP5jM0@Ansuel-xps.localdomain>
-References: <20211013011622.10537-1-ansuelsmth@gmail.com>
- <20211013011622.10537-16-ansuelsmth@gmail.com>
- <1634094529.487895.3858822.nullmailer@robh.at.kernel.org>
+        id S232810AbhJMKdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 06:33:50 -0400
+Received: from mga04.intel.com ([192.55.52.120]:43420 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229495AbhJMKdt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Oct 2021 06:33:49 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10135"; a="226170344"
+X-IronPort-AV: E=Sophos;i="5.85,370,1624345200"; 
+   d="scan'208";a="226170344"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2021 03:31:46 -0700
+X-IronPort-AV: E=Sophos;i="5.85,370,1624345200"; 
+   d="scan'208";a="547782394"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.72.159])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2021 03:31:41 -0700
+Received: from andy by smile with local (Exim 4.95)
+        (envelope-from <andy.shevchenko@gmail.com>)
+        id 1mabXu-000JEQ-AK;
+        Wed, 13 Oct 2021 13:31:38 +0300
+Date:   Wed, 13 Oct 2021 13:31:38 +0300
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+To:     Thorsten Leemhuis <linux@leemhuis.info>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Thomas Graf <tgraf@suug.ch>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v2 0/4] kernel.h further split
+Message-ID: <YWa1igOl4eAxv6FL@smile.fi.intel.com>
+References: <20211007095129.22037-1-andriy.shevchenko@linux.intel.com>
+ <YV7NEze2IvUgHusJ@kroah.com>
+ <CAHp75VfoQ-rFEEFu2FnaPuPDwyiTHpA_dCwqfA1SYSkFPM2uMA@mail.gmail.com>
+ <20211008113758.6cbee642@t14s>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <1634094529.487895.3858822.nullmailer@robh.at.kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211008113758.6cbee642@t14s>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 12, 2021 at 10:08:49PM -0500, Rob Herring wrote:
-> On Wed, 13 Oct 2021 03:16:21 +0200, Ansuel Smith wrote:
-> > From: Matthew Hagan <mnhagan88@gmail.com>
+On Fri, Oct 08, 2021 at 11:37:58AM +0200, Thorsten Leemhuis wrote:
+> On Thu, 7 Oct 2021 14:51:15 +0300
+> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > On Thu, Oct 7, 2021 at 1:34 PM Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org> wrote:
+> > > On Thu, Oct 07, 2021 at 12:51:25PM +0300, Andy Shevchenko wrote:
+> > > > The kernel.h is a set of something which is not related to each
+> > > > other and often used in non-crossed compilation units, especially
+> > > > when drivers need only one or two macro definitions from it.
+> > > >
+> > > > Here is the split of container_of(). The goals are the following:
+> > > > - untwist the dependency hell a bit
+> > > > - drop kernel.h inclusion where it's only used for container_of()
+> > > > - speed up C preprocessing.
+> > > >
+> > > > People, like Greg KH and Miguel Ojeda, were asking about the
+> > > > latter. Read below the methodology and test setup with outcome
+> > > > numbers.
+> > > >
+> > > > The methodology
+> > > > ===============
+> > > > The question here is how to measure in the more or less clean way
+> > > > the C preprocessing time when building a project like Linux
+> > > > kernel. To answer it, let's look around and see what tools do we
+> > > > have that may help. Aha, here is ccache tool that seems quite
+> > > > plausible to be used. Its core idea is to preprocess C file,
+> > > > count hash (MD4) and compare to ones that are in the cache. If
+> > > > found, return the object file, avoiding compilation stage.
+> > > >
+> > > > Taking into account the property of the ccache, configure and use
+> > > > it in the below steps:
+> > > >
+> > > > 1. Configure kernel with allyesconfig
+> > > >
+> > > > 2. Make it with `make` to be sure that the cache is filled with
+> > > >    the latest data. I.o.w. warm up the cache.
+> > > >
+> > > > 3. Run `make -s` (silent mode to reduce the influence of
+> > > >    the unrelated things, like console output) 10 times and
+> > > >    measure 'real' time spent.
+> > > >
+> > > > 4. Repeat 1-3 for each patch or patch set to get data sets before
+> > > >    and after.
+> > > >
+> > > > When we get the raw data, calculating median will show us the
+> > > > number. Comparing them before and after we will see the
+> > > > difference.
+> > > >
+> > > > The setup
+> > > > =========
+> > > > I have used the Intel x86_64 server platform (see partial output
+> > > > of `lscpu` below):
+> > > >
+> > > > $ lscpu
+> > > > Architecture:            x86_64
+> > > >   CPU op-mode(s):        32-bit, 64-bit
+> > > >   Address sizes:         46 bits physical, 48 bits virtual
+> > > >   Byte Order:            Little Endian
+> > > > CPU(s):                  88
+> > > >   On-line CPU(s) list:   0-87
+> > > > Vendor ID:               GenuineIntel
+> > > >   Model name:            Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
+> > > >     CPU family:          6
+> > > >     Model:               79
+> > > >     Thread(s) per core:  2
+> > > >     Core(s) per socket:  22
+> > > >     Socket(s):           2
+> > > >     Stepping:            1
+> > > >     CPU max MHz:         3600.0000
+> > > >     CPU min MHz:         1200.0000
+> > > > ...
+> > > > Caches (sum of all):
+> > > >   L1d:                   1.4 MiB (44 instances)
+> > > >   L1i:                   1.4 MiB (44 instances)
+> > > >   L2:                    11 MiB (44 instances)
+> > > >   L3:                    110 MiB (2 instances)
+> > > > NUMA:
+> > > >   NUMA node(s):          2
+> > > >   NUMA node0 CPU(s):     0-21,44-65
+> > > >   NUMA node1 CPU(s):     22-43,66-87
+> > > > Vulnerabilities:
+> > > >   Itlb multihit:         KVM: Mitigation: Split huge pages
+> > > >   L1tf:                  Mitigation; PTE Inversion; VMX
+> > > > conditional cache flushes, SMT vulnerable Mds:
+> > > > Mitigation; Clear CPU buffers; SMT vulnerable Meltdown:
+> > > >    Mitigation; PTI Spec store bypass:     Mitigation; Speculative
+> > > > Store Bypass disabled via prctl and seccomp Spectre v1:
+> > > >  Mitigation; usercopy/swapgs barriers and __user pointer
+> > > > sanitization Spectre v2:            Mitigation; Full generic
+> > > > retpoline, IBPB conditional, IBRS_FW, STIBP conditional, RSB
+> > > > filling Tsx async abort:       Mitigation; Clear CPU buffers; SMT
+> > > > vulnerable
+> > > >
+> > > > With the following GCC:
+> > > >
+> > > > $ gcc --version
+> > > > gcc (Debian 10.3.0-11) 10.3.0
+> > > >
+> > > > The commands I have run during the measurement were:
+> > > >
+> > > >       rm -rf $O
+> > > >       make O=$O allyesconfig
+> > > >       time make O=$O -s -j64  # this step has been measured
+> 
+> BTW, what kcbench does in the end is not that different, but it only
+> builds the config once and that uses it for all further testing.
+
+Since I measure the third operation only this shouldn't affect recreation
+of the configuration file.
+
+> > > > The raw data and median
+> > > > =======================
+> > > > Before patch 2 (yes, I have measured the only patch 2 effect) in
+> > > > the series (the data is sorted by time):
+> > > >
+> > > > real    2m8.794s
+> > > > real    2m11.183s
+> > > > real    2m11.235s
+> > > > real    2m11.639s
+> > > > real    2m11.960s
+> > > > real    2m12.014s
+> > > > real    2m12.609s
+> > > > real    2m13.177s
+> > > > real    2m13.462s
+> > > > real    2m19.132s
+> > > >
+> > > > After patch 2 has been applied:
+> > > >
+> > > > real    2m8.536s
+> > > > real    2m8.776s
+> > > > real    2m9.071s
+> > > > real    2m9.459s
+> > > > real    2m9.531s
+> > > > real    2m9.610s
+> > > > real    2m10.356s
+> > > > real    2m10.430s
+> > > > real    2m11.117s
+> > > > real    2m11.885s
+> > > >
+> > > > Median values are:
+> > > >       131.987s before
+> > > >       129.571s after
+> > > >
+> > > > We see the steady speedup as of 1.83%.
+> > >
+> > > You do know about kcbench:
+> > >         https://gitlab.com/knurd42/kcbench.git
+> > >
+> > > Try running that to make it such that we know how it was tested :)
 > > 
-> > Convert the qca8k bindings to YAML format.
+> > I'll try it.
 > > 
-> > Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
-> > Co-developed-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > ---
-> >  .../devicetree/bindings/net/dsa/qca8k.txt     | 245 ------------
-> >  .../devicetree/bindings/net/dsa/qca8k.yaml    | 362 ++++++++++++++++++
-> >  2 files changed, 362 insertions(+), 245 deletions(-)
-> >  delete mode 100644 Documentation/devicetree/bindings/net/dsa/qca8k.txt
-> >  create mode 100644 Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-> > 
+> > Meanwhile, Thorsten, can you have a look at my approach and tell if it
+> > makes sense?
 > 
-> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-> on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> I'm not the right person to ask here, I don't know enough about the
+> inner working of ccache and C preprocessing. Reminder: I'm not a real
+> kernel/C developer, but more kind of a parasite that lives on the
+> fringes of kernel development. ;-) Kcbench in fact originated as a
+> benchmark magazine for the computer magazine I used to work for – where
+> I also did quite a few benchmarks. But that knowledge might be helpful
+> here:
 > 
-> yamllint warnings/errors:
-> ./Documentation/devicetree/bindings/net/dsa/qca8k.yaml:362:7: [error] no new line character at the end of file (new-line-at-end-of-file)
->
+> The measurements before and after patch 2 was applied get slower over
+> time. That is a hint that something is interfering. Is the disk filling
+> up and making the fs do more work? Or is the machine getting to hot? It
+> IMHO would be worth investigating and ruling out, as the differences
+> you are looking out are likely quite small
 
-Stupid me will fix that...
+I tried to explain why my methodology is closer to what we need to measure
+in the above and replies. TL;DR: mathematically the O() shadows o() and as
+we know the CPU and disk usage during compilation is a huge in comparison
+to the C preprocessing. I'm not sure what you are referring by "slower
+over time" since I explicitly said that I have _sorted_ the data. Nothing
+should be done here, I believe.
 
-> dtschema/dtc warnings/errors:
-> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.example.dt.yaml: switch@10: 'oneOf' conditional failed, one must be fixed:
-> 	'ports' is a required property
-> 	'ethernet-ports' is a required property
-> 	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-> 
+> Also: the last run of the first measurement cycle is off by quite a
+> bit, so I wouldn't even include the result, as there like was something
+> that disturbed the benchmark.
 
-About this i fixed with the next patch. Should I include that in this
-patch? Or i can ignore this error?
+I believe you missed the very same remark, i.e. that the data is sorted.
 
-> doc reference errors (make refcheckdocs):
-> 
-> See https://patchwork.ozlabs.org/patch/1540096
-> 
-> This check can fail if there are any dependencies. The base for a patch
-> series is generally the most recent rc1.
-> 
-> If you already ran 'make dt_binding_check' and didn't see the above
-> error(s), then make sure 'yamllint' is installed and dt-schema is up to
-> date:
-> 
-> pip3 install dtschema --upgrade
-> 
-> Please check and re-submit.
-> 
+> And I might be missing something, but why were you using "-j 64" on a
+> machine with 44 cores/88 threads?
+
+Because that machine has more processes being run. And I would like to
+minimize fluctuation of the CPU scheduling when some process requires
+a resource to perform little work.
+
+> I wonder if that might lead do
+> interesting effects due to SMT (some core will run two threads, other
+> only one). Using either "-j 44" or "-j 88" might be better.
+
+How -j64 can be better? Nothing will guarantee that any of the core will
+be half-loaded. But -j88 is worse because any process that wakes up and
+requires for a resource may affect the measurements.
+
+> But I
+> suggest you run kcbench once without specifying "-j", as that will
+> check which setting is the fastest on this system – and then use that
+> for all further tests.
+
+Next time I will try this approach, thanks for your reply and insights!
 
 -- 
-	Ansuel
+With Best Regards,
+Andy Shevchenko
+
+
