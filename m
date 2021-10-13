@@ -2,113 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0A9F42C85E
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 20:09:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6DDD42C872
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 20:14:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233315AbhJMSLP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 14:11:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45274 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229967AbhJMSLN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 14:11:13 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6794C061570;
-        Wed, 13 Oct 2021 11:09:09 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id m22so11360631wrb.0;
-        Wed, 13 Oct 2021 11:09:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=/ytiN9XGDbiiKGkMOwESD33uHgZwCopfsh4LpOW+5PE=;
-        b=OEuwdOW4DwKh1KYjwdUaRVNIQlco8GFcy8Z2mXSJinApGVhVSjTY2yfgag4fh4Jfzl
-         8MFkfxLEtKDGPY88Cupdl1uDqG3DJFL3aYv87umbNRjXsEezPTZ2gRQFHLMaEKVLajxv
-         3S2YJbF7Aia2irgHTYKRbpe69bSM7XQJIbw+wzGOcmTHE6k+7+bKLsk5fYY8fWR9EXyz
-         n/g+SuqXRRWLYIXpBPlNxVlEIdFxHEbGqgaYErg62kzsPruJMXm6icltn7+w82R4dyr3
-         45BQeh7vB7WHJTyafovlaAViRQqEaa/yS11cbWBe2O246/VtbslIQtxyItsOsw4zL+05
-         vJkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=/ytiN9XGDbiiKGkMOwESD33uHgZwCopfsh4LpOW+5PE=;
-        b=mbXy5oVclGfnrE2pX7howdQQRxEJvDFNjUYp0ukFhPv6LIBTo4SZEWEecMg9i17IZk
-         linuqhHZ93/kdmdfOD6L4E/FI1cOJURv3UW2yaPfvbiYeHF7PJTm0cmBMEg6J3n4sFgI
-         ETo+Dl90qcIx9Ut5thcWV/ZLtv2aNFgt4vUncfa9M0zc5NoJIuKYwUAXNI90nsUSy55N
-         WtJ82VwEEGWE8TUmBEa49bks52ECCA65ed3ONF3fqlDWJaiIKSH9DsqopxQ369NYl6f6
-         bI8fe45o822yLh5TPxyx9td5TYweVHtuFCvRuFWyTwaxwtMDOcW+zznWpk7kZzg6+mSo
-         3EtQ==
-X-Gm-Message-State: AOAM5300lylDOuGP16rhvvjRdpUo34rdB7kydT4t2Qzp6uxvvo0eCjTM
-        5hxq9VFsflVVMSd75z5pFxI1AwwSs5E=
-X-Google-Smtp-Source: ABdhPJwfCFerKAXMGvYUzZCWIM7MdT/r+zanRxobT3iuW1uJSYPY/ZAgJnuIMt1aOsL+85yk+qjVZw==
-X-Received: by 2002:a1c:4302:: with SMTP id q2mr14754298wma.133.1634148548500;
-        Wed, 13 Oct 2021 11:09:08 -0700 (PDT)
-Received: from ?IPV6:2003:ea:8f22:fa00:49bd:5329:15d2:9218? (p200300ea8f22fa0049bd532915d29218.dip0.t-ipconnect.de. [2003:ea:8f22:fa00:49bd:5329:15d2:9218])
-        by smtp.googlemail.com with ESMTPSA id g188sm143892wmg.46.2021.10.13.11.09.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Oct 2021 11:09:08 -0700 (PDT)
-Message-ID: <0c141713-c8d9-c910-e083-5dab67929c51@gmail.com>
-Date:   Wed, 13 Oct 2021 20:08:58 +0200
+        id S238420AbhJMSQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 14:16:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45054 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230301AbhJMSQc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Oct 2021 14:16:32 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F213461130;
+        Wed, 13 Oct 2021 18:14:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634148869;
+        bh=nTv0tRFqu3rs6zCgIelWjkmGWCCAcB61amgKTV3GfC0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=HOLLh68Gs9vf4Npd6whvsjzKAoFHcVugXPxOcgeVyO732h8qgr+DSmkWwj+upu833
+         2GS1m+i3/ZzqrPhLaWml/+vF7n4KSFWN7vivN6sdzeb0R7CadkUZ/Ls3KBzcBGT5FE
+         P7YEPTmdFlVm63NKRClCMh5xlUNzrMBS02v7nNZDB7ERffjEdsNKgaAEPUO8Q5RMw+
+         Q90N9x92/Wc6rpIpp+FgplmzxhrMnDmgoHQbayy2BQmnwtfaLhSv87bXfLFElBPwig
+         813KDACHpaI04Vunmw4nRcp+/W7Zu4Q0CNL9GOJ6NC7pG8jXfTf2a9hQT0hPVBZPHK
+         DH76xPmHZ9lRQ==
+Date:   Wed, 13 Oct 2021 13:14:26 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Yishai Hadas <yishaih@nvidia.com>
+Cc:     alex.williamson@redhat.com, bhelgaas@google.com, jgg@nvidia.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com
+Subject: Re: [PATCH V1 mlx5-next 01/13] PCI/IOV: Provide internal VF index
+Message-ID: <20211013181426.GA1906116@bhelgaas>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Subject: Re: [PATCH 1/5] PCI/VPD: Add pci_read/write_vpd_any()
-Content-Language: en-US
-To:     Qian Cai <quic_qiancai@quicinc.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Raju Rangoju <rajur@chelsio.com>
-Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <ba0b18a3-64d8-d72f-9e9f-ad3e4d7ae3b8@gmail.com>
- <93ecce28-a158-f02a-d134-8afcaced8efe@gmail.com>
- <e89087c5-c495-c5ca-feb1-54cf3a8775c5@quicinc.com>
- <ca805454-6ec5-303b-d39f-d505cad6b338@gmail.com>
- <64b87f6b-5db9-721f-1bb8-6ae29742bf96@quicinc.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-In-Reply-To: <64b87f6b-5db9-721f-1bb8-6ae29742bf96@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211013094707.163054-2-yishaih@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13.10.2021 16:22, Qian Cai wrote:
+On Wed, Oct 13, 2021 at 12:46:55PM +0300, Yishai Hadas wrote:
+> From: Jason Gunthorpe <jgg@nvidia.com>
 > 
+> The PCI core uses the VF index internally, often called the vf_id,
+> during the setup of the VF, eg pci_iov_add_virtfn().
 > 
-> On 10/12/2021 4:26 PM, Heiner Kallweit wrote:
->> Thanks for the report! I could reproduce the issue, the following fixes
->> it for me. Could you please test whether it fixes the issue for you as well?
+> This index is needed for device drivers that implement live migration
+> for their internal operations that configure/control their VFs.
 > 
-> Yes, it works fine. BTW, in the original patch here:
+> Specifically, mlx5_vfio_pci driver that is introduced in coming patches
+> from this series needs it and not the bus/device/function which is
+> exposed today.
 > 
-Thanks for testing!
+> Add pci_iov_vf_id() which computes the vf_id by reversing the math that
+> was used to create the bus/device/function.
+> 
+> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 
-> --- a/drivers/pci/vpd.c
-> +++ b/drivers/pci/vpd.c
-> @@ -138,9 +138,10 @@ static int pci_vpd_wait(struct pci_dev *dev, bool set)
+I already acked this:
+
+  https://lore.kernel.org/r/20210922215930.GA231505@bhelgaas
+
+Saves me time if you carry the ack so I don't have to look at this
+again.  But since I *am* looking at it again, I think it's nice if the
+subject line includes the actual interface you're adding, e.g.,
+
+  PCI/IOV: Add pci_iov_vf_id() to get VF index
+
+> ---
+>  drivers/pci/iov.c   | 14 ++++++++++++++
+>  include/linux/pci.h |  8 +++++++-
+>  2 files changed, 21 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
+> index dafdc652fcd0..e7751fa3fe0b 100644
+> --- a/drivers/pci/iov.c
+> +++ b/drivers/pci/iov.c
+> @@ -33,6 +33,20 @@ int pci_iov_virtfn_devfn(struct pci_dev *dev, int vf_id)
 >  }
+>  EXPORT_SYMBOL_GPL(pci_iov_virtfn_devfn);
 >  
->  static ssize_t pci_vpd_read(struct pci_dev *dev, loff_t pos, size_t count,
-> -			    void *arg)
-> +			    void *arg, bool check_size)
+> +int pci_iov_vf_id(struct pci_dev *dev)
+> +{
+> +	struct pci_dev *pf;
+> +
+> +	if (!dev->is_virtfn)
+> +		return -EINVAL;
+> +
+> +	pf = pci_physfn(dev);
+> +	return (((dev->bus->number << 8) + dev->devfn) -
+> +		((pf->bus->number << 8) + pf->devfn + pf->sriov->offset)) /
+> +	       pf->sriov->stride;
+> +}
+> +EXPORT_SYMBOL_GPL(pci_iov_vf_id);
+> +
+>  /*
+>   * Per SR-IOV spec sec 3.3.10 and 3.3.11, First VF Offset and VF Stride may
+>   * change when NumVFs changes.
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index cd8aa6fce204..2337512e67f0 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -2153,7 +2153,7 @@ void __iomem *pci_ioremap_wc_bar(struct pci_dev *pdev, int bar);
+>  #ifdef CONFIG_PCI_IOV
+>  int pci_iov_virtfn_bus(struct pci_dev *dev, int id);
+>  int pci_iov_virtfn_devfn(struct pci_dev *dev, int id);
+> -
+> +int pci_iov_vf_id(struct pci_dev *dev);
+>  int pci_enable_sriov(struct pci_dev *dev, int nr_virtfn);
+>  void pci_disable_sriov(struct pci_dev *dev);
+>  
+> @@ -2181,6 +2181,12 @@ static inline int pci_iov_virtfn_devfn(struct pci_dev *dev, int id)
 >  {
->  	struct pci_vpd *vpd = &dev->vpd;
-> +	unsigned int max_len = check_size ? vpd->len : PCI_VPD_MAX_SIZE;
->  	int ret = 0;
->  	loff_t end = pos + count;
->  	u8 *buf = arg;
-> @@ -151,11 +152,11 @@ static ssize_t pci_vpd_read(struct pci_dev *dev, loff_t pos, size_t count,
->  	if (pos < 0)
->  		return -EINVAL;
+>  	return -ENOSYS;
+>  }
+> +
+> +static inline int pci_iov_vf_id(struct pci_dev *dev)
+> +{
+> +	return -ENOSYS;
+> +}
+> +
+>  static inline int pci_enable_sriov(struct pci_dev *dev, int nr_virtfn)
+>  { return -ENODEV; }
 >  
-> -	if (pos > vpd->len)
-> +	if (pos >= max_len)
->  		return 0;
+> -- 
+> 2.18.1
 > 
-> I am not sure if "pos >= max_len" is correct there, so just want to give you
-> a chance to double-check.
-> 
-This is intentional, but good catch.
