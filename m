@@ -2,89 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1C8A42BD91
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 12:46:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5FD842BDD2
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 12:51:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230029AbhJMKsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 06:48:02 -0400
-Received: from mx3.molgen.mpg.de ([141.14.17.11]:46721 "EHLO mx1.molgen.mpg.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229795AbhJMKsB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Oct 2021 06:48:01 -0400
-Received: from ersatz.molgen.mpg.de (g45.guest.molgen.mpg.de [141.14.220.45])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 5F1F661E64760;
-        Wed, 13 Oct 2021 12:45:56 +0200 (CEST)
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-To:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Taras Chornyi <taras.chornyi@plvision.eu>,
-        Vadym Kochan <vadym.kochan@plvision.eu>,
-        Paul Menzel <pmenzel@molgen.mpg.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: sfp: add quirk for Finisar FTLF8536P4BCL
-Date:   Wed, 13 Oct 2021 12:45:42 +0200
-Message-Id: <20211013104542.14146-1-pmenzel@molgen.mpg.de>
-X-Mailer: git-send-email 2.33.0
+        id S229882AbhJMKxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 06:53:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55248 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229912AbhJMKxN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 06:53:13 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F339C061749
+        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 03:51:10 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id u18so9830835lfd.12
+        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 03:51:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=rKfrG5HHh3oByuKlWlvIaOLx1lvfyWUDrGma858qYu4=;
+        b=PM4nQ3HIhjJ2Pk5nkf2WdoHIipWVFAbxEGjfZadAqybQ4lcctoKu6oL9ozmu4+CRTZ
+         uYIVnj/KasRu8P5C8j4KeWBZdHkmqWbcg7FZJjB+IlCLrSuPl9oyPQNc/6z5IY0xtYk7
+         iea0guujK7W4loKN/Bdg1IGrCMUqIZBnVFNemU99yxwV+YBihHQBEb1VKi1cfodpIegh
+         CqhZR3NK8QqpiewaxmZ4tx9ILWzWKuWea8Qx64M/DM4EjYcwY7FVTJLLeQKSwvVgOxFh
+         fwXO2hJYhvFlED8pENWDK/HoSvWXn+/0A/nSz63cQ16tnLAP5Vss6BNjbr+lMjQOKMFG
+         T5mA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=rKfrG5HHh3oByuKlWlvIaOLx1lvfyWUDrGma858qYu4=;
+        b=EKjOzajleD6KCLIdJxPaydLMd6QaTVpeY3V7i4wMnsIx4PRHeWjPVGZAS55mE58END
+         pyXjHoUIFKOxEHgXQLr6jNE7rdyHZuon7Ap9nWQiYCH8zHtRjuj3F39sp6yx0SsCBc5M
+         Cl6bG0t4hC1e7mfxOAqnF+IS/6UzFsfI+fOOrCmv30acTSuIdR/sOmCRHgIQQfUR1te9
+         /grPehmBWY/Rdlzk6jFimZMFeYw23Tdco8wEGC+SeXA20hZJts41WnRP2d2BBlBPs/tA
+         8kpjIFhIDEUKZpNqiKyFgTMvs6Iq4A3pJFEZLa1RX1XjOc51+y6rlwvxTuyI0rca+8lx
+         Y5Pg==
+X-Gm-Message-State: AOAM531KHGmbcLJI517D6wu2tiWSaY71hyA/U7q7YtHgS5gVtV+lLAex
+        szPTlfsVvqAGVejvwbGCk3k4tJhfaivYnAcBxUgY4Q==
+X-Google-Smtp-Source: ABdhPJzSXmuXGLBC0odLomW50c6wMRcojgUpr4C5z0oUp4TqIelvRRd22KJdLKLOYhRHwdIro3XxaIq1Ttl1rW8y4uE=
+X-Received: by 2002:a05:651c:4d2:: with SMTP id e18mr35521797lji.432.1634122268377;
+ Wed, 13 Oct 2021 03:51:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211012123557.3547280-1-alvin@pqrs.dk> <20211012123557.3547280-3-alvin@pqrs.dk>
+In-Reply-To: <20211012123557.3547280-3-alvin@pqrs.dk>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 13 Oct 2021 12:50:56 +0200
+Message-ID: <CACRpkdaTZYgW8PWabUoKA97B6yOUUGaNsnXOrrxtHc38fU8Qnw@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/6] net: dsa: move NET_DSA_TAG_RTL4_A to right
+ place in Kconfig/Makefile
+To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alvin@pqrs.dk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Taras Chornyi <taras.chornyi@plvision.eu>
+On Tue, Oct 12, 2021 at 2:37 PM Alvin =C5=A0ipraga <alvin@pqrs.dk> wrote:
 
-Finisar FTLF8536P4BCL can operate at 1000base-X and 10000base-SR, but
-reports 25G & 100GBd SR in it's EEPROM.
+> From: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
+>
+> Move things around a little so that this tag driver is alphabetically
+> ordered. The Kconfig file is sorted based on the tristate text.
+>
+> Suggested-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
 
-Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
-Signed-off-by: Taras Chornyi <taras.chornyi@plvision.eu>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-[Upstream from https://github.com/dentproject/dentOS/pull/133/commits/b87b10ef72ea4638e80588facf3c9c2c1be67b40]
-
-Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
----
- drivers/net/phy/sfp-bus.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
-index 7362f8c3271c..162b4030a863 100644
---- a/drivers/net/phy/sfp-bus.c
-+++ b/drivers/net/phy/sfp-bus.c
-@@ -55,6 +55,13 @@ static void sfp_quirk_ubnt_uf_instant(const struct sfp_eeprom_id *id,
- 	phylink_set(modes, 1000baseX_Full);
- }
- 
-+static void sfp_quirk_finisar_25g(const struct sfp_eeprom_id *id,
-+				  unsigned long *modes)
-+{
-+	phylink_set(modes, 1000baseX_Full);
-+	phylink_set(modes, 10000baseSR_Full);
-+}
-+
- static const struct sfp_quirk sfp_quirks[] = {
- 	{
- 		// Alcatel Lucent G-010S-P can operate at 2500base-X, but
-@@ -78,7 +85,13 @@ static const struct sfp_quirk sfp_quirks[] = {
- 		.vendor = "UBNT",
- 		.part = "UF-INSTANT",
- 		.modes = sfp_quirk_ubnt_uf_instant,
--	},
-+	}, {
-+		// Finisar FTLF8536P4BCL can operate at 1000base-X and 10000base-SR,
-+		// but reports 25G & 100GBd SR in it's EEPROM
-+		.vendor = "FINISAR CORP.",
-+		.part = "FTLF8536P4BCL",
-+		.modes = sfp_quirk_finisar_25g,
-+	}
- };
- 
- static size_t sfp_strlen(const char *str, size_t maxlen)
--- 
-2.33.0
-
+Yours,
+Linus Walleij
