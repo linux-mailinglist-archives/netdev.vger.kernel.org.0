@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFC1742BBF3
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 11:48:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2E3442BBF5
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 11:48:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238613AbhJMJug (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 05:50:36 -0400
-Received: from mail-dm6nam10on2058.outbound.protection.outlook.com ([40.107.93.58]:34945
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        id S239150AbhJMJum (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 05:50:42 -0400
+Received: from mail-bn7nam10on2079.outbound.protection.outlook.com ([40.107.92.79]:3739
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238054AbhJMJuf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Oct 2021 05:50:35 -0400
+        id S238054AbhJMJul (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Oct 2021 05:50:41 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f3DjYJ+StX7/dp5hDhNa4wrygcS+FEKH2wwEIA4w3Yk8xrs315T4pbGjTl0mvg20Is1iKEvrQRJv+37RA9fxRgifRhfotF1Y9oVnUUrO8/rKNvzrpbFK+tS2aHwAFg20YlG/9DfDgrtK49NA42/eY7QOypal07YQf2bseqb4KnNFRBhQHtZXhShKdIsEDy49gjTFuqMxDhivyFAt3aDiV0f/u68bRiA/5qXlJmiJJLBWxuP+cAoV80rxRRAddodC3PZmnliH+ckBEIKVwvfKkK0slvOFqG78CFPbktoijynIGQfSe2Yb9EUwAaUpUuQN8ZtYdjQJXzPOGqbcOgRFng==
+ b=VZMeezSSpNCqyLqtGHiyLB0+QPtvEd9laSJPRkwQay+u7xg9yrwOiGbs8fkHsDvsZWKY5EpexTLYmXRdelMcEEd12+ioBnsEelxEl9JyxtmzCpyFgb+8Etc+Q9DpFkEMnDhicl58KqzUztU54Dee38dciB9AmE8OuljMSjvv/Jo9h0bi4i/71a5jej6AxLnUOeEgGaMs27wy458lj/MUgiiOiW1W4LH6DI6lhU8Wq07dTvsT3aUExri4u21Zo3NwrD1fPASkLxhHWH0hSHExmJ63DMtT7CIeE3wLKmeqsff3edNDdm6GvQj10SeZ8cz+4S0dQZ/LAZY77T6o/TFMQQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=eawxF+jFRBAH1P9hWq5BE145QVmYPfYNp1U9MJCuY0E=;
- b=m0fD2JPx026KRYbjawSEeKI7AtIMm+XhqXgdI6L3UYOngIX9PviP8BG43rNkR1wtIiPCzOEIBzKH02Zzog5vSRdL6yUoWLu6sqdWwZVeR1fXm+FQZLS2t/Zn65zeAKrrYjrqIbVj+NGMRHubEHf4q+dsLcFMO8gObGoTs7/TQpzor4HqB84m8fXZBc5BbLH0C/HL7TQjOQHJcknKSGDIM8hLs7McP8BvO9GcSinlJwtCic70l9cZi6NnHUKttPYC6U5L3K50krJciSCoztM5sQfCTFnb6UwxDKVjA6JGM8kBA9wcqXLnPhJNjVRL4OfuTg3VMdwg3P9uvkOsNzBFYg==
+ bh=ATQOdGVF4dTjbvMJ1bmmazMNjFwWqMg4M5PKqHqf20k=;
+ b=ENq/hsvIygegJGnDVqaf+qWYtYgHeAsAfs0e9NA9RsgSKBrahdbrjGFzVAVkLChi51FlbUDR+6rXTmYcqmIoRE+Eut+Ow2Gyfj1SfGdhXlnNUDGEYGb2f3qI1Wm5HqqA+150EqvIjKqQ3nz7sWrZvZNfCDpcumeBblthU6ZmeoMF/cRiUr4ut9VFDl8jr71ECMtfNApvLOjAsyxTTcEzGVVwP3sa35Zmk/BUuyggAFge+tK7mgvFrQJCaNoae7xfXEG4FoXYZxtlV1uggoEAPKe/bpHccXlsAlCHkpPX6/KO9Z9DsQJfIUoSXSRpVDk7uBr039rh9/7WUfmoCGyAAA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ 216.228.112.36) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=nvidia.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eawxF+jFRBAH1P9hWq5BE145QVmYPfYNp1U9MJCuY0E=;
- b=U4/0ReJp2fO7wu4M7wJAzZ9zSX4MjyOAGLDbZ7wzu8LzEm59tQt471GFklE8JVdLWKJ4okd2eM4peEMjmgrzR/IhlWgyu0QZG/rVMKEjfPKbtshvn14g/Nif1ACkFY152/sv6oIzvKUKGSa+qJnG9sRRGlSMjyE5WXlofE9HH4GoL2fnA3Q/67PUfgr+C/JU/dPNhdyrQYMm/e2EwGf0jfVZHWowLfKJ7sJRDZHYDSrJCtAk9jl5RImESeAJ6rjlg5SbMDAQmNsoNnSQkcZs3BmJmX49CAeHakR1Hs8EpeTXWNm4vnnDFZhqXxV3Y1oahwd9jAbjZMiXdgCfJdx6Gg==
-Received: from DM3PR12CA0089.namprd12.prod.outlook.com (2603:10b6:0:57::33) by
- BN6PR1201MB0227.namprd12.prod.outlook.com (2603:10b6:405:4e::7) with
+ bh=ATQOdGVF4dTjbvMJ1bmmazMNjFwWqMg4M5PKqHqf20k=;
+ b=RWuFkJW9nkvhZ5TZ+4sLkDIsjGq1yKHvWz2dwOhl2lcEfUtok7EGuw6bmfXFGjKCtSPdvIoODeMp/kwtDG893R7bLDjhMGD3sSo7vLENluc+5vfa84yoSUgF6aW9H/HOAtSzPdSEx9xEUvoxL3IUSP6mX6N7wNmIiQ28WB2c+FAgW0+unwygk3a5OpiUE7v3ez227XdioKUKBObG+x5WJWTGPC6vtAF/dYGVmKig02ME1dP4Q7k7yOF3nN/mxy7L71sFs70DmBWtTzMVwaZsbFPNV8wh0h8o8nCQshqH0bGk1nENW9phWdhQwD8lIKIgFTYJbmn3+NSOqOh6mbAJCQ==
+Received: from MW4PR03CA0357.namprd03.prod.outlook.com (2603:10b6:303:dc::32)
+ by DM6PR12MB4636.namprd12.prod.outlook.com (2603:10b6:5:161::32) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.22; Wed, 13 Oct
- 2021 09:48:31 +0000
-Received: from DM6NAM11FT051.eop-nam11.prod.protection.outlook.com
- (2603:10b6:0:57:cafe::76) by DM3PR12CA0089.outlook.office365.com
- (2603:10b6:0:57::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.14 via Frontend
- Transport; Wed, 13 Oct 2021 09:48:31 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ 2021 09:48:36 +0000
+Received: from CO1NAM11FT060.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:dc:cafe::b6) by MW4PR03CA0357.outlook.office365.com
+ (2603:10b6:303:dc::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.15 via Frontend
+ Transport; Wed, 13 Oct 2021 09:48:36 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.36)
  smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- DM6NAM11FT051.mail.protection.outlook.com (10.13.172.243) with Microsoft SMTP
+ 216.228.112.36 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.36; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.36) by
+ CO1NAM11FT060.mail.protection.outlook.com (10.13.175.132) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4608.15 via Frontend Transport; Wed, 13 Oct 2021 09:48:30 +0000
-Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 13 Oct
- 2021 09:48:29 +0000
+ 15.20.4608.15 via Frontend Transport; Wed, 13 Oct 2021 09:48:35 +0000
+Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 13 Oct
+ 2021 09:48:33 +0000
 Received: from vdi.nvidia.com (172.20.187.6) by mail.nvidia.com
  (172.20.187.18) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Wed, 13 Oct 2021 09:48:26 +0000
+ Transport; Wed, 13 Oct 2021 09:48:29 +0000
 From:   Yishai Hadas <yishaih@nvidia.com>
 To:     <alex.williamson@redhat.com>, <bhelgaas@google.com>,
         <jgg@nvidia.com>, <saeedm@nvidia.com>
@@ -61,9 +61,9 @@ CC:     <linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
         <netdev@vger.kernel.org>, <kuba@kernel.org>, <leonro@nvidia.com>,
         <kwankhede@nvidia.com>, <mgurtovoy@nvidia.com>,
         <yishaih@nvidia.com>, <maorg@nvidia.com>
-Subject: [PATCH V1 mlx5-next 02/13] net/mlx5: Reuse exported virtfn index function call
-Date:   Wed, 13 Oct 2021 12:46:56 +0300
-Message-ID: <20211013094707.163054-3-yishaih@nvidia.com>
+Subject: [PATCH V1 mlx5-next 03/13] net/mlx5: Disable SRIOV before PF removal
+Date:   Wed, 13 Oct 2021 12:46:57 +0300
+Message-ID: <20211013094707.163054-4-yishaih@nvidia.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20211013094707.163054-1-yishaih@nvidia.com>
 References: <20211013094707.163054-1-yishaih@nvidia.com>
@@ -72,66 +72,83 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3bef8b47-4308-4664-aa37-08d98e2e9d4b
-X-MS-TrafficTypeDiagnostic: BN6PR1201MB0227:
-X-Microsoft-Antispam-PRVS: <BN6PR1201MB0227F4C77236FC7540172929C3B79@BN6PR1201MB0227.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3826;
+X-MS-Office365-Filtering-Correlation-Id: 6eed1d71-9118-4a3a-73e2-08d98e2ea04d
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4636:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB4636BC03FA3AF9A58D70B97CC3B79@DM6PR12MB4636.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: TN1FiAeem9aNKm6QcMf+VHfSoQk5FjCZi7hoKjI0NnsZRBQNHeW/Pk3WJjbw8ZxiIy9rVuVBnzvLVDnSXW3qidYLtnOGhgp7VN4HhYz7caLegrKGEvoVLuWJ3U0U9QFnfgfrGty48+Bz2WM88Vku1FzsCGHMwKu/l6vZUv7RjEdslov96RrwvQ2I8oW5XONgMpLPh39bn+Tfyo3oao6hgzvNGBn+5A5QYW3XtEbSMFJn56MjaRfx7AbUDVdhtDr6+nWVjvNsXkSfhnTAa3wJhkZ+FfzBkRqQUxd9z+BGPO3L80l3wfoOyFYIcW2zqbkWp/s0nkKfjY4p0sED9QBRRb138XZnYPBBoGQemcXpdaJUW8YuZRx1IIAuD6a71km1IVzJbn+pbc/IaaX/jRR4RSnyj3OnpML/nlk47/oQDuh17JewOaGd78SGt3mV2drIcRPYNJ8z81vRAEkQOKihSvNf27xIvX0KcZcXXhp0Vreggz9CfIXA7obDb/SEx12HhpsRH0wxIj/hUrsqmtGcFnUtW/TL5l1Zdt07T+eDCHmaOlYWrxTdODcr/LpK1D59xkYORn1XT/t7I+TIUfIXmMAnGyCazOicbjyD2OuxZirXRb+gu1WHX4MdjV/Vn6u1w/Z9zCoLPMw1dqcW6BEKAlSe8/aqC+JD0/0l8sYdZwBuyNcnUTx8fpIJlOw3NPKfAKzWvzGKVRaCM98oB5XTBg==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(83380400001)(70206006)(6636002)(1076003)(82310400003)(2906002)(508600001)(26005)(107886003)(336012)(356005)(7636003)(54906003)(6666004)(426003)(70586007)(36756003)(86362001)(8676002)(110136005)(316002)(5660300002)(47076005)(2616005)(4326008)(8936002)(36860700001)(186003)(7696005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: K/8WXcu5JMewWlP4zPze8NwceZczgO+EJT1AVwWlmh9dzATuFHCyqp3+/Ndoay1AQBJB449mDA74x6YafyhUUs86sU/1DaAPhucIlS7DHrOXVvwRdhj2MBYbtHZeoju3AGri8p6wTEhViEO7N7ARShByN29JfgRKFdf4WfFpoU9mKMnZ1KjFDv8cwx09TvQqzYSjiMkU8Mb0+g0Me8chpCK5JUti9E++6osbTVVnL7vKgB0tWvzFSYSJt7NxS91D+ME0LNx33HGaZkacwhML9wsUAcQcK5Flw8edH7W1TZRMVh+VPqFbD+NSYfIxiJGqAWzxAr8nc1lDtgpybog+VxxJ0nNpDDwA4X08wnRGWBmD0I1UARHYdJnvHCfvY/UXJ3b7PVcOYBQxkVOLXgmvVZTPaUSgL4g59ShtOBDoP06iz3WFkjFhj6QuOK0hgR0xEeSGCr6401KsakTb9Y3iIG3DqYY/4YcWpv/IUIS1vUP+X8AB4mEaSSAhtrkJ1TwQvM4+kcfQK060keBj4kW37U1LvDKULEzzqPJmbJxKM5DkJT3uT7MHdSbxIEVDm2UK36DHSmeFc8MCSHmVzW54HW3vIjVJx1DUEGuyEeiKOCBrcdONViUtNFpCqT6w8gJncm9soF8mVdsCTefMR2w/qWZgxfNjKkDo1yjob5vMr5KoIkAJlNazjjV1aQlgl+sr2x2hL6eQ8LcszpX/xxnrow==
+X-Forefront-Antispam-Report: CIP:216.228.112.36;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid05.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(82310400003)(36756003)(8936002)(426003)(36860700001)(83380400001)(54906003)(7636003)(356005)(4326008)(5660300002)(26005)(336012)(186003)(110136005)(86362001)(47076005)(70586007)(107886003)(70206006)(2906002)(6666004)(508600001)(7696005)(1076003)(2616005)(6636002)(316002)(8676002);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Oct 2021 09:48:30.7147
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Oct 2021 09:48:35.7553
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3bef8b47-4308-4664-aa37-08d98e2e9d4b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6eed1d71-9118-4a3a-73e2-08d98e2ea04d
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT051.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.36];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT060.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB0227
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4636
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+Virtual functions depend on physical function for device access (for example
+firmware host PAGE management), so make sure to disable SRIOV once PF is gone.
 
-Instead open-code iteration to compare virtfn internal index, use newly
-introduced pci_iov_vf_id() call.
+This will prevent also the below warning if PF has gone before disabling SRIOV.
+"driver left SR-IOV enabled after remove"
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Next patch from this series will rely on that when the VF may need to
+access safely the PF 'driver data'.
+
 Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/sriov.c | 15 ++-------------
- 1 file changed, 2 insertions(+), 13 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/main.c      | 1 +
+ drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h | 1 +
+ drivers/net/ethernet/mellanox/mlx5/core/sriov.c     | 2 +-
+ 3 files changed, 3 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index 79482824c64f..0b9a911acfc1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1558,6 +1558,7 @@ static void remove_one(struct pci_dev *pdev)
+ 	struct mlx5_core_dev *dev  = pci_get_drvdata(pdev);
+ 	struct devlink *devlink = priv_to_devlink(dev);
+ 
++	mlx5_sriov_disable(pdev);
+ 	devlink_reload_disable(devlink);
+ 	mlx5_crdump_disable(dev);
+ 	mlx5_drain_health_wq(dev);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+index 230eab7e3bc9..f21d64416f7f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+@@ -140,6 +140,7 @@ void mlx5_sriov_cleanup(struct mlx5_core_dev *dev);
+ int mlx5_sriov_attach(struct mlx5_core_dev *dev);
+ void mlx5_sriov_detach(struct mlx5_core_dev *dev);
+ int mlx5_core_sriov_configure(struct pci_dev *dev, int num_vfs);
++void mlx5_sriov_disable(struct pci_dev *pdev);
+ int mlx5_core_sriov_set_msix_vec_count(struct pci_dev *vf, int msix_vec_count);
+ int mlx5_core_enable_hca(struct mlx5_core_dev *dev, u16 func_id);
+ int mlx5_core_disable_hca(struct mlx5_core_dev *dev, u16 func_id);
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sriov.c b/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
-index e8185b69ac6c..24c4b4f05214 100644
+index 24c4b4f05214..887ee0f729d1 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
-@@ -205,19 +205,8 @@ int mlx5_core_sriov_set_msix_vec_count(struct pci_dev *vf, int msix_vec_count)
- 			mlx5_get_default_msix_vec_count(dev, pci_num_vf(pf));
+@@ -161,7 +161,7 @@ static int mlx5_sriov_enable(struct pci_dev *pdev, int num_vfs)
+ 	return err;
+ }
  
- 	sriov = &dev->priv.sriov;
--
--	/* Reversed translation of PCI VF function number to the internal
--	 * function_id, which exists in the name of virtfn symlink.
--	 */
--	for (id = 0; id < pci_num_vf(pf); id++) {
--		if (!sriov->vfs_ctx[id].enabled)
--			continue;
--
--		if (vf->devfn == pci_iov_virtfn_devfn(pf, id))
--			break;
--	}
--
--	if (id == pci_num_vf(pf) || !sriov->vfs_ctx[id].enabled)
-+	id = pci_iov_vf_id(vf);
-+	if (id < 0 || !sriov->vfs_ctx[id].enabled)
- 		return -EINVAL;
- 
- 	return mlx5_set_msix_vec_count(dev, id + 1, msix_vec_count);
+-static void mlx5_sriov_disable(struct pci_dev *pdev)
++void mlx5_sriov_disable(struct pci_dev *pdev)
+ {
+ 	struct mlx5_core_dev *dev  = pci_get_drvdata(pdev);
+ 	int num_vfs = pci_num_vf(dev->pdev);
 -- 
 2.18.1
 
