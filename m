@@ -2,201 +2,370 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 723A442C05B
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 14:44:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C656A42C065
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 14:44:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233569AbhJMMqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 08:46:20 -0400
-Received: from mail-oln040093003013.outbound.protection.outlook.com ([40.93.3.13]:54991
-        "EHLO na01-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231330AbhJMMqU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Oct 2021 08:46:20 -0400
+        id S233571AbhJMMq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 08:46:57 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:45651 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233922AbhJMMq5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 08:46:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1634129094; x=1665665094;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=SZJX07Mo+CZ6KEiPsTWRuPDYhJ7dV2qdSgL2k2wL41Q=;
+  b=CtgMjpQiOEe6Cgf1eO7QvpjTyW8CGngnFcJG0G2kV0wwjU9bKM4tFMlS
+   Wqvv+3VwGWa61tAvF1JqApVlZsK3PRE46ljTHMyjXhBx1vrVLonFP8iKC
+   1LREJIGFJ1kLQUQ3h62UGTXXSfe5qeNAI7vPKAjW3NagRKp2xlfsIidgV
+   8MjelMWLFLJZC8swX2PXhSuwFW6QGFHWLM0a5yXYtboWw0Q1GVo5bpgzQ
+   6scrgUTCmCLwKegWvaJuzH1pWRkFpTST+nqc4pmySH29pS9PrMJt1qezp
+   JuITY1VEjx93ko64fhuvA7I9tmYAz5Rcq+rHmnsZn5OfgUm5Ux3/NSOeq
+   g==;
+IronPort-SDR: 1vpNLFmuQu+pSmZQIMT4muy5UD5zmVX7z38Tz8L7jEBQFxPLYh6vUlJACFy+uLunIc+er9f1El
+ 6SadPTCTpBl7i0vVvj4YiDd4ZY0Le9dj9FetUaYxRxasbvMmgTBV5sIbmo/PaqSg1KGTYoxc4C
+ Eofwwt4aQBFJnh3dUmS3py+n1yygdIfDkw6l/T51T1/rfGnpRc15+Cdu+WfEIdUSQtspSnprcH
+ 2InNUIiHpMKpQCf+unrC9SoxdRQcxj7/5tj5hPdN35f3dpU90tg/5BUUxMUa5EAIxkkjc0wfzY
+ EXQfDZODPfnbcnl85hT/0NFg
+X-IronPort-AV: E=Sophos;i="5.85,370,1624345200"; 
+   d="scan'208";a="139561970"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Oct 2021 05:44:53 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Wed, 13 Oct 2021 05:44:52 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14 via Frontend Transport; Wed, 13 Oct 2021 05:44:52 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AaQPr+mV1N8qHczOlAo2XCBsccgdZO6AvLgbJ3RqbIiX0mwbzp+Mfd46q9lzAyG27Fmgy4iqrFKnQOaxe1W/ePBt9Lya6/PmQYdWK7aVEwntah+VOFn48tbLIrdwkmo40Q6T0v24HaCHkwFR4XGKtdhfdebxwO8mW2Kf8E8zhiOo4bBylPeK4Di/ou9r3meK7Gyt4i18jZXsfqZucMAvxK8wH12oAso2h+c2vxR2g6luJzrNBS19iEFwZB0mL5IiMJAAJm3xuIHfTbav/kGRCnG4+f0lkBW3OwZWYCVvCPauOqP60EE73dAJxg8CRZXYKhaNaSIBMHkE04k0JeDPzw==
+ b=CPE5vrnWReBJ7/tziOe+Zfjz0H0jh/vdmywOTRE9pwjN9yY0+RUuouQ/9ai2Aw5i0S2UBhQWU9FZd9CdO/fiy3TX1bXbI/2TMpCHtYfvdj+LGzTHecfbdaOyUWWyaRsvV00pbQkQKqBQjnjdNFqoJdCLDgKcuOBW6bNxf4GNQre0qAqMZzjc0X+eVIL9OoAJExtP0NkPB0KTNV0Dm8F/ukYDBefPrH2IorIVv830oJCuSn3ZB2y9CgWLY+BQvx2/timWyxzj/UD8DjOS4AYvntSG6/Y7koJ4J71XZ2YDfCO1dFKZlZGgSgkISq/WyzmDWKZhwtjLuO5uy5PUb2yl8A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CSZlphN2Ou1yqM3oJB+jK4FtQv0kEt+ihgkxNDdv9dw=;
- b=mOEJmkhh5W3i6DoshTPIWWkQUiICZvDBd+D8apFtI4DcYf+apScH6v3oYjKOwIRNTIsPvP/Qt38vAT1zUPnWWGZ7K8iKPQfxmbazvvzs/fy0vspqPlQMomK9YcIYggMb/0FAmACuyWxtz4Mi0gwFdBdekmC6pZWbrracCltdExt0db8F1PPATeMfrY7MG4Bl4g4Mq7G9Fyv69LctRHpjnKlc+39Y3cqqCoK+7m6oXJjWJSmEBD154+42FE+mITrVCVFxbPhkiu3PL/OpiVS8wcs0srewfS/dV+t4Ss7qzUjvK9eTDcNCubZ/qkscQwflPqOZErQol8WOwCl5dtSqkA==
+ bh=SECMx9Qwa5TRL5hYbUdl+lI3Hvoj+BdSp9ripkATdaM=;
+ b=JRh4QzfWFWGAred796A7pj2FVdL1O10WRjaqgU+oJA58Xpc6aQvIAJ3Gl+pw1+knxEMWOvpdxwQdDVvR5zsWG+UJ3+sLx/2kaDD2RAhqDKVOWOTljescbI8+b54qactUgaEezdwWabSbI20xGaULyN9mXwNF8LOteB08glZOY/CLlYdT3w/sNz83qQ+pBNgxPwnD0tlk5yT4kJelY9GAsGa7A6IQbjaX6TZ8f9WJ7fT6xVsccCKt47Zwg6WvfnZovhgN0W43eA5rhOo2hnDdZPcWHW5c+nXjTa4883lowAo51oNdlqvylHEcwQToVFHb0p6/6Qqr02EFwzALhgWbzg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CSZlphN2Ou1yqM3oJB+jK4FtQv0kEt+ihgkxNDdv9dw=;
- b=Qms+slOU01t0bFYaIPZLvIY9CR4eN9Fr27WxRdf9uYaigyBqP8D54fBMU8Leb+EgNDWtlULgnY/T1JpRRAHb/bOfCehIrTs2tUsuS8LcJV0tdZOarsqXtq9hS4gI4v/9pawaLFNrPrzA3qd+RPMjOkbSOGd4N58ADHz8+7xTtpM=
-Received: from MW2SPR01MB07.namprd21.prod.outlook.com (2603:10b6:302:a::17) by
- MN2PR21MB1232.namprd21.prod.outlook.com (2603:10b6:208:3b::13) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4628.3; Wed, 13 Oct 2021 12:44:12 +0000
-Received: from MW2SPR01MB07.namprd21.prod.outlook.com
- ([fe80::c8ac:aa63:8f5e:cf1c]) by MW2SPR01MB07.namprd21.prod.outlook.com
- ([fe80::c8ac:aa63:8f5e:cf1c%3]) with mapi id 15.20.4628.008; Wed, 13 Oct 2021
- 12:44:11 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "hawk@kernel.org" <hawk@kernel.org>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kafai@fb.com" <kafai@fb.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "yhs@fb.com" <yhs@fb.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>
-CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: RE: [PATCH] hv_netvsc: Fix potentionally overflow in
- netvsc_xdp_xmit()
-Thread-Topic: [PATCH] hv_netvsc: Fix potentionally overflow in
- netvsc_xdp_xmit()
-Thread-Index: AQHXv98bUqltCWSfmk+wm+1khQrFQqvQ3c7w
-Date:   Wed, 13 Oct 2021 12:44:11 +0000
-Message-ID: <MW2SPR01MB07B9C0C7ABCE2F81950BAACAB79@MW2SPR01MB07.namprd21.prod.outlook.com>
-References: <1634094275-1773464-1-git-send-email-jiasheng@iscas.ac.cn>
-In-Reply-To: <1634094275-1773464-1-git-send-email-jiasheng@iscas.ac.cn>
+ bh=SECMx9Qwa5TRL5hYbUdl+lI3Hvoj+BdSp9ripkATdaM=;
+ b=jwKQZo+IGk5mMQ7lETHZf2bJb4ybbaL9o8UA9H+nj2Nunr0Z/zYQ0glAx13phukIZErzskU6zkXFarb7N7HfaXJklhCouSizvlmF9kPm36UWI9U++iBVXyHmoKrIUO2ZOVzmZnhcUjEblkpiEwu175SbLHwLxRjCCzDGA+kEjI4=
+Received: from CH0PR11MB5561.namprd11.prod.outlook.com (2603:10b6:610:d4::8)
+ by CH0PR11MB5564.namprd11.prod.outlook.com (2603:10b6:610:d7::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.20; Wed, 13 Oct
+ 2021 12:44:46 +0000
+Received: from CH0PR11MB5561.namprd11.prod.outlook.com
+ ([fe80::4907:3693:d51c:af7e]) by CH0PR11MB5561.namprd11.prod.outlook.com
+ ([fe80::4907:3693:d51c:af7e%9]) with mapi id 15.20.4587.026; Wed, 13 Oct 2021
+ 12:44:45 +0000
+From:   <Yuiko.Oshino@microchip.com>
+To:     <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <richardcochran@gmail.com>
+Subject: RE: [PATCH net-next] net: microchip: lan743x: add support for PTP
+ pulse width (duty cycle)
+Thread-Topic: [PATCH net-next] net: microchip: lan743x: add support for PTP
+ pulse width (duty cycle)
+Thread-Index: AQHXv3APHaVpeTKsFUOp5D2pQ5OlfavP6GcAgAD4kDA=
+Date:   Wed, 13 Oct 2021 12:44:45 +0000
+Message-ID: <CH0PR11MB5561CCFC048FBAD8C936E5898EB79@CH0PR11MB5561.namprd11.prod.outlook.com>
+References: <1634046593-64312-1-git-send-email-yuiko.oshino@microchip.com>
+ <20211012145350.0d7d96bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211012145350.0d7d96bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=d5802a60-9755-4f0f-b69f-5c2aa1d6c3a9;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-10-13T12:35:16Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=microchip.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 235b5505-9e76-4239-a15b-08d98e472845
-x-ms-traffictypediagnostic: MN2PR21MB1232:
-x-microsoft-antispam-prvs: <MN2PR21MB1232AA1161A8EEC868940CCDCAB79@MN2PR21MB1232.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-office365-filtering-correlation-id: 4dc16cc8-676b-4b2d-ca37-08d98e473c96
+x-ms-traffictypediagnostic: CH0PR11MB5564:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CH0PR11MB5564DD490085E36929572B418EB79@CH0PR11MB5564.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7nK9U5kPhfbYyA6cIGt8lcPtbZICfNguE43k3PBPfgaUhNgSaYY7jjJcG2AGVECnu4OrwzTlODQuKfU6wSNb763LQ5p2Iq18nDpsaqdltDHCVIIZOH6LQEiemdMzwmVkpTznq2ctouE9tMOF6OI6jh8sRtEmSDnw4U3m79HLxjJto8Tpf0cqeWZKmiqWI0Yd1V9lViyZQrDblAJ/EcZnf3JxG9BY/8+xQsMugtOutYvKHayCpqMisHbryFEOo+1cO+WXeBjwC769GteCe1Yj5NfPE8BrR+a/ERsSdaya1r72gi9wFSkM5ZFAuRsLiTLJHE9z/qBna915Z11URwN08oj8qiDOYDyoLMWETofaSWwgNRsRrN7ilt5v7vb7xVnYMeaQLH7MiR4zjFXN96gjG5x+hf6jl4Vc6lp+NMN/caASNEHiFqL/nmMye9i6MugsgN9+tPnj7YGfT+wmP+RQMhwuqnxTkdClN9kgErEdHYPyLU1ilDd1fTAk5nS4BqEiCWJj/CrX2gh2tkZ2A6a6wwl/jhXfOXCemTX4BtTh98ufzp5l8leuEpSrQmgbBIhgTEkC5lswbeVWL4YyvVtEIwUzsfNUXQ54XdrInS+hE/dKRetwZAbchrv2NUlIQxw/S9DUKP357mHb19+tHGAWUBsQTySKt2t5YDVmrtmnOHQM9mLLf9uLSCMaKWSBsdedjCnx708HV5rdOk8zFoaw9MKeP5n+iWlClCXxkWHNMGcVgCmB1ziCXpzIFaF2DJucqQM4lFxOJoNOtUyeByyoxQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW2SPR01MB07.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(508600001)(921005)(9686003)(38100700002)(82950400001)(2906002)(186003)(66556008)(7416002)(4326008)(83380400001)(52536014)(82960400001)(54906003)(110136005)(33656002)(55016002)(122000001)(6506007)(8676002)(66946007)(64756008)(53546011)(316002)(8990500004)(10290500003)(71200400001)(66446008)(966005)(26005)(38070700005)(8936002)(76116006)(86362001)(7696005)(5660300002)(66476007)(10090945008);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: azFQhDXU8e5TYcoW0Abg3IdSVxK90ptfnQv+SXGbLD+sOkQvS62PPs39eK7caQWuMlX9qd9vYsiZGXrshXwJ5+TJhyaFupvJMkaxtW1rzJxi3cz80jdJLp2xAHRXSXasjlgh+nBgk7dlmJ7iPJa/gh7i34EwR/FfkQ2QQvAyUBcSickkjMcpnDApguFMdrNFVwNs/IanJXkzCfjYGfXGkcX5xjZ9HzHkfT71Xb0PaeN7M0JtAmeYwypyGAyuDB+5DdgpeVYU/dKddBmK7jr1BN8pKG2fEbOahgUIU4Ymh03Cq4GzTH00lt3pFhHxZYq337+dZTC0FQ3E7fI9OX309L+GU8FTaOuaTXSKtoIZ9yHNerkE7Nv61i3sDYPrJw1WpImqF9ynRPfEBD0k9SdFM6oJCA9y1cldkIVUlPekCrx5bdSZjTsxOoABD0WUo/U0UtpTTE1aXbgah7GGnf4eUPvWVJAYvW4w3yfjqbPXRQL9iBR4G9qxDEfhsDdZYWAUlM6h045FktdVMiuh8uJE8NnJYDiUM/D4ERfm64jJrNg4Mbi902xqyanuAKNSAWLOvgsV6D6gFCPpNfyZnSDSpulvNTRvzP127LTsUDel8LgJvgyXtFZHmzQ67JvY7kVU1/1vVZS7w4nQyswuOyKY2ejbsAy2LM3gFIcVpFzoum/KEOTT+cpgJslaMaxRWuVGwAaFuGDwl8TY1SxKN7+G1Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR11MB5561.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(33656002)(9686003)(2906002)(55016002)(122000001)(4326008)(83380400001)(38070700005)(54906003)(8676002)(6916009)(26005)(71200400001)(5660300002)(38100700002)(66446008)(316002)(64756008)(66476007)(86362001)(8936002)(52536014)(7696005)(66556008)(508600001)(186003)(76116006)(6506007)(66946007);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Rmt8Gx4JFP0E4tl2K99oMkPl4peD7EY1FgRdzt9DHC2fkD+4iBGG4W4/3Zez?=
- =?us-ascii?Q?MxbM/ybXZCUzm8DTfz8Sh5GH8e13GiiSvLsyvvFI6iFq9pGmfzKRh3ivXzST?=
- =?us-ascii?Q?5Zt1ls2aOS3I+5jFNjvVzgj+8/K7VJbZgWkDOGptFPEEyx5i4CqvAYcbJ+KJ?=
- =?us-ascii?Q?KNJXl7Vq14mYUeVKV0dK8UaupYZnEuBOjs+a85drhUYlnzkuCu8hDfXfWtGT?=
- =?us-ascii?Q?/bZbv2vKXQWYZ3piS9jTglc/CgRcUfDiSXLnPYuf470i628fcnE28aDEui0T?=
- =?us-ascii?Q?hZmAejbr61Gg1SJ4mnA6rFhamN3r+R2d93GfembQVfKfcsjqEms3ZrlmV6KK?=
- =?us-ascii?Q?i5GsQ/U/E5DVU8uMbZawZJS25aNwZBhQ5vLlACM3nHdAOd0G/jnPBMbJFi9Y?=
- =?us-ascii?Q?OPZzdjD6RhYR80NfBP4u4cqIuceBBuNXxxh5I30FHlshyaZgz/r2S6Veh7Xr?=
- =?us-ascii?Q?GbjkxTRtXdjsxcZPAThz3c83W1U2cm78IQfn2wkgn9Ue/Nr9gIqsHG/jZp4h?=
- =?us-ascii?Q?R7X2m6YZqhxtyQ+BY4+t5jK/gOmjOUYbX8sW+lx986u5KgxuJ3POnyLHmPgF?=
- =?us-ascii?Q?RN5kbj8TrUNOu0H+8brixO9qKr8iPdWckPQt5lg6whtZbs8712uuSkPX+sfW?=
- =?us-ascii?Q?3pIIYf7kHq7kHlserdf3fSpWN6SVZ+BPOUPuM+puMzL1bZUpe1JJYPMN8e9g?=
- =?us-ascii?Q?OW+J0pBXPp4e247Tf71BzkVWDns6tlyRXSvfFj94C4WoaHnSaUd5PDfZFrjV?=
- =?us-ascii?Q?pxwAWeWk60povg2Y56/hE7/5UEzeYFx2QY3N00v7JNZ+Nfng0ba0YBt0k5j+?=
- =?us-ascii?Q?7fzu0h0eij+SwwuiLovxHlmSkty2dgcE1kcD/JXKinT8z2R1Xy1hm6WZytqT?=
- =?us-ascii?Q?Axp0FG01x+eyc/ZU0y16dKasb/UOapxdZMpu/0Y2m/00VkQtQ19TAY4sxKix?=
- =?us-ascii?Q?BswFC93NHoV7hR/TF7W4d1+rWPPQd5s7aPZiMvE5SQAjQo6osidiPyFQDLs9?=
- =?us-ascii?Q?rsSHtw+DYJwRFQsocUJVRqYjKjYAn3sJmx4mKyFkvHOivExjz0/kIOYyGFQ/?=
- =?us-ascii?Q?69R0GWjAvtgC+QZgWc/YPluugGOppw1941WLSgu2pvsjzg75WIJwuNDCMqM7?=
- =?us-ascii?Q?EjzlDwHIf9AKItmbctuTceXaBcJO1tZcqlQ3qbzaC8AJvgF3Fe6LGjq+hTgV?=
- =?us-ascii?Q?cV34V44eRWbJ6gRxyya9R/qRO+EQAMVwX3ND54+voskQmTrphtbD5NkZJb94?=
- =?us-ascii?Q?zjBPce5n07qtsgjBvbj9YuiF+tve5aUerSshQbrT5shPysB3MawncjbWOmqI?=
- =?us-ascii?Q?+lRjmYwG/YZuz8zbAPiEw/bIEntUiGKUp9yzq+WKQmUYSwVfIj7GkzyYayij?=
- =?us-ascii?Q?tmaDUYMLG8b0ul4iTIMFVOKWoOp6tQFHnnQJkjNCB+wbPQ9BIEYmUY7zQvwR?=
- =?us-ascii?Q?Jjt0FWCdIhSvHazcnaeOvMtnFR0UrGuGyUp7b7k2kPnmluC7/+V6pg+843K3?=
- =?us-ascii?Q?W5CgsY9M29/Y2G5hG7C4EF0eW4WCdmsmA4pBHZ/33ulj7HMLrbb4GDybrB8/?=
- =?us-ascii?Q?i14l3viKYv2iFgV+0BcEGQZ1wBaKCEwRErvhXTkiKeszo/GFk+69zi2vWatU?=
- =?us-ascii?Q?XA=3D=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?HBzzGgMueSgZOWaL7wd5ga+NFgixMQg18U/VAJPfjVWT1zMh9/PeCr9Wk5uz?=
+ =?us-ascii?Q?9Sy0oXl4dhHO8ete4SA/d1XfPPRQqjwdVZodaoLt7hZIBZI6dHt9BcElbI+N?=
+ =?us-ascii?Q?Igl6qySq2Aag8b5FjZPjtDgvSZfJItgxFhol+MZQp77eNupuyNq5TFRNfAho?=
+ =?us-ascii?Q?EkI/vdexsiCl0xpvJ9ISq/20ugxZdyg2POJ8KhF6t7x6MA8bsizzPt7y/fmI?=
+ =?us-ascii?Q?sRgNN6+ZQYvSg6QM7FMtNIOJ6HfytAM+AqWFDY7yOm/DRn0cqXde2eJcNHyo?=
+ =?us-ascii?Q?JjBPkQQR9jipOhRSnq918RWCbjObzzer/rSHP0skq8dRemsySnCwdK3W5pbv?=
+ =?us-ascii?Q?fXJnWyYTGsbVVaMUefDGG1BsuZMBKKiLrpM2+tjBf1M9RissLZ6P3oCA3bur?=
+ =?us-ascii?Q?qgaWAD7iyIpYocuJeKeoCXzJ+oQnn5ZQapU/Nb4NWAb+sZP1HPLzhj0Iv/Aj?=
+ =?us-ascii?Q?fOTKVHwKZd39A2OoIUvu3/jWk6pkrbZertQjbfw9MXl6Fg0CXvXMVoA+r6Gd?=
+ =?us-ascii?Q?iWBg9SK1hPTE3jKV49EYj3BdkcyUaoMMOLayE0rlWkZzYnCrL4/tlAuZW8EU?=
+ =?us-ascii?Q?0wvzCXo5L6cuYHOx41nN27H91kFd2Hx2x8BO34GvFB7d7ZffYIUqDJWRgmqr?=
+ =?us-ascii?Q?46qUP18BbiSDLgHBQ7a1yPX1AUBbkWCcPFLt33VAvyMGC5peHmqTwCfP93rL?=
+ =?us-ascii?Q?4PSukHncX9OaRGHAKjC+DKjtZ8+1JCMkdzut8N4f/nOE9EMyO1UHwWZPO5/q?=
+ =?us-ascii?Q?uzHa18w+3aDHbunlVUUDqN2s9Oe2OuleBYcQVmZRC9XzGtFc0krv4gHcGyfV?=
+ =?us-ascii?Q?FjvRn6hWMxt8BrOE7r9b4VjIh8pM2ygxRiXWrUvbEWUKBrA9IaikIWOHHFSu?=
+ =?us-ascii?Q?Y40whM2C9JDU5oLbOZ6XqAszL0lB0l6sQyUn4l1/DqqyZnzB5LqkLYq0JiSW?=
+ =?us-ascii?Q?6Xntje1QwY85jpG0X1lt2DPestANFUFSFEeViawG3sCd2Pvj1aLnpltWl6Tn?=
+ =?us-ascii?Q?9E4iGV7oSpox5u1B6crKezjyZa1jqE0NysFxlQlS3FtQIzaC8z/YkUuF+PI2?=
+ =?us-ascii?Q?YyQoBT3wqCK8VzRI91PmlzLmmthQ4+3katNBmhq3+mkPiPmBKaRz5JLEBk0u?=
+ =?us-ascii?Q?S0b1hHegXYevQdgB33oB/EAo5UqH/TpjCjP8Yjn/9UAdDQXm9t9/Jc1dqm/m?=
+ =?us-ascii?Q?YpcWw0/Hg1q/HgNA2ZZmNiOgvv2rg7J7RSLqeaYSsBBiQbi7rxWDAM6O8c19?=
+ =?us-ascii?Q?72Woo60xhlkqLxLChWudAWTzkltIyNyoC4qNyiWifB4E7JOz6uU+D4vz7XgR?=
+ =?us-ascii?Q?csc=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW2SPR01MB07.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 235b5505-9e76-4239-a15b-08d98e472845
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Oct 2021 12:44:11.6651
+X-MS-Exchange-CrossTenant-AuthSource: CH0PR11MB5561.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4dc16cc8-676b-4b2d-ca37-08d98e473c96
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Oct 2021 12:44:45.9216
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9S4TqOslIdNp5LsFO+a5cBbSKt1WaqG9Sz+N5WY4IdSM1YRnjDCdipho2F0Mmm0olDMEWbzvfc72IAGbeRcfCg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR21MB1232
+X-MS-Exchange-CrossTenant-userprincipalname: 8TDGn2FRQhSQU3SolEFTya1vOP0BWfnU3E5O1utyU8W2hAQlDXCv5/232srlhhIDcjBY0xuNzAnM7/gjpJ6bHu6XrSnDnNzbAeKKRRYq6Ko=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB5564
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+>-----Original Message-----
+>From: Jakub Kicinski <kuba@kernel.org>
+>Sent: Tuesday, October 12, 2021 5:54 PM
+>To: Yuiko Oshino - C18177 <Yuiko.Oshino@microchip.com>
+>Cc: davem@davemloft.net; netdev@vger.kernel.org; UNGLinuxDriver
+><UNGLinuxDriver@microchip.com>; Richard Cochran
+><richardcochran@gmail.com>
+>Subject: Re: [PATCH net-next] net: microchip: lan743x: add support for PTP=
+ pulse
+>width (duty cycle)
+>
+>EXTERNAL EMAIL: Do not click links or open attachments unless you know the
+>content is safe
+>
+>On Tue, 12 Oct 2021 09:49:53 -0400 yuiko.oshino@microchip.com wrote:
+>> From: Yuiko Oshino <yuiko.oshino@microchip.com>
+>>
+>> If the PTP_PEROUT_DUTY_CYCLE flag is set, then check if the request_on
+>> value in ptp_perout_request matches the pre-defined values or a toggle
+>> option.
+>> Return a failure if the value is not supported.
+>>
+>> Preserve the old behaviors if the PTP_PEROUT_DUTY_CYCLE flag is not
+>> set.
+>>
+>> Tested with an oscilloscope on EVB-LAN7430:
+>> e.g., to output PPS 1sec period 500mS on (high) to GPIO 2.
+>>  ./testptp -L 2,2
+>>  ./testptp -p 1000000000 -w 500000000
+>>
+>> Signed-off-by: Yuiko Oshino <yuiko.oshino@microchip.com>
+>
+>Please make sure to CC Richard on PTP-related changes.
 
+I did not know. Thank you!
 
-> -----Original Message-----
-> From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> Sent: Tuesday, October 12, 2021 11:05 PM
-> To: KY Srinivasan <kys@microsoft.com>; Haiyang Zhang
-> <haiyangz@microsoft.com>; Stephen Hemminger <sthemmin@microsoft.com>;
-> wei.liu@kernel.org; Dexuan Cui <decui@microsoft.com>;
-> davem@davemloft.net; kuba@kernel.org; ast@kernel.org;
-> daniel@iogearbox.net; hawk@kernel.org; john.fastabend@gmail.com;
-> andrii@kernel.org; kafai@fb.com; songliubraving@fb.com; yhs@fb.com;
-> kpsingh@kernel.org
-> Cc: linux-hyperv@vger.kernel.org; netdev@vger.kernel.org; linux-
-> kernel@vger.kernel.org; bpf@vger.kernel.org; Jiasheng Jiang
-> <jiasheng@iscas.ac.cn>
-> Subject: [PATCH] hv_netvsc: Fix potentionally overflow in
-> netvsc_xdp_xmit()
->=20
-> [Some people who received this message don't often get email from
-> jiasheng@iscas.ac.cn. Learn why this is important at
-> http://aka.ms/LearnAboutSenderIdentification.]
->=20
-> Adding skb_rx_queue_recorded() to avoid the value of skb->queue_mapping
-> to be 0. Otherwise the return value of skb_get_rx_queue() could be
-> MAX_U16
-> cause by overflow.
->=20
-> Fixes: 351e158 ("hv_netvsc: Add XDP support")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> ---
->  drivers/net/hyperv/netvsc_drv.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/net/hyperv/netvsc_drv.c
-> b/drivers/net/hyperv/netvsc_drv.c
-> index f682a55..e51201e 100644
-> --- a/drivers/net/hyperv/netvsc_drv.c
-> +++ b/drivers/net/hyperv/netvsc_drv.c
-> @@ -807,7 +807,7 @@ static void netvsc_xdp_xmit(struct sk_buff *skb,
-> struct net_device *ndev)
->  {
->         int rc;
->=20
-> -       skb->queue_mapping =3D skb_get_rx_queue(skb);
-> +       skb->queue_mapping =3D skb_rx_queue_recorded(skb) ?
-> skb_get_rx_queue(skb) : 0;
->         __skb_push(skb, ETH_HLEN);
->=20
-
-netvsc_xdp_xmit() is only called from netvsc_recv_callback()=20
-and after skb_record_rx_queue(skb, q_idx) is called:
-
-        skb_record_rx_queue(skb, q_idx);
-
-	  ......
-
-        if (act =3D=3D XDP_TX) {
-                netvsc_xdp_xmit(skb, net);
-                return NVSP_STAT_SUCCESS;
-        }
-
-So the existing code doesn't need this patch.
-
-To avoid future misusing of netvsc_xdp_xmit() in other places, you
-may just add a comment -- "This function should only be called=20
-after skb_record_rx_queue()".
-
-Thanks,
-
-- Haiyang
+>
+>> diff --git a/drivers/net/ethernet/microchip/lan743x_main.h
+>> b/drivers/net/ethernet/microchip/lan743x_main.h
+>> index 6080028c1df2..34c22eea0124 100644
+>> --- a/drivers/net/ethernet/microchip/lan743x_main.h
+>> +++ b/drivers/net/ethernet/microchip/lan743x_main.h
+>> @@ -279,6 +279,7 @@
+>>  #define PTP_GENERAL_CONFIG_CLOCK_EVENT_1MS_  (3)  #define
+>> PTP_GENERAL_CONFIG_CLOCK_EVENT_10MS_ (4)
+>>  #define PTP_GENERAL_CONFIG_CLOCK_EVENT_200MS_        (5)
+>> +#define PTP_GENERAL_CONFIG_CLOCK_EVENT_TOGGLE_       (6)
+>>  #define PTP_GENERAL_CONFIG_CLOCK_EVENT_X_SET_(channel, value) \
+>>       (((value) & 0x7) << (1 + ((channel) << 2)))
+>>  #define PTP_GENERAL_CONFIG_RELOAD_ADD_X_(channel)    (BIT((channel) <<
+>2))
+>> diff --git a/drivers/net/ethernet/microchip/lan743x_ptp.c
+>> b/drivers/net/ethernet/microchip/lan743x_ptp.c
+>> index ab6d719d40f0..9380e396f648 100644
+>> --- a/drivers/net/ethernet/microchip/lan743x_ptp.c
+>> +++ b/drivers/net/ethernet/microchip/lan743x_ptp.c
+>> @@ -491,9 +491,10 @@ static int lan743x_ptp_perout(struct lan743x_adapte=
+r
+>*adapter, int on,
+>>       int perout_pin =3D 0;
+>>       unsigned int index =3D perout_request->index;
+>>       struct lan743x_ptp_perout *perout =3D &ptp->perout[index];
+>> +     int ret =3D 0;
+>>
+>>       /* Reject requests with unsupported flags */
+>> -     if (perout_request->flags)
+>> +     if (perout_request->flags & ~PTP_PEROUT_DUTY_CYCLE)
+>>               return -EOPNOTSUPP;
+>>
+>>       if (on) {
+>> @@ -518,6 +519,7 @@ static int lan743x_ptp_perout(struct lan743x_adapter
+>*adapter, int on,
+>>               netif_warn(adapter, drv, adapter->netdev,
+>>                          "Failed to reserve event channel %d for PEROUT\=
+n",
+>>                          index);
+>> +             ret =3D -EBUSY;
+>>               goto failed;
+>>       }
+>>
+>> @@ -529,6 +531,7 @@ static int lan743x_ptp_perout(struct lan743x_adapter
+>*adapter, int on,
+>>               netif_warn(adapter, drv, adapter->netdev,
+>>                          "Failed to reserve gpio %d for PEROUT\n",
+>>                          perout_pin);
+>> +             ret =3D -EBUSY;
+>>               goto failed;
+>>       }
+>>
+>> @@ -540,27 +543,93 @@ static int lan743x_ptp_perout(struct
+>lan743x_adapter *adapter, int on,
+>>       period_sec +=3D perout_request->period.nsec / 1000000000;
+>>       period_nsec =3D perout_request->period.nsec % 1000000000;
+>>
+>> -     if (period_sec =3D=3D 0) {
+>> -             if (period_nsec >=3D 400000000) {
+>> +     if (perout_request->flags & PTP_PEROUT_DUTY_CYCLE) {
+>> +             struct timespec64 ts_on, ts_period;
+>> +             s64 wf_high, period64, half;
+>> +             s32 reminder;
+>> +
+>> +             ts_on.tv_sec =3D perout_request->on.sec;
+>> +             ts_on.tv_nsec =3D perout_request->on.nsec;
+>> +             wf_high =3D timespec64_to_ns(&ts_on);
+>> +             ts_period.tv_sec =3D perout_request->period.sec;
+>> +             ts_period.tv_nsec =3D perout_request->period.nsec;
+>> +             period64 =3D timespec64_to_ns(&ts_period);
+>> +
+>> +             if (period64 < 200) {
+>> +                     netif_warn(adapter, drv, adapter->netdev,
+>> +                                "perout period too small, minimum is 20=
+0nS\n");
+>> +                     ret =3D -EOPNOTSUPP;
+>> +                     goto failed;
+>> +             }
+>> +             if (wf_high >=3D period64) {
+>> +                     netif_warn(adapter, drv, adapter->netdev,
+>> +                                "pulse width must be smaller than perio=
+d\n");
+>> +                     ret =3D -EINVAL;
+>> +                     goto failed;
+>> +             }
+>> +
+>> +             /* Check if we can do 50% toggle on an even value of perio=
+d.
+>> +              * If the period number is odd, then check if the requeste=
+d
+>> +              * pulse width is the same as one of pre-defined width val=
+ues.
+>> +              * Otherwise, return failure.
+>> +              */
+>> +             half =3D div_s64_rem(period64, 2, &reminder);
+>> +             if (!reminder) {
+>> +                     if (half =3D=3D wf_high) {
+>> +                             /* It's 50% match. Use the toggle option *=
+/
+>> +                             pulse_width =3D
+>PTP_GENERAL_CONFIG_CLOCK_EVENT_TOGGLE_;
+>> +                             /* In this case, devide period value by 2 =
+*/
+>> +                             ts_period =3D ns_to_timespec64(div_s64(per=
+iod64, 2));
+>> +                             period_sec =3D ts_period.tv_sec;
+>> +                             period_nsec =3D ts_period.tv_nsec;
+>> +
+>> +                             goto program;
+>> +                     }
+>> +             }
+>> +             /* if we can't do toggle, then the width option needs to b=
+e the exact
+>match */
+>> +             if (wf_high =3D=3D 200000000) {
+>>                       pulse_width =3D PTP_GENERAL_CONFIG_CLOCK_EVENT_200=
+MS_;
+>> -             } else if (period_nsec >=3D 20000000) {
+>> +             } else if (wf_high =3D=3D 10000000) {
+>>                       pulse_width =3D PTP_GENERAL_CONFIG_CLOCK_EVENT_10M=
+S_;
+>> -             } else if (period_nsec >=3D 2000000) {
+>> +             } else if (wf_high =3D=3D 1000000) {
+>>                       pulse_width =3D PTP_GENERAL_CONFIG_CLOCK_EVENT_1MS=
+_;
+>> -             } else if (period_nsec >=3D 200000) {
+>> +             } else if (wf_high =3D=3D 100000) {
+>>                       pulse_width =3D PTP_GENERAL_CONFIG_CLOCK_EVENT_100=
+US_;
+>> -             } else if (period_nsec >=3D 20000) {
+>> +             } else if (wf_high =3D=3D 10000) {
+>>                       pulse_width =3D PTP_GENERAL_CONFIG_CLOCK_EVENT_10U=
+S_;
+>> -             } else if (period_nsec >=3D 200) {
+>> +             } else if (wf_high =3D=3D 100) {
+>>                       pulse_width =3D PTP_GENERAL_CONFIG_CLOCK_EVENT_100=
+NS_;
+>>               } else {
+>>                       netif_warn(adapter, drv, adapter->netdev,
+>> -                                "perout period too small, minimum is 20=
+0nS\n");
+>> +                                "duty cycle specified is not supported\=
+n");
+>> +                     ret =3D -EOPNOTSUPP;
+>>                       goto failed;
+>>               }
+>>       } else {
+>> -             pulse_width =3D PTP_GENERAL_CONFIG_CLOCK_EVENT_200MS_;
+>> +             if (period_sec =3D=3D 0) {
+>> +                     if (period_nsec >=3D 400000000) {
+>> +                             pulse_width =3D
+>PTP_GENERAL_CONFIG_CLOCK_EVENT_200MS_;
+>> +                     } else if (period_nsec >=3D 20000000) {
+>> +                             pulse_width =3D PTP_GENERAL_CONFIG_CLOCK_E=
+VENT_10MS_;
+>> +                     } else if (period_nsec >=3D 2000000) {
+>> +                             pulse_width =3D PTP_GENERAL_CONFIG_CLOCK_E=
+VENT_1MS_;
+>> +                     } else if (period_nsec >=3D 200000) {
+>> +                             pulse_width =3D
+>PTP_GENERAL_CONFIG_CLOCK_EVENT_100US_;
+>> +                     } else if (period_nsec >=3D 20000) {
+>> +                             pulse_width =3D PTP_GENERAL_CONFIG_CLOCK_E=
+VENT_10US_;
+>> +                     } else if (period_nsec >=3D 200) {
+>> +                             pulse_width =3D
+>PTP_GENERAL_CONFIG_CLOCK_EVENT_100NS_;
+>> +                     } else {
+>> +                             netif_warn(adapter, drv, adapter->netdev,
+>> +                                        "perout period too small, minim=
+um is 200nS\n");
+>> +                             ret =3D -EOPNOTSUPP;
+>> +                             goto failed;
+>> +                     }
+>> +             } else {
+>> +                     pulse_width =3D PTP_GENERAL_CONFIG_CLOCK_EVENT_200=
+MS_;
+>> +             }
+>>       }
+>> +program:
+>>
+>>       /* turn off by setting target far in future */
+>>       lan743x_csr_write(adapter,
+>> @@ -599,7 +668,7 @@ static int lan743x_ptp_perout(struct
+>> lan743x_adapter *adapter, int on,
+>>
+>>  failed:
+>>       lan743x_ptp_perout_off(adapter, index);
+>> -     return -ENODEV;
+>> +     return ret;
+>>  }
+>>
+>>  static int lan743x_ptpci_enable(struct ptp_clock_info *ptpci,
 
