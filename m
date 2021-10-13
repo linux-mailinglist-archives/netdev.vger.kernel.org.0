@@ -2,105 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9600642C4D0
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 17:31:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BAD442C4EA
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 17:38:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229777AbhJMPdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 11:33:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229514AbhJMPdH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 11:33:07 -0400
-Received: from mail-ua1-x929.google.com (mail-ua1-x929.google.com [IPv6:2607:f8b0:4864:20::929])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF0FC061570;
-        Wed, 13 Oct 2021 08:31:03 -0700 (PDT)
-Received: by mail-ua1-x929.google.com with SMTP id q13so5316326uaq.2;
-        Wed, 13 Oct 2021 08:31:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=/ZBJjm+4NhR4GlguoMXFg/KsmiNX+LHGMnNEPUDTBVw=;
-        b=Fz8jsLxny0P6SGfvSlb6H1Z3nW3OOzTlkD0eHH8Vi6PIkZE0ntPUm/egfy5WAyyYXi
-         efz4AzuTNAqXDBOJCpsPR3B18LMWPBMf7cJVdFEAjm8DjSfTysfGqEqCqifWecVWuUoy
-         oLlVaLIQ2WGBC8AgMKm5g/hX+0WHIjdZ4lz8oIuER9Sb2TZXZPKnMpbDMnNmZHshMQ1L
-         d8XkhJs1LheJ+p706OEdhiq62QekVBJAHs88Md1t7a0+kX04udQKSAjrj5DlmZA1L2zY
-         0rcnKae5E15Pg+0ubqFnRZoHhg3NsYCG1/4xYG6XzcmEbXGJgd1EzDIQ+6YWoXU3K7Df
-         UGKQ==
+        id S229877AbhJMPkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 11:40:21 -0400
+Received: from mail-ua1-f43.google.com ([209.85.222.43]:38700 "EHLO
+        mail-ua1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229653AbhJMPkU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 11:40:20 -0400
+Received: by mail-ua1-f43.google.com with SMTP id h19so5327628uax.5;
+        Wed, 13 Oct 2021 08:38:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=/ZBJjm+4NhR4GlguoMXFg/KsmiNX+LHGMnNEPUDTBVw=;
-        b=mBUwBHaEaM+QeGa3I1UZFKS/enPQV3kWt4uBu6he0UiaWuRxuVgdO3zreFtusFOu5J
-         Avdike5kmVszmrrjwZWgh8uY4pcQE1Kly2M3Gqdotvx53QEjwcdlyQ7N8+p8yOGx3MiF
-         3wLCNJuz5XahHeRT7GF9JBXSkxEPsYuuMdqqcArhQwsUZLfqvVBUkmbjaV5Xi8geNhlm
-         F+iHdEeA+xgDUajciGyfKK/JOkLkbyOG1YWUuWkxw35BkQ5ycy16wwA6pYfdgf7xiQrF
-         Giv1Le7WRTVvpT/f+gLABS8PsG/LxDdTaZy+Vo6iCtVMn/nc5m0JHX8zhiR3pkTMvS2h
-         piaQ==
-X-Gm-Message-State: AOAM530//Fe9OsUhpzw6p4NldXe0IvbkWWTyRuRrfFWEbQ1vkrkuR+VP
-        k4uywVJJxtkhByUHE/AQodU=
-X-Google-Smtp-Source: ABdhPJzaZrAdqtZKw+ljkGjy+/5Eo5FO0rZIfnSJucNiaomXqeBxkKCxVxUzz6zuD6ZH6RjrWsDzjQ==
-X-Received: by 2002:a67:ac04:: with SMTP id v4mr39843399vse.50.1634139062835;
-        Wed, 13 Oct 2021 08:31:02 -0700 (PDT)
-Received: from t14s.localdomain ([177.220.174.164])
-        by smtp.gmail.com with ESMTPSA id c10sm6044500vsm.13.2021.10.13.08.31.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Oct 2021 08:31:02 -0700 (PDT)
-Received: by t14s.localdomain (Postfix, from userid 1000)
-        id B93B887E7E; Wed, 13 Oct 2021 12:31:00 -0300 (-03)
-Date:   Wed, 13 Oct 2021 12:31:00 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Eiichi Tsukata <eiichi.tsukata@nutanix.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] sctp: account stream padding length for reconf chunk
-Message-ID: <YWb7tFDwitBYSaXO@t14s.localdomain>
-References: <YWPc8Stn3iBBNh80@kroah.com>
- <YWQ43VyG8bF2gvF7@t14s.localdomain>
- <A3FC3A11-C149-4527-84A2-541E951B7A86@nutanix.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=l17U/nka2OkSajssGDLJw20Bxljp4r8q0ycLklITrQY=;
+        b=mfnSSMOwKoqrWvMfkSrLpGjH/L6vNyfnrV9WUi5gqTxdrtVHA6VYQD/ZSF/VeqSssk
+         gcytXXBnDqxZ77fPrlvUar98Bf4TpAW5il+Behoo8U6MvTcLa08s0/K2+R0AlkeY2YWw
+         hUsJ4MiWKx14wyksrqwNzfbYXtnawxWwLxgsmBA1CK5AuiEzw6N/hDc7nj5IaRkyqQiy
+         NNlfCwwgPRlj8J10k0QEO5s30kk/bbaOBADp3CKMa1TJOK86NshRsGioMLHGPb6MvSBZ
+         HjapAIXk9q7gnB69li0oFGk6BOCZQtv3FuiGs+052sEDANcPh85rGuDGqnyTQcs0tWXP
+         hJUg==
+X-Gm-Message-State: AOAM53066f0DHdJVplsobNk5jFfudjvcd5t1LREBYyFzQXjEhYM5BGYs
+        FeE7XIeIlrFHUjQfnk7DNgSi2ZWeCGbdNqPfXzGMe8L4I6eeNg==
+X-Google-Smtp-Source: ABdhPJw2Rr8lHJ8+2NgbvwjPXz5Zv6MvN+huaOXS/8KKef2X84kYutQm73pvfOZve6GwNRFDlOyTFLSRHw90yEeltIw=
+X-Received: by 2002:ab0:2bd2:: with SMTP id s18mr10036764uar.78.1634139496435;
+ Wed, 13 Oct 2021 08:38:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <A3FC3A11-C149-4527-84A2-541E951B7A86@nutanix.com>
+References: <1539889562-21458-1-git-send-email-yuiko.oshino@microchip.com> <1539889562-21458-3-git-send-email-yuiko.oshino@microchip.com>
+In-Reply-To: <1539889562-21458-3-git-send-email-yuiko.oshino@microchip.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 13 Oct 2021 17:38:05 +0200
+Message-ID: <CAMuHMdX3xeSM3sd9UuURw5Vvh43=81XJd75Ug-4-mYLhw+oTRA@mail.gmail.com>
+Subject: Re: [PATCH v3 net-next 2/2] dt-bindings: net: add support for
+ Microchip KSZ9131
+To:     Yuiko Oshino <yuiko.oshino@microchip.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Marco Felsch <m.felsch@pengutronix.de>, Markus.Niebel@tqs.de,
+        netdev <netdev@vger.kernel.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 12, 2021 at 12:17:08AM +0000, Eiichi Tsukata wrote:
-> Hi Marcelo
-> 
-> > On Oct 11, 2021, at 22:15, Marcelo Ricardo Leitner <marcelo.leitner@gmail.com> wrote:
-> > 
-> > 
-> ...
-> > 
-> > So if stream_num was originally 1, stream_len would be 2, and with
-> > padding, 4. Here, nums would be 2 then, and not 1. The padding gets
-> > accounted as if it was payload.
-> > 
-> > IOW, the patch is making the padding part of the parameter data by
-> > adding it to the header as well. SCTP padding works by having it in
-> > between them, and not inside them.
-> > 
-> > This other approach avoids this issue by adding the padding only when
-> > allocating the packet. It (ab)uses the fact that inreq and outreq are
-> > already aligned to 4 bytes. Eiichi, can you please give it a go?
-> > 
-> > 
-> 
-> Thanks, I understood. I’ve tested your diff with my reproducer and it certainly works.
-> Your diff looks good to me.
+Hi Yuiko,
 
-Cool, thanks. I'm running a couple more tests on it and will submit it
-on your behalf by EOD if all goes well.
+On Thu, Oct 18, 2018 at 8:16 PM Yuiko Oshino <yuiko.oshino@microchip.com> wrote:
+> Add support for Microchip Technology KSZ9131 10/100/1000 Ethernet PHY
+>
+> Signed-off-by: Yuiko Oshino <yuiko.oshino@microchip.com>
 
-Regards,
-Marcelo
+Thanks for your patch, which is commit 806700bab41e9297
+("dt-bindings: net: add support for Microchip KSZ9131") in v4.20.
+
+> --- a/Documentation/devicetree/bindings/net/micrel-ksz90x1.txt
+> +++ b/Documentation/devicetree/bindings/net/micrel-ksz90x1.txt
+> @@ -1,4 +1,4 @@
+> -Micrel KSZ9021/KSZ9031 Gigabit Ethernet PHY
+> +Micrel KSZ9021/KSZ9031/KSZ9131 Gigabit Ethernet PHY
+>
+>  Some boards require special tuning values, particularly when it comes
+>  to clock delays. You can specify clock delay values in the PHY OF
+> @@ -64,6 +64,32 @@ KSZ9031:
+>          Attention: The link partner must be configurable as slave otherwise
+>          no link will be established.
+>
+> +KSZ9131:
+> +
+> +  All skew control options are specified in picoseconds. The increment
+> +  step is 100ps. Unlike KSZ9031, the values represent picoseccond delays.
+> +  A negative value can be assigned as rxc-skew-psec = <(-100)>;.
+> +
+> +  Optional properties:
+> +
+> +    Range of the value -700 to 2400, default value 0:
+> +
+> +      - rxc-skew-psec : Skew control of RX clock pad
+> +      - txc-skew-psec : Skew control of TX clock pad
+> +
+> +    Range of the value -700 to 800, default value 0:
+> +
+> +      - rxdv-skew-psec : Skew control of RX CTL pad
+> +      - txen-skew-psec : Skew control of TX CTL pad
+> +      - rxd0-skew-psec : Skew control of RX data 0 pad
+> +      - rxd1-skew-psec : Skew control of RX data 1 pad
+> +      - rxd2-skew-psec : Skew control of RX data 2 pad
+> +      - rxd3-skew-psec : Skew control of RX data 3 pad
+> +      - txd0-skew-psec : Skew control of TX data 0 pad
+> +      - txd1-skew-psec : Skew control of TX data 1 pad
+> +      - txd2-skew-psec : Skew control of TX data 2 pad
+> +      - txd3-skew-psec : Skew control of TX data 3 pad
+
+Shouldn't all these use "*-skew-ps" instead of "*-skew-psec", like all
+other documented skew properties?
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
