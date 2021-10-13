@@ -2,100 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C32C342BB36
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 11:11:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BB1D42BB65
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 11:21:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239065AbhJMJNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 05:13:50 -0400
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:42561 "EHLO
-        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239067AbhJMJNu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 05:13:50 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailnew.nyi.internal (Postfix) with ESMTP id BB52F580BEA;
-        Wed, 13 Oct 2021 05:11:46 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Wed, 13 Oct 2021 05:11:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm2; bh=ze/R6OhPdJBigyPk+ZDOG+YF/1b
-        XIPDQ8E8tmsolguo=; b=iP/C6xnZ9xiQKGdJctkYNWkK4Ki/6Akx62XU+q4QG08
-        keubdtX1CRNceI6n65Oy6G9A5/niusuUXtGxIEwfiJUMYU1DP0GDKcoxWA8QcMsM
-        0lOFsprdulHXwvu9tU+qf3sWTmmrySQ4W9MT7a42lmcmhianfsS0MyuHJiqMC5WE
-        GsGMQZvCxNmsYG+rZu0GSsIsKK1T5qYzDfFkhTVDZ4NpjrbQ8OzpYckG16B3R0cH
-        tN39dvCGhMQdeoiGQDaGYEIOj4ZH06wKN55RO6bU7oYGmHbbfBbOnaJGPQFiviH7
-        /dh+4CevIDC4q7RDblO2Hyg3b41EdurthYPpHNh5PKQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=ze/R6O
-        hPdJBigyPk+ZDOG+YF/1bXIPDQ8E8tmsolguo=; b=DvS49/i5AHyPadhF6eguZu
-        ikQWhO2oSHEig4Yh0c86hdegFyqciLYwyTQXEYdvS26Ie7SP9nk5mLZiC/zlMLrP
-        BJGobZMwcJNpNgCn3kYE9jq1RjOt3LHgfXIOspUP4a+i9ZMJOFSIA8BqtQ/rDpaU
-        C+tRIBIasaPacUG3ZGWAXIVI4bT3qa+QIgQQPPeJtDzOcGGTuHUAfucFs5LKFjHR
-        FKbfxsF+ltAdveGI9aPLC/fd8NzKZvOVFGykIObPJg3+AQIfIR0lvANW93YbJu88
-        nil4H9VKHXz/gM/0oeSAT0mUYunoNZyvrI0Ll1BtVYyu3IZT36rSCvXJeCwNqTeQ
-        ==
-X-ME-Sender: <xms:0qJmYXD9fYJWOAczzazVG9Z47yTjEjSZcjPrVrozWpK1dr3C0-Npfw>
-    <xme:0qJmYdikjczUJd_Xpgete0Z4grMnSX6EFoUTODVs0axZaioc7D2HGNhO07yExLLrx
-    Qp5eWHMwrXInQ>
-X-ME-Received: <xmr:0qJmYSmY6ZiyOv4JngmKq-QYMLXNaYkpW3UvCeV-hguxnn5kUDxZ3UnjwkuaV8TtydiyflcxTllIStFK6Cgy0Qp47HpdIUlK>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddutddguddvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
-    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevueehje
-    fgfffgiedvudekvdektdelleelgefhleejieeugeegveeuuddukedvteenucevlhhushht
-    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhh
-    drtghomh
-X-ME-Proxy: <xmx:0qJmYZwL2hLzilnOOn5f1m9yqmZjfNJS-M_ia-lFg_3yrBdrsaIvLw>
-    <xmx:0qJmYcTdWCU1d7DyG7bScELQ4uvewk6-9G1JfeQNZAGG0LoW5gC5BQ>
-    <xmx:0qJmYcYgq6cjLPgRJzS5nfK_wdfbNWO5zVizPjm2IK1414aBrT_UzQ>
-    <xmx:0qJmYRJpgrpXv9BN_f1M8OYTY2Lk4gfoUfwJ5Z_tKoat3_lJuNKO4g>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 13 Oct 2021 05:11:45 -0400 (EDT)
-Date:   Wed, 13 Oct 2021 11:11:44 +0200
-From:   Greg KH <greg@kroah.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "open list:ETHERNET PHY LIBRARY" <netdev@vger.kernel.org>
-Subject: Re: [PATCH stable 4.14] net: phy: bcm7xxx: Fixed indirect MMD
- operations
-Message-ID: <YWai0CXJaI+sJaf8@kroah.com>
-References: <20211011181516.103835-1-f.fainelli@gmail.com>
+        id S239072AbhJMJXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 05:23:19 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:25129 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230150AbhJMJXS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 05:23:18 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4HTn6c6ZRhz1DHZw;
+        Wed, 13 Oct 2021 17:19:36 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Wed, 13 Oct 2021 17:21:05 +0800
+Received: from localhost.localdomain (10.69.192.56) by
+ dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Wed, 13 Oct 2021 17:21:05 +0800
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@openeuler.org>, <hawk@kernel.org>,
+        <ilias.apalodimas@linaro.org>, <akpm@linux-foundation.org>,
+        <peterz@infradead.org>, <will@kernel.org>, <jhubbard@nvidia.com>,
+        <yuzhao@google.com>, <mcroce@microsoft.com>,
+        <fenghua.yu@intel.com>, <feng.tang@intel.com>, <jgg@ziepe.ca>,
+        <aarcange@redhat.com>, <guro@fb.com>
+Subject: [PATCH net-next v6] page_pool: disable dma mapping support for 32-bit arch with 64-bit DMA
+Date:   Wed, 13 Oct 2021 17:19:20 +0800
+Message-ID: <20211013091920.1106-1-linyunsheng@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211011181516.103835-1-f.fainelli@gmail.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.69.192.56]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 11, 2021 at 11:15:16AM -0700, Florian Fainelli wrote:
-> commit d88fd1b546ff19c8040cfaea76bf16aed1c5a0bb upstream
-> 
-> When EEE support was added to the 28nm EPHY it was assumed that it would
-> be able to support the standard clause 45 over clause 22 register access
-> method. It turns out that the PHY does not support that, which is the
-> very reason for using the indirect shadow mode 2 bank 3 access method.
-> 
-> Implement {read,write}_mmd to allow the standard PHY library routines
-> pertaining to EEE querying and configuration to work correctly on these
-> PHYs. This forces us to implement a __phy_set_clr_bits() function that
-> does not grab the MDIO bus lock since the PHY driver's {read,write}_mmd
-> functions are always called with that lock held.
-> 
-> Fixes: 83ee102a6998 ("net: phy: bcm7xxx: add support for 28nm EPHY")
-> [florian: adjust locking since phy_{read,write}_mmd are called with no
-> PHYLIB locks held]
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> Signed-off-by: David S. Miller <davem@davemloft.net>
-> ---
->  drivers/net/phy/bcm7xxx.c | 94 +++++++++++++++++++++++++++++++++++++++
->  1 file changed, 94 insertions(+)
+As the 32-bit arch with 64-bit DMA seems to rare those days,
+and page pool might carry a lot of code and complexity for
+systems that possibly.
 
-All 3 now queued up, thanks!
+So disable dma mapping support for such systems, if drivers
+really want to work on such systems, they have to implement
+their own DMA-mapping fallback tracking outside page_pool.
 
-greg k-h
+Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+---
+V6: Drop pp page tracking support
+---
+ include/linux/mm_types.h | 13 +------------
+ include/net/page_pool.h  | 12 +-----------
+ net/core/page_pool.c     | 10 ++++++----
+ 3 files changed, 8 insertions(+), 27 deletions(-)
+
+diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+index 7f8ee09c711f..436e0946d691 100644
+--- a/include/linux/mm_types.h
++++ b/include/linux/mm_types.h
+@@ -104,18 +104,7 @@ struct page {
+ 			struct page_pool *pp;
+ 			unsigned long _pp_mapping_pad;
+ 			unsigned long dma_addr;
+-			union {
+-				/**
+-				 * dma_addr_upper: might require a 64-bit
+-				 * value on 32-bit architectures.
+-				 */
+-				unsigned long dma_addr_upper;
+-				/**
+-				 * For frag page support, not supported in
+-				 * 32-bit architectures with 64-bit DMA.
+-				 */
+-				atomic_long_t pp_frag_count;
+-			};
++			atomic_long_t pp_frag_count;
+ 		};
+ 		struct {	/* slab, slob and slub */
+ 			union {
+diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+index a4082406a003..3855f069627f 100644
+--- a/include/net/page_pool.h
++++ b/include/net/page_pool.h
+@@ -216,24 +216,14 @@ static inline void page_pool_recycle_direct(struct page_pool *pool,
+ 	page_pool_put_full_page(pool, page, true);
+ }
+ 
+-#define PAGE_POOL_DMA_USE_PP_FRAG_COUNT	\
+-		(sizeof(dma_addr_t) > sizeof(unsigned long))
+-
+ static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
+ {
+-	dma_addr_t ret = page->dma_addr;
+-
+-	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
+-		ret |= (dma_addr_t)page->dma_addr_upper << 16 << 16;
+-
+-	return ret;
++	return page->dma_addr;
+ }
+ 
+ static inline void page_pool_set_dma_addr(struct page *page, dma_addr_t addr)
+ {
+ 	page->dma_addr = addr;
+-	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
+-		page->dma_addr_upper = upper_32_bits(addr);
+ }
+ 
+ static inline void page_pool_set_frag_count(struct page *page, long nr)
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index 1a6978427d6c..9b60e4301a44 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -49,6 +49,12 @@ static int page_pool_init(struct page_pool *pool,
+ 	 * which is the XDP_TX use-case.
+ 	 */
+ 	if (pool->p.flags & PP_FLAG_DMA_MAP) {
++		/* DMA-mapping is not supported on 32-bit systems with
++		 * 64-bit DMA mapping.
++		 */
++		if (sizeof(dma_addr_t) > sizeof(unsigned long))
++			return -EOPNOTSUPP;
++
+ 		if ((pool->p.dma_dir != DMA_FROM_DEVICE) &&
+ 		    (pool->p.dma_dir != DMA_BIDIRECTIONAL))
+ 			return -EINVAL;
+@@ -69,10 +75,6 @@ static int page_pool_init(struct page_pool *pool,
+ 		 */
+ 	}
+ 
+-	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT &&
+-	    pool->p.flags & PP_FLAG_PAGE_FRAG)
+-		return -EINVAL;
+-
+ 	if (ptr_ring_init(&pool->ring, ring_qsize, GFP_KERNEL) < 0)
+ 		return -ENOMEM;
+ 
+-- 
+2.33.0
+
