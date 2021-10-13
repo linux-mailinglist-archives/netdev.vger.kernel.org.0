@@ -2,100 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D15B442C1FA
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 15:59:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D596242C221
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 16:07:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234712AbhJMOBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 10:01:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42596 "EHLO
+        id S235647AbhJMOJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 10:09:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229794AbhJMOBy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 10:01:54 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C796CC061746
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 06:59:50 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1maenF-00047v-AN; Wed, 13 Oct 2021 15:59:41 +0200
-Received: from pengutronix.de (2a03-f580-87bc-d400-4e9e-60fc-b8e7-7754.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:4e9e:60fc:b8e7:7754])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 85F196924D0;
-        Wed, 13 Oct 2021 13:59:39 +0000 (UTC)
-Date:   Wed, 13 Oct 2021 15:59:38 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [patch 05/11] can: bcm: Use hrtimer_forward_now()
-Message-ID: <20211013135938.mdg3ucyjtkvfcxcu@pengutronix.de>
-References: <20210923153311.225307347@linutronix.de>
- <20210923153339.684546907@linutronix.de>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ulf5aacqnjevo763"
-Content-Disposition: inline
-In-Reply-To: <20210923153339.684546907@linutronix.de>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+        with ESMTP id S234096AbhJMOJO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 10:09:14 -0400
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2F01C061570;
+        Wed, 13 Oct 2021 07:07:10 -0700 (PDT)
+Received: by mail-il1-x130.google.com with SMTP id j8so2856678ila.11;
+        Wed, 13 Oct 2021 07:07:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=OIpe5CXqjO0j1Yipt7qNHWybOtR4WIPY8YXbWdPRvqc=;
+        b=prg2sO/RoAM/NU+d18t+N1X/wfQBQtbzHGlrtZEJ+lb36kxgu75bzfVjzovHwTxJEt
+         AAXEeqBdhK3XB6wAmlPAcg1/koAVvQ0+h95HiwYspCKTbJXw62oUPj4gMKCQtt8RS0lS
+         PvFZKPO4ClQ1sXACJuuAP3P2eXm9KKT1ybWohyD2NISq5fjnSGh2dTYIsOC9piOHNRQ/
+         g6B0W9MP5HYv5ze4910IAO7Pats3uaEDfnlEFUDqMqzDkObBkpO5p3O4qLeiL7x+HNMI
+         pNRw06ChcZbu2xuSQuBEN32yMfImbgHvJDvBkfHvNc/csK2jl72PvThjFE5csCbaYvaC
+         YQeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=OIpe5CXqjO0j1Yipt7qNHWybOtR4WIPY8YXbWdPRvqc=;
+        b=dITsMd1C2RiRPwU5pBCQCxupEofkL9twfPW+z+yBf2R8E9uLPktc3+7m+g7g2oJUve
+         pxUnpMpjbyQVqWvY6xGF6f4cOuggUskrcukx6MinZlOvggKyxxg5y3s9sNI4wPXPu+bZ
+         Fbl7Duq9eCeeSEdI+E+WoL/sQloKDMVfB69PfaFbYIoqn8w7ejc/CN3AKQQ7adCnux2A
+         IwtoRgONNi0TqKs2GqkRHmYhXPGP0aQabkZjUDxJSSNb+osbQmhN12kRKsKMKjcgkFz9
+         VBZ0Orja/pAPIHUbJsfs8JQ/sjW0ENgBO8lwJUxLbvu1GGlxfIPtk4StsA+j4SDErPX0
+         i6Sg==
+X-Gm-Message-State: AOAM533W42by9X5T97agkqxSu9MuSzFLFbUB2+lCFKz9FSOjo5lt2jDr
+        cNCSve5RY6WX5oLsK/S0+hs=
+X-Google-Smtp-Source: ABdhPJwfX9AVotR7iYVaFCTGFpDajdE8cs6ZUD3nPJAlsTI16uIyGiqEUu2tZTeaf003ZKhp7s64SQ==
+X-Received: by 2002:a05:6e02:2141:: with SMTP id d1mr6361675ilv.5.1634134030082;
+        Wed, 13 Oct 2021 07:07:10 -0700 (PDT)
+Received: from localhost ([172.243.157.240])
+        by smtp.gmail.com with ESMTPSA id g13sm6328890ilc.54.2021.10.13.07.07.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Oct 2021 07:07:09 -0700 (PDT)
+Date:   Wed, 13 Oct 2021 07:07:02 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Message-ID: <6166e806d00ea_48c5d208be@john-XPS-13-9370.notmuch>
+In-Reply-To: <20211007195147.28462-1-xiyou.wangcong@gmail.com>
+References: <20211007195147.28462-1-xiyou.wangcong@gmail.com>
+Subject: RE: [Patch bpf v3] skmsg: check sk_rcvbuf limit before queuing to
+ ingress_skb
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
+> 
+> Jiang observed OOM frequently when testing our AF_UNIX/UDP
+> proxy. This is due to the fact that we do not actually limit
+> the socket memory before queueing skb to ingress_skb. We
+> charge the skb memory later when handling the psock backlog,
+> and it is not limited either.
+> 
+> This patch adds checks for sk->sk_rcvbuf right before queuing
+> to ingress_skb and drops or retries the packets if this limit
+> exceeds. This is very similar to UDP receive path. Ideally we
+> should set the skb owner before this check too, but it is hard
+> to make TCP happy with sk_forward_alloc.
+> 
+> For TCP, we can not just drop the packets on errors. TCP ACKs
+> are already sent for those packet before reaching
+> ->sk_data_ready(). Instead, we use best effort to retry, this
+> works because TCP does not remove the skb from receive queue
+> at that point and exceeding sk_rcvbuf limit is a temporary
+> situation.
+> 
+> Reported-by: Jiang Wang <jiang.wang@bytedance.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Lorenz Bauer <lmb@cloudflare.com>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 
---ulf5aacqnjevo763
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Makes sense to include a fixes tag here.
 
-On 23.09.2021 18:04:27, Thomas Gleixner wrote:
-> hrtimer_forward_now() provides the same functionality as the open coded
-> hrimer_forward() invocation. Prepares for removal of hrtimer_forward() fr=
-om
-> the public interfaces.
->=20
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Oliver Hartkopp <socketcan@hartkopp.net>
-> Cc: linux-can@vger.kernel.org
-> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-> Cc: netdev@vger.kernel.org
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
+> ---
+> v3: add retry logic for TCP
+> v2: add READ_ONCE()
 
-Tnx, applied to linux-can-next/testing.
+I agree this logic is needed, but I think the below is not
+complete. I can get the couple extra fixes in front of this
+today/tomorrow on my side and kick it through some testing here.
+Then we should push it as a series. Your patch + additions.
 
-regards,
-Marc
+> 
+>  net/core/skmsg.c | 15 +++++++++------
+>  net/ipv4/tcp.c   |  2 ++
+>  2 files changed, 11 insertions(+), 6 deletions(-)
+> 
+> diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+> index 2d6249b28928..356c314cd60c 100644
+> --- a/net/core/skmsg.c
+> +++ b/net/core/skmsg.c
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+All the skmsg changes are good.
 
---ulf5aacqnjevo763
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index e8b48df73c85..8b243fcdbb8f 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -1665,6 +1665,8 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
+>  			if (used <= 0) {
+>  				if (!copied)
+>  					copied = used;
+> +				if (used == -EAGAIN)
+> +					continue;
 
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmFm5kgACgkQqclaivrt
-76ly8Af+MZpwNSBSkgu3BoHbXJM/ftEtG8NwqL4gN3XFG2q00fGFifF6cR1SZqB8
-lnFWAfGMCPGla49W/6vkAg9x1QwGR74q++Z+Dj51dImt7qYTsDMoVhDS3jrSO+5b
-ESnvU6e5FXZbI0bvnZCvM3ML9kxSb8vXaYUxKRBrkf4gK7dQNAl1PAAK4B3h03xf
-JPV4wpZGxcxeVUEffv9PvvX9fdwVfb7szCmt8KqaxIUuH1IfM+gZGxxoiNW8YEPZ
-YgixZRWjON1Y5SJ/FmEYBW3Wk/1Scyqg/Ts9LC0TQRvLJIiojQrpC4X5qDUr2P8N
-3tH/WZoW99MfvlmrL8zSxRcp0sNqPQ==
-=PxYX
------END PGP SIGNATURE-----
+This is not a good idea, looping through read_sock because we have
+hit a memory limit is not going to work. If something is holding the
+memlimit pinned this could loop indefinately.
 
---ulf5aacqnjevo763--
+Also this will run the verdict multiple times on the same bytes. For
+apply/cork logic this will break plus just basic parsers will be
+confused when they see duplicate bytes.
+
+We need to do a workqueue and then retry later.
+
+Final missing piece is that strparser logic would still not handle
+this correctly.
+
+I don't mind spending some time on this today. I'll apply your
+patch and then add a few fixes for above.
+
+Thanks,
+John
