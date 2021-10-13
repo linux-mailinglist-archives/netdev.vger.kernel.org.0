@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 914DC42CE31
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 00:32:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 093C142CE32
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 00:32:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231344AbhJMWem (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 18:34:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49642 "EHLO
+        id S231361AbhJMWen (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 18:34:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231273AbhJMWeh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 18:34:37 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2F5C061570
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 15:32:33 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id m26so3765394pff.3
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 15:32:33 -0700 (PDT)
+        with ESMTP id S230361AbhJMWei (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 18:34:38 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A63BEC061746
+        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 15:32:34 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id lk8-20020a17090b33c800b001a0a284fcc2so5525772pjb.2
+        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 15:32:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=K3xmyrvrabuXSa2GxlZvZmaD6t80A1dyvYqPOhLAPUM=;
-        b=oH+s3TzBp80hi2+8fLk+BxUA/Lo8MJovNJJQVYkR/woOEx0/JK8jA3uz3FM/zYx/eU
-         zikY9iYu9WC5mVQsEmvdZwHmPmyy8AhPIm2cTuAUXdcr5r6gYX2K+la0aJ+XpOjs0+1t
-         SpuOiD2ip538ATQVM2DzFixtB5v395rFjG6PA885qMDErLt39YgLTeOBPLq87l0PzrUZ
-         So/ycGq+BaIEG/VgO0Fmb532xgDTLq6g0VW2OUOvGX6DfxzN8InJqGvhqPZSv+7kO7ag
-         dx4frzN0/ScZum55ixIycEc9u/zBN5zmn90nkuFKNAHduZeQH/IF75P4dYt0uY3JT1aL
-         bzXQ==
+        bh=2sn0l15EeXVjYYIzqdi92hRykDGSnNV5xCLLrC1tcLE=;
+        b=Kh2aSOAmd2QgPUsue3SnT7fnE66zH9AHXjkYvSowtwgpYlQP8Zv8BclxcPUV2KFJsD
+         O7oo01yX9nYGgqbhYq+ww6AscwkRFvH7oQetB5XGZWY3CRNC/+IhxCnYyxAZ1OGBxnWg
+         BiTsUeHKd0kyYR9wrCq23iwu7WnhtQX/8vZIEn6X/Rgg4/dDrmPjyXaSVdKl3EFVlaiP
+         M5SSsFAS4CKNBAll45b+XQuHWarjTMW91Ko4zoHIAKjR8hVRD8luyiCAX0CTBoZ6di3l
+         Fss62GBxaUyhug+5slC4ag37lc2ZVL+tjuRlewldW4ivRIeP9kDTCIyZ1bI78MWg8Z6h
+         65BQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=K3xmyrvrabuXSa2GxlZvZmaD6t80A1dyvYqPOhLAPUM=;
-        b=dvCPq9KpdKPDnXEbCCMeTaa3KOwgVZFDEwXjtNkge9nGx1z95m2vjZFUSVojHz7GkD
-         89BRVuSu47C+85lNg+8SCbC942sfdPB81vRDyk4JibQM9uVh3h6/d4JIqbTzK7GgJSUk
-         oPtm4fn1VqsSMj8LCvQWHi/YpRfy1cqmtx2TNZzi6HP7dKJx59mDG1vP4fOCrX+aV5O2
-         fx0FGCw1jGLDOZLecfgUP+KXt+7dbwSeuzPogLkjft3LZrTk6ARMIBQ0LFH2yS4v2wbG
-         UEIqusD1HR90+Ddg/S/digls3BdiSMiOxcZBrvsK07S342AiqLcMZPERXtMTdU9tEItP
-         9V+A==
-X-Gm-Message-State: AOAM533Sa+KiItujwR7Xqvz7YlgsqlEuW7gDj2NuVaxCLO0pxSSIFTuU
-        MVboRNe+JftxQn37w1SEve6NAR6nahc=
-X-Google-Smtp-Source: ABdhPJyusmCMK0AKn6uPpwooU95/JwT12ECQEMAz6V9wWAtpyb1pppPtecoJeDB08kJMwWDfo1daKg==
-X-Received: by 2002:a05:6a00:d63:b0:44d:186d:c4c0 with SMTP id n35-20020a056a000d6300b0044d186dc4c0mr1946966pfv.47.1634164353246;
-        Wed, 13 Oct 2021 15:32:33 -0700 (PDT)
+        bh=2sn0l15EeXVjYYIzqdi92hRykDGSnNV5xCLLrC1tcLE=;
+        b=77dRMNXmKEQhuQ1VJ9OicWLDSsWXbYbxNzN0WWUYixczi8ZpDzyACwI3g074/y7OtP
+         LL8o32LXMLB4LoiG6Zqe6UBkTo4IrDEy3AcxCFWc+ag7zra/5tDQqKaoTcCLiJ/TSmVD
+         DuuAK9E8R2NhhxxZNQlfCFEb0YvbH+xskN1Kltc3ght/jmZ0gPwa/BZl11btiShNh7ba
+         68X0kv2ial8wsA3ab2pZ9yeGTTVPlPewRdvJ27xUlh5AA9SfGWz33HhIGSHyo7pxvuj/
+         /h32K0J2KdtjhFouOQ96UKdClOSsOPAAlcekd+ZtgGE3WU2BdZu45yBeXQunSi63nuDu
+         fxVw==
+X-Gm-Message-State: AOAM531bybk4RX/rwP9JsYDfK4TOIg5B0l+x0KqiyYD9rf8XPlB5pLNo
+        Jlf86p4JPNIeg9bP/3E1+nqqCK8MaKc=
+X-Google-Smtp-Source: ABdhPJzm6oaScbf6gzJrBMLHzKVrgjBIr0VrkVu9nj3TeAlhCj5RB6AXBe+LHQCNF7pyxV1iQlUtrw==
+X-Received: by 2002:a17:902:8a83:b0:13d:9572:86c2 with SMTP id p3-20020a1709028a8300b0013d957286c2mr1775156plo.48.1634164354019;
+        Wed, 13 Oct 2021 15:32:34 -0700 (PDT)
 Received: from localhost.localdomain ([50.39.163.188])
-        by smtp.gmail.com with ESMTPSA id i2sm6546091pjt.19.2021.10.13.15.32.32
+        by smtp.gmail.com with ESMTPSA id i2sm6546091pjt.19.2021.10.13.15.32.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Oct 2021 15:32:32 -0700 (PDT)
+        Wed, 13 Oct 2021 15:32:33 -0700 (PDT)
 From:   James Prestwood <prestwoj@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     James Prestwood <prestwoj@gmail.com>
-Subject: [PATCH 3/4] doc: networking: document arp_evict_nocarrier
-Date:   Wed, 13 Oct 2021 15:27:09 -0700
-Message-Id: <20211013222710.4162634-3-prestwoj@gmail.com>
+Subject: [PATCH 4/4] doc: networking: document ndisc_evict_nocarrier
+Date:   Wed, 13 Oct 2021 15:27:10 -0700
+Message-Id: <20211013222710.4162634-4-prestwoj@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211013222710.4162634-1-prestwoj@gmail.com>
 References: <20211013222710.4162634-1-prestwoj@gmail.com>
@@ -68,25 +68,25 @@ Signed-off-by: James Prestwood <prestwoj@gmail.com>
  1 file changed, 9 insertions(+)
 
 diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index c2ecc9894fd0..174d9d3ee5c2 100644
+index 174d9d3ee5c2..7bac67a2f6d7 100644
 --- a/Documentation/networking/ip-sysctl.rst
 +++ b/Documentation/networking/ip-sysctl.rst
-@@ -1565,6 +1565,15 @@ arp_accept - BOOLEAN
- 	gratuitous arp frame, the arp table will be updated regardless
- 	if this setting is on or off.
+@@ -2258,6 +2258,15 @@ ndisc_tclass - INTEGER
  
-+arp_evict_nocarrier - BOOLEAN
-+	Clears the ARP cache on NOCARRIER events. This option is important for
-+	wireless devices where the ARP cache should not be cleared when roaming
-+	between access points on the same network. In most cases this should
-+	remain as the default (1).
+ 	* 0 - (default)
+ 
++ndisc_evict_nocarrier - BOOLEAN
++	Clears the neighbor discovery table on NOCARRIER events. This option is
++	important for wireless devices where the neighbor discovery cache should
++	not be cleared when roaming between access points on the same network.
++	In most cases this should remain as the default (1).
 +
-+	- 1 - (default): Clear the ARP cache on NOCARRIER events
-+	- 0 - Do not clear ARP cache on NOCARRIER events
++	- 1 - (default): Clear neighbor discover cache on NOCARRIER events.
++	- 0 - Do not clear neighbor discovery cache on NOCARRIER events.
 +
- mcast_solicit - INTEGER
- 	The maximum number of multicast probes in INCOMPLETE state,
- 	when the associated hardware address is unknown.  Defaults
+ mldv1_unsolicited_report_interval - INTEGER
+ 	The interval in milliseconds in which the next unsolicited
+ 	MLDv1 report retransmit will take place.
 -- 
 2.31.1
 
