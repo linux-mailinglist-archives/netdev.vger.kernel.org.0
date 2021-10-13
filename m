@@ -2,153 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1FEE42C186
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 15:36:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66B5642C1DA
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 15:57:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233884AbhJMNiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 09:38:06 -0400
-Received: from www62.your-server.de ([213.133.104.62]:59648 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233901AbhJMNiD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 09:38:03 -0400
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1maeQI-000B9f-8W; Wed, 13 Oct 2021 15:35:58 +0200
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux.fritz.box)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1maeQH-0002T3-Rr; Wed, 13 Oct 2021 15:35:57 +0200
-Subject: Re: [syzbot] BUG: corrupted list in netif_napi_add
-To:     syzbot <syzbot+62e474dd92a35e3060d8@syzkaller.appspotmail.com>,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
-References: <0000000000005639cd05ce3a6d4d@google.com>
-Cc:     pabeni@redhat.com, toke@toke.dk, joamaki@gmail.com
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <f821df00-b3e9-f5a8-3dcb-a235dd473355@iogearbox.net>
-Date:   Wed, 13 Oct 2021 15:35:57 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <0000000000005639cd05ce3a6d4d@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26321/Wed Oct 13 10:21:20 2021)
+        id S233241AbhJMN73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 09:59:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42002 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229794AbhJMN72 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 09:59:28 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 727FAC061570
+        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 06:57:25 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id r134so3058967iod.11
+        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 06:57:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=zH9iLVZeYc3T/1I0i4gfF2z69XUZS+8cTQ9a+77tSlA=;
+        b=W6IP04V7/XemvrA3m4cQhGGZeBRhMbWCY8Aos8bg0ay35+YB/fsdJAK5IhukXo4FT+
+         2YkUX8v/fMPQA5Ad3nH5KszGtBktHXAx7EGMvZVkP20wz/A78XnM5liLZA0jdhSneIrK
+         kQo6BwQwSWRIq/a9Z845kXMs0I8WmU6itFG/PrfqC8/78Pq5NfnmO/p/XnHViyxGkUwu
+         nK+s3oNmiQh28dBV4c0NOKskOhS/liAviPec+9urqi0v0L6sdIwkKgp2obeFHqtfei/l
+         B9IOBrr+Kju7S3cSPBwfd2odcwKPbEuw8bhZn2dcdbVqjG2wyTYtSRbhKdox6TT4w6gW
+         t8DQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=zH9iLVZeYc3T/1I0i4gfF2z69XUZS+8cTQ9a+77tSlA=;
+        b=4CeG35pvzlFwd6m53uvFpcdZ45hJeHt0mQ5uNYo+s4ksbwZjqck27VQFFrM8MgjgMr
+         JMW+hh82+aLerzY2BIgWJoN+e39lGEQpO1NDHnBG6BIQV5vt7HKZT0zaJ1hL8kbr4pXU
+         IkJqf9rXmcvuu02gLreTpm/nD7ApQenYq9EvtxsBuXCLI+wbKWbvYffqnUhawLVIBflo
+         wCaacsBTkFHl7H0QgKJ1Lb9YjTciHxuBAYq1QqxChHIE93Y8DfvZLqCMJXc6izNpABTD
+         76Erzgoz0RP/kg6Q1ZvRQN0KAKMDRxNUSvW22K2thAGqOz4xdZ3ZKxW/kT3ZoFDLE+u7
+         DqKA==
+X-Gm-Message-State: AOAM532Wap1TGONOZfWaeeUdcIengtEypLT2hDd8akZKHF4zV9bWLHzI
+        LLneh0wyb3kbUmB57rD6qMg=
+X-Google-Smtp-Source: ABdhPJwW4EvHHRL/0uwUUvoMM8INp2X8/ZXq/nAntgg9pzps2QvP8KH8by/5wbOCDqKVtegG2RM7oQ==
+X-Received: by 2002:a6b:cd8b:: with SMTP id d133mr31037888iog.88.1634133444754;
+        Wed, 13 Oct 2021 06:57:24 -0700 (PDT)
+Received: from localhost ([172.243.157.240])
+        by smtp.gmail.com with ESMTPSA id h7sm6978213ils.0.2021.10.13.06.57.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Oct 2021 06:57:24 -0700 (PDT)
+Date:   Wed, 13 Oct 2021 06:57:16 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jun Miao <jun.miao@windriver.com>, john.fastabend@gmail.com,
+        cong.wang@bytedance.com
+Cc:     netdev@vger.kernel.org
+Message-ID: <6166e5bcda91c_48c5d20882@john-XPS-13-9370.notmuch>
+In-Reply-To: <f733db94-c75f-2091-4bae-c99daa5a555d@windriver.com>
+References: <f733db94-c75f-2091-4bae-c99daa5a555d@windriver.com>
+Subject: RE: Bug Report:bpf, sockmap: On cleanup we additionally need to
+ remove cached skb
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/13/21 1:40 PM, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
+Jun Miao wrote:
+> Hi,
+> =
 
-[ +Paolo/Toke wrt veth/XDP, +Jussi wrt bond/XDP, please take a look, thanks! ]
+>  =C2=A0 From our netperf stress test with your patch, the Call trace st=
+ill =
 
-> HEAD commit:    683f29b781ae Add linux-next specific files for 20211008
-> git tree:       linux-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1525a614b00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=673b3589d970c
-> dashboard link: https://syzkaller.appspot.com/bug?extid=62e474dd92a35e3060d8
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17c98e98b00000
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+62e474dd92a35e3060d8@syzkaller.appspotmail.com
-> 
-> IPv6: ADDRCONF(NETDEV_CHANGE): vcan0: link becomes ready
-> list_add double add: new=ffff888023417160, prev=ffff88807de3a050, next=ffff888023417160.
-> ------------[ cut here ]------------
-> kernel BUG at lib/list_debug.c:29!
-> invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-> CPU: 0 PID: 9490 Comm: syz-executor.1 Not tainted 5.15.0-rc4-next-20211008-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:__list_add_valid.cold+0x26/0x3c lib/list_debug.c:29
-> Code: b1 24 c3 fa 4c 89 e1 48 c7 c7 60 56 04 8a e8 f2 8c f1 ff 0f 0b 48 89 f2 4c 89 e1 48 89 ee 48 c7 c7 a0 57 04 8a e8 db 8c f1 ff <0f> 0b 48 89 f1 48 c7 c7 20 57 04 8a 4c 89 e6 e8 c7 8c f1 ff 0f 0b
-> RSP: 0018:ffffc90002c26a48 EFLAGS: 00010286
-> RAX: 0000000000000058 RBX: 0000000000000040 RCX: 0000000000000000
-> RDX: ffff888023263a00 RSI: ffffffff815e0d78 RDI: fffff52000584d3b
-> RBP: ffff888023417160 R08: 0000000000000058 R09: 0000000000000000
-> R10: ffffffff815dab5e R11: 0000000000000000 R12: ffff888023417160
-> R13: ffff888023417000 R14: ffff888023417160 R15: ffff888023417160
-> FS:  00007f841e9e8700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000000000000 CR3: 00000000601bd000 CR4: 00000000003506f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->   <TASK>
->   __list_add_rcu include/linux/rculist.h:79 [inline]
->   list_add_rcu include/linux/rculist.h:106 [inline]
->   netif_napi_add+0x3fd/0x9c0 net/core/dev.c:6889
->   veth_enable_xdp_range+0x1b1/0x300 drivers/net/veth.c:1009
->   veth_enable_xdp+0x2a5/0x620 drivers/net/veth.c:1063
->   veth_xdp_set drivers/net/veth.c:1483 [inline]
->   veth_xdp+0x4d4/0x780 drivers/net/veth.c:1523
->   bond_xdp_set drivers/net/bonding/bond_main.c:5217 [inline]
->   bond_xdp+0x325/0x920 drivers/net/bonding/bond_main.c:5263
->   dev_xdp_install+0xd5/0x270 net/core/dev.c:9365
->   dev_xdp_attach+0x83d/0x1010 net/core/dev.c:9513
->   dev_change_xdp_fd+0x246/0x300 net/core/dev.c:9753
->   do_setlink+0x2fb4/0x3970 net/core/rtnetlink.c:2931
->   rtnl_group_changelink net/core/rtnetlink.c:3242 [inline]
->   __rtnl_newlink+0xc06/0x1750 net/core/rtnetlink.c:3396
->   rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3506
->   rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5572
->   netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2491
->   netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
->   netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1345
->   netlink_sendmsg+0x86d/0xda0 net/netlink/af_netlink.c:1916
->   sock_sendmsg_nosec net/socket.c:704 [inline]
->   sock_sendmsg+0xcf/0x120 net/socket.c:724
->   ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
->   ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
->   __sys_sendmsg+0xe5/0x1b0 net/socket.c:2492
->   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->   do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->   entry_SYSCALL_64_after_hwframe+0x44/0xae
-> RIP: 0033:0x7f841f2718d9
-> Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007f841e9e8188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-> RAX: ffffffffffffffda RBX: 00007f841f375f60 RCX: 00007f841f2718d9
-> RDX: 0000000000000000 RSI: 0000000020000140 RDI: 0000000000000003
-> RBP: 00007f841f2cbcb4 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007ffc8978d37f R14: 00007f841e9e8300 R15: 0000000000022000
->   </TASK>
-> Modules linked in:
-> ---[ end trace 7281cadbc8534f23 ]---
-> RIP: 0010:__list_add_valid.cold+0x26/0x3c lib/list_debug.c:29
-> Code: b1 24 c3 fa 4c 89 e1 48 c7 c7 60 56 04 8a e8 f2 8c f1 ff 0f 0b 48 89 f2 4c 89 e1 48 89 ee 48 c7 c7 a0 57 04 8a e8 db 8c f1 ff <0f> 0b 48 89 f1 48 c7 c7 20 57 04 8a 4c 89 e6 e8 c7 8c f1 ff 0f 0b
-> RSP: 0018:ffffc90002c26a48 EFLAGS: 00010286
-> RAX: 0000000000000058 RBX: 0000000000000040 RCX: 0000000000000000
-> RDX: ffff888023263a00 RSI: ffffffff815e0d78 RDI: fffff52000584d3b
-> RBP: ffff888023417160 R08: 0000000000000058 R09: 0000000000000000
-> R10: ffffffff815dab5e R11: 0000000000000000 R12: ffff888023417160
-> R13: ffff888023417000 R14: ffff888023417160 R15: ffff888023417160
-> FS:  00007f841e9e8700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000000000000 CR3: 00000000601bd000 CR4: 00000000003506f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> 
-> 
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> syzbot can test patches for this issue, for details see:
-> https://goo.gl/tpsmEJ#testing-patches
-> 
+> can reproduce, as follow:
 
+Hi Jun,
+
+Is this testing with sockmap and BPF? If not I can't see how the above
+patch is the correct bisection. That patch touches internals of skmsg
+handling in a specific backlog case which would only be used in BPF
+use case.
+
+Thanks,
+John
+
+
+> =
+
+> *Test Log:*
+> =
+
+> [ 6405.990626] Writes:  Total: 12095025292  Max/Min: 379145540/23752721=
+2   Fail: 0
+> [ 6436.970251] ------------[ cut here ]------------
+> [ 6436.975016] WARNING: CPU: 0 PID: 42336 at net/core/stream.c:207 sk_s=
+tream_kill_queues+0x11a/0x140
+> [ 6436.984044] Modules linked in: i10nm_edac iTCO_wdt intel_pmc_bxt iTC=
+O_vendor_support intel_rapl_msr watchdog intel_rapl_common intel_th_gth x=
+86_pkg_temp_thermal intel_powerclamp coretemp crct10dif_pclmul crct10dif_=
+common aesni_intel crypto_simd cryptd qat_c4xxx(O) intel_qat(O) dh_generi=
+c uio intel_spi_pci intel_spi intel_th_pci ice i2c_i801 spi_nor intel_th =
+i2c_smbus i2c_ismt wmi acpi_cpufreq sch_fq_codel openvswitch nsh nf_connc=
+ount nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 fuse [last unloade=
+d: i10nm_edac]
+> [ 6437.029831] CPU: 0 PID: 42336 Comm: netperf Tainted: G        W  O  =
+    5.15.0-rc3 #1
+> [ 6437.039374] Hardware name: Intel Corporation JACOBSVILLE/JACOBSVILLE=
+, BIOS JBVLCRB2.86B.0014.P67.2103111848 03/11/2021
+> [ 6437.050212] RIP: 0010:sk_stream_kill_queues+0x11a/0x140
+> [ 6437.055581] Code: 93 90 02 00 00 85 d2 75 21 8b 83 48 02 00 00 85 c0=
+ 75 23 5b 41 5c 5d c3 48 89 df e8 10 d1 fe ff 8b 93 90 02 00 00 85 d2 74 =
+df <0f> 0b 8b 83 48 02 00 00 85 c0 74 dd 0f 0b 5b 41 5c 5d c3 0f 0b eb
+> [ 6437.074492] RSP: 0018:ffffac32425d7d90 EFLAGS: 00010282
+> [ 6437.079861] RAX: ffffffff9931cfc0 RBX: ffff9cd4eda58d40 RCX: 0000000=
+000000000
+> [ 6437.087139] RDX: 00000000fffffb80 RSI: 0000000000000480 RDI: ffff9cd=
+4eda58ea8
+> [ 6437.094424] RBP: ffffac32425d7da0 R08: 0000000000000000 R09: 0000000=
+000000000
+> [ 6437.101705] R10: 0000000000000000 R11: 0000000000000000 R12: ffff9cd=
+4eda58ea8
+> [ 6437.108986] R13: ffff9cd4eda58dc8 R14: 0000000000000000 R15: ffff9cd=
+57079d230
+> [ 6437.116263] FS:  00007fe132d96740(0000) GS:ffff9ce3ba200000(0000) kn=
+lGS:0000000000000000
+> [ 6437.124498] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [ 6437.130385] CR2: 0000556041d81128 CR3: 0000000165aa4000 CR4: 0000000=
+000350ef0
+> [ 6437.137668] Call Trace:
+> [ 6437.140259]  inet_csk_destroy_sock+0x64/0x150
+> [ 6437.144762]  __tcp_close+0x3b2/0x4e0
+> [ 6437.148484]  tcp_close+0x25/0x80
+> [ 6437.151858]  inet_release+0x4d/0x90
+> [ 6437.155494]  __sock_release+0x3f/0xb0
+> [ 6437.159305]  sock_close+0x18/0x20
+> [ 6437.162765]  __fput+0xb0/0x280
+> [ 6437.165967]  ____fput+0xe/0x10
+> [ 6437.169167]  task_work_run+0x61/0xb0
+> [ 6437.172889]  exit_to_user_mode_loop+0x114/0x120
+> [ 6437.177568]  exit_to_user_mode_prepare+0xe9/0x150
+> [ 6437.182421]  syscall_exit_to_user_mode+0x1e/0x60
+> [ 6437.187183]  do_syscall_64+0x50/0x90
+> [ 6437.190904]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> [ 6437.196097] RIP: 0033:0x7fe132e950c7
+> [ 6437.199820] Code: b8 ff ff ff ff e9 3e ff ff ff 66 0f 1f 84 00 00 00=
+ 00 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 03 00 00 00 0f =
+05 <48> 3d 00 f0 ff ff 77 41 c3 48 83 ec 18 89 7c 24 0c e8 33 b1 f8 ff
+> [ 6437.218732] RSP: 002b:00007fffc46df2c8 EFLAGS: 00000246 ORIG_RAX: 00=
+00000000000003
+> [ 6437.226449] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007fe=
+132e950c7
+> [ 6437.233727] RDX: 0000000000000001 RSI: 00007fffc46df2e4 RDI: 0000000=
+000000004
+> [ 6437.241007] RBP: 0000000000000004 R08: 0000000000000000 R09: 0000000=
+000000000
+> [ 6437.248286] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000=
+000000001
+> [ 6437.255565] R13: 0000000000000001 R14: 0000000000000000 R15: 0000559=
+ace3650c0
+> [ 6437.262847] irq event stamp: 0
+> [ 6437.266049] hardirqs last  enabled at (0): [<0000000000000000>] 0x0
+> [ 6437.272463] hardirqs last disabled at (0): [<ffffffff96d134fd>] copy=
+_process+0x74d/0x18a0
+> [ 6437.280786] softirqs last  enabled at (0): [<ffffffff96d134fd>] copy=
+_process+0x74d/0x18a0
+> [ 6437.289109] softirqs last disabled at (0): [<0000000000000000>] 0x0
+> [ 6437.295524] ---[ end trace 42c5ce4ee9dd57c1 ]---
+
+[...]=
