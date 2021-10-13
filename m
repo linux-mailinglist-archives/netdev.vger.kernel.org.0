@@ -2,303 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FEAC42BEF6
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 13:34:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4044E42BF13
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 13:40:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232079AbhJMLgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 07:36:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43820 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229535AbhJMLgB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Oct 2021 07:36:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A11E861056;
-        Wed, 13 Oct 2021 11:33:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634124838;
-        bh=HQKsM5+JxN3z7fyOH4PY/6KtY66RH98iqwIkPpr7pp4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=UShiO4p2ZNEqVxTuBk6kFbR2B00UaMlAvlLYQnZahYzzR2pWxODYirJ55Ppvc4wcb
-         TbsHJjV6yBuou71KQ85auBUjZSwjeGda875UjLN7pwgf34k/EH2knu8OabkXl897I6
-         d38KzzByzeedoIWV/dOugDUDl6DilZq//3uEMWjKd9CwvbS4Qozhkn8DshWNKQBTv1
-         2O/FPQuHxfdQqcncfqcRRrj5kN+rqJ+5UArlW1uDTv4ePzGur9CO7NwFRq4T1/KEQq
-         aWFCcH5AR4qBg0rsV6uekaLWSPeuu9SbuPW4oDnE1b1kYx2Q3hiZfUMs5RsbVbgQOk
-         /xhQrHdqpvXyQ==
-Date:   Wed, 13 Oct 2021 06:33:56 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Andrew Donnellan <ajd@linux.ibm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Fiona Trahe <fiona.trahe@intel.com>,
-        Frederic Barrat <fbarrat@linux.ibm.com>,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ido Schimmel <idosch@nvidia.com>,
-        Ingo Molnar <mingo@redhat.com>, Jack Xu <jack.xu@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jiri Olsa <jolsa@redhat.com>, Jiri Pirko <jiri@nvidia.com>,
-        Juergen Gross <jgross@suse.com>,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        Marco Chiappero <marco.chiappero@intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Michael Buesch <m@bues.ch>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Oliver O'Halloran <oohall@gmail.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Russell Currey <ruscur@russell.cc>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Sathya Prakash <sathya.prakash@broadcom.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Suganath Prabu Subramani 
-        <suganath-prabu.subramani@broadcom.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tomaszx Kowalik <tomaszx.kowalik@intel.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Wojciech Ziemba <wojciech.ziemba@intel.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Zhou Wang <wangzhou1@hisilicon.com>,
-        linux-crypto <linux-crypto@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-perf-users@vger.kernel.org,
-        "open list:LINUX FOR POWERPC PA SEMI PWRFICIENT" 
-        <linuxppc-dev@lists.ozlabs.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        USB <linux-usb@vger.kernel.org>,
-        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        MPT-FusionLinux.pdl@broadcom.com, netdev <netdev@vger.kernel.org>,
-        oss-drivers@corigine.com, qat-linux@intel.com,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        xen-devel@lists.xenproject.org
-Subject: Re: [PATCH v6 00/11] PCI: Drop duplicated tracking of a pci_dev's
- bound driver
-Message-ID: <20211013113356.GA1891412@bhelgaas>
+        id S230158AbhJMLmZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 07:42:25 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:49781 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229664AbhJMLmY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 07:42:24 -0400
+Received: by mail-il1-f200.google.com with SMTP id e10-20020a92194a000000b00258acd999afso1380364ilm.16
+        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 04:40:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=SB9IPDSfjtSY2Vj2VJmHJrw1P1v8HF1L8QnrpBqns8M=;
+        b=Prvt65x9+Di5QwGGVzxBsiXEx5Dx4W72XqEz9TQWa6IqiHYnA1yoXUoOmgf3bBfTJP
+         dgr8bwgfMp+txFHCcpwj4Duw7EA6tP1Fpi/vwWhIeicnpvkXUSAl7qUZeQIp1es/snNT
+         CCmKoTX0NIVXaR6vRpasPXFGfclPyqLZKayEQcgCd1zoV3smMlaYzltKBnmciZM8TRXw
+         RzvgmRs2vR9VJcvFxzjWqDpceGwQcJWA/s+15My6h6hoNm5+y8f4UUI24EziQQ929FlC
+         ZjNKbBRMIdyFJPz+cD4YztXGd1CjrGjxZ7hA1OnjqWSM90pxSlGyqFbqkv/K9gMSSmgV
+         x5xw==
+X-Gm-Message-State: AOAM530FItrDl0oDrTQXCHxjVGTyAtXCPm4H69lYKpd71XKr3Tc61R+g
+        2edV2FKVWNAdgKOvd2ijLYtm+uF/WUHlFkHu7JG74bJPG0jg
+X-Google-Smtp-Source: ABdhPJyUNhYOY8K5eaDeWjzC+bAVRTWqNr5hy0FJlN8eDbHMaqFymA5rolaTf90yt/ItBRwBEFjsP12ertCY2mRp6lDCElwstZ2F
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHp75Vd0uYEdfB0XaQuUV34V91qJdHR5ARku1hX_TCJLJHEjxQ@mail.gmail.com>
+X-Received: by 2002:a05:6e02:6c2:: with SMTP id p2mr17916421ils.104.1634125221343;
+ Wed, 13 Oct 2021 04:40:21 -0700 (PDT)
+Date:   Wed, 13 Oct 2021 04:40:21 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005639cd05ce3a6d4d@google.com>
+Subject: [syzbot] BUG: corrupted list in netif_napi_add
+From:   syzbot <syzbot+62e474dd92a35e3060d8@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 13, 2021 at 12:26:42PM +0300, Andy Shevchenko wrote:
-> On Wed, Oct 13, 2021 at 2:33 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > On Mon, Oct 04, 2021 at 02:59:24PM +0200, Uwe Kleine-König wrote:
-> 
-> > I split some of the bigger patches apart so they only touched one
-> > driver or subsystem at a time.  I also updated to_pci_driver() so it
-> > returns NULL when given NULL, which makes some of the validations
-> > quite a bit simpler, especially in the PM code in pci-driver.c.
-> 
-> It's a bit unusual. Other to_*_dev() are not NULL-aware IIRC.
+Hello,
 
-It is a little unusual.  I only found three of 77 that are NULL-aware:
+syzbot found the following issue on:
 
-  to_moxtet_driver()
-  to_siox_driver()
-  to_spi_driver()
+HEAD commit:    683f29b781ae Add linux-next specific files for 20211008
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1525a614b00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=673b3589d970c
+dashboard link: https://syzkaller.appspot.com/bug?extid=62e474dd92a35e3060d8
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17c98e98b00000
 
-It seems worthwhile to me because it makes the patch and the resulting
-code significantly cleaner.  Here's one example without the NULL
-check:
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+62e474dd92a35e3060d8@syzkaller.appspotmail.com
 
-  @@ -493,12 +493,15 @@ static void pci_device_remove(struct device *dev)
-   static void pci_device_shutdown(struct device *dev)
-   {
-          struct pci_dev *pci_dev = to_pci_dev(dev);
-  -       struct pci_driver *drv = pci_dev->driver;
+IPv6: ADDRCONF(NETDEV_CHANGE): vcan0: link becomes ready
+list_add double add: new=ffff888023417160, prev=ffff88807de3a050, next=ffff888023417160.
+------------[ cut here ]------------
+kernel BUG at lib/list_debug.c:29!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 9490 Comm: syz-executor.1 Not tainted 5.15.0-rc4-next-20211008-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:__list_add_valid.cold+0x26/0x3c lib/list_debug.c:29
+Code: b1 24 c3 fa 4c 89 e1 48 c7 c7 60 56 04 8a e8 f2 8c f1 ff 0f 0b 48 89 f2 4c 89 e1 48 89 ee 48 c7 c7 a0 57 04 8a e8 db 8c f1 ff <0f> 0b 48 89 f1 48 c7 c7 20 57 04 8a 4c 89 e6 e8 c7 8c f1 ff 0f 0b
+RSP: 0018:ffffc90002c26a48 EFLAGS: 00010286
+RAX: 0000000000000058 RBX: 0000000000000040 RCX: 0000000000000000
+RDX: ffff888023263a00 RSI: ffffffff815e0d78 RDI: fffff52000584d3b
+RBP: ffff888023417160 R08: 0000000000000058 R09: 0000000000000000
+R10: ffffffff815dab5e R11: 0000000000000000 R12: ffff888023417160
+R13: ffff888023417000 R14: ffff888023417160 R15: ffff888023417160
+FS:  00007f841e9e8700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000000 CR3: 00000000601bd000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ __list_add_rcu include/linux/rculist.h:79 [inline]
+ list_add_rcu include/linux/rculist.h:106 [inline]
+ netif_napi_add+0x3fd/0x9c0 net/core/dev.c:6889
+ veth_enable_xdp_range+0x1b1/0x300 drivers/net/veth.c:1009
+ veth_enable_xdp+0x2a5/0x620 drivers/net/veth.c:1063
+ veth_xdp_set drivers/net/veth.c:1483 [inline]
+ veth_xdp+0x4d4/0x780 drivers/net/veth.c:1523
+ bond_xdp_set drivers/net/bonding/bond_main.c:5217 [inline]
+ bond_xdp+0x325/0x920 drivers/net/bonding/bond_main.c:5263
+ dev_xdp_install+0xd5/0x270 net/core/dev.c:9365
+ dev_xdp_attach+0x83d/0x1010 net/core/dev.c:9513
+ dev_change_xdp_fd+0x246/0x300 net/core/dev.c:9753
+ do_setlink+0x2fb4/0x3970 net/core/rtnetlink.c:2931
+ rtnl_group_changelink net/core/rtnetlink.c:3242 [inline]
+ __rtnl_newlink+0xc06/0x1750 net/core/rtnetlink.c:3396
+ rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3506
+ rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5572
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2491
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x86d/0xda0 net/netlink/af_netlink.c:1916
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:724
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2492
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f841f2718d9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f841e9e8188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f841f375f60 RCX: 00007f841f2718d9
+RDX: 0000000000000000 RSI: 0000000020000140 RDI: 0000000000000003
+RBP: 00007f841f2cbcb4 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffc8978d37f R14: 00007f841e9e8300 R15: 0000000000022000
+ </TASK>
+Modules linked in:
+---[ end trace 7281cadbc8534f23 ]---
+RIP: 0010:__list_add_valid.cold+0x26/0x3c lib/list_debug.c:29
+Code: b1 24 c3 fa 4c 89 e1 48 c7 c7 60 56 04 8a e8 f2 8c f1 ff 0f 0b 48 89 f2 4c 89 e1 48 89 ee 48 c7 c7 a0 57 04 8a e8 db 8c f1 ff <0f> 0b 48 89 f1 48 c7 c7 20 57 04 8a 4c 89 e6 e8 c7 8c f1 ff 0f 0b
+RSP: 0018:ffffc90002c26a48 EFLAGS: 00010286
+RAX: 0000000000000058 RBX: 0000000000000040 RCX: 0000000000000000
+RDX: ffff888023263a00 RSI: ffffffff815e0d78 RDI: fffff52000584d3b
+RBP: ffff888023417160 R08: 0000000000000058 R09: 0000000000000000
+R10: ffffffff815dab5e R11: 0000000000000000 R12: ffff888023417160
+R13: ffff888023417000 R14: ffff888023417160 R15: ffff888023417160
+FS:  00007f841e9e8700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000000 CR3: 00000000601bd000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
-          pm_runtime_resume(dev);
 
-  -       if (drv && drv->shutdown)
-  -               drv->shutdown(pci_dev);
-  +       if (pci_dev->dev.driver) {
-  +               struct pci_driver *drv = to_pci_driver(pci_dev->dev.driver);
-  +
-  +               if (drv->shutdown)
-  +                       drv->shutdown(pci_dev);
-  +       }
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-  static void pci_device_shutdown(struct device *dev)
-  {
-    struct pci_dev *pci_dev = to_pci_dev(dev);
-
-    pm_runtime_resume(dev);
-
-    if (pci_dev->dev.driver) {
-      struct pci_driver *drv = to_pci_driver(pci_dev->dev.driver);
-
-      if (drv->shutdown)
-        drv->shutdown(pci_dev);
-    }
-
-and here's the same thing with the NULL check:
-
-  @@ -493,7 +493,7 @@ static void pci_device_remove(struct device *dev)
-   static void pci_device_shutdown(struct device *dev)
-   {
-          struct pci_dev *pci_dev = to_pci_dev(dev);
-  -       struct pci_driver *drv = pci_dev->driver;
-  +       struct pci_driver *drv = to_pci_driver(dev->driver);
-
-  static void pci_device_shutdown(struct device *dev)
-  {
-    struct pci_dev *pci_dev = to_pci_dev(dev);
-    struct pci_driver *drv = to_pci_driver(dev->driver);
-
-    pm_runtime_resume(dev);
-
-    if (drv && drv->shutdown)
-      drv->shutdown(pci_dev);
-
-> >  static bool match_id(struct pci_dev *pdev, unsigned short vendor, unsigned short device)
-> >  {
-> > +       struct pci_driver *drv = to_pci_driver(pdev->dev.driver);
-> >         const struct pci_device_id *id;
-> >
-> >         if (pdev->vendor == vendor && pdev->device == device)
-> >                 return true;
-> 
-> > +       for (id = drv ? drv->id_table : NULL; id && id->vendor; id++)
-> > +               if (id->vendor == vendor && id->device == device)
-> 
-> > +                       break;
-> 
-> return true;
-> 
-> >         return id && id->vendor;
-> 
-> return false;
-
-Good cleanup for a follow-up patch, but doesn't seem directly related
-to the objective here.  The current patch is:
-
-  @@ -80,7 +80,7 @@ static struct resource video_rom_resource = {
-    */
-   static bool match_id(struct pci_dev *pdev, unsigned short vendor, unsigned short device)
-   {
-  -       struct pci_driver *drv = pdev->driver;
-  +       struct pci_driver *drv = to_pci_driver(pdev->dev.driver);
-          const struct pci_device_id *id;
-
-          if (pdev->vendor == vendor && pdev->device == device)
-
-> >         device_lock(&vf_dev->dev);
-> > -       if (vf_dev->dev.driver) {
-> > +       if (to_pci_driver(vf_dev->dev.driver)) {
-> 
-> Hmm...
-
-Yeah, it could be either of:
-
-  if (to_pci_driver(vf_dev->dev.driver))
-  if (vf_dev->dev.driver)
-
-I went back and forth on that and went with to_pci_driver() on the
-theory that we were testing the pci_driver * before and the patch is
-more of a mechanical change and easier to review if we test the
-pci_driver * after.
-
-> > +               if (!pci_dev->state_saved && pci_dev->current_state != PCI_D0
-> 
-> > +                   && pci_dev->current_state != PCI_UNKNOWN) {
-> 
-> Can we keep && on the previous line?
-
-I think this is in pci_legacy_suspend(), and I didn't touch that line.
-It shows up in the interdiff because without the NULL check in
-to_pci_driver(), we had to indent this code another level.  With the
-NULL check, we don't need that extra indentation.
-
-> > +                       pci_WARN_ONCE(pci_dev, pci_dev->current_state != prev,
-> > +                                     "PCI PM: Device state not saved by %pS\n",
-> > +                                     drv->suspend);
-> >                 }
-> 
-> ...
-> 
-> > +       return drv && drv->resume ?
-> > +                       drv->resume(pci_dev) : pci_pm_reenable_device(pci_dev);
-> 
-> One line?
-
-I don't think I touched that line.
-
-> > +       struct pci_driver *drv = to_pci_driver(dev->dev.driver);
-> >         const struct pci_error_handlers *err_handler =
-> > -                       dev->dev.driver ? to_pci_driver(dev->dev.driver)->err_handler : NULL;
-> > +                       drv ? drv->err_handler : NULL;
-> 
-> Isn't dev->driver == to_pci_driver(dev->dev.driver)?
-
-Yes, I think so, but not sure what you're getting at here, can you
-elaborate?
-
-> >         device_lock(&dev->dev);
-> > +       pdrv = to_pci_driver(dev->dev.driver);
-> >         if (!pci_dev_set_io_state(dev, state) ||
-> > -               !dev->dev.driver ||
-> > -               !(pdrv = to_pci_driver(dev->dev.driver))->err_handler ||
-> 
-> > +               !pdrv ||
-> > +               !pdrv->err_handler ||
-> 
-> One line now?
-> 
-> >                 !pdrv->err_handler->error_detected) {
-> 
-> Or this and the previous line?
-
-Could, but the "dev->driver" to "to_pci_driver(dev->dev.driver)"
-changes are the heart of this patch, and I don't like to clutter it
-with unrelated changes.
-
-> > -       result = PCI_ERS_RESULT_NONE;
-> >
-> >         pcidev = pci_get_domain_bus_and_slot(domain, bus, devfn);
-> >         if (!pcidev || !pcidev->dev.driver) {
-> >                 dev_err(&pdev->xdev->dev, "device or AER driver is NULL\n");
-> >                 pci_dev_put(pcidev);
-> > -               return result;
-> > +               return PCI_ERS_RESULT_NONE;
-> >         }
-> >         pdrv = to_pci_driver(pcidev->dev.driver);
-> 
-> What about splitting the conditional to two with clear error message
-> in each and use pci_err() in the second one?
-
-Could possibly be cleaned up.  Felt like feature creep so I didn't.
-
-> >                 default:
-> >                         dev_err(&pdev->xdev->dev,
-> > -                               "bad request in aer recovery "
-> > -                               "operation!\n");
-> > +                               "bad request in AER recovery operation!\n");
-> 
-> Stray change? Or is it in a separate patch in your tree?
-
-Could be skipped.  The string now fits on one line so I combined it to
-make it more greppable.
-
-Bjorn
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
