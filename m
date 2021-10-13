@@ -2,93 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3399342B2C9
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 04:40:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AD1742B2D4
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 04:46:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236373AbhJMCmN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 22:42:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47242 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229980AbhJMCmM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Oct 2021 22:42:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 4E1F360F38;
-        Wed, 13 Oct 2021 02:40:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634092810;
-        bh=BfG/hOLpELMeJrrJw0w09DM+woU9VOgyQrkpY6CyVMg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TVVAOey1CPDdwUH01HCruw7LCP/pstooOqwntPu0D2E62ObI+0Q5QWNLRIH7EpT87
-         jCKsjhvFWwShDtRAy22TBjgt0hSXfIUIzg2FjB5yKP9uxR7QTmmrISsFf9j2bRFMaj
-         ElICYqISn6ogormcqBMNkGivWehsZ8jb9C8Hqo4ZlSyTKEp+vHO9uxOR03fXks5vNh
-         ylW6DB1N76dhoTNVUwZClBiwTa9NVegeNdzmtALKJdELFgqhyXU8AwaBknsKuHzDLS
-         EiKnAxceBU2LDbKRk7QRfArnyvZBI2T7EIlEiK77WFKckWec7otqYKZeeBzrZqhkaF
-         Ip7MXmdOrpt1g==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3FA9560A38;
-        Wed, 13 Oct 2021 02:40:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S236900AbhJMCsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 22:48:35 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:38729 "EHLO
+        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229980AbhJMCse (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 22:48:34 -0400
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id A236E5805DD;
+        Tue, 12 Oct 2021 22:46:31 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute6.internal (MEProxy); Tue, 12 Oct 2021 22:46:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        mendozajonas.com; h=message-id:subject:from:to:cc:date
+        :in-reply-to:references:content-type:mime-version
+        :content-transfer-encoding; s=fm1; bh=+E7F0YWmqRY7h6makWzK8RcDUH
+        P7dmZaJRlPDdMf1ug=; b=IwqhZ2PQASvkp6GZ1X4nmPUo2+mgkl6BejxqX/F+bN
+        FUDb0Z0QqWeATGLZqE/Ed2bXP8J4MntmkoapyNnSNvxJwrqxKwAMgwxAwKwz8VRc
+        HdlbPBUOBE8IkStBpPkAhIeMaKkzpoMJvWA4Ru0Z3NX4ZwNYTzJbkmiy+EgTSgpX
+        BuaBOG+oEeOQKMc7FDeMkow6w4HP9eafWVhxZzYrUxEzpN3fD6ImPRUs6Z2Vh5oH
+        5DhGOWQ/rg+DqC8oEI5XGsrRilBfHqgRjSQ0msUMm/BwHbNcULWHBU+Bu/P2mRA0
+        u11ojxYQuaJPj7CNirV6gD9dbR/n2sY4mL4rznoEbshA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; bh=+E7F0YWmqRY7h6makWzK8RcDUHP7dmZaJRlPDdMf1
+        ug=; b=EFBfADF6uEgUiRhavisj/MQdWunqxQrllDiFzwV5zC+2lnccdpB/+/FH1
+        K3zQ4Jip6oF+Jyj2tPLiP9oAuKbOzcQ8Xj40R/9rjJUfwF6DWZhZUMpRc7Ug1an8
+        16YiO4ot8YZguN4hMTN5ZJNgrwe3mkNkERqJ5oqQ/Oc4IX9UPEWn95o0ZQtL5W8j
+        u+XWtK7nYaIEIHVHtlDmjGQ3ByB8GJRl7WS4he+09kTCGad8XKcmOH8fOhSskBvU
+        9HmpBEc64LMjTMKd6H9AGAczsOVIW1D5HFU9fICDwhl9CwNqHu21bcXV1HSBdYm2
+        0BWPFwogRvghsm4Yw7REozZAITu3A==
+X-ME-Sender: <xms:hkhmYYsydRgnmIG_2Kx-2WvQ6Xl6BWUluO_JfQsBQzyWywnHRB9caQ>
+    <xme:hkhmYVeDaR935O---C-qQ4h4QZ49_Mq3eiMMWuOITkvKZ594Vu9k_uv8hGT9npaWI
+    BIT8KqZXLscu3b1eA>
+X-ME-Received: <xmr:hkhmYTxugakxtqRCivgo_FfAYKDaLUMxyHNzYH7pxWCpdSt6MzxZZ5B2k-WBsoCdRQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddtledgiedtucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepkffuhffvffgjfhgtfggggfesthekredttderjeenucfhrhhomhepufgrmhhu
+    vghlucfovghnughoiigrqdflohhnrghsuceoshgrmhesmhgvnhguohiirghjohhnrghsrd
+    gtohhmqeenucggtffrrghtthgvrhhnpefgvedvvdffhfeihedukeegheeludduhfehuddt
+    gefftddugeffjeetjeduteduvdenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
+    epmhgrihhlfhhrohhmpehsrghmsehmvghnughoiigrjhhonhgrshdrtghomh
+X-ME-Proxy: <xmx:hkhmYbNDWWG5jqtR5vjtSMbPmiaOo5H1abbtGAAHKs9Wtd6bsf567g>
+    <xmx:hkhmYY9pHIUzImTwu-fhBpxdNl_um-5ungduh24-F-2BcfQuyLk5NA>
+    <xmx:hkhmYTUIqgZiEGXWqHmjBVbHuxLdpd4qkdH3_C0fC2eYaW3LmqwzHg>
+    <xmx:h0hmYTa3YlRUS_owCFVD2HGmT2hqDU2zIRae-pRVzYzEbkKkJt8H-A>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 12 Oct 2021 22:46:29 -0400 (EDT)
+Message-ID: <dd6df3ee84110649d901f041883c3d44c0798cda.camel@mendozajonas.com>
+Subject: Re: [PATCH] net: ncsi: Adding padding bytes in the payload
+From:   Samuel Mendoza-Jonas <sam@mendozajonas.com>
+To:     Joel Stanley <joel@jms.id.au>,
+        Kumar Thangavel <kumarthangavel.hcl@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        Networking <netdev@vger.kernel.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Amithash Prasad <amithash@fb.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        velumanit@hcl.com, patrickw3@fb.com
+Date:   Tue, 12 Oct 2021 19:46:28 -0700
+In-Reply-To: <CACPK8XcJudWoKgXORvRzGAbtBwHm3a56RULriVABfERZgNgt9w@mail.gmail.com>
+References: <20211012062240.GA5761@gmail.com>
+         <CACPK8XcJudWoKgXORvRzGAbtBwHm3a56RULriVABfERZgNgt9w@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net 00/10] Felix DSA driver fixes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163409281025.3651.17457636920061865230.git-patchwork-notify@kernel.org>
-Date:   Wed, 13 Oct 2021 02:40:10 +0000
-References: <20211012114044.2526146-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20211012114044.2526146-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        po.liu@nxp.com, f.fainelli@gmail.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, olteanv@gmail.com, michael@walle.cc,
-        rui.sousa@nxp.com, yangbo.lu@nxp.com, xiaoliang.yang_1@nxp.com,
-        alexandre.belloni@bootlin.com, claudiu.manoil@nxp.com,
-        UNGLinuxDriver@microchip.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Tue, 12 Oct 2021 14:40:34 +0300 you wrote:
-> This is an assorted collection of fixes for issues seen on the NXP
-> LS1028A switch.
+On Tue, 2021-10-12 at 22:44 +0000, Joel Stanley wrote:
+> On Tue, 12 Oct 2021 at 06:23, Kumar Thangavel
+> <kumarthangavel.hcl@gmail.com> wrote:
+> > 
+> > Update NC-SI command handler (both standard and OEM) to take into
+> > account of payload paddings in allocating skb (in case of payload
+> > size is not 32-bit aligned).
+> > 
+> > The checksum field follows payload field, without taking payload
+> > padding into account can cause checksum being truncated, leading to
+> > dropped packets.
 > 
-> - PTP packet drops due to switch congestion result in catastrophic
->   damage to the driver's state
-> - loops are not blocked by STP if using the ocelot-8021q tagger
-> - driver uses the wrong CPU port when two of them are defined in DT
-> - module autoloading is broken* with both tagging protocol drivers
->   (ocelot and ocelot-8021q)
+> Can you help us review this by pointing out where this is described in
+> the NCSI spec?
 > 
-> [...]
+> We've been running this code for a number of years now and I wonder
+> why this hasn't been a problem so far.
 
-Here is the summary with links:
-  - [v2,net,01/10] net: mscc: ocelot: make use of all 63 PTP timestamp identifiers
-    https://git.kernel.org/netdev/net/c/c57fe0037a4e
-  - [v2,net,02/10] net: mscc: ocelot: avoid overflowing the PTP timestamp FIFO
-    https://git.kernel.org/netdev/net/c/52849bcf0029
-  - [v2,net,03/10] net: mscc: ocelot: warn when a PTP IRQ is raised for an unknown skb
-    https://git.kernel.org/netdev/net/c/9fde506e0c53
-  - [v2,net,04/10] net: mscc: ocelot: deny TX timestamping of non-PTP packets
-    https://git.kernel.org/netdev/net/c/fba01283d85a
-  - [v2,net,05/10] net: mscc: ocelot: cross-check the sequence id from the timestamp FIFO with the skb PTP header
-    https://git.kernel.org/netdev/net/c/ebb4c6a990f7
-  - [v2,net,06/10] net: dsa: tag_ocelot: break circular dependency with ocelot switch lib driver
-    https://git.kernel.org/netdev/net/c/deab6b1cd978
-  - [v2,net,07/10] net: dsa: tag_ocelot_8021q: break circular dependency with ocelot switch lib
-    https://git.kernel.org/netdev/net/c/49f885b2d970
-  - [v2,net,08/10] net: dsa: felix: purge skb from TX timestamping queue if it cannot be sent
-    https://git.kernel.org/netdev/net/c/1328a883258b
-  - [v2,net,09/10] net: dsa: tag_ocelot_8021q: fix inability to inject STP BPDUs into BLOCKING ports
-    https://git.kernel.org/netdev/net/c/43ba33b4f143
-  - [v2,net,10/10] net: dsa: felix: break at first CPU port during init and teardown
-    https://git.kernel.org/netdev/net/c/8d5f7954b7c8
+I'm assuming this is referencing section 8.2.2.2:
+If the payload is present and does not end on a 32-bit boundary, one to
+three padding bytes equal to 0x00 shall be present to align the
+checksum field to a 32-bit boundary.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+But I'm also surprised this hasn't caused issues so far if we've been
+getting it wrong. Is there an example that reproduces the issue?
+
+Cheers,
+Sam
+
+> 
+> Cheers,
+> 
+> Joel
+> 
+> > 
+> > Signed-off-by: Kumar Thangavel <thangavel.k@hcl.com>
+> > 
+> > ---
+> >  net/ncsi/ncsi-cmd.c | 21 +++++++++++++++++----
+> >  1 file changed, 17 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/net/ncsi/ncsi-cmd.c b/net/ncsi/ncsi-cmd.c
+> > index ba9ae482141b..4625fc935603 100644
+> > --- a/net/ncsi/ncsi-cmd.c
+> > +++ b/net/ncsi/ncsi-cmd.c
+> > @@ -214,11 +214,19 @@ static int ncsi_cmd_handler_oem(struct sk_buff
+> > *skb,
+> >         struct ncsi_cmd_oem_pkt *cmd;
+> >         unsigned int len;
+> > 
+> > +       /* NC-SI spec requires payload to be padded with 0
+> > +        * to 32-bit boundary before the checksum field.
+> > +        * Ensure the padding bytes are accounted for in
+> > +        * skb allocation
+> > +        */
+> > +
+> > +       unsigned short payload = ALIGN(nca->payload, 4);
+> > +
+> >         len = sizeof(struct ncsi_cmd_pkt_hdr) + 4;
+> > -       if (nca->payload < 26)
+> > +       if (payload < 26)
+> >                 len += 26;
+> >         else
+> > -               len += nca->payload;
+> > +               len += payload;
+> > 
+> >         cmd = skb_put_zero(skb, len);
+> >         memcpy(&cmd->mfr_id, nca->data, nca->payload);
+> > @@ -272,6 +280,7 @@ static struct ncsi_request
+> > *ncsi_alloc_command(struct ncsi_cmd_arg *nca)
+> >         struct net_device *dev = nd->dev;
+> >         int hlen = LL_RESERVED_SPACE(dev);
+> >         int tlen = dev->needed_tailroom;
+> > +       int payload;
+> >         int len = hlen + tlen;
+> >         struct sk_buff *skb;
+> >         struct ncsi_request *nr;
+> > @@ -281,14 +290,18 @@ static struct ncsi_request
+> > *ncsi_alloc_command(struct ncsi_cmd_arg *nca)
+> >                 return NULL;
+> > 
+> >         /* NCSI command packet has 16-bytes header, payload, 4 bytes
+> > checksum.
+> > +        * Payload needs padding so that the checksum field follwoing
+> > payload is
+> > +        * aligned to 32bit boundary.
+> >          * The packet needs padding if its payload is less than 26
+> > bytes to
+> >          * meet 64 bytes minimal ethernet frame length.
+> >          */
+> >         len += sizeof(struct ncsi_cmd_pkt_hdr) + 4;
+> > -       if (nca->payload < 26)
+> > +
+> > +       payload = ALIGN(nca->payload, 4);
+> > +       if (payload < 26)
+> >                 len += 26;
+> >         else
+> > -               len += nca->payload;
+> > +               len += payload;
+> > 
+> >         /* Allocate skb */
+> >         skb = alloc_skb(len, GFP_ATOMIC);
+> > --
+> > 2.17.1
+> > 
 
 
