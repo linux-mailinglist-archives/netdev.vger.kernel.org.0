@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28DFC42B7F4
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 08:50:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45B7942B7F5
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 08:50:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237918AbhJMGw4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 02:52:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56102 "EHLO
+        id S238094AbhJMGw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 02:52:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230156AbhJMGww (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 02:52:52 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F2C1C061570;
-        Tue, 12 Oct 2021 23:50:50 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id ec8so5780497edb.6;
-        Tue, 12 Oct 2021 23:50:49 -0700 (PDT)
+        with ESMTP id S233247AbhJMGw4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 02:52:56 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18ADFC061570;
+        Tue, 12 Oct 2021 23:50:53 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id w19so5882495edd.2;
+        Tue, 12 Oct 2021 23:50:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rJuE6Pp9lkDOOOTalExDw5jNyfW6/ykHvOQPHpnMcnQ=;
-        b=WSztpwpydnYASkv73NyidXyVf9vx22yndzvImhNv5g3NN+LZHyQTxnVhjqZWah5+51
-         O+PpOXT+cDy2XWR4+q8Wv973ut+16yacHkpJFe7dXuh+bdDzWwZd49QToFGfEnd83Qq3
-         pNFtGge7d2kRgJpHlaEgIvrUmb23gdzzlZBv03EQHolCD5eqwuRcrJXmLkKQinJUipAu
-         oNfO+j+poCO0iHHV/c64sBj6l3PWQCZaX3nqUQiskIuiXZ3oDzmGH3hAQOEZllxDy8yk
-         zBWDk2kDdCmmlH6QLRvAlk1PsYA80CgYl2r56xT+xWACxhZQE8ZwDgsJN8aoKKcrDTYN
-         5dKg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=RYCKTVD13R38t3WR/vos+HLpCIiXFIXTlTL/zxQSSKw=;
+        b=SnEw/GhaqO5KlOEO8Hzvk0UBbd1OS83DRJyCeWeH1RscJs+pMIu0dOxxyT6cawkP7t
+         sYXtHVWsTnzk5QGYtH0a1GeDmtRC0H0L1hDZOx+c8M+Sl6W36viaG1RXrsan6gIwAQVX
+         8S3Wvk9RVqdy1zSWBcABrIqxREbEAk9Zk9S5lZsC7evYe2RNfou5kRV87hnuqOEMeO/y
+         X9EympOYFd4ZgH63RnxxqLn+jEklYri7Uj3V/ecrROX2BftFAQ199xF7sWxpCI4xvpJ9
+         Z0KBzQhm8ESQHzFtl/f/dY4Al6a/1dO8o0i55n0Mstx7TRKdh4cMntkJmUzOKbZ+zBHh
+         xUjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rJuE6Pp9lkDOOOTalExDw5jNyfW6/ykHvOQPHpnMcnQ=;
-        b=n7S3twYf6Vt3zfY82A8j+IEEiysnraEKJ4zc1XWj9QZH3pqqgRD5KbelyJs85gDulG
-         18O5EKPyj012QUWt48tgC9CD86ommOjrzcTL2/HW8kmilWLaFFcld+R+PseBwh5USSbu
-         HGpqqgcoA0rfQ1ruRonJgNJmYjQW/kqnwekqdRWaE9oENLR9LEVvUcoD2nO6mQ2ItSMt
-         cmf16QOhkITBGlwCVdEw7iHE+AS0xxV8tPyb6wZdkKcKHDwcvAuaK70mi9XcSLF/u7bm
-         7PkfGk2frp+Z29E2nsdzKMdlnge80NQlOfjxn10fEVLNqAYoR/mxiobk/v17tGwk33Oi
-         0qvw==
-X-Gm-Message-State: AOAM532YmMDfmVapcd+eECfJl4eEljqYThy89cCW47pVJR7RTOagElhA
-        n998DBwpWsD17bo7ApriUuk=
-X-Google-Smtp-Source: ABdhPJyrFw3rn6IHBty5/kP1xrHecojrR8X6QfUbWvzX1/Lqtkn+DoqNjp2Z0r4mra4jbwiedSUC4g==
-X-Received: by 2002:a17:906:712:: with SMTP id y18mr37710983ejb.408.1634107848578;
-        Tue, 12 Oct 2021 23:50:48 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=RYCKTVD13R38t3WR/vos+HLpCIiXFIXTlTL/zxQSSKw=;
+        b=Am7R8xz4X1Ap6a+NbqUKk4M1UDj1jo1DLjGO/fzqSqfpuLsw3lctfsRYzSfC6o3xwx
+         goMBtuf3I8kLE0eyxDms8qstawgM9v8DS+WgNI8SO+TbYXZu3hRM4e9Aq0ZDG40LOLYQ
+         nGUUhoUUap40IaW85c2Fi3qFWz1S0903iZGrXjvsMQH+AS2ZmlOJZRX1uoKNTxVpFr2w
+         0MRmC3agg97m7TJaan7ojWaM91Lr7F9fxGjpUr0LIjLZ+ASAiWI0D+x7gS9n0ON++v/+
+         XajW8DsrkqAcCitP7Leqgyiv2pFUpDAyWvk7CbGYUCNPXeZeO4Kk3+8ltDdScHnE8OsN
+         AcRw==
+X-Gm-Message-State: AOAM532fRFvYVeFA9xeu1RAfq0c+VCE9Ezc+T74O4q2quDftdvTQFoFK
+        DIKMmHpeqd8Q5Qt9XOl8kfI=
+X-Google-Smtp-Source: ABdhPJw4Omo9b4Hq97vOhIHDiwGyV/cs39eLeCUzvUb1XQeIZd9/WydchaaorVIjOHJjh4zTM/9uRw==
+X-Received: by 2002:a50:e184:: with SMTP id k4mr7047706edl.217.1634107851671;
+        Tue, 12 Oct 2021 23:50:51 -0700 (PDT)
 Received: from ponky.lan ([2a04:241e:501:3870:6346:a6a3:f7ea:349e])
-        by smtp.gmail.com with ESMTPSA id m15sm4568710edd.5.2021.10.12.23.50.47
+        by smtp.gmail.com with ESMTPSA id m15sm4568710edd.5.2021.10.12.23.50.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Oct 2021 23:50:47 -0700 (PDT)
+        Tue, 12 Oct 2021 23:50:49 -0700 (PDT)
 From:   Leonard Crestez <cdleonard@gmail.com>
 To:     David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>
@@ -59,10 +59,12 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Alexander Duyck <alexanderduyck@fb.com>,
         Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/4] tcp: md5: Fix overlap between vrf and non-vrf keys
-Date:   Wed, 13 Oct 2021 09:50:34 +0300
-Message-Id: <cover.1634107317.git.cdleonard@gmail.com>
+Subject: [PATCH v2 1/4] tcp: md5: Fix overlap between vrf and non-vrf keys
+Date:   Wed, 13 Oct 2021 09:50:35 +0300
+Message-Id: <6d99312c4863c37ad394c815f8529ee635bdb0d0.1634107317.git.cdleonard@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1634107317.git.cdleonard@gmail.com>
+References: <cover.1634107317.git.cdleonard@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -84,48 +86,72 @@ if the non-vrf key is added later.
  * _tcp_md5_do_lookup can match a non-vrf key before a vrf key. This
 casues failures if the passwords differ.
 
-This can be fixed by making tcp_md5_do_lookup_exact perform an actual
-exact comparison on l3index and by making  __tcp_md5_do_lookup perfer
+Fix this by making tcp_md5_do_lookup_exact perform an actual exact
+comparison on l3index and by making  __tcp_md5_do_lookup perfer
 vrf-bound keys above other considerations like prefixlen.
 
-The fact that keys with l3index==0 affect VRF connections is usually
-not desirable, VRFs are meant to be completely independent. This
-behavior needs to preserved for backwards compatiblity. Also,
-applications can just bind listen sockets to VRF and never specify
-TCP_MD5SIG_IFINDEX at all.
+Fixes: dea53bb80e07 ("tcp: Add l3index to tcp_md5sig_key and md5 functions")
+Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
+---
+ net/ipv4/tcp_ipv4.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
-So far the combination of TCP_MD5SIG_IFINDEX with tcpm_ifindex == 0
-was an error, accept this to mean "key only applies to default VRF".
-This is what applications using VRFs for traffic separation want.
-
-This also contains tests for the second part. It does not contain
-tests for overlapping keys, that would require more changes in
-nettest to add multiple keys. These scenarios are also covered by
-my tests for TCP-AO, especially around this area:
-https://github.com/cdleonard/tcp-authopt-test/blob/main/tcp_authopt_test/test_vrf_bind.py
-
-Changes since V1:
-* Accept (TCP_MD5SIG_IFINDEX with tcpm_ifindex == 0)
-* Add flags for explicitly including or excluding TCP_MD5SIG_IFINDEX
-to nettest
-* Add few more tests in fcnal-test.sh.
-Link to v1: https://lore.kernel.org/netdev/3d8387d499f053dba5cd9184c0f7b8445c4470c6.1633542093.git.cdleonard@gmail.com/
-
-Leonard Crestez (4):
-  tcp: md5: Fix overlap between vrf and non-vrf keys
-  tcp: md5: Allow MD5SIG_FLAG_IFINDEX with ifindex=0
-  selftests: nettest: Add --{do,no}-bind-key-ifindex
-  selftests: net/fcnal: Test --{do,no}-bind-key-ifindex
-
- include/net/tcp.h                         |  5 +-
- net/ipv4/tcp_ipv4.c                       | 45 ++++++++++++-----
- net/ipv6/tcp_ipv6.c                       | 15 +++---
- tools/testing/selftests/net/fcnal-test.sh | 60 +++++++++++++++++++++++
- tools/testing/selftests/net/nettest.c     | 28 ++++++++++-
- 5 files changed, 130 insertions(+), 23 deletions(-)
-
-
-base-commit: d1f24712a86abd04d82cf4b00fb4ab8ff2d23c8a
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 29a57bd159f0..a9a6a6d598c6 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1035,10 +1035,24 @@ static void tcp_v4_reqsk_destructor(struct request_sock *req)
+  */
+ 
+ DEFINE_STATIC_KEY_FALSE(tcp_md5_needed);
+ EXPORT_SYMBOL(tcp_md5_needed);
+ 
++static bool better_md5_match(struct tcp_md5sig_key *old, struct tcp_md5sig_key *new)
++{
++	if (!old)
++		return true;
++
++	/* l3index always overrides non-l3index */
++	if (old->l3index && new->l3index == 0)
++		return false;
++	if (old->l3index == 0 && new->l3index)
++		return true;
++
++	return old->prefixlen < new->prefixlen;
++}
++
+ /* Find the Key structure for an address.  */
+ struct tcp_md5sig_key *__tcp_md5_do_lookup(const struct sock *sk, int l3index,
+ 					   const union tcp_md5_addr *addr,
+ 					   int family)
+ {
+@@ -1072,12 +1086,11 @@ struct tcp_md5sig_key *__tcp_md5_do_lookup(const struct sock *sk, int l3index,
+ #endif
+ 		} else {
+ 			match = false;
+ 		}
+ 
+-		if (match && (!best_match ||
+-			      key->prefixlen > best_match->prefixlen))
++		if (match && better_md5_match(best_match, key))
+ 			best_match = key;
+ 	}
+ 	return best_match;
+ }
+ EXPORT_SYMBOL(__tcp_md5_do_lookup);
+@@ -1103,11 +1116,11 @@ static struct tcp_md5sig_key *tcp_md5_do_lookup_exact(const struct sock *sk,
+ #endif
+ 	hlist_for_each_entry_rcu(key, &md5sig->head, node,
+ 				 lockdep_sock_is_held(sk)) {
+ 		if (key->family != family)
+ 			continue;
+-		if (key->l3index && key->l3index != l3index)
++		if (key->l3index != l3index)
+ 			continue;
+ 		if (!memcmp(&key->addr, addr, size) &&
+ 		    key->prefixlen == prefixlen)
+ 			return key;
+ 	}
 -- 
 2.25.1
 
