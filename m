@@ -2,137 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D40642BE76
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 13:01:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A7A742BE85
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 13:02:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231530AbhJMLDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 07:03:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56448 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232243AbhJMLDR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 07:03:17 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E9ACC0613B0
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 04:00:15 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id f189so1031620pfg.12
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 04:00:15 -0700 (PDT)
+        id S232116AbhJMLDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 07:03:46 -0400
+Received: from mx1.tq-group.com ([93.104.207.81]:47633 "EHLO mx1.tq-group.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231658AbhJMLDb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Oct 2021 07:03:31 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=nQQWQUgxuW6Tu+PRvCtkwuIVHgAhZ7y427FiGzCqW1I=;
-        b=zuDceFqPkzhsXg/5Ra0cCOC1bU0nBHOgMC+yisKtXJINh/T8f5KQ5Xk3tN1hEQWy1f
-         fF/5Ti7SlnxHTZ8CRdyv6Jl7qV6+yL697U37ZNkhKajiI+l/0MJiVPCdQ2f0nPB60e3l
-         deL9dfPtSkXLUF1i0K5lBK/jrlNzSLsedO4pErBw8lcHrmTQsFpVw/Kq9PVvZIU+2X3S
-         BjO3inmiQSb4KC3RcJr5s4SFs01LRfMOjiO3Y4IdS3Rj0CRwh+XHIqdFiSxlkBam0yxV
-         rxKuYNPGd/pLOsHpTEsqWBSUGsQm4kgH2TClaSNsf9ya4bJIDlxKTpNOca2+BLM7jp/t
-         D1tA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=nQQWQUgxuW6Tu+PRvCtkwuIVHgAhZ7y427FiGzCqW1I=;
-        b=Zx/KPNKucic/oULzc4syWTg2jv4WDG/s1UkMq5LO2wo9mAcjzqlePKHATJT/xh1W7L
-         Yk3ENoBfRymm+GvdsB4ZilKz/X31z/c86qqgb803FScAVeF3vouH8HGsR3sKMmiu1scf
-         O5U+2a0QXG5vxYaXyMP7CEMlvmSyzprVTNyf607aZHCnTeiLdW4zgPvzl0k0g809fDVY
-         mA3Levc4zRcmTeGoUsCXuQyQTsEoewspzfyJpF3GaCse72Dm607M/EUZn9C3gb2K/qSF
-         qufmaxlA9VPCcx5P3O1hXrnDbK1nrKZkho8RueOvVFjJboRIXav0T6rHMgBY8XLpgnCO
-         2FAg==
-X-Gm-Message-State: AOAM530v47xp0BqPG0fbwDq7ROB6ZgH+9EL0b9VRuMB+XsrLAe3zUJNR
-        NQion6nmx0I5MdcSuh1csGaL6Q==
-X-Google-Smtp-Source: ABdhPJxhzjNSoABq+dGG77CzsRDyX+40KYVEdGsQI8qW5B1JHU6i8UmOJoBqJRMmoCIvhAQ+em8rxg==
-X-Received: by 2002:a63:2dc7:: with SMTP id t190mr27705777pgt.455.1634122814960;
-        Wed, 13 Oct 2021 04:00:14 -0700 (PDT)
-Received: from localhost ([106.201.113.61])
-        by smtp.gmail.com with ESMTPSA id g189sm5284657pfb.75.2021.10.13.04.00.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Oct 2021 04:00:14 -0700 (PDT)
-Date:   Wed, 13 Oct 2021 16:30:12 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Amit Shah <amit@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Gonglei <arei.gonglei@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        "Enrico Weigelt, metux IT consult" <info@metux.net>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Daniel Vetter <daniel@ffwll.ch>, Jie Deng <jie.deng@intel.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        David Hildenbrand <david@redhat.com>,
-        Vivek Goyal <vgoyal@redhat.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Anton Yakovlev <anton.yakovlev@opensynergy.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, linux-um@lists.infradead.org,
-        virtualization@lists.linux-foundation.org,
-        linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-gpio@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        nvdimm@lists.linux.dev, linux-remoteproc@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net, kvm@vger.kernel.org,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH RFC] virtio: wrap config->reset calls
-Message-ID: <20211013110012.3exppbls2wggqfhb@vireshk-i7>
-References: <20211013105226.20225-1-mst@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211013105226.20225-1-mst@redhat.com>
-User-Agent: NeoMutt/20180716-391-311a52
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1634122888; x=1665658888;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=yiLPIdqtdIwyAypswEPJAvSEqYuCP9g6YjtCjU518zk=;
+  b=XQLiQFvAaJnSRgTcWqr+Z8mfHQ8pnkHBcTft2vWkUyYCP4DQRdSB/anI
+   J8/ZpHQGy7uYk7hIRxPf+cyVOPJPVI2SM44cP0KqGTjzygpBi+hUbivrx
+   EMAOb7h6urwjn43ktRlsYIbGmhrBaaGug5obTgxngthigWoyhrVSwB/aB
+   fZabR2EaMtR6sf73r/IMyAVqs3Q3rCvXzSUkdM3wKO+RqJ/HQwIG1VdAc
+   p02hMY0k78wfRjlKSCNUTwOFms2fzUY1Cn+KmRAa5IpJbINRz/fgK3aKZ
+   G3rg1KXd9rHZSQZNA7Wilc7qzBDtdi3jNPETn/U33tRst6XOXsqHv7S3h
+   w==;
+X-IronPort-AV: E=Sophos;i="5.85,370,1624312800"; 
+   d="scan'208";a="20020507"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 13 Oct 2021 13:01:26 +0200
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Wed, 13 Oct 2021 13:01:26 +0200
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Wed, 13 Oct 2021 13:01:26 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1634122886; x=1665658886;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=yiLPIdqtdIwyAypswEPJAvSEqYuCP9g6YjtCjU518zk=;
+  b=TmU0umnDQwHvvgjdvEJzxe4mjRMdMiEleUGywN2TR2dDh+wI4a94fuK4
+   VpeuYPm1kQmDzsbUhQrU8+95BfgyY/tUX/DBeH3tPrLsGXT50tN3rEM/r
+   GMlmN3hKY7shjOT7sRwiycvj9fElfQuUQu/hSjZTQaW1RoTVUO+sZ6SBR
+   CFFMQvlwY45lVQNqUkyQ4YoGZBZoyk4I+ZXXB9QCjO6E/H2RHMxSub8l4
+   ro6Rtlz6Q2sQQVrOR3z3rmjt4sVmH3g6cQK/MI1oK1X17la8c1SVpPqFz
+   4r3K17rvAaIB9w62uyKINY1t3++ZaFRnVRDwtuom6kdHvbuXHl73bPedE
+   A==;
+X-IronPort-AV: E=Sophos;i="5.85,370,1624312800"; 
+   d="scan'208";a="20020506"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 13 Oct 2021 13:01:26 +0200
+Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.121.48.12])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 4FBE1280065;
+        Wed, 13 Oct 2021 13:01:26 +0200 (CEST)
+Message-ID: <d46649a97945efb49fefcd30415548a76cd0a334.camel@ew.tq-group.com>
+Subject: Re: [PATCH] net: phy: micrel: make *-skew-ps check more lenient
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Philippe Schenker <philippe.schenker@toradex.com>
+Cc:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "kuba@kernel.org" <kuba@kernel.org>
+Date:   Wed, 13 Oct 2021 13:01:26 +0200
+In-Reply-To: <bf2c71d5f73839bdc585c19490e40d08f26d644a.camel@toradex.com>
+References: <20211012103402.21438-1-matthias.schiffer@ew.tq-group.com>
+         <45137d2d365d5737f36fa398ee815695722b04e5.camel@toradex.com>
+         <987224f4ca93f928c8ddb69710d3aa72b336b6dc.camel@ew.tq-group.com>
+         <bf2c71d5f73839bdc585c19490e40d08f26d644a.camel@toradex.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13-10-21, 06:55, Michael S. Tsirkin wrote:
-> This will enable cleanups down the road.
-> The idea is to disable cbs, then add "flush_queued_cbs" callback
-> as a parameter, this way drivers can flush any work
-> queued after callbacks have been disabled.
+On Wed, 2021-10-13 at 10:18 +0000, Philippe Schenker wrote:
+> On Wed, 2021-10-13 at 10:46 +0200, Matthias Schiffer wrote:
+> > On Wed, 2021-10-13 at 08:25 +0000, Philippe Schenker wrote:
+> > > On Tue, 2021-10-12 at 12:34 +0200, Matthias Schiffer wrote:
+> > > > It seems reasonable to fine-tune only some of the skew values when
+> > > > using
+> > > > one of the rgmii-*id PHY modes, and even when all skew values are
+> > > > specified, using the correct ID PHY mode makes sense for
+> > > > documentation
+> > > > purposes. Such a configuration also appears in the binding docs in
+> > > > Documentation/devicetree/bindings/net/micrel-ksz90x1.txt, so the
+> > > > driver
+> > > > should not warn about it.
+> > > 
+> > > I don't think your commit message is right. The rgmii-*id PHY modes
+> > > are
+> > > no longer just for documentation purposes on KSZ9031 PHY. They are
+> > > used
+> > > to set the skew-registers according to .
+> > 
+> > Yes, this was implemented in [1]. The commit message explicitly states
+> > that fine-tuning is still possible using *-skew-ps.
+> > 
+> > > 
+> > > The warning is there, that in case you override the skew registers
+> > > of
+> > > one of the modes rgmii-id, rgmii-txid, rgmii-rxid with *-skew-ps
+> > > settings in DT.
+> > 
+> > The "rgmii" mode should not be handled differently from "rgmii-*id" in
+> > my opinion. Otherwise for a device that is basically "rgmii-id", but
+> > requires slight fine-tuning, you have to set the mode to the incorrect
+> > value "rgmii" in the DTS to avoid this warning.
 > 
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->  drivers/gpio/gpio-virtio.c                 | 2 +-
->  drivers/i2c/busses/i2c-virtio.c            | 2 +-
+> Now I have understood your argument. But then I suggest to delete the
+> warning entirely as it completely changes its meaning with that patch.
+> 
+> Philippe
 
-Reviewed-by: Viresh Kumar <viresh.kumar@linaro.org>
+The KSZ9031 also supports MII and GMII though. I think it makes sense
+to keep the warning for these cases (which is why I reworded the
+warning the way I did).
 
--- 
-viresh
+
+> 
+> > 
+> > 
+> > > 
+> > > Therefore I also think the warning is valuable and should be kept.
+> > > We
+> > > may want to reword it though.
+> > > 
+> > > Philippe
+> > 
+> > [1]
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/net/phy/micrel.c?id=bcf3440c6dd78bfe5836ec0990fe36d7b4bb7d20
+> > 
+> > 
+> > > 
+> > > > 
+> > > > Signed-off-by: Matthias Schiffer
+> > > > <matthias.schiffer@ew.tq-group.com>
+> > > > ---
+> > > >  drivers/net/phy/micrel.c | 4 ++--
+> > > >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+> > > > index c330a5a9f665..03e58ebf68af 100644
+> > > > --- a/drivers/net/phy/micrel.c
+> > > > +++ b/drivers/net/phy/micrel.c
+> > > > @@ -863,9 +863,9 @@ static int ksz9031_config_init(struct
+> > > > phy_device
+> > > > *phydev)
+> > > >                                 MII_KSZ9031RN_TX_DATA_PAD_SKEW, 4,
+> > > >                                 tx_data_skews, 4, &update);
+> > > >  
+> > > > -               if (update && phydev->interface !=
+> > > > PHY_INTERFACE_MODE_RGMII)
+> > > > +               if (update && !phy_interface_is_rgmii(phydev))
+> > > >                         phydev_warn(phydev,
+> > > > -                                   "*-skew-ps values should be
+> > > > used
+> > > > only with phy-mode = \"rgmii\"\n");
+> > > > +                                   "*-skew-ps values should be
+> > > > used
+> > > > only with RGMII PHY modes\n");
+> > > >  
+> > > >                 /* Silicon Errata Sheet (DS80000691D or
+> > > > DS80000692D):
+> > > >                  * When the device links in the 1000BASE-T slave
+> > > > mode
+> > > > only,
+> > > 
+> > > 
+> 
+> 
+
