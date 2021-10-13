@@ -2,65 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3103842CE19
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 00:31:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1656B42CE1C
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 00:31:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231611AbhJMWc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 18:32:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49090 "EHLO
+        id S231474AbhJMWdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 18:33:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231620AbhJMWcd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 18:32:33 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D34A1C06176C
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 15:30:28 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id s17so1457224ioa.13
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 15:30:28 -0700 (PDT)
+        with ESMTP id S231566AbhJMWcl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 18:32:41 -0400
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAF60C061767
+        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 15:30:34 -0700 (PDT)
+Received: by mail-io1-xd29.google.com with SMTP id s17so1457432ioa.13
+        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 15:30:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ieee.org; s=google;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LsEczdPkEsnbJ1dnB/+4ts+9TUj4vFxU0DaILYx11QI=;
-        b=eM2Mpb/UF0KX8yu9A83o+DXc902Xkv2b3RhErTUeGyc1jd0nzOgIaIWvFagx+iBO42
-         2TvRYJGWRQ0tDQGb+jgIsfnOSe1Ytnb1g1zcHmOPqoTbHnI3D91kizets39xVOA/5jWl
-         ptPlZ18Xlk5MH4qt3owMdjb9qnCQwDKWHWtMw=
+        bh=hHiPs/gfwiQ9sIPDSoZQFdd7zvmeZywPocUYefGGRO4=;
+        b=EYSukUru/jts3OTTxhPNC/oADo3i15QFV8ecLYL4LzeEEDEnEFjcJQGESBSdymg8Du
+         SWKmQKR1jdByPgPmAgciWPziRZneqeQGbYsEliNtIwypnw0aT5lY4k7Yu1hwzUrZGSJZ
+         4sSSWDSNtRioWFp4HtQBhAUbTSTMgL3ZyqprA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=LsEczdPkEsnbJ1dnB/+4ts+9TUj4vFxU0DaILYx11QI=;
-        b=jDRXnp36kPqe75zB/WE4Dfcf6/8hy5nNbkrrd6F68C4HZ5aWKt3MStWv771Uml4Czj
-         DDuBDED1NJrZC1MdCvU05+Gcavd2I08+z9uOVLWvJJLSJv2OZmIcPd0eu0UuSM4cHP2g
-         y2kw4FaBY9NBzM2feqrTBmOTolnOUhC1NODfnGgPxR6A5FOGCtzr3xs5W9V9gEWftUeU
-         dGQMZ2psDq/1KQPpXGNxxucGW3l0Tz4Rm15jbP9tNZyqVu43o65T1Pj0q1fBufa4i+Ri
-         jOVuNbI0uljb0beycBin4yjEyjx17sIq7SIkhvPOKtsTPa1gKMxMCDVVpsiwehLCJapN
-         M1kw==
-X-Gm-Message-State: AOAM531iFWgeFMjwASISOgV/rMwNwM3NC24rlvkJ5MFrHXA7uGvgRkg4
-        dE0yFbMVZ/rVW8s9xQfyoo9zsQ==
-X-Google-Smtp-Source: ABdhPJxzTBf3ZiQDuYsNZ4nBXs4vS7MeBMn4iHP5+Cx1gQ1hivM/4Fp2gUJkwuv09mJ4AwLvM/Ov6A==
-X-Received: by 2002:a05:6602:29c2:: with SMTP id z2mr1566167ioq.73.1634164228273;
-        Wed, 13 Oct 2021 15:30:28 -0700 (PDT)
+        bh=hHiPs/gfwiQ9sIPDSoZQFdd7zvmeZywPocUYefGGRO4=;
+        b=bGjr0vk7FfIuxFmdOhGA2Woer7mj5yq/VEg2v9lzZs6Fnvy3jz0ums2nRFuuxjPsgk
+         BtTz+c4I8RnyOcAKct3QXGodX5lT1f4ID7DvXC7KR11f+fMrEHszhIPPB+NpDED1ICZx
+         tz9R15Zhq9oM74fa3SgBmF3p1rBGz/Ye7veC9ePrWFcfFNjXxQIKyOBu9RHB17b+6rhe
+         aUXEZBxFnOIkss6wzvHPqDlxWI4kgxAHT4TRmUDg5107ZaXGy4TKu8Wc7u5SpuBiXSZ8
+         TlMqChyhx4djZazEl16ejGpd9o0wHGx26rCk2xsRLroI5i5p+LqYHUTfBxkZMYURQpV5
+         iBCw==
+X-Gm-Message-State: AOAM532u5Rd0TRpc3D+3u5O2j+vPHLyxuxAiNw8IlujdN4k0ASlbrirn
+        m6tk+w55zfby/xcxmUl9J6DXEQ==
+X-Google-Smtp-Source: ABdhPJyP3eGZ368Jec+j6FW+wVWTmCaXH/FAwxbXUsNkBNjH+oZ7rLECv+N4gi0h1d2+leeD9K07fQ==
+X-Received: by 2002:a6b:8d4a:: with SMTP id p71mr1570545iod.16.1634164234137;
+        Wed, 13 Oct 2021 15:30:34 -0700 (PDT)
 Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id a4sm353806ild.52.2021.10.13.15.30.26
+        by smtp.googlemail.com with ESMTPSA id s18sm350553ilo.14.2021.10.13.15.30.32
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Oct 2021 15:30:27 -0700 (PDT)
-Subject: Re: [RFC PATCH 12/17] net: ipa: Add support for IPA v2.x memory map
+        Wed, 13 Oct 2021 15:30:33 -0700 (PDT)
+Subject: Re: [RFC PATCH 13/17] net: ipa: Add support for IPA v2.x in the
+ driver's QMI interface
 To:     Sireesh Kodali <sireeshkodali1@gmail.com>,
         phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, elder@kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
+Cc:     Vladimir Lypak <vladimir.lypak@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 References: <20210920030811.57273-1-sireeshkodali1@gmail.com>
- <20210920030811.57273-13-sireeshkodali1@gmail.com>
+ <20210920030811.57273-14-sireeshkodali1@gmail.com>
 From:   Alex Elder <elder@ieee.org>
-Message-ID: <566b43c9-2893-09ac-1f27-513f0a6d767e@ieee.org>
-Date:   Wed, 13 Oct 2021 17:30:26 -0500
+Message-ID: <d50312f8-823d-01b1-47a5-7190be93408d@ieee.org>
+Date:   Wed, 13 Oct 2021 17:30:32 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210920030811.57273-13-sireeshkodali1@gmail.com>
+In-Reply-To: <20210920030811.57273-14-sireeshkodali1@gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -69,137 +71,103 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 9/19/21 10:08 PM, Sireesh Kodali wrote:
-> IPA v2.6L has an extra region to handle compression/decompression
-> acceleration. This region is used by some modems during modem init.
+> On IPA v2.x, the modem doesn't send a DRIVER_INIT_COMPLETED, so we have
+> to rely on the uc's IPA_UC_RESPONSE_INIT_COMPLETED to know when its
+> ready. We add a function here that marks uc_ready = true. This function
+> is called by ipa_uc.c when IPA_UC_RESPONSE_INIT_COMPLETED is handled.
 
-So it has to be initialized?  (I guess so.)
+This should use the new ipa_mem_find() interface for getting the
+memory information for the ZIP region.
 
-The memory size register apparently doesn't express things in
-units of 8 bytes either.
+I don't know where the IPA_UC_RESPONSE_INIT_COMPLETED gets sent
+but I presume it ends up calling ipa_qmi_signal_uc_loaded().
+
+I think actually the DRIVER_INIT_COMPLETE message from the modem
+is saying "I finished initializing the microcontroller."  And
+I've wondered why there is a duplicate mechanism.  Maybe there
+was a race or something.
 
 					-Alex
 
 > Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
+> Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
 > ---
->   drivers/net/ipa/ipa_mem.c | 36 ++++++++++++++++++++++++++++++------
->   drivers/net/ipa/ipa_mem.h |  5 ++++-
->   2 files changed, 34 insertions(+), 7 deletions(-)
+>   drivers/net/ipa/ipa_qmi.c | 27 ++++++++++++++++++++++++++-
+>   drivers/net/ipa/ipa_qmi.h | 10 ++++++++++
+>   2 files changed, 36 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/net/ipa/ipa_mem.c b/drivers/net/ipa/ipa_mem.c
-> index 8acc88070a6f..bfcdc7e08de2 100644
-> --- a/drivers/net/ipa/ipa_mem.c
-> +++ b/drivers/net/ipa/ipa_mem.c
-> @@ -84,7 +84,7 @@ int ipa_mem_setup(struct ipa *ipa)
->   	/* Get a transaction to define the header memory region and to zero
->   	 * the processing context and modem memory regions.
->   	 */
-> -	trans = ipa_cmd_trans_alloc(ipa, 4);
-> +	trans = ipa_cmd_trans_alloc(ipa, 5);
->   	if (!trans) {
->   		dev_err(&ipa->pdev->dev, "no transaction for memory setup\n");
->   		return -EBUSY;
-> @@ -107,8 +107,14 @@ int ipa_mem_setup(struct ipa *ipa)
->   	ipa_mem_zero_region_add(trans, IPA_MEM_AP_PROC_CTX);
->   	ipa_mem_zero_region_add(trans, IPA_MEM_MODEM);
+> diff --git a/drivers/net/ipa/ipa_qmi.c b/drivers/net/ipa/ipa_qmi.c
+> index 7e2fe701cc4d..876e2a004f70 100644
+> --- a/drivers/net/ipa/ipa_qmi.c
+> +++ b/drivers/net/ipa/ipa_qmi.c
+> @@ -68,6 +68,11 @@
+>    * - The INDICATION_REGISTER request and INIT_COMPLETE indication are
+>    *   optional for non-initial modem boots, and have no bearing on the
+>    *   determination of when things are "ready"
+> + *
+> + * Note that on IPA v2.x, the modem doesn't send a DRIVER_INIT_COMPLETE
+> + * request. Thus, we rely on the uc's IPA_UC_RESPONSE_INIT_COMPLETED to know
+> + * when the uc is ready. The rest of the process is the same on IPA v2.x and
+> + * later IPA versions
+>    */
 >   
-> +	ipa_mem_zero_region_add(trans, IPA_MEM_ZIP);
-> +
->   	ipa_trans_commit_wait(trans);
->   
-> +	/* On IPA version <=2.6L (except 2.5) there is no PROC_CTX.  */
-> +	if (ipa->version != IPA_VERSION_2_5 && ipa->version <= IPA_VERSION_2_6L)
-> +		return 0;
-> +
->   	/* Tell the hardware where the processing context area is located */
->   	mem = ipa_mem_find(ipa, IPA_MEM_MODEM_PROC_CTX);
->   	offset = ipa->mem_offset + mem->offset;
-> @@ -147,6 +153,11 @@ static bool ipa_mem_id_valid(struct ipa *ipa, enum ipa_mem_id mem_id)
->   	case IPA_MEM_END_MARKER:	/* pseudo region */
->   		break;
->   
-> +	case IPA_MEM_ZIP:
-> +		if (version == IPA_VERSION_2_6L)
-> +			return true;
-> +		break;
-> +
->   	case IPA_MEM_STATS_TETHERING:
->   	case IPA_MEM_STATS_DROP:
->   		if (version < IPA_VERSION_4_0)
-> @@ -319,10 +330,15 @@ int ipa_mem_config(struct ipa *ipa)
->   	/* Check the advertised location and size of the shared memory area */
->   	val = ioread32(ipa->reg_virt + ipa_reg_shared_mem_size_offset(ipa->version));
->   
-> -	/* The fields in the register are in 8 byte units */
-> -	ipa->mem_offset = 8 * u32_get_bits(val, SHARED_MEM_BADDR_FMASK);
-> -	/* Make sure the end is within the region's mapped space */
-> -	mem_size = 8 * u32_get_bits(val, SHARED_MEM_SIZE_FMASK);
-> +	if (IPA_VERSION_RANGE(ipa->version, 2_0, 2_6L)) {
-> +		/* The fields in the register are in 8 byte units */
-> +		ipa->mem_offset = 8 * u32_get_bits(val, SHARED_MEM_BADDR_FMASK);
-> +		/* Make sure the end is within the region's mapped space */
-> +		mem_size = 8 * u32_get_bits(val, SHARED_MEM_SIZE_FMASK);
-> +	} else {
-> +		ipa->mem_offset = u32_get_bits(val, SHARED_MEM_BADDR_FMASK);
-> +		mem_size = u32_get_bits(val, SHARED_MEM_SIZE_FMASK);
-> +	}
->   
->   	/* If the sizes don't match, issue a warning */
->   	if (ipa->mem_offset + mem_size < ipa->mem_size) {
-> @@ -564,6 +580,10 @@ static int ipa_smem_init(struct ipa *ipa, u32 item, size_t size)
->   		return -EINVAL;
+>   #define IPA_HOST_SERVICE_SVC_ID		0x31
+> @@ -345,7 +350,12 @@ init_modem_driver_req(struct ipa_qmi *ipa_qmi)
+>   			req.hdr_proc_ctx_tbl_info.start + mem->size - 1;
 >   	}
 >   
-> +	/* IPA v2.6L does not use IOMMU */
-> +	if (ipa->version <= IPA_VERSION_2_6L)
-> +		return 0;
-> +
->   	domain = iommu_get_domain_for_dev(dev);
->   	if (!domain) {
->   		dev_err(dev, "no IOMMU domain found for SMEM\n");
-> @@ -591,6 +611,9 @@ static void ipa_smem_exit(struct ipa *ipa)
->   	struct device *dev = &ipa->pdev->dev;
->   	struct iommu_domain *domain;
+> -	/* Nothing to report for the compression table (zip_tbl_info) */
+> +	mem = &ipa->mem[IPA_MEM_ZIP];
+> +	if (mem->size) {
+> +		req.zip_tbl_info_valid = 1;
+> +		req.zip_tbl_info.start = ipa->mem_offset + mem->offset;
+> +		req.zip_tbl_info.end = ipa->mem_offset + mem->size - 1;
+> +	}
 >   
-> +	if (ipa->version <= IPA_VERSION_2_6L)
+>   	mem = ipa_mem_find(ipa, IPA_MEM_V4_ROUTE_HASHED);
+>   	if (mem->size) {
+> @@ -525,6 +535,21 @@ int ipa_qmi_setup(struct ipa *ipa)
+>   	return ret;
+>   }
+>   
+> +/* With IPA v2 modem is not required to send DRIVER_INIT_COMPLETE request to AP.
+> + * We start operation as soon as IPA_UC_RESPONSE_INIT_COMPLETED irq is triggered.
+> + */
+> +void ipa_qmi_signal_uc_loaded(struct ipa *ipa)
+> +{
+> +	struct ipa_qmi *ipa_qmi = &ipa->qmi;
+> +
+> +	/* This is needed only on IPA 2.x */
+> +	if (ipa->version > IPA_VERSION_2_6L)
 > +		return;
 > +
->   	domain = iommu_get_domain_for_dev(dev);
->   	if (domain) {
->   		size_t size;
-> @@ -622,7 +645,8 @@ int ipa_mem_init(struct ipa *ipa, const struct ipa_mem_data *mem_data)
->   	ipa->mem_count = mem_data->local_count;
->   	ipa->mem = mem_data->local;
+> +	ipa_qmi->uc_ready = true;
+> +	ipa_qmi_ready(ipa_qmi);
+> +}
+> +
+>   /* Tear down IPA QMI handles */
+>   void ipa_qmi_teardown(struct ipa *ipa)
+>   {
+> diff --git a/drivers/net/ipa/ipa_qmi.h b/drivers/net/ipa/ipa_qmi.h
+> index 856ef629ccc8..4962d88b0d22 100644
+> --- a/drivers/net/ipa/ipa_qmi.h
+> +++ b/drivers/net/ipa/ipa_qmi.h
+> @@ -55,6 +55,16 @@ struct ipa_qmi {
+>    */
+>   int ipa_qmi_setup(struct ipa *ipa);
 >   
-> -	ret = dma_set_mask_and_coherent(&ipa->pdev->dev, DMA_BIT_MASK(64));
-> +	ret = dma_set_mask_and_coherent(&ipa->pdev->dev, IPA_IS_64BIT(ipa->version) ?
-> +					DMA_BIT_MASK(64) : DMA_BIT_MASK(32));
->   	if (ret) {
->   		dev_err(dev, "error %d setting DMA mask\n", ret);
->   		return ret;
-> diff --git a/drivers/net/ipa/ipa_mem.h b/drivers/net/ipa/ipa_mem.h
-> index 570bfdd99bff..be91cb38b6a8 100644
-> --- a/drivers/net/ipa/ipa_mem.h
-> +++ b/drivers/net/ipa/ipa_mem.h
-> @@ -47,8 +47,10 @@ enum ipa_mem_id {
->   	IPA_MEM_UC_INFO,		/* 0 canaries */
->   	IPA_MEM_V4_FILTER_HASHED,	/* 2 canaries */
->   	IPA_MEM_V4_FILTER,		/* 2 canaries */
-> +	IPA_MEM_V4_FILTER_AP,		/* 2 canaries (IPA v2.0) */
->   	IPA_MEM_V6_FILTER_HASHED,	/* 2 canaries */
->   	IPA_MEM_V6_FILTER,		/* 2 canaries */
-> +	IPA_MEM_V6_FILTER_AP,		/* 0 canaries (IPA v2.0) */
->   	IPA_MEM_V4_ROUTE_HASHED,	/* 2 canaries */
->   	IPA_MEM_V4_ROUTE,		/* 2 canaries */
->   	IPA_MEM_V6_ROUTE_HASHED,	/* 2 canaries */
-> @@ -57,7 +59,8 @@ enum ipa_mem_id {
->   	IPA_MEM_AP_HEADER,		/* 0 canaries, optional */
->   	IPA_MEM_MODEM_PROC_CTX,		/* 2 canaries */
->   	IPA_MEM_AP_PROC_CTX,		/* 0 canaries */
-> -	IPA_MEM_MODEM,			/* 0/2 canaries */
-> +	IPA_MEM_ZIP,			/* 1 canary (IPA v2.6L) */
-> +	IPA_MEM_MODEM,			/* 0-2 canaries */
->   	IPA_MEM_UC_EVENT_RING,		/* 1 canary, optional */
->   	IPA_MEM_PDN_CONFIG,		/* 0/2 canaries (IPA v4.0+) */
->   	IPA_MEM_STATS_QUOTA_MODEM,	/* 2/4 canaries (IPA v4.0+) */
+> +/**
+> + * ipa_qmi_signal_uc_loaded() - Signal that the UC has been loaded
+> + * @ipa:		IPA pointer
+> + *
+> + * This is called when the uc indicates that it is ready. This exists, because
+> + * on IPA v2.x, the modem does not send a DRIVER_INIT_COMPLETED. Thus we have
+> + * to rely on the uc's INIT_COMPLETED response to know if it was initialized
+> + */
+> +void ipa_qmi_signal_uc_loaded(struct ipa *ipa);
+> +
+>   /**
+>    * ipa_qmi_teardown() - Tear down IPA QMI handles
+>    * @ipa:		IPA pointer
 > 
 
