@@ -2,309 +2,364 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1996A42C9DE
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 21:20:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AB1442CA78
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 21:56:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236036AbhJMTWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 15:22:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33390 "EHLO
+        id S238371AbhJMT6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 15:58:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231563AbhJMTWB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 15:22:01 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADEB3C061570
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 12:19:57 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id i21-20020a253b15000000b005b9c0fbba45so4262490yba.20
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 12:19:57 -0700 (PDT)
+        with ESMTP id S236791AbhJMT6O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 15:58:14 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BB2FC061746
+        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 12:56:11 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id y15so16802971lfk.7
+        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 12:56:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=d0rAx93itBTSy1xOFmXFYBiya33QB5vLyzSyQgo9d2c=;
-        b=D0+l2u4oHREq5LiRim/bUBO5IIzBDxCa771gjZQxRJ+bWU4NFILtxa9VrWxdPA88Ba
-         +COehWk0YG+QXxNevytH5qXsLOwufKKazg2eg3Eq/ze3To5hkil+lfnM0fjyDT/RAKxL
-         zmMpS76ZUFqu6cwwikvocolnJEfxIoqHJFcdLBWVSaK+O2vxYluCJaGwPXaimtioKFQR
-         /hVfN4+W6BPhBB3TGdndzYaxMsG+NCWNNIbDC5DWiIK8fGif/qiaZUm4JPyKVmaWlOf6
-         AzlK1u9qPMuavAvJ+EBpc1L97awfCOlESTQVx65Pa+gWRZC+eLP1dMl3rgNIyNJFo38p
-         1vMA==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=qKH85f/X/bTM1HBd2jb8yR7hV1r7tXpdbyJxEIUbYFg=;
+        b=IrFtpUHHjhCjoRTsTIuTweLrfzJObNtGoSCXCsaLWFNHKsTRzgvJ055GYOlkux+FY2
+         SL4/Ct2NU4cOXVX5KzbrkO6L4NU3buaYTu0n+RExjMKoh6AkQGFyikPxpPpxolnvDRZv
+         /aLUPlSU3vyjEA+TSWAzjLCAYqNpOPqtkCQgg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=d0rAx93itBTSy1xOFmXFYBiya33QB5vLyzSyQgo9d2c=;
-        b=OtT/kkrtL/UeJL7KjoP0yIq7c7lFfVn0XvgwtVNfJMigtvnqRKFEqwUGBqS6Nhss4M
-         5bL/V02nytSfDYsEkQHLnmptHXy6mlFzFuAm7CEog/YhKqRfBWg4fbLQhkd6MlsjGnTq
-         v7/OHPZF3J9tfXCRJSlideLMMXZ6BF+qT+BxGWgP/k+tjgXtFdQYpXWmzjk+gCrC5lEY
-         32N6qy/AzdMJYevUr0uLnaul9BAPOOFGNpBrwhDSjm9fF1rAJW6oMZzBvoQRCQEJiqLq
-         apFctVcn2P5sAYkiVzZh6HonSifPcTAngGd0kRlPNZlZ+qVXRicPJFjmkslQA/EBvj8g
-         kfXA==
-X-Gm-Message-State: AOAM533EFuoqcz3066kbJXW0tcuwIVXtkU4jWYePlvDLXhOAVM7reEck
-        HKnCa8AMZ++4pHKwlJtW0zMFnw/YL8AxBw==
-X-Google-Smtp-Source: ABdhPJwulKZu414F3l5Atx3YNuWmHlorG2mHqfczLBh6vFzVZjLMPq9K6DvJuf7brTnwZT98+IHBFEwRVS5ylg==
-X-Received: from mmandlik.mtv.corp.google.com ([2620:15c:202:201:9910:f10f:1467:c3f])
- (user=mmandlik job=sendgmr) by 2002:a25:df06:: with SMTP id
- w6mr1182115ybg.459.1634152796951; Wed, 13 Oct 2021 12:19:56 -0700 (PDT)
-Date:   Wed, 13 Oct 2021 12:19:52 -0700
-Message-Id: <20211013121544.v3.1.Ic0a40b84dee3825302890aaea690e73165c71820@changeid>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.33.0.882.g93a45727a2-goog
-Subject: [PATCH v3] bluetooth: Add Adv Monitor Device Lost event
-From:   Manish Mandlik <mmandlik@google.com>
-To:     marcel@holtmann.org, luiz.dentz@gmail.com
-Cc:     linux-bluetooth@vger.kernel.org,
-        chromeos-bluetooth-upstreaming@chromium.org,
-        Manish Mandlik <mmandlik@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=qKH85f/X/bTM1HBd2jb8yR7hV1r7tXpdbyJxEIUbYFg=;
+        b=2OBCBcNsk4MQnHF6rbQLvCT+sLsjXLcyQ792DzSjW8+NhuOAAOznDHDmyN6ADNV9HY
+         SmWjP9GALacyi6r9YueaiV+dbyvcrvKLor9G5QHtL1nlld6CWzlExgV4UigPuVYJbj9P
+         Cw104764g24dWDgYEhblMe/rnKmsIrKgDPD2Exf5ez8di/e1F1AHI3Jy1ZaeyAszuxhG
+         WjQ7uCpUEw5VStLuqU9N9lnbJ5KIAB1aWQbFxZ5K+aM5dEPtQWJhttzQTfTcBIn/MwQ0
+         3bwn247lxNYy9TRYvCJH8RUmkXwdVIO8NThk0haFsrlgYcwqe3uij97PHXONNkOcg2Rz
+         eO5A==
+X-Gm-Message-State: AOAM531Ug5mHyDZR1hcPklUpQOT4daBlC5riQ3niqH+k/NTteBGf1OuC
+        POSYxIX3+yq1Z8dxw/E7rP3xCA==
+X-Google-Smtp-Source: ABdhPJwHphrDVmMbMJ7FNjq5CHkLWjARm6t6dQ3Imk/b5ETfBXq/2tEXlahAHUelGKMPUbS6bJZYhQ==
+X-Received: by 2002:a05:6512:4029:: with SMTP id br41mr961117lfb.233.1634154969452;
+        Wed, 13 Oct 2021 12:56:09 -0700 (PDT)
+Received: from cloudflare.com ([2a01:110f:480d:6f00:ff34:bf12:ef2:5071])
+        by smtp.gmail.com with ESMTPSA id d19sm47867ljl.87.2021.10.13.12.56.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Oct 2021 12:56:09 -0700 (PDT)
+References: <20211012135935.37054-1-lmb@cloudflare.com>
+User-agent: mu4e 1.1.0; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     nicolas.dichtel@6wind.com, luke.r.nels@gmail.com,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        kernel-team@cloudflare.com, linux-riscv@lists.infradead.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH v2 0/4] Fix up bpf_jit_limit some more
+In-reply-to: <20211012135935.37054-1-lmb@cloudflare.com>
+Date:   Wed, 13 Oct 2021 21:56:08 +0200
+Message-ID: <87wnmgg0mf.fsf@cloudflare.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Whenever the controller starts/stops monitoring a bt device, it sends
-MSFT Monitor Device event. Handle this event and notify the bluetoothd
-whenever the controller stops monitoring a particular device.
+On Tue, Oct 12, 2021 at 03:59 PM CEST, Lorenz Bauer wrote:
+> Some more cleanups around bpf_jit_limit to make it readable via sysctl.
+>
+> Jakub raised the point that a sysctl toggle is UAPI and therefore
+> can't be easily changed later on. I tried to find another place to stick
+> the info, but couldn't find a good one. All the current BPF knobs are in
+> sysctl.
+>
+> There are examples of read only sysctls:
+> $ sudo find /proc/sys -perm 0444 | wc -l
+> 90
+>
+> There are no examples of sysctls with mode 0400 however:
+> $ sudo find /proc/sys -perm 0400 | wc -l
+> 0
+>
+> Thoughts?
 
-Test performed:
-- verified by logs that the MSFT Monitor Device is received from the
-  controller and the bluetoothd is notified when the controller stops
-  monitoring the device.
+I threw this idea out there during LPC already, that it would be cool to
+use BPF iterators for that. Pinned/preloaded iterators were made for
+dumping kernel data on demand after all.
 
-Signed-off-by: Manish Mandlik <mmandlik@google.com>
+What is missing is a BPF iterator type that would run the program just
+once (there is just one thing to print), and a BPF helper to lookup
+symbol's address.
+
+I thought this would require a bit of work, but actually getting a PoC
+(see below) to work was rather pleasntly straightforward.
+
+Perhaps a bit of a hack but I'd consider it as an alternative.
+
+-- >8 --
+
+From bef52bec926ea08ccd32a3421d195210ae7d3b38 Mon Sep 17 00:00:00 2001
+From: Jakub Sitnicki <jakub@cloudflare.com>
+Date: Wed, 13 Oct 2021 18:54:12 +0200
+Subject: [PATCH] RFC: BPF iterator that always runs the program just once
+
+The test iterator loads the value of bpf_jit_current kernel global:
+
+ # bpftool iter pin tools/testing/selftests/bpf/bpf_iter_once.o /sys/fs/bpf/bpf_jit_current
+ libbpf: elf: skipping unrecognized data section(6) .rodata.str1.1
+ # cat /sys/fs/bpf/bpf_jit_current
+ 2
+ # for ((i=0; i<10; i++)); do iptables -A OUTPUT -m bpf --bytecode '1,6 0 0 0' -j ACCEPT; done
+ # cat /sys/fs/bpf/bpf_jit_current
+ 12
+ # iptables -F OUTPUT
+ # cat /sys/fs/bpf/bpf_jit_current
+ 2
+
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 ---
-Hello Bt-Maintainers,
+ include/uapi/linux/bpf.h                      |  7 ++
+ kernel/bpf/Makefile                           |  2 +-
+ kernel/bpf/helpers.c                          | 22 ++++++
+ kernel/bpf/once_iter.c                        | 76 +++++++++++++++++++
+ tools/include/uapi/linux/bpf.h                |  7 ++
+ .../selftests/bpf/progs/bpf_iter_once.c       | 33 ++++++++
+ 6 files changed, 146 insertions(+), 1 deletion(-)
+ create mode 100644 kernel/bpf/once_iter.c
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_once.c
 
-As mentioned in the bluez patch series [1], we need to capture the 'MSFT
-Monitor Device' from the controller and pass it to the bluetoothd.
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 6fc59d61937a..ec117ebd3d58 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -4909,6 +4909,12 @@ union bpf_attr {
+  *	Return
+  *		The number of bytes written to the buffer, or a negative error
+  *		in case of failure.
++ *
++ * long bpf_kallsyms_lookup_name(const char *name, u32 name_size)
++ *	Description
++ *		Lookup the address for a symbol.
++ *	Return
++ *		Returns 0 if not found.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -5089,6 +5095,7 @@ union bpf_attr {
+ 	FN(task_pt_regs),		\
+ 	FN(get_branch_snapshot),	\
+ 	FN(trace_vprintk),		\
++	FN(kallsyms_lookup_name),	\
+ 	/* */
 
-This is required to further optimize the power consumption by avoiding
-handling of RSSI thresholds and timeouts in the user space and let the
-controller do the RSSI tracking.
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
+index 7f33098ca63f..f2dc86ea0f2d 100644
+--- a/kernel/bpf/Makefile
++++ b/kernel/bpf/Makefile
+@@ -6,7 +6,7 @@ cflags-nogcse-$(CONFIG_X86)$(CONFIG_CC_IS_GCC) := -fno-gcse
+ endif
+ CFLAGS_core.o += $(call cc-disable-warning, override-init) $(cflags-nogcse-yy)
 
-This patch adds support to read HCI_VS_MSFT_LE_Monitor_Device_Event and
-introduces a new MGMT event MGMT_EV_ADV_MONITOR_DEVICE_LOST to indicate
-that the controller has stopped tracking that particular device.
+-obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o tnum.o bpf_iter.o map_iter.o task_iter.o prog_iter.o
++obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o tnum.o bpf_iter.o map_iter.o task_iter.o prog_iter.o once_iter.o
+ obj-$(CONFIG_BPF_SYSCALL) += hashtab.o arraymap.o percpu_freelist.o bpf_lru_list.o lpm_trie.o map_in_map.o
+ obj-$(CONFIG_BPF_SYSCALL) += local_storage.o queue_stack_maps.o ringbuf.o
+ obj-$(CONFIG_BPF_SYSCALL) += bpf_local_storage.o bpf_task_storage.o
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index 1ffd469c217f..d2524df54ab5 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -15,6 +15,7 @@
+ #include <linux/pid_namespace.h>
+ #include <linux/proc_ns.h>
+ #include <linux/security.h>
++#include <linux/kallsyms.h>
 
-Please let me know what you think about this or if you have any further
-questions.
+ #include "../../lib/kstrtox.h"
 
-[1] https://patchwork.kernel.org/project/bluetooth/list/?series=562967
-
-Thanks,
-Manish.
-
-Changes in v3:
-- Discard changes to the Device Found event and notify bluetoothd only
-  when the controller stops monitoring the device via new Device Lost
-  event.
-
-Changes in v2:
-- Instead of creating a new 'Device Tracking' event, add a flag 'Device
-  Tracked' in the existing 'Device Found' event and add a new 'Device
-  Lost' event to indicate that the controller has stopped tracking that
-  device.
-
- include/net/bluetooth/hci_core.h |  2 +
- include/net/bluetooth/mgmt.h     |  6 ++
- net/bluetooth/mgmt.c             | 14 +++++
- net/bluetooth/msft.c             | 94 +++++++++++++++++++++++++-------
- 4 files changed, 95 insertions(+), 21 deletions(-)
-
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index dd8840e70e25..8a160c0bba21 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -1842,6 +1842,8 @@ void mgmt_adv_monitor_removed(struct hci_dev *hdev, u16 handle);
- int mgmt_phy_configuration_changed(struct hci_dev *hdev, struct sock *skip);
- int mgmt_add_adv_patterns_monitor_complete(struct hci_dev *hdev, u8 status);
- int mgmt_remove_adv_monitor_complete(struct hci_dev *hdev, u8 status);
-+void mgmt_adv_monitor_device_lost(struct hci_dev *hdev, u16 handle,
-+				  bdaddr_t *addr, u8 addr_type);
- 
- u8 hci_le_conn_update(struct hci_conn *conn, u16 min, u16 max, u16 latency,
- 		      u16 to_multiplier);
-diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
-index 23a0524061b7..d438b51310d4 100644
---- a/include/net/bluetooth/mgmt.h
-+++ b/include/net/bluetooth/mgmt.h
-@@ -1103,3 +1103,9 @@ struct mgmt_ev_controller_resume {
- #define MGMT_WAKE_REASON_NON_BT_WAKE		0x0
- #define MGMT_WAKE_REASON_UNEXPECTED		0x1
- #define MGMT_WAKE_REASON_REMOTE_WAKE		0x2
-+
-+#define MGMT_EV_ADV_MONITOR_DEVICE_LOST		0x002f
-+struct mgmt_ev_adv_monitor_device_lost {
-+	__le16 monitor_handle;
-+	struct mgmt_addr_info addr;
-+} __packed;
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index 44683443300c..c3c178e1878e 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -173,6 +173,7 @@ static const u16 mgmt_events[] = {
- 	MGMT_EV_ADV_MONITOR_REMOVED,
- 	MGMT_EV_CONTROLLER_SUSPEND,
- 	MGMT_EV_CONTROLLER_RESUME,
-+	MGMT_EV_ADV_MONITOR_DEVICE_LOST,
- };
- 
- static const u16 mgmt_untrusted_commands[] = {
-@@ -4396,6 +4397,19 @@ static int set_device_flags(struct sock *sk, struct hci_dev *hdev, void *data,
- 				 &cp->addr, sizeof(cp->addr));
+@@ -1328,6 +1329,25 @@ void bpf_timer_cancel_and_free(void *val)
+ 	kfree(t);
  }
- 
-+void mgmt_adv_monitor_device_lost(struct hci_dev *hdev, u16 handle,
-+				  bdaddr_t *addr, u8 addr_type)
+
++BPF_CALL_2(bpf_kallsyms_lookup_name, const char *, name, u32, name_size)
 +{
-+	struct mgmt_ev_adv_monitor_device_lost ev;
++	const char *name_end;
 +
-+	ev.monitor_handle = cpu_to_le16(handle);
-+	bacpy(&ev.addr.bdaddr, addr);
-+	ev.addr.type = addr_type;
++	name_end = strnchr(name, name_size, 0);
++	if (!name_end)
++		return -EINVAL;
 +
-+	mgmt_event(MGMT_EV_ADV_MONITOR_DEVICE_LOST, hdev, &ev, sizeof(ev),
-+		   NULL);
++	return kallsyms_lookup_name(name);
 +}
 +
- static void mgmt_adv_monitor_added(struct sock *sk, struct hci_dev *hdev,
- 				   u16 handle)
- {
-diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
-index 255cffa554ee..40f95263ebb6 100644
---- a/net/bluetooth/msft.c
-+++ b/net/bluetooth/msft.c
-@@ -80,6 +80,14 @@ struct msft_rp_le_set_advertisement_filter_enable {
- 	__u8 sub_opcode;
- } __packed;
- 
-+#define MSFT_EV_LE_MONITOR_DEVICE	0x02
-+struct msft_ev_le_monitor_device {
-+	__u8     addr_type;
-+	bdaddr_t bdaddr;
-+	__u8     monitor_handle;
-+	__u8     monitor_state;
-+} __packed;
++static const struct bpf_func_proto bpf_kallsyms_lookup_name_proto = {
++	.func		= bpf_kallsyms_lookup_name,
++	.gpl_only	= true,
++	.ret_type	= RET_INTEGER,
++	.arg1_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_CONST_SIZE,
++};
 +
- struct msft_monitor_advertisement_handle_data {
- 	__u8  msft_handle;
- 	__u16 mgmt_handle;
-@@ -103,6 +111,26 @@ static int __msft_add_monitor_pattern(struct hci_dev *hdev,
- static int __msft_remove_monitor(struct hci_dev *hdev,
- 				 struct adv_monitor *monitor, u16 handle);
- 
-+/* is_mgmt = true matches the handle exposed to userspace via mgmt.
-+ * is_mgmt = false matches the handle used by the msft controller.
-+ * This function requires the caller holds hdev->lock
-+ */
-+static struct msft_monitor_advertisement_handle_data *msft_find_handle_data
-+				(struct hci_dev *hdev, u16 handle, bool is_mgmt)
+ const struct bpf_func_proto bpf_get_current_task_proto __weak;
+ const struct bpf_func_proto bpf_get_current_task_btf_proto __weak;
+ const struct bpf_func_proto bpf_probe_read_user_proto __weak;
+@@ -1404,6 +1424,8 @@ bpf_base_func_proto(enum bpf_func_id func_id)
+ 		return &bpf_timer_start_proto;
+ 	case BPF_FUNC_timer_cancel:
+ 		return &bpf_timer_cancel_proto;
++	case BPF_FUNC_kallsyms_lookup_name:
++		return &bpf_kallsyms_lookup_name_proto;
+ 	default:
+ 		break;
+ 	}
+diff --git a/kernel/bpf/once_iter.c b/kernel/bpf/once_iter.c
+new file mode 100644
+index 000000000000..f2635f1b0043
+--- /dev/null
++++ b/kernel/bpf/once_iter.c
+@@ -0,0 +1,76 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (c) 2021 Cloudflare, Inc. */
++
++#include <linux/bpf.h>
++#include <linux/init.h>
++#include <linux/seq_file.h>
++
++static struct {} empty;
++
++static void *once_seq_start(struct seq_file *seq, loff_t *pos)
 +{
-+	struct msft_monitor_advertisement_handle_data *entry;
-+	struct msft_data *msft = hdev->msft_data;
++	if (*pos == 0)
++		++*pos;
++	return &empty;
++}
 +
-+	list_for_each_entry(entry, &msft->handle_map, list) {
-+		if (is_mgmt && entry->mgmt_handle == handle)
-+			return entry;
-+		if (!is_mgmt && entry->msft_handle == handle)
-+			return entry;
-+	}
-+
++static void *once_seq_next(struct seq_file *seq, void *v, loff_t *pos)
++{
++	++*pos;
 +	return NULL;
 +}
 +
- bool msft_monitor_supported(struct hci_dev *hdev)
- {
- 	return !!(msft_get_features(hdev) & MSFT_FEATURE_MASK_LE_ADV_MONITOR);
-@@ -341,6 +369,38 @@ void msft_unregister(struct hci_dev *hdev)
- 	kfree(msft);
- }
- 
-+/* This function requires the caller holds hdev->lock */
-+static void msft_monitor_device_evt(struct hci_dev *hdev, struct sk_buff *skb)
++struct bpf_iter__once {
++	__bpf_md_ptr(struct bpf_iter_meta *, meta);
++};
++
++DEFINE_BPF_ITER_FUNC(once, struct bpf_iter_meta *meta)
++
++static int once_seq_show(struct seq_file *seq, void *v)
 +{
-+	struct msft_ev_le_monitor_device *ev = (void *)skb->data;
-+	struct msft_monitor_advertisement_handle_data *handle_data;
-+
-+	if (skb->len < sizeof(*ev)) {
-+		bt_dev_err(hdev,
-+			   "MSFT vendor event %u: insufficient data (len: %u)",
-+			   MSFT_EV_LE_MONITOR_DEVICE, skb->len);
-+		return;
-+	}
-+	skb_pull(skb, sizeof(*ev));
-+
-+	bt_dev_dbg(hdev,
-+		   "MSFT vendor event %u: handle 0x%04x state %d addr %pMR",
-+		   MSFT_EV_LE_MONITOR_DEVICE, ev->monitor_handle,
-+		   ev->monitor_state, &ev->bdaddr);
-+
-+	handle_data = msft_find_handle_data(hdev, ev->monitor_handle, false);
-+
-+	if (!ev->monitor_state) {
-+		/* Notify the bluetoothd ONLY when the controller stops
-+		 * monitoring a particular device. No need to notify when
-+		 * the controller starts monitoring a device as the Device
-+		 * Found event will be sent anyway.
-+		 */
-+		mgmt_adv_monitor_device_lost(hdev, handle_data->mgmt_handle,
-+					     &ev->bdaddr, ev->addr_type);
-+	}
++	return 0;
 +}
 +
- void msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
- {
- 	struct msft_data *msft = hdev->msft_data;
-@@ -368,37 +428,29 @@ void msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 	if (skb->len < 1)
- 		return;
- 
-+	hci_dev_lock(hdev);
++static void once_seq_stop(struct seq_file *seq, void *v)
++{
++	struct bpf_iter_meta meta;
++	struct bpf_iter__once ctx;
++	struct bpf_prog *prog;
 +
- 	event = *skb->data;
- 	skb_pull(skb, 1);
- 
--	bt_dev_dbg(hdev, "MSFT vendor event %u", event);
--}
-+	switch (event) {
-+	case MSFT_EV_LE_MONITOR_DEVICE:
-+		msft_monitor_device_evt(hdev, skb);
-+		break;
- 
--__u64 msft_get_features(struct hci_dev *hdev)
--{
--	struct msft_data *msft = hdev->msft_data;
-+	default:
-+		bt_dev_dbg(hdev, "MSFT vendor event %u", event);
-+		break;
-+	}
- 
--	return msft ? msft->features : 0;
-+	hci_dev_unlock(hdev);
- }
- 
--/* is_mgmt = true matches the handle exposed to userspace via mgmt.
-- * is_mgmt = false matches the handle used by the msft controller.
-- * This function requires the caller holds hdev->lock
-- */
--static struct msft_monitor_advertisement_handle_data *msft_find_handle_data
--				(struct hci_dev *hdev, u16 handle, bool is_mgmt)
-+__u64 msft_get_features(struct hci_dev *hdev)
- {
--	struct msft_monitor_advertisement_handle_data *entry;
- 	struct msft_data *msft = hdev->msft_data;
- 
--	list_for_each_entry(entry, &msft->handle_map, list) {
--		if (is_mgmt && entry->mgmt_handle == handle)
--			return entry;
--		if (!is_mgmt && entry->msft_handle == handle)
--			return entry;
--	}
--
--	return NULL;
-+	return msft ? msft->features : 0;
- }
- 
- static void msft_le_monitor_advertisement_cb(struct hci_dev *hdev,
--- 
-2.33.0.882.g93a45727a2-goog
++	meta.seq = seq;
++	prog = bpf_iter_get_info(&meta, true);
++	if (!prog)
++		return;
++
++	meta.seq = seq;
++	ctx.meta = &meta;
++	bpf_iter_run_prog(prog, &ctx);
++}
++
++static const struct seq_operations once_seq_ops = {
++	.start	= once_seq_start,
++	.next	= once_seq_next,
++	.stop	= once_seq_stop,
++	.show	= once_seq_show,
++};
++
++static const struct bpf_iter_seq_info once_seq_info = {
++	.seq_ops		= &once_seq_ops,
++	.init_seq_private	= NULL,
++	.fini_seq_private	= NULL,
++	.seq_priv_size		= 0,
++};
++
++static struct bpf_iter_reg once_reg_info = {
++	.target			= "once",
++	.feature		= 0,
++	.ctx_arg_info_size	= 0,
++	.ctx_arg_info		= {},
++	.seq_info		= &once_seq_info,
++};
++
++static int __init once_iter_init(void)
++{
++	return bpf_iter_reg_target(&once_reg_info);
++}
++late_initcall(once_iter_init);
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 6fc59d61937a..ec117ebd3d58 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -4909,6 +4909,12 @@ union bpf_attr {
+  *	Return
+  *		The number of bytes written to the buffer, or a negative error
+  *		in case of failure.
++ *
++ * long bpf_kallsyms_lookup_name(const char *name, u32 name_size)
++ *	Description
++ *		Lookup the address for a symbol.
++ *	Return
++ *		Returns 0 if not found.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -5089,6 +5095,7 @@ union bpf_attr {
+ 	FN(task_pt_regs),		\
+ 	FN(get_branch_snapshot),	\
+ 	FN(trace_vprintk),		\
++	FN(kallsyms_lookup_name),	\
+ 	/* */
 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_once.c b/tools/testing/selftests/bpf/progs/bpf_iter_once.c
+new file mode 100644
+index 000000000000..e5e6d779eb51
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/bpf_iter_once.c
+@@ -0,0 +1,33 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2021 Cloudflare, Inc. */
++
++#include "bpf_iter.h"
++#include <bpf/bpf_helpers.h>
++
++char _license[] SEC("license") = "GPL";
++
++SEC("iter/once")
++int dump_once(struct bpf_iter__once *ctx)
++{
++	const char sym_name[] = "bpf_jit_current";
++	struct seq_file *seq = ctx->meta->seq;
++	unsigned long sym_addr;
++	s64 value = 0;
++	int err;
++
++	sym_addr = bpf_kallsyms_lookup_name(sym_name, sizeof(sym_name));
++	if (!sym_addr) {
++		BPF_SEQ_PRINTF(seq, "failed to find %s address\n", sym_name);
++		return 0;
++	}
++
++	err = bpf_probe_read_kernel(&value, sizeof(value), (void *)sym_addr);
++	if (err) {
++		BPF_SEQ_PRINTF(seq, "failed to read from %s address\n", sym_name);
++		return 0;
++	}
++
++	BPF_SEQ_PRINTF(seq, "%ld\n", value);
++
++	return 0;
++}
+--
+2.31.1
