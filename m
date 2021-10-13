@@ -2,177 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44F0242C3A3
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 16:41:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C678F42C3AB
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 16:41:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237123AbhJMOnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 10:43:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:54546 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237322AbhJMOnP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 10:43:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1634136072;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vXA8djbogp7Sw2Cx9pnk662UT7IyGOIMEvk8gNSftSc=;
-        b=Mx11ETY8j9M7bAzleG/Y0LUAi255k1dH54251OgDfJ9RQW8ABRRKr2idzJz4CklnvNwUi+
-        3X0HKxUKV16EaDprokxW55SKuuLijhQx+J2a8qrGxARqyQCZswgVFQTsIrJz4Ci89pYcrn
-        tPe/lOR896xbo2o6ciwuqN/ctGK/0BQ=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-271-AcqTPIMeMLCTCPwGsB0ogg-1; Wed, 13 Oct 2021 10:41:10 -0400
-X-MC-Unique: AcqTPIMeMLCTCPwGsB0ogg-1
-Received: by mail-wr1-f69.google.com with SMTP id f11-20020adfc98b000000b0015fedc2a8d4so2213611wrh.0
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 07:41:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=vXA8djbogp7Sw2Cx9pnk662UT7IyGOIMEvk8gNSftSc=;
-        b=omdZ2mjDu5gudV9DaJiXGXIRMchidNPcq13x6/D88RZ8/VndU5IGRlZQNFMB5aQrTj
-         SdfkkOYu1H9Ky+XyjnDHXJcdvKtox7Sjs0XvXjU89sRjNNtCKLU1OXjSp3NhSfjk3DYj
-         QwdgiKHCrxfNrqRyH/5M84mDbqFHDIbAkUe7jZQGWppxfEShXw6ej6awBOylgm3DRYGv
-         oAdcuTyIUp8Ix0cCLI+iA1HAlR58XaGPtWNGpfToZ1KOeOjjoFv3gcCu3whKXjQZVhwY
-         lknmvJnu/Y2Sfl7kjQlgvtu3rnH8xGNEhuPmp/AH2XZp8AhX7guJGoeyT8a+2IOc0mNB
-         Q5SQ==
-X-Gm-Message-State: AOAM533kkQ3xjuMIdpGqRXcSXx6pqx1aCfI3Nz1uO/81KZYhXKrW4Kcu
-        ac0pnvUE6owP1+GgU/LaSTeeb9bGgkob9dG18BXDdc35ApwxMUj0prb9lbvzjbABEMkjDKsL8sP
-        JojXdyuhjDOUfevgo
-X-Received: by 2002:a05:600c:b41:: with SMTP id k1mr13372449wmr.4.1634136067611;
-        Wed, 13 Oct 2021 07:41:07 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwt34fB2yqwZduR7VWDbtvJ7IM2/MeeGw2kkFQt8Dvi5/3wo4+TpAZuJy7894+p0ZVlIIFpDQ==
-X-Received: by 2002:a05:600c:b41:: with SMTP id k1mr13372409wmr.4.1634136067387;
-        Wed, 13 Oct 2021 07:41:07 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-231-16.dyn.eolo.it. [146.241.231.16])
-        by smtp.gmail.com with ESMTPSA id y5sm8490227wrq.85.2021.10.13.07.41.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Oct 2021 07:41:07 -0700 (PDT)
-Message-ID: <f16214e5bca925d1087f8ba6d1aa8f4cf048808b.camel@redhat.com>
-Subject: Re: [syzbot] BUG: corrupted list in netif_napi_add
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     syzbot <syzbot+62e474dd92a35e3060d8@syzkaller.appspotmail.com>,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Date:   Wed, 13 Oct 2021 16:41:05 +0200
-In-Reply-To: <0000000000005639cd05ce3a6d4d@google.com>
-References: <0000000000005639cd05ce3a6d4d@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S236903AbhJMOng (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 10:43:36 -0400
+Received: from mail-sn1anam02on2087.outbound.protection.outlook.com ([40.107.96.87]:42673
+        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S237317AbhJMOnc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Oct 2021 10:43:32 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HwLkQfqv2bxRvxwYXYIucRoDuNm07RZB2W8yZTqrpQ5XeK4SDg33jrXDrJHM/BIlIj07oIVTeGfZpUac0A5um2H4cfnxWq8wdItDX5MQHPSuXyXIQmzKLpCjDtfEMSQGFGTv4Tzo1UzrPZxLiI7atWC81QD61oUxetR5MrWUjzPKgNScI57XE2aCzB7h+Ewn7vW9QdYbD/aABqFhHB5ydtzkHOvKXjAnleuGIQllEJ2SJ7z0Y5vYYv6bj3tQHv9mh4LMvGdsKR7ri1gjXl6KYlOMNlgodGViip3iDVCIBDsA1Blzjnf3PzcSr27EEvIMymV7+B90+L1IUOYyTItTrg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Q2j68wmAga4u4gzCvJAQ0eOXRyOhxlwf+X/vNpCRFlI=;
+ b=ChAhwHTG+zXLcNEJewwaJjNxYARtXHFIUnXrphBAWnadp7s4qCLLUKRvBpG6GS068G1UHF0Bm2tlbHTERdqveUGC+mmVjh871rZUwkyVtW0q3Okz9xmteL6xZ1kElH/lLJJ9mMYwqo3VnJyKBiVMbjm5BYVEj7pmooFad0ya1UUFiZnBwg8n/0k7OQsUgA1QgaRZsYv4c7nKyP1tQpKGhARvK9frLJDhjFBApuEDxmmimFgnpLoSlwbTQlrwJ+tWkfyDknzrlipD64PQ1GXa6SBU7UGvzRIX30UOLZS6RnDpYCgMxiSe2+mnx1i1aS6zQBdemkf+jy6zqx6JJ0sNag==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Q2j68wmAga4u4gzCvJAQ0eOXRyOhxlwf+X/vNpCRFlI=;
+ b=G0pRV46jWS+OVnA/ZKkHvldAEVO/8BMlB4CznQEZzOJU1tp0ROAuHr6bCehtBShnj7DQ5g40jHXkvyCZAyt2qWEyCMIawjF2bqP+bGSqf1nvAIybL5MT3Lqu5n4rPTmLDJToSsUUeOBhW2A/5Hsds46KqqEw5+sOsd0WWjWGGi7Ff1VuGzmUu/eVMlt2fnJwW++j7MMYM4PonNghjrK9GpjhoVbr4DgVYxDa+GiwkSgGSaTYBtzQ8b78XVx6ROK3fAAaCw0oHFLDwt7ZbFIswrXh5HJrpUJcAhJ/SEGtYG0ykkdhzIohH8nOie7y3K5z8J/fU7FANoe9MrvFrZs5Hw==
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5173.namprd12.prod.outlook.com (2603:10b6:208:308::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.25; Wed, 13 Oct
+ 2021 14:41:27 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::e8af:232:915e:2f95%6]) with mapi id 15.20.4608.016; Wed, 13 Oct 2021
+ 14:41:27 +0000
+Date:   Wed, 13 Oct 2021 11:41:25 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Aharon Landau <aharonl@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Maor Gottlieb <maorg@nvidia.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Shay Drory <shayd@nvidia.com>,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH mlx5-next 7/7] RDMA/mlx5: Attach ndescs to mlx5_ib_mkey
+Message-ID: <20211013144125.GE2744544@nvidia.com>
+References: <cover.1634033956.git.leonro@nvidia.com>
+ <4bf22f9401a01df13804b90f9c7e90e36c788bd9.1634033957.git.leonro@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4bf22f9401a01df13804b90f9c7e90e36c788bd9.1634033957.git.leonro@nvidia.com>
+X-ClientProxiedBy: CH2PR19CA0010.namprd19.prod.outlook.com
+ (2603:10b6:610:4d::20) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Received: from mlx.ziepe.ca (206.223.160.26) by CH2PR19CA0010.namprd19.prod.outlook.com (2603:10b6:610:4d::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.15 via Frontend Transport; Wed, 13 Oct 2021 14:41:26 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1mafRd-00EVTG-Hu; Wed, 13 Oct 2021 11:41:25 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f21ab987-e1db-4a99-5cc6-08d98e578963
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5173:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BL1PR12MB517349332C2F8F9F1767FD9CC2B79@BL1PR12MB5173.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2000;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: iV6/zSqZem4G7oKNWdnjxk++Ya2iUNZin5lgmzYMyKiZj8PAjUqzbpeYRzTBcZo2hpnJfb+klGPDoYvdcu6I1Kr2z+WIqTzAaFJ8xYZNMvf1m/rWr6XFvMMS2lNZpjryVgyan4cPiZ7JC6KxiwzddVQRvD5BkhvzYbu8o/j37sQJc2vw7sAWAfbVEnNt3I8XO6mHcHgN4rn3yCcGX3g9cuM6/uvRpqndXSHsn3+fSs4bGUh9r3cXeucVZOKSdM9iZ/Y+dS5s+e+UO1Gy01jnP/XPGtLLhXwrRxIZWktRmv9el3MTgPKU1OEOZV6BYDOe49n8t/RZm8KbgGXJhDNbJS9w+rRJFAMWmBBhdJW2Tikk8kotOcYrdv5yvmpgNqtlixcQuI1xDqAh/Rc+gtxX6WZ6e8e34FuqJgDTu2e4HmZkA7E0moMCNownQws5GaXaRH1tu7xgZXl0gFAfW5H7/lpFvLN35aSuI7jZFP5ulU1Ak7tbyHpr8R78yenP+L7lAM8S/rn7RSXuTfBXpKhcyZ00zS8ajmMFby1ZtCCagFQC3TPfSJ5FZE+IDQp5CtOcfninK1APSBiv41S5/YX+LUzrpH6Vl79mrB/0EcaY9YObnK8gZOMM+1TXCBWqwMq74WIQ5eGBeMGfSnHgsS9MGw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(38100700002)(4744005)(2616005)(66946007)(66476007)(8936002)(66556008)(2906002)(8676002)(36756003)(86362001)(54906003)(1076003)(5660300002)(186003)(6916009)(7416002)(508600001)(426003)(26005)(316002)(9786002)(9746002)(33656002)(4326008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?yFD1+7dp+h4qj1LXUVT+S+CU2AKwI1YPuE8tW7rs2foCKgUcy8h5vOF37M2G?=
+ =?us-ascii?Q?lb18oXt/f8S16MRvleEogSmes91xq0QdJntsWsyiV0bJ7SOZCSEdtEuSxR0M?=
+ =?us-ascii?Q?Ek16d5rgbAlAMeChrWS7Hi77BH6QE8xH5Yb20R2IyFEZ41kluivyP4JS9xAi?=
+ =?us-ascii?Q?TYsQ9NIuHOLaV+8BprsRj74jhAi93XxMV05RA7ObEwhZwCaan6F1cwL71jki?=
+ =?us-ascii?Q?VM++u/rJUGV/BZ6VDmY7ioOsHgetlghfqFXrD2PKixOajmAw08pYItO/IMrL?=
+ =?us-ascii?Q?KonURuk3hhQj1OmDAWSYrJR55GHFU4xVdQ2r4WH2S3rf1mXWY5aplXrlLcnH?=
+ =?us-ascii?Q?SxHQ++pVHBK2kGGZIpT7E5yOUKHvCeRkg2HdIAGGvICdyZO2SCJQ2MuRClOo?=
+ =?us-ascii?Q?i3GAA6aH7r0dOHVou7Ei9c4sBalL6OxFvQ4iH0NU6dPF3F3ZMJJW71eLhH4c?=
+ =?us-ascii?Q?za33jvNJKrotGPh/sWLSFfRY4XLgShAYIBVpC8Vt1xzdx271ZBtUgkXxoGVw?=
+ =?us-ascii?Q?lBIuCduYhaJVTL8GaZUD1NgpdFLoYPWwk65roStX6UyKU7/A97qy1MMUmQR0?=
+ =?us-ascii?Q?U1+XgEwIMJmLyYdZoSO+qMz78LrnuKdbSb/QJKOgdCrALkz+KPLnCIo6Tkhl?=
+ =?us-ascii?Q?VFRsQBhwlwcEavGEaQVycWJlmFenBjJq6dAgmy4B1OUdF8NIbrfMGtVB/7vo?=
+ =?us-ascii?Q?I88MERN6VCoag8XC0LvVnSW9SS4hPiRxfM/m4jWd9h4+raSJG9F0loszUdnD?=
+ =?us-ascii?Q?vGVUdnQ15LyBaQ3ejRtcSaG+Z3RxHYwtN7XdJoTe+kaHqTI0GXmqQZXGf3qL?=
+ =?us-ascii?Q?KfRZekBDAo0Z6qP/lH2eM2oFelDv58WnUXGBI2lx1shKkggOJ5SKq0rm6CyN?=
+ =?us-ascii?Q?ZJPgRVoooJvib+bGQxwfcTl7u0bjYXHBnLk0L6bcU9Y4YsN3MCO3hfzQ+unV?=
+ =?us-ascii?Q?L9AMcTtbTvklxJTs4kEbor7P97PmVorZFVPermrRfrsXa+Nq3Bs7kEGKcbRv?=
+ =?us-ascii?Q?gnw6MRSQDST2/ovE1+9akw3762JeUJ8t7pGPz1oygQLYqxExNw2MjB+YjtYu?=
+ =?us-ascii?Q?KYwIb//jPs/KIbRSx+RbIuLnfEDv7/O+f9wbRG2S4BItUVMEhhwvivMk0Ibc?=
+ =?us-ascii?Q?qQR8l3UrD0aEBVdqzROgsgBjV0dA9TCqtweXMAjZo+eqqVz2roJEXnq4rrMK?=
+ =?us-ascii?Q?v1OOeCri5gujsitYLnptjUD+WssSL/DTUvsvvi7Iurt5Gcqxt5gqGZgY3vUN?=
+ =?us-ascii?Q?qGckkdOcvYrQbCIv/wM40n7WqEnKw/qTIjPdwBSX0o+8fTCpmqEv+6pSNhuj?=
+ =?us-ascii?Q?IfxQCezrDhX1MEk0s6oZrLtO?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f21ab987-e1db-4a99-5cc6-08d98e578963
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Oct 2021 14:41:27.0683
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: XZp+YE3MvBk8Lh6r3e53HkgO5bEg6yp9v4qascD5TKx0AqVR2GbM5tBG55fXeo+4
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5173
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-10-13 at 04:40 -0700, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    683f29b781ae Add linux-next specific files for 20211008
-> git tree:       linux-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1525a614b00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=673b3589d970c
-> dashboard link: https://syzkaller.appspot.com/bug?extid=62e474dd92a35e3060d8
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17c98e98b00000
-> 
-> IMPORTANTIMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+62e474dd92a35e3060d8@syzkaller.appspotmail.com
-> 
-> IPv6: ADDRCONF(NETDEV_CHANGE): vcan0: link becomes ready
-> list_add double add: new=ffff888023417160, prev=ffff88807de3a050, next=ffff888023417160.
-> ------------[ cut here ]------------
-> kernel BUG at lib/list_debug.c:29!
-> invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-> CPU: 0 PID: 9490 Comm: syz-executor.1 Not tainted 5.15.0-rc4-next-20211008-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:__list_add_valid.cold+0x26/0x3c lib/list_debug.c:29
-> Code: b1 24 c3 fa 4c 89 e1 48 c7 c7 60 56 04 8a e8 f2 8c f1 ff 0f 0b 48 89 f2 4c 89 e1 48 89 ee 48 c7 c7 a0 57 04 8a e8 db 8c f1 ff <0f> 0b 48 89 f1 48 c7 c7 20 57 04 8a 4c 89 e6 e8 c7 8c f1 ff 0f 0b
-> RSP: 0018:ffffc90002c26a48 EFLAGS: 00010286
-> RAX: 0000000000000058 RBX: 0000000000000040 RCX: 0000000000000000
-> RDX: ffff888023263a00 RSI: ffffffff815e0d78 RDI: fffff52000584d3b
-> RBP: ffff888023417160 R08: 0000000000000058 R09: 0000000000000000
-> R10: ffffffff815dab5e R11: 0000000000000000 R12: ffff888023417160
-> R13: ffff888023417000 R14: ffff888023417160 R15: ffff888023417160
-> FS:  00007f841e9e8700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000000000000 CR3: 00000000601bd000 CR4: 00000000003506f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  <TASK>
->  __list_add_rcu include/linux/rculist.h:79 [inline]
->  list_add_rcu include/linux/rculist.h:106 [inline]
->  netif_napi_add+0x3fd/0x9c0 net/core/dev.c:6889
->  veth_enable_xdp_range+0x1b1/0x300 drivers/net/veth.c:1009
->  veth_enable_xdp+0x2a5/0x620 drivers/net/veth.c:1063
->  veth_xdp_set drivers/net/veth.c:1483 [inline]
->  veth_xdp+0x4d4/0x780 drivers/net/veth.c:1523
->  bond_xdp_set drivers/net/bonding/bond_main.c:5217 [inline]
->  bond_xdp+0x325/0x920 drivers/net/bonding/bond_main.c:5263
->  dev_xdp_install+0xd5/0x270 net/core/dev.c:9365
->  dev_xdp_attach+0x83d/0x1010 net/core/dev.c:9513
->  dev_change_xdp_fd+0x246/0x300 net/core/dev.c:9753
->  do_setlink+0x2fb4/0x3970 net/core/rtnetlink.c:2931
->  rtnl_group_changelink net/core/rtnetlink.c:3242 [inline]
->  __rtnl_newlink+0xc06/0x1750 net/core/rtnetlink.c:3396
->  rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3506
->  rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5572
->  netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2491
->  netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
->  netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1345
->  netlink_sendmsg+0x86d/0xda0 net/netlink/af_netlink.c:1916
->  sock_sendmsg_nosec net/socket.c:704 [inline]
->  sock_sendmsg+0xcf/0x120 net/socket.c:724
->  ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
->  ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
->  __sys_sendmsg+0xe5/0x1b0 net/socket.c:2492
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> RIP: 0033:0x7f841f2718d9
-> Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007f841e9e8188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-> RAX: ffffffffffffffda RBX: 00007f841f375f60 RCX: 00007f841f2718d9
-> RDX: 0000000000000000 RSI: 0000000020000140 RDI: 0000000000000003
-> RBP: 00007f841f2cbcb4 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007ffc8978d37f R14: 00007f841e9e8300 R15: 0000000000022000
->  </TASK>
-> Modules linked in:
-> ---[ end trace 7281cadbc8534f23 ]---
-> RIP: 0010:__list_add_valid.cold+0x26/0x3c lib/list_debug.c:29
-> Code: b1 24 c3 fa 4c 89 e1 48 c7 c7 60 56 04 8a e8 f2 8c f1 ff 0f 0b 48 89 f2 4c 89 e1 48 89 ee 48 c7 c7 a0 57 04 8a e8 db 8c f1 ff <0f> 0b 48 89 f1 48 c7 c7 20 57 04 8a 4c 89 e6 e8 c7 8c f1 ff 0f 0b
-> RSP: 0018:ffffc90002c26a48 EFLAGS: 00010286
-> RAX: 0000000000000058 RBX: 0000000000000040 RCX: 0000000000000000
-> RDX: ffff888023263a00 RSI: ffffffff815e0d78 RDI: fffff52000584d3b
-> RBP: ffff888023417160 R08: 0000000000000058 R09: 0000000000000000
-> R10: ffffffff815dab5e R11: 0000000000000000 R12: ffff888023417160
-> R13: ffff888023417000 R14: ffff888023417160 R15: ffff888023417160
-> FS:  00007f841e9e8700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000000000000 CR3: 00000000601bd000 CR4: 00000000003506f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+On Tue, Oct 12, 2021 at 01:26:35PM +0300, Leon Romanovsky wrote:
 
-For the record: I'm wild guessing this is related to:
+> diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniband/hw/mlx5/mlx5_ib.h
+> index ef6087a9f93b..ed173af8ae75 100644
+> +++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
+> @@ -637,6 +637,7 @@ enum mlx5_mkey_type {
+>  struct mlx5_ib_mkey {
+>  	u32			key;
+>  	enum mlx5_mkey_type	type;
+> +	int			ndescs;
 
-https://syzkaller.appspot.com/bug?extid=67f89551088ea1a6850e
+unsigned int
 
-(hopefully they share the same root cause)
-
-I spent some time investigating the latter, with no real clue. This has
-a repro, so I'll ask syzbot to provide more info with debug patches.
-
-Cheers,
-
-Paolo
-
+Jason
