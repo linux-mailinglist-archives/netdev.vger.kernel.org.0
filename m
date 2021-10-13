@@ -2,66 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72B1342BB05
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 10:59:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C32C342BB36
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 11:11:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234560AbhJMJBi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 05:01:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57892 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230461AbhJMJBg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 05:01:36 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89BD1C061570
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 01:59:33 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id g25so5878363wrb.2
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 01:59:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=QAVg72Jt+lGtXjAEZvBgf5t6NkxtFQa6ajJbavHqU3g=;
-        b=Nt2xksYI0PwJ2oWchboJX57w06zwXfncCLPtgvB6kNQf+DJdfXlr2/4Ya2U2K70+I6
-         QLPTLeAUwQkmV/m8C6wXEFRVgR1xYVo6vbvjisrt4Gdq2DP/1IeISCHr1iHv0W5vWGdN
-         ZvacQ7ps0/LQxre4b8itoZ0IlGO4hLaZAJ7Z4OagIaSPD4s7mM+5OruTBgOzKaJ5Gc9/
-         rNOn8zugUeRcqvdrYyFONZdbbwRXweW7nio3QjUJOAmY3Tozvb18mOo2vdlhgWxvXL0J
-         WTJ9ajGfINGdXvWdHgKLVUsuzjIOUygcbOnCmt0tb3sGn5Ct7yEcygH3nItBBS4VE/y+
-         AdUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=QAVg72Jt+lGtXjAEZvBgf5t6NkxtFQa6ajJbavHqU3g=;
-        b=C3iINkNpDmiyAf99t53owoG6WB2/tEF2FjVD/z5PqZZVqIG5WlEd3gkWbXFJ9ejUGh
-         BotK2bhriYYaPSImCQELqaweNWFWqKq0LvLgu1WdqTDI1se5ud4KXBGULtQ4g5XR9HT9
-         N1xBABqjNYqgGM9TIORZl+5H7xbQZDdVU+WHOr274PZSKhkr/fOyuIcJtAh6uyz4dtT7
-         AaxpATY9A6H3Hst944EZSNhIuSjjT/ISRnFb7KcLNvo3dqk6JTTwBSIDn6ysRNJE0Wdw
-         LevE61dgia4GmHDAUTUWXmjbgKpPKv/1p4ID3C7nHcvBmGPCMcfmh7WvPpNXiY1Z/vTk
-         uFKw==
-X-Gm-Message-State: AOAM533iVsgYe+NAUFd1C5wQ4Qg0JAFaCIfC2L4HrfQg6gif6uVK3fLb
-        eQPUrRMLYBDAD3regutz6TfpX18HHbO9njIuT18=
-X-Google-Smtp-Source: ABdhPJxWQrDUCzV2quIMleDNiZsquFVQK7VDOo8iKUT8DSrE9+GkVLEKedYwaHsFIsFnbXLmF2/cIcCjRktt3AZ1afg=
-X-Received: by 2002:a05:6000:1acc:: with SMTP id i12mr37783980wry.249.1634115572007;
- Wed, 13 Oct 2021 01:59:32 -0700 (PDT)
+        id S239065AbhJMJNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 05:13:50 -0400
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:42561 "EHLO
+        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239067AbhJMJNu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 05:13:50 -0400
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailnew.nyi.internal (Postfix) with ESMTP id BB52F580BEA;
+        Wed, 13 Oct 2021 05:11:46 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Wed, 13 Oct 2021 05:11:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm2; bh=ze/R6OhPdJBigyPk+ZDOG+YF/1b
+        XIPDQ8E8tmsolguo=; b=iP/C6xnZ9xiQKGdJctkYNWkK4Ki/6Akx62XU+q4QG08
+        keubdtX1CRNceI6n65Oy6G9A5/niusuUXtGxIEwfiJUMYU1DP0GDKcoxWA8QcMsM
+        0lOFsprdulHXwvu9tU+qf3sWTmmrySQ4W9MT7a42lmcmhianfsS0MyuHJiqMC5WE
+        GsGMQZvCxNmsYG+rZu0GSsIsKK1T5qYzDfFkhTVDZ4NpjrbQ8OzpYckG16B3R0cH
+        tN39dvCGhMQdeoiGQDaGYEIOj4ZH06wKN55RO6bU7oYGmHbbfBbOnaJGPQFiviH7
+        /dh+4CevIDC4q7RDblO2Hyg3b41EdurthYPpHNh5PKQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=ze/R6O
+        hPdJBigyPk+ZDOG+YF/1bXIPDQ8E8tmsolguo=; b=DvS49/i5AHyPadhF6eguZu
+        ikQWhO2oSHEig4Yh0c86hdegFyqciLYwyTQXEYdvS26Ie7SP9nk5mLZiC/zlMLrP
+        BJGobZMwcJNpNgCn3kYE9jq1RjOt3LHgfXIOspUP4a+i9ZMJOFSIA8BqtQ/rDpaU
+        C+tRIBIasaPacUG3ZGWAXIVI4bT3qa+QIgQQPPeJtDzOcGGTuHUAfucFs5LKFjHR
+        FKbfxsF+ltAdveGI9aPLC/fd8NzKZvOVFGykIObPJg3+AQIfIR0lvANW93YbJu88
+        nil4H9VKHXz/gM/0oeSAT0mUYunoNZyvrI0Ll1BtVYyu3IZT36rSCvXJeCwNqTeQ
+        ==
+X-ME-Sender: <xms:0qJmYXD9fYJWOAczzazVG9Z47yTjEjSZcjPrVrozWpK1dr3C0-Npfw>
+    <xme:0qJmYdikjczUJd_Xpgete0Z4grMnSX6EFoUTODVs0axZaioc7D2HGNhO07yExLLrx
+    Qp5eWHMwrXInQ>
+X-ME-Received: <xmr:0qJmYSmY6ZiyOv4JngmKq-QYMLXNaYkpW3UvCeV-hguxnn5kUDxZ3UnjwkuaV8TtydiyflcxTllIStFK6Cgy0Qp47HpdIUlK>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddutddguddvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevueehje
+    fgfffgiedvudekvdektdelleelgefhleejieeugeegveeuuddukedvteenucevlhhushht
+    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhh
+    drtghomh
+X-ME-Proxy: <xmx:0qJmYZwL2hLzilnOOn5f1m9yqmZjfNJS-M_ia-lFg_3yrBdrsaIvLw>
+    <xmx:0qJmYcTdWCU1d7DyG7bScELQ4uvewk6-9G1JfeQNZAGG0LoW5gC5BQ>
+    <xmx:0qJmYcYgq6cjLPgRJzS5nfK_wdfbNWO5zVizPjm2IK1414aBrT_UzQ>
+    <xmx:0qJmYRJpgrpXv9BN_f1M8OYTY2Lk4gfoUfwJ5Z_tKoat3_lJuNKO4g>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 13 Oct 2021 05:11:45 -0400 (EDT)
+Date:   Wed, 13 Oct 2021 11:11:44 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "open list:ETHERNET PHY LIBRARY" <netdev@vger.kernel.org>
+Subject: Re: [PATCH stable 4.14] net: phy: bcm7xxx: Fixed indirect MMD
+ operations
+Message-ID: <YWai0CXJaI+sJaf8@kroah.com>
+References: <20211011181516.103835-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
-Received: by 2002:a05:600c:3b85:0:0:0:0 with HTTP; Wed, 13 Oct 2021 01:59:31
- -0700 (PDT)
-Reply-To: jennifermbaya@yandex.com
-From:   Mrs Jennifer Mbaya <nicholas.jeremy58@gmail.com>
-Date:   Wed, 13 Oct 2021 01:59:31 -0700
-Message-ID: <CAFT8x55VeG8syUNhSbzpRiCbgA6j8=u77kenfRM=hV0Oq_XZVg@mail.gmail.com>
-Subject: Yours Sincerely
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211011181516.103835-1-f.fainelli@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, Oct 11, 2021 at 11:15:16AM -0700, Florian Fainelli wrote:
+> commit d88fd1b546ff19c8040cfaea76bf16aed1c5a0bb upstream
+> 
+> When EEE support was added to the 28nm EPHY it was assumed that it would
+> be able to support the standard clause 45 over clause 22 register access
+> method. It turns out that the PHY does not support that, which is the
+> very reason for using the indirect shadow mode 2 bank 3 access method.
+> 
+> Implement {read,write}_mmd to allow the standard PHY library routines
+> pertaining to EEE querying and configuration to work correctly on these
+> PHYs. This forces us to implement a __phy_set_clr_bits() function that
+> does not grab the MDIO bus lock since the PHY driver's {read,write}_mmd
+> functions are always called with that lock held.
+> 
+> Fixes: 83ee102a6998 ("net: phy: bcm7xxx: add support for 28nm EPHY")
+> [florian: adjust locking since phy_{read,write}_mmd are called with no
+> PHYLIB locks held]
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> Signed-off-by: David S. Miller <davem@davemloft.net>
+> ---
+>  drivers/net/phy/bcm7xxx.c | 94 +++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 94 insertions(+)
 
-My name is Mrs.Jennifer Mbaya, I am writing to invite you to my
-Charity project, I will be ready to donate some money for you to carry
-on the project in your country.
+All 3 now queued up, thanks!
 
-Yours Sincerely,
-
-Mrs Jennifer Mbaya
+greg k-h
