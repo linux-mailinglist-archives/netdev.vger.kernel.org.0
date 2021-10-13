@@ -2,72 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D868942CAD9
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 22:20:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3063D42CAEC
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 22:27:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229529AbhJMUWM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 16:22:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48744 "EHLO mail.kernel.org"
+        id S229548AbhJMU3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 16:29:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51316 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229496AbhJMUWJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Oct 2021 16:22:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8B966604AC;
-        Wed, 13 Oct 2021 20:20:05 +0000 (UTC)
+        id S229462AbhJMU3N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Oct 2021 16:29:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9572260ED4;
+        Wed, 13 Oct 2021 20:27:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634156405;
-        bh=jta6yXjC/Wl1nw1uLFoDnn4drjCLPWFpLRa4zX5Flbs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=CoFiDxp+ezkGTSRyDE4yUQiG3UbDw4L32Z6YhyR9zxf6r4mGGLTMoGCl364bbT8/J
-         ZXV61EpQzFKuJEjGj67DIvYi8jgisqLHQ+5l4Kmt2ryKfGkqTjNrRT8o1JSxQm/Mqx
-         DSFJid34Z3HxYfFIufzqx5pXEq1BSWlTO8z9E6C5fUDj/3Umxj5K2TdPqe1XOFIJqg
-         NAbgCcx1TXAVjg2ZqQ8I0DWJb7efSfCHXFFzXNdSAMilZqibOFrDdGbRRkymQtg+Cp
-         UqzxnQVdiUWYZdCtZ+RCcBpG+BrnYDKy9v3/dcQWsuzFcQIIAPf0+u4/zhtQD1Ymt1
-         KAoasGs/YjXbg==
+        s=k20201202; t=1634156825;
+        bh=WzPpCqbIaU8Yjzurw6WdxtOLIiYPLLjEr2x0eJGm70M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=c25QnCbpiya+dme+pIyczl7QnqiZLi71xvWE2MS/gSUhL6LlnphZVcuzTdhtGLKMD
+         47D6mLpAKPVWKopu1WiTP/Cn50z0/FSU+SolVAvEjwHWFME1q4W9MnJqqJfS3XSCK9
+         t2+linuqGz7AxmJpxLyro11CORnAYRjlnieWx7NDSSg9Pnmb1EgY3oiQIz2WQ3zX+w
+         W06/FEONbknB47+2KsV1mLBSidI4to7gVixyzIfhNVL4TCzFHAFoNYBPOYVpATiMsE
+         aKztnmbpbEjXNBbuJuM3Yt+PDLUdye9sRdajbiClAP9Lq6b+XQhiW4q31nH+kzWwIp
+         eCgVzY7vtMtEw==
+Date:   Wed, 13 Oct 2021 13:27:04 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     saeedm@nvidia.com
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH] mlx5: don't write directly to netdev->dev_addr
-Date:   Wed, 13 Oct 2021 13:20:01 -0700
-Message-Id: <20211013202001.311183-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
+To:     Anders Roxell <anders.roxell@linaro.org>
+Cc:     bbrezillon@kernel.org, arno@natisbad.org, schalla@marvell.com,
+        sgoutham@marvell.com, gakula@marvell.com, sbhatta@marvell.com,
+        hkelam@marvell.com, linux-crypto@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] include: marvell: octeontx2: build error: unknown type
+ name 'u64'
+Message-ID: <20211013132704.75fa98ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211013084020.44352ee0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20211013135743.3826594-1-anders.roxell@linaro.org>
+        <20211013084020.44352ee0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use a local buffer and eth_hw_addr_set().
+On Wed, 13 Oct 2021 08:40:20 -0700 Jakub Kicinski wrote:
+> On Wed, 13 Oct 2021 15:57:43 +0200 Anders Roxell wrote:
+> > Building an allmodconfig kernel arm64 kernel, the following build error
+> > shows up:
+> > 
+> > In file included from drivers/crypto/marvell/octeontx2/cn10k_cpt.c:4:
+> > include/linux/soc/marvell/octeontx2/asm.h:38:15: error: unknown type name 'u64'
+> >    38 | static inline u64 otx2_atomic64_fetch_add(u64 incr, u64 *ptr)
+> >       |               ^~~
+> > 
+> > Include linux/types.h in asm.h so the compiler knows what the type
+> > 'u64' are.
+> > 
+> > Fixes: af3826db74d1 ("octeontx2-pf: Use hardware register for CQE count")
+> > Signed-off-by: Anders Roxell <anders.roxell@linaro.org>  
+> 
+> Yes, please! I've been carrying same patch locally. Any expectations on
+> who should apply the patch? I'm gonna send a PR with networking fixes
+> to Linus tomorrow, happy to take it via netdev if that's okay.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-This takes care of Ethernet, mlx5/core/ipoib/ipoib.c
-will be changed as part of all the IB conversions.
----
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index e81e5505207c..430c9e967f5d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -4385,12 +4385,15 @@ void mlx5e_build_nic_params(struct mlx5e_priv *priv, struct mlx5e_xsk *xsk, u16
- static void mlx5e_set_netdev_dev_addr(struct net_device *netdev)
- {
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
-+	u8 addr[ETH_ALEN];
- 
--	mlx5_query_mac_address(priv->mdev, netdev->dev_addr);
--	if (is_zero_ether_addr(netdev->dev_addr) &&
-+	mlx5_query_mac_address(priv->mdev, addr);
-+	if (is_zero_ether_addr(addr) &&
- 	    !MLX5_CAP_GEN(priv->mdev, vport_group_manager)) {
- 		eth_hw_addr_random(netdev);
- 		mlx5_core_info(priv->mdev, "Assigned random MAC address %pM\n", netdev->dev_addr);
-+	} else {
-+		eth_hw_addr_set(netdev, addr);
- 	}
- }
- 
--- 
-2.31.1
-
+I realized the breakage only exists in net-next so applied 
+the fix there. Thanks!
