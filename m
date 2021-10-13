@@ -2,118 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E38542B4D8
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 07:21:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B425A42B636
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 07:56:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237672AbhJMFXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 01:23:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35544 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237600AbhJMFXk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 01:23:40 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9440C061570;
-        Tue, 12 Oct 2021 22:21:36 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id r18so4865856edv.12;
-        Tue, 12 Oct 2021 22:21:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=O0bpNeV5H2tlTKXse90QMUfiIV8csT1Ar0RjDFkM7MQ=;
-        b=bHtADcOHkeHQOEJQ1DFKGZXoEe2uR67R4MGx+Xt53CiQdjgqW6piJV4beISkN7L9bf
-         5X4DrXk4/GfkKHDaVWmulp8diX6xqXZeVbqpttUR389XmHXP9cppPbcuO8r/w8fOQDnU
-         OpBQyyPVtVK0wwq+ZX4iwXZMA2p3FmvqOkJr/2CEIK5zD93vWMmwqrfICD8+Bq+mjNNr
-         HScRHcVpXt/0T4+m9fUVvPGtWS+OMJsHDUre/ddB2wxJQxxrvDKptbqx1Cs+E3glqi37
-         U1NIt9vR6pvQskNa6AFdBi7qJvWW4u5WCckhycVb1Lw+HkuPYny/rxZmpB9nW5Qu5W0s
-         +xdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=O0bpNeV5H2tlTKXse90QMUfiIV8csT1Ar0RjDFkM7MQ=;
-        b=NXAym8+EnADfxHGlJhsASyESAlSAhT7D9MtSyK5BThHjdu0jst13rKtLfQr+g166V5
-         vNXhp6O1V/U1G6DMkztm53b1fs2wxTVQUFwg4bIqbWPnwuZzaRebStXWNFXoaeJ73CS/
-         sR02G62NZFeH7xbMMZnC1InpmJ/Eb1A1Nu0xVk3wHOw0aCJEC9qsskF0W87ZB/F9uDLU
-         a1iDlHyGgizrR2oudRRNWOZoo8iYGfx9v8xDchvRRhfFBc2QYmX8Q2qU+pzAGyM9Ioy8
-         +UX2h1TNbdCFfWkN9oME1EeEuX4c4eCZPBTELZpRCftCAvig8HrGR45DBDwtsZM25xDe
-         s5CQ==
-X-Gm-Message-State: AOAM530Dt6ZUrtaSwNJnVPCGTCtK8PKRedfOEB+fXvsC2gsxQxlsKEq5
-        zXo++wxRn2+RIyp/YDgNSElVvf8qHWvQlWMYrjZx7FzVDKHXAtfwJvI=
-X-Google-Smtp-Source: ABdhPJycgoRsBj6dI+FOHWjkdXIyhPmcwUwXpL4QMgQODvoGZJExgG7CIgbT9UWGiYlQufM4N3L8Eec0wMeqHjsqjQI=
-X-Received: by 2002:a17:906:f6cd:: with SMTP id jo13mr37508004ejb.563.1634102495447;
- Tue, 12 Oct 2021 22:21:35 -0700 (PDT)
+        id S229690AbhJMF6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 01:58:33 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:4782 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229582AbhJMF6d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 01:58:33 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19CMf9MV022235;
+        Tue, 12 Oct 2021 22:56:27 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=F1WWg0azO0/2uVqPI2BGNQyv5hN+ngaXIUzY8ubdzBw=;
+ b=V45b1dkFnrnI52LEX4IdFfJcFPv+IYKkXVeg/tOfSNsv/edU/ebvtJmXEbAIuNOZxyG0
+ iYhpDiVd9GZ3onflQob1r5sNz7c5kTIrq+DvkZsZWg08Cyc2UQVhWxG7N0n8PudoTmS7
+ Q3VhpQvTwpe0/AOsu4VCZhY/5lZ4v6lgKqg9rvaTBdNZqOjeAB9K19A1FjIuItSq/u1t
+ N7NCzfrHUrPa6MZmFnBKfHdxAw/n5qAQvUqSHl/rabjXnXgpEdSauncV0AbIF7DkNY9/
+ GVlNRN6/97vPlNDEN7rffrRXbP1CjuboW0npw2WScovl/NOLIi01pGp7oOM6//1+x8Ee aQ== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 3bnkcchhnc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 12 Oct 2021 22:56:27 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 12 Oct
+ 2021 22:56:25 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Tue, 12 Oct 2021 22:56:25 -0700
+Received: from localhost.localdomain (unknown [10.28.36.175])
+        by maili.marvell.com (Postfix) with ESMTP id B40373F708C;
+        Tue, 12 Oct 2021 22:56:22 -0700 (PDT)
+From:   Srujana Challa <schalla@marvell.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
+CC:     <sgoutham@marvell.com>, <lcherian@marvell.com>,
+        <gakula@marvell.com>, <hkelam@marvell.com>, <jerinj@marvell.com>,
+        <sbhatta@marvell.com>, <schalla@marvell.com>
+Subject: [PATCH v2 net-next 0/3] octeontx2-af: Miscellaneous changes for CPT
+Date:   Wed, 13 Oct 2021 11:26:18 +0530
+Message-ID: <20211013055621.1812301-1-schalla@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211013040349.2858773-1-mudongliangabcd@gmail.com>
-In-Reply-To: <20211013040349.2858773-1-mudongliangabcd@gmail.com>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Wed, 13 Oct 2021 13:21:09 +0800
-Message-ID: <CAD-N9QWTP8DLtAN70Xxap+WhNUfh9ixfeDMuNaB2NnpFhuAN8A@mail.gmail.com>
-Subject: Re: [PATCH] driver: net: can: delete napi if register_candev fails
-To:     Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
-        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>
-Cc:     linux-can@vger.kernel.org,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: ihdg6EqvgSdQnetwVqG7gQK3PME0s5Hk
+X-Proofpoint-GUID: ihdg6EqvgSdQnetwVqG7gQK3PME0s5Hk
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-10-13_01,2021-10-13_01,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 13, 2021 at 12:04 PM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
->
-> If register_candev fails, xcan_probe does not clean the napi
-> created by netif_napi_add.
->
+This patchset consists of miscellaneous changes for CPT.
+First patch enables the CPT HW interrupts, second patch
+adds support for CPT LF teardown in non FLR path and 
+final patch does CPT CTX flush in FLR handler.
 
-It seems the netif_napi_del operation is done in the free_candev
-(free_netdev precisely).
+v2:
+- Fixed a warning reported by kernel test robot.
 
-list_for_each_entry_safe(p, n, &dev->napi_list, dev_list)
-          netif_napi_del(p);
+Nithin Dabilpuram (1):
+  octeontx2-af: Perform cpt lf teardown in non FLR path
 
-And list_add_rcu(&napi->dev_list, &dev->napi_list) is done in the
-netif_napi_add.
+Srujana Challa (2):
+  octeontx2-af: Enable CPT HW interrupts
+  octeontx2-af: Add support to flush full CPT CTX cache
 
-Therefore, I suggest removing "netif_napi_del" operation in the
-xcan_remove to match probe and remove function.
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |  12 +
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   |  16 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |   7 +-
+ .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 466 +++++++++++++++++-
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   |  11 +
+ .../ethernet/marvell/octeontx2/af/rvu_reg.h   |   2 +
+ .../marvell/octeontx2/af/rvu_struct.h         |  18 +
+ 7 files changed, 517 insertions(+), 15 deletions(-)
 
-> Fix this by adding error handling code to clean napi when
-> register_candev fails.
->
-> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> ---
->  drivers/net/can/xilinx_can.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
-> index 3b883e607d8b..6ee0b5a8cdfc 100644
-> --- a/drivers/net/can/xilinx_can.c
-> +++ b/drivers/net/can/xilinx_can.c
-> @@ -1807,7 +1807,7 @@ static int xcan_probe(struct platform_device *pdev)
->         ret = register_candev(ndev);
->         if (ret) {
->                 dev_err(&pdev->dev, "fail to register failed (err=%d)\n", ret);
-> -               goto err_disableclks;
-> +               goto err_del_napi;
->         }
->
->         devm_can_led_init(ndev);
-> @@ -1825,6 +1825,8 @@ static int xcan_probe(struct platform_device *pdev)
->
->         return 0;
->
-> +err_del_napi:
-> +       netif_napi_del(&priv->napi);
->  err_disableclks:
->         pm_runtime_put(priv->dev);
->         pm_runtime_disable(&pdev->dev);
-> --
-> 2.25.1
->
+-- 
+2.25.1
+
