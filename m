@@ -2,190 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EF6C42BFA8
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 14:18:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61DD242BFC2
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 14:20:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232498AbhJMMUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 08:20:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55776 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230236AbhJMMUJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 08:20:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1634127483;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=8uA+gFhUzMMrb5D5fxARTwQwcT+AEfWKWkQ0ooGMKj8=;
-        b=gcZphIhv1SUibhOpSsOSgz4m0cbJvHyEtd0kwtKyNGk7PlE0SU+JPX+FUmjzkGHkvuPJuI
-        RYeShTXWeJ1jx+SFek2K1Tc6X4vwuEpu4Q3Rv6491+05hOgYMfee2etkukNn00qGLGJeMY
-        ljgHBxDZGBTUGlUD8++dZn6sdjVlaG0=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-555-0cjA2k3oO0iYD0-DbC0mBA-1; Wed, 13 Oct 2021 08:18:02 -0400
-X-MC-Unique: 0cjA2k3oO0iYD0-DbC0mBA-1
-Received: by mail-wr1-f70.google.com with SMTP id r16-20020adfbb10000000b00160958ed8acso1799135wrg.16
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 05:18:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8uA+gFhUzMMrb5D5fxARTwQwcT+AEfWKWkQ0ooGMKj8=;
-        b=rl5mqZL8wZnll4S1tTkFTuwugwWunPBNy6gXiDsgJpcY55Co9lMKYZHrF5k6ZiwkAZ
-         1NqftJxzroIYS54w6ohL5Uk7sppUmW4pJ6tJRSeeCtmh3c7IGFgACboTSX9+GlYIbt/j
-         Ju8GlJGn3JvPmfmJ/m3zm/xIPIm7xjbMccoCfI9Qs4Wmd+PHiQLQnLtLhPlPbHFm7iGk
-         LRUcVgjDEK6r8VqvRgw9Kpy2PBDVPP8J/lzhBRMGCLsWoEQgF8gXOT1EnLoAjPHskhSK
-         BJTsugOtJLW/GnjUVvD8KVe72FljO4veZt0vDaBbOcpWj8aCQ6OgwLX24luIW4wdBbIW
-         O81w==
-X-Gm-Message-State: AOAM531Y2ab67nkihpj45yhT1vK6mPVrMZiwUjEg60ZUzmdUQ2Mb2kOg
-        NIO9zrERtyokA0Bwt1vd9cDlc1ZZYtoG4KW52xQjhqTfp0i7+EvvFwzyWofCWB7BGGiViqRSxNi
-        hL7xZv4X65t4OrPd+
-X-Received: by 2002:a7b:c30c:: with SMTP id k12mr12535182wmj.38.1634127481353;
-        Wed, 13 Oct 2021 05:18:01 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwFEzPqFQ+1qHznC4euH1QtbfXrvr/+t46tCqHwjpC6aqk2B2gJ30j5Cm2I+Hz0oA4zGN44UQ==
-X-Received: by 2002:a7b:c30c:: with SMTP id k12mr12535146wmj.38.1634127481076;
-        Wed, 13 Oct 2021 05:18:01 -0700 (PDT)
-Received: from redhat.com ([2.55.30.112])
-        by smtp.gmail.com with ESMTPSA id z1sm4104369wrt.94.2021.10.13.05.17.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Oct 2021 05:18:00 -0700 (PDT)
-Date:   Wed, 13 Oct 2021 08:17:49 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Amit Shah <amit@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Gonglei <arei.gonglei@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        "Enrico Weigelt, metux IT consult" <info@metux.net>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Daniel Vetter <daniel@ffwll.ch>, Jie Deng <jie.deng@intel.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Vivek Goyal <vgoyal@redhat.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Anton Yakovlev <anton.yakovlev@opensynergy.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, linux-um@lists.infradead.org,
-        virtualization@lists.linux-foundation.org,
-        linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-gpio@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        nvdimm@lists.linux.dev, linux-remoteproc@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net, kvm@vger.kernel.org,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH RFC] virtio: wrap config->reset calls
-Message-ID: <20211013081632-mutt-send-email-mst@kernel.org>
-References: <20211013105226.20225-1-mst@redhat.com>
- <2060bd96-5884-a1b5-9f29-7fe670dc088d@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2060bd96-5884-a1b5-9f29-7fe670dc088d@redhat.com>
+        id S231208AbhJMMWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 08:22:02 -0400
+Received: from sonic306-20.consmr.mail.ne1.yahoo.com ([66.163.189.82]:32805
+        "EHLO sonic306-20.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229715AbhJMMWB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 08:22:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cs.com; s=a2048; t=1634127598; bh=59ehpsV6we++SPvKD6pA7TwtexdocZDdTB22sdCQp7s=; h=From:Subject:Date:To:References:From:Subject:Reply-To; b=ZVe18YlUiSiH1b/5+yJ5y3DWFihL68GgyoZVClnArOTCZdhJ/Lr4Rg+l9ihYlHBslse5ZBRfmXpztCw+8wOGEdnuDUzVL/bvMRUSPR+NmhVjcskmES2wMOWSkHrqBFcbAVp2cP8EZFopQV8Oae9UvMQrE25pdg65atmpFVbk5z8k/2gVZFVyGd95sc1sWE5pvPGDIKnsJ7PvJcPyqnpypVGU5Tb+iScnFaR6o+KPENV1JPol2YjXXR19t8e5rHkFjapyjV+FXHnNXsycB+Em2tuv7mrIrXY/lg59TyELSsWboVH1g4+JZxztXMvE0pF8/uBWa/iOy0JSBfvlDi7RDQ==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1634127598; bh=P+Q18oifKMG4LVXkSpRyJqBbydZWhztwzj1vKxmYZft=; h=X-Sonic-MF:From:Subject:Date:To:From:Subject; b=ds++R1VznfmxMQi8g9h577XUGGEIENyvHRdxwumll4lyb9hD7STzNZyZYctCZLQmekLFvde5qSlPB94nAInywCWzM+deXDHK2dGMbTIBsosvejQWArR4ChOpuDzUAL/L3kpGuM77E1b0keQgyOFEU+hQpuKUAe8yoqazH0onGiUjB+DPK6+MINFJEC8kD+3A7adOpR509aMqLHD/jajdzX0Juc9v0An/2nsoY+zz6d02Ue9l/pVNshgU5BgwsLK8tfVPWljUgV4xNp+4Fek3Wn7pyLHN9lrX/Hq/1AIZoiQtsa6GjL0vXJpCMWHaz2Bc1VLgkGG9XLPbbqmaI9S/ZA==
+X-YMail-OSG: Zs4T7GYVM1mIV38UO490wVr9Uf.NzCoJXZ7ByWhrXUEz4s4nLjGFJHAVdzo2rhA
+ X3Ap5rexf1UoPvigw7mIpTJr8YQaIO0eImQZbyaCGbFwXW_9ZbrJTZcGftn4bijJX7SQG.OoawnH
+ 5ujBuN3MXwxasEY5utRiQQ.hYU5y40TnbMm4uFTd4LTBkJATiq8a3_tPzBptt3BTcEP.o1ZMx0_x
+ KPwiJINkOBBBKm3TFe5IzzxNAW9A57QtQzci3DaLAxqaxug91QucSyGU_DwrY_vArD5IfLhN70s2
+ B9xptA1sdgtpj4YYMzuHephPXyz37E6Go39hIttrSiv4RkHVRIeCAo3DMkNaSWYUQZe1M7XJwcp2
+ oEL9EV9pUfySxHvjVBi9esSvRS6setNlzQM4_75itQo93EJYqbnijNz0pTM_gcMbxZkldQrdq5GQ
+ 89Gz95LNYJPrhggqJq1HLHHyfNZpfxhJPaCDdxBDOTeYZLq_ncbIFBOr102MV6EuEfB9rnOJFTs_
+ DRk.B3_mwPqWALUj1pT4LTv8RMt_zsIaaMBoONFBBMkOh817_sLwiHFBpR6SwmeK_IMaNxQwdOo3
+ CstQ_3rldTTqnSs1KWYUJSgArq2amU86iQz995Lws0G._cgkJTDEak1G3vgbNFtOi0NQ5zOe2y3.
+ 8bgfA1h1Egl2mIabDe319xSQHeXFjJcJdmyaJqn5XADnMv7U2KwMUsfA8i.eKD2MJifVnpgpNcYf
+ 4dWO6HZe7.PeM2RM4rlmKBkYB065FZWkdvYjinWDz5CdJtCqhTzljoJ1WbizESfIG1.l2GTPWA5f
+ SVEuRpYHt9p0hW6u2uhYue_wH07wLU5SZJixGq.XdlcMjMdojfV3r1u5RfgJd4sTyCEeoqw1iw5M
+ WB.Efw7HYjfF_mZuzBPKgRYOfKw_m1DSSuae_bIe2.kp04K1ORIepR8CEWre5t6YxUOmGgyutTdn
+ m6YMgh_uaf5soCPnpJuJKWZFTrObawqiNVGR9C2hrndoDxgsauhlFpJhHrclHO.aunTMWHi8o7ff
+ HBGC1Mrsu.kdaJ9yFpFOa18LavnCcY37YhQGxvHjjncZaRrwWpB4s.lOCar5qUjmRupogQVrhdqk
+ V5YaStQpnDGWZK3ikI05stzmRIBs.o8kTCMoHo5WuEP6Xlf0cmFG55yOYK2P6AwI163TUnRf63Ga
+ mcwFro1hlu_CrTppWuEUCpLyHjVChQxn_tctvfCc3Q9e1jUAtWi1h79vNjKqQq5TxE3.QW_JHUcx
+ yjiItSKR9Aiwn3pnjjLlLb8x7lnpGBU96vCun4seevmx2fHcQw7c1_zQt6haza79b6fAv7TAWJlX
+ jf3PgFfUY4x5slF2OwV4XoaXVXFpjioC_OP2TtEfowdSd6AiPZgzw7ddfcQFInABC9ODb2OqeJyg
+ gJHrPcVfw4tJ9GdQr3jhSIEiROuZKoa4kKDFzKJswNLZc3ppRbFkw7qbqPyi222w8kW60V1rXiv4
+ HmNnK3nqMFD_t2vv5xvj6da8qW5V6W7VoI_TV629jAw9ZjDiglNiSGVabKPdZikJ8JDMvIJbNtXT
+ 71uH6VyFEZgCWU.6hCjmFltlVo6HqPh0p8DaEBT7D6o1ii4pL9faIURTsw4hlgQlPl.vVwTXyEFw
+ vP5d.8azfyxdX7HRNNKWz_HYoUWEV6bZFJk1Y6IieG9R87ywQD.tbcsBC5LnbzfzETZZygXFvgOj
+ cgxpF1aO3r7vU9FOeT2gFTs6O9FLRznKOlgrN8p1o3Ny2gC13W78BG_hfmabXW.d48tL3QLxjmVc
+ ro3r278uboanNOi4hLcYQFO2nURDeOxYEC4.R64gvTYf2g_babNdVbhFqdmcCOQwKPHFHqUTIY4h
+ LzAB7G.gURIC03hn_Lvzuqg8tnMs8tWT1XDgBIub1W0YoqrtF2qEjD4ZbLRHbZp6V0X5P5vnYm0I
+ gpXD49jgD9BWum1xIohQYk68D4Wf9mKjY45y29IE.MWYtBHHM4HG1hOjO98L7hTY88XfCheXhrIP
+ DegMMflmsm7jeIz6hRW6V2BL2fzyN5e7k.7jrwO7GWoJVQMXDvmQtyuxy14xqSZ6H__s46zdQIOr
+ wpMtA_6c6xwbQhZJKJqqz7.XqIjDVdqt5gT_9_Hf_9sQJkNboKpGumxKgeBVhKiazgkBS97MwhwQ
+ vonz_MOv_HyPo_1wS22l961PI6fmY4pkop2pYXkYxDm8Mjj0GjcmNhFph1GRgajuAg2DrZVrIgN2
+ Nj30ne0w-
+X-Sonic-MF: <vschagen@cs.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic306.consmr.mail.ne1.yahoo.com with HTTP; Wed, 13 Oct 2021 12:19:58 +0000
+Received: by kubenode501.mail-prod1.omega.sg3.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID f0c2e6c44a0c01c89cc561ccf12c50ad;
+          Wed, 13 Oct 2021 12:19:52 +0000 (UTC)
+From:   R W van Schagen <vschagen@cs.com>
+Content-Type: text/plain;
+        charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.7\))
+Subject: Question: ESP GSO not working
+Message-Id: <FBA664BB-EB62-4A70-9025-B1A33100B029@cs.com>
+Date:   Wed, 13 Oct 2021 20:19:45 +0800
+To:     netdev@vger.kernel.org
+X-Mailer: Apple Mail (2.3608.120.23.2.7)
+References: <FBA664BB-EB62-4A70-9025-B1A33100B029.ref@cs.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 13, 2021 at 01:03:46PM +0200, David Hildenbrand wrote:
-> On 13.10.21 12:55, Michael S. Tsirkin wrote:
-> > This will enable cleanups down the road.
-> > The idea is to disable cbs, then add "flush_queued_cbs" callback
-> > as a parameter, this way drivers can flush any work
-> > queued after callbacks have been disabled.
-> > 
-> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > ---
-> >   arch/um/drivers/virt-pci.c                 | 2 +-
-> >   drivers/block/virtio_blk.c                 | 4 ++--
-> >   drivers/bluetooth/virtio_bt.c              | 2 +-
-> >   drivers/char/hw_random/virtio-rng.c        | 2 +-
-> >   drivers/char/virtio_console.c              | 4 ++--
-> >   drivers/crypto/virtio/virtio_crypto_core.c | 8 ++++----
-> >   drivers/firmware/arm_scmi/virtio.c         | 2 +-
-> >   drivers/gpio/gpio-virtio.c                 | 2 +-
-> >   drivers/gpu/drm/virtio/virtgpu_kms.c       | 2 +-
-> >   drivers/i2c/busses/i2c-virtio.c            | 2 +-
-> >   drivers/iommu/virtio-iommu.c               | 2 +-
-> >   drivers/net/caif/caif_virtio.c             | 2 +-
-> >   drivers/net/virtio_net.c                   | 4 ++--
-> >   drivers/net/wireless/mac80211_hwsim.c      | 2 +-
-> >   drivers/nvdimm/virtio_pmem.c               | 2 +-
-> >   drivers/rpmsg/virtio_rpmsg_bus.c           | 2 +-
-> >   drivers/scsi/virtio_scsi.c                 | 2 +-
-> >   drivers/virtio/virtio.c                    | 5 +++++
-> >   drivers/virtio/virtio_balloon.c            | 2 +-
-> >   drivers/virtio/virtio_input.c              | 2 +-
-> >   drivers/virtio/virtio_mem.c                | 2 +-
-> >   fs/fuse/virtio_fs.c                        | 4 ++--
-> >   include/linux/virtio.h                     | 1 +
-> >   net/9p/trans_virtio.c                      | 2 +-
-> >   net/vmw_vsock/virtio_transport.c           | 4 ++--
-> >   sound/virtio/virtio_card.c                 | 4 ++--
-> >   26 files changed, 39 insertions(+), 33 deletions(-)
-> > 
-> > diff --git a/arch/um/drivers/virt-pci.c b/arch/um/drivers/virt-pci.c
-> > index c08066633023..22c4d87c9c15 100644
-> > --- a/arch/um/drivers/virt-pci.c
-> > +++ b/arch/um/drivers/virt-pci.c
-> > @@ -616,7 +616,7 @@ static void um_pci_virtio_remove(struct virtio_device *vdev)
-> >   	int i;
-> >           /* Stop all virtqueues */
-> > -        vdev->config->reset(vdev);
-> > +        virtio_reset_device(vdev);
-> >           vdev->config->del_vqs(vdev);
-> 
-> Nit: virtio_device_reset()?
-> 
-> Because I see:
-> 
-> int virtio_device_freeze(struct virtio_device *dev);
-> int virtio_device_restore(struct virtio_device *dev);
-> void virtio_device_ready(struct virtio_device *dev)
-> 
-> But well, there is:
-> void virtio_break_device(struct virtio_device *dev);
+While testing a new kernel driver I am writing I noticed that
+esp_gso_segment is never called. esp_gro_receive, the .xmit,
+.output_tail and .encap references are all used. So its not
+missing a module.
 
-Exactly. I don't know what's best, so I opted for plain english :)
+I tried without my own code and it still doesn=E2=80=99t do GSO?
 
+Ethtools is showing GRO and GSO enabled on the NIC.
 
-> -- 
-> Thanks,
-> 
-> David / dhildenb
+I guess I=E2=80=99m getting code blind and it must something simple
+as missing a flag.
 
+Richard van Schagen=
