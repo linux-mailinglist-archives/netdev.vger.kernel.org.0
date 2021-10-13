@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29C0542B1FB
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 03:16:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94B3B42B203
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 03:16:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236835AbhJMBSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 21:18:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37876 "EHLO
+        id S237185AbhJMBSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 21:18:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236400AbhJMBSf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 21:18:35 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 436DFC061749;
-        Tue, 12 Oct 2021 18:16:33 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id ec8so3168986edb.6;
-        Tue, 12 Oct 2021 18:16:33 -0700 (PDT)
+        with ESMTP id S236387AbhJMBSh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 21:18:37 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A64BC061570;
+        Tue, 12 Oct 2021 18:16:34 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id ec8so3169105edb.6;
+        Tue, 12 Oct 2021 18:16:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=3IAt1FuB6uBCMbNFm5wiYpy/LAKC6HjVdSQQgksgAGs=;
-        b=msgzzVZN0FUKbmnnrM0v9MV/uoP6V1GkCmC8Vg82Go55KZUOQ+Y6nO17uZGXvjsxw2
-         gB2Q7C9oLcDwiYZhq8FzcB8rAGH2b49hMtAxmyxvfAkeinqsprqkLNwNS/XqF9WyVCJ9
-         uqHr+I/qpjr9F2iArIXh3PQaWzsU/bzzSl6OniwLozlaLttzWSRfa2MAJ1O48KjA2llu
-         w+6EHKMY5hwvDBbomO0gMtFnSP1WtN1cgSaLdqYI8gRGyWbIhbDmXHFZViOwPKtPxJUe
-         DQHD9ujhHe14Cz5FMbqwKJEFSZVZOG9Y0G7ICTR0IK7jzsS8PKoQbKPR1YVvBbGVZ0sw
-         100Q==
+        bh=OXhbfjK5amKoFJfFVvnOk18wH+m5OlETJ/MI+jLxCPs=;
+        b=Hf3IN61MAmvP9m4TBHswalQ4blzKHMgYQnIZJMoy7uv54p6xJ8k8QZzUAs3tNHlI1G
+         +BoZb6+Rt/XQtcNZ3RMNE0USwjtd4Lv6NAmX1QmL0W6Xo1cBwZ3VAgfebRQA8RXOIlsN
+         ILMkxiKA2U/BuuD9YP7HxWYiqXzVDEJB8Zamds5dR0cpdqmbIa0LZKI5jsJ4Z9yRGmJx
+         nDuKGBtjTvTfI2b4EwrEjMQIruwQynxztJpg8/KRFCPa0qf71DKIMcpvP5ezzvfSuooK
+         45PcAInwSPPqY5KkgLRy4m2ZRmavmm+HQ90VHb2aJwO6fNTfDqf3Yq+FzPDrFrP2ObPO
+         CO+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=3IAt1FuB6uBCMbNFm5wiYpy/LAKC6HjVdSQQgksgAGs=;
-        b=LwgIboPb+H1nxTQQGug4wioD4ri/UST+qNVd3nSyQyy5Xpur70ulxwrQutdb4M6qg8
-         HBFDZ40lwgcWrKfKvotR8b8tdFqSDltEjATw+xcPNMAObprgD5tU91Erkd+efvXLUA+M
-         9daWtE1dUM7QvtUiaVX0sQdpMVQs+p89zxFTMOxugRchSbGpKmcpWrzpYTji9AyAr9MS
-         hM81pGVQCIlozh7FUgAsKiBbSlhj1Yo3uOg04tYP3pt07XyGNCBnUvMjccuw1LKxC1mS
-         2qPemgIvsXamd9aCkYBF2re3dWAQNBUgRoEMLKIkjK/HUZ54KvWrksPi6bi7rmGwiLM/
-         /yXg==
-X-Gm-Message-State: AOAM533weeQRQplJbb5GIduEWNSZKbwtzreGOdDZ9F/g8bf2P8Oul+ho
-        a9wipB+okLow/E1dm+PWGRI=
-X-Google-Smtp-Source: ABdhPJy1oKnkQP+4xb6RjFJWuLgSCK5+49O264isgJfUugLamanEBrtHGp6Y7lxep6uijIXGRdRH5A==
-X-Received: by 2002:a50:d085:: with SMTP id v5mr4849907edd.75.1634087791666;
-        Tue, 12 Oct 2021 18:16:31 -0700 (PDT)
+        bh=OXhbfjK5amKoFJfFVvnOk18wH+m5OlETJ/MI+jLxCPs=;
+        b=qUJ9EYgceuvrcUio2l5FAuKcLVQX/7u4K3bRxXsFV3YtomdmWGwzy7lY/aBjVatMZ3
+         fMK8KbG4mGuLxMSNUH+rq+/Gj/5KGzxqWP4g3Ios8wC/wrwyTc0AWwO6f35ju2Js/uyQ
+         xNf4LATiDLdKslgL5CA/neqj9n8D8WZjihH2EYN4U4DXvpyhkKCE9uM0hodgrw0ISQ6h
+         NaacVMpsrliVaJ5TELWoSdeBOjupNN3Fs+ALkfg6pHlAhA5RSbID5T9mzeisncCx94Zz
+         HU0v0wD6nr4gaZs+bNEHI5Qe49NT0xP3lmenpkfSeYKp0VnuHrjgX8eW5fWIXZrz0hz5
+         svUg==
+X-Gm-Message-State: AOAM532g0fFx4pAzdbpGigw7nWi7X5I2arIF5DyTHVfEtTlWUtazV1pJ
+        qPLzu5OAukwhN3p+ESEjOuk=
+X-Google-Smtp-Source: ABdhPJz3dg7kF67HNJTeO5QEyzkmkIzSqGxpKULnvqaPyiaA/vJzwVlPFmAp4xUUGq+D80j8DBz/DQ==
+X-Received: by 2002:a05:6402:2022:: with SMTP id ay2mr5089713edb.344.1634087792976;
+        Tue, 12 Oct 2021 18:16:32 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id v13sm6894630ede.79.2021.10.12.18.16.30
+        by smtp.googlemail.com with ESMTPSA id v13sm6894630ede.79.2021.10.12.18.16.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Oct 2021 18:16:31 -0700 (PDT)
+        Tue, 12 Oct 2021 18:16:32 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -62,9 +62,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-msm@vger.kernel.org
-Subject: [net-next PATCH v6 05/16] net: dsa: qca8k: add support for cpu port 6
-Date:   Wed, 13 Oct 2021 03:16:11 +0200
-Message-Id: <20211013011622.10537-6-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v6 06/16] net: dsa: qca8k: rework rgmii delay logic and scan for cpu port 6
+Date:   Wed, 13 Oct 2021 03:16:12 +0200
+Message-Id: <20211013011622.10537-7-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211013011622.10537-1-ansuelsmth@gmail.com>
 References: <20211013011622.10537-1-ansuelsmth@gmail.com>
@@ -74,157 +74,299 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently CPU port is always hardcoded to port 0. This switch have 2 CPU
-ports. The original intention of this driver seems to be use the
-mac06_exchange bit to swap MAC0 with MAC6 in the strange configuration
-where device have connected only the CPU port 6. To skip the
-introduction of a new binding, rework the driver to address the
-secondary CPU port as primary and drop any reference of hardcoded port.
-With configuration of mac06 exchange, just skip the definition of port0
-and define the CPU port as a secondary. The driver will autoconfigure
-the switch to use that as the primary CPU port.
+Future proof commit. This switch have 2 CPU ports and one valid
+configuration is first CPU port set to sgmii and second CPU port set to
+rgmii-id. The current implementation detects delay only for CPU port
+zero set to rgmii and doesn't count any delay set in a secondary CPU
+port. Drop the current delay scan function and move it to the sgmii
+parser function to generalize and implicitly add support for secondary
+CPU port set to rgmii-id. Introduce new logic where delay is enabled
+also with internal delay binding declared and rgmii set as PHY mode.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 50 +++++++++++++++++++++++++++++------------
- drivers/net/dsa/qca8k.h |  2 --
- 2 files changed, 36 insertions(+), 16 deletions(-)
+ drivers/net/dsa/qca8k.c | 165 ++++++++++++++++++++--------------------
+ drivers/net/dsa/qca8k.h |  10 ++-
+ 2 files changed, 89 insertions(+), 86 deletions(-)
 
 diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 22d6e4abb986..1998090a4c6b 100644
+index 1998090a4c6b..3b1874bf5d7d 100644
 --- a/drivers/net/dsa/qca8k.c
 +++ b/drivers/net/dsa/qca8k.c
-@@ -977,6 +977,22 @@ qca8k_setup_mac_pwr_sel(struct qca8k_priv *priv)
- 	return ret;
+@@ -888,68 +888,6 @@ qca8k_setup_mdio_bus(struct qca8k_priv *priv)
+ 	return 0;
  }
  
-+static int qca8k_find_cpu_port(struct dsa_switch *ds)
-+{
-+	struct qca8k_priv *priv = ds->priv;
-+
-+	/* Find the connected cpu port. Valid port are 0 or 6 */
-+	if (dsa_is_cpu_port(ds, 0))
-+		return 0;
-+
-+	dev_dbg(priv->dev, "port 0 is not the CPU port. Checking port 6");
-+
-+	if (dsa_is_cpu_port(ds, 6))
-+		return 6;
-+
-+	return -EINVAL;
-+}
-+
+-static int
+-qca8k_setup_of_rgmii_delay(struct qca8k_priv *priv)
+-{
+-	struct device_node *port_dn;
+-	phy_interface_t mode;
+-	struct dsa_port *dp;
+-	u32 val;
+-
+-	/* CPU port is already checked */
+-	dp = dsa_to_port(priv->ds, 0);
+-
+-	port_dn = dp->dn;
+-
+-	/* Check if port 0 is set to the correct type */
+-	of_get_phy_mode(port_dn, &mode);
+-	if (mode != PHY_INTERFACE_MODE_RGMII_ID &&
+-	    mode != PHY_INTERFACE_MODE_RGMII_RXID &&
+-	    mode != PHY_INTERFACE_MODE_RGMII_TXID) {
+-		return 0;
+-	}
+-
+-	switch (mode) {
+-	case PHY_INTERFACE_MODE_RGMII_ID:
+-	case PHY_INTERFACE_MODE_RGMII_RXID:
+-		if (of_property_read_u32(port_dn, "rx-internal-delay-ps", &val))
+-			val = 2;
+-		else
+-			/* Switch regs accept value in ns, convert ps to ns */
+-			val = val / 1000;
+-
+-		if (val > QCA8K_MAX_DELAY) {
+-			dev_err(priv->dev, "rgmii rx delay is limited to a max value of 3ns, setting to the max value");
+-			val = 3;
+-		}
+-
+-		priv->rgmii_rx_delay = val;
+-		/* Stop here if we need to check only for rx delay */
+-		if (mode != PHY_INTERFACE_MODE_RGMII_ID)
+-			break;
+-
+-		fallthrough;
+-	case PHY_INTERFACE_MODE_RGMII_TXID:
+-		if (of_property_read_u32(port_dn, "tx-internal-delay-ps", &val))
+-			val = 1;
+-		else
+-			/* Switch regs accept value in ns, convert ps to ns */
+-			val = val / 1000;
+-
+-		if (val > QCA8K_MAX_DELAY) {
+-			dev_err(priv->dev, "rgmii tx delay is limited to a max value of 3ns, setting to the max value");
+-			val = 3;
+-		}
+-
+-		priv->rgmii_tx_delay = val;
+-		break;
+-	default:
+-		return 0;
+-	}
+-
+-	return 0;
+-}
+-
+ static int
+ qca8k_setup_mac_pwr_sel(struct qca8k_priv *priv)
+ {
+@@ -996,19 +934,21 @@ static int qca8k_find_cpu_port(struct dsa_switch *ds)
  static int
  qca8k_parse_port_config(struct qca8k_priv *priv)
  {
-@@ -1017,13 +1033,14 @@ static int
- qca8k_setup(struct dsa_switch *ds)
- {
- 	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
-+	u8 cpu_port;
- 	int ret, i;
- 	u32 mask;
++	int port, cpu_port_index = 0, ret;
+ 	struct device_node *port_dn;
+ 	phy_interface_t mode;
+ 	struct dsa_port *dp;
+-	int port, ret;
++	u32 delay;
  
--	/* Make sure that port 0 is the cpu port */
--	if (!dsa_is_cpu_port(ds, 0)) {
--		dev_err(priv->dev, "port 0 is not the CPU port");
--		return -EINVAL;
-+	cpu_port = qca8k_find_cpu_port(ds);
-+	if (cpu_port < 0) {
-+		dev_err(priv->dev, "No cpu port configured in both cpu port0 and port6");
-+		return cpu_port;
+ 	/* We have 2 CPU port. Check them */
+-	for (port = 0; port < QCA8K_NUM_PORTS; port++) {
++	for (port = 0; port < QCA8K_NUM_PORTS && cpu_port_index < QCA8K_NUM_CPU_PORTS; port++) {
+ 		/* Skip every other port */
+ 		if (port != 0 && port != 6)
+ 			continue;
+ 
+ 		dp = dsa_to_port(priv->ds, port);
+ 		port_dn = dp->dn;
++		cpu_port_index++;
+ 
+ 		if (!of_device_is_available(port_dn))
+ 			continue;
+@@ -1017,12 +957,54 @@ qca8k_parse_port_config(struct qca8k_priv *priv)
+ 		if (ret)
+ 			continue;
+ 
+-		if (mode == PHY_INTERFACE_MODE_SGMII) {
++		switch (mode) {
++		case PHY_INTERFACE_MODE_RGMII:
++		case PHY_INTERFACE_MODE_RGMII_ID:
++		case PHY_INTERFACE_MODE_RGMII_TXID:
++		case PHY_INTERFACE_MODE_RGMII_RXID:
++			delay = 0;
++
++			if (!of_property_read_u32(port_dn, "tx-internal-delay-ps", &delay))
++				/* Switch regs accept value in ns, convert ps to ns */
++				delay = delay / 1000;
++			else if (mode == PHY_INTERFACE_MODE_RGMII_ID ||
++				 mode == PHY_INTERFACE_MODE_RGMII_TXID)
++				delay = 1;
++
++			if (delay > QCA8K_MAX_DELAY) {
++				dev_err(priv->dev, "rgmii tx delay is limited to a max value of 3ns, setting to the max value");
++				delay = 3;
++			}
++
++			priv->rgmii_tx_delay[cpu_port_index] = delay;
++
++			delay = 0;
++
++			if (!of_property_read_u32(port_dn, "rx-internal-delay-ps", &delay))
++				/* Switch regs accept value in ns, convert ps to ns */
++				delay = delay / 1000;
++			else if (mode == PHY_INTERFACE_MODE_RGMII_ID ||
++				 mode == PHY_INTERFACE_MODE_RGMII_RXID)
++				delay = 2;
++
++			if (delay > QCA8K_MAX_DELAY) {
++				dev_err(priv->dev, "rgmii rx delay is limited to a max value of 3ns, setting to the max value");
++				delay = 3;
++			}
++
++			priv->rgmii_rx_delay[cpu_port_index] = delay;
++
++			break;
++		case PHY_INTERFACE_MODE_SGMII:
+ 			if (of_property_read_bool(port_dn, "qca,sgmii-txclk-falling-edge"))
+ 				priv->sgmii_tx_clk_falling_edge = true;
+ 
+ 			if (of_property_read_bool(port_dn, "qca,sgmii-rxclk-falling-edge"))
+ 				priv->sgmii_rx_clk_falling_edge = true;
++
++			break;
++		default:
++			continue;
+ 		}
  	}
  
- 	/* Parse CPU port config to be later used in phy_link mac_config */
-@@ -1065,7 +1082,7 @@ qca8k_setup(struct dsa_switch *ds)
- 		dev_warn(priv->dev, "mib init failed");
- 
- 	/* Enable QCA header mode on the cpu port */
--	ret = qca8k_write(priv, QCA8K_REG_PORT_HDR_CTRL(QCA8K_CPU_PORT),
-+	ret = qca8k_write(priv, QCA8K_REG_PORT_HDR_CTRL(cpu_port),
- 			  QCA8K_PORT_HDR_CTRL_ALL << QCA8K_PORT_HDR_CTRL_TX_S |
- 			  QCA8K_PORT_HDR_CTRL_ALL << QCA8K_PORT_HDR_CTRL_RX_S);
- 	if (ret) {
-@@ -1087,10 +1104,10 @@ qca8k_setup(struct dsa_switch *ds)
- 
- 	/* Forward all unknown frames to CPU port for Linux processing */
- 	ret = qca8k_write(priv, QCA8K_REG_GLOBAL_FW_CTRL1,
--			  BIT(0) << QCA8K_GLOBAL_FW_CTRL1_IGMP_DP_S |
--			  BIT(0) << QCA8K_GLOBAL_FW_CTRL1_BC_DP_S |
--			  BIT(0) << QCA8K_GLOBAL_FW_CTRL1_MC_DP_S |
--			  BIT(0) << QCA8K_GLOBAL_FW_CTRL1_UC_DP_S);
-+			  BIT(cpu_port) << QCA8K_GLOBAL_FW_CTRL1_IGMP_DP_S |
-+			  BIT(cpu_port) << QCA8K_GLOBAL_FW_CTRL1_BC_DP_S |
-+			  BIT(cpu_port) << QCA8K_GLOBAL_FW_CTRL1_MC_DP_S |
-+			  BIT(cpu_port) << QCA8K_GLOBAL_FW_CTRL1_UC_DP_S);
+@@ -1060,10 +1042,6 @@ qca8k_setup(struct dsa_switch *ds)
  	if (ret)
  		return ret;
  
-@@ -1098,7 +1115,7 @@ qca8k_setup(struct dsa_switch *ds)
- 	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
- 		/* CPU port gets connected to all user ports of the switch */
- 		if (dsa_is_cpu_port(ds, i)) {
--			ret = qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(QCA8K_CPU_PORT),
-+			ret = qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(cpu_port),
- 					QCA8K_PORT_LOOKUP_MEMBER, dsa_user_ports(ds));
- 			if (ret)
- 				return ret;
-@@ -1110,7 +1127,7 @@ qca8k_setup(struct dsa_switch *ds)
- 
- 			ret = qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(i),
- 					QCA8K_PORT_LOOKUP_MEMBER,
--					BIT(QCA8K_CPU_PORT));
-+					BIT(cpu_port));
- 			if (ret)
- 				return ret;
- 
-@@ -1616,9 +1633,12 @@ static int
- qca8k_port_bridge_join(struct dsa_switch *ds, int port, struct net_device *br)
+-	ret = qca8k_setup_of_rgmii_delay(priv);
+-	if (ret)
+-		return ret;
+-
+ 	ret = qca8k_setup_mac_pwr_sel(priv);
+ 	if (ret)
+ 		return ret;
+@@ -1230,8 +1208,8 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+ 			 const struct phylink_link_state *state)
  {
- 	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
--	int port_mask = BIT(QCA8K_CPU_PORT);
-+	int port_mask, cpu_port;
- 	int i, ret;
+ 	struct qca8k_priv *priv = ds->priv;
+-	u32 reg, val;
+-	int ret;
++	int cpu_port_index, ret;
++	u32 reg, val, delay;
  
-+	cpu_port = dsa_to_port(ds, port)->cpu_dp->index;
-+	port_mask = BIT(cpu_port);
+ 	switch (port) {
+ 	case 0: /* 1st CPU port */
+@@ -1243,6 +1221,7 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+ 			return;
+ 
+ 		reg = QCA8K_REG_PORT0_PAD_CTRL;
++		cpu_port_index = QCA8K_CPU_PORT0;
+ 		break;
+ 	case 1:
+ 	case 2:
+@@ -1261,6 +1240,7 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+ 			return;
+ 
+ 		reg = QCA8K_REG_PORT6_PAD_CTRL;
++		cpu_port_index = QCA8K_CPU_PORT6;
+ 		break;
+ 	default:
+ 		dev_err(ds->dev, "%s: unsupported port: %i\n", __func__, port);
+@@ -1275,23 +1255,40 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+ 
+ 	switch (state->interface) {
+ 	case PHY_INTERFACE_MODE_RGMII:
+-		/* RGMII mode means no delay so don't enable the delay */
+-		qca8k_write(priv, reg, QCA8K_PORT_PAD_RGMII_EN);
+-		break;
+ 	case PHY_INTERFACE_MODE_RGMII_ID:
+ 	case PHY_INTERFACE_MODE_RGMII_TXID:
+ 	case PHY_INTERFACE_MODE_RGMII_RXID:
+-		/* RGMII_ID needs internal delay. This is enabled through
+-		 * PORT5_PAD_CTRL for all ports, rather than individual port
+-		 * registers
++		val = QCA8K_PORT_PAD_RGMII_EN;
 +
- 	for (i = 1; i < QCA8K_NUM_PORTS; i++) {
- 		if (dsa_to_port(ds, i)->bridge_dev != br)
- 			continue;
-@@ -1645,7 +1665,9 @@ static void
- qca8k_port_bridge_leave(struct dsa_switch *ds, int port, struct net_device *br)
- {
- 	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
--	int i;
-+	int cpu_port, i;
++		/* Delay can be declared in 3 different way.
++		 * Mode to rgmii and internal-delay standard binding defined
++		 * rgmii-id or rgmii-tx/rx phy mode set.
++		 * The parse logic set a delay different than 0 only when one
++		 * of the 3 different way is used. In all other case delay is
++		 * not enabled. With ID or TX/RXID delay is enabled and set
++		 * to the default and recommended value.
++		 */
++		if (priv->rgmii_tx_delay[cpu_port_index]) {
++			delay = priv->rgmii_tx_delay[cpu_port_index];
 +
-+	cpu_port = dsa_to_port(ds, port)->cpu_dp->index;
- 
- 	for (i = 1; i < QCA8K_NUM_PORTS; i++) {
- 		if (dsa_to_port(ds, i)->bridge_dev != br)
-@@ -1662,7 +1684,7 @@ qca8k_port_bridge_leave(struct dsa_switch *ds, int port, struct net_device *br)
- 	 * this port
- 	 */
- 	qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
--		  QCA8K_PORT_LOOKUP_MEMBER, BIT(QCA8K_CPU_PORT));
-+		  QCA8K_PORT_LOOKUP_MEMBER, BIT(cpu_port));
- }
- 
- static int
++			val |= QCA8K_PORT_PAD_RGMII_TX_DELAY(delay) |
++			       QCA8K_PORT_PAD_RGMII_TX_DELAY_EN;
++		}
++
++		if (priv->rgmii_rx_delay[cpu_port_index]) {
++			delay = priv->rgmii_rx_delay[cpu_port_index];
++
++			val |= QCA8K_PORT_PAD_RGMII_RX_DELAY(delay) |
++			       QCA8K_PORT_PAD_RGMII_RX_DELAY_EN;
++		}
++
++		/* Set RGMII delay based on the selected values */
++		qca8k_write(priv, reg, val);
++
++		/* QCA8337 requires to set rgmii rx delay for all ports.
++		 * This is enabled through PORT5_PAD_CTRL for all ports,
++		 * rather than individual port registers.
+ 		 */
+-		qca8k_write(priv, reg,
+-			    QCA8K_PORT_PAD_RGMII_EN |
+-			    QCA8K_PORT_PAD_RGMII_TX_DELAY(priv->rgmii_tx_delay) |
+-			    QCA8K_PORT_PAD_RGMII_RX_DELAY(priv->rgmii_rx_delay) |
+-			    QCA8K_PORT_PAD_RGMII_TX_DELAY_EN |
+-			    QCA8K_PORT_PAD_RGMII_RX_DELAY_EN);
+-		/* QCA8337 requires to set rgmii rx delay */
+ 		if (priv->switch_id == QCA8K_ID_QCA8337)
+ 			qca8k_write(priv, QCA8K_REG_PORT5_PAD_CTRL,
+ 				    QCA8K_PORT_PAD_RGMII_RX_DELAY_EN);
 diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index bc9c89dd7e71..781521e6a965 100644
+index 781521e6a965..5eb0c890dfe4 100644
 --- a/drivers/net/dsa/qca8k.h
 +++ b/drivers/net/dsa/qca8k.h
-@@ -24,8 +24,6 @@
+@@ -13,6 +13,7 @@
+ #include <linux/gpio.h>
  
- #define QCA8K_NUM_FDB_RECORDS				2048
+ #define QCA8K_NUM_PORTS					7
++#define QCA8K_NUM_CPU_PORTS				2
+ #define QCA8K_MAX_MTU					9000
  
--#define QCA8K_CPU_PORT					0
--
- #define QCA8K_PORT_VID_DEF				1
+ #define PHY_ID_QCA8327					0x004dd034
+@@ -255,13 +256,18 @@ struct qca8k_match_data {
+ 	u8 id;
+ };
  
- /* Global control registers */
++enum {
++	QCA8K_CPU_PORT0,
++	QCA8K_CPU_PORT6,
++};
++
+ struct qca8k_priv {
+ 	u8 switch_id;
+ 	u8 switch_revision;
+-	u8 rgmii_tx_delay;
+-	u8 rgmii_rx_delay;
+ 	bool sgmii_rx_clk_falling_edge;
+ 	bool sgmii_tx_clk_falling_edge;
++	u8 rgmii_rx_delay[QCA8K_NUM_CPU_PORTS]; /* 0: CPU port0, 1: CPU port6 */
++	u8 rgmii_tx_delay[QCA8K_NUM_CPU_PORTS]; /* 0: CPU port0, 1: CPU port6 */
+ 	bool legacy_phy_port_mapping;
+ 	struct regmap *regmap;
+ 	struct mii_bus *bus;
 -- 
 2.32.0
 
