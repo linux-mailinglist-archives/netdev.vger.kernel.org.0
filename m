@@ -2,105 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D71642B93C
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 09:34:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01B3942B93E
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 09:34:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238521AbhJMHgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 03:36:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38106 "EHLO
+        id S232625AbhJMHgc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 03:36:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238509AbhJMHgT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 03:36:19 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E98EC061570;
-        Wed, 13 Oct 2021 00:34:16 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id pi19-20020a17090b1e5300b0019fdd3557d3so1546066pjb.5;
-        Wed, 13 Oct 2021 00:34:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=uRw8ev8Sq3xSNTxh3mi2/kC9mLBG1rrnJ2qBvZCOQlI=;
-        b=BGcAaI5PQmf0dYiSKzcmKWZN+cWa851iS3FsMCWg3MKvXAqIrsaTwwOcGlpMh3zAkd
-         NRvmFUYJvSJ17ycW+8+hiYQ/KtNLxV+BbEuvrbD/UVCogIAnN5x7YGXbxSE7VNPLM5D4
-         8hLNP51L69JlZCyzpHXMQh7BYRWqc/Bf0AWW3cDevWZdtWAvZhNrOmXy5cLe5fPNEMTj
-         Hm9XAnadl1lDg2ZCyOpwruOWqF4t0s4fB7g1HjYF5aa8b7xiWiV1b8EZgMY2YHCbAopQ
-         oqBcZvH6F3DGnMB1vq8criOucUvBE87GO2eFxFZImWFpi5fIHqApFcTrnSKq8KjnKuCG
-         j2sQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=uRw8ev8Sq3xSNTxh3mi2/kC9mLBG1rrnJ2qBvZCOQlI=;
-        b=He2POhTqeclCSovXfLWYiOG6ekJ1jibEJ683yvsQnZDa0x7ZKHdOw3L+4zg/hwiWqI
-         6RCutsdKfCeEx1huG6EMmfMjprm/URlTcHiENqpQsZwgTS7QE9WGhcXg0eoiQASz9TwA
-         AEk+R/NYxhne8WlmsZs8FQ0bsvut6IfIzwFlQzlzPqwF0xeYMn+iBFbMWTqBy/n555or
-         mpq5rKwJ5FQGb2ON0hPvrRVERjC1OT1qcKekVA1pSgpqSCrsOAwyDIuv3hdximdETpmb
-         ArU0qzWlkH/RjKF0Io+hmeoCM9nWtMDzOJ+GH5VYM4cS0xwkInanxly/5GzvdjBF3SzB
-         Eh4w==
-X-Gm-Message-State: AOAM532ALNGPZQmjZ9ttVFZI6v3cAncAT6ljfGMRKP/qGr2R1fUJWjgX
-        QR6/BvShpU887vc18qej6YOIbVf6gGY=
-X-Google-Smtp-Source: ABdhPJzYWhN9EXRlWRzutZ7lB7tv0CDIMrPg48y97vF92OdfjtFXR7EJDChQxiOugDzmyojDa7pQ6w==
-X-Received: by 2002:a17:90b:694:: with SMTP id m20mr11695633pjz.160.1634110455852;
-        Wed, 13 Oct 2021 00:34:15 -0700 (PDT)
-Received: from localhost ([2405:201:6014:d058:a28d:3909:6ed5:29e7])
-        by smtp.gmail.com with ESMTPSA id r7sm13041369pff.112.2021.10.13.00.34.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Oct 2021 00:34:15 -0700 (PDT)
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH bpf-next v2 8/8] selftests/bpf: Fix memory leak in test_ima
-Date:   Wed, 13 Oct 2021 13:03:48 +0530
-Message-Id: <20211013073348.1611155-9-memxor@gmail.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211013073348.1611155-1-memxor@gmail.com>
-References: <20211013073348.1611155-1-memxor@gmail.com>
+        with ESMTP id S232458AbhJMHg2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 03:36:28 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24FDFC061570;
+        Wed, 13 Oct 2021 00:34:25 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1634110462;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=BoBO8v8xV3g6Rp8um6ygnHmfr/6EsiEB9PRtDEyc70c=;
+        b=D0z6yuJVThpCfxAmjHC1+UsPkR2QPNc9M/9113DqNPTRVtCRoPQWIWKsgS6sA8aJkIR/zW
+        rOoC/eyzDhcy4rby/sxn0mHfix0sMm8OgGwSFxq/KmuaxBsold5f0r1FK10w4y+XFKyEl6
+        sHYw24EX1O6b+NeNUQmEAQ++ogyi3nYQJxkHqD5RNOFjfVjjEdf2bwYl1ZESrwoOJ7uLHa
+        wdqfJsk2prhS0n6udkzjieqvyq/vPkhCM2GgJjHoXAIbEik4uWPx0speAPDlpPKVio643p
+        DKOE1ETyDnt5PAw7Cgr5rhklokRlTFa3NKEGE0JhLHy+QQg7Jq3Lw9E/qLanbA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1634110462;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=BoBO8v8xV3g6Rp8um6ygnHmfr/6EsiEB9PRtDEyc70c=;
+        b=kPdQ4jvjSI3sTpH75SWW8kNT/7gIo/QLtPaBbw30lJrCGyzxjRZu3oyF1WQhzHJPo1p4dE
+        DbFXfBdHNbBjRICw==
+To:     Ong Boon Leong <boon.leong.ong@intel.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lay Kuan Loon <kuan.loon.lay@intel.com>,
+        Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Subject: Re: [PATCH net-next v2 1/1] net: phy: dp83867: introduce critical
+ chip default init for non-of platform
+In-Reply-To: <20211013065941.2124858-2-boon.leong.ong@intel.com>
+References: <20211013065941.2124858-1-boon.leong.ong@intel.com>
+ <20211013065941.2124858-2-boon.leong.ong@intel.com>
+Date:   Wed, 13 Oct 2021 09:34:21 +0200
+Message-ID: <87a6jd5qf6.fsf@kurt>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1208; h=from:subject; bh=l4THhEd2yt0B5MEgzUfB0eWsbv0o9TbBjS4jiWJ5iQA=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhZovSwfaAqgynGxNWS0LoOrX257+duVJAwbNsaJ+G qycKr7KJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYWaL0gAKCRBM4MiGSL8RyqonD/ 9X3DpGxvHdzNZyH4TKjjnzu1uS0GpmAgAwBCWrO4GETSZ0csA82/vFUhaxUyjmL4O4ZhxkvvokEa/z IIO374F8Gf99qOJGHZJfqlLuIdyJIaU40rYdOiSWBjEXZicwQgn8EPT5i3MWKhzIb8hVC+gcSjKyhh O85Rr0LId6lMUxrm5CPPX4Vyz4YKmjJ9GsVLGO5moKHB7BFm5am6BSY09ELOwzHiLvlhJ0v2nRpRvD w1kScRAxrxRvx/tMTfLxQRvcBmjaaeXIUmd9B2oFnQUi826dg5pqux41thfFgljcPewZPFZx4OAbam rqXRH3JhHcOX7/pjQGnTmPH0jkS06kXAsLyhWVMbrijn7DWrrgQpD6AfJgQ9RDXqAdG6usiCmux62F Y3N8KkOEZnlbipxhw/ohAJX2rptaFUAPyuVX9XiN2vC5zTYUrTrge0kDMKMeMLEssmQAGg3Dgu1dd7 80tlzxWXh4UaBb8MfjlieMag/oVNEElvBwJM0Qg2t8NnwKVNvBUwpnjX/j1CjmdmWj9QUC4KXkDX5T QW6qy5qeYTHC43U1FxfDqVnPhJSIcYd1vAkTsTnOaLfGakNhDFX5sXW+pzNwPauvuFvOSLLINNz1O+ z9aDceCqUkwcr3w8AmlnOVH9/5CvScNjmwiNyxEyUybrDSGyl5tjx5JCBLIg==
-X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The allocated ring buffer is never freed, do so in the cleanup path.
+--=-=-=
+Content-Type: text/plain
 
-Fixes: f446b570ac7e ("bpf/selftests: Update the IMA test to use BPF ring buffer")
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
-Acked-by: Song Liu <songliubraving@fb.com>
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
----
- tools/testing/selftests/bpf/prog_tests/test_ima.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+On Wed Oct 13 2021, Ong Boon Leong wrote:
+> From: "Lay, Kuan Loon" <kuan.loon.lay@intel.com>
+>
+> PHY driver dp83867 has rich supports for OF-platform to fine-tune the PHY
+> chip during phy configuration. However, for non-OF platform, certain PHY
+> tunable parameters such as IO impedance and RX & TX internal delays are
+> critical and should be initialized to its default during PHY driver probe.
+>
+> Tested-by: Clement <clement@intel.com>
+> Signed-off-by: Lay, Kuan Loon <kuan.loon.lay@intel.com>
+> Co-developed-by: Ong Boon Leong <boon.leong.ong@intel.com>
+> Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/test_ima.c b/tools/testing/selftests/bpf/prog_tests/test_ima.c
-index 0252f61d611a..97d8a6f84f4a 100644
---- a/tools/testing/selftests/bpf/prog_tests/test_ima.c
-+++ b/tools/testing/selftests/bpf/prog_tests/test_ima.c
-@@ -43,7 +43,7 @@ static int process_sample(void *ctx, void *data, size_t len)
- void test_test_ima(void)
- {
- 	char measured_dir_template[] = "/tmp/ima_measuredXXXXXX";
--	struct ring_buffer *ringbuf;
-+	struct ring_buffer *ringbuf = NULL;
- 	const char *measured_dir;
- 	char cmd[256];
- 
-@@ -85,5 +85,6 @@ void test_test_ima(void)
- 	err = system(cmd);
- 	CHECK(err, "failed to run command", "%s, errno = %d\n", cmd, errno);
- close_prog:
-+	ring_buffer__free(ringbuf);
- 	ima__destroy(skel);
- }
--- 
-2.33.0
+Thanks!
 
+Tested-by: Kurt Kanzenbach <kurt@linutronix.de>
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQJHBAEBCgAxFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmFmi/0THGt1cnRAbGlu
+dXRyb25peC5kZQAKCRB5KluBy5jwpkPDEADXps/m6uU4NMKjuzLOYjb5cgHAQxP0
+/6Y9CMU2v9WcI7opoiwlD6gZwFmnF6/6vNvgRYtN28ryv58XG5zOb2mvGBDFOTeI
+jMmlzwiubTB6z3/PaSnaGvCAAuf5B8Q5L+BYwWpWqLpnepAql6fprBKIjgmE6Ezg
+9YAz63p4Df9L1Krln3BjCA/6yCVAc5riwXSxIogm84JTFAgd6ae9UfLU2XF3opvf
+0ERCa0AT6Yp6+tQrpZKTrsvzUtK6BaHmWijeJcbsZ3ayF18dNHioY7L/aeVvWbZM
+GTmhohr+w1UnyRg1i/ANdjmzNtobdVaN6Op6vvUTIlItKhhxbKvI25hJ+62oAYZU
+mf95hbxT94GsqW/8xbJ6VELauujcXMn63VpkuqYdcGyQuERJdC8CpdpNYMbZc8/C
+r3XARRY69Gokn5dFLbUX4B3vujMgKwcPqHVpRP0xREm7E1pqkUtGzBcexeebE//L
+p6vPB1vxGMbSVYBxMnQsZgJotJ11Q2EztG4qsoCos19NACYC+Ok+HsIZ8Lotsfrq
+Jg2vSYRkFwSactr5+fAWKNbaXSm7Tw+Zkwh0Mjn6lFbWM5dNob36nmrVvin/ba4u
+YmtF881aL38DDB4Vb88gSAdRYuprJfg/5Obn44rNY4QFxoaC2ncgXajzBCedWK2o
+rRJQmgo6soysRQ==
+=LFAf
+-----END PGP SIGNATURE-----
+--=-=-=--
