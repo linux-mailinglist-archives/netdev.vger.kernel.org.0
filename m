@@ -2,81 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A28BD42C61A
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 18:17:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A869142C626
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 18:18:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229785AbhJMQUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 12:20:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47450 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229529AbhJMQT6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 12:19:58 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5822EC061570
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 09:17:54 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id u18so10256181wrg.5
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 09:17:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:references:from:cc:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Fwku3EdzEWTgZ31mJcVlz+4QZC17pms4jeMoG5dZCY0=;
-        b=WTicfrUeVvIlgB1sURXWiVpTAx7InaPm2IQ4zJRicBN9NdPN0k3bSfRTMY2sJFqlMZ
-         xRc1KgH6K9L/x5NA2um2WTDoOXCWtUEc+KaNe57Ng36dON199b8m2Sw7FqsGZPJ3zJsm
-         JvOt1qH8cfj9LuVItQ9CDvD7wm4hPYsIFrFWgAS3sL81g+ibJqIw3mQu7QdqWxHv8LYP
-         kw/JOno7x/EjtRUtwMegW1HVCryV0W5Or4Xu9nMLKZvu6XL2UXeIIt2ikN4lBl1w4hOw
-         VzQlFUFYONQn+HXpVpb/iLUeUqEu4hdxiSWhzZgW4BWVFT+LjjSHyqGp/gPwbm/PRgtB
-         Zutw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:references:from:cc:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Fwku3EdzEWTgZ31mJcVlz+4QZC17pms4jeMoG5dZCY0=;
-        b=zmd8KOkqVkJHLqZbUUlVgLvh6V3ng1Ltld9m5pjNgyfvl9j1H/6epgtnJw42qvaFPF
-         0+4lXb1SJZP/UHt73P0BZp5WivnlA9gUhAqx9k5wyBV7tI8FGmgGhImeGGjdrlPfUouQ
-         LMPobI22q+bM8xTg7KZrw1jrfNCn5xwwJxDh3m5py50mffm+Sn/H4Ga5XGfsKtY53HSX
-         r/vO7MA2VuSFPJilrS66cZ4ZfwCZVcswIY++BYf8hxGLD9iJBRybf57321ZP7FALTqBZ
-         Ki+/Hu2LZ4d9Bao3fwf9lQzA2JAzFPGU0eTvwlKGBGWrvyNa+KGl2pjfinTbBefMvy8D
-         0JkA==
-X-Gm-Message-State: AOAM533DOL+Aeh0HpyQBqmX1pDf2c37r9HVJNRvIkvcZ1ASKe4Toafm0
-        aT/sV+F/qXZqPe7jS9Ao4LC5LB8SL7ZdjQ==
-X-Google-Smtp-Source: ABdhPJwUdZtheTJ2ctS5pnZqWS0v3nAlSPeKzLJ4iRD59LlGTI3rBbFGELZlkqpKKJ0OFgKAwXwKJw==
-X-Received: by 2002:adf:a4d5:: with SMTP id h21mr60991wrb.203.1634141873048;
-        Wed, 13 Oct 2021 09:17:53 -0700 (PDT)
-Received: from [80.5.213.92] (cpc108963-cmbg20-2-0-cust347.5-4.cable.virginm.net. [80.5.213.92])
-        by smtp.gmail.com with ESMTPSA id q14sm5703242wmq.4.2021.10.13.09.17.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Oct 2021 09:17:52 -0700 (PDT)
-Subject: Re: ip_list_rcv() question
-To:     Stephen Suryaputra <ssuryaextr@gmail.com>
-References: <20211007121451.GA27153@EXT-6P2T573.localdomain>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>
-Message-ID: <4dddfda5-1c03-6386-e204-e21df07aabd1@gmail.com>
-Date:   Wed, 13 Oct 2021 17:17:51 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S236388AbhJMQUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 12:20:25 -0400
+Received: from foss.arm.com ([217.140.110.172]:41924 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229529AbhJMQUV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Oct 2021 12:20:21 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 588C61063;
+        Wed, 13 Oct 2021 09:18:17 -0700 (PDT)
+Received: from e120937-lin (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 25FED3F694;
+        Wed, 13 Oct 2021 09:18:07 -0700 (PDT)
+Date:   Wed, 13 Oct 2021 17:18:04 +0100
+From:   Cristian Marussi <cristian.marussi@arm.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Matt Mackall <mpm@selenic.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Amit Shah <amit@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Gonglei <arei.gonglei@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        "Enrico Weigelt, metux IT consult" <info@metux.net>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Daniel Vetter <daniel@ffwll.ch>, Jie Deng <jie.deng@intel.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        David Hildenbrand <david@redhat.com>,
+        Vivek Goyal <vgoyal@redhat.com>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Anton Yakovlev <anton.yakovlev@opensynergy.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, linux-um@lists.infradead.org,
+        virtualization@lists.linux-foundation.org,
+        linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-gpio@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        nvdimm@lists.linux.dev, linux-remoteproc@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net, kvm@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH RFC] virtio: wrap config->reset calls
+Message-ID: <20211013161804.GB6376@e120937-lin>
+References: <20211013105226.20225-1-mst@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20211007121451.GA27153@EXT-6P2T573.localdomain>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211013105226.20225-1-mst@redhat.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/10/2021 13:14, Stephen Suryaputra wrote:
-> Under what condition that ip_list_rcv() would restart the sublist, i.e.
-> that the skb in the list is having different skb->dev?
+On Wed, Oct 13, 2021 at 06:55:31AM -0400, Michael S. Tsirkin wrote:
+> This will enable cleanups down the road.
+> The idea is to disable cbs, then add "flush_queued_cbs" callback
+> as a parameter, this way drivers can flush any work
+> queued after callbacks have been disabled.
+> 
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>  arch/um/drivers/virt-pci.c                 | 2 +-
+>  drivers/block/virtio_blk.c                 | 4 ++--
+>  drivers/bluetooth/virtio_bt.c              | 2 +-
+>  drivers/char/hw_random/virtio-rng.c        | 2 +-
+>  drivers/char/virtio_console.c              | 4 ++--
+>  drivers/crypto/virtio/virtio_crypto_core.c | 8 ++++----
+>  drivers/firmware/arm_scmi/virtio.c         | 2 +-
+>  drivers/gpio/gpio-virtio.c                 | 2 +-
+>  drivers/gpu/drm/virtio/virtgpu_kms.c       | 2 +-
+>  drivers/i2c/busses/i2c-virtio.c            | 2 +-
+>  drivers/iommu/virtio-iommu.c               | 2 +-
+>  drivers/net/caif/caif_virtio.c             | 2 +-
+>  drivers/net/virtio_net.c                   | 4 ++--
+>  drivers/net/wireless/mac80211_hwsim.c      | 2 +-
+>  drivers/nvdimm/virtio_pmem.c               | 2 +-
+>  drivers/rpmsg/virtio_rpmsg_bus.c           | 2 +-
+>  drivers/scsi/virtio_scsi.c                 | 2 +-
+>  drivers/virtio/virtio.c                    | 5 +++++
+>  drivers/virtio/virtio_balloon.c            | 2 +-
+>  drivers/virtio/virtio_input.c              | 2 +-
+>  drivers/virtio/virtio_mem.c                | 2 +-
+>  fs/fuse/virtio_fs.c                        | 4 ++--
+>  include/linux/virtio.h                     | 1 +
+>  net/9p/trans_virtio.c                      | 2 +-
+>  net/vmw_vsock/virtio_transport.c           | 4 ++--
+>  sound/virtio/virtio_card.c                 | 4 ++--
+>  26 files changed, 39 insertions(+), 33 deletions(-)
+> 
+[snip]
+> diff --git a/drivers/firmware/arm_scmi/virtio.c b/drivers/firmware/arm_scmi/virtio.c
+> index 11e8efb71375..6b8d93fe8848 100644
+> --- a/drivers/firmware/arm_scmi/virtio.c
+> +++ b/drivers/firmware/arm_scmi/virtio.c
+> @@ -452,7 +452,7 @@ static void scmi_vio_remove(struct virtio_device *vdev)
+>  	 * outstanding message on any vqueue to be ignored by complete_cb: now
+>  	 * we can just stop processing buffers and destroy the vqueues.
+>  	 */
+> -	vdev->config->reset(vdev);
+> +	virtio_reset_device(vdev);
+>  	vdev->config->del_vqs(vdev);
+>  	/* Ensure scmi_vdev is visible as NULL */
+>  	smp_store_mb(scmi_vdev, NULL);
 
-IIRC, something earlier in the call chain (possibly
- __netif_receive_skb_core()?) can change skb->dev to something other
- than the device that originally received the packet (orig_dev).  I
- think it's if the packet gets handled/transformed by a software
- netdevice (maybe a VLAN device?).
-But really when I wrote ip_list_rcv() I just worked on the basis
- that "I don't know it can't change, so I shall assume it can".
 
-HTH,
--ed
+Reviewed-by: Cristian Marussi <cristian.marussi@arm.com>
+
+Thanks,
+Cristian
+
