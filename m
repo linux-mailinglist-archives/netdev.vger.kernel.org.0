@@ -2,160 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46B8842BF75
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 14:04:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EF6C42BFA8
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 14:18:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232851AbhJMMGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 08:06:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43704 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230005AbhJMMGH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 08:06:07 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA475C061749
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 05:04:04 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id w14so1656709pll.2
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 05:04:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=li/Vpn5Wu6X+Kzrsg43KbGBbRvdUem+CU3/lp/9gODE=;
-        b=RgS0rKVa0G6RD32ICzRX0eQxYmA1I9+38OnSM6ouadBWD/AbbYYUNAmNfmLrkGQVhG
-         FMoVTMN5lOUpvRhNODbCtTC0pmXa+Jot/F2ysZMHYMIcStpNCcNMbUMuXO/CjCm8EVEg
-         Jzu0Wox51e5qznM1JP3Xnf3b+YvPXcVFAUzv8522HnIPrM9KmwUegfRJMy2tqDEgP4C5
-         xGIsMdIWby0sfYrzPpa2DgS3FmzV0euV3GOOPDgg3SdD65A9Zo9mIGLG0HV+o3sWMjsl
-         XRGLBcRA8pKGtT0TFP3AaXPvadXFVHijnf0UnbNOa0mMG5FEbuQA5E95LmSXg5rsj0Ji
-         VfLw==
+        id S232498AbhJMMUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 08:20:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55776 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230236AbhJMMUJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 08:20:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634127483;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8uA+gFhUzMMrb5D5fxARTwQwcT+AEfWKWkQ0ooGMKj8=;
+        b=gcZphIhv1SUibhOpSsOSgz4m0cbJvHyEtd0kwtKyNGk7PlE0SU+JPX+FUmjzkGHkvuPJuI
+        RYeShTXWeJ1jx+SFek2K1Tc6X4vwuEpu4Q3Rv6491+05hOgYMfee2etkukNn00qGLGJeMY
+        ljgHBxDZGBTUGlUD8++dZn6sdjVlaG0=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-555-0cjA2k3oO0iYD0-DbC0mBA-1; Wed, 13 Oct 2021 08:18:02 -0400
+X-MC-Unique: 0cjA2k3oO0iYD0-DbC0mBA-1
+Received: by mail-wr1-f70.google.com with SMTP id r16-20020adfbb10000000b00160958ed8acso1799135wrg.16
+        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 05:18:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=li/Vpn5Wu6X+Kzrsg43KbGBbRvdUem+CU3/lp/9gODE=;
-        b=uZlKrwGAP3TDie3o5sb6SAI+BXtCkM8VBxWJhgpeJm2t9hpK+/Kl/P8b9uDFmADP1J
-         YFE8svapabp48R2Ex82G6rGXUnpYce5X4X4tVwJvNsbjO69FEGI88caL9ZODrgUkEmhJ
-         sccek6DFFq0LjczdcbL3r6Tf7maZdLVe0dbOd00/nQx/03aBxklePWxORKasRHdHCpCs
-         n2hTyjZ6A23/D+n07/Ng1M+NSIIqs4vcPzRWRxReoWJEl+OgKYdAR3dZ5+1bQnQGWeWw
-         sn/+djlPswK6AWEG3wmjo1tSOoUwMzkKsCGIkDZkfwgtyTRSWGlJWXSmHYpOEQkHx7jy
-         ZgDg==
-X-Gm-Message-State: AOAM5333pbAfz0XLwzISr4RKHJ2u/4DmN43iXOHPdEFjNO5GRrk1D4gb
-        5H1VJdy/bND2kXAe0AfxR7xERxwLb59uf8RjZ+weg8ooIu8=
-X-Google-Smtp-Source: ABdhPJyneJH0chvun7R8B3JgQRb0LpvqqeyzIakwCTpmZfenmnt5T/CiwKnQ1MGObkRNnIS8AFGiQUqN5pM2mahsuq4=
-X-Received: by 2002:a17:90b:1d0a:: with SMTP id on10mr12961168pjb.218.1634126644247;
- Wed, 13 Oct 2021 05:04:04 -0700 (PDT)
-MIME-Version: 1.0
-References: <20211012155542.827631-1-atenart@kernel.org>
-In-Reply-To: <20211012155542.827631-1-atenart@kernel.org>
-From:   Jonathon Reinhart <jonathon.reinhart@gmail.com>
-Date:   Wed, 13 Oct 2021 08:03:39 -0400
-Message-ID: <CAPFHKzfg2+cvbbbDL0Qt1LRiYKO6N+7DeNshLZXnbb6+Fo7QPQ@mail.gmail.com>
-Subject: Re: [RFC net-next] net: sysctl data could be in .bss
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8uA+gFhUzMMrb5D5fxARTwQwcT+AEfWKWkQ0ooGMKj8=;
+        b=rl5mqZL8wZnll4S1tTkFTuwugwWunPBNy6gXiDsgJpcY55Co9lMKYZHrF5k6ZiwkAZ
+         1NqftJxzroIYS54w6ohL5Uk7sppUmW4pJ6tJRSeeCtmh3c7IGFgACboTSX9+GlYIbt/j
+         Ju8GlJGn3JvPmfmJ/m3zm/xIPIm7xjbMccoCfI9Qs4Wmd+PHiQLQnLtLhPlPbHFm7iGk
+         LRUcVgjDEK6r8VqvRgw9Kpy2PBDVPP8J/lzhBRMGCLsWoEQgF8gXOT1EnLoAjPHskhSK
+         BJTsugOtJLW/GnjUVvD8KVe72FljO4veZt0vDaBbOcpWj8aCQ6OgwLX24luIW4wdBbIW
+         O81w==
+X-Gm-Message-State: AOAM531Y2ab67nkihpj45yhT1vK6mPVrMZiwUjEg60ZUzmdUQ2Mb2kOg
+        NIO9zrERtyokA0Bwt1vd9cDlc1ZZYtoG4KW52xQjhqTfp0i7+EvvFwzyWofCWB7BGGiViqRSxNi
+        hL7xZv4X65t4OrPd+
+X-Received: by 2002:a7b:c30c:: with SMTP id k12mr12535182wmj.38.1634127481353;
+        Wed, 13 Oct 2021 05:18:01 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwFEzPqFQ+1qHznC4euH1QtbfXrvr/+t46tCqHwjpC6aqk2B2gJ30j5Cm2I+Hz0oA4zGN44UQ==
+X-Received: by 2002:a7b:c30c:: with SMTP id k12mr12535146wmj.38.1634127481076;
+        Wed, 13 Oct 2021 05:18:01 -0700 (PDT)
+Received: from redhat.com ([2.55.30.112])
+        by smtp.gmail.com with ESMTPSA id z1sm4104369wrt.94.2021.10.13.05.17.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Oct 2021 05:18:00 -0700 (PDT)
+Date:   Wed, 13 Oct 2021 08:17:49 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Matt Mackall <mpm@selenic.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Amit Shah <amit@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Gonglei <arei.gonglei@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        "Enrico Weigelt, metux IT consult" <info@metux.net>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Daniel Vetter <daniel@ffwll.ch>, Jie Deng <jie.deng@intel.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linux Netdev List <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Johannes Berg <johannes@sipsolutions.net>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Vivek Goyal <vgoyal@redhat.com>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Anton Yakovlev <anton.yakovlev@opensynergy.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, linux-um@lists.infradead.org,
+        virtualization@lists.linux-foundation.org,
+        linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-gpio@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        nvdimm@lists.linux.dev, linux-remoteproc@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net, kvm@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH RFC] virtio: wrap config->reset calls
+Message-ID: <20211013081632-mutt-send-email-mst@kernel.org>
+References: <20211013105226.20225-1-mst@redhat.com>
+ <2060bd96-5884-a1b5-9f29-7fe670dc088d@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2060bd96-5884-a1b5-9f29-7fe670dc088d@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 12, 2021 at 11:55 AM Antoine Tenart <atenart@kernel.org> wrote:
->
-> A check is made when registering non-init netns sysctl files to ensure
-> their data pointer does not point to a global data section. This works
-> well for modules as the check is made against the whole module address
-> space (is_module_address). But when built-in, the check is made against
-> the .data section. However global variables initialized to 0 can be in
-> .bss (-fzero-initialized-in-bss).
->
-> Add an extra check to make sure the sysctl data does not point to the
-> .bss section either.
->
-> Signed-off-by: Antoine Tenart <atenart@kernel.org>
+On Wed, Oct 13, 2021 at 01:03:46PM +0200, David Hildenbrand wrote:
+> On 13.10.21 12:55, Michael S. Tsirkin wrote:
+> > This will enable cleanups down the road.
+> > The idea is to disable cbs, then add "flush_queued_cbs" callback
+> > as a parameter, this way drivers can flush any work
+> > queued after callbacks have been disabled.
+> > 
+> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > ---
+> >   arch/um/drivers/virt-pci.c                 | 2 +-
+> >   drivers/block/virtio_blk.c                 | 4 ++--
+> >   drivers/bluetooth/virtio_bt.c              | 2 +-
+> >   drivers/char/hw_random/virtio-rng.c        | 2 +-
+> >   drivers/char/virtio_console.c              | 4 ++--
+> >   drivers/crypto/virtio/virtio_crypto_core.c | 8 ++++----
+> >   drivers/firmware/arm_scmi/virtio.c         | 2 +-
+> >   drivers/gpio/gpio-virtio.c                 | 2 +-
+> >   drivers/gpu/drm/virtio/virtgpu_kms.c       | 2 +-
+> >   drivers/i2c/busses/i2c-virtio.c            | 2 +-
+> >   drivers/iommu/virtio-iommu.c               | 2 +-
+> >   drivers/net/caif/caif_virtio.c             | 2 +-
+> >   drivers/net/virtio_net.c                   | 4 ++--
+> >   drivers/net/wireless/mac80211_hwsim.c      | 2 +-
+> >   drivers/nvdimm/virtio_pmem.c               | 2 +-
+> >   drivers/rpmsg/virtio_rpmsg_bus.c           | 2 +-
+> >   drivers/scsi/virtio_scsi.c                 | 2 +-
+> >   drivers/virtio/virtio.c                    | 5 +++++
+> >   drivers/virtio/virtio_balloon.c            | 2 +-
+> >   drivers/virtio/virtio_input.c              | 2 +-
+> >   drivers/virtio/virtio_mem.c                | 2 +-
+> >   fs/fuse/virtio_fs.c                        | 4 ++--
+> >   include/linux/virtio.h                     | 1 +
+> >   net/9p/trans_virtio.c                      | 2 +-
+> >   net/vmw_vsock/virtio_transport.c           | 4 ++--
+> >   sound/virtio/virtio_card.c                 | 4 ++--
+> >   26 files changed, 39 insertions(+), 33 deletions(-)
+> > 
+> > diff --git a/arch/um/drivers/virt-pci.c b/arch/um/drivers/virt-pci.c
+> > index c08066633023..22c4d87c9c15 100644
+> > --- a/arch/um/drivers/virt-pci.c
+> > +++ b/arch/um/drivers/virt-pci.c
+> > @@ -616,7 +616,7 @@ static void um_pci_virtio_remove(struct virtio_device *vdev)
+> >   	int i;
+> >           /* Stop all virtqueues */
+> > -        vdev->config->reset(vdev);
+> > +        virtio_reset_device(vdev);
+> >           vdev->config->del_vqs(vdev);
+> 
+> Nit: virtio_device_reset()?
+> 
+> Because I see:
+> 
+> int virtio_device_freeze(struct virtio_device *dev);
+> int virtio_device_restore(struct virtio_device *dev);
+> void virtio_device_ready(struct virtio_device *dev)
+> 
+> But well, there is:
+> void virtio_break_device(struct virtio_device *dev);
 
-Reviewed-by: Jonathon Reinhart <jonathon.reinhart@gmail.com>
+Exactly. I don't know what's best, so I opted for plain english :)
 
-> ---
->
-> Hello,
->
-> This is sent as an RFC as I'd like a fix[1] to be merged before to
-> avoid introducing a new warning. But this can be reviewed in the
-> meantime.
->
-> I'm not sending this as a fix to avoid possible new warnings in stable
-> kernels. (The actual fixes of sysctl files should go).
->
-> I think this can go through the net-next tree as kernel/extable.c
-> doesn't seem to be under any subsystem and a conflict is unlikely to
-> happen.
->
-> Thanks!
-> Antoine
->
-> [1] https://lore.kernel.org/all/20211012145437.754391-1-atenart@kernel.org/T/
->
->  include/linux/kernel.h | 1 +
->  kernel/extable.c       | 8 ++++++++
->  net/sysctl_net.c       | 2 +-
->  3 files changed, 10 insertions(+), 1 deletion(-)
->
-> diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-> index 2776423a587e..beb61d0ab220 100644
-> --- a/include/linux/kernel.h
-> +++ b/include/linux/kernel.h
-> @@ -231,6 +231,7 @@ extern char *next_arg(char *args, char **param, char **val);
->  extern int core_kernel_text(unsigned long addr);
->  extern int init_kernel_text(unsigned long addr);
->  extern int core_kernel_data(unsigned long addr);
-> +extern int core_kernel_bss(unsigned long addr);
->  extern int __kernel_text_address(unsigned long addr);
->  extern int kernel_text_address(unsigned long addr);
->  extern int func_ptr_is_kernel_text(void *ptr);
-> diff --git a/kernel/extable.c b/kernel/extable.c
-> index b0ea5eb0c3b4..477a4b6c8f63 100644
-> --- a/kernel/extable.c
-> +++ b/kernel/extable.c
-> @@ -100,6 +100,14 @@ int core_kernel_data(unsigned long addr)
->         return 0;
->  }
->
-> +int core_kernel_bss(unsigned long addr)
-> +{
-> +       if (addr >= (unsigned long)__bss_start &&
-> +           addr < (unsigned long)__bss_stop)
-> +               return 1;
-> +       return 0;
-> +}
-> +
->  int __kernel_text_address(unsigned long addr)
->  {
->         if (kernel_text_address(addr))
-> diff --git a/net/sysctl_net.c b/net/sysctl_net.c
-> index f6cb0d4d114c..d883cf65029f 100644
-> --- a/net/sysctl_net.c
-> +++ b/net/sysctl_net.c
-> @@ -144,7 +144,7 @@ static void ensure_safe_net_sysctl(struct net *net, const char *path,
->                 addr = (unsigned long)ent->data;
->                 if (is_module_address(addr))
->                         where = "module";
-> -               else if (core_kernel_data(addr))
-> +               else if (core_kernel_data(addr) || core_kernel_bss(addr))
->                         where = "kernel";
->                 else
->                         continue;
-> --
-> 2.31.1
->
 
-This looks good to me. Thanks for the improvement, Antoine!
+> -- 
+> Thanks,
+> 
+> David / dhildenb
 
-I would ask about .rodata, that would imply the use of 'const'
-variables, which would be causing compiler warnings or errors. And
-writes to those variables would already be crashing. So it doesn't
-seem to be necessary.
-
-(sorry for the duplicate mail; I accidentally sent HTML from mobile
-the first time.)
-
-Jonathon
