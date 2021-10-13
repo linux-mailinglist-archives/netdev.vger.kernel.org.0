@@ -2,176 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A7A742BE85
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 13:02:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B079642BE8E
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 13:02:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232116AbhJMLDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 07:03:46 -0400
-Received: from mx1.tq-group.com ([93.104.207.81]:47633 "EHLO mx1.tq-group.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231658AbhJMLDb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Oct 2021 07:03:31 -0400
+        id S230083AbhJMLEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 07:04:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232278AbhJMLEZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 07:04:25 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B47FC06174E
+        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 04:02:21 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id z11so10011721lfj.4
+        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 04:02:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1634122888; x=1665658888;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=yiLPIdqtdIwyAypswEPJAvSEqYuCP9g6YjtCjU518zk=;
-  b=XQLiQFvAaJnSRgTcWqr+Z8mfHQ8pnkHBcTft2vWkUyYCP4DQRdSB/anI
-   J8/ZpHQGy7uYk7hIRxPf+cyVOPJPVI2SM44cP0KqGTjzygpBi+hUbivrx
-   EMAOb7h6urwjn43ktRlsYIbGmhrBaaGug5obTgxngthigWoyhrVSwB/aB
-   fZabR2EaMtR6sf73r/IMyAVqs3Q3rCvXzSUkdM3wKO+RqJ/HQwIG1VdAc
-   p02hMY0k78wfRjlKSCNUTwOFms2fzUY1Cn+KmRAa5IpJbINRz/fgK3aKZ
-   G3rg1KXd9rHZSQZNA7Wilc7qzBDtdi3jNPETn/U33tRst6XOXsqHv7S3h
-   w==;
-X-IronPort-AV: E=Sophos;i="5.85,370,1624312800"; 
-   d="scan'208";a="20020507"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 13 Oct 2021 13:01:26 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Wed, 13 Oct 2021 13:01:26 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Wed, 13 Oct 2021 13:01:26 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1634122886; x=1665658886;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=yiLPIdqtdIwyAypswEPJAvSEqYuCP9g6YjtCjU518zk=;
-  b=TmU0umnDQwHvvgjdvEJzxe4mjRMdMiEleUGywN2TR2dDh+wI4a94fuK4
-   VpeuYPm1kQmDzsbUhQrU8+95BfgyY/tUX/DBeH3tPrLsGXT50tN3rEM/r
-   GMlmN3hKY7shjOT7sRwiycvj9fElfQuUQu/hSjZTQaW1RoTVUO+sZ6SBR
-   CFFMQvlwY45lVQNqUkyQ4YoGZBZoyk4I+ZXXB9QCjO6E/H2RHMxSub8l4
-   ro6Rtlz6Q2sQQVrOR3z3rmjt4sVmH3g6cQK/MI1oK1X17la8c1SVpPqFz
-   4r3K17rvAaIB9w62uyKINY1t3++ZaFRnVRDwtuom6kdHvbuXHl73bPedE
-   A==;
-X-IronPort-AV: E=Sophos;i="5.85,370,1624312800"; 
-   d="scan'208";a="20020506"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 13 Oct 2021 13:01:26 +0200
-Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.121.48.12])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 4FBE1280065;
-        Wed, 13 Oct 2021 13:01:26 +0200 (CEST)
-Message-ID: <d46649a97945efb49fefcd30415548a76cd0a334.camel@ew.tq-group.com>
-Subject: Re: [PATCH] net: phy: micrel: make *-skew-ps check more lenient
-From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-To:     Philippe Schenker <philippe.schenker@toradex.com>
-Cc:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "kuba@kernel.org" <kuba@kernel.org>
-Date:   Wed, 13 Oct 2021 13:01:26 +0200
-In-Reply-To: <bf2c71d5f73839bdc585c19490e40d08f26d644a.camel@toradex.com>
-References: <20211012103402.21438-1-matthias.schiffer@ew.tq-group.com>
-         <45137d2d365d5737f36fa398ee815695722b04e5.camel@toradex.com>
-         <987224f4ca93f928c8ddb69710d3aa72b336b6dc.camel@ew.tq-group.com>
-         <bf2c71d5f73839bdc585c19490e40d08f26d644a.camel@toradex.com>
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=73KxlkdlyI8mXLBvQp61F7Ysreyok1FWDPua3YonDqI=;
+        b=dzUOvMFCFHvCPLA4d4o9RjHZKAsUW8CJ8oRvQYf4LqDiIG7OE6g1KuPgql1kadB3aC
+         XzGQ7f+HgP4YIjgcC++iLXXfad+FBeSMLBstC6LODUf/X8gOn/lKxj5odAm1aUlXVwsn
+         ISQaOFgM6/zv79n2vyS2H4dFk0UrDDDhStQkeMKKM3GRg5N7QEYtl8UYDerp8QxdegiB
+         ATkstm1/7JjmiFB2ZbcpE2NFFe/5mAjWG8z+VH4130qfhXz3HljINzyBbeseSe3eECK9
+         7e/7Ix2eDLLhCfJy7sub3EBFnXZkBY/5uQ442QjVMeD6cic7lyr+lh/HGHKbjFGWajkk
+         q2Uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=73KxlkdlyI8mXLBvQp61F7Ysreyok1FWDPua3YonDqI=;
+        b=nlekk5syyykuC0rEJmfw9ZyHSKJP5macdE58csKFX3JYliHmW4SrC5/ot1oyE6SYYc
+         5A7AkOgfGCv7YkEBOEDAKR9fvA4CiIkBZXD+N13+m6QIM80ujpWJcVFvcMq9ifGpVCXw
+         PjXh0Foso1MyCPopuA3jtMc+PRP285wFHJs/vYDPxZ6II7jo4sKpx3VgIykcU7adCsrO
+         FXw0RmqwwWwNACT4QmIGTUXeB7uE0c/se5aJyIMKzRq9ciztTgM9pQ0QNVbDmCHcLhKQ
+         +lppwcJ+tUqAh/66QH4Klz1MFfdf38qh2huw7Z9BYn675Ql4O6XsyfMJ9sXZOYc/4EZE
+         1UBA==
+X-Gm-Message-State: AOAM530JkW+yHsaIEqnJ/WZabDKswYCTMvfGVadTEOaTNgj85dPNUR3C
+        mpF2+sk0FWuFfjdLsFbnt0mkDzxUc92Bbw4DZhm5RA==
+X-Google-Smtp-Source: ABdhPJz2gpDUS4W8/df8P/ssMlsByhqzpK4UIzTghVzZx58NQPyhf6+NIw+RgxaAWRM1G+lZLH7/RTstEmgTzE39ngk=
+X-Received: by 2002:a05:651c:111:: with SMTP id a17mr5578922ljb.145.1634122933990;
+ Wed, 13 Oct 2021 04:02:13 -0700 (PDT)
+MIME-Version: 1.0
+References: <20211012123557.3547280-1-alvin@pqrs.dk> <20211012123557.3547280-5-alvin@pqrs.dk>
+In-Reply-To: <20211012123557.3547280-5-alvin@pqrs.dk>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 13 Oct 2021 13:02:02 +0200
+Message-ID: <CACRpkdby5Z9yzUFo4_cXtXb-bz6gF60Rt52naqu5yWBM0bC7bw@mail.gmail.com>
+Subject: Re: [PATCH net-next 4/6] net: dsa: tag_rtl8_4: add realtek 8 byte
+ protocol 4 tag
+To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alvin@pqrs.dk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-10-13 at 10:18 +0000, Philippe Schenker wrote:
-> On Wed, 2021-10-13 at 10:46 +0200, Matthias Schiffer wrote:
-> > On Wed, 2021-10-13 at 08:25 +0000, Philippe Schenker wrote:
-> > > On Tue, 2021-10-12 at 12:34 +0200, Matthias Schiffer wrote:
-> > > > It seems reasonable to fine-tune only some of the skew values when
-> > > > using
-> > > > one of the rgmii-*id PHY modes, and even when all skew values are
-> > > > specified, using the correct ID PHY mode makes sense for
-> > > > documentation
-> > > > purposes. Such a configuration also appears in the binding docs in
-> > > > Documentation/devicetree/bindings/net/micrel-ksz90x1.txt, so the
-> > > > driver
-> > > > should not warn about it.
-> > > 
-> > > I don't think your commit message is right. The rgmii-*id PHY modes
-> > > are
-> > > no longer just for documentation purposes on KSZ9031 PHY. They are
-> > > used
-> > > to set the skew-registers according to .
-> > 
-> > Yes, this was implemented in [1]. The commit message explicitly states
-> > that fine-tuning is still possible using *-skew-ps.
-> > 
-> > > 
-> > > The warning is there, that in case you override the skew registers
-> > > of
-> > > one of the modes rgmii-id, rgmii-txid, rgmii-rxid with *-skew-ps
-> > > settings in DT.
-> > 
-> > The "rgmii" mode should not be handled differently from "rgmii-*id" in
-> > my opinion. Otherwise for a device that is basically "rgmii-id", but
-> > requires slight fine-tuning, you have to set the mode to the incorrect
-> > value "rgmii" in the DTS to avoid this warning.
-> 
-> Now I have understood your argument. But then I suggest to delete the
-> warning entirely as it completely changes its meaning with that patch.
-> 
-> Philippe
+On Tue, Oct 12, 2021 at 2:37 PM Alvin =C5=A0ipraga <alvin@pqrs.dk> wrote:
 
-The KSZ9031 also supports MII and GMII though. I think it makes sense
-to keep the warning for these cases (which is why I reworded the
-warning the way I did).
+> From: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
+>
+> This commit implements a basic version of the 8 byte tag protocol used
+> in the Realtek RTL8365MB-VC unmanaged switch, which carries with it a
+> protocol version of 0x04.
+>
+> The implementation itself only handles the parsing of the EtherType
+> value and Realtek protocol version, together with the source or
+> destination port fields. The rest is left unimplemented for now.
+>
+> The tag format is described in a confidential document provided to my
+> company by Realtek Semiconductor Corp. Permission has been granted by
+> the vendor to publish this driver based on that material, together with
+> an extract from the document describing the tag format and its fields.
+> It is hoped that this will help future implementors who do not have
+> access to the material but who wish to extend the functionality of
+> drivers for chips which use this protocol.
+>
+> In addition, two possible values of the REASON field are specified,
+> based on experiments on my end. Realtek does not specify what value this
+> field can take.
+>
+> Signed-off-by: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
 
+The code definately looks good:
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-> 
-> > 
-> > 
-> > > 
-> > > Therefore I also think the warning is valuable and should be kept.
-> > > We
-> > > may want to reword it though.
-> > > 
-> > > Philippe
-> > 
-> > [1]
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/net/phy/micrel.c?id=bcf3440c6dd78bfe5836ec0990fe36d7b4bb7d20
-> > 
-> > 
-> > > 
-> > > > 
-> > > > Signed-off-by: Matthias Schiffer
-> > > > <matthias.schiffer@ew.tq-group.com>
-> > > > ---
-> > > >  drivers/net/phy/micrel.c | 4 ++--
-> > > >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-> > > > index c330a5a9f665..03e58ebf68af 100644
-> > > > --- a/drivers/net/phy/micrel.c
-> > > > +++ b/drivers/net/phy/micrel.c
-> > > > @@ -863,9 +863,9 @@ static int ksz9031_config_init(struct
-> > > > phy_device
-> > > > *phydev)
-> > > >                                 MII_KSZ9031RN_TX_DATA_PAD_SKEW, 4,
-> > > >                                 tx_data_skews, 4, &update);
-> > > >  
-> > > > -               if (update && phydev->interface !=
-> > > > PHY_INTERFACE_MODE_RGMII)
-> > > > +               if (update && !phy_interface_is_rgmii(phydev))
-> > > >                         phydev_warn(phydev,
-> > > > -                                   "*-skew-ps values should be
-> > > > used
-> > > > only with phy-mode = \"rgmii\"\n");
-> > > > +                                   "*-skew-ps values should be
-> > > > used
-> > > > only with RGMII PHY modes\n");
-> > > >  
-> > > >                 /* Silicon Errata Sheet (DS80000691D or
-> > > > DS80000692D):
-> > > >                  * When the device links in the 1000BASE-T slave
-> > > > mode
-> > > > only,
-> > > 
-> > > 
-> 
-> 
+Some nitpicky personal preferences below:
 
+> +#define RTL8_4_TAG_LEN                 8
+> +/* 0x04 =3D RTL8365MB DSA protocol
+> + */
+> +#define RTL8_4_PROTOCOL_RTL8365MB      0x04
+
+This is #defined
+
+> +       /* Zero FID_EN, FID, PRI_EN, PRI, KEEP; set LEARN_DIS */
+> +       tag[2] =3D htons(1 << 5);
+
+I would create defines for the flags like this:
+#define RTL8365MB_LEARN_DIS BIT(5)
+
+> +       /* Parse Protocol */
+> +       proto =3D ntohs(tag[1]) >> 8;
+
+In the 4byte header code we have something like this:
+#define RTL8_4_PROTOCOL_SHIFT 8
+
+> +       /* Parse TX (switch->CPU) */
+> +       port =3D ntohs(tag[3]) & 0xf; /* Port number is the LSB 4 bits */
+
+This I think is fair enough. No need to define that mask.
+
+Yours,
+Linus Walleij
