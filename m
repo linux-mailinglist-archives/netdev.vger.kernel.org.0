@@ -2,158 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC05542BE7F
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 13:01:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D40642BE76
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 13:01:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232272AbhJMLDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 07:03:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57520 "EHLO
+        id S231530AbhJMLDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 07:03:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232870AbhJMLDV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 07:03:21 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7DB0C0612EF
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 04:00:33 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mabyZ-0005e3-LW; Wed, 13 Oct 2021 12:59:11 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mabyL-0005Lr-7I; Wed, 13 Oct 2021 12:58:57 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mabyL-0007HS-2y; Wed, 13 Oct 2021 12:58:57 +0200
-Date:   Wed, 13 Oct 2021 12:58:56 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Sathya Prakash <sathya.prakash@broadcom.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        linux-pci@vger.kernel.org, Alexander Duyck <alexanderduyck@fb.com>,
-        Russell Currey <ruscur@russell.cc>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        oss-drivers@corigine.com, netdev@vger.kernel.org,
-        Oliver O'Halloran <oohall@gmail.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Jiri Olsa <jolsa@redhat.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Marco Chiappero <marco.chiappero@intel.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
+        with ESMTP id S232243AbhJMLDR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 07:03:17 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E9ACC0613B0
+        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 04:00:15 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id f189so1031620pfg.12
+        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 04:00:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=nQQWQUgxuW6Tu+PRvCtkwuIVHgAhZ7y427FiGzCqW1I=;
+        b=zuDceFqPkzhsXg/5Ra0cCOC1bU0nBHOgMC+yisKtXJINh/T8f5KQ5Xk3tN1hEQWy1f
+         fF/5Ti7SlnxHTZ8CRdyv6Jl7qV6+yL697U37ZNkhKajiI+l/0MJiVPCdQ2f0nPB60e3l
+         deL9dfPtSkXLUF1i0K5lBK/jrlNzSLsedO4pErBw8lcHrmTQsFpVw/Kq9PVvZIU+2X3S
+         BjO3inmiQSb4KC3RcJr5s4SFs01LRfMOjiO3Y4IdS3Rj0CRwh+XHIqdFiSxlkBam0yxV
+         rxKuYNPGd/pLOsHpTEsqWBSUGsQm4kgH2TClaSNsf9ya4bJIDlxKTpNOca2+BLM7jp/t
+         D1tA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=nQQWQUgxuW6Tu+PRvCtkwuIVHgAhZ7y427FiGzCqW1I=;
+        b=Zx/KPNKucic/oULzc4syWTg2jv4WDG/s1UkMq5LO2wo9mAcjzqlePKHATJT/xh1W7L
+         Yk3ENoBfRymm+GvdsB4ZilKz/X31z/c86qqgb803FScAVeF3vouH8HGsR3sKMmiu1scf
+         O5U+2a0QXG5vxYaXyMP7CEMlvmSyzprVTNyf607aZHCnTeiLdW4zgPvzl0k0g809fDVY
+         mA3Levc4zRcmTeGoUsCXuQyQTsEoewspzfyJpF3GaCse72Dm607M/EUZn9C3gb2K/qSF
+         qufmaxlA9VPCcx5P3O1hXrnDbK1nrKZkho8RueOvVFjJboRIXav0T6rHMgBY8XLpgnCO
+         2FAg==
+X-Gm-Message-State: AOAM530v47xp0BqPG0fbwDq7ROB6ZgH+9EL0b9VRuMB+XsrLAe3zUJNR
+        NQion6nmx0I5MdcSuh1csGaL6Q==
+X-Google-Smtp-Source: ABdhPJxhzjNSoABq+dGG77CzsRDyX+40KYVEdGsQI8qW5B1JHU6i8UmOJoBqJRMmoCIvhAQ+em8rxg==
+X-Received: by 2002:a63:2dc7:: with SMTP id t190mr27705777pgt.455.1634122814960;
+        Wed, 13 Oct 2021 04:00:14 -0700 (PDT)
+Received: from localhost ([106.201.113.61])
+        by smtp.gmail.com with ESMTPSA id g189sm5284657pfb.75.2021.10.13.04.00.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Oct 2021 04:00:14 -0700 (PDT)
+Date:   Wed, 13 Oct 2021 16:30:12 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Matt Mackall <mpm@selenic.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
-        linux-scsi@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
-        Ido Schimmel <idosch@nvidia.com>, x86@kernel.org,
-        qat-linux@intel.com, Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Frederic Barrat <fbarrat@linux.ibm.com>,
-        Fiona Trahe <fiona.trahe@intel.com>,
-        Andrew Donnellan <ajd@linux.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        Suganath Prabu Subramani 
-        <suganath-prabu.subramani@broadcom.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jack Xu <jack.xu@intel.com>, Borislav Petkov <bp@alien8.de>,
-        Michael Buesch <m@bues.ch>, Jiri Pirko <jiri@nvidia.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Juergen Gross <jgross@suse.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        xen-devel@lists.xenproject.org, Vadym Kochan <vkochan@marvell.com>,
-        MPT-FusionLinux.pdl@broadcom.com, linux-usb@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Zhou Wang <wangzhou1@hisilicon.com>,
-        linux-crypto@vger.kernel.org, kernel@pengutronix.de,
+        Amit Shah <amit@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Simon Horman <simon.horman@corigine.com>,
-        Wojciech Ziemba <wojciech.ziemba@intel.com>,
-        Tomaszx Kowalik <tomaszx.kowalik@intel.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        Taras Chornyi <tchornyi@marvell.com>,
-        linux-perf-users@vger.kernel.org
-Subject: Re: [PATCH v6 00/11] PCI: Drop duplicated tracking of a pci_dev's
- bound driver
-Message-ID: <20211013105856.yve6n5zu625im5fo@pengutronix.de>
-References: <20211013085131.5htnch5p6zv46mzn@pengutronix.de>
- <20211013105428.GA1890798@bhelgaas>
+        Gonglei <arei.gonglei@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        "Enrico Weigelt, metux IT consult" <info@metux.net>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Daniel Vetter <daniel@ffwll.ch>, Jie Deng <jie.deng@intel.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        David Hildenbrand <david@redhat.com>,
+        Vivek Goyal <vgoyal@redhat.com>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Anton Yakovlev <anton.yakovlev@opensynergy.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, linux-um@lists.infradead.org,
+        virtualization@lists.linux-foundation.org,
+        linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-gpio@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        nvdimm@lists.linux.dev, linux-remoteproc@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net, kvm@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH RFC] virtio: wrap config->reset calls
+Message-ID: <20211013110012.3exppbls2wggqfhb@vireshk-i7>
+References: <20211013105226.20225-1-mst@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="52e44hxpwffbx22b"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211013105428.GA1890798@bhelgaas>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <20211013105226.20225-1-mst@redhat.com>
+User-Agent: NeoMutt/20180716-391-311a52
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 13-10-21, 06:55, Michael S. Tsirkin wrote:
+> This will enable cleanups down the road.
+> The idea is to disable cbs, then add "flush_queued_cbs" callback
+> as a parameter, this way drivers can flush any work
+> queued after callbacks have been disabled.
+> 
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>  drivers/gpio/gpio-virtio.c                 | 2 +-
+>  drivers/i2c/busses/i2c-virtio.c            | 2 +-
 
---52e44hxpwffbx22b
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Reviewed-by: Viresh Kumar <viresh.kumar@linaro.org>
 
-Hello,
-
-On Wed, Oct 13, 2021 at 05:54:28AM -0500, Bjorn Helgaas wrote:
-> On Wed, Oct 13, 2021 at 10:51:31AM +0200, Uwe Kleine-K=F6nig wrote:
-> > On Tue, Oct 12, 2021 at 06:32:12PM -0500, Bjorn Helgaas wrote:
-> > > diff --git a/drivers/misc/cxl/guest.c b/drivers/misc/cxl/guest.c
-> > > index d997c9c3ebb5..7eb3706cf42d 100644
-> > > --- a/drivers/misc/cxl/guest.c
-> > > +++ b/drivers/misc/cxl/guest.c
-> > > @@ -20,38 +20,38 @@ static void pci_error_handlers(struct cxl_afu *af=
-u,
-> > >  				pci_channel_state_t state)
-> > >  {
-> > >  	struct pci_dev *afu_dev;
-> > > +	struct pci_driver *afu_drv;
-> > > +	struct pci_error_handlers *err_handler;
-> >=20
-> > These two could be moved into the for loop (where afu_drv was with my
-> > patch already). This is also possible in a few other drivers.
->=20
-> That's true, they could.  I tried to follow the prevailing style in
-> the file.  At least in cxl, I didn't see any other cases of
-> declarations being in the minimal scope like that.
-
-I don't care much, do whatever you consider nice. I'm happy you liked
-the cleanup and that you took it.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---52e44hxpwffbx22b
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmFmu+0ACgkQwfwUeK3K
-7AnoGgf+Org0o7CctF9VMJ1cRL0/n994P0Xf4J0pVgDihRJKx2m6225saLIOfR9c
-tezswS1SpHGF0jh6VVcc26om68F6diINTuhV9HjdShrJ3OqoifBqUQ+ggPRWVaT5
-KB06t/1umM6bzcXmVvhwDX4+amPeFwfSPynHBfhudbA6DLwhCVuJk+109EvvuLlm
-u79Qp7+p4PyMwo699ubwQFekrSsf72gzSOfuRBPqHqx0SWbSUPlUyLyolxtsUD22
-7/ex/TOt2JrmP7lFEfLhrONg7BvlEBUokQ5MGQqxdyP/djPUVbtDoM3iX0kC7x2A
-Fa44dFbWF/D3+K4X5Cesu+BfzXP+rA==
-=xGeM
------END PGP SIGNATURE-----
-
---52e44hxpwffbx22b--
+-- 
+viresh
