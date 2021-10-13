@@ -2,87 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5FD842BDD2
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 12:51:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6E2D42BDDA
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 12:54:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229882AbhJMKxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 06:53:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55248 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229912AbhJMKxN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 06:53:13 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F339C061749
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 03:51:10 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id u18so9830835lfd.12
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 03:51:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=rKfrG5HHh3oByuKlWlvIaOLx1lvfyWUDrGma858qYu4=;
-        b=PM4nQ3HIhjJ2Pk5nkf2WdoHIipWVFAbxEGjfZadAqybQ4lcctoKu6oL9ozmu4+CRTZ
-         uYIVnj/KasRu8P5C8j4KeWBZdHkmqWbcg7FZJjB+IlCLrSuPl9oyPQNc/6z5IY0xtYk7
-         iea0guujK7W4loKN/Bdg1IGrCMUqIZBnVFNemU99yxwV+YBihHQBEb1VKi1cfodpIegh
-         CqhZR3NK8QqpiewaxmZ4tx9ILWzWKuWea8Qx64M/DM4EjYcwY7FVTJLLeQKSwvVgOxFh
-         fwXO2hJYhvFlED8pENWDK/HoSvWXn+/0A/nSz63cQ16tnLAP5Vss6BNjbr+lMjQOKMFG
-         T5mA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=rKfrG5HHh3oByuKlWlvIaOLx1lvfyWUDrGma858qYu4=;
-        b=EKjOzajleD6KCLIdJxPaydLMd6QaTVpeY3V7i4wMnsIx4PRHeWjPVGZAS55mE58END
-         pyXjHoUIFKOxEHgXQLr6jNE7rdyHZuon7Ap9nWQiYCH8zHtRjuj3F39sp6yx0SsCBc5M
-         Cl6bG0t4hC1e7mfxOAqnF+IS/6UzFsfI+fOOrCmv30acTSuIdR/sOmCRHgIQQfUR1te9
-         /grPehmBWY/Rdlzk6jFimZMFeYw23Tdco8wEGC+SeXA20hZJts41WnRP2d2BBlBPs/tA
-         8kpjIFhIDEUKZpNqiKyFgTMvs6Iq4A3pJFEZLa1RX1XjOc51+y6rlwvxTuyI0rca+8lx
-         Y5Pg==
-X-Gm-Message-State: AOAM531KHGmbcLJI517D6wu2tiWSaY71hyA/U7q7YtHgS5gVtV+lLAex
-        szPTlfsVvqAGVejvwbGCk3k4tJhfaivYnAcBxUgY4Q==
-X-Google-Smtp-Source: ABdhPJzSXmuXGLBC0odLomW50c6wMRcojgUpr4C5z0oUp4TqIelvRRd22KJdLKLOYhRHwdIro3XxaIq1Ttl1rW8y4uE=
-X-Received: by 2002:a05:651c:4d2:: with SMTP id e18mr35521797lji.432.1634122268377;
- Wed, 13 Oct 2021 03:51:08 -0700 (PDT)
-MIME-Version: 1.0
-References: <20211012123557.3547280-1-alvin@pqrs.dk> <20211012123557.3547280-3-alvin@pqrs.dk>
-In-Reply-To: <20211012123557.3547280-3-alvin@pqrs.dk>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Wed, 13 Oct 2021 12:50:56 +0200
-Message-ID: <CACRpkdaTZYgW8PWabUoKA97B6yOUUGaNsnXOrrxtHc38fU8Qnw@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/6] net: dsa: move NET_DSA_TAG_RTL4_A to right
- place in Kconfig/Makefile
-To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alvin@pqrs.dk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        id S229845AbhJMK4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 06:56:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55102 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229602AbhJMK4d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Oct 2021 06:56:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 85F6E60ED4;
+        Wed, 13 Oct 2021 10:54:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634122469;
+        bh=7iHTFHMgD8tHMQJ8um3MWnq2WmS30AxI0TP6/V1BtV4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=OqtFMqGMGFV4K9yVj94P1PdYhryA/CdqOslHcpNhaQ08AmoURmbWpdbwgGLpBRtvv
+         GOsgbbkXEnNemfGxenULuEuLWhQSBLZDlcXtsIPUtWRz0Xquu4nM3on/FjIIYLKVym
+         bnMheTYnvnPKKCMeJmHy92kqkk6lJLUVe2jWrwP9ZfoZxr9KzicovqTES+nvgUJrgd
+         CW5TCOmBqfvu1ALAWILVarLhtB0Ty7o6Te/0Wlj3D4Ep4xDYZe5KxmPTRIsD28cE8M
+         U3L0ny1u+JWyxeAAoH7731EvVOLTcEPfK9OIXkjw0dh6LOeY9oV0Ng9JEnXKuTIMCX
+         IWg5mdhv7zLQg==
+Date:   Wed, 13 Oct 2021 05:54:28 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Sathya Prakash <sathya.prakash@broadcom.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        linux-pci@vger.kernel.org, Alexander Duyck <alexanderduyck@fb.com>,
+        Russell Currey <ruscur@russell.cc>, x86@kernel.org,
+        qat-linux@intel.com, oss-drivers@corigine.com,
+        Oliver O'Halloran <oohall@gmail.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Jiri Olsa <jolsa@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marco Chiappero <marco.chiappero@intel.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        linux-scsi@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        linux-wireless@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Suganath Prabu Subramani 
+        <suganath-prabu.subramani@broadcom.com>,
+        Fiona Trahe <fiona.trahe@intel.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        linuxppc-dev@lists.ozlabs.org,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jack Xu <jack.xu@intel.com>, Borislav Petkov <bp@alien8.de>,
+        Michael Buesch <m@bues.ch>, Jiri Pirko <jiri@nvidia.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Juergen Gross <jgross@suse.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        xen-devel@lists.xenproject.org, Vadym Kochan <vkochan@marvell.com>,
+        MPT-FusionLinux.pdl@broadcom.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org,
+        Wojciech Ziemba <wojciech.ziemba@intel.com>,
+        linux-kernel@vger.kernel.org,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Zhou Wang <wangzhou1@hisilicon.com>,
+        linux-crypto@vger.kernel.org, kernel@pengutronix.de,
+        netdev@vger.kernel.org, Frederic Barrat <fbarrat@linux.ibm.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Tomaszx Kowalik <tomaszx.kowalik@intel.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        linux-perf-users@vger.kernel.org
+Subject: Re: [PATCH v6 00/11] PCI: Drop duplicated tracking of a pci_dev's
+ bound driver
+Message-ID: <20211013105428.GA1890798@bhelgaas>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211013085131.5htnch5p6zv46mzn@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 12, 2021 at 2:37 PM Alvin =C5=A0ipraga <alvin@pqrs.dk> wrote:
+On Wed, Oct 13, 2021 at 10:51:31AM +0200, Uwe Kleine-König wrote:
+> On Tue, Oct 12, 2021 at 06:32:12PM -0500, Bjorn Helgaas wrote:
+> > On Mon, Oct 04, 2021 at 02:59:24PM +0200, Uwe Kleine-König wrote:
+> > > Hello,
+> > > 
+> > > this is v6 of the quest to drop the "driver" member from struct pci_dev
+> > > which tracks the same data (apart from a constant offset) as dev.driver.
+> > 
+> > I like this a lot and applied it to pci/driver for v5.16, thanks!
+> > 
+> > I split some of the bigger patches apart so they only touched one
+> > driver or subsystem at a time.  I also updated to_pci_driver() so it
+> > returns NULL when given NULL, which makes some of the validations
+> > quite a bit simpler, especially in the PM code in pci-driver.c.
+> 
+> OK.
+> 
+> > Full interdiff from this v6 series:
+> > 
+> > diff --git a/arch/x86/kernel/probe_roms.c b/arch/x86/kernel/probe_roms.c
+> > index deaaef6efe34..36e84d904260 100644
+> > --- a/arch/x86/kernel/probe_roms.c
+> > +++ b/arch/x86/kernel/probe_roms.c
+> > @@ -80,17 +80,15 @@ static struct resource video_rom_resource = {
+> >   */
+> >  static bool match_id(struct pci_dev *pdev, unsigned short vendor, unsigned short device)
+> >  {
+> > +	struct pci_driver *drv = to_pci_driver(pdev->dev.driver);
+> >  	const struct pci_device_id *id;
+> >  
+> >  	if (pdev->vendor == vendor && pdev->device == device)
+> >  		return true;
+> >  
+> > -	if (pdev->dev.driver) {
+> > -		struct pci_driver *drv = to_pci_driver(pdev->dev.driver);
+> > -		for (id = drv->id_table; id && id->vendor; id++)
+> > -			if (id->vendor == vendor && id->device == device)
+> > -				break;
+> > -	}
+> > +	for (id = drv ? drv->id_table : NULL; id && id->vendor; id++)
+> > +		if (id->vendor == vendor && id->device == device)
+> > +			break;
+> >  
+> >  	return id && id->vendor;
+> >  }
+> > diff --git a/drivers/misc/cxl/guest.c b/drivers/misc/cxl/guest.c
+> > index d997c9c3ebb5..7eb3706cf42d 100644
+> > --- a/drivers/misc/cxl/guest.c
+> > +++ b/drivers/misc/cxl/guest.c
+> > @@ -20,38 +20,38 @@ static void pci_error_handlers(struct cxl_afu *afu,
+> >  				pci_channel_state_t state)
+> >  {
+> >  	struct pci_dev *afu_dev;
+> > +	struct pci_driver *afu_drv;
+> > +	struct pci_error_handlers *err_handler;
+> 
+> These two could be moved into the for loop (where afu_drv was with my
+> patch already). This is also possible in a few other drivers.
 
-> From: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
->
-> Move things around a little so that this tag driver is alphabetically
-> ordered. The Kconfig file is sorted based on the tristate text.
->
-> Suggested-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
+That's true, they could.  I tried to follow the prevailing style in
+the file.  At least in cxl, I didn't see any other cases of
+declarations being in the minimal scope like that.
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-
-Yours,
-Linus Walleij
+Bjorn
