@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBFA042CEA1
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 00:40:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3958142CEAD
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 00:40:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231769AbhJMWlm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 18:41:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51312 "EHLO
+        id S231862AbhJMWlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 18:41:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231741AbhJMWlk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 18:41:40 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE6DCC061570;
-        Wed, 13 Oct 2021 15:39:36 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id r18so16218007edv.12;
-        Wed, 13 Oct 2021 15:39:36 -0700 (PDT)
+        with ESMTP id S231728AbhJMWll (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 18:41:41 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBFE0C061570;
+        Wed, 13 Oct 2021 15:39:37 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id p13so16702476edw.0;
+        Wed, 13 Oct 2021 15:39:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=9LnrAkocmQLk3/asb8CX9S+Wuzi97AtlcxiuNHbEEro=;
-        b=gMcwb1/d52eOvmh67O4QgbAp4fBJM6ubuIIwsSckas8uEaaOxBve2DndTg0W5IZJfN
-         UWpOgAnOXRCbPsdIiRTto0fXZ5caEtHBCzQrH6/+wBjdWhMUDvoEGv3XkHM3mvNn9Fjx
-         Mxhm4/JBnCexwbaGGVhT/d6fI5gZeI1DY1cwZLCAc3lGAzNHwQZle6frQP6Jj2SmxcYJ
-         yUs/9fw/Y+DITzBUnsPbu1/XpL7DFXWVY3IURyV1+DGWJ06O9dCg4F1ZCQMXEor/pg6l
-         aAsDyC3XSbxp/MquIR0HIYPvGUPnUjmy2bxAPodGw3trwQWlatMzkgF97q0yqpAaq1Kn
-         2TIQ==
+        bh=rMP3P5zozCXV/t6fvCx4z79ja0Mg8ZMQVvb40Sw+2ds=;
+        b=HCniQKhNadMKS9Qh2VfcdzSDpM8bhqvz7gPWzyVynluZqoqDgqc6mR6ai1Z7GDLRct
+         uXCp5TGOtXj5U9FAAgVfIcMOM+7XhX6dyTSstD9UVUBONfNraMNgZhre5ssL1FlU/9h3
+         Bqqwy9FdM4E0XE/qxCF+TrubchrgeqxmKcS0VwJ3G+cBnNEbBU2at+ggXxHJ/JrB2a2g
+         ZoEzo8MHqdiPrnXfPdCJCdJamqmHUkUgpjQurbA+07cAXmQPhCKSqtaAT01NZTwxRGUQ
+         8cL/+qALIRHPtQkKUA5p0dPjOpY5xzK6fUjKR8wrLz1SuVz5H7uiG9lBVPHghu9dep7N
+         xI6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=9LnrAkocmQLk3/asb8CX9S+Wuzi97AtlcxiuNHbEEro=;
-        b=TS/XbyerLdlN9s5G1OcX2nqN7VIt8jTSKKg88ppJoaQ8Vb5KaciU654bN7wG8Uhs+b
-         jclrw5105jjqSJMaZyNkbD+++WTzRGSQ3I5GcObDkhSHLClrpJgrvRrjTObKJLX8nGHS
-         VWgetLbWiP+MXlZqmqva9xJnctKVvsfuBStyc8j0//L/ypU6It9fIQx5bbUdeZQKPJrr
-         T/XVReiAEOx9taOPJw/IdoC81E/bQ4NNfvrO20MoiIE4ryRwXUlig5tXEjmtrUGI/i+2
-         2Ik1YZqA5WPJbYfuQJ1P8rR2fZWdW8NT+BW6duBtlgsnDF0wa9qXTdn0vpS4bHCvTBWe
-         btEQ==
-X-Gm-Message-State: AOAM531Sok0l/UukrJhjfZI0zgB5bN0vEHnii0qJE8YbuYwaZTGet3mr
-        mOHIzn+7bHqXNvkWYTLQl7g=
-X-Google-Smtp-Source: ABdhPJwE2UJ3Ma4YjFurbO5nJCVPdyt/bJpVQtgiDsOBuEoNLyVHbhVE/WkvuRFTwnZuwg+F9teKRQ==
-X-Received: by 2002:a17:906:c009:: with SMTP id e9mr2303214ejz.509.1634164775170;
-        Wed, 13 Oct 2021 15:39:35 -0700 (PDT)
+        bh=rMP3P5zozCXV/t6fvCx4z79ja0Mg8ZMQVvb40Sw+2ds=;
+        b=TEqrItz3rRr0AGYqp7mk+OtY4qLotWf/Q73BkPzWCljuneIz+c6/BJPC08YkmBaPjd
+         inS4YB1xQSppbftK3NdVoNdvnHxB38h2cM82mPXoZ1qwRVunAftry5In5T9L1eGUBd3j
+         HqMQzcl8KIuT1MEtzaXGZ1K1ge30puX0i/4Mq0LSzDud+W6D3StciFr0z/BukTD7Si6q
+         Ra3D+Z1Mmhdz4mfGn3OXkr2c02oXVXr2O6qf2MIFDF3q9/hFtfkAg1ijOCtXgUwK9gEi
+         fUtrzr1ohwe7xDmQ/4VxRY2DxMBOqZpr40ryR0wS19LMZXhxSO44VwS2aULxWv3t3yqp
+         xL2w==
+X-Gm-Message-State: AOAM532kpk8TLG36WJgsGRVC4zPdM5s1toJpx6jRizrYWDogfY/YovpM
+        EmHbkZctKT91reZnD3dg/e8=
+X-Google-Smtp-Source: ABdhPJzlhplAawllZ951CVFUGz91PxA8GDYNiszmwekcJ4QQLvy7nRDbX1y+qhJ/excn/fG4J1bTew==
+X-Received: by 2002:a17:907:f83:: with SMTP id kb3mr2393669ejc.453.1634164776313;
+        Wed, 13 Oct 2021 15:39:36 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id o3sm524735eju.123.2021.10.13.15.39.34
+        by smtp.googlemail.com with ESMTPSA id o3sm524735eju.123.2021.10.13.15.39.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Oct 2021 15:39:34 -0700 (PDT)
+        Wed, 13 Oct 2021 15:39:36 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -62,9 +62,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-msm@vger.kernel.org
-Subject: [net-next PATCH v7 08/16] net: dsa: qca8k: add explicit SGMII PLL enable
-Date:   Thu, 14 Oct 2021 00:39:13 +0200
-Message-Id: <20211013223921.4380-9-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v7 09/16] dt-bindings: net: dsa: qca8k: Document qca,led-open-drain binding
+Date:   Thu, 14 Oct 2021 00:39:14 +0200
+Message-Id: <20211013223921.4380-10-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211013223921.4380-1-ansuelsmth@gmail.com>
 References: <20211013223921.4380-1-ansuelsmth@gmail.com>
@@ -74,69 +74,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Support enabling PLL on the SGMII CPU port. Some device require this
-special configuration or no traffic is transmitted and the switch
-doesn't work at all. A dedicated binding is added to the CPU node
-port to apply the correct reg on mac config.
-Fail to correctly configure sgmii with qca8327 switch and warn if pll is
-used on qca8337 with a revision greater than 1.
+Document new binding qca,ignore-power-on-sel used to ignore
+power on strapping and use sw regs instead.
+Document qca,led-open.drain to set led to open drain mode, the
+qca,ignore-power-on-sel is mandatory with this enabled or an error will
+be reported.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 19 +++++++++++++++++--
- drivers/net/dsa/qca8k.h |  1 +
- 2 files changed, 18 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/net/dsa/qca8k.txt | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index dad8cc5fd1af..23a05b857975 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -1002,6 +1002,18 @@ qca8k_parse_port_config(struct qca8k_priv *priv)
- 			if (of_property_read_bool(port_dn, "qca,sgmii-rxclk-falling-edge"))
- 				priv->sgmii_rx_clk_falling_edge = true;
+diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+index 05a8ddfb5483..9e6748ec13da 100644
+--- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
++++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+@@ -13,6 +13,17 @@ Required properties:
+ Optional properties:
  
-+			if (of_property_read_bool(port_dn, "qca,sgmii-enable-pll")) {
-+				priv->sgmii_enable_pll = true;
-+
-+				if (priv->switch_id == QCA8K_ID_QCA8327) {
-+					dev_err(priv->dev, "SGMII PLL should NOT be enabled for qca8327. Aborting enabling");
-+					priv->sgmii_enable_pll = false;
-+				}
-+
-+				if (priv->switch_revision < 2)
-+					dev_warn(priv->dev, "SGMII PLL should NOT be enabled for qca8337 with revision 2 or more.");
-+			}
-+
- 			break;
- 		default:
- 			continue;
-@@ -1312,8 +1324,11 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- 		if (ret)
- 			return;
+ - reset-gpios: GPIO to be used to reset the whole device
++- qca,ignore-power-on-sel: Ignore power on pin strapping to configure led open
++                           drain or eeprom presence. This is needed for broken
++                           devices that have wrong configuration or when the oem
++                           decided to not use pin strapping and fallback to sw
++                           regs.
++- qca,led-open-drain: Set leds to open-drain mode. This requires the
++                      qca,ignore-power-on-sel to be set or the driver will fail
++                      to probe. This is needed if the oem doesn't use pin
++                      strapping to set this mode and prefers to set it using sw
++                      regs. The pin strapping related to led open drain mode is
++                      the pin B68 for QCA832x and B49 for QCA833x
  
--		val |= QCA8K_SGMII_EN_PLL | QCA8K_SGMII_EN_RX |
--			QCA8K_SGMII_EN_TX | QCA8K_SGMII_EN_SD;
-+		val |= QCA8K_SGMII_EN_SD;
-+
-+		if (priv->sgmii_enable_pll)
-+			val |= QCA8K_SGMII_EN_PLL | QCA8K_SGMII_EN_RX |
-+			       QCA8K_SGMII_EN_TX;
+ Subnodes:
  
- 		if (dsa_is_cpu_port(ds, port)) {
- 			/* CPU port, we're talking to the CPU MAC, be a PHY */
-diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index 5eb0c890dfe4..77b1677edafa 100644
---- a/drivers/net/dsa/qca8k.h
-+++ b/drivers/net/dsa/qca8k.h
-@@ -266,6 +266,7 @@ struct qca8k_priv {
- 	u8 switch_revision;
- 	bool sgmii_rx_clk_falling_edge;
- 	bool sgmii_tx_clk_falling_edge;
-+	bool sgmii_enable_pll;
- 	u8 rgmii_rx_delay[QCA8K_NUM_CPU_PORTS]; /* 0: CPU port0, 1: CPU port6 */
- 	u8 rgmii_tx_delay[QCA8K_NUM_CPU_PORTS]; /* 0: CPU port0, 1: CPU port6 */
- 	bool legacy_phy_port_mapping;
 -- 
 2.32.0
 
