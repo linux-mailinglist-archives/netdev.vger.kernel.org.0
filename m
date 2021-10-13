@@ -2,77 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29DC642B313
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 05:05:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D28042B31E
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 05:08:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235675AbhJMDHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 23:07:20 -0400
-Received: from smtp23.cstnet.cn ([159.226.251.23]:57482 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229571AbhJMDHO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Oct 2021 23:07:14 -0400
-Received: from localhost.localdomain (unknown [124.16.138.128])
-        by APP-03 (Coremail) with SMTP id rQCowAC3v6vFTGZhRuViAw--.13004S2;
-        Wed, 13 Oct 2021 11:04:37 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org
-Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] hv_netvsc: Fix potentionally overflow in netvsc_xdp_xmit()
-Date:   Wed, 13 Oct 2021 03:04:35 +0000
-Message-Id: <1634094275-1773464-1-git-send-email-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.7.4
-X-CM-TRANSID: rQCowAC3v6vFTGZhRuViAw--.13004S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7Jr4DGFWktr1fGr4xtr17GFg_yoWfAFX_Cr
-        18GF17Ww4UC3WkKr4kGa1rZFy8tw1vqFWfAFWIq39xX347Ary5Xw1Fvr9xGrWrW3yUCr9x
-        Gws7WaykZr9rWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbVAFF20E14v26ryj6rWUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
-        n2kIc2xKxwCY02Avz4vE14v_Gr4l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr
-        0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY
-        17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcV
-        C0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF
-        0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxh
-        VjvjDU0xZFpf9x0JU3kucUUUUU=
-X-Originating-IP: [124.16.138.128]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+        id S236988AbhJMDKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 23:10:55 -0400
+Received: from mail-ot1-f50.google.com ([209.85.210.50]:39869 "EHLO
+        mail-ot1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230054AbhJMDKy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 23:10:54 -0400
+Received: by mail-ot1-f50.google.com with SMTP id k2-20020a056830168200b0054e523d242aso1850687otr.6;
+        Tue, 12 Oct 2021 20:08:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=dG7YKVkdDHgU/EVdP5rWldt/Wd4xuXVEeGYHHbyU6pY=;
+        b=WglxSxVgt/9zWvhHSfPuH2OAOHpAGX+Khs0OhpMn7pjFzANsTtnQuP0Mt9UxR/8kWb
+         NHuq0FurjW8AW7hlgZRQ4DfJaVOI4QUWofTQQvS4iudEKhz5ZMIJXe3GQWXYn0bt8E0+
+         PBqz1v4YPNS+P8BBfqvI2g4GlS3yWG0gdqe705pTE+YakxJxgvT6iSBiJaIp1wCmk8nO
+         cpzIujo7yi2bjoh0eRCh6nSfgoqr6kqxa9Aa/amZxxu4g0NxoQD54HCQYPPd75GqA1J1
+         nDAolp2DYMe2xHX89SClcXpeex7qr58sTpR1aAKPdE3vxJfZkKSduu9qWxSLjuyYK7ht
+         ZivQ==
+X-Gm-Message-State: AOAM5329g1lE8Hqre5lBK0OJdYrvOq/wqNbvPAVZTIGXQbATlfz5nH27
+        zhBoaIgVSktRpNC/v377r+C1Ix+LkA==
+X-Google-Smtp-Source: ABdhPJwxbanwesgn/W1Wk639iMVs3dz+D5GBhnB2Y0dX/VfTkAYTB4EguI+MLsLJdXY/BZM8w0/ILA==
+X-Received: by 2002:a9d:61c7:: with SMTP id h7mr4857303otk.21.1634094531056;
+        Tue, 12 Oct 2021 20:08:51 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id l45sm2488680ooi.30.2021.10.12.20.08.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Oct 2021 20:08:50 -0700 (PDT)
+Received: (nullmailer pid 3858823 invoked by uid 1000);
+        Wed, 13 Oct 2021 03:08:49 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        netdev@vger.kernel.org, Matthew Hagan <mnhagan88@gmail.com>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Russell King <linux@armlinux.org.uk>
+In-Reply-To: <20211013011622.10537-16-ansuelsmth@gmail.com>
+References: <20211013011622.10537-1-ansuelsmth@gmail.com> <20211013011622.10537-16-ansuelsmth@gmail.com>
+Subject: Re: [net-next PATCH v6 15/16] dt-bindings: net: dsa: qca8k: convert to YAML schema
+Date:   Tue, 12 Oct 2021 22:08:49 -0500
+Message-Id: <1634094529.487895.3858822.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding skb_rx_queue_recorded() to avoid the value of skb->queue_mapping
-to be 0. Otherwise the return value of skb_get_rx_queue() could be MAX_U16
-cause by overflow.
+On Wed, 13 Oct 2021 03:16:21 +0200, Ansuel Smith wrote:
+> From: Matthew Hagan <mnhagan88@gmail.com>
+> 
+> Convert the qca8k bindings to YAML format.
+> 
+> Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
+> Co-developed-by: Ansuel Smith <ansuelsmth@gmail.com>
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
+>  .../devicetree/bindings/net/dsa/qca8k.txt     | 245 ------------
+>  .../devicetree/bindings/net/dsa/qca8k.yaml    | 362 ++++++++++++++++++
+>  2 files changed, 362 insertions(+), 245 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/net/dsa/qca8k.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/dsa/qca8k.yaml
+> 
 
-Fixes: 351e158 ("hv_netvsc: Add XDP support")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- drivers/net/hyperv/netvsc_drv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index f682a55..e51201e 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -807,7 +807,7 @@ static void netvsc_xdp_xmit(struct sk_buff *skb, struct net_device *ndev)
- {
- 	int rc;
- 
--	skb->queue_mapping = skb_get_rx_queue(skb);
-+	skb->queue_mapping = skb_rx_queue_recorded(skb) ? skb_get_rx_queue(skb) : 0;
- 	__skb_push(skb, ETH_HLEN);
- 
- 	rc = netvsc_xmit(skb, ndev, true);
--- 
-2.7.4
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/net/dsa/qca8k.yaml:362:7: [error] no new line character at the end of file (new-line-at-end-of-file)
+
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.example.dt.yaml: switch@10: 'oneOf' conditional failed, one must be fixed:
+	'ports' is a required property
+	'ethernet-ports' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/1540096
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
