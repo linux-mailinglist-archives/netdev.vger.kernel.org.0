@@ -2,53 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 444EC42C2CE
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 16:20:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D0CD42C2E3
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 16:22:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233894AbhJMOWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 10:22:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39286 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229562AbhJMOWq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Oct 2021 10:22:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0C8F6610A2;
-        Wed, 13 Oct 2021 14:20:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634134843;
-        bh=OkUGPmr2zk19BhOFZL4WOXYVOIbey/ov0aRoYoGKEbo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GBxCPPQJV6wtqQNztoLxB3QEjt9xcOdRIuABiufO0C0WgKfWhsxyIR5d1jKaOnOhn
-         k76PrdrmHH5U8MAY4KPmyijZOoRKD6E9KpRfzkywIXm4lnxAXOLsD+9qzHvYcY5PmJ
-         TfWn53crGXymxpTwuRngxvEXjdfGrMgqIsK3/GLetrD6Jray/uFisLjVhUtROkhUuU
-         kirZnx5XBWnco4Vs3wWJZ5kxtieywq2YiPKC8i4UKgDnu7eOVNJIIAbeOLHLbJlNp9
-         FNVkdoOz8IezoNlxeJaKDbVzD/CHewTvtCdR7gMu1bRsLZVT/S7RXWovk+ZkkMjrgl
-         oTF26B+S4IRKQ==
-Date:   Wed, 13 Oct 2021 07:20:42 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Strejc Cyril <cyril.strejc@skoda.cz>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: PROBLEM: multicast router does not fill UDP csum of its own
- forwarded packets
-Message-ID: <20211013072042.2b6077e3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <3fc5b9be1d73417a99756404c0089814@skoda.cz>
-References: <3fc5b9be1d73417a99756404c0089814@skoda.cz>
+        id S236701AbhJMOYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 10:24:50 -0400
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:14526 "EHLO
+        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235899AbhJMOYl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 10:24:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1634134958; x=1665670958;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=QLxl0HoobPToMMkExPECA79JKwgJz+rF51IZKeXVMAA=;
+  b=UtRLKzkk643Ek+LsTu/gYJDoE0EdmT7jNm6wjqVDqIJl+bPB5unf7Yow
+   3X5EnpqwKQW950ZNm46DPx95VJrSlgGKCK/FbeezWzdAa+fnV124WaZOo
+   Yyt9PCow09VyN/I5LHWBlrPfgpTFq3VltkQq1jrGYR0uG4lNAaaqP+EZH
+   M=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 13 Oct 2021 07:22:38 -0700
+X-QCInternal: smtphost
+Received: from nalasex01a.na.qualcomm.com ([10.47.209.196])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2021 07:22:37 -0700
+Received: from [10.111.161.132] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.7; Wed, 13 Oct 2021
+ 07:22:36 -0700
+Message-ID: <64b87f6b-5db9-721f-1bb8-6ae29742bf96@quicinc.com>
+Date:   Wed, 13 Oct 2021 10:22:35 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.0
+Subject: Re: [PATCH 1/5] PCI/VPD: Add pci_read/write_vpd_any()
+Content-Language: en-US
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Raju Rangoju <rajur@chelsio.com>
+CC:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <ba0b18a3-64d8-d72f-9e9f-ad3e4d7ae3b8@gmail.com>
+ <93ecce28-a158-f02a-d134-8afcaced8efe@gmail.com>
+ <e89087c5-c495-c5ca-feb1-54cf3a8775c5@quicinc.com>
+ <ca805454-6ec5-303b-d39f-d505cad6b338@gmail.com>
+From:   Qian Cai <quic_qiancai@quicinc.com>
+In-Reply-To: <ca805454-6ec5-303b-d39f-d505cad6b338@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 8 Oct 2021 20:08:36 +0000 Strejc Cyril wrote:
-> please let me summarize a problem regarding Linux multicast routing
-> in combination with L4 checksum offloading and own (locally produced)
-> multicast packets being forwarded.
 
-Hi Cyril, thanks for the report, looks like nobody has immediate
-feedback to share. Could you resend the patch in more usual form 
-so that it's easier to review and harder to ignore? 
 
-Please put your description into the commit message (line wrapped 
-at 72 characters), run ./scripts/checkpatch.pl --strict on the patch
-and submit it with git send-email?
+On 10/12/2021 4:26 PM, Heiner Kallweit wrote:
+> Thanks for the report! I could reproduce the issue, the following fixes
+> it for me. Could you please test whether it fixes the issue for you as well?
+
+Yes, it works fine. BTW, in the original patch here:
+
+--- a/drivers/pci/vpd.c
++++ b/drivers/pci/vpd.c
+@@ -138,9 +138,10 @@ static int pci_vpd_wait(struct pci_dev *dev, bool set)
+ }
+ 
+ static ssize_t pci_vpd_read(struct pci_dev *dev, loff_t pos, size_t count,
+-			    void *arg)
++			    void *arg, bool check_size)
+ {
+ 	struct pci_vpd *vpd = &dev->vpd;
++	unsigned int max_len = check_size ? vpd->len : PCI_VPD_MAX_SIZE;
+ 	int ret = 0;
+ 	loff_t end = pos + count;
+ 	u8 *buf = arg;
+@@ -151,11 +152,11 @@ static ssize_t pci_vpd_read(struct pci_dev *dev, loff_t pos, size_t count,
+ 	if (pos < 0)
+ 		return -EINVAL;
+ 
+-	if (pos > vpd->len)
++	if (pos >= max_len)
+ 		return 0;
+
+I am not sure if "pos >= max_len" is correct there, so just want to give you
+a chance to double-check.
