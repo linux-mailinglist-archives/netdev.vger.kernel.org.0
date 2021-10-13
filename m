@@ -2,66 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D920442CE0F
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 00:31:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E91A342CE12
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 00:31:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231562AbhJMWcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 18:32:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48986 "EHLO
+        id S231528AbhJMWc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 18:32:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231491AbhJMWcO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 18:32:14 -0400
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03FBFC061767
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 15:30:09 -0700 (PDT)
-Received: by mail-io1-xd2e.google.com with SMTP id h196so1526008iof.2
-        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 15:30:08 -0700 (PDT)
+        with ESMTP id S231532AbhJMWcU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 18:32:20 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3919AC061762
+        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 15:30:16 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id i189so1530230ioa.1
+        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 15:30:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ieee.org; s=google;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=R7T39QATmB4tA2vUHsFSgOPvWUP2Zhw6kWYGRWlSnPw=;
-        b=Ndt/c7zpnsNXF0M0iZ6h8CRsVzZzY1QlkCFZr+KX9mwV+L1tDFnxFdCv+a/JITMX5c
-         uhI/itrmvyJkZOxvA7YGQuQJRdY4k+UFkNDiliZvuPm/s6h1KnILNZYH4ridvN5fvmGN
-         KuT0VDHfKVy9lMv7DPM2Y1Gy+o4Sce3W3n2ho=
+        bh=oF0iPtyjsTTR1yTh/BwWvIZP+4z74H6xesWC3R7KH/k=;
+        b=AfecqWo4/beRevzvEHj9nZWPwJls8LXaTLtaK4qGis1Z67xe4kytYc4cPOmhO4sNTh
+         5aSa79htr/tzP9eCNnp7X/wma7nf08RyhzzCffj/SRFhEvYg+ozPb5hyD12JAeiVpZM7
+         jAUF93kvgAZlt0FkmJD3NQa7TmrQwNkIA/kG4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=R7T39QATmB4tA2vUHsFSgOPvWUP2Zhw6kWYGRWlSnPw=;
-        b=CCWCuKcdDrx3AwiV6tshpiR/1j7lASeZ9C5Gnk9YH6qj3i4cECnL06D8TgtmIF6RUP
-         1WSXxgo0xwhPKmCBkkdRljPYpuCi2h5plFWNW6fNMa5yrjB0qmEL4+K6U2IbHz7Oi+sA
-         62KM70vTL+TEJPOsBwA4tn4wXwLiPcvQocVEbtYbvWar9+7bHpqdvjhwFubPElxHa3dA
-         ZoJyH8Uiw5QdS6Uvw8fNcf6ykmtkae/FjXARMtqspaa0/2J91/RjZq7I6N4ycLQio/lM
-         6blHd87zAZSlypAlYmdj7iZsUKxrbtVJ8kEeUNa8TSeK3bvaM6tk2GstorwNgphYi9rI
-         0+gw==
-X-Gm-Message-State: AOAM530D8zYWiMx/yX5UT7PrttRr8EjT3zvJQuYWEnN/uamTdEarCKFm
-        d1bjxJzTSG4b9ZxtkMJ986h56A==
-X-Google-Smtp-Source: ABdhPJx8rkbhYPnbTuW0J5cchW5tUZkXBo0VS++k4owrz+oDabr8tqWpIy21SzNiRV8Cer6lLVn7FA==
-X-Received: by 2002:a6b:8d8a:: with SMTP id p132mr1542155iod.96.1634164208245;
-        Wed, 13 Oct 2021 15:30:08 -0700 (PDT)
+        bh=oF0iPtyjsTTR1yTh/BwWvIZP+4z74H6xesWC3R7KH/k=;
+        b=ODyFjZXJymAYYqjDdGce1UoeULR04ZmVGoqCJuvO84hBldWyKZN8i+eQT4x16H4Ip3
+         j3q8Iqxdzfo7FA4X+a/YiNDEGneNaaUvoMCCzx4C5d51NNv8FFdSJhkgE2TF3xhxqwYK
+         YZvJaaPmzF4oMc6M9fKrvjpFyObEyWujM+912gnqh6qeo50A1hL8Qq7/sqlH+yV01o5L
+         /pH93BwKQGB2OQt5fZrsS5e4LVNXPUkErp6KgEz8BW8GH3ca4kixzUetr6pEaND/SGwa
+         FfUhmoMSzYs0xbfXH/VrvkZFjNh5TGn6hHOw5NFp8gFQpCm/BZ03nARz2uVr1gQXVfYv
+         f8jg==
+X-Gm-Message-State: AOAM532UiKSJah0XtbIwxPH+jpHz0s7BEQFO4Q/kmZdlDKvlQ3p42isu
+        NuQ8L0om2J7zrG+8Hl0TImOSaA==
+X-Google-Smtp-Source: ABdhPJyzgin8AlIMOxRiFSLjROwUBORf+h+MMulKL9D4Y5DO+0vgeo20Kp30Sc1Jexo4ZUMORHPsUw==
+X-Received: by 2002:a05:6638:39c:: with SMTP id y28mr1485441jap.47.1634164215426;
+        Wed, 13 Oct 2021 15:30:15 -0700 (PDT)
 Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id o10sm327303ilt.84.2021.10.13.15.30.06
+        by smtp.googlemail.com with ESMTPSA id y11sm387191ior.4.2021.10.13.15.30.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Oct 2021 15:30:07 -0700 (PDT)
-Subject: Re: [RFC PATCH 09/17] net: ipa: Add support for using BAM as a DMA
- transport
+        Wed, 13 Oct 2021 15:30:14 -0700 (PDT)
+Subject: Re: [PATCH 10/17] net: ipa: Add support for IPA v2.x commands and
+ table init
 To:     Sireesh Kodali <sireeshkodali1@gmail.com>,
         phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, elder@kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
+Cc:     Vladimir Lypak <vladimir.lypak@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 References: <20210920030811.57273-1-sireeshkodali1@gmail.com>
- <20210920030811.57273-10-sireeshkodali1@gmail.com>
+ <20210920030811.57273-11-sireeshkodali1@gmail.com>
 From:   Alex Elder <elder@ieee.org>
-Message-ID: <794ca401-294f-54ed-0af2-e3c763723340@ieee.org>
-Date:   Wed, 13 Oct 2021 17:30:06 -0500
+Message-ID: <b4e13fa5-7ac0-6ce5-28d6-e9946fe039f2@ieee.org>
+Date:   Wed, 13 Oct 2021 17:30:13 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210920030811.57273-10-sireeshkodali1@gmail.com>
+In-Reply-To: <20210920030811.57273-11-sireeshkodali1@gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -70,806 +71,402 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 9/19/21 10:08 PM, Sireesh Kodali wrote:
-> BAM is used on IPA v2.x. Since BAM already has a nice dmaengine driver,
-> the IPA driver only makes calls the dmaengine API.
-> Also add BAM transaction support to IPA's trasaction abstraction layer.
+> IPA v2.x commands are different from later IPA revisions mostly because
+> of the fact that IPA v2.x is 32 bit. There are also other minor
+> differences some of the command structs.
 > 
-> BAM transactions should use NAPI just like GSI transactions, but just
-> use callbacks on each transaction for now.
+> The tables again are only different because of the fact that IPA v2.x is
+> 32 bit.
 
-This is where things get a little more complicated.  I'm not really
-familiar with the BAM interface and would really like to give this
-a much deeper review, and I won't be doing that now.
+There's no "RFC" on this patch, but I assume it's just invisible.
 
-At first glance, it looks reasonably clean to me, and it surprises
-me a little that this different system can be used with a relatively
-small amount of change.  Much looks duplicated, so it could be that
-a little more work abstracting might avoid that (but I haven't looked
-that closely).
+There are some things in here where some conventions used elsewhere
+in the driver aren't as well followed.  One example is the use of
+symbol names with IPA version encoded in them; such cases usually
+have a macro that takes a version as argument.
+
+And I don't especially like using a macro on the left hand side
+of an assignment expression.
+
+I'm skimming now, but overall this looks OK.
 
 					-Alex
 
-> 
 > Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
+> Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
 > ---
->   drivers/net/ipa/Makefile          |   2 +-
->   drivers/net/ipa/bam.c             | 525 ++++++++++++++++++++++++++++++
->   drivers/net/ipa/gsi.c             |   1 +
->   drivers/net/ipa/ipa_data.h        |   1 +
->   drivers/net/ipa/ipa_dma.h         |  18 +-
->   drivers/net/ipa/ipa_dma_private.h |   2 +
->   drivers/net/ipa/ipa_main.c        |  20 +-
->   drivers/net/ipa/ipa_trans.c       |  14 +-
->   drivers/net/ipa/ipa_trans.h       |   4 +
->   9 files changed, 569 insertions(+), 18 deletions(-)
->   create mode 100644 drivers/net/ipa/bam.c
+>   drivers/net/ipa/ipa.h       |   2 +-
+>   drivers/net/ipa/ipa_cmd.c   | 138 ++++++++++++++++++++++++++----------
+>   drivers/net/ipa/ipa_table.c |  29 ++++++--
+>   drivers/net/ipa/ipa_table.h |   2 +-
+>   4 files changed, 125 insertions(+), 46 deletions(-)
 > 
-> diff --git a/drivers/net/ipa/Makefile b/drivers/net/ipa/Makefile
-> index 3cd021fb992e..4abebc667f77 100644
-> --- a/drivers/net/ipa/Makefile
-> +++ b/drivers/net/ipa/Makefile
-> @@ -2,7 +2,7 @@ obj-$(CONFIG_QCOM_IPA)	+=	ipa.o
+> diff --git a/drivers/net/ipa/ipa.h b/drivers/net/ipa/ipa.h
+> index 80a83ac45729..63b2b368b588 100644
+> --- a/drivers/net/ipa/ipa.h
+> +++ b/drivers/net/ipa/ipa.h
+> @@ -81,7 +81,7 @@ struct ipa {
+>   	struct ipa_power *power;
 >   
->   ipa-y			:=	ipa_main.o ipa_power.o ipa_reg.o ipa_mem.o \
->   				ipa_table.o ipa_interrupt.o gsi.o ipa_trans.o \
-> -				ipa_gsi.o ipa_smp2p.o ipa_uc.o \
-> +				ipa_gsi.o ipa_smp2p.o ipa_uc.o bam.o \
->   				ipa_endpoint.o ipa_cmd.o ipa_modem.o \
->   				ipa_resource.o ipa_qmi.o ipa_qmi_msg.o \
->   				ipa_sysfs.o
-> diff --git a/drivers/net/ipa/bam.c b/drivers/net/ipa/bam.c
-> new file mode 100644
-> index 000000000000..0726e385fee5
-> --- /dev/null
-> +++ b/drivers/net/ipa/bam.c
-> @@ -0,0 +1,525 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +/* Copyright (c) 2020, The Linux Foundation. All rights reserved.
-> + */
-> +
-> +#include <linux/completion.h>
-> +#include <linux/dma-mapping.h>
-> +#include <linux/dmaengine.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/io.h>
-> +#include <linux/kernel.h>
-> +#include <linux/mutex.h>
-> +#include <linux/netdevice.h>
-> +#include <linux/platform_device.h>
-> +
-> +#include "ipa_gsi.h"
-> +#include "ipa.h"
-> +#include "ipa_dma.h"
-> +#include "ipa_dma_private.h"
-> +#include "ipa_gsi.h"
-> +#include "ipa_trans.h"
-> +#include "ipa_data.h"
-> +
-> +/**
-> + * DOC: The IPA Smart Peripheral System Interface
-> + *
-> + * The Smart Peripheral System is a means to communicate over BAM pipes to
-> + * the IPA block. The Modem also uses BAM pipes to communicate with the IPA
-> + * core.
-> + *
-> + * Refer the GSI documentation, because BAM is a precursor to GSI and more or less
-> + * the same, conceptually (maybe, IDK, I have no docs to go through).
-> + *
-> + * Each channel here corresponds to 1 BAM pipe configured in BAM2BAM mode
-> + *
-> + * IPA cmds are transferred one at a time, each in one BAM transfer.
-> + */
-> +
-> +/* Get and configure the BAM DMA channel */
-> +int bam_channel_init_one(struct ipa_dma *bam,
-> +			 const struct ipa_gsi_endpoint_data *data, bool command)
-> +{
-> +	struct dma_slave_config bam_config;
-> +	u32 channel_id = data->channel_id;
-> +	struct ipa_channel *channel = &bam->channel[channel_id];
-> +	int ret;
-> +
-> +	/*TODO: if (!bam_channel_data_valid(bam, data))
-> +		return -EINVAL;*/
-> +
-> +	channel->dma_subsys = bam;
-> +	channel->dma_chan = dma_request_chan(bam->dev, data->channel_name);
-> +	channel->toward_ipa = data->toward_ipa;
-> +	channel->tlv_count = data->channel.tlv_count;
-> +	channel->tre_count = data->channel.tre_count;
-> +	if (IS_ERR(channel->dma_chan)) {
-> +		dev_err(bam->dev, "failed to request BAM channel %s: %d\n",
-> +				data->channel_name,
-> +				(int) PTR_ERR(channel->dma_chan));
-> +		return PTR_ERR(channel->dma_chan);
-> +	}
-> +
-> +	ret = ipa_channel_trans_init(bam, data->channel_id);
-> +	if (ret)
-> +		goto err_dma_chan_free;
-> +
-> +	if (data->toward_ipa) {
-> +		bam_config.direction = DMA_MEM_TO_DEV;
-> +		bam_config.dst_maxburst = channel->tlv_count;
-> +	} else {
-> +		bam_config.direction = DMA_DEV_TO_MEM;
-> +		bam_config.src_maxburst = channel->tlv_count;
-> +	}
-> +
-> +	dmaengine_slave_config(channel->dma_chan, &bam_config);
-> +
-> +	if (command)
-> +		ret = ipa_cmd_pool_init(channel, 256);
-> +
-> +	if (!ret)
-> +		return 0;
-> +
-> +err_dma_chan_free:
-> +	dma_release_channel(channel->dma_chan);
-> +	return ret;
-> +}
-> +
-> +static void bam_channel_exit_one(struct ipa_channel *channel)
-> +{
-> +	if (channel->dma_chan) {
-> +		dmaengine_terminate_sync(channel->dma_chan);
-> +		dma_release_channel(channel->dma_chan);
-> +	}
-> +}
-> +
-> +/* Get channels from BAM_DMA */
-> +int bam_channel_init(struct ipa_dma *bam, u32 count,
-> +		const struct ipa_gsi_endpoint_data *data)
-> +{
-> +	int ret = 0;
-> +	u32 i;
-> +
-> +	for (i = 0; i < count; ++i) {
-> +		bool command = i == IPA_ENDPOINT_AP_COMMAND_TX;
-> +
-> +		if (!data[i].channel_name || data[i].ee_id == GSI_EE_MODEM)
-> +			continue;
-> +
-> +		ret = bam_channel_init_one(bam, &data[i], command);
-> +		if (ret)
-> +			goto err_unwind;
-> +	}
-> +
-> +	return ret;
-> +
-> +err_unwind:
-> +	while (i--) {
-> +		if (ipa_gsi_endpoint_data_empty(&data[i]))
-> +			continue;
-> +
-> +		bam_channel_exit_one(&bam->channel[i]);
-> +	}
-> +	return ret;
-> +}
-> +
-> +/* Inverse of bam_channel_init() */
-> +void bam_channel_exit(struct ipa_dma *bam)
-> +{
-> +	u32 channel_id = BAM_CHANNEL_COUNT_MAX - 1;
-> +
-> +	do
-> +		bam_channel_exit_one(&bam->channel[channel_id]);
-> +	while (channel_id--);
-> +}
-> +
-> +/* Inverse of bam_init() */
-> +static void bam_exit(struct ipa_dma *bam)
-> +{
-> +	mutex_destroy(&bam->mutex);
-> +	bam_channel_exit(bam);
-> +}
-> +
-> +/* Return the channel id associated with a given channel */
-> +static u32 bam_channel_id(struct ipa_channel *channel)
-> +{
-> +	return channel - &channel->dma_subsys->channel[0];
-> +}
-> +
-> +static void
-> +bam_channel_tx_update(struct ipa_channel *channel, struct ipa_trans *trans)
-> +{
-> +	u64 byte_count = trans->byte_count + trans->len;
-> +	u64 trans_count = trans->trans_count + 1;
-> +
-> +	byte_count -= channel->compl_byte_count;
-> +	channel->compl_byte_count += byte_count;
-> +	trans_count -= channel->compl_trans_count;
-> +	channel->compl_trans_count += trans_count;
-> +
-> +	ipa_gsi_channel_tx_completed(channel->dma_subsys, bam_channel_id(channel),
-> +					   trans_count, byte_count);
-> +}
-> +
-> +static void
-> +bam_channel_rx_update(struct ipa_channel *channel, struct ipa_trans *trans)
-> +{
-> +	/* FIXME */
-> +	u64 byte_count = trans->byte_count + trans->len;
-> +
-> +	channel->byte_count += byte_count;
-> +	channel->trans_count++;
-> +}
-> +
-> +/* Consult hardware, move any newly completed transactions to completed list */
-> +static void bam_channel_update(struct ipa_channel *channel)
-> +{
-> +	struct ipa_trans *trans;
-> +
-> +	list_for_each_entry(trans, &channel->trans_info.pending, links) {
-> +		enum dma_status trans_status =
-> +				dma_async_is_tx_complete(channel->dma_chan,
-> +					trans->cookie, NULL, NULL);
-> +		if (trans_status == DMA_COMPLETE)
-> +			break;
-> +	}
-> +	/* Get the transaction for the latest completed event.  Take a
-> +	 * reference to keep it from completing before we give the events
-> +	 * for this and previous transactions back to the hardware.
-> +	 */
-> +	refcount_inc(&trans->refcount);
-> +
-> +	/* For RX channels, update each completed transaction with the number
-> +	 * of bytes that were actually received.  For TX channels, report
-> +	 * the number of transactions and bytes this completion represents
-> +	 * up the network stack.
-> +	 */
-> +	if (channel->toward_ipa)
-> +		bam_channel_tx_update(channel, trans);
-> +	else
-> +		bam_channel_rx_update(channel, trans);
-> +
-> +	ipa_trans_move_complete(trans);
-> +
-> +	ipa_trans_free(trans);
-> +}
-> +
-> +/**
-> + * bam_channel_poll_one() - Return a single completed transaction on a channel
-> + * @channel:	Channel to be polled
-> + *
-> + * Return:	Transaction pointer, or null if none are available
-> + *
-> + * This function returns the first entry on a channel's completed transaction
-> + * list.  If that list is empty, the hardware is consulted to determine
-> + * whether any new transactions have completed.  If so, they're moved to the
-> + * completed list and the new first entry is returned.  If there are no more
-> + * completed transactions, a null pointer is returned.
-> + */
-> +static struct ipa_trans *bam_channel_poll_one(struct ipa_channel *channel)
-> +{
-> +	struct ipa_trans *trans;
-> +
-> +	/* Get the first transaction from the completed list */
-> +	trans = ipa_channel_trans_complete(channel);
-> +	if (!trans) {
-> +		bam_channel_update(channel);
-> +		trans = ipa_channel_trans_complete(channel);
-> +	}
-> +
-> +	if (trans)
-> +		ipa_trans_move_polled(trans);
-> +
-> +	return trans;
-> +}
-> +
-> +/**
-> + * bam_channel_poll() - NAPI poll function for a channel
-> + * @napi:	NAPI structure for the channel
-> + * @budget:	Budget supplied by NAPI core
-> + *
-> + * Return:	Number of items polled (<= budget)
-> + *
-> + * Single transactions completed by hardware are polled until either
-> + * the budget is exhausted, or there are no more.  Each transaction
-> + * polled is passed to ipa_trans_complete(), to perform remaining
-> + * completion processing and retire/free the transaction.
-> + */
-> +static int bam_channel_poll(struct napi_struct *napi, int budget)
-> +{
-> +	struct ipa_channel *channel;
-> +	int count = 0;
-> +
-> +	channel = container_of(napi, struct ipa_channel, napi);
-> +	while (count < budget) {
-> +		struct ipa_trans *trans;
-> +
-> +		count++;
-> +		trans = bam_channel_poll_one(channel);
-> +		if (!trans)
-> +			break;
-> +		ipa_trans_complete(trans);
-> +	}
-> +
-> +	if (count < budget)
-> +		napi_complete(&channel->napi);
-> +
-> +	return count;
-> +}
-> +
-> +/* Setup function for a single channel */
-> +static void bam_channel_setup_one(struct ipa_dma *bam, u32 channel_id)
-> +{
-> +	struct ipa_channel *channel = &bam->channel[channel_id];
-> +
-> +	if (!channel->dma_subsys)
-> +		return;	/* Ignore uninitialized channels */
-> +
-> +	if (channel->toward_ipa) {
-> +		netif_tx_napi_add(&bam->dummy_dev, &channel->napi,
-> +				  bam_channel_poll, NAPI_POLL_WEIGHT);
-> +	} else {
-> +		netif_napi_add(&bam->dummy_dev, &channel->napi,
-> +			       bam_channel_poll, NAPI_POLL_WEIGHT);
-> +	}
-> +	napi_enable(&channel->napi);
-> +}
-> +
-> +static void bam_channel_teardown_one(struct ipa_dma *bam, u32 channel_id)
-> +{
-> +	struct ipa_channel *channel = &bam->channel[channel_id];
-> +
-> +	if (!channel->dma_subsys)
-> +		return;		/* Ignore uninitialized channels */
-> +
-> +	netif_napi_del(&channel->napi);
-> +}
-> +
-> +/* Setup function for channels */
-> +static int bam_channel_setup(struct ipa_dma *bam)
-> +{
-> +	u32 channel_id = 0;
-> +	int ret;
-> +
-> +	mutex_lock(&bam->mutex);
-> +
-> +	do
-> +		bam_channel_setup_one(bam, channel_id);
-> +	while (++channel_id < BAM_CHANNEL_COUNT_MAX);
-> +
-> +	/* Make sure no channels were defined that hardware does not support */
-> +	while (channel_id < BAM_CHANNEL_COUNT_MAX) {
-> +		struct ipa_channel *channel = &bam->channel[channel_id++];
-> +
-> +		if (!channel->dma_subsys)
-> +			continue;	/* Ignore uninitialized channels */
-> +
-> +		dev_err(bam->dev, "channel %u not supported by hardware\n",
-> +			channel_id - 1);
-> +		channel_id = BAM_CHANNEL_COUNT_MAX;
-> +		goto err_unwind;
-> +	}
-> +
-> +	mutex_unlock(&bam->mutex);
-> +
-> +	return 0;
-> +
-> +err_unwind:
-> +	while (channel_id--)
-> +		bam_channel_teardown_one(bam, channel_id);
-> +
-> +	mutex_unlock(&bam->mutex);
-> +
-> +	return ret;
-> +}
-> +
-> +/* Inverse of bam_channel_setup() */
-> +static void bam_channel_teardown(struct ipa_dma *bam)
-> +{
-> +	u32 channel_id;
-> +
-> +	mutex_lock(&bam->mutex);
-> +
-> +	channel_id = BAM_CHANNEL_COUNT_MAX;
-> +	do
-> +		bam_channel_teardown_one(bam, channel_id);
-> +	while (channel_id--);
-> +
-> +	mutex_unlock(&bam->mutex);
-> +}
-> +
-> +static int bam_setup(struct ipa_dma *bam)
-> +{
-> +	return bam_channel_setup(bam);
-> +}
-> +
-> +static void bam_teardown(struct ipa_dma *bam)
-> +{
-> +	bam_channel_teardown(bam);
-> +}
-> +
-> +static u32 bam_channel_tre_max(struct ipa_dma *bam, u32 channel_id)
-> +{
-> +	struct ipa_channel *channel = &bam->channel[channel_id];
-> +
-> +	/* Hardware limit is channel->tre_count - 1 */
-> +	return channel->tre_count - (channel->tlv_count - 1);
-> +}
-> +
-> +static u32 bam_channel_trans_tre_max(struct ipa_dma *bam, u32 channel_id)
-> +{
-> +	struct ipa_channel *channel = &bam->channel[channel_id];
-> +
-> +	return channel->tlv_count;
-> +}
-> +
-> +static int bam_channel_start(struct ipa_dma *bam, u32 channel_id)
-> +{
-> +	return 0;
-> +}
-> +
-> +static int bam_channel_stop(struct ipa_dma *bam, u32 channel_id)
-> +{
-> +	struct ipa_channel *channel = &bam->channel[channel_id];
-> +
-> +	return dmaengine_terminate_sync(channel->dma_chan);
-> +}
-> +
-> +static void bam_channel_reset(struct ipa_dma *bam, u32 channel_id, bool doorbell)
-> +{
-> +	bam_channel_stop(bam, channel_id);
-> +}
-> +
-> +static int bam_channel_suspend(struct ipa_dma *bam, u32 channel_id)
-> +{
-> +	struct ipa_channel *channel = &bam->channel[channel_id];
-> +
-> +	return dmaengine_pause(channel->dma_chan);
-> +}
-> +
-> +static int bam_channel_resume(struct ipa_dma *bam, u32 channel_id)
-> +{
-> +	struct ipa_channel *channel = &bam->channel[channel_id];
-> +
-> +	return dmaengine_resume(channel->dma_chan);
-> +}
-> +
-> +static void bam_suspend(struct ipa_dma *bam)
-> +{
-> +	/* No-op for now */
-> +}
-> +
-> +static void bam_resume(struct ipa_dma *bam)
-> +{
-> +	/* No-op for now */
-> +}
-> +
-> +static void bam_trans_callback(void *arg)
-> +{
-> +	ipa_trans_complete(arg);
-> +}
-> +
-> +static void bam_trans_commit(struct ipa_trans *trans, bool unused)
-> +{
-> +	struct ipa_channel *channel = &trans->dma_subsys->channel[trans->channel_id];
-> +	enum ipa_cmd_opcode opcode = IPA_CMD_NONE;
-> +	struct ipa_cmd_info *info;
-> +	struct scatterlist *sg;
-> +	u32 byte_count = 0;
-> +	u32 i;
-> +	enum dma_transfer_direction direction;
-> +
-> +	if (channel->toward_ipa)
-> +		direction = DMA_MEM_TO_DEV;
-> +	else
-> +		direction = DMA_DEV_TO_MEM;
-> +
-> +	/* assert(trans->used > 0); */
-> +
-> +	info = trans->info ? &trans->info[0] : NULL;
-> +	for_each_sg(trans->sgl, sg, trans->used, i) {
-> +		bool last_tre = i == trans->used - 1;
-> +		dma_addr_t addr = sg_dma_address(sg);
-> +		u32 len = sg_dma_len(sg);
-> +		u32 dma_flags = 0;
-> +		struct dma_async_tx_descriptor *desc;
-> +
-> +		byte_count += len;
-> +		if (info)
-> +			opcode = info++->opcode;
-> +
-> +		if (opcode != IPA_CMD_NONE) {
-> +			len = opcode;
-> +			dma_flags |= DMA_PREP_IMM_CMD;
-> +		}
-> +
-> +		if (last_tre)
-> +			dma_flags |= DMA_PREP_INTERRUPT;
-> +
-> +		desc = dmaengine_prep_slave_single(channel->dma_chan, addr, len,
-> +				direction, dma_flags);
-> +
-> +		if (last_tre) {
-> +			desc->callback = bam_trans_callback;
-> +			desc->callback_param = trans;
-> +		}
-> +
-> +		desc->cookie = dmaengine_submit(desc);
-> +
-> +		if (last_tre)
-> +			trans->cookie = desc->cookie;
-> +
-> +		if (direction == DMA_DEV_TO_MEM)
-> +			dmaengine_desc_attach_metadata(desc, &trans->len, sizeof(trans->len));
-> +	}
-> +
-> +	if (channel->toward_ipa) {
-> +		/* We record TX bytes when they are sent */
-> +		trans->len = byte_count;
-> +		trans->trans_count = channel->trans_count;
-> +		trans->byte_count = channel->byte_count;
-> +		channel->trans_count++;
-> +		channel->byte_count += byte_count;
-> +	}
-> +
-> +	ipa_trans_move_pending(trans);
-> +
-> +	dma_async_issue_pending(channel->dma_chan);
-> +}
-> +
-> +/* Initialize the BAM DMA channels
-> + * Actual hw init is handled by the BAM_DMA driver
-> + */
-> +int bam_init(struct ipa_dma *bam, struct platform_device *pdev,
-> +		enum ipa_version version, u32 count,
-> +		const struct ipa_gsi_endpoint_data *data)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	int ret;
-> +
-> +	bam->dev = dev;
-> +	bam->version = version;
-> +	bam->setup = bam_setup;
-> +	bam->teardown = bam_teardown;
-> +	bam->exit = bam_exit;
-> +	bam->suspend = bam_suspend;
-> +	bam->resume = bam_resume;
-> +	bam->channel_tre_max = bam_channel_tre_max;
-> +	bam->channel_trans_tre_max = bam_channel_trans_tre_max;
-> +	bam->channel_start = bam_channel_start;
-> +	bam->channel_stop = bam_channel_stop;
-> +	bam->channel_reset = bam_channel_reset;
-> +	bam->channel_suspend = bam_channel_suspend;
-> +	bam->channel_resume = bam_channel_resume;
-> +	bam->trans_commit = bam_trans_commit;
-> +
-> +	init_dummy_netdev(&bam->dummy_dev);
-> +
-> +	ret = bam_channel_init(bam, count, data);
-> +	if (ret)
-> +		return ret;
-> +
-> +	mutex_init(&bam->mutex);
-> +
-> +	return 0;
-> +}
-> diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
-> index 39d9ca620a9f..ac0b9e748fa1 100644
-> --- a/drivers/net/ipa/gsi.c
-> +++ b/drivers/net/ipa/gsi.c
-> @@ -2210,6 +2210,7 @@ int gsi_init(struct ipa_dma *gsi, struct platform_device *pdev,
->   	gsi->channel_reset = gsi_channel_reset;
->   	gsi->channel_suspend = gsi_channel_suspend;
->   	gsi->channel_resume = gsi_channel_resume;
-> +	gsi->trans_commit = gsi_trans_commit;
+>   	dma_addr_t table_addr;
+> -	__le64 *table_virt;
+> +	void *table_virt;
 >   
->   	/* GSI uses NAPI on all channels.  Create a dummy network device
->   	 * for the channel NAPI contexts to be associated with.
-> diff --git a/drivers/net/ipa/ipa_data.h b/drivers/net/ipa/ipa_data.h
-> index 6d329e9ce5d2..7d62d49f414f 100644
-> --- a/drivers/net/ipa/ipa_data.h
-> +++ b/drivers/net/ipa/ipa_data.h
-> @@ -188,6 +188,7 @@ struct ipa_gsi_endpoint_data {
->   	u8 channel_id;
->   	u8 endpoint_id;
->   	bool toward_ipa;
-> +	const char *channel_name;	/* used only for BAM DMA channels */
->   
->   	struct gsi_channel_data channel;
->   	struct ipa_endpoint_data endpoint;
-> diff --git a/drivers/net/ipa/ipa_dma.h b/drivers/net/ipa/ipa_dma.h
-> index 1a23e6ac5785..3000182ae689 100644
-> --- a/drivers/net/ipa/ipa_dma.h
-> +++ b/drivers/net/ipa/ipa_dma.h
-> @@ -17,7 +17,11 @@
->   
->   /* Maximum number of channels and event rings supported by the driver */
->   #define GSI_CHANNEL_COUNT_MAX	23
-> +#define BAM_CHANNEL_COUNT_MAX	20
->   #define GSI_EVT_RING_COUNT_MAX	24
-> +#define IPA_CHANNEL_COUNT_MAX	MAX(GSI_CHANNEL_COUNT_MAX, \
-> +				    BAM_CHANNEL_COUNT_MAX)
-> +#define MAX(a, b)		((a > b) ? a : b)
->   
->   /* Maximum TLV FIFO size for a channel; 64 here is arbitrary (and high) */
->   #define GSI_TLV_MAX		64
-> @@ -119,6 +123,8 @@ struct ipa_channel {
->   	struct gsi_ring tre_ring;
->   	u32 evt_ring_id;
->   
-> +	struct dma_chan *dma_chan;
-> +
->   	u64 byte_count;			/* total # bytes transferred */
->   	u64 trans_count;		/* total # transactions */
->   	/* The following counts are used only for TX endpoints */
-> @@ -154,7 +160,7 @@ struct ipa_dma {
->   	u32 irq;
->   	u32 channel_count;
->   	u32 evt_ring_count;
-> -	struct ipa_channel channel[GSI_CHANNEL_COUNT_MAX];
-> +	struct ipa_channel channel[IPA_CHANNEL_COUNT_MAX];
->   	struct gsi_evt_ring evt_ring[GSI_EVT_RING_COUNT_MAX];
->   	u32 event_bitmap;		/* allocated event rings */
->   	u32 modem_channel_bitmap;	/* modem channels to allocate */
-> @@ -303,7 +309,7 @@ static inline void ipa_dma_resume(struct ipa_dma *dma_subsys)
->   }
->   
->   /**
-> - * ipa_dma_init() - Initialize the GSI subsystem
-> + * ipa_init/bam_init() - Initialize the GSI/BAM subsystem
->    * @dma_subsys:	Address of ipa_dma structure embedded in an IPA structure
->    * @pdev:	IPA platform device
->    * @version:	IPA hardware version (implies GSI version)
-> @@ -312,14 +318,18 @@ static inline void ipa_dma_resume(struct ipa_dma *dma_subsys)
+>   	struct ipa_interrupt *interrupt;
+>   	bool uc_powered;
+> diff --git a/drivers/net/ipa/ipa_cmd.c b/drivers/net/ipa/ipa_cmd.c
+> index 7a104540dc26..58dae4b3bf87 100644
+> --- a/drivers/net/ipa/ipa_cmd.c
+> +++ b/drivers/net/ipa/ipa_cmd.c
+> @@ -25,8 +25,8 @@
+>    * An immediate command is generally used to request the IPA do something
+>    * other than data transfer to another endpoint.
 >    *
->    * Return:	0 if successful, or a negative error code
->    *
-> - * Early stage initialization of the GSI subsystem, performing tasks
-> - * that can be done before the GSI hardware is ready to use.
-> + * Early stage initialization of the GSI/BAM subsystem, performing tasks
-> + * that can be done before the GSI/BAM hardware is ready to use.
->    */
+> - * Immediate commands are represented by GSI transactions just like other
+> - * transfer requests, represented by a single GSI TRE.  Each immediate
+> + * Immediate commands on IPA v3 are represented by GSI transactions just like
+> + * other transfer requests, represented by a single GSI TRE.  Each immediate
+>    * command has a well-defined format, having a payload of a known length.
+>    * This allows the transfer element's length field to be used to hold an
+>    * immediate command's opcode.  The payload for a command resides in DRAM
+> @@ -45,10 +45,16 @@ enum pipeline_clear_options {
 >   
->   int gsi_init(struct ipa_dma *dma_subsys, struct platform_device *pdev,
->   	     enum ipa_version version, u32 count,
->   	     const struct ipa_gsi_endpoint_data *data);
+>   /* IPA_CMD_IP_V{4,6}_{FILTER,ROUTING}_INIT */
 >   
-> +int bam_init(struct ipa_dma *dma_subsys, struct platform_device *pdev,
-> +	     enum ipa_version version, u32 count,
-> +	     const struct ipa_gsi_endpoint_data *data);
+> -struct ipa_cmd_hw_ip_fltrt_init {
+> -	__le64 hash_rules_addr;
+> -	__le64 flags;
+> -	__le64 nhash_rules_addr;
+> +union ipa_cmd_hw_ip_fltrt_init {
+> +	struct {
+> +		__le32 nhash_rules_addr;
+> +		__le32 flags;
+> +	} v2;
+> +	struct {
+> +		__le64 hash_rules_addr;
+> +		__le64 flags;
+> +		__le64 nhash_rules_addr;
+> +	} v3;
+>   };
+>   
+>   /* Field masks for ipa_cmd_hw_ip_fltrt_init structure fields */
+> @@ -56,13 +62,23 @@ struct ipa_cmd_hw_ip_fltrt_init {
+>   #define IP_FLTRT_FLAGS_HASH_ADDR_FMASK			GENMASK_ULL(27, 12)
+>   #define IP_FLTRT_FLAGS_NHASH_SIZE_FMASK			GENMASK_ULL(39, 28)
+>   #define IP_FLTRT_FLAGS_NHASH_ADDR_FMASK			GENMASK_ULL(55, 40)
+> +#define IP_V2_IPV4_FLTRT_FLAGS_SIZE_FMASK		GENMASK_ULL(11, 0)
+> +#define IP_V2_IPV4_FLTRT_FLAGS_ADDR_FMASK		GENMASK_ULL(27, 12)
+> +#define IP_V2_IPV6_FLTRT_FLAGS_SIZE_FMASK		GENMASK_ULL(15, 0)
+> +#define IP_V2_IPV6_FLTRT_FLAGS_ADDR_FMASK		GENMASK_ULL(31, 16)
+>   
+>   /* IPA_CMD_HDR_INIT_LOCAL */
+>   
+> -struct ipa_cmd_hw_hdr_init_local {
+> -	__le64 hdr_table_addr;
+> -	__le32 flags;
+> -	__le32 reserved;
+> +union ipa_cmd_hw_hdr_init_local {
+> +	struct {
+> +		__le32 hdr_table_addr;
+> +		__le32 flags;
+> +	} v2;
+> +	struct {
+> +		__le64 hdr_table_addr;
+> +		__le32 flags;
+> +		__le32 reserved;
+> +	} v3;
+>   };
+>   
+>   /* Field masks for ipa_cmd_hw_hdr_init_local structure fields */
+> @@ -109,14 +125,37 @@ struct ipa_cmd_ip_packet_init {
+>   #define DMA_SHARED_MEM_OPCODE_SKIP_CLEAR_FMASK		GENMASK(8, 8)
+>   #define DMA_SHARED_MEM_OPCODE_CLEAR_OPTION_FMASK	GENMASK(10, 9)
+>   
+> -struct ipa_cmd_hw_dma_mem_mem {
+> -	__le16 clear_after_read; /* 0 or DMA_SHARED_MEM_CLEAR_AFTER_READ */
+> -	__le16 size;
+> -	__le16 local_addr;
+> -	__le16 flags;
+> -	__le64 system_addr;
+> +union ipa_cmd_hw_dma_mem_mem {
+> +	struct {
+> +		__le16 reserved;
+> +		__le16 size;
+> +		__le32 system_addr;
+> +		__le16 local_addr;
+> +		__le16 flags; /* the least significant 14 bits are reserved */
+> +		__le32 padding;
+> +	} v2;
+> +	struct {
+> +		__le16 clear_after_read; /* 0 or DMA_SHARED_MEM_CLEAR_AFTER_READ */
+> +		__le16 size;
+> +		__le16 local_addr;
+> +		__le16 flags;
+> +		__le64 system_addr;
+> +	} v3;
+>   };
+>   
+> +#define CMD_FIELD(_version, _payload, _field)				\
+> +	*(((_version) > IPA_VERSION_2_6L) ?		    		\
+> +	  &(_payload->v3._field) :			    		\
+> +	  &(_payload->v2._field))
 > +
->   /**
->    * ipa_dma_exit() - Exit the DMA subsystem
->    * @dma_subsys:	ipa_dma address previously passed to a successful gsi_init() call
-> diff --git a/drivers/net/ipa/ipa_dma_private.h b/drivers/net/ipa/ipa_dma_private.h
-> index 40148a551b47..1db53e597a61 100644
-> --- a/drivers/net/ipa/ipa_dma_private.h
-> +++ b/drivers/net/ipa/ipa_dma_private.h
-> @@ -16,6 +16,8 @@ struct ipa_channel;
->   
->   #define GSI_RING_ELEMENT_SIZE	16	/* bytes; must be a power of 2 */
->   
-> +void gsi_trans_commit(struct ipa_trans *trans, bool ring_db);
+> +#define SET_DMA_FIELD(_ver, _payload, _field, _value)			\
+> +	do {								\
+> +		if ((_ver) >= IPA_VERSION_3_0)				\
+> +			(_payload)->v3._field = cpu_to_le64(_value);	\
+> +		else							\
+> +			(_payload)->v2._field = cpu_to_le32(_value);	\
+> +	} while (0)
 > +
->   /* Return the entry that follows one provided in a transaction pool */
->   void *ipa_trans_pool_next(struct ipa_trans_pool *pool, void *element);
+>   /* Flag allowing atomic clear of target region after reading data (v4.0+)*/
+>   #define DMA_SHARED_MEM_CLEAR_AFTER_READ			GENMASK(15, 15)
 >   
-> diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
-> index ba06e3ad554c..ea6c4347f2c6 100644
-> --- a/drivers/net/ipa/ipa_main.c
-> +++ b/drivers/net/ipa/ipa_main.c
-> @@ -60,12 +60,15 @@
->    * core.  The GSI implements a set of "channels" used for communication
->    * between the AP and the IPA.
->    *
-> - * The IPA layer uses GSI channels to implement its "endpoints".  And while
-> - * a GSI channel carries data between the AP and the IPA, a pair of IPA
-> - * endpoints is used to carry traffic between two EEs.  Specifically, the main
-> - * modem network interface is implemented by two pairs of endpoints:  a TX
-> + * The IPA layer uses GSI channels or BAM pipes to implement its "endpoints".
-> + * And while a GSI channel carries data between the AP and the IPA, a pair of
-> + * IPA endpoints is used to carry traffic between two EEs.  Specifically, the
-> + * main modem network interface is implemented by two pairs of endpoints:  a TX
->    * endpoint on the AP coupled with an RX endpoint on the modem; and another
->    * RX endpoint on the AP receiving data from a TX endpoint on the modem.
-> + *
-> + * For BAM based transport, a pair of BAM pipes are used for TX and RX between
-> + * the AP and IPA, and between IPA and other EEs.
->    */
+> @@ -132,15 +171,16 @@ struct ipa_cmd_ip_packet_tag_status {
+>   	__le64 tag;
+>   };
 >   
->   /* The name of the GSI firmware file relative to /lib/firmware */
-> @@ -716,8 +719,13 @@ static int ipa_probe(struct platform_device *pdev)
->   	if (ret)
->   		goto err_reg_exit;
+> -#define IP_PACKET_TAG_STATUS_TAG_FMASK			GENMASK_ULL(63, 16)
+> +#define IPA_V2_IP_PACKET_TAG_STATUS_TAG_FMASK		GENMASK_ULL(63, 32)
+> +#define IPA_V3_IP_PACKET_TAG_STATUS_TAG_FMASK		GENMASK_ULL(63, 16)
 >   
-> -	ret = gsi_init(&ipa->dma_subsys, pdev, ipa->version, data->endpoint_count,
-> -		       data->endpoint_data);
-> +	if (IPA_HAS_GSI(ipa->version))
-> +		ret = gsi_init(&ipa->dma_subsys, pdev, ipa->version, data->endpoint_count,
-> +			       data->endpoint_data);
-> +	else
-> +		ret = bam_init(&ipa->dma_subsys, pdev, ipa->version, data->endpoint_count,
-> +			       data->endpoint_data);
+>   /* Immediate command payload */
+>   union ipa_cmd_payload {
+> -	struct ipa_cmd_hw_ip_fltrt_init table_init;
+> -	struct ipa_cmd_hw_hdr_init_local hdr_init_local;
+> +	union ipa_cmd_hw_ip_fltrt_init table_init;
+> +	union ipa_cmd_hw_hdr_init_local hdr_init_local;
+>   	struct ipa_cmd_register_write register_write;
+>   	struct ipa_cmd_ip_packet_init ip_packet_init;
+> -	struct ipa_cmd_hw_dma_mem_mem dma_shared_mem;
+> +	union ipa_cmd_hw_dma_mem_mem dma_shared_mem;
+>   	struct ipa_cmd_ip_packet_tag_status ip_packet_tag_status;
+>   };
+>   
+> @@ -154,6 +194,7 @@ static void ipa_cmd_validate_build(void)
+>   	 * of entries.
+>   	 */
+>   #define TABLE_SIZE	(TABLE_COUNT_MAX * sizeof(__le64))
+> +// TODO
+>   #define TABLE_COUNT_MAX	max_t(u32, IPA_ROUTE_COUNT_MAX, IPA_FILTER_COUNT_MAX)
+>   	BUILD_BUG_ON(TABLE_SIZE > field_max(IP_FLTRT_FLAGS_HASH_SIZE_FMASK));
+>   	BUILD_BUG_ON(TABLE_SIZE > field_max(IP_FLTRT_FLAGS_NHASH_SIZE_FMASK));
+> @@ -405,15 +446,26 @@ void ipa_cmd_table_init_add(struct ipa_trans *trans,
+>   {
+>   	struct ipa *ipa = container_of(trans->dma_subsys, struct ipa, dma_subsys);
+>   	enum dma_data_direction direction = DMA_TO_DEVICE;
+> -	struct ipa_cmd_hw_ip_fltrt_init *payload;
+> +	union ipa_cmd_hw_ip_fltrt_init *payload;
+> +	enum ipa_version version = ipa->version;
+>   	union ipa_cmd_payload *cmd_payload;
+>   	dma_addr_t payload_addr;
+>   	u64 val;
+>   
+>   	/* Record the non-hash table offset and size */
+>   	offset += ipa->mem_offset;
+> -	val = u64_encode_bits(offset, IP_FLTRT_FLAGS_NHASH_ADDR_FMASK);
+> -	val |= u64_encode_bits(size, IP_FLTRT_FLAGS_NHASH_SIZE_FMASK);
 > +
->   	if (ret)
->   		goto err_mem_exit;
+> +	if (version >= IPA_VERSION_3_0) {
+> +		val = u64_encode_bits(offset, IP_FLTRT_FLAGS_NHASH_ADDR_FMASK);
+> +		val |= u64_encode_bits(size, IP_FLTRT_FLAGS_NHASH_SIZE_FMASK);
+> +	} else if (opcode == IPA_CMD_IP_V4_FILTER_INIT ||
+> +		   opcode == IPA_CMD_IP_V4_ROUTING_INIT) {
+> +		val = u64_encode_bits(offset, IP_V2_IPV4_FLTRT_FLAGS_ADDR_FMASK);
+> +		val |= u64_encode_bits(size, IP_V2_IPV4_FLTRT_FLAGS_SIZE_FMASK);
+> +	} else { /* IPA <= v2.6L IPv6 */
+> +		val = u64_encode_bits(offset, IP_V2_IPV6_FLTRT_FLAGS_ADDR_FMASK);
+> +		val |= u64_encode_bits(size, IP_V2_IPV6_FLTRT_FLAGS_SIZE_FMASK);
+> +	}
 >   
-> diff --git a/drivers/net/ipa/ipa_trans.c b/drivers/net/ipa/ipa_trans.c
-> index 22755f3ce3da..444f44846da8 100644
-> --- a/drivers/net/ipa/ipa_trans.c
-> +++ b/drivers/net/ipa/ipa_trans.c
-> @@ -254,7 +254,7 @@ struct ipa_trans *ipa_channel_trans_complete(struct ipa_channel *channel)
->   }
+>   	/* The hash table offset and address are zero if its size is 0 */
+>   	if (hash_size) {
+> @@ -429,10 +481,10 @@ void ipa_cmd_table_init_add(struct ipa_trans *trans,
+>   	payload = &cmd_payload->table_init;
 >   
->   /* Move a transaction from the allocated list to the pending list */
-> -static void ipa_trans_move_pending(struct ipa_trans *trans)
-> +void ipa_trans_move_pending(struct ipa_trans *trans)
+>   	/* Fill in all offsets and sizes and the non-hash table address */
+> -	if (hash_size)
+> -		payload->hash_rules_addr = cpu_to_le64(hash_addr);
+> -	payload->flags = cpu_to_le64(val);
+> -	payload->nhash_rules_addr = cpu_to_le64(addr);
+> +	if (hash_size && version >= IPA_VERSION_3_0)
+> +		payload->v3.hash_rules_addr = cpu_to_le64(hash_addr);
+> +	SET_DMA_FIELD(version, payload, flags, val);
+> +	SET_DMA_FIELD(version, payload, nhash_rules_addr, addr);
+>   
+>   	ipa_trans_cmd_add(trans, payload, sizeof(*payload), payload_addr,
+>   			  direction, opcode);
+> @@ -445,7 +497,7 @@ void ipa_cmd_hdr_init_local_add(struct ipa_trans *trans, u32 offset, u16 size,
+>   	struct ipa *ipa = container_of(trans->dma_subsys, struct ipa, dma_subsys);
+>   	enum ipa_cmd_opcode opcode = IPA_CMD_HDR_INIT_LOCAL;
+>   	enum dma_data_direction direction = DMA_TO_DEVICE;
+> -	struct ipa_cmd_hw_hdr_init_local *payload;
+> +	union ipa_cmd_hw_hdr_init_local *payload;
+>   	union ipa_cmd_payload *cmd_payload;
+>   	dma_addr_t payload_addr;
+>   	u32 flags;
+> @@ -460,10 +512,10 @@ void ipa_cmd_hdr_init_local_add(struct ipa_trans *trans, u32 offset, u16 size,
+>   	cmd_payload = ipa_cmd_payload_alloc(ipa, &payload_addr);
+>   	payload = &cmd_payload->hdr_init_local;
+>   
+> -	payload->hdr_table_addr = cpu_to_le64(addr);
+> +	SET_DMA_FIELD(ipa->version, payload, hdr_table_addr, addr);
+>   	flags = u32_encode_bits(size, HDR_INIT_LOCAL_FLAGS_TABLE_SIZE_FMASK);
+>   	flags |= u32_encode_bits(offset, HDR_INIT_LOCAL_FLAGS_HDR_ADDR_FMASK);
+> -	payload->flags = cpu_to_le32(flags);
+> +	CMD_FIELD(ipa->version, payload, flags) = cpu_to_le32(flags);
+>   
+>   	ipa_trans_cmd_add(trans, payload, sizeof(*payload), payload_addr,
+>   			  direction, opcode);
+> @@ -509,8 +561,11 @@ void ipa_cmd_register_write_add(struct ipa_trans *trans, u32 offset, u32 value,
+>   
+>   	} else {
+>   		flags = 0;	/* SKIP_CLEAR flag is always 0 */
+> -		options = u16_encode_bits(clear_option,
+> -					  REGISTER_WRITE_CLEAR_OPTIONS_FMASK);
+> +		if (ipa->version > IPA_VERSION_2_6L)
+> +			options = u16_encode_bits(clear_option,
+> +					REGISTER_WRITE_CLEAR_OPTIONS_FMASK);
+> +		else
+> +			options = 0;
+>   	}
+>   
+>   	cmd_payload = ipa_cmd_payload_alloc(ipa, &payload_addr);
+> @@ -552,7 +607,8 @@ void ipa_cmd_dma_shared_mem_add(struct ipa_trans *trans, u32 offset, u16 size,
 >   {
->   	struct ipa_channel *channel = &trans->dma_subsys->channel[trans->channel_id];
->   	struct ipa_trans_info *trans_info = &channel->trans_info;
-> @@ -539,7 +539,7 @@ static void gsi_trans_tre_fill(struct gsi_tre *dest_tre, dma_addr_t addr,
->    * pending list.  Finally, updates the channel ring pointer and optionally
->    * rings the doorbell.
->    */
-> -static void __gsi_trans_commit(struct ipa_trans *trans, bool ring_db)
-> +void gsi_trans_commit(struct ipa_trans *trans, bool ring_db)
->   {
->   	struct ipa_channel *channel = &trans->dma_subsys->channel[trans->channel_id];
->   	struct gsi_ring *ring = &channel->tre_ring;
-> @@ -604,9 +604,9 @@ static void __gsi_trans_commit(struct ipa_trans *trans, bool ring_db)
->   /* Commit a GSI transaction */
->   void ipa_trans_commit(struct ipa_trans *trans, bool ring_db)
->   {
-> -	if (trans->used)
-> -		__gsi_trans_commit(trans, ring_db);
-> -	else
-> +	if (trans->used) {
-> +		trans->dma_subsys->trans_commit(trans, ring_db);
-> +	} else
->   		ipa_trans_free(trans);
->   }
->   
-> @@ -618,7 +618,7 @@ void ipa_trans_commit_wait(struct ipa_trans *trans)
->   
->   	refcount_inc(&trans->refcount);
->   
-> -	__gsi_trans_commit(trans, true);
-> +	trans->dma_subsys->trans_commit(trans, true);
->   
->   	wait_for_completion(&trans->completion);
->   
-> @@ -638,7 +638,7 @@ int ipa_trans_commit_wait_timeout(struct ipa_trans *trans,
->   
->   	refcount_inc(&trans->refcount);
->   
-> -	__gsi_trans_commit(trans, true);
-> +	trans->dma_subsys->trans_commit(trans, true);
->   
->   	remaining = wait_for_completion_timeout(&trans->completion,
->   						timeout_jiffies);
-> diff --git a/drivers/net/ipa/ipa_trans.h b/drivers/net/ipa/ipa_trans.h
-> index b93342414360..5f41e3e6f92a 100644
-> --- a/drivers/net/ipa/ipa_trans.h
-> +++ b/drivers/net/ipa/ipa_trans.h
-> @@ -10,6 +10,7 @@
->   #include <linux/refcount.h>
->   #include <linux/completion.h>
->   #include <linux/dma-direction.h>
-> +#include <linux/dmaengine.h>
->   
->   #include "ipa_cmd.h"
->   
-> @@ -61,6 +62,7 @@ struct ipa_trans {
->   	struct scatterlist *sgl;
->   	struct ipa_cmd_info *info;	/* array of entries, or null */
+>   	struct ipa *ipa = container_of(trans->dma_subsys, struct ipa, dma_subsys);
+>   	enum ipa_cmd_opcode opcode = IPA_CMD_DMA_SHARED_MEM;
+> -	struct ipa_cmd_hw_dma_mem_mem *payload;
+> +	enum ipa_version version = ipa->version;
+> +	union ipa_cmd_hw_dma_mem_mem *payload;
+>   	union ipa_cmd_payload *cmd_payload;
 >   	enum dma_data_direction direction;
-> +	dma_cookie_t cookie;
+>   	dma_addr_t payload_addr;
+> @@ -571,8 +627,8 @@ void ipa_cmd_dma_shared_mem_add(struct ipa_trans *trans, u32 offset, u16 size,
+>   	/* payload->clear_after_read was reserved prior to IPA v4.0.  It's
+>   	 * never needed for current code, so it's 0 regardless of version.
+>   	 */
+> -	payload->size = cpu_to_le16(size);
+> -	payload->local_addr = cpu_to_le16(offset);
+> +	CMD_FIELD(version, payload, size) = cpu_to_le16(size);
+> +	CMD_FIELD(version, payload, local_addr) = cpu_to_le16(offset);
+>   	/* payload->flags:
+>   	 *   direction:		0 = write to IPA, 1 read from IPA
+>   	 * Starting at v4.0 these are reserved; either way, all zero:
+> @@ -582,8 +638,8 @@ void ipa_cmd_dma_shared_mem_add(struct ipa_trans *trans, u32 offset, u16 size,
+>   	 * since both values are 0 we won't bother OR'ing them in.
+>   	 */
+>   	flags = toward_ipa ? 0 : DMA_SHARED_MEM_FLAGS_DIRECTION_FMASK;
+> -	payload->flags = cpu_to_le16(flags);
+> -	payload->system_addr = cpu_to_le64(addr);
+> +	CMD_FIELD(version, payload, flags) = cpu_to_le16(flags);
+> +	SET_DMA_FIELD(version, payload, system_addr, addr);
 >   
->   	refcount_t refcount;
->   	struct completion completion;
-> @@ -149,6 +151,8 @@ struct ipa_trans *ipa_channel_trans_alloc(struct ipa_dma *dma_subsys, u32 channe
->    */
->   void ipa_trans_free(struct ipa_trans *trans);
+>   	direction = toward_ipa ? DMA_TO_DEVICE : DMA_FROM_DEVICE;
 >   
-> +void ipa_trans_move_pending(struct ipa_trans *trans);
+> @@ -599,11 +655,17 @@ static void ipa_cmd_ip_tag_status_add(struct ipa_trans *trans)
+>   	struct ipa_cmd_ip_packet_tag_status *payload;
+>   	union ipa_cmd_payload *cmd_payload;
+>   	dma_addr_t payload_addr;
+> +	u64 tag_mask;
 > +
+> +	if (trans->dma_subsys->version <= IPA_VERSION_2_6L)
+> +		tag_mask = IPA_V2_IP_PACKET_TAG_STATUS_TAG_FMASK;
+> +	else
+> +		tag_mask = IPA_V3_IP_PACKET_TAG_STATUS_TAG_FMASK;
+>   
+>   	cmd_payload = ipa_cmd_payload_alloc(ipa, &payload_addr);
+>   	payload = &cmd_payload->ip_packet_tag_status;
+>   
+> -	payload->tag = le64_encode_bits(0, IP_PACKET_TAG_STATUS_TAG_FMASK);
+> +	payload->tag = le64_encode_bits(0, tag_mask);
+>   
+>   	ipa_trans_cmd_add(trans, payload, sizeof(*payload), payload_addr,
+>   			  direction, opcode);
+> diff --git a/drivers/net/ipa/ipa_table.c b/drivers/net/ipa/ipa_table.c
+> index d197959cc032..459fb4830244 100644
+> --- a/drivers/net/ipa/ipa_table.c
+> +++ b/drivers/net/ipa/ipa_table.c
+> @@ -8,6 +8,7 @@
+>   #include <linux/kernel.h>
+>   #include <linux/bits.h>
+>   #include <linux/bitops.h>
+> +#include <linux/module.h>
+>   #include <linux/bitfield.h>
+>   #include <linux/io.h>
+>   #include <linux/build_bug.h>
+> @@ -561,6 +562,19 @@ void ipa_table_config(struct ipa *ipa)
+>   	ipa_route_config(ipa, true);
+>   }
+>   
+> +static inline void *ipa_table_write(enum ipa_version version,
+> +				   void *virt, u64 value)
+> +{
+> +	if (IPA_IS_64BIT(version)) {
+> +		__le64 *ptr = virt;
+> +		*ptr = cpu_to_le64(value);
+> +	} else {
+> +		__le32 *ptr = virt;
+> +		*ptr = cpu_to_le32(value);
+> +	}
+> +	return virt + IPA_TABLE_ENTRY_SIZE(version);
+> +}
+> +
+>   /*
+>    * Initialize a coherent DMA allocation containing initialized filter and
+>    * route table data.  This is used when initializing or resetting the IPA
+> @@ -602,10 +616,11 @@ void ipa_table_config(struct ipa *ipa)
+>   int ipa_table_init(struct ipa *ipa)
+>   {
+>   	u32 count = max_t(u32, IPA_FILTER_COUNT_MAX, IPA_ROUTE_COUNT_MAX);
+> +	enum ipa_version version = ipa->version;
+>   	struct device *dev = &ipa->pdev->dev;
+> +	u64 filter_map = ipa->filter_map << 1;
+>   	dma_addr_t addr;
+> -	__le64 le_addr;
+> -	__le64 *virt;
+> +	void *virt;
+>   	size_t size;
+>   
+>   	ipa_table_validate_build();
+> @@ -626,19 +641,21 @@ int ipa_table_init(struct ipa *ipa)
+>   	ipa->table_addr = addr;
+>   
+>   	/* First slot is the zero rule */
+> -	*virt++ = 0;
+> +	virt = ipa_table_write(version, virt, 0);
+>   
+>   	/* Next is the filter table bitmap.  The "soft" bitmap value
+>   	 * must be converted to the hardware representation by shifting
+>   	 * it left one position.  (Bit 0 repesents global filtering,
+>   	 * which is possible but not used.)
+>   	 */
+> -	*virt++ = cpu_to_le64((u64)ipa->filter_map << 1);
+> +	if (version <= IPA_VERSION_2_6L)
+> +		filter_map |= 1;
+> +
+> +	virt = ipa_table_write(version, virt, filter_map);
+>   
+>   	/* All the rest contain the DMA address of the zero rule */
+> -	le_addr = cpu_to_le64(addr);
+>   	while (count--)
+> -		*virt++ = le_addr;
+> +		virt = ipa_table_write(version, virt, addr);
+>   
+>   	return 0;
+>   }
+> diff --git a/drivers/net/ipa/ipa_table.h b/drivers/net/ipa/ipa_table.h
+> index 78a168ce6558..6e12fc49e45b 100644
+> --- a/drivers/net/ipa/ipa_table.h
+> +++ b/drivers/net/ipa/ipa_table.h
+> @@ -43,7 +43,7 @@ bool ipa_filter_map_valid(struct ipa *ipa, u32 filter_mask);
+>    */
+>   static inline bool ipa_table_hash_support(struct ipa *ipa)
+>   {
+> -	return ipa->version != IPA_VERSION_4_2;
+> +	return ipa->version != IPA_VERSION_4_2 && ipa->version > IPA_VERSION_2_6L;
+>   }
+>   
 >   /**
->    * ipa_trans_cmd_add() - Add an immediate command to a transaction
->    * @trans:	Transaction
 > 
 
