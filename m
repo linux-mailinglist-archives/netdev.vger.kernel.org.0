@@ -2,95 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E1A742C45D
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 17:02:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54C3342C496
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 17:12:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233837AbhJMPEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 11:04:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59466 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232587AbhJMPEl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Oct 2021 11:04:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8F91860EBB;
-        Wed, 13 Oct 2021 15:02:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634137357;
-        bh=y1Rpvv6y+NitR+8qwldmLDOxqBM7XyQANkxTD9N2zAo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Cibb7xA4JDTHogDnzQPZya8mgpOhMbe8JwTMUDzdrhPvKYcVZ16ruxdFIl63XRTt3
-         QW8H+U9u29K6LGMvIcEuHl2zJeMEOWomnQ9rXiACdq6rIj4LpIEvowxcz762DkO6uL
-         Gk97jNwxOmh4Ok9R9z1sdw5xRMp6bO3LzxO+gfxHgbHFDGfAgoG3j5EIhmrlZ8x95q
-         3iXU4/VQ9XFzVvKAtpVSbj3pEB/9q0FVyDLrjGizAgXIPul2g1unwe94PsUR57m2LN
-         k6+0q3Hsa84GrRsebIW9qTzjxOAn9++41KgE1QVcRd1ZGwggp6UPqVhugrt9K3C4FQ
-         CAuQ0D7YTf2gA==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Aya Levin <ayal@nvidia.com>,
-        Eran Ben Elisha <eranbe@nvidia.com>,
-        Vladyslav Tarasiuk <vladyslavt@nvidia.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: [PATCH] mlx5: allow larger xsk chunk_size
-Date:   Wed, 13 Oct 2021 17:02:13 +0200
-Message-Id: <20211013150232.2942146-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        id S231855AbhJMPO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 11:14:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229514AbhJMPO5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 11:14:57 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1DF6C061570
+        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 08:12:53 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id r19so13066079lfe.10
+        for <netdev@vger.kernel.org>; Wed, 13 Oct 2021 08:12:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=KeBf3L7IIF8Rv/Bp70om/1tZpd3FOupbjhm8llgp0W8=;
+        b=upCptVhN8O7PL7K/2Xmyntm8koWnqGyv185dyC0zDf2wLGIeqwnkvsk7yMCUfO0Rwm
+         lM6c+2SZ9LJBJojVFJSPXgfhPn92tnIXEX6iePeZJ8ERM3AWA5QLV0FMSXxtYiKxUwbU
+         c+r1OeF3bw05W6ouhHvp1ezmlmEwMIxH4b5ZtpadYQVs0QhBrdwHhb2KddOyC+VXP7gU
+         gP78rYq5pG7XPc7dnfMNpD5c8Ln+O2E91/A/bsu9Hoj9PbrHElK2rCxQWncYnlzRGTgr
+         BxKzio5Zmeo2SBAUBEwlyAqgvE5V7SA1GJ7HR2KHLuzdeuI9uRqVYtR7ABBfcL+B5XTt
+         FCyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=KeBf3L7IIF8Rv/Bp70om/1tZpd3FOupbjhm8llgp0W8=;
+        b=yz6Z9ZOGWwo96PetFY3yUVoUeJTfj+udg8W//iWxzFa6ziCeZU103ayesXYMHABIxG
+         13JIR+pLJhFeiGUm7zAh+rMbZ4aBq9n1ngFcK9FNNYhhn0jQupQQ6UEsJxva6v4GhmSe
+         0DDp4EVfYmMXmkTpiKf8CK8IhgvEDIHt0eNO4XLUSPLCjEopnm0tW86R+wwTvvG6Gm5J
+         wH71ql2QsaeU3NLE8iG7a25nmdeYNkmi+Qp2RWaWmTr8V6jCfOP8zaFfx07oqawrJ7fX
+         3MtiBD4/I54fLXy7VLXWfFKbwYyoMaPax37YhO7vT/IXN6Un9xiBRULNVJhIv0F9ft8u
+         ddOA==
+X-Gm-Message-State: AOAM532+PBDHfqICd1ZQHQkIsxjLazn5/KK/gJgOlOz5pbpsW3fEqdes
+        OOoP0h1zCq9PQr5IUCfTay29bXVY4n3KGSyuN/mPNQ==
+X-Google-Smtp-Source: ABdhPJxsi6yl4d+fJISK8+JZ/UaD4XqCzsHCSENtim47MqwOVR+AZEyZ64Jm3UrawMFcA93DGim4kE6c9FW1FJ1nhUM=
+X-Received: by 2002:a05:6512:1303:: with SMTP id x3mr40718274lfu.291.1634137971739;
+ Wed, 13 Oct 2021 08:12:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211012123557.3547280-1-alvin@pqrs.dk> <20211012123557.3547280-6-alvin@pqrs.dk>
+In-Reply-To: <20211012123557.3547280-6-alvin@pqrs.dk>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 13 Oct 2021 17:12:39 +0200
+Message-ID: <CACRpkdYwTUopZ_6khRpkAPFg6qiRTOgyKe=URzVRrNagK2HZMw@mail.gmail.com>
+Subject: Re: [PATCH net-next 5/6] net: dsa: realtek-smi: add rtl8365mb
+ subdriver for RTL8365MB-VC
+To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alvin@pqrs.dk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Michael Rasmussen <mir@bang-olufsen.dk>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Tue, Oct 12, 2021 at 2:37 PM Alvin =C5=A0ipraga <alvin@pqrs.dk> wrote:
 
-When building with 64KB pages, clang points out that xsk->chunk_size
-can never be PAGE_SIZE:
+> This patch adds a realtek-smi subdriver for the RTL8365MB-VC 4+1 port
+> 10/100/1000M switch controller. The driver has been developed based on a
+> GPL-licensed OS-agnostic Realtek vendor driver known as rtl8367c found
+> in the OpenWrt source tree.
+(...)
+> Co-developed-by: Michael Rasmussen <mir@bang-olufsen.dk>
+> Signed-off-by: Michael Rasmussen <mir@bang-olufsen.dk>
+> Signed-off-by: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
 
-drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c:19:22: error: result of comparison of constant 65536 with expression of type 'u16' (aka 'unsigned short') is always false [-Werror,-Wtautological-constant-out-of-range-compare]
-        if (xsk->chunk_size > PAGE_SIZE ||
-            ~~~~~~~~~~~~~~~ ^ ~~~~~~~~~
+Overall this driver looks very good :)
 
-I'm not familiar with the details of this code, but from a quick look
-I found that it gets assigned from a 32-bit variable that can be
-PAGE_SIZE, and that the layout of 'xsk' is not part of an ABI or
-a hardware structure, so extending the members to 32 bits as well
-should address both the behavior on 64KB page kernels, and the
-warning I saw.
+Some minor nits below:
 
-In older versions of this code, using PAGE_SIZE was the only
-possibility, so this would have never worked on 64KB page kernels,
-but the patch apparently did not address this case completely.
+> +static irqreturn_t rtl8365mb_irq(int irq, void *data)
+> +{
+(...)
+> +       if (!line_changes)
+> +               goto out_none;
+> +
+> +       while (line_changes) {
+> +               int line =3D __ffs(line_changes);
+> +               int child_irq;
+> +
+> +               line_changes &=3D ~BIT(line);
+> +
+> +               child_irq =3D irq_find_mapping(smi->irqdomain, line);
+> +               handle_nested_irq(child_irq);
+> +       }
 
-Fixes: 282c0c798f8e ("net/mlx5e: Allow XSK frames smaller than a page")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/params.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+What about just:
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-index 879ad46d754e..b4167350b6df 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-@@ -7,8 +7,8 @@
- #include "en.h"
- 
- struct mlx5e_xsk_param {
--	u16 headroom;
--	u16 chunk_size;
-+	u32 headroom;
-+	u32 chunk_size;
- };
- 
- struct mlx5e_lro_param {
--- 
-2.29.2
+for_each_set_bit(offset, &line_changes, 32) {
+  child_irq =3D irq_find_mapping(smi->irqdomain, line);
+  handle_nested_irq(child_irq);
+}
 
+?
+
+I don't know how many or which bits are valid IRQs, 16 maybe rather
+than 32.
+
+> +static struct irq_chip rtl8365mb_irq_chip =3D {
+> +       .name =3D "rtl8365mb",
+> +       /* The hardware doesn't support masking IRQs on a per-port basis =
+*/
+> +};
+
+I would rathe make this a dynamically allocated struct inside
+struct rtl8365mb, so the irqchip lives with the instance of the
+chip. (Which is nice if there would happen to be two of these
+chips in a system.)
+
+> +static int _rtl8365mb_irq_enable(struct realtek_smi *smi, bool enable)
+
+I'm personally a bit allergic to _rand_underscore_naming, as sometimes
+that means "inner function" and sometimes it means "compiler intrinsic"
+I would just name it rtl8365mb_irq_config_commit()
+
+(no strong opinion)
+
+> +       /* Configure chip interrupt signal polarity */
+> +       irq_trig =3D irqd_get_trigger_type(irq_get_irq_data(irq));
+
+Nice that you preserve this edge trigger config from the machine
+description (DT)!
+
+With this fixed or not (your preference)
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+
+Yours,
+Linus Walleij
