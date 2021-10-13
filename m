@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CEBF42CEB6
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 00:40:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17A2F42CEBB
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 00:40:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231976AbhJMWl7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 18:41:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51372 "EHLO
+        id S232034AbhJMWmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 18:42:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231758AbhJMWlv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 18:41:51 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D880C061769;
-        Wed, 13 Oct 2021 15:39:40 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id g10so16518443edj.1;
-        Wed, 13 Oct 2021 15:39:40 -0700 (PDT)
+        with ESMTP id S231927AbhJMWlz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 18:41:55 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54454C06176E;
+        Wed, 13 Oct 2021 15:39:41 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id w14so16258832edv.11;
+        Wed, 13 Oct 2021 15:39:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=I7/2mOCuSGi00O37dYhVmntD5IhCZQlkid+4wMza39o=;
-        b=Ts6bVYREMDstVsvF8PsQ53MBVx0VX0pJIEL1gJLXAuOscwY40xlyhsGhKs4QI3jpBK
-         SJaBsDwpiMZKKyJz7Y3/g1+E8q7EsndwksqpLYJZGP0xhK6UrGcGs+kaCG+PXu+U+yIF
-         8qtrUNDu6brxg2WEPDxxvD7ZUTKS239TjBJDflD0JYh/gb5u8MUMU29pZS78CfE3DiMY
-         OQoihnzSG12MgbhDetJ3MeQz7uvknlH+bCH9jHUroZhcqm6Kog41WWMrYnJlW4YZrZfb
-         PrB+I5W51uW5NVMPrqUVlomPo/C/XAtj/A5JQXk/SLtO898ph9bkF1CFFyaRyXFCiNxj
-         GVXQ==
+        bh=ra5UFjspLZycsL7dcenAPnY4GY6p9Bf7XDyytIIICY8=;
+        b=DpYCX+71tZWOdl5VZDAM4WBiu/V+OvZTY3yRvrMha5rUu0337J5NXUKYsFVht4MbU4
+         V4JqKPtf3dtbBccCSaPJUX8q/iTJvVQ8zelyWQWHRpusZyaJTMpKHMinGpO50+I7ko0W
+         hE8izeOHYoL3eUK2IU6S0WjyQJYPlgrLPPRTbn+mLjghIZVJ8uAO59XQqELXIJ9KptfF
+         N8hlMsbJgglmiWqMPYC5DBLsFqfHl/ALGe4M1eN1eemXBy9rWQdVbxotsqkph6Fw2+te
+         f0NIcVmw/tHUAU+k+n6O2rUwf8BV8uC7Y8PC2GqkNbgtZ81PZbD8H8km/UI5ww/0d7dv
+         n10Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=I7/2mOCuSGi00O37dYhVmntD5IhCZQlkid+4wMza39o=;
-        b=cUImlGKbAxpIvFpjtQGBgLQFtFFDYSEAX8aOZSZZ0Px1wEhRJ8+9dMv1vtXFIElF9Q
-         qufMLHtbA5P3Mfry4dJmAFawbdxFb+6z3FK9wMRjqXRggTreS6G+f0ikwem93QHZj0hT
-         zz1bMFYfvc234XJEl/383ts4e8IjCtpQ3p1XORT35RpflH/4tfYbUkt6ZrU2XFo6XYtE
-         OYaLr3MuWKicWtsjD9/TUUY1qwcxD2XrB1Y5jYxERzGisplS7rZronWIRtOkVnkxJGL5
-         3vafIUZp5zsvUXTq1DUws2joVwYSrralgo9Ggs/1/e5GY57n8e1NASlbuqdyyglb0lbI
-         fy2g==
-X-Gm-Message-State: AOAM531mju00cECYnt7IVG1j/ZZRLnxvFVvQmRT5o94DmCNv8oZGUNhJ
-        8opwlq5l0xYKyMmvG4h/zag=
-X-Google-Smtp-Source: ABdhPJzQXZOENoeuC4YF7vpA5T3Cs8cbRDNGziCMaEvK7UawMrKdbW0QshU+EdvCoCiyDBlTo44wug==
-X-Received: by 2002:a17:906:f259:: with SMTP id gy25mr2384556ejb.210.1634164778662;
-        Wed, 13 Oct 2021 15:39:38 -0700 (PDT)
+        bh=ra5UFjspLZycsL7dcenAPnY4GY6p9Bf7XDyytIIICY8=;
+        b=6R5mhAsIZvdSYeXajxz9awuFnIE5bfSzVmUmtBTnoNL40ak98keq1v3chTB+1qY7Qt
+         C0RUSauvPk5rOn7KP3MnFQTTEOKWTqz1UMAto840Gs77LJHaR1Zup2ldLS8YGCAvGa1q
+         TDmJ0u39o9hcyU6sSxPa1R3/JCd1+RKGcWY82YNMWyh+qSYzTrK/Gmhmx2izDtVWNdZ8
+         gJKkpA698NZ7iIuURtka0WrkfO41g/isqcneGGsu5uzAYnMALQESlZ/eZiMs0O6cM5P3
+         yuOj7YnbP2yL17JURRDHunwFGGXbxQmjexcT201loh3A5NjTNsP+cLKADSjm2SGKb49X
+         /50A==
+X-Gm-Message-State: AOAM53113/gyB637T9RJNfA9a2YIZnyZeEGOIoa2ZcqOWkEx8Nl3XTxu
+        FrzX40yHDuFO4u/1n7Assk0=
+X-Google-Smtp-Source: ABdhPJyrkzJ62V4+dw4XY7+z9op0NymGE+pjfWBtZ3l9tQm8J/twjJ/GSCLPNvNzXRp4jrTjDu6CjA==
+X-Received: by 2002:a05:6402:3488:: with SMTP id v8mr3159622edc.106.1634164779876;
+        Wed, 13 Oct 2021 15:39:39 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id o3sm524735eju.123.2021.10.13.15.39.37
+        by smtp.googlemail.com with ESMTPSA id o3sm524735eju.123.2021.10.13.15.39.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Oct 2021 15:39:38 -0700 (PDT)
+        Wed, 13 Oct 2021 15:39:39 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -62,9 +62,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-msm@vger.kernel.org
-Subject: [net-next PATCH v7 11/16] dt-bindings: net: dsa: qca8k: document support for qca8328
-Date:   Thu, 14 Oct 2021 00:39:16 +0200
-Message-Id: <20211013223921.4380-12-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v7 12/16] net: dsa: qca8k: add support for QCA8328
+Date:   Thu, 14 Oct 2021 00:39:17 +0200
+Message-Id: <20211013223921.4380-13-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211013223921.4380-1-ansuelsmth@gmail.com>
 References: <20211013223921.4380-1-ansuelsmth@gmail.com>
@@ -74,34 +74,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-QCA8328 is the bigger brother of qca8327. Document the new compatible
-binding and add some information to understand the various switch
-compatible.
+QCA8328 switch is the bigger brother of the qca8327. Same regs different
+chip. Change the function to set the correct pin layout and introduce a
+new match_data to differentiate the 2 switch as they have the same ID
+and their internal PHY have the same ID.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- Documentation/devicetree/bindings/net/dsa/qca8k.txt | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/dsa/qca8k.c | 19 ++++++++++++++++---
+ drivers/net/dsa/qca8k.h |  1 +
+ 2 files changed, 17 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-index 9e6748ec13da..f057117764af 100644
---- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-+++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-@@ -3,9 +3,10 @@
- Required properties:
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+index fad32ed75f45..6dcb2546388a 100644
+--- a/drivers/net/dsa/qca8k.c
++++ b/drivers/net/dsa/qca8k.c
+@@ -935,6 +935,7 @@ static int
+ qca8k_setup_of_pws_reg(struct qca8k_priv *priv)
+ {
+ 	struct device_node *node = priv->dev->of_node;
++	const struct qca8k_match_data *data;
+ 	u32 val = 0;
+ 	int ret;
  
- - compatible: should be one of:
--    "qca,qca8327"
--    "qca,qca8334"
--    "qca,qca8337"
-+    "qca,qca8328": referenced as AR8328(N)-AK1(A/B) QFN 176 pin package
-+    "qca,qca8327": referenced as AR8327(N)-AL1A DR-QFN 148 pin package
-+    "qca,qca8334": referenced as QCA8334-AL3C QFN 88 pin package
-+    "qca,qca8337": referenced as QCA8337N-AL3(B/C) DR-QFN 148 pin package
+@@ -943,8 +944,14 @@ qca8k_setup_of_pws_reg(struct qca8k_priv *priv)
+ 	 * Should be applied by default but we set this just to make sure.
+ 	 */
+ 	if (priv->switch_id == QCA8K_ID_QCA8327) {
++		data = of_device_get_match_data(priv->dev);
++
++		/* Set the correct package of 148 pin for QCA8327 */
++		if (data->reduced_package)
++			val |= QCA8327_PWS_PACKAGE148_EN;
++
+ 		ret = qca8k_rmw(priv, QCA8K_REG_PWS, QCA8327_PWS_PACKAGE148_EN,
+-				QCA8327_PWS_PACKAGE148_EN);
++				val);
+ 		if (ret)
+ 			return ret;
+ 	}
+@@ -2088,7 +2095,12 @@ static int qca8k_resume(struct device *dev)
+ static SIMPLE_DEV_PM_OPS(qca8k_pm_ops,
+ 			 qca8k_suspend, qca8k_resume);
  
- - #size-cells: must be 0
- - #address-cells: must be 1
+-static const struct qca8k_match_data qca832x = {
++static const struct qca8k_match_data qca8327 = {
++	.id = QCA8K_ID_QCA8327,
++	.reduced_package = true,
++};
++
++static const struct qca8k_match_data qca8328 = {
+ 	.id = QCA8K_ID_QCA8327,
+ };
+ 
+@@ -2097,7 +2109,8 @@ static const struct qca8k_match_data qca833x = {
+ };
+ 
+ static const struct of_device_id qca8k_of_match[] = {
+-	{ .compatible = "qca,qca8327", .data = &qca832x },
++	{ .compatible = "qca,qca8327", .data = &qca8327 },
++	{ .compatible = "qca,qca8328", .data = &qca8328 },
+ 	{ .compatible = "qca,qca8334", .data = &qca833x },
+ 	{ .compatible = "qca,qca8337", .data = &qca833x },
+ 	{ /* sentinel */ },
+diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+index 35a471bfd27f..9c115cfe613b 100644
+--- a/drivers/net/dsa/qca8k.h
++++ b/drivers/net/dsa/qca8k.h
+@@ -260,6 +260,7 @@ struct ar8xxx_port_status {
+ 
+ struct qca8k_match_data {
+ 	u8 id;
++	bool reduced_package;
+ };
+ 
+ enum {
 -- 
 2.32.0
 
