@@ -2,188 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AD1742B2D4
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 04:46:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29DC642B313
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 05:05:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236900AbhJMCsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 22:48:35 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:38729 "EHLO
-        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229980AbhJMCse (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 22:48:34 -0400
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id A236E5805DD;
-        Tue, 12 Oct 2021 22:46:31 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute6.internal (MEProxy); Tue, 12 Oct 2021 22:46:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        mendozajonas.com; h=message-id:subject:from:to:cc:date
-        :in-reply-to:references:content-type:mime-version
-        :content-transfer-encoding; s=fm1; bh=+E7F0YWmqRY7h6makWzK8RcDUH
-        P7dmZaJRlPDdMf1ug=; b=IwqhZ2PQASvkp6GZ1X4nmPUo2+mgkl6BejxqX/F+bN
-        FUDb0Z0QqWeATGLZqE/Ed2bXP8J4MntmkoapyNnSNvxJwrqxKwAMgwxAwKwz8VRc
-        HdlbPBUOBE8IkStBpPkAhIeMaKkzpoMJvWA4Ru0Z3NX4ZwNYTzJbkmiy+EgTSgpX
-        BuaBOG+oEeOQKMc7FDeMkow6w4HP9eafWVhxZzYrUxEzpN3fD6ImPRUs6Z2Vh5oH
-        5DhGOWQ/rg+DqC8oEI5XGsrRilBfHqgRjSQ0msUMm/BwHbNcULWHBU+Bu/P2mRA0
-        u11ojxYQuaJPj7CNirV6gD9dbR/n2sY4mL4rznoEbshA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; bh=+E7F0YWmqRY7h6makWzK8RcDUHP7dmZaJRlPDdMf1
-        ug=; b=EFBfADF6uEgUiRhavisj/MQdWunqxQrllDiFzwV5zC+2lnccdpB/+/FH1
-        K3zQ4Jip6oF+Jyj2tPLiP9oAuKbOzcQ8Xj40R/9rjJUfwF6DWZhZUMpRc7Ug1an8
-        16YiO4ot8YZguN4hMTN5ZJNgrwe3mkNkERqJ5oqQ/Oc4IX9UPEWn95o0ZQtL5W8j
-        u+XWtK7nYaIEIHVHtlDmjGQ3ByB8GJRl7WS4he+09kTCGad8XKcmOH8fOhSskBvU
-        9HmpBEc64LMjTMKd6H9AGAczsOVIW1D5HFU9fICDwhl9CwNqHu21bcXV1HSBdYm2
-        0BWPFwogRvghsm4Yw7REozZAITu3A==
-X-ME-Sender: <xms:hkhmYYsydRgnmIG_2Kx-2WvQ6Xl6BWUluO_JfQsBQzyWywnHRB9caQ>
-    <xme:hkhmYVeDaR935O---C-qQ4h4QZ49_Mq3eiMMWuOITkvKZ594Vu9k_uv8hGT9npaWI
-    BIT8KqZXLscu3b1eA>
-X-ME-Received: <xmr:hkhmYTxugakxtqRCivgo_FfAYKDaLUMxyHNzYH7pxWCpdSt6MzxZZ5B2k-WBsoCdRQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddtledgiedtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepkffuhffvffgjfhgtfggggfesthekredttderjeenucfhrhhomhepufgrmhhu
-    vghlucfovghnughoiigrqdflohhnrghsuceoshgrmhesmhgvnhguohiirghjohhnrghsrd
-    gtohhmqeenucggtffrrghtthgvrhhnpefgvedvvdffhfeihedukeegheeludduhfehuddt
-    gefftddugeffjeetjeduteduvdenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
-    epmhgrihhlfhhrohhmpehsrghmsehmvghnughoiigrjhhonhgrshdrtghomh
-X-ME-Proxy: <xmx:hkhmYbNDWWG5jqtR5vjtSMbPmiaOo5H1abbtGAAHKs9Wtd6bsf567g>
-    <xmx:hkhmYY9pHIUzImTwu-fhBpxdNl_um-5ungduh24-F-2BcfQuyLk5NA>
-    <xmx:hkhmYTUIqgZiEGXWqHmjBVbHuxLdpd4qkdH3_C0fC2eYaW3LmqwzHg>
-    <xmx:h0hmYTa3YlRUS_owCFVD2HGmT2hqDU2zIRae-pRVzYzEbkKkJt8H-A>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 12 Oct 2021 22:46:29 -0400 (EDT)
-Message-ID: <dd6df3ee84110649d901f041883c3d44c0798cda.camel@mendozajonas.com>
-Subject: Re: [PATCH] net: ncsi: Adding padding bytes in the payload
-From:   Samuel Mendoza-Jonas <sam@mendozajonas.com>
-To:     Joel Stanley <joel@jms.id.au>,
-        Kumar Thangavel <kumarthangavel.hcl@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
-        Networking <netdev@vger.kernel.org>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        Amithash Prasad <amithash@fb.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        velumanit@hcl.com, patrickw3@fb.com
-Date:   Tue, 12 Oct 2021 19:46:28 -0700
-In-Reply-To: <CACPK8XcJudWoKgXORvRzGAbtBwHm3a56RULriVABfERZgNgt9w@mail.gmail.com>
-References: <20211012062240.GA5761@gmail.com>
-         <CACPK8XcJudWoKgXORvRzGAbtBwHm3a56RULriVABfERZgNgt9w@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S235675AbhJMDHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 23:07:20 -0400
+Received: from smtp23.cstnet.cn ([159.226.251.23]:57482 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229571AbhJMDHO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Oct 2021 23:07:14 -0400
+Received: from localhost.localdomain (unknown [124.16.138.128])
+        by APP-03 (Coremail) with SMTP id rQCowAC3v6vFTGZhRuViAw--.13004S2;
+        Wed, 13 Oct 2021 11:04:37 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, davem@davemloft.net,
+        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org
+Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] hv_netvsc: Fix potentionally overflow in netvsc_xdp_xmit()
+Date:   Wed, 13 Oct 2021 03:04:35 +0000
+Message-Id: <1634094275-1773464-1-git-send-email-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.7.4
+X-CM-TRANSID: rQCowAC3v6vFTGZhRuViAw--.13004S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7Jr4DGFWktr1fGr4xtr17GFg_yoWfAFX_Cr
+        18GF17Ww4UC3WkKr4kGa1rZFy8tw1vqFWfAFWIq39xX347Ary5Xw1Fvr9xGrWrW3yUCr9x
+        Gws7WaykZr9rWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbVAFF20E14v26ryj6rWUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
+        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
+        n2kIc2xKxwCY02Avz4vE14v_Gr4l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr
+        0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY
+        17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcV
+        C0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF
+        0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxh
+        VjvjDU0xZFpf9x0JU3kucUUUUU=
+X-Originating-IP: [124.16.138.128]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-10-12 at 22:44 +0000, Joel Stanley wrote:
-> On Tue, 12 Oct 2021 at 06:23, Kumar Thangavel
-> <kumarthangavel.hcl@gmail.com> wrote:
-> > 
-> > Update NC-SI command handler (both standard and OEM) to take into
-> > account of payload paddings in allocating skb (in case of payload
-> > size is not 32-bit aligned).
-> > 
-> > The checksum field follows payload field, without taking payload
-> > padding into account can cause checksum being truncated, leading to
-> > dropped packets.
-> 
-> Can you help us review this by pointing out where this is described in
-> the NCSI spec?
-> 
-> We've been running this code for a number of years now and I wonder
-> why this hasn't been a problem so far.
+Adding skb_rx_queue_recorded() to avoid the value of skb->queue_mapping
+to be 0. Otherwise the return value of skb_get_rx_queue() could be MAX_U16
+cause by overflow.
 
-I'm assuming this is referencing section 8.2.2.2:
-If the payload is present and does not end on a 32-bit boundary, one to
-three padding bytes equal to 0x00 shall be present to align the
-checksum field to a 32-bit boundary.
+Fixes: 351e158 ("hv_netvsc: Add XDP support")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+ drivers/net/hyperv/netvsc_drv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-But I'm also surprised this hasn't caused issues so far if we've been
-getting it wrong. Is there an example that reproduces the issue?
-
-Cheers,
-Sam
-
-> 
-> Cheers,
-> 
-> Joel
-> 
-> > 
-> > Signed-off-by: Kumar Thangavel <thangavel.k@hcl.com>
-> > 
-> > ---
-> >  net/ncsi/ncsi-cmd.c | 21 +++++++++++++++++----
-> >  1 file changed, 17 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/net/ncsi/ncsi-cmd.c b/net/ncsi/ncsi-cmd.c
-> > index ba9ae482141b..4625fc935603 100644
-> > --- a/net/ncsi/ncsi-cmd.c
-> > +++ b/net/ncsi/ncsi-cmd.c
-> > @@ -214,11 +214,19 @@ static int ncsi_cmd_handler_oem(struct sk_buff
-> > *skb,
-> >         struct ncsi_cmd_oem_pkt *cmd;
-> >         unsigned int len;
-> > 
-> > +       /* NC-SI spec requires payload to be padded with 0
-> > +        * to 32-bit boundary before the checksum field.
-> > +        * Ensure the padding bytes are accounted for in
-> > +        * skb allocation
-> > +        */
-> > +
-> > +       unsigned short payload = ALIGN(nca->payload, 4);
-> > +
-> >         len = sizeof(struct ncsi_cmd_pkt_hdr) + 4;
-> > -       if (nca->payload < 26)
-> > +       if (payload < 26)
-> >                 len += 26;
-> >         else
-> > -               len += nca->payload;
-> > +               len += payload;
-> > 
-> >         cmd = skb_put_zero(skb, len);
-> >         memcpy(&cmd->mfr_id, nca->data, nca->payload);
-> > @@ -272,6 +280,7 @@ static struct ncsi_request
-> > *ncsi_alloc_command(struct ncsi_cmd_arg *nca)
-> >         struct net_device *dev = nd->dev;
-> >         int hlen = LL_RESERVED_SPACE(dev);
-> >         int tlen = dev->needed_tailroom;
-> > +       int payload;
-> >         int len = hlen + tlen;
-> >         struct sk_buff *skb;
-> >         struct ncsi_request *nr;
-> > @@ -281,14 +290,18 @@ static struct ncsi_request
-> > *ncsi_alloc_command(struct ncsi_cmd_arg *nca)
-> >                 return NULL;
-> > 
-> >         /* NCSI command packet has 16-bytes header, payload, 4 bytes
-> > checksum.
-> > +        * Payload needs padding so that the checksum field follwoing
-> > payload is
-> > +        * aligned to 32bit boundary.
-> >          * The packet needs padding if its payload is less than 26
-> > bytes to
-> >          * meet 64 bytes minimal ethernet frame length.
-> >          */
-> >         len += sizeof(struct ncsi_cmd_pkt_hdr) + 4;
-> > -       if (nca->payload < 26)
-> > +
-> > +       payload = ALIGN(nca->payload, 4);
-> > +       if (payload < 26)
-> >                 len += 26;
-> >         else
-> > -               len += nca->payload;
-> > +               len += payload;
-> > 
-> >         /* Allocate skb */
-> >         skb = alloc_skb(len, GFP_ATOMIC);
-> > --
-> > 2.17.1
-> > 
-
+diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+index f682a55..e51201e 100644
+--- a/drivers/net/hyperv/netvsc_drv.c
++++ b/drivers/net/hyperv/netvsc_drv.c
+@@ -807,7 +807,7 @@ static void netvsc_xdp_xmit(struct sk_buff *skb, struct net_device *ndev)
+ {
+ 	int rc;
+ 
+-	skb->queue_mapping = skb_get_rx_queue(skb);
++	skb->queue_mapping = skb_rx_queue_recorded(skb) ? skb_get_rx_queue(skb) : 0;
+ 	__skb_push(skb, ETH_HLEN);
+ 
+ 	rc = netvsc_xmit(skb, ndev, true);
+-- 
+2.7.4
 
