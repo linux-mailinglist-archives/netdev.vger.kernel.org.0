@@ -2,101 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFB9642DB58
+	by mail.lfdr.de (Postfix) with ESMTP id 3BFB742DB54
 	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 16:20:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231802AbhJNOWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 10:22:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37902 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231773AbhJNOWM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 10:22:12 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE122C061570;
-        Thu, 14 Oct 2021 07:20:07 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id g8so25100208edt.7;
-        Thu, 14 Oct 2021 07:20:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7Pye4dG5TzjPVrX9c8oeWbQoM2y1O4UpzQfA4r8OJaA=;
-        b=WwdTRvdKab+eMr3+y9HfZBaeaAsfYnX4mcEtXNjSKSOQ2SSl+BCKfBohsaYTL29FSG
-         GTuq0kFig2krOZmzXe+Vp9mLJMw6M9VV8NpKTss4BySFLwnmdvuEeIwZ+/fhZ4PYPboI
-         rZ2mv5TBM/0vv8YMt/F2fKSUm8bBu6eG9L9BPFp81YLbSqrIKJfrbFuRQ1fxNNO1/Sr0
-         c9KTkWeMMknBILsRcIpBCUX4DG0bydF9whpQSCq6eY3xLUWMMtsiNSg/Q7S9stiGtOt6
-         o6+PbwwEvtOxbFPos2uFWkmr19d4t6n4xDeeQSedphdPLSkiBq6WIkYse7IC41o1X+8p
-         8z6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7Pye4dG5TzjPVrX9c8oeWbQoM2y1O4UpzQfA4r8OJaA=;
-        b=rqoGW7SvMsDx2lnLKhdIv7Sqpd26mz1oKk+Gx4ydOkS+St13oYy0ciPPrSbpfW/lsO
-         UMWD2yiEjxamjzLC+OeXFJKGrER6RyXAuV2AQjHltw9CjTwPn6d8vBckDJrjLjOJdWxr
-         VwRlwb0S/SZyBLHXQ5ZGkZzK+r6R/1sN5ZWcU3qVYC3RdcGN63psBJL7TDz7fXz7iP/e
-         Xntxhx5fuubykJMIk/uuNIV2IECzKZho4W1J+Ww3ZgbF5vDWc4yiXAmtiGy9wAb3AUTD
-         0V6fj/aLlXg9/aDJbZ3JmZ/gzX7g2xQGCcYlStlPn0eozzVNsZcAtaj0jKAo7u397hnE
-         y89g==
-X-Gm-Message-State: AOAM533oOQuAlxMpS1UAQa57FRuk0CUhJLBJxS7gB0+059HITPsCk3bj
-        211Z+EEVFo5jAY5FI9zC1ys=
-X-Google-Smtp-Source: ABdhPJy0+pozCqlTwocQGfr9R46cwy6kWFFfRiMq/UXnrJH8vQXJ8/wSBT8bV0wifyFZDclOSHVWsQ==
-X-Received: by 2002:a17:906:7c4f:: with SMTP id g15mr3948514ejp.373.1634221172254;
-        Thu, 14 Oct 2021 07:19:32 -0700 (PDT)
-Received: from skbuf ([188.25.225.253])
-        by smtp.gmail.com with ESMTPSA id s3sm2107994ejm.49.2021.10.14.07.19.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Oct 2021 07:19:31 -0700 (PDT)
-Date:   Thu, 14 Oct 2021 17:19:30 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-Cc:     andrew@lunn.ch, netdev@vger.kernel.org, robh+dt@kernel.org,
-        UNGLinuxDriver@microchip.com, Woojung.Huh@microchip.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 10/10] net: dsa: microchip: add support for
- vlan operations
-Message-ID: <20211014141930.3e5x2wgitsw57v4z@skbuf>
-References: <20211007151200.748944-1-prasanna.vengateshan@microchip.com>
- <20211007151200.748944-11-prasanna.vengateshan@microchip.com>
- <20211007201705.polwaqgbzff4u3vx@skbuf>
- <6c97e0771204b492f31b3d003a5fd97d789920ef.camel@microchip.com>
+        id S231784AbhJNOWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 10:22:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51264 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230177AbhJNOWM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Oct 2021 10:22:12 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 3989F610A0;
+        Thu, 14 Oct 2021 14:20:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634221207;
+        bh=FmINIR3ENpN9V0QG7PF4m2RytRAAMj043EYCFwR1ouU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=JmX9p+Go8UR2v6cjAeXBFRjmRWTEd74R4aiSvoKXcdjtxApaFq11onzlrwNQw9T6Y
+         EihuylMNXLq+ARFDZf5YZ7SIoKypbXOXGnXwwsmn2NgimwLcvtjmja8ovXsoge0+kN
+         fmANZLFAL+Vvwy1RusoXyCLGU+sxAKzJCVUtgn+7IyB/HxoiZDwAlgYNnpw+HHpD9p
+         82qgDAxiUtgksepRwvMzesl7cm7wH0yhs0re9sjfLAqgtuW6/zeMrpNw+4hdVu4tEs
+         EhrniG7AGbi65oiedH+RIHGQuLnJuSHAtA+bQOLWnJMyQ5saMz+6V7JSdCBW/44n4f
+         Yp17QXmfi0nHg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2FD3260A44;
+        Thu, 14 Oct 2021 14:20:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6c97e0771204b492f31b3d003a5fd97d789920ef.camel@microchip.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] mlxsw: thermal: Fix out-of-bounds memory accesses
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163422120719.29699.5423823491345588706.git-patchwork-notify@kernel.org>
+Date:   Thu, 14 Oct 2021 14:20:07 +0000
+References: <20211012174955.472928-1-idosch@idosch.org>
+In-Reply-To: <20211012174955.472928-1-idosch@idosch.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jiri@nvidia.com, vadimp@nvidia.com, cera@cera.cz, mlxsw@nvidia.com,
+        idosch@nvidia.com, daniel.lezcano@linaro.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 11, 2021 at 11:13:36PM +0530, Prasanna Vengateshan wrote:
-> > Do you have an explanation for what SW_VLAN_ENABLE does exactly?
-> Enabling the VLAN mode and then act as per the VLAN table.
-> Do you want me to add this explanation as a comment? or?
+Hello:
 
-Yes, not all switches have the same knobs, it would be good to have a
-comment about what you are changing.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-> Step (0)
-> > ip link add br0 type bridge vlan_filtering 1
-> > ip link set lan0 master br0
-> > bridge vlan add dev lan0 vid 100 pvid untagged
-> Step (1)
-> > bridge vlan del dev lan0 vid 100
-> Step (2)
-> > ip link set br0 type bridge vlan_filtering 0
-> > 
-> > The expectation is that the switch, being VLAN-unaware as it is currently
-> > configured, receives and sends any packet regardless of VLAN ID.
-> > If you put an IP on br0 in this state, are you able to ping an outside host?
+On Tue, 12 Oct 2021 20:49:55 +0300 you wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
 > 
-> I have numbered the commands above.
-> Results are,
-> Before Step (0). Am able to ping outside.
-> After Step (0). Am not able to ping outside because the vlan table is set
-> After Step (1). Am not able to ping outside
-> After Step (2). Am able to ping outside because of vlan unaware mode.
+> Currently, mlxsw allows cooling states to be set above the maximum
+> cooling state supported by the driver:
+> 
+>  # cat /sys/class/thermal/thermal_zone2/cdev0/type
+>  mlxsw_fan
+>  # cat /sys/class/thermal/thermal_zone2/cdev0/max_state
+>  10
+>  # echo 18 > /sys/class/thermal/thermal_zone2/cdev0/cur_state
+>  # echo $?
+>  0
+> 
+> [...]
 
-This sounds okay.
+Here is the summary with links:
+  - [net] mlxsw: thermal: Fix out-of-bounds memory accesses
+    https://git.kernel.org/netdev/net/c/332fdf951df8
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
