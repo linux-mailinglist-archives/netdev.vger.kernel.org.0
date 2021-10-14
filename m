@@ -2,120 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2235942D898
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 13:54:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CAAD42D8A5
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 13:58:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231201AbhJNL4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 07:56:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60774 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229994AbhJNL4j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 07:56:39 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A243C061570;
-        Thu, 14 Oct 2021 04:54:34 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id e12so18623540wra.4;
-        Thu, 14 Oct 2021 04:54:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=Qh70ZouKZ85gIbpuXKWewmPLqOEF6lltY7MRU3dhsLQ=;
-        b=cn8xR7iiAw7tWLtSnmilwd0CLe4cIYuLcWV6O7XQ5LHFnC/wOFIWN4l3qyN6BY/cdh
-         AS/BEtzOkPPJ5YvO0DQPfmbY7qhU9fI/9imeranMOICUU0X4q8sP2J4qAmieeoLD+nhK
-         HCTGk05ojGTmiqhKPYB+q8hH1ptSggXPQDx0d06jXoCevxZe4/+UAgsJ7aD4/ClHjIDM
-         Uq5d3+wzLafXiIO/rGCntLEJUnvzl5Grh6fujZ9n6G/AzHdjs/mNvee7wuGUcKCbGqZN
-         hhAIlxxxWuVoWMEk21U4XseZsNKCBloH6AeNxzN0KJ4c23+pyL9kgi+FRKa4kRWi4HUZ
-         5DaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Qh70ZouKZ85gIbpuXKWewmPLqOEF6lltY7MRU3dhsLQ=;
-        b=T1pACr/10OguqapE/VHYbt/2yLHVbCkyctoSoYkWZkuIOdou4XQGtopkm30+Rh+hk6
-         E1QYCN35a7FQWjdWdmlPSoFBU1zbwL3o+Wh9LLxa427aiPuvf0BZtEqhxJe2d9FBsId4
-         t2JEwL/mUFgOhA8dP3mGb7F6BZTOM1tb6HQzT+RbJXUyijhQgC0fkzdKk0lVUYEC7txC
-         03O8p/S0YKu9JwExR7w4cZVTL35XrRrBlJjHXD1mkUyZZcdZ6/bm3LWL2ZCCY0v/SEIS
-         12D9tdqu0NeBRzF9t7iNmAUBGi4ch94M9bDGenwXyy65cA2ly/BMdP2SFzpT4rdCiHdK
-         s4Ug==
-X-Gm-Message-State: AOAM532K5dh/ir8JIQiz5jYxBMjCYoYIiLnBBiyp5z+NT4dmj05L7RMG
-        RiaRwYQubrJoL9bvTKNTUrJcunk9F4g=
-X-Google-Smtp-Source: ABdhPJy1ZYZCOFqvLyyp8cFqmb+AwiD6hjCGDA1IY0Kv5GkMzSNmSJNkDkdSXDMvEMcXmypDMbPF0A==
-X-Received: by 2002:adf:8bca:: with SMTP id w10mr6144612wra.43.1634212472296;
-        Thu, 14 Oct 2021 04:54:32 -0700 (PDT)
-Received: from debian64.daheim (p200300d5ff0f7400d63d7efffebde96e.dip0.t-ipconnect.de. [2003:d5:ff0f:7400:d63d:7eff:febd:e96e])
-        by smtp.gmail.com with ESMTPSA id c17sm2194410wmk.23.2021.10.14.04.54.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Oct 2021 04:54:31 -0700 (PDT)
-Received: from localhost.daheim ([127.0.0.1])
-        by debian64.daheim with esmtp (Exim 4.95)
-        (envelope-from <chunkeey@gmail.com>)
-        id 1mazJe-0008WG-Sw;
-        Thu, 14 Oct 2021 13:54:30 +0200
-Subject: Re: [PATCH] ath10k: support bus and device specific API 1 BDF
- selection
-To:     Robert Marko <robimarko@gmail.com>, kvalo@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20211009221711.2315352-1-robimarko@gmail.com>
-From:   Christian Lamparter <chunkeey@gmail.com>
-Message-ID: <ba520cf0-480e-245b-395f-7d3a5f771521@gmail.com>
-Date:   Thu, 14 Oct 2021 13:54:30 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S230339AbhJNMAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 08:00:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57188 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230080AbhJNMAy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Oct 2021 08:00:54 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 326E960BD3;
+        Thu, 14 Oct 2021 11:58:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634212730;
+        bh=Oui10MkUZm/crpdoOrZ3ozxUHKzPdQEL7AlhQ8R675Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Q49C3RwqQC7F6HavHPN+uRkVi/fsecm3XXv8aXcaQZxrBVOMDR6uCdii+9bV1mEKN
+         +YW4suBNflX4qGV44IqjW3FZx6O3zvmfhaV0acFTlnuTPzwf3gvXOc5w/cA4jHi+M1
+         jogi6naNWIJ9Z/TQS0pBlUtwmrUH2sMNwOJb8ju7X4Z4tRefXNxA6bWO6R1TbA/GTy
+         2lhyBIBfrFVKyCEEBS3NmYh1bDe3i7qBEIN4fA5UcI/eGTS3iNONGJR4QUDASH7k1a
+         kJva1EYTeFratntuqWqsjs2lc6zUL1wn2azovXIEBfaY5X+B5gyX+SYUnLlgriINr0
+         H1+Pxgc1EIVRA==
+Date:   Thu, 14 Oct 2021 13:58:44 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Alexander Dahl <ada@thorsis.com>
+Cc:     Pavel Machek <pavel@ucw.cz>, devicetree@vger.kernel.org,
+        linux-leds@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        robh+dt@kernel.org, Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH 2/3] dt-bindings: leds: Add `excludes` property
+Message-ID: <20211014135844.440e4e19@dellmb>
+In-Reply-To: <YWgU37NQfnIOtlsn@ada.ifak-system.com>
+References: <20211013204424.10961-1-kabel@kernel.org>
+        <20211013204424.10961-2-kabel@kernel.org>
+        <20211014102918.GA21116@duo.ucw.cz>
+        <20211014124309.10b42043@dellmb>
+        <YWgU37NQfnIOtlsn@ada.ifak-system.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20211009221711.2315352-1-robimarko@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: de-DE
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/10/2021 00:17, Robert Marko wrote:
-> Some ath10k IPQ40xx devices like the MikroTik hAP ac2 and ac3 require the
-> BDF-s to be extracted from the device storage instead of shipping packaged
-> API 2 BDF-s.
-> 
-> This is required as MikroTik has started shipping boards that require BDF-s
-> to be updated, as otherwise their WLAN performance really suffers.
-> This is however impossible as the devices that require this are release
-> under the same revision and its not possible to differentiate them from
-> devices using the older BDF-s.
-> 
-> In OpenWrt we are extracting the calibration data during runtime and we are
-> able to extract the BDF-s in the same manner, however we cannot package the
-> BDF-s to API 2 format on the fly and can only use API 1 to provide BDF-s on
-> the fly.
-> This is an issue as the ath10k driver explicitly looks only for the
-> board.bin file and not for something like board-bus-device.bin like it does
-> for pre-cal data.
-> Due to this we have no way of providing correct BDF-s on the fly, so lets
-> extend the ath10k driver to first look for BDF-s in the
-> board-bus-device.bin format, for example: board-ahb-a800000.wifi.bin
-> If that fails, look for the default board file name as defined previously.
-> 
-> Signed-off-by: Robert Marko <robimarko@gmail.com>
-> ---
+On Thu, 14 Oct 2021 13:30:39 +0200
+Alexander Dahl <ada@thorsis.com> wrote:
 
-As mentioned in Robert's OpenWrt Pull request:
-https://github.com/openwrt/openwrt/pull/4679
+> Hei hei,
+>=20
+> Am Thu, Oct 14, 2021 at 12:43:09PM +0200 schrieb Marek Beh=C3=BAn:
+> > On Thu, 14 Oct 2021 12:29:18 +0200
+> > Pavel Machek <pavel@ucw.cz> wrote:
+> >  =20
+> > > Hi!
+> > >  =20
+> > > > Some RJ-45 connectors have LEDs wired in the following way:
+> > > >=20
+> > > >          LED1
+> > > >       +--|>|--+
+> > > >       |       |
+> > > >   A---+--|<|--+---B
+> > > >          LED2
+> > > >=20
+> > > > With + on A and - on B, LED1 is ON and LED2 is OFF. Inverting
+> > > > the polarity turns LED1 OFF and LED2 ON.
+> > > >=20
+> > > > So these LEDs exclude each other.
+> > > >=20
+> > > > Add new `excludes` property to the LED binding. The property is
+> > > > a phandle-array to all the other LEDs that are excluded by this
+> > > > LED.   =20
+> > >=20
+> > > I don't think this belongs to the LED binding.
+> > >=20
+> > > This is controller limitation, and the driver handling the
+> > > controller needs to know about it... so it does not need to learn
+> > > that from the LED binding. =20
+> >=20
+> > It's not necessarily a controller limitation, rather a limitation of
+> > the board (or ethernet connector, in the case of LEDs on an ethernet
+> > connector). =20
+>=20
+> Such LEDs are not limited to PHYs or ethernet connectors.  There is
+> hardware with such dual color LEDs connected to GPIO pins (either
+> directly to the SoC or through some GPIO expander like an 74hc595
+> shift register).  That mail points to such hardware:
+>=20
+> https://www.spinics.net/lists/linux-leds/msg11847.html
+>=20
+> I asked about how this can be modelled back in 2019 and it was also
+> discussed last year:
+>=20
+> https://www.spinics.net/lists/linux-leds/msg11665.html
+> https://lore.kernel.org/linux-leds/2315048.uTtSMl1LR1@ada/
+>=20
+> The "solution" back when I first asked was treating them as ordinary
+> GPIO-LEDs and ignore the "exclusion topic" which means in practice the
+> LED goes OFF if both pins are ON (high) at the same time, which works
+> well enough in practice.
+>=20
+> > But I guess we could instead document this property in the ethernet
+> > PHY controller binding for a given PHY. =20
+>=20
+> Because such LEDs are not restricted to ethernet PHYs, but can also be
+> used with GPIOs from the hardware point of view, I would not put it
+> there.
+>=20
+> Furthermore I would not view this as a restriction of the gpio-leds
+> controller, but it's a property of the LEDs itself or the way they are
+> wired to the board.
+>=20
+> This could (or should as Pavel suggested back in 2019) be put to a new
+> driver, at least for the GPIO case, but it would need some kind of new
+> binding anyways.  With that in mind I consider the proposed binding to
+> be well comprehensible for a human reader/writer.
+>=20
+> I'm sorry, I did not have leisure time to implement such a driver yet.
+> Breadboard hardware for that still waiting in the drawer. :-/
 
-It looks like the data comes from an mtd-partition parser.
-So the board data takes an extra detour through userspace
-for this.
+That's why I think we need the `excludes` property.
 
-Maybe it would be great, if that BDF (and likewise pre-cal)
-files could be fetched via an nvmem-consumer there?
-(Kalle: like the ath9k-nvmem patches)
+On the sw side, it should work like this:
+$ cd /sys/class/leds
+$ echo 1 >LED1/brightness
+$ cat LED1/brightness LED2/brightness
+1
+0
+$ echo 1 >LED2/brightness
+$ cat LED1/brightness LED2/brightness
+0
+1
 
-This would help with many other devices as well, since currently
-in OpenWrt all pre-cal data has to be extracted by userspace
-helpers, while it could be easily accessible through nvmem.
+The drivers could also implement brightness_hw_changed for these LEDs.
 
-What do you think?
-
-Cheers,
-Christian
+Marek
