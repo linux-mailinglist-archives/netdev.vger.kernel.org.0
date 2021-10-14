@@ -2,83 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAA2142D6C3
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 12:06:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5963142D6CD
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 12:10:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230192AbhJNKIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 06:08:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47382 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230179AbhJNKIJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Oct 2021 06:08:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 26B856101E;
-        Thu, 14 Oct 2021 10:06:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634205965;
-        bh=/DwZK5Nqwyga0GMSWPMyT43TU7YWs7C3bgxh4CwgbEw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=m52fPtgtgnew0Aq0pgkU6z7LidydJ+7r294XdHXWQlpClh0dni+lhC7ORhqNG57Dn
-         zqV8yIdYjoknBtZ/zrLVqm84podfu/tth4b35shx3G78BHpb5hkGtrYpz8y2yc3Hlu
-         C0An/rlAg9obXIa7HhdO9yzxVARlgtnOBd4rbvQU++Oit8HpuehM1nleW5Qmfkl9oV
-         0N0B/quQC4RHz6Fz7aUsb6WEsoTp0dWNvmty29qTjG2b7npsUR990bde5eBv74x7Bk
-         3CUOYNKHFcj55v25yv+NVhTVgu0z8YhpLh6O8ZXm7ZZfDlzygq/0romtNUHRcGHgdd
-         /jdO/m+Axe2nw==
-Date:   Thu, 14 Oct 2021 12:06:01 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc:     robh+dt@kernel.org, devicetree@vger.kernel.org,
-        U-Boot Mailing List <u-boot@lists.denx.de>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Luka Kovacic <luka.kovacic@sartura.hr>
-Subject: Re: [PATCH RFC linux] dt-bindings: nvmem: Add binding for U-Boot
- environment NVMEM provider
-Message-ID: <20211014120601.133e9a84@dellmb>
-In-Reply-To: <629c8ba1-c924-565f-0b3c-8b625f4e5fb0@linaro.org>
-References: <20211013232048.16559-1-kabel@kernel.org>
-        <629c8ba1-c924-565f-0b3c-8b625f4e5fb0@linaro.org>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S230018AbhJNKNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 06:13:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36944 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229468AbhJNKNC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 06:13:02 -0400
+Received: from orbyte.nwl.cc (orbyte.nwl.cc [IPv6:2001:41d0:e:133a::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FBCFC061570
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 03:10:57 -0700 (PDT)
+Received: from n0-1 by orbyte.nwl.cc with local (Exim 4.94.2)
+        (envelope-from <n0-1@orbyte.nwl.cc>)
+        id 1maxhN-0006vc-W4; Thu, 14 Oct 2021 12:10:54 +0200
+Date:   Thu, 14 Oct 2021 12:10:53 +0200
+From:   Phil Sutter <phil@nwl.cc>
+To:     Andrea Claudi <aclaudi@redhat.com>
+Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
+        dsahern@gmail.com, bluca@debian.org, haliu@redhat.com
+Subject: Re: [PATCH iproute2 v5 7/7] configure: add the --libdir option
+Message-ID: <20211014101053.GJ1668@orbyte.nwl.cc>
+Mail-Followup-To: Phil Sutter <phil@nwl.cc>,
+        Andrea Claudi <aclaudi@redhat.com>, netdev@vger.kernel.org,
+        stephen@networkplumber.org, dsahern@gmail.com, bluca@debian.org,
+        haliu@redhat.com
+References: <cover.1634199240.git.aclaudi@redhat.com>
+ <62f6968cc2647685a0ef8074687ecf12c8c1f3c0.1634199240.git.aclaudi@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <62f6968cc2647685a0ef8074687ecf12c8c1f3c0.1634199240.git.aclaudi@redhat.com>
+Sender:  <n0-1@orbyte.nwl.cc>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 Oct 2021 09:26:27 +0100
-Srinivas Kandagatla <srinivas.kandagatla@linaro.org> wrote:
+Hi Andrea,
 
-> On 14/10/2021 00:20, Marek Beh=C3=BAn wrote:
-> > Add device tree bindings for U-Boot environment NVMEM provider.
-> >=20
-> > U-Boot environment can be stored at a specific offset of a MTD
-> > device, EEPROM, MMC, NAND or SATA device, on an UBI volume, or in a
-> > file on a filesystem.
-> >=20
-> > The environment can contain information such as device's MAC
-> > address, which should be used by the ethernet controller node.
-> >  =20
->=20
-> Have you looked at=20
-> ./Documentation/devicetree/bindings/mtd/partitions/nvmem-cells.yaml ?
+On Thu, Oct 14, 2021 at 10:50:55AM +0200, Andrea Claudi wrote:
+[...]
+> diff --git a/Makefile b/Makefile
+> index 5eddd504..f6214534 100644
+> --- a/Makefile
+> +++ b/Makefile
+> @@ -1,6 +1,8 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  # Top level Makefile for iproute2
+>  
+> +-include config.mk
+> +
 
-Hello srini,
+Assuming config.mk may be missing (as dash-prefix is used).
 
-yes, I have. What about it? :)
+>  ifeq ("$(origin V)", "command line")
+>  VERBOSE = $(V)
+>  endif
+> @@ -13,7 +15,6 @@ MAKEFLAGS += --no-print-directory
+>  endif
+>  
+>  PREFIX?=/usr
+> -LIBDIR?=$(PREFIX)/lib
 
-That binding won't work for u-boot-env, because the data are stored
-in a different way. A cell does not have a constant predetermined
-offset on the MTD.
-The variables are stored as a sequence of values of format
-"name=3Dvalue", separated by '\0's, for example:
-  board=3Dturris_mox\0ethaddr=3D00:11:22:33:44:55\0bootcmd=3Drun distro_boo=
-tcmd\0....
-Chaning lengths of values of variables, or deleting variables, moves
-the data around. Integers and MAC addresses are stored as strings, and so o=
-n.
+Dropping this leads to trouble if config.mk is missing or didn't define
+it. Can't you just leave it in place? Usually config.mk would override
+it anyway, no?
 
-Also the mtd/partitions/nvmem-cells.yaml doesn't take into account
-u-boot-env stored on non-MTD devices.
+Rest of the series looks great, thanks a lot for spending the extra
+cycles giving it the mirror finish it has now. :)
 
-Marek
-
- =20
+Cheers, Phil
