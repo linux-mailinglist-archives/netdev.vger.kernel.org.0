@@ -2,132 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E7AD42D52E
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 10:36:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72BB842D567
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 10:51:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230205AbhJNIik (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 04:38:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43640 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230020AbhJNIij (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 04:38:39 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B330C061570
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 01:36:34 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id i12so16897897wrb.7
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 01:36:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=cfakvhen/wxw5fHdRu0DEuLT5DMfJlXe2a/johLjqxo=;
-        b=h40uJnzRy4bIKfqfvwm3i/kik60+Kgx2sfXbHxmv0MsZax7HkeDmryc9yctryM7xlU
-         37bg2VuoZWdH4kTXGosC95Fa3QYJayYirIbI/UeFVNH/Nzn2/7/VodB6g1hiMuG9zp+p
-         egl0Br7pM5vnKxSuUDa7BUq17cmPH9MsIYOosVtDeEDQMUaCZ6h+AWD2esXOH1LRk+zZ
-         X2uV1Nn3ulaudun/4f5AT6jS5oilV0myDq9ozSQAqUnytF1YgcEInQmj+cCLjl5OgT5o
-         004n5bwSXge4iP3a4skCS8avlQccw5QvPN8BVpAjam8zZmlkvShcDVpQvgmxjplGDMKz
-         pkRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=cfakvhen/wxw5fHdRu0DEuLT5DMfJlXe2a/johLjqxo=;
-        b=Rmof+Enyy0heGZkQ+qBkQ9EwFkyiwk/FhALP5/bXiRyueGQrua1a/33jL6ew9KnbNL
-         VnAfDQ6bYqJvtbDsnVH6UVV+vKrtgylh7X01YGoFtdQ8aPVlKCL3T06/nAHkACErsS8N
-         4oEXAPs6HkdYNMtLfWxckVE5B82A4bhJ6hXTNfT3P9QJtCuM1Z+sePji0jrz83rMfbxc
-         R+EOdLonrkdr5Y8xYW7PwCZ8Ne3VPuppsWeuAsbDNRuAJgtJewdAMieooIdx2hURZ8bc
-         ACMCiurjdhWutu8Ach3XQk/EkMJ5jsp2sP0GqojGf02rXVYCg60mS3hq8RKMBlDWIQqZ
-         XCKg==
-X-Gm-Message-State: AOAM53029n5jLkIBDmvHudcexvkLhQ3yw0rVIJCae58yQuMGe7Ly2mdt
-        9WPoQ3VNc17fthLfxmp3gwLSeA==
-X-Google-Smtp-Source: ABdhPJzpVg8OIER+zTALG2ilasSHxD7bC/dTlVAeWBUDgRwrRvN9DCthCd2lRX0ZyZDpw2FTk6Hq6g==
-X-Received: by 2002:a5d:59a9:: with SMTP id p9mr5151873wrr.386.1634200593067;
-        Thu, 14 Oct 2021 01:36:33 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id r4sm2299114wrz.58.2021.10.14.01.36.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Oct 2021 01:36:32 -0700 (PDT)
-Date:   Thu, 14 Oct 2021 09:36:09 +0100
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Amit Shah <amit@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Gonglei <arei.gonglei@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        "Enrico Weigelt, metux IT consult" <info@metux.net>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Daniel Vetter <daniel@ffwll.ch>, Jie Deng <jie.deng@intel.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        David Hildenbrand <david@redhat.com>,
-        Vivek Goyal <vgoyal@redhat.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Anton Yakovlev <anton.yakovlev@opensynergy.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, linux-um@lists.infradead.org,
-        virtualization@lists.linux-foundation.org,
-        linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-gpio@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        nvdimm@lists.linux.dev, linux-remoteproc@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net, kvm@vger.kernel.org,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH RFC] virtio: wrap config->reset calls
-Message-ID: <YWfr+Z0wgpQ48yC5@myrica>
-References: <20211013105226.20225-1-mst@redhat.com>
+        id S229967AbhJNIxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 04:53:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:21804 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229551AbhJNIxa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 04:53:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634201485;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=N/PVZSit8aH08UMYaPleFxoGWJ78BZezxI3fvGpGm1c=;
+        b=cNo7SL2l/YaFHrd4DUBWBGiimnmvmC3xXLHDrZZ/HQfXDZk8Z5q6VGZ3fphOPGU+FV3ZrO
+        nEkUJC/ny5ZXXQyJpIjnBwjs51ZoO9wpRjs3yDOtzw7Ar1ZlvzmQb0vsz7ST2EFcP+f1wp
+        H6Zv4keO9AZWPLJEtVxy7TqvFl5zJRs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-389-LqXrUIl7P_Wy1X47ZgWjBQ-1; Thu, 14 Oct 2021 04:51:22 -0400
+X-MC-Unique: LqXrUIl7P_Wy1X47ZgWjBQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9ACFE1006AA2;
+        Thu, 14 Oct 2021 08:51:20 +0000 (UTC)
+Received: from renaissance-vector.redhat.com (unknown [10.39.194.134])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C4E5C7093A;
+        Thu, 14 Oct 2021 08:51:17 +0000 (UTC)
+From:   Andrea Claudi <aclaudi@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com, bluca@debian.org,
+        phil@nwl.cc, haliu@redhat.com
+Subject: [PATCH iproute2 v5 0/7] configure: add support for libdir option
+Date:   Thu, 14 Oct 2021 10:50:48 +0200
+Message-Id: <cover.1634199240.git.aclaudi@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211013105226.20225-1-mst@redhat.com>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 13, 2021 at 06:55:31AM -0400, Michael S. Tsirkin wrote:
-> This will enable cleanups down the road.
-> The idea is to disable cbs, then add "flush_queued_cbs" callback
-> as a parameter, this way drivers can flush any work
-> queued after callbacks have been disabled.
-> 
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
+This series add support for the libdir parameter in iproute2 configure
+script. The idea is to make use of the fact that packaging systems may
+assume that 'configure' comes from autotools allowing a syntax similar
+to the autotools one, and using it to tell iproute2 where the distro
+expects to find its lib files.
 
->  drivers/iommu/virtio-iommu.c               | 2 +-
+Patches 1-2 fix a parsing issue on current configure options, that may
+trigger an endless loop when no value is provided with some options;
 
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Patch 3 fixes a parsing issue bailing out when more than one value is
+provided for a single option;
+
+Patch 4 simplifies options parsing, moving semantic checks out of the
+while loop processing options;
+
+Patch 5 introduces support for the --opt=value style on current options,
+for uniformity;
+
+Patch 6 adds the --prefix option, that may be used by some packaging
+systems when calling the configure script;
+
+Patch 7 finally adds the --libdir option, and also drops the static
+LIBDIR var from the Makefile.
+
+Changelog:
+----------
+v4 -> v5
+  - bail out when multiple values are provided with a single option
+  - simplify option parsing and reduce code duplication, as suggested
+    by Phil Sutter
+  - remove a nasty eval on libdir option processing
+
+v3 -> v4
+  - fix parsing issue on '--include_dir' and '--libbpf_dir'
+  - split '--opt value' and '--opt=value' use cases, avoid code
+    duplication moving semantic checks on value to dedicated functions
+
+v2 -> v3
+  - fix parsing error on prefix and libdir options.
+
+v1 -> v2
+  - consolidate '--opt value' and '--opt=value' use cases, as suggested
+    by David Ahern.
+  - added patch 2 to manage the --prefix option, used by the Debian
+    packaging system, as reported by Luca Boccassi, and use it when
+    setting lib directory.
+
+Andrea Claudi (7):
+  configure: fix parsing issue on include_dir option
+  configure: fix parsing issue on libbpf_dir option
+  configure: fix parsing issue with more than one value per option
+  configure: simplify options parsing
+  configure: support --param=value style
+  configure: add the --prefix option
+  configure: add the --libdir option
+
+ Makefile  |  7 ++---
+ configure | 78 +++++++++++++++++++++++++++++++++++++++++--------------
+ 2 files changed, 63 insertions(+), 22 deletions(-)
+
+-- 
+2.31.1
+
