@@ -2,114 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06A5A42D1AF
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 06:38:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6561742D1B1
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 06:43:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229502AbhJNEk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 00:40:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46246 "EHLO
+        id S229557AbhJNEpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 00:45:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbhJNEk6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 00:40:58 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4336AC061570;
-        Wed, 13 Oct 2021 21:38:54 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id v17so15209655wrv.9;
-        Wed, 13 Oct 2021 21:38:54 -0700 (PDT)
+        with ESMTP id S229457AbhJNEpU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 00:45:20 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04848C061570;
+        Wed, 13 Oct 2021 21:43:15 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id y30so2602326edi.0;
+        Wed, 13 Oct 2021 21:43:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Wgv6cDEm6n/7wB+5ada4bNuNyCqeYPkJ/qfH7uQLwdw=;
-        b=HBqlbpKTnGP1oBL4c0ock7YYEUfuEpFtHRG8LE+ycRa1fw1zk50ai68cRxyfJYnh/l
-         7IJwcKjFpBMfNXGn6Llamu3+Ilj3b62xtTrj7ZVKHB8KgHhYoB4F+cWOFxOJSD/1vA+6
-         I8gJhjd6CC6O/wwLOE50j1516nsaJyGOZeJgN2oiGd7kx5IbfCZ1NC4MStD3KeykJFZa
-         c01/oFJBv1PeHZ3dR+iMLqP+CCRerN1T4T8HXur+tSFqK+ZaKx7cxsdwykpllKcdxACx
-         3Y38aEnBDooF6RXWIfYjd0tB3owcclhpy7IksdPt9eP+Jpxx5mmslqlJtQm/HVghh8k4
-         9vIA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=8LPaw5+M3luGOVH1M1qUxYbUAN1VHa4xoL3FVlaU0qc=;
+        b=MFquGC9VtUKw8pTBgsPsfZDGIu9cYGc4JldmzyNsgdWqmhc/zctDSXxMlASUM133+6
+         cXBXs89qeGqUI5Qzrj4kMjK7tAJMUKzW46AiAsr/A5FHnS2I2DVQW1VZhrH58ElyC/qz
+         RHix/4VoZPx/C4k171vUR1Yvrim1ADZU0M2tqUik+ZVxOFoqfn8sR+eUbpClNd+PmjRZ
+         p8aYhZ9s+GDvprc1//1oTQfQMNdvUbFDvkC8QnmW9PgFnaAXaW8efJq1umQQfyLJ0FT+
+         3dJzbsNEbRLxXS1F3YrMZIweVLzGeKcAOf4iI12C70z6Mu8CUsGU8QqSLEAZ6Xfe7P8i
+         lGsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Wgv6cDEm6n/7wB+5ada4bNuNyCqeYPkJ/qfH7uQLwdw=;
-        b=rohoXRT51fJp4iGJkhStEceyTWlVTIHDHxeTN6ZJjZcZzs5W5bJzpIsU9he2K+VMaf
-         uA0SG06t89BpYCg2I3cIJKoE/6+sBKACQ7a9KjLlSJKNno/fLuJ5NA2CLCfRGtVrfFpT
-         PhrBrz19AIqNOR709nBcTW7Gd2FGAOnYO2RkIdpsIdATDP7LQcz0n6xWkVKbbr8nbY9K
-         EAE3nffUThF5Kn56u0mot9L83K6h+glLq4CQPVtKVoE603Y0QKJiG8yuZWKvtNM9xQxS
-         jComxQWKbd2wnGuSS1XZK1avx6E4KP3ZGxaJCCKstr2o4sf2k1a5IBWhkjD7g/IAzbAj
-         j1tA==
-X-Gm-Message-State: AOAM5308lw3xL731lLqOciviD9yyBDgMEHm9SC2vxe4OxIedxk7mwI8D
-        6LghsQE5mJCAKc33UJVQm9enVKshM9y2XNUbcZnmIhpahn+TEw==
-X-Google-Smtp-Source: ABdhPJxSelOiLlZl4FOTD/U2o55/uu/hebvyjCb43lohPc/vEuzmnHtnUYE1H2Ni2qUg7V+BGd/a0/W5Jw22+rJX2Is=
-X-Received: by 2002:a05:6000:162f:: with SMTP id v15mr4098049wrb.118.1634186332786;
- Wed, 13 Oct 2021 21:38:52 -0700 (PDT)
-MIME-Version: 1.0
-References: <b97c1f8b0c7ff79ac4ed206fc2c49d3612e0850c.1634156849.git.mleitner@redhat.com>
-In-Reply-To: <b97c1f8b0c7ff79ac4ed206fc2c49d3612e0850c.1634156849.git.mleitner@redhat.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Thu, 14 Oct 2021 12:38:41 +0800
-Message-ID: <CADvbK_dc0fuSuSdGihgL2Ms3_ZhQx0Jd5k+-wFR5fM7ss52r-w@mail.gmail.com>
-Subject: Re: [PATCH net] sctp: account stream padding length for reconf chunk
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Eiichi Tsukata <eiichi.tsukata@nutanix.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=8LPaw5+M3luGOVH1M1qUxYbUAN1VHa4xoL3FVlaU0qc=;
+        b=4wngAwIzwvTE3Qf7AApm9nzcTj9QKBfM2o2AHZD8PWcWzB9lBca9oASagk5Vr1DIdn
+         VBxThBvhtBxkN+hAF6i7exC22fgBMIoBhVz+8Bwm116eQMvQwxz4buVJpoiF86HeC+Ep
+         UlVu5zLYaj9Am7p4KLDViI1tPjmRnemuihjW0/0VUGoGAL8YkuUVd0LFzB4KhzdeY4fO
+         vmh5zwYLCQNQw3Kgc/sKPkzFc7e4jRVPYk6RnQnW5khs7b31LR19hOP3DU12YJnS/Db+
+         hoB8uxy0GtKORkJoucJqOAO4QKqa2P1xWeUSXT5a91A79it6SbHernF7ywsVgd7RSps/
+         hunQ==
+X-Gm-Message-State: AOAM533ub0ZpqrEc8HRbteMkuQc+hsmx3x2aZJxjOW5yvczAuFYo+BMC
+        BHYAPDfvmIrmUVbJ7HTljzomPpzBju5RMDA8
+X-Google-Smtp-Source: ABdhPJyz3OfW6aowvh4DiAwX9JLEogf5euDIwW9BIUV2E+zePjUtqGQaIGHRZ3c8bksJbAdDiQYJEg==
+X-Received: by 2002:a05:6402:50d4:: with SMTP id h20mr5444213edb.112.1634186594587;
+        Wed, 13 Oct 2021 21:43:14 -0700 (PDT)
+Received: from ?IPv6:2a04:241e:501:3800:2cc6:c762:3ced:180f? ([2a04:241e:501:3800:2cc6:c762:3ced:180f])
+        by smtp.gmail.com with ESMTPSA id s7sm1206140edw.67.2021.10.13.21.43.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Oct 2021 21:43:14 -0700 (PDT)
+Subject: Re: [PATCH v2 2/4] tcp: md5: Allow MD5SIG_FLAG_IFINDEX with ifindex=0
+To:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Martin KaFai Lau <kafai@fb.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Yonghong Song <yhs@fb.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <cover.1634107317.git.cdleonard@gmail.com>
+ <9eb867a3751ee4213d8019139cf1af42570e9e91.1634107317.git.cdleonard@gmail.com>
+ <7d8f3de1-d093-c013-88c4-3cff8c7bc012@gmail.com>
+From:   Leonard Crestez <cdleonard@gmail.com>
+Message-ID: <bc702545-175d-9de8-e131-839efbcb4492@gmail.com>
+Date:   Thu, 14 Oct 2021 07:43:10 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
+MIME-Version: 1.0
+In-Reply-To: <7d8f3de1-d093-c013-88c4-3cff8c7bc012@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 14, 2021 at 4:27 AM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> From: Eiichi Tsukata <eiichi.tsukata@nutanix.com>
->
-> sctp_make_strreset_req() makes repeated calls to sctp_addto_chunk()
-> which will automatically account for padding on each call. inreq and
-> outreq are already 4 bytes aligned, but the payload is not and doing
-> SCTP_PAD4(a + b) (which _sctp_make_chunk() did implicitly here) is
-> different from SCTP_PAD4(a) + SCTP_PAD4(b) and not enough. It led to
-> possible attempt to use more buffer than it was allocated and triggered
-> a BUG_ON.
->
-> Cc: Vlad Yasevich <vyasevich@gmail.com>
-> Cc: Neil Horman <nhorman@tuxdriver.com>
-> Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: linux-sctp@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: Greg KH <gregkh@linuxfoundation.org>
-> Fixes: cc16f00f6529 ("sctp: add support for generating stream reconf ssn reset request chunk")
-> Reported-by: Eiichi Tsukata <eiichi.tsukata@nutanix.com>
-> Signed-off-by: Eiichi Tsukata <eiichi.tsukata@nutanix.com>
-> Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-> Signed-off-by: Marcelo Ricardo Leitner <mleitner@redhat.com>
-> ---
->  net/sctp/sm_make_chunk.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
-> index b8fa8f1a7277..c7503fd64915 100644
-> --- a/net/sctp/sm_make_chunk.c
-> +++ b/net/sctp/sm_make_chunk.c
-> @@ -3697,7 +3697,7 @@ struct sctp_chunk *sctp_make_strreset_req(
->         outlen = (sizeof(outreq) + stream_len) * out;
->         inlen = (sizeof(inreq) + stream_len) * in;
->
-> -       retval = sctp_make_reconf(asoc, outlen + inlen);
-> +       retval = sctp_make_reconf(asoc, SCTP_PAD4(outlen) + SCTP_PAD4(inlen));
->         if (!retval)
->                 return NULL;
->
-> --
-> 2.31.1
->
-Reviewed-by: Xin Long <lucien.xin@gmail.com>
+On 10/14/21 6:09 AM, David Ahern wrote:
+> On 10/13/21 12:50 AM, Leonard Crestez wrote:
+>> Multiple VRFs are generally meant to be "separate" but right now md5
+>> keys for the default VRF also affect connections inside VRFs if the IP
+>> addresses happen to overlap.
+>>
+>> So far the combination of TCP_MD5SIG_IFINDEX with tcpm_ifindex == 0
+> 
+> TCP_MD5SIG_IFINDEX does not exist in net-next and it was not added by
+> patch 1 or this patch.
+
+Commit message is wrong, it should refer to TCP_MD5SIG_FLAG_IFINDEX.
+
+--
+Regards,
+Leonard
