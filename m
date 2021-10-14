@@ -2,79 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8D9742CFC3
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 03:00:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C524842CFC5
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 03:01:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229754AbhJNBCM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 21:02:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35828 "EHLO mail.kernel.org"
+        id S229663AbhJNBDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 21:03:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36040 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229660AbhJNBCL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Oct 2021 21:02:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id E9FE861181;
-        Thu, 14 Oct 2021 01:00:07 +0000 (UTC)
+        id S229496AbhJNBDQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Oct 2021 21:03:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 624DB61175;
+        Thu, 14 Oct 2021 01:01:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634173208;
-        bh=CLoSyWVS6ts1sfaswnKU4RS/yzUMw8brR1Qd4YGCHyw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=VXGRUrwMOVsQWADBj9+T0nRy+UIO6FDXiyHF6DAZNKaE54oWGng7YiIrV4Z2jJ2aF
-         +pxVQ37U2x3+Lp71eXwDtZBxZSQbeIE23PHgbOdczsrk/QEqB7DGK7LvG6O4pD1vZC
-         u8euXYI8qAq2v7Y+cD8O3j0MzBE9O3sQl6lbKbHDlcPjx2oD3XIUipwxtma7lE078N
-         kbWysHLI0WFtyRiLDVJCiP1Y/f2p8BBvVuv9FiNp/ivdt57AnXpIDHeShgG8ikmxOY
-         19KfcY1q/Ij90fDshAnuLYaO1X2hvOau0wj6PW/i+eQHylNwq+Rz+LD+WUMOoxGtWn
-         j+7o9J/KqjU5A==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DD31B609CF;
-        Thu, 14 Oct 2021 01:00:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1634173272;
+        bh=YiGocq2ZvSgn0npzYDaosIe5Ts+WasrJDtPiAWS7vI4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iA800c2KPZ2v9W8IVp8CYnjP5cpqxwyhCHkR6+W/Mu4Tpi2CdoF2Ket0rEIVcwajb
+         33XDBo7DXJMZcz3mG4+8iT1kPRICZtl+Mu3fc/v3S9Fiii1FQZ8XgDTmnOEy8cPTvR
+         IwX7HSlPOvyLPr61XHDF+rRWR69ShLaEw8fzmlhx67BsicXQWlqH4esRkSeCUIc04N
+         l3SvVkRU5XZktv0VKmyBUp5G3OKe1zCd3ZqX3uZFnSv3q6TjAu3JgNCo0qYhgcEaOK
+         EpcijtlLXBj6VNgUd88HKL1gqnY03ggy8+93Q2btVWUdLs/lJrCLvY4NEfA2nB7C+z
+         pFRfXsSyTnZAQ==
+Date:   Wed, 13 Oct 2021 18:01:11 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Lin Ma <linma@zju.edu.cn>
+Cc:     linux-nfc@lists.01.org, krzysztof.kozlowski@canonical.com,
+        davem@davemloft.net, bongsu.jeon@samsung.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] NFC: NULL out conn_info reference when conn is closed
+Message-ID: <20211013180111.611dac91@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211013043052.16379-1-linma@zju.edu.cn>
+References: <20211013043052.16379-1-linma@zju.edu.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/5] mlxsw: Show per-band ECN-marked counter on qdisc
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163417320790.18513.14257429887955313854.git-patchwork-notify@kernel.org>
-Date:   Thu, 14 Oct 2021 01:00:07 +0000
-References: <20211013103748.492531-1-idosch@idosch.org>
-In-Reply-To: <20211013103748.492531-1-idosch@idosch.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jiri@nvidia.com, petrm@nvidia.com, mlxsw@nvidia.com,
-        idosch@nvidia.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed, 13 Oct 2021 13:37:43 +0300 you wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
+On Wed, 13 Oct 2021 12:30:52 +0800 Lin Ma wrote:
+> The nci_core_conn_close_rsp_packet() function will release the conn_info
+> with given conn_id. However, this reference of this object may still held
+> by other places like ndev->rf_conn_info in routine:
+> .. -> nci_recv_frame()
+>      -> nci_rx_work()
+>        -> nci_rsp_packet()
+>          -> nci_rf_disc_rsp_packet()
+>            -> devm_kzalloc()  
+>               ndev->rf_conn_info = conn_info;
 > 
-> Petr says:
+> or ndev->hci_dev->conn_info in routine:
+> .. -> nci_recv_frame()
+>      -> nci_rx_work()
+>        -> nci_rsp_packet()
+>          -> nci_core_conn_create_rsp_packet()
+>            -> devm_kzalloc()  
+>               ndev->hci_dev->conn_info = conn_info;
 > 
-> The RED qdisc can expose number of packets that it has marked through
-> the prob_marked counter (shown in iproute2 as "marked"). This counter
-> currently just shows number of packets marked in the SW datapath, which
-> in a switch deployment likely means zero.
+> If these two places are not NULL out, potential UAF can be exploited by
+> the attacker when emulating an UART NFC device. This patch compares the
+> deallocating object with the two places and writes NULL to prevent that.
 > 
-> [...]
+> Signed-off-by: Lin Ma <linma@zju.edu.cn>
 
-Here is the summary with links:
-  - [net-next,1/5] mlxsw: reg: Fix a typo in a group heading
-    https://git.kernel.org/netdev/net-next/c/b063e0651ced
-  - [net-next,2/5] mlxsw: reg: Rename MLXSW_REG_PPCNT_TC_CONG_TC to _CNT
-    https://git.kernel.org/netdev/net-next/c/fc372cc07286
-  - [net-next,3/5] mlxsw: reg: Add ecn_marked_tc to Per-TC Congestion Counters
-    https://git.kernel.org/netdev/net-next/c/6242b0a96302
-  - [net-next,4/5] mlxsw: spectrum_qdisc: Introduce per-TC ECN counters
-    https://git.kernel.org/netdev/net-next/c/15be36b8126b
-  - [net-next,5/5] selftests: mlxsw: RED: Test per-TC ECN counters
-    https://git.kernel.org/netdev/net-next/c/bf862732945c
+This doesn't apply, looks like we already have half of this patch in
+the networking fixes tree:
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=1b1499a817c90fd1ce9453a2c98d2a01cca0e775
 
-
+Please rebase on top of that and resend. Add a Fixes tag while at it.
