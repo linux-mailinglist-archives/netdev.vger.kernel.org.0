@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEF4442D0C4
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 05:05:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ED1942D0CA
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 05:09:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229913AbhJNDHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 23:07:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53764 "EHLO
+        id S229931AbhJNDLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 23:11:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229834AbhJNDHr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 23:07:47 -0400
-Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BCBAC061570;
-        Wed, 13 Oct 2021 20:05:43 -0700 (PDT)
-Received: by mail-oo1-xc33.google.com with SMTP id n15-20020a4ad12f000000b002b6e3e5fd5dso1446992oor.1;
-        Wed, 13 Oct 2021 20:05:43 -0700 (PDT)
+        with ESMTP id S229496AbhJNDLs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 23:11:48 -0400
+Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80DECC061570;
+        Wed, 13 Oct 2021 20:09:44 -0700 (PDT)
+Received: by mail-oo1-xc34.google.com with SMTP id c29-20020a4ad21d000000b002b6cf3f9aceso1426932oos.13;
+        Wed, 13 Oct 2021 20:09:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=d1385PWcZJRF7AKd4UEG4AV7ybG/wi0GEJ0BosT22g8=;
-        b=pXKAMmR/xzMljbw/eNfBG8AuOseS2mPEMgiIEKceLbWLKcjP81ozhY9W5V5Cdy7Qgp
-         BGOIHvLPcVYP11vhOOAdhoytozAQ/hA627OtLzuPft++hivhcvdQ160zBPsZO8GkY5DE
-         vZ6xoA+6+Jg4ARXxjkmqlmxhFYxxncjLhMt0kx+KcgAB6NhJNH+4RU7Sbj2FqtyXtV+l
-         q4jh1/oAR5hhECoSlaOH90TABOVAEqeCfNwe1lAqaTsphXcdBmJ8hBRRfgA0jXuY+CQG
-         HrLokNTr5KOvnYDilgXI5mbBmgbzYVeZhIRGw7fW80dkCAm4G80c133AjrxCdNH7kamu
-         LnUw==
+        bh=HE9z5tlF77mRAkHNqcUY/20RBkunTk9T3krwd45VGuk=;
+        b=lCO/JQCREM+81cayvh0CHs3V7SF8AZi8+4VOYZPZfk9QH6Uk2pnPqm2euY+mChd1hV
+         bjO7WeMzWiZEa7gV+6Bm4yZ21dNlaE1x9RujA4JVmvcxgiv9eMNk0orCLl+aX6SclQs0
+         AyY5SXbI/PVot3uWMz25KOfwUJTG6MKsEHC86UEZY+51GrS9dSaZPO5uv94+bhi3oqps
+         6Bb05EaGTQ7lllzx7mQ870sX1r/YohiSqheTiYnZLpbohwELF0vOSdl56owztHZTkRvD
+         FWeXjaw6+vnfoN06lMOAymwWPe5qish0dtDWbqh3A7UOB8ImUs9GTa8UsEhR/IZx5WGR
+         IrxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=d1385PWcZJRF7AKd4UEG4AV7ybG/wi0GEJ0BosT22g8=;
-        b=v2jezdAXhpwC/RYp4Cxa1d1wPzp63LjI1Hm4xriy0yAgSexQ4h7t1TigrHjB7qGBdw
-         +OJGuvuYCl9xHN0ndB2jZm2vTU0TfCw6WO4IJHUGscZ48o0enOPuJt/BTRi9dtpBCHCC
-         BGxWj+Qb5UKipttB3MoT7kxiFGq4LOYkXqo5aCAph5iUxZeaVW2Z4CP13eE1o7twVe4F
-         gyT8ZPQqpOW7bRN7gEuL3Xb9Eu/GSGhmcGWeX3cRzQWt5YIbpTfoEObMXEFhqCGbD+XL
-         s6thwpfE956SiXwCkYAh2YBozqXB/HX6AhfOezbmpRjk6/uyXVDbZajfFot9X5ZmkQWv
-         AMyQ==
-X-Gm-Message-State: AOAM530CIS7D8N3DoZWpfupTGGs+4CDnRtYt43iqi3+fAfxX55Al82Dj
-        F2RZCJXplgWlwcYY5iFzwul2LGsStAJrwg==
-X-Google-Smtp-Source: ABdhPJyMU3EjySfOQ6JyMsRrLZcxyafz4scF+7NQeAec7TbUuE5tLE7xrLtL0hD7XG2a2bu/LssKvA==
-X-Received: by 2002:a4a:d5c8:: with SMTP id a8mr1784724oot.18.1634180741652;
-        Wed, 13 Oct 2021 20:05:41 -0700 (PDT)
+        bh=HE9z5tlF77mRAkHNqcUY/20RBkunTk9T3krwd45VGuk=;
+        b=lBG6r9UA63OHMGI2Px+U1gc2sU1X+JLgtzbcD6H9vYcltwTBX1TBJ18w3pC+tqqsY8
+         TNWVdnZE9bJ3wig9FEjZs+kxw474hivivX4/hMcWYnEfVXMUkDF//5WGT+BgnxcRTgfg
+         4P3Ir6BEWzDB0iixApvDXaA/oDMJA3LDOHBAAyfPNbVwVMW5GNO0UIkCmFFpbixSxFgP
+         CsjipABUwxa/8qbiJqS5rF0nq6WmZT/G6ziX6Swo4WWNEJ8ZjqRdOspQXhruB1IesIL+
+         BeCSUkAvTtKfTelU7nJ2HTNqhmFw4/5iHDrmsletPppi8dxUeXXVPw3ZAFlthEM1y3Gb
+         WiTA==
+X-Gm-Message-State: AOAM532+Ymrhui9ROYHGpj7shSm/U55I43snJ7cZfkaYCB4Zwvlijids
+        J7mZdTpvjCDVeNXTrVI+wyqc5bX0lqzMEg==
+X-Google-Smtp-Source: ABdhPJwNRtMu0D2MeivvDWc4qCFUdD03zkvdEBjopiN6PPThrvexnA1SdkWeszmICCg6kI68AJMl2Q==
+X-Received: by 2002:a4a:430c:: with SMTP id k12mr2198711ooj.43.1634180983781;
+        Wed, 13 Oct 2021 20:09:43 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([8.48.134.40])
-        by smtp.googlemail.com with ESMTPSA id c3sm314906otr.42.2021.10.13.20.05.39
+        by smtp.googlemail.com with ESMTPSA id u6sm278423ooh.15.2021.10.13.20.09.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Oct 2021 20:05:40 -0700 (PDT)
-Subject: Re: [PATCH v2 1/4] tcp: md5: Fix overlap between vrf and non-vrf keys
+        Wed, 13 Oct 2021 20:09:43 -0700 (PDT)
+Subject: Re: [PATCH v2 2/4] tcp: md5: Allow MD5SIG_FLAG_IFINDEX with ifindex=0
 To:     Leonard Crestez <cdleonard@gmail.com>,
         David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>
@@ -62,14 +62,14 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <cover.1634107317.git.cdleonard@gmail.com>
- <6d99312c4863c37ad394c815f8529ee635bdb0d0.1634107317.git.cdleonard@gmail.com>
+ <9eb867a3751ee4213d8019139cf1af42570e9e91.1634107317.git.cdleonard@gmail.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <65cb2c9f-28f8-8570-3275-b1080232a7f8@gmail.com>
-Date:   Wed, 13 Oct 2021 21:05:39 -0600
+Message-ID: <7d8f3de1-d093-c013-88c4-3cff8c7bc012@gmail.com>
+Date:   Wed, 13 Oct 2021 21:09:42 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <6d99312c4863c37ad394c815f8529ee635bdb0d0.1634107317.git.cdleonard@gmail.com>
+In-Reply-To: <9eb867a3751ee4213d8019139cf1af42570e9e91.1634107317.git.cdleonard@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -78,32 +78,11 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 10/13/21 12:50 AM, Leonard Crestez wrote:
-> With net.ipv4.tcp_l3mdev_accept=1 it is possible for a listen socket to
-> accept connection from the same client address in different VRFs. It is
-> also possible to set different MD5 keys for these clients which differ
-> only in the tcpm_l3index field.
+> Multiple VRFs are generally meant to be "separate" but right now md5
+> keys for the default VRF also affect connections inside VRFs if the IP
+> addresses happen to overlap.
 > 
-> This appears to work when distinguishing between different VRFs but not
-> between non-VRF and VRF connections. In particular:
-> 
->  * tcp_md5_do_lookup_exact will match a non-vrf key against a vrf key.
-> This means that adding a key with l3index != 0 after a key with l3index
-> == 0 will cause the earlier key to be deleted. Both keys can be present
-> if the non-vrf key is added later.
->  * _tcp_md5_do_lookup can match a non-vrf key before a vrf key. This
-> casues failures if the passwords differ.
-> 
-> Fix this by making tcp_md5_do_lookup_exact perform an actual exact
-> comparison on l3index and by making  __tcp_md5_do_lookup perfer
-> vrf-bound keys above other considerations like prefixlen.
-> 
-> Fixes: dea53bb80e07 ("tcp: Add l3index to tcp_md5sig_key and md5 functions")
-> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
-> ---
->  net/ipv4/tcp_ipv4.c | 19 ++++++++++++++++---
->  1 file changed, 16 insertions(+), 3 deletions(-)
-> 
+> So far the combination of TCP_MD5SIG_IFINDEX with tcpm_ifindex == 0
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
-
-
+TCP_MD5SIG_IFINDEX does not exist in net-next and it was not added by
+patch 1 or this patch.
