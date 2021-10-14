@@ -2,120 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1BE742D5A4
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 11:05:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9CB942D5AB
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 11:08:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229970AbhJNJH3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 05:07:29 -0400
-Received: from mail-sn1anam02on2106.outbound.protection.outlook.com ([40.107.96.106]:19134
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
+        id S229967AbhJNJKp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 05:10:45 -0400
+Received: from mail-mw2nam12on2064.outbound.protection.outlook.com ([40.107.244.64]:43991
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229994AbhJNJH1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Oct 2021 05:07:27 -0400
+        id S229551AbhJNJKo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Oct 2021 05:10:44 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bK5B5cB07r/HIIq70D6tftpV2EoAnNMTW8RjueQ0DBtJm955dV51gkVXRKaYPf1j6ZG8ojGi0fNT5M1xrt4qsxFxWINKy6tl9USynvyYBOS5Ac7V0ZaImR+JUKFKMuOLEiUQQ8PQG5HAOGOs3SpgMN5yIIphr4LHiJdHzmYxVkne/c8sTBgextY/s6rvAJH6CdLRea3DluTcChVkXIlwbOWNSKyyl/E3eCJ8rCm0PnHePiY6D1XRkfhijzGJGXU3Miq/XuMj47xFJbug0fSmPfxEzzspZJJfN+nsSdzkLX80bO2YYxHy7j9doEl3dnbaiJOa/vQ6QplbuX80RVtB9g==
+ b=Za7iuN60Pv5h7ln8/ym7G1RVT8rDQkpLam+EyV+Q97tvENGQ5AJUw55lE5B8nl3kSZ2gzSc04qDbT1TmVJwfZLQVwd8X1/JOzPYUv+o16h+q69dE08voUgM8zyb2hM9oTG9WVd79bC/TYyegw2Yns5aOwpv5qZyb9W/yDHnC77SfqdbaLClNHSF/z8CSCK0N3NhKViOoAA09RIp9xLo6kMjAunOwflOXMLaxEggZMJ6Oo6IDFY5V9c6qd2C+hhY5AXSdNXMqFV8G4zLR5K6O6Fh/8DkmrWsyvX2SfWpE3jrJBCFT8N5cvh0QrvHQS5SWWkliCBMHGmXQunAodlIxHA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=s7Medaztcjg5jyOAFW8zFBsApUhR+KUfLquwfhFLF0c=;
- b=Ky8qZSkAXQvCvq3POf7HsLblGI5EpeyT0u+BYNSc17bYFoTYDJ6KU4YQdWDSrZwuTQq3x+f5xn2iGVfIOBPEZqqjlFbQ60Fz3uJYHYLfkLdpgSIMzmvF/+bWsYQuhyxAQJHu/lER2RglJ2UO3pQp8lZgZMpuA2GznYvmpXit79hj1iH9cbMMWWFe4TSxXTywEUyfr2yj1Sji4RSXoK3T2IFWQikqSIIXxmbATL1dDVZ3UkEdUVUlRZfxQKZ92UbZGqmkRJT4YxrWhUsmlZTC+zEJygBG77uC0j9uFtE552nZerOJ5Blb/W6knc9GCiMhi/hFpV0NPMb/a4DcZQTolQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ bh=LJy7VKXgtgD3G2QDSXPpk4vWJnG3p/DKX0If/EhyGyE=;
+ b=m0/OfHsuSIJnIP2MzAIxtDCFVkQnoxL+mCB8UyLfSd+nYqvcHKRKw5a9sB9KnoEBi3BW2APtwl6HLblEDuRZqk2fptmDd3Ieu8eRyI2/jeHOF3NqXpRpIx1VPjUthwJHvd0erHwwZoHcVU6TIc6ob5sBtk8L3PMKCs62q/CvM6MOrgbL52P3DKuwfksPAAYWuRY0ooHXLxMElWV0XIIiSXilmVsFExDDch0SWPMdoF2k7NgTJghpS09/0tLUQUDYdNSCwusUYTWFLc6r99WdE1FViO7np0TNkSyqTCCr8zGuoTgKK1umh95DQajmT8ik9HwDo9gnMQO7Q/cK7vgRSQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=nvidia.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=s7Medaztcjg5jyOAFW8zFBsApUhR+KUfLquwfhFLF0c=;
- b=GQU2Evorc035RERLXnSWsw+IUQezZ01wieu3KMMDi6tSofbV6Qr51xP4hdCP8EVJHVBgX+v0Zd8BdQ6kYUgFtYHAUpAjdeiqcHKsTsD1iYmoJpWwWyPIUylwu6rAnj9fm0DviVj47h+o7ILbsrAKY3gyOg700P5H6ZKRo8iMbx8=
-Authentication-Results: oracle.com; dkim=none (message not signed)
- header.d=none;oracle.com; dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB5379.namprd13.prod.outlook.com (2603:10b6:510:fd::12) with
+ bh=LJy7VKXgtgD3G2QDSXPpk4vWJnG3p/DKX0If/EhyGyE=;
+ b=Cx4jZhKnA2S4rtkLWng1VGnZiAdirf9OswhEmtLVrOQuwjto+8Uu+C4b9Obidlj6T7Y9NgK/1invJxSkEEi+LgAd3tN2XrBc523ohubbW9YiKsnXhfC5PX0PRgwZQZV0Gm4pZeAUbRjAWuGLHCnYWW5IjD13kDm8VNuksHeuIMmeD2TkutZ6hoWMFxIdg2Ax+tQA1cSX4HSNBf5vr0z6oKdnKVScn2X1wrSuRyfzfSr7hggLJigfkck34nIGtvnN4Kprb3VT8AAmiBoUtGpwK0OHkGrfLJOvic2+5uJsIt/qW9QGLcvXY4YX5TjDQlES3r1W0l/T5XJ7hak2fTZwjQ==
+Received: from MW4PR03CA0077.namprd03.prod.outlook.com (2603:10b6:303:b6::22)
+ by CH2PR12MB3688.namprd12.prod.outlook.com (2603:10b6:610:28::33) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.13; Thu, 14 Oct
- 2021 09:05:19 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::e1d9:64d0:cb4f:3e90]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::e1d9:64d0:cb4f:3e90%7]) with mapi id 15.20.4608.016; Thu, 14 Oct 2021
- 09:05:19 +0000
-Date:   Thu, 14 Oct 2021 11:05:13 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Grzegorz Nitka <grzegorz.nitka@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Wojciech Drewek <wojciech.drewek@intel.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net-next] ice: fix an error code in ice_ena_vfs()
-Message-ID: <20211014090510.GA20127@corigine.com>
-References: <20211013080012.GB6010@kili>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211013080012.GB6010@kili>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: AM0PR04CA0088.eurprd04.prod.outlook.com
- (2603:10a6:208:be::29) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.16; Thu, 14 Oct
+ 2021 09:08:38 +0000
+Received: from CO1NAM11FT066.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b6:cafe::11) by MW4PR03CA0077.outlook.office365.com
+ (2603:10b6:303:b6::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.14 via Frontend
+ Transport; Thu, 14 Oct 2021 09:08:37 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; google.com; dkim=none (message not signed)
+ header.d=none;google.com; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ CO1NAM11FT066.mail.protection.outlook.com (10.13.175.18) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4608.15 via Frontend Transport; Thu, 14 Oct 2021 09:08:37 +0000
+Received: from [172.27.11.74] (172.20.187.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 14 Oct
+ 2021 09:08:31 +0000
+Subject: Re: [PATCH V1 mlx5-next 01/13] PCI/IOV: Provide internal VF index
+To:     Bjorn Helgaas <helgaas@kernel.org>
+CC:     <alex.williamson@redhat.com>, <bhelgaas@google.com>,
+        <jgg@nvidia.com>, <saeedm@nvidia.com>, <linux-pci@vger.kernel.org>,
+        <kvm@vger.kernel.org>, <netdev@vger.kernel.org>, <kuba@kernel.org>,
+        <leonro@nvidia.com>, <kwankhede@nvidia.com>,
+        <mgurtovoy@nvidia.com>, <maorg@nvidia.com>
+References: <20211013181426.GA1906116@bhelgaas>
+From:   Yishai Hadas <yishaih@nvidia.com>
+Message-ID: <68d1d356-3a3e-7254-6127-297fc48cf197@nvidia.com>
+Date:   Thu, 14 Oct 2021 12:08:28 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Received: from corigine.com (2001:982:756:703:d63d:7eff:fe99:ac9d) by AM0PR04CA0088.eurprd04.prod.outlook.com (2603:10a6:208:be::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.15 via Frontend Transport; Thu, 14 Oct 2021 09:05:17 +0000
+In-Reply-To: <20211013181426.GA1906116@bhelgaas>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [172.20.187.6]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 83146fec-b6b9-4a91-eeb3-08d98ef1bec2
-X-MS-TrafficTypeDiagnostic: PH0PR13MB5379:
-X-Microsoft-Antispam-PRVS: <PH0PR13MB537972F83429C34ABBFFD932E8B89@PH0PR13MB5379.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:328;
+X-MS-Office365-Filtering-Correlation-Id: aa27df6f-7034-4f29-9612-08d98ef2353f
+X-MS-TrafficTypeDiagnostic: CH2PR12MB3688:
+X-Microsoft-Antispam-PRVS: <CH2PR12MB3688B683DE3512EE6D4731FBC3B89@CH2PR12MB3688.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +/FL7SccpbnawwWMVd94yXC/aIcXEO+Tku6219EiPH9ro/8DzWrBtatwdEtRTbQVQJNJZgrhViJMRpAVzSzl1bS4t2eaawzxQ8uRuOh/gkvDqV1ziO+Cr2rnu7hJyRVrQOplJxyGGy5WyHfcs6KKAXw6XdZyuGLl07Hwhr2VU8JCikwPL9GOhZf3EiHIn5AqEO/qNdUlX6ogk7cuzWsYCobZQKG+8D8Ip0YkcGUhXF2KovI/zqUTM/5zp/5b/29JxANbAR5VhvLx62L37M2mTsLM068ynZCpGHBg7XsMUHho5q1KXKnW7iQbOKx2jeNWOYUF5YrEohWwdQbD9LCbdZ2HRoFUuuEnsOUoYadRTC7YdvfX9fkdi2OKbhgt7VMpg0H16bCK9FgfRwYgnTH4RrqBhpkTyGSL6GUC6iFJTe7AS1ECxWEMtFjMq+ZYIHeDC15u3kGWyyOmVr5dZmKExv0Flj63zTQSprzy4RB8amIZ62sVXRR7WwLwEDIkZDIpvOcpna0Gljj5LPXo8o8KNG0w/u5O4QKpA/Ehg27rO+n60uTAKs1e9hKWghbgjtArDMp7KZcKhOlPOQdasaaksjsSrar0V62Fa9llTPZnHTXs2FY7QfU5T3L5wKtqQxqhjtn72YZLb2nv0f2mZ3NByQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(376002)(346002)(39830400003)(366004)(136003)(5660300002)(2616005)(38100700002)(66946007)(66476007)(66556008)(8676002)(7416002)(55016002)(1076003)(8936002)(508600001)(36756003)(8886007)(7696005)(6666004)(86362001)(2906002)(44832011)(316002)(52116002)(186003)(4326008)(33656002)(4744005)(54906003)(6916009);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UShO+2+VP+9ogvD9NOBoVG7U9C7wPHgldQ1C267BbO90dZqhRveibQ8xZaEG?=
- =?us-ascii?Q?kbUkEqBdtc1kWxi33gvwjSLNuvngrU41XZp/R+K2krMnWyJzRQIbJvTbNtjf?=
- =?us-ascii?Q?2lw5n+GPyuuuwlFYizl4tPXnamAvXELn3Q2VACH7RtsHKbllZ0TOYPsdFPM9?=
- =?us-ascii?Q?OTEhs6+gtOSYZMTZ54vWgQNWioAYV/qE3aPWA79u+kqQVzKXXzHffssTq2qS?=
- =?us-ascii?Q?LrYXqL9dh6SNIWilDwi7E5UzmWm4z+ouiLVY1IPxUMoFivZkr2TmCMdjMaZa?=
- =?us-ascii?Q?1Tr9OVX2oP8NsSHZJzQup5ynfVnx8U/cpzqGinwMsqPcSB8dZxPrit+jhSzs?=
- =?us-ascii?Q?x7PGSyc2P6nJqocVg9cQWP3MhHh820GOMFGNAf+STf3oIQXt9Hnp2cD5x7L2?=
- =?us-ascii?Q?J9She9DGvu3tYU9NK/iVZJ5CEvaKS83bqrakyn8a2bU57RgvvrhhEPqeW/vQ?=
- =?us-ascii?Q?MyoOk3L81xxIAr811K9SBcTBoZZUE9wIXL4ecGJeNlDVs/vvSix1apKB5QOq?=
- =?us-ascii?Q?5dmETR2c/2TeIUCTu04qArTARBZtIYCvinPyXspKbhIPDd5RO8qrg2OgCBpL?=
- =?us-ascii?Q?ysRF33hAt5DoyA38HR3OCaONoxux2e8NjXikjPUh3e7+stRfPkG1nJi1tbnh?=
- =?us-ascii?Q?GV4K5QliYR/vllctGo4EyOMjzIMz1vN7+KDNzGX4pOaJwd2WnU2/1OKkafmw?=
- =?us-ascii?Q?WoP9dUKH1uQdo5OXz9OiZD54Vy4EOzgdtU4Wc2Gsr+hGap/XpAChORb+1TI2?=
- =?us-ascii?Q?KrHjZQS/4dpKW0diWiFC7bjeMszK78H8Or82KGoLm5tgvav/CvzRyFq65s/9?=
- =?us-ascii?Q?KK0aZiqLity7QjxAYUj3bVELmTCRiughPOrGuA69ZPOr3TLCMoSDscPCQuU8?=
- =?us-ascii?Q?Zau0Y36LOFiiqvBS7Q/7JJxNcOqtO4JcSdCy8vC4B9GaJUM9fAJxsvC+CTv4?=
- =?us-ascii?Q?dDxStHD9fS2oPePgpguLJCaRjn9NhCbqAVBAh/3Z7J4g4D0s60S8mlrZu87Q?=
- =?us-ascii?Q?y9d0DE4Hu49atDFwJtWXbcZ8BI0VygH6QW+VyHB0Eu3o0VLhrIs6EUxmNwIA?=
- =?us-ascii?Q?mOgxs70HZuV4SC/IEsTwHvHToR3n7w5xdHcSbfmQPVEe+bWokEfLtQWYrs+b?=
- =?us-ascii?Q?pEwqR3MIq49upJ9y+ZanBqqHV87QQeFu6Xn+akpEzGequXzh7zcBUftc+6xh?=
- =?us-ascii?Q?udpoSXWr7b1AUF1w5BHR6Y6dRWBbPhkH8NuU1i1g7TY0WW8p4rUXSzYh6J3O?=
- =?us-ascii?Q?NCJxCVtlW/33m6TjqOERIX/V22R7Qken8rGKegGX66cLE31MuqypEBsEIJb0?=
- =?us-ascii?Q?8lb66rufA8YRG87TQkB2PR6XolVjaskqRFzrAXcoUjAaFVO5GZBpKWvji17r?=
- =?us-ascii?Q?XsFPFkIYMOlHlMYC80CdNhFo/vvF?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 83146fec-b6b9-4a91-eeb3-08d98ef1bec2
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Oct 2021 09:05:18.9300
+X-Microsoft-Antispam-Message-Info: kWKHOs3iGcC/N7uyeGgWiC9Eu1fAGEso30wqoeXm9TEjFW6lOQ+iI0qPPkdqv+4iKIIpRMoy/Gnc1GufyxabN6JlfiWB6+jfQ+iT0TgCrHjGX9f5OppN/wt9vCmcltUxwHa73QXSYJUamDtkjsbX1EGdubGOKXbOMkHw2dNZJk+8+C5o7XsY3VRC9+rZNH229+1YPnaizS5Ff0ndYZrvpuzu3qSB6Z+OJVnh1qQGS/trwD/y+C31RvofdsElW/yN/rPr47ydRAYX31sekDXbZO5KRLCZ+iioOF/s06HCAzSBOp1M9X8Bk5o1cf9fv3LULUrNLzpf30Dwp5N2vM7IvcAfArpaz+uXpH8x7TVdxeumH7Qtdwq8Jz6wABLaYN+fsEZu/PTTx3cScDiO+TIQ0oPKXeVKPCJL8GuxECAHKgUfKtgS978iVEfLTITHpd7JUfxfIqOzQy76BL+1D1CG15kzyjQCqqrPQSul3ZU3hOsTuouNcr28WCidiOF7BDIb3mrHodEJwWBq0e0yUHP8LfY/nYvrTXOHjAfqcrMam+aQSnXa0f03NA4lJYiLAmJFi+8xxxT0MNNKQHcb/NLQeI6A8OTPtrE5ywzfggczgqXe1EyUlmnWUFkgjlRpOgC7xcVsl7ydVw+oD4Sl9G4+Yar+8dRzBcEA8Xwn4zUFg61kUdWzc7vT/KaMx4UHlWtq7Kq7BlMwmjp/XsNjyA6evjplsx647tFvbgKk9B0F5DMM7kQRId80xZXUxrCEuHR8NeQ9OZUU+HUKxelOty7t52JSb3gC9Zrhn1iwLyWgW6TPV3V7rn8tf716TbhIjwoy
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(2616005)(4326008)(53546011)(26005)(426003)(6916009)(336012)(47076005)(966005)(31696002)(8936002)(508600001)(82310400003)(83380400001)(70586007)(70206006)(8676002)(36756003)(6666004)(54906003)(5660300002)(2906002)(316002)(86362001)(36860700001)(186003)(16526019)(107886003)(31686004)(16576012)(7636003)(356005)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Oct 2021 09:08:37.5132
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mD0iQj1jbxy9PE24+pZUvCD8LJs8rbLw7BHEiBknmX+Dx1gRbhVZC3lbcjWcef5zy5wDwnURPFxveGHF/GlAfELouUKriKoK+9i30G7vAc8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB5379
+X-MS-Exchange-CrossTenant-Network-Message-Id: aa27df6f-7034-4f29-9612-08d98ef2353f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT066.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB3688
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 13, 2021 at 11:00:12AM +0300, Dan Carpenter wrote:
-> Return the error code if ice_eswitch_configure() fails.  Don't return
-> success.
-> 
-> Fixes: 1c54c839935b ("ice: enable/disable switchdev when managing VFs")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+On 10/13/2021 9:14 PM, Bjorn Helgaas wrote:
+> On Wed, Oct 13, 2021 at 12:46:55PM +0300, Yishai Hadas wrote:
+>> From: Jason Gunthorpe <jgg@nvidia.com>
+>>
+>> The PCI core uses the VF index internally, often called the vf_id,
+>> during the setup of the VF, eg pci_iov_add_virtfn().
+>>
+>> This index is needed for device drivers that implement live migration
+>> for their internal operations that configure/control their VFs.
+>>
+>> Specifically, mlx5_vfio_pci driver that is introduced in coming patches
+>> from this series needs it and not the bus/device/function which is
+>> exposed today.
+>>
+>> Add pci_iov_vf_id() which computes the vf_id by reversing the math that
+>> was used to create the bus/device/function.
+>>
+>> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+>> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+>> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> I already acked this:
+>
+>    https://lore.kernel.org/r/20210922215930.GA231505@bhelgaas
+>
+> Saves me time if you carry the ack so I don't have to look at this
+> again.  But since I *am* looking at it again, I think it's nice if the
+> subject line includes the actual interface you're adding, e.g.,
+>
+>    PCI/IOV: Add pci_iov_vf_id() to get VF index
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+
+Sure, will change as part of V2 and add your Acked-by.
+
+>> ---
+>>   drivers/pci/iov.c   | 14 ++++++++++++++
+>>   include/linux/pci.h |  8 +++++++-
+>>   2 files changed, 21 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
+>> index dafdc652fcd0..e7751fa3fe0b 100644
+>> --- a/drivers/pci/iov.c
+>> +++ b/drivers/pci/iov.c
+>> @@ -33,6 +33,20 @@ int pci_iov_virtfn_devfn(struct pci_dev *dev, int vf_id)
+>>   }
+>>   EXPORT_SYMBOL_GPL(pci_iov_virtfn_devfn);
+>>   
+>> +int pci_iov_vf_id(struct pci_dev *dev)
+>> +{
+>> +	struct pci_dev *pf;
+>> +
+>> +	if (!dev->is_virtfn)
+>> +		return -EINVAL;
+>> +
+>> +	pf = pci_physfn(dev);
+>> +	return (((dev->bus->number << 8) + dev->devfn) -
+>> +		((pf->bus->number << 8) + pf->devfn + pf->sriov->offset)) /
+>> +	       pf->sriov->stride;
+>> +}
+>> +EXPORT_SYMBOL_GPL(pci_iov_vf_id);
+>> +
+>>   /*
+>>    * Per SR-IOV spec sec 3.3.10 and 3.3.11, First VF Offset and VF Stride may
+>>    * change when NumVFs changes.
+>> diff --git a/include/linux/pci.h b/include/linux/pci.h
+>> index cd8aa6fce204..2337512e67f0 100644
+>> --- a/include/linux/pci.h
+>> +++ b/include/linux/pci.h
+>> @@ -2153,7 +2153,7 @@ void __iomem *pci_ioremap_wc_bar(struct pci_dev *pdev, int bar);
+>>   #ifdef CONFIG_PCI_IOV
+>>   int pci_iov_virtfn_bus(struct pci_dev *dev, int id);
+>>   int pci_iov_virtfn_devfn(struct pci_dev *dev, int id);
+>> -
+>> +int pci_iov_vf_id(struct pci_dev *dev);
+>>   int pci_enable_sriov(struct pci_dev *dev, int nr_virtfn);
+>>   void pci_disable_sriov(struct pci_dev *dev);
+>>   
+>> @@ -2181,6 +2181,12 @@ static inline int pci_iov_virtfn_devfn(struct pci_dev *dev, int id)
+>>   {
+>>   	return -ENOSYS;
+>>   }
+>> +
+>> +static inline int pci_iov_vf_id(struct pci_dev *dev)
+>> +{
+>> +	return -ENOSYS;
+>> +}
+>> +
+>>   static inline int pci_enable_sriov(struct pci_dev *dev, int nr_virtfn)
+>>   { return -ENODEV; }
+>>   
+>> -- 
+>> 2.18.1
+>>
+
