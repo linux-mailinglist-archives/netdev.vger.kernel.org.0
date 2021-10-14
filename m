@@ -2,105 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47F0642E2FB
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 22:57:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D312942E2F1
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 22:57:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232563AbhJNU7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 16:59:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44024 "EHLO
+        id S232323AbhJNU7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 16:59:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232538AbhJNU7T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 16:59:19 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7089FC061570;
-        Thu, 14 Oct 2021 13:57:14 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id q12so3707653pgq.11;
-        Thu, 14 Oct 2021 13:57:14 -0700 (PDT)
+        with ESMTP id S232333AbhJNU7D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 16:59:03 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A468BC061753
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 13:56:58 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id x1so5344553iof.7
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 13:56:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=uRw8ev8Sq3xSNTxh3mi2/kC9mLBG1rrnJ2qBvZCOQlI=;
-        b=fGeY8VXguArczrDK6eEIWds8igwxMjy6wHQwQId1RlXRgG73cvO5DpUcVuwms7xGEk
-         pSCAU/dygEUJGiTajPMK+bSJJNvTtsNJl9mjhnNOukW0zv++TmCv/ERQDGGQBIBc65i8
-         HnlpN7KXpG25R+keTsKu2AsaEyIqFghr8DzJfghMvRJSqp0kNJoXqZ3TkRjyC6ldKQ8h
-         2L09S/OUp0dk9lBzweAbot1a+d0EtZr9NVTR+llOWptpoZxRhtLUE3BmCTO3BFv15zsZ
-         axZCfsBa+tLsCigxm82eac3LZWE0wJtjjSVhBiKpjclipCaSscnasPuFC5+c4y6VsuxZ
-         5wIQ==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=ZtbtiDfzDukBLZYnOHrCeVnkOoquuLFd/q6NL5wXjzg=;
+        b=WXORnutHTSM5fUR4CSaJtU1mTTWd3HOQAf5M7KIKKNsIp+me9vS2r2uK7VXsUs6dtz
+         fJDJn91LFODXGjiucQ4U9n9EON1NC7uIZuPJ4gpYKmwTvSHPuwL4Tt0BZgb748uu08kV
+         BcTGYEy/Ef+eq7Em0spZJ9661fwgSgQFDkPUsFq2tvX+g7UDoXNcXaNPJkpCXh1BtzkA
+         bCZ8lCxK3xxTCNfn+ZgSOhEogSxWpOh+ejKFioI7b183l6X4Drbx1OqQXR0sP0qRYZsx
+         teKjPP6CzZ3QjYuzKw2cFsan01jsUE3ifkRePcyx1anc48azHWoJoRUWe0yyF4W9xrrQ
+         Rwkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=uRw8ev8Sq3xSNTxh3mi2/kC9mLBG1rrnJ2qBvZCOQlI=;
-        b=JpQeUDsG+JXwMZnzGCtGtxrIWiHufZ3VOFk5gWhm0XaqmuyEeSf1Cr/c9ROsCPPYi2
-         4b4DEopnQa+SMN9/HLVeZLgm0VKqXmJBQa2Cz5/dIM385iGxtTYFidl6u7kPhx0RY87M
-         5VYlw+E/B6LhUIzHPHFzndtvCNZg6vipzNGrsCs/6keMFd276UE+P3dRY8IvrDeIZ4Yt
-         QCm+d+FSbF9ytFizxQQs7MadIJGkYBvp2dIGLwF/3Bqjdti2gbYVCCPAiDpWS7y14hFm
-         kJpoHWZMjZeKo5xY+UjSoMGnc1joD8//gTqWgvNds1TZtr9ZTF2L6ysJxtUfT9XHgrSD
-         N9Og==
-X-Gm-Message-State: AOAM530SJSVXTRapUkYvgEc75ibkzzT+7OIc6jR+LwkU6GMCiUAY7URS
-        g4VJ2r3kXsquzKORrf1Knb/630qcVuE=
-X-Google-Smtp-Source: ABdhPJwHKzCnb2WqMUAX4VVTcZp6gCMNTnCuMtF3L2DJYquoOBS2GOyOg4Wwm5GTmVRFmj+Dd6Nulw==
-X-Received: by 2002:a05:6a00:a94:b0:44c:ecb2:6018 with SMTP id b20-20020a056a000a9400b0044cecb26018mr7360586pfl.57.1634245033833;
-        Thu, 14 Oct 2021 13:57:13 -0700 (PDT)
-Received: from localhost ([2405:201:6014:d058:a28d:3909:6ed5:29e7])
-        by smtp.gmail.com with ESMTPSA id i13sm3202574pgf.77.2021.10.14.13.57.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Oct 2021 13:57:13 -0700 (PDT)
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH bpf-next v3 8/8] selftests/bpf: Fix memory leak in test_ima
-Date:   Fri, 15 Oct 2021 02:26:44 +0530
-Message-Id: <20211014205644.1837280-9-memxor@gmail.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211014205644.1837280-1-memxor@gmail.com>
-References: <20211014205644.1837280-1-memxor@gmail.com>
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=ZtbtiDfzDukBLZYnOHrCeVnkOoquuLFd/q6NL5wXjzg=;
+        b=TB6iI8KVYjxyowQmeROPLYZJ4xZK0h7vhphOp83mp7WlxyK/pIxn+/fVZrJp2I7HgS
+         CTMZerJ2uPFR2zn5azIp9sXj9wRxAsWgaRnMOPiF6MXz8aJzvfbwPJaAWYP6q8BsBEGF
+         b9rgMSIF6reGKz8PfCJpoBTvTtRHqlxdLGs91rj0m0IJ0fCjVTtAttgF/rXIUppSf08G
+         Ezm4AHnsH+J5rgPQAkgPn+usXQzYU+n3BJVOGp9vPssDGClJs3DWt3qugLZUNLOlTzLU
+         7QNqzl1sFkaFsG3RBHLkojC2T6c5zr769WQofFdOykqb2IiF1uxdLgsippa6GlKMtvNV
+         m4lA==
+X-Gm-Message-State: AOAM530WVOANq87HSt3YMLlOm4iFTn8wHiCqh4rBCAmtB65aoyV6gKHZ
+        UziA7BcBLuAe6h9TIftnc4AcywkJiNY06aWFbzc=
+X-Google-Smtp-Source: ABdhPJyJ+38UuwzN/FyyyT2RyZCTVa99OrAZE02oowwkeatsQPTGowAJm0eZycV+qCusYcpuuAPH75zz2dPdqOvPTSg=
+X-Received: by 2002:a6b:d210:: with SMTP id q16mr923073iob.187.1634245017887;
+ Thu, 14 Oct 2021 13:56:57 -0700 (PDT)
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1208; h=from:subject; bh=l4THhEd2yt0B5MEgzUfB0eWsbv0o9TbBjS4jiWJ5iQA=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhaJk/wfaAqgynGxNWS0LoOrX257+duVJAwbNsaJ+G qycKr7KJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYWiZPwAKCRBM4MiGSL8RyhgcEA Cjq0DMBUzh/Jk5TARd8rR5hf2L7f5hBLwvjcGmM6HFhss1ws3vvrE/ruP65vTTU1KxyYcl9wN9ATMI qLJzBaU7lKMLUI1DdAH8uX73CX+fcu7ohNJ9OxVgt3gaizsFRVUDLsnKCudifUDzIyKe/sUTEQmfz+ oU6ony9p2OktkQ2L+MDGyctR6LiwsSD27OsTovNW+WTba43nnpbrGbuobSXOaU+hyaeuX/0qG2GTTK LsI4W8937nq6H/ua+J02L6Z+u8Do4nM2BJj3C4Vj26sBa9SQGXVPYZpSD/vPJdLmizjeS05jqnC3hX 5H6QjdL0Cgsdi9EqEMJlCLF8h1mwdGzyIK44kQDogrmDSiOL9WxCSWTyQBrMGIUPMxOqrS7a+D4n0/ 6rruF4l5sfxzwN+jziLpWKUV3YE6rOPOqq0uHCVN7FNk1+ma8RBjJ6H/f93LyTDdc5XoayM47+qBEK z5x7rBryjcbHXeW/2GJb/68AIv35s9t/93lWf5Lb14oZ1lQ2e4Hv38bo8svvAMgrPMRYbb5ak/U3k1 sZJxlygCV391iDCkBB/+lvU+QCz+c47MO5MfpILV/W/WoQprK0HtLEI011NQOEHSe7iC3YvE5/9EhE GR/qSpdpXUq5kv7CELe5nW1PM5aV4/EsYJg5YeKtjEO/jdvnVQhC6XchZzBg==
-X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
-Content-Transfer-Encoding: 8bit
+Received: by 2002:ac0:da04:0:0:0:0:0 with HTTP; Thu, 14 Oct 2021 13:56:57
+ -0700 (PDT)
+Reply-To: compaorekone34@gmail.com
+From:   kone compaore <abbttnb02@gmail.com>
+Date:   Thu, 14 Oct 2021 13:56:57 -0700
+Message-ID: <CAPvj-=EYDuWswe8SM0d+t+kU3=5h8BxF5m1cLKmVnPymPKTkEA@mail.gmail.com>
+Subject: Greetings from kone
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The allocated ring buffer is never freed, do so in the cleanup path.
-
-Fixes: f446b570ac7e ("bpf/selftests: Update the IMA test to use BPF ring buffer")
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
-Acked-by: Song Liu <songliubraving@fb.com>
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
----
- tools/testing/selftests/bpf/prog_tests/test_ima.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/test_ima.c b/tools/testing/selftests/bpf/prog_tests/test_ima.c
-index 0252f61d611a..97d8a6f84f4a 100644
---- a/tools/testing/selftests/bpf/prog_tests/test_ima.c
-+++ b/tools/testing/selftests/bpf/prog_tests/test_ima.c
-@@ -43,7 +43,7 @@ static int process_sample(void *ctx, void *data, size_t len)
- void test_test_ima(void)
- {
- 	char measured_dir_template[] = "/tmp/ima_measuredXXXXXX";
--	struct ring_buffer *ringbuf;
-+	struct ring_buffer *ringbuf = NULL;
- 	const char *measured_dir;
- 	char cmd[256];
- 
-@@ -85,5 +85,6 @@ void test_test_ima(void)
- 	err = system(cmd);
- 	CHECK(err, "failed to run command", "%s, errno = %d\n", cmd, errno);
- close_prog:
-+	ring_buffer__free(ringbuf);
- 	ima__destroy(skel);
- }
 -- 
-2.33.0
+Greetings to you and your family.
 
+With all due respect I got your details from an online directory and
+having been motivated by your personal status, I decided to approach
+you  I am Mrs. Assana Ibrahim; I have decided to donate what I have to
+you / Motherless babies/Less privileged/Widows' because I am dying and
+diagnosed for cancer for about 2 years ago. I have been touched by God
+Almighty to donate from what I have inherited from my late husband to
+you for good work of God Almighty. I have asked Almighty God to
+forgive me and believe he has, because he is a Merciful God I will be
+going in for an operation surgery soon.
+
+I decided to will/donate the sum of ($ 8.1 million DOLLARS) to you for
+the good work of God Almighty, and also to help the motherless and
+less privilege and also forth assistance of the widows. At the moment
+I cannot take any telephone calls right now due to the fact that my
+relatives (that have squandered the funds gave them for this purpose
+before) are around me and my health status also. I have adjusted my
+will and my lawyer is aware.
+
+I wish you all the best and May the good Lord bless you abundantly,
+and please use the funds judiciously and always extend the good work
+to others. As soon as you get back to me, I shall give you info on
+what I need from you, then you will contact the bank and tell them I
+have willed those properties to you by quoting my personal file
+routing and account information. And I have also notified the bank
+that I am willing that properties to you for a good, effective and
+prudent work. I know I don't know you but I have been directed to do
+this by God Almighty.
+
+I Have all my Hospital document which i can send to you as prove to
+what am tell you and my seriousness to this. If you are interested in
+carrying out this task, get back to me for more details on this noble
+project of mine.
+
+Yours Faithfully,
+Mrs. Assana Ibrahim
