@@ -2,96 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D368A42E166
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 20:35:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 592C642E180
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 20:41:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233936AbhJNShG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 14:37:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40076 "EHLO
+        id S233975AbhJNSnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 14:43:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231531AbhJNShG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 14:37:06 -0400
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27EF4C061570
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 11:35:01 -0700 (PDT)
-Received: by mail-il1-x12b.google.com with SMTP id k3so4545666ilu.2
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 11:35:01 -0700 (PDT)
+        with ESMTP id S229610AbhJNSnQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 14:43:16 -0400
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2E4C061570
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 11:41:11 -0700 (PDT)
+Received: by mail-il1-x130.google.com with SMTP id s3so4614447ild.0
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 11:41:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=FwUeMoPWL9inNO+LURXxh7KICLo2YBfVK8NCY8LIn4k=;
-        b=QcOAj2KqZG0WtqX7TSaLY+QPA5IlMFMlBBEhjaud1tvF4a8x/TQTdwwziAQrKVJWnD
-         /5i+D9gCFhoMlvkizoc7iYdaR407zHUrT3wZ8NyTP+f1lS8CfmZ7UcMcLHsd5OAkRw5T
-         g5yzZGZSrcd4ir9F0+vIKPed30GUPBNCjVJlfNjjrxPgknD9LJGSFX3gUSBaOtO/olAW
-         CEKEX7d9ZI+1WQi7BrB5xaMN5AUdNB0ibjtxKPmXeeS8XM+XJLc3Fq0VpE6rsfYx7zOd
-         DqV4K0UXrKx2m+feDbagpisrsl2m0+JZ9ABC4VNhqG/786FO8lkMXKAhb7yujAnfPEGU
-         19Pg==
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=0+I54Y0kBzlS+sPttMIRhZJO83USZ15pz3lII9HAt8k=;
+        b=HFmUVhmLxJHJwx8RCKinTmzUJer0MeAbzt9rSrnBbQZIdBK3rcFRJl0aehO02ARd1J
+         6dyhDqcf4y6rBjOHH9HJ58V2vxpbS8SdlztaXFLlDnjjVmXEHKOso/trER+e7dXx1Wat
+         bKJfMa++LXsacx4qxyNE6btLepHcNrrnR0C7m0SefGRMjbKVpGeVGL5NAnv2d1GZumQy
+         gR9CY0EmQUrCIs2sdFWtT8YJ5cJ1jvIjdp4sHDU4xvGPH9BelN8sJanbCtTVRHSDmfFr
+         RXigrZjWTekX9uUj9J6FVNmunOwn8kV+ojwTkPYR8xcWsn1u2qSG8cpIpXzmEFPRbsMH
+         Y1Sw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=FwUeMoPWL9inNO+LURXxh7KICLo2YBfVK8NCY8LIn4k=;
-        b=CqIieyuC1nHJbED9ONlj1wdkcsztRXJwNX+Rs0k3Xm+9W8KP722Xxc1c5VBhIKLJfe
-         gnfORiINT9IxQXgwI9qvGuq/WtGn29eHuYNehCWRAfG7HnKU8Ot3SDC6KNZGSkSfQdtg
-         klohYAmf9grNXNAuWG45GlZnTrLFEZTLkN7g5stzHCdc+yXyTiJeowuzMWcbvZjnn2JG
-         oW5abW+9BiNUQ0Z5apEJ6jZK0ENvYN3jV/8NTBnhCcf4zaIppNmHD3PcqNgERRSw9MBY
-         OZUba0LoSPSKIdIHxUMF0+NgB2+LnET3BS1zJ5EVF0SJNr0+xXyllgOgG9CZ5k03DDg2
-         ANgA==
-X-Gm-Message-State: AOAM533gzG7nrs6puebe4VWrKC1rQUE167Ya6WLOAT+dTMg484S1AWKA
-        h/5bpwahJNy8IZ84kPTTx3P50DgRLwavdw==
-X-Google-Smtp-Source: ABdhPJxzjkdn2XZ4mWip6AtjKaQbVAhHPobDxHDoTUJdocZZCe3z4f+GTE540pdgqUidUjIrt2NjmQ==
-X-Received: by 2002:a05:6e02:1a05:: with SMTP id s5mr445958ild.303.1634236500524;
-        Thu, 14 Oct 2021 11:35:00 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.34])
-        by smtp.googlemail.com with ESMTPSA id e14sm1501162ioe.37.2021.10.14.11.35.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Oct 2021 11:35:00 -0700 (PDT)
-Subject: Re: [PATCH 3/4] doc: networking: document arp_evict_nocarrier
-To:     James Prestwood <prestwoj@gmail.com>, netdev@vger.kernel.org
-References: <20211013222710.4162634-1-prestwoj@gmail.com>
- <20211013222710.4162634-3-prestwoj@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <3ab4e882-3778-6711-7c43-c1eebdb340c0@gmail.com>
-Date:   Thu, 14 Oct 2021 12:34:59 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=0+I54Y0kBzlS+sPttMIRhZJO83USZ15pz3lII9HAt8k=;
+        b=D6u85N8c0JZWlX98ltMsMb2EVihIKIHIi3PUujba2J4pVOBRDL4uDH4/FEpLi6Yo6t
+         hDmGQJ/wmKsw/GNfy0UShwyseMxMQrMKTy5iZwPWlCGuV5vbO2O6SFD4iWD2NWQvYhlp
+         D8sMLe8TBYeGVVmrQFgz93WfdN2nb/eWXM7sdAAztr8V5fs93903Ldir85YiJVH4INfI
+         ZZWT9of0SNcENHl6UIzyFC1/jc7BR5sABSe/mE3LbdwNu3H4JoHra/U7W3juprs+QDAh
+         tfqlpSaK5Pn3EEO554oeE5DRfRTifl9Y0TlbZaO4Wh75xyHA7MYV+wsG15NurKEZihly
+         /k/A==
+X-Gm-Message-State: AOAM533hNMr1iCstSQ8SDAFOY9/NbnR+xiHdUbG52lD/q6L8dlZBmPVV
+        v8meq/ZD3+55RWdigZNClMm9XsFUk6fPkX0aBMk=
+X-Google-Smtp-Source: ABdhPJx8sLznRuZxE9J30VAohoj1qE0DN4xumeqvvBjkDKFg0VIMtYzCfY8dgyeFmLArUMDuG1ZA1KogcVYVxBdM6vA=
+X-Received: by 2002:a05:6e02:668:: with SMTP id l8mr479844ilt.134.1634236870555;
+ Thu, 14 Oct 2021 11:41:10 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20211013222710.4162634-3-prestwoj@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a5d:8718:0:0:0:0:0 with HTTP; Thu, 14 Oct 2021 11:41:10
+ -0700 (PDT)
+Reply-To: robertandersonhappy1@gmail.com
+From:   robert <andersonrobertpass11@gmail.com>
+Date:   Thu, 14 Oct 2021 11:41:10 -0700
+Message-ID: <CAOga3ccM5fd2mXJ1Me-NMtsb_kuEsm-Cyae0pOYnd4aVzJOgMg@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/13/21 4:27 PM, James Prestwood wrote:
-> Signed-off-by: James Prestwood <prestwoj@gmail.com>
-> ---
->  Documentation/networking/ip-sysctl.rst | 9 +++++++++
->  1 file changed, 9 insertions(+)
-> 
-> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-> index c2ecc9894fd0..174d9d3ee5c2 100644
-> --- a/Documentation/networking/ip-sysctl.rst
-> +++ b/Documentation/networking/ip-sysctl.rst
-> @@ -1565,6 +1565,15 @@ arp_accept - BOOLEAN
->  	gratuitous arp frame, the arp table will be updated regardless
->  	if this setting is on or off.
->  
-> +arp_evict_nocarrier - BOOLEAN
-> +	Clears the ARP cache on NOCARRIER events. This option is important for
-> +	wireless devices where the ARP cache should not be cleared when roaming
-> +	between access points on the same network. In most cases this should
-> +	remain as the default (1).
-> +
-> +	- 1 - (default): Clear the ARP cache on NOCARRIER events
-> +	- 0 - Do not clear ARP cache on NOCARRIER events
-> +
->  mcast_solicit - INTEGER
->  	The maximum number of multicast probes in INCOMPLETE state,
->  	when the associated hardware address is unknown.  Defaults
-> 
+Dear Friend,
 
-documentation can be added to the patch that adds the new sysctl
+How are you doing? I guess that you are fine and healthy. This is to inform
+you that I have concluded the transaction successfully. It has been a long
+time since our last communication. It was unfortunate that your partnership
+with me failed to complete the fund=E2=80=99s transfer. I guess it got to a=
+ time
+when there was so much pressure and confusion that you became less
+interested about the transaction.
+
+
+In any case, I=E2=80=99m happy to inform you about my success in getting th=
+e fund
+transferred under the co-operation of the new partner. I=E2=80=99m presentl=
+y in
+Venezuela on investment .However; i didn't forget your past effort and
+attempts to assist me in transferring the fund despite the fact that we
+couldn't reach a specific conclusion.
+
+In appreciation of your attempt to assist, I and my new partner reached a
+decision that you deserve to be compensated, this letter is therefore to
+inform you that I left a compensation of $350,000.00 in your name so that
+you will share the joy with me. I advise you to contact BTCI bank for the
+transfer of the $350,000.00. To avoid a long delay of the compensation fund
+transfer, I instructed BTCI bank to issue an international ATM visa card
+and send it to your home address via courier delivery Company.
+
+The bank contact information is stated below:
+
+Bank Name: BTCI Bank
+Email Address: btcbanktg478@gmail.com
+Address: 169, Boulevard du 13 janvier BP 363 Lom=C3=A9, Togo
+Contact person: Mr. Leonard Mathias
+
+Inform me as soon as you receive the ATM visa card from BTCI bank. I wish
+you success in all your endeavors.
+
+Best Regards
+Barrister   uchenna ilobi
