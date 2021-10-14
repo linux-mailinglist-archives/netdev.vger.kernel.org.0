@@ -2,137 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06C0D42D84A
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 13:36:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C65E42D834
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 13:31:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231159AbhJNLiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 07:38:11 -0400
-Received: from mail.thorsis.com ([92.198.35.195]:44701 "EHLO mail.thorsis.com"
+        id S230241AbhJNLdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 07:33:15 -0400
+Received: from mx1.tq-group.com ([93.104.207.81]:12537 "EHLO mx1.tq-group.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229984AbhJNLiK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Oct 2021 07:38:10 -0400
-X-Greylist: delayed 310 seconds by postgrey-1.27 at vger.kernel.org; Thu, 14 Oct 2021 07:38:09 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by mail.thorsis.com (Postfix) with ESMTP id 28F38DF2;
-        Thu, 14 Oct 2021 13:30:53 +0200 (CEST)
-X-Virus-Scanned: Debian amavisd-new at mail.thorsis.com
-Received: from mail.thorsis.com ([127.0.0.1])
-        by localhost (mail.thorsis.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id FKW-dOaehEgS; Thu, 14 Oct 2021 13:30:53 +0200 (CEST)
-Received: by mail.thorsis.com (Postfix, from userid 109)
-        id 3B27824F9; Thu, 14 Oct 2021 13:30:50 +0200 (CEST)
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NO_RECEIVED,
-        NO_RELAYS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-        version=3.4.2
-X-Spam-Report: * -1.9 BAYES_00 BODY: Bayes spam probability is 0 to 1%
-        *      [score: 0.0000]
-        * -0.0 NO_RELAYS Informational: message was not relayed via SMTP
-        *  0.0 URIBL_BLOCKED ADMINISTRATOR NOTICE: The query to URIBL was
-        *      blocked.  See
-        *      http://wiki.apache.org/spamassassin/DnsBlocklists#dnsbl-block
-        *      for more information.
-        *      [URIs: spinics.net]
-        * -0.0 NO_RECEIVED Informational: message has no Received headers
-Date:   Thu, 14 Oct 2021 13:30:39 +0200
-From:   Alexander Dahl <ada@thorsis.com>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     Pavel Machek <pavel@ucw.cz>, devicetree@vger.kernel.org,
-        linux-leds@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        robh+dt@kernel.org, Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 2/3] dt-bindings: leds: Add `excludes` property
-Message-ID: <YWgU37NQfnIOtlsn@ada.ifak-system.com>
-Mail-Followup-To: Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        Pavel Machek <pavel@ucw.cz>, devicetree@vger.kernel.org,
-        linux-leds@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        robh+dt@kernel.org, Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>
-References: <20211013204424.10961-1-kabel@kernel.org>
- <20211013204424.10961-2-kabel@kernel.org>
- <20211014102918.GA21116@duo.ucw.cz>
- <20211014124309.10b42043@dellmb>
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211014124309.10b42043@dellmb>
+        id S230431AbhJNLdM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Oct 2021 07:33:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1634211067; x=1665747067;
+  h=from:to:cc:subject:date:message-id;
+  bh=e/k33b5iviI3LCxGlOyGY6873RDXdxSoyCGTS6Pf+wg=;
+  b=Sfq1jL/KbMQf99atXFdscWTy6blTDx/eNnilm2fnZ6N0zSUFx72DsZ4J
+   +4JS2kHYkPfMCEdZOqnfAT4Bjoizkx73WmrzfdQ5dB6e5ZzP2I8zAzMJq
+   k/N2+SZ2jwextqm4kApL+uXwCKq/ZGJB+JhULWVUkLtmPSDGOz5QM514R
+   0iOMO/3XR57ZTy8JP3lQH8rFnguoaRaoc0AkscHqdhYZVO90nPnZUhBuK
+   XvnpYqjGev7DiXOi1pccu4/YlUl5bWvlqqaFqe3nPo8exrQUouVEWIOEz
+   zE2fCHAVNxHZ1HbwJAUtuQfQrMYobBz//U8RW04nkCaLDp3uQMM5Yeigt
+   A==;
+X-IronPort-AV: E=Sophos;i="5.85,372,1624312800"; 
+   d="scan'208";a="20047202"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 14 Oct 2021 13:31:03 +0200
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Thu, 14 Oct 2021 13:31:03 +0200
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Thu, 14 Oct 2021 13:31:03 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1634211063; x=1665747063;
+  h=from:to:cc:subject:date:message-id;
+  bh=e/k33b5iviI3LCxGlOyGY6873RDXdxSoyCGTS6Pf+wg=;
+  b=B9ldJckA5MTNgesBU2w/aka80Q3SNxjgiLqp6wTCIrprMU3Ure6TnNm8
+   oCOgKOU/IrTr+AFdThIOm3D/0TvSaJLpR9JdqjBSDwsm246hXBqTOzi7B
+   cEItQ2akCcVrE1Cqg98kq4ybmeAaiAAX/5beG0ko5tm2oAyvWeo7rkSHD
+   X0JB0P6NTdmBlh21X5yDTRkxPVlCOqKwFSoON/bf9FU2ulBkHWXEgpFMk
+   LrCcaHdKk+kVRrKU7mCliL3zQ6Y+2CMCvasv50KwvAX3ln+fTPNXfMxvm
+   Gc1X4VDM4USZx4EMAHlPoMayUgX0+199h08nywYNqCCF45tN2Q0eJU10I
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.85,372,1624312800"; 
+   d="scan'208";a="20047198"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 14 Oct 2021 13:31:03 +0200
+Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.121.48.12])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 97C73280065;
+        Thu, 14 Oct 2021 13:31:01 +0200 (CEST)
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Subject: [PATCH] net: fec: defer probe if PHY on external MDIO bus is not available
+Date:   Thu, 14 Oct 2021 13:30:43 +0200
+Message-Id: <20211014113043.3518-1-matthias.schiffer@ew.tq-group.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hei hei,
+On some SoCs like i.MX6UL it is common to use the same MDIO bus for PHYs
+on both Ethernet controllers. Currently device trees for such setups
+have to make assumptions regarding the probe order of the controllers:
 
-Am Thu, Oct 14, 2021 at 12:43:09PM +0200 schrieb Marek Behún:
-> On Thu, 14 Oct 2021 12:29:18 +0200
-> Pavel Machek <pavel@ucw.cz> wrote:
-> 
-> > Hi!
-> > 
-> > > Some RJ-45 connectors have LEDs wired in the following way:
-> > > 
-> > >          LED1
-> > >       +--|>|--+
-> > >       |       |
-> > >   A---+--|<|--+---B
-> > >          LED2
-> > > 
-> > > With + on A and - on B, LED1 is ON and LED2 is OFF. Inverting the
-> > > polarity turns LED1 OFF and LED2 ON.
-> > > 
-> > > So these LEDs exclude each other.
-> > > 
-> > > Add new `excludes` property to the LED binding. The property is a
-> > > phandle-array to all the other LEDs that are excluded by this LED.  
-> > 
-> > I don't think this belongs to the LED binding.
-> > 
-> > This is controller limitation, and the driver handling the controller
-> > needs to know about it... so it does not need to learn that from the
-> > LED binding.
-> 
-> It's not necessarily a controller limitation, rather a limitation of
-> the board (or ethernet connector, in the case of LEDs on an ethernet
-> connector).
+For example in imx6ul-14x14-evk.dtsi, the MDIO bus of fec2 is used for
+the PHYs of both fec1 and fec2. The reason is that fec2 has a lower
+address than fec1 and is thus loaded first, so the bus is already
+available when fec1 is probed.
 
-Such LEDs are not limited to PHYs or ethernet connectors.  There is
-hardware with such dual color LEDs connected to GPIO pins (either
-directly to the SoC or through some GPIO expander like an 74hc595
-shift register).  That mail points to such hardware:
+Besides being confusing, this limitation also makes it impossible to use
+the same device tree for variants of the i.MX6UL with one Ethernet
+controller (which have to use the MDIO of fec1, as fec2 does not exist)
+and variants with two controllers (which have to use fec2 because of the
+load order).
 
-https://www.spinics.net/lists/linux-leds/msg11847.html
+To fix this, defer the probe of the Ethernet controller when the PHY is
+not on our own MDIO bus and not available.
 
-I asked about how this can be modelled back in 2019 and it was also
-discussed last year:
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+---
+ drivers/net/ethernet/freescale/fec_main.c | 23 ++++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
 
-https://www.spinics.net/lists/linux-leds/msg11665.html
-https://lore.kernel.org/linux-leds/2315048.uTtSMl1LR1@ada/
-
-The "solution" back when I first asked was treating them as ordinary
-GPIO-LEDs and ignore the "exclusion topic" which means in practice the
-LED goes OFF if both pins are ON (high) at the same time, which works
-well enough in practice.
-
-> But I guess we could instead document this property in the ethernet PHY
-> controller binding for a given PHY.
-
-Because such LEDs are not restricted to ethernet PHYs, but can also be
-used with GPIOs from the hardware point of view, I would not put it
-there.
-
-Furthermore I would not view this as a restriction of the gpio-leds
-controller, but it's a property of the LEDs itself or the way they are
-wired to the board.
-
-This could (or should as Pavel suggested back in 2019) be put to a new
-driver, at least for the GPIO case, but it would need some kind of new
-binding anyways.  With that in mind I consider the proposed binding to
-be well comprehensible for a human reader/writer.
-
-I'm sorry, I did not have leisure time to implement such a driver yet.
-Breadboard hardware for that still waiting in the drawer. :-/
-
-Greets
-Alex
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index 47a6fc702ac7..dc070dd216e8 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -3820,7 +3820,28 @@ fec_probe(struct platform_device *pdev)
+ 		goto failed_stop_mode;
+ 
+ 	phy_node = of_parse_phandle(np, "phy-handle", 0);
+-	if (!phy_node && of_phy_is_fixed_link(np)) {
++	if (phy_node) {
++		struct device_node *mdio_parent =
++			of_get_next_parent(of_get_parent(phy_node));
++
++		ret = 0;
++
++		/* Skip PHY availability check for our own MDIO bus to avoid
++		 * cyclic dependency
++		 */
++		if (mdio_parent != np) {
++			struct phy_device *phy = of_phy_find_device(phy_node);
++
++			if (phy)
++				put_device(&phy->mdio.dev);
++			else
++				ret = -EPROBE_DEFER;
++		}
++
++		of_node_put(mdio_parent);
++		if (ret)
++			goto failed_phy;
++	} else if (of_phy_is_fixed_link(np)) {
+ 		ret = of_phy_register_fixed_link(np);
+ 		if (ret < 0) {
+ 			dev_err(&pdev->dev,
+-- 
+2.17.1
 
