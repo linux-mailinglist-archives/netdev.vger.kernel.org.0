@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B08B42E116
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 20:21:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CD1F42E119
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 20:21:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233907AbhJNSXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 14:23:51 -0400
+        id S233915AbhJNSXw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 14:23:52 -0400
 Received: from mga04.intel.com ([192.55.52.120]:62163 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232425AbhJNSXu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Oct 2021 14:23:50 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10137"; a="226531107"
+        id S230422AbhJNSXv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Oct 2021 14:23:51 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10137"; a="226531109"
 X-IronPort-AV: E=Sophos;i="5.85,373,1624345200"; 
-   d="scan'208";a="226531107"
+   d="scan'208";a="226531109"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2021 11:21:44 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2021 11:21:45 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.85,373,1624345200"; 
-   d="scan'208";a="717815815"
+   d="scan'208";a="717815819"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga005.fm.intel.com with ESMTP; 14 Oct 2021 11:21:44 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, linux-rdma@vger.kernel.org,
-        shiraz.saleem@intel.com, Jun Miao <jun.miao@windriver.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: [PATCH net 2/4] ice: Avoid crash from unnecessary IDA free
-Date:   Thu, 14 Oct 2021 11:19:51 -0700
-Message-Id: <20211014181953.3538330-3-anthony.l.nguyen@intel.com>
+Cc:     Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        linux-rdma@vger.kernel.org, shiraz.saleem@intel.com,
+        Gurucharan G <gurucharanx.g@intel.com>
+Subject: [PATCH net 3/4] ice: fix getting UDP tunnel entry
+Date:   Thu, 14 Oct 2021 11:19:52 -0700
+Message-Id: <20211014181953.3538330-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211014181953.3538330-1-anthony.l.nguyen@intel.com>
 References: <20211014181953.3538330-1-anthony.l.nguyen@intel.com>
@@ -39,52 +39,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dave Ertman <david.m.ertman@intel.com>
+From: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 
-In the remove path, there is an attempt to free the aux_idx IDA whether
-it was allocated or not.  This can potentially cause a crash when
-unloading the driver on systems that do not initialize support for RDMA.
-But, this free cannot be gated by the status bit for RDMA, since it is
-allocated if the driver detects support for RDMA at probe time, but the
-driver can enter into a state where RDMA is not supported after the IDA
-has been allocated at probe time and this would lead to a memory leak.
+Correct parameters order in call to ice_tunnel_idx_to_entry function.
 
-Initialize aux_idx to an invalid value and check for a valid value when
-unloading to determine if an IDA free is necessary.
+Entry in sparse port table is correct when the idx is 0. For idx 1 one
+correct entry should be skipped, for idx 2 two of them should be skipped
+etc. Change if condition to be true when idx is 0, which means that
+previous valid entry of this tunnel type were skipped.
 
-Fixes: d25a0fc41c1f ("ice: Initialize RDMA support")
-Reported-by: Jun Miao <jun.miao@windriver.com>
-Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
-Tested-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Fixes: b20e6c17c468 ("ice: convert to new udp_tunnel infrastructure")
+Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Tested-by: Gurucharan G <gurucharanx.g@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_flex_pipe.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 0d6c143f6653..94037881bfd8 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -4224,6 +4224,9 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 	if (!pf)
- 		return -ENOMEM;
+diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+index 06ac9badee77..1ac96dc66d0d 100644
+--- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
++++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+@@ -1668,7 +1668,7 @@ static u16 ice_tunnel_idx_to_entry(struct ice_hw *hw, enum ice_tunnel_type type,
+ 	for (i = 0; i < hw->tnl.count && i < ICE_TUNNEL_MAX_ENTRIES; i++)
+ 		if (hw->tnl.tbl[i].valid &&
+ 		    hw->tnl.tbl[i].type == type &&
+-		    idx--)
++		    idx-- == 0)
+ 			return i;
  
-+	/* initialize Auxiliary index to invalid value */
-+	pf->aux_idx = -1;
-+
- 	/* set up for high or low DMA */
- 	err = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64));
- 	if (err)
-@@ -4615,7 +4618,8 @@ static void ice_remove(struct pci_dev *pdev)
+ 	WARN_ON_ONCE(1);
+@@ -1828,7 +1828,7 @@ int ice_udp_tunnel_set_port(struct net_device *netdev, unsigned int table,
+ 	u16 index;
  
- 	ice_aq_cancel_waiting_tasks(pf);
- 	ice_unplug_aux_dev(pf);
--	ida_free(&ice_aux_ida, pf->aux_idx);
-+	if (pf->aux_idx >= 0)
-+		ida_free(&ice_aux_ida, pf->aux_idx);
- 	set_bit(ICE_DOWN, pf->state);
+ 	tnl_type = ti->type == UDP_TUNNEL_TYPE_VXLAN ? TNL_VXLAN : TNL_GENEVE;
+-	index = ice_tunnel_idx_to_entry(&pf->hw, idx, tnl_type);
++	index = ice_tunnel_idx_to_entry(&pf->hw, tnl_type, idx);
  
- 	mutex_destroy(&(&pf->hw)->fdir_fltr_lock);
+ 	status = ice_create_tunnel(&pf->hw, index, tnl_type, ntohs(ti->port));
+ 	if (status) {
 -- 
 2.31.1
 
