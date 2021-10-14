@@ -2,124 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A2BE42D263
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 08:24:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A5EF42D2AB
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 08:29:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230123AbhJNG0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 02:26:35 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:25135 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230097AbhJNG0P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 02:26:15 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4HVK7n5qdYz1DHYG;
-        Thu, 14 Oct 2021 14:22:29 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Thu, 14 Oct 2021 14:24:08 +0800
-Received: from [10.67.102.67] (10.67.102.67) by kwepemm600016.china.huawei.com
- (7.193.23.20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.8; Thu, 14 Oct
- 2021 14:24:06 +0800
-Subject: Re: [PATCH V3 net-next 3/6] ethtool: add support to set/get rx buf
- len via ethtool
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <mkubecek@suse.cz>, <andrew@lunn.ch>,
-        <amitc@mellanox.com>, <idosch@idosch.org>, <danieller@nvidia.com>,
-        <jesse.brandeburg@intel.com>, <anthony.l.nguyen@intel.com>,
-        <jdike@addtoit.com>, <richard@nod.at>,
-        <anton.ivanov@cambridgegreys.com>, <netanel@amazon.com>,
-        <akiyano@amazon.com>, <gtzalik@amazon.com>, <saeedb@amazon.com>,
-        <chris.snook@gmail.com>, <ulli.kroll@googlemail.com>,
-        <linus.walleij@linaro.org>, <jeroendb@google.com>,
-        <csully@google.com>, <awogbemila@google.com>, <jdmason@kudzu.us>,
-        <rain.1986.08.12@gmail.com>, <zyjzyj2000@gmail.com>,
-        <kys@microsoft.com>, <haiyangz@microsoft.com>, <mst@redhat.com>,
-        <jasowang@redhat.com>, <doshir@vmware.com>,
-        <pv-drivers@vmware.com>, <jwi@linux.ibm.com>,
-        <kgraul@linux.ibm.com>, <hca@linux.ibm.com>, <gor@linux.ibm.com>,
-        <johannes@sipsolutions.net>, <netdev@vger.kernel.org>,
-        <lipeng321@huawei.com>, <chenhao288@hisilicon.com>,
-        <linux-s390@vger.kernel.org>
-References: <20211012134127.11761-1-huangguangbin2@huawei.com>
- <20211012134127.11761-4-huangguangbin2@huawei.com>
- <20211012112624.641ed3e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   "huangguangbin (A)" <huangguangbin2@huawei.com>
-Message-ID: <a2d3a1b7-5574-208a-e62e-24b378f258b7@huawei.com>
-Date:   Thu, 14 Oct 2021 14:24:06 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <20211012112624.641ed3e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.102.67]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+        id S229530AbhJNGbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 02:31:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42276 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229933AbhJNGbY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 02:31:24 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84874C061570;
+        Wed, 13 Oct 2021 23:29:20 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id x8so3439379plv.8;
+        Wed, 13 Oct 2021 23:29:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=n5SnxvhmY+qTRILLCzaztY5PSjGFzaDoDn+bV8S3cgY=;
+        b=ZVJLFTxXpbZlHXGhzWOAW0ZgukXn/BcWxZcMXnLe3lSgvCuDecQK4rDC1FiR5DNNYS
+         o6DsfgABOcQm39yOjdWLbGFZL1OA53fn7N5C8Xq8VCmR0YHN1Di+WlxoU/LoeDeaPhB/
+         Nco9gx4kfdafhWeryAeC9GicsYYGkX02NPWEMgFAOAowxiDwZIZImJi+FNTVOobgaQdw
+         NekzqVew0rCucgQbwknB+w0WhpQBxf1Deice9SArFSCEyqeMdJlO2XPpA4nTqTHtqhtK
+         1qI/512+z/eZAtlL+pRBARHRpVGYWj5RfrGGK4ncUG4XrgInQZmoysgOYsyHCBEocCI/
+         J/9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=n5SnxvhmY+qTRILLCzaztY5PSjGFzaDoDn+bV8S3cgY=;
+        b=p2TVCpU7vhKQY3lQlcJ3TDyLOhZJ+uRhHQuY6eL+SxZ8eGVNLsGPa5uDxKTUIfPGGq
+         7949BEnpIIlLy7Am52pk9xUs8fou6bEwbzQKD9AAgXqBA1BiE9yK5WQZ1Ja+R2bkzhj3
+         H4AQ69slUhVTq9pOdkcWP0P7ydcd0z1ZHxkDlWlvGCefRdS0IRDIEjd/cgi8wvAEOwi/
+         XxJl4Ty5i5udRMLWz1/Jc0NlXrZnFVesiPI7qVhllRB1R9FbRoAPlQY2TcFTF7pMDldd
+         Qp3tExpZ2PhsvBgPs+Vrlkfqrh0hgkUM4tqM3OGBF3v6Aj2DyPGIFQbtZnjDjfwDtp3G
+         Srkw==
+X-Gm-Message-State: AOAM5319/NdlF+thxGU9PEkRCvo6VTz5oE/uCBOuQVVPpg/sS/rKnrOJ
+        gXQMHy2B3JgtlkehvUidQA==
+X-Google-Smtp-Source: ABdhPJxr7qNWbYDpMwgqOQ0O/nEjHG9wzCmIqSUfEjlh+p+/T+oIrofLbPZ7u+jrggvcZzc43H5dqQ==
+X-Received: by 2002:a17:90b:1d0d:: with SMTP id on13mr7346518pjb.36.1634192960097;
+        Wed, 13 Oct 2021 23:29:20 -0700 (PDT)
+Received: from vultr.guest ([107.191.53.97])
+        by smtp.gmail.com with ESMTPSA id x7sm7769503pjg.5.2021.10.13.23.29.17
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 13 Oct 2021 23:29:19 -0700 (PDT)
+From:   Zheyu Ma <zheyuma97@gmail.com>
+To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>
+Subject: [PATCH] can: peak_pci: Fix UAF in peak_pci_remove
+Date:   Thu, 14 Oct 2021 06:28:33 +0000
+Message-Id: <1634192913-15639-1-git-send-email-zheyuma97@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When remove the module peek_pci, referencing 'chan' again after
+releasing 'dev' will cause UAF.
 
+Fix this by releasing 'dev' later.
 
-On 2021/10/13 2:26, Jakub Kicinski wrote:
-> On Tue, 12 Oct 2021 21:41:24 +0800 Guangbin Huang wrote:
->> From: Hao Chen <chenhao288@hisilicon.com>
->>
->> Add support to set rx buf len via ethtool -G parameter and get
->> rx buf len via ethtool -g parameter.
->>
->> Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
->> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-> 
->> +  ``ETHTOOL_A_RINGS_RX_BUF_LEN``        u32     size of buffers on the ring
->>     ====================================  ======  ==========================
-> 
-> Does the documentation build without warnings?
-> 
-Hi Jakub, there is no warning when we build documentation. It seems that the third
-column needs more '=' symbol, we add it in next version.
+The following log reveals it:
 
->> diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
->> index 266e95e4fb33..83544186cbb5 100644
->> --- a/include/uapi/linux/ethtool.h
->> +++ b/include/uapi/linux/ethtool.h
->> @@ -535,6 +535,14 @@ struct ethtool_ringparam {
->>   	__u32	tx_pending;
->>   };
->>   
->> +/**
->> + * struct ethtool_ringparam_ext - RX/TX ring configuration
->> + * @rx_buf_len: Current length of buffers on the rx ring.
->> + */
->> +struct ethtool_ringparam_ext {
->> +	__u32	rx_buf_len;
->> +};
-> 
-> This can be moved to include/linux/ethtool.h, user space does not need
-> to know about this structure.
-> 
-Ok.
+[   35.961814 ] BUG: KASAN: use-after-free in peak_pci_remove+0x16f/0x270 [peak_pci]
+[   35.963414 ] Read of size 8 at addr ffff888136998ee8 by task modprobe/5537
+[   35.965513 ] Call Trace:
+[   35.965718 ]  dump_stack_lvl+0xa8/0xd1
+[   35.966028 ]  print_address_description+0x87/0x3b0
+[   35.966420 ]  kasan_report+0x172/0x1c0
+[   35.966725 ]  ? peak_pci_remove+0x16f/0x270 [peak_pci]
+[   35.967137 ]  ? trace_irq_enable_rcuidle+0x10/0x170
+[   35.967529 ]  ? peak_pci_remove+0x16f/0x270 [peak_pci]
+[   35.967945 ]  __asan_report_load8_noabort+0x14/0x20
+[   35.968346 ]  peak_pci_remove+0x16f/0x270 [peak_pci]
+[   35.968752 ]  pci_device_remove+0xa9/0x250
 
->> +	if (ringparam_ext.rx_buf_len != 0 &&
->> +	    !(ops->supported_ring_params & ETHTOOL_RING_USE_RX_BUF_LEN)) {
->> +		ret = -EOPNOTSUPP;
->> +		NL_SET_ERR_MSG_ATTR(info->extack,
->> +				    tb[ETHTOOL_A_RINGS_RX_BUF_LEN],
->> +				    "setting not supported rx buf len");
-> 
-> "setting rx buf len not supported" sounds better
-> 
-Ok.
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+---
+ drivers/net/can/sja1000/peak_pci.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
->> +		goto out_ops;
->> +	}
->> +
->>   	ret = dev->ethtool_ops->set_ringparam(dev, &ringparam);
->>   	if (ret < 0)
->>   		goto out_ops;
-> 
-> .
-> 
+diff --git a/drivers/net/can/sja1000/peak_pci.c b/drivers/net/can/sja1000/peak_pci.c
+index 6db90dc4bc9d..84f34020aafb 100644
+--- a/drivers/net/can/sja1000/peak_pci.c
++++ b/drivers/net/can/sja1000/peak_pci.c
+@@ -752,16 +752,15 @@ static void peak_pci_remove(struct pci_dev *pdev)
+ 		struct net_device *prev_dev = chan->prev_dev;
+ 
+ 		dev_info(&pdev->dev, "removing device %s\n", dev->name);
++		/* do that only for first channel */
++		if (!prev_dev && chan->pciec_card)
++			peak_pciec_remove(chan->pciec_card);
+ 		unregister_sja1000dev(dev);
+ 		free_sja1000dev(dev);
+ 		dev = prev_dev;
+ 
+-		if (!dev) {
+-			/* do that only for first channel */
+-			if (chan->pciec_card)
+-				peak_pciec_remove(chan->pciec_card);
++		if (!dev)
+ 			break;
+-		}
+ 		priv = netdev_priv(dev);
+ 		chan = priv->priv;
+ 	}
+-- 
+2.17.6
+
