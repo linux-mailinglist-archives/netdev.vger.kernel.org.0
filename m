@@ -2,66 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FE9842D432
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 09:54:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E04042D434
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 09:54:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230026AbhJNH4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 03:56:52 -0400
-Received: from mail-dm6nam12on2067.outbound.protection.outlook.com ([40.107.243.67]:58335
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        id S230049AbhJNH44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 03:56:56 -0400
+Received: from mail-mw2nam10on2072.outbound.protection.outlook.com ([40.107.94.72]:9825
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230010AbhJNH4v (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Oct 2021 03:56:51 -0400
+        id S230010AbhJNH4x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Oct 2021 03:56:53 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cxgruQYVWjzwZQqKnyEQP6Tq8FI3Txi9aBZwB3Xqq3bPeKYD+iSx/ztoXFw9dv+A5tNj3YHvJGIGIK1joKLChx5iwskvZ/Fnnu4y22SWlDNpdZ81CHaJatC4pafDDd3ODzDh4zJCNZMeH+SehoQFbSIQ7mPHNa1cyUJMpg/Oix79Z76IwCHmBd1Q0ir5VBmV1eutaAisEV5jPmecAp1HCuepkkXFfLWLjcdVlzTuDGWRuZobHpOJtlkWphM6nsYZRFOQv9FjLnREfIUJUBfhiJd2yijrJC7cwS5jKYKyvBUTekx8Jqth1jrzYL0HyGJc9a6ZtPqhipjyETUf58F3zg==
+ b=XBVaLLZD1HJTR1KruKB86a2xyOgXMujMSmhI9zazxJqxOLToszHOK93cAoK+MR0E6cT5Ue6w/D50/ib2q0d2mrGzdAKBbi/YBIduhvf9s+aeQeAWkAvlrqonqHQUmtOAuDGfMbMFSjjRdTe237a48DF4IaKnysSiuHRoer7yZg9QuZ6jCGtwotphOlidagbrmCT0owafByuxsQCiMGWV5+mccyb6LfKoTw2977G6TuYImcMZGMBZYN6yOAZ1Y9LylhC8EMmXb/QlVyM3eTrn56oWafhGTQ18jmM2WjqYP1GIPfUTH4/pplBcHNiVqEnGik16OzSRDWkFmKjpTs6Dhw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uCma/3dfxAGsXuA2hOg4BZlo00a83VbvVxoGmR3vyPA=;
- b=kxiNOjgCUpXq7MJjMXlrEaPcxRvN/RNMMAOKINgZ7PxLBphSHzcX097oLRZ+/n6IBOp82JluYFfPrVhsbB+gV5Is7jzngixvTe1kxxZtJ+AtAnmMQhBsgweLJ5b9tAblZpk997Y7MsOkp9pA6rCXDbQAmL9IIlataCsWtD8k98l47vL0RotXgqgw2Vvl84i56l40Z/tOWznkpgCTSOa/eeMiwhVz4jy3q0plX0QOHddCLewuRNDevKsr3StrS4fvFYCqoAa5xUnEIYqQPjR+KAZw36iZtREuhGUCwiq1c6kZJKP6Mp3E7P41clg82ubh92o2DXDowDvAVbzCsWodXA==
+ bh=nvzR34DTpSlDedTQKv89Q2n9S2M3uBt7kCejDzDAtAw=;
+ b=RrtgcLD4vRsydM+/1v8SjltZs/0uf+jZVt9ag+1vS1T3xMB2qf2hcmSbkGPxfU6t8SIWsZyZ5EKVA6XDZsn8egLyLKWHDhuqh20OFIpuoZ6kdKUqS14XygxqrwBDeuNb5czfRnPunb6+0WhwoAEz2/TxnUq4erjOPJaMqA8HrqJrAmIWgRuQpIojR4UAZLiSRpnTmu/QWSTaMoY01e6s/jWyg66lGJpJV95aa+wsTs1YpiDMwMd/y184zV9G9I4panul1CbHu0aLwLv6gEu9BCD8r/AVTpzYnDayrMxnnh5F1q3X00qvT831crpPzBJrybFyys1ycnyB9RlAmM9omA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.35) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=nvidia.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uCma/3dfxAGsXuA2hOg4BZlo00a83VbvVxoGmR3vyPA=;
- b=VCWZmnqSihQk5V1S0YjbZKGQ2gKXqX6/h+AUu62MQoipePLoaUR57+peP/vyQw6vj9lm4Pl8NORT699l92iZve2vKIslRKJyRLThqDFvjem2GbKqIsk5HQd84h86WURoE8iHvVkXLoRLf/eSIdQ3acCVg1UEK9Z7/C7ChzoaE7U1VGl6POBWqC03Llr5OFAuJqvZuTEW0VK6wG6bwPAzKtzKennbe/Zbv20iSzj/pEbwp+9pA8L1ajshI9Sx0kXygplskPG3PzzVcnstauLrZ5hT8DLfrky4u7ocUSu1gY54qEuiwwuahCGRocJyEPb5a/uFHNg1OAnY7yD2Vo/o1Q==
-Received: from DS7PR03CA0139.namprd03.prod.outlook.com (2603:10b6:5:3b4::24)
- by SA0PR12MB4528.namprd12.prod.outlook.com (2603:10b6:806:9e::17) with
+ bh=nvzR34DTpSlDedTQKv89Q2n9S2M3uBt7kCejDzDAtAw=;
+ b=s/M9zEZrh+0gGFTV4j3AEKnfxaAvEgQwIkSt0gl2mV6zUSv4GdrOkIWOCgbLW2dzc0gtjbCcDuSR/JUyOxGFmKF004wj3k9lX734x/C6+PHRVNn3jt0R1Z24+e/TKyuyVDzopaGYgkC199RfB3PhJBwyAz4e4iFFO75SWu+jGCObeWa5RMotY6OtgfZ6il6BJkzKj226nXtmBudWBvpctbykyOwDytvPDQB6046RlflXWXIXSHET0bsd6zM8kFFZL7sO9hkB+cQOxChRtlSCG5vMrj+ET7RuTLhXIZER6EimY3OQdYoFC2f4iSknELDIY0W5cmQ4RFsx3r3mLes3pg==
+Received: from DM6PR07CA0099.namprd07.prod.outlook.com (2603:10b6:5:337::32)
+ by BL0PR12MB4660.namprd12.prod.outlook.com (2603:10b6:207:34::30) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.16; Thu, 14 Oct
- 2021 07:54:45 +0000
-Received: from DM6NAM11FT033.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3b4:cafe::e0) by DS7PR03CA0139.outlook.office365.com
- (2603:10b6:5:3b4::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.16 via Frontend
- Transport; Thu, 14 Oct 2021 07:54:45 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.35)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.15; Thu, 14 Oct
+ 2021 07:54:48 +0000
+Received: from DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:337:cafe::9f) by DM6PR07CA0099.outlook.office365.com
+ (2603:10b6:5:337::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.14 via Frontend
+ Transport; Thu, 14 Oct 2021 07:54:48 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.35 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.35; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.35) by
- DM6NAM11FT033.mail.protection.outlook.com (10.13.172.221) with Microsoft SMTP
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ DM6NAM11FT035.mail.protection.outlook.com (10.13.172.100) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4608.15 via Frontend Transport; Thu, 14 Oct 2021 07:54:45 +0000
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 14 Oct
- 2021 07:54:43 +0000
+ 15.20.4608.15 via Frontend Transport; Thu, 14 Oct 2021 07:54:47 +0000
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 14 Oct
+ 2021 07:54:46 +0000
 Received: from vdi.nvidia.com (172.20.187.6) by mail.nvidia.com
  (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Thu, 14 Oct 2021 00:54:41 -0700
+ Transport; Thu, 14 Oct 2021 00:54:44 -0700
 From:   Mark Zhang <markzhang@nvidia.com>
 To:     <jgg@nvidia.com>, <dledford@redhat.com>, <dsahern@gmail.com>
 CC:     <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
         <aharonl@nvidia.com>, <netao@nvidia.com>, <leonro@nvidia.com>,
         Mark Zhang <markzhang@nvidia.com>
-Subject: [PATCH iproute2-next v1 2/3] rdma: Add stat "mode" support
-Date:   Thu, 14 Oct 2021 10:53:57 +0300
-Message-ID: <20211014075358.239708-3-markzhang@nvidia.com>
+Subject: [PATCH iproute2-next v1 3/3] rdma: Add optional-counters set/unset support
+Date:   Thu, 14 Oct 2021 10:53:58 +0300
+Message-ID: <20211014075358.239708-4-markzhang@nvidia.com>
 X-Mailer: git-send-email 2.8.4
 In-Reply-To: <20211014075358.239708-1-markzhang@nvidia.com>
 References: <20211014075358.239708-1-markzhang@nvidia.com>
@@ -69,230 +69,234 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f86ea7ec-4420-4e64-3b61-08d98ee7e36a
-X-MS-TrafficTypeDiagnostic: SA0PR12MB4528:
-X-Microsoft-Antispam-PRVS: <SA0PR12MB45286925BE05BD0F6394020BC7B89@SA0PR12MB4528.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:94;
+X-MS-Office365-Filtering-Correlation-Id: 0ef44f52-95bb-4605-a011-08d98ee7e4d0
+X-MS-TrafficTypeDiagnostic: BL0PR12MB4660:
+X-Microsoft-Antispam-PRVS: <BL0PR12MB4660806C5D3B0C4AA574FE8BC7B89@BL0PR12MB4660.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1303;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5hAZdj4eRLGHCgoqr4rdHGxqEgjqAL4WBB7+Mdwyf8DBnsGNopUD4u0pG2kozjMwzRJT8RqDnHe2+pOwFFGKK4HWGFT4jxC5mcS6bvVdWJV8TEnLeMQ2sx8BhdP27W/JuHH9vqqEvcKaMywHd/xztGhadzWVJKrono2Xj6TaHLOxyXn8Q1LQQHikj8m948xKem7zp/oU2uoRpKArowK9dhr3oa2eY+Kz9ohiEWlmq2DftKwyDsmvF7Bt3JixTGtpfjfGLRgswvhUDv4Hji2blLCIbGngVeYK7PWKxT8N2DuOlrkv6ZPABoCrniOzEtM39eXDgX9c64uebrEXtaArmDwQxxmytE3vwRJggOWUFpxIMts6IhjrcB9kVGR4a7b1Qi668Ye/GYfyGaM0ztt7FnDObBQm3hy9TNfwc47Z4c6FHKQVqRvllm9cI1xjl+T/07fn6DasSXbFZHbNN8RlkCbHhE2uJ4UoiPgZVtSmX7D2m/ZvVh9hKr2jVlFDxW4pQM0n9QwnESDGBuK0Qs0GpLBtGjPADoArAyjhvXTOI2vY5kgDe0euG4zwKQw06MjG/4AWF8u7VbW1/pQ+HqiLdQeVH6Opbt8bGVwkO0dO9HCYZztwUc++UKrb5Il5hYSTak39pO/PSLejeju6QHV/zvL09rRuEAFkZMTK4Ni2HU3l4WZtRHEUFjt4dlSDV3sl24kE3sHWjUMqYaozc3oaClZYEwyGQY7BYpHvxT0uT5Y=
-X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid04.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(36860700001)(186003)(36756003)(6666004)(70586007)(336012)(70206006)(107886003)(356005)(7636003)(4326008)(83380400001)(2906002)(7696005)(26005)(1076003)(54906003)(110136005)(5660300002)(8676002)(2616005)(426003)(8936002)(47076005)(316002)(82310400003)(86362001)(508600001)(2101003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: xSSdaiURP/KElI9Vcp+aPHFcxeuV6UPRrjfrKHwTT5DBgFb2u2AIobpmAfUQr5txPg4ZWdaI7+wx/Npcnq7nBCNAUqQQrNQeVTIVk0PG39h8iMOTz1Mn+sfWS0u3FJ9UgZivTCCi11elbsCMufVWqQdo97c4uFirtL8ed1E+e63ITUBGlh2Du5ifOGwqgTuysNAzHa7qDlc1avME0aV69fCq1WpJveE/SD8aFVqUi3gUE0OjQ2BtThJMy5qGppj8wkgtAq2uU0ksyOLh5cInHGR4PeJHEdZlZCCfdJx+AApv66+HBrjV8O++PwXavuS4PK9oxd6J6CmwlcwiA7FIeqi7r9AiENzZSNpeqx56/5oJXw7GzHnSyHlis1NIqPN5zrpJSgd2bk/yTcUXPZoH1cYXoWZoHKaxcFq827pAAkazV+ZTFBe7IuJm1lArjvbfwnQGAWC4wxh3HBnbCH+XhnfbSxus/ih2ntVXLUcQhRToAy286GBRvNPm7o8Lz4OFKMksv1A8J60axUPDsQMTpny2sSpQqGWogQ33Ve+BlyX+lH2kKhLjLqd9RSKDBd/o20yajApwEQm0K2cVvQkkBC/WIVc67g19ZoQ8nBGuDIpjNdtdH6XekietiGfOGkt3JfaIJBR0X2WYgmgH1ZggaCzspxAPONaZ/53L5ILd1tCdCqw7egBPiCqcfAHXd7RRUtSWRj09UUN1eQEL5pNjFAGmyjdZjr5l8HcJFBwdnjk=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(8936002)(70586007)(7696005)(47076005)(86362001)(336012)(83380400001)(8676002)(2616005)(70206006)(82310400003)(110136005)(54906003)(356005)(316002)(508600001)(1076003)(426003)(4326008)(186003)(2906002)(6666004)(7636003)(26005)(36860700001)(36756003)(107886003)(5660300002)(2101003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Oct 2021 07:54:45.2616
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Oct 2021 07:54:47.5873
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f86ea7ec-4420-4e64-3b61-08d98ee7e36a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0ef44f52-95bb-4605-a011-08d98ee7e4d0
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.35];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT033.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4528
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4660
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Neta Ostrovsky <netao@nvidia.com>
 
-This patch introduces the "mode" command, which presents the enabled or
-supported (when the "supported" argument is available) optional
-counters.
-
-An optional counter is a vendor-specific counter that may be
-dynamically enabled/disabled. This enhancement of hwcounters allows
-exposing of counters which are for example mutual exclusive and cannot
-be enabled at the same time, counters that might degrades performance,
-optional debug counters, etc.
+This patch provides an extension to the rdma statistics tool
+that allows to set/unset optional counters set dynamically,
+using new netlink commands.
+Note that the optional counter statistic implementation is
+driver-specific and may impact the performance.
 
 Examples:
-To present currently enabled optional counters on link rocep8s0f0/1:
-    $ rdma statistic mode link rocep8s0f0/1
-    link rocep8s0f0/1 optional-counters cc_rx_ce_pkts
-
-To present supported optional counters on link rocep8s0f0/1:
-    $ rdma statistic mode supported link rocep8s0f0/1
-    link rocep8s0f0/1 supported optional-counters cc_rx_ce_pkts,cc_rx_cnp_pkts,cc_tx_cnp_pkts
+To enable a set of optional counters on link rocep8s0f0/1:
+    $ sudo rdma statistic set link rocep8s0f0/1 optional-counters cc_rx_ce_pkts,cc_rx_cnp_pkts
+To disable all optional counters on link rocep8s0f0/1:
+    $ sudo rdma statistic unset link rocep8s0f0/1 optional-counters
 
 Signed-off-by: Neta Ostrovsky <netao@nvidia.com>
 Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 Signed-off-by: Mark Zhang <markzhang@nvidia.com>
 ---
- man/man8/rdma-statistic.8 |  23 ++++++
- rdma/stat.c               | 163 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 186 insertions(+)
+ man/man8/rdma-statistic.8 |  32 +++++++
+ rdma/stat.c               | 178 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 210 insertions(+)
 
 diff --git a/man/man8/rdma-statistic.8 b/man/man8/rdma-statistic.8
-index 7160bcdf..885769bc 100644
+index 885769bc..7dd2b02c 100644
 --- a/man/man8/rdma-statistic.8
 +++ b/man/man8/rdma-statistic.8
-@@ -58,6 +58,13 @@ rdma-statistic \- RDMA statistic counter configuration
- .RI "[ " COUNTER-ID " ]"
- .RI "[ " OBJECT-ID " ]"
+@@ -65,6 +65,21 @@ rdma-statistic \- RDMA statistic counter configuration
+ .B link
+ .RI "[ " DEV/PORT_INDEX " ]"
  
 +.ti -8
 +.B rdma statistic
-+.B mode
-+.B "[" supported "]"
++.B set
 +.B link
 +.RI "[ " DEV/PORT_INDEX " ]"
++.B optional-counters
++.RI "[ " OPTIONAL-COUNTERS " ]"
++
++.ti -8
++.B rdma statistic
++.B unset
++.B link
++.RI "[ " DEV/PORT_INDEX " ]"
++.B optional-counters
 +
  .ti -8
  .IR COUNTER_SCOPE " := "
  .RB "{ " link " | " dev " }"
-@@ -100,6 +107,10 @@ When unbound the statistics of this object are no longer available in this count
- - specifies the id of the counter to be bound.
- If this argument is omitted then a new counter will be allocated.
+@@ -111,6 +126,13 @@ If this argument is omitted then a new counter will be allocated.
  
-+.SS rdma statistic mode - Display the enabled optional counters for each link.
+ .SS rdma statistic mode supported - Display the supported optional counters for each link.
+ 
++.SS rdma statistic set - Enable a set of optional counters for a specific device/port.
 +
-+.SS rdma statistic mode supported - Display the supported optional counters for each link.
++.I "OPTIONAL-COUNTERS"
++- specifies the name of the optional counters to enable. Optional counters that are not specified will be disabled. Note that optional counters are driver-specific.
++
++.SS rdma statistic unset - Disable all optional counters for a specific device/port.
 +
  .SH "EXAMPLES"
  .PP
  rdma statistic show
-@@ -186,6 +197,16 @@ rdma statistic show mr mrn 6
+@@ -207,6 +229,16 @@ rdma statistic mode supported link mlx5_2/1
  .RS 4
- Dump a specific MR statistics with mrn 6. Dumps nothing if does not exists.
+ Display the optional counters that mlx5_2/1 supports.
  .RE
 +.PP
-+rdma statistic mode link mlx5_2/1
++rdma statistic set link mlx5_2/1 optional-counters cc_rx_ce_pkts,cc_rx_cnp_pkts
 +.RS 4
-+Display the optional counters that was enabled on mlx5_2/1.
++Enable the cc_rx_ce_pkts,cc_rx_cnp_pkts counters on device mlx5_2 port 1.
 +.RE
 +.PP
-+rdma statistic mode supported link mlx5_2/1
++rdma statistic unset link mlx5_2/1 optional-counters
 +.RS 4
-+Display the optional counters that mlx5_2/1 supports.
++Disable all the optional counters on device mlx5_2 port 1.
 +.RE
  
  .SH SEE ALSO
  .BR rdma (8),
-@@ -198,3 +219,5 @@ Dump a specific MR statistics with mrn 6. Dumps nothing if does not exists.
- Mark Zhang <markz@mellanox.com>
- .br
- Erez Alfasi <ereza@mellanox.com>
-+.br
-+Neta Ostrovsky <netao@nvidia.com>
 diff --git a/rdma/stat.c b/rdma/stat.c
-index 8edf7bf1..7d645d8f 100644
+index 7d645d8f..adfcd34a 100644
 --- a/rdma/stat.c
 +++ b/rdma/stat.c
-@@ -20,6 +20,8 @@ static int stat_help(struct rd *rd)
- 	pr_out("       %s statistic OBJECT unbind COUNTER_SCOPE [DEV/PORT_INDEX] [COUNTER-ID]\n", rd->filename);
- 	pr_out("       %s statistic show\n", rd->filename);
+@@ -22,6 +22,8 @@ static int stat_help(struct rd *rd)
  	pr_out("       %s statistic show link [ DEV/PORT_INDEX ]\n", rd->filename);
-+	pr_out("       %s statistic mode [ supported ]\n", rd->filename);
-+	pr_out("       %s statistic mode [ supported ] link [ DEV/PORT_INDEX ]\n", rd->filename);
+ 	pr_out("       %s statistic mode [ supported ]\n", rd->filename);
+ 	pr_out("       %s statistic mode [ supported ] link [ DEV/PORT_INDEX ]\n", rd->filename);
++	pr_out("       %s statistic set link [ DEV/PORT_INDEX ] optional-counters [ OPTIONAL-COUNTERS ]\n", rd->filename);
++	pr_out("       %s statistic unset link [ DEV/PORT_INDEX ] optional-counters\n", rd->filename);
  	pr_out("where  OBJECT: = { qp }\n");
  	pr_out("       CRITERIA : = { type }\n");
  	pr_out("       COUNTER_SCOPE: = { link | dev }\n");
-@@ -37,6 +39,10 @@ static int stat_help(struct rd *rd)
- 	pr_out("       %s statistic qp unbind link mlx5_2/1 cntn 4 lqpn 178\n", rd->filename);
- 	pr_out("       %s statistic show\n", rd->filename);
- 	pr_out("       %s statistic show link mlx5_2/1\n", rd->filename);
-+	pr_out("       %s statistic mode\n", rd->filename);
-+	pr_out("       %s statistic mode link mlx5_2/1\n", rd->filename);
-+	pr_out("       %s statistic mode supported\n", rd->filename);
-+	pr_out("       %s statistic mode supported link mlx5_2/1\n", rd->filename);
+@@ -43,6 +45,8 @@ static int stat_help(struct rd *rd)
+ 	pr_out("       %s statistic mode link mlx5_2/1\n", rd->filename);
+ 	pr_out("       %s statistic mode supported\n", rd->filename);
+ 	pr_out("       %s statistic mode supported link mlx5_2/1\n", rd->filename);
++	pr_out("       %s statistic set link mlx5_2/1 optional-counters cc_rx_ce_pkts,cc_rx_cnp_pkts\n", rd->filename);
++	pr_out("       %s statistic unset link mlx5_2/1 optional-counters\n", rd->filename);
  
  	return 0;
  }
-@@ -715,6 +721,162 @@ static int stat_qp(struct rd *rd)
+@@ -499,6 +503,30 @@ static int stat_qp_set(struct rd *rd)
  	return rd_exec_cmd(rd, cmds, "parameter");
  }
  
-+static int do_stat_mode_parse_cb(const struct nlmsghdr *nlh, void *data,
-+				 bool supported)
++static int stat_get_arg_str(struct rd *rd, const char *arg, char **value, bool allow_empty)
 +{
-+	struct nlattr *tb[RDMA_NLDEV_ATTR_MAX] = {};
-+	struct nlattr *nla_entry;
-+	const char *dev, *name;
-+	struct rd *rd = data;
-+	int enabled, err = 0;
-+	bool isfirst = true;
-+	uint32_t port;
++	int len = 0;
 +
-+	mnl_attr_parse(nlh, 0, rd_attr_cb, tb);
-+	if (!tb[RDMA_NLDEV_ATTR_DEV_INDEX] || !tb[RDMA_NLDEV_ATTR_DEV_NAME] ||
-+	    !tb[RDMA_NLDEV_ATTR_PORT_INDEX] ||
-+	    !tb[RDMA_NLDEV_ATTR_STAT_HWCOUNTERS])
-+		return MNL_CB_ERROR;
-+
-+	dev = mnl_attr_get_str(tb[RDMA_NLDEV_ATTR_DEV_NAME]);
-+	port = mnl_attr_get_u32(tb[RDMA_NLDEV_ATTR_PORT_INDEX]);
-+
-+	mnl_attr_for_each_nested(nla_entry,
-+				 tb[RDMA_NLDEV_ATTR_STAT_HWCOUNTERS]) {
-+		struct nlattr *cnt[RDMA_NLDEV_ATTR_MAX] = {};
-+
-+		err  = mnl_attr_parse_nested(nla_entry, rd_attr_cb, cnt);
-+		if ((err != MNL_CB_OK) ||
-+		    (!cnt[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY_NAME]))
-+			return -EINVAL;
-+
-+		if (!cnt[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_DYNAMIC])
-+			continue;
-+
-+		enabled = mnl_attr_get_u8(cnt[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_DYNAMIC]);
-+		name = mnl_attr_get_str(cnt[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY_NAME]);
-+		if (supported || enabled) {
-+			if (isfirst) {
-+				open_json_object(NULL);
-+				print_color_string(PRINT_ANY, COLOR_NONE,
-+						   "ifname", "link %s/", dev);
-+				print_color_uint(PRINT_ANY, COLOR_NONE, "port",
-+						 "%u ", port);
-+				if (supported)
-+					open_json_array(PRINT_ANY,
-+						"supported optional-counters");
-+				else
-+					open_json_array(PRINT_ANY,
-+							"optional-counters");
-+				print_color_string(PRINT_FP, COLOR_NONE, NULL,
-+						   " ", NULL);
-+				isfirst = false;
-+			} else {
-+				print_color_string(PRINT_FP, COLOR_NONE, NULL,
-+						   ",", NULL);
-+			}
-+			if (rd->pretty_output && !rd->json_output)
-+				newline_indent(rd);
-+
-+			print_color_string(PRINT_ANY, COLOR_NONE, NULL, "%s",
-+					   name);
-+		}
++	if (strcmpx(rd_argv(rd), arg) != 0) {
++		pr_err("Unknown parameter '%s'.\n", rd_argv(rd));
++		return -EINVAL;
 +	}
 +
-+	if (!isfirst) {
-+		close_json_array(PRINT_JSON, NULL);
-+		newline(rd);
++	rd_arg_inc(rd);
++	if (!rd_no_arg(rd)) {
++		*value = strdup(rd_argv(rd));
++		len = strlen(*value);
++		rd_arg_inc(rd);
++	}
++
++	if ((allow_empty && len) || (!allow_empty && !len)) {
++		stat_help(rd);
++		return -EINVAL;
 +	}
 +
 +	return 0;
 +}
 +
-+static int stat_mode_parse_cb(const struct nlmsghdr *nlh, void *data)
+ static int stat_get_arg(struct rd *rd, const char *arg)
+ {
+ 	int value = 0;
+@@ -877,6 +905,154 @@ static int stat_mode(struct rd *rd)
+ 	return rd_exec_cmd(rd, cmds, "parameter");
+ }
+ 
++static int stat_one_set_link_opcounters(const struct nlmsghdr *nlh, void *data)
 +{
-+	return do_stat_mode_parse_cb(nlh, data, false);
++	struct nlattr *tb[RDMA_NLDEV_ATTR_MAX] = {};
++	struct nlattr *nla_entry, *tb_set;
++	int ret, flags = NLM_F_REQUEST | NLM_F_ACK;
++	char *opcnt, *opcnts;
++	struct rd *rd = data;
++	uint32_t seq;
++	bool found;
++
++	mnl_attr_parse(nlh, 0, rd_attr_cb, tb);
++	if (!tb[RDMA_NLDEV_ATTR_STAT_HWCOUNTERS])
++		return MNL_CB_ERROR;
++
++	if (rd_no_arg(rd)) {
++		stat_help(rd);
++		return -EINVAL;
++	}
++
++	ret = stat_get_arg_str(rd, "optional-counters", &opcnts, false);
++	if (ret)
++		return ret;
++
++	rd_prepare_msg(rd, RDMA_NLDEV_CMD_STAT_SET, &seq, flags);
++	mnl_attr_put_u32(rd->nlh, RDMA_NLDEV_ATTR_DEV_INDEX,
++			 rd->dev_idx);
++	mnl_attr_put_u32(rd->nlh, RDMA_NLDEV_ATTR_PORT_INDEX,
++			 rd->port_idx);
++
++	tb_set = mnl_attr_nest_start(rd->nlh, RDMA_NLDEV_ATTR_STAT_HWCOUNTERS);
++
++	opcnt = strtok(opcnts, ",");
++	while (opcnt) {
++		found = false;
++		mnl_attr_for_each_nested(nla_entry,
++					 tb[RDMA_NLDEV_ATTR_STAT_HWCOUNTERS]) {
++			struct nlattr *cnt[RDMA_NLDEV_ATTR_MAX] = {}, *nm, *id;
++
++			if (mnl_attr_parse_nested(nla_entry, rd_attr_cb,
++						  cnt) != MNL_CB_OK)
++				return -EINVAL;
++
++			nm = cnt[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY_NAME];
++			id = cnt[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_INDEX];
++			if (!nm || ! id)
++				return -EINVAL;
++
++			if (!cnt[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_DYNAMIC])
++				continue;
++
++			if (strcmp(opcnt, mnl_attr_get_str(nm)) == 0) {
++				mnl_attr_put_u32(rd->nlh,
++						 RDMA_NLDEV_ATTR_STAT_HWCOUNTER_INDEX,
++						 mnl_attr_get_u32(id));
++				found = true;
++			}
++		}
++
++		if (!found)
++			return -EINVAL;
++
++		opcnt = strtok(NULL, ",");
++	}
++	mnl_attr_nest_end(rd->nlh, tb_set);
++
++	return rd_sendrecv_msg(rd, seq);
 +}
 +
-+static int stat_mode_parse_cb_supported(const struct nlmsghdr *nlh, void *data)
-+{
-+	return do_stat_mode_parse_cb(nlh, data, true);
-+}
-+
-+static int stat_one_link_get_status_req(struct rd *rd, uint32_t *seq)
-+{
-+	int flags = NLM_F_REQUEST | NLM_F_ACK;
-+
-+	rd_prepare_msg(rd, RDMA_NLDEV_CMD_STAT_GET_STATUS, seq,  flags);
-+	mnl_attr_put_u32(rd->nlh, RDMA_NLDEV_ATTR_DEV_INDEX, rd->dev_idx);
-+	mnl_attr_put_u32(rd->nlh, RDMA_NLDEV_ATTR_PORT_INDEX, rd->port_idx);
-+
-+	return rd_send_msg(rd);
-+}
-+
-+static int stat_one_link_get_mode(struct rd *rd)
++static int stat_one_set_link(struct rd *rd)
 +{
 +	uint32_t seq;
 +	int err;
@@ -304,67 +308,83 @@ index 8edf7bf1..7d645d8f 100644
 +	if (err)
 +		return err;
 +
-+	return rd_recv_msg(rd, stat_mode_parse_cb, rd, seq);
++	return rd_recv_msg(rd, stat_one_set_link_opcounters, rd, seq);
 +}
 +
-+static int stat_one_link_get_mode_supported(struct rd *rd)
++static int stat_set_link(struct rd *rd)
 +{
-+	uint32_t seq;
-+	int err;
-+
-+	if (!rd->port_idx)
-+		return 0;
-+
-+	err = stat_one_link_get_status_req(rd, &seq);
-+	if (err)
-+		return err;
-+
-+	return rd_recv_msg(rd, stat_mode_parse_cb_supported, rd, seq);
++	return rd_exec_link(rd, stat_one_set_link, true);
 +}
 +
-+static int stat_link_get_mode(struct rd *rd)
-+{
-+	return rd_exec_link(rd, stat_one_link_get_mode, false);
-+}
-+
-+static int stat_link_get_mode_supported(struct rd *rd)
-+{
-+	return rd_exec_link(rd, stat_one_link_get_mode_supported, false);
-+}
-+
-+static int stat_mode_supported(struct rd *rd)
++static int stat_set(struct rd *rd)
 +{
 +	const struct rd_cmd cmds[] = {
-+		{ NULL,		stat_link_get_mode_supported },
-+		{ "link",	stat_link_get_mode_supported },
++		{ NULL,		stat_help },
++		{ "link",	stat_set_link },
 +		{ "help",	stat_help },
 +		{ 0 },
 +	};
 +	return rd_exec_cmd(rd, cmds, "parameter");
 +}
 +
-+static int stat_mode(struct rd *rd)
++static int stat_one_unset_link_opcounters(struct rd *rd)
++{
++	int ret, flags = NLM_F_REQUEST | NLM_F_ACK;
++	struct nlattr *tbl;
++	uint32_t seq;
++	char *opcnts;
++
++	if (rd_no_arg(rd)) {
++		stat_help(rd);
++		return -EINVAL;
++	}
++
++	ret = stat_get_arg_str(rd, "optional-counters", &opcnts, true);
++	if (ret)
++		return ret;
++
++	rd_prepare_msg(rd, RDMA_NLDEV_CMD_STAT_SET, &seq, flags);
++	mnl_attr_put_u32(rd->nlh, RDMA_NLDEV_ATTR_DEV_INDEX,
++			 rd->dev_idx);
++	mnl_attr_put_u32(rd->nlh, RDMA_NLDEV_ATTR_PORT_INDEX,
++			 rd->port_idx);
++
++	tbl = mnl_attr_nest_start(rd->nlh, RDMA_NLDEV_ATTR_STAT_HWCOUNTERS);
++	mnl_attr_nest_end(rd->nlh, tbl);
++
++	return rd_sendrecv_msg(rd, seq);
++}
++
++static int stat_one_unset_link(struct rd *rd)
++{
++	return stat_one_unset_link_opcounters(rd);
++}
++
++static int stat_unset_link(struct rd *rd)
++{
++	return rd_exec_link(rd, stat_one_unset_link, true);
++}
++
++static int stat_unset(struct rd *rd)
 +{
 +	const struct rd_cmd cmds[] = {
-+		{ NULL,		stat_link_get_mode },
-+		{ "link",	stat_link_get_mode },
-+		{ "show",	stat_link_get_mode },
-+		{ "supported",	stat_mode_supported },
++		{ NULL,		stat_help },
++		{ "link",	stat_unset_link },
 +		{ "help",	stat_help },
 +		{ 0 },
 +	};
-+
 +	return rd_exec_cmd(rd, cmds, "parameter");
 +}
 +
  static int stat_show_parse_cb(const struct nlmsghdr *nlh, void *data)
  {
  	struct nlattr *tb[RDMA_NLDEV_ATTR_MAX] = {};
-@@ -786,6 +948,7 @@ int cmd_stat(struct rd *rd)
- 		{ "help",	stat_help },
+@@ -949,6 +1125,8 @@ int cmd_stat(struct rd *rd)
  		{ "qp",		stat_qp },
  		{ "mr",		stat_mr },
-+		{ "mode",	stat_mode },
+ 		{ "mode",	stat_mode },
++		{ "set",	stat_set },
++		{ "unset",	stat_unset },
  		{ 0 }
  	};
  
