@@ -2,163 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3FD042D66D
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 11:50:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2381242D676
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 11:52:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230051AbhJNJw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 05:52:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60492 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229984AbhJNJw6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 05:52:58 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 280A1C061570
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 02:50:54 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id ay35so4876401qkb.10
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 02:50:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vX0mCVgZ/TEe/oLuoOJv1/ATY6BWIt4qZwuFYY1g4pY=;
-        b=L0hQaE1NNuQQ+DzUa8/YHduVX8X2dWRp2hZTJbc3xbBqu/4hoYULu1UZnUmwUmSDdC
-         SIICh6vdmswlK8k03+ZJnxjyZM5Hc3g8n04vrnIaLB5hPgYr3BsaVN/0oRgV4o6ingMx
-         8dgj4HAuJqdaey6aMB8Jtibepi5KIF7jGd9GHlkgJB+EywtBgVGmKN/0rZn5CQw+N4uQ
-         IZsUYp6nDX6JLAT2QPghae4yXbO/ulnJ7gAN/vveWvoDLY9v0oULM3tJToziz+dHS4sQ
-         DKneGH7rztuZ+jRe3FOuGLq0e5ZCidmBUduKJvHamcOITD4EKaqpzIhB5TC4bwX54zA2
-         E+NA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vX0mCVgZ/TEe/oLuoOJv1/ATY6BWIt4qZwuFYY1g4pY=;
-        b=0nvKKdIJvWtakZHyOSbks+0UvX6MPFR5e13d3I/2X+Fij8ytTWHgAc6BHSz/LcvM8O
-         ZxFER8u46RZ9i1YnMPC3uIGhxjQgk0tdMv593nyBtSsmVjH8LPdrT/2EAc+1L56ifkkD
-         IiMF6KJNShlnrojxh6GUVwZJpA5rVaG8SsYnSi2iGC5hpz10aPrWOKc6/GkVXVqODsQE
-         Um6oqQOFaUBnzrRqtCW/6HSqd0UI3EpFi5/jRzPN7Zsx9/kkc76Co6FGJrMTHKZqnKUY
-         ocJGJ/pVtq2gaWDPrudF1CPDQCLzFENv3XlXHQ3IsM/UIYlIkSzKbrAJY8STzfOpk7Bd
-         jOSg==
-X-Gm-Message-State: AOAM531mPtNjBPLQi3zaSk/xxVCzmPAfpHaFVdPj+nvprwt3+RlU7W59
-        cztRHpsNMG3K00mtfzA+AO+5KDPuSlEV4Q==
-X-Google-Smtp-Source: ABdhPJwqh6+s/Og2RbPeNFIrmfr11lvl4QNCVw+mUOV4YVk5nq6PU0E/2tJf4ZEEJNlxLw8OdHG1cA==
-X-Received: by 2002:a37:a88b:: with SMTP id r133mr3800461qke.290.1634205053066;
-        Thu, 14 Oct 2021 02:50:53 -0700 (PDT)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id u3sm1079670qkj.53.2021.10.14.02.50.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Oct 2021 02:50:52 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Andreas Roeseler <andreas.a.roeseler@gmail.com>
-Subject: [PATCHv3 net] icmp: fix icmp_ext_echo_iio parsing in icmp_build_probe
-Date:   Thu, 14 Oct 2021 05:50:50 -0400
-Message-Id: <31628dd76657ea62f5cf78bb55da6b35240831f1.1634205050.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        id S230035AbhJNJyz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 05:54:55 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:22452 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229468AbhJNJyy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 05:54:54 -0400
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-281-0kZEbeCKOrajOVXG60QEgw-1; Thu, 14 Oct 2021 10:52:48 +0100
+X-MC-Unique: 0kZEbeCKOrajOVXG60QEgw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.23; Thu, 14 Oct 2021 10:52:47 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.023; Thu, 14 Oct 2021 10:52:47 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Christophe Leroy' <christophe.leroy@csgroup.eu>,
+        'Hari Bathini' <hbathini@linux.ibm.com>,
+        "naveen.n.rao@linux.ibm.com" <naveen.n.rao@linux.ibm.com>,
+        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>
+CC:     "paulus@samba.org" <paulus@samba.org>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+Subject: RE: [RESEND PATCH v4 0/8] bpf powerpc: Add BPF_PROBE_MEM support in
+ powerpc JIT compiler
+Thread-Topic: [RESEND PATCH v4 0/8] bpf powerpc: Add BPF_PROBE_MEM support in
+ powerpc JIT compiler
+Thread-Index: AQHXv2X2sg2Hg8STAUWVvVtx4py8mavSKAQw///02QCAACVDAA==
+Date:   Thu, 14 Oct 2021 09:52:46 +0000
+Message-ID: <edd852c0f36145b6a2967086bbb589fb@AcuMS.aculab.com>
+References: <20211012123056.485795-1-hbathini@linux.ibm.com>
+ <8091e1294ad343a88aa399417ff91aee@AcuMS.aculab.com>
+ <61bc0e8e-8ab9-f837-1b44-1e193567fff7@csgroup.eu>
+In-Reply-To: <61bc0e8e-8ab9-f837-1b44-1e193567fff7@csgroup.eu>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In icmp_build_probe(), the icmp_ext_echo_iio parsing should be done
-step by step and skb_header_pointer() return value should always be
-checked, this patch fixes 3 places in there:
-
-  - On case ICMP_EXT_ECHO_CTYPE_NAME, it should only copy ident.name
-    from skb by skb_header_pointer(), its len is ident_len. Besides,
-    the return value of skb_header_pointer() should always be checked.
-
-  - On case ICMP_EXT_ECHO_CTYPE_INDEX, move ident_len check ahead of
-    skb_header_pointer(), and also do the return value check for
-    skb_header_pointer().
-
-  - On case ICMP_EXT_ECHO_CTYPE_ADDR, before accessing iio->ident.addr.
-    ctype3_hdr.addrlen, skb_header_pointer() should be called first,
-    then check its return value and ident_len.
-    On subcases ICMP_AFI_IP and ICMP_AFI_IP6, also do check for ident.
-    addr.ctype3_hdr.addrlen and skb_header_pointer()'s return value.
-    On subcase ICMP_AFI_IP, the len for skb_header_pointer() should be
-    "sizeof(iio->extobj_hdr) + sizeof(iio->ident.addr.ctype3_hdr) +
-    sizeof(struct in_addr)" or "ident_len".
-
-v1->v2:
-  - To make it more clear, call skb_header_pointer() once only for
-    iio->indent's parsing as Jakub Suggested.
-v2->v3:
-  - The extobj_hdr.length check against sizeof(_iio) should be done
-    before calling skb_header_pointer(), as Eric noticed.
-
-Fixes: d329ea5bd884 ("icmp: add response to RFC 8335 PROBE messages")
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/ipv4/icmp.c | 23 +++++++++++------------
- 1 file changed, 11 insertions(+), 12 deletions(-)
-
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index 8b30cadff708..b7e277d8a84d 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -1054,14 +1054,19 @@ bool icmp_build_probe(struct sk_buff *skb, struct icmphdr *icmphdr)
- 	iio = skb_header_pointer(skb, sizeof(_ext_hdr), sizeof(iio->extobj_hdr), &_iio);
- 	if (!ext_hdr || !iio)
- 		goto send_mal_query;
--	if (ntohs(iio->extobj_hdr.length) <= sizeof(iio->extobj_hdr))
-+	if (ntohs(iio->extobj_hdr.length) <= sizeof(iio->extobj_hdr) ||
-+	    ntohs(iio->extobj_hdr.length) > sizeof(_iio))
- 		goto send_mal_query;
- 	ident_len = ntohs(iio->extobj_hdr.length) - sizeof(iio->extobj_hdr);
-+	iio = skb_header_pointer(skb, sizeof(_ext_hdr),
-+				 sizeof(iio->extobj_hdr) + ident_len, &_iio);
-+	if (!iio)
-+		goto send_mal_query;
-+
- 	status = 0;
- 	dev = NULL;
- 	switch (iio->extobj_hdr.class_type) {
- 	case ICMP_EXT_ECHO_CTYPE_NAME:
--		iio = skb_header_pointer(skb, sizeof(_ext_hdr), sizeof(_iio), &_iio);
- 		if (ident_len >= IFNAMSIZ)
- 			goto send_mal_query;
- 		memset(buff, 0, sizeof(buff));
-@@ -1069,30 +1074,24 @@ bool icmp_build_probe(struct sk_buff *skb, struct icmphdr *icmphdr)
- 		dev = dev_get_by_name(net, buff);
- 		break;
- 	case ICMP_EXT_ECHO_CTYPE_INDEX:
--		iio = skb_header_pointer(skb, sizeof(_ext_hdr), sizeof(iio->extobj_hdr) +
--					 sizeof(iio->ident.ifindex), &_iio);
- 		if (ident_len != sizeof(iio->ident.ifindex))
- 			goto send_mal_query;
- 		dev = dev_get_by_index(net, ntohl(iio->ident.ifindex));
- 		break;
- 	case ICMP_EXT_ECHO_CTYPE_ADDR:
--		if (ident_len != sizeof(iio->ident.addr.ctype3_hdr) +
-+		if (ident_len < sizeof(iio->ident.addr.ctype3_hdr) ||
-+		    ident_len != sizeof(iio->ident.addr.ctype3_hdr) +
- 				 iio->ident.addr.ctype3_hdr.addrlen)
- 			goto send_mal_query;
- 		switch (ntohs(iio->ident.addr.ctype3_hdr.afi)) {
- 		case ICMP_AFI_IP:
--			iio = skb_header_pointer(skb, sizeof(_ext_hdr), sizeof(iio->extobj_hdr) +
--						 sizeof(struct in_addr), &_iio);
--			if (ident_len != sizeof(iio->ident.addr.ctype3_hdr) +
--					 sizeof(struct in_addr))
-+			if (iio->ident.addr.ctype3_hdr.addrlen != sizeof(struct in_addr))
- 				goto send_mal_query;
- 			dev = ip_dev_find(net, iio->ident.addr.ip_addr.ipv4_addr);
- 			break;
- #if IS_ENABLED(CONFIG_IPV6)
- 		case ICMP_AFI_IP6:
--			iio = skb_header_pointer(skb, sizeof(_ext_hdr), sizeof(_iio), &_iio);
--			if (ident_len != sizeof(iio->ident.addr.ctype3_hdr) +
--					 sizeof(struct in6_addr))
-+			if (iio->ident.addr.ctype3_hdr.addrlen != sizeof(struct in6_addr))
- 				goto send_mal_query;
- 			dev = ipv6_stub->ipv6_dev_find(net, &iio->ident.addr.ip_addr.ipv6_addr, dev);
- 			dev_hold(dev);
--- 
-2.27.0
+RnJvbTogQ2hyaXN0b3BoZSBMZXJveQ0KPiBTZW50OiAxNCBPY3RvYmVyIDIwMjEgMDk6MzQNCj4g
+DQo+IExlIDE0LzEwLzIwMjEgw6AgMTA6MTUsIERhdmlkIExhaWdodCBhIMOpY3JpdMKgOg0KPiA+
+IEZyb206IEhhcmkgQmF0aGluaQ0KPiA+PiBTZW50OiAxMiBPY3RvYmVyIDIwMjEgMTM6MzENCj4g
+Pj4NCj4gPj4gUGF0Y2ggIzEgJiAjMiBhcmUgc2ltcGxlIGNsZWFudXAgcGF0Y2hlcy4gUGF0Y2gg
+IzMgcmVmYWN0b3JzIEpJVA0KPiA+PiBjb21waWxlciBjb2RlIHdpdGggdGhlIGFpbSB0byBzaW1w
+bGlmeSBhZGRpbmcgQlBGX1BST0JFX01FTSBzdXBwb3J0Lg0KPiA+PiBQYXRjaCAjNCBpbnRyb2R1
+Y2VzIFBQQ19SQVdfQlJBTkNIKCkgbWFjcm8gaW5zdGVhZCBvZiBvcGVuIGNvZGluZw0KPiA+PiBi
+cmFuY2ggaW5zdHJ1Y3Rpb24uIFBhdGNoICM1ICYgIzcgYWRkIEJQRl9QUk9CRV9NRU0gc3VwcG9y
+dCBmb3IgUFBDNjQNCj4gPj4gJiBQUEMzMiBKSVQgY29tcGlsZXJzIHJlc3BlY3RpdmVseS4gUGF0
+Y2ggIzYgJiAjOCBoYW5kbGUgYmFkIHVzZXJzcGFjZQ0KPiA+PiBwb2ludGVycyBmb3IgUFBDNjQg
+JiBQUEMzMiBjYXNlcyByZXNwZWN0aXZlbHkuDQo+ID4NCj4gPiBJIHRob3VnaHQgdGhhdCBCUEYg
+d2FzIG9ubHkgYWxsb3dlZCB0byBkbyBmYWlybHkgcmVzdHJpY3RlZA0KPiA+IG1lbW9yeSBhY2Nl
+c3NlcyAtIHNvIFdURiBkb2VzIGl0IG5lZWQgYSBCUEZfUFJPQkVfTUVNIGluc3RydWN0aW9uPw0K
+PiA+DQo+IA0KPiANCj4gTG9va3MgbGlrZSBpdCdzIGJlZW4gYWRkZWQgYnkgY29tbWl0IDJhMDI3
+NTllZjVmOCAoImJwZjogQWRkIHN1cHBvcnQgZm9yDQo+IEJURiBwb2ludGVycyB0byBpbnRlcnBy
+ZXRlciIpDQo+IA0KPiBUaGV5IHNheSBpbiB0aGUgbG9nOg0KPiANCj4gICAgICBQb2ludGVyIHRv
+IEJURiBvYmplY3QgaXMgYSBwb2ludGVyIHRvIGtlcm5lbCBvYmplY3Qgb3IgTlVMTC4NCj4gICAg
+ICBUaGUgbWVtb3J5IGFjY2VzcyBpbiB0aGUgaW50ZXJwcmV0ZXIgaGFzIHRvIGJlIGRvbmUgdmlh
+DQo+ICAgICAgcHJvYmVfa2VybmVsX3JlYWQgdG8gYXZvaWQgcGFnZSBmYXVsdHMuDQoNCkhtbW0u
+Li4uDQoNCkVpdGhlciB0aGUgcG9pbnRlciBzaG91bGQgYmUgdmFsaWQgKGlmIG5vdCBOVUxMKSBv
+ciB0aGV5IHNob3VsZA0KdmVyaWZ5IHRoYXQgaXQgaXMgdGhlIGFkZHJlc3Mgb2YgYW4gaW50ZXJw
+cmV0ZXIuDQpJZiB0aGUgdmFsdWUgaXMgYmVpbmcgcGFzc2VkIHRvL2Zyb20gdXNlcnNwYWNlIHRo
+ZW4gdGhleQ0KYXJlIGxlYWtpbmcga2VybmVsIGFkZHJlc3MgLSBhbmQgdGhhdCBuZWVkcyB0byBi
+ZSBzcXVhc2hlZC4NCg0KVGhleSBzaG91bGQgYmUgdXNpbmcgYW4gb3BhcXVlIGlkZW50aWZpZXIg
+Zm9yIHRoZSBpbnRlcnByZXRlci4NCg0KTXkgZ3V0IGZlZWxpbmcgaXMgdGhhdCBhIGxvdCBvZiB0
+aGUgY2hhbmdlcyB0byBicGYgb3ZlciB0aGUgbGFzdA0KZmV3IHllYXJzIG1lYW5zIHRoYXQgaXQg
+aXMgbm8gbG9uZ2VyIGEgdmVyaWZpYWJseSBzYWZlIHNpbXBsZQ0KZmlsdGVyIGVuZ2luZS4NCkFz
+IHN1Y2ggdGhlIHlvdSBtaWdodCBhcyB3ZWxsIGxvYWQgYSBub3JtYWwga2VybmVsIG1vZHVsZS4N
+Cg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2Fk
+LCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5v
+OiAxMzk3Mzg2IChXYWxlcykNCg==
 
