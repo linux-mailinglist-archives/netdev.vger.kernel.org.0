@@ -2,164 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6055A42DA5A
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 15:27:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CA4D42DA89
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 15:34:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230245AbhJNN3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 09:29:42 -0400
-Received: from mail-eopbgr80050.outbound.protection.outlook.com ([40.107.8.50]:25109
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230205AbhJNN3l (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Oct 2021 09:29:41 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dHfTuewaX7RuzSWZVSwx9PxZO+L6UjbzTPXzMzM4sQ7/9HFKpwcy6BGOW6A6JiaJg2O9egenZGlgHmYAvNt+MZ48NRDfqyR19TNRCWEzSvBTcLzwC3FDS52sEh09fu4g6SObydbdc2IUIwI5YBVJoyf6dU8KKiAMYvak5Sq7G4OxU/aHQEbi7NokKBcUtUkrqZSJ2PGHvQncX/7Oe41P/1vB7tYHqh7A0EfQtSGIF20vW+BcTEs0ILNy/sYbKZ75Gk50zdorMwzaIK9g3ZPyvCHIVHOcH1/O2/ThWutfvIqp1buN8Gl3pANnyTQRQ9IBGrDC0Onw6j4l6WcB2S8wVQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SxX3/8Szm+/595jehOyQqDg/FCB0DErjPqqwijcQsXI=;
- b=ecHTJm4hxkkjRDGa+bTPI/ei5DDHaIYoyXqYGZEJlEWbmM25BMb4Vmij7ipvcdgnX2zedmhWtRdXrdiaqDnEmybikJ55XjchmtpxWjRGn/bbfTTztfnwO2dcOm4sTxCGvlu7TqLHGgP7rM0y8KIaN5xdnWx0bPAm2OVM0pzah/Bj2RJnqx43tF97rQuHEFeE5abT20GeeFpvsxMUWRtAzsqBcVxjy5SRy4CWwe2zlX1m1bLDIUaE6WtTYqNR/57Pe0htjlDF6JR9/3Kvpg6jjGmQQdtEGdGf6t4IvkvchiiBJNUMTeoXnIm498WhwJyLrdoh/eoj3TyvPHOGUYucDQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SxX3/8Szm+/595jehOyQqDg/FCB0DErjPqqwijcQsXI=;
- b=XfOfAAsZPZn7aK/M2SET3lDW0Oa7/icfweNoD3g6VswzRCIs8q0qOsg+a9fsksVkVmiH+GbZxrLMi3JypXz4ywq+V+KNLxcwTtG8z3rHwc6u+OGcLIsEXiynXh7eDsabgcrufnmqkdh+J1PzYYaVdeT/fPLqp0/x9ghGzavPhUo=
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=oss.nxp.com;
-Received: from AM0PR04MB6018.eurprd04.prod.outlook.com (2603:10a6:208:138::18)
- by AM0PR04MB6020.eurprd04.prod.outlook.com (2603:10a6:208:13d::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.22; Thu, 14 Oct
- 2021 13:27:34 +0000
-Received: from AM0PR04MB6018.eurprd04.prod.outlook.com
- ([fe80::9556:9329:ce6f:7e3e]) by AM0PR04MB6018.eurprd04.prod.outlook.com
- ([fe80::9556:9329:ce6f:7e3e%6]) with mapi id 15.20.4587.030; Thu, 14 Oct 2021
- 13:27:34 +0000
-Message-ID: <c361070cc08063f19bbc5756714d677d5c649ed2.camel@oss.nxp.com>
-Subject: Re: [PATCH net-next] ptp: add vclock timestamp conversion IOCTL
-From:   Sebastien Laveze <sebastien.laveze@oss.nxp.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yangbo.lu@nxp.com, yannick.vignon@oss.nxp.com,
-        rui.sousa@oss.nxp.com
-Date:   Thu, 14 Oct 2021 15:27:29 +0200
-In-Reply-To: <20211013175405.GB24542@hoboy.vegasvil.org>
-References: <20210928133100.GB28632@hoboy.vegasvil.org>
-         <0941a4ea73c496ab68b24df929dcdef07637c2cd.camel@oss.nxp.com>
-         <20210930143527.GA14158@hoboy.vegasvil.org>
-         <fea51ae9423c07e674402047851dd712ff1733bb.camel@oss.nxp.com>
-         <20211007201927.GA9326@hoboy.vegasvil.org>
-         <768227b1f347cb1573efb1b5f6c642e2654666ba.camel@oss.nxp.com>
-         <20211011125815.GC14317@hoboy.vegasvil.org>
-         <ca7dd5d4143537cfb2028d96d1c266f326e43b08.camel@oss.nxp.com>
-         <20211013131017.GA20400@hoboy.vegasvil.org>
-         <646d27a57e72c88bcba7f4f1362d998bbb742315.camel@oss.nxp.com>
-         <20211013175405.GB24542@hoboy.vegasvil.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM8P191CA0018.EURP191.PROD.OUTLOOK.COM
- (2603:10a6:20b:21a::23) To AM0PR04MB6018.eurprd04.prod.outlook.com
- (2603:10a6:208:138::18)
+        id S230177AbhJNNgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 09:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55512 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231161AbhJNNf7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 09:35:59 -0400
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD91C061762
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 06:33:54 -0700 (PDT)
+Received: by mail-qv1-xf33.google.com with SMTP id cv2so3722502qvb.5
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 06:33:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=konsulko.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6BcmqvnYViEIh48To1seJSXIijn4d6ZSZ7k3f+Yktoo=;
+        b=WyR7VMh0hbMsAtleInHlYp/PyzHfcoWba5Lblnza+Ml+5P7u5g4w/o2lKo0X4Wq0BN
+         qLDsAYwzNK72LEcoabc6Fdpv08rdjj2b2vzCA0a4BqTXEBAEX4b/7aXxpslEYSTX8DXo
+         7CEVgpzsIwww1pqHMh6nl/0NwzWLRl4x+jXI0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6BcmqvnYViEIh48To1seJSXIijn4d6ZSZ7k3f+Yktoo=;
+        b=BYFhGGcIHls8cg5Y/0vY1fd/m/STk5ov7RFIq6UROyXIew4d9Zc8xa8fYwFXyR7RLn
+         OkHouZSYRBtiGGQvtmp3FNYncudLQ8R5icsem52t/JFg/hFZTUOtsajs9tK58ixzuEBt
+         V7emAODhib5bPln7K2xfv0nq4rd/Mi8iHPmsRCLKyH79XI9GLjfvln9Ygdh462B4XnmI
+         tbsTpNrrpoFYeUZJ55fEKBdcxvvAdNdBlCsTSy835PEUsV3BJnlpOLNdXaghr85uc3k0
+         WksfDWZHc21Mlc0Y/cVV2fuFM0dm7p/fLAeyWE4B8YLwYeZBzZNfN5KChCMNSGipb1/R
+         ko0w==
+X-Gm-Message-State: AOAM532SvXn1FeC472eOUZlwiNyFIZslU60cAiTE2D/5WnYRlqWtJyXb
+        Ts8sPvKeERjPBOf0bmp+5P2BNA==
+X-Google-Smtp-Source: ABdhPJw5LsNyTAGPpiW66Ow6a1r04mwufMVin71Cm8de/KShizf497R610ZNXNOKwBKSNIfUWlFr1w==
+X-Received: by 2002:a05:6214:506:: with SMTP id v6mr5264835qvw.52.1634218428689;
+        Thu, 14 Oct 2021 06:33:48 -0700 (PDT)
+Received: from bill-the-cat (2603-6081-7b01-cbda-0d65-5385-0e85-d408.res6.spectrum.com. [2603:6081:7b01:cbda:d65:5385:e85:d408])
+        by smtp.gmail.com with ESMTPSA id p19sm1431432qtk.20.2021.10.14.06.33.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Oct 2021 06:33:47 -0700 (PDT)
+Date:   Thu, 14 Oct 2021 09:33:43 -0400
+From:   Tom Rini <trini@konsulko.com>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     robh+dt@kernel.org, devicetree@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        U-Boot Mailing List <u-boot@lists.denx.de>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Luka Kovacic <luka.kovacic@sartura.hr>
+Subject: Re: [PATCH RFC linux] dt-bindings: nvmem: Add binding for U-Boot
+ environment NVMEM provider
+Message-ID: <20211014133343.GA7964@bill-the-cat>
+References: <20211013232048.16559-1-kabel@kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from soplpuats06.ea.freescale.net (81.1.10.98) by AM8P191CA0018.EURP191.PROD.OUTLOOK.COM (2603:10a6:20b:21a::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.16 via Frontend Transport; Thu, 14 Oct 2021 13:27:33 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5f0803b9-9fec-42ec-0fb1-08d98f166180
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6020:
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB6020FECDC121065C9982AA2BCDB89@AM0PR04MB6020.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /ILddaltp2Z7wX5aaai4sbE9y3tin4zyZzAtZucXBsDKd49vHXQbTxN4z25xmAKWloMzSaHD1I4DZPkdFnjZr8mIg3/sde/HWprhJo8sLXXPJtJFtwoKfuFWEjp/DszUvEiGs2jDkgYqnZgtwAQnov8LsS1CISSJqCXJ1L+oo+6VXNGXvKAKFge7g/zui23T9JQiflFYk7iQzDkQ5xgCIDn35+XjnWtU99RrhUooeV24EdTLF1jI7MB2C25aNIxjVGLEKEcUxlrBqCVHGsqmfqisqF1NHsReN04321FWERUWAZGYS0C8w+JTM2mDAIPR0xr0tkmwX83wLJOeP5dY9oJWhKRFFt7JyRqXI77MlDkXqjwhl8eaLac3skNbtfT6N1BUjRKr9pUmp9BexP4XydPrXjqIiaf/MBuGGMemC0QuoGeomLBVnlEh0uz5k+FFEg1THLxsveIOwTChXh5tA7Snjge4FHqFAv6PPq4soAC6mrT0Bv7fLiDp/pSWYjMbkKNjFph1dHSS+d6QVR6RFtkQuxO8YCsOxun3OZc2lQi8pvZSVvMlbV5M3iOU7/n1xiAE2QEYtXJtgvSQpB3nWbQKFG+xZYT3m3T7eKYQ31jixVINVQG64XzQzM/3oaErpYA6NjjGZn3MIy4fwBYRw4UcEe3JO1snBNz1/blPdun5sZ3rN/DY23DtAk/Erpa8
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6018.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(8936002)(26005)(6506007)(38100700002)(38350700002)(6486002)(6666004)(2906002)(44832011)(2616005)(956004)(6512007)(4001150100001)(8676002)(4326008)(66556008)(316002)(66946007)(52116002)(186003)(508600001)(86362001)(83380400001)(5660300002)(66476007)(6916009);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?d283cGtmTWtRdWZuVkZ0ejh2TFVXL2xZZVdvcEJMTE94ekRlY05qQnVTS2tq?=
- =?utf-8?B?VXJBZlFOeUEvaHBES3NDQURtQWFQc1pNVkZoN05XdnhzZHRkYXFmTUtseXRh?=
- =?utf-8?B?N1JGVjhySXVmcTJQejFRdW9KQ3lyRTdEeUtWZCtBdUQ4ZU1TN2sxdmpzcURK?=
- =?utf-8?B?dHUrVkhiekFqR2I3WnNqZGl2NXJlKzBSUlpMZnZwN20rOGFwbGhtZGJMZ3pu?=
- =?utf-8?B?U0d0bTdvVkdUQ0RpM0FCVHhVUkdNRFNPeTlaZ0U3MTkvSm11ZVpQODlYNHFr?=
- =?utf-8?B?cnphT1BEZGN0NG5yZDArNXlLM05JYWhkd25oOUVQc1pEQUcvS1V2MXhRdEpt?=
- =?utf-8?B?SnZvZ0ZGV25qb2llSjh6UUJJQmg0cTBmdmtqd3ZJd3dwNlE1YjJaajlTWC9T?=
- =?utf-8?B?QXZPTE10NkhPVmJjdWVWZGpEakF4NWlMKzZuT005ank4UUhoUmZXOWpRTnZI?=
- =?utf-8?B?WGV6VTBPZElpTTFScFUybTQ1TSt2bVkrM09Mc1R2UU9OSDFkNnlSWnRBQldK?=
- =?utf-8?B?OGZOTzZrUHk0UC9ENGNMSkwwNVZiSWttajhQQko4bHFFVmdOVkRZTHRXekMy?=
- =?utf-8?B?VEVqUkhVMHJlekJGanlTT3AwTjFRbjRWNVp4akZoVGlodG5JTitOZlNPMURj?=
- =?utf-8?B?amZYMnNXckNFT29ZVmtOVTdZc2pwNGNWbWtCQk00WW56QWhXK1dhUzltSXA3?=
- =?utf-8?B?U1M4OWQ5ajQyNCtDSGF3ZHBmNlVIL213dnYwZTBYSkFteFR1cmFabFFjdDUz?=
- =?utf-8?B?bktXcjVGS09BMWVhOW1mZHJTUlBWVFZDbXBwSFovbmRBeTJ4d01TWlA0MkhL?=
- =?utf-8?B?VzJCbmZuSWw3RnRkbjUvUm1qTUxIMGhnalY2VGJZM2VMbC8yNThVVFhYVFlG?=
- =?utf-8?B?R3JKcUV2TVB1SWp5WU9aYXI2bjMvTmVydGNFL0hzejFyd0Ewa0NzV2xMR0JD?=
- =?utf-8?B?c3pjNFd0Ny9iNDl2SnlHb3ZMQ1UrL0FrdlIweG5ZcjJkQmxMbEtIQzdsOUhR?=
- =?utf-8?B?REphOHR3TnZzUXBYT2s3c2hwY3lxMUo1bnRHYk5pRkx6Nk1OZnRFN3JLNVBO?=
- =?utf-8?B?SmJ5NHE3dnlkSXF3VnpvRVQ4ZFY1T2VOMTAxS3R2ekJUa0xZWUZqTTlucEt0?=
- =?utf-8?B?MWxBSS9PYlM5cWVVK3MrUWNKL1dVU2RYRFBmSHRUdm9udGhYdWhTZEZ2ZnhF?=
- =?utf-8?B?WHdhVzRqUjgrMURzS1lRTUtJbDJ1SDlyVnE1VzhiOC9SbTk1a1BFYmhPK1BS?=
- =?utf-8?B?Yi8wSGVjZ3kwc3NwL0IwbVZVb3M3N2Jsam1Vd1JiRDFXTGVXdjZWZi94TFo2?=
- =?utf-8?B?M01RZ3J2dVhqSFdsKzB6dFhGNC8zazRKNGF3N3lZNXBxaHVMMlR4Mmg0cjRx?=
- =?utf-8?B?d0cwNjdPYW56Uk4wdkhJbUREbTBZY0V3RGxiK0taS2hvbDVNcWN4RklrWGxy?=
- =?utf-8?B?NlZ3UmVpdGVHNUFHbzN4RGxHbk9uY1dHcFhaaGlPcUUyZWppUm8xdjZoc1VB?=
- =?utf-8?B?ZllZWGp6L3RCcG1LNVJiaVlDZkJJVThrUWFKeWNQZUs2b09HUTVnQXZ4djJC?=
- =?utf-8?B?bU5kQUZaTUZjYUhHbTl4WXFMU0lCVHVxdnJ3SnJqcWNNVmR2enVhQm9uZmtn?=
- =?utf-8?B?Q1dSTjdER0E2RmlrSytsWmFuRkhzMm96VHlxdWNkcDhpajArUzV4NWdNVHBw?=
- =?utf-8?B?Ym92cElSbkIrWCttU1E4RTA0N2p6QnU3OTBJcURXa0dHK2dETzV4c0dTUkpK?=
- =?utf-8?Q?MeqKM2ckYbMSkwd0CBjR9rolCNeD+lEng8QCpKJ?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5f0803b9-9fec-42ec-0fb1-08d98f166180
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6018.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Oct 2021 13:27:33.9559
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nrXrgPM43crXe1M6yJPo9G5I759gOk8WMw0u2Z9EEGlEw5weHeyNASTQoSH7ihI8Do447ZTwJUxk8c4asYwRZXKx2Og1abwEs55CU+/BVLc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6020
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="19yxUJAiKHVhK1FQ"
+Content-Disposition: inline
+In-Reply-To: <20211013232048.16559-1-kabel@kernel.org>
+X-Clacks-Overhead: GNU Terry Pratchett
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-10-13 at 10:54 -0700, Richard Cochran wrote:
-> On Wed, Oct 13, 2021 at 03:28:12PM +0200, Sebastien Laveze wrote:
-> > On Wed, 2021-10-13 at 06:10 -0700, Richard Cochran wrote:
-> > > That means no control over the phase of the output signals.  Super.
-> > 
-> > You have. There's just a small conversion to go from and to the low-
-> > level hardware counter. (Which also needs to be done for rx/tx
-> > timestamps btw) 
-> > When programming an output signal you use this offset to have the right
-> > phase.
-> 
-> I have an i210 with 2 periodic output channels.  How am I supposed to
-> generate signals from two different virtual PTP clocks?
 
-Is it something currently supported to generate output signals from
-virtual clocks ? (I would say no)
+--19yxUJAiKHVhK1FQ
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-It seems to me that any periodic signal handled in hardware (scheduled
-traffic for instance or periodic PPS) the hardware PHC frequency needs
-to be adjusted.
+On Thu, Oct 14, 2021 at 01:20:48AM +0200, Marek Beh=FAn wrote:
 
-For the offset, adjusting the PHC counter is not mandatory but requires
-to re-configure any active hardware periodic logic. And here I'm not
-saying it comes free. (especially if it would have to be supported by
-all devices with PHC)
+> Add device tree bindings for U-Boot environment NVMEM provider.
+>=20
+> U-Boot environment can be stored at a specific offset of a MTD device,
+> EEPROM, MMC, NAND or SATA device, on an UBI volume, or in a file on a
+> filesystem.
+>=20
+> The environment can contain information such as device's MAC address,
+> which should be used by the ethernet controller node.
+>=20
+> Signed-off-by: Marek Beh=FAn <kabel@kernel.org>
+> ---
+>  .../bindings/nvmem/denx,u-boot-env.yaml       | 88 +++++++++++++++++++
 
-In this regard, we think that the capability to allow PHC adjustements
-with virtual clocks may be on a per driver basis:
--driver exposes if it can make atomic offset adjustment or not
--if yes, allow PHC freq adjustments with a limited range. This range
-can be known by userspace using PTP_CLOCK_GETCAPS. This limitation
-doesn't have to be drastic but just here to prevent 10^6 ppm.
+We already have a vendor prefix for U-Boot, "u-boot" which should be
+used here.
 
-A limited adjustment remains an improvement vs no adjustment at all.
+--=20
+Tom
 
-Thanks,
-Sebastien
+--19yxUJAiKHVhK1FQ
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQGzBAABCgAdFiEEGjx/cOCPqxcHgJu/FHw5/5Y0tywFAmFoMbQACgkQFHw5/5Y0
+tyzETwv/WiHjFPTYHkbLH/q0GQ+AwOlojn0s5gVYnJG4xnsqkk1WYj9Af4u4Cky1
+wi0nv4tTbfrOMuJx7gdNpkDIpuBeqKEwu1OrgWurONDFDjgXMzywHG0dZvPdt7M7
+jFrGUlWhrv4wq5B5D9G+MKGrhAqpUi2ROfMZ7x6h7DPxa+wLRDPzrKeqRcGNQ1zP
+X6/Oz+H79f+gbDUc2OosGaTKWA+I1tJ8MNXJxXme6eO2uugqFwNIqptQOsM0KtTD
+dflVWpiyVRVgHPfuGikeKjYq5HNsY0nna5OPQbvPErsoW+RJCYXmrkIa5doKH8wJ
+EjUsTD/H1T8ur91xlM7ys3uzNzd/poozOAxGTRLGvwxRamuRvf55PmhhYGCXcd8i
+3IVrPz06/ItwmysTUfbThBAoRreDprfY/tKxqdoMt9sUh9V11cpw2jjfhTOmu7vX
+cTOg2Nq67+3h6XEyy/raYFGxcuVm1gSpDbPPFYTlxQN1shQXqERTMAtDh/iJnvYP
+G5d3MLRV
+=zlwI
+-----END PGP SIGNATURE-----
+
+--19yxUJAiKHVhK1FQ--
