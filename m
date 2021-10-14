@@ -2,83 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0353742DBF4
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 16:42:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3553F42DBF6
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 16:43:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231699AbhJNOop (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 10:44:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43292 "EHLO
+        id S231639AbhJNOpq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 10:45:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231685AbhJNOoo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 10:44:44 -0400
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 801A3C061570
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 07:42:39 -0700 (PDT)
-Received: by mail-qt1-x835.google.com with SMTP id y11so5896342qtn.13
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 07:42:39 -0700 (PDT)
+        with ESMTP id S230198AbhJNOpp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 10:45:45 -0400
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8003C061570
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 07:43:40 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id v17so5956281qtp.1
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 07:43:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=/yjEznXe8PGmI25I2l8yi3gHnvsfZLZpG8yYDPxzg30=;
-        b=ZK82Rea8GAm5DZNisT1C9eCp9uinMsoXxUsr84Wl1guunYJA1kdqbGm0WATuI/H7fl
-         3nrm7OFGe+K7/IzH32w/6+3yZ+VuTYqkv25ydI9Dy6LDPXD5kymNrkK2RiWti4DcVDp7
-         0dsv/ViHwVZqzHcY7lBGX6lHD7W1EE2JLZKUgoYyOCThE5oBJ4Di41ewMI/SYp10dwFD
-         zDiQgpIM+PKy5G75O5Z5e5qCDwCUv7aQXnWH0SZdb2cxS3qGA+Q2+iI0//U0EXKhojq9
-         sKZaeESeH7vUch9JT6Iy7Uz++JPNYEj1U86Joi3v5W2xOj7IFv8HmBEQF5MhumvQ7XfP
-         mJnQ==
+        bh=ITdFVgd0CcYj6iQsuAiP2p3dvvTOyzqMQ2c0R/TALeQ=;
+        b=bjF2RFuBLSkg41n4klDc4YJ83ECjlHKka7Go2am9IddIJmaQgg0lMd4k4V+KRj7YBr
+         Y2bHptEtHURA0de9RynBHxiH572aR3+VzjAAxS7aJXXC/GuNdRktbeZdrm9iaIvFJoFA
+         ZPwEqxDI7bhtOwiOZCK6WnrNDZ3noln9ieqJk0Q4rRCWpYiL7hF08/FoRzYhDS5s42K1
+         B+CLd6LdVAw4tsA8yVUV2x7uOSMaOroH/Oy2fs5Qg+oLovy2VH/uyYSQAnrxfedm1lzr
+         REUngbcFPokswv1XrnHHk3l0sF0N6oKwIPe2Rs+PjVvuLWy/vJQE5+kGTeeNpy1lNzZN
+         8FpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=/yjEznXe8PGmI25I2l8yi3gHnvsfZLZpG8yYDPxzg30=;
-        b=hEAuz/Xy1PH/+N/3q7Y6EL93xFBIQyxa85LDsyGdLVuLGCRmq1ZIv+jOlTYbYkWnEJ
-         Bf1NcPT9ExUGqkJ9h676cV1l03mNrrAZW6Jl6VWMImvlHlrOk4cWIHxwkt48+cXWNjLF
-         Splq24b622uJYunX7a7eDsEtMxkXD/HA2ajGdLxU8CrDhkpio414TQnxE30woN16zHyk
-         DQ6dIM8zWwa7Tofy5voVqkxVpNeOEkBHRRFiMQA3Xe1aGo6I559/OOB+heBBWONafcYe
-         G3fZ9mAG83UQNgOm0OkfHRfMTltya2tpq6CDx//N9Zj3kOFogJfSLZhyFBn9BJKnP/tj
-         VPOg==
-X-Gm-Message-State: AOAM530W816Tv46ISqyKxI+3fz8fmssrtdbzh4fXOOgZKl8FhJK/A0cs
-        JmvTEitRE5pROydlDMZfcg==
-X-Google-Smtp-Source: ABdhPJyQicuO9BMgJP2DmZKCXztmZylPM9J20/1lVvMA7JnX45LIvG3/NliZr7Kq1q1LMzQAS/r1wQ==
-X-Received: by 2002:a05:622a:13:: with SMTP id x19mr7033327qtw.83.1634222558740;
-        Thu, 14 Oct 2021 07:42:38 -0700 (PDT)
+        bh=ITdFVgd0CcYj6iQsuAiP2p3dvvTOyzqMQ2c0R/TALeQ=;
+        b=2+xKobWfyZVmkdla4nXm+fD7Cd5U0jAQswQasP58RzmPwbAoe373POC4AIPPHkwjFU
+         Xa77ndNrYDyhbecpdcn2wxZ0JFdD1nRGnikzbxJCNjhvP4liq5AcrEe1bB00GxgaykPv
+         0rhShtGOC8gZtrC5j+XeY+F3iVitJlakeL5ui4gnNL6PnGGklN6Z6TZ9uZYnOS62NUsu
+         vZNr76+mf3RfDq92UhT2YYrVP6+udnpDNNe1hBJ526X/y1jRP9QnX229n8HrdyU9wN+D
+         QKT7oUhEePeElKwwRywn6SUR5cqCIr6/jR4myD59K940qhnk6bXOI5tm1es5xwMulrkn
+         ssBA==
+X-Gm-Message-State: AOAM530PZ/FeZafAIoKKhP9qf5qTkQqJqo9cWoS6czvZKp34BXnX1tA7
+        CXKCnKTwuwKfKQfiHxfjEwXz8kWEsA==
+X-Google-Smtp-Source: ABdhPJymcxXmNoLZf+HVGTNyxwV3D0I9j+VJbBUY3rJ3VmIDgdWgaSB/UOGxulWIVJozM6Nn/YvCDA==
+X-Received: by 2002:ac8:5c16:: with SMTP id i22mr7170876qti.26.1634222620075;
+        Thu, 14 Oct 2021 07:43:40 -0700 (PDT)
 Received: from ICIPI.localdomain ([136.56.65.87])
-        by smtp.gmail.com with ESMTPSA id i13sm1425926qtp.87.2021.10.14.07.42.38
+        by smtp.gmail.com with ESMTPSA id n79sm1361991qke.97.2021.10.14.07.43.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Oct 2021 07:42:38 -0700 (PDT)
-Date:   Thu, 14 Oct 2021 10:42:31 -0400
+        Thu, 14 Oct 2021 07:43:39 -0700 (PDT)
+Date:   Thu, 14 Oct 2021 10:43:37 -0400
 From:   Stephen Suryaputra <ssuryaextr@gmail.com>
-To:     Edward Cree <ecree.xilinx@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>
-Subject: Re: ip_list_rcv() question
-Message-ID: <20211014144231.GA11651@ICIPI.localdomain>
-References: <20211007121451.GA27153@EXT-6P2T573.localdomain>
- <4dddfda5-1c03-6386-e204-e21df07aabd1@gmail.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>
+Subject: Re: Anybody else getting unsubscribed from the list?
+Message-ID: <20211014144337.GB11651@ICIPI.localdomain>
+References: <1fd8d0ac-ba8a-4836-59ab-0ed3b0321775@mojatatu.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4dddfda5-1c03-6386-e204-e21df07aabd1@gmail.com>
+In-Reply-To: <1fd8d0ac-ba8a-4836-59ab-0ed3b0321775@mojatatu.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 13, 2021 at 05:17:51PM +0100, Edward Cree wrote:
-> On 07/10/2021 13:14, Stephen Suryaputra wrote:
-> > Under what condition that ip_list_rcv() would restart the sublist, i.e.
-> > that the skb in the list is having different skb->dev?
++1. Had to re-subscribe.
+
+On Thu, Oct 14, 2021 at 10:18:12AM -0400, Jamal Hadi Salim wrote:
+> I was trying to catchup with the list and i noticed I
+> have stopped receiving emails since the 11th. I am leaning
+> towards my account being unsubscribed given i had to
+> resubscribe last time.
 > 
-> IIRC, something earlier in the call chain (possibly
->  __netif_receive_skb_core()?) can change skb->dev to something other
->  than the device that originally received the packet (orig_dev).  I
->  think it's if the packet gets handled/transformed by a software
->  netdevice (maybe a VLAN device?).
-> But really when I wrote ip_list_rcv() I just worked on the basis
->  that "I don't know it can't change, so I shall assume it can".
-
-I see now that vlan_do_receive() changes the skb->dev. It didn't occur
-to me because __netif_receive_skb_list_core() has a similar logic for
-dispatching sublists. But still the skb->dev could be different that
-orig_dev.
-
-Thanks.
+> Anyone else experiencing the same problem?
+> And, yes - ive checked all of spam...
+> 
+> Who owns the management of the list these days so i can
+> reach out to them?
+> 
+> cheers,
+> jamal
