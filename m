@@ -2,98 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 592C642E180
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 20:41:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CF9242E1BE
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 20:55:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233975AbhJNSnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 14:43:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41482 "EHLO
+        id S232123AbhJNS5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 14:57:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229610AbhJNSnQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 14:43:16 -0400
-Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2E4C061570
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 11:41:11 -0700 (PDT)
-Received: by mail-il1-x130.google.com with SMTP id s3so4614447ild.0
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 11:41:11 -0700 (PDT)
+        with ESMTP id S231327AbhJNS5X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 14:57:23 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173ABC061570
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 11:55:18 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id g5so4808386plg.1
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 11:55:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=0+I54Y0kBzlS+sPttMIRhZJO83USZ15pz3lII9HAt8k=;
-        b=HFmUVhmLxJHJwx8RCKinTmzUJer0MeAbzt9rSrnBbQZIdBK3rcFRJl0aehO02ARd1J
-         6dyhDqcf4y6rBjOHH9HJ58V2vxpbS8SdlztaXFLlDnjjVmXEHKOso/trER+e7dXx1Wat
-         bKJfMa++LXsacx4qxyNE6btLepHcNrrnR0C7m0SefGRMjbKVpGeVGL5NAnv2d1GZumQy
-         gR9CY0EmQUrCIs2sdFWtT8YJ5cJ1jvIjdp4sHDU4xvGPH9BelN8sJanbCtTVRHSDmfFr
-         RXigrZjWTekX9uUj9J6FVNmunOwn8kV+ojwTkPYR8xcWsn1u2qSG8cpIpXzmEFPRbsMH
-         Y1Sw==
+        h=message-id:subject:from:to:date:in-reply-to:references:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=j7wDhfUYmgwotP1y7gzXQPMh0D1p5UqPh72hBSBD4Qc=;
+        b=lun74KBrBj2/0VKpxEMxdXYS9uGj/cnpxqRj85owJApxk47olqfgZpmgeVPcdIRfqa
+         kv8EHF8pGz07CPy6tBdCgDChR1gNHzqP3xV+/8ywliLFqAN4S8014rty6Ug3fLp+gMLj
+         G610N6C8ZWbLbeAGB8URHF2FYgXpLAcUasKsEK9PJsm0YFE1WjcYGL7UkAaesfNXCr2l
+         OJWXHL8UG9oOyM/nKFOW/wMQffreNitxEAHVUpo62P7l3Dccf4ITAk4MXTIwV397JY77
+         bv5gKjyagQEVDRjXrF9OEyGx0LLCLjvpfaauAtYPGi2hUHpr+rJd9BWMB5LPPuCEoK5M
+         OefQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=0+I54Y0kBzlS+sPttMIRhZJO83USZ15pz3lII9HAt8k=;
-        b=D6u85N8c0JZWlX98ltMsMb2EVihIKIHIi3PUujba2J4pVOBRDL4uDH4/FEpLi6Yo6t
-         hDmGQJ/wmKsw/GNfy0UShwyseMxMQrMKTy5iZwPWlCGuV5vbO2O6SFD4iWD2NWQvYhlp
-         D8sMLe8TBYeGVVmrQFgz93WfdN2nb/eWXM7sdAAztr8V5fs93903Ldir85YiJVH4INfI
-         ZZWT9of0SNcENHl6UIzyFC1/jc7BR5sABSe/mE3LbdwNu3H4JoHra/U7W3juprs+QDAh
-         tfqlpSaK5Pn3EEO554oeE5DRfRTifl9Y0TlbZaO4Wh75xyHA7MYV+wsG15NurKEZihly
-         /k/A==
-X-Gm-Message-State: AOAM533hNMr1iCstSQ8SDAFOY9/NbnR+xiHdUbG52lD/q6L8dlZBmPVV
-        v8meq/ZD3+55RWdigZNClMm9XsFUk6fPkX0aBMk=
-X-Google-Smtp-Source: ABdhPJx8sLznRuZxE9J30VAohoj1qE0DN4xumeqvvBjkDKFg0VIMtYzCfY8dgyeFmLArUMDuG1ZA1KogcVYVxBdM6vA=
-X-Received: by 2002:a05:6e02:668:: with SMTP id l8mr479844ilt.134.1634236870555;
- Thu, 14 Oct 2021 11:41:10 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:a5d:8718:0:0:0:0:0 with HTTP; Thu, 14 Oct 2021 11:41:10
- -0700 (PDT)
-Reply-To: robertandersonhappy1@gmail.com
-From:   robert <andersonrobertpass11@gmail.com>
-Date:   Thu, 14 Oct 2021 11:41:10 -0700
-Message-ID: <CAOga3ccM5fd2mXJ1Me-NMtsb_kuEsm-Cyae0pOYnd4aVzJOgMg@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
+        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=j7wDhfUYmgwotP1y7gzXQPMh0D1p5UqPh72hBSBD4Qc=;
+        b=1k7tD9vwJmB6m2Ki65ULAqhv3wWsZiV4BuGd5bxVxuGdBG7G/UmXXTextbCmk+4E8v
+         KzpnhUiUFtnLgyM9RzE8LoSFlcGPP+DsGSk2afU9TR5zeQoCJ8TMMfKwBeKvTSeLdIGW
+         OnS1QDHYdlSHgRGZ7a0uQykCWQpuzBEAEfy+J5waEU8Aovtq/g2/SBqhGw+ylmKjDSow
+         g3yXfem95TDeZL+M6qgsjcPgkKzBwF+QmGshOX8wgP61qqEIwm4imCU6LUtntR7zxq+A
+         wBCNOVYkg4mkSak1vxGOujN9WWQSzK1WGo7T4/rPn9d78Fey4LT2myskKiP0hAoXagpS
+         rjOg==
+X-Gm-Message-State: AOAM533uLgDdi7ueoZU/D+hB4MIIyQG30fysRIT+7RHsxqJ8/V1RslLr
+        yczOP3DHAJONVFZs+z2BGhw=
+X-Google-Smtp-Source: ABdhPJwHBaUw13G4UA8teOg204EBZVH8DEk0p0EqTVqo2ZFmeh4FF6BTuJV44+qNZbmPE9ilU+Hn6g==
+X-Received: by 2002:a17:902:6b86:b0:13f:8d7a:397c with SMTP id p6-20020a1709026b8600b0013f8d7a397cmr655812plk.50.1634237717587;
+        Thu, 14 Oct 2021 11:55:17 -0700 (PDT)
+Received: from [192.168.254.55] ([50.39.163.188])
+        by smtp.gmail.com with ESMTPSA id t126sm3178139pfc.80.2021.10.14.11.55.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Oct 2021 11:55:17 -0700 (PDT)
+Message-ID: <81cd604b9d44d2058464d90788f43d6803f7eea3.camel@gmail.com>
+Subject: Re: [PATCH 1/4] net: arp: introduce arp_evict_nocarrier sysctl
+ parameter
+From:   James Prestwood <prestwoj@gmail.com>
+To:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
+Date:   Thu, 14 Oct 2021 11:52:00 -0700
+In-Reply-To: <1d503584-e463-3324-140a-14c86521cd59@gmail.com>
+References: <20211013222710.4162634-1-prestwoj@gmail.com>
+         <1d503584-e463-3324-140a-14c86521cd59@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+Hi David,
 
-How are you doing? I guess that you are fine and healthy. This is to inform
-you that I have concluded the transaction successfully. It has been a long
-time since our last communication. It was unfortunate that your partnership
-with me failed to complete the fund=E2=80=99s transfer. I guess it got to a=
- time
-when there was so much pressure and confusion that you became less
-interested about the transaction.
+On Thu, 2021-10-14 at 12:34 -0600, David Ahern wrote:
+> On 10/13/21 4:27 PM, James Prestwood wrote:
+> > This change introduces a new sysctl parameter, arp_evict_nocarrier.
+> > When set (default) the ARP cache will be cleared on a NOCARRIER
+> > event.
+> > This new option has been defaulted to '1' which maintains existing
+> > behavior.
+> > 
+> > Clearing the ARP cache on NOCARRIER is relatively new, introduced
+> > by:
+> > 
+> > commit 859bd2ef1fc1110a8031b967ee656c53a6260a76
+> > Author: David Ahern <dsahern@gmail.com>
+> > Date:   Thu Oct 11 20:33:49 2018 -0700
+> > 
+> >     net: Evict neighbor entries on carrier down
+> > 
+> > The reason for this changes is to prevent the ARP cache from being
+> > cleared when a wireless device roams. Specifically for wireless
+> > roams
+> > the ARP cache should not be cleared because the underlying network
+> > has not
+> > changed. Clearing the ARP cache in this case can introduce
+> > significant
+> > delays sending out packets after a roam.
+> 
+> how do you know if the existing ARP / ND entries are valid when
+> roaming?
+> 
 
+I guess there is no way of really knowing, but since your roaming in
+the same network I think we can assume the entries are just as valid
+prior to the roam as after it right? If there are invalid entries, they
+were likely invalid prior to the roam too.
 
-In any case, I=E2=80=99m happy to inform you about my success in getting th=
-e fund
-transferred under the co-operation of the new partner. I=E2=80=99m presentl=
-y in
-Venezuela on investment .However; i didn't forget your past effort and
-attempts to assist me in transferring the fund despite the fact that we
-couldn't reach a specific conclusion.
+I obviously cant speak to all network configurations, but I think if
+your network infrastructure is set up to roam you into a different
+subnet you're doing something wrong. Or I can't think of a reason to do
+this, it would defeat the purpose of quickly roaming between BSS's
+since you would then have to do DHCP aftewards.
 
-In appreciation of your attempt to assist, I and my new partner reached a
-decision that you deserve to be compensated, this letter is therefore to
-inform you that I left a compensation of $350,000.00 in your name so that
-you will share the joy with me. I advise you to contact BTCI bank for the
-transfer of the $350,000.00. To avoid a long delay of the compensation fund
-transfer, I instructed BTCI bank to issue an international ATM visa card
-and send it to your home address via courier delivery Company.
+Thanks,
+James
 
-The bank contact information is stated below:
-
-Bank Name: BTCI Bank
-Email Address: btcbanktg478@gmail.com
-Address: 169, Boulevard du 13 janvier BP 363 Lom=C3=A9, Togo
-Contact person: Mr. Leonard Mathias
-
-Inform me as soon as you receive the ATM visa card from BTCI bank. I wish
-you success in all your endeavors.
-
-Best Regards
-Barrister   uchenna ilobi
