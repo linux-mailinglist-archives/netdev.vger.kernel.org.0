@@ -2,97 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1409D42DACB
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 15:50:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DE6A42DAF8
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 15:58:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231723AbhJNNwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 09:52:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:27645 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231365AbhJNNwM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 09:52:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1634219407;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NU91yXOcSHE5nSjfMfHje2UOd8qpOzLy0LtZp6G93T4=;
-        b=M4FtwOeDSeX49mu+9oT9hZNNOnDSCenZGvZmkRLhZagAuCvpCkldnT5lyQoTjiJmk7cZUg
-        4mZj/vcHgERiVXDjDArej97L3LUcfF+WHSH5KlArPoPCIycH6Ee2KLU34DHE8y3DlMA6yi
-        YcT3EiQgQmy5sySU34e7+hFcSe61rW0=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-75-07MxgU9ZMy2PLvK8l51Gtg-1; Thu, 14 Oct 2021 09:50:03 -0400
-X-MC-Unique: 07MxgU9ZMy2PLvK8l51Gtg-1
-Received: by mail-wr1-f69.google.com with SMTP id d13-20020adf9b8d000000b00160a94c235aso4634823wrc.2
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 06:50:03 -0700 (PDT)
+        id S231703AbhJNOA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 10:00:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32940 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230177AbhJNOA2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 10:00:28 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 638EAC061570;
+        Thu, 14 Oct 2021 06:58:23 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id i76so3382985pfe.13;
+        Thu, 14 Oct 2021 06:58:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=dS0i6alI3BCHNaXfp1uM+JXm7ZDsa47H0oTFoSaCWMw=;
+        b=ndusAQ61wdgQFI7E6PkbvYr3ncmwCpa+P08lKrxTbW+l0njiL37dsZTK8PHGZSLp06
+         lYg4PTJ+fKeCHJfdmLS0F6yrU8+2PBPgJrmrghIo38lEXug25NFKS8/K6Px0f8/fkJcT
+         BkTr/5xnf7OtN7BZECHZegvUxkUuSgr5HUzJJ0S6nCYuWgxvN1VLL4/DXiwv+R3ugSob
+         PU654j614ktsavGien4Vo1+VWveuRmzcK/XsOYpU4u3o1sRPtZJX75Hd5I5KBDcOLjNP
+         93D0xzNryxXIepdP0eMtk1Whbtke9jRC8m/qX8nkT9/nq9hsAjpA01RGhl9R2k1NzFWK
+         VKjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=NU91yXOcSHE5nSjfMfHje2UOd8qpOzLy0LtZp6G93T4=;
-        b=hfjqaEatiOAjTLXVeyiXeiCw99bA6J/kx95Zz1AJGcw96ZO7cnK0HqE+Z2ciCsQk2V
-         5cMdWB4ak164pOYGV5DOlwpHUYviUVJusUp3xd32p2HSz2eXLW3PKZza9Acsp8QVFN6N
-         cujQJKbwTlKUMD6j361CBGSldSP5JBi+q3psioYgzSzPyDCFAHA0Q5Bf9KUkEJCPZssM
-         thov0BX7CYRgfGD5uYXsPKjF3j1SmUWKOVyxrUfO+lpBQsnloSCkopmnhpSV5fOv0boK
-         UMAg5IGnKs/5qGQiYAYP48FOvEfkz8sNT1N6fFQM4OU3NMF+9P+zT9MBf090mO7zLn19
-         p4/g==
-X-Gm-Message-State: AOAM531AC+Kck7IzNyjWCE499fzc17hItUVTSxpxP97uzPJufBWStoRX
-        8traG74S9eQ6NctOWs+U35T/AsuiBlwHwyeR0+4by4vEsj1nw9OxRF+2k6pKvZOZj13BkUsWgri
-        VNNf2cQa/ueHEXnNa
-X-Received: by 2002:adf:a48c:: with SMTP id g12mr6772212wrb.341.1634219402591;
-        Thu, 14 Oct 2021 06:50:02 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwhasqnkH6VqbFgdvBD0W5Dr+k4Bevu249dEYV/bhzX6RKl2KWbGOdZbqz1wCI3B6WA3SqVvQ==
-X-Received: by 2002:adf:a48c:: with SMTP id g12mr6772182wrb.341.1634219402382;
-        Thu, 14 Oct 2021 06:50:02 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-231-16.dyn.eolo.it. [146.241.231.16])
-        by smtp.gmail.com with ESMTPSA id c15sm2496966wrs.19.2021.10.14.06.50.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Oct 2021 06:50:02 -0700 (PDT)
-Message-ID: <f3cc125b2865cce2ea4354b3c93f45c86193545a.camel@redhat.com>
-Subject: Re: [syzbot] BUG: corrupted list in netif_napi_add
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        syzbot <syzbot+62e474dd92a35e3060d8@syzkaller.appspotmail.com>,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
-Cc:     toke@toke.dk, joamaki@gmail.com
-Date:   Thu, 14 Oct 2021 15:50:00 +0200
-In-Reply-To: <f821df00-b3e9-f5a8-3dcb-a235dd473355@iogearbox.net>
-References: <0000000000005639cd05ce3a6d4d@google.com>
-         <f821df00-b3e9-f5a8-3dcb-a235dd473355@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dS0i6alI3BCHNaXfp1uM+JXm7ZDsa47H0oTFoSaCWMw=;
+        b=LAMQ34E9rn8t3o+T/gqIpAB939LYad/AHVj7HzMOAUMZnFp9XKSFltS9iIhI1g0pbP
+         rPXr64GBl0oU+uaCqcBCjt3iVxt7kkbaIfmqzV4qm4Qmz1x7mVAY0Jro5nXWm4sagASx
+         yV7ndvQLxhQ/+9cy4DblQOLvEmMOh6JMKFzgAeSapJRqQSrZhzxG7bxFLUdV8SjUJhfX
+         WW6c/pP8u8xV5PZxlA4m6By5f5GSRpR7qeMtwYdPeNLmUzA9tnvFoVMIdhZ/BX7KZwy8
+         lTCVOdy+Xbkm1R95jl1k3tBxR8Td1GjgKWvsW1BZitah1liM2pTY3zrZlXgzN/ud5F2u
+         3lhg==
+X-Gm-Message-State: AOAM5336gDaivRdCTs9BJHKGGxZz6Z3779NnP2uI/v1OdMKevNAEuVHD
+        5XJHqh3/KDWTHVTpYprfgZptwZ4vf+E=
+X-Google-Smtp-Source: ABdhPJyyGc2oq5hhrdTOCQTBJCh4dUs6RzdGwbjgcpLodj6H7Cdwm29aHAUvSnAGURGmFclxzdGkgg==
+X-Received: by 2002:a63:3f05:: with SMTP id m5mr4346881pga.240.1634219902587;
+        Thu, 14 Oct 2021 06:58:22 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id p30sm2634991pgn.60.2021.10.14.06.58.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Oct 2021 06:58:22 -0700 (PDT)
+Subject: Re: [PATCH V4 net-next 1/6] ethtool: add support to set/get tx
+ copybreak buf size via ethtool
+To:     Guangbin Huang <huangguangbin2@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org, mkubecek@suse.cz, andrew@lunn.ch,
+        amitc@mellanox.com, idosch@idosch.org, danieller@nvidia.com,
+        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        jdike@addtoit.com, richard@nod.at, anton.ivanov@cambridgegreys.com,
+        netanel@amazon.com, akiyano@amazon.com, gtzalik@amazon.com,
+        saeedb@amazon.com, chris.snook@gmail.com,
+        ulli.kroll@googlemail.com, linus.walleij@linaro.org,
+        jeroendb@google.com, csully@google.com, awogbemila@google.com,
+        jdmason@kudzu.us, rain.1986.08.12@gmail.com, zyjzyj2000@gmail.com,
+        kys@microsoft.com, haiyangz@microsoft.com, mst@redhat.com,
+        jasowang@redhat.com, doshir@vmware.com, pv-drivers@vmware.com,
+        jwi@linux.ibm.com, kgraul@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, johannes@sipsolutions.net
+Cc:     netdev@vger.kernel.org, lipeng321@huawei.com,
+        chenhao288@hisilicon.com, linux-s390@vger.kernel.org
+References: <20211014113943.16231-1-huangguangbin2@huawei.com>
+ <20211014113943.16231-2-huangguangbin2@huawei.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <e4e276c6-9545-cf6a-b23e-a80123e896a0@gmail.com>
+Date:   Thu, 14 Oct 2021 06:58:17 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <20211014113943.16231-2-huangguangbin2@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-10-13 at 15:35 +0200, Daniel Borkmann wrote:
-> On 10/13/21 1:40 PM, syzbot wrote:
-> > Hello,
-> > 
-> > syzbot found the following issue on:
+
+
+On 10/14/21 4:39 AM, Guangbin Huang wrote:
+> From: Hao Chen <chenhao288@hisilicon.com>
 > 
-> [ +Paolo/Toke wrt veth/XDP, +Jussi wrt bond/XDP, please take a look, thanks! ]
+> Add support for ethtool to set/get tx copybreak buf size.
 
-For the records: Toke and me are actively investigating this issue and
-the other recent related one. So far we could not find anything
-relevant. 
+What is the unit ?
 
-The onluy note is that the reproducer is not extremelly reliable - I
-could not reproduce locally, and multiple syzbot runs on the same code
-give different results. Anyhow, so far the issue was only observerable
-on a specific 'next' commit which is currently "not reachable" from any
-branch. I'm wondering if the issue was caused by some incosistent
-status of such tree.
+Frankly, having to size the 'buffer' based on number of slots in TX ring buffer
+is not good.
 
-Cheers,
+What happens later when/if ethtool -G tx xxxxx' is trying
+to change number of slots ?
 
-Paolo
+The 'tx copybreak' should instead give a number of bytes per TX ring slot.
 
+Eg, 128 or 256 bytes.
+
+This is very similar to what drivers using net/core/tso.c do.
+
+They usually use TSO_HEADER_SIZE for this.
+
+> 
+> Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+> ---
+>  include/uapi/linux/ethtool.h | 1 +
+>  net/ethtool/common.c         | 1 +
+>  net/ethtool/ioctl.c          | 1 +
+>  3 files changed, 3 insertions(+)
+> 
+> diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+> index a2223b685451..7bc4b8def12c 100644
+> --- a/include/uapi/linux/ethtool.h
+> +++ b/include/uapi/linux/ethtool.h
+> @@ -231,6 +231,7 @@ enum tunable_id {
+>  	ETHTOOL_RX_COPYBREAK,
+>  	ETHTOOL_TX_COPYBREAK,
+>  	ETHTOOL_PFC_PREVENTION_TOUT, /* timeout in msecs */
+> +	ETHTOOL_TX_COPYBREAK_BUF_SIZE,
+>  	/*
+>  	 * Add your fresh new tunable attribute above and remember to update
+>  	 * tunable_strings[] in net/ethtool/common.c
+> diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+> index c63e0739dc6a..0c5210015911 100644
+> --- a/net/ethtool/common.c
+> +++ b/net/ethtool/common.c
+> @@ -89,6 +89,7 @@ tunable_strings[__ETHTOOL_TUNABLE_COUNT][ETH_GSTRING_LEN] = {
+>  	[ETHTOOL_RX_COPYBREAK]	= "rx-copybreak",
+>  	[ETHTOOL_TX_COPYBREAK]	= "tx-copybreak",
+>  	[ETHTOOL_PFC_PREVENTION_TOUT] = "pfc-prevention-tout",
+> +	[ETHTOOL_TX_COPYBREAK_BUF_SIZE] = "tx-copybreak-buf-size",
+>  };
+>  
+>  const char
+> diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+> index bf6e8c2f9bf7..617ebc4183d9 100644
+> --- a/net/ethtool/ioctl.c
+> +++ b/net/ethtool/ioctl.c
+> @@ -2383,6 +2383,7 @@ static int ethtool_tunable_valid(const struct ethtool_tunable *tuna)
+>  	switch (tuna->id) {
+>  	case ETHTOOL_RX_COPYBREAK:
+>  	case ETHTOOL_TX_COPYBREAK:
+> +	case ETHTOOL_TX_COPYBREAK_BUF_SIZE:
+>  		if (tuna->len != sizeof(u32) ||
+>  		    tuna->type_id != ETHTOOL_TUNABLE_U32)
+>  			return -EINVAL;
+> 
