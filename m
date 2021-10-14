@@ -2,153 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14E2342DBF2
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 16:42:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0353742DBF4
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 16:42:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231665AbhJNOoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 10:44:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35760 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231286AbhJNOog (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Oct 2021 10:44:36 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C31EB60E96;
-        Thu, 14 Oct 2021 14:42:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634222551;
-        bh=fdhTS66TOVDzx8KtquiTV6pJu0VSd2p4ZibtwFJ6e5Q=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=AvOkMWb9LYqhw0j4orEhtR1txAXUInuvW633fDb+TQVhvDHap03TwlMBh2qeczBmX
-         Ri+keFSGIkgXFSdIzu6bwT8ZDurmK6KCVzLEjuLcxdwApgHUZQviQ5UyEsWYYUuTvf
-         4/usieL7klqmsowMa325ng3gVEAMlO5pCe5Fs9goSAZznNIBp52U193iFhgmzdpTZJ
-         WyMhMx1XpcRsNzqv9nWptrCchbmNa/kDub7PYlE/CkawK2hc5GCBIhgEBUL0/yyVGS
-         cZhLEpbgKIo7SxLlq1/WdGAVn3kv3DQHLa/xXplOKagpwkIv5mD7iXmgujx2tbmIYS
-         YSLqxysJQf+ww==
-Received: by mail-ed1-f52.google.com with SMTP id y12so26134968eda.4;
-        Thu, 14 Oct 2021 07:42:31 -0700 (PDT)
-X-Gm-Message-State: AOAM533nsQioKLxtF0k8k2P44gskUAIlJVMaHiJMoh74/y9878eh1tSK
-        Ezt1KaUX3t3S92HBSb65Jg1N70AIRs3IdbzKOQ==
-X-Google-Smtp-Source: ABdhPJxM5Uhcff7BCaGJHmbmB9JXZvWTU1yQyXDETewwjg/h9UtviGQRmtNS9N8T6a/ID0xDkhc7i4+bv61tRY4XgNk=
-X-Received: by 2002:a17:906:9399:: with SMTP id l25mr4245067ejx.363.1634222517021;
- Thu, 14 Oct 2021 07:41:57 -0700 (PDT)
+        id S231699AbhJNOop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 10:44:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43292 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231685AbhJNOoo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 10:44:44 -0400
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 801A3C061570
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 07:42:39 -0700 (PDT)
+Received: by mail-qt1-x835.google.com with SMTP id y11so5896342qtn.13
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 07:42:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/yjEznXe8PGmI25I2l8yi3gHnvsfZLZpG8yYDPxzg30=;
+        b=ZK82Rea8GAm5DZNisT1C9eCp9uinMsoXxUsr84Wl1guunYJA1kdqbGm0WATuI/H7fl
+         3nrm7OFGe+K7/IzH32w/6+3yZ+VuTYqkv25ydI9Dy6LDPXD5kymNrkK2RiWti4DcVDp7
+         0dsv/ViHwVZqzHcY7lBGX6lHD7W1EE2JLZKUgoYyOCThE5oBJ4Di41ewMI/SYp10dwFD
+         zDiQgpIM+PKy5G75O5Z5e5qCDwCUv7aQXnWH0SZdb2cxS3qGA+Q2+iI0//U0EXKhojq9
+         sKZaeESeH7vUch9JT6Iy7Uz++JPNYEj1U86Joi3v5W2xOj7IFv8HmBEQF5MhumvQ7XfP
+         mJnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/yjEznXe8PGmI25I2l8yi3gHnvsfZLZpG8yYDPxzg30=;
+        b=hEAuz/Xy1PH/+N/3q7Y6EL93xFBIQyxa85LDsyGdLVuLGCRmq1ZIv+jOlTYbYkWnEJ
+         Bf1NcPT9ExUGqkJ9h676cV1l03mNrrAZW6Jl6VWMImvlHlrOk4cWIHxwkt48+cXWNjLF
+         Splq24b622uJYunX7a7eDsEtMxkXD/HA2ajGdLxU8CrDhkpio414TQnxE30woN16zHyk
+         DQ6dIM8zWwa7Tofy5voVqkxVpNeOEkBHRRFiMQA3Xe1aGo6I559/OOB+heBBWONafcYe
+         G3fZ9mAG83UQNgOm0OkfHRfMTltya2tpq6CDx//N9Zj3kOFogJfSLZhyFBn9BJKnP/tj
+         VPOg==
+X-Gm-Message-State: AOAM530W816Tv46ISqyKxI+3fz8fmssrtdbzh4fXOOgZKl8FhJK/A0cs
+        JmvTEitRE5pROydlDMZfcg==
+X-Google-Smtp-Source: ABdhPJyQicuO9BMgJP2DmZKCXztmZylPM9J20/1lVvMA7JnX45LIvG3/NliZr7Kq1q1LMzQAS/r1wQ==
+X-Received: by 2002:a05:622a:13:: with SMTP id x19mr7033327qtw.83.1634222558740;
+        Thu, 14 Oct 2021 07:42:38 -0700 (PDT)
+Received: from ICIPI.localdomain ([136.56.65.87])
+        by smtp.gmail.com with ESMTPSA id i13sm1425926qtp.87.2021.10.14.07.42.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Oct 2021 07:42:38 -0700 (PDT)
+Date:   Thu, 14 Oct 2021 10:42:31 -0400
+From:   Stephen Suryaputra <ssuryaextr@gmail.com>
+To:     Edward Cree <ecree.xilinx@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>
+Subject: Re: ip_list_rcv() question
+Message-ID: <20211014144231.GA11651@ICIPI.localdomain>
+References: <20211007121451.GA27153@EXT-6P2T573.localdomain>
+ <4dddfda5-1c03-6386-e204-e21df07aabd1@gmail.com>
 MIME-Version: 1.0
-References: <20211013232048.16559-1-kabel@kernel.org>
-In-Reply-To: <20211013232048.16559-1-kabel@kernel.org>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Thu, 14 Oct 2021 09:41:44 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqJZC0G_SGfuK0zg8n+uPm5b1L44fo8axUbpvAAZ2b8tAQ@mail.gmail.com>
-Message-ID: <CAL_JsqJZC0G_SGfuK0zg8n+uPm5b1L44fo8axUbpvAAZ2b8tAQ@mail.gmail.com>
-Subject: Re: [PATCH RFC linux] dt-bindings: nvmem: Add binding for U-Boot
- environment NVMEM provider
-To:     =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>
-Cc:     devicetree@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        U-Boot Mailing List <u-boot@lists.denx.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Luka Kovacic <luka.kovacic@sartura.hr>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4dddfda5-1c03-6386-e204-e21df07aabd1@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 13, 2021 at 6:20 PM Marek Beh=C3=BAn <kabel@kernel.org> wrote:
->
-> Add device tree bindings for U-Boot environment NVMEM provider.
->
-> U-Boot environment can be stored at a specific offset of a MTD device,
-> EEPROM, MMC, NAND or SATA device, on an UBI volume, or in a file on a
-> filesystem.
->
-> The environment can contain information such as device's MAC address,
-> which should be used by the ethernet controller node.
->
-> Signed-off-by: Marek Beh=C3=BAn <kabel@kernel.org>
-> ---
->  .../bindings/nvmem/denx,u-boot-env.yaml       | 88 +++++++++++++++++++
->  include/dt-bindings/nvmem/u-boot-env.h        | 18 ++++
->  2 files changed, 106 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/nvmem/denx,u-boot-e=
-nv.yaml
->  create mode 100644 include/dt-bindings/nvmem/u-boot-env.h
->
-> diff --git a/Documentation/devicetree/bindings/nvmem/denx,u-boot-env.yaml=
- b/Documentation/devicetree/bindings/nvmem/denx,u-boot-env.yaml
-> new file mode 100644
-> index 000000000000..56505c08e622
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/nvmem/denx,u-boot-env.yaml
-> @@ -0,0 +1,88 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/nvmem/denx,u-boot-env.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: U-Boot environment NVMEM Device Tree Bindings
-> +
-> +maintainers:
-> +  - Marek Beh=C3=BAn <kabel@kernel.org>
-> +
-> +description:
-> +  This binding represents U-Boot's environment NVMEM settings which can =
-be
-> +  stored on a specific offset of an EEPROM, MMC, NAND or SATA device, or
-> +  an UBI volume, or in a file on a filesystem.
-> +
-> +properties:
-> +  compatible:
-> +    const: denx,u-boot-env
+On Wed, Oct 13, 2021 at 05:17:51PM +0100, Edward Cree wrote:
+> On 07/10/2021 13:14, Stephen Suryaputra wrote:
+> > Under what condition that ip_list_rcv() would restart the sublist, i.e.
+> > that the skb in the list is having different skb->dev?
+> 
+> IIRC, something earlier in the call chain (possibly
+>  __netif_receive_skb_core()?) can change skb->dev to something other
+>  than the device that originally received the packet (orig_dev).  I
+>  think it's if the packet gets handled/transformed by a software
+>  netdevice (maybe a VLAN device?).
+> But really when I wrote ip_list_rcv() I just worked on the basis
+>  that "I don't know it can't change, so I shall assume it can".
 
-'u-boot' is a vendor prefix. Unless you are saying Denx owns u-boot...
+I see now that vlan_do_receive() changes the skb->dev. It didn't occur
+to me because __netif_receive_skb_list_core() has a similar logic for
+dispatching sublists. But still the skb->dev could be different that
+orig_dev.
 
-> +
-> +  path:
-> +    description:
-> +      The path to the file containing the environment if on a filesystem=
-.
-> +    $ref: /schemas/types.yaml#/definitions/string
-> +
-> +patternProperties:
-> +  "^[^=3D]+$":
-> +    type: object
-> +
-> +    description:
-> +      This node represents one U-Boot environment variable, which is als=
-o one
-> +      NVMEM data cell.
-> +
-> +    properties:
-> +      name:
-
-'name' is already a property for every node, so this would collide. It
-used to be in the dtb itself, but current revisions generate it from
-the node name.
-
-> +        description:
-> +          If the variable name contains characters not allowed in device=
- tree node
-> +          name, use this property to specify the name, otherwise the var=
-iable name
-> +          is equal to node name.
-> +        $ref: /schemas/types.yaml#/definitions/string
-> +
-> +      type:
-
-'type' is really too generic. Any given property name should have 1
-meaning and data type.
-
-But I expect based on other comments already, all this is going away anyway=
-s.
-
-> +        description:
-> +          Type of the variable. Since variables, even integers and MAC a=
-ddresses,
-> +          are stored as strings in U-Boot environment, for proper conver=
-sion the
-> +          type needs to be specified. Use one of the U_BOOT_ENV_TYPE_* p=
-refixed
-> +          definitions from include/dt-bindings/nvmem/u-boot-env.h.
-> +        $ref: /schemas/types.yaml#/definitions/uint32
-> +        minimum: 0
-> +        maximum: 5
+Thanks.
