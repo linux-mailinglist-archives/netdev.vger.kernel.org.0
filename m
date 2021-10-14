@@ -2,107 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4E5242DB08
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 16:02:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14B7A42DB22
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 16:08:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231464AbhJNOEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 10:04:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57046 "EHLO mail.kernel.org"
+        id S231722AbhJNOKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 10:10:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45204 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230177AbhJNOEO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Oct 2021 10:04:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BFB7060D07;
-        Thu, 14 Oct 2021 14:02:09 +0000 (UTC)
+        id S230177AbhJNOKP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Oct 2021 10:10:15 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 209BF610A0;
+        Thu, 14 Oct 2021 14:08:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634220130;
-        bh=TiEabhn5ARhjlEpC9/usidwzgzF5FoyqmA9TadcjUyw=;
+        s=k20201202; t=1634220490;
+        bh=D0kIMpPplXpp37Gh0tOmiNC+vZqJTD00gQ8fpi5NP1k=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=k/CgIJL0rNLhgXb1xRDQw48sdoPHvUJtjKf2NcVp9AiUMPnDSscnRbUAo1NnqP6PF
-         a8GFovmm+HCmd4K+w7mZ0JwpenLrw75Y4EF9MNeSMR7y1ONXn0xvdI17XpjBzkDyzI
-         ORC+3t7QcXeAW4icovTETGsNhoeZsrsKgvusVIHpx29MXHxo3wWLplwclurvk640Em
-         rrIK4ypPhkY2kimZ85hUL4N5GfnelwDzjqNYpQMbuGHhmmPO11rzq2s/CGN9xfoey/
-         0xJRLCHo4Ltlph7jUwjtll44mBVUpsLGsv3uGYXBdHqWIpLft9g/u+TEs98DZts5A5
-         7Kk3fOi0XQVrQ==
-Date:   Thu, 14 Oct 2021 07:02:08 -0700
+        b=VxiRiJNs1di0hnfqTQfezhICJ6DFPuhn+4LCHaybprPQL1ccfr5k+pjOanaqq/Ro1
+         Z+L1SqtxyTSSSvgO1BShU959kscT0F9Dup5iJYHk6bNFakJdKxVLmX3RIxg8o0lGd7
+         xPJW4bv+PEpVutGchFm0DMOlBEIF4EzsCbQHl3MGtBHq3RITUHzlG6meTMIfqKq0PH
+         0xHCl/OUiCGA19/hda/V41fLe4ErDMmZwCWvUp0w9VVy7WJ9hvSaxu4unFFyOMfrB5
+         Fjq7pju3gK71nooJ1XF+kySjX9PoHdx43dclswMhBgupzmoWLqmKrJS2yszulsdINs
+         i3etWyYjqehPg==
+Date:   Thu, 14 Oct 2021 07:08:09 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     David Ahern <dsahern@gmail.com>, davem@davemloft.net,
-        roopa@nvidia.com, dsahern@kernel.org, m@lambda.lt,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH net-next 2/3] net, neigh: Use NLA_POLICY_MASK helper for
- NDA_FLAGS_EXT attribute
-Message-ID: <20211014070208.3cd7e679@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <687e2be1-4d16-1f71-bb25-1f27a04d06f0@iogearbox.net>
-References: <20211013132140.11143-1-daniel@iogearbox.net>
-        <20211013132140.11143-3-daniel@iogearbox.net>
-        <8be43259-1fc1-2c62-3cd1-100bde6ff702@gmail.com>
-        <687e2be1-4d16-1f71-bb25-1f27a04d06f0@iogearbox.net>
+To:     Alvin =?UTF-8?B?xaBpcHJhZ2E=?= <ALSI@bang-olufsen.dk>
+Cc:     Alvin =?UTF-8?B?xaBpcHJhZ2E=?= <alvin@pqrs.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Michael Rasmussen <MIR@bang-olufsen.dk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 5/6] net: dsa: realtek-smi: add rtl8365mb
+ subdriver for RTL8365MB-VC
+Message-ID: <20211014070809.6ca397ce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <80c80992-85c2-d971-ce1c-a37f8199da7a@bang-olufsen.dk>
+References: <20211012123557.3547280-1-alvin@pqrs.dk>
+        <20211012123557.3547280-6-alvin@pqrs.dk>
+        <20211012082703.7b31e73b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <bde59012-8394-d31b-24c4-018cbfe0ed57@bang-olufsen.dk>
+        <20211013081340.0ca97db1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <80c80992-85c2-d971-ce1c-a37f8199da7a@bang-olufsen.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 Oct 2021 10:10:18 +0200 Daniel Borkmann wrote:
-> On 10/14/21 5:13 AM, David Ahern wrote:
-> > On 10/13/21 7:21 AM, Daniel Borkmann wrote:  
-> >> Instead of open-coding a check for invalid bits in NTF_EXT_MASK, we can just
-> >> use the NLA_POLICY_MASK() helper instead, and simplify NDA_FLAGS_EXT sanity
-> >> check this way.
-> >>
-> >> Suggested-by: Jakub Kicinski <kuba@kernel.org>
-> >> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> >> ---
-> >>   net/core/neighbour.c | 6 +-----
-> >>   1 file changed, 1 insertion(+), 5 deletions(-)
-> >>
-> >> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> >> index 4fc601f9cd06..922b9ed0fe76 100644
-> >> --- a/net/core/neighbour.c
-> >> +++ b/net/core/neighbour.c
-> >> @@ -1834,7 +1834,7 @@ const struct nla_policy nda_policy[NDA_MAX+1] = {
-> >>   	[NDA_MASTER]		= { .type = NLA_U32 },
-> >>   	[NDA_PROTOCOL]		= { .type = NLA_U8 },
-> >>   	[NDA_NH_ID]		= { .type = NLA_U32 },
-> >> -	[NDA_FLAGS_EXT]		= { .type = NLA_U32 },
-> >> +	[NDA_FLAGS_EXT]		= NLA_POLICY_MASK(NLA_U32, NTF_EXT_MASK),
-> >>   	[NDA_FDB_EXT_ATTRS]	= { .type = NLA_NESTED },
-> >>   };
-> >>   
-> >> @@ -1936,10 +1936,6 @@ static int neigh_add(struct sk_buff *skb, struct nlmsghdr *nlh,
-> >>   	if (tb[NDA_FLAGS_EXT]) {
-> >>   		u32 ext = nla_get_u32(tb[NDA_FLAGS_EXT]);
-> >>   
-> >> -		if (ext & ~NTF_EXT_MASK) {
-> >> -			NL_SET_ERR_MSG(extack, "Invalid extended flags");
-> >> -			goto out;
-> >> -		}
-> >>   		BUILD_BUG_ON(sizeof(neigh->flags) * BITS_PER_BYTE <
-> >>   			     (sizeof(ndm->ndm_flags) * BITS_PER_BYTE +
-> >>   			      hweight32(NTF_EXT_MASK)));
-> >>  
-> > 
-> > I get that NLA_POLICY_MASK wants to standardize the logic, but the
-> > generic extack message "reserved bit set" is less useful than the one here.  
-> 
-> If the expectation/recommendation is that NLA_POLICY_MASK() should be used, then
-> it would probably make sense for NLA_POLICY_MASK() itself to improve. For example,
-> NLA_POLICY_MASK() could perhaps take an optional error string which it should
-> return via extack rather than the standard "reserved bit set" one or such.. on
-> the other hand, I see that NL_SET_ERR_MSG_ATTR() already points out the affected
-> attribute via setting extack->bad_attr, so it be sufficient to figure out that it's
-> about reserved bits inside NDA_FLAGS_EXT given this is propagated back to user
-> space via NLMSGERR_ATTR_OFFS.
+On Thu, 14 Oct 2021 12:44:37 +0000 Alvin =C5=A0ipraga wrote:
+> On 10/13/21 5:13 PM, Jakub Kicinski wrote:
+> > On Wed, 13 Oct 2021 08:33:36 +0000 Alvin =C5=A0ipraga wrote: =20
+> >> I implement the dsa_switch_ops callback .get_ethtool_stats, using an
+> >> existing function rtl8366_get_ethtool_stats in the switch helper libra=
+ry
+> >> rtl8366.c. It was my understanding that this is the correct way to
+> >> expose counters within the DSA framework - please correct me if that is
+> >> wrong. =20
+> >=20
+> > It's the legacy way, today we have a unified API for reporting those
+> > stats so user space SW doesn't have to maintain a myriad string matches
+> > to get to basic IEEE stats across vendors. Driver authors have a truly
+> > incredible ability to invent their own names for standard stats. It
+> > appears that your pick of names is also unique :)
+> >=20
+> > It should be trivial to plumb the relevant ethtool_ops thru to
+> > dsa_switch_ops if relevant dsa ops don't exist.
+> >=20
+> > You should also populate correct stats in dsa_switch_ops::get_stats64
+> > (see the large comment above the definition of struct
+> > rtnl_link_stats64 for mapping). A word of warning there, tho, that
+> > callback runs in an atomic context so if your driver needs to block it
+> > has to read the stats periodically from a async work. =20
+>=20
+> OK, so just to clarify:
+>=20
+> - get_ethtool_stats is deprecated - do not use
 
-My larger point is that the ability to dump policy and inspect it in
-user space is an important part of the modern netlink paradigm. When
-RTNL is extended appropriately it'll be good if the policies are
-expressed the right way.
+It can still be used, but standardized interfaces should be preferred
+whenever possible, especially when appropriate uAPI already exists.
 
-Fingers-on-the-keyboard-eyes-on-the-screen user friendliness is
-important but IMHO code that can be built on top of these interfaces 
-is more important.
+> - get_eth_{phy,mac,ctrl,rmon}_stats is the new API - add DSA plumbing=20
+> and use this
 
-I think the patch is good as is.
+Yup.
+
+> - get_stats64 orthogonal to ethtool stats but still important - use also=
+=20
+> this
+
+Yes, users should be able to depend on basic interface stats (packets,
+bytes, crc errors) to be correct.
+
+> For stats64 I will need to poll asynchronously - do you have any=20
+> suggestion for how frequently I should do that? I see one DSA driver=20
+> doing it every 3 seconds, for example.
+
+3 sec seems fine.
