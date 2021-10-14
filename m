@@ -2,162 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B9B242D49B
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 10:14:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE9EC42D4A1
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 10:15:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230072AbhJNIQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 04:16:51 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:60431 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229551AbhJNIQs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 04:16:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1634199284; x=1665735284;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=2Q6yaUU9qlb3WZoZtGPuaVZXBC1cFKtpGHsUGf9FZr8=;
-  b=A9fHbjpUvn1Qs03mLRO5MinIqvWFHXoMx9m4X5VxA2MrwlrSwJZ3A7oa
-   lvHINFRp+bEU9TxeGHi6rdiDj2aecRHMKbwyK8BRH+/sidr/W271ppSA2
-   3rBYMHeRQj7EqBqNALJdXFQMgLatLzDD0QgVEvyyENJbzX90ZIG4jbsJ/
-   dIu44nWQhj9BJg60n2oexHxOJ4zYu/ZlgNRwq4luCXUiZZhw1GLwolyYq
-   4XubzTPYFmNtZ/AimfPE2mvGKLfk5/WdaW2rHg9t4mzDS2a5M/in55xLM
-   NMUBVd8vlccvtpoJyxV7B6NaoSJ83voOE38dZLogZJIQbNP9CzXAyotuC
-   Q==;
-IronPort-SDR: Xu1iAr4SBtsG5mthR3lwDh4e0vRa4rcH7tbNgf8PI3EYuWhiiXtuIKn2apCnCxo33CSyg8x6kK
- hJ14QGc5w1TvfGuywE321RsUYJBVwqWJgiXFEcFwXN7mvpucd7ZwPd/QMQ2iErvyRFtz3DcDdB
- QG5XqhnswomVeZsr7yuPr+QErYYi58cNxjdkge9RW5lLzRuDTn+0+a3NxfiUEQNY1+ULoebaBf
- rww9ptBLAZ+Ebgk8iS/QYyEuVQslO4QVL2qcgfPcynOpmRVAaOioy6rqzXiWQqA3EOU8aeZVeo
- 11omhRztmRK9TCcB4Ytc9Wos
-X-IronPort-AV: E=Sophos;i="5.85,372,1624345200"; 
-   d="scan'208";a="140256199"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Oct 2021 01:14:43 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Thu, 14 Oct 2021 01:14:44 -0700
-Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2176.14 via Frontend
- Transport; Thu, 14 Oct 2021 01:14:42 -0700
-Subject: Re: [PATCH net-next 4/7] ethernet: manually convert
- memcpy(dev_addr,..., sizeof(addr))
-To:     Jakub Kicinski <kuba@kernel.org>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <claudiu.beznea@microchip.com>,
-        <f.fainelli@gmail.com>, <petkan@nucleusys.com>,
-        <christophe.jaillet@wanadoo.fr>, <zhangchangzhong@huawei.com>,
-        <linux-usb@vger.kernel.org>
-References: <20211013204435.322561-1-kuba@kernel.org>
- <20211013204435.322561-5-kuba@kernel.org>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-Message-ID: <669ce977-1181-9522-2503-746a0499d383@microchip.com>
-Date:   Thu, 14 Oct 2021 10:14:41 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S230174AbhJNIRf convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 14 Oct 2021 04:17:35 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:35480 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230129AbhJNIRe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 04:17:34 -0400
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-25-ZAf48fDhNsWZHQ1kXJysiQ-1; Thu, 14 Oct 2021 09:15:25 +0100
+X-MC-Unique: ZAf48fDhNsWZHQ1kXJysiQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.23; Thu, 14 Oct 2021 09:15:23 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.023; Thu, 14 Oct 2021 09:15:23 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Hari Bathini' <hbathini@linux.ibm.com>,
+        "naveen.n.rao@linux.ibm.com" <naveen.n.rao@linux.ibm.com>,
+        "christophe.leroy@csgroup.eu" <christophe.leroy@csgroup.eu>,
+        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>
+CC:     "paulus@samba.org" <paulus@samba.org>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+Subject: RE: [RESEND PATCH v4 0/8] bpf powerpc: Add BPF_PROBE_MEM support in
+ powerpc JIT compiler
+Thread-Topic: [RESEND PATCH v4 0/8] bpf powerpc: Add BPF_PROBE_MEM support in
+ powerpc JIT compiler
+Thread-Index: AQHXv2X2sg2Hg8STAUWVvVtx4py8mavSKAQw
+Date:   Thu, 14 Oct 2021 08:15:23 +0000
+Message-ID: <8091e1294ad343a88aa399417ff91aee@AcuMS.aculab.com>
+References: <20211012123056.485795-1-hbathini@linux.ibm.com>
+In-Reply-To: <20211012123056.485795-1-hbathini@linux.ibm.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-In-Reply-To: <20211013204435.322561-5-kuba@kernel.org>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13/10/2021 at 22:44, Jakub Kicinski wrote:
-> A handful of drivers use sizeof(addr) for the size of
-> the address, after manually confirming the size is
-> indeed 6 convert them to eth_hw_addr_set().
+From: Hari Bathini 
+> Sent: 12 October 2021 13:31
 > 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> CC: nicolas.ferre@microchip.com
+> Patch #1 & #2 are simple cleanup patches. Patch #3 refactors JIT
+> compiler code with the aim to simplify adding BPF_PROBE_MEM support.
+> Patch #4 introduces PPC_RAW_BRANCH() macro instead of open coding
+> branch instruction. Patch #5 & #7 add BPF_PROBE_MEM support for PPC64
+> & PPC32 JIT compilers respectively. Patch #6 & #8 handle bad userspace
+> pointers for PPC64 & PPC32 cases respectively.
 
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+I thought that BPF was only allowed to do fairly restricted
+memory accesses - so WTF does it need a BPF_PROBE_MEM instruction?
 
-> CC: claudiu.beznea@microchip.com
-> CC: f.fainelli@gmail.com
-> CC: petkan@nucleusys.com
-> CC: christophe.jaillet@wanadoo.fr
-> CC: zhangchangzhong@huawei.com
-> CC: linux-usb@vger.kernel.org
-> ---
->   drivers/net/ethernet/cadence/macb_main.c | 2 +-
->   drivers/net/ethernet/dnet.c              | 2 +-
->   drivers/net/ethernet/pasemi/pasemi_mac.c | 2 +-
->   drivers/net/ethernet/ti/cpmac.c          | 2 +-
->   drivers/net/usb/pegasus.c                | 2 +-
->   5 files changed, 5 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-> index 683f14665c2c..029dea2873e3 100644
-> --- a/drivers/net/ethernet/cadence/macb_main.c
-> +++ b/drivers/net/ethernet/cadence/macb_main.c
-> @@ -313,7 +313,7 @@ static void macb_get_hwaddr(struct macb *bp)
->                  addr[5] = (top >> 8) & 0xff;
-> 
->                  if (is_valid_ether_addr(addr)) {
-> -                       memcpy(bp->dev->dev_addr, addr, sizeof(addr));
-> +                       eth_hw_addr_set(bp->dev, addr);
->                          return;
->                  }
->          }
-> diff --git a/drivers/net/ethernet/dnet.c b/drivers/net/ethernet/dnet.c
-> index 3ed21ba4eb99..92462ed87bc4 100644
-> --- a/drivers/net/ethernet/dnet.c
-> +++ b/drivers/net/ethernet/dnet.c
-> @@ -93,7 +93,7 @@ static void dnet_get_hwaddr(struct dnet *bp)
->          *((__be16 *)(addr + 4)) = cpu_to_be16(tmp);
-> 
->          if (is_valid_ether_addr(addr))
-> -               memcpy(bp->dev->dev_addr, addr, sizeof(addr));
-> +               eth_hw_addr_set(bp->dev, addr);
->   }
-> 
->   static int dnet_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
-> diff --git a/drivers/net/ethernet/pasemi/pasemi_mac.c b/drivers/net/ethernet/pasemi/pasemi_mac.c
-> index 5512e43bafc1..f0ace3a0e85c 100644
-> --- a/drivers/net/ethernet/pasemi/pasemi_mac.c
-> +++ b/drivers/net/ethernet/pasemi/pasemi_mac.c
-> @@ -1722,7 +1722,7 @@ pasemi_mac_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->                  err = -ENODEV;
->                  goto out;
->          }
-> -       memcpy(dev->dev_addr, mac->mac_addr, sizeof(mac->mac_addr));
-> +       eth_hw_addr_set(dev, mac->mac_addr);
-> 
->          ret = mac_to_intf(mac);
->          if (ret < 0) {
-> diff --git a/drivers/net/ethernet/ti/cpmac.c b/drivers/net/ethernet/ti/cpmac.c
-> index 02d4e51f7306..7449436fc87c 100644
-> --- a/drivers/net/ethernet/ti/cpmac.c
-> +++ b/drivers/net/ethernet/ti/cpmac.c
-> @@ -1112,7 +1112,7 @@ static int cpmac_probe(struct platform_device *pdev)
->          priv->dev = dev;
->          priv->ring_size = 64;
->          priv->msg_enable = netif_msg_init(debug_level, 0xff);
-> -       memcpy(dev->dev_addr, pdata->dev_addr, sizeof(pdata->dev_addr));
-> +       eth_hw_addr_set(dev, pdata->dev_addr);
-> 
->          snprintf(priv->phy_name, MII_BUS_ID_SIZE, PHY_ID_FMT,
->                                                  mdio_bus_id, phy_id);
-> diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
-> index 6a92a3fef75e..c4cd40b090fd 100644
-> --- a/drivers/net/usb/pegasus.c
-> +++ b/drivers/net/usb/pegasus.c
-> @@ -357,7 +357,7 @@ static void set_ethernet_addr(pegasus_t *pegasus)
->                          goto err;
->          }
-> 
-> -       memcpy(pegasus->net->dev_addr, node_id, sizeof(node_id));
-> +       eth_hw_addr_set(pegasus->net, node_id);
-> 
->          return;
->   err:
-> --
-> 2.31.1
-> 
+	David
 
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
--- 
-Nicolas Ferre
