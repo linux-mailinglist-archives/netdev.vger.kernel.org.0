@@ -2,470 +2,489 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7408242D082
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 04:35:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F335A42D087
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 04:38:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229929AbhJNChx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 22:37:53 -0400
-Received: from mail.loongson.cn ([114.242.206.163]:46846 "EHLO loongson.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229927AbhJNChw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Oct 2021 22:37:52 -0400
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxT2tzl2dh354ZAA--.38552S2;
-        Thu, 14 Oct 2021 10:35:31 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Subject: [PATCH bpf-next v5] test_bpf: Add module parameter test_suite
-Date:   Thu, 14 Oct 2021 10:35:30 +0800
-Message-Id: <1634178930-4067-1-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-X-CM-TRANSID: AQAAf9DxT2tzl2dh354ZAA--.38552S2
-X-Coremail-Antispam: 1UD129KBjvJXoW3Cr4rWw1fGFyDXw1fWr1Dtrb_yoWkCF1rpF
-        Wjqrn0yF18JFn7XF18XF17Aa4FyF4vy3yrKrWfJryqyrs5AryUtF4xK34IqFn3Jr40vw15
-        Z3W0vF45G3W2yaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvE14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
-        Y2ka0xkIwI1lc2xSY4AK67AK6r4UMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
-        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
-        b7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
-        vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI
-        42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWI
-        evJa73UjIFyTuYvjfUO_MaUUUUU
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+        id S229837AbhJNCkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 22:40:09 -0400
+Received: from pi.codeconstruct.com.au ([203.29.241.158]:38542 "EHLO
+        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229496AbhJNCkI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 22:40:08 -0400
+Received: by codeconstruct.com.au (Postfix, from userid 10000)
+        id A87DB20223; Thu, 14 Oct 2021 10:38:03 +0800 (AWST)
+From:   Jeremy Kerr <jk@codeconstruct.com.au>
+To:     netdev@vger.kernel.org
+Cc:     Matt Johnston <matt@codeconstruct.com.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v2] mctp: Implement extended addressing
+Date:   Thu, 14 Oct 2021 10:37:39 +0800
+Message-Id: <20211014023739.2032160-1-jk@codeconstruct.com.au>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After commit 9298e63eafea ("bpf/tests: Add exhaustive tests of ALU
-operand magnitudes"), when modprobe test_bpf.ko with jit on mips64,
-there exists segment fault due to the following reason:
+This change allows an extended address struct - struct sockaddr_mctp_ext
+- to be passed to sendmsg/recvmsg. This allows userspace to specify
+output ifindex and physical address information (for sendmsg) or receive
+the input ifindex/physaddr for incoming messages (for recvmsg). This is
+typically used by userspace for MCTP address discovery and assignment
+operations.
 
-ALU64_MOV_X: all register value magnitudes jited:1
-Break instruction in kernel code[#1]
+The extended addressing facility is conditional on a new sockopt:
+MCTP_OPT_ADDR_EXT; userspace must explicitly enable addressing before
+the kernel will consume/populate the extended address data.
 
-It seems that the related jit implementations of some test cases
-in test_bpf() have problems. At this moment, I do not care about
-the segment fault while I just want to verify the test cases of
-tail calls.
+Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
 
-Based on the above background and motivation, add the following
-module parameter test_suite to the test_bpf.ko:
-test_suite=<string>: only the specified test suite will be run, the
-string can be "test_bpf", "test_tail_calls" or "test_skb_segment".
-
-If test_suite is not specified, but test_id, test_name or test_range
-is specified, set 'test_bpf' as the default test suite.
-
-This is useful to only test the corresponding test suite when specify
-the valid test_suite string.
-
-Any invalid test suite will result in -EINVAL being returned and no
-tests being run. If the test_suite is not specified or specified as
-empty string, it does not change the current logic, all of the test
-cases will be run.
-
-Here are some test results:
- # dmesg -c
- # modprobe test_bpf
- # dmesg | grep Summary
- test_bpf: Summary: 1009 PASSED, 0 FAILED, [0/997 JIT'ed]
- test_bpf: test_tail_calls: Summary: 8 PASSED, 0 FAILED, [0/8 JIT'ed]
- test_bpf: test_skb_segment: Summary: 2 PASSED, 0 FAILED
-
- # rmmod test_bpf
- # dmesg -c
- # modprobe test_bpf test_suite=test_bpf
- # dmesg | tail -1
- test_bpf: Summary: 1009 PASSED, 0 FAILED, [0/997 JIT'ed]
-
- # rmmod test_bpf
- # dmesg -c
- # modprobe test_bpf test_suite=test_tail_calls
- # dmesg
- test_bpf: #0 Tail call leaf jited:0 21 PASS
- [...]
- test_bpf: #7 Tail call error path, index out of range jited:0 32 PASS
- test_bpf: test_tail_calls: Summary: 8 PASSED, 0 FAILED, [0/8 JIT'ed]
-
- # rmmod test_bpf
- # dmesg -c
- # modprobe test_bpf test_suite=test_skb_segment
- # dmesg
- test_bpf: #0 gso_with_rx_frags PASS
- test_bpf: #1 gso_linear_no_head_frag PASS
- test_bpf: test_skb_segment: Summary: 2 PASSED, 0 FAILED
-
- # rmmod test_bpf
- # dmesg -c
- # modprobe test_bpf test_id=1
- # dmesg
- test_bpf: test_bpf: set 'test_bpf' as the default test_suite.
- test_bpf: #1 TXA jited:0 54 51 50 PASS
- test_bpf: Summary: 1 PASSED, 0 FAILED, [0/1 JIT'ed]
-
- # rmmod test_bpf
- # dmesg -c
- # modprobe test_bpf test_suite=test_bpf test_name=TXA
- # dmesg
- test_bpf: #1 TXA jited:0 54 50 51 PASS
- test_bpf: Summary: 1 PASSED, 0 FAILED, [0/1 JIT'ed]
-
- # rmmod test_bpf
- # dmesg -c
- # modprobe test_bpf test_suite=test_tail_calls test_range=6,7
- # dmesg
- test_bpf: #6 Tail call error path, NULL target jited:0 41 PASS
- test_bpf: #7 Tail call error path, index out of range jited:0 32 PASS
- test_bpf: test_tail_calls: Summary: 2 PASSED, 0 FAILED, [0/2 JIT'ed]
-
- # rmmod test_bpf
- # dmesg -c
- # modprobe test_bpf test_suite=test_skb_segment test_id=1
- # dmesg
- test_bpf: #1 gso_linear_no_head_frag PASS
- test_bpf: test_skb_segment: Summary: 1 PASSED, 0 FAILED
-
-By the way, the above segment fault has been fixed in the latest bpf-next
-tree.
-
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
 ---
-
-v5:
-  -- Remove some duplicated code, suggested by Johan Almbladh,
-     thank you.
-  -- Initialize test_range[2] to {0, INT_MAX}.
-  -- If test_suite is specified, but test_range is not specified,
-     set the upper limit of each test_suite to overwrite INT_MAX.
-
-v4:
-  -- Fix the following checkpatch issues:
-     CHECK: Alignment should match open parenthesis
-     CHECK: Please don't use multiple blank lines
-
-     ./scripts/checkpatch.pl --strict *.patch
-     total: 0 errors, 0 warnings, 0 checks, 299 lines checked
-
-     the default max-line-length is 100 in ./scripts/checkpatch.pl,
-     but it seems that the netdev/checkpatch is 80:
-     https://patchwork.hopto.org/static/nipa/559961/12545157/checkpatch/stdout
-
-v3:
-  -- Use test_suite instead of test_type as module parameter
-  -- Make test_id, test_name and test_range selection applied to each test suite
-
 v2:
-  -- Fix typo in the commit message
-  -- Use my private email to send
+ - non-RFC
+ - learn to spell "typically"
 
- lib/test_bpf.c | 245 +++++++++++++++++++++++++++++++++++++++------------------
- 1 file changed, 169 insertions(+), 76 deletions(-)
+RFC: this patch adds a bit of an new ABI, in that the struct sockaddr
+for MCTP has been extended, with extra addressing data being available
+for applications after setting a sockopt.
 
-diff --git a/lib/test_bpf.c b/lib/test_bpf.c
-index e5b10fd..64fb358 100644
---- a/lib/test_bpf.c
-+++ b/lib/test_bpf.c
-@@ -14316,72 +14316,9 @@ module_param_string(test_name, test_name, sizeof(test_name), 0);
- static int test_id = -1;
- module_param(test_id, int, 0);
+Using something like IP_PKTINFO might be suitable instead, but that
+requires sendmsg/recvmsg, and control message setup, whereas this is a
+a simpler interface, and also allows extended addressing info in
+sendto/recvfrom too. Comments most welcome!
+---
+ include/net/mctp.h        | 16 +++++--
+ include/uapi/linux/mctp.h | 13 ++++++
+ net/mctp/af_mctp.c        | 86 ++++++++++++++++++++++++++++++----
+ net/mctp/route.c          | 97 +++++++++++++++++++++++++++++----------
+ 4 files changed, 172 insertions(+), 40 deletions(-)
+
+diff --git a/include/net/mctp.h b/include/net/mctp.h
+index b9ed62a63c24..716405e0294c 100644
+--- a/include/net/mctp.h
++++ b/include/net/mctp.h
+@@ -58,6 +58,9 @@ struct mctp_sock {
+ 	mctp_eid_t	bind_addr;
+ 	__u8		bind_type;
  
--static int test_range[2] = { 0, ARRAY_SIZE(tests) - 1 };
-+static int test_range[2] = { 0, INT_MAX };
- module_param_array(test_range, int, NULL, 0);
++	/* sendmsg()/recvmsg() uses struct sockaddr_mctp_ext */
++	bool		addr_ext;
++
+ 	/* list of mctp_sk_key, for incoming tag lookup. updates protected
+ 	 * by sk->net->keys_lock
+ 	 */
+@@ -152,10 +155,16 @@ struct mctp_sk_key {
  
--static __init int find_test_index(const char *test_name)
--{
--	int i;
+ struct mctp_skb_cb {
+ 	unsigned int	magic;
+-	unsigned int	net;
++	int		net;
++	int		ifindex; /* extended/direct addressing if set */
++	unsigned char	halen;
+ 	mctp_eid_t	src;
++	unsigned char	haddr[];
+ };
+ 
++#define MCTP_SKB_CB_HADDR_MAXLEN (sizeof((((struct sk_buff *)(NULL))->cb)) \
++				  - offsetof(struct mctp_skb_cb, haddr))
++
+ /* skb control-block accessors with a little extra debugging for initial
+  * development.
+  *
+@@ -189,8 +198,7 @@ static inline struct mctp_skb_cb *mctp_cb(struct sk_buff *skb)
+  *
+  * Updates to the route table are performed under rtnl; all reads under RCU,
+  * so routes cannot be referenced over a RCU grace period. Specifically: A
+- * caller cannot block between mctp_route_lookup and passing the route to
+- * mctp_do_route.
++ * caller cannot block between mctp_route_lookup and mctp_route_release()
+  */
+ struct mctp_route {
+ 	mctp_eid_t		min, max;
+@@ -210,8 +218,6 @@ struct mctp_route {
+ struct mctp_route *mctp_route_lookup(struct net *net, unsigned int dnet,
+ 				     mctp_eid_t daddr);
+ 
+-int mctp_do_route(struct mctp_route *rt, struct sk_buff *skb);
 -
--	for (i = 0; i < ARRAY_SIZE(tests); i++) {
--		if (!strcmp(tests[i].descr, test_name))
--			return i;
+ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
+ 		      struct sk_buff *skb, mctp_eid_t daddr, u8 req_tag);
+ 
+diff --git a/include/uapi/linux/mctp.h b/include/uapi/linux/mctp.h
+index 52b54d13f385..896432ce3c71 100644
+--- a/include/uapi/linux/mctp.h
++++ b/include/uapi/linux/mctp.h
+@@ -10,6 +10,7 @@
+ #define __UAPI_MCTP_H
+ 
+ #include <linux/types.h>
++#include <linux/netdevice.h>
+ 
+ typedef __u8			mctp_eid_t;
+ 
+@@ -25,6 +26,13 @@ struct sockaddr_mctp {
+ 	__u8			smctp_tag;
+ };
+ 
++struct sockaddr_mctp_ext {
++	struct sockaddr_mctp	smctp_base;
++	int			smctp_ifindex;
++	unsigned char		smctp_halen;
++	unsigned char		smctp_haddr[MAX_ADDR_LEN];
++};
++
+ #define MCTP_NET_ANY		0x0
+ 
+ #define MCTP_ADDR_NULL		0x00
+@@ -33,4 +41,9 @@ struct sockaddr_mctp {
+ #define MCTP_TAG_MASK		0x07
+ #define MCTP_TAG_OWNER		0x08
+ 
++/* setsockopt(2) level & options */
++#define SOL_MCTP		0
++
++#define MCTP_OPT_ADDR_EXT	1
++
+ #endif /* __UAPI_MCTP_H */
+diff --git a/net/mctp/af_mctp.c b/net/mctp/af_mctp.c
+index 66a411d60b6c..5eae06aaf65c 100644
+--- a/net/mctp/af_mctp.c
++++ b/net/mctp/af_mctp.c
+@@ -77,6 +77,7 @@ static int mctp_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 	const int hlen = MCTP_HEADER_MAXLEN + sizeof(struct mctp_hdr);
+ 	int rc, addrlen = msg->msg_namelen;
+ 	struct sock *sk = sock->sk;
++	struct mctp_sock *msk = container_of(sk, struct mctp_sock, sk);
+ 	struct mctp_skb_cb *cb;
+ 	struct mctp_route *rt;
+ 	struct sk_buff *skb;
+@@ -100,11 +101,6 @@ static int mctp_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 	if (addr->smctp_network == MCTP_NET_ANY)
+ 		addr->smctp_network = mctp_default_net(sock_net(sk));
+ 
+-	rt = mctp_route_lookup(sock_net(sk), addr->smctp_network,
+-			       addr->smctp_addr.s_addr);
+-	if (!rt)
+-		return -EHOSTUNREACH;
+-
+ 	skb = sock_alloc_send_skb(sk, hlen + 1 + len,
+ 				  msg->msg_flags & MSG_DONTWAIT, &rc);
+ 	if (!skb)
+@@ -116,19 +112,45 @@ static int mctp_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 	*(u8 *)skb_put(skb, 1) = addr->smctp_type;
+ 
+ 	rc = memcpy_from_msg((void *)skb_put(skb, len), msg, len);
+-	if (rc < 0) {
+-		kfree_skb(skb);
+-		return rc;
 -	}
--	return -1;
--}
--
--static __init int prepare_bpf_tests(void)
--{
--	if (test_id >= 0) {
--		/*
--		 * if a test_id was specified, use test_range to
--		 * cover only that test.
--		 */
--		if (test_id >= ARRAY_SIZE(tests)) {
--			pr_err("test_bpf: invalid test_id specified.\n");
--			return -EINVAL;
--		}
--
--		test_range[0] = test_id;
--		test_range[1] = test_id;
--	} else if (*test_name) {
--		/*
--		 * if a test_name was specified, find it and setup
--		 * test_range to cover only that test.
--		 */
--		int idx = find_test_index(test_name);
--
--		if (idx < 0) {
--			pr_err("test_bpf: no test named '%s' found.\n",
--			       test_name);
--			return -EINVAL;
--		}
--		test_range[0] = idx;
--		test_range[1] = idx;
--	} else {
--		/*
--		 * check that the supplied test_range is valid.
--		 */
--		if (test_range[0] >= ARRAY_SIZE(tests) ||
--		    test_range[1] >= ARRAY_SIZE(tests) ||
--		    test_range[0] < 0 || test_range[1] < 0) {
--			pr_err("test_bpf: test_range is out of bound.\n");
--			return -EINVAL;
--		}
--
--		if (test_range[1] < test_range[0]) {
--			pr_err("test_bpf: test_range is ending before it starts.\n");
--			return -EINVAL;
--		}
--	}
--
--	return 0;
--}
--
--static __init void destroy_bpf_tests(void)
--{
--}
--
- static bool exclude_test(int test_id)
- {
- 	return test_id < test_range[0] || test_id > test_range[1];
-@@ -14553,6 +14490,10 @@ static __init int test_skb_segment(void)
- 	for (i = 0; i < ARRAY_SIZE(skb_segment_tests); i++) {
- 		const struct skb_segment_test *test = &skb_segment_tests[i];
++	if (rc < 0)
++		goto err_free;
  
-+		cond_resched();
-+		if (exclude_test(i))
-+			continue;
-+
- 		pr_info("#%d %s ", i, test->descr);
+ 	/* set up cb */
+ 	cb = __mctp_cb(skb);
+ 	cb->net = addr->smctp_network;
  
- 		if (test_skb_segment_single(test)) {
-@@ -14934,6 +14875,8 @@ static __init int test_tail_calls(struct bpf_array *progs)
- 		int ret;
- 
- 		cond_resched();
-+		if (exclude_test(i))
-+			continue;
- 
- 		pr_info("#%d %s ", i, test->descr);
- 		if (!fp) {
-@@ -14966,29 +14909,179 @@ static __init int test_tail_calls(struct bpf_array *progs)
- 	return err_cnt ? -EINVAL : 0;
- }
- 
-+static char test_suite[32];
-+module_param_string(test_suite, test_suite, sizeof(test_suite), 0);
++	/* direct addressing */
++	if (msk->addr_ext && addrlen >= sizeof(struct sockaddr_mctp_ext)) {
++		DECLARE_SOCKADDR(struct sockaddr_mctp_ext *,
++				 extaddr, msg->msg_name);
 +
-+static __init int find_test_index(const char *test_name)
-+{
-+	int i;
-+
-+	if (!strcmp(test_suite, "test_bpf")) {
-+		for (i = 0; i < ARRAY_SIZE(tests); i++) {
-+			if (!strcmp(tests[i].descr, test_name))
-+				return i;
-+		}
-+	}
-+
-+	if (!strcmp(test_suite, "test_tail_calls")) {
-+		for (i = 0; i < ARRAY_SIZE(tail_call_tests); i++) {
-+			if (!strcmp(tail_call_tests[i].descr, test_name))
-+				return i;
-+		}
-+	}
-+
-+	if (!strcmp(test_suite, "test_skb_segment")) {
-+		for (i = 0; i < ARRAY_SIZE(skb_segment_tests); i++) {
-+			if (!strcmp(skb_segment_tests[i].descr, test_name))
-+				return i;
-+		}
-+	}
-+
-+	return -1;
-+}
-+
-+static __init int prepare_bpf_tests(void)
-+{
-+	if (test_id >= 0) {
-+		/*
-+		 * if a test_id was specified, use test_range to
-+		 * cover only that test.
-+		 */
-+		if (!strcmp(test_suite, "test_bpf") &&
-+		    test_id >= ARRAY_SIZE(tests)) {
-+			pr_err("test_bpf: invalid test_id specified for '%s' suite.\n",
-+			       test_suite);
-+			return -EINVAL;
++		if (extaddr->smctp_halen > MCTP_SKB_CB_HADDR_MAXLEN) {
++			rc = -EINVAL;
++			goto err_free;
 +		}
 +
-+		if (!strcmp(test_suite, "test_tail_calls") &&
-+		    test_id >= ARRAY_SIZE(tail_call_tests)) {
-+			pr_err("test_bpf: invalid test_id specified for '%s' suite.\n",
-+			       test_suite);
-+			return -EINVAL;
-+		}
++		cb->ifindex = extaddr->smctp_ifindex;
++		cb->halen = extaddr->smctp_halen;
++		memcpy(cb->haddr, extaddr->smctp_haddr, cb->halen);
 +
-+		if (!strcmp(test_suite, "test_skb_segment") &&
-+		    test_id >= ARRAY_SIZE(skb_segment_tests)) {
-+			pr_err("test_bpf: invalid test_id specified for '%s' suite.\n",
-+			       test_suite);
-+			return -EINVAL;
-+		}
-+
-+		test_range[0] = test_id;
-+		test_range[1] = test_id;
-+	} else if (*test_name) {
-+		/*
-+		 * if a test_name was specified, find it and setup
-+		 * test_range to cover only that test.
-+		 */
-+		int idx = find_test_index(test_name);
-+
-+		if (idx < 0) {
-+			pr_err("test_bpf: no test named '%s' found for '%s' suite.\n",
-+			       test_name, test_suite);
-+			return -EINVAL;
-+		}
-+		test_range[0] = idx;
-+		test_range[1] = idx;
++		rt = NULL;
 +	} else {
-+		int valid_range;
-+
-+		if (!strcmp(test_suite, "test_bpf"))
-+			valid_range = ARRAY_SIZE(tests);
-+		else if (!strcmp(test_suite, "test_tail_calls"))
-+			valid_range = ARRAY_SIZE(tail_call_tests);
-+		else if (!strcmp(test_suite, "test_skb_segment"))
-+			valid_range = ARRAY_SIZE(skb_segment_tests);
-+
-+		/*
-+		 * check that the supplied test_range is valid.
-+		 */
-+		if (strlen(test_suite)) {
-+			if (test_range[0] >= valid_range ||
-+			    test_range[1] >= valid_range ||
-+			    test_range[0] < 0 || test_range[1] < 0) {
-+				pr_err("test_bpf: test_range is out of bound for '%s' suite.\n",
-+				       test_suite);
-+				return -EINVAL;
-+			}
-+		}
-+
-+		if (test_range[1] < test_range[0]) {
-+			pr_err("test_bpf: test_range is ending before it starts.\n");
-+			return -EINVAL;
++		rt = mctp_route_lookup(sock_net(sk), addr->smctp_network,
++				       addr->smctp_addr.s_addr);
++		if (!rt) {
++			rc = -EHOSTUNREACH;
++			goto err_free;
 +		}
 +	}
 +
-+	return 0;
-+}
-+
-+static __init void destroy_bpf_tests(void)
-+{
-+}
-+
- static int __init test_bpf_init(void)
- {
- 	struct bpf_array *progs = NULL;
- 	int ret;
+ 	rc = mctp_local_output(sk, rt, skb, addr->smctp_addr.s_addr,
+ 			       addr->smctp_tag);
  
-+	if (strlen(test_suite) &&
-+	    strcmp(test_suite, "test_bpf") &&
-+	    strcmp(test_suite, "test_tail_calls") &&
-+	    strcmp(test_suite, "test_skb_segment")) {
-+		pr_err("test_bpf: invalid test_suite '%s' specified.\n", test_suite);
-+		return -EINVAL;
-+	}
+ 	return rc ? : len;
 +
-+	/*
-+	 * if test_suite is not specified, but test_id, test_name or test_range
-+	 * is specified, set 'test_bpf' as the default test suite.
-+	 */
-+	if (!strlen(test_suite) &&
-+	    (test_id != -1 || strlen(test_name) ||
-+	    (test_range[0] != 0 || test_range[1] != INT_MAX))) {
-+		pr_info("test_bpf: set 'test_bpf' as the default test_suite.\n");
-+		strcpy(test_suite, "test_bpf");
-+	}
-+
-+	/*
-+	 * if test_suite is specified, but test_range is not specified,
-+	 * set the upper limit of each test_suite to overwrite INT_MAX.
-+	 */
-+	if (strlen(test_suite) && test_range[0] == 0 && test_range[1] == INT_MAX) {
-+		if (!strcmp(test_suite, "test_bpf"))
-+			test_range[1] = ARRAY_SIZE(tests) - 1;
-+		else if (!strcmp(test_suite, "test_tail_calls"))
-+			test_range[1] = ARRAY_SIZE(tail_call_tests) - 1;
-+		else if (!strcmp(test_suite, "test_skb_segment"))
-+			test_range[1] = ARRAY_SIZE(skb_segment_tests) - 1;
-+	}
-+
- 	ret = prepare_bpf_tests();
- 	if (ret < 0)
- 		return ret;
- 
--	ret = test_bpf();
--	destroy_bpf_tests();
--	if (ret)
--		return ret;
-+	if (!strlen(test_suite) || !strcmp(test_suite, "test_bpf")) {
-+		ret = test_bpf();
-+		destroy_bpf_tests();
-+		if (ret)
-+			return ret;
-+	}
- 
--	ret = prepare_tail_call_tests(&progs);
--	if (ret)
--		return ret;
--	ret = test_tail_calls(progs);
--	destroy_tail_call_tests(progs);
--	if (ret)
--		return ret;
-+	if (!strlen(test_suite) || !strcmp(test_suite, "test_tail_calls")) {
-+		ret = prepare_tail_call_tests(&progs);
-+		if (ret)
-+			return ret;
-+		ret = test_tail_calls(progs);
-+		destroy_tail_call_tests(progs);
-+		if (ret)
-+			return ret;
-+	}
- 
--	return test_skb_segment();
-+	if (!strlen(test_suite) || !strcmp(test_suite, "test_skb_segment"))
-+		return test_skb_segment();
-+
-+	return 0;
++err_free:
++	kfree_skb(skb);
++	return rc;
  }
  
- static void __exit test_bpf_exit(void)
+ static int mctp_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+@@ -136,6 +158,7 @@ static int mctp_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ {
+ 	DECLARE_SOCKADDR(struct sockaddr_mctp *, addr, msg->msg_name);
+ 	struct sock *sk = sock->sk;
++	struct mctp_sock *msk = container_of(sk, struct mctp_sock, sk);
+ 	struct sk_buff *skb;
+ 	size_t msglen;
+ 	u8 type;
+@@ -181,6 +204,16 @@ static int mctp_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 		addr->smctp_tag = hdr->flags_seq_tag &
+ 					(MCTP_HDR_TAG_MASK | MCTP_HDR_FLAG_TO);
+ 		msg->msg_namelen = sizeof(*addr);
++
++		if (msk->addr_ext) {
++			DECLARE_SOCKADDR(struct sockaddr_mctp_ext *, ae,
++					 msg->msg_name);
++			msg->msg_namelen = sizeof(*ae);
++			ae->smctp_ifindex = cb->ifindex;
++			ae->smctp_halen = cb->halen;
++			memset(ae->smctp_haddr, 0x0, sizeof(ae->smctp_haddr));
++			memcpy(ae->smctp_haddr, cb->haddr, cb->halen);
++		}
+ 	}
+ 
+ 	rc = len;
+@@ -196,12 +229,45 @@ static int mctp_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ static int mctp_setsockopt(struct socket *sock, int level, int optname,
+ 			   sockptr_t optval, unsigned int optlen)
+ {
+-	return -EINVAL;
++	struct mctp_sock *msk = container_of(sock->sk, struct mctp_sock, sk);
++	int val;
++
++	if (level != SOL_MCTP)
++		return -EINVAL;
++
++	if (optname == MCTP_OPT_ADDR_EXT) {
++		if (optlen != sizeof(int))
++			return -EINVAL;
++		if (copy_from_sockptr(&val, optval, sizeof(int)))
++			return -EFAULT;
++		msk->addr_ext = val;
++		return 0;
++	}
++
++	return -ENOPROTOOPT;
+ }
+ 
+ static int mctp_getsockopt(struct socket *sock, int level, int optname,
+ 			   char __user *optval, int __user *optlen)
+ {
++	struct mctp_sock *msk = container_of(sock->sk, struct mctp_sock, sk);
++	int len, val;
++
++	if (level != SOL_MCTP)
++		return -EINVAL;
++
++	if (get_user(len, optlen))
++		return -EFAULT;
++
++	if (optname == MCTP_OPT_ADDR_EXT) {
++		if (len != sizeof(int))
++			return -EINVAL;
++		val = !!msk->addr_ext;
++		if (copy_to_user(optval, &val, len))
++			return -EFAULT;
++		return 0;
++	}
++
+ 	return -EINVAL;
+ }
+ 
+diff --git a/net/mctp/route.c b/net/mctp/route.c
+index 04781459b2be..3d77bb5e34d2 100644
+--- a/net/mctp/route.c
++++ b/net/mctp/route.c
+@@ -433,6 +433,7 @@ static unsigned int mctp_route_mtu(struct mctp_route *rt)
+ 
+ static int mctp_route_output(struct mctp_route *route, struct sk_buff *skb)
+ {
++	struct mctp_skb_cb *cb = mctp_cb(skb);
+ 	struct mctp_hdr *hdr = mctp_hdr(skb);
+ 	char daddr_buf[MAX_ADDR_LEN];
+ 	char *daddr = NULL;
+@@ -447,9 +448,14 @@ static int mctp_route_output(struct mctp_route *route, struct sk_buff *skb)
+ 		return -EMSGSIZE;
+ 	}
+ 
+-	/* If lookup fails let the device handle daddr==NULL */
+-	if (mctp_neigh_lookup(route->dev, hdr->dest, daddr_buf) == 0)
+-		daddr = daddr_buf;
++	if (cb->ifindex) {
++		/* direct route; use the hwaddr we stashed in sendmsg */
++		daddr = cb->haddr;
++	} else {
++		/* If lookup fails let the device handle daddr==NULL */
++		if (mctp_neigh_lookup(route->dev, hdr->dest, daddr_buf) == 0)
++			daddr = daddr_buf;
++	}
+ 
+ 	rc = dev_hard_header(skb, skb->dev, ntohs(skb->protocol),
+ 			     daddr, skb->dev->dev_addr, skb->len);
+@@ -645,16 +651,6 @@ static struct mctp_route *mctp_route_lookup_null(struct net *net,
+ 	return NULL;
+ }
+ 
+-/* sends a skb to rt and releases the route. */
+-int mctp_do_route(struct mctp_route *rt, struct sk_buff *skb)
+-{
+-	int rc;
+-
+-	rc = rt->output(rt, skb);
+-	mctp_route_release(rt);
+-	return rc;
+-}
+-
+ static int mctp_do_fragment_route(struct mctp_route *rt, struct sk_buff *skb,
+ 				  unsigned int mtu, u8 tag)
+ {
+@@ -721,7 +717,7 @@ static int mctp_do_fragment_route(struct mctp_route *rt, struct sk_buff *skb,
+ 		/* copy message payload */
+ 		skb_copy_bits(skb, pos, skb_transport_header(skb2), size);
+ 
+-		/* do route, but don't drop the rt reference */
++		/* do route */
+ 		rc = rt->output(rt, skb2);
+ 		if (rc)
+ 			break;
+@@ -730,7 +726,6 @@ static int mctp_do_fragment_route(struct mctp_route *rt, struct sk_buff *skb,
+ 		pos += size;
+ 	}
+ 
+-	mctp_route_release(rt);
+ 	consume_skb(skb);
+ 	return rc;
+ }
+@@ -740,15 +735,50 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
+ {
+ 	struct mctp_sock *msk = container_of(sk, struct mctp_sock, sk);
+ 	struct mctp_skb_cb *cb = mctp_cb(skb);
++	struct mctp_route tmp_rt;
++	struct net_device *dev;
+ 	struct mctp_hdr *hdr;
+ 	unsigned long flags;
+ 	unsigned int mtu;
+ 	mctp_eid_t saddr;
++	bool ext_rt;
+ 	int rc;
+ 	u8 tag;
+ 
+-	if (WARN_ON(!rt->dev))
++	if (rt) {
++		ext_rt = false;
++		dev = NULL;
++
++		if (WARN_ON(!rt->dev))
++			goto out_release;
++
++	} else if (cb->ifindex) {
++		ext_rt = true;
++		rt = &tmp_rt;
++
++		rc = -ENODEV;
++		rcu_read_lock();
++		dev = dev_get_by_index_rcu(sock_net(sk), cb->ifindex);
++		if (!dev) {
++			rcu_read_unlock();
++			return rc;
++		}
++
++		rt->dev = __mctp_dev_get(dev);
++		rcu_read_unlock();
++
++		if (!rt->dev)
++			goto out_release;
++
++		/* establish temporary route - we set up enough to keep
++		 * mctp_route_output happy
++		 */
++		rt->output = mctp_route_output;
++		rt->mtu = 0;
++
++	} else {
+ 		return -EINVAL;
++	}
+ 
+ 	spin_lock_irqsave(&rt->dev->addrs_lock, flags);
+ 	if (rt->dev->num_addrs == 0) {
+@@ -761,18 +791,17 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
+ 	spin_unlock_irqrestore(&rt->dev->addrs_lock, flags);
+ 
+ 	if (rc)
+-		return rc;
++		goto out_release;
+ 
+ 	if (req_tag & MCTP_HDR_FLAG_TO) {
+ 		rc = mctp_alloc_local_tag(msk, saddr, daddr, &tag);
+ 		if (rc)
+-			return rc;
++			goto out_release;
+ 		tag |= MCTP_HDR_FLAG_TO;
+ 	} else {
+ 		tag = req_tag;
+ 	}
+ 
+-
+ 	skb->protocol = htons(ETH_P_MCTP);
+ 	skb->priority = 0;
+ 	skb_reset_transport_header(skb);
+@@ -792,12 +821,22 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
+ 	mtu = mctp_route_mtu(rt);
+ 
+ 	if (skb->len + sizeof(struct mctp_hdr) <= mtu) {
+-		hdr->flags_seq_tag = MCTP_HDR_FLAG_SOM | MCTP_HDR_FLAG_EOM |
+-			tag;
+-		return mctp_do_route(rt, skb);
++		hdr->flags_seq_tag = MCTP_HDR_FLAG_SOM |
++			MCTP_HDR_FLAG_EOM | tag;
++		rc = rt->output(rt, skb);
+ 	} else {
+-		return mctp_do_fragment_route(rt, skb, mtu, tag);
++		rc = mctp_do_fragment_route(rt, skb, mtu, tag);
+ 	}
++
++out_release:
++	if (!ext_rt)
++		mctp_route_release(rt);
++
++	if (dev)
++		dev_put(dev);
++
++	return rc;
++
+ }
+ 
+ /* route management */
+@@ -938,8 +977,15 @@ static int mctp_pkttype_receive(struct sk_buff *skb, struct net_device *dev,
+ 	if (mh->ver < MCTP_VER_MIN || mh->ver > MCTP_VER_MAX)
+ 		goto err_drop;
+ 
+-	cb = __mctp_cb(skb);
++	/* MCTP drivers must populate halen/haddr */
++	if (dev->type == ARPHRD_MCTP) {
++		cb = mctp_cb(skb);
++	} else {
++		cb = __mctp_cb(skb);
++		cb->halen = 0;
++	}
+ 	cb->net = READ_ONCE(mdev->net);
++	cb->ifindex = dev->ifindex;
+ 
+ 	rt = mctp_route_lookup(net, cb->net, mh->dest);
+ 
+@@ -950,7 +996,8 @@ static int mctp_pkttype_receive(struct sk_buff *skb, struct net_device *dev,
+ 	if (!rt)
+ 		goto err_drop;
+ 
+-	mctp_do_route(rt, skb);
++	rt->output(rt, skb);
++	mctp_route_release(rt);
+ 
+ 	return NET_RX_SUCCESS;
+ 
 -- 
-2.1.0
+2.30.2
 
