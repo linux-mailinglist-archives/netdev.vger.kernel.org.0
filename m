@@ -2,165 +2,320 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C556142D98B
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 14:51:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB62B42D9C2
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 15:08:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231265AbhJNMxz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 08:53:55 -0400
-Received: from mail-oln040093003003.outbound.protection.outlook.com ([40.93.3.3]:21188
-        "EHLO na01-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231140AbhJNMxz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Oct 2021 08:53:55 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QFQO4O7WfZ7bbE5qqcPv1yWTU+y3tcr84X4Pgv4nIc0GJNT471xsJczbl0VGDR2yvqmWCywOO5OSs9uVYTiKSljnOsr9Qe2JEu9L092ZeVE58QXpGI8/pkHD/uXEAeEUDyRPx73jLc7uJ5daxSUIRXWDBhPosgKegYqUFIGf3YCTaIHevb+aiB4Nn2vNt3kO2m92fTA2nqzo+TpROm3V7/0d40OSIX+qQqd+B8R6QaSIPSwBAXdbywnBfQH5IR7pvMFC9KFQ8byPlTEH8U86KYMiImk/Y7Fc9YbdVFP66p70UkiiUTKqziCFJOZAJOairfNe3MliPmtjO0y1q6nHEw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MTZ8PljX/KUFo44quNY166bkZOy8cgps8qRAFzPFgz8=;
- b=hXtaJ+gKNUDLsoE+xcCS+U7q79a0W/QmBnZCKsiy29qdQav1sfDwuywT2sBvzfdZ3REn5D2MAPDdfOhaX2EtsAkXdmZlvGBO0B4oeFD0bV5ghP0KhVJzI4l6C87LREBMRgkwcEr5wsOb0rSkIG3pf3opSAfALBlUP/UzdroVa+26uL1IbX96xqKOQL2Do0qoJux1wKXP5p2xrNgsGNar058GLHG9ALZWYgYCIcPsTxv76cOibG99OnLcvAsWtxdjxZykNaIzaDGnuK8piSQ7SeGF4dRtaBrtrpP2uYni9jGkf8pcvVV5GAMEt/L1hSDW31lXBd6nHLrsrAUYQ90GZA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MTZ8PljX/KUFo44quNY166bkZOy8cgps8qRAFzPFgz8=;
- b=ANJjkFloh1gUOuH/nviE3mZzp+NuyPe9ItTSzF7MObtdl8TxbkxtvTAjRSQ2/jU7HLVbtkGAJy3so7tPjLh2qD6qIAh1FlHT0uZB5fN22wnAlV3Dg4tElXGYOWw9kC14C7/w9QE104cLl0xv6Jq6a/rIZNEtDsqRv2n5plOr7V4=
-Received: from BN8PR21MB1284.namprd21.prod.outlook.com (2603:10b6:408:a2::22)
- by BN8PR21MB1220.namprd21.prod.outlook.com (2603:10b6:408:77::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.3; Thu, 14 Oct
- 2021 12:51:48 +0000
-Received: from BN8PR21MB1284.namprd21.prod.outlook.com
- ([fe80::297f:262:dd3c:555]) by BN8PR21MB1284.namprd21.prod.outlook.com
- ([fe80::297f:262:dd3c:555%5]) with mapi id 15.20.4628.009; Thu, 14 Oct 2021
- 12:51:48 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: RE: [PATCH] hv_netvsc: Add comment of netvsc_xdp_xmit()
-Thread-Topic: [PATCH] hv_netvsc: Add comment of netvsc_xdp_xmit()
-Thread-Index: AQHXwJqJRtOmHDL5Xk+iISMAX9KcJKvScnUg
-Date:   Thu, 14 Oct 2021 12:51:48 +0000
-Message-ID: <BN8PR21MB1284BC427B0AA4C01C263BDECAB89@BN8PR21MB1284.namprd21.prod.outlook.com>
-References: <1634174786-1810351-1-git-send-email-jiasheng@iscas.ac.cn>
-In-Reply-To: <1634174786-1810351-1-git-send-email-jiasheng@iscas.ac.cn>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=3a766eba-2401-4220-bd07-aef53ddbb9ca;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-10-14T12:48:48Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 84b35a9d-0a2a-4977-8ab9-08d98f1162ae
-x-ms-traffictypediagnostic: BN8PR21MB1220:
-x-microsoft-antispam-prvs: <BN8PR21MB12204ABD44DC8F6B252B88F0CAB89@BN8PR21MB1220.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3383;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: JxBjy4UOJTVYPwjobr8M/9+QJGV2FCHEbpWP2hgEFZhZ9PZ5SLunSPYHXmW8tuhDZoQWvHQY27zHbU3pQZy5cuFymVpwsUYfiErKtXdX73LJurjvQayV4PC00jhU+befQ1b1PGNJxqggLhADTISXGDYq9gAaX4OxEoT8VIKmIkfNkw/Ec0Upwfq95YwKH2RjF6hDs5WSVaysaSrqRqJ/9mVejcKnhske46NfSzVqYJCtBfFUheWAB4jv3tXt3IqIfn8VVMNbm8moPtLOmyIOmmt5Fzauq9A9+WevNrEtxAqGTb50JEUfO1OoqkG/zwvpHC1pGd1YP3o0d0pvS4F0jZWn8U4j52G4XJxgzL9JmHnUuX9Z/rsGJV13GerLLpj4/SG/SbCfA0HP5/yK5q299RDaUM4P+1oqWspefT+R/sHMoCj0A9Vf4kyiWQLKj9PGmu44zCWYmUQ5zohmnYbak145vxdvgVTJC7mLJpQ+XivUsjbMdp3j8kJsWBLWnLtv6GJAt5wQuJiFHV+2I6/xYBsDQAaaTeRUECEOrFFn4EWwhc5ir/6hyhRAmnTe/SC/IQa8P6FtZwlcszwcF5uVlTJHkB2xNxugFTy1EDpF1pWR7iBySWLFa8b9b45IfzbP//ZfXtEhO29VSEvO/kmi7UEuiICWJ0H4iL9CYeSsp0Mk2QnwccVA9iDSpztsC+J3Zttb07dz+1h1g+1+oxww9Q==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR21MB1284.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(7696005)(10290500003)(9686003)(38100700002)(82960400001)(54906003)(55016002)(508600001)(83380400001)(2906002)(64756008)(38070700005)(66556008)(26005)(122000001)(6506007)(4326008)(186003)(8676002)(76116006)(5660300002)(110136005)(82950400001)(66946007)(66476007)(53546011)(8936002)(33656002)(8990500004)(52536014)(71200400001)(86362001)(66446008)(316002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?KSen0njkRuMTXaeSY8WfPITGTI0Xm9J1kipSR3qdWF9Q2oqcA2rT4EWVz1Pl?=
- =?us-ascii?Q?ZOqzV2WLRXhDKPS6uzpohI/utg8/Qa4wH6hCu0ijUMYT3Pj1hFXS7Y6a5pp8?=
- =?us-ascii?Q?CBs1KckJuYdVS/lm/08PaNVZVmwUsiEKqOA3xrrzfXL4N/SWn13ez3LRXZZj?=
- =?us-ascii?Q?SZt8TSVzNMLnF8I4V4Fc0ytZ3ysL2vnn8s/hHqQ+BWPBCtd+dS981Xyyku8c?=
- =?us-ascii?Q?Aet+MuJrOzaSSedsvWr0wwFfMfZ4JN67fDl12f7KwMLWz3Sbe36Nt6xGg/Js?=
- =?us-ascii?Q?br9TXqoexrABEuqBAjyleWWXgHw1qv7r2wVW8f+YKljRjac6D/L/kWCP3Qz6?=
- =?us-ascii?Q?lYU4KpzW2z8Mk750LBzALGAvJGLVVJTISfruyNSg+x4nV6TRDL3GcNziru2L?=
- =?us-ascii?Q?Z3ksuA4n7d1d+OSzaI93wHVs3PzrQP4DCOaEl5RYbqc/sDE+eq867gzgLDBO?=
- =?us-ascii?Q?57hq7kWwaGvzwk1SvbQZCFPfFJYZi0fILbobYba53Z8y2d44xMpDnFSrNZof?=
- =?us-ascii?Q?YcLFBsho1JbCzOW8dDXOzarqDjLOQChtoqg8SrDHQRGmHzkQK99lJaz7Opm9?=
- =?us-ascii?Q?IWhVJZzr2keUp12tSYRB11tIRaqX28BfCOh+MLqzoV3M1+1nxbJpilTmPt3I?=
- =?us-ascii?Q?DseYE36cQCHbbm5cwsyFzyHFQ4Nwf7lob4BFRtx3/VlGGRIeBBqy219p20e0?=
- =?us-ascii?Q?CRJPS01iAdMjxMjx+sy/n+3nmbcg8uvhqI1MXw6G2nOxdeaFNugDexIF9ccR?=
- =?us-ascii?Q?KS7WJE1QREIxcewMKmhxINumyhSfr0bWUJMO4ZVHyj2hA5czcs/JW36PgVAb?=
- =?us-ascii?Q?ZLtlCl652KkP3oM+B1CbarDkpZR+0t/AvI8IaKqQAniZCKBzOKA2yLAx80vO?=
- =?us-ascii?Q?V9s2yAhjh2CWqBWKPjltOZQW4SjrI4vtKy48/gEvwkWXvup7FlFoM/j/zyFl?=
- =?us-ascii?Q?XjBZSovAz7S4g5rSY/0kgro3hUGFf5bLtqq9gJY6G0wq6Ap/xKLWNIpVhAW7?=
- =?us-ascii?Q?KQflcj1g6fAqBIjyC/72fqwSJcEJ4wSiIdW5hsqV+MlpA88WIpQdHWwKn9gW?=
- =?us-ascii?Q?7wprIReuXEOw+V5HmU1PZL3r3XTzoNshBH03YqBXiBsrq46iXhVqA17gbTPC?=
- =?us-ascii?Q?zAFSl7yWRhNs2xxmr0No7dtURhYzAITKlFDaXNANSDudwlRG79f5fL8h9kjO?=
- =?us-ascii?Q?39HbDhyU8UdMAoXt0n9r0Y0vZWxB3OF+8gHzwoMNnH+Icy8NcoPDAOyIwyLs?=
- =?us-ascii?Q?uTqZhnBUCg+LQzFIVbbEx7Iq2eB4+4a26Y1E01J2ot1NyGqSaTCvgokglPzG?=
- =?us-ascii?Q?/UkfK5r2VaoFL9h4rirhvak6S7iulF53LUWUFmyJCcr25Kq5kxH+eThm4Dy8?=
- =?us-ascii?Q?T80NU6mXv/iXvMq61j0cnEmhJOQRTe9/JAJ+0YZW6pNuYK7c0jkRX22Oo2a+?=
- =?us-ascii?Q?TZDQKNxYA9hTd5OkIbDNgzUc+dxI6RLMt3aMmb/i3mIGoUn2zTSBH+tX92RA?=
- =?us-ascii?Q?NoUcc/3qPOpfrWneReGKL/gti9WwrBKpDDrbAqBQPDtTGmkrqfcZK7nW43dF?=
- =?us-ascii?Q?ssyyWnomuBXnW7dz6K6gyeXI8EoPxIWdQQaUj+Xj/KyxAwUKp3A3Pv+a8fRD?=
- =?us-ascii?Q?Zw=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S231167AbhJNNK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 09:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49548 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230054AbhJNNK7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 09:10:59 -0400
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B20C2C061570
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 06:08:54 -0700 (PDT)
+Received: by mail-qk1-x733.google.com with SMTP id l7so5388035qkk.0
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 06:08:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tpHQRD9rh8/8ACIv/b6/FgDaPM+li/9Ov04kpX/3w2k=;
+        b=T9Pb1HgQMIbZDPaWjMa0kZRjgVVJP3nNVvhFoCLcMasRTGjZd16KXc+SZMoH16zWXH
+         x67LcbLbGWQvqoDL2HppBoiv/1oHtaH2/IEdXSYFUzYDZ61iGySk8XOQGswsRNJhcorX
+         Rq/vptzqZxdW5eATFTMRaj3ixt2Y0qeLE3NOH8nXkrRsvM2RvOq/wpB+z9PBkKV4VPxl
+         rBbItMJYiHpktfnsU9u8oJMTJBXmk7J8hltdwlvcpOF6hnIFGbS2kdDKmXLkG2snrdc4
+         ktEJed/EzBdxMBb0lpW2Qt8RIyEla4pX0VOtYIJyGmM9XxispziKrg0UcZJixTXiBfS/
+         Dp8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tpHQRD9rh8/8ACIv/b6/FgDaPM+li/9Ov04kpX/3w2k=;
+        b=yPeE4TI3t5OBlOGcyiRpl02PMwn6FMcvyOw36UiwNUnwqKuSFXE4dR9GcjcGbYWILb
+         qHJiua+J4jebT9IXIUfjmzG0ZNh36UULY4u9mlkh9l3INKyU9UONU12FUAMTPezsP1uE
+         UUOEOAgFJXiLzcJYW7Y8iQWo/9J7/dx8XlhwqmPMNKrXuoKSvyy7c1HLYlakOsKIdee1
+         Y0xrv73XWgX3R7+/rzqQCXTXTZMp6xyWkg7EQzy52I0nRrbAVf1M4yMNk3IeyYFH3H43
+         6UmMhtkC9HXNFVOZAAYhEBbnnqabIeYB0Acitw1A+I64XCt5q0TmLfeE/WM+jcw4813Y
+         VrRQ==
+X-Gm-Message-State: AOAM5335tubs+9GRaoJZ5a6fLGSv0jC2JxBbaMOHV9SE89woNT7WJVAm
+        wLBhpI2z7uWbDJ+BnFDTK5X/ZoxXQA==
+X-Google-Smtp-Source: ABdhPJwi8NVR/Nj4eDgbpXSsuGbieBNPASc24DNWO2FQDFVlBdEflFO5F5iQXWUs+mVuS6Q0NZ9RLw==
+X-Received: by 2002:a37:bf85:: with SMTP id p127mr4390104qkf.259.1634216933621;
+        Thu, 14 Oct 2021 06:08:53 -0700 (PDT)
+Received: from ssuryadesk.lan ([136.56.65.87])
+        by smtp.gmail.com with ESMTPSA id v80sm1273292qkb.45.2021.10.14.06.08.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Oct 2021 06:08:53 -0700 (PDT)
+From:   Stephen Suryaputra <ssuryaextr@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, Stephen Suryaputra <ssuryaextr@gmail.com>
+Subject: [PATCH net] ipv6: When forwarding count rx stats on the orig netdev
+Date:   Thu, 14 Oct 2021 09:08:45 -0400
+Message-Id: <20211014130845.410602-1-ssuryaextr@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR21MB1284.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 84b35a9d-0a2a-4977-8ab9-08d98f1162ae
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Oct 2021 12:51:48.1638
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Yr0wMZmEzgINTZAHLmhuJ0Rn/T14tlSWbcm6fKzXc8WA0LbXc5U3y+yaKPAEP4KtuCbDn9PWJs9QCrH0qvzC/g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR21MB1220
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Commit bdb7cc643fc9 ("ipv6: Count interface receive statistics on the
+ingress netdev") does not work when ip6_forward() executes on the skbs
+with vrf-enslaved netdev. Use IP6CB(skb)->iif to get to the right one.
 
+Add a selftest script to verify.
 
-> -----Original Message-----
-> From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> Sent: Wednesday, October 13, 2021 9:26 PM
-> To: KY Srinivasan <kys@microsoft.com>; Haiyang Zhang
-> <haiyangz@microsoft.com>; Stephen Hemminger <sthemmin@microsoft.com>;
-> wei.liu@kernel.org; Dexuan Cui <decui@microsoft.com>;
-> davem@davemloft.net; kuba@kernel.org
-> Cc: linux-hyperv@vger.kernel.org; netdev@vger.kernel.org; linux-
-> kernel@vger.kernel.org; bpf@vger.kernel.org; Jiasheng Jiang
-> <jiasheng@iscas.ac.cn>
-> Subject: [PATCH] hv_netvsc: Add comment of netvsc_xdp_xmit()
->=20
-> Adding comment to avoid the misusing of netvsc_xdp_xmit().
-> Otherwise the value of skb->queue_mapping could be 0 and
-> then the return value of skb_get_rx_queue() could be MAX_U16
-> cause by overflow.
->=20
-> Fixes: 351e158 ("hv_netvsc: Add XDP support")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> ---
->  drivers/net/hyperv/netvsc_drv.c | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/drivers/net/hyperv/netvsc_drv.c
-> b/drivers/net/hyperv/netvsc_drv.c
-> index f682a55..ac9529c 100644
-> --- a/drivers/net/hyperv/netvsc_drv.c
-> +++ b/drivers/net/hyperv/netvsc_drv.c
-> @@ -803,6 +803,7 @@ void netvsc_linkstatus_callback(struct net_device
-> *net,
->  	schedule_delayed_work(&ndev_ctx->dwork, 0);
->  }
->=20
-> +/* This function should only be called after skb_record_rx_queue() */
->  static void netvsc_xdp_xmit(struct sk_buff *skb, struct net_device
-> *ndev)
->  {
+Fixes: bdb7cc643fc9 ("ipv6: Count interface receive statistics on the ingress netdev")
+Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
+---
+ net/ipv6/ip6_output.c                         |   3 +-
+ .../testing/selftests/net/forwarding/Makefile |   1 +
+ .../net/forwarding/forwarding.config.sample   |   2 +
+ .../net/forwarding/ip6_forward_instats_vrf.sh | 172 ++++++++++++++++++
+ tools/testing/selftests/net/forwarding/lib.sh |   8 +
+ 5 files changed, 185 insertions(+), 1 deletion(-)
+ create mode 100755 tools/testing/selftests/net/forwarding/ip6_forward_instats_vrf.sh
 
-Thanks.
-
-Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
-
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 12f985f43bcc..2f044a49afa8 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -464,13 +464,14 @@ static bool ip6_pkt_too_big(const struct sk_buff *skb, unsigned int mtu)
+ 
+ int ip6_forward(struct sk_buff *skb)
+ {
+-	struct inet6_dev *idev = __in6_dev_get_safely(skb->dev);
+ 	struct dst_entry *dst = skb_dst(skb);
+ 	struct ipv6hdr *hdr = ipv6_hdr(skb);
+ 	struct inet6_skb_parm *opt = IP6CB(skb);
+ 	struct net *net = dev_net(dst->dev);
++	struct inet6_dev *idev;
+ 	u32 mtu;
+ 
++	idev = __in6_dev_get_safely(dev_get_by_index_rcu(net, IP6CB(skb)->iif));
+ 	if (net->ipv6.devconf_all->forwarding == 0)
+ 		goto error;
+ 
+diff --git a/tools/testing/selftests/net/forwarding/Makefile b/tools/testing/selftests/net/forwarding/Makefile
+index d97bd6889446..72ee644d47bf 100644
+--- a/tools/testing/selftests/net/forwarding/Makefile
++++ b/tools/testing/selftests/net/forwarding/Makefile
+@@ -9,6 +9,7 @@ TEST_PROGS = bridge_igmp.sh \
+ 	gre_inner_v4_multipath.sh \
+ 	gre_inner_v6_multipath.sh \
+ 	gre_multipath.sh \
++	ip6_forward_instats_vrf.sh \
+ 	ip6gre_inner_v4_multipath.sh \
+ 	ip6gre_inner_v6_multipath.sh \
+ 	ipip_flat_gre_key.sh \
+diff --git a/tools/testing/selftests/net/forwarding/forwarding.config.sample b/tools/testing/selftests/net/forwarding/forwarding.config.sample
+index b802c14d2950..e5e2fbeca22e 100644
+--- a/tools/testing/selftests/net/forwarding/forwarding.config.sample
++++ b/tools/testing/selftests/net/forwarding/forwarding.config.sample
+@@ -39,3 +39,5 @@ NETIF_CREATE=yes
+ # Timeout (in seconds) before ping exits regardless of how many packets have
+ # been sent or received
+ PING_TIMEOUT=5
++# IPv6 traceroute utility name.
++TROUTE6=traceroute6
+diff --git a/tools/testing/selftests/net/forwarding/ip6_forward_instats_vrf.sh b/tools/testing/selftests/net/forwarding/ip6_forward_instats_vrf.sh
+new file mode 100755
+index 000000000000..9f5b3e2e5e95
+--- /dev/null
++++ b/tools/testing/selftests/net/forwarding/ip6_forward_instats_vrf.sh
+@@ -0,0 +1,172 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++
++# Test ipv6 stats on the incoming if when forwarding with VRF
++
++ALL_TESTS="
++	ipv6_ping
++	ipv6_in_too_big_err
++	ipv6_in_hdr_err
++	ipv6_in_addr_err
++	ipv6_in_discard
++"
++
++NUM_NETIFS=4
++source lib.sh
++
++h1_create()
++{
++	simple_if_init $h1 2001:1:1::2/64
++	ip -6 route add vrf v$h1 2001:1:2::/64 via 2001:1:1::1
++}
++
++h1_destroy()
++{
++	ip -6 route del vrf v$h1 2001:1:2::/64 via 2001:1:1::1
++	simple_if_fini $h1 2001:1:1::2/64
++}
++
++router_create()
++{
++	vrf_create router
++	__simple_if_init $rtr1 router 2001:1:1::1/64
++	__simple_if_init $rtr2 router 2001:1:2::1/64
++	mtu_set $rtr2 1280
++}
++
++router_destroy()
++{
++	mtu_restore $rtr2
++	__simple_if_fini $rtr2 2001:1:2::1/64
++	__simple_if_fini $rtr1 2001:1:1::1/64
++	vrf_destroy router
++}
++
++h2_create()
++{
++	simple_if_init $h2 2001:1:2::2/64
++	ip -6 route add vrf v$h2 2001:1:1::/64 via 2001:1:2::1
++	mtu_set $h2 1280
++}
++
++h2_destroy()
++{
++	mtu_restore $h2
++	ip -6 route del vrf v$h2 2001:1:1::/64 via 2001:1:2::1
++	simple_if_fini $h2 2001:1:2::2/64
++}
++
++setup_prepare()
++{
++	h1=${NETIFS[p1]}
++	rtr1=${NETIFS[p2]}
++
++	rtr2=${NETIFS[p3]}
++	h2=${NETIFS[p4]}
++
++	vrf_prepare
++	h1_create
++	router_create
++	h2_create
++
++	forwarding_enable
++}
++
++cleanup()
++{
++	pre_cleanup
++
++	forwarding_restore
++
++	h2_destroy
++	router_destroy
++	h1_destroy
++	vrf_cleanup
++}
++
++ipv6_in_too_big_err()
++{
++	RET=0
++
++	local t0=$(ipv6_stats_get $rtr1 Ip6InTooBigErrors)
++	local vrf_name=$(master_name_get $h1)
++
++	# Send too big packets
++	ip vrf exec $vrf_name \
++		$PING6 -s 1300 2001:1:2::2 -c 1 -w $PING_TIMEOUT &> /dev/null
++
++	local t1=$(ipv6_stats_get $rtr1 Ip6InTooBigErrors)
++	test "$((t1 - t0))" -ne 0
++	check_err $?
++	log_test "Ip6InTooBigErrors"
++}
++
++ipv6_in_hdr_err()
++{
++	RET=0
++
++	local t0=$(ipv6_stats_get $rtr1 Ip6InHdrErrors)
++	local vrf_name=$(master_name_get $h1)
++
++	# Send packets with hop limit 1, easiest with traceroute6 as some ping6
++	# doesn't allow hop limit to be specified
++	ip vrf exec $vrf_name \
++		$TROUTE6 2001:1:2::2 &> /dev/null
++
++	local t1=$(ipv6_stats_get $rtr1 Ip6InHdrErrors)
++	test "$((t1 - t0))" -ne 0
++	check_err $?
++	log_test "Ip6InHdrErrors"
++}
++
++ipv6_in_addr_err()
++{
++	RET=0
++
++	local t0=$(ipv6_stats_get $rtr1 Ip6InAddrErrors)
++	local vrf_name=$(master_name_get $h1)
++
++	# Disable forwarding temporary while sending the packet
++	sysctl -qw net.ipv6.conf.all.forwarding=0
++	ip vrf exec $vrf_name \
++		$PING6 2001:1:2::2 -c 1 -w $PING_TIMEOUT &> /dev/null
++	sysctl -qw net.ipv6.conf.all.forwarding=1
++
++	local t1=$(ipv6_stats_get $rtr1 Ip6InAddrErrors)
++	test "$((t1 - t0))" -ne 0
++	check_err $?
++	log_test "Ip6InAddrErrors"
++}
++
++ipv6_in_discard()
++{
++	RET=0
++
++	local t0=$(ipv6_stats_get $rtr1 Ip6InDiscards)
++	local vrf_name=$(master_name_get $h1)
++
++	# Add a policy to discard
++	ip xfrm policy add dst 2001:1:2::2/128 dir fwd action block
++	ip vrf exec $vrf_name \
++		$PING6 2001:1:2::2 -c 1 -w $PING_TIMEOUT &> /dev/null
++	ip xfrm policy del dst 2001:1:2::2/128 dir fwd
++
++	local t1=$(ipv6_stats_get $rtr1 Ip6InDiscards)
++	test "$((t1 - t0))" -ne 0
++	check_err $?
++	log_test "Ip6InDiscards"
++}
++ipv6_ping()
++{
++	RET=0
++
++	ping6_test $h1 2001:1:2::2
++}
++
++trap cleanup EXIT
++
++setup_prepare
++setup_wait
++tests_run
++
++exit $EXIT_STATUS
+diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
+index e7fc5c35b569..92087d423bcf 100644
+--- a/tools/testing/selftests/net/forwarding/lib.sh
++++ b/tools/testing/selftests/net/forwarding/lib.sh
+@@ -751,6 +751,14 @@ qdisc_parent_stats_get()
+ 	    | jq '.[] | select(.parent == "'"$parent"'") | '"$selector"
+ }
+ 
++ipv6_stats_get()
++{
++	local dev=$1; shift
++	local stat=$1; shift
++
++	cat /proc/net/dev_snmp6/$dev | grep "^$stat" | cut -f2
++}
++
+ humanize()
+ {
+ 	local speed=$1; shift
+-- 
+2.25.1
 
