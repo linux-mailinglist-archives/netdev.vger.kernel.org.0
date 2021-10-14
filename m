@@ -2,594 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF46642DE47
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 17:37:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3626342DECA
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 18:01:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231524AbhJNPjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 11:39:54 -0400
-Received: from mga09.intel.com ([134.134.136.24]:31413 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231432AbhJNPjx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Oct 2021 11:39:53 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10137"; a="227599607"
-X-IronPort-AV: E=Sophos;i="5.85,372,1624345200"; 
-   d="scan'208";a="227599607"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2021 08:37:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,372,1624345200"; 
-   d="scan'208";a="592642530"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga004.jf.intel.com with ESMTP; 14 Oct 2021 08:37:23 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Maciej Machnikowski <maciej.machnikowski@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        richardcochran@gmail.com,
-        Sunitha Mekala <sunithax.d.mekala@intel.com>
-Subject: [PATCH net-next v2 4/4] ice: Implement support for SMA and U.FL on E810-T
-Date:   Thu, 14 Oct 2021 08:35:31 -0700
-Message-Id: <20211014153531.2908804-5-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211014153531.2908804-1-anthony.l.nguyen@intel.com>
-References: <20211014153531.2908804-1-anthony.l.nguyen@intel.com>
+        id S231316AbhJNQDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 12:03:38 -0400
+Received: from mail-eopbgr10086.outbound.protection.outlook.com ([40.107.1.86]:32421
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230359AbhJNQDh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Oct 2021 12:03:37 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RD4u5SO9bUa9zuek/KX5dwYTRgsfvn+KGwUFUFPIvA2glv8w0DAeP7W86jPjMIopha+FBFhfQLIjDW4yYeROcZ3r3LWBu6xgl60/CoEf/1434WuXNzp1BRsbglkZq+K3horWrm9BXd3VYXtZyDmCeBnlVrtsHYJQXRr2Vrem6kgHv5wX4fVzh2gHwS2b+iN4HfllfP3cpHU3lf4MAk0mw/MpAXUJRF6nEedcM4502dy4fweQt8a+drlLeU2BpRKae0cg2iMWqDzzzPNZkRsjM0W/3xznSJutpgMUP5TcFxJMG9BD/tHGAkPiHqhP082NCH3+wvxhfj8y2uZgIxWSlg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GEKvcUprMjap+wh2qeMR0T3wmP4/FdWl+e3e4OvWwSg=;
+ b=Eus6OjLgfkFMkSLr/THEmwGmAz45P85OFcCiQVjU1CH+qcVZZtCaItEAiEcZXQ8m8+dD8MjeS4Xft6lEZtoeLbctE5juV6l4ySD3FIkZEmwClXDaegh9B6DDraQf6/DTZ41J+4DtW79ThpidnRWXLLyiWavVRpKNG7eu7eJrYeg3cDkZKA3nFyJ5YrTuVd9QbrYacJi/c2ng9nL8ARTqYCLktf45UuaelsXozcHoW69UkXria9DiEecC2kcBkOM3vS0x/gxW97oPJGzH77pYvQfq4akgtdI9uSzx+IYpZ0Pni24JOd5IFHq+dwxSBiLE4UYdb7JZ4trU2FV4VSCeiQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=secospa.onmicrosoft.com; s=selector2-secospa-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GEKvcUprMjap+wh2qeMR0T3wmP4/FdWl+e3e4OvWwSg=;
+ b=0oAuIQpdNTLmC0rzcD8fkLB49oeGW27j4gr10EjgQVHuaqvy3MN5FCDJSTg6afowvjISkbCPN6WKRo8Db+tkOB+SlGbxykgfIHOxaiZ4IJPYV7+L1wMYb8tlHkXgyBVpVEbku9coDWtMm0voYJr4CKrvwpDkvlyYrvTHj5Hmzhc=
+Authentication-Results: armlinux.org.uk; dkim=none (message not signed)
+ header.d=none;armlinux.org.uk; dmarc=none action=none header.from=seco.com;
+Received: from AM0PR03MB4514.eurprd03.prod.outlook.com (2603:10a6:208:d0::10)
+ by AM0PR0302MB3362.eurprd03.prod.outlook.com (2603:10a6:208:3::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.16; Thu, 14 Oct
+ 2021 16:01:30 +0000
+Received: from AM0PR03MB4514.eurprd03.prod.outlook.com
+ ([fe80::5039:758e:c5a:b1c3]) by AM0PR03MB4514.eurprd03.prod.outlook.com
+ ([fe80::5039:758e:c5a:b1c3%4]) with mapi id 15.20.4587.025; Thu, 14 Oct 2021
+ 16:01:30 +0000
+From:   Sean Anderson <sean.anderson@seco.com>
+Subject: Re: [PATCH v3 2/2] net: macb: Clean up macb_validate
+To:     Antoine Tenart <atenart@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Russell King <linux@armlinux.org.uk>
+References: <20211012194644.3182475-1-sean.anderson@seco.com>
+ <20211012194644.3182475-2-sean.anderson@seco.com>
+ <163411375475.451779.17785363770684815611@kwain>
+Message-ID: <08913b53-0960-d8f4-9209-51a059b62fa2@seco.com>
+Date:   Thu, 14 Oct 2021 12:01:25 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <163411375475.451779.17785363770684815611@kwain>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BL0PR01CA0028.prod.exchangelabs.com (2603:10b6:208:71::41)
+ To AM0PR03MB4514.eurprd03.prod.outlook.com (2603:10a6:208:d0::10)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: from [172.27.1.65] (50.195.82.171) by BL0PR01CA0028.prod.exchangelabs.com (2603:10b6:208:71::41) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.16 via Frontend Transport; Thu, 14 Oct 2021 16:01:28 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 58d80a07-2e7b-44df-40d7-08d98f2be2dd
+X-MS-TrafficTypeDiagnostic: AM0PR0302MB3362:
+X-Microsoft-Antispam-PRVS: <AM0PR0302MB3362F8EAB410012A49E4541096B89@AM0PR0302MB3362.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2331;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: KnHz1dJeCSlB4N4Hu30xxTUjOMB3/C7Xnrz5K595JQeUCaaHcmiFtpcucKdwIUJLBINa1HUIYBAHumqERNAzHdv3K5WGROo+Fw3L/C8j8LfXg/Ww6d8GxW6FsZl9p6yFdc43dKv71OynjFrXTram8pnz3AGsCpQUcRPp58nxAWTBc5GIkbdesHMgfccodF4SvICDsO18nOXzAyskO41rdkTBSOIWJyV4GJ0CQa80EmZjSRWi0G61x4s+pdK0ncha5FBprAbaDsfqcIEXlj9gXIKZbIuqLaCFwgBL5YFKoFtUvuVM8YR5YkXodXzXkXwx8GsJHcMWuoaqmECIaQ/56m+aiJUOM7otOtp8rtKRFD5crnnM62pKxoauB22SK4LRkOSL5O3Gs4JMr6eC1fftOJrUo6rYZMq7x7PxUe0XbyatGpO9r1ioOYZlD85cmr+477agD2Xc0uESbm31vdGsEZBWjA6ummu46ShuusI/rcb9idjakRt98LXJnp25gb675BtXCfJMNojUZ5maQNsuGZIPxHpl/PilttK2AIev7mUaP9O3wi+i8+QfQs1oaKnhlqsZ8VT9Iad95D3Y/Yb7iB+bDc2GlvbJJ3YLOWJy9qyflfYCUj6LKSfeuh9FDP8V4YWvJ/m4Jxte1q0p/07mtXTyWgKldPVwBCzFzkhkYsfPZzsskNt7KdNvrnyAtBc4piovqEiamjhCOlgrtqUTnrUskCH1rK69NlZ5ffJ6Bf9B2ET6vMANqVjOsSUiYbIJ
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR03MB4514.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(53546011)(6486002)(4001150100001)(26005)(86362001)(186003)(44832011)(956004)(31696002)(2616005)(52116002)(66556008)(508600001)(4326008)(38350700002)(36756003)(38100700002)(5660300002)(83380400001)(16576012)(8676002)(6666004)(110136005)(8936002)(316002)(31686004)(54906003)(66946007)(66476007)(2906002)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SDFqUjJQRTdqSnlXK2hoR3hCNDd0eUpLNjk4SFBndW9WOFpNeUxTbDVRMmR5?=
+ =?utf-8?B?R3pXeGxIdnREd0E3SWRjcWVJQ24zZUo0Rmk5V3NCbkVMNldPQTBFdHlES2Vy?=
+ =?utf-8?B?QTAyRUpBK3BoTEVsZ3RieCsrTHVMSTBWeGlIanNVTExKTnU3UWhOM2RwVFVG?=
+ =?utf-8?B?OGJGTlZIY0VNTS91RzUyRkU0WlRlQ1pCekQxUXhMeHQ0a0M1M05hSkppV0Zr?=
+ =?utf-8?B?V3ZsdHBUdXNRTXdrUlBjQ2c2UmZIOFU2U1lsNGxEenRKTnpVNjhqd1hLWjNQ?=
+ =?utf-8?B?dzBIR01lOEtObzM5bUhvNWN5aTF3Z0x0VjRnamkwOUJMMWY3Mm1CTTZjK0Nr?=
+ =?utf-8?B?eHU3Y3hPUlp2SzN2Z2ZwcHBpclpmbEpNc3c5VUErb2xtQlRsZStOTjBLSEtX?=
+ =?utf-8?B?OVByWlRsUzlldm1TSlEvWFlnWGt3NUlzV2tHb21yWGFPcEVucXFlMTJBTkRq?=
+ =?utf-8?B?QW9uVFBqS3k0dVhVa2MyT3h4Zk54MlE3c0tDeTM4d0xMNVVIQUVFdWR1Tmw5?=
+ =?utf-8?B?L2VheXd2MlZXWTh3eUJuaEFsYVBKMUZaRVFuZWpyNnkrbXQwbFJaT1hLc3lj?=
+ =?utf-8?B?c0kyaC9XS0NiUHdjRlpqZEhUQk5sWmt0RUJDMW5mUWV6SmFLOE82VlQrZ1Er?=
+ =?utf-8?B?YU91ZW95T1ZncnVYenEraFJIQVhiUWxhRE40R05ZSElsYk05TGsxUHIxeStJ?=
+ =?utf-8?B?SEFZZEFyb25nUXJFM2lmdy9TZTA4MWorYVZQaTJXVUIzd1hxNGIyMUxQUDUx?=
+ =?utf-8?B?L3NhZWhIY0JvZDkzdnFqUXhlUGFzSXJEVTB0VGNFWWJXWXRYTmRMY211eTl6?=
+ =?utf-8?B?WlhlMG14VGlhWWI5STVRQ0s1RXQvQjhqTlYrWTAyVGxieG82OEtZYS8wTXdS?=
+ =?utf-8?B?MTNubk5sK0FlVGxnQktqbUN2bEV2ZFdQTUNrUWV3OFJaeFZYcGxxcWxKTEp0?=
+ =?utf-8?B?MitIVS92RlhFTUtYR0Fjb01KV1RvV2M1S0w3aEVnc3J1S1AzcTRMUnk1TVBP?=
+ =?utf-8?B?bENHUVFweGFuUW54YklyRzU2V3hGYTR1WDJUaHBjMHlqQmN2elVORmVPdmlQ?=
+ =?utf-8?B?ZlFWQ3o0cDJUdDlPRVpFTjl6Nlo4SGtmaHBaVk4vL2Yya3VXSnhTcW80RVN4?=
+ =?utf-8?B?Qm5LdElNRG1VRENMWUYxY2p3V3E1VG90VXMrbnd3TGdSZ0s2MUJqRHVVNXhk?=
+ =?utf-8?B?eEtvSEJHMUdteVBiU29tNDlINlQ2TUFYWnlHSWYwRkdjc2lkWlR3Qm9TL3lj?=
+ =?utf-8?B?c0w5UmtiUFhVajBqT3lSd0J6RVVSSW1JVDRuSkxxZmJGWGVnQzBUQUVBVENu?=
+ =?utf-8?B?T3lvVCtQK3pqUXJrcnlJQVlZdzlYbnQvdTgvOUNYbjBhQ3pLRWlEeVRudzZt?=
+ =?utf-8?B?OHh3d0JIUlN1SThPOEtwZ0g1V1Z6UHJrclVvMUxSaTRsN1g4aVdMbDhkMlI1?=
+ =?utf-8?B?ZE9YenVmYktRY0Nqd051NkthbEwwQ0hZOTdLNFl6Rkl5dnpkNzh6OFN1a2RD?=
+ =?utf-8?B?cDlKK3k4bWo3cTlhNUJVbURvNitmWjVtd0YrckNtcVc5NGlBVFlaY01TWk8y?=
+ =?utf-8?B?RjZWRXVCdDNwc0NnZ1ZyNHJiZVFsRXRyeUtHRUNVNEZxNE83RUI3ZklpSUVo?=
+ =?utf-8?B?TTZ4Vjc1a0hkOW5TdDJud2RsYWdwM2RUdE9HUUFsL3JXMVllTGpnMzYvcktP?=
+ =?utf-8?B?VUQ4bkJ5MURSSFhOd3c3dDlway9sQlJBNGw4S2tKZEc1bFlVNWlvK2RUaFQ2?=
+ =?utf-8?Q?4UIPkt0i2MtqWnOC/cNtlUdhzAymrgO/QFtbTpv?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 58d80a07-2e7b-44df-40d7-08d98f2be2dd
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR03MB4514.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Oct 2021 16:01:30.2852
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0H+vvUbY+5TZGSogjjTs6N8lZRll+v9iY7+7GnjgT/Fq5TvCT2DUz0/GfQ1PsCt6ChpRWynfBTSSIF69IrvhpA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0302MB3362
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Machnikowski <maciej.machnikowski@intel.com>
 
-Expose SMA and U.FL connectors as ptp_pins on E810-T based adapters and
-allow controlling them.
 
-E810-T adapters are equipped with:
-- 2 external bidirectional SMA connectors
-- 1 internal TX U.FL
-- 1 internal RX U.FL
+On 10/13/21 4:29 AM, Antoine Tenart wrote:
+> Quoting Sean Anderson (2021-10-12 21:46:44)
+>> +       /* There are three major types of interfaces we support:
+>> +        * - (R)MII supporting 10/100 Mbit/s
+>> +        * - GMII, RGMII, and SGMII supporting 10/100/1000 Mbit/s
+>> +        * - 10GBASER supporting 10 Gbit/s only
+>> +        * Because GMII and MII both support 10/100, GMII falls through to MII.
+>> +        *
+>> +        * If we can't support an interface mode, we just clear the supported
+>> +        * mask and return. The major complication is that if we get
+>> +        * PHY_INTERFACE_MODE_NA, we must return all modes we support.  Because
+>> +        * of this, NA starts at the top of the switch and falls all the way to
+>> +        * the bottom, and doesn't return early if we don't support a
+>> +        * particular mode.
+>> +        */
+>> +       switch (state->interface) {
+>> +       case PHY_INTERFACE_MODE_NA:
+>> +       case PHY_INTERFACE_MODE_10GBASER:
+>> +               if (bp->caps & MACB_CAPS_HIGH_SPEED &&
+>> +                   bp->caps & MACB_CAPS_PCS &&
+>> +                   bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE) {
+>> +                       phylink_set_10g_modes(mask);
+>> +                       phylink_set(mask, 10000baseKR_Full);
+>> +               } else if (one) {
+>> +                       bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
+>> +                       return;
+>> +               }
+>> +               if (one)
+>> +                       break;
+>
+> This can go in the first if block.
 
-U.FL connectors share signal lines with the SMA connectors. The TX U.FL1
-share the line with the SMA1 and the RX U.FL2 share line with the SMA2.
-This dependence is controlled by the ice_verify_pin_e810t.
+OK.
 
-Additionally add support for the E810-T-based  devices which don't use the
-SMA/U.FL controller. If the IO expander is not detected don't expose pins
-and use 2 predefined 1PPS input and output pins.
+>> +               fallthrough;
+>> +       case PHY_INTERFACE_MODE_GMII:
+>> +       case PHY_INTERFACE_MODE_RGMII:
+>> +       case PHY_INTERFACE_MODE_RGMII_ID:
+>> +       case PHY_INTERFACE_MODE_RGMII_RXID:
+>> +       case PHY_INTERFACE_MODE_RGMII_TXID:
+>> +       case PHY_INTERFACE_MODE_SGMII:
+>> +               if (macb_is_gem(bp)) {
+>> +                       if (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE) {
+>
+> Is not having MACB_CAPS_GIGABIT_MODE_AVAILABLE acceptable here, or
+> should the two above checks be merged?
 
-Signed-off-by: Maciej Machnikowski <maciej.machnikowski@intel.com>
-Tested-by: Sunitha Mekala <sunithax.d.mekala@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice.h     |   1 +
- drivers/net/ethernet/intel/ice/ice_lib.c |  15 +
- drivers/net/ethernet/intel/ice/ice_lib.h |   1 +
- drivers/net/ethernet/intel/ice/ice_ptp.c | 370 ++++++++++++++++++++++-
- drivers/net/ethernet/intel/ice/ice_ptp.h |  20 +-
- 5 files changed, 397 insertions(+), 10 deletions(-)
+As I understand it, macb_is_gem does not imply GIGABIT_MODE. I'm not
+sure if GIGABIT_MODE implies macb_is_gem. The logic here is mostly to
+match that in prepare()/config(). From what I can gather, all accesses
+to GEM registers are protected by macb_is_gem.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index 6bfbf704eddf..30cc748337dd 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -163,6 +163,7 @@
- 
- enum ice_feature {
- 	ICE_F_DSCP,
-+	ICE_F_SMA_CTRL,
- 	ICE_F_MAX
- };
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 93565f597266..c8a50898bbc1 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -3649,6 +3649,19 @@ static void ice_set_feature_support(struct ice_pf *pf, enum ice_feature f)
- 	set_bit(f, pf->features);
- }
- 
-+/**
-+ * ice_clear_feature_support
-+ * @pf: pointer to the struct ice_pf instance
-+ * @f: feature enum to clear
-+ */
-+void ice_clear_feature_support(struct ice_pf *pf, enum ice_feature f)
-+{
-+	if (f < 0 || f >= ICE_F_MAX)
-+		return;
-+
-+	clear_bit(f, pf->features);
-+}
-+
- /**
-  * ice_init_feature_support
-  * @pf: pointer to the struct ice_pf instance
-@@ -3662,6 +3675,8 @@ void ice_init_feature_support(struct ice_pf *pf)
- 	case ICE_DEV_ID_E810C_QSFP:
- 	case ICE_DEV_ID_E810C_SFP:
- 		ice_set_feature_support(pf, ICE_F_DSCP);
-+		if (ice_is_e810t(&pf->hw))
-+			ice_set_feature_support(pf, ICE_F_SMA_CTRL);
- 		break;
- 	default:
- 		break;
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.h b/drivers/net/ethernet/intel/ice/ice_lib.h
-index 3f3fef6551c0..193f96305407 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.h
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.h
-@@ -129,5 +129,6 @@ void ice_vsi_ctx_set_allow_override(struct ice_vsi_ctx *ctx);
- void ice_vsi_ctx_clear_allow_override(struct ice_vsi_ctx *ctx);
- 
- bool ice_is_feature_supported(struct ice_pf *pf, enum ice_feature f);
-+void ice_clear_feature_support(struct ice_pf *pf, enum ice_feature f);
- void ice_init_feature_support(struct ice_pf *pf);
- #endif /* !_ICE_LIB_H_ */
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
-index 05cc5870e4ef..77298f6cef2f 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
-@@ -6,6 +6,252 @@
- 
- #define E810_OUT_PROP_DELAY_NS 1
- 
-+static const struct ptp_pin_desc ice_pin_desc_e810t[] = {
-+	/* name    idx   func         chan */
-+	{ "GNSS",  GNSS, PTP_PF_EXTTS, 0, { 0, } },
-+	{ "SMA1",  SMA1, PTP_PF_NONE, 1, { 0, } },
-+	{ "U.FL1", UFL1, PTP_PF_NONE, 1, { 0, } },
-+	{ "SMA2",  SMA2, PTP_PF_NONE, 2, { 0, } },
-+	{ "U.FL2", UFL2, PTP_PF_NONE, 2, { 0, } },
-+};
-+
-+/**
-+ * ice_get_sma_config_e810t
-+ * @hw: pointer to the hw struct
-+ * @ptp_pins: pointer to the ptp_pin_desc struture
-+ *
-+ * Read the configuration of the SMA control logic and put it into the
-+ * ptp_pin_desc structure
-+ */
-+static int
-+ice_get_sma_config_e810t(struct ice_hw *hw, struct ptp_pin_desc *ptp_pins)
-+{
-+	u8 data, i;
-+	int status;
-+
-+	/* Read initial pin state */
-+	status = ice_read_sma_ctrl_e810t(hw, &data);
-+	if (status)
-+		return status;
-+
-+	/* initialize with defaults */
-+	for (i = 0; i < NUM_PTP_PINS_E810T; i++) {
-+		snprintf(ptp_pins[i].name, sizeof(ptp_pins[i].name),
-+			 "%s", ice_pin_desc_e810t[i].name);
-+		ptp_pins[i].index = ice_pin_desc_e810t[i].index;
-+		ptp_pins[i].func = ice_pin_desc_e810t[i].func;
-+		ptp_pins[i].chan = ice_pin_desc_e810t[i].chan;
-+	}
-+
-+	/* Parse SMA1/UFL1 */
-+	switch (data & ICE_SMA1_MASK_E810T) {
-+	case ICE_SMA1_MASK_E810T:
-+	default:
-+		ptp_pins[SMA1].func = PTP_PF_NONE;
-+		ptp_pins[UFL1].func = PTP_PF_NONE;
-+		break;
-+	case ICE_SMA1_DIR_EN_E810T:
-+		ptp_pins[SMA1].func = PTP_PF_PEROUT;
-+		ptp_pins[UFL1].func = PTP_PF_NONE;
-+		break;
-+	case ICE_SMA1_TX_EN_E810T:
-+		ptp_pins[SMA1].func = PTP_PF_EXTTS;
-+		ptp_pins[UFL1].func = PTP_PF_NONE;
-+		break;
-+	case 0:
-+		ptp_pins[SMA1].func = PTP_PF_EXTTS;
-+		ptp_pins[UFL1].func = PTP_PF_PEROUT;
-+		break;
-+	}
-+
-+	/* Parse SMA2/UFL2 */
-+	switch (data & ICE_SMA2_MASK_E810T) {
-+	case ICE_SMA2_MASK_E810T:
-+	default:
-+		ptp_pins[SMA2].func = PTP_PF_NONE;
-+		ptp_pins[UFL2].func = PTP_PF_NONE;
-+		break;
-+	case (ICE_SMA2_TX_EN_E810T | ICE_SMA2_UFL2_RX_DIS_E810T):
-+		ptp_pins[SMA2].func = PTP_PF_EXTTS;
-+		ptp_pins[UFL2].func = PTP_PF_NONE;
-+		break;
-+	case (ICE_SMA2_DIR_EN_E810T | ICE_SMA2_UFL2_RX_DIS_E810T):
-+		ptp_pins[SMA2].func = PTP_PF_PEROUT;
-+		ptp_pins[UFL2].func = PTP_PF_NONE;
-+		break;
-+	case (ICE_SMA2_DIR_EN_E810T | ICE_SMA2_TX_EN_E810T):
-+		ptp_pins[SMA2].func = PTP_PF_NONE;
-+		ptp_pins[UFL2].func = PTP_PF_EXTTS;
-+		break;
-+	case ICE_SMA2_DIR_EN_E810T:
-+		ptp_pins[SMA2].func = PTP_PF_PEROUT;
-+		ptp_pins[UFL2].func = PTP_PF_EXTTS;
-+		break;
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_ptp_set_sma_config_e810t
-+ * @hw: pointer to the hw struct
-+ * @ptp_pins: pointer to the ptp_pin_desc struture
-+ *
-+ * Set the configuration of the SMA control logic based on the configuration in
-+ * num_pins parameter
-+ */
-+static int
-+ice_ptp_set_sma_config_e810t(struct ice_hw *hw,
-+			     const struct ptp_pin_desc *ptp_pins)
-+{
-+	int status;
-+	u8 data;
-+
-+	/* SMA1 and UFL1 cannot be set to TX at the same time */
-+	if (ptp_pins[SMA1].func == PTP_PF_PEROUT &&
-+	    ptp_pins[UFL1].func == PTP_PF_PEROUT)
-+		return -EINVAL;
-+
-+	/* SMA2 and UFL2 cannot be set to RX at the same time */
-+	if (ptp_pins[SMA2].func == PTP_PF_EXTTS &&
-+	    ptp_pins[UFL2].func == PTP_PF_EXTTS)
-+		return -EINVAL;
-+
-+	/* Read initial pin state value */
-+	status = ice_read_sma_ctrl_e810t(hw, &data);
-+	if (status)
-+		return status;
-+
-+	/* Set the right sate based on the desired configuration */
-+	data &= ~ICE_SMA1_MASK_E810T;
-+	if (ptp_pins[SMA1].func == PTP_PF_NONE &&
-+	    ptp_pins[UFL1].func == PTP_PF_NONE) {
-+		dev_info(ice_hw_to_dev(hw), "SMA1 + U.FL1 disabled");
-+		data |= ICE_SMA1_MASK_E810T;
-+	} else if (ptp_pins[SMA1].func == PTP_PF_EXTTS &&
-+		   ptp_pins[UFL1].func == PTP_PF_NONE) {
-+		dev_info(ice_hw_to_dev(hw), "SMA1 RX");
-+		data |= ICE_SMA1_TX_EN_E810T;
-+	} else if (ptp_pins[SMA1].func == PTP_PF_NONE &&
-+		   ptp_pins[UFL1].func == PTP_PF_PEROUT) {
-+		/* U.FL 1 TX will always enable SMA 1 RX */
-+		dev_info(ice_hw_to_dev(hw), "SMA1 RX + U.FL1 TX");
-+	} else if (ptp_pins[SMA1].func == PTP_PF_EXTTS &&
-+		   ptp_pins[UFL1].func == PTP_PF_PEROUT) {
-+		dev_info(ice_hw_to_dev(hw), "SMA1 RX + U.FL1 TX");
-+	} else if (ptp_pins[SMA1].func == PTP_PF_PEROUT &&
-+		   ptp_pins[UFL1].func == PTP_PF_NONE) {
-+		dev_info(ice_hw_to_dev(hw), "SMA1 TX");
-+		data |= ICE_SMA1_DIR_EN_E810T;
-+	}
-+
-+	data &= ~ICE_SMA2_MASK_E810T;
-+	if (ptp_pins[SMA2].func == PTP_PF_NONE &&
-+	    ptp_pins[UFL2].func == PTP_PF_NONE) {
-+		dev_info(ice_hw_to_dev(hw), "SMA2 + U.FL2 disabled");
-+		data |= ICE_SMA2_MASK_E810T;
-+	} else if (ptp_pins[SMA2].func == PTP_PF_EXTTS &&
-+			ptp_pins[UFL2].func == PTP_PF_NONE) {
-+		dev_info(ice_hw_to_dev(hw), "SMA2 RX");
-+		data |= (ICE_SMA2_TX_EN_E810T |
-+			 ICE_SMA2_UFL2_RX_DIS_E810T);
-+	} else if (ptp_pins[SMA2].func == PTP_PF_NONE &&
-+		   ptp_pins[UFL2].func == PTP_PF_EXTTS) {
-+		dev_info(ice_hw_to_dev(hw), "UFL2 RX");
-+		data |= (ICE_SMA2_DIR_EN_E810T | ICE_SMA2_TX_EN_E810T);
-+	} else if (ptp_pins[SMA2].func == PTP_PF_PEROUT &&
-+		   ptp_pins[UFL2].func == PTP_PF_NONE) {
-+		dev_info(ice_hw_to_dev(hw), "SMA2 TX");
-+		data |= (ICE_SMA2_DIR_EN_E810T |
-+			 ICE_SMA2_UFL2_RX_DIS_E810T);
-+	} else if (ptp_pins[SMA2].func == PTP_PF_PEROUT &&
-+		   ptp_pins[UFL2].func == PTP_PF_EXTTS) {
-+		dev_info(ice_hw_to_dev(hw), "SMA2 TX + U.FL2 RX");
-+		data |= ICE_SMA2_DIR_EN_E810T;
-+	}
-+
-+	return ice_write_sma_ctrl_e810t(hw, data);
-+}
-+
-+/**
-+ * ice_ptp_set_sma_e810t
-+ * @info: the driver's PTP info structure
-+ * @pin: pin index in kernel structure
-+ * @func: Pin function to be set (PTP_PF_NONE, PTP_PF_EXTTS or PTP_PF_PEROUT)
-+ *
-+ * Set the configuration of a single SMA pin
-+ */
-+static int
-+ice_ptp_set_sma_e810t(struct ptp_clock_info *info, unsigned int pin,
-+		      enum ptp_pin_function func)
-+{
-+	struct ptp_pin_desc ptp_pins[NUM_PTP_PINS_E810T];
-+	struct ice_pf *pf = ptp_info_to_pf(info);
-+	struct ice_hw *hw = &pf->hw;
-+	int err;
-+
-+	if (pin < SMA1 || func > PTP_PF_PEROUT)
-+		return -EOPNOTSUPP;
-+
-+	err = ice_get_sma_config_e810t(hw, ptp_pins);
-+	if (err)
-+		return err;
-+
-+	/* Disable the same function on the other pin sharing the channel */
-+	if (pin == SMA1 && ptp_pins[UFL1].func == func)
-+		ptp_pins[UFL1].func = PTP_PF_NONE;
-+	if (pin == UFL1 && ptp_pins[SMA1].func == func)
-+		ptp_pins[SMA1].func = PTP_PF_NONE;
-+
-+	if (pin == SMA2 && ptp_pins[UFL2].func == func)
-+		ptp_pins[UFL2].func = PTP_PF_NONE;
-+	if (pin == UFL2 && ptp_pins[SMA2].func == func)
-+		ptp_pins[SMA2].func = PTP_PF_NONE;
-+
-+	/* Set up new pin function in the temp table */
-+	ptp_pins[pin].func = func;
-+
-+	return ice_ptp_set_sma_config_e810t(hw, ptp_pins);
-+}
-+
-+/**
-+ * ice_verify_pin_e810t
-+ * @info: the driver's PTP info structure
-+ * @pin: Pin index
-+ * @func: Assigned function
-+ * @chan: Assigned channel
-+ *
-+ * Verify if pin supports requested pin function. If the Check pins consistency.
-+ * Reconfigure the SMA logic attached to the given pin to enable its
-+ * desired functionality
-+ */
-+static int
-+ice_verify_pin_e810t(struct ptp_clock_info *info, unsigned int pin,
-+		     enum ptp_pin_function func, unsigned int chan)
-+{
-+	/* Don't allow channel reassignment */
-+	if (chan != ice_pin_desc_e810t[pin].chan)
-+		return -EOPNOTSUPP;
-+
-+	/* Check if functions are properly assigned */
-+	switch (func) {
-+	case PTP_PF_NONE:
-+		break;
-+	case PTP_PF_EXTTS:
-+		if (pin == UFL1)
-+			return -EOPNOTSUPP;
-+		break;
-+	case PTP_PF_PEROUT:
-+		if (pin == UFL2 || pin == GNSS)
-+			return -EOPNOTSUPP;
-+		break;
-+	case PTP_PF_PHYSYNC:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return ice_ptp_set_sma_e810t(info, pin, func);
-+}
-+
- /**
-  * ice_set_tx_tstamp - Enable or disable Tx timestamping
-  * @pf: The PF pointer to search in
-@@ -735,17 +981,34 @@ ice_ptp_gpio_enable_e810(struct ptp_clock_info *info,
- {
- 	struct ice_pf *pf = ptp_info_to_pf(info);
- 	struct ice_perout_channel clk_cfg = {0};
-+	bool sma_pres = false;
- 	unsigned int chan;
- 	u32 gpio_pin;
- 	int err;
- 
-+	if (ice_is_feature_supported(pf, ICE_F_SMA_CTRL))
-+		sma_pres = true;
-+
- 	switch (rq->type) {
- 	case PTP_CLK_REQ_PEROUT:
- 		chan = rq->perout.index;
--		if (chan == PPS_CLK_GEN_CHAN)
-+		if (sma_pres) {
-+			if (chan == ice_pin_desc_e810t[SMA1].chan)
-+				clk_cfg.gpio_pin = GPIO_20;
-+			else if (chan == ice_pin_desc_e810t[SMA2].chan)
-+				clk_cfg.gpio_pin = GPIO_22;
-+			else
-+				return -1;
-+		} else if (ice_is_e810t(&pf->hw)) {
-+			if (chan == 0)
-+				clk_cfg.gpio_pin = GPIO_20;
-+			else
-+				clk_cfg.gpio_pin = GPIO_22;
-+		} else if (chan == PPS_CLK_GEN_CHAN) {
- 			clk_cfg.gpio_pin = PPS_PIN_INDEX;
--		else
-+		} else {
- 			clk_cfg.gpio_pin = chan;
-+		}
- 
- 		clk_cfg.period = ((rq->perout.period.sec * NSEC_PER_SEC) +
- 				   rq->perout.period.nsec);
-@@ -757,7 +1020,19 @@ ice_ptp_gpio_enable_e810(struct ptp_clock_info *info,
- 		break;
- 	case PTP_CLK_REQ_EXTTS:
- 		chan = rq->extts.index;
--		gpio_pin = chan;
-+		if (sma_pres) {
-+			if (chan < ice_pin_desc_e810t[SMA2].chan)
-+				gpio_pin = GPIO_21;
-+			else
-+				gpio_pin = GPIO_23;
-+		} else if (ice_is_e810t(&pf->hw)) {
-+			if (chan == 0)
-+				gpio_pin = GPIO_21;
-+			else
-+				gpio_pin = GPIO_23;
-+		} else {
-+			gpio_pin = chan;
-+		}
- 
- 		err = ice_ptp_cfg_extts(pf, !!on, chan, gpio_pin,
- 					rq->extts.flags);
-@@ -1037,14 +1312,94 @@ ice_ptp_rx_hwtstamp(struct ice_ring *rx_ring,
- 	}
- }
- 
-+/**
-+ * ice_ptp_disable_sma_pins_e810t - Disable E810-T SMA pins
-+ * @pf: pointer to the PF structure
-+ * @info: PTP clock info structure
-+ *
-+ * Disable the OS access to the SMA pins. Called to clear out the OS
-+ * indications of pin support when we fail to setup the E810-T SMA control
-+ * register.
-+ */
-+static void
-+ice_ptp_disable_sma_pins_e810t(struct ice_pf *pf, struct ptp_clock_info *info)
-+{
-+	struct device *dev = ice_pf_to_dev(pf);
-+
-+	dev_warn(dev, "Failed to configure E810-T SMA pin control\n");
-+
-+	info->enable = NULL;
-+	info->verify = NULL;
-+	info->n_pins = 0;
-+	info->n_ext_ts = 0;
-+	info->n_per_out = 0;
-+}
-+
-+/**
-+ * ice_ptp_setup_sma_pins_e810t - Setup the SMA pins
-+ * @pf: pointer to the PF structure
-+ * @info: PTP clock info structure
-+ *
-+ * Finish setting up the SMA pins by allocating pin_config, and setting it up
-+ * according to the current status of the SMA. On failure, disable all of the
-+ * extended SMA pin support.
-+ */
-+static void
-+ice_ptp_setup_sma_pins_e810t(struct ice_pf *pf, struct ptp_clock_info *info)
-+{
-+	struct device *dev = ice_pf_to_dev(pf);
-+	int err;
-+
-+	/* Allocate memory for kernel pins interface */
-+	info->pin_config = devm_kcalloc(dev, info->n_pins,
-+					sizeof(*info->pin_config), GFP_KERNEL);
-+	if (!info->pin_config) {
-+		ice_ptp_disable_sma_pins_e810t(pf, info);
-+		return;
-+	}
-+
-+	/* Read current SMA status */
-+	err = ice_get_sma_config_e810t(&pf->hw, info->pin_config);
-+	if (err)
-+		ice_ptp_disable_sma_pins_e810t(pf, info);
-+}
-+
-+/**
-+ * ice_ptp_setup_pins_e810t - Setup PTP pins in sysfs
-+ * @pf: pointer to the PF instance
-+ * @info: PTP clock capabilities
-+ */
-+static void
-+ice_ptp_setup_pins_e810t(struct ice_pf *pf, struct ptp_clock_info *info)
-+{
-+	/* Check if SMA controller is in the netlist */
-+	if (ice_is_feature_supported(pf, ICE_F_SMA_CTRL) &&
-+	    !ice_is_pca9575_present(&pf->hw))
-+		ice_clear_feature_support(pf, ICE_F_SMA_CTRL);
-+
-+	if (!ice_is_feature_supported(pf, ICE_F_SMA_CTRL)) {
-+		info->n_ext_ts = N_EXT_TS_E810_NO_SMA;
-+		info->n_per_out = N_PER_OUT_E810T_NO_SMA;
-+		return;
-+	}
-+
-+	info->n_per_out = N_PER_OUT_E810T;
-+	info->n_ext_ts = N_EXT_TS_E810;
-+	info->n_pins = NUM_PTP_PINS_E810T;
-+	info->verify = ice_verify_pin_e810t;
-+
-+	/* Complete setup of the SMA pins */
-+	ice_ptp_setup_sma_pins_e810t(pf, info);
-+}
-+
- /**
-  * ice_ptp_setup_pins_e810 - Setup PTP pins in sysfs
-  * @info: PTP clock capabilities
-  */
- static void ice_ptp_setup_pins_e810(struct ptp_clock_info *info)
- {
--	info->n_per_out = E810_N_PER_OUT;
--	info->n_ext_ts = E810_N_EXT_TS;
-+	info->n_per_out = N_PER_OUT_E810;
-+	info->n_ext_ts = N_EXT_TS_E810;
- }
- 
- /**
-@@ -1062,7 +1417,10 @@ ice_ptp_set_funcs_e810(struct ice_pf *pf, struct ptp_clock_info *info)
- {
- 	info->enable = ice_ptp_gpio_enable_e810;
- 
--	ice_ptp_setup_pins_e810(info);
-+	if (ice_is_e810t(&pf->hw))
-+		ice_ptp_setup_pins_e810t(pf, info);
-+	else
-+		ice_ptp_setup_pins_e810(info);
- }
- 
- /**
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.h b/drivers/net/ethernet/intel/ice/ice_ptp.h
-index e1c787bd5b96..1b9aab7de319 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp.h
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp.h
-@@ -9,12 +9,21 @@
- 
- #include "ice_ptp_hw.h"
- 
--enum ice_ptp_pin {
-+enum ice_ptp_pin_e810 {
- 	GPIO_20 = 0,
- 	GPIO_21,
- 	GPIO_22,
- 	GPIO_23,
--	NUM_ICE_PTP_PIN
-+	NUM_PTP_PIN_E810
-+};
-+
-+enum ice_ptp_pin_e810t {
-+	GNSS = 0,
-+	SMA1,
-+	UFL1,
-+	SMA2,
-+	UFL2,
-+	NUM_PTP_PINS_E810T
- };
- 
- struct ice_perout_channel {
-@@ -155,8 +164,11 @@ struct ice_ptp {
- #define PPS_CLK_SRC_CHAN		2
- #define PPS_PIN_INDEX			5
- #define TIME_SYNC_PIN_INDEX		4
--#define E810_N_EXT_TS			3
--#define E810_N_PER_OUT			4
-+#define N_EXT_TS_E810			3
-+#define N_PER_OUT_E810			4
-+#define N_PER_OUT_E810T			3
-+#define N_PER_OUT_E810T_NO_SMA		2
-+#define N_EXT_TS_E810_NO_SMA		2
- 
- #if IS_ENABLED(CONFIG_PTP_1588_CLOCK)
- struct ice_pf;
--- 
-2.31.1
+--Sean
 
+>> +                               phylink_set(mask, 1000baseT_Full);
+>> +                               phylink_set(mask, 1000baseX_Full);
+>> +                               if (!(bp->caps & MACB_CAPS_NO_GIGABIT_HALF))
+>> +                                       phylink_set(mask, 1000baseT_Half);
+>> +                       }
+>> +               } else if (one) {
+>> +                       bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
+>> +                       return;
+>> +               }
+>> +               fallthrough;
+>> +       case PHY_INTERFACE_MODE_MII:
+>> +       case PHY_INTERFACE_MODE_RMII:
+>> +               phylink_set(mask, 10baseT_Half);
+>> +               phylink_set(mask, 10baseT_Full);
+>> +               phylink_set(mask, 100baseT_Half);
+>> +               phylink_set(mask, 100baseT_Full);
+>> +               break;
+>> +       default:
+>>                 bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
+>>                 return;
+>>         }
+>
+> (For readability, it's not for me to decide in the end).
+>
+> Thanks,
+> Antoine
+>
