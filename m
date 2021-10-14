@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D1A942E111
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 20:21:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B08B42E116
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 20:21:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232566AbhJNSXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 14:23:50 -0400
+        id S233907AbhJNSXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 14:23:51 -0400
 Received: from mga04.intel.com ([192.55.52.120]:62163 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230422AbhJNSXu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232425AbhJNSXu (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 14 Oct 2021 14:23:50 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10137"; a="226531105"
+X-IronPort-AV: E=McAfee;i="6200,9189,10137"; a="226531107"
 X-IronPort-AV: E=Sophos;i="5.85,373,1624345200"; 
-   d="scan'208";a="226531105"
+   d="scan'208";a="226531107"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
   by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2021 11:21:44 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.85,373,1624345200"; 
-   d="scan'208";a="717815812"
+   d="scan'208";a="717815815"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga005.fm.intel.com with ESMTP; 14 Oct 2021 11:21:43 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 14 Oct 2021 11:21:44 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
+Cc:     Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
         anthony.l.nguyen@intel.com, linux-rdma@vger.kernel.org,
-        shiraz.saleem@intel.com,
-        Jerzy Wiktor Jurkowski <jerzy.wiktor.jurkowski@intel.com>
-Subject: [PATCH net 1/4] ice: Fix failure to re-add LAN/RDMA Tx queues
-Date:   Thu, 14 Oct 2021 11:19:50 -0700
-Message-Id: <20211014181953.3538330-2-anthony.l.nguyen@intel.com>
+        shiraz.saleem@intel.com, Jun Miao <jun.miao@windriver.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>
+Subject: [PATCH net 2/4] ice: Avoid crash from unnecessary IDA free
+Date:   Thu, 14 Oct 2021 11:19:51 -0700
+Message-Id: <20211014181953.3538330-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211014181953.3538330-1-anthony.l.nguyen@intel.com>
 References: <20211014181953.3538330-1-anthony.l.nguyen@intel.com>
@@ -39,98 +39,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Brett Creeley <brett.creeley@intel.com>
+From: Dave Ertman <david.m.ertman@intel.com>
 
-Currently if the VSI is rebuilt/removed and the RDMA PF driver is active
-the RDMA Tx queue scheduler node configuration will not be cleaned up.
-This will cause the rebuild/re-add of the VSI to fail due to the
-software structures not being correctly cleaned up for the VSI index.
-Fix this by always calling ice_rm_vsi_rdma_cfg() for all VSI. If there
-are no RDMA scheduler nodes created, then there is no harm in calling
-ice_rm_vsi_rdma_cfg(). This change applies to all VSI types, so if
-RDMA support is added for other VSI types they will also get this
-change.
+In the remove path, there is an attempt to free the aux_idx IDA whether
+it was allocated or not.  This can potentially cause a crash when
+unloading the driver on systems that do not initialize support for RDMA.
+But, this free cannot be gated by the status bit for RDMA, since it is
+allocated if the driver detects support for RDMA at probe time, but the
+driver can enter into a state where RDMA is not supported after the IDA
+has been allocated at probe time and this would lead to a memory leak.
 
-Fixes: 348048e724a0 ("ice: Implement iidc operations")
-Signed-off-by: Brett Creeley <brett.creeley@intel.com>
-Tested-by: Jerzy Wiktor Jurkowski <jerzy.wiktor.jurkowski@intel.com>
+Initialize aux_idx to an invalid value and check for a valid value when
+unloading to determine if an IDA free is necessary.
+
+Fixes: d25a0fc41c1f ("ice: Initialize RDMA support")
+Reported-by: Jun Miao <jun.miao@windriver.com>
+Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
+Tested-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c   |  9 +++++++++
- drivers/net/ethernet/intel/ice/ice_sched.c | 13 +++++++++++++
- drivers/net/ethernet/intel/ice/ice_sched.h |  1 +
- 3 files changed, 23 insertions(+)
+ drivers/net/ethernet/intel/ice/ice_main.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index dde9802c6c72..b718e196af2a 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -2841,6 +2841,7 @@ void ice_napi_del(struct ice_vsi *vsi)
-  */
- int ice_vsi_release(struct ice_vsi *vsi)
- {
-+	enum ice_status err;
- 	struct ice_pf *pf;
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 0d6c143f6653..94037881bfd8 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -4224,6 +4224,9 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
+ 	if (!pf)
+ 		return -ENOMEM;
  
- 	if (!vsi->back)
-@@ -2912,6 +2913,10 @@ int ice_vsi_release(struct ice_vsi *vsi)
- 
- 	ice_fltr_remove_all(vsi);
- 	ice_rm_vsi_lan_cfg(vsi->port_info, vsi->idx);
-+	err = ice_rm_vsi_rdma_cfg(vsi->port_info, vsi->idx);
-+	if (err)
-+		dev_err(ice_pf_to_dev(vsi->back), "Failed to remove RDMA scheduler config for VSI %u, err %d\n",
-+			vsi->vsi_num, err);
- 	ice_vsi_delete(vsi);
- 	ice_vsi_free_q_vectors(vsi);
- 
-@@ -3092,6 +3097,10 @@ int ice_vsi_rebuild(struct ice_vsi *vsi, bool init_vsi)
- 	prev_num_q_vectors = ice_vsi_rebuild_get_coalesce(vsi, coalesce);
- 
- 	ice_rm_vsi_lan_cfg(vsi->port_info, vsi->idx);
-+	ret = ice_rm_vsi_rdma_cfg(vsi->port_info, vsi->idx);
-+	if (ret)
-+		dev_err(ice_pf_to_dev(vsi->back), "Failed to remove RDMA scheduler config for VSI %u, err %d\n",
-+			vsi->vsi_num, ret);
- 	ice_vsi_free_q_vectors(vsi);
- 
- 	/* SR-IOV determines needed MSIX resources all at once instead of per
-diff --git a/drivers/net/ethernet/intel/ice/ice_sched.c b/drivers/net/ethernet/intel/ice/ice_sched.c
-index 9f07b6641705..2d9b10277186 100644
---- a/drivers/net/ethernet/intel/ice/ice_sched.c
-+++ b/drivers/net/ethernet/intel/ice/ice_sched.c
-@@ -2070,6 +2070,19 @@ enum ice_status ice_rm_vsi_lan_cfg(struct ice_port_info *pi, u16 vsi_handle)
- 	return ice_sched_rm_vsi_cfg(pi, vsi_handle, ICE_SCHED_NODE_OWNER_LAN);
- }
- 
-+/**
-+ * ice_rm_vsi_rdma_cfg - remove VSI and its RDMA children nodes
-+ * @pi: port information structure
-+ * @vsi_handle: software VSI handle
-+ *
-+ * This function clears the VSI and its RDMA children nodes from scheduler tree
-+ * for all TCs.
-+ */
-+enum ice_status ice_rm_vsi_rdma_cfg(struct ice_port_info *pi, u16 vsi_handle)
-+{
-+	return ice_sched_rm_vsi_cfg(pi, vsi_handle, ICE_SCHED_NODE_OWNER_RDMA);
-+}
++	/* initialize Auxiliary index to invalid value */
++	pf->aux_idx = -1;
 +
- /**
-  * ice_get_agg_info - get the aggregator ID
-  * @hw: pointer to the hardware structure
-diff --git a/drivers/net/ethernet/intel/ice/ice_sched.h b/drivers/net/ethernet/intel/ice/ice_sched.h
-index 9beef8f0ec76..fdf7a5882f07 100644
---- a/drivers/net/ethernet/intel/ice/ice_sched.h
-+++ b/drivers/net/ethernet/intel/ice/ice_sched.h
-@@ -89,6 +89,7 @@ enum ice_status
- ice_sched_cfg_vsi(struct ice_port_info *pi, u16 vsi_handle, u8 tc, u16 maxqs,
- 		  u8 owner, bool enable);
- enum ice_status ice_rm_vsi_lan_cfg(struct ice_port_info *pi, u16 vsi_handle);
-+enum ice_status ice_rm_vsi_rdma_cfg(struct ice_port_info *pi, u16 vsi_handle);
+ 	/* set up for high or low DMA */
+ 	err = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64));
+ 	if (err)
+@@ -4615,7 +4618,8 @@ static void ice_remove(struct pci_dev *pdev)
  
- /* Tx scheduler rate limiter functions */
- enum ice_status
+ 	ice_aq_cancel_waiting_tasks(pf);
+ 	ice_unplug_aux_dev(pf);
+-	ida_free(&ice_aux_ida, pf->aux_idx);
++	if (pf->aux_idx >= 0)
++		ida_free(&ice_aux_ida, pf->aux_idx);
+ 	set_bit(ICE_DOWN, pf->state);
+ 
+ 	mutex_destroy(&(&pf->hw)->fdir_fltr_lock);
 -- 
 2.31.1
 
