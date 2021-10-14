@@ -2,126 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C65E42D834
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 13:31:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F178942D84C
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 13:36:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230241AbhJNLdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 07:33:15 -0400
-Received: from mx1.tq-group.com ([93.104.207.81]:12537 "EHLO mx1.tq-group.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230431AbhJNLdM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Oct 2021 07:33:12 -0400
+        id S230510AbhJNLiU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 07:38:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56616 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230328AbhJNLiS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 07:38:18 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E345EC061753
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 04:36:13 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id g25so18465443wrb.2
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 04:36:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1634211067; x=1665747067;
-  h=from:to:cc:subject:date:message-id;
-  bh=e/k33b5iviI3LCxGlOyGY6873RDXdxSoyCGTS6Pf+wg=;
-  b=Sfq1jL/KbMQf99atXFdscWTy6blTDx/eNnilm2fnZ6N0zSUFx72DsZ4J
-   +4JS2kHYkPfMCEdZOqnfAT4Bjoizkx73WmrzfdQ5dB6e5ZzP2I8zAzMJq
-   k/N2+SZ2jwextqm4kApL+uXwCKq/ZGJB+JhULWVUkLtmPSDGOz5QM514R
-   0iOMO/3XR57ZTy8JP3lQH8rFnguoaRaoc0AkscHqdhYZVO90nPnZUhBuK
-   XvnpYqjGev7DiXOi1pccu4/YlUl5bWvlqqaFqe3nPo8exrQUouVEWIOEz
-   zE2fCHAVNxHZ1HbwJAUtuQfQrMYobBz//U8RW04nkCaLDp3uQMM5Yeigt
-   A==;
-X-IronPort-AV: E=Sophos;i="5.85,372,1624312800"; 
-   d="scan'208";a="20047202"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 14 Oct 2021 13:31:03 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Thu, 14 Oct 2021 13:31:03 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Thu, 14 Oct 2021 13:31:03 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1634211063; x=1665747063;
-  h=from:to:cc:subject:date:message-id;
-  bh=e/k33b5iviI3LCxGlOyGY6873RDXdxSoyCGTS6Pf+wg=;
-  b=B9ldJckA5MTNgesBU2w/aka80Q3SNxjgiLqp6wTCIrprMU3Ure6TnNm8
-   oCOgKOU/IrTr+AFdThIOm3D/0TvSaJLpR9JdqjBSDwsm246hXBqTOzi7B
-   cEItQ2akCcVrE1Cqg98kq4ybmeAaiAAX/5beG0ko5tm2oAyvWeo7rkSHD
-   X0JB0P6NTdmBlh21X5yDTRkxPVlCOqKwFSoON/bf9FU2ulBkHWXEgpFMk
-   LrCcaHdKk+kVRrKU7mCliL3zQ6Y+2CMCvasv50KwvAX3ln+fTPNXfMxvm
-   Gc1X4VDM4USZx4EMAHlPoMayUgX0+199h08nywYNqCCF45tN2Q0eJU10I
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.85,372,1624312800"; 
-   d="scan'208";a="20047198"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 14 Oct 2021 13:31:03 +0200
-Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.121.48.12])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 97C73280065;
-        Thu, 14 Oct 2021 13:31:01 +0200 (CEST)
-From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Subject: [PATCH] net: fec: defer probe if PHY on external MDIO bus is not available
-Date:   Thu, 14 Oct 2021 13:30:43 +0200
-Message-Id: <20211014113043.3518-1-matthias.schiffer@ew.tq-group.com>
-X-Mailer: git-send-email 2.17.1
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=U4ipNp1A1LkMViR5fSWkLGWj7ewgxV9un8v72sPWhJc=;
+        b=DItIv86tnWADRqJzyKzy+oAcUa2ya/iQpu1rwxuulp2coeAPnD/mho9YrUfGb+ty+A
+         Ti/+YvHte5NH9CdBkLxOEFhercMmkFrOCgr0QW4ZJcl4zvk3hf1I9ka6oz9iY87yhXtc
+         YJJg7eB4SQUamwGVH3dBPpY0thQ5mwlx+azcKG0KfsleorNRgGHpbRc2wrvyqWkbuTNK
+         ZTMKokfuOjmtIjQ5kqtk0TpRqhU7Pwpf8SCjW7eUH+GHtfHQFxCC2FU6Qr/MJIAW3oOx
+         0NE22OSmm2e+y/VD4EKxZjN909xkrWNIW6G9EercCpQjxFGWosV/PZKI08rGKWEk2jJC
+         hjXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=U4ipNp1A1LkMViR5fSWkLGWj7ewgxV9un8v72sPWhJc=;
+        b=VRMzSHdKtoQbaaVqKR3Pe4t9ssZhzC/A5uTybhD71fBW1f9RMSUEMx/H1X4QxNrmmJ
+         b/pXeAL25YJH3XRnMVtmDzp8t4Ufgzv5CBth19pZPRt2MT/LTFOy6wKLzTULYBf7kEUz
+         yuS6WUhhMMqEg3EuolQii8skdbjFOmuwmNlSbIWhTBdoyDC7kD3sQogI2PC0w+BVd9QF
+         wqlGPDwMdiggMBIq125NCHhSF+fDlc7mvaajE28t12n3pOvAqyYHqdWXUWKHVTehCR3H
+         InvWddtkHqsfxWZMFOqYY4NIn6waoobFTp2SdhSmlp57eFvVFZRpW5N38rnkKWaFeYT4
+         0o2g==
+X-Gm-Message-State: AOAM532MuHCvsSvtS8oHGvAcuok+5PKtPHKCUQTym8gf0YxT+eGBsp6x
+        Qs//82e0ZL76/0d+DOacHW/cRQ==
+X-Google-Smtp-Source: ABdhPJzT+LXujsr3qpAYh2Qv2HXhFIwBYT8OJSpU1B7hW6sUiYucP3cOYtMJmYa4GK+BbZxExtRdpw==
+X-Received: by 2002:a1c:22d7:: with SMTP id i206mr5337436wmi.122.1634211372424;
+        Thu, 14 Oct 2021 04:36:12 -0700 (PDT)
+Received: from [192.168.86.34] (cpc86377-aztw32-2-0-cust226.18-1.cable.virginm.net. [92.233.226.227])
+        by smtp.googlemail.com with ESMTPSA id g2sm2199373wrb.20.2021.10.14.04.36.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Oct 2021 04:36:12 -0700 (PDT)
+Subject: Re: [PATCH RFC linux] dt-bindings: nvmem: Add binding for U-Boot
+ environment NVMEM provider
+To:     =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>
+Cc:     robh+dt@kernel.org, devicetree@vger.kernel.org,
+        U-Boot Mailing List <u-boot@lists.denx.de>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Luka Kovacic <luka.kovacic@sartura.hr>
+References: <20211013232048.16559-1-kabel@kernel.org>
+ <629c8ba1-c924-565f-0b3c-8b625f4e5fb0@linaro.org>
+ <20211014120601.133e9a84@dellmb>
+ <857c27a6-5c4b-e0ed-a830-35762799613f@linaro.org>
+ <20211014125526.10d4861b@dellmb>
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Message-ID: <d2c0d673-440d-9e58-82b4-a73740a9c180@linaro.org>
+Date:   Thu, 14 Oct 2021 12:36:11 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
+MIME-Version: 1.0
+In-Reply-To: <20211014125526.10d4861b@dellmb>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On some SoCs like i.MX6UL it is common to use the same MDIO bus for PHYs
-on both Ethernet controllers. Currently device trees for such setups
-have to make assumptions regarding the probe order of the controllers:
 
-For example in imx6ul-14x14-evk.dtsi, the MDIO bus of fec2 is used for
-the PHYs of both fec1 and fec2. The reason is that fec2 has a lower
-address than fec1 and is thus loaded first, so the bus is already
-available when fec1 is probed.
 
-Besides being confusing, this limitation also makes it impossible to use
-the same device tree for variants of the i.MX6UL with one Ethernet
-controller (which have to use the MDIO of fec1, as fec2 does not exist)
-and variants with two controllers (which have to use fec2 because of the
-load order).
+On 14/10/2021 11:55, Marek Behún wrote:
+> On Thu, 14 Oct 2021 11:30:13 +0100
+> Srinivas Kandagatla <srinivas.kandagatla@linaro.org> wrote:
+> 
+>> On 14/10/2021 11:06, Marek Behún wrote:
+>>> On Thu, 14 Oct 2021 09:26:27 +0100
+>>> Srinivas Kandagatla <srinivas.kandagatla@linaro.org> wrote:
+>>>    
+>>>> On 14/10/2021 00:20, Marek Behún wrote:
+>>>>> Add device tree bindings for U-Boot environment NVMEM provider.
+>>>>>
+>>>>> U-Boot environment can be stored at a specific offset of a MTD
+>>>>> device, EEPROM, MMC, NAND or SATA device, on an UBI volume, or in
+>>>>> a file on a filesystem.
+>>>>>
+>>>>> The environment can contain information such as device's MAC
+>>>>> address, which should be used by the ethernet controller node.
+>>>>>       
+>>>>
+>>>> Have you looked at
+>>>> ./Documentation/devicetree/bindings/mtd/partitions/nvmem-cells.yaml
+>>>> ?
+>>>
+>>> Hello srini,
+>>>
+>>> yes, I have. What about it? :)
+>>>
+>>> That binding won't work for u-boot-env, because the data are stored
+>>> in a different way. A cell does not have a constant predetermined
+>>> offset on the MTD.
+>>
+>> Can't you dynamically update the nodes before nvmem-provider is
+>> registered?
+> 
+> Are you talking about dynamically updating nvmem-cell OF nodes, adding
+> reg properties with actual offsets and lengths found after parsing?
 
-To fix this, defer the probe of the Ethernet controller when the PHY is
-not on our own MDIO bus and not available.
+Yes, atleast for the nodes that are defined in the dt.
 
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
----
- drivers/net/ethernet/freescale/fec_main.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
+> 
+>>> The variables are stored as a sequence of values of format
+>>> "name=value", separated by '\0's, for example:
+>>>     board=turris_mox\0ethaddr=00:11:22:33:44:55\0bootcmd=run
+>>> distro_bootcmd\0.... Chaning lengths of values of variables, or
+>>> deleting variables, moves the data around. Integers and MAC
+>>> addresses are stored as strings, and so on.
+>>
+>> Do you already have a provider driver for handing this.
+> 
+> Not yet, I will send the proposal together with a driver in next
+> round.
+> 
+>> How is pre parsing cell info and post processing data planned to be
+>> handled?
+> 
+> My plan was to read the variables from the u-boot-env partition, create
+> a nvmem-cell for each variable, and then pair the ones mentioned in
+> device tree with their DT nodes, and post-process according to type
+Adding cells using nvmem_cell_info should work. I think pairing the one 
+with DT entries is something that is missing. Currently nvmem_cell_info 
+does not have device_node pointer may be that is something that could be 
+added to help here.
 
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 47a6fc702ac7..dc070dd216e8 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -3820,7 +3820,28 @@ fec_probe(struct platform_device *pdev)
- 		goto failed_stop_mode;
- 
- 	phy_node = of_parse_phandle(np, "phy-handle", 0);
--	if (!phy_node && of_phy_is_fixed_link(np)) {
-+	if (phy_node) {
-+		struct device_node *mdio_parent =
-+			of_get_next_parent(of_get_parent(phy_node));
-+
-+		ret = 0;
-+
-+		/* Skip PHY availability check for our own MDIO bus to avoid
-+		 * cyclic dependency
-+		 */
-+		if (mdio_parent != np) {
-+			struct phy_device *phy = of_phy_find_device(phy_node);
-+
-+			if (phy)
-+				put_device(&phy->mdio.dev);
-+			else
-+				ret = -EPROBE_DEFER;
-+		}
-+
-+		of_node_put(mdio_parent);
-+		if (ret)
-+			goto failed_phy;
-+	} else if (of_phy_is_fixed_link(np)) {
- 		ret = of_phy_register_fixed_link(np);
- 		if (ret < 0) {
- 			dev_err(&pdev->dev,
--- 
-2.17.1
 
+> (post-processing would be done only for those mentioned in device tree,
+> others would be left as strings).
+> 
+>> Currently in nvmem core we do check for "reg" property for each cell,
+>> unless the provider driver is adding/updating dt entries dynamically
+>> before registering nvmem provider
+> 
+> I don't think updaring DT entries dynamically is a correct solution at
+> all. Is this done in Linux? Updating device properties is something
+> different, but changing DT properties seems wrong to me.
+> 
+>> It will not work as it is. Alteast this is what I suggested in similar
+>> case where cell information is in tlv format.
+> 
+> Hmm. OK, I shall try to implement a driver for this and then will
+> return to you.
+
+Sounds good.
+
+> 
+>> Secondly mac-address seems to be delimited, we recently introduced
+>> post processing callback for provider driver [1], which should help
+>> in this case.
+> 
+> Cool, I shall use that.
+yes, please it should show up in 5.16 anyway.
+
+> 
+>> If the nvmem-cell names are standard like "mac-address" then you do
+>> not need to add a new "type" binding to cell too, you can do
+>> post-processing based on name.
+> 
+> I plan to add functions
+>    of_nvmem_get_mac_address()
+>    nvmem_get_mac_address()
+we already have nvmem_get_mac_address() in  ./net/ethernet/eth.c that 
+looks for mac-address.
+
+--srini
+> which would look at (in this order):
+>    mac-address, address, mac-address-backup
+> We have to keep the name "address" for backwards compatibility with one
+> driver that uses this (drivers/net/ethernet/ni/nixge.c)
+> 
+> Thanks.
+> 
+> Marek
+> 
