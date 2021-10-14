@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC79942E2F5
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 22:57:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57D6142E2F7
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 22:57:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232402AbhJNU7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 16:59:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43984 "EHLO
+        id S232486AbhJNU7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 16:59:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232467AbhJNU7K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 16:59:10 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9684BC061570;
-        Thu, 14 Oct 2021 13:57:04 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id lk8-20020a17090b33c800b001a0a284fcc2so7838592pjb.2;
-        Thu, 14 Oct 2021 13:57:04 -0700 (PDT)
+        with ESMTP id S232480AbhJNU7N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 16:59:13 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6175EC061570;
+        Thu, 14 Oct 2021 13:57:08 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id q12so3707397pgq.11;
+        Thu, 14 Oct 2021 13:57:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=uGJypVP0LSdHJsPF64m+oQSB4IwFYdW+hk4M0oJYwes=;
-        b=hAFpU981llIxCCKzv3FkVj3hu3yz/bD4sjfem9GLz6AmYNSVUTCh5tpbzWGaBl0SpB
-         y4bFCTq/xN2D4wPL8zHDSRhB7MGUaB/Gby97Cbn+DugeuiwQ42OzofQMQER7MBd37U47
-         5SbpaUYJUTdbp/K0Fpfz5NQFn1+SvWfDBmJUnbtkOCNLgxPaYZDTirlx1oWy+fokM02Q
-         6BJNnpa1rdD79hxm9c9C6IXnrLUCenpubjXibHO+qs1lbUM6Q1QWqRSG63duLoqg3l/J
-         btkOZY2Wpv7Cc9rubqu0ZvjPkd3sNWnXwatCM18GDI0NTO8byjdcf0/YRcm6pWudHEZN
-         eGwg==
+        bh=/MoWpmHEu1OQtZSrGj5Hg3ERSdRg3WEnuTQ4/fvGv8U=;
+        b=GBcn8IsjVQzZbfDPUmR5IFHKrvt0R7JmJV/qYxCa64JqDHqY7lE1fnDBtCvr2LGvtT
+         mtn2N+S+pWR2+glgjHvVUc3rxoNiWWGpVSCBx2rKXsh/1vbS8xam6saBrv5P4ypXpIDn
+         JICBsvj7xiYcyk38EQx37t49SM5MCSQsnIJ6kJoGlOtHFLJYdJ3jL2msUXE7H46ufRsY
+         qmzmSQX6SZjmznjNBhjGMyDb/YGcQRVGs2n3sBQMuxwi0zRSnGe9jNa+q8qb6A9de4xt
+         0qjf2HBmkXkilmFnpEVNKXoE2Fp+z4HphmsWxNnQvbLIhwx8Uv3DVo9J8HuFPV5jmYix
+         ILpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=uGJypVP0LSdHJsPF64m+oQSB4IwFYdW+hk4M0oJYwes=;
-        b=bqipQoNO2H0TZ4196ID6PauSInUw8qS8ngaxxio2mhk/rxaWk1zAmw0AXFlniEOrdL
-         RVtiAeBXgTu/HLuI8ZEighuOD0HapkNo8ZDzexGsyy/yJJnSVPqEQQnBABGN7buMqkvH
-         Q2a38ydjxkXU4GjFvOLMNjOSJ+7PnxLZqLOR2hQlrPNdtlXDMtHGClFoIJv1Uk6/NB2Q
-         6rVu6cRB5Fn3uEF6Fi/jlSLasNCzqIHflxCMWjYIM4uqpdlEuyDdIN63TI7PKBYKG9v9
-         pjzJn8ubl4H+cw7z+3uUf6+IYMypFhlklo6RmWCTewuAh0bVLYc/86wN9OVtAuXOC2Q8
-         OA7A==
-X-Gm-Message-State: AOAM5319sldl9fmfyFcD/JSWmsQP4GkgwJdZbOf/TLS0bQsTLwyT60Y9
-        g/if771d5Fz/WNo5FmI8fHNwWM62GZQ=
-X-Google-Smtp-Source: ABdhPJxW6Z0qeV4/am30zOoxP4qEZJlGMg3Y4+CksXz061SxJHsQDQGkWjBufCp+XdJRNRkwAtJqmg==
-X-Received: by 2002:a17:902:8bc4:b029:12b:8470:e29e with SMTP id r4-20020a1709028bc4b029012b8470e29emr7184862plo.2.1634245023938;
-        Thu, 14 Oct 2021 13:57:03 -0700 (PDT)
+        bh=/MoWpmHEu1OQtZSrGj5Hg3ERSdRg3WEnuTQ4/fvGv8U=;
+        b=MxlsscLyEEzi0KMoze6O3ptY22HlzYyyVrWj7yjwn+h3Kt4IEX9E/aqNLzBVkfMwQC
+         Ac4ExCrgptw7f8LUnYhtWY0iPkY3hU3xM0AiHYDT5MBNHxV0FuU9hIsqy1Qo/4qx4XsE
+         lRTQqAV8cc0oQwiA4dsHwZkmszmPBilgjQVsu3FMUwCe4ojndrzcvy9S7Tt0qk6qEMox
+         XZCGcRnGdDHZfsf0GSbevkqUe4APRzivD/7efCzTlXPfFUZ9LYkeQPsyDrkoJJl+H4zr
+         sNE+/mcqIpMM3039A1QBTkcEvpg07yrYysrIHUtqoeJUSkM1K93pPEabLMIzQmJmbmpI
+         cPVA==
+X-Gm-Message-State: AOAM533SAyry9hbIJDI4EctqNIKeHxsESwpC4AOoUFIvjyYWWa523bQP
+        wanxh1CEK4H1Q0d1H1giXa8u0sFclt0=
+X-Google-Smtp-Source: ABdhPJzDJrV+03Zf0JS6Z1hIfyiUKDO8xoaDXB+ynPKvv2/jvce4wyPd65OarCDyp2RE1d6sMHB/aQ==
+X-Received: by 2002:a05:6a00:13a1:b0:44c:f60d:5fe6 with SMTP id t33-20020a056a0013a100b0044cf60d5fe6mr7374198pfg.48.1634245027647;
+        Thu, 14 Oct 2021 13:57:07 -0700 (PDT)
 Received: from localhost ([2405:201:6014:d058:a28d:3909:6ed5:29e7])
-        by smtp.gmail.com with ESMTPSA id o14sm3279225pfh.145.2021.10.14.13.57.03
+        by smtp.gmail.com with ESMTPSA id j6sm3108153pgq.0.2021.10.14.13.57.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Oct 2021 13:57:03 -0700 (PDT)
+        Thu, 14 Oct 2021 13:57:07 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -57,143 +57,267 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org
-Subject: [PATCH bpf-next v3 5/8] libbpf: Use O_CLOEXEC uniformly when opening fds
-Date:   Fri, 15 Oct 2021 02:26:41 +0530
-Message-Id: <20211014205644.1837280-6-memxor@gmail.com>
+Subject: [PATCH bpf-next v3 6/8] selftests/bpf: Add weak/typeless ksym test for light skeleton
+Date:   Fri, 15 Oct 2021 02:26:42 +0530
+Message-Id: <20211014205644.1837280-7-memxor@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211014205644.1837280-1-memxor@gmail.com>
 References: <20211014205644.1837280-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4473; h=from:subject; bh=FKKozzSHJ71MClmNbogdMEPIOs+69DDD1f21NC0pk00=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhaJk/2XqnJ+Sb8y6Em5Rd9293CWcKWIt4nFJISFyG RI7pK9aJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYWiZPwAKCRBM4MiGSL8Ryq36D/ 0WJHGn/6RMUAZ6vVZ42WKx+eix9+BHGDcccSh1s3h2wrOU9grzAKNTHf3EihaJ2SGSP+4mWXCFoGVW zVWI5GQMFdekfZNpHwmjV5PxXpHAGfJEgz/t2XLsOeVCIAYcRsP/hcVFA8trzeOBpkll3BfjCzNKog kvQ0StJgdmnQeQmRtQi35qIJpRtLZRBXJNJOILZpOF8fPTWrPzmkruC1AubomG136yTbIH7AwZxfvq jaw7a5xUPp+ddh+7DNev4P1ify/lOtM4gTxiT/M8b9B1Vo32ybLEaF/iVIw0loo4yY7Im4VYp01AD9 8VjPSgOAGGuZOhZ2BSJlWvt13hgyMdJlCuRwLFLZJxnH8SMUJCEOX9SmDD8T9lBSmauOnWqZCxj5q8 W94Hc/R59EwdF0B2lzX14d6fGYUKZ3rmmfdr22/8a+qRNtWtOc7dmW1HzaZc5IU5s7s8pmR9O3V7+3 el7vI6geim7X01fWA0wGdUEWB6euxLJU2HMz8Lf0Vweo30Ntd5v2b12TAjJaRbKXqFs2PAIjgvBWyZ rnGwifAIOR1RXDXRIvTkZN1kGYgrSwwb8hOVCf00aWSVv3IXv919yvKYy691mSEdyPifJCWMBodiYB F1ZM1ZIndoqRLjfd0u+UfJNIINtzzhDNbKOm3pCSfqlBoE+BoSNJgh4SwRcg==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=9277; h=from:subject; bh=TMtdE2D/ImvLwSwYCMuCvHpm+1Vv8RSv/Nm+/+tskG0=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhaJk/P/2ivmGfx/A+E7Xhf4iAYrcvjjkHCbU9Zbiz PVa2it2JAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYWiZPwAKCRBM4MiGSL8RymGDD/ 9QTtZ8Wy0MJmDmjPjVpkwdqE5rBUwDqasYRENM8BbhkxADZd2iAdX4dZqACh8qgr0ugAbTV5ak8qtK ulzEyQuR5FxyRRyaWBmGERQ/bItDUrG75NdFubPLdJYumdpTkmv3+Lh74eE3KRHoqpfYR1m3yf4kbP ns8M1bzdCS77tPiCkKR/dsGoRjrzviLK04XsjlsSnCLri89FvU3Yd8fK6y9e7cZRhF2VTCZ7IJWTMI HwTKgEUi4e8RLnOQArCtHrgSmE/A8Rk2Ffa36LZ8n2H3Q/ao67YmlK0bb5UBxqQ/PlDSgD416EsBa7 ydOpuGF3PFGoJLU0khieXVOjWU/kEH652PCvj9QgrwNx/1ZVBerAlLoVbzGa8qq/rEE9t4cL0LMofE ez9dH04+oh0AQSLKc+3K3aaPmNR44vxXN49zGkwLJ7Qn4LDi/VLytMMxaE+JIjBE7bLRloGgj4RwjE EbYG96B58hJY7tfMi/rreV2TPTx9wzh5vxlmbzfz4w55TBdoS80gbC0E5sM95rSaO0hFxwSmJLjpmb QuGqm9wYOa7JFc37gmE7H36hVOnmn/pCg2giHm/B+kErEVCHz5BuIJLIgrr5/APB6UqXesWxMKEZ2B KBF2S230n9fw3R68uETMp/PqmvRzQdde+JnTeLei228DzsvogfHQFALuhsoA==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are some instances where we don't use O_CLOEXEC when opening an
-fd, fix these up. Otherwise, it is possible that a parallel fork causes
-these fds to leak into a child process on execve.
+Also, avoid using CO-RE features, as lskel doesn't support CO-RE, yet.
+Include both light and libbpf skeleton in same file to test both of them
+together.
+
+In c48e51c8b07a ("bpf: selftests: Add selftests for module kfunc support"),
+I added support for generating both lskel and libbpf skel for a BPF
+object, however the name parameter for bpftool caused collisions when
+included in same file together. This meant that every test needed a
+separate file for a libbpf/light skeleton separation instead of
+subtests.
+
+Change that by appending a "_light" suffix to the name for files listed
+in LSKELS_EXTRA, such that both light and libbpf skeleton can be used in
+the same file for subtests, leading to better code sharing.
+
+While at it, improve the build output by saying GEN-LSKEL instead of
+GEN-SKEL for light skeleton generation recipe.
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- tools/lib/bpf/btf.c           | 2 +-
- tools/lib/bpf/libbpf.c        | 6 +++---
- tools/lib/bpf/libbpf_probes.c | 2 +-
- tools/lib/bpf/linker.c        | 4 ++--
- tools/lib/bpf/xsk.c           | 6 +++---
- 5 files changed, 10 insertions(+), 10 deletions(-)
+ tools/testing/selftests/bpf/Makefile          |  7 ++--
+ .../selftests/bpf/prog_tests/ksyms_btf.c      | 35 +++++++++++++++-
+ .../selftests/bpf/prog_tests/ksyms_module.c   | 40 +++++++++++++++++--
+ .../bpf/prog_tests/ksyms_module_libbpf.c      | 28 -------------
+ .../selftests/bpf/progs/test_ksyms_weak.c     |  3 +-
+ 5 files changed, 74 insertions(+), 39 deletions(-)
+ delete mode 100644 tools/testing/selftests/bpf/prog_tests/ksyms_module_libbpf.c
 
-diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-index 60fbd1c6d466..06a7a4e52134 100644
---- a/tools/lib/bpf/btf.c
-+++ b/tools/lib/bpf/btf.c
-@@ -886,7 +886,7 @@ static struct btf *btf_parse_elf(const char *path, struct btf *base_btf,
- 		return ERR_PTR(-LIBBPF_ERRNO__LIBELF);
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 498222543c37..1c3c8befc249 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -325,7 +325,7 @@ LINKED_SKELS := test_static_linked.skel.h linked_funcs.skel.h		\
+ LSKELS := kfunc_call_test.c fentry_test.c fexit_test.c fexit_sleep.c \
+ 	test_ringbuf.c atomics.c trace_printk.c trace_vprintk.c
+ # Generate both light skeleton and libbpf skeleton for these
+-LSKELS_EXTRA := test_ksyms_module.c
++LSKELS_EXTRA := test_ksyms_module.c test_ksyms_weak.c
+ SKEL_BLACKLIST += $$(LSKELS)
+ 
+ test_static_linked.skel.h-deps := test_static_linked1.o test_static_linked2.o
+@@ -399,12 +399,13 @@ $(TRUNNER_BPF_SKELS): %.skel.h: %.o $(BPFTOOL) | $(TRUNNER_OUTPUT)
+ 	$(Q)$$(BPFTOOL) gen skeleton $$(<:.o=.linked3.o) name $$(notdir $$(<:.o=)) > $$@
+ 
+ $(TRUNNER_BPF_LSKELS): %.lskel.h: %.o $(BPFTOOL) | $(TRUNNER_OUTPUT)
+-	$$(call msg,GEN-SKEL,$(TRUNNER_BINARY),$$@)
++	$$(call msg,GEN-LSKEL,$(TRUNNER_BINARY),$$@)
+ 	$(Q)$$(BPFTOOL) gen object $$(<:.o=.linked1.o) $$<
+ 	$(Q)$$(BPFTOOL) gen object $$(<:.o=.linked2.o) $$(<:.o=.linked1.o)
+ 	$(Q)$$(BPFTOOL) gen object $$(<:.o=.linked3.o) $$(<:.o=.linked2.o)
+ 	$(Q)diff $$(<:.o=.linked2.o) $$(<:.o=.linked3.o)
+-	$(Q)$$(BPFTOOL) gen skeleton -L $$(<:.o=.linked3.o) name $$(notdir $$(<:.o=)) > $$@
++	$$(eval LSKEL_NAME := $$(notdir $$(<:.o=$$(if $$(filter $$(notdir $$(<:.o=.c)),$(LSKELS_EXTRA)),_light,))))
++	$(Q)$$(BPFTOOL) gen skeleton -L $$(<:.o=.linked3.o) name $$(LSKEL_NAME) > $$@
+ 
+ $(TRUNNER_BPF_SKELS_LINKED): $(TRUNNER_BPF_OBJS) $(BPFTOOL) | $(TRUNNER_OUTPUT)
+ 	$$(call msg,LINK-BPF,$(TRUNNER_BINARY),$$(@:.skel.h=.o))
+diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c b/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
+index cf3acfa5a91d..9f4853781702 100644
+--- a/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
++++ b/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
+@@ -7,6 +7,7 @@
+ #include "test_ksyms_btf.skel.h"
+ #include "test_ksyms_btf_null_check.skel.h"
+ #include "test_ksyms_weak.skel.h"
++#include "test_ksyms_weak.lskel.h"
+ 
+ static int duration;
+ 
+@@ -89,11 +90,11 @@ static void test_weak_syms(void)
+ 	int err;
+ 
+ 	skel = test_ksyms_weak__open_and_load();
+-	if (CHECK(!skel, "test_ksyms_weak__open_and_load", "failed\n"))
++	if (!ASSERT_OK_PTR(skel, "test_ksyms_weak__open_and_load"))
+ 		return;
+ 
+ 	err = test_ksyms_weak__attach(skel);
+-	if (CHECK(err, "test_ksyms_weak__attach", "skeleton attach failed: %d\n", err))
++	if (!ASSERT_OK(err, "test_ksyms_weak__attach"))
+ 		goto cleanup;
+ 
+ 	/* trigger tracepoint */
+@@ -109,6 +110,33 @@ static void test_weak_syms(void)
+ 	test_ksyms_weak__destroy(skel);
+ }
+ 
++static void test_weak_syms_light(void)
++{
++	struct test_ksyms_weak_light *skel;
++	struct test_ksyms_weak_light__data *data;
++	int err;
++
++	skel = test_ksyms_weak_light__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "test_ksyms_weak_light__open_and_load"))
++		return;
++
++	err = test_ksyms_weak_light__attach(skel);
++	if (!ASSERT_OK(err, "test_ksyms_weak_light__attach"))
++		goto cleanup;
++
++	/* trigger tracepoint */
++	usleep(1);
++
++	data = skel->data;
++	ASSERT_EQ(data->out__existing_typed, 0, "existing typed ksym");
++	ASSERT_NEQ(data->out__existing_typeless, -1, "existing typeless ksym");
++	ASSERT_EQ(data->out__non_existent_typeless, 0, "nonexistent typeless ksym");
++	ASSERT_EQ(data->out__non_existent_typed, 0, "nonexistent typed ksym");
++
++cleanup:
++	test_ksyms_weak_light__destroy(skel);
++}
++
+ void test_ksyms_btf(void)
+ {
+ 	int percpu_datasec;
+@@ -136,4 +164,7 @@ void test_ksyms_btf(void)
+ 
+ 	if (test__start_subtest("weak_ksyms"))
+ 		test_weak_syms();
++
++	if (test__start_subtest("weak_ksyms_light"))
++		test_weak_syms_light();
+ }
+diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_module.c b/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
+index 831447878d7b..653a1352ccb8 100644
+--- a/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
++++ b/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
+@@ -4,10 +4,11 @@
+ #include <test_progs.h>
+ #include <network_helpers.h>
+ #include "test_ksyms_module.lskel.h"
++#include "test_ksyms_module.skel.h"
+ 
+-void test_ksyms_module(void)
++void test_ksyms_module_light(void)
+ {
+-	struct test_ksyms_module *skel;
++	struct test_ksyms_module_light *skel;
+ 	int retval;
+ 	int err;
+ 
+@@ -16,8 +17,8 @@ void test_ksyms_module(void)
+ 		return;
  	}
  
--	fd = open(path, O_RDONLY);
-+	fd = open(path, O_RDONLY | O_CLOEXEC);
- 	if (fd < 0) {
- 		err = -errno;
- 		pr_warn("failed to open %s: %s\n", path, strerror(errno));
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 0a5ff7f2d16d..e7d8bb34f58c 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -1223,7 +1223,7 @@ static int bpf_object__elf_init(struct bpf_object *obj)
- 		obj->efile.elf = elf_memory((char *)obj->efile.obj_buf,
- 					    obj->efile.obj_buf_sz);
- 	} else {
--		obj->efile.fd = ensure_good_fd(open(obj->path, O_RDONLY));
-+		obj->efile.fd = ensure_good_fd(open(obj->path, O_RDONLY | O_CLOEXEC));
- 		if (obj->efile.fd < 0) {
- 			char errmsg[STRERR_BUFSIZE], *cp;
+-	skel = test_ksyms_module__open_and_load();
+-	if (!ASSERT_OK_PTR(skel, "test_ksyms_module__open_and_load"))
++	skel = test_ksyms_module_light__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "test_ksyms_module_light__open_and_load"))
+ 		return;
+ 	err = bpf_prog_test_run(skel->progs.load.prog_fd, 1, &pkt_v4, sizeof(pkt_v4),
+ 				NULL, NULL, (__u32 *)&retval, NULL);
+@@ -25,6 +26,37 @@ void test_ksyms_module(void)
+ 		goto cleanup;
+ 	ASSERT_EQ(retval, 0, "retval");
+ 	ASSERT_EQ(skel->bss->out_bpf_testmod_ksym, 42, "bpf_testmod_ksym");
++cleanup:
++	test_ksyms_module_light__destroy(skel);
++}
++
++void test_ksyms_module_libbpf(void)
++{
++	struct test_ksyms_module *skel;
++	int retval, err;
++
++	if (!env.has_testmod) {
++		test__skip();
++		return;
++	}
++
++	skel = test_ksyms_module__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "test_ksyms_module__open"))
++		return;
++	err = bpf_prog_test_run(bpf_program__fd(skel->progs.load), 1, &pkt_v4,
++				sizeof(pkt_v4), NULL, NULL, (__u32 *)&retval, NULL);
++	if (!ASSERT_OK(err, "bpf_prog_test_run"))
++		goto cleanup;
++	ASSERT_EQ(retval, 0, "retval");
++	ASSERT_EQ(skel->bss->out_bpf_testmod_ksym, 42, "bpf_testmod_ksym");
+ cleanup:
+ 	test_ksyms_module__destroy(skel);
+ }
++
++void test_ksyms_module(void)
++{
++	if (test__start_subtest("light"))
++		test_ksyms_module_light();
++	if (test__start_subtest("libbpf"))
++		test_ksyms_module_libbpf();
++}
+diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_module_libbpf.c b/tools/testing/selftests/bpf/prog_tests/ksyms_module_libbpf.c
+deleted file mode 100644
+index e6343ef63af9..000000000000
+--- a/tools/testing/selftests/bpf/prog_tests/ksyms_module_libbpf.c
++++ /dev/null
+@@ -1,28 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-
+-#include <test_progs.h>
+-#include <network_helpers.h>
+-#include "test_ksyms_module.skel.h"
+-
+-void test_ksyms_module_libbpf(void)
+-{
+-	struct test_ksyms_module *skel;
+-	int retval, err;
+-
+-	if (!env.has_testmod) {
+-		test__skip();
+-		return;
+-	}
+-
+-	skel = test_ksyms_module__open_and_load();
+-	if (!ASSERT_OK_PTR(skel, "test_ksyms_module__open"))
+-		return;
+-	err = bpf_prog_test_run(bpf_program__fd(skel->progs.load), 1, &pkt_v4,
+-				sizeof(pkt_v4), NULL, NULL, (__u32 *)&retval, NULL);
+-	if (!ASSERT_OK(err, "bpf_prog_test_run"))
+-		goto cleanup;
+-	ASSERT_EQ(retval, 0, "retval");
+-	ASSERT_EQ(skel->bss->out_bpf_testmod_ksym, 42, "bpf_testmod_ksym");
+-cleanup:
+-	test_ksyms_module__destroy(skel);
+-}
+diff --git a/tools/testing/selftests/bpf/progs/test_ksyms_weak.c b/tools/testing/selftests/bpf/progs/test_ksyms_weak.c
+index 5f8379aadb29..521e7b99db08 100644
+--- a/tools/testing/selftests/bpf/progs/test_ksyms_weak.c
++++ b/tools/testing/selftests/bpf/progs/test_ksyms_weak.c
+@@ -21,7 +21,6 @@ __u64 out__non_existent_typed = -1;
+ extern const struct rq runqueues __ksym __weak; /* typed */
+ extern const void bpf_prog_active __ksym __weak; /* typeless */
  
-@@ -9331,7 +9331,7 @@ static int append_to_file(const char *file, const char *fmt, ...)
- 	int fd, n, err = 0;
- 	va_list ap;
+-
+ /* non-existent weak symbols. */
  
--	fd = open(file, O_WRONLY | O_APPEND, 0);
-+	fd = open(file, O_WRONLY | O_APPEND | O_CLOEXEC, 0);
- 	if (fd < 0)
- 		return -errno;
+ /* typeless symbols, default to zero. */
+@@ -38,7 +37,7 @@ int pass_handler(const void *ctx)
+ 	/* tests existing symbols. */
+ 	rq = (struct rq *)bpf_per_cpu_ptr(&runqueues, 0);
+ 	if (rq)
+-		out__existing_typed = rq->cpu;
++		out__existing_typed = 0;
+ 	out__existing_typeless = (__u64)&bpf_prog_active;
  
-@@ -10976,7 +10976,7 @@ int parse_cpu_mask_file(const char *fcpu, bool **mask, int *mask_sz)
- 	int fd, err = 0, len;
- 	char buf[128];
- 
--	fd = open(fcpu, O_RDONLY);
-+	fd = open(fcpu, O_RDONLY | O_CLOEXEC);
- 	if (fd < 0) {
- 		err = -errno;
- 		pr_warn("Failed to open cpu mask file %s: %d\n", fcpu, err);
-diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
-index cd8c703dde71..68f2dbf364aa 100644
---- a/tools/lib/bpf/libbpf_probes.c
-+++ b/tools/lib/bpf/libbpf_probes.c
-@@ -33,7 +33,7 @@ static int get_vendor_id(int ifindex)
- 
- 	snprintf(path, sizeof(path), "/sys/class/net/%s/device/vendor", ifname);
- 
--	fd = open(path, O_RDONLY);
-+	fd = open(path, O_RDONLY | O_CLOEXEC);
- 	if (fd < 0)
- 		return -1;
- 
-diff --git a/tools/lib/bpf/linker.c b/tools/lib/bpf/linker.c
-index 6106a0b5572a..f993706eff77 100644
---- a/tools/lib/bpf/linker.c
-+++ b/tools/lib/bpf/linker.c
-@@ -302,7 +302,7 @@ static int init_output_elf(struct bpf_linker *linker, const char *file)
- 	if (!linker->filename)
- 		return -ENOMEM;
- 
--	linker->fd = ensure_good_fd(open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644));
-+	linker->fd = ensure_good_fd(open(file, O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, 0644));
- 	if (linker->fd < 0) {
- 		err = -errno;
- 		pr_warn("failed to create '%s': %d\n", file, err);
-@@ -557,7 +557,7 @@ static int linker_load_obj_file(struct bpf_linker *linker, const char *filename,
- 
- 	obj->filename = filename;
- 
--	obj->fd = open(filename, O_RDONLY);
-+	obj->fd = open(filename, O_RDONLY | O_CLOEXEC);
- 	if (obj->fd < 0) {
- 		err = -errno;
- 		pr_warn("failed to open file '%s': %d\n", filename, err);
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index a2111696ba91..81f8fbc85e70 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -300,7 +300,7 @@ int xsk_umem__create_v0_0_4(struct xsk_umem **umem_ptr, void *umem_area,
- 	if (!umem)
- 		return -ENOMEM;
- 
--	umem->fd = socket(AF_XDP, SOCK_RAW, 0);
-+	umem->fd = socket(AF_XDP, SOCK_RAW | SOCK_CLOEXEC, 0);
- 	if (umem->fd < 0) {
- 		err = -errno;
- 		goto out_umem_alloc;
-@@ -549,7 +549,7 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
- 	struct ifreq ifr = {};
- 	int fd, err, ret;
- 
--	fd = socket(AF_LOCAL, SOCK_DGRAM, 0);
-+	fd = socket(AF_LOCAL, SOCK_DGRAM | SOCK_CLOEXEC, 0);
- 	if (fd < 0)
- 		return -errno;
- 
-@@ -1046,7 +1046,7 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 	}
- 
- 	if (umem->refcount++ > 0) {
--		xsk->fd = socket(AF_XDP, SOCK_RAW, 0);
-+		xsk->fd = socket(AF_XDP, SOCK_RAW | SOCK_CLOEXEC, 0);
- 		if (xsk->fd < 0) {
- 			err = -errno;
- 			goto out_xsk_alloc;
+ 	/* tests non-existent symbols. */
 -- 
 2.33.0
 
