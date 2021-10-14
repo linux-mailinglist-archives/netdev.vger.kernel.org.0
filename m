@@ -2,98 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D2D442DF31
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 18:32:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B4DA42DF3A
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 18:34:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233206AbhJNQey (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 12:34:54 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:22882 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232248AbhJNQeu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 12:34:50 -0400
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19EFicAj032432;
-        Thu, 14 Oct 2021 12:32:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=KK2u8WdR1B+7QuzxPI5SyQPFbK5W+cd5cU/ZFriISYo=;
- b=N71M+qMYc0b5wLHU3KsQWS0u8fJtm5yLeYSV/Nu3HdWiFiX6+cYW0M/7NobPPVCT+cv1
- +RjSLdPpseDwM+sgrn7i2kLuKYfCEsUIdUYtY2sltENtlGSITWxSvFcSLh6y0TwjreR5
- mu1wHb741Zs9f5UNvdn71rEPUeFooZMAEegg5waKdZSRzEQjZjUkiOdciK9lBHP4q1a+
- 02tZGoPAWOCZEfD384URDXNxrAiizMKR4ZjstkLpcgSRbjCejNsj2TtlL+scxWfVR6DN
- rwmWRhSnoTE335MaoP6vwji3eCzJ3AB83I75F2s0ZXYTuAfhBuyhVMQ+cwKQBcQQ2fpC zQ== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3bnr7ak5vk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Oct 2021 12:32:43 -0400
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 19EGJXcg006777;
-        Thu, 14 Oct 2021 16:32:40 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma03ams.nl.ibm.com with ESMTP id 3bk2qa7bmk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Oct 2021 16:32:40 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 19EGWciZ20447732
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 14 Oct 2021 16:32:38 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2B6765205F;
-        Thu, 14 Oct 2021 16:32:38 +0000 (GMT)
-Received: from [9.171.89.192] (unknown [9.171.89.192])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id D88C452051;
-        Thu, 14 Oct 2021 16:32:37 +0000 (GMT)
-Message-ID: <7d3e762e-12e9-bb5c-f242-785047087783@linux.ibm.com>
-Date:   Thu, 14 Oct 2021 18:32:37 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Subject: Re: [PATCH net-next 00/11] net/smc: introduce SMC-Rv2 support
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>
-References: <20211012101743.2282031-1-kgraul@linux.ibm.com>
- <20211014090951.592e1d3d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <20211014090951.592e1d3d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=UTF-8
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: k1aF0PF7wpLGOdvrxKpSWHeyjdT3A-w3
-X-Proofpoint-ORIG-GUID: k1aF0PF7wpLGOdvrxKpSWHeyjdT3A-w3
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        id S232467AbhJNQgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 12:36:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40854 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231982AbhJNQgk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 12:36:40 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1CAC061753
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 09:34:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=rWTtBHHhXY4jnsCdKVmXHpUzMRVuyqvgG9+JMQ2KHXI=; b=VIsmsJE503g+ZslNEnRbRHWt5V
+        IvxC5Ql1q0KVPJEU+AKSf0E3whquTBkqZWC66QFa600VeEhUpvs8K47mns5yZnSOzDDlJcozXKmw6
+        CtvEU3uO3+FQSxQooIVoLfyY7lr7zIpDZq/gSLGxRkIc16xFHhL+2TNsDWrnsY+BjJ4iwS30x7dMx
+        LFF6dR8Pz2AYiTXO1gxXsBGVrVek6jU5uMrXD9Y91N9LaQb18BMKIHi4Zy51xJC05vBTh1X+TdGbL
+        Gwp4BafDdD8vMaidUH85a52AW+icfZVIey5OiVNkd24PrJzY4J0uE3dDvEOSqXyCvrCgkBfiMztEL
+        A4fk4xyg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55112)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mb3ga-0001Xl-NR; Thu, 14 Oct 2021 17:34:28 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mb3gZ-0002IY-5e; Thu, 14 Oct 2021 17:34:27 +0100
+Date:   Thu, 14 Oct 2021 17:34:27 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Antoine Tenart <atenart@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sean Anderson <sean.anderson@seco.com>, netdev@vger.kernel.org,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: Re: [PATCH v2 1/2] net: macb: Clean up macb_validate
+Message-ID: <YWhcEzZzrE5lMxD4@shell.armlinux.org.uk>
+References: <20211011165517.2857893-1-sean.anderson@seco.com>
+ <163402758460.4280.9175185858026827934@kwain>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-10-14_09,2021-10-14_02,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- lowpriorityscore=0 mlxlogscore=999 malwarescore=0 adultscore=0
- suspectscore=0 bulkscore=0 spamscore=0 phishscore=0 mlxscore=0
- priorityscore=1501 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2109230001 definitions=main-2110140095
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <163402758460.4280.9175185858026827934@kwain>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/10/2021 18:09, Jakub Kicinski wrote:
-> On Tue, 12 Oct 2021 12:17:32 +0200 Karsten Graul wrote:
->> Please apply the following patch series for smc to netdev's net-next tree.
->>
->> SMC-Rv2 support (see https://www.ibm.com/support/pages/node/6326337)
->> provides routable RoCE support for SMC-R, eliminating the current
->> same-subnet restriction, by exploiting the UDP encapsulation feature
->> of the RoCE adapter hardware.
->>
->> Patch 1 ("net/smc: improved fix wait on already cleared link") is
->> already applied on netdevs net tree but its changes are needed for
->> this series on net-next. The patch is unchanged compared to the
->> version on the net tree.
+On Tue, Oct 12, 2021 at 10:33:04AM +0200, Antoine Tenart wrote:
+> Hello Sean,
 > 
-> This series as marked as "Needs ACK" in patchwork, I think my Dave.
-> Maybe it is because of the RoCE part, is there a reason not to CC
-> linux-rdma on it?
+> Quoting Sean Anderson (2021-10-11 18:55:16)
+> > As the number of interfaces grows, the number of if statements grows
+> > ever more unweildy. Clean everything up a bit by using a switch
+> > statement. No functional change intended.
+> 
+> I'm not 100% convinced this makes macb_validate more readable: there are
+> lots of conditions, and jumps, in the switch.
+> 
+> Maybe you could try a mixed approach; keeping the invalid modes checks
+> (bitmap_zero) at the beginning and once we know the mode is valid using
+> a switch statement. That might make it easier to read as this should
+> remove lots of conditionals. (We'll still have the one/_NA checks
+> though).
 
-There is no reason for that, I was not aware that I should CC linux-rdma.
-I can send a v2 with an extended CC list.
+Some of this could be improved if we add the ability for a MAC to
+specify the phy_interface_t modes that it supports as a bitmap
+before calling phylink_create() - then we can have phylink check
+that the mode is supported itself prior to calling the validate
+handler.
+
+You can find some patches that add the "supported_interfaces" masks
+in git.armlinux.org.uk/linux-arm.git net-queue
+
+and we could add to phylink_validate():
+
+	if (!phy_interface_empty(pl->config->supported_interfaces) &&
+	    !test_bit(state->interface, pl->config->supported_interfaces))
+		return -EINVAL;
+
+which should go a long way to simplifying a lot of these validation
+implementations.
+
+Any thoughts on that?
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
