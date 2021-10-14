@@ -2,62 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 754ED42DF12
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 18:23:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2820C42DF2E
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 18:32:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231888AbhJNQ0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 12:26:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38470 "EHLO
+        id S233073AbhJNQea (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 12:34:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229589AbhJNQ0B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 12:26:01 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8DFDC061570
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 09:23:56 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id oa12-20020a17090b1bcc00b0019f715462a8so5139159pjb.3
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 09:23:56 -0700 (PDT)
+        with ESMTP id S231624AbhJNQe1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 12:34:27 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62CE6C061570
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 09:32:22 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id g5so4554927plg.1
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 09:32:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:subject:from:to:cc:date:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=IGI5fR7VnikgYGVlf5PjT1UZlv/9yl+wcjA9DYbaNn4=;
-        b=IddHURL28IWfjbkK84aQQBHVDAzfTzIFC/0JMZSKh6SFM6XtKruslMOVyocpUdwT0F
-         PTduLji2fFMMnze3yJEPv1V61pteDZsO22mk8Qr1rsKHHacYnYvyZajXsdr9hBzReEnB
-         Ph+EdUiZ4Ra//OGRT6UNkkrYV66hVIXMQm0I2ZAr87r0Na+aM93qOuhC0pu8kbJLUfA2
-         pQd/p1iVsWJNJHWxb99FVDciWe+3M+rR2dqPzxMdUHv6lgwWDq4OAA8untEWkPpVPKB9
-         2BDr8VtL+R3tVqOg1mTv5f7GxdkFLZwB1NdzZPMSHq9ivkmH8xG99ewpSJQ7TnQ6yDWL
-         NA4A==
+        bh=1P6t73TdrKue96+G1h/DQ/mbMd5pJZx8xHuLTMwuJD8=;
+        b=lotvLR/SrukF0Cej719fV4B+1Iq+dsXWDOkAbZHUfleFG1x+HyBp5JaDaLENu7xqz1
+         0DsxtZTS71O+snkB1fGsS6eq4lV2KUDScNWMkCFcb+7bSiszzyrBnKNK5+vwAwulXxXs
+         M64PQrQfP/+70rUSjBv3BGAfRDUlqi4y4ZK1G0c51drQux03Kxi7Qjg4TRXKNtzpQptZ
+         D2weSbXWUAaNjYCO4HIoBmHSgawboHF3IH2HqJ55xjSe8FCGDHsrmcso7cdDl5a3ipos
+         LaapD6CEHS4lzKUhYCcOsdn2Eq+9Gz9ric+JTnXLDat7PuMeQXCWqMTY1C5gU3uyPhEa
+         hi5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=IGI5fR7VnikgYGVlf5PjT1UZlv/9yl+wcjA9DYbaNn4=;
-        b=Cr7YAM1NKduapBJ1oU0F5GcmLrHl9Ulj8T4qrXVbAvB4mk/SHO60ZL1nhKiKvROWS5
-         hEnVGCnNc1r4e17LDWBACdHfGEeJj2d41M4F4skgVJuE0NZ+/XaE02UrN5hfvxO7rm/7
-         +kxtDKTzwPRjdvud2crhwtRuvo0HkLuTidZ3Jpk9gGhlAGHHMI22iYrnQ8NCtudfTfX2
-         fdmeUP6O3ktANdWLjbbNAQ/9RlB6M+Kz3pzi9vmPfcDjP1ijIfz6VTcAwhnhGd5iHmuQ
-         zBTI+nfO2y38olFkp9FkqGnmXiB//KNgaa31D/HT/2b1OPhXuoS135AanEUbDuYURQob
-         tcwg==
-X-Gm-Message-State: AOAM5309rckc7UUOY7dH9xQ0l2kpXVhwokoYIaQy8Ud7fOHcYSX3AGnk
-        WQCQ0jZkuUj09E5FHJ3kh+g=
-X-Google-Smtp-Source: ABdhPJyrf8ZQT/nLW5LiHtFFmuggB2p1dz8TbJECXUOTISt68rKV1weaEcwAgJxwBFbIpckDxPSC3Q==
-X-Received: by 2002:a17:90b:1e4b:: with SMTP id pi11mr7303301pjb.179.1634228636276;
-        Thu, 14 Oct 2021 09:23:56 -0700 (PDT)
+        bh=1P6t73TdrKue96+G1h/DQ/mbMd5pJZx8xHuLTMwuJD8=;
+        b=mDgcakqRrOoBaxhPUyoT8hi7GQ9645chtHEM0y36onv0TGaMVjQckTX8o+mc0FJEyt
+         zZ7IcDp7EqbqxJCb0JckOQC/rA+VN7PP/SogkkSi7geuHimejgB310AeZxcv/U+s/jjK
+         qtNgQ8TX6vag4DgQraFQVhQmNKAaihiWEo7UE02MMxAPmPAUJyOa2udlRN+Yh/d1Og6T
+         /u3cqtNU9EWWS4Kjm2ihqpI30+k59KXa4Dx8r5H5Ri35S2w9kPDDkqTapCxZoLJusAFt
+         O1IsK+lv/1+rmEI9jC+gZDG/Tlw9ULIMmf8Piq+cuG5hgJKC095DEiZ2hCt2rOgQUh8N
+         RPSA==
+X-Gm-Message-State: AOAM532pB+fqYctk3Z18B8ZLJOWSbP9Y3oNFPaj3hF6uSNSRNsYbuODo
+        1mbIfZkiNxBhueLH05kTk6Xgfb60bx0=
+X-Google-Smtp-Source: ABdhPJxgFo7tGJGULlr4sJajKghVRPEZRUrUcm+D+Mt4MQX9QvRS61dFZ/o3HUygaBpipSGx/YGGmg==
+X-Received: by 2002:a17:90b:1c82:: with SMTP id oo2mr7406625pjb.53.1634229141782;
+        Thu, 14 Oct 2021 09:32:21 -0700 (PDT)
 Received: from [192.168.254.55] ([50.39.163.188])
-        by smtp.gmail.com with ESMTPSA id a11sm2789197pgj.75.2021.10.14.09.23.55
+        by smtp.gmail.com with ESMTPSA id j126sm3072194pfd.113.2021.10.14.09.32.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Oct 2021 09:23:55 -0700 (PDT)
-Message-ID: <39983085fd56096fbf7434976fc2c639f6ef1155.camel@gmail.com>
+        Thu, 14 Oct 2021 09:32:21 -0700 (PDT)
+Message-ID: <10e8c5b435c3d19d062581b31e34de8e8511f75d.camel@gmail.com>
 Subject: Re: [PATCH 1/4] net: arp: introduce arp_evict_nocarrier sysctl
  parameter
 From:   James Prestwood <prestwoj@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     netdev@vger.kernel.org, roopa@nvidia.com, dsahern@kernel.org,
-        idosch@idosch.org
-Date:   Thu, 14 Oct 2021 09:20:39 -0700
-In-Reply-To: <d935a56e-39b6-70be-16a8-313282c3e6c4@iogearbox.net>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org
+Date:   Thu, 14 Oct 2021 09:29:05 -0700
+In-Reply-To: <20211013163714.63abdd44@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 References: <20211013222710.4162634-1-prestwoj@gmail.com>
-         <d935a56e-39b6-70be-16a8-313282c3e6c4@iogearbox.net>
+         <20211013163714.63abdd44@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
 MIME-Version: 1.0
@@ -66,12 +65,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniel,
+Hi Jakub,
 
-On Thu, 2021-10-14 at 10:30 +0200, Daniel Borkmann wrote:
-> [ Adding few more to Cc ]
-> 
-> On 10/14/21 12:27 AM, James Prestwood wrote:
+On Wed, 2021-10-13 at 16:37 -0700, Jakub Kicinski wrote:
+> On Wed, 13 Oct 2021 15:27:07 -0700 James Prestwood wrote:
 > > This change introduces a new sysctl parameter, arp_evict_nocarrier.
 > > When set (default) the ARP cache will be cleared on a NOCARRIER
 > > event.
@@ -85,7 +82,7 @@ On Thu, 2021-10-14 at 10:30 +0200, Daniel Borkmann wrote:
 > > Author: David Ahern <dsahern@gmail.com>
 > > Date:   Thu Oct 11 20:33:49 2018 -0700
 > > 
-> >      net: Evict neighbor entries on carrier down
+> >     net: Evict neighbor entries on carrier down
 > > 
 > > The reason for this changes is to prevent the ARP cache from being
 > > cleared when a wireless device roams. Specifically for wireless
@@ -113,26 +110,78 @@ On Thu, 2021-10-14 at 10:30 +0200, Daniel Borkmann wrote:
 > > As for the unanswered who-has, we know the packet made it OTA since
 > > it was seen while monitoring. Why it never received a response is
 > > unknown.
+> > 
+> > Signed-off-by: James Prestwood <prestwoj@gmail.com>
 > 
-> Wouldn't it make more sense to extend neigh_flush_dev() where we skip
-> eviction
-> of NUD_PERMANENT (see the skip_perm condition)? Either as a per table
-> setting
-> (tbl->parms) or as a NTF_EXT_* flag for specific neighbors?
+> Seems sensible at a glance, some quick feedback.
 > 
+> Please make sure you run ./scripts/get_maintainers.pl on the patch
+> and add appropriate folks to CC.
+> 
+> Please rebase the code on top of this tree:
+> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/
+> 
+> > diff --git a/include/linux/inetdevice.h
+> > b/include/linux/inetdevice.h
+> > index 53aa0343bf69..63180170fdbd 100644
+> > --- a/include/linux/inetdevice.h
+> > +++ b/include/linux/inetdevice.h
+> > @@ -133,6 +133,7 @@ static inline void ipv4_devconf_setall(struct
+> > in_device *in_dev)
+> >  #define IN_DEV_ARP_ANNOUNCE(in_dev)    IN_DEV_MAXCONF((in_dev),
+> > ARP_ANNOUNCE)
+> >  #define IN_DEV_ARP_IGNORE(in_dev)      IN_DEV_MAXCONF((in_dev),
+> > ARP_IGNORE)
+> >  #define IN_DEV_ARP_NOTIFY(in_dev)      IN_DEV_MAXCONF((in_dev),
+> > ARP_NOTIFY)
+> > +#define IN_DEV_ARP_EVICT_NOCARRIER(in_dev)
+> > IN_DEV_CONF_GET((in_dev), ARP_EVICT_NOCARRIER)
+> 
+> IN_DEV_ANDCONF() makes most sense, I'd think.
 
-This is all new code to me, but from what I can tell NUD_PERMANENT is a
-per-neighbor thing, which a wireless supplicant shouldn't be expected
-to manage. It also seems like a pain to mark all neighbors as permanent
-prior to a roam, then undo it all after a roam.
+So given we want '1' as the default as well as the ability to toggle
+this option per-netdev I thought this was more appropriate. One caviat
+is this would not work for setting ALL netdev's, but I don't think this
+is a valid use case; or at least I can't imagine why you'd want to ever
+do this.
 
-As for table settings I'll need to look into those, and if/how you
-expose them to userspace? I modeled both these (arp/ndisc) options
-after the other arp_*/ndisc_* sysctl parameters, as they seemed to fit
-in there.
-
-Thanks,
-James
+This is a whole new area to me though, so if I'm understanding these
+macros wrong please educate me :)
 
 > 
+> >  struct in_ifaddr {
+> >         struct hlist_node       hash;
+> 
+> > diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
+> > index 922dd73e5740..50cfe4f37089 100644
+> > --- a/net/ipv4/arp.c
+> > +++ b/net/ipv4/arp.c
+> > @@ -1247,6 +1247,7 @@ static int arp_netdev_event(struct
+> > notifier_block *this, unsigned long event,
+> >  {
+> >         struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+> >         struct netdev_notifier_change_info *change_info;
+> > +       struct in_device *in_dev = __in_dev_get_rcu(dev);
+> 
+> Don't we need to hold the RCU lock to call this?
+
+I was wondering that as well. It seems to be used in some places and
+not others. Maybe the caller locked prior in places where there was no
+lock, I'll look further into it.
+
+> 
+> >         switch (event) {
+> >         case NETDEV_CHANGEADDR:
+> > @@ -1257,7 +1258,8 @@ static int arp_netdev_event(struct
+> > notifier_block *this, unsigned long event,
+> >                 change_info = ptr;
+> >                 if (change_info->flags_changed & IFF_NOARP)
+> >                         neigh_changeaddr(&arp_tbl, dev);
+> > -               if (!netif_carrier_ok(dev))
+> > +               if (IN_DEV_ARP_EVICT_NOCARRIER(in_dev) &&
+> > +                   !netif_carrier_ok(dev))
+> >                         neigh_carrier_down(&arp_tbl, dev);
+> >                 break;
+> >         default:
+
 
