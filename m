@@ -2,75 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 894C642CFE8
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 03:27:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FC6C42CFF8
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 03:36:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230011AbhJNB27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 21:28:59 -0400
-Received: from smtp23.cstnet.cn ([159.226.251.23]:50020 "EHLO cstnet.cn"
+        id S229798AbhJNBic (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 21:38:32 -0400
+Received: from smtp23.cstnet.cn ([159.226.251.23]:52224 "EHLO cstnet.cn"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229967AbhJNB26 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Oct 2021 21:28:58 -0400
+        id S229496AbhJNBic (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Oct 2021 21:38:32 -0400
 Received: from localhost.localdomain (unknown [124.16.138.128])
-        by APP-03 (Coremail) with SMTP id rQCowADHqOVDh2dh39eAAw--.51542S2;
-        Thu, 14 Oct 2021 09:26:27 +0800 (CST)
+        by APP-03 (Coremail) with SMTP id rQCowAAnLqqBiWdhYA+BAw--.50977S2;
+        Thu, 14 Oct 2021 09:36:01 +0800 (CST)
 From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, davem@davemloft.net,
+To:     dhowells@redhat.com, marc.dionne@auristor.com, davem@davemloft.net,
         kuba@kernel.org
-Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] hv_netvsc: Add comment of netvsc_xdp_xmit()
-Date:   Thu, 14 Oct 2021 01:26:26 +0000
-Message-Id: <1634174786-1810351-1-git-send-email-jiasheng@iscas.ac.cn>
+Cc:     linux-afs@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH RESEND] rxrpc: Fix _usecs_to_jiffies() by using usecs_to_jiffies()
+Date:   Thu, 14 Oct 2021 01:35:59 +0000
+Message-Id: <1634175359-1810410-1-git-send-email-jiasheng@iscas.ac.cn>
 X-Mailer: git-send-email 2.7.4
-X-CM-TRANSID: rQCowADHqOVDh2dh39eAAw--.51542S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrtr18XFyrZFykGFWfAFy8uFg_yoWfAFc_u3
-        48WF17Xr4YkF1vkF4DGF4rZFy8twsFqFyfZrWIqrW3Ja4UArWUXwnYvF9rGr48WrW8Cr9x
-        Gwn7Xay7Z347WjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbVkFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+X-CM-TRANSID: rQCowAAnLqqBiWdhYA+BAw--.50977S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrtr1xtr43Gr4xWr4DZFyrZwb_yoWfZFg_ZF
+        WkJ3W7WayayFZ3uF42yr4Fyr98Cry5uryFvr1SkFZrK3yY9rySy39FgFn5Gr1YgrW7WFnx
+        ua1jva4xKr1fujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbcxFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
         6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
-        n2kIc2xKxwCY02Avz4vE14v_KwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJV
-        W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
-        1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
-        IIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAI
-        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2Kf
-        nxnUUI43ZEXa7VUbLiSPUUUUU==
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
+        Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
+        jxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr
+        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVWkMxAI
+        w28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr
+        4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxG
+        rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJw
+        CI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAI
+        cVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VU1ItC7UUUUU==
 X-Originating-IP: [124.16.138.128]
 X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding comment to avoid the misusing of netvsc_xdp_xmit().
-Otherwise the value of skb->queue_mapping could be 0 and
-then the return value of skb_get_rx_queue() could be MAX_U16
-cause by overflow.
+Directly using _usecs_to_jiffies() might be unsafe, so it's
+better to use usecs_to_jiffies() instead.
+Because we can see that the result of _usecs_to_jiffies()
+could be larger than MAX_JIFFY_OFFSET values without the
+check of the input.
 
-Fixes: 351e158 ("hv_netvsc: Add XDP support")
+Fixes: c410bf01 ("rxrpc: Fix the excessive initial retransmission timeout")
 Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 ---
- drivers/net/hyperv/netvsc_drv.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/rxrpc/rtt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index f682a55..ac9529c 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -803,6 +803,7 @@ void netvsc_linkstatus_callback(struct net_device *net,
- 	schedule_delayed_work(&ndev_ctx->dwork, 0);
+diff --git a/net/rxrpc/rtt.c b/net/rxrpc/rtt.c
+index 4e565ee..be61d6f 100644
+--- a/net/rxrpc/rtt.c
++++ b/net/rxrpc/rtt.c
+@@ -22,7 +22,7 @@ static u32 rxrpc_rto_min_us(struct rxrpc_peer *peer)
+ 
+ static u32 __rxrpc_set_rto(const struct rxrpc_peer *peer)
+ {
+-	return _usecs_to_jiffies((peer->srtt_us >> 3) + peer->rttvar_us);
++	return usecs_to_jiffies((peer->srtt_us >> 3) + peer->rttvar_us);
  }
  
-+/* This function should only be called after skb_record_rx_queue() */
- static void netvsc_xdp_xmit(struct sk_buff *skb, struct net_device *ndev)
- {
- 	int rc;
+ static u32 rxrpc_bound_rto(u32 rto)
 -- 
 2.7.4
 
