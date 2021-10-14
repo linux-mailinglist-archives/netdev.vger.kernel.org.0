@@ -2,78 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85D0742DB56
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 16:20:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FA4042DB62
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 16:22:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231795AbhJNOWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 10:22:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51280 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230209AbhJNOWM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Oct 2021 10:22:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 46DB4610CC;
-        Thu, 14 Oct 2021 14:20:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634221207;
-        bh=NDTSxb14xO73sN25tCERdoV++ozHnresvMGHMCEE5Fo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=jB+RG0ItyqL9/f/Pz/0UBSSJLpGPWA4nPrNiF/RkmkLkBHYX3zLm9BR+o4A7a7tnY
-         aVnmbvCRXxAUEoGdE3Dr/KWJ0InTUbOZmfDL6taYNVKy+QihLxFfZZivkcxV1xw5tq
-         WyPYIPmHY1UG37Ytn94J31+f4bdJSfyjIzCc/3bm27NzsjMcj7VsMMQHqUALX5Lcc5
-         m6pDHLo7iOzM1mzn6wc5UqmKuo7ssSeJJiOjXN70/t5JCMEe/6wKnWS457fNH3m3iC
-         FUxUtezKpkv9dzC1jP5p4sINdotPJXuY0oJFgDa/y+c5PBE4n1kGxjTYm2tLeEs96o
-         2i67Y/d0RPZUw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3BCE6609ED;
-        Thu, 14 Oct 2021 14:20:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231361AbhJNOY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 10:24:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38406 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230213AbhJNOYZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 10:24:25 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D849CC061570
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 07:22:20 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id q2-20020a17090a2e0200b001a0fd4efd49so1106914pjd.1
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 07:22:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=EMwDXgwXoXF7SJJC/qZQx+iamVJ9IAoHTJ7NZ/HN9Rg=;
+        b=ETvHGUwHG/zNHf5o1+vARHesXnfa+3+7u6M0xtAlwoVduXR6mkjF8uk/SyT7Nqi3/i
+         9qDyBiStkVJrEvZk2thXcpiBdzaJd5+CoahSH5E803tQ3uLiWWi1XxlhcPYM+KO3cobM
+         oKkZZ1wlfu3j0zbQzuh32Yoz3ORBIZhnot9uJoESWPBBXrq/1fKLiE08j0MqQijpu2t6
+         0dGadW4Gzsm51HrvR2oo8+MqruM1U3pnGxy1ZbursCRO8FmD2vVFK0gDfzfdcKcq2uy5
+         S6oA3ReXZaaUWH/gOH6IjaeJrfovPWEzUNenX3B5NQMAWlDDzxyOsIzkfh6ARs7NTGSQ
+         SrDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=EMwDXgwXoXF7SJJC/qZQx+iamVJ9IAoHTJ7NZ/HN9Rg=;
+        b=HzOo5LvS2GAj7hCktajK9QnvbZRUCvH3XI+GHtkxil6HjK7aLZgqAOxmyvS5h4NV5J
+         ixJvXqF5vHnAl1nA0l4W8UDMaJ192zI1uLdsFGwt37vrT0vkcf0kPkEKYl3ZO21OmJ34
+         FzEM4fFno3LbNlreNIGSUtnp1xOznldgO5zFKH8TZfWfUjfuiVxG+i9QzVVN4RC5u5rF
+         lbsErQeWylPS2YcuHVnNAdG/Pj8pFKinsPQ+L76ZBwWc5YXSDNeSWBVLGCBMev6OIKvc
+         YE0FhJIA4mJMTS97PceEGxUE2bxyF0no/pvuqcX+R4kBspUudZUJMoW71pXRHeC7K8R4
+         dDMw==
+X-Gm-Message-State: AOAM532MUBS+A5CKz247u+7BBsMaprpWbnTPK+q5pfjvN1SVL7DlKmg8
+        ohMgAAz6OVS9rwdQtS7tNYg=
+X-Google-Smtp-Source: ABdhPJzf/mtylGR9H7OXHgXyEYtkQIu8ODpYpJhH8ktzgNAVJNgMBOcY2jB1Jr6KEwTxvCPupIWX6w==
+X-Received: by 2002:a17:902:70cb:b0:13e:91f3:641a with SMTP id l11-20020a17090270cb00b0013e91f3641amr5143051plt.13.1634221340379;
+        Thu, 14 Oct 2021 07:22:20 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id b10sm2987437pfl.200.2021.10.14.07.22.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Oct 2021 07:22:19 -0700 (PDT)
+Subject: Re: [PATCHv3 net] icmp: fix icmp_ext_echo_iio parsing in
+ icmp_build_probe
+To:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Andreas Roeseler <andreas.a.roeseler@gmail.com>
+References: <31628dd76657ea62f5cf78bb55da6b35240831f1.1634205050.git.lucien.xin@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <16bd32a3-b716-0a83-3983-85f4a6468645@gmail.com>
+Date:   Thu, 14 Oct 2021 07:22:17 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] ethernet: s2io: fix setting mac address during resume
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163422120724.29699.2814286544000918647.git-patchwork-notify@kernel.org>
-Date:   Thu, 14 Oct 2021 14:20:07 +0000
-References: <20211013143613.2049096-1-arnd@kernel.org>
-In-Reply-To: <20211013143613.2049096-1-arnd@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     jdmason@kudzu.us, davem@davemloft.net, kuba@kernel.org,
-        sreenivasa.honnur@neterion.com, jeff@garzik.org, arnd@arndb.de,
-        jgg@ziepe.ca, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <31628dd76657ea62f5cf78bb55da6b35240831f1.1634205050.git.lucien.xin@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed, 13 Oct 2021 16:35:49 +0200 you wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On 10/14/21 2:50 AM, Xin Long wrote:
+> In icmp_build_probe(), the icmp_ext_echo_iio parsing should be done
+> step by step and skb_header_pointer() return value should always be
+> checked, this patch fixes 3 places in there:
 > 
-> After recent cleanups, gcc started warning about a suspicious
-> memcpy() call during the s2io_io_resume() function:
+>   - On case ICMP_EXT_ECHO_CTYPE_NAME, it should only copy ident.name
+>     from skb by skb_header_pointer(), its len is ident_len. Besides,
+>     the return value of skb_header_pointer() should always be checked.
 > 
-> In function '__dev_addr_set',
->     inlined from 'eth_hw_addr_set' at include/linux/etherdevice.h:318:2,
->     inlined from 's2io_set_mac_addr' at drivers/net/ethernet/neterion/s2io.c:5205:2,
->     inlined from 's2io_io_resume' at drivers/net/ethernet/neterion/s2io.c:8569:7:
-> arch/x86/include/asm/string_32.h:182:25: error: '__builtin_memcpy' accessing 6 bytes at offsets 0 and 2 overlaps 4 bytes at offset 2 [-Werror=restrict]
->   182 | #define memcpy(t, f, n) __builtin_memcpy(t, f, n)
->       |                         ^~~~~~~~~~~~~~~~~~~~~~~~~
-> include/linux/netdevice.h:4648:9: note: in expansion of macro 'memcpy'
->  4648 |         memcpy(dev->dev_addr, addr, len);
->       |         ^~~~~~
+>   - On case ICMP_EXT_ECHO_CTYPE_INDEX, move ident_len check ahead of
+>     skb_header_pointer(), and also do the return value check for
+>     skb_header_pointer().
 > 
-> [...]
+>   - On case ICMP_EXT_ECHO_CTYPE_ADDR, before accessing iio->ident.addr.
+>     ctype3_hdr.addrlen, skb_header_pointer() should be called first,
+>     then check its return value and ident_len.
+>     On subcases ICMP_AFI_IP and ICMP_AFI_IP6, also do check for ident.
+>     addr.ctype3_hdr.addrlen and skb_header_pointer()'s return value.
+>     On subcase ICMP_AFI_IP, the len for skb_header_pointer() should be
+>     "sizeof(iio->extobj_hdr) + sizeof(iio->ident.addr.ctype3_hdr) +
+>     sizeof(struct in_addr)" or "ident_len".
+> 
+> v1->v2:
+>   - To make it more clear, call skb_header_pointer() once only for
+>     iio->indent's parsing as Jakub Suggested.
+> v2->v3:
+>   - The extobj_hdr.length check against sizeof(_iio) should be done
+>     before calling skb_header_pointer(), as Eric noticed.
+> 
+> Fixes: d329ea5bd884 ("icmp: add response to RFC 8335 PROBE messages")
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
 
-Here is the summary with links:
-  - ethernet: s2io: fix setting mac address during resume
-    https://git.kernel.org/netdev/net/c/40507e7aada8
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Thanks !
 
