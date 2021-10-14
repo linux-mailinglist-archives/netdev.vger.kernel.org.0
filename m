@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58D3542D0CC
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 05:10:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E32A42D0CF
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 05:11:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229882AbhJNDM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Oct 2021 23:12:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54896 "EHLO
+        id S229883AbhJNDNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Oct 2021 23:13:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbhJNDM4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 23:12:56 -0400
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA64C061570;
-        Wed, 13 Oct 2021 20:10:51 -0700 (PDT)
-Received: by mail-ot1-x32b.google.com with SMTP id d21-20020a9d4f15000000b0054e677e0ac5so6379147otl.11;
-        Wed, 13 Oct 2021 20:10:51 -0700 (PDT)
+        with ESMTP id S229496AbhJNDNU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Oct 2021 23:13:20 -0400
+Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A76BC061570;
+        Wed, 13 Oct 2021 20:11:16 -0700 (PDT)
+Received: by mail-ot1-x332.google.com with SMTP id x33-20020a9d37a4000000b0054733a85462so6396271otb.10;
+        Wed, 13 Oct 2021 20:11:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=MDcIaKQ5v9Uwb9iAdAtQgCdcI6fVMvMf7iMJVcoRZNY=;
-        b=B429JZV/z6LMkDJeR+RpZcUWKQPrYn8GDkQB43bsVK1tDGeo4J5mNuitjQJyPQ0n8z
-         jLw7zBn+h220gYYX7WP+Ydz6dEF9LqrVxt+rz4RMLnEouovd+3vImzRctMe1dmYlhVpq
-         WtBTuwFjuP5p58EuVcphgqGc+bFVizQbTRiuXSYkXJtOes4uH6/j/UQcSltKqsPqPEB2
-         T1DTlR1gCLZfbKPESNy8KXJCdC4Ex4CXvNySjDGRlslIhDAoAATyK8H412m7mfSp8pNx
-         oK80IgQ4XDkvEr4i7PwaJ9N1gfgLvqopXOvP4TN277XLp3mk2SncQqkoSBK3L0aU8J7Y
-         gdag==
+        bh=LBPW3fMyICXdUnGUVW6erk1L8DkgBFvdBy+5fInXDF0=;
+        b=eM2BngcCRKzUkgGj2QEaruFhcmrYf4k5R86NVmtmMvi47xdD+8uZ/dQ/6drhLV175p
+         Wj93T6YEUb/vDoeonJy0AhAcwl0EFbIbsMSkhNUkMGX9ZCvREY/I8eP7Xfz2iIXjuOYY
+         +5LyJZvdfUVlPTPUDiKbv/KrTXlEeyaD89jI3Xu0/o+NY6XbBjKt4NNjZgQDZUqrJWFZ
+         oYqN0yw+iOnoa+lQ051giMYvAeiKqlXotsouB1FCF5gbkuenA6Bl8Zi8pJen8khmWEhV
+         6RGRI+SbB/tq3o8aF7q9Nm6/CzWGaHhI7IMT1jHHDTEXD28r9pZLQYNT0r/+bRNQIhBe
+         xutw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=MDcIaKQ5v9Uwb9iAdAtQgCdcI6fVMvMf7iMJVcoRZNY=;
-        b=wuv2WnLuhOVIVORDEi2iD+9Vgk6QGH7wBoQOndjMxY3N4PM41H5Or3EdXaHVetH0Dn
-         MBk+qG6UOPYrenFGb1d6lVjTKRT/3rnsTpn7v5a8qXD7M9ELQmfUI0UhX2RCyO5/HjIM
-         jODBeAJgdfOBApAU37EikWwaO7WgQY6JiQJ4WLhTa9aCoL3J7pffX8iHJj5SDt7ESftj
-         WlCMDBF80SiaP6wsJL6dRUaysVcD1aAJgXN+t3dDmSHUQIjC2Dn3cEQ+P4EUCM+xIWqQ
-         VuIu6tLcLzHa6IzkHEgddZsugkyDCacK2XdLR5MejsTgZ5qTW57o82qTaC4rzJZe7Kq/
-         ydAQ==
-X-Gm-Message-State: AOAM531j4ludh7dZEczBGtP1j9hKTxc9HbH8EDhrMEn02cOIhOTkaUnj
-        Vx0bq2vvDt95Uk5n+EmqkQxQp5ao8hVs9A==
-X-Google-Smtp-Source: ABdhPJzuRjsbUZY+gCV5v11n1amFzerZaVhz32/94M9+JjEqkPFuJWMAoVB+wNEvPHASX9/TgaB94A==
-X-Received: by 2002:a05:6830:35a:: with SMTP id h26mr307225ote.369.1634181051071;
-        Wed, 13 Oct 2021 20:10:51 -0700 (PDT)
+        bh=LBPW3fMyICXdUnGUVW6erk1L8DkgBFvdBy+5fInXDF0=;
+        b=0GkCnMG57BuMs8PovxdD0jrfw65He9U6IFjSfKD0x9I5RJGIV+ZDdvQSylrbo+1p4k
+         AJfkkbD03KDrq5kVOj/JMAB48OO58pmEsL/TgnmRDsvZm95q2qLw3oNHGiohPVc81bl0
+         Y9/emqDu1owV1xmmIO4rDjFIM+/PR+5qmjVkMtER9nKdsZgcIXMYChRUb8Wcw1sD7fkN
+         rmA6o4Gk0xo8cSQ1xpgB43ddNMa/LyXd/8+5mEPkVW3atmeDtMO+7fOoSrwW4HcG7yBu
+         JuCJ9u087rcumKJ9AFAISjSuhkRXzOAoIeRzHNvWZY+aW/KWnmmNSMcGARjghYSVUU/D
+         KFrA==
+X-Gm-Message-State: AOAM5322OvwM4hamgr420rCyPU7ix4wT5QGyKoZEFg5I3mtJD3Hl2diW
+        6LXeuS/WRtqOolKVzjfeM43E7WzRWEmBnw==
+X-Google-Smtp-Source: ABdhPJz82C9z0HnqtBgqMno+vbXO9PXqt7ZzBH9Rgoid0TlRr7o2zfea/0qmiiTwRmjkjf2NDzpRxw==
+X-Received: by 2002:a9d:4b94:: with SMTP id k20mr317264otf.203.1634181075684;
+        Wed, 13 Oct 2021 20:11:15 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([8.48.134.40])
-        by smtp.googlemail.com with ESMTPSA id t5sm340740oic.4.2021.10.13.20.10.49
+        by smtp.googlemail.com with ESMTPSA id w9sm297220otp.64.2021.10.13.20.11.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Oct 2021 20:10:50 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/3] net, neigh: Add build-time assertion to
- avoid neigh->flags overflow
+        Wed, 13 Oct 2021 20:11:15 -0700 (PDT)
+Subject: Re: [PATCH net-next 3/3] net, neigh: Reject creating NUD_PERMANENT
+ with NTF_MANAGED entries
 To:     Daniel Borkmann <daniel@iogearbox.net>, davem@davemloft.net,
         kuba@kernel.org
 Cc:     roopa@nvidia.com, dsahern@kernel.org, m@lambda.lt,
         john.fastabend@gmail.com, netdev@vger.kernel.org,
         bpf@vger.kernel.org
 References: <20211013132140.11143-1-daniel@iogearbox.net>
- <20211013132140.11143-2-daniel@iogearbox.net>
+ <20211013132140.11143-4-daniel@iogearbox.net>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <e5eed61b-94d3-aa1a-1966-84242785f5dc@gmail.com>
-Date:   Wed, 13 Oct 2021 21:10:49 -0600
+Message-ID: <4553162b-86df-38f5-cd26-107bdee40116@gmail.com>
+Date:   Wed, 13 Oct 2021 21:11:14 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <20211013132140.11143-2-daniel@iogearbox.net>
+In-Reply-To: <20211013132140.11143-4-daniel@iogearbox.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -72,41 +72,20 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 10/13/21 7:21 AM, Daniel Borkmann wrote:
-> Currently, NDA_FLAGS_EXT flags allow a maximum of 24 bits to be used for
-> extended neighbor flags. These are eventually fed into neigh->flags by
-> shifting with NTF_EXT_SHIFT as per commit 2c611ad97a82 ("net, neigh:
-> Extend neigh->flags to 32 bit to allow for extensions").
+> The combination of NUD_PERMANENT + NTF_MANAGED is not supported and does
+> not make sense either given the former indicates a static/fixed neighbor
+> entry whereas the latter a dynamically resolved one. While it is possible
+> to transition from one over to the other, we should however reject such
+> creation attempts.
 > 
-> If really ever needed in future, the full 32 bits from NDA_FLAGS_EXT can
-> be used, it would only require to move neigh->flags from u32 to u64 inside
-> the kernel.
-> 
-> Add a build-time assertion such that when extending the NTF_EXT_MASK with
-> new bits, we'll trigger an error once we surpass the 24th bit. This assumes
-> that no bit holes in new NTF_EXT_* flags will slip in from UAPI, but I
-> think this is reasonable to assume.
-> 
+> Fixes: 7482e3841d52 ("net, neigh: Add NTF_MANAGED flag for managed neighbor entries")
 > Suggested-by: David Ahern <dsahern@kernel.org>
 > Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 > ---
->  net/core/neighbour.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> index eae73efa9245..4fc601f9cd06 100644
-> --- a/net/core/neighbour.c
-> +++ b/net/core/neighbour.c
-> @@ -1940,6 +1940,9 @@ static int neigh_add(struct sk_buff *skb, struct nlmsghdr *nlh,
->  			NL_SET_ERR_MSG(extack, "Invalid extended flags");
->  			goto out;
->  		}
-> +		BUILD_BUG_ON(sizeof(neigh->flags) * BITS_PER_BYTE <
-> +			     (sizeof(ndm->ndm_flags) * BITS_PER_BYTE +
-> +			      hweight32(NTF_EXT_MASK)));
->  		ndm_flags |= (ext << NTF_EXT_SHIFT);
->  	}
->  	if (ndm->ndm_ifindex) {
+>  net/core/neighbour.c | 11 ++++++++---
+>  1 file changed, 8 insertions(+), 3 deletions(-)
 > 
 
 Reviewed-by: David Ahern <dsahern@kernel.org>
+
 
