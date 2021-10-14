@@ -2,83 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E6A442D800
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 13:17:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06C0D42D84A
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 13:36:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230202AbhJNLTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 07:19:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52246 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229513AbhJNLTc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 07:19:32 -0400
-Received: from orbyte.nwl.cc (orbyte.nwl.cc [IPv6:2001:41d0:e:133a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C80E2C061570
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 04:17:27 -0700 (PDT)
-Received: from n0-1 by orbyte.nwl.cc with local (Exim 4.94.2)
-        (envelope-from <n0-1@orbyte.nwl.cc>)
-        id 1mayjl-0007Rb-5o; Thu, 14 Oct 2021 13:17:25 +0200
-Date:   Thu, 14 Oct 2021 13:17:25 +0200
-From:   Phil Sutter <phil@nwl.cc>
-To:     Andrea Claudi <aclaudi@redhat.com>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        dsahern@gmail.com, bluca@debian.org, haliu@redhat.com
-Subject: Re: [PATCH iproute2 v5 7/7] configure: add the --libdir option
-Message-ID: <20211014111725.GK1668@orbyte.nwl.cc>
-Mail-Followup-To: Phil Sutter <phil@nwl.cc>,
-        Andrea Claudi <aclaudi@redhat.com>, netdev@vger.kernel.org,
-        stephen@networkplumber.org, dsahern@gmail.com, bluca@debian.org,
-        haliu@redhat.com
-References: <cover.1634199240.git.aclaudi@redhat.com>
- <62f6968cc2647685a0ef8074687ecf12c8c1f3c0.1634199240.git.aclaudi@redhat.com>
- <20211014101053.GJ1668@orbyte.nwl.cc>
- <YWgOUedjAR+sAtcG@renaissance-vector>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+        id S231159AbhJNLiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 07:38:11 -0400
+Received: from mail.thorsis.com ([92.198.35.195]:44701 "EHLO mail.thorsis.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229984AbhJNLiK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Oct 2021 07:38:10 -0400
+X-Greylist: delayed 310 seconds by postgrey-1.27 at vger.kernel.org; Thu, 14 Oct 2021 07:38:09 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by mail.thorsis.com (Postfix) with ESMTP id 28F38DF2;
+        Thu, 14 Oct 2021 13:30:53 +0200 (CEST)
+X-Virus-Scanned: Debian amavisd-new at mail.thorsis.com
+Received: from mail.thorsis.com ([127.0.0.1])
+        by localhost (mail.thorsis.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id FKW-dOaehEgS; Thu, 14 Oct 2021 13:30:53 +0200 (CEST)
+Received: by mail.thorsis.com (Postfix, from userid 109)
+        id 3B27824F9; Thu, 14 Oct 2021 13:30:50 +0200 (CEST)
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NO_RECEIVED,
+        NO_RELAYS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+        version=3.4.2
+X-Spam-Report: * -1.9 BAYES_00 BODY: Bayes spam probability is 0 to 1%
+        *      [score: 0.0000]
+        * -0.0 NO_RELAYS Informational: message was not relayed via SMTP
+        *  0.0 URIBL_BLOCKED ADMINISTRATOR NOTICE: The query to URIBL was
+        *      blocked.  See
+        *      http://wiki.apache.org/spamassassin/DnsBlocklists#dnsbl-block
+        *      for more information.
+        *      [URIs: spinics.net]
+        * -0.0 NO_RECEIVED Informational: message has no Received headers
+Date:   Thu, 14 Oct 2021 13:30:39 +0200
+From:   Alexander Dahl <ada@thorsis.com>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     Pavel Machek <pavel@ucw.cz>, devicetree@vger.kernel.org,
+        linux-leds@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        robh+dt@kernel.org, Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH 2/3] dt-bindings: leds: Add `excludes` property
+Message-ID: <YWgU37NQfnIOtlsn@ada.ifak-system.com>
+Mail-Followup-To: Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>, devicetree@vger.kernel.org,
+        linux-leds@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        robh+dt@kernel.org, Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>
+References: <20211013204424.10961-1-kabel@kernel.org>
+ <20211013204424.10961-2-kabel@kernel.org>
+ <20211014102918.GA21116@duo.ucw.cz>
+ <20211014124309.10b42043@dellmb>
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <YWgOUedjAR+sAtcG@renaissance-vector>
-Sender:  <n0-1@orbyte.nwl.cc>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211014124309.10b42043@dellmb>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 14, 2021 at 01:02:41PM +0200, Andrea Claudi wrote:
-> On Thu, Oct 14, 2021 at 12:10:53PM +0200, Phil Sutter wrote:
-> > Hi Andrea,
-> > 
-> > On Thu, Oct 14, 2021 at 10:50:55AM +0200, Andrea Claudi wrote:
-> > [...]
-> > > diff --git a/Makefile b/Makefile
-> > > index 5eddd504..f6214534 100644
-> > > --- a/Makefile
-> > > +++ b/Makefile
-> > > @@ -1,6 +1,8 @@
-> > >  # SPDX-License-Identifier: GPL-2.0
-> > >  # Top level Makefile for iproute2
-> > >  
-> > > +-include config.mk
-> > > +
-> > 
-> > Assuming config.mk may be missing (as dash-prefix is used).
-> > 
-> > >  ifeq ("$(origin V)", "command line")
-> > >  VERBOSE = $(V)
-> > >  endif
-> > > @@ -13,7 +15,6 @@ MAKEFLAGS += --no-print-directory
-> > >  endif
-> > >  
-> > >  PREFIX?=/usr
-> > > -LIBDIR?=$(PREFIX)/lib
-> > 
-> > Dropping this leads to trouble if config.mk is missing or didn't define
-> > it. Can't you just leave it in place? Usually config.mk would override
-> > it anyway, no?
+Hei hei,
+
+Am Thu, Oct 14, 2021 at 12:43:09PM +0200 schrieb Marek Behún:
+> On Thu, 14 Oct 2021 12:29:18 +0200
+> Pavel Machek <pavel@ucw.cz> wrote:
 > 
-> config.mk may miss at the first make call, but the "all" target calls
-> config.mk, which in turns re-generate it. Thus LIBDIR is defined when
-> the target all executes.
+> > Hi!
+> > 
+> > > Some RJ-45 connectors have LEDs wired in the following way:
+> > > 
+> > >          LED1
+> > >       +--|>|--+
+> > >       |       |
+> > >   A---+--|<|--+---B
+> > >          LED2
+> > > 
+> > > With + on A and - on B, LED1 is ON and LED2 is OFF. Inverting the
+> > > polarity turns LED1 OFF and LED2 ON.
+> > > 
+> > > So these LEDs exclude each other.
+> > > 
+> > > Add new `excludes` property to the LED binding. The property is a
+> > > phandle-array to all the other LEDs that are excluded by this LED.  
+> > 
+> > I don't think this belongs to the LED binding.
+> > 
+> > This is controller limitation, and the driver handling the controller
+> > needs to know about it... so it does not need to learn that from the
+> > LED binding.
+> 
+> It's not necessarily a controller limitation, rather a limitation of
+> the board (or ethernet connector, in the case of LEDs on an ethernet
+> connector).
 
-Ah, I forgot the call to configure from make. So full series:
+Such LEDs are not limited to PHYs or ethernet connectors.  There is
+hardware with such dual color LEDs connected to GPIO pins (either
+directly to the SoC or through some GPIO expander like an 74hc595
+shift register).  That mail points to such hardware:
 
-Acked-by: Phil Sutter <phil@nwl.cc>
+https://www.spinics.net/lists/linux-leds/msg11847.html
 
-Thanks, Phil
+I asked about how this can be modelled back in 2019 and it was also
+discussed last year:
+
+https://www.spinics.net/lists/linux-leds/msg11665.html
+https://lore.kernel.org/linux-leds/2315048.uTtSMl1LR1@ada/
+
+The "solution" back when I first asked was treating them as ordinary
+GPIO-LEDs and ignore the "exclusion topic" which means in practice the
+LED goes OFF if both pins are ON (high) at the same time, which works
+well enough in practice.
+
+> But I guess we could instead document this property in the ethernet PHY
+> controller binding for a given PHY.
+
+Because such LEDs are not restricted to ethernet PHYs, but can also be
+used with GPIOs from the hardware point of view, I would not put it
+there.
+
+Furthermore I would not view this as a restriction of the gpio-leds
+controller, but it's a property of the LEDs itself or the way they are
+wired to the board.
+
+This could (or should as Pavel suggested back in 2019) be put to a new
+driver, at least for the GPIO case, but it would need some kind of new
+binding anyways.  With that in mind I consider the proposed binding to
+be well comprehensible for a human reader/writer.
+
+I'm sorry, I did not have leisure time to implement such a driver yet.
+Breadboard hardware for that still waiting in the drawer. :-/
+
+Greets
+Alex
+
