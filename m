@@ -2,87 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5390442E167
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 20:35:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D368A42E166
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 20:35:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231531AbhJNShN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 14:37:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:52056 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233937AbhJNShN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 14:37:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1634236507;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UZNn8kzbWIxQwtjH8lt0ko0RegzP6xW5fshzI713BkU=;
-        b=b+xVlqq79Ls7Q1nNoIA3en2OE0+Wc4uXYVsOj8AcxkrW7wRp85Uj1vnj66kM6U1L4d1tMl
-        bt5sBIlSRMvXGkl+Pur5yJoeX5EmhM/qwYRcz7YcXmKu52cDEOwH5E8xwteHZcMTDUBmBA
-        rIJUtgGI/MCwNda3oUodjtpe1LK96d8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-9-BJUzd1_QP2CaybUaVeq_mQ-1; Thu, 14 Oct 2021 14:35:04 -0400
-X-MC-Unique: BJUzd1_QP2CaybUaVeq_mQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 35C0A801AA7;
-        Thu, 14 Oct 2021 18:35:02 +0000 (UTC)
-Received: from asgard.redhat.com (unknown [10.36.110.5])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id DF9595DEFA;
-        Thu, 14 Oct 2021 18:34:59 +0000 (UTC)
-Date:   Thu, 14 Oct 2021 20:34:56 +0200
-From:   Eugene Syromiatnikov <esyr@redhat.com>
-To:     Jeremy Kerr <jk@codeconstruct.com.au>
-Cc:     netdev@vger.kernel.org, Matt Johnston <matt@codeconstruct.com.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-m68k@lists.linux-m68k.org
-Subject: Re: [PATCH net-next v4 04/15] mctp: Add sockaddr_mctp to uapi
-Message-ID: <20211014183456.GA8474@asgard.redhat.com>
-References: <20210729022053.134453-1-jk@codeconstruct.com.au>
- <20210729022053.134453-5-jk@codeconstruct.com.au>
+        id S233936AbhJNShG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 14:37:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40076 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231531AbhJNShG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 14:37:06 -0400
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27EF4C061570
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 11:35:01 -0700 (PDT)
+Received: by mail-il1-x12b.google.com with SMTP id k3so4545666ilu.2
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 11:35:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=FwUeMoPWL9inNO+LURXxh7KICLo2YBfVK8NCY8LIn4k=;
+        b=QcOAj2KqZG0WtqX7TSaLY+QPA5IlMFMlBBEhjaud1tvF4a8x/TQTdwwziAQrKVJWnD
+         /5i+D9gCFhoMlvkizoc7iYdaR407zHUrT3wZ8NyTP+f1lS8CfmZ7UcMcLHsd5OAkRw5T
+         g5yzZGZSrcd4ir9F0+vIKPed30GUPBNCjVJlfNjjrxPgknD9LJGSFX3gUSBaOtO/olAW
+         CEKEX7d9ZI+1WQi7BrB5xaMN5AUdNB0ibjtxKPmXeeS8XM+XJLc3Fq0VpE6rsfYx7zOd
+         DqV4K0UXrKx2m+feDbagpisrsl2m0+JZ9ABC4VNhqG/786FO8lkMXKAhb7yujAnfPEGU
+         19Pg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=FwUeMoPWL9inNO+LURXxh7KICLo2YBfVK8NCY8LIn4k=;
+        b=CqIieyuC1nHJbED9ONlj1wdkcsztRXJwNX+Rs0k3Xm+9W8KP722Xxc1c5VBhIKLJfe
+         gnfORiINT9IxQXgwI9qvGuq/WtGn29eHuYNehCWRAfG7HnKU8Ot3SDC6KNZGSkSfQdtg
+         klohYAmf9grNXNAuWG45GlZnTrLFEZTLkN7g5stzHCdc+yXyTiJeowuzMWcbvZjnn2JG
+         oW5abW+9BiNUQ0Z5apEJ6jZK0ENvYN3jV/8NTBnhCcf4zaIppNmHD3PcqNgERRSw9MBY
+         OZUba0LoSPSKIdIHxUMF0+NgB2+LnET3BS1zJ5EVF0SJNr0+xXyllgOgG9CZ5k03DDg2
+         ANgA==
+X-Gm-Message-State: AOAM533gzG7nrs6puebe4VWrKC1rQUE167Ya6WLOAT+dTMg484S1AWKA
+        h/5bpwahJNy8IZ84kPTTx3P50DgRLwavdw==
+X-Google-Smtp-Source: ABdhPJxzjkdn2XZ4mWip6AtjKaQbVAhHPobDxHDoTUJdocZZCe3z4f+GTE540pdgqUidUjIrt2NjmQ==
+X-Received: by 2002:a05:6e02:1a05:: with SMTP id s5mr445958ild.303.1634236500524;
+        Thu, 14 Oct 2021 11:35:00 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.34])
+        by smtp.googlemail.com with ESMTPSA id e14sm1501162ioe.37.2021.10.14.11.35.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Oct 2021 11:35:00 -0700 (PDT)
+Subject: Re: [PATCH 3/4] doc: networking: document arp_evict_nocarrier
+To:     James Prestwood <prestwoj@gmail.com>, netdev@vger.kernel.org
+References: <20211013222710.4162634-1-prestwoj@gmail.com>
+ <20211013222710.4162634-3-prestwoj@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <3ab4e882-3778-6711-7c43-c1eebdb340c0@gmail.com>
+Date:   Thu, 14 Oct 2021 12:34:59 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210729022053.134453-5-jk@codeconstruct.com.au>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+In-Reply-To: <20211013222710.4162634-3-prestwoj@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 29, 2021 at 10:20:42AM +0800, Jeremy Kerr wrote:
-> This change introduces the user-visible MCTP header, containing the
-> protocol-specific addressing definitions.
-
-[...]
-
-> --- a/include/uapi/linux/mctp.h
-> +++ b/include/uapi/linux/mctp.h
-> @@ -9,7 +9,28 @@
->  #ifndef __UAPI_MCTP_H
->  #define __UAPI_MCTP_H
+On 10/13/21 4:27 PM, James Prestwood wrote:
+> Signed-off-by: James Prestwood <prestwoj@gmail.com>
+> ---
+>  Documentation/networking/ip-sysctl.rst | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
+> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+> index c2ecc9894fd0..174d9d3ee5c2 100644
+> --- a/Documentation/networking/ip-sysctl.rst
+> +++ b/Documentation/networking/ip-sysctl.rst
+> @@ -1565,6 +1565,15 @@ arp_accept - BOOLEAN
+>  	gratuitous arp frame, the arp table will be updated regardless
+>  	if this setting is on or off.
 >  
-> +#include <linux/types.h>
+> +arp_evict_nocarrier - BOOLEAN
+> +	Clears the ARP cache on NOCARRIER events. This option is important for
+> +	wireless devices where the ARP cache should not be cleared when roaming
+> +	between access points on the same network. In most cases this should
+> +	remain as the default (1).
 > +
-> +typedef __u8			mctp_eid_t;
+> +	- 1 - (default): Clear the ARP cache on NOCARRIER events
+> +	- 0 - Do not clear ARP cache on NOCARRIER events
 > +
-> +struct mctp_addr {
-> +	mctp_eid_t		s_addr;
-> +};
-> +
->  struct sockaddr_mctp {
-> +	unsigned short int	smctp_family;
+>  mcast_solicit - INTEGER
+>  	The maximum number of multicast probes in INCOMPLETE state,
+>  	when the associated hardware address is unknown.  Defaults
+> 
 
-This gap makes the size of struct sockaddr_mctp 2 bytes less at least
-on m68k, are you fine with that?
-
-> +	int			smctp_network;
-> +	struct mctp_addr	smctp_addr;
-> +	__u8			smctp_type;
-> +	__u8			smctp_tag;
->  };
-
+documentation can be added to the patch that adds the new sysctl
