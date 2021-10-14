@@ -2,106 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A69742DDEF
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 17:17:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 746F742DDF9
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 17:21:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233008AbhJNPUB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 11:20:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51452 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232063AbhJNPUA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 11:20:00 -0400
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88DBBC061570
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 08:17:55 -0700 (PDT)
-Received: by mail-qt1-x82d.google.com with SMTP id t2so6046021qtx.8
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 08:17:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=A/Ao1/VZ7zK7qrSpRYFgCFChgYWpQjOIEy40S8T48Xc=;
-        b=18Wy7iDGkLqXAzZ9IU2GsGwHTSOuE3d7XnSLg0WX1dM2dHqkK1IRGDCLPrmQ0dsFeF
-         nr1fvqNVusZufxOpehH3+EaZNhEoLI3dBw7V4Cah++GH839Ro+TilG+9MEitHC98ohsH
-         Od9Jtea1/+2IeRoatTb9LE1Q/TqJ1SDCxghokDnGa/HJs3++GCgJvkz4CzvHPPRfrPlU
-         AbzdMIhxmNKzT2N54llMADiFdBSy63nMXxZ1+hoezGKhVJA+iwHFSqA7J7IOhj0Ifb2E
-         FH7QfeU+Vuq4IpnwXRostXhtQPRu6l3oKg8bJ73ENgJWskoJxoikJIOU3SOjky5dSxn8
-         E9tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=A/Ao1/VZ7zK7qrSpRYFgCFChgYWpQjOIEy40S8T48Xc=;
-        b=wS3HKV4ZUL+qb6QoDsOTWC1hT5iA1aSNQhkegIvIDUQlrDq+kftLsyBuLB+0aSRO4y
-         BZxOo+lmHle/95YKj5+LC2yotVPJnjduuJMa3y6W9IUBHfa3NeS0P4REcxvDkWPOftC+
-         ka5fOIBVgU6YnH0j9v21JZ/WaJy3pJMnmJEKOiOy00SoL6k1nNXAOPgWROQ81wleosoD
-         EcBMhq9T1rByKROryeuRTgzzKigefsapJRgOkEynvGpYHWJPliUS4dKAw2HinPxOXeem
-         X2ySKeYXYYgsAPWoL/5UmuXfjZ13iEybaD5a8kdoXyBT4c5h/sSgD7NA9d3bMfZ3f/SH
-         SXYg==
-X-Gm-Message-State: AOAM533YMNAzAUuLWSi8zG0rDh4x9RfEK2ubIL1+SApC0YjbyGSaLeU9
-        OTV2MIkbi2cHgrhqEXVe6LzAH2ByRx3Fww==
-X-Google-Smtp-Source: ABdhPJxYwflFbswqioOmEQhUhZZnSR3K8H/u8+st6rLcwKQiToQDNF+38WVGGHbrqNRj+VwqS3hPdw==
-X-Received: by 2002:a05:622a:190e:: with SMTP id w14mr3367039qtc.112.1634224674726;
-        Thu, 14 Oct 2021 08:17:54 -0700 (PDT)
-Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-33-142-112-185-132.dsl.bell.ca. [142.112.185.132])
-        by smtp.googlemail.com with ESMTPSA id b8sm1486874qtr.82.2021.10.14.08.17.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Oct 2021 08:17:54 -0700 (PDT)
-Message-ID: <6263102e-ddf2-def1-2dae-d4f69dc04eca@mojatatu.com>
-Date:   Thu, 14 Oct 2021 11:17:53 -0400
+        id S232204AbhJNPXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 11:23:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:21673 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231552AbhJNPXB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 11:23:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634224856;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=tOTKFFGtjip5ZWj15JuU+YQ9cEjBP5TceDwsinyFy6Q=;
+        b=HC0Q9p+rL8240Dd6auZTPrrxTUSjyN0rks76EhPyZuOvdwKNAhXcELFVwgya0ctiD7Qnhb
+        P1SsORjH7gf9ao7yU6XPgcqeVFyojDPkxeD32P1wurKtFQQIU5eqowD3tWWwslJP763D0r
+        Yl3pcgz7hSrT6yWU4JSFx364w7eZLFE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-561-uVLmyzpnMvOJJ5Lw9uSMMA-1; Thu, 14 Oct 2021 11:20:53 -0400
+X-MC-Unique: uVLmyzpnMvOJJ5Lw9uSMMA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 101AA1922961;
+        Thu, 14 Oct 2021 15:20:52 +0000 (UTC)
+Received: from steredhat.redhat.com (unknown [10.39.194.226])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DF7945D6B1;
+        Thu, 14 Oct 2021 15:20:46 +0000 (UTC)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        "David S. Miller" <davem@davemloft.net>,
+        =?UTF-8?q?Marc-Andr=C3=A9=20Lureau?= <marcandre.lureau@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net] vsock_diag_test: remove free_sock_stat() call in test_no_sockets
+Date:   Thu, 14 Oct 2021 17:20:45 +0200
+Message-Id: <20211014152045.173872-1-sgarzare@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Subject: Re: Anybody else getting unsubscribed from the list?
-Content-Language: en-US
-To:     Stephen Suryaputra <ssuryaextr@gmail.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-References: <1fd8d0ac-ba8a-4836-59ab-0ed3b0321775@mojatatu.com>
- <20211014144337.GB11651@ICIPI.localdomain>
- <ce98b6b2-1251-556d-e6c8-461467c3c604@mojatatu.com>
- <20211014145940.GC11651@ICIPI.localdomain>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-In-Reply-To: <20211014145940.GC11651@ICIPI.localdomain>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ok, so common denominator seems to be google then...
+In `test_no_sockets` we don't expect any sockets, indeed
+check_no_sockets() prints an error and exits if `sockets` list is
+not empty, so free_sock_stat() call is unnecessary since it would
+only be called when the `sockets` list is empty.
 
-Other than possibly an outage which would have affected
-a large chunk of the list using gmail cant quiet explain it.
+This was discovered by a strange warning printed by gcc v11.2.1:
+  In file included from ../../include/linux/list.h:7,
+                   from vsock_diag_test.c:18:
+  vsock_diag_test.c: In function ‘test_no_sockets’:
+  ../../include/linux/kernel.h:35:45: error: array subscript ‘struct vsock_stat[0]’ is partly outside array bound
+  s of ‘struct list_head[1]’ [-Werror=array-bounds]
+     35 |         const typeof(((type *)0)->member) * __mptr = (ptr);     \
+        |                                             ^~~~~~
+  ../../include/linux/list.h:352:9: note: in expansion of macro ‘container_of’
+    352 |         container_of(ptr, type, member)
+        |         ^~~~~~~~~~~~
+  ../../include/linux/list.h:393:9: note: in expansion of macro ‘list_entry’
+    393 |         list_entry((pos)->member.next, typeof(*(pos)), member)
+        |         ^~~~~~~~~~
+  ../../include/linux/list.h:522:21: note: in expansion of macro ‘list_next_entry’
+    522 |                 n = list_next_entry(pos, member);                       \
+        |                     ^~~~~~~~~~~~~~~
+  vsock_diag_test.c:325:9: note: in expansion of macro ‘list_for_each_entry_safe’
+    325 |         list_for_each_entry_safe(st, next, sockets, list) {
+        |         ^~~~~~~~~~~~~~~~~~~~~~~~
+  In file included from vsock_diag_test.c:18:
+  vsock_diag_test.c:333:19: note: while referencing ‘sockets’
+    333 |         LIST_HEAD(sockets);
+        |                   ^~~~~~~
+  ../../include/linux/list.h:23:26: note: in definition of macro ‘LIST_HEAD’
+     23 |         struct list_head name = LIST_HEAD_INIT(name)
 
-cheers,
-jamal
+It seems related to some compiler optimization and assumption
+about the empty `sockets` list, since this warning is printed
+only with -02 or -O3. Also removing `exit(1)` from
+check_no_sockets() makes the warning disappear since in that
+case free_sock_stat() can be reached also when the list is
+not empty.
 
-On 2021-10-14 10:59, Stephen Suryaputra wrote:
-> I believe it is around the 11th like what you experienced. I came to
-> realize when I thought that the 12th seems to be very quiet in term of
-> patches. I went to patchwork and saw that are patches on the day, so
-> I suspected that I've been unsubscribed.
-> 
-> I'm using gmail like you see, so not sure if there was a long outage for
-> gmail. Doubtful about gmail outage...
-> 
-> I didn't see any suspicious email around the 11th.
-> 
-> Regards,
-> Stephen.
-> 
-> On Thu, Oct 14, 2021 at 10:51:15AM -0400, Jamal Hadi Salim wrote:
->> On 2021-10-14 10:43, Stephen Suryaputra wrote:
->>> +1. Had to re-subscribe.
->>>
->>
->> Thanks for confirming. Would be nice to be able maybe
->> to check somewhere when you suspect you are unsubscribed.
->> The mailing list is incredibly solid otherwise (amazing
->> spam filtering for one).
->>
->> cheers,
->> jamal
+Reported-by: Marc-André Lureau <marcandre.lureau@redhat.com>
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+---
+ tools/testing/vsock/vsock_diag_test.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/tools/testing/vsock/vsock_diag_test.c b/tools/testing/vsock/vsock_diag_test.c
+index cec6f5a738e1..fa927ad16f8a 100644
+--- a/tools/testing/vsock/vsock_diag_test.c
++++ b/tools/testing/vsock/vsock_diag_test.c
+@@ -332,8 +332,6 @@ static void test_no_sockets(const struct test_opts *opts)
+ 	read_vsock_stat(&sockets);
+ 
+ 	check_no_sockets(&sockets);
+-
+-	free_sock_stat(&sockets);
+ }
+ 
+ static void test_listen_socket_server(const struct test_opts *opts)
+-- 
+2.31.1
 
