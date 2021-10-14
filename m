@@ -2,86 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CB7542D737
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 12:36:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B793042D745
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 12:43:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230032AbhJNKiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 06:38:25 -0400
-Received: from smtp11.skoda.cz ([185.50.127.88]:54598 "EHLO smtp11.skoda.cz"
+        id S230078AbhJNKpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 06:45:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42942 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230063AbhJNKiZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Oct 2021 06:38:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; d=skoda.cz; s=plzenjune2021; c=relaxed/simple;
-        q=dns/txt; i=@skoda.cz; t=1634207778; x=1634812578;
-        h=From:Sender:Reply-To:Subject:Date:Message-ID:To:CC:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=vsjQM05NokQSW87Qwnr/NIt/TFok9cIpWMaFIeHQwd0=;
-        b=A499rnOENIUPdnFM0Il0OJhTKzKKlaWdbG/SojvzxcoIyX4Xc8PYWLES1+cpwK08
-        A0PhP29Z3gkcNgqfaH2LWftTjVn2cpx36n6+ckRKeM2WSdGUyuhKY5TxsJQ5lQ33
-        xvrcTfle3EVrXcbSbCWqemiSc0NAYkT8Hw/wv0L4vPjfcZjLyalRScJM9FpItvfj
-        uRDlUCRYUTHcgnMC9q7sD+7rlw25FFJgilLycrntwxbw5nQgO2hG/hyepcCK+H5L
-        fcEfnAYX8lJtQzBwwUCL2UnmpcuD92zL0Dg4y25zz+jwnDy47C1A5AkDRBX5zuGL
-        ceVfaZdHn2NMyFZZ+/lQ+Q==;
-X-AuditID: 0a2aa12e-a0e7170000001c4f-01-616808222f46
-Received: from srv-exch-04.skoda.cz (srv-exch-04.skoda.cz [10.42.11.94])
-        (using TLS with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client did not present a certificate)
-        by smtp11.skoda.cz (Mail Gateway) with SMTP id 0A.32.07247.22808616; Thu, 14 Oct 2021 12:36:18 +0200 (CEST)
-Received: from srv-exch-04.skoda.cz (10.42.11.94) by srv-exch-04.skoda.cz
- (10.42.11.94) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Thu, 14 Oct
- 2021 12:36:18 +0200
-Received: from srv-exch-04.skoda.cz ([fe80::fcf6:f37d:8437:b10d]) by
- srv-exch-04.skoda.cz ([fe80::fcf6:f37d:8437:b10d%2]) with mapi id
- 15.01.2375.007; Thu, 14 Oct 2021 12:36:18 +0200
-From:   Strejc Cyril <cyril.strejc@skoda.cz>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: PROBLEM: multicast router does not fill UDP csum of its own
- forwarded packets
-Thread-Topic: PROBLEM: multicast router does not fill UDP csum of its own
- forwarded packets
-Thread-Index: AQHXwOdSBoWV+H76jEm6oC/XOdizBQ==
-Date:   Thu, 14 Oct 2021 10:36:18 +0000
-Message-ID: <51ca6cd2b8444f008164bb1fc89164c4@skoda.cz>
-References: <3fc5b9be1d73417a99756404c0089814@skoda.cz>
- <20211013072042.2b6077e3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: cs-CZ, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.42.12.26]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S229468AbhJNKpR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Oct 2021 06:45:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A50A561029;
+        Thu, 14 Oct 2021 10:43:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634208193;
+        bh=aWMglBh9pGCOmiZ88eOVpvJvmJl3/pOcN/7VDiuqDNU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SgFxRO+6xvvs5vx4lximIeqbNre80UgWO61jBHG29uq9+hp3FdKUOtf3hnfj8t3vN
+         3fMS2d15RPSusAQrIolmMnc084ndG+ddTGle9/JPozqJkpZrBw34XcGzXuBPBsGd9N
+         yeKiij+uvhRAGUngk2tQYS9UHUOvQrnjvmd2jQmwH012Dy5u6mL0g/j0hzGPw4oQFO
+         uaecRUm+jRy5ZfklXzFJG//cU3xo1U8hbSnZbLIORBw3BMlqRiSgiJ1ngVcq012ahW
+         eCGa/teKbGSsAI40NV3AMCMB0Me/W9JN/znRwWNjv/HVAJ+248zKhJkkQSjddpy1ZS
+         kQCH9WBIoO9JA==
+Date:   Thu, 14 Oct 2021 12:43:09 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Pavel Machek <pavel@ucw.cz>
+Cc:     devicetree@vger.kernel.org, linux-leds@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>, robh+dt@kernel.org,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] dt-bindings: leds: Add `excludes` property
+Message-ID: <20211014124309.10b42043@dellmb>
+In-Reply-To: <20211014102918.GA21116@duo.ucw.cz>
+References: <20211013204424.10961-1-kabel@kernel.org>
+        <20211013204424.10961-2-kabel@kernel.org>
+        <20211014102918.GA21116@duo.ucw.cz>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrMLMWRmVeSWpSXmKPExsXCpcUdp6vEkZFocHeTisWc8y0sFhe29bFa
-        HFsg5sDssWXlTSaPTas62Tw+b5ILYI7isklJzcksSy3St0vgyjjz9zh7wUbWimeb1rA0MG5i
-        6WLk5JAQMJH49nQraxcjF4eQwBImiacft7FDOM8ZJQ7eWsAI4exilOhb9Y4RpIVNQEti0Za1
-        bCC2iICKRMvmmWCjmAUSJP593s0OYgsLxEg8btjCBFETK7Hm5HNWCFtPYsKhNjCbRUBVYsvL
-        k2BzeAXMJea1zYPa3Mgo8f35GrBBjAKyEns6PzNCLBCXuPVkPhPE3QISS/acZ4awRSVePv7H
-        CmHLS3zasIEZol5HYsHuT2wQtrbEsoWvmSGWCUqcnPmEZQKj6CwkY2chaZmFpGUWkpYFjCyr
-        GPmLc0sKDA31irPzUxL1kqs2MYIjZqHeDsb9remHGJk4GA8xSnAwK4nwvjuQnijEm5JYWZVa
-        lB9fVJqTWnyIUZqDRUmc9+Z3w0QhgfTEktTs1NSC1CKYLBMHp1QDY2yh7ofdCzZny086l8Fl
-        qLdWoYQ10zP0zu+kpd6nH89PMrl/bdJOoTkmsUvOPaxvU5HQ4rH57nVcWqh/3e0nHZtLH22Y
-        +eoqx181w71Xvu3+9Vr+wvzzh71lLP+oTX8t+XDHg7KodYrvl0v4HfwgtemA2sP9Pj8vZXv0
-        fOo/vkQ6767qWo/thu+UWIozEg21mIuKEwHwJaHVhgIAAA==
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/13/21 4:20 PM, Jakub Kicinski wrote:=0A=
-> On Fri, 8 Oct 2021 20:08:36 +0000 Strejc Cyril wrote:=0A=
->> please let me summarize a problem regarding Linux multicast routing=0A=
->> in combination with L4 checksum offloading and own (locally produced)=0A=
->> multicast packets being forwarded.=0A=
-> =0A=
-> Hi Cyril, thanks for the report, looks like nobody has immediate=0A=
-> feedback to share. Could you resend the patch in more usual form=0A=
-> so that it's easier to review and harder to ignore?=0A=
-=0A=
-Thanks Jakub, I will do so. The patch I sent meant to be illustrative =0A=
-for the problem, but of course, the problem can be discussed around the =0A=
-patch.=0A=
+On Thu, 14 Oct 2021 12:29:18 +0200
+Pavel Machek <pavel@ucw.cz> wrote:
+
+> Hi!
+> 
+> > Some RJ-45 connectors have LEDs wired in the following way:
+> > 
+> >          LED1
+> >       +--|>|--+
+> >       |       |
+> >   A---+--|<|--+---B
+> >          LED2
+> > 
+> > With + on A and - on B, LED1 is ON and LED2 is OFF. Inverting the
+> > polarity turns LED1 OFF and LED2 ON.
+> > 
+> > So these LEDs exclude each other.
+> > 
+> > Add new `excludes` property to the LED binding. The property is a
+> > phandle-array to all the other LEDs that are excluded by this LED.  
+> 
+> I don't think this belongs to the LED binding.
+> 
+> This is controller limitation, and the driver handling the controller
+> needs to know about it... so it does not need to learn that from the
+> LED binding.
+
+It's not necessarily a controller limitation, rather a limitation of
+the board (or ethernet connector, in the case of LEDs on an ethernet
+connector).
+
+But I guess we could instead document this property in the ethernet PHY
+controller binding for a given PHY.
+
+Marek
