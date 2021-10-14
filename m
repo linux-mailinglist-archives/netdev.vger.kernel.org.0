@@ -2,34 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CD1F42E119
+	by mail.lfdr.de (Postfix) with ESMTP id C7A0342E11A
 	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 20:21:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233915AbhJNSXw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 14:23:52 -0400
+        id S233918AbhJNSXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 14:23:53 -0400
 Received: from mga04.intel.com ([192.55.52.120]:62163 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230422AbhJNSXv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233901AbhJNSXv (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 14 Oct 2021 14:23:51 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10137"; a="226531109"
+X-IronPort-AV: E=McAfee;i="6200,9189,10137"; a="226531110"
 X-IronPort-AV: E=Sophos;i="5.85,373,1624345200"; 
-   d="scan'208";a="226531109"
+   d="scan'208";a="226531110"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
   by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2021 11:21:45 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.85,373,1624345200"; 
-   d="scan'208";a="717815819"
+   d="scan'208";a="717815822"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga005.fm.intel.com with ESMTP; 14 Oct 2021 11:21:44 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        linux-rdma@vger.kernel.org, shiraz.saleem@intel.com,
-        Gurucharan G <gurucharanx.g@intel.com>
-Subject: [PATCH net 3/4] ice: fix getting UDP tunnel entry
-Date:   Thu, 14 Oct 2021 11:19:52 -0700
-Message-Id: <20211014181953.3538330-4-anthony.l.nguyen@intel.com>
+Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, linux-rdma@vger.kernel.org,
+        shiraz.saleem@intel.com, Gurucharan G <gurucharanx.g@intel.com>
+Subject: [PATCH net 4/4] ice: Print the api_patch as part of the fw.mgmt.api
+Date:   Thu, 14 Oct 2021 11:19:53 -0700
+Message-Id: <20211014181953.3538330-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211014181953.3538330-1-anthony.l.nguyen@intel.com>
 References: <20211014181953.3538330-1-anthony.l.nguyen@intel.com>
@@ -39,45 +38,123 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+From: Brett Creeley <brett.creeley@intel.com>
 
-Correct parameters order in call to ice_tunnel_idx_to_entry function.
+Currently when a user uses "devlink dev info", the fw.mgmt.api will be
+the major.minor numbers as shown below:
 
-Entry in sparse port table is correct when the idx is 0. For idx 1 one
-correct entry should be skipped, for idx 2 two of them should be skipped
-etc. Change if condition to be true when idx is 0, which means that
-previous valid entry of this tunnel type were skipped.
+devlink dev info pci/0000:3b:00.0
+pci/0000:3b:00.0:
+  driver ice
+  serial_number 00-01-00-ff-ff-00-00-00
+  versions:
+      fixed:
+        board.id K91258-000
+      running:
+        fw.mgmt 6.1.2
+        fw.mgmt.api 1.7 <--- No patch number included
+        fw.mgmt.build 0xd75e7d06
+        fw.mgmt.srev 5
+        fw.undi 1.2992.0
+        fw.undi.srev 5
+        fw.psid.api 3.10
+        fw.bundle_id 0x800085cc
+        fw.app.name ICE OS Default Package
+        fw.app 1.3.27.0
+        fw.app.bundle_id 0xc0000001
+        fw.netlist 3.10.2000-3.1e.0
+        fw.netlist.build 0x2a76e110
+      stored:
+        fw.mgmt.srev 5
+        fw.undi 1.2992.0
+        fw.undi.srev 5
+        fw.psid.api 3.10
+        fw.bundle_id 0x800085cc
+        fw.netlist 3.10.2000-3.1e.0
+        fw.netlist.build 0x2a76e110
 
-Fixes: b20e6c17c468 ("ice: convert to new udp_tunnel infrastructure")
-Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+There are many features in the driver that depend on the major, minor,
+and patch version of the FW. Without the patch number in the output for
+fw.mgmt.api debugging issues related to the FW API version is difficult.
+Also, using major.minor.patch aligns with the existing firmware version
+which uses a 3 digit value.
+
+Fix this by making the fw.mgmt.api print the major.minor.patch
+versions. Shown below is the result:
+
+devlink dev info pci/0000:3b:00.0
+pci/0000:3b:00.0:
+  driver ice
+  serial_number 00-01-00-ff-ff-00-00-00
+  versions:
+      fixed:
+        board.id K91258-000
+      running:
+        fw.mgmt 6.1.2
+        fw.mgmt.api 1.7.9 <--- patch number included
+        fw.mgmt.build 0xd75e7d06
+        fw.mgmt.srev 5
+        fw.undi 1.2992.0
+        fw.undi.srev 5
+        fw.psid.api 3.10
+        fw.bundle_id 0x800085cc
+        fw.app.name ICE OS Default Package
+        fw.app 1.3.27.0
+        fw.app.bundle_id 0xc0000001
+        fw.netlist 3.10.2000-3.1e.0
+        fw.netlist.build 0x2a76e110
+      stored:
+        fw.mgmt.srev 5
+        fw.undi 1.2992.0
+        fw.undi.srev 5
+        fw.psid.api 3.10
+        fw.bundle_id 0x800085cc
+        fw.netlist 3.10.2000-3.1e.0
+        fw.netlist.build 0x2a76e110
+
+Fixes: ff2e5c700e08 ("ice: add basic handler for devlink .info_get")
+Signed-off-by: Brett Creeley <brett.creeley@intel.com>
 Tested-by: Gurucharan G <gurucharanx.g@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_flex_pipe.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Documentation/networking/devlink/ice.rst     | 9 +++++----
+ drivers/net/ethernet/intel/ice/ice_devlink.c | 3 ++-
+ 2 files changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-index 06ac9badee77..1ac96dc66d0d 100644
---- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-+++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-@@ -1668,7 +1668,7 @@ static u16 ice_tunnel_idx_to_entry(struct ice_hw *hw, enum ice_tunnel_type type,
- 	for (i = 0; i < hw->tnl.count && i < ICE_TUNNEL_MAX_ENTRIES; i++)
- 		if (hw->tnl.tbl[i].valid &&
- 		    hw->tnl.tbl[i].type == type &&
--		    idx--)
-+		    idx-- == 0)
- 			return i;
+diff --git a/Documentation/networking/devlink/ice.rst b/Documentation/networking/devlink/ice.rst
+index a432dc419fa4..5d97cee9457b 100644
+--- a/Documentation/networking/devlink/ice.rst
++++ b/Documentation/networking/devlink/ice.rst
+@@ -30,10 +30,11 @@ The ``ice`` driver reports the following versions
+         PHY, link, etc.
+     * - ``fw.mgmt.api``
+       - running
+-      - 1.5
+-      - 2-digit version number of the API exported over the AdminQ by the
+-        management firmware. Used by the driver to identify what commands
+-        are supported.
++      - 1.5.1
++      - 3-digit version number (major.minor.patch) of the API exported over
++        the AdminQ by the management firmware. Used by the driver to
++        identify what commands are supported. Historical versions of the
++        kernel only displayed a 2-digit version number (major.minor).
+     * - ``fw.mgmt.build``
+       - running
+       - 0x305d955f
+diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
+index 14afce82ef63..da7288bdc9a3 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devlink.c
++++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
+@@ -63,7 +63,8 @@ static int ice_info_fw_api(struct ice_pf *pf, struct ice_info_ctx *ctx)
+ {
+ 	struct ice_hw *hw = &pf->hw;
  
- 	WARN_ON_ONCE(1);
-@@ -1828,7 +1828,7 @@ int ice_udp_tunnel_set_port(struct net_device *netdev, unsigned int table,
- 	u16 index;
+-	snprintf(ctx->buf, sizeof(ctx->buf), "%u.%u", hw->api_maj_ver, hw->api_min_ver);
++	snprintf(ctx->buf, sizeof(ctx->buf), "%u.%u.%u", hw->api_maj_ver,
++		 hw->api_min_ver, hw->api_patch);
  
- 	tnl_type = ti->type == UDP_TUNNEL_TYPE_VXLAN ? TNL_VXLAN : TNL_GENEVE;
--	index = ice_tunnel_idx_to_entry(&pf->hw, idx, tnl_type);
-+	index = ice_tunnel_idx_to_entry(&pf->hw, tnl_type, idx);
- 
- 	status = ice_create_tunnel(&pf->hw, index, tnl_type, ntohs(ti->port));
- 	if (status) {
+ 	return 0;
+ }
 -- 
 2.31.1
 
