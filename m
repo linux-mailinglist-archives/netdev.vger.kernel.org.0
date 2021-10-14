@@ -2,112 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FA4042DB62
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 16:22:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 109CE42DB65
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 16:22:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231361AbhJNOY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 10:24:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38406 "EHLO
+        id S230190AbhJNOY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 10:24:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230213AbhJNOYZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 10:24:25 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D849CC061570
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 07:22:20 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id q2-20020a17090a2e0200b001a0fd4efd49so1106914pjd.1
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 07:22:20 -0700 (PDT)
+        with ESMTP id S231825AbhJNOYz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 10:24:55 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB3CC061570
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 07:22:50 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id z11so26750399lfj.4
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 07:22:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=EMwDXgwXoXF7SJJC/qZQx+iamVJ9IAoHTJ7NZ/HN9Rg=;
-        b=ETvHGUwHG/zNHf5o1+vARHesXnfa+3+7u6M0xtAlwoVduXR6mkjF8uk/SyT7Nqi3/i
-         9qDyBiStkVJrEvZk2thXcpiBdzaJd5+CoahSH5E803tQ3uLiWWi1XxlhcPYM+KO3cobM
-         oKkZZ1wlfu3j0zbQzuh32Yoz3ORBIZhnot9uJoESWPBBXrq/1fKLiE08j0MqQijpu2t6
-         0dGadW4Gzsm51HrvR2oo8+MqruM1U3pnGxy1ZbursCRO8FmD2vVFK0gDfzfdcKcq2uy5
-         S6oA3ReXZaaUWH/gOH6IjaeJrfovPWEzUNenX3B5NQMAWlDDzxyOsIzkfh6ARs7NTGSQ
-         SrDw==
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Okqf4cnxYE2FjVdlyGWzuWegB5o4GhJUuUv5TbPoZBA=;
+        b=DGrABGEtP5hjLIs/K1pNqbk2y6fYRbTTyPPSrc7s4OG9i6hCAmcTe5jL1IVGbdybNm
+         n0QifbSEMlrGOg4m4tPIegguFfiIUWJvHDSXCODQQ2YBybjOAwh0WVR136yqcH7zOo2W
+         De5kAU5D+EBLEhVYxyJSKgs4GEFiD3QIS417M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=EMwDXgwXoXF7SJJC/qZQx+iamVJ9IAoHTJ7NZ/HN9Rg=;
-        b=HzOo5LvS2GAj7hCktajK9QnvbZRUCvH3XI+GHtkxil6HjK7aLZgqAOxmyvS5h4NV5J
-         ixJvXqF5vHnAl1nA0l4W8UDMaJ192zI1uLdsFGwt37vrT0vkcf0kPkEKYl3ZO21OmJ34
-         FzEM4fFno3LbNlreNIGSUtnp1xOznldgO5zFKH8TZfWfUjfuiVxG+i9QzVVN4RC5u5rF
-         lbsErQeWylPS2YcuHVnNAdG/Pj8pFKinsPQ+L76ZBwWc5YXSDNeSWBVLGCBMev6OIKvc
-         YE0FhJIA4mJMTS97PceEGxUE2bxyF0no/pvuqcX+R4kBspUudZUJMoW71pXRHeC7K8R4
-         dDMw==
-X-Gm-Message-State: AOAM532MUBS+A5CKz247u+7BBsMaprpWbnTPK+q5pfjvN1SVL7DlKmg8
-        ohMgAAz6OVS9rwdQtS7tNYg=
-X-Google-Smtp-Source: ABdhPJzf/mtylGR9H7OXHgXyEYtkQIu8ODpYpJhH8ktzgNAVJNgMBOcY2jB1Jr6KEwTxvCPupIWX6w==
-X-Received: by 2002:a17:902:70cb:b0:13e:91f3:641a with SMTP id l11-20020a17090270cb00b0013e91f3641amr5143051plt.13.1634221340379;
-        Thu, 14 Oct 2021 07:22:20 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id b10sm2987437pfl.200.2021.10.14.07.22.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Oct 2021 07:22:19 -0700 (PDT)
-Subject: Re: [PATCHv3 net] icmp: fix icmp_ext_echo_iio parsing in
- icmp_build_probe
-To:     Xin Long <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Andreas Roeseler <andreas.a.roeseler@gmail.com>
-References: <31628dd76657ea62f5cf78bb55da6b35240831f1.1634205050.git.lucien.xin@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <16bd32a3-b716-0a83-3983-85f4a6468645@gmail.com>
-Date:   Thu, 14 Oct 2021 07:22:17 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Okqf4cnxYE2FjVdlyGWzuWegB5o4GhJUuUv5TbPoZBA=;
+        b=fOp2VLXh43En4nNsDvcE5yi8kMBM4KV7e3MaziaL3NB9U7/gSZcK68UZFQQwyOzryd
+         PJ5Eho9sMr2aLgvLhr/vy7T+3mzkc8G2BabMoMuQS5JGGVpO02paaAkI+QYCw+fPxx1s
+         NMgHtTEeA/OwK7NF7W4AfJfQsuoR5FYz3q9no0y7VWAVPFMTBHpeFQi2FkiILx4DVUD0
+         0zeLajCVm3o0RmGapGsOdUl8clSt3hu5puYM7DQUXyn4KE1mlA/o6wF3/A4duWNWyDih
+         xszMrF8zscHxTLfFXKynNWYO/C7x7nS2gKyn5pv74Nmu8vRwqw4WaJGgI/bf1ZhEEU3K
+         3Bgg==
+X-Gm-Message-State: AOAM530wpDXMs5KAxMtuvEK6xv+hK4JDO8taW6DJ/y6Br5N2HXf/OYpe
+        JlAIpH0Q+NNSFfQuLqGtqtDBC1InnZ7y4ez0SAM+YQ==
+X-Google-Smtp-Source: ABdhPJwH/KSfANj7WAISJ4X/OGGDRL8CEswJt/vSOXqtZNnUmhmfUOPmS/catGq1ZLRDado7y9BjlPPYtSlde7lnKe4=
+X-Received: by 2002:a05:6512:314b:: with SMTP id s11mr5650906lfi.206.1634221358158;
+ Thu, 14 Oct 2021 07:22:38 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <31628dd76657ea62f5cf78bb55da6b35240831f1.1634205050.git.lucien.xin@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20211012135935.37054-1-lmb@cloudflare.com> <87wnmgg0mf.fsf@cloudflare.com>
+In-Reply-To: <87wnmgg0mf.fsf@cloudflare.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Thu, 14 Oct 2021 15:22:26 +0100
+Message-ID: <CACAyw99FGc_z2zXjrjP=0k3jz0vz2u6ddiGVbzD0zuTcTU4rzg@mail.gmail.com>
+Subject: Re: [PATCH v2 0/4] Fix up bpf_jit_limit some more
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        linux-riscv@lists.infradead.org,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 13 Oct 2021 at 20:56, Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>
+> On Tue, Oct 12, 2021 at 03:59 PM CEST, Lorenz Bauer wrote:
+> > Some more cleanups around bpf_jit_limit to make it readable via sysctl.
+> >
+> > Jakub raised the point that a sysctl toggle is UAPI and therefore
+> > can't be easily changed later on. I tried to find another place to stick
+> > the info, but couldn't find a good one. All the current BPF knobs are in
+> > sysctl.
+> >
+> > There are examples of read only sysctls:
+> > $ sudo find /proc/sys -perm 0444 | wc -l
+> > 90
+> >
+> > There are no examples of sysctls with mode 0400 however:
+> > $ sudo find /proc/sys -perm 0400 | wc -l
+> > 0
+> >
+> > Thoughts?
+>
+> I threw this idea out there during LPC already, that it would be cool to
+> use BPF iterators for that. Pinned/preloaded iterators were made for
+> dumping kernel data on demand after all.
+>
+> What is missing is a BPF iterator type that would run the program just
+> once (there is just one thing to print), and a BPF helper to lookup
+> symbol's address.
+>
+> I thought this would require a bit of work, but actually getting a PoC
+> (see below) to work was rather pleasntly straightforward.
+>
+> Perhaps a bit of a hack but I'd consider it as an alternative.
 
+I spoke to Jakub, I won't have time to work on this myself. So I'll
+drop this patch from the series and send a v3 with just the fixes to
+bpf_jit_limit.
 
-On 10/14/21 2:50 AM, Xin Long wrote:
-> In icmp_build_probe(), the icmp_ext_echo_iio parsing should be done
-> step by step and skb_header_pointer() return value should always be
-> checked, this patch fixes 3 places in there:
-> 
->   - On case ICMP_EXT_ECHO_CTYPE_NAME, it should only copy ident.name
->     from skb by skb_header_pointer(), its len is ident_len. Besides,
->     the return value of skb_header_pointer() should always be checked.
-> 
->   - On case ICMP_EXT_ECHO_CTYPE_INDEX, move ident_len check ahead of
->     skb_header_pointer(), and also do the return value check for
->     skb_header_pointer().
-> 
->   - On case ICMP_EXT_ECHO_CTYPE_ADDR, before accessing iio->ident.addr.
->     ctype3_hdr.addrlen, skb_header_pointer() should be called first,
->     then check its return value and ident_len.
->     On subcases ICMP_AFI_IP and ICMP_AFI_IP6, also do check for ident.
->     addr.ctype3_hdr.addrlen and skb_header_pointer()'s return value.
->     On subcase ICMP_AFI_IP, the len for skb_header_pointer() should be
->     "sizeof(iio->extobj_hdr) + sizeof(iio->ident.addr.ctype3_hdr) +
->     sizeof(struct in_addr)" or "ident_len".
-> 
-> v1->v2:
->   - To make it more clear, call skb_header_pointer() once only for
->     iio->indent's parsing as Jakub Suggested.
-> v2->v3:
->   - The extobj_hdr.length check against sizeof(_iio) should be done
->     before calling skb_header_pointer(), as Eric noticed.
-> 
-> Fixes: d329ea5bd884 ("icmp: add response to RFC 8335 PROBE messages")
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> ---
+-- 
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-
-Thanks !
-
+www.cloudflare.com
