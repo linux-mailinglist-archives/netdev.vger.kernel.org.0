@@ -2,101 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAACE42D86C
-	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 13:44:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2235942D898
+	for <lists+netdev@lfdr.de>; Thu, 14 Oct 2021 13:54:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231245AbhJNLqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 07:46:13 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:24312 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231194AbhJNLqK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 07:46:10 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HVS9f3BsmzRQHr;
-        Thu, 14 Oct 2021 19:39:34 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Thu, 14 Oct 2021 19:44:03 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Thu, 14 Oct 2021 19:44:02 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <mkubecek@suse.cz>,
-        <andrew@lunn.ch>, <amitc@mellanox.com>, <idosch@idosch.org>,
-        <danieller@nvidia.com>, <jesse.brandeburg@intel.com>,
-        <anthony.l.nguyen@intel.com>, <jdike@addtoit.com>,
-        <richard@nod.at>, <anton.ivanov@cambridgegreys.com>,
-        <netanel@amazon.com>, <akiyano@amazon.com>, <gtzalik@amazon.com>,
-        <saeedb@amazon.com>, <chris.snook@gmail.com>,
-        <ulli.kroll@googlemail.com>, <linus.walleij@linaro.org>,
-        <jeroendb@google.com>, <csully@google.com>,
-        <awogbemila@google.com>, <jdmason@kudzu.us>,
-        <rain.1986.08.12@gmail.com>, <zyjzyj2000@gmail.com>,
-        <kys@microsoft.com>, <haiyangz@microsoft.com>, <mst@redhat.com>,
-        <jasowang@redhat.com>, <doshir@vmware.com>,
-        <pv-drivers@vmware.com>, <jwi@linux.ibm.com>,
-        <kgraul@linux.ibm.com>, <hca@linux.ibm.com>, <gor@linux.ibm.com>,
-        <johannes@sipsolutions.net>
-CC:     <netdev@vger.kernel.org>, <lipeng321@huawei.com>,
-        <chenhao288@hisilicon.com>, <huangguangbin2@huawei.com>,
-        <linux-s390@vger.kernel.org>
-Subject: [PATCH V4 net-next 6/6] net: hns3: remove the way to set tx spare buf via module parameter
-Date:   Thu, 14 Oct 2021 19:39:43 +0800
-Message-ID: <20211014113943.16231-7-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211014113943.16231-1-huangguangbin2@huawei.com>
-References: <20211014113943.16231-1-huangguangbin2@huawei.com>
+        id S231201AbhJNL4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 07:56:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60774 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229994AbhJNL4j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 07:56:39 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A243C061570;
+        Thu, 14 Oct 2021 04:54:34 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id e12so18623540wra.4;
+        Thu, 14 Oct 2021 04:54:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=Qh70ZouKZ85gIbpuXKWewmPLqOEF6lltY7MRU3dhsLQ=;
+        b=cn8xR7iiAw7tWLtSnmilwd0CLe4cIYuLcWV6O7XQ5LHFnC/wOFIWN4l3qyN6BY/cdh
+         AS/BEtzOkPPJ5YvO0DQPfmbY7qhU9fI/9imeranMOICUU0X4q8sP2J4qAmieeoLD+nhK
+         HCTGk05ojGTmiqhKPYB+q8hH1ptSggXPQDx0d06jXoCevxZe4/+UAgsJ7aD4/ClHjIDM
+         Uq5d3+wzLafXiIO/rGCntLEJUnvzl5Grh6fujZ9n6G/AzHdjs/mNvee7wuGUcKCbGqZN
+         hhAIlxxxWuVoWMEk21U4XseZsNKCBloH6AeNxzN0KJ4c23+pyL9kgi+FRKa4kRWi4HUZ
+         5DaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Qh70ZouKZ85gIbpuXKWewmPLqOEF6lltY7MRU3dhsLQ=;
+        b=T1pACr/10OguqapE/VHYbt/2yLHVbCkyctoSoYkWZkuIOdou4XQGtopkm30+Rh+hk6
+         E1QYCN35a7FQWjdWdmlPSoFBU1zbwL3o+Wh9LLxa427aiPuvf0BZtEqhxJe2d9FBsId4
+         t2JEwL/mUFgOhA8dP3mGb7F6BZTOM1tb6HQzT+RbJXUyijhQgC0fkzdKk0lVUYEC7txC
+         03O8p/S0YKu9JwExR7w4cZVTL35XrRrBlJjHXD1mkUyZZcdZ6/bm3LWL2ZCCY0v/SEIS
+         12D9tdqu0NeBRzF9t7iNmAUBGi4ch94M9bDGenwXyy65cA2ly/BMdP2SFzpT4rdCiHdK
+         s4Ug==
+X-Gm-Message-State: AOAM532K5dh/ir8JIQiz5jYxBMjCYoYIiLnBBiyp5z+NT4dmj05L7RMG
+        RiaRwYQubrJoL9bvTKNTUrJcunk9F4g=
+X-Google-Smtp-Source: ABdhPJy1ZYZCOFqvLyyp8cFqmb+AwiD6hjCGDA1IY0Kv5GkMzSNmSJNkDkdSXDMvEMcXmypDMbPF0A==
+X-Received: by 2002:adf:8bca:: with SMTP id w10mr6144612wra.43.1634212472296;
+        Thu, 14 Oct 2021 04:54:32 -0700 (PDT)
+Received: from debian64.daheim (p200300d5ff0f7400d63d7efffebde96e.dip0.t-ipconnect.de. [2003:d5:ff0f:7400:d63d:7eff:febd:e96e])
+        by smtp.gmail.com with ESMTPSA id c17sm2194410wmk.23.2021.10.14.04.54.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Oct 2021 04:54:31 -0700 (PDT)
+Received: from localhost.daheim ([127.0.0.1])
+        by debian64.daheim with esmtp (Exim 4.95)
+        (envelope-from <chunkeey@gmail.com>)
+        id 1mazJe-0008WG-Sw;
+        Thu, 14 Oct 2021 13:54:30 +0200
+Subject: Re: [PATCH] ath10k: support bus and device specific API 1 BDF
+ selection
+To:     Robert Marko <robimarko@gmail.com>, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20211009221711.2315352-1-robimarko@gmail.com>
+From:   Christian Lamparter <chunkeey@gmail.com>
+Message-ID: <ba520cf0-480e-245b-395f-7d3a5f771521@gmail.com>
+Date:   Thu, 14 Oct 2021 13:54:30 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+In-Reply-To: <20211009221711.2315352-1-robimarko@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: de-DE
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hao Chen <chenhao288@hisilicon.com>
+On 10/10/2021 00:17, Robert Marko wrote:
+> Some ath10k IPQ40xx devices like the MikroTik hAP ac2 and ac3 require the
+> BDF-s to be extracted from the device storage instead of shipping packaged
+> API 2 BDF-s.
+> 
+> This is required as MikroTik has started shipping boards that require BDF-s
+> to be updated, as otherwise their WLAN performance really suffers.
+> This is however impossible as the devices that require this are release
+> under the same revision and its not possible to differentiate them from
+> devices using the older BDF-s.
+> 
+> In OpenWrt we are extracting the calibration data during runtime and we are
+> able to extract the BDF-s in the same manner, however we cannot package the
+> BDF-s to API 2 format on the fly and can only use API 1 to provide BDF-s on
+> the fly.
+> This is an issue as the ath10k driver explicitly looks only for the
+> board.bin file and not for something like board-bus-device.bin like it does
+> for pre-cal data.
+> Due to this we have no way of providing correct BDF-s on the fly, so lets
+> extend the ath10k driver to first look for BDF-s in the
+> board-bus-device.bin format, for example: board-ahb-a800000.wifi.bin
+> If that fails, look for the default board file name as defined previously.
+> 
+> Signed-off-by: Robert Marko <robimarko@gmail.com>
+> ---
 
-The way to set tx spare buf via module parameter is not such
-convenient as the way to set it via ethtool.
+As mentioned in Robert's OpenWrt Pull request:
+https://github.com/openwrt/openwrt/pull/4679
 
-So,remove the way to set tx spare buf via module parameter.
+It looks like the data comes from an mtd-partition parser.
+So the board data takes an extra detour through userspace
+for this.
 
-Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+Maybe it would be great, if that BDF (and likewise pre-cal)
+files could be fetched via an nvmem-consumer there?
+(Kalle: like the ath9k-nvmem patches)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 0dd8987d1228..bcab29d7ed9f 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -53,10 +53,6 @@ static int debug = -1;
- module_param(debug, int, 0);
- MODULE_PARM_DESC(debug, " Network interface message level setting");
- 
--static unsigned int tx_spare_buf_size;
--module_param(tx_spare_buf_size, uint, 0400);
--MODULE_PARM_DESC(tx_spare_buf_size, "Size used to allocate tx spare buffer");
--
- static unsigned int tx_sgl = 1;
- module_param(tx_sgl, uint, 0600);
- MODULE_PARM_DESC(tx_sgl, "Minimum number of frags when using dma_map_sg() to optimize the IOMMU mapping");
-@@ -1041,8 +1037,7 @@ static void hns3_init_tx_spare_buffer(struct hns3_enet_ring *ring)
- 	dma_addr_t dma;
- 	int order;
- 
--	alloc_size = tx_spare_buf_size ? tx_spare_buf_size :
--		     ring->tqp->handle->kinfo.tx_spare_buf_size;
-+	alloc_size = ring->tqp->handle->kinfo.tx_spare_buf_size;
- 	if (!alloc_size)
- 		return;
- 
--- 
-2.33.0
+This would help with many other devices as well, since currently
+in OpenWrt all pre-cal data has to be extracted by userspace
+helpers, while it could be easily accessible through nvmem.
 
+What do you think?
+
+Cheers,
+Christian
