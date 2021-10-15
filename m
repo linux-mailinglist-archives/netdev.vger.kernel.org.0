@@ -2,67 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CCBE42EEC5
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 12:30:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DC9442EEF7
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 12:40:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238006AbhJOKcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 06:32:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50958 "EHLO mail.kernel.org"
+        id S230034AbhJOKmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 06:42:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56050 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237984AbhJOKcR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Oct 2021 06:32:17 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id A7FC961053;
-        Fri, 15 Oct 2021 10:30:11 +0000 (UTC)
+        id S229690AbhJOKmN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Oct 2021 06:42:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1CDFE61056;
+        Fri, 15 Oct 2021 10:40:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634293811;
-        bh=DHLh6FSnH4QrHqAuKEUFUCXthCz94ImsyAK5Mc9UgGc=;
+        s=k20201202; t=1634294407;
+        bh=FOYvUhqg8F7JGlf84dnt7hHVnjpsrBbGqNvl7gebi/s=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gbs/1Da0V275uZF0HfEtIkXz3JNE6m0LL3Y/XLON93VJ8I+qmIsi0hkCXiu7+aVwJ
-         BidiixWMSN1LsGCZ1b+3+dq/U0LM1YZkjT8JPicOE2TF1x1ag1u43H0vRtXQFVaHVb
-         PW+qSKgsbmItz2nWdoEcylgw/buPvyIPBjoOaUpzR2S32p9LAR40SHiCeSej5ZAyDK
-         kZRWpQgvo3XehzIoiYol7VB+0Gz4GIEybLp/Ba/N6oN84gZt7eO5SZv12z0MvNFwJf
-         jXde+XrCu45Pf88bT2tC81OaejRYKUSHkzF4cuYVC9IKM7mhDJ5jEHcGUk4mhLGEeM
-         hwepOuywgW77A==
+        b=bePMfmwIHe3UYG7JHRDvl/tYEdLHqY78iTDnyRk4GuosnqMm+A1vuUVlU9cbFeGSA
+         ojgIDOPR85ILsPWHK6riLLom/98A687NOuW3Av3P0akx33g+MfF4xpdyNTYNqoQ5oj
+         teSs1G4zhX4VtrTsUjnYqMLvJudZyexzyyZf0kHan3+UbD5e6z5H+fiYg3x013t9d3
+         Ug2XOIJ4+PbsA3pnjSYfIyaUx+/IKCgx+cXlIVjBVGDAYioUl/HB1J/jCTtWW7qM9j
+         Mmp8x0OI5krAlZVulSbZDk2UMczMx0E0rO53hDPglUfQZgpgu3HVM1nqFkAz5CUJxa
+         PDcIJoUSKjITA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9C23D609ED;
-        Fri, 15 Oct 2021 10:30:11 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0FFBD60A47;
+        Fri, 15 Oct 2021 10:40:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next] tcp: switch orphan_count to bare per-cpu counters
+Subject: Re: [PATCH net-next 0/2] net/sched: implement L4S style ce_threshold_ect1
+ marking
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163429381163.2368.12610989324854729622.git-patchwork-notify@kernel.org>
-Date:   Fri, 15 Oct 2021 10:30:11 +0000
-References: <20211014134126.3998932-1-eric.dumazet@gmail.com>
-In-Reply-To: <20211014134126.3998932-1-eric.dumazet@gmail.com>
+Message-Id: <163429440706.6571.2942933078477320787.git-patchwork-notify@kernel.org>
+Date:   Fri, 15 Oct 2021 10:40:07 +0000
+References: <20211014175918.60188-1-eric.dumazet@gmail.com>
+In-Reply-To: <20211014175918.60188-1-eric.dumazet@gmail.com>
 To:     Eric Dumazet <eric.dumazet@gmail.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, sfb@google.com, ncardwell@google.com
+        edumazet@google.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Thu, 14 Oct 2021 06:41:26 -0700 you wrote:
+On Thu, 14 Oct 2021 10:59:16 -0700 you wrote:
 > From: Eric Dumazet <edumazet@google.com>
 > 
-> Use of percpu_counter structure to track count of orphaned
-> sockets is causing problems on modern hosts with 256 cpus
-> or more.
+> As suggested by Ingemar Johansson, Neal Cardwell, and others, fq_codel can be used
+> for Low Latency, Low Loss, Scalable Throughput (L4S) with a small change.
 > 
-> Stefan Bach reported a serious spinlock contention in real workloads,
-> that I was able to reproduce with a netfilter rule dropping
-> incoming FIN packets.
+> In ce_threshold_ect1 mode, only ECT(1) packets can be marked to CE if
+> their sojourn time is above the threshold.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2,net-next] tcp: switch orphan_count to bare per-cpu counters
-    https://git.kernel.org/netdev/net-next/c/19757cebf0c5
+  - [net-next,1/2] net: add skb_get_dsfield() helper
+    https://git.kernel.org/netdev/net-next/c/70e939ddea7f
+  - [net-next,2/2] fq_codel: implement L4S style ce_threshold_ect1 marking
+    https://git.kernel.org/netdev/net-next/c/e72aeb9ee0e3
 
 You are awesome, thank you!
 --
