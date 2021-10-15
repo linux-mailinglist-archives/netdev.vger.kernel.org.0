@@ -2,81 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B6E642F19C
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 15:01:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8871642F1BB
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 15:08:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235560AbhJONDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 09:03:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:47722 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233950AbhJONDU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 09:03:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1634302873;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xXqOotKBI86MAPAyKtRqjtlYyDq6iJ0xKNQOjSoSQ7g=;
-        b=AJKPYS3+pnEd9cY5Yzt4QZL2vtVkyFIxvzwrQqfjcDqSCh2XVLNVj5u7a7WrALoAeoMFKq
-        v8grFQcIg9xEti09DuEQE4AvkJBD4FKJyBHp+lcldzeFWBrUrUfiDMvIZKaM6IOa2q/TBW
-        wRAJKV7k1Km6yNe3H0NE0yPuOeyenWg=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-472-zIzGOoKYPIGh9D75EqcFJQ-1; Fri, 15 Oct 2021 09:01:12 -0400
-X-MC-Unique: zIzGOoKYPIGh9D75EqcFJQ-1
-Received: by mail-ed1-f71.google.com with SMTP id l22-20020aa7c316000000b003dbbced0731so8172014edq.6
-        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 06:01:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=xXqOotKBI86MAPAyKtRqjtlYyDq6iJ0xKNQOjSoSQ7g=;
-        b=NI18t6iWUtAWUsXRyAEXPaiz/nqGTOmZwVJTxe6VGR/kT42ZfFznrvqAA+F/+V0vOI
-         kn+mulSDoyoMzmgCsF4t4Tk3FN8cvxKDCFwwynAa0iu1kOgQPg4I1zwRedjeGOrE0+Hp
-         HiwlIshrLgmRgHCDJSAZUA1PRHQ23CctlxOHuyao6PIRInvSY2PZixPRBc8Xgy0H7yyl
-         vMRoHA5C7N8XkBZz4akOxc7pct/KarBDdDNItg5PPbU8GJCaAFUhFq06gqWkJyLwEdhL
-         tpsLWgCexdYuYqD9zYau080Dx9dEXpOiVmul10zs19U5aUCGKQvw5C7f3Pju2+R3JjMR
-         2F6w==
-X-Gm-Message-State: AOAM530xG5EZZWSvFicRatmsqt4KQ4T3sjPsppvWiOmlV+QUaICVOG7b
-        dP/+K7eJDQj2/c+YoydgphvVMFPo9ufIh0Bj1Ofak6K4WZR5gQtt4cyEMhvQSXoj41HoY9YpA0K
-        G88q4XxE4HaLkCk90
-X-Received: by 2002:a17:906:1749:: with SMTP id d9mr6661195eje.178.1634302871118;
-        Fri, 15 Oct 2021 06:01:11 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzPL7J4lh6lO87caBdDpsxZJ18ztvNW9fybwMRAts3YNtZ9Bt2JYZEVvs8FRCuBEX8GqqKD7w==
-X-Received: by 2002:a17:906:1749:: with SMTP id d9mr6661154eje.178.1634302870749;
-        Fri, 15 Oct 2021 06:01:10 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id q23sm4441169ejr.0.2021.10.15.06.01.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Oct 2021 06:01:09 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 4169A18025F; Fri, 15 Oct 2021 15:01:09 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, netdev@vger.kernel.org, edumazet@google.com,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: Re: [PATCH net-next 0/2] net/sched: implement L4S style
- ce_threshold_ect1 marking
-In-Reply-To: <163429440706.6571.2942933078477320787.git-patchwork-notify@kernel.org>
-References: <20211014175918.60188-1-eric.dumazet@gmail.com>
- <163429440706.6571.2942933078477320787.git-patchwork-notify@kernel.org>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 15 Oct 2021 15:01:09 +0200
-Message-ID: <875yty1lyi.fsf@toke.dk>
+        id S239273AbhJONKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 09:10:31 -0400
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:44558 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239256AbhJONK3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 09:10:29 -0400
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19FCx1Tm007385;
+        Fri, 15 Oct 2021 13:08:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=corp-2021-07-09; bh=5HiMwcak6Fmpj6WRmUR1Pdxweyd3dBzOlejvpHt0vww=;
+ b=aPt0R47T/QHcDyY/4nPD4RXQJkWP8+nnnw+YDjgjWjMxFkM2s9unYkPxJRRku38gB/pM
+ 9tVkcSoh9yoBAZHIccuUMrbIr1JzkrWPgKnzxHl92bIR3t47XHjec+Fo+J9IivKmJ+8E
+ msjVuqFHVP+fxMV4VAFUeKSaRzWYKqgKIFYYuRuW1+V4HzzTERaegEj87BFyI1teflHQ
+ nD63S5hBIgOXTeuO5KqimlLDDoyV4ZMXueqJYSB3zFBAY1mFYlcVyi6FE9G7tpCDgJ1a
+ B4ohnTPt4by4urYbzJrq/oCYjS4aoXkHB878KJccqMD532CwJ1fW44w0zMq8Z0fDFFY1 5A== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3bpfsyrtg9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 15 Oct 2021 13:08:18 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 19FD4sWa005247;
+        Fri, 15 Oct 2021 13:08:17 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3020.oracle.com with ESMTP id 3bmae46k0y-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 15 Oct 2021 13:08:17 +0000
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 19FD8G58020291;
+        Fri, 15 Oct 2021 13:08:16 GMT
+Received: from t460.home (dhcp-10-175-9-30.vpn.oracle.com [10.175.9.30])
+        by aserp3020.oracle.com with ESMTP id 3bmae46jxq-1;
+        Fri, 15 Oct 2021 13:08:16 +0000
+From:   Vegard Nossum <vegard.nossum@oracle.com>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vegard Nossum <vegard.nossum@oracle.com>
+Subject: [PATCH] lan78xx: select CRC32
+Date:   Fri, 15 Oct 2021 15:07:54 +0200
+Message-Id: <20211015130754.12283-1-vegard.nossum@oracle.com>
+X-Mailer: git-send-email 2.23.0.718.g5ad94255a8
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: oft2zsSFztGteDHkGwKZWiravcqIXUYm
+X-Proofpoint-GUID: oft2zsSFztGteDHkGwKZWiravcqIXUYm
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-patchwork-bot+netdevbpf@kernel.org writes:
+Fix the following build/link error by adding a dependency on the CRC32
+routines:
 
-> Hello:
->
-> This series was applied to netdev/net-next.git (master)
-> by David S. Miller <davem@davemloft.net>:
+  ld: drivers/net/usb/lan78xx.o: in function `lan78xx_set_multicast':
+  lan78xx.c:(.text+0x48cf): undefined reference to `crc32_le'
 
-Erm, huh? We were in the middle of a discussion of this :/
+The actual use of crc32_le() comes indirectly through ether_crc().
 
--Toke
+Fixes: 55d7de9de6c30 ("Microchip's LAN7800 family USB 2/3 to 10/100/1000 Ethernet device driver")
+Signed-off-by: Vegard Nossum <vegard.nossum@oracle.com>
+---
+ drivers/net/usb/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/usb/Kconfig b/drivers/net/usb/Kconfig
+index f87f175033731..b554054a7560a 100644
+--- a/drivers/net/usb/Kconfig
++++ b/drivers/net/usb/Kconfig
+@@ -117,6 +117,7 @@ config USB_LAN78XX
+ 	select PHYLIB
+ 	select MICROCHIP_PHY
+ 	select FIXED_PHY
++	select CRC32
+ 	help
+ 	  This option adds support for Microchip LAN78XX based USB 2
+ 	  & USB 3 10/100/1000 Ethernet adapters.
+-- 
+2.23.0.718.g5ad94255a8
 
