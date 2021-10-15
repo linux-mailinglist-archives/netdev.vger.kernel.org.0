@@ -2,71 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CC9C42EE3F
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 11:59:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6520742EE44
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 12:00:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234875AbhJOKBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 06:01:47 -0400
-Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:54882 "EHLO
-        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234825AbhJOKBj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 06:01:39 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=tianjia.zhang@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0Us8GlL2_1634291969;
-Received: from B-455UMD6M-2027.local(mailfrom:tianjia.zhang@linux.alibaba.com fp:SMTPD_---0Us8GlL2_1634291969)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 15 Oct 2021 17:59:30 +0800
-Subject: Re: [PATCH] selftests/tls: add SM4 GCM/CCM to tls selftests
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20211008091745.42917-1-tianjia.zhang@linux.alibaba.com>
- <YWk9ruGFxRA/1On6@Laptop-X1>
-From:   Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-Message-ID: <cf53cf98-354f-f993-4b55-ff22dcc0d92d@linux.alibaba.com>
-Date:   Fri, 15 Oct 2021 17:59:29 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        id S234950AbhJOKCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 06:02:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38396 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234903AbhJOKCN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Oct 2021 06:02:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id A1D0261216;
+        Fri, 15 Oct 2021 10:00:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634292007;
+        bh=uxTckg/PXhVC/sRLjqHJOSFxr7kH5uNpkLmHI6AChYA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ssyg9qTeRV56KNh6ytmaNFn1qwtUIH2dwiJqFPcio9G9/nq/jTNoTecrkKDY0Llpu
+         6RcqfrVEqiMe9uI85PEgwzCq/gFlg0XvxSsAp/nGT4ZpvERhLn4t8pBjwvS6soPLZ9
+         lsbUgDlh78j8ByM2oiQ4UQ/bgnPLe2TQSvrdO7USUntSVgG2IEATwIN/y1IrQdb9IW
+         3Up7Knd+zMmefQDdIL1XNCJuudO8MvjVNrSYbuyX0WnOKJsoKEsMd3+0OJlFggpe4a
+         PJuiZxljCCe+uqYpvjQCj3WWc0wAbR7O26AOAXBgBCXnAYpvKFPzmyf+HWwlelJZ6z
+         te3gwzAmA8Xxg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8EBA460A47;
+        Fri, 15 Oct 2021 10:00:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <YWk9ruGFxRA/1On6@Laptop-X1>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v6] page_pool: disable dma mapping support for 32-bit
+ arch with 64-bit DMA
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163429200757.18650.14587453476284432970.git-patchwork-notify@kernel.org>
+Date:   Fri, 15 Oct 2021 10:00:07 +0000
+References: <20211013091920.1106-1-linyunsheng@huawei.com>
+In-Reply-To: <20211013091920.1106-1-linyunsheng@huawei.com>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
+        hawk@kernel.org, ilias.apalodimas@linaro.org,
+        akpm@linux-foundation.org, peterz@infradead.org, will@kernel.org,
+        jhubbard@nvidia.com, yuzhao@google.com, mcroce@microsoft.com,
+        fenghua.yu@intel.com, feng.tang@intel.com, jgg@ziepe.ca,
+        aarcange@redhat.com, guro@fb.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Hangbin,
+Hello:
 
-On 10/15/21 4:37 PM, Hangbin Liu wrote:
-> Hi Tianjia,
-> 
-> The new added tls selftest failed with latest net-next in RedHat CKI
-> test env. Would you like to help check if we missed anything?
-> 
-> Here is the pipeline page
-> https://datawarehouse.cki-project.org/kcidb/builds/67720
-> Config URL:
-> http://s3.amazonaws.com/arr-cki-prod-datawarehouse-public/datawarehouse-public/2021/10/14/388570846/redhat:388570846/redhat:388570846_x86_64_debug/.config
-> Build Log URL:
-> http://s3.amazonaws.com/arr-cki-prod-datawarehouse-public/datawarehouse-public/2021/10/14/388570846/redhat:388570846/redhat:388570846_x86_64_debug/build.log
-> TLS test log:
-> https://s3.us-east-1.amazonaws.com/arr-cki-prod-datawarehouse-public/datawarehouse-public/2021/10/14/redhat:388570846/build_x86_64_redhat:388570846_x86_64_debug/tests/1/results_0001/job.01/recipes/10799149/tasks/19/results/1634231959/logs/resultoutputfile.log
-> Command: make -j24 INSTALL_MOD_STRIP=1 targz-pkg
-> Architecture: x86_64
-> 
-> Please tell me if you need any other info.
-> 
-> Thanks
-> Hangbin
-> 
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-This patch needs to enable the SM4 algorithm, and the config file you 
-provided does not enable this algorithm.
+On Wed, 13 Oct 2021 17:19:20 +0800 you wrote:
+> As the 32-bit arch with 64-bit DMA seems to rare those days,
+> and page pool might carry a lot of code and complexity for
+> systems that possibly.
+> 
+> So disable dma mapping support for such systems, if drivers
+> really want to work on such systems, they have to implement
+> their own DMA-mapping fallback tracking outside page_pool.
+> 
+> [...]
 
-Best regards,
-Tianjia
+Here is the summary with links:
+  - [net-next,v6] page_pool: disable dma mapping support for 32-bit arch with 64-bit DMA
+    https://git.kernel.org/netdev/net-next/c/d00e60ee54b1
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
