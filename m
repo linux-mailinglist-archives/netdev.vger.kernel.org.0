@@ -2,98 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31A8E42FE30
-	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 00:31:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32A5B42FE4B
+	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 00:42:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235751AbhJOWdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 18:33:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43886 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235622AbhJOWdC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Oct 2021 18:33:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 71BA1611C3;
-        Fri, 15 Oct 2021 22:30:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634337055;
-        bh=fUrFqPRnlAT5YXQndyHh2D+XafDA6mw8WfAjlL8tzn0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SEBzdisNkvtUQ4vmlit744P1D8/R2uHULn0gGWdxXejWQvjmTC+nbw9F0Q7VmPIjP
-         0AHTArU4eUSboC2BF7Nsxs7uZ95XxDc2J1/aSe5pYfAxy0ox8SzANtLHEBPXe24g0v
-         6NjGdOU4xfmIwKV0TG+13c5DLU48BTVsxdYufn453vGzQJe1xIs2W7fe3PqV3d6Eei
-         WaGo+huYGgIFDsCCu8fXkkv9+6773Hab1d6V+FwQuLGJdwA2Pro5UXJsaF48q6rBX3
-         RdoGOP9Oqy5Y3Hls+uJRsm3hDEHn/y68rL4G5iSYskpZRBczBJZDnl0t7GgKPIALmn
-         hIVSAKiqSO9Kw==
-Date:   Fri, 15 Oct 2021 15:30:53 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, olteanv@gmail.com, andrew@lunn.ch,
-        idosch@idosch.org, f.fainelli@gmail.com, jiri@nvidia.com,
-        idosch@nvidia.com, lars.povlsen@microchip.com,
-        Steen.Hegelund@microchip.com, UNGLinuxDriver@microchip.com,
-        bjarni.jonasson@microchip.com,
-        linux-arm-kernel@lists.infradead.org, qiangqing.zhang@nxp.com,
-        vkochan@marvell.com, tchornyi@marvell.com, vladimir.oltean@nxp.com,
-        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com
-Subject: Re: [RFC net-next 1/6] ethernet: add a helper for assigning port
- addresses
-Message-ID: <20211015153053.781b6e57@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <47ac074a-bf85-a514-00a5-3749e3582099@pensando.io>
-References: <20211015193848.779420-1-kuba@kernel.org>
-        <20211015193848.779420-2-kuba@kernel.org>
-        <47ac074a-bf85-a514-00a5-3749e3582099@pensando.io>
+        id S243328AbhJOWoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 18:44:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56308 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234009AbhJOWoH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 18:44:07 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C07B0C061570
+        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 15:42:00 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id pf6-20020a17090b1d8600b0019fa884ab85so10323601pjb.5
+        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 15:42:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=+JT4uWJe2lAG86rhYFZpxUZYD/s5UxqcXEsRxu1qbeI=;
+        b=Nv/AGEPSbXBo63/4eWX/P9Gd17yYMCFz5yEFKB3eRN1VN0NBEQhjcTDqkKs7+kRqIW
+         U6t6dbcJJGXFAOyaOsJ5PktrzJGauHcwUhuAxmaF9UojsBJEVbNVdLOqOE1Mrm957XLU
+         7BtRCdJ7JdtY1rN081B+2M+feG1Oa18P2aI7NI3+U+4zbOBCYewyP96Dk64wo1I1sKqP
+         endkKY6PwuNvDyIHWyFzO82ftBjxrdbUfjOIaqHXfax5jSRuppDBKoWkoSkzQdBVbEIg
+         1j4XnfF5kfIyLfo6qKVVTu02n7wiML/KLtJjLPBDopothaAZxt4EnNs4ctZAPXXjHT3h
+         U0Tw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+JT4uWJe2lAG86rhYFZpxUZYD/s5UxqcXEsRxu1qbeI=;
+        b=M7waD0wqdlOankNi6YVYaP/93c3NIZRcgITh2jFeuWmmfqR9CVrOkJJfxxPBVkMOQp
+         myyawxLTbreFrAU1aat4r7vhnfFkEV4XCb+uIwbdNE74vkFqjX0WjFZmx21PTtPMPRDg
+         9kYJGXGg9T3olnVaSH8bGpcYe182OT/RW2QylPiVxWfvnSy0mz0dkCtAv+KFVR8oTQUd
+         HSQYOF1IrhaZUS+9r5nbOSsJ9plV5sapvkh0/zbL49okxwYAZOrqG/fKckNnjbKaroiC
+         v4yCKKZy23hryAPJWdVgqJqISORY+TFsNrK1dCAbGH7178pRojfVMqbxSFq1nXNSVeoZ
+         cK3w==
+X-Gm-Message-State: AOAM532ZpWManjMCaSGUSLeakXtVHrmsJLbLZDpFccgHmvQkAoWn6PhN
+        5FJq56JDKuLBl/ermZrdthmsfPm6B+A=
+X-Google-Smtp-Source: ABdhPJyv69Qxgjsue4v7s8P1XtEJP16BOTe+sfds9KiZn6V30EEEONy5P143THsBk77g8+4oGABHxw==
+X-Received: by 2002:a17:902:e8c9:b0:13d:dae7:1d5b with SMTP id v9-20020a170902e8c900b0013ddae71d5bmr13210369plg.39.1634337719759;
+        Fri, 15 Oct 2021 15:41:59 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id d60sm11857742pjk.49.2021.10.15.15.41.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Oct 2021 15:41:59 -0700 (PDT)
+Subject: Re: KSZ8041 errata - linux patch
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20211012035650.GA10335@francesco-nb.int.toradex.com>
+ <09cc480a-eaa6-48cf-859c-48387f448e2f@csgroup.eu>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <697dc669-c733-d1e4-6559-432b2ef9400d@gmail.com>
+Date:   Fri, 15 Oct 2021 15:41:57 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <09cc480a-eaa6-48cf-859c-48387f448e2f@csgroup.eu>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 15 Oct 2021 14:36:00 -0700 Shannon Nelson wrote:
-> On 10/15/21 12:38 PM, Jakub Kicinski wrote:
-> > We have 5 drivers which offset base MAC addr by port id.
-> > Create a helper for them.
-> >
-> > This helper takes care of overflows, which some drivers
-> > did not do, please complain if that's going to break
-> > anything!
+On 10/15/21 2:36 AM, Christophe Leroy wrote:
+> Hello
+> 
+> Le 12/10/2021 à 05:56, Francesco Dolcini a écrit :
+>> Hello,
+>> I found out that in 2016 you tried to push a patch to fix a KSZ8041
+>> errata [1],
+>> what was the final conclusion on that? We have a similar patch in our
+>> kernel
+>> and I think that this should be really merged upstream.
+>>
+>> [1]
+>> https://lore.kernel.org/all/2ee9441d-1b3b-de6d-691d-b615c04c69d0@gmail.com/
+>>
+>>
+> 
+> I think I never got any answer to my last mail and it stoped there,
+> without any conclusion I guess.
 
-> > +/**
-> > + * eth_hw_addr_set_port - Generate and assign Ethernet address to a po=
-rt
-> > + * @dev: pointer to port's net_device structure
-> > + * @base_addr: base Ethernet address
-> > + * @id: offset to add to the base address
-> > + *
-> > + * Assign a MAC address to the net_device using a base address and an =
-offset.
-> > + * Commonly used by switch drivers which need to compute addresses for=
- all
-> > + * their ports. addr_assign_type is not changed.
-> > + */
-> > +static inline void eth_hw_addr_set_port(struct net_device *dev,
-> > +					const u8 *base_addr, u8 id) =20
->=20
-> To me, the words "_set_port" imply that you're going to force "id" into=20
-> the byte, overwriting what is already there.=C2=A0 Since this instead is=
-=20
-> adding "id" to the byte, perhaps a better name would include the word=20
-> "offset", maybe like eth_hw_addr_set_port_offset(), to better imply the=20
-> actual operation.
->=20
-> Personally, I think my name suggestion is too long, but it gets my=20
-> thought across.
+Yes sorry looks like I should have answered that better. Being on the
+side of caution makes sense to me.
 
-I started with eth_hw_addr_set_offset() my thought process was:
+> 
+> I can't see my patch in netdev patchwork so I guess it's been discarded.
 
-  .._set_offset() sounds like it's setting the offset
+Yes it certainly was.
 
-  dev_addr_mod() uses offset to modify just part of the address
-  so we have two similar functions using 'offset' with different=20
-  meaning
+> 
+> If you have a patch feel free to submit it.
 
-  how about we name it after the most common use? -> .._port()
-
-Thinking again maybe eth_hw_addr_gen()? We "generate" a port address
-based on base address and port ID.
-
-I can change if others agree that .._set_offset() is better.
+Yes please do.
+-- 
+Florian
