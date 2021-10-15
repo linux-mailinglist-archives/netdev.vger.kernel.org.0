@@ -2,74 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22F5442E711
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 05:10:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D554942E77A
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 06:05:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232068AbhJODMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 23:12:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44064 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229526AbhJODMN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Oct 2021 23:12:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 5992861152;
-        Fri, 15 Oct 2021 03:10:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634267407;
-        bh=P9nM+iawcJ/cq9zxzrLs3/0vOumzbm2xlBDwLs2lEC8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ZLJGt8sCFWZnezJ1ABzCIB6rNztC/C6kKbilZKUbU+bJr8JIULmCLLEz8GXWkZhhT
-         3g8xp3MUWrNFp+UQb9uEkuT3Gx1EQmCIYSGPfPPWtUMEhT2GU5H6+D6T5jE4twuGh9
-         ldM1ShI/oepnSxPpgoCdqB+lX7Nue/sNnaYMD8HIirzxm31+w+vexxHQF9hJ5YqVR5
-         qfXkJePBc+jpWsG7uDVXg14HaShdCvkKVIT6M8BqWiLsdyDGWk5voQqnbakJr2tZqj
-         n00ZToDg816kCnZq85BlR8a22klfCFb0B2G4iECNle81TSgs24YX+lP/E1dCVBm4IW
-         RQw6qz4+wdy3g==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4C35960A6D;
-        Fri, 15 Oct 2021 03:10:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232924AbhJOEGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 00:06:39 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:24319 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229445AbhJOEGi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 00:06:38 -0400
+Received: from dggeml757-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HVswx4tqrzbcyb;
+        Fri, 15 Oct 2021 12:00:01 +0800 (CST)
+Received: from localhost.localdomain (10.175.104.82) by
+ dggeml757-chm.china.huawei.com (10.1.199.137) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.8; Fri, 15 Oct 2021 12:04:30 +0800
+From:   Ziyang Xuan <william.xuanziyang@huawei.com>
+To:     <amitkarwar@gmail.com>, <siva8118@gmail.com>
+CC:     <kvalo@codeaurora.org>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net] rsi: stop thread firstly in rsi_91x_init() error handling
+Date:   Fri, 15 Oct 2021 12:03:35 +0800
+Message-ID: <20211015040335.1021546-1-william.xuanziyang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next 0/3] octeontx2-af: Miscellaneous changes for CPT
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163426740730.15884.10273341939652937551.git-patchwork-notify@kernel.org>
-Date:   Fri, 15 Oct 2021 03:10:07 +0000
-References: <20211013055621.1812301-1-schalla@marvell.com>
-In-Reply-To: <20211013055621.1812301-1-schalla@marvell.com>
-To:     Srujana Challa <schalla@marvell.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sgoutham@marvell.com, lcherian@marvell.com, gakula@marvell.com,
-        hkelam@marvell.com, jerinj@marvell.com, sbhatta@marvell.com
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggeml757-chm.china.huawei.com (10.1.199.137)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+When fail to init coex module, free 'common' and 'adapter' directly, but
+common->tx_thread which will access 'common' and 'adapter' is running at
+the same time. That will trigger the UAF bug.
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+==================================================================
+BUG: KASAN: use-after-free in rsi_tx_scheduler_thread+0x50f/0x520 [rsi_91x]
+Read of size 8 at addr ffff8880076dc000 by task Tx-Thread/124777
+CPU: 0 PID: 124777 Comm: Tx-Thread Not tainted 5.15.0-rc5+ #19
+Call Trace:
+ dump_stack_lvl+0xe2/0x152
+ print_address_description.constprop.0+0x21/0x140
+ ? rsi_tx_scheduler_thread+0x50f/0x520
+ kasan_report.cold+0x7f/0x11b
+ ? rsi_tx_scheduler_thread+0x50f/0x520
+ rsi_tx_scheduler_thread+0x50f/0x520
+...
 
-On Wed, 13 Oct 2021 11:26:18 +0530 you wrote:
-> This patchset consists of miscellaneous changes for CPT.
-> First patch enables the CPT HW interrupts, second patch
-> adds support for CPT LF teardown in non FLR path and
-> final patch does CPT CTX flush in FLR handler.
-> 
-> v2:
-> - Fixed a warning reported by kernel test robot.
-> 
-> [...]
+Freed by task 111873:
+ kasan_save_stack+0x1b/0x40
+ kasan_set_track+0x1c/0x30
+ kasan_set_free_info+0x20/0x30
+ __kasan_slab_free+0x109/0x140
+ kfree+0x117/0x4c0
+ rsi_91x_init+0x741/0x8a0 [rsi_91x]
+ rsi_probe+0x9f/0x1750 [rsi_usb]
 
-Here is the summary with links:
-  - [v2,net-next,1/3] octeontx2-af: Enable CPT HW interrupts
-    https://git.kernel.org/netdev/net-next/c/4826090719d4
-  - [v2,net-next,2/3] octeontx2-af: Perform cpt lf teardown in non FLR path
-    https://git.kernel.org/netdev/net-next/c/7054d39ccf7e
-  - [v2,net-next,3/3] octeontx2-af: Add support to flush full CPT CTX cache
-    https://git.kernel.org/netdev/net-next/c/149f3b73cb66
+Stop thread before free 'common' and 'adapter' to fix it.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Fixes: 2108df3c4b18 ("rsi: add coex support")
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+---
+ drivers/net/wireless/rsi/rsi_91x_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/drivers/net/wireless/rsi/rsi_91x_main.c b/drivers/net/wireless/rsi/rsi_91x_main.c
+index d98483298555..87f83def6c25 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_main.c
++++ b/drivers/net/wireless/rsi/rsi_91x_main.c
+@@ -359,6 +359,7 @@ struct rsi_hw *rsi_91x_init(u16 oper_mode)
+ 	if (common->coex_mode > 1) {
+ 		if (rsi_coex_attach(common)) {
+ 			rsi_dbg(ERR_ZONE, "Failed to init coex module\n");
++			rsi_kill_thread(&common->tx_thread);
+ 			goto err;
+ 		}
+ 	}
+-- 
+2.25.1
 
