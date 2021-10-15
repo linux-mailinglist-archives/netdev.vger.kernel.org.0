@@ -2,70 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C5C242EAB0
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 09:54:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C13FF42EACB
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 09:58:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236362AbhJOH5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 03:57:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48696 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230049AbhJOH5A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 03:57:00 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2393C061570;
-        Fri, 15 Oct 2021 00:54:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=+s4DkuJzbd93nRi4ilegPIH9sOXH6/eoHaUfmFKjyfI=; b=RqMZ8GyIYYcgnSr27St+djU57e
-        r++o9EoFVz6kcPXf0UkIgMhpFsUpXooMEmwj+0+IuQUlPI7yPprh3UVN8wNgX+JS4SR5lioqBKnyQ
-        rsKLkNDSLFAPN+XIqeAiU+MalorcTOfHHboDPJJdy0pi7utAI9ZgwSEXNT77bi+DXjNcBjdt/NOrv
-        g2g+icoSoc/YZLpTcN7xbs2T94Ilx/+T3Gjm0S5Tm0Sh+2/q1Yy964cIyaXqCtDnCk73UhKvbJXwL
-        IT6sDo9kzK/EZKEAfaHUN84KT5D0hrVle4v1QTf17ku3rV8Dgzojc8+Awv+2TBoYSMngvkOiMHLWE
-        YQ3283Wg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55126)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mbI3E-0002AK-6o; Fri, 15 Oct 2021 08:54:48 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mbI3B-0002wu-Qm; Fri, 15 Oct 2021 08:54:45 +0100
-Date:   Fri, 15 Oct 2021 08:54:45 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Luo Jie <luoj@codeaurora.org>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sricharan@codeaurora.org
-Subject: Re: [PATCH v2 05/13] net: phy: add qca8081 ethernet phy driver
-Message-ID: <YWkzxd7xzTDngoT9@shell.armlinux.org.uk>
-References: <20211015073505.1893-1-luoj@codeaurora.org>
- <20211015073505.1893-6-luoj@codeaurora.org>
+        id S236400AbhJOIAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 04:00:42 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:25137 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236397AbhJOIAl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 04:00:41 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4HVzBD485lz1DHcx;
+        Fri, 15 Oct 2021 15:56:52 +0800 (CST)
+Received: from dggema772-chm.china.huawei.com (10.1.198.214) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2308.8; Fri, 15 Oct 2021 15:58:32 +0800
+Received: from huawei.com (10.175.101.6) by dggema772-chm.china.huawei.com
+ (10.1.198.214) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.8; Fri, 15
+ Oct 2021 15:58:31 +0800
+From:   Liu Jian <liujian56@huawei.com>
+To:     <john.fastabend@gmail.com>, <daniel@iogearbox.net>,
+        <jakub@cloudflare.com>, <lmb@cloudflare.com>,
+        <edumazet@google.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>, <ast@kernel.org>,
+        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
+        <yhs@fb.com>, <kpsingh@kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+CC:     <liujian56@huawei.com>
+Subject: [PATCH] bpf, sockmap: Do not read sk_receive_queue in tcp_bpf_recvmsg if strparser enabled
+Date:   Fri, 15 Oct 2021 16:01:42 +0800
+Message-ID: <20211015080142.43424-1-liujian56@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211015073505.1893-6-luoj@codeaurora.org>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggema772-chm.china.huawei.com (10.1.198.214)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 15, 2021 at 03:34:57PM +0800, Luo Jie wrote:
-> @@ -1431,6 +1433,18 @@ static struct phy_driver at803x_driver[] = {
->  	.get_sset_count = at803x_get_sset_count,
->  	.get_strings = at803x_get_strings,
->  	.get_stats = at803x_get_stats,
-> +}, {
-> +	/* Qualcomm QCA8081 */
-> +	PHY_ID_MATCH_EXACT(QCA8081_PHY_ID),
-> +	.name			= "Qualcomm QCA8081 PHY",
+If the strparser function of sk is turned on, all received data needs to
+be processed by strparser first.
 
-I don't think we need the " PHY" suffix. This name gets printed in a
-context where it's obvious it's a network PHY.
+Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
+Signed-off-by: Liu Jian <liujian56@huawei.com>
+---
+ include/linux/skmsg.h | 6 ++++++
+ net/core/skmsg.c      | 5 +++++
+ net/ipv4/tcp_bpf.c    | 9 ++++++---
+ 3 files changed, 17 insertions(+), 3 deletions(-)
 
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index 94e2a1f6e58d..25e92dff04aa 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -390,6 +390,7 @@ void sk_psock_stop(struct sk_psock *psock, bool wait);
+ int sk_psock_init_strp(struct sock *sk, struct sk_psock *psock);
+ void sk_psock_start_strp(struct sock *sk, struct sk_psock *psock);
+ void sk_psock_stop_strp(struct sock *sk, struct sk_psock *psock);
++bool sk_psock_strparser_started(struct sock *sk);
+ #else
+ static inline int sk_psock_init_strp(struct sock *sk, struct sk_psock *psock)
+ {
+@@ -403,6 +404,11 @@ static inline void sk_psock_start_strp(struct sock *sk, struct sk_psock *psock)
+ static inline void sk_psock_stop_strp(struct sock *sk, struct sk_psock *psock)
+ {
+ }
++
++static inline bool sk_psock_strparser_started(struct sock *sk)
++{
++	return false;
++}
+ #endif
+ 
+ void sk_psock_start_verdict(struct sock *sk, struct sk_psock *psock);
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index e85b7f8491b9..dd64ef854f3e 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -1105,6 +1105,11 @@ void sk_psock_start_strp(struct sock *sk, struct sk_psock *psock)
+ 	sk->sk_write_space = sk_psock_write_space;
+ }
+ 
++bool sk_psock_strparser_started(struct sock *sk)
++{
++	return sk->sk_data_ready == sk_psock_strp_data_ready;
++}
++
+ void sk_psock_stop_strp(struct sock *sk, struct sk_psock *psock)
+ {
+ 	if (!psock->saved_data_ready)
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index 9d068153c316..17129b343966 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -198,6 +198,7 @@ static int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 	if (unlikely(!psock))
+ 		return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
+ 	if (!skb_queue_empty(&sk->sk_receive_queue) &&
++	    !sk_psock_strparser_started(sk) &&
+ 	    sk_psock_queue_empty(psock)) {
+ 		sk_psock_put(sk, psock);
+ 		return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
+@@ -214,9 +215,11 @@ static int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 		if (data) {
+ 			if (!sk_psock_queue_empty(psock))
+ 				goto msg_bytes_ready;
+-			release_sock(sk);
+-			sk_psock_put(sk, psock);
+-			return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
++			if (!sk_psock_strparser_started(sk)) {
++				release_sock(sk);
++				sk_psock_put(sk, psock);
++				return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
++			}
+ 		}
+ 		copied = -EAGAIN;
+ 	}
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.17.1
+
