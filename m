@@ -2,308 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A5BE42EA52
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 09:36:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2F7C42EA8B
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 09:50:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236270AbhJOHio (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 03:38:44 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:28770 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236226AbhJOHiH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 03:38:07 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1634283361; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=KbFFkIDkDNqUeZgyk5IMdH2c9o7vcEdfeaALVMeb95Y=; b=tBAvCLKIIFNcl/5CAcXIL2bYCBgIlZyKay4iOdHbxeFQwitpWVe1Hte1n0eRUWh4xpkTJfbh
- y+jWN/OOvQ2i0VChceC4UtPzERYgowbn0lh7IocraGAN8v3/1lorEt/Da4rZfHSyzZM5IfJV
- RGejmFKAj2DVkTSS9g86vFAL2zc=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
- 61692f59f3e5b80f1f7cb1ba (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 15 Oct 2021 07:35:53
- GMT
-Sender: luoj=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 94F6EC4338F; Fri, 15 Oct 2021 07:35:53 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from akronite-sh-dev02.qualcomm.com (unknown [180.166.53.21])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: luoj)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 187DAC4360D;
-        Fri, 15 Oct 2021 07:35:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 187DAC4360D
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-From:   Luo Jie <luoj@codeaurora.org>
-To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sricharan@codeaurora.org, Luo Jie <luoj@codeaurora.org>
-Subject: [PATCH v2 13/13] net: phy: add qca8081 cdt feature
-Date:   Fri, 15 Oct 2021 15:35:05 +0800
-Message-Id: <20211015073505.1893-14-luoj@codeaurora.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20211015073505.1893-1-luoj@codeaurora.org>
-References: <20211015073505.1893-1-luoj@codeaurora.org>
+        id S236161AbhJOHwR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 03:52:17 -0400
+Received: from mail-eopbgr1310122.outbound.protection.outlook.com ([40.107.131.122]:58784
+        "EHLO APC01-SG2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S236198AbhJOHwR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Oct 2021 03:52:17 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IXFF5hCZVAXwkj7OGND85vsexG/12/2sM8nt0pSjYBqmAilyYUhzwRwVL/TSbB7LrMwGn2tOVqg13B9NE6BLgXWVoVY/Pxmujyi5MsCuwCDOf12QZfHq61ngnWwQmOfjVa10BYnhxorlmImvbIbkfuPPXAZaT/ZiGLyoWk2ihzJMjP8WQbo27xcZZrU7PUVygzCFHGHKyJX6k/q0OnYLFvby9N2bxsa4hJ2dRhyR8LjisKew57niMjIUndfZPKfXD7G4DarIhdPl1yp2JDejp8zPEXYh3XqaIlR/bnUywzgTBtaQkeUi4LmnUX5FsVPUHXkXOqqy5KvfLTWPpW0kTA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CJLIN6hNGI3dlKQXf8s98PkQ7taZWBOXok0RGBS0VlA=;
+ b=DpQRdjQcZkeVEBla44esfJ6fLTKXt4yHmTJlpzUk8SjGxE5k3g7RsnNvh4ldbfcBuUBCK0uSJFzbLPs3+I13xRNoQV+8I/IN/E90S24+laidFBdBuGup7b02C0JV/FUC9+24fHwXD21IRzcT9eFVSxJWyeHPTu5QKJlGHxXlPjf396qeAtXnvwqoZsfJE60YijspLUJDGoV9uzLGumKSEPd/gFp1afYLh+mRdJFw2BTaPxTc5V5V8OUfv+AoYr4ZG5br+cMJByfC9NgJSCl6lyVb3C5ORIeA1/4zj9PV8NjAb1vzs79dx2i3ZHMnYL7PjInBw2NP83e8kqM279Ue2g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CJLIN6hNGI3dlKQXf8s98PkQ7taZWBOXok0RGBS0VlA=;
+ b=GdSifSMjeHbT+BIWeyQCxQyeaf/etDpO7duhG3FhFCsBthckxFWwyA3QO3iDR2LCdes92AKmijpfoi9Qo2pfs9K604PueTW344qUZ0sv3teG8yRQOdq+7i7qMdjBoM4Tbpq5OJymrIomXxF0kmetASCPiACHNvRVbxIikoROXMA=
+Authentication-Results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=vivo.com;
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com (2603:1096:4:78::19) by
+ SG2PR06MB3822.apcprd06.prod.outlook.com (2603:1096:4:dd::10) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4608.15; Fri, 15 Oct 2021 07:50:05 +0000
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::fc12:4e1b:cc77:6c0]) by SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::fc12:4e1b:cc77:6c0%6]) with mapi id 15.20.4608.017; Fri, 15 Oct 2021
+ 07:50:05 +0000
+From:   Wan Jiabing <wanjiabing@vivo.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     kael_w@yeah.net, Wan Jiabing <wanjiabing@vivo.com>
+Subject: [PATCH] net: phy: Add of_node_put() before return
+Date:   Fri, 15 Oct 2021 03:49:49 -0400
+Message-Id: <20211015074949.14589-1-wanjiabing@vivo.com>
+X-Mailer: git-send-email 2.20.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: HKAPR03CA0019.apcprd03.prod.outlook.com
+ (2603:1096:203:c9::6) To SG2PR06MB3367.apcprd06.prod.outlook.com
+ (2603:1096:4:78::19)
+MIME-Version: 1.0
+Received: from localhost.localdomain (203.90.234.87) by HKAPR03CA0019.apcprd03.prod.outlook.com (2603:1096:203:c9::6) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.10 via Frontend Transport; Fri, 15 Oct 2021 07:50:03 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4d6fc678-c0ea-46f0-ee30-08d98fb0666b
+X-MS-TrafficTypeDiagnostic: SG2PR06MB3822:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <SG2PR06MB38220FEAB9D9BC4D6DAE5F3AABB99@SG2PR06MB3822.apcprd06.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1227;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: DdDkvcZTeNljInc1WZOwwS19G+6+xaUmXdA1Hwmb3D0MIaxb6Expnyp82hgPmIgaIcLaC2/Eg9BsIt6CmN/lVG4uoaSVe6qZtU3a3giMm88nj50NIWlu5gQxKRN++5YDJz50VfEv7p4YRvnm7PAG6PMpEmtNL2rPrirxXLztfmkR6C8f6oSae4Bi6VMNN0Lexdr+TvWal786UjpCMQ5W8bZZe6Erjh39biFwP+rarvx/wJ1s7IGR1nHrA1HMKqmWVkRpF3heNGUqVErTHpAzXVSpVgZ5moOnO3ERUleLaUbNbNvQ3uC1Xfv21+IuunL/0MwoK2vohleemYPIie1lYp2W0Imyxgc1bOBCBYe2UFRXshNy+AQ5O/qasN9pWWU3If+yKbxsULNjHKhbSjYAsqdFMuImaWzE3OQBMiYXifAC8hRofzbnnmsEsFzm3FG3i6e5+xQ5WVUUU28T5GAa6uPqnosjWqd97h4YNtTCKQqjl6OkN2jyts3fclqy0ZMXP4PBUHYq247g1Dau+Rw/avKjr3PpNNAGpx6v8bMVEjxblN6WsOYGulRksKV7/sIa+1f+NrbLktC1dZOKa/u6jxOb9EC8PKE24vX3/2RSVZEskUeLfxcvGcJrI/ZzZTkfscha+il1SkajtAgNTEX5EfdM3rlfZ8x9m7j7wSR+QMGCfq6CwmvJ7GjqPE0Mu+Hxz17pm4odl6pP16SBqNRGZQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3367.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(38100700002)(38350700002)(6512007)(186003)(52116002)(4744005)(26005)(5660300002)(8936002)(2616005)(8676002)(956004)(508600001)(6506007)(4326008)(36756003)(66476007)(6486002)(86362001)(316002)(83380400001)(107886003)(110136005)(66556008)(1076003)(2906002)(66946007)(6666004);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?w0XYmD8DGKwJKoLF9xKX41FqP/7I9dF6wrna0Ir5ChZJj2BkiM1n7mtFQny3?=
+ =?us-ascii?Q?lB/e6ZkuDwA8GsQQhrwAP53xylRaS0YmjeBByCkefO2o+oGNJ1sSwaDA/l2O?=
+ =?us-ascii?Q?EgU4H5vQk9wEAZlIgmTmBPVxLkOKTGSQ6XJx8rUvqo7yzBgKm+0X04H+JHU3?=
+ =?us-ascii?Q?EOEZfNuaU+WJCiYtNWN5Ip5bgOfJ0BLSSQ4HMq+Xi6yroEupUB4yLdsOQAkp?=
+ =?us-ascii?Q?De1i2DY/qI6j6g9o5Eqzm4NPu443nOabVh8ZEug1bXISerrMz6jKMBDsEVZl?=
+ =?us-ascii?Q?7+05l/6U3zTch/fsQ7Axk8OwazItXILOT0Vf07ZGwOjkIR8zFUw/FktP8nn6?=
+ =?us-ascii?Q?xCzJFNwIVtJldb82bajCZf4AZ+9EUeLfKRDYnJxSO3g0z+Ihx0GmY3kGUdmY?=
+ =?us-ascii?Q?mzKGkXMSPauePD4wtGWcZT1ph/V87JZdF9+5s2BTTjXyaaTVtC3O8yL3digq?=
+ =?us-ascii?Q?5eV2j4q6o2LoduptaUziHptlbTggAJ+5AbztRBY/shlnVOAaDeecpizvbiRQ?=
+ =?us-ascii?Q?Z31QkPisS9k1xJ7qVQ2VMW4xHpDKRS2oFFkZjYkgY44fEFrC6vw+4RkPmgRn?=
+ =?us-ascii?Q?3FOUzm6MGZg8YM0OACh1b1YMIMFkYD6xZY6OdEQDz20oxDBQgrKc9NATYgti?=
+ =?us-ascii?Q?xrIscybJk6bbZylIUfHuQBqI8mezq8bfoPVJ9YOmCvzaCfOFlFqvUGfINSco?=
+ =?us-ascii?Q?Qzfiw1aEKOdjnRmK4+HBU+fNVJmXrnRBFJNE9KY2ogEiypDV5Wj3Ci5k/eZf?=
+ =?us-ascii?Q?Gol8D58crwdw4NOFKiO9pgC0OO6z2gxXxREZN1cW6kb1dHapEuAF0ZW7p3D0?=
+ =?us-ascii?Q?s22y2MXe0IF5eZVxYpfnM+Bgh6KhqBbX0KAknb1yvcz7R2aqYfN7Dpek2P1g?=
+ =?us-ascii?Q?+5QyOec1wmShSnzSUS9gb4hnDeCuQ5U64lmwJEGbHECgRyiholkceXJ8KnhA?=
+ =?us-ascii?Q?7SVc+orwo/R4X/oYMs8Qn3bEV9D7bIHvtRTHHiFV6mYouxG4j4Lflkkmff8i?=
+ =?us-ascii?Q?qzKQtyMUXnv5iuM3mH4VWmmhiWrpsdyS87I5KezE3dUXiBjiBSiwhP8adGJZ?=
+ =?us-ascii?Q?9g7Larl6C5B3Cstt0MlFq7fI5CNV4Tnha/j/Pa9cIaKJRaLaZZNx2QHzNxff?=
+ =?us-ascii?Q?YCoznfycRSUsfy+OtgZ4pW+qm34i508KL2em72BymJGUTgt0sRvNg2cfZv3G?=
+ =?us-ascii?Q?sgSL+bMXKR+xkWqOPKGEGTjX8vFVJFPoyyCoXR8FtJk7o2FiTYYWd2ZKAWvy?=
+ =?us-ascii?Q?LY7dtA/+v3RQ8aQLX5F3WEPK20TnIRll3QaPFfrE0Wq6nlAUi9ETM/z3Srxv?=
+ =?us-ascii?Q?aiuy5UsnyzaPNzYKJNyklhpf?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4d6fc678-c0ea-46f0-ee30-08d98fb0666b
+X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3367.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Oct 2021 07:50:04.8139
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: XZKptHd4EZuYp8wris8v8pD6w7OBxqalp7bx4+sLVunfh7c3IeneZZ12BI5GprGITkZwnzbjjyXjD6i9o6FlOg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR06MB3822
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To perform CDT of qca8081 phy:
-1. disable hibernation.
-2. force phy working in MDI mode.
-3. force phy working in 1000BASE-T mode.
-4. configure the related thresholds.
+Fix following coccicheck warning:
+./drivers/net/phy/mdio_bus.c:454:1-33: WARNING: Function
+for_each_available_child_of_node should have of_node_put() before return
 
-Signed-off-by: Luo Jie <luoj@codeaurora.org>
+Early exits from for_each_available_child_of_node should decrement the
+node reference counter.
+
+Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
 ---
- drivers/net/phy/at803x.c | 193 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 190 insertions(+), 3 deletions(-)
+ drivers/net/phy/mdio_bus.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 6c5dc4eed752..acb3dd9fd3b3 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -220,6 +220,32 @@
- #define QCA808X_MASTER_SLAVE_SEED_CFG		GENMASK(12, 2)
- #define QCA808X_MASTER_SLAVE_SEED_RANGE		0x32
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index c204067f1890..d19ee8a69e6c 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -460,6 +460,7 @@ static void of_mdiobus_link_mdiodev(struct mii_bus *bus,
  
-+/* Hibernation yields lower power consumpiton in contrast with normal operation mode.
-+ * when the copper cable is unplugged, the PHY enters into hibernation mode in about 10s.
-+ */
-+#define QCA808X_DBG_AN_TEST			0xb
-+#define QCA808X_HIBERNATION_EN			BIT(15)
-+
-+#define QCA808X_CDT_ENABLE_TEST			BIT(15)
-+#define QCA808X_CDT_INTER_CHECK_DIS		BIT(13)
-+#define QCA808X_CDT_LENGTH_UNIT			BIT(10)
-+
-+#define QCA808X_MMD3_CDT_STATUS			0x8064
-+#define QCA808X_MMD3_CDT_DIAG_PAIR_A		0x8065
-+#define QCA808X_MMD3_CDT_DIAG_PAIR_B		0x8066
-+#define QCA808X_MMD3_CDT_DIAG_PAIR_C		0x8067
-+#define QCA808X_MMD3_CDT_DIAG_PAIR_D		0x8068
-+#define QCA808X_CDT_DIAG_LENGTH			GENMASK(7, 0)
-+
-+#define QCA808X_CDT_CODE_PAIR_A			GENMASK(15, 12)
-+#define QCA808X_CDT_CODE_PAIR_B			GENMASK(11, 8)
-+#define QCA808X_CDT_CODE_PAIR_C			GENMASK(7, 4)
-+#define QCA808X_CDT_CODE_PAIR_D			GENMASK(3, 0)
-+#define QCA808X_CDT_STATUS_STAT_FAIL		0
-+#define QCA808X_CDT_STATUS_STAT_NORMAL		1
-+#define QCA808X_CDT_STATUS_STAT_OPEN		2
-+#define QCA808X_CDT_STATUS_STAT_SHORT		3
-+
- MODULE_DESCRIPTION("Qualcomm Atheros AR803x and QCA808X PHY driver");
- MODULE_AUTHOR("Matus Ujhelyi");
- MODULE_LICENSE("GPL");
-@@ -1294,8 +1320,14 @@ static int at803x_cdt_start(struct phy_device *phydev, int pair)
- {
- 	u16 cdt;
- 
--	cdt = FIELD_PREP(AT803X_CDT_MDI_PAIR_MASK, pair) |
--	      AT803X_CDT_ENABLE_TEST;
-+	/* qca8081 takes the different bit 15 to enable CDT test */
-+	if (phydev->drv->phy_id == QCA8081_PHY_ID)
-+		cdt = QCA808X_CDT_ENABLE_TEST |
-+			QCA808X_CDT_LENGTH_UNIT |
-+			QCA808X_CDT_INTER_CHECK_DIS;
-+	else
-+		cdt = FIELD_PREP(AT803X_CDT_MDI_PAIR_MASK, pair) |
-+			AT803X_CDT_ENABLE_TEST;
- 
- 	return phy_write(phydev, AT803X_CDT, cdt);
- }
-@@ -1303,10 +1335,16 @@ static int at803x_cdt_start(struct phy_device *phydev, int pair)
- static int at803x_cdt_wait_for_completion(struct phy_device *phydev)
- {
- 	int val, ret;
-+	u16 cdt_en;
-+
-+	if (phydev->drv->phy_id == QCA8081_PHY_ID)
-+		cdt_en = QCA808X_CDT_ENABLE_TEST;
-+	else
-+		cdt_en = AT803X_CDT_ENABLE_TEST;
- 
- 	/* One test run takes about 25ms */
- 	ret = phy_read_poll_timeout(phydev, AT803X_CDT, val,
--				    !(val & AT803X_CDT_ENABLE_TEST),
-+				    !(val & cdt_en),
- 				    30000, 100000, true);
- 
- 	return ret < 0 ? ret : 0;
-@@ -1586,6 +1624,153 @@ static int qca808x_soft_reset(struct phy_device *phydev)
- 	return qca808x_phy_ms_seed_enable(phydev, true);
- }
- 
-+static bool qca808x_cdt_fault_length_valid(int cdt_code)
-+{
-+	switch (cdt_code) {
-+	case QCA808X_CDT_STATUS_STAT_SHORT:
-+	case QCA808X_CDT_STATUS_STAT_OPEN:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+static int qca808x_cable_test_result_trans(int cdt_code)
-+{
-+	switch (cdt_code) {
-+	case QCA808X_CDT_STATUS_STAT_NORMAL:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_OK;
-+	case QCA808X_CDT_STATUS_STAT_SHORT:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_SAME_SHORT;
-+	case QCA808X_CDT_STATUS_STAT_OPEN:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_OPEN;
-+	case QCA808X_CDT_STATUS_STAT_FAIL:
-+	default:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_UNSPEC;
-+	}
-+}
-+
-+static int qca808x_cdt_fault_length(struct phy_device *phydev, int pair)
-+{
-+	int val;
-+	u32 cdt_length_reg = 0;
-+
-+	switch (pair) {
-+	case ETHTOOL_A_CABLE_PAIR_A:
-+		cdt_length_reg = QCA808X_MMD3_CDT_DIAG_PAIR_A;
-+		break;
-+	case ETHTOOL_A_CABLE_PAIR_B:
-+		cdt_length_reg = QCA808X_MMD3_CDT_DIAG_PAIR_B;
-+		break;
-+	case ETHTOOL_A_CABLE_PAIR_C:
-+		cdt_length_reg = QCA808X_MMD3_CDT_DIAG_PAIR_C;
-+		break;
-+	case ETHTOOL_A_CABLE_PAIR_D:
-+		cdt_length_reg = QCA808X_MMD3_CDT_DIAG_PAIR_D;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	val = phy_read_mmd(phydev, MDIO_MMD_PCS, cdt_length_reg);
-+	if (val < 0)
-+		return val;
-+
-+	return (FIELD_GET(QCA808X_CDT_DIAG_LENGTH, val) * 824) / 10;
-+}
-+
-+static int qca808x_cable_test_start(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	/* perform CDT with the following configs:
-+	 * 1. disable hibernation.
-+	 * 2. force PHY working in MDI mode.
-+	 * 3. for PHY working in 1000BaseT.
-+	 * 4. configure the threshold.
-+	 */
-+
-+	ret = at803x_debug_reg_mask(phydev, QCA808X_DBG_AN_TEST, QCA808X_HIBERNATION_EN, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = at803x_config_mdix(phydev, ETH_TP_MDI);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Force 1000base-T needs to configure PMA/PMD and MII_BMCR */
-+	phydev->duplex = DUPLEX_FULL;
-+	phydev->speed = SPEED_1000;
-+	ret = genphy_c45_pma_setup_forced(phydev);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = genphy_setup_forced(phydev);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* configure the thresholds for open, short, pair ok test */
-+	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x8074, 0xc040);
-+	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x8076, 0xc040);
-+	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x8077, 0xa060);
-+	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x8078, 0xc050);
-+	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x807a, 0xc060);
-+	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x807e, 0xb060);
-+
-+	return 0;
-+}
-+
-+static int qca808x_cable_test_get_status(struct phy_device *phydev, bool *finished)
-+{
-+	int ret, val;
-+	int pair_a, pair_b, pair_c, pair_d;
-+
-+	*finished = false;
-+
-+	ret = at803x_cdt_start(phydev, 0);
-+	if (ret)
-+		return ret;
-+
-+	ret = at803x_cdt_wait_for_completion(phydev);
-+	if (ret)
-+		return ret;
-+
-+	val = phy_read_mmd(phydev, MDIO_MMD_PCS, QCA808X_MMD3_CDT_STATUS);
-+	if (val < 0)
-+		return val;
-+
-+	pair_a = FIELD_GET(QCA808X_CDT_CODE_PAIR_A, val);
-+	pair_b = FIELD_GET(QCA808X_CDT_CODE_PAIR_B, val);
-+	pair_c = FIELD_GET(QCA808X_CDT_CODE_PAIR_C, val);
-+	pair_d = FIELD_GET(QCA808X_CDT_CODE_PAIR_D, val);
-+
-+	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_A,
-+				qca808x_cable_test_result_trans(pair_a));
-+	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_B,
-+				qca808x_cable_test_result_trans(pair_b));
-+	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_C,
-+				qca808x_cable_test_result_trans(pair_c));
-+	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_D,
-+				qca808x_cable_test_result_trans(pair_d));
-+
-+	if (qca808x_cdt_fault_length_valid(pair_a))
-+		ethnl_cable_test_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_A,
-+				qca808x_cdt_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_A));
-+	if (qca808x_cdt_fault_length_valid(pair_b))
-+		ethnl_cable_test_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_B,
-+				qca808x_cdt_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_B));
-+	if (qca808x_cdt_fault_length_valid(pair_c))
-+		ethnl_cable_test_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_C,
-+				qca808x_cdt_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_C));
-+	if (qca808x_cdt_fault_length_valid(pair_d))
-+		ethnl_cable_test_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_D,
-+				qca808x_cdt_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_D));
-+
-+	*finished = true;
-+
-+	return 0;
-+}
-+
- static struct phy_driver at803x_driver[] = {
- {
- 	/* Qualcomm Atheros AR8035 */
-@@ -1712,6 +1897,8 @@ static struct phy_driver at803x_driver[] = {
- 	.read_status		= qca808x_read_status,
- 	.config_init		= qca808x_config_init,
- 	.soft_reset		= qca808x_soft_reset,
-+	.cable_test_start	= qca808x_cable_test_start,
-+	.cable_test_get_status	= qca808x_cable_test_get_status,
- }, };
- 
- module_phy_driver(at803x_driver);
+ 		if (addr == mdiodev->addr) {
+ 			device_set_node(dev, of_fwnode_handle(child));
++			of_node_put(child);
+ 			return;
+ 		}
+ 	}
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.20.1
 
