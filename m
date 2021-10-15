@@ -2,74 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73E3A42FDF7
+	by mail.lfdr.de (Postfix) with ESMTP id BD28942FDF8
 	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 00:17:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238760AbhJOWTH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 18:19:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34132 "EHLO mail.kernel.org"
+        id S238781AbhJOWTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 18:19:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34150 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234582AbhJOWTH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S238749AbhJOWTH (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 15 Oct 2021 18:19:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 19FE06115C;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5EA6D61181;
         Fri, 15 Oct 2021 22:17:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1634336220;
-        bh=CUXWYsSE1DcHFADWvZC2PXXgm+dgjFSAhnmxL5GZs1c=;
-        h=From:To:Cc:Subject:Date:From;
-        b=t2pfVxRNyJ0tcfsbazsh72Hpyj948HQqTFSR9VFFnrq8nYP37pI571JyvNVfRLsGl
-         Xgyfwva3UF+IJTTx+fp7/wezNGVyADAJjG7yzeiNPQWuvwVqFjS4Ae9S2td/LmqJi3
-         Z5JwYb7nf35N/PUAl3iKoeo5f/cBUB6/LosWJyk4PgBeDBkEgtyYNV21UP6R/BBK23
-         E0HE+pnwdO2ijvNwiMT8+4ftMuISC5dfWB5/wj6FbhKOHeNpHRWxWGQ45BRvQOayRA
-         N5xDDBsPGI7qLnM/nAC2G7sAUbrtgkb6TfafOB39OjMnkIq1W1mW2H+GRFkPpAWeEK
-         LW3OfGKts+eHA==
+        bh=K6pls3GWczQzZMES9wiWedY5vKt2ql1T+kOFjzAv+eY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ZKfM+F3sgNpXNHJ8J1hdnz1Z1ai4JV5F7DGxdKZSMvZhn95/fVEDdyv/aqXCyfrqM
+         KFYnJZfx9G6RG0uPbjkbWetvZPHiLNI9PbKGemrEygDlOutYtrmUgSNYLm1Xksi5u4
+         dVPAB7eQeyJX5RCghTxYNuu4I9Wf2er2v0hhRswrqgDZAuSyg+4xm+YSGQJPecnx8i
+         6s8+IPlWf7Ys+TexGw4vGvCYjR8BN20xU1RGQV6V+H+0O41e+HZAscYihZK91jpxho
+         eduXqPs946GoXUDwWNSsZyNCavjxOg1Ifee4+DsQuons03fRNi0Q3TdPxNoAlh1/WM
+         nAZplW6d/ruIQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 00/12] ethernet: manual netdev->dev_addr conversions (part 1)
-Date:   Fri, 15 Oct 2021 15:16:40 -0700
-Message-Id: <20211015221652.827253-1-kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        ionut@badula.org
+Subject: [PATCH net-next 01/12] ethernet: adaptec: use eth_hw_addr_set()
+Date:   Fri, 15 Oct 2021 15:16:41 -0700
+Message-Id: <20211015221652.827253-2-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20211015221652.827253-1-kuba@kernel.org>
+References: <20211015221652.827253-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Manual conversions of drivers writing directly
-to netdev->dev_addr (part 1 out of 3).
+Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
+of VLANs...") introduced a rbtree for faster Ethernet address look
+up. To maintain netdev->dev_addr in this tree we need to make all
+the writes to it got through appropriate helpers.
 
-Jakub Kicinski (12):
-  ethernet: adaptec: use eth_hw_addr_set()
-  ethernet: aeroflex: use eth_hw_addr_set()
-  ethernet: alteon: use eth_hw_addr_set()
-  ethernet: amd: use eth_hw_addr_set()
-  ethernet: aquantia: use eth_hw_addr_set()
-  ethernet: bnx2x: use eth_hw_addr_set()
-  ethernet: bcmgenet: use eth_hw_addr_set()
-  ethernet: enic: use eth_hw_addr_set()
-  ethernet: ec_bhf: use eth_hw_addr_set()
-  ethernet: enetc: use eth_hw_addr_set()
-  ethernet: ibmveth: use ether_addr_to_u64()
-  ethernet: ixgb: use eth_hw_addr_set()
+Read the address into an array on the stack, then call
+eth_hw_addr_set().
 
- drivers/net/ethernet/adaptec/starfire.c         |  4 +++-
- drivers/net/ethernet/aeroflex/greth.c           |  6 +++---
- drivers/net/ethernet/alteon/acenic.c            | 14 ++++++++------
- drivers/net/ethernet/amd/amd8111e.c             |  4 +++-
- drivers/net/ethernet/amd/pcnet32.c              | 13 +++++++++----
- drivers/net/ethernet/aquantia/atlantic/aq_nic.c |  6 ++++--
- .../net/ethernet/broadcom/bnx2x/bnx2x_main.c    | 16 +++++++++++-----
- drivers/net/ethernet/broadcom/genet/bcmgenet.c  |  8 ++++++--
- drivers/net/ethernet/cisco/enic/enic_main.c     |  5 +++--
- drivers/net/ethernet/ec_bhf.c                   |  4 +++-
- drivers/net/ethernet/freescale/enetc/enetc_hw.h |  6 +++++-
- drivers/net/ethernet/freescale/enetc/enetc_pf.c |  2 +-
- drivers/net/ethernet/freescale/enetc/enetc_vf.c |  2 +-
- drivers/net/ethernet/ibm/ibmveth.c              | 17 +++--------------
- drivers/net/ethernet/intel/ixgb/ixgb_main.c     |  8 ++++++--
- 15 files changed, 69 insertions(+), 46 deletions(-)
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+CC: ionut@badula.org
+---
+ drivers/net/ethernet/adaptec/starfire.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/ethernet/adaptec/starfire.c b/drivers/net/ethernet/adaptec/starfire.c
+index 16b6b83f670b..c6982f7caf9b 100644
+--- a/drivers/net/ethernet/adaptec/starfire.c
++++ b/drivers/net/ethernet/adaptec/starfire.c
+@@ -641,6 +641,7 @@ static int starfire_init_one(struct pci_dev *pdev,
+ 	struct netdev_private *np;
+ 	int i, irq, chip_idx = ent->driver_data;
+ 	struct net_device *dev;
++	u8 addr[ETH_ALEN];
+ 	long ioaddr;
+ 	void __iomem *base;
+ 	int drv_flags, io_size;
+@@ -696,7 +697,8 @@ static int starfire_init_one(struct pci_dev *pdev,
+ 
+ 	/* Serial EEPROM reads are hidden by the hardware. */
+ 	for (i = 0; i < 6; i++)
+-		dev->dev_addr[i] = readb(base + EEPROMCtrl + 20 - i);
++		addr[i] = readb(base + EEPROMCtrl + 20 - i);
++	eth_hw_addr_set(dev, addr);
+ 
+ #if ! defined(final_version) /* Dump the EEPROM contents during development. */
+ 	if (debug > 4)
 -- 
 2.31.1
 
