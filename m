@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A73A42FE64
+	by mail.lfdr.de (Postfix) with ESMTP id E99EB42FE66
 	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 00:53:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243411AbhJOWzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 18:55:44 -0400
-Received: from www62.your-server.de ([213.133.104.62]:46074 "EHLO
+        id S243414AbhJOWzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 18:55:46 -0400
+Received: from www62.your-server.de ([213.133.104.62]:46076 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243405AbhJOWzk (ORCPT
+        with ESMTP id S243406AbhJOWzk (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 18:55:40 -0400
 Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
         by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92.3)
         (envelope-from <daniel@iogearbox.net>)
-        id 1mbW4x-000Beu-PZ; Sat, 16 Oct 2021 00:53:31 +0200
+        id 1mbW4y-000Bf1-5F; Sat, 16 Oct 2021 00:53:32 +0200
 From:   Daniel Borkmann <daniel@iogearbox.net>
 To:     dsahern@kernel.org
 Cc:     netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH iproute2 -next 2/4] ip, neigh: Fix up spacing in netlink dump
-Date:   Sat, 16 Oct 2021 00:53:17 +0200
-Message-Id: <20211015225319.2284-3-daniel@iogearbox.net>
+Subject: [PATCH iproute2 -next 3/4] ip, neigh: Add missing NTF_USE support
+Date:   Sat, 16 Oct 2021 00:53:18 +0200
+Message-Id: <20211015225319.2284-4-daniel@iogearbox.net>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20211015225319.2284-1-daniel@iogearbox.net>
 References: <20211015225319.2284-1-daniel@iogearbox.net>
@@ -33,71 +33,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix up spacing to consistently add a single ' ' after an attribute has
-been printed. Currently, it is a bit of a mix of before and after which
-can lead to double spacing to be printed.
+Currently, ip neigh does not support the NTF_USE flag. Similar to other flags
+such as extern_learn, add cmdline support. The flag dump support is explicitly
+missing here, since the kernel does not propagate the flag back to user space.
+
+Usage example:
+
+  # ./ip/ip n replace 192.168.178.30 dev enp5s0 use extern_learn
+  # ./ip/ip n
+  192.168.178.30 dev enp5s0 lladdr f4:8c:50:5e:71:9a extern_learn REACHABLE
+  [...]
 
 Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 ---
- ip/ipneigh.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ ip/ipneigh.c            | 4 +++-
+ man/man8/ip-neighbour.8 | 8 ++++++++
+ 2 files changed, 11 insertions(+), 1 deletion(-)
 
 diff --git a/ip/ipneigh.c b/ip/ipneigh.c
-index b778de00..564e787c 100644
+index 564e787c..9510e03e 100644
 --- a/ip/ipneigh.c
 +++ b/ip/ipneigh.c
-@@ -235,7 +235,7 @@ static void print_neigh_state(unsigned int nud)
- #define PRINT_FLAG(f)						\
- 	if (nud & NUD_##f) {					\
- 		nud &= ~NUD_##f;				\
--		print_string(PRINT_ANY, NULL, " %s", #f);	\
-+		print_string(PRINT_ANY, NULL, "%s ", #f);	\
- 	}
+@@ -51,7 +51,7 @@ static void usage(void)
+ 	fprintf(stderr,
+ 		"Usage: ip neigh { add | del | change | replace }\n"
+ 		"		{ ADDR [ lladdr LLADDR ] [ nud STATE ] proxy ADDR }\n"
+-		"		[ dev DEV ] [ router ] [ extern_learn ] [ protocol PROTO ]\n"
++		"		[ dev DEV ] [ router ] [ use ] [ extern_learn ] [ protocol PROTO ]\n"
+ 		"\n"
+ 		"	ip neigh { show | flush } [ proxy ] [ to PREFIX ] [ dev DEV ] [ nud STATE ]\n"
+ 		"				  [ vrf NAME ]\n"
+@@ -148,6 +148,8 @@ static int ipneigh_modify(int cmd, int flags, int argc, char **argv)
+ 			req.ndm.ndm_flags |= NTF_PROXY;
+ 		} else if (strcmp(*argv, "router") == 0) {
+ 			req.ndm.ndm_flags |= NTF_ROUTER;
++		} else if (strcmp(*argv, "use") == 0) {
++			req.ndm.ndm_flags |= NTF_USE;
+ 		} else if (matches(*argv, "extern_learn") == 0) {
+ 			req.ndm.ndm_flags |= NTF_EXT_LEARNED;
+ 		} else if (strcmp(*argv, "dev") == 0) {
+diff --git a/man/man8/ip-neighbour.8 b/man/man8/ip-neighbour.8
+index a27f9ef8..ed2dcd5a 100644
+--- a/man/man8/ip-neighbour.8
++++ b/man/man8/ip-neighbour.8
+@@ -25,6 +25,7 @@ ip-neighbour \- neighbour/arp tables management.
+ .B  dev
+ .IR DEV " ] [ "
+ .BR router " ] [ "
++.BR use " ] [ "
+ .BR extern_learn " ]"
  
- 	PRINT_FLAG(INCOMPLETE);
-@@ -423,27 +423,27 @@ int print_neigh(struct nlmsghdr *n, void *arg)
- 			fprintf(fp, "lladdr ");
+ .ti -8
+@@ -91,6 +92,13 @@ indicates whether we are proxying for this neighbour entry
+ .BI router
+ indicates whether neighbour is a router
  
- 		print_color_string(PRINT_ANY, COLOR_MAC,
--				   "lladdr", "%s", lladdr);
-+				   "lladdr", "%s ", lladdr);
- 	}
- 
- 	if (r->ndm_flags & NTF_ROUTER)
--		print_null(PRINT_ANY, "router", " %s", "router");
-+		print_null(PRINT_ANY, "router", "%s ", "router");
- 
- 	if (r->ndm_flags & NTF_PROXY)
--		print_null(PRINT_ANY, "proxy", " %s", "proxy");
-+		print_null(PRINT_ANY, "proxy", "%s ", "proxy");
- 
- 	if (r->ndm_flags & NTF_EXT_LEARNED)
--		print_null(PRINT_ANY, "extern_learn", " %s ", "extern_learn");
-+		print_null(PRINT_ANY, "extern_learn", "%s ", "extern_learn");
- 
- 	if (r->ndm_flags & NTF_OFFLOADED)
--		print_null(PRINT_ANY, "offload", " %s", "offload");
-+		print_null(PRINT_ANY, "offload", "%s ", "offload");
- 
- 	if (show_stats) {
- 		if (tb[NDA_CACHEINFO])
- 			print_cacheinfo(RTA_DATA(tb[NDA_CACHEINFO]));
- 
- 		if (tb[NDA_PROBES])
--			print_uint(PRINT_ANY, "probes", " probes %u",
-+			print_uint(PRINT_ANY, "probes", "probes %u ",
- 				   rta_getattr_u32(tb[NDA_PROBES]));
- 	}
- 
-@@ -453,7 +453,7 @@ int print_neigh(struct nlmsghdr *n, void *arg)
- 	if (protocol) {
- 		SPRINT_BUF(b1);
- 
--		print_string(PRINT_ANY, "protocol", " proto %s ",
-+		print_string(PRINT_ANY, "protocol", "proto %s ",
- 			     rtnl_rtprot_n2a(protocol, b1, sizeof(b1)));
- 	}
- 
++.TP
++.BI use
++this neigh entry is in "use". This option can be used to indicate to
++the kernel that a controller is using this dynamic entry. If the entry
++does not exist, the kernel will resolve it. If it exists, an attempt
++to refresh the neighbor entry will be triggered.
++
+ .TP
+ .BI extern_learn
+ this neigh entry was learned externally. This option can be used to
 -- 
 2.27.0
 
