@@ -2,35 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F89F42FDFE
+	by mail.lfdr.de (Postfix) with ESMTP id D8F3F42FDFF
 	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 00:17:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238875AbhJOWTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S238886AbhJOWTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 15 Oct 2021 18:19:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34244 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:34274 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238815AbhJOWTJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S238817AbhJOWTJ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 15 Oct 2021 18:19:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 545F86120D;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id ADFEB6120E;
         Fri, 15 Oct 2021 22:17:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1634336222;
-        bh=JaopO1MbDCUObFcjPUAtpGLUuJP3a6deYO5ssIwQCo8=;
+        bh=M3gQVPI7KcuY7TO9EODNRVHgRkr1U1nqyCsxcbrZFO8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IllUyJNFcX6QeOsWocB6DfamaEj27znRGPITCuNm3Kqt4Lv6iOJuuBz2muVCMC5Ct
-         wm1y4Yx8/+stWK3LjLXg2fxxlJO83z8gGghVM46kXfLPcbO3ObYzxe2AxiZUmh8w0G
-         PeprX1Y2UW1gWbojYd6wKMfare5LsrgSjReatCHG/a8oddJnlU2H+du0Q7jx2MYb+O
-         OWsy+fsFVfG1CjgR3xtbapiX7WpgTDP+b4ROEQKaG1RxAyvX6k/i/CMWy17zh0z5N0
-         ID3vSDNfzLxyF6hofwHxxs8LQ6mhQZdd5pAnVeEjGmqD0P30+G+0jUH02xaDpi/RU8
-         bJv6wXBAf1RPg==
+        b=oTQI5fzoSWfoD3TGk/ONAWHTPN2eCadeSn41fiHni5VHL1HXg3kupqOPxCptgIMm8
+         gRiG8o+WNSMMhtoHezLVnbZvNuioikwsVBY1JSC0RnwkBSKLiGOTwtj+pPa/8pvBmN
+         2oB8o+O7Cg34ugp+lKw2r11s5A4XqhqM1q4P+3oqYUbW0s05/4cTi9/Q5BtalK8D27
+         p7W3AVeHqsZxIjdAvqjs0QCNekI0QyZER8/hVTgfULw7UkUeQjKFdZsLg9vbGWXDEQ
+         uhpEYF+Dgvv9TsU+TEk/h1ikEUOjgHCUZSLdmKna9W1DDzazO1UxuHzW7mgmvVLu5a
+         jRWtWPGw1PW4g==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        opendmb@gmail.com, f.fainelli@gmail.com,
-        bcm-kernel-feedback-list@broadcom.com
-Subject: [PATCH net-next 07/12] ethernet: bcmgenet: use eth_hw_addr_set()
-Date:   Fri, 15 Oct 2021 15:16:47 -0700
-Message-Id: <20211015221652.827253-8-kuba@kernel.org>
+        benve@cisco.com, _govind@gmx.com
+Subject: [PATCH net-next 08/12] ethernet: enic: use eth_hw_addr_set()
+Date:   Fri, 15 Oct 2021 15:16:48 -0700
+Message-Id: <20211015221652.827253-9-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211015221652.827253-1-kuba@kernel.org>
 References: <20211015221652.827253-1-kuba@kernel.org>
@@ -45,37 +44,46 @@ of VLANs...") introduced a rbtree for faster Ethernet address look
 up. To maintain netdev->dev_addr in this tree we need to make all
 the writes to it got through appropriate helpers.
 
-Read the address into an array on the stack, then call
-eth_hw_addr_set().
+Use a zero'ed array on the stack, then call eth_hw_addr_set().
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: opendmb@gmail.com
-CC: f.fainelli@gmail.com
-CC: bcm-kernel-feedback-list@broadcom.com
+CC: benve@cisco.com
+CC: _govind@gmx.com
 ---
- drivers/net/ethernet/broadcom/genet/bcmgenet.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/cisco/enic/enic_main.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index ed53859b6f7d..5da9c00b43b1 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -4085,8 +4085,12 @@ static int bcmgenet_probe(struct platform_device *pdev)
- 		eth_hw_addr_set(dev, pd->mac_address);
- 	else
- 		if (device_get_ethdev_address(&pdev->dev, dev))
--			if (has_acpi_companion(&pdev->dev))
--				bcmgenet_get_hw_addr(priv, dev->dev_addr);
-+			if (has_acpi_companion(&pdev->dev)) {
-+				u8 addr[ETH_ALEN];
-+
-+				bcmgenet_get_hw_addr(priv, addr);
-+				eth_hw_addr_set(dev, addr);
-+			}
+diff --git a/drivers/net/ethernet/cisco/enic/enic_main.c b/drivers/net/ethernet/cisco/enic/enic_main.c
+index 66348cc3aaaf..aacf141986d5 100644
+--- a/drivers/net/ethernet/cisco/enic/enic_main.c
++++ b/drivers/net/ethernet/cisco/enic/enic_main.c
+@@ -1098,6 +1098,7 @@ static int enic_set_vf_mac(struct net_device *netdev, int vf, u8 *mac)
+ static int enic_set_vf_port(struct net_device *netdev, int vf,
+ 	struct nlattr *port[])
+ {
++	static const u8 zero_addr[ETH_ALEN] = {};
+ 	struct enic *enic = netdev_priv(netdev);
+ 	struct enic_port_profile prev_pp;
+ 	struct enic_port_profile *pp;
+@@ -1162,7 +1163,7 @@ static int enic_set_vf_port(struct net_device *netdev, int vf,
+ 		} else {
+ 			memset(pp, 0, sizeof(*pp));
+ 			if (vf == PORT_SELF_VF)
+-				eth_zero_addr(netdev->dev_addr);
++				eth_hw_addr_set(netdev, zero_addr);
+ 		}
+ 	} else {
+ 		/* Set flag to indicate that the port assoc/disassoc
+@@ -1174,7 +1175,7 @@ static int enic_set_vf_port(struct net_device *netdev, int vf,
+ 		if (pp->request == PORT_REQUEST_DISASSOCIATE) {
+ 			eth_zero_addr(pp->mac_addr);
+ 			if (vf == PORT_SELF_VF)
+-				eth_zero_addr(netdev->dev_addr);
++				eth_hw_addr_set(netdev, zero_addr);
+ 		}
+ 	}
  
- 	if (!is_valid_ether_addr(dev->dev_addr)) {
- 		dev_warn(&pdev->dev, "using random Ethernet MAC\n");
 -- 
 2.31.1
 
