@@ -2,65 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06D0142FD58
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 23:20:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CCD542FD67
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 23:28:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238583AbhJOVV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 17:21:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37766 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229445AbhJOVV7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Oct 2021 17:21:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 134EC60F8F;
-        Fri, 15 Oct 2021 21:19:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634332792;
-        bh=8EpwbXfqCihyp1kWvX2Lskh5HYwA27kvk5tv5n7Tu6w=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KB3OEs21r1y4VABkoEXUch7UTAqN/deNDDa5K4UCOV7M7BtIKkiG1AyEBv7KYxQX6
-         tvof7V/CwGNan4m6xF6/UKhc93rZAm+O3E8Iy6bW7E41zBLEOw9kHP4/DNR6Tzm7OQ
-         Tthr/I7FWgaw+1aZQvbeNrpX/qx/0EatZJqcGtZCcDkCUr75g7BJZSEv5JGUKPXHSf
-         GLXw/yF2msORIC4hL4GhTRRa5TW0LXIWtPXdMFvfgOo08VVPrTM8za7+MSy7Qo2XVd
-         2dMQmrqn2yKTbz4NpW/bSI0kIYTsF9gUaLRqyYnjjb9jOgIvMyi50ZfyEY0gRfAiw4
-         JpENM5+u/NUEQ==
-Date:   Fri, 15 Oct 2021 14:19:51 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
-Cc:     netdev@vger.kernel.org, Taras Chornyi <taras.chornyi@plvision.eu>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Volodymyr Mytnyk <vmytnyk@marvell.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Yevhen Orlov <yevhen.orlov@plvision.eu>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: marvell: prestera: add firmware v4.0
- support
-Message-ID: <20211015141951.07852e95@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1634309793-23816-1-git-send-email-volodymyr.mytnyk@plvision.eu>
-References: <1634309793-23816-1-git-send-email-volodymyr.mytnyk@plvision.eu>
+        id S243085AbhJOVaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 17:30:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39242 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232225AbhJOVaJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 17:30:09 -0400
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45775C061570
+        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 14:28:02 -0700 (PDT)
+Received: by mail-ot1-x330.google.com with SMTP id v2-20020a05683018c200b0054e3acddd91so14603655ote.8
+        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 14:28:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=kbNi0Kt3wXtJGF7cC+kzSls+UPemjN8p+7i3L8b9myY=;
+        b=dzpMpe/U4m1eVVi9/OJExKViLZZNVTsIjDysq6M5cbYrDrEHjIEQKW7qeNc0Xu0vB5
+         hn7j/nPgC4E2udVl3SLe+/Ld1CKDfDXXOLq8cH6iWKaquZtGKqMVNO4fASabI9JVECnq
+         UtgjI/Xo+hqDCVOsw26M10U+EqHl5CEkzxIJ8ILNW63zWofN86dJLfOkI1tvffBboaJO
+         ejH2MQSQsNmrGzYRWury8cgToKs6EIZjpR0lVrwesC731uoz2r/XhwBYN7NQ1lyjDSjl
+         3/XI5K4FTeqVTtd3jG1OirjgeH78RvatYzG9LlRm2G/t+c40BHEh3M2up08cBFZ8YNxl
+         q7Ig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kbNi0Kt3wXtJGF7cC+kzSls+UPemjN8p+7i3L8b9myY=;
+        b=Zq5GGraE0bTZEfdWQNDCj/qCnQMGKMWcjn5t5apN91GDXc2AbGDvcGOGZLrzelEtT5
+         s2xyXggej9xiXRIh/t7e8ywau4axpX9REam8B19JjKt2LbPIhZ/4mRmTTsQoD1d5WB4B
+         X6GMHUR9/jbVCvBmiEPsgRDpzH9sHVTWLtZZwQq+4jDeV/BS/VRBp129n78Rn3ligxeE
+         fZpbtnIzYdSt19x+yEbVE6uckdTS1F/1t+m8yoPfkZ4vHGh36gk3w/um+/axTzSogPhk
+         Z4WxTmE9mmkNzsnPtG0/mnbMuvOnlNsUdANVslMqXdTxWNWIJEAum4mZ+RdCer1StmoJ
+         bTaA==
+X-Gm-Message-State: AOAM532KsBTcBSxfHQe3oFRhpk+31FQJUAuy6h1+6ewioXFI048Z9rhf
+        uovU0LrBBb0tkyJltwgKxbKU4+WfaukjEw==
+X-Google-Smtp-Source: ABdhPJw6aNRoE+D8Fpew3bQ943i8f1tfGhObW/Vgt22SoP5sdqhozzDJ9jX6wEEwZfWPU2XtcBzqaw==
+X-Received: by 2002:a9d:26:: with SMTP id 35mr10014266ota.68.1634333281714;
+        Fri, 15 Oct 2021 14:28:01 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.34])
+        by smtp.googlemail.com with ESMTPSA id x28sm1553737ote.24.2021.10.15.14.28.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Oct 2021 14:28:01 -0700 (PDT)
+Subject: Re: [PATCH net] ipv6: When forwarding count rx stats on the orig
+ netdev
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Stephen Suryaputra <ssuryaextr@gmail.com>, netdev@vger.kernel.org,
+        Ido Schimmel <idosch@mellanox.com>
+References: <20211014130845.410602-1-ssuryaextr@gmail.com>
+ <1a83de45-936e-483c-0176-c877d8548d70@gmail.com>
+ <20211015022241.GA3405@ICIPI.localdomain>
+ <1e07d35a-50f5-349e-3634-b9fd73fca8ea@gmail.com>
+ <20211015130141.66db253b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <372a0b95-7ec4-fcd9-564e-cb898c4fe90a@gmail.com>
+Date:   Fri, 15 Oct 2021 15:28:00 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20211015130141.66db253b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 15 Oct 2021 17:56:32 +0300 Volodymyr Mytnyk wrote:
-> From: Volodymyr Mytnyk <vmytnyk@marvell.com>
->=20
-> Add firmware (FW) version 4.0 support for Marvell Prestera
-> driver. This FW ABI will be compatible with future Prestera
-> driver versions and features.
->=20
-> The previous FW support is dropped due to significant changes
-> in FW ABI, thus this version of Prestera driver will not be
-> compatible with previous FW versions.
+On 10/15/21 2:01 PM, Jakub Kicinski wrote:
+> On Thu, 14 Oct 2021 20:27:38 -0600 David Ahern wrote:
+>> On 10/14/21 8:22 PM, Stephen Suryaputra wrote:
+>>> On Thu, Oct 14, 2021 at 08:15:34PM -0600, David Ahern wrote:  
+>>>> [ added Ido for the forwarding tests ]
+>>>>  
+>>> [snip]  
+>>>>
+>>>> This seems fine to me, but IPv4 and IPv6 should work the same.  
+>>>
+>>> But we don't have per if ipv4 stats. Remember that I tried to get
+>>> something going but wasn't getting any traction?
+>>>   
+>> oh right, ipv4 is per net-namespace.
+> 
+> Is that an ack? :)
+> 
 
-drivers/net/ethernet/marvell/prestera/prestera_hw.c:786:5: warning: no prev=
-ious prototype for =E2=80=98prestera_hw_port_state_set=E2=80=99 [-Wmissing-=
-prototypes]
-  786 | int prestera_hw_port_state_set(const struct prestera_port *port,
-      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Reviewed-by: David Ahern <dsahern@kernel.org>
