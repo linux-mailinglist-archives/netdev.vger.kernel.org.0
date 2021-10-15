@@ -2,173 +2,276 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B27BF42F4A6
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 16:01:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 412C642F4D8
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 16:08:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239577AbhJOODZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 10:03:25 -0400
-Received: from mx4.uni-regensburg.de ([194.94.157.149]:36010 "EHLO
-        mx4.uni-regensburg.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239663AbhJOODP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 10:03:15 -0400
-Received: from mx4.uni-regensburg.de (localhost [127.0.0.1])
-        by localhost (Postfix) with SMTP id 9294D600005A;
-        Fri, 15 Oct 2021 16:01:03 +0200 (CEST)
-Received: from smtp1.uni-regensburg.de (smtp1.uni-regensburg.de [194.94.157.129])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "smtp.uni-regensburg.de", Issuer "DFN-Verein Global Issuing CA" (not verified))
-        by mx4.uni-regensburg.de (Postfix) with ESMTPS id 6015E6000059;
-        Fri, 15 Oct 2021 16:01:03 +0200 (CEST)
-From:   "Andreas K. Huettel" <andreas.huettel@ur.de>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        netdev <netdev@vger.kernel.org>,
-        intel-wired-lan@lists.osuosl.org, Jakub Kicinski <kubakici@wp.pl>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Len Brown <lenb@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
-Subject: Re: [EXT] Re: [Intel-wired-lan] Intel I350 regression 5.10 -> 5.14 ("The NVM Checksum Is Not Valid") [8086:1521]
-Date:   Fri, 15 Oct 2021 16:00:59 +0200
-Message-ID: <4697216.31r3eYUQgx@kailua>
-Organization: Universitaet Regensburg
-In-Reply-To: <CAJZ5v0icUwksYVjKW0H5G0DNpfVHSyfm4oC782+Fsy56mQ330A@mail.gmail.com>
-References: <1823864.tdWV9SEqCh@kailua> <9965462.DAOxP5AVGn@pinacolada> <CAJZ5v0icUwksYVjKW0H5G0DNpfVHSyfm4oC782+Fsy56mQ330A@mail.gmail.com>
+        id S240062AbhJOOKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 10:10:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50172 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236704AbhJOOKT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 10:10:19 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B094C061570
+        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 07:08:12 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id a7so23077624yba.6
+        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 07:08:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EknDO0Lxqz6goVyoL+OLdAwbHcz+DtZ3AhFPKmQIGZA=;
+        b=GnLX0gwcfrTy2zaj88HAZOrHHfSHJfJpoRc3a4V/JoRFsVzAeUxvwNtQDt32bnR1um
+         NQpVChIEDhbaTmw7HPNqwVAF2Ff1qNoUbweG7tOAG2jrmRCf0MqDrFbs7giYFtV0ZyIY
+         OcM0JJTHnfVwyB5uZP5QFViPf6DJUjZI/nse3bVc1Rqpchrhd4MIsUi5O/2CYea9VnYM
+         TuyGpx3yEk/ibjeuLVWhuVH5iZxk4AJwzQPDjPo81oNOthIDIIe22hp6YiJZEH8Mx4Vq
+         TNNnl3DYQ5L04mtgCgeZ3qYiHtooJqQKWyNn+IssQAPmebWpvn+aEt7WQHzL4PmxmU3X
+         43/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EknDO0Lxqz6goVyoL+OLdAwbHcz+DtZ3AhFPKmQIGZA=;
+        b=x6glHXK+/ZE/5/6URTaL73bLhAyJuP4HFQg3FecQbg5fgr6dux89NCyGtKGckSf/5n
+         ADPgxndJoS6OiLSf00vqe54DiXrRNycYj4cvv5GMA961YdWofI/2YhGMd8MABJtulyyv
+         8FYgh2vsiB9jlszmb20VmcSvjO1UJrProb+v68EZjbMRCXsNgEFGPHkXJM5RMGbQGPAI
+         oKhjKm+7zX+enPw0ZomC7coUl4Wmjn6DNNK3aSz8XWDlpYhqukAaNEDt5G5c12XldT4E
+         W3gFuV21aRHGtWVxKnoRlU8WZBX+il4KkzZAIuf+qbK5GSb659GIOgKz1adHvZOXuSxm
+         uofQ==
+X-Gm-Message-State: AOAM532k9wUX3QSVY/Ta0fIBz+BZfieo1nOBHPACCGees31bMXQ0Facy
+        HlK1yvcoP0GIZw/i0SO5CoeC3vgWhlWhjGxLadJBqg==
+X-Google-Smtp-Source: ABdhPJxvijjPYU+5dAGtG2AEIvtztA/BfZ7EcR3x6oEPn5xoTGRpVddCSzLuNdHSxOIuGswTYE6PNLDz10JQZ1U4L5w=
+X-Received: by 2002:a5b:783:: with SMTP id b3mr13360982ybq.328.1634306891258;
+ Fri, 15 Oct 2021 07:08:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart4360949.LvFx2qVVIh"; micalg="pgp-sha512"; protocol="application/pgp-signature"
+References: <20211014175918.60188-1-eric.dumazet@gmail.com>
+ <20211014175918.60188-3-eric.dumazet@gmail.com> <9608bf7c-a6a2-2a30-2d96-96bd1dfb25e3@bobbriscoe.net>
+In-Reply-To: <9608bf7c-a6a2-2a30-2d96-96bd1dfb25e3@bobbriscoe.net>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 15 Oct 2021 07:08:00 -0700
+Message-ID: <CANn89iKavhJGi0NE873v+qCjZL=NRbMjVCsLJJv2o9nXyDSmUQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/2] fq_codel: implement L4S style
+ ce_threshold_ect1 marking
+To:     Bob Briscoe <ietf@bobbriscoe.net>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Neal Cardwell <ncardwell@google.com>,
+        Ingemar Johansson S <ingemar.s.johansson@ericsson.com>,
+        Tom Henderson <tomh@tomh.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---nextPart4360949.LvFx2qVVIh
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
-From: "Andreas K. Huettel" <andreas.huettel@ur.de>
-To: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Paul Menzel <pmenzel@molgen.mpg.de>, "Rafael J. Wysocki" <rafael@kernel.org>, Jesse Brandeburg <jesse.brandeburg@intel.com>, netdev <netdev@vger.kernel.org>, intel-wired-lan@lists.osuosl.org, Jakub Kicinski <kubakici@wp.pl>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Len Brown <lenb@kernel.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>
-Subject: Re: [EXT] Re: [Intel-wired-lan] Intel I350 regression 5.10 -> 5.14 ("The NVM Checksum Is Not Valid") [8086:1521]
-Date: Fri, 15 Oct 2021 16:00:59 +0200
-Message-ID: <4697216.31r3eYUQgx@kailua>
-Organization: Universitaet Regensburg
-In-Reply-To: <CAJZ5v0icUwksYVjKW0H5G0DNpfVHSyfm4oC782+Fsy56mQ330A@mail.gmail.com>
-References: <1823864.tdWV9SEqCh@kailua> <9965462.DAOxP5AVGn@pinacolada> <CAJZ5v0icUwksYVjKW0H5G0DNpfVHSyfm4oC782+Fsy56mQ330A@mail.gmail.com>
+On Fri, Oct 15, 2021 at 5:59 AM Bob Briscoe <ietf@bobbriscoe.net> wrote:
+>
+> Eric,
+>
+> Because the threshold is in time units, I suggest the condition for
+> exceeding it needs to be AND'd with (*backlog > mtu), otherwise you can
+> get 100% solid marking at low link rates.
+>
+> When ce_threshold is for DCs, low link rates are unlikely.
+> However, given ce_threshold_ect1 is mainly for the Internet, during
+> testing with 1ms threshold we encountered solid marking at low link
+> rates, so we had to add a 1 packet floor:
+> https://bobbriscoe.net/projects/latency/dctth_journal_draft20190726.pdf
+>
+> Sorry to chime in after your patch went to net-next.
+>
 
-Am Donnerstag, 14. Oktober 2021, 14:09:39 CEST schrieb Rafael J. Wysocki:
-> > > > >>> huettel@pinacolada ~/tmp $ cat kernel-messages-5.10.59.txt |grep igb
-> > > > >>> Oct  5 15:11:18 dilfridge kernel: [    2.090675] igb: Intel(R) Gigabit Ethernet Network Driver
-> > > > >>> Oct  5 15:11:18 dilfridge kernel: [    2.090676] igb: Copyright (c) 2007-2014 Intel Corporation.
-> > > > >>> Oct  5 15:11:18 dilfridge kernel: [    2.090728] igb 0000:01:00.0: enabling device (0000 -> 0002)
-> > > > >>
-> > > > >> This line is missing below, it indicates that the kernel couldn't or
-> > > > >> didn't power up the PCIe for some reason. We're looking for something
-> > > > >> like ACPI or PCI patches (possibly PCI-Power management) to be the
-> > > > >> culprit here.
-> > > > >
-> > > > > So I did a git bisect from linux-v5.10 (good) to linux-v5.14.11 (bad).
-> > > > >
-> > > > > The result was:
-> > > > >
-> > > > > dilfridge /usr/src/linux-git # git bisect bad
-> > > > > 6381195ad7d06ef979528c7452f3ff93659f86b1 is the first bad commit
-> > > > > commit 6381195ad7d06ef979528c7452f3ff93659f86b1
-> > > > > Author: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> > > > > Date:   Mon May 24 17:26:16 2021 +0200
-> > > > >
-> > > > >      ACPI: power: Rework turning off unused power resources
-> > > > > [...]
-> > > > >
-> > > > > I tried naive reverting of this commit on top of 5.14.11. That applies nearly cleanly,
-> > > > > and after a reboot the additional ethernet interfaces show up with their MAC in the
-> > > > > boot messages.
-> > > > >
-> > > > > (Not knowing how safe that experiment was, I did not go further than single mode and
-> > > > > immediately rebooted into 5.10 afterwards.)
-> > >
-> > > Reverting this is rather not an option, because the code before it was
-> > > a one-off fix of an earlier issue, but it should be fixable given some
-> > > more information.
-> > >
-> > > Basically, I need a boot log from both the good and bad cases and the
-> > > acpidump output from the affected machine.
-> > >
+What you describe about a minimal backlog was already there with
+ce_threshold handling ?
+
+Or is it something exclusive to L4S ?
+
+This deserves a separate patch, if anything :)
+
+
+>
+> Bob
+>
+>
+> On 14/10/2021 18:59, Eric Dumazet wrote:
+> > From: Eric Dumazet <edumazet@google.com>
 > >
-> > https://dev.gentoo.org/~dilfridge/igb/
+> > Add TCA_FQ_CODEL_CE_THRESHOLD_ECT1 boolean option to select Low Latency,
+> > Low Loss, Scalable Throughput (L4S) style marking, along with ce_threshold.
 > >
-> > ^ Should all be here now.
+> > If enabled, only packets with ECT(1) can be transformed to CE
+> > if their sojourn time is above the ce_threshold.
 > >
-> > 5.10 -> "good" log (the errors are caused by missing support for my i915 graphics and hopefully unrelated)
-> > 5.14 -> "bad" log
+> > Note that this new option does not change rules for codel law.
+> > In particular, if TCA_FQ_CODEL_ECN is left enabled (this is
+> > the default when fq_codel qdisc is created), ECT(0) packets can
+> > still get CE if codel law (as governed by limit/target) decides so.
 > >
-> > Thank you for looking at this. If you need anything else, just ask.
-> 
-> You're welcome.
-> 
-> Please test the attached patch and let me know if it helps.
-> 
-
-It helps (*); the second ethernet adaptor is initialized, and works normally as far as I can see.
-
-(*) The debug output line following the if-condition apparently changed in the meantime, so I had 
-to apply the change in the if-condition "manually".
-
-igb: Intel(R) Gigabit Ethernet Network Driver
-igb: Copyright (c) 2007-2014 Intel Corporation.
-igb 0000:01:00.0: enabling device (0000 -> 0002)
-igb 0000:01:00.0: added PHC on eth1
-igb 0000:01:00.0: Intel(R) Gigabit Ethernet Network Connection
-igb 0000:01:00.0: eth1: (PCIe:5.0Gb/s:Width x4) 6c:b3:11:23:d4:4c
-igb 0000:01:00.0: eth1: PBA No: H47819-001
-igb 0000:01:00.0: Using MSI-X interrupts. 8 rx queue(s), 8 tx queue(s)
-igb 0000:01:00.1: enabling device (0000 -> 0002)
-igb 0000:01:00.1: added PHC on eth2
-igb 0000:01:00.1: Intel(R) Gigabit Ethernet Network Connection
-igb 0000:01:00.1: eth2: (PCIe:5.0Gb/s:Width x4) 6c:b3:11:23:d4:4d
-igb 0000:01:00.1: eth2: PBA No: H47819-001
-igb 0000:01:00.1: Using MSI-X interrupts. 8 rx queue(s), 8 tx queue(s)
-
-The full boot log is at https://dev.gentoo.org/~dilfridge/igb/ as 5.14.11-*.txt
-
-Thanks,
-Andreas
-
-
--- 
-PD Dr. Andreas K. Huettel
-Institute for Experimental and Applied Physics
-University of Regensburg
-93040 Regensburg
-Germany
-
-e-mail andreas.huettel@ur.de
-http://www.akhuettel.de/
-http://www.physik.uni-r.de/forschung/huettel/
---nextPart4360949.LvFx2qVVIh
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQKTBAABCgB9FiEE6W4INB9YeKX6Qpi1TEn3nlTQogYFAmFpiZtfFIAAAAAALgAo
-aXNzdWVyLWZwckBub3RhdGlvbnMub3BlbnBncC5maWZ0aGhvcnNlbWFuLm5ldEU5
-NkUwODM0MUY1ODc4QTVGQTQyOThCNTRDNDlGNzlFNTREMEEyMDYACgkQTEn3nlTQ
-ogaJCxAAnSpBiRSKPdL45G3xs0gFEKfnunkYqdDtgK39lQ2XAVDMoIBdY6ibc11x
-7y3S246ldBXqHhUVAummn/ZzyhTKXPODUT1rrvRfSYSVEzXhaTeOWpzpg/9bzXt4
-ArlCEbsSMTXtqyf03ki3I/fIy/MUyvdgm3xZz10mdk4v2+cTWoKBk5/UNOx9gtCs
-tpdj9PuEAVPK1xfse3hElF+Mp1FusLWiHehMcKm2DhLt1MRlk/nMK7M9wBS29Ghi
-7doYHZXjDBvz1UUX9DbJGTw/1FrS8dYjS/jabI5FNNHhVUj8EoQuNQz22dhHW5WH
-YRosN0fFONKyw1MhhV5ZZVFSllRoaIcjxx5SQhOzU44/KsnQ/zePZ1SoXbvLHZ28
-/V1j4cq9nRQoZ6VN4a/i1xbaBtEuXlt4SLMcqA4/r2Br+AydGbzp99vAbtNvz/57
-Lnn7nYb67t8QI/o4XVcURWnWO/KK/3Qbh0KkvnknY9BnpEGaQy+6y3iLBrLMYIzP
-0zr739GISC+GHken1/uKVZt2IF5KQWVjCz5rH+y8W1+Z0mKOcATkwTXVIWqGuTGL
-XUyc6QWXFdk87YBGUV0IEejopYUUV+mEzxNTVdkRUTbYdFwhAcc6VjBjN2++AWSS
-AC1cWM4uUzaWQ0eNP5jpw18YlCb22wv2y9NqbWewUoIyuwxkfx8=
-=DPDP
------END PGP SIGNATURE-----
-
---nextPart4360949.LvFx2qVVIh--
-
-
-
+> > Section 4.3.b of current draft [1] states:
+> >
+> > b.  A scheduler with per-flow queues such as FQ-CoDel or FQ-PIE can
+> >      be used for L4S.  For instance within each queue of an FQ-CoDel
+> >      system, as well as a CoDel AQM, there is typically also ECN
+> >      marking at an immediate (unsmoothed) shallow threshold to support
+> >      use in data centres (see Sec.5.2.7 of [RFC8290]).  This can be
+> >      modified so that the shallow threshold is solely applied to
+> >      ECT(1) packets.  Then if there is a flow of non-ECN or ECT(0)
+> >      packets in the per-flow-queue, the Classic AQM (e.g.  CoDel) is
+> >      applied; while if there is a flow of ECT(1) packets in the queue,
+> >      the shallower (typically sub-millisecond) threshold is applied.
+> >
+> > Tested:
+> >
+> > tc qd replace dev eth1 root fq_codel ce_threshold_ect1 50usec
+> >
+> > netperf ... -t TCP_STREAM -- K dctcp
+> >
+> > tc -s -d qd sh dev eth1
+> > qdisc fq_codel 8022: root refcnt 32 limit 10240p flows 1024 quantum 9212 target 5ms ce_threshold_ect1 49us interval 100ms memory_limit 32Mb ecn drop_batch 64
+> >   Sent 14388596616 bytes 9543449 pkt (dropped 0, overlimits 0 requeues 152013)
+> >   backlog 0b 0p requeues 152013
+> >    maxpacket 68130 drop_overlimit 0 new_flow_count 95678 ecn_mark 0 ce_mark 7639
+> >    new_flows_len 0 old_flows_len 0
+> >
+> > [1] L4S current draft:
+> > https://datatracker.ietf.org/doc/html/draft-ietf-tsvwg-l4s-arch
+> >
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > Cc: Neal Cardwell <ncardwell@google.com>
+> > Cc: Ingemar Johansson S <ingemar.s.johansson@ericsson.com>
+> > Cc: Tom Henderson <tomh@tomh.org>
+> > Cc: Bob Briscoe <in@bobbriscoe.net>
+> > ---
+> >   include/net/codel.h            |  2 ++
+> >   include/net/codel_impl.h       | 18 +++++++++++++++---
+> >   include/uapi/linux/pkt_sched.h |  1 +
+> >   net/mac80211/sta_info.c        |  1 +
+> >   net/sched/sch_fq_codel.c       | 15 +++++++++++----
+> >   5 files changed, 30 insertions(+), 7 deletions(-)
+> >
+> > diff --git a/include/net/codel.h b/include/net/codel.h
+> > index a6e428f801350809322aaff08d92904e059c3b5a..5e8b181b76b829d6af3c57809d9bc5f0578dd112 100644
+> > --- a/include/net/codel.h
+> > +++ b/include/net/codel.h
+> > @@ -102,6 +102,7 @@ static inline u32 codel_time_to_us(codel_time_t val)
+> >    * @interval:       width of moving time window
+> >    * @mtu:    device mtu, or minimal queue backlog in bytes.
+> >    * @ecn:    is Explicit Congestion Notification enabled
+> > + * @ce_threshold_ect1: if ce_threshold only marks ECT(1) packets
+> >    */
+> >   struct codel_params {
+> >       codel_time_t    target;
+> > @@ -109,6 +110,7 @@ struct codel_params {
+> >       codel_time_t    interval;
+> >       u32             mtu;
+> >       bool            ecn;
+> > +     bool            ce_threshold_ect1;
+> >   };
+> >
+> >   /**
+> > diff --git a/include/net/codel_impl.h b/include/net/codel_impl.h
+> > index d289b91dcd65ecdc96dc0c9bf85d4a4be6961022..7af2c3eb3c43c24364519120aad5be77522854a6 100644
+> > --- a/include/net/codel_impl.h
+> > +++ b/include/net/codel_impl.h
+> > @@ -54,6 +54,7 @@ static void codel_params_init(struct codel_params *params)
+> >       params->interval = MS2TIME(100);
+> >       params->target = MS2TIME(5);
+> >       params->ce_threshold = CODEL_DISABLED_THRESHOLD;
+> > +     params->ce_threshold_ect1 = false;
+> >       params->ecn = false;
+> >   }
+> >
+> > @@ -246,9 +247,20 @@ static struct sk_buff *codel_dequeue(void *ctx,
+> >                                                   vars->rec_inv_sqrt);
+> >       }
+> >   end:
+> > -     if (skb && codel_time_after(vars->ldelay, params->ce_threshold) &&
+> > -         INET_ECN_set_ce(skb))
+> > -             stats->ce_mark++;
+> > +     if (skb && codel_time_after(vars->ldelay, params->ce_threshold)) {
+> > +             bool set_ce = true;
+> > +
+> > +             if (params->ce_threshold_ect1) {
+> > +                     /* Note: if skb_get_dsfield() returns -1, following
+> > +                      * gives INET_ECN_MASK, which is != INET_ECN_ECT_1.
+> > +                      */
+> > +                     u8 ecn = skb_get_dsfield(skb) & INET_ECN_MASK;
+> > +
+> > +                     set_ce = (ecn == INET_ECN_ECT_1);
+> > +             }
+> > +             if (set_ce && INET_ECN_set_ce(skb))
+> > +                     stats->ce_mark++;
+> > +     }
+> >       return skb;
+> >   }
+> >
+> > diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
+> > index ec88590b3198441f18cc9def7bd40c48f0bc82a1..6be9a84cccfa79bace1f3f7123d02f484b67a25e 100644
+> > --- a/include/uapi/linux/pkt_sched.h
+> > +++ b/include/uapi/linux/pkt_sched.h
+> > @@ -840,6 +840,7 @@ enum {
+> >       TCA_FQ_CODEL_CE_THRESHOLD,
+> >       TCA_FQ_CODEL_DROP_BATCH_SIZE,
+> >       TCA_FQ_CODEL_MEMORY_LIMIT,
+> > +     TCA_FQ_CODEL_CE_THRESHOLD_ECT1,
+> >       __TCA_FQ_CODEL_MAX
+> >   };
+> >
+> > diff --git a/net/mac80211/sta_info.c b/net/mac80211/sta_info.c
+> > index 2b5acb37587f7068e2d11fe842ec963a556f1eb1..a39830418434d4bb74d238373f63a4858230fce5 100644
+> > --- a/net/mac80211/sta_info.c
+> > +++ b/net/mac80211/sta_info.c
+> > @@ -513,6 +513,7 @@ struct sta_info *sta_info_alloc(struct ieee80211_sub_if_data *sdata,
+> >       sta->cparams.target = MS2TIME(20);
+> >       sta->cparams.interval = MS2TIME(100);
+> >       sta->cparams.ecn = true;
+> > +     sta->cparams.ce_threshold_ect1 = false;
+> >
+> >       sta_dbg(sdata, "Allocated STA %pM\n", sta->sta.addr);
+> >
+> > diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
+> > index bb0cd6d3d2c2749d54e26368fb2558beedea85c9..033d65d06eb136ff704cddd3ee950a5c3a5d9831 100644
+> > --- a/net/sched/sch_fq_codel.c
+> > +++ b/net/sched/sch_fq_codel.c
+> > @@ -362,6 +362,7 @@ static const struct nla_policy fq_codel_policy[TCA_FQ_CODEL_MAX + 1] = {
+> >       [TCA_FQ_CODEL_CE_THRESHOLD] = { .type = NLA_U32 },
+> >       [TCA_FQ_CODEL_DROP_BATCH_SIZE] = { .type = NLA_U32 },
+> >       [TCA_FQ_CODEL_MEMORY_LIMIT] = { .type = NLA_U32 },
+> > +     [TCA_FQ_CODEL_CE_THRESHOLD_ECT1] = { .type = NLA_U8 },
+> >   };
+> >
+> >   static int fq_codel_change(struct Qdisc *sch, struct nlattr *opt,
+> > @@ -408,6 +409,9 @@ static int fq_codel_change(struct Qdisc *sch, struct nlattr *opt,
+> >               q->cparams.ce_threshold = (val * NSEC_PER_USEC) >> CODEL_SHIFT;
+> >       }
+> >
+> > +     if (tb[TCA_FQ_CODEL_CE_THRESHOLD_ECT1])
+> > +             q->cparams.ce_threshold_ect1 = !!nla_get_u8(tb[TCA_FQ_CODEL_CE_THRESHOLD_ECT1]);
+> > +
+> >       if (tb[TCA_FQ_CODEL_INTERVAL]) {
+> >               u64 interval = nla_get_u32(tb[TCA_FQ_CODEL_INTERVAL]);
+> >
+> > @@ -544,10 +548,13 @@ static int fq_codel_dump(struct Qdisc *sch, struct sk_buff *skb)
+> >                       q->flows_cnt))
+> >               goto nla_put_failure;
+> >
+> > -     if (q->cparams.ce_threshold != CODEL_DISABLED_THRESHOLD &&
+> > -         nla_put_u32(skb, TCA_FQ_CODEL_CE_THRESHOLD,
+> > -                     codel_time_to_us(q->cparams.ce_threshold)))
+> > -             goto nla_put_failure;
+> > +     if (q->cparams.ce_threshold != CODEL_DISABLED_THRESHOLD) {
+> > +             if (nla_put_u32(skb, TCA_FQ_CODEL_CE_THRESHOLD,
+> > +                             codel_time_to_us(q->cparams.ce_threshold)))
+> > +                     goto nla_put_failure;
+> > +             if (nla_put_u8(skb, TCA_FQ_CODEL_CE_THRESHOLD_ECT1, q->cparams.ce_threshold_ect1))
+> > +                     goto nla_put_failure;
+> > +     }
+> >
+> >       return nla_nest_end(skb, opts);
+> >
+>
+> --
+> ________________________________________________________________
+> Bob Briscoe                               http://bobbriscoe.net/
+>
