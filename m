@@ -2,34 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F05EE42FDFC
-	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 00:17:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45FDF42FDFD
+	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 00:17:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238839AbhJOWTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 18:19:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34158 "EHLO mail.kernel.org"
+        id S238858AbhJOWTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 18:19:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34226 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238787AbhJOWTI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Oct 2021 18:19:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A2C68611F0;
+        id S238808AbhJOWTJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Oct 2021 18:19:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EE91A6120A;
         Fri, 15 Oct 2021 22:17:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634336221;
-        bh=kW53tfWc5n/jzsp+9d89Ha7x0q4gvvQkPAGhLt/pVz4=;
+        s=k20201202; t=1634336222;
+        bh=5nivEfqlALOw188V5+i9KJKoYg/vi6u9v1wJ/SCiLpw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rERmcOWBHU57gm3UF3FrKqZeyFBPKt2fRRpcuFh9q4ytG21zjL6/rQVRF1ZpKOae0
-         PGLOth5/dsrrAOC1i6tzLanux1gZcjoQpDb8E/KKTfBqzMVafn9HGZDP0ZYbYH3uq1
-         p6+Xb/DM8kGbpz3DA45qIMZBzy/yN0XJC1XnX2iRk5l/Mu1cMTw4cwcoLurAlkffUQ
-         Rx7S+RnWK5uLZfEqJ5Voua5VEUpOkhF8/ZYyQ7a0Ej3zRdJZfJOsDJgyfpYTJYdUt2
-         N5AWZOoZgN+XPRsQIQBqLNpPksCPoHLTtgWy7bmvRLdaKV7C8h58K/BGUyVYL+9itZ
-         E8j60d7qRBesQ==
+        b=HE4HCHuTwlyZe0xwAa3VuDAUbo6+Kh0Q66NEoG6+tJT+vxQHskbO6EQ9pe4pPu9dD
+         IHKoOZshviBjQDS5D+Tg4E4grFPY/b4v6Nh1BD26Kx+BtrNYNDd/GWhJl0++fWiDKW
+         XRcM3/9gkPWv89A+eKsHvqp6n39cPc9Wk0swjkDixtFVNdmBSghyhH5vrk1wdHpYuI
+         wXEoLC8Q1vc+8feePPWD1NdHSYpzYuAIF/MoAyDWEK/wvQGloSMKvADrFLWSauhREK
+         KfCREZ30nPiLVaeaHTXmEx56x46CouCM7cC4DHnbL/qs8lCIz4RpJh4XhxLKw1VETL
+         gwmwbISKX2zoQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        irusskikh@marvell.com
-Subject: [PATCH net-next 05/12] ethernet: aquantia: use eth_hw_addr_set()
-Date:   Fri, 15 Oct 2021 15:16:45 -0700
-Message-Id: <20211015221652.827253-6-kuba@kernel.org>
+        aelior@marvell.com, skalluru@marvell.com,
+        GR-everest-linux-l2@marvell.com
+Subject: [PATCH net-next 06/12] ethernet: bnx2x: use eth_hw_addr_set()
+Date:   Fri, 15 Oct 2021 15:16:46 -0700
+Message-Id: <20211015221652.827253-7-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211015221652.827253-1-kuba@kernel.org>
 References: <20211015221652.827253-1-kuba@kernel.org>
@@ -44,45 +45,68 @@ of VLANs...") introduced a rbtree for faster Ethernet address look
 up. To maintain netdev->dev_addr in this tree we need to make all
 the writes to it got through appropriate helpers.
 
-Use an array on the stack, then call eth_hw_addr_set().
-eth_hw_addr_set() is after error checking, this should
-be fine, error propagates all the way to failing probe.
+Read the address into an array on the stack, then call
+eth_hw_addr_set().
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: irusskikh@marvell.com
+CC: aelior@marvell.com
+CC: skalluru@marvell.com
+CC: GR-everest-linux-l2@marvell.com
 ---
- drivers/net/ethernet/aquantia/atlantic/aq_nic.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-index 694aa70bcafe..1acf544afeb4 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-@@ -300,6 +300,7 @@ static bool aq_nic_is_valid_ether_addr(const u8 *addr)
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+index 27e712178f95..aec666e97683 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+@@ -11823,9 +11823,10 @@ static void bnx2x_get_mac_hwinfo(struct bnx2x *bp)
+ 	u32 val, val2;
+ 	int func = BP_ABS_FUNC(bp);
+ 	int port = BP_PORT(bp);
++	u8 addr[ETH_ALEN] = {};
  
- int aq_nic_ndev_register(struct aq_nic_s *self)
- {
-+	u8 addr[ETH_ALEN];
- 	int err = 0;
+ 	/* Zero primary MAC configuration */
+-	eth_zero_addr(bp->dev->dev_addr);
++	eth_hw_addr_set(bp->dev, addr);
  
- 	if (!self->ndev) {
-@@ -316,12 +317,13 @@ int aq_nic_ndev_register(struct aq_nic_s *self)
- #endif
+ 	if (BP_NOMCP(bp)) {
+ 		BNX2X_ERROR("warning: random MAC workaround active\n");
+@@ -11834,8 +11835,10 @@ static void bnx2x_get_mac_hwinfo(struct bnx2x *bp)
+ 		val2 = MF_CFG_RD(bp, func_mf_config[func].mac_upper);
+ 		val = MF_CFG_RD(bp, func_mf_config[func].mac_lower);
+ 		if ((val2 != FUNC_MF_CFG_UPPERMAC_DEFAULT) &&
+-		    (val != FUNC_MF_CFG_LOWERMAC_DEFAULT))
+-			bnx2x_set_mac_buf(bp->dev->dev_addr, val, val2);
++		    (val != FUNC_MF_CFG_LOWERMAC_DEFAULT)) {
++			bnx2x_set_mac_buf(addr, val, val2);
++			eth_hw_addr_set(bp->dev, addr);
++		}
  
- 	mutex_lock(&self->fwreq_mutex);
--	err = self->aq_fw_ops->get_mac_permanent(self->aq_hw,
--			    self->ndev->dev_addr);
-+	err = self->aq_fw_ops->get_mac_permanent(self->aq_hw, addr);
- 	mutex_unlock(&self->fwreq_mutex);
- 	if (err)
- 		goto err_exit;
+ 		if (CNIC_SUPPORT(bp))
+ 			bnx2x_get_cnic_mac_hwinfo(bp);
+@@ -11843,7 +11846,8 @@ static void bnx2x_get_mac_hwinfo(struct bnx2x *bp)
+ 		/* in SF read MACs from port configuration */
+ 		val2 = SHMEM_RD(bp, dev_info.port_hw_config[port].mac_upper);
+ 		val = SHMEM_RD(bp, dev_info.port_hw_config[port].mac_lower);
+-		bnx2x_set_mac_buf(bp->dev->dev_addr, val, val2);
++		bnx2x_set_mac_buf(addr, val, val2);
++		eth_hw_addr_set(bp->dev, addr);
  
-+	eth_hw_addr_set(self->ndev, addr);
+ 		if (CNIC_SUPPORT(bp))
+ 			bnx2x_get_cnic_mac_hwinfo(bp);
+@@ -12291,7 +12295,9 @@ static int bnx2x_init_bp(struct bnx2x *bp)
+ 		if (rc)
+ 			return rc;
+ 	} else {
+-		eth_zero_addr(bp->dev->dev_addr);
++		static const u8 zero_addr[ETH_ALEN] = {};
 +
- 	if (!is_valid_ether_addr(self->ndev->dev_addr) ||
- 	    !aq_nic_is_valid_ether_addr(self->ndev->dev_addr)) {
- 		netdev_warn(self->ndev, "MAC is invalid, will use random.");
++		eth_hw_addr_set(bp->dev, zero_addr);
+ 	}
+ 
+ 	bnx2x_set_modes_bitmap(bp);
 -- 
 2.31.1
 
