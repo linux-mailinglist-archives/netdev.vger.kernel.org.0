@@ -2,81 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F08FE42E6DA
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 04:50:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5026542E6DE
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 04:52:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233392AbhJOCxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 22:53:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37984 "EHLO
+        id S233572AbhJOCyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 22:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232508AbhJOCxD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 22:53:03 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4289FC061753
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 19:50:58 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id gn3so689531pjb.0
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 19:50:58 -0700 (PDT)
+        with ESMTP id S232508AbhJOCyG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 22:54:06 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98B4FC061570
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 19:52:00 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id w14so5500874pll.2
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 19:52:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=buel8FT8odvpagvmPrwbM1NuTKwe5jQmfhwUUa1cid0=;
-        b=oslE2W0ohtjDFpXAYPra2hMdbrbG6sIiHgPeLF2Q5qsXSEjDHAxlJXzuHuVD6qQyNS
-         OVxYgd03wBTkusctiFfKT/2DsITZjakfNycL833nRd+Yisvk3o65fIG0dITn6a6khh+t
-         p+t7Zr8dfHDNpIZ7R2t1LI/deT/caxuNU4mwq05Ar8aLC16aTlwxl9yBuxZKE9PUm5Z+
-         TJ4TeTugDQ3BK5M6W76DB0xlw2pT55jlrlTuCHGG+flFGEC0YYr/pbBZ/wk2oMs++sUJ
-         aJmaNSUSJOVpsWHqIV2peUEnC2IyKCkyFMxEQYXoNy/zG6dNdCsDjXqOdaJJFna4HF/9
-         zJ6A==
+        bh=ucGNWVxcRddDN1+ka0dNwUptaDTbn15BT3DH4Hwkw+8=;
+        b=k16VEmnWCOJ1z/BCd5eL3yQW1Sh4YHFvAUR4iS02i/18d3V0zTVECjlCChvSz3zkqa
+         bRR5izLG+IWEkBK2NjZpl2FBv2Zsk69PqFzlZhBxWJbGGCcvlfd6bkoBCFd19GduBcxg
+         Bn6Ls8RxEgUPmomubhvUl3cnzlF/Yr3p5B4/AEOo9auWKfj2buym81OViMmEZs7fE2IQ
+         Hk7wDVQhY6BUFjugwwVoCc+bisJWmEtH1sENSUH8wswwwqkuZyZu8vL0EtVBqshxLzhL
+         MKT5tDTnYgiQCuNQ1tGEEZp840pi7JCagId5hJY/oXqVd8kOzyvbBkP0yk/Skf6qyfOD
+         W1cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=buel8FT8odvpagvmPrwbM1NuTKwe5jQmfhwUUa1cid0=;
-        b=VG67uJfv/7qo+AmTwv/C14pyfsRanSj+mSakfX7Jk/hzPb2BO4v7/GFkBOT0Ry/X5Q
-         jCyOab8sHvcZcSXM+a1z3btexqDFd1I+VqLx3miKTvGmkmOtJKxH05wpSv7MP08N/qpi
-         McB0dq6bDp5vhjhk1wHzq1juqOsJvUirbb5Kg1+TjHsuzONABrIUZY4hsKoXbPYx/nBC
-         1rYyhtCGwgCRsI9rqvG3WPo6vEtdlvCrsMnIIFfrJ8tgAYAvXdcyljsWusW2YpkFO18l
-         x7FDmYmwmbMRKmxH/PJDIxRlM4wv/61HzSEtpgN2zzvAfxYdFI3k8EtvSLLhDpUU74oS
-         WpcQ==
-X-Gm-Message-State: AOAM5332slWg6IyPU01+wnySKtuAp0/Xr9tDs5E8bwPhDOJT6elmYsn/
-        7ZLIVtT2PY0u1m6cTeomycU=
-X-Google-Smtp-Source: ABdhPJz42TtQ0QzfgRxBL7BejzjZQrNGyb8TYikah6BbxPYHaVIIpKfSJpaJL7B4YV4ZmSPiTBRcIA==
-X-Received: by 2002:a17:90a:ea94:: with SMTP id h20mr24901775pjz.58.1634266257694;
-        Thu, 14 Oct 2021 19:50:57 -0700 (PDT)
-Received: from d3 ([2405:6580:97e0:3100:ae94:2ee7:59a:4846])
-        by smtp.gmail.com with ESMTPSA id 139sm3680798pfz.35.2021.10.14.19.50.55
+        bh=ucGNWVxcRddDN1+ka0dNwUptaDTbn15BT3DH4Hwkw+8=;
+        b=ULUZPx7t1ErISAxRK3J4rSDol6v9dSYLOivFEcHii9mEyntTtiLKVe3W00tqXFMUbm
+         3etK/O0LkP8sckQ3bw1NptgWiev5uZyJaWHExlVPHkjEcSSIyvM3QSxCoJ1w7n2VwcgQ
+         YX09T/L6jk69DD3P3p9am+46UlZ4CA5+KYTMufKFkEBMbnHk6LUB5G4mJnRXLYTnK9Id
+         Q5pzK7Vj3BoOUBwL7QM2kqoejQ+asesHxC3iFVMsBCvSIi8F3yTXVXGkoUVtJNAQaszn
+         kVfJGrwY0al7kZYRsa158tGHmFR+U7BZPOVUVHEmZz9zcVReDt1aoLj46CnUVxCP+D71
+         hEqQ==
+X-Gm-Message-State: AOAM533GnukCWcRVUgYWNPbwgdPsI4e/VpKv7w0uL7+CMIaztog33Hir
+        FrSn4/G6LABPydTbEd824wQ=
+X-Google-Smtp-Source: ABdhPJxFFcb8/UXAvxUXngke/UDgp2mjcTrK7f4crhmU+EefFgONVDCXzkF5d5hzi3pWXXWoiLKs8g==
+X-Received: by 2002:a17:902:e144:b0:13f:4b7:68c0 with SMTP id d4-20020a170902e14400b0013f04b768c0mr8453206pla.77.1634266320080;
+        Thu, 14 Oct 2021 19:52:00 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id q18sm4117411pfj.46.2021.10.14.19.51.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Oct 2021 19:50:56 -0700 (PDT)
-Date:   Fri, 15 Oct 2021 11:50:52 +0900
-From:   Benjamin Poirier <benjamin.poirier@gmail.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     Stephen Suryaputra <ssuryaextr@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-Subject: Re: Anybody else getting unsubscribed from the list?
-Message-ID: <YWjsjB8rewStIybP@d3>
-References: <1fd8d0ac-ba8a-4836-59ab-0ed3b0321775@mojatatu.com>
- <20211014144337.GB11651@ICIPI.localdomain>
- <ce98b6b2-1251-556d-e6c8-461467c3c604@mojatatu.com>
- <20211014145940.GC11651@ICIPI.localdomain>
- <6263102e-ddf2-def1-2dae-d4f69dc04eca@mojatatu.com>
+        Thu, 14 Oct 2021 19:51:59 -0700 (PDT)
+Date:   Fri, 15 Oct 2021 10:51:54 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Cc:     netdev@vger.kernel.org, roopa@nvidia.com,
+        bridge@lists.linux-foundation.org, kuba@kernel.org,
+        davem@davemloft.net
+Subject: Re: [PATCH net-next v4 10/15] net: bridge: mcast: support for
+ IGMPv3/MLDv2 ALLOW_NEW_SOURCES report
+Message-ID: <YWjsyk/Dzg2/zVbw@Laptop-X1>
+References: <20200907095619.11216-1-nikolay@cumulusnetworks.com>
+ <20200907095619.11216-11-nikolay@cumulusnetworks.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <6263102e-ddf2-def1-2dae-d4f69dc04eca@mojatatu.com>
+In-Reply-To: <20200907095619.11216-11-nikolay@cumulusnetworks.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-10-14 11:17 -0400, Jamal Hadi Salim wrote:
-> Ok, so common denominator seems to be google then...
+On Mon, Sep 07, 2020 at 12:56:14PM +0300, Nikolay Aleksandrov wrote:
+> This patch adds handling for the ALLOW_NEW_SOURCES IGMPv3/MLDv2 report
+> types and limits them only when multicast_igmp_version == 3 or
+> multicast_mld_version == 2 respectively. Now that IGMPv3/MLDv2 handling
+> functions will be managing timers we need to delay their activation, thus
+> a new argument is added which controls if the timer should be updated.
+> We also disable host IGMPv3/MLDv2 handling as it's not yet implemented and
+> could cause inconsistent group state, the host can only join a group as
+> EXCLUDE {} or leave it.
 > 
-> Other than possibly an outage which would have affected
-> a large chunk of the list using gmail cant quiet explain it.
+> v4: rename update_timer to igmpv2_mldv1 and use the passed value from
+>     br_multicast_add_group's callers
+> v3: Add IPv6/MLDv2 support
+> 
+> Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+> ---
+>  net/bridge/br_multicast.c | 152 ++++++++++++++++++++++++++++++++------
+>  net/bridge/br_private.h   |   7 ++
+>  2 files changed, 137 insertions(+), 22 deletions(-)
+> 
+> diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+> index ba2ce875a80e..98600a08114e 100644
+> --- a/net/bridge/br_multicast.c
+> +++ b/net/bridge/br_multicast.c
+> @@ -787,7 +787,8 @@ static int br_multicast_add_group(struct net_bridge *br,
+>  				  struct net_bridge_port *port,
+>  				  struct br_ip *group,
+>  				  const unsigned char *src,
+> -				  u8 filter_mode)
+> +				  u8 filter_mode,
+> +				  bool igmpv2_mldv1)
+>  {
+>  	struct net_bridge_port_group __rcu **pp;
+>  	struct net_bridge_port_group *p;
+> @@ -826,7 +827,8 @@ static int br_multicast_add_group(struct net_bridge *br,
+>  	br_mdb_notify(br->dev, mp, p, RTM_NEWMDB);
+>  
+>  found:
+> -	mod_timer(&p->timer, now + br->multicast_membership_interval);
+> +	if (igmpv2_mldv1)
+> +		mod_timer(&p->timer, now + br->multicast_membership_interval);
 
-Happened to me too in the same time frame, also on gmail.
+Hi Nikolay,
 
-I think the last message I received before the drop was
-<487fa811-5afb-e25f-4292-0771c67cc462@omp.ru>
+Our engineer found that the multicast_membership_interval will not work with
+IGMPv3. Is it intend as you said "IGMPv3/MLDv2 handling is not yet
+implemented" ?
 
-In my case I haven't been dropped from the list since 2010.
+Thanks
+Hangbin
