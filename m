@@ -2,72 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE1CE42EE77
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 12:10:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8590842EE9F
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 12:15:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237765AbhJOKMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 06:12:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42524 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231776AbhJOKMN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Oct 2021 06:12:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 3854860F5D;
-        Fri, 15 Oct 2021 10:10:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634292607;
-        bh=0MfS7M8bqmbo6Sa8T+anrOM8zgErxdkmqGBEWGlx3Bg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=hNMFicw3CpcMLPWuRShyIjlkm5feBOZf6kE4hjgOBlxon/hzgi5rz4OiyAhsy4LIs
-         /pJwSEyHuC4qL8TbeZ42P4Es4F60slIjsSN9Wbjh44faDDvssamEhLQ1EwQnbbxC87
-         zP7ow4wU37rRHHlw/iJQOejJJmNTOitYuSu27hTHJVfGxqABUAZJ2LOIZynd1ed7lZ
-         X29CtjtsqFSNDUcSsKi+ZrBThnZ9axSq52N4/njfg9DbdNZ6uLwfkF8Roy7a6r/qbc
-         +4GG8zPK4mx76XUwn7MwUYMO00t8bJ+MFL6qLF+Vx0YoDMFtCUzt88dHHq1LtpfuW4
-         E6lQ9rzuuT80g==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2907B60A47;
-        Fri, 15 Oct 2021 10:10:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S237906AbhJOKRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 06:17:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53202 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237945AbhJOKR1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 06:17:27 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6FE1C061755;
+        Fri, 15 Oct 2021 03:15:20 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id x27so39848494lfu.5;
+        Fri, 15 Oct 2021 03:15:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=3gr9OcTQADgsroZkxjA4AUKlpE+nrLRpuXBQjxsEHLQ=;
+        b=qfFwnpb6M1YIhGtE1mKUJHOToAoQsZrCt9HeWMvbchWj1fg0w/eVD8wsgGJX4ZUCMO
+         BlBLXV5Y8niGFiDOL9a+0YFe9JpBJeig49Y4dyf8NPakLkfmKAq6QuE62QsoBSVB8Prk
+         OgVxDg512vQjhx3UrVBWP8dyq30z0GDNe4b78+y9TLiBVOigsbKWBQ3418Ja2f+bacW0
+         l1prEVovKt/TJm+WGE7emSy8p4oeGQTLLfxJ1JWC4fnI71WoHe6ljXP+CclOILWVgFKK
+         Zp9AnsAUYlEDWzc04r0+qKO+Ii6+7wCJrmRYMHXZznfqhDKkpdk/FT/VM3cP5gDZ8bvN
+         0tjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=3gr9OcTQADgsroZkxjA4AUKlpE+nrLRpuXBQjxsEHLQ=;
+        b=7SidSsJprU1VB0IisuRuUs63O6hW/jkHU2GV95sHV1SqTtf7csDOVQQqRbJffidNmz
+         24q/Maz9tke7nkUMuKrmK5frnV98s7jo7VsFvHIRK/bOd3ZJRQBX6J0oddCX8mGZapwN
+         qrMX90ZfFWZPQQHJPqOp6NjTS/0dc8sgmMiTcu3OB+FhssbdyWQoVME7XP4iuYUj5OlE
+         UWctXoiqUAaWpe+WyDBCUQkPLn4ft++hcKKoIT5fflsrNYxXZRiseYjroYxJmsQCAy7Y
+         enBfhVnz+YRNRpdYLoEIV4NeZm82rXaCd4IAkQtLZxxC2mgTx1oEEV1mq8dPGpXMElTq
+         atrA==
+X-Gm-Message-State: AOAM532ewhKD9dVEDYs57fRYmKzt+3s5Q+XUeD9dTNppgTuz0+SKzKzt
+        Hh4DDk8v6BB9ea9LkDMti/MPSFVpuihaAkBEr5E=
+X-Google-Smtp-Source: ABdhPJyEnWCoMDfH2i0HBPnsF/jpVigS3WGJwXYdVWthdfMH0pND3u7CqdgRvstM137UT/hj5eNbqwSpm0nHMR/eZqg=
+X-Received: by 2002:a05:6512:b08:: with SMTP id w8mr10144778lfu.505.1634292919050;
+ Fri, 15 Oct 2021 03:15:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] xen-netback: Remove redundant initialization of variable err
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163429260716.22961.1289715814535736615.git-patchwork-notify@kernel.org>
-Date:   Fri, 15 Oct 2021 10:10:07 +0000
-References: <20211013165142.135795-1-colin.king@canonical.com>
-In-Reply-To: <20211013165142.135795-1-colin.king@canonical.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     wei.liu@kernel.org, paul@xen.org, davem@davemloft.net,
-        kuba@kernel.org, xen-devel@lists.xenproject.org,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20211015090934.2870662-1-zenczykowski@gmail.com>
+ <YWlKGFpHa5o5jFgJ@salvia> <CANP3RGdCBzjWuK8FfHOOKcFAbd_Zru=DkOBBpD3d_PYDR91P5g@mail.gmail.com>
+ <20211015095716.GH2942@breakpoint.cc>
+In-Reply-To: <20211015095716.GH2942@breakpoint.cc>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Date:   Fri, 15 Oct 2021 03:15:07 -0700
+Message-ID: <CAHo-OoxsN5d+ipbp0TQ=a+o=ynd3-w5RZ3S3F8Vg89ipT5=UHw@mail.gmail.com>
+Subject: Re: [PATCH netfilter] netfilter: conntrack: udp: generate event on
+ switch to stream timeout
+To:     Florian Westphal <fw@strlen.de>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Netfilter Development Mailing List 
+        <netfilter-devel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, Oct 15, 2021 at 2:57 AM Florian Westphal <fw@strlen.de> wrote:
+>
+> Maciej =C5=BBenczykowski <zenczykowski@gmail.com> wrote:
+> > > Hm, I still don't understand why do you need this extra 3rd
+> > > update/assured event event. Could you explain your usecase?
+> >
+> > Currently we populate a flow offload array on the assured event, and
+> > thus the flow in both directions starts bypassing the kernel.
+> > Hence conntrack timeout is no longer automatically refreshed - and
+> > there is no opportunity for the timeout to get bumped to the stream
+> > timeout of 120s - it stays at 30s.
+> > We periodically (every just over 60-ish seconds) check whether packets
+> > on a flow have been offloaded, and if so refresh the conntrack
+> > timeout.  This isn't cheap and we don't want to do it even more often.
+> > However this 60s cycle > 30s non-stream udp timeout, so the kernel
+> > conntrack entry expires (and we must thus clear out the flow from the
+> > offload).  This results in a broken udp stream - but only on newer
+> > kernels.  Older kernels don't have this '2s' wait feature (which makes
+> > a lot of sense btw.) but as a result of this the conntrack assured
+> > event happens at the right time - when the timeout hits 120s (or 180s
+> > on even older kernels).
+> >
+> > By generating another assured event when the udp stream is 'confirmed'
+> > and the timeout is boosted from 30s to 120s we have an opportunity to
+> > ignore the first one (with timeout 30) and only populate the offload
+> > on the second one (with timeout 120).
+> >
+> > I'm not sure if I'm doing a good job of describing this.  Ask again if
+> > it's not clear and I'll try again.
+>
+> Thanks for explaining, no objections to this from my side.
+>
+> Do you think it makes sense to just delay setting the ASSURED bit
+> until after the 2s period?
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+That would work for this particular use case.... but I don't know if
+it's a good idea.
+I did of course think of it, but the commit message seemed to imply
+there's a good reason to set the assured bit earlier rather than
+later...
 
-On Wed, 13 Oct 2021 17:51:42 +0100 you wrote:
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> The variable err is being initialized with a value that is never read, it
-> is being updated immediately afterwards. The assignment is redundant and
-> can be removed.
-> 
-> Addresses-Coverity: ("Unused value")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> 
-> [...]
+A udp flow becoming bidirectional seems like an important event to
+notify about...
+Afterall, the UDP flow might become a stream 29 seconds after it
+becomes bidirectional...
+That seems like a pretty long time (and it's user configurable to be
+even longer) to delay the notification.
 
-Here is the summary with links:
-  - xen-netback: Remove redundant initialization of variable err
-    https://git.kernel.org/netdev/net-next/c/bacc8daf97d4
+I imagine the pair of you know best whether 2 events or delay assured
+event until stream timeout is applied makes more sense...
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+- Maciej
