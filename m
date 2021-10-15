@@ -2,56 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A602442E546
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 02:28:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFD9142E613
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 03:19:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233343AbhJOAaH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 20:30:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45566 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229983AbhJOAaG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Oct 2021 20:30:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 065F4600CC;
-        Fri, 15 Oct 2021 00:28:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634257681;
-        bh=qgAzhKwAF3KDwxxqTXRD7qYDvukIZgRp5XGAGy+Qmzs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hb+jjMQFzu5/a9RADaTKjPfSg0IifgcCX+KhbrcjU7/u3uaVBMk75eQPquqeiF8CM
-         pbLsbhQrM9nUY5t5lMP/LxOa2zXLqaSTgA35tphHw0tuulQxUpMmZTi3kwmmmF756R
-         K/LVFjgpBBy7P5x1orFjx6A3984pKSV38dzw86Jz1Rc0i7/70SLybmfaXSlr3eoNVO
-         NNu8dd1F70KSS4hdlRoGzae7nDovOSjbtKhcKesppigTP2eCLrYvBinlOMX+B9wNi/
-         S9dIj+OIumNm+AFXkeK5sr0le0R+jLEExKY7tQGuqYQ2TQx725QM+Kh13Z4IHa9fdy
-         glkqDgnzwR0xQ==
-Date:   Thu, 14 Oct 2021 17:28:00 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Justin Iurman <justin.iurman@uliege.be>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org
-Subject: Re: [PATCH net 0/2] Correct the IOAM behavior for undefined trace
- type bits
-Message-ID: <20211014172800.26374a35@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211011180412.22781-1-justin.iurman@uliege.be>
-References: <20211011180412.22781-1-justin.iurman@uliege.be>
+        id S233065AbhJOBVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 21:21:12 -0400
+Received: from pi.codeconstruct.com.au ([203.29.241.158]:38930 "EHLO
+        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234960AbhJOBU7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 21:20:59 -0400
+Received: from pecola.lan (unknown [159.196.93.152])
+        by mail.codeconstruct.com.au (Postfix) with ESMTPSA id BADF720181;
+        Fri, 15 Oct 2021 09:18:45 +0800 (AWST)
+Message-ID: <df5c3b8c0d0e8e2c97d4ab009c2f8faf1569c958.camel@codeconstruct.com.au>
+Subject: Re: [PATCH net-next v4 04/15] mctp: Add sockaddr_mctp to uapi
+From:   Jeremy Kerr <jk@codeconstruct.com.au>
+To:     Eugene Syromiatnikov <esyr@redhat.com>
+Cc:     netdev@vger.kernel.org, Matt Johnston <matt@codeconstruct.com.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-m68k@lists.linux-m68k.org
+Date:   Fri, 15 Oct 2021 09:18:45 +0800
+In-Reply-To: <20211014183456.GA8474@asgard.redhat.com>
+References: <20210729022053.134453-1-jk@codeconstruct.com.au>
+         <20210729022053.134453-5-jk@codeconstruct.com.au>
+         <20211014183456.GA8474@asgard.redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 11 Oct 2021 20:04:10 +0200 Justin Iurman wrote:
-> (@Jakub @David: there will be a conflict for #2 when merging net->net-next, due
-> to commit [1]. The conflict is only 5-10 lines for #2 (#1 should be fine) inside
-> the file tools/testing/selftests/net/ioam6.sh, so quite short though possibly
-> ugly. Sorry for that, I didn't expect to post this one... Had I known, I'd have
-> made the opposite.)
+Hi Eugene,
 
-Hi Justin, net was merged into net-next now, please double check the
-resolution. I think it's the same as Stephen's [1]. In the future please
-try to include a tree way diff or instructions on how to do the merge.
+Thanks for taking a look at these!
 
-Thanks!
+> > +typedef __u8                   mctp_eid_t;
+> > +
+> > +struct mctp_addr {
+> > +       mctp_eid_t              s_addr;
+> > +};
+> > +
+> >  struct sockaddr_mctp {
+> > +       unsigned short int      smctp_family;
+> 
+> This gap makes the size of struct sockaddr_mctp 2 bytes less at least
+> on m68k, are you fine with that?
 
-[1]
-https://lore.kernel.org/all/20211013104227.62c4d3af@canb.auug.org.au/
+Yep, that's OK from the protocol implementation side; this layout better
+matches the "hierarchy" of the MCTP addressing. If we go for optimal
+packing, the order of the members makes somewhat less sense. We could
+add padding members, but I'm not sure that's worth it...
+
+I noticed a few other protocol implementations doing similar things, so
+assume it isn't an issue - it's all arch-specific ABI anyway, right?
+
+> > +       int                     smctp_network;
+> > +       struct mctp_addr        smctp_addr;
+> > +       __u8                    smctp_type;
+> > +       __u8                    smctp_tag;
+> >  };
+
+Cheers,
+
+
+Jeremy
+
+
