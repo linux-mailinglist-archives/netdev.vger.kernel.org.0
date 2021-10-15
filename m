@@ -2,118 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8590842EE9F
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 12:15:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E035442EEB0
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 12:20:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237906AbhJOKRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 06:17:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53202 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237945AbhJOKR1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 06:17:27 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6FE1C061755;
-        Fri, 15 Oct 2021 03:15:20 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id x27so39848494lfu.5;
-        Fri, 15 Oct 2021 03:15:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=3gr9OcTQADgsroZkxjA4AUKlpE+nrLRpuXBQjxsEHLQ=;
-        b=qfFwnpb6M1YIhGtE1mKUJHOToAoQsZrCt9HeWMvbchWj1fg0w/eVD8wsgGJX4ZUCMO
-         BlBLXV5Y8niGFiDOL9a+0YFe9JpBJeig49Y4dyf8NPakLkfmKAq6QuE62QsoBSVB8Prk
-         OgVxDg512vQjhx3UrVBWP8dyq30z0GDNe4b78+y9TLiBVOigsbKWBQ3418Ja2f+bacW0
-         l1prEVovKt/TJm+WGE7emSy8p4oeGQTLLfxJ1JWC4fnI71WoHe6ljXP+CclOILWVgFKK
-         Zp9AnsAUYlEDWzc04r0+qKO+Ii6+7wCJrmRYMHXZznfqhDKkpdk/FT/VM3cP5gDZ8bvN
-         0tjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=3gr9OcTQADgsroZkxjA4AUKlpE+nrLRpuXBQjxsEHLQ=;
-        b=7SidSsJprU1VB0IisuRuUs63O6hW/jkHU2GV95sHV1SqTtf7csDOVQQqRbJffidNmz
-         24q/Maz9tke7nkUMuKrmK5frnV98s7jo7VsFvHIRK/bOd3ZJRQBX6J0oddCX8mGZapwN
-         qrMX90ZfFWZPQQHJPqOp6NjTS/0dc8sgmMiTcu3OB+FhssbdyWQoVME7XP4iuYUj5OlE
-         UWctXoiqUAaWpe+WyDBCUQkPLn4ft++hcKKoIT5fflsrNYxXZRiseYjroYxJmsQCAy7Y
-         enBfhVnz+YRNRpdYLoEIV4NeZm82rXaCd4IAkQtLZxxC2mgTx1oEEV1mq8dPGpXMElTq
-         atrA==
-X-Gm-Message-State: AOAM532ewhKD9dVEDYs57fRYmKzt+3s5Q+XUeD9dTNppgTuz0+SKzKzt
-        Hh4DDk8v6BB9ea9LkDMti/MPSFVpuihaAkBEr5E=
-X-Google-Smtp-Source: ABdhPJyEnWCoMDfH2i0HBPnsF/jpVigS3WGJwXYdVWthdfMH0pND3u7CqdgRvstM137UT/hj5eNbqwSpm0nHMR/eZqg=
-X-Received: by 2002:a05:6512:b08:: with SMTP id w8mr10144778lfu.505.1634292919050;
- Fri, 15 Oct 2021 03:15:19 -0700 (PDT)
+        id S232733AbhJOKWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 06:22:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47124 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230061AbhJOKWN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Oct 2021 06:22:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 48E3260FDA;
+        Fri, 15 Oct 2021 10:20:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634293207;
+        bh=layviOlym3XQHi5ErpUCAn17rbJSMBf73Ptgsdy19oU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=NEvYmhT+rUicoBCRGAZ+QBCms6p/Q8jvX8cjzX13nBoCvXfmzJkb+hAaWZE0/pRVu
+         ZbNsgFkM8bH172JjhTvngrG+zA4Rxw3LDqU3I2s6Iqm22X87qCEpZPvgLsA2ONhtHJ
+         xUlgJ1kldicTn59rqGF/UHD3uncbLfoMP+qwf0/TxGQNQIoLNzwKyZlFAYBSYzD8j9
+         tNlAfOPqkk2exBbJTkDLLg57LpZp9aAnuh/lpm2d4CjIedT9vz6VBMBBIiTaH/exl8
+         BOR6Jf9XzH82zJ/iCbTA2B7KzDAkuDxKsoliqCfA+jS9uUlOgnBG1ZjxiTAMjlYrOg
+         I/l8s3lVrvDMg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3757660A47;
+        Fri, 15 Oct 2021 10:20:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20211015090934.2870662-1-zenczykowski@gmail.com>
- <YWlKGFpHa5o5jFgJ@salvia> <CANP3RGdCBzjWuK8FfHOOKcFAbd_Zru=DkOBBpD3d_PYDR91P5g@mail.gmail.com>
- <20211015095716.GH2942@breakpoint.cc>
-In-Reply-To: <20211015095716.GH2942@breakpoint.cc>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Date:   Fri, 15 Oct 2021 03:15:07 -0700
-Message-ID: <CAHo-OoxsN5d+ipbp0TQ=a+o=ynd3-w5RZ3S3F8Vg89ipT5=UHw@mail.gmail.com>
-Subject: Re: [PATCH netfilter] netfilter: conntrack: udp: generate event on
- switch to stream timeout
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Netfilter Development Mailing List 
-        <netfilter-devel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] ptp: fix error print of ptp_kvm on X86_64 platform
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163429320722.30649.15225917576713116209.git-patchwork-notify@kernel.org>
+Date:   Fri, 15 Oct 2021 10:20:07 +0000
+References: <20211014031952.1573640-1-huangkele@bytedance.com>
+In-Reply-To: <20211014031952.1573640-1-huangkele@bytedance.com>
+To:     Kele Huang <huangkele@bytedance.com>
+Cc:     richardcochran@gmail.com, xieyongji@bytedance.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 15, 2021 at 2:57 AM Florian Westphal <fw@strlen.de> wrote:
->
-> Maciej =C5=BBenczykowski <zenczykowski@gmail.com> wrote:
-> > > Hm, I still don't understand why do you need this extra 3rd
-> > > update/assured event event. Could you explain your usecase?
-> >
-> > Currently we populate a flow offload array on the assured event, and
-> > thus the flow in both directions starts bypassing the kernel.
-> > Hence conntrack timeout is no longer automatically refreshed - and
-> > there is no opportunity for the timeout to get bumped to the stream
-> > timeout of 120s - it stays at 30s.
-> > We periodically (every just over 60-ish seconds) check whether packets
-> > on a flow have been offloaded, and if so refresh the conntrack
-> > timeout.  This isn't cheap and we don't want to do it even more often.
-> > However this 60s cycle > 30s non-stream udp timeout, so the kernel
-> > conntrack entry expires (and we must thus clear out the flow from the
-> > offload).  This results in a broken udp stream - but only on newer
-> > kernels.  Older kernels don't have this '2s' wait feature (which makes
-> > a lot of sense btw.) but as a result of this the conntrack assured
-> > event happens at the right time - when the timeout hits 120s (or 180s
-> > on even older kernels).
-> >
-> > By generating another assured event when the udp stream is 'confirmed'
-> > and the timeout is boosted from 30s to 120s we have an opportunity to
-> > ignore the first one (with timeout 30) and only populate the offload
-> > on the second one (with timeout 120).
-> >
-> > I'm not sure if I'm doing a good job of describing this.  Ask again if
-> > it's not clear and I'll try again.
->
-> Thanks for explaining, no objections to this from my side.
->
-> Do you think it makes sense to just delay setting the ASSURED bit
-> until after the 2s period?
+Hello:
 
-That would work for this particular use case.... but I don't know if
-it's a good idea.
-I did of course think of it, but the commit message seemed to imply
-there's a good reason to set the assured bit earlier rather than
-later...
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-A udp flow becoming bidirectional seems like an important event to
-notify about...
-Afterall, the UDP flow might become a stream 29 seconds after it
-becomes bidirectional...
-That seems like a pretty long time (and it's user configurable to be
-even longer) to delay the notification.
+On Thu, 14 Oct 2021 11:19:52 +0800 you wrote:
+> Commit a86ed2cfa13c5 ("ptp: Don't print an error if ptp_kvm is not supported")
+> fixes the error message print on ARM platform by only concerning about
+> the case that the error returned from kvm_arch_ptp_init() is not -EOPNOTSUPP.
+> Although the ARM platform returns -EOPNOTSUPP if ptp_kvm is not supported
+> while X86_64 platform returns -KVM_EOPNOTSUPP, both error codes share the
+> same value 95.
+> 
+> [...]
 
-I imagine the pair of you know best whether 2 events or delay assured
-event until stream timeout is applied makes more sense...
+Here is the summary with links:
+  - ptp: fix error print of ptp_kvm on X86_64 platform
+    https://git.kernel.org/netdev/net/c/c2402d43d183
 
-- Maciej
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
