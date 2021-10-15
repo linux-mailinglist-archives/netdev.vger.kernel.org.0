@@ -2,170 +2,298 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AF8C42E98B
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 08:58:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E584F42E99D
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 09:01:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235823AbhJOHAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 03:00:42 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:36938 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235787AbhJOHAj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 03:00:39 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19F6wWY8024075;
-        Thu, 14 Oct 2021 23:58:33 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=xk3BZTrBDT3rK/UZWKJuKLgq3Wy3alV3sonsURLGi5c=;
- b=nFQiZOqcdvth4t5P45lSX+VAxog0yRZvLuMkZk2WxrIW0dSSL1OnaJ/Rzpkg9YoErN4d
- WXYOmlKm1yUAhA2bLfdUgRWJ+o4YWs8i3C5DgFdaOqqp2vQcr0TcOAgwOnqHSWkFqc0f
- 14CO1/AegoKnOLDvTICHRd4Bxe3Yma1L7v0= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3bq4ky01a4-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 14 Oct 2021 23:58:32 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.228) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.14; Thu, 14 Oct 2021 23:58:31 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MZD6Eq8sBQRJ8zYUKMRCOJKrE75s9SF0XHwAGWMF8WrsHWTXJYh9k93VzjWuWYvi4PAYNW/5IwFccsKHnCifVwBMikkXMXwypIBVYyPQoi7aIWzF1YfTvYkUBHTNT6qTzaUICqah98DSrVPcKuja12mzDrnVK69qtrhAk3p6jflb6fJvsfe81rSINgjJawfZa1oGwaDJ9bBTvqENMxP/8BNJIqv+wRaQgPaYnw+rCL5Dtu/bNr/9pXe3ybhSJ1rQ25/qq5mPCBFaDIDFz1MPdYGtjvM7WEAL12/1DqDmSyHe9STTlyR0hsB1ktKU8Nzt6VYC/5xfxmaC1tgQ71Hk6w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xk3BZTrBDT3rK/UZWKJuKLgq3Wy3alV3sonsURLGi5c=;
- b=aKu3yA/frmjQ2y4qmNMIJ0cbm1HyMQLF2gYGH2JSPOYrGO2Dmg5acME52Kr/FvJAqEeckgVA0GksO0nxy27LOPTCDv9BjZg54ygUa6+9xRx+6xPQEdXuaevGLWUiXrYfKnKVu1BJtEkYlAu12Y/jipyirY/SNTnzL0F6RXMBZ7DpxbHHm/JknubKca6psggvuAo6dMzEF4dGypvjvsWUyX/eIwq7ynxYfn3RP+34488gJ1/ttcDnAcEnSBDqjBqzbHrbW/VO0BH8ezkpJjhUNFFwACtC5Mu07isubAFJOm1D6UMBtNXUDd0Ty42IhRIop/YVPPBZcVBaO8nhrMwImw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SA1PR15MB5109.namprd15.prod.outlook.com (2603:10b6:806:1dc::10)
- by SA1PR15MB5235.namprd15.prod.outlook.com (2603:10b6:806:22a::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.16; Fri, 15 Oct
- 2021 06:58:30 +0000
-Received: from SA1PR15MB5109.namprd15.prod.outlook.com
- ([fe80::7d66:9b36:b482:af0f]) by SA1PR15MB5109.namprd15.prod.outlook.com
- ([fe80::7d66:9b36:b482:af0f%8]) with mapi id 15.20.4608.017; Fri, 15 Oct 2021
- 06:58:30 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-CC:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "Martin Lau" <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?iso-8859-1?Q?Toke_H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v3 6/8] selftests/bpf: Add weak/typeless ksym
- test for light skeleton
-Thread-Topic: [PATCH bpf-next v3 6/8] selftests/bpf: Add weak/typeless ksym
- test for light skeleton
-Thread-Index: AQHXwT4TVKNF9yVm4kiVloooFQ5DLqvToaGA
-Date:   Fri, 15 Oct 2021 06:58:29 +0000
-Message-ID: <D997C301-25F9-4378-82E3-A1B072C58A6D@fb.com>
-References: <20211014205644.1837280-1-memxor@gmail.com>
- <20211014205644.1837280-7-memxor@gmail.com>
-In-Reply-To: <20211014205644.1837280-7-memxor@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3654.120.0.1.13)
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 685e0174-33c6-409c-22dc-08d98fa93203
-x-ms-traffictypediagnostic: SA1PR15MB5235:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <SA1PR15MB5235C50FC4B993485110B79FB3B99@SA1PR15MB5235.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ObapEvasn91Q3Kzalr8c2pQ91EZ1qwelbjGl5HPoEiXfVANDXQSNMtP6vxF/licwbjidPJ+lcPVL3vXWG4389JVzwByitT3RUChT/YqWTlUZLexqu71JfiHCHF604MIeQuIAbHQoEceqq/QwoDAs3OXvJjlBsWOxDU4JrQzGsklrB75IAhGbc7IKPTUEYz9VIjK7KjmuoRArVNhSue1s1Zothcyskv74Eqk5a8e71M/XrC/rBhCB1y2nEetuJjvby2+37apM2riOIMAg1ugWuIxJo6LgQ4rSG6/ei7X6ylKcvfG84ki8FOeJf9XFMLLQ4hg1y23uBxjl21fweV+0qC7TtqfHLviTV7c/aaIfylAYEwnQLNKhhfnY6chyckBLlH3wB9+vxSITABQOrvXkxGDklXhxMxYIUgDY2xa46CR6nNJGjZj3L4i18TbAbuxCj7iw7JPLZGEiH74y+3hnuoSp90uaXjnGIqBIp6ebT1XICyDHxq3COIdUcYs+ZmNx6pA2030Ye/z7toadOruWjqc99H4KvStJiTEe3PBs8mD9AiRocu4GBuJxoEY1byuZsEoNI7KuhJmNeXRVw9IPIcljmYV8UShyMHC6T6AxbTOE33NJL+gdndUrmrxQ2Zgppo6J4oU6liDLEST9ZsFG7F27zn5XHmUI5WsAk71VIn0IM4Q1IVZH2sWAW3P4b7fdA+Sg9a/Q8YLHe8AzjRJbMAyUA6lA1cBWj5skbet0jIQ=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(4744005)(71200400001)(6916009)(8936002)(122000001)(316002)(4326008)(508600001)(5660300002)(6486002)(36756003)(38100700002)(33656002)(8676002)(66446008)(38070700005)(54906003)(66946007)(66556008)(86362001)(91956017)(76116006)(186003)(2906002)(6512007)(6506007)(2616005)(64756008)(53546011)(66476007)(45980500001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?w1kKfGB0xcUv51ZcAybnLreCKbOEOHYSA4X3en27pb4+oBB51UfXkjZht9?=
- =?iso-8859-1?Q?Ie0+woFJp2N0aoi5SF8h+KgUdd0bHDUtcCd2U+wZxjQSdtMGnEqaQKB8fS?=
- =?iso-8859-1?Q?zdZRcnKvALgD4RHhyPZk/TIjVGyBy10ZpKPvwsykz/luSsBFIOmr0d4tIS?=
- =?iso-8859-1?Q?l3knEwLs9J2maBWPrrD+KcLNh2DjSXj0dsB5kedJbK10w3x77zfrCpA2Ik?=
- =?iso-8859-1?Q?v9f8X4jv0XPnwfEagETItrz7wfsjrZSyhwThTHYBjESC5JYpelRnetW4/a?=
- =?iso-8859-1?Q?6xmQcDG1Gh0lftWg/TEjsx56pDeJqoj2FiN4k1JEu8uq4ArvAQOxYsRG5y?=
- =?iso-8859-1?Q?VF0YLwNNeCwGGpYk3pVe7QN2qEj06CXo+rl3JzpWiQfpf/jqVsHak7R2rn?=
- =?iso-8859-1?Q?p1WRJ/rZGyDk2YIxV+cycbOO8bSKQYDW2ycPEbpdmt1Hrj5T46GNVwCCYn?=
- =?iso-8859-1?Q?s1w5zXmoOiPEu5l7Mno3q9ZhLp8QHv+pszm4raL009/Ci9168ybFDgbMZE?=
- =?iso-8859-1?Q?/XgZZlVRVzbMb6Lbke1qdEpIVvxTOTZYIiOvWcZAPYgrCHxsuSegFDMK9c?=
- =?iso-8859-1?Q?78tJlSsDBs87v7XNWYDmQ9RblPGrab8HJX+1KMSWxR/V650nZMJbwth/RK?=
- =?iso-8859-1?Q?O7PbAeeCjCBljLR/Tt7HCoZGuNlqjFhG/rqhClM2v/QBPK7f1spQVomMmv?=
- =?iso-8859-1?Q?6akz8r3HpOonHGTjRKnlZFlXrPPe5fivWe/f704MNqacpCKBCUmRmfXg/C?=
- =?iso-8859-1?Q?2yQvgtXliLtkPj0lrFXGs205PUXBWbjq85xqEWmPyv4HsgKoRXZ48mMTFk?=
- =?iso-8859-1?Q?HsephiKnFNn1cE+cGTjFRqXzquj31ay5o4cjgTRVIrrlyOLsWBxwXrbs+p?=
- =?iso-8859-1?Q?Ewp0DT5eBMq0dvQPdSwyT+6AiwkPqfLEPrCLWetlawZpUPoI0JEJ1IWSGB?=
- =?iso-8859-1?Q?sRVOv2Ed3cT+NLw/yz92Mi89EQkKK2dVN7zzyEHjzRXd0pM4tk5IK2kWkP?=
- =?iso-8859-1?Q?biD5QhUDNdnr4GVZbV5TEtAUCtUd4seIwOS6Bru0V/GhmZ5FjLCOCjxD9M?=
- =?iso-8859-1?Q?ttL/A2whTfsLeB3GlBsnW2QHhtoiMM0i8hbyhwnZd1ahX6Zc+bkbr0x4Lh?=
- =?iso-8859-1?Q?i8LjM1krzNUsy3GMVAFNb3mtKJnv2t2VyWb0lJ7T1GMt0RcxhV9zGCh2fi?=
- =?iso-8859-1?Q?m7Tk4qjeByPf1qJIAEH9WLsmkU3nJwzo4QLey+Izy2i+DquDn4SI0cYpCD?=
- =?iso-8859-1?Q?nywp0zu5w7PEMgkg3xXmsJsSabdChxni9SeV70e+d8DNKCjrh78fY39eLO?=
- =?iso-8859-1?Q?OY5vL8IG2ZKiYiAzg/N2cKjy4FezBgsbh8zQLb6dj/rqvOhICZ+LUI5TyX?=
- =?iso-8859-1?Q?CCCRuEXthgme8OUrKIlFi7wXLVO5gG0YUcUemWSZxbYDNj2EhNLcI=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-ID: <418AD1D4CB42314A9CB33C966AD746D5@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S235838AbhJOHDh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 03:03:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36454 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235715AbhJOHDh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 03:03:37 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 340F3C061755
+        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 00:01:31 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id a25so34168744edx.8
+        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 00:01:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FmKkfM/1eZ6CH+Nh6bYE9seKAU754cBloquUZK6mdqE=;
+        b=tkVzioxgPLgsxZof6tus91cnxKZrzjdS3z8DEavY8Oi1OmMtqCq65N6JS1GsMCc4eA
+         FgHR7JSmgPMtQpjkLN/lfLULjd48xbrDVeqlAkxp50zIr1GeKu9SxZzpcjOE8rsWpaLO
+         EibptvGr56Ot3HqH2G3Zlrxle/LeVe8kMX97EkEC1Wlstn6q9cA2NbvwBE8994ePisfL
+         /a75reki8xcXuHO6KF/rWatMH67cTf+Tk5yjSZXGfIe3NKPRRCROYb2B0R7ew21kwpZ6
+         MANAKNTSFOG2qsLQVxsKcFpSh04JMzklntlFlllhVRkte4a7whRCrjoNwBvv2TRnuqe0
+         MR/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FmKkfM/1eZ6CH+Nh6bYE9seKAU754cBloquUZK6mdqE=;
+        b=jb0Cvz4ypSjkbGVffcV9D+qa11ybNfeKGxdbdHtzzFXcTP9YiSpW5gPhz/bPDXKBAa
+         eMaqLE2VpYUmf3PvuS2cJeCgWrYqv8i9G5e9I74g3Hz4zbxsREGm9MINAaqnJKl25u5w
+         xyvn41vLusaZMCAhZqnTvn5xTkwLJfcrsGSa++lPTz/5SO60GWg/TR2SRnWLSKjacuC8
+         S58tuwFoayuO3olqIi2FBKMGLnMKUdPBPdjRk2bSs/rpHeMKCyjPNNW7XIFd5Wil9Idc
+         WnGp69X7k+tNlmWBzsDYo6Vr5LOFExF986K7Wnq1lFLZujIl2CPDoscmMEYprOdBpCy/
+         nFKQ==
+X-Gm-Message-State: AOAM532b6YGbKVzBnvU6+sm9/YWQZ62DLxPyxlILYxplgPR28aeyqxyj
+        c0chy9Iw3xrknC3Xy2OdUV4DSU9gjfzOOLf+03UOCQ==
+X-Google-Smtp-Source: ABdhPJwNoPIEp9DqsKcjRA/4bQg99WBVvXwoh/QRRh1FQrhwZnaIKoS9tr3rFItF7II3bnd8+H/p9XfpTYmuH2TO/1A=
+X-Received: by 2002:a50:d50c:: with SMTP id u12mr15591860edi.118.1634281287150;
+ Fri, 15 Oct 2021 00:01:27 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5109.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 685e0174-33c6-409c-22dc-08d98fa93203
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Oct 2021 06:58:29.9194
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zf3c41wn9CikxECk2FbzwzBEvo/0zAO9W1CAC2CCVKAnEHabyZPwtpy4bsApOqdBbn0IbIjmcrdzJ3fnkn7wqA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB5235
-X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: ElCYHbIOz28FK4zZ2tuEX19iUplEWxnk
-X-Proofpoint-GUID: ElCYHbIOz28FK4zZ2tuEX19iUplEWxnk
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-10-15_02,2021-10-14_02,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 mlxscore=0
- malwarescore=0 phishscore=0 priorityscore=1501 impostorscore=0 bulkscore=0
- clxscore=1015 spamscore=0 mlxlogscore=999 suspectscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109230001 definitions=main-2110150042
-X-FB-Internal: deliver
+References: <20211008144920.10975-1-asmaa@nvidia.com> <20211008144920.10975-2-asmaa@nvidia.com>
+In-Reply-To: <20211008144920.10975-2-asmaa@nvidia.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Fri, 15 Oct 2021 09:01:16 +0200
+Message-ID: <CAMRc=Mc4yJZ2qv7W+mk-jJhhxEwe+7VowJt51ZekpVrZ=4LsZA@mail.gmail.com>
+Subject: Re: [PATCH v4 1/2] gpio: mlxbf2: Introduce IRQ support
+To:     Asmaa Mnebhi <asmaa@nvidia.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>, davthompson@nvidia.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Oct 8, 2021 at 4:50 PM Asmaa Mnebhi <asmaa@nvidia.com> wrote:
+>
+> Introduce standard IRQ handling in the gpio-mlxbf2.c
+> driver.
+>
+> Signed-off-by: Asmaa Mnebhi <asmaa@nvidia.com>
+> ---
+>  drivers/gpio/gpio-mlxbf2.c | 147 ++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 145 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/gpio/gpio-mlxbf2.c b/drivers/gpio/gpio-mlxbf2.c
+> index 177d03ef4529..3d89912a05b8 100644
+> --- a/drivers/gpio/gpio-mlxbf2.c
+> +++ b/drivers/gpio/gpio-mlxbf2.c
+> @@ -1,9 +1,14 @@
+>  // SPDX-License-Identifier: GPL-2.0
+>
+> +/*
+> + * Copyright (C) 2020-2021 NVIDIA CORPORATION & AFFILIATES
+> + */
+> +
+>  #include <linux/bitfield.h>
+>  #include <linux/bitops.h>
+>  #include <linux/device.h>
+>  #include <linux/gpio/driver.h>
+> +#include <linux/interrupt.h>
+>  #include <linux/io.h>
+>  #include <linux/ioport.h>
+>  #include <linux/kernel.h>
+> @@ -43,9 +48,14 @@
+>  #define YU_GPIO_MODE0                  0x0c
+>  #define YU_GPIO_DATASET                        0x14
+>  #define YU_GPIO_DATACLEAR              0x18
+> +#define YU_GPIO_CAUSE_RISE_EN          0x44
+> +#define YU_GPIO_CAUSE_FALL_EN          0x48
+>  #define YU_GPIO_MODE1_CLEAR            0x50
+>  #define YU_GPIO_MODE0_SET              0x54
+>  #define YU_GPIO_MODE0_CLEAR            0x58
+> +#define YU_GPIO_CAUSE_OR_CAUSE_EVTEN0  0x80
+> +#define YU_GPIO_CAUSE_OR_EVTEN0                0x94
+> +#define YU_GPIO_CAUSE_OR_CLRCAUSE      0x98
+>
+>  struct mlxbf2_gpio_context_save_regs {
+>         u32 gpio_mode0;
+> @@ -55,6 +65,7 @@ struct mlxbf2_gpio_context_save_regs {
+>  /* BlueField-2 gpio block context structure. */
+>  struct mlxbf2_gpio_context {
+>         struct gpio_chip gc;
+> +       struct irq_chip irq_chip;
+>
+>         /* YU GPIO blocks address */
+>         void __iomem *gpio_io;
+> @@ -218,15 +229,114 @@ static int mlxbf2_gpio_direction_output(struct gpio_chip *chip,
+>         return ret;
+>  }
+>
+> +static void mlxbf2_gpio_irq_enable(struct irq_data *irqd)
+> +{
+> +       struct gpio_chip *gc = irq_data_get_irq_chip_data(irqd);
+> +       struct mlxbf2_gpio_context *gs = gpiochip_get_data(gc);
+> +       int offset = irqd_to_hwirq(irqd);
+> +       unsigned long flags;
+> +       u32 val;
+> +
+> +       spin_lock_irqsave(&gs->gc.bgpio_lock, flags);
+> +       val = readl(gs->gpio_io + YU_GPIO_CAUSE_OR_CLRCAUSE);
+> +       val |= BIT(offset);
+> +       writel(val, gs->gpio_io + YU_GPIO_CAUSE_OR_CLRCAUSE);
+> +
+> +       val = readl(gs->gpio_io + YU_GPIO_CAUSE_OR_EVTEN0);
+> +       val |= BIT(offset);
+> +       writel(val, gs->gpio_io + YU_GPIO_CAUSE_OR_EVTEN0);
+> +       spin_unlock_irqrestore(&gs->gc.bgpio_lock, flags);
+> +}
+> +
+> +static void mlxbf2_gpio_irq_disable(struct irq_data *irqd)
+> +{
+> +       struct gpio_chip *gc = irq_data_get_irq_chip_data(irqd);
+> +       struct mlxbf2_gpio_context *gs = gpiochip_get_data(gc);
+> +       int offset = irqd_to_hwirq(irqd);
+> +       unsigned long flags;
+> +       u32 val;
+> +
+> +       spin_lock_irqsave(&gs->gc.bgpio_lock, flags);
+> +       val = readl(gs->gpio_io + YU_GPIO_CAUSE_OR_EVTEN0);
+> +       val &= ~BIT(offset);
+> +       writel(val, gs->gpio_io + YU_GPIO_CAUSE_OR_EVTEN0);
+> +       spin_unlock_irqrestore(&gs->gc.bgpio_lock, flags);
+> +}
+> +
+> +static irqreturn_t mlxbf2_gpio_irq_handler(int irq, void *ptr)
+> +{
+> +       struct mlxbf2_gpio_context *gs = ptr;
+> +       struct gpio_chip *gc = &gs->gc;
+> +       unsigned long pending;
+> +       u32 level;
+> +
+> +       pending = readl(gs->gpio_io + YU_GPIO_CAUSE_OR_CAUSE_EVTEN0);
+> +       writel(pending, gs->gpio_io + YU_GPIO_CAUSE_OR_CLRCAUSE);
+> +
+> +       for_each_set_bit(level, &pending, gc->ngpio) {
+> +               int gpio_irq = irq_find_mapping(gc->irq.domain, level);
+> +               generic_handle_irq(gpio_irq);
+> +       }
+> +
+> +       return IRQ_RETVAL(pending);
+> +}
+> +
+> +static int
+> +mlxbf2_gpio_irq_set_type(struct irq_data *irqd, unsigned int type)
+> +{
+> +       struct gpio_chip *gc = irq_data_get_irq_chip_data(irqd);
+> +       struct mlxbf2_gpio_context *gs = gpiochip_get_data(gc);
+> +       int offset = irqd_to_hwirq(irqd);
+> +       unsigned long flags;
+> +       bool fall = false;
+> +       bool rise = false;
+> +       u32 val;
+> +
+> +       switch (type & IRQ_TYPE_SENSE_MASK) {
+> +       case IRQ_TYPE_EDGE_BOTH:
+> +               fall = true;
+> +               rise = true;
+> +               break;
+> +       case IRQ_TYPE_EDGE_RISING:
+> +               rise = true;
+> +               break;
+> +       case IRQ_TYPE_EDGE_FALLING:
+> +               fall = true;
+> +               break;
+> +       default:
+> +               return -EINVAL;
+> +       }
+> +
+> +       spin_lock_irqsave(&gs->gc.bgpio_lock, flags);
+> +       if (fall) {
+> +               val = readl(gs->gpio_io + YU_GPIO_CAUSE_FALL_EN);
+> +               val |= BIT(offset);
+> +               writel(val, gs->gpio_io + YU_GPIO_CAUSE_FALL_EN);
+> +       }
+> +
+> +       if (rise) {
+> +               val = readl(gs->gpio_io + YU_GPIO_CAUSE_RISE_EN);
+> +               val |= BIT(offset);
+> +               writel(val, gs->gpio_io + YU_GPIO_CAUSE_RISE_EN);
+> +       }
+> +       spin_unlock_irqrestore(&gs->gc.bgpio_lock, flags);
+> +
+> +       return 0;
+> +}
+> +
+>  /* BlueField-2 GPIO driver initialization routine. */
+>  static int
+>  mlxbf2_gpio_probe(struct platform_device *pdev)
+>  {
+>         struct mlxbf2_gpio_context *gs;
+>         struct device *dev = &pdev->dev;
+> +       struct gpio_irq_chip *girq;
+>         struct gpio_chip *gc;
+>         unsigned int npins;
+> -       int ret;
+> +       const char *name;
+> +       int ret, irq;
+> +
+> +       name = dev_name(dev);
+>
+>         gs = devm_kzalloc(dev, sizeof(*gs), GFP_KERNEL);
+>         if (!gs)
+> @@ -256,11 +366,44 @@ mlxbf2_gpio_probe(struct platform_device *pdev)
+>                         NULL,
+>                         0);
+>
+> +       if (ret) {
+> +               dev_err(dev, "bgpio_init failed\n");
+> +               return ret;
+> +       }
 
+This is a correct fix but it should be sent as a fix aimed for stable
+in a separate branch, as we want that to be backported.
 
-> On Oct 14, 2021, at 1:56 PM, Kumar Kartikeya Dwivedi <memxor@gmail.com> w=
-rote:
->=20
-> Also, avoid using CO-RE features, as lskel doesn't support CO-RE, yet.
-> Include both light and libbpf skeleton in same file to test both of them
-> together.
->=20
-> In c48e51c8b07a ("bpf: selftests: Add selftests for module kfunc support"=
-),
-> I added support for generating both lskel and libbpf skel for a BPF
-> object, however the name parameter for bpftool caused collisions when
-> included in same file together. This meant that every test needed a
-> separate file for a libbpf/light skeleton separation instead of
-> subtests.
->=20
-> Change that by appending a "_light" suffix to the name for files listed
-> in LSKELS_EXTRA, such that both light and libbpf skeleton can be used in
-> the same file for subtests, leading to better code sharing.
->=20
-> While at it, improve the build output by saying GEN-LSKEL instead of
-> GEN-SKEL for light skeleton generation recipe.
->=20
-> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Other than that it looks good to me, which tree do you want it to go through?
 
-Acked-by: Song Liu <songliubraving@fb.com>
+Bart
 
+> +
+>         gc->direction_input = mlxbf2_gpio_direction_input;
+>         gc->direction_output = mlxbf2_gpio_direction_output;
+>         gc->ngpio = npins;
+>         gc->owner = THIS_MODULE;
+>
+> +       irq = platform_get_irq(pdev, 0);
+> +       if (irq >= 0) {
+> +               gs->irq_chip.name = name;
+> +               gs->irq_chip.irq_set_type = mlxbf2_gpio_irq_set_type;
+> +               gs->irq_chip.irq_enable = mlxbf2_gpio_irq_enable;
+> +               gs->irq_chip.irq_disable = mlxbf2_gpio_irq_disable;
+> +
+> +               girq = &gs->gc.irq;
+> +               girq->chip = &gs->irq_chip;
+> +               girq->handler = handle_simple_irq;
+> +               girq->default_type = IRQ_TYPE_NONE;
+> +               /* This will let us handle the parent IRQ in the driver */
+> +               girq->num_parents = 0;
+> +               girq->parents = NULL;
+> +               girq->parent_handler = NULL;
+> +
+> +               /*
+> +                * Directly request the irq here instead of passing
+> +                * a flow-handler because the irq is shared.
+> +                */
+> +               ret = devm_request_irq(dev, irq, mlxbf2_gpio_irq_handler,
+> +                                      IRQF_SHARED, name, gs);
+> +               if (ret) {
+> +                       dev_err(dev, "failed to request IRQ");
+> +                       return ret;
+> +               }
+> +       }
+> +
+>         platform_set_drvdata(pdev, gs);
+>
+>         ret = devm_gpiochip_add_data(dev, &gs->gc, gs);
+> @@ -315,5 +458,5 @@ static struct platform_driver mlxbf2_gpio_driver = {
+>  module_platform_driver(mlxbf2_gpio_driver);
+>
+>  MODULE_DESCRIPTION("Mellanox BlueField-2 GPIO Driver");
+> -MODULE_AUTHOR("Mellanox Technologies");
+> +MODULE_AUTHOR("Asmaa Mnebhi <asmaa@nvidia.com>");
+>  MODULE_LICENSE("GPL v2");
+> --
+> 2.30.1
+>
