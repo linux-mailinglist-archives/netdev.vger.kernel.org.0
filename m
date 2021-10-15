@@ -2,75 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D38042EE3A
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 11:57:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CC9C42EE3F
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 11:59:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234814AbhJOJ71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 05:59:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49010 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233716AbhJOJ7Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 05:59:25 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 720AAC061570;
-        Fri, 15 Oct 2021 02:57:19 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1mbJxk-0008PF-Ra; Fri, 15 Oct 2021 11:57:16 +0200
-Date:   Fri, 15 Oct 2021 11:57:16 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Netfilter Development Mailing List 
-        <netfilter-devel@vger.kernel.org>
-Subject: Re: [PATCH netfilter] netfilter: conntrack: udp: generate event on
- switch to stream timeout
-Message-ID: <20211015095716.GH2942@breakpoint.cc>
-References: <20211015090934.2870662-1-zenczykowski@gmail.com>
- <YWlKGFpHa5o5jFgJ@salvia>
- <CANP3RGdCBzjWuK8FfHOOKcFAbd_Zru=DkOBBpD3d_PYDR91P5g@mail.gmail.com>
+        id S234875AbhJOKBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 06:01:47 -0400
+Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:54882 "EHLO
+        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234825AbhJOKBj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 06:01:39 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=tianjia.zhang@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0Us8GlL2_1634291969;
+Received: from B-455UMD6M-2027.local(mailfrom:tianjia.zhang@linux.alibaba.com fp:SMTPD_---0Us8GlL2_1634291969)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 15 Oct 2021 17:59:30 +0800
+Subject: Re: [PATCH] selftests/tls: add SM4 GCM/CCM to tls selftests
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Boris Pismenny <borisp@nvidia.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20211008091745.42917-1-tianjia.zhang@linux.alibaba.com>
+ <YWk9ruGFxRA/1On6@Laptop-X1>
+From:   Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+Message-ID: <cf53cf98-354f-f993-4b55-ff22dcc0d92d@linux.alibaba.com>
+Date:   Fri, 15 Oct 2021 17:59:29 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CANP3RGdCBzjWuK8FfHOOKcFAbd_Zru=DkOBBpD3d_PYDR91P5g@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <YWk9ruGFxRA/1On6@Laptop-X1>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Maciej Żenczykowski <zenczykowski@gmail.com> wrote:
-> > Hm, I still don't understand why do you need this extra 3rd
-> > update/assured event event. Could you explain your usecase?
-> 
-> Currently we populate a flow offload array on the assured event, and
-> thus the flow in both directions starts bypassing the kernel.
-> Hence conntrack timeout is no longer automatically refreshed - and
-> there is no opportunity for the timeout to get bumped to the stream
-> timeout of 120s - it stays at 30s.
-> We periodically (every just over 60-ish seconds) check whether packets
-> on a flow have been offloaded, and if so refresh the conntrack
-> timeout.  This isn't cheap and we don't want to do it even more often.
-> However this 60s cycle > 30s non-stream udp timeout, so the kernel
-> conntrack entry expires (and we must thus clear out the flow from the
-> offload).  This results in a broken udp stream - but only on newer
-> kernels.  Older kernels don't have this '2s' wait feature (which makes
-> a lot of sense btw.) but as a result of this the conntrack assured
-> event happens at the right time - when the timeout hits 120s (or 180s
-> on even older kernels).
-> 
-> By generating another assured event when the udp stream is 'confirmed'
-> and the timeout is boosted from 30s to 120s we have an opportunity to
-> ignore the first one (with timeout 30) and only populate the offload
-> on the second one (with timeout 120).
-> 
-> I'm not sure if I'm doing a good job of describing this.  Ask again if
-> it's not clear and I'll try again.
+Hi Hangbin,
 
-Thanks for explaining, no objections to this from my side.
+On 10/15/21 4:37 PM, Hangbin Liu wrote:
+> Hi Tianjia,
+> 
+> The new added tls selftest failed with latest net-next in RedHat CKI
+> test env. Would you like to help check if we missed anything?
+> 
+> Here is the pipeline page
+> https://datawarehouse.cki-project.org/kcidb/builds/67720
+> Config URL:
+> http://s3.amazonaws.com/arr-cki-prod-datawarehouse-public/datawarehouse-public/2021/10/14/388570846/redhat:388570846/redhat:388570846_x86_64_debug/.config
+> Build Log URL:
+> http://s3.amazonaws.com/arr-cki-prod-datawarehouse-public/datawarehouse-public/2021/10/14/388570846/redhat:388570846/redhat:388570846_x86_64_debug/build.log
+> TLS test log:
+> https://s3.us-east-1.amazonaws.com/arr-cki-prod-datawarehouse-public/datawarehouse-public/2021/10/14/redhat:388570846/build_x86_64_redhat:388570846_x86_64_debug/tests/1/results_0001/job.01/recipes/10799149/tasks/19/results/1634231959/logs/resultoutputfile.log
+> Command: make -j24 INSTALL_MOD_STRIP=1 targz-pkg
+> Architecture: x86_64
+> 
+> Please tell me if you need any other info.
+> 
+> Thanks
+> Hangbin
+> 
 
-Do you think it makes sense to just delay setting the ASSURED bit
-until after the 2s period?
+This patch needs to enable the SM4 algorithm, and the config file you 
+provided does not enable this algorithm.
+
+Best regards,
+Tianjia
