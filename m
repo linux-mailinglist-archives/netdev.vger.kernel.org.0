@@ -2,69 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52FFB42E66E
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 04:20:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FD7842E678
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 04:22:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234921AbhJOCWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Oct 2021 22:22:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54754 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229648AbhJOCWO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Oct 2021 22:22:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 673FD610E8;
-        Fri, 15 Oct 2021 02:20:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634264408;
-        bh=KswJUkdEiL4Krr7vlY5opvIuYtULjYcRFQmnEPlZm4k=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TfS+T3fOQQ/35MKQXKAZgiU3mN7dIy8sijJ61Q8H3tANRaSrKU6hLVwSQ7QGpyTAm
-         z5OWksos40E02PwYgB4On3JJik1WZtnS2Z4ucfy9n6ExVLcafMciyuhnumz39z453p
-         JSQvDiVATvcEkLS/xw0RM6KfeLdvp5UHsydmli/fjT8K51e+4kOOax4+xuCv1Kr4df
-         CDg3eg79fIWTgubymnux6Se7p/F69f1VJBDd5Qw/VgfrXVGkqtorMeNfm3+lyJMK9o
-         Wi/2jJQRoMxywjLXY9oaLdVqy3xFOfyg5m+6rghum0KNkUmb282H2AyIGybwaQ0DFn
-         wS/Yi6vhnaJqQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5A86260A38;
-        Fri, 15 Oct 2021 02:20:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S234986AbhJOCY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Oct 2021 22:24:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59924 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232094AbhJOCYy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Oct 2021 22:24:54 -0400
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CC3AC061570
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 19:22:49 -0700 (PDT)
+Received: by mail-qv1-xf2a.google.com with SMTP id cv2so4908363qvb.5
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 19:22:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=j8HHbZRpYt8dYVOh9U53np7zOR0OtBavUvWM+AaBjR4=;
+        b=ni9yApiar9FYap+XVIuqodS1urP5e9XRmCYAqkdvD9jVRlaoph0n7bU6DsuR5GmMQH
+         qYuCJ+WmZUfvln7QukUegl+Iqc1DwG+C+h15tEhdt9Y+PA4DzSOJmZByHiDDxTtynt0E
+         1xFY/IUCNW4h1Ysr6cpRZMPywI0ZQ9KM4GalwgrS2NyeILK7cQa8aBz+RjcYMaYtzcAX
+         eiljAZVcpRgJjquc8ToeEbck4gKXdJwuqmOlseKy3d5DjjW0jOBAZl09nUzjb1YO2iTK
+         a7aON98cIi6RDmzGiMyYd1yLAMkbG1+/FAD9wcF+GXt5FaHtSVg0e5UadcnkaLeF3rS9
+         GUhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=j8HHbZRpYt8dYVOh9U53np7zOR0OtBavUvWM+AaBjR4=;
+        b=CW57Gf/0HdvMZvydnX+brX1d//AU/yio9etfn5F3aEmCY8qxJvkuJyvEtPDaCe2QKs
+         azF6UvyWqQWL7CacbF28ffYXJOJr0CS1hp3PvM+ErYJGLrCHR+LGUJXP6QnlMRhwNAfA
+         9/YLb8bCPaW1h78ntb85mKs7JqHyN8Zqd7jf+nf467HuYHheiPfXvY5PMypHRo2eJWel
+         fjBjFneHZ6DKJD7ArmM0Bd/Tc76TUlktLS5yYmUBU4+rMrr7aZuALKdZRau3/3h0T+H9
+         2+mhgCouxUNX+BjK1wwzkl3B+9vB/DvOjWfeRy0ZFrY/czHkfw7HMcz7ANtmclwqwc7K
+         PFmg==
+X-Gm-Message-State: AOAM5315OXcPm9V+qoIl5ACRtFDM/XzimFWv9AsYGEXCi+0OOIVRNZqD
+        j4HO3pNmdl2czhrP7Cex4w==
+X-Google-Smtp-Source: ABdhPJwouM14RYAPSOHRURW15WEnyZivGCvLVOmh04aUZUqv03iD/n8S3bqfO3Sub9XqZqk5qr8AZA==
+X-Received: by 2002:a05:6214:1269:: with SMTP id r9mr8987160qvv.23.1634264568511;
+        Thu, 14 Oct 2021 19:22:48 -0700 (PDT)
+Received: from ICIPI.localdomain ([136.56.65.87])
+        by smtp.gmail.com with ESMTPSA id o190sm2088631qka.16.2021.10.14.19.22.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Oct 2021 19:22:48 -0700 (PDT)
+Date:   Thu, 14 Oct 2021 22:22:41 -0400
+From:   Stephen Suryaputra <ssuryaextr@gmail.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net] ipv6: When forwarding count rx stats on the orig
+ netdev
+Message-ID: <20211015022241.GA3405@ICIPI.localdomain>
+References: <20211014130845.410602-1-ssuryaextr@gmail.com>
+ <1a83de45-936e-483c-0176-c877d8548d70@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: phy: micrel: make *-skew-ps check more lenient
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163426440836.28081.5382655272516843843.git-patchwork-notify@kernel.org>
-Date:   Fri, 15 Oct 2021 02:20:08 +0000
-References: <20211012103402.21438-1-matthias.schiffer@ew.tq-group.com>
-In-Reply-To: <20211012103402.21438-1-matthias.schiffer@ew.tq-group.com>
-To:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1a83de45-936e-483c-0176-c877d8548d70@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Tue, 12 Oct 2021 12:34:02 +0200 you wrote:
-> It seems reasonable to fine-tune only some of the skew values when using
-> one of the rgmii-*id PHY modes, and even when all skew values are
-> specified, using the correct ID PHY mode makes sense for documentation
-> purposes. Such a configuration also appears in the binding docs in
-> Documentation/devicetree/bindings/net/micrel-ksz90x1.txt, so the driver
-> should not warn about it.
+On Thu, Oct 14, 2021 at 08:15:34PM -0600, David Ahern wrote:
+> [ added Ido for the forwarding tests ]
 > 
-> [...]
+[snip]
+> 
+> This seems fine to me, but IPv4 and IPv6 should work the same.
 
-Here is the summary with links:
-  - net: phy: micrel: make *-skew-ps check more lenient
-    https://git.kernel.org/netdev/net-next/c/67ca5159dbe2
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+But we don't have per if ipv4 stats. Remember that I tried to get
+something going but wasn't getting any traction?
