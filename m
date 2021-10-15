@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B14D642F9F0
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 19:16:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A23642F9F6
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 19:16:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242214AbhJORSh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 13:18:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38852 "EHLO
+        id S242173AbhJORS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 13:18:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242134AbhJORSf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 13:18:35 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71760C061762;
-        Fri, 15 Oct 2021 10:16:29 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id e7so9190528pgk.2;
-        Fri, 15 Oct 2021 10:16:29 -0700 (PDT)
+        with ESMTP id S242176AbhJORSu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 13:18:50 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98AD8C061767;
+        Fri, 15 Oct 2021 10:16:43 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id i5so555477pla.5;
+        Fri, 15 Oct 2021 10:16:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=nNU/Jlv2Z8cbVRwF3uZFRercElyzOMBVYw9cMxYKxuw=;
-        b=hN/4clyKdcquXclbvcXDjifrAC5C7tXFpaOABzlWCNUeB7sx8GJeIIVfww1oE8qv5b
-         liFfVLF6kf5FaPoagCWeN4ED+NNt87xy+h3F9v2hN0aG+Lk75pi60xImfJ7AtKfVFGLI
-         snkxk9OQ3XvTt0pV9TWnmd7HRcfN3b118uryDDLR8jQ1Jb+bousljKcKYdeAKOAlR7Cu
-         /yTJhviiRaBHZjQY4Dq3I3edtMrplcdNHTruH0ilE2WzratxhXS9xfVXB2SCIenI/Rhm
-         l/1fHaD2mc9DAgia0NJIzQD2JKH6n6RS8A7sJLFyvwpA1yHnHa/ESWWhA/oK/Ep9MTpP
-         qR0Q==
+        bh=h1OfWNmPxnvZMni+hSGr/aPakXoUDhVv2xUOS4WlYDg=;
+        b=kyPHGZmrPOS/mviCT0sz87P/tWmUvHvWTyD0U+V5YZoy+eLX3dOTwgcgrYP/ebIhX6
+         koEADONUdH4BLJPtn8C7gYcbgPz5XTOyogtmKNh1Xgm54h0qwlS7fhqPAYZ93oDeOxqg
+         TrbShyJoma34MXNXE8WuNuvNqDjGwwgOoENO1JKNZkyAlHMkJhmc3VZK+3wRKVLCSvAo
+         AsMqqyoCn1Ybb68clUy6OtA3YUqcCbKXaK4WN6ej3ca2F+gKrfY7+nZsEhqwF2m7N1dB
+         jKuxjODzZjst70vMF+ETB4asYF4+2pjULbLZf4kufZfTjaoUCe5rQGPF171sZfOg4fN8
+         PFEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=nNU/Jlv2Z8cbVRwF3uZFRercElyzOMBVYw9cMxYKxuw=;
-        b=bzbudXyAM+el9NNVNrXde5DUA+68Bn+uPyYfmPYJ6UXu3AHtQnziFbwzHZ0d4Q/oX6
-         X/b5hunxlPDSPfptj0SYLQvb/85CXWfary6CXnqGb9hW/mXhvNSZiFOf6SaQuJ7X6S9q
-         PWG6r+NKT6s/9MHY/lP35vuyyfZqJBo0jaaBCK8jzgzsagN7uUgDYatPYjfnzMoCBg2j
-         CyNknU0CpY6EMMdqHip1jvp0J9ueOs28B46CPqtEgOfqoG5lm8008lV+kGYekHmNlbsN
-         JsLe/26BL8u3EvB8qsU6K1TeJGUGya51E2ajtKpClouwN+/cxa2ij0mNPKKDsV7H3W0M
-         PVaQ==
-X-Gm-Message-State: AOAM531O56eIzzaqMA6FBWkMPZnjA4/3M0Qr+jCY09T6NtklxgEADD+K
-        Ve8WlOGRnYXHgGVtKAW/HCw=
-X-Google-Smtp-Source: ABdhPJyeVQ4RBcDSAtV/MP8O6OdXDyGXgWtMA2JJsP4mR4E29TlsXLxOlQ5lyi8886/0iXwWwGcyVA==
-X-Received: by 2002:a62:7506:0:b0:44c:efe8:4167 with SMTP id q6-20020a627506000000b0044cefe84167mr12897706pfc.59.1634318188961;
-        Fri, 15 Oct 2021 10:16:28 -0700 (PDT)
+        bh=h1OfWNmPxnvZMni+hSGr/aPakXoUDhVv2xUOS4WlYDg=;
+        b=xft/gXjatTmgZc5+mrheuZyMGe4dSHZ1NNAK3aLYFkOoqEGxkVAqavKrXsjZojCLWa
+         p18MzmAI4KHRTRZ4INxg3GgEhA05ULENwd8e/YbeV9DwBxkzBs8a93DUKM548fV7dmqb
+         PrKaKSuKlLN7PzeFrSe+moCxQMt9GXpLWt/IU3W28n7wsQZcZR6pjCGU14nsn++iNglM
+         PFVfUZsecHUGTwifjhISxPQiavK0lc+QZPkXRFkd36iJfgPtJKe+sNVWur3tioz/Su/d
+         kf3pCZO1M40yGI8SYHFqcRsoHDzdBAqtiW3DGEk5wb0I20DLhSIVlMcriXBFKaa0Tfsb
+         OUWQ==
+X-Gm-Message-State: AOAM531F9Fia0mCt0RUuCFkUJnDoIVDTjjipM1WQKJ/gOMYxIw8+QSxm
+        NKDfQW5lZFzmxPPLE07j4lA=
+X-Google-Smtp-Source: ABdhPJxDnJ9gEfsIjDn1Pb1K/slL3blAcdVmn64+NKMFsrbUb4oQ/BHNdP6eXr2WWDYflbz3V9L6aA==
+X-Received: by 2002:a17:902:e74a:b0:13f:3538:fca0 with SMTP id p10-20020a170902e74a00b0013f3538fca0mr12160835plf.22.1634318203132;
+        Fri, 15 Oct 2021 10:16:43 -0700 (PDT)
 Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id k1sm5262100pjj.54.2021.10.15.10.16.11
+        by smtp.googlemail.com with ESMTPSA id s17sm5666597pfs.91.2021.10.15.10.16.30
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Oct 2021 10:16:28 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/6] ARM: dts: imx6qp-prtwd3: update RGMII delays
+        Fri, 15 Oct 2021 10:16:42 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/6] ARM: dts: ls1021a-tsn: update RGMII delays
  for sja1105 switch
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
         "David S . Miller" <davem@davemloft.net>,
@@ -65,14 +65,14 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Ansuel Smith <ansuelsmth@gmail.com>,
         =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>
 References: <20211013222313.3767605-1-vladimir.oltean@nxp.com>
- <20211013222313.3767605-2-vladimir.oltean@nxp.com>
+ <20211013222313.3767605-3-vladimir.oltean@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <531b85ec-4227-85b5-f1c7-206f293ec0b9@gmail.com>
-Date:   Fri, 15 Oct 2021 10:16:07 -0700
+Message-ID: <28551a3d-541e-8538-6a2f-110eeacd0500@gmail.com>
+Date:   Fri, 15 Oct 2021 10:16:24 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <20211013222313.3767605-2-vladimir.oltean@nxp.com>
+In-Reply-To: <20211013222313.3767605-3-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -86,13 +86,13 @@ On 10/13/21 3:23 PM, Vladimir Oltean wrote:
 > that it falls back to legacy behavior, which is to apply RGMII delays
 > incorrectly derived from the phy-mode string.
 > 
-> In this case, the legacy behavior of the driver is to apply both RX and
-> TX delays. To preserve that, add explicit 2 nanosecond delays, which are
-> identical with what the driver used to add (a 90 degree phase shift).
-> The delays from the phy-mode are ignored by new kernels (it's still
-> RGMII as long as it's "rgmii*" something), and the explicit
-> {rx,tx}-internal-delay-ps properties are ignored by old kernels, so the
-> change works both ways.
+> In this case, the legacy behavior of the driver is to not apply delays
+> in any direction (mostly because the SJA1105T can't do that, so this
+> board uses PCB traces). To preserve that but also silence the driver,
+> use explicit delays of 0 ns. The delay information from the phy-mode is
+> ignored by new kernels (it's still RGMII as long as it's "rgmii*"
+> something), and the explicit {rx,tx}-internal-delay-ps properties are
+> ignored by old kernels, so the change works both ways.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
