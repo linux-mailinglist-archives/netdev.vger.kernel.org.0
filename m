@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF37242F8BE
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 18:52:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DCEE42F8D4
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 18:53:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241691AbhJOQyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 12:54:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60936 "EHLO
+        id S241674AbhJOQzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 12:55:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241657AbhJOQyD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 12:54:03 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EEC1C061570;
-        Fri, 15 Oct 2021 09:51:56 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id q10-20020a17090a1b0a00b001a076a59640so7626706pjq.0;
-        Fri, 15 Oct 2021 09:51:56 -0700 (PDT)
+        with ESMTP id S237376AbhJOQzQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 12:55:16 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AC51C061570;
+        Fri, 15 Oct 2021 09:53:10 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id q2-20020a17090a2e0200b001a0fd4efd49so3113413pjd.1;
+        Fri, 15 Oct 2021 09:53:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=3o5yVUkAQxi7EAG4z+qLtJfsfGY9iQ3yN3rUtTSBlMs=;
-        b=Ei+YeCOrAxu8aqVNs0CM/9/iDKLQ5Onex3oMjoF66B1/hA49W3TEcgbwM10WVTYtgm
-         GIXlPGvEo7NKvdWQFnTwT7Hhb/vR8u812yzkVREDs2mx73z9LYDYkFq/9enoOw+n4Roa
-         WhBLJStQDSVGBdnqbdFjUie/FAk5jzQfnJfBjphV+AQtyggNukcgZj6mqjJNwvty/G5v
-         RXV63e2kawah5zACmpqT801JGeOdLD/3Gab1a9nHMbxFBm4l2FmFbPa9a+ik1jjxeoXb
-         bnEmerpX1ra5WlmbjvvRZyLLa7BUxzAjfekABwv2Mb9XPB0YWxPHE5X+sEe875kbsM2y
-         YkDA==
+        bh=Y06AwVPF9wGy7ZjJQhPVlMY5dCrjrZo4wsT35dSuuis=;
+        b=NTPb1Um5q8+eNvi484E+2Kxe5mpBncQXzmMJw9YUwHMruk6AW0hljl/FCcsJI4QXY1
+         fzUp1pzFM4BK/qzCrq3KUDuXFbFRiQ+zY+Yhcyjw0QZRrvCICjS64MWwoNqs5p/4aNJC
+         JVQAPbdrSnqkA35NwtF/EcGNvbp8e4AM0Pap6dyfu1WDTZjWP8biyW0MSROpopSkVKsG
+         uAmzqevm7NjB1Ge3SB1fg3QJ3DOdw+XNu0UvUDOzjJdcHZgUDXr+4YG5pZRw0n+qIJtc
+         /qnbekVzhe4gbBXOjc8lM6rq7OUy7avyatEzTnY1vM4k5nMl9G2jMLJjS7kprL5nlu1n
+         76fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=3o5yVUkAQxi7EAG4z+qLtJfsfGY9iQ3yN3rUtTSBlMs=;
-        b=PqZ2BhxdTfUBYsSJLhytkqVBPdB7HyXUVf9hix7i0zfQ5puZ4SYcUgfM362lRM2SZ1
-         2MwCytu96se9ioKOnPUXNeeLvqta+cWj7k2Ov74RTlBE/XsQWx2nMuDU56GPFtc726QN
-         mAFTZvMmM9otFrEXNUmtIpohSfJUZu/EA+fMacf6fTEyKJe8twMb3rwpa8Mslojf9K5i
-         JqKMscDwxPrzAqOwm74xOG1+YPgsmJ+BB3sXi/MxzzsjxEk9KnrX2/aqeCcPZSQYoM3u
-         /5TYUpOlw9wuGj2F/P5UKwJojBPVlgdPi3eKUeUZe21SQYFO21el8QpjLesJE6e+m3Z9
-         yKww==
-X-Gm-Message-State: AOAM530Vo0OU36Ibs93KNfan2j8YQbvpRACTU82Iq/2A5AgiMGhzhsyl
-        sd8YU+fXdyUSYWTlr0duFnA=
-X-Google-Smtp-Source: ABdhPJz3Pbs/ZZog6QwTndMIPRmzItBjlEEpgz1atY4WV9jY0jgnA2HEi5hDfbe/0zn8I1wueVHFVg==
-X-Received: by 2002:a17:90a:fb87:: with SMTP id cp7mr29151027pjb.114.1634316715788;
-        Fri, 15 Oct 2021 09:51:55 -0700 (PDT)
+        bh=Y06AwVPF9wGy7ZjJQhPVlMY5dCrjrZo4wsT35dSuuis=;
+        b=T+YdFgAFtTH4kVUPgIDjAQn0RvggUbM1p+iUILlYXLaPT7hXhxwEy0371WPMNqhYCx
+         dsPUkggd4af1CCxMAn02ICUicjBc8AYEejhNx4tYCv1weaLPPz7HpVQdS9IK+qtIMaPj
+         F5CwFwKYW7DdR0VH1Qxe4IdMGmY2UjqZIoxf0i418J9LutbIiwAwyaaxxxEvytAB/Evd
+         Zb+eBLYL0X2gEUrtAIQYJXIvw1pcz5JArhmOho2Ku2Lib1caCh/0St8IuMJMM3d1YcZ2
+         r/wRkA2hFEA2G9lwocHJ7a1FuQl4mhl9N7/y/fq4IyckqISPtTGyFBPXCim6NFK2MtrZ
+         ghVA==
+X-Gm-Message-State: AOAM532U7yldnFHixGSPzTeGqK6dnHgoUcjFGzL3IZ9rr3CnfbKSWIAB
+        EAiErh7trBo89iA4j/RAdTQ=
+X-Google-Smtp-Source: ABdhPJwSBunU680FFsxAdzwM9PMw6szem6EvS9KaFeAMQixeIFY1x1N7ckNXeLuzhM/Z1ruycr5zwQ==
+X-Received: by 2002:a17:90a:b391:: with SMTP id e17mr29179998pjr.137.1634316789907;
+        Fri, 15 Oct 2021 09:53:09 -0700 (PDT)
 Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id t13sm5266201pjg.25.2021.10.15.09.51.52
+        by smtp.googlemail.com with ESMTPSA id i5sm5115933pgo.36.2021.10.15.09.53.04
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Oct 2021 09:51:55 -0700 (PDT)
-Subject: Re: [PATCH net-next 4/6] dt-bindings: net: dsa: inherit the
- ethernet-controller DT schema
+        Fri, 15 Oct 2021 09:53:09 -0700 (PDT)
+Subject: Re: [PATCH net-next 5/6] dt-bindings: net: dsa: sja1105: add
+ {rx,tx}-internal-delay-ps
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -65,14 +65,14 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Ansuel Smith <ansuelsmth@gmail.com>,
         =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>
 References: <20211013222313.3767605-1-vladimir.oltean@nxp.com>
- <20211013222313.3767605-5-vladimir.oltean@nxp.com>
+ <20211013222313.3767605-6-vladimir.oltean@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <3c794866-6319-4f5f-25cd-e2980d1fc211@gmail.com>
-Date:   Fri, 15 Oct 2021 09:51:51 -0700
+Message-ID: <a3f21c49-7d35-393d-9d2f-d1bad9201bc5@gmail.com>
+Date:   Fri, 15 Oct 2021 09:53:00 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <20211013222313.3767605-5-vladimir.oltean@nxp.com>
+In-Reply-To: <20211013222313.3767605-6-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -81,15 +81,23 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 10/13/21 3:23 PM, Vladimir Oltean wrote:
-> Since a switch is basically a bunch of Ethernet controllers, just
-> inherit the common schema for one to get stronger type validation of the
-> properties of a port.
+> Add a schema validator to nxp,sja1105.yaml and to dsa.yaml for explicit
+> MAC-level RGMII delays. These properties must be per port and must be
+> present only for a phy-mode that represents RGMII.
 > 
-> For example, before this change it was valid to have a phy-mode = "xfi"
-> even if "xfi" is not part of ethernet-controller.yaml, now it is not.
+> We tell dsa.yaml that these port properties might be present, we also
+> define their valid values for SJA1105. We create a common definition for
+> the RX and TX valid range, since it's quite a mouthful.
+> 
+> We also modify the example to include the explicit RGMII delay properties.
+> On the fixed-link ports (in the example, port 4), having these explicit
+> delays is actually mandatory, since with the new behavior, the driver
+> shouts that it is interpreting what delays to apply based on phy-mode.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+
+Even if you need to make yamllint happy
 -- 
 Florian
