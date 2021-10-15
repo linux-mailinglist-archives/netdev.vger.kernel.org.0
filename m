@@ -2,157 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0980742FE69
-	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 00:53:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D704942FE78
+	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 01:01:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243418AbhJOWzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 18:55:46 -0400
-Received: from www62.your-server.de ([213.133.104.62]:46082 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243407AbhJOWzk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 18:55:40 -0400
-Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mbW4y-000Bf7-Gr; Sat, 16 Oct 2021 00:53:32 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     dsahern@kernel.org
-Cc:     netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH iproute2 -next 4/4] ip, neigh: Add NTF_EXT_MANAGED support
-Date:   Sat, 16 Oct 2021 00:53:19 +0200
-Message-Id: <20211015225319.2284-5-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20211015225319.2284-1-daniel@iogearbox.net>
-References: <20211015225319.2284-1-daniel@iogearbox.net>
+        id S243432AbhJOXDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 19:03:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60544 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243422AbhJOXDT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 19:03:19 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B4DC061570;
+        Fri, 15 Oct 2021 16:01:12 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id y12so45374615eda.4;
+        Fri, 15 Oct 2021 16:01:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=T4LRxAmbFnflH89t7OJtpK+BQEdtR46vgXDNxjLPMWU=;
+        b=Y9WTtoiXiSsSWyIAWeO3FssHPSkqyF3GnQexcuagjyW84NFoky0YLr09dK3/Fw3x1b
+         //DBLwyGlrOA1Fcg2o/mNhQ1hKE5LLSyjzhlRCEqwK0SDX5ISLbvsv0OdQR8ni0Eb0Ro
+         TXa2DjrRnf+XNmpshxJO4cti3KEudQSLfK79bjw9jzf4qyIv5OaBGWUikk3Oz457nKSC
+         rXRIZZSzkeWfpin9xA0cbCy3Jz5jfonO7nM5DaNAhV5ygodXKHdFjTH1Kz9E4/Xw1oJI
+         Xwg7xeRHib9WmItnidrP1dG3px5biJTEZD4W/YwfiN6ge4GIFTdHysaBtRxg8otI5SYk
+         ndyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=T4LRxAmbFnflH89t7OJtpK+BQEdtR46vgXDNxjLPMWU=;
+        b=sExcf8lAFHTNG/TsI9CpGozoOU5BOahxQszU/jy0LpMtwN3xRbIm4PQMpDsFCyYmzM
+         QcuzSbsvYr+fnxdVfAVFzJ7j9+V8lFn7PIyZVfS/yik5gwj8aqXlA89VrYjB0ZouNg+M
+         fT1s2SxLUPAQRuRS+8WZnyHuDuHC9JR3JJvKycUXWG3M87sJKWzYrN5C5Dwy4IFqML9a
+         IyXa6mO0GfX0dKf74sv08Uo4LRFdUIBt8d0k90DUUL4YDKGrxEqRHi6TssznVKMj1Qvg
+         d83wuSslDKlfDxcxi3MxHAhtA1uWqbFLX/x7Ge3kkYWXg9dbSQ2MkJXzJgJwUqHjYq1q
+         jzFQ==
+X-Gm-Message-State: AOAM533pnWt9AMs32nnFP2rUg2Bpfmu54hoA67T+6BDSZGuw3fYG+oG3
+        +ZEZLMegf7xuJT5wbuy4kHFV52/filo=
+X-Google-Smtp-Source: ABdhPJzIrWLtY+giAi17VaQkRdkdMHiZXWZ5wjZE86tw8qEYUHkxsAqqCsgGSZ6Cmty1XEYoHKlTFw==
+X-Received: by 2002:a17:906:9554:: with SMTP id g20mr9846761ejy.173.1634338870403;
+        Fri, 15 Oct 2021 16:01:10 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.googlemail.com with ESMTPSA id oz11sm4836496ejc.72.2021.10.15.16.01.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Oct 2021 16:01:09 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [PATCH] net: dsa: qca8k: tidy for loop in setup and add cpu port check
+Date:   Sat, 16 Oct 2021 00:58:32 +0200
+Message-Id: <20211015225832.14824-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26323/Fri Oct 15 10:25:36 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, ip neigh does not support the NTF_EXT_MANAGED flag. Add cmdline
-support.
+Tidy and organize qca8k setup function from multiple for loop.
+Change for loop in bridge leave/join to scan all port and skip cpu port.
+No functional change intended.
 
-Usage example:
-
-  # ./ip/ip n replace 192.168.178.30 dev enp5s0 managed extern_learn
-  # ./ip/ip n
-  192.168.178.30 dev enp5s0 lladdr f4:8c:50:5e:71:9a managed extern_learn REACHABLE
-  [...]
-
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- ip/ipneigh.c            | 20 +++++++++++++++-----
- man/man8/ip-neighbour.8 |  9 +++++++++
- 2 files changed, 24 insertions(+), 5 deletions(-)
+ drivers/net/dsa/qca8k.c | 74 ++++++++++++++++++++++++-----------------
+ 1 file changed, 44 insertions(+), 30 deletions(-)
 
-diff --git a/ip/ipneigh.c b/ip/ipneigh.c
-index 9510e03e..9a56b4a5 100644
---- a/ip/ipneigh.c
-+++ b/ip/ipneigh.c
-@@ -51,7 +51,8 @@ static void usage(void)
- 	fprintf(stderr,
- 		"Usage: ip neigh { add | del | change | replace }\n"
- 		"		{ ADDR [ lladdr LLADDR ] [ nud STATE ] proxy ADDR }\n"
--		"		[ dev DEV ] [ router ] [ use ] [ extern_learn ] [ protocol PROTO ]\n"
-+		"		[ dev DEV ] [ router ] [ use ] [ managed ] [ extern_learn ]\n"
-+		"		[ protocol PROTO ]\n"
- 		"\n"
- 		"	ip neigh { show | flush } [ proxy ] [ to PREFIX ] [ dev DEV ] [ nud STATE ]\n"
- 		"				  [ vrf NAME ]\n"
-@@ -115,6 +116,7 @@ static int ipneigh_modify(int cmd, int flags, int argc, char **argv)
- 		.ndm.ndm_family = preferred_family,
- 		.ndm.ndm_state = NUD_PERMANENT,
- 	};
-+	__u32 ext_flags = 0;
- 	char  *dev = NULL;
- 	int dst_ok = 0;
- 	int dev_ok = 0;
-@@ -150,6 +152,9 @@ static int ipneigh_modify(int cmd, int flags, int argc, char **argv)
- 			req.ndm.ndm_flags |= NTF_ROUTER;
- 		} else if (strcmp(*argv, "use") == 0) {
- 			req.ndm.ndm_flags |= NTF_USE;
-+		} else if (strcmp(*argv, "managed") == 0) {
-+			ext_flags |= NTF_EXT_MANAGED;
-+			req.ndm.ndm_state = NUD_NONE;
- 		} else if (matches(*argv, "extern_learn") == 0) {
- 			req.ndm.ndm_flags |= NTF_EXT_LEARNED;
- 		} else if (strcmp(*argv, "dev") == 0) {
-@@ -185,7 +190,10 @@ static int ipneigh_modify(int cmd, int flags, int argc, char **argv)
- 	req.ndm.ndm_family = dst.family;
- 	if (addattr_l(&req.n, sizeof(req), NDA_DST, &dst.data, dst.bytelen) < 0)
- 		return -1;
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+index 2b0aadb0114c..ba0411d4c5ae 100644
+--- a/drivers/net/dsa/qca8k.c
++++ b/drivers/net/dsa/qca8k.c
+@@ -1122,28 +1122,34 @@ qca8k_setup(struct dsa_switch *ds)
+ 	if (ret)
+ 		dev_warn(priv->dev, "mib init failed");
+ 
+-	/* Enable QCA header mode on the cpu port */
+-	ret = qca8k_write(priv, QCA8K_REG_PORT_HDR_CTRL(cpu_port),
+-			  QCA8K_PORT_HDR_CTRL_ALL << QCA8K_PORT_HDR_CTRL_TX_S |
+-			  QCA8K_PORT_HDR_CTRL_ALL << QCA8K_PORT_HDR_CTRL_RX_S);
+-	if (ret) {
+-		dev_err(priv->dev, "failed enabling QCA header mode");
+-		return ret;
+-	}
 -
-+	if (ext_flags &&
-+	    addattr_l(&req.n, sizeof(req), NDA_FLAGS_EXT, &ext_flags,
-+		      sizeof(ext_flags)) < 0)
-+		return -1;
- 	if (lla && strcmp(lla, "null")) {
- 		char llabuf[20];
- 		int l;
-@@ -305,6 +313,7 @@ int print_neigh(struct nlmsghdr *n, void *arg)
- 	int len = n->nlmsg_len;
- 	struct rtattr *tb[NDA_MAX+1];
- 	static int logit = 1;
-+	__u32 ext_flags = 0;
- 	__u8 protocol = 0;
+-	/* Disable forwarding by default on all ports */
++	/* Initial setup of all ports */
+ 	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
++		/* Disable forwarding by default on all ports */
+ 		ret = qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(i),
+ 				QCA8K_PORT_LOOKUP_MEMBER, 0);
+ 		if (ret)
+ 			return ret;
+-	}
  
- 	if (n->nlmsg_type != RTM_NEWNEIGH && n->nlmsg_type != RTM_DELNEIGH &&
-@@ -348,6 +357,8 @@ int print_neigh(struct nlmsghdr *n, void *arg)
+-	/* Disable MAC by default on all ports */
+-	for (i = 1; i < QCA8K_NUM_PORTS; i++)
+-		qca8k_port_set_status(priv, i, 0);
++		/* Enable QCA header mode on all cpu ports */
++		if (dsa_is_cpu_port(ds, i)) {
++			ret = qca8k_write(priv, QCA8K_REG_PORT_HDR_CTRL(i),
++					  QCA8K_PORT_HDR_CTRL_ALL << QCA8K_PORT_HDR_CTRL_TX_S |
++					  QCA8K_PORT_HDR_CTRL_ALL << QCA8K_PORT_HDR_CTRL_RX_S);
++			if (ret) {
++				dev_err(priv->dev, "failed enabling QCA header mode");
++				return ret;
++			}
++		}
  
- 	if (tb[NDA_PROTOCOL])
- 		protocol = rta_getattr_u8(tb[NDA_PROTOCOL]);
-+	if (tb[NDA_FLAGS_EXT])
-+		ext_flags = rta_getattr_u32(tb[NDA_FLAGS_EXT]);
- 
- 	if (filter.protocol && filter.protocol != protocol)
- 		return 0;
-@@ -430,13 +441,12 @@ int print_neigh(struct nlmsghdr *n, void *arg)
- 
- 	if (r->ndm_flags & NTF_ROUTER)
- 		print_null(PRINT_ANY, "router", "%s ", "router");
--
- 	if (r->ndm_flags & NTF_PROXY)
- 		print_null(PRINT_ANY, "proxy", "%s ", "proxy");
--
-+	if (ext_flags & NTF_EXT_MANAGED)
-+		print_null(PRINT_ANY, "managed", "%s ", "managed");
- 	if (r->ndm_flags & NTF_EXT_LEARNED)
- 		print_null(PRINT_ANY, "extern_learn", "%s ", "extern_learn");
--
- 	if (r->ndm_flags & NTF_OFFLOADED)
- 		print_null(PRINT_ANY, "offload", "%s ", "offload");
- 
-diff --git a/man/man8/ip-neighbour.8 b/man/man8/ip-neighbour.8
-index ed2dcd5a..1331d7cb 100644
---- a/man/man8/ip-neighbour.8
-+++ b/man/man8/ip-neighbour.8
-@@ -26,6 +26,7 @@ ip-neighbour \- neighbour/arp tables management.
- .IR DEV " ] [ "
- .BR router " ] [ "
- .BR use " ] [ "
-+.BR managed " ] [ "
- .BR extern_learn " ]"
- 
- .ti -8
-@@ -99,6 +100,14 @@ the kernel that a controller is using this dynamic entry. If the entry
- does not exist, the kernel will resolve it. If it exists, an attempt
- to refresh the neighbor entry will be triggered.
- 
-+.TP
-+.BI managed
-+this neigh entry is "managed". This option can be used to indicate to
-+the kernel that a controller is using this dynamic entry. In contrast
-+to "use", if the entry does not exist, the kernel will resolve it and
-+periodically attempt to auto-refresh the neighbor entry such that it
-+remains in resolved state when possible.
+-	/* Forward all unknown frames to CPU port for Linux processing */
++		/* Disable MAC by default on all user ports */
++		if (dsa_is_user_port(ds, i))
++			qca8k_port_set_status(priv, i, 0);
++	}
 +
- .TP
- .BI extern_learn
- this neigh entry was learned externally. This option can be used to
++	/* Forward all unknown frames to CPU port for Linux processing
++	 * Notice that in multi-cpu config only one port should be set
++	 * for igmp, unknown, multicast and broadcast packet
++	 */
+ 	ret = qca8k_write(priv, QCA8K_REG_GLOBAL_FW_CTRL1,
+ 			  BIT(cpu_port) << QCA8K_GLOBAL_FW_CTRL1_IGMP_DP_S |
+ 			  BIT(cpu_port) << QCA8K_GLOBAL_FW_CTRL1_BC_DP_S |
+@@ -1152,11 +1158,13 @@ qca8k_setup(struct dsa_switch *ds)
+ 	if (ret)
+ 		return ret;
+ 
+-	/* Setup connection between CPU port & user ports */
++	/* Setup connection between CPU port & user ports
++	 * Configure specific switch configuration for ports
++	 */
+ 	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
+ 		/* CPU port gets connected to all user ports of the switch */
+ 		if (dsa_is_cpu_port(ds, i)) {
+-			ret = qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(cpu_port),
++			ret = qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(i),
+ 					QCA8K_PORT_LOOKUP_MEMBER, dsa_user_ports(ds));
+ 			if (ret)
+ 				return ret;
+@@ -1193,16 +1201,14 @@ qca8k_setup(struct dsa_switch *ds)
+ 			if (ret)
+ 				return ret;
+ 		}
+-	}
+ 
+-	/* The port 5 of the qca8337 have some problem in flood condition. The
+-	 * original legacy driver had some specific buffer and priority settings
+-	 * for the different port suggested by the QCA switch team. Add this
+-	 * missing settings to improve switch stability under load condition.
+-	 * This problem is limited to qca8337 and other qca8k switch are not affected.
+-	 */
+-	if (priv->switch_id == QCA8K_ID_QCA8337) {
+-		for (i = 0; i < QCA8K_NUM_PORTS; i++) {
++		/* The port 5 of the qca8337 have some problem in flood condition. The
++		 * original legacy driver had some specific buffer and priority settings
++		 * for the different port suggested by the QCA switch team. Add this
++		 * missing settings to improve switch stability under load condition.
++		 * This problem is limited to qca8337 and other qca8k switch are not affected.
++		 */
++		if (priv->switch_id == QCA8K_ID_QCA8337) {
+ 			switch (i) {
+ 			/* The 2 CPU port and port 5 requires some different
+ 			 * priority than any other ports.
+@@ -1238,6 +1244,12 @@ qca8k_setup(struct dsa_switch *ds)
+ 				  QCA8K_PORT_HOL_CTRL1_WRED_EN,
+ 				  mask);
+ 		}
++
++		/* Set initial MTU for every port.
++		 * We have only have a general MTU setting. So track
++		 * every port and set the max across all port.
++		 */
++		priv->port_mtu[i] = ETH_FRAME_LEN + ETH_FCS_LEN;
+ 	}
+ 
+ 	/* Special GLOBAL_FC_THRESH value are needed for ar8327 switch */
+@@ -1251,8 +1263,6 @@ qca8k_setup(struct dsa_switch *ds)
+ 	}
+ 
+ 	/* Setup our port MTUs to match power on defaults */
+-	for (i = 0; i < QCA8K_NUM_PORTS; i++)
+-		priv->port_mtu[i] = ETH_FRAME_LEN + ETH_FCS_LEN;
+ 	ret = qca8k_write(priv, QCA8K_MAX_FRAME_SIZE, ETH_FRAME_LEN + ETH_FCS_LEN);
+ 	if (ret)
+ 		dev_warn(priv->dev, "failed setting MTU settings");
+@@ -1728,7 +1738,9 @@ qca8k_port_bridge_join(struct dsa_switch *ds, int port, struct net_device *br)
+ 	cpu_port = dsa_to_port(ds, port)->cpu_dp->index;
+ 	port_mask = BIT(cpu_port);
+ 
+-	for (i = 1; i < QCA8K_NUM_PORTS; i++) {
++	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
++		if (dsa_is_cpu_port(ds, i))
++			continue;
+ 		if (dsa_to_port(ds, i)->bridge_dev != br)
+ 			continue;
+ 		/* Add this port to the portvlan mask of the other ports
+@@ -1758,7 +1770,9 @@ qca8k_port_bridge_leave(struct dsa_switch *ds, int port, struct net_device *br)
+ 
+ 	cpu_port = dsa_to_port(ds, port)->cpu_dp->index;
+ 
+-	for (i = 1; i < QCA8K_NUM_PORTS; i++) {
++	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
++		if (dsa_is_cpu_port(ds, i))
++			continue;
+ 		if (dsa_to_port(ds, i)->bridge_dev != br)
+ 			continue;
+ 		/* Remove this port to the portvlan mask of the other ports
 -- 
-2.27.0
+2.32.0
 
