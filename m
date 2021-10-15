@@ -2,108 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D117F42E8FA
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 08:27:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19BAF42E91E
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 08:37:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234388AbhJOG3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 02:29:47 -0400
-Received: from mail-vk1-f182.google.com ([209.85.221.182]:33507 "EHLO
-        mail-vk1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233311AbhJOG3q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 02:29:46 -0400
-Received: by mail-vk1-f182.google.com with SMTP id t200so4663869vkt.0
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 23:27:40 -0700 (PDT)
+        id S235523AbhJOGjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 02:39:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59054 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234617AbhJOGjL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 02:39:11 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13B2C061570
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 23:37:05 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id oa4so6567454pjb.2
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 23:37:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=TusiGY9Id/oD51908hOFhgKlKHw5g+jeF6Iv+dmRSBk=;
+        b=lH9JGXfqRpprxbxWiOgi7OJko8JZ8+8+6XeISMXirHJVIR1lKakRAJjNZHlW+Ib8Qg
+         R06emWD2DUsOGIITYlNDoWmJBlsSUAW3pSxbFkRWd5Ja8GLQLy3s485DZdGV8tZdaSGl
+         SzT8Lo137Pgaft698OjxGWfqcTP5eYLS6kXOLUsyOy/wZydy28IyYoUBapOX627T8FDO
+         75420c5x7tEC7mcO93KdjdGD2emIMQhILzb1DbhNX59cwHU9+vMMQsVHANGoa4Bl/EPa
+         8kigD20bdOqXz7zPbaLzzVmFGNJSXRpOY8myukx8UDna1MFZZFf8gt6dcM4Mo2yBJ8Rj
+         4Uvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zLWrh2HbN7U/0CA4mkAltroII0u8oVmRY36amHD0pU8=;
-        b=1c1eYp6M3ixzG0O+hV2b48BuSEXGvA0GtPXDa0v0qjRUdWdiF7ZOunHeaQKQ7f0P/K
-         KssBypa8eiFsP5Pg8EGS9s0JrgVUl0wpVQZ7JiliKEUUxqgxPVuRBVx+kstHVBB1CUxE
-         0PidFfQbb/gvRh3+vC71LExxX1J9DMcp/H/tdTz1PjdBD9d92MMfwvoeitJoR5GgPC4O
-         piHAk/KR9NOm7UfSbiBGPFAfQ6GFnYUR/ZmCuJC4WBd3eVdm/G+hVRZs48S/6BUbliNm
-         6iPs+3GwsNdJAt8Uw3QAA3r2Wb24dAU+p6DoDtnfEsX6dKxb+kX0uexON663aFfbX5Yd
-         85Gw==
-X-Gm-Message-State: AOAM532+SqGk1mNyZg0X3fUsdrV54dNCbwLOH92/hMCdYSGA2/aE68tC
-        kNzigoM1etYGT/O+VWBtrOxtMhIvPt86/g==
-X-Google-Smtp-Source: ABdhPJzx42IyPgH0P9z8wzE+mYdJB8qy329zjZdThyvTU0Mrf41MFbgOfMXOpgQz6BsyyAfgMiA0lg==
-X-Received: by 2002:a1f:2515:: with SMTP id l21mr10508709vkl.13.1634279260113;
-        Thu, 14 Oct 2021 23:27:40 -0700 (PDT)
-Received: from mail-ua1-f49.google.com (mail-ua1-f49.google.com. [209.85.222.49])
-        by smtp.gmail.com with ESMTPSA id p191sm3191264vkp.31.2021.10.14.23.27.39
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Oct 2021 23:27:39 -0700 (PDT)
-Received: by mail-ua1-f49.google.com with SMTP id h19so15984399uax.5
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 23:27:39 -0700 (PDT)
-X-Received: by 2002:a67:cb0a:: with SMTP id b10mr12377426vsl.9.1634279259068;
- Thu, 14 Oct 2021 23:27:39 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TusiGY9Id/oD51908hOFhgKlKHw5g+jeF6Iv+dmRSBk=;
+        b=bJtFeqCbXfgrtiVGc3ng7zj0oEfYDE/+LH9QH4edgqy48K3eVsQtYuuTsPx4I/ITFy
+         CD/G4bIGjFFfal+gH9FN0W0JehRLzBo+souyWmg3W2OGVbsLAewaHnKNI3AXPtsWkrvg
+         QGLhTuamG9aKyGqaGiPOj3Qd7R3ItdSD0sNB1b0mehXaKCtDWBAGNuLwzO8kT1MzsstM
+         /vSZUfUCRVm8XrAg5lRRIleUxXdCPuGltCL4RX0q9hzl9j5LoUPfOlPG0m5DPyCxVeSe
+         it4oWJdn2nBUHhdWzaP3j+Q9sB/2ZnrS6EOfKowXwoVpkrJ4AkbL6nCijApcrG0BAU1T
+         BO6w==
+X-Gm-Message-State: AOAM530ni6w/j5k0CHOFvE6tVlqrYWEGECWNXL1UlbOj0seIXp4uBsnA
+        7FQvbuZOy5eo8kFJ1LzNimk=
+X-Google-Smtp-Source: ABdhPJxoo/72MfW/Ipk59ge8/0C3/EX3KvsLs8fmgcTPXQMutahjP+xjfaVAFsKx6lc0uOzC7S3YeA==
+X-Received: by 2002:a17:90a:8912:: with SMTP id u18mr11213252pjn.69.1634279825506;
+        Thu, 14 Oct 2021 23:37:05 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id 14sm4095129pfu.29.2021.10.14.23.37.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Oct 2021 23:37:04 -0700 (PDT)
+Date:   Fri, 15 Oct 2021 14:36:59 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Cc:     netdev@vger.kernel.org, roopa@nvidia.com,
+        bridge@lists.linux-foundation.org, kuba@kernel.org,
+        davem@davemloft.net
+Subject: Re: [PATCH net-next v4 10/15] net: bridge: mcast: support for
+ IGMPv3/MLDv2 ALLOW_NEW_SOURCES report
+Message-ID: <YWkhi7iABEKygKaL@Laptop-X1>
+References: <20200907095619.11216-1-nikolay@cumulusnetworks.com>
+ <20200907095619.11216-11-nikolay@cumulusnetworks.com>
+ <YWjsyk/Dzg2/zVbw@Laptop-X1>
 MIME-Version: 1.0
-References: <20210729022053.134453-1-jk@codeconstruct.com.au>
- <20210729022053.134453-5-jk@codeconstruct.com.au> <20211014183456.GA8474@asgard.redhat.com>
-In-Reply-To: <20211014183456.GA8474@asgard.redhat.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 15 Oct 2021 08:27:27 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVJusoGEe-+eLnA5zKJ79Z4uRYVePTFsa6WVfKDqwmySw@mail.gmail.com>
-Message-ID: <CAMuHMdVJusoGEe-+eLnA5zKJ79Z4uRYVePTFsa6WVfKDqwmySw@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 04/15] mctp: Add sockaddr_mctp to uapi
-To:     Eugene Syromiatnikov <esyr@redhat.com>
-Cc:     Jeremy Kerr <jk@codeconstruct.com.au>,
-        netdev <netdev@vger.kernel.org>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YWjsyk/Dzg2/zVbw@Laptop-X1>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 15, 2021 at 12:32 AM Eugene Syromiatnikov <esyr@redhat.com> wrote:
-> On Thu, Jul 29, 2021 at 10:20:42AM +0800, Jeremy Kerr wrote:
-> > This change introduces the user-visible MCTP header, containing the
-> > protocol-specific addressing definitions.
->
-> [...]
->
-> > --- a/include/uapi/linux/mctp.h
-> > +++ b/include/uapi/linux/mctp.h
-> > @@ -9,7 +9,28 @@
-> >  #ifndef __UAPI_MCTP_H
-> >  #define __UAPI_MCTP_H
-> >
-> > +#include <linux/types.h>
-> > +
-> > +typedef __u8                 mctp_eid_t;
-> > +
-> > +struct mctp_addr {
-> > +     mctp_eid_t              s_addr;
-> > +};
-> > +
-> >  struct sockaddr_mctp {
-> > +     unsigned short int      smctp_family;
->
-> This gap makes the size of struct sockaddr_mctp 2 bytes less at least
-> on m68k, are you fine with that?
->
-> > +     int                     smctp_network;
-> > +     struct mctp_addr        smctp_addr;
-> > +     __u8                    smctp_type;
-> > +     __u8                    smctp_tag;
+On Fri, Oct 15, 2021 at 10:52:00AM +0800, Hangbin Liu wrote:
+> > -	mod_timer(&p->timer, now + br->multicast_membership_interval);
+> > +	if (igmpv2_mldv1)
+> > +		mod_timer(&p->timer, now + br->multicast_membership_interval);
+> 
+> Hi Nikolay,
+> 
+> Our engineer found that the multicast_membership_interval will not work with
+> IGMPv3. Is it intend as you said "IGMPv3/MLDv2 handling is not yet
+> implemented" ?
 
-And it may be wise to add 1 byte of explicit padding here?
-Or is there a good reason not to do so?
+Ah, I saw in br_multicast_group_expired() it wait for mp->ports be freed
+before delete the mdb entry.
 
-> >  };
+And in br_multicast_port_group_expired() it wait for src entry freed first.
 
-Gr{oetje,eeting}s,
+But when mod group src timer, we use
+__grp_src_mod_timer(ent, now + br_multicast_gmi(brmctx));
 
-                        Geert
+instead of user configured multicast_membership_interval. I think we should
+fix it. WDYT?
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Thanks
+Hangbin
