@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EC8442ED05
+	by mail.lfdr.de (Postfix) with ESMTP id 6831E42ED06
 	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 11:01:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236267AbhJOJD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 05:03:56 -0400
+        id S236314AbhJOJD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 05:03:57 -0400
 Received: from mail-eopbgr70088.outbound.protection.outlook.com ([40.107.7.88]:52805
         "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229656AbhJOJD4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Oct 2021 05:03:56 -0400
+        id S234459AbhJOJD5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Oct 2021 05:03:57 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e9x0gbz0dAqpsIiTFbJVQfpZDjiGXAxSZhl3eGEzdTG+qxByyk/SsiCYDi4xJtjTwrCpWESECkGkwux5+6PW2zA8NlbKEhnUcLBFFwaln0AB6ZZxpGAJZ/EF5485D8J7ePRqxS06UmR1hNlZ/bGVyDcg4kqkIJYYtnKaOsb2AhDsWD4cZmUrLexW8xJZaS0oWemY6/0wGTfcKdPzHyuRznxYL9jMggegKXEd/OAJcOUUnDfyRu6H5SRlKRWCxK+/huXLPNx5b/NJMELWMVF1q/pZFhvtENl5ckroggduLEVSB00LN/4Ul/CHWKRWY03ZsJ08XfglbI7ksZKy7zo/cg==
+ b=a7gbf1STARLOSAmDX/2/M7uAPK+2pcAs+/EyG2O7z+jyT1kUZHISLwaXMplP5dV8CZWjuBHAGnAmNTg0Y2wKeWae/7NZqTYubEZhsU6cS04LA2gJkAkY3lYPrOvLpXAYOr9lHCgwaqb+X90j5Ly9O9pSuIaxDUJ6HP1sRdy/M2Fy8F+oE4FYmIuwFqbLmrOlTbotHP9dPA6bmqOiVg+vZTWe33jaNFjD94w9X5XFLZKdJMKOUcf/s3Bzel3nD/GHMw+lfwof9cNX755C0xxPKQhp/KCEvYKHtHhtgf+uNrKstKnkAL51t2/JFCbZ2mfmvymsq5LgvljSqi0M0+uqCQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YHNORdNXVUgtZ4Eloi0aQcNZ2wrKDj+KePPScf2Q3tA=;
- b=XqmHcSyn+uR4zdbLj+ZjFEEoUTsX1NO7N3E39cZgTwcU9CDHZgJ0/Hs81uIDnPjse2f4KgdhRBTXsldLl5W8OoX82OYF/A8DZytEto7g145W02dYzr4RVrc+rhOu6BHS4o7fF7IVJZdiYrtN1hv79mKpAw6e+BjhT0kEZj79rm87rjMl1mvbB3jmSQjqqctnn7hHO9OFaPK6grByS//nPboFp3Env73fn26M7pDcajugB5yIZwJhCIhnJDrmmYX/opsimj4hMz3PQzoNbJmv5N0JNyKfP3g7QYKMUe1NbxS4sIHM8FDnLcETU5JYAnjFBNIphPL52otWjA6MgYWZ1w==
+ bh=fqS5cvhufYMmtQCGVfRqae1D2hzE2PGergU0liNQuR0=;
+ b=lX3cLBaHPRkxbdg6N5zoVVxUxjXtksEBc0InSy+xVYqKMnf6BSaFBOwXLnohBxTaM+coLC7IKcdbgzsV90cObTkd736HJubip25c8rwCoqeEhgXLwulfhQVrLOEoFPeop1Hv8GIzDsI48iDrXrks9/TU4ObdYk3bJkiG6L9h5lHCPLWyBX5UPayHFlDkCcl64s2H3Do0XjRJrHRp2RCzv6OnXsjTBWS7vdTqairKjwCXVhcvu0GDAwzIgwkHwXpvPVRRdoD20c1+u/YC4LM5MZOL29G7XxJyQA6DKSX1f2Gu6EfmCpCLfES8+U2Ny9KoTEQgh1Kp9Emr5lalhuSkVw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YHNORdNXVUgtZ4Eloi0aQcNZ2wrKDj+KePPScf2Q3tA=;
- b=dvxmfhsBAPLuFIfBSyucragMuNKJ3cG9u1tvDyh9T3dpu1WxXYhxYCAe/rhBsVDJ4yYt+K3hIIbvUzBVa8RqaWK8vnzt1lMvejZE/Adnnveiav9C6CGVrQCr3T0GSmCfNyb1V4eD1pJjucDJAWnwcRHhfeIQaqjLfrgecaI0Jms=
+ bh=fqS5cvhufYMmtQCGVfRqae1D2hzE2PGergU0liNQuR0=;
+ b=LHFJTaUBuzAex8CWR3pDGstmCnLLeQOYKxAe2Wq5q0jFiOgWU/o3mwQqWOjqJvTyNrGhBPCnIxayZaI+42hnKt/IF7RrtQz5If6/epNUFMMQmpWYIeT1sbvYWEm8anFZiC1J9DR932e5kyn6gWleCPova2/3iWxXadWUNb0oN6o=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
 Received: from AM4PR0401MB2308.eurprd04.prod.outlook.com
  (2603:10a6:200:4f::13) by AM0PR04MB5988.eurprd04.prod.outlook.com
  (2603:10a6:208:11b::19) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.15; Fri, 15 Oct
- 2021 09:01:47 +0000
+ 2021 09:01:48 +0000
 Received: from AM4PR0401MB2308.eurprd04.prod.outlook.com
  ([fe80::6476:5ddb:7bf2:e726]) by AM4PR0401MB2308.eurprd04.prod.outlook.com
  ([fe80::6476:5ddb:7bf2:e726%8]) with mapi id 15.20.4587.031; Fri, 15 Oct 2021
- 09:01:47 +0000
+ 09:01:48 +0000
 From:   Ioana Ciornei <ioana.ciornei@nxp.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     youri.querry_1@nxp.com, leoyang.li@nxp.com, netdev@vger.kernel.org,
         Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH v2 net-next 2/5] soc: fsl: dpio: add support for irq coalescing per software portal
-Date:   Fri, 15 Oct 2021 12:01:24 +0300
-Message-Id: <20211015090127.241910-3-ioana.ciornei@nxp.com>
+Subject: [PATCH v2 net-next 3/5] net: dpaa2: add support for manual setup of IRQ coalesing
+Date:   Fri, 15 Oct 2021 12:01:25 +0300
+Message-Id: <20211015090127.241910-4-ioana.ciornei@nxp.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211015090127.241910-1-ioana.ciornei@nxp.com>
 References: <20211015090127.241910-1-ioana.ciornei@nxp.com>
@@ -53,272 +53,139 @@ X-ClientProxiedBy: AM8P190CA0018.EURP190.PROD.OUTLOOK.COM
  (2603:10a6:20b:219::23) To AM4PR0401MB2308.eurprd04.prod.outlook.com
  (2603:10a6:200:4f::13)
 MIME-Version: 1.0
-Received: from yoga-910.localhost (188.26.184.231) by AM8P190CA0018.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:219::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.15 via Frontend Transport; Fri, 15 Oct 2021 09:01:47 +0000
+Received: from yoga-910.localhost (188.26.184.231) by AM8P190CA0018.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:219::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.15 via Frontend Transport; Fri, 15 Oct 2021 09:01:48 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c4af7c91-56ab-4a0e-d842-08d98fba6b47
+X-MS-Office365-Filtering-Correlation-Id: 23e57a5a-6957-43ed-5604-08d98fba6bdb
 X-MS-TrafficTypeDiagnostic: AM0PR04MB5988:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB5988534169E674E40736C861E0B99@AM0PR04MB5988.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:179;
+X-Microsoft-Antispam-PRVS: <AM0PR04MB5988ADED0CB898488DEA30CDE0B99@AM0PR04MB5988.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wuYuxR2/Xsd0xE+JYqRnWiQZYY8Ib15r+atV9TQeNxbAx9nJ3CUu6dVgRcGgE5auyoRcAu4uk091qa2J4EKcIeKiLBL4IsvSi8Uf5nTJkuZ445w58y2KEXdCUvpQrsAf4a20Shu9LAmlOd6XClaX6/u7xFCEiRTzXycdQbx4hV3VEOr33ClqdjDyuBgMr36hGAi8NyDKD56RHMWvFpubFeLUG6CjbbBMn85lsaS3N0IYaDYOGilCyrQzlxTGUZzSuouUnkIpESVVqcbh+sl9mUKYgSrShwNfi7UfrqdsBxRcqTNgCxDG1ScouPDQyDopSVBSsIx0hW0wVdNZ0BXgEWx3moXUSnFUhkmzVegEjcGcT2uokcPJ+a21pOGZFgLdT8djETKkbiok0ilbgh2ZnbDjdwCNpVjdDEzdQqQloe0aEcJ+5Dju5RvSv+/+976V8TYLmgf+3s3L+UrA+42CqKpRlPpuDihqz5cz4zyOatbF+u2bzne3fs9UeutglbRjFET2gFqekWGK+bXFkpjvqGs4wRcyitGAxJqr2I+71QO6ZNM7G6JdVsYG5jqnDLVj8dX4jBvfE4xRn008fSVeYHE/8OrXQoqHIUyE4tcYHnowDoKvCAZCEskgT/NRtf/k5kj/i/7qfcGBepLMw/67RzpwYGA6Ob//ooDJdOvdatLULdYiOsulhVAuZCBgpcvxh+45GK0alA3paOAjBz2zTA==
+X-Microsoft-Antispam-Message-Info: bG4fnUh51kKyDd7966UgDaWylb3eyYm8t8iSWvMMUB3J+6uZYLMLwIl76SHfo3vK0n0yOdjCdm3gukEONLDaR/VNwj0nq+c1URLtmMn/69bGW/6oSOsjWCe37r0Xcm0GYtO0676ubsvFPJreuo9oU0S47Nk9Ar0S/ZLyza+tUrPrnrIO9431swlgCGA49lGivWQmIhmJ0ZiuUYIOQsullIy511UKgDZbqOMlN/i1IWkTtVGyiC7h8r6S8Kk7NmAjSSyCIfpBIeEXkNE07/NRmtCp6DpXjTlo378qU4nCvM7tXGCsRnmH2x1b7GtGWwKtEacrJlJMHPxy3NKI0tSpLLORLVagJtJbFH8OqrwuPKOctdaLSVlq64/kOX/jrdnClJeTmykELXo2hUkMyHRSKK7qfnpGp0m3QQOV1JSV90v1LesDUxbArQau4Cr//6+9lZfBFVuF8fOR/S/qiVSt47Rl9sSizI4V73mjyHzxaPek/gOY5iNx7pYXN0dhGKXoC+pxX8V56sW51lV2VJ3webKyfszft5UcqOc01YbXa5G8XAqARQXBpP0s+FdQFZrUmIMy90C1PPYMbo58oGmbP57U2i0L0jekg4DN+5trmYxlYP5N5SfUXHGhYWLgMyW7hKMVAk2WFL50rY/Zu7zuOb1FZMUqH3By3cOVUSX/TB5rIbMZ3Jl7bqyaefQrjZfL71oAjkhyH3aa8VMOeksPbA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM4PR0401MB2308.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(5660300002)(2616005)(956004)(4326008)(44832011)(6486002)(8936002)(36756003)(8676002)(86362001)(2906002)(6506007)(186003)(66946007)(66476007)(66556008)(26005)(1076003)(52116002)(38100700002)(38350700002)(6666004)(508600001)(6512007)(83380400001)(316002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fY0cjno2H/rF3GqewDXIeAbl2pQ91IPblExG0r27iD29OL5Td5te2+LmD+R0?=
- =?us-ascii?Q?uEXYGQNiP626uMqNHmyBo08W5qWQQANSZHGcOXkggHVdbHHR7yZlEuC4N9sb?=
- =?us-ascii?Q?q+uHjv7iE/mhR32rvG5HOucICgUEncPUF3CKRsADqfGF28wlucX9KLuyueFp?=
- =?us-ascii?Q?KJ5cKy8xp7rsJS/rFly+upr8Px20DnQgT5K0BeJZgGMNBw51XM66BLisAsie?=
- =?us-ascii?Q?weyBIn4JPRVk8LD7GEfC3hrvQWZXp5PKgIeL6cuFZE4z/9WYo31J/uM07EJ3?=
- =?us-ascii?Q?jzekTTWu4MDPq++C235KzkkxBCTfAXrxDZt22ClEZkaqo1XqHMnnVt2QkeuQ?=
- =?us-ascii?Q?0dDTTFAryGKKp4QQoUuyooTaEwFaB4hNDh0KX2IkQA1awEi4lPUr8aDBLnP7?=
- =?us-ascii?Q?xrnKCVDjJKbCdEZZGVJ1CEPssLmhUNFDAEG/SJIdXPbAdX2ROFjIHX3cRhiw?=
- =?us-ascii?Q?YsNYyrBYV4AAXSUsDxHwVIBBRrRV8MpSNCNZHlJaKa23Cxf7S5LxEZEAkvKA?=
- =?us-ascii?Q?QszX5g5xOF8fokwZFaOwKlKI3TAFWJqlJj0NzgBglw1Jh0Xga/MGI6ZNU+VG?=
- =?us-ascii?Q?IB1++vKAM0qc27cT25e8CsXQXyR/9MrFlMHquoM5xHXdi4eH9seKXZKfd45u?=
- =?us-ascii?Q?3qoh2NOdE90KDtvC1o8Dl1grjnOGLxTfkQ5wrEimM2tcmnxaR+873mDSUfzC?=
- =?us-ascii?Q?a+VFZwz6BHxBJK8g3KwE0z38+jukET+g7778UEuMnaVkIUUNn6nsBDknQhhY?=
- =?us-ascii?Q?e3ivsDcZ9vIXsNvfJ+IBdQTRFZIn2R7nDdPqon4C12Fr/9hzIXDNXUwPQl7N?=
- =?us-ascii?Q?lHod8BIg5Xa5pwwefoiXXuf+DzcZYEAEuZ81Crxmr8GPPQdBEhkqJw0QC+So?=
- =?us-ascii?Q?UsHVkAhyxJcy3AGPDAgk1ERqU3EUxIcfkcFBPebnoZ2iWZxRTRH8jnkcXLOw?=
- =?us-ascii?Q?qL7krpmUE39dg9QCz4V4Q867uMkXwRMS5zW1loOb1IHKrwenB+OnBcnODjr/?=
- =?us-ascii?Q?CVjbsCyILf0NeqEgoY150OuHfNdurrIyI5vRspg5ot+j6TDaSi3oQprqmKgY?=
- =?us-ascii?Q?ZO+zq58xtjcBVjN8+V1ud95pLdrQqq9zYeX9Fq7PUL0CgQf0oqoomty9OYiI?=
- =?us-ascii?Q?B1J+g/+QHJhRFHeaS8AJdCgmXrsc9t8XpFuibto8HEth26UsIJ4yD3tarx8b?=
- =?us-ascii?Q?reYK+DlS3VQ78oKgxtudEyEbR0SiGrHXxef43gH3rFzBzTmJ4VxHlHIK8JH5?=
- =?us-ascii?Q?rSti9UF7B2yBd8TzjFNAXUT/gZQTCdDt0JyJbzggZm005I5SJXmo4MD2V/pK?=
- =?us-ascii?Q?4u6LWfOw6uViYeofuinmBcSk?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ccLHE4ON1JSlaWY/L+bAWL7JUcL9xKXc5SPCgLEK67TH8ty/8iBP8kzv/O9q?=
+ =?us-ascii?Q?e9GSYtG6L+X2HDk8F/lO0XPhrUMROHUti6UGjXsZtY94II1RIa7XGrXwU81I?=
+ =?us-ascii?Q?gLElBf9CkS8XyYp7t0L3fk9aLNDCWoDVFIRe0Hf8FhJUqjqdXjCoWjDPHIz7?=
+ =?us-ascii?Q?H9F4HiRxmI0Srs+bbwxWayXVp96vOrgQ9lfqrlc7jPcC3BzETgYaGRSG7rSL?=
+ =?us-ascii?Q?gt3yFyex13yzntdu3tYmyzc9d32zzi6d3/jPIBTxO+JDCAzTT+GUmcEGdqeS?=
+ =?us-ascii?Q?tQqVxu3rtj1aaZL6mPF8SrQRbOn1J576BFF/iqkYZjEGXgcWfrFQoTU/dehb?=
+ =?us-ascii?Q?nHX2blheUcP2alvPTcCJsz5BLk6kWmkCanqW4YJz0xwMNqVXDdACry8ZuCNM?=
+ =?us-ascii?Q?HUbZXGsy0pE0wV8fh1/qlh+nVGk37noogvMkrxZuQ3j9tRTp7Ohb6z/UMphk?=
+ =?us-ascii?Q?+lSK7SHUKHctprPxW1Ie8qiD62tVaXNdwvvcs3gTJISu8K3gUPGdnpfmSApL?=
+ =?us-ascii?Q?0GbPWT/eL89gVJsRa93b3SXB0NVo0kvKFiKUPQkHCBHlKpFN6ZQeNr+rELpk?=
+ =?us-ascii?Q?F2aPvxPDFNIxlGmQ0AiNNVhjLSlvAvVmNa81OXspwfBu9YaKsuLintRCuDcb?=
+ =?us-ascii?Q?IRiEEDgaccYBhWznTeCnAJ6QgxcNYLLs3inYlSxi0SmXunzQxM3wA1mDPITX?=
+ =?us-ascii?Q?3A1A1m3uYinH0M9WykjNmLmVL2YNWaI02vawRB2LhOE3Gq8rW/S0uozDp8eL?=
+ =?us-ascii?Q?woTnbnrH6heXQHa6bNrW84J1bbv5A9P5B7CNMR8EGnZgUqS6lC8I9JaXsNzd?=
+ =?us-ascii?Q?ZizitGSumNBA/U5ohxSF36qwRPjDRrZGL+u61+XwvzIeysczy3sf5yI+d5lZ?=
+ =?us-ascii?Q?VcIb6nz8scu/oKLU9x1NVQvD+wE/6oPyruydDxWPDnj/xCUfdrcQ6iDKdLSc?=
+ =?us-ascii?Q?WHvkv+23bh1+TDNArd3lCurZQ79hZ2vIvg3CY2CdYYGYb273Qmyp/mQo3Wtb?=
+ =?us-ascii?Q?sEuB9nsfByiZiNNZc91MSS/SIjakMtkReQfLAqfDokSObWR+cSmPKJA6+x+a?=
+ =?us-ascii?Q?7A0iIlXM38QpwOoBw7wuYVZ05AcQ74dFP6N7OzbovSSI47V1ofsQQFBV91Pl?=
+ =?us-ascii?Q?9zgnunkFwRWLH9GzA8nA8VtMSjunnuCj1bxVaS6YBoQjyKWCkbf0pb9rImyo?=
+ =?us-ascii?Q?H90B9w6LH7S9LpfJqE9iBrlVf8qJS0/LZ1+77tO4zhJL34G1cpjmmOXp0Tfn?=
+ =?us-ascii?Q?XYGqHc+o95W1TrCZm5BsrUAcLJw/GfElZT6AMEIcK5E/0tsA3tUz22nzMV/r?=
+ =?us-ascii?Q?dT8h0sy124m90rxOTmJ4BBMU?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c4af7c91-56ab-4a0e-d842-08d98fba6b47
+X-MS-Exchange-CrossTenant-Network-Message-Id: 23e57a5a-6957-43ed-5604-08d98fba6bdb
 X-MS-Exchange-CrossTenant-AuthSource: AM4PR0401MB2308.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Oct 2021 09:01:47.7844
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Oct 2021 09:01:48.7740
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zheNbAVc3jT74TzTZx5HLnNNyMrQA3WPwMtJZyjeR3DF3ebiEI2oms5kQmowlNbLjfpdy7UFIwGSdkHmiH6Q5g==
+X-MS-Exchange-CrossTenant-UserPrincipalName: NbOL9MmX2hkurE6H6aOOHx+Udcoc984zmCQaez4R+dmRDNUCmPAe2hHfENq9Mrwk5QvSodbLY6SKqgwRu4YLzQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5988
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In DPAA2 based SoCs, the IRQ coalesing support per software portal has 2
-configurable parameters:
- - the IRQ timeout period (QBMAN_CINH_SWP_ITPR): how many 256 QBMAN
-   cycles need to pass until a dequeue interrupt is asserted.
- - the IRQ threshold (QBMAN_CINH_SWP_DQRR_ITR): how many dequeue
-   responses in the DQRR ring would generate an IRQ.
-
-Add support for setting up and querying these IRQ coalescing related
-parameters.
+Use the newly exported dpio driver API to manually configure the IRQ
+coalescing parameters requested by the user.
+The .get_coalesce() and .set_coalesce() net_device callbacks are
+implemented and directly export or setup the rx-usecs on all the
+channels configured.
 
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
 Changes in v2:
  - none
 
- drivers/soc/fsl/dpio/dpio-service.c | 37 ++++++++++++++++++
- drivers/soc/fsl/dpio/qbman-portal.c | 59 +++++++++++++++++++++++++++++
- drivers/soc/fsl/dpio/qbman-portal.h | 11 ++++++
- include/soc/fsl/dpaa2-io.h          |  4 ++
- 4 files changed, 111 insertions(+)
+ .../ethernet/freescale/dpaa2/dpaa2-ethtool.c  | 51 +++++++++++++++++++
+ 1 file changed, 51 insertions(+)
 
-diff --git a/drivers/soc/fsl/dpio/dpio-service.c b/drivers/soc/fsl/dpio/dpio-service.c
-index 2acbb96c5e45..44fafed045ca 100644
---- a/drivers/soc/fsl/dpio/dpio-service.c
-+++ b/drivers/soc/fsl/dpio/dpio-service.c
-@@ -114,6 +114,7 @@ struct dpaa2_io *dpaa2_io_create(const struct dpaa2_io_desc *desc,
- 				 struct device *dev)
- {
- 	struct dpaa2_io *obj = kmalloc(sizeof(*obj), GFP_KERNEL);
-+	u32 qman_256_cycles_per_ns;
- 
- 	if (!obj)
- 		return NULL;
-@@ -129,6 +130,13 @@ struct dpaa2_io *dpaa2_io_create(const struct dpaa2_io_desc *desc,
- 	obj->swp_desc.cinh_bar = obj->dpio_desc.regs_cinh;
- 	obj->swp_desc.qman_clk = obj->dpio_desc.qman_clk;
- 	obj->swp_desc.qman_version = obj->dpio_desc.qman_version;
-+
-+	/* Compute how many 256 QBMAN cycles fit into one ns. This is because
-+	 * the interrupt timeout period register needs to be specified in QBMAN
-+	 * clock cycles in increments of 256.
-+	 */
-+	qman_256_cycles_per_ns = 256000 / (obj->swp_desc.qman_clk / 1000000);
-+	obj->swp_desc.qman_256_cycles_per_ns = qman_256_cycles_per_ns;
- 	obj->swp = qbman_swp_init(&obj->swp_desc);
- 
- 	if (!obj->swp) {
-@@ -780,3 +788,32 @@ int dpaa2_io_query_bp_count(struct dpaa2_io *d, u16 bpid, u32 *num)
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(dpaa2_io_query_bp_count);
-+
-+/**
-+ * dpaa2_io_set_irq_coalescing() - Set new IRQ coalescing values
-+ * @d: the given DPIO object
-+ * @irq_holdoff: interrupt holdoff (timeout) period in us
-+ *
-+ * Return 0 for success, or negative error code on error.
-+ */
-+int dpaa2_io_set_irq_coalescing(struct dpaa2_io *d, u32 irq_holdoff)
-+{
-+	struct qbman_swp *swp = d->swp;
-+
-+	return qbman_swp_set_irq_coalescing(swp, swp->dqrr.dqrr_size - 1,
-+					    irq_holdoff);
-+}
-+EXPORT_SYMBOL(dpaa2_io_set_irq_coalescing);
-+
-+/**
-+ * dpaa2_io_get_irq_coalescing() - Get the current IRQ coalescing parameters
-+ * @d: the given DPIO object
-+ * @irq_holdoff: interrupt holdoff (timeout) period in us
-+ */
-+void dpaa2_io_get_irq_coalescing(struct dpaa2_io *d, u32 *irq_holdoff)
-+{
-+	struct qbman_swp *swp = d->swp;
-+
-+	qbman_swp_get_irq_coalescing(swp, NULL, irq_holdoff);
-+}
-+EXPORT_SYMBOL(dpaa2_io_get_irq_coalescing);
-diff --git a/drivers/soc/fsl/dpio/qbman-portal.c b/drivers/soc/fsl/dpio/qbman-portal.c
-index f13da4d7d1c5..d3c58df6240d 100644
---- a/drivers/soc/fsl/dpio/qbman-portal.c
-+++ b/drivers/soc/fsl/dpio/qbman-portal.c
-@@ -29,6 +29,7 @@
- #define QBMAN_CINH_SWP_EQCR_AM_RT   0x980
- #define QBMAN_CINH_SWP_RCR_AM_RT    0x9c0
- #define QBMAN_CINH_SWP_DQPI    0xa00
-+#define QBMAN_CINH_SWP_DQRR_ITR     0xa80
- #define QBMAN_CINH_SWP_DCAP    0xac0
- #define QBMAN_CINH_SWP_SDQCR   0xb00
- #define QBMAN_CINH_SWP_EQCR_AM_RT2  0xb40
-@@ -38,6 +39,7 @@
- #define QBMAN_CINH_SWP_IER     0xe40
- #define QBMAN_CINH_SWP_ISDR    0xe80
- #define QBMAN_CINH_SWP_IIR     0xec0
-+#define QBMAN_CINH_SWP_ITPR    0xf40
- 
- /* CENA register offsets */
- #define QBMAN_CENA_SWP_EQCR(n) (0x000 + ((u32)(n) << 6))
-@@ -355,6 +357,9 @@ struct qbman_swp *qbman_swp_init(const struct qbman_swp_desc *d)
- 			& p->eqcr.pi_ci_mask;
- 	p->eqcr.available = p->eqcr.pi_ring_size;
- 
-+	/* Initialize the software portal with a irq timeout period of 0us */
-+	qbman_swp_set_irq_coalescing(p, p->dqrr.dqrr_size - 1, 0);
-+
- 	return p;
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
+index 2da5f881f630..69a6860e11fa 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
+@@ -820,7 +820,56 @@ static int dpaa2_eth_set_tunable(struct net_device *net_dev,
+ 	return err;
  }
  
-@@ -1796,3 +1801,57 @@ u32 qbman_bp_info_num_free_bufs(struct qbman_bp_query_rslt *a)
- {
- 	return le32_to_cpu(a->fill);
- }
-+
-+/**
-+ * qbman_swp_set_irq_coalescing() - Set new IRQ coalescing values
-+ * @p: the software portal object
-+ * @irq_threshold: interrupt threshold
-+ * @irq_holdoff: interrupt holdoff (timeout) period in us
-+ *
-+ * Return 0 for success, or negative error code on error.
-+ */
-+int qbman_swp_set_irq_coalescing(struct qbman_swp *p, u32 irq_threshold,
-+				 u32 irq_holdoff)
++static int dpaa2_eth_get_coalesce(struct net_device *dev,
++				  struct ethtool_coalesce *ic,
++				  struct kernel_ethtool_coalesce *kernel_coal,
++				  struct netlink_ext_ack *extack)
 +{
-+	u32 itp, max_holdoff;
++	struct dpaa2_eth_priv *priv = netdev_priv(dev);
++	struct dpaa2_io *dpio = priv->channel[0]->dpio;
 +
-+	/* Convert irq_holdoff value from usecs to 256 QBMAN clock cycles
-+	 * increments. This depends to the QBMAN internal frequency.
-+	 */
-+	itp = (irq_holdoff * 1000) / p->desc->qman_256_cycles_per_ns;
-+	if (itp < 0 || itp > 4096) {
-+		max_holdoff = (p->desc->qman_256_cycles_per_ns * 4096) / 1000;
-+		pr_err("irq_holdoff must be between 0..%dus\n", max_holdoff);
-+		return -EINVAL;
-+	}
-+
-+	if (irq_threshold >= p->dqrr.dqrr_size || irq_threshold < 0) {
-+		pr_err("irq_threshold must be between 0..%d\n",
-+		       p->dqrr.dqrr_size - 1);
-+		return -EINVAL;
-+	}
-+
-+	p->irq_threshold = irq_threshold;
-+	p->irq_holdoff = irq_holdoff;
-+
-+	qbman_write_register(p, QBMAN_CINH_SWP_DQRR_ITR, irq_threshold);
-+	qbman_write_register(p, QBMAN_CINH_SWP_ITPR, itp);
++	dpaa2_io_get_irq_coalescing(dpio, &ic->rx_coalesce_usecs);
 +
 +	return 0;
 +}
 +
-+/**
-+ * qbman_swp_get_irq_coalescing() - Get the current IRQ coalescing parameters
-+ * @p: the software portal object
-+ * @irq_threshold: interrupt threshold (an IRQ is generated when there are more
-+ * DQRR entries in the portal than the threshold)
-+ * @irq_holdoff: interrupt holdoff (timeout) period in us
-+ */
-+void qbman_swp_get_irq_coalescing(struct qbman_swp *p, u32 *irq_threshold,
-+				  u32 *irq_holdoff)
++static int dpaa2_eth_set_coalesce(struct net_device *dev,
++				  struct ethtool_coalesce *ic,
++				  struct kernel_ethtool_coalesce *kernel_coal,
++				  struct netlink_ext_ack *extack)
 +{
-+	if (irq_threshold)
-+		*irq_threshold = p->irq_threshold;
-+	if (irq_holdoff)
-+		*irq_holdoff = p->irq_holdoff;
++	struct dpaa2_eth_priv *priv = netdev_priv(dev);
++	struct dpaa2_io *dpio;
++	u32 prev_rx_usecs;
++	int i, j, err;
++
++	/* Keep track of the previous value, just in case we fail */
++	dpio = priv->channel[0]->dpio;
++	dpaa2_io_get_irq_coalescing(dpio, &prev_rx_usecs);
++
++	/* Setup new value for rx coalescing */
++	for (i = 0; i < priv->num_channels; i++) {
++		dpio = priv->channel[i]->dpio;
++
++		err = dpaa2_io_set_irq_coalescing(dpio, ic->rx_coalesce_usecs);
++		if (err)
++			goto restore_rx_usecs;
++	}
++
++	return 0;
++
++restore_rx_usecs:
++	for (j = 0; j < i; j++) {
++		dpio = priv->channel[j]->dpio;
++
++		dpaa2_io_set_irq_coalescing(dpio, prev_rx_usecs);
++	}
++
++	return err;
 +}
-diff --git a/drivers/soc/fsl/dpio/qbman-portal.h b/drivers/soc/fsl/dpio/qbman-portal.h
-index f058289416af..4ea2dd950a2a 100644
---- a/drivers/soc/fsl/dpio/qbman-portal.h
-+++ b/drivers/soc/fsl/dpio/qbman-portal.h
-@@ -25,6 +25,7 @@ struct qbman_swp_desc {
- 	void __iomem *cinh_bar; /* Cache-inhibited portal base address */
- 	u32 qman_version;
- 	u32 qman_clk;
-+	u32 qman_256_cycles_per_ns;
++
+ const struct ethtool_ops dpaa2_ethtool_ops = {
++	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS,
+ 	.get_drvinfo = dpaa2_eth_get_drvinfo,
+ 	.nway_reset = dpaa2_eth_nway_reset,
+ 	.get_link = ethtool_op_get_link,
+@@ -836,4 +885,6 @@ const struct ethtool_ops dpaa2_ethtool_ops = {
+ 	.get_ts_info = dpaa2_eth_get_ts_info,
+ 	.get_tunable = dpaa2_eth_get_tunable,
+ 	.set_tunable = dpaa2_eth_set_tunable,
++	.get_coalesce = dpaa2_eth_get_coalesce,
++	.set_coalesce = dpaa2_eth_set_coalesce,
  };
- 
- #define QBMAN_SWP_INTERRUPT_EQRI 0x01
-@@ -157,6 +158,10 @@ struct qbman_swp {
- 	} eqcr;
- 
- 	spinlock_t access_spinlock;
-+
-+	/* Interrupt coalescing */
-+	u32 irq_threshold;
-+	u32 irq_holdoff;
- };
- 
- /* Function pointers */
-@@ -649,4 +654,10 @@ static inline const struct dpaa2_dq *qbman_swp_dqrr_next(struct qbman_swp *s)
- 	return qbman_swp_dqrr_next_ptr(s);
- }
- 
-+int qbman_swp_set_irq_coalescing(struct qbman_swp *p, u32 irq_threshold,
-+				 u32 irq_holdoff);
-+
-+void qbman_swp_get_irq_coalescing(struct qbman_swp *p, u32 *irq_threshold,
-+				  u32 *irq_holdoff);
-+
- #endif /* __FSL_QBMAN_PORTAL_H */
-diff --git a/include/soc/fsl/dpaa2-io.h b/include/soc/fsl/dpaa2-io.h
-index 041ebf7d804c..9bff280fe8f4 100644
---- a/include/soc/fsl/dpaa2-io.h
-+++ b/include/soc/fsl/dpaa2-io.h
-@@ -131,4 +131,8 @@ int dpaa2_io_query_fq_count(struct dpaa2_io *d, u32 fqid,
- 			    u32 *fcnt, u32 *bcnt);
- int dpaa2_io_query_bp_count(struct dpaa2_io *d, u16 bpid,
- 			    u32 *num);
-+
-+int dpaa2_io_set_irq_coalescing(struct dpaa2_io *d, u32 irq_holdoff);
-+void dpaa2_io_get_irq_coalescing(struct dpaa2_io *d, u32 *irq_holdoff);
-+
- #endif /* __FSL_DPAA2_IO_H */
 -- 
 2.31.1
 
