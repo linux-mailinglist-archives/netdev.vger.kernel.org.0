@@ -2,103 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B35FF42E89C
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 07:58:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D117F42E8FA
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 08:27:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231709AbhJOGAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 02:00:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50482 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231827AbhJOGAn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 02:00:43 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88BD5C061760;
-        Thu, 14 Oct 2021 22:58:37 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id t16so33495645eds.9;
-        Thu, 14 Oct 2021 22:58:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=p5xn5pzNkUwMt65ulpDvl82UfebPrZ4ckvdDqReUMOk=;
-        b=SpAtvtToe+gzCfhaDEb9v0so8VOMg7Q+GvmwJfyn+JhqtyT9wHYEZjxd6ccJRGGBkB
-         /mC7S/w+FQkjPn6o+D+PwfPUI17mJVQj+2J7eVybj4Gz4wu/CJLRdPFxr3Y8rdFqqJOX
-         LQC3KQnEU+l7YisESuDbvepEswezswRxUW8zVMJx2K0FVxDiwBN/Ck6WhaTXvH1AZ3fN
-         VtbkTHzugvVkMv8J7g/Al5dwqDOh2XRNkabKffkuDTxW6RQY5FMZiRrstIhyPvnQ5nL3
-         VkG8rbAUDjCNLxMAQwXvrJ2XWYpBQh1C6Km1ragyVyY2CKjECbwvq+GfC3zzAbKrQ3Bu
-         4xBw==
+        id S234388AbhJOG3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 02:29:47 -0400
+Received: from mail-vk1-f182.google.com ([209.85.221.182]:33507 "EHLO
+        mail-vk1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233311AbhJOG3q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 02:29:46 -0400
+Received: by mail-vk1-f182.google.com with SMTP id t200so4663869vkt.0
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 23:27:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=p5xn5pzNkUwMt65ulpDvl82UfebPrZ4ckvdDqReUMOk=;
-        b=wqbTJDtUxTVXxpKlXsbc/kZSk2mpVNwp8DRqaOAVsJ37EAJbJMF93FrDdjrwspTgdO
-         Yl2wbQY+WbAtE8i8SqCHJIRMgUK04k+Ye0atbvKNLxz5d1mzqa/lJj2RuaK32HT/NyXM
-         JlHF/BCjHoYqdo9HXXlq5Z5Vmlo3J50pboGrQ6HDOBGi7SwFjNW5qjTOrl+a1G0MIdEq
-         0oknbxeNYnbAV7Lln/lSq3K9wYHysfrk7ygED9IE8LVRpOrX9GZnsG1S6d8ZlRkgNbdt
-         Db1COvG5dPz2t+QHlNx2vskk4Y/hYOlKBGqJx7j8tEeia1HOXHEUk9KOo/TsLvGAcmr8
-         P57g==
-X-Gm-Message-State: AOAM530zf+SMqENxCiIH24G99aLvuVTLWt8jfmieqfmxEKisXYTqu4KG
-        3Hv/zejoUIUqNwFCCuFKGMTDjVw1byjovDkq
-X-Google-Smtp-Source: ABdhPJyB+vQV6j9yifRtEwxirspvDj3fHc69zNWnsoDm3Pl0Yvh4UknHYt8bczGvzkchX9n0Na4RWw==
-X-Received: by 2002:a05:6402:5249:: with SMTP id t9mr15138687edd.135.1634277516089;
-        Thu, 14 Oct 2021 22:58:36 -0700 (PDT)
-Received: from ?IPv6:2a04:241e:501:3800:a29:9110:6b9c:9e9e? ([2a04:241e:501:3800:a29:9110:6b9c:9e9e])
-        by smtp.gmail.com with ESMTPSA id lb20sm3415402ejc.40.2021.10.14.22.58.34
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zLWrh2HbN7U/0CA4mkAltroII0u8oVmRY36amHD0pU8=;
+        b=1c1eYp6M3ixzG0O+hV2b48BuSEXGvA0GtPXDa0v0qjRUdWdiF7ZOunHeaQKQ7f0P/K
+         KssBypa8eiFsP5Pg8EGS9s0JrgVUl0wpVQZ7JiliKEUUxqgxPVuRBVx+kstHVBB1CUxE
+         0PidFfQbb/gvRh3+vC71LExxX1J9DMcp/H/tdTz1PjdBD9d92MMfwvoeitJoR5GgPC4O
+         piHAk/KR9NOm7UfSbiBGPFAfQ6GFnYUR/ZmCuJC4WBd3eVdm/G+hVRZs48S/6BUbliNm
+         6iPs+3GwsNdJAt8Uw3QAA3r2Wb24dAU+p6DoDtnfEsX6dKxb+kX0uexON663aFfbX5Yd
+         85Gw==
+X-Gm-Message-State: AOAM532+SqGk1mNyZg0X3fUsdrV54dNCbwLOH92/hMCdYSGA2/aE68tC
+        kNzigoM1etYGT/O+VWBtrOxtMhIvPt86/g==
+X-Google-Smtp-Source: ABdhPJzx42IyPgH0P9z8wzE+mYdJB8qy329zjZdThyvTU0Mrf41MFbgOfMXOpgQz6BsyyAfgMiA0lg==
+X-Received: by 2002:a1f:2515:: with SMTP id l21mr10508709vkl.13.1634279260113;
+        Thu, 14 Oct 2021 23:27:40 -0700 (PDT)
+Received: from mail-ua1-f49.google.com (mail-ua1-f49.google.com. [209.85.222.49])
+        by smtp.gmail.com with ESMTPSA id p191sm3191264vkp.31.2021.10.14.23.27.39
+        for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Oct 2021 22:58:35 -0700 (PDT)
-Subject: Re: [PATCH v2 3/4] selftests: nettest: Add --{do,no}-bind-key-ifindex
-To:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Yonghong Song <yhs@fb.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1634107317.git.cdleonard@gmail.com>
- <122a68cd7fd28e9a5580f16f650826437f7397a1.1634107317.git.cdleonard@gmail.com>
- <133b490a-29a2-aa40-37bf-aef582f2028f@gmail.com>
-From:   Leonard Crestez <cdleonard@gmail.com>
-Message-ID: <c9c5ce5c-b81e-9dd9-c689-247691fe4249@gmail.com>
-Date:   Fri, 15 Oct 2021 08:58:33 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        Thu, 14 Oct 2021 23:27:39 -0700 (PDT)
+Received: by mail-ua1-f49.google.com with SMTP id h19so15984399uax.5
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 23:27:39 -0700 (PDT)
+X-Received: by 2002:a67:cb0a:: with SMTP id b10mr12377426vsl.9.1634279259068;
+ Thu, 14 Oct 2021 23:27:39 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <133b490a-29a2-aa40-37bf-aef582f2028f@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210729022053.134453-1-jk@codeconstruct.com.au>
+ <20210729022053.134453-5-jk@codeconstruct.com.au> <20211014183456.GA8474@asgard.redhat.com>
+In-Reply-To: <20211014183456.GA8474@asgard.redhat.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 15 Oct 2021 08:27:27 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVJusoGEe-+eLnA5zKJ79Z4uRYVePTFsa6WVfKDqwmySw@mail.gmail.com>
+Message-ID: <CAMuHMdVJusoGEe-+eLnA5zKJ79Z4uRYVePTFsa6WVfKDqwmySw@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 04/15] mctp: Add sockaddr_mctp to uapi
+To:     Eugene Syromiatnikov <esyr@redhat.com>
+Cc:     Jeremy Kerr <jk@codeconstruct.com.au>,
+        netdev <netdev@vger.kernel.org>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/14/21 5:25 PM, David Ahern wrote:
-> On 10/13/21 12:50 AM, Leonard Crestez wrote:
->> @@ -1856,10 +1870,14 @@ static void print_usage(char *prog)
->>   	"    -n num        number of times to send message\n"
->>   	"\n"
->>   	"    -M password   use MD5 sum protection\n"
->>   	"    -X password   MD5 password for client mode\n"
->>   	"    -m prefix/len prefix and length to use for MD5 key\n"
->> +	"    --no-bind-key-ifindex: Force TCP_MD5SIG_FLAG_IFINDEX off\n"
->> +	"    --do-bind-key-ifindex: Force TCP_MD5SIG_FLAG_IFINDEX on\n"
->> +	"        (default: only if -I is passed)\n"
-> 
-> a nit:
-> just --bind-key-ifindex and --no-bind-key-ifindex
-> 
-> Reviewed-by: David Ahern <dsahern@kernel.org>
+On Fri, Oct 15, 2021 at 12:32 AM Eugene Syromiatnikov <esyr@redhat.com> wrote:
+> On Thu, Jul 29, 2021 at 10:20:42AM +0800, Jeremy Kerr wrote:
+> > This change introduces the user-visible MCTP header, containing the
+> > protocol-specific addressing definitions.
+>
+> [...]
+>
+> > --- a/include/uapi/linux/mctp.h
+> > +++ b/include/uapi/linux/mctp.h
+> > @@ -9,7 +9,28 @@
+> >  #ifndef __UAPI_MCTP_H
+> >  #define __UAPI_MCTP_H
+> >
+> > +#include <linux/types.h>
+> > +
+> > +typedef __u8                 mctp_eid_t;
+> > +
+> > +struct mctp_addr {
+> > +     mctp_eid_t              s_addr;
+> > +};
+> > +
+> >  struct sockaddr_mctp {
+> > +     unsigned short int      smctp_family;
+>
+> This gap makes the size of struct sockaddr_mctp 2 bytes less at least
+> on m68k, are you fine with that?
+>
+> > +     int                     smctp_network;
+> > +     struct mctp_addr        smctp_addr;
+> > +     __u8                    smctp_type;
+> > +     __u8                    smctp_tag;
 
-That would be slightly confusing because it would be easy to assume that 
-the default behavior is "--bind-key-ifindex".
+And it may be wise to add 1 byte of explicit padding here?
+Or is there a good reason not to do so?
 
-Instead of using "--do-" as an intensifier I can use "--force-".
+> >  };
+
+Gr{oetje,eeting}s,
+
+                        Geert
 
 --
-Regards,
-Leonard
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
