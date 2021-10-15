@@ -2,84 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9066242FCA6
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 21:58:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E434042FCA8
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 21:59:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242903AbhJOUBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 16:01:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47688 "EHLO
+        id S242883AbhJOUBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 16:01:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233148AbhJOUA7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 16:00:59 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2F7C061570;
-        Fri, 15 Oct 2021 12:58:52 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id k26so9244666pfi.5;
-        Fri, 15 Oct 2021 12:58:52 -0700 (PDT)
+        with ESMTP id S233148AbhJOUBJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 16:01:09 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A72BC061570
+        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 12:59:03 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id lk8-20020a17090b33c800b001a0a284fcc2so10100810pjb.2
+        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 12:59:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EpBL0d+zARonX4e/FdCBynNmNWbTS6+G42KxKb9lhC8=;
-        b=Yp5b2HqyopTLlyq+F0z39XHmlgPs7aOcuIwqOjxxLevJITs+tLjbIvkLdoR7pSyHaS
-         pSdD1norYLU8RnDg/GlUbeKd4+PM91tVieMKfT6nyoN2rEXTmLa/OyYeG328xQENFeNI
-         Qnyk2FQ4eqXLrlqrIAfgB2lloO3L3PmdCmQNnb9Vs22z2LIUP86VwLoNp1jxUOXz2xS+
-         6vmDeS24uPMEpJeL9ksl1aIcjq/N/8J4uz1jsqSqAuDzC/lpVrzmHTC0u2buYpt/PX+t
-         o7mCHE7HTnzHm6r/7gINP18c8JDkmuj9+olsoBuaVVFCbzLCaLjawiuadDvH4K00wBLE
-         zXcQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jeCsJzc7qx5OCn43bBbSxHSYOv9Vb3deZK8CzTFOVHg=;
+        b=K94Fyw3cHw3pLDQ7nET81VCqQjultWoZIienGTCgFOrYJGY/8oznRL1QvqO31W/KAV
+         S+4fYIEDDj8D/cbXH6qSf5NLCuWGn+gHvdlVYNHckbN9f7TLn4p/jAtKlXSlgXJmfSDI
+         bFePDkDPS6EstkcdqWO64YqY5bCA8zEg9Om60EHIlYKu45yC+LuX/jEzHZWY78CyIuzR
+         AyoY2GfOJvT9nM+p0n1IoR1kkWQEibuOA/czsDWwO01UL6dRPod0tV1uGn95AhxS7MwY
+         m/9ysr1ju7x56HTHXDd58CPdwMHdZCa/J/bazccULNnJyvq3AkodytoFSNFp6755YYzb
+         lqDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EpBL0d+zARonX4e/FdCBynNmNWbTS6+G42KxKb9lhC8=;
-        b=Se6CcjunioSovMYuaF8O+TvnbFQgmod1c+eVvbADbYeXUQ2aDMTN+q6n2oDGM8nNjC
-         85JHT324LGoaHdicMhksq24lFcwO3O4GSRgaNgbnGlC96PqDfRsKOliErfYlHJq/RPJO
-         ePni1XJdOZr7XEmCMJP8hQe9aO4f0lwsqK9WcAm+5WbJo5mFIb2JjVJ8/qpWqwWyE4hY
-         bldYe0B3kEMSIOZpx9TqfBqEzo/Q0XnzZmEwT63gWrPEtpQfZRzzDgmhh89ZhFsDqGqh
-         EikQPm8IO6tMdNZFBmgSZhgIKQVMUizdUQ0oLCKze+Rumbb+Sf/q/eUbkKnVnYamgx2B
-         Xlzw==
-X-Gm-Message-State: AOAM532Tgu8BIYxWh2/zVEZDPGvf8lQTcll32rxC6vzVcbdDfGe1e4mv
-        DQAYcwJNjbZUSNJAyJui7QxIw7md/Rv+NgLWGr8=
-X-Google-Smtp-Source: ABdhPJz9duZk+yy0M1N2CMw5eP43R6dCaVdVYh1L+JZWF0kXl2A3MqE/VITrtXtpUfFOkHWoNF+Z1+Ew1KA3Dp9h51w=
-X-Received: by 2002:a63:4f57:: with SMTP id p23mr10654618pgl.376.1634327932138;
- Fri, 15 Oct 2021 12:58:52 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jeCsJzc7qx5OCn43bBbSxHSYOv9Vb3deZK8CzTFOVHg=;
+        b=Db/8GHB8+J7cxpXdAUX2ZYzCcnZgTj1Y4SEglhFAT9dKc7smt6c8aDwhxO2ogpNuGd
+         y15d9NQ6k30cgWkc51qLofKByHsMP8vm2A75F04eSX0WEiWTfhF8jV5Z5ds3EqVEarNA
+         j1+6emnsa4Fnb2kRC0L2nFT7fnoVIuxmXqsCwKyCJadgbL7na6jlyj9UfqGM1kKHtzb3
+         ffrHsjXvC4QiMrsK6xKWK6COXgDiU+E5VqK8AHNIhisl8lEs6SlqHewT8vTHAmVallgo
+         zOM2tZMjxKxK5OfPJH0lXE7avtMhbOcvsGlkpWX/VHCSmK7JcvUFFNoe6CMmOeCAgL25
+         bt3g==
+X-Gm-Message-State: AOAM532flUhvcEN74Xl7YD/zF+b/7iVW663XjWbFspjiApov2QDomTMs
+        e+vKChO9urja2dqQbuLM5eqjLDlgZII=
+X-Google-Smtp-Source: ABdhPJwpOM4Ylqtp9k0FmDgthrXDkH9oAv+yqeqRe/9tPg3IzRXFsUaCTLHGoMqaTneWg/PsJQT06w==
+X-Received: by 2002:a17:90a:4290:: with SMTP id p16mr29918243pjg.112.1634327942171;
+        Fri, 15 Oct 2021 12:59:02 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id t2sm12000668pjf.1.2021.10.15.12.59.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Oct 2021 12:59:01 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: stream: don't purge sk_error_queue in
+ sk_stream_kill_queues()
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+References: <20211015133739.672915-1-kuba@kernel.org>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <bb4e66df-7639-0797-49ed-0909fb83a85a@gmail.com>
+Date:   Fri, 15 Oct 2021 12:59:00 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20211015090353.31248-1-zhouchengming@bytedance.com>
-In-Reply-To: <20211015090353.31248-1-zhouchengming@bytedance.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 15 Oct 2021 21:58:40 +0200
-Message-ID: <CAADnVQ+A5LdWQTXFugNTceGcz_biV-uEJma4oT5UJKeHQBHQPw@mail.gmail.com>
-Subject: Re: [PATCH] bpf: use count for prealloc hashtab too
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20211015133739.672915-1-kuba@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 15, 2021 at 11:04 AM Chengming Zhou
-<zhouchengming@bytedance.com> wrote:
->
-> We only use count for kmalloc hashtab not for prealloc hashtab, because
-> __pcpu_freelist_pop() return NULL when no more elem in pcpu freelist.
->
-> But the problem is that __pcpu_freelist_pop() will traverse all CPUs and
-> spin_lock for all CPUs to find there is no more elem at last.
->
-> We encountered bad case on big system with 96 CPUs that alloc_htab_elem()
-> would last for 1ms. This patch use count for prealloc hashtab too,
-> avoid traverse and spin_lock for all CPUs in this case.
->
-> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 
-It's not clear from the commit log what you're solving.
-The atomic inc/dec in critical path of prealloc maps hurts performance.
-That's why it's not used.
+
+On 10/15/21 6:37 AM, Jakub Kicinski wrote:
+> sk_stream_kill_queues() can be called on close when there are
+> still outstanding skbs to transmit. Those skbs may try to queue
+> notifications to the error queue (e.g. timestamps).
+> If sk_stream_kill_queues() purges the queue without taking
+> its lock the queue may get corrupted, and skbs leaked.
+> 
+> This shows up as a warning about an rmem leak:
+> 
+> WARNING: CPU: 24 PID: 0 at net/ipv4/af_inet.c:154 inet_sock_destruct+0x...
+> 
+> The leak is always a multiple of 0x300 bytes (the value is in
+> %rax on my builds, so RAX: 0000000000000300). 0x300 is truesize of
+> an empty sk_buff. Indeed if we dump the socket state at the time
+> of the warning the sk_error_queue is often (but not always)
+> corrupted. The ->next pointer points back at the list head,
+> but not the ->prev pointer. Indeed we can find the leaked skb
+> by scanning the kernel memory for something that looks like
+> an skb with ->sk = socket in question, and ->truesize = 0x300.
+> The contents of ->cb[] of the skb confirms the suspicion that
+> it is indeed a timestamp notification (as generated in
+> __skb_complete_tx_timestamp()).
+> 
+> Removing purging of sk_error_queue should be okay, since
+> inet_sock_destruct() does it again once all socket refs
+> are gone. Eric suggests this may cause sockets that go
+> thru disconnect() to maintain notifications from the
+> previous incarnations of the socket, but that should be
+> okay since the race was there anyway, and disconnect()
+> is not exactly dependable.
+> 
+> Thanks to Jonathan Lemon and Omar Sandoval for help at various
+> stages of tracing the issue.
+> 
+> Fixes: cb9eff097831 ("net: new user space API for time stamping of incoming and outgoing packets")
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> v1: delete the purge completely
+> 
+> Sorry for the delay from RFC, took a while to get enough
+> production signal to confirm the fix.
+> ---
+>  net/core/stream.c | 3 ---
+>  1 file changed, 3 deletions(-)
+> 
+> diff --git a/net/core/stream.c b/net/core/stream.c
+> index e09ffd410685..06b36c730ce8 100644
+> --- a/net/core/stream.c
+> +++ b/net/core/stream.c
+> @@ -195,9 +195,6 @@ void sk_stream_kill_queues(struct sock *sk)
+>  	/* First the read buffer. */
+>  	__skb_queue_purge(&sk->sk_receive_queue);
+>  
+> -	/* Next, the error queue. */
+> -	__skb_queue_purge(&sk->sk_error_queue);
+> -
+>  	/* Next, the write queue. */
+>  	WARN_ON(!skb_queue_empty(&sk->sk_write_queue));
+>  
+> 
+
+Thanks Jakub !
+
+Reviewed-by: Eric Dumazet <edumazet@google.com>
