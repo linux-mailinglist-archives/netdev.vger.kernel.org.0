@@ -2,77 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1932542F41C
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 15:45:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D1F642F443
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 15:52:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239979AbhJONrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 09:47:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:34430 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236140AbhJONrE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 09:47:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1634305497;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XiqkKErJTyLhV4pOARnkz/OcSHl9NgZqjk9FUGyq53Y=;
-        b=AbOR5CBtyMw5YOWIWjwkM8DDQmln3uV0hU43ydbCdsqIqlTljPDudLjLuXa2UbD95oRmdu
-        Tru/KVSwvKIk51kSqfOJztsyNicJEaC9PEuJ7e5Lf0q+pRA7I4YUAwFJT3ymQHne/JkciQ
-        m9x1uOKhNU6hS8Q24YQoKf8B5pd8JzI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-206-SNqBwgGrOheUKqr5gb1Pxg-1; Fri, 15 Oct 2021 09:44:54 -0400
-X-MC-Unique: SNqBwgGrOheUKqr5gb1Pxg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 118A6802575;
-        Fri, 15 Oct 2021 13:44:53 +0000 (UTC)
-Received: from asgard.redhat.com (unknown [10.36.110.5])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6117360FDD;
-        Fri, 15 Oct 2021 13:44:51 +0000 (UTC)
-Date:   Fri, 15 Oct 2021 15:44:48 +0200
-From:   Eugene Syromiatnikov <esyr@redhat.com>
-To:     Jeremy Kerr <jk@codeconstruct.com.au>
-Cc:     netdev@vger.kernel.org, Matt Johnston <matt@codeconstruct.com.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next v3] mctp: Implement extended addressing
-Message-ID: <20211015134448.GA16157@asgard.redhat.com>
-References: <20211014083420.2050417-1-jk@codeconstruct.com.au>
+        id S236374AbhJONym (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 09:54:42 -0400
+Received: from relay10.mail.gandi.net ([217.70.178.230]:48653 "EHLO
+        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236395AbhJONyg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 09:54:36 -0400
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 16F3D240007;
+        Fri, 15 Oct 2021 13:52:24 +0000 (UTC)
+Message-ID: <8c4ee3e8-0400-ee6e-b12c-327806f26dae@ovn.org>
+Date:   Fri, 15 Oct 2021 15:52:23 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211014083420.2050417-1-jk@codeconstruct.com.au>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.0
+Cc:     ovs dev <dev@openvswitch.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, i.maximets@ovn.org
+Content-Language: en-US
+To:     Cpp Code <cpp.code.lv@gmail.com>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>
+References: <20210928194727.1635106-1-cpp.code.lv@gmail.com>
+ <20210928174853.06fe8e66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <d1e5b178-47f5-9791-73e9-0c1f805b0fca@6wind.com>
+ <20210929061909.59c94eff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAASuNyVe8z1R6xyCfSAxZbcrL3dej1n8TXXkqS-e8QvA6eWd+w@mail.gmail.com>
+ <b091ef39-dc29-8362-4d31-0a9cc498e8ea@6wind.com>
+ <CAASuNyW81zpSu+FGSDuUrOsyqJj7SokZtvX081BbeXi0ARBaYg@mail.gmail.com>
+ <a4894aef-b82a-8224-611d-07be229f5ebe@6wind.com>
+ <CAASuNyUWP2HQLhGf29is3fG2+uG8SqOFoXHeHf-vC6HYJ1Wb7g@mail.gmail.com>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Subject: Re: [ovs-dev] [PATCH net-next v6] net: openvswitch: IPv6: Add IPv6
+ extension header support
+In-Reply-To: <CAASuNyUWP2HQLhGf29is3fG2+uG8SqOFoXHeHf-vC6HYJ1Wb7g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 14, 2021 at 04:34:20PM +0800, Jeremy Kerr wrote:
-> This change allows an extended address struct - struct sockaddr_mctp_ext
-> - to be passed to sendmsg/recvmsg. This allows userspace to specify
-> output ifindex and physical address information (for sendmsg) or receive
-> the input ifindex/physaddr for incoming messages (for recvmsg). This is
-> typically used by userspace for MCTP address discovery and assignment
-> operations.
+On 10/14/21 23:12, Cpp Code wrote:
+> On Mon, Oct 4, 2021 at 11:41 PM Nicolas Dichtel
+> <nicolas.dichtel@6wind.com> wrote:
+>>
+>> Le 01/10/2021 à 22:42, Cpp Code a écrit :
+>>> On Fri, Oct 1, 2021 at 12:21 AM Nicolas Dichtel
+>>> <nicolas.dichtel@6wind.com> wrote:
+>>>>
+>>>> Le 30/09/2021 à 18:11, Cpp Code a écrit :
+>>>>> On Wed, Sep 29, 2021 at 6:19 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>>>>>>
+>>>>>> On Wed, 29 Sep 2021 08:19:05 +0200 Nicolas Dichtel wrote:
+>>>>>>>> /* Insert a kernel only KEY_ATTR */
+>>>>>>>> #define OVS_KEY_ATTR_TUNNEL_INFO    __OVS_KEY_ATTR_MAX
+>>>>>>>> #undef OVS_KEY_ATTR_MAX
+>>>>>>>> #define OVS_KEY_ATTR_MAX            __OVS_KEY_ATTR_MAX
+>>>>>>> Following the other thread [1], this will break if a new app runs over an old
+>>>>>>> kernel.
+>>>>>>
+>>>>>> Good point.
+>>>>>>
+>>>>>>> Why not simply expose this attribute to userspace and throw an error if a
+>>>>>>> userspace app uses it?
+>>>>>>
+>>>>>> Does it matter if it's exposed or not? Either way the parsing policy
+>>>>>> for attrs coming from user space should have a reject for the value.
+>>>>>> (I say that not having looked at the code, so maybe I shouldn't...)
+>>>>>
+>>>>> To remove some confusion, there are some architectural nuances if we
+>>>>> want to extend code without large refactor.
+>>>>> The ovs_key_attr is defined only in kernel side. Userspace side is
+>>>>> generated from this file. As well the code can be built without kernel
+>>>>> modules.
+>>>>> The code inside OVS repository and net-next is not identical, but I
+>>>>> try to keep some consistency.
+>>>> I didn't get why OVS_KEY_ATTR_TUNNEL_INFO cannot be exposed to userspace.
+>>>
+>>> OVS_KEY_ATTR_TUNNEL_INFO is compressed version of OVS_KEY_ATTR_TUNNEL
+>>> and for clarity purposes its not exposed to userspace as it will never
+>>> use it.
+>>> I would say it's a coding style as it would not brake anything if exposed.
+>> In fact, it's the best way to keep the compatibility in the long term.
+>> You can define it like this:
+>> OVS_KEY_ATTR_TUNNEL_INFO,  /* struct ip_tunnel_info, reserved for kernel use */
+>>
+>>>
+>>>>
+>>>>>
+>>>>> JFYI This is the file responsible for generating userspace part:
+>>>>> https://github.com/openvswitch/ovs/blob/master/build-aux/extract-odp-netlink-h
+>>>>> This is the how corresponding file for ovs_key_attr looks inside OVS:
+>>>>> https://github.com/openvswitch/ovs/blob/master/datapath/linux/compat/include/linux/openvswitch.h
+>>>>> one can see there are more values than in net-next version.
+>>>> There are still some '#ifdef __KERNEL__'. The standard 'make headers_install'
+>>>> filters them. Why not using this standard mechanism?
+>>>
+>>> Could you elaborate on this, I don't quite understand the idea!? Which
+>>> ifdef you are referring, the one along OVS_KEY_ATTR_TUNNEL_INFO or
+>>> some other?
+>> My understanding is that this file is used for the userland third party, thus,
+>> theoretically, there should be no '#ifdef __KERNEL__'. uapi headers generated
+>> with 'make headers_install' are filtered to remove them.
 > 
-> The extended addressing facility is conditional on a new sockopt:
-> MCTP_OPT_ADDR_EXT; userspace must explicitly enable addressing before
-> the kernel will consume/populate the extended address data.
+> From https://lwn.net/Articles/507794/ I understand that is the goal,
+> but this part of the code is still used in the kernel part.
+> 
+>>
+>>>
+>>>>
+>>>> In this file, there are two attributes (OVS_KEY_ATTR_PACKET_TYPE and
+>>>> OVS_KEY_ATTR_ND_EXTENSIONS) that doesn't exist in the kernel.
+>>>> This will also breaks if an old app runs over a new kernel. I don't see how it
+>>>> is possible to keep the compat between {old|new} {kernel|app}.
 
-[...]
+I don't know why the initial design looked like this, but here some
+thoughts on why it works without noticeable issues:
 
-> +/* setsockopt(2) level & options */
-> +#define SOL_MCTP		0
+OVS_KEY_ATTR_TUNNEL_INFO is defined only for kernel and not used by
+userspace application.  If we have newer app and older kernel, new
+app can send a different attribute, kernel than will interpret it
+as OVS_KEY_ATTR_TUNNEL_INFO.  This will pass the
+'type > OVS_KEY_ATTR_MAX' check.  However, this will always fail the
+check_attr_len() check, because the length for OVS_KEY_ATTR_TUNNEL_INFO
+is not defined in 'ovs_key_lens' and will be treated as zero, while
+correct attributes always has non-zero length (at least current ones
+has).  Kind of ugly, but should work.  And yes, more explicit
+rejection should be implemented, I think.
 
-Socket option levels tend to be globally unique and additionally defined
-in include/linux/socket.h (which led to them not being exposed to UAPI
-in many cases, but that is another, entirely avoiadable, problem), with
-Bluetooth socket option levels being most notable exception (and IEEE 802.15.4
-and mISDN being less notable).  So, unless there is existing code that relies
-on this socket level definition, it is probably worth re-defining it to 284
-and put a copy of SOL_MCTP definition after SOL_XDP in include/linux/socket.h.
+OVS_KEY_ATTR_PACKET_TYPE and OVS_KEY_ATTR_ND_EXTENSIONS doesn't
+exist in kernel and moreover not even used by the application for
+kernel datapath, so it's fine.  And it's application's responsibility
+to never send them to kernel as they are not intended to be sent.
+So, this is in realm of the app, kernel should not care about these
+two attributes.
+If newer kernel will send some different attributes to the old app,
+app will drop them as these are not expected to be ever received from
+a kernel (similar attribute length check as in above case with
+OVS_KEY_ATTR_TUNNEL_INFO).  Another point is that kernel should not
+normally return attributes not previously set by userspace application,
+so this should only happen in a runtime application downgrade scenario.
+
+All-in-all it should be safe to add new attributes before the
+OVS_KEY_ATTR_TUNNEL_INFO inside the kernel without introducing
+any new paddings.  At least, as long as there are no common (valid
+for both kernel AND the app) attributes defined after the
+OVS_KEY_ATTR_TUNNEL_INFO.
+
+But, well, I agree that current design doesn't look great.  OTOH,
+paddings makes it even worse.
+
+>>>
+>>> Looks like this most likely is a bug while working on multiple
+>>> versions of code.  Need to do add more padding.
+>> As said above, just define the same uapi for everybody and the problem is gone
+>> forever.
+
+That should be a right change to do.  We can start with exposing the
+OVS_KEY_ATTR_TUNNEL_INFO.  At the same time userspace-only attributes
+in the OVS codebase should, likely, be moved to a separate enum/structure
+to avoid confusion and keep kernel uapi clean.  Though this will require
+some code changes on the OVS side.
+
+>>
+> 
+> As this part of the code was already there, I think the correct way
+> would be to refactor that in a separate commit if necessary.
+
+It's OK to make this a separate change, but, please, don't add
+paddings in a current one.  Add the new attribute before the
+OVS_KEY_ATTR_TUNNEL_INFO instead.
+
+Best regards, Ilya Maximets.
+
+> 
+>>
+>> Regards,
+>> Nicolas
+> 
+> Best,
+> Tom
+> _______________________________________________
+> dev mailing list
+> dev@openvswitch.org
+> https://mail.openvswitch.org/mailman/listinfo/ovs-dev
+> 
 
