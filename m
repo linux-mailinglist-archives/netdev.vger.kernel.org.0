@@ -2,98 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84BEF42F3C5
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 15:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7374742F3F5
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 15:40:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239878AbhJONkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 09:40:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47136 "EHLO mail.kernel.org"
+        id S239847AbhJONmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 09:42:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47896 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240123AbhJONkH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Oct 2021 09:40:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3161161164;
-        Fri, 15 Oct 2021 13:38:01 +0000 (UTC)
+        id S239841AbhJONmO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Oct 2021 09:42:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id D92916115C;
+        Fri, 15 Oct 2021 13:40:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634305081;
-        bh=17+5dVIzHaa9AclJ8cie2QB4xpM7OWjPMngX/X9X4vI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=lCIWtfTNGUPUpee0wga01V4RP64zSMFIrO0S+0jvrtCkoR4VcXZ2NU2759D5iTnts
-         ZDQToi+FXidjMJQVPh3EAwTKrOgwX0SR7Nav5w0tUnrA3Wdm1hm5ueQ9GdFYjx371Z
-         7rSjUEZ9b8vZNDu5PWIg7jmrN3SYvRzajC0elRmXCy8DznmvZK6yxQhWOMUAkG136s
-         Az+5Y1UhsjmkQpBh5E3aO0ny2AiPhFu7G4hU8B7/iId+yek42V9Wog6MlwW2AVcnAi
-         LMTG0obCV7pBQTLJKi6OjcNr2+DSnE8v4HqcLbbexVIk/y6FsO/i/D4yfzFjGk0f9z
-         82dLjkIG5H1AA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net, eric.dumazet@gmail.com
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] net: stream: don't purge sk_error_queue in sk_stream_kill_queues()
-Date:   Fri, 15 Oct 2021 06:37:39 -0700
-Message-Id: <20211015133739.672915-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
+        s=k20201202; t=1634305207;
+        bh=++VYZxb1k0MdY+p0VarcfX/XIUGntHcujXiOuY3ZaQY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZZsG9m8Ty033EA9CYG+OKHGBR3ICygvaFP1DpiOMLkIYaPJG0eVqMmXJmSZrvz71f
+         sEdyEoqttdyjDCB6bcPBo/lHTEM43igWTqq9TISMNvW4+R3GkQ1+w4od3lgaGMacIe
+         qHtKoB5YHjQrrYVZiwyIPTw/AC1BNCmbGykbluywcAW31qxQC4VETbLufjfKJyp1Es
+         QcKu94sHMfeUIPMVHkWMensJmMtUkQ/PkEN0zD9E9moyP4oqyKMFCfDu1moiEAOOR4
+         cpsXDg8Y8BiYWvZHJpdZs34SKIpPGybHqnZGZLlHiU9Lp4tBx/3UQrCNFU2BBgsXUW
+         Z+nEhDNYsfI/A==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C87E8609ED;
+        Fri, 15 Oct 2021 13:40:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] lan78xx: select CRC32
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163430520781.23472.11375176494240682949.git-patchwork-notify@kernel.org>
+Date:   Fri, 15 Oct 2021 13:40:07 +0000
+References: <20211015130754.12283-1-vegard.nossum@oracle.com>
+In-Reply-To: <20211015130754.12283-1-vegard.nossum@oracle.com>
+To:     Vegard Nossum <vegard.nossum@oracle.com>
+Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sk_stream_kill_queues() can be called on close when there are
-still outstanding skbs to transmit. Those skbs may try to queue
-notifications to the error queue (e.g. timestamps).
-If sk_stream_kill_queues() purges the queue without taking
-its lock the queue may get corrupted, and skbs leaked.
+Hello:
 
-This shows up as a warning about an rmem leak:
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-WARNING: CPU: 24 PID: 0 at net/ipv4/af_inet.c:154 inet_sock_destruct+0x...
+On Fri, 15 Oct 2021 15:07:54 +0200 you wrote:
+> Fix the following build/link error by adding a dependency on the CRC32
+> routines:
+> 
+>   ld: drivers/net/usb/lan78xx.o: in function `lan78xx_set_multicast':
+>   lan78xx.c:(.text+0x48cf): undefined reference to `crc32_le'
+> 
+> The actual use of crc32_le() comes indirectly through ether_crc().
+> 
+> [...]
 
-The leak is always a multiple of 0x300 bytes (the value is in
-%rax on my builds, so RAX: 0000000000000300). 0x300 is truesize of
-an empty sk_buff. Indeed if we dump the socket state at the time
-of the warning the sk_error_queue is often (but not always)
-corrupted. The ->next pointer points back at the list head,
-but not the ->prev pointer. Indeed we can find the leaked skb
-by scanning the kernel memory for something that looks like
-an skb with ->sk = socket in question, and ->truesize = 0x300.
-The contents of ->cb[] of the skb confirms the suspicion that
-it is indeed a timestamp notification (as generated in
-__skb_complete_tx_timestamp()).
+Here is the summary with links:
+  - lan78xx: select CRC32
+    https://git.kernel.org/netdev/net/c/46393d61a328
 
-Removing purging of sk_error_queue should be okay, since
-inet_sock_destruct() does it again once all socket refs
-are gone. Eric suggests this may cause sockets that go
-thru disconnect() to maintain notifications from the
-previous incarnations of the socket, but that should be
-okay since the race was there anyway, and disconnect()
-is not exactly dependable.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Thanks to Jonathan Lemon and Omar Sandoval for help at various
-stages of tracing the issue.
-
-Fixes: cb9eff097831 ("net: new user space API for time stamping of incoming and outgoing packets")
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-v1: delete the purge completely
-
-Sorry for the delay from RFC, took a while to get enough
-production signal to confirm the fix.
----
- net/core/stream.c | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/net/core/stream.c b/net/core/stream.c
-index e09ffd410685..06b36c730ce8 100644
---- a/net/core/stream.c
-+++ b/net/core/stream.c
-@@ -195,9 +195,6 @@ void sk_stream_kill_queues(struct sock *sk)
- 	/* First the read buffer. */
- 	__skb_queue_purge(&sk->sk_receive_queue);
- 
--	/* Next, the error queue. */
--	__skb_queue_purge(&sk->sk_error_queue);
--
- 	/* Next, the write queue. */
- 	WARN_ON(!skb_queue_empty(&sk->sk_write_queue));
- 
--- 
-2.31.1
 
