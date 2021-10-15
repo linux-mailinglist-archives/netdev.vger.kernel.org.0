@@ -2,132 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2034742E785
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 06:12:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 345DA42E7F0
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 06:37:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233737AbhJOEOI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 00:14:08 -0400
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:51966
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229445AbhJOEOH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 00:14:07 -0400
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 0B50040013
-        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 04:12:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1634271120;
-        bh=VkQNKanW6J45PUNBM67VvUtIKTUpwQuF1nL5FyFppEE=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=c37he0BdOhePTj6VKY5MRr4NWuYcRpEBK1Jh5mzS2QqffuHSNAMwrr9WTX3QG4Jlg
-         TOLwjnha18pA/u/lbur2VDejuFQrLAch6GIhvkUkP31WoSyPkg3pEMfcW3xUTwDP3q
-         BZ3K/avyMbod+sdQwtpDjzM8aWGb9jJrqvVPjH6TfWyAHOzntBpXXbFHdx2PO0Gyna
-         IH73Bxf4tzZKfwwp1FQ8E8h/FpAHKfl91VGd/yU38S7ns1FxkSFzFb+IoGbMyJQsGM
-         /jTVuRhTGxp9pRjBtmvkpWlXGmq4bdRu+sJ01wrCesKa3RqgelQyJ4mfUw26hs6wYf
-         CehlUdwOuS5aA==
-Received: by mail-ot1-f69.google.com with SMTP id z15-20020a9d71cf000000b0055036817463so5001704otj.0
-        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 21:11:59 -0700 (PDT)
+        id S234467AbhJOEjn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 00:39:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32992 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234255AbhJOEjm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 00:39:42 -0400
+Received: from mail-vk1-xa43.google.com (mail-vk1-xa43.google.com [IPv6:2607:f8b0:4864:20::a43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 635BEC061753
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 21:37:36 -0700 (PDT)
+Received: by mail-vk1-xa43.google.com with SMTP id j12so4536011vka.4
+        for <netdev@vger.kernel.org>; Thu, 14 Oct 2021 21:37:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=1Br/N6WhyVMlujnGsxiPG2oa5QW+rtf7KlXAbdHBbwA=;
+        b=jyVM53wfJcsIDsvVdca3E/7XLAXINgag7ndLorYbd1Qr86mDQFfL2GyjfyJYmrNg1r
+         ai8Rk+AjEWgULWKvTbkaLu1lJsfSQf2Uyve59aLr7/G9b4ygjATYRvpDUsuAqPdIr5Ey
+         ATZEWcV1jkKBhVtS87xW+CuY9YYaxxurQPH/WUGTWKeXFuzQ6jXIlfiV2ry1zJ/Dr2BG
+         zX1n+qWB+QLYJSWDhWgIAN+mL6P5YYDFz3dngOdESX0FEznH1QvuHzAice63H8FCmX7k
+         avDb2MKZgV/1nECBI05sjLraHQPOVbE0wzkuSfj3DAbaOrOwoNk+VbCmdS1njbzDmn9b
+         OmpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VkQNKanW6J45PUNBM67VvUtIKTUpwQuF1nL5FyFppEE=;
-        b=KK63noCimBZPMmziIOgsjoms0hkHAm+7A/+gKsDdeOoaye7bbkf7+VtbDv4LVioohK
-         7xoElY/3WFQ1Cdtt4cWvsuk3/rgDdJkSuWaUEr0ePkC4Ji3PH1k/1MhoAlvx3D6dEVlG
-         E7jSW2QjcJY5Rs/XZIOCmLyXjzTs9ZZ5qeNF+bFjaWlxeCwf/4UxkzxFmGYRfAQkDhhj
-         qzOKyZtHzW1icrjbLA70MBD/y3B+LYb2ccZPclOnCz2PRYx7ZMxz4Kq8ByoCnOOH9bNl
-         00eLLRUBP5HtpUb06CHyMRmocB7MDEoMGVsTFh30EmtGwJvASxqj+x8RQ6ccjQCGISDh
-         afSw==
-X-Gm-Message-State: AOAM533WXg8syK/eEZxRYnzQCGxvYR+mP6SMLVGWq5KHfOvVOgSlhAvs
-        7NzjEjrQ32Q6X1b9JSAl1g9Xn9LprvJPy9jDMr3ExsBFDX2BWlstTnFvFdciM2HQwNrMwaQkdLx
-        7rj8ThlcWZ3NjCEiBl8Dp9jOzlmbNb2XGPs/3OJuQ/EX4G7BFdw==
-X-Received: by 2002:a05:6808:10d5:: with SMTP id s21mr16056003ois.98.1634271118912;
-        Thu, 14 Oct 2021 21:11:58 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwaiHm2G7XZVZEqFR4bQ7ScvEI4IpC62Z7F9tOh8xzse8b/KH/rrxlb0aJs1f/fExK7bOuM0e6I+M3e6iNUcqE=
-X-Received: by 2002:a05:6808:10d5:: with SMTP id s21mr16055983ois.98.1634271118568;
- Thu, 14 Oct 2021 21:11:58 -0700 (PDT)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=1Br/N6WhyVMlujnGsxiPG2oa5QW+rtf7KlXAbdHBbwA=;
+        b=azLc9LcWLd5iPVRQqiHKxhFk0MUkTX2jeMVTuh0iYgTK2vK+jqYiD1IKfzsankMlCL
+         HRwbhb1HAPmMSh7YuFgEPfk3FWcMKnouudmk4e+w8thj/vVeZpFeOWokPnRnNR5OLfq0
+         cRxZj6JMX8CmS+3TYWKe3VJgV5nuAxtRlsZhHw7MdqC5yieMnvFKuujXT0HXkqVhJ9CS
+         3hoPEPcZcr5t/kwl5ERJYZ/SFXdTo64bxfmP0urJYQrEBUPF//jP+8bWX6npxiOYNEes
+         fx3fmN28LyzSY7jnXIRS2eBh74wuGN3fbwBBQGz0hVkyk1jDC6AyjJu4v1Im4p7qmFsE
+         cxdA==
+X-Gm-Message-State: AOAM5320FgeVjQq3JE8904VLomIIRnO6ycJFN7xfGyfjr8h9Z/RpDeN7
+        Pr5JyKBrEwfMI1D4PtvWVfus+qoSSHlrCWMJ/dM=
+X-Google-Smtp-Source: ABdhPJxudV3tCqA7RoTfj8d5PYTIwuRBHtky/cegN9iwEuFIFlXKd29DEgCMofrCw/5GGlfMcRB3Ua6rzvJRtBozz7c=
+X-Received: by 2002:a1f:27cd:: with SMTP id n196mr10765617vkn.23.1634272655439;
+ Thu, 14 Oct 2021 21:37:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAAd53p4v+CmupCu2+3vY5N64WKkxcNvpk1M7+hhNoposx+aYCg@mail.gmail.com>
- <20211008135821.GA1326355@bhelgaas>
-In-Reply-To: <20211008135821.GA1326355@bhelgaas>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Fri, 15 Oct 2021 12:11:47 +0800
-Message-ID: <CAAd53p5w_tE8URs0R7eog6X-kMSUQAeLiGS-CvDvnfQq+=i3TA@mail.gmail.com>
-Subject: Re: [RFC] [PATCH net-next v6 3/3] r8169: Implement dynamic ASPM mechanism
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        nic_swsd <nic_swsd@realtek.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Anthony Wong <anthony.wong@canonical.com>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+Received: by 2002:ab0:4592:0:0:0:0:0 with HTTP; Thu, 14 Oct 2021 21:37:35
+ -0700 (PDT)
+Reply-To: mrsbillchantallawrence58@gmail.com
+From:   mrsbillchantal <mrspoliazeklo75@gmail.com>
+Date:   Fri, 15 Oct 2021 05:37:35 +0100
+Message-ID: <CAMu8FetxdjjZJUmw=HK5X62rGLToo5qsZTpP9xsu-Lu-Ld7iPg@mail.gmail.com>
+Subject: Dear Friend, My present internet connection is very slow in case you
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 8, 2021 at 9:58 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
->
-> On Fri, Oct 08, 2021 at 02:18:55PM +0800, Kai-Heng Feng wrote:
-> > On Fri, Oct 8, 2021 at 3:11 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > > On Fri, Oct 08, 2021 at 12:15:52AM +0800, Kai-Heng Feng wrote:
-> > > > r8169 NICs on some platforms have abysmal speed when ASPM is enabled.
-> > > > Same issue can be observed with older vendor drivers.
-> > > >
-> > > > The issue is however solved by the latest vendor driver. There's a new
-> > > > mechanism, which disables r8169's internal ASPM when the NIC traffic has
-> > > > more than 10 packets per second, and vice versa. The possible reason for
-> > > > this is likely because the buffer on the chip is too small for its ASPM
-> > > > exit latency.
-> > > > ...
->
-> > > I suppose that on the Intel system, if we enable ASPM, the link goes
-> > > to L1.2, and the NIC immediately receives 1000 packets in that second
-> > > before we can disable ASPM again, we probably drop a few packets?
-> > >
-> > > Whereas on the AMD system, we probably *never* drop any packets even
-> > > with L1.2 enabled all the time?
-> >
-> > Yes and yes.
->
-> The fact that we drop some packets with dynamic ASPM on the Intel
-> system means we must be giving up some performance.
->
-> And I guess that on the AMD system, we should get full performance but
-> we must be using a little more power (probably unmeasurable) because
-> ASPM *could* be always enabled but dynamic ASPM disables it some of
-> the time.
+hello....
 
-Yes that's the case here.
+You have been compensated with the sum of 5.5 million dollars in this
+united nation the payment will be issue into atm visa card and send to
+you from the santander bank we need your address and your  Whatsapp
+this my email.ID (  mrsbillchantallawrence58@gmail.com)  contact  me
 
->
-> > > And if we actually knew the root cause and could set the correct LTR
-> > > values or whatever is wrong on the Intel system, we probably wouldn't
-> > > need this dynamic scheme?
-> >
-> > Because Realtek already implemented the dynamic ASPM workaround in
-> > their Windows and Linux driver, they never bother to find the root
-> > cause.
-> > So we'll never know what really happens here.
->
-> Looks like it.  Somebody with a PCIe analyzer could probably make
-> progress, but I agree, that doesn't seem likely.
->
-> Realtek no doubt has the equipment to do this, but apparently they
-> don't think it's worthwhile.  In their defense, the Linux ASPM code is
-> pretty impenetrable and there could be a problem there that causes or
-> contributes to this.
+Thanks my
 
-I do hope they can put more effort on their ethernet driver like what
-they do on their wireless drivers.
-
-Kai-Heng
-
->
-> Bjorn
+mrs chantal
