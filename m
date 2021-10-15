@@ -2,113 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7724E42ED1F
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 11:06:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 125E642ED37
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 11:09:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236424AbhJOJI4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 05:08:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37226 "EHLO
+        id S236898AbhJOJLu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 05:11:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236767AbhJOJIz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 05:08:55 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52850C061753
-        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 02:06:49 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id d3so35285698edp.3
-        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 02:06:49 -0700 (PDT)
+        with ESMTP id S236895AbhJOJLu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 05:11:50 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347ACC061570;
+        Fri, 15 Oct 2021 02:09:44 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id t11so5989874plq.11;
+        Fri, 15 Oct 2021 02:09:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=kAZh9fqmHigo6xRDqgFos5JwAKHqDbj5bkhVwftM1Ys=;
-        b=KrAgOqV1v2KxOuW7pkfy/lKylkCadAUoPsHrJ7bpEFwfLuP2zvalxzqIFo4jfEfjc5
-         iBdWZ+bk8TJhhjQqzl5lUgOwloB6XEqqxkJ6FVzvCixT1SLpn/CO0t0IBSYWT6FOhaMv
-         /gKEplLZbjCdiUi2TusREYcGOkzdYQts62fGIPetDmKc0djiKFRSj95jwnUZLEMabZHO
-         OdzuSOb4svHB018Ff/nQjlhq/Cc/xFw1b1p8qF8OJO6aTJY9z4faJRPBsrre/Hb8W2vI
-         jVFmX8D4M7htPSCERrDiepcLTAYmSgdiLjV4EcOeRyfyTQ1q6GIZ3IDQGFsLZ1KbE3Ra
-         xmyw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dqkAJ7cyGwsKnh2HC9/AWtnTSkngUFywloc5uLJfxlk=;
+        b=Qdi/nUwkPz3L8BZgwRAxsKrBMXZCyZsVVsVOBFXz/6Lq9nlo4X8kG9ke5cLralNnXl
+         MbomyyR84FuiSSrsFryNJ5sSqU1ejs17TrcdAzH1GmLtCuZy2c4pAwi4f/Agm8bwzRDV
+         TESNkWnkxJKYhg62FJmrhOtyhrrebVTlbkqTWscfxADrZI2sKvvZ0VbGGM4S84Esknkj
+         sddE19X8bs0nmpctoTWirrcIYbvIg2V4BU4GrpO7Qh2tJ/iMrsK7oK9E0EntzJRXJsj+
+         ffI3uRkhZqDBxSxQnua9n33szhCGTQcSc13BxMW9AiIhguPabimRZxYBHI4pQzqS9mxR
+         Fvrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=kAZh9fqmHigo6xRDqgFos5JwAKHqDbj5bkhVwftM1Ys=;
-        b=cWQhFn4c6DdfXnGHDR/BVBRVGmdnQuZygPfDz6v+b637UhbEOwrbXkUU5KRGEdjhNd
-         2mwzOvYQteHkT946YqRpktyWTqiWNjWXfctlfqGrqXF2IDmUBJMz0kB4Ay8sf5uGm1Dw
-         gR4GK+67z+aICHpOqhcpX9wkYyQqDZJbjO+XAJB4AeaeHVW4NTSTOTtqIXsdrCloIRu+
-         1e7NN2QlXwJzaN+1PwSNofZ7cuR4u2fLxDcdiEJUApJOdNxyPZquflQsPxFmAI7pO9wU
-         mC+vhFSwhMy038L4Z2b5FyZi1e6Ias5LGFxEFU71KnDKRP0PpNQHYgG6bWdCiL/ys7JI
-         tsGw==
-X-Gm-Message-State: AOAM531LeUVzMoR9q4i5+2k9GuJMvVufUYAU1Dd/0HNjnOzusr9UP2qe
-        Zpptm06ELWU1+WoH67RX48EJm04apAQv4BNe
-X-Google-Smtp-Source: ABdhPJwwzKlulbjNPJ9dhS1QtKNP/+rvGHzF6kJnLiZ/Ig2orOOXOYfLlqUjw0qeA96Ch3kZF6e4aw==
-X-Received: by 2002:a17:906:a1c1:: with SMTP id bx1mr5230787ejb.447.1634288807299;
-        Fri, 15 Oct 2021 02:06:47 -0700 (PDT)
-Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id v13sm4695034edl.69.2021.10.15.02.06.46
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dqkAJ7cyGwsKnh2HC9/AWtnTSkngUFywloc5uLJfxlk=;
+        b=QtZn3fJW5mIgNkd0tC1hCu2o+S9w9GKuTrGU9s+MMfE5/VrgMDWM1dvJ42Twd4mtd5
+         Ww4X80kRWh1NLRbhCZJFB3DsXNEOXV3QOjbbp7NvXz3faWAniLYdkV84ucGzKYEsPiju
+         i5e6b16I9STEUXuv29+hMZQa+f+G5SvrnmQoHAXvR6KeeZx0GvW7u/zNQzs7p2y/OX2g
+         rPcKnQEzvUrujwcHn97XQ4F8BK5MUoSR980LMIKM3+j6Hd+OuB5BXssof4vNwgktM2V+
+         rPXqqXEC+hFz4Yz1TC0XCtHVlObbBMgw1TBKA2Skvdv8re+oqyNBK59YskzlCaplk+dY
+         YZow==
+X-Gm-Message-State: AOAM533zW+giQ2i04fWn7L09HVbyXtd5ex9dYaJevxqGWYphODs7SQnR
+        kggi/ngZUvNzGGDB9OeGOKGkWX/XeNM=
+X-Google-Smtp-Source: ABdhPJw4trk3u0yFq0vchr54Pz4m53l/MZxSY8AUPnBgmNddBu6L18Rrduqp9EJ92NqyYawO/EbWpA==
+X-Received: by 2002:a17:90a:642:: with SMTP id q2mr12561538pje.55.1634288983429;
+        Fri, 15 Oct 2021 02:09:43 -0700 (PDT)
+Received: from athina.mtv.corp.google.com ([2620:15c:211:200:fb72:79a:c1e7:291b])
+        by smtp.gmail.com with ESMTPSA id i18sm4601981pfq.198.2021.10.15.02.09.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Oct 2021 02:06:46 -0700 (PDT)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
-        davem@davemloft.net, kuba@kernel.org,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net] net: bridge: mcast: use multicast_membership_interval for IGMPv3
-Date:   Fri, 15 Oct 2021 12:05:46 +0300
-Message-Id: <20211015090546.19967-1-razor@blackwall.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <357fad9e-581e-7b71-9b32-aac77d5d13c1@nvidia.com>
-References: <357fad9e-581e-7b71-9b32-aac77d5d13c1@nvidia.com>
+        Fri, 15 Oct 2021 02:09:42 -0700 (PDT)
+From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
+To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        Netfilter Development Mailing List 
+        <netfilter-devel@vger.kernel.org>
+Subject: [PATCH netfilter] netfilter: conntrack: udp: generate event on switch to stream timeout
+Date:   Fri, 15 Oct 2021 02:09:34 -0700
+Message-Id: <20211015090934.2870662-1-zenczykowski@gmail.com>
+X-Mailer: git-send-email 2.33.0.1079.g6e70778dc9-goog
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@nvidia.com>
+From: Maciej Żenczykowski <maze@google.com>
 
-When I added IGMPv3 support I decided to follow the RFC for computing
-the GMI dynamically:
-" 8.4. Group Membership Interval
+Without this it's hard to offload udp due to lack of a conntrack event
+at the appropriate time (ie. once udp stream is established and stream
+timeout is in effect).
 
-   The Group Membership Interval is the amount of time that must pass
-   before a multicast router decides there are no more members of a
-   group or a particular source on a network.
+Without this udp conntrack events 'update/assured/timeout=30'
+either need to be ignored, or polling loop needs to be <30 second
+instead of <120 second.
 
-   This value MUST be ((the Robustness Variable) times (the Query
-   Interval)) plus (one Query Response Interval)."
+With this change:
+      [NEW] udp      17 30 src=10.246.11.13 dst=216.239.35.0 sport=37282 dport=123 [UNREPLIED] src=216.239.35.0 dst=10.246.11.13 sport=123 dport=37282
+   [UPDATE] udp      17 30 src=10.246.11.13 dst=216.239.35.0 sport=37282 dport=123 src=216.239.35.0 dst=10.246.11.13 sport=123 dport=37282
+   [UPDATE] udp      17 30 src=10.246.11.13 dst=216.239.35.0 sport=37282 dport=123 src=216.239.35.0 dst=10.246.11.13 sport=123 dport=37282 [ASSURED]
+   [UPDATE] udp      17 120 src=10.246.11.13 dst=216.239.35.0 sport=37282 dport=123 src=216.239.35.0 dst=10.246.11.13 sport=123 dport=37282 [ASSURED]
+  [DESTROY] udp      17 src=10.246.11.13 dst=216.239.35.0 sport=37282 dport=123 src=216.239.35.0 dst=10.246.11.13 sport=123 dport=37282 [ASSURED]
+(the 3rd update/assured/120 event is new)
 
-But that actually is inconsistent with how the bridge used to compute it
-for IGMPv2, where it was user-configurable that has a correct default value
-but it is up to user-space to maintain it. This would make it consistent
-with the other timer values which are also maintained correct by the user
-instead of being dynamically computed. It also changes back to the previous
-user-expected GMI behaviour for IGMPv3 queries which were supported before
-IGMPv3 was added. Note that to properly compute it dynamically we would
-need to add support for "Robustness Variable" which is currently missing.
-
-Reported-by: Hangbin Liu <liuhangbin@gmail.com>
-Fixes: 0436862e417e ("net: bridge: mcast: support for IGMPv3/MLDv2 ALLOW_NEW_SOURCES report")
-Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+Cc: Florian Westphal <fw@strlen.de>
+Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: d535c8a69c19 'netfilter: conntrack: udp: only extend timeout to stream mode after 2s'
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
 ---
- net/bridge/br_private.h | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ include/net/netfilter/nf_conntrack.h             |  1 +
+ .../uapi/linux/netfilter/nf_conntrack_common.h   |  1 +
+ net/netfilter/nf_conntrack_proto_udp.c           | 16 ++++++++++++++--
+ 3 files changed, 16 insertions(+), 2 deletions(-)
 
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index b4cef3a97f12..5c68052466a0 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -1125,9 +1125,7 @@ static inline unsigned long br_multicast_lmqt(const struct net_bridge_mcast *brm
+diff --git a/include/net/netfilter/nf_conntrack.h b/include/net/netfilter/nf_conntrack.h
+index cc663c68ddc4..12029d616cfa 100644
+--- a/include/net/netfilter/nf_conntrack.h
++++ b/include/net/netfilter/nf_conntrack.h
+@@ -26,6 +26,7 @@
  
- static inline unsigned long br_multicast_gmi(const struct net_bridge_mcast *brmctx)
- {
--	/* use the RFC default of 2 for QRV */
--	return 2 * brmctx->multicast_query_interval +
--	       brmctx->multicast_query_response_interval;
-+	return brmctx->multicast_membership_interval;
- }
+ struct nf_ct_udp {
+ 	unsigned long	stream_ts;
++	bool		notified;
+ };
  
- static inline bool
+ /* per conntrack: protocol private data */
+diff --git a/include/uapi/linux/netfilter/nf_conntrack_common.h b/include/uapi/linux/netfilter/nf_conntrack_common.h
+index 4b3395082d15..a8e91b5821fa 100644
+--- a/include/uapi/linux/netfilter/nf_conntrack_common.h
++++ b/include/uapi/linux/netfilter/nf_conntrack_common.h
+@@ -144,6 +144,7 @@ enum ip_conntrack_events {
+ 	IPCT_SECMARK,		/* new security mark has been set */
+ 	IPCT_LABEL,		/* new connlabel has been set */
+ 	IPCT_SYNPROXY,		/* synproxy has been set */
++	IPCT_UDPSTREAM,		/* udp stream has been set */
+ #ifdef __KERNEL__
+ 	__IPCT_MAX
+ #endif
+diff --git a/net/netfilter/nf_conntrack_proto_udp.c b/net/netfilter/nf_conntrack_proto_udp.c
+index 68911fcaa0f1..f0d9869aa30f 100644
+--- a/net/netfilter/nf_conntrack_proto_udp.c
++++ b/net/netfilter/nf_conntrack_proto_udp.c
+@@ -97,18 +97,23 @@ int nf_conntrack_udp_packet(struct nf_conn *ct,
+ 	if (!timeouts)
+ 		timeouts = udp_get_timeouts(nf_ct_net(ct));
+ 
+-	if (!nf_ct_is_confirmed(ct))
++	if (!nf_ct_is_confirmed(ct)) {
+ 		ct->proto.udp.stream_ts = 2 * HZ + jiffies;
++		ct->proto.udp.notified = false;
++	}
+ 
+ 	/* If we've seen traffic both ways, this is some kind of UDP
+ 	 * stream. Set Assured.
+ 	 */
+ 	if (test_bit(IPS_SEEN_REPLY_BIT, &ct->status)) {
+ 		unsigned long extra = timeouts[UDP_CT_UNREPLIED];
++		bool stream = false;
+ 
+ 		/* Still active after two seconds? Extend timeout. */
+-		if (time_after(jiffies, ct->proto.udp.stream_ts))
++		if (time_after(jiffies, ct->proto.udp.stream_ts)) {
+ 			extra = timeouts[UDP_CT_REPLIED];
++			stream = true;
++		}
+ 
+ 		nf_ct_refresh_acct(ct, ctinfo, skb, extra);
+ 
+@@ -116,9 +121,16 @@ int nf_conntrack_udp_packet(struct nf_conn *ct,
+ 		if (unlikely((ct->status & IPS_NAT_CLASH)))
+ 			return NF_ACCEPT;
+ 
++		if (stream) {
++			stream = !ct->proto.udp.notified;
++			ct->proto.udp.notified = true;
++		}
++
+ 		/* Also, more likely to be important, and not a probe */
+ 		if (!test_and_set_bit(IPS_ASSURED_BIT, &ct->status))
+ 			nf_conntrack_event_cache(IPCT_ASSURED, ct);
++		else if (stream)
++			nf_conntrack_event_cache(IPCT_UDPSTREAM, ct);
+ 	} else {
+ 		nf_ct_refresh_acct(ct, ctinfo, skb, timeouts[UDP_CT_UNREPLIED]);
+ 	}
 -- 
-2.31.1
+2.33.0.1079.g6e70778dc9-goog
 
