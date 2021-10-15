@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD28942FDF8
-	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 00:17:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1387142FDF9
+	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 00:17:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238781AbhJOWTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S238785AbhJOWTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 15 Oct 2021 18:19:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34150 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:34158 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238749AbhJOWTH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S238763AbhJOWTH (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 15 Oct 2021 18:19:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5EA6D61181;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AA34B60BD3;
         Fri, 15 Oct 2021 22:17:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1634336220;
-        bh=K6pls3GWczQzZMES9wiWedY5vKt2ql1T+kOFjzAv+eY=;
+        bh=vfz/YNs8y7zYMKx5zvHUpwkzUibBgZroAl9UzzqEXSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZKfM+F3sgNpXNHJ8J1hdnz1Z1ai4JV5F7DGxdKZSMvZhn95/fVEDdyv/aqXCyfrqM
-         KFYnJZfx9G6RG0uPbjkbWetvZPHiLNI9PbKGemrEygDlOutYtrmUgSNYLm1Xksi5u4
-         dVPAB7eQeyJX5RCghTxYNuu4I9Wf2er2v0hhRswrqgDZAuSyg+4xm+YSGQJPecnx8i
-         6s8+IPlWf7Ys+TexGw4vGvCYjR8BN20xU1RGQV6V+H+0O41e+HZAscYihZK91jpxho
-         eduXqPs946GoXUDwWNSsZyNCavjxOg1Ifee4+DsQuons03fRNi0Q3TdPxNoAlh1/WM
-         nAZplW6d/ruIQ==
+        b=BlNxeZwVRFQUhliJrVpcPgx0MAfc9Azq9F3hV/ZDA7msC/Xz3IMeJiwhdEtI/PDab
+         KCWIgA2VXnGrRqC3arYNH0EthEVayZui1mR0KwLjOktVg7Px8dq0I7Zm2ZXKqhVBJC
+         oDzAkOxxM4RxUHOLut3/C5PyzgmhpslVwpDgNtzIXqTFlcd5XnzV3UPGkMdazqNg+/
+         zxJ4t2Ms7YnmmW3c2wOCKLYCASp2QspdSznkKhpGSU7Lsi9mWjDKs3z4F5kB/XvBb5
+         iGbZ2rrJpsIhTwSzBkgF1zUDVN52Aaww2kg9GDWPC5aQqx63lLeEngccb8oVgJXqHG
+         sGcAnZqmMyZlg==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        ionut@badula.org
-Subject: [PATCH net-next 01/12] ethernet: adaptec: use eth_hw_addr_set()
-Date:   Fri, 15 Oct 2021 15:16:41 -0700
-Message-Id: <20211015221652.827253-2-kuba@kernel.org>
+        andreas@gaisler.com
+Subject: [PATCH net-next 02/12] ethernet: aeroflex: use eth_hw_addr_set()
+Date:   Fri, 15 Oct 2021 15:16:42 -0700
+Message-Id: <20211015221652.827253-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211015221652.827253-1-kuba@kernel.org>
 References: <20211015221652.827253-1-kuba@kernel.org>
@@ -44,38 +44,47 @@ of VLANs...") introduced a rbtree for faster Ethernet address look
 up. To maintain netdev->dev_addr in this tree we need to make all
 the writes to it got through appropriate helpers.
 
-Read the address into an array on the stack, then call
-eth_hw_addr_set().
+macaddr[] is a module param, and int, so copy the address into
+an array of u8 on the stack, then call eth_hw_addr_set().
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: ionut@badula.org
+CC: andreas@gaisler.com
 ---
- drivers/net/ethernet/adaptec/starfire.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/aeroflex/greth.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/adaptec/starfire.c b/drivers/net/ethernet/adaptec/starfire.c
-index 16b6b83f670b..c6982f7caf9b 100644
---- a/drivers/net/ethernet/adaptec/starfire.c
-+++ b/drivers/net/ethernet/adaptec/starfire.c
-@@ -641,6 +641,7 @@ static int starfire_init_one(struct pci_dev *pdev,
- 	struct netdev_private *np;
- 	int i, irq, chip_idx = ent->driver_data;
- 	struct net_device *dev;
+diff --git a/drivers/net/ethernet/aeroflex/greth.c b/drivers/net/ethernet/aeroflex/greth.c
+index cc34eaf0491f..447dc64a17e5 100644
+--- a/drivers/net/ethernet/aeroflex/greth.c
++++ b/drivers/net/ethernet/aeroflex/greth.c
+@@ -1346,6 +1346,7 @@ static int greth_of_probe(struct platform_device *ofdev)
+ 	int i;
+ 	int err;
+ 	int tmp;
 +	u8 addr[ETH_ALEN];
- 	long ioaddr;
- 	void __iomem *base;
- 	int drv_flags, io_size;
-@@ -696,7 +697,8 @@ static int starfire_init_one(struct pci_dev *pdev,
+ 	unsigned long timeout;
  
- 	/* Serial EEPROM reads are hidden by the hardware. */
+ 	dev = alloc_etherdev(sizeof(struct greth_private));
+@@ -1449,8 +1450,6 @@ static int greth_of_probe(struct platform_device *ofdev)
+ 			break;
+ 	}
+ 	if (i == 6) {
+-		u8 addr[ETH_ALEN];
+-
+ 		err = of_get_mac_address(ofdev->dev.of_node, addr);
+ 		if (!err) {
+ 			for (i = 0; i < 6; i++)
+@@ -1464,7 +1463,8 @@ static int greth_of_probe(struct platform_device *ofdev)
+ 	}
+ 
  	for (i = 0; i < 6; i++)
--		dev->dev_addr[i] = readb(base + EEPROMCtrl + 20 - i);
-+		addr[i] = readb(base + EEPROMCtrl + 20 - i);
+-		dev->dev_addr[i] = macaddr[i];
++		addr[i] = macaddr[i];
 +	eth_hw_addr_set(dev, addr);
  
- #if ! defined(final_version) /* Dump the EEPROM contents during development. */
- 	if (debug > 4)
+ 	macaddr[5]++;
+ 
 -- 
 2.31.1
 
