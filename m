@@ -2,179 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 617A942EA13
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 09:27:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43B8042EA35
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 09:31:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236126AbhJOH3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 03:29:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42220 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236050AbhJOH3D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 03:29:03 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E2B7C061760;
-        Fri, 15 Oct 2021 00:26:57 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id y30so17315035edi.0;
-        Fri, 15 Oct 2021 00:26:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=AX2BpCwAHsJ9vAVMGMg+034+7Y/IY2VhzAS++Px6BtQ=;
-        b=Gl6loNmsS/lpioR+G0SjkAxS4RdAdyW3fzUgX3JY7yXFMfJ6EnQsDW4M+vSGk/F/V2
-         JvHqTR4LP/hzaWfq8ImEKbWJJAG/EpIkZoOthUG+eIq6B6jXWaomiZsb2hII7oWEx9yu
-         Au6kLkTAvNpPhnFmL93z+F83nbQpWq3q6m6HM4en+xW3wr+TFnSvbFaVh+sbgjIO9ZUS
-         vHboQ6fBEp58dxiQEKuVykzUypOkcgtZtT9K4cz9mzPl3E0Dk08eSI1OLrSIL2Il7y62
-         SzZc0rAxdOL0+pzsnPVePqXnQQKBJN9zbtXSWxF/Ozmc2DPvf/xnjf6QTtMYGlDj4rUt
-         EZDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=AX2BpCwAHsJ9vAVMGMg+034+7Y/IY2VhzAS++Px6BtQ=;
-        b=FAr6gwSW8iUN6+lgT0AhaVXFpvX0r6dTaVI86d8QMod6DXW94QYDA1QsB9iBblDobo
-         XZViASqYgUOgMnNiQoK7CYoin94Yca/8VljJejNmMmFGsxu7E49ZOJb6dg1fWv/gw8Z4
-         +X/GM8BTJibBU50fTm8Gwv0HcCjQgyacnsbXsXT7NGWo5UbwahgRy8glOiDhvtTS4rvu
-         4EDwWkjiBpW7Vr1ybAXdSMBtytWv/LILUCay5LX5aCRcUzk6h5yoMZs1snVjmCWvwKDz
-         0QydoSC9fr/R4d9aokn8VaO2j06Yh7fqWyJqqJCqlOQbyJ+Thu6S6BIAtYDlkxmvvuNc
-         eEhg==
-X-Gm-Message-State: AOAM532JNyQFEmRrkhhUZ4Z6o55wMZ+6Tol1Py5VXA1YzYBAhkJnJFHg
-        svs8j1fzpNwZJcMZBokR7pg=
-X-Google-Smtp-Source: ABdhPJwh4HvHQcedjSGAlTEY+pXeFSAT3UYiM/HjyPORXRzWpcbgwIJ8nm8uj/2+P618AoXTaGjfpw==
-X-Received: by 2002:aa7:ca0d:: with SMTP id y13mr15325489eds.335.1634282815944;
-        Fri, 15 Oct 2021 00:26:55 -0700 (PDT)
-Received: from ponky.lan ([2a04:241e:501:3870:bac1:743:3859:80df])
-        by smtp.gmail.com with ESMTPSA id l25sm3873107edc.31.2021.10.15.00.26.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Oct 2021 00:26:55 -0700 (PDT)
-From:   Leonard Crestez <cdleonard@gmail.com>
-To:     David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        id S236092AbhJOHd7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 03:33:59 -0400
+Received: from mail-eopbgr1310117.outbound.protection.outlook.com ([40.107.131.117]:13872
+        "EHLO APC01-SG2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S234603AbhJOHdx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Oct 2021 03:33:53 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LsHh238PycTcAPRtRrxjFK5RlBDgT4sXgGRExUbzAroNmODT/P6VJ80BJduZ2ysOJ3bPPcy/uh+1OOhZErbGZxmxftQkKw9x9ZQ1JFUYs95S3VjJNsJ6zP0bwfLfjv9kJ76UQ61BXGQKUygtXtdkUGdyNnmQVM3v8+kckVBkgIWK61utxk0d2N8G1suUIct0FbMC+IdSj55F18K4mWzYJ9Q5qUn5IWLQ/75LbSX6AIJ6Y5I3GMwqgYNTdS2ph+Np3aa7/eUvfLjmZdPEKM3TYpCD4qZkb7cpFZ6Cr/VafDMmWjnmVM3qaIE2CCzDOWQYAW//7cw0Tsx+Lzn7ThxN6A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SfBOPJYbjsFhI8TxiXamOfsUyoXFN9Arcx8qkPfuIq8=;
+ b=At/83Lh9fxrVxS0nUtMDNWS9ta5a3mFIfFeO5LnpxePb12e1UXo/O+zg5qQWijmJ+C9i6fHnjkRk+5aSeDKJ9lCIpjH7h1aTyjTwyXGd3RsYD1OGUFGXmWuI+v1ReSRb77t1kqTJbLdr9tetRJ/ToilknvvNnBzQQB7FzGWR5MJVkt0XbgLDBfS7CtHcVqpb/on4n1l7aEs6QCk6FacaY2bu4s3be/cpjiLUsxbwohFElQjP+Hiy1igs/ghifan5emzo55O3N7UjH4uFnCtkOJb//RRO480W9yQwT7nG8M+6LzEgoZHOOTuQR/FtMTzrMpIAGHzP1eNyYdXeAggP1A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SfBOPJYbjsFhI8TxiXamOfsUyoXFN9Arcx8qkPfuIq8=;
+ b=e+cNCicki0NZqwTM+kKOLNfFIJ7vJJSD21YvQ4yCw83YpbRbrcD5kDDdYN/quGG1hO50kkRQtpTST54BbpH4nDFlKzu0zjbTMTYaWtU8UjUfBbmyKGeLAU5dB7IBIrpKS8oWykq//gACpvOUhUtMgOedYLsljRaKcD+jL4nL/cc=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=vivo.com;
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com (2603:1096:4:78::19) by
+ SG2PR06MB3578.apcprd06.prod.outlook.com (2603:1096:4:a3::15) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4587.19; Fri, 15 Oct 2021 07:31:43 +0000
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::fc12:4e1b:cc77:6c0]) by SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::fc12:4e1b:cc77:6c0%6]) with mapi id 15.20.4608.017; Fri, 15 Oct 2021
+ 07:31:43 +0000
+From:   Wan Jiabing <wanjiabing@vivo.com>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Yonghong Song <yhs@fb.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Peter Ujfalusi <peter.ujfalusi@ti.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 4/4] selftests: net/fcnal: Test --{force,no}-bind-key-ifindex
-Date:   Fri, 15 Oct 2021 10:26:07 +0300
-Message-Id: <9b00cba5116604773554db98405691076c66b71a.1634282515.git.cdleonard@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1634282515.git.cdleonard@gmail.com>
-References: <cover.1634282515.git.cdleonard@gmail.com>
-MIME-Version: 1.0
+Cc:     kael_w@yeah.net, Wan Jiabing <wanjiabing@vivo.com>
+Subject: [PATCH] net: ethernet: ti: Add of_node_put() before return
+Date:   Fri, 15 Oct 2021 03:30:57 -0400
+Message-Id: <20211015073107.13046-1-wanjiabing@vivo.com>
+X-Mailer: git-send-email 2.20.1
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: HK2PR02CA0141.apcprd02.prod.outlook.com
+ (2603:1096:202:16::25) To SG2PR06MB3367.apcprd06.prod.outlook.com
+ (2603:1096:4:78::19)
+MIME-Version: 1.0
+Received: from localhost.localdomain (203.90.234.87) by HK2PR02CA0141.apcprd02.prod.outlook.com (2603:1096:202:16::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.15 via Frontend Transport; Fri, 15 Oct 2021 07:31:41 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9820adb9-76e7-49e2-50b1-08d98fadd5b8
+X-MS-TrafficTypeDiagnostic: SG2PR06MB3578:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <SG2PR06MB3578EC23B4FD117CF6143492ABB99@SG2PR06MB3578.apcprd06.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:751;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: px7GuGGWCxT5t8AqCbh6cnvSSL21prstV4/Wd5B8+ibY3a7S82/2z8h45cnAFPqSxG64MqLNT2ImX2Tj6vwfZ8o06PdcTI00zPHNt2gMmz8iDv8+YDjJhwIJMTyiH3Sfgg16mv93UIDdutFEFmqKvF/40CdMALBHWkHswOERX6ELOOhdrXqxdN3MP2yWHFsS/jBAUyI13bcOTxPtBOjpKd2rzaa4X2GdLbZhwHVykfx6TVX4TFiPQMyxJCCgn/MdZyIaXwm+PB5hWHNS/dPsgkmLYUFJObggvDlWl2Cghx00tjYXDSSROCSKjWutSBljQmaij4pOBf4auQfUO367uK0O+hzi3OlqPY/3h9oW4SELJqAwxr7lIID8P92yWEBBVRmEOAhJjPr4KHT48N9SM29vRF9wWc29iB5xlOblsRgIrieDFWHOSdpM9mrqHGVaV207/F6lTiSitsUR67Si/L0aEbQjZxvcoVwle+Roao1lkK1kEEwTT6HJKYWhO8V8mv9BS9AWkvZUOmYJiYSpyJcfSSOKXq2ba+QQ3LrY8EZmxXaP4HCN7T7fpuIJMcBNl1o/BZnwm3MaX0MqVOpz82QXKTddINtLCoEnV95MFrZVVQEWDt/1qp2Br36LVoLQouen8BbNT6ouyMBfzI8W1bAnK0o1enjIGLp6xEN2VM9OlNG/YGTerdUMvSSwGd23oX0SAO9pRgmjVAmF//hcw3IaP+/nEsusiwhJ2XV5+qo=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3367.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(52116002)(4326008)(6506007)(316002)(110136005)(186003)(36756003)(921005)(86362001)(7416002)(66476007)(83380400001)(107886003)(66556008)(6486002)(38100700002)(8936002)(26005)(508600001)(66946007)(6512007)(2616005)(956004)(5660300002)(38350700002)(6666004)(8676002)(1076003)(2906002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?iNEXfipzYb0oh7c72ytFmM1HNJiHZ/2TGOQp29eDkmcm6dBqp3r9HrWL2h/1?=
+ =?us-ascii?Q?I3eJJWeBGZFRiOIFVnJ2nCiuHPHORqoS5gkvmXwK6qfkuWoX97kA1kFd0tbu?=
+ =?us-ascii?Q?MmAvsRIWXuoplp54hxGPd0FUwXLcNKUWhWWsyHWkxmXvFZBBkFEOXAAbroEv?=
+ =?us-ascii?Q?dkC208cvVo2jT30YJ7uRzQ6c7/ADirNd+A7KvNl36Ejo/UBjGoNCujxtesm6?=
+ =?us-ascii?Q?3E1SWw2uuHubN9KL1ztFdGOAF/N0zfGZ6CAzgiWs9BVGI8bT6jut5VhyKiWk?=
+ =?us-ascii?Q?RMDqdDqEGyDtYsJU+Qvl90tN0Mux/1ljxXkVvM0rXw7Dt/sjmOSW/FDMSblg?=
+ =?us-ascii?Q?ETLEKzp0IIUlvvxd1U1RwfCwnO58cyz1mHEJjBlp6Wi49bJwf6tq26w6Ng85?=
+ =?us-ascii?Q?q6QFW9PwJ9jli2VzURSi5YrL4Y0nkSHJmNG4tP6C8KlXia4eNMaCw3CNaPKd?=
+ =?us-ascii?Q?OImYO4ZuGYIVhqMXawieG4dn83qvPhBIGPqdNI0Y8EUf4ouLnmVjohB/zAje?=
+ =?us-ascii?Q?yvQImr7C4jwpQPb+1ugqweOsp6znVd/p0tOpu2kZ1KBwAi8t2n3ADS2jmtxK?=
+ =?us-ascii?Q?fdERu6k8aNf5C0jtVM9wHEpqO01B+HnfmPNxcJcFMoCh0v8kru2O0LOnXDDa?=
+ =?us-ascii?Q?uIk5KXAIEARDcXLRrqMH14NUFLINjiQeBEL+G5I7SpmvV82s1Vm/qr6H0gnn?=
+ =?us-ascii?Q?zsSyTQyIj9Jb3xjz8YR4ueK2a8icUmLN4iYiZCqEBpcenQ6Qj3LCQxMenT19?=
+ =?us-ascii?Q?Isdl8aM6xnlXjVR+nbxHgcOEHvyZqCIWKe87aRPcRFhu8WYiZMGpWG8I+LjP?=
+ =?us-ascii?Q?PC0+1x+OMAeW8i+10C9IgoIi+jRj77ZOpqZ/+EVX3IYYix6rREpuI+62wQ7m?=
+ =?us-ascii?Q?ug3zuNtKJDhLNNmhAtr7nbdikO16STthYkT33zb/aMk5yQ4YDp8OwTf4svmG?=
+ =?us-ascii?Q?CLo82CQhE8PYc/yW28MfdFYaCz1AJwFTfGT6I+UboV5RKDoZtqM67Wo5ZGbV?=
+ =?us-ascii?Q?6yaWXl7yHzgBV/3ZCJer7L+n2PsJeijv7pognuJyOjixvid3wdwnYewvl0If?=
+ =?us-ascii?Q?36SB/JkIqSl/jNsbu4FGR5nSKq1TZlyd/bRfTzHnoYvLMJwym+BO3JqYYrrq?=
+ =?us-ascii?Q?3mkP0rgX38ke7y/mRght+Cweyhodz4CapiZrKdGo5c/Rvg5l8eosqM4IXB4d?=
+ =?us-ascii?Q?fR44kxjcpKOZWhLxKfQnjg/7pSzsJV5IJKoiGSIbQxnXh3J06LBe8H+bgq3r?=
+ =?us-ascii?Q?1Q9yunkno+TjUZl83dDzFUkgNcVT1AQTNL8/vMQLas8qaMtFR52iz5MDq26v?=
+ =?us-ascii?Q?d3Shrz4kkhRbcE0pgleW7NoZ?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9820adb9-76e7-49e2-50b1-08d98fadd5b8
+X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3367.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Oct 2021 07:31:43.1144
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ei7h+ltTnN27gpKcnyEJAU+m1h7pOb7YqbMxp0wCKzCSCt/9gpnTvzNWoNQirh7tnXxyHs/W62dIj78A5Gvimw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR06MB3578
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test that applications binding listening sockets to VRFs without
-specifying TCP_MD5SIG_FLAG_IFINDEX will work as expected. This would
-be broken if __tcp_md5_do_lookup always made a strict comparison on
-l3index. See this email:
+Fix following coccicheck warning:
+./drivers/net/ethernet/ti/am65-cpsw-nuss.c:1835:1-23: WARNING: Function
+for_each_child_of_node should have of_node_put() before return
 
-https://lore.kernel.org/netdev/209548b5-27d2-2059-f2e9-2148f5a0291b@gmail.com/
+Early exits from for_each_child_of_node should decrement the
+node reference counter.
 
-Applications using tcp_l3mdev_accept=1 and a single global socket (not
-bound to any interface) also should have a way to specify keys that are
-only for the default VRF, this is done by --force-bind-key-ifindex
-without otherwise binding to a device.
-
-Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
 ---
- tools/testing/selftests/net/fcnal-test.sh | 60 +++++++++++++++++++++++
- 1 file changed, 60 insertions(+)
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index 13350cd5c8ac..8e67a252b672 100755
---- a/tools/testing/selftests/net/fcnal-test.sh
-+++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -287,10 +287,16 @@ set_sysctl()
- 	echo "SYSCTL: $*"
- 	echo
- 	run_cmd sysctl -q -w $*
- }
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+index 6904bfaa5777..00ef27cdde84 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+@@ -1844,12 +1844,14 @@ static int am65_cpsw_nuss_init_slave_ports(struct am65_cpsw_common *common)
+ 		if (ret < 0) {
+ 			dev_err(dev, "%pOF error reading port_id %d\n",
+ 				port_np, ret);
++			of_node_put(port_np);
+ 			return ret;
+ 		}
  
-+# get sysctl values in NS-A
-+get_sysctl()
-+{
-+	${NSA_CMD} sysctl -n $*
-+}
-+
- ################################################################################
- # Setup for tests
+ 		if (!port_id || port_id > common->port_num) {
+ 			dev_err(dev, "%pOF has invalid port_id %u %s\n",
+ 				port_np, port_id, port_np->name);
++			of_node_put(port_np);
+ 			return -EINVAL;
+ 		}
  
- addr2str()
- {
-@@ -1001,10 +1007,64 @@ ipv4_tcp_md5()
+@@ -1866,8 +1868,10 @@ static int am65_cpsw_nuss_init_slave_ports(struct am65_cpsw_common *common)
+ 				(AM65_CPSW_NU_FRAM_PORT_OFFSET * (port_id - 1));
  
- 	log_start
- 	run_cmd nettest -s -I ${NSA_DEV} -M ${MD5_PW} -m ${NS_NET}
- 	log_test $? 1 "MD5: VRF: Device must be a VRF - prefix"
+ 		port->slave.mac_sl = cpsw_sl_get("am65", dev, port->port_base);
+-		if (IS_ERR(port->slave.mac_sl))
++		if (IS_ERR(port->slave.mac_sl)) {
++			of_node_put(port_np);
+ 			return PTR_ERR(port->slave.mac_sl);
++		}
  
-+	test_ipv4_md5_vrf__vrf_server__no_bind_ifindex
-+	test_ipv4_md5_vrf__global_server__bind_ifindex0
-+}
-+
-+test_ipv4_md5_vrf__vrf_server__no_bind_ifindex()
-+{
-+	log_start
-+	show_hint "Simulates applications using VRF without TCP_MD5SIG_FLAG_IFINDEX"
-+	run_cmd nettest -s -I ${VRF} -M ${MD5_PW} -m ${NS_NET} --no-bind-key-ifindex &
-+	sleep 1
-+	run_cmd_nsb nettest -r ${NSA_IP} -X ${MD5_PW}
-+	log_test $? 0 "MD5: VRF: VRF-bound server, unbound key accepts connection"
-+
-+	log_start
-+	show_hint "Binding both the socket and the key is not required but it works"
-+	run_cmd nettest -s -I ${VRF} -M ${MD5_PW} -m ${NS_NET} --force-bind-key-ifindex &
-+	sleep 1
-+	run_cmd_nsb nettest -r ${NSA_IP} -X ${MD5_PW}
-+	log_test $? 0 "MD5: VRF: VRF-bound server, bound key accepts connection"
-+}
-+
-+test_ipv4_md5_vrf__global_server__bind_ifindex0()
-+{
-+	# This particular test needs tcp_l3mdev_accept=1 for Global server to accept VRF connections
-+	local old_tcp_l3mdev_accept
-+	old_tcp_l3mdev_accept=$(get_sysctl net.ipv4.tcp_l3mdev_accept)
-+	set_sysctl net.ipv4.tcp_l3mdev_accept=1
-+
-+	log_start
-+	run_cmd nettest -s -M ${MD5_PW} -m ${NS_NET} --force-bind-key-ifindex &
-+	sleep 1
-+	run_cmd_nsb nettest -r ${NSA_IP} -X ${MD5_PW}
-+	log_test $? 2 "MD5: VRF: Global server, Key bound to ifindex=0 rejects VRF connection"
-+
-+	log_start
-+	run_cmd nettest -s -M ${MD5_PW} -m ${NS_NET} --force-bind-key-ifindex &
-+	sleep 1
-+	run_cmd_nsc nettest -r ${NSA_IP} -X ${MD5_PW}
-+	log_test $? 0 "MD5: VRF: Global server, key bound to ifindex=0 accepts non-VRF connection"
-+	log_start
-+
-+	run_cmd nettest -s -M ${MD5_PW} -m ${NS_NET} --no-bind-key-ifindex &
-+	sleep 1
-+	run_cmd_nsb nettest -r ${NSA_IP} -X ${MD5_PW}
-+	log_test $? 0 "MD5: VRF: Global server, key not bound to ifindex accepts VRF connection"
-+
-+	log_start
-+	run_cmd nettest -s -M ${MD5_PW} -m ${NS_NET} --no-bind-key-ifindex &
-+	sleep 1
-+	run_cmd_nsc nettest -r ${NSA_IP} -X ${MD5_PW}
-+	log_test $? 0 "MD5: VRF: Global server, key not bound to ifindex accepts non-VRF connection"
-+
-+	# restore value
-+	set_sysctl net.ipv4.tcp_l3mdev_accept="$old_tcp_l3mdev_accept"
- }
+ 		port->disabled = !of_device_is_available(port_np);
+ 		if (port->disabled) {
+@@ -1880,6 +1884,7 @@ static int am65_cpsw_nuss_init_slave_ports(struct am65_cpsw_common *common)
+ 			ret = PTR_ERR(port->slave.ifphy);
+ 			dev_err(dev, "%pOF error retrieving port phy: %d\n",
+ 				port_np, ret);
++			of_node_put(port_np);
+ 			return ret;
+ 		}
  
- ipv4_tcp_novrf()
- {
- 	local a
+@@ -1889,10 +1894,12 @@ static int am65_cpsw_nuss_init_slave_ports(struct am65_cpsw_common *common)
+ 		/* get phy/link info */
+ 		if (of_phy_is_fixed_link(port_np)) {
+ 			ret = of_phy_register_fixed_link(port_np);
+-			if (ret)
++			if (ret) {
++				of_node_put(port_np);
+ 				return dev_err_probe(dev, ret,
+ 						     "failed to register fixed-link phy %pOF\n",
+ 						     port_np);
++			}
+ 			port->slave.phy_node = of_node_get(port_np);
+ 		} else {
+ 			port->slave.phy_node =
+@@ -1902,6 +1909,7 @@ static int am65_cpsw_nuss_init_slave_ports(struct am65_cpsw_common *common)
+ 		if (!port->slave.phy_node) {
+ 			dev_err(dev,
+ 				"slave[%d] no phy found\n", port_id);
++			of_node_put(port_np);
+ 			return -ENODEV;
+ 		}
+ 
+@@ -1909,6 +1917,7 @@ static int am65_cpsw_nuss_init_slave_ports(struct am65_cpsw_common *common)
+ 		if (ret) {
+ 			dev_err(dev, "%pOF read phy-mode err %d\n",
+ 				port_np, ret);
++			of_node_put(port_np);
+ 			return ret;
+ 		}
+ 
 -- 
-2.25.1
+2.20.1
 
