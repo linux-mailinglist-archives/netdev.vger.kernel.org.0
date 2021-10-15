@@ -2,148 +2,654 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92D4642FD86
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 23:36:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82E0E42FDAD
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 23:53:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238708AbhJOViL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 17:38:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41078 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238695AbhJOViL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 17:38:11 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD52C061570
-        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 14:36:04 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id gn3so2576489pjb.0
-        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 14:36:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=MM8qEUXivu5Vx408ObeccNA25B8u584qoW9GHWLKLoQ=;
-        b=TN9KWWmRkHtH33uGXLhJTJr/lhSGvCzeqZGKy7HbVgNAph20BAWLoKkM/dYivHSEcw
-         jqw2l1m7oNhYRclOoEikxjXb8183VCRmsAwVQwdMnv3VbreZpDh/WBjRqitmM2FH6/gh
-         6TWTNAJYCDjEBknwHkbdCnnJf/hVHETuvgvkFo6P8z4KEt/C1ersU6fJLULDkbV9BIxq
-         pbug3AlILe2Ule6hMrFBHRMEnfqrt7xbVG9xLG+Hto9fw8h0MBdcby9TTPh5gMpo5Xo/
-         GDOoBc7qh2CtuEy78w/egI9QW5rUhFgG0XSpYKCyYcQxSMXRXbAsHw7eqL5f/BP9P8Y/
-         xWzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=MM8qEUXivu5Vx408ObeccNA25B8u584qoW9GHWLKLoQ=;
-        b=wrDq5RqCa4pzwrzUJB65T2TgoA07SorHYUPecvt8zwS6TcAkZOaGSj61yX1J2Dkstk
-         tRSCMprKVvQzWh2+gtPc6xJ4GHb2/F0lgeD1mi6ngYOhbfrb5yO80Ovw23cXP88D2blI
-         6mzbXMXnsapqSRI5NdYCjttUa5Wi9nDGa/RAQoy4t3wXSFGw/SO4yVLHaSttTPPJJYcc
-         ChfQ7yLHLMOTxBCRLstjBlGGKqgsvOkdGQ61SjOAdI8kXwtYX48vWJNC/mt0LbCCItQm
-         n0Rt6Qsaw91DyLuampuWjjS9+I5Cnui5lMiQlfKFuw17mHvxRZWCufE1L2ZrabswqcBd
-         WUDw==
-X-Gm-Message-State: AOAM5325qDamWrSDRrXoMVyJxJl9k/JFznv0G2IErLUJ7vdDRwMDcjom
-        p1DPe8yZYYhWm5HV50x7zTpWIg==
-X-Google-Smtp-Source: ABdhPJy+aw61au5zIquY9j3oo7h7v4C3VjA1mCGMes/Xxh6syaqcyeBeXPGn5mw6tLGEYfb50ij8ZQ==
-X-Received: by 2002:a17:90a:c58e:: with SMTP id l14mr30961486pjt.213.1634333763767;
-        Fri, 15 Oct 2021 14:36:03 -0700 (PDT)
-Received: from [192.168.0.14] ([50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id t2sm5643857pjo.4.2021.10.15.14.36.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Oct 2021 14:36:03 -0700 (PDT)
-Message-ID: <47ac074a-bf85-a514-00a5-3749e3582099@pensando.io>
-Date:   Fri, 15 Oct 2021 14:36:00 -0700
+        id S243179AbhJOVzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 17:55:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52046 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229921AbhJOVzP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Oct 2021 17:55:15 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9A0CF61184;
+        Fri, 15 Oct 2021 21:53:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634334788;
+        bh=2lLHCasiRh1eU0nBNpraLkt2TCdEqvkXIN/Z/k9dYHE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=mduoLX2XOwpEGWQ3v8ORdt9QU+lbi7Di1JlzwMmTPDXC4bfAqAilrPov5QhEOrdTx
+         QDxjlBIr0hVha1DVxc+h1aEzqrOl1UTJ5ovKLhnBTQZBWfQiYlqiFxPe99+7sUJtJN
+         d0ovnKe1A+ecxtWL1i/Qp9t73we5QFueCA3a7nGg0UQ30/ZJTyupfsXw9YqbPcnIsg
+         XHTgZNMMXzDCTsu0tg5/hLBCC2uolUE4BE9nRAd13O/JAuFIg6Hosi4jKpp9LfDoep
+         wFfO0cclWPWzyrdv/nh1FbGm8ko0p6LgCxBAsyJ2GRaNEmq/8np7exU5kyqynv2lOF
+         Xt1B80nw0EWvA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next] ethernet: use eth_hw_addr_set() in unmaintained drivers
+Date:   Fri, 15 Oct 2021 14:53:04 -0700
+Message-Id: <20211015215304.817145-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.2.0
-Subject: Re: [RFC net-next 1/6] ethernet: add a helper for assigning port
- addresses
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     olteanv@gmail.com, andrew@lunn.ch, idosch@idosch.org,
-        f.fainelli@gmail.com, jiri@nvidia.com, idosch@nvidia.com,
-        lars.povlsen@microchip.com, Steen.Hegelund@microchip.com,
-        UNGLinuxDriver@microchip.com, bjarni.jonasson@microchip.com,
-        linux-arm-kernel@lists.infradead.org, qiangqing.zhang@nxp.com,
-        vkochan@marvell.com, tchornyi@marvell.com, vladimir.oltean@nxp.com,
-        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com
-References: <20211015193848.779420-1-kuba@kernel.org>
- <20211015193848.779420-2-kuba@kernel.org>
-From:   Shannon Nelson <snelson@pensando.io>
-In-Reply-To: <20211015193848.779420-2-kuba@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/15/21 12:38 PM, Jakub Kicinski wrote:
-> We have 5 drivers which offset base MAC addr by port id.
-> Create a helper for them.
->
-> This helper takes care of overflows, which some drivers
-> did not do, please complain if that's going to break
-> anything!
->
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> CC: jiri@nvidia.com
-> CC: idosch@nvidia.com
-> CC: lars.povlsen@microchip.com
-> CC: Steen.Hegelund@microchip.com
-> CC: UNGLinuxDriver@microchip.com
-> CC: bjarni.jonasson@microchip.com
-> CC: linux-arm-kernel@lists.infradead.org
-> CC: qiangqing.zhang@nxp.com
-> CC: vkochan@marvell.com
-> CC: tchornyi@marvell.com
-> CC: vladimir.oltean@nxp.com
-> CC: claudiu.manoil@nxp.com
-> CC: alexandre.belloni@bootlin.com
-> CC: UNGLinuxDriver@microchip.com
-> ---
->   include/linux/etherdevice.h | 21 +++++++++++++++++++++
->   1 file changed, 21 insertions(+)
->
-> diff --git a/include/linux/etherdevice.h b/include/linux/etherdevice.h
-> index 23681c3d3b8a..157f6c7ac9ff 100644
-> --- a/include/linux/etherdevice.h
-> +++ b/include/linux/etherdevice.h
-> @@ -551,6 +551,27 @@ static inline unsigned long compare_ether_header(const void *a, const void *b)
->   #endif
->   }
->   
-> +/**
-> + * eth_hw_addr_set_port - Generate and assign Ethernet address to a port
-> + * @dev: pointer to port's net_device structure
-> + * @base_addr: base Ethernet address
-> + * @id: offset to add to the base address
-> + *
-> + * Assign a MAC address to the net_device using a base address and an offset.
-> + * Commonly used by switch drivers which need to compute addresses for all
-> + * their ports. addr_assign_type is not changed.
-> + */
-> +static inline void eth_hw_addr_set_port(struct net_device *dev,
-> +					const u8 *base_addr, u8 id)
+Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
+of VLANs...") introduced a rbtree for faster Ethernet address look
+up. To maintain netdev->dev_addr in this tree we need to make all
+the writes to it got through appropriate helpers.
 
-To me, the words "_set_port" imply that you're going to force "id" into 
-the byte, overwriting what is already there.  Since this instead is 
-adding "id" to the byte, perhaps a better name would include the word 
-"offset", maybe like eth_hw_addr_set_port_offset(), to better imply the 
-actual operation.
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ drivers/net/ethernet/calxeda/xgmac.c           |  4 +++-
+ drivers/net/ethernet/cirrus/cs89x0.c           | 11 +++++++----
+ drivers/net/ethernet/davicom/dm9000.c          |  7 +++++--
+ drivers/net/ethernet/ethoc.c                   |  8 ++++++--
+ drivers/net/ethernet/fealnx.c                  |  4 +++-
+ drivers/net/ethernet/fujitsu/fmvj18x_cs.c      |  7 +++++--
+ drivers/net/ethernet/huawei/hinic/hinic_main.c |  4 +++-
+ drivers/net/ethernet/marvell/pxa168_eth.c      |  8 ++++++--
+ drivers/net/ethernet/micrel/ks8842.c           |  8 +++++---
+ drivers/net/ethernet/micrel/ks8851_common.c    |  6 ++++--
+ drivers/net/ethernet/micrel/ksz884x.c          |  7 +++++--
+ drivers/net/ethernet/microchip/encx24j600.c    |  4 +++-
+ drivers/net/ethernet/natsemi/natsemi.c         |  6 ++++--
+ drivers/net/ethernet/natsemi/ns83820.c         | 11 +++++++----
+ drivers/net/ethernet/packetengines/hamachi.c   |  5 +++--
+ drivers/net/ethernet/packetengines/yellowfin.c |  6 ++++--
+ drivers/net/ethernet/silan/sc92031.c           | 14 ++++++++------
+ drivers/net/ethernet/smsc/smc91c92_cs.c        | 10 +++++++---
+ drivers/net/ethernet/sun/sunvnet.c             |  4 +++-
+ drivers/net/ethernet/toshiba/tc35815.c         |  6 ++++--
+ drivers/net/ethernet/xircom/xirc2ps_cs.c       | 12 ++++--------
+ 21 files changed, 99 insertions(+), 53 deletions(-)
 
-Personally, I think my name suggestion is too long, but it gets my 
-thought across.
-
-sln
-
-> +{
-> +	u64 u = ether_addr_to_u64(base_addr);
-> +	u8 addr[ETH_ALEN];
-> +
-> +	u += id;
-> +	u64_to_ether_addr(u, addr);
-> +	eth_hw_addr_set(dev, addr);
-> +}
-> +
->   /**
->    * eth_skb_pad - Pad buffer to mininum number of octets for Ethernet frame
->    * @skb: Buffer to pad
+diff --git a/drivers/net/ethernet/calxeda/xgmac.c b/drivers/net/ethernet/calxeda/xgmac.c
+index 9ad89a53c3e6..457cb7121000 100644
+--- a/drivers/net/ethernet/calxeda/xgmac.c
++++ b/drivers/net/ethernet/calxeda/xgmac.c
+@@ -1693,6 +1693,7 @@ static int xgmac_probe(struct platform_device *pdev)
+ 	struct resource *res;
+ 	struct net_device *ndev = NULL;
+ 	struct xgmac_priv *priv = NULL;
++	u8 addr[ETH_ALEN];
+ 	u32 uid;
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+@@ -1785,7 +1786,8 @@ static int xgmac_probe(struct platform_device *pdev)
+ 	ndev->max_mtu = XGMAC_MAX_MTU;
+ 
+ 	/* Get the MAC address */
+-	xgmac_get_mac_addr(priv->base, ndev->dev_addr, 0);
++	xgmac_get_mac_addr(priv->base, addr, 0);
++	eth_hw_addr_set(ndev, addr);
+ 	if (!is_valid_ether_addr(ndev->dev_addr))
+ 		netdev_warn(ndev, "MAC address %pM not valid",
+ 			 ndev->dev_addr);
+diff --git a/drivers/net/ethernet/cirrus/cs89x0.c b/drivers/net/ethernet/cirrus/cs89x0.c
+index bd7920ab166f..4a97aa8e1387 100644
+--- a/drivers/net/ethernet/cirrus/cs89x0.c
++++ b/drivers/net/ethernet/cirrus/cs89x0.c
+@@ -1314,6 +1314,7 @@ cs89x0_probe1(struct net_device *dev, void __iomem *ioaddr, int modular)
+ 	int tmp;
+ 	unsigned rev_type = 0;
+ 	int eeprom_buff[CHKSUM_LEN];
++	u8 addr[ETH_ALEN];
+ 	int retval;
+ 
+ 	/* Initialize the device structure. */
+@@ -1387,9 +1388,10 @@ cs89x0_probe1(struct net_device *dev, void __iomem *ioaddr, int modular)
+ 		for (i = 0; i < ETH_ALEN / 2; i++) {
+ 			unsigned int Addr;
+ 			Addr = readreg(dev, PP_IA + i * 2);
+-			dev->dev_addr[i * 2] = Addr & 0xFF;
+-			dev->dev_addr[i * 2 + 1] = Addr >> 8;
++			addr[i * 2] = Addr & 0xFF;
++			addr[i * 2 + 1] = Addr >> 8;
+ 		}
++		eth_hw_addr_set(dev, addr);
+ 
+ 		/* Load the Adapter Configuration.
+ 		 * Note:  Barring any more specific information from some
+@@ -1464,9 +1466,10 @@ cs89x0_probe1(struct net_device *dev, void __iomem *ioaddr, int modular)
+ 		/* eeprom_buff has 32-bit ints, so we can't just memcpy it */
+ 		/* store the initial memory base address */
+ 		for (i = 0; i < ETH_ALEN / 2; i++) {
+-			dev->dev_addr[i * 2] = eeprom_buff[i];
+-			dev->dev_addr[i * 2 + 1] = eeprom_buff[i] >> 8;
++			addr[i * 2] = eeprom_buff[i];
++			addr[i * 2 + 1] = eeprom_buff[i] >> 8;
+ 		}
++		eth_hw_addr_set(dev, addr);
+ 		cs89_dbg(1, debug, "%s: new adapter_cnf: 0x%x\n",
+ 			 dev->name, lp->adapter_cnf);
+ 	}
+diff --git a/drivers/net/ethernet/davicom/dm9000.c b/drivers/net/ethernet/davicom/dm9000.c
+index e13dd53a8b3b..0985ab216566 100644
+--- a/drivers/net/ethernet/davicom/dm9000.c
++++ b/drivers/net/ethernet/davicom/dm9000.c
+@@ -1425,6 +1425,7 @@ dm9000_probe(struct platform_device *pdev)
+ 	enum of_gpio_flags flags;
+ 	struct regulator *power;
+ 	bool inv_mac_addr = false;
++	u8 addr[ETH_ALEN];
+ 
+ 	power = devm_regulator_get(dev, "vcc");
+ 	if (IS_ERR(power)) {
+@@ -1666,7 +1667,8 @@ dm9000_probe(struct platform_device *pdev)
+ 
+ 	/* try reading the node address from the attached EEPROM */
+ 	for (i = 0; i < 6; i += 2)
+-		dm9000_read_eeprom(db, i / 2, ndev->dev_addr+i);
++		dm9000_read_eeprom(db, i / 2, addr + i);
++	eth_hw_addr_set(ndev, addr);
+ 
+ 	if (!is_valid_ether_addr(ndev->dev_addr) && pdata != NULL) {
+ 		mac_src = "platform data";
+@@ -1678,7 +1680,8 @@ dm9000_probe(struct platform_device *pdev)
+ 
+ 		mac_src = "chip";
+ 		for (i = 0; i < 6; i++)
+-			ndev->dev_addr[i] = ior(db, i+DM9000_PAR);
++			addr[i] = ior(db, i + DM9000_PAR);
++		eth_hw_addr_set(ndev, pdata->dev_addr);
+ 	}
+ 
+ 	if (!is_valid_ether_addr(ndev->dev_addr)) {
+diff --git a/drivers/net/ethernet/ethoc.c b/drivers/net/ethernet/ethoc.c
+index ed2ef167cdb2..b1c8ffea6ad2 100644
+--- a/drivers/net/ethernet/ethoc.c
++++ b/drivers/net/ethernet/ethoc.c
+@@ -1154,8 +1154,12 @@ static int ethoc_probe(struct platform_device *pdev)
+ 	/* Check that the given MAC address is valid. If it isn't, read the
+ 	 * current MAC from the controller.
+ 	 */
+-	if (!is_valid_ether_addr(netdev->dev_addr))
+-		ethoc_get_mac_address(netdev, netdev->dev_addr);
++	if (!is_valid_ether_addr(netdev->dev_addr)) {
++		u8 addr[ETH_ALEN];
++
++		ethoc_get_mac_address(netdev, addr);
++		eth_hw_addr_set(netdev, addr);
++	}
+ 
+ 	/* Check the MAC again for validity, if it still isn't choose and
+ 	 * program a random one.
+diff --git a/drivers/net/ethernet/fealnx.c b/drivers/net/ethernet/fealnx.c
+index ab194c9b0691..b3939a5f7b03 100644
+--- a/drivers/net/ethernet/fealnx.c
++++ b/drivers/net/ethernet/fealnx.c
+@@ -482,6 +482,7 @@ static int fealnx_init_one(struct pci_dev *pdev,
+ 	struct net_device *dev;
+ 	void *ring_space;
+ 	dma_addr_t ring_dma;
++	u8 addr[ETH_ALEN];
+ #ifdef USE_IO_OPS
+ 	int bar = 0;
+ #else
+@@ -525,7 +526,8 @@ static int fealnx_init_one(struct pci_dev *pdev,
+ 
+ 	/* read ethernet id */
+ 	for (i = 0; i < 6; ++i)
+-		dev->dev_addr[i] = ioread8(ioaddr + PAR0 + i);
++		addr[i] = ioread8(ioaddr + PAR0 + i);
++	eth_hw_addr_set(dev, addr);
+ 
+ 	/* Reset the chip to erase previous misconfiguration. */
+ 	iowrite32(0x00000001, ioaddr + BCR);
+diff --git a/drivers/net/ethernet/fujitsu/fmvj18x_cs.c b/drivers/net/ethernet/fujitsu/fmvj18x_cs.c
+index 62600153b964..b0d733e9a7c6 100644
+--- a/drivers/net/ethernet/fujitsu/fmvj18x_cs.c
++++ b/drivers/net/ethernet/fujitsu/fmvj18x_cs.c
+@@ -334,6 +334,7 @@ static int fmvj18x_config(struct pcmcia_device *link)
+     u8 *buf;
+     size_t len;
+     u_char buggybuf[32];
++    u8 addr[ETH_ALEN];
+ 
+     dev_dbg(&link->dev, "fmvj18x_config\n");
+ 
+@@ -489,7 +490,8 @@ static int fmvj18x_config(struct pcmcia_device *link)
+     case UNGERMANN:
+ 	/* Read MACID from register */
+ 	for (i = 0; i < 6; i++) 
+-	    dev->dev_addr[i] = inb(ioaddr + UNGERMANN_MAC_ID + i);
++	    addr[i] = inb(ioaddr + UNGERMANN_MAC_ID + i);
++	eth_hw_addr_set(dev, addr);
+ 	card_name = "Access/CARD";
+ 	break;
+     case XXX10304:
+@@ -505,7 +507,8 @@ static int fmvj18x_config(struct pcmcia_device *link)
+     default:
+ 	/* Read MACID from register */
+ 	for (i = 0; i < 6; i++) 
+-	    dev->dev_addr[i] = inb(ioaddr + MAC_ID + i);
++	    addr[i] = inb(ioaddr + MAC_ID + i);
++	eth_hw_addr_set(dev, addr);
+ 	card_name = "FMV-J181";
+ 	break;
+     }
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+index 6414e922cf8c..f9a766b8ac43 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+@@ -1181,6 +1181,7 @@ static int nic_dev_init(struct pci_dev *pdev)
+ 	struct net_device *netdev;
+ 	struct hinic_hwdev *hwdev;
+ 	struct devlink *devlink;
++	u8 addr[ETH_ALEN];
+ 	int err, num_qps;
+ 
+ 	devlink = hinic_devlink_alloc(&pdev->dev);
+@@ -1259,11 +1260,12 @@ static int nic_dev_init(struct pci_dev *pdev)
+ 
+ 	pci_set_drvdata(pdev, netdev);
+ 
+-	err = hinic_port_get_mac(nic_dev, netdev->dev_addr);
++	err = hinic_port_get_mac(nic_dev, addr);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "Failed to get mac address\n");
+ 		goto err_get_mac;
+ 	}
++	eth_hw_addr_set(netdev, addr);
+ 
+ 	if (!is_valid_ether_addr(netdev->dev_addr)) {
+ 		if (!HINIC_IS_VF(nic_dev->hwdev->hwif)) {
+diff --git a/drivers/net/ethernet/marvell/pxa168_eth.c b/drivers/net/ethernet/marvell/pxa168_eth.c
+index bb5341020803..6c02e1740609 100644
+--- a/drivers/net/ethernet/marvell/pxa168_eth.c
++++ b/drivers/net/ethernet/marvell/pxa168_eth.c
+@@ -1436,9 +1436,13 @@ static int pxa168_eth_probe(struct platform_device *pdev)
+ 
+ 	err = of_get_ethdev_address(pdev->dev.of_node, dev);
+ 	if (err) {
++		u8 addr[ETH_ALEN];
++
+ 		/* try reading the mac address, if set by the bootloader */
+-		pxa168_eth_get_mac_address(dev, dev->dev_addr);
+-		if (!is_valid_ether_addr(dev->dev_addr)) {
++		pxa168_eth_get_mac_address(dev, addr);
++		if (is_valid_ether_addr(addr)) {
++			eth_hw_addr_set(dev, addr);
++		} else {
+ 			dev_info(&pdev->dev, "Using random mac address\n");
+ 			eth_hw_addr_random(dev);
+ 		}
+diff --git a/drivers/net/ethernet/micrel/ks8842.c b/drivers/net/ethernet/micrel/ks8842.c
+index 0f2cdcd4a4c0..c11b118dc415 100644
+--- a/drivers/net/ethernet/micrel/ks8842.c
++++ b/drivers/net/ethernet/micrel/ks8842.c
+@@ -348,13 +348,15 @@ static void ks8842_reset_hw(struct ks8842_adapter *adapter)
+ 	ks8842_write16(adapter, 32, 0x1, REG_SW_ID_AND_ENABLE);
+ }
+ 
+-static void ks8842_read_mac_addr(struct ks8842_adapter *adapter, u8 *dest)
++static void ks8842_init_mac_addr(struct ks8842_adapter *adapter)
+ {
++	u8 addr[ETH_ALEN];
+ 	int i;
+ 	u16 mac;
+ 
+ 	for (i = 0; i < ETH_ALEN; i++)
+-		dest[ETH_ALEN - i - 1] = ks8842_read8(adapter, 2, REG_MARL + i);
++		addr[ETH_ALEN - i - 1] = ks8842_read8(adapter, 2, REG_MARL + i);
++	eth_hw_addr_set(adapter->netdev, addr);
+ 
+ 	if (adapter->conf_flags & MICREL_KS884X) {
+ 		/*
+@@ -1195,7 +1197,7 @@ static int ks8842_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	if (i == netdev->addr_len) {
+-		ks8842_read_mac_addr(adapter, netdev->dev_addr);
++		ks8842_init_mac_addr(adapter);
+ 
+ 		if (!is_valid_ether_addr(netdev->dev_addr))
+ 			eth_hw_addr_random(netdev);
+diff --git a/drivers/net/ethernet/micrel/ks8851_common.c b/drivers/net/ethernet/micrel/ks8851_common.c
+index 2c4e5e602be7..8b0fac815147 100644
+--- a/drivers/net/ethernet/micrel/ks8851_common.c
++++ b/drivers/net/ethernet/micrel/ks8851_common.c
+@@ -165,6 +165,7 @@ static void ks8851_read_mac_addr(struct net_device *dev)
+ {
+ 	struct ks8851_net *ks = netdev_priv(dev);
+ 	unsigned long flags;
++	u8 addr[ETH_ALEN];
+ 	u16 reg;
+ 	int i;
+ 
+@@ -172,9 +173,10 @@ static void ks8851_read_mac_addr(struct net_device *dev)
+ 
+ 	for (i = 0; i < ETH_ALEN; i += 2) {
+ 		reg = ks8851_rdreg16(ks, KS_MAR(i));
+-		dev->dev_addr[i] = reg >> 8;
+-		dev->dev_addr[i + 1] = reg & 0xff;
++		addr[i] = reg >> 8;
++		addr[i + 1] = reg & 0xff;
+ 	}
++	eth_hw_addr_set(dev, addr);
+ 
+ 	ks8851_unlock(ks, &flags);
+ }
+diff --git a/drivers/net/ethernet/micrel/ksz884x.c b/drivers/net/ethernet/micrel/ksz884x.c
+index 03ad8bdc1f0d..99c0c1491af2 100644
+--- a/drivers/net/ethernet/micrel/ksz884x.c
++++ b/drivers/net/ethernet/micrel/ksz884x.c
+@@ -7007,9 +7007,12 @@ static int pcidev_init(struct pci_dev *pdev, const struct pci_device_id *id)
+ 		if (MAIN_PORT == i)
+ 			eth_hw_addr_set(dev, hw_priv->hw.override_addr);
+ 		else {
+-			eth_hw_addr_set(dev, sw->other_addr);
++			u8 addr[ETH_ALEN];
++
++			ether_addr_copy(addr, sw->other_addr);
+ 			if (ether_addr_equal(sw->other_addr, hw->override_addr))
+-				dev->dev_addr[5] += port->first_port;
++				addr[5] += port->first_port;
++			eth_hw_addr_set(dev, addr);
+ 		}
+ 
+ 		dev->netdev_ops = &netdev_ops;
+diff --git a/drivers/net/ethernet/microchip/encx24j600.c b/drivers/net/ethernet/microchip/encx24j600.c
+index 79167c3a3179..b90efc80fb59 100644
+--- a/drivers/net/ethernet/microchip/encx24j600.c
++++ b/drivers/net/ethernet/microchip/encx24j600.c
+@@ -1001,6 +1001,7 @@ static int encx24j600_spi_probe(struct spi_device *spi)
+ 	struct net_device *ndev;
+ 	struct encx24j600_priv *priv;
+ 	u16 eidled;
++	u8 addr[ETH_ALEN];
+ 
+ 	ndev = alloc_etherdev(sizeof(struct encx24j600_priv));
+ 
+@@ -1056,7 +1057,8 @@ static int encx24j600_spi_probe(struct spi_device *spi)
+ 	}
+ 
+ 	/* Get the MAC address from the chip */
+-	encx24j600_hw_get_macaddr(priv, ndev->dev_addr);
++	encx24j600_hw_get_macaddr(priv, addr);
++	eth_hw_addr_set(ndev, addr);
+ 
+ 	ndev->ethtool_ops = &encx24j600_ethtool_ops;
+ 
+diff --git a/drivers/net/ethernet/natsemi/natsemi.c b/drivers/net/ethernet/natsemi/natsemi.c
+index 3f982033944b..82a22711ce45 100644
+--- a/drivers/net/ethernet/natsemi/natsemi.c
++++ b/drivers/net/ethernet/natsemi/natsemi.c
+@@ -809,6 +809,7 @@ static int natsemi_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	unsigned long iosize;
+ 	void __iomem *ioaddr;
+ 	const int pcibar = 1; /* PCI base address register */
++	u8 addr[ETH_ALEN];
+ 	int prev_eedata;
+ 	u32 tmp;
+ 
+@@ -859,10 +860,11 @@ static int natsemi_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	prev_eedata = eeprom_read(ioaddr, 6);
+ 	for (i = 0; i < 3; i++) {
+ 		int eedata = eeprom_read(ioaddr, i + 7);
+-		dev->dev_addr[i*2] = (eedata << 1) + (prev_eedata >> 15);
+-		dev->dev_addr[i*2+1] = eedata >> 7;
++		addr[i*2] = (eedata << 1) + (prev_eedata >> 15);
++		addr[i*2+1] = eedata >> 7;
+ 		prev_eedata = eedata;
+ 	}
++	eth_hw_addr_set(dev, addr);
+ 
+ 	np = netdev_priv(dev);
+ 	np->ioaddr = ioaddr;
+diff --git a/drivers/net/ethernet/natsemi/ns83820.c b/drivers/net/ethernet/natsemi/ns83820.c
+index 72794d158871..49ea130c9067 100644
+--- a/drivers/net/ethernet/natsemi/ns83820.c
++++ b/drivers/net/ethernet/natsemi/ns83820.c
+@@ -1649,9 +1649,11 @@ static int ns83820_open(struct net_device *ndev)
+ 	return ret;
+ }
+ 
+-static void ns83820_getmac(struct ns83820 *dev, u8 *mac)
++static void ns83820_getmac(struct ns83820 *dev, struct net_device *ndev)
+ {
++	u8 mac[ETH_ALEN];
+ 	unsigned i;
++
+ 	for (i=0; i<3; i++) {
+ 		u32 data;
+ 
+@@ -1661,9 +1663,10 @@ static void ns83820_getmac(struct ns83820 *dev, u8 *mac)
+ 		writel(i*2, dev->base + RFCR);
+ 		data = readl(dev->base + RFDR);
+ 
+-		*mac++ = data;
+-		*mac++ = data >> 8;
++		mac[i * 2] = data;
++		mac[i * 2 + 1] = data >> 8;
+ 	}
++	eth_hw_addr_set(ndev, mac);
+ }
+ 
+ static void ns83820_set_multicast(struct net_device *ndev)
+@@ -2136,7 +2139,7 @@ static int ns83820_init_one(struct pci_dev *pci_dev,
+ 	/* Disable Wake On Lan */
+ 	writel(0, dev->base + WCSR);
+ 
+-	ns83820_getmac(dev, ndev->dev_addr);
++	ns83820_getmac(dev, ndev);
+ 
+ 	/* Yes, we support dumb IP checksum on transmit */
+ 	ndev->features |= NETIF_F_SG;
+diff --git a/drivers/net/ethernet/packetengines/hamachi.c b/drivers/net/ethernet/packetengines/hamachi.c
+index 1a6336a56d3d..9c408328be0d 100644
+--- a/drivers/net/ethernet/packetengines/hamachi.c
++++ b/drivers/net/ethernet/packetengines/hamachi.c
+@@ -592,6 +592,7 @@ static int hamachi_init_one(struct pci_dev *pdev,
+ 	void *ring_space;
+ 	dma_addr_t ring_dma;
+ 	int ret = -ENOMEM;
++	u8 addr[ETH_ALEN];
+ 
+ /* when built into the kernel, we only print version if device is found */
+ #ifndef MODULE
+@@ -628,8 +629,8 @@ static int hamachi_init_one(struct pci_dev *pdev,
+ 	SET_NETDEV_DEV(dev, &pdev->dev);
+ 
+ 	for (i = 0; i < 6; i++)
+-		dev->dev_addr[i] = 1 ? read_eeprom(ioaddr, 4 + i)
+-			: readb(ioaddr + StationAddr + i);
++		addr[i] = read_eeprom(ioaddr, 4 + i);
++	eth_hw_addr_set(dev, addr);
+ 
+ #if ! defined(final_version)
+ 	if (hamachi_debug > 4)
+diff --git a/drivers/net/ethernet/packetengines/yellowfin.c b/drivers/net/ethernet/packetengines/yellowfin.c
+index f5cd8f51be7c..12105f62cbdd 100644
+--- a/drivers/net/ethernet/packetengines/yellowfin.c
++++ b/drivers/net/ethernet/packetengines/yellowfin.c
+@@ -384,6 +384,7 @@ static int yellowfin_init_one(struct pci_dev *pdev,
+ #else
+ 	int bar = 1;
+ #endif
++	u8 addr[ETH_ALEN];
+ 
+ /* when built into the kernel, we only print version if device is found */
+ #ifndef MODULE
+@@ -416,12 +417,13 @@ static int yellowfin_init_one(struct pci_dev *pdev,
+ 
+ 	if (drv_flags & DontUseEeprom)
+ 		for (i = 0; i < 6; i++)
+-			dev->dev_addr[i] = ioread8(ioaddr + StnAddr + i);
++			addr[i] = ioread8(ioaddr + StnAddr + i);
+ 	else {
+ 		int ee_offset = (read_eeprom(ioaddr, 6) == 0xff ? 0x100 : 0);
+ 		for (i = 0; i < 6; i++)
+-			dev->dev_addr[i] = read_eeprom(ioaddr, ee_offset + i);
++			addr[i] = read_eeprom(ioaddr, ee_offset + i);
+ 	}
++	eth_hw_addr_set(dev, addr);
+ 
+ 	/* Reset the chip. */
+ 	iowrite32(0x80000000, ioaddr + DMACtrl);
+diff --git a/drivers/net/ethernet/silan/sc92031.c b/drivers/net/ethernet/silan/sc92031.c
+index 1fd08a04bd4e..ff4197f5e46d 100644
+--- a/drivers/net/ethernet/silan/sc92031.c
++++ b/drivers/net/ethernet/silan/sc92031.c
+@@ -1400,6 +1400,7 @@ static int sc92031_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	void __iomem* port_base;
+ 	struct net_device *dev;
+ 	struct sc92031_priv *priv;
++	u8 addr[ETH_ALEN];
+ 	u32 mac0, mac1;
+ 
+ 	err = pci_enable_device(pdev);
+@@ -1458,12 +1459,13 @@ static int sc92031_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	mac0 = ioread32(port_base + MAC0);
+ 	mac1 = ioread32(port_base + MAC0 + 4);
+-	dev->dev_addr[0] = mac0 >> 24;
+-	dev->dev_addr[1] = mac0 >> 16;
+-	dev->dev_addr[2] = mac0 >> 8;
+-	dev->dev_addr[3] = mac0;
+-	dev->dev_addr[4] = mac1 >> 8;
+-	dev->dev_addr[5] = mac1;
++	addr[0] = mac0 >> 24;
++	addr[1] = mac0 >> 16;
++	addr[2] = mac0 >> 8;
++	addr[3] = mac0;
++	addr[4] = mac1 >> 8;
++	addr[5] = mac1;
++	eth_hw_addr_set(dev, addr);
+ 
+ 	err = register_netdev(dev);
+ 	if (err < 0)
+diff --git a/drivers/net/ethernet/smsc/smc91c92_cs.c b/drivers/net/ethernet/smsc/smc91c92_cs.c
+index e5658aa39765..37c822e27207 100644
+--- a/drivers/net/ethernet/smsc/smc91c92_cs.c
++++ b/drivers/net/ethernet/smsc/smc91c92_cs.c
+@@ -347,6 +347,7 @@ static void smc91c92_detach(struct pcmcia_device *link)
+ 
+ static int cvt_ascii_address(struct net_device *dev, char *s)
+ {
++    u8 mac[ETH_ALEN];
+     int i, j, da, c;
+ 
+     if (strlen(s) != 12)
+@@ -359,8 +360,9 @@ static int cvt_ascii_address(struct net_device *dev, char *s)
+ 	    da += ((c >= '0') && (c <= '9')) ?
+ 		(c - '0') : ((c & 0x0f) + 9);
+ 	}
+-	dev->dev_addr[i] = da;
++	mac[i] = da;
+     }
++    eth_hw_addr_set(dev, mac);
+     return 0;
+ }
+ 
+@@ -539,6 +541,7 @@ static int mot_setup(struct pcmcia_device *link)
+     struct net_device *dev = link->priv;
+     unsigned int ioaddr = dev->base_addr;
+     int i, wait, loop;
++    u8 mac[ETH_ALEN];
+     u_int addr;
+ 
+     /* Read Ethernet address from Serial EEPROM */
+@@ -559,9 +562,10 @@ static int mot_setup(struct pcmcia_device *link)
+ 	    return -1;
+ 	
+ 	addr = inw(ioaddr + GENERAL);
+-	dev->dev_addr[2*i]   = addr & 0xff;
+-	dev->dev_addr[2*i+1] = (addr >> 8) & 0xff;
++	mac[2*i]   = addr & 0xff;
++	mac[2*i+1] = (addr >> 8) & 0xff;
+     }
++    eth_hw_addr_set(dev, mac);
+ 
+     return 0;
+ }
+diff --git a/drivers/net/ethernet/sun/sunvnet.c b/drivers/net/ethernet/sun/sunvnet.c
+index 58ee89223951..da8119625cf3 100644
+--- a/drivers/net/ethernet/sun/sunvnet.c
++++ b/drivers/net/ethernet/sun/sunvnet.c
+@@ -285,6 +285,7 @@ static struct vnet *vnet_new(const u64 *local_mac,
+ 			     struct vio_dev *vdev)
+ {
+ 	struct net_device *dev;
++	u8 addr[ETH_ALEN];
+ 	struct vnet *vp;
+ 	int err, i;
+ 
+@@ -295,7 +296,8 @@ static struct vnet *vnet_new(const u64 *local_mac,
+ 	dev->needed_tailroom = 8;
+ 
+ 	for (i = 0; i < ETH_ALEN; i++)
+-		dev->dev_addr[i] = (*local_mac >> (5 - i) * 8) & 0xff;
++		addr[i] = (*local_mac >> (5 - i) * 8) & 0xff;
++	eth_hw_addr_set(dev, addr);
+ 
+ 	vp = netdev_priv(dev);
+ 
+diff --git a/drivers/net/ethernet/toshiba/tc35815.c b/drivers/net/ethernet/toshiba/tc35815.c
+index f8b9d10dc056..ce38f7515225 100644
+--- a/drivers/net/ethernet/toshiba/tc35815.c
++++ b/drivers/net/ethernet/toshiba/tc35815.c
+@@ -725,6 +725,7 @@ static int tc35815_init_dev_addr(struct net_device *dev)
+ {
+ 	struct tc35815_regs __iomem *tr =
+ 		(struct tc35815_regs __iomem *)dev->base_addr;
++	u8 addr[ETH_ALEN];
+ 	int i;
+ 
+ 	while (tc_readl(&tr->PROM_Ctl) & PROM_Busy)
+@@ -735,9 +736,10 @@ static int tc35815_init_dev_addr(struct net_device *dev)
+ 		while (tc_readl(&tr->PROM_Ctl) & PROM_Busy)
+ 			;
+ 		data = tc_readl(&tr->PROM_Data);
+-		dev->dev_addr[i] = data & 0xff;
+-		dev->dev_addr[i+1] = data >> 8;
++		addr[i] = data & 0xff;
++		addr[i+1] = data >> 8;
+ 	}
++	eth_hw_addr_set(dev, addr);
+ 	if (!is_valid_ether_addr(dev->dev_addr))
+ 		return tc35815_read_plat_dev_addr(dev);
+ 	return 0;
+diff --git a/drivers/net/ethernet/xircom/xirc2ps_cs.c b/drivers/net/ethernet/xircom/xirc2ps_cs.c
+index ab513dcc3b22..f9587e55b842 100644
+--- a/drivers/net/ethernet/xircom/xirc2ps_cs.c
++++ b/drivers/net/ethernet/xircom/xirc2ps_cs.c
+@@ -671,7 +671,6 @@ static int pcmcia_get_mac_ce(struct pcmcia_device *p_dev,
+ 			     void *priv)
+ {
+ 	struct net_device *dev = priv;
+-	int i;
+ 
+ 	if (tuple->TupleDataLen != 13)
+ 		return -EINVAL;
+@@ -679,8 +678,7 @@ static int pcmcia_get_mac_ce(struct pcmcia_device *p_dev,
+ 		(tuple->TupleData[2] != 6))
+ 		return -EINVAL;
+ 	/* another try	(James Lehmer's CE2 version 4.1)*/
+-	for (i = 2; i < 6; i++)
+-		dev->dev_addr[i] = tuple->TupleData[i+2];
++	dev_addr_mod(dev, 2, &tuple->TupleData[2], 4);
+ 	return 0;
+ };
+ 
+@@ -742,11 +740,9 @@ xirc2ps_config(struct pcmcia_device * link)
+ 	    len = pcmcia_get_tuple(link, 0x89, &buf);
+ 	    /* data layout looks like tuple 0x22 */
+ 	    if (buf && len == 8) {
+-		    if (*buf == CISTPL_FUNCE_LAN_NODE_ID) {
+-			    int i;
+-			    for (i = 2; i < 6; i++)
+-				    dev->dev_addr[i] = buf[i+2];
+-		    } else
++		    if (*buf == CISTPL_FUNCE_LAN_NODE_ID)
++			    dev_addr_mod(dev, 2, &buf[2], 4);
++		    else
+ 			    err = -1;
+ 	    }
+ 	    kfree(buf);
+-- 
+2.31.1
 
