@@ -2,143 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A5FC42F860
-	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 18:38:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01E7842F89C
+	for <lists+netdev@lfdr.de>; Fri, 15 Oct 2021 18:47:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241463AbhJOQk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 12:40:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:49526 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241380AbhJOQk0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 12:40:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1634315899;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OL1xVkJ1GZ3Vp5ZR2VEcp/JIFWoJLAIj138sahWf0nI=;
-        b=NOpGfMXRuFgdOyETbQos7lxomZy5caANyRh3AwP6wyg8ZX49FVWEHouoFESn+1ZvJJRW0B
-        ACF66jgHu3nRsn9zgqudeO5Ki5AalzcSCLxsMJ4JY1CmCRuhX903fzGQjqkVyZ0IqORPne
-        IHMCE72aMQItwED2qWVao3zePgVQiEQ=
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
- [209.85.161.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-561-JSACGs1LO2Gh6Ut1xc4l6Q-1; Fri, 15 Oct 2021 12:38:18 -0400
-X-MC-Unique: JSACGs1LO2Gh6Ut1xc4l6Q-1
-Received: by mail-oo1-f70.google.com with SMTP id c8-20020a4ad208000000b002b6b6df6b7fso4368928oos.13
-        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 09:38:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OL1xVkJ1GZ3Vp5ZR2VEcp/JIFWoJLAIj138sahWf0nI=;
-        b=Ld+zz93sECjqeTKGvas57YFuatsqoWeIHn8YtIEzsqfZCXCFmcrp8IKfjt888ReKqg
-         DvECjmCkXz21YqeTbwctQcbUaWs77sKHWyqI+mV2MsRqg7oWdbQyVz38xbGQS7n+uOBU
-         nFWt2M0lqVQry8bZm3LXIS8RsUztD+6WnGbn/lcy1637hHAir9nkwtkCZdBu80eSF07+
-         SfoenU9jpd5Jggwh3ex0DnosJsFMilWuA5cna8VUaPcWXbCJs5nMY17srKfixT8yCjXZ
-         jSiSZIn4RH7Sx8Jx7GTPms3beC9j+f83Z9XuAYk1vQ0YN9rJ09paCdq+O2rVTGeLPSL/
-         PTUQ==
-X-Gm-Message-State: AOAM530mtIBAh3n8z8qcsSQgriIZavbrLUx1NFPV6utW3gEbBjOZjETe
-        Ki6UDhaSV46vfVByW0PDwu+gF8ZLBcmGmigw18iBfU1X+TZzLC3HBAeVmC9uIvl8KwOzHR15kfw
-        oA94UGLkpeFJSzL2I
-X-Received: by 2002:a4a:adca:: with SMTP id t10mr9780929oon.19.1634315897609;
-        Fri, 15 Oct 2021 09:38:17 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy07XqbfRReKgHIu02thE2BC8q9a60k39yM0PD78yJmMQBceFMI+pcgwV8uY+kr3MAVEOqLnA==
-X-Received: by 2002:a4a:adca:: with SMTP id t10mr9780920oon.19.1634315897403;
-        Fri, 15 Oct 2021 09:38:17 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id a10sm1334513otb.7.2021.10.15.09.38.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Oct 2021 09:38:17 -0700 (PDT)
-Date:   Fri, 15 Oct 2021 10:38:15 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Yishai Hadas <yishaih@nvidia.com>
-Cc:     <bhelgaas@google.com>, <jgg@nvidia.com>, <saeedm@nvidia.com>,
-        <linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <kuba@kernel.org>, <leonro@nvidia.com>,
-        <kwankhede@nvidia.com>, <mgurtovoy@nvidia.com>, <maorg@nvidia.com>
-Subject: Re: [PATCH V1 mlx5-next 07/13] vfio: Add 'invalid' state
- definitions
-Message-ID: <20211015103815.4b165d43.alex.williamson@redhat.com>
-In-Reply-To: <20211013094707.163054-8-yishaih@nvidia.com>
-References: <20211013094707.163054-1-yishaih@nvidia.com>
-        <20211013094707.163054-8-yishaih@nvidia.com>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        id S241597AbhJOQtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 12:49:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60482 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241554AbhJOQtC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Oct 2021 12:49:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 34DF061164;
+        Fri, 15 Oct 2021 16:46:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634316415;
+        bh=UazkFhnF58o243B84E27T2Q0kziPCzNQlAM0EXnPs+0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=uJA4ra39P0Gv6naQSVcILGvPjCJywIq0xOMKparacmz05rvVX6Np5K3P9TBtMV+Q6
+         0fZMoqlsDqrvmOr81us08+gZah/AgsMkvZGLUZdvStWvkLQD9P6+IT1gNPD5kGzCTz
+         OqQa78pHkuTPX/IwPxuJYSyFJgvQojor9CCfmM0cFvkyP8yz7FerO3C6Xj6Ja6G65F
+         0JNWOrnI2B9XClHx9c5DgYXjOqp4IU9Zrxk/YET9tVYaYS+dnGehAv9e/YWKzwcbHz
+         D1LRfA0mXkjJ2/mnwlueLADrqQ5YuEa5UTY+rPKkoEu2iEn918jjZk3T8fIflFmK8o
+         yGBq7Ksq4IKXA==
+Date:   Fri, 15 Oct 2021 11:46:53 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Fiona Trahe <fiona.trahe@intel.com>,
+        Frederic Barrat <fbarrat@linux.ibm.com>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ido Schimmel <idosch@nvidia.com>,
+        Ingo Molnar <mingo@redhat.com>, Jack Xu <jack.xu@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jiri Olsa <jolsa@redhat.com>, Jiri Pirko <jiri@nvidia.com>,
+        Juergen Gross <jgross@suse.com>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        Marco Chiappero <marco.chiappero@intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Michael Buesch <m@bues.ch>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Oliver O'Halloran <oohall@gmail.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Russell Currey <ruscur@russell.cc>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Sathya Prakash <sathya.prakash@broadcom.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Suganath Prabu Subramani 
+        <suganath-prabu.subramani@broadcom.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tomaszx Kowalik <tomaszx.kowalik@intel.com>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Wojciech Ziemba <wojciech.ziemba@intel.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Zhou Wang <wangzhou1@hisilicon.com>,
+        linux-crypto <linux-crypto@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-perf-users@vger.kernel.org,
+        "open list:LINUX FOR POWERPC PA SEMI PWRFICIENT" 
+        <linuxppc-dev@lists.ozlabs.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        USB <linux-usb@vger.kernel.org>,
+        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
+        MPT-FusionLinux.pdl@broadcom.com, netdev <netdev@vger.kernel.org>,
+        oss-drivers@corigine.com, qat-linux@intel.com,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        xen-devel@lists.xenproject.org
+Subject: Re: [PATCH v6 00/11] PCI: Drop duplicated tracking of a pci_dev's
+ bound driver
+Message-ID: <20211015164653.GA2108651@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YWbdvc7EWEZLVTHM@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 13 Oct 2021 12:47:01 +0300
-Yishai Hadas <yishaih@nvidia.com> wrote:
+On Wed, Oct 13, 2021 at 04:23:09PM +0300, Andy Shevchenko wrote:
+> On Wed, Oct 13, 2021 at 06:33:56AM -0500, Bjorn Helgaas wrote:
+> > On Wed, Oct 13, 2021 at 12:26:42PM +0300, Andy Shevchenko wrote:
+> > > On Wed, Oct 13, 2021 at 2:33 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > > > On Mon, Oct 04, 2021 at 02:59:24PM +0200, Uwe Kleine-König wrote:
 
-> Add 'invalid' state definition to be used by drivers to set/check
-> invalid state.
+> > > > +       return drv && drv->resume ?
+> > > > +                       drv->resume(pci_dev) : pci_pm_reenable_device(pci_dev);
+> > > 
+> > > One line?
+> > 
+> > I don't think I touched that line.
 > 
-> In addition dropped the non complied macro VFIO_DEVICE_STATE_SET_ERROR
-> (i.e SATE instead of STATE) which seems unusable.
+> Then why they are both in + section?
 
-s/non complied/non-compiled/
+They're both in the + section of the interdiff because Uwe's v6 patch
+looks like this:
 
-We can certainly assume it's unused based on the typo, but removing it
-or fixing it should be a separate patch.
+  static int pci_legacy_resume(struct device *dev)
+  {
+          struct pci_dev *pci_dev = to_pci_dev(dev);
+  -       return drv && drv->resume ?
+  -                       drv->resume(pci_dev) : pci_pm_reenable_device(pci_dev);
+  +       if (pci_dev->dev.driver) {
+  +               struct pci_driver *drv = to_pci_driver(pci_dev->dev.driver);
+  +
+  +               if (drv->resume)
+  +                       return drv->resume(pci_dev);
+  +       }
+  +
+  +       return pci_pm_reenable_device(pci_dev);
 
-> Fixes: a8a24f3f6e38 ("vfio: UAPI for migration interface for device state")
-> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
->  include/linux/vfio.h      | 5 +++++
->  include/uapi/linux/vfio.h | 4 +---
->  2 files changed, 6 insertions(+), 3 deletions(-)
+and my revision looks like this:
+
+   static int pci_legacy_resume(struct device *dev)
+   {
+	  struct pci_dev *pci_dev = to_pci_dev(dev);
+  -       struct pci_driver *drv = pci_dev->driver;
+  +       struct pci_driver *drv = to_pci_driver(dev->driver);
+
+so compared to Uwe's v6, I restored that section to the original code.
+My goal here was to make the patch as simple and easy to review as
+possible.
+
+> > > > +       struct pci_driver *drv = to_pci_driver(dev->dev.driver);
+> > > >         const struct pci_error_handlers *err_handler =
+> > > > -                       dev->dev.driver ? to_pci_driver(dev->dev.driver)->err_handler : NULL;
+> > > > +                       drv ? drv->err_handler : NULL;
+> > > 
+> > > Isn't dev->driver == to_pci_driver(dev->dev.driver)?
+> > 
+> > Yes, I think so, but not sure what you're getting at here, can you
+> > elaborate?
 > 
-> diff --git a/include/linux/vfio.h b/include/linux/vfio.h
-> index b53a9557884a..6a8cf6637333 100644
-> --- a/include/linux/vfio.h
-> +++ b/include/linux/vfio.h
-> @@ -252,4 +252,9 @@ extern int vfio_virqfd_enable(void *opaque,
->  			      void *data, struct virqfd **pvirqfd, int fd);
->  extern void vfio_virqfd_disable(struct virqfd **pvirqfd);
->  
-> +static inline bool vfio_is_state_invalid(u32 state)
-> +{
-> +	return state >= VFIO_DEVICE_STATE_INVALID;
-> +}
+> Getting pointer from another pointer seems waste of resources, why we
+> can't simply
+> 
+> 	struct pci_driver *drv = dev->driver;
 
+I think this is in pci_dev_save_and_disable(), and "dev" here is a
+struct pci_dev *.  We're removing the dev->driver member.  Let me know
+if I'm still missing something.
 
-Redundant, we already have !VFIO_DEVICE_STATE_VALID(state)
+> > > > -                               "bad request in aer recovery "
+> > > > -                               "operation!\n");
+> > > > +                               "bad request in AER recovery operation!\n");
 
-> +
->  #endif /* VFIO_H */
-> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> index ef33ea002b0b..7f8fdada5eb3 100644
-> --- a/include/uapi/linux/vfio.h
-> +++ b/include/uapi/linux/vfio.h
-> @@ -609,6 +609,7 @@ struct vfio_device_migration_info {
->  #define VFIO_DEVICE_STATE_RUNNING   (1 << 0)
->  #define VFIO_DEVICE_STATE_SAVING    (1 << 1)
->  #define VFIO_DEVICE_STATE_RESUMING  (1 << 2)
-> +#define VFIO_DEVICE_STATE_INVALID   (VFIO_DEVICE_STATE_RESUMING + 1)
+> > > Stray change? Or is it in a separate patch in your tree?
+> > 
+> > Could be skipped.  The string now fits on one line so I combined it to
+> > make it more greppable.
+> 
+> This is inconsistency in your changes, in one case you are objecting of
+> doing something close to the changed lines, in the other you are doing
+> unrelated change.
 
-Nak, device_state is not an enum, this is only one of the states we
-currently define as invalid and usage such as the inline above ignores
-the device state mask below, which induces future limits on how we can
-expand the device_state field.  Thanks,
+You're right, this didn't make much sense in that patch.  I moved the
+line join to the previous patch, which unindented this section and
+made space for this to fit on one line.  Here's the revised commit:
 
-Alex
-
->  #define VFIO_DEVICE_STATE_MASK      (VFIO_DEVICE_STATE_RUNNING | \
->  				     VFIO_DEVICE_STATE_SAVING |  \
->  				     VFIO_DEVICE_STATE_RESUMING)
-> @@ -621,9 +622,6 @@ struct vfio_device_migration_info {
->  	((state & VFIO_DEVICE_STATE_MASK) == (VFIO_DEVICE_STATE_SAVING | \
->  					      VFIO_DEVICE_STATE_RESUMING))
->  
-> -#define VFIO_DEVICE_STATE_SET_ERROR(state) \
-> -	((state & ~VFIO_DEVICE_STATE_MASK) | VFIO_DEVICE_SATE_SAVING | \
-> -					     VFIO_DEVICE_STATE_RESUMING)
->  
->  	__u32 reserved;
->  	__u64 pending_bytes;
+  https://git.kernel.org/cgit/linux/kernel/git/helgaas/pci.git/commit/?id=34ab316d7287
 
