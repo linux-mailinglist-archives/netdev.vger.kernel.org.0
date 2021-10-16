@@ -2,45 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59A9D4300F8
-	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 09:55:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9C724300FA
+	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 09:55:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243841AbhJPH5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Oct 2021 03:57:17 -0400
-Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:59600
+        id S243844AbhJPH5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Oct 2021 03:57:18 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:59624
         "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243845AbhJPH5N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Oct 2021 03:57:13 -0400
+        by vger.kernel.org with ESMTP id S239780AbhJPH5Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Oct 2021 03:57:16 -0400
 Received: from HP-EliteBook-840-G7.. (36-229-230-94.dynamic-ip.hinet.net [36.229.230.94])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 0019B40006;
-        Sat, 16 Oct 2021 07:55:00 +0000 (UTC)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 8EAA941B97;
+        Sat, 16 Oct 2021 07:55:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1634370904;
-        bh=/P/llMH6UOsylnpGcNCdg/3aIo3qtJzP4OvFE14/jU0=;
+        s=20210705; t=1634370908;
+        bh=ks4EMfJg/egcfAoIsAktLMa4qabsfSpvzb0PW64b30Q=;
         h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=nHBkHAX7YBPrflOhdLijiU2uu2zx5xxTN+a9s8vgi+Bc1YItAhNx+inGISeXVlb/t
-         IKTt7zUDcBOwDS4NeMPFM86mWkOpQ0aLAdR0CG32ne3/evnatCZDxwBHIMRAuAi7vE
-         eQlvfC9iwHq7AeRPO7ORe6M+Y+ZzFDtoWN9JycN9M9MEbdDP6CmmNT6un9TIoR0sWH
-         eRUB4bgK+wYoX8QZJBTFeNYk3EfPcMPDU/g5Q54Btz8PAS24mAbKiZnxnYMHvYzdsm
-         uPucHOEbIRNsYCRObJuTIkwdQ7LcOXC8MzdbmYB6ecQIBjsILDqhnqZteP8ZHdnLc6
-         Ot7EJ9N/5VaNA==
+        b=m69cEWGg7bX6fjr5Eyse2DGGBU81swiTj/yccQ38+nTUIYLW0hu/6w7HV75R5VPlR
+         aK6x+gxvys09xLE7DkbKJ+TMWS3yviyKI/3s2OLWj85UcfMMk1QSH/7NWAjnTDf5u/
+         /FHaw2q8lbrn5ifySEHL0idIQFLZ1PVgEfk2aWP42UmrZMAxsn7FYb09Xr722vLPX+
+         q7f3zQ8ckdDkMwZgZppOuZBo1mF2Kdehx79GV8gPXMJv1dTrDFge3QpKPvMhtD+mEw
+         HHBGY99ufikTgbaUWTnQV5FczVhMejKuOrtg7qFlW+olzBM5qhOLsGQjnpQlMsZaG5
+         ZyKpX4OGM2VOA==
 From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
 To:     hkallweit1@gmail.com, nic_swsd@realtek.com, bhelgaas@google.com
 Cc:     davem@davemloft.net, kuba@kernel.org, anthony.wong@canonical.com,
         netdev@vger.kernel.org, linux-pci@vger.kernel.org,
         linux-kernel@vger.kernel.org,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        "Saheed O. Bolarinwa" <refactormyself@gmail.com>,
-        Vidya Sagar <vidyas@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
-Subject: [RFC] [PATCH net-next v7 1/4] PCI/ASPM: Add pcie_aspm_capable()
-Date:   Sat, 16 Oct 2021 15:54:39 +0800
-Message-Id: <20211016075442.650311-2-kai.heng.feng@canonical.com>
+        Kai-Heng Feng <kai.heng.feng@canonical.com>
+Subject: [RFC] [PATCH net-next v7 2/4] r8169: Enable chip-specific ASPM regardless of PCIe ASPM status
+Date:   Sat, 16 Oct 2021 15:54:40 +0800
+Message-Id: <20211016075442.650311-3-kai.heng.feng@canonical.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211016075442.650311-1-kai.heng.feng@canonical.com>
 References: <20211016075442.650311-1-kai.heng.feng@canonical.com>
@@ -50,75 +46,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce a new helper, pcie_aspm_capable(), to report ASPM capability.
+To really enable ASPM on r8169 NICs, both standard PCIe ASPM and
+chip-specific ASPM have to be enabled at the same time.
 
-The user will be introduced by next patch.
+Since PCIe ASPM can be enabled or disabled vis sysfs and there's no
+mechanism to notify driver about ASPM change, unconditionally enable
+chip-specific ASPM to make ASPM really take into effect.
 
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-Suggested-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 ---
 v7:
-- Change subject.
+ - No change.
 
 v6:
- - No change.
+ - Unconditionally enable chip-specific ASPM.
 
 v5:
- - No change.
+ - New patch.
 
-v4:
- - Report aspm_capable instead.
+ drivers/net/ethernet/realtek/r8169_main.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-v3:
- - This is a new patch
-
- drivers/pci/pcie/aspm.c | 11 +++++++++++
- include/linux/pci.h     |  2 ++
- 2 files changed, 13 insertions(+)
-
-diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
-index 013a47f587cea..788e7496f33b1 100644
---- a/drivers/pci/pcie/aspm.c
-+++ b/drivers/pci/pcie/aspm.c
-@@ -1201,6 +1201,17 @@ bool pcie_aspm_enabled(struct pci_dev *pdev)
- }
- EXPORT_SYMBOL_GPL(pcie_aspm_enabled);
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 0199914440abc..53936ebb3b3a6 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -622,7 +622,6 @@ struct rtl8169_private {
+ 	} wk;
  
-+bool pcie_aspm_capable(struct pci_dev *pdev)
-+{
-+	struct pcie_link_state *link = pcie_aspm_get_link(pdev);
-+
-+	if (!link)
-+		return false;
-+
-+	return link->aspm_capable;
-+}
-+EXPORT_SYMBOL_GPL(pcie_aspm_capable);
-+
- static ssize_t aspm_attr_show_common(struct device *dev,
- 				     struct device_attribute *attr,
- 				     char *buf, u8 state)
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index cd8aa6fce2041..a17baa39141f4 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1639,6 +1639,7 @@ int pci_disable_link_state_locked(struct pci_dev *pdev, int state);
- void pcie_no_aspm(void);
- bool pcie_aspm_support_enabled(void);
- bool pcie_aspm_enabled(struct pci_dev *pdev);
-+bool pcie_aspm_capable(struct pci_dev *pdev);
- #else
- static inline int pci_disable_link_state(struct pci_dev *pdev, int state)
- { return 0; }
-@@ -1647,6 +1648,7 @@ static inline int pci_disable_link_state_locked(struct pci_dev *pdev, int state)
- static inline void pcie_no_aspm(void) { }
- static inline bool pcie_aspm_support_enabled(void) { return false; }
- static inline bool pcie_aspm_enabled(struct pci_dev *pdev) { return false; }
-+static inline bool pcie_aspm_capable(struct pci_dev *pdev) { return false; }
- #endif
+ 	unsigned supports_gmii:1;
+-	unsigned aspm_manageable:1;
+ 	dma_addr_t counters_phys_addr;
+ 	struct rtl8169_counters *counters;
+ 	struct rtl8169_tc_offsets tc_offset;
+@@ -2664,8 +2663,13 @@ static void rtl_enable_exit_l1(struct rtl8169_private *tp)
  
- #ifdef CONFIG_PCIEAER
+ static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
+ {
+-	/* Don't enable ASPM in the chip if OS can't control ASPM */
+-	if (enable && tp->aspm_manageable) {
++	struct pci_dev *pdev = tp->pci_dev;
++
++	/* Skip if PCIe ASPM isn't possible */
++	if (!pcie_aspm_support_enabled() || !pcie_aspm_capable(pdev))
++		return;
++
++	if (enable) {
+ 		RTL_W8(tp, Config5, RTL_R8(tp, Config5) | ASPM_en);
+ 		RTL_W8(tp, Config2, RTL_R8(tp, Config2) | ClkReqEn);
+ 	} else {
+@@ -5272,8 +5276,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	/* Disable ASPM L1 as that cause random device stop working
+ 	 * problems as well as full system hangs for some PCIe devices users.
+ 	 */
+-	rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
+-	tp->aspm_manageable = !rc;
++	pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
+ 
+ 	/* enable device (incl. PCI PM wakeup and hotplug setup) */
+ 	rc = pcim_enable_device(pdev);
 -- 
 2.32.0
 
