@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0C2742FF79
+	by mail.lfdr.de (Postfix) with ESMTP id A186442FF78
 	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 02:39:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239374AbhJPAlS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 20:41:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58746 "EHLO mail.kernel.org"
+        id S239373AbhJPAlR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 20:41:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58758 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236655AbhJPAlL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Oct 2021 20:41:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7624761245;
+        id S239231AbhJPAlM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Oct 2021 20:41:12 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EC93561247;
         Sat, 16 Oct 2021 00:39:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634344744;
-        bh=09GipYYgS1ppxLSKiufRdaY95dHzxfGWveeWloBXus8=;
+        s=k20201202; t=1634344745;
+        bh=AJqxr2Q32R0jFDIYi9I6KfKGyGxUAdXlw49fhXGJsQM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qm4Z6mSDyQJRIjhhXnZPiwkvA9oKewrI1qrZ9BeYkGOJsH8j2xBEvYC8XTtUMMsZb
-         66+GGULl7Qrvnr2/8YQYb5WkORHgCzRWp9YJCmfcj+IaMS0kAxw6xqs/4w6EjLbfAl
-         kCA9BCMu3Wya4nDJt068w5rTvemSVM8muHpeYtS26q8UoOvt9ADmoJaB1SuHfT6iU2
-         ViMuYMswF9PjiDMGH1LlKGjhC9xdrjkmLrItGWa5pEt7YrIERtb5RXF6snNU+n+Riv
-         HoQfyKWkQBcFg3OM/5M8HGRCinXcLFaxpJjfh8DX9akOdipfMYdIcf0Zj+AY0c3KeO
-         Bi3n/bBWG76+A==
+        b=pl8rbSU8ENTa8lqwkEziWk/dABoZosDcvt0B+5ncUC4DYPVYfuD+p2pg1QYtsExVN
+         hlF0gIgDklU8hOpHfdbgwLN6EmsJv0iE8Xrrl68r1yVBOtgj9llsgMPljQAjn3xal0
+         MGV8Z1AbrzyWIkx80uIC01SHeEDTyEqZDAohICo5RjWfy7pMB3L+pF0ToWeSqMhxQd
+         WRxYrD1d0aqzukDnK5XwA5vFs2pa41H0qhqk7KAcwxiKxs44DarJ0FPhxyEYWbeyBF
+         bCfIwOU0tkjf6biEF1GoAnW9/llRr3QX1IswPmqtgZuzBVyvfXiIrgpHD82b67CCI3
+         aTpxHcQp0YVHQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Amir Tzin <amirtz@mellanox.com>,
+Cc:     netdev@vger.kernel.org, Amir Tzin <amirtz@nvidia.com>,
         Moshe Shemesh <moshe@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 02/13] net/mlx5: Read timeout values from init segment
-Date:   Fri, 15 Oct 2021 17:38:51 -0700
-Message-Id: <20211016003902.57116-3-saeed@kernel.org>
+Subject: [net-next 03/13] net/mlx5: Read timeout values from DTOR
+Date:   Fri, 15 Oct 2021 17:38:52 -0700
+Message-Id: <20211016003902.57116-4-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211016003902.57116-1-saeed@kernel.org>
 References: <20211016003902.57116-1-saeed@kernel.org>
@@ -41,360 +41,478 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Amir Tzin <amirtz@mellanox.com>
+From: Amir Tzin <amirtz@nvidia.com>
 
-Replace hard coded timeouts with values stored in firmware's init
-segment. Timeouts are read from init segment during driver load. If init
-segment timeouts are not supported then fallback to hard coded defaults
-instead. Also move pre initialization timeouts which cannot be read from
-firmware to the new mechanism.
+Replace hard coded timeouts with values stored by firmware in default
+timeouts register (DTOR). Timeouts are read during driver load. If DTOR
+is not supported by firmware then fallback to hard coded defaults
+instead.
 
-Signed-off-by: Amir Tzin <amirtz@mellanox.com>
+Signed-off-by: Amir Tzin <amirtz@nvidia.com>
 Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/Makefile  |  2 +-
- drivers/net/ethernet/mellanox/mlx5/core/cmd.c | 18 +++-
- .../ethernet/mellanox/mlx5/core/lib/tout.c    | 96 +++++++++++++++++++
- .../ethernet/mellanox/mlx5/core/lib/tout.h    | 28 ++++++
- .../net/ethernet/mellanox/mlx5/core/main.c    | 38 ++++----
- include/linux/mlx5/driver.h                   |  5 +-
- 6 files changed, 161 insertions(+), 26 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
+ .../ethernet/mellanox/mlx5/core/en/health.h   |  1 -
+ .../mellanox/mlx5/core/en/reporter_rx.c       |  7 +-
+ .../mellanox/mlx5/core/en/reporter_tx.c       |  7 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fw.c  |  9 +--
+ .../ethernet/mellanox/mlx5/core/fw_reset.c    | 16 ++---
+ .../net/ethernet/mellanox/mlx5/core/health.c  | 21 +++---
+ .../ethernet/mellanox/mlx5/core/lib/tout.c    | 68 ++++++++++++++++++-
+ .../ethernet/mellanox/mlx5/core/lib/tout.h    | 13 ++++
+ .../net/ethernet/mellanox/mlx5/core/main.c    |  6 ++
+ .../ethernet/mellanox/mlx5/core/pagealloc.c   | 16 ++---
+ 10 files changed, 124 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-index 63032cd6efb1..a151575be51f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-@@ -17,7 +17,7 @@ mlx5_core-y :=	main.o cmd.o debugfs.o fw.o eq.o uar.o pagealloc.o \
- 		fs_counters.o fs_ft_pool.o rl.o lag.o dev.o events.o wq.o lib/gid.o \
- 		lib/devcom.o lib/pci_vsc.o lib/dm.o lib/fs_ttc.o diag/fs_tracepoint.o \
- 		diag/fw_tracer.o diag/crdump.o devlink.o diag/rsc_dump.o \
--		fw_reset.o qos.o
-+		fw_reset.o qos.o lib/tout.o
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/health.h b/drivers/net/ethernet/mellanox/mlx5/core/en/health.h
+index 018262d0164b..d5b7110a4265 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/health.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/health.h
+@@ -32,7 +32,6 @@ void mlx5e_reporter_rq_cqe_err(struct mlx5e_rq *rq);
+ void mlx5e_reporter_rx_timeout(struct mlx5e_rq *rq);
  
- #
- # Netdev basic
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-index 4dc3a822907a..f71ec4d9d68e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-@@ -45,6 +45,7 @@
+ #define MLX5E_REPORTER_PER_Q_MAX_LEN 256
+-#define MLX5E_REPORTER_FLUSH_TIMEOUT_MSEC 2000
  
+ struct mlx5e_err_ctx {
+ 	int (*recover)(void *ctx);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
+index 0eb125316fe2..74086eb556ae 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
+@@ -6,6 +6,7 @@
+ #include "txrx.h"
+ #include "devlink.h"
+ #include "ptp.h"
++#include "lib/tout.h"
+ 
+ static int mlx5e_query_rq_state(struct mlx5_core_dev *dev, u32 rqn, u8 *state)
+ {
+@@ -32,8 +33,10 @@ static int mlx5e_query_rq_state(struct mlx5_core_dev *dev, u32 rqn, u8 *state)
+ 
+ static int mlx5e_wait_for_icosq_flush(struct mlx5e_icosq *icosq)
+ {
+-	unsigned long exp_time = jiffies +
+-				 msecs_to_jiffies(MLX5E_REPORTER_FLUSH_TIMEOUT_MSEC);
++	struct mlx5_core_dev *dev = icosq->channel->mdev;
++	unsigned long exp_time;
++
++	exp_time = jiffies + msecs_to_jiffies(mlx5_tout_ms(dev, FLUSH_ON_ERROR));
+ 
+ 	while (time_before(jiffies, exp_time)) {
+ 		if (icosq->cc == icosq->pc)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
+index bb682fd751c9..4f4bc8726ec4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
+@@ -4,11 +4,14 @@
+ #include "health.h"
+ #include "en/ptp.h"
+ #include "en/devlink.h"
++#include "lib/tout.h"
+ 
+ static int mlx5e_wait_for_sq_flush(struct mlx5e_txqsq *sq)
+ {
+-	unsigned long exp_time = jiffies +
+-				 msecs_to_jiffies(MLX5E_REPORTER_FLUSH_TIMEOUT_MSEC);
++	struct mlx5_core_dev *dev = sq->mdev;
++	unsigned long exp_time;
++
++	exp_time = jiffies + msecs_to_jiffies(mlx5_tout_ms(dev, FLUSH_ON_ERROR));
+ 
+ 	while (time_before(jiffies, exp_time)) {
+ 		if (sq->cc == sq->pc)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw.c b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
+index 016d26f809a5..f4f8993eac17 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
+@@ -35,6 +35,7 @@
+ #include <linux/module.h>
+ #include "mlx5_core.h"
+ #include "../../mlxfw/mlxfw.h"
++#include "lib/tout.h"
+ #include "accel/tls.h"
+ 
+ enum {
+@@ -317,10 +318,9 @@ int mlx5_cmd_force_teardown_hca(struct mlx5_core_dev *dev)
+ 	return 0;
+ }
+ 
+-#define MLX5_FAST_TEARDOWN_WAIT_MS   3000
+ int mlx5_cmd_fast_teardown_hca(struct mlx5_core_dev *dev)
+ {
+-	unsigned long end, delay_ms = MLX5_FAST_TEARDOWN_WAIT_MS;
++	unsigned long end, delay_ms = mlx5_tout_ms(dev, TEARDOWN);
+ 	u32 out[MLX5_ST_SZ_DW(teardown_hca_out)] = {};
+ 	u32 in[MLX5_ST_SZ_DW(teardown_hca_in)] = {};
+ 	int state;
+@@ -618,17 +618,18 @@ static void mlx5_fsm_release(struct mlxfw_dev *mlxfw_dev, u32 fwhandle)
+ 			 fwhandle, 0);
+ }
+ 
+-#define MLX5_FSM_REACTIVATE_TOUT 5000 /* msecs */
+ static int mlx5_fsm_reactivate(struct mlxfw_dev *mlxfw_dev, u8 *status)
+ {
+-	unsigned long exp_time = jiffies + msecs_to_jiffies(MLX5_FSM_REACTIVATE_TOUT);
+ 	struct mlx5_mlxfw_dev *mlx5_mlxfw_dev =
+ 		container_of(mlxfw_dev, struct mlx5_mlxfw_dev, mlxfw_dev);
+ 	struct mlx5_core_dev *dev = mlx5_mlxfw_dev->mlx5_core_dev;
+ 	u32 out[MLX5_ST_SZ_DW(mirc_reg)];
+ 	u32 in[MLX5_ST_SZ_DW(mirc_reg)];
++	unsigned long exp_time;
+ 	int err;
+ 
++	exp_time = jiffies + msecs_to_jiffies(mlx5_tout_ms(dev, FSM_REACTIVATE));
++
+ 	if (!MLX5_CAP_MCAM_REG2(dev, mirc))
+ 		return -EOPNOTSUPP;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+index 106b50e42b46..eaca79cc7b9d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+@@ -3,6 +3,7 @@
+ 
+ #include "fw_reset.h"
+ #include "diag/fw_tracer.h"
++#include "lib/tout.h"
+ 
+ enum {
+ 	MLX5_FW_RESET_FLAGS_RESET_REQUESTED,
+@@ -228,8 +229,6 @@ static void mlx5_sync_reset_request_event(struct work_struct *work)
+ 		mlx5_core_warn(dev, "PCI Sync FW Update Reset Ack. Device reset is expected.\n");
+ }
+ 
+-#define MLX5_PCI_LINK_UP_TIMEOUT 2000
+-
+ static int mlx5_pci_link_toggle(struct mlx5_core_dev *dev)
+ {
+ 	struct pci_bus *bridge_bus = dev->pdev->bus;
+@@ -286,7 +285,7 @@ static int mlx5_pci_link_toggle(struct mlx5_core_dev *dev)
+ 		goto restore;
+ 	}
+ 
+-	timeout = jiffies + msecs_to_jiffies(MLX5_PCI_LINK_UP_TIMEOUT);
++	timeout = jiffies + msecs_to_jiffies(mlx5_tout_ms(dev, PCI_TOGGLE));
+ 	do {
+ 		err = pci_read_config_word(bridge, cap + PCI_EXP_LNKSTA, &reg16);
+ 		if (err)
+@@ -299,8 +298,8 @@ static int mlx5_pci_link_toggle(struct mlx5_core_dev *dev)
+ 	if (reg16 & PCI_EXP_LNKSTA_DLLLA) {
+ 		mlx5_core_info(dev, "PCI Link up\n");
+ 	} else {
+-		mlx5_core_err(dev, "PCI link not ready (0x%04x) after %d ms\n",
+-			      reg16, MLX5_PCI_LINK_UP_TIMEOUT);
++		mlx5_core_err(dev, "PCI link not ready (0x%04x) after %llu ms\n",
++			      reg16, mlx5_tout_ms(dev, PCI_TOGGLE));
+ 		err = -ETIMEDOUT;
+ 	}
+ 
+@@ -395,16 +394,15 @@ static int fw_reset_event_notifier(struct notifier_block *nb, unsigned long acti
+ 	return NOTIFY_OK;
+ }
+ 
+-#define MLX5_FW_RESET_TIMEOUT_MSEC 5000
+ int mlx5_fw_reset_wait_reset_done(struct mlx5_core_dev *dev)
+ {
+-	unsigned long timeout = msecs_to_jiffies(MLX5_FW_RESET_TIMEOUT_MSEC);
++	unsigned long timeout = msecs_to_jiffies(mlx5_tout_ms(dev, PCI_SYNC_UPDATE));
+ 	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
+ 	int err;
+ 
+ 	if (!wait_for_completion_timeout(&fw_reset->done, timeout)) {
+-		mlx5_core_warn(dev, "FW sync reset timeout after %d seconds\n",
+-			       MLX5_FW_RESET_TIMEOUT_MSEC / 1000);
++		mlx5_core_warn(dev, "FW sync reset timeout after %llu seconds\n",
++			       mlx5_tout_ms(dev, PCI_SYNC_UPDATE) / 1000);
+ 		err = -ETIMEDOUT;
+ 		goto out;
+ 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+index 037e18dd4be0..6a4dd7f78958 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+@@ -40,10 +40,10 @@
+ #include "lib/eq.h"
+ #include "lib/mlx5.h"
+ #include "lib/pci_vsc.h"
++#include "lib/tout.h"
+ #include "diag/fw_tracer.h"
+ 
+ enum {
+-	MLX5_HEALTH_POLL_INTERVAL	= 2 * HZ,
+ 	MAX_MISSES			= 3,
+ };
+ 
+@@ -219,11 +219,9 @@ void mlx5_enter_error_state(struct mlx5_core_dev *dev, bool force)
+ 	mutex_unlock(&dev->intf_state_mutex);
+ }
+ 
+-#define MLX5_CRDUMP_WAIT_MS	60000
+-#define MLX5_FW_RESET_WAIT_MS	1000
+ void mlx5_error_sw_reset(struct mlx5_core_dev *dev)
+ {
+-	unsigned long end, delay_ms = MLX5_FW_RESET_WAIT_MS;
++	unsigned long end, delay_ms = mlx5_tout_ms(dev, PCI_TOGGLE);
+ 	int lock = -EBUSY;
+ 
+ 	mutex_lock(&dev->intf_state_mutex);
+@@ -237,7 +235,7 @@ void mlx5_error_sw_reset(struct mlx5_core_dev *dev)
+ 		lock = lock_sem_sw_reset(dev, true);
+ 
+ 		if (lock == -EBUSY) {
+-			delay_ms = MLX5_CRDUMP_WAIT_MS;
++			delay_ms = mlx5_tout_ms(dev, FULL_CRDUMP);
+ 			goto recover_from_sw_reset;
+ 		}
+ 		/* Execute SW reset */
+@@ -307,13 +305,11 @@ static void mlx5_handle_bad_state(struct mlx5_core_dev *dev)
+ 	mlx5_disable_device(dev);
+ }
+ 
+-/* How much time to wait until health resetting the driver (in msecs) */
+-#define MLX5_RECOVERY_WAIT_MSECS 60000
+ int mlx5_health_wait_pci_up(struct mlx5_core_dev *dev)
+ {
+ 	unsigned long end;
+ 
+-	end = jiffies + msecs_to_jiffies(MLX5_RECOVERY_WAIT_MSECS);
++	end = jiffies + msecs_to_jiffies(mlx5_tout_ms(dev, FW_RESET));
+ 	while (sensor_pci_not_working(dev)) {
+ 		if (time_after(jiffies, end))
+ 			return -ETIMEDOUT;
+@@ -674,13 +670,13 @@ static void mlx5_fw_reporters_destroy(struct mlx5_core_dev *dev)
+ 		devlink_health_reporter_destroy(health->fw_fatal_reporter);
+ }
+ 
+-static unsigned long get_next_poll_jiffies(void)
++static unsigned long get_next_poll_jiffies(struct mlx5_core_dev *dev)
+ {
+ 	unsigned long next;
+ 
+ 	get_random_bytes(&next, sizeof(next));
+ 	next %= HZ;
+-	next += jiffies + MLX5_HEALTH_POLL_INTERVAL;
++	next += jiffies + msecs_to_jiffies(mlx5_tout_ms(dev, HEALTH_POLL_INTERVAL));
+ 
+ 	return next;
+ }
+@@ -740,11 +736,12 @@ static void poll_health(struct timer_list *t)
+ 		queue_work(health->wq, &health->report_work);
+ 
+ out:
+-	mod_timer(&health->timer, get_next_poll_jiffies());
++	mod_timer(&health->timer, get_next_poll_jiffies(dev));
+ }
+ 
+ void mlx5_start_health_poll(struct mlx5_core_dev *dev)
+ {
++	u64 poll_interval_ms =  mlx5_tout_ms(dev, HEALTH_POLL_INTERVAL);
+ 	struct mlx5_core_health *health = &dev->priv.health;
+ 
+ 	timer_setup(&health->timer, poll_health, 0);
+@@ -753,7 +750,7 @@ void mlx5_start_health_poll(struct mlx5_core_dev *dev)
+ 	health->health = &dev->iseg->health;
+ 	health->health_counter = &dev->iseg->health_counter;
+ 
+-	health->timer.expires = round_jiffies(jiffies + MLX5_HEALTH_POLL_INTERVAL);
++	health->timer.expires = jiffies + msecs_to_jiffies(poll_interval_ms);
+ 	add_timer(&health->timer);
+ }
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
+index ee266e0d122a..0dd96a6b140d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
+@@ -13,7 +13,17 @@ static const u32 tout_def_sw_val[MAX_TIMEOUT_TYPES] = {
+ 	[MLX5_TO_FW_PRE_INIT_WARN_MESSAGE_INTERVAL_MS] = 20000,
+ 	[MLX5_TO_FW_PRE_INIT_WAIT_MS] = 2,
+ 	[MLX5_TO_FW_INIT_MS] = 2000,
+-	[MLX5_TO_CMD_MS] = 60000
++	[MLX5_TO_CMD_MS] = 60000,
++	[MLX5_TO_PCI_TOGGLE_MS] =  2000,
++	[MLX5_TO_HEALTH_POLL_INTERVAL_MS] =  2000,
++	[MLX5_TO_FULL_CRDUMP_MS] = 60000,
++	[MLX5_TO_FW_RESET_MS] = 60000,
++	[MLX5_TO_FLUSH_ON_ERROR_MS] = 2000,
++	[MLX5_TO_PCI_SYNC_UPDATE_MS] = 5000,
++	[MLX5_TO_TEARDOWN_MS] = 3000,
++	[MLX5_TO_FSM_REACTIVATE_MS] = 5000,
++	[MLX5_TO_RECLAIM_PAGES_MS] = 5000,
++	[MLX5_TO_RECLAIM_VFS_PAGES_MS] = 120000
+ };
+ 
+ static void tout_set(struct mlx5_core_dev *dev, u64 val, enum mlx5_timeouts_types type)
+@@ -94,3 +104,59 @@ u64 _mlx5_tout_ms(struct mlx5_core_dev *dev, enum mlx5_timeouts_types type)
+ {
+ 	return dev->timeouts->to[type];
+ }
++
++#define MLX5_TIMEOUT_QUERY(fld, reg_out) \
++	({ \
++	struct mlx5_ifc_default_timeout_bits *time_field; \
++	u32 to_multi, to_value; \
++	u64 to_val_ms; \
++	\
++	time_field = MLX5_ADDR_OF(dtor_reg, reg_out, fld); \
++	to_multi = MLX5_GET(default_timeout, time_field, to_multiplier); \
++	to_value = MLX5_GET(default_timeout, time_field, to_value); \
++	to_val_ms = tout_convert_reg_field_to_ms(to_multi, to_value); \
++	to_val_ms; \
++	})
++
++#define MLX5_TIMEOUT_FILL(fld, reg_out, dev, to_type, to_extra) \
++	({ \
++	u64 fw_to = MLX5_TIMEOUT_QUERY(fld, reg_out); \
++	tout_set(dev, fw_to + (to_extra), to_type); \
++	fw_to; \
++	})
++
++static int tout_query_dtor(struct mlx5_core_dev *dev)
++{
++	u64 pcie_toggle_to_val, tear_down_to_val;
++	u32 out[MLX5_ST_SZ_DW(dtor_reg)] = {};
++	u32 in[MLX5_ST_SZ_DW(dtor_reg)] = {};
++	int err;
++
++	err = mlx5_core_access_reg(dev, in, sizeof(in), out, sizeof(out), MLX5_REG_DTOR, 0, 0);
++	if (err)
++		return err;
++
++	pcie_toggle_to_val = MLX5_TIMEOUT_FILL(pcie_toggle_to, out, dev, MLX5_TO_PCI_TOGGLE_MS, 0);
++	MLX5_TIMEOUT_FILL(fw_reset_to, out, dev, MLX5_TO_FW_RESET_MS, pcie_toggle_to_val);
++
++	tear_down_to_val = MLX5_TIMEOUT_FILL(tear_down_to, out, dev, MLX5_TO_TEARDOWN_MS, 0);
++	MLX5_TIMEOUT_FILL(pci_sync_update_to, out, dev, MLX5_TO_PCI_SYNC_UPDATE_MS,
++			  tear_down_to_val);
++
++	MLX5_TIMEOUT_FILL(health_poll_to, out, dev, MLX5_TO_HEALTH_POLL_INTERVAL_MS, 0);
++	MLX5_TIMEOUT_FILL(full_crdump_to, out, dev, MLX5_TO_FULL_CRDUMP_MS, 0);
++	MLX5_TIMEOUT_FILL(flush_on_err_to, out, dev, MLX5_TO_FLUSH_ON_ERROR_MS, 0);
++	MLX5_TIMEOUT_FILL(fsm_reactivate_to, out, dev, MLX5_TO_FSM_REACTIVATE_MS, 0);
++	MLX5_TIMEOUT_FILL(reclaim_pages_to, out, dev, MLX5_TO_RECLAIM_PAGES_MS, 0);
++	MLX5_TIMEOUT_FILL(reclaim_vfs_pages_to, out, dev, MLX5_TO_RECLAIM_VFS_PAGES_MS, 0);
++
++	return 0;
++}
++
++int mlx5_tout_query_dtor(struct mlx5_core_dev *dev)
++{
++	if (tout_is_supported(dev))
++		return tout_query_dtor(dev);
++
++	return 0;
++}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
+index 7e6fc61c5b45..31faa5c17aa9 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
+@@ -14,6 +14,18 @@ enum mlx5_timeouts_types {
+ 	MLX5_TO_FW_INIT_MS,
+ 	MLX5_TO_CMD_MS,
+ 
++	/* DTOR timeouts */
++	MLX5_TO_PCI_TOGGLE_MS,
++	MLX5_TO_HEALTH_POLL_INTERVAL_MS,
++	MLX5_TO_FULL_CRDUMP_MS,
++	MLX5_TO_FW_RESET_MS,
++	MLX5_TO_FLUSH_ON_ERROR_MS,
++	MLX5_TO_PCI_SYNC_UPDATE_MS,
++	MLX5_TO_TEARDOWN_MS,
++	MLX5_TO_FSM_REACTIVATE_MS,
++	MLX5_TO_RECLAIM_PAGES_MS,
++	MLX5_TO_RECLAIM_VFS_PAGES_MS,
++
+ 	MAX_TIMEOUT_TYPES
+ };
+ 
+@@ -21,6 +33,7 @@ struct mlx5_core_dev;
+ int mlx5_tout_init(struct mlx5_core_dev *dev);
+ void mlx5_tout_cleanup(struct mlx5_core_dev *dev);
+ void mlx5_tout_query_iseg(struct mlx5_core_dev *dev);
++int mlx5_tout_query_dtor(struct mlx5_core_dev *dev);
+ u64 _mlx5_tout_ms(struct mlx5_core_dev *dev, enum mlx5_timeouts_types type);
+ 
+ #define mlx5_tout_ms(dev, type) _mlx5_tout_ms(dev, MLX5_TO_##type##_MS)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index b4893eac6ed6..75d284272119 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1020,6 +1020,12 @@ static int mlx5_function_setup(struct mlx5_core_dev *dev, bool boot)
+ 		goto err_disable_hca;
+ 	}
+ 
++	err = mlx5_tout_query_dtor(dev);
++	if (err) {
++		mlx5_core_err(dev, "failed to read dtor\n");
++		goto reclaim_boot_pages;
++	}
++
+ 	err = set_hca_ctrl(dev);
+ 	if (err) {
+ 		mlx5_core_err(dev, "set_hca_ctrl failed\n");
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pagealloc.c b/drivers/net/ethernet/mellanox/mlx5/core/pagealloc.c
+index 110c0837f95b..f6b5451328fc 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/pagealloc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/pagealloc.c
+@@ -38,6 +38,7 @@
+ #include <linux/xarray.h>
  #include "mlx5_core.h"
  #include "lib/eq.h"
 +#include "lib/tout.h"
  
  enum {
- 	CMD_IF_REV = 5,
-@@ -225,9 +226,13 @@ static void set_signature(struct mlx5_cmd_work_ent *ent, int csum)
- 
- static void poll_timeout(struct mlx5_cmd_work_ent *ent)
- {
--	unsigned long poll_end = jiffies + msecs_to_jiffies(MLX5_CMD_TIMEOUT_MSEC + 1000);
-+	struct mlx5_core_dev *dev = container_of(ent->cmd, struct mlx5_core_dev, cmd);
-+	u64 cmd_to_ms = mlx5_tout_ms(dev, CMD);
-+	unsigned long poll_end;
- 	u8 own;
- 
-+	poll_end = jiffies + msecs_to_jiffies(cmd_to_ms + 1000);
-+
- 	do {
- 		own = READ_ONCE(ent->lay->status_own);
- 		if (!(own & CMD_OWNER_HW)) {
-@@ -925,15 +930,18 @@ static void cmd_work_handler(struct work_struct *work)
- {
- 	struct mlx5_cmd_work_ent *ent = container_of(work, struct mlx5_cmd_work_ent, work);
- 	struct mlx5_cmd *cmd = ent->cmd;
--	struct mlx5_core_dev *dev = container_of(cmd, struct mlx5_core_dev, cmd);
--	unsigned long cb_timeout = msecs_to_jiffies(MLX5_CMD_TIMEOUT_MSEC);
-+	bool poll_cmd = ent->polling;
- 	struct mlx5_cmd_layout *lay;
-+	struct mlx5_core_dev *dev;
-+	unsigned long cb_timeout;
- 	struct semaphore *sem;
- 	unsigned long flags;
--	bool poll_cmd = ent->polling;
- 	int alloc_ret;
- 	int cmd_mode;
- 
-+	dev = container_of(cmd, struct mlx5_core_dev, cmd);
-+	cb_timeout = msecs_to_jiffies(mlx5_tout_ms(dev, CMD));
-+
- 	complete(&ent->handling);
- 	sem = ent->page_queue ? &cmd->pages_sem : &cmd->sem;
- 	down(sem);
-@@ -1073,7 +1081,7 @@ static void wait_func_handle_exec_timeout(struct mlx5_core_dev *dev,
- 
- static int wait_func(struct mlx5_core_dev *dev, struct mlx5_cmd_work_ent *ent)
- {
--	unsigned long timeout = msecs_to_jiffies(MLX5_CMD_TIMEOUT_MSEC);
-+	unsigned long timeout = msecs_to_jiffies(mlx5_tout_ms(dev, CMD));
- 	struct mlx5_cmd *cmd = &dev->cmd;
- 	int err;
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
-new file mode 100644
-index 000000000000..ee266e0d122a
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
-@@ -0,0 +1,96 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
-+
-+#include <linux/mlx5/driver.h>
-+#include "lib/tout.h"
-+
-+struct mlx5_timeouts {
-+	u64 to[MAX_TIMEOUT_TYPES];
-+};
-+
-+static const u32 tout_def_sw_val[MAX_TIMEOUT_TYPES] = {
-+	[MLX5_TO_FW_PRE_INIT_TIMEOUT_MS] = 120000,
-+	[MLX5_TO_FW_PRE_INIT_WARN_MESSAGE_INTERVAL_MS] = 20000,
-+	[MLX5_TO_FW_PRE_INIT_WAIT_MS] = 2,
-+	[MLX5_TO_FW_INIT_MS] = 2000,
-+	[MLX5_TO_CMD_MS] = 60000
-+};
-+
-+static void tout_set(struct mlx5_core_dev *dev, u64 val, enum mlx5_timeouts_types type)
-+{
-+	dev->timeouts->to[type] = val;
-+}
-+
-+static void tout_set_def_val(struct mlx5_core_dev *dev)
-+{
-+	int i;
-+
-+	for (i = MLX5_TO_FW_PRE_INIT_TIMEOUT_MS; i < MAX_TIMEOUT_TYPES; i++)
-+		tout_set(dev, tout_def_sw_val[i], i);
-+}
-+
-+int mlx5_tout_init(struct mlx5_core_dev *dev)
-+{
-+	dev->timeouts = kmalloc(sizeof(*dev->timeouts), GFP_KERNEL);
-+	if (!dev->timeouts)
-+		return -ENOMEM;
-+
-+	tout_set_def_val(dev);
-+	return 0;
-+}
-+
-+void mlx5_tout_cleanup(struct mlx5_core_dev *dev)
-+{
-+	kfree(dev->timeouts);
-+}
-+
-+/* Time register consists of two fields to_multiplier(time out multiplier)
-+ * and to_value(time out value). to_value is the quantity of the time units and
-+ * to_multiplier is the type and should be one off these four values.
-+ * 0x0: millisecond
-+ * 0x1: seconds
-+ * 0x2: minutes
-+ * 0x3: hours
-+ * this function converts the time stored in the two register fields into
-+ * millisecond.
-+ */
-+static u64 tout_convert_reg_field_to_ms(u32 to_mul, u32 to_val)
-+{
-+	u64 msec = to_val;
-+
-+	to_mul &= 0x3;
-+	/* convert hours/minutes/seconds to miliseconds */
-+	if (to_mul)
-+		msec *= 1000 * int_pow(60, to_mul - 1);
-+
-+	return msec;
-+}
-+
-+static u64 tout_convert_iseg_to_ms(u32 iseg_to)
-+{
-+	return tout_convert_reg_field_to_ms(iseg_to >> 29, iseg_to & 0xfffff);
-+}
-+
-+static bool tout_is_supported(struct mlx5_core_dev *dev)
-+{
-+	return !!ioread32be(&dev->iseg->cmd_q_init_to);
-+}
-+
-+void mlx5_tout_query_iseg(struct mlx5_core_dev *dev)
-+{
-+	u32 to;
-+
-+	if (!tout_is_supported(dev))
-+		return;
-+
-+	to = ioread32be(&dev->iseg->cmd_q_init_to);
-+	tout_set(dev, tout_convert_iseg_to_ms(to), MLX5_TO_FW_INIT_MS);
-+
-+	to = ioread32be(&dev->iseg->cmd_exec_to);
-+	tout_set(dev, tout_convert_iseg_to_ms(to), MLX5_TO_CMD_MS);
-+}
-+
-+u64 _mlx5_tout_ms(struct mlx5_core_dev *dev, enum mlx5_timeouts_types type)
-+{
-+	return dev->timeouts->to[type];
-+}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
-new file mode 100644
-index 000000000000..7e6fc61c5b45
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
-@@ -0,0 +1,28 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-+/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
-+
-+#ifndef MLX5_TIMEOUTS_H
-+#define MLX5_TIMEOUTS_H
-+
-+enum mlx5_timeouts_types {
-+	/* pre init timeouts (not read from FW) */
-+	MLX5_TO_FW_PRE_INIT_TIMEOUT_MS,
-+	MLX5_TO_FW_PRE_INIT_WARN_MESSAGE_INTERVAL_MS,
-+	MLX5_TO_FW_PRE_INIT_WAIT_MS,
-+
-+	/* init segment timeouts */
-+	MLX5_TO_FW_INIT_MS,
-+	MLX5_TO_CMD_MS,
-+
-+	MAX_TIMEOUT_TYPES
-+};
-+
-+struct mlx5_core_dev;
-+int mlx5_tout_init(struct mlx5_core_dev *dev);
-+void mlx5_tout_cleanup(struct mlx5_core_dev *dev);
-+void mlx5_tout_query_iseg(struct mlx5_core_dev *dev);
-+u64 _mlx5_tout_ms(struct mlx5_core_dev *dev, enum mlx5_timeouts_types type);
-+
-+#define mlx5_tout_ms(dev, type) _mlx5_tout_ms(dev, MLX5_TO_##type##_MS)
-+
-+# endif /* MLX5_TIMEOUTS_H */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index 65313448a47c..b4893eac6ed6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -60,6 +60,7 @@
- #include "devlink.h"
- #include "fw_reset.h"
- #include "lib/mlx5.h"
-+#include "lib/tout.h"
- #include "fpga/core.h"
- #include "fpga/ipsec.h"
- #include "accel/ipsec.h"
-@@ -176,11 +177,6 @@ static struct mlx5_profile profile[] = {
- 	},
+ 	MLX5_PAGES_CANT_GIVE	= 0,
+@@ -64,11 +65,6 @@ struct fw_page {
+ 	unsigned int free_count;
  };
  
--#define FW_INIT_TIMEOUT_MILI		2000
--#define FW_INIT_WAIT_MS			2
--#define FW_PRE_INIT_TIMEOUT_MILI	120000
--#define FW_INIT_WARN_MESSAGE_INTERVAL	20000
+-enum {
+-	MAX_RECLAIM_TIME_MSECS	= 5000,
+-	MAX_RECLAIM_VFS_PAGES_TIME_MSECS = 2 * 1000 * 60,
+-};
 -
- static int fw_initializing(struct mlx5_core_dev *dev)
- {
- 	return ioread32be(&dev->iseg->initializing) >> 31;
-@@ -193,8 +189,6 @@ static int wait_fw_init(struct mlx5_core_dev *dev, u32 max_wait_mili,
- 	unsigned long end = jiffies + msecs_to_jiffies(max_wait_mili);
- 	int err = 0;
- 
--	BUILD_BUG_ON(FW_PRE_INIT_TIMEOUT_MILI < FW_INIT_WARN_MESSAGE_INTERVAL);
--
- 	while (fw_initializing(dev)) {
- 		if (time_after(jiffies, end)) {
- 			err = -EBUSY;
-@@ -205,7 +199,7 @@ static int wait_fw_init(struct mlx5_core_dev *dev, u32 max_wait_mili,
- 				       jiffies_to_msecs(end - warn) / 1000);
- 			warn = jiffies + msecs_to_jiffies(warn_time_mili);
- 		}
--		msleep(FW_INIT_WAIT_MS);
-+		msleep(mlx5_tout_ms(dev, FW_PRE_INIT_WAIT));
- 	}
- 
- 	return err;
-@@ -975,25 +969,34 @@ static int mlx5_function_setup(struct mlx5_core_dev *dev, bool boot)
- 	if (mlx5_core_is_pf(dev))
- 		pcie_print_link_status(dev->pdev);
- 
-+	err = mlx5_tout_init(dev);
-+	if (err) {
-+		mlx5_core_err(dev, "Failed initializing timeouts, aborting\n");
-+		return err;
-+	}
-+
- 	/* wait for firmware to accept initialization segments configurations
- 	 */
--	err = wait_fw_init(dev, FW_PRE_INIT_TIMEOUT_MILI, FW_INIT_WARN_MESSAGE_INTERVAL);
-+	err = wait_fw_init(dev, mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT),
-+			   mlx5_tout_ms(dev, FW_PRE_INIT_WARN_MESSAGE_INTERVAL));
- 	if (err) {
--		mlx5_core_err(dev, "Firmware over %d MS in pre-initializing state, aborting\n",
--			      FW_PRE_INIT_TIMEOUT_MILI);
--		return err;
-+		mlx5_core_err(dev, "Firmware over %llu MS in pre-initializing state, aborting\n",
-+			      mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT));
-+		goto err_tout_cleanup;
- 	}
- 
- 	err = mlx5_cmd_init(dev);
- 	if (err) {
- 		mlx5_core_err(dev, "Failed initializing command interface, aborting\n");
--		return err;
-+		goto err_tout_cleanup;
- 	}
- 
--	err = wait_fw_init(dev, FW_INIT_TIMEOUT_MILI, 0);
-+	mlx5_tout_query_iseg(dev);
-+
-+	err = wait_fw_init(dev, mlx5_tout_ms(dev, FW_INIT), 0);
- 	if (err) {
--		mlx5_core_err(dev, "Firmware over %d MS in initializing state, aborting\n",
--			      FW_INIT_TIMEOUT_MILI);
-+		mlx5_core_err(dev, "Firmware over %llu MS in initializing state, aborting\n",
-+			      mlx5_tout_ms(dev, FW_INIT));
- 		goto err_cmd_cleanup;
- 	}
- 
-@@ -1062,6 +1065,8 @@ static int mlx5_function_setup(struct mlx5_core_dev *dev, bool boot)
- err_cmd_cleanup:
- 	mlx5_cmd_set_state(dev, MLX5_CMDIF_STATE_DOWN);
- 	mlx5_cmd_cleanup(dev);
-+err_tout_cleanup:
-+	mlx5_tout_cleanup(dev);
- 
- 	return err;
- }
-@@ -1080,6 +1085,7 @@ static int mlx5_function_teardown(struct mlx5_core_dev *dev, bool boot)
- 	mlx5_core_disable_hca(dev, 0);
- 	mlx5_cmd_set_state(dev, MLX5_CMDIF_STATE_DOWN);
- 	mlx5_cmd_cleanup(dev);
-+	mlx5_tout_cleanup(dev);
- 
- 	return 0;
- }
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index ccbd87fbd3bf..fb06e8870aee 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -66,10 +66,6 @@ enum {
- };
- 
  enum {
--	/* one minute for the sake of bringup. Generally, commands must always
--	 * complete and we may need to increase this timeout value
--	 */
--	MLX5_CMD_TIMEOUT_MSEC	= 60 * 1000,
- 	MLX5_CMD_WQ_MAX_NAME	= 32,
- };
+ 	MLX5_MAX_RECLAIM_TIME_MILI	= 5000,
+ 	MLX5_NUM_4K_IN_PAGE		= PAGE_SIZE / MLX5_ADAPTER_PAGE_SIZE,
+@@ -641,7 +637,8 @@ static int optimal_reclaimed_pages(void)
+ static int mlx5_reclaim_root_pages(struct mlx5_core_dev *dev,
+ 				   struct rb_root *root, u16 func_id)
+ {
+-	unsigned long end = jiffies + msecs_to_jiffies(MAX_RECLAIM_TIME_MSECS);
++	u64 recl_pages_to_jiffies = msecs_to_jiffies(mlx5_tout_ms(dev, RECLAIM_PAGES));
++	unsigned long end = jiffies + recl_pages_to_jiffies;
  
-@@ -755,6 +751,7 @@ struct mlx5_core_dev {
- 		u32 qcam[MLX5_ST_SZ_DW(qcam_reg)];
- 		u8  embedded_cpu;
- 	} caps;
-+	struct mlx5_timeouts	*timeouts;
- 	u64			sys_image_guid;
- 	phys_addr_t		iseg_base;
- 	struct mlx5_init_seg __iomem *iseg;
+ 	while (!RB_EMPTY_ROOT(root)) {
+ 		int nclaimed;
+@@ -656,7 +653,7 @@ static int mlx5_reclaim_root_pages(struct mlx5_core_dev *dev,
+ 		}
+ 
+ 		if (nclaimed)
+-			end = jiffies + msecs_to_jiffies(MAX_RECLAIM_TIME_MSECS);
++			end = jiffies + recl_pages_to_jiffies;
+ 
+ 		if (time_after(jiffies, end)) {
+ 			mlx5_core_warn(dev, "FW did not return all pages. giving up...\n");
+@@ -727,7 +724,8 @@ void mlx5_pagealloc_stop(struct mlx5_core_dev *dev)
+ 
+ int mlx5_wait_for_pages(struct mlx5_core_dev *dev, int *pages)
+ {
+-	unsigned long end = jiffies + msecs_to_jiffies(MAX_RECLAIM_VFS_PAGES_TIME_MSECS);
++	u64 recl_vf_pages_to_jiffies = msecs_to_jiffies(mlx5_tout_ms(dev, RECLAIM_VFS_PAGES));
++	unsigned long end = jiffies + recl_vf_pages_to_jiffies;
+ 	int prev_pages = *pages;
+ 
+ 	/* In case of internal error we will free the pages manually later */
+@@ -743,7 +741,7 @@ int mlx5_wait_for_pages(struct mlx5_core_dev *dev, int *pages)
+ 			return -ETIMEDOUT;
+ 		}
+ 		if (*pages < prev_pages) {
+-			end = jiffies + msecs_to_jiffies(MAX_RECLAIM_VFS_PAGES_TIME_MSECS);
++			end = jiffies + recl_vf_pages_to_jiffies;
+ 			prev_pages = *pages;
+ 		}
+ 		msleep(50);
 -- 
 2.31.1
 
