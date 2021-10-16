@@ -2,93 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C839743010D
-	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 10:03:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D5F2430111
+	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 10:03:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239870AbhJPIFd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Oct 2021 04:05:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55600 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239866AbhJPICc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Oct 2021 04:02:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 16D3361242;
-        Sat, 16 Oct 2021 08:00:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634371215;
-        bh=3Jmht32j/5SNE/+y7WKMJLlCO/sVKxOH+AOIUpuSkGA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=XupZAy5no4Gkp9lhFF8+GV3UErrudxjHZuhqeH5v5aEWI8eTk9NSGuAlP753m3byU
-         s+2HKCDyVQlBcDsz84quxIZUS8R8d5qYKG91ArF/SobgWRKQOzBy7kptxF3qUQN10F
-         NdGg0GeUZ/4GwvPUO27fcUYt1DdNEEkAnPFiCjYS//5dRHDns87ilz7bThJU1F9j91
-         bk5rWSji8juuD9pLCh6ews+16mlIB/Mo2BRvkHSCPpkm6RUcgeemF0xmKtFjqolVA+
-         MTNtU2k9REqAN/So6fSVgAbuboPHmDmvyBjUzNB9JIX7fdeXcJPyU/2Tx3iX5lugrh
-         tYBHvxDFzImmA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 02DB160A44;
-        Sat, 16 Oct 2021 08:00:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next 01/13] net/mlx5: Add layout to support default timeouts
- register
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163437121500.28528.12494239407753342994.git-patchwork-notify@kernel.org>
-Date:   Sat, 16 Oct 2021 08:00:15 +0000
-References: <20211016003902.57116-2-saeed@kernel.org>
-In-Reply-To: <20211016003902.57116-2-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        amirtz@nvidia.com, moshe@nvidia.com, saeedm@nvidia.com
+        id S240069AbhJPIFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Oct 2021 04:05:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36880 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239864AbhJPIFo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Oct 2021 04:05:44 -0400
+Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57BDCC061570
+        for <netdev@vger.kernel.org>; Sat, 16 Oct 2021 01:03:19 -0700 (PDT)
+Received: from localhost (cpc147930-brnt3-2-0-cust60.4-2.cable.virginm.net [86.15.196.61])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id 81A0B4FFA3116;
+        Sat, 16 Oct 2021 01:03:13 -0700 (PDT)
+Date:   Sat, 16 Oct 2021 09:03:12 +0100 (BST)
+Message-Id: <20211016.090312.864899799732614331.davem@davemloft.net>
+To:     kgraul@linux.ibm.com
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, hca@linux.ibm.com,
+        linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net-next v2 00/11] net/smc: introduce SMC-Rv2 support
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20211014164752.3647027-1-kgraul@linux.ibm.com>
+References: <20211014164752.3647027-1-kgraul@linux.ibm.com>
+X-Mailer: Mew version 6.8 on Emacs 27.2
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Sat, 16 Oct 2021 01:03:14 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Karsten Graul <kgraul@linux.ibm.com>
+Date: Thu, 14 Oct 2021 18:47:41 +0200
 
-This series was applied to netdev/net-next.git (master)
-by Saeed Mahameed <saeedm@nvidia.com>:
-
-On Fri, 15 Oct 2021 17:38:50 -0700 you wrote:
-> From: Amir Tzin <amirtz@nvidia.com>
+> Please apply the following patch series for smc to netdev's net-next tree.
 > 
-> Add needed structures and defines for DTOR (default timeouts register).
-> This will be used to get timeouts values from FW instead of hard coded
-> values in the driver code thus enabling support for slower devices which
-> need longer timeouts.
+> SMC-Rv2 support (see https://www.ibm.com/support/pages/node/6326337)
+> provides routable RoCE support for SMC-R, eliminating the current
+> same-subnet restriction, by exploiting the UDP encapsulation feature
+> of the RoCE adapter hardware.
 > 
-> [...]
+> Patch 1 ("net/smc: improved fix wait on already cleared link") is
+> already applied on netdevs net tree but its changes are needed for
+> this series on net-next. The patch is unchanged compared to the
+> version on the net tree.
+> 
+> v2: resend of the v1 patch series, and CC linux-rdma this time
 
-Here is the summary with links:
-  - [net-next,01/13] net/mlx5: Add layout to support default timeouts register
-    https://git.kernel.org/netdev/net-next/c/4b2c5fa9c990
-  - [net-next,02/13] net/mlx5: Read timeout values from init segment
-    https://git.kernel.org/netdev/net-next/c/5945e1adeab5
-  - [net-next,03/13] net/mlx5: Read timeout values from DTOR
-    https://git.kernel.org/netdev/net-next/c/32def4120e48
-  - [net-next,04/13] net/mlx5: Bridge, provide flow source hints
-    https://git.kernel.org/netdev/net-next/c/17ac528d8868
-  - [net-next,05/13] net/mlx5i: Enable Rx steering for IPoIB via ethtool
-    https://git.kernel.org/netdev/net-next/c/9fbe1c25ecca
-  - [net-next,06/13] net/mlx5: Disable roce at HCA level
-    https://git.kernel.org/netdev/net-next/c/fbfa97b4d79f
-  - [net-next,07/13] net/mlx5: CT: Fix missing cleanup of ct nat table on init failure
-    https://git.kernel.org/netdev/net-next/c/88594d83314a
-  - [net-next,08/13] net/mlx5e: Add extack msgs related to TC for better debug
-    https://git.kernel.org/netdev/net-next/c/0885ae1a9d34
-  - [net-next,09/13] net/mlx5: DR, Prefer kcalloc over open coded arithmetic
-    https://git.kernel.org/netdev/net-next/c/0e6f3ef469bb
-  - [net-next,10/13] net/mlx5: Check return status first when querying system_image_guid
-    https://git.kernel.org/netdev/net-next/c/7b1b6d35f045
-  - [net-next,11/13] net/mlx5: Introduce new device index wrapper
-    https://git.kernel.org/netdev/net-next/c/2ec16ddde1fa
-  - [net-next,12/13] net/mlx5: Use native_port_num as 1st option of device index
-    https://git.kernel.org/netdev/net-next/c/1021d0645d59
-  - [net-next,13/13] net/mlx5: Use system_image_guid to determine bonding
-    https://git.kernel.org/netdev/net-next/c/8a543184d79c
+This does not apply cleanly to net-next, please respin.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Thank you.
 
