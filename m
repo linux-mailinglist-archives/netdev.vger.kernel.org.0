@@ -2,158 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B88442FF72
-	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 02:39:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0390842FF73
+	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 02:39:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236576AbhJPAlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 20:41:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58730 "EHLO mail.kernel.org"
+        id S239317AbhJPAlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 20:41:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58738 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232480AbhJPAlK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Oct 2021 20:41:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9FCB161073;
+        id S236462AbhJPAlL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Oct 2021 20:41:11 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0838761242;
         Sat, 16 Oct 2021 00:39:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634344743;
-        bh=wdUvTeA5V7uxY/cTDGKimXSBVSAcUiCtAa+hSyqEzQM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=dJp67fSEnEEo5WuPqc67ST5AETySNEzwh8eWCT8YvPF2I5N5EUhqUA2o9s3s+DzQw
-         W8aL6v6IixPCl3PX6UFl8WISIGx1E9EI3fN/YNXooOPt7D6qnqlZRKHEsF05SxqMNO
-         4uREM9foKyUFi7aWANZ4GNHqrWLfajE0G64NSti4sjBwEety0BzvSks2GYnRo6vAUg
-         +XS9OM9P4QC+Lf9APMlh21d6DRLD18G2G8o+vk7yFIXje6Y3IcixLPmwg/uAD5gXCh
-         yCpoeUtYYjMVl8NNonaxBY1FoTYl9k7L4erC1BNe7+bujXCGAMSGe9iIcliOol+IWs
-         Tq5qvkZ8TByvA==
+        s=k20201202; t=1634344744;
+        bh=Fiwv/lYWx0cc/u+2z5E2ASE8v9H3yAUrKvOUdYx4X6A=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fOfV7OGTrW7oyWPtoXJ79hxOeuyvSKR+3v/tZ9otQOYyuJwXigTdmBrx8TlTpau+j
+         2KecHgL+0O1e8wR2eO2rbEiobPIBEUMb0imP0qjXb6iSVtFkmpkvnMMS9p3+q5wr4u
+         R5jWWMBEMNQoMrAi1YKMX300pwazR8Z1rKEJv2U2i9bYTciauSOryZyXQadUDS3T+K
+         xAOWW5SgX+SUwlz4pNT6tEadoWN0MyQaJSczPOPf8wq+T7x79iuEoM9p5RAVUxQErB
+         xN++XbR4G5JySlCXxnXW5OE3RnFtZWBk+1i+Mxv2k6iybRZENcTdcgMbLDbDBWAiRA
+         BIyyUkg88zxhQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [pull request][net-next 00/13] mlx5 updates 2021-10-15
-Date:   Fri, 15 Oct 2021 17:38:49 -0700
-Message-Id: <20211016003902.57116-1-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Amir Tzin <amirtz@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net-next 01/13] net/mlx5: Add layout to support default timeouts register
+Date:   Fri, 15 Oct 2021 17:38:50 -0700
+Message-Id: <20211016003902.57116-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20211016003902.57116-1-saeed@kernel.org>
+References: <20211016003902.57116-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Amir Tzin <amirtz@nvidia.com>
 
-Hi Dave, Jakub,
+Add needed structures and defines for DTOR (default timeouts register).
+This will be used to get timeouts values from FW instead of hard coded
+values in the driver code thus enabling support for slower devices which
+need longer timeouts.
 
-This series provides updates to mlx5 driver.
-
-For more information please see tag log below.
-
-Please pull and let me know if there is any problem.
-
-Thanks,
-Saeed.
-
+Signed-off-by: Amir Tzin <amirtz@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
-The following changes since commit 295711fa8fec42a55623bf6997d05a21d7855132:
+ include/linux/mlx5/device.h   |  4 +++-
+ include/linux/mlx5/driver.h   |  1 +
+ include/linux/mlx5/mlx5_ifc.h | 37 ++++++++++++++++++++++++++++++++++-
+ 3 files changed, 40 insertions(+), 2 deletions(-)
 
-  Merge branch 'dpaa2-irq-coalescing' (2021-10-15 14:32:41 +0100)
+diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
+index 66eaf0aa7f69..109cc8106d16 100644
+--- a/include/linux/mlx5/device.h
++++ b/include/linux/mlx5/device.h
+@@ -577,7 +577,9 @@ struct mlx5_init_seg {
+ 	__be32			rsvd1[120];
+ 	__be32			initializing;
+ 	struct health_buffer	health;
+-	__be32			rsvd2[880];
++	__be32			rsvd2[878];
++	__be32			cmd_exec_to;
++	__be32			cmd_q_init_to;
+ 	__be32			internal_timer_h;
+ 	__be32			internal_timer_l;
+ 	__be32			rsvd3[2];
+diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
+index 0ca719c00824..ccbd87fbd3bf 100644
+--- a/include/linux/mlx5/driver.h
++++ b/include/linux/mlx5/driver.h
+@@ -156,6 +156,7 @@ enum {
+ 	MLX5_REG_MIRC		 = 0x9162,
+ 	MLX5_REG_SBCAM		 = 0xB01F,
+ 	MLX5_REG_RESOURCE_DUMP   = 0xC000,
++	MLX5_REG_DTOR            = 0xC00E,
+ };
+ 
+ enum mlx5_qpts_trust_state {
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index 993204a6c1a1..b8bff5109656 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -1306,7 +1306,8 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+ 	u8         vhca_resource_manager[0x1];
+ 
+ 	u8         hca_cap_2[0x1];
+-	u8         reserved_at_21[0x2];
++	u8         reserved_at_21[0x1];
++	u8         dtor[0x1];
+ 	u8         event_on_vhca_state_teardown_request[0x1];
+ 	u8         event_on_vhca_state_in_use[0x1];
+ 	u8         event_on_vhca_state_active[0x1];
+@@ -2807,6 +2808,40 @@ struct mlx5_ifc_dropped_packet_logged_bits {
+ 	u8         reserved_at_0[0xe0];
+ };
+ 
++struct mlx5_ifc_default_timeout_bits {
++	u8         to_multiplier[0x3];
++	u8         reserved_at_3[0x9];
++	u8         to_value[0x14];
++};
++
++struct mlx5_ifc_dtor_reg_bits {
++	u8         reserved_at_0[0x20];
++
++	struct mlx5_ifc_default_timeout_bits pcie_toggle_to;
++
++	u8         reserved_at_40[0x60];
++
++	struct mlx5_ifc_default_timeout_bits health_poll_to;
++
++	struct mlx5_ifc_default_timeout_bits full_crdump_to;
++
++	struct mlx5_ifc_default_timeout_bits fw_reset_to;
++
++	struct mlx5_ifc_default_timeout_bits flush_on_err_to;
++
++	struct mlx5_ifc_default_timeout_bits pci_sync_update_to;
++
++	struct mlx5_ifc_default_timeout_bits tear_down_to;
++
++	struct mlx5_ifc_default_timeout_bits fsm_reactivate_to;
++
++	struct mlx5_ifc_default_timeout_bits reclaim_pages_to;
++
++	struct mlx5_ifc_default_timeout_bits reclaim_vfs_pages_to;
++
++	u8         reserved_at_1c0[0x40];
++};
++
+ enum {
+ 	MLX5_CQ_ERROR_SYNDROME_CQ_OVERRUN                 = 0x1,
+ 	MLX5_CQ_ERROR_SYNDROME_CQ_ACCESS_VIOLATION_ERROR  = 0x2,
+-- 
+2.31.1
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-10-15
-
-for you to fetch changes up to 8a543184d79c83d0887c25cf202a43559ba39583:
-
-  net/mlx5: Use system_image_guid to determine bonding (2021-10-15 17:37:47 -0700)
-
-----------------------------------------------------------------
-mlx5-updates-2021-10-15
-
-1) From Rongwei Liu:
-
-Use system_image_guid and native_port_num when bonding.
-Don't relay on PCIe ids anymore.
-
-With some specific NIC, the physical devices may have PCIe IDs like
-0001:01:00.0/1 and 0002:02:00.0/1. All of these devices should have
-the same system_image_guid and device index can be queried from
-native_port_num.
-
-For matching sibling devices/port of the same HCA, compare the HCA
-GUID reported on each device rather than just assuming PCIe ids have
-similar attributes.
-
-2) From Amir Tzin: Use HCA defined Timouts
-
-Replace hard coded timeouts with values stored by firmware in default
-timeouts register (DTOR). Timeouts are read during driver load. If DTOR
-is not supported by firmware then fallback to hard coded defaults
-instead.
-
-3) From Shay Drory: Disable roce at HCA level
-Disable RoCE in Firmware when devlink roce parameter is set to off.
-
-4) A small set of trivial cleanups
-
-----------------------------------------------------------------
-Abhiram R N (1):
-      net/mlx5e: Add extack msgs related to TC for better debug
-
-Amir Tzin (3):
-      net/mlx5: Add layout to support default timeouts register
-      net/mlx5: Read timeout values from init segment
-      net/mlx5: Read timeout values from DTOR
-
-Len Baker (1):
-      net/mlx5: DR, Prefer kcalloc over open coded arithmetic
-
-Moosa Baransi (1):
-      net/mlx5i: Enable Rx steering for IPoIB via ethtool
-
-Paul Blakey (1):
-      net/mlx5: CT: Fix missing cleanup of ct nat table on init failure
-
-Rongwei Liu (4):
-      net/mlx5: Check return status first when querying system_image_guid
-      net/mlx5: Introduce new device index wrapper
-      net/mlx5: Use native_port_num as 1st option of device index
-      net/mlx5: Use system_image_guid to determine bonding
-
-Shay Drory (1):
-      net/mlx5: Disable roce at HCA level
-
-Vlad Buslov (1):
-      net/mlx5: Bridge, provide flow source hints
-
- drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/cmd.c      |  18 ++-
- drivers/net/ethernet/mellanox/mlx5/core/dev.c      |  14 +-
- drivers/net/ethernet/mellanox/mlx5/core/devlink.c  |   3 +-
- .../net/ethernet/mellanox/mlx5/core/en/devlink.c   |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/fs.h    |   8 +-
- .../net/ethernet/mellanox/mlx5/core/en/health.h    |   1 -
- .../ethernet/mellanox/mlx5/core/en/reporter_rx.c   |   7 +-
- .../ethernet/mellanox/mlx5/core/en/reporter_tx.c   |   7 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c |   1 +
- .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |   6 +-
- .../ethernet/mellanox/mlx5/core/en_fs_ethtool.c    |   6 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 106 ++++++++++----
- .../net/ethernet/mellanox/mlx5/core/esw/bridge.c   |   4 +
- .../ethernet/mellanox/mlx5/core/esw/devlink_port.c |   4 +-
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/fw.c       |   9 +-
- drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c |  16 +-
- drivers/net/ethernet/mellanox/mlx5/core/health.c   |  21 ++-
- .../ethernet/mellanox/mlx5/core/ipoib/ethtool.c    |  30 ++++
- .../net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c  |   3 +
- drivers/net/ethernet/mellanox/mlx5/core/lag.c      |   4 +-
- drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c | 162 +++++++++++++++++++++
- drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h |  41 ++++++
- drivers/net/ethernet/mellanox/mlx5/core/main.c     |  69 ++++++---
- .../net/ethernet/mellanox/mlx5/core/pagealloc.c    |  16 +-
- .../net/ethernet/mellanox/mlx5/core/sf/devlink.c   |   2 +-
- .../mellanox/mlx5/core/steering/dr_action.c        |   8 +-
- drivers/net/ethernet/mellanox/mlx5/core/vport.c    |  21 +--
- include/linux/mlx5/device.h                        |   4 +-
- include/linux/mlx5/driver.h                        |  25 +++-
- include/linux/mlx5/mlx5_ifc.h                      |  40 ++++-
- 32 files changed, 529 insertions(+), 133 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
