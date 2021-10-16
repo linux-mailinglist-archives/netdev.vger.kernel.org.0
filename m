@@ -2,66 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 928B742FF44
-	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 01:56:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A005542FF55
+	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 02:02:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236090AbhJOX6k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 19:58:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44686 "EHLO
+        id S239159AbhJPAEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 20:04:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235896AbhJOX6f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 19:58:35 -0400
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BCB7C061570;
-        Fri, 15 Oct 2021 16:56:28 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id q129so15402971oib.0;
-        Fri, 15 Oct 2021 16:56:28 -0700 (PDT)
+        with ESMTP id S235896AbhJPAEM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 20:04:12 -0400
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BA51C061570
+        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 17:02:05 -0700 (PDT)
+Received: by mail-oi1-x22d.google.com with SMTP id g125so15322445oif.9
+        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 17:02:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7cuQKyRo8VwWnrKSZqEjby++qEMEDn98shw21ePswis=;
-        b=DTAlrs5lawIcHNKMkDsVFpsUnbe/RApPndHoGvA4uMu8Bd0+h05InLaOreTm9qoPp8
-         Gsz7n5r4009xFEnw7Nc8j5c3ulsd89xTQLObrxQ6bSo23FYp/Ewq8HN4z7qC/LlSowk0
-         OgAIo0hu/haakwrin2XoDtzZOAUFbTg9FFiLcijalh/vWzsBBz2n6kEdFrtc6aXY2cOX
-         s+LVFKLNdQKPXGvz2rkXMFaauPManGtK0ggHLbt48etYsRcG0ZK1Ew7yRp9NsLxPVIvL
-         L2JQ2GwvS9a5yr1c8G7lAlfgowpqsyyIm/gxAkpIjLvijzR8NRMZOW+JN5IC2MUxsgJS
-         Oxzw==
+        bh=XnHDGEE6L64o9fJgbhzw9HiCviY4S3K7IWTZ4pRYfm8=;
+        b=GemM4bPJbPXAZJwCf06nh0bRJwF5ROeaabPzSKcgzegviIdCrHX5QLK6y4NdNfmkFp
+         FYk85BtlRPSKsEKJ+ORojgt6KLdyHQbGDto3+mJsh5ItXdyygC1JeRG6fSEbu66x1DaY
+         Pg2LQKCwDWM2pA80oCiyC9+XTWYcIHgvnUPRprVDOuD93/jFU2/5YpMB1wx8nLk6yQlQ
+         p+px5qzWA81s0ZKki870HJOHsSNb44973Y5PTHrv/w4+0SBWP0IB01i2xcuQw9I7dgMR
+         Y0ox87CDk5zIWNSu1oNstcKUGCD7dlmdjTkQr68PZZusN0zuabV+BQA6/v0SzBWXE9oc
+         3OTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=7cuQKyRo8VwWnrKSZqEjby++qEMEDn98shw21ePswis=;
-        b=i3DOIJnOLz+Ko1IfLJj0kHJKvQKJTZNh0XmAhY0nkDuOQmV/iMrYbyB4z2Y0mic+60
-         +t5rMvA5oRq7xb8CuALXRpFcaakp8U6odfT+x+KxMzaMh+Cy2UpHyhrrQwdwfLKsf8IY
-         zqZ0O77kJoxKvVRGC81U1GRTJ3aIdD8j01QqUyW+LjvrWYeTpx7O1XeZZTKyg1loZE84
-         wMXFokpez7H5WQkehMEQPuxNuxEAr3bF4nNYUNdUDkC4dC65nOVPjtXjwUjln7gES2cp
-         OC6gOdDAALI6gXxEps5+CjOom3ZHwwUy/9WUlSDyFd5ntraKMR9byvOCKVKypP81YHT/
-         JCvQ==
-X-Gm-Message-State: AOAM530BME3B6eZxpOU1qBqgo+zIW8lJid62b1izABSNl7Ia1TUMNanY
-        VBzU3rPe9Ua2Vxruij66AEFPhYU7XsBbkA==
-X-Google-Smtp-Source: ABdhPJzP8XCGDMiZ2DvlGAjvtaHS7914IxZVLdV88hxxy+wmUMHk+1O6jCOUKtQ4hROfPYB1cgeHSg==
-X-Received: by 2002:aca:3bd7:: with SMTP id i206mr10557473oia.166.1634342187455;
-        Fri, 15 Oct 2021 16:56:27 -0700 (PDT)
+        bh=XnHDGEE6L64o9fJgbhzw9HiCviY4S3K7IWTZ4pRYfm8=;
+        b=QXRr0JfHYnSwkED/SeTtFT54/M7pkgL50Bb40EIWdxquuEDt8dLg2rdfHhrWOwRY/l
+         y1fI7ASJgmar+ElXA76NnB7rhXLVzG6mvzUaqVL0C7iVO314kw8m4ZwolFQRlEjmNVqK
+         VitQVzkqXlWgetaOrpDCxOisTukllz5kMElC8mYW8iK97JeV3IACXI+4Z4TstmUUAtcL
+         zPkCMd6RL/+6rADQV2VrwqK3m7E9+KSjHU3NTcsRq3aG4IcppSBbBadYgy4J38vPw5Zf
+         3viFttt2tW6+y7w7sE5bOC6zRxMiQV1JR/WFKa7Lbn9LYy8JpU1pn+RKRK6lrjrgOg8Z
+         Z5KQ==
+X-Gm-Message-State: AOAM530bkCBH/FFawq8amaZ9m8iAdWJED4uBRQZiK3HBe4XeAToVBUyl
+        mxgdeLIxQQLNSgJ5czVIgRoINKRb8JYMGA==
+X-Google-Smtp-Source: ABdhPJyMWNT7g/hrUpziBpKJ2jOf2OfxC2/oHV5daqzP9Rfcfyk/nJiHzCUoLcwfpMxqx0WH+WeBog==
+X-Received: by 2002:aca:bd02:: with SMTP id n2mr19841055oif.113.1634342524796;
+        Fri, 15 Oct 2021 17:02:04 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([8.48.134.34])
-        by smtp.googlemail.com with ESMTPSA id w2sm1278923ooa.26.2021.10.15.16.56.26
+        by smtp.googlemail.com with ESMTPSA id o16sm1256717oor.41.2021.10.15.17.02.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Oct 2021 16:56:26 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next v1 2/3] rdma: Add stat "mode" support
-To:     Mark Zhang <markzhang@nvidia.com>, jgg@nvidia.com,
-        dledford@redhat.com
-Cc:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        aharonl@nvidia.com, netao@nvidia.com, leonro@nvidia.com
-References: <20211014075358.239708-1-markzhang@nvidia.com>
- <20211014075358.239708-3-markzhang@nvidia.com>
+        Fri, 15 Oct 2021 17:02:04 -0700 (PDT)
+Subject: Re: [PATCH iproute2 v5 0/7] configure: add support for libdir option
+To:     Andrea Claudi <aclaudi@redhat.com>, netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, bluca@debian.org, phil@nwl.cc,
+        haliu@redhat.com
+References: <cover.1634199240.git.aclaudi@redhat.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <a01a1b0e-90a4-c14f-fa5f-35a698d5b730@gmail.com>
-Date:   Fri, 15 Oct 2021 17:56:25 -0600
+Message-ID: <e892800e-b914-78c8-f6af-033a5dd2144e@gmail.com>
+Date:   Fri, 15 Oct 2021 18:02:03 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <20211014075358.239708-3-markzhang@nvidia.com>
+In-Reply-To: <cover.1634199240.git.aclaudi@redhat.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -69,80 +67,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/14/21 1:53 AM, Mark Zhang wrote:
-> +static int do_stat_mode_parse_cb(const struct nlmsghdr *nlh, void *data,
-> +				 bool supported)
-> +{
-> +	struct nlattr *tb[RDMA_NLDEV_ATTR_MAX] = {};
-> +	struct nlattr *nla_entry;
-> +	const char *dev, *name;
-> +	struct rd *rd = data;
-> +	int enabled, err = 0;
-> +	bool isfirst = true;
-> +	uint32_t port;
-> +
-> +	mnl_attr_parse(nlh, 0, rd_attr_cb, tb);
-> +	if (!tb[RDMA_NLDEV_ATTR_DEV_INDEX] || !tb[RDMA_NLDEV_ATTR_DEV_NAME] ||
-> +	    !tb[RDMA_NLDEV_ATTR_PORT_INDEX] ||
-> +	    !tb[RDMA_NLDEV_ATTR_STAT_HWCOUNTERS])
-> +		return MNL_CB_ERROR;
-> +
-> +	dev = mnl_attr_get_str(tb[RDMA_NLDEV_ATTR_DEV_NAME]);
-> +	port = mnl_attr_get_u32(tb[RDMA_NLDEV_ATTR_PORT_INDEX]);
-> +
-> +	mnl_attr_for_each_nested(nla_entry,
-> +				 tb[RDMA_NLDEV_ATTR_STAT_HWCOUNTERS]) {
-> +		struct nlattr *cnt[RDMA_NLDEV_ATTR_MAX] = {};
-> +
-> +		err  = mnl_attr_parse_nested(nla_entry, rd_attr_cb, cnt);
-> +		if ((err != MNL_CB_OK) ||
-> +		    (!cnt[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY_NAME]))
-> +			return -EINVAL;
-> +
-> +		if (!cnt[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_DYNAMIC])
-> +			continue;
-> +
-> +		enabled = mnl_attr_get_u8(cnt[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_DYNAMIC]);
-> +		name = mnl_attr_get_str(cnt[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY_NAME]);
-> +		if (supported || enabled) {
-> +			if (isfirst) {
-> +				open_json_object(NULL);
+On 10/14/21 2:50 AM, Andrea Claudi wrote:
+> This series add support for the libdir parameter in iproute2 configure
+> script. The idea is to make use of the fact that packaging systems may
+> assume that 'configure' comes from autotools allowing a syntax similar
+> to the autotools one, and using it to tell iproute2 where the distro
+> expects to find its lib files.
+> 
+> Patches 1-2 fix a parsing issue on current configure options, that may
+> trigger an endless loop when no value is provided with some options;
+> 
+> Patch 3 fixes a parsing issue bailing out when more than one value is
+> provided for a single option;
+> 
+> Patch 4 simplifies options parsing, moving semantic checks out of the
+> while loop processing options;
+> 
+> Patch 5 introduces support for the --opt=value style on current options,
+> for uniformity;
+> 
+> Patch 6 adds the --prefix option, that may be used by some packaging
+> systems when calling the configure script;
+> 
+> Patch 7 finally adds the --libdir option, and also drops the static
+> LIBDIR var from the Makefile.
+> 
 
-I don't see the close_json_object(). Did you verify json output is proper?
-
-
-> +				print_color_string(PRINT_ANY, COLOR_NONE,
-> +						   "ifname", "link %s/", dev);
-> +				print_color_uint(PRINT_ANY, COLOR_NONE, "port",
-> +						 "%u ", port);
-> +				if (supported)
-> +					open_json_array(PRINT_ANY,
-> +						"supported optional-counters");
-> +				else
-> +					open_json_array(PRINT_ANY,
-> +							"optional-counters");
-> +				print_color_string(PRINT_FP, COLOR_NONE, NULL,
-> +						   " ", NULL);
-> +				isfirst = false;
-> +			} else {
-> +				print_color_string(PRINT_FP, COLOR_NONE, NULL,
-> +						   ",", NULL);
-> +			}
-> +			if (rd->pretty_output && !rd->json_output)
-> +				newline_indent(rd);
-> +
-> +			print_color_string(PRINT_ANY, COLOR_NONE, NULL, "%s",
-> +					   name);
-> +		}
-> +	}
-> +
-> +	if (!isfirst) {
-> +		close_json_array(PRINT_JSON, NULL);
-> +		newline(rd);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-
-
+applied to net-next. Thanks for working on this.
