@@ -2,113 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1FD44303FF
-	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 19:50:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E9F9430422
+	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 20:20:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233171AbhJPRwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Oct 2021 13:52:42 -0400
-Received: from smtprelay0095.hostedemail.com ([216.40.44.95]:33634 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S230071AbhJPRwl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Oct 2021 13:52:41 -0400
-Received: from omf09.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay04.hostedemail.com (Postfix) with ESMTP id D9E2E1817352A;
-        Sat, 16 Oct 2021 17:50:31 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf09.hostedemail.com (Postfix) with ESMTPA id C2AD91E04D7;
-        Sat, 16 Oct 2021 17:50:28 +0000 (UTC)
-Message-ID: <8d16c5fa8d6dd2424cc5a136a879e88b90ec0345.camel@perches.com>
-Subject: Re: [PATCH v3 1/5] mwifiex: Don't log error on suspend if
- wake-on-wlan is disabled
-From:   Joe Perches <joe@perches.com>
-To:     Jonas =?ISO-8859-1?Q?Dre=DFler?= <verdre@v0yd.nl>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        id S236771AbhJPSWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Oct 2021 14:22:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58644 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234320AbhJPSWp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Oct 2021 14:22:45 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B505C061765;
+        Sat, 16 Oct 2021 11:20:36 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id g2so4955754wme.4;
+        Sat, 16 Oct 2021 11:20:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lipIEZ+n1vyEC0IkcC3jv40a0eLLrhXH63M7mDRpB6I=;
+        b=eYT8t574M05uVS1H1EfgJk/5BEpGNyusvh4tDe2wGvBLCueBhSscEjrIC9gSXjfplS
+         UWiv4BH+iBcmmj7kaiA/9VXTBDQbo9rIRhSkdr1UjqbhKSbPGfFHnWFn5QW6kKql+xnL
+         xVoEw6Piz4a7XRswSPLxJbvlHh/BB+tQH2gMvtOVoITGvUPtTWbE0jloBwXayqY3e89I
+         XCm8o3dI7Hyy8OQsT/b/hN7mjAJnVe4Jvfj00v6ohzAq+VKqmGQPfDRHNxM3kzm3Foyr
+         ywPiBLx+m0o1fa8xIL7/yQJdikW29dA766rJ5uApIzdcjrAsnqey9g3B5O3bltVr8AXh
+         BGrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lipIEZ+n1vyEC0IkcC3jv40a0eLLrhXH63M7mDRpB6I=;
+        b=IZQdiEwP03GcWrKQCoBAoBladHDs6ec7JEDeY49a+zMM1TLLazZrduk3K0usHkzdUy
+         hXjwfkuSru5TZyDyq7uOCtgCCBHsEDlmPXHFPz1GDkG+B75yxJaTdzP3cxa18BPdA7De
+         rBJbW0LUPQmeuivqB1ujjVdixi4lMSlCPVvJB5+xdCnVhPPnggvakwnJr2h4nMvlE24y
+         OgJTeNLa47kGmGERvaNmo7UjVPPY/Rt2cjbMiQYtS1iwzj47B/pTBvy6pkKq8V3PHCzP
+         vBmr2D2sJkuTWZeM85iEdmCpMwRylAoYkDQ45HG2u7h6563vy0Pup2kfRSZViQqkm12d
+         u6Fg==
+X-Gm-Message-State: AOAM530XMks9d0z5yKJ9iuhBHmiU4gGgvXJNEuRZhsNh+ihSCkgLoCsQ
+        MWfE1IjOJhoBNSLMznW8wWg=
+X-Google-Smtp-Source: ABdhPJwBHG8OptDZ0NKxN0FDnaRmx+SErG5UvPOrK5Bg4V0AE1f8go5bVzGWSHIe+NM7ApQvb0BVmw==
+X-Received: by 2002:a05:600c:354a:: with SMTP id i10mr33401008wmq.70.1634408434928;
+        Sat, 16 Oct 2021 11:20:34 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.googlemail.com with ESMTPSA id g1sm14746049wmk.2.2021.10.16.11.20.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 Oct 2021 11:20:34 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Tsuchiya Yuto <kitakar@gmail.com>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Pali =?ISO-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Date:   Sat, 16 Oct 2021 10:50:25 -0700
-In-Reply-To: <20211016153244.24353-2-verdre@v0yd.nl>
-References: <20211016153244.24353-1-verdre@v0yd.nl>
-         <20211016153244.24353-2-verdre@v0yd.nl>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1 
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [PATCH] net: dsa: qca8k: fix delay applied to wrong cpu in parse_port_config
+Date:   Sat, 16 Oct 2021 20:20:24 +0200
+Message-Id: <20211016182024.25037-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.91
-X-Stat-Signature: 1otizh97cxkfe1cfcqkpczgjab9bxe79
-X-Rspamd-Server: rspamout05
-X-Rspamd-Queue-Id: C2AD91E04D7
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1+A2kH2tKDKg0O1jm0nSW8lLql+D1gcUGs=
-X-HE-Tag: 1634406628-700120
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2021-10-16 at 17:32 +0200, Jonas Dreﬂler wrote:
-> It's not an error if someone chooses to put their computer to sleep, not
-> wanting it to wake up because the person next door has just discovered
-> what a magic packet is. So change the loglevel of this annoying message
-> from ERROR to INFO.
-> 
-> Signed-off-by: Jonas Dreﬂler <verdre@v0yd.nl>
-> ---
->  drivers/net/wireless/marvell/mwifiex/cfg80211.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-> index ef697572a293..987558c4fc79 100644
-> --- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-> +++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-> @@ -3492,7 +3492,7 @@ static int mwifiex_cfg80211_suspend(struct wiphy *wiphy,
->  	}
->  
->  	if (!wowlan) {
-> -		mwifiex_dbg(adapter, ERROR,
-> +		mwifiex_dbg(adapter, INFO,
->  			    "None of the WOWLAN triggers enabled\n");
+Fix delay settings applied to wrong cpu in parse_port_config. The delay
+values is set to the wrong index as the cpu_port_index is incremented
+too early. Start the cpu_port_index to -1 so the correct value is
+applied to address also the case with invalid phy mode and not available
+port.
 
-None of these are have a loglevel of KERN_ERR,
-all of these are logged at KERN_INFO.
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+---
+ drivers/net/dsa/qca8k.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-What I don't understand is why mwifiex_dbg is using KERN_INFO at all
-and not KERN_DEBUG.
-
-[]
-
-drivers/net/wireless/marvell/mwifiex/main.h:#define mwifiex_dbg(adapter, mask, fmt, ...)                                \
-drivers/net/wireless/marvell/mwifiex/main.h-    _mwifiex_dbg(adapter, MWIFIEX_DBG_##mask, fmt, ##__VA_ARGS__)
-
-[]
-
-drivers/net/wireless/marvell/mwifiex/main.c:void _mwifiex_dbg(const struct mwifiex_adapter *adapter, int mask,
-drivers/net/wireless/marvell/mwifiex/main.c-              const char *fmt, ...)
-drivers/net/wireless/marvell/mwifiex/main.c-{
-drivers/net/wireless/marvell/mwifiex/main.c-    struct va_format vaf;
-drivers/net/wireless/marvell/mwifiex/main.c-    va_list args;
-drivers/net/wireless/marvell/mwifiex/main.c-
-drivers/net/wireless/marvell/mwifiex/main.c-    if (!(adapter->debug_mask & mask))
-drivers/net/wireless/marvell/mwifiex/main.c-            return;
-drivers/net/wireless/marvell/mwifiex/main.c-
-drivers/net/wireless/marvell/mwifiex/main.c-    va_start(args, fmt);
-drivers/net/wireless/marvell/mwifiex/main.c-
-drivers/net/wireless/marvell/mwifiex/main.c-    vaf.fmt = fmt;
-drivers/net/wireless/marvell/mwifiex/main.c-    vaf.va = &args;
-drivers/net/wireless/marvell/mwifiex/main.c-
-drivers/net/wireless/marvell/mwifiex/main.c-    if (adapter->dev)
-drivers/net/wireless/marvell/mwifiex/main.c-            dev_info(adapter->dev, "%pV", &vaf);
-drivers/net/wireless/marvell/mwifiex/main.c-    else
-drivers/net/wireless/marvell/mwifiex/main.c-            pr_info("%pV", &vaf);
-drivers/net/wireless/marvell/mwifiex/main.c-
-drivers/net/wireless/marvell/mwifiex/main.c-    va_end(args);
-drivers/net/wireless/marvell/mwifiex/main.c-}
-drivers/net/wireless/marvell/mwifiex/main.c:EXPORT_SYMBOL_GPL(_mwifiex_dbg);
-
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+index ba0411d4c5ae..ee51186720d2 100644
+--- a/drivers/net/dsa/qca8k.c
++++ b/drivers/net/dsa/qca8k.c
+@@ -976,7 +976,7 @@ qca8k_setup_of_pws_reg(struct qca8k_priv *priv)
+ static int
+ qca8k_parse_port_config(struct qca8k_priv *priv)
+ {
+-	int port, cpu_port_index = 0, ret;
++	int port, cpu_port_index = -1, ret;
+ 	struct device_node *port_dn;
+ 	phy_interface_t mode;
+ 	struct dsa_port *dp;
+-- 
+2.32.0
 
