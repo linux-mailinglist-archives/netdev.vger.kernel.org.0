@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85057430299
-	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 14:33:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0826743029A
+	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 14:33:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235202AbhJPMfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S240422AbhJPMfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sat, 16 Oct 2021 08:35:18 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:28951 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234762AbhJPMfR (ORCPT
+Received: from szxga03-in.huawei.com ([45.249.212.189]:25195 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235124AbhJPMfR (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 16 Oct 2021 08:35:17 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HWj9J6HS2zbmrT;
-        Sat, 16 Oct 2021 20:28:36 +0800 (CST)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4HWjF94kNVz8tV5;
+        Sat, 16 Oct 2021 20:31:57 +0800 (CST)
 Received: from dggpeml500025.china.huawei.com (7.185.36.35) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2308.8; Sat, 16 Oct 2021 20:33:07 +0800
 Received: from huawei.com (10.175.124.27) by dggpeml500025.china.huawei.com
  (7.185.36.35) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.8; Sat, 16 Oct
- 2021 20:33:06 +0800
+ 2021 20:33:07 +0800
 From:   Hou Tao <houtao1@huawei.com>
 To:     Alexei Starovoitov <ast@kernel.org>
 CC:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
         "Daniel Borkmann" <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>, <houtao1@huawei.com>
-Subject: [PATCH bpf-next v2 0/5] introduce dummy BPF STRUCT_OPS
-Date:   Sat, 16 Oct 2021 20:48:01 +0800
-Message-ID: <20211016124806.1547989-1-houtao1@huawei.com>
+Subject: [PATCH bpf-next v2 1/5] bpf: factor out a helper to prepare trampoline for struct_ops prog
+Date:   Sat, 16 Oct 2021 20:48:02 +0800
+Message-ID: <20211016124806.1547989-2-houtao1@huawei.com>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20211016124806.1547989-1-houtao1@huawei.com>
+References: <20211016124806.1547989-1-houtao1@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -43,59 +45,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Factor out a helper bpf_struct_ops_prepare_trampoline() to prepare
+trampoline for BPF_PROG_TYPE_STRUCT_OPS prog. It will be used by
+.test_run callback in following patch.
 
-Currently the test of BPF STRUCT_OPS depends on the specific bpf
-implementation (e.g, tcp_congestion_ops), but it can not cover all
-basic functionalities (e.g, return value handling), so introduce
-a dummy BPF STRUCT_OPS for test purpose.
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+---
+ include/linux/bpf.h         |  4 ++++
+ kernel/bpf/bpf_struct_ops.c | 29 +++++++++++++++++++----------
+ 2 files changed, 23 insertions(+), 10 deletions(-)
 
-Instead of loading a userspace-implemeted bpf_dummy_ops map into
-kernel and calling the specific function by writing to sysfs provided
-by bpf_testmode.ko, only loading bpf_dummy_ops related prog into
-kernel and calling these prog by bpf_prog_test_run(). The latter
-is more flexible and has no dependency on extra kernel module.
-
-Now the return value handling is supported by test_1(...) ops,
-and passing multiple arguments is supported by test_2(...) ops.
-If more is needed, test_x(...) ops can be added afterwards.
-
-Comments are always welcome.
-Regards,
-Hou
-
-Change Log:
-v2:
- * rebase on bpf-next
- * add test_2(...) ops to test the passing of multiple arguments
- * a new patch (patch #2) is added to factor out ctx access helpers
- * address comments from Martin & Andrii
-
-v1: https://www.spinics.net/lists/bpf/msg46787.html
-
-RFC: https://www.spinics.net/lists/bpf/msg46117.html
-
-Hou Tao (5):
-  bpf: factor out a helper to prepare trampoline for struct_ops prog
-  bpf: factor out helpers to check ctx access for BTF function
-  bpf: add dummy BPF STRUCT_OPS for test purpose
-  bpf: hook .test_run for struct_ops program
-  selftests/bpf: add test cases for struct_ops prog
-
- include/linux/bpf.h                           |  45 ++++
- kernel/bpf/bpf_struct_ops.c                   |  46 +++-
- kernel/bpf/bpf_struct_ops_types.h             |   1 +
- kernel/trace/bpf_trace.c                      |  16 +-
- net/bpf/Makefile                              |   3 +
- net/bpf/bpf_dummy_struct_ops.c                | 206 ++++++++++++++++++
- net/ipv4/bpf_tcp_ca.c                         |   9 +-
- .../selftests/bpf/prog_tests/dummy_st_ops.c   | 114 ++++++++++
- .../selftests/bpf/progs/dummy_st_ops.c        |  50 +++++
- 9 files changed, 458 insertions(+), 32 deletions(-)
- create mode 100644 net/bpf/bpf_dummy_struct_ops.c
- create mode 100644 tools/testing/selftests/bpf/prog_tests/dummy_st_ops.c
- create mode 100644 tools/testing/selftests/bpf/progs/dummy_st_ops.c
-
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index d604c8251d88..b7c1e2bc93f7 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -998,6 +998,10 @@ bool bpf_struct_ops_get(const void *kdata);
+ void bpf_struct_ops_put(const void *kdata);
+ int bpf_struct_ops_map_sys_lookup_elem(struct bpf_map *map, void *key,
+ 				       void *value);
++int bpf_struct_ops_prepare_trampoline(struct bpf_tramp_progs *tprogs,
++				      struct bpf_prog *prog,
++				      const struct btf_func_model *model,
++				      void *image, void *image_end);
+ static inline bool bpf_try_module_get(const void *data, struct module *owner)
+ {
+ 	if (owner == BPF_MODULE_OWNER)
+diff --git a/kernel/bpf/bpf_struct_ops.c b/kernel/bpf/bpf_struct_ops.c
+index 9abcc33f02cf..44be101f2562 100644
+--- a/kernel/bpf/bpf_struct_ops.c
++++ b/kernel/bpf/bpf_struct_ops.c
+@@ -312,6 +312,20 @@ static int check_zero_holes(const struct btf_type *t, void *data)
+ 	return 0;
+ }
+ 
++int bpf_struct_ops_prepare_trampoline(struct bpf_tramp_progs *tprogs,
++				      struct bpf_prog *prog,
++				      const struct btf_func_model *model,
++				      void *image, void *image_end)
++{
++	u32 flags;
++
++	tprogs[BPF_TRAMP_FENTRY].progs[0] = prog;
++	tprogs[BPF_TRAMP_FENTRY].nr_progs = 1;
++	flags = model->ret_size > 0 ? BPF_TRAMP_F_RET_FENTRY_RET : 0;
++	return arch_prepare_bpf_trampoline(NULL, image, image_end,
++					   model, flags, tprogs, NULL);
++}
++
+ static int bpf_struct_ops_map_update_elem(struct bpf_map *map, void *key,
+ 					  void *value, u64 flags)
+ {
+@@ -323,7 +337,7 @@ static int bpf_struct_ops_map_update_elem(struct bpf_map *map, void *key,
+ 	struct bpf_tramp_progs *tprogs = NULL;
+ 	void *udata, *kdata;
+ 	int prog_fd, err = 0;
+-	void *image;
++	void *image, *image_end;
+ 	u32 i;
+ 
+ 	if (flags)
+@@ -363,12 +377,12 @@ static int bpf_struct_ops_map_update_elem(struct bpf_map *map, void *key,
+ 	udata = &uvalue->data;
+ 	kdata = &kvalue->data;
+ 	image = st_map->image;
++	image_end = st_map->image + PAGE_SIZE;
+ 
+ 	for_each_member(i, t, member) {
+ 		const struct btf_type *mtype, *ptype;
+ 		struct bpf_prog *prog;
+ 		u32 moff;
+-		u32 flags;
+ 
+ 		moff = btf_member_bit_offset(t, member) / 8;
+ 		ptype = btf_type_resolve_ptr(btf_vmlinux, member->type, NULL);
+@@ -430,14 +444,9 @@ static int bpf_struct_ops_map_update_elem(struct bpf_map *map, void *key,
+ 			goto reset_unlock;
+ 		}
+ 
+-		tprogs[BPF_TRAMP_FENTRY].progs[0] = prog;
+-		tprogs[BPF_TRAMP_FENTRY].nr_progs = 1;
+-		flags = st_ops->func_models[i].ret_size > 0 ?
+-			BPF_TRAMP_F_RET_FENTRY_RET : 0;
+-		err = arch_prepare_bpf_trampoline(NULL, image,
+-						  st_map->image + PAGE_SIZE,
+-						  &st_ops->func_models[i],
+-						  flags, tprogs, NULL);
++		err = bpf_struct_ops_prepare_trampoline(tprogs, prog,
++							&st_ops->func_models[i],
++							image, image_end);
+ 		if (err < 0)
+ 			goto reset_unlock;
+ 
 -- 
 2.29.2
 
