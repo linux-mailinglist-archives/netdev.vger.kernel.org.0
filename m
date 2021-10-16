@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFE124305A9
-	for <lists+netdev@lfdr.de>; Sun, 17 Oct 2021 01:54:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 815144305AA
+	for <lists+netdev@lfdr.de>; Sun, 17 Oct 2021 01:54:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241227AbhJPXzx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Oct 2021 19:55:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46028 "EHLO
+        id S241228AbhJPX42 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Oct 2021 19:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241220AbhJPXzv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Oct 2021 19:55:51 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E4FC061765
-        for <netdev@vger.kernel.org>; Sat, 16 Oct 2021 16:53:41 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id j190so5515433pgd.0
-        for <netdev@vger.kernel.org>; Sat, 16 Oct 2021 16:53:41 -0700 (PDT)
+        with ESMTP id S241211AbhJPX42 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Oct 2021 19:56:28 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D649CC061765
+        for <netdev@vger.kernel.org>; Sat, 16 Oct 2021 16:54:19 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id ez7-20020a17090ae14700b001a132a1679bso2099614pjb.0
+        for <netdev@vger.kernel.org>; Sat, 16 Oct 2021 16:54:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version
+        h=date:from:to:subject:message-id:mime-version
          :content-transfer-encoding;
-        bh=zI4+murqGWeXA+/iHLW/xzoeA7R6WZUdZyqBRDLcSTU=;
-        b=yThL4QwmYG6hDdMyqU92whNkqrOXX17Br9giKx9IhaQXBkx4kMQh8i/xmF3OGivSIE
-         T0O+MXHLTHkuCaDtZVI8WwVkVGSlkaSE0KqWJxLETx1QmgNSwyyJHPRuowuQ1jKvrveB
-         rhtEOHLQk4fVHQpk4j0I8SxTzOOq2Ya/0PAiS9YGqcQ/YVkQ5N/lrDD5X5IDa+4vfXnp
-         by2D9h9vt2nbOq3l+fVDxsc5nF0FzdV/YEjXVpLvzFePcscFqDW2jDJj74yoviLtJ/11
-         7AfCnIvzfd+oDGf+4LYb8ZJBSN4e18htVMIoI6q3BdwjEoOkSMj2qCGNHAYRKw3LGgZm
-         YB6Q==
+        bh=fuxxn6ZRO+8ECCbjh6IkYfd/4atCOgYZC/5BfYl+Sno=;
+        b=B/xNm0+wFRW5Vx0UMOpZAL8kG0PjwdXZP1ELpYJWan3z6CLbTLGBnBQXbXseD40xBa
+         AYw9Z4YUnA2QxbAua7WfecHAqNAX0Rdc2G+fbM7i9vFCJbrEJg1q6dTXZUs0xzF1XheB
+         +NuRf+2DoeHYIAWo/0s9FpPANR8dPu1YOAT1oGlkzqJG+/aRnP4iZz0G5zhubgaQsun/
+         qpDmChMl90nIUYTOGzGThay4pdUYNkZ5aiCbeF5jLqJVZtzHn9fDdAX56br3HZ8Ft96k
+         5rkKol/rbo4c4IvKp3j4xxCD0Qn1QyaPp8hU4slI/w4ARlUDJG7iU3Lgl79iRoXT/Qpi
+         Ao+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
          :content-transfer-encoding;
-        bh=zI4+murqGWeXA+/iHLW/xzoeA7R6WZUdZyqBRDLcSTU=;
-        b=R13eRUxYe7Yg3Q99IM+pmD2uJhzjmWngpoETaBOwGAD2gV7OZxY13u+wxPWUm6Wxjv
-         GqEiaM59d47KiUZ6O95zibV4Rqk7nwkFF95f61w/du6nwEqAcbnkB2TfrJsIrswwA2gJ
-         qlMEf2USZDekdbnJy4V5k431M8RBwHI0pJ9oPJ57KZWe7X+BfxsZNyt28GWYgwAs46Oy
-         JRihaGW1dvcxmtcI5JjeSKi4u6JIbgqiJBj4vtOcV954vd6fHv55JdP53vXeSHC0EOdK
-         2kY+O5t6bdK3Zndb2vLMBfXcKKa7YE2iOMbcWd7KHbBTPdNHGcBPdVxOMtmPWgHxmhE9
-         K8vg==
-X-Gm-Message-State: AOAM530qdQhJGwjojxtZgaOZxghNbigVih7gxinY2EcZMsIipPOgQOXi
-        SXs3cEXOjGtso2y+EwN04A5OKw==
-X-Google-Smtp-Source: ABdhPJzo+xEsGdA/yr1XsHtgSG5J5z9cw3gUCyOstmOmSd1Gt64wuw+kb7WpX7miOdRyrhWpBmNp7Q==
-X-Received: by 2002:a63:6bc2:: with SMTP id g185mr11147502pgc.356.1634428420680;
-        Sat, 16 Oct 2021 16:53:40 -0700 (PDT)
+        bh=fuxxn6ZRO+8ECCbjh6IkYfd/4atCOgYZC/5BfYl+Sno=;
+        b=cupU+uf6EvA/0zh1UADKJ9c9E86hrz6sfPrdpjWlVC8xMrihyVVtYiEp7vwOTX7msd
+         PcRf/nywy/GzxU7ru7UScC5wOFzGfSpJwiPzR/Xw9dyuKdts0JQ0wHFsw8fPArnbtruP
+         V7ON4L/bUugRMv4cTW0YxQSbim8bxuJBxUtEda76S7HaDunpSy/9t//Hyb9E7FjNT9cF
+         kk3xWCPToybbhZlMsgwmTRIBlgbdR3p1pqjOlCVNXO+NgdIk/oXKWjJX6zsvEjkNxa/H
+         IcSCcIzpnT+dvSblLVIHBBL0QT/6ag1Di2RvZfxs3dHAMvMp7VPi37nt2beZZ98er3xj
+         S13g==
+X-Gm-Message-State: AOAM533i90L4Nq4dr2Kb7k0TiJr+nSJck30bct6LuKjhOayOpYMaU8kn
+        Kz/wMDV/y5cBAupWxIoSVENPTYf2VQE2mw==
+X-Google-Smtp-Source: ABdhPJypoS7czBxmVLRt/shARPKeWdf+nqJOyHMax6rImTXOpxpKVZ4D+if0NdolPx76PzBoePu/Og==
+X-Received: by 2002:a17:90b:3ecd:: with SMTP id rm13mr23357624pjb.189.1634428458815;
+        Sat, 16 Oct 2021 16:54:18 -0700 (PDT)
 Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
-        by smtp.gmail.com with ESMTPSA id n202sm8663586pfd.160.2021.10.16.16.53.39
+        by smtp.gmail.com with ESMTPSA id pj12sm9297988pjb.19.2021.10.16.16.54.18
+        for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Oct 2021 16:53:40 -0700 (PDT)
-Date:   Sat, 16 Oct 2021 16:53:37 -0700
+        Sat, 16 Oct 2021 16:54:18 -0700 (PDT)
+Date:   Sat, 16 Oct 2021 16:54:15 -0700
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Manivannan Sadhasivam <mani@kernel.org>
-Cc:     netdev@vger.kernel.org
-Subject: Fw: [Bug 214739] New: Information leakage from kernel to user space
- in /net/qrtr/qrtr.c
-Message-ID: <20211016165337.18a1299e@hermes.local>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 214741] New: Information leakage from kernel to user space
+ in /net/netrom/af_netrom.c
+Message-ID: <20211016165415.3f4e8842@hermes.local>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
@@ -65,18 +65,18 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Begin forwarded message:
 
-Date: Sat, 16 Oct 2021 20:16:08 +0000
+Date: Sat, 16 Oct 2021 21:03:45 +0000
 From: bugzilla-daemon@bugzilla.kernel.org
 To: stephen@networkplumber.org
-Subject: [Bug 214739] New: Information leakage from kernel to user space in=
- /net/qrtr/qrtr.c
+Subject: [Bug 214741] New: Information leakage from kernel to user space in=
+ /net/netrom/af_netrom.c
 
 
-https://bugzilla.kernel.org/show_bug.cgi?id=3D214739
+https://bugzilla.kernel.org/show_bug.cgi?id=3D214741
 
-            Bug ID: 214739
+            Bug ID: 214741
            Summary: Information leakage from kernel to user space in
-                    /net/qrtr/qrtr.c
+                    /net/netrom/af_netrom.c
            Product: Networking
            Version: 2.5
     Kernel Version: 5.15-rc5
@@ -84,7 +84,7 @@ https://bugzilla.kernel.org/show_bug.cgi?id=3D214739
                 OS: Linux
               Tree: Mainline
             Status: NEW
-          Severity: normal
+          Severity: high
           Priority: P1
          Component: Other
           Assignee: stephen@networkplumber.org
@@ -238,51 +238,70 @@ struct, it may cause an information leak from kernel space to userspace.=20
 
 
 My tools find similar cloned bugs
-The same bug happens in /net/qtr/qrtr.c
+The same bug happens in /net/netrom/af_netrom.c
 
-static int qrtr_getname(struct socket *sock, struct sockaddr *saddr,
-                        int peer)
+
+static int nr_getname(struct socket *sock, struct sockaddr *uaddr,
+        int peer)
 {
-        struct qrtr_sock *ipc =3D qrtr_sk(sock->sk);
-        struct sockaddr_qrtr qaddr;
+        struct full_sockaddr_ax25 *sax =3D (struct full_sockaddr_ax25 *)uad=
+dr;
         struct sock *sk =3D sock->sk;
+        struct nr_sock *nr =3D nr_sk(sk);
+        int uaddr_len;
+
+        memset(&sax->fsa_ax25, 0, sizeof(struct sockaddr_ax25));
 
         lock_sock(sk);
-        if (peer) {
+        if (peer !=3D 0) {
                 if (sk->sk_state !=3D TCP_ESTABLISHED) {
                         release_sock(sk);
                         return -ENOTCONN;
                 }
-
-                qaddr =3D ipc->peer;
+                sax->fsa_ax25.sax25_family =3D AF_NETROM;
+                sax->fsa_ax25.sax25_ndigis =3D 1;
+                sax->fsa_ax25.sax25_call   =3D nr->user_addr;
+                memset(sax->fsa_digipeater, 0, sizeof(sax->fsa_digipeater));
+                sax->fsa_digipeater[0]     =3D nr->dest_addr;
+                uaddr_len =3D sizeof(struct full_sockaddr_ax25);
         } else {
-                qaddr =3D ipc->us;
+                sax->fsa_ax25.sax25_family =3D AF_NETROM;
+                sax->fsa_ax25.sax25_ndigis =3D 0;
+                sax->fsa_ax25.sax25_call   =3D nr->source_addr;
+                uaddr_len =3D sizeof(struct sockaddr_ax25);
         }
         release_sock(sk);
 
-        qaddr.sq_family =3D AF_QIPCRTR;
-
-        memcpy(saddr, &qaddr, sizeof(qaddr));
-
-        return sizeof(qaddr);
+        return uaddr_len;
 }
 
+full_sockaddr_ax25 is declared here:
 
-
-sockaddr_qrtr is declared here:
-
-struct sockaddr_qrtr {
-        __kernel_sa_family_t sq_family;
-        __u32 sq_node;
-        __u32 sq_port;
+struct full_sockaddr_ax25 {
+        struct sockaddr_ax25 fsa_ax25;
+        ax25_address    fsa_digipeater[AX25_MAX_DIGIS];
 };
 
-We can see there is a hole between sq_family and sq_node. Thus, we have to
+and sockaddr_ax25 is declared here:
+struct sockaddr_ax25 {
+        __kernel_sa_family_t sax25_family;
+        ax25_address    sax25_call;
+        int             sax25_ndigis;
+        /* Digipeater ax25_address sets follow */
+};
+
+ax25_address is declared here:
+typedef struct {
+        char            ax25_call[7];   /* 6 call + SSID (shifted ascii!) */
+} ax25_address;
+
+We can see there are a few holes inside struct sockaddr_ax25. Thus, we have=
+ to
 explicitly set the hole to zero. Otherwise, the address will be passed to
 copy_to_user and cause information leakage.
 
 Suggested patch:
-memset(maddr, 0, sizeof(sockaddr_qrtr));
+memset(maddr, 0, sizeof(full_sockaddr_ax25));
 
 
 Thank you for the review. I appreciate your time.=20
