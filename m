@@ -2,102 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBBF2430301
-	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 16:28:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 387F6430351
+	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 17:32:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244374AbhJPOaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Oct 2021 10:30:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33982 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235901AbhJPOaU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Oct 2021 10:30:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7526F6023F;
-        Sat, 16 Oct 2021 14:28:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634394492;
-        bh=UtxDaouKQps0itBNO4xcZJA5ANZ6urCvPOxooN5Kfz4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=h296bgRMaq4cIlUw7CSO4BK7lCUnZGTwwvLvhy3E1QMsZWeOe2m/3E5IunKwzPrUY
-         fU1FfGQPBbR27F119gMJGvdSzk0vWleL/JpgHcqM0iSGA8Oesf4HsmUx7QMHczVQz9
-         O6F9VBLoMxIc81L5Xc5//U9VZV7wd6hGVx4iBRiFBjAMe60yUNaMA5oUQpcESj6iY+
-         wlNg8IFwd0txclVf8CzeWShgaJofbJr28TNk42Gs/1ppCKhUHW5DuzHdA5aqyrpKyj
-         uVQqgjVN+vILInNtlKjiIplDVpPMjdXJ9HzRG90d3+7JhfXv4hGaxpD9TaG32FJzzK
-         vveFXI8aqDtvA==
-Received: by pali.im (Postfix)
-        id DEEC77DE; Sat, 16 Oct 2021 16:28:09 +0200 (CEST)
-Date:   Sat, 16 Oct 2021 16:28:09 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Jonas =?utf-8?Q?Dre=C3=9Fler?= <verdre@v0yd.nl>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        id S237813AbhJPPfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Oct 2021 11:35:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50228 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233277AbhJPPfF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Oct 2021 11:35:05 -0400
+Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050::465:201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC98C061570;
+        Sat, 16 Oct 2021 08:32:57 -0700 (PDT)
+Received: from smtp102.mailbox.org (smtp102.mailbox.org [80.241.60.233])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4HWnFy1lhqzQjVH;
+        Sat, 16 Oct 2021 17:32:54 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+From:   =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>
+To:     Amitkumar Karwar <amitkarwar@gmail.com>,
         Ganapathi Bhat <ganapathi017@gmail.com>,
         Xinming Hu <huxinming820@gmail.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>,
         Tsuchiya Yuto <kitakar@gmail.com>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Maximilian Luz <luzmaximilian@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v2 4/5] mwifiex: Send DELBA requests according to spec
-Message-ID: <20211016142809.tjezv4dpxrlmdp6v@pali>
-References: <20211016103656.16791-1-verdre@v0yd.nl>
- <20211016103656.16791-5-verdre@v0yd.nl>
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+Subject: [PATCH v3 0/5] A few more cleanups and fixes for mwifiex
+Date:   Sat, 16 Oct 2021 17:32:39 +0200
+Message-Id: <20211016153244.24353-1-verdre@v0yd.nl>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211016103656.16791-5-verdre@v0yd.nl>
-User-Agent: NeoMutt/20180716
+X-Rspamd-Queue-Id: EBF03273
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Saturday 16 October 2021 12:36:55 Jonas Dreßler wrote:
-> While looking at on-air packets using Wireshark, I noticed we're never
-> setting the initiator bit when sending DELBA requests to the AP: While
-> we set the bit on our del_ba_param_set bitmask, we forget to actually
-> copy that bitmask over to the command struct, which means we never
-> actually set the initiator bit.
-> 
-> Fix that and copy the bitmask over to the host_cmd_ds_11n_delba command
-> struct.
-> 
-> Signed-off-by: Jonas Dreßler <verdre@v0yd.nl>
+v1: https://lore.kernel.org/linux-wireless/20211016101743.15565-1-verdre@v0yd.nl/T/#t
+v2: https://lore.kernel.org/linux-wireless/20211016103656.16791-1-verdre@v0yd.nl/T/#t
 
-Hello! This looks like is fixing mwifiex_send_delba() function which was
-added in initial mwifiex commit. So probably it should have following
-tag:
+Changes between v2 and v3:
+ - Added "Fixes" tag to commit fixing DELBA requests
 
-Fixes: 5e6e3a92b9a4 ("wireless: mwifiex: initial commit for Marvell mwifiex driver")
+Just a few more cleanups and two fixes for mwifiex.
 
-> ---
->  drivers/net/wireless/marvell/mwifiex/11n.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/marvell/mwifiex/11n.c b/drivers/net/wireless/marvell/mwifiex/11n.c
-> index b0695432b26a..9ff2058bcd7e 100644
-> --- a/drivers/net/wireless/marvell/mwifiex/11n.c
-> +++ b/drivers/net/wireless/marvell/mwifiex/11n.c
-> @@ -657,14 +657,15 @@ int mwifiex_send_delba(struct mwifiex_private *priv, int tid, u8 *peer_mac,
->  	uint16_t del_ba_param_set;
->  
->  	memset(&delba, 0, sizeof(delba));
-> -	delba.del_ba_param_set = cpu_to_le16(tid << DELBA_TID_POS);
->  
-> -	del_ba_param_set = le16_to_cpu(delba.del_ba_param_set);
-> +	del_ba_param_set = tid << DELBA_TID_POS;
-> +
->  	if (initiator)
->  		del_ba_param_set |= IEEE80211_DELBA_PARAM_INITIATOR_MASK;
->  	else
->  		del_ba_param_set &= ~IEEE80211_DELBA_PARAM_INITIATOR_MASK;
->  
-> +	delba.del_ba_param_set = cpu_to_le16(del_ba_param_set);
->  	memcpy(&delba.peer_mac_addr, peer_mac, ETH_ALEN);
->  
->  	/* We don't wait for the response of this command */
-> -- 
-> 2.31.1
-> 
+Jonas Dreßler (5):
+  mwifiex: Don't log error on suspend if wake-on-wlan is disabled
+  mwifiex: Log an error on command failure during key-material upload
+  mwifiex: Fix an incorrect comment
+  mwifiex: Send DELBA requests according to spec
+  mwifiex: Deactive host sleep using HSCFG after it was activated
+    manually
+
+ drivers/net/wireless/marvell/mwifiex/11n.c    |  7 ++++---
+ .../net/wireless/marvell/mwifiex/cfg80211.c   | 12 ++++++++---
+ drivers/net/wireless/marvell/mwifiex/cmdevt.c | 21 +++++++++++++++++++
+ drivers/net/wireless/marvell/mwifiex/main.c   | 18 ++++++++++++++++
+ drivers/net/wireless/marvell/mwifiex/main.h   |  1 +
+ .../net/wireless/marvell/mwifiex/sta_cmd.c    |  4 ++++
+ 6 files changed, 57 insertions(+), 6 deletions(-)
+
+-- 
+2.31.1
+
