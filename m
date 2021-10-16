@@ -2,73 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60DA8430070
-	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 07:42:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7425430077
+	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 07:58:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239419AbhJPFoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Oct 2021 01:44:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34466 "EHLO
+        id S239709AbhJPGAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Oct 2021 02:00:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239417AbhJPFoS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Oct 2021 01:44:18 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9DCCC061570
-        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 22:42:10 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id 5so16160823edw.7
-        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 22:42:10 -0700 (PDT)
+        with ESMTP id S233998AbhJPGAe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Oct 2021 02:00:34 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A27E4C061570;
+        Fri, 15 Oct 2021 22:58:26 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id d198-20020a1c1dcf000000b00322f53b9b89so86990wmd.0;
+        Fri, 15 Oct 2021 22:58:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=4Ve9yp/G25WGVQ9lTwderqeao7P0IgztY+IjSYCW8UE=;
-        b=lbz1eYZyUhn0UWEygMnWjrFcv+JokqSwDfl28dQpx+i05Jei076D00in9Iae/fOaWR
-         mKqO43iwPOwOlQ8xDEhW1BiIUcuHbE5DhoxgTTJd+DFbGcQghv4nubqs97FYhHfYic47
-         Jl7hvnuXF+BpE6O+tPjzGPol5FZ0fW2OG3oYnMhNnHmSr8tt/UAic7pLKeqmIePm/18V
-         cdJVmmwkwovm9xAtLBqgqUk8AWgDXwb/xNcSRfIZanpLkJCJrR3+qew9p0bHiq8h5332
-         enuzYkrdhHCI01BgTPmlAoypVvUrVSEOyHDmhNEBx7AX2I09w92H5gCK9ebKcwR+lqOn
-         Xmgw==
+        bh=68eNOtWppTlKiNDzdJ7rYhaZj7B9d5e+FYeQLVcNMSo=;
+        b=D+nlQfc9DYD5+coGuBtTTUZqQFt/wx4ryYCCFquF9XNFWO1QbZlhkldAK9VdHKVtKb
+         5ddbqnhObEXe5UgDqw5G+VtgReb9wdJqBixOIHgoB6zqEtsd6JpATx7Knh1DoK+IEoKg
+         gr0uP1w6wry+fmPoSjkpUYfN5p1UhHwNEmU5jW7KVvgmTL97ogxkdULB3w4Dp0okFBlV
+         YJZdtB4K/TjDA9OYDMAFcruwdv53iFGDc/567GE2hZdJHRbVJMaI0Aepwbt5vDAnX5La
+         8IgZULKjwtelcOb7lSSkjKI3lyQcNuZu+M28SkQKyliOvY5mbR1SqpWa5XdyRt0tTw0O
+         BNTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=4Ve9yp/G25WGVQ9lTwderqeao7P0IgztY+IjSYCW8UE=;
-        b=uSZ5VH26wefslp8B77gFUCa+dKfBSzmaMnK7cEtctUe0IHAF10WBPAbMM53HrSzmN2
-         SAlQNa/+6E0mn15V7kOHiI/ODkjOIw+7B8euwErZKTcQBaCrbDDteX3cq2PvBy4O5imO
-         FAGakJOpCSlaoU0B+q9kQuj/2kXC4/5QarZ3+jq14kd4L2zuZLD4ydqWmZCSbP35C6U6
-         JEUiJXlUwhRLr85Y50sxL365fPLCw0kVYsWxLz7zjYvPPwmoTmVb45x54cvgTdT1CtcK
-         dB5xZVaSVp61qi8W5dlMPyKxxCReHKlz+YUlG4cx5TtOesF7gFP7ISjhUtp0ZGSiCjvN
-         coQA==
-X-Gm-Message-State: AOAM533N/Ci856u7gjE75oSE6p/XgkUi4iDFQ3Kig+cOMCaZoEfrXq/t
-        xNtk9c+nT0tzLVs5BJYSzv/hNbWeAFdZvg==
-X-Google-Smtp-Source: ABdhPJy2TS7E4x2/70j2sW8cp9KPimqEYj0pFHnSoZ7tSroDCsjjlbD0AelNKtPNb28FzAKRI6x5Mg==
-X-Received: by 2002:a17:906:b19:: with SMTP id u25mr11851256ejg.36.1634362929379;
-        Fri, 15 Oct 2021 22:42:09 -0700 (PDT)
-Received: from localhost (tor-exit-relay-8.anonymizing-proxy.digitalcourage.de. [185.220.102.254])
-        by smtp.gmail.com with ESMTPSA id lm14sm5589548ejb.24.2021.10.15.22.42.08
+        bh=68eNOtWppTlKiNDzdJ7rYhaZj7B9d5e+FYeQLVcNMSo=;
+        b=fAu5r+kBBF8sFgESrfZBDLXOFcw9sWtJ/KLRRdLHY7w/8shcioF5hlofI4FOzeaJuE
+         A/Se8Td7XAvlZHxxBPGfDriWxd0BIWa75khNDG6UgJKCKGAFx7z7Pk9bZ4UqpKTloRML
+         KUXFHF61X/2P2oGrxghvi66bmvqWEks8jwmkMa4aSB2ZXqRghak0BDoj6e92tMYBrdQv
+         Yc9jgAQSplKVVFIiWyvPxf11tE6T5H+fmuO/JegufM3WA+nt3T9Rf5sH2jMeovDXYmGg
+         loTsJjWk4CLdK4A0LhATjQYLhf65E1ZftunTLTPTgzMkHofIQDqerSfjO9arTsRJighV
+         xx3A==
+X-Gm-Message-State: AOAM530TO1+H3KJHJ9/ibWf+LXLBAMDzzK4OAqs8SvMA1sZ/Gc3eowcn
+        GgugXe2HRtHalI1jw83MB3I=
+X-Google-Smtp-Source: ABdhPJwU5Fum1Kw7UkbSQHzfGpIqocSyY0NqH3rqkuvQXub5yuDceyboyg7DhZSOPO17hhUSFqjnFQ==
+X-Received: by 2002:a1c:1f0e:: with SMTP id f14mr1246663wmf.65.1634363905217;
+        Fri, 15 Oct 2021 22:58:25 -0700 (PDT)
+Received: from localhost.elektrobit.com (eth1-fw1-nbg6.eb.noris.de. [213.95.148.172])
+        by smtp.gmail.com with ESMTPSA id z2sm6487523wrh.44.2021.10.15.22.58.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Oct 2021 22:42:09 -0700 (PDT)
-From:   =?UTF-8?q?J=CE=B5an=20Sacren?= <sakiwit@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 0/2] Small fixes for both macvtap and ipvtap
-Date:   Fri, 15 Oct 2021 23:41:36 -0600
-Message-Id: <20211016054136.13286-3-sakiwit@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        Fri, 15 Oct 2021 22:58:24 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] MAINTAINERS: adjust file entry for of_net.c after movement
+Date:   Sat, 16 Oct 2021 07:58:15 +0200
+Message-Id: <20211016055815.14397-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jean Sacren <sakiwit@gmail.com>
+Commit e330fb14590c ("of: net: move of_net under net/") moves of_net.c
+to ./net/core/, but misses to adjust the reference to this file in
+MAINTAINERS.
 
-This series fixes the common errors in both macvtap and ipvtap.
+Hence, ./scripts/get_maintainer.pl --self-test=patterns complains:
 
-Jean Sacren (2):
-  net: macvtap: fix template string argument of device_create() call
-  net: ipvtap: fix template string argument of device_create() call
+   warning: no file matches    F:    drivers/of/of_net.c
 
- drivers/net/ipvlan/ipvtap.c | 2 +-
- drivers/net/macvtap.c       | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+Adjust the file entry after this file movement.
+
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+applies cleanly on next-20211015
+
+Jakub, David, please pick this minor non-urgent clean-up patch.
+
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 932699757201..0b69e613112c 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -7085,7 +7085,6 @@ F:	drivers/net/mdio/fwnode_mdio.c
+ F:	drivers/net/mdio/of_mdio.c
+ F:	drivers/net/pcs/
+ F:	drivers/net/phy/
+-F:	drivers/of/of_net.c
+ F:	include/dt-bindings/net/qca-ar803x.h
+ F:	include/linux/*mdio*.h
+ F:	include/linux/mdio/*.h
+@@ -7097,6 +7096,7 @@ F:	include/linux/platform_data/mdio-gpio.h
+ F:	include/trace/events/mdio.h
+ F:	include/uapi/linux/mdio.h
+ F:	include/uapi/linux/mii.h
++F:	net/core/of_net.c
+ 
+ EXEC & BINFMT API
+ R:	Eric Biederman <ebiederm@xmission.com>
+-- 
+2.26.2
 
