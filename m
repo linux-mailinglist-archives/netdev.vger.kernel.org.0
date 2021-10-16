@@ -2,160 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 299514301A4
-	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 11:39:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DE724301AF
+	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 11:52:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243979AbhJPJlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Oct 2021 05:41:12 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:26242 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243969AbhJPJkk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Oct 2021 05:40:40 -0400
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19G5xYtv004984;
-        Sat, 16 Oct 2021 05:38:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=ajtnnQPYsZIaOVWtFcDlVc5hApbamOHVoABLoj+q3Eo=;
- b=nI+snleNOc6guflgc+JOrt4xMQB9fPOaJ0EdJhILKGGcTpayk7SPPl37kVE20gCUqynH
- 2RZzTAKSPDSUCm0QE20kyB15bDA2euoopZMKCN7qw+iWBGSQP1ztoOdnZx6Vhug3hOQB
- kMcQreo9TD/sxwUptk/9WscXdmczLiYxDetnhBBvvwOvctmfrtAKdohR2NvCnVSh9ev4
- tnnR/QyldgaD1ZJ3/AboJtzPOsVt4vGfaOddBYkRoiiY8EZ0TeGWDwusVjYrBrQ4vkow
- NFPctkRRF6S/9LO+A3P4kUHvJKnj3jdy9oWKMG+KmNeGh9+kXOV/vHSTxwQat79rrkLV YQ== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3bqs2qk19d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 16 Oct 2021 05:38:31 -0400
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 19G9biSC004105;
-        Sat, 16 Oct 2021 09:38:28 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3bqpc919xf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 16 Oct 2021 09:38:28 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 19G9cQOO56492390
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 16 Oct 2021 09:38:26 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1721E4C040;
-        Sat, 16 Oct 2021 09:38:26 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D52544C044;
-        Sat, 16 Oct 2021 09:38:25 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Sat, 16 Oct 2021 09:38:25 +0000 (GMT)
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>, linux-rdma@vger.kernel.org
-Subject: [PATCH net-next v3 10/10] net/smc: stop links when their GID is removed
-Date:   Sat, 16 Oct 2021 11:37:52 +0200
-Message-Id: <20211016093752.3564615-11-kgraul@linux.ibm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211016093752.3564615-1-kgraul@linux.ibm.com>
-References: <20211016093752.3564615-1-kgraul@linux.ibm.com>
+        id S240111AbhJPJyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Oct 2021 05:54:32 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:13678 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236710AbhJPJyb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Oct 2021 05:54:31 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1634377943; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=YDjU1Hp2eUm33Aa/Rzcjoft0RKalrfyE5SPNRjlio3g=; b=Gco+E95wKWhSdw3l3z2nEIhdLWhUTagSXNFestKkTE2a4goeGxUukex8ROMV9fP4yZyosghv
+ hW+d1UibG9K7/r4Mf4kuDp/lpoHWQ+GutwNdzsltQU23opVikqEXB9fAFhH9g9a+MAiYL6Px
+ TG3l3+hoENmxbxUPtIReEnsg0mQ=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
+ 616aa0c6446c6db0cba7dbd2 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 16 Oct 2021 09:52:06
+ GMT
+Sender: quic_luoj=quicinc.com@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id C7477C4361A; Sat, 16 Oct 2021 09:52:05 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        NICE_REPLY_A,SPF_FAIL autolearn=no autolearn_force=no version=3.4.0
+Received: from [192.168.1.4] (unknown [183.192.232.55])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: luoj)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9866CC4338F;
+        Sat, 16 Oct 2021 09:52:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 9866CC4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=fail (p=none dis=none) header.from=quicinc.com
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=quicinc.com
+Subject: Re: [PATCH v2 05/13] net: phy: add qca8081 ethernet phy driver
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Luo Jie <luoj@codeaurora.org>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sricharan@codeaurora.org
+References: <20211015073505.1893-1-luoj@codeaurora.org>
+ <20211015073505.1893-6-luoj@codeaurora.org>
+ <YWkzxd7xzTDngoT9@shell.armlinux.org.uk>
+From:   Jie Luo <quic_luoj@quicinc.com>
+Message-ID: <73d24f3d-3327-5d4b-c308-e5b145cbe6a5@quicinc.com>
+Date:   Sat, 16 Oct 2021 17:51:59 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: QLmraRanIlq2CVmumSvC2pGPnLLGPu_w
-X-Proofpoint-GUID: QLmraRanIlq2CVmumSvC2pGPnLLGPu_w
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-10-16_03,2021-10-14_02,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- suspectscore=0 mlxscore=0 adultscore=0 phishscore=0 lowpriorityscore=0
- bulkscore=0 priorityscore=1501 spamscore=0 clxscore=1015 mlxlogscore=999
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109230001 definitions=main-2110160060
+In-Reply-To: <YWkzxd7xzTDngoT9@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With SMC-Rv2 the GID is an IP address that can be deleted from the
-device. When an IB_EVENT_GID_CHANGE event is provided then iterate over
-all active links and check if their GID is still defined. Otherwise
-stop the affected link.
 
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
----
- net/smc/smc_ib.c | 53 ++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 53 insertions(+)
-
-diff --git a/net/smc/smc_ib.c b/net/smc/smc_ib.c
-index 32f9d2fdc474..d93055ec17ae 100644
---- a/net/smc/smc_ib.c
-+++ b/net/smc/smc_ib.c
-@@ -295,6 +295,58 @@ int smc_ib_determine_gid(struct smc_ib_device *smcibdev, u8 ibport,
- 	return -ENODEV;
- }
- 
-+/* check if gid is still defined on smcibdev */
-+static bool smc_ib_check_link_gid(u8 gid[SMC_GID_SIZE], bool smcrv2,
-+				  struct smc_ib_device *smcibdev, u8 ibport)
-+{
-+	const struct ib_gid_attr *attr;
-+	bool rc = false;
-+	int i;
-+
-+	for (i = 0; !rc && i < smcibdev->pattr[ibport - 1].gid_tbl_len; i++) {
-+		attr = rdma_get_gid_attr(smcibdev->ibdev, ibport, i);
-+		if (IS_ERR(attr))
-+			continue;
-+
-+		rcu_read_lock();
-+		if ((!smcrv2 && attr->gid_type == IB_GID_TYPE_ROCE) ||
-+		    (smcrv2 && attr->gid_type == IB_GID_TYPE_ROCE_UDP_ENCAP &&
-+		     !(ipv6_addr_type((const struct in6_addr *)&attr->gid)
-+				     & IPV6_ADDR_LINKLOCAL)))
-+			if (!memcmp(gid, &attr->gid, SMC_GID_SIZE))
-+				rc = true;
-+		rcu_read_unlock();
-+		rdma_put_gid_attr(attr);
-+	}
-+	return rc;
-+}
-+
-+/* check all links if the gid is still defined on smcibdev */
-+static void smc_ib_gid_check(struct smc_ib_device *smcibdev, u8 ibport)
-+{
-+	struct smc_link_group *lgr;
-+	int i;
-+
-+	spin_lock_bh(&smc_lgr_list.lock);
-+	list_for_each_entry(lgr, &smc_lgr_list.list, list) {
-+		if (strncmp(smcibdev->pnetid[ibport - 1], lgr->pnet_id,
-+			    SMC_MAX_PNETID_LEN))
-+			continue; /* lgr is not affected */
-+		if (list_empty(&lgr->list))
-+			continue;
-+		for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
-+			if (lgr->lnk[i].state == SMC_LNK_UNUSED ||
-+			    lgr->lnk[i].smcibdev != smcibdev)
-+				continue;
-+			if (!smc_ib_check_link_gid(lgr->lnk[i].gid,
-+						   lgr->smc_version == SMC_V2,
-+						   smcibdev, ibport))
-+				smcr_port_err(smcibdev, ibport);
-+		}
-+	}
-+	spin_unlock_bh(&smc_lgr_list.lock);
-+}
-+
- static int smc_ib_remember_port_attr(struct smc_ib_device *smcibdev, u8 ibport)
- {
- 	int rc;
-@@ -333,6 +385,7 @@ static void smc_ib_port_event_work(struct work_struct *work)
- 		} else {
- 			clear_bit(port_idx, smcibdev->ports_going_away);
- 			smcr_port_add(smcibdev, port_idx + 1);
-+			smc_ib_gid_check(smcibdev, port_idx + 1);
- 		}
- 	}
- }
--- 
-2.25.1
-
+On 10/15/2021 3:54 PM, Russell King (Oracle) wrote:
+> On Fri, Oct 15, 2021 at 03:34:57PM +0800, Luo Jie wrote:
+>> @@ -1431,6 +1433,18 @@ static struct phy_driver at803x_driver[] = {
+>>   	.get_sset_count = at803x_get_sset_count,
+>>   	.get_strings = at803x_get_strings,
+>>   	.get_stats = at803x_get_stats,
+>> +}, {
+>> +	/* Qualcomm QCA8081 */
+>> +	PHY_ID_MATCH_EXACT(QCA8081_PHY_ID),
+>> +	.name			= "Qualcomm QCA8081 PHY",
+> I don't think we need the " PHY" suffix. This name gets printed in a
+> context where it's obvious it's a network PHY.
+thanks Russell, will remove the suffix " PHY" in the next patch set.
+>
