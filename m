@@ -2,166 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35F3E430245
-	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 12:56:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F347430254
+	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 13:12:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237029AbhJPK6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Oct 2021 06:58:47 -0400
-Received: from mail-bn8nam11on2043.outbound.protection.outlook.com ([40.107.236.43]:7777
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        id S244289AbhJPLOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Oct 2021 07:14:23 -0400
+Received: from mail-mw2nam10on2063.outbound.protection.outlook.com ([40.107.94.63]:36321
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229832AbhJPK6q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Oct 2021 06:58:46 -0400
+        id S240148AbhJPLOW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Oct 2021 07:14:22 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LEGvVNFQC5B0sfCTDOAtp6pVBrAbtmV+hrFGfzHiTyQwYidYpoaCZN2QeIHjPq3kGSORaS/RlvaP9nss/vtpTuXNbd59kYKISFsT1g2N3sQyHSiYhMVwhsHb2DD0cy+BuQF+8tP/tX9Qyhv9s0mrpc/ZqHxofVsNfK1LxTutAVwXStt+jKb9yMPevZHQXccGMjllsF+x9lPkyiNRjjKXXfJUlSUVvg8Put56cF1bR/zBmIkGJIkQZcGISjN+1gtcKxc2cQ4M0cC9vPOlvbaKJSpyiGJ71sh6rA+o+86goSovaHQPLRKfSXaazY0tbGkcYvIS0FjdZeK4JjgR2LUwoQ==
+ b=gGK2n1oU+ptgRM8kjqdKwRVOVco1YVNZqQXbPXuho3OXMSvQifzoiOf5xIKm9YH1KOBSRxKykLdcKq/F/JO9+lhucEpxJ+QftMdfaqQq6m3MtiyqcOjXQP6hFWTz1t1J2Z+jY9+TFzyGQFmSvAU5GdmWAoQF0VA4Wg0CcYpIbwYjXS/ISbP7BXkilbl4jKVCLhKsBdVrjyTThYEoYcjzXB9y/l6J6OTOTBqEvARtVczmstHI/FFTyuQMH/AdCS2TWHLwyH7FyYK7zHAdH+tgSgee5P5ADw7+t9x6dZIQ49wnMqqLjD6+ev1wS0rT7H+Tx3eTRzpp6x9YoV4FgqIC5A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AUniiJ6OeGLbG1wAJSEpLFfBJJ74i9fSehgCxYgN2+c=;
- b=lj4npjBkxpcCsnc76EFC0RErF21uaZbb7hH9nbQ8lK9v5C3I41OKYapyL20TSgSNyQrwZ4jzbxaBmYWjKzJ9swymt99fo5DAJWcJG7ArVWr5S3YhxE5UYOSduV4lmOWN/BAJXcWtmuOCOp+ywlCOijXvzVPOj4r28UzFFHetEJIJDfLRmQqipfmIMbPFlCw5y28JLnyNW/rgss0OKAI/SkQKWp+B60cEGL4Fro97u+Q+4b1BzeNV+tZOSTJVYPDC+dfoT7jGEO9Wz0DiABojjh5TvugWWVPM/j+bnAN5jDDirYWAPVEf5htCKiaair7iU8ibQqzd13bOUD1cUkz+lg==
+ bh=hOfqkCmEeDU7ngOA7+b2rXK2U/mDsU25DH39iAvs02g=;
+ b=hwC8E+kyLgBn2/t6ydJTjhnQXHziUaE5cbDXskm8q5tvokrRaf2elfwnNtrCmukrrgBe2UWlTZpBLLn/IhSEHBlI3IJMIkWD7QB5rG59Fn8eYiFwZwiWHNSyTbEC7ZUA5K/s/MElf4S5FcrXlXN5oQGkF/Wcp8Cv6W//MYIe+gMyAPH8er8UUdYPRulWPwKz+xiuHNPn9Sbx5P5WNVmczOT9yEPD1alHWWc2+GurSgVjYbF6yloJK6XZWh12/3/sXX5VARJtwS6CZzzdTvUl+ePaYWg4Li3yTIfRDxGToZ36GWE67aGLFKOmc8yq5+jfrW7L/MEML2r1YfgzdkrjDw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AUniiJ6OeGLbG1wAJSEpLFfBJJ74i9fSehgCxYgN2+c=;
- b=PIz5G9by3kgNh9tIF0M/s2JcFADqltX4LJG0oWIGr8/5GDWdHrNFIUCrU5+zXW5Us/tm1HLryTOCwWC/CTYy4e4xm/hEHNy9R8nx7PgF4JzTvvH3S5oTeOXJoO7VWGpNzWbHaNv0qjA3yNVj6AigQ4OLp8y0Ar4NcrOa6ANWhEd+PoEmupckkQD+i9QLy0ngXgwOTWMIX10P+GhXRHCeR7UT2EB+FyZFGqdHnkqaP8r5dh/KnsG/NKYEpVI3rBSjOONogJlcoIZlpS8lXHuwJzKlB5B0M7eCqXCguMcLoeKEeFIBBY387j+puUvQvY6W7UEjYOihk0DITXqkmnVTRA==
+ bh=hOfqkCmEeDU7ngOA7+b2rXK2U/mDsU25DH39iAvs02g=;
+ b=koIbtxqB9FBC780DxSDPs7D4wXIILEmskLEu/rq4iHJGvVVH/c6PMceIwFpLgzSjHSqOYcVKHiVhPxwJXHmJVIGb7+6vrc2+xI0J3QTLys3XQk0TQ86uMG8LRotkVDdznW2QOcJ0RSyMGj8YbSiaQy9i6i6rnItg6pzhyzL4PcxA6IicqCuHHfxgm0+OJpX9akyy4N4H9oYovHQpXCesfv6egqeIqfA2660bjk+w7urB5Iwz4kPqSHCB4oOip/j95ZFtm4hJ3UjvGK4Oo9fAjttz9wtGF7J9A/jWqzRzR5DPrR4C5vWuzwxCxsSD9Lf2E0LBdiXGGH4tbjn3VJaqGA==
 Authentication-Results: gmail.com; dkim=none (message not signed)
  header.d=none;gmail.com; dmarc=none action=none header.from=nvidia.com;
 Received: from DM4PR12MB5278.namprd12.prod.outlook.com (2603:10b6:5:39e::17)
- by DM4PR12MB5167.namprd12.prod.outlook.com (2603:10b6:5:396::10) with
+ by DM4PR12MB5056.namprd12.prod.outlook.com (2603:10b6:5:38b::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.16; Sat, 16 Oct
- 2021 10:56:36 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.17; Sat, 16 Oct
+ 2021 11:12:13 +0000
 Received: from DM4PR12MB5278.namprd12.prod.outlook.com
  ([fe80::513c:d3d8:9c43:2cea]) by DM4PR12MB5278.namprd12.prod.outlook.com
  ([fe80::513c:d3d8:9c43:2cea%8]) with mapi id 15.20.4608.018; Sat, 16 Oct 2021
- 10:56:36 +0000
-Message-ID: <badf4e55-ddeb-cfdd-4162-b8b9ae3fed04@nvidia.com>
-Date:   Sat, 16 Oct 2021 13:56:26 +0300
+ 11:12:13 +0000
+Message-ID: <fc84cc7e-142f-48cb-2638-6cbc5b625782@nvidia.com>
+Date:   Sat, 16 Oct 2021 14:12:04 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.1.0
-Subject: Re: [PATCH v2 net-next] net: make use of helper
- netif_is_bridge_master()
+Subject: Re: [PATCH v3] net: neighbour: introduce EVICT_NOCARRIER table option
 Content-Language: en-US
-To:     Kyungrok Chung <acadx0@gmail.com>,
-        Marek Lindner <mareklindner@neomailbox.ch>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Antonio Quartulli <a@unstable.cc>,
-        Sven Eckelmann <sven@narfation.org>,
-        "David S. Miller" <davem@davemloft.net>,
+To:     James Prestwood <prestwoj@gmail.com>, netdev@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
         Roopa Prabhu <roopa@nvidia.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>
-Cc:     b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
-References: <20211016050439.2592877-1-acadx0@gmail.com>
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Chinmay Agarwal <chinagar@codeaurora.org>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Tong Zhu <zhutong@amazon.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jouni Malinen <jouni@codeaurora.org>
+References: <20211015200648.297373-1-prestwoj@gmail.com>
+ <20211015200648.297373-2-prestwoj@gmail.com>
 From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-In-Reply-To: <20211016050439.2592877-1-acadx0@gmail.com>
+In-Reply-To: <20211015200648.297373-2-prestwoj@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: ZR0P278CA0054.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:1d::23) To DM4PR12MB5278.namprd12.prod.outlook.com
+X-ClientProxiedBy: ZR0P278CA0144.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:40::23) To DM4PR12MB5278.namprd12.prod.outlook.com
  (2603:10b6:5:39e::17)
 MIME-Version: 1.0
-Received: from [10.21.240.28] (213.179.129.39) by ZR0P278CA0054.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:1d::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.22 via Frontend Transport; Sat, 16 Oct 2021 10:56:32 +0000
+Received: from [10.21.240.28] (213.179.129.39) by ZR0P278CA0144.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:40::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.16 via Frontend Transport; Sat, 16 Oct 2021 11:12:09 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 69fc3f0d-b4a0-4459-7940-08d990939f76
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5167:
+X-MS-Office365-Filtering-Correlation-Id: 9e68cd5d-6ad0-460a-338c-08d99095ce2c
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5056:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM4PR12MB5167072F4BCE23C06DBEB117DFBA9@DM4PR12MB5167.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1775;
+X-Microsoft-Antispam-PRVS: <DM4PR12MB505685D24D263A00E8B1DF3DDFBA9@DM4PR12MB5056.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: J3kT00u8s714I0t/388AlVjTwv+54M1VfbiCB9t7UnRXcO9QnoltfgMTtJWt93jSqYWr+lwwOzidNJsqHp7AULVRJjIFDf6vYfuzX+ddXIak2+nkHfp+8qzOLt8eOU/doH3DjEBdVhEsSS4yNRL4XTQgtigZCGyTrASBxfjcbBYY2egZDn0G5XQ5NaDUp73gNnL6mEJOSL6QbL5kvf4NR8dUfKuu3yiC9gjPJ5abVJUGDKfL/2B+AsMG4ApqLh5LRQhVFqGB+f1h2qfV43H5bcn2EJq5q1ldtdiKE6HSRi0BKgll86hN2bvuDylw3TS7UW5Eo/laiQd1NPrBRP5EMVG/vdwzkfE61Fg434FhRVYXBK1HBlzEla2Qze38V3iJT1ZeR7Z5g6fXrL760UIRBCnBK94J2u6qM67PA5qFYuMOuYtMnNoXeetyVRzIRi1EwYyhyAXPyO6xoMZZDuH4IVjzWwggsdgBxQebkV8KLPjOADZaNKtuLNIVmXI5fPsU1l2bepHiMVbh38dILKMtoJ9m/kQ8BLDNpCI/1/rpTnhMz/wo9RZhSE1QXTogGiLtntQtKMR6wYA1Ebl8Sw7zComVpLhk+afjk+yt207NN7fWKUn1cvsR+tVNANEQ4wuvlvDCLFbFoO+EWwj2cDWTX3bG2w97XZQR2p+MUXlfFf8aq38kYziTRZeeS6V34O9Uj4y5lMIbB75sWKfCT0kUg1OQfL+YxGXm95J559o9P9IIwiCuezPP6dDro18FRvcwwRMNAu8y7K6dK8TNFBrWzg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5278.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(316002)(31696002)(16576012)(956004)(38100700002)(921005)(5660300002)(83380400001)(186003)(31686004)(2616005)(53546011)(8676002)(6486002)(508600001)(2906002)(7416002)(66946007)(66556008)(66476007)(86362001)(36756003)(110136005)(4326008)(8936002)(26005)(6666004)(781001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: q3OIPdo7X+It4Inur30x6Neh+tJN2eJzv4jhFzq5SzCKBfdCcm3D2aqb+m1r3lDtp4ImhgLJJsE5ZapS9SCfMkorU6XxAnXml1V9lrnf/HZOvaPfZ2cJuJBNtF3YFIxvc+oJm1XeLsGA6WbYZIfs9lfkI8aR4y8DC5jZTr7Lp24armZvUr2+G6V6f4QIlh0yT/uG8CHW9Z4JBrKpHBQkcyEfYILBn5s+UcTgRJWnPNh61KJQ5iQZbR3UPNVwbYCQVa+h0SYxdxYHdwosNBPrOjGMjqTkgC5BKeX3fCt8567FeYqyAq8kcycpimtajx/2ZNU5Hxte+SH+au2+pFDTC/cFIABS19TpEfAKymOPGJLT0j8KeG8hOI9GAufYuCjUjK3GrcNq5UmOtCUqGLg9REoR4w2DvzXr59LUggqa56M9EDaYu/wwSKPR+WKV9iBX8dhkz6lwmq92bmAeQTEfTrhxosQsVWU1o27eUBHXrIDTADDnzGh4h6lbpS+kmsoGLHI+lEot/AfdRhWn1ZnNMZ8PkQ6QSds/1apePde8xBinKkx0DfAEAMkA+69TK8oGpfo7iFX2UAo3n1PNhhXg6MJnmuln09u0jRUvFr1/LOz1dnZYEYWh8cBDNbiGzUWzYgHG5jachcpt9HlFAvCIKHMW24aR+ARe8RM6htOWs8EzVgmy2vsO/b/5XzpDoIRivIbYuh1ZrixEYOM4Mjr16iy+nWyIxunWbezJO6PTKXU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5278.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(83380400001)(8936002)(38100700002)(36756003)(31686004)(8676002)(5660300002)(26005)(6666004)(508600001)(2906002)(53546011)(6486002)(316002)(66476007)(54906003)(2616005)(956004)(16576012)(86362001)(66946007)(7416002)(186003)(31696002)(4326008)(66556008)(45980500001)(43740500002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TTMxY1BEVmV2dEU1Z1dpOHRFSXU5RTU4Qyt2dXdDVVVJUXkwVHo3eXdvUm5R?=
- =?utf-8?B?UkIrYjhoUG10c3JUbFh2bTVWTm5PMjAwOFFmMjZib05OQnVFSkxPRFA1bCtE?=
- =?utf-8?B?YXY1akVrcTVVYnBrc045WW5MWlM3R2lKWXpVT29Ha1ZGZ1YzWDVLUy9VQTgx?=
- =?utf-8?B?TnV5bFRQbGdJQkR5TTlXNzlISEpnVVBvYjRFdzdXNGVSNFNaRHdsT2hqZ0hq?=
- =?utf-8?B?TXVtbmRSTGhOTHI0U1BhYlkvTitUdWFxbFpBZStoUGJiNzl3aUxMbTVubTNp?=
- =?utf-8?B?TzN4S3BWLzcydWtSOGhCNi96elp1dlFQVlhPRENNK0JyMHg2NFJkTVM5OXdh?=
- =?utf-8?B?WWNUck1XeVZwVDdobGZ5bmxvdStBdW94MEVzbTRtSDZlTG1oTDduMkRiMnpt?=
- =?utf-8?B?RHBjTmtWNlhleVpQRU5EUkF1bW9OTU5GbUFObXVMdEtHbVU5Rmw1WExIWHAz?=
- =?utf-8?B?WldjT1RDV0R2ajB0c2VHZnk4dGdja0ozcmx5UXJaQ1JlMDdVTW5JQ0ZVanhH?=
- =?utf-8?B?VVVNSDZiTHRCQXpRSWNlSGJxcERmNUdhdGNpeWpPMjNwd0pFSm9xUzZLWUsv?=
- =?utf-8?B?ZUwycjNnMkRDejNnS2g0RmNobk9ieHZZQ0dwRlgwVnN4WlhKQnFzZllqTkJ1?=
- =?utf-8?B?RlpIVXZDeVZEakpSNHFUazlTOFhtSzZiOVFmRjl0d3BsZFVXb0wyTEJ0L2hW?=
- =?utf-8?B?b01DYXhjY2FtNm1nZjNGZ1FRWENmK28xejhWMVJwSnFvdk5IVUsxRU9TYXFy?=
- =?utf-8?B?S0loL29UVFVEcFJzazMxRzA5eWZQYVZKSU16U3pkV08veGo2VnB5eFptTCtP?=
- =?utf-8?B?dWEzeisxQjNxT2dwdmZFZElXbEhkOVNHZEpaN1ZndjhvSTIxRDcvbXBDVjdD?=
- =?utf-8?B?eUdDSVc2MzlqSWZWL3F2R2FCT2ptZmt4VXc1ZGpwMEc0U0w2TGdLelZ0azNs?=
- =?utf-8?B?eTlTbWExdXAzK0N5NkVwRHBRTk5ZR3ArQ2JzK01YRWhPLzZqdzhMMUNIUGdn?=
- =?utf-8?B?UllGRjhRMEI1dlVZNzh1T2RWUU11L2dlSmlFTWFtNHZWLzhsOStTZERTQ0l0?=
- =?utf-8?B?S1RZTHE4K1FVaWVTQldrMXlkb0tlMFpMMVdpckxjZHFrWnp3bkdGM0VJRVpl?=
- =?utf-8?B?Q3Y1blJxeWZWVTcvM1JsVm5WVFZ1V2xaM21OZzlNejVsMmg1MUZGay94ZGtn?=
- =?utf-8?B?VjdQbWZuRFNiU0xsMDU5Rmw4MGpRTmhHQnNDZVNPTmp0MGEySUM4OUdaQkp6?=
- =?utf-8?B?bVA4MTEreFg1a0tQUVpqdjFHWVh5aDhTSnN6UTNlQVkxMTY4UmVnY1ovbTBD?=
- =?utf-8?B?aG1Da3hxdHBCdkxLNmZOR3dpaC80ZmF6WVVVZGJmcDRKcXdvK1RWSDB3K3p3?=
- =?utf-8?B?VG1GL1pDUUZ1TVI5VGozWmJ4dFZHODZnMEl4ZW5LVjZDZy9lNEpsVG9ZcmhF?=
- =?utf-8?B?a2xEWnJXUnFyaElaUHh3cjhXQWluL2dOTk83SHF5VWFiK2hLY29uVVloeWpw?=
- =?utf-8?B?WkhlOFpTYWEzSkRlYUN3dXVFUmhleWdnRXlHS1JYWFgzSVE5bkZOZG1ZQTZ5?=
- =?utf-8?B?SFFFMDVXbzRyL1FNeG1FeXo1NWJHekFBV3BYRDBDTjRhTS9RWHdUUW9ZWS9z?=
- =?utf-8?B?dUJlZ2cwalZtblMzbW92YjZhcWU1RHJZZFQxbFc1ZVJDb1krRGx4MVBORVpX?=
- =?utf-8?B?V09QTFJVT2dsbE5lVmVYbk1qaTJwaUdaTEJUdThvREtMRVhGcGU3V3VMUWt1?=
- =?utf-8?Q?IAsrNbg4vJFJddryuxK3+JhB9uwoOD6IYR9PdZx?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UVNySlFwQ2s4ZC8vVFVpc0FEcmIwQnk1ekswQ3dkbllCbGVNYmNNUEFJR3g0?=
+ =?utf-8?B?NS96VjR1WnJFSU51KzZuK1hnamNCaVMrK3VCRlA1WWtpRWlZamVjUVRDZm9k?=
+ =?utf-8?B?MndnL0dudmROWFhXMGkyc3hiZ25rbHJBczU2bElub2xrcjgwajV0ekQ5UlRQ?=
+ =?utf-8?B?bXdDbnJyMDV3SDF2cW84OEN1Yjh4M3RxM2xXQ2ZqRHV6ZzVFbVl0RkxjanpF?=
+ =?utf-8?B?cE1nSkZTaEZHMFBzSms3M1FiSjl3cktUN1hiTkJZaWZVendzMXFNcHJmSnhi?=
+ =?utf-8?B?U3AwRTAzWnRBMldDNWcvdk5VVWk5YW04OHdYNVRpLzFWN3NDbTFaS3RmaDhC?=
+ =?utf-8?B?ODJBWDhiOVBWa2xrejl5T2FFL0dNblJuWG5oYXNlNkpRcEtGdUs0eUViQmhi?=
+ =?utf-8?B?SzRRUHROWUhrQ3dBZGQyRE5pR3dybkpzYjY2cHc3YklEcFl2Y2VKeHE3UlE4?=
+ =?utf-8?B?MUdQMzIrV3ptWWpXeUhHSS8wV1k5cXR6QlNjOVE1TXRTQm9OM0N6aUUvTXVr?=
+ =?utf-8?B?V3JMYnhlVUtZQTUvMmxSTzdiNWhzdXBpOHc0K1pMcERmK2c0bmZCenEzQkZO?=
+ =?utf-8?B?STFKVVI5RDlUY3FEVjV1dE5MYWpaSGpuMUNQQU5EQ3JHaHlLNXdYYXVFRnFX?=
+ =?utf-8?B?MzdyUGZwZk1FQjQxWWVCcHFJZ1dDTXNhQ3BWUmlxbUF6SmN1cGkvT20rU1V0?=
+ =?utf-8?B?RlRIcXdLNG1ZOVIxY0ptRGxEUHN4dUlMVjFZVTUwcUpEUENZblo3ZnJPakox?=
+ =?utf-8?B?RmI2QjNsR2ExWFVIcWNHa09hVlpUNEtKQkdDaFIybFNyeVk2Nit5ZXIrZXFn?=
+ =?utf-8?B?UUVlWVdZeTlxTFZCUEpnNXhSNEk5M3dMZ2F6aCs5ZTJJTjhFTFdNZ040Zk1E?=
+ =?utf-8?B?RTRaeWl6T09wcVJJek82bm9WMTRLbFk1U2hkS3Q2MG56STZDbDc5dDVkTmpF?=
+ =?utf-8?B?ZFdLZDd5VWdNSTN3bmlOeFlmU0JPdzdkZDBYd1pmd1RlckhuZUxuSWt6My94?=
+ =?utf-8?B?MVNucEFxVHNkclgxck9WR1IxKzJHajh3OXphcXlJZjVYdDh2UFpQT3NMVG5M?=
+ =?utf-8?B?ZDFNTFg3YWNnMXVpMDlMRjI2V1Q2dVBMWUhXRXh2cm9ubWFwTGk5S1FZYzBP?=
+ =?utf-8?B?VnBFT0c0Q1dkZHdjU1BqL3cwemVDd052OGJkdTdWR1hFN1ZhTStoSURzSG1O?=
+ =?utf-8?B?WmZ2RUYvajZwdTNyR21lbkRBZ2ZOQXNjTWYzOHNJcElpTm85QUZoUVhvc3lF?=
+ =?utf-8?B?WXNsVnNvdHRSQkFsTnlzdTFhS0h6KzI4dmJ4blJDT1BxdkhDQTNIdDArOE9j?=
+ =?utf-8?B?dm42eHVXYmpISWxBREpWTHdwMzk0KzRMUkJDUjNNaTI3N3RPS1hxN2VESXhH?=
+ =?utf-8?B?VE5kcThKUzRETUFnblU3U1hCY3dNcndMbm5yVWJNNFJzVFJGbkxRQktDa3Qr?=
+ =?utf-8?B?eDVKb3BRR25ZVmVzMXRSZFlWT2lOVTU2eGFVTmhtRXE3OHhZQnYvOUdZS3Rk?=
+ =?utf-8?B?endVcFBKTWtPUE5QYnJzd1JIdVc0c3RKbTBDNXdZL0w2YXNNa1RtcjlrUjNt?=
+ =?utf-8?B?NDE1YWdKMGFWYTFHWGZKbHV4ZWd5cVRYVWRJMDFML3lCSWJEd0pNYWxsTDNh?=
+ =?utf-8?B?ZmhXNGlvOU15MXZheVhZOGptQlcyU1U1dytpcHcwbnNMc251RHROTUliZUFP?=
+ =?utf-8?B?RlM3TFZxNW5BdEt3QjZqUkVhVDJCaVdDVzBlZUt0dS9WQUQwVkNWMEZDdjFE?=
+ =?utf-8?Q?/yiUiLYNgkaeeAXHobggfyaYisTVoP74tzpKDxi?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 69fc3f0d-b4a0-4459-7940-08d990939f76
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9e68cd5d-6ad0-460a-338c-08d99095ce2c
 X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5278.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2021 10:56:36.2705
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2021 11:12:13.5346
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: e68Lp+naZFLSw7fdEhH/nVAqoQNSPbW0pfX7nyklLqOsZB+Ez47AiWvE5QVjf1jzSdOKme8HJHw4tDLSt3uz7g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5167
+X-MS-Exchange-CrossTenant-UserPrincipalName: p7UpKpyxiH5/XwinEEZxxFjl3Y+ZrrLYhes1pOGIgtVzy0AYVhbwE6cTwJsCrj2gzDvqUkRmFSTr/1mi4veyUQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5056
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16/10/2021 08:04, Kyungrok Chung wrote:
-> Make use of netdev helper functions to improve code readability.
-> Replace 'dev->priv_flags & IFF_EBRIDGE' with netif_is_bridge_master(dev).
+On 15/10/2021 23:06, James Prestwood wrote:
+> This adds an option to ARP/NDISC tables that clears the table on
+> NOCARRIER events. The default option (1) maintains existing
+> behavior.
 > 
-> Signed-off-by: Kyungrok Chung <acadx0@gmail.com>
-> ---
-> 
-> v1->v2:
->   - Apply fixes to batman-adv, core too.
-> 
->  net/batman-adv/multicast.c      | 2 +-
->  net/bridge/br.c                 | 4 ++--
->  net/bridge/br_fdb.c             | 6 +++---
->  net/bridge/br_if.c              | 2 +-
->  net/bridge/br_ioctl.c           | 2 +-
->  net/bridge/br_mdb.c             | 4 ++--
->  net/bridge/br_netfilter_hooks.c | 2 +-
->  net/bridge/br_netlink.c         | 4 ++--
->  net/core/rtnetlink.c            | 2 +-
->  9 files changed, 14 insertions(+), 14 deletions(-)
-> 
+> Clearing the ARP cache on NOCARRIER is relatively new, introduced by:
 [snip]
->  	err = br_afspec(br, p, afspec, RTM_DELLINK, &changed, NULL);
-> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-> index 2dc1b209ba91..d3676666a529 100644
-> --- a/net/core/rtnetlink.c
-> +++ b/net/core/rtnetlink.c
-> @@ -4384,7 +4384,7 @@ static int rtnl_fdb_dump(struct sk_buff *skb, struct netlink_callback *cb)
->  					continue;
->  
->  				if (br_dev != netdev_master_upper_dev_get(dev) &&
-> -				    !(dev->priv_flags & IFF_EBRIDGE))
-> +				    netif_is_bridge_master(dev))
->  					continue;
->  				cops = ops;
->  			}
+> Signed-off-by: James Prestwood <prestwoj@gmail.com>
+> ---
+>  Documentation/networking/ip-sysctl.rst |  9 +++++++++
+>  include/net/neighbour.h                |  3 ++-
+>  include/uapi/linux/neighbour.h         |  1 +
+>  net/core/neighbour.c                   | 18 +++++++++++++-----
+>  net/ipv4/arp.c                         |  1 +
+>  net/ipv6/ndisc.c                       |  1 +
+>  6 files changed, 27 insertions(+), 6 deletions(-)
 > 
+> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+> index 16b8bf72feaf..e2aced01905a 100644
+> --- a/Documentation/networking/ip-sysctl.rst
+> +++ b/Documentation/networking/ip-sysctl.rst
+> @@ -200,6 +200,15 @@ neigh/default/unres_qlen - INTEGER
+>  
+>  	Default: 101
+>  
+> +neigh/default/evict_nocarrier - BOOLEAN
+> +	Clears the neighbor cache on NOCARRIER events. This option is important
+> +	for wireless devices where the cache should not be cleared when roaming
+> +	between access points on the same network. In most cases this should
+> +	remain as the default (1).
+> +
+> +	- 1 - (default): Clear the neighbor cache on NOCARRIER events
+> +	- 0 - Do not clear neighbor cache on NOCARRIER events
+> +
+>  mtu_expires - INTEGER
+>  	Time, in seconds, that cached PMTU information is kept.
+>  
+> diff --git a/include/net/neighbour.h b/include/net/neighbour.h
+> index e8e48be66755..71b28f83c3d3 100644
+> --- a/include/net/neighbour.h
+> +++ b/include/net/neighbour.h
+> @@ -54,7 +54,8 @@ enum {
+>  	NEIGH_VAR_ANYCAST_DELAY,
+>  	NEIGH_VAR_PROXY_DELAY,
+>  	NEIGH_VAR_LOCKTIME,
+> -#define NEIGH_VAR_DATA_MAX (NEIGH_VAR_LOCKTIME + 1)
+> +	NEIGH_VAR_EVICT_NOCARRIER,
+> +#define NEIGH_VAR_DATA_MAX (NEIGH_VAR_EVICT_NOCARRIER + 1)
+>  	/* Following are used as a second way to access one of the above */
+>  	NEIGH_VAR_QUEUE_LEN, /* same data as NEIGH_VAR_QUEUE_LEN_BYTES */
+>  	NEIGH_VAR_RETRANS_TIME_MS, /* same data as NEIGH_VAR_RETRANS_TIME */
+> diff --git a/include/uapi/linux/neighbour.h b/include/uapi/linux/neighbour.h
+> index db05fb55055e..4322e5f42646 100644
+> --- a/include/uapi/linux/neighbour.h
+> +++ b/include/uapi/linux/neighbour.h
+> @@ -151,6 +151,7 @@ enum {
+>  	NDTPA_LOCKTIME,			/* u64, msecs */
+>  	NDTPA_QUEUE_LENBYTES,		/* u32 */
+>  	NDTPA_MCAST_REPROBES,		/* u32 */
+> +	NDTPA_EVICT_NOCARRIER,		/* u8 */
+>  	NDTPA_PAD,
+>  	__NDTPA_MAX
+>  };
 
-This looks wrong, the original check is if it's _not_ a bridge master.
+I think this should be the last attribute (after PAD).
+
+Since this is a single patch you don't really need a cover letter, you can add the version
+changes below ---. Also your cover letter says v2 and the patch says v3.
+
+Cheers,
+ Nik
+
