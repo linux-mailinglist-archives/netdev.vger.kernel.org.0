@@ -2,84 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C4B6430282
-	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 13:58:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85057430299
+	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 14:33:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240376AbhJPMAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Oct 2021 08:00:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60150 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237354AbhJPMAO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Oct 2021 08:00:14 -0400
-Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61ED4C061570;
-        Sat, 16 Oct 2021 04:58:06 -0700 (PDT)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4HWhV42KNVzQkBP;
-        Sat, 16 Oct 2021 13:58:04 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hauke-m.de; s=MBO0001;
-        t=1634385482;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zsKwS6F8UjWzhAlYTHRy4Hc+M+BiPhF7fV4hrQ8cfa4=;
-        b=UgCKdTq8CohrRhsn3YjXVjEMreslxZcRenBy75dzDrB4s6bXATbear4SwxLqp8sXQaoH8p
-        0xeBdOH+5Tll61/kh0kJLKKy65ZFiHma1aWcwP8tmSFlk2pcC7p9cz+w3ZqfzDarWyBcGh
-        mRl8q6GBwII3NCvyGdTb+Ln6iWyIu4mLWDM825dPay2opaYQZUPGSI8IFWHd5/mBHHVPLV
-        xHVL8H5OOGIzjAaep+JPJHpL3A+x6LQ5wvCglMReep0JB7DM2mADkppYe2c1vVb8U9InDf
-        WwwbROpdvFIPKgkto8sMxk13drafdONfMikvCwagpxwnY5LaUbE5R5Ss3tw7KQ==
-Subject: Re: [PATCH net] net: dsa: lantiq_gswip: fix register definition
-To:     Aleksander Jan Bajkowski <olek2@wp.pl>, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20211015221020.3590-1-olek2@wp.pl>
-From:   Hauke Mehrtens <hauke@hauke-m.de>
-Message-ID: <0abd339a-3a9b-edfc-d697-27fce492bdd0@hauke-m.de>
-Date:   Sat, 16 Oct 2021 13:57:59 +0200
+        id S235202AbhJPMfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Oct 2021 08:35:18 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:28951 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234762AbhJPMfR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Oct 2021 08:35:17 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HWj9J6HS2zbmrT;
+        Sat, 16 Oct 2021 20:28:36 +0800 (CST)
+Received: from dggpeml500025.china.huawei.com (7.185.36.35) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Sat, 16 Oct 2021 20:33:07 +0800
+Received: from huawei.com (10.175.124.27) by dggpeml500025.china.huawei.com
+ (7.185.36.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.8; Sat, 16 Oct
+ 2021 20:33:06 +0800
+From:   Hou Tao <houtao1@huawei.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+CC:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <houtao1@huawei.com>
+Subject: [PATCH bpf-next v2 0/5] introduce dummy BPF STRUCT_OPS
+Date:   Sat, 16 Oct 2021 20:48:01 +0800
+Message-ID: <20211016124806.1547989-1-houtao1@huawei.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-In-Reply-To: <20211015221020.3590-1-olek2@wp.pl>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Queue-Id: D509522F
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500025.china.huawei.com (7.185.36.35)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/16/21 12:10 AM, Aleksander Jan Bajkowski wrote:
-> I compared the register definitions with the D-Link DWR-966
-> GPL sources and found that the PUAFD field definition was
-> incorrect. This definition is unused and causes no issues.
-> 
-> Fixes: 14fceff4771e ("net: dsa: Add Lantiq / Intel DSA driver for vrx200")
-> Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
+Hi,
 
-Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
+Currently the test of BPF STRUCT_OPS depends on the specific bpf
+implementation (e.g, tcp_congestion_ops), but it can not cover all
+basic functionalities (e.g, return value handling), so introduce
+a dummy BPF STRUCT_OPS for test purpose.
 
-Thanks for finding this problem.
+Instead of loading a userspace-implemeted bpf_dummy_ops map into
+kernel and calling the specific function by writing to sysfs provided
+by bpf_testmode.ko, only loading bpf_dummy_ops related prog into
+kernel and calling these prog by bpf_prog_test_run(). The latter
+is more flexible and has no dependency on extra kernel module.
 
-> ---
->   drivers/net/dsa/lantiq_gswip.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-> index 3ff4b7e177f3..dbd4486a173f 100644
-> --- a/drivers/net/dsa/lantiq_gswip.c
-> +++ b/drivers/net/dsa/lantiq_gswip.c
-> @@ -230,7 +230,7 @@
->   #define GSWIP_SDMA_PCTRLp(p)		(0xBC0 + ((p) * 0x6))
->   #define  GSWIP_SDMA_PCTRL_EN		BIT(0)	/* SDMA Port Enable */
->   #define  GSWIP_SDMA_PCTRL_FCEN		BIT(1)	/* Flow Control Enable */
-> -#define  GSWIP_SDMA_PCTRL_PAUFWD	BIT(1)	/* Pause Frame Forwarding */
-> +#define  GSWIP_SDMA_PCTRL_PAUFWD	BIT(3)	/* Pause Frame Forwarding */
->   
->   #define GSWIP_TABLE_ACTIVE_VLAN		0x01
->   #define GSWIP_TABLE_VLAN_MAPPING	0x02
-> 
+Now the return value handling is supported by test_1(...) ops,
+and passing multiple arguments is supported by test_2(...) ops.
+If more is needed, test_x(...) ops can be added afterwards.
+
+Comments are always welcome.
+Regards,
+Hou
+
+Change Log:
+v2:
+ * rebase on bpf-next
+ * add test_2(...) ops to test the passing of multiple arguments
+ * a new patch (patch #2) is added to factor out ctx access helpers
+ * address comments from Martin & Andrii
+
+v1: https://www.spinics.net/lists/bpf/msg46787.html
+
+RFC: https://www.spinics.net/lists/bpf/msg46117.html
+
+Hou Tao (5):
+  bpf: factor out a helper to prepare trampoline for struct_ops prog
+  bpf: factor out helpers to check ctx access for BTF function
+  bpf: add dummy BPF STRUCT_OPS for test purpose
+  bpf: hook .test_run for struct_ops program
+  selftests/bpf: add test cases for struct_ops prog
+
+ include/linux/bpf.h                           |  45 ++++
+ kernel/bpf/bpf_struct_ops.c                   |  46 +++-
+ kernel/bpf/bpf_struct_ops_types.h             |   1 +
+ kernel/trace/bpf_trace.c                      |  16 +-
+ net/bpf/Makefile                              |   3 +
+ net/bpf/bpf_dummy_struct_ops.c                | 206 ++++++++++++++++++
+ net/ipv4/bpf_tcp_ca.c                         |   9 +-
+ .../selftests/bpf/prog_tests/dummy_st_ops.c   | 114 ++++++++++
+ .../selftests/bpf/progs/dummy_st_ops.c        |  50 +++++
+ 9 files changed, 458 insertions(+), 32 deletions(-)
+ create mode 100644 net/bpf/bpf_dummy_struct_ops.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/dummy_st_ops.c
+ create mode 100644 tools/testing/selftests/bpf/progs/dummy_st_ops.c
+
+-- 
+2.29.2
 
