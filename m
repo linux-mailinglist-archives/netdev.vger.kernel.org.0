@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AA9B43010B
-	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 10:03:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F042430108
+	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 10:02:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239855AbhJPIEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Oct 2021 04:04:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55608 "EHLO mail.kernel.org"
+        id S239862AbhJPIEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Oct 2021 04:04:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55626 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239870AbhJPICc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S239875AbhJPICc (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 16 Oct 2021 04:02:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 1C4D261250;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 2DEFA61262;
         Sat, 16 Oct 2021 08:00:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1634371215;
-        bh=z7wGmmtu6pRU/n8V87yDR2OS56ZiEYl+zlv7QsE1DCk=;
+        bh=s4nLj3p5TCl8eoQynUVAfkz9NXDeqvDunm2+lTWXVbM=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MoemE8DV/e60UIkxP14diOF0KpVKe0oA80r9VdGn7jorsG1SZqcsbebLe/DbV16o0
-         gWrWYyr1bVxaqMb5+B2qpi9s2rPAY+leLR8MtaXBRnD1nXc2Fz0VKiUNL8reZpDTjj
-         CTE3GlvixzX/tHw7v+Akh5ODm3PiROeLCNJRO5OWqdvrmoBjJ3bcV1Ro68na4Tdo2S
-         YhSdHT9VOAoaR8DXdVc3LN3PQTXxigzX6Vgf/lnEOdKcgO3xcnqn6FufaRO663R9g5
-         LGBgIREVe+n9gQHgZmmDT7m/z0LrbHmb3eVThJ9hsq+gd9J7TcIY5nBLwur6DhRhkB
-         1fHY9Ow+nKizg==
+        b=jOr8qXl/2tGOUOBb1LCeKhSV31vhNm5XjqR21i1jyUOpw84HnThyJw38xprigNz3U
+         Soz8PyvAUI227id+7Iv///ujEAIpGZkaofUJeP9PW7ThqbiOeda4tbtvA2NxqlVr/E
+         3O2D2bE+mbM2wek0d02TO0rewCkcBeaE8Oas2qm0PtBlrpo48I29bZ8VIKAKxVnJZY
+         0+gZnGeuiNrEFoAKI2ca2C/nJbBsM4fDZePPM1Ta3MvG7iO3JSfx360ulNj6xsJHVz
+         JuhpP6H2ZnbwKbcu76W4Nxj1GHIwDqZbD6wN8PiCvBIcGONS/L+YCWQNFnlkBSds+R
+         HIkYfxWK07JaA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0B96C60AA3;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 21A2460BBF;
         Sat, 16 Oct 2021 08:00:15 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/12] ethernet: manual netdev->dev_addr conversions
- (part 1)
+Subject: Re: [PATCH net-next 1/2] net: macvtap: fix template string argument of
+ device_create() call
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163437121504.28528.4573595521963466241.git-patchwork-notify@kernel.org>
+Message-Id: <163437121513.28528.3625194342664164879.git-patchwork-notify@kernel.org>
 Date:   Sat, 16 Oct 2021 08:00:15 +0000
-References: <20211015221652.827253-1-kuba@kernel.org>
-In-Reply-To: <20211015221652.827253-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
+References: <20211016054136.13286-1-sakiwit@gmail.com>
+In-Reply-To: <20211016054136.13286-1-sakiwit@gmail.com>
+To:     =?utf-8?q?J=CE=B5an_Sacren_=3Csakiwit=40gmail=2Ecom=3E?=@ci.codeaurora.org
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,51 +47,21 @@ Hello:
 This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 15 Oct 2021 15:16:40 -0700 you wrote:
-> Manual conversions of drivers writing directly
-> to netdev->dev_addr (part 1 out of 3).
+On Fri, 15 Oct 2021 23:41:34 -0600 you wrote:
+> From: Jean Sacren <sakiwit@gmail.com>
 > 
-> Jakub Kicinski (12):
->   ethernet: adaptec: use eth_hw_addr_set()
->   ethernet: aeroflex: use eth_hw_addr_set()
->   ethernet: alteon: use eth_hw_addr_set()
->   ethernet: amd: use eth_hw_addr_set()
->   ethernet: aquantia: use eth_hw_addr_set()
->   ethernet: bnx2x: use eth_hw_addr_set()
->   ethernet: bcmgenet: use eth_hw_addr_set()
->   ethernet: enic: use eth_hw_addr_set()
->   ethernet: ec_bhf: use eth_hw_addr_set()
->   ethernet: enetc: use eth_hw_addr_set()
->   ethernet: ibmveth: use ether_addr_to_u64()
->   ethernet: ixgb: use eth_hw_addr_set()
+> The last argument of device_create() call should be a template string.
+> The tap_name variable should be the argument to the string, but not the
+> argument of the call itself.  We should add the template string and turn
+> tap_name into its argument.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,01/12] ethernet: adaptec: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/8ec53ed9af1f
-  - [net-next,02/12] ethernet: aeroflex: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/0d4c7517159f
-  - [net-next,03/12] ethernet: alteon: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/ffaeca68fb5f
-  - [net-next,04/12] ethernet: amd: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/f98c50509a20
-  - [net-next,05/12] ethernet: aquantia: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/698c33d8b489
-  - [net-next,06/12] ethernet: bnx2x: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/a85c8f9ad2f6
-  - [net-next,07/12] ethernet: bcmgenet: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/0c9e0c7931c6
-  - [net-next,08/12] ethernet: enic: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/41edfff572d9
-  - [net-next,09/12] ethernet: ec_bhf: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/10e6ded81235
-  - [net-next,10/12] ethernet: enetc: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/d9ca87233b68
-  - [net-next,11/12] ethernet: ibmveth: use ether_addr_to_u64()
-    https://git.kernel.org/netdev/net-next/c/5c8b348534ac
-  - [net-next,12/12] ethernet: ixgb: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/ec356edef78c
+  - [net-next,1/2] net: macvtap: fix template string argument of device_create() call
+    https://git.kernel.org/netdev/net-next/c/1c5b5b3f0eab
+  - [net-next,2/2] net: ipvtap: fix template string argument of device_create() call
+    https://git.kernel.org/netdev/net-next/c/a07a296bba9d
 
 You are awesome, thank you!
 --
