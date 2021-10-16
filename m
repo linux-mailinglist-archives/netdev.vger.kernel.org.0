@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7A9543006E
-	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 07:42:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17A5A43006F
+	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 07:42:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239114AbhJPFoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Oct 2021 01:44:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34402 "EHLO
+        id S239404AbhJPFoK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Oct 2021 01:44:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230261AbhJPFoB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Oct 2021 01:44:01 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F36FBC061570
-        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 22:41:53 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id w14so46240426edv.11
-        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 22:41:53 -0700 (PDT)
+        with ESMTP id S230261AbhJPFoK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Oct 2021 01:44:10 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB8A2C061570
+        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 22:42:02 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id r18so46528679edv.12
+        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 22:42:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=lMvcUb0T02209f5pJydbauUDAAhob9vjG7UsNSiJn7k=;
-        b=PK+bJXfOyIWZTIDps+rHBN2iWtlR5GGVOBAECToVQzNdIj16Fiq6paoPGtoC2G76FA
-         yFgN1/s8YJRO5fnIIgLOevpw8rHpCjNTrYNBi9E9nsnL08IeAofStoSqPn6+3IkBovaW
-         BQnmjt5W6HJOhBKG4+XzVqrR17s77sfGtlRZurIy/WNAPXYJc+KxdF5XY/b7mqgXjUEl
-         hghIZD8tJthGdcLXxyaINvjSdug9aM6VAdeQp2tMbsuxVKn5/nhM0wadQIPZColLePd0
-         n5j/IIZaNV1WL0Uu3rHvayBnWpAnyGecIK9yxYcphFZvUH1X36USXjiqDojgSt7+qW5F
-         L6Dw==
+        bh=jQvqR2fsSCKgSd1DWZCEzMyF/A8PbJ0mfnrcCvpD9RA=;
+        b=CN8OXMsaBdmbj3xoXn2iQ63wQQQOIRt7DTcebzEc8U+C8Foz8ZEosTYQyjXYuEZhEn
+         7GshPDAN7c+CBdwCw4+2gERCylmm3NP5Jp5snaTDAWyLoqp9G5Y09XiXDOR+1enU/qWc
+         fLeVcmFpOB0FyANWblrIPHszSt9xa1X9l7guGjMPXr5og2fey3cnIF5TcLqRCh9YtOkF
+         K+0IsrbGKY9Um1Y//BT4/tJuva9Dk6E6H8PL6RHFiv6XMpd4Sz+CLYE6FNF1g7JvBwHt
+         I4Z70MnrlvKylTlHvmI1D5DBvch6e4IdvHERVRTV3LNmHuoTGwTV/ecrTWNKDVd0MnAW
+         6n/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=lMvcUb0T02209f5pJydbauUDAAhob9vjG7UsNSiJn7k=;
-        b=jnsOTO43vgvQiS8EJ03UW+autVIV1IgZbwH7rLbUOzICKurkHN+Qw7yV2PaSBfAUOd
-         fT+3jadUE6HLE29XyKpvfhIee4onRnhLwI0MZsLt1mUbXNs9XQR9SHwMN+mMTeVLtqZ6
-         Q7jHA0sTBpT86VbUk3BwQA9gb+olFnqcLgXSOCOXZlZ4aQnRybtsDE3Pte0lrwPvI9gi
-         P9sQQg4hFvSihY5+qP6uxLHN3SMdRwPAY8c4WcfK8cyFgO0u3GI4B/jxbEp0EJRHCvRN
-         zSLi+2FfTSFzYCTqjuJH/jp/MnazeyXPxc3wXne11UoDuaMvAs1XIhyn69NJLsAsFjf2
-         RplA==
-X-Gm-Message-State: AOAM531g+hsqdcRZhKV6u4w9/bGLZ/KTvDuN5LP3DW3UaV8sW/SdEzKH
-        gYD10/plUlgGOKYN1iNoetjMsUeDVlW1Kw==
-X-Google-Smtp-Source: ABdhPJwB8ZssZtcu20jVLMq/OK/ehkAMM9Gwr9SOoYBNeAbsjzPkgZhBhEWXD7zT1z60cm0Vt2J47w==
-X-Received: by 2002:a17:906:68d6:: with SMTP id y22mr12115745ejr.274.1634362912530;
-        Fri, 15 Oct 2021 22:41:52 -0700 (PDT)
+        bh=jQvqR2fsSCKgSd1DWZCEzMyF/A8PbJ0mfnrcCvpD9RA=;
+        b=pLUx8JFZJY/2FL3R2IegUOi6Jdknf9gyf8JNE5lHx+isfbyLk3yzsDNVSEFrGDK9to
+         lgCn8jtTm5D0wx6cg1dFoGhXouq/JSJijPa6QhMXZrwZ4HRRgM2QR/x8FoU4945qej9q
+         fxpLrcDJHXqg3SpNcbAQ0lbzwWyjn/rTqaR3BBDqTjhuXYHdJYBaGSF4PGBQ/cehKkmV
+         clqhkSM7CZTmhodfQrzQC4IZ1JA9stTA1y0jAjiKR9Vknwqy6LJkYHrAQEFHcWPlfsjc
+         2Yx8RvYFEfAue+QdlvEyBmIAHcjQJzf6X9wfS0BsBymtZvFZPG5oeiLTKhx45yDDRtJe
+         k74Q==
+X-Gm-Message-State: AOAM532LW3bXa69PAfT558nYZJZ5X5x8Yv0vsBgJZfOCekg0MROdsYU1
+        Wxh7deklL4iGzH0rJ+FxlFs9L86r5xSgRA==
+X-Google-Smtp-Source: ABdhPJyQNPesg1B1ArRaibR0yLeShFlzYl1IBclu+xYbppQ8+CdE1uQbSDdPMglIG02gFJQz50ycfQ==
+X-Received: by 2002:a05:6402:34d5:: with SMTP id w21mr24538795edc.358.1634362921495;
+        Fri, 15 Oct 2021 22:42:01 -0700 (PDT)
 Received: from localhost (tor-exit-relay-8.anonymizing-proxy.digitalcourage.de. [185.220.102.254])
-        by smtp.gmail.com with ESMTPSA id m15sm5989314edv.45.2021.10.15.22.41.50
+        by smtp.gmail.com with ESMTPSA id ke24sm5384392ejc.73.2021.10.15.22.41.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Oct 2021 22:41:52 -0700 (PDT)
+        Fri, 15 Oct 2021 22:42:01 -0700 (PDT)
 From:   =?UTF-8?q?J=CE=B5an=20Sacren?= <sakiwit@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 1/2] net: macvtap: fix template string argument of device_create() call
-Date:   Fri, 15 Oct 2021 23:41:34 -0600
-Message-Id: <20211016054136.13286-1-sakiwit@gmail.com>
+Subject: [PATCH net-next 2/2] net: ipvtap: fix template string argument of device_create() call
+Date:   Fri, 15 Oct 2021 23:41:35 -0600
+Message-Id: <20211016054136.13286-2-sakiwit@gmail.com>
 X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -69,19 +69,19 @@ tap_name into its argument.
 
 Signed-off-by: Jean Sacren <sakiwit@gmail.com>
 ---
- drivers/net/macvtap.c | 2 +-
+ drivers/net/ipvlan/ipvtap.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/macvtap.c b/drivers/net/macvtap.c
-index 694e2f5dbbe5..6b12902a803f 100644
---- a/drivers/net/macvtap.c
-+++ b/drivers/net/macvtap.c
-@@ -169,7 +169,7 @@ static int macvtap_device_event(struct notifier_block *unused,
+diff --git a/drivers/net/ipvlan/ipvtap.c b/drivers/net/ipvlan/ipvtap.c
+index 1cedb634f4f7..ef02f2cf5ce1 100644
+--- a/drivers/net/ipvlan/ipvtap.c
++++ b/drivers/net/ipvlan/ipvtap.c
+@@ -162,7 +162,7 @@ static int ipvtap_device_event(struct notifier_block *unused,
  
- 		devt = MKDEV(MAJOR(macvtap_major), vlantap->tap.minor);
- 		classdev = device_create(&macvtap_class, &dev->dev, devt,
+ 		devt = MKDEV(MAJOR(ipvtap_major), vlantap->tap.minor);
+ 		classdev = device_create(&ipvtap_class, &dev->dev, devt,
 -					 dev, tap_name);
 +					 dev, "%s", tap_name);
  		if (IS_ERR(classdev)) {
- 			tap_free_minor(macvtap_major, &vlantap->tap);
+ 			tap_free_minor(ipvtap_major, &vlantap->tap);
  			return notifier_from_errno(PTR_ERR(classdev));
