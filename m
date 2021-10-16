@@ -2,87 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA8EC4302E1
-	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 16:10:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBBF2430301
+	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 16:28:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244324AbhJPOMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Oct 2021 10:12:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57464 "EHLO mail.kernel.org"
+        id S244374AbhJPOaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Oct 2021 10:30:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33982 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236207AbhJPOMR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Oct 2021 10:12:17 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 7BBF5611AF;
-        Sat, 16 Oct 2021 14:10:09 +0000 (UTC)
+        id S235901AbhJPOaU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Oct 2021 10:30:20 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7526F6023F;
+        Sat, 16 Oct 2021 14:28:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634393409;
-        bh=95aZ1CM7N8b8MKSJdRpoV5eWlnvchNidhqY/V1gcn5o=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=hlp4sXTYFOytoYomx4rai3lUX3wX+DImLdQXePkotWN8KXjTNsDkm5HVFoqS0Lw/j
-         z/Jsk89k+JvD+PLmaHBBoJah7tYuKpwaMPYlCaHyrWv849VF8mVnSDkZMl0/hFtYkr
-         dvMbBwtVnSHyGHGsohLSyP3TeczLbe1x1FH5ebILP3quGSjjuyJiKA1dsl8bWtaFNQ
-         SDMsM57a1uRz2TGgx93JcQ7kF+txlcbaNf/qMwpKmzepFA3rARITNo2bdUH6wKM27m
-         U4frN7RQPYRtf9n1+5tTlDvtqF6c5xNWsx5eh150LGKOy24S3i0pFmZUzKAn4Mircd
-         6vU4VsTGMqshQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 735E360A47;
-        Sat, 16 Oct 2021 14:10:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1634394492;
+        bh=UtxDaouKQps0itBNO4xcZJA5ANZ6urCvPOxooN5Kfz4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=h296bgRMaq4cIlUw7CSO4BK7lCUnZGTwwvLvhy3E1QMsZWeOe2m/3E5IunKwzPrUY
+         fU1FfGQPBbR27F119gMJGvdSzk0vWleL/JpgHcqM0iSGA8Oesf4HsmUx7QMHczVQz9
+         O6F9VBLoMxIc81L5Xc5//U9VZV7wd6hGVx4iBRiFBjAMe60yUNaMA5oUQpcESj6iY+
+         wlNg8IFwd0txclVf8CzeWShgaJofbJr28TNk42Gs/1ppCKhUHW5DuzHdA5aqyrpKyj
+         uVQqgjVN+vILInNtlKjiIplDVpPMjdXJ9HzRG90d3+7JhfXv4hGaxpD9TaG32FJzzK
+         vveFXI8aqDtvA==
+Received: by pali.im (Postfix)
+        id DEEC77DE; Sat, 16 Oct 2021 16:28:09 +0200 (CEST)
+Date:   Sat, 16 Oct 2021 16:28:09 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Jonas =?utf-8?Q?Dre=C3=9Fler?= <verdre@v0yd.nl>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH v2 4/5] mwifiex: Send DELBA requests according to spec
+Message-ID: <20211016142809.tjezv4dpxrlmdp6v@pali>
+References: <20211016103656.16791-1-verdre@v0yd.nl>
+ <20211016103656.16791-5-verdre@v0yd.nl>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3 00/10] net/smc: introduce SMC-Rv2 support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163439340946.2147.12741689734091144591.git-patchwork-notify@kernel.org>
-Date:   Sat, 16 Oct 2021 14:10:09 +0000
-References: <20211016093752.3564615-1-kgraul@linux.ibm.com>
-In-Reply-To: <20211016093752.3564615-1-kgraul@linux.ibm.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, hca@linux.ibm.com,
-        linux-rdma@vger.kernel.org
+In-Reply-To: <20211016103656.16791-5-verdre@v0yd.nl>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Sat, 16 Oct 2021 11:37:42 +0200 you wrote:
-> Please apply the following patch series for smc to netdev's net-next tree.
+On Saturday 16 October 2021 12:36:55 Jonas Dreßler wrote:
+> While looking at on-air packets using Wireshark, I noticed we're never
+> setting the initiator bit when sending DELBA requests to the AP: While
+> we set the bit on our del_ba_param_set bitmask, we forget to actually
+> copy that bitmask over to the command struct, which means we never
+> actually set the initiator bit.
 > 
-> SMC-Rv2 support (see https://www.ibm.com/support/pages/node/6326337)
-> provides routable RoCE support for SMC-R, eliminating the current
-> same-subnet restriction, by exploiting the UDP encapsulation feature
-> of the RoCE adapter hardware.
+> Fix that and copy the bitmask over to the host_cmd_ds_11n_delba command
+> struct.
 > 
-> [...]
+> Signed-off-by: Jonas Dreßler <verdre@v0yd.nl>
 
-Here is the summary with links:
-  - [net-next,v3,01/10] net/smc: save stack space and allocate smc_init_info
-    https://git.kernel.org/netdev/net-next/c/ed990df29f5b
-  - [net-next,v3,02/10] net/smc: prepare for SMC-Rv2 connection
-    https://git.kernel.org/netdev/net-next/c/42042dbbc2eb
-  - [net-next,v3,03/10] net/smc: add SMC-Rv2 connection establishment
-    https://git.kernel.org/netdev/net-next/c/e5c4744cfb59
-  - [net-next,v3,04/10] net/smc: add listen processing for SMC-Rv2
-    https://git.kernel.org/netdev/net-next/c/e49300a6bf62
-  - [net-next,v3,05/10] net/smc: add v2 format of CLC decline message
-    https://git.kernel.org/netdev/net-next/c/8ade200c269f
-  - [net-next,v3,06/10] net/smc: retrieve v2 gid from IB device
-    https://git.kernel.org/netdev/net-next/c/24fb68111d45
-  - [net-next,v3,07/10] net/smc: add v2 support to the work request layer
-    https://git.kernel.org/netdev/net-next/c/8799e310fb3f
-  - [net-next,v3,08/10] net/smc: extend LLC layer for SMC-Rv2
-    https://git.kernel.org/netdev/net-next/c/b4ba4652b3f8
-  - [net-next,v3,09/10] net/smc: add netlink support for SMC-Rv2
-    https://git.kernel.org/netdev/net-next/c/b0539f5eddc2
-  - [net-next,v3,10/10] net/smc: stop links when their GID is removed
-    https://git.kernel.org/netdev/net-next/c/29397e34c76b
+Hello! This looks like is fixing mwifiex_send_delba() function which was
+added in initial mwifiex commit. So probably it should have following
+tag:
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Fixes: 5e6e3a92b9a4 ("wireless: mwifiex: initial commit for Marvell mwifiex driver")
 
-
+> ---
+>  drivers/net/wireless/marvell/mwifiex/11n.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/marvell/mwifiex/11n.c b/drivers/net/wireless/marvell/mwifiex/11n.c
+> index b0695432b26a..9ff2058bcd7e 100644
+> --- a/drivers/net/wireless/marvell/mwifiex/11n.c
+> +++ b/drivers/net/wireless/marvell/mwifiex/11n.c
+> @@ -657,14 +657,15 @@ int mwifiex_send_delba(struct mwifiex_private *priv, int tid, u8 *peer_mac,
+>  	uint16_t del_ba_param_set;
+>  
+>  	memset(&delba, 0, sizeof(delba));
+> -	delba.del_ba_param_set = cpu_to_le16(tid << DELBA_TID_POS);
+>  
+> -	del_ba_param_set = le16_to_cpu(delba.del_ba_param_set);
+> +	del_ba_param_set = tid << DELBA_TID_POS;
+> +
+>  	if (initiator)
+>  		del_ba_param_set |= IEEE80211_DELBA_PARAM_INITIATOR_MASK;
+>  	else
+>  		del_ba_param_set &= ~IEEE80211_DELBA_PARAM_INITIATOR_MASK;
+>  
+> +	delba.del_ba_param_set = cpu_to_le16(del_ba_param_set);
+>  	memcpy(&delba.peer_mac_addr, peer_mac, ETH_ALEN);
+>  
+>  	/* We don't wait for the response of this command */
+> -- 
+> 2.31.1
+> 
