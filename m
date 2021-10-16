@@ -2,87 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B52642FF67
-	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 02:18:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49CAF42FF70
+	for <lists+netdev@lfdr.de>; Sat, 16 Oct 2021 02:27:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239294AbhJPAUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Oct 2021 20:20:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49558 "EHLO
+        id S239293AbhJPA30 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Oct 2021 20:29:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231881AbhJPAUq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 20:20:46 -0400
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2718C061570
-        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 17:18:39 -0700 (PDT)
-Received: by mail-ot1-x334.google.com with SMTP id l16-20020a9d6a90000000b0054e7ab56f27so216347otq.12
-        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 17:18:39 -0700 (PDT)
+        with ESMTP id S234077AbhJPA30 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Oct 2021 20:29:26 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD05BC061570
+        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 17:27:18 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id w19so44087944edd.2
+        for <netdev@vger.kernel.org>; Fri, 15 Oct 2021 17:27:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=H8q53TloCGiUd6RtkUcytB8p601kXgM502d2BwEyALM=;
-        b=a13OWWUYDe3svmXW6mYFr9orp9l1md3XuFY56wRh7bzILcki7cxIpK2yMXcvOoHi63
-         euleqsaU9n7HffJzaVqkrVph/i1YTQWKvVHsz34BEwDQe+w1Byf2UwjM45/DXPMCLpoh
-         msqv1YHyPDURjlwk/GUKcGt1m2A1BmWgQtpmTHdFZX2rHeIofK4L5r+7d6RZ3OYoty2f
-         SzuugQib4l5NwD53NTjdzoGqdpSowgOe5WwLbRLIqcJezka7nIblSs71j2v6qmM5Q45O
-         Q7554p2FGmoSof8ioCktrO5Kx1RT6KqmX8juh1lp5RA579w3RRm3NiXrh81uSyz389RN
-         b+GQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jNHMFmIIWmrzSChsqzBq2iHkjFLiK7xRecuDgNQ5/rs=;
+        b=J0+ckxqMuBOfXwxjLQTqKdo13tPDmh6mBcb9hGjbO872//qgTlxK65zF/vF4EmvU7E
+         f499tqDc6AWkiKbReDHBWJMeXnzR9KOc70GROL/qy1LHCbwMXH7D2uNNZtE4cD+84iRK
+         NI681H2dDbZlwiWkMOZZvQMQz1YdQKWyYPCcrb/TPZ0/KWtATWTFtR03xDPbM+3gjjSx
+         EJc4Q9NXm+RqIr9S06V2OvyfKvUueMnJHXUPssGGm13Wpfg09i7uJreZSYVs/VdvfGaz
+         w7sToClkWnOau9wTL/K3OGcMaNhLBmKmBcTmLxmFdS/ewtlamwGWNxkB3wGWclJDD8tP
+         yTVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=H8q53TloCGiUd6RtkUcytB8p601kXgM502d2BwEyALM=;
-        b=PvJvIt1j5f19uFH3AW1vN69jhs5NBUgLLKNp8VdYQwxvtdvxzXx13oyrnQU02lMS9q
-         7b9RTxQeXUWmfsm5SbWvhiHzwpQ0leo25gKxeiQT1nxn3l2Ur3E/iJWa37aFWywLcKmb
-         skbZjOvl/dsXQQHTcgEkFuu6jiBVNra2LM09qgEIh91hwvP/ii05cJr7NEpjGyJ/s0yO
-         3uWLzvKzhLPy/ULhWQwjwePF020h1IXSwrkqhB/lVuyeOklDc+OrQyR3kiMssBXYxdqo
-         RYSTxaJpO4m//DIuN/JnomALOY5lmI5/mAlgo3CzO1eIVcrDqXGBfoaq1dFb3XN6XoIg
-         5Jnw==
-X-Gm-Message-State: AOAM53023jvxMv9O0Cf1nlgFCCG/pHE0aoU2m7lNc4Djau6QUutK8oG0
-        mfxzazMesw81EGfYLEAx6kejkPCjfzW8mg==
-X-Google-Smtp-Source: ABdhPJzNWc5ZFwDqWzMwy+xQB7+HDo2V9VI4vlxEVmbmM8c2EnNqTaw5OoGQuMpxk6hlxjLz+e81Dw==
-X-Received: by 2002:a05:6830:57d:: with SMTP id f29mr10921661otc.285.1634343518944;
-        Fri, 15 Oct 2021 17:18:38 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.34])
-        by smtp.googlemail.com with ESMTPSA id l16sm1270724oou.7.2021.10.15.17.18.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Oct 2021 17:18:38 -0700 (PDT)
-Subject: Re: [PATCH iproute2 -next 3/4] ip, neigh: Add missing NTF_USE support
-To:     Daniel Borkmann <daniel@iogearbox.net>, dsahern@kernel.org
-Cc:     netdev@vger.kernel.org
-References: <20211015225319.2284-1-daniel@iogearbox.net>
- <20211015225319.2284-4-daniel@iogearbox.net>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <4e842bc5-116b-66c6-b8dc-487b4b5d15ed@gmail.com>
-Date:   Fri, 15 Oct 2021 18:18:37 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jNHMFmIIWmrzSChsqzBq2iHkjFLiK7xRecuDgNQ5/rs=;
+        b=ztioFyBeJxYUGLaVb7Wbi637t8gzYXgE68wLP6jiuxGF1289QYuZWKb25V4G/2Gdo/
+         OUqthIqzJxsGArJMsOtv8kA6OlwyW4UZOIiKOgDPurLkqbQa40X0DOm0XeenZhgs3qcm
+         4TWoEqlBb32M6ZUzTFyglMmyZqdhbXY2d4mn56EKbDB3+O9SMKPC6IGgy5yTtUp9bF6t
+         i0lNpGcdC4JNqRYdJfcSNo0nvLCDpOiX4vakYSEEzQNjx9ujmmwR7WMbMoovMu+a3Qml
+         yZcYVerkbML9LZYQas824Unp+ctH92vCZl3aQ0o2IAO8lSXyuc3qjEvUeuTbOMbk60Bo
+         jTUQ==
+X-Gm-Message-State: AOAM533No53wGrcGZP1iX1oRmOY65tQKpm2UlxgetfJ9/KC9S0jAORML
+        3+Vc8Orpw/BEAnpPwBMM9vE=
+X-Google-Smtp-Source: ABdhPJwakKoG+QUzLwpiCKZxXY76coyvHcL3Q/icxT2ywii3FrJJ7ZH3VVC5kcJSYSsvv1PTREWs9w==
+X-Received: by 2002:aa7:cb92:: with SMTP id r18mr22660382edt.282.1634344037540;
+        Fri, 15 Oct 2021 17:27:17 -0700 (PDT)
+Received: from skbuf ([188.26.184.231])
+        by smtp.gmail.com with ESMTPSA id ay7sm5125567ejb.116.2021.10.15.17.27.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Oct 2021 17:27:17 -0700 (PDT)
+Date:   Sat, 16 Oct 2021 03:27:16 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, idosch@idosch.org,
+        f.fainelli@gmail.com, vkochan@marvell.com, tchornyi@marvell.com
+Subject: Re: [RFC net-next 3/6] ethernet: prestera: use eth_hw_addr_set_port()
+Message-ID: <20211016002716.j3v4pamavkvxodsv@skbuf>
+References: <20211015193848.779420-1-kuba@kernel.org>
+ <20211015193848.779420-4-kuba@kernel.org>
+ <20211015235130.6sulfh2ouqt3dgfh@skbuf>
+ <20211015171730.5651f0f5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <20211015225319.2284-4-daniel@iogearbox.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211015171730.5651f0f5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/15/21 4:53 PM, Daniel Borkmann wrote:
-> diff --git a/ip/ipneigh.c b/ip/ipneigh.c
-> index 564e787c..9510e03e 100644
-> --- a/ip/ipneigh.c
-> +++ b/ip/ipneigh.c
-> @@ -51,7 +51,7 @@ static void usage(void)
->  	fprintf(stderr,
->  		"Usage: ip neigh { add | del | change | replace }\n"
->  		"		{ ADDR [ lladdr LLADDR ] [ nud STATE ] proxy ADDR }\n"
-> -		"		[ dev DEV ] [ router ] [ extern_learn ] [ protocol PROTO ]\n"
-> +		"		[ dev DEV ] [ router ] [ use ] [ extern_learn ] [ protocol PROTO ]\n"
->  		"\n"
->  		"	ip neigh { show | flush } [ proxy ] [ to PREFIX ] [ dev DEV ] [ nud STATE ]\n"
->  		"				  [ vrf NAME ]\n"
+On Fri, Oct 15, 2021 at 05:17:30PM -0700, Jakub Kicinski wrote:
+> On Sat, 16 Oct 2021 02:51:30 +0300 Vladimir Oltean wrote:
+> > > @@ -341,8 +342,8 @@ static int prestera_port_create(struct prestera_switch *sw, u32 id)
+> > >  	/* firmware requires that port's MAC address consist of the first
+> > >  	 * 5 bytes of the base MAC address
+> > >  	 */
+> > > -	memcpy(dev->dev_addr, sw->base_mac, dev->addr_len - 1);
+> > > -	dev->dev_addr[dev->addr_len - 1] = port->fp_id;
+> > > +	memcpy(addr, sw->base_mac, dev->addr_len - 1);
+> > > +	eth_hw_addr_set_port(dev, addr, port->fp_id);  
+> > 
+> > Instead of having yet another temporary copy, can't we zero out
+> > sw->base_mac[ETH_ALEN - 1] in prestera_switch_set_base_mac_addr()?
+> 
+> Will do unless Marvel & friends tell us FW cares about the last byte
+> (prestera_hw_switch_mac_set() send the whole thing).
 
-
-does not apply to iproute2-next; looks like you made the change against
-main branch.
-
+You can always zero out the last byte after the call to
+prestera_hw_switch_mac_set(), and then it shouldn't even matter.
