@@ -2,82 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D50084308A6
-	for <lists+netdev@lfdr.de>; Sun, 17 Oct 2021 14:29:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 162844308AE
+	for <lists+netdev@lfdr.de>; Sun, 17 Oct 2021 14:30:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245643AbhJQMa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Oct 2021 08:30:56 -0400
-Received: from mout.gmx.net ([212.227.15.15]:49225 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245634AbhJQMa4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 17 Oct 2021 08:30:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1634473696;
-        bh=cbmUGzU1hyhfVw27QCJZ4UFCSB3owM8yg3KH4pv2Meo=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=FgQF1bnMfZpqiLiWcwmo4tKY92EvGGpLSrDNF8O8Pl2Ok7TFaQFmXtHPkpiNnWcTb
-         +kVIye22YcImxnUMoO/R3nPQLDOuma5QAVqihArxeVkZUN0TWSjXk0iN1w4FOmzGg3
-         aVQFHOxFlgTm/24TudrTjM59RMRGfTkjOhDal5YA=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [157.180.225.22] ([157.180.225.22]) by web-mail.gmx.net
- (3c-app-gmx-bs33.server.lan [172.19.170.85]) (via HTTP); Sun, 17 Oct 2021
- 14:28:16 +0200
+        id S245672AbhJQMcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Oct 2021 08:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40172 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245666AbhJQMcF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 08:32:05 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55A33C061765
+        for <netdev@vger.kernel.org>; Sun, 17 Oct 2021 05:29:54 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1mc5IO-0004A5-NX; Sun, 17 Oct 2021 14:29:44 +0200
+Received: from pengutronix.de (2a03-f580-87bc-d400-7b24-848c-3829-1203.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:7b24:848c:3829:1203])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id BD40E695CCE;
+        Sun, 17 Oct 2021 12:29:43 +0000 (UTC)
+Date:   Sun, 17 Oct 2021 14:29:43 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Zheyu Ma <zheyuma97@gmail.com>
+Cc:     wg@grandegger.com, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] can: peak_pci: Fix UAF in peak_pci_remove
+Message-ID: <20211017122943.q4ic472sigcrk4l2@pengutronix.de>
+References: <1634192913-15639-1-git-send-email-zheyuma97@gmail.com>
 MIME-Version: 1.0
-Message-ID: <trinity-b64203a5-8e23-4d1c-afd1-a29afa69f8f6-1634473696601@3c-app-gmx-bs33>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Daniel Golle <daniel@makrotopia.org>
-Cc:     Nick <vincent@systemli.org>, Kalle Valo <kvalo@codeaurora.org>,
-        nbd@nbd.name, lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
-        davem@davemloft.net, kuba@kernel.org, matthias.bgg@gmail.com,
-        sean.wang@mediatek.com, shayne.chen@mediatek.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Robert Foss <robert.foss@linaro.org>
-Subject: Aw: Re: [RFC v2] mt76: mt7615: mt7622: fix ibss and meshpoint
-Content-Type: text/plain; charset=UTF-8
-Date:   Sun, 17 Oct 2021 14:28:16 +0200
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <YWGXiExg1uBIFr2c@makrotopia.org>
-References: <20211007225725.2615-1-vincent@systemli.org>
- <87czoe61kh.fsf@codeaurora.org>
- <274013cd-29e4-9202-423b-bd2b2222d6b8@systemli.org>
- <YWGXiExg1uBIFr2c@makrotopia.org>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:fyBM2xVbitALniHvauTUD7yrO0uOEc4mCU0F1K23UQXJGTTN449orREFI7R6/jIwk2Gfz
- +/t5YHtCN79gYYBepZq88+TxCl9EOmLon24tVUZtoEA+yhKSKkYwyZfIMvm4BmHiBOooqXdvcPkN
- 2tiEOmsT8A75bnUmNG3cwMe2lVBuOhH9OQ96pnvWguNt1I8QU8ooFGKgHp7PWQok+ckMlwWMpQnU
- DCRkLgt6buZvFOvW9LKpt8RMxF+gVj07Jt+pnBeV6TmBIIY5cOfKzjCvRfR697xToQ48ZFR4+kSg
- Ec=
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:uRD9Evc6puo=:G4Jl5nlDqhYHEAGiTmwbT9
- B4HxHhEQJFhMTmBBoc65QLaRQ+84jKSXRdt59yACNSSbcCvyyGLvnrwSeO2xVx5jBnmJn/eMM
- z5HhMUlK4WpOrvAoD5QdWjiNvEiZrPiWfGk7WOXa+BDfgAP9dBZzeXQNRptwumLi1LDGEY0+3
- Q3jjuyfFqb4wN/PWx36xsnYAKK66Z7KL4z1nOmkhWc1UXcetmdrWzsYIb3h4YrWSPIC9gk+DP
- c4hILA67s3n35PnK2nQJkCHwqGB4ngTOQZBfSDAJXxxvghncAfXIAohXT+9pLtrgj2o4+MSCo
- VBJO8EtTsIMhJ/z6R1HxiHVOyi2RSGKvdY+fAQ5Y5Ptnb5R2pzM56i5wmIITBA+BPWtrsN0ei
- 1ZM+BPGhBZTsWFGii7Q5KOVsFm/KiNtwC4FpLXyRhhzEXADby7Wll0Iaorhx/AiY4xeF/7oIQ
- DuEOOSsnV5vltv7sEUCB00SIPWnSske6NpOh9hxMS150uB75Uy10lSVUddwQbWvC2IrZ4RkiE
- BRrlxcKZmA5IWfHBU8/4iMAFz2nLGmL4ySQ+0B0CC9xN521KUMjlFkGTxalvCq9mZ2b9muquX
- wsL7buDtbeD4iQVs8khWkueC1UyJMRmyL+wPVPsbQbvR2skb+cADRMI269FjG/+AUjmjox6aC
- EuTLt25a8zAvN1KGXCcEn/6StV8u8DB236SL04zPCNRwkhKrD/x5laTLaKYGcJUATGoIF/LKI
- xAzkrGay/GV/iFmBg9w26NP8IX8TfSCwKUKtp3iUHVI3b+wwpFXAX605EOdKFmo4FXPWTcEEs
- 4X+LBRj
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="5pdcbj2in2nebprh"
+Content-Disposition: inline
+In-Reply-To: <1634192913-15639-1-git-send-email-zheyuma97@gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Gesendet: Samstag, 09. Oktober 2021 um 15:22 Uhr
-> Von: "Daniel Golle" <daniel@makrotopia.org>
 
-> Does Mesh+AP or Ad-Hoc+AP also work on MT7622 and does it still work on
-> MT7615E card with your patch applied?
+--5pdcbj2in2nebprh
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-tested bananapi-r2 with mt7615 and bananapi-r64 with internal mt7622-wmac
+On 14.10.2021 06:28:33, Zheyu Ma wrote:
+> When remove the module peek_pci, referencing 'chan' again after
+> releasing 'dev' will cause UAF.
+>=20
+> Fix this by releasing 'dev' later.
+>=20
+> The following log reveals it:
+>=20
+> [   35.961814 ] BUG: KASAN: use-after-free in peak_pci_remove+0x16f/0x270=
+ [peak_pci]
+> [   35.963414 ] Read of size 8 at addr ffff888136998ee8 by task modprobe/=
+5537
+> [   35.965513 ] Call Trace:
+> [   35.965718 ]  dump_stack_lvl+0xa8/0xd1
+> [   35.966028 ]  print_address_description+0x87/0x3b0
+> [   35.966420 ]  kasan_report+0x172/0x1c0
+> [   35.966725 ]  ? peak_pci_remove+0x16f/0x270 [peak_pci]
+> [   35.967137 ]  ? trace_irq_enable_rcuidle+0x10/0x170
+> [   35.967529 ]  ? peak_pci_remove+0x16f/0x270 [peak_pci]
+> [   35.967945 ]  __asan_report_load8_noabort+0x14/0x20
+> [   35.968346 ]  peak_pci_remove+0x16f/0x270 [peak_pci]
+> [   35.968752 ]  pci_device_remove+0xa9/0x250
+>=20
+> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
 
-ibss/ad-hoc: working
-AP-Mode: still working
+Applied to linux-can/testing.
 
-regards Frank
+Thanks,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--5pdcbj2in2nebprh
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmFsFzQACgkQqclaivrt
+76l+jAf/YD2qprHjvgyGwkm0pxyq8/7j2vxoknztrO65wqUoT51GTKnaarLL8Duh
+b3Wslyvw0F2qQH3ATWdPDr6Nn8OaA4cNxN/sb+BSKyiAWdn2DkY7Fk3s0weskLuh
+jUQFs5ejfkUolKSYQQ/jXHNtZoWfgv9AliBMzZovOAMWvlVQDn+7wLQTcmg/OFLJ
+wZJyd/pBIuRQdz6WfYzf6ovt9h4fJtryBF5zlVifyNHT4RBreklCCAsc5fUmFKDX
+IsvNvLPCh1CBH3GLpQkFFAVfKDFakU2oSk4I1qPuG/Cg69aDv4hKAZ4pXzfCtIfk
+8TuQEPj01nxpKiO0ejfeplmJp174dA==
+=6OLJ
+-----END PGP SIGNATURE-----
+
+--5pdcbj2in2nebprh--
