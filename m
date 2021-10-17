@@ -2,106 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F197430ACC
-	for <lists+netdev@lfdr.de>; Sun, 17 Oct 2021 18:37:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 883D9430B23
+	for <lists+netdev@lfdr.de>; Sun, 17 Oct 2021 19:17:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344217AbhJQQjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Oct 2021 12:39:53 -0400
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:48496
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242474AbhJQQjw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 12:39:52 -0400
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com [209.85.208.199])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 392D94005D
-        for <netdev@vger.kernel.org>; Sun, 17 Oct 2021 16:37:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1634488659;
-        bh=1RPm1/LKTSEH8C0YJx6dXoFgI89yVIC6crD5lgWAirc=;
-        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
-         In-Reply-To:Content-Type;
-        b=GB/2jkttGiT2O3gSLZIsbwSllMctQKrSsyztzWsDbljlV5zNTSfTo35vCHi1wxUKR
-         1bBlMY56nADKVeMt68W2CPN92cDamRoYIcOYm/I68xlenoO8tbWFW3Fg5u0CepcA2Q
-         o2VUxAE4Xcf7IjayPdS+B/VtTVSjkZWLy9bkto7n3KyGKxN1mwMetIDefbDPC8bIlq
-         XGM7hWB0xNa2J8d49mgDr9HW+VyfnHiasUDr3H98isGgsgEWF0vhNoBMy3Tjsp+keI
-         p0bQORe73fZ8TR59UROSgM8qgfXvhU9qhqgig4fwkgPVkLlYvFj3vKhAGHHI+OENOi
-         vGX1VAFqRmPqQ==
-Received: by mail-lj1-f199.google.com with SMTP id s5-20020a2e98c5000000b002112895b3f6so493492ljj.21
-        for <netdev@vger.kernel.org>; Sun, 17 Oct 2021 09:37:39 -0700 (PDT)
+        id S1344364AbhJQRTk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Oct 2021 13:19:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47808 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344363AbhJQRTj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 13:19:39 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A818C06161C
+        for <netdev@vger.kernel.org>; Sun, 17 Oct 2021 10:17:29 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id m22so36950706wrb.0
+        for <netdev@vger.kernel.org>; Sun, 17 Oct 2021 10:17:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kryo-se.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4viN/Os8N6l4stBrqPBr6YTWSITrWn2XRCojerv1iUg=;
+        b=Q9zKX0QnFqfYHtrWDbZpywzKtbR0m++3i/YWT1yPWQGaYeXD+GUiatYEXHbKZ5//7P
+         eezHIn4g1vaIKdyIjk2xw0kQboawVO5ZLqfskF48S2fjaVb0L5qZ+zjM+zECzuAamEUs
+         i4O3BfFxZKJfYmqxQp2eArqBpZPbEuaqSKxM1uPGNpffkYiJLck0n8kerX8L+ZnZyzoO
+         bZi68ZPsMPrB++e6+9QtRQQzt1EXpGYB9yHFyhdOrPsvO9VWxhIphIfxDmawBfSi3WLF
+         E4Y2BW9NDgPwwFZqND/SlrsZKCT8aiJJ9OBnTL0rZyY4rA8F03LcbyyUxF/AeGmWQ8Wp
+         6QLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=1RPm1/LKTSEH8C0YJx6dXoFgI89yVIC6crD5lgWAirc=;
-        b=ixllKuWV7NJ3dum/2EoYd/stvpngYMh5pmJNFLPaB/l0s1kBKaCXtAOMHsQyqbs8tW
-         yYNgk2sJ7fErXH5UCVM6rs5Fhz5pdpHTDtTxOmgMmx0smCi4FWD5DDsnA+pnHhk+mJ2t
-         XwEvol/zMyirC6+g7qrl8UA/XpLF7gjdLwwSFPFAI1BcyBSEpJch70sIwSN1/z4C9xyj
-         J4PPbMNsMWn2SCUrZ2qcmkXGozl0ro+BhwZveDkNigQOczGWVG9bYH2yYhMvr6jPEpOa
-         eK52PvvFJ2VaLj+Y/8sr5WkcGBd5fEaLlFI5OTtXh1KrG9eANJzZ/KrfSGv1ToPbPCKV
-         PMVQ==
-X-Gm-Message-State: AOAM530fGr5yGYw8uGjja3dwNc+JHXDX0ttSiOM0bvLaPHkpKWIMku55
-        vdbEshTv2KKheqRTEkpTyHW/pMjoSgGKZfZwE/yXglAp3NGJd5EjDv5SU0SrYbplllhgO/3kbPf
-        aVRd5Wmm2re/ppMWwZwPh01cs/QeUL8FuLg==
-X-Received: by 2002:a05:651c:204d:: with SMTP id t13mr23783987ljo.267.1634488658195;
-        Sun, 17 Oct 2021 09:37:38 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw/lqcEKlBCBJKXljOPkvtPOkonlr9+CwlLqnStL9xaA21H+RrX4917KV+h8+HiIpOwiDIgFg==
-X-Received: by 2002:a05:651c:204d:: with SMTP id t13mr23783965ljo.267.1634488658014;
-        Sun, 17 Oct 2021 09:37:38 -0700 (PDT)
-Received: from [192.168.3.161] (89-77-68-124.dynamic.chello.pl. [89.77.68.124])
-        by smtp.gmail.com with ESMTPSA id k23sm46262ljm.29.2021.10.17.09.37.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 17 Oct 2021 09:37:37 -0700 (PDT)
-Subject: Re: [PATCH v4] dt-bindings: net: nfc: nxp,pn544: Convert txt bindings
- to yaml
-To:     David Heidelberg <david@ixit.cz>,
+        bh=4viN/Os8N6l4stBrqPBr6YTWSITrWn2XRCojerv1iUg=;
+        b=SEvmGH9fcL8zEbIYUDSWrj5rA9ZUTJgG8okRusZ+8FayTYaBgD2g0IZ3hR1wrzPVmD
+         8phMXjpYKgeVPlJxcaW/FA68IJJylt4x+E04QPcmbMW5G5e8/qwRswucZ6akBrxTMG7T
+         riu0+hA2BkW1L7/oFmOXbKJ4VxnzKOV7nNN2ebf9vxQ3bi/h+Ntt3i74+Bl7W+ZUNMOT
+         k8bhyZUCl+z3o3Y2+copL0lvCEBywW4+Y2vrYAv5cHy2t2DCm5oxE1LwPdtf9Qkl8nGW
+         XtbxfK2Gf5AYxxocB5CaO4Hpk64ycZGtJ21Wd1H/ONqvp0sUjPrCAUsYlteo/Wd2wx3u
+         dgDg==
+X-Gm-Message-State: AOAM5328/tLTDCAqdC2CImg2ILtENSe3PWkTB9vannrvrH94e0P8TFaP
+        IVMqtfXpmfMrBSpiPVC0wArsYw==
+X-Google-Smtp-Source: ABdhPJxE1sAAXF7HZRudLOuJ+b9trDLLoM0RmxxjU1XhjuBo/dgox+Y/S+TDdUZB7k1mamh0iMZskA==
+X-Received: by 2002:a5d:4a08:: with SMTP id m8mr12226944wrq.18.1634491047630;
+        Sun, 17 Oct 2021 10:17:27 -0700 (PDT)
+Received: from kerfuffle.. ([2a02:168:9619:0:5497:3715:36d:f557])
+        by smtp.gmail.com with ESMTPSA id k17sm10139820wrc.93.2021.10.17.10.17.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Oct 2021 10:17:27 -0700 (PDT)
+From:   Erik Ekman <erik@kryo.se>
+To:     Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ~okias/devicetree@lists.sr.ht
-References: <20211017160210.85543-1-david@ixit.cz>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <0937ddb4-7a5b-b6e0-d6b8-42a912744bd6@canonical.com>
-Date:   Sun, 17 Oct 2021 18:37:36 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Erik Ekman <erik@kryo.se>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] sfc: Fix reading non-legacy supported link modes
+Date:   Sun, 17 Oct 2021 19:16:57 +0200
+Message-Id: <20211017171657.85724-1-erik@kryo.se>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <20211017160210.85543-1-david@ixit.cz>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17/10/2021 18:02, David Heidelberg wrote:
-> Convert bindings for NXP PN544 NFC driver to YAML syntax.
-> 
-> Signed-off-by: David Heidelberg <david@ixit.cz>
-> ---
-> v2
->  - Krzysztof is a maintainer
->  - pintctrl dropped
->  - 4 space indent for example
->  - nfc node name
-> v3
->  - remove whole pinctrl
-> v4
->  - drop clock-frequency, which is inherited by i2c bus
-> 
->  .../bindings/net/nfc/nxp,pn544.yaml           | 56 +++++++++++++++++++
->  .../devicetree/bindings/net/nfc/pn544.txt     | 33 -----------
->  2 files changed, 56 insertions(+), 33 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/net/nfc/nxp,pn544.yaml
->  delete mode 100644 Documentation/devicetree/bindings/net/nfc/pn544.txt
-> 
+Everything except the first 32 bits was lost when the pause flags were
+added. This makes the 50000baseCR2 mode flag (bit 34) not appear.
 
+I have tested this with a 10G card (SFN5122F-R7) by modifying it to
+return a non-legacy link mode (10000baseCR).
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Signed-off-by: Erik Ekman <erik@kryo.se>
+---
+ drivers/net/ethernet/sfc/ethtool_common.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
+diff --git a/drivers/net/ethernet/sfc/ethtool_common.c b/drivers/net/ethernet/sfc/ethtool_common.c
+index bf1443539a1a..bd552c7dffcb 100644
+--- a/drivers/net/ethernet/sfc/ethtool_common.c
++++ b/drivers/net/ethernet/sfc/ethtool_common.c
+@@ -563,20 +563,14 @@ int efx_ethtool_get_link_ksettings(struct net_device *net_dev,
+ {
+ 	struct efx_nic *efx = netdev_priv(net_dev);
+ 	struct efx_link_state *link_state = &efx->link_state;
+-	u32 supported;
+ 
+ 	mutex_lock(&efx->mac_lock);
+ 	efx_mcdi_phy_get_link_ksettings(efx, cmd);
+ 	mutex_unlock(&efx->mac_lock);
+ 
+ 	/* Both MACs support pause frames (bidirectional and respond-only) */
+-	ethtool_convert_link_mode_to_legacy_u32(&supported,
+-						cmd->link_modes.supported);
+-
+-	supported |= SUPPORTED_Pause | SUPPORTED_Asym_Pause;
+-
+-	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.supported,
+-						supported);
++	ethtool_link_ksettings_add_link_mode(cmd, supported, Pause);
++	ethtool_link_ksettings_add_link_mode(cmd, supported, Asym_Pause);
+ 
+ 	if (LOOPBACK_INTERNAL(efx)) {
+ 		cmd->base.speed = link_state->speed;
+-- 
+2.31.1
 
-Best regards,
-Krzysztof
