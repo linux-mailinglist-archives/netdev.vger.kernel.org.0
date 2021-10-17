@@ -2,131 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C837430C8F
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 00:15:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18747430C92
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 00:15:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344750AbhJQWRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Oct 2021 18:17:50 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:53380 "EHLO
+        id S1344756AbhJQWRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Oct 2021 18:17:52 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:53388 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235725AbhJQWRt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 18:17:49 -0400
+        with ESMTP id S235725AbhJQWRv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 18:17:51 -0400
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id E67E7605E1;
-        Mon, 18 Oct 2021 00:13:57 +0200 (CEST)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 3E39563586;
+        Mon, 18 Oct 2021 00:13:59 +0200 (CEST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH nf-next 00/15] Netfilter/IPVS updates for net-next
-Date:   Mon, 18 Oct 2021 00:15:07 +0200
-Message-Id: <20211017221522.853838-1-pablo@netfilter.org>
+Subject: [PATCH nf-next 01/15] ipvs: add sysctl_run_estimation to support disable estimation
+Date:   Mon, 18 Oct 2021 00:15:08 +0200
+Message-Id: <20211017221522.853838-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20211017221522.853838-1-pablo@netfilter.org>
+References: <20211017221522.853838-1-pablo@netfilter.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Dust Li <dust.li@linux.alibaba.com>
 
-The following patchset contains Netfilter/IPVS for net-next:
+estimation_timer will iterate the est_list to do estimation
+for each ipvs stats. When there are lots of services, the
+list can be very large.
+We found that estimation_timer() run for more then 200ms on a
+machine with 104 CPU and 50K services.
 
-1) Add new run_estimation toggle to IPVS to stop the estimation_timer
-   logic, from Dust Li.
+yunhong-cgl jiang report the same phenomenon before:
+https://www.spinics.net/lists/lvs-devel/msg05426.html
 
-2) Relax superfluous dynset check on NFT_SET_TIMEOUT.
+In some cases(for example a large K8S cluster with many ipvs services),
+ipvs estimation may not be needed. So adding a sysctl blob to allow
+users to disable this completely.
 
-3) Add egress hook, from Lukas Wunner.
+Default is: 1 (enable)
 
-4) Nowadays, almost all hook functions in x_table land just call the hook
-   evaluation loop. Remove remaining hook wrappers from iptables and IPVS.
-   From Florian Westphal.
+Cc: yunhong-cgl jiang <xintian1976@gmail.com>
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+Acked-by: Julian Anastasov <ja@ssi.bg>
+Acked-by: Simon Horman <horms@verge.net.au>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ Documentation/networking/ipvs-sysctl.rst | 11 +++++++++++
+ include/net/ip_vs.h                      | 11 +++++++++++
+ net/netfilter/ipvs/ip_vs_ctl.c           |  8 ++++++++
+ net/netfilter/ipvs/ip_vs_est.c           |  5 +++++
+ 4 files changed, 35 insertions(+)
 
-Please, pull these changes from:
+diff --git a/Documentation/networking/ipvs-sysctl.rst b/Documentation/networking/ipvs-sysctl.rst
+index 2afccc63856e..95ef56d62077 100644
+--- a/Documentation/networking/ipvs-sysctl.rst
++++ b/Documentation/networking/ipvs-sysctl.rst
+@@ -300,3 +300,14 @@ sync_version - INTEGER
+ 
+ 	Kernels with this sync_version entry are able to receive messages
+ 	of both version 1 and version 2 of the synchronisation protocol.
++
++run_estimation - BOOLEAN
++	0 - disabled
++	not 0 - enabled (default)
++
++	If disabled, the estimation will be stop, and you can't see
++	any update on speed estimation data.
++
++	You can always re-enable estimation by setting this value to 1.
++	But be careful, the first estimation after re-enable is not
++	accurate.
+diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
+index 7cb5a1aace40..ff1804a0c469 100644
+--- a/include/net/ip_vs.h
++++ b/include/net/ip_vs.h
+@@ -931,6 +931,7 @@ struct netns_ipvs {
+ 	int			sysctl_conn_reuse_mode;
+ 	int			sysctl_schedule_icmp;
+ 	int			sysctl_ignore_tunneled;
++	int			sysctl_run_estimation;
+ 
+ 	/* ip_vs_lblc */
+ 	int			sysctl_lblc_expiration;
+@@ -1071,6 +1072,11 @@ static inline int sysctl_cache_bypass(struct netns_ipvs *ipvs)
+ 	return ipvs->sysctl_cache_bypass;
+ }
+ 
++static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
++{
++	return ipvs->sysctl_run_estimation;
++}
++
+ #else
+ 
+ static inline int sysctl_sync_threshold(struct netns_ipvs *ipvs)
+@@ -1163,6 +1169,11 @@ static inline int sysctl_cache_bypass(struct netns_ipvs *ipvs)
+ 	return 0;
+ }
+ 
++static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
++{
++	return 1;
++}
++
+ #endif
+ 
+ /* IPVS core functions
+diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
+index c25097092a06..cbea5a68afb5 100644
+--- a/net/netfilter/ipvs/ip_vs_ctl.c
++++ b/net/netfilter/ipvs/ip_vs_ctl.c
+@@ -2017,6 +2017,12 @@ static struct ctl_table vs_vars[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec,
+ 	},
++	{
++		.procname	= "run_estimation",
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec,
++	},
+ #ifdef CONFIG_IP_VS_DEBUG
+ 	{
+ 		.procname	= "debug_level",
+@@ -4090,6 +4096,8 @@ static int __net_init ip_vs_control_net_init_sysctl(struct netns_ipvs *ipvs)
+ 	tbl[idx++].data = &ipvs->sysctl_conn_reuse_mode;
+ 	tbl[idx++].data = &ipvs->sysctl_schedule_icmp;
+ 	tbl[idx++].data = &ipvs->sysctl_ignore_tunneled;
++	ipvs->sysctl_run_estimation = 1;
++	tbl[idx++].data = &ipvs->sysctl_run_estimation;
+ 
+ 	ipvs->sysctl_hdr = register_net_sysctl(net, "net/ipv4/vs", tbl);
+ 	if (ipvs->sysctl_hdr == NULL) {
+diff --git a/net/netfilter/ipvs/ip_vs_est.c b/net/netfilter/ipvs/ip_vs_est.c
+index 05b8112ffb37..9a1a7af6a186 100644
+--- a/net/netfilter/ipvs/ip_vs_est.c
++++ b/net/netfilter/ipvs/ip_vs_est.c
+@@ -100,6 +100,9 @@ static void estimation_timer(struct timer_list *t)
+ 	u64 rate;
+ 	struct netns_ipvs *ipvs = from_timer(ipvs, t, est_timer);
+ 
++	if (!sysctl_run_estimation(ipvs))
++		goto skip;
++
+ 	spin_lock(&ipvs->est_lock);
+ 	list_for_each_entry(e, &ipvs->est_list, list) {
+ 		s = container_of(e, struct ip_vs_stats, est);
+@@ -131,6 +134,8 @@ static void estimation_timer(struct timer_list *t)
+ 		spin_unlock(&s->lock);
+ 	}
+ 	spin_unlock(&ipvs->est_lock);
++
++skip:
+ 	mod_timer(&ipvs->est_timer, jiffies + 2*HZ);
+ }
+ 
+-- 
+2.30.2
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git
-
-Thanks.
-
-----------------------------------------------------------------
-
-The following changes since commit c514fbb6231483b05c97eb22587188d4c453b28e:
-
-  ethernet: ti: cpts: Use devm_kcalloc() instead of devm_kzalloc() (2021-10-07 09:08:43 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git HEAD
-
-for you to fetch changes up to ffdd33dd9c12a8c263f78d778066709ef94671f9:
-
-  netfilter: core: Fix clang warnings about unused static inlines (2021-10-17 15:49:08 +0200)
-
-----------------------------------------------------------------
-Dust Li (1):
-      ipvs: add sysctl_run_estimation to support disable estimation
-
-Florian Westphal (8):
-      netfilter: iptables: allow use of ipt_do_table as hookfn
-      netfilter: arp_tables: allow use of arpt_do_table as hookfn
-      netfilter: ip6tables: allow use of ip6t_do_table as hookfn
-      netfilter: ebtables: allow use of ebt_do_table as hookfn
-      netfilter: ipvs: prepare for hook function reduction
-      netfilter: ipvs: remove unneeded output wrappers
-      netfilter: ipvs: remove unneeded input wrappers
-      netfilter: ipvs: merge ipv4 + ipv6 icmp reply handlers
-
-Lukas Wunner (4):
-      netfilter: Rename ingress hook include file
-      netfilter: Generalize ingress hook include file
-      netfilter: Introduce egress hook
-      netfilter: core: Fix clang warnings about unused static inlines
-
-Pablo Neira Ayuso (2):
-      netfilter: nft_dynset: relax superfluous check on set updates
-      af_packet: Introduce egress hook
-
- Documentation/networking/ipvs-sysctl.rst  |  11 ++
- drivers/net/ifb.c                         |   3 +
- include/linux/netdevice.h                 |   4 +
- include/linux/netfilter_arp/arp_tables.h  |   5 +-
- include/linux/netfilter_bridge/ebtables.h |   5 +-
- include/linux/netfilter_ingress.h         |  58 -----------
- include/linux/netfilter_ipv4/ip_tables.h  |   6 +-
- include/linux/netfilter_ipv6/ip6_tables.h |   5 +-
- include/linux/netfilter_netdev.h          | 146 ++++++++++++++++++++++++++
- include/linux/skbuff.h                    |   4 +
- include/net/ip_vs.h                       |  11 ++
- include/uapi/linux/netfilter.h            |   1 +
- net/bridge/netfilter/ebtable_broute.c     |   2 +-
- net/bridge/netfilter/ebtable_filter.c     |  13 +--
- net/bridge/netfilter/ebtable_nat.c        |  12 +--
- net/bridge/netfilter/ebtables.c           |   6 +-
- net/core/dev.c                            |  19 +++-
- net/ipv4/netfilter/arp_tables.c           |   7 +-
- net/ipv4/netfilter/arptable_filter.c      |  10 +-
- net/ipv4/netfilter/ip_tables.c            |   7 +-
- net/ipv4/netfilter/iptable_filter.c       |   9 +-
- net/ipv4/netfilter/iptable_mangle.c       |   8 +-
- net/ipv4/netfilter/iptable_nat.c          |  15 +--
- net/ipv4/netfilter/iptable_raw.c          |  10 +-
- net/ipv4/netfilter/iptable_security.c     |   9 +-
- net/ipv6/netfilter/ip6_tables.c           |   6 +-
- net/ipv6/netfilter/ip6table_filter.c      |  10 +-
- net/ipv6/netfilter/ip6table_mangle.c      |   8 +-
- net/ipv6/netfilter/ip6table_nat.c         |  15 +--
- net/ipv6/netfilter/ip6table_raw.c         |  10 +-
- net/ipv6/netfilter/ip6table_security.c    |   9 +-
- net/netfilter/Kconfig                     |  11 ++
- net/netfilter/core.c                      |  38 ++++++-
- net/netfilter/ipvs/ip_vs_core.c           | 166 ++++++------------------------
- net/netfilter/ipvs/ip_vs_ctl.c            |   8 ++
- net/netfilter/ipvs/ip_vs_est.c            |   5 +
- net/netfilter/nfnetlink_hook.c            |  16 ++-
- net/netfilter/nft_chain_filter.c          |   4 +-
- net/netfilter/nft_dynset.c                |  11 +-
- net/packet/af_packet.c                    |  35 +++++++
- 40 files changed, 389 insertions(+), 349 deletions(-)
- delete mode 100644 include/linux/netfilter_ingress.h
- create mode 100644 include/linux/netfilter_netdev.h
