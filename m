@@ -2,91 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B984430C3C
-	for <lists+netdev@lfdr.de>; Sun, 17 Oct 2021 23:07:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A102430C46
+	for <lists+netdev@lfdr.de>; Sun, 17 Oct 2021 23:15:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344623AbhJQVJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Oct 2021 17:09:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41222 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232986AbhJQVJp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 17:09:45 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 368D4C06161C;
-        Sun, 17 Oct 2021 14:07:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=eR4g3uuGyNp1bFRoz5Hyr18qs5VEjGPKJqGzRB2AGqY=; b=momF6VusPtUxNlMO2Yz5/AJv/1
-        AYe3LKPBFECRM/NV1KrrmGTiE/aKcGeB6sDtyVqo8ksG5Kb/Gc+PVbAlSajsuoQlQuYgptg4A5yDm
-        PYa6jcRArtRMdVbHGi2B8coyMJO9JgqVow7XHD3qwpLNmh5Z+4ib1gKQcoIPFN6vVOxA73MJEhABt
-        jefHxL5DB4uTZg6W7CZ6wKSBytFp9PwLhX4QyUYtaEwf13tzZD0JwfmojwxiOAC5GH2UGq1uPrd52
-        zgRIe7eW5tAdj1B6eZzcWyD4p1746qZCvqJRBevGOKkI4ZR0vBNC0NAYVl+kBWPhP8b6w4EKygAky
-        aLBLkipA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55164)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mcDNN-0004IW-9X; Sun, 17 Oct 2021 22:07:26 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mcDNJ-0005GW-Gy; Sun, 17 Oct 2021 22:07:21 +0100
-Date:   Sun, 17 Oct 2021 22:07:21 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Maarten Zanders <maarten.zanders@mind.be>
-Cc:     Maarten Zanders <m.zanders@televic.com>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: don't use PHY_DETECT on internal
- PHY's
-Message-ID: <YWyQiSejqGNOG6ES@shell.armlinux.org.uk>
-References: <20211011142720.42642-1-maarten.zanders@mind.be>
+        id S1344623AbhJQVRM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Oct 2021 17:17:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:41715 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232561AbhJQVRL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 17:17:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634505300;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=FRy9bwvZsJvWv4Af9Z5HsgohV/baKvxzAPxWjKJBPXI=;
+        b=e3Aa4A/l6iiCr90PSHbmi2tl9Ky7XppRz8TQm9qw/ciX7+oVoQki+vd0qG9jlz2kupN3W6
+        x0utiTdBfj8XYZxhJ5x/pEoDcC8Z6LHD313RQSuuhaUbU9xnk9F3tRPdbZ8u8d1wWSYn+8
+        0wCySNNPvcNmnah514uwB0vHbrbk4QM=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-366-Jz0KEk7TP_a8l7wgVk7mrw-1; Sun, 17 Oct 2021 17:14:59 -0400
+X-MC-Unique: Jz0KEk7TP_a8l7wgVk7mrw-1
+Received: by mail-wr1-f69.google.com with SMTP id r16-20020adfb1d0000000b00160bf8972ceso7889139wra.13
+        for <netdev@vger.kernel.org>; Sun, 17 Oct 2021 14:14:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FRy9bwvZsJvWv4Af9Z5HsgohV/baKvxzAPxWjKJBPXI=;
+        b=IPzL9Sz3+sd4iOtOvJsP3wdV0jyh72BUDQGvr9FM3+gYrrxtrYhPPJsEx6rm0jrL8K
+         4GRDb+p6m7NYXQMyRBJt44qw67pA0+067ynhDBCtgpkeNjeqAR21KXRCk9ASd1IbeWIK
+         bDe3WFrZ6ysTukNpAE+kn0+zTJumdnN75ERE2xCm/HFnS/2BpusbWhL08PucKJ6rOH7E
+         nPUpWBIvaGxO8XxGL0UY/DXPrSQr2e7zNvY7SaMQU6mLXuFpRMM7EjV4zJPl3CjYGQfP
+         RutWAbzrysO1KSyq3Z8ygvLQ3Xz0INq1fNzF/cOosVRsusd+EyZN08tqI9kCfaCjY2tq
+         d+xw==
+X-Gm-Message-State: AOAM530XKs/4ulI3gOAvrAHWhgysDi6qkbq99/916XzOVKZyCv7+XGFp
+        d8s+nnU2B6QWusAqY1JJhbSEOLdpMHa/HTgA1Bttij9J43/ZLAaS3gLHYqKDxnHux6hqVV4ae4y
+        znTourA+5JZLzHeKx
+X-Received: by 2002:adf:9791:: with SMTP id s17mr30276206wrb.122.1634505298404;
+        Sun, 17 Oct 2021 14:14:58 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw0JZXfKOigWsN3W5rdhjJNq/c+D3QKjRn7R5w5HK6ebUis5XeuRhpaedp/NVgzsSOO7QhOfQ==
+X-Received: by 2002:adf:9791:: with SMTP id s17mr30276191wrb.122.1634505298233;
+        Sun, 17 Oct 2021 14:14:58 -0700 (PDT)
+Received: from krava.cust.in.nbox.cz ([83.240.63.48])
+        by smtp.gmail.com with ESMTPSA id t11sm10788829wrz.65.2021.10.17.14.14.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Oct 2021 14:14:57 -0700 (PDT)
+From:   Jiri Olsa <jolsa@redhat.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: [PATCH bpf-next 1/3] selftests/bpf: Fix perf_buffer test on system with offline cpus
+Date:   Sun, 17 Oct 2021 23:14:55 +0200
+Message-Id: <20211017211457.343768-1-jolsa@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211011142720.42642-1-maarten.zanders@mind.be>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 11, 2021 at 04:27:20PM +0200, Maarten Zanders wrote:
-> mv88e6xxx_port_ppu_updates() interpretes data in the PORT_STS
-> register incorrectly for internal ports (ie no PPU). In these
-> cases, the PHY_DETECT bit indicates link status. This results
-> in forcing the MAC state whenever the PHY link goes down which
-> is not intended. As a side effect, LED's configured to show
-> link status stay lit even though the physical link is down.
+The perf_buffer fails on system with offline cpus:
 
-I know this patch has been merged, but I'm going to say this anyway
-for the record.
+  # test_progs -t perf_buffer
+  test_perf_buffer:PASS:nr_cpus 0 nsec
+  test_perf_buffer:PASS:nr_on_cpus 0 nsec
+  test_perf_buffer:PASS:skel_load 0 nsec
+  test_perf_buffer:PASS:attach_kprobe 0 nsec
+  test_perf_buffer:PASS:perf_buf__new 0 nsec
+  test_perf_buffer:PASS:epoll_fd 0 nsec
+  skipping offline CPU #24
+  skipping offline CPU #25
+  skipping offline CPU #26
+  skipping offline CPU #27
+  skipping offline CPU #28
+  skipping offline CPU #29
+  skipping offline CPU #30
+  skipping offline CPU #31
+  test_perf_buffer:PASS:perf_buffer__poll 0 nsec
+  test_perf_buffer:PASS:seen_cpu_cnt 0 nsec
+  test_perf_buffer:FAIL:buf_cnt got 24, expected 32
+  Summary: 0/0 PASSED, 0 SKIPPED, 1 FAILED
 
-The description is not entirely correct. It is not true that internal
-ports do not have the PHY_DETECT bit. 88E6176 and friends are documented
-that bit 12 is always the PHY_DETECT bit even for internal ports. Bit 11
-there is Link status.
+Changing the test to check online cpus instead of possible.
 
-Looking at the definitions in port.h, some switches are different
-(88E6250 family) and do indeed use bit 12 as link status.
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+---
+ tools/testing/selftests/bpf/prog_tests/perf_buffer.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-The point I'm making is that the commit description is not universally
-true and only applies to a subset of mv88e6xxx supported switches. It is
-a shame it wasn't better reviewed before merging.
-
-At least the patch is harmless; we leave the PHY_DETECT bit set on the
-internal ports, which means the PPU fetches the configuration and
-configures the port appropriately. The change merely helps to ensure
-that we don't force link status on the internal ports.
-
+diff --git a/tools/testing/selftests/bpf/prog_tests/perf_buffer.c b/tools/testing/selftests/bpf/prog_tests/perf_buffer.c
+index 6979aff4aab2..877600392851 100644
+--- a/tools/testing/selftests/bpf/prog_tests/perf_buffer.c
++++ b/tools/testing/selftests/bpf/prog_tests/perf_buffer.c
+@@ -107,8 +107,8 @@ void serial_test_perf_buffer(void)
+ 		  "expect %d, seen %d\n", nr_on_cpus, CPU_COUNT(&cpu_seen)))
+ 		goto out_free_pb;
+ 
+-	if (CHECK(perf_buffer__buffer_cnt(pb) != nr_cpus, "buf_cnt",
+-		  "got %zu, expected %d\n", perf_buffer__buffer_cnt(pb), nr_cpus))
++	if (CHECK(perf_buffer__buffer_cnt(pb) != nr_on_cpus, "buf_cnt",
++		  "got %zu, expected %d\n", perf_buffer__buffer_cnt(pb), nr_on_cpus))
+ 		goto out_close;
+ 
+ 	for (i = 0; i < nr_cpus; i++) {
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.31.1
+
