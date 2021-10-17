@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72CCD4308BC
-	for <lists+netdev@lfdr.de>; Sun, 17 Oct 2021 14:36:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EF87430916
+	for <lists+netdev@lfdr.de>; Sun, 17 Oct 2021 14:46:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245679AbhJQMir (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Oct 2021 08:38:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41636 "EHLO
+        id S241353AbhJQMsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Oct 2021 08:48:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245686AbhJQMio (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 08:38:44 -0400
+        with ESMTP id S229648AbhJQMsn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 08:48:43 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 229FEC06176A
-        for <netdev@vger.kernel.org>; Sun, 17 Oct 2021 05:36:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68FA3C061765
+        for <netdev@vger.kernel.org>; Sun, 17 Oct 2021 05:46:33 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1mc5Or-0004sm-Ic; Sun, 17 Oct 2021 14:36:25 +0200
+        id 1mc5YS-0006AU-Ks; Sun, 17 Oct 2021 14:46:20 +0200
 Received: from pengutronix.de (2a03-f580-87bc-d400-7b24-848c-3829-1203.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:7b24:848c:3829:1203])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
         (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 44EC5695CD8;
-        Sun, 17 Oct 2021 12:36:23 +0000 (UTC)
-Date:   Sun, 17 Oct 2021 14:36:22 +0200
+        by smtp.blackshift.org (Postfix) with ESMTPSA id E8C99695CEF;
+        Sun, 17 Oct 2021 12:46:13 +0000 (UTC)
+Date:   Sun, 17 Oct 2021 14:46:13 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Dongliang Mu <mudongliangabcd@gmail.com>
-Cc:     Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
-        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
+To:     Brandon Maier <brandon.maier@rockwellcollins.com>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        linux-can@vger.kernel.org,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] driver: net: can: delete napi if register_candev fails
-Message-ID: <20211017123622.nfyis7o235tb2qad@pengutronix.de>
-References: <20211013040349.2858773-1-mudongliangabcd@gmail.com>
- <CAD-N9QWTP8DLtAN70Xxap+WhNUfh9ixfeDMuNaB2NnpFhuAN8A@mail.gmail.com>
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        "open list:CAN NETWORK DRIVERS" <linux-can@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        "moderated list:ARM/Microchip (AT91) SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] can: at91_can: fix passive-state AERR flooding
+Message-ID: <20211017124613.ttplab5ydklehvxd@pengutronix.de>
+References: <20211005183023.109328-1-brandon.maier@rockwellcollins.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="dfm43gs7fxhcrzkr"
+        protocol="application/pgp-signature"; boundary="kt7k6mpieicyhvfv"
 Content-Disposition: inline
-In-Reply-To: <CAD-N9QWTP8DLtAN70Xxap+WhNUfh9ixfeDMuNaB2NnpFhuAN8A@mail.gmail.com>
+In-Reply-To: <20211005183023.109328-1-brandon.maier@rockwellcollins.com>
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -57,32 +57,32 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---dfm43gs7fxhcrzkr
+--kt7k6mpieicyhvfv
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On 13.10.2021 13:21:09, Dongliang Mu wrote:
-> On Wed, Oct 13, 2021 at 12:04 PM Dongliang Mu <mudongliangabcd@gmail.com>=
- wrote:
-> >
-> > If register_candev fails, xcan_probe does not clean the napi
-> > created by netif_napi_add.
-> >
+On 05.10.2021 13:30:23, Brandon Maier wrote:
+> When the at91_can is a single node on the bus and a user attempts to
+> transmit, the can state machine will report ack errors and increment the
+> transmit error count until it reaches the passive-state. Per the
+> specification, it will then transmit with a passive error, but will stop
+> incrementing the transmit error count. This results in the host machine
+> being flooded with the AERR interrupt forever, or until another node
+> rejoins the bus.
 >=20
-> It seems the netif_napi_del operation is done in the free_candev
-> (free_netdev precisely).
->=20
-> list_for_each_entry_safe(p, n, &dev->napi_list, dev_list)
->           netif_napi_del(p);
->=20
-> And list_add_rcu(&napi->dev_list, &dev->napi_list) is done in the
-> netif_napi_add.
->=20
-> Therefore, I suggest removing "netif_napi_del" operation in the
-> xcan_remove to match probe and remove function.
+> To prevent the AERR flooding, disable the AERR interrupt when we are in
+> passive mode.
 
-Sounds reasonable, can you create a patch for this.
+Can you implement Bus Error Reporting?
+
+| https://elixir.bootlin.com/linux/v5.14/source/include/uapi/linux/can/netl=
+ink.h#L99
+
+This way the user can control if bus errors, and the ACK error is one of
+them, should be reported. Bus error reporting is disabled by default. I
+think enabling AT91_IRQ_ERR_FRAME only if CAN_CTRLMODE_BERR_REPORTING is
+active should do the trick.
 
 regards,
 Marc
@@ -93,19 +93,19 @@ Embedded Linux                   | https://www.pengutronix.de  |
 Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
---dfm43gs7fxhcrzkr
+--kt7k6mpieicyhvfv
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmFsGMMACgkQqclaivrt
-76n7igf8CvP7xI7j1Eqn4NDnUwcP2SDkko7tGu/cFltCOZ6NwQ5DNo+VwAvhQIwA
-wO2XgNcA81EuK+TX4Oq0+XjvCbiaVjS2Y3bwHNNVpJbUhDmqiq0QknGGbfwqkTks
-OXlv5INJSkVLCvadeTIenBUgB4KLygX0XM0hyZCejRf3SeCM/LJvJuYt6jtxWCjM
-qZndqek8+fvgllTBkVO/sv5fvyxDq0JErWfbTuxk6aLI6tiRqBhQgi0li+VHVcSV
-F9e7Tw9tSVMo63RhCoAu4Glina1nHl/G/ToEfOgJZjo56a212y2Gfs6QSyW53VCR
-oQsEjpBIfaG3B/RFfvw9/70gG4CuwQ==
-=KM5O
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmFsGxIACgkQqclaivrt
+76kR6gf/SZqWy8DDw7I6Pxr3FLEttdavMEKmwFK+1T6ML0EHmsRqwTfbe3ol/eJi
+CjnED87jezZM1vzfjQ0fWgSrSbY/6SYlk3fASIRLSw/0n3H9WYrzNJLvZwjMtKlH
+Kw/9yQfGfHBI4FoNdWaYyo8ZSnOPzqjC9+X7/Zn7LCbNPiXw2+G41fGrzh69G6uz
+AM8vNcBLx+PkF2jUodTBzspvz9auYlCO2VuDCsPIBR1pfCXKuiNjZWXZyGmW5VcR
+gCykGKvzaCzCEJNxxHZAH7IJ3Zq2Std9e5btHHEim5P5WpLML/ddYxoRfQqgRZqb
+y7+Vg2AWOXEe7Zsq20czLIoPvjccSA==
+=FYBd
 -----END PGP SIGNATURE-----
 
---dfm43gs7fxhcrzkr--
+--kt7k6mpieicyhvfv--
