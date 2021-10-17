@@ -2,49 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 343EC430C36
-	for <lists+netdev@lfdr.de>; Sun, 17 Oct 2021 23:02:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87F73430C33
+	for <lists+netdev@lfdr.de>; Sun, 17 Oct 2021 23:02:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344675AbhJQVEV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Oct 2021 17:04:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39976 "EHLO
+        id S1344662AbhJQVES (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Oct 2021 17:04:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344626AbhJQVEO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 17:04:14 -0400
+        with ESMTP id S1344624AbhJQVEL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 17:04:11 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D01C061778
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D19EC061771
         for <netdev@vger.kernel.org>; Sun, 17 Oct 2021 14:01:59 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1mcDI6-0000QL-AA
-        for netdev@vger.kernel.org; Sun, 17 Oct 2021 23:01:58 +0200
+        id 1mcDI5-0000Pa-RI
+        for netdev@vger.kernel.org; Sun, 17 Oct 2021 23:01:57 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id C71DC695F1D
+        by bjornoya.blackshift.org (Postfix) with SMTP id 5FE24695F17
         for <netdev@vger.kernel.org>; Sun, 17 Oct 2021 21:01:50 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 4A14F695EB7;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 80665695EBB;
         Sun, 17 Oct 2021 21:01:45 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 512d2b15;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id a39e62da;
         Sun, 17 Oct 2021 21:01:43 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        stable@vger.kernel.org,
-        Ayumi Nakamichi <ayumi.nakamichi.kf@renesas.com>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
+        kernel@pengutronix.de, Aswath Govindraju <a-govindraju@ti.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net 07/11] can: rcar_can: fix suspend/resume
-Date:   Sun, 17 Oct 2021 23:01:38 +0200
-Message-Id: <20211017210142.2108610-8-mkl@pengutronix.de>
+Subject: [PATCH net 08/11] can: m_can: fix iomap_read_fifo() and iomap_write_fifo()
+Date:   Sun, 17 Oct 2021 23:01:39 +0200
+Message-Id: <20211017210142.2108610-9-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211017210142.2108610-1-mkl@pengutronix.de>
 References: <20211017210142.2108610-1-mkl@pengutronix.de>
@@ -58,68 +53,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+From: Aswath Govindraju <a-govindraju@ti.com>
 
-If the driver was not opened, rcar_can_suspend() should not call
-clk_disable() because the clock was not enabled.
+The read and writes from the fifo are from a buffer, with various
+fields and data at predefined offsets. So, they should not be done to
+the same address(or port) in case of val_count greater than 1.
+Therefore, fix this by using iowrite32()/ioread32() instead of
+ioread32_rep()/iowrite32_rep().
 
-Fixes: fd1159318e55 ("can: add Renesas R-Car CAN driver")
-Link: https://lore.kernel.org/all/20210924075556.223685-1-yoshihiro.shimoda.uh@renesas.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Tested-by: Ayumi Nakamichi <ayumi.nakamichi.kf@renesas.com>
-Reviewed-by: Ulrich Hecht <uli+renesas@fpond.eu>
-Tested-by: Biju Das <biju.das.jz@bp.renesas.com>
+Also, the write into FIFO must be performed with an offset from the
+message ram base address. Therefore, fix the base address to
+mram_base.
+
+Fixes: e39381770ec9 ("can: m_can: Disable IRQs on FIFO bus errors")
+Link: https://lore.kernel.org/all/20210920123344.2320-1-a-govindraju@ti.com
+Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/rcar/rcar_can.c | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+ drivers/net/can/m_can/m_can_platform.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/can/rcar/rcar_can.c b/drivers/net/can/rcar/rcar_can.c
-index 00e4533c8bdd..8999ec9455ec 100644
---- a/drivers/net/can/rcar/rcar_can.c
-+++ b/drivers/net/can/rcar/rcar_can.c
-@@ -846,10 +846,12 @@ static int __maybe_unused rcar_can_suspend(struct device *dev)
- 	struct rcar_can_priv *priv = netdev_priv(ndev);
- 	u16 ctlr;
+diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
+index 308d4f2fff00..eee47bad0592 100644
+--- a/drivers/net/can/m_can/m_can_platform.c
++++ b/drivers/net/can/m_can/m_can_platform.c
+@@ -32,8 +32,13 @@ static u32 iomap_read_reg(struct m_can_classdev *cdev, int reg)
+ static int iomap_read_fifo(struct m_can_classdev *cdev, int offset, void *val, size_t val_count)
+ {
+ 	struct m_can_plat_priv *priv = cdev_to_priv(cdev);
++	void __iomem *src = priv->mram_base + offset;
  
--	if (netif_running(ndev)) {
--		netif_stop_queue(ndev);
--		netif_device_detach(ndev);
--	}
-+	if (!netif_running(ndev))
-+		return 0;
-+
-+	netif_stop_queue(ndev);
-+	netif_device_detach(ndev);
-+
- 	ctlr = readw(&priv->regs->ctlr);
- 	ctlr |= RCAR_CAN_CTLR_CANM_HALT;
- 	writew(ctlr, &priv->regs->ctlr);
-@@ -868,6 +870,9 @@ static int __maybe_unused rcar_can_resume(struct device *dev)
- 	u16 ctlr;
- 	int err;
+-	ioread32_rep(priv->mram_base + offset, val, val_count);
++	while (val_count--) {
++		*(unsigned int *)val = ioread32(src);
++		val += 4;
++		src += 4;
++	}
  
-+	if (!netif_running(ndev))
-+		return 0;
-+
- 	err = clk_enable(priv->clk);
- 	if (err) {
- 		netdev_err(ndev, "clk_enable() failed, error %d\n", err);
-@@ -881,10 +886,9 @@ static int __maybe_unused rcar_can_resume(struct device *dev)
- 	writew(ctlr, &priv->regs->ctlr);
- 	priv->can.state = CAN_STATE_ERROR_ACTIVE;
- 
--	if (netif_running(ndev)) {
--		netif_device_attach(ndev);
--		netif_start_queue(ndev);
--	}
-+	netif_device_attach(ndev);
-+	netif_start_queue(ndev);
-+
  	return 0;
  }
+@@ -51,8 +56,13 @@ static int iomap_write_fifo(struct m_can_classdev *cdev, int offset,
+ 			    const void *val, size_t val_count)
+ {
+ 	struct m_can_plat_priv *priv = cdev_to_priv(cdev);
++	void __iomem *dst = priv->mram_base + offset;
  
+-	iowrite32_rep(priv->base + offset, val, val_count);
++	while (val_count--) {
++		iowrite32(*(unsigned int *)val, dst);
++		val += 4;
++		dst += 4;
++	}
+ 
+ 	return 0;
+ }
 -- 
 2.33.0
 
