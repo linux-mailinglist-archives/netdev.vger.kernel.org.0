@@ -2,99 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23E79430C4D
-	for <lists+netdev@lfdr.de>; Sun, 17 Oct 2021 23:20:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1420F430C8A
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 00:04:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344648AbhJQVWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Oct 2021 17:22:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:46402 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242717AbhJQVWa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 17:22:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1634505619;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=srAxXppIvHz+myMAl+rb3OMXLAjwG2sT2dL0Sifr8SY=;
-        b=YSYlRFsFcLfsRb/MFm6bkaLCyJsVAvkqz6iH7plAyMd6oY4WWkTKYleihdqPrExblliUlN
-        lAMuFoQhk+8TvVD1KGHMozwK+11DZmzxmvdjm5YCGM2KmHXiljIClCZ9T+OqBtqFxJJ4gK
-        Hrjn6Mz3IVoNNpTQ0wlviRlyf6Pxv/k=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-74-OYSrSrc9PHOFmLrkRe6rkw-1; Sun, 17 Oct 2021 17:20:18 -0400
-X-MC-Unique: OYSrSrc9PHOFmLrkRe6rkw-1
-Received: by mail-wm1-f70.google.com with SMTP id k6-20020a7bc306000000b0030d92a6bdc7so2376650wmj.3
-        for <netdev@vger.kernel.org>; Sun, 17 Oct 2021 14:20:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=srAxXppIvHz+myMAl+rb3OMXLAjwG2sT2dL0Sifr8SY=;
-        b=gwjSrE+EdvPbU6dE3/96/gPgwMF69fr2qBxw4FTfk6mQU+6J8NTdJwrCpzi3B2DRFk
-         dicPSvRvHxYhceHLLrKAGukeIQPdnYs+q7mQiCHdNI9udP1hZfinYsg+N3U83dqNhcbH
-         ruqXxKURTJay0mPHhUMBbdMQ3XSwa8+UAXuOAWUx0g8GFBSMOQesVxFQ378ou/IQjPeh
-         31C+KIyJuE6wLZ7k//jIhvv1K0pWtEWmpMrVtxCuPMO0MVDVGR9SYeM6O42Nb+Xmbpvr
-         8d+yIHXSytCnWkKApbgy9Upfhkjf3qvGLqRTdf1ZXCe7R19iC4cawiFmowCinjHE4bAT
-         p0TQ==
-X-Gm-Message-State: AOAM533xS6Tm40bAWosqVT9fwSNkp1TBbfZbYXUPUVV0+YsULsFgOfFh
-        uKfvh9j8QuLuSVEi3+wh3VvX/DI4NwUCSUCWTY9wzUJXVOrnvGzC7WWcDy7FhGcfWx4I912b540
-        4Tqef6V29+keM24i9
-X-Received: by 2002:a5d:4563:: with SMTP id a3mr30702551wrc.198.1634505310422;
-        Sun, 17 Oct 2021 14:15:10 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz8GDujnnlYrDZ6vz0cWuCOjpMhoco6bgO3eFsSttDzPYk0xUFvblndr4yRkPOE120t1DCMtQ==
-X-Received: by 2002:a5d:4563:: with SMTP id a3mr30702543wrc.198.1634505310287;
-        Sun, 17 Oct 2021 14:15:10 -0700 (PDT)
-Received: from krava.cust.in.nbox.cz ([83.240.63.48])
-        by smtp.gmail.com with ESMTPSA id c132sm16905985wma.22.2021.10.17.14.15.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Oct 2021 14:15:10 -0700 (PDT)
-From:   Jiri Olsa <jolsa@redhat.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: [PATCH bpf-next 3/3] selftests/bpf: Use nanosleep tracepoint in perf buffer test
-Date:   Sun, 17 Oct 2021 23:14:57 +0200
-Message-Id: <20211017211457.343768-3-jolsa@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211017211457.343768-1-jolsa@kernel.org>
-References: <20211017211457.343768-1-jolsa@kernel.org>
+        id S1344747AbhJQWGe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Oct 2021 18:06:34 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:53358 "EHLO
+        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344746AbhJQWGe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 18:06:34 -0400
+Received: from netfilter.org (unknown [78.30.32.163])
+        by mail.netfilter.org (Postfix) with ESMTPSA id E352A605E1;
+        Mon, 18 Oct 2021 00:02:41 +0200 (CEST)
+Date:   Mon, 18 Oct 2021 00:04:19 +0200
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Netfilter Development Mailing List 
+        <netfilter-devel@vger.kernel.org>
+Subject: Re: [PATCH netfilter] netfilter: conntrack: udp: generate event on
+ switch to stream timeout
+Message-ID: <YWyd44P+ey9VXvRn@salvia>
+References: <20211015090934.2870662-1-zenczykowski@gmail.com>
+ <YWlKGFpHa5o5jFgJ@salvia>
+ <CANP3RGdCBzjWuK8FfHOOKcFAbd_Zru=DkOBBpD3d_PYDR91P5g@mail.gmail.com>
+ <20211015095716.GH2942@breakpoint.cc>
+ <CAHo-OoxsN5d+ipbp0TQ=a+o=ynd3-w5RZ3S3F8Vg89ipT5=UHw@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHo-OoxsN5d+ipbp0TQ=a+o=ynd3-w5RZ3S3F8Vg89ipT5=UHw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The perf buffer tests triggers trace with nanosleep syscall,
-but monitors all syscalls, which results in lot of data in the
-buffer and makes it harder to debug. Let's lower the trace
-traffic and monitor just nanosleep syscall.
+On Fri, Oct 15, 2021 at 03:15:07AM -0700, Maciej Żenczykowski wrote:
+> On Fri, Oct 15, 2021 at 2:57 AM Florian Westphal <fw@strlen.de> wrote:
+> > Maciej Żenczykowski <zenczykowski@gmail.com> wrote:
+[...]
+> A udp flow becoming bidirectional seems like an important event to
+> notify about...
+> Afterall, the UDP flow might become a stream 29 seconds after it
+> becomes bidirectional...
+> That seems like a pretty long time (and it's user configurable to be
+> even longer) to delay the notification.
+> 
+> I imagine the pair of you know best whether 2 events or delay assured
+> event until stream timeout is applied makes more sense...
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- tools/testing/selftests/bpf/progs/test_perf_buffer.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This 2 events looks awkward to me, currently the model we have to
+report events is:
 
-diff --git a/tools/testing/selftests/bpf/progs/test_perf_buffer.c b/tools/testing/selftests/bpf/progs/test_perf_buffer.c
-index d37ce29fd393..a08874c5bdf2 100644
---- a/tools/testing/selftests/bpf/progs/test_perf_buffer.c
-+++ b/tools/testing/selftests/bpf/progs/test_perf_buffer.c
-@@ -12,7 +12,7 @@ struct {
- 	__type(value, int);
- } perf_buf_map SEC(".maps");
- 
--SEC("tp/raw_syscalls/sys_enter")
-+SEC("tp/syscalls/sys_enter_nanosleep")
- int handle_sys_enter(void *ctx)
- {
- 	int cpu = bpf_get_smp_processor_id();
--- 
-2.31.1
+- status bits are updated
+- flow has changed protocol state (TCP).
 
+but in this case, this is reporting a timer update. Timeout updates
+are not reported on events, since this would trigger too many events
+one per packet.
+
+What's the concern with delaying the IPS_ASSURED bit?
+
+By setting a lower timeout (30 second) my understanding is that this
+flow is less important to those that are in the stream state (120s),
+so these should also be candidate to be removed by early_drop. IIRC,
+the idea behind the stream concept is to reduce lifetime of shortlived
+UDP flows to release slots from the conntrack table earlier.
