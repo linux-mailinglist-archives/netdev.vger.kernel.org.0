@@ -2,45 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 356D3430C29
-	for <lists+netdev@lfdr.de>; Sun, 17 Oct 2021 23:02:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 343EC430C36
+	for <lists+netdev@lfdr.de>; Sun, 17 Oct 2021 23:02:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344623AbhJQVEL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Oct 2021 17:04:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39964 "EHLO
+        id S1344675AbhJQVEV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Oct 2021 17:04:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344621AbhJQVEI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 17:04:08 -0400
+        with ESMTP id S1344626AbhJQVEO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 17:04:14 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 175BFC061768
-        for <netdev@vger.kernel.org>; Sun, 17 Oct 2021 14:01:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D01C061778
+        for <netdev@vger.kernel.org>; Sun, 17 Oct 2021 14:01:59 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1mcDI4-0000Ip-7n
-        for netdev@vger.kernel.org; Sun, 17 Oct 2021 23:01:56 +0200
+        id 1mcDI6-0000QL-AA
+        for netdev@vger.kernel.org; Sun, 17 Oct 2021 23:01:58 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 4EBB9695F05
-        for <netdev@vger.kernel.org>; Sun, 17 Oct 2021 21:01:49 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id C71DC695F1D
+        for <netdev@vger.kernel.org>; Sun, 17 Oct 2021 21:01:50 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 25310695EB5;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 4A14F695EB7;
         Sun, 17 Oct 2021 21:01:45 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 779818b8;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 512d2b15;
         Sun, 17 Oct 2021 21:01:43 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Ziyang Xuan <william.xuanziyang@huawei.com>,
-        stable@vger.kernel.org, Oliver Hartkopp <socketcan@hartkopp.net>,
+        kernel@pengutronix.de,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        stable@vger.kernel.org,
+        Ayumi Nakamichi <ayumi.nakamichi.kf@renesas.com>,
+        Ulrich Hecht <uli+renesas@fpond.eu>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net 06/11] can: isotp: isotp_sendmsg(): fix TX buffer concurrent access in isotp_sendmsg()
-Date:   Sun, 17 Oct 2021 23:01:37 +0200
-Message-Id: <20211017210142.2108610-7-mkl@pengutronix.de>
+Subject: [PATCH net 07/11] can: rcar_can: fix suspend/resume
+Date:   Sun, 17 Oct 2021 23:01:38 +0200
+Message-Id: <20211017210142.2108610-8-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211017210142.2108610-1-mkl@pengutronix.de>
 References: <20211017210142.2108610-1-mkl@pengutronix.de>
@@ -54,142 +58,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ziyang Xuan <william.xuanziyang@huawei.com>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-When isotp_sendmsg() concurrent, tx.state of all TX processes can be
-ISOTP_IDLE. The conditions so->tx.state != ISOTP_IDLE and
-wq_has_sleeper(&so->wait) can not protect TX buffer from being
-accessed by multiple TX processes.
+If the driver was not opened, rcar_can_suspend() should not call
+clk_disable() because the clock was not enabled.
 
-We can use cmpxchg() to try to modify tx.state to ISOTP_SENDING firstly.
-If the modification of the previous process succeed, the later process
-must wait tx.state to ISOTP_IDLE firstly. Thus, we can ensure TX buffer
-is accessed by only one process at the same time. And we should also
-restore the original tx.state at the subsequent error processes.
-
-Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
-Link: https://lore.kernel.org/all/c2517874fbdf4188585cf9ddf67a8fa74d5dbde5.1633764159.git.william.xuanziyang@huawei.com
+Fixes: fd1159318e55 ("can: add Renesas R-Car CAN driver")
+Link: https://lore.kernel.org/all/20210924075556.223685-1-yoshihiro.shimoda.uh@renesas.com
 Cc: stable@vger.kernel.org
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Tested-by: Ayumi Nakamichi <ayumi.nakamichi.kf@renesas.com>
+Reviewed-by: Ulrich Hecht <uli+renesas@fpond.eu>
+Tested-by: Biju Das <biju.das.jz@bp.renesas.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- net/can/isotp.c | 46 +++++++++++++++++++++++++++++++---------------
- 1 file changed, 31 insertions(+), 15 deletions(-)
+ drivers/net/can/rcar/rcar_can.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index 2ac29c2b2ca6..d1f54273c0bb 100644
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -121,7 +121,7 @@ enum {
- struct tpcon {
- 	int idx;
- 	int len;
--	u8 state;
-+	u32 state;
- 	u8 bs;
- 	u8 sn;
- 	u8 ll_dl;
-@@ -848,6 +848,7 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
- {
- 	struct sock *sk = sock->sk;
- 	struct isotp_sock *so = isotp_sk(sk);
-+	u32 old_state = so->tx.state;
- 	struct sk_buff *skb;
- 	struct net_device *dev;
- 	struct canfd_frame *cf;
-@@ -860,47 +861,55 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
- 		return -EADDRNOTAVAIL;
+diff --git a/drivers/net/can/rcar/rcar_can.c b/drivers/net/can/rcar/rcar_can.c
+index 00e4533c8bdd..8999ec9455ec 100644
+--- a/drivers/net/can/rcar/rcar_can.c
++++ b/drivers/net/can/rcar/rcar_can.c
+@@ -846,10 +846,12 @@ static int __maybe_unused rcar_can_suspend(struct device *dev)
+ 	struct rcar_can_priv *priv = netdev_priv(ndev);
+ 	u16 ctlr;
  
- 	/* we do not support multiple buffers - for now */
--	if (so->tx.state != ISOTP_IDLE || wq_has_sleeper(&so->wait)) {
--		if (msg->msg_flags & MSG_DONTWAIT)
--			return -EAGAIN;
-+	if (cmpxchg(&so->tx.state, ISOTP_IDLE, ISOTP_SENDING) != ISOTP_IDLE ||
-+	    wq_has_sleeper(&so->wait)) {
-+		if (msg->msg_flags & MSG_DONTWAIT) {
-+			err = -EAGAIN;
-+			goto err_out;
-+		}
+-	if (netif_running(ndev)) {
+-		netif_stop_queue(ndev);
+-		netif_device_detach(ndev);
+-	}
++	if (!netif_running(ndev))
++		return 0;
++
++	netif_stop_queue(ndev);
++	netif_device_detach(ndev);
++
+ 	ctlr = readw(&priv->regs->ctlr);
+ 	ctlr |= RCAR_CAN_CTLR_CANM_HALT;
+ 	writew(ctlr, &priv->regs->ctlr);
+@@ -868,6 +870,9 @@ static int __maybe_unused rcar_can_resume(struct device *dev)
+ 	u16 ctlr;
+ 	int err;
  
- 		/* wait for complete transmission of current pdu */
- 		err = wait_event_interruptible(so->wait, so->tx.state == ISOTP_IDLE);
- 		if (err)
--			return err;
-+			goto err_out;
- 	}
- 
--	if (!size || size > MAX_MSG_LENGTH)
--		return -EINVAL;
-+	if (!size || size > MAX_MSG_LENGTH) {
-+		err = -EINVAL;
-+		goto err_out;
-+	}
- 
- 	/* take care of a potential SF_DL ESC offset for TX_DL > 8 */
- 	off = (so->tx.ll_dl > CAN_MAX_DLEN) ? 1 : 0;
- 
- 	/* does the given data fit into a single frame for SF_BROADCAST? */
- 	if ((so->opt.flags & CAN_ISOTP_SF_BROADCAST) &&
--	    (size > so->tx.ll_dl - SF_PCI_SZ4 - ae - off))
--		return -EINVAL;
-+	    (size > so->tx.ll_dl - SF_PCI_SZ4 - ae - off)) {
-+		err = -EINVAL;
-+		goto err_out;
-+	}
- 
- 	err = memcpy_from_msg(so->tx.buf, msg, size);
- 	if (err < 0)
--		return err;
-+		goto err_out;
- 
- 	dev = dev_get_by_index(sock_net(sk), so->ifindex);
--	if (!dev)
--		return -ENXIO;
-+	if (!dev) {
-+		err = -ENXIO;
-+		goto err_out;
-+	}
- 
- 	skb = sock_alloc_send_skb(sk, so->ll.mtu + sizeof(struct can_skb_priv),
- 				  msg->msg_flags & MSG_DONTWAIT, &err);
- 	if (!skb) {
- 		dev_put(dev);
--		return err;
-+		goto err_out;
- 	}
- 
- 	can_skb_reserve(skb);
- 	can_skb_prv(skb)->ifindex = dev->ifindex;
- 	can_skb_prv(skb)->skbcnt = 0;
- 
--	so->tx.state = ISOTP_SENDING;
- 	so->tx.len = size;
- 	so->tx.idx = 0;
- 
-@@ -956,7 +965,7 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
++	if (!netif_running(ndev))
++		return 0;
++
+ 	err = clk_enable(priv->clk);
  	if (err) {
- 		pr_notice_once("can-isotp: %s: can_send_ret %pe\n",
- 			       __func__, ERR_PTR(err));
--		return err;
-+		goto err_out;
- 	}
+ 		netdev_err(ndev, "clk_enable() failed, error %d\n", err);
+@@ -881,10 +886,9 @@ static int __maybe_unused rcar_can_resume(struct device *dev)
+ 	writew(ctlr, &priv->regs->ctlr);
+ 	priv->can.state = CAN_STATE_ERROR_ACTIVE;
  
- 	if (wait_tx_done) {
-@@ -965,6 +974,13 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
- 	}
- 
- 	return size;
+-	if (netif_running(ndev)) {
+-		netif_device_attach(ndev);
+-		netif_start_queue(ndev);
+-	}
++	netif_device_attach(ndev);
++	netif_start_queue(ndev);
 +
-+err_out:
-+	so->tx.state = old_state;
-+	if (so->tx.state == ISOTP_IDLE)
-+		wake_up_interruptible(&so->wait);
-+
-+	return err;
+ 	return 0;
  }
  
- static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 -- 
 2.33.0
 
