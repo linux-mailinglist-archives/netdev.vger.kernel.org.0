@@ -2,96 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 757A74309E7
-	for <lists+netdev@lfdr.de>; Sun, 17 Oct 2021 16:57:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 340AE4309F0
+	for <lists+netdev@lfdr.de>; Sun, 17 Oct 2021 17:06:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343939AbhJQO7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Oct 2021 10:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44504 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343932AbhJQO7P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 10:59:15 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F138C06161C;
-        Sun, 17 Oct 2021 07:57:06 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id w19so59842998edd.2;
-        Sun, 17 Oct 2021 07:57:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=lipIEZ+n1vyEC0IkcC3jv40a0eLLrhXH63M7mDRpB6I=;
-        b=b3y2ExnKRIhg3hWAu0BtPQ1jjAhR/NruRmRFVYikj/gt1KLT8rs7S9UDXRfiarECQP
-         GdTw13HwDIked9Jkb/IyQkjVjXQt2tsnwMtbvN+uP0aNtKIPxFIZoy0rrnTztE5/kf/g
-         7U2bx0O2TIpxzGUJuIZ7igRaHoxlXnR9J2gIWXMqmv0OmMj6Tpe0HoZQwsTJ55v2cV+p
-         grrDis6i1FLjSTPfZ7Anme+/7NaWIK6aIYzArML0Vxwk3Dylx8m1D37WfyPtN5Z8KjVK
-         qPcMMW320e9iqci+naN7/VbWZCZHUwzS2MXZ3aidmW43mrbqi2Bja6jb9vuK3SibgDBh
-         em/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=lipIEZ+n1vyEC0IkcC3jv40a0eLLrhXH63M7mDRpB6I=;
-        b=EwxQ2zsFtEs/chniUGx0yXG14RVbHq/2imcQ0L79fbdwQbs20QkrTnvyTQ/aLFC9LN
-         6UxDs7n9/GIl2XzVQLoMQyc4WVQHlwo94d0hcyl885+qg8cFC+NSNysuZHJ9GrN/moD+
-         brZcJQ/FZSqv9PDvTOg+endFaR+j3P3rA0JP5bWZr6IfJdmtqjkH9RYZkbRMezjToZEZ
-         pRTLzUg03noXNZF+7jKRm+8pEVI0yl147B7asL3YYLs1s7lQ/eCUCjZHhgHA+I3llLxY
-         Fuiq9okDqMt+hX6HY3ckTSUdVhVVUp4pyqyvEfSoU756IzSNTOfwZhLF/Ui4OxE0p3QA
-         AmhA==
-X-Gm-Message-State: AOAM530erI6yazDD3iQ/1eeS3yT0gO8FADXN95zQNGqWlieU+dPX1xBF
-        0lEMRF162FaexTB0BmfxzBzzFUMjSE0=
-X-Google-Smtp-Source: ABdhPJxZYAvtGkH3LNE4woix254XGGQJfwLPHR88ASAjEjKjlZHmG9ghBeUYfki3ZKnPRsMtnYEScg==
-X-Received: by 2002:a17:906:e2cf:: with SMTP id gr15mr22006992ejb.468.1634482624484;
-        Sun, 17 Oct 2021 07:57:04 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id o15sm7631100ejj.10.2021.10.17.07.57.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Oct 2021 07:57:04 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next RESEND PATCH 2/2] net: dsa: qca8k: fix delay applied to wrong cpu in parse_port_config
-Date:   Sun, 17 Oct 2021 16:56:46 +0200
-Message-Id: <20211017145646.56-2-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211017145646.56-1-ansuelsmth@gmail.com>
-References: <20211017145646.56-1-ansuelsmth@gmail.com>
+        id S241630AbhJQPIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Oct 2021 11:08:32 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:42473 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237285AbhJQPIb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 11:08:31 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id D5F4658169C;
+        Sun, 17 Oct 2021 11:06:21 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Sun, 17 Oct 2021 11:06:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=5Pe0wu
+        t2jSUUZ3JaYsA7RTwVinQOvg8fx604Qjkaovg=; b=inSrWpuNC5gzL0qgSzdrBn
+        JvcafU+dtnvVGwYRcd1mJ4NVeud4pltocyB1QVuHXEXfs9SuPj7i6CdCB8jEKGo8
+        W4k+LxYLLfxUzk+mJOxk3Z23PMK/xMD0+hVsUIUqL9F5qYiYJxobfAqQsSxpQds1
+        p0PrUOeO4Uc3kJsLe7VVl70gzd6pmAgqrq+012yJaIJHWDouUoxp/eqe0frXTrAb
+        S8QrtPujr4MZNc3HPqc1/38LVO/c0sFU9rtM9o8HBOMDrNUI2aSlEkK/SN5OhQ1P
+        aQh7zlp1NkOZ/+Zs8GwKOJQQsLk/IJ58o4i1vTeHkHDoFaNWtl/BHm85is0T+VOg
+        ==
+X-ME-Sender: <xms:7DtsYaGopnv86selzyU9UTClpZCdt4S8wZ7fg7GbBKaveUsmviSgOg>
+    <xme:7DtsYbWO2LtV8hOfQw-Ap3fSJ6MSWtFz-I8kW5OqBgWaT71LMXVJfeLrkCHwk9q3E
+    KG4r41v0z9eMAA>
+X-ME-Received: <xmr:7DtsYUK5pwevCD30aRTI2kXxaflM01arJEG69XfvNn-Q7yEPCh5NiBH0lIJh_WVop_yFZA2_1uCQ9PEnOUHeVVeJUy8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddukedgkeefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujgesthdtre
+    dttddtvdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnheptdffkeekfeduffevgeeujeffjefhte
+    fgueeugfevtdeiheduueeukefhudehleetnecuvehluhhsthgvrhfuihiivgeptdenucfr
+    rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:7TtsYUGZljxHZVuIjojNLsvAcpKxGAkVtPA7lZpfeFS-5tDbLm4veg>
+    <xmx:7TtsYQVr__sUlw8HS3V3FwlRi34A9ss4IsmSKbRTW-nuJuDKpv1_4g>
+    <xmx:7TtsYXOraUWaCHSo3K5ddmQ1MKUR2mYtuzTbmcsQC6XXX-niREFsww>
+    <xmx:7TtsYVWxTjVPFeEXOhEPKNIKOHWImIYKUOems5o3ZR9GXqtgjlAN0g>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 17 Oct 2021 11:06:20 -0400 (EDT)
+Date:   Sun, 17 Oct 2021 18:06:17 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, olteanv@gmail.com, andrew@lunn.ch,
+        f.fainelli@gmail.com, jiri@nvidia.com, idosch@nvidia.com,
+        lars.povlsen@microchip.com, Steen.Hegelund@microchip.com,
+        UNGLinuxDriver@microchip.com, bjarni.jonasson@microchip.com,
+        linux-arm-kernel@lists.infradead.org, qiangqing.zhang@nxp.com,
+        vkochan@marvell.com, tchornyi@marvell.com, vladimir.oltean@nxp.com,
+        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com
+Subject: Re: [RFC net-next 1/6] ethernet: add a helper for assigning port
+ addresses
+Message-ID: <YWw76V/UfJm3yM2t@shredder>
+References: <20211015193848.779420-1-kuba@kernel.org>
+ <20211015193848.779420-2-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211015193848.779420-2-kuba@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix delay settings applied to wrong cpu in parse_port_config. The delay
-values is set to the wrong index as the cpu_port_index is incremented
-too early. Start the cpu_port_index to -1 so the correct value is
-applied to address also the case with invalid phy mode and not available
-port.
+On Fri, Oct 15, 2021 at 12:38:43PM -0700, Jakub Kicinski wrote:
+> +/**
+> + * eth_hw_addr_set_port - Generate and assign Ethernet address to a port
+> + * @dev: pointer to port's net_device structure
+> + * @base_addr: base Ethernet address
+> + * @id: offset to add to the base address
+> + *
+> + * Assign a MAC address to the net_device using a base address and an offset.
+> + * Commonly used by switch drivers which need to compute addresses for all
+> + * their ports. addr_assign_type is not changed.
+> + */
+> +static inline void eth_hw_addr_set_port(struct net_device *dev,
+> +					const u8 *base_addr, u8 id)
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- drivers/net/dsa/qca8k.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+If necessary, would it be possible to change 'id' to u16?
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index ba0411d4c5ae..ee51186720d2 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -976,7 +976,7 @@ qca8k_setup_of_pws_reg(struct qca8k_priv *priv)
- static int
- qca8k_parse_port_config(struct qca8k_priv *priv)
- {
--	int port, cpu_port_index = 0, ret;
-+	int port, cpu_port_index = -1, ret;
- 	struct device_node *port_dn;
- 	phy_interface_t mode;
- 	struct dsa_port *dp;
--- 
-2.32.0
+I'm asking because currently in mlxsw we set the MAC of each netdev to
+'base_mac + local_port' where 'local_port' is u8. In Spectrum-4 we are
+going to have more than 256 logical ports, so 'local_port' becomes u16.
 
+Regarding the naming, eth_hw_addr_gen() sounds good to me.
+
+Thanks for working on this
+
+> +{
+> +	u64 u = ether_addr_to_u64(base_addr);
+> +	u8 addr[ETH_ALEN];
+> +
+> +	u += id;
+> +	u64_to_ether_addr(u, addr);
+> +	eth_hw_addr_set(dev, addr);
+> +}
+> +
+>  /**
+>   * eth_skb_pad - Pad buffer to mininum number of octets for Ethernet frame
+>   * @skb: Buffer to pad
+> -- 
+> 2.31.1
+> 
