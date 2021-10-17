@@ -2,93 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FCC0430925
-	for <lists+netdev@lfdr.de>; Sun, 17 Oct 2021 14:50:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E810D430929
+	for <lists+netdev@lfdr.de>; Sun, 17 Oct 2021 14:52:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343490AbhJQMw4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Oct 2021 08:52:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45036 "EHLO
+        id S1343586AbhJQMyz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Oct 2021 08:54:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229648AbhJQMwz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 08:52:55 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88324C061765;
-        Sun, 17 Oct 2021 05:50:46 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id kk10so10432071pjb.1;
-        Sun, 17 Oct 2021 05:50:46 -0700 (PDT)
+        with ESMTP id S229648AbhJQMyw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 08:54:52 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0CCCC061765;
+        Sun, 17 Oct 2021 05:52:42 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id w14so58901385edv.11;
+        Sun, 17 Oct 2021 05:52:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4wqy4m7MNxsT45A9dbW0Hcm/ddfeiUuTQypZRmFJ+Vg=;
-        b=Xr8G/LsVQ0pBXqDobWkzpHu0rdMgdKUkGJhF+vweJ4R7F5yPI8WQv4Ze0eEpmHR2kh
-         1rHOjxqVOY+lmnxoN3BnH50MxruiHyt2aM1Bf13XVljf6+ncHlmasLENCksEtFFelkLz
-         VpLllWKaS2Kzwlewc85RHGp2bGSIo2Fn4GJLQcd9PSNk+Zj2CzYZqWt+p5dU1Bs21lLJ
-         nGMJHMze1YkipQZJvipUGZJ3vX9MbPbt3OLUGXkrqPT/wCVPuckQiDABr4IRBIxC80Cg
-         pPZX8i88ZziY0zlx1j4xIARp/cN7XT2BdXmDkuAa5tmrmNcUFq6Ap7oPz71HOG1Eoydz
-         Zi0Q==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AcKNMpIu/CxYg6y5WrlzjtXsA7RyD9Ka9kXb+oqwfng=;
+        b=far4EBP95mrfBat4/xMz28TF89+ISBdEv+wcEZhGEBM7zIeN2rd5Zju2Q1zhuHLYLT
+         /rcleHlIEIM5wp+Xhyl2QUSs5/WdbKab4sWIrxfzsxlqdvR/wM9xstCHENfr6Jn1nVYa
+         st+8nbcy/lghqszR5H8ATwvn9z5eFK+awX/FXCfxXrgY0pgiXwJ05CZ47s+XGBLt14lx
+         KjqrRTnsE2v1NltaL5ksbPUpkFihFRNseiyYpfwr+r/49q0krYPQOOQhjs7H/FP+hJgz
+         cL78BEndilGrL1CXAWrJ2YHf2Mlexs8Hy2mJEDXiksbqpNMcfYm2H5LiHM5B2uyRVn/B
+         kKMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4wqy4m7MNxsT45A9dbW0Hcm/ddfeiUuTQypZRmFJ+Vg=;
-        b=o9Uv9OGAnu8XD8nTHtAJu+mzVVaLuQZpcHWzakBk0Ec036FFawjiI0XqiN0mFZ6lKd
-         54ViGmltWupqjPQQP364g5PCxN8k8VwUQD7oJNcJ7bZJg93NDSGXQohWDk9gL0enY93z
-         uGknUw4OvC87N0Dh2qg7Q8zjL3D4S98+lf8H0u8VYmI5h/qMVO6phb56QbbPvldauWCO
-         q1l12a18yP526HulUSp+IZ5NB0yVXM93VWLteqZvCyGH0hJARRBj2ejdnLUtc+h4D/NH
-         GVjEO9o34+HwOL11DbCpaM0R9X02p9y31odXk+JFMkEytaOxxc13Bpqwggs1pIsNu7+F
-         9vGA==
-X-Gm-Message-State: AOAM531wB6NJ/N8WuENIT42vJU95ZrTDiXIQ1TguKmKmDsldVV4qvcOO
-        aEZ9QTv/4rpVAYtNi0xokp6a4LeXlAUuLkh6EiMPmw==
-X-Google-Smtp-Source: ABdhPJwd6jVaVw6mIw9QPU49EMFxTyVxmCXP3tlrmMyblrpy2Jo8kKhctyZemNnq7uWAN42WHFfDyg==
-X-Received: by 2002:a17:90a:73ce:: with SMTP id n14mr41998106pjk.215.1634475045872;
-        Sun, 17 Oct 2021 05:50:45 -0700 (PDT)
-Received: from localhost.localdomain ([94.177.118.10])
-        by smtp.gmail.com with ESMTPSA id i5sm9597221pgo.36.2021.10.17.05.50.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Oct 2021 05:50:45 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AcKNMpIu/CxYg6y5WrlzjtXsA7RyD9Ka9kXb+oqwfng=;
+        b=qyLu6YvYTZbI41FPErXeH5/RigyA2DXrnzZz1ZqhBhDhNrm2Hln0FE8N/ejfmKZMgc
+         sPKFTL8AQ720yUEJObaYNopBVfflCiNeb9a3ESAq1ekQ8GlZ+7l9XTlYqsXcyz36XOkG
+         PkObRmkf4V0VBaVBhZ1sMPVTaPfzzozU0HpkHhqU/Zxt/R687B25gp/ydGCtzMO/8FMQ
+         DU9qhq60iezYNggcV1GQZJuavw3ANH2dXgmeg2yEKjhid8w1aXN9sJ0u8IMSAELRSqJe
+         9oRLbWK56QrjeTv8W7RMjl8+orlzRn666j/IgPhTVVcr5Eb4Kx6JDrBIKD1uhMgbMTjn
+         xbmA==
+X-Gm-Message-State: AOAM532FfDw84n+i6yp4HXGUBua1CukF8t4wr14tXHRE94oO5A8+AD/U
+        5BzchwQhxaOMrjE2OeLCUSg95cOzE8oyA/NB580wRckdWq/QuBMLEpQ2pg==
+X-Google-Smtp-Source: ABdhPJzij32hvS0NsE0C37rPDtMtoA0A2PgvSzyqiVc5Dc1EALsAR/qOiJbsYCBuOO2a7B5ye7fFtH/9v2K/Gc7xeIo=
+X-Received: by 2002:aa7:c783:: with SMTP id n3mr35243349eds.122.1634475160794;
+ Sun, 17 Oct 2021 05:52:40 -0700 (PDT)
+MIME-Version: 1.0
+References: <20211013040349.2858773-1-mudongliangabcd@gmail.com>
+ <CAD-N9QWTP8DLtAN70Xxap+WhNUfh9ixfeDMuNaB2NnpFhuAN8A@mail.gmail.com> <20211017123622.nfyis7o235tb2qad@pengutronix.de>
+In-Reply-To: <20211017123622.nfyis7o235tb2qad@pengutronix.de>
 From:   Dongliang Mu <mudongliangabcd@gmail.com>
-To:     Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
+Date:   Sun, 17 Oct 2021 20:52:14 +0800
+Message-ID: <CAD-N9QXwHgTdPdp+RN4sDfzxx0oa9T0TNbSt1x9D3vddbY4CQw@mail.gmail.com>
+Subject: Re: [PATCH] driver: net: can: delete napi if register_candev fails
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
         Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
         Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] can: xilinx_can: remove redundent netif_napi_del from xcan_remove
-Date:   Sun, 17 Oct 2021 20:50:21 +0800
-Message-Id: <20211017125022.3100329-1-mudongliangabcd@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Michal Simek <michal.simek@xilinx.com>,
+        linux-can@vger.kernel.org,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since netif_napi_del is already done in the free_candev, so we remove
-this redundent netif_napi_del invocation. In addition, this patch can
-match the operations in the xcan_probe and xcan_remove functions.
+On Sun, Oct 17, 2021 at 8:36 PM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+>
+> On 13.10.2021 13:21:09, Dongliang Mu wrote:
+> > On Wed, Oct 13, 2021 at 12:04 PM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
+> > >
+> > > If register_candev fails, xcan_probe does not clean the napi
+> > > created by netif_napi_add.
+> > >
+> >
+> > It seems the netif_napi_del operation is done in the free_candev
+> > (free_netdev precisely).
+> >
+> > list_for_each_entry_safe(p, n, &dev->napi_list, dev_list)
+> >           netif_napi_del(p);
+> >
+> > And list_add_rcu(&napi->dev_list, &dev->napi_list) is done in the
+> > netif_napi_add.
+> >
+> > Therefore, I suggest removing "netif_napi_del" operation in the
+> > xcan_remove to match probe and remove function.
+>
+> Sounds reasonable, can you create a patch for this.
 
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
----
- drivers/net/can/xilinx_can.c | 1 -
- 1 file changed, 1 deletion(-)
+I have submitted one patch - https://lkml.org/lkml/2021/10/17/181
 
-diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
-index 3b883e607d8b..60a3fb369058 100644
---- a/drivers/net/can/xilinx_can.c
-+++ b/drivers/net/can/xilinx_can.c
-@@ -1848,7 +1848,6 @@ static int xcan_remove(struct platform_device *pdev)
- 
- 	unregister_candev(ndev);
- 	pm_runtime_disable(&pdev->dev);
--	netif_napi_del(&priv->napi);
- 	free_candev(ndev);
- 
- 	return 0;
--- 
-2.25.1
-
+>
+> regards,
+> Marc
+>
+> --
+> Pengutronix e.K.                 | Marc Kleine-Budde           |
+> Embedded Linux                   | https://www.pengutronix.de  |
+> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
