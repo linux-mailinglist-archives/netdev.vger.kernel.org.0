@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18747430C92
+	by mail.lfdr.de (Postfix) with ESMTP id D4321430C94
 	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 00:15:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344756AbhJQWRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1344758AbhJQWRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sun, 17 Oct 2021 18:17:52 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:53388 "EHLO
+Received: from mail.netfilter.org ([217.70.188.207]:53394 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235725AbhJQWRv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 18:17:51 -0400
+        with ESMTP id S1344751AbhJQWRw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 18:17:52 -0400
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 3E39563586;
-        Mon, 18 Oct 2021 00:13:59 +0200 (CEST)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 4B76363EE1;
+        Mon, 18 Oct 2021 00:14:00 +0200 (CEST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH nf-next 01/15] ipvs: add sysctl_run_estimation to support disable estimation
-Date:   Mon, 18 Oct 2021 00:15:08 +0200
-Message-Id: <20211017221522.853838-2-pablo@netfilter.org>
+Subject: [PATCH nf-next 02/15] netfilter: nft_dynset: relax superfluous check on set updates
+Date:   Mon, 18 Oct 2021 00:15:09 +0200
+Message-Id: <20211017221522.853838-3-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211017221522.853838-1-pablo@netfilter.org>
 References: <20211017221522.853838-1-pablo@netfilter.org>
@@ -29,139 +29,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dust Li <dust.li@linux.alibaba.com>
+Relax this condition to make add and update commands idempotent for sets
+with no timeout. The eval function already checks if the set element
+timeout is available and updates it if the update command is used.
 
-estimation_timer will iterate the est_list to do estimation
-for each ipvs stats. When there are lots of services, the
-list can be very large.
-We found that estimation_timer() run for more then 200ms on a
-machine with 104 CPU and 50K services.
-
-yunhong-cgl jiang report the same phenomenon before:
-https://www.spinics.net/lists/lvs-devel/msg05426.html
-
-In some cases(for example a large K8S cluster with many ipvs services),
-ipvs estimation may not be needed. So adding a sysctl blob to allow
-users to disable this completely.
-
-Default is: 1 (enable)
-
-Cc: yunhong-cgl jiang <xintian1976@gmail.com>
-Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
-Acked-by: Julian Anastasov <ja@ssi.bg>
-Acked-by: Simon Horman <horms@verge.net.au>
+Fixes: 22fe54d5fefc ("netfilter: nf_tables: add support for dynamic set updates")
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- Documentation/networking/ipvs-sysctl.rst | 11 +++++++++++
- include/net/ip_vs.h                      | 11 +++++++++++
- net/netfilter/ipvs/ip_vs_ctl.c           |  8 ++++++++
- net/netfilter/ipvs/ip_vs_est.c           |  5 +++++
- 4 files changed, 35 insertions(+)
+ net/netfilter/nft_dynset.c | 11 +----------
+ 1 file changed, 1 insertion(+), 10 deletions(-)
 
-diff --git a/Documentation/networking/ipvs-sysctl.rst b/Documentation/networking/ipvs-sysctl.rst
-index 2afccc63856e..95ef56d62077 100644
---- a/Documentation/networking/ipvs-sysctl.rst
-+++ b/Documentation/networking/ipvs-sysctl.rst
-@@ -300,3 +300,14 @@ sync_version - INTEGER
+diff --git a/net/netfilter/nft_dynset.c b/net/netfilter/nft_dynset.c
+index 6ba3256fa844..87f3af4645d9 100644
+--- a/net/netfilter/nft_dynset.c
++++ b/net/netfilter/nft_dynset.c
+@@ -198,17 +198,8 @@ static int nft_dynset_init(const struct nft_ctx *ctx,
+ 		return -EBUSY;
  
- 	Kernels with this sync_version entry are able to receive messages
- 	of both version 1 and version 2 of the synchronisation protocol.
-+
-+run_estimation - BOOLEAN
-+	0 - disabled
-+	not 0 - enabled (default)
-+
-+	If disabled, the estimation will be stop, and you can't see
-+	any update on speed estimation data.
-+
-+	You can always re-enable estimation by setting this value to 1.
-+	But be careful, the first estimation after re-enable is not
-+	accurate.
-diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
-index 7cb5a1aace40..ff1804a0c469 100644
---- a/include/net/ip_vs.h
-+++ b/include/net/ip_vs.h
-@@ -931,6 +931,7 @@ struct netns_ipvs {
- 	int			sysctl_conn_reuse_mode;
- 	int			sysctl_schedule_icmp;
- 	int			sysctl_ignore_tunneled;
-+	int			sysctl_run_estimation;
+ 	priv->op = ntohl(nla_get_be32(tb[NFTA_DYNSET_OP]));
+-	switch (priv->op) {
+-	case NFT_DYNSET_OP_ADD:
+-	case NFT_DYNSET_OP_DELETE:
+-		break;
+-	case NFT_DYNSET_OP_UPDATE:
+-		if (!(set->flags & NFT_SET_TIMEOUT))
+-			return -EOPNOTSUPP;
+-		break;
+-	default:
++	if (priv->op > NFT_DYNSET_OP_DELETE)
+ 		return -EOPNOTSUPP;
+-	}
  
- 	/* ip_vs_lblc */
- 	int			sysctl_lblc_expiration;
-@@ -1071,6 +1072,11 @@ static inline int sysctl_cache_bypass(struct netns_ipvs *ipvs)
- 	return ipvs->sysctl_cache_bypass;
- }
- 
-+static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
-+{
-+	return ipvs->sysctl_run_estimation;
-+}
-+
- #else
- 
- static inline int sysctl_sync_threshold(struct netns_ipvs *ipvs)
-@@ -1163,6 +1169,11 @@ static inline int sysctl_cache_bypass(struct netns_ipvs *ipvs)
- 	return 0;
- }
- 
-+static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
-+{
-+	return 1;
-+}
-+
- #endif
- 
- /* IPVS core functions
-diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
-index c25097092a06..cbea5a68afb5 100644
---- a/net/netfilter/ipvs/ip_vs_ctl.c
-+++ b/net/netfilter/ipvs/ip_vs_ctl.c
-@@ -2017,6 +2017,12 @@ static struct ctl_table vs_vars[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec,
- 	},
-+	{
-+		.procname	= "run_estimation",
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dointvec,
-+	},
- #ifdef CONFIG_IP_VS_DEBUG
- 	{
- 		.procname	= "debug_level",
-@@ -4090,6 +4096,8 @@ static int __net_init ip_vs_control_net_init_sysctl(struct netns_ipvs *ipvs)
- 	tbl[idx++].data = &ipvs->sysctl_conn_reuse_mode;
- 	tbl[idx++].data = &ipvs->sysctl_schedule_icmp;
- 	tbl[idx++].data = &ipvs->sysctl_ignore_tunneled;
-+	ipvs->sysctl_run_estimation = 1;
-+	tbl[idx++].data = &ipvs->sysctl_run_estimation;
- 
- 	ipvs->sysctl_hdr = register_net_sysctl(net, "net/ipv4/vs", tbl);
- 	if (ipvs->sysctl_hdr == NULL) {
-diff --git a/net/netfilter/ipvs/ip_vs_est.c b/net/netfilter/ipvs/ip_vs_est.c
-index 05b8112ffb37..9a1a7af6a186 100644
---- a/net/netfilter/ipvs/ip_vs_est.c
-+++ b/net/netfilter/ipvs/ip_vs_est.c
-@@ -100,6 +100,9 @@ static void estimation_timer(struct timer_list *t)
- 	u64 rate;
- 	struct netns_ipvs *ipvs = from_timer(ipvs, t, est_timer);
- 
-+	if (!sysctl_run_estimation(ipvs))
-+		goto skip;
-+
- 	spin_lock(&ipvs->est_lock);
- 	list_for_each_entry(e, &ipvs->est_list, list) {
- 		s = container_of(e, struct ip_vs_stats, est);
-@@ -131,6 +134,8 @@ static void estimation_timer(struct timer_list *t)
- 		spin_unlock(&s->lock);
- 	}
- 	spin_unlock(&ipvs->est_lock);
-+
-+skip:
- 	mod_timer(&ipvs->est_timer, jiffies + 2*HZ);
- }
- 
+ 	timeout = 0;
+ 	if (tb[NFTA_DYNSET_TIMEOUT] != NULL) {
 -- 
 2.30.2
 
