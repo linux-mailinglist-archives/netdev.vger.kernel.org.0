@@ -2,123 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B399C432957
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 23:54:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B558843296F
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 23:58:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233099AbhJRV5D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 17:57:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38178 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229529AbhJRV5D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 17:57:03 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92DAC06161C
-        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 14:54:51 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id g13-20020a17090a3c8d00b00196286963b9so448534pjc.3
-        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 14:54:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=8xH3XSAR7udht232w8mkdA/G0f8peO0K4PRCSdaMeiI=;
-        b=mmESebPE5SQ5BfKdxSRAj7ZXqSKxZnG9CHzlWtWw42ajOSoNPX7gGQOJI3UygPkSkh
-         lT9JZVnPzNYWQ6LX3Jy/30HhCNv6UkFrmVIgNHsi8qwFAJpkrlZQPWE+yO4Z1LFYYoiX
-         kj/NLN2VUhRbQWLEwlwtO/GUMSlSbtidkyyWFyWIPRXJnqh19xrT7FJVOtCg0Ho/m+qR
-         Mf8COd8n+vk2eIINwfILIFnq5GpmXgWIY51sF0yLPrp0zPNq2j7lGW5NJwyNZpLBDb11
-         /3hSa8ZDgKafbiY/xMdCIveLuBNV6FztN0QwKj4XXgSQlGGlJUn47Kip+0KeFZbzLxuo
-         G9iA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=8xH3XSAR7udht232w8mkdA/G0f8peO0K4PRCSdaMeiI=;
-        b=iib38ibMs6IpoPQ+Ib0YlPjJLSIv5raGC9zfTTWWtvyaT2M2Ci812hfV8eewF/Qp8J
-         8yPutppEuJpClKifbhe1ZKlUs2RJlsKj5mI9RTzcTIe0usmIl8pZT/gGsAAZ7FexSj+O
-         uxUt5nk3SXxVFP9BUoL3QRWTuqHxLwUimuWCbo7lyVgLP9ESUuMStKkCUIBX2VBogWmV
-         eaU6/Rlp4QiZKxgCLDNXtSCngHSA+NaHFyF5vfGY8mIGygqANJKYHIlqB4lsKUShFrFK
-         lPQPSDaT557nKB493c/ugB+de6gA0bXfQHnebiWQMYcxhLzKimP66ZxFLAArHk/CxKMs
-         x0sA==
-X-Gm-Message-State: AOAM530rctzWRPfIqpItuY9bBSEDp/dFUgaV8Lw0qxuCA09XYwk/eajK
-        UOGO71+pD75GRf+u71nvSwqelQ==
-X-Google-Smtp-Source: ABdhPJzWsCWpjvse5SFvrzA6g1FIc0f/kB/7FDbDuCLAwyrsSwfJduPMui1CqEUIenRJg8ygNgULog==
-X-Received: by 2002:a17:902:7616:b0:13f:354a:114f with SMTP id k22-20020a170902761600b0013f354a114fmr30554203pll.8.1634594091236;
-        Mon, 18 Oct 2021 14:54:51 -0700 (PDT)
-Received: from [192.168.0.14] ([50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id j12sm13944802pff.127.2021.10.18.14.54.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Oct 2021 14:54:50 -0700 (PDT)
-Message-ID: <33fba14b-01cb-8644-7678-a0f12d9cf499@pensando.io>
-Date:   Mon, 18 Oct 2021 14:54:49 -0700
+        id S233374AbhJRWAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 18:00:52 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:31104 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230135AbhJRWAv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 18:00:51 -0400
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19ILKUYA010680;
+        Mon, 18 Oct 2021 17:58:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=m6cs17KXv90k07us+CYZWzWzt/Uab1CXXZYHUP7YvQo=;
+ b=NBCfRMpuwUmE7Fw+WTQtJ86RgR/aM1ydt17jwA0RMoOcQ77xkY9TabpOMt0uw5FXcl7W
+ Jf9/BLy+I6UswHe10fP0CIwOWQmgYveZ0wLzwkBuo8dqQhR6QHzkmL+tJLvvcWbIEpjt
+ xdkdPG52CdErZnc9C7ZX93kNZCiU0aAI0AvpToFtQWI2XTSKXIDbhPGcaJDCODoAHS5b
+ RwuHyh01fjrdCUmbecEqgZMPpCZ894618+eQ+bwpg6ReQ42wnQWOCuINohnlvStrndUx
+ olwIcHNxo6h+NmRAd32G9HbJNpC68q1i98TvoGAVz29k5ZEyCfl37P38gQeaR2AHRnqK DQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3bsgrj0mf6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 18 Oct 2021 17:58:18 -0400
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 19ILiGWo014531;
+        Mon, 18 Oct 2021 17:58:17 -0400
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3bsgrj0meq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 18 Oct 2021 17:58:17 -0400
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 19ILlthu031273;
+        Mon, 18 Oct 2021 21:58:16 GMT
+Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
+        by ppma01dal.us.ibm.com with ESMTP id 3bqpcba2cs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 18 Oct 2021 21:58:16 +0000
+Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
+        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 19ILwFSm52887974
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 18 Oct 2021 21:58:15 GMT
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 037A6C6084;
+        Mon, 18 Oct 2021 21:58:15 +0000 (GMT)
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E51D4C6062;
+        Mon, 18 Oct 2021 21:58:11 +0000 (GMT)
+Received: from suka-w540.localdomain (unknown [9.160.15.50])
+        by b03ledav006.gho.boulder.ibm.com (Postfix) with SMTP;
+        Mon, 18 Oct 2021 21:58:11 +0000 (GMT)
+Received: by suka-w540.localdomain (Postfix, from userid 1000)
+        id A08922E185B; Mon, 18 Oct 2021 14:58:08 -0700 (PDT)
+Date:   Mon, 18 Oct 2021 14:58:08 -0700
+From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     netdev@vger.kernel.org, linyunsheng@huawei.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Wei Wang <weiwan@google.com>, Taehee Yoo <ap420073@gmail.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Neil Horman <nhorman@redhat.com>,
+        Dust Li <dust.li@linux.alibaba.com>
+Subject: Re: [PATCH net v2] napi: fix race inside napi_enable
+Message-ID: <YW3t8AGxW6p261hw@us.ibm.com>
+References: <20210918085232.71436-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.2.0
-Subject: Re: [PATCH net-next 1/6] ethernet: add a helper for assigning port
- addresses
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, olteanv@gmail.com, andrew@lunn.ch,
-        idosch@idosch.org, f.fainelli@gmail.com
-References: <20211018211007.1185777-1-kuba@kernel.org>
- <20211018211007.1185777-2-kuba@kernel.org>
-From:   Shannon Nelson <snelson@pensando.io>
-In-Reply-To: <20211018211007.1185777-2-kuba@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210918085232.71436-1-xuanzhuo@linux.alibaba.com>
+X-Operating-System: Linux 2.0.32 on an i486
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 6SqAweiN9E_g0SDgPkO067OSNbqCnZW4
+X-Proofpoint-GUID: 3t3ZcXKlOe8jndRXtHrzKY5Q47hbV4Gz
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-10-18_07,2021-10-18_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 impostorscore=0
+ malwarescore=0 priorityscore=1501 mlxlogscore=999 suspectscore=0
+ clxscore=1011 adultscore=0 spamscore=0 phishscore=0 mlxscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109230001 definitions=main-2110180116
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/18/21 2:10 PM, Jakub Kicinski wrote:
-> We have 5 drivers which offset base MAC addr by port id.
-> Create a helper for them.
->
-> This helper takes care of overflows, which some drivers
-> did not do, please complain if that's going to break
-> anything!
->
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Xuan Zhuo [xuanzhuo@linux.alibaba.com] wrote:
+> The process will cause napi.state to contain NAPI_STATE_SCHED and
+> not in the poll_list, which will cause napi_disable() to get stuck.
+> 
+> The prefix "NAPI_STATE_" is removed in the figure below, and
+> NAPI_STATE_HASHED is ignored in napi.state.
+> 
+>                       CPU0       |                   CPU1       | napi.state
+> ===============================================================================
+> napi_disable()                   |                              | SCHED | NPSVC
+> napi_enable()                    |                              |
+> {                                |                              |
+>     smp_mb__before_atomic();     |                              |
+>     clear_bit(SCHED, &n->state); |                              | NPSVC
+>                                  | napi_schedule_prep()         | SCHED | NPSVC
+>                                  | napi_poll()                  |
+>                                  |   napi_complete_done()       |
+>                                  |   {                          |
+>                                  |      if (n->state & (NPSVC | | (1)
+>                                  |               _BUSY_POLL)))  |
+>                                  |           return false;      |
+>                                  |     ................         |
+>                                  |   }                          | SCHED | NPSVC
+>                                  |                              |
+>     clear_bit(NPSVC, &n->state); |                              | SCHED
+> }                                |                              |
 
-Reviewed-by: Shannon Nelson <snelson@pensando.io>
+So its possible that after cpu0 cleared SCHED, cpu1 could have set it
+back and we are going to use cmpxchg() to detect and retry right? If so,
 
 
-> --
->   - eth_hw_addr_set_port() -> eth_hw_addr_gen()
->   - id u8 -> unsigned int
+>                                  |                              |
+> napi_schedule_prep()             |                              | SCHED | MISSED (2)
+> 
+> (1) Here return direct. Because of NAPI_STATE_NPSVC exists.
+> (2) NAPI_STATE_SCHED exists. So not add napi.poll_list to sd->poll_list
+> 
+> Since NAPI_STATE_SCHED already exists and napi is not in the
+> sd->poll_list queue, NAPI_STATE_SCHED cannot be cleared and will always
+> exist.
+> 
+> 1. This will cause this queue to no longer receive packets.
+> 2. If you encounter napi_disable under the protection of rtnl_lock, it
+>    will cause the entire rtnl_lock to be locked, affecting the overall
+>    system.
+> 
+> This patch uses cmpxchg to implement napi_enable(), which ensures that
+> there will be no race due to the separation of clear two bits.
+> 
+> Fixes: 2d8bff12699abc ("netpoll: Close race condition between poll_one_napi and napi_disable")
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
 > ---
->   include/linux/etherdevice.h | 21 +++++++++++++++++++++
->   1 file changed, 21 insertions(+)
->
-> diff --git a/include/linux/etherdevice.h b/include/linux/etherdevice.h
-> index 23681c3d3b8a..2ad71cc90b37 100644
-> --- a/include/linux/etherdevice.h
-> +++ b/include/linux/etherdevice.h
-> @@ -551,6 +551,27 @@ static inline unsigned long compare_ether_header(const void *a, const void *b)
->   #endif
->   }
->   
-> +/**
-> + * eth_hw_addr_gen - Generate and assign Ethernet address to a port
-> + * @dev: pointer to port's net_device structure
-> + * @base_addr: base Ethernet address
-> + * @id: offset to add to the base address
-> + *
-> + * Generate a MAC address using a base address and an offset and assign it
-> + * to a net_device. Commonly used by switch drivers which need to compute
-> + * addresses for all their ports. addr_assign_type is not changed.
-> + */
-> +static inline void eth_hw_addr_gen(struct net_device *dev, const u8 *base_addr,
-> +				   unsigned int id)
-> +{
-> +	u64 u = ether_addr_to_u64(base_addr);
-> +	u8 addr[ETH_ALEN];
+>  net/core/dev.c | 16 ++++++++++------
+>  1 file changed, 10 insertions(+), 6 deletions(-)
+> 
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 74fd402d26dd..7ee9fecd3aff 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -6923,12 +6923,16 @@ EXPORT_SYMBOL(napi_disable);
+>   */
+>  void napi_enable(struct napi_struct *n)
+>  {
+> -	BUG_ON(!test_bit(NAPI_STATE_SCHED, &n->state));
+> -	smp_mb__before_atomic();
+> -	clear_bit(NAPI_STATE_SCHED, &n->state);
+> -	clear_bit(NAPI_STATE_NPSVC, &n->state);
+> -	if (n->dev->threaded && n->thread)
+> -		set_bit(NAPI_STATE_THREADED, &n->state);
+> +	unsigned long val, new;
 > +
-> +	u += id;
-> +	u64_to_ether_addr(u, addr);
-> +	eth_hw_addr_set(dev, addr);
-> +}
-> +
->   /**
->    * eth_skb_pad - Pad buffer to mininum number of octets for Ethernet frame
->    * @skb: Buffer to pad
+> +	do {
+> +		val = READ_ONCE(n->state);
+> +		BUG_ON(!test_bit(NAPI_STATE_SCHED, &val));
 
+is this BUG_ON valid/needed? We could have lost the cmpxchg() and
+the other thread could have set NAPI_STATE_SCHED?
+
+Sukadev
+
+> +
+> +		new = val & ~(NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC);
+> +		if (n->dev->threaded && n->thread)
+> +			new |= NAPIF_STATE_THREADED;
+> +	} while (cmpxchg(&n->state, val, new) != val);
+>  }
+>  EXPORT_SYMBOL(napi_enable);
+>  
+> -- 
+> 2.31.0
