@@ -2,123 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFE0B431A6F
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 15:10:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00879431A78
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 15:14:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231720AbhJRNM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 09:12:58 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:26758 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231489AbhJRNM6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 09:12:58 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1634562647; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=2iZh5xPrIPUDbVFXGh7W2cb2/hGVEE7gEkCaxI5tQ2Y=; b=V1CJJh0dPIw1jvkmebXK/qfQ7H0f/BKVH1Q2N4TOZ5eFPRuTsZirqnaHDugeflZlntUzG+DD
- 87CL5+9KYGq4JbijAWUCHeHSezlIac3GeXoNJBGzoLIb2ds1xwgwCwFRg+Mq58BBCW7DCdPk
- OfqMmuNJbhLgNwXTAXsMLMEfNZo=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
- 616d72490605239689a079b1 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 18 Oct 2021 13:10:33
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id AAA0BC4361C; Mon, 18 Oct 2021 13:10:32 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from tykki (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id D04D4C4338F;
-        Mon, 18 Oct 2021 13:10:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org D04D4C4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Alagu Sankar <alagusankar@silex-india.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Brian Norris <briannorris@chromium.org>,
-        Wen Gong <wgong@codeaurora.org>,
-        Tamizh Chelvam <tamizhr@codeaurora.org>,
-        Carl Huang <cjhuang@codeaurora.org>,
-        Miaoqing Pan <miaoqing@codeaurora.org>,
-        Ben Greear <greearb@candelatech.com>,
-        Erik Stromdahl <erik.stromdahl@gmail.com>,
-        Fabio Estevam <festevam@denx.de>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ath10k: fix invalid dma_addr_t token assignment
-References: <20211014075153.3655910-1-arnd@kernel.org>
-Date:   Mon, 18 Oct 2021 16:10:21 +0300
-In-Reply-To: <20211014075153.3655910-1-arnd@kernel.org> (Arnd Bergmann's
-        message of "Thu, 14 Oct 2021 09:51:15 +0200")
-Message-ID: <87fssytr5u.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S231310AbhJRNQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 09:16:11 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:25229 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229519AbhJRNQJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 09:16:09 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4HXy3H1SVBz8thx;
+        Mon, 18 Oct 2021 21:12:43 +0800 (CST)
+Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Mon, 18 Oct 2021 21:13:55 +0800
+Received: from [10.174.176.245] (10.174.176.245) by
+ kwepemm600001.china.huawei.com (7.193.23.3) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Mon, 18 Oct 2021 21:13:54 +0800
+Subject: Re: [PATCH net] mwifiex: Fix possible memleak in probe and disconnect
+To:     Kalle Valo <kvalo@codeaurora.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <shenyang39@huawei.com>,
+        <marcelo@kvack.org>, <linville@tuxdriver.com>,
+        <luisca@cozybit.com>, <libertas-dev@lists.infradead.org>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20211018063818.1895774-1-wanghai38@huawei.com>
+ <163456107685.11105.13969946027999768773.kvalo@codeaurora.org>
+From:   "wanghai (M)" <wanghai38@huawei.com>
+Message-ID: <dc70c674-c47e-9afc-afb8-918f1e22c54d@huawei.com>
+Date:   Mon, 18 Oct 2021 21:13:53 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <163456107685.11105.13969946027999768773.kvalo@codeaurora.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.245]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600001.china.huawei.com (7.193.23.3)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Arnd Bergmann <arnd@kernel.org> writes:
 
-> From: Arnd Bergmann <arnd@arndb.de>
+在 2021/10/18 20:44, Kalle Valo 写道:
+> Wang Hai <wanghai38@huawei.com> wrote:
 >
-> Using a kernel pointer in place of a dma_addr_t token can
-> lead to undefined behavior if that makes it into cache
-> management functions. The compiler caught one such attempt
-> in a cast:
->
-> drivers/net/wireless/ath/ath10k/mac.c: In function 'ath10k_add_interface':
-> drivers/net/wireless/ath/ath10k/mac.c:5586:47: error: cast from pointer to integer of different size [-Werror=pointer-to-int-cast]
->  5586 |                         arvif->beacon_paddr = (dma_addr_t)arvif->beacon_buf;
->       |                                               ^
->
-> Looking through how this gets used down the way, I'm fairly
-> sure that beacon_paddr is never accessed again for ATH10K_DEV_TYPE_HL
-> devices, and if it was accessed, that would be a bug.
-
-That's my understanding as well. beacon_paddr is only accessed in
-ath10k_wmi_event_host_swba() and only low latency (ATH10K_DEV_TYPE_LL)
-should use that function.
-
-> Change the assignment to use a known-invalid address token
-> instead, which avoids the warning and makes it easier to catch
-> bugs if it does end up getting used.
->
-> Fixes: e263bdab9c0e ("ath10k: high latency fixes for beacon buffer")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  drivers/net/wireless/ath/ath10k/mac.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-> index 7ca68c81d9b6..c0e78eaa65f8 100644
-> --- a/drivers/net/wireless/ath/ath10k/mac.c
-> +++ b/drivers/net/wireless/ath/ath10k/mac.c
-> @@ -5583,7 +5583,7 @@ static int ath10k_add_interface(struct ieee80211_hw *hw,
->  		if (ar->bus_param.dev_type == ATH10K_DEV_TYPE_HL) {
->  			arvif->beacon_buf = kmalloc(IEEE80211_MAX_FRAME_LEN,
->  						    GFP_KERNEL);
-> -			arvif->beacon_paddr = (dma_addr_t)arvif->beacon_buf;
-> +			arvif->beacon_paddr = DMA_MAPPING_ERROR;
-
-In the pending branch I added a comment here:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git/commit/?h=pending&id=02a383c9bf959147a95c4efeaa4edf35c4450fac
+>> I got memory leak as follows when doing fault injection test:
+>>
+>> unreferenced object 0xffff888031c2f000 (size 512):
+>>    comm "kworker/0:2", pid 165, jiffies 4294922253 (age 391.180s)
+>>    hex dump (first 32 bytes):
+>>      00 20 f7 08 80 88 ff ff 01 00 00 00 00 00 00 00  . ..............
+>>      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>>    backtrace:
+>>      [<00000000537bdb86>] kmem_cache_alloc_trace+0x16d/0x360
+>>      [<0000000047666fab>] if_usb_probe+0x90/0x96e [usb8xxx]
+>>      [<00000000de44b4f0>] usb_probe_interface+0x31b/0x800 [usbcore]
+>>      [<000000009b1a1951>] really_probe+0x299/0xc30
+>>      [<0000000055b8ffce>] __driver_probe_device+0x357/0x500
+>>      [<00000000bb0c7161>] driver_probe_device+0x4e/0x140
+>>      [<00000000866d1730>] __device_attach_driver+0x257/0x340
+>>      [<0000000084e79b96>] bus_for_each_drv+0x166/0x1e0
+>>      [<000000009bad60ea>] __device_attach+0x272/0x420
+>>      [<00000000236b97c1>] bus_probe_device+0x1eb/0x2a0
+>>      [<000000008d77d7cf>] device_add+0xbf0/0x1cd0
+>>      [<000000004af6a3f0>] usb_set_configuration+0x10fb/0x18d0 [usbcore]
+>>      [<000000002ebdfdcd>] usb_generic_driver_probe+0xa2/0xe0 [usbcore]
+>>      [<00000000444f344d>] usb_probe_device+0xe4/0x2b0 [usbcore]
+>>      [<000000009b1a1951>] really_probe+0x299/0xc30
+>>      [<0000000055b8ffce>] __driver_probe_device+0x357/0x500
+>>
+>> cardp is missing being freed in the error handling path of the probe
+>> and the path of the disconnect, which will cause kmemleak.
+>>
+>> This patch adds the missing free().
+>>
+>> Fixes: 876c9d3aeb98 ("[PATCH] Marvell Libertas 8388 802.11b/g USB driver")
+>> Fixes: c305a19a0d0a ("libertas_tf: usb specific functions")
+>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>> Signed-off-by: Wang Hai <wanghai38@huawei.com>
+> mwifiex patches are applied to wireless-drivers, not to the net tree. Please be
+> careful how you mark your patches.
+Thanks for the reminder, I will pay attention to it in the future.
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+Wang Hai
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
