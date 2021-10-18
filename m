@@ -2,201 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F709431AC6
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 15:27:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7CC9431B11
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 15:28:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231919AbhJRN3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 09:29:07 -0400
-Received: from mail-mw2nam12on2059.outbound.protection.outlook.com ([40.107.244.59]:51777
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231548AbhJRN2h (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Oct 2021 09:28:37 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=J/TLvzLz9MaITQhhN27KsRT39jTjEuoeNTjnmwMledNNCJG34vAkQPdWnwYLCUWdWwFsCGPfVXlk3pPbdTmgg5X9dPo1eylivCnEZ8uTG+DAopOMVdiQuS8kEoKTUfxvOXrGxgQ3iP+8UXjKIG4XaVx9QhCaUMRoeFoP0ND2/Y/NlFuQHwiNHeEADDGIHfkQ3li3mSlGySHjypBwgKlp52z89HYooXTHnJ+CBuzauYtl1p0wsSvyaRS8L+4T0K43BIgAiLlfksFZ7H2kfhvFq6EGB9CK67ojOg37MUryPt9EqgXOp+jdtL1bcNm5vgShE+npD63ye/VpV/+ouwAfsA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2EG3922+/l+1A7ZAMw1FN4JECWOzmSFWYJ6qfvb0cCg=;
- b=ZD603vC+Qe7XbnevuA8G8r2wU2mdZfAG/Zi7nW5JgjYFTZA9yJqzxkxlu2giWDX2TnIw0/rCiFNxmsaeqG1Gav2fXaccAOeVWubh7dRZRbWk3VB7nWUjhRLD5QUNC9dfecpmL9zzWHvkVvdgXZ6ap/CLv4ydxNUViEge8mExQ+HvWdHqOkCoZARLXaaQEV0Q5tp+b89S7AkwqKOYUaoSyQoQkMK7XLWBA+nd+CIPoeZyRM+mUSqvbDUzkY9r2ySJ8LDGcDZdRG5rc7JLiy0oUt61FMT0+7oU6mJXryeuQbCGv3HiR++L9F4orlSfaKymrRWaioXLNZ2xArk476FUfg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2EG3922+/l+1A7ZAMw1FN4JECWOzmSFWYJ6qfvb0cCg=;
- b=qEdnIdxauC7Ba8Zv+jU0qeDWXhMW8Ux3xTm7Qc/EFL3H7pm1VZI6tJ/4lQ/kobt8n78RX7FLDkK6MasDK8qf3LsU1G+1HKHBPFSzwWXph+3v3R92J0SH7k8FVcZGlJXJTqB6dV+gbcTA9G5dvfLGjKNg+0ONhR+4SqqJHWnK8i3L0u63ymXIJuEbIk2LjJn76tzTkkc4uZk6ehUMkJ9TKRft2JNduLaxN/W3tm6FPxYiRdbaLhpYG4zW1i1nrevvtA2Uf3WYpDldm7RKWf8lMIyo76RCsZmgLAG0yVHpx69O5nQ13Iy6EV1Gpk1lGJmO90XUP+YA29odyX6KU7kzNg==
-Received: from DM6PR08CA0054.namprd08.prod.outlook.com (2603:10b6:5:1e0::28)
- by DM5PR1201MB0027.namprd12.prod.outlook.com (2603:10b6:4:59::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.17; Mon, 18 Oct
- 2021 13:26:24 +0000
-Received: from DM6NAM11FT026.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:1e0:cafe::2e) by DM6PR08CA0054.outlook.office365.com
- (2603:10b6:5:1e0::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.14 via Frontend
- Transport; Mon, 18 Oct 2021 13:26:24 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- DM6NAM11FT026.mail.protection.outlook.com (10.13.172.161) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4608.15 via Frontend Transport; Mon, 18 Oct 2021 13:26:24 +0000
-Received: from [172.27.14.240] (172.20.187.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 18 Oct
- 2021 13:26:19 +0000
-Subject: Re: [PATCH V1 mlx5-next 11/13] vfio/mlx5: Implement vfio_pci driver
- for mlx5 devices
-To:     Jason Gunthorpe <jgg@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>
-CC:     <bhelgaas@google.com>, <saeedm@nvidia.com>,
-        <linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <kuba@kernel.org>, <leonro@nvidia.com>,
-        <kwankhede@nvidia.com>, <mgurtovoy@nvidia.com>, <maorg@nvidia.com>
-References: <20211013094707.163054-1-yishaih@nvidia.com>
- <20211013094707.163054-12-yishaih@nvidia.com>
- <20211015134820.603c45d0.alex.williamson@redhat.com>
- <20211015195937.GF2744544@nvidia.com>
- <20211015141201.617049e9.alex.williamson@redhat.com>
- <20211015201654.GH2744544@nvidia.com>
- <20211015145921.0abf7cb0.alex.williamson@redhat.com>
- <6608853f-7426-7b79-da1a-29c8fcc6ffc3@nvidia.com>
- <20211018115107.GM2744544@nvidia.com>
-From:   Yishai Hadas <yishaih@nvidia.com>
-Message-ID: <c27a775f-f003-b652-ea80-f6ea988c0e78@nvidia.com>
-Date:   Mon, 18 Oct 2021 16:26:16 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S229519AbhJRNa2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 09:30:28 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:53001 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232180AbhJRN3h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 09:29:37 -0400
+Received: by mail-io1-f70.google.com with SMTP id y9-20020a5e8349000000b005ddb44e9eb8so10664028iom.19
+        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 06:27:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=vHNmD/y+gjT5l0EQyfbWcEg0aHeoUgqB/l/IGlb3ctU=;
+        b=f5fr+/qhKNst8uSlneYgB2HNm8Os4DEI9CD7xf+Gbs4Jan1RfekQJpk4PD9UIc6F8g
+         y0SFEsEyyPb4FdvDTdfnSlzE5cccdlTzPima4Bl9dtG+ALJRPX1zHvmC6jcvpCS9dECW
+         wwSJQ9Dkj34YEd2kOO94KHrXxF5Q9MJCiuYL9I4l7dVuA+IMruIW1XIR4QxwA29hivRG
+         oAH83QaAqJidyc8QcLX0DmBKRrH980GGJsAgzbRakVuZTgGPWvFL35te24jzRLQJLh2v
+         DYJDVA7BPf9ybgylmOHkXIzjBKOdTIQO1Llz3VSaSzUTyuO9y9jWs1diQKNQzFhacwVi
+         BGMA==
+X-Gm-Message-State: AOAM530W6QC9BXjW0CV08B/4PATXIU/G8zbNoFpkNVpp814i/xePFjky
+        fY0+vCt4mGTJhcRCuFW+xTSjEJjJcb3SWbTEOOxGQC1I8YNP
+X-Google-Smtp-Source: ABdhPJz5R5gb+JYBpKPMIPyEU/4PnU1eYPMQoDQl3MMTBgeX6nbHo9Nx/o/WqSQYC+rY5aZPIgjTSgIJfnRx2XPyjgtGsNOArYxj
 MIME-Version: 1.0
-In-Reply-To: <20211018115107.GM2744544@nvidia.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [172.20.187.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 29cf26ba-2ac7-4922-616c-08d9923ae1e4
-X-MS-TrafficTypeDiagnostic: DM5PR1201MB0027:
-X-Microsoft-Antispam-PRVS: <DM5PR1201MB002762D7E15152942D2EB939C3BC9@DM5PR1201MB0027.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qrOMt+v6mlq5juOHN48SjnZK3O1msnNxGO76XJHRN4Y3lxAM8iUqXEABrXgJREyNsX7rE/2Ldz9to4wXW0VsTbgSQpdtjnC6PnyW9b7IqCOSRiVdRP3pSd9ZA4tT9znueTaHwoMXlP6nM5w2pvHctGk2jXvaAa5KnDvSrkqzi/o8XpxL6NK+G4rfeKcoSOhbfuOsb7E5ziIAZ4bHltfE2FL7QgEEzo4lgofRVa3j7YJksl2HQbu+VROzsv2J/8MecqqW4zh9gFBpjqQ2yTaTC0NYBS4kl7DMUOxPNcDqbghDtkla9w6CtojYKa49hQhmxxMBKCJIM12WHSqQ5RRF8TktpN+YdDnMSx9ikWE8Cjv+JD3/V18zSJxneHv96Bl0TsFIfYPZ8IiCGSw4EERrw9IOFfDd5EK/KTRf+x5K9ebVw46mWitluChziFlZZqs166dRYzYmyUCMMA+6wAg0lYsR0888PgzWQ5khoEt9rgIY4OkB8N2EXgPvWd+E8r+3O7JuAtz5Q7KbNSPHuxk3LUu9UupCR/EpVgTf7FnpuZkeOUvYuZ5DBMm4VBCSq2T3oR3LrEpPerORmAwboE4TuF/UPwC+b5hpGg2LEDo6zpbrTjhm/HmhDVdjYgc83z51yN4OWvBx3fWhjWV/YcwGRKtapq7jmHuq4qXUjAhasc5sw9xPtHzpasrqB/HSq7lIYICgNFlSKpi1EVaynDbQwlGCWj7lC2cFOBxAJUiZ1dE=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(356005)(8936002)(70206006)(426003)(86362001)(336012)(2616005)(70586007)(8676002)(36756003)(47076005)(26005)(110136005)(16576012)(5660300002)(31686004)(82310400003)(6666004)(2906002)(508600001)(4326008)(316002)(53546011)(54906003)(7636003)(36860700001)(186003)(16526019)(31696002)(107886003)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2021 13:26:24.4201
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 29cf26ba-2ac7-4922-616c-08d9923ae1e4
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT026.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1201MB0027
+X-Received: by 2002:a05:6602:2a44:: with SMTP id k4mr14347641iov.56.1634563645825;
+ Mon, 18 Oct 2021 06:27:25 -0700 (PDT)
+Date:   Mon, 18 Oct 2021 06:27:25 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000078ed9505cea081d3@google.com>
+Subject: [syzbot] INFO: task can't die in ip_tunnel_init_net
+From:   syzbot <syzbot+57acebac784a6a86f44d@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/18/2021 2:51 PM, Jason Gunthorpe wrote:
-> On Sun, Oct 17, 2021 at 05:03:28PM +0300, Yishai Hadas wrote:
->> On 10/15/2021 11:59 PM, Alex Williamson wrote:
->>> On Fri, 15 Oct 2021 17:16:54 -0300
->>> Jason Gunthorpe <jgg@nvidia.com> wrote:
->>>
->>>> On Fri, Oct 15, 2021 at 02:12:01PM -0600, Alex Williamson wrote:
->>>>> On Fri, 15 Oct 2021 16:59:37 -0300
->>>>> Jason Gunthorpe <jgg@nvidia.com> wrote:
->>>>>> On Fri, Oct 15, 2021 at 01:48:20PM -0600, Alex Williamson wrote:
->>>>>>>> +static int mlx5vf_pci_set_device_state(struct mlx5vf_pci_core_device *mvdev,
->>>>>>>> +				       u32 state)
->>>>>>>> +{
->>>>>>>> +	struct mlx5vf_pci_migration_info *vmig = &mvdev->vmig;
->>>>>>>> +	u32 old_state = vmig->vfio_dev_state;
->>>>>>>> +	int ret = 0;
->>>>>>>> +
->>>>>>>> +	if (vfio_is_state_invalid(state) || vfio_is_state_invalid(old_state))
->>>>>>>> +		return -EINVAL;
->>>>>>> if (!VFIO_DEVICE_STATE_VALID(old_state) || !VFIO_DEVICE_STATE_VALID(state))
->>>>>> AFAICT this macro doesn't do what is needed, eg
->>>>>>
->>>>>> VFIO_DEVICE_STATE_VALID(0xF000) == true
->>>>>>
->>>>>> What Yishai implemented is at least functionally correct - states this
->>>>>> driver does not support are rejected.
->>>>> if (!VFIO_DEVICE_STATE_VALID(old_state) || !VFIO_DEVICE_STATE_VALID(state)) || (state & ~VFIO_DEVICE_STATE_MASK))
->>>>>
->>>>> old_state is controlled by the driver and can never have random bits
->>>>> set, user state should be sanitized to prevent setting undefined bits.
->>>> In that instance let's just write
->>>>
->>>> old_state != VFIO_DEVICE_STATE_ERROR
->>>>
->>>> ?
->>> Not quite, the user can't set either of the other invalid states
->>> either.
->>
->> OK so let's go with below as you suggested.
->> if (!VFIO_DEVICE_STATE_VALID(old_state) ||
->>       !VFIO_DEVICE_STATE_VALID(state) ||
->>        (state & ~VFIO_DEVICE_STATE_MASK))
->>             
-> This is my preference:
->
-> if (vmig->vfio_dev_state != VFIO_DEVICE_STATE_ERROR ||
->      !vfio_device_state_valid(state) ||
->      (state & !MLX5VF_SUPPORTED_DEVICE_STATES))
->
+Hello,
 
-OK, let's go with this approach which enforces what the driver supports 
-as well.
+syzbot found the following issue on:
 
-We may have the below post making it accurate and complete.
+HEAD commit:    83fa5857d812 Add linux-next specific files for 20210921
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1219b1f3300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=26e605eb9e346182
+dashboard link: https://syzkaller.appspot.com/bug?extid=57acebac784a6a86f44d
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-enum {
-     MLX5VF_SUPPORTED_DEVICE_STATES = VFIO_DEVICE_STATE_RUNNING |
-                                      VFIO_DEVICE_STATE_SAVING |
-                                      VFIO_DEVICE_STATE_RESUMING,
-};
+Unfortunately, I don't have any reproducer for this issue yet.
 
-if (old_state == VFIO_DEVICE_STATE_ERROR ||
-     !vfio_device_state_valid(state) ||
-     (state & ~MLX5VF_SUPPORTED_DEVICE_STATES))
-           return -EINVAL;
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+57acebac784a6a86f44d@syzkaller.appspotmail.com
 
->> diff --git a/include/linux/vfio.h b/include/linux/vfio.h
->> index b53a9557884a..37376dadca5a 100644
->> +++ b/include/linux/vfio.h
->> @@ -15,6 +15,8 @@
->>   #include <linux/poll.h>
->>   #include <uapi/linux/vfio.h>
->>
->> +static const int VFIO_DEVICE_STATE_ERROR = VFIO_DEVICE_STATE_SAVING |
->> + VFIO_DEVICE_STATE_RESUMING;
-> Do not put static variables in header files
->
-> Jason
+INFO: task syz-executor.0:17359 can't die for more than 143 seconds.
+task:syz-executor.0  state:D stack:26504 pid:17359 ppid: 15131 flags:0x00004004
+Call Trace:
+ context_switch kernel/sched/core.c:4955 [inline]
+ __schedule+0x940/0x26f0 kernel/sched/core.c:6236
+ schedule+0xd3/0x270 kernel/sched/core.c:6315
+ schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6374
+ __mutex_lock_common kernel/locking/mutex.c:672 [inline]
+ __mutex_lock+0xa34/0x12f0 kernel/locking/mutex.c:732
+ ip_tunnel_init_net+0x2d5/0x9d0 net/ipv4/ip_tunnel.c:1069
+ ops_init+0xaf/0x470 net/core/net_namespace.c:140
+ setup_net+0x40f/0xa30 net/core/net_namespace.c:326
+ copy_net_ns+0x319/0x760 net/core/net_namespace.c:470
+ create_new_namespaces+0x3f6/0xb20 kernel/nsproxy.c:110
+ copy_namespaces+0x391/0x450 kernel/nsproxy.c:178
+ copy_process+0x2da7/0x7580 kernel/fork.c:2248
+ kernel_clone+0xe7/0xac0 kernel/fork.c:2635
+ __do_sys_clone+0xc8/0x110 kernel/fork.c:2752
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f4805e8a739
+RSP: 002b:00007f4803401188 EFLAGS: 00000246 ORIG_RAX: 0000000000000038
+RAX: ffffffffffffffda RBX: 00007f4805f8ef80 RCX: 00007f4805e8a739
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000046100380
+RBP: 00007f4805ee4cc4 R08: 0000000020003a80 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f4805f8ef80
+R13: 00007ffdbf36d0af R14: 00007f4803401300 R15: 0000000000022000
 
-OK, we can come with an enum instead.
+Showing all locks held in the system:
+4 locks held by kworker/u4:0/8:
+ #0: ffff888012033138 ((wq_completion)netns){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff888012033138 ((wq_completion)netns){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
+ #0: ffff888012033138 ((wq_completion)netns){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1198 [inline]
+ #0: ffff888012033138 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:634 [inline]
+ #0: ffff888012033138 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:661 [inline]
+ #0: ffff888012033138 ((wq_completion)netns){+.+.}-{0:0}, at: process_one_work+0x896/0x1690 kernel/workqueue.c:2268
+ #1: ffffc90000cd7db0 (net_cleanup_work){+.+.}-{0:0}, at: process_one_work+0x8ca/0x1690 kernel/workqueue.c:2272
+ #2: ffffffff8d0d1290 (pernet_ops_rwsem){++++}-{3:3}, at: cleanup_net+0x9b/0xb00 net/core/net_namespace.c:555
+ #3: ffffffff8d0e4828 (rtnl_mutex){+.+.}-{3:3}, at: netdev_run_todo+0x6fa/0xa80 net/core/dev.c:10600
+3 locks held by kworker/u4:1/10:
+ #0: ffff888018113138 ((wq_completion)cfg80211){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff888018113138 ((wq_completion)cfg80211){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
+ #0: ffff888018113138 ((wq_completion)cfg80211){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1198 [inline]
+ #0: ffff888018113138 ((wq_completion)cfg80211){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:634 [inline]
+ #0: ffff888018113138 ((wq_completion)cfg80211){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:661 [inline]
+ #0: ffff888018113138 ((wq_completion)cfg80211){+.+.}-{0:0}, at: process_one_work+0x896/0x1690 kernel/workqueue.c:2268
+ #1: ffffc90000cf7db0 ((work_completion)(&(&rdev->dfs_update_channels_wk)->work)){+.+.}-{0:0}, at: process_one_work+0x8ca/0x1690 kernel/workqueue.c:2272
+ #2: ffffffff8d0e4828 (rtnl_mutex){+.+.}-{3:3}, at: cfg80211_dfs_channels_update_work+0x91/0x5f0 net/wireless/mlme.c:842
+1 lock held by khungtaskd/27:
+ #0: ffffffff8b980960 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:6446
+2 locks held by kworker/u4:4/319:
+3 locks held by kworker/1:2/2928:
+ #0: ffff888010c64d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff888010c64d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
+ #0: ffff888010c64d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1198 [inline]
+ #0: ffff888010c64d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:634 [inline]
+ #0: ffff888010c64d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:661 [inline]
+ #0: ffff888010c64d38 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x896/0x1690 kernel/workqueue.c:2268
+ #1: ffffc9000c7b7db0 (deferred_process_work){+.+.}-{0:0}, at: process_one_work+0x8ca/0x1690 kernel/workqueue.c:2272
+ #2: ffffffff8d0e4828 (rtnl_mutex){+.+.}-{3:3}, at: switchdev_deferred_process_work+0xa/0x20 net/switchdev/switchdev.c:74
+1 lock held by in:imklog/6255:
+2 locks held by kworker/1:8/8556:
+3 locks held by kworker/0:7/8576:
+ #0: ffff88802532d938 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff88802532d938 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
+ #0: ffff88802532d938 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1198 [inline]
+ #0: ffff88802532d938 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:634 [inline]
+ #0: ffff88802532d938 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:661 [inline]
+ #0: ffff88802532d938 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: process_one_work+0x896/0x1690 kernel/workqueue.c:2268
+ #1: ffffc90016df7db0 ((work_completion)(&(&ifa->dad_work)->work)){+.+.}-{0:0}, at: process_one_work+0x8ca/0x1690 kernel/workqueue.c:2272
+ #2: ffffffff8d0e4828 (rtnl_mutex){+.+.}-{3:3}, at: addrconf_dad_work+0xa3/0x1340 net/ipv6/addrconf.c:4047
+2 locks held by syz-executor.1/15129:
+ #0: ffffffff8d0e4828 (rtnl_mutex){+.+.}-{3:3}, at: tun_detach drivers/net/tun.c:684 [inline]
+ #0: ffffffff8d0e4828 (rtnl_mutex){+.+.}-{3:3}, at: tun_chr_close+0x3a/0x180 drivers/net/tun.c:3397
+ #1: ffffffff8b989ce8 (rcu_state.exp_mutex){+.+.}-{3:3}, at: exp_funnel_lock kernel/rcu/tree_exp.h:290 [inline]
+ #1: ffffffff8b989ce8 (rcu_state.exp_mutex){+.+.}-{3:3}, at: synchronize_rcu_expedited+0x4fc/0x620 kernel/rcu/tree_exp.h:836
+1 lock held by syz-executor.5/15130:
+ #0: ffffffff8d0e4828 (rtnl_mutex){+.+.}-{3:3}, at: tun_detach drivers/net/tun.c:684 [inline]
+ #0: ffffffff8d0e4828 (rtnl_mutex){+.+.}-{3:3}, at: tun_chr_close+0x3a/0x180 drivers/net/tun.c:3397
+1 lock held by syz-executor.4/15132:
+ #0: ffffffff8d0e4828 (rtnl_mutex){+.+.}-{3:3}, at: tun_detach drivers/net/tun.c:684 [inline]
+ #0: ffffffff8d0e4828 (rtnl_mutex){+.+.}-{3:3}, at: tun_chr_close+0x3a/0x180 drivers/net/tun.c:3397
+1 lock held by kworker/u4:8/17189:
+1 lock held by syz-executor.2/17352:
+ #0: ffffffff8d0e4828 (rtnl_mutex){+.+.}-{3:3}, at: tun_detach drivers/net/tun.c:684 [inline]
+ #0: ffffffff8d0e4828 (rtnl_mutex){+.+.}-{3:3}, at: tun_chr_close+0x3a/0x180 drivers/net/tun.c:3397
+1 lock held by syz-executor.3/17355:
+ #0: ffffffff8d0e4828 (rtnl_mutex){+.+.}-{3:3}, at: tun_detach drivers/net/tun.c:684 [inline]
+ #0: ffffffff8d0e4828 (rtnl_mutex){+.+.}-{3:3}, at: tun_chr_close+0x3a/0x180 drivers/net/tun.c:3397
+2 locks held by syz-executor.0/17359:
+ #0: ffffffff8d0d1290 (pernet_ops_rwsem){++++}-{3:3}, at: copy_net_ns+0x2f5/0x760 net/core/net_namespace.c:466
+ #1: ffffffff8d0e4828 (rtnl_mutex){+.+.}-{3:3}, at: ip_tunnel_init_net+0x2d5/0x9d0 net/ipv4/ip_tunnel.c:1069
+3 locks held by kworker/1:4/17404:
+ #0: ffff88802532d938 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff88802532d938 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
+ #0: ffff88802532d938 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1198 [inline]
+ #0: ffff88802532d938 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:634 [inline]
+ #0: ffff88802532d938 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:661 [inline]
+ #0: ffff88802532d938 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: process_one_work+0x896/0x1690 kernel/workqueue.c:2268
+ #1: ffffc900021efdb0 ((work_completion)(&(&ifa->dad_work)->work)){+.+.}-{0:0}, at: process_one_work+0x8ca/0x1690 kernel/workqueue.c:2272
+ #2: ffffffff8d0e4828 (rtnl_mutex){+.+.}-{3:3}, at: addrconf_dad_work+0xa3/0x1340 net/ipv6/addrconf.c:4047
 
-enum {
+=============================================
 
-VFIO_DEVICE_STATE_ERROR = VFIO_DEVICE_STATE_SAVING | VFIO_DEVICE_STATE_RESUMING,
 
-};
 
-Alex,
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Do you prefer to  put it under include/uapi/vfio.h or that it can go 
-under inlcude/linux/vfio.h for internal drivers usage ?
-
-Yishai
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
