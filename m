@@ -2,83 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F59443292A
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 23:38:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBE3243292C
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 23:38:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233737AbhJRVkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 17:40:19 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45292 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233899AbhJRVkM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Oct 2021 17:40:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=WgZVH2o58S2b3z+JLYDkc0nTLqWy8/84Xlffw5Y2nuQ=; b=TEKI4v8zBXvSqIsZ0q6cWiLB1H
-        ci08Ty4rj4zxQ29sKpqLyv/lIe2V5NZpJZMLiqJGy+nuMu3dUm3GU0jGeL5SuRqMbWVTaSxbDnkMw
-        1mHkEiYJIsnGZu4SVfJ+T/wZ986bl0Y0X/T/9DAQCViWH+JVTeJgoEXD+MitjWQycmQE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mcaKO-00B0ml-NW; Mon, 18 Oct 2021 23:37:52 +0200
-Date:   Mon, 18 Oct 2021 23:37:52 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Luo Jie <luoj@codeaurora.org>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sricharan@codeaurora.org
-Subject: Re: [PATCH v3 08/13] net: phy: add qca8081 config_aneg
-Message-ID: <YW3pMD7PD2M3lD3o@lunn.ch>
-References: <20211018033333.17677-1-luoj@codeaurora.org>
- <20211018033333.17677-9-luoj@codeaurora.org>
+        id S232651AbhJRVkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 17:40:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34304 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233527AbhJRVkN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 17:40:13 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB46C061765
+        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 14:38:01 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id d9so4756390edh.5
+        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 14:38:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=D4/S956yr106t3LKks68I5mxYFr0YWPDjv2cZtJsKl0=;
+        b=YMlBcET5y8025OGf/QO1Buydhip73j9aOA5btGLvLfsheHOgvtdI9ZKssyiGbSTcqk
+         Xj73ewNycpDhvUM/jLIIgNA3m/2VH/5i8rKHK2TFtXJcA1BhzDBMwThNqkin+ZklbR8g
+         7IIoFjpKESL9IHtQp/UdvNbrOQl+HOZao7gEZfM6hRn8uZrMnv+ShLQlxHXE0vgoWJus
+         V+u9lmt1RD5DmTmV0inSBEVk23NIa+fU4K9WZwGNZx/N2MI3+iKZXYfuhMyTaExajANe
+         tkiZu92uLKqcB3kZ+GoYPzfigxDOt5BP4b9OIMADABabiZ9mxPIjlZ23ZDVyPR5YcDpv
+         e55Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=D4/S956yr106t3LKks68I5mxYFr0YWPDjv2cZtJsKl0=;
+        b=YWcY8HHSfkfDmxlQg0Fi8TYmNbo32JiXoZBHYlN76lCdgAfk5uNH+SZioV7EBWSMKE
+         XVRlfm1dRpeCbXtMplesT3WeSumHljPEoIvv6ngCWEQk2LawyBGDHu7cfpUzwgLCN0qX
+         rLZYfMMqMJ7xvdGSWGBZ+Zk3NrPOGusrd7fNiXIShugC6xzWTadrdz30cEkp4Sgh3uNE
+         PDJgGcXEjAOHmj1Kkvrlh1HWMmWMxBi8qZrKFk9WGfPAmc5EPnr0fWQDYxIPTyZ4gYIF
+         dnA2EALyzmJ+PMJLxJ46p22jAe62/2Tdk3z1BMqaLP44+kkUtJtvFA52sqDtKztlCUUK
+         pTJg==
+X-Gm-Message-State: AOAM533vP3Y++boCzrZ19q8Hmn5j8bE31XajgYWaH91G0ghQU9XKs54N
+        tffggefRmOVqO64jU49aKv8=
+X-Google-Smtp-Source: ABdhPJzIM01aPtuXTjpo5g9DCMy/k8XcbDLlA/8Zos3KCknANxABgsCNHGNYEbyXQr4aDhd9OLF58w==
+X-Received: by 2002:aa7:dbcf:: with SMTP id v15mr48200397edt.243.1634593080334;
+        Mon, 18 Oct 2021 14:38:00 -0700 (PDT)
+Received: from skbuf ([188.26.184.231])
+        by smtp.gmail.com with ESMTPSA id og39sm9427258ejc.93.2021.10.18.14.37.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Oct 2021 14:37:59 -0700 (PDT)
+Date:   Tue, 19 Oct 2021 00:37:58 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, andrew@lunn.ch,
+        idosch@idosch.org, f.fainelli@gmail.com, snelson@pensando.io
+Subject: Re: [PATCH net-next 1/6] ethernet: add a helper for assigning port
+ addresses
+Message-ID: <20211018213758.mgl4sc7yeloa6dst@skbuf>
+References: <20211018211007.1185777-1-kuba@kernel.org>
+ <20211018211007.1185777-2-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211018033333.17677-9-luoj@codeaurora.org>
+In-Reply-To: <20211018211007.1185777-2-kuba@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 18, 2021 at 11:33:28AM +0800, Luo Jie wrote:
-> Reuse at803x phy driver config_aneg excepting
-> adding 2500M auto-negotiation.
+On Mon, Oct 18, 2021 at 02:10:02PM -0700, Jakub Kicinski wrote:
+> We have 5 drivers which offset base MAC addr by port id.
+> Create a helper for them.
 > 
-> Signed-off-by: Luo Jie <luoj@codeaurora.org>
-> ---
->  drivers/net/phy/at803x.c | 26 +++++++++++++++++++++++++-
->  1 file changed, 25 insertions(+), 1 deletion(-)
+> This helper takes care of overflows, which some drivers
+> did not do, please complain if that's going to break
+> anything!
 > 
-> diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-> index 0c22ef735230..c124d3fe40fb 100644
-> --- a/drivers/net/phy/at803x.c
-> +++ b/drivers/net/phy/at803x.c
-> @@ -1084,7 +1084,30 @@ static int at803x_config_aneg(struct phy_device *phydev)
->  			return ret;
->  	}
->  
-> -	return genphy_config_aneg(phydev);
-> +	/* Do not restart auto-negotiation by setting ret to 0 defautly,
-> +	 * when calling __genphy_config_aneg later.
-> +	 */
-> +	ret = 0;
-> +
-> +	if (phydev->drv->phy_id == QCA8081_PHY_ID) {
-> +		int phy_ctrl = 0;
-> +
-> +		/* The reg MII_BMCR also needs to be configured for force mode, the
-> +		 * genphy_config_aneg is also needed.
-> +		 */
-> +		if (phydev->autoneg == AUTONEG_DISABLE)
-> +			genphy_c45_pma_setup_forced(phydev);
-> +
-> +		if (linkmode_test_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, phydev->advertising))
-> +			phy_ctrl = MDIO_AN_10GBT_CTRL_ADV2_5G;
-> +
-> +		ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_10GBT_CTRL,
-> +				MDIO_AN_10GBT_CTRL_ADV2_5G, phy_ctrl);
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> --
 
-Does the PHY also have MDIO_MMD_AN, MDIO_AN_ADVERTISE ? I'm wondering
-if you can use genphy_c45_an_config_aneg()
-
-   Andrew
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
