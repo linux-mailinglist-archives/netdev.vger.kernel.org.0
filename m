@@ -2,218 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07E46432642
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 20:22:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B387B432640
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 20:22:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232531AbhJRSYg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 14:24:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46630 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229980AbhJRSYf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 14:24:35 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EEC2C06161C;
-        Mon, 18 Oct 2021 11:22:24 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id e5-20020a17090a804500b001a116ad95caso636432pjw.2;
-        Mon, 18 Oct 2021 11:22:24 -0700 (PDT)
+        id S232157AbhJRSYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 14:24:18 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:26940 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S229980AbhJRSYR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 14:24:17 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19ICKCv2024145;
+        Mon, 18 Oct 2021 11:21:58 -0700
+Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2176.outbound.protection.outlook.com [104.47.55.176])
+        by mx0a-0016f401.pphosted.com with ESMTP id 3bs1buk984-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 18 Oct 2021 11:21:58 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GFeZzIwpm/NwZlixLoRLSr747p17mXu4/3QUHD3FHS9IBkF+WYlx8mZSrF5lMx6igfGMAkKwvaXfmB8jYfGyICK/X7+LQKvPuSVaQD7nK/d4AaMrymmPKTrdc7fn88vA3XJM7sk+hUx1rJPxQL9/6bv4P5+8aynanVJJwOB6s1nIiWN9OcoYQzgAdObamgbLC0dXPpGcG228tIaDymuh2Op2Dk/EyfBxWtDCILalhQjFbf5PCf++eVn5nbuGr5YQ2Jqgl4BR3J9wL16OpsUS/ZwI914JAuqNIItR/5YnjVqsLZr0s60c4ARtIz/LLq4/F4pHiKbw6lTpliZHuhBDHQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=TY2s0vy7NccLea/LcrejGk0hF4frWcpwDesWsXXJpZQ=;
+ b=VWURxpNZi88XLhlDzc+YB3vREcx+0xbPIK6Wuvo8/ujfzFc4KgBO9gCZ0WqGX8HemQyzWqs3G/4iKBAeprdaPb4StZqt85KPjatDpZUU20xrv+f23DIRYa33xVL4Qx73zGxIVYhregZ00UQms1z4BqrGSzUTklF1ghJ/rcKlAT/W1OwV66tMinszrJEXc4w1rRYxN0IlGN/7gB/Xj3NRtHwyFr22emImNsw6yhQxkSmhXE/VYEEHBIa+hGlkrvH57xu/FGgNuAovI7Gmmh3fZQIKqQhXiSMwZI/x38Pv34/l6rc6xzFcaQi6+zNVtS8jK/UTvUfCVdanlOXtAJLfIw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:content-transfer-encoding:cc:subject:from:to:date
-         :message-id:in-reply-to;
-        bh=O3JTsJ//+aRHmKyBmq+YMFG4wtH7aD4MaEaRfkM2pfA=;
-        b=QjqcxT3HbF+90hPV9T7yihmLJb87KM6gkBPtXzTS7ttTlpzzTqGJ1S5IBUI/MQqY8D
-         X1zIxgbhagtvTqcQXAeN4tNyUWpcN/vqs0VdzAVq/NZKPkonH/3jcVaAZBDwZW1svz02
-         Jo35NqFLw06rWP469JtVUZtYmULUjxrx0G9uo4NebStJQF7MYO3VZbMUzQeEY8fz2Nh1
-         eXZYh70GC58YAOO/Ua+TZqupDBPFnpcNODN7tGX0byFImrYZpXt99sN3f9DJHamxX6qQ
-         yjO47dzVI0HHPDW3ZGR6sf6Yrf8EKFs2N0CHfUa5PxT5CjYLWJak+h5BQu+o3mGAhNT8
-         Mplg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:content-transfer-encoding:cc
-         :subject:from:to:date:message-id:in-reply-to;
-        bh=O3JTsJ//+aRHmKyBmq+YMFG4wtH7aD4MaEaRfkM2pfA=;
-        b=1J5gt+2VIpOhPfOS/nGNnmDZjJi3UxCkewm6VslEF99A3mTggXduPIalV8+ideCwQT
-         EhUclFR6piWD9dUeey9L8jh4uVieDEJUTAPsZLa/AjqnUz8iYzb5dgsfThWvJozuF5HA
-         cpHGU+lOhsMG1NXwDx8Mbp5Ml81kj3aK/CcHUf3u5gF5bQ3VUH/n8zSN/pCV3V4S2/zA
-         /+ilpxz/EHEBCjUfPY2AQqv2LKXOSF3jVbVuHgzBFwcXxFw9rGzsWbsYHoIqBPgDll2x
-         76nuiQKQ7M84QYee+CZKAZgE20jLyNY/442+vhC7dZ0+wmO3UgAUjhMihglUKA5npS46
-         Hqnw==
-X-Gm-Message-State: AOAM533AzXxdNr6mEtC/9462XktWuvAxOf37JnIf9fmJELOepq33hfHf
-        qMlTN49aOGJV1LNKdqcc1XOZvWJUe4Gvjb61
-X-Google-Smtp-Source: ABdhPJz/pqHLPI6TAN0ZTeY47crCygjKDltqRe8CtbzoQNMBQDb+r5AGhA1R8XoOzYofwE2BbebpXA==
-X-Received: by 2002:a17:90a:a609:: with SMTP id c9mr592265pjq.134.1634581343846;
-        Mon, 18 Oct 2021 11:22:23 -0700 (PDT)
-Received: from localhost ([117.200.53.211])
-        by smtp.gmail.com with ESMTPSA id c12sm13694481pfc.161.2021.10.18.11.22.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Oct 2021 11:22:23 -0700 (PDT)
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TY2s0vy7NccLea/LcrejGk0hF4frWcpwDesWsXXJpZQ=;
+ b=qw93V/4c4zi734TYRKTHy9uc6TeLK0YI5PfuLBDMJ5ZCpFfUtoBymm+8d+pQuWspot/ry7S77fZigq0xWgOTENMRkXOY9+VpoLU+flAAZ7GnIDuTuy3J1FRxgAmqD0phfXhM/3ZcCgGosd4A5+Pz1/DfxMh+J+beraYqu17G/XM=
+Received: from CO6PR18MB4083.namprd18.prod.outlook.com (2603:10b6:5:348::9) by
+ CO6PR18MB3873.namprd18.prod.outlook.com (2603:10b6:5:350::23) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4608.18; Mon, 18 Oct 2021 18:21:55 +0000
+Received: from CO6PR18MB4083.namprd18.prod.outlook.com
+ ([fe80::85b0:35ef:704b:3a19]) by CO6PR18MB4083.namprd18.prod.outlook.com
+ ([fe80::85b0:35ef:704b:3a19%9]) with mapi id 15.20.4608.018; Mon, 18 Oct 2021
+ 18:21:55 +0000
+Message-ID: <3bc71e9a-8e6d-abef-708b-704e3b78c3d7@marvell.com>
+Date:   Mon, 18 Oct 2021 21:20:21 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Subject: Re: Re: [RFC net-next 3/6] ethernet: prestera: use
+ eth_hw_addr_set_port()
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "idosch@idosch.org" <idosch@idosch.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "Vadym Kochan [C]" <vkochan@marvell.com>
+References: <20211015193848.779420-1-kuba@kernel.org>
+ <20211015193848.779420-4-kuba@kernel.org>
+ <20211015235130.6sulfh2ouqt3dgfh@skbuf>
+ <CO6PR18MB4083DDE34183B96B4D882D60C4BC9@CO6PR18MB4083.namprd18.prod.outlook.com>
+ <20211018100141.53844c4e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Taras Chornyi <tchornyi@marvell.com>
+In-Reply-To: <20211018100141.53844c4e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset=UTF-8
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>
-Subject: Re: [RFC PATCH 12/17] net: ipa: Add support for IPA v2.x memory map
-From:   "Sireesh Kodali" <sireeshkodali1@gmail.com>
-To:     "Alex Elder" <elder@ieee.org>, <phone-devel@vger.kernel.org>,
-        <~postmarketos/upstreaming@lists.sr.ht>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <elder@kernel.org>
-Date:   Mon, 18 Oct 2021 23:49:27 +0530
-Message-Id: <CF2QNY03DL92.2L28UE4T4GU9H@skynet-linux>
-In-Reply-To: <566b43c9-2893-09ac-1f27-513f0a6d767e@ieee.org>
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR0P281CA0084.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:1e::23) To CO6PR18MB4083.namprd18.prod.outlook.com
+ (2603:10b6:5:348::9)
+MIME-Version: 1.0
+Received: from [192.168.0.122] (193.93.219.25) by FR0P281CA0084.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:1e::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.10 via Frontend Transport; Mon, 18 Oct 2021 18:21:52 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3a0c0838-4c6e-4d75-2e16-08d9926429cb
+X-MS-TrafficTypeDiagnostic: CO6PR18MB3873:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <CO6PR18MB38735E1C6DE91F93960FAEDAC4BC9@CO6PR18MB3873.namprd18.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ML0sKtBypnM9vJxqkL2G3PiOv8LRdwY6k3MzoXWzjVd8kfbyQEOFhS1pnYutWCbL/gtm9pQLp2fPAA3ZNLKGIGqe3Y7PWD/eKMc7KNPZyNm0giD6gkLwpdGtmhuy/1NlxCtFO4lHzZTlk7GDv//6OD2xCSrRprQHawiPoweePXRqy5wHg5dm+vBimVqCIrsnBu4Er9GVCijgAwm0ftoUVZiz0DYhBP7Mw7tKbEE9+9WvbOVktTlOZg7i+ZNLclDFnmsH7IKqKA1voGgqRkIFeODhtbL6EAxX8/Ia4LQhWtmCJH6zJRAP2KzDPLZEINvBEFcb5ZAH3ZS5p9A1GgpZcG5OcHV7Syo62qZ6qj/lV7lJXtX7FarRQS3GqNcoII32pFsGKWciELmIl5IavmbX2WdrGe9qkZuwpeIzPI5oVfBCgc/0L8rl1BeBV7J8lQE2wLEfgyX8FQcUPvczR8PZhc9gFQe9EMUx3OYCBarYkIJD3lfpgcW8+jYCJ5BNuvkRrCeEzh3bzWaUfag/lbWoDyCWLDba+KHXvFpyzaJYcAfoY56ljmQ43I4ygfOhhNztoJSHGcurbomVKg6Nuwlta4hZhVuIDulrO58yabBzAepkYiLPUSV3OKduDCbPmyV4Z+RzdiYoR9oD7ZiWjX5MnUsBe/CqOeo6eFMYQUnITlBa5yzOVFCezoD78Ts1k3a5xpjyWyTEqFIP697jfJkPnki+/hR/c4eYkVDqTXHxJ7Y=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR18MB4083.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(508600001)(5660300002)(956004)(8676002)(107886003)(8936002)(2616005)(66556008)(6916009)(86362001)(66946007)(66476007)(36756003)(4326008)(6486002)(54906003)(316002)(16576012)(31686004)(38100700002)(2906002)(31696002)(6666004)(26005)(186003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NCtvSUNXK1Nsb3pqSUxJbStxTXpQNVFScEZyOUp6K3NLT3I4K3JGWTZSVEVh?=
+ =?utf-8?B?WVU0N2ZXV2w0N25uY2FOd3RoMHYvd3F6eDVvTmpsL3NVWXJMYjN1WnoyUStM?=
+ =?utf-8?B?K29MeHUzQjZrNkdUSWJ4NnZZaW9YZmhUL3pnNE8zMlFSdmJhVWs1QVFUQlh1?=
+ =?utf-8?B?Umx0bjFBdkZkdlM1cUkrS3J3R2lvbzZsTmdSLzhOeTdLbzV6VUkwcmt5S0dh?=
+ =?utf-8?B?SGt4a0JjT3B0TlJXcms0L3U0Tm4wODFMVDVndmpXLzk3ZGVPSktGdHpYb3Fr?=
+ =?utf-8?B?WjI4cmhodUxFMEdFQVhqa2phOTFsdzdnQmdDUTJGdUtBY1JUK1R3L2I2dFRy?=
+ =?utf-8?B?UzMvV2taMTRaTXVsTnpuWXlTeHBJbG4rOTVYZ2FhenNYbjhmcjZZUFNxTDBX?=
+ =?utf-8?B?c0V0UFJXUHBmSE52alAxbDJpWjFLZ3BlYjRZcHowWmt6cGFZY2dlLytWNHhu?=
+ =?utf-8?B?WTh4ZkpxUTBxWjVWNjY4R09DSGpqQlZEbG1JNTRCRXAzNisxQnR3dlpuRVlZ?=
+ =?utf-8?B?bk52aHpSNW1YN04yVWh5YUxaZk8yMnpzNE9vUDdsaXlCVG8wR2lnUXVBVlQv?=
+ =?utf-8?B?ZWVEZUJubXdIMnZsMnJ4NmV4ZjdiODg2Y0JyUnlGUjM5aHB6NXNYZGZ0bnBO?=
+ =?utf-8?B?NnB0azFXMWx1TkhsclFhZ2FWTS9MYjJacHpKMkNXakoyT25FTFdKKys4Nk45?=
+ =?utf-8?B?TGhOcUN2aG93ZXFTQ1E1dXhxR0d3ZFF4VE5EVkJjZENaMGxFSTdyTmVrMU04?=
+ =?utf-8?B?eXF1VzFYUGN0c1NnR3ZqSEYydWcwNDRwK2I1c3FjdVdHTDdrVUt1NkluWTd4?=
+ =?utf-8?B?UDIycGkwQytzODhMUERwUm1EMWJFWnBXN1VNOGtTWnNObTdXODlIQlJ6enhC?=
+ =?utf-8?B?Qml2eC9sMnpBaENaMGNJV1hBRktGU2JUc1I1VzFNOU1hSDJ4bGdpSDJESTdu?=
+ =?utf-8?B?MS9GYTdseHRIZW1Bc3dodVhzdmIzbklraHFmMGpoRlFMQ2hDamJ0VzNvaUFQ?=
+ =?utf-8?B?U0t5Sy8rUzV6K09rYUlZcUovalVZV2xyOExJUENaRlhxcWhhditUNUlCclN5?=
+ =?utf-8?B?T1BkSU8yTlEwZ1VObnhjalM5bHZQdEFIdDlTUGtScFVMRzkvZVgzVEpDT0hB?=
+ =?utf-8?B?RWorbWdmdXY4WEhNUVg0T0NqZ1FzQ0lIdTdlQ29kK3Y4RHBKbDZHa2hWQlZl?=
+ =?utf-8?B?RFpLRTU1OXFkeUhxZkZTSGVTR0E4cTZmRklNdHJWWldpcWpRT0dQdCtzaks1?=
+ =?utf-8?B?TEtRREFoUk5DWUszQ3BJVEVoOXA2Rmt5YS9WYVlLdjNGN2RDbFE2ekhKUUo2?=
+ =?utf-8?B?R1NIdXp1VlV5ZkIzc0NJM212R0hPQWtMeENqK3B3cFc2dXZNV0NBeFJjdDhq?=
+ =?utf-8?B?NHNLS0dVS2lBNW9keFNGaU1NVFovQk9OSGkyMVdYU2o1SkQ5WVJTR1VCbSsr?=
+ =?utf-8?B?QXRpWHVBUkl5VUI3UVJidGRwbGNHRUJJMXg4WGZsd2hpMlJaM3krR25mQXNv?=
+ =?utf-8?B?MU5YRUY4RjBSalV3Uy9LOWh1Wm9VdjF1Tm5zLzlKUHZSQWJBSmI4NUJtN0Fz?=
+ =?utf-8?B?dXQrbEdvZkNRSDg0em9VV0FndU1PZ1lJSHRZNlV2RmJOei9lWTZvcjFXdnVY?=
+ =?utf-8?B?VC85MURqODRScUJYV21ySWFNRm9ya3pXTEpSSVQ3SGVhem44SG4yRGJGblpx?=
+ =?utf-8?B?ZXcveS9mLzZteDE5NzNTSlNvcitFOEpZdmVCTjRnMFpCbVdNYXlWM0NaVlZO?=
+ =?utf-8?Q?LcJovVcqSlk1TqKFX0op/fNwnIWwkwlBx7VIsxG?=
+X-OriginatorOrg: marvell.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3a0c0838-4c6e-4d75-2e16-08d9926429cb
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR18MB4083.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2021 18:21:54.8647
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IEH2+zdfph5bvWfMdVXFVsMJAa/y54elHjkQxltJ4/+3qXUB0UKbEGmjRhyakUqFiWePXzZp8jBq3ew3tHdrBg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR18MB3873
+X-Proofpoint-GUID: J1MyD3kYanly2KDkPyO9F7bKmeULH1gP
+X-Proofpoint-ORIG-GUID: J1MyD3kYanly2KDkPyO9F7bKmeULH1gP
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-10-18_07,2021-10-18_01,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu Oct 14, 2021 at 4:00 AM IST, Alex Elder wrote:
-> On 9/19/21 10:08 PM, Sireesh Kodali wrote:
-> > IPA v2.6L has an extra region to handle compression/decompression
-> > acceleration. This region is used by some modems during modem init.
->
-> So it has to be initialized? (I guess so.)
+> ----------------------------------------------------------------------
+> On Mon, 18 Oct 2021 16:54:00 +0000 Taras Chornyi [C] wrote:
+>>> @@ -341,8 +342,8 @@ static int prestera_port_create(struct prestera_switch *sw, u32 id)
+>>>       /* firmware requires that port's MAC address consist of the first
+>>>        * 5 bytes of the base MAC address
+>>>        */
+>>> -     memcpy(dev->dev_addr, sw->base_mac, dev->addr_len - 1);
+>>> -     dev->dev_addr[dev->addr_len - 1] = port->fp_id;
+>>> +     memcpy(addr, sw->base_mac, dev->addr_len - 1);  
+>>
+>> This code is a bit buggy.  We do care about the last byte of the base mac address.
+>> For example if base mac is xx:xx:xx:xx:xx:10 first port mac should be  xx:xx:xx:xx:xx:11
+> 
+> Thanks for the reply, does it mean we can assume base_mac will be valid
+> or should we add a check like below?
+> 
+We can assume that base mac is always valid in production environment(stored in eeprom),
+however if can we can not get base mac it will be generated.
 
-This is how downstream handles it, I haven't tested not initializing it.
-
->
-> The memory size register apparently doesn't express things in
-> units of 8 bytes either.
->
-
-Indeed, with the hardware being 32 bits, it expresses things in values
-of 4 bytes instead.
-
-Regards,
-Sireesh
-> -Alex
->
-> > Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
-> > ---
-> >   drivers/net/ipa/ipa_mem.c | 36 ++++++++++++++++++++++++++++++------
-> >   drivers/net/ipa/ipa_mem.h |  5 ++++-
-> >   2 files changed, 34 insertions(+), 7 deletions(-)
-> >=20
-> > diff --git a/drivers/net/ipa/ipa_mem.c b/drivers/net/ipa/ipa_mem.c
-> > index 8acc88070a6f..bfcdc7e08de2 100644
-> > --- a/drivers/net/ipa/ipa_mem.c
-> > +++ b/drivers/net/ipa/ipa_mem.c
-> > @@ -84,7 +84,7 @@ int ipa_mem_setup(struct ipa *ipa)
-> >   	/* Get a transaction to define the header memory region and to zero
-> >   	 * the processing context and modem memory regions.
-> >   	 */
-> > -	trans =3D ipa_cmd_trans_alloc(ipa, 4);
-> > +	trans =3D ipa_cmd_trans_alloc(ipa, 5);
-> >   	if (!trans) {
-> >   		dev_err(&ipa->pdev->dev, "no transaction for memory setup\n");
-> >   		return -EBUSY;
-> > @@ -107,8 +107,14 @@ int ipa_mem_setup(struct ipa *ipa)
-> >   	ipa_mem_zero_region_add(trans, IPA_MEM_AP_PROC_CTX);
-> >   	ipa_mem_zero_region_add(trans, IPA_MEM_MODEM);
-> >  =20
-> > +	ipa_mem_zero_region_add(trans, IPA_MEM_ZIP);
-> > +
-> >   	ipa_trans_commit_wait(trans);
-> >  =20
-> > +	/* On IPA version <=3D2.6L (except 2.5) there is no PROC_CTX.  */
-> > +	if (ipa->version !=3D IPA_VERSION_2_5 && ipa->version <=3D IPA_VERSIO=
-N_2_6L)
-> > +		return 0;
-> > +
-> >   	/* Tell the hardware where the processing context area is located */
-> >   	mem =3D ipa_mem_find(ipa, IPA_MEM_MODEM_PROC_CTX);
-> >   	offset =3D ipa->mem_offset + mem->offset;
-> > @@ -147,6 +153,11 @@ static bool ipa_mem_id_valid(struct ipa *ipa, enum=
- ipa_mem_id mem_id)
-> >   	case IPA_MEM_END_MARKER:	/* pseudo region */
-> >   		break;
-> >  =20
-> > +	case IPA_MEM_ZIP:
-> > +		if (version =3D=3D IPA_VERSION_2_6L)
-> > +			return true;
-> > +		break;
-> > +
-> >   	case IPA_MEM_STATS_TETHERING:
-> >   	case IPA_MEM_STATS_DROP:
-> >   		if (version < IPA_VERSION_4_0)
-> > @@ -319,10 +330,15 @@ int ipa_mem_config(struct ipa *ipa)
-> >   	/* Check the advertised location and size of the shared memory area =
-*/
-> >   	val =3D ioread32(ipa->reg_virt + ipa_reg_shared_mem_size_offset(ipa-=
->version));
-> >  =20
-> > -	/* The fields in the register are in 8 byte units */
-> > -	ipa->mem_offset =3D 8 * u32_get_bits(val, SHARED_MEM_BADDR_FMASK);
-> > -	/* Make sure the end is within the region's mapped space */
-> > -	mem_size =3D 8 * u32_get_bits(val, SHARED_MEM_SIZE_FMASK);
-> > +	if (IPA_VERSION_RANGE(ipa->version, 2_0, 2_6L)) {
-> > +		/* The fields in the register are in 8 byte units */
-> > +		ipa->mem_offset =3D 8 * u32_get_bits(val, SHARED_MEM_BADDR_FMASK);
-> > +		/* Make sure the end is within the region's mapped space */
-> > +		mem_size =3D 8 * u32_get_bits(val, SHARED_MEM_SIZE_FMASK);
-> > +	} else {
-> > +		ipa->mem_offset =3D u32_get_bits(val, SHARED_MEM_BADDR_FMASK);
-> > +		mem_size =3D u32_get_bits(val, SHARED_MEM_SIZE_FMASK);
-> > +	}
-> >  =20
-> >   	/* If the sizes don't match, issue a warning */
-> >   	if (ipa->mem_offset + mem_size < ipa->mem_size) {
-> > @@ -564,6 +580,10 @@ static int ipa_smem_init(struct ipa *ipa, u32 item=
-, size_t size)
-> >   		return -EINVAL;
-> >   	}
-> >  =20
-> > +	/* IPA v2.6L does not use IOMMU */
-> > +	if (ipa->version <=3D IPA_VERSION_2_6L)
-> > +		return 0;
-> > +
-> >   	domain =3D iommu_get_domain_for_dev(dev);
-> >   	if (!domain) {
-> >   		dev_err(dev, "no IOMMU domain found for SMEM\n");
-> > @@ -591,6 +611,9 @@ static void ipa_smem_exit(struct ipa *ipa)
-> >   	struct device *dev =3D &ipa->pdev->dev;
-> >   	struct iommu_domain *domain;
-> >  =20
-> > +	if (ipa->version <=3D IPA_VERSION_2_6L)
-> > +		return;
-> > +
-> >   	domain =3D iommu_get_domain_for_dev(dev);
-> >   	if (domain) {
-> >   		size_t size;
-> > @@ -622,7 +645,8 @@ int ipa_mem_init(struct ipa *ipa, const struct ipa_=
-mem_data *mem_data)
-> >   	ipa->mem_count =3D mem_data->local_count;
-> >   	ipa->mem =3D mem_data->local;
-> >  =20
-> > -	ret =3D dma_set_mask_and_coherent(&ipa->pdev->dev, DMA_BIT_MASK(64));
-> > +	ret =3D dma_set_mask_and_coherent(&ipa->pdev->dev, IPA_IS_64BIT(ipa->=
-version) ?
-> > +					DMA_BIT_MASK(64) : DMA_BIT_MASK(32));
-> >   	if (ret) {
-> >   		dev_err(dev, "error %d setting DMA mask\n", ret);
-> >   		return ret;
-> > diff --git a/drivers/net/ipa/ipa_mem.h b/drivers/net/ipa/ipa_mem.h
-> > index 570bfdd99bff..be91cb38b6a8 100644
-> > --- a/drivers/net/ipa/ipa_mem.h
-> > +++ b/drivers/net/ipa/ipa_mem.h
-> > @@ -47,8 +47,10 @@ enum ipa_mem_id {
-> >   	IPA_MEM_UC_INFO,		/* 0 canaries */
-> >   	IPA_MEM_V4_FILTER_HASHED,	/* 2 canaries */
-> >   	IPA_MEM_V4_FILTER,		/* 2 canaries */
-> > +	IPA_MEM_V4_FILTER_AP,		/* 2 canaries (IPA v2.0) */
-> >   	IPA_MEM_V6_FILTER_HASHED,	/* 2 canaries */
-> >   	IPA_MEM_V6_FILTER,		/* 2 canaries */
-> > +	IPA_MEM_V6_FILTER_AP,		/* 0 canaries (IPA v2.0) */
-> >   	IPA_MEM_V4_ROUTE_HASHED,	/* 2 canaries */
-> >   	IPA_MEM_V4_ROUTE,		/* 2 canaries */
-> >   	IPA_MEM_V6_ROUTE_HASHED,	/* 2 canaries */
-> > @@ -57,7 +59,8 @@ enum ipa_mem_id {
-> >   	IPA_MEM_AP_HEADER,		/* 0 canaries, optional */
-> >   	IPA_MEM_MODEM_PROC_CTX,		/* 2 canaries */
-> >   	IPA_MEM_AP_PROC_CTX,		/* 0 canaries */
-> > -	IPA_MEM_MODEM,			/* 0/2 canaries */
-> > +	IPA_MEM_ZIP,			/* 1 canary (IPA v2.6L) */
-> > +	IPA_MEM_MODEM,			/* 0-2 canaries */
-> >   	IPA_MEM_UC_EVENT_RING,		/* 1 canary, optional */
-> >   	IPA_MEM_PDN_CONFIG,		/* 0/2 canaries (IPA v4.0+) */
-> >   	IPA_MEM_STATS_QUOTA_MODEM,	/* 2/4 canaries (IPA v4.0+) */
-> >=20
-
+> diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+> index b667f560b931..966f94c6c7a6 100644
+> --- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
+> +++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+> @@ -338,11 +338,14 @@ static int prestera_port_create(struct prestera_switch *sw, u32 id)
+>                 goto err_port_init;
+>         }
+>  
+> -       /* firmware requires that port's MAC address consist of the first
+> -        * 5 bytes of the base MAC address
+> -        */
+> -       memcpy(dev->dev_addr, sw->base_mac, dev->addr_len - 1);
+> -       dev->dev_addr[dev->addr_len - 1] = port->fp_id;
+> +       eth_hw_addr_set_port(dev, sw->base_mac, port->fp_id);
+> +       if (memcmp(dev->dev_addr, sw->base_mac, ETH_ALEN - 1)) {
+> +               /* firmware requires that port's MAC address consists
+> +                * of the first 5 bytes of the base MAC address
+> +                */
+> +               dev_warn(prestera_dev(sw), "Port MAC address overflows the base for port(%u)\n", id);
+> +               dev_addr_mod(dev, 0, sw->base_mac, ETH_ALEN - 1);
+> +       }
+>  
+>         err = prestera_hw_port_mac_set(port, dev->dev_addr);
+>         if (err) {
+> 
