@@ -2,173 +2,289 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA7464311C0
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 10:02:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AC2D43122C
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 10:30:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231176AbhJRIEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 04:04:32 -0400
-Received: from mail-eopbgr1320138.outbound.protection.outlook.com ([40.107.132.138]:34578
-        "EHLO APC01-PU1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231131AbhJRIEZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Oct 2021 04:04:25 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GF/Jg0mrfmsGo14C5SQymkvYGuuYfxQWKKdvVh2j6MkxlL3Munj8HvHYMIjvVEFsW2cowdyX4qQBFffDeE3FnEwBqzwd/HmY5AwVyWe8jubhAlxkCETpOC2Mo7klkHDOt/zAleyABdZxnUOMCmzsYOCUeHCXbM0lMhjzsADeu7PiIuVJB7NJSaMRkxc5hsWoLxWSG5FpGF+ZixtcOCpXHaf39n9YA85AZSQL0BaskKtCOb3ReHww5FoXvCRps0W/TQZcXL5oVGtavxJ4ZYqgapbTzQrv1M/yVGUUbO5WXeBczRyRec7MCyRBRGiogXQXoAUH5zSQI4gBoCkJB5oSxA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8fFpyHXk9zLsLJjUT7wiSSQFl+XSANp6PXOV0T9cKJ0=;
- b=Rz+gSeunuxFNtBjAf4Zv/ArsHVBka196k373g8YGMBLP3NZtY7a49IEiQBVAC2OCMJZTQvSGPSRA31oReDwhJa6V5EYIvoTwHWgrfPXBSeLAVgczhrky1b1zTZ+Of9NbdxwDs8BzdBNtG667xvE3lCla9s5PJ98DU+IM4OfRoXQK0SPKId5mkx9ZMEA9AGpWvdsDy+jljFa6ui27SBk79PUvRtK064iVnlSYQoIBvzaVA48wFY4u71f2sCgPMtPmULSGK5OuMAPUjYBqrWu6zx9FTvCyxJpgkSSA2GRTa1tBXbFVJy5WbHynamvKL2JKh2Iq9l6QP1J1KX7tNyq3jg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8fFpyHXk9zLsLJjUT7wiSSQFl+XSANp6PXOV0T9cKJ0=;
- b=KLdeafj8KnZ3dF9DE8UMSMmKJreTjTwRmmnyZlABQpTODDd5OP8HyeUPyodqxD91qnQsGj+TVyCthYL0yrLnd0WWVBvnGC+r7EY51FTFKT+4ceq7rCvrt/Zb+z7LiiDz+04UjZGzYVOp81SPbQvZ6E4X5oeRk4OwJ92NMtR14YA=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=vivo.com;
-Received: from SL2PR06MB3082.apcprd06.prod.outlook.com (2603:1096:100:37::17)
- by SL2PR06MB3161.apcprd06.prod.outlook.com (2603:1096:100:33::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.16; Mon, 18 Oct
- 2021 08:01:47 +0000
-Received: from SL2PR06MB3082.apcprd06.prod.outlook.com
- ([fe80::4c9b:b71f:fb67:6414]) by SL2PR06MB3082.apcprd06.prod.outlook.com
- ([fe80::4c9b:b71f:fb67:6414%6]) with mapi id 15.20.4608.018; Mon, 18 Oct 2021
- 08:01:47 +0000
-From:   Qing Wang <wangqing@vivo.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Qing Wang <wangqing@vivo.com>
-Subject: [PATCH] net: bpf: switch over to memdup_user()
-Date:   Mon, 18 Oct 2021 01:01:31 -0700
-Message-Id: <1634544092-37014-1-git-send-email-wangqing@vivo.com>
-X-Mailer: git-send-email 2.7.4
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR0401CA0005.apcprd04.prod.outlook.com
- (2603:1096:3:1::15) To SL2PR06MB3082.apcprd06.prod.outlook.com
- (2603:1096:100:37::17)
+        id S231156AbhJRIdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 04:33:05 -0400
+Received: from host.78.145.23.62.rev.coltfrance.com ([62.23.145.78]:54288 "EHLO
+        smtpservice.6wind.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S230439AbhJRIdD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 04:33:03 -0400
+Received: from bretzel (bretzel.dev.6wind.com [10.16.0.57])
+        by smtpservice.6wind.com (Postfix) with ESMTPS id E73B760D79;
+        Mon, 18 Oct 2021 10:30:51 +0200 (CEST)
+Received: from dichtel by bretzel with local (Exim 4.92)
+        (envelope-from <dichtel@6wind.com>)
+        id 1mcO2l-00078P-QV; Mon, 18 Oct 2021 10:30:51 +0200
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     stephen@networkplumber.org
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
+        antony.antony@secunet.com, steffen.klassert@secunet.com,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Subject: [PATCH iproute2 v2] xfrm: enable to manage default policies
+Date:   Mon, 18 Oct 2021 10:30:45 +0200
+Message-Id: <20211018083045.27406-1-nicolas.dichtel@6wind.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20210923061342.8522-1-nicolas.dichtel@6wind.com>
+References: <20210923061342.8522-1-nicolas.dichtel@6wind.com>
 MIME-Version: 1.0
-Received: from ubuntu.localdomain (103.220.76.181) by SG2PR0401CA0005.apcprd04.prod.outlook.com (2603:1096:3:1::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.4608.15 via Frontend Transport; Mon, 18 Oct 2021 08:01:45 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f07d66d8-3320-47c8-9713-08d9920d8880
-X-MS-TrafficTypeDiagnostic: SL2PR06MB3161:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SL2PR06MB3161908C7170FF9E94976DF6BDBC9@SL2PR06MB3161.apcprd06.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mWUAii6R+Dl2ZYjOFPSUB9l8050oVLrI6hQMJHkFblKFLJDTB58UTxQzK9jUrgovegTkWMzPmbh7l2zfv6/eNALWvbt9qfXmU6Hlg7Xhmo/H6HG84q+TgGse2PJ4T48VNFci03YTmU8Pry7oJ2v+A00mFOQ3ESos6XFF+q+EP1vYY+3DHy+7F457KEx558hDnuouHoa4/WIDc2LGfLTWS3Jzfoo5sAVYFeWFVr/FBqJtmWEgX2BC7HzbLNr7EHvCLR6AFgqheef0J2cZmaJpu7uJtKxQ7eP9Nj1o51SNYahNVjjk+nqoc00amMANCQK1RwBtntrm1TK1Z+B3tfES7zAQ0Y9LgF40NTg6XcL7dCFhRvW3Le8FQWcv+vRIZOUZsghQac43iZQCG+D7PLNIq8lqqINIhK8ktIJ+yO5YwwTSxzeMIl5p8uqr/QdaO311rRU7vK3Au62W5ZED2ij7WQ5gjRyMG9q7I0drH0oNQ44cR8I07W6SdC7LomV7VPHcsxZ7jSF75HARD9A4Aoosqa3dsynavrC5m/EVHI7d6cPpM+aSKKqDhB37wspf1ew2vPsE93xpVj6ViQdtZqtb5fgmar2iVBdB/f0LnL9K6WM8nZLjfWm9HIRUwfBapyAOEiXCy4dN3/vMOiAIMbZEc9q0s/jw3N+zAhXDPWtKEMFkfYMT3jDff+ze3OcqKefnaYCx/zx3oqQtbrXx73N7VrSsDLNVeXxoSt90rCtriWs=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SL2PR06MB3082.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(8936002)(7416002)(508600001)(66476007)(66556008)(921005)(83380400001)(36756003)(66946007)(6486002)(6512007)(107886003)(26005)(5660300002)(86362001)(956004)(52116002)(186003)(2616005)(6666004)(110136005)(8676002)(316002)(6506007)(4326008)(38100700002)(38350700002)(2906002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?oJomrw6TT2UfWWKwMQz99/+Oe8Dr/cBV7YRnaj0UFwuxc40yMbnnJ7badS2m?=
- =?us-ascii?Q?dyilPQs6nbU9bd9Cg0JZqvQJYJBe46Gtwi4xlaZt0o5kqCvB+H6RgyuOYMna?=
- =?us-ascii?Q?5RrlgDlS/uvXWi9w7+bALDBEW/JPCXC8uKyw09Py6qasM7ZiVJBrTPD0vUYu?=
- =?us-ascii?Q?26xwmyzc9elvD3RS/dnzgiHg5fAIeWP8jWotce5sG6O5Ef4ElGgaDuPrGhkM?=
- =?us-ascii?Q?y+LY6RM0eiXoy64CeB5vPVwqY6fXlJJURT1BwVOxD5SgzrKrv3tLYWk65WwH?=
- =?us-ascii?Q?PfwfV1eiOPLkzVdvQ5iATXDs3apOQuyDhuvPbP9ywwvH4LdvfHamuUxgc4SM?=
- =?us-ascii?Q?JMW1km0zZjGeikSwJLamVsBsyqKPe16+vUDXGt26CM3Yq5T9ngYXkOJHiGuc?=
- =?us-ascii?Q?soO5zubOeYyXkSh0YZABcO+Q5EUoVjJm6aUEEjBOaFMExGjT01EuUW1ptGre?=
- =?us-ascii?Q?fY+NimmwCQlcMAb6vP4jQ4zzSLy32+1m+EaeTOhQAROvixHgfnm+laTU/1OH?=
- =?us-ascii?Q?JERphDz2tVuhpr48BAOtxNLBA66kQAdudmAp8VgKW3/X4niHQyaBwOki4Ph9?=
- =?us-ascii?Q?Wsotbr+05ZOxcn77Ka7ZX62sIFQdCEew+EoJdk3IMdzntWB9oNfn6KVk2Fde?=
- =?us-ascii?Q?+TVylJRoeIaqlYM7b7HwevRyvXabfD7rnVO0AH43iLljRmny1khh792LMHnj?=
- =?us-ascii?Q?87/9/nEAYL0D8vY9bjoUVEPMiIEDLuEJ6Ch8bo+FoGzzV7i34rp8U2sgrN7m?=
- =?us-ascii?Q?qHDeM9qPoaN2M+9MCtphEctNMMShJfdCd/btwdqUY6kEweRKd2KuT86y78OW?=
- =?us-ascii?Q?GA9Gjj2fRToTYTbRweMp2u462Nt68fwSm0tk+9NGVdz+Vh1qZq9i6gb0/P15?=
- =?us-ascii?Q?yGrPOPHhzCK+l3W/N/jrvjUva5LiEDyIyV7/Yqy/SNyXY5i72e4+ivnwjTdp?=
- =?us-ascii?Q?lAO+UN4bpBHtF8MN7obPERi2pr3cptd+C5lmlEV9k0E/ARcR/9ntNTvzdUpq?=
- =?us-ascii?Q?HvMfA0KYLCdDrDUANzMG2Bv9/FJlC3/YZ3RSB3MlMzMchVr1doZj7F0UV7m+?=
- =?us-ascii?Q?hXrXSUqUqjPUCNgiJA9A0NWbJXApeBeEu3YkHO5i02InIQISJGg+nVPEDJXn?=
- =?us-ascii?Q?UXGboLwocmVk5k4rjU/EG/OSMEcR0vI1udRQ+hYMPuF0wCFZ6wRZud4e8F5f?=
- =?us-ascii?Q?aw2eQ2reAIKpGcNglHYWVT4wuSFVFfJkkaMueuhrjkDlXXsFuvSVzjMSXlN1?=
- =?us-ascii?Q?KmaQJBM8RVMtuGmJdZdGt6qDGXsp94Kla7IqHOyXFrY60VAKwul1jYj5HU+4?=
- =?us-ascii?Q?5kAnsSLT6HDX7sFkcmuii1P/?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f07d66d8-3320-47c8-9713-08d9920d8880
-X-MS-Exchange-CrossTenant-AuthSource: SL2PR06MB3082.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2021 08:01:47.2944
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dIF5yRP5Tib877SFg0Xl8bZrVS8EfBszet9rYo0N+inWUwYXdeBg860yJgksFtrwXH7xRQMmASCTfuC5sqNxbA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SL2PR06MB3161
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes the following Coccinelle warning:
+Two new commands to manage default policies:
+ - ip xfrm policy setdefault
+ - ip xfrm policy getdefault
 
-net/bpf/test_run.c:361:8-15: WARNING opportunity for memdup_user
-net/bpf/test_run.c:1055:8-15: WARNING opportunity for memdup_user
+And the corresponding part in 'ip xfrm monitor'.
 
-Use memdup_user rather than duplicating its implementation
-This is a little bit restricted to reduce false positives
-
-Signed-off-by: Qing Wang <wangqing@vivo.com>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 ---
- net/bpf/test_run.c | 21 ++++++---------------
- 1 file changed, 6 insertions(+), 15 deletions(-)
 
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 5296087..fbda8f5
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -358,13 +358,9 @@ int bpf_prog_test_run_raw_tp(struct bpf_prog *prog,
- 		return -EINVAL;
+v1 -> v2:
+  rebase and resent (kernel patches are now in Linus's tree)
+
+ include/uapi/linux/xfrm.h |  15 +++--
+ ip/xfrm.h                 |   1 +
+ ip/xfrm_monitor.c         |   3 +
+ ip/xfrm_policy.c          | 121 ++++++++++++++++++++++++++++++++++++++
+ man/man8/ip-xfrm.8        |  12 ++++
+ 5 files changed, 146 insertions(+), 6 deletions(-)
+
+diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
+index ecd06396eb16..378b4092f26a 100644
+--- a/include/uapi/linux/xfrm.h
++++ b/include/uapi/linux/xfrm.h
+@@ -213,13 +213,13 @@ enum {
+ 	XFRM_MSG_GETSPDINFO,
+ #define XFRM_MSG_GETSPDINFO XFRM_MSG_GETSPDINFO
  
- 	if (ctx_size_in) {
--		info.ctx = kzalloc(ctx_size_in, GFP_USER);
--		if (!info.ctx)
--			return -ENOMEM;
--		if (copy_from_user(info.ctx, ctx_in, ctx_size_in)) {
--			err = -EFAULT;
--			goto out;
--		}
-+		info.ctx = memdup_user(ctx_in, ctx_size_in);
-+		if (IS_ERR(info.ctx))
-+			return ERR_PTR(PTR_ERR(info.ctx));
- 	} else {
- 		info.ctx = NULL;
++	XFRM_MSG_MAPPING,
++#define XFRM_MSG_MAPPING XFRM_MSG_MAPPING
++
+ 	XFRM_MSG_SETDEFAULT,
+ #define XFRM_MSG_SETDEFAULT XFRM_MSG_SETDEFAULT
+ 	XFRM_MSG_GETDEFAULT,
+ #define XFRM_MSG_GETDEFAULT XFRM_MSG_GETDEFAULT
+-
+-	XFRM_MSG_MAPPING,
+-#define XFRM_MSG_MAPPING XFRM_MSG_MAPPING
+ 	__XFRM_MSG_MAX
+ };
+ #define XFRM_MSG_MAX (__XFRM_MSG_MAX - 1)
+@@ -514,9 +514,12 @@ struct xfrm_user_offload {
+ #define XFRM_OFFLOAD_INBOUND	2
+ 
+ struct xfrm_userpolicy_default {
+-#define XFRM_USERPOLICY_DIRMASK_MAX	(sizeof(__u8) * 8)
+-	__u8				dirmask;
+-	__u8				action;
++#define XFRM_USERPOLICY_UNSPEC	0
++#define XFRM_USERPOLICY_BLOCK	1
++#define XFRM_USERPOLICY_ACCEPT	2
++	__u8				in;
++	__u8				fwd;
++	__u8				out;
+ };
+ 
+ /* backwards compatibility for userspace */
+diff --git a/ip/xfrm.h b/ip/xfrm.h
+index 9ba5ca61d5e4..17dcf3fea83f 100644
+--- a/ip/xfrm.h
++++ b/ip/xfrm.h
+@@ -132,6 +132,7 @@ void xfrm_state_info_print(struct xfrm_usersa_info *xsinfo,
+ void xfrm_policy_info_print(struct xfrm_userpolicy_info *xpinfo,
+ 			    struct rtattr *tb[], FILE *fp, const char *prefix,
+ 			    const char *title);
++int xfrm_policy_default_print(struct nlmsghdr *n, FILE *fp);
+ int xfrm_id_parse(xfrm_address_t *saddr, struct xfrm_id *id, __u16 *family,
+ 		  int loose, int *argcp, char ***argvp);
+ int xfrm_mode_parse(__u8 *mode, int *argcp, char ***argvp);
+diff --git a/ip/xfrm_monitor.c b/ip/xfrm_monitor.c
+index e34b5fbda130..f67424c5be06 100644
+--- a/ip/xfrm_monitor.c
++++ b/ip/xfrm_monitor.c
+@@ -323,6 +323,9 @@ static int xfrm_accept_msg(struct rtnl_ctrl_data *ctrl,
+ 	case XFRM_MSG_MAPPING:
+ 		xfrm_mapping_print(n, arg);
+ 		return 0;
++	case XFRM_MSG_GETDEFAULT:
++		xfrm_policy_default_print(n, arg);
++		return 0;
+ 	default:
+ 		break;
  	}
-@@ -392,7 +388,6 @@ int bpf_prog_test_run_raw_tp(struct bpf_prog *prog,
- 	    copy_to_user(&uattr->test.retval, &info.retval, sizeof(u32)))
- 		err = -EFAULT;
- 
--out:
- 	kfree(info.ctx);
- 	return err;
+diff --git a/ip/xfrm_policy.c b/ip/xfrm_policy.c
+index 7cc00e7c2f5b..744f331ff564 100644
+--- a/ip/xfrm_policy.c
++++ b/ip/xfrm_policy.c
+@@ -66,6 +66,8 @@ static void usage(void)
+ 		"Usage: ip xfrm policy flush [ ptype PTYPE ]\n"
+ 		"Usage: ip xfrm policy count\n"
+ 		"Usage: ip xfrm policy set [ hthresh4 LBITS RBITS ] [ hthresh6 LBITS RBITS ]\n"
++		"Usage: ip xfrm policy setdefault DIR ACTION [ DIR ACTION ] [ DIR ACTION ]\n"
++		"Usage: ip xfrm policy getdefault\n"
+ 		"SELECTOR := [ src ADDR[/PLEN] ] [ dst ADDR[/PLEN] ] [ dev DEV ] [ UPSPEC ]\n"
+ 		"UPSPEC := proto { { tcp | udp | sctp | dccp } [ sport PORT ] [ dport PORT ] |\n"
+ 		"                  { icmp | ipv6-icmp | mobility-header } [ type NUMBER ] [ code NUMBER ] |\n"
+@@ -1124,6 +1126,121 @@ static int xfrm_spd_getinfo(int argc, char **argv)
+ 	return 0;
  }
-@@ -1052,13 +1047,9 @@ int bpf_prog_test_run_syscall(struct bpf_prog *prog,
- 		return -EINVAL;
  
- 	if (ctx_size_in) {
--		ctx = kzalloc(ctx_size_in, GFP_USER);
--		if (!ctx)
--			return -ENOMEM;
--		if (copy_from_user(ctx, ctx_in, ctx_size_in)) {
--			err = -EFAULT;
--			goto out;
--		}
-+		ctx = memdup_user(ctx_in, ctx_size_in);
-+		if (IS_ERR(ctx))
-+			return ERR_PTR(PTR_ERR(ctx));
- 	}
++static int xfrm_spd_setdefault(int argc, char **argv)
++{
++	struct rtnl_handle rth;
++	struct {
++		struct nlmsghdr			n;
++		struct xfrm_userpolicy_default  up;
++	} req = {
++		.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct xfrm_userpolicy_default)),
++		.n.nlmsg_flags = NLM_F_REQUEST,
++		.n.nlmsg_type = XFRM_MSG_SETDEFAULT,
++	};
++
++	while (argc > 0) {
++		if (strcmp(*argv, "in") == 0) {
++			if (req.up.in)
++				duparg("in", *argv);
++
++			NEXT_ARG();
++			if (strcmp(*argv, "block") == 0)
++				req.up.in = XFRM_USERPOLICY_BLOCK;
++			else if (strcmp(*argv, "accept") == 0)
++				req.up.in = XFRM_USERPOLICY_ACCEPT;
++			else
++				invarg("in policy value is invalid", *argv);
++		} else if (strcmp(*argv, "fwd") == 0) {
++			if (req.up.fwd)
++				duparg("fwd", *argv);
++
++			NEXT_ARG();
++			if (strcmp(*argv, "block") == 0)
++				req.up.fwd = XFRM_USERPOLICY_BLOCK;
++			else if (strcmp(*argv, "accept") == 0)
++				req.up.fwd = XFRM_USERPOLICY_ACCEPT;
++			else
++				invarg("fwd policy value is invalid", *argv);
++		} else if (strcmp(*argv, "out") == 0) {
++			if (req.up.out)
++				duparg("out", *argv);
++
++			NEXT_ARG();
++			if (strcmp(*argv, "block") == 0)
++				req.up.out = XFRM_USERPOLICY_BLOCK;
++			else if (strcmp(*argv, "accept") == 0)
++				req.up.out = XFRM_USERPOLICY_ACCEPT;
++			else
++				invarg("out policy value is invalid", *argv);
++		} else {
++			invarg("unknown direction", *argv);
++		}
++
++		argc--; argv++;
++	}
++
++	if (rtnl_open_byproto(&rth, 0, NETLINK_XFRM) < 0)
++		exit(1);
++
++	if (rtnl_talk(&rth, &req.n, NULL) < 0)
++		exit(2);
++
++	rtnl_close(&rth);
++
++	return 0;
++}
++
++int xfrm_policy_default_print(struct nlmsghdr *n, FILE *fp)
++{
++	struct xfrm_userpolicy_default *up = NLMSG_DATA(n);
++	int len = n->nlmsg_len - NLMSG_SPACE(sizeof(*up));
++
++	if (len < 0) {
++		fprintf(stderr,
++			"BUG: short nlmsg len %u (expect %lu) for XFRM_MSG_GETDEFAULT\n",
++			n->nlmsg_len, NLMSG_SPACE(sizeof(*up)));
++		return -1;
++	}
++
++	fprintf(fp, "Default policies:\n");
++	fprintf(fp, " in:  %s\n",
++		up->in == XFRM_USERPOLICY_BLOCK ? "block" : "accept");
++	fprintf(fp, " fwd: %s\n",
++		up->fwd == XFRM_USERPOLICY_BLOCK ? "block" : "accept");
++	fprintf(fp, " out: %s\n",
++		up->out == XFRM_USERPOLICY_BLOCK ? "block" : "accept");
++	fflush(fp);
++
++	return 0;
++}
++
++static int xfrm_spd_getdefault(int argc, char **argv)
++{
++	struct rtnl_handle rth;
++	struct {
++		struct nlmsghdr			n;
++		struct xfrm_userpolicy_default  up;
++	} req = {
++		.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct xfrm_userpolicy_default)),
++		.n.nlmsg_flags = NLM_F_REQUEST,
++		.n.nlmsg_type = XFRM_MSG_GETDEFAULT,
++	};
++	struct nlmsghdr *answer;
++
++	if (rtnl_open_byproto(&rth, 0, NETLINK_XFRM) < 0)
++		exit(1);
++
++	if (rtnl_talk(&rth, &req.n, &answer) < 0)
++		exit(2);
++
++	xfrm_policy_default_print(answer, (FILE *)stdout);
++
++	free(answer);
++	rtnl_close(&rth);
++
++	return 0;
++}
++
+ static int xfrm_policy_flush(int argc, char **argv)
+ {
+ 	struct rtnl_handle rth;
+@@ -1197,6 +1314,10 @@ int do_xfrm_policy(int argc, char **argv)
+ 		return xfrm_spd_getinfo(argc, argv);
+ 	if (matches(*argv, "set") == 0)
+ 		return xfrm_spd_setinfo(argc-1, argv+1);
++	if (matches(*argv, "setdefault") == 0)
++		return xfrm_spd_setdefault(argc-1, argv+1);
++	if (matches(*argv, "getdefault") == 0)
++		return xfrm_spd_getdefault(argc-1, argv+1);
+ 	if (matches(*argv, "help") == 0)
+ 		usage();
+ 	fprintf(stderr, "Command \"%s\" is unknown, try \"ip xfrm policy help\".\n", *argv);
+diff --git a/man/man8/ip-xfrm.8 b/man/man8/ip-xfrm.8
+index 003f6c3d1c28..bf725cabb82d 100644
+--- a/man/man8/ip-xfrm.8
++++ b/man/man8/ip-xfrm.8
+@@ -298,6 +298,18 @@ ip-xfrm \- transform configuration
+ .RB "[ " hthresh6
+ .IR LBITS " " RBITS " ]"
  
- 	rcu_read_lock_trace();
++.ti -8
++.B "ip xfrm policy setdefault"
++.IR DIR
++.IR ACTION " [ "
++.IR DIR
++.IR ACTION " ] [ "
++.IR DIR
++.IR ACTION " ]"
++
++.ti -8
++.B "ip xfrm policy getdefault"
++
+ .ti -8
+ .IR SELECTOR " :="
+ .RB "[ " src
 -- 
-2.7.4
+2.33.0
 
