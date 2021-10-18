@@ -2,184 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D62B643162D
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 12:32:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EBC4431663
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 12:46:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230460AbhJRKfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 06:35:09 -0400
-Received: from mx1.tq-group.com ([93.104.207.81]:11056 "EHLO mx1.tq-group.com"
+        id S230376AbhJRKs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 06:48:28 -0400
+Received: from pegase2.c-s.fr ([93.17.235.10]:57413 "EHLO pegase2.c-s.fr"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230446AbhJRKfI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Oct 2021 06:35:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1634553177; x=1666089177;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7TuARXSI3wTGfh7jWlkLb/D7la4yilknZ2ZdyGEzh0U=;
-  b=Am09TH449mxfAIuL9ccwNYujk+9g3k4dGBbEXeFHTFGrzstqtzpzqFzB
-   exPxbrgPEfpT0WUWNZwChR3dhnla7HH4MW9zOzz/ff9b93DOM4CE7SBP8
-   99zTS3VgfUjWNwsImlKQJuJ6L1rdGyGev7Bd7g8BZPcAt3hg1ytfQxaIq
-   jc5EPgY0LecyDvXHzlTCqLm7xyYZtCNLEvwSIZJbLMUycHGA50aziT2N1
-   NEwZwrIJ82FXFQtwyiWahB6JrJD4VC0Dn2c/Rhk6mFYR/V2gevqNlpcT/
-   QbDSPzAit6T+IVL8fU0gl78Ne5En9nHd75wf4/kCgC2vegsyKtpsdHTIV
-   A==;
-X-IronPort-AV: E=Sophos;i="5.85,381,1624312800"; 
-   d="scan'208";a="20102957"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 18 Oct 2021 12:32:55 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Mon, 18 Oct 2021 12:32:55 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Mon, 18 Oct 2021 12:32:55 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1634553175; x=1666089175;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7TuARXSI3wTGfh7jWlkLb/D7la4yilknZ2ZdyGEzh0U=;
-  b=GiApMPZuDIDbGMwkp7Ci7+Ogc6AyVpkh9DNtNt5ko7UFzVCBzjn9WeUI
-   rrn4gMJaCHh7TxMJ2ouAx3aeP6pPV91sJYIrXK0O/M70Wx92VwqGdf5ns
-   p+dqLk/vXLOhHpIR396zUP3L4jTm+p/sNV77dtVAfzVZKzp+H55p8sLTJ
-   czrXyw9lgROdDcijCrvsqZ1yBwUB+DHkE4gWdEt/mgyOV4scGA9WQVKIs
-   25gJ5wIsd12ECjn7/AmXFncoBQAkG85DynmtEHCx3KnIt+pK0SVH+SL2Q
-   r+bjiIzUUDUFIiteUBgcI1bweQ/I9ngFfATBSildFv0EtBX90RhKs+ItS
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.85,381,1624312800"; 
-   d="scan'208";a="20102956"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 18 Oct 2021 12:32:55 +0200
-Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.121.48.12])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 9AC22280065;
-        Mon, 18 Oct 2021 12:32:55 +0200 (CEST)
-Message-ID: <0dd0eb96ce6509b944d1a0b3cfa78e692409edc5.camel@ew.tq-group.com>
-Subject: RE: [PATCH] net: fec: defer probe if PHY on external MDIO bus is
- not available
-From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        id S229603AbhJRKs1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Oct 2021 06:48:27 -0400
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4HXtpH2mnzz9sSY;
+        Mon, 18 Oct 2021 12:46:15 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id ANnJZly2ob87; Mon, 18 Oct 2021 12:46:15 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4HXtpH1wwVz9sSD;
+        Mon, 18 Oct 2021 12:46:15 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 29DC68B76C;
+        Mon, 18 Oct 2021 12:46:15 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id qhZjXg78Wf90; Mon, 18 Oct 2021 12:46:15 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.103])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id EA6688B763;
+        Mon, 18 Oct 2021 12:46:14 +0200 (CEST)
+Subject: Re: [PATCH net-next] phy: micrel: ksz8041nl: do not use power down
+ mode
+To:     Francesco Dolcini <francesco.dolcini@toradex.com>
+Cc:     f.fainelli@gmail.com, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Date:   Mon, 18 Oct 2021 12:32:53 +0200
-In-Reply-To: <DB8PR04MB679504F7E61252F3FC62FBFEE6BC9@DB8PR04MB6795.eurprd04.prod.outlook.com>
-References: <20211014113043.3518-1-matthias.schiffer@ew.tq-group.com>
-         <DB8PR04MB679504F7E61252F3FC62FBFEE6BC9@DB8PR04MB6795.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-Mime-Version: 1.0
+        Jakub Kicinski <kuba@kernel.org>,
+        Stefan Agner <stefan@agner.ch>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20211018094256.70096-1-francesco.dolcini@toradex.com>
+ <180289ac-4480-1e4c-d679-df4f0478ec65@csgroup.eu>
+ <20211018101802.GA7669@francesco-nb.int.toradex.com>
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+Message-ID: <a06104cf-d634-a25a-cf54-975689ad3e91@csgroup.eu>
+Date:   Mon, 18 Oct 2021 12:46:14 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+MIME-Version: 1.0
+In-Reply-To: <20211018101802.GA7669@francesco-nb.int.toradex.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: fr-FR
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2021-10-18 at 10:20 +0000, Joakim Zhang wrote:
-> Hi Matthias,
+
+
+Le 18/10/2021 à 12:18, Francesco Dolcini a écrit :
+> Hello Christophe,
 > 
-> > -----Original Message-----
-> > From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-> > Sent: 2021年10月14日 19:31
-> > To: Joakim Zhang <qiangqing.zhang@nxp.com>; David S. Miller
-> > <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>
-> > Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Matthias Schiffer
-> > <matthias.schiffer@ew.tq-group.com>
-> > Subject: [PATCH] net: fec: defer probe if PHY on external MDIO bus is not
-> > available
-> > 
-> > On some SoCs like i.MX6UL it is common to use the same MDIO bus for PHYs
-> > on both Ethernet controllers. Currently device trees for such setups have to
-> > make assumptions regarding the probe order of the controllers:
-> > 
-> > For example in imx6ul-14x14-evk.dtsi, the MDIO bus of fec2 is used for the
-> > PHYs of both fec1 and fec2. The reason is that fec2 has a lower address than
-> > fec1 and is thus loaded first, so the bus is already available when fec1 is
-> > probed.
+> On Mon, Oct 18, 2021 at 11:53:03AM +0200, Christophe Leroy wrote:
+>>
+>>
+>> Le 18/10/2021 à 11:42, Francesco Dolcini a écrit :
+>>> From: Stefan Agner <stefan@agner.ch>
+>>>
+>>> Some Micrel KSZ8041NL PHY chips exhibit continous RX errors after using
+>>> the power down mode bit (0.11). If the PHY is taken out of power down
+>>> mode in a certain temperature range, the PHY enters a weird state which
+>>> leads to continously reporting RX errors. In that state, the MAC is not
+>>> able to receive or send any Ethernet frames and the activity LED is
+>>> constantly blinking. Since Linux is using the suspend callback when the
+>>> interface is taken down, ending up in that state can easily happen
+>>> during a normal startup.
+>>>
+>>> Micrel confirmed the issue in errata DS80000700A [*], caused by abnormal
+>>> clock recovery when using power down mode. Even the latest revision (A4,
+>>> Revision ID 0x1513) seems to suffer that problem, and according to the
+>>> errata is not going to be fixed.
+>>>
+>>> Remove the suspend/resume callback to avoid using the power down mode
+>>> completely.
+>>
+>> As far as I can see in the ERRATA, KSZ8041 RNLI also has the bug.
+>> Shoudn't you also remove the suspend/resume on that one (which follows in
+>> ksphy_driver[])
 > 
-> It's not correct, I think, we have board designed to use fec1(which is lower address) to controller MDIO interface, such as,
-> https://source.codeaurora.org/external/imx/linux-imx/tree/arch/arm64/boot/dts/freescale/imx8qm-mek.dts?h=lf-5.10.y#n948
-> that means our driver can handle these cases, not related to the order.
-
-Yes, not all SoC have FEC2 at the lower address, but this is the case
-on i.MX6UL. As far as I can tell my patch should not hurt when the
-order is already correct, as the added code will never retern
-EPROBE_DEFER in these cases.
-
-Obviously all existing Device Trees in the mainline kernel are defined
-in a way that already works with the existing code, by using the FEC2
-MDIO on i.MX6UL-based designs, or their Ethernet would not work
-correctly.
-
-
+> Yes, I could, however this patch is coming out of a real issue we had with
+> KSZ8041NL with this specific phy id (and we have such a patch in our linux
+> branch since years).
 > 
-> > Besides being confusing, this limitation also makes it impossible to use the
-> > same device tree for variants of the i.MX6UL with one Ethernet controller
-> > (which have to use the MDIO of fec1, as fec2 does not exist) and variants with
-> > two controllers (which have to use fec2 because of the load order).
-> 
-> Generally speaking, you should only include imx6ul.dtsi for your board design to cover SoC definition,
-> and imx6ul-14x14-evk.dtsi/ imx6ul-14x14-evk.dts is for our 14x14 EVK board. So do we really need this
-> defer probe?
-
-I only mentioned imx6ul-14x14-evk.dtsi as an example. The issue affects
-the TQ-Systems MBa6ULx board, which I'm currently preparing for
-mainline submission.
-
-The bootloader disables the non-existing FEC2 node on MCIMX6G1, but
-when the MDIO of FEC2 is used for both interfacse, this will also break
-FEC1, so a separate Device Tree is currently needed for the MCIMX6G1.
-We would prefer to use the same Device Tree for both variants, which is
-possible by using the MDIO of FEC1 and applying this patch.
+> On the other hand the entry for KSZ8041RNLI in the driver is somehow weird,
+> since the phy id according to the original commit does not even exists on
+> the datasheet. Would you be confident applying such errata for that phyid
+> without having a way of testing it?
 
 
-> 
-> > 
-> > To fix this, defer the probe of the Ethernet controller when the PHY is not on
-> > our own MDIO bus and not available.
-> > 
-> > Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-> > ---
-> >  drivers/net/ethernet/freescale/fec_main.c | 23 ++++++++++++++++++++++-
-> >  1 file changed, 22 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/net/ethernet/freescale/fec_main.c
-> > b/drivers/net/ethernet/freescale/fec_main.c
-> > index 47a6fc702ac7..dc070dd216e8 100644
-> > --- a/drivers/net/ethernet/freescale/fec_main.c
-> > +++ b/drivers/net/ethernet/freescale/fec_main.c
-> > @@ -3820,7 +3820,28 @@ fec_probe(struct platform_device *pdev)
-> >  		goto failed_stop_mode;
-> > 
-> >  	phy_node = of_parse_phandle(np, "phy-handle", 0);
-> > -	if (!phy_node && of_phy_is_fixed_link(np)) {
-> > +	if (phy_node) {
-> > +		struct device_node *mdio_parent =
-> > +			of_get_next_parent(of_get_parent(phy_node));
-> > +
-> > +		ret = 0;
-> > +
-> > +		/* Skip PHY availability check for our own MDIO bus to avoid
-> > +		 * cyclic dependency
-> > +		 */
-> > +		if (mdio_parent != np) {
-> > +			struct phy_device *phy = of_phy_find_device(phy_node);
-> > +
-> > +			if (phy)
-> > +				put_device(&phy->mdio.dev);
-> > +			else
-> > +				ret = -EPROBE_DEFER;
-> > +		}
-> > +
-> > +		of_node_put(mdio_parent);
-> > +		if (ret)
-> > +			goto failed_phy;
-> > +	} else if (of_phy_is_fixed_link(np)) {
-> >  		ret = of_phy_register_fixed_link(np);
-> >  		if (ret < 0) {
-> >  			dev_err(&pdev->dev,
-> > --
-> > 2.17.1
-> 
-> Best Regards,
-> Joakim Zhang
+If your patch was to add the suspend/resume capability I would agree 
+with you, but here we are talking about removing it, so what risk are we 
+taking ?
 
+In addition, commit 4bd7b5127bd0 ("micrel: add support for KSZ8041RNLI") 
+clearly tells that the only thing it did was to copy KSZ8041NL entry, so 
+for me updating both entries would really make sense.
+
+It looks odd to me that you refer in your commit log to an ERRATA that 
+tells you that the bug also exists on the KSZ8041RNLI and you apply it 
+only partly.
+
+Christophe
