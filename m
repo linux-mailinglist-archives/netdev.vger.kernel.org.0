@@ -2,154 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FF13432485
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 19:16:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBAEF4324F1
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 19:23:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233511AbhJRRSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 13:18:39 -0400
-Received: from mail-eopbgr140120.outbound.protection.outlook.com ([40.107.14.120]:17421
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232587AbhJRRSj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Oct 2021 13:18:39 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AvXr1ThTpRpnJD0GgNtu9I4gyDAfbEP3UPjn/YZqFDpe8qcQaVCZxlCqrTsDjq1eGMniDd0UD86IaQycewkxasDvnv8kE3xWBwEIX7gRfhW1nF4vKgt/vnKXDXvIMj6uQHncGB3SbfPBB8yrYwk//8JQ3SYY8gOAUDDchpqaqQT7IHA2Bgkbv0CzMRvS9B9b5O/MEhg+3fE86SGUDcnt/FT0eVHNl8qt8JT1JK0KcHMPg61GBUdh1lPzF4Gjz84Fd25jfjQ7Y3m5GrOK+dQ2pwB1967G8GTAFPfqd6RSAVZtztvR5ACcPZ+qplkLvtesBmY7oiKdxgCCFL9VhWXcVw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ec5L5TptzAHNm7Luda5hyHGvR3q/QQo+EUU4YJgc+Gk=;
- b=BucSG4pGiGYPgLZp06clW/KwMmZh7YZkJofnJxFsOijwPKHdg1Ra3/cYGoNgGpkt/y7L7j9CtCkaOU0SbO/l8iPD+YsvBHDxOFDnOSwSkwNsqsO5238uG5Y7VuiZl6rZyGK/3EBaKbfQ1/g8W33S/E/0HU+Sit4CxcRxbNyBY90cA3eDYyjkSS1rluHGY4xaSBdMVsxZr6FsE2lQG/vP9pHx/54VdDC+/RBUJxrNtJ2fIxOO+NSPRLnCqk+DndDHOgciAO7K/0qWYHFRwcASDCdgk7pUnO1ZEwyn3gB5XDHx6Yjnt4CtlITcn3wLxkX6nI/2HyIYqffWJsBocT3aeg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
- dkim=pass header.d=toradex.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ec5L5TptzAHNm7Luda5hyHGvR3q/QQo+EUU4YJgc+Gk=;
- b=MXPW6ZakWfVDkTm/hkKyBaPlxiYifctJw3ehv+gv9Wi8I75AYr5VfnNkqgXQfiYBLtQZO4F6NEtAaFTKTvuG/e4QpiHhGc35RXs6mvQgsrf/sv3MhJjGLweKXVeM/ZNcOEFTZMQ7cFHP/aXxZuu13NJ/ga95WZyIRIxapmDC60M=
-Authentication-Results: agner.ch; dkim=none (message not signed)
- header.d=none;agner.ch; dmarc=none action=none header.from=toradex.com;
-Received: from DBAPR05MB7445.eurprd05.prod.outlook.com (2603:10a6:10:1a0::8)
- by DB6PR05MB4549.eurprd05.prod.outlook.com (2603:10a6:6:4e::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.18; Mon, 18 Oct
- 2021 17:16:24 +0000
-Received: from DBAPR05MB7445.eurprd05.prod.outlook.com
- ([fe80::98f8:53ac:8110:c783]) by DBAPR05MB7445.eurprd05.prod.outlook.com
- ([fe80::98f8:53ac:8110:c783%3]) with mapi id 15.20.4608.018; Mon, 18 Oct 2021
- 17:16:24 +0000
-Date:   Mon, 18 Oct 2021 19:16:21 +0200
-From:   Francesco Dolcini <francesco.dolcini@toradex.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Francesco Dolcini <francesco.dolcini@toradex.com>,
-        f.fainelli@gmail.com, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        id S234061AbhJRRZf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 13:25:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32802 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234057AbhJRRZe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 13:25:34 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A99C06161C;
+        Mon, 18 Oct 2021 10:23:23 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id i5so5494474pla.5;
+        Mon, 18 Oct 2021 10:23:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=hLDHeDLR9sweLfVAyTlcUqMbZFfUddaQHjQtPR1ETdo=;
+        b=QFjaquk4UVOQdJnETV14okN6lMvUqewO+Mr4MgqI0qvGyBfZOYhPZ4dmi1TsvoUoI5
+         G2AVXbjOrqkinVykBpi0LhrBzmYV2jelu7GJEY1VoOdprIGPgvBCVj/ARrmhbc4MQCkf
+         sFrgWCCjQKSMlavysw732Jq0zBgB5BcrDcigkswdJYM9Y6kh5uLoyWHM4CrAzi0ew7Ax
+         yXrvk2GxhggtgKr6K8V2FKTwiXJEDwNQLmIjeSMlTDjMguV+Voi1V6NzKWFT+2DPD9Gs
+         +/CLcLFOLV2CyyBu7s8noOam9A1gi9GIMZub04mvb3IaNkiYBX56Hxi34JaYZ8qrAZK2
+         ACiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=hLDHeDLR9sweLfVAyTlcUqMbZFfUddaQHjQtPR1ETdo=;
+        b=M9GNI3WM/6CF5+jAUvxnXfgLR2J0wTSZo231Z8qCDo50h6+8K4Ze5fGmB6XoN04yh+
+         r8eztua+5CN0z4M1QPXVhcTn9gLFov8XLsCXeGq4q8FsGhZLMq4Y1Vv2V9CTG6zySP51
+         KGyM7nTWOlNaLUkcE+zQleAMd8+LD3t4CwPD/4Eg3AgvNoq465yW0E+78NHbFhi5qUXa
+         jSmxslFGE17/Bk0krhplHDGmzKL22TcCMMCshBXh0Sc1ZgFIyzrGJkoGkevBiIrHD1D7
+         1BC+pYFrxTDxwQHDts5WtAh/hfs19A2HyqI2M4/qxara05Sxp6GH82tIS6zr+z1GtgNi
+         OFfA==
+X-Gm-Message-State: AOAM532ngVSnyJsmfWFxUhuE3lO9Qj00fHyJxbLweFZKMfGehodTYZWo
+        fcvAadVICDMc0S/2UIYNn6I=
+X-Google-Smtp-Source: ABdhPJyCxgZnxwSbLxxdXAz5BQyxfRb2wcBvXV/NdOTZ9rFsF6KAh/SYQU1ex8z3PyEhlvJXulZi+g==
+X-Received: by 2002:a17:903:228d:b0:13f:45d4:fa8b with SMTP id b13-20020a170903228d00b0013f45d4fa8bmr27907754plh.21.1634577802658;
+        Mon, 18 Oct 2021 10:23:22 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id s3sm3208464pfu.84.2021.10.18.10.23.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Oct 2021 10:23:22 -0700 (PDT)
+Subject: Re: [PATCH net-next 9/9] net: sched: Remove Qdisc::running sequence
+ counter
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        christophe.leroy@csgroup.eu, Stefan Agner <stefan@agner.ch>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] phy: micrel: ksz8041nl: do not use power down
- mode
-Message-ID: <20211018171621.GC7669@francesco-nb.int.toradex.com>
-References: <20211018094256.70096-1-francesco.dolcini@toradex.com>
- <20211018095249.1219ddaf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211018095249.1219ddaf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-ClientProxiedBy: GVAP278CA0011.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:710:20::21) To DBAPR05MB7445.eurprd05.prod.outlook.com
- (2603:10a6:10:1a0::8)
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "Ahmed S. Darwish" <a.darwish@linutronix.de>,
+        Eric Dumazet <edumazet@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+References: <20211016084910.4029084-1-bigeasy@linutronix.de>
+ <20211016084910.4029084-10-bigeasy@linutronix.de>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <1cdc197a-f9c8-34e4-b19c-132dbbbcafb5@gmail.com>
+Date:   Mon, 18 Oct 2021 10:23:19 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Received: from francesco-nb.toradex.int (93.49.2.63) by GVAP278CA0011.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:20::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.15 via Frontend Transport; Mon, 18 Oct 2021 17:16:23 +0000
-Received: by francesco-nb.toradex.int (Postfix, from userid 1000)       id F2F4510A0FF3; Mon, 18 Oct 2021 19:16:21 +0200 (CEST)
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 870c04fe-7966-434e-932d-08d9925b02e3
-X-MS-TrafficTypeDiagnostic: DB6PR05MB4549:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB6PR05MB454959C2A8D29638F2E67D12E2BC9@DB6PR05MB4549.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:820;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: V+R5/qsqgVS3QOAKrggarbJRDaXXVt/r36+ZUOB+crduWnLTg8fbjz1k+22eKmo4uhzdvo9OayW9buT8ZJQ3Kmv8gRBVtvhoXCyAjVGNkLal64pY9TGjC3T5jTzwGfL0aWlKKiP6uG5SrAPFgKkSApw8QDbAidsncvNh46tuWBsZvlLCn+CUq5zkNselkkn51isl21gjo172CNKeC8ifrgTMe408AFUg8rt9UYyUdeLEWicSCKEEl4os1PH6ogDxu6Fwrn5jFwTm3eueLDCV579AsfvHgdS2d+ySMEj7us7blDKGrjeSyz1j2LaYaSmCk6zYVshOD2iQG7zvMb70/v6Imve+0sOHi6wtOacVCqRxNrTKazneUOL7llmq/rfV9vr5UvZAYMly9Kt5AMpDT+tARTXVyUOSSJz3+Xxk/jWt8VSJ/CUnQSfuhFxEqMaU1tncs1/AFD6ppBvZNV0NvN9qM3INnmoL+mSlyF8i1yDvcb0zJESQt1mMnsAFI0MdT4cugyRoUpJSGTwdGvM++B7/FBucbxJA2R99Hcj9Ees1yNnAmmvoYHId7nZ5BSTw876UWlV2DrqI/Wj3II4PDqXyY/DOz6mOEMrKtJ+LDfdEWzOjOchCb1oV1Oy2iLAKzYbt7hDUMws3tqITIx/gMUMONzVX6AjtxzvQ8uqMRrwCH1aCHudZ/sx2vq8aIZ0EgMaZ1apk2My5QbZE4+3AzAIcL7wwL9U3WsHbYy4+xVm+do6JstPfD3uNjzbs/7w1QlfZwtTKvJl2XYoS5UtAmLo/hW38CiVdsW3WGic51G8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DBAPR05MB7445.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(4326008)(52116002)(44832011)(8936002)(8676002)(966005)(42186006)(316002)(33656002)(6266002)(54906003)(86362001)(5660300002)(1076003)(38100700002)(38350700002)(7416002)(66946007)(508600001)(6916009)(83380400001)(26005)(2906002)(66556008)(66476007)(186003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?moS3REKXWjcGsmRkPGXT+h7iYSEyut7t+4lfFv6Ql/fzqNN1epucV8RSTWWh?=
- =?us-ascii?Q?UZxc0uld03zqizB0+JNxni6qknU9Qss+DT7xEd2qAyy405ap6EKEr4gU/RVj?=
- =?us-ascii?Q?J+4/sM9d82tBc+0dvJdxZlLQfvR5t82pvQixzXeU1MChiBIyBslE+viK2TLu?=
- =?us-ascii?Q?NfBQkVS93Y/dvoNcFy3ivHYujQCEZIhMVZ71XXZsBWvX9CfW6lcNXQn3ipHp?=
- =?us-ascii?Q?SbplQRJ0c3SGunkiK4AbJ5eS1kuA0qd9uL5xF6nN+tTPQKWZHg45k2uW9EnC?=
- =?us-ascii?Q?i2TV/P0dcFihKygBxt3ympvAhg5hFVD1EwV8ia8lI6e3h2RSo8MCRrteSvQf?=
- =?us-ascii?Q?GZo/NZwaC5RgWP9bfTnIdBjCfEBH5aQGX6S2b/eGU5W9tSuZUMPWtyawYT0p?=
- =?us-ascii?Q?/2FpM4GrEUNWqvXIJwmhRvQKlf+EByDdE1w9FqdGWY3pnbvMvqHmsw2h0mTS?=
- =?us-ascii?Q?GIAtRvOTavY9Sy19FwM4Qv+6NO25kQUh9JUqP06GDUUfEqbE5nGJ589xq7Gp?=
- =?us-ascii?Q?mv4Yws9yXhuJFt/orlPaXTVZGBnNeEwsrMX9hyJDSSQNvhdnY91cjttftu6+?=
- =?us-ascii?Q?OiKGX+WGILEY5JOmw5dk4/gxYitXwC3IJItjGTKF06TIjCo/OzZZUkE5RMSY?=
- =?us-ascii?Q?TxLdeciMY6xnQWeIQDAmWSEhaA/RT1s9cUNIYP7tEMvMQOn9MF00D1c5N7+b?=
- =?us-ascii?Q?rPZ+S1JQHMeRkiK2UoGXYJNaReM1oD5v+/4smuv/iNl4AFGXCJbPl5zWme8P?=
- =?us-ascii?Q?Galh3OgX9tzMC8uFjdDT8Qg4fiPEttN91Okrp/NahD/y3LM+Fu6Veb1Jovrp?=
- =?us-ascii?Q?5eFFtrSbMrjKmfFJmWjDdsph/mTDe6LYcPbQKy6HWpYINAuUz234VkXhb4qg?=
- =?us-ascii?Q?dErH6U1YNy58DYeMDVq4kB4x12gqvSNAwA1qQQMq3JMlqN6ZCCmyTkpYdJqh?=
- =?us-ascii?Q?X6brS3s1k00zw/+NxVfKG4Ik49cUAZy3oypPhNMwyfqcJQRpmH2cLwHEbId6?=
- =?us-ascii?Q?ng14k+Bdt9CcEBv2reYtYj6m9jGjQnNrUS8OOvYrdMnEr5Own5oAA540TebH?=
- =?us-ascii?Q?eyKBZeEJFmaUyoVC7aL8I1IjEVY33JsUwkvT9h4xmsDGn3Z9Jw8PBjBdsJz4?=
- =?us-ascii?Q?9WXVvWdroY8Zgi8I2qy1KCM6K6EK4deObntdkH+d4o6tNtbZ9WzXr0oZM+Wo?=
- =?us-ascii?Q?HzncXN0h5TcgibwICrJRJOVNWiH2ivyLyI5cXR6SPSO/xB4S4pjIt0qCEa6L?=
- =?us-ascii?Q?GyKkr7yfUGLwvdMUcUNJiyw4wRdHVayW3+TdYbvHulHxaInSwuKGZ2s6gGJK?=
- =?us-ascii?Q?OFd3YzfYa4qzdzMjBqZT8iFl?=
-X-OriginatorOrg: toradex.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 870c04fe-7966-434e-932d-08d9925b02e3
-X-MS-Exchange-CrossTenant-AuthSource: DBAPR05MB7445.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2021 17:16:23.8859
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3N9tU1Zc4rD2RiNdVyKJMWr3mzc15lKD1on6zmCzBxghbHJB23y3Xzlie46ScZNocXcEcQEUyZI6GeAOEPj2/916PBmHlrpcgrCGtlr5v5o=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR05MB4549
+In-Reply-To: <20211016084910.4029084-10-bigeasy@linutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jakub,
 
-On Mon, Oct 18, 2021 at 09:52:49AM -0700, Jakub Kicinski wrote:
-> On Mon, 18 Oct 2021 11:42:58 +0200 Francesco Dolcini wrote:
-> > From: Stefan Agner <stefan@agner.ch>
-> > 
-> > Some Micrel KSZ8041NL PHY chips exhibit continous RX errors after using
-> > the power down mode bit (0.11). If the PHY is taken out of power down
-> > mode in a certain temperature range, the PHY enters a weird state which
-> > leads to continously reporting RX errors. In that state, the MAC is not
-> > able to receive or send any Ethernet frames and the activity LED is
-> > constantly blinking. Since Linux is using the suspend callback when the
-> > interface is taken down, ending up in that state can easily happen
-> > during a normal startup.
-> > 
-> > Micrel confirmed the issue in errata DS80000700A [*], caused by abnormal
-> > clock recovery when using power down mode. Even the latest revision (A4,
-> > Revision ID 0x1513) seems to suffer that problem, and according to the
-> > errata is not going to be fixed.
-> > 
-> > Remove the suspend/resume callback to avoid using the power down mode
-> > completely.
-> > 
-> > [*] https://ww1.microchip.com/downloads/en/DeviceDoc/80000700A.pdf
-> > 
-> > Signed-off-by: Stefan Agner <stefan@agner.ch>
-> > Acked-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-> > Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+
+On 10/16/21 1:49 AM, Sebastian Andrzej Siewior wrote:
+> From: "Ahmed S. Darwish" <a.darwish@linutronix.de>
 > 
-> Is this the correct fixes tag?
+> The Qdisc::running sequence counter has two uses:
 > 
-> Fixes: 1a5465f5d6a2 ("phy/micrel: Add suspend/resume support to Micrel PHYs")
-The errata is from 2016, while this commit is from 2013, weird? Apart of that I
-can add the Fixes tag, should we send this also to stable?
+>   1. Reliably reading qdisc's tc statistics while the qdisc is running
+>      (a seqcount read/retry loop at gnet_stats_add_basic()).
+> 
+>   2. As a flag, indicating whether the qdisc in question is running
+>      (without any retry loops).
+> 
+> For the first usage, the Qdisc::running sequence counter write section,
+> qdisc_run_begin() => qdisc_run_end(), covers a much wider area than what
+> is actually needed: the raw qdisc's bstats update. A u64_stats sync
+> point was thus introduced (in previous commits) inside the bstats
+> structure itself. A local u64_stats write section is then started and
+> stopped for the bstats updates.
+> 
+> Use that u64_stats sync point mechanism for the bstats read/retry loop
+> at gnet_stats_add_basic().
+> 
+> For the second qdisc->running usage, a __QDISC_STATE_RUNNING bit flag,
+> accessed with atomic bitops, is sufficient. Using a bit flag instead of
+> a sequence counter at qdisc_run_begin/end() and qdisc_is_running() leads
+> to the SMP barriers implicitly added through raw_read_seqcount() and
+> write_seqcount_begin/end() getting removed. All call sites have been
+> surveyed though, and no required ordering was identified.
+> 
+> Now that the qdisc->running sequence counter is no longer used, remove
+> it.
+> 
+> Note, using u64_stats implies no sequence counter protection for 64-bit
+> architectures. This can lead to the qdisc tc statistics "packets" vs.
+> "bytes" values getting out of sync on rare occasions. The individual
+> values will still be valid.
+> 
+> Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-> Should we leave a comment in place of the callbacks referring 
-> to the errata?
-I think is a good idea, I'll add it.
 
-Francesco
+I see this has been merged this week end before we could test this thing during work days :/
+
+Just add a rate estimator on a qdisc:
+
+tc qd add dev lo root est 1sec 4sec pfifo
+
+then :
+
+[  140.824352] ------------[ cut here ]------------
+[  140.824361] WARNING: CPU: 15 PID: 0 at net/core/gen_stats.c:157 gnet_stats_add_basic+0x97/0xc0
+[  140.824378] Modules linked in: ipvlan bonding vfat fat w1_therm i2c_mux_pca954x i2c_mux ds2482 wire cdc_acm ehci_pci ehci_hcd bnx2x mdio xt_TCPMSS ip6table_mangle ip6_tables ipv6
+[  140.824413] CPU: 15 PID: 0 Comm: swapper/15 Not tainted 5.15.0-smp-DEV #73
+[  140.824415] Hardware name: Intel RML,PCH/Ibis_QC_18, BIOS 2.48.0 10/02/2019
+[  140.824417] RIP: 0010:gnet_stats_add_basic+0x97/0xc0
+[  140.824420] Code: 2c 38 4a 03 5c 38 08 48 c7 c6 68 15 51 a4 e8 60 00 c7 ff 44 39 e0 72 db 89 d8 eb 05 31 c0 45 31 ed 4d 01 2e 49 01 46 08 eb 17 <0f> 0b 4d 85 ff 75 96 48 8b 02 48 8b 4a 08 49 01 06 89 c8 49 01 46
+[  140.824432] RSP: 0018:ffff99415fbc5e08 EFLAGS: 00010206
+[  140.824434] RAX: 0000000080000100 RBX: ffff9939812f41d0 RCX: 0000000000000001
+[  140.824436] RDX: ffff99399705e0b0 RSI: 0000000000000000 RDI: ffff99415fbc5e40
+[  140.824438] RBP: ffff99415fbc5e30 R08: 0000000000000000 R09: 0000000000000000
+[  140.824440] R10: 0000000000000000 R11: ffffffffffffffff R12: ffff99415fbd7740
+[  140.824441] R13: dead000000000122 R14: ffff99415fbc5e40 R15: 0000000000000000
+[  140.824443] FS:  0000000000000000(0000) GS:ffff99415fbc0000(0000) knlGS:0000000000000000
+[  140.824445] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  140.824447] CR2: 000000000087fff0 CR3: 0000000f11610006 CR4: 00000000000606e0
+[  140.824449] Call Trace:
+[  140.824450]  <IRQ>
+[  140.824453]  ? local_bh_enable+0x20/0x20
+[  140.824457]  est_timer+0x5e/0x130
+[  140.824460]  call_timer_fn+0x2c/0x110
+[  140.824464]  expire_timers+0x4c/0xf0
+[  140.824467]  __run_timers+0x16f/0x1b0
+[  140.824470]  run_timer_softirq+0x1d/0x40
+[  140.824473]  __do_softirq+0x142/0x2a1
+[  140.824477]  irq_exit_rcu+0x6b/0xb0
+[  140.824480]  sysvec_apic_timer_interrupt+0x79/0x90
+[  140.824483]  </IRQ>
+[  140.824493]  asm_sysvec_apic_timer_interrupt+0x12/0x20
+[  140.824497] RIP: 0010:cpuidle_enter_state+0x19b/0x300
+[  140.824502] Code: ff 45 84 e4 74 20 48 c7 45 c8 00 00 00 00 9c 8f 45 c8 f7 45 c8 00 02 00 00 0f 85 e4 00 00 00 31 ff e8 c9 0d 88 ff fb 8b 45 bc <85> c0 78 52 48 89 de 89 c3 48 6b d3 68 48 8b 4c 16 48 4c 2b 6d b0
+[  140.824503] RSP: 0018:ffff99398089be60 EFLAGS: 00000246
+[  140.824505] RAX: 0000000000000004 RBX: ffffffffa446cb28 RCX: 000000000000001f
+[  140.824506] RDX: 000000000000000f RSI: 0000000000000000 RDI: 0000000000000000
+[  140.824507] RBP: ffff99398089beb0 R08: 0000000000000002 R09: 00000020cf9326e4
+[  140.824508] R10: 0000000000638824 R11: 0000000000000000 R12: 0000000000000000
+[  140.824509] R13: 00000020c9c8d180 R14: ffffc4733fbe1c50 R15: 0000000000000004
+[  140.824511]  cpuidle_enter+0x2e/0x40
+[  140.824514]  do_idle+0x19f/0x240
+[  140.824517]  cpu_startup_entry+0x25/0x30
+[  140.824519]  start_secondary+0x7c/0x80
+[  140.824521]  secondary_startup_64_no_verify+0xc3/0xcb
+[  140.824525] ---[ end trace d64fa4b3dc94b292 ]---
+
+
