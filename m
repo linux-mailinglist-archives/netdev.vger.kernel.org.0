@@ -2,94 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 269FA43237C
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 18:07:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FD2E432398
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 18:16:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233176AbhJRQJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 12:09:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43622 "EHLO
+        id S233504AbhJRQSf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 12:18:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232231AbhJRQJS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 12:09:18 -0400
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5C73C06161C;
-        Mon, 18 Oct 2021 09:07:06 -0700 (PDT)
-Received: by mail-io1-xd32.google.com with SMTP id z69so13769221iof.9;
-        Mon, 18 Oct 2021 09:07:06 -0700 (PDT)
+        with ESMTP id S231768AbhJRQSe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 12:18:34 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 446A6C06161C;
+        Mon, 18 Oct 2021 09:16:23 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id t7so2292808pgl.9;
+        Mon, 18 Oct 2021 09:16:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=/mTRsShBa0RedCL/8LYjfYhzL4WnaAlgO3es86cebV8=;
-        b=cUk+7h7TIexWwHkAj4k6UnkOyxoX7UzvYwSdOx5wPRXGQJ7ChybSfiEt/jBkF+r+MK
-         TEQAOCr/v/RxGCI5V8bkRLGrZSRsoJHgUIdGhHITt0WLzfgz4MOvf//KK+46br7Vn9aw
-         GEPt6iEeyl4s+NSOoyMYMyq1I2P8ZGKFLxP3vwjW85Vn5ULakJk4xzKYhKIxyF5F+hrG
-         U6T/riKd6XMRANLoMwH4U8HR8leER6nef159R0fyqF/zk5tHSyPmFk33KEE+XloBFogL
-         5xMgkrLGEv3WzDXiirrdDk4eVwq6z42FVTQ1GFtrHAPlLuQ4wROxbQSXhO3E10i7oKQR
-         vSrg==
+        h=mime-version:content-transfer-encoding:subject:from:to:cc:date
+         :message-id:in-reply-to;
+        bh=SwEuwCnXiV80SDJdClsOIhkNBmpbMyPtKGwWzGdE5yc=;
+        b=oB6C5Ty03ZxOBOZsbmna53g8YKpZvIPAa/MJ53ylUc8+mVWu2cMEgAQDvewuV/mQmW
+         d1aam6+5Lqlose6GRA7YO21xvzukxCTW9Dd9VYkWB1R1QjynOa2ISuYeuGy/7UD6X+Si
+         +t0XtPQZbmKE/gymbAIETgIvH+bcOweq/sd/4YieFdCvGcQ27gUiG0Jw0XmI7TB28Fqk
+         PP0tiPnwVCjIHGyn2KAXhbklR3kkek1j3fHCByYeCd9D6AFBV+pP9wRhmFb4lPZMFbGg
+         q6DdWCJXoF3hlDs9RyHn5ZKy/sy64xzSC1G6h2WpsbuNZ1H6f8XgicG1GOBhQIhk2zY7
+         /hfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=/mTRsShBa0RedCL/8LYjfYhzL4WnaAlgO3es86cebV8=;
-        b=fC+79xY63hQf3iKBNDbs6aSNHRQSSX0axO16YtFbCINUOEpFZKFBo/zY1YuRdSejMq
-         KnGTZpi+wWuA2ctzsMGmGK80dDiX0hMx3ur8q4PZkHZxpPr1RvGy+Kv9ObzIbs7nG0W9
-         P+SBZ/7/BQYJY+H69Vkvxim7F61hl2aOH9vhCMZpKSzu4AD+LvkufEsTAFX7R+3rSh0v
-         biKf1MyC3EE4UVfDwGvAeRdug9wqIJ+Lb3CI5/s3L8U95Pq38cNfx4UDWHRrL1gwoOVe
-         DosodrbXRI0UC0X7Ld93bzSgX7G7mAk8ZVJF6aCsv8iy66jc5j7cWuqEOeXJ5OgQYeSt
-         CDxw==
-X-Gm-Message-State: AOAM533dZX9sOHmb282YzCzzQu0M+cpJZgwRu0xr+x9bHnS+OwomeEUp
-        lpCi4NZsS6/5nA1HJPdlrhA=
-X-Google-Smtp-Source: ABdhPJyWIHgwW8gcHHZCBaExCk/ZbXnX2pGmMUfJ3ykpnFTd5jPFQGtHwf9Iz1Nf1IBavCvlHxpumg==
-X-Received: by 2002:a6b:f816:: with SMTP id o22mr15689164ioh.106.1634573226289;
-        Mon, 18 Oct 2021 09:07:06 -0700 (PDT)
-Received: from localhost ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id i15sm7114153ilb.30.2021.10.18.09.07.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Oct 2021 09:07:05 -0700 (PDT)
-Date:   Mon, 18 Oct 2021 09:06:57 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Wan Jiabing <wanjiabing@vivo.com>, Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     kael_w@yeah.net, Wan Jiabing <wanjiabing@vivo.com>
-Message-ID: <616d9ba173075_1eb12088b@john-XPS-13-9370.notmuch>
-In-Reply-To: <20211012023231.19911-1-wanjiabing@vivo.com>
-References: <20211012023231.19911-1-wanjiabing@vivo.com>
-Subject: RE: [PATCH] [v2] selftests: bpf: Remove duplicated include in
- cgroup_helpers
+        h=x-gm-message-state:mime-version:content-transfer-encoding:subject
+         :from:to:cc:date:message-id:in-reply-to;
+        bh=SwEuwCnXiV80SDJdClsOIhkNBmpbMyPtKGwWzGdE5yc=;
+        b=ufMDIzAE42i/k+rIGPkSI5OANwSUONJT6d3WXCt+JdIfDzPRvAvjzJtVi5b+NXHvbr
+         AJt7VW8e7tuyt0osPwYmFkS0JKGE1awyx5SjLbTvl5vLiaq6wk2SeSSTETYsQiHrnzcm
+         x8NeQf8g7PK6BM3FI+CCYsImsePiO3NyXHHQBP6q43cDs3H7yUrjd3TtWrEC18fWw042
+         J3rGOBFpStahcVtccvOMpfJY0ux5WeWbj/4tzjqoayl2eiD1GLtJqWmvvReSbhm4VGgR
+         Io+pTdrc6vjl4X2sPlt1i0iJX3RCUvW63wMsj5o1n7UwpA2A/PpeBx6LGnKWg4chdAfe
+         6UUw==
+X-Gm-Message-State: AOAM533TzvfLFc5Gd+gPaIkaHNOMNCoOASde6/Ag7yV9BIj4Ci9UzvVE
+        LP+tA9UAbyPQQMVMMAGyGD4=
+X-Google-Smtp-Source: ABdhPJzmiqjJ4gQv1OofM3fUMnZH1cZxOPi++IeGD51mIIqGPptPWRApZZerHodnI84/UmbpxxG6pQ==
+X-Received: by 2002:a62:7b87:0:b0:44d:3e28:a2ac with SMTP id w129-20020a627b87000000b0044d3e28a2acmr29942629pfc.67.1634573782720;
+        Mon, 18 Oct 2021 09:16:22 -0700 (PDT)
+Received: from localhost ([117.200.53.211])
+        by smtp.gmail.com with ESMTPSA id t14sm19592807pjl.10.2021.10.18.09.16.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Oct 2021 09:16:22 -0700 (PDT)
 Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [RFC PATCH 01/17] net: ipa: Correct ipa_status_opcode
+ enumeration
+From:   "Sireesh Kodali" <sireeshkodali1@gmail.com>
+To:     "Alex Elder" <elder@ieee.org>, <phone-devel@vger.kernel.org>,
+        <~postmarketos/upstreaming@lists.sr.ht>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <elder@kernel.org>
+Cc:     "Vladimir Lypak" <vladimir.lypak@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>
+Date:   Mon, 18 Oct 2021 21:42:04 +0530
+Message-Id: <CF2NYEUKQORV.3GXBPSZ0DT1BM@skynet-linux>
+In-Reply-To: <132dbed4-0dc9-a198-218f-90d44deb5d03@ieee.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wan Jiabing wrote:
-> Fix following checkincludes.pl warning:
-> ./scripts/checkincludes.pl tools/testing/selftests/bpf/cgroup_helpers.c
-> tools/testing/selftests/bpf/cgroup_helpers.c: unistd.h is included more
-> than once.
-> 
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-> ---
-> Changelog:
-> v2:
-> - Fix the commit description.
-> ---
+On Thu Oct 14, 2021 at 3:58 AM IST, Alex Elder wrote:
+> On 9/19/21 10:07 PM, Sireesh Kodali wrote:
+> > From: Vladimir Lypak <vladimir.lypak@gmail.com>
+> >=20
+> > The values in the enumaration were defined as bitmasks (base 2 exponent=
+s of
+> > actual opcodes). Meanwhile, it's used not as bitmask
+> > ipa_endpoint_status_skip and ipa_status_formet_packet functions (compar=
+ed
+> > directly with opcode from status packet). This commit converts these va=
+lues
+> > to actual hardware constansts.
+> >=20
+> > Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
+> > Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
+> > ---
+> >   drivers/net/ipa/ipa_endpoint.c | 8 ++++----
+> >   1 file changed, 4 insertions(+), 4 deletions(-)
+> >=20
+> > diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpo=
+int.c
+> > index 5528d97110d5..29227de6661f 100644
+> > --- a/drivers/net/ipa/ipa_endpoint.c
+> > +++ b/drivers/net/ipa/ipa_endpoint.c
+> > @@ -41,10 +41,10 @@
+> >  =20
+> >   /** enum ipa_status_opcode - status element opcode hardware values */
+> >   enum ipa_status_opcode {
+> > -	IPA_STATUS_OPCODE_PACKET		=3D 0x01,
+> > -	IPA_STATUS_OPCODE_DROPPED_PACKET	=3D 0x04,
+> > -	IPA_STATUS_OPCODE_SUSPENDED_PACKET	=3D 0x08,
+> > -	IPA_STATUS_OPCODE_PACKET_2ND_PASS	=3D 0x40,
+> > +	IPA_STATUS_OPCODE_PACKET		=3D 0,
+> > +	IPA_STATUS_OPCODE_DROPPED_PACKET	=3D 2,
+> > +	IPA_STATUS_OPCODE_SUSPENDED_PACKET	=3D 3,
+> > +	IPA_STATUS_OPCODE_PACKET_2ND_PASS	=3D 6,
+>
+> I haven't looked at how these symbols are used (whether you
+> changed it at all), but I'm pretty sure this is wrong.
+>
+> The downstream tends to define "soft" symbols that must
+> be mapped to their hardware equivalent values. So for
+> example you might find a function ipa_pkt_status_parse()
+> that translates between the hardware status structure
+> and the abstracted "soft" status structure. In that
+> function you see, for example, that hardware status
+> opcode 0x1 is translated to IPAHAL_PKT_STATUS_OPCODE_PACKET,
+> which downstream is defined to have value 0.
+>
+> In many places the upstream code eliminates that layer
+> of indirection where possible. So enumerated constants
+> are assigned specific values that match what the hardware
+> uses.
+>
 
-The Subject is a bit unusual. Typically it would be something like,
+Looking at these again, I realised this patch is indeed wrong...
+The status values are different on v2 and v3+. I guess the correct
+approach here would be to use an inline function and pick the correct
+status opcode, like how its handled for register defintions.
 
- "[PATCH bpf-next] selftests, remove duplicated include in cgroup_helpers"
+Regards,
+Sireesh
 
-For the actual patch though LGTM.
+> -Alex
+>
+> >   };
+> >  =20
+> >   /** enum ipa_status_exception - status element exception type */
+> >=20
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
