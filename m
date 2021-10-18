@@ -2,98 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49E824329F5
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 01:06:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE675432A1D
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 01:13:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229641AbhJRXI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 19:08:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39552 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229524AbhJRXI0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Oct 2021 19:08:26 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E684D61027;
-        Mon, 18 Oct 2021 23:06:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634598375;
-        bh=oJjYusAZZIbxfy2c0kkjkheSQqJ7qhypJ+gwZ6KVzVM=;
+        id S233487AbhJRXPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 19:15:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55610 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232424AbhJRXPv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 19:15:51 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F922C06161C;
+        Mon, 18 Oct 2021 16:13:35 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4HYCNX1vgPz4xd8;
+        Tue, 19 Oct 2021 10:13:31 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1634598814;
+        bh=0JD4M3w968qMBzkNmzmzABvLfRCjiTJMb0zNLPTmqCA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=sIZTtn/ojJG1P+kVwYFJ/Djf4OTzuC4qN/1yIJdp8Uxjuzme8YFD2eXD5JgCc9NRG
-         tTCTSvoMlGMSLOu+YYeQ7VWVREYtMOe6wLATI6yRaMH+FAk/PlWd6gweT497V+zUUM
-         uZ+Q+fNp5SUwHoeHvMukQ/oOEhdfhu338gTqmy9tVln6e9dDxAbVh6yXeLLckHBvJj
-         uqFivX7Z5gQRCIufOhchlUTAObw1Hg7+UGjUJsOjn1TiSLxB4bclLDvy+UjU1sPoU8
-         bxf/ndaxrC8CMxSUa0xVSGFgIALf1XjHVZ8UBmMhO2Arh/arPyTNGKMiSafTGoAwyu
-         RTdYRjN+nZ7bQ==
-Date:   Mon, 18 Oct 2021 16:06:14 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [net-next RESEND PATCH 1/2] net: dsa: qca8k: tidy for loop in
- setup and add cpu port check
-Message-ID: <20211018160614.4b24959c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CA+_ehUzHm1+7MNNHg7CDmMpW5nZhzsyvG_pKm8drmSa6Mx5tNQ@mail.gmail.com>
-References: <20211017145646.56-1-ansuelsmth@gmail.com>
-        <20211018154812.54dbc3ef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CA+_ehUzHm1+7MNNHg7CDmMpW5nZhzsyvG_pKm8drmSa6Mx5tNQ@mail.gmail.com>
+        b=fsgTW2zSFYjdcdebjDF8Cjk1TnecVDhP5pwtLZQcegwoSSE/8zmjM4+8dXxv9eHsL
+         3nV6dWfvW57syB5+e2K0tojDiIU3/AjWtalVS/uPG2SBAxtYTc9+kfUn7U5FZPOoFJ
+         ynTzFPbQ2RYXHLCEl1mzYFwRuyQiSYBQlbmRiIjTce5g/iUBdF5Wfm19pUfZCWijB5
+         CWx1ezrWDOvYBXSQCRhOasq4pHAyJSAeqPdANtv3BxoZ+eqiEuGPNvOx/l/HOOjNvS
+         NMzqEwfOnLU4OQmL38IG10oZZMbv097ttyQ0IxbB9SdDZU8z2d7qFQhY3w8XiwdPtc
+         bBsUuzyyVk0dg==
+Date:   Tue, 19 Oct 2021 10:13:30 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        NetFilter <netfilter-devel@vger.kernel.org>,
+        Antoine Tenart <atenart@kernel.org>,
+        Dust Li <dust.li@linux.alibaba.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: manual merge of the netfilter-next tree with the
+ netfilter tree
+Message-ID: <20211019101330.59790f64@canb.auug.org.au>
+In-Reply-To: <20211015130022.51468c6d@canb.auug.org.au>
+References: <20211015130022.51468c6d@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/TNrxAlFP+r_f.3.oxqd_ipx";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 19 Oct 2021 00:54:17 +0200 Ansuel Smith wrote:
-> > > Tidy and organize qca8k setup function from multiple for loop.
-> > > Change for loop in bridge leave/join to scan all port and skip cpu port.
-> > > No functional change intended.
-> > >
-> > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>  
-> >
-> > There's some confusion in patchwork. I think previous posting got
-> > applied, but patch 1 of this series git marked as applied.. while
-> > it was patch 2 that corresponds to previous posting..?
-> >
-> > Please make sure you mark new postings as v2 v3 etc. It's not a problem
-> > to post a vN+1 and say "no changes" in the change log, while it may be
-> > a problem if patchwork bot gets confused and doesn't mark series as
-> > superseded appropriately.
-> >
-> > I'm dropping the remainder of this series from patchwork, please rebase
-> > and resend what's missing in net-next.
-> >
-> > Thanks!  
-> 
-> Sorry for the mess. I think I got confused.
-> I resent these 2 patch (in one go) as i didn't add the net-next tag
-> and i thought they got ignored as the target was wrong.
-> I didn't receive any review or ack so i thought it was a good idea to
-> resend them in one go with the correct tag.
-> Hope it's not a stupid question but can you point me where should
-> i check to prevent this kind of error?
+--Sig_/TNrxAlFP+r_f.3.oxqd_ipx
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-You can check in patchwork if your submission was indeed ignored.
+Hi all,
 
-All the "active" patches are here:
+On Fri, 15 Oct 2021 13:00:22 +1100 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
+>
+> Today's linux-next merge of the netfilter-next tree got a conflict in:
+>=20
+>   net/netfilter/ipvs/ip_vs_ctl.c
+>=20
+> between commit:
+>=20
+>   174c37627894 ("netfilter: ipvs: make global sysctl readonly in non-init=
+ netns")
+>=20
+> from the netfilter tree and commit:
+>=20
+>   2232642ec3fb ("ipvs: add sysctl_run_estimation to support disable estim=
+ation")
+>=20
+> from the netfilter-next tree.
+>=20
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
+>=20
+> diff --cc net/netfilter/ipvs/ip_vs_ctl.c
+> index 29ec3ef63edc,cbea5a68afb5..000000000000
+> --- a/net/netfilter/ipvs/ip_vs_ctl.c
+> +++ b/net/netfilter/ipvs/ip_vs_ctl.c
+> @@@ -4090,11 -4096,8 +4096,13 @@@ static int __net_init ip_vs_control_net
+>   	tbl[idx++].data =3D &ipvs->sysctl_conn_reuse_mode;
+>   	tbl[idx++].data =3D &ipvs->sysctl_schedule_icmp;
+>   	tbl[idx++].data =3D &ipvs->sysctl_ignore_tunneled;
+> + 	ipvs->sysctl_run_estimation =3D 1;
+> + 	tbl[idx++].data =3D &ipvs->sysctl_run_estimation;
+>  +#ifdef CONFIG_IP_VS_DEBUG
+>  +	/* Global sysctls must be ro in non-init netns */
+>  +	if (!net_eq(net, &init_net))
+>  +		tbl[idx++].mode =3D 0444;
+>  +#endif
+>  =20
+>   	ipvs->sysctl_hdr =3D register_net_sysctl(net, "net/ipv4/vs", tbl);
+>   	if (ipvs->sysctl_hdr =3D=3D NULL) {
 
-https://patchwork.kernel.org/project/netdevbpf/list/
+This is now a conflict between the net-next tree and the netfilter tree.
 
-You can also look up particular patch by using it's message ID:
+--=20
+Cheers,
+Stephen Rothwell
 
-https://patchwork.kernel.org/project/netdevbpf/patch/<msg-id>/
+--Sig_/TNrxAlFP+r_f.3.oxqd_ipx
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-E.g.
+-----BEGIN PGP SIGNATURE-----
 
-https://patchwork.kernel.org/project/netdevbpf/patch/20211017145646.56-1-ansuelsmth@gmail.com/
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmFt/5oACgkQAVBC80lX
+0GxLHQf/W9/BAOuvRDEH1LJ2CBoJ7+FZADcYmfCCFqYmIlTyLkvVo5gJOuZnd+A0
+5pq/vZkS93qbBf5yfIQqeaQRg4ICq85r4LDTliQpdr8hjQMb+n6l0C+DQ5uHkHJ9
+Ow1giWH8aiqzA4rUbOksZmmXtDDxDCsH7dxIDssVDTM5YhcWpLRAwZhewKfSnYta
+YsLZXZB9iO4rcwq05PibIOwcw/7iBShDfLfGX2bAbKYKMVCXUbCmBEQc5wzSEbYl
+6YLGDN+aEtNOA0AxA0ZLZOO5A1OaRgH47tYlHKidDCepKeZ0b2N7VY38wVllXynR
+W/kqOHAB7OPoNY+C04/sY8Beu37etA==
+=XEu3
+-----END PGP SIGNATURE-----
 
-If the patch is in New, Under review or Needs ACK state then there's 
-no need to resend.
-
-> So anyway i both send these 2 patch as a dedicated patch with the
-> absent tag.
-
-Ah! I see the first posting of both now, looks like patchwork realized
-it's a repost of patch 1 so it marked that as superseded.
+--Sig_/TNrxAlFP+r_f.3.oxqd_ipx--
