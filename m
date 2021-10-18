@@ -2,84 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3118C43245A
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 19:02:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74B404324EC
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 19:23:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232432AbhJRREL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 13:04:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56168 "EHLO
+        id S233944AbhJRRZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 13:25:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232114AbhJRREK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 13:04:10 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 636CFC06161C
-        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 10:01:59 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id qe4-20020a17090b4f8400b0019f663cfcd1so14950703pjb.1
-        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 10:01:59 -0700 (PDT)
+        with ESMTP id S232272AbhJRRZO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 13:25:14 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE00C06161C;
+        Mon, 18 Oct 2021 10:23:03 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id v20so11723902plo.7;
+        Mon, 18 Oct 2021 10:23:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/I9J3P31boI1XKLBs2K675bnHHS64wpGLIx+qFAYY20=;
-        b=vztpI2qL0rJLIJ6uYoAV+VpasyYUnE0bXaJWeT0Vi8b51csHnDZmny0bTOks6dffEi
-         nNkQhyJkFxNDJgWqMOXgR0XgUD/QBxarRw7aOO+mnt6anLFlU4WIm55htyhm0OnB6XOW
-         jqiGrTkfmzDJvFmlY+OcCzm42nWzfkilhuf+zZNB55ZoK7vZf6Ymh0JiZSaD1QbRVg+Z
-         tIG4umBzZJDwrAUdchepC6/bGr58u0phqnEQ75QLyv/3bVCobXAM4QGrROQl91cklh1n
-         tojxD2TeB6WIouhhpIws/zns+SIYx8rWR7YOBfsN4YeQEl8qxXY7JrQaX+f8eXnnN/QJ
-         Qh1w==
+        d=gmail.com; s=20210112;
+        h=mime-version:content-transfer-encoding:to:cc:subject:from:date
+         :message-id:in-reply-to;
+        bh=KDtNvROv/emFHAIcdrMJhdJgVC4zcXHGcLaLCPrH1OA=;
+        b=Zj5uiURO92L8XvERHEm0QTtpUBIK8I8U+kgMLUJMWArshfy4CuQ5qBBwv35ptCjh/u
+         0bwhw0+PSc5VO4G+EybDHgTrCFqIkTnha8ixKGazLDoFliUWDRWkgQLSBmmwPxtv+hmB
+         FpnABZG5YW4HBAc3a27OkFcSv3y8YG5wvoHrQ4vZl3TNaNnXBx/KnXimjezsTPiwY8jB
+         +TiGQ7NbyV2CZ6b02DjkHtDe7E4NWUGW/Vyb7ZtNyx1mKTDs9NrEpmbsMvvXR+CKPwtb
+         7HBZ763ZdBuIOX04zmADDYA6KAEGlKnHq7OaAvfDkR+hOSVQ5IiiHjg5kR7BM/QLYk4I
+         FFUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/I9J3P31boI1XKLBs2K675bnHHS64wpGLIx+qFAYY20=;
-        b=JZgo2t4RndWuYHOO8Ve32wUakGwDC4XS4tVV7Pqnjfvpicnn4pGb3m04MB65qCfpbM
-         3wE/p5w/NKJG063JXJ6eQe1IZnHs1inB9oYBscTzD8EPmwniFepM1fl6RV82owzaVc3w
-         Ti4N4PhXa9JfTeNjPOTzlQOkHd0vc2rVVx3NB/Vz82cLqPTG9hgAS2vQHHVA40E9ukLv
-         5ITya/6nSgP0fEEuE+D/hTEEu9803puzD5C5KeRj65oV5nss/DybFhNneZCv5XVGkRnZ
-         ywEqx2og3qv6fXkaUTTJecliW9XRer0yWBY6rfdtb5DGM+cxU5wy+ZACGdOD8WWJUB5/
-         uCrw==
-X-Gm-Message-State: AOAM533fqWvY67z1NGGDoRBAc4mi/oOMTvE4cN/+OykDcZa7tPvz0mwW
-        sPlyowOTnQrAafa1hkZNjsPZEA==
-X-Google-Smtp-Source: ABdhPJwMqzWB1aFCAmIq/7mov4j0b9+irq3q5PhAPnXHcKhNCJm/CqCClI5HrSZb1rJzr4cL4lZCsA==
-X-Received: by 2002:a17:90a:c08d:: with SMTP id o13mr26390pjs.181.1634576518819;
-        Mon, 18 Oct 2021 10:01:58 -0700 (PDT)
-Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
-        by smtp.gmail.com with ESMTPSA id d137sm14071155pfd.72.2021.10.18.10.01.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Oct 2021 10:01:58 -0700 (PDT)
-Date:   Mon, 18 Oct 2021 10:01:48 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, mlindner@marvell.com
-Subject: Re: [PATCH net-next 02/12] ethernet: sky2/skge: use
- eth_hw_addr_set()
-Message-ID: <20211018100148.75ab3f23@hermes.local>
-In-Reply-To: <20211018142932.1000613-3-kuba@kernel.org>
-References: <20211018142932.1000613-1-kuba@kernel.org>
-        <20211018142932.1000613-3-kuba@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:content-transfer-encoding:to:cc
+         :subject:from:date:message-id:in-reply-to;
+        bh=KDtNvROv/emFHAIcdrMJhdJgVC4zcXHGcLaLCPrH1OA=;
+        b=W5HllaLhDv0tx0ocUAMYW4Y3/Wg8oxmsmVGDsl3hh86cuwnttQnAMutMnoPe+zz6zp
+         ajI5xkSxGZc3pXbUFyQKyIZz2xVqtx/0Hksz/llOcJA01EL/jGLMeQIjRVhGcOjEn07t
+         ZJP2d/Bp9sBIkYwUFRftQnGqAKHnwWgCvPZuyEs8ibXu6tXBXmPWKl+6f5LRFs4OwWjU
+         aLuXrUSfzNSC8X54kSKP4ttB0XsBUSai4OQ4oGtFsnyCs7xQEkpdifxhVA4I3DJ9HK47
+         S5vnRXZQowBMpQ076XfX78CAgDNIbOPxpM8I4NhjEgKqFuZeEdtYeKAzeSmPwL8wz0hn
+         XXbA==
+X-Gm-Message-State: AOAM530r8yBr3bGWEb/JWa7g7bhZ7Wu+DwveZ3BlY73BldmgQkd/WwsQ
+        oNeTDQGsHBb/gKAvVIgVv/Q=
+X-Google-Smtp-Source: ABdhPJx40xJU8YE1isP+oL8/lINyv5pBl24icWiCna71nEI8P6QEHIWo7YAGX9JEZRNhlcZrYal87A==
+X-Received: by 2002:a17:902:e74a:b0:13f:3538:fca0 with SMTP id p10-20020a170902e74a00b0013f3538fca0mr28311600plf.22.1634577782509;
+        Mon, 18 Oct 2021 10:23:02 -0700 (PDT)
+Received: from localhost ([117.200.53.211])
+        by smtp.gmail.com with ESMTPSA id ip10sm34849pjb.40.2021.10.18.10.22.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Oct 2021 10:23:01 -0700 (PDT)
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+To:     "Alex Elder" <elder@ieee.org>, <phone-devel@vger.kernel.org>,
+        <~postmarketos/upstreaming@lists.sr.ht>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <elder@kernel.org>
+Cc:     "Vladimir Lypak" <vladimir.lypak@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>
+Subject: Re: [RFC PATCH 06/17] net: ipa: Add timeout for
+ ipa_cmd_pipeline_clear_wait
+From:   "Sireesh Kodali" <sireeshkodali1@gmail.com>
+Date:   Mon, 18 Oct 2021 22:32:31 +0530
+Message-Id: <CF2P11HZE0H2.S4II3PH6QLCF@skynet-linux>
+In-Reply-To: <5219dde9-665d-a813-a9b8-3db51aea97b5@ieee.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 18 Oct 2021 07:29:22 -0700
-Jakub Kicinski <kuba@kernel.org> wrote:
+On Thu Oct 14, 2021 at 3:59 AM IST, Alex Elder wrote:
+> On 9/19/21 10:08 PM, Sireesh Kodali wrote:
+> > From: Vladimir Lypak <vladimir.lypak@gmail.com>
+> >=20
+> > Sometimes the pipeline clear fails, and when it does, having a hang in
+> > kernel is ugly. The timeout gives us a nice error message. Note that
+> > this shouldn't actually hang, ever. It only hangs if there is a mistake
+> > in the config, and the timeout is only useful when debugging.
+> >=20
+> > Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
+> > Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
+>
+> This is actually an item on my to-do list. All of the waits
+> for GSI completions should have timeouts. The only reason it
+> hasn't been implemented already is that I would like to be sure
+> all paths that could have a timeout actually have a reasonable
+> recovery.
+>
+> I'd say an error message after a timeout is better than a hung
+> task panic, but if this does time out, I'm not sure the state
+> of the hardware is well-defined.
 
-> Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
-> of VLANs...") introduced a rbtree for faster Ethernet address look
-> up. To maintain netdev->dev_addr in this tree we need to make all
-> the writes to it got through appropriate helpers.
-> 
-> Read the address into an array on the stack, then call
-> eth_hw_addr_set().
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> CC: mlindner@marvell.com
-> CC: stephen@networkplumber.org
+Early on while wiring up BAM support, I handn't quite figured out the
+IPA init sequence, and some of the BAM opcode stuff. This caused the
+driver to hang when it would reach the completion. Since this particular
+completion was waited for just before the probe function retured, it
+prevented hung up the kernel thread, and prevented the module from being
+`modprobe -r`ed.
 
-Looks ok. Don't even use any of that hardware anymore.
+Since then, I've properly fixed the BAM code, the completion always
+returns, making the patch kinda useless for now. Since its only for
+debugging, I'll just drop this patch. I think the only error handling we
+can do at this stage is to return -EIO, and get the callee to handle
+de-initing everything.
 
-Acked-by: Stephen Hemminger <stephen@networkplumber.org>
+Regards,
+Sireesh
+
+>
+> -Alex
+>
+> > ---
+> >   drivers/net/ipa/ipa_cmd.c | 5 ++++-
+> >   1 file changed, 4 insertions(+), 1 deletion(-)
+> >=20
+> > diff --git a/drivers/net/ipa/ipa_cmd.c b/drivers/net/ipa/ipa_cmd.c
+> > index 3db9e94e484f..0bdbc331fa78 100644
+> > --- a/drivers/net/ipa/ipa_cmd.c
+> > +++ b/drivers/net/ipa/ipa_cmd.c
+> > @@ -658,7 +658,10 @@ u32 ipa_cmd_pipeline_clear_count(void)
+> >  =20
+> >   void ipa_cmd_pipeline_clear_wait(struct ipa *ipa)
+> >   {
+> > -	wait_for_completion(&ipa->completion);
+> > +	unsigned long timeout_jiffies =3D msecs_to_jiffies(1000);
+> > +
+> > +	if (!wait_for_completion_timeout(&ipa->completion, timeout_jiffies))
+> > +		dev_err(&ipa->pdev->dev, "%s time out\n", __func__);
+> >   }
+> >  =20
+> >   void ipa_cmd_pipeline_clear(struct ipa *ipa)
+> >=20
+
