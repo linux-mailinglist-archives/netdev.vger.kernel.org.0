@@ -2,193 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 549F2431FD5
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 16:34:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70721432024
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 16:47:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231775AbhJROgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 10:36:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49744 "EHLO
+        id S232200AbhJROt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 10:49:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231495AbhJROgn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 10:36:43 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5EC3C06161C;
-        Mon, 18 Oct 2021 07:34:32 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1mcTig-0007Ls-1l; Mon, 18 Oct 2021 16:34:30 +0200
-Date:   Mon, 18 Oct 2021 16:34:30 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Eugene Crosser <crosser@average.org>, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org,
-        Lahav Schlesinger <lschlesinger@drivenets.com>,
-        David Ahern <dsahern@kernel.org>
-Subject: Re: Commit 09e856d54bda5f288ef8437a90ab2b9b3eab83d1r "vrf: Reset skb
- conntrack connection on VRF rcv" breaks expected netfilter behaviour
-Message-ID: <20211018143430.GB28644@breakpoint.cc>
-References: <bca5dcab-ef6b-8711-7f99-8d86e79d76eb@average.org>
- <20211013092235.GA32450@breakpoint.cc>
- <20211015210448.GA5069@breakpoint.cc>
- <378ca299-4474-7e9a-3d36-2350c8c98995@gmail.com>
+        with ESMTP id S229519AbhJROt1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 10:49:27 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B10EBC06161C;
+        Mon, 18 Oct 2021 07:47:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=9iC152e1aDmgWA+aHHRHXqgiWkTrwFJBqqglF+YsoV0=; b=gHJxFdZpxImjujKrk8tlaAj20d
+        +e4fdO08JlC1eoHubobQNZoIiy9k74GpWWZqPwl5EFYMOe0BRyKcvhPU07Qf6FcHPw0UywbkV22h2
+        KFOxoDiFV9S/kqqzqOT2rf1vLwUZ6ZR96INicUDuJwX3fHpwhIyY09V0NJcB/bH0Vtycfh72zdvhT
+        XC+ySVb0bFWlsSgP4aLKlvFXe0Y3ut+RJ63Iz2rVfCUBhWTCd/w+NdatUPLznRaYtGmkp8A29xPUj
+        7Ei5IGK9t8xwqnVZn5qSrBstwfgMY8lUxbLe1u0W+TV7mFRYJ/03uJ234cIRimTrvacbGgRCSOMXh
+        3wLNIChQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55174)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mcTur-00059X-Hd; Mon, 18 Oct 2021 15:47:05 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mcTuo-0005yw-PY; Mon, 18 Oct 2021 15:47:02 +0100
+Date:   Mon, 18 Oct 2021 15:47:02 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Vadym Kochan <vadym.kochan@plvision.eu>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: sfp: add quirk for Finisar FTLF8536P4BCL
+Message-ID: <YW2I5qP0O4Pviia3@shell.armlinux.org.uk>
+References: <20211013104542.14146-1-pmenzel@molgen.mpg.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <378ca299-4474-7e9a-3d36-2350c8c98995@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20211013104542.14146-1-pmenzel@molgen.mpg.de>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dsahern@gmail.com> wrote:
+On Wed, Oct 13, 2021 at 12:45:42PM +0200, Paul Menzel wrote:
+> From: Taras Chornyi <taras.chornyi@plvision.eu>
+> 
+> Finisar FTLF8536P4BCL can operate at 1000base-X and 10000base-SR, but
+> reports 25G & 100GBd SR in it's EEPROM.
+> 
+> Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
+> Signed-off-by: Taras Chornyi <taras.chornyi@plvision.eu>
+> 
+> [Upstream from https://github.com/dentproject/dentOS/pull/133/commits/b87b10ef72ea4638e80588facf3c9c2c1be67b40]
+> 
+> Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
 
-Hi David
+Thanks Vadym for the eeprom dump.
 
-TL;DR:
-What is your take on the correct/expected behaviour with vrf+conntrack+nat?
+> diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
+> index 7362f8c3271c..162b4030a863 100644
+> --- a/drivers/net/phy/sfp-bus.c
+> +++ b/drivers/net/phy/sfp-bus.c
+> @@ -55,6 +55,13 @@ static void sfp_quirk_ubnt_uf_instant(const struct sfp_eeprom_id *id,
+>  	phylink_set(modes, 1000baseX_Full);
+>  }
+>  
+> +static void sfp_quirk_finisar_25g(const struct sfp_eeprom_id *id,
+> +				  unsigned long *modes)
+> +{
+> +	phylink_set(modes, 1000baseX_Full);
+> +	phylink_set(modes, 10000baseSR_Full);
+> +}
 
-> Thanks for jumping in, Florian.
+I'd ask that this is named "sfp_quirk_1g10g()" please - it isn't
+doing anything that is specific to Finisar, it is merely stating
+that 1000base-X and 10000base-SR are supported.
 
-NP.
+> +	}, {
+> +		// Finisar FTLF8536P4BCL can operate at 1000base-X and 10000base-SR,
+> +		// but reports 25G & 100GBd SR in it's EEPROM
 
-Sorry for the wall of text below.
+This file doesn't wrap over column 80, so please continue to keeping
+it that way.
 
-You can fast-forward to 'Possible solutions' if you want, but they key
-question for me at the moment is the one above.
+		// Finisar FTLF8536P4BCL can operate at 1000base-X and
+		// 10000base-SR, but reports 25G & 100GBd SR in it's EEPROM
 
-I've just submitted a selftest patch to nf.git that adds test
-cases for the problem reported by Eugene + two masquerade/snat test
-cases.
+Thanks.
 
-With net/net-next, first test fails and the other two work, after
-revert its vice versa.
-
-To get all three working there are a couple of possible solutions to
-this but so far I don't have anything that is void of side effects.
-
-It assumes revert of the problematic commit, i.e. no nf_reset_ct in
-ingress path from VRF driver.
-
-First, a summary of VRF+nf+conntrack interaction and where problems are.
-
-The VRF driver invokes netfilter for output+postrouting hooks,
-with outdev set to the vrf device. Afterwards, ip stack calls those
-hooks again, with outdev set to lower device.
-
-This is a problem when conntrack is used with IP masquerading.
-With all nf_reset_ct() in vrf driver removed following will happen:
-
-1. Conntrack only, no nat, locally generated traffic.
-
-vrf driver calls output/postrouting hooks.
-output creates new conntrack object and attaches it to skb.
-postrouting confirms entry and places it into state table.
-
-When hooks are called a second time by IP stack, no new conntrack lookup is
-done because skb already has one attached to it.
-
-2. When SNAT is used, this works as well, second iteration doesn't
-   do connection tracking and re-uses nat settings done in iteration 1.
-
-However there are caveats:
-a) NAT rules that use something like '-o eth0' won't have any effect.
-b) IP address matching in round 2 is 'broken', as the second round deals
-with a rewritten skb (iph saddr already updated).
-
-This is because when the hooks are invoked a second time, there already
-is a NAT binding attached to the entry. This happens regardless of a
-matching '-o vrfdevice' nat rule or not; when first round did not match
-a nat rule, nat engine attaches a 'nat null binding'.
-
-3) When Masquerade is used, things don't work at all.
-
-This is because of nf_nat_oif_changed() triggering errnously in the nat
-engine.  When masquerade is hit, the output interface index gets stored
-in the conntrack entry.  When the interface index changes, its assumed
-that a routing change took place and the connection has been broken
-(masquerade picks saddr based on the output interface).
-
-Therefore, NF_DROP gets returned.
-
-In VRF case, this triggers because we see the skb twice, once with
-ifindex == vrf and once with lower/physdev.
-
-I suspect that this is what lead eb63ecc1706b3e094d0f57438b6c2067cfc299f2
-(net: vrf: Drop conntrack data after pass through VRF device on Tx),
-this added nf_reset() calls to the tx path.
-
-This changes things as follows:
-
-1. Conntrack only, no nat:
-same as before, expect that the second round does a new conntrack lookup.
-It will find the entry created by first iteration and use that.
-
-2. With nat:
-If first round has no matching nat rule, things work:
-Second round will find existing entry and use it.
-NAT rules on second iteration have no effect, just like before.
-
-If first round had a matching nat rule, then the packet gets rewritten.
-This means that the second round will NOT find an existing entry, and
-conntrack tracks the flow a second time, this time with the post-nat
-source address.
-
-Because of this, conntrack will also detect a tuple collision when it
-tries to insert the 'new flow incarnation', because the reply direction
-of the 'first round flow' collides with the original direction of the
-second iteration. This forces allocation of a new source port, so source
-port translation is done.
-
-This in turn breaks in reverse direction, because incoming/reply packet
-only hits the connection tracking engine once, i.e. only the source
-port translation is reversed.
-
-To fix this, Lahav also added nf_reset_ct() to ingress processing to
-undo the first round nat transformation as well.
-
-... and that in turn breaks 'notrack', 'mark' or 'ct zone' assignments
-done based on the incoming/lower device -- the nf_reset_ct zaps those
-settings before round 2 so they have no effect anymore.
-
-Possible solutions
-==================
-
-Taking a few steps back and ignoring 'backwards compat' for now, I think
-that conntrack should process the flow only once.  VRF doesn't transform the
-packets in any way and the only reason for the extra NF_HOOK() calls appear to
-be so that users can match on the incoming/outgoing vrf interface.
-
-a)
-For locally generated packets, the most simple fix would be to mark
-skb->nfct as 'untracked', and clear it again instead of nf_reset_ct().
-
-This avoids the need to change anyting on conntrack/nat side.
-The downside is that it becomes impossible to add nat mappings based
-on '-o vrf', because conntrack gets bypassed in round 1.
-
-For forwarding case (where OUTPUT hooks are not hit and
-ingress path has attached skb->nfct), we would need to find a different
-way to bypass conntrack.  One solution (least-LOC) is to nf_reset() and
-then mark skb as untracked.  IP(6)CB should have FORWARD flag set that
-can be used to detect this condition.
-
-b)
-make the nf_ct_reset calls in vrf tx path conditional.
-Its possible to detect when a NAT rule was hit via ct->status bits.
-
-When the NF_HOOK() calls invoked via VRF found a SNAT/MASQ rule,
-don't reset the conntrack entry.
-
-Downside 1: the second invocation is done with 'incorrect' ip source
-address, OTOH that already happens at this time.
-
-Downside 2: We need to alter conntrack/nat to avoid the 'oif has
-changed' logic from kicking in.
-
-I don't see other solutions at the moment.
-
-For INPUT, users can also match the lower device via inet_sdif()
-(original ifindex stored in IP(6)CB), but we don't have that
-for output, and its not easy to add something because IPCB isn't
-preserved between rounds 1 & 2.
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
