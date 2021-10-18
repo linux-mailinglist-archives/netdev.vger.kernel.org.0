@@ -2,123 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC85F431FB8
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 16:30:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E003F431FC6
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 16:33:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232430AbhJROc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 10:32:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50734 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232406AbhJROcJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Oct 2021 10:32:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CF050610E8;
-        Mon, 18 Oct 2021 14:29:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634567392;
-        bh=DhxheYRL1MXr7pefW6gucmrlw+vojeyVl835hc2hudI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HwijmnyfN1y9p8Zs04sXabhcYxIdtmPkXNt/Ow+QaIHeGhgbjSEgDAGCdoIUFuVlu
-         WV8+GiYV953pEhVlGAy1d+nX5njLLqamxxKzdWuQcjaayPG18DtJbeKCpRd573ftgt
-         6d5RRU1afyWxOx4f3ib/PJnl2xMy/VP8W0RTd8skFi5nhp83GIjdh8vlic0VgUQ/qa
-         PM3fKiXWOF7MSj55hliAR7OhnB3/XwGKU9NH8hma0vRac66kNpeFJzMXxuV06XFkYS
-         M3G/wovU3sBduqyEFMv1OvJ0jLLSyjedXJzYaJeYd7MLdvMz3mmEjEUXVBqcQkmY8Z
-         q7RjfIk8k+Lyg==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        steve.glendinning@shawell.net
-Subject: [PATCH net-next 12/12] ethernet: smsc: use eth_hw_addr_set()
-Date:   Mon, 18 Oct 2021 07:29:32 -0700
-Message-Id: <20211018142932.1000613-13-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211018142932.1000613-1-kuba@kernel.org>
-References: <20211018142932.1000613-1-kuba@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S231944AbhJROfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 10:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49416 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231634AbhJROfS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 10:35:18 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 192D6C06161C;
+        Mon, 18 Oct 2021 07:33:07 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id ez7-20020a17090ae14700b001a132a1679bso4760375pjb.0;
+        Mon, 18 Oct 2021 07:33:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=onF4hmW8ZH95EB856Ri4m8yoghjYbaHUCFiH6N60H08=;
+        b=UaGejdWHICPQznn/3ylFkZwh7hackIAt1/8i4qImkRk9MnJCzJNadZRrZ7RsBJm5AC
+         E5voL2UVHp/xoiV73DX/2Ww7OpJUX7XY7o+8c1OiP66ojXufB6vypyz+aFsQELPTUpeO
+         iw6Z66LAvax5nmML9P6IKP1rAFg0gHK3eqEDQ4kDM1rEwmG55D90dX97WwjTgaYwUmhi
+         XNhiBGnAUXobA3iaIC0UpwqBK+ODui53g+Qh7WGRGvQlnY7vEv4E2/GFC0D7kvVl5Ev2
+         MwHrZt5euDadI65URle8N5o+L5aYpXpLzdluIOnCwpGSKOShTN4Vg+Nd0zbNAJODFPNa
+         huwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=onF4hmW8ZH95EB856Ri4m8yoghjYbaHUCFiH6N60H08=;
+        b=HZwO2ShCbwy2pbjNlleXasKTD0bn4Ml3nNHhVOj0ixdrrLYBaBoBQY4+ugcGz14Q0V
+         Xxl0bCz2+LbAniDGhEoy9jNRePrHGeovQ8F6xmCr5ARdIxbOHMpn4iwPgXerU+yv/HTq
+         uilxrDDJyC/5OPe0q0J8gkpDmwMALFKO5Zy3KogUjp+XKj11JopbUKmJ5VWMlRtNoomb
+         KClbcjhw4g3NIR3jIjFgTTWddl84Ra00VM2fYfXdychaHtNzenIJlq9uTSTIgnsjOIQI
+         aoMmGMIBzV0f9aWw8hyf+wGV6HxbAA+qqJoV2C1EnO3DA3DL1voQdH/VPhJPOZdz9uCD
+         T+BA==
+X-Gm-Message-State: AOAM532jnTdmc4cbPuzrP/l0mw8rd1zZkAXJeFK3BOc+onCEo0FGMU5D
+        WWl8JEz/yNdBEeQtyrVAPA==
+X-Google-Smtp-Source: ABdhPJz7iCXevqjw8+WfBIHed8GTuSwGhzDaLOGw285GU6Df470RNLn50c1PIKk7g992CyohynHtHA==
+X-Received: by 2002:a17:90b:4f46:: with SMTP id pj6mr33886455pjb.63.1634567586599;
+        Mon, 18 Oct 2021 07:33:06 -0700 (PDT)
+Received: from vultr.guest ([107.191.53.97])
+        by smtp.gmail.com with ESMTPSA id k14sm13455059pfh.154.2021.10.18.07.33.04
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 18 Oct 2021 07:33:06 -0700 (PDT)
+From:   Zheyu Ma <zheyuma97@gmail.com>
+To:     sgoutham@marvell.com, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>
+Subject: [PATCH] cavium: Fix return values of the probe function
+Date:   Mon, 18 Oct 2021 14:32:57 +0000
+Message-Id: <1634567577-4033-1-git-send-email-zheyuma97@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
-of VLANs...") introduced a rbtree for faster Ethernet address look
-up. To maintain netdev->dev_addr in this tree we need to make all
-the writes to it got through appropriate helpers.
+During the process of driver probing, the probe function should return < 0
+for failure, otherwise, the kernel will treat value > 0 as success.
 
-Break the address up into an array on the stack, then call
-eth_hw_addr_set().
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
 ---
-CC: steve.glendinning@shawell.net
----
- drivers/net/ethernet/smsc/smsc911x.c | 16 +++++++++-------
- drivers/net/ethernet/smsc/smsc9420.c | 18 ++++++++++--------
- 2 files changed, 19 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/cavium/thunder/nicvf_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/smsc/smsc911x.c b/drivers/net/ethernet/smsc/smsc911x.c
-index 73bcc6f2bb6e..7a50ba00f8ae 100644
---- a/drivers/net/ethernet/smsc/smsc911x.c
-+++ b/drivers/net/ethernet/smsc/smsc911x.c
-@@ -2162,13 +2162,15 @@ static void smsc911x_read_mac_address(struct net_device *dev)
- 	struct smsc911x_data *pdata = netdev_priv(dev);
- 	u32 mac_high16 = smsc911x_mac_read(pdata, ADDRH);
- 	u32 mac_low32 = smsc911x_mac_read(pdata, ADDRL);
--
--	dev->dev_addr[0] = (u8)(mac_low32);
--	dev->dev_addr[1] = (u8)(mac_low32 >> 8);
--	dev->dev_addr[2] = (u8)(mac_low32 >> 16);
--	dev->dev_addr[3] = (u8)(mac_low32 >> 24);
--	dev->dev_addr[4] = (u8)(mac_high16);
--	dev->dev_addr[5] = (u8)(mac_high16 >> 8);
-+	u8 addr[ETH_ALEN];
-+
-+	addr[0] = (u8)(mac_low32);
-+	addr[1] = (u8)(mac_low32 >> 8);
-+	addr[2] = (u8)(mac_low32 >> 16);
-+	addr[3] = (u8)(mac_low32 >> 24);
-+	addr[4] = (u8)(mac_high16);
-+	addr[5] = (u8)(mac_high16 >> 8);
-+	eth_hw_addr_set(dev, addr);
- }
+diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_main.c b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
+index d1667b759522..a27227aeae88 100644
+--- a/drivers/net/ethernet/cavium/thunder/nicvf_main.c
++++ b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
+@@ -1224,7 +1224,7 @@ static int nicvf_register_misc_interrupt(struct nicvf *nic)
+ 	if (ret < 0) {
+ 		netdev_err(nic->netdev,
+ 			   "Req for #%d msix vectors failed\n", nic->num_vec);
+-		return 1;
++		return ret;
+ 	}
  
- /* Initializing private device structures, only called from probe */
-diff --git a/drivers/net/ethernet/smsc/smsc9420.c b/drivers/net/ethernet/smsc/smsc9420.c
-index d207c0b463ab..d937af18973e 100644
---- a/drivers/net/ethernet/smsc/smsc9420.c
-+++ b/drivers/net/ethernet/smsc/smsc9420.c
-@@ -416,6 +416,7 @@ static void smsc9420_set_mac_address(struct net_device *dev)
- static void smsc9420_check_mac_address(struct net_device *dev)
- {
- 	struct smsc9420_pdata *pd = netdev_priv(dev);
-+	u8 addr[ETH_ALEN];
+ 	sprintf(nic->irq_name[irq], "%s Mbox", "NICVF");
+@@ -1243,7 +1243,7 @@ static int nicvf_register_misc_interrupt(struct nicvf *nic)
+ 	if (!nicvf_check_pf_ready(nic)) {
+ 		nicvf_disable_intr(nic, NICVF_INTR_MBOX, 0);
+ 		nicvf_unregister_interrupts(nic);
+-		return 1;
++		return -EIO;
+ 	}
  
- 	/* Check if mac address has been specified when bringing interface up */
- 	if (is_valid_ether_addr(dev->dev_addr)) {
-@@ -427,15 +428,16 @@ static void smsc9420_check_mac_address(struct net_device *dev)
- 		 * it will already have been set */
- 		u32 mac_high16 = smsc9420_reg_read(pd, ADDRH);
- 		u32 mac_low32 = smsc9420_reg_read(pd, ADDRL);
--		dev->dev_addr[0] = (u8)(mac_low32);
--		dev->dev_addr[1] = (u8)(mac_low32 >> 8);
--		dev->dev_addr[2] = (u8)(mac_low32 >> 16);
--		dev->dev_addr[3] = (u8)(mac_low32 >> 24);
--		dev->dev_addr[4] = (u8)(mac_high16);
--		dev->dev_addr[5] = (u8)(mac_high16 >> 8);
--
--		if (is_valid_ether_addr(dev->dev_addr)) {
-+		addr[0] = (u8)(mac_low32);
-+		addr[1] = (u8)(mac_low32 >> 8);
-+		addr[2] = (u8)(mac_low32 >> 16);
-+		addr[3] = (u8)(mac_low32 >> 24);
-+		addr[4] = (u8)(mac_high16);
-+		addr[5] = (u8)(mac_high16 >> 8);
-+
-+		if (is_valid_ether_addr(addr)) {
- 			/* eeprom values are valid  so use them */
-+			eth_hw_addr_set(dev, addr);
- 			netif_dbg(pd, probe, pd->dev,
- 				  "Mac Address is read from EEPROM\n");
- 		} else {
+ 	return 0;
 -- 
-2.31.1
+2.17.6
 
