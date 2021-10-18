@@ -2,91 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 349C14312FF
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 11:13:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3531C431301
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 11:14:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231375AbhJRJQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 05:16:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59506 "EHLO
+        id S231528AbhJRJQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 05:16:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231338AbhJRJQF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 05:16:05 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBE15C06161C;
-        Mon, 18 Oct 2021 02:13:53 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id z20so68373167edc.13;
-        Mon, 18 Oct 2021 02:13:53 -0700 (PDT)
+        with ESMTP id S231516AbhJRJQN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 05:16:13 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC0DC061745;
+        Mon, 18 Oct 2021 02:14:01 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id e5-20020a17090a804500b001a116ad95caso6500924pjw.2;
+        Mon, 18 Oct 2021 02:14:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uYiwoLjIpwXhjE4+/22a2xkYUdGgH07KcD2ULSn0KKM=;
-        b=am4HvN2wsY8dZhVj+hvASDKd7y7W33NU7V/XoEnE3+nhc/IUvQniFsDTIe6WFCxJOG
-         dTjXGq47WsXdE7PuaDt5CFQtJMlliwg3uvdTeZWbKkm8zA41zCoCFfO3KhbW3S0sWCtO
-         9rTc962aI6CV9o6RuPaTEhhjBvN2LInLb9G7e4ViVict/rMbfNy75N5cPAkOIA8aAR1T
-         XxDyLBA3Sq5+YX2v0oqaoiSCOWi2VhM73SyoyM+F+RAjv/aUl2u4f/ZU+AADTvOZ5Hx6
-         8yZ1P1XdDXc21Kud1BmK7uknKAX0EGHAMrpogHGwPfZkzxDdBz9U8zySX6KhoTD0t2rx
-         54Dw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oFAbXqA6zWIIm+vWnBjNCmD/eug6wi9LsU8+kOasxIs=;
+        b=Wdh7lBDdAWKD8/k/eMS2KuccvGhdKK2S+VohP4+icKxaCmTiQ/di31bTthWwOFNoLo
+         hCm0qZuR/eP29cVCow+00sNwe4npZ9k8VEZ1oxXTpa8gpsfYi/clbBR361mHX1Y8j9Ai
+         PAU7kgk3YH/RzKsw7Okmuq+JyP0E1LS2IEGG/4kWdtY5t4Cs2Ii54NlEZrmcj0KYqdov
+         U5OtSbTNtNoAq8OHCsc6xABuTiCOStOTFvbQJI6DCXek98kc6KwiYPewUjZeYHtfLio+
+         QuXZY4tigaEgSmWR431nE5Fn7FAE6zAr0pyYcnJpM4PIbVg+mrLqJqeBj2mefob5tUj8
+         UtWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uYiwoLjIpwXhjE4+/22a2xkYUdGgH07KcD2ULSn0KKM=;
-        b=ofNPUIVyRi80IsiMF7pf60yP+CcB17Hnu8XvlX7sjxuSpS7WrpBFNkvpfDlr4rok12
-         TcWa+OmzRHM79GMf6PsHmHf+5YNpZzolYLmTf/ns98eqphfijClkHj9fi25sgeXpSHUm
-         Oa2MIUiTf41Zr0pdiB51rw26+fvh+Cd+mBmij+sso+fYMs78Smdb1F7nqO2neqQNxei0
-         JBhx+qYPQIybftOe/jlDQTlhDRn5NfYuQbWsUIM0XmDym21XN7UgurdKxsaiZkJRXcSu
-         Bc3V8p/qt/EiOjL6h6iJidErWt9qZBE8gzKkjzoyUGKyQB7/cU9uOLmZXdHpVm+qESnv
-         qJLA==
-X-Gm-Message-State: AOAM531GjLB5CNbiMa0tbLHgGKRgthBccgdtFsHo/ssA3nvoP3x65sUU
-        rxWZuBQlZxU60spvO4oTtlxcPzdM/kdPwKRFjfk=
-X-Google-Smtp-Source: ABdhPJyzgbVJD9WKuqniOdZkG09nayR+ufzFdsTUjr7xg3R/e5wA+IXRSGcKv9/nnFLlGs7E+k9+SM0ja79C9ylkqRk=
-X-Received: by 2002:a05:6402:5ca:: with SMTP id n10mr43501196edx.216.1634548432334;
- Mon, 18 Oct 2021 02:13:52 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oFAbXqA6zWIIm+vWnBjNCmD/eug6wi9LsU8+kOasxIs=;
+        b=mYafZvFXot7WuhqYKOSgJTN17dA5wtiqtvI9x/VZ9Bm9YxaFYrdQ1/Zog6Md5Xabpv
+         YYxfHQWLp86XzS0fSL0Iw2PK+nE2cErBj2TrkqfxIRokX4rFSaHHgc44u2FTFSM1sPv9
+         HY5UFkHMfy7/wWcNsBx6DayKQ7+flNrLMJVmA4yXoWwBM2HC584eoNyzBEx5KKygs8d/
+         nz8B2WSxPAX05kpylM4eyrpea3V9gxOvpTbhMffwmSgU2YFp5CDXheYHm98hjhnWz9oN
+         Eph2rZ1q0o2vHD2lE6RnCo0PZwnW+IE9eRgucLp7ZqYdS5n5EZEvX2d2n379TeqUqPw6
+         qoVQ==
+X-Gm-Message-State: AOAM531AOHM1UkpJTqVgl9MCHoGa7GbB+lAXkGiusxDInGtNSvW1c9Or
+        fXRD6Gozs7cr9A/A2Bd5xkA+VITq4yo=
+X-Google-Smtp-Source: ABdhPJxYeOZW916ZhLvxOrYJSceadI+yLzBOrXglPM4F4+L8FECKrpKNUesLSORLd5CmFxEm5fIJug==
+X-Received: by 2002:a17:90b:4b10:: with SMTP id lx16mr31927942pjb.217.1634548440694;
+        Mon, 18 Oct 2021 02:14:00 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id x23sm13146856pfq.146.2021.10.18.02.13.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Oct 2021 02:14:00 -0700 (PDT)
+From:   luo penghao <cgel.zte@gmail.com>
+X-Google-Original-From: luo penghao <luo.penghao@zte.com.cn>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        penghao luo <luo.penghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] net/core: Remove unused assignment operations and variable
+Date:   Mon, 18 Oct 2021 09:13:56 +0000
+Message-Id: <20211018091356.858036-1-luo.penghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211017125022.3100329-1-mudongliangabcd@gmail.com> <20211018091206.cflpumnfm3mt7aiy@pengutronix.de>
-In-Reply-To: <20211018091206.cflpumnfm3mt7aiy@pengutronix.de>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Mon, 18 Oct 2021 17:13:26 +0800
-Message-ID: <CAD-N9QXUzjaPqs8sgi4CPjusMzQxNWvVYDxxTL8grj+Aw48JpQ@mail.gmail.com>
-Subject: Re: [PATCH] can: xilinx_can: remove redundent netif_napi_del from xcan_remove
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
-        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        linux-can@vger.kernel.org,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 18, 2021 at 5:12 PM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
->
-> On 17.10.2021 20:50:21, Dongliang Mu wrote:
-> > Since netif_napi_del is already done in the free_candev, so we remove
-> > this redundent netif_napi_del invocation. In addition, this patch can
->        ^^^^^^^^^
-> redundant, fixed (also in subject)
+From: penghao luo <luo.penghao@zte.com.cn>
 
-:\ Sorry about this typo.
+Although if_info_size is assigned, it has not been used. And the variable
+should also be deleted.
 
-> > match the operations in the xcan_probe and xcan_remove functions.
-> >
-> > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
->
-> Applied to linux-can-next/testing
->
-> regards,
-> Marc
->
-> --
-> Pengutronix e.K.                 | Marc Kleine-Budde           |
-> Embedded Linux                   | https://www.pengutronix.de  |
-> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+The clang_analyzer complains as follows:
+
+net/core/rtnetlink.c:3806: warning:
+
+Although the value stored to 'if_info_size' is used in the enclosing expression,
+the value is never actually read from 'if_info_size'.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: penghao luo <luo.penghao@zte.com.cn>
+---
+ net/core/rtnetlink.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 327ca6b..52dc51a 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -3804,9 +3804,9 @@ struct sk_buff *rtmsg_ifinfo_build_skb(int type, struct net_device *dev,
+ 	struct net *net = dev_net(dev);
+ 	struct sk_buff *skb;
+ 	int err = -ENOBUFS;
+-	size_t if_info_size;
+ 
+-	skb = nlmsg_new((if_info_size = if_nlmsg_size(dev, 0)), flags);
++
++	skb = nlmsg_new((if_nlmsg_size(dev, 0)), flags);
+ 	if (skb == NULL)
+ 		goto errout;
+ 
+-- 
+2.15.2
+
