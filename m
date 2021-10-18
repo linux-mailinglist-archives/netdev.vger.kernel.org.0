@@ -2,96 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A067431970
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 14:39:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F7C2431973
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 14:40:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231628AbhJRMle (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 08:41:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51248 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231712AbhJRMle (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 08:41:34 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3E04C06161C
-        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 05:39:22 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1mcRv8-00023Q-2m; Mon, 18 Oct 2021 14:39:14 +0200
-Received: from pengutronix.de (2a03-f580-87bc-d400-c2ef-28ab-e0cd-e8fd.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:c2ef:28ab:e0cd:e8fd])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id ED709696744;
-        Mon, 18 Oct 2021 12:39:11 +0000 (UTC)
-Date:   Mon, 18 Oct 2021 14:39:11 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Michal Simek <michal.simek@xilinx.com>
-Cc:     linux-kernel@vger.kernel.org, monstr@monstr.eu, git@xilinx.com,
-        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] can: xilinx_can: Remove repeated work the from kernel-doc
-Message-ID: <20211018123911.5ri2gbodsolhcvg2@pengutronix.de>
-References: <267c11097c90debbb5b1efebbeabc98161177def.1632306843.git.michal.simek@xilinx.com>
+        id S231562AbhJRMmS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 08:42:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46732 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230515AbhJRMmR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Oct 2021 08:42:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id BF29360FC3;
+        Mon, 18 Oct 2021 12:40:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634560806;
+        bh=gjqZ3TRhYfzAWUt0j34PYC6gVKhTDNAxS7IgmynFDUo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Blf2Men3p3FlZYESMxiSFKRutARItt3TWM++4mlnxrCDqBPcxUt7P/a1ZY7xHvmDK
+         06/Kkwk9AH2Rm+fbvPpaZyJaFKkMFSkGoEcoeWfMUF70cTdImKBKQUCSu+r3VHeF/c
+         cjQ+V85kq0wydxurhRHMpiGtugajj4zaR9iQHv1t9o6LuB/uVXd0vPb0YPC0Yk3eH3
+         KDQ3u0DCR60SL1/rscsslzQ7WXOIzpVcAxk9+jgSBAT3cteMiNGyWHdltLmyWs+kMc
+         /l+szQP9J8xQyLdSZbKnffMU9yyRsAQI6nGTEwUS5/+wooIBW4PNrOEfExAtvdluCb
+         ix3m3IQroRB6w==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B0867609F7;
+        Mon, 18 Oct 2021 12:40:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="2nbomcsbxyvypu7o"
-Content-Disposition: inline
-In-Reply-To: <267c11097c90debbb5b1efebbeabc98161177def.1632306843.git.michal.simek@xilinx.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: dsa: lantiq_gswip: fix register definition
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163456080671.22515.9929678118226387428.git-patchwork-notify@kernel.org>
+Date:   Mon, 18 Oct 2021 12:40:06 +0000
+References: <20211015221020.3590-1-olek2@wp.pl>
+In-Reply-To: <20211015221020.3590-1-olek2@wp.pl>
+To:     Aleksander Jan Bajkowski <olek2@wp.pl>
+Cc:     hauke@hauke-m.de, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
---2nbomcsbxyvypu7o
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-On 22.09.2021 12:34:04, Michal Simek wrote:
-> Trivial patch. Issue is reported by checkpatch.
->=20
-> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+On Sat, 16 Oct 2021 00:10:20 +0200 you wrote:
+> I compared the register definitions with the D-Link DWR-966
+> GPL sources and found that the PUAFD field definition was
+> incorrect. This definition is unused and causes no issues.
+> 
+> Fixes: 14fceff4771e ("net: dsa: Add Lantiq / Intel DSA driver for vrx200")
+> Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
+> 
+> [...]
 
-I've fixed the subject to:
+Here is the summary with links:
+  - [net] net: dsa: lantiq_gswip: fix register definition
+    https://git.kernel.org/netdev/net/c/66d262804a22
 
-| Subject: can: xilinx_can: remove repeated word from the kernel-doc
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Applied to linux-can-next/testing
 
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---2nbomcsbxyvypu7o
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmFtauwACgkQqclaivrt
-76ki0Af/dCW7j9/75sw2c0gE5wOTQGQLi5pCx+4Pz0emj1DQog24UGEnwhwTOcIP
-g44O7ZNeUw2YnMkIc2CZMvdd+ACOnjlrGaEwxJ5mioW9tqZTh+HIil3wd1cPW3sR
-zclscn05AS2S2d6jfUB5N2BgDYhHbALe7p9HM70BlKUAcjOsaM5mmpVaA5wI/VVD
-ZsdDzRbpMY2cgAP2VbdAJqO5azoSnHFN1uOfh40hChwlonwKhZPbBkNS7FeHMRN9
-SvAi8G7wqojz5Wmx1JZKAKrfF0ZrokKFoVVj/GjuE2X8lLT5bI2u5wsDRw5tfvuW
-d20wWVcVm4sgONltlD315fiQuZVLog==
-=ULN4
------END PGP SIGNATURE-----
-
---2nbomcsbxyvypu7o--
