@@ -2,189 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEECA4316D1
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 13:05:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BEC8431745
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 13:27:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230346AbhJRLHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 07:07:43 -0400
-Received: from mail-am6eur05on2135.outbound.protection.outlook.com ([40.107.22.135]:1345
+        id S229870AbhJRL3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 07:29:53 -0400
+Received: from mail-am6eur05on2097.outbound.protection.outlook.com ([40.107.22.97]:22966
         "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229491AbhJRLHm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Oct 2021 07:07:42 -0400
+        id S229491AbhJRL3w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Oct 2021 07:29:52 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=g9F7M9R1TJsSEfKAYE8okt/ALpTyhcDAy168KAaT/6EIOCKfdsF+x/yXkkYHY0qaTc7NOQJQSwgb/7kXLWSCtl01HkI1uJW/h6uyangfjgOmu5srSXrtr0UGBHzgHL/4NMznV+qvz6eg+NMvgqKtxfcHf09cDuveYq8ygdXPqyDY0eFAi9sxsHJQB/L0fswlWVtinX3eqrzqM8jdZE3QX6VEuL5HAwsF2SlF6SQn8G14oA8rtZV/TjKTYUJnBGhFLCwuRtoRrWZ3EsP1Vov0c3bz9B2ucpgAthHrFr4Wo6+0Lq+rvzbilos7S6PxOt15S5KKzhXXUeQq9+EjohXncg==
+ b=mocTDpS/S6l7frDES2hIBj5eDjBBt6OVlQkm0noBeeNdkQySdexJ1qejem+7CU38iu9GVKDxagxnukp+spj3397DBK17ALj5pdm9bNKJAHqbX67hRNi6ZriopQxpB3qUM7WdwSXWKnxCjTRcjwWhEB2Ju6L6cy98hMFpoFCj7qjyVN84x4eyu1tYsu86CQ9ajxWlm/sMeX7WXY7+fhdJRoCoM2AziqCm2tu/jrCyvtl+tkSAmR1+ELAO2B53QeFwNS2RxRwvzySaal3mh6S0nIHSiWrSUO5zYLt7rvneLhxMmYgez4YPTORbyj71uiQVjtqD4RHeqDanmbOm9/aJTQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/Y6fnRl1BuyUJVyeiwucxfP6vEZH+yhY42N3iQED+NM=;
- b=AFPJE3JWTwphP/IE9Fo2zqZXVOi53XTD1rzlHabvc5RUyb8Yy59Wmcgb+wIg+4gJlvEYEXlLvT1JYkhGGXK98bdSlyhvM/yTTWodM9QNmqnWrXMnhzkn+Z3FBs5szkKaxpIA/WFEF40x0FfOcN00EA9wfJVwSqlE31mtlucvZpGuLVKtlfU1QTTx9VDcAO+j3xvGE88Y1T9rmukChCMzU4q3e4ZE4/m9wOesjQVFShirg9VATvLtlhAsiZVJk7fBIdcfKYYLXd8UaEYy4bVHWuZJh+QlKYCqcWXvzhk8AkitgnvZBdYcXYc8aQlZeitNMfKM5Kd12+rs8ZH9gzHuyQ==
+ bh=lZINK1R7I5glM0tdcfPWpWOOyobDPOGOJJzQMc8fqeo=;
+ b=QAvpqKnXxFNwgw1pAiS3kftTblux+c7uPTxTGwVW6vzN+nO/hpAvhBmo0RxEmKlickly0GXWfz80omp2uWA2WJdwIQbayi2ZF+OendGxJ9qktPFEQpFMV3e1LvxTyz5622u0SpA0vOZvuxzLFKs9q3prCXt4ZiTsW9j8XxgxuCevHyLASreNk3Lky7CkQjwprvYpRe+MSEG9S48idZWAuPd8RLp5ZEsnXVOE9o8ANeGYqtvmy+zG38w+jN5GFM0MHhebPUwtfncE6FH04+z/BATZwcvn1licVc9Sezj28AY5DNRjLeIgAb0grz3yCpSTHSiC7tfquWBfOJNYu0AqoA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
+ dkim=pass header.d=toradex.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/Y6fnRl1BuyUJVyeiwucxfP6vEZH+yhY42N3iQED+NM=;
- b=nR+NqpfwmL8hJxvIcKkjuFOe/98W/aMLi14552LmLVjz6taL0yXQ4DW1KR/76haCHCb9kwEO8r1Rbhrwsae8XDrW4Th2ENKszpCNpy18cehoja5JyMH5w4d0D0fLQz9BiWHDoq1ic3ANTaHRzsxzgs+bLaZGOuGlvOrzTsPw8tk=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=plvision.eu;
-Received: from AS8P190MB1063.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:2e4::5)
- by AM7P190MB0693.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:118::7) with
+ bh=lZINK1R7I5glM0tdcfPWpWOOyobDPOGOJJzQMc8fqeo=;
+ b=RzyvERph3ltPXW905UM8ZyyJgDM+D5B5oPrIjFOcAGm0E4QkAZpdUHRvi+L8std/6oP39si4auE8U0C7yzUbd+DBZx4f+P/n+F2TIewJaPssJpI+M9gBs1DHbd0OAK3MBkgjbvbaHz6tHtdlxHVvJBYzNzQ+pxFHsIPCZYHxs08=
+Authentication-Results: agner.ch; dkim=none (message not signed)
+ header.d=none;agner.ch; dmarc=none action=none header.from=toradex.com;
+Received: from DBAPR05MB7445.eurprd05.prod.outlook.com (2603:10a6:10:1a0::8)
+ by DBAPR05MB7448.eurprd05.prod.outlook.com (2603:10a6:10:1ac::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.15; Mon, 18 Oct
- 2021 11:05:26 +0000
-Received: from AS8P190MB1063.EURP190.PROD.OUTLOOK.COM
- ([fe80::a861:17ac:d33c:4347]) by AS8P190MB1063.EURP190.PROD.OUTLOOK.COM
- ([fe80::a861:17ac:d33c:4347%5]) with mapi id 15.20.4608.018; Mon, 18 Oct 2021
- 11:05:26 +0000
-References: <20211013104542.14146-1-pmenzel@molgen.mpg.de>
- <YWhfsiA6Vngi/1l+@shell.armlinux.org.uk>
-User-agent: mu4e 0.9.18; emacs 28.0.50
-From:   Vadym Kochan <vadym.kochan@plvision.eu>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Paul Menzel <pmenzel@molgen.mpg.de>, Andrew Lunn <andrew@lunn.ch>,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.16; Mon, 18 Oct
+ 2021 11:27:37 +0000
+Received: from DBAPR05MB7445.eurprd05.prod.outlook.com
+ ([fe80::98f8:53ac:8110:c783]) by DBAPR05MB7445.eurprd05.prod.outlook.com
+ ([fe80::98f8:53ac:8110:c783%3]) with mapi id 15.20.4608.018; Mon, 18 Oct 2021
+ 11:27:37 +0000
+Date:   Mon, 18 Oct 2021 13:27:35 +0200
+From:   Francesco Dolcini <francesco.dolcini@toradex.com>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        f.fainelli@gmail.com, Andrew Lunn <andrew@lunn.ch>
+Cc:     Francesco Dolcini <francesco.dolcini@toradex.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Vadym Kochan <vadym.kochan@plvision.eu>,
+        Stefan Agner <stefan@agner.ch>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: sfp: add quirk for Finisar FTLF8536P4BCL
-In-reply-to: <YWhfsiA6Vngi/1l+@shell.armlinux.org.uk>
-Date:   Mon, 18 Oct 2021 14:05:24 +0300
-Message-ID: <vrcxh2o87ma8zv.fsf@plvision.eu>
-Content-Type: multipart/mixed; boundary="=-=-="
-X-ClientProxiedBy: FR0P281CA0072.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:49::9) To AS8P190MB1063.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:20b:2e4::5)
+Subject: Re: [PATCH net-next] phy: micrel: ksz8041nl: do not use power down
+ mode
+Message-ID: <20211018112735.GB7669@francesco-nb.int.toradex.com>
+References: <20211018094256.70096-1-francesco.dolcini@toradex.com>
+ <180289ac-4480-1e4c-d679-df4f0478ec65@csgroup.eu>
+ <20211018101802.GA7669@francesco-nb.int.toradex.com>
+ <a06104cf-d634-a25a-cf54-975689ad3e91@csgroup.eu>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a06104cf-d634-a25a-cf54-975689ad3e91@csgroup.eu>
+X-ClientProxiedBy: GV0P278CA0036.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:710:28::23) To DBAPR05MB7445.eurprd05.prod.outlook.com
+ (2603:10a6:10:1a0::8)
 MIME-Version: 1.0
-Received: from pc60716vkochan (217.20.186.93) by FR0P281CA0072.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:49::9) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.13 via Frontend Transport; Mon, 18 Oct 2021 11:05:25 +0000
+Received: from francesco-nb.toradex.int (93.49.2.63) by GV0P278CA0036.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:28::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.16 via Frontend Transport; Mon, 18 Oct 2021 11:27:36 +0000
+Received: by francesco-nb.toradex.int (Postfix, from userid 1000)       id 7DD2310A08AC; Mon, 18 Oct 2021 13:27:35 +0200 (CEST)
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7d51c042-596c-4260-4c00-08d992273027
-X-MS-TrafficTypeDiagnostic: AM7P190MB0693:
+X-MS-Office365-Filtering-Correlation-Id: 24a476e8-1530-40c4-8805-08d9922a498e
+X-MS-TrafficTypeDiagnostic: DBAPR05MB7448:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM7P190MB06935789EA227CED0437CD1295BC9@AM7P190MB0693.EURP190.PROD.OUTLOOK.COM>
+X-Microsoft-Antispam-PRVS: <DBAPR05MB7448D6D698268C3BF9F99BCAE2BC9@DBAPR05MB7448.eurprd05.prod.outlook.com>
 X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: T4FFWE/uVkl2rdOk9s4STREWYgaRRdk8+/PCEqSoS481Qk7PpXWAwR3JKqGhn5EgtHxQnVv5n+2g582SvgySFhyByrKL1fDbAvGRlfeR1uFeyHE9eH9id+TzS3vUibO1COE8oeW1kwAVKkoD6SWr7IcnCbVaNkU1wV+O8PjDh6QsknknP4njSXc21sh9TsdwYcTbeGK9V8ksMQJ3kBskNQXmkdg3S1ALqlXCF9eOJygvkqL/n5ml6+sSrtPXI8+G6qiczV3UOtnyY8D66hobRgF2Lnq4WgC7vGt37369vSB2Pjo69C17sS3znMG33aCE4kYspwQIZCDjwXJJYdVHa7nAzyLuHHBvWlPQxY+k4YnvURBWH+10/I1MXv/6BWip5EiaTDTcI+a8runSPKwGQmeqGWpbhsiH++/aGvzvO+FODaAcqBKkwfs1ziSx0mls0oHzDy6LXbOWup+HkrHgRNExtAMQY6r/+S9uNBU6ejhhhOLb6RYXL9KxAPgdEUZ1U9IPh/YCu2KSL0QVYHiv58xUnjdZ3OIQWwpZPR7ZvvB40Te4i7pyINq7bOdQMk11f6wXBpVrCiW1yjCEBWcRIlymUfNndmJZJYzEOTzJcDgUDExMWmNT/PfUbgX0B915jKaYu6CXpLSU2izJBpg6GLfc61BjrtELKoye15SiAjIyKy7YDzRSkrdUvhDJwWs7NzImfUdpCQyPRype8XGwg+BDeoEE1jtkCzLtV/7E9s//rc9xkcDdPi1sBCGIx44H7sUtH5dRfet5mf1kgrc7bhODuppE4atwqK1THNCT5iuuEkyN525UtGpEkHaUV5IC
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8P190MB1063.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(346002)(396003)(136003)(376002)(39830400003)(366004)(8936002)(2906002)(86362001)(235185007)(316002)(38100700002)(38350700002)(956004)(54906003)(6916009)(186003)(508600001)(36756003)(26005)(5660300002)(66946007)(52116002)(8676002)(4326008)(66556008)(66476007)(6496006)(44832011)(966005)(2616005)(6486002)(505234007);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: hxb2cpN/0QoPiBYS1X6VaIkjgUhYDT6Uj/RTDaw/S5jo5jbxEqXG+0/wSr5GaOOgIi9wsisk76UDTFCj0l0j9bNHTlc5tinIdbSoU72O/G9tlh5IXxl7qSCr/9HwmRHE4wUsXl+3/CQGY6laAiaojR/0HRdPx97TPrPFufHz0TDcopIusRmbDDKbvU+HyQYvf7V4b/ywPDklADkVqwCLjfSTJZyomdbM0gLeEU3oDpaf1A2gXyoGYzTS7x4QLQPUneyOJ2sx09cMpSYAeM1z1qpkMTrVuLR8FNoClMV4+2Bb61zN4N7f95bkA1sIVRm0pCeQHagq2sygAqX68dbhjPTnm3aO9o5OeZDpuAag2bTjvuay+OMqpNzYbkinyM37pIwG5TiFSrjgqJcYHuGPSDypa853G7d5uY9l/rUCa4cxPkx+BC9dku79YMM8eruyCHhKz4b7OYQEJbvqWV2XG7zs3PbViXrJFAufif2Dqw8KYPBUBFbUXDFadXb1cD1+CeHzdrko/qIW2On3ncIemhUaru6oZ/7d6KlWH2u3IjFZ6EeIcuCUjCR/M7EXwhY3uK9nBuSH2vLZGI7Cl9Jz7ufX3+eQmvSb4I/T1n++phdFebs4rTA25aGWQtgsnMzP6liQhQILVHavCwrIxN9DZVzO/l1J0M+cNQy+WvAbtsJHxZDKHf1veLvZ+SU+tfHXgBs3+XMG+p/R98h/6H9nsg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DBAPR05MB7445.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(39850400004)(376002)(396003)(346002)(136003)(1076003)(83380400001)(86362001)(66946007)(66476007)(66556008)(110136005)(66574015)(508600001)(38100700002)(44832011)(186003)(8936002)(4326008)(8676002)(52116002)(5660300002)(2906002)(26005)(7416002)(316002)(42186006)(38350700002)(6266002)(54906003)(33656002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Q6b8eXUiw8Q3ryHhzmd0Gx+ppvdeG3dINZY35YFzjQeHM+8pCcDsB+7c95dT?=
- =?us-ascii?Q?nJz9fby24q3t+3dScKk0vRp13MxJdvebZBpoKX76RRhKxOXhGrBRfqsFIPuo?=
- =?us-ascii?Q?3EDpnwO3hNhMGXM+2OZpAoWqfz5qdfnQllmjx6sAOvo9p7Vc2+/deIK878dR?=
- =?us-ascii?Q?fMr1D3xvLH8J0a/zy6sVJCUTf0wDlXg4FxX/TxGnmVjSjrpMPEVh2HWaKeh9?=
- =?us-ascii?Q?6Sx1/okxoOY049sBTfQhh/4JuhnSMbrxD70qQ/MUraa3rYMRZF652BNym6CE?=
- =?us-ascii?Q?H+jP0gWomElbBeRuKbPQGdkaMKTRLtR2igdiHpuzKXYV9e8b8RDnkFwPHV7C?=
- =?us-ascii?Q?qIrp0FTaxNQsA66wed+obDxOWwOxIclG23QMk7UPh8Z8bIeUwLIUC2tK1jPg?=
- =?us-ascii?Q?m6t8PToCR1cnnU/QLVwaGrCRebeFDxxW2yQikH2q9gFxyuvYu4W2SY47YhY9?=
- =?us-ascii?Q?k+0W0mUiMgqg8yMUvnKupTL2Pu+YK6qdshKVX1eeml5eg4X7lH/yfM45EO5J?=
- =?us-ascii?Q?Qp7pr9xMzYQk2WEgpw3IFDjk/sOj28EgB9h6qU7kXSvJ1CDook/FYTJjkq4+?=
- =?us-ascii?Q?Qc5VAltQYmtVYNUzXY1fgfyoUYLFVLYn1bQK4lx3gTIpY27c23PDZjahhjHb?=
- =?us-ascii?Q?nK2C2NiPkIql8C1xrYGTUbE/472WcPoDJQ9vlIrzaBOtfExDiN9FtPFdXM1I?=
- =?us-ascii?Q?YQltez3MsgOtSznlV5we/YNixawaMJDRwgMe1LF6VpbNXtYDJQ5XPCvfpyFQ?=
- =?us-ascii?Q?rwMeOmb1q8EASk2aBOb+j9HBLYRLqhdpPms6ZJDW43Gx/VpbJfTXA53EeZsn?=
- =?us-ascii?Q?z6Xdu/jBYddBPnF2yaqzOXc8wrCYDXb/FSfedF58OYNXqCP0sgtsT4WacNrP?=
- =?us-ascii?Q?N9PBQSqRUotaeY8Y+R32iz/jDxp5Nypmnla3MgJrCAilM+i2kvRg/Fhjbajg?=
- =?us-ascii?Q?1Ma+GzZvMfvxbaN6lWU4IziQrR57/xbmwf+TV+ga0yRU03/dByw+u3QwEhRZ?=
- =?us-ascii?Q?k9AEhLsZRZbPgQ1yvos8B61C83cY0fPV/4xMWX/imaOu9V2G48sJ1lfR3pvh?=
- =?us-ascii?Q?kWIqkfaNQlwkTimz1aF6aR9R3igPgbi+3jskRXw37EQZEou12SnXUC5XyZZA?=
- =?us-ascii?Q?Aj6zTwHXVPCTbDtZW+q/fC9cm3ECa4rP6kZLR8UA3kDHy9hulBuD3AIZeIjc?=
- =?us-ascii?Q?OHvyzCAnuFf09GtNDGsivPI39ezDgcGyloT7NQPiS/qVG6r+N8wvK9APYu8a?=
- =?us-ascii?Q?a6RLEWfZ57i6yRbfv1MH/CBXud9UIrYJu6jIEFT7b3jApXsAci9X5Sr6md8G?=
- =?us-ascii?Q?WW4QKeWGH9CUB2UrZpP9lZ0y?=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7d51c042-596c-4260-4c00-08d992273027
-X-MS-Exchange-CrossTenant-AuthSource: AS8P190MB1063.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?310ZYG0e/DALEYMDlGUwDfOa/UaQh5myxwong4S6BzcH12mtkViOxGhRA3?=
+ =?iso-8859-1?Q?qkOe7sQ6OLLXMZplcbME70qT9ndwVn2GAA/qIzNnehcZ9QAoWzP9aJQLG/?=
+ =?iso-8859-1?Q?xzmHfsZtjSqcE3n5ocOglIYC/lflz4USoKkj8brKtbX/QVDk2oTxb9AI7w?=
+ =?iso-8859-1?Q?o27ymAUGBIbInolFUzUjFvCH7+PLqo0Bx71uy4DuLx0d0gFIUDkaYtz5Kg?=
+ =?iso-8859-1?Q?B8eeGvyu8hbi6Un/XGDKD05Thf39GDnkeshEC9SzwGh5V5CyL5ZRJPIsB9?=
+ =?iso-8859-1?Q?oWAG6fURoomv9FciuMtY/dQkIvAFPgYIMqU0HZ0LgtgUNkT4MzwWtBKCJW?=
+ =?iso-8859-1?Q?ptOkf+1WEL3/Bx9qjJBhoX7roGmsKOAXb87Qa58oiXZ37ciR/2w7KEwEFi?=
+ =?iso-8859-1?Q?oOZ28hnNDnedShlKPm/N1iSZM+JnA/sh4l7KL+LhGR04rMsEMWglSf6vOa?=
+ =?iso-8859-1?Q?ggiSFBojoZGrR78PgOV6z9Ue2m90e9XCUIo3ATeVB1k9hwgiee2hhfeieu?=
+ =?iso-8859-1?Q?dvJVD3OcWU9Cd7zqek+32dLmfmFCwAtbnUcrgY5XAc6dFoJX4u57fJ7nGS?=
+ =?iso-8859-1?Q?TtWwcnE5wdKSVFGx8zDvvmFEn7udBJ/V3+bI3WaNqFi/SMAWN0rrmgJ9NL?=
+ =?iso-8859-1?Q?BFNYa0zHbFV59aLlFqRQgMn6FDMktWK3xB7LLOHzRFK1uv/niQ8EgODtaN?=
+ =?iso-8859-1?Q?4GavuDe5F4dMlZZcid8azSeG/T8I6ArApyZv9cNScFK0kq34B7NfOsk6jI?=
+ =?iso-8859-1?Q?xITPIEdZMBkv8Or8fzZxsXG/6v8dKncKW3vs1kV2SZwJ2rw6F9VEGmKEQu?=
+ =?iso-8859-1?Q?3ixWZCbfUQnbKCoMsZe9LEQBn46WAy1hzo7/ru18HuwJ17azuieZVhWIpo?=
+ =?iso-8859-1?Q?0j03HstasUjr1Mflp+NL1aGNCiIWjo8aEcarNdCJvibfTcJ6BisOQ6MwRK?=
+ =?iso-8859-1?Q?W5OE5KmC+NwqY5vcBQK37uP4AH8o1AZxugfwUQTpR3jR1maBcF3MmYV7aA?=
+ =?iso-8859-1?Q?CNI6LcfPfKKGkuFd7Q5xYTA1c3EFY2+QeXuMji5eJ+L8D/qXn5SSdq/Or4?=
+ =?iso-8859-1?Q?XcmEgaSinJPcHDwWBC8LCzWIuGrhFmxmfKQW+m+rno4PdTR14DuboKnhbp?=
+ =?iso-8859-1?Q?lkspRBzixT70hW4BT0e39a+AY87JIft5YA+yTtcir4WQSB8crHobW/7S/1?=
+ =?iso-8859-1?Q?kPJ1cNK7saxEWH5HRp3KJ3Zk84mGrqmbehIpaBot532Jrfcs4vJFgoE8ox?=
+ =?iso-8859-1?Q?dP6RThIdf2RfydIBkq050g5p4JkZNxtZM9kimjfwqF4mS5GofIzFZ1im13?=
+ =?iso-8859-1?Q?GmcYZWx0Ux2q2sQjSWRQhRj1JWK9tX0JXe9I95GTeT9Xjfhx3mA1GMidFd?=
+ =?iso-8859-1?Q?/brumejHwd?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24a476e8-1530-40c4-8805-08d9922a498e
+X-MS-Exchange-CrossTenant-AuthSource: DBAPR05MB7445.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2021 11:05:26.1356
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2021 11:27:37.0751
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cs6ahOsRQBB3aa1axrCe9oCXelArlYJJkRIJ6yqfxTLZaGKt1cEGmkjM4aRpqjbcFOyNlUuwR31j/UsQJyG/9Jd9N2lus2AndPMuit2uwhU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7P190MB0693
+X-MS-Exchange-CrossTenant-UserPrincipalName: AxHDfSChq/jTHAajznVN2rCUrY7K6RTuKBN+Ydw9DgiDTNBLkhkNpwB5ZxKd/AbsieBRq8cAGzg6QEopedu/PF2YT7HZw74/eZrDKNn4ZGk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR05MB7448
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
+On Mon, Oct 18, 2021 at 12:46:14PM +0200, Christophe Leroy wrote:
+> 
+> 
+> Le 18/10/2021 à 12:18, Francesco Dolcini a écrit :
+> > Hello Christophe,
+> > 
+> > On Mon, Oct 18, 2021 at 11:53:03AM +0200, Christophe Leroy wrote:
+> > > 
+> > > 
+> > > Le 18/10/2021 à 11:42, Francesco Dolcini a écrit :
+> > > > From: Stefan Agner <stefan@agner.ch>
+> > > > 
+> > > > Some Micrel KSZ8041NL PHY chips exhibit continous RX errors after using
+> > > > the power down mode bit (0.11). If the PHY is taken out of power down
+> > > > mode in a certain temperature range, the PHY enters a weird state which
+> > > > leads to continously reporting RX errors. In that state, the MAC is not
+> > > > able to receive or send any Ethernet frames and the activity LED is
+> > > > constantly blinking. Since Linux is using the suspend callback when the
+> > > > interface is taken down, ending up in that state can easily happen
+> > > > during a normal startup.
+> > > > 
+> > > > Micrel confirmed the issue in errata DS80000700A [*], caused by abnormal
+> > > > clock recovery when using power down mode. Even the latest revision (A4,
+> > > > Revision ID 0x1513) seems to suffer that problem, and according to the
+> > > > errata is not going to be fixed.
+> > > > 
+> > > > Remove the suspend/resume callback to avoid using the power down mode
+> > > > completely.
+> > > 
+> > > As far as I can see in the ERRATA, KSZ8041 RNLI also has the bug.
+> > > Shoudn't you also remove the suspend/resume on that one (which follows in
+> > > ksphy_driver[])
+> > 
+> > Yes, I could, however this patch is coming out of a real issue we had with
+> > KSZ8041NL with this specific phy id (and we have such a patch in our linux
+> > branch since years).
+> > 
+> > On the other hand the entry for KSZ8041RNLI in the driver is somehow weird,
+> > since the phy id according to the original commit does not even exists on
+> > the datasheet. Would you be confident applying such errata for that phyid
+> > without having a way of testing it?
+> 
+> 
+> If your patch was to add the suspend/resume capability I would agree with
+> you, but here we are talking about removing it, so what risk are we taking ?
+yes, you are right.
 
-Hi Russel,
+> In addition, commit 4bd7b5127bd0 ("micrel: add support for KSZ8041RNLI")
+> clearly tells that the only thing it did was to copy KSZ8041NL entry, so for
+> me updating both entries would really make sense.
+> 
+> It looks odd to me that you refer in your commit log to an ERRATA that tells
+> you that the bug also exists on the KSZ8041RNLI and you apply it only
+> partly.
 
-Russell King (Oracle) <linux@armlinux.org.uk> writes:
+I think I was not clear enough, the entry I changed should already cover
+KSZ8041RNLI, the phyid is supposed to be just the same according to the
+datasheet. This entry for KSZ8041RNLI seems really special with this
+un-documented phyid.
+But I'm just speculating, I do not have access to these hardware.
 
-> On Wed, Oct 13, 2021 at 12:45:42PM +0200, Paul Menzel wrote:
->> From: Taras Chornyi <taras.chornyi@plvision.eu>
->> 
->> Finisar FTLF8536P4BCL can operate at 1000base-X and 10000base-SR, but
->> reports 25G & 100GBd SR in it's EEPROM.
->> 
->> Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
->> Signed-off-by: Taras Chornyi <taras.chornyi@plvision.eu>
->> 
->> [Upstream from https://github.com/dentproject/dentOS/pull/133/commits/b87b10ef72ea4638e80588facf3c9c2c1be67b40]
->> 
->> Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
->
-> Hi Paul,
->
-> Please can you send me the file resulting from:
->
-> ethtool -m ethX raw on > file
->
-> please - it will be binary data, and that is exactly what I'm after.
-> I would like to see what the EEPROM contains before making a decision
-> on this patch.
->
-> Thanks.
+Said that if there are no concern from anybody else, to be on the safe/cautious
+side, I can just update also this entry.
 
-Attached output of ethtool:
-
-
---=-=-=
-Content-Type: application/octet-stream
-Content-Disposition: attachment; filename=FTLF8536P4BCL.bin
-Content-Transfer-Encoding: base64
-
-AwQHAAAAAAAAAAAG/wAAAAIACgdGSU5JU0FSIENPUlAuICAgAgCQZUZUTEY4NTM2UDRCQ0wgICBB
-ICAgA1IAuAgacABVVUgyMEZMICAgICAgICAgMTYwMjEyICBo8AhkAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEsA+wBGAAAAjKB1MIi4eRgXcAH0FnYD6D3pBOsx
-LQYxTfEAZD3pAJ4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP4AAAAAAAAAAAQAAAAEAAAAB
-AAAAAQAAAAAA9Cbxg7YAUQAACsYAHiRLsAAFKAAABSgAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
-
---=-=-=
-Content-Type: text/plain
-
-
-Also adding hexdump version to have it in mail:
-
-00000000  03 04 07 00 00 00 00 00  00 00 00 06 ff 00 00 00  |................|
-00000010  02 00 0a 07 46 49 4e 49  53 41 52 20 43 4f 52 50  |....FINISAR CORP|
-00000020  2e 20 20 20 02 00 90 65  46 54 4c 46 38 35 33 36  |.   ...eFTLF8536|
-00000030  50 34 42 43 4c 20 20 20  41 20 20 20 03 52 00 b8  |P4BCL   A   .R..|
-00000040  08 1a 70 00 55 55 48 32  30 46 4c 20 20 20 20 20  |..p.UUH20FL     |
-00000050  20 20 20 20 31 36 30 32  31 32 20 20 68 f0 08 64  |    160212  h..d|
-00000060  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
-*
-00000100  4b 00 fb 00 46 00 00 00  8c a0 75 30 88 b8 79 18  |K...F.....u0..y.|
-00000110  17 70 01 f4 16 76 03 e8  3d e9 04 eb 31 2d 06 31  |.p...v..=...1-.1|
-00000120  4d f1 00 64 3d e9 00 9e  00 00 00 00 00 00 00 00  |M..d=...........|
-00000130  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
-00000140  00 00 00 00 3f 80 00 00  00 00 00 00 00 01 00 00  |....?...........|
-00000150  00 01 00 00 00 01 00 00  00 01 00 00 00 00 00 f4  |................|
-00000160  26 f1 83 b6 00 51 00 00  0a c6 00 1e 24 4b b0 00  |&....Q......$K..|
-00000170  05 28 00 00 05 28 00 00  00 00 00 00 00 00 00 01  |.(...(..........|
-00000180  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
-*
-00000200
-
---=-=-=--
+Francesco
