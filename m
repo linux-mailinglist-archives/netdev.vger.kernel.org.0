@@ -2,41 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 590374326E8
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 20:55:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B0B14326F1
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 20:56:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232944AbhJRS5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 14:57:38 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:53770 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232381AbhJRS5h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 14:57:37 -0400
-Received: by mail-io1-f70.google.com with SMTP id g9-20020a056602150900b005d6376bdce7so11470468iow.20
-        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 11:55:26 -0700 (PDT)
+        id S233345AbhJRS6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 14:58:37 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:44717 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232841AbhJRS6g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 14:58:36 -0400
+Received: by mail-il1-f197.google.com with SMTP id i11-20020a92540b000000b0025456903645so8607661ilb.11
+        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 11:56:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=d9FglVVwh25AoGE+76STUHBE//5+OPpn8rA7VxNxOTI=;
-        b=JEYfpJC/imjU9TI2lCwjZgLX9egpcUjCA00qQf8JtE47jWkx9T+KpWPtDehlfHeKSB
-         YoQonRzjNV4/OQSglHxrby1JEs+WprHyIAnvFSRtln2HJpYUxGM7K97qqZ5HpIS3Qz+r
-         AxKDX72OT9IUshrvXfItDCf8mwr5tyzwmzyC/tIAv4LQ82F7LGIhVkAgA932fFeKVtFL
-         mrVRZsbUv0HKJt5l/qWJALnU5GKeB04BUPwPbSqkSvQ7lEj6aHSANncetnEk0c8ehkJs
-         C2V+L7CZuoI7024EfT2nsiqRJvydSrLgjQx57FMtfBPPmZPzWQn5tj+hZDjlf8ZPpdEX
-         4+6A==
-X-Gm-Message-State: AOAM531Z8jPhMv181kgbzzMvSyuUssHADooYUhQVpFW9vNrGA9FO7xPh
-        YatEkWXigquFQ0sdq2R9KrniUk4WYriqvcFgGLiT7AL3yH7A
-X-Google-Smtp-Source: ABdhPJwVl4Hluj+sHjdVEOw84B/s8707bcUBy90SmSxoxW/4Op1rbrmHAViUG0tIZjkhBcDE+PUubtQ5nVHtVpU9Zkiep7OB0MuU
+        bh=qrfb55jZpNwVAqJrVbLH1XCEOAgnpcHdVrtGXnqAP20=;
+        b=W5u2ZpLrTFvZemGZJHLb57D0rk6a1BVeqWCtGEVhymYOEJH9ewXN1tqzwZ+0LN65FH
+         cYl0HTn6dztWNfSJLQYNs0lhGHnzGpjt0PZ9gQ9mTkfM0IfFpuKZ79RTHWoacgYs8FSe
+         E6TWtqPcIBkGoU/e7iKEdoF+XAuinujUlEdQoi8vxHro4yLWHZyaoFqCyZZMJpt0H10i
+         8oCrJQgDgBm4bertU6eQPsn9SaFbi+KK5IywiIs/PSn5JwAQuXczecuBz84OW6K7Bsos
+         nKCSVT0Zz8jWLo6uTSNn7FcPivVwpsjGZP668tyDqH51a7vYF0dPziabW4NBB/kS+1j4
+         e81Q==
+X-Gm-Message-State: AOAM533hLXSp9LKwGnszvwc5J+XK5/sgcVqvmmgz845FTNx7yGtvufdr
+        xy4QrCHc8mfOGDTtYp5XtW7OfdaJ+1D1iLIJ1mCp0HrqSOkf
+X-Google-Smtp-Source: ABdhPJz72nBghGjLut9waCZkNKD4/yd8i4XkP3TKRiLBsPdj890qMfwAgKdV6HQx4TqEH+t1LRkeYI5J7411P66ZLngomq4cbb9l
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:4ca:: with SMTP id f10mr15538757ils.316.1634583326004;
- Mon, 18 Oct 2021 11:55:26 -0700 (PDT)
-Date:   Mon, 18 Oct 2021 11:55:26 -0700
+X-Received: by 2002:a05:6638:ac6:: with SMTP id m6mr1115607jab.28.1634583383840;
+ Mon, 18 Oct 2021 11:56:23 -0700 (PDT)
+Date:   Mon, 18 Oct 2021 11:56:23 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000809ecc05cea5165d@google.com>
-Subject: [syzbot] divide error in genelink_tx_fixup
-From:   syzbot <syzbot+a6ec4dd9d38cb9261a77@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+Message-ID: <000000000000f3259005cea5199e@google.com>
+Subject: [syzbot] divide error in mac80211_hwsim_bss_info_changed (2)
+From:   syzbot <syzbot+5f110beab9fb01e48be5@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
+        kvalo@codeaurora.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
@@ -47,101 +48,78 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    660a92a59b9e usb: xhci: Enable runtime-pm by default on AM..
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
-console output: https://syzkaller.appspot.com/x/log.txt?x=1506ccf0b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5016916cdc0a4a84
-dashboard link: https://syzkaller.appspot.com/bug?extid=a6ec4dd9d38cb9261a77
+HEAD commit:    fac3cb82a54a net: bridge: mcast: use multicast_membership_..
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=144efe78b00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=bab9d35f204746a7
+dashboard link: https://syzkaller.appspot.com/bug?extid=5f110beab9fb01e48be5
 compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11308734b00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12f56f68b00000
+
+Unfortunately, I don't have any reproducer for this issue yet.
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+a6ec4dd9d38cb9261a77@syzkaller.appspotmail.com
+Reported-by: syzbot+5f110beab9fb01e48be5@syzkaller.appspotmail.com
 
-gl620a 2-1:0.0 usb1: register 'gl620a' at usb-dummy_hcd.1-1, Genesys GeneLink, 7a:f2:d1:89:41:da
-divide error: 0000 [#1] SMP KASAN
-CPU: 0 PID: 7 Comm: kworker/0:1 Not tainted 5.15.0-rc5-syzkaller #0
+divide error: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 1140 Comm: kworker/u4:4 Not tainted 5.15.0-rc5-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: mld mld_ifc_work
-RIP: 0010:genelink_tx_fixup+0x308/0x610 drivers/net/usb/gl620a.c:172
-Code: 8b 44 24 70 48 ba 00 00 00 00 00 fc ff df 48 89 f9 48 c1 e9 03 0f b6 14 11 84 d2 74 09 80 fa 03 0f 8e 50 02 00 00 31 d2 31 ff <f7> b3 28 01 00 00 41 89 d5 89 d6 e8 f8 50 b6 fd 45 85 ed 0f 84 b1
-RSP: 0018:ffffc9000007f5e8 EFLAGS: 00010246
-RAX: 0000000000000062 RBX: ffff8881197c0c00 RCX: 1ffff110232f81a5
-RDX: 0000000000000000 RSI: ffffffff84bd1bb7 RDI: 0000000000000000
-RBP: ffff88811b40b780 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff838b813c R11: 0000000000000000 R12: ffff88811b40b780
-R13: 0000000000000654 R14: 000000000000005a R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff8881f6800000(0000) knlGS:0000000000000000
+Workqueue: phy9 ieee80211_roc_work
+RIP: 0010:mac80211_hwsim_bss_info_changed+0xd37/0xf10 drivers/net/wireless/mac80211_hwsim.c:2033
+Code: 48 ba 00 00 00 00 00 fc ff df 48 c1 e9 03 80 3c 11 00 0f 85 96 01 00 00 49 8b b6 a0 3c 00 00 49 8d be 40 3d 00 00 31 d2 89 f1 <48> f7 f1 29 d6 b9 05 00 00 00 31 d2 48 69 f6 e8 03 00 00 e8 d1 1f
+RSP: 0018:ffffc9000550fb70 EFLAGS: 00010246
+RAX: 0005ce87f3fb02a5 RBX: 0000000000000200 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff88807783efe0
+RBP: ffff88801af8e088 R08: 000000000000f8c6 R09: ffffffff8fcffa47
+R10: ffffffff8167242f R11: 0000000000000000 R12: ffff888077838d60
+R13: ffff88807783ef40 R14: ffff88807783b2a0 R15: ffff88807783b2a0
+FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f09f3e0aff8 CR3: 000000011c54f000 CR4: 00000000003506f0
+CR2: 00007ffee3e2afcc CR3: 000000004efc2000 CR4: 00000000003506e0
 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
- usbnet_start_xmit+0x152/0x1f70 drivers/net/usb/usbnet.c:1370
- __netdev_start_xmit include/linux/netdevice.h:4988 [inline]
- netdev_start_xmit include/linux/netdevice.h:5002 [inline]
- xmit_one net/core/dev.c:3576 [inline]
- dev_hard_start_xmit+0x1df/0x890 net/core/dev.c:3592
- sch_direct_xmit+0x25b/0x790 net/sched/sch_generic.c:342
- __dev_xmit_skb net/core/dev.c:3803 [inline]
- __dev_queue_xmit+0xf25/0x2d40 net/core/dev.c:4170
- neigh_resolve_output net/core/neighbour.c:1492 [inline]
- neigh_resolve_output+0x50e/0x820 net/core/neighbour.c:1472
- neigh_output include/net/neighbour.h:510 [inline]
- ip6_finish_output2+0xdbe/0x1b20 net/ipv6/ip6_output.c:126
- __ip6_finish_output.part.0+0x387/0xbb0 net/ipv6/ip6_output.c:191
- __ip6_finish_output include/linux/skbuff.h:982 [inline]
- ip6_finish_output net/ipv6/ip6_output.c:201 [inline]
- NF_HOOK_COND include/linux/netfilter.h:296 [inline]
- ip6_output+0x3d2/0x810 net/ipv6/ip6_output.c:224
- dst_output include/net/dst.h:450 [inline]
- NF_HOOK include/linux/netfilter.h:307 [inline]
- NF_HOOK include/linux/netfilter.h:301 [inline]
- mld_sendpack+0x979/0xe10 net/ipv6/mcast.c:1826
- mld_send_cr net/ipv6/mcast.c:2127 [inline]
- mld_ifc_work+0x71c/0xdc0 net/ipv6/mcast.c:2659
- process_one_work+0x9bf/0x1620 kernel/workqueue.c:2297
+ drv_bss_info_changed+0x2c6/0x5f0 net/mac80211/driver-ops.h:177
+ ieee80211_bss_info_change_notify+0x9a/0xc0 net/mac80211/main.c:210
+ ieee80211_offchannel_return+0x330/0x4a0 net/mac80211/offchannel.c:158
+ __ieee80211_roc_work+0x35a/0x3d0 net/mac80211/offchannel.c:444
+ ieee80211_roc_work+0x2b/0x40 net/mac80211/offchannel.c:458
+ process_one_work+0x9bf/0x16b0 kernel/workqueue.c:2297
  worker_thread+0x658/0x11f0 kernel/workqueue.c:2444
- kthread+0x3c2/0x4a0 kernel/kthread.c:319
+ kthread+0x3e5/0x4d0 kernel/kthread.c:319
  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
 Modules linked in:
----[ end trace faca6a933050247e ]---
-RIP: 0010:genelink_tx_fixup+0x308/0x610 drivers/net/usb/gl620a.c:172
-Code: 8b 44 24 70 48 ba 00 00 00 00 00 fc ff df 48 89 f9 48 c1 e9 03 0f b6 14 11 84 d2 74 09 80 fa 03 0f 8e 50 02 00 00 31 d2 31 ff <f7> b3 28 01 00 00 41 89 d5 89 d6 e8 f8 50 b6 fd 45 85 ed 0f 84 b1
-RSP: 0018:ffffc9000007f5e8 EFLAGS: 00010246
-RAX: 0000000000000062 RBX: ffff8881197c0c00 RCX: 1ffff110232f81a5
-RDX: 0000000000000000 RSI: ffffffff84bd1bb7 RDI: 0000000000000000
-RBP: ffff88811b40b780 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff838b813c R11: 0000000000000000 R12: ffff88811b40b780
-R13: 0000000000000654 R14: 000000000000005a R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff8881f6800000(0000) knlGS:0000000000000000
+---[ end trace ff9a982d4a81be98 ]---
+RIP: 0010:mac80211_hwsim_bss_info_changed+0xd37/0xf10 drivers/net/wireless/mac80211_hwsim.c:2033
+Code: 48 ba 00 00 00 00 00 fc ff df 48 c1 e9 03 80 3c 11 00 0f 85 96 01 00 00 49 8b b6 a0 3c 00 00 49 8d be 40 3d 00 00 31 d2 89 f1 <48> f7 f1 29 d6 b9 05 00 00 00 31 d2 48 69 f6 e8 03 00 00 e8 d1 1f
+RSP: 0018:ffffc9000550fb70 EFLAGS: 00010246
+RAX: 0005ce87f3fb02a5 RBX: 0000000000000200 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff88807783efe0
+RBP: ffff88801af8e088 R08: 000000000000f8c6 R09: ffffffff8fcffa47
+R10: ffffffff8167242f R11: 0000000000000000 R12: ffff888077838d60
+R13: ffff88807783ef40 R14: ffff88807783b2a0 R15: ffff88807783b2a0
+FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f09f3e0aff8 CR3: 000000011c54f000 CR4: 00000000003506f0
+CR2: 00007f1b6573a218 CR3: 00000000271f2000 CR4: 00000000003506f0
 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 ----------------
 Code disassembly (best guess):
-   0:	8b 44 24 70          	mov    0x70(%rsp),%eax
-   4:	48 ba 00 00 00 00 00 	movabs $0xdffffc0000000000,%rdx
-   b:	fc ff df
-   e:	48 89 f9             	mov    %rdi,%rcx
-  11:	48 c1 e9 03          	shr    $0x3,%rcx
-  15:	0f b6 14 11          	movzbl (%rcx,%rdx,1),%edx
-  19:	84 d2                	test   %dl,%dl
-  1b:	74 09                	je     0x26
-  1d:	80 fa 03             	cmp    $0x3,%dl
-  20:	0f 8e 50 02 00 00    	jle    0x276
+   0:	48 ba 00 00 00 00 00 	movabs $0xdffffc0000000000,%rdx
+   7:	fc ff df
+   a:	48 c1 e9 03          	shr    $0x3,%rcx
+   e:	80 3c 11 00          	cmpb   $0x0,(%rcx,%rdx,1)
+  12:	0f 85 96 01 00 00    	jne    0x1ae
+  18:	49 8b b6 a0 3c 00 00 	mov    0x3ca0(%r14),%rsi
+  1f:	49 8d be 40 3d 00 00 	lea    0x3d40(%r14),%rdi
   26:	31 d2                	xor    %edx,%edx
-  28:	31 ff                	xor    %edi,%edi
-* 2a:	f7 b3 28 01 00 00    	divl   0x128(%rbx) <-- trapping instruction
-  30:	41 89 d5             	mov    %edx,%r13d
-  33:	89 d6                	mov    %edx,%esi
-  35:	e8 f8 50 b6 fd       	callq  0xfdb65132
-  3a:	45 85 ed             	test   %r13d,%r13d
-  3d:	0f                   	.byte 0xf
-  3e:	84                   	.byte 0x84
-  3f:	b1                   	.byte 0xb1
+  28:	89 f1                	mov    %esi,%ecx
+* 2a:	48 f7 f1             	div    %rcx <-- trapping instruction
+  2d:	29 d6                	sub    %edx,%esi
+  2f:	b9 05 00 00 00       	mov    $0x5,%ecx
+  34:	31 d2                	xor    %edx,%edx
+  36:	48 69 f6 e8 03 00 00 	imul   $0x3e8,%rsi,%rsi
+  3d:	e8                   	.byte 0xe8
+  3e:	d1 1f                	rcrl   (%rdi)
 
 
 ---
@@ -151,5 +129,3 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this issue. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
