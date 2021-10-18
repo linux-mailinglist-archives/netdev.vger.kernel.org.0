@@ -2,51 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88BC6430DDC
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 04:34:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12FB8430E2A
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 05:29:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237744AbhJRCgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Oct 2021 22:36:43 -0400
-Received: from angie.orcam.me.uk ([78.133.224.34]:34066 "EHLO
-        angie.orcam.me.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234406AbhJRCgn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 22:36:43 -0400
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 0F3A692009C; Mon, 18 Oct 2021 04:34:29 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 0885992009B;
-        Mon, 18 Oct 2021 04:34:29 +0200 (CEST)
-Date:   Mon, 18 Oct 2021 04:34:28 +0200 (CEST)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Jakub Kicinski <kuba@kernel.org>
-cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 10/11] fddi: use eth_hw_addr_set()
-In-Reply-To: <20211001213228.1735079-11-kuba@kernel.org>
-Message-ID: <alpine.DEB.2.21.2110180427110.31442@angie.orcam.me.uk>
-References: <20211001213228.1735079-1-kuba@kernel.org> <20211001213228.1735079-11-kuba@kernel.org>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        id S230429AbhJRDbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Oct 2021 23:31:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39060 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229451AbhJRDbh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 23:31:37 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E53AC06161C;
+        Sun, 17 Oct 2021 20:29:10 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id 75so14630279pga.3;
+        Sun, 17 Oct 2021 20:29:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=z/ylY5vvx5KqxKz+xNvwJdpdJw5+5FU5nhFhUTLsP6U=;
+        b=bPiB52YVZ6xugdYoVwwX6zElVM0xfH8uUNDVLmt0JTZO+DMgHIWyiq8BLzjouivfE6
+         LVZi2EhDN8L/5oGT9I94I28lwQm4hLOp3deU1/Kx/BKBkdHSiRJpuma96PZuHqNU1S9w
+         a4juYMSyfdjjt28KCNDynG5NjjB7h7t0jZw6LdIBNUT8JMay1jvMCupR+8lNmVBqS3st
+         1+wIrEq9yoACbi3I93ZEU4hihhzkaVuaB/8j5kLdJIOLdRLgeQZfXMuP7azVTgC/Bjl8
+         yXhOyMbiggUnrRUvHckIXCnTEvDCOzqnAhWKhIhqFjin+MZb+vLFQgBlmBQ2zaheBO+0
+         HjjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=z/ylY5vvx5KqxKz+xNvwJdpdJw5+5FU5nhFhUTLsP6U=;
+        b=ZCtsXmJ/wwtzgFckQukPXHYFAqXtsAX80FRI5B8pMLBokPm/jyEQgNxaU0sTvy+bP1
+         nnMCHy+ySLyTex+DCNn44gemswtzWb1zLv81fe5XADZgCcjuv8qKLCoBU4te0h6pssth
+         ODi3bgDh6RA+wG9Nai16Sy5DkRiKnTMhR9EKLoEf7lZPHhubb7PfS71tF6hEhy44BEia
+         Ld0piE+qpqvn4VzH9LxzP5SzDwOLuDrHowU1+S6KFKh6g0m56Ihcur8ed+IGpZWmhHUb
+         PE9UH2q/H5w8uFVJiHjoSEx59sqe+bD5T3xrbjBHK8JlXxEld2O/M2YmjgdwmdwNTpjZ
+         CEGQ==
+X-Gm-Message-State: AOAM531qbJc7dmGZzEJU8RGZ9B1xQvpYw1gfc94CInOMR+dYMsKCzhJm
+        zHJoWySYTQdgbOdZooDpJdE=
+X-Google-Smtp-Source: ABdhPJwPr0ojYey2tmRElAZma0tOh6ohytOGftBSpRh4js5ajCQuqz83wLVGyNL9Jws7TkqvXDd1LA==
+X-Received: by 2002:a63:5544:: with SMTP id f4mr21400410pgm.431.1634527749814;
+        Sun, 17 Oct 2021 20:29:09 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id c9sm10682612pgq.58.2021.10.17.20.29.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Oct 2021 20:29:09 -0700 (PDT)
+Date:   Mon, 18 Oct 2021 11:29:03 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Boris Pismenny <borisp@nvidia.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] selftests/tls: add SM4 GCM/CCM to tls selftests
+Message-ID: <YWzp/5ClVG0nigMY@Laptop-X1>
+References: <20211008091745.42917-1-tianjia.zhang@linux.alibaba.com>
+ <YWk9ruGFxRA/1On6@Laptop-X1>
+ <cf53cf98-354f-f993-4b55-ff22dcc0d92d@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cf53cf98-354f-f993-4b55-ff22dcc0d92d@linux.alibaba.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 1 Oct 2021, Jakub Kicinski wrote:
+On Fri, Oct 15, 2021 at 05:59:29PM +0800, Tianjia Zhang wrote:
+> This patch needs to enable the SM4 algorithm, and the config file you
+> provided does not enable this algorithm.
+> 
+Thanks Tianjia, I will ask CKI team if it's easy to enable the new config.
 
-> diff --git a/drivers/net/fddi/skfp/skfddi.c b/drivers/net/fddi/skfp/skfddi.c
-> index cc5126ea7ef5..652cb174302e 100644
-> --- a/drivers/net/fddi/skfp/skfddi.c
-> +++ b/drivers/net/fddi/skfp/skfddi.c
-> @@ -433,7 +434,7 @@ static  int skfp_driver_init(struct net_device *dev)
->  	}
->  	read_address(smc, NULL);
->  	pr_debug("HW-Addr: %pMF\n", smc->hw.fddi_canon_addr.a);
-> -	memcpy(dev->dev_addr, smc->hw.fddi_canon_addr.a, ETH_ALEN);
-> +	eth_hw_addr_set(dev, smc->hw.fddi_canon_addr.a);
-
- Hmm, it looks to me like this ought to be abstracted somehow even if it 
-ultimately expanded to exactly the same code; note that FDDI_K_ALEN should 
-have been used in original code.  Not functionally incorrect however, so I 
-guess no need to rush cleaning up.
-
-  Maciej
+Cheers
+Hangbin
