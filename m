@@ -2,65 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56145432944
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 23:48:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D72E432955
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 23:54:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232562AbhJRVuK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 17:50:10 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45344 "EHLO vps0.lunn.ch"
+        id S232495AbhJRV4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 17:56:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41826 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229524AbhJRVuK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Oct 2021 17:50:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=BapwsbtYOPKbDg5KdZ4f1xIYaXmcW0uLqeUff/ga3b4=; b=viCmyS0AVopFgGRSsw30OCs3xI
-        cxP9pcl/PKkCFoHWkxt8VAHiVOF+RUZQp2pGmX0wnjvE7TVTO6NvOUDgMYD5FIIeI/v62DMCNV5Nk
-        HWZVRUXtdJsI9K12dIQAzouE/AYS5XtO236GeLi6Upjwpi0Y6PFjS2Ji/5iXu2vu77jQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mcaU6-00B0rC-FG; Mon, 18 Oct 2021 23:47:54 +0200
-Date:   Mon, 18 Oct 2021 23:47:54 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Luo Jie <luoj@codeaurora.org>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sricharan@codeaurora.org
-Subject: Re: [PATCH v3 10/13] net: phy: add qca8081 config_init
-Message-ID: <YW3riurwBofqOmUL@lunn.ch>
-References: <20211018033333.17677-1-luoj@codeaurora.org>
- <20211018033333.17677-11-luoj@codeaurora.org>
+        id S229529AbhJRV4Q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Oct 2021 17:56:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0EFFC60E78;
+        Mon, 18 Oct 2021 21:54:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634594044;
+        bh=guCARVySqwCJZT5ZkTzkfBsy7YHlyNBrOFj19+oPouU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=i9WV+sETDEhFbs0dI9M5awwTTArvYOIynxt+7hzRlTujLWZnPelzWRnDnFUC3d5zQ
+         hu+tXWjWI3icrRsC9EtkoovNeeE0bjXmvfwmF65z/xxtgGa4Tt3+XvptQz97nvvdu7
+         WMu++VqdCo82pPmAiCPGmsCQ6T0rQ5ishE0uHQQGilTBqndfVMtRoVwSHs0PnWcZ0R
+         31PcOVqPORUkOkPOuZzYgXKrvP6YhF2QReDXC16/s66xAQa4CwtQ6/QPSAdSaVVnKx
+         iEc7WMM3Z6FNJvje05/En7pJypOyxJ8XGRBZxlZLq9H5cw8m9Tc1+SOxUt56sreyqN
+         QFkrtJ7FnNSHg==
+Date:   Mon, 18 Oct 2021 14:54:03 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Simon Horman <simon.horman@corigine.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        oss-drivers@corigine.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH] nfp: bpf: Fix bitwise vs. logical OR warning
+Message-ID: <20211018145403.5eb2807d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211018193101.2340261-1-nathan@kernel.org>
+References: <20211018193101.2340261-1-nathan@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211018033333.17677-11-luoj@codeaurora.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static int qca808x_phy_fast_retrain_config(struct phy_device *phydev)
-> +{
-> +	int ret;
-> +
-> +	ret = phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_10GBT_CTRL,
-> +			MDIO_AN_10GBT_CTRL_ADV2_5G |
-> +			MDIO_AN_10GBT_CTRL_ADVFSRT2_5G |
-> +			MDIO_AN_10GBT_CTRL_ADVLPTIMING);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = phy_write_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_10GBR_FSRT_CSR,
-> +			MDIO_PMA_10GBR_FSRT_ENABLE);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_CTRL2, MDIO_AN_THP_BP2_5GT);
-> +	if (ret)
-> +		return ret;
+On Mon, 18 Oct 2021 12:31:01 -0700 Nathan Chancellor wrote:
+> A new warning in clang points out two places in this driver where
+> boolean expressions are being used with a bitwise OR instead of a
+> logical one:
+> 
+> drivers/net/ethernet/netronome/nfp/nfp_asm.c:199:20: error: use of bitwise '|' with boolean operands [-Werror,-Wbitwise-instead-of-logical]
+>         reg->src_lmextn = swreg_lmextn(lreg) | swreg_lmextn(rreg);
+>                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>                                              ||
+> drivers/net/ethernet/netronome/nfp/nfp_asm.c:199:20: note: cast one or both operands to int to silence this warning
+> drivers/net/ethernet/netronome/nfp/nfp_asm.c:280:20: error: use of bitwise '|' with boolean operands [-Werror,-Wbitwise-instead-of-logical]
+>         reg->src_lmextn = swreg_lmextn(lreg) | swreg_lmextn(rreg);
+>                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>                                              ||
+> drivers/net/ethernet/netronome/nfp/nfp_asm.c:280:20: note: cast one or both operands to int to silence this warning
+> 2 errors generated.
+> 
+> The motivation for the warning is that logical operations short circuit
+> while bitwise operations do not. In this case, it does not seem like
+> short circuiting is harmful so implement the suggested fix of changing
+> to a logical operation to fix the warning.
 
-Could that be made generic and put into phy-c45.c? Is there anything
-specific to your PHY here?
+Warning seems generally useful, although in this case it is a little
+out of place (swreg_lmextn() is a field extractor after all).
 
-	 Andrew
+Applied to net, but without the Fixes tag, thanks!
