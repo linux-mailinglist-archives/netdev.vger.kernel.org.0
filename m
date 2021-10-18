@@ -2,289 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AC2D43122C
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 10:30:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93B57431250
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 10:42:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231156AbhJRIdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 04:33:05 -0400
-Received: from host.78.145.23.62.rev.coltfrance.com ([62.23.145.78]:54288 "EHLO
-        smtpservice.6wind.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S230439AbhJRIdD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 04:33:03 -0400
-Received: from bretzel (bretzel.dev.6wind.com [10.16.0.57])
-        by smtpservice.6wind.com (Postfix) with ESMTPS id E73B760D79;
-        Mon, 18 Oct 2021 10:30:51 +0200 (CEST)
-Received: from dichtel by bretzel with local (Exim 4.92)
-        (envelope-from <dichtel@6wind.com>)
-        id 1mcO2l-00078P-QV; Mon, 18 Oct 2021 10:30:51 +0200
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-To:     stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
-        antony.antony@secunet.com, steffen.klassert@secunet.com,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Subject: [PATCH iproute2 v2] xfrm: enable to manage default policies
-Date:   Mon, 18 Oct 2021 10:30:45 +0200
-Message-Id: <20211018083045.27406-1-nicolas.dichtel@6wind.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20210923061342.8522-1-nicolas.dichtel@6wind.com>
-References: <20210923061342.8522-1-nicolas.dichtel@6wind.com>
+        id S231199AbhJRIoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 04:44:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52200 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230006AbhJRIou (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 04:44:50 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6A0C06161C;
+        Mon, 18 Oct 2021 01:42:39 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id ez7-20020a17090ae14700b001a132a1679bso4113466pjb.0;
+        Mon, 18 Oct 2021 01:42:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=DAyRWJeM7WcXBmJfC8EYVSatAo1tUAa025hjrvqygj4=;
+        b=pjkO0MkdRmY5FkfWW+EfXlo7coSyNA0UvLvaremgQ0bVxp1yk8zUfFBuLWo3vptr6g
+         a8MwQHjz+iMGgp1Leq6G2BYTatimamqvnfcfKKxI1+WbcOLJAB8UBAp+r9iZ5Xg+mHSa
+         1NuHjrmSUkaD9IKUixkCzMpvwe/0C+iOgTBN3CjWMmQzjMuVnXenqGHQfdlxzDe6CKWv
+         z1SeLPMNTGiSepavXDsSHZoDc5NkxoPsQZ9/3ffhRep3fA8UPncN+0RfiGU+6TD4TOHb
+         rscUJw5JZ8NQZ6ea+J42gVaBQREDiL/TFnYprSWPeYQ0fzOXDc22Z++8CoKi5p6kNNG5
+         JLwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=DAyRWJeM7WcXBmJfC8EYVSatAo1tUAa025hjrvqygj4=;
+        b=ox0S+115MIIDF4VCRnN896peLxd1sLMtWqknl/gyqJ+2MAE5SQq+keSpgkizi0lwI7
+         GihMIh8sggYtsb9SZmyEhlnRcZfYcWoY6toa57fjmpLmnLoP7GAvRFcdpgdUlV/EKc0O
+         1cQyUmxec+I8WvyWzvlw3gWxsq2tLZAcHEG8qu8lOfeBUR3oeimPXqG8bF/LhP9AWH0y
+         m7+AMGNo6rXhn7naFPquJL4meVA4kBzMFGuRj6t6HSQ5riTH5wxkpuwc1mpK4NWhsNTA
+         lGv83b+t0fget060G2iSu7+ZoHHd//s+GcBNseOdnJWofXiwdQJtW0YCNk68usmLhae7
+         fGxA==
+X-Gm-Message-State: AOAM531CbJ+G0NZFYQZ2AG9WYc04IbyigrList1WWBlhJTtsWs0aqmWr
+        gJPsoXj6SsRqWgY/VdCpz6o=
+X-Google-Smtp-Source: ABdhPJyYoLQM1iIllEwgPR6qgb4iSpGJ2GuiYzUTfZIXXF0pt3/TERwOOPTiYDZi2i8s2Qh/vmQT+Q==
+X-Received: by 2002:a17:90b:1b49:: with SMTP id nv9mr31231964pjb.134.1634546558838;
+        Mon, 18 Oct 2021 01:42:38 -0700 (PDT)
+Received: from localhost.localdomain ([171.211.28.7])
+        by smtp.gmail.com with ESMTPSA id x13sm11727906pge.37.2021.10.18.01.42.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Oct 2021 01:42:38 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH net] net: dsa: mt7530: correct ds->num_ports
+Date:   Mon, 18 Oct 2021 16:42:30 +0800
+Message-Id: <20211018084230.6710-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cd6a03b9-af49-97b4-6869-d51b461bf50a@gmail.com>
+References: <20211016062414.783863-1-dqfext@gmail.com> <cd6a03b9-af49-97b4-6869-d51b461bf50a@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Two new commands to manage default policies:
- - ip xfrm policy setdefault
- - ip xfrm policy getdefault
+On Sat, Oct 16, 2021 at 07:36:14PM -0700, Florian Fainelli wrote:
+> On 10/15/2021 11:24 PM, DENG Qingfang wrote:
+> > Setting ds->num_ports to DSA_MAX_PORTS made DSA core allocate unnecessary
+> > dsa_port's and call mt7530_port_disable for non-existent ports.
+> > 
+> > Set it to MT7530_NUM_PORTS to fix that, and dsa_is_user_port check in
+> > port_enable/disable is no longer required.
+> > 
+> > Cc: stable@vger.kernel.org
+> > Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+> 
+> Do you really want to target the net tree for this change?
 
-And the corresponding part in 'ip xfrm monitor'.
-
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
----
-
-v1 -> v2:
-  rebase and resent (kernel patches are now in Linus's tree)
-
- include/uapi/linux/xfrm.h |  15 +++--
- ip/xfrm.h                 |   1 +
- ip/xfrm_monitor.c         |   3 +
- ip/xfrm_policy.c          | 121 ++++++++++++++++++++++++++++++++++++++
- man/man8/ip-xfrm.8        |  12 ++++
- 5 files changed, 146 insertions(+), 6 deletions(-)
-
-diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
-index ecd06396eb16..378b4092f26a 100644
---- a/include/uapi/linux/xfrm.h
-+++ b/include/uapi/linux/xfrm.h
-@@ -213,13 +213,13 @@ enum {
- 	XFRM_MSG_GETSPDINFO,
- #define XFRM_MSG_GETSPDINFO XFRM_MSG_GETSPDINFO
- 
-+	XFRM_MSG_MAPPING,
-+#define XFRM_MSG_MAPPING XFRM_MSG_MAPPING
-+
- 	XFRM_MSG_SETDEFAULT,
- #define XFRM_MSG_SETDEFAULT XFRM_MSG_SETDEFAULT
- 	XFRM_MSG_GETDEFAULT,
- #define XFRM_MSG_GETDEFAULT XFRM_MSG_GETDEFAULT
--
--	XFRM_MSG_MAPPING,
--#define XFRM_MSG_MAPPING XFRM_MSG_MAPPING
- 	__XFRM_MSG_MAX
- };
- #define XFRM_MSG_MAX (__XFRM_MSG_MAX - 1)
-@@ -514,9 +514,12 @@ struct xfrm_user_offload {
- #define XFRM_OFFLOAD_INBOUND	2
- 
- struct xfrm_userpolicy_default {
--#define XFRM_USERPOLICY_DIRMASK_MAX	(sizeof(__u8) * 8)
--	__u8				dirmask;
--	__u8				action;
-+#define XFRM_USERPOLICY_UNSPEC	0
-+#define XFRM_USERPOLICY_BLOCK	1
-+#define XFRM_USERPOLICY_ACCEPT	2
-+	__u8				in;
-+	__u8				fwd;
-+	__u8				out;
- };
- 
- /* backwards compatibility for userspace */
-diff --git a/ip/xfrm.h b/ip/xfrm.h
-index 9ba5ca61d5e4..17dcf3fea83f 100644
---- a/ip/xfrm.h
-+++ b/ip/xfrm.h
-@@ -132,6 +132,7 @@ void xfrm_state_info_print(struct xfrm_usersa_info *xsinfo,
- void xfrm_policy_info_print(struct xfrm_userpolicy_info *xpinfo,
- 			    struct rtattr *tb[], FILE *fp, const char *prefix,
- 			    const char *title);
-+int xfrm_policy_default_print(struct nlmsghdr *n, FILE *fp);
- int xfrm_id_parse(xfrm_address_t *saddr, struct xfrm_id *id, __u16 *family,
- 		  int loose, int *argcp, char ***argvp);
- int xfrm_mode_parse(__u8 *mode, int *argcp, char ***argvp);
-diff --git a/ip/xfrm_monitor.c b/ip/xfrm_monitor.c
-index e34b5fbda130..f67424c5be06 100644
---- a/ip/xfrm_monitor.c
-+++ b/ip/xfrm_monitor.c
-@@ -323,6 +323,9 @@ static int xfrm_accept_msg(struct rtnl_ctrl_data *ctrl,
- 	case XFRM_MSG_MAPPING:
- 		xfrm_mapping_print(n, arg);
- 		return 0;
-+	case XFRM_MSG_GETDEFAULT:
-+		xfrm_policy_default_print(n, arg);
-+		return 0;
- 	default:
- 		break;
- 	}
-diff --git a/ip/xfrm_policy.c b/ip/xfrm_policy.c
-index 7cc00e7c2f5b..744f331ff564 100644
---- a/ip/xfrm_policy.c
-+++ b/ip/xfrm_policy.c
-@@ -66,6 +66,8 @@ static void usage(void)
- 		"Usage: ip xfrm policy flush [ ptype PTYPE ]\n"
- 		"Usage: ip xfrm policy count\n"
- 		"Usage: ip xfrm policy set [ hthresh4 LBITS RBITS ] [ hthresh6 LBITS RBITS ]\n"
-+		"Usage: ip xfrm policy setdefault DIR ACTION [ DIR ACTION ] [ DIR ACTION ]\n"
-+		"Usage: ip xfrm policy getdefault\n"
- 		"SELECTOR := [ src ADDR[/PLEN] ] [ dst ADDR[/PLEN] ] [ dev DEV ] [ UPSPEC ]\n"
- 		"UPSPEC := proto { { tcp | udp | sctp | dccp } [ sport PORT ] [ dport PORT ] |\n"
- 		"                  { icmp | ipv6-icmp | mobility-header } [ type NUMBER ] [ code NUMBER ] |\n"
-@@ -1124,6 +1126,121 @@ static int xfrm_spd_getinfo(int argc, char **argv)
- 	return 0;
- }
- 
-+static int xfrm_spd_setdefault(int argc, char **argv)
-+{
-+	struct rtnl_handle rth;
-+	struct {
-+		struct nlmsghdr			n;
-+		struct xfrm_userpolicy_default  up;
-+	} req = {
-+		.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct xfrm_userpolicy_default)),
-+		.n.nlmsg_flags = NLM_F_REQUEST,
-+		.n.nlmsg_type = XFRM_MSG_SETDEFAULT,
-+	};
-+
-+	while (argc > 0) {
-+		if (strcmp(*argv, "in") == 0) {
-+			if (req.up.in)
-+				duparg("in", *argv);
-+
-+			NEXT_ARG();
-+			if (strcmp(*argv, "block") == 0)
-+				req.up.in = XFRM_USERPOLICY_BLOCK;
-+			else if (strcmp(*argv, "accept") == 0)
-+				req.up.in = XFRM_USERPOLICY_ACCEPT;
-+			else
-+				invarg("in policy value is invalid", *argv);
-+		} else if (strcmp(*argv, "fwd") == 0) {
-+			if (req.up.fwd)
-+				duparg("fwd", *argv);
-+
-+			NEXT_ARG();
-+			if (strcmp(*argv, "block") == 0)
-+				req.up.fwd = XFRM_USERPOLICY_BLOCK;
-+			else if (strcmp(*argv, "accept") == 0)
-+				req.up.fwd = XFRM_USERPOLICY_ACCEPT;
-+			else
-+				invarg("fwd policy value is invalid", *argv);
-+		} else if (strcmp(*argv, "out") == 0) {
-+			if (req.up.out)
-+				duparg("out", *argv);
-+
-+			NEXT_ARG();
-+			if (strcmp(*argv, "block") == 0)
-+				req.up.out = XFRM_USERPOLICY_BLOCK;
-+			else if (strcmp(*argv, "accept") == 0)
-+				req.up.out = XFRM_USERPOLICY_ACCEPT;
-+			else
-+				invarg("out policy value is invalid", *argv);
-+		} else {
-+			invarg("unknown direction", *argv);
-+		}
-+
-+		argc--; argv++;
-+	}
-+
-+	if (rtnl_open_byproto(&rth, 0, NETLINK_XFRM) < 0)
-+		exit(1);
-+
-+	if (rtnl_talk(&rth, &req.n, NULL) < 0)
-+		exit(2);
-+
-+	rtnl_close(&rth);
-+
-+	return 0;
-+}
-+
-+int xfrm_policy_default_print(struct nlmsghdr *n, FILE *fp)
-+{
-+	struct xfrm_userpolicy_default *up = NLMSG_DATA(n);
-+	int len = n->nlmsg_len - NLMSG_SPACE(sizeof(*up));
-+
-+	if (len < 0) {
-+		fprintf(stderr,
-+			"BUG: short nlmsg len %u (expect %lu) for XFRM_MSG_GETDEFAULT\n",
-+			n->nlmsg_len, NLMSG_SPACE(sizeof(*up)));
-+		return -1;
-+	}
-+
-+	fprintf(fp, "Default policies:\n");
-+	fprintf(fp, " in:  %s\n",
-+		up->in == XFRM_USERPOLICY_BLOCK ? "block" : "accept");
-+	fprintf(fp, " fwd: %s\n",
-+		up->fwd == XFRM_USERPOLICY_BLOCK ? "block" : "accept");
-+	fprintf(fp, " out: %s\n",
-+		up->out == XFRM_USERPOLICY_BLOCK ? "block" : "accept");
-+	fflush(fp);
-+
-+	return 0;
-+}
-+
-+static int xfrm_spd_getdefault(int argc, char **argv)
-+{
-+	struct rtnl_handle rth;
-+	struct {
-+		struct nlmsghdr			n;
-+		struct xfrm_userpolicy_default  up;
-+	} req = {
-+		.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct xfrm_userpolicy_default)),
-+		.n.nlmsg_flags = NLM_F_REQUEST,
-+		.n.nlmsg_type = XFRM_MSG_GETDEFAULT,
-+	};
-+	struct nlmsghdr *answer;
-+
-+	if (rtnl_open_byproto(&rth, 0, NETLINK_XFRM) < 0)
-+		exit(1);
-+
-+	if (rtnl_talk(&rth, &req.n, &answer) < 0)
-+		exit(2);
-+
-+	xfrm_policy_default_print(answer, (FILE *)stdout);
-+
-+	free(answer);
-+	rtnl_close(&rth);
-+
-+	return 0;
-+}
-+
- static int xfrm_policy_flush(int argc, char **argv)
- {
- 	struct rtnl_handle rth;
-@@ -1197,6 +1314,10 @@ int do_xfrm_policy(int argc, char **argv)
- 		return xfrm_spd_getinfo(argc, argv);
- 	if (matches(*argv, "set") == 0)
- 		return xfrm_spd_setinfo(argc-1, argv+1);
-+	if (matches(*argv, "setdefault") == 0)
-+		return xfrm_spd_setdefault(argc-1, argv+1);
-+	if (matches(*argv, "getdefault") == 0)
-+		return xfrm_spd_getdefault(argc-1, argv+1);
- 	if (matches(*argv, "help") == 0)
- 		usage();
- 	fprintf(stderr, "Command \"%s\" is unknown, try \"ip xfrm policy help\".\n", *argv);
-diff --git a/man/man8/ip-xfrm.8 b/man/man8/ip-xfrm.8
-index 003f6c3d1c28..bf725cabb82d 100644
---- a/man/man8/ip-xfrm.8
-+++ b/man/man8/ip-xfrm.8
-@@ -298,6 +298,18 @@ ip-xfrm \- transform configuration
- .RB "[ " hthresh6
- .IR LBITS " " RBITS " ]"
- 
-+.ti -8
-+.B "ip xfrm policy setdefault"
-+.IR DIR
-+.IR ACTION " [ "
-+.IR DIR
-+.IR ACTION " ] [ "
-+.IR DIR
-+.IR ACTION " ]"
-+
-+.ti -8
-+.B "ip xfrm policy getdefault"
-+
- .ti -8
- .IR SELECTOR " :="
- .RB "[ " src
--- 
-2.33.0
-
+Yes because I consider this a bug fix.
