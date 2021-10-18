@@ -2,94 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D75F8431F4D
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 16:17:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6911C431EFF
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 16:08:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232369AbhJROT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 10:19:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44746 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232842AbhJROTX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 10:19:23 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA25C094268;
-        Mon, 18 Oct 2021 07:05:47 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id i189so16438977ioa.1;
-        Mon, 18 Oct 2021 07:05:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=Zg7ZOhohtZhCCy7y9pyI3V1BTITKPMF9LsGk4rxu3ME=;
-        b=nWNyDok3ZmGoXBOCY7rCOH0ppd4gXK2vUtMNQkkv7frHeMXcrlianwSQCXCO8XHfcz
-         3y8V7pEP1XpLmpJnkagiE5hUH0ZoZ6RxtvaZV6UUNXD9zHSR1ikashslErZRryq+/RoB
-         x51k0yCMuqY5womdTVfwGUtijvkUI3gL4qE5q3LQV5gYGMOrvIuRLGGsyFdPcyx8e2Mt
-         fzCx8+qg0UOaky5bIJACV5hKzdWWrDvFWaDn2p+Nqwz52iLhJwIeu+PuIDQP40iAStDn
-         z2wbm0rzPI2Vny/ISUNKAOKof7A794b8TrwXVkYmrAVR1gI6P4d7CwXIYnuoX3oSIYwo
-         6CKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=Zg7ZOhohtZhCCy7y9pyI3V1BTITKPMF9LsGk4rxu3ME=;
-        b=5TYZK11lqjkpncD4VBREDErviYpNtz38JHdCGiCDtI9NoV0yq8imNw9M879a8pduXf
-         UJlgPfFBfqcoZgaMZa3XQCSvxHl4K5xAwBtttO0BnkXRnYho3DhN/C1rcRz0OhK6ee67
-         /qfnb4tfxEKoCJb339VZ5+uzS+ORT098jfKBLCNL0jaOggqdlOwYCGbndwmQFFgD0VgY
-         89RBP3k44eq+uIchWjtXmGMChBZfun+Coc3Vbc0+D/PFqz+vLjdd46Lg97/wINGR3gdb
-         XBCKQCa8miMeq/DcoWEQISx+Juri9yHEkOrWb5W9PF6OzblljX2iSa9RS1UO+p+JQyML
-         otvw==
-X-Gm-Message-State: AOAM530HA2W7PdVQsiUrJpCmwSVfJwlt049DctyaIROukmW9Nwxd13ry
-        27gptYGM98o4n8zXCibu9JY=
-X-Google-Smtp-Source: ABdhPJzFz3LOOcUrd20WZd2igSMrraNbJfSZMRIQa54AFozFR435NJccy3bCwPdMG49RTzIOq3jViA==
-X-Received: by 2002:a02:c484:: with SMTP id t4mr18449727jam.37.1634565947280;
-        Mon, 18 Oct 2021 07:05:47 -0700 (PDT)
-Received: from localhost ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id g9sm3610257ila.20.2021.10.18.07.05.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Oct 2021 07:05:46 -0700 (PDT)
-Date:   Mon, 18 Oct 2021 07:05:38 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Quentin Monnet <quentin@isovalent.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Quentin Monnet <quentin@isovalent.com>
-Message-ID: <616d7f32e2125_1eb12088b@john-XPS-13-9370.notmuch>
-In-Reply-To: <20211009210341.6291-1-quentin@isovalent.com>
-References: <20211009210341.6291-1-quentin@isovalent.com>
-Subject: RE: [PATCH bpf-next 0/3] fixes for bpftool's Makefile
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S232574AbhJROJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 10:09:56 -0400
+Received: from mx3.molgen.mpg.de ([141.14.17.11]:37595 "EHLO mx1.molgen.mpg.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S234091AbhJROIJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Oct 2021 10:08:09 -0400
+Received: from [141.14.220.45] (g45.guest.molgen.mpg.de [141.14.220.45])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 64AF661E5FE33;
+        Mon, 18 Oct 2021 16:05:57 +0200 (CEST)
+Subject: Re: [Intel-wired-lan] [PATCH 1/1] ice: compact the file ice_nvm.c
+To:     Yanjun Zhu <yanjun.zhu@linux.dev>
+Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+References: <20211018131713.3478-1-yanjun.zhu@linux.dev>
+ <c1903730-9508-1fef-4232-3a5b62f28d7c@molgen.mpg.de>
+ <087710e9-2aeb-c070-cebb-82ae9cb5c20e@linux.dev>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+Message-ID: <10c80bab-db74-b567-505c-95d74763248f@molgen.mpg.de>
+Date:   Mon, 18 Oct 2021 16:05:57 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+MIME-Version: 1.0
+In-Reply-To: <087710e9-2aeb-c070-cebb-82ae9cb5c20e@linux.dev>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quentin Monnet wrote:
-> This set contains one fix for bpftool's Makefile, to make sure that the
-> headers internal to libbpf are installed properly even if we add more
-> headers to the relevant Makefile variable in the future (although we'd like
-> to avoid that if possible).
-> 
-> The other patches aim at cleaning up the output from the Makefile, in
-> particular when running the command "make" another time after bpftool is
-> built.
-> 
-> Quentin Monnet (3):
->   bpftool: fix install for libbpf's internal header(s)
->   bpftool: do not FORCE-build libbpf
->   bpftool: turn check on zlib from a phony target into a conditional
->     error
-> 
->  tools/bpf/bpftool/Makefile | 29 +++++++++++++++--------------
->  1 file changed, 15 insertions(+), 14 deletions(-)
-> 
-> -- 
-> 2.30.2
-> 
+Dear Yanjun,
 
-I'm not a Makefile expert, but from my side these look good. Thanks.
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+Am 18.10.21 um 16:00 schrieb Yanjun Zhu:
+
+> 在 2021/10/18 21:44, Paul Menzel 写道:
+
+>> Am 18.10.21 um 15:17 schrieb yanjun.zhu@linux.dev:
+>>> From: Zhu Yanjun <yanjun.zhu@linux.dev>
+>>>
+>>> The function ice_aq_nvm_update_empr is not used, so remove it.
+>>
+>> Thank you for the patch. Could you please make the commit message 
+>> summary more descriptive? Maybe:
+>>
+>>> ice: Remove unused `ice_aq_nvm_update_empr()`
+>>
+>> If you find out, what commit removed the usage, that would be also 
+>> good to document, but it’s not that important.
+> 
+> Thanks for your suggestion.
+> 
+> IMO, removing the unused function is one method of compact file.
+> 
+> I agree with you that the commit message summary is not important.
+
+Sorry, you misunderstood me. The commit message summary is my opinion 
+very important, as it’s what shown in `git log --oneline`, and in this 
+case everybody has to read the full commit message to know what the 
+commit actually as *compact* is not conveying this meaning and is ambiguous.
+
+Not as important is finding the commit removing the last user, and 
+adding a Fixes tag with it.
+
+> If someone finds more important problem in this commit, I will resend the
+> 
+> patch and change the commit message summary based on your suggestion.
+
+It’d be great, if you sent an improved version.
+
+
+Kind regards,
+
+Paul
