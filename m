@@ -2,92 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6DA143189F
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 14:14:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EC554318C2
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 14:16:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231609AbhJRMQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 08:16:09 -0400
-Received: from mail-ot1-f49.google.com ([209.85.210.49]:40799 "EHLO
-        mail-ot1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231590AbhJRMQI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 08:16:08 -0400
-Received: by mail-ot1-f49.google.com with SMTP id s18-20020a0568301e1200b0054e77a16651so219997otr.7;
-        Mon, 18 Oct 2021 05:13:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=WBwVmJRA9jHYx97goTq2YBnHx5m4DkWOs/nHLFWmPK8=;
-        b=ine0NeJjSu32hcmBK66V5hEERQmtFn7bZam5rnYDdySVTIDm1dRjH2aTRh4DPO8J6n
-         NBNsT9cKo/kls2oUUA8wztUo6nWpNzvwe2vDTesWQAtVgz7CO7cWHsAJfb3jlKsXjyFr
-         N3lDnH+hmlawA41KOZCoHokEX9I09VWqGrwugxFRqVWLj62nceYcUewTKRXG6Ycb9oZE
-         X/lOPsg6mV8eDotGzZ8Kay+sF4pq5oiK+Q8x2AThCRtZlEuER2d6wAgEZetbS95bTCZq
-         Q/+yl3uLypRw+VCIX4qp9x9vBOThfGdKZIUTgb5TcmwlEpnPj10ikdEkKTKVcnRRuInT
-         baOA==
-X-Gm-Message-State: AOAM53313OO2Ra+HlNLGv1dzO1Ao18pd/lyp5bQt70g0r1IlCQSfUt6C
-        tu584dhaCeAjkeTPqzvMkA==
-X-Google-Smtp-Source: ABdhPJwZUUe+FY/YopTOf0d39emzYA495qgKB42FtPd05e1NUcWV0zHVanfuIq4go7Xk4GV6uef0Zg==
-X-Received: by 2002:a9d:6206:: with SMTP id g6mr10530175otj.6.1634559236564;
-        Mon, 18 Oct 2021 05:13:56 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id l25sm2473661oot.36.2021.10.18.05.13.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Oct 2021 05:13:55 -0700 (PDT)
-Received: (nullmailer pid 2074241 invoked by uid 1000);
-        Mon, 18 Oct 2021 12:13:53 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     David Heidelberg <david@ixit.cz>
-Cc:     linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        ~okias/devicetree@lists.sr.ht, devicetree@vger.kernel.org
-In-Reply-To: <20211017160210.85543-1-david@ixit.cz>
-References: <20211017160210.85543-1-david@ixit.cz>
-Subject: Re: [PATCH v4] dt-bindings: net: nfc: nxp,pn544: Convert txt bindings to yaml
-Date:   Mon, 18 Oct 2021 07:13:53 -0500
-Message-Id: <1634559233.484644.2074240.nullmailer@robh.at.kernel.org>
+        id S231728AbhJRMSk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 08:18:40 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:62068 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229833AbhJRMSj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 08:18:39 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1634559388; h=Date: Message-ID: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=hHOTyhKY+jF9m2eMBr2/9tn1FPmbSZyijxUuMni71YQ=;
+ b=hitnut89a7azzCLqn93xC+s9i4CohdV4yeeYc4mqfPGjLF0zj2it/tm7IrXbku86eTy2SkMS
+ zRblapQswTCUb4Ggt5l+2+qjfqnufBJ7M5J9UtF1AzHm/xyArQQXVa66iZ6jrDHxJpSUdLoy
+ sLxgAEbYx41O6MNbmEe6HhlNEGo=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 616d65878ea00a941fc4a75c (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 18 Oct 2021 12:16:07
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 44428C43616; Mon, 18 Oct 2021 12:16:07 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.5 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,SPF_FAIL autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 19B50C4338F;
+        Mon, 18 Oct 2021 12:16:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 19B50C4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH net-next] rtw89: fix return value check in
+ rtw89_cam_send_sec_key_cmd()
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20211018033102.1813058-1-yangyingliang@huawei.com>
+References: <20211018033102.1813058-1-yangyingliang@huawei.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-wireless@vger.kernel.org>, <pkshih@realtek.com>,
+        <kuba@kernel.org>, <davem@davemloft.net>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <163455936283.19217.11931035159424062771.kvalo@codeaurora.org>
+Date:   Mon, 18 Oct 2021 12:16:07 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 17 Oct 2021 18:02:10 +0200, David Heidelberg wrote:
-> Convert bindings for NXP PN544 NFC driver to YAML syntax.
+Yang Yingliang <yangyingliang@huawei.com> wrote:
+
+> Fix the return value check which testing the wrong variable
+> in rtw89_cam_send_sec_key_cmd().
 > 
-> Signed-off-by: David Heidelberg <david@ixit.cz>
-> ---
-> v2
->  - Krzysztof is a maintainer
->  - pintctrl dropped
->  - 4 space indent for example
->  - nfc node name
-> v3
->  - remove whole pinctrl
-> v4
->  - drop clock-frequency, which is inherited by i2c bus
-> 
->  .../bindings/net/nfc/nxp,pn544.yaml           | 56 +++++++++++++++++++
->  .../devicetree/bindings/net/nfc/pn544.txt     | 33 -----------
->  2 files changed, 56 insertions(+), 33 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/net/nfc/nxp,pn544.yaml
->  delete mode 100644 Documentation/devicetree/bindings/net/nfc/pn544.txt
-> 
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Fixes: e3ec7017f6a2 ("rtw89: add Realtek 802.11ax driver")
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> Acked-by: Ping-Ke Shih <pkshih@realtek.com>
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+rtw89 patches are applied wireless-drivers-next, not net-next. rtw89 is not
+even in net-next yet.
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20211018033102.1813058-1-yangyingliang@huawei.com/
 
-Full log is available here: https://patchwork.ozlabs.org/patch/1542257
-
-
-nfc@28: 'clock-frequency' does not match any of the regexes: 'pinctrl-[0-9]+'
-	arch/arm/boot/dts/tegra30-asus-nexus7-grouper-E1565.dt.yaml
-	arch/arm/boot/dts/tegra30-asus-nexus7-grouper-PM269.dt.yaml
-
-nfc@2a: 'clock-frequency' does not match any of the regexes: 'pinctrl-[0-9]+'
-	arch/arm/boot/dts/tegra30-asus-nexus7-tilapia-E1565.dt.yaml
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
