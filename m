@@ -2,116 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECDE0430CEF
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 01:52:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 613AB430D6F
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 03:27:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344794AbhJQXzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Oct 2021 19:55:00 -0400
-Received: from gandalf.ozlabs.org ([150.107.74.76]:33697 "EHLO
-        gandalf.ozlabs.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232246AbhJQXzA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 19:55:00 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4HXcJH71nHz4xbb;
-        Mon, 18 Oct 2021 10:52:47 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1634514768;
-        bh=Z12/LzqRnTuMa2K3hnOVJnRq+Am1J+wCD4czDVuOD7M=;
-        h=Date:From:To:Cc:Subject:From;
-        b=IxxTqJTLVQ27rAafX7YDlfpCawNB5LnJTAjMPtZ4+Lj1iKayXEdjpqyBnfVygHvuq
-         Mm0Koh9FFadD02wk6lFitDVo1u//tczX2qoBgMRR2HJ/ZFAaTVnO8SrkbPWpWJ07Eb
-         AZInpBHuvcoemvN7JiFSBiFqrHq/v9+Pawellh8rDut+YtyPVVq80NppBWSVAH8o9n
-         80MfgJCbZgdvK96fg+0lRluyyhDLDsN5GIi+znQollXavN+T7oxINYybHML4keDYka
-         RK2/u37XZXIEfYzO3TsyrS1N8+D5CCfY+IVTVexkmb4r5qIjomSsHisVc7gQxmYpSS
-         Eyt5ZtfKsrESA==
-Date:   Mon, 18 Oct 2021 10:52:46 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Brett Creeley <brett.creeley@intel.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20211018105246.13d388b0@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/6xYK3BNhZmGD.oCN5M5mGEU";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+        id S242957AbhJRB3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Oct 2021 21:29:55 -0400
+Received: from mx.socionext.com ([202.248.49.38]:31204 "EHLO mx.socionext.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238640AbhJRB3y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 17 Oct 2021 21:29:54 -0400
+Received: from unknown (HELO iyokan2-ex.css.socionext.com) ([172.31.9.54])
+  by mx.socionext.com with ESMTP; 18 Oct 2021 10:27:43 +0900
+Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
+        by iyokan2-ex.css.socionext.com (Postfix) with ESMTP id 4A6C72058B40;
+        Mon, 18 Oct 2021 10:27:43 +0900 (JST)
+Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Mon, 18 Oct 2021 10:27:43 +0900
+Received: from plum.e01.socionext.com (unknown [10.212.243.119])
+        by kinkan2.css.socionext.com (Postfix) with ESMTP id 8F54DB62B7;
+        Mon, 18 Oct 2021 10:27:42 +0900 (JST)
+From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Subject: [PATCH net-next 0/2] net: ethernet: ave: Introduce UniPhier NX1 SoC support
+Date:   Mon, 18 Oct 2021 10:27:35 +0900
+Message-Id: <1634520457-16440-1-git-send-email-hayashi.kunihiko@socionext.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/6xYK3BNhZmGD.oCN5M5mGEU
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+This series includes the patches to add basic support for new UniPhier NX1
+SoC. NX1 SoC also has the same kinds of controls as the other UniPhier
+SoCs.
 
-Hi all,
+Kunihiko Hayashi (2):
+  dt-bindings: net: ave: Add bindings for NX1 SoC
+  net: ethernet: ave: Add compatible string and SoC-dependent data for
+    NX1 SoC
 
-Today's linux-next merge of the net-next tree got a conflict in:
+ .../devicetree/bindings/net/socionext,uniphier-ave4.yaml  |  1 +
+ drivers/net/ethernet/socionext/sni_ave.c                  | 15 +++++++++++++++
+ 2 files changed, 16 insertions(+)
 
-  drivers/net/ethernet/intel/ice/ice_devlink.c
+-- 
+2.7.4
 
-between commit:
-
-  b726ddf984a5 ("ice: Print the api_patch as part of the fw.mgmt.api")
-
-from the net tree and commit:
-
-  0128cc6e928d ("ice: refactor devlink getter/fallback functions to void")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc drivers/net/ethernet/intel/ice/ice_devlink.c
-index da7288bdc9a3,55353bf4cbef..000000000000
---- a/drivers/net/ethernet/intel/ice/ice_devlink.c
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@@ -63,13 -60,11 +60,11 @@@ static void ice_info_fw_api(struct ice_
-  {
-  	struct ice_hw *hw =3D &pf->hw;
- =20
- -	snprintf(ctx->buf, sizeof(ctx->buf), "%u.%u",
- -		 hw->api_maj_ver, hw->api_min_ver);
- +	snprintf(ctx->buf, sizeof(ctx->buf), "%u.%u.%u", hw->api_maj_ver,
- +		 hw->api_min_ver, hw->api_patch);
--=20
-- 	return 0;
-  }
- =20
-- static int ice_info_fw_build(struct ice_pf *pf, struct ice_info_ctx *ctx)
-+ static void ice_info_fw_build(struct ice_pf *pf, struct ice_info_ctx *ctx)
-  {
-  	struct ice_hw *hw =3D &pf->hw;
- =20
-
---Sig_/6xYK3BNhZmGD.oCN5M5mGEU
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmFst04ACgkQAVBC80lX
-0GwT4gf7BzGVWydcvGaTk61MyxsEm9UWLSPifNCqaFa3+vfRDrUuYE7AiZt+k4wa
-7VBcN91/3A7VlBbe0LlYU5+kBnKhiT56bna+678Uw6HGn6E3Ob0g6xEzlJQRzxXj
-kP0DSWaqQFp/A/4YEdHf7r8pJ2BC6AuIVS3+TMukPJ0ei9eYExPn2ucRTeCMILOy
-CJo/4a/BC+q/fIPafmFJrGIAky3S3jIQzsg99bWx0sQI8InDI5SqvF7VJXA8i2iZ
-MuhphCURvEFB69aqmEWFILxXp8GAGlMfHD1tzG6xY7nAlM0DLWcHL+GOi1i6ipKM
-B7W9N6xNNHRPGnUcZqLHp+LiwBn9sQ==
-=nquE
------END PGP SIGNATURE-----
-
---Sig_/6xYK3BNhZmGD.oCN5M5mGEU--
