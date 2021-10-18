@@ -2,321 +2,373 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4E5C432A62
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 01:37:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F38DE432A68
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 01:47:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231296AbhJRXjN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 19:39:13 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:59890 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229524AbhJRXjM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 19:39:12 -0400
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19IKxXDT024816;
-        Mon, 18 Oct 2021 19:36:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=mime-version :
- content-type : content-transfer-encoding : date : from : to : cc : subject
- : in-reply-to : references : message-id; s=pp1;
- bh=kzA5HNO4PQchdRsCTqWXPdBQZud78SiuQPgIGFZN+8w=;
- b=j4CVLpExg4B01OtNgB9GcTVNtRmV4f9SNC6YGEa6BfgKaYEUr7B8qosprLptH3PNUKU6
- C+i8KbJce9J2VdjgR37BZUEwc/fPl8w65/o6nTix+rlZL/D49fIn7ck7XVqOak9TXo0b
- l0wBgfrmLmVnGMch5LInIgWAw2ODO5fj0PEIaJ8A2VFuY7vEqhqwgidKDDCo10YW5h/6
- ApQm2tS8yOCo6jDyvfX4uXZiCyElnoYIZ4AebcYhQVoKNzgCIO+A+TXnCGu6b/KgWDDk
- fLb80QKwN/YYlamYdnnR0pI4FFIPAmH546Mo8ngD5xMsj+Obb10KelfANqEIAs6uyzwh Tg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3bsfwhu72k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 18 Oct 2021 19:36:39 -0400
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 19INadoY005599;
-        Mon, 18 Oct 2021 19:36:39 -0400
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3bsfwhu729-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 18 Oct 2021 19:36:39 -0400
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 19INHNho029487;
-        Mon, 18 Oct 2021 23:36:38 GMT
-Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
-        by ppma04dal.us.ibm.com with ESMTP id 3bqpcbbnsm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 18 Oct 2021 23:36:38 +0000
-Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
-        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 19INabmm31654384
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 18 Oct 2021 23:36:37 GMT
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 42681AC065;
-        Mon, 18 Oct 2021 23:36:37 +0000 (GMT)
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8AFD5AC062;
-        Mon, 18 Oct 2021 23:36:36 +0000 (GMT)
-Received: from ltc.linux.ibm.com (unknown [9.10.229.42])
-        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 18 Oct 2021 23:36:36 +0000 (GMT)
+        id S229608AbhJRXs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 19:48:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33116 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229524AbhJRXs6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Oct 2021 19:48:58 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 726DD61002;
+        Mon, 18 Oct 2021 23:46:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634600806;
+        bh=r2HlYVjtlyjsJp5D5P1HSIFJ+0fT/kKr4q1/LW/10lc=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=CRcUSmRm3LaP+i0WYLlMs0C/PgplClQ0OMRyCVLC3/3FDjWTVKFmfOjTujLyYC83l
+         8XkdEkvDNTyXlFuIDncFokjzSTobCpx3V9EwiU4wEYDTpq4u0xiNWqaGzCHTO1McB1
+         h7XqUvhP3w0dBh4+r6aCMqdAH1tP4ijrTov/3hBJr102z4EZTka3tqD13Z6WRHF08K
+         spK78s66HK0zGu/0UHqyV6SQRpHBg7qTVnUNl4ddyopvgjh2WgmuDuj1sWCTbDjdrY
+         H+io6XdZmNgAr1P9UitjugFi7ZE3dIqEsdlBLSQJU3AwBWzTgkbJS3V6DLfIzIKoHM
+         7B5svkIkhMAsQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 3DE025C1044; Mon, 18 Oct 2021 16:46:46 -0700 (PDT)
+Date:   Mon, 18 Oct 2021 16:46:46 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     donghai qiao <donghai.w.qiao@gmail.com>
+Cc:     Boqun Feng <boqun.feng@gmail.com>, rcu@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: RCU: rcu stall issues and an approach to the fix
+Message-ID: <20211018234646.GX880162@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <CAOzhvcMwTzHSbrkPv9DXVAdUcddHEJazz_6p6tzXiJht43RMYg@mail.gmail.com>
+ <20210725004823.GN4397@paulmck-ThinkPad-P17-Gen-1>
+ <CAOzhvcMcMY057uJNM9oMsKJubSpQ_yKwHtVEpJkATqumkNebXQ@mail.gmail.com>
+ <20210728001010.GF4397@paulmck-ThinkPad-P17-Gen-1>
+ <CAOzhvcO3a-GiipELoztmGWOmABuSC=b5vcBu8bC_Q-aT=Fe5ng@mail.gmail.com>
+ <20211005005908.GR880162@paulmck-ThinkPad-P17-Gen-1>
+ <CAOzhvcPLjH_qh4-PEA-MukiRhzkYHQ0UnE21Un+UP9dgpQV3zw@mail.gmail.com>
+ <20211005163956.GV880162@paulmck-ThinkPad-P17-Gen-1>
+ <CAOzhvcPv59zwq26a9wKbFudLBdxd8tDr6OVDvKwzje2cm2woJw@mail.gmail.com>
+ <CAOzhvcOt1gaLiOKFOAYutfDLZy3xyZMPo1N6T+1HYYXzsCpxTw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 18 Oct 2021 16:36:36 -0700
-From:   Dany Madden <drt@linux.ibm.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org,
-        linyunsheng@huawei.com, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Antoine Tenart <atenart@kernel.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Wei Wang <weiwan@google.com>, Taehee Yoo <ap420073@gmail.com>,
-        =?UTF-8?Q?B?= =?UTF-8?Q?j=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Neil Horman <nhorman@redhat.com>,
-        Dust Li <dust.li@linux.alibaba.com>
-Subject: Re: [PATCH net v2] napi: fix race inside napi_enable
-In-Reply-To: <20211018155503.74aeaba9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20210918085232.71436-1-xuanzhuo@linux.alibaba.com>
- <YW3t8AGxW6p261hw@us.ibm.com>
- <20211018155503.74aeaba9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Message-ID: <dc6902364a8f91c4292fe1c5e01b24be@imap.linux.ibm.com>
-X-Sender: drt@linux.ibm.com
-User-Agent: Roundcube Webmail/1.1.12
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: FadrIKvtbLR1014lqpr_0rXUY0la0Zlh
-X-Proofpoint-GUID: dmZyUY8FbYEGlKNBzJrSySgtnxoxS4V8
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-10-18_07,2021-10-18_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxscore=0
- malwarescore=0 adultscore=0 phishscore=0 bulkscore=0 mlxlogscore=999
- impostorscore=0 priorityscore=1501 clxscore=1011 suspectscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109230001 definitions=main-2110180125
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAOzhvcOt1gaLiOKFOAYutfDLZy3xyZMPo1N6T+1HYYXzsCpxTw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-10-18 15:55, Jakub Kicinski wrote:
-> On Mon, 18 Oct 2021 14:58:08 -0700 Sukadev Bhattiprolu wrote:
->> >                       CPU0       |                   CPU1       | napi.state
->> > ===============================================================================
->> > napi_disable()                   |                              | SCHED | NPSVC
->> > napi_enable()                    |                              |
->> > {                                |                              |
->> >     smp_mb__before_atomic();     |                              |
->> >     clear_bit(SCHED, &n->state); |                              | NPSVC
->> >                                  | napi_schedule_prep()         | SCHED | NPSVC
->> >                                  | napi_poll()                  |
->> >                                  |   napi_complete_done()       |
->> >                                  |   {                          |
->> >                                  |      if (n->state & (NPSVC | | (1)
->> >                                  |               _BUSY_POLL)))  |
->> >                                  |           return false;      |
->> >                                  |     ................         |
->> >                                  |   }                          | SCHED | NPSVC
->> >                                  |                              |
->> >     clear_bit(NPSVC, &n->state); |                              | SCHED
->> > }                                |                              |
->> 
->> So its possible that after cpu0 cleared SCHED, cpu1 could have set it
->> back and we are going to use cmpxchg() to detect and retry right? If 
->> so,
+On Mon, Oct 18, 2021 at 05:18:40PM -0400, donghai qiao wrote:
+> I just want to follow up this discussion. First off, the latest issue
+> I mentioned in the email of Oct 4th which
+> exhibited a symptom of networking appeared to be a problem in
+> qrwlock.c. Particularly the problem is
+> caused by the 'if' statement in the function queued_read_lock_slowpath() below :
 > 
-> This is a state diagram before the change. There's no cmpxchg() here.
+> void queued_read_lock_slowpath(struct qrwlock *lock)
+> {
+>         /*
+>          * Readers come here when they cannot get the lock without waiting
+>          */
+>         if (unlikely(in_interrupt())) {
+>                 /*
+>                  * Readers in interrupt context will get the lock immediately
+>                  * if the writer is just waiting (not holding the lock yet),
+>                  * so spin with ACQUIRE semantics until the lock is available
+>                  * without waiting in the queue.
+>                  */
+>                 atomic_cond_read_acquire(&lock->cnts, !(VAL & _QW_LOCKED));
+>                 return;
+>         }
+>         ...
+> }
 > 
->> > napi_schedule_prep()             |                              | SCHED | MISSED (2)
->> >
->> > (1) Here return direct. Because of NAPI_STATE_NPSVC exists.
->> > (2) NAPI_STATE_SCHED exists. So not add napi.poll_list to sd->poll_list
->> >
->> > Since NAPI_STATE_SCHED already exists and napi is not in the
->> > sd->poll_list queue, NAPI_STATE_SCHED cannot be cleared and will always
->> > exist.
->> >
->> > 1. This will cause this queue to no longer receive packets.
->> > 2. If you encounter napi_disable under the protection of rtnl_lock, it
->> >    will cause the entire rtnl_lock to be locked, affecting the overall
->> >    system.
->> >
->> > This patch uses cmpxchg to implement napi_enable(), which ensures that
->> > there will be no race due to the separation of clear two bits.
->> >
->> > Fixes: 2d8bff12699abc ("netpoll: Close race condition between poll_one_napi and napi_disable")
->> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
->> > Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
->> > ---
->> >  net/core/dev.c | 16 ++++++++++------
->> >  1 file changed, 10 insertions(+), 6 deletions(-)
->> >
->> > diff --git a/net/core/dev.c b/net/core/dev.c
->> > index 74fd402d26dd..7ee9fecd3aff 100644
->> > --- a/net/core/dev.c
->> > +++ b/net/core/dev.c
->> > @@ -6923,12 +6923,16 @@ EXPORT_SYMBOL(napi_disable);
->> >   */
->> >  void napi_enable(struct napi_struct *n)
->> >  {
->> > -	BUG_ON(!test_bit(NAPI_STATE_SCHED, &n->state));
->> > -	smp_mb__before_atomic();
->> > -	clear_bit(NAPI_STATE_SCHED, &n->state);
->> > -	clear_bit(NAPI_STATE_NPSVC, &n->state);
->> > -	if (n->dev->threaded && n->thread)
->> > -		set_bit(NAPI_STATE_THREADED, &n->state);
->> > +	unsigned long val, new;
->> > +
->> > +	do {
->> > +		val = READ_ONCE(n->state);
->> > +		BUG_ON(!test_bit(NAPI_STATE_SCHED, &val));
->> 
->> is this BUG_ON valid/needed? We could have lost the cmpxchg() and
->> the other thread could have set NAPI_STATE_SCHED?
+> That 'if' statement said, if we are in an interrupt context and we are
+> a reader, then
+> we will be allowed to enter the lock as a reader no matter if there
+> are writers waiting
+> for it or not. So, in the circumstance when the network packets steadily come in
+> and the intervals are relatively small enough, then the writers will
+> have no chance to
+> acquire the lock. This should be the root cause for that case.
 > 
-> The BUG_ON() is here to make sure that when napi_enable() is called the
-> napi instance was dormant, i.e. disabled. We have "STATE_SCHED" bit set
-> on disabled NAPIs because that bit means ownership. Whoever disabled
-> the NAPI owns it.
-> 
-> That BUG_ON() could have been taken outside of the loop, there's no
-> point re-checking on every try.
-> 
-> Are you seeing NAPI-related failures? We had at least 3 reports in the
-> last two weeks of strange failures which look like NAPI state getting
-> corrupted on net-next...
+> I have verified it by removing the 'if' and rerun the test multiple
+> times.
 
-We hit two napi related crashes while attempting mtu size change.
+That could do it!
 
-1st crash:
-[430425.020051] ------------[ cut here ]------------
-[430425.020053] kernel BUG at ../net/core/dev.c:6938!
-[430425.020057] Oops: Exception in kernel mode, sig: 5 [#1]
-[430425.020068] LE PAGE_SIZE=64K MMU=Hash SMP NR_CPUS=2048 NUMA pSeries
-[430425.020075] Modules linked in: binfmt_misc rpadlpar_io rpaphp 
-xt_tcpudp iptable_filter ip_tables x_tables pseries_rng ibmvnic rng_core 
-ibmveth vmx_crypto gf128mul fuse btrfs blake2b_generic xor zstd_compress 
-lzo_compress raid6_pq dm_service_time crc32c_vpmsum dm_mirror 
-dm_region_hash dm_log dm_multipath scsi_dh_rdac scsi_dh_alua autofs4
-[430425.020123] CPU: 0 PID: 34337 Comm: kworker/0:3 Kdump: loaded 
-Tainted: G    W     5.15.0-rc2-suka-00486-gce916130f5f6 #3
-[430425.020133] Workqueue: events_long __ibmvnic_reset [ibmvnic]
-[430425.020145] NIP: c000000000cb03f4 LR: c0080000014a4ce8 CTR: 
-c000000000cb03b0
-[430425.020151] REGS: c00000002e5d37e0 TRAP: 0700  Tainted: G    W     
-(5.15.0-rc2-suka-00486-gce916130f5f6)
-[430425.020159] MSR: 800000000282b033 <SF,VEC,VSX,EE,FP,ME,IR,DR,RI,LE> 
-CR: 28248428 XER: 20000001
-[430425.020176] CFAR: c0080000014ad9cc IRQMASK: 0
-         GPR00: c0080000014a4ce8 c00000002e5d3a80 c000000001b12100 
-c0000001274f3190
-         GPR04: 00000000ffff36dc fffffffffffffff6 0000000000000019 
-0000000000000010
-         GPR08: c00000002ec48900 0000000000000001 c0000001274f31a0 
-c0080000014ad9b8
-         GPR12: c000000000cb03b0 c000000001d00000 0000000080000000 
-00000000000003fe
-         GPR16: 00000000000006e3 0000000000000000 0000000000000008 
-c00000002ec48af8
-         GPR20: c00000002ec48db0 0000000000000000 0000000000000004 
-0000000000000000
-         GPR24: c00000002ec48000 0000000000000004 c00000002ec49070 
-0000000000000006
-         GPR28: c00000002ec48900 c00000002ec48900 0000000000000002 
-c00000002ec48000
-[430425.020248] NIP [c000000000cb03f4] napi_enable+0x44/0xc0
-[430425.020257] LR [c0080000014a4ce8] __ibmvnic_open+0xf0/0x440 
-[ibmvnic]
-[430425.020265] Call Trace:
-[430425.020269] [c00000002e5d3a80] [c00000002ec48900] 0xc00000002ec48900 
-(unreliable)
-[430425.020277] [c00000002e5d3ab0] [c0080000014a4f40] 
-__ibmvnic_open+0x348/0x440 [ibmvnic]
-[430425.020286] [c00000002e5d3b40] [c0080000014ace58] 
-__ibmvnic_reset+0xb10/0xe40 [ibmvnic]
-[430425.020296] [c00000002e5d3c60] [c0000000001673a4] 
-process_one_work+0x2d4/0x5d0
-[430425.020305] [c00000002e5d3d00] [c000000000167718] 
-worker_thread+0x78/0x6c0
-[430425.020314] [c00000002e5d3da0] [c000000000173388] 
-kthread+0x188/0x190
-[430425.020322] [c00000002e5d3e10] [c00000000000cee4] 
-ret_from_kernel_thread+0x5c/0x64
-[430425.020331] Instruction dump:
-[430425.020335] 38a0fff6 39430010 e92d0c80 f9210028 39200000 60000000 
-60000000 e9030010
-[430425.020348] f9010020 e9210020 7d2948f8 792907e0 <0b090000> e9230038 
-7d072838 89290889
-[430425.020364] ---[ end trace 3abb5ec5589518ca ]---
-[430425.068100]
-[430425.068108] Sending IPI to other CPUs
-[430425.068206] IPI complete
-[430425.090333] kexec: Starting switchover sequence.
+Would it make sense to keep the current check, but to also check if a
+writer had been waiting for more than (say) 100ms?  The reason that I
+ask is that I believe that this "if" statement is there for a reason.
 
-2nd crash:
-[ 1526.539335] NAPI poll function 0x96b6b00f7adfd returned 0, exceeding 
-its budget of -49738736.
-[ 1526.539349] BUG: Kernel NULL pointer dereference on read at 
-0x00000000
-[ 1526.539354] Faulting instruction address: 0xc000000000cc4054
-[ 1526.539358] Oops: Kernel access of bad area, sig: 11 [#1]
-[ 1526.539376] LE PAGE_SIZE=64K MMU=Hash SMP NR_CPUS=2048 NUMA pSeries
-[ 1526.539390] Modules linked in: rpadlpar_io rpaphp xt_tcpudp 
-iptable_filter ip_tables x_tables pseries_rng ibmvnic rng_core ibmveth 
-vmx_crypto gf128mul fuse btrfs blake2b_generic xor zstd_compress 
-lzo_compress raid6_pq dm_service_time crc32c_vpmsum dm_mirror 
-dm_region_hash dm_log dm_multipath scsi_dh_rdac scsi_dh_alua autofs4
-[ 1526.539469] CPU: 0 PID: 11 Comm: ksoftirqd/0 Kdump: loaded Not 
-tainted 5.15.0-rc2-suka-00489-gd86e74e0e2e9 #4
-[ 1526.539484] NIP: c000000000cc4054 LR: c000000000cc4494 CTR: 
-c00000000089b9f0
-[ 1526.539495] REGS: c00000000652b790 TRAP: 0380  Not tainted 
-(5.15.0-rc2-suka-00489-gd86e74e0e2e9)
-[ 1526.539506] MSR: 800000000280b033 <SF,VEC,VSX,EE,FP,ME,IR,DR,RI,LE> 
-CR: 28004224 XER: 20000001
-[ 1526.539538] CFAR: c000000000cc4490 IRQMASK: 0
-         GPR00: c000000000cc4494 c00000000652ba30 c000000001b12100 
-c0000003fd090d08
-         GPR04: 00000000fffeffff c00000000652b800 0000000000000027 
-c0000003fd007e08
-         GPR08: 0000000000000023 0000000000000000 0000000000000027 
-0000000000000001
-         GPR12: 0000000028004224 c000000001d00000 c0000000064ceb00 
-0000000000000001
-         GPR16: 0000000000000000 c000000001b33a00 000000010001df1f 
-0000000000000003
-         GPR20: c0000003fd090c00 0000000000000026 ffffffffffffffff 
-0000000000000000
-         GPR24: c000000001b33a00 c00000000652bba8 000000010001df20 
-c00000000652ba58
-         GPR28: c00000000652bb97 fffffffffd090c10 c0000003fd090d08 
-0000000000000000
-[ 1526.539661] NIP [c000000000cc4054] 
-netif_receive_skb_list_internal+0x54/0x340
-[ 1526.539675] LR [c000000000cc4494] gro_normal_list.part.149+0x34/0x60
-[ 1526.539687] Call Trace:
-[ 1526.539696] [c00000000652ba30] [c0000000001ca308] 
-vprintk_emit+0xe8/0x2b0 (unreliable)
-[ 1526.539713] [c00000000652bab0] [c000000000cc4494] 
-gro_normal_list.part.149+0x34/0x60
-[ 1526.539727] [c00000000652bae0] [c000000000cc6340] 
-__napi_poll+0x250/0x330
-[ 1526.539741] [c00000000652bb70] [c000000000cc697c] 
-net_rx_action+0x31c/0x370
-[ 1526.539754] [c00000000652bc20] [c000000000f3c8fc] 
-__do_softirq+0x16c/0x420
-[ 1526.539768] [c00000000652bd20] [c000000000147654] 
-run_ksoftirqd+0x64/0x90
-[ 1526.539783] [c00000000652bd40] [c00000000017955c] 
-smpboot_thread_fn+0x21c/0x260
-[ 1526.539796] [c00000000652bda0] [c000000000173388] kthread+0x188/0x190
-[ 1526.539812] [c00000000652be10] [c00000000000cee4] 
-ret_from_kernel_thread+0x5c/0x64
-[ 1526.539827] Instruction dump:
-[ 1526.539835] fbe1fff8 7c7e1b78 f8010010 f821ff81 ebe30000 3b610028 
-e92d0c80 f9210048
-[ 1526.539858] 39200000 fb610028 fb610030 7fa3f840 <eb9f0000> 419e004c 
-7ffdfb78 60000000
-[ 1526.539884] ---[ end trace e9681bc32653835d ]---
-[ 1526.559758]
-[ 1526.559766] Sending IPI to other CPUs
-[ 1526.559858] IPI complete
-[ 1526.581983] kexec: Starting switchover sequence.
+>        The same
+> symptom hasn't been reproduced.  As far as rcu stall is concerned as a
+> broader range
+> of problems,  this is absolutely not the only root cause I have seen.
+> Actually too many
+> things can delay context switching.  Do you have a long term plan to
+> fix this issue,
+> or just want to treat it case by case?
+
+If you are running a CONFIG_PREEMPT=n kernel, then the plan has been to
+leverage the calls to cond_resched().  If the grace period is old enough,
+cond_resched() will supply a quiescent state.
+
+In a CONFIG_PREEMPT=y kernel, when the grace period is old enough,
+RCU forces a schedule on the holdout CPU.  As long as the CPU is not
+eternally non-preemptible (for example, eternally in an interrupt
+handler), the grace period will end.
+
+But beyond a certain point, case-by-case analysis and handling is
+required.
+
+> Secondly, back to the following code I brought up that day. Actually
+> it is not as simple
+> as spinlock.
+> 
+>       rcu_read_lock();
+>       ip_protocol_deliver_rcu(net, skb, ip_hdr(skb)->protocol);
+>       rcu_read_unlock();
+> 
+> Are you all aware of all the potential functions that
+> ip_protocol_deliver_rcu will call?
+> As I can see, there is a code path from ip_protocol_deliver_rcu to
+> kmem_cache_alloc
+> which will end up a call to cond_resched().
+
+Can't say that I am familiar with everything that ip_protocol_deliver_rcu().
+There are some tens of millions of lines of code in the kernel, and I have
+but one brain.  ;-)
+
+And this cond_resched() should set things straight for a CONFIG_PREEMPT=n
+kernel.  Except that there should not be a call to cond_resched() within
+an RCU read-side critical section.  Does the code momentarily exit that
+critical section via something like rcu_read_unlock(); cond_resched();
+rcu_read_lock()?  Or does something prevent the code from getting there
+while in an RCU read-side critical section?  (The usual trick here is
+to have different GFP_ flags depending on the context.)
+
+>                                              Because the operations in memory
+> allocation are too complicated, we cannot alway expect a prompt return
+> with success.
+> When the system is running out of memory, then rcu cannot close the
+> current gp, then
+> great number of callbacks will be delayed and the freeing of the
+> memory they held
+> will be delayed as well. This sounds like a deadlock in the resource flow.
+
+That would of course be bad.  Though I am not familiar with all of the
+details of how the networking guys handle out-of-memory conditions.
+
+The usual advice would be to fail the request, but that does not appear
+to be an easy option for ip_protocol_deliver_rcu().  At this point, I
+must defer to the networking folks.
+
+							Thanx, Paul
+
+> Thanks
+> Donghai
+> 
+> 
+> On Tue, Oct 5, 2021 at 8:25 PM donghai qiao <donghai.w.qiao@gmail.com> wrote:
+> >
+> > On Tue, Oct 5, 2021 at 12:39 PM Paul E. McKenney <paulmck@kernel.org> wrote:
+> > >
+> > > On Tue, Oct 05, 2021 at 12:10:25PM -0400, donghai qiao wrote:
+> > > > On Mon, Oct 4, 2021 at 8:59 PM Paul E. McKenney <paulmck@kernel.org> wrote:
+> > > > >
+> > > > > On Mon, Oct 04, 2021 at 05:22:52PM -0400, donghai qiao wrote:
+> > > > > > Hello Paul,
+> > > > > > Sorry it has been long..
+> > > > >
+> > > > > On this problem, your schedule is my schedule.  At least as long as your
+> > > > > are not expecting instantaneous response.  ;-)
+> > > > >
+> > > > > > > > Because I am dealing with this issue in multiple kernel versions, sometimes
+> > > > > > > > the configurations in these kernels may different. Initially the
+> > > > > > > > problem I described
+> > > > > > > > originated to rhel-8 on which the problem occurs more often and is a bit easier
+> > > > > > > > to reproduce than others.
+> > > > > > >
+> > > > > > > Understood, that does make things more difficult.
+> > > > > > >
+> > > > > > > > Regarding these dynticks* parameters, I collected the data for CPU 0 as below :
+> > > > > > > >    - dynticks = 0x6eab02    which indicated the CPU was not in eqs.
+> > > > > > > >    - dynticks_nesting = 1    which is in its initial state, so it said
+> > > > > > > > it was not in eqs either.
+> > > > > > > >    - dynticks_nmi_nesting = 4000000000000004    which meant that this
+> > > > > > > > CPU had been
+> > > > > > > >      interrupted when it was in the middle of the first interrupt.
+> > > > > > > > And this is true: the first
+> > > > > > > >      interrupt was the sched_timer interrupt, and the second was a NMI
+> > > > > > > > when another
+> > > > > > > >     CPU detected the RCU stall on CPU 0.  So it looks all identical.
+> > > > > > > > If the kernel missed
+> > > > > > > >     a rcu_user_enter or rcu_user_exit, would these items remain
+> > > > > > > > identical ?  But I'll
+> > > > > > > >     investigate that possibility seriously as you pointed out.
+> > > > > > >
+> > > > > > > So is the initial state non-eqs because it was interrupted from kernel
+> > > > > > > mode?  Or because a missing rcu_user_enter() left ->dynticks_nesting
+> > > > > > > incorrectly equal to the value of 1?  Or something else?
+> > > > > >
+> > > > > > As far as the original problem is concerned, the user thread was interrupted by
+> > > > > > the timer, so the CPU was not working in the nohz mode. But I saw the similar
+> > > > > > problems on CPUs working in nohz mode with different configurations.
+> > > > >
+> > > > > OK.
+> > > > >
+> > > > > > > > > There were some issues of this sort around the v5.8 timeframe.  Might
+> > > > > > > > > there be another patch that needs to be backported?  Or a patch that
+> > > > > > > > > was backported, but should not have been?
+> > > > > > > >
+> > > > > > > > Good to know that clue. I'll take a look into the log history.
+> > > > > > > >
+> > > > > > > > > Is it possible to bisect this?
+> > > > > > > > >
+> > > > > > > > > Or, again, to run with CONFIG_RCU_EQS_DEBUG=y?
+> > > > > > > >
+> > > > > > > > I am building the latest 5.14 kernel with this config and give it a try when the
+> > > > > > > > machine is set up, see how much it can help.
+> > > > > > >
+> > > > > > > Very good, as that will help determine whether or not the problem is
+> > > > > > > due to backporting issues.
+> > > > > >
+> > > > > > I enabled CONFIG_RCU_EQS_DEBUG=y as you suggested and
+> > > > > > tried it for both the latest rhel8 and a later upstream version 5.15.0-r1,
+> > > > > > turns out no new warning messages related to this came out. So,
+> > > > > > rcu_user_enter/rcu_user_exit() should be paired right.
+> > > > >
+> > > > > OK, good.
+> > > > >
+> > > > > > > > > Either way, what should happen is that dyntick_save_progress_counter() or
+> > > > > > > > > rcu_implicit_dynticks_qs() should see the rdp->dynticks field indicating
+> > > > > > > > > nohz_full user execution, and then the quiescent state will be supplied
+> > > > > > > > > on behalf of that CPU.
+> > > > > > > >
+> > > > > > > > Agreed. But the counter rdp->dynticks of the CPU can only be updated
+> > > > > > > > by rcu_dynticks_eqs_enter() or rcu_dynticks_exit() when rcu_eqs_enter()
+> > > > > > > > or rcu_eqs_exit() is called, which in turn depends on the context switch.
+> > > > > > > > So, when the context switch never happens, the counter rdp->dynticks
+> > > > > > > > never advances. That's the thing I try to fix here.
+> > > > > > >
+> > > > > > > First, understand the problem.  Otherwise, your fix is not so likely
+> > > > > > > to actually fix anything.  ;-)
+> > > > > > >
+> > > > > > > If kernel mode was interrupted, there is probably a missing cond_resched().
+> > > > > > > But in sufficiently old kernels, cond_resched() doesn't do anything for
+> > > > > > > RCU unless a context switch actually happened.  In some of those kernels,
+> > > > > > > you can use cond_resched_rcu_qs() instead to get RCU's attention.  In
+> > > > > > > really old kernels, life is hard and you will need to do some backporting.
+> > > > > > > Or move to newer kernels.
+> > > > > > >
+> > > > > > > In short, if an in-kernel code path runs for long enough without hitting
+> > > > > > > a cond_resched() or similar, that is a bug.  The RCU CPU stall warning
+> > > > > > > that you will get is your diagnostic.
+> > > > > >
+> > > > > > Probably this is the case. With the test for 5.15.0-r1, I have seen different
+> > > > > > scenarios, among them the most frequent ones were caused by the networking
+> > > > > > in which a bunch of networking threads were spinning on the same rwlock.
+> > > > > >
+> > > > > > For instance in one of them, the ticks_this_gp of a rcu_data could go as
+> > > > > > large as 12166 (ticks) which is 12+ seconds. The thread on this cpu was
+> > > > > > doing networking work and finally it was spinning as a writer on a rwlock
+> > > > > > which had been locked by 16 readers.  By the way, there were 70 this
+> > > > > > kinds of writers were blocked on the same rwlock.
+> > > > >
+> > > > > OK, a lock-contention problem.  The networking folks have fixed a
+> > > > > very large number of these over the years, though, so I wonder what is
+> > > > > special about this one so that it is just now showing up.  I have added
+> > > > > a networking list on CC for their thoughts.
+> > > >
+> > > > Thanks for pulling the networking in. If they need the coredump, I can
+> > > > forward it to them.  It's definitely worth analyzing it as this contention
+> > > > might be a performance issue.  Or we can discuss this further in this
+> > > > email thread if they are fine, or we can discuss it over with a separate
+> > > > email thread with netdev@ only.
+> > > >
+> > > > So back to my original problem, this might be one of the possibilities that
+> > > > led to RCU stall panic.  Just imagining this type of contention might have
+> > > > occurred and lasted long enough. When it finally came to the end, the
+> > > > timer interrupt occurred, therefore rcu_sched_clock_irq detected the RCU
+> > > > stall on the CPU and panic.
+> > > >
+> > > > So definitely we need to understand these networking activities here as
+> > > > to why the readers could hold the rwlock too long.
+> > >
+> > > I strongly suggest that you also continue to do your own analysis on this.
+> > > So please see below.
+> >
+> > This is just a brief of my analysis and the stack info below is not enough
+> > for other people to figure out anything useful. I meant if they are really
+> > interested, I can upload the core file. I think this is fair.
+> >
+> > >
+> > > > > > When examining the readers of the lock, except the following code,
+> > > > > > don't see any other obvious problems: e.g
+> > > > > >  #5 [ffffad3987254df8] __sock_queue_rcv_skb at ffffffffa49cd2ee
+> > > > > >  #6 [ffffad3987254e18] raw_rcv at ffffffffa4ac75c8
+> > > > > >  #7 [ffffad3987254e38] raw_local_deliver at ffffffffa4ac7819
+> > > > > >  #8 [ffffad3987254e88] ip_protocol_deliver_rcu at ffffffffa4a8dea4
+> > > > > >  #9 [ffffad3987254ea8] ip_local_deliver_finish at ffffffffa4a8e074
+> > > > > > #10 [ffffad3987254eb0] __netif_receive_skb_one_core at ffffffffa49f3057
+> > > > > > #11 [ffffad3987254ed0] process_backlog at ffffffffa49f3278
+> > > > > > #12 [ffffad3987254f08] __napi_poll at ffffffffa49f2aba
+> > > > > > #13 [ffffad3987254f30] net_rx_action at ffffffffa49f2f33
+> > > > > > #14 [ffffad3987254fa0] __softirqentry_text_start at ffffffffa50000d0
+> > > > > > #15 [ffffad3987254ff0] do_softirq at ffffffffa40e12f6
+> > > > > >
+> > > > > > In the function ip_local_deliver_finish() of this stack, a lot of the work needs
+> > > > > > to be done with ip_protocol_deliver_rcu(). But this function is invoked from
+> > > > > > a rcu reader side section.
+> > > > > >
+> > > > > > static int ip_local_deliver_finish(struct net *net, struct sock *sk,
+> > > > > > struct sk_buff *skb)
+> > > > > > {
+> > > > > >         __skb_pull(skb, skb_network_header_len(skb));
+> > > > > >
+> > > > > >         rcu_read_lock();
+> > > > > >         ip_protocol_deliver_rcu(net, skb, ip_hdr(skb)->protocol);
+> > > > > >         rcu_read_unlock();
+> > > > > >
+> > > > > >         return 0;
+> > > > > > }
+> > > > > >
+> > > > > > Actually there are multiple chances that this code path can hit
+> > > > > > spinning locks starting from ip_protocol_deliver_rcu(). This kind
+> > > > > > usage looks not quite right. But I'd like to know your opinion on this first ?
+> > > > >
+> > > > > It is perfectly legal to acquire spinlocks in RCU read-side critical
+> > > > > sections.  In fact, this is one of the few ways to safely acquire a
+> > > > > per-object lock while still maintaining good performance and
+> > > > > scalability.
+> > > >
+> > > > Sure, understand. But the RCU related docs said that anything causing
+> > > > the reader side to block must be avoided.
+> > >
+> > > True.  But this is the Linux kernel, where "block" means something
+> > > like "invoke schedule()" or "sleep" instead of the academic-style
+> > > non-blocking-synchronization definition.  So it is perfectly legal to
+> > > acquire spinlocks within RCU read-side critical sections.
+> > >
+> > > And before you complain that practitioners are not following the academic
+> > > definitions, please keep in mind that our definitions were here first.  ;-)
+> > >
+> > > > > My guess is that the thing to track down is the cause of the high contention
+> > > > > on that reader-writer spinlock.  Missed patches, misconfiguration, etc.
+> > > >
+> > > > Actually, the test was against a recent upstream 5.15.0-r1  But I can try
+> > > > the latest r4.  Regarding the network configure, I believe I didn't do anything
+> > > > special, just use the default.
+> > >
+> > > Does this occur on older mainline kernels?  If not, I strongly suggest
+> > > bisecting, as this often quickly and easily finds the problem.
+> >
+> > Actually It does. But let's focus on the latest upstream and the latest rhel8.
+> > This way, we will not worry about missing the needed rcu patches.
+> > However, in rhel8, the kernel stack running on the rcu-stalled CPU is not
+> > networking related, which I am still working on.  So, there might be
+> > multiple root causes.
+> >
+> > > Bisection can also help you find the patch to be backported if a later
+> > > release fixes the bug, though things like gitk can also be helpful.
+> >
+> > Unfortunately, this is reproducible on the latest bit.
+> >
+> > Thanks
+> > Donghai
+> > >
+> > >                                                         Thanx, Paul
