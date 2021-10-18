@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F35F431FB3
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 16:30:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 364C3431FB6
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 16:30:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232339AbhJROcX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 10:32:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50716 "EHLO mail.kernel.org"
+        id S232495AbhJROcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 10:32:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50730 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232253AbhJROcI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232355AbhJROcI (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 18 Oct 2021 10:32:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E508D6128E;
-        Mon, 18 Oct 2021 14:29:50 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3ABDD61350;
+        Mon, 18 Oct 2021 14:29:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1634567391;
-        bh=UNM/ksWOibJHwFdJn12h15WWbXNzPbUZuqJ0k01l5Lo=;
+        bh=UNgP6mt73WUSWJjOQ3PXI6RUpAtumqrzrmNHdQ+OO84=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Arm+awgM19dbK8rRPBm5DJZo4w1fC4SXLosXabDKv5sN6t8Kwr4jCePIcSH9USm+7
-         Bt88KTys6B0qoelFxGmM8J72UwFFybwHyEVcj+T7OZlLwJtYq5XWk1//9PL4/v8nex
-         rUa/uA4BLVWx9gy8VxkkpJFf3DoFD1jhTpZsBccWx/lzLTptLQOIv4DPlKdyW8F21R
-         zoj06d7B0jZq8qH+K3a78pDtEkj2KkliMgzzwJ+FrsABL554i5jpQa2n4TlWPYMf+D
-         dzrsV25eshk0qLsYINI89lBagPbNlmkYIL7oINGG4SWzy3rPaszFjVjVgZNBKoyn0D
-         EB3NnKLi2eujA==
+        b=r6uXXuJX4+J1U/Ht9xyIL/0qo/+JRoWv6T95hrnSWSnHEmsh7QAPIqyJG5YHc7M4g
+         c7yjm40wxTpZFAEDUPlSpmGMVpHEyLJcUhg9ybigyuy9YPQlYUIl9mWkWV85fyFM0j
+         zqYQ6P78AgrPW3cc8eC0FEBDUevFxcg5XlzPcn7EK7ojWi8xlkag9Zdoj/fwHFaqzF
+         kZkgmNMRveB07b0tvTWr9aGzYu1ZT2DBs2SwDNmCDXPj47bqs5PkCRfjQuBc6ZMtjB
+         EsKo1CHuqYaHIw2K2pZa6bauDyf3dLHPre4xLdr04KmA2OQgxT4dog/MYPxTSmLIFj
+         3XqzZ0Xn8ng5w==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        romieu@fr.zoreil.com
-Subject: [PATCH net-next 09/12] ethernet: sis190: use eth_hw_addr_set()
-Date:   Mon, 18 Oct 2021 07:29:29 -0700
-Message-Id: <20211018142932.1000613-10-kuba@kernel.org>
+        venza@brownhat.org
+Subject: [PATCH net-next 10/12] ethernet: sis900: use eth_hw_addr_set()
+Date:   Mon, 18 Oct 2021 07:29:30 -0700
+Message-Id: <20211018142932.1000613-11-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211018142932.1000613-1-kuba@kernel.org>
 References: <20211018142932.1000613-1-kuba@kernel.org>
@@ -49,34 +49,34 @@ eth_hw_addr_set().
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: romieu@fr.zoreil.com
+CC: venza@brownhat.org
 ---
- drivers/net/ethernet/sis/sis190.c | 4 +++-
+ drivers/net/ethernet/sis/sis900.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/sis/sis190.c b/drivers/net/ethernet/sis/sis190.c
-index 5e66e3f3aafc..216bb2d34d7c 100644
---- a/drivers/net/ethernet/sis/sis190.c
-+++ b/drivers/net/ethernet/sis/sis190.c
-@@ -1631,6 +1631,7 @@ static int sis190_get_mac_addr_from_apc(struct pci_dev *pdev,
- 	static const u16 ids[] = { 0x0965, 0x0966, 0x0968 };
- 	struct sis190_private *tp = netdev_priv(dev);
- 	struct pci_dev *isa_bridge;
+diff --git a/drivers/net/ethernet/sis/sis900.c b/drivers/net/ethernet/sis/sis900.c
+index 3f5717a1874f..cc2d907c4c4b 100644
+--- a/drivers/net/ethernet/sis/sis900.c
++++ b/drivers/net/ethernet/sis/sis900.c
+@@ -292,6 +292,7 @@ static int sis630e_get_mac_addr(struct pci_dev *pci_dev,
+ 				struct net_device *net_dev)
+ {
+ 	struct pci_dev *isa_bridge = NULL;
 +	u8 addr[ETH_ALEN];
- 	u8 reg, tmp8;
- 	unsigned int i;
+ 	u8 reg;
+ 	int i;
  
-@@ -1659,8 +1660,9 @@ static int sis190_get_mac_addr_from_apc(struct pci_dev *pdev,
+@@ -308,8 +309,9 @@ static int sis630e_get_mac_addr(struct pci_dev *pci_dev,
  
-         for (i = 0; i < ETH_ALEN; i++) {
-                 outb(0x9 + i, 0x78);
--                dev->dev_addr[i] = inb(0x79);
-+                addr[i] = inb(0x79);
-         }
-+	eth_hw_addr_set(dev, addr);
+ 	for (i = 0; i < 6; i++) {
+ 		outb(0x09 + i, 0x70);
+-		((u8 *)(net_dev->dev_addr))[i] = inb(0x71);
++		addr[i] = inb(0x71);
+ 	}
++	eth_hw_addr_set(net_dev, addr);
  
- 	outb(0x12, 0x78);
- 	reg = inb(0x79);
+ 	pci_write_config_byte(isa_bridge, 0x48, reg & ~0x40);
+ 	pci_dev_put(isa_bridge);
 -- 
 2.31.1
 
