@@ -2,130 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66C58431770
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 13:34:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAA7B431776
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 13:34:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229665AbhJRLgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 07:36:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35808 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229843AbhJRLgy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 07:36:54 -0400
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E35CC061769
-        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 04:34:43 -0700 (PDT)
-Received: by mail-ot1-x332.google.com with SMTP id g62-20020a9d2dc4000000b0054752cfbc59so461025otb.1
-        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 04:34:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6G8Hfd9HWWdOmQn8dJ/4ZTN0E6g9DldkLudnuHQWD1k=;
-        b=mfWHkg6A++/9gjuM+FUS0mGsRBbFBJOlC/EjyddiPAJctM5q/3aGEkGv0P9ExrHLYf
-         vlnNzUKEfOTtJzDy0NRR4NFTvE8RnCv5Smk1MSYJQUYBgQc5ztrxlGLQ6BvCE6HgqeHR
-         AuoMfraz4oXYEmgUAVhlRhm6sQ6nWYWvEQiL/5R7bLCmzwDP9RIyY3PFQFpKf0P/mdMb
-         //v1bgSYW9PRlFyzfVwe5fv6KzVlQVdy0Ry0vHqL9/4UtfDzq4BV85xu2Uh50jPPrQl5
-         zIZuwOmHSc6Thw3vfNcXkvSf9F+XlsvT5aeSj7mjWcE3tgqqeaVhgoC46G9Tj2XzjpoB
-         yUtg==
+        id S231340AbhJRLg7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 07:36:59 -0400
+Received: from mail-ua1-f44.google.com ([209.85.222.44]:41852 "EHLO
+        mail-ua1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231217AbhJRLg6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 07:36:58 -0400
+Received: by mail-ua1-f44.google.com with SMTP id r17so521964uaf.8;
+        Mon, 18 Oct 2021 04:34:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=6G8Hfd9HWWdOmQn8dJ/4ZTN0E6g9DldkLudnuHQWD1k=;
-        b=2UfAxxAxFaBK7nHxfvP6mYqy3Z7A/LhrMbs07TkWW9aozd9+mpQxDcOFsW6zbOwR3x
-         adg4UnO7nyw5i4hUbwTDfbkOrNkHBONy9UB03bCuXSZIx0wMi+X52KTczdC/3s1urCug
-         GQHhpesB/5sduWOY7TBcl+xM0uvLS0ILrO5er44SnnR//rp0md9ILFrUOW4q2XAyOTP3
-         hBm4CqDXWUIvqSkOMs1JM100gh/s19AOzflIhTyw+SZYxgUpU78o7orYZ7m0a4KdpLXv
-         RtiqE8ESFza3JKacy56+VFbkreRDFdaLgmZpasnoPL5hMkwErieQ985/vskjJLYT9ZSY
-         KUTQ==
-X-Gm-Message-State: AOAM531F+Jcdy9flsx9rTQ3Pq1LrYpsfl8cFrpT6oLfuHDwfSrjmo7q8
-        O6npN0zGT8yleNBWx4Foq2IbJErqPbFKkjv8P3QxNQ==
-X-Google-Smtp-Source: ABdhPJzToQU6dBlbmasyOXnGLHSpLJDGclh9CmgZFd06P3bvgiJJeE2czOxOsSKQnEzr3MFg2ogcNZYW8cFjW+0K93M=
-X-Received: by 2002:a05:6830:1c26:: with SMTP id f6mr20715033ote.28.1634556882315;
- Mon, 18 Oct 2021 04:34:42 -0700 (PDT)
+        bh=6IaelJrOWMpa4QAL/Q/iLPggGYl6ZVnf+Z8JHUKXX5M=;
+        b=hvb9Wwq43L8ElKt7vyoA2GstxJULwpV/W1OasgR0dyNLCq03qvMWhlh0fr/kHh8TWb
+         GNwK/BfflyZnA23SNWM4Fr92gTYOlBRdchKtektPA8ZSmREgat/klSrEKL4UjLx9nFSU
+         t5KunvVU6Uwl/PSXtc4IAjux0oMNcA1VAWJOXj/tqH8Tw3HzBXowY6HfJXtbh9ixAVgo
+         v/ZlCdsOwANxOpa4EDrBa2kdlGcUU/p+0oJeWGV/eDqLZJFxH1i19KuDxYNUUiqEwS6O
+         GiYH3f7CLIxI9Y+lf1EUxUTQXW6nDtbvHmSHVegfb2hK1ZaeujljAzdC35Ny2gwrNObq
+         mx3Q==
+X-Gm-Message-State: AOAM532msyroz2av7aliZ9jKDzR3zkYza9mpqstUG77941kN3PXeijts
+        S/xpxE9uzaY9u4ZZgfGy6x6cNY6iHXlPwQ==
+X-Google-Smtp-Source: ABdhPJxJRJAYWTZiZk+IKwDkT7LqcVPgxwi5YBSCprR9WkFVle0VS/VLhtNdct4VRTKWyJHaNI14VA==
+X-Received: by 2002:a67:d111:: with SMTP id u17mr26704847vsi.37.1634556886652;
+        Mon, 18 Oct 2021 04:34:46 -0700 (PDT)
+Received: from mail-vk1-f170.google.com (mail-vk1-f170.google.com. [209.85.221.170])
+        by smtp.gmail.com with ESMTPSA id 39sm9116159vki.56.2021.10.18.04.34.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Oct 2021 04:34:46 -0700 (PDT)
+Received: by mail-vk1-f170.google.com with SMTP id j12so8384799vka.4;
+        Mon, 18 Oct 2021 04:34:45 -0700 (PDT)
+X-Received: by 2002:a05:6122:a20:: with SMTP id 32mr23628239vkn.15.1634556885722;
+ Mon, 18 Oct 2021 04:34:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211011141733.3999-1-stephan@gerhold.net> <20211011141733.3999-2-stephan@gerhold.net>
-In-Reply-To: <20211011141733.3999-2-stephan@gerhold.net>
-From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Date:   Mon, 18 Oct 2021 17:04:31 +0530
-Message-ID: <CAH=2NtwH9kmZBMsOkZkwiuN2mpmOTiAVtw3zC2O4xNdCgG8P4w@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/4] dt-bindings: dmaengine: bam_dma: Add
- "powered remotely" mode
-To:     Stephan Gerhold <stephan@gerhold.net>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+References: <362d9ced19f3524ee8917df5681b3880c13cac85.1630416373.git.geert+renesas@glider.be>
+ <20210831133238.75us5ipf25wzqkuq@pengutronix.de>
+In-Reply-To: <20210831133238.75us5ipf25wzqkuq@pengutronix.de>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 18 Oct 2021 13:34:34 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdX63XMfHS+d9FM0oR_-hnFi4z_GsSwhCmkNKQ01093ttQ@mail.gmail.com>
+Message-ID: <CAMuHMdX63XMfHS+d9FM0oR_-hnFi4z_GsSwhCmkNKQ01093ttQ@mail.gmail.com>
+Subject: Re: [PATCH] can: rcar: Drop unneeded ARM dependency
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Aleksander Morgado <aleksander@aleksander.es>,
-        netdev@vger.kernel.org, MSM <linux-arm-msm@vger.kernel.org>,
-        dmaengine@vger.kernel.org, devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        linux-can@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stephan,
+Hi Marc,
 
-On Mon, 11 Oct 2021 at 20:12, Stephan Gerhold <stephan@gerhold.net> wrote:
+On Tue, Aug 31, 2021 at 3:32 PM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> On 31.08.2021 15:27:40, Geert Uytterhoeven wrote:
+> > The dependency on ARM predates the dependency on ARCH_RENESAS.
+> > The latter was introduced for Renesas arm64 SoCs first, and later
+> > extended to cover Renesas ARM SoCs, too.
+> >
+> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 >
-> In some configurations, the BAM DMA controller is set up by a remote
-> processor and the local processor can simply start making use of it
-> without setting up the BAM. This is already supported using the
-> "qcom,controlled-remotely" property.
->
-> However, for some reason another possible configuration is that the
-> remote processor is responsible for powering up the BAM, but we are
-> still responsible for initializing it (e.g. resetting it etc). Add
-> a "qcom,powered-remotely" property to describe that configuration.
->
-> Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
-> ---
-> Changes since RFC:
->   - Rename qcom,remote-power-collapse -> qcom,powered-remotely
->     for consistency with "qcom,controlled-remotely"
->
-> NOTE: This is *not* a compile-time requirement for the BAM-DMUX driver
->       so this could also go through the dmaengine tree.
->
-> Also note that there is an ongoing effort to convert these bindings
-> to DT schema but sadly there were not any updates for a while. :/
-> https://lore.kernel.org/linux-arm-msm/20210519143700.27392-2-bhupesh.sharma@linaro.org/
+> Applied to linux-can-next/testing.
 
-Seems you missed the latest series posted last week - [1]. Sorry I got
-a bit delayed posting it due to being caught up in other patches.
+Thanks!
 
-Maybe you can rebase your patch on the same and use the YAML bindings
-for the qcom,bam_dma controller.
+https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git/log/?h=testing
+still predates my patch. Am I looking at the wrong tree?
 
-[1]. https://lore.kernel.org/linux-arm-msm/20211013105541.68045-1-bhupesh.sharma@linaro.org/T/#t
+Thanks again!
 
-Regards,
-Bhupesh
+Gr{oetje,eeting}s,
 
-> ---
->  Documentation/devicetree/bindings/dma/qcom_bam_dma.txt | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/dma/qcom_bam_dma.txt b/Documentation/devicetree/bindings/dma/qcom_bam_dma.txt
-> index cf5b9e44432c..6e9a5497b3f2 100644
-> --- a/Documentation/devicetree/bindings/dma/qcom_bam_dma.txt
-> +++ b/Documentation/devicetree/bindings/dma/qcom_bam_dma.txt
-> @@ -15,6 +15,8 @@ Required properties:
->    the secure world.
->  - qcom,controlled-remotely : optional, indicates that the bam is controlled by
->    remote proccessor i.e. execution environment.
-> +- qcom,powered-remotely : optional, indicates that the bam is powered up by
-> +  a remote processor but must be initialized by the local processor.
->  - num-channels : optional, indicates supported number of DMA channels in a
->    remotely controlled bam.
->  - qcom,num-ees : optional, indicates supported number of Execution Environments
-> --
-> 2.33.0
->
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
