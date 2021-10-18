@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B31C431314
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 11:16:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69734431321
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 11:18:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231411AbhJRJSa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 05:18:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60128 "EHLO
+        id S231375AbhJRJUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 05:20:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231230AbhJRJS2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 05:18:28 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DBA5C06161C;
-        Mon, 18 Oct 2021 02:16:17 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id kk10so11792612pjb.1;
-        Mon, 18 Oct 2021 02:16:17 -0700 (PDT)
+        with ESMTP id S231230AbhJRJUO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 05:20:14 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65ED6C06161C;
+        Mon, 18 Oct 2021 02:18:03 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id t7so1048160pgl.9;
+        Mon, 18 Oct 2021 02:18:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=JEWEoZv6sG09goH0sj7RrT+ljFzU3IjCc2+Xvzt0KKQ=;
-        b=mftqzN66xs83o46X0hTDP1k9SrsEIfVsvhqKk9/StpA/QVQT+2EF2ddmu+pSp3tdDD
-         IKfMzLiK4km6fcTcpB1o7spCnjf0Wk7t05aHrOJvOzYXUQ90+lyYvT/8dHP0dV4IC/w/
-         FA9Z8l011OFjo/nRxWbEya06/X8xDqeIUa0TpHiYIpZ4816MTNplQSTqJG+IUu2waDTD
-         bAAvwt4QUs4mnw4BbGGnftCUQUM3juk6shGIPhvTb+yAy5nVK9ZVsCBCYl6mg2L+iElF
-         IddcaWK7ENaXbMT3ecMz1C4QuYn1rU75lmSnB+O6g9BMaLhxUX88zmzMST2fv971Ww/W
-         AGMA==
+        bh=TL8MKdaHHltkSLJJhEgpOYC4/+7FPpkVJIhEqgGDpIo=;
+        b=FDma6FSH9LVf6Tx0LTXBlp+fTXB+WsjAO5X2hE3fxAwi0EqpBVbbEzdl7jKBLJPiSp
+         S3httpAytp70wJxB9hInu3xbXytyCE3KKZGuAy6QXqoVZTLvzr/5WJqZzCtuHXS1ETyt
+         lEl8cuYbT8XaERbHySMN/UhA89OsxtjWzAaq8oju4RjBtWMaFhSq0ZYnOvS5S1EO0DY8
+         JBej4E6yHHVrHKUK1DHtXfsaRCZfHY5EkwYgUGYBgw3Jm/3qSt7SeBVekiQS4VNX/0ax
+         MlSdRnVGENCcL38Wbdzh0FS3l5X5GyDNkX0oQeBuqBXGsl7VZYbzsbaw4hQgjtJWeIL0
+         Q3qQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=JEWEoZv6sG09goH0sj7RrT+ljFzU3IjCc2+Xvzt0KKQ=;
-        b=Th5eaU/UnQxfUhpsKgBouiiWTO1uXteSYZlGl2mBxWuWsLrNgPjNClZL1BOg3g8hVS
-         ev7t+omz4IOqYcuX45TkWuPKl3Ufsy9OLEKVJnOOUvdIJYVrKCnw/5FaU0ZycBiX1lht
-         MJ8h4e8JN1eYalXOWSTRN1jOTcZvFRvrITnEu7dumi7mU4SXEc5T4+HfjH8gnybJgYrh
-         don5Igpmnlq1oTFfQGNViVSpYygJMSGEZHYqArTbMG0Ji3Pj7ooq+bFVunKhT4aOA6PF
-         9JpNleE5VYBVnJnd1iuuF/eFq9yi5oGtpaEpzPlZ6vGT1Fvagu0JRPP9mccDy7z3zqAq
-         qwWw==
-X-Gm-Message-State: AOAM530/Wa7XFkD9SEtI6bCc+CGS1fSKLawp1o0GQZiJI/8afdt8HxCa
-        heUm//6pZCZUTtvgCHYwc5U=
-X-Google-Smtp-Source: ABdhPJyFUkmAT5Sy+FzX1OhwIDD9J3kQnq3J3Y8E5yhbFimcCDyz+WhKpBgEdRdb/meHZKn3400TSA==
-X-Received: by 2002:a17:90a:930d:: with SMTP id p13mr29935602pjo.171.1634548576936;
-        Mon, 18 Oct 2021 02:16:16 -0700 (PDT)
+        bh=TL8MKdaHHltkSLJJhEgpOYC4/+7FPpkVJIhEqgGDpIo=;
+        b=GuSdyMKO2d8Vk6wFKYtb0raSAc3xzPufb82a9uEx2rl+7ojb+oX2jUBLLNWMJsdNhN
+         brAuoFftqOMXXEY3oXSxkAD0/EZAFf+im8KhNeJhMjlT8gaNyu6y1L+oqJByJNKd4Bny
+         rDjC9VI6sIViWKyauRYKBvwYf2B/7YeNf3QoXIy3XDWgIIDdivOgtZj493ErnuVTWndL
+         xF+csXrhGk7qc+bmP8fZkMU4yqWynQq/CdoKK75Zc8UfE5AglDVyCJ1xcqLI+zwHBAG3
+         Y4Tg3kpSiSKqKhgXabziDLHIyhuwNpw34JMFrKbYbgRv8kuUXeuADVvu2iJMVRoggSdh
+         Vt/A==
+X-Gm-Message-State: AOAM530dqyiZw3dhlkEZK+ZdvdWuCYFVlXeClhGviuoyvV3vCvKdTQtp
+        ozokbM51FZaXRiZ4Nf14Dj5He7m0U94=
+X-Google-Smtp-Source: ABdhPJxrqx37vnGZwzi86d06c52M+BYYUENbKxHgRLWQxR9hkllJAe8xAQQIWtHKgmVDPT85Y6dz0Q==
+X-Received: by 2002:a63:3e84:: with SMTP id l126mr18260763pga.55.1634548683006;
+        Mon, 18 Oct 2021 02:18:03 -0700 (PDT)
 Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id g14sm11990489pgo.88.2021.10.18.02.16.15
+        by smtp.gmail.com with ESMTPSA id s30sm11644608pgn.38.2021.10.18.02.18.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Oct 2021 02:16:16 -0700 (PDT)
+        Mon, 18 Oct 2021 02:18:02 -0700 (PDT)
 From:   luo penghao <cgel.zte@gmail.com>
 X-Google-Original-From: luo penghao <luo.penghao@zte.com.cn>
-To:     Mirko Lindner <mlindner@marvell.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, penghao luo <luo.penghao@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] octeontx2-af: Remove redundant assignment operations
-Date:   Mon, 18 Oct 2021 09:16:12 +0000
-Message-Id: <20211018091612.858462-1-luo.penghao@zte.com.cn>
+Subject: [PATCH linux-next] xfrm: Remove redundant fields
+Date:   Mon, 18 Oct 2021 09:17:58 +0000
+Message-Id: <20211018091758.858899-1-luo.penghao@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -67,12 +67,12 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: penghao luo <luo.penghao@zte.com.cn>
 
-the variable err will be reassigned on subsequent branches, and this
-assignment does not perform related value operations.
+the variable err is not necessary in such places. It should be revmoved
+for the simplicity of the code.
 
-clang_analyzer complains as follows:
+The clang_analyzer complains as follows:
 
-drivers/net/ethernet/marvell/sky2.c:4988: warning:
+net/xfrm/xfrm_input.c:530: warning:
 
 Although the value stored to 'err' is used in the enclosing expression,
 the value is never actually read from 'err'.
@@ -80,22 +80,31 @@ the value is never actually read from 'err'.
 Reported-by: Zeal Robot <zealci@zte.com.cn>
 Signed-off-by: penghao luo <luo.penghao@zte.com.cn>
 ---
- drivers/net/ethernet/marvell/sky2.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/xfrm/xfrm_input.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/sky2.c b/drivers/net/ethernet/marvell/sky2.c
-index 3cb9c12..6428ae5 100644
---- a/drivers/net/ethernet/marvell/sky2.c
-+++ b/drivers/net/ethernet/marvell/sky2.c
-@@ -4907,7 +4907,7 @@ static int sky2_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	pci_set_master(pdev);
+diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
+index 3df0861..ff34667 100644
+--- a/net/xfrm/xfrm_input.c
++++ b/net/xfrm/xfrm_input.c
+@@ -530,7 +530,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ 				goto drop;
+ 			}
  
- 	if (sizeof(dma_addr_t) > sizeof(u32) &&
--	    !(err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64)))) {
-+	    !(dma_set_mask(&pdev->dev, DMA_BIT_MASK(64)))) {
- 		using_dac = 1;
- 		err = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64));
- 		if (err < 0) {
+-			if ((err = xfrm_parse_spi(skb, nexthdr, &spi, &seq)) != 0) {
++			if ((xfrm_parse_spi(skb, nexthdr, &spi, &seq)) != 0) {
+ 				XFRM_INC_STATS(net, LINUX_MIB_XFRMINHDRERROR);
+ 				goto drop;
+ 			}
+@@ -560,7 +560,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ 	}
+ 
+ 	seq = 0;
+-	if (!spi && (err = xfrm_parse_spi(skb, nexthdr, &spi, &seq)) != 0) {
++	if (!spi && (xfrm_parse_spi(skb, nexthdr, &spi, &seq)) != 0) {
+ 		secpath_reset(skb);
+ 		XFRM_INC_STATS(net, LINUX_MIB_XFRMINHDRERROR);
+ 		goto drop;
 -- 
 2.15.2
 
