@@ -2,44 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ADBB432459
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 19:01:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3118C43245A
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 19:02:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232329AbhJRRDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 13:03:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55016 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231894AbhJRRDx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Oct 2021 13:03:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 44EF1604D2;
-        Mon, 18 Oct 2021 17:01:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634576502;
-        bh=Av85IzgjOQuZnSY8coC4aSGyh0ererNkt1NuiSRDWns=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pfcItBDlTvc917rUYeDYNuwkeY/Eo0KsRYwe0Ow/iCg/KaGmjUmcGBJIJJnuQb9ew
-         9XcdC0A2K1m9/h5nAas2H78dhONHcOHGHp/bVnpG00VIO5gwuCdeD3/6nDyCEyuOuz
-         qXz/EetI/QzyRCJlwx0yQTwoNYzbXKJ4ZCbFZ78Ao3A73XlZnfGhwL5tNoUeb7bUjn
-         915hTwt7e9C0qahSUVQs8sVgaT1LYgN07l+Tm55n15it80bgVvOqMAYPcal9DSF3Mx
-         fnSclYuLAzOVYSCmbmZIsIcChGbVps6o4e3V59PSqnWSsqHmSNwff9nmrW8ZQeUY4N
-         I+2f8z/bg4Tfg==
-Date:   Mon, 18 Oct 2021 10:01:41 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Taras Chornyi [C]" <tchornyi@marvell.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "idosch@idosch.org" <idosch@idosch.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "Vadym Kochan [C]" <vkochan@marvell.com>
-Subject: Re: [RFC net-next 3/6] ethernet: prestera: use
- eth_hw_addr_set_port()
-Message-ID: <20211018100141.53844c4e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CO6PR18MB4083DDE34183B96B4D882D60C4BC9@CO6PR18MB4083.namprd18.prod.outlook.com>
-References: <20211015193848.779420-1-kuba@kernel.org>
-        <20211015193848.779420-4-kuba@kernel.org>
-        <20211015235130.6sulfh2ouqt3dgfh@skbuf>
-        <CO6PR18MB4083DDE34183B96B4D882D60C4BC9@CO6PR18MB4083.namprd18.prod.outlook.com>
+        id S232432AbhJRREL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 13:04:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56168 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232114AbhJRREK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 13:04:10 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 636CFC06161C
+        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 10:01:59 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id qe4-20020a17090b4f8400b0019f663cfcd1so14950703pjb.1
+        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 10:01:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=/I9J3P31boI1XKLBs2K675bnHHS64wpGLIx+qFAYY20=;
+        b=vztpI2qL0rJLIJ6uYoAV+VpasyYUnE0bXaJWeT0Vi8b51csHnDZmny0bTOks6dffEi
+         nNkQhyJkFxNDJgWqMOXgR0XgUD/QBxarRw7aOO+mnt6anLFlU4WIm55htyhm0OnB6XOW
+         jqiGrTkfmzDJvFmlY+OcCzm42nWzfkilhuf+zZNB55ZoK7vZf6Ymh0JiZSaD1QbRVg+Z
+         tIG4umBzZJDwrAUdchepC6/bGr58u0phqnEQ75QLyv/3bVCobXAM4QGrROQl91cklh1n
+         tojxD2TeB6WIouhhpIws/zns+SIYx8rWR7YOBfsN4YeQEl8qxXY7JrQaX+f8eXnnN/QJ
+         Qh1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=/I9J3P31boI1XKLBs2K675bnHHS64wpGLIx+qFAYY20=;
+        b=JZgo2t4RndWuYHOO8Ve32wUakGwDC4XS4tVV7Pqnjfvpicnn4pGb3m04MB65qCfpbM
+         3wE/p5w/NKJG063JXJ6eQe1IZnHs1inB9oYBscTzD8EPmwniFepM1fl6RV82owzaVc3w
+         Ti4N4PhXa9JfTeNjPOTzlQOkHd0vc2rVVx3NB/Vz82cLqPTG9hgAS2vQHHVA40E9ukLv
+         5ITya/6nSgP0fEEuE+D/hTEEu9803puzD5C5KeRj65oV5nss/DybFhNneZCv5XVGkRnZ
+         ywEqx2og3qv6fXkaUTTJecliW9XRer0yWBY6rfdtb5DGM+cxU5wy+ZACGdOD8WWJUB5/
+         uCrw==
+X-Gm-Message-State: AOAM533fqWvY67z1NGGDoRBAc4mi/oOMTvE4cN/+OykDcZa7tPvz0mwW
+        sPlyowOTnQrAafa1hkZNjsPZEA==
+X-Google-Smtp-Source: ABdhPJwMqzWB1aFCAmIq/7mov4j0b9+irq3q5PhAPnXHcKhNCJm/CqCClI5HrSZb1rJzr4cL4lZCsA==
+X-Received: by 2002:a17:90a:c08d:: with SMTP id o13mr26390pjs.181.1634576518819;
+        Mon, 18 Oct 2021 10:01:58 -0700 (PDT)
+Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
+        by smtp.gmail.com with ESMTPSA id d137sm14071155pfd.72.2021.10.18.10.01.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Oct 2021 10:01:58 -0700 (PDT)
+Date:   Mon, 18 Oct 2021 10:01:48 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, mlindner@marvell.com
+Subject: Re: [PATCH net-next 02/12] ethernet: sky2/skge: use
+ eth_hw_addr_set()
+Message-ID: <20211018100148.75ab3f23@hermes.local>
+In-Reply-To: <20211018142932.1000613-3-kuba@kernel.org>
+References: <20211018142932.1000613-1-kuba@kernel.org>
+        <20211018142932.1000613-3-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -47,42 +64,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 18 Oct 2021 16:54:00 +0000 Taras Chornyi [C] wrote:
-> > @@ -341,8 +342,8 @@ static int prestera_port_create(struct prestera_switch *sw, u32 id)
-> >       /* firmware requires that port's MAC address consist of the first
-> >        * 5 bytes of the base MAC address
-> >        */
-> > -     memcpy(dev->dev_addr, sw->base_mac, dev->addr_len - 1);
-> > -     dev->dev_addr[dev->addr_len - 1] = port->fp_id;
-> > +     memcpy(addr, sw->base_mac, dev->addr_len - 1);  
+On Mon, 18 Oct 2021 07:29:22 -0700
+Jakub Kicinski <kuba@kernel.org> wrote:
+
+> Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
+> of VLANs...") introduced a rbtree for faster Ethernet address look
+> up. To maintain netdev->dev_addr in this tree we need to make all
+> the writes to it got through appropriate helpers.
 > 
-> This code is a bit buggy.  We do care about the last byte of the base mac address.
-> For example if base mac is xx:xx:xx:xx:xx:10 first port mac should be  xx:xx:xx:xx:xx:11
+> Read the address into an array on the stack, then call
+> eth_hw_addr_set().
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> CC: mlindner@marvell.com
+> CC: stephen@networkplumber.org
 
-Thanks for the reply, does it mean we can assume base_mac will be valid
-or should we add a check like below?
+Looks ok. Don't even use any of that hardware anymore.
 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-index b667f560b931..966f94c6c7a6 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-@@ -338,11 +338,14 @@ static int prestera_port_create(struct prestera_switch *sw, u32 id)
-                goto err_port_init;
-        }
- 
--       /* firmware requires that port's MAC address consist of the first
--        * 5 bytes of the base MAC address
--        */
--       memcpy(dev->dev_addr, sw->base_mac, dev->addr_len - 1);
--       dev->dev_addr[dev->addr_len - 1] = port->fp_id;
-+       eth_hw_addr_set_port(dev, sw->base_mac, port->fp_id);
-+       if (memcmp(dev->dev_addr, sw->base_mac, ETH_ALEN - 1)) {
-+               /* firmware requires that port's MAC address consists
-+                * of the first 5 bytes of the base MAC address
-+                */
-+               dev_warn(prestera_dev(sw), "Port MAC address overflows the base for port(%u)\n", id);
-+               dev_addr_mod(dev, 0, sw->base_mac, ETH_ALEN - 1);
-+       }
- 
-        err = prestera_hw_port_mac_set(port, dev->dev_addr);
-        if (err) {
+Acked-by: Stephen Hemminger <stephen@networkplumber.org>
