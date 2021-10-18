@@ -2,42 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E880431BE8
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 15:34:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E7A1431BE3
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 15:33:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231852AbhJRNgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 09:36:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43210 "EHLO mail.kernel.org"
+        id S233213AbhJRNft (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 09:35:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41884 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232285AbhJRNeh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Oct 2021 09:34:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 589A5613A9;
+        id S232934AbhJRNeR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Oct 2021 09:34:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 4E8B0613A8;
         Mon, 18 Oct 2021 13:30:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1634563810;
-        bh=YcQxKFgOwG4U9no21lMH48UCdQH7udic8FNxaAaqmt0=;
+        bh=Aa1DT3/aO+8pNsk40S8yWCfB7ApcUbciD7ozhLoSznU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=cXy+JO69QXzKNv8cgT0gT+0q0mJ5g30pxpRQtr7sKLO22qg7zG3790kc0HFpASVIU
-         AwPhkwWFmcBnr7JhpypNIKbgE9eNR0PsNEsxhm0v3JX2OjWweTIh8Ps2DF+8tjshnH
-         TyfJDJib97894gYGecnMBKUxhqpDsFgswS7AEiwuAZN0gsXCVlG7l1v8tcq+BNnogD
-         QdKKWFn9NRLECh1bYz1TiGdU1BlOlDa/+WMDnbwYoHnaKyzCxiUVIgWd3s70TVOZ28
-         Z7yj478DaMQfl/V5T0sdVVfWfU/QaUlas8e0q5nw25sqBdyTcySS8xEDn1pyYOAy1f
-         Wa/lRj6zTleZQ==
+        b=ZPDNXyT98gYQeND+CXNBfYJrRGNirs46wLP8dfF5B4g0z+5+u34sAFytY2Jta1wAp
+         Zpwq0lYbucd/y+NCrTqgt/p6Ug92kSo94BFEGVUf2S0CxgVQx4EHTDmrxMlx4ovhAn
+         n4OhjxxvQeKhcTmXXSWO8EtpLqddGB66FfaCiuOTyI8jcN50muUfkeCeBCHrAZS7RT
+         shHxWh6bfVZOyOCxs8HDWSqR/TisfV+XQ8G4kjh2uTgZ7FkVZxWOqqv9IsOUfaX4xA
+         2gLB4YkvLQnu79f9OWO3cFsPmi545g1BAK8W8j2RaOQ6Wfkw3onzUkjJbm+iHIatcY
+         uAseVrBjhJZag==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4F8E5609E4;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 432D060971;
         Mon, 18 Oct 2021 13:30:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] sfc: Fix reading non-legacy supported link modes
+Subject: Re: [PATCH v4 net-next 0/7] net: dsa: add support for RTL8365MB-VC
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163456381032.15402.834559957967695883.git-patchwork-notify@kernel.org>
+Message-Id: <163456381026.15402.11468820446338383690.git-patchwork-notify@kernel.org>
 Date:   Mon, 18 Oct 2021 13:30:10 +0000
-References: <20211017171657.85724-1-erik@kryo.se>
-In-Reply-To: <20211017171657.85724-1-erik@kryo.se>
-To:     Erik Ekman <erik@kryo.se>
-Cc:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+References: <20211018093804.3115191-1-alvin@pqrs.dk>
+In-Reply-To: <20211018093804.3115191-1-alvin@pqrs.dk>
+To:     =?utf-8?b?QWx2aW4gxaBpcHJhZ2EgPGFsdmluQHBxcnMuZGs+?=@ci.codeaurora.org
+Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, robh+dt@kernel.org, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, arinc.unal@arinc9.com, alsi@bang-olufsen.dk,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -45,23 +48,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Sun, 17 Oct 2021 19:16:57 +0200 you wrote:
-> Everything except the first 32 bits was lost when the pause flags were
-> added. This makes the 50000baseCR2 mode flag (bit 34) not appear.
+On Mon, 18 Oct 2021 11:37:55 +0200 you wrote:
+> From: Alvin Šipraga <alsi@bang-olufsen.dk>
 > 
-> I have tested this with a 10G card (SFN5122F-R7) by modifying it to
-> return a non-legacy link mode (10000baseCR).
+> This series adds support for Realtek's RTL8365MB-VC, a 4+1 port
+> 10/100/1000M Ethernet switch. The driver - rtl8365mb - was developed by
+> Michael Ramussen and myself.
 > 
-> Signed-off-by: Erik Ekman <erik@kryo.se>
+> This version of the driver is relatively slim, implementing only the
+> standalone port functionality and no offload capabilities. It is based
+> on a previous RFC series [1] from August, and the main difference is the
+> removal of some spurious VLAN operations. Otherwise I have simply
+> addressed most of the feedback. Please see the respective patches for
+> more detail.
 > 
 > [...]
 
 Here is the summary with links:
-  - sfc: Fix reading non-legacy supported link modes
-    https://git.kernel.org/netdev/net-next/c/041c61488236
+  - [v4,net-next,1/7] ether: add EtherType for proprietary Realtek protocols
+    https://git.kernel.org/netdev/net-next/c/7bbbbfaa7a1b
+  - [v4,net-next,2/7] net: dsa: allow reporting of standard ethtool stats for slave devices
+    https://git.kernel.org/netdev/net-next/c/487d3855b641
+  - [v4,net-next,3/7] net: dsa: move NET_DSA_TAG_RTL4_A to right place in Kconfig/Makefile
+    https://git.kernel.org/netdev/net-next/c/9cb8edda2157
+  - [v4,net-next,4/7] dt-bindings: net: dsa: realtek-smi: document new compatible rtl8365mb
+    https://git.kernel.org/netdev/net-next/c/2e405875f39f
+  - [v4,net-next,5/7] net: dsa: tag_rtl8_4: add realtek 8 byte protocol 4 tag
+    https://git.kernel.org/netdev/net-next/c/1521d5adfc2b
+  - [v4,net-next,6/7] net: dsa: realtek-smi: add rtl8365mb subdriver for RTL8365MB-VC
+    https://git.kernel.org/netdev/net-next/c/4af2950c50c8
+  - [v4,net-next,7/7] net: phy: realtek: add support for RTL8365MB-VC internal PHYs
+    https://git.kernel.org/netdev/net-next/c/2ca2969aae1e
 
 You are awesome, thank you!
 --
