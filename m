@@ -2,104 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 358AC431040
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 08:15:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8EAB431048
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 08:17:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230173AbhJRGRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 02:17:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47366 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229708AbhJRGRY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 02:17:24 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99075C06161C;
-        Sun, 17 Oct 2021 23:15:13 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id o24so292480wms.0;
-        Sun, 17 Oct 2021 23:15:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=WQhK9newMuT4ZcfEVTu2O6OOxhG5FSs8pfq23mZQ9b8=;
-        b=IU6s7L+v4s0/VflIrjGqDc+A21kMuoTSuD8fw/5h+PKaJcHoeA0GIjHE/yccgSfss3
-         j/2wa+P8gnqL6Aa9WPzCcZ4eOB1bvmHD6MW4wiRcR6KGbbafNxloYv76HE6sYsABF6iL
-         3IIW3b1BdgKPatNsN3YHj1WciZ2YTWYCsA+xwiAbrLkwnSEJazWr63w59qkkHBdT6Mc5
-         qtNJ4fl61L6stAnOOVlMFk39rhnU1189y8xIoQnXQBFFHQi6NVelT5k2Hl2CVHC0hvpN
-         QBSKmU3wWRMgBbEl0fEjaIvsd7Ii0nqJtesePyWPqKwIIO96lZoeHF3WRatFjI17NkFs
-         +KDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=WQhK9newMuT4ZcfEVTu2O6OOxhG5FSs8pfq23mZQ9b8=;
-        b=x6tH1ujLeoStJujBi0ConT+O6fthZJZ+LjOmVuY8EZ1tVKpx86goxBu3WmJ4p+9WUY
-         AsVNe27Ug20jLpjm95T4l0Uvs11b4i7CpNs8DDhehgRQXQIQSmJL4uYa+wWWgtmglpAg
-         Z1Z/gvZMaMSIknRqIojWzoA/ZMumi1E5gHSCv0OQFesAniGpHoCiltHN7evLH/4T7Ss1
-         c15z7XghEohC38WN8bc4G8N1QiroroyFzi5t8FPwEk1/3BIfWw9Kf9YV0ZFazvR+fRlJ
-         V0brYzykyHyXFyvn3pg2ypcu7aFBhlr0HbKz90i2YSGhWlfFefwuozhxkuZeiYcJmMEi
-         qYrA==
-X-Gm-Message-State: AOAM533AKRSe6lKvz5WAYF3LKSgYhXzX+BUSq22rWIZueH3tOrL2RMig
-        eaViCvt5Ek1L6ZcESrf6fj+YCdHAttWS539o6Zm4b0C5dfw=
-X-Google-Smtp-Source: ABdhPJzIWJApevckci5qatLKjWalU8JmJdnGMPtIihNA04JRK/++WitE4TYuQZePvX7gfpQTma1rFv+7dMmpPjJx4WI=
-X-Received: by 2002:a1c:750b:: with SMTP id o11mr28786227wmc.5.1634537712218;
- Sun, 17 Oct 2021 23:15:12 -0700 (PDT)
+        id S230091AbhJRGTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 02:19:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43672 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229533AbhJRGTV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Oct 2021 02:19:21 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0F0B360EB2;
+        Mon, 18 Oct 2021 06:17:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634537830;
+        bh=tbeYO4SB6h2XwPY3OFzR5vFWaqhgyaKQVbzLGhlxkeY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=n8gi+n9fU46L71M9i6Ez2+q9n35ml71iVpTSOJzpjVaHTUl2ddSz3OA3vKSRAoPW0
+         TWybBKHD8YvUsS4kMoxshh6g03RnDd08Zvz40yuLvddWvke8D4x9XlB9koWAqTngH6
+         AwvxBeCEE9eRMUx0UbvLN0FuCgKc6m6/VRbtb9xZr93jYknUKwsH2x+p6WTDKy3Zto
+         US/bq5LlG7WoSW1QFnFxXgzwfP2MpxUEc8Z25WjQL5upuu5R3YNgO+kvwpr4s2zfNO
+         wE/7unG207pTadTy0mjUm//vnpfGtk2mmxw+d7n+z1XIxwa2WIiS0bKEZU6U7DYGYT
+         7HeNV2C2Zce1g==
+Date:   Mon, 18 Oct 2021 11:47:06 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Stephan Gerhold <stephan@gerhold.net>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Aleksander Morgado <aleksander@aleksander.es>,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, phone-devel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Subject: Re: [PATCH net-next v2 1/4] dt-bindings: dmaengine: bam_dma: Add
+ "powered remotely" mode
+Message-ID: <YW0RYufCyPi5JLo3@matsya>
+References: <20211011141733.3999-1-stephan@gerhold.net>
+ <20211011141733.3999-2-stephan@gerhold.net>
 MIME-Version: 1.0
-References: <20211014142554.53120-1-lmb@cloudflare.com> <20211014142554.53120-2-lmb@cloudflare.com>
-In-Reply-To: <20211014142554.53120-2-lmb@cloudflare.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Mon, 18 Oct 2021 08:14:59 +0200
-Message-ID: <CAJ+HfNjwYtg+8ZWBNaL08afQJpOQ6m0tUiTjhTtLBBoLDdxAmg@mail.gmail.com>
-Subject: Re: [PATCH v3 1/3] bpf: define bpf_jit_alloc_exec_limit for riscv JIT
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     nicolas.dichtel@6wind.com, Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, kernel-team@cloudflare.com,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211011141733.3999-2-stephan@gerhold.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 Oct 2021 at 16:26, Lorenz Bauer <lmb@cloudflare.com> wrote:
->
-> Expose the maximum amount of useable memory from the riscv JIT.
->
-> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-> Acked-by: Luke Nelson <luke.r.nels@gmail.com>
-
-Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn@kernel.org>
-
+On 11-10-21, 16:17, Stephan Gerhold wrote:
+> In some configurations, the BAM DMA controller is set up by a remote
+> processor and the local processor can simply start making use of it
+> without setting up the BAM. This is already supported using the
+> "qcom,controlled-remotely" property.
+> 
+> However, for some reason another possible configuration is that the
+> remote processor is responsible for powering up the BAM, but we are
+> still responsible for initializing it (e.g. resetting it etc). Add
+> a "qcom,powered-remotely" property to describe that configuration.
+> 
+> Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
 > ---
->  arch/riscv/net/bpf_jit_core.c | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/arch/riscv/net/bpf_jit_core.c b/arch/riscv/net/bpf_jit_core.=
-c
-> index fed86f42dfbe..0fee2cbaaf53 100644
-> --- a/arch/riscv/net/bpf_jit_core.c
-> +++ b/arch/riscv/net/bpf_jit_core.c
-> @@ -166,6 +166,11 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog=
- *prog)
->         return prog;
->  }
->
-> +u64 bpf_jit_alloc_exec_limit(void)
-> +{
-> +       return BPF_JIT_REGION_SIZE;
-> +}
-> +
->  void *bpf_jit_alloc_exec(unsigned long size)
->  {
->         return __vmalloc_node_range(size, PAGE_SIZE, BPF_JIT_REGION_START=
-,
-> --
-> 2.30.2
->
+> Changes since RFC:
+>   - Rename qcom,remote-power-collapse -> qcom,powered-remotely
+>     for consistency with "qcom,controlled-remotely"
+> 
+> NOTE: This is *not* a compile-time requirement for the BAM-DMUX driver
+>       so this could also go through the dmaengine tree.
+
+Can we split that this to dmaengine & net series if there is not
+dependency on the two... I think I skipped rev1 when I saw net-next
+
+
+> 
+> Also note that there is an ongoing effort to convert these bindings
+> to DT schema but sadly there were not any updates for a while. :/
+> https://lore.kernel.org/linux-arm-msm/20210519143700.27392-2-bhupesh.sharma@linaro.org/
+> ---
+>  Documentation/devicetree/bindings/dma/qcom_bam_dma.txt | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/dma/qcom_bam_dma.txt b/Documentation/devicetree/bindings/dma/qcom_bam_dma.txt
+> index cf5b9e44432c..6e9a5497b3f2 100644
+> --- a/Documentation/devicetree/bindings/dma/qcom_bam_dma.txt
+> +++ b/Documentation/devicetree/bindings/dma/qcom_bam_dma.txt
+> @@ -15,6 +15,8 @@ Required properties:
+>    the secure world.
+>  - qcom,controlled-remotely : optional, indicates that the bam is controlled by
+>    remote proccessor i.e. execution environment.
+> +- qcom,powered-remotely : optional, indicates that the bam is powered up by
+> +  a remote processor but must be initialized by the local processor.
+>  - num-channels : optional, indicates supported number of DMA channels in a
+>    remotely controlled bam.
+>  - qcom,num-ees : optional, indicates supported number of Execution Environments
+> -- 
+> 2.33.0
+
+-- 
+~Vinod
