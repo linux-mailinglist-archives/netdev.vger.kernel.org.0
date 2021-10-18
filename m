@@ -2,175 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 634614323E2
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 18:30:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 964CD4323FD
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 18:41:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232508AbhJRQdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 12:33:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49072 "EHLO
+        id S233552AbhJRQnn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 12:43:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232025AbhJRQdE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 12:33:04 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC504C06161C
-        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 09:30:52 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id e5-20020a17090a804500b001a116ad95caso384796pjw.2
-        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 09:30:52 -0700 (PDT)
+        with ESMTP id S232499AbhJRQnl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 12:43:41 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FDF1C06176A
+        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 09:41:29 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id o204so553313oih.13
+        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 09:41:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=aNklGbMj5Y6WgOfozwDtGtU0+dKIw8juqOePwQhi/xI=;
-        b=N+1aI+Qi/kz63yBLI2Lnf4m7Ak5aaDH4SdZeYti5EDwPK25MSRIahQvPd1tEPdkQtI
-         U9CYtkY1kuPd3TLQskS4IW57hl2iPnlQ1MFekKsrecfe0uKoLp/ykkKjw7idbjvaVJhO
-         ZTts1Jbc8oyoeE++DoUOJ8rlzTrP7ShRJwfplpCuS3Uq7EnFWodbVDiGn1jhBJJaDR5d
-         bm7muUcfkKOAMlBZtSyuBbxkxFXazQXhQAsmEbKniumOy1TNak/Ows9phTUPgikprghb
-         P4zN8k+8HmmxHXP//a0MTAznW+j0voZduBdpcIs0gVr9Ln7+n23oSt4UmWlBYLeAM1bc
-         O9bw==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=m/74ZeSghoGWz2Y5U8O6ZsL9J98hmrFFn2k+ASasuxI=;
+        b=V/Sg2umzcGxAR3kKFG3Fy5qzN2KDcjvbNbDPZVaGE9ltjEXcESslh7PJ2o2/ybmpNP
+         UFKEXP1js86ftmV1k/I7e/TrkYC6/wQSVyV+vk68P+lRlhHBXg7o+2ZGRYT/JZ6SJ9sC
+         Rzo6euFvfLpT+re3VFTWKSb+c74m/3JcGY6wipnJ1dHRejNOXrIUSd1GaebdANSi3Qb7
+         9Mcow/pJUlnMAbcheP/las1Om3h3m3i6zigpriw6Z/MENOdDrDyQkO9R7p7b9ZH8aNLU
+         qKXLUBvNx2XeEqdc9CfCezeBu8rx3mP4+VPFrBP9p2Bpw2JTmyJzSb4QNdb5VMtNxwoL
+         c/iQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=aNklGbMj5Y6WgOfozwDtGtU0+dKIw8juqOePwQhi/xI=;
-        b=cHbTo0jGMpv7o5yLMuMxUnLPV1URhc5OCGwNY4O2DFHGJHxhFMlF0ntCUi3PzCSTZa
-         PBKM0ZmRZsHlePIHfcmweymXW+EN/Hjan3rdMMgxcPLsfvzLjuB54ItLCp6kfCDL8o4c
-         U19VKJ81PfySDr6aZoU/lmGGiFvFVidB0xHvtuzeMJHZFwIVuznliKVVMQmiDXgi9PGr
-         Zuwx47o0MvaCDkMyptFWCHqNCfGB5tOqRdVcLFWD7tFqZLN6lfYZpFzaepo7VN91qa3i
-         La2a/Zj59A+LiPuCFP3TT1VOdtyV1de+PqpLDkC7ld1bBQV4gfN0CPe++CN/f+IB8eoX
-         Cc/w==
-X-Gm-Message-State: AOAM533bk1+hr5xpy4ivPYkzFi0FPtXSh/JivyOyNxokxWAjlbopbW/N
-        G0PJ5aTTkvDNi5QjtQgnLyM=
-X-Google-Smtp-Source: ABdhPJxJvu5j9G4GdMHK1KlqOKvzYWQ1tC934dAAJ7ZMtlgAgFpcP/GxBwtgB7jtj8xBybALmeGFjA==
-X-Received: by 2002:a17:90a:df91:: with SMTP id p17mr48644077pjv.185.1634574652355;
-        Mon, 18 Oct 2021 09:30:52 -0700 (PDT)
-Received: from [192.168.254.55] ([50.39.163.188])
-        by smtp.gmail.com with ESMTPSA id 139sm13595744pfz.35.2021.10.18.09.30.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Oct 2021 09:30:52 -0700 (PDT)
-Message-ID: <a9fc0e074fb10a2df7a75cd7381cd8e4db7ce924.camel@gmail.com>
-Subject: Re: [PATCH v3] net: neighbour: introduce EVICT_NOCARRIER table
- option
-From:   James Prestwood <prestwoj@gmail.com>
-To:     Nikolay Aleksandrov <nikolay@nvidia.com>, netdev@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Chinmay Agarwal <chinagar@codeaurora.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Tong Zhu <zhutong@amazon.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jouni Malinen <jouni@codeaurora.org>
-Date:   Mon, 18 Oct 2021 09:27:31 -0700
-In-Reply-To: <fc84cc7e-142f-48cb-2638-6cbc5b625782@nvidia.com>
-References: <20211015200648.297373-1-prestwoj@gmail.com>
-         <20211015200648.297373-2-prestwoj@gmail.com>
-         <fc84cc7e-142f-48cb-2638-6cbc5b625782@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=m/74ZeSghoGWz2Y5U8O6ZsL9J98hmrFFn2k+ASasuxI=;
+        b=GRQPnNW67BdBkUqPKr6ZLzt3Gyxxqyxl35cQxQ+n2z+dGNyJG/QEzGh6gVLcfQO82a
+         h75xAdrD3KFAfgikcLEaYfN+G/GxsIlg8m3S4PwFAATMqFRwVN6hVOQjfsgzNo5s/Ax2
+         0BcTGkuZ+KGBtRw1o6i1+4u6OZoF19DpNVdLFDy4Tp2X/yR+MPi3613UjqH+bSc6EFWw
+         61vWq7do7lYrQOOxluQeouEFcCA/VaIcRjE4M29xpAPWpi68W5hNyCHh+aqIElBJZkY5
+         VvvR2KOcHFxTD2zagLfpGCvsOyhAWy/5liAgoBY8i6TmwCzmA3vDaR5kL8DdAylngvNH
+         owUA==
+X-Gm-Message-State: AOAM530UrnwdTSlM4ePUhwtBe30vrFpHICyAsuqmniojxzKiAUs6P7bq
+        Zd0xTQdFP/oEn0g7RIJHyDSS2QJoRteDRHmfo4D9+g==
+X-Google-Smtp-Source: ABdhPJyhI/boD/Dqt4cOu1o+91uOGjUh5J0lLqztunxb38ijIyGLzE0BAxzGggtm1QdOFWnWdOHyLHlnrRrD206Ea5U=
+X-Received: by 2002:aca:58d6:: with SMTP id m205mr737607oib.126.1634575288536;
+ Mon, 18 Oct 2021 09:41:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211011141733.3999-1-stephan@gerhold.net> <20211011141733.3999-2-stephan@gerhold.net>
+ <CAH=2NtwH9kmZBMsOkZkwiuN2mpmOTiAVtw3zC2O4xNdCgG8P4w@mail.gmail.com> <YW1u5UlmrypFxp9C@gerhold.net>
+In-Reply-To: <YW1u5UlmrypFxp9C@gerhold.net>
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Date:   Mon, 18 Oct 2021 22:11:17 +0530
+Message-ID: <CAH=2Ntz9BLKpQCPtUOtHp6HDS8R6AQf5XVDUNbdRvYSn=pn8Rg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/4] dt-bindings: dmaengine: bam_dma: Add
+ "powered remotely" mode
+To:     Stephan Gerhold <stephan@gerhold.net>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Aleksander Morgado <aleksander@aleksander.es>,
+        netdev@vger.kernel.org, MSM <linux-arm-msm@vger.kernel.org>,
+        dmaengine@vger.kernel.org, devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2021-10-16 at 14:12 +0300, Nikolay Aleksandrov wrote:
-> On 15/10/2021 23:06, James Prestwood wrote:
-> > This adds an option to ARP/NDISC tables that clears the table on
-> > NOCARRIER events. The default option (1) maintains existing
-> > behavior.
-> > 
-> > Clearing the ARP cache on NOCARRIER is relatively new, introduced
-> > by:
-> [snip]
-> > Signed-off-by: James Prestwood <prestwoj@gmail.com>
-> > ---
-> >  Documentation/networking/ip-sysctl.rst |  9 +++++++++
-> >  include/net/neighbour.h                |  3 ++-
-> >  include/uapi/linux/neighbour.h         |  1 +
-> >  net/core/neighbour.c                   | 18 +++++++++++++-----
-> >  net/ipv4/arp.c                         |  1 +
-> >  net/ipv6/ndisc.c                       |  1 +
-> >  6 files changed, 27 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/Documentation/networking/ip-sysctl.rst
-> > b/Documentation/networking/ip-sysctl.rst
-> > index 16b8bf72feaf..e2aced01905a 100644
-> > --- a/Documentation/networking/ip-sysctl.rst
-> > +++ b/Documentation/networking/ip-sysctl.rst
-> > @@ -200,6 +200,15 @@ neigh/default/unres_qlen - INTEGER
-> >  
-> >         Default: 101
-> >  
-> > +neigh/default/evict_nocarrier - BOOLEAN
-> > +       Clears the neighbor cache on NOCARRIER events. This option
-> > is important
-> > +       for wireless devices where the cache should not be cleared
-> > when roaming
-> > +       between access points on the same network. In most cases
-> > this should
-> > +       remain as the default (1).
-> > +
-> > +       - 1 - (default): Clear the neighbor cache on NOCARRIER
-> > events
-> > +       - 0 - Do not clear neighbor cache on NOCARRIER events
-> > +
-> >  mtu_expires - INTEGER
-> >         Time, in seconds, that cached PMTU information is kept.
-> >  
-> > diff --git a/include/net/neighbour.h b/include/net/neighbour.h
-> > index e8e48be66755..71b28f83c3d3 100644
-> > --- a/include/net/neighbour.h
-> > +++ b/include/net/neighbour.h
-> > @@ -54,7 +54,8 @@ enum {
-> >         NEIGH_VAR_ANYCAST_DELAY,
-> >         NEIGH_VAR_PROXY_DELAY,
-> >         NEIGH_VAR_LOCKTIME,
-> > -#define NEIGH_VAR_DATA_MAX (NEIGH_VAR_LOCKTIME + 1)
-> > +       NEIGH_VAR_EVICT_NOCARRIER,
-> > +#define NEIGH_VAR_DATA_MAX (NEIGH_VAR_EVICT_NOCARRIER + 1)
-> >         /* Following are used as a second way to access one of the
-> > above */
-> >         NEIGH_VAR_QUEUE_LEN, /* same data as
-> > NEIGH_VAR_QUEUE_LEN_BYTES */
-> >         NEIGH_VAR_RETRANS_TIME_MS, /* same data as
-> > NEIGH_VAR_RETRANS_TIME */
-> > diff --git a/include/uapi/linux/neighbour.h
-> > b/include/uapi/linux/neighbour.h
-> > index db05fb55055e..4322e5f42646 100644
-> > --- a/include/uapi/linux/neighbour.h
-> > +++ b/include/uapi/linux/neighbour.h
-> > @@ -151,6 +151,7 @@ enum {
-> >         NDTPA_LOCKTIME,                 /* u64, msecs */
-> >         NDTPA_QUEUE_LENBYTES,           /* u32 */
-> >         NDTPA_MCAST_REPROBES,           /* u32 */
-> > +       NDTPA_EVICT_NOCARRIER,          /* u8 */
-> >         NDTPA_PAD,
-> >         __NDTPA_MAX
-> >  };
-> 
-> I think this should be the last attribute (after PAD).
+Hi,
 
-Sure.
+On Mon, 18 Oct 2021 at 18:26, Stephan Gerhold <stephan@gerhold.net> wrote:
+>
+> On Mon, Oct 18, 2021 at 05:04:31PM +0530, Bhupesh Sharma wrote:
+> > On Mon, 11 Oct 2021 at 20:12, Stephan Gerhold <stephan@gerhold.net> wrote:
+> > >
+> > > In some configurations, the BAM DMA controller is set up by a remote
+> > > processor and the local processor can simply start making use of it
+> > > without setting up the BAM. This is already supported using the
+> > > "qcom,controlled-remotely" property.
+> > >
+> > > However, for some reason another possible configuration is that the
+> > > remote processor is responsible for powering up the BAM, but we are
+> > > still responsible for initializing it (e.g. resetting it etc). Add
+> > > a "qcom,powered-remotely" property to describe that configuration.
+> > >
+> > > Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
+> > > ---
+> > > Changes since RFC:
+> > >   - Rename qcom,remote-power-collapse -> qcom,powered-remotely
+> > >     for consistency with "qcom,controlled-remotely"
+> > >
+> > > NOTE: This is *not* a compile-time requirement for the BAM-DMUX driver
+> > >       so this could also go through the dmaengine tree.
+> > >
+> > > Also note that there is an ongoing effort to convert these bindings
+> > > to DT schema but sadly there were not any updates for a while. :/
+> > > https://lore.kernel.org/linux-arm-msm/20210519143700.27392-2-bhupesh.sharma@linaro.org/
+> >
+> > Seems you missed the latest series posted last week - [1]. Sorry I got
+> > a bit delayed posting it due to being caught up in other patches.
+> >
+> > Maybe you can rebase your patch on the same and use the YAML bindings
+> > for the qcom,bam_dma controller.
+> >
+> > [1]. https://lore.kernel.org/linux-arm-msm/20211013105541.68045-1-bhupesh.sharma@linaro.org/T/#t
+> >
+>
+> Ah, you're right sorry! Seems like you sent it two days after I sent the
+> v2 of this patch. Thanks a lot for continuing work on this! :)
+>
+> Since I already sent v3 of this patch earlier, I think it is best if
+> I wait a bit first and see if Vinod has any comments or still wants to
+> take it for 5.16. Should be simple to rebase either of our patches on
+> the other one.
 
-> 
-> Since this is a single patch you don't really need a cover letter,
-> you can add the version
-> changes below ---. Also your cover letter says v2 and the patch says
-> v3.
+Sure, let's wait for Vinod's comments.
 
-Ok, I'll move it into the patch itself.
-
-Thanks,
-James
-> 
-> Cheers,
->  Nik
-> 
-
-
+Regards,
+Bhupesh
