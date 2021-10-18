@@ -2,93 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16AA6431768
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 13:33:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66C58431770
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 13:34:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230515AbhJRLfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 07:35:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35388 "EHLO
+        id S229665AbhJRLgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 07:36:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229569AbhJRLfQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 07:35:16 -0400
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A6FC06161C;
-        Mon, 18 Oct 2021 04:33:05 -0700 (PDT)
-Received: by mail-io1-xd2b.google.com with SMTP id b188so10893696iof.8;
-        Mon, 18 Oct 2021 04:33:05 -0700 (PDT)
+        with ESMTP id S229843AbhJRLgy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 07:36:54 -0400
+Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E35CC061769
+        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 04:34:43 -0700 (PDT)
+Received: by mail-ot1-x332.google.com with SMTP id g62-20020a9d2dc4000000b0054752cfbc59so461025otb.1
+        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 04:34:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=E7ifO5BVPgOaaNdJsY38xuA6JsGENgZFJ6DdNp9B7wI=;
-        b=ENJ2zN3PxW0z7Kh5XQhf9ew/rE6C/uB8Go5bnJl+x8nGzFLQdfrHYS7cUGSTueUSEG
-         f2KJDYcc/fDrxUEU00wkp5KV8HlMi68pJHLSam9/+iclrMZFvrxwfDCMtR7qmZjVzHOw
-         Nr3tNUtLy1lJHcIFnrdtfZlEPpYk34LtIFrMrwxkQnmFs/EdwejchZ/AcgNzspH3JwY8
-         YOCExRgN5CgIvKA5GQ7FR3Je0JcRtqKMBHwRxfN6WMy0NRssPRrUwgpdgGhCIKkoXk3o
-         psUieB91kllLiLkrq+HfyP91iPYwZ73L04WxKhg63ZldQVaV7vY6y8g9hSkOXCFYY440
-         LrVQ==
+        bh=6G8Hfd9HWWdOmQn8dJ/4ZTN0E6g9DldkLudnuHQWD1k=;
+        b=mfWHkg6A++/9gjuM+FUS0mGsRBbFBJOlC/EjyddiPAJctM5q/3aGEkGv0P9ExrHLYf
+         vlnNzUKEfOTtJzDy0NRR4NFTvE8RnCv5Smk1MSYJQUYBgQc5ztrxlGLQ6BvCE6HgqeHR
+         AuoMfraz4oXYEmgUAVhlRhm6sQ6nWYWvEQiL/5R7bLCmzwDP9RIyY3PFQFpKf0P/mdMb
+         //v1bgSYW9PRlFyzfVwe5fv6KzVlQVdy0Ry0vHqL9/4UtfDzq4BV85xu2Uh50jPPrQl5
+         zIZuwOmHSc6Thw3vfNcXkvSf9F+XlsvT5aeSj7mjWcE3tgqqeaVhgoC46G9Tj2XzjpoB
+         yUtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=E7ifO5BVPgOaaNdJsY38xuA6JsGENgZFJ6DdNp9B7wI=;
-        b=O6SfxsDE3O6dqzEPosmANVZMkl46aECSTIEuoxcNZf6GzM6giMmR5k11VVa9DBAFAP
-         MF3jEVXAFFmQFNrMGvFzj6ONMN7jyS/Rj15sQASwD1pxjVsgaFzBcZyKpkLdm/yDA5M6
-         4rs6R2WxXP1RKYHd90+czZn5J37mKRJoECdwDycmsv6qD+JApg1yRJja36WSnZsPdbUK
-         MKuWI+R2MRcJ01nlSVrYQE4Xb1jTfg/pAfTfU1ldJdXREf4wmuY1F5AWhoTLDg+Ygldz
-         orgKkNUkAqMY4pDlDlcBrN1kU84nLK2mf6o32+DPSm/Aq2vF0Gp01VTPsUr42vgfUrez
-         RKOQ==
-X-Gm-Message-State: AOAM531WqGI5DguYaBwNoloZFNmJpi0utanpCmbvlxHxrk2OBhb9CDBa
-        WwN8IOsrDiD3337nddtj5FcXHpUyKmMGSRVhAU0=
-X-Google-Smtp-Source: ABdhPJxFgtvgU3knHtiUQXMNalkS0mgyH/u1KxHLmjWwMqIDNUSuvJzt2siSzEozgXUzHwELOXILvCfbq0791S+CgJ8=
-X-Received: by 2002:a05:6602:2d4e:: with SMTP id d14mr14339267iow.172.1634556785457;
- Mon, 18 Oct 2021 04:33:05 -0700 (PDT)
+        bh=6G8Hfd9HWWdOmQn8dJ/4ZTN0E6g9DldkLudnuHQWD1k=;
+        b=2UfAxxAxFaBK7nHxfvP6mYqy3Z7A/LhrMbs07TkWW9aozd9+mpQxDcOFsW6zbOwR3x
+         adg4UnO7nyw5i4hUbwTDfbkOrNkHBONy9UB03bCuXSZIx0wMi+X52KTczdC/3s1urCug
+         GQHhpesB/5sduWOY7TBcl+xM0uvLS0ILrO5er44SnnR//rp0md9ILFrUOW4q2XAyOTP3
+         hBm4CqDXWUIvqSkOMs1JM100gh/s19AOzflIhTyw+SZYxgUpU78o7orYZ7m0a4KdpLXv
+         RtiqE8ESFza3JKacy56+VFbkreRDFdaLgmZpasnoPL5hMkwErieQ985/vskjJLYT9ZSY
+         KUTQ==
+X-Gm-Message-State: AOAM531F+Jcdy9flsx9rTQ3Pq1LrYpsfl8cFrpT6oLfuHDwfSrjmo7q8
+        O6npN0zGT8yleNBWx4Foq2IbJErqPbFKkjv8P3QxNQ==
+X-Google-Smtp-Source: ABdhPJzToQU6dBlbmasyOXnGLHSpLJDGclh9CmgZFd06P3bvgiJJeE2czOxOsSKQnEzr3MFg2ogcNZYW8cFjW+0K93M=
+X-Received: by 2002:a05:6830:1c26:: with SMTP id f6mr20715033ote.28.1634556882315;
+ Mon, 18 Oct 2021 04:34:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211018155113.1303fa5e@canb.auug.org.au>
-In-Reply-To: <20211018155113.1303fa5e@canb.auug.org.au>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Mon, 18 Oct 2021 13:32:54 +0200
-Message-ID: <CANiq72mOMtY+jC7hU92cpdRDuQSYSs3vOaJ_+9wx7NOVifmGFg@mail.gmail.com>
-Subject: Re: linux-next: manual merge of the rust tree with the bpf-next tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Adam Bratschi-Kaye <ark.email@gmail.com>,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Ayaan Zaidi <zaidi.ayaan@gmail.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Boris-Chengbiao Zhou <bobo1239@web.de>,
-        Douglas Su <d0u9.su@outlook.com>, Finn Behrens <me@kloenk.de>,
-        Fox Chen <foxhlchen@gmail.com>, Gary Guo <gary@garyguo.net>,
-        Geoffrey Thomas <geofft@ldpreload.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+References: <20211011141733.3999-1-stephan@gerhold.net> <20211011141733.3999-2-stephan@gerhold.net>
+In-Reply-To: <20211011141733.3999-2-stephan@gerhold.net>
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Date:   Mon, 18 Oct 2021 17:04:31 +0530
+Message-ID: <CAH=2NtwH9kmZBMsOkZkwiuN2mpmOTiAVtw3zC2O4xNdCgG8P4w@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/4] dt-bindings: dmaengine: bam_dma: Add
+ "powered remotely" mode
+To:     Stephan Gerhold <stephan@gerhold.net>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Aleksander Morgado <aleksander@aleksander.es>,
+        netdev@vger.kernel.org, MSM <linux-arm-msm@vger.kernel.org>,
+        dmaengine@vger.kernel.org, devicetree <devicetree@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Sumera Priyadarsini <sylphrenadin@gmail.com>,
-        Sven Van Asbroeck <thesven73@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Yuki Okushi <jtitor@2k36.org>
+        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 18, 2021 at 6:51 AM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+Hi Stephan,
+
+On Mon, 11 Oct 2021 at 20:12, Stephan Gerhold <stephan@gerhold.net> wrote:
 >
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
+> In some configurations, the BAM DMA controller is set up by a remote
+> processor and the local processor can simply start making use of it
+> without setting up the BAM. This is already supported using the
+> "qcom,controlled-remotely" property.
+>
+> However, for some reason another possible configuration is that the
+> remote processor is responsible for powering up the BAM, but we are
+> still responsible for initializing it (e.g. resetting it etc). Add
+> a "qcom,powered-remotely" property to describe that configuration.
+>
+> Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
+> ---
+> Changes since RFC:
+>   - Rename qcom,remote-power-collapse -> qcom,powered-remotely
+>     for consistency with "qcom,controlled-remotely"
+>
+> NOTE: This is *not* a compile-time requirement for the BAM-DMUX driver
+>       so this could also go through the dmaengine tree.
+>
+> Also note that there is an ongoing effort to convert these bindings
+> to DT schema but sadly there were not any updates for a while. :/
+> https://lore.kernel.org/linux-arm-msm/20210519143700.27392-2-bhupesh.sharma@linaro.org/
 
-Looks correct, thanks Stephen!
+Seems you missed the latest series posted last week - [1]. Sorry I got
+a bit delayed posting it due to being caught up in other patches.
 
-I am glad you didn't have more conflicts after the rebase to v5.15-rc5.
+Maybe you can rebase your patch on the same and use the YAML bindings
+for the qcom,bam_dma controller.
 
-Cheers,
-Miguel
+[1]. https://lore.kernel.org/linux-arm-msm/20211013105541.68045-1-bhupesh.sharma@linaro.org/T/#t
+
+Regards,
+Bhupesh
+
+> ---
+>  Documentation/devicetree/bindings/dma/qcom_bam_dma.txt | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/dma/qcom_bam_dma.txt b/Documentation/devicetree/bindings/dma/qcom_bam_dma.txt
+> index cf5b9e44432c..6e9a5497b3f2 100644
+> --- a/Documentation/devicetree/bindings/dma/qcom_bam_dma.txt
+> +++ b/Documentation/devicetree/bindings/dma/qcom_bam_dma.txt
+> @@ -15,6 +15,8 @@ Required properties:
+>    the secure world.
+>  - qcom,controlled-remotely : optional, indicates that the bam is controlled by
+>    remote proccessor i.e. execution environment.
+> +- qcom,powered-remotely : optional, indicates that the bam is powered up by
+> +  a remote processor but must be initialized by the local processor.
+>  - num-channels : optional, indicates supported number of DMA channels in a
+>    remotely controlled bam.
+>  - qcom,num-ees : optional, indicates supported number of Execution Environments
+> --
+> 2.33.0
+>
