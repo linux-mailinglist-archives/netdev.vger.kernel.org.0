@@ -2,136 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 051CF431845
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 13:57:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31ED4431853
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 14:00:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230515AbhJRL7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 07:59:39 -0400
-Received: from pegase2.c-s.fr ([93.17.235.10]:46085 "EHLO pegase2.c-s.fr"
+        id S230114AbhJRMCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 08:02:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54384 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229519AbhJRL7j (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Oct 2021 07:59:39 -0400
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4HXwNQ3pXVz9sSg;
-        Mon, 18 Oct 2021 13:57:26 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id RL3x8vznDKhL; Mon, 18 Oct 2021 13:57:26 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4HXwNQ2lbsz9sSY;
-        Mon, 18 Oct 2021 13:57:26 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 466508B76C;
-        Mon, 18 Oct 2021 13:57:26 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id MRjVM3w8MEjt; Mon, 18 Oct 2021 13:57:26 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.103])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 102D18B763;
-        Mon, 18 Oct 2021 13:57:26 +0200 (CEST)
-Subject: Re: [PATCH net-next] phy: micrel: ksz8041nl: do not use power down
- mode
-To:     Francesco Dolcini <francesco.dolcini@toradex.com>,
-        f.fainelli@gmail.com, Andrew Lunn <andrew@lunn.ch>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stefan Agner <stefan@agner.ch>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20211018094256.70096-1-francesco.dolcini@toradex.com>
- <180289ac-4480-1e4c-d679-df4f0478ec65@csgroup.eu>
- <20211018101802.GA7669@francesco-nb.int.toradex.com>
- <a06104cf-d634-a25a-cf54-975689ad3e91@csgroup.eu>
- <20211018112735.GB7669@francesco-nb.int.toradex.com>
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-Message-ID: <efb25ac0-a5f6-fc88-ce6d-f93a174c65f1@csgroup.eu>
-Date:   Mon, 18 Oct 2021 13:57:25 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S229644AbhJRMCR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Oct 2021 08:02:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id E187161260;
+        Mon, 18 Oct 2021 12:00:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634558406;
+        bh=gtGtOrvrLSJKUmHl3YuUlIXzUghrjnKyvXs2fn+o7HA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ndZeUT8EOqUS0YeJAgul/hD1fu0qI++QfZTFp7BCXRu8g7cbR6k/oA6xh3Y4zBjxJ
+         wmPoS92WkEoYqVSgIm+MGZwdVBu2XsbDAzpA6cmCdUiI+kzI7TsO89Hx7kqf3C8SL4
+         0VvOlVZWhpiD39AVIb2gPD43fdbIT/lU0NTcmGz7CPFc71n5sL4w9LUfLStAGR/tJb
+         OPIJ5pfahjKvaPRc40gQt9JaFtBorJHBGI0KwF3WWE0dX+ISGFGZ5vlVd4ByKMRC5U
+         CXvdaBymBVMFQteRpl6KnIzBHNwlsr85MF7rGHT4wgx6AS1qZ5fvGOROV0+iGjhmZ6
+         DJ5zUUEoV1VSA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D1ADD609F7;
+        Mon, 18 Oct 2021 12:00:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20211018112735.GB7669@francesco-nb.int.toradex.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: fr-FR
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] hamradio: baycom_epp: fix build for UML
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163455840685.2577.7817040614905305666.git-patchwork-notify@kernel.org>
+Date:   Mon, 18 Oct 2021 12:00:06 +0000
+References: <20211015021804.17005-1-rdunlap@infradead.org>
+In-Reply-To: <20211015021804.17005-1-rdunlap@infradead.org>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     netdev@vger.kernel.org, linux-um@lists.infradead.org,
+        jdike@addtoit.com, richard@nod.at, anton.ivanov@cambridgegreys.com,
+        davem@davemloft.net, kuba@kernel.org, t.sailer@alumni.ethz.ch,
+        linux-hams@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+Sergei Shtylyov
+Hello:
 
-Adding Sergei Shtylyov in the discussion, as he submitted the patch for 
-the support of KSZ8041RNLI.
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Thu, 14 Oct 2021 19:18:04 -0700 you wrote:
+> On i386, the baycom_epp driver wants to inspect X86 CPU features (TSC)
+> and then act on that data, but that info is not available when running
+> on UML, so prevent that test and do the default action.
+> 
+> Prevents this build error on UML + i386:
+> 
+> ../drivers/net/hamradio/baycom_epp.c: In function ‘epp_bh’:
+> ../drivers/net/hamradio/baycom_epp.c:630:6: error: implicit declaration of function ‘boot_cpu_has’; did you mean ‘get_cpu_mask’? [-Werror=implicit-function-declaration]
+>   if (boot_cpu_has(X86_FEATURE_TSC))   \
+>       ^
+> ../drivers/net/hamradio/baycom_epp.c:658:2: note: in expansion of macro ‘GETTICK’
+>   GETTICK(time1);
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] hamradio: baycom_epp: fix build for UML
+    https://git.kernel.org/netdev/net/c/0a9bb11a5e29
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-Le 18/10/2021 à 13:27, Francesco Dolcini a écrit :
-> On Mon, Oct 18, 2021 at 12:46:14PM +0200, Christophe Leroy wrote:
->>
->>
->> Le 18/10/2021 à 12:18, Francesco Dolcini a écrit :
->>> Hello Christophe,
->>>
->>> On Mon, Oct 18, 2021 at 11:53:03AM +0200, Christophe Leroy wrote:
->>>>
->>>>
->>>> Le 18/10/2021 à 11:42, Francesco Dolcini a écrit :
->>>>> From: Stefan Agner <stefan@agner.ch>
->>>>>
->>>>> Some Micrel KSZ8041NL PHY chips exhibit continous RX errors after using
->>>>> the power down mode bit (0.11). If the PHY is taken out of power down
->>>>> mode in a certain temperature range, the PHY enters a weird state which
->>>>> leads to continously reporting RX errors. In that state, the MAC is not
->>>>> able to receive or send any Ethernet frames and the activity LED is
->>>>> constantly blinking. Since Linux is using the suspend callback when the
->>>>> interface is taken down, ending up in that state can easily happen
->>>>> during a normal startup.
->>>>>
->>>>> Micrel confirmed the issue in errata DS80000700A [*], caused by abnormal
->>>>> clock recovery when using power down mode. Even the latest revision (A4,
->>>>> Revision ID 0x1513) seems to suffer that problem, and according to the
->>>>> errata is not going to be fixed.
->>>>>
->>>>> Remove the suspend/resume callback to avoid using the power down mode
->>>>> completely.
->>>>
->>>> As far as I can see in the ERRATA, KSZ8041 RNLI also has the bug.
->>>> Shoudn't you also remove the suspend/resume on that one (which follows in
->>>> ksphy_driver[])
->>>
->>> Yes, I could, however this patch is coming out of a real issue we had with
->>> KSZ8041NL with this specific phy id (and we have such a patch in our linux
->>> branch since years).
->>>
->>> On the other hand the entry for KSZ8041RNLI in the driver is somehow weird,
->>> since the phy id according to the original commit does not even exists on
->>> the datasheet. Would you be confident applying such errata for that phyid
->>> without having a way of testing it?
->>
->>
->> If your patch was to add the suspend/resume capability I would agree with
->> you, but here we are talking about removing it, so what risk are we taking ?
-> yes, you are right.
-> 
->> In addition, commit 4bd7b5127bd0 ("micrel: add support for KSZ8041RNLI")
->> clearly tells that the only thing it did was to copy KSZ8041NL entry, so for
->> me updating both entries would really make sense.
->>
->> It looks odd to me that you refer in your commit log to an ERRATA that tells
->> you that the bug also exists on the KSZ8041RNLI and you apply it only
->> partly.
-> 
-> I think I was not clear enough, the entry I changed should already cover
-> KSZ8041RNLI, the phyid is supposed to be just the same according to the
-> datasheet. This entry for KSZ8041RNLI seems really special with this
-> un-documented phyid.
-> But I'm just speculating, I do not have access to these hardware.
-> 
-> Said that if there are no concern from anybody else, to be on the safe/cautious
-> side, I can just update also this entry.
-> 
-> Francesco
-> 
