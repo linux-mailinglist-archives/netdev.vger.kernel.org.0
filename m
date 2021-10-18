@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 364C3431FB6
+	by mail.lfdr.de (Postfix) with ESMTP id 7F882431FB7
 	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 16:30:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232495AbhJROcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 10:32:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50730 "EHLO mail.kernel.org"
+        id S232506AbhJROc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 10:32:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50732 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232355AbhJROcI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232363AbhJROcI (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 18 Oct 2021 10:32:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3ABDD61350;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 84ABC61351;
         Mon, 18 Oct 2021 14:29:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1634567391;
-        bh=UNgP6mt73WUSWJjOQ3PXI6RUpAtumqrzrmNHdQ+OO84=;
+        bh=KZtHg7yk8Pn3Lcemcr/JPhLiHvvvJS8AYe/0uznmcVU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r6uXXuJX4+J1U/Ht9xyIL/0qo/+JRoWv6T95hrnSWSnHEmsh7QAPIqyJG5YHc7M4g
-         c7yjm40wxTpZFAEDUPlSpmGMVpHEyLJcUhg9ybigyuy9YPQlYUIl9mWkWV85fyFM0j
-         zqYQ6P78AgrPW3cc8eC0FEBDUevFxcg5XlzPcn7EK7ojWi8xlkag9Zdoj/fwHFaqzF
-         kZkgmNMRveB07b0tvTWr9aGzYu1ZT2DBs2SwDNmCDXPj47bqs5PkCRfjQuBc6ZMtjB
-         EsKo1CHuqYaHIw2K2pZa6bauDyf3dLHPre4xLdr04KmA2OQgxT4dog/MYPxTSmLIFj
-         3XqzZ0Xn8ng5w==
+        b=qlx1+i1tD91pl8JKDjnzvZcw8XdvNYQaFtTBEpbsYDb9/+3OHtOwd4bs9WPD5FSzn
+         SD6DlJsnV/GzO14dCVA7z6ussBH/9JOdXyWG1QdZk6GSPDsAAWCdhTDFEjzrMmwtfs
+         j911ZTbJ3SJSKZw0HlFjT0dL1ThkRgQafBHaoG1eo2tsLfOz3p8gw9vMnVrOOxAj0V
+         KFS6Tdj5AMh3wTv9pxfZpcYyX2ZLFYSIX8AhWw1huJue/PpoVFHEda3dUIRJZeHHgL
+         N0DlWnA7Z+LsS714mEpuaZZYTEFcN028ny2ZDws1DsOMUC4k/4pJ+R4la3G0esZlPJ
+         biX7SARJ3Knng==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        venza@brownhat.org
-Subject: [PATCH net-next 10/12] ethernet: sis900: use eth_hw_addr_set()
-Date:   Mon, 18 Oct 2021 07:29:30 -0700
-Message-Id: <20211018142932.1000613-11-kuba@kernel.org>
+        nico@fluxnic.net
+Subject: [PATCH net-next 11/12] ethernet: smc91x: use eth_hw_addr_set()
+Date:   Mon, 18 Oct 2021 07:29:31 -0700
+Message-Id: <20211018142932.1000613-12-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211018142932.1000613-1-kuba@kernel.org>
 References: <20211018142932.1000613-1-kuba@kernel.org>
@@ -49,34 +49,56 @@ eth_hw_addr_set().
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: venza@brownhat.org
+CC: nico@fluxnic.net
 ---
- drivers/net/ethernet/sis/sis900.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/smsc/smc911x.c | 4 +++-
+ drivers/net/ethernet/smsc/smc91x.c  | 4 +++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/sis/sis900.c b/drivers/net/ethernet/sis/sis900.c
-index 3f5717a1874f..cc2d907c4c4b 100644
---- a/drivers/net/ethernet/sis/sis900.c
-+++ b/drivers/net/ethernet/sis/sis900.c
-@@ -292,6 +292,7 @@ static int sis630e_get_mac_addr(struct pci_dev *pci_dev,
- 				struct net_device *net_dev)
- {
- 	struct pci_dev *isa_bridge = NULL;
+diff --git a/drivers/net/ethernet/smsc/smc911x.c b/drivers/net/ethernet/smsc/smc911x.c
+index b008b4e8a2a5..89381f796985 100644
+--- a/drivers/net/ethernet/smsc/smc911x.c
++++ b/drivers/net/ethernet/smsc/smc911x.c
+@@ -1788,6 +1788,7 @@ static int smc911x_probe(struct net_device *dev)
+ 	struct dma_slave_config	config;
+ 	dma_cap_mask_t mask;
+ #endif
 +	u8 addr[ETH_ALEN];
- 	u8 reg;
- 	int i;
  
-@@ -308,8 +309,9 @@ static int sis630e_get_mac_addr(struct pci_dev *pci_dev,
+ 	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
  
- 	for (i = 0; i < 6; i++) {
- 		outb(0x09 + i, 0x70);
--		((u8 *)(net_dev->dev_addr))[i] = inb(0x71);
-+		addr[i] = inb(0x71);
- 	}
-+	eth_hw_addr_set(net_dev, addr);
+@@ -1892,7 +1893,8 @@ static int smc911x_probe(struct net_device *dev)
+ 	spin_lock_init(&lp->lock);
  
- 	pci_write_config_byte(isa_bridge, 0x48, reg & ~0x40);
- 	pci_dev_put(isa_bridge);
+ 	/* Get the MAC address */
+-	SMC_GET_MAC_ADDR(lp, dev->dev_addr);
++	SMC_GET_MAC_ADDR(lp, addr);
++	eth_hw_addr_set(dev, addr);
+ 
+ 	/* now, reset the chip, and put it into a known state */
+ 	smc911x_reset(dev);
+diff --git a/drivers/net/ethernet/smsc/smc91x.c b/drivers/net/ethernet/smsc/smc91x.c
+index 813ea941b91a..a31c159e96ea 100644
+--- a/drivers/net/ethernet/smsc/smc91x.c
++++ b/drivers/net/ethernet/smsc/smc91x.c
+@@ -1851,6 +1851,7 @@ static int smc_probe(struct net_device *dev, void __iomem *ioaddr,
+ 	int retval;
+ 	unsigned int val, revision_register;
+ 	const char *version_string;
++	u8 addr[ETH_ALEN];
+ 
+ 	DBG(2, dev, "%s: %s\n", CARDNAME, __func__);
+ 
+@@ -1922,7 +1923,8 @@ static int smc_probe(struct net_device *dev, void __iomem *ioaddr,
+ 
+ 	/* Get the MAC address */
+ 	SMC_SELECT_BANK(lp, 1);
+-	SMC_GET_MAC_ADDR(lp, dev->dev_addr);
++	SMC_GET_MAC_ADDR(lp, addr);
++	eth_hw_addr_set(dev, addr);
+ 
+ 	/* now, reset the chip, and put it into a known state */
+ 	smc_reset(dev);
 -- 
 2.31.1
 
