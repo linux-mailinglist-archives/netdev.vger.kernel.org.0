@@ -2,105 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E2464319D9
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 14:48:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 855A9431A07
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 14:50:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231741AbhJRMuK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 08:50:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53410 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231745AbhJRMuK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 08:50:10 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 361D4C06161C
-        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 05:47:59 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1mcS3I-0003FV-EQ; Mon, 18 Oct 2021 14:47:40 +0200
-Received: from pengutronix.de (2a03-f580-87bc-d400-c2ef-28ab-e0cd-e8fd.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:c2ef:28ab:e0cd:e8fd])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 81EB9696766;
-        Mon, 18 Oct 2021 12:47:37 +0000 (UTC)
-Date:   Mon, 18 Oct 2021 14:47:36 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Aswath Govindraju <a-govindraju@ti.com>
-Cc:     Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH v4 0/6] CAN: Add support for CAN in AM65,J721e and AM64
-Message-ID: <20211018124736.zr2oavfg6h3tnrgp@pengutronix.de>
-References: <20211006055344.22662-1-a-govindraju@ti.com>
+        id S231749AbhJRMwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 08:52:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50086 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230005AbhJRMwS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Oct 2021 08:52:18 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 4B80D6103C;
+        Mon, 18 Oct 2021 12:50:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634561407;
+        bh=JnYYRYLbC5Sj+JWdGzdxNR/oyUX3SCHmbG8fqsaFADM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=TcDN0R7DW/D984OXRguGlwOelWCUKaOId1iPfheXffhUsSF0KsCtIxct/lPp6FxqY
+         laDazJABjKHudn4SZceKJhuFGBKq67xiCpngJNTrgf0xqnUfD1XjzcfCy9iR9BSnGR
+         zkEAhEvZ+Dy8r+Rh/5fkP6CCyP/SduSrVV1JEpCmTSDwB7Fbcv1m6VKpkm4m2F4jR3
+         2KCiRQugpfRTpKChRjZulUsPDuhsX3qI0kRwssnpPtqI15RZyFIR3ENCnLsh+7exh7
+         ubNCxyCkK+IJ9jZONm/XBhmvfi7BYY9nMTpvErZGU2117r1p+fFquLlEYhjkxUHC9w
+         +nO5Q/a3KlvmA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3F5A160A2E;
+        Mon, 18 Oct 2021 12:50:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ljji6pbi73l3wne5"
-Content-Disposition: inline
-In-Reply-To: <20211006055344.22662-1-a-govindraju@ti.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: sparx5: Add of_node_put() before goto
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163456140725.28486.14644227841066747140.git-patchwork-notify@kernel.org>
+Date:   Mon, 18 Oct 2021 12:50:07 +0000
+References: <20211018013138.2956-1-wanjiabing@vivo.com>
+In-Reply-To: <20211018013138.2956-1-wanjiabing@vivo.com>
+To:     Wan Jiabing <wanjiabing@vivo.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, lars.povlsen@microchip.com,
+        Steen.Hegelund@microchip.com, UNGLinuxDriver@microchip.com,
+        bjarni.jonasson@microchip.com, yangyingliang@huawei.com,
+        yang.lee@linux.alibaba.com, nathan@kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kael_w@yeah.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
---ljji6pbi73l3wne5
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-On 06.10.2021 11:23:37, Aswath Govindraju wrote:
-> The following series of patches add support for CAN in SoC's AM65, J721e
-> and AM64.
->=20
-> The following series is dependent on,
-> https://patchwork.kernel.org/project/netdevbpf/patch/20210920123344.2320-=
-1-a-govindraju@ti.com/
+On Sun, 17 Oct 2021 21:31:30 -0400 you wrote:
+> Fix following coccicheck warning:
+> ./drivers/net/ethernet/microchip/sparx5/s4parx5_main.c:723:1-33: WARNING: Function
+> for_each_available_child_of_node should have of_node_put() before goto
+> 
+> Early exits from for_each_available_child_of_node should decrement the
+> node reference counter.
+> 
+> [...]
 
-This patch just hit net/master:
+Here is the summary with links:
+  - net: sparx5: Add of_node_put() before goto
+    https://git.kernel.org/netdev/net/c/d9fd7e9fccfa
 
-| 99d173fbe894 can: m_can: fix iomap_read_fifo() and iomap_write_fifo()
-| https://git.kernel.org/netdev/net/c/99d173fbe8944861a00ebd1c73817a1260d21=
-e60
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-and should be part of v5.15.
 
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---ljji6pbi73l3wne5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmFtbOYACgkQqclaivrt
-76n5Jwf/R6q+JD0YwphCt5Ds1vOyuiZPyR4D2wrVSFpT/+l6g00FDgeMztPJT6zN
-SYLYIyyceQ3tBP1R+ZBKfM8EdFaA8g6PORPECfUwH12gP6GnvUX+Nsvlgr1XMtOn
-9I6ls+J0cFhFoSQ/HVXoRlLsCTXGEk1QLcPUVE/iazvJx7bOy1jbR+sLwINoMn0L
-Kf+3/Pae+NhOvELK8HjVFIH1LWAEUpu6sTs81ebL8elGHxgbiGBi8vcWPkorkyfD
-DhaLbRCSh1y4uf09YJhU9OzjXIwyVbOJZixDUGgEBDwvjV9BtOyAhsAgQYFZ8IQg
-prXTLN1erGJEdGGjZgq/9DPDviN91g==
-=H9mY
------END PGP SIGNATURE-----
-
---ljji6pbi73l3wne5--
