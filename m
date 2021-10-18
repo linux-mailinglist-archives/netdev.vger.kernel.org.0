@@ -2,78 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBE3243292C
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 23:38:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C7ED432935
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 23:42:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232651AbhJRVkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 17:40:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34304 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233527AbhJRVkN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 17:40:13 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB46C061765
-        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 14:38:01 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id d9so4756390edh.5
-        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 14:38:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=D4/S956yr106t3LKks68I5mxYFr0YWPDjv2cZtJsKl0=;
-        b=YMlBcET5y8025OGf/QO1Buydhip73j9aOA5btGLvLfsheHOgvtdI9ZKssyiGbSTcqk
-         Xj73ewNycpDhvUM/jLIIgNA3m/2VH/5i8rKHK2TFtXJcA1BhzDBMwThNqkin+ZklbR8g
-         7IIoFjpKESL9IHtQp/UdvNbrOQl+HOZao7gEZfM6hRn8uZrMnv+ShLQlxHXE0vgoWJus
-         V+u9lmt1RD5DmTmV0inSBEVk23NIa+fU4K9WZwGNZx/N2MI3+iKZXYfuhMyTaExajANe
-         tkiZu92uLKqcB3kZ+GoYPzfigxDOt5BP4b9OIMADABabiZ9mxPIjlZ23ZDVyPR5YcDpv
-         e55Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=D4/S956yr106t3LKks68I5mxYFr0YWPDjv2cZtJsKl0=;
-        b=YWcY8HHSfkfDmxlQg0Fi8TYmNbo32JiXoZBHYlN76lCdgAfk5uNH+SZioV7EBWSMKE
-         XVRlfm1dRpeCbXtMplesT3WeSumHljPEoIvv6ngCWEQk2LawyBGDHu7cfpUzwgLCN0qX
-         rLZYfMMqMJ7xvdGSWGBZ+Zk3NrPOGusrd7fNiXIShugC6xzWTadrdz30cEkp4Sgh3uNE
-         PDJgGcXEjAOHmj1Kkvrlh1HWMmWMxBi8qZrKFk9WGfPAmc5EPnr0fWQDYxIPTyZ4gYIF
-         dnA2EALyzmJ+PMJLxJ46p22jAe62/2Tdk3z1BMqaLP44+kkUtJtvFA52sqDtKztlCUUK
-         pTJg==
-X-Gm-Message-State: AOAM533vP3Y++boCzrZ19q8Hmn5j8bE31XajgYWaH91G0ghQU9XKs54N
-        tffggefRmOVqO64jU49aKv8=
-X-Google-Smtp-Source: ABdhPJzIM01aPtuXTjpo5g9DCMy/k8XcbDLlA/8Zos3KCknANxABgsCNHGNYEbyXQr4aDhd9OLF58w==
-X-Received: by 2002:aa7:dbcf:: with SMTP id v15mr48200397edt.243.1634593080334;
-        Mon, 18 Oct 2021 14:38:00 -0700 (PDT)
-Received: from skbuf ([188.26.184.231])
-        by smtp.gmail.com with ESMTPSA id og39sm9427258ejc.93.2021.10.18.14.37.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Oct 2021 14:37:59 -0700 (PDT)
-Date:   Tue, 19 Oct 2021 00:37:58 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, andrew@lunn.ch,
-        idosch@idosch.org, f.fainelli@gmail.com, snelson@pensando.io
-Subject: Re: [PATCH net-next 1/6] ethernet: add a helper for assigning port
- addresses
-Message-ID: <20211018213758.mgl4sc7yeloa6dst@skbuf>
-References: <20211018211007.1185777-1-kuba@kernel.org>
- <20211018211007.1185777-2-kuba@kernel.org>
+        id S232243AbhJRVoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 17:44:21 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45310 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229524AbhJRVoV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Oct 2021 17:44:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=xfigqgq3auU+bCIeWSNZA5J9X0KkjzeCETQout6wr6M=; b=3yMPr3eZ5OdQtCAuApxpT3neYa
+        NbsSRR7udUU0C4mU8ION2UuSpkoDCNfcVbxTOMj3Gp4mCmnWFkl1l6LoLlS3/TaqnnM5fA3MZ4OlN
+        Agz1QfZFF9IqOzngHqk6/XDmn6npyRGTVKv3BbBdKgq+WgHMRB9utF+O9/mCrvQDCamM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mcaOT-00B0p6-6U; Mon, 18 Oct 2021 23:42:05 +0200
+Date:   Mon, 18 Oct 2021 23:42:05 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Luo Jie <luoj@codeaurora.org>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sricharan@codeaurora.org
+Subject: Re: [PATCH v3 06/13] net: phy: add qca8081 read_status
+Message-ID: <YW3qLe8iHe1wdMev@lunn.ch>
+References: <20211018033333.17677-1-luoj@codeaurora.org>
+ <20211018033333.17677-7-luoj@codeaurora.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211018211007.1185777-2-kuba@kernel.org>
+In-Reply-To: <20211018033333.17677-7-luoj@codeaurora.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 18, 2021 at 02:10:02PM -0700, Jakub Kicinski wrote:
-> We have 5 drivers which offset base MAC addr by port id.
-> Create a helper for them.
-> 
-> This helper takes care of overflows, which some drivers
-> did not do, please complain if that's going to break
-> anything!
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> --
+> +static int qca808x_read_status(struct phy_device *phydev)
+> +{
+> +	int ret;
+> +
+> +	ret = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_10GBT_STAT);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	linkmode_mod_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, phydev->lp_advertising,
+> +			ret & MDIO_AN_10GBT_STAT_LP2_5G);
+> +
 
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Could genphy_c45_read_lpa() be used here?
+
+      Andrew
