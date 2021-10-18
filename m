@@ -2,116 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 422E7430D81
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 03:31:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C885430D88
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 03:32:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344999AbhJRBdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Oct 2021 21:33:21 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:42233 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344984AbhJRBdU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Oct 2021 21:33:20 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 19I1UvbnE003571, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36503.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 19I1UvbnE003571
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 18 Oct 2021 09:30:57 +0800
-Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
- RTEXH36503.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.14; Mon, 18 Oct 2021 09:30:56 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Mon, 18 Oct 2021 09:30:56 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::cdd5:82a3:e854:7098]) by
- RTEXMBS04.realtek.com.tw ([fe80::cdd5:82a3:e854:7098%5]) with mapi id
- 15.01.2106.013; Mon, 18 Oct 2021 09:30:56 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     Colin King <colin.king@canonical.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S235349AbhJRBeh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Oct 2021 21:34:37 -0400
+Received: from mail-eopbgr1300109.outbound.protection.outlook.com ([40.107.130.109]:34502
+        "EHLO APC01-HK2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S242986AbhJRBeS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 17 Oct 2021 21:34:18 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=d/35gquHYkWqMsbDfzs62Dvy3X3ZnbuNGEDOFDhFxnQ+Oj5/nG8vHgP4xaU4VUvGkS4eFp2YWmKVMHc3185FDIO8PGOgybZSY3Keq0+igE9S9rK/IOm+21FN36xoDMISXhJvsqLxPFaqvt6pUfn+WhcLtY6JP2t6Bd5nBbbz5pU4ayS3Po5S9BRheyJ5+iXKLUfdbQoX9Pa+61j6CX1/OpvnMDdyb86qtKEl0IfN6wTG/1f88kNM8U3biKWgwg/PfkmHwmv6qPKFIahJFVDrUGx+nQ/OVrRF8K7QUQLlmp1dPGQVFHKOZbDOVGDWV8TAU+cxl7B1CikkFAtyZ1zNFA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xP7BZ/Mg94cWWW4sSuZbATSOSOzOqb8/Y3mDn/G8Gvk=;
+ b=eKFqOOjbyo67Uu0ymkEJkYTZNUD6igQ6q5JgprDMEpvD/t4gKnoTEP72A6cShCdkwXp16FZGFK9pTGsmxxDSnEYtYgOBdEIuPHF+0ka10XkyofdIQrK+4R1J1a35w8F1fUKWImldnMJ75jy3hIWsTdVDOJb2qMOLrQngGpfrPlCZdQwRLqOeLD0nihSapyPMrAA4Po/cVWKp5uAevuEjUVzy44jVysdSbnSiF4qa2SSPKhZnh/JuwTzFHIjpl+rcqs/8p0HKrQwQwa2Q+w5+DqlngmDg623JrSZ6fo5jRgqw2tOmYYNEdg8Byk2K+SZ6l1GSEx8Pb4uvKXW0TPHGlg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xP7BZ/Mg94cWWW4sSuZbATSOSOzOqb8/Y3mDn/G8Gvk=;
+ b=ascuPidHlXsqfNBnD0M8fCV6qBY+vPdpp7FY/S7pS4wy5esz+74/XTBulIkuIgLLYRrj/sJLExLKMC4LWtB+L4hydq+fY+5r3XVAzH34SEkae8CKEltKur29JLnrteosSFoNNTy+GwbxD8DSvVitZss4WG+eB0D8NcqcoAgkZ5c=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=vivo.com;
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com (2603:1096:4:78::19) by
+ SG2PR06MB2523.apcprd06.prod.outlook.com (2603:1096:4:5e::17) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4587.25; Mon, 18 Oct 2021 01:32:01 +0000
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::fc12:4e1b:cc77:6c0]) by SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::fc12:4e1b:cc77:6c0%6]) with mapi id 15.20.4608.018; Mon, 18 Oct 2021
+ 01:32:00 +0000
+From:   Wan Jiabing <wanjiabing@vivo.com>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH][next] rtw89: Remove redundant check of ret after call to rtw89_mac_enable_bb_rf
-Thread-Topic: [PATCH][next] rtw89: Remove redundant check of ret after call to
- rtw89_mac_enable_bb_rf
-Thread-Index: AQHXwdhPDlA3YyhjVkeaAkBOHtLbNqvX+9Ag
-Date:   Mon, 18 Oct 2021 01:30:56 +0000
-Message-ID: <d136802937c24fca9e4823ace692a57a@realtek.com>
-References: <20211015152113.33179-1-colin.king@canonical.com>
-In-Reply-To: <20211015152113.33179-1-colin.king@canonical.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzEwLzE3IOS4i+WNiCAwNzozOTowMA==?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        Nathan Chancellor <nathan@kernel.org>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     kael_w@yeah.net
+Subject: [PATCH] net: sparx5: Add of_node_put() before goto
+Date:   Sun, 17 Oct 2021 21:31:30 -0400
+Message-Id: <20211018013138.2956-1-wanjiabing@vivo.com>
+X-Mailer: git-send-email 2.20.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: HK2PR06CA0018.apcprd06.prod.outlook.com
+ (2603:1096:202:2e::30) To SG2PR06MB3367.apcprd06.prod.outlook.com
+ (2603:1096:4:78::19)
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36503.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 10/18/2021 01:22:07
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 166777 [Oct 17 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: pkshih@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 463 463 5854868460de3f0d8e8c0a4df98aeb05fb764a09
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1;127.0.0.199:7.1.2
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 10/18/2021 01:24:00
+Received: from localhost.localdomain (203.90.234.87) by HK2PR06CA0018.apcprd06.prod.outlook.com (2603:1096:202:2e::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.16 via Frontend Transport; Mon, 18 Oct 2021 01:31:58 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: aea0e229-b76f-46e5-63bb-08d991d71489
+X-MS-TrafficTypeDiagnostic: SG2PR06MB2523:
+X-Microsoft-Antispam-PRVS: <SG2PR06MB2523E3E98B405791AE795DC0ABBC9@SG2PR06MB2523.apcprd06.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:475;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: aSYz2/blw8qn7Fa7dL/UjCdm3Mq9c5BtQ0EJ8/Gttzbxeo6QkzNdLsXcrkemmxsVPNp/+m+cA1VkNvBdOsYmrREUTIi2rKhVwh8cL1qkfyNgeVIecXCJgwBUIQLfwUeHq5a5yGTtOWb3naF61vsP0w3tWoSn1ZlF9u46+e+bgEB3NeV0XtX++H8Ar6PCbyrQBOUlIFwPxQktaaGmZb1cduKhZUKep9wTRKQpVivhiq1lUlMDzstWa6I+Xk4bWl2XJBZPy+1RkVg0p/Drzwc3B0HxUndfudSzmsig8dlgXuqa8Sp7reEeIoXmzVNwvau437eL06mLEc3gqkKxtRRL6PJF52J4VboeQb1N8EOzUKhd+SKOePuIpkJljBh3BJLZSVBLRWES/lbySRDHOh27hQNyoXoxxIuwohoNtxAwthJL209wnoVLwgsPi+1zFGfK+dsi2VJVPRJmRqfqK2Plxyv9f6U+QZHbqxOYVC5e3LsSk4flG+VylZAtKen4mUzg0OJkKCkP+/ow9rYv0jMZ6BGp0zG2yNQSMR7Id8Fov3W9lEk8Yv1EElmctCevq67fUOp2Fzyvg2/Hk3d0/+ddyEhrbLtLpY8KPsN/JUGRQ5O0+cckxw5QniHenGiyitgrfzuso/AL/41rlb46O52fw3CZoPyNkvrDuWxUDpd58rTqp3Rnjin2M9OQuL4SVF/snkfJY5XVfApD8klwWIRUSQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3367.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(921005)(52116002)(86362001)(6512007)(26005)(316002)(5660300002)(36756003)(186003)(7416002)(6486002)(6506007)(83380400001)(956004)(38100700002)(38350700002)(4326008)(66556008)(4744005)(66476007)(2906002)(66946007)(110136005)(6666004)(2616005)(8676002)(508600001)(8936002)(1076003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?uG45Ax0pqt4ac9tRlApbd5W1SWw0DaZPEjvis7TAlLdlNcDZ5dVHHHuGTKWQ?=
+ =?us-ascii?Q?6pkwA3JLW6gAlrLmnJzze4LXljVT3JyADz30HMuMAFvUw0TUjoZDXP7zEHxa?=
+ =?us-ascii?Q?zGboCX8lnCVySDXQDcyqACW3jGyPQ12D0eCOXDx+/I3amxdEh4NoBNqwhw/2?=
+ =?us-ascii?Q?vu7xxSbKSfUGaUPs+R4Yq3CCO/wf7aSWO83uZQlgY8gXDlM0RfCNp4znbFwp?=
+ =?us-ascii?Q?yomkj3MPsYA6XHZX28Cqv74SiXJ7j3Tqft1YwfXB6y1bn73FklzG9qZf2uOJ?=
+ =?us-ascii?Q?O9v80/WlCDB722Uka/f1L+NpNhg91CHDuhWyXq3wV88wu1+ud7iKGppMLThR?=
+ =?us-ascii?Q?Jg5Lo337QLRQySH1Szu81gHWDVwSm+0YOFs+R1uADT277LWJ4lvMCnUP272i?=
+ =?us-ascii?Q?d7ksPbg4JRC+YxrTqrzsRDwrBmar4kiE+kyDtcOrKGqlMPn1RxYdrS5HRYRu?=
+ =?us-ascii?Q?+u1xR0rZjxedAQYjXNFQaa4kvYtuvLH9PTOm/Rq0D5y/Jf5VhkJCBZ+yAEIP?=
+ =?us-ascii?Q?MZmB7Hgr9HEMpv48zlPKnwik5wy42siBvVwD4CHN2lobHdHZv1R0zTpobsAk?=
+ =?us-ascii?Q?MAUuwWVOrIlKt7LFiuaZYqAbeRcF6+FkQjTnKdpNAubML/4L4G3IWx5WG4M1?=
+ =?us-ascii?Q?QtVf0jmmKAafQ3a1iAuGA7mLtRBJVASUfJzSnbv5F+ToVDOv/0SSHyE5P7Jf?=
+ =?us-ascii?Q?k3LCNeK8QTQgBVy0UM6kfaaTfvYUm7ZgyVZxqUAMu74vWGUYZ1iAxk0aLbbd?=
+ =?us-ascii?Q?hRxNCcncj5DsBvnl1Gk53Ei5ZueawJNLO7q9anTWVvqXo8iQcQDR0B4MOpKq?=
+ =?us-ascii?Q?ZEZmHFXRbW6cb1PYAozfWYEcYkTPo065sQXaKqltpOrJzpV0UPy2iZW/Zb8N?=
+ =?us-ascii?Q?LaBtwrHX24+Il6wA+VWeBboFOKFbBzFcJJWHUG2NHSukoxFkhPfg5wM7h1ij?=
+ =?us-ascii?Q?9ODHNFLA+TVRKJVltSRg/Lt452DMMYGVJ5ZcNdnqKxFknxy+Q2c9p6P2Bz+N?=
+ =?us-ascii?Q?CoW4RBOwdEXKn8OgyTlFwYO4QoEeRjYCnpnb/r5VgSGHnEd9UIihWOSDZtXv?=
+ =?us-ascii?Q?xsgz2ueEgOcD7MRn5JKzgpJEF/a3Hp6bmSRplC5JuBXxXZuotc2QPD6gkcy3?=
+ =?us-ascii?Q?fLbCWafBn3zDBQP773fuAFlg4UH8JPqErAFOhIr2LyKT1522eZeqojy3ddXF?=
+ =?us-ascii?Q?s235LbrW+6oPwAoppS6K8QSw05oXpKS69xHEsbgMVShabLattJaB2KDO6JSa?=
+ =?us-ascii?Q?MYmqYBxNjiBPnY8FP0lvFd3DP+9GKXHaRSs/GVDHLAIO15ICsmU2OWe/UEAQ?=
+ =?us-ascii?Q?QkRXDzJ2pukTBSI9VR+fB3tg?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: aea0e229-b76f-46e5-63bb-08d991d71489
+X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3367.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2021 01:32:00.2537
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: cd26PrRfKYelJu+qVQ1rtrJ5/UnzcITSbfi0IREdou0+6lwVxjkQCgrYKbr4exSKI5cqr0Dl1SW5VGPrHCuW7g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR06MB2523
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IENvbGluIEtpbmcgPGNvbGlu
-LmtpbmdAY2Fub25pY2FsLmNvbT4NCj4gU2VudDogRnJpZGF5LCBPY3RvYmVyIDE1LCAyMDIxIDEx
-OjIxIFBNDQo+IFRvOiBLYWxsZSBWYWxvIDxrdmFsb0Bjb2RlYXVyb3JhLm9yZz47IERhdmlkIFMg
-LiBNaWxsZXIgPGRhdmVtQGRhdmVtbG9mdC5uZXQ+OyBKYWt1YiBLaWNpbnNraQ0KPiA8a3ViYUBr
-ZXJuZWwub3JnPjsgUGtzaGloIDxwa3NoaWhAcmVhbHRlay5jb20+OyBsaW51eC13aXJlbGVzc0B2
-Z2VyLmtlcm5lbC5vcmc7DQo+IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmcNCj4gQ2M6IGtlcm5lbC1q
-YW5pdG9yc0B2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4g
-U3ViamVjdDogW1BBVENIXVtuZXh0XSBydHc4OTogUmVtb3ZlIHJlZHVuZGFudCBjaGVjayBvZiBy
-ZXQgYWZ0ZXIgY2FsbCB0byBydHc4OV9tYWNfZW5hYmxlX2JiX3JmDQo+IA0KPiBGcm9tOiBDb2xp
-biBJYW4gS2luZyA8Y29saW4ua2luZ0BjYW5vbmljYWwuY29tPg0KPiANCj4gVGhlIGZ1bmN0aW9u
-IHJ0dzg5X21hY19lbmFibGVfYmJfcmYgaXMgYSB2b2lkIHJldHVybiB0eXBlLCBzbyB0aGVyZSBp
-cw0KPiBubyByZXR1cm4gZXJyb3IgY29kZSB0byByZXQsIHNvIHRoZSBmb2xsb3dpbmcgY2hlY2sg
-Zm9yIGFuIGVycm9yIGluIHJldA0KPiBpcyByZWR1bmRhbnQgZGVhZCBjb2RlIGFuZCBjYW4gYmUg
-cmVtb3ZlZC4NCj4gDQo+IEFkZHJlc3Nlcy1Db3Zlcml0eTogKCJMb2dpY2FsbHkgZGVhZCBjb2Rl
-IikNCj4gRml4ZXM6IGUzZWM3MDE3ZjZhMiAoInJ0dzg5OiBhZGQgUmVhbHRlayA4MDIuMTFheCBk
-cml2ZXIiKQ0KPiBTaWduZWQtb2ZmLWJ5OiBDb2xpbiBJYW4gS2luZyA8Y29saW4ua2luZ0BjYW5v
-bmljYWwuY29tPg0KDQpBY2tlZC1ieTogUGluZy1LZSBTaGloIDxwa3NoaWhAcmVhbHRlay5jb20+
-DQoNCj4gLS0tDQo+ICBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg5L21hYy5jIHwg
-MiAtLQ0KPiAgMSBmaWxlIGNoYW5nZWQsIDIgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0
-IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OS9tYWMuYw0KPiBiL2RyaXZlcnMv
-bmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODkvbWFjLmMNCj4gaW5kZXggMDE3MWE1YTdiMWRlLi42
-OTM4NGM0M2MwNDYgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsv
-cnR3ODkvbWFjLmMNCj4gKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OS9t
-YWMuYw0KPiBAQCAtMjY1Niw4ICsyNjU2LDYgQEAgaW50IHJ0dzg5X21hY19pbml0KHN0cnVjdCBy
-dHc4OV9kZXYgKnJ0d2RldikNCj4gIAkJZ290byBmYWlsOw0KPiANCj4gIAlydHc4OV9tYWNfZW5h
-YmxlX2JiX3JmKHJ0d2Rldik7DQo+IC0JaWYgKHJldCkNCj4gLQkJZ290byBmYWlsOw0KPiANCj4g
-IAlyZXQgPSBydHc4OV9tYWNfc3lzX2luaXQocnR3ZGV2KTsNCj4gIAlpZiAocmV0KQ0KPiAtLQ0K
-PiAyLjMyLjANCj4gDQo+IC0tLS0tLVBsZWFzZSBjb25zaWRlciB0aGUgZW52aXJvbm1lbnQgYmVm
-b3JlIHByaW50aW5nIHRoaXMgZS1tYWlsLg0K
+Fix following coccicheck warning:
+./drivers/net/ethernet/microchip/sparx5/s4parx5_main.c:723:1-33: WARNING: Function
+for_each_available_child_of_node should have of_node_put() before goto
+
+Early exits from for_each_available_child_of_node should decrement the
+node reference counter.
+
+Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+---
+ drivers/net/ethernet/microchip/sparx5/sparx5_main.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main.c b/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
+index c6eb0b70dd3f..4625d4fb4cde 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
+@@ -757,6 +757,7 @@ static int mchp_sparx5_probe(struct platform_device *pdev)
+ 			err = dev_err_probe(sparx5->dev, PTR_ERR(serdes),
+ 					    "port %u: missing serdes\n",
+ 					    portno);
++			of_node_put(portnp);
+ 			goto cleanup_config;
+ 		}
+ 		config->portno = portno;
+-- 
+2.20.1
+
