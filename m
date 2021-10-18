@@ -2,94 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B33743196B
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 14:39:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A067431970
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 14:39:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231771AbhJRMlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 08:41:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51000 "EHLO
+        id S231628AbhJRMle (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 08:41:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231793AbhJRMlD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 08:41:03 -0400
-Received: from mail-ua1-x936.google.com (mail-ua1-x936.google.com [IPv6:2607:f8b0:4864:20::936])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26DDEC06176C;
-        Mon, 18 Oct 2021 05:38:49 -0700 (PDT)
-Received: by mail-ua1-x936.google.com with SMTP id i15so4726843uap.0;
-        Mon, 18 Oct 2021 05:38:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3D7vJ2CO2XMEmMZh2MVP6JvkEYwgmfgFmLBCLmoiFCU=;
-        b=SyS5M378yS/ljDYnutUpPjvYWUz2wikfuz5/vW6GtZmZ/iLUuiTyJZE313Gk/gMmvk
-         ZbV3KNcI9welOW2jO+dIx4okltfVVIGoDjjA0ILQXdCkUKgJGaH+r9YJUcLpUP3I7NI/
-         M5JBLSVPZ+7rIXDlyuMqJeYKoUA8qo32wmsLwLwj5IL1IkNpgBxmwRnbFqmgJVuiFSaO
-         QCL4JSp0eetDd1AgwPWohbm2EhHndOxiqWQDEq92M1opfqRYPfEZ/MEAPnpGgKjSQN8E
-         dFGcOlAOU+bSlZXjqMQDutnE5nuDH7zTLnvz9xXiMSjiagLAwJvKC7abkQP8K5Yxwq3w
-         rq5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3D7vJ2CO2XMEmMZh2MVP6JvkEYwgmfgFmLBCLmoiFCU=;
-        b=UDi1B038jDV2jETrNuGr3f3P5BQ0KzRvr95H8uGBf6YSS5fPU/1X1bacK8Ur+5VZRN
-         R2MZb/TtI+irw8R+AexXXzJ+EwpKca+kkPC6UDU9gKu1q/W0mDgyH9ptRX2esg8EmSru
-         ch1yOmYVaFfJA0ol7FVZBYoJF6K2sHTPJb1cFhAnU49UEsBNyeQ/zb6qL6cqoxGpbBSG
-         Uy8ovbXlv0+w0z9YTMWpohAbPowG13Qg39Z8GT7bfIlmIbOdFYlfkBLVGyymaQQHjT6e
-         hl+Cvb65Ce6cL15aWqa8RvNJp23bHep6ymW13GT4ijTd0lnwZQRZnDK82vbrrMKWFmYw
-         gDYQ==
-X-Gm-Message-State: AOAM532e04vn7aOqX15rTm1HvZpTLYT6G9RUITYtKpeD38v728la1uMI
-        ApM+dupzvF8G30L4UN3kn+dogeXLGtA=
-X-Google-Smtp-Source: ABdhPJxG7g83ycJI57AwYWA3/6RkZu5SescbZexsGiLyijgwEwIO7IyVvQMR2fJJNnQ7fveD3YVH6w==
-X-Received: by 2002:ab0:6e91:: with SMTP id b17mr25871332uav.117.1634560727995;
-        Mon, 18 Oct 2021 05:38:47 -0700 (PDT)
-Received: from nyarly.rlyeh.local ([179.233.244.167])
-        by smtp.gmail.com with ESMTPSA id k1sm8585304uaq.0.2021.10.18.05.38.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Oct 2021 05:38:47 -0700 (PDT)
-From:   Thiago Rafael Becker <trbecker@gmail.com>
-To:     linux-nfs@vger.kernel.org
-Cc:     Thiago Rafael Becker <tbecker@redhat.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Thiago Rafael Becker <trbecker@gmail.com>
-Subject: [PATCH] sunrpc: bug on rpc_task_set_client when no client is present.
-Date:   Mon, 18 Oct 2021 09:38:12 -0300
-Message-Id: <20211018123812.71482-1-trbecker@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S231712AbhJRMle (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 08:41:34 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3E04C06161C
+        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 05:39:22 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1mcRv8-00023Q-2m; Mon, 18 Oct 2021 14:39:14 +0200
+Received: from pengutronix.de (2a03-f580-87bc-d400-c2ef-28ab-e0cd-e8fd.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:c2ef:28ab:e0cd:e8fd])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id ED709696744;
+        Mon, 18 Oct 2021 12:39:11 +0000 (UTC)
+Date:   Mon, 18 Oct 2021 14:39:11 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Michal Simek <michal.simek@xilinx.com>
+Cc:     linux-kernel@vger.kernel.org, monstr@monstr.eu, git@xilinx.com,
+        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] can: xilinx_can: Remove repeated work the from kernel-doc
+Message-ID: <20211018123911.5ri2gbodsolhcvg2@pengutronix.de>
+References: <267c11097c90debbb5b1efebbeabc98161177def.1632306843.git.michal.simek@xilinx.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="2nbomcsbxyvypu7o"
+Content-Disposition: inline
+In-Reply-To: <267c11097c90debbb5b1efebbeabc98161177def.1632306843.git.michal.simek@xilinx.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If we pass a NULL client to rpc_task_set_client and no client is
-attached to the task, then the kernel will crash later. Antecipate the
-crash by checking if a client is available for the task.
 
-Signed-off-by: Thiago Rafael Becker <trbecker@gmail.com>
----
- net/sunrpc/clnt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--2nbomcsbxyvypu7o
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
-index f056ff931444..ccbc9a9715da 100644
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -1076,7 +1076,7 @@ void rpc_task_set_transport(struct rpc_task *task, struct rpc_clnt *clnt)
- static
- void rpc_task_set_client(struct rpc_task *task, struct rpc_clnt *clnt)
- {
--
-+	BUG_ON(clnt == NULL && task->tk_client == NULL);
- 	if (clnt != NULL) {
- 		rpc_task_set_transport(task, clnt);
- 		task->tk_client = clnt;
--- 
-2.31.1
+On 22.09.2021 12:34:04, Michal Simek wrote:
+> Trivial patch. Issue is reported by checkpatch.
+>=20
+> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 
+I've fixed the subject to:
+
+| Subject: can: xilinx_can: remove repeated word from the kernel-doc
+
+Applied to linux-can-next/testing
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--2nbomcsbxyvypu7o
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmFtauwACgkQqclaivrt
+76ki0Af/dCW7j9/75sw2c0gE5wOTQGQLi5pCx+4Pz0emj1DQog24UGEnwhwTOcIP
+g44O7ZNeUw2YnMkIc2CZMvdd+ACOnjlrGaEwxJ5mioW9tqZTh+HIil3wd1cPW3sR
+zclscn05AS2S2d6jfUB5N2BgDYhHbALe7p9HM70BlKUAcjOsaM5mmpVaA5wI/VVD
+ZsdDzRbpMY2cgAP2VbdAJqO5azoSnHFN1uOfh40hChwlonwKhZPbBkNS7FeHMRN9
+SvAi8G7wqojz5Wmx1JZKAKrfF0ZrokKFoVVj/GjuE2X8lLT5bI2u5wsDRw5tfvuW
+d20wWVcVm4sgONltlD315fiQuZVLog==
+=ULN4
+-----END PGP SIGNATURE-----
+
+--2nbomcsbxyvypu7o--
