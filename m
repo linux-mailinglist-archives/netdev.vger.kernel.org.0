@@ -2,58 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33AED432501
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 19:28:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AB3F432521
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 19:34:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234117AbhJRRaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 13:30:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60868 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234099AbhJRRaH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Oct 2021 13:30:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 50DF561077;
-        Mon, 18 Oct 2021 17:27:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634578075;
-        bh=Bsrx7g92tYLygYaWvgBumvWoPy04BmyJB9LZTCvOM18=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=seIYQL5uL8PPzuTaOW4/RHE62JKmI6k72bsGcR5TYnoJl68cM0Ot/evAuoX3UlV4C
-         HkPgxGxDFolW5e0FOFCTFeLJoPfxrq3XnwEFsUTzy8p5lZELAJ9yZbaw+vWCEEklRm
-         iNmSMop9UOkCinkg0ozyB4EqI8t/vqkn56oG6Uz2nlG0ETn2KHQmlfE1VLeTd15/4O
-         /hl19OooHsSkM5IDwSTztxJrAoNEkcK8rnrlDH5nDiRcf2eo7W+MmfMC6fzNuai0E2
-         IVRyVSr6Z76dtBluKJZe7RNCQIrn+UEiGdcJlUM1n1S8EMzGGcnwwj1Znof4ckhUSz
-         UwrkCfDaZGV3w==
-Date:   Mon, 18 Oct 2021 10:27:54 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Francesco Dolcini <francesco.dolcini@toradex.com>
-Cc:     f.fainelli@gmail.com, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        christophe.leroy@csgroup.eu, Stefan Agner <stefan@agner.ch>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] phy: micrel: ksz8041nl: do not use power down
- mode
-Message-ID: <20211018102754.5b097ae4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211018171621.GC7669@francesco-nb.int.toradex.com>
-References: <20211018094256.70096-1-francesco.dolcini@toradex.com>
-        <20211018095249.1219ddaf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20211018171621.GC7669@francesco-nb.int.toradex.com>
+        id S234143AbhJRRgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 13:36:14 -0400
+Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:33455 "EHLO
+        wout1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234141AbhJRRgN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 13:36:13 -0400
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id 6AF10320157F;
+        Mon, 18 Oct 2021 13:34:01 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute6.internal (MEProxy); Mon, 18 Oct 2021 13:34:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=UzKObu
+        pR1nGbqgeiPXiDKZcY67QhbGnTmQUMpYRjjlc=; b=Q5pYx6dSeB4gK/vgq287gm
+        ovSJIHCjvdV7zp9Se4XdzUzJFJ/rdnjMsamkyNGTJoQ1zJSg4CKn9RdYbpp9U6/D
+        JGfxB2mpQuQTIihB9mzs84VMSvL2T+sNaTnrurwxNLf8+6Ob72qZOj+CMQLPdSFZ
+        BgLveUrc4jIgj3AkTa7w12Zp7/mwXO5PrMJEsaT6twDTLifhPcqZSR5/01K2bKes
+        9EvdEUfZ9ZriSDemPLBwfgB+yTEAlxagV9Y3qxNrhuRZclVJwmI27nfQc0DqgHD8
+        ExkZxUkMzZ/MMNKnOzUJHfEMOpjpUfnBjc2uLiQoOKahZwgft80W20LMQCVFjCVQ
+        ==
+X-ME-Sender: <xms:CLBtYXRyCOZY3oFH8bf83Caf1lOaRR14eYAS-XtH5Lx8GYPeLG15EQ>
+    <xme:CLBtYYwPU-uR3icG7WjGd58Wf-dzRTk6BlH7AZn5F0d1RXLgGpuis-h74ag8fAmMW
+    rIZ7_VTcbJIKVA>
+X-ME-Received: <xmr:CLBtYc2-xYawu1WsksNzKiYKwiNLupVLq29scA9ksKNNFnG9gWAtgbNy7kZc5RfIrh33Oe3nsvC8tUea0Ncn9-XHHj8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddvtddgudduudcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnhepgfevgfevueduueffieffheeifffgjeelvedtteeuteeuffekvefggfdtudfg
+    keevnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpe
+    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:CLBtYXDXffujbCFzxO28C-wrVEOq8mNgU1TYdV7KvAXE9X4ubYxXmw>
+    <xmx:CLBtYQgfpxugb6ILKBuxTwKFVuPZkzG5ukopSxPIO7ogbAcFTP8-uA>
+    <xmx:CLBtYboCUPjzSgEVq6f2yZKxl5pv1ZRzewV4Rb6C9e2BxcrOKJ8OAA>
+    <xmx:CbBtYaatOPzkpCKrXEeLzD-x6UutszdX3tpOD6vBz_0mqodB5r3Cww>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 18 Oct 2021 13:34:00 -0400 (EDT)
+Date:   Mon, 18 Oct 2021 20:33:56 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        olteanv@gmail.com, andrew@lunn.ch, f.fainelli@gmail.com,
+        vkochan@marvell.com, tchornyi@marvell.com
+Subject: Re: [RFC net-next 3/6] ethernet: prestera: use eth_hw_addr_set_port()
+Message-ID: <YW2wBJ7yoUaLkYVv@shredder>
+References: <20211015193848.779420-1-kuba@kernel.org>
+ <20211015193848.779420-4-kuba@kernel.org>
+ <186dd3ec-6bab-fe3c-cbab-a54898d51f57@pensando.io>
+ <20211018071915.2e2afdd3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <6dc4c0b4-8eaa-800a-a06c-a16cbee5a22e@pensando.io>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6dc4c0b4-8eaa-800a-a06c-a16cbee5a22e@pensando.io>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 18 Oct 2021 19:16:21 +0200 Francesco Dolcini wrote:
-> > Fixes: 1a5465f5d6a2 ("phy/micrel: Add suspend/resume support to Micrel PHYs")  
-> The errata is from 2016, while this commit is from 2013, weird?
-> Apart of that I can add the Fixes tag, should we send this also to stable?
+On Mon, Oct 18, 2021 at 09:26:21AM -0700, Shannon Nelson wrote:
+> On 10/18/21 7:19 AM, Jakub Kicinski wrote:
+> > On Sat, 16 Oct 2021 14:19:18 -0700 Shannon Nelson wrote:
+> > > As a potential consumer of these helpers, I'd rather do my own mac
+> > > address byte twiddling and then use eth_hw_addr_set() to put it into place.
+> > This is disproved by many upstream drivers, I only converted the ones
+> > that jumped out at me on Friday, but I'm sure there is more. If your
+> > driver is _really_ doing something questionable^W I mean "special"
+> > nothing is stopping you from open coding it. For others the helper will
+> > be useful.
+> > 
+> > IOW I don't understand your comment.
+> 
+> To try to answer your RFC more clearly: I feel that this particular helper
+> obfuscates the operation more than it helps.
 
-I'd lean towards sending it to stable, yes.
+FWIW, it at least helped me realize that we are going to have a bug with
+Spectrum-4. Currently we have:
 
-> > Should we leave a comment in place of the callbacks referring 
-> > to the errata?  
-> I think is a good idea, I'll add it.
+ether_addr_copy(addr, mlxsw_sp->base_mac);
+addr[ETH_ALEN - 1] += mlxsw_sp_port->local_port;
+
+As a preparation for Spectrum-4 we are promoting 'local_port' to u16
+since at least 257 and 258 are valid local port values.
+
+With the current code, the netdev corresponding to local port 1 will
+have the same MAC as the netdev corresponding to local port 257.
+
+After Jakub's conversion and changing the 'id' argument to 'unsigned
+int' [1], it should work correctly.
+
+[1] https://lore.kernel.org/netdev/20211018070845.68ba815d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
