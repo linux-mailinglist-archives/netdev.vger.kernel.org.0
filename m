@@ -2,138 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31B84430F5A
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 06:51:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47035430FF0
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 07:49:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229666AbhJRExe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 00:53:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57196 "EHLO
+        id S230182AbhJRFv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 01:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229583AbhJRExd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 00:53:33 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B91FBC06161C;
-        Sun, 17 Oct 2021 21:51:22 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4HXkwh29Rbz4xbT;
-        Mon, 18 Oct 2021 15:51:16 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1634532680;
-        bh=6zAiMGt9lN3fX/YpWxecPHWsTqnDTeNDIYa0BPeLy5s=;
-        h=Date:From:To:Cc:Subject:From;
-        b=fW4c7a4S/JgodkeUS5uKVtw8Q4E3ao37mrDmKYENGIKvDmHGQey+1kYSbznxuC2jN
-         +R1BbKYoCf20pZgPrc3++8oCq3NIEf+fKQjdkNNKuV/0iciMqpO/H4xCXXt6aySG6E
-         lgblEFmvcyvR2s9cWE625J+uCGyfWrLYAdH+XaX3cQrZX0jUPc76JkTeizvxmYXR8M
-         ec+oxNixp4voipZj1qrECGmfKnu5hiviVUT8EKuuFr4/nf656dnyBAiwXfo8cfIgqo
-         P+s2sBOceoCxGgieQO4uTfaiLGoKAYxRitm/VByYu0zH2Wf4mpjvBQH/EEPmYzHeAM
-         +VTaOnI3aknoA==
-Date:   Mon, 18 Oct 2021 15:51:13 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Adam Bratschi-Kaye <ark.email@gmail.com>,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Ayaan Zaidi <zaidi.ayaan@gmail.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Boris-Chengbiao Zhou <bobo1239@web.de>,
-        Douglas Su <d0u9.su@outlook.com>, Finn Behrens <me@kloenk.de>,
-        Fox Chen <foxhlchen@gmail.com>, Gary Guo <gary@garyguo.net>,
-        Geoffrey Thomas <geofft@ldpreload.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Sumera Priyadarsini <sylphrenadin@gmail.com>,
-        Sven Van Asbroeck <thesven73@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Yuki Okushi <jtitor@2k36.org>
-Subject: linux-next: manual merge of the rust tree with the bpf-next tree
-Message-ID: <20211018155113.1303fa5e@canb.auug.org.au>
+        with ESMTP id S230153AbhJRFvz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 01:51:55 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 780F1C06161C
+        for <netdev@vger.kernel.org>; Sun, 17 Oct 2021 22:49:45 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id s1so8621421plg.12
+        for <netdev@vger.kernel.org>; Sun, 17 Oct 2021 22:49:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=6rwEtZ1Zb/VZuvZ9Ty4TZLVT6960nXlgqfxXCvxX4Tk=;
+        b=Pev3csxQaQTkrwhTCrr7tYQsB65VVPyU53VeCEXBl0QUr/YENzAWjt3xqz4VuY7hwz
+         yLa5TvtM1tLiYClOkPBC3ELc2XGTXt7AflP97/8ttptFUDiI52sM/FF/awdNQA1FA7/F
+         BWqS1WMhK1ew3r5UdO+VsiceVhcuAaYZWOPbBb8cM/1BgU3erpmyw1edocXIYfTOlcwg
+         p0fPPF5+gkrV4KRVAwGk02w0r0/KKrOb8dEfQ6EoibNxohOCH/md9i97Ht7qRvV/r4K2
+         EV0GH/3THuUyCANq56o4frDJ/xNg5NSUUG9sVGG8FVnXlwXJ2onL3bW+csMD6W2OcliN
+         UQDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=6rwEtZ1Zb/VZuvZ9Ty4TZLVT6960nXlgqfxXCvxX4Tk=;
+        b=ltC/a/oW3UAKhlvUrgI0nbt+LCIPlkm9zBheimBJJa8iSk+5zWuHOBwGkwA0jt3nbt
+         TQQ6LOyOJSK/klaWe/JDi0ZjTSWQPKrpnxjzR5odjeBKEt35RKxt6ntZTB5cl/FzzpfL
+         rGbqaKPYxb6m+swoNYJfZpvkRssYZ0qampdUhlivI0DbEinDU2iAte+ESHBnIxWwReHU
+         XVzuNq4o9NBwZavsZ7vYuUjjPYMGkFRQMQ7y1D8oOJpjokoJ70M5102xAUSVGMjPUy0g
+         PN8tzZfFLtnjDo23+274c/BqhE9dI7snuHSzvcI6DZ0UcTHLpil0Bayb3M/gAE4gSWSK
+         0ovQ==
+X-Gm-Message-State: AOAM530jXy3RrHZvPRYhDWoL3ybkDJKeBUnTw3G3wPZ1ADFsivdUAkQs
+        gtVt4aPbHUsphJlErluGAykBLQ==
+X-Google-Smtp-Source: ABdhPJxhYreOWM4oXTRILVvFSjCgPe7TD6r5u4iYr/UTp36Dw6uFV5EzNle1SeXfKd7jOG9AS/zrEA==
+X-Received: by 2002:a17:90b:4a8d:: with SMTP id lp13mr31527573pjb.32.1634536185061;
+        Sun, 17 Oct 2021 22:49:45 -0700 (PDT)
+Received: from [10.254.36.135] ([139.177.225.233])
+        by smtp.gmail.com with ESMTPSA id n202sm11706527pfd.160.2021.10.17.22.49.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 17 Oct 2021 22:49:44 -0700 (PDT)
+Message-ID: <6d7246b6-195e-ee08-06b1-2d1ec722e7b2@bytedance.com>
+Date:   Mon, 18 Oct 2021 13:49:38 +0800
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/czlDD6Zf2uoH0zh=yDxuLMx";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.2.0
+Subject: Re: [External] Re: [PATCH] bpf: use count for prealloc hashtab too
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+References: <20211015090353.31248-1-zhouchengming@bytedance.com>
+ <CAADnVQ+A5LdWQTXFugNTceGcz_biV-uEJma4oT5UJKeHQBHQPw@mail.gmail.com>
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+In-Reply-To: <CAADnVQ+A5LdWQTXFugNTceGcz_biV-uEJma4oT5UJKeHQBHQPw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/czlDD6Zf2uoH0zh=yDxuLMx
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+在 2021/10/16 上午3:58, Alexei Starovoitov 写道:
+> On Fri, Oct 15, 2021 at 11:04 AM Chengming Zhou
+> <zhouchengming@bytedance.com> wrote:
+>>
+>> We only use count for kmalloc hashtab not for prealloc hashtab, because
+>> __pcpu_freelist_pop() return NULL when no more elem in pcpu freelist.
+>>
+>> But the problem is that __pcpu_freelist_pop() will traverse all CPUs and
+>> spin_lock for all CPUs to find there is no more elem at last.
+>>
+>> We encountered bad case on big system with 96 CPUs that alloc_htab_elem()
+>> would last for 1ms. This patch use count for prealloc hashtab too,
+>> avoid traverse and spin_lock for all CPUs in this case.
+>>
+>> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+> 
+> It's not clear from the commit log what you're solving.
+> The atomic inc/dec in critical path of prealloc maps hurts performance.
+> That's why it's not used.
+> 
+Thanks for the explanation, what I'm solving is when hash table hasn't free
+elements, we don't need to call __pcpu_freelist_pop() to traverse and
+spin_lock all CPUs. The ftrace output of this bad case is below:
 
-Hi all,
-
-Today's linux-next merge of the rust tree got a conflict in:
-
-  scripts/Makefile.modfinal
-
-between commit:
-
-  0e32dfc80bae ("bpf: Enable TCP congestion control kfunc from modules")
-
-from the bpf-next tree and commit:
-
-  c862c7fee526 ("Kbuild: add Rust support")
-
-from the rust tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc scripts/Makefile.modfinal
-index 1fb45b011e4b,c0842e999a75..000000000000
---- a/scripts/Makefile.modfinal
-+++ b/scripts/Makefile.modfinal
-@@@ -39,11 -39,12 +39,13 @@@ quiet_cmd_ld_ko_o =3D LD [M]  $
- =20
-  quiet_cmd_btf_ko =3D BTF [M] $@
-        cmd_btf_ko =3D 							\
-- 	if [ -f vmlinux ]; then						\
-+ 	if [ ! -f vmlinux ]; then					\
-+ 		printf "Skipping BTF generation for %s due to unavailability of vmlinux=
-\n" $@ 1>&2; \
-+ 	elif $(srctree)/scripts/is_rust_module.sh $@; then 		\
-+ 		printf "Skipping BTF generation for %s because it's a Rust module\n" $@=
- 1>&2; \
-+ 	else								\
-  		LLVM_OBJCOPY=3D"$(OBJCOPY)" $(PAHOLE) -J --btf_base vmlinux $@; \
- +		$(RESOLVE_BTFIDS) -b vmlinux $@; 			\
-- 	else								\
-- 		printf "Skipping BTF generation for %s due to unavailability of vmlinux=
-\n" $@ 1>&2; \
-  	fi;
- =20
-  # Same as newer-prereqs, but allows to exclude specified extra dependenci=
-es
-
---Sig_/czlDD6Zf2uoH0zh=yDxuLMx
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmFs/UIACgkQAVBC80lX
-0GxNKgf+OIlNISH1VEOt5ZFH7WDK6buIRBYIG2BHwHx1dUiyJMiMHktLCMlDJ36L
-Z8J8FubHOY7GCUz5OC3UBISL5xq6kBvKi8/Hw0synGDkIeKXl17KP+AbBfwxwOWo
-leeUZg7rXERwRjJymxwluVtqexBGkOJVN7iADHDrxPpbgHjBgsAkVi4MtgT4AQPG
-RdXRE/ody2JDMd86XFJY+0gao4ruhK6EDjtFUjtmqFG969aSILrE2AzUJNypY6SD
-d35lCGJwsxVQ9xhCoyQIziOfaNicJJoKe5I8dlvnGH5Vh6hE1+5qD/20QPwIZArq
-mIWpExST/gS8FYz1iTuvDxgO0Vnn5Q==
-=KBES
------END PGP SIGNATURE-----
-
---Sig_/czlDD6Zf2uoH0zh=yDxuLMx--
+ 50)               |  htab_map_update_elem() {
+ 50)   0.329 us    |    _raw_spin_lock_irqsave();
+ 50)   0.063 us    |    lookup_elem_raw();
+ 50)               |    alloc_htab_elem() {
+ 50)               |      pcpu_freelist_pop() {
+ 50)   0.209 us    |        _raw_spin_lock();
+ 50)   0.264 us    |        _raw_spin_lock();
+ 50)   0.231 us    |        _raw_spin_lock();
+ 50)   0.168 us    |        _raw_spin_lock();
+ 50)   0.168 us    |        _raw_spin_lock();
+ 50)   0.300 us    |        _raw_spin_lock();
+ 50)   0.263 us    |        _raw_spin_lock();
+ 50)   0.304 us    |        _raw_spin_lock();
+ 50)   0.168 us    |        _raw_spin_lock();
+ 50)   0.177 us    |        _raw_spin_lock();
+ 50)   0.235 us    |        _raw_spin_lock();
+ 50)   0.162 us    |        _raw_spin_lock();
+ 50)   0.186 us    |        _raw_spin_lock();
+ 50)   0.185 us    |        _raw_spin_lock();
+ 50)   0.315 us    |        _raw_spin_lock();
+ 50)   0.172 us    |        _raw_spin_lock();
+ 50)   0.180 us    |        _raw_spin_lock();
+ 50)   0.173 us    |        _raw_spin_lock();
+ 50)   0.176 us    |        _raw_spin_lock();
+ 50)   0.261 us    |        _raw_spin_lock();
+ 50)   0.364 us    |        _raw_spin_lock();
+ 50)   0.180 us    |        _raw_spin_lock();
+ 50)   0.284 us    |        _raw_spin_lock();
+ 50)   0.226 us    |        _raw_spin_lock();
+ 50)   0.210 us    |        _raw_spin_lock();
+ 50)   0.237 us    |        _raw_spin_lock();
+ 50)   0.333 us    |        _raw_spin_lock();
+ 50)   0.295 us    |        _raw_spin_lock();
+ 50)   0.278 us    |        _raw_spin_lock();
+ 50)   0.260 us    |        _raw_spin_lock();
+ 50)   0.224 us    |        _raw_spin_lock();
+ 50)   0.447 us    |        _raw_spin_lock();
+ 50)   0.221 us    |        _raw_spin_lock();
+ 50)   0.320 us    |        _raw_spin_lock();
+ 50)   0.203 us    |        _raw_spin_lock();
+ 50)   0.213 us    |        _raw_spin_lock();
+ 50)   0.242 us    |        _raw_spin_lock();
+ 50)   0.230 us    |        _raw_spin_lock();
+ 50)   0.216 us    |        _raw_spin_lock();
+ 50)   0.525 us    |        _raw_spin_lock();
+ 50)   0.257 us    |        _raw_spin_lock();
+ 50)   0.235 us    |        _raw_spin_lock();
+ 50)   0.269 us    |        _raw_spin_lock();
+ 50)   0.368 us    |        _raw_spin_lock();
+ 50)   0.249 us    |        _raw_spin_lock();
+ 50)   0.217 us    |        _raw_spin_lock();
+ 50)   0.174 us    |        _raw_spin_lock();
+ 50)   0.173 us    |        _raw_spin_lock();
+ 50)   0.161 us    |        _raw_spin_lock();
+ 50)   0.282 us    |        _raw_spin_lock();
+ 50)   0.264 us    |        _raw_spin_lock();
+ 50)   0.160 us    |        _raw_spin_lock();
+ 50)   0.692 us    |        _raw_spin_lock();
+ 50)   0.185 us    |        _raw_spin_lock();
+ 50)   0.157 us    |        _raw_spin_lock();
+ 50)   0.168 us    |        _raw_spin_lock();
+ 50)   0.205 us    |        _raw_spin_lock();
+ 50)   0.189 us    |        _raw_spin_lock();
+ 50)   0.276 us    |        _raw_spin_lock();
+ 50)   0.171 us    |        _raw_spin_lock();
+ 50)   0.390 us    |        _raw_spin_lock();
+ 50)   0.164 us    |        _raw_spin_lock();
+ 50)   0.170 us    |        _raw_spin_lock();
+ 50)   0.188 us    |        _raw_spin_lock();
+ 50)   0.284 us    |        _raw_spin_lock();
+ 50)   0.191 us    |        _raw_spin_lock();
+ 50)   0.412 us    |        _raw_spin_lock();
+ 50)   0.285 us    |        _raw_spin_lock();
+ 50)   0.296 us    |        _raw_spin_lock();
+ 50)   0.315 us    |        _raw_spin_lock();
+ 50)   0.239 us    |        _raw_spin_lock();
+ 50)   0.225 us    |        _raw_spin_lock();
+ 50)   0.258 us    |        _raw_spin_lock();
+ 50)   0.228 us    |        _raw_spin_lock();
+ 50)   0.240 us    |        _raw_spin_lock();
+ 50)   0.297 us    |        _raw_spin_lock();
+ 50)   0.216 us    |        _raw_spin_lock();
+ 50)   0.213 us    |        _raw_spin_lock();
+ 50)   0.225 us    |        _raw_spin_lock();
+ 50)   0.223 us    |        _raw_spin_lock();
+ 50)   0.287 us    |        _raw_spin_lock();
+ 50)   0.258 us    |        _raw_spin_lock();
+ 50)   0.295 us    |        _raw_spin_lock();
+ 50)   0.262 us    |        _raw_spin_lock();
+ 50)   0.325 us    |        _raw_spin_lock();
+ 50)   0.203 us    |        _raw_spin_lock();
+ 50)   0.325 us    |        _raw_spin_lock();
+ 50)   0.255 us    |        _raw_spin_lock();
+ 50)   0.325 us    |        _raw_spin_lock();
+ 50)   0.216 us    |        _raw_spin_lock();
+ 50)   0.232 us    |        _raw_spin_lock();
+ 50)   0.804 us    |        _raw_spin_lock();
+ 50)   0.262 us    |        _raw_spin_lock();
+ 50)   0.242 us    |        _raw_spin_lock();
+ 50)   0.271 us    |        _raw_spin_lock();
+ 50)   0.175 us    |        _raw_spin_lock();
+ 50) + 61.026 us   |      }
+ 50) + 61.575 us   |    }
+ 50)   0.051 us    |    _raw_spin_unlock_irqrestore();
+ 50) + 64.863 us   |  }
