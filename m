@@ -2,316 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D665643289B
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 22:49:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EA1A4328A0
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 22:50:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229963AbhJRUve (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 16:51:34 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:52112 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229529AbhJRUvd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 16:51:33 -0400
-Received: by mail-il1-f200.google.com with SMTP id a14-20020a927f0e000000b002597075cb35so7487689ild.18
-        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 13:49:22 -0700 (PDT)
+        id S229727AbhJRUwQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 16:52:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:42252 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233730AbhJRUwO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 16:52:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634590201;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ulj4h8MQYp21p6C7TH+LEd0CYfp/aSUgLTdq7C5hcrg=;
+        b=gvHbxHa+GM7dhMUPXEIScGKycr5Zrso26pUes9BS0KVIPJ+3XQ09+4hFTYHtHpERNKJNzL
+        7KFeSXueQDusuj2w5o1QA7eCfNk+AvABLo8c+c13aT37CbYiz1bMDFpkpevB+td5qPMrPw
+        xsoGeNN2TCXifLRSS2ofBGfQB2byQN4=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-215-HEkx6HPsNPaqx-7ft0kSaw-1; Mon, 18 Oct 2021 16:50:00 -0400
+X-MC-Unique: HEkx6HPsNPaqx-7ft0kSaw-1
+Received: by mail-wr1-f70.google.com with SMTP id l6-20020adfa386000000b00160c4c1866eso9237994wrb.4
+        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 13:50:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=z1Usp68k2V+t9Wysdl4FaxRyMvsaxNLopVhfKi5kpqo=;
-        b=AW1OZmIfEzJICaAjYA6oMxht4ccEiFFomD7dBrXEuNI7sLNfMnwtiWkbkDKCQCAA5R
-         VT75jls33AtslRrMhCAp4zXeNHHL45eal1NkhrSc+w6hqSVIDLHXmeocFNQ14tWH+K24
-         hKk2rKMEHcW+jlv0v7ObE/QK1GAg0AX1RmDsZXVnqb8iEQ9g2NCbi/RUlXovahH36mey
-         ckfNhAFUu+vS1t3wqidUJId4Jsc7J+pr9mNHS2oOr0tb7si3brQPcHrXEVH6kQvtBbRa
-         X50QwXJcec3ytpdhk8yUZnWP/l1QKVNCSqdLeIwUBFvju6l2IiCpZc83e2G1CfSIuHIQ
-         0DQw==
-X-Gm-Message-State: AOAM530QvSrqqLP5rmE+pbcUGGi5gN/7y8A0Bq1iVVhA3e01q9k2Jelb
-        CqLNiHxw+TrrV9YtsPZW1ZAW87yc3qUGaqZAoKiCGLH5uoEi
-X-Google-Smtp-Source: ABdhPJxa//Gc+WKOl9FRpzi3LJXJE8UrJuT9/SdA1qYQQgxyKKrkmw0Wu1o3m2WZPM3xGRBtAygp/FwAw/FEMJjV0OVZy0IVgb8m
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ulj4h8MQYp21p6C7TH+LEd0CYfp/aSUgLTdq7C5hcrg=;
+        b=IjzeHPzk6znArfj1qZUpfQk0VKhX+w8AGl4GmC0XYxNq5Bn/C1/YfHZ9fr7GT3UD0X
+         d8qup6YPdP08UakLBBlN8gkPBiUIZFSHnTNb7lgBQdixXwn1gu1bSJZOp87Q5XjxJs3X
+         4KZPn/xB8uEIMpQ+DcQNKWFiiXYCdbJOLs2fnZISB+ys7F29+p+arRwDr6J9EHHGNoeG
+         i3dbG9stTvr/BUAfL++b8S7RHLD3hpIXp9L9n4VuDBSNncyqGQRWCt9N1L/p9B1D1Zji
+         2lALQ4yXm+qkBiWoFnncAvcSFL0O9cd73pNxcVJ4z6k7U64eDibGqyjZVNccocYAixXa
+         FlDw==
+X-Gm-Message-State: AOAM5338+3EVnapx3fiYHwiR6mFG0BKH3sCEdGNqv4RdmvUlcGlz8o5E
+        pMLy8794xR1zqV/NE/q1k68ypHFqVHj/aoB2/ZSLyV6SzB1kaZffKNGBUil99+t7BMjkLboDOf/
+        8TqProuBz3qhGp3YE
+X-Received: by 2002:a1c:3b86:: with SMTP id i128mr1363721wma.132.1634590198282;
+        Mon, 18 Oct 2021 13:49:58 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzrBSNe5FMwZd+yUOErQf/ZOVTtIeiOwVIVrSlGskYzFMqX6S5jgZ+WSDgneCkfLlCPgiLKjQ==
+X-Received: by 2002:a1c:3b86:: with SMTP id i128mr1363705wma.132.1634590198054;
+        Mon, 18 Oct 2021 13:49:58 -0700 (PDT)
+Received: from redhat.com ([2.55.24.172])
+        by smtp.gmail.com with ESMTPSA id i188sm481878wmi.5.2021.10.18.13.49.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Oct 2021 13:49:57 -0700 (PDT)
+Date:   Mon, 18 Oct 2021 16:49:53 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Maxim Levitsky <mlevitsk@redhat.com>, netdev@vger.kernel.org,
+        "J. Bruce Fields" <bfields@redhat.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>, qemu-devel@nongnu.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        David Gilbert <dgilbert@redhat.com>
+Subject: Re: TCP/IP connections sometimes stop retransmitting packets (in
+ nested virtualization case)
+Message-ID: <20211018164839-mutt-send-email-mst@kernel.org>
+References: <1054a24529be44e11d65e61d8760f7c59dfa073b.camel@redhat.com>
+ <ed357c14-a795-3116-4db9-8486e4f71751@gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a02:ccc9:: with SMTP id k9mr1444397jaq.60.1634590161730;
- Mon, 18 Oct 2021 13:49:21 -0700 (PDT)
-Date:   Mon, 18 Oct 2021 13:49:21 -0700
-In-Reply-To: <000000000000d9b3aa05c30fce61@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f182a705cea6ad05@google.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in dump_schedule (2)
-From:   syzbot <syzbot+a6e609c672ce997c14a8@syzkaller.appspotmail.com>
-To:     chouhan.shreyansh630@gmail.com, davem@davemloft.net,
-        jhs@mojatatu.com, jiri@resnulli.us, kuba@kernel.org,
-        leandro.maciel.dorileo@intel.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        vedang.patel@intel.com, vinicius.gomes@intel.com,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ed357c14-a795-3116-4db9-8486e4f71751@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+On Mon, Oct 18, 2021 at 11:05:23AM -0700, Eric Dumazet wrote:
+> 
+> 
+> On 10/17/21 3:50 AM, Maxim Levitsky wrote:
+> > Hi!
+> >  
+> > This is a follow up mail to my mail about NFS client deadlock I was trying to debug last week:
+> > https://lore.kernel.org/all/e10b46b04fe4427fa50901dda71fb5f5a26af33e.camel@redhat.com/T/#u
+> >  
+> > I strongly believe now that this is not related to NFS, but rather to some issue in networking stack and maybe
+> > to somewhat non standard .config I was using for the kernels which has many advanced networking options disabled
+> > (to cut on compile time).
+> > This is why I choose to start a new thread about it.
+> >  
+> > Regarding the custom .config file, in particular I disabled CONFIG_NET_SCHED and CONFIG_TCP_CONG_ADVANCED. 
+> > Both host and the fedora32 VM run the same kernel with those options disabled.
+> > 
+> > 
+> > My setup is a VM (fedora32) which runs Win10 HyperV VM inside, nested, which in turn runs a fedora32 VM
+> > (but I was able to reproduce it with ordinary HyperV disabled VM running in the same fedora 32 VM)
+> >  
+> > The host is running a NFS server, and the fedora32 VM runs a NFS client which is used to read/write to a qcow2 file
+> > which contains the disk of the nested Win10 VM. The L3 VM which windows VM optionally
+> > runs, is contained in the same qcow2 file.
+> > 
+> > 
+> > I managed to capture (using wireshark) packets around the failure in both L0 and L1.
+> > The trace shows fair number of lost packets, a bit more than I would expect from communication that is running on the same host, 
+> > but they are retransmitted and don't cause any issues until the moment of failure.
+> > 
+> > 
+> > The failure happens when one packet which is sent from host to the guest,
+> > is not received by the guest (as evident by the L1 trace, and by the following SACKS from the guest which exclude this packet), 
+> > and then the host (on which the NFS server runs) never attempts to re-transmit it.
+> > 
+> > 
+> > The host keeps on sending further TCP packets with replies to previous RPC calls it received from the fedora32 VM,
+> > with an increasing sequence number, as evident from both traces, and the fedora32 VM keeps on SACK'ing those received packets, 
+> > patiently waiting for the retransmission.
+> >  
+> > After around 12 minutes (!), the host RSTs the connection.
+> > 
+> > It is worth mentioning that while all of this is happening, the fedora32 VM can become hung if one attempts to access the files 
+> > on the NFS share because effectively all NFS communication is blocked on TCP level.
+> > 
+> > I attached an extract from the two traces  (in L0 and L1) around the failure up to the RST packet.
+> > 
+> > In this trace the second packet with TCP sequence number 1736557331 (first one was empty without data) is not received by the guest
+> > and then never retransmitted by the host.
+> > 
+> > Also worth noting that to ease on storage I captured only 512 bytes of each packet, but wireshark
+> > notes how many bytes were in the actual packet.
+> >  
+> > Best regards,
+> > 	Maxim Levitsky
+> 
+> TCP has special logic not attempting a retransmit if it senses the prior
+> packet has not been consumed yet.
+> 
+> Usually, the consume part is done from NIC drivers at TC completion time,
+> when NIC signals packet has been sent to the wire.
+> 
+> It seems one skb is essentially leaked somewhere, and leaked (not freed)
 
-HEAD commit:    cf52ad5ff16c Merge tag 'driver-core-5.15-rc6' of git://git..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1028c158b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=6d3b157700b617b8
-dashboard link: https://syzkaller.appspot.com/bug?extid=a6e609c672ce997c14a8
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14e85344b00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1137bcaf300000
+Thanks Eric!
 
-The issue was bisected to:
+Maxim since the packets that leak are transmitted on the host,
+the question then is what kind of device do you use on the host
+to talk to the guest? tap?
 
-commit 7b9eba7ba0c1b24df42b70b62d154b284befbccf
-Author: Leandro Dorileo <leandro.maciel.dorileo@intel.com>
-Date:   Mon Apr 8 17:12:17 2019 +0000
 
-    net/sched: taprio: fix picos_per_byte miscalculation
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1261f09dd00000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=1161f09dd00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1661f09dd00000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+a6e609c672ce997c14a8@syzkaller.appspotmail.com
-Fixes: 7b9eba7ba0c1 ("net/sched: taprio: fix picos_per_byte miscalculation")
-
-==================================================================
-BUG: KASAN: use-after-free in dump_schedule+0x79c/0x830 net/sched/sch_taprio.c:1841
-Read of size 8 at addr ffff888079b90040 by task syz-executor038/30374
-
-CPU: 1 PID: 30374 Comm: syz-executor038 Not tainted 5.15.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0x6c/0x2d6 mm/kasan/report.c:256
- __kasan_report mm/kasan/report.c:442 [inline]
- kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
- dump_schedule+0x79c/0x830 net/sched/sch_taprio.c:1841
- taprio_dump+0x53d/0xdf0 net/sched/sch_taprio.c:1910
- tc_fill_qdisc+0x60e/0x12e0 net/sched/sch_api.c:923
- qdisc_notify.isra.0+0x2b1/0x310 net/sched/sch_api.c:990
- tc_modify_qdisc+0xf85/0x1a60 net/sched/sch_api.c:1642
- rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5572
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2510
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1935
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:724
- sock_no_sendpage+0xf3/0x130 net/core/sock.c:2998
- kernel_sendpage.part.0+0x1a0/0x340 net/socket.c:3504
- kernel_sendpage net/socket.c:3501 [inline]
- sock_sendpage+0xe5/0x140 net/socket.c:1003
- pipe_to_sendpage+0x2ad/0x380 fs/splice.c:364
- splice_from_pipe_feed fs/splice.c:418 [inline]
- __splice_from_pipe+0x43e/0x8a0 fs/splice.c:562
- splice_from_pipe fs/splice.c:597 [inline]
- generic_splice_sendpage+0xd4/0x140 fs/splice.c:746
- do_splice_from fs/splice.c:767 [inline]
- do_splice+0xb7e/0x1960 fs/splice.c:1079
- __do_splice+0x134/0x250 fs/splice.c:1144
- __do_sys_splice fs/splice.c:1350 [inline]
- __se_sys_splice fs/splice.c:1332 [inline]
- __x64_sys_splice+0x198/0x250 fs/splice.c:1332
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f46c5794669
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 d1 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fff2ed06cc8 EFLAGS: 00000246 ORIG_RAX: 0000000000000113
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007f46c5794669
-RDX: 0000000000000004 RSI: 0000000000000000 RDI: 0000000000000003
-RBP: 0000000000000000 R08: 0000000000010976 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007fff2ed06cf8
-R13: 00007fff2ed06d30 R14: 00007fff2ed06d10 R15: 0000000000000e44
-
-Allocated by task 30364:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
- kasan_set_track mm/kasan/common.c:46 [inline]
- set_alloc_info mm/kasan/common.c:434 [inline]
- ____kasan_kmalloc mm/kasan/common.c:513 [inline]
- ____kasan_kmalloc mm/kasan/common.c:472 [inline]
- __kasan_kmalloc+0xa1/0xd0 mm/kasan/common.c:522
- kasan_kmalloc include/linux/kasan.h:264 [inline]
- kmem_cache_alloc_trace+0x1e4/0x480 mm/slab.c:3575
- kmalloc include/linux/slab.h:591 [inline]
- kzalloc include/linux/slab.h:721 [inline]
- taprio_change+0x5fb/0x4160 net/sched/sch_taprio.c:1477
- qdisc_change net/sched/sch_api.c:1338 [inline]
- tc_modify_qdisc+0xd9a/0x1a60 net/sched/sch_api.c:1640
- rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5572
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2510
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1935
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:724
- sock_no_sendpage+0xf3/0x130 net/core/sock.c:2998
- kernel_sendpage.part.0+0x1a0/0x340 net/socket.c:3504
- kernel_sendpage net/socket.c:3501 [inline]
- sock_sendpage+0xe5/0x140 net/socket.c:1003
- pipe_to_sendpage+0x2ad/0x380 fs/splice.c:364
- splice_from_pipe_feed fs/splice.c:418 [inline]
- __splice_from_pipe+0x43e/0x8a0 fs/splice.c:562
- splice_from_pipe fs/splice.c:597 [inline]
- generic_splice_sendpage+0xd4/0x140 fs/splice.c:746
- do_splice_from fs/splice.c:767 [inline]
- do_splice+0xb7e/0x1960 fs/splice.c:1079
- __do_splice+0x134/0x250 fs/splice.c:1144
- __do_sys_splice fs/splice.c:1350 [inline]
- __se_sys_splice fs/splice.c:1332 [inline]
- __x64_sys_splice+0x198/0x250 fs/splice.c:1332
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Freed by task 19:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
- kasan_set_track+0x1c/0x30 mm/kasan/common.c:46
- kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:360
- ____kasan_slab_free mm/kasan/common.c:366 [inline]
- ____kasan_slab_free mm/kasan/common.c:328 [inline]
- __kasan_slab_free+0xd1/0x110 mm/kasan/common.c:374
- kasan_slab_free include/linux/kasan.h:230 [inline]
- __cache_free mm/slab.c:3445 [inline]
- kfree+0x10a/0x2c0 mm/slab.c:3803
- rcu_do_batch kernel/rcu/tree.c:2508 [inline]
- rcu_core+0x7ab/0x1470 kernel/rcu/tree.c:2743
- __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
-
-Last potentially related work creation:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
- kasan_record_aux_stack+0xa7/0xd0 mm/kasan/generic.c:348
- __call_rcu kernel/rcu/tree.c:2987 [inline]
- call_rcu+0xb1/0x750 kernel/rcu/tree.c:3067
- taprio_change+0x2fe5/0x4160 net/sched/sch_taprio.c:1597
- qdisc_change net/sched/sch_api.c:1338 [inline]
- tc_modify_qdisc+0xd9a/0x1a60 net/sched/sch_api.c:1640
- rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5572
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2510
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1935
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:724
- sock_no_sendpage+0xf3/0x130 net/core/sock.c:2998
- kernel_sendpage.part.0+0x1a0/0x340 net/socket.c:3504
- kernel_sendpage net/socket.c:3501 [inline]
- sock_sendpage+0xe5/0x140 net/socket.c:1003
- pipe_to_sendpage+0x2ad/0x380 fs/splice.c:364
- splice_from_pipe_feed fs/splice.c:418 [inline]
- __splice_from_pipe+0x43e/0x8a0 fs/splice.c:562
- splice_from_pipe fs/splice.c:597 [inline]
- generic_splice_sendpage+0xd4/0x140 fs/splice.c:746
- do_splice_from fs/splice.c:767 [inline]
- do_splice+0xb7e/0x1960 fs/splice.c:1079
- __do_splice+0x134/0x250 fs/splice.c:1144
- __do_sys_splice fs/splice.c:1350 [inline]
- __se_sys_splice fs/splice.c:1332 [inline]
- __x64_sys_splice+0x198/0x250 fs/splice.c:1332
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Second to last potentially related work creation:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
- kasan_record_aux_stack+0xa7/0xd0 mm/kasan/generic.c:348
- __call_rcu kernel/rcu/tree.c:2987 [inline]
- call_rcu+0xb1/0x750 kernel/rcu/tree.c:3067
- taprio_change+0x2fe5/0x4160 net/sched/sch_taprio.c:1597
- qdisc_change net/sched/sch_api.c:1338 [inline]
- tc_modify_qdisc+0xd9a/0x1a60 net/sched/sch_api.c:1640
- rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5572
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2510
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1935
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:724
- sock_no_sendpage+0xf3/0x130 net/core/sock.c:2998
- kernel_sendpage.part.0+0x1a0/0x340 net/socket.c:3504
- kernel_sendpage net/socket.c:3501 [inline]
- sock_sendpage+0xe5/0x140 net/socket.c:1003
- pipe_to_sendpage+0x2ad/0x380 fs/splice.c:364
- splice_from_pipe_feed fs/splice.c:418 [inline]
- __splice_from_pipe+0x43e/0x8a0 fs/splice.c:562
- splice_from_pipe fs/splice.c:597 [inline]
- generic_splice_sendpage+0xd4/0x140 fs/splice.c:746
- do_splice_from fs/splice.c:767 [inline]
- do_splice+0xb7e/0x1960 fs/splice.c:1079
- __do_splice+0x134/0x250 fs/splice.c:1144
- __do_sys_splice fs/splice.c:1350 [inline]
- __se_sys_splice fs/splice.c:1332 [inline]
- __x64_sys_splice+0x198/0x250 fs/splice.c:1332
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The buggy address belongs to the object at ffff888079b90000
- which belongs to the cache kmalloc-96 of size 96
-The buggy address is located 64 bytes inside of
- 96-byte region [ffff888079b90000, ffff888079b90060)
-The buggy address belongs to the page:
-page:ffffea0001e6e400 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff888079b90f80 pfn:0x79b90
-flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000000200 ffffea00006bcf88 ffffea0001e3b588 ffff888010c40300
-raw: ffff888079b90f80 ffff888079b90000 0000000100000006 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0x242220(__GFP_HIGH|__GFP_ATOMIC|__GFP_NOWARN|__GFP_COMP|__GFP_THISNODE), pid 8434, ts 1000501276831, free_ts 996338348587
- prep_new_page mm/page_alloc.c:2424 [inline]
- get_page_from_freelist+0xa72/0x2f80 mm/page_alloc.c:4153
- __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5375
- __alloc_pages_node include/linux/gfp.h:570 [inline]
- kmem_getpages mm/slab.c:1377 [inline]
- cache_grow_begin+0x75/0x460 mm/slab.c:2593
- cache_alloc_refill+0x27f/0x380 mm/slab.c:2965
- ____cache_alloc mm/slab.c:3048 [inline]
- ____cache_alloc mm/slab.c:3031 [inline]
- __do_cache_alloc mm/slab.c:3275 [inline]
- slab_alloc mm/slab.c:3316 [inline]
- kmem_cache_alloc_trace+0x38c/0x480 mm/slab.c:3573
- kmalloc include/linux/slab.h:591 [inline]
- dst_cow_metrics_generic+0x48/0x1e0 net/core/dst.c:199
- dst_metrics_write_ptr include/net/dst.h:118 [inline]
- dst_metric_set include/net/dst.h:179 [inline]
- icmp6_dst_alloc+0x4f5/0x6c0 net/ipv6/route.c:3284
- mld_sendpack+0x56f/0xe40 net/ipv6/mcast.c:1815
- mld_send_cr net/ipv6/mcast.c:2127 [inline]
- mld_ifc_work+0x71c/0xdc0 net/ipv6/mcast.c:2659
- process_one_work+0x9bf/0x16b0 kernel/workqueue.c:2297
- worker_thread+0x658/0x11f0 kernel/workqueue.c:2444
- kthread+0x3e5/0x4d0 kernel/kthread.c:319
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-page last free stack trace:
- reset_page_owner include/linux/page_owner.h:24 [inline]
- free_pages_prepare mm/page_alloc.c:1338 [inline]
- free_pcp_prepare+0x2c5/0x780 mm/page_alloc.c:1389
- free_unref_page_prepare mm/page_alloc.c:3315 [inline]
- free_unref_page+0x19/0x690 mm/page_alloc.c:3394
- slab_destroy mm/slab.c:1627 [inline]
- slabs_destroy+0x89/0xc0 mm/slab.c:1647
- cache_flusharray mm/slab.c:3418 [inline]
- ___cache_free+0x4c6/0x610 mm/slab.c:3480
- qlink_free mm/kasan/quarantine.c:146 [inline]
- qlist_free_all+0x4e/0x110 mm/kasan/quarantine.c:165
- kasan_quarantine_reduce+0x180/0x200 mm/kasan/quarantine.c:272
- __kasan_slab_alloc+0x92/0xa0 mm/kasan/common.c:444
- kasan_slab_alloc include/linux/kasan.h:254 [inline]
- slab_post_alloc_hook mm/slab.h:519 [inline]
- slab_alloc mm/slab.c:3323 [inline]
- kmem_cache_alloc+0x25f/0x540 mm/slab.c:3507
- prepare_kernel_cred+0x27/0x890 kernel/cred.c:724
- call_usermodehelper_exec_async+0x10e/0x580 kernel/umh.c:91
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-
-Memory state around the buggy address:
- ffff888079b8ff00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff888079b8ff80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->ffff888079b90000: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
-                                           ^
- ffff888079b90080: fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
- ffff888079b90100: fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
-==================================================================
+-- 
+MST
 
