@@ -2,76 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34BE64328CD
-	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 23:10:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B3164328E9
+	for <lists+netdev@lfdr.de>; Mon, 18 Oct 2021 23:14:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231946AbhJRVMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 17:12:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59442 "EHLO mail.kernel.org"
+        id S232740AbhJRVRG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 17:17:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34402 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232545AbhJRVMc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Oct 2021 17:12:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2AF7D60FC3;
-        Mon, 18 Oct 2021 21:10:20 +0000 (UTC)
+        id S229524AbhJRVRF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Oct 2021 17:17:05 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 802AD6112D;
+        Mon, 18 Oct 2021 21:14:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634591420;
-        bh=j6kDwZb9t7Mb2ggxAZzllHjr38pFKLpEfd25hHxYlBY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IQw5Ciljfiko+c7/7bWO84+f/S0mcsvc1QqpOc6en6ceXcBRbQ7s2NSXa+bRzzMxy
-         BKR6JkVV78e2j/iCCKihu8taGA2+KY8Grl1OO8RUXqRBv7Xwxb4s7g/7SuLPm6covo
-         lZBBQEwUm+sQaIPjeSakAjlF4QIe6QvC8gFCj1OnCSGCpGxQEYLP7CW38TaJtesaCw
-         LZim/Va1Gc9LM2tjlTGIMTFS6wjrIwehJU6aheTi99A+830bVoAkk9q7i0R6Nc6/cG
-         n/YjRrOW+IilC9KiJhueXlTfLAy3PHICKEaszUJXaruikIBmbXEUf8O69/CCsx4K0Q
-         I2fluAvGaPyjQ==
+        s=k20201202; t=1634591693;
+        bh=EWaVbvXwPOfOJaJ7PODosMCA0CEx1uJeH4dhO1/nBAo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HjAbFjoEzwcMFpkYfB9go++lcHB6GCAHM+Hqi9fuLfp0pNj3rgoGQVkmFmqg03ODE
+         95Adu0msWYYd/6ziLpBOACC3e2uJTPSho3A4nk6wL3ASwOuQoFhxgR0RIaS8d5GFiv
+         KTyNP1Vio8rqvReJTD7Oz/XJVoCl4JvcQs6l+DHDAxen6rc+iOW1frKATzGj51aGgL
+         qq/V1YovIi0fRD0Qw2k1WL4PjKBb3boCE/nRtDriDdGmRBgxP8rkDKHvKN47VFdyhg
+         qHd+qcOrWAFCzkwnmHvlrfFww8VAEsH8VG8NgqoTz5ikcJDWwFJSgESz9LPd84PgjW
+         9TV2w+G8UqKeg==
+Date:   Mon, 18 Oct 2021 14:14:52 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, olteanv@gmail.com, andrew@lunn.ch,
-        idosch@idosch.org, f.fainelli@gmail.com, snelson@pensando.io,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 6/6] ethernet: sparx5: use eth_hw_addr_gen()
-Date:   Mon, 18 Oct 2021 14:10:07 -0700
-Message-Id: <20211018211007.1185777-7-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211018211007.1185777-1-kuba@kernel.org>
-References: <20211018211007.1185777-1-kuba@kernel.org>
+To:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     h.morris@cascoda.com, alex.aring@gmail.com, davem@davemloft.net,
+        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] ieee802154: Remove redundant 'flush_workqueue()' calls
+Message-ID: <20211018141452.544931a7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <0a080522-a30b-8b78-86d2-66c1c1a5f604@datenfreihafen.org>
+References: <fedb57c4f6d4373e0d6888d13ad2de3a1d315d81.1634235880.git.christophe.jaillet@wanadoo.fr>
+        <0a080522-a30b-8b78-86d2-66c1c1a5f604@datenfreihafen.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
-of VLANs...") introduced a rbtree for faster Ethernet address look
-up. To maintain netdev->dev_addr in this tree we need to make all
-the writes to it got through appropriate helpers.
+On Sat, 16 Oct 2021 22:54:52 +0200 Stefan Schmidt wrote:
+> I have nothing else in my ieee802154 tree for net right now so it would 
+> be great if you could take it directly. 
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+Do you mean net or net-next? This looks like net-next material.
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c b/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
-index b21ebaa32d7e..e042f117dc7a 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
-@@ -200,7 +200,6 @@ struct net_device *sparx5_create_netdev(struct sparx5 *sparx5, u32 portno)
- {
- 	struct sparx5_port *spx5_port;
- 	struct net_device *ndev;
--	u64 val;
- 
- 	ndev = devm_alloc_etherdev(sparx5->dev, sizeof(struct sparx5_port));
- 	if (!ndev)
-@@ -216,8 +215,7 @@ struct net_device *sparx5_create_netdev(struct sparx5 *sparx5, u32 portno)
- 	ndev->netdev_ops = &sparx5_port_netdev_ops;
- 	ndev->ethtool_ops = &sparx5_ethtool_ops;
- 
--	val = ether_addr_to_u64(sparx5->base_mac) + portno + 1;
--	u64_to_ether_addr(val, ndev->dev_addr);
-+	eth_hw_addr_gen(ndev, sparx5->base_mac, portno + 1);
- 
- 	return ndev;
- }
--- 
-2.31.1
-
+Just to be sure, applying directly is not a problem.
