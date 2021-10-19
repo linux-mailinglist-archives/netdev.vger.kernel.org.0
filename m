@@ -2,75 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80EC14337E0
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 15:58:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 545C2433814
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 16:09:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231231AbhJSOAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 10:00:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57570 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235754AbhJSOAN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 10:00:13 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30675C061746
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 06:58:01 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id s17so20371475ioa.13
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 06:58:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=szeolAqmJqd0hJn5d47PHeNOyZWuU1CeFrejo0YAi2g=;
-        b=YUmYghPXAXM38IEdzvvt1fZJ7fHt0ezT3Kn18p/MFWnxsFI6airBzGg9Xi02XsxkZo
-         utveEhuDsBQUSedSSwGgkPTRaS7CSvDUSt/q2sTMWe+EFmP7cpXQOSY4HTFdiIJ/wvwl
-         1eFTQCdaZ2ZzlAaCFDIU+xddbIaRGvpYPLueO1oKxqob9mFRhWWFbusNNq3jKYiCVPQT
-         ZLBhSMzjqO7XmBoVASk/lNSCjcVEZyUhc2RhgQJEDqqDAhdiy5sLIN8FiSZGz62+porO
-         XezxuKdM1l4JnBBigapkkGgn4OALQlgD0uPq+7/V2zcINcIVTPbeVUF3Y3xsGRuklRxm
-         P3fQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=szeolAqmJqd0hJn5d47PHeNOyZWuU1CeFrejo0YAi2g=;
-        b=upg73brmpf3mtlxLadw3CTMsKgSKKG8BRl4B6hsLk6ZIvTmhtnqi7Ix0yPpZSXVbQ8
-         9Sdcy+9ch1RykIogYQdUqOYweVAzJ5UU+oGryytZtWXJlrd9PmSonXu0riSiUNRvJt0V
-         aJTsNFMYAxn9dXezlF42he0FYfMoyXqsnst4xhL5AICx0S+wAe5N7X+cENlbsKMTvExa
-         gqiCBGgmruwXgMD+PL5Fun0K8c1laiIRpN5xtCwHwNHb51To0F/hmEkwqmalGTKuqsdm
-         sPOCOFrm0Ro/PsAA7L4My4dU14q19QPZia8c1PQ8Voan03R+GUvc8+n5mftQNvkzcCUu
-         +kjg==
-X-Gm-Message-State: AOAM5321bqtKJ0nKQoRjVIEveSMiUMNfI1V5yPdbedKFL4MBySyH8UiJ
-        BFz7/s5yom1eZhDsujBP73XqL59tfMxs2lAcowk=
-X-Google-Smtp-Source: ABdhPJygz0nj7NVNIFZX0orUMNW6iqulKGL3iyEAj+zIutp8oGrI/gnbTb7nk3HwcKLi2ENfgGZkCsL9UYybdE3PiG0=
-X-Received: by 2002:a02:b013:: with SMTP id p19mr4423529jah.38.1634651880543;
- Tue, 19 Oct 2021 06:58:00 -0700 (PDT)
+        id S229930AbhJSOLl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 10:11:41 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:21504 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232726AbhJSOLk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 10:11:40 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1634652567; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=WY2I3/9Ukehmx/Ml8RRSY/034uNGRLFMxiyy7ZlPyKo=; b=w29hNv4FRxFTPbMyQPfgMcAgQbvVdwrgXAn8II9d8UDevbMGINqvuGCR0oWGafZEyQPoqZFJ
+ ydd32IVKItx10Nr9NKj+XwnDBnJZPqWFRo0YSnguzcI3hZo/1C9U7j9RMsr9ZaGnHPSVrpwg
+ cY0NIA0odHFuE2hm97LEGmxz4oU=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
+ 616ed0b8b03398c06c521e8d (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 19 Oct 2021 14:05:44
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 386C5C4360C; Tue, 19 Oct 2021 14:05:44 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id B3E66C4338F;
+        Tue, 19 Oct 2021 14:05:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org B3E66C4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?utf-8?Q?Beno?= =?utf-8?Q?=C3=AEt?= Cousson 
+        <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        David Lechner <david@lechnology.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        "open list\:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "open list\:TI ETHERNET SWITCH DRIVER \(CPSW\)" 
+        <linux-omap@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Subject: Re: [PATCH 0/3] dt-bindings: net: TI wlcore json schema conversion and fix
+References: <cover.1634646975.git.geert+renesas@glider.be>
+        <87a6j5gmvg.fsf@codeaurora.org>
+        <CAMuHMdWEwsK=jUt=T8irpAdjocLtAjajBCacGHnu4fKKio6ZbA@mail.gmail.com>
+Date:   Tue, 19 Oct 2021 17:05:37 +0300
+In-Reply-To: <CAMuHMdWEwsK=jUt=T8irpAdjocLtAjajBCacGHnu4fKKio6ZbA@mail.gmail.com>
+        (Geert Uytterhoeven's message of "Tue, 19 Oct 2021 15:48:03 +0200")
+Message-ID: <8735oxgle6.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Received: by 2002:a02:c904:0:0:0:0:0 with HTTP; Tue, 19 Oct 2021 06:58:00
- -0700 (PDT)
-Reply-To: mrsaishag45@gmail.com
-From:   Mrs Aisha Al-Qaddafi <gaddafimrsaisha155@gmail.com>
-Date:   Tue, 19 Oct 2021 06:58:00 -0700
-Message-ID: <CAATVZ=RF26WcfuRtt_T3fYejL6_AwzGxM8xHSb06XLsZUz0pEg@mail.gmail.com>
-Subject: Dear Friend,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+Geert Uytterhoeven <geert@linux-m68k.org> writes:
 
-I came across your e-mail contact prior to a private search while in
-need of your assistance. I am Aisha Al-Qaddafi, the only biological
-Daughter of Former President of Libya Col. Muammar Al-Qaddafi. Am a
-single Mother and a Widow with three Children.
+> On Tue, Oct 19, 2021 at 3:33 PM Kalle Valo <kvalo@codeaurora.org> wrote:
+>> Geert Uytterhoeven <geert+renesas@glider.be> writes:
+>> > This patch series converts the Device Tree bindings for the Texas
+>> > Instruments Wilink Wireless LAN and Bluetooth Controllers to
+>> > json-schema, after fixing an issue in a Device Tree source file.
+>> >
+>> > Thanks for your comments!
+>> >
+>> > Geert Uytterhoeven (3):
+>> >   ARM: dts: motorola-mapphone: Drop second ti,wlcore compatible value
+>> >   dt-bindings: net: wireless: ti,wlcore: Convert to json-schema
+>> >   dt-bindings: net: ti,bluetooth: Convert to json-schema
+>> >
+>> >  .../devicetree/bindings/net/ti,bluetooth.yaml |  91 ++++++++++++
+>> >  .../devicetree/bindings/net/ti-bluetooth.txt  |  60 --------
+>> >  .../bindings/net/wireless/ti,wlcore,spi.txt   |  57 --------
+>> >  .../bindings/net/wireless/ti,wlcore.txt       |  45 ------
+>> >  .../bindings/net/wireless/ti,wlcore.yaml      | 134 ++++++++++++++++++
+>> >  .../boot/dts/motorola-mapphone-common.dtsi    |   2 +-
+>> >  arch/arm/boot/dts/omap3-gta04a5.dts           |   2 +-
+>> >  7 files changed, 227 insertions(+), 164 deletions(-)
+>> >  create mode 100644 Documentation/devicetree/bindings/net/ti,bluetooth.yaml
+>> >  delete mode 100644 Documentation/devicetree/bindings/net/ti-bluetooth.txt
+>> >  delete mode 100644 Documentation/devicetree/bindings/net/wireless/ti,wlcore,spi.txt
+>> >  delete mode 100644 Documentation/devicetree/bindings/net/wireless/ti,wlcore.txt
+>> >  create mode 100644 Documentation/devicetree/bindings/net/wireless/ti,wlcore.yaml
+>>
+>> Via which tree should these go?
+>
+> The DTS change should go through the OMAP tree.
+> The binding changes through the net or DT trees.
+>
+> I kept everything together for an improved overview.
 
-I have investment funds worth Twenty Seven Million Five Hundred
-Thousand United State Dollar ($27.500.000.00 ) and i need a trusted
-investment Manager/Partner because of my current refugee status,
-however, I am interested in you for investment project assistance in
-your country, may be from there, we can build business relationship in
-the nearest future.
+Good, thanks. I'll then drop these from my queue.
 
-I am willing to negotiate an investment/business profit sharing ratio
-with you based on the future investment earning profits.
-Best Regards
-Mrs Aisha Al-Qaddafi
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
