@@ -2,54 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3A244335F2
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 14:29:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26A3E4335FB
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 14:30:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231441AbhJSMbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 08:31:24 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46496 "EHLO vps0.lunn.ch"
+        id S235586AbhJSMc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 08:32:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58914 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230097AbhJSMbW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Oct 2021 08:31:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=4KPabGMaD3wPi9aIZhTTDGiCmqEZZ5KOQzX/xnMFK5c=; b=VhBMmqOHyvEmQuDl3D8SGZQPPM
-        xFEqu3sRwnKlaXlypIFyzG7eMiNc7mf/R7H1crPxPT3+xkgRzZDm8Y9TZTShnxLDhChIp56acq1Xg
-        ghzKcxNFng2fA/V4bjy06voGS4M6yyfDzg689NC8nnmS/s64dFXhIjClXmAVOKCIwkOg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mcoEn-00B4gv-5L; Tue, 19 Oct 2021 14:29:01 +0200
-Date:   Tue, 19 Oct 2021 14:29:01 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jie Luo <quic_luoj@quicinc.com>
-Cc:     Luo Jie <luoj@codeaurora.org>, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sricharan@codeaurora.org
-Subject: Re: [PATCH v3 03/13] net: phy: at803x: improve the WOL feature
-Message-ID: <YW66DXOIt8GrR2IQ@lunn.ch>
-References: <20211018033333.17677-1-luoj@codeaurora.org>
- <20211018033333.17677-4-luoj@codeaurora.org>
- <YW2/wck2NPhgwjuL@lunn.ch>
- <0ba3022d-9879-bf85-251d-3f48b9cff93b@quicinc.com>
+        id S235513AbhJSMcZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Oct 2021 08:32:25 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id E2FF86137E;
+        Tue, 19 Oct 2021 12:30:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634646613;
+        bh=XyyFo7VCfQkK4qvOwoiYg2WPBpG6l2mNFmmJjx+2ql0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=nwTXKaK7amNOacCPQ9ybufYuxn+NZWOQ4pnyi+Y8TY5YrFg+hg12fRTeckItWWg5J
+         Q2zTX3imo0YCyjd4Y0BynEo3tcuBoxSd2C0wrFkGYL4vP+3n0icWPiz/N+NveqSNTN
+         IltCs8R5s5ixy/rtRIhT+Ze4fZtcjuCAVLv9sx0KzBxVmrjVnaUDnjW4++ykhse1E8
+         m2luSzitIfTcv67gWQRnl8E4wadLbxWy3BB0se1MegoZTXiaXyAJQGfwXo9+1q37rW
+         PVqUPuevhQ8BruYzfHhlFIm8SyuypufJwPugNe472IgXdfrhJNZx7sCEmevj0YlMd5
+         hUeV+eAN7GHGg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D9C73609D8;
+        Tue, 19 Oct 2021 12:30:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0ba3022d-9879-bf85-251d-3f48b9cff93b@quicinc.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: ethernet: ixp4xx: Make use of dma_pool_zalloc() instead
+ of dma_pool_alloc/memset()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163464661288.12016.993642519618586973.git-patchwork-notify@kernel.org>
+Date:   Tue, 19 Oct 2021 12:30:12 +0000
+References: <20211018131630.328-1-caihuoqing@baidu.com>
+In-Reply-To: <20211018131630.328-1-caihuoqing@baidu.com>
+To:     Cai Huoqing <caihuoqing@baidu.com>
+Cc:     khalasa@piap.pl, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Hi Andrew,
+Hello:
+
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Mon, 18 Oct 2021 21:16:29 +0800 you wrote:
+> Replacing dma_pool_alloc/memset() with dma_pool_zalloc()
+> to simplify the code.
 > 
-> when this register AT803X_INTR_STATUS bits are cleared after read, we can't
-> clear only WOL interrupt here.
+> Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
+> ---
+>  drivers/net/ethernet/xscale/ixp4xx_eth.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
 
-O.K. But you do have the value of the interrupt status register. So
-you could call phy_trigger_machine(phydev) if there are any other
-interrupt pending. They won't get lost that way.
+Here is the summary with links:
+  - net: ethernet: ixp4xx: Make use of dma_pool_zalloc() instead of dma_pool_alloc/memset()
+    https://git.kernel.org/netdev/net-next/c/05be94633783
 
-	  Andrew
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
