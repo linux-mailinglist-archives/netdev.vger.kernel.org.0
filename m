@@ -2,80 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACA0F43397F
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 17:00:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C081B4339A1
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 17:02:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232633AbhJSPCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 11:02:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53256 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232126AbhJSPCe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Oct 2021 11:02:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5D1F9613A4;
-        Tue, 19 Oct 2021 15:00:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634655619;
-        bh=k1ZFk/5FR8UhXYQ4Om34BhWCra8K/FHBV30wgh0SiRg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XNSa3rfwGmmK3PTbmdF8eIfrZIjQX719ot7oeeJzRd0Rw+kfEc2SvqMFPGYjVHHur
-         0/+qiafPznSGq979mAwD17VGfxJlGGrbdKj3pgaVzt+mTGqHP1U6pw0qkeYD0pTtzi
-         PUQ3zd8xu9EzGAKqVGJ9shp9hD0Adn4LlI2N48t9jJ0QuWH6Xw3pxaXIQtyZrTxCek
-         7sq8zAJC+OklUjNMJhsJsl7MZybTe764tqz9viskxFB7D8p4DFgLKEo4dEHBcw+GiZ
-         cQCHG16jIWXJwGzdYjNfXpG9KtQN6gYRRhx7AMgtWe7HNdado0cZU1EhZ71b6PIzG8
-         WZs48BITVHnbg==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        romieu@fr.zoreil.com
-Subject: [PATCH net-next 6/6] ethernet: via-velocity: use eth_hw_addr_set()
-Date:   Tue, 19 Oct 2021 08:00:11 -0700
-Message-Id: <20211019150011.1355755-7-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211019150011.1355755-1-kuba@kernel.org>
-References: <20211019150011.1355755-1-kuba@kernel.org>
+        id S233425AbhJSPEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 11:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44130 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233353AbhJSPEj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 11:04:39 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC26C06161C
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 08:02:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=0xczBOFznEKiydkdssDmvhHhjjkJOIO47q11K7PlmOE=; b=dgYh5TGyOjs2hQjFHexqlzXdR6
+        i4YogkbSQWJNCp5Ecs3QGVxA/qR3GKU3ZjrpH5XcfLNU94vKGwmNi/uc2MuG644ESv2tL9S+3cyHu
+        9l92I0Na50lhUX4zAePZeY1FEcLg9xihSMPpeQ9nd1LDp0eWkbDnJm2GoqFQ1W6z0h6GOKjh/v/GW
+        oY3XXy1Ke/2KQ7ApZLCyZneICUnTewxRe4zlKADiFpSpyFgdGODGGyzF3oAek8Obbm7wCxdbQYwYI
+        NIKhS1fOeqSpdXvux/7o1HoaeIYqBjZdFDQks29vAXgcYk7U7NhpJL13bdiiINcR0gTBuH/IqKVxK
+        fWBWpy1A==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55192)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mcqdA-0006JD-Cv; Tue, 19 Oct 2021 16:02:20 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mcqd8-0006vC-Hy; Tue, 19 Oct 2021 16:02:18 +0100
+Date:   Tue, 19 Oct 2021 16:02:18 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     Antoine Tenart <atenart@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: Re: [PATCH v2 1/2] net: macb: Clean up macb_validate
+Message-ID: <YW7d+qm/hnTZ80Ar@shell.armlinux.org.uk>
+References: <20211011165517.2857893-1-sean.anderson@seco.com>
+ <163402758460.4280.9175185858026827934@kwain>
+ <YWhcEzZzrE5lMxD4@shell.armlinux.org.uk>
+ <82025310-10f3-28fd-1b52-2b3969d5f00b@seco.com>
+ <YWi4a5Jme5IDSuKE@shell.armlinux.org.uk>
+ <95defe0f-542c-b93d-8d66-745130fbe580@seco.com>
+ <YWoFAiCRZJGnkBJB@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YWoFAiCRZJGnkBJB@shell.armlinux.org.uk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
-of VLANs...") introduced a rbtree for faster Ethernet address look
-up. To maintain netdev->dev_addr in this tree we need to make all
-the writes to it got through appropriate helpers.
+On Fri, Oct 15, 2021 at 11:47:30PM +0100, Russell King (Oracle) wrote:
+> I have been working on it but haven't finished the patches yet. There's
+> a few issues that came up with e.g. DSA and mvneta being able to switch
+> between different speeds with some SFP modules that have needed other
+> tweaks.
 
-Read the address into an array on the stack, then call
-eth_hw_addr_set().
+Okay, have a look at:
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-CC: romieu@fr.zoreil.com
----
- drivers/net/ethernet/via/via-velocity.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+http://git.armlinux.org.uk/cgit/linux-arm.git/log/?h=net-queue
 
-diff --git a/drivers/net/ethernet/via/via-velocity.c b/drivers/net/ethernet/via/via-velocity.c
-index 4b9c30f735b5..be2b992f24d9 100644
---- a/drivers/net/ethernet/via/via-velocity.c
-+++ b/drivers/net/ethernet/via/via-velocity.c
-@@ -2767,6 +2767,7 @@ static int velocity_probe(struct device *dev, int irq,
- 	struct velocity_info *vptr;
- 	struct mac_regs __iomem *regs;
- 	int ret = -ENOMEM;
-+	u8 addr[ETH_ALEN];
- 
- 	/* FIXME: this driver, like almost all other ethernet drivers,
- 	 * can support more than MAX_UNITS.
-@@ -2820,7 +2821,8 @@ static int velocity_probe(struct device *dev, int irq,
- 	mac_wol_reset(regs);
- 
- 	for (i = 0; i < 6; i++)
--		netdev->dev_addr[i] = readb(&regs->PAR[i]);
-+		addr[i] = readb(&regs->PAR[i]);
-+	eth_hw_addr_set(netdev, addr);
- 
- 
- 	velocity_get_options(&vptr->options, velocity_nics);
+and the patches from "net: enetc: remove interface checks in
+enetc_pl_mac_validate ()" down to the "net-merged" branch label.
+
+That set of patches add the supported_interfaces bitmap, uses it for
+validation purposes, converts all but one of the ethernet drivers
+over to using it, and then simplifies the validate() implementations.
+
 -- 
-2.31.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
