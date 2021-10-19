@@ -2,164 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB7C0432AA6
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 02:01:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46FC0432ABF
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 02:02:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233627AbhJSADP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 20:03:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37768 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233662AbhJSADN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 20:03:13 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA93C06161C;
-        Mon, 18 Oct 2021 17:01:01 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id y7so16040668pfg.8;
-        Mon, 18 Oct 2021 17:01:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=CsvmshUK1J5oLgHlkNzVwU1CrFBDnoDJiUW4z7Gb9/k=;
-        b=UJWjY63bLaZzldwpkWRcKrmeXvsgYJu0Z59gypu6tOjd8wMJ5EYIeKpAkJ05nRmxzQ
-         yWYhvBpAcwi4K0JIFAMep9yV1a4DHcJwAx6N0Pumx9FG8aHHuUzM/u8N/d+hg8A4UqoV
-         4+kyLwF7MjLr7dv9YW/DMDiVQtem48XRPKRwF2Qn5kNOqzRDF2dfCPAK1/jS7eph+dXU
-         ldDdt4X1KZNm+yOEc+oRs+qrHeEkv4N6TaY1qTM5t6BKa7zC1G3NodhgSnfRBsi3Dxu+
-         nvxYl//ZiWslR+d9vub/OMCLrczrN7Cpbg7LzT4UQhR5AvY2MaHg2VvJ5hlfMcjUGLRs
-         wK5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=CsvmshUK1J5oLgHlkNzVwU1CrFBDnoDJiUW4z7Gb9/k=;
-        b=wyaF9ZOnu8yOQt9sObUoUg6OCpLMSkj6AsZdOiPfTH+2uhKnKMN1d6bANbTylzWcIh
-         Tw/eYSyoiuU5+yYom/4JU3cLWNd7NFx18NxzqyZ1HwZ+F1PpCaAZP71GFllK5vj41QyJ
-         lLvKYCqAP5hvnmkXrRBNqF58k5BcsiBlOmdVVXIRYR464ACj3a6Xysf0WujZcjM6+dAr
-         NISiHCe773czbBDpNK3hQPWEn2cgzAFp3QkqTmfg/d64gfCRGZ0BXBp4lWAoe9SXKfrY
-         wOFsOhEFoBqNkXchLxDIzNpFkuwqvQ5vkzYAhoG8h1M3SUuhRoxhFMVdThYFFhQ9AG9G
-         9kSg==
-X-Gm-Message-State: AOAM530oZlxgGCd6gxyUEaLEoyxtWtbhlEksr1W1Hquc7HoOj17lbDKq
-        MT4yi+2/D9ufLpzlof/6YCo=
-X-Google-Smtp-Source: ABdhPJz2uYeVgr44Dl+rmwluHMNM5vtCNcpNBtKHRctEMRzWIOonaskLJb2hbvfRXV5kjo3nNzTlwQ==
-X-Received: by 2002:a63:1d25:: with SMTP id d37mr26010213pgd.52.1634601660981;
-        Mon, 18 Oct 2021 17:01:00 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:f01f])
-        by smtp.gmail.com with ESMTPSA id mi8sm556618pjb.20.2021.10.18.17.00.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Oct 2021 17:01:00 -0700 (PDT)
-Date:   Mon, 18 Oct 2021 17:00:58 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     Martin KaFai Lau <kafai@fb.com>,
+        id S233928AbhJSAEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 20:04:15 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:5764 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229529AbhJSAEO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 20:04:14 -0400
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19IKxRdM009446;
+        Mon, 18 Oct 2021 20:01:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=HaYbOhx0Jisq12+/LcjKuLODglGabQYZoqBazXr8XCQ=;
+ b=qB8pbIam8hdV66gGO61iM0IOm3QNuqT9M8SeG/flLtg7PFinCa/eg9K+6s4ssjKPaSsl
+ FCYCga1sslgi0TvfJnLxvAWzJl396XD28S75pEvnP4a5323UrI8/oMtzFaOQiPlfh5us
+ J/z/euag13TYUYTSQsl8GXOE8xutIcIPfRhL7A91fP9DadQ0Hgzzi3xG8z2I9zfxym+0
+ oKUIuQMrCETC+1lU6ad19ACFNGrhzymF8XtcZRQEobPBvBH0+ivb6VCgDegaW0cm/PCu
+ aGgpPZKOXohWuUxHbzSdcFVqJHR3PaR5cBX0YnZKT1wDLx601ijsEdJHG+W5GJsJy1R0 DQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3bsg9934ky-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 18 Oct 2021 20:01:35 -0400
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 19INqcE3011548;
+        Mon, 18 Oct 2021 20:01:34 -0400
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3bsg9934km-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 18 Oct 2021 20:01:34 -0400
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 19INbECB011563;
+        Tue, 19 Oct 2021 00:01:33 GMT
+Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
+        by ppma02dal.us.ibm.com with ESMTP id 3bqpcauyj5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Oct 2021 00:01:33 +0000
+Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
+        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 19J01Wf050987364
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 19 Oct 2021 00:01:32 GMT
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 41B2A12405B;
+        Tue, 19 Oct 2021 00:01:32 +0000 (GMT)
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8164C12405C;
+        Tue, 19 Oct 2021 00:01:30 +0000 (GMT)
+Received: from suka-w540.localdomain (unknown [9.160.15.50])
+        by b01ledav002.gho.pok.ibm.com (Postfix) with SMTP;
+        Tue, 19 Oct 2021 00:01:30 +0000 (GMT)
+Received: by suka-w540.localdomain (Postfix, from userid 1000)
+        id 9C1822E11C0; Mon, 18 Oct 2021 17:01:27 -0700 (PDT)
+Date:   Mon, 18 Oct 2021 17:01:27 -0700
+From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Dany Madden <drt@linux.ibm.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org,
+        linyunsheng@huawei.com, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Joanne Koong <joannekoong@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Kernel-team@fb.com
-Subject: Re: [PATCH bpf-next v2 0/3] Add XDP support for bpf_load_hdr_opt
-Message-ID: <20211019000058.ghklvg4saybzqk3o@ast-mbp>
-References: <20211006230543.3928580-1-joannekoong@fb.com>
- <87h7dsnbh5.fsf@toke.dk>
- <9f8c195c-9c03-b398-2803-386c7af99748@fb.com>
- <43bfb0fe-5476-c62c-51f2-a83da9fef659@iogearbox.net>
- <20211007235203.uksujks57djohg3p@kafai-mbp>
- <87lf33jh04.fsf@toke.dk>
+        Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Wei Wang <weiwan@google.com>, Taehee Yoo <ap420073@gmail.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Neil Horman <nhorman@redhat.com>,
+        Dust Li <dust.li@linux.alibaba.com>
+Subject: Re: [PATCH net v2] napi: fix race inside napi_enable
+Message-ID: <YW4K1/O51V/5/q1w@us.ibm.com>
+References: <20210918085232.71436-1-xuanzhuo@linux.alibaba.com>
+ <YW3t8AGxW6p261hw@us.ibm.com>
+ <20211018155503.74aeaba9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <dc6902364a8f91c4292fe1c5e01b24be@imap.linux.ibm.com>
+ <20211018164723.02919102@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87lf33jh04.fsf@toke.dk>
+In-Reply-To: <20211018164723.02919102@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-Operating-System: Linux 2.0.32 on an i486
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: BJs2fihDTGGfXqOoUH32BODcKCA-9sfq
+X-Proofpoint-ORIG-GUID: 4srfQZsquStLqasXLBIvmdvwZrteOhwa
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-10-18_07,2021-10-18_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1015
+ spamscore=0 malwarescore=0 phishscore=0 bulkscore=0 priorityscore=1501
+ adultscore=0 mlxlogscore=999 suspectscore=0 lowpriorityscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2109230001
+ definitions=main-2110180126
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 09, 2021 at 12:20:27AM +0200, Toke Høiland-Jørgensen wrote:
+Jakub Kicinski [kuba@kernel.org] wrote:
+> On Mon, 18 Oct 2021 16:36:36 -0700 Dany Madden wrote:
+> > > The BUG_ON() is here to make sure that when napi_enable() is called the
+> > > napi instance was dormant, i.e. disabled. We have "STATE_SCHED" bit set
+> > > on disabled NAPIs because that bit means ownership. Whoever disabled
+> > > the NAPI owns it.
+> > > 
+> > > That BUG_ON() could have been taken outside of the loop, there's no
+> > > point re-checking on every try.
+> > > 
+> > > Are you seeing NAPI-related failures? We had at least 3 reports in the
+> > > last two weeks of strange failures which look like NAPI state getting
+> > > corrupted on net-next...  
+> > 
+> > We hit two napi related crashes while attempting mtu size change.
+
+BTW these are with a couple of bug fixes in ibmvnic driver applied
+to 1e0083bd0777 ("gve: DQO: avoid unused variable warnings").
+
+We are trying to narrow it down to the following change that is
+required to be able to change mtu on ibmvnic.
+
 > 
-> So if we can't fix the verifier, maybe we could come up with a more
-> general helper for packet parsing? Something like:
-> 
-> bpf_for_each_pkt_chunk(ctx, offset, callback_fn, callback_arg)
-> {
->   ptr = ctx->data + offset;
->   while (ptr < ctx->data_end) {
->     offset = callback_fn(ptr, ctx->data_end, callback_arg);
->     if (offset == 0)
->       return 0;
->     ptr += offset;
->   }
->   
->   // out of bounds before callback was done
->   return -EINVAL;
-> }
+> Is it reproducible or happens rarely and randomly?
 
-We're starting to work on this since it will be useful not only for
-packet parsing, TLV parsing, but potentially any kind of 'for' loop iteration.
+Random. We have been testing for a couple of weeks but hit both today.
 
-> This would work for parsing any kind of packet header or TLV-style data
-> without having to teach the kernel about each header type. It'll have
-> quite a bit of overhead if all the callbacks happen via indirect calls,
-> but maybe the verifier can inline the calls (or at least turn them into
-> direct CALL instructions)?
+Sukadev
 
-Right. That's the main downside.
-If the bpf_for_each*() helper is simple enough the verifier can inline it
-similar to map_gen_lookup. In such case the indirect call will be a direct call,
-so the overhead won't be that bad, but it's still a function call and
-static function will have full prologue+epilogue.
-Converting static function into direct jump would be really challenging
-for the verifier and won't provide much benefit, since r6-r9 save/restore
-would need to happen anyway even for such 'inlined' static func, since
-llvm will be freely using r6-r9 for insns inside function body
-assuming that it's a normal function.
-
-May be there is a way to avoid call overhead with with clang extensions.
-If we want to do:
-int mem_eq(char *p1, char *p2, int size)
-{
-  int i;
-  for (i = 0; i < size; i++)
-    if (p1[i] != p2[i])
-      return 0;
-  return 1;
-}
-
-With clang extension we might write it as:
-int bpf_mem_eq(char *p1, char *p2, int size)
-{
-  int i = 0;
-  int iter;
-
-  iter = __builtin_for_until(i, size, ({
-      if (p1[i] != p2[i])
-        goto out;
-  }));
-  out:
-  if (iter != size)
-    return 0;
-  return 1;
-}
-
-The llvm will generate pseudo insns for this __builtin_for.
-The verifier will analyze the loop body for the range [0, size)
-and replace pseudo insns with normal branches after the verification.
-We might even keep the normal C syntax for loops and use
-llvm HardwareLoops pass to add pseudo insns.
-It's more or less the same ideas for loops we discussed before
-bounded loops were introduced.
-The main problem with bounded loops is that the loop body will
-typically be verified the number of times equal to the number of iterations.
-So for any non-trivial loop such iteration count is not much more
-than 100. The verifier can do scalar evolution analysis, but
-it's likely won't work for many cases and user experience
-will suffer. With __builtin_for the scalar evolution is not necessary,
-since induction variable is one and explicit and its range is explicit too.
-That enables single pass over loop body.
-One might argue that for (i = 0; i < 10000; i += 10) loops are
-necessary too, but instead of complicating the verifier with sparse
-ranges it's better to put that on users that can do:
-  iter = __builtin_for_until(i, 10000 / 10, ({
-      j = i * 10;
-      use j;
-  }));
-Single explicit induction variable makes the verification practical.
-The loop body won't be as heavily optimized as normal loop,
-but it's a good thing.
+---
+index 8f17096e614d..a1533979c670 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -1914,8 +1914,6 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
+        ind_bufp = &tx_scrq->ind_buf;
+ 
+        if (test_bit(0, &adapter->resetting)) {
+-               if (!netif_subqueue_stopped(netdev, skb))
+-                       netif_stop_subqueue(netdev, queue_num);
+                dev_kfree_skb_any(skb);
+ 
