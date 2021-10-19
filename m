@@ -2,96 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89B2843321D
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 11:23:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9459D433220
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 11:23:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235043AbhJSJZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 05:25:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50522 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235035AbhJSJZq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 05:25:46 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC323C06161C
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 02:23:33 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1mclLB-00052N-CE; Tue, 19 Oct 2021 11:23:25 +0200
-Received: from pengutronix.de (2a03-f580-87bc-d400-6267-dd6f-bd00-49b6.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:6267:dd6f:bd00:49b6])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 27707697F76;
-        Tue, 19 Oct 2021 09:23:21 +0000 (UTC)
-Date:   Tue, 19 Oct 2021 11:23:20 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Meng Li <Meng.Li@windriver.com>
-Cc:     wg@grandegger.com, davem@davemloft.net, kuba@kernel.org,
-        mailhol.vincent@wanadoo.fr, socketcan@hartkopp.net,
-        ramesh.shanmugasundaram@bp.renesas.com, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] driver: net: can: disable clock when it is in enable
- status
-Message-ID: <20211019092320.wrs2o7cmn4pmnirt@pengutronix.de>
-References: <20211019091416.16923-1-Meng.Li@windriver.com>
+        id S235006AbhJSJ0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 05:26:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35282 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231652AbhJSJ0F (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Oct 2021 05:26:05 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 33A176113D;
+        Tue, 19 Oct 2021 09:23:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634635433;
+        bh=ZvHmmk9NzSMdRMcuDJwACGSszzVGMNFFatXRDZYmeyw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=E28/Kz3gflNxyOGdLEfbDweru7NIthIRIAm68B1k5hjLbC3lTDCToUrZs5HFJETUZ
+         kVOMZuSxO3fd8upEjGxfLdr6q6SSeZ8t4VHEVtDdpAfTdtdx82ir/eW/SzhVNoVnwh
+         JO2H2vBcagrbeqbNJhLkRQlxqMTfh4UqIHEXT6GE0BlJc1uhl9XRrUGV4wABFdc8+t
+         DLD3ma7cYt2Qf0P9cUdHVOtMVzyAs0K+jQ9BzvmebRBmeodhGh5t5VsboGuvRjGCJB
+         jTJy5kq1Syv54qrqzc63btGgF1T0tTBSnrZyVkDYsx3GgZlrdLvR3qOfY1eL66R4s7
+         J2MP8hyPyslsA==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1mclLT-0003Ka-J1; Tue, 19 Oct 2021 11:23:44 +0200
+Date:   Tue, 19 Oct 2021 11:23:43 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Oliver Neukum <oneukum@suse.com>
+Cc:     syzbot <syzbot+76bb1d34ffa0adc03baa@syzkaller.appspotmail.com>,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] divide error in usbnet_start_xmit
+Message-ID: <YW6On2cAm1qLoidn@hovoldconsulting.com>
+References: <000000000000046acd05ceac1a72@google.com>
+ <c5a75b9b-bc2b-2bd8-f57c-833e6ca4c192@suse.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="gcthovzhffxiqrug"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20211019091416.16923-1-Meng.Li@windriver.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <c5a75b9b-bc2b-2bd8-f57c-833e6ca4c192@suse.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Oct 19, 2021 at 10:14:20AM +0200, Oliver Neukum wrote:
+> 
+> On 19.10.21 05:17, syzbot wrote:
+> > Hello,
+> >
+> > syzbot found the following issue on:
+> >
+> > HEAD commit:    c03fb16bafdf Merge 5.15-rc6 into usb-next
+> > git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=12d48f1f300000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=c27d285bdb7457e2
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=76bb1d34ffa0adc03baa
+> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14fe6decb00000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15c7bcaf300000
+> >
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+76bb1d34ffa0adc03baa@syzkaller.appspotmail.com
+> 
+> #syz test:
+> https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git c03fb16bafdf
+> 
+> From a5270791d4480e9a6bc009c69a4454039aa160e7 Mon Sep 17 00:00:00 2001
+> From: Oliver Neukum <oneukum@suse.com>
+> Date: Tue, 19 Oct 2021 10:02:42 +0200
+> Subject: [PATCH] usbnet: sanity check for maxpacket
+> 
+> We cannot leave maxpacket at 0 because we divide by it.
+> Devices that give us a 0 there are unlikely to work, but let's
+> assume a 1, so we don't oops and a least try to operate.
+> 
+> Signed-off-by: Oliver Neukum <oneukum@suse.com>
+> Reported-by: syzbot+76bb1d34ffa0adc03baa@syzkaller.appspotmail.com
+> ---
+>  drivers/net/usb/usbnet.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+> index 840c1c2ab16a..2bdc3e0c1579 100644
+> --- a/drivers/net/usb/usbnet.c
+> +++ b/drivers/net/usb/usbnet.c
+> @@ -1788,6 +1788,9 @@ usbnet_probe (struct usb_interface *udev, const
+> struct usb_device_id *prod)
+>      if (!dev->rx_urb_size)
+>          dev->rx_urb_size = dev->hard_mtu;
+>      dev->maxpacket = usb_maxpacket (dev->udev, dev->out, 1);
+> +    if (dev->maxpacket == 0)
+> +        /* that is a strange device */
+> +        dev->maxpacket = 1;
 
---gcthovzhffxiqrug
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Just bail out; what can you do with a 1-byte packet size? Also compare
+usbnet_get_endpoints() where such endpoints are ignored.
 
-On 19.10.2021 17:14:16, Meng Li wrote:
-> If disable a clock when it is already in disable status, there
-> will be a warning trace generated. So, it is need to confirm
-> whether what status the clock is in before disable it.
->=20
-> Fixes: a23b97e6255b ("can: rcar_can: Move Renesas CAN driver to rcar dir")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Meng Li <Meng.Li@windriver.com>
-
-Thanks for your patch. This problem should have been resolved with:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=
-=3Df7c05c3987dcfde9a4e8c2d533db013fabebca0d
-
-regards
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---gcthovzhffxiqrug
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmFujoAACgkQqclaivrt
-76nC/gf/TRlVrZAuKsSSQtKrMHoOPskhErX7SyAT4+3HLmjHx9ZI7TNUsQxzky5n
-1tuEXlcPzKC8TGSqFrrBBqIUTGEFgZFozuzDBhEvh/AUQRpyP+BTxr1tRrVMBEvl
-mxI9HYl/WDw38CgLNoqKuh1XlNcOPKjyXYnqWMCfmC5qAD3ilkKz+hjTyHwHxOKV
-bvicXaMaeHsle9kDMpPYA0gZ8WLxXuykBlLhZsaQXeYS8Xoq3cWfDQFPQkMT5g+l
-0qzusN90qhQfHYaZlxgXso6dhe9dxYP0G0AgGZCzWdyLhyNqZ4PfmtJeDMsAJrsK
-wEhtgYcl+LMQ7o8ivu8sBoFPWh0LmA==
-=LeJ8
------END PGP SIGNATURE-----
-
---gcthovzhffxiqrug--
+Johan
