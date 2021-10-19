@@ -2,62 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C19B3433385
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 12:31:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 756EE4333A3
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 12:37:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235227AbhJSKdT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 06:33:19 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:42872 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230117AbhJSKdS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 06:33:18 -0400
-Received: by mail-io1-f70.google.com with SMTP id j7-20020a0566022cc700b005d65f61a95fso12980378iow.9
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 03:31:06 -0700 (PDT)
+        id S234914AbhJSKjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 06:39:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:45902 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230097AbhJSKjU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 06:39:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634639827;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cAQsBHydgzMjOzRTPF8Ki+usRko1EEMZbSVZpLxCFAA=;
+        b=R1iBhi83wnc43WqZfNW/0KLxVLgKPrrhJi2qjMoOnc+6GQn0TBndRztzZ+SFIOvJuoiygl
+        JQIwy7C6XvpxBKEY3rn+GoYJkUQ63irt69+MvGz5l8piWwi0HjWAnTVwccqZmuiPoZz/ZY
+        /At1OeH6CqDwe3QQO656cAlPINo2OZs=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-29-AuYaaLrQPD-ZUSbEdG1YFQ-1; Tue, 19 Oct 2021 06:37:06 -0400
+X-MC-Unique: AuYaaLrQPD-ZUSbEdG1YFQ-1
+Received: by mail-wm1-f70.google.com with SMTP id 128-20020a1c0486000000b0030dcd45476aso2467002wme.0
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 03:37:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=hXd5vu2HVp+c/936Z+UfrXr6vwZDrrnzOmy4lULgqWc=;
-        b=Fjwy9MSpUuS9H90aZehxViRYW7VUG0pIWfYqwq5i0Li7XbLGrb12SDKesV4hP4m58t
-         OBnul38+34RIHkywBX8ybN7WpN1wHxtCZswAKVgJ/abdR/M6ahLq3jTHnRKFX6/ITsr0
-         X4oCgsm03ac/+q8yrthLYZzvHvgsQ8KPeqjgWOPPep2VbKd2d5kZbnWb4LmibgXd4civ
-         z+i+4aBQ5YQjb6oDaVbYQsu6h1b6mN5Oy7JmxV8MgkJKAOCs00vnWxvcuUTe6z0PcbHY
-         oVuFITcq5B1OKWFd4IddYkmgDpDVXSi6VDDSS6lEKNXqhy8xofX+Uka5+TOUgCApoa12
-         qRhg==
-X-Gm-Message-State: AOAM5310+pZgpkfcqIFkAXyLWLhn+KABbh52lrf6gYzrU4c3oNiS32W3
-        MsHKbJE4VvcY3qkIPx3jYWcLIfSDa5E+W9zyF3t/8o0llfVT
-X-Google-Smtp-Source: ABdhPJyFNinPrD+dC0GJvpY6bw/xoDh7KcP4ullLmIObAIatN5O9PX8AXOag91eqZ/lVKAJcOTn1fWXsLcc8pv2b121jymSzmI1v
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=cAQsBHydgzMjOzRTPF8Ki+usRko1EEMZbSVZpLxCFAA=;
+        b=t+vZzjbpkQebeInqQv7nynHhnLfKQZL7kAXsPtqsKQJ2yOOy2QOoNe9XKya3VsXRh+
+         mT3j9iRRIHBqi1hady3IV5MQ6S4YS5WuUkV1jKJxMwsqSWGGhug2e29V0/ayoKqblylQ
+         G7qTh3dSGehszn6Yp6L4m1vmS0HPdM0/qFx5XOfO4mXKaQDvTuFe+wfty2ADz0DNJhwa
+         2ZgmGcSZSbcjFyxFgrewaug97/jcPTyUFhf6Iq7ql6B0kZGtRCJZH0TEtphVHT827Ev1
+         9IP9INnA5hB7CCbyrlMG0e2Ch1xuPPXGu7gDSbrATf25TDCykaiXdXclW3sHXgKMEAGx
+         lleA==
+X-Gm-Message-State: AOAM532J6yiVhHBNygQq6OneYwTzJvwYmxcBnTX8EWv8OGUiaHWzj2oL
+        U/nsM4E8FUIzpP0xIr8/d3+ro7lt24vznBivBbtkJepXLNvvl6QbiXjOXcmQ1YCT/iTIkZYmpLH
+        ZOp5inCCJ7prNS8qb
+X-Received: by 2002:adf:8b84:: with SMTP id o4mr42842553wra.108.1634639825260;
+        Tue, 19 Oct 2021 03:37:05 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzVLveMMkJNDyTdvIMAyJyBw2e+/NydmNGsn4YI7SpswnHqSAORSosIXakO0U2k13gdqAkzKg==
+X-Received: by 2002:adf:8b84:: with SMTP id o4mr42842521wra.108.1634639824955;
+        Tue, 19 Oct 2021 03:37:04 -0700 (PDT)
+Received: from redhat.com ([2.55.24.172])
+        by smtp.gmail.com with ESMTPSA id i13sm2152294wmq.41.2021.10.19.03.37.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Oct 2021 03:37:03 -0700 (PDT)
+Date:   Tue, 19 Oct 2021 06:37:00 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH] virtio: Introduce a new kick interface
+ virtqueue_kick_try()
+Message-ID: <20211019063009-mutt-send-email-mst@kernel.org>
+References: <fdfca0e9-dd2c-13a2-39ed-b360f7bcb881@redhat.com>
+ <1634631199.0198228-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1583:: with SMTP id m3mr17715899ilu.304.1634639466240;
- Tue, 19 Oct 2021 03:31:06 -0700 (PDT)
-Date:   Tue, 19 Oct 2021 03:31:06 -0700
-In-Reply-To: <28d9989c-4a80-daf7-d0e0-ae8e56b6e4d9@suse.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b89ea805ceb228dd@google.com>
-Subject: Re: [syzbot] divide error in genelink_tx_fixup
-From:   syzbot <syzbot+a6ec4dd9d38cb9261a77@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        oneukum@suse.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1634631199.0198228-1-xuanzhuo@linux.alibaba.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Tue, Oct 19, 2021 at 04:13:19PM +0800, Xuan Zhuo wrote:
+> On Mon, 31 May 2021 14:34:16 +0800, Jason Wang <jasowang@redhat.com> wrote:
+> >
+> > ÔÚ 2021/5/19 ÏÂÎç7:47, Xuan Zhuo Ð´µÀ:
+> > > Unlike virtqueue_kick(), virtqueue_kick_try() returns true only when the
+> > > kick is successful. In virtio-net, we want to count the number of kicks.
+> > > So we need an interface that can perceive whether the kick is actually
+> > > executed.
+> > >
+> > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> >
+> >
+> > Acked-by: Jason Wang <jasowang@redhat.com>
+> 
+> Hi, this patch seems to have not been merged, is there something wrong with me?
+> 
+> Thanks.
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+The commit log does not make it clear, but this is just
+code refactoring. Pls make it clearer in the log.
+Also, if we add a new API like this as a cleanup,
+it needs to be documented much better.
 
-Reported-and-tested-by: syzbot+a6ec4dd9d38cb9261a77@syzkaller.appspotmail.com
 
-Tested on:
+> >
+> > Thanks
+> >
+> >
+> > > ---
+> > >   drivers/net/virtio_net.c     |  8 ++++----
+> > >   drivers/virtio/virtio_ring.c | 20 ++++++++++++++++++++
+> > >   include/linux/virtio.h       |  2 ++
+> > >   3 files changed, 26 insertions(+), 4 deletions(-)
+> > >
+> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > index 9b6a4a875c55..167697030cb6 100644
+> > > --- a/drivers/net/virtio_net.c
+> > > +++ b/drivers/net/virtio_net.c
+> > > @@ -617,7 +617,7 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+> > >   	ret = nxmit;
+> > >
+> > >   	if (flags & XDP_XMIT_FLUSH) {
+> > > -		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq))
+> > > +		if (virtqueue_kick_try(sq->vq))
+> > >   			kicks = 1;
+> > >   	}
+> > >   out:
+> > > @@ -1325,7 +1325,7 @@ static bool try_fill_recv(struct virtnet_info *vi, struct receive_queue *rq,
+> > >   		if (err)
+> > >   			break;
+> > >   	} while (rq->vq->num_free);
+> > > -	if (virtqueue_kick_prepare(rq->vq) && virtqueue_notify(rq->vq)) {
+> > > +	if (virtqueue_kick_try(rq->vq)) {
+> > >   		unsigned long flags;
+> > >
+> > >   		flags = u64_stats_update_begin_irqsave(&rq->stats.syncp);
+> > > @@ -1533,7 +1533,7 @@ static int virtnet_poll(struct napi_struct *napi, int budget)
+> > >
+> > >   	if (xdp_xmit & VIRTIO_XDP_TX) {
+> > >   		sq = virtnet_xdp_get_sq(vi);
+> > > -		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq)) {
+> > > +		if (virtqueue_kick_try(sq->vq)) {
+> > >   			u64_stats_update_begin(&sq->stats.syncp);
+> > >   			sq->stats.kicks++;
+> > >   			u64_stats_update_end(&sq->stats.syncp);
+> > > @@ -1710,7 +1710,7 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
+> > >   	}
+> > >
+> > >   	if (kick || netif_xmit_stopped(txq)) {
+> > > -		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq)) {
+> > > +		if (virtqueue_kick_try(sq->vq)) {
+> > >   			u64_stats_update_begin(&sq->stats.syncp);
+> > >   			sq->stats.kicks++;
+> > >   			u64_stats_update_end(&sq->stats.syncp);
+> > > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> > > index 71e16b53e9c1..1462be756875 100644
+> > > --- a/drivers/virtio/virtio_ring.c
+> > > +++ b/drivers/virtio/virtio_ring.c
+> > > @@ -1874,6 +1874,26 @@ bool virtqueue_kick(struct virtqueue *vq)
+> > >   }
+> > >   EXPORT_SYMBOL_GPL(virtqueue_kick);
+> > >
+> > > +/**
+> > > + * virtqueue_kick_try - try update after add_buf
+> > > + * @vq: the struct virtqueue
+> > > + *
+> > > + * After one or more virtqueue_add_* calls, invoke this to kick
+> > > + * the other side.
+> > > + *
+> > > + * Caller must ensure we don't call this with other virtqueue
+> > > + * operations at the same time (except where noted).
+> > > + *
+> > > + * Returns true if kick success, otherwise false.
 
-commit:         c03fb16b Merge 5.15-rc6 into usb-next
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c27d285bdb7457e2
-dashboard link: https://syzkaller.appspot.com/bug?extid=a6ec4dd9d38cb9261a77
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=10d634e8b00000
+on a successful kick?
 
-Note: testing is done by a robot and is best-effort only.
+> > > + */
+
+I don't really understand what this is doing, the comment
+doesn't seem to explain. Try implies it might fail to update.
+
+virtqueue_kick seems to be documented the same:
+ * Returns false if kick failed, otherwise true.
+
+
+> > > +bool virtqueue_kick_try(struct virtqueue *vq)
+> > > +{
+> > > +	if (virtqueue_kick_prepare(vq) && virtqueue_notify(vq))
+> > > +		return true;
+> > > +	return false;
+> > > +}
+> > > +EXPORT_SYMBOL_GPL(virtqueue_kick_try);
+> > > +
+> > >   /**
+> > >    * virtqueue_get_buf - get the next used buffer
+> > >    * @_vq: the struct virtqueue we're talking about.
+> > > diff --git a/include/linux/virtio.h b/include/linux/virtio.h
+> > > index b1894e0323fa..45cd6a0af24d 100644
+> > > --- a/include/linux/virtio.h
+> > > +++ b/include/linux/virtio.h
+> > > @@ -59,6 +59,8 @@ int virtqueue_add_sgs(struct virtqueue *vq,
+> > >
+> > >   bool virtqueue_kick(struct virtqueue *vq);
+> > >
+> > > +bool virtqueue_kick_try(struct virtqueue *vq);
+> > > +
+> > >   bool virtqueue_kick_prepare(struct virtqueue *vq);
+> > >
+> > >   bool virtqueue_notify(struct virtqueue *vq);
+> >
+
