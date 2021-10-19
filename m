@@ -2,190 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEA2C433AC1
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 17:37:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F4CE433AD3
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 17:39:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231296AbhJSPj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 11:39:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53552 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229584AbhJSPj4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Oct 2021 11:39:56 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D554061029;
-        Tue, 19 Oct 2021 15:37:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634657864;
-        bh=Ucop47/+jBEH9oYguwlpcdXQsoSUIhDFRGU+hQHi++Y=;
-        h=From:To:Cc:Subject:Date:From;
-        b=IiQgXANYlBTQruB+omPn0g7v1wN9tDnFSD01Rj90lBWP5UZZXFhsUQQdyVLCtye+o
-         9Qc8jQMaOeDhYZk3IjqN1wxVqptOCAvmFs81qRFqXwDJ53qvhaw8jtsBXOUo3ENNW3
-         nlSyysZPNCYI0faUzGU7McjsU1v1+LdDmwUkUNnyQyf+xqTSB6e6B/l2tU6WOPxeRg
-         JS1xvseKWAgaxh2m2In5sXXUibF7K3Y+tYzz51VQ/6KK62mEf0Zq24tXZneFnL8QAv
-         H1Xj9Mdhw2q19QtXp0pcK0P5JyPkBLwZHXQDyl3cL/wE5+Ui9tKL6x8mcBDMx/h/B+
-         U32pAYDXkpA3w==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Ahmed S. Darwish" <a.darwish@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: sched: gred: dynamically allocate tc_gred_qopt_offload
-Date:   Tue, 19 Oct 2021 17:37:27 +0200
-Message-Id: <20211019153739.446190-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        id S232425AbhJSPls (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 11:41:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53188 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229702AbhJSPlr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 11:41:47 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C326EC06161C
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 08:39:34 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id z11so8435127lfj.4
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 08:39:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=0VpfFN+eClDHTCsrtIrkOfvztFLiCLmZKgP0eUDDWzA=;
+        b=jnXyynF8MstVlmz/y/8VBFvR8ltAzMbJTV9n6gApK8VxImgwGLDb7Y4sFQdhdfqikz
+         MtmH+Zm23LoTu4uvdOlViqlgVnNSaN/d2zZJLdvMOhQdKy+7nQBntJnFVW5ZMEr2N9me
+         dpVtTnqp7MVClO3qKuqd3MbxptezGhZk/BJWg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=0VpfFN+eClDHTCsrtIrkOfvztFLiCLmZKgP0eUDDWzA=;
+        b=JlJpNIoruegusi8RrUE+OqU25TrZ994wlO17sLcUsTZX4oDAQ6yyM2phOGUpHapd38
+         GSPQeNyEiTjLt0dTOjpfyWMZNeGWGB9E6iLBpC2NrGJsptQZ162h92U0Z4ApV0my3m5D
+         RdPhjCBKffpimQF/OcP0qH2O6ZmYCxcnr+NOqaaXYjUwewZwfh0SkD1jIJDENI1+hNpl
+         dtxnZDToN+vjBXgRssrDQdFFUqtDhu+P7duJ5V3yOW7pkDii2A8H7XIjz+iDfYsLCitW
+         lEs56P6X5gTcLL56HwakLdZJp9ou/rQZ4/sEnkskvn1dRgoEr+8/rXoPGCOyG3nFfitT
+         k5vg==
+X-Gm-Message-State: AOAM530XZKSXQpvSw2mip4KSALjwzUWH1jJiEmgcLpYnuICsI0o0o+pc
+        9DCkayDadFWWHHNygCZMYTLGPA==
+X-Google-Smtp-Source: ABdhPJyXGlUj4iXGhOSh8+9ntzzCtyogpER73ImUnpNVm1Hp0xsvvSPN+awnVHbRXTEjs1jMOnk0/w==
+X-Received: by 2002:a05:6512:e96:: with SMTP id bi22mr6654111lfb.156.1634657973073;
+        Tue, 19 Oct 2021 08:39:33 -0700 (PDT)
+Received: from cloudflare.com (2a01-110f-480d-6f00-ff34-bf12-0ef2-5071.aa.ipv6.supernova.orange.pl. [2a01:110f:480d:6f00:ff34:bf12:ef2:5071])
+        by smtp.gmail.com with ESMTPSA id w16sm1699194lfl.189.2021.10.19.08.39.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Oct 2021 08:39:32 -0700 (PDT)
+References: <20211011191647.418704-1-john.fastabend@gmail.com>
+ <20211011191647.418704-4-john.fastabend@gmail.com>
+User-agent: mu4e 1.1.0; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
+        joamaki@gmail.com, xiyou.wangcong@gmail.com
+Subject: Re: [PATCH bpf 3/4] bpf: sockmap, strparser, and tls are reusing
+ qdisc_skb_cb and colliding
+In-reply-to: <20211011191647.418704-4-john.fastabend@gmail.com>
+Date:   Tue, 19 Oct 2021 17:39:32 +0200
+Message-ID: <87r1chf2h7.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Mon, Oct 11, 2021 at 09:16 PM CEST, John Fastabend wrote:
+> Strparser is reusing the qdisc_skb_cb struct to stash the skb message
+> handling progress, e.g. offset and length of the skb. First this is
+> poorly named and inherits a struct from qdisc that doesn't reflect the
+> actual usage of cb[] at this layer.
+>
+> But, more importantly strparser is using the following to access its
+> metadata.
+>
+> (struct _strp_msg *)((void *)skb->cb + offsetof(struct qdisc_skb_cb, data))
+>
+> Where _strp_msg is defined as,
+>
+>  struct _strp_msg {
+>         struct strp_msg            strp;                 /*     0     8 */
+>         int                        accum_len;            /*     8     4 */
+>
+>         /* size: 12, cachelines: 1, members: 2 */
+>         /* last cacheline: 12 bytes */
+>  };
+>
+> So we use 12 bytes of ->data[] in struct. However in BPF code running
+> parser and verdict the user has read capabilities into the data[]
+> array as well. Its not too problematic, but we should not be
+> exposing internal state to BPF program. If its really needed then we can
+> use the probe_read() APIs which allow reading kernel memory. And I don't
+> believe cb[] layer poses any API breakage by moving this around because
+> programs can't depend on cb[] across layers.
+>
+> In order to fix another issue with a ctx rewrite we need to stash a temp
+> variable somewhere. To make this work cleanly this patch builds a cb
+> struct for sk_skb types called sk_skb_cb struct. Then we can use this
+> consistently in the strparser, sockmap space. Additionally we can
+> start allowing ->cb[] write access after this.
+>
+> Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface"
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
+>  include/net/strparser.h   | 16 +++++++++++++++-
+>  net/core/filter.c         | 22 ++++++++++++++++++++++
+>  net/strparser/strparser.c | 10 +---------
+>  3 files changed, 38 insertions(+), 10 deletions(-)
+>
+> diff --git a/include/net/strparser.h b/include/net/strparser.h
+> index 1d20b98493a1..bec1439bd3be 100644
+> --- a/include/net/strparser.h
+> +++ b/include/net/strparser.h
+> @@ -54,10 +54,24 @@ struct strp_msg {
+>  	int offset;
+>  };
+>
+> +struct _strp_msg {
+> +	/* Internal cb structure. struct strp_msg must be first for passing
+> +	 * to upper layer.
+> +	 */
+> +	struct strp_msg strp;
+> +	int accum_len;
+> +};
+> +
+> +struct sk_skb_cb {
+> +#define SK_SKB_CB_PRIV_LEN 20
 
-The tc_gred_qopt_offload structure has grown too big to be on the
-stack for 32-bit architectures after recent changes.
+Nit: Would consider reusing BPF_SKB_CB_LEN from linux/filter.h.
+net/bpf/test_run.c should probably use it too, instead of
+QDISC_CB_PRIV_LEN.
 
-net/sched/sch_gred.c:903:13: error: stack frame size (1180) exceeds limit (1024) in 'gred_destroy' [-Werror,-Wframe-larger-than]
-net/sched/sch_gred.c:310:13: error: stack frame size (1212) exceeds limit (1024) in 'gred_offload' [-Werror,-Wframe-larger-than]
+> +	unsigned char data[SK_SKB_CB_PRIV_LEN];
+> +	struct _strp_msg strp;
+> +};
+> +
+>  static inline struct strp_msg *strp_msg(struct sk_buff *skb)
+>  {
+>  	return (struct strp_msg *)((void *)skb->cb +
+> -		offsetof(struct qdisc_skb_cb, data));
+> +		offsetof(struct sk_skb_cb, strp));
+>  }
+>
+>  /* Structure for an attached lower socket */
 
-Use dynamic allocation to avoid this. Unfortunately, this introduces
-a new problem in gred_destroy(), which cannot recover from a failure
-to allocate memory, and that may be worse than the potential
-stack overflow risk.
+[...]
 
-Not sure what a better approach might be.
-
-Fixes: 50dc9a8572aa ("net: sched: Merge Qdisc::bstats and Qdisc::cpu_bstats data types")
-Fixes: 67c9e6270f30 ("net: sched: Protect Qdisc::bstats with u64_stats")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- net/sched/sch_gred.c | 64 +++++++++++++++++++++++++-------------------
- 1 file changed, 36 insertions(+), 28 deletions(-)
-
-diff --git a/net/sched/sch_gred.c b/net/sched/sch_gred.c
-index 72de08ef8335..59c55c6cf3ea 100644
---- a/net/sched/sch_gred.c
-+++ b/net/sched/sch_gred.c
-@@ -307,46 +307,53 @@ static void gred_reset(struct Qdisc *sch)
- 	}
- }
- 
--static void gred_offload(struct Qdisc *sch, enum tc_gred_command command)
-+static int gred_offload(struct Qdisc *sch, enum tc_gred_command command)
- {
- 	struct gred_sched *table = qdisc_priv(sch);
- 	struct net_device *dev = qdisc_dev(sch);
--	struct tc_gred_qopt_offload opt = {
--		.command	= command,
--		.handle		= sch->handle,
--		.parent		= sch->parent,
--	};
-+	struct tc_gred_qopt_offload *opt;
- 
- 	if (!tc_can_offload(dev) || !dev->netdev_ops->ndo_setup_tc)
--		return;
-+		return -ENXIO;
-+
-+	opt = kzalloc(sizeof(*opt), GFP_KERNEL);
-+	if (!opt)
-+		return -ENOMEM;
-+
-+	opt->command = command;
-+	opt->handle = sch->handle;
-+	opt->parent = sch->parent;
- 
- 	if (command == TC_GRED_REPLACE) {
- 		unsigned int i;
- 
--		opt.set.grio_on = gred_rio_mode(table);
--		opt.set.wred_on = gred_wred_mode(table);
--		opt.set.dp_cnt = table->DPs;
--		opt.set.dp_def = table->def;
-+		opt->set.grio_on = gred_rio_mode(table);
-+		opt->set.wred_on = gred_wred_mode(table);
-+		opt->set.dp_cnt = table->DPs;
-+		opt->set.dp_def = table->def;
- 
- 		for (i = 0; i < table->DPs; i++) {
- 			struct gred_sched_data *q = table->tab[i];
- 
- 			if (!q)
- 				continue;
--			opt.set.tab[i].present = true;
--			opt.set.tab[i].limit = q->limit;
--			opt.set.tab[i].prio = q->prio;
--			opt.set.tab[i].min = q->parms.qth_min >> q->parms.Wlog;
--			opt.set.tab[i].max = q->parms.qth_max >> q->parms.Wlog;
--			opt.set.tab[i].is_ecn = gred_use_ecn(q);
--			opt.set.tab[i].is_harddrop = gred_use_harddrop(q);
--			opt.set.tab[i].probability = q->parms.max_P;
--			opt.set.tab[i].backlog = &q->backlog;
-+			opt->set.tab[i].present = true;
-+			opt->set.tab[i].limit = q->limit;
-+			opt->set.tab[i].prio = q->prio;
-+			opt->set.tab[i].min = q->parms.qth_min >> q->parms.Wlog;
-+			opt->set.tab[i].max = q->parms.qth_max >> q->parms.Wlog;
-+			opt->set.tab[i].is_ecn = gred_use_ecn(q);
-+			opt->set.tab[i].is_harddrop = gred_use_harddrop(q);
-+			opt->set.tab[i].probability = q->parms.max_P;
-+			opt->set.tab[i].backlog = &q->backlog;
- 		}
--		opt.set.qstats = &sch->qstats;
-+		opt->set.qstats = &sch->qstats;
- 	}
- 
--	dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_QDISC_GRED, &opt);
-+	dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_QDISC_GRED, opt);
-+	kfree(opt);
-+
-+	return 0;
- }
- 
- static int gred_offload_dump_stats(struct Qdisc *sch)
-@@ -470,8 +477,7 @@ static int gred_change_table_def(struct Qdisc *sch, struct nlattr *dps,
- 		}
- 	}
- 
--	gred_offload(sch, TC_GRED_REPLACE);
--	return 0;
-+	return gred_offload(sch, TC_GRED_REPLACE);
- }
- 
- static inline int gred_change_vq(struct Qdisc *sch, int dp,
-@@ -719,8 +725,7 @@ static int gred_change(struct Qdisc *sch, struct nlattr *opt,
- 	sch_tree_unlock(sch);
- 	kfree(prealloc);
- 
--	gred_offload(sch, TC_GRED_REPLACE);
--	return 0;
-+	return gred_offload(sch, TC_GRED_REPLACE);
- 
- err_unlock_free:
- 	sch_tree_unlock(sch);
-@@ -903,13 +908,16 @@ static int gred_dump(struct Qdisc *sch, struct sk_buff *skb)
- static void gred_destroy(struct Qdisc *sch)
- {
- 	struct gred_sched *table = qdisc_priv(sch);
--	int i;
-+	int i, ret;
- 
- 	for (i = 0; i < table->DPs; i++) {
- 		if (table->tab[i])
- 			gred_destroy_vq(table->tab[i]);
- 	}
--	gred_offload(sch, TC_GRED_DESTROY);
-+	ret = gred_offload(sch, TC_GRED_DESTROY);
-+
-+	WARN(ret, "%s: failed to disable offload: %pe\n",
-+	     __func__, ERR_PTR(ret));
- }
- 
- static struct Qdisc_ops gred_qdisc_ops __read_mostly = {
--- 
-2.29.2
-
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
