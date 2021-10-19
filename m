@@ -2,161 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42E59433F38
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 21:23:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00CBA433F46
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 21:30:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234626AbhJSTZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 15:25:45 -0400
-Received: from mail-mw2nam12on2080.outbound.protection.outlook.com ([40.107.244.80]:26913
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230432AbhJSTZp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Oct 2021 15:25:45 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jITP9TEPH8bzEe0hqqDEXCwMXkdqyhplZMMaTHnNO+WOHh3Zhp9cqQ34g1TMGMagS5QH4PuJHB0sQp+hBGCs1Egyvc5N/8jZ3dN55uhgwUVFdguHq7mke3ITqkQ2TemzK8E2a/0cs8LKxxW6T80vxqyxTjja+JLmrIIVS5irRHsdmwD7rsZVQlfrbV16F6O55RN3E/B1ZCUJ6L+6aVQY+jx9kbYzFgwAsiKNM0oZ4QNs7kVPnCNb1Iy6JIf/Mlsltf4b7E9Zsl0XUX+8S6cUXva0Zo/DrHEaBY3gCkCGULUMLKKnGlw3WP/5KD2Tgn69m+ywgEwmlCR+/jQIaUc8EA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dZiet93y2Ewa/PJvh+Wx/7C90B6eq0e4ydr6jOUOGdg=;
- b=L+LW0/h4sq5T62n3VDJhtHzG8TVysy3NbLLAe5L579Nul3RIaqls+k2qJWU4t8HsdLxhx/fpREf/UzNdG6ue4Vk5O9Adbf3dcnqGDz4T3Vxm7MTeoZ/Q0ANdiOUgd3W+PdNCgL8wDDDBXGlzcS1O3ZWQn0YPkNoQHnWJ93M4yWfqV+j3I8qv9KOsO03ulISylixnmaG9z43goLpzmFVKqVwb0bwhKd2tweV/xJq5xtXnOs3IQ3cZs/60WR9z0cgSorHlseYvw25TISQJfZxs18rTQZ5K7inWfLn1XLdJDiw1RPzgXhitzu1hVwPYw8fzI0cwh96yI7TnvUg93vLCxw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dZiet93y2Ewa/PJvh+Wx/7C90B6eq0e4ydr6jOUOGdg=;
- b=HgIz5sK9rdWW5VH9uwjvKDqaXpv/GR8Up1XHTXfvwgHpRE2lb9ScP8Wb88njlQK36LEZKWBF/arXEP55/WYQ5/Tp4Dhb97Oh9ttut23yvHdXs06HowhJoK+RBAUdRM4NsrD/uI56hCSpjI5osoHWhbENh646iriCRlmXjIG2ZupEYZPfgushxv2O9laiJqeXzpJAyQq7v40tyQOnknnYy/Xn4zEqtzSHCJov8LkYt3+5UmPWSKpXj+DzAIjWFArHYHFiB7Afyb+3PG/Yz3uHBVNmlyKw9OHSimBTeMKmfzo9Zv2nXL/iNph+yQp2Tyq6XOutzM3pTYuQ5A/ZcfIPVQ==
-Authentication-Results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5142.namprd12.prod.outlook.com (2603:10b6:208:312::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.16; Tue, 19 Oct
- 2021 19:23:29 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::e8af:232:915e:2f95%8]) with mapi id 15.20.4628.015; Tue, 19 Oct 2021
- 19:23:29 +0000
-Date:   Tue, 19 Oct 2021 16:23:28 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
-        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com
-Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
- for mlx5 devices
-Message-ID: <20211019192328.GZ2744544@nvidia.com>
-References: <20211019105838.227569-1-yishaih@nvidia.com>
- <20211019105838.227569-13-yishaih@nvidia.com>
- <20211019124352.74c3b6ba.alex.williamson@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211019124352.74c3b6ba.alex.williamson@redhat.com>
-X-ClientProxiedBy: MN2PR01CA0064.prod.exchangelabs.com (2603:10b6:208:23f::33)
- To BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+        id S234722AbhJSTcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 15:32:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49708 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231738AbhJSTcs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 15:32:48 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECA03C06161C;
+        Tue, 19 Oct 2021 12:30:34 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id u5so8120543ljo.8;
+        Tue, 19 Oct 2021 12:30:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QtbIYKqyjuoCeOS42MgIvrpZ7Pn419j5CC8FsD29r50=;
+        b=Jo6/1MckxITRPeE2qvas3MY1v6ySQgD1x0LuooElQnuiSzOryUoACqfKUkk5jtCQEF
+         YHTmA/IjBTUnlc7z0n7o7GEabC2SCJOgsa/pgsqS36lorEZ8V3tvm60D3cJdNJPX8eSN
+         LdLMGDO7mtQB8HiQVTuYgQ/s346NoZ3QOrbHHKymJFOpqMxWOwUggd1mAZM4FJ11lXE0
+         v9dLOIEa/QBrFzH37OCCiu8uAI5K23v8u3E1K5njdB60CDRy7mSpGfN64dmLuQFVWxv1
+         74cM/8RWVz9nBn7gSe0JsrYnNEF9fWnL8OJHWlUuPp4irJesHT4mkNrSGT7m9ZZdFp8l
+         AjnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QtbIYKqyjuoCeOS42MgIvrpZ7Pn419j5CC8FsD29r50=;
+        b=XQYUu82T00PcJ0SD31p02kTyZPTiXtpiakLZFJPu3f1u9jljRxs1QauBX00FITibJk
+         4j0+BtJHyFiTPbX51JFLGVDyvzjtQ4ZXyMKiNPXp2AS1rDavQGW+9QJs2M+PE144SPvg
+         vvpLUV1fa0I1nwEVyZes7oGOm7jUHFVA1d6LbkQgZtzZmQXHGHqu+EvR7SYWUf6cpUax
+         px1pO2HBghoBM+rNhLDth2sjLnkW0pzgMGiOXBYKBaDCKKtN5TPTSgmKgKyBoTcN1lgb
+         dtCisY4YnvruwBk9DODjiDIpsCkeaHpgPJr41+5XN+N3R7sWTweEJYwpwHYUBFOq7VN6
+         ax0Q==
+X-Gm-Message-State: AOAM532vm6b2gpZZ4bB8pgb56asi5JD5jUvsfeBP6+2ccc+RY55kdN5H
+        yqJPXcwrzWHWvklxX0sKxSD4Pl4Ptu5sgZZ0C0l4fcqprVg=
+X-Google-Smtp-Source: ABdhPJxuey+7YvjOHCyb/UoYoYOYp+VMMAVfZL8a6SDIMzd3d4M/j2J0R7ViaL6W0Mv8sDSEhqUJK607TowX8O6OYWs=
+X-Received: by 2002:a05:651c:339:: with SMTP id b25mr8786662ljp.15.1634671833366;
+ Tue, 19 Oct 2021 12:30:33 -0700 (PDT)
 MIME-Version: 1.0
-Received: from mlx.ziepe.ca (142.162.113.129) by MN2PR01CA0064.prod.exchangelabs.com (2603:10b6:208:23f::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.15 via Frontend Transport; Tue, 19 Oct 2021 19:23:29 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1mcuhs-00H5hn-5J; Tue, 19 Oct 2021 16:23:28 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f827f130-aba6-493d-74f4-08d99335ee4a
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5142:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BL1PR12MB514292C084C89DE39FAB649AC2BD9@BL1PR12MB5142.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lxc5r8yHfsyzlGeCxLysQcQ0lIDIy3u/vKwlOsl8oCqvD7vuY+W8/ugUNztPQPDIpgiMw5FALVMFYSCgVu4kmkxD1iK5NsUYVmf96Mz7fNXfXfTC46t+XySv4Uk0j569z27QAGWYUZRVdh02b8XybOrYM2y523L9ei9bGR83XIrEcTqxI/y84Jw+h5LgzTN/EkPjYbVQxFowSut5PLv86rqAPdMHod2ZoLFEypmIjNAlP3D1pLkBGl348Rlzw3UoaFFDXTP1SVHQaTZcRhJuulbkdgfiiaavNMfTnUte3DYMnObCoQX6dJ6qFITeDgUlV/cxyhinOjtlOAJA0aDaRrGjpXuocR9XLck6nCmvEr1dmMOoiQ+CDTJ6wEqVE2O+XOI9/iim6cgaGY5DX30wxfOQz3cJFpGH567VbzNMqQBOh4MEeb/Gl9sx7jgOrj/4SaC55phlizg0ZaUAPaVvCPSuosU/m4EPjORW4QCEyRMt6nebXZGtFbT+osy1Dz3jXnycEg1TvGqlrcCFAW8Rl9yo7vqCUF2IAPGIYCwySPlNuvgy3WUy65o+H2MnRt7QfMHosC7BRBmWtn1ZEOjn2zLoge/EZey0VTdpf4cL+1U6uobIc6DHIghF6NWVEHUvtWG7GXyi7L+c0T33ZsWBOQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(4326008)(9786002)(9746002)(8676002)(107886003)(2616005)(1076003)(36756003)(26005)(86362001)(2906002)(66556008)(8936002)(316002)(66946007)(508600001)(186003)(6916009)(66476007)(426003)(33656002)(38100700002)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jaBmu1/6GtTY6QTMSqQ4WQNYrt6sHzQJUGp21b83C9JFtMIRmBhCs/VaaKOu?=
- =?us-ascii?Q?XfBzyXrXJZFwtPAv1vmMyxw0dGKC+gvXdzYF4LHmbnd461ZVjbjENSVBCuax?=
- =?us-ascii?Q?X9BkZ7b5k9F4UHLOM8F34gWt2YZf8qPGJIWAikzPTi+M6bdANh9/z3hi0JbE?=
- =?us-ascii?Q?0QNoOHMraAm6N4jSNVHbv7OpUb+8p/f62KWCuqvuy01m8mChbg3Elo29zhOT?=
- =?us-ascii?Q?uh/PkgX6wgrWSelazzDZ0jmnMUOjq16DsK9vU3TKr0k6yuAdin65Q0uxCXBL?=
- =?us-ascii?Q?MSDiIUz8+0VUKIy/gfiU0FwqSd3EqEXzHCISa8Fp6w04VtBSAd+5twedFhwc?=
- =?us-ascii?Q?SlBOY+8PCTmbWnCFiF5Vzr7q1cGc+sG9EYr9XhxvCiBd+ZcctuzyBm7t6tNi?=
- =?us-ascii?Q?R9bdGrF+swMURz5A/vUxH38VuuOR2sN7gTqgp26GjKnbQBjIgsvvVXU7FL+t?=
- =?us-ascii?Q?VuUgGLMaPRZL7O5GPfT8AeWtvAGxw3KNn4uRFL+Xsl1n2DzehJCV0JDHDWpC?=
- =?us-ascii?Q?8afY85nh4S+wCXV6XQZIN+804yNHTgJE5RMHbWEwBBFWk4A3T6CssodTNM9d?=
- =?us-ascii?Q?1QRfWIhpo0eGzR1kkRjp+pWP+u45Z4aTuyO6Orv8AdpHZzVfp62YvJI508nZ?=
- =?us-ascii?Q?0lkPIeUHCxgtBM6xshqrBdXREBmMc2ozJtKWGWQizNao89uHh5GfnlNXxdxj?=
- =?us-ascii?Q?IykOsPJMRmT9hLrI/blbi0hIp/l+E98d+elRHmrU4CjA3dXJIpS0PSTqoLXa?=
- =?us-ascii?Q?azI/aJWh+DQDh+QF9pBL4KqlO94gEFwl+S5L0qYaYpgCRTWRMWeimBKbISES?=
- =?us-ascii?Q?i5j3Plhaoezrl7rbHXCeDe3U3eLZ6RP7kjfoQzVtcecG20ltAK+s7oX1bbt1?=
- =?us-ascii?Q?sn2I8+6Xei5FAuyTaFu3CJLMi5U+mQJxQ/oL+DJMvl1eALg3EG7TGj2z+txw?=
- =?us-ascii?Q?7yLy9fmsVJ57Vyub4n4I0PKTvPLDIjZ07i5zdeCpfPK4i2UhwS55Ffvk02wP?=
- =?us-ascii?Q?cpIResESbLx972xnX3v9ULPr69Sm4sXgfCuwfrnA3/lkLKBGSJT7bnhNQHOC?=
- =?us-ascii?Q?9UE+AyNDJOuT46lLdR1MpChtrta4yoNpNtcqnjAQtU1lt+esL6LCjCfKztGq?=
- =?us-ascii?Q?VLeqe+xAxwYfcHFwACtMzguprxZPiM2Qgh+sAWfvN0UG/2DFUciFTbisBF7q?=
- =?us-ascii?Q?Fh4jExRUKQDmzszzZhx+gDlOeiVJ2tt50KkWzft4tYCuhfxgx+deuhp201F8?=
- =?us-ascii?Q?ZddMwJAjPyf8Axtxndi4doqn6LlYKc+nPl5U7FLdc7coRvVTcQb+E0nyuhtq?=
- =?us-ascii?Q?p8afwv9nYlbFbBCwM5LbQY4LKL94QwiqCstnYOK1ZS2NRg=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f827f130-aba6-493d-74f4-08d99335ee4a
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2021 19:23:29.1028
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jgg@nvidia.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5142
+References: <20211014211828.291213-1-cpp.code.lv@gmail.com> <1d0a5e90-b878-61a1-99af-35702b72f2d9@ovn.org>
+In-Reply-To: <1d0a5e90-b878-61a1-99af-35702b72f2d9@ovn.org>
+From:   Cpp Code <cpp.code.lv@gmail.com>
+Date:   Tue, 19 Oct 2021 12:30:22 -0700
+Message-ID: <CAASuNyXe6OYPe0Utd4xG1-ZTHZet3sJDi2sxXJ-7RWQ-GaEW2w@mail.gmail.com>
+Subject: Re: [ovs-dev] [PATCH net-next v7] net: openvswitch: IPv6: Add IPv6
+ extension header support
+To:     Ilya Maximets <i.maximets@ovn.org>
+Cc:     netdev@vger.kernel.org, pshelar@ovn.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        ovs dev <dev@openvswitch.org>, linux-kernel@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 19, 2021 at 12:43:52PM -0600, Alex Williamson wrote:
-> > +	/* Running switches on */
-> > +	if (((old_state ^ state) & VFIO_DEVICE_STATE_RUNNING) &&
-> > +	    (state & VFIO_DEVICE_STATE_RUNNING)) {
-> > +		ret = mlx5vf_pci_unfreeze_device(mvdev);
-> > +		if (ret)
-> > +			return ret;
-> > +		ret = mlx5vf_pci_unquiesce_device(mvdev);
-> > +		if (ret) {
-> > +			vmig->vfio_dev_state = VFIO_DEVICE_STATE_ERROR;
-> > +			return ret;
-> > +		}
-> > +	}
-> 
-> Per previous discussion, I understand that freeze and quiesce are
-> loosely stop-responding-to-dma and stop-sending-dma, respectively.
-> Once we're quiesced and frozen, device state doesn't change.  What are
-> the implications to userspace that we don't expose a quiesce state
-> (yet)?  I'm wondering if this needs to be resolved before we introduce
-> our first in-tree user of the uAPI (and before QEMU support becomes
-> non-experimental).  Thanks,
+On Fri, Oct 15, 2021 at 6:56 AM Ilya Maximets <i.maximets@ovn.org> wrote:
+>
+> On 10/14/21 23:18, Toms Atteka wrote:
+> > This change adds a new OpenFlow field OFPXMT_OFB_IPV6_EXTHDR and
+> > packets can be filtered using ipv6_ext flag.
+> >
+> > Signed-off-by: Toms Atteka <cpp.code.lv@gmail.com>
+> > ---
+> >  include/uapi/linux/openvswitch.h |  16 +++-
+> >  net/openvswitch/flow.c           | 140 +++++++++++++++++++++++++++++++
+> >  net/openvswitch/flow.h           |  14 ++++
+> >  net/openvswitch/flow_netlink.c   |  24 +++++-
+> >  4 files changed, 192 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+> > index a87b44cd5590..763adf3dce23 100644
+> > --- a/include/uapi/linux/openvswitch.h
+> > +++ b/include/uapi/linux/openvswitch.h
+> > @@ -344,8 +344,17 @@ enum ovs_key_attr {
+> >       OVS_KEY_ATTR_NSH,       /* Nested set of ovs_nsh_key_* */
+> >
+> >  #ifdef __KERNEL__
+> > -     OVS_KEY_ATTR_TUNNEL_INFO,  /* struct ip_tunnel_info */
+> > +     OVS_KEY_ATTR_TUNNEL_INFO,/* struct ip_tunnel_info */
+> > +     __OVS_KEY_ATTR_PADDING_1,/* Padding to match field count with ovs */
+> >  #endif
+> > +
+> > +#ifndef __KERNEL__
+> > +     __OVS_KEY_ATTR_PADDING_2,/* Padding to match field count with ovs */
+> > +     __OVS_KEY_ATTR_PADDING_3,/* Padding to match field count with ovs */
+> > +#endif
+> > +
+> > +     OVS_KEY_ATTR_IPV6_EXTHDRS,  /* struct ovs_key_ipv6_exthdr */
+> > +
+> >       __OVS_KEY_ATTR_MAX
+> >  };
+>
+> Not a full review, but, I think, that we should not add paddings, and
+> define OVS_KEY_ATTR_IPV6_EXTHDRS before the OVS_KEY_ATTR_TUNNEL_INFO
+> instead.  See my comments for v6:
+>   https://lore.kernel.org/netdev/8c4ee3e8-0400-ee6e-b12c-327806f26dae@ovn.org/T/#u
+>
+> Best regards, Ilya Maximets.
 
-The prototype patch I saw added a 4th bit to the state which was
-   1 == 'not dma initiating'
-As you suggested I think a cap bit someplace should be defined if the
-driver supports the 4th bit.
+Maybe I am still missing the idea, but I think it's not possible.
 
-Otherwise, I think it is backwards compatible, the new logic would be
-two ifs
+If we consider userspace code:
+OVS_KEY_ATTR_NSH,       /* Nested set of ovs_nsh_key_* */
 
- if ((flipped & STATE_NDMA) &&
-      (flipped & (STATE_NDMA | STATE_RUNNING)) == STATE_NDMA | STATE_RUNNING)
-      mlx5vf_pci _quiesce_device()
+#ifdef __KERNEL__
+/* Only used within kernel data path. */
+OVS_KEY_ATTR_TUNNEL_INFO,  /* struct ovs_tunnel_info */
+#endif
 
- [..]
+#ifndef __KERNEL__
+/* Only used within userspace data path. */
+OVS_KEY_ATTR_PACKET_TYPE,  /* be32 packet type */
+OVS_KEY_ATTR_ND_EXTENSIONS, /* struct ovs_key_nd_extensions */
+#endif
 
- if ((flipped == (STATE_NDMA)) &&
-      (flipped & (STATE_NDMA | STATE_RUNNING)) == STATE_RUNNING)
-      mlx5vf_pci_unquiesce_device()
+__OVS_KEY_ATTR_MAX
+};
 
-Sequenced before/after the other calls to quiesce_device
+adding OVS_KEY_ATTR_IPV6_EXTHDRS before OVS_KEY_ATTR_PACKET_TYPE will
+conflict on kernel update.
 
-So if userspace doesn't use it then the same driver behavior is kept,
-as it never sees STATE_NDMA flip
+And we will see following warning:
+00001|odp_util(handler1)|WARN|attribute packet_type has length 2 but
+should have length 4
 
-Asking for STATE_NDMA !STATE_RUNNING is just ignored because !RUNNING
-already implies NDMA
-
-.. and some optimization of the logic to avoid duplicated work
-
-Jason
+Best,
+Tom
