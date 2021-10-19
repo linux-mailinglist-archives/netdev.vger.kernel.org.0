@@ -2,165 +2,552 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AF37433EA3
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 20:39:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D62B433EB1
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 20:44:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234965AbhJSSl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 14:41:56 -0400
-Received: from mail-eopbgr80082.outbound.protection.outlook.com ([40.107.8.82]:59040
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234961AbhJSSlz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Oct 2021 14:41:55 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fVbgPC4tsQsxq+fQXpI7j1lTnbTIdy3UEEVapLtzbVrDwBpu+bEkAAQ806eUOMCgcSchorvWQ62PS42TQPNzZ0VcB71UufZQyAxeqYY2iTQBz8mIN4ffbuQOS3YuQM9iuMIA0PFthgiBbsDELQaQsL1QqQZw10hntaQlqAJqHkMVsackCWagXlSLx8gKRGZ27r1MEmCgn9R9U9PJhh8AYBn4C8ewvkx5HSIcxdtNx+mcTggIT5ktdSFXCatVyBDisSMaixSfFl1ROM+cyGTMWsny5Y4DdwbVSTPbRM8eMOwrpM3jfLBMDp9MWWrSqhJKE3Pj9HTnL3cmwtnF84+/PQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mqQlDrMqtQhk+Z3BceRn+OI6jAtZOdU3jWzx3gDgQ9E=;
- b=idkcWXKgGzs0xq6wZCGHebAf15Q6pEjp8YusbbLQ4z4ai5E0sf6Xo/C7kQHC01lBTVV8A3V2nX/LqyVJyRKlkkVmOxpphtOLyuhhm7T37nyoCfwMO++BxsS3CRYNH28uaz/amWpOQd9r9qBG513HfCH4M6GCWTNhzGmFVM5Gb/96tT+X0T4rWwuKC/yjtckE3CP6UpjxGO6lEXa/PFHw6n0JaUIjPDWbLcMX83qZXvbaWaY4gNSpmQp58GjXwSJWzo+EBNg9+tUMZR2J99+iEzSnKpPA7KQ3g75FUGUNuMFKAAuXXTkCnZ1Aqmghp0VFEn0OccezKQW9eXBGfaT+6g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mqQlDrMqtQhk+Z3BceRn+OI6jAtZOdU3jWzx3gDgQ9E=;
- b=UAEOyDYx6WmnbmbwEZsSXWBYx8XRoJirFS3nms4e1Mj1nj90Z2ZeWmgibJtrn7sH/He7qYcI6BUsBijXOTaekwpxvkN54wetTeHcsRo82U7F7+/HH/jBAHUNTvXVKTzjwm2IvLzyBBODcVcVQKBgU7G90ZsM0VZqZ6skSE3gIQg=
-Received: from AM4PR0401MB2308.eurprd04.prod.outlook.com
- (2603:10a6:200:4f::13) by AM8PR04MB7267.eurprd04.prod.outlook.com
- (2603:10a6:20b:1df::8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.17; Tue, 19 Oct
- 2021 18:39:40 +0000
-Received: from AM4PR0401MB2308.eurprd04.prod.outlook.com
- ([fe80::6476:5ddb:7bf2:e726]) by AM4PR0401MB2308.eurprd04.prod.outlook.com
- ([fe80::6476:5ddb:7bf2:e726%8]) with mapi id 15.20.4608.018; Tue, 19 Oct 2021
- 18:39:40 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Tim Gardner <tim.gardner@canonical.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Roy Pledge <Roy.Pledge@nxp.com>, Leo Li <leoyang.li@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v2][net-next] soc: fsl: dpio: Unsigned compared against 0
- in qbman_swp_set_irq_coalescing()
-Thread-Topic: [PATCH v2][net-next] soc: fsl: dpio: Unsigned compared against 0
- in qbman_swp_set_irq_coalescing()
-Thread-Index: AQHXxOOfZYpKtOnMkEOYlsQsmv2J5qvap5GA
-Date:   Tue, 19 Oct 2021 18:39:40 +0000
-Message-ID: <20211019183939.bfgpcewtyrutfsky@skbuf>
-References: <20211019121925.8910-1-tim.gardner@canonical.com>
-In-Reply-To: <20211019121925.8910-1-tim.gardner@canonical.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: canonical.com; dkim=none (message not signed)
- header.d=none;canonical.com; dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: bcd25832-cb1a-4a95-bd71-08d9932fcf8c
-x-ms-traffictypediagnostic: AM8PR04MB7267:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM8PR04MB72671C3274158AEBF0BEBB34E0BD9@AM8PR04MB7267.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3631;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: SStZcinfi6jpqL4RQhyOEeQ9la4M8f/xfpy2jfww+mIVE5/YK7m63EoWlaLTtRghesF6TqOICqHWvJRD+j2SKFTsarAmUIG8eiTRtS9KYp0ncdc7qkDOyyln6BckiHStc3w9SirRt5mqHlmPO/1dzSIO2Sphp+uqHJGeRRExA9p6gnfYLq/a7PM9TnOLYctKzNgqvt4z3k3p0ZEv60mbXI0X8UO8ZZdHIJ85IeC78gKiR6wMfPjkFV/VI0ITj+5uKVKXiNiLBmunYwLst1Jxj7JcE7HnHbTlc5+PXyVZ55+dzWp9gqjFG2qnbDTd6RZK7X09xrgTCcXkMw3Lm9XTUw8+LkMoGeOo8P2C+mX5sFuMqPaX2IL639KkMn9kK+GlORMS2wdiAOhOxanVP3MqDlMj+1lC3S1zEKX35xRDf5bx6O+hXAccLIRiwkuPXo4KNtYU1mop7QGwre+K2P1gzJGBGS/T51EQBTUqSIBxf0hMUkJHnBAjmmCZl29o/XmqU77sztLwpeefAvdbPvr5dYO9bBS8FQsMA/WRxGT8b2bpAfGxGfX08QVOPzWkdPDlddLo57vFprAjOMxgcvZKwl7xg6UkwMqkbfkxxNWqKK7UYwjU0Y6w/zqAIAkiUndgpwcceq0g9DRrCEsFd9lwdP8cBYiVTx5YIf8WhYEWX4kqIqQtmE9WH4WINPqNMDBGbObXIWeWnbdSi+VdCDVkrQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM4PR0401MB2308.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(54906003)(6916009)(83380400001)(8676002)(86362001)(8936002)(66446008)(66946007)(6506007)(1076003)(33716001)(122000001)(38070700005)(4326008)(66556008)(66476007)(3716004)(38100700002)(44832011)(64756008)(6486002)(71200400001)(2906002)(26005)(5660300002)(9686003)(76116006)(508600001)(91956017)(186003)(316002)(6512007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?6rUcs6ZeVH+8789LhBsyZrrjgl6CCFV2V0ZdleAN+1+8r8bdAvr5DpEuK/00?=
- =?us-ascii?Q?hOi56yqlnS6BGROwGoFaLnExAaCLh6QcPj2x+/7oYuTJTIlxtEClTV7SikCr?=
- =?us-ascii?Q?6tAaJnNKNi8+mkI7ZUcTCPABnIU0Z6dNnxXp8vllp07SbnpBy5wD0vzJPIQ/?=
- =?us-ascii?Q?SmQ1rPdBm1wtIvJLlgoMXufjrbfbJK5IzhcBvL8hy7sh6tUACpUszR6yGJEv?=
- =?us-ascii?Q?AKVM9jhwqUgkebLw/C5esYiOV2s/gzsY7bzO8Z1HjwIViThTWwg3flE0t9wp?=
- =?us-ascii?Q?8Dlkf4JNTS3oX2zAmXIOGTNZ/CsCpKLcoVza/4GvP6vNpdt/0HnYYYbFWxiv?=
- =?us-ascii?Q?YQ0ZrYvCpHbz4HAPBGYsVbhPAkMRojd3/YoHfYhnEYrEfTCUVJGgPhQQUv8q?=
- =?us-ascii?Q?YKJdFbHO15/ItlouDlLBexAFMuYAxvTQeo7nZ6gIua47j2DjW/YfSbWfyppj?=
- =?us-ascii?Q?FQlkHEgUpFFNBWiV9odEzbVSnWsY06+xP7XIo1utDxUMeXwNWghMcePvnWCy?=
- =?us-ascii?Q?6fcl0d0Se0xniHfnoYIELg9e82ipUrtvx78OkDy0Z1pXm6N+jnbWKoL3WFai?=
- =?us-ascii?Q?/jTqmxoRVYdbM8CRtbFatNRCehQ3sJrSLiI0FqqT1FbujiVkHuWT8ASJ0aE7?=
- =?us-ascii?Q?pimWbyqo3EQR6AnloddxpF4Fe9V9nWTAp7YSAcT6eW4PP55wRI3epcIyMcOU?=
- =?us-ascii?Q?zwpJIXvAyGRcDMO2w6FwrHLGPjQ9JjPAAxLSNeS1MEKADtgGb8+43JZkzXfQ?=
- =?us-ascii?Q?Se3NwLMHDgAhEJXkZpm+M3T/WDcHNPj+eKAanA8KFEO9LT8jtXLomYBWurO7?=
- =?us-ascii?Q?XiUJU+PNW3T3+vIM/RZglHdQvVdiVJ7HLUnRRnR0C+ZI8kM4AazYDARPBl82?=
- =?us-ascii?Q?6xG9HnqE7+louRsSiiXqMUeNP0VsH5wIqjvOsCRx1eLAovYmEzUjp2veviJ0?=
- =?us-ascii?Q?/gbhVB91wdiDbjodEJ2muq4KLkiSWVl+I6DNMtw5O49W0Ue9HvbNJNbqKWOS?=
- =?us-ascii?Q?eeESRwmRdCXKHIyS9+rW9TmC/8FTMIeSZpIfV1fo1AUP1H5FohVWD8fCZRdZ?=
- =?us-ascii?Q?pA+cqvsKCOEq4k/yPQYo4p/juWE+NqA0p2Kayh5gN2NvXwKTN/TEb44elnTy?=
- =?us-ascii?Q?Zpi34pjk0AFJcbUjUnxRwT0xMgYr1h2zpy0swazqh5CCQHhlS/mwf0K8QDHC?=
- =?us-ascii?Q?t6fPSxP/iTWBhPcc9hmd97nkEoaYqulCOBarEfQ/zRhGIqBbGMiuMK9rBhDF?=
- =?us-ascii?Q?tg5pQVMaCQ+mqZ17ZYy1Iv9ujoJpRlfY8iTeStJKC41pyaqx3CwF+Lqled+Z?=
- =?us-ascii?Q?xIBUyhbPdy7sluMagIwWG6UF?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <798AC0193565D344ACA7244DF1D0E979@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S234526AbhJSSqM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 14:46:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:57998 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230059AbhJSSqL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 14:46:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634669038;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Sr+x84SCkmGLApJEjQsX0aDeUaBjlbrwfVOJ4N8OhpA=;
+        b=N8OW5jdH6bnDiG/2SH7s0CPZhFFy0SI0yd7LT+pU7m+zMa2W7Xoan0oBeOaLeLW4eRV6Ch
+        YShXHKgJISe6bygXxky0sOux+JNdqDCb1eip03lyq+QHhNrA9G8PABv/heKq8osoKr0GOh
+        d1oPsdCxZs8R92hD2QdPNgE6WCwq3Rc=
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com
+ [209.85.167.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-354-DTnFjxt6MqWyFQtRQQ8Ezw-1; Tue, 19 Oct 2021 14:43:57 -0400
+X-MC-Unique: DTnFjxt6MqWyFQtRQQ8Ezw-1
+Received: by mail-oi1-f198.google.com with SMTP id w26-20020a056808019a00b00298e7b4523cso2356367oic.9
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 11:43:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Sr+x84SCkmGLApJEjQsX0aDeUaBjlbrwfVOJ4N8OhpA=;
+        b=gXzmnYakFqjur3Kzz/03JX6QH30Z969VTKt3AldeUrBFGvb9NfaFFc8OnSEllk/2j9
+         9a2nDPv/7kQmNNtJlur7zpw2HsuTd/23IrvO5wE8gIkN5H2Efd+rWwufozyd742YIVme
+         mnI7fjiqN9GcUzW7BRxnjHXaN7yiZvyl5fhU6K4K4eE78dA2B7d+EXscSdc70j50+Zh8
+         tsZ903S9XizNoUHveJzRsZU4owmvZ8JMFeMZmm8FMTa2NLOsCjTZ1+YF5gcZfPm9QdBM
+         8/BBTA1cUUmOpT3fPA8S5LoxZ0wqGTbrFPHX1o5gB1Kahl8/9dy7TpzqUbp2uofDhjWH
+         J4Qg==
+X-Gm-Message-State: AOAM530HoqzjzJS0Yyr5J+7YA4DYK6DidCzk2tPmmDs+MtnQ6E6VmARR
+        gGN3mkZVRzaaghzOLSpVdlk0dtvvtgk0Nv0r4Bj0ZI4rYUBk+B/hiGzikLhwPnUE+qYzKtwQ4Dw
+        X9+/Co63sucrNhpLQ
+X-Received: by 2002:a05:6808:21a7:: with SMTP id be39mr5821694oib.145.1634669035227;
+        Tue, 19 Oct 2021 11:43:55 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzdPrscBK1YG1VH1rUMi0yLuvlurM9VfSCdKInuWJvERwiEMMvX78fAUQE+08Aj4iTiMq6yiQ==
+X-Received: by 2002:a05:6808:21a7:: with SMTP id be39mr5821661oib.145.1634669034900;
+        Tue, 19 Oct 2021 11:43:54 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id bb39sm4048561oib.28.2021.10.19.11.43.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Oct 2021 11:43:54 -0700 (PDT)
+Date:   Tue, 19 Oct 2021 12:43:52 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Yishai Hadas <yishaih@nvidia.com>
+Cc:     <bhelgaas@google.com>, <jgg@nvidia.com>, <saeedm@nvidia.com>,
+        <linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <kuba@kernel.org>, <leonro@nvidia.com>,
+        <kwankhede@nvidia.com>, <mgurtovoy@nvidia.com>, <maorg@nvidia.com>
+Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
+ for mlx5 devices
+Message-ID: <20211019124352.74c3b6ba.alex.williamson@redhat.com>
+In-Reply-To: <20211019105838.227569-13-yishaih@nvidia.com>
+References: <20211019105838.227569-1-yishaih@nvidia.com>
+        <20211019105838.227569-13-yishaih@nvidia.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM4PR0401MB2308.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bcd25832-cb1a-4a95-bd71-08d9932fcf8c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Oct 2021 18:39:40.3529
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: caF6euLqSsusMXfBHHiWF5hJDEdjoN/GhrBk6XZ+pAj0NqVju7iFAy8tHN7t2YQnWR03xX9HXfCbRaNHCHJ8sA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR04MB7267
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 19, 2021 at 06:19:25AM -0600, Tim Gardner wrote:
-> Coverity complains of unsigned compare against 0. There are 2 cases in
-> this function:
->=20
-> 1821        itp =3D (irq_holdoff * 1000) / p->desc->qman_256_cycles_per_n=
-s;
->=20
-> CID 121131 (#1 of 1): Unsigned compared against 0 (NO_EFFECT)
-> unsigned_compare: This less-than-zero comparison of an unsigned value is =
-never true. itp < 0U.
-> 1822        if (itp < 0 || itp > 4096) {
-> 1823                max_holdoff =3D (p->desc->qman_256_cycles_per_ns * 40=
-96) / 1000;
-> 1824                pr_err("irq_holdoff must be between 0..%dus\n", max_h=
-oldoff);
-> 1825                return -EINVAL;
-> 1826        }
-> 1827
->     	unsigned_compare: This less-than-zero comparison of an unsigned valu=
-e is never true. irq_threshold < 0U.
-> 1828        if (irq_threshold >=3D p->dqrr.dqrr_size || irq_threshold < 0=
-) {
-> 1829                pr_err("irq_threshold must be between 0..%d\n",
-> 1830                       p->dqrr.dqrr_size - 1);
-> 1831                return -EINVAL;
-> 1832        }
->=20
-> Fix this by removing the comparisons altogether as they are incorrect. Ze=
-ro is
-> a possible value in either case. Also fix a minor comment typo and update=
- the
-> 2 pr_err() calls to use %u formatting as well as be more precise regardin=
-g
-> the exact error.
->=20
-> Fixes: ed1d2143fee5 ("soc: fsl: dpio: add support for irq coalescing per =
-software portal")
-> Cc: Ioana Ciornei <ioana.ciornei@nxp.com>
-> Cc: Roy Pledge <Roy.Pledge@nxp.com>
-> Cc: Li Yang <leoyang.li@nxp.com>
-> Cc: linux-kernel@vger.kernel.org
-> Cc: linuxppc-dev@lists.ozlabs.org
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Tim Gardner <tim.gardner@canonical.com>
+On Tue, 19 Oct 2021 13:58:36 +0300
+Yishai Hadas <yishaih@nvidia.com> wrote:
 
-Tested-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-Reviewed-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> This patch adds support for vfio_pci driver for mlx5 devices.
+> 
+> It uses vfio_pci_core to register to the VFIO subsystem and then
+> implements the mlx5 specific logic in the migration area.
+> 
+> The migration implementation follows the definition from uapi/vfio.h and
+> uses the mlx5 VF->PF command channel to achieve it.
+> 
+> This patch implements the suspend/resume flows.
+> 
+> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  MAINTAINERS                    |   6 +
+>  drivers/vfio/pci/Kconfig       |   3 +
+>  drivers/vfio/pci/Makefile      |   2 +
+>  drivers/vfio/pci/mlx5/Kconfig  |  10 +
+>  drivers/vfio/pci/mlx5/Makefile |   4 +
+>  drivers/vfio/pci/mlx5/main.c   | 696 +++++++++++++++++++++++++++++++++
+>  6 files changed, 721 insertions(+)
+>  create mode 100644 drivers/vfio/pci/mlx5/Kconfig
+>  create mode 100644 drivers/vfio/pci/mlx5/Makefile
+>  create mode 100644 drivers/vfio/pci/mlx5/main.c
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index abdcbcfef73d..e824bfab4a01 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -19699,6 +19699,12 @@ L:	kvm@vger.kernel.org
+>  S:	Maintained
+>  F:	drivers/vfio/platform/
+>  
+> +VFIO MLX5 PCI DRIVER
+> +M:	Yishai Hadas <yishaih@nvidia.com>
+> +L:	kvm@vger.kernel.org
+> +S:	Maintained
+> +F:	drivers/vfio/pci/mlx5/
+> +
+>  VGA_SWITCHEROO
+>  R:	Lukas Wunner <lukas@wunner.de>
+>  S:	Maintained
+> diff --git a/drivers/vfio/pci/Kconfig b/drivers/vfio/pci/Kconfig
+> index 860424ccda1b..187b9c259944 100644
+> --- a/drivers/vfio/pci/Kconfig
+> +++ b/drivers/vfio/pci/Kconfig
+> @@ -43,4 +43,7 @@ config VFIO_PCI_IGD
+>  
+>  	  To enable Intel IGD assignment through vfio-pci, say Y.
+>  endif
+> +
+> +source "drivers/vfio/pci/mlx5/Kconfig"
+> +
+>  endif
+> diff --git a/drivers/vfio/pci/Makefile b/drivers/vfio/pci/Makefile
+> index 349d68d242b4..ed9d6f2e0555 100644
+> --- a/drivers/vfio/pci/Makefile
+> +++ b/drivers/vfio/pci/Makefile
+> @@ -7,3 +7,5 @@ obj-$(CONFIG_VFIO_PCI_CORE) += vfio-pci-core.o
+>  vfio-pci-y := vfio_pci.o
+>  vfio-pci-$(CONFIG_VFIO_PCI_IGD) += vfio_pci_igd.o
+>  obj-$(CONFIG_VFIO_PCI) += vfio-pci.o
+> +
+> +obj-$(CONFIG_MLX5_VFIO_PCI)           += mlx5/
+> diff --git a/drivers/vfio/pci/mlx5/Kconfig b/drivers/vfio/pci/mlx5/Kconfig
+> new file mode 100644
+> index 000000000000..119712656400
+> --- /dev/null
+> +++ b/drivers/vfio/pci/mlx5/Kconfig
+> @@ -0,0 +1,10 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +config MLX5_VFIO_PCI
+> +	tristate "VFIO support for MLX5 PCI devices"
+> +	depends on MLX5_CORE
+> +	select VFIO_PCI_CORE
+> +	help
+> +	  This provides a migration support for MLX5 devices using the VFIO
 
-Thanks,
+s/ a//
 
--Ioana=
+
+> +	  framework.
+> +
+> +	  If you don't know what to do here, say N.
+> diff --git a/drivers/vfio/pci/mlx5/Makefile b/drivers/vfio/pci/mlx5/Makefile
+> new file mode 100644
+> index 000000000000..689627da7ff5
+> --- /dev/null
+> +++ b/drivers/vfio/pci/mlx5/Makefile
+> @@ -0,0 +1,4 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +obj-$(CONFIG_MLX5_VFIO_PCI) += mlx5-vfio-pci.o
+> +mlx5-vfio-pci-y := main.o cmd.o
+> +
+> diff --git a/drivers/vfio/pci/mlx5/main.c b/drivers/vfio/pci/mlx5/main.c
+> new file mode 100644
+> index 000000000000..621b7fc60544
+> --- /dev/null
+> +++ b/drivers/vfio/pci/mlx5/main.c
+> @@ -0,0 +1,696 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved
+> + */
+> +
+> +#include <linux/device.h>
+> +#include <linux/eventfd.h>
+> +#include <linux/file.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/iommu.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/notifier.h>
+> +#include <linux/pci.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/types.h>
+> +#include <linux/uaccess.h>
+> +#include <linux/vfio.h>
+> +#include <linux/sched/mm.h>
+> +#include <linux/vfio_pci_core.h>
+> +
+> +#include "cmd.h"
+> +
+> +enum {
+> +	MLX5VF_PCI_FREEZED = 1 << 0,
+> +};
+> +
+> +enum {
+> +	MLX5VF_REGION_PENDING_BYTES = 1 << 0,
+> +	MLX5VF_REGION_DATA_SIZE = 1 << 1,
+> +};
+> +
+> +enum {
+> +	MLX5VF_SUPPORTED_DEVICE_STATES = VFIO_DEVICE_STATE_RUNNING |
+> +					 VFIO_DEVICE_STATE_SAVING |
+> +					 VFIO_DEVICE_STATE_RESUMING,
+> +};
+> +
+> +#define MLX5VF_MIG_REGION_DATA_SIZE SZ_128K
+> +/* Data section offset from migration region */
+> +#define MLX5VF_MIG_REGION_DATA_OFFSET                                          \
+> +	(sizeof(struct vfio_device_migration_info))
+> +
+> +#define VFIO_DEVICE_MIGRATION_OFFSET(x)                                        \
+> +	(offsetof(struct vfio_device_migration_info, x))
+> +
+> +struct mlx5vf_pci_migration_info {
+> +	u32 vfio_dev_state; /* VFIO_DEVICE_STATE_XXX */
+> +	u32 dev_state; /* device migration state */
+> +	u32 region_state; /* Use MLX5VF_REGION_XXX */
+> +	u16 vhca_id;
+> +	struct mlx5_vhca_state_data vhca_state_data;
+> +};
+> +
+> +struct mlx5vf_pci_core_device {
+> +	struct vfio_pci_core_device core_device;
+> +	u8 migrate_cap:1;
+> +	/* protect migartion state */
+
+s/migartion/migration/
+
+> +	struct mutex state_mutex;
+> +	struct mlx5vf_pci_migration_info vmig;
+> +};
+> +
+> +static int mlx5vf_pci_unquiesce_device(struct mlx5vf_pci_core_device *mvdev)
+> +{
+> +	return mlx5vf_cmd_resume_vhca(mvdev->core_device.pdev,
+> +				      mvdev->vmig.vhca_id,
+> +				      MLX5_RESUME_VHCA_IN_OP_MOD_RESUME_MASTER);
+> +}
+> +
+> +static int mlx5vf_pci_quiesce_device(struct mlx5vf_pci_core_device *mvdev)
+> +{
+> +	return mlx5vf_cmd_suspend_vhca(
+> +		mvdev->core_device.pdev, mvdev->vmig.vhca_id,
+> +		MLX5_SUSPEND_VHCA_IN_OP_MOD_SUSPEND_MASTER);
+> +}
+> +
+> +static int mlx5vf_pci_unfreeze_device(struct mlx5vf_pci_core_device *mvdev)
+> +{
+> +	int ret;
+> +
+> +	ret = mlx5vf_cmd_resume_vhca(mvdev->core_device.pdev,
+> +				     mvdev->vmig.vhca_id,
+> +				     MLX5_RESUME_VHCA_IN_OP_MOD_RESUME_SLAVE);
+> +	if (ret)
+> +		return ret;
+> +
+> +	mvdev->vmig.dev_state &= ~MLX5VF_PCI_FREEZED;
+> +	return 0;
+> +}
+> +
+> +static int mlx5vf_pci_freeze_device(struct mlx5vf_pci_core_device *mvdev)
+> +{
+> +	int ret;
+> +
+> +	ret = mlx5vf_cmd_suspend_vhca(
+> +		mvdev->core_device.pdev, mvdev->vmig.vhca_id,
+> +		MLX5_SUSPEND_VHCA_IN_OP_MOD_SUSPEND_SLAVE);
+> +	if (ret)
+> +		return ret;
+> +
+> +	mvdev->vmig.dev_state |= MLX5VF_PCI_FREEZED;
+> +	return 0;
+> +}
+> +
+> +static int mlx5vf_pci_save_device_data(struct mlx5vf_pci_core_device *mvdev)
+> +{
+> +	u32 state_size = 0;
+> +	int ret;
+> +
+> +	if (!(mvdev->vmig.dev_state & MLX5VF_PCI_FREEZED))
+> +		return -EFAULT;
+> +
+> +	/* If we already read state no reason to re-read */
+> +	if (mvdev->vmig.vhca_state_data.state_size)
+> +		return 0;
+> +
+> +	ret = mlx5vf_cmd_query_vhca_migration_state(
+> +		mvdev->core_device.pdev, mvdev->vmig.vhca_id, &state_size);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return mlx5vf_cmd_save_vhca_state(mvdev->core_device.pdev,
+> +					  mvdev->vmig.vhca_id, state_size,
+> +					  &mvdev->vmig.vhca_state_data);
+> +}
+> +
+> +static int mlx5vf_pci_new_write_window(struct mlx5vf_pci_core_device *mvdev)
+> +{
+> +	struct mlx5_vhca_state_data *state_data = &mvdev->vmig.vhca_state_data;
+> +	u32 num_pages_needed;
+> +	u64 allocated_ready;
+> +	u32 bytes_needed;
+> +
+> +	/* Check how many bytes are available from previous flows */
+> +	WARN_ON(state_data->num_pages * PAGE_SIZE <
+> +		state_data->win_start_offset);
+> +	allocated_ready = (state_data->num_pages * PAGE_SIZE) -
+> +			  state_data->win_start_offset;
+> +	WARN_ON(allocated_ready > MLX5VF_MIG_REGION_DATA_SIZE);
+> +
+> +	bytes_needed = MLX5VF_MIG_REGION_DATA_SIZE - allocated_ready;
+> +	if (!bytes_needed)
+> +		return 0;
+> +
+> +	num_pages_needed = DIV_ROUND_UP_ULL(bytes_needed, PAGE_SIZE);
+> +	return mlx5vf_add_migration_pages(state_data, num_pages_needed);
+> +}
+> +
+> +static ssize_t
+> +mlx5vf_pci_handle_migration_data_size(struct mlx5vf_pci_core_device *mvdev,
+> +				      char __user *buf, bool iswrite)
+> +{
+> +	struct mlx5vf_pci_migration_info *vmig = &mvdev->vmig;
+> +	u64 data_size;
+> +	int ret;
+> +
+> +	if (iswrite) {
+> +		/* data_size is writable only during resuming state */
+> +		if (vmig->vfio_dev_state != VFIO_DEVICE_STATE_RESUMING)
+> +			return -EINVAL;
+> +
+> +		ret = copy_from_user(&data_size, buf, sizeof(data_size));
+> +		if (ret)
+> +			return -EFAULT;
+> +
+> +		vmig->vhca_state_data.state_size += data_size;
+> +		vmig->vhca_state_data.win_start_offset += data_size;
+> +		ret = mlx5vf_pci_new_write_window(mvdev);
+> +		if (ret)
+> +			return ret;
+> +
+> +	} else {
+> +		if (vmig->vfio_dev_state != VFIO_DEVICE_STATE_SAVING)
+> +			return -EINVAL;
+> +
+> +		data_size = min_t(u64, MLX5VF_MIG_REGION_DATA_SIZE,
+> +				  vmig->vhca_state_data.state_size -
+> +				  vmig->vhca_state_data.win_start_offset);
+> +		ret = copy_to_user(buf, &data_size, sizeof(data_size));
+> +		if (ret)
+> +			return -EFAULT;
+> +	}
+> +
+> +	vmig->region_state |= MLX5VF_REGION_DATA_SIZE;
+> +	return sizeof(data_size);
+> +}
+> +
+> +static ssize_t
+> +mlx5vf_pci_handle_migration_data_offset(struct mlx5vf_pci_core_device *mvdev,
+> +					char __user *buf, bool iswrite)
+> +{
+> +	static const u64 data_offset = MLX5VF_MIG_REGION_DATA_OFFSET;
+> +	int ret;
+> +
+> +	/* RO field */
+> +	if (iswrite)
+> +		return -EFAULT;
+> +
+> +	ret = copy_to_user(buf, &data_offset, sizeof(data_offset));
+> +	if (ret)
+> +		return -EFAULT;
+> +
+> +	return sizeof(data_offset);
+> +}
+> +
+> +static ssize_t
+> +mlx5vf_pci_handle_migration_pending_bytes(struct mlx5vf_pci_core_device *mvdev,
+> +					  char __user *buf, bool iswrite)
+> +{
+> +	struct mlx5vf_pci_migration_info *vmig = &mvdev->vmig;
+> +	u64 pending_bytes;
+> +	int ret;
+> +
+> +	/* RO field */
+> +	if (iswrite)
+> +		return -EFAULT;
+> +
+> +	if (vmig->vfio_dev_state == (VFIO_DEVICE_STATE_SAVING |
+> +				     VFIO_DEVICE_STATE_RUNNING)) {
+> +		/* In pre-copy state we have no data to return for now,
+> +		 * return 0 pending bytes
+> +		 */
+> +		pending_bytes = 0;
+> +	} else {
+> +		if (!vmig->vhca_state_data.state_size)
+> +			return 0;
+> +		pending_bytes = vmig->vhca_state_data.state_size -
+> +				vmig->vhca_state_data.win_start_offset;
+> +	}
+> +
+> +	ret = copy_to_user(buf, &pending_bytes, sizeof(pending_bytes));
+> +	if (ret)
+> +		return -EFAULT;
+> +
+> +	/* Window moves forward once data from previous iteration was read */
+> +	if (vmig->region_state & MLX5VF_REGION_DATA_SIZE)
+> +		vmig->vhca_state_data.win_start_offset +=
+> +			min_t(u64, MLX5VF_MIG_REGION_DATA_SIZE, pending_bytes);
+> +
+> +	WARN_ON(vmig->vhca_state_data.win_start_offset >
+> +		vmig->vhca_state_data.state_size);
+> +
+> +	/* New iteration started */
+> +	vmig->region_state = MLX5VF_REGION_PENDING_BYTES;
+> +	return sizeof(pending_bytes);
+> +}
+> +
+> +static int mlx5vf_load_state(struct mlx5vf_pci_core_device *mvdev)
+> +{
+> +	if (!mvdev->vmig.vhca_state_data.state_size)
+> +		return 0;
+> +
+> +	return mlx5vf_cmd_load_vhca_state(mvdev->core_device.pdev,
+> +					  mvdev->vmig.vhca_id,
+> +					  &mvdev->vmig.vhca_state_data);
+> +}
+> +
+> +static void mlx5vf_reset_mig_state(struct mlx5vf_pci_core_device *mvdev)
+> +{
+> +	struct mlx5vf_pci_migration_info *vmig = &mvdev->vmig;
+> +
+> +	vmig->region_state = 0;
+> +	mlx5vf_reset_vhca_state(&vmig->vhca_state_data);
+> +}
+> +
+> +static int mlx5vf_pci_set_device_state(struct mlx5vf_pci_core_device *mvdev,
+> +				       u32 state)
+> +{
+> +	struct mlx5vf_pci_migration_info *vmig = &mvdev->vmig;
+> +	u32 old_state = vmig->vfio_dev_state;
+> +	int ret = 0;
+> +
+> +	if (old_state == VFIO_DEVICE_STATE_ERROR ||
+> +	    !VFIO_DEVICE_STATE_VALID(state) ||
+> +	    (state & ~MLX5VF_SUPPORTED_DEVICE_STATES))
+> +		return -EINVAL;
+> +
+> +	/* Running switches off */
+> +	if (((old_state ^ state) & VFIO_DEVICE_STATE_RUNNING) &&
+> +	    (old_state & VFIO_DEVICE_STATE_RUNNING)) {
+> +		ret = mlx5vf_pci_quiesce_device(mvdev);
+> +		if (ret)
+> +			return ret;
+> +		ret = mlx5vf_pci_freeze_device(mvdev);
+> +		if (ret) {
+> +			vmig->vfio_dev_state = VFIO_DEVICE_STATE_ERROR;
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	/* Resuming switches off */
+> +	if (((old_state ^ state) & VFIO_DEVICE_STATE_RESUMING) &&
+> +	    (old_state & VFIO_DEVICE_STATE_RESUMING)) {
+> +		/* deserialize state into the device */
+> +		ret = mlx5vf_load_state(mvdev);
+> +		if (ret) {
+> +			vmig->vfio_dev_state = VFIO_DEVICE_STATE_ERROR;
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	/* Resuming switches on */
+> +	if (((old_state ^ state) & VFIO_DEVICE_STATE_RESUMING) &&
+> +	    (state & VFIO_DEVICE_STATE_RESUMING)) {
+> +		mlx5vf_reset_mig_state(mvdev);
+> +		ret = mlx5vf_pci_new_write_window(mvdev);
+> +		if (ret)
+> +			return ret;
+> +	}
+
+A couple nits here...
+
+Perhaps:
+
+	if ((old_state ^ state) & VFIO_DEVICE_STATE_RESUMING)) {
+		/* Resuming bit cleared */
+		if (old_state & VFIO_DEVICE_STATE_RESUMING) {
+			...
+		} else { /* Resuming bit set */
+			...
+		}
+	}
+
+Also
+
+	u32 flipped_bits = old_state ^ state;
+
+or similar would simplify all these cases slightly.
+
+
+> +
+> +	/* Saving switches on */
+> +	if (((old_state ^ state) & VFIO_DEVICE_STATE_SAVING) &&
+> +	    (state & VFIO_DEVICE_STATE_SAVING)) {
+> +		if (!(state & VFIO_DEVICE_STATE_RUNNING)) {
+> +			/* serialize post copy */
+> +			ret = mlx5vf_pci_save_device_data(mvdev);
+> +			if (ret)
+> +				return ret;
+> +		}
+> +	}
+
+This doesn't catch all the cases, and in fact misses the most expected
+case where userspace clears the _RUNNING bit while _SAVING is already
+enabled.  Does that mean this hasn't actually been tested with QEMU?
+
+It seems like there also needs to be a clause in the case where
+_RUNNING switches off to test if _SAVING is already set and has not
+toggled.
+
+
+> +
+> +	/* Running switches on */
+> +	if (((old_state ^ state) & VFIO_DEVICE_STATE_RUNNING) &&
+> +	    (state & VFIO_DEVICE_STATE_RUNNING)) {
+> +		ret = mlx5vf_pci_unfreeze_device(mvdev);
+> +		if (ret)
+> +			return ret;
+> +		ret = mlx5vf_pci_unquiesce_device(mvdev);
+> +		if (ret) {
+> +			vmig->vfio_dev_state = VFIO_DEVICE_STATE_ERROR;
+> +			return ret;
+> +		}
+> +	}
+
+Per previous discussion, I understand that freeze and quiesce are
+loosely stop-responding-to-dma and stop-sending-dma, respectively.
+Once we're quiesced and frozen, device state doesn't change.  What are
+the implications to userspace that we don't expose a quiesce state
+(yet)?  I'm wondering if this needs to be resolved before we introduce
+our first in-tree user of the uAPI (and before QEMU support becomes
+non-experimental).  Thanks,
+
+Alex
+
