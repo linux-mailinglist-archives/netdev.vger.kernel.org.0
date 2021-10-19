@@ -2,113 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 667D1432BA0
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 03:57:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3CCD432B85
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 03:38:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230187AbhJSB7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 21:59:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35184 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229588AbhJSB7y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 21:59:54 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC7EC06161C;
-        Mon, 18 Oct 2021 18:57:42 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id ls14-20020a17090b350e00b001a00e2251c8so1414415pjb.4;
-        Mon, 18 Oct 2021 18:57:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=qUY79MPyKMwGVT6iIJG0K/BwgiUzFm+gKagkPPohO2I=;
-        b=JORsSZEgrR8G1WZivCfAlnol5GV1JeVfl2qbtl+N2GBfrV2qmq9cx4Ucm9Cr4ICODD
-         m2TSG9wCBiYAb1EliNiQqhVdS/oo0xpYZb4uLT2fhWhDXpost+kj3rifEYv6ByZu5p0e
-         9KQNYpgPyC6BMkt9t2etI9gL/EDenRkyssFJXDWth38RcD/+3G5UYtTLVRiqm3dgEGWg
-         tMLOCUWqXJgb35eqz8BawmH+IElzSkyrmR1EcPFYqUk2DRNP9SXhhkpeDCr0TIoM5iXS
-         9x1vs8ZNetPOA93nsY/q23x4QaJfp1iQ7rY/xbAmu3LOnYsp5ibK+ZQRHn2BwVzfCW7r
-         Ebtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=qUY79MPyKMwGVT6iIJG0K/BwgiUzFm+gKagkPPohO2I=;
-        b=vyORHjmx4FU27BZgr1D84Hej0EBTcHgad+Fdxo7O0bDvya8m3PJ7Bi05nKvyw/hPB6
-         sZBP3vDfF29ruJNg8Qudmi8fsuMNV22H0zeUBGzGJNTRlO1hKfUFoo4Tr0XCZ7aJEn6V
-         kpe39QuxzNijEMJF+UiojlxFO91mlm9dVMsAEjIFCCr6vLNxmRrUuHdErmUDqNvmS4N1
-         DWfj8beAAMajblafT3hSfC49XUb5CrP42DfnJ7ol+tnG+6DJRlAIgVA1xa46N+cp538c
-         Bj9efwkF7fxtcOKyN+9RbA9v9zZOravQ/NDVcR70siZBLi+Q3/oBpbUtyKprJ9V4UYCc
-         4u/g==
-X-Gm-Message-State: AOAM530MIhoMKZBIpP63Qd2L9fHMU/vB3T5xNWQ9DQSx2GS1JL4weS4N
-        myOaX5HEwEeM1WDNsezTLyNKyyLA747M91MASdixuTco
-X-Google-Smtp-Source: ABdhPJyPybmmM9SrYlqMdXm4JeZRP35FsXVmolprketo+C/zDHmctWOYo01jj1/89HRUecM3oWT5PafbaAEzEj5wgu8=
-X-Received: by 2002:a17:90a:6b0d:: with SMTP id v13mr2703651pjj.138.1634608661937;
- Mon, 18 Oct 2021 18:57:41 -0700 (PDT)
+        id S229771AbhJSBlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 21:41:08 -0400
+Received: from mga09.intel.com ([134.134.136.24]:34697 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230070AbhJSBlH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Oct 2021 21:41:07 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10141"; a="228280497"
+X-IronPort-AV: E=Sophos;i="5.85,382,1624345200"; 
+   d="scan'208";a="228280497"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Oct 2021 18:38:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,382,1624345200"; 
+   d="scan'208";a="661606945"
+Received: from unknown (HELO intel-73.bj.intel.com) ([10.238.154.73])
+  by orsmga005.jf.intel.com with ESMTP; 18 Oct 2021 18:38:45 -0700
+From:   yanjun.zhu@linux.dev
+To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        yanjun.zhu@linux.dev
+Subject: [PATCH 1/1] ice: remove the unused function ice_aq_nvm_update_empr
+Date:   Tue, 19 Oct 2021 05:17:43 -0400
+Message-Id: <20211019091743.12046-1-yanjun.zhu@linux.dev>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20211015090353.31248-1-zhouchengming@bytedance.com>
- <CAADnVQ+A5LdWQTXFugNTceGcz_biV-uEJma4oT5UJKeHQBHQPw@mail.gmail.com> <6d7246b6-195e-ee08-06b1-2d1ec722e7b2@bytedance.com>
-In-Reply-To: <6d7246b6-195e-ee08-06b1-2d1ec722e7b2@bytedance.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 18 Oct 2021 18:57:30 -0700
-Message-ID: <CAADnVQKG5=qVSjZGzHEc0ijwiYABVCU1uc8vOQ-ZLibhpW--Hg@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH] bpf: use count for prealloc hashtab too
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 17, 2021 at 10:49 PM Chengming Zhou
-<zhouchengming@bytedance.com> wrote:
->
-> =E5=9C=A8 2021/10/16 =E4=B8=8A=E5=8D=883:58, Alexei Starovoitov =E5=86=99=
-=E9=81=93:
-> > On Fri, Oct 15, 2021 at 11:04 AM Chengming Zhou
-> > <zhouchengming@bytedance.com> wrote:
-> >>
-> >> We only use count for kmalloc hashtab not for prealloc hashtab, becaus=
-e
-> >> __pcpu_freelist_pop() return NULL when no more elem in pcpu freelist.
-> >>
-> >> But the problem is that __pcpu_freelist_pop() will traverse all CPUs a=
-nd
-> >> spin_lock for all CPUs to find there is no more elem at last.
-> >>
-> >> We encountered bad case on big system with 96 CPUs that alloc_htab_ele=
-m()
-> >> would last for 1ms. This patch use count for prealloc hashtab too,
-> >> avoid traverse and spin_lock for all CPUs in this case.
-> >>
-> >> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-> >
-> > It's not clear from the commit log what you're solving.
-> > The atomic inc/dec in critical path of prealloc maps hurts performance.
-> > That's why it's not used.
-> >
-> Thanks for the explanation, what I'm solving is when hash table hasn't fr=
-ee
-> elements, we don't need to call __pcpu_freelist_pop() to traverse and
-> spin_lock all CPUs. The ftrace output of this bad case is below:
->
->  50)               |  htab_map_update_elem() {
->  50)   0.329 us    |    _raw_spin_lock_irqsave();
->  50)   0.063 us    |    lookup_elem_raw();
->  50)               |    alloc_htab_elem() {
->  50)               |      pcpu_freelist_pop() {
->  50)   0.209 us    |        _raw_spin_lock();
->  50)   0.264 us    |        _raw_spin_lock();
+From: Zhu Yanjun <yanjun.zhu@linux.dev>
 
-This is LRU map. Not hash map.
-It will grab spin_locks of other cpus
-only if all previous cpus don't have free elements.
-Most likely your map is actually full and doesn't have any free elems.
-Since it's an lru it will force free an elem eventually.
+The function ice_aq_nvm_update_empr is not used, so remove it.
+
+Signed-off-by: Zhu Yanjun <yanjun.zhu@linux.dev>
+---
+ drivers/net/ethernet/intel/ice/ice_nvm.c | 16 ----------------
+ drivers/net/ethernet/intel/ice/ice_nvm.h |  1 -
+ 2 files changed, 17 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.c b/drivers/net/ethernet/intel/ice/ice_nvm.c
+index fee37a5844cf..bad374bd7ab3 100644
+--- a/drivers/net/ethernet/intel/ice/ice_nvm.c
++++ b/drivers/net/ethernet/intel/ice/ice_nvm.c
+@@ -1106,22 +1106,6 @@ enum ice_status ice_nvm_write_activate(struct ice_hw *hw, u8 cmd_flags)
+ 	return ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
+ }
+ 
+-/**
+- * ice_aq_nvm_update_empr
+- * @hw: pointer to the HW struct
+- *
+- * Update empr (0x0709). This command allows SW to
+- * request an EMPR to activate new FW.
+- */
+-enum ice_status ice_aq_nvm_update_empr(struct ice_hw *hw)
+-{
+-	struct ice_aq_desc desc;
+-
+-	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_nvm_update_empr);
+-
+-	return ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
+-}
+-
+ /* ice_nvm_set_pkg_data
+  * @hw: pointer to the HW struct
+  * @del_pkg_data_flag: If is set then the current pkg_data store by FW
+diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.h b/drivers/net/ethernet/intel/ice/ice_nvm.h
+index c6f05f43d593..925225905491 100644
+--- a/drivers/net/ethernet/intel/ice/ice_nvm.h
++++ b/drivers/net/ethernet/intel/ice/ice_nvm.h
+@@ -39,7 +39,6 @@ enum ice_status
+ ice_aq_erase_nvm(struct ice_hw *hw, u16 module_typeid, struct ice_sq_cd *cd);
+ enum ice_status ice_nvm_validate_checksum(struct ice_hw *hw);
+ enum ice_status ice_nvm_write_activate(struct ice_hw *hw, u8 cmd_flags);
+-enum ice_status ice_aq_nvm_update_empr(struct ice_hw *hw);
+ enum ice_status
+ ice_nvm_set_pkg_data(struct ice_hw *hw, bool del_pkg_data_flag, u8 *data,
+ 		     u16 length, struct ice_sq_cd *cd);
+-- 
+2.27.0
+
