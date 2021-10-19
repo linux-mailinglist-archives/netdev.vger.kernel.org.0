@@ -2,72 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDA90433BF0
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 18:19:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4FE6433C45
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 18:32:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233784AbhJSQVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 12:21:19 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:47048 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232137AbhJSQVN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Oct 2021 12:21:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=fJRLB42XQcsYfYfsYVcIV7s8kQ6rgyTZ6Dj+jrkJZ9E=; b=NSKzDMTQO6yn+mn0JvlksHP1Rb
-        Uc7zxbee4w0ttz09MF/1w7QhkBswOqsj5SR4b7AKN6UqbT/tV9SB40+gYMQ76NCV4G5B8WyiHTIrA
-        Q9eHhyZXBex9ypKAYVv5Y4GFs2vrUgoNIftPdIvMLHrWJZNMevnlNDJqPSPGbXWjdfrg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mcrpF-00B5wm-Dh; Tue, 19 Oct 2021 18:18:53 +0200
-Date:   Tue, 19 Oct 2021 18:18:53 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Volodymyr Mytnyk [C]" <vmytnyk@marvell.com>
-Cc:     "kuba@kernel.org" <kuba@kernel.org>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        "Vadym Kochan [C]" <vkochan@marvell.com>,
-        Yevhen Orlov <yevhen.orlov@plvision.eu>,
-        "Taras Chornyi [C]" <tchornyi@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v2] net: marvell: prestera: add firmware v4.0
- support
-Message-ID: <YW7v7VjQF6ZZOb/L@lunn.ch>
-References: <1634623424-15011-1-git-send-email-volodymyr.mytnyk@plvision.eu>
- <YW6+r9u2a9k6wKF+@lunn.ch>
- <SJ0PR18MB40099BBA546BFBE941B969DCB2BD9@SJ0PR18MB4009.namprd18.prod.outlook.com>
+        id S234334AbhJSQeY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 12:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37300 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234326AbhJSQeX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 12:34:23 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C5FBC06161C
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 09:32:10 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id i20so14877640edj.10
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 09:32:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8xUa4jDp8wEq2+KyjYLUoyDAf9haNG/CAH7QLO3lCFg=;
+        b=Rk3hPiN1Cgn4j+zmGpM0dENIhRnzhwt3kwrJw0dXrtwRIVtz33CBjd1xw9nFoz4Y54
+         orSrK+/3veW61o8sx5I9LiM2oX+VL9+WV8tNCkfSFeACCFxjFpO8cuGdJWAtcl/R/iyd
+         JSllRqHrbTYt0SodjJZCokHVxZoY+roP3verKxSMGZha5nDo8UundCHVvMKz1yLlLX+A
+         Yv2x2RPOb7INYdlisfjqVAAnylzMCH1JejmnWqjvrI9KZfd5Z+AdFC3UQVR1xC3YrEtN
+         +oo8OMgQVykkiHbVa0UEw91IZP1jygwfZXxmIv3yzPWsmS4pbb1XvJ2GC/68Aw6XihBt
+         Rcaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8xUa4jDp8wEq2+KyjYLUoyDAf9haNG/CAH7QLO3lCFg=;
+        b=X9gDmOoWOOJceGRweiBLtdCOdWv8UDOiuuTf6OZ5zB6sOfb6KAwKuZLCbi+27R37+t
+         9dOu4TUjg3F4HmgOjEY/0mVvT23h0HwETtbpkd2V8ZZOMKtWFff2gLIwScfwaEbxh7l7
+         D2a0PZ5vDhQGAJnKa2vn7S7LBGTQ1Z1wr2LKCcy50+IY37XXPee04TFqz5vkkiypJOuE
+         A9ZrBld9TO0rG9VyGfcCix5b8GuhSF6IITcKUVv3ENgg1bEBUiSnWkuoqpbWfccEiKul
+         LoUTNc7IbydfmjWqgwlEq8YoAQNg0L8KM5F+U+50lCqFJBEG/GxN/ObVmeVqi2NeQAbF
+         AhGg==
+X-Gm-Message-State: AOAM532nV8QgCmo1ISp0C1E+2RnmEOevC28iroVV3Mh+EynvxsBZlidH
+        a5RT3TzPEwINHtC8of4ZUFFzkX/hS9mTKOYgpSRU
+X-Google-Smtp-Source: ABdhPJx2DygXOAUIL+ZmjqAeaXSLbDoYpIDmg/VlX8my35/hQmEKkmgE44G+Jhusz2tWvG+Y9ihUjD2QYXGPH0taDhY=
+X-Received: by 2002:a05:6402:22d6:: with SMTP id dm22mr55776304edb.209.1634660962615;
+ Tue, 19 Oct 2021 09:29:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <SJ0PR18MB40099BBA546BFBE941B969DCB2BD9@SJ0PR18MB4009.namprd18.prod.outlook.com>
+References: <CA+G9fYuY3BJ9osvhwg0-YG=L+etgCBfCq0koC9BEkvK8-GR3ew@mail.gmail.com>
+ <20211019131049.GE28644@breakpoint.cc>
+In-Reply-To: <20211019131049.GE28644@breakpoint.cc>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Tue, 19 Oct 2021 12:29:11 -0400
+Message-ID: <CAHC9VhTobH9ExRt5fLx+S9ibRipeA4pj8yFhjDKb0Buq6naD5A@mail.gmail.com>
+Subject: Re: [next] BUG: kernel NULL pointer dereference, address:: selinux_ip_postroute_compat
+To:     Florian Westphal <fw@strlen.de>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        selinux@vger.kernel.org,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, lkft-triage@lists.linaro.org,
+        Eric Paris <eparis@parisplace.org>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> - Major changes have been made to new v4.0 FW ABI to add support of new features,
->   introduce the stability of the FW ABI and ensure better forward compatibility
->   for the future vesrions.
+On Tue, Oct 19, 2021 at 9:10 AM Florian Westphal <fw@strlen.de> wrote:
+>
+> Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
+> > Following kernel crash noticed on linux next 20211019 tag.
+> > on x86, i386 and other architectures.
+>
+> Paul, this might be caused by
+> 1d1e1ded13568be81a0e19d228e310a48997bec8
+> ("selinux: make better use of the nf_hook_state passed to the NF
+>  hooks"), in particular this hunk here:
+>
+> -       if (sk == NULL)
+> +       if (state->sk == NULL)
+>                 return NF_ACCEPT;
+> +       sk = skb_to_full_sk(skb);
+>         sksec = sk->sk_security;
+>
+> state->sk might not be related to skb->sk.
+> I suspect that this should instead be:
+>
+> +       sk = skb_to_full_sk(skb);
+>         if (sk == NULL)
+>
+> See 7026b1ddb6b8d4e6ee33dc2bd06c0ca8746fa7ab for the origin of this
+> additional socket pointer.
 
-So this point needs bring out in the commit message. You need to
-explain why you think you will never need another ABI break. How your
-new design allows extensible, what you have fixed in your old design
-which has causes two ABI breaks.
+Sure, I'll patch that up now.
 
-Given this is the second time you have broken the ABI, i need
-convincing.
-
-> - All current platforms using this driver have dedicated OOB mgmt port, thus the
->   user still be able to do upgrade of the FW. So, no "Bricks in broom closets" :).
-
-So your cabling guidelines suggest a dedicated Ethernet cable from the
-broom closet to the NOC for the OOB port? I suspect most users ignore
-this, and do management over the network. They only use the OOB port
-when they have bricked the device because they installed a kernel
-upgrade over the network, without upgrading the firmware.
-
-	Andrew
+-- 
+paul moore
+www.paul-moore.com
