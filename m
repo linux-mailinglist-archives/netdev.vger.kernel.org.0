@@ -2,162 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA7ED4331F6
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 11:15:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4620433200
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 11:16:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234884AbhJSJRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 05:17:38 -0400
-Received: from mx0a-0064b401.pphosted.com ([205.220.166.238]:31760 "EHLO
-        mx0a-0064b401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234511AbhJSJRh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 05:17:37 -0400
-Received: from pps.filterd (m0250809.ppops.net [127.0.0.1])
-        by mx0a-0064b401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19J8VJZg018153;
-        Tue, 19 Oct 2021 02:15:05 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=from : to : cc :
- subject : date : message-id : content-type : mime-version; s=PPS06212021;
- bh=mFheHQJ6WdWVbOFR2iqet41nB7ohpEtAMAWJRLQBtLw=;
- b=qBIfDjs+zgBW+UgnGgn4JC5mUo90pbHL7uL2eFQWqaGfE+5ZGWq7Si7mx1u6UU5hCTPF
- 5rNyKQ8fKyZqlD6toNIZAp+qv7+XGD4tnOR8+u/5leS3tHONQ23WsroJNjNRVod1aPPp
- HC+Xqbk9BdYgFCOI993Bu6Dxp7NxKGrHx1IttofcHaqANRnaeo8uakc7wTbCMhHPGBuU
- rGPO93T/HSB1VT1MVxfXtt1lCuiq9V4R6Ri2dtybqRZccQIpFE4ntCEqhokUzWwjn+O1
- XmHLAkfOKxUkCe7Qz37D0BCOpkWMyVFJn3Im2MBEwACg3y7EiGOXcBtxlmAj+sxPNsfd Sg== 
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2176.outbound.protection.outlook.com [104.47.58.176])
-        by mx0a-0064b401.pphosted.com with ESMTP id 3bsmtb088h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 19 Oct 2021 02:15:05 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Tll2JYk11RXpnwL31TIBLEuRqCLstS+1AsYfu/SzaJuvCGVJ/GrEkWEIS3iHbEeJnY4hBlIpBOzL99x5cnaNTsQ+GI5oCxtMqDu0DB5Z8rZugkMabLC3b/2JQIDeMsgqjMA4FT9aiE8UId4UZLFv5R7X8h2mR2+0P89NpHCRg4Fx3rjjLMWdn+NZGVfD3QNwvfJcTMdjB6U91YonOoz9KDVOXdmRhAI3WB3lgf+glbstONV6GnfMZIXy3kWaeHAtxj60cNFZzXwB0H7K32Nj9L3tNsXJaMkpv03mIeKsF6eWEDnA4G61zzpsFG4AeaYRl5NSdnQvQFOB7YwmDNNhKw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mFheHQJ6WdWVbOFR2iqet41nB7ohpEtAMAWJRLQBtLw=;
- b=VchNTyTme9LwRU7eiKLohraH87vfn7zSERzZ76L9hyyMScmFEgUSu56/XcDeO/W6TUyxJqRlMrlFb/U9mqnqIUXcwAnlz764O4oeaSg9DDb4TULaJfPvGsDkaiAqKEeuss0AH9RESXGzltwa/ypb9KzvfbzSh22cR3BDW1xIFDHkB0HG/EHNE1Jp6clno+X4EOp0p4tgeekd5UJYbYEcbo0JGP6BLCCQGTAsFFawqf+0PG5pbzQv4AYuTvNg/MABsjM5gvzpryDKPyXwl1fDMUAz0dzsZe9GAgro3w52ZwSOo7/Lxu/f1U6j/8ZKg083UonamGrftfkyDheJsh4Ktg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=windriver.com; dmarc=pass action=none
- header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
-Authentication-Results: grandegger.com; dkim=none (message not signed)
- header.d=none;grandegger.com; dmarc=none action=none
- header.from=windriver.com;
-Received: from PH0PR11MB5191.namprd11.prod.outlook.com (2603:10b6:510:3e::24)
- by PH0PR11MB4901.namprd11.prod.outlook.com (2603:10b6:510:3a::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.15; Tue, 19 Oct
- 2021 09:15:02 +0000
-Received: from PH0PR11MB5191.namprd11.prod.outlook.com
- ([fe80::c11a:b99e:67ce:4a14]) by PH0PR11MB5191.namprd11.prod.outlook.com
- ([fe80::c11a:b99e:67ce:4a14%8]) with mapi id 15.20.4608.018; Tue, 19 Oct 2021
- 09:15:01 +0000
-From:   Meng Li <Meng.Li@windriver.com>
-To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
-        kuba@kernel.org, mailhol.vincent@wanadoo.fr,
-        socketcan@hartkopp.net, ramesh.shanmugasundaram@bp.renesas.com
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, meng.li@windriver.com
-Subject: [PATCH] driver: net: can: disable clock when it is in enable status
-Date:   Tue, 19 Oct 2021 17:14:16 +0800
-Message-Id: <20211019091416.16923-1-Meng.Li@windriver.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR06CA0012.apcprd06.prod.outlook.com
- (2603:1096:202:2e::24) To PH0PR11MB5191.namprd11.prod.outlook.com
- (2603:10b6:510:3e::24)
+        id S234939AbhJSJSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 05:18:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48892 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234887AbhJSJSp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 05:18:45 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD85C061745
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 02:16:32 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id z11so5995871lfj.4
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 02:16:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=cxhBllE4qGFDGgzgKWWLi0zeBxQnDNBJTirScQAPH6k=;
+        b=p54i6P06LTDaCPBW4CrsJWb73kTEh+TA89xUqk7Jd2oywEHlGVEYAsjKGLDBC2535y
+         TsQn04umL7+y8g3xhdBTrAMEvv1rIBlUhpt1z2uVwQ+tRkjIIZrbn50cu8ZebudlbsM3
+         GfhCeuIVGsmMF5jdROtkal/4I5S9nnNcdaV9A=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=cxhBllE4qGFDGgzgKWWLi0zeBxQnDNBJTirScQAPH6k=;
+        b=SF/uoDb4hn2RzpzYyiYzFmptqQHosN16t92zUKxLkRL8YfWzZqFLyiOLTSyk1Bis9x
+         XbGeyhRfR5JIwaZQcOKSnEWNjY0+C+HMoa5vssC/vVheR5873KlfmC/kyNYY/bKYqkQr
+         iuKau00utbX/jE2nmdLwBZIHpWIRjqAk9p2hn/tATCpYBZHA8FMDmrGZQ7I3xEmS+Vk6
+         8mtd/RKbUuupfMS5loJz8DlJA4GwQWTL1Xy3N67JbPWHzaEyKk5/DdTQtKim/ry5RKG+
+         MzDRb+J5E6ZpkLYi0IRRBzHAc54t82PpYXyJz1mltgEMpTv4sBR2UsiMvTXAtF1P0/X1
+         LLqA==
+X-Gm-Message-State: AOAM533Sx3Ymof2gl6Ga64r2qi7AnOjMKREzLm76NewYxCx2qxfQEzf8
+        BVlDsiqpTn9VjXEcwXMMGFJuaw==
+X-Google-Smtp-Source: ABdhPJxUeKr2wrSWuBx0TSBk2qJrKNOUCrH+GEBa8+DKn9RSfKsGBVi0ZH7xCQzy4XnMSpUOX1+y3g==
+X-Received: by 2002:ac2:52a5:: with SMTP id r5mr5019056lfm.239.1634634991018;
+        Tue, 19 Oct 2021 02:16:31 -0700 (PDT)
+Received: from cloudflare.com (2a01-110f-480d-6f00-ff34-bf12-0ef2-5071.aa.ipv6.supernova.orange.pl. [2a01:110f:480d:6f00:ff34:bf12:ef2:5071])
+        by smtp.gmail.com with ESMTPSA id h19sm1619568lfk.199.2021.10.19.02.16.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Oct 2021 02:16:30 -0700 (PDT)
+References: <20211011191647.418704-1-john.fastabend@gmail.com>
+ <20211011191647.418704-3-john.fastabend@gmail.com>
+User-agent: mu4e 1.1.0; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
+        joamaki@gmail.com, xiyou.wangcong@gmail.com
+Subject: Re: [PATCH bpf 2/4] bpf, sockmap: Fix race in ingress receive
+ verdict with redirect to self
+In-reply-to: <20211011191647.418704-3-john.fastabend@gmail.com>
+Date:   Tue, 19 Oct 2021 11:16:29 +0200
+Message-ID: <87sfwxfk7m.fsf@cloudflare.com>
 MIME-Version: 1.0
-Received: from pek-mli1-d2.wrs.com (60.247.85.82) by HK2PR06CA0012.apcprd06.prod.outlook.com (2603:1096:202:2e::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.18 via Frontend Transport; Tue, 19 Oct 2021 09:14:58 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 87c6ece2-ac8a-4f4b-7931-08d992e0ee23
-X-MS-TrafficTypeDiagnostic: PH0PR11MB4901:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <PH0PR11MB49012384531E52049183CF7BF1BD9@PH0PR11MB4901.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 33A2Spc4jZlukxYDAhLQcABkgLKg7GBBLgnBY96w8WdYiFpVjfUQ+JEHg4OfmP/xKvRb0HOiGofol47JY0A6Rguc3ClkLLIStL2oWER4ht98oTjF+sWoT+K3GrYOEXgpiY52rKopetMzUwWuBqckXWLFEhmIp6FC/fBcrAhnvKxlCV9aOSYff1xsw9Sy3qjAbxRjw5Nzrq7LT4lib/BkKOlcqI6gk+L/hWayDAMZWggD0Bi1gRyGQIEYKegkz0slx+i4DBn4mE780lxHfRzrJIpNWrKdLt1lpKNGu6JpCqANHFLYptGcM0brUI6rgW/CpTIpW7qwIpXAoMZHfx4FZNEsnwSu+DrVsMtfdnW9EXY98o9NHqx83J5vSW5KYFDSLutCAEvFQ7O6SO34FsBGdICM4wk1gtAJh3IaBR4Qdu8Piy5O0WmfvayFB/RAJFMRP52ptreGaGhkjlAe6KzaQ2BMmBiar9z7uffE6y9a14tju6qi9NTgrGsurSl7LeGwVwftIsKwK0KJc61EzbJu9rgMKeI99DzbSxBJa/lbV/I5xxMy6sT6WWcevRoTqnwFUCDOGMCC7KzodcVznDpIWk49u8ZKjpr35wQlY5org4zp6OA0d6OHigfH834syhvEgjUdv6vx688N4Kr3SQE5SIkcCMPOeMcGVsEHM6OTtTyPO6KuRfOHT7mzmn3VVVI5Q5S2dsEG9dUN/j6MTCzlKw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5191.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(26005)(186003)(6666004)(8676002)(36756003)(508600001)(2906002)(52116002)(86362001)(66476007)(66556008)(83380400001)(1076003)(7416002)(5660300002)(6512007)(6486002)(8936002)(66946007)(38350700002)(38100700002)(316002)(2616005)(6506007)(956004)(107886003)(4326008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TKWuEZxlB9gU0CWhdVVOGRaRZAHsqhDtM8pfmLphu/P2AMQCEf8yK7/ceGGq?=
- =?us-ascii?Q?iloWwctfOhlNoaiMwPaE0EN2aSOo0huHYwZVz3PnTv/kebCu7pZg9Jx+y5Vs?=
- =?us-ascii?Q?41fys0r7t0EpJSkptmai73Iy7FVtIOUoNDh7ynulRfyMzYDthzOFYiflkQuO?=
- =?us-ascii?Q?mXLaaZ+gYiQv5WX6MRFrK0W5ez2SSG4iY7ymZ0UjP92F3e18vBGCUzvpFcjh?=
- =?us-ascii?Q?NJtUZBCxSFiBzb2zxPfA8beD4QmWuIZ5lbJxGoydnkpmE3qlBoaCiaH8bTVM?=
- =?us-ascii?Q?GHrbT1j/wCk+T5MhmFPqN8UiQN2+W7KOQX/Za2hsi8+v9+2kJQ41xAbYBtMk?=
- =?us-ascii?Q?WoK2Qe+HuqkXX9gmxwVyhlONxAF1rTK/2xpIUlzArSgMuMy5fs7D236Ql7uW?=
- =?us-ascii?Q?OCEczNgmln/BWODaLcCksOdEUUcdTYdfV116I/Ams+XUauGoE7MzEvdIZasy?=
- =?us-ascii?Q?1U/Y7MVEbQWHtEwo6oNywbR26BMuPz5SLE9brk5l+odeZyPQtNB2kXjU66o3?=
- =?us-ascii?Q?MdrtWLAYfUdge4iSxa+XUknPStuiWMBLo0IjFH4R5Khh7epTLtfxMf7Ur6MH?=
- =?us-ascii?Q?/Ruf2Ylq85KvnaR7BVjMzVzBqq4pEHLfHHy/Ar+ogm5GXdQCxt9N8oDQOOWy?=
- =?us-ascii?Q?o77wNeGqlAmdQOCUiFunHUjSw31A42U8ZBvPUI2DGfagf4QBxEereshT7vxc?=
- =?us-ascii?Q?ixQxZmSNIlVhDzIzUyCj60fTr0Y+nlqzjRdj9K6BY2y5Fjmx4Yj9l4tInqMJ?=
- =?us-ascii?Q?9HOxM+/JakuCLQOOpLxPVUdi3xPqFTzTu2wnQw0qo6Ymom56C//rcvCGvrzz?=
- =?us-ascii?Q?UwD6cpZ2RTq1M2jDa6VyP67743RNKFUNLKVz7NH7rdgtxUo6cpkpLE7WWe8I?=
- =?us-ascii?Q?TsQdkg3nR0BSJjgYI6U81MTXYPHl6Vd2hf9DOpVctHZMTMlDxr/XOdDCOVsF?=
- =?us-ascii?Q?bHWDzVQnThhYFZYsDVsqnE3hM/xJ0yb6+QcgPyIhZm7yDyIGJspxMx3wVUhP?=
- =?us-ascii?Q?cBDrMwyW+Ly+D5a6N3Ld8h7sviqLvMedptQ/GlEY5OcouSFCAt/DcBDF/QkT?=
- =?us-ascii?Q?BVf+cNIG3wfGZciKH2NsxxQ2WWk+lp8PruAHac9qqriELRiza+iNFE26Bpll?=
- =?us-ascii?Q?cgVPanCXD9LR0P3yPgSNNo/z+hBffLH6zwTvPs3Me4Cgv6wZonD1O9jAbSIR?=
- =?us-ascii?Q?KPMUwueUzmQM2HxrAcgLmhvA9JPsGyV+mO2ittTbDe8s00KpMuafKRFnwmMs?=
- =?us-ascii?Q?R+PwYirEpxF/l+/k95TEoFez7fZMcKJ6ksrxN/U8DjfY4FxnGMB7GGPY0qgD?=
- =?us-ascii?Q?OuDzmtn8RFdAm2HC/6BXLYqr?=
-X-OriginatorOrg: windriver.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 87c6ece2-ac8a-4f4b-7931-08d992e0ee23
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5191.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2021 09:15:01.8324
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: her1UKag0IzzHyZIfP9nzXixZ5Jll2UibgO1xndOC3xLh8Qbb+jAtDa9MUWCnHki2wP1gG+o/pgrdmdoB6Fg4A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB4901
-X-Proofpoint-ORIG-GUID: 9AiDFZcj2Zba1GiuMmqxmBtyRPn9Qi-2
-X-Proofpoint-GUID: 9AiDFZcj2Zba1GiuMmqxmBtyRPn9Qi-2
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-10-18_07,2021-10-18_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=559
- impostorscore=0 suspectscore=0 clxscore=1011 priorityscore=1501
- adultscore=0 lowpriorityscore=0 phishscore=0 spamscore=0 malwarescore=0
- bulkscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109230001 definitions=main-2110190056
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If disable a clock when it is already in disable status, there
-will be a warning trace generated. So, it is need to confirm
-whether what status the clock is in before disable it.
 
-Fixes: a23b97e6255b ("can: rcar_can: Move Renesas CAN driver to rcar dir")
-Cc: stable@vger.kernel.org
-Signed-off-by: Meng Li <Meng.Li@windriver.com>
----
- drivers/net/can/rcar/rcar_can.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+On Mon, Oct 11, 2021 at 09:16 PM CEST, John Fastabend wrote:
+> A socket in a sockmap may have different combinations of programs
+> attached depending on configuration. There can be no programs in which
+> case the socket acts as a sink only. There can be a TX program in this
+> case a BPF program is attached to sending side, but no RX program is
+> attached. There can be an RX program only where sends have no BPF
+> program attached, but receives are hooked with BPF. And finally,
+> both TX and RX programs may be attached. Giving us the permutations,
+>
+>  None, Tx, Rx, and TxRx
+>
+> To date most of our use cases have been TX case being used as a fast
+> datapath to directly copy between local application and a userspace
+> proxy. Or Rx cases and TxRX applications that are operating an in
+> kernel based proxy. The traffic in the first case where we hook
+> applications into a userspace application looks like this,
+>
+>   AppA  redirect   AppB
+>    Tx <-----------> Rx
+>    |                |
+>    +                +
+>    TCP <--> lo <--> TCP
+>
+> In this case all traffic from AppA (after 3whs) is copied into the
+> AppB ingress queue and no traffic is ever on the TCP recieive_queue.
+>
+> In the second case the application never receives, except in some
+> rare error cases, traffic on the actual user space socket. Instead
+> the send happens in the kernel.
+>
+>            AppProxy       socket pool
+>        sk0 ------------->{sk1,sk2, skn}
+>         ^                      |
+>         |                      |
+>         |                      v
+>        ingress              lb egress
+>        TCP                  TCP
+>
+> Here because traffic is never read off the socket with userspace
+> recv() APIs there is only ever one reader on the sk receive_queue.
+> Namely the BPF programs.
+>
+> However, we've started to introduce a third configuration where the
+> BPF program on receive should process the data, but then the normal
+> case is to push the data into the receive queue of AppB.
+>
+>        AppB
+>        recv()                (userspace)
+>      -----------------------
+>        tcp_bpf_recvmsg()     (kernel)
+>          |             |
+>          |             |
+>          |             |
+>        ingress_msgQ    |
+>          |             |
+>        RX_BPF          |
+>          |             |
+>          v             v
+>        sk->receive_queue
+>
+>
+> This is different from the App{A,B} redirect because traffic is
+> first received on the sk->receive_queue.
+>
+> Now for the issue. The tcp_bpf_recvmsg() handler first checks the
+> ingress_msg queue for any data handled by the BPF rx program and
+> returned with PASS code so that it was enqueued on the ingress msg
+> queue. Then if no data exists on that queue it checks the socket
+> receive queue. Unfortunately, this is the same receive_queue the
+> BPF program is reading data off of. So we get a race. Its possible
+> for the recvmsg() hook to pull data off the receive_queue before
+> the BPF hook has a chance to read it. It typically happens when
+> an application is banging on recv() and getting EAGAINs. Until
+> they manage to race with the RX BPF program.
+>
+> To fix this we note that before this patch at attach time when
+> the socket is loaded into the map we check if it needs a TX
+> program or just the base set of proto bpf hooks. Then it uses
+> the above general RX hook regardless of if we have a BPF program
+> attached at rx or not. This patch now extends this check to
+> handle all cases enumerated above, TX, RX, TXRX, and none. And
+> to fix above race when an RX program is attached we use a new
+> hook that is nearly identical to the old one except now we
+> do not let the recv() call skip the RX BPF program. Now only
+> the BPF program pulls data from sk->receive_queue and recv()
+> only pulls data from the ingress msgQ post BPF program handling.
+>
+> With this resolved our AppB from above has been up and running
+> for many hours without detecting any errors. We do this by
+> correlating counters in RX BPF events and the AppB to ensure
+> data is never skipping the BPF program. Selftests, was not
+> able to detect this because we only run them for a short
+> period of time on well ordered send/recvs so we don't get any
+> of the noise we see in real application environments.
+>
+> Fixes: 51199405f9672 ("bpf: skb_verdict, support SK_PASS on RX BPF path")
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
 
-diff --git a/drivers/net/can/rcar/rcar_can.c b/drivers/net/can/rcar/rcar_can.c
-index 48575900adb7..e340e32cd145 100644
---- a/drivers/net/can/rcar/rcar_can.c
-+++ b/drivers/net/can/rcar/rcar_can.c
-@@ -15,6 +15,7 @@
- #include <linux/can/led.h>
- #include <linux/can/dev.h>
- #include <linux/clk.h>
-+#include <linux/clk-provider.h>
- #include <linux/of.h>
- 
- #define RCAR_CAN_DRV_NAME	"rcar_can"
-@@ -857,7 +858,9 @@ static int __maybe_unused rcar_can_suspend(struct device *dev)
- 	writew(ctlr, &priv->regs->ctlr);
- 	priv->can.state = CAN_STATE_SLEEPING;
- 
--	clk_disable(priv->clk);
-+	if(__clk_is_enabled(priv->clk))
-+		clk_disable(priv->clk);
-+
- 	return 0;
- }
- 
--- 
-2.17.1
-
+Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
