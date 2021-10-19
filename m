@@ -2,84 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 415A4432E99
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 08:50:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FE68432EC6
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 09:01:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229846AbhJSGxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 02:53:02 -0400
-Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:46129 "EHLO
-        wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229649AbhJSGxB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 02:53:01 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id E917A3200F6F;
-        Tue, 19 Oct 2021 02:50:48 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 19 Oct 2021 02:50:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=480Xut
-        i6WMD7oXbzl7SOf79XKVvGXiS+iqAnhPGVbxw=; b=ViC41NzXT3m4OL0/mMfsDM
-        lF6Bthhuh3QBTIsiftzoZsp5KH6Vc+VQivtHD5Ne/PhzMFO2GQop+Aw/llIvco01
-        R47K9fZePzmLpklRY2CFOSXDpafAv+nqZWeth5qpXfc/vreL/2bX6RhGVvc0uSfD
-        nPa3e/Vb1q3B+TsU5PIf5ytahbGyQazGh7DZr8Hf/u/a13Qm18YFL6T6AjiJMaBd
-        m5lu1Kd4ijKPyKBotcNTEns8X7TyiJqRLmroYdRGqmVesEniWM726xDTasrGd/oi
-        JvQ7X+udqJVTrsDmhLV0p5DBUbavyEs6q8q3LsFpHjvyrlnMKzYVg4laaWhjGdnw
-        ==
-X-ME-Sender: <xms:yGpuYexDPGGJl4Y_uVRf0VAk677W725zYTxwEocX2Mwxgj9pbozq8w>
-    <xme:yGpuYaQPNRlKZ-HDTo1ozAFG5PszDlLlHW4MY8_DIo548Y7ZKNo6ULLwiZEI_5oRa
-    zX-gZOfi6mzUPk>
-X-ME-Received: <xmr:yGpuYQVZNQLQy8qCHdsd-AAOgXkAnWV3qp3tctQkR06HlFIP5njsxMZnUDrVLj3H7CVXpb7QcQdMfMTXqpySuJJK0Tw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddvuddguddutdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
-    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:yGpuYUjRMIrRs5fo19Y0b-ifcMzgz_L5yMxMi6nB2MSv5vHwt_F9BA>
-    <xmx:yGpuYQCQc01-fSwzYNXcIDJYE0C_b65TzVuBEZ7dLfXfk49hohFIDg>
-    <xmx:yGpuYVLseg4aV8KUiH667Han4rrO_CXCUfW04O7CpkOQgKTpwmdVCQ>
-    <xmx:yGpuYT-JpC3msax1IgjDFOuDfNCVYxB3AAl771QLyEqex-n1MferwQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 19 Oct 2021 02:50:47 -0400 (EDT)
-Date:   Tue, 19 Oct 2021 09:50:44 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "Ahmed S . Darwish" <a.darwish@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH net-next 1/2] net: sched: fix logic error in
- qdisc_run_begin()
-Message-ID: <YW5qxB8fovdP0JXh@shredder>
-References: <20211019003402.2110017-1-eric.dumazet@gmail.com>
- <20211019003402.2110017-2-eric.dumazet@gmail.com>
+        id S234339AbhJSHDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 03:03:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45778 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229584AbhJSHDh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 03:03:37 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0F28C06161C
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 00:01:25 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id t184so15950334pfd.0
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 00:01:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+        b=ZeMwK2oadO0ZU4hiLT1BljgCDxoyNvDtTWdD97YkGh+znqlVZ74sOuwM2lXJbdK3fP
+         wACRbbDkE168gt8Dilv3IvsEdwF96Szk2xESIKDFKHKgsXYPQA1Iy4UM//9l52X0OzIb
+         iheTfeYROKGcmP/orDDOmgtqFMWrThWzcCUXo8+EHfpQSrM+eiwgNzm3O9GfPzDJTQTl
+         l+0RSJlIYbXsd5omvgEYLRGIPEP+pgsu/97a0u9egjFv6SBpYrJQAzDp05ghkRueDoF2
+         LsKRqEH++y05MLC58rVLU+R/cG46Kz3aIoAtJ76x7SkDuF4xEssG6onq3QdmrZnweW7A
+         PIMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+        b=dN+NUw+bV/aRADaa3GuSALAyZ6016+CDjQLgIEP63Tl5uwKHwZDwkgKNYVLfVg7e1q
+         v8CA4IoG3OaNEOYqz+PWw4Ebpu1ZqC+ZUaLeWwltT7FecizMcvIchkgUZL3BtSjkQpUL
+         Zo5CO85J0l+IMcaRVsxVLYEfzudmR0xKl7S7ftzvrPklNq2fPa4O/Nc/XNiX6Kc9q1fq
+         gwf0vmgYLoF8ZrQn49yokq0cuO+Ytfh2nQ9V6kfjfjWqfnboVKqOoJTno3rUOZ881UW1
+         92VTaugNM6fDlwmEmdN+ZPZWY04XXAL0jDtPP9hb/IR9oiMXeNbCO4M9piVbnScJGxA6
+         CQ6Q==
+X-Gm-Message-State: AOAM530lGteZiyVUDwl1K/7re3bAu3fYfrCaYpTUNQ05Ke+5c4ogY0PP
+        9TQW5ArW64s8fsSYkEBjLykHEe6GNMigWfrhPlI=
+X-Google-Smtp-Source: ABdhPJx39u2eAi9t8/R5K7AJwmP9rh3jDvYLkJYstP/mZ550YlYF6lXTTpNDWr8exQFvaiqCpqizCqdGUSAaTfohU9g=
+X-Received: by 2002:aa7:8f12:0:b0:44c:833f:9dad with SMTP id
+ x18-20020aa78f12000000b0044c833f9dadmr33390954pfr.35.1634626881495; Tue, 19
+ Oct 2021 00:01:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211019003402.2110017-2-eric.dumazet@gmail.com>
+Received: by 2002:a05:6a10:e2cb:0:0:0:0 with HTTP; Tue, 19 Oct 2021 00:01:21
+ -0700 (PDT)
+Reply-To: michellebrow93@gmail.com
+From:   Michelle Brown <ambrosegnona@gmail.com>
+Date:   Tue, 19 Oct 2021 00:01:21 -0700
+Message-ID: <CAApYH-qxmvYfwacfhuin=3pens3_V+z7grMfP651G=xWruiCEw@mail.gmail.com>
+Subject: Hi, I have something to discuss with you, please reply me
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 18, 2021 at 05:34:01PM -0700, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> For non TCQ_F_NOLOCK qdisc, qdisc_run_begin() tries to set
-> __QDISC_STATE_RUNNING and should return true if the bit was not set.
-> 
-> test_and_set_bit() returns old bit value, therefore we need to invert.
-> 
-> Fixes: 29cbcd858283 ("net: sched: Remove Qdisc::running sequence counter")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Ahmed S. Darwish <a.darwish@linutronix.de>
-> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-Tested-by: Ido Schimmel <idosch@nvidia.com>
-
-Thanks!
