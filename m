@@ -2,127 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA9D1432C1F
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 05:14:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 618D7432C26
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 05:17:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229909AbhJSDQt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 23:16:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52036 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229692AbhJSDQs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 23:16:48 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F4C4C06161C
-        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 20:14:36 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id q5so18058922pgr.7
-        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 20:14:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to:content-transfer-encoding;
-        bh=aM3Uu5Y3y5Vgada2bdPWHaQ5RiDRtrSzHIKW6V50leE=;
-        b=eeY8dNlntVANS/YumjJeKJj3EiisMkt7ORQbYNbiJrNn2j5RLJeDnnqNZ2xjLg0/gC
-         WEoMCb10GIAEaLRe295tQhPF7lQdErJd0ZUN1Y87RkNAJr5dxPQiBNvbnl9xqRNa1l/N
-         9uaNftBK6wsiTb8nqVTwsysQRaVJNZWJ9poMTH2jGENqTUzyzNyLzCz4QvZktp4W1pqS
-         0YWYAYRbtuawAGUMBaZMDuP9Ux1hrRO709/zM3eS6TINDoTI2bje3gw87p/0lDtJlL2U
-         TszjhnOucLEe1Ld2ilVcsvghIVrlosxHrPkYyF/2e3c+Rwbb5ZJTvQ58SAt3Sqsn/oH/
-         XAIA==
+        id S231956AbhJSDTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 23:19:43 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:48759 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229742AbhJSDTm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 23:19:42 -0400
+Received: by mail-il1-f197.google.com with SMTP id s8-20020a056e02216800b002593ad87094so9236337ilv.15
+        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 20:17:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=aM3Uu5Y3y5Vgada2bdPWHaQ5RiDRtrSzHIKW6V50leE=;
-        b=pmZM2+am7yvD6R7gDEGQStqENSV7a72Mt5pHOl68TDuAgxIgUt7joijCE6YPsDAg51
-         DsKEuEO4W+x6Fwa/nuFiIgn18BzSxOqBqL+akVgang+p7b2hMB1+AjRQNgCENGDSSzFN
-         vEiexBlrys1maYZMErst0Go2eSGlbBX9FyWSMIviQGSuIakjnfwFjlpKGdyxAUwEsHqG
-         a2YMj9w5AP6LpJfwFF7YrvDOwxBWWCrtcnJHer2tec7q6GZZ+haN0UI9QXBOQXpY6C0S
-         QnEUOjP0kOwzjRrMXXH6GgzOLo0qlYtugpB1njEFjk6ys5ptpSjG4PGYq/MHGFGErmTi
-         Guhg==
-X-Gm-Message-State: AOAM530Ja7wRccHPllL88ntw8pfK9L2UmPajBwinahrYPVYpCePdD7uv
-        2zBHUIrdzyV+pAXIFVf8v6SS+g==
-X-Google-Smtp-Source: ABdhPJwfYtqxpPN0L68LDtEG9zZo+GUWjRoapYQgmNZQnF4PdyJWOOIUoIKa0aug2G03DckNnuqyYA==
-X-Received: by 2002:a05:6a00:198c:b0:44d:ce87:d164 with SMTP id d12-20020a056a00198c00b0044dce87d164mr10603571pfl.64.1634613276110;
-        Mon, 18 Oct 2021 20:14:36 -0700 (PDT)
-Received: from [10.70.253.117] ([139.177.225.234])
-        by smtp.gmail.com with ESMTPSA id gm14sm791619pjb.40.2021.10.18.20.14.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Oct 2021 20:14:35 -0700 (PDT)
-Message-ID: <b8f6c2f6-1b07-9306-46da-5ab170a125f9@bytedance.com>
-Date:   Tue, 19 Oct 2021 11:14:30 +0800
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=OaCb4m2Y41G8nZRW9KQLy/L6JXv6G8zOIqHDza5NSKY=;
+        b=sQWAuPck8+JTgOKjgBriLc4UpIM0EziROn9D1KDRMTcEHYApid8MM4sdaOBNlDbebF
+         asSHVuIXQaTZRjSXbrzoYVElH4zrjaMZc4OcuNptCC1iAWDcERhS26kY4n8JlmmswlYa
+         3/pgJo91NbF2NL8DkRWPPb5TQocQW0DnHhXPSlg1z88bB+uhIdDBeBh+SHieiiUYmBj0
+         JSUBZdlpXprArU+8/5rSJH9bWhJjCSO1C/0LF6iedIIBp/swPXDVFs1uy9wEpdDY8qSd
+         ciCgcBXTqbN02ihh/JIwC+W0nQ9TsfNqBrbdmD8dayhnzJHmV0lVha8E/jtwhSHYgn06
+         8vvw==
+X-Gm-Message-State: AOAM533oFmHwBn3oX9UQR1z+V/Bsf9CjuwTrvxFsTxpmQ993DXBbkkD2
+        qI72keAaztFpG3wmmv+JLsST6w5YlBSHqPamV/KPjPrQxZcn
+X-Google-Smtp-Source: ABdhPJytT01GGfwmypDTPjJGvud3xJD/NRIzfMyKE/Wt5woHb/L6cvKtWWgzORzXXgPLYExfF4IloMbwxriKJhcmvYnYPvVeicuK
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.2.0
-Subject: Re: [External] Re: [PATCH] bpf: use count for prealloc hashtab too
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-References: <20211015090353.31248-1-zhouchengming@bytedance.com>
- <CAADnVQ+A5LdWQTXFugNTceGcz_biV-uEJma4oT5UJKeHQBHQPw@mail.gmail.com>
- <6d7246b6-195e-ee08-06b1-2d1ec722e7b2@bytedance.com>
- <CAADnVQKG5=qVSjZGzHEc0ijwiYABVCU1uc8vOQ-ZLibhpW--Hg@mail.gmail.com>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <CAADnVQKG5=qVSjZGzHEc0ijwiYABVCU1uc8vOQ-ZLibhpW--Hg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6638:220c:: with SMTP id l12mr2445346jas.149.1634613449745;
+ Mon, 18 Oct 2021 20:17:29 -0700 (PDT)
+Date:   Mon, 18 Oct 2021 20:17:29 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000046acd05ceac1a72@google.com>
+Subject: [syzbot] divide error in usbnet_start_xmit
+From:   syzbot <syzbot+76bb1d34ffa0adc03baa@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        oneukum@suse.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-在 2021/10/19 上午9:57, Alexei Starovoitov 写道:
-> On Sun, Oct 17, 2021 at 10:49 PM Chengming Zhou
-> <zhouchengming@bytedance.com> wrote:
->>
->> 在 2021/10/16 上午3:58, Alexei Starovoitov 写道:
->>> On Fri, Oct 15, 2021 at 11:04 AM Chengming Zhou
->>> <zhouchengming@bytedance.com> wrote:
->>>>
->>>> We only use count for kmalloc hashtab not for prealloc hashtab, because
->>>> __pcpu_freelist_pop() return NULL when no more elem in pcpu freelist.
->>>>
->>>> But the problem is that __pcpu_freelist_pop() will traverse all CPUs and
->>>> spin_lock for all CPUs to find there is no more elem at last.
->>>>
->>>> We encountered bad case on big system with 96 CPUs that alloc_htab_elem()
->>>> would last for 1ms. This patch use count for prealloc hashtab too,
->>>> avoid traverse and spin_lock for all CPUs in this case.
->>>>
->>>> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
->>>
->>> It's not clear from the commit log what you're solving.
->>> The atomic inc/dec in critical path of prealloc maps hurts performance.
->>> That's why it's not used.
->>>
->> Thanks for the explanation, what I'm solving is when hash table hasn't free
->> elements, we don't need to call __pcpu_freelist_pop() to traverse and
->> spin_lock all CPUs. The ftrace output of this bad case is below:
->>
->>  50)               |  htab_map_update_elem() {
->>  50)   0.329 us    |    _raw_spin_lock_irqsave();
->>  50)   0.063 us    |    lookup_elem_raw();
->>  50)               |    alloc_htab_elem() {
->>  50)               |      pcpu_freelist_pop() {
->>  50)   0.209 us    |        _raw_spin_lock();
->>  50)   0.264 us    |        _raw_spin_lock();
-> 
-> This is LRU map. Not hash map.
-> It will grab spin_locks of other cpus
-> only if all previous cpus don't have free elements.
-> Most likely your map is actually full and doesn't have any free elems.
-> Since it's an lru it will force free an elem eventually.
-> 
+Hello,
 
-Maybe I missed something, the map_update_elem function of LRU map is
-htab_lru_map_update_elem() and the htab_map_update_elem() above is the
-map_update_elem function of hash map.
-Because of the implementation of percpu freelist used in hash map, it
-will spin_lock all other CPUs when there is no free elements.
+syzbot found the following issue on:
 
-Thanks.
+HEAD commit:    c03fb16bafdf Merge 5.15-rc6 into usb-next
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
+console output: https://syzkaller.appspot.com/x/log.txt?x=12d48f1f300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c27d285bdb7457e2
+dashboard link: https://syzkaller.appspot.com/bug?extid=76bb1d34ffa0adc03baa
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14fe6decb00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15c7bcaf300000
 
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+76bb1d34ffa0adc03baa@syzkaller.appspotmail.com
+
+divide error: 0000 [#1] SMP KASAN
+CPU: 0 PID: 1315 Comm: kworker/0:6 Not tainted 5.15.0-rc6-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: mld mld_ifc_work
+RIP: 0010:usbnet_start_xmit+0x3f1/0x1f70 drivers/net/usb/usbnet.c:1404
+Code: 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e 4b 18 00 00 8b 44 24 08 31 d2 31 ff <41> f7 b5 28 0d 00 00 41 89 d4 89 d6 e8 4e 12 b5 fd 45 85 e4 0f 84
+RSP: 0018:ffffc9000104f660 EFLAGS: 00010246
+RAX: 000000000000005a RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff838cbdc1 RDI: 0000000000000000
+RBP: ffff8881155b1350 R08: 0000000000000001 R09: 0000000000000000
+R10: ffffffff838cbdb4 R11: 0000000000000000 R12: 00000000c0011100
+R13: ffff888119304000 R14: ffff8881155b1280 R15: ffff8881155b0d00
+FS:  0000000000000000(0000) GS:ffff8881f6800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f24d7edaa70 CR3: 000000010a45d000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ __netdev_start_xmit include/linux/netdevice.h:4988 [inline]
+ netdev_start_xmit include/linux/netdevice.h:5002 [inline]
+ xmit_one net/core/dev.c:3576 [inline]
+ dev_hard_start_xmit+0x1df/0x890 net/core/dev.c:3592
+ sch_direct_xmit+0x25b/0x790 net/sched/sch_generic.c:342
+ __dev_xmit_skb net/core/dev.c:3803 [inline]
+ __dev_queue_xmit+0xf25/0x2d40 net/core/dev.c:4170
+ neigh_resolve_output net/core/neighbour.c:1492 [inline]
+ neigh_resolve_output+0x50e/0x820 net/core/neighbour.c:1472
+ neigh_output include/net/neighbour.h:510 [inline]
+ ip6_finish_output2+0xdbe/0x1b20 net/ipv6/ip6_output.c:126
+ __ip6_finish_output.part.0+0x387/0xbb0 net/ipv6/ip6_output.c:191
+ __ip6_finish_output include/linux/skbuff.h:982 [inline]
+ ip6_finish_output net/ipv6/ip6_output.c:201 [inline]
+ NF_HOOK_COND include/linux/netfilter.h:296 [inline]
+ ip6_output+0x3d2/0x810 net/ipv6/ip6_output.c:224
+ dst_output include/net/dst.h:450 [inline]
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ NF_HOOK include/linux/netfilter.h:301 [inline]
+ mld_sendpack+0x979/0xe10 net/ipv6/mcast.c:1826
+ mld_send_cr net/ipv6/mcast.c:2127 [inline]
+ mld_ifc_work+0x71c/0xdc0 net/ipv6/mcast.c:2659
+ process_one_work+0x9bf/0x1620 kernel/workqueue.c:2297
+ worker_thread+0x658/0x11f0 kernel/workqueue.c:2444
+ kthread+0x3c2/0x4a0 kernel/kthread.c:319
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+Modules linked in:
+---[ end trace 3c734ee50b55655e ]---
+RIP: 0010:usbnet_start_xmit+0x3f1/0x1f70 drivers/net/usb/usbnet.c:1404
+Code: 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e 4b 18 00 00 8b 44 24 08 31 d2 31 ff <41> f7 b5 28 0d 00 00 41 89 d4 89 d6 e8 4e 12 b5 fd 45 85 e4 0f 84
+RSP: 0018:ffffc9000104f660 EFLAGS: 00010246
+RAX: 000000000000005a RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff838cbdc1 RDI: 0000000000000000
+RBP: ffff8881155b1350 R08: 0000000000000001 R09: 0000000000000000
+R10: ffffffff838cbdb4 R11: 0000000000000000 R12: 00000000c0011100
+R13: ffff888119304000 R14: ffff8881155b1280 R15: ffff8881155b0d00
+FS:  0000000000000000(0000) GS:ffff8881f6800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f24d7edaa70 CR3: 000000010a45d000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess), 1 bytes skipped:
+   0:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+   7:	fc ff df
+   a:	48 89 fa             	mov    %rdi,%rdx
+   d:	48 c1 ea 03          	shr    $0x3,%rdx
+  11:	0f b6 04 02          	movzbl (%rdx,%rax,1),%eax
+  15:	84 c0                	test   %al,%al
+  17:	74 08                	je     0x21
+  19:	3c 03                	cmp    $0x3,%al
+  1b:	0f 8e 4b 18 00 00    	jle    0x186c
+  21:	8b 44 24 08          	mov    0x8(%rsp),%eax
+  25:	31 d2                	xor    %edx,%edx
+  27:	31 ff                	xor    %edi,%edi
+* 29:	41 f7 b5 28 0d 00 00 	divl   0xd28(%r13) <-- trapping instruction
+  30:	41 89 d4             	mov    %edx,%r12d
+  33:	89 d6                	mov    %edx,%esi
+  35:	e8 4e 12 b5 fd       	callq  0xfdb51288
+  3a:	45 85 e4             	test   %r12d,%r12d
+  3d:	0f                   	.byte 0xf
+  3e:	84                   	.byte 0x84
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
