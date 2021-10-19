@@ -2,106 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D641A433B2D
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 17:51:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85013433B4B
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 17:53:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233497AbhJSPxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 11:53:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:51828 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233335AbhJSPxL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 11:53:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1634658658;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+GbRnMysgz6O7UnaXr5MK4VpcJplugKks3BSf1ebt1U=;
-        b=Jx4E0zUqaJ0oon9pP9k9ysGbp8EnqagtL9cq4RTIV2dff1xgwWt6gNlJLtd9aqHV6bAhAn
-        r26ad+0q9VyR5jafmk2N6oN26ZpaZvrzivxKAZdxzeCKNwixy4To2p9lV+w/Jau9ArT53s
-        EOsiZESwBYPxPcdW5v/8WJif4/MiMgc=
-Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com
- [209.85.210.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-87-fqbpNh0eN4C91Hnbb2anlg-1; Tue, 19 Oct 2021 11:50:57 -0400
-X-MC-Unique: fqbpNh0eN4C91Hnbb2anlg-1
-Received: by mail-ot1-f70.google.com with SMTP id r3-20020a056830236300b0054d43b72ba5so1997700oth.17
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 08:50:56 -0700 (PDT)
+        id S233693AbhJSPz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 11:55:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56374 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233722AbhJSPzX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 11:55:23 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9577EC06161C
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 08:53:10 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id g39so8466887wmp.3
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 08:53:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=MEYczlvn+sDQDgpqyNJyvotYqA1JPQB0pEp3NFQIWlQ=;
+        b=aqZRkEqqF92D40NS6wOIfWs08C2MH6tTKKGoRAXYXO7KDe1wK4ZcNFxDddeSyo2E+8
+         M+gwDIc0eeWtb6wbFrOzMPIe82vsitA7wsZAqhMxnGhuHLAY6NpICTHWGPEyydpwD4GO
+         SIPFlyQFksyPNNDRCkZ3iggnYjtFyX3yUbmc5KVU2QNkkeiqgzvqDESYkxuJ9GeaSICR
+         lg2Uz6ViW7/i+ixFJz8XFmw9zu9JZSkC7j+gzkmsSlcW35pKUFL9yVlMiPdriGt9l7VO
+         BLMfJP20SXL8cCEkifAzQv/QbeZG0OnYL+CI/k7k1JCRY4JnLSm0uR9LZXoXD6o5GTsg
+         xUqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+GbRnMysgz6O7UnaXr5MK4VpcJplugKks3BSf1ebt1U=;
-        b=3MHNfdyrH8nniEJ38XnbzKgHr8SQoOjD9ILoDqlpGwif6MTgAwEpDtJZg98zBIkYI7
-         ifiReKum9C1Obmk1XIeEtx+NjiGnOw95U6Rrwkg2DB+p00OUMkkDkQNgckjwg3isC7Fh
-         H/hYqHwO8z0/B84ZtbiMqI1XgfdAt33IsQF+g9RMAJNh04EVolU/SsCT1E1jhJNbDkAM
-         i6hkWZXFsFqUAYltexuz4+0FSO6jlNJq9fwz04Pp5MJb3fF0O9mVRP4xJefXDSg+Cyln
-         YhbC0pAPcq18++i/w+Zpm7LSpFPg4dj7xYLnDlLSuxkcx2PXzEeOD5AXD7JBWMP5aM39
-         cQEA==
-X-Gm-Message-State: AOAM532X11fksKAiZxaa6ip2X4jIt00kU81zERFM/orKAF85WCKj+4Jv
-        B76Ew3fBBtRWleZ8f01N0DEoaRKZ+dP0t8gHeDTYAncx3JPKQ+03WbSE06dBI+YqxGGCuI+3pel
-        PbAnfXEP/j8WMSB+I
-X-Received: by 2002:aca:3741:: with SMTP id e62mr4868390oia.107.1634658656393;
-        Tue, 19 Oct 2021 08:50:56 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxuZk7ybu4ZG0GrP92X3+qNn8wg+fCyQDne+8sf1A9W2vT/rGeO2zS+cII8ncS8Dh0Ll18EuQ==
-X-Received: by 2002:aca:3741:: with SMTP id e62mr4868375oia.107.1634658656212;
-        Tue, 19 Oct 2021 08:50:56 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id r23sm3738636otg.71.2021.10.19.08.50.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Oct 2021 08:50:56 -0700 (PDT)
-Date:   Tue, 19 Oct 2021 09:50:54 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Yishai Hadas <yishaih@nvidia.com>
-Cc:     <bhelgaas@google.com>, <jgg@nvidia.com>, <saeedm@nvidia.com>,
-        <linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <kuba@kernel.org>, <leonro@nvidia.com>,
-        <kwankhede@nvidia.com>, <mgurtovoy@nvidia.com>, <maorg@nvidia.com>
-Subject: Re: [PATCH V2 mlx5-next 08/14] vfio: Add a macro for
- VFIO_DEVICE_STATE_ERROR
-Message-ID: <20211019095054.396b4f57.alex.williamson@redhat.com>
-In-Reply-To: <20211019094820.2e9bfc01.alex.williamson@redhat.com>
-References: <20211019105838.227569-1-yishaih@nvidia.com>
-        <20211019105838.227569-9-yishaih@nvidia.com>
-        <20211019094820.2e9bfc01.alex.williamson@redhat.com>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=MEYczlvn+sDQDgpqyNJyvotYqA1JPQB0pEp3NFQIWlQ=;
+        b=jp7Zu66KX6gbzBtO1CauDSAHkcWI5XQZtJj9NeGVCAFZzU9Ys33VMCUFVLTPh3lB0j
+         sGoC4G7TrnXAkpN3JlDrcrfXRO3P4iW+L+UyvY9ktd85H5LP02LA9ALc3ydA2bxxcwec
+         pnxPjaPHiUg/KtkA/nFdZtijnihkoCEhsp40J50N+H0JNdcQMrZ8Nu+tR+76xm1d38n3
+         cYs+YdNvMYxkFzNqQT35mq8jj8OiWSQQaX1zvTG5ghQLCiEkRIJGxb0McYx0Ty3LfO5c
+         qh83UbzeMXfnRognHz14DJtlivVI1WmfKsAeCn/sae14oCOeNWnv6bCONEBHIoPoJ0lT
+         aUxA==
+X-Gm-Message-State: AOAM531ICuUFVKP5mGdVszC0B4ArNliz1ksNk/loyyw6RFZmwyBgmXBI
+        uWNoQ47COy1aB7zWgiVaYmr1zBeSMq8=
+X-Google-Smtp-Source: ABdhPJz6oCIQtDZHBP+o9TsRUb+xQq7Y39X5e+HWXGsZhbauPL1ev3vM1w3hzztUTPUkqQkkhQEhFg==
+X-Received: by 2002:a05:600c:208:: with SMTP id 8mr6670691wmi.173.1634658789226;
+        Tue, 19 Oct 2021 08:53:09 -0700 (PDT)
+Received: from gmail.com ([81.168.73.77])
+        by smtp.gmail.com with ESMTPSA id s3sm1405495wmh.30.2021.10.19.08.53.07
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 19 Oct 2021 08:53:08 -0700 (PDT)
+Date:   Tue, 19 Oct 2021 16:53:06 +0100
+From:   Martin Habets <habetsm.xilinx@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>, Erik Ekman <erik@kryo.se>
+Cc:     Edward Cree <ecree.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH] sfc: Export fibre-specific link modes for 1/10G
+Message-ID: <20211019155306.ibxzmsixwb5rd6wx@gmail.com>
+Mail-Followup-To: Andrew Lunn <andrew@lunn.ch>, Erik Ekman <erik@kryo.se>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+References: <20211018183709.124744-1-erik@kryo.se>
+ <YW7k6JVh5LxMNP98@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YW7k6JVh5LxMNP98@lunn.ch>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 19 Oct 2021 09:48:20 -0600
-Alex Williamson <alex.williamson@redhat.com> wrote:
-
-> On Tue, 19 Oct 2021 13:58:32 +0300
-> Yishai Hadas <yishaih@nvidia.com> wrote:
-> 
-> > Add a macro for VFIO_DEVICE_STATE_ERROR to be used to set/check an error
-> > state.
+On Tue, Oct 19, 2021 at 05:31:52PM +0200, Andrew Lunn wrote:
+> On Mon, Oct 18, 2021 at 08:37:08PM +0200, Erik Ekman wrote:
+> > These modes were added to ethtool.h in 5711a98221443 ("net: ethtool: add support
+> > for 1000BaseX and missing 10G link modes") back in 2016.
 > > 
-> > Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
-> > ---
-> >  include/uapi/linux/vfio.h | 2 ++
-> >  1 file changed, 2 insertions(+)
+> > Only setting CR mode for 10G, similar to how 25/40/50/100G modes are set up.
 > > 
-> > diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> > index 114ffcefe437..6d41a0f011db 100644
-> > --- a/include/uapi/linux/vfio.h
-> > +++ b/include/uapi/linux/vfio.h
-> > @@ -631,6 +631,8 @@ struct vfio_device_migration_info {
-> >  	__u64 data_size;
-> >  };
-> >  
-> > +#define VFIO_DEVICE_STATE_ERROR (VFIO_DEVICE_STATE_SAVING | \
-> > +				 VFIO_DEVICE_STATE_RESUMING)  
+> > Tested using SFN5122F-R7 (with 2 SFP+ ports) and a 1000BASE-BX10 SFP module.
 > 
-> This should be with the other VFIO_DEVICE_STATE_foo #defines.  I'd
-> probably put it between _RESUMING and _MASK.  Thanks,
+> Did you test with a Copper SFP modules? 
+> 
+> > +++ b/drivers/net/ethernet/sfc/mcdi_port_common.c
+> > @@ -133,9 +133,9 @@ void mcdi_to_ethtool_linkset(u32 media, u32 cap, unsigned long *linkset)
+> >  	case MC_CMD_MEDIA_QSFP_PLUS:
+> >  		SET_BIT(FIBRE);
+> >  		if (cap & (1 << MC_CMD_PHY_CAP_1000FDX_LBN))
+> > -			SET_BIT(1000baseT_Full);
+> > +			SET_BIT(1000baseX_Full);
+> 
+> I'm wondering if you should have both? The MAC is doing 1000BaseX. But
+> it could then be connected to a copper PHY which then does
+> 1000baseT_Full? At 1G, it is however more likely to be using SGMII,
+> not 1000BaseX.
 
-This should also update the existing macros that include _SAVING |
-_RESUMING.  Thanks,
+Yes, they should both be set. We actually did a 10Gbase-T version of Siena,
+the SFN51x1T.
 
-Alex
-
+Martin
