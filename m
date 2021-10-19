@@ -2,151 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 618D7432C26
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 05:17:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4964432C2A
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 05:20:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231956AbhJSDTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 23:19:43 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:48759 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229742AbhJSDTm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 23:19:42 -0400
-Received: by mail-il1-f197.google.com with SMTP id s8-20020a056e02216800b002593ad87094so9236337ilv.15
-        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 20:17:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=OaCb4m2Y41G8nZRW9KQLy/L6JXv6G8zOIqHDza5NSKY=;
-        b=sQWAuPck8+JTgOKjgBriLc4UpIM0EziROn9D1KDRMTcEHYApid8MM4sdaOBNlDbebF
-         asSHVuIXQaTZRjSXbrzoYVElH4zrjaMZc4OcuNptCC1iAWDcERhS26kY4n8JlmmswlYa
-         3/pgJo91NbF2NL8DkRWPPb5TQocQW0DnHhXPSlg1z88bB+uhIdDBeBh+SHieiiUYmBj0
-         JSUBZdlpXprArU+8/5rSJH9bWhJjCSO1C/0LF6iedIIBp/swPXDVFs1uy9wEpdDY8qSd
-         ciCgcBXTqbN02ihh/JIwC+W0nQ9TsfNqBrbdmD8dayhnzJHmV0lVha8E/jtwhSHYgn06
-         8vvw==
-X-Gm-Message-State: AOAM533oFmHwBn3oX9UQR1z+V/Bsf9CjuwTrvxFsTxpmQ993DXBbkkD2
-        qI72keAaztFpG3wmmv+JLsST6w5YlBSHqPamV/KPjPrQxZcn
-X-Google-Smtp-Source: ABdhPJytT01GGfwmypDTPjJGvud3xJD/NRIzfMyKE/Wt5woHb/L6cvKtWWgzORzXXgPLYExfF4IloMbwxriKJhcmvYnYPvVeicuK
+        id S229878AbhJSDXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 23:23:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48596 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229692AbhJSDXB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Oct 2021 23:23:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5A9D66128B;
+        Tue, 19 Oct 2021 03:20:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634613649;
+        bh=Cs8sRn/8o+XG/ELauySlS9OJB3T+Sl+oFysUxfr6qP8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=FPLVAgsJMGpezENeW8lMuY/DWeOgF1cuiqgdqji4Z3LwrGWAt0uclCbFKyLk+bsqU
+         Uiu2IQbbeGXm68WvLdyLvw8fODHEIxvGF5b2cLn0eAsmeCyL4REXAMqLeHHL2vzCKQ
+         7dARp2BUW3kO51fSfwVLxGvfNgH09BwXBNFg2z5xMSaN3tcMhYecUQB+BL8TQI68HU
+         xS+tW0IOiR8DRzcCJ4HyifnWhuRzFjaN/HOcptZ6g7j6OY+ScmmqOb5DeaeWsy7fIO
+         hCw7Vy+Y+aakCfa5/0s7Pmlyr4RcFwBIELPCd3y6DBBKGNo5G9RMB3/W1yMic+EBd7
+         Tp/rx243L0Gow==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net-next 00/13] mlx5 updates 2021-10-18
+Date:   Mon, 18 Oct 2021 20:20:34 -0700
+Message-Id: <20211019032047.55660-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:220c:: with SMTP id l12mr2445346jas.149.1634613449745;
- Mon, 18 Oct 2021 20:17:29 -0700 (PDT)
-Date:   Mon, 18 Oct 2021 20:17:29 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000046acd05ceac1a72@google.com>
-Subject: [syzbot] divide error in usbnet_start_xmit
-From:   syzbot <syzbot+76bb1d34ffa0adc03baa@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        oneukum@suse.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-syzbot found the following issue on:
+Hi Dave and Jakub,
 
-HEAD commit:    c03fb16bafdf Merge 5.15-rc6 into usb-next
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
-console output: https://syzkaller.appspot.com/x/log.txt?x=12d48f1f300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c27d285bdb7457e2
-dashboard link: https://syzkaller.appspot.com/bug?extid=76bb1d34ffa0adc03baa
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14fe6decb00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15c7bcaf300000
+This series adds the support for new lag mode based on packet hash in
+mlx5 driver, for more information please see tag log below.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+76bb1d34ffa0adc03baa@syzkaller.appspotmail.com
+Please pull and let me know if there is any problem.
 
-divide error: 0000 [#1] SMP KASAN
-CPU: 0 PID: 1315 Comm: kworker/0:6 Not tainted 5.15.0-rc6-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: mld mld_ifc_work
-RIP: 0010:usbnet_start_xmit+0x3f1/0x1f70 drivers/net/usb/usbnet.c:1404
-Code: 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e 4b 18 00 00 8b 44 24 08 31 d2 31 ff <41> f7 b5 28 0d 00 00 41 89 d4 89 d6 e8 4e 12 b5 fd 45 85 e4 0f 84
-RSP: 0018:ffffc9000104f660 EFLAGS: 00010246
-RAX: 000000000000005a RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff838cbdc1 RDI: 0000000000000000
-RBP: ffff8881155b1350 R08: 0000000000000001 R09: 0000000000000000
-R10: ffffffff838cbdb4 R11: 0000000000000000 R12: 00000000c0011100
-R13: ffff888119304000 R14: ffff8881155b1280 R15: ffff8881155b0d00
-FS:  0000000000000000(0000) GS:ffff8881f6800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f24d7edaa70 CR3: 000000010a45d000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- __netdev_start_xmit include/linux/netdevice.h:4988 [inline]
- netdev_start_xmit include/linux/netdevice.h:5002 [inline]
- xmit_one net/core/dev.c:3576 [inline]
- dev_hard_start_xmit+0x1df/0x890 net/core/dev.c:3592
- sch_direct_xmit+0x25b/0x790 net/sched/sch_generic.c:342
- __dev_xmit_skb net/core/dev.c:3803 [inline]
- __dev_queue_xmit+0xf25/0x2d40 net/core/dev.c:4170
- neigh_resolve_output net/core/neighbour.c:1492 [inline]
- neigh_resolve_output+0x50e/0x820 net/core/neighbour.c:1472
- neigh_output include/net/neighbour.h:510 [inline]
- ip6_finish_output2+0xdbe/0x1b20 net/ipv6/ip6_output.c:126
- __ip6_finish_output.part.0+0x387/0xbb0 net/ipv6/ip6_output.c:191
- __ip6_finish_output include/linux/skbuff.h:982 [inline]
- ip6_finish_output net/ipv6/ip6_output.c:201 [inline]
- NF_HOOK_COND include/linux/netfilter.h:296 [inline]
- ip6_output+0x3d2/0x810 net/ipv6/ip6_output.c:224
- dst_output include/net/dst.h:450 [inline]
- NF_HOOK include/linux/netfilter.h:307 [inline]
- NF_HOOK include/linux/netfilter.h:301 [inline]
- mld_sendpack+0x979/0xe10 net/ipv6/mcast.c:1826
- mld_send_cr net/ipv6/mcast.c:2127 [inline]
- mld_ifc_work+0x71c/0xdc0 net/ipv6/mcast.c:2659
- process_one_work+0x9bf/0x1620 kernel/workqueue.c:2297
- worker_thread+0x658/0x11f0 kernel/workqueue.c:2444
- kthread+0x3c2/0x4a0 kernel/kthread.c:319
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-Modules linked in:
----[ end trace 3c734ee50b55655e ]---
-RIP: 0010:usbnet_start_xmit+0x3f1/0x1f70 drivers/net/usb/usbnet.c:1404
-Code: 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e 4b 18 00 00 8b 44 24 08 31 d2 31 ff <41> f7 b5 28 0d 00 00 41 89 d4 89 d6 e8 4e 12 b5 fd 45 85 e4 0f 84
-RSP: 0018:ffffc9000104f660 EFLAGS: 00010246
-RAX: 000000000000005a RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff838cbdc1 RDI: 0000000000000000
-RBP: ffff8881155b1350 R08: 0000000000000001 R09: 0000000000000000
-R10: ffffffff838cbdb4 R11: 0000000000000000 R12: 00000000c0011100
-R13: ffff888119304000 R14: ffff8881155b1280 R15: ffff8881155b0d00
-FS:  0000000000000000(0000) GS:ffff8881f6800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f24d7edaa70 CR3: 000000010a45d000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess), 1 bytes skipped:
-   0:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-   7:	fc ff df
-   a:	48 89 fa             	mov    %rdi,%rdx
-   d:	48 c1 ea 03          	shr    $0x3,%rdx
-  11:	0f b6 04 02          	movzbl (%rdx,%rax,1),%eax
-  15:	84 c0                	test   %al,%al
-  17:	74 08                	je     0x21
-  19:	3c 03                	cmp    $0x3,%al
-  1b:	0f 8e 4b 18 00 00    	jle    0x186c
-  21:	8b 44 24 08          	mov    0x8(%rsp),%eax
-  25:	31 d2                	xor    %edx,%edx
-  27:	31 ff                	xor    %edi,%edi
-* 29:	41 f7 b5 28 0d 00 00 	divl   0xd28(%r13) <-- trapping instruction
-  30:	41 89 d4             	mov    %edx,%r12d
-  33:	89 d6                	mov    %edx,%esi
-  35:	e8 4e 12 b5 fd       	callq  0xfdb51288
-  3a:	45 85 e4             	test   %r12d,%r12d
-  3d:	0f                   	.byte 0xf
-  3e:	84                   	.byte 0x84
-
+Thanks,
+Saeed.
 
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+The following changes since commit 939a6567f976efb8b3e6d601ce35eb56b17babd0:
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+  qed: Change the TCP common variable - "iscsi_ooo" (2021-10-18 15:58:21 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-10-18
+
+for you to fetch changes up to d40bfeddacd6b4c05a28e3e8f7cb18989a4e134f:
+
+  net/mlx5: E-Switch, Increase supported number of forward destinations to 32 (2021-10-18 20:18:10 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2021-10-18
+
+Maor Maor Gottlieb says:
+========================
+Use hash to select the affinity port in VF LAG
+
+Current VF LAG architecture is based on QP association with a port.
+QP must be created after LAG is enabled to allow association with non-native port.
+VM Packets going on slow-path to eSwicth manager (SW path or hairpin) will be transmitted
+through a different QP than the VM. This means that Different packets of the same flow might
+egress from different physical ports.
+
+This patch-set solves this issue by moving the port selection to be based on the hash function
+defined by the bond.
+
+When the device is moved to VF LAG mode, the driver creates TTC (traffic type classifier) flow
+tables in order to classify the packet and steer it to the relevant hash function. Similar to what
+is done in the mlx5 RSS implementation.
+
+Each rule in the TTC table, forwards the packet to port selection flow table which has one hash
+split flow group which contains two "catch all" flow table entries. Each entry point to the
+relative uplink port. As shown below:
+
+		-------------------
+		| FT              |
+TTC rule ->	|     ----------- |
+		|   FG|   FTE --|-|-----> uplink of port #1
+		|     |   FTE --|-|-----> uplink of port #2
+		|     ----------- |
+		-------------------
+
+Hash split flow group is flow group that created as type of HASH_SPLIT and associated with match definer.
+The match definer define the fields which included in the hash calculation.
+
+The driver creates the match definer according to the xmit hash policy of the bond driver.
+
+Patches overview:
+========================
+
+Minor E-Switch updates:
+- Patch #12, dynamic  allocation of dest array
+- Patch #13, increase number of forward destinations to 32
+
+----------------------------------------------------------------
+Maor Dickman (2):
+      net/mlx5: E-Switch, Use dynamic alloc for dest array
+      net/mlx5: E-Switch, Increase supported number of forward destinations to 32
+
+Maor Gottlieb (11):
+      net/mlx5: Support partial TTC rules
+      net/mlx5: Introduce port selection namespace
+      net/mlx5: Add support to create match definer
+      net/mlx5: Introduce new uplink destination type
+      net/mlx5: Lag, move lag files into directory
+      net/mlx5: Lag, set LAG traffic type mapping
+      net/mlx5: Lag, set match mask according to the traffic type bitmap
+      net/mlx5: Lag, add support to create definers for LAG
+      net/mlx5: Lag, add support to create TTC tables for LAG port selection
+      net/mlx5: Lag, add support to create/destroy/modify port selection
+      net/mlx5: Lag, use steering to select the affinity port in LAG
+
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   4 +-
+ .../mellanox/mlx5/core/diag/fs_tracepoint.c        |   3 +
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |   2 +-
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |  16 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c   |  66 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.h   |   4 +
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |  72 +++
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.h  |  12 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fw.c       |   6 +
+ .../ethernet/mellanox/mlx5/core/{ => lag}/lag.c    |  98 +++-
+ .../ethernet/mellanox/mlx5/core/{ => lag}/lag.h    |   9 +-
+ .../mellanox/mlx5/core/{lag_mp.c => lag/mp.c}      |   4 +-
+ .../mellanox/mlx5/core/{lag_mp.h => lag/mp.h}      |   0
+ .../net/ethernet/mellanox/mlx5/core/lag/port_sel.c | 611 +++++++++++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/lag/port_sel.h |  52 ++
+ .../net/ethernet/mellanox/mlx5/core/lib/fs_ttc.c   |   4 +
+ .../net/ethernet/mellanox/mlx5/core/lib/fs_ttc.h   |   2 +
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |   1 +
+ .../ethernet/mellanox/mlx5/core/steering/fs_dr.c   |  15 +
+ include/linux/mlx5/device.h                        |  15 +
+ include/linux/mlx5/fs.h                            |   9 +
+ include/linux/mlx5/mlx5_ifc.h                      | 298 +++++++++-
+ 22 files changed, 1239 insertions(+), 64 deletions(-)
+ rename drivers/net/ethernet/mellanox/mlx5/core/{ => lag}/lag.c (92%)
+ rename drivers/net/ethernet/mellanox/mlx5/core/{ => lag}/lag.h (89%)
+ rename drivers/net/ethernet/mellanox/mlx5/core/{lag_mp.c => lag/mp.c} (99%)
+ rename drivers/net/ethernet/mellanox/mlx5/core/{lag_mp.h => lag/mp.h} (100%)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.h
