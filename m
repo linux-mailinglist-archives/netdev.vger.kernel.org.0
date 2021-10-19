@@ -2,102 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1DF2433D90
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 19:36:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DC31433DAC
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 19:42:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234665AbhJSRiP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 13:38:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:45614 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231226AbhJSRiO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 13:38:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1634664961;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Jc2BfaUWoqtDc9ItZrfxrQaVPoO7pD/AF6pbg1QoF/4=;
-        b=MeBpQLohFuDs464u2I6geSNTIKX3wH996ChMIprkgXredBeYqDUcnM29v52tewEig0FpkF
-        1nFxhGRYmccpwaAqphNNL2B0+l70fT9zYJ6KiUNjXK5e2Cs4Gza5E0GKJ9MBcaspTGwCoe
-        aeJnCu3ET+syDzv5JQvkX+QZjyzfCas=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-371-r5e37_weNXCa6MOl4lAIuA-1; Tue, 19 Oct 2021 13:35:59 -0400
-X-MC-Unique: r5e37_weNXCa6MOl4lAIuA-1
-Received: by mail-ed1-f69.google.com with SMTP id a3-20020a50da43000000b003dca31dcfc2so1907683edk.14
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 10:35:59 -0700 (PDT)
+        id S234309AbhJSRoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 13:44:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53544 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231586AbhJSRoi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 13:44:38 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 284A0C06161C
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 10:42:25 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id r4so9132945edi.5
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 10:42:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kryo-se.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FBFB5TpvCM2ffvAvKnFSlCgvqyq0TJ9lHk49iX31/z4=;
+        b=wtDfIxAopPK3YdfWAUQxFYYuLqtBo5X09KwU4oRyNkF7nQ3w6UHKKBOR4Ss+YMbbz/
+         qxnISxkdk+5MlWe6Rqx/CLRN0StexKNEXbC8OfMGlA0jR7j6DjgVhoXuhav1jGTXfxiH
+         +9q1oyxgkI7HrI9WHfI54im6ovTg4kQWkndQvLF7xRz7MVe8YvInZsoKCU9wj88F8kDC
+         IWJ2Xp9sBk0dnKfPDznxlhHvOnpGEkiMEmuJEOS+DMBRlz7cGc45QJmay+soj5eah+sj
+         XHz3RJP7CvHhTDm8/kgY7a+KZVTbN1nNhYT+9s2XgnNk+3Mz2Yz7Qt7XzcahkKBdUznm
+         kE+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=Jc2BfaUWoqtDc9ItZrfxrQaVPoO7pD/AF6pbg1QoF/4=;
-        b=WdjdNspA5w1pXC3uhL4YV2wT+DvQgV9hvLrJJXEcOCmlVSEkz+8jNH0RrqoGig+O3z
-         YzM5EldNq+un4Gz0OoFS1UCLfCbDQZkEFTaIjS27a56lLzxy328L1Q3KJ5ylgwQ3B8ET
-         CoLUu/rz8oxy+LKeuSm2wUq4F8NEjXAKPQi22SToWkrwKFWaZEw9CLwOrcHHKkJcqfMv
-         SC2lo0FnMPdU2m/2E0W/O2BQ1rocYKRMwLj1VELf7APuihPKmFC+8jsni3YJMp+yIm4P
-         /O3+tEBYiu3XZ+rL5NMb8/CnnrUxGzKRrhyGppm12U9vc7pyPaI7v/r2+aeYoKco9hjk
-         Wn6Q==
-X-Gm-Message-State: AOAM531BJ0Wd+UtUpGDZUTXmdnfZeYqnGH9GEF4xJMZOBOhPa2e8lXMD
-        cUUqCKn+jYvZ4LWm8og5/plMCAk+6uSKnxy0Mg533G9MckQxGD1vsBAIZj0t16jpzZ66zyxOrj2
-        t4/FYntCpHug1GrLf
-X-Received: by 2002:a17:906:1f95:: with SMTP id t21mr38996601ejr.234.1634664958636;
-        Tue, 19 Oct 2021 10:35:58 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz3AUDVf0RVyabhcgqw5Ai7j/Tk0sHUHevfAOzLXpiPs5E2XL8yMOe2L/ll1ROYRdmR3WAW7A==
-X-Received: by 2002:a17:906:1f95:: with SMTP id t21mr38996570ejr.234.1634664958273;
-        Tue, 19 Oct 2021 10:35:58 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id v13sm10590387ejo.36.2021.10.19.10.35.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Oct 2021 10:35:57 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 19B2018025D; Tue, 19 Oct 2021 19:35:56 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] fq_codel: generalise ce_threshold marking for
- subset of traffic
-In-Reply-To: <CANn89iKmR3XTjcHkpk=woDdED7YPi=8jNAOpKvvcjr9pY3bo0Q@mail.gmail.com>
-References: <20211019171534.66628-1-toke@redhat.com>
- <CANn89iKmR3XTjcHkpk=woDdED7YPi=8jNAOpKvvcjr9pY3bo0Q@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 19 Oct 2021 19:35:56 +0200
-Message-ID: <87y26ogbnn.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FBFB5TpvCM2ffvAvKnFSlCgvqyq0TJ9lHk49iX31/z4=;
+        b=LOboUem8wuEyqpzpgm8gbxXXUcp3eDfy1APvwmS/Viy9AwvUlbL4WMWdMSnwUi3XSZ
+         iaKVtEYSsMTnw39AzoLUN/cUdCHtjVnKqZKQcMds780s7C+TqsHldI3yuKpFOyIR1NHj
+         t1A7Y3r8U2ebs/kfM/Ef+VIJ5DDpkCZWW51vdKPbNZacGCn7WBLW+Xj1jxqRE21XXPPM
+         Bgkl8BQW2g5bNMEdvjBs1StAUH7RB75RUJQOH7q/ig8hlMQL4Wrdchs3qWkRyD0dMjw1
+         6DrQ7r39S4UTGp8R67ZW+lMfNgP7Tay1OxR1RVOhTRkOwti/YyibxSMQuqipltUMr9aN
+         k3SA==
+X-Gm-Message-State: AOAM530ooNR/cwtGguLplvKnaHMIS1VhIM+iBt9bY4nudu9YjKmKPsje
+        oW1opB9khMVN5a3QpjxNpne83Oje+LClOcJxWrXGHp4l6RIZywpp9QI=
+X-Google-Smtp-Source: ABdhPJzfo2ze0heRi2KfK1PcOqBhINxGfn0+3IQEhHpQwsxkzsNldAQt0r8Dih8slmmDCBVknTt+nWf7OCHz68hJb8E=
+X-Received: by 2002:a17:907:168c:: with SMTP id hc12mr39661473ejc.570.1634665317380;
+ Tue, 19 Oct 2021 10:41:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <20211017171657.85724-1-erik@kryo.se> <YW7idC0/+zq6dDNv@lunn.ch>
+In-Reply-To: <YW7idC0/+zq6dDNv@lunn.ch>
+From:   Erik Ekman <erik@kryo.se>
+Date:   Tue, 19 Oct 2021 19:41:46 +0200
+Message-ID: <CAGgu=sCBUU29tkjqOP9j7EZJL-T4O6NoTDNB+-PFNhUkOTdWuw@mail.gmail.com>
+Subject: Re: [PATCH] sfc: Fix reading non-legacy supported link modes
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eric Dumazet <edumazet@google.com> writes:
-
-> On Tue, Oct 19, 2021 at 10:17 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
-edhat.com> wrote:
->>
->> The commit in the Fixes tag expanded the ce_threshold feature of FQ-CoDel
->> so it can be applied to a subset of the traffic, using the ECT(1) bit of
->> the ECN field as the classifier. However, hard-coding ECT(1) as the only
->> classifier for this feature seems limiting, so let's expand it to be more
->> general.
->>
->> To this end, change the parameter from a ce_threshold_ect1 boolean, to a
->> one-byte selector/mask pair (ce_threshold_{selector,mask}) which is appl=
-ied
->> to the whole diffserv/ECN field in the IP header. This makes it possible=
- to
->> classify packets by any value in either the ECN field or the diffserv
->> field. In particular, setting a selector of INET_ECN_ECT_1 and a mask of
->> INET_ECN_MASK corresponds to the functionality before this patch, and a
->> mask of ~INET_ECN_MASK allows using the selector as a straight-forward
->> match against a diffserv code point.
+On Tue, 19 Oct 2021 at 17:21, Andrew Lunn <andrew@lunn.ch> wrote:
 >
-> Please include what command line should be used once we get iproute2
-> support.
+> On Sun, Oct 17, 2021 at 07:16:57PM +0200, Erik Ekman wrote:
+> > Everything except the first 32 bits was lost when the pause flags were
+> > added. This makes the 50000baseCR2 mode flag (bit 34) not appear.
+> >
+> > I have tested this with a 10G card (SFN5122F-R7) by modifying it to
+> > return a non-legacy link mode (10000baseCR).
+>
+> Does this need a Fixes: tag? Should it be added to stable?
+>
 
-Sure, will add that and send a v2
+The speed flags in use that can be lost are for 50G and 100G.
+The affected devices are ones based on the Solarflare EF100 networking
+IP in Xilinx FPGAs supporting 10/25/40/100-gigabit.
+I don't know how widespread these are, and if there might be enough
+users for adding this to stable.
 
--Toke
+The gsettings api code for sfc was added in 7cafe8f82438ced6d ("net:
+sfc: use new api ethtool_{get|set}_link_ksettings")
+and the bug was introduced then, but bits would only be lost after
+support for 25/50/100G was added in
+5abb5e7f916ee8d2d ("sfc: add bits for 25/50/100G supported/advertised speeds").
+Not sure which of these should be used for a Fixes tag.
 
+I only noticed this because I was using newer flags for signaling
+1G/10G fibre support in my other patch.
+
+Thanks
+/Erik
