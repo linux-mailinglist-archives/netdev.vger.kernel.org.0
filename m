@@ -2,89 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63266433EC4
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 20:51:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E72B4433ED8
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 20:55:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234361AbhJSSxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 14:53:33 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:47402 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230432AbhJSSxd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Oct 2021 14:53:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=XyDOlNEps2PQPz5H4bnK67kSEIkgFEX6exshJ2yzhyM=; b=bA+YYgRDKxKJpD5QHiKoXNPb8i
-        cIqAjABUWsHq/iIfvSKyYreq5Kxs+xSTXA4ZgwanMczGCB1iXjvCXY7FCAVMm/mGCVAFgivPU2oJx
-        4BrqqGWcvD3CsP4PmU1YrhrEDcW3pl/MeKeno0dn3talGkcsjHxDcdCZvtu8nmgSsjng=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mcuCc-00B7DH-5q; Tue, 19 Oct 2021 20:51:10 +0200
-Date:   Tue, 19 Oct 2021 20:51:10 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ong Boon Leong <boon.leong.ong@intel.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/2] net: phy: dp83867: introduce critical chip
- default init for non-of platform
-Message-ID: <YW8TnjisOh1OEpz+@lunn.ch>
-References: <20211013034128.2094426-1-boon.leong.ong@intel.com>
- <20211013034128.2094426-2-boon.leong.ong@intel.com>
+        id S234665AbhJSS5a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 14:57:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:22450 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232717AbhJSS5a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 14:57:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634669716;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=C9pInqT0x8tL+gZeRj+uARHfyBEVwwnUEmKq2gOLQEY=;
+        b=DCq1AQ9n0JE52bzFMu4qHd92Oh58ZqSAJUuoTIbLnJGNKCroUXi91GIo9Qddr0LBmqwKYs
+        /oryA+DFaf/gA8/GruiGm/GCHZ66pi8VFqgiNqUiWgmLvo1fEAFXUsWXYoq5xjmt6WzaEQ
+        6jRyW56D7YlTVtgZBXxQHj7vB/X0rOA=
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
+ [209.85.210.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-453-830U34GsMJClObe5wKstHQ-1; Tue, 19 Oct 2021 14:55:15 -0400
+X-MC-Unique: 830U34GsMJClObe5wKstHQ-1
+Received: by mail-ot1-f72.google.com with SMTP id b22-20020a056830311600b00552b48856bdso2294945ots.6
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 11:55:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=C9pInqT0x8tL+gZeRj+uARHfyBEVwwnUEmKq2gOLQEY=;
+        b=0BfJmiTtx2b3I9u18GGOd3cIUPVKXHWT8iGO+0XJ/d0gdpGPd4GGgMJtDvLPi0jNYR
+         Hr5wMeLpDaoeupDEyyZaDIcmqN/6Lvfzj9q2lgtItgmAjIYY598rQ+W4Pbg8qfRiod3A
+         Co6XLluB85P8fb/4CKeS1h39IvCJUm4UN8wqqNS5gwyjjziJoVNnnCLyf/Yig6cLYPMB
+         aZUsIlG8MH2V6gQuqon4LhhWN6YraawS1ABIblUHzUvSyEmsNU9kC98gzUD8H0Dnawm9
+         REJcJN/CUsYh93cWGMvNumG9CaGvfUrL55R2HKgC4MoN31JoFELxifFbvNC7IuHrMN8r
+         NP8g==
+X-Gm-Message-State: AOAM531ZuGlMnknWl1IaX4ds6xUa1iuFcAoW9zqQ8jRS+370LKrvNMDx
+        18juExWjm96GVYUVbLmILnobcjsfU7aYeWC0/qAK999o7x/O/++xfIx/rXBM2Ydjp9eRpO+TktH
+        TmRT+WTDpJ6ve27HE
+X-Received: by 2002:a05:6830:3184:: with SMTP id p4mr6660774ots.219.1634669715004;
+        Tue, 19 Oct 2021 11:55:15 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyYuYWzej6WRwpFRe+xeU0VckgFTXZrx1wHyJQOQaSjSBmKomLO/QW64NjjAECvHkUqbcqg2A==
+X-Received: by 2002:a05:6830:3184:: with SMTP id p4mr6660750ots.219.1634669714770;
+        Tue, 19 Oct 2021 11:55:14 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id l1sm2328995oic.30.2021.10.19.11.55.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Oct 2021 11:55:14 -0700 (PDT)
+Date:   Tue, 19 Oct 2021 12:55:13 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Yishai Hadas <yishaih@nvidia.com>
+Cc:     <bhelgaas@google.com>, <jgg@nvidia.com>, <saeedm@nvidia.com>,
+        <linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <kuba@kernel.org>, <leonro@nvidia.com>,
+        <kwankhede@nvidia.com>, <mgurtovoy@nvidia.com>, <maorg@nvidia.com>
+Subject: Re: [PATCH V2 mlx5-next 14/14] vfio/mlx5: Use its own PCI
+ reset_done error handler
+Message-ID: <20211019125513.4e522af9.alex.williamson@redhat.com>
+In-Reply-To: <20211019105838.227569-15-yishaih@nvidia.com>
+References: <20211019105838.227569-1-yishaih@nvidia.com>
+        <20211019105838.227569-15-yishaih@nvidia.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211013034128.2094426-2-boon.leong.ong@intel.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 13, 2021 at 11:41:27AM +0800, Ong Boon Leong wrote:
-> From: "Lay, Kuan Loon" <kuan.loon.lay@intel.com>
+On Tue, 19 Oct 2021 13:58:38 +0300
+Yishai Hadas <yishaih@nvidia.com> wrote:
+
+> Register its own handler for pci_error_handlers.reset_done and update
+> state accordingly.
 > 
-> PHY driver dp83867 has rich supports for OF-platform to fine-tune the PHY
-> chip during phy configuration. However, for non-OF platform, certain PHY
-> tunable parameters such as IO impedence and RX & TX internal delays are
-> critical and should be initialized to its default during PHY driver probe.
-> 
-> Signed-off-by: Lay, Kuan Loon <kuan.loon.lay@intel.com>
-> Co-developed-by: Ong Boon Leong <boon.leong.ong@intel.com>
-> Tested-by: Clement <clement@intel.com>
-> Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 > ---
->  drivers/net/phy/dp83867.c | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
+>  drivers/vfio/pci/mlx5/main.c | 33 ++++++++++++++++++++++++++++++++-
+>  1 file changed, 32 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-> index 6bbc81ad295f..bb4369b75179 100644
-> --- a/drivers/net/phy/dp83867.c
-> +++ b/drivers/net/phy/dp83867.c
-> @@ -619,6 +619,24 @@ static int dp83867_of_init(struct phy_device *phydev)
->  #else
->  static int dp83867_of_init(struct phy_device *phydev)
->  {
-> +	struct dp83867_private *dp83867 = phydev->priv;
-> +	u16 delay;
-
-So this is in the stub for when OF is disabled. What about the case
-that OF is enabled? I've used DT on x86, even Intel used it for
-intel,ce4100 aka falconfalls. So rather than do this in the stub, i
-would look at the value of dev->of_node. If it is NULL, do this. That
-should always work, and it is how other drivers deal with none OF
-cases.
-
-> +	/* Per datasheet, IO impedance is default to 50-ohm, so we set the same
-> +	 * here or else the default '0' means highest IO impedence which is wrong.
-> +	 */
-> +	dp83867->io_impedance = DP83867_IO_MUX_CFG_IO_IMPEDANCE_MIN / 2;
+> diff --git a/drivers/vfio/pci/mlx5/main.c b/drivers/vfio/pci/mlx5/main.c
+> index 621b7fc60544..b759c6e153b6 100644
+> --- a/drivers/vfio/pci/mlx5/main.c
+> +++ b/drivers/vfio/pci/mlx5/main.c
+> @@ -58,6 +58,7 @@ struct mlx5vf_pci_core_device {
+>  	/* protect migartion state */
+>  	struct mutex state_mutex;
+>  	struct mlx5vf_pci_migration_info vmig;
+> +	struct work_struct work;
+>  };
+>  
+>  static int mlx5vf_pci_unquiesce_device(struct mlx5vf_pci_core_device *mvdev)
+> @@ -615,6 +616,27 @@ static const struct vfio_device_ops mlx5vf_pci_ops = {
+>  	.match = vfio_pci_core_match,
+>  };
+>  
+> +static void mlx5vf_reset_work_handler(struct work_struct *work)
+> +{
+> +	struct mlx5vf_pci_core_device *mvdev =
+> +		container_of(work, struct mlx5vf_pci_core_device, work);
 > +
+> +	mutex_lock(&mvdev->state_mutex);
+> +	mlx5vf_reset_mig_state(mvdev);
 
-I would prefer you add a new define
-DP83867_IO_MUX_CFG_IO_IMPEDANCE_DEFAULT, which then avoids this very
-odd looking 1/2 the minimum.
+I see this calls mlx5vf_reset_vhca_state() but how does that unfreeze
+and unquiesce the device as necessary to get back to _RUNNING?
 
-    Andrew
+> +	mvdev->vmig.vfio_dev_state = VFIO_DEVICE_STATE_RUNNING;
+> +	mutex_unlock(&mvdev->state_mutex);
+> +}
+> +
+> +static void mlx5vf_pci_aer_reset_done(struct pci_dev *pdev)
+> +{
+> +	struct mlx5vf_pci_core_device *mvdev = dev_get_drvdata(&pdev->dev);
+> +
+> +	if (!mvdev->migrate_cap)
+> +		return;
+> +
+> +	schedule_work(&mvdev->work);
+
+This seems troublesome, how long does userspace poll the device state
+after reset to get back to _RUNNING?  Seems we at least need a
+flush_work() call when userspace reads the device state.  Thanks,
+
+Alex
+
+> +}
+> +
+>  static int mlx5vf_pci_probe(struct pci_dev *pdev,
+>  			    const struct pci_device_id *id)
+>  {
+> @@ -634,6 +656,8 @@ static int mlx5vf_pci_probe(struct pci_dev *pdev,
+>  			if (MLX5_CAP_GEN(mdev, migration)) {
+>  				mvdev->migrate_cap = 1;
+>  				mutex_init(&mvdev->state_mutex);
+> +				INIT_WORK(&mvdev->work,
+> +					  mlx5vf_reset_work_handler);
+>  			}
+>  			mlx5_vf_put_core_dev(mdev);
+>  		}
+> @@ -656,6 +680,8 @@ static void mlx5vf_pci_remove(struct pci_dev *pdev)
+>  {
+>  	struct mlx5vf_pci_core_device *mvdev = dev_get_drvdata(&pdev->dev);
+>  
+> +	if (mvdev->migrate_cap)
+> +		cancel_work_sync(&mvdev->work);
+>  	vfio_pci_core_unregister_device(&mvdev->core_device);
+>  	vfio_pci_core_uninit_device(&mvdev->core_device);
+>  	kfree(mvdev);
+> @@ -668,12 +694,17 @@ static const struct pci_device_id mlx5vf_pci_table[] = {
+>  
+>  MODULE_DEVICE_TABLE(pci, mlx5vf_pci_table);
+>  
+> +const struct pci_error_handlers mlx5vf_err_handlers = {
+> +	.reset_done = mlx5vf_pci_aer_reset_done,
+> +	.error_detected = vfio_pci_aer_err_detected,
+> +};
+> +
+>  static struct pci_driver mlx5vf_pci_driver = {
+>  	.name = KBUILD_MODNAME,
+>  	.id_table = mlx5vf_pci_table,
+>  	.probe = mlx5vf_pci_probe,
+>  	.remove = mlx5vf_pci_remove,
+> -	.err_handler = &vfio_pci_core_err_handlers,
+> +	.err_handler = &mlx5vf_err_handlers,
+>  };
+>  
+>  static void __exit mlx5vf_pci_cleanup(void)
+
