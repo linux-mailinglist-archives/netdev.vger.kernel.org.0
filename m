@@ -2,136 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2947D433F92
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 22:05:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8496433F9B
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 22:08:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233451AbhJSUIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 16:08:09 -0400
-Received: from mail-ua1-f52.google.com ([209.85.222.52]:46691 "EHLO
-        mail-ua1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231355AbhJSUIH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 16:08:07 -0400
-Received: by mail-ua1-f52.google.com with SMTP id u5so2259400uao.13;
-        Tue, 19 Oct 2021 13:05:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OJuwtmxpS0dVu0QSLCNxBq3CqaxqLtoYSRoUqyl67fo=;
-        b=tmeSgCmhPYAoqDRCUb0cP6zJf5uQzfIsxq5XnA1y13HfLdVXlVu+B+Yqxce8I3YGM3
-         VLTamKipmNeL6jpLeRmNjVOWc7vz4lVmk7mNmftpSgHhADlbH72tjGg9PohEbNgk+Jh1
-         WYHXGPN3JAMrrRRcGsLiGInwh5X4M97JI8mui93+k7DCDm1NgfVCUoEl4gvwjM9fr0YE
-         h2I8vEUKeCg9BY2x3vaFJK29rfDtzRmKHg6GVLYo1A4HGR3dk3G+qcvvzm53dfDNfocp
-         PO7RMTNoKExDqEgROkqGPt9QLACv351qRDjtBQpymDrMzOrTskV4FMe06X0Z4E4vy+Mx
-         5s5Q==
-X-Gm-Message-State: AOAM531ak48J1ZnGp+xRn78CWjBoEjPAOfexuwC8G4dpLAiKROwNTXW8
-        RQg3EsKo0cO1AT5sjXi4x4nrwOB8iO9epg==
-X-Google-Smtp-Source: ABdhPJw4/OCO2/ispicPxfOr398MXzMCD6fLq8Ou6i83NEIvD6trXJ7x7tJqWvmkHbaBV/R1jhHQqQ==
-X-Received: by 2002:a67:e04c:: with SMTP id n12mr38271362vsl.9.1634673953781;
-        Tue, 19 Oct 2021 13:05:53 -0700 (PDT)
-Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com. [209.85.222.43])
-        by smtp.gmail.com with ESMTPSA id z4sm11913049vsk.15.2021.10.19.13.05.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Oct 2021 13:05:53 -0700 (PDT)
-Received: by mail-ua1-f43.google.com with SMTP id h19so2335631uax.5;
-        Tue, 19 Oct 2021 13:05:52 -0700 (PDT)
-X-Received: by 2002:a67:d111:: with SMTP id u17mr38534586vsi.37.1634673952603;
- Tue, 19 Oct 2021 13:05:52 -0700 (PDT)
-MIME-Version: 1.0
-References: <20211019145719.122751-1-kory.maincent@bootlin.com>
- <CAMuHMdWghZ7HM5RRFRsZu8P_ikna0QWoRfCKeym61N-Lv-v4Xw@mail.gmail.com>
- <20211019173520.0154a8cb@kmaincent-XPS-13-7390> <YW7nPfzjstmeoMbf@lunn.ch> <20211019175746.11b388ce@windsurf>
-In-Reply-To: <20211019175746.11b388ce@windsurf>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 19 Oct 2021 22:05:41 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXiMhpU0vDV3KaOg4DY59cszAtoG1sDOgnTRY6C6cyitQ@mail.gmail.com>
-Message-ID: <CAMuHMdXiMhpU0vDV3KaOg4DY59cszAtoG1sDOgnTRY6C6cyitQ@mail.gmail.com>
-Subject: Re: [PATCH] net: renesas: Fix rgmii-id delays
-To:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        =?UTF-8?Q?K=C3=B6ry_Maincent?= <kory.maincent@bootlin.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        id S234693AbhJSUKN convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 19 Oct 2021 16:10:13 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:53894 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234941AbhJSUKK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 16:10:10 -0400
+Received: from smtpclient.apple (p54899aa7.dip0.t-ipconnect.de [84.137.154.167])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 5AF3ACED08;
+        Tue, 19 Oct 2021 22:07:54 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
+Subject: Re: [PATCH v5 1/3] Bluetooth: Add struct of reading AOSP vendor
+ capabilities
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20211019200701.v5.1.I139e71adfd3f00b88fe9edb63d013f9cd3e24506@changeid>
+Date:   Tue, 19 Oct 2021 22:07:53 +0200
+Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        pali@kernel.org, josephsih@google.com,
+        chromeos-bluetooth-upstreaming@chromium.org,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Adam Ford <aford173@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Yang Yingliang <yangyingliang@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <72F09687-C2CB-44F5-8C44-7697B65A5348@holtmann.org>
+References: <20211019200701.v5.1.I139e71adfd3f00b88fe9edb63d013f9cd3e24506@changeid>
+To:     Joseph Hwang <josephsih@chromium.org>
+X-Mailer: Apple Mail (2.3654.120.0.1.13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Thomas,
+Hi Joseph,
 
-On Tue, Oct 19, 2021 at 5:57 PM Thomas Petazzoni
-<thomas.petazzoni@bootlin.com> wrote:
-> On Tue, 19 Oct 2021 17:41:49 +0200
-> Andrew Lunn <andrew@lunn.ch> wrote:
-> > > When people update the kernel version don't they update also the devicetree?
-> >
-> > DT is ABI. Driver writers should not break old blobs running on new
-> > kernels. Often the DT blob is updated with the kernel, but it is not
-> > required. It could be stored in a hard to reach place, shared with
-> > u-boot etc.
->
-> Right, but conversely if someone reads the DT bindings that exists
-> today, specifies phy-mode = "rgmii-rxid" or phy-mmode = "rmgii-txid",
+> This patch adds the struct of reading AOSP vendor capabilities.
+> New capabilities are added incrementally. Note that the
+> version_supported octets will be used to determine whether a
+> capability has been defined for the version.
+> 
+> Signed-off-by: Joseph Hwang <josephsih@chromium.org>
+> 
+> ---
+> 
+> Changes in v5:
+> - This is a new patch.
+> - Add struct aosp_rp_le_get_vendor_capabilities so that next patch
+>  can determine whether a particular capability is supported or not.
+> 
+> net/bluetooth/aosp.c | 45 +++++++++++++++++++++++++++++++++++++++++---
+> 1 file changed, 42 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/bluetooth/aosp.c b/net/bluetooth/aosp.c
+> index a1b7762335a5..3f0ea57a68de 100644
+> --- a/net/bluetooth/aosp.c
+> +++ b/net/bluetooth/aosp.c
+> @@ -8,9 +8,32 @@
+> 
+> #include "aosp.h"
+> 
+> +#define AOSP_OP_LE_GET_VENDOR_CAPABILITIES	0x153
 
-Today == v5.10-rc1 and later?
+I rather have the hci_opcode_pack(0x3f, 0x153) here.
 
-> this person will get incorrect behavior. Sure a behavior that is
-> backward compatible with older DTs, but a terribly wrong one when you
-> write a new DT and read the DT binding documentation. This is exactly
-> the problem that happened to us.
+> +struct aosp_rp_le_get_vendor_capabilities {
+> +	__u8	status;
+> +	__u8	max_advt_instances;
+> +	__u8	offloaded_resolution_of_private_address;
+> +	__u16	total_scan_results_storage;
+> +	__u8	max_irk_list_sz;
+> +	__u8	filtering_support;
+> +	__u8	max_filter;
+> +	__u8	activity_energy_info_support;
+> +	__u16	version_supported;
+> +	__u16	total_num_of_advt_tracked;
+> +	__u8	extended_scan_support;
+> +	__u8	debug_logging_supported;
+> +	__u8	le_address_generation_offloading_support;
+> +	__u32	a2dp_source_offload_capability_mask;
+> +	__u8	bluetooth_quality_report_support;
+> +	__u32	dynamic_audio_buffer_support;
+> +} __packed;
 
-If you write a new DT, you read the DT binding documentation, and
-"make dtbs_check" will inform you politely if you use the legacy/wrong
-DT (i.e. lacking "[rt]x-internal-delay-ps")?
+So as far as I recall, the original struct was smaller. Google started to add new fields over time.
 
-> I know that those properties are considered obsolete, but even though
-> they are considered as such, they are still supported, but for this
-> particular MAC driver, with an inverted meaning compared to what the DT
-> binding documentation says.
->
-> What wins: DT ABI backward compatibility, or correctness of the DT
-> binding ? :-)
+> +
+> void aosp_do_open(struct hci_dev *hdev)
+> {
+> 	struct sk_buff *skb;
+> +	struct aosp_rp_le_get_vendor_capabilities *rp;
+> +	u16 opcode;
+> +	u16 version_supported;
+> 
+> 	if (!hdev->aosp_capable)
+> 		return;
+> @@ -18,10 +41,26 @@ void aosp_do_open(struct hci_dev *hdev)
+> 	bt_dev_dbg(hdev, "Initialize AOSP extension");
+> 
+> 	/* LE Get Vendor Capabilities Command */
+> -	skb = __hci_cmd_sync(hdev, hci_opcode_pack(0x3f, 0x153), 0, NULL,
+> -			     HCI_CMD_TIMEOUT);
+> -	if (IS_ERR(skb))
+> +	opcode = hci_opcode_pack(0x3f, AOSP_OP_LE_GET_VENDOR_CAPABILITIES);
+> +	skb = __hci_cmd_sync(hdev, opcode, 0, NULL, HCI_CMD_TIMEOUT);
+> +	if (IS_ERR(skb)) {
+> +		bt_dev_warn(hdev, "AOSP get vendor capabilities (%ld)",
+> +			    PTR_ERR(skb));
+> +		return;
+> +	}
+> +
+> +	bt_dev_info(hdev, "aosp le vendor capabilities length %d", skb->len);
 
-Both ;-)
+This is not a bt_dev_info.
 
-The current driver is backwards-compatible with the legacy/wrong DTB.
-The current DT bindings (as of v5.10-rc1), using "[rt]x-internal-delay-ps"
-are correct.
-Or am I missing something here?
+> +
+> +	rp = (struct aosp_rp_le_get_vendor_capabilities *)skb->data;
+> +
+> +	if (rp->status) {
+> +		bt_dev_err(hdev, "AOSP LE Get Vendor Capabilities status %d",
+> +			   rp->status);
+> 		return;
+> +	}
+> +
+> +	version_supported = le16_to_cpu(rp->version_supported);
+> +	bt_dev_info(hdev, "AOSP version 0x%4.4x", version_supported);
 
-BTW, it's still not clear to me why the inversion would be needed.
-Cfr. Andrew's comment:
+You need to check the supported version for basic length of the struct and then also bluetooth_quality_report_support details.
 
-| So with rgmii-rxid, what is actually passed to the PHY? Is your
-| problem you get twice the delay in one direction, and no delay in the
-| other?
+Regards
 
-We know the ravb driver misbehaved in the past by applying the
-rgmii-*id values to the MAC, while they are meant for the PHY, thus
-causing bad interaction with PHY drivers.  But that was fixed
-by commit 9b23203c32ee02cd ("ravb: Mask PHY mode to avoid inserting
-delays twice") and a6f51f2efa742df0 ("ravb: Add support for explicit
-internal clock delay configuration").
+Marcel
 
-Thanks!
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
