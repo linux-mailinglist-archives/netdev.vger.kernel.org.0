@@ -2,205 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AD5D433655
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 14:50:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6A56433663
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 14:54:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235728AbhJSMwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 08:52:36 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:36502 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235684AbhJSMwf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 08:52:35 -0400
-Received: by mail-il1-f199.google.com with SMTP id c17-20020a92c791000000b0025929f440f0so10078691ilk.3
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 05:50:22 -0700 (PDT)
+        id S235717AbhJSM4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 08:56:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42800 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230097AbhJSM4j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 08:56:39 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED5E5C06161C
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 05:54:25 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id 5so12153864edw.7
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 05:54:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=kHRyb3T+qamddAp9cLynID5NLJ6FfaF3XyicNPvPyEI=;
+        b=kloAA//XaI2scnZmIHxbPch8wyZX1ANlByyqPT+1BHf/GhwIMJHR7/N+/uN0gQK/0g
+         KsSHlstZvEpI5TqCh3U7aRhBaEDwKIntCiiv4Oz+zXr675vfT1Ixs5Bj3eaw52BfSuX1
+         qRjcbCyAg0QwhoeTX5M1BIVuUPABDBKjLVlt3KsHhWRPbQERgaLBZv2MV68ih/7XoP2/
+         HlXlavaCKiGgEfS9cDVk+G/+eA1XE9ybUBZbJb8aK1inx6Lcq1cuCqb+CpVp0THXH1wq
+         RO530m2/x9cNy9ZTmzMyZE7X8mDDmsHfeOpMX2vmx7yrTSbDcC5qHXHY/TPrzKUBh0vP
+         1dPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=bFZmoTBRl1R1qYVXczghINGlIPTaUfOP94TF4bR5q2Q=;
-        b=yXDjTXii0Yj9n9kkEbAFJBTkZJxADqITAfQ0DYxkkvoEDo/uF9hS/3RRxYkHh2NJ01
-         ZM88gwK9kPRu4826MIEHIgnNqmr5CF+YgOdRFFfsetniu+rRtVODYWNePQ+HrHkoynWk
-         yg9udq7CzhJJ7n8JvryPVCC9gD64tdVbnVYw5cL5x5DydERyd2M0RilpBlXzCdxdFXGU
-         u/ijfmMQvUxKZa/UGY4FV07qwk52gcC9i7RK/88qKp98FYGPeLAVFWxnpN9RY0HTf6S2
-         od3+5L2rVkupAnPaRV2urCj3vlcMLiR0y9hFCqQbowpPvAz5Ouwsy5TtJmt+UMOD+qpY
-         86Zw==
-X-Gm-Message-State: AOAM531HoZba1D/nfROAWuVJKFlenHF5Um2W85iNaMk4ZpIMZEpSk6kH
-        y3xKTO1skT3SEMayPZPyaeynjZX/WyiziTgvbPAEmmfppniq
-X-Google-Smtp-Source: ABdhPJw+uxCUYWF5tbRGkCVF+1A0ZsW/FYvAv+CVSHoENSvNrVk69XQJ5tVs6n3O0t3lc53aK1UeQyPutzRHhzT/Q+W3o+eEnK97
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=kHRyb3T+qamddAp9cLynID5NLJ6FfaF3XyicNPvPyEI=;
+        b=D5+UvCApfXBb0tbHfN6N+XUKZm4kex+4UQi0uQAeB2nJnRrps26HPIU40T9vd+uzeV
+         0cTwOKVUUqFb/eYPuMY39A2ICT5np/N4iPPvxakeOiJxLK53u6BuIkFFh8iXggynN1Wd
+         wE7yvYwHx3OIozMo5cyJUMFVLub1nES698ewIHuyfVCK+gO5k0g6dBuMKM5fR0DGbmyo
+         fet0XzIj2nQ5aOoRvhUQuvTJ+lh2t2YqbUaRNaW3eBFWHFrmTEtRPIeT9R+FDuYf+9X3
+         L3VhXDQCz2Ik/oVqXkoh7NWnJqYbkNjUY5NUsbI61MUD/9OlmsFBeImZ1Pr2qGzowjl/
+         Dcig==
+X-Gm-Message-State: AOAM533RgUXwk5s+QXrgPNOnHCzG+pPpyLOzyR4R61Nd/H+0DhnbMpy3
+        Pls2MLRzHGYNsFLOSCKhmuUjwHo8LwxjGPKb7ccamQ==
+X-Google-Smtp-Source: ABdhPJxEw0ShxbPahbMOQkBJ4LTtwgUGU1HhWjzbq9TYIqT2JLuOrMhnR2uoHfH+SG6RXr7JdATbZsArRrubcRI5u4Q=
+X-Received: by 2002:a50:9993:: with SMTP id m19mr52700855edb.357.1634648061101;
+ Tue, 19 Oct 2021 05:54:21 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:3052:: with SMTP id u18mr4114717jak.148.1634647822011;
- Tue, 19 Oct 2021 05:50:22 -0700 (PDT)
-Date:   Tue, 19 Oct 2021 05:50:22 -0700
-In-Reply-To: <0000000000007e727005c284bc8e@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c3972705ceb41add@google.com>
-Subject: Re: [syzbot] possible deadlock in perf_event_ctx_lock_nested (2)
-From:   syzbot <syzbot+4b71bb3365e7d5228913@syzkaller.appspotmail.com>
-To:     acme@kernel.org, alexander.shishkin@linux.intel.com,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, john.fastabend@gmail.com, jolsa@redhat.com,
-        kafai@fb.com, kpsingh@kernel.org, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, mark.rutland@arm.com,
-        mingo@redhat.com, namhyung@kernel.org, netdev@vger.kernel.org,
-        peterz@infradead.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 19 Oct 2021 18:24:09 +0530
+Message-ID: <CA+G9fYuY3BJ9osvhwg0-YG=L+etgCBfCq0koC9BEkvK8-GR3ew@mail.gmail.com>
+Subject: [next] BUG: kernel NULL pointer dereference, address:: selinux_ip_postroute_compat
+To:     open list <linux-kernel@vger.kernel.org>, selinux@vger.kernel.org,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, lkft-triage@lists.linaro.org
+Cc:     Florian Westphal <fw@strlen.de>, Paul Moore <paul@paul-moore.com>,
+        Eric Paris <eparis@parisplace.org>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+Following kernel crash noticed on linux next 20211019 tag.
+on x86, i386 and other architectures.
 
-HEAD commit:    60e8840126bd Add linux-next specific files for 20211018
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=15c92b80b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4bd44cafcda7632e
-dashboard link: https://syzkaller.appspot.com/bug?extid=4b71bb3365e7d5228913
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11eccf58b00000
+[   15.197596] BUG: kernel NULL pointer dereference, address: 0000000000000290
+[   15.204577] #PF: supervisor read access in kernel mode
+[   15.204581] #PF: error_code(0x0000) - not-present page
+[   15.204585] PGD 0 P4D 0
+[   15.204592] Oops: 0000 [#1] PREEMPT SMP PTI
+[   15.204597] CPU: 2 PID: 352 Comm: systemd-resolve Not tainted
+5.15.0-rc6-next-20211019 #1
+[   15.204604] Hardware name: Supermicro SYS-5019S-ML/X11SSH-F, BIOS
+2.2 05/23/2018
+[   15.204607] RIP: 0010:selinux_ip_postroute_compat+0x55/0x110
+[   15.242847] Code: 48 89 45 e8 31 c0 48 83 7a 18 00 f3 48 ab 0f 84
+96 00 00 00 48 8b 43 18 48 85 c0 74 0d 0f b6 48 12 80 f9 0c 0f 84 a9
+00 00 00 <4c> 8b a0 90 02 00 00 48 8b 42 10 31 c9 48 89 df 48 89 75 98
+4c 8d
+[   15.261592] RSP: 0018:ffffb8fc0077f890 EFLAGS: 00010246
+[   15.266810] RAX: 0000000000000000 RBX: ffffa31a82ee7200 RCX: 0000000000000000
+[   15.273933] RDX: ffffb8fc0077fa18 RSI: ffffb8fc0077f8b8 RDI: ffffb8fc0077f8f0
+[   15.281059] RBP: ffffb8fc0077f908 R08: ffffb8fc0077f960 R09: 0000000000000000
+[   15.288180] R10: 0000000000000000 R11: ffffb8fc0077fb70 R12: ffffa31a82ee7200
+[   15.295305] R13: ffffb8fc0077fa18 R14: ffffa31a82ee7200 R15: ffffb8fc0077fa18
+[   15.302428] FS:  00007fc366df0840(0000) GS:ffffa31befb00000(0000)
+knlGS:0000000000000000
+[   15.310507] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   15.316242] CR2: 0000000000000290 CR3: 0000000107660002 CR4: 00000000003706e0
+[   15.323367] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   15.330492] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[   15.337615] Call Trace:
+[   15.340061]  <TASK>
+[   15.342157]  ? alloc_skb_with_frags+0x4e/0x1b0
+[   15.346603]  ? _copy_from_iter+0xcd/0x5f0
+[   15.350614]  selinux_ip_postroute+0x18f/0x4a0
+[   15.354964]  ? ip_generic_getfrag+0x53/0xe0
+[   15.359145]  nf_hook_slow+0x44/0xb0
+[   15.362635]  ip_mc_output+0x184/0x310
+[   15.366292]  ? ip_frag_next+0x184/0x190
+[   15.370123]  ? ip_fraglist_init+0xb0/0xb0
+[   15.374128]  ip_send_skb+0x8b/0x90
+[   15.377533]  udp_send_skb+0x166/0x390
+[   15.381192]  udp_sendmsg+0x9a6/0xb80
+[   15.384769]  ? ip_frag_init+0x60/0x60
+[   15.388427]  ? sock_def_readable+0x50/0x90
+[   15.392517]  ? unix_stream_sendmsg+0x5a3/0x640
+[   15.396956]  ? __switch_to+0x12e/0x490
+[   15.400708]  ? _copy_from_user+0x2e/0x60
+[   15.404633]  inet_sendmsg+0x65/0x70
+[   15.408116]  ? inet_sendmsg+0x65/0x70
+[   15.411776]  sock_sendmsg+0x5e/0x70
+[   15.415267]  ____sys_sendmsg+0x22d/0x280
+[   15.419192]  ___sys_sendmsg+0x81/0xc0
+[   15.422851]  ? preempt_count_sub+0xba/0x100
+[   15.427062]  ? debug_smp_processor_id+0x17/0x20
+[   15.431595]  ? get_nohz_timer_target+0x1b/0x1b0
+[   15.436128]  ? timerqueue_add+0x6e/0xc0
+[   15.439968]  ? _raw_spin_unlock_irqrestore+0x24/0x40
+[   15.444932]  ? __fdget+0x13/0x20
+[   15.448156]  ? do_epoll_wait+0x84/0x750
+[   15.451987]  __sys_sendmsg+0x62/0xb0
+[   15.455557]  ? syscall_trace_enter.constprop.0+0x14c/0x1e0
+[   15.461037]  __x64_sys_sendmsg+0x1d/0x20
+[   15.464960]  do_syscall_64+0x3b/0x90
+[   15.468531]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   15.473576] RIP: 0033:0x7fc36620b711
+[   15.477153] Code: b5 78 20 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff
+eb b6 0f 1f 80 00 00 00 00 8b 05 da bc 20 00 85 c0 75 16 b8 2e 00 00
+00 0f 05 <48> 3d 00 f0 ff ff 77 57 c3 66 0f 1f 44 00 00 41 54 41 89 d4
+55 48
+[   15.495890] RSP: 002b:00007fff5eab9cd8 EFLAGS: 00000246 ORIG_RAX:
+000000000000002e
+[   15.503476] RAX: ffffffffffffffda RBX: 000000000000000b RCX: 00007fc36620b711
+[   15.510598] RDX: 0000000000000000 RSI: 00007fff5eab9d20 RDI: 000000000000000b
+[   15.517721] RBP: 00007fff5eab9d20 R08: 00007fff5eab9e80 R09: 00000000000014eb
+[   15.524845] R10: 0000000000003d34 R11: 0000000000000246 R12: 00007fff5eab9e80
+[   15.531971] R13: 0000000000000002 R14: 0000000000000002 R15: 000000000000000b
+[   15.539096]  </TASK>
+[   15.541278] Modules linked in: x86_pkg_temp_thermal
+[   15.546148] CR2: 0000000000000290
+[   15.549460] ---[ end trace 2e081564e8f528df ]---
+[   15.554069] RIP: 0010:selinux_ip_postroute_compat+0x55/0x110
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+4b71bb3365e7d5228913@syzkaller.appspotmail.com
 
-======================================================
-WARNING: possible circular locking dependency detected
-5.15.0-rc5-next-20211018-syzkaller #0 Not tainted
-------------------------------------------------------
-syz-executor.1/30066 is trying to acquire lock:
-ffff88807cb88f28 (&mm->mmap_lock#2){++++}-{3:3}, at: __might_fault+0xa1/0x170 mm/memory.c:5243
+Full log,
+https://qa-reports.linaro.org/lkft/linux-next-master-sanity/build/next-20211019/testrun/6166857/suite/linux-log-parser/test/check-kernel-bug-3781895/log
 
-but task is already holding lock:
-ffff8880b9c3fab0 (&cpuctx_mutex){+.+.}-{3:3}, at: perf_event_ctx_lock_nested+0x23a/0x490 kernel/events/core.c:1357
+Build config:
+https://builds.tuxbuild.com/1ziJHznpBT84rIGZ2HgbY9CVlQ1/config
 
-which lock already depends on the new lock.
+Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
 
-the existing dependency chain (in reverse order) is:
+steps to reproduce:
+https://builds.tuxbuild.com/1ziJHznpBT84rIGZ2HgbY9CVlQ1/tuxmake_reproducer.sh
 
--> #3 (&cpuctx_mutex){+.+.}-{3:3}:
-       __mutex_lock_common kernel/locking/mutex.c:599 [inline]
-       __mutex_lock+0x12f/0x12f0 kernel/locking/mutex.c:732
-       perf_event_init_cpu+0x172/0x3e0 kernel/events/core.c:13325
-       perf_event_init+0x39d/0x408 kernel/events/core.c:13372
-       start_kernel+0x2bb/0x49b init/main.c:1063
-       secondary_startup_64_no_verify+0xb0/0xbb
-
--> #2 (pmus_lock){+.+.}-{3:3}:
-       __mutex_lock_common kernel/locking/mutex.c:599 [inline]
-       __mutex_lock+0x12f/0x12f0 kernel/locking/mutex.c:732
-       perf_event_init_cpu+0xc4/0x3e0 kernel/events/core.c:13319
-       cpuhp_invoke_callback+0x3b5/0x9a0 kernel/cpu.c:190
-       cpuhp_invoke_callback_range kernel/cpu.c:665 [inline]
-       cpuhp_up_callbacks kernel/cpu.c:693 [inline]
-       _cpu_up+0x3b0/0x790 kernel/cpu.c:1368
-       cpu_up kernel/cpu.c:1404 [inline]
-       cpu_up+0xfe/0x1a0 kernel/cpu.c:1376
-       bringup_nonboot_cpus+0xfe/0x130 kernel/cpu.c:1470
-       smp_init+0x2e/0x145 kernel/smp.c:1092
-       kernel_init_freeable+0x477/0x73a init/main.c:1618
-       kernel_init+0x1a/0x1d0 init/main.c:1515
-       ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-
--> #1 (cpu_hotplug_lock){++++}-{0:0}:
-       percpu_down_read include/linux/percpu-rwsem.h:51 [inline]
-       cpus_read_lock+0x3e/0x140 kernel/cpu.c:308
-       wake_up_all_idle_cpus+0x13/0x80 kernel/smp.c:1173
-       cpu_latency_qos_apply kernel/power/qos.c:249 [inline]
-       cpu_latency_qos_remove_request.part.0+0xc4/0x2f0 kernel/power/qos.c:328
-       cpu_latency_qos_remove_request+0x65/0x80 kernel/power/qos.c:330
-       snd_pcm_hw_params+0x1481/0x1990 sound/core/pcm_native.c:784
-       snd_pcm_kernel_ioctl+0x164/0x310 sound/core/pcm_native.c:3355
-       snd_pcm_oss_change_params_locked+0x1936/0x3a60 sound/core/oss/pcm_oss.c:947
-       snd_pcm_oss_change_params sound/core/oss/pcm_oss.c:1091 [inline]
-       snd_pcm_oss_mmap+0x442/0x550 sound/core/oss/pcm_oss.c:2910
-       call_mmap include/linux/fs.h:2164 [inline]
-       mmap_region+0xd8c/0x1650 mm/mmap.c:1787
-       do_mmap+0x869/0xfb0 mm/mmap.c:1575
-       vm_mmap_pgoff+0x1b7/0x290 mm/util.c:519
-       ksys_mmap_pgoff+0x49f/0x620 mm/mmap.c:1624
-       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-       do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-       entry_SYSCALL_64_after_hwframe+0x44/0xae
-
--> #0 (&mm->mmap_lock#2){++++}-{3:3}:
-       check_prev_add kernel/locking/lockdep.c:3063 [inline]
-       check_prevs_add kernel/locking/lockdep.c:3186 [inline]
-       validate_chain kernel/locking/lockdep.c:3801 [inline]
-       __lock_acquire+0x2a07/0x54a0 kernel/locking/lockdep.c:5027
-       lock_acquire kernel/locking/lockdep.c:5637 [inline]
-       lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5602
-       __might_fault mm/memory.c:5244 [inline]
-       __might_fault+0x104/0x170 mm/memory.c:5229
-       _copy_to_user+0x27/0x150 lib/usercopy.c:28
-       copy_to_user include/linux/uaccess.h:200 [inline]
-       perf_read_group kernel/events/core.c:5329 [inline]
-       __perf_read kernel/events/core.c:5396 [inline]
-       perf_read+0x736/0x900 kernel/events/core.c:5415
-       do_loop_readv_writev fs/read_write.c:750 [inline]
-       do_loop_readv_writev fs/read_write.c:737 [inline]
-       do_iter_read+0x501/0x760 fs/read_write.c:792
-       vfs_readv+0xe5/0x150 fs/read_write.c:910
-       do_readv+0x139/0x300 fs/read_write.c:947
-       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-       do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-       entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-other info that might help us debug this:
-
-Chain exists of:
-  &mm->mmap_lock#2 --> pmus_lock --> &cpuctx_mutex
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock(&cpuctx_mutex);
-                               lock(pmus_lock);
-                               lock(&cpuctx_mutex);
-  lock(&mm->mmap_lock#2);
-
- *** DEADLOCK ***
-
-1 lock held by syz-executor.1/30066:
- #0: ffff8880b9c3fab0 (&cpuctx_mutex){+.+.}-{3:3}, at: perf_event_ctx_lock_nested+0x23a/0x490 kernel/events/core.c:1357
-
-stack backtrace:
-CPU: 0 PID: 30066 Comm: syz-executor.1 Not tainted 5.15.0-rc5-next-20211018-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2143
- check_prev_add kernel/locking/lockdep.c:3063 [inline]
- check_prevs_add kernel/locking/lockdep.c:3186 [inline]
- validate_chain kernel/locking/lockdep.c:3801 [inline]
- __lock_acquire+0x2a07/0x54a0 kernel/locking/lockdep.c:5027
- lock_acquire kernel/locking/lockdep.c:5637 [inline]
- lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5602
- __might_fault mm/memory.c:5244 [inline]
- __might_fault+0x104/0x170 mm/memory.c:5229
- _copy_to_user+0x27/0x150 lib/usercopy.c:28
- copy_to_user include/linux/uaccess.h:200 [inline]
- perf_read_group kernel/events/core.c:5329 [inline]
- __perf_read kernel/events/core.c:5396 [inline]
- perf_read+0x736/0x900 kernel/events/core.c:5415
- do_loop_readv_writev fs/read_write.c:750 [inline]
- do_loop_readv_writev fs/read_write.c:737 [inline]
- do_iter_read+0x501/0x760 fs/read_write.c:792
- vfs_readv+0xe5/0x150 fs/read_write.c:910
- do_readv+0x139/0x300 fs/read_write.c:947
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f78228c6a39
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f7821ffa188 EFLAGS: 00000246 ORIG_RAX: 0000000000000013
-RAX: ffffffffffffffda RBX: 00007f78229ca0e0 RCX: 00007f78228c6a39
-RDX: 0000000000000001 RSI: 00000000200002c0 RDI: 0000000000000007
-RBP: 00007f7822920c5f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ffd71dc7def R14: 00007f7821ffa300 R15: 0000000000022000
- </TASK>
-
+--
+Linaro LKFT
+https://lkft.linaro.org
