@@ -2,199 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0812432B69
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 03:11:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C4A0432B8B
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 03:42:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233225AbhJSBN7 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 18 Oct 2021 21:13:59 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:55485 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229588AbhJSBN6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 21:13:58 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 19J1BQSc8013000, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36503.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 19J1BQSc8013000
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 19 Oct 2021 09:11:26 +0800
-Received: from RTEXMBS03.realtek.com.tw (172.21.6.96) by
- RTEXH36503.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.14; Tue, 19 Oct 2021 09:11:26 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Mon, 18 Oct 2021 21:11:26 -0400
-Received: from RTEXMBS04.realtek.com.tw ([fe80::cdd5:82a3:e854:7098]) by
- RTEXMBS04.realtek.com.tw ([fe80::cdd5:82a3:e854:7098%5]) with mapi id
- 15.01.2106.013; Tue, 19 Oct 2021 09:11:26 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-CC:     Colin King <colin.king@canonical.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH][next] rtw89: Fix potential dereference of the null pointer sta
-Thread-Topic: [PATCH][next] rtw89: Fix potential dereference of the null
- pointer sta
-Thread-Index: AQHXwduziBNegQ3KtE6tzEeaYjpkJqvX/pCwgACwb0mAANdosA==
-Date:   Tue, 19 Oct 2021 01:11:25 +0000
-Message-ID: <abc2e3a274694d48aa468491df334349@realtek.com>
-References: <20211015154530.34356-1-colin.king@canonical.com>
-        <9cc681c217a449519aee524b35e6b6bc@realtek.com>
- <87pms2ttvi.fsf@codeaurora.org>
-In-Reply-To: <87pms2ttvi.fsf@codeaurora.org>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS03.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/10/18_=3F=3F_11:09:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S230158AbhJSBod (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 21:44:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35104 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229777AbhJSBob (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Oct 2021 21:44:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 41B2C61260;
+        Tue, 19 Oct 2021 01:42:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634607738;
+        bh=D7YEQastTxFQdKRaYpytIqKQ/4otb+9xuoq/+a0xTe8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Q1vHyVjPA1YYlW/kk/Au08uMtZBfDh7TNX69DFvVdRf1xD0GS1vp3Oi9sy5fivxYj
+         r5JrbeMLvihQ+uygHe8teqas18pTG0utLYcc+I7xgnlb2Wf4VO3WcpyONxS8N7Tbf4
+         XDC1P44EmhjMkN0GAcpQLAa0G1cF/3FRCqh8sAvvKab+E3DbeQnVOW52mEKr7Vfj+1
+         THhKyJTKesrfOEpOb9vZ/UmaqqgYfHC4xLwJmWhsdu2ssEvO9eoFBSjhCGdn7s16Dg
+         IEYfImJoHV/Z8swOgD7zG9LOVN69KhavBUJtNXTCCWUlMzJ9BBMV3TItaED+Dab/Fz
+         O+wHEroE2revA==
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH] ice: Fix clang -Wimplicit-fallthrough in ice_pull_qvec_from_rc()
+Date:   Mon, 18 Oct 2021 18:42:03 -0700
+Message-Id: <20211019014203.1926130-1-nathan@kernel.org>
+X-Mailer: git-send-email 2.33.1.637.gf443b226ca
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36503.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 10/19/2021 00:52:27
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 166808 [Oct 18 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: pkshih@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 463 463 5854868460de3f0d8e8c0a4df98aeb05fb764a09
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: realtek.com:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 10/19/2021 00:54:00
+X-Patchwork-Bot: notify
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Clang warns:
 
-> -----Original Message-----
-> From: kvalo=codeaurora.org@mg.codeaurora.org <kvalo=codeaurora.org@mg.codeaurora.org> On
-> Behalf Of Kalle Valo
-> Sent: Monday, October 18, 2021 8:12 PM
-> To: Pkshih <pkshih@realtek.com>
-> Cc: Colin King <colin.king@canonical.com>; David S . Miller <davem@davemloft.net>; Jakub
-> Kicinski <kuba@kernel.org>; linux-wireless@vger.kernel.org; netdev@vger.kernel.org;
-> kernel-janitors@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH][next] rtw89: Fix potential dereference of the null pointer sta
-> 
-> Pkshih <pkshih@realtek.com> writes:
-> 
-> >> -----Original Message-----
-> >> From: Colin King <colin.king@canonical.com>
-> >> Sent: Friday, October 15, 2021 11:46 PM
-> >> To: Kalle Valo <kvalo@codeaurora.org>; David S . Miller <davem@davemloft.net>; Jakub Kicinski
-> >> <kuba@kernel.org>; Pkshih <pkshih@realtek.com>; linux-wireless@vger.kernel.org;
-> >> netdev@vger.kernel.org
-> >> Cc: kernel-janitors@vger.kernel.org; linux-kernel@vger.kernel.org
-> >> Subject: [PATCH][next] rtw89: Fix potential dereference of the null pointer sta
-> >>
-> >> From: Colin Ian King <colin.king@canonical.com>
-> >>
-> >> The pointer rtwsta is dereferencing pointer sta before sta is
-> >> being null checked, so there is a potential null pointer deference
-> >> issue that may occur. Fix this by only assigning rtwsta after sta
-> >> has been null checked. Add in a null pointer check on rtwsta before
-> >> dereferencing it too.
-> >>
-> >> Fixes: e3ec7017f6a2 ("rtw89: add Realtek 802.11ax driver")
-> >> Addresses-Coverity: ("Dereference before null check")
-> >> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> >> ---
-> >>  drivers/net/wireless/realtek/rtw89/core.c | 9 +++++++--
-> >>  1 file changed, 7 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git a/drivers/net/wireless/realtek/rtw89/core.c
-> >> b/drivers/net/wireless/realtek/rtw89/core.c
-> >> index 06fb6e5b1b37..26f52a25f545 100644
-> >> --- a/drivers/net/wireless/realtek/rtw89/core.c
-> >> +++ b/drivers/net/wireless/realtek/rtw89/core.c
-> >> @@ -1534,9 +1534,14 @@ static bool rtw89_core_txq_agg_wait(struct rtw89_dev *rtwdev,
-> >>  {
-> >>  	struct rtw89_txq *rtwtxq = (struct rtw89_txq *)txq->drv_priv;
-> >>  	struct ieee80211_sta *sta = txq->sta;
-> >> -	struct rtw89_sta *rtwsta = (struct rtw89_sta *)sta->drv_priv;
-> >
-> > 'sta->drv_priv' is only a pointer, we don't really dereference the
-> > data right here, so I think this is safe. More, compiler can optimize
-> > this instruction that reorder it to the place just right before using.
-> > So, it seems like a false alarm.
-> >
-> >> +	struct rtw89_sta *rtwsta;
-> >>
-> >> -	if (!sta || rtwsta->max_agg_wait <= 0)
-> >> +	if (!sta)
-> >> +		return false;
-> >> +	rtwsta = (struct rtw89_sta *)sta->drv_priv;
-> >> +	if (!rtwsta)
-> >> +		return false;
-> >> +	if (rtwsta->max_agg_wait <= 0)
-> >>  		return false;
-> >>
-> >>  	if (rtwdev->stats.tx_tfc_lv <= RTW89_TFC_MID)
-> >
-> > I check the size of object files before/after this patch, and
-> > the original one is smaller.
-> >
-> >    text    data     bss     dec     hex filename
-> >   16781    3392       1   20174    4ece core-0.o  // original
-> >   16819    3392       1   20212    4ef4 core-1.o  // after this patch
-> >
-> > Do you think it is worth to apply this patch?
-> 
-> I think that we should apply the patch. Even though the compiler _may_
-> reorder the code, it might choose not to do that.
+drivers/net/ethernet/intel/ice/ice_lib.c:1906:2: error: unannotated fall-through between switch labels [-Werror,-Wimplicit-fallthrough]
+        default:
+        ^
+drivers/net/ethernet/intel/ice/ice_lib.c:1906:2: note: insert 'break;' to avoid fall-through
+        default:
+        ^
+        break;
+1 error generated.
 
-Understand.
+Clang is a little more pedantic than GCC, which does not warn when
+falling through to a case that is just break or return. Clang's version
+is more in line with the kernel's own stance in deprecated.rst, which
+states that all switch/case blocks must end in either break,
+fallthrough, continue, goto, or return. Add the missing break to silence
+the warning.
 
-I have another way to fix this coverity warning, like:
+Link: https://github.com/ClangBuiltLinux/linux/issues/1482
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+---
+ drivers/net/ethernet/intel/ice/ice_lib.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-@@ -1617,7 +1617,7 @@ static bool rtw89_core_txq_agg_wait(struct rtw89_dev *rtwdev,
- {
-        struct rtw89_txq *rtwtxq = (struct rtw89_txq *)txq->drv_priv;
-        struct ieee80211_sta *sta = txq->sta;
--       struct rtw89_sta *rtwsta = (struct rtw89_sta *)sta->drv_priv;
-+       struct rtw89_sta *rtwsta = sta ? (struct rtw89_sta *)sta->drv_priv : NULL;
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index f981e77f72ad..03443c060507 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -1903,6 +1903,7 @@ static struct ice_q_vector *ice_pull_qvec_from_rc(struct ice_ring_container *rc)
+ 	case ICE_TX_CONTAINER:
+ 		if (rc->tx_ring)
+ 			return rc->tx_ring->q_vector;
++		break;
+ 	default:
+ 		break;
+ 	}
 
-        if (!sta || rtwsta->max_agg_wait <= 0)
-                return false;
-
-Is this acceptable?
-It has a little redundant checking of 'sta', but the code looks clean.
-
-> 
-> Another question is that can txq->sta really be null? I didn't check the
-> code, but if it should be always set when the null check is not needed.
-> 
-
-It says
-
-* struct ieee80211_txq - Software intermediate tx queue
-* @sta: station table entry, %NULL for per-vif queue
-
-So, we need to check if 'sta' is NULL.
-
---
-Ping-Ke
+base-commit: 939a6567f976efb8b3e6d601ce35eb56b17babd0
+-- 
+2.33.1.637.gf443b226ca
 
