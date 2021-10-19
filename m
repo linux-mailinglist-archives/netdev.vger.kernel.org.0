@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C93543390F
+	by mail.lfdr.de (Postfix) with ESMTP id 9EF91433911
 	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 16:48:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231775AbhJSOuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 10:50:20 -0400
-Received: from mail-co1nam11on2040.outbound.protection.outlook.com ([40.107.220.40]:25664
-        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        id S232290AbhJSOub (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 10:50:31 -0400
+Received: from mail-mw2nam12on2057.outbound.protection.outlook.com ([40.107.244.57]:53729
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229641AbhJSOuT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Oct 2021 10:50:19 -0400
+        id S229641AbhJSOub (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Oct 2021 10:50:31 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=X4N6/ndJtwnRABwvbQMO9vh66s8G5E95Nmg6eSFEAokrBIdAyW2QvzPLFVzvPTDHsdUpx79jgARyifP5ca8C9vPPUnNE6W0artPPrBJq3L5RZ/h6cb3AFAgqI2Yjr/Dr2xO1MD13bO7JOuaNRHHzwdiBjHaxIMfjfsXsqXqTyimKMczklB/Lg4eGicJNVWgkbMfosiCvDibnz1yoeZBdXjg1CyaClOhA80k+umZVAP9J5J5F68rGnYXlSNKjBj5YY/TErIP7wwGKLvPRbZ7iobgDNXohii+tOoG0WprR3txorwZkQ6M3DqqJqYFGS+/OXimoe+s/Dcr/FpoWtvfahA==
+ b=YuaITKXVjeV2xeMUkmILYlBI0mX+fNub31B9JBT3Ms5+x1lrgOkZxrCKyQSpuvO+Y7++DhBo3x8ByJDYEAyk1fqIWecUfIYUpQRQ9Vwe2xrrJwXDlDiMH6iRA47mVQNWWuH4bVTqYL1QxOm2l/mgbQv8c9CjKpeCxGRWjWPTm/P+PFsBF4TCW5zcLejr86BlLhsl9FA8nOwYBL+fJwfsMOlYkQEMw0VmtDA9DeYQkMdoNqrgt/vH0PTU5kM1IyRb8V/l6VYLlqbuP0Uk/gsYDdbgsRdUJ4uOLmU+XtKXjWDzdV2AmmgEepdYLGjbhvcVc73qF84hmxRMQQqp12SVeg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jXLQ7xAs8EOu6G2zUj4E0yFOji2FUos7HtcrIt0viUk=;
- b=fib6ncjq2r8saJChd3oebAZPjywo4FDxhK/eeUpQ2rz+kNUwRvG649xT0bWSQ9KrmhjRkWScRBD3SWdERjHXBEuiENL+0CnGkW8lsiCNakHCPmvZ0w9W0qfbaekc/Vfuqf8dT2HmDckUFPdJ5TAyVYQiSY3mNaH6pahyZnTZ2Y7MV9Np/2kp/h9O6YsUfjQwMgCXEtj6k4LKbMXoPQddKSi9dAwuyjQZY5mokNBNznntDBQb3KE2umjWJ3iADNR2XmoO9cEDHiDrZQzvSBTMzBJLlZ8L+nb1nMW+HLWHiofXLUnlPUT7FpSlwf6pp6NcHD5DplKC5YQcbZSA/k6nHg==
+ bh=Jb1uETqWVAaoOM305t81Q0H2Deol3CCp7nQLsSHbUSs=;
+ b=cUV0fWxbR1yJgKF7ATeDn3LWL70Yw1Kvlt75aXJj4Xg/NmfrgpYw5Vx5kj7h7TQxTCnvoKYlQHinMJtSph7wJ5i6HiEq33zotDHGQM/VEXNbnn5kobBV7raE6noLkiAlge+BvvB+nAH4D8J5HqjWOYJs39qxRsB0+D0FFFd0oaoA877P69doPwo2wDR3moL+i8ELAponwAihIcDOSx7RNBCBrBtvFDL0p0zbme2PGSS9mMhCBzjEdwIC2fY5svrXB3JyokgJ3vcJSF1ZcO2xMemPqDZT6RZ6lsbxW5FHhvFwvvbsNUD8dRomcNspaB6EDtl5XTe5xDUl9Fy3yti7XA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.32) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ 216.228.112.34) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=nvidia.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jXLQ7xAs8EOu6G2zUj4E0yFOji2FUos7HtcrIt0viUk=;
- b=OmhToDrlEuDsBmTgWf6cn9jqKUN4NXM0LDTmuwoKN7ceZn+fnpS/X0IZu7eh54fWk5In8ef45+mUIPCBSjaF2YcsxlgjQRlzPs6leTdEmZDoZx5xIyL47u3SZlRE0D35k9LzcW9W7d0Vl8YV9pCHdyAFd/6PaSn+4EspeaTqyvA0/IIXdeo8q0K5A2/76PuG9Dt3WY/l+3o/zhCOkBtXh9lurvJDk52BvhDrWmRhH0THyGdqiL+cwAMqNhxD6tVH8eWy/mIsVf4VrWVR65BDG+VCaowILPHm8ZrEbmYF3YEJZjNpOoeYlzvTUkjFg+OkFdxioMS+A1DiS8Cpvp/Zgg==
-Received: from DM6PR03CA0013.namprd03.prod.outlook.com (2603:10b6:5:40::26) by
- CY4PR1201MB0199.namprd12.prod.outlook.com (2603:10b6:910:1c::10) with
+ bh=Jb1uETqWVAaoOM305t81Q0H2Deol3CCp7nQLsSHbUSs=;
+ b=noWFWeo9pLoWmrfVQOwhYqjqqjBknTiqkbtOZQMqy8+JWpk7tTM+ySx+K0c7Hm2up8HNc/3XxZujMCjlm6aV19Idm2aY+4+cmxsTumhea6GSbkzTlgiwzxQDK+sibOJSzd52h1ITqEiWDgLcrkH6UqtOShhUbePiFsLNGkVPRM7FSTflhDkaGX/Bu+grKVw08wK9puWID/X9it6vNGygk2ifrYl2UntMbSPEiH/KiioB9sm3MkeN+1PKJUnXl36sEofdF0WXrDDeSfRQYUSNtWJD0rbxyWeksNlzyWTPp1bEXAXQNVcfDB2ij3FnWP08p32PdVLPSvWkVnkECUNBoQ==
+Received: from DM3PR08CA0021.namprd08.prod.outlook.com (2603:10b6:0:52::31) by
+ BY5PR12MB3684.namprd12.prod.outlook.com (2603:10b6:a03:1a2::32) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.18; Tue, 19 Oct
- 2021 14:48:03 +0000
-Received: from DM6NAM11FT028.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:40:cafe::4) by DM6PR03CA0013.outlook.office365.com
- (2603:10b6:5:40::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.16 via Frontend
- Transport; Tue, 19 Oct 2021 14:48:03 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.32)
+ 2021 14:48:16 +0000
+Received: from DM6NAM11FT067.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:0:52:cafe::fe) by DM3PR08CA0021.outlook.office365.com
+ (2603:10b6:0:52::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.15 via Frontend
+ Transport; Tue, 19 Oct 2021 14:48:16 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; google.com; dkim=none (message not signed)
  header.d=none;google.com; dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.32 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.32; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.32) by
- DM6NAM11FT028.mail.protection.outlook.com (10.13.173.140) with Microsoft SMTP
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ DM6NAM11FT067.mail.protection.outlook.com (10.13.172.76) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4608.15 via Frontend Transport; Tue, 19 Oct 2021 14:48:03 +0000
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 19 Oct
- 2021 07:48:02 -0700
+ 15.20.4608.15 via Frontend Transport; Tue, 19 Oct 2021 14:48:15 +0000
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 19 Oct
+ 2021 14:48:14 +0000
 Received: from vdi.nvidia.com (172.20.187.6) by mail.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Tue, 19 Oct 2021 14:47:51 +0000
+ Transport; Tue, 19 Oct 2021 14:48:03 +0000
 From:   Maxim Mikityanskiy <maximmi@nvidia.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -73,13 +73,13 @@ CC:     Eric Dumazet <edumazet@google.com>,
         Brendan Jackman <jackmanb@google.com>,
         Florent Revest <revest@chromium.org>,
         Joe Stringer <joe@cilium.io>,
-        "Lorenz Bauer" <lmb@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
         Tariq Toukan <tariqt@nvidia.com>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>, <clang-built-linux@googlegroups.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [PATCH bpf-next 04/10] bpf: Make errors of bpf_tcp_check_syncookie distinguishable
-Date:   Tue, 19 Oct 2021 17:46:49 +0300
-Message-ID: <20211019144655.3483197-5-maximmi@nvidia.com>
+Subject: [PATCH bpf-next 05/10] bpf: Fix documentation of th_len in bpf_tcp_{gen,check}_syncookie
+Date:   Tue, 19 Oct 2021 17:46:50 +0300
+Message-ID: <20211019144655.3483197-6-maximmi@nvidia.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211019144655.3483197-1-maximmi@nvidia.com>
 References: <20211019144655.3483197-1-maximmi@nvidia.com>
@@ -88,163 +88,88 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dbffa9f1-e9d6-4067-fb84-08d9930f7452
-X-MS-TrafficTypeDiagnostic: CY4PR1201MB0199:
-X-Microsoft-Antispam-PRVS: <CY4PR1201MB0199E769E8000F0E40711B55DCBD9@CY4PR1201MB0199.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2512;
+X-MS-Office365-Filtering-Correlation-Id: ea5932fd-8d1c-4ff7-2166-08d9930f7bb1
+X-MS-TrafficTypeDiagnostic: BY5PR12MB3684:
+X-Microsoft-Antispam-PRVS: <BY5PR12MB368401FA52943580A4C36C28DCBD9@BY5PR12MB3684.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HUDYheS+pV6nwD7bM5lIZQ+sE+Qpea1QxXSfKXbFkeW+cZFjpaL5owE+buJzw64Ld+iws2ZcAsJi5KQSRvISs0xw78ls2G8ydv2X8vgkDOoCYQE6wXa602ucJPhAryAtA5LouAMI6kwYsEwnNumrbGVcVZ543G0R7ZLJ5YSeNEuiv24yVJgePzVMc7sqWFlC8OhndOHT4GI8jFP9NNZ3LTdpuugjgf91EIUY+eNIYmLS5QyonFih7w5bls/yxZVThIgt10wAU1ZTbKt+r4nTHaB6j5u16sNa1z6+P030FwE9EbbmmL9k9SNJcimSH0B3sfE5HfrjJFjNkD/MdK/dSU1b2Wl4M0OnXBw4iN+WV6oPuef3GJ0TXtDkxZz6h9sAAe9KHiJo5/KcXbAe8s4xil82FMz8sfguJad+y4P4gh2cYfrfAbxSgvYOgp14DrAhVOJ7te94fhwXYPvYWWLkX4xtm94BWxTmRxNPUHmFqCt+ugtDWQHws4iADUaQLeJFSj3/nOf3twT/n6Qdw0yRAxQekkDmQ186+JSLrk/XBoQ05IY5qOhboPXrEfqxlaerkCcU8mG9i/8pdBn09+J+TQQJ0ULUUDJpU2z8nynW5HzPaxQaBMr3YQkn6KeFXWi/jg2iu4m+UA40SIxufhapIl299m7K9h/XC+yD8W0qm5TyUm+4nYURA/vYaSAvdi2xhX0lCMeP4Cm5eV+hjs3E7Q==
-X-Forefront-Antispam-Report: CIP:216.228.112.32;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid01.nvidia.com;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(110136005)(2616005)(54906003)(70586007)(107886003)(2906002)(8676002)(47076005)(1076003)(316002)(83380400001)(7696005)(5660300002)(70206006)(7416002)(36860700001)(82310400003)(426003)(26005)(36756003)(186003)(356005)(7636003)(336012)(508600001)(8936002)(86362001)(4326008);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: C6RKjhAPiBOoyuhWSy0Kg2ciyNFQdhKI0nlgpZbbsRhdrz94GzU5SXt9UvyEStw/+eQYsI+znpIg3vjfuZCtKgIu9oeDh/aEUXo1KlHx9g1v2GpJcIfW1xfcM4inUsYOi546LPU3TuVybGZo4YQzt2mcfDy8M3/wZsgTykhjD2sBA11EhpO05oR/GTobdnecCEUCMtIhk0ITlsffjHkpPLZp/4JnRGq4nqP61HfewNCaRi7qzdOx04O2QmsTb5W+anW1zCcMYKCmUaJIaMetcQa2KkNBrz8D7YOmCjJyEn0cpK4whMR4kaOfjVve66S8uroXGdtU8owLIHKvOqAzuddAfZiyWlzt8re22OyTHliUelGlmQ/ug2ejSPUYrfSZpTKZGz6AhbGcAU+QKIvbp4DP04/z3lO/t/iWJh0XAknIpF7W2L+4XBoceN2QXifZrH8/VdPNLCDiUY7w531MmmaoaNlVnqF/eTiKsJflJ//idWMz0OHy+8UP0coM1UvlPuWQGknyK00awGzg/gfHD3p91BQipUeGLpZjbd5t0UQKfJXrXl08Fyfq9IZiwLLB8vM7wPM6CEFN4TREDM+y+h5fJE/e+fFM6PvQxSXrmcb9INHUvAw++yS297cvxswb2iZ10/NO9IyLYd0QDTEmqOKV3AtS2KEDVVDgxA2c7HyhvN7fyjag2ATfIrk7rWmbeKCFWxejAN6CoZvCyiD53Q==
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(8936002)(107886003)(36860700001)(316002)(6666004)(7636003)(356005)(7416002)(83380400001)(82310400003)(2906002)(336012)(47076005)(2616005)(86362001)(70206006)(70586007)(36756003)(7696005)(110136005)(54906003)(426003)(8676002)(5660300002)(508600001)(186003)(1076003)(4326008)(26005);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2021 14:48:03.3404
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2021 14:48:15.7135
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: dbffa9f1-e9d6-4067-fb84-08d9930f7452
+X-MS-Exchange-CrossTenant-Network-Message-Id: ea5932fd-8d1c-4ff7-2166-08d9930f7bb1
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.32];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT028.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT067.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1201MB0199
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3684
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bpf_tcp_check_syncookie returns errors when SYN cookie generation is
-disabled (EINVAL) or when no cookies were recently generated (ENOENT).
-The same error codes are used for other kinds of errors: invalid
-parameters (EINVAL), invalid packet (EINVAL, ENOENT), bad cookie
-(ENOENT). Such an overlap makes it impossible for a BPF program to
-distinguish different cases that may require different handling.
-
-For a BPF program that accelerates generating and checking SYN cookies,
-typical logic looks like this (with current error codes annotated):
-
-1. Drop invalid packets (EINVAL, ENOENT).
-
-2. Drop packets with bad cookies (ENOENT).
-
-3. Pass packets with good cookies (0).
-
-4. Pass all packets when cookies are not in use (EINVAL, ENOENT).
-
-The last point also matches the behavior of cookie_v4_check and
-cookie_v6_check that skip all checks if cookie generation is disabled or
-no cookies were recently generated. Overlapping error codes, however,
-make it impossible to distinguish case 4 from cases 1 and 2.
-
-The original commit message of commit 399040847084 ("bpf: add helper to
-check for a valid SYN cookie") mentions another use case, though:
-traffic classification, where it's important to distinguish new
-connections from existing ones, and case 4 should be distinguishable
-from case 3.
-
-To match the requirements of both use cases, this patch reassigns error
-codes of bpf_tcp_check_syncookie and adds missing documentation:
-
-1. EINVAL: Invalid packets.
-
-2. EACCES: Packets with bad cookies.
-
-3. 0: Packets with good cookies.
-
-4. ENOENT: Cookies are not in use.
-
-This way all four cases are easily distinguishable.
+bpf_tcp_gen_syncookie and bpf_tcp_check_syncookie expect the full length
+of the TCP header (with all extensions). Fix the documentation that says
+it should be sizeof(struct tcphdr).
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 ---
- include/uapi/linux/bpf.h       | 18 ++++++++++++++++--
- net/core/filter.c              |  6 +++---
- tools/include/uapi/linux/bpf.h | 18 ++++++++++++++++--
- 3 files changed, 35 insertions(+), 7 deletions(-)
+ include/uapi/linux/bpf.h       | 6 ++++--
+ tools/include/uapi/linux/bpf.h | 6 ++++--
+ 2 files changed, 8 insertions(+), 4 deletions(-)
 
 diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 6fc59d61937a..2f12b11f1259 100644
+index 2f12b11f1259..efb2750f39c6 100644
 --- a/include/uapi/linux/bpf.h
 +++ b/include/uapi/linux/bpf.h
-@@ -3545,8 +3545,22 @@ union bpf_attr {
-  * 		*th* points to the start of the TCP header, while *th_len*
-  * 		contains **sizeof**\ (**struct tcphdr**).
-  * 	Return
-- * 		0 if *iph* and *th* are a valid SYN cookie ACK, or a negative
-- * 		error otherwise.
-+ *		0 if *iph* and *th* are a valid SYN cookie ACK.
-+ *
-+ *		On failure, the returned value is one of the following:
-+ *
-+ *		**-EACCES** if the SYN cookie is not valid.
-+ *
-+ *		**-EINVAL** if the packet or input arguments are invalid.
-+ *
-+ *		**-ENOENT** if SYN cookies are not issued (no SYN flood, or SYN
-+ *		cookies are disabled in sysctl).
-+ *
-+ *		**-EOPNOTSUPP** if the kernel configuration does not enable SYN
-+ *		cookies (CONFIG_SYN_COOKIES is off).
-+ *
-+ *		**-EPROTONOSUPPORT** if the IP version is not 4 or 6 (or 6, but
-+ *		CONFIG_IPV6 is disabled).
+@@ -3543,7 +3543,8 @@ union bpf_attr {
+  * 		**sizeof**\ (**struct ip6hdr**).
   *
-  * long bpf_sysctl_get_name(struct bpf_sysctl *ctx, char *buf, size_t buf_len, u64 flags)
-  *	Description
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 2c5877b775d9..d04988e67640 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -6709,10 +6709,10 @@ BPF_CALL_5(bpf_tcp_check_syncookie, struct sock *, sk, void *, iph, u32, iph_len
- 		return -EINVAL;
- 
- 	if (!sock_net(sk)->ipv4.sysctl_tcp_syncookies)
--		return -EINVAL;
-+		return -ENOENT;
- 
- 	if (!th->ack || th->rst || th->syn)
--		return -ENOENT;
-+		return -EINVAL;
- 
- 	if (unlikely(iph_len < sizeof(struct iphdr)))
- 		return -EINVAL;
-@@ -6752,7 +6752,7 @@ BPF_CALL_5(bpf_tcp_check_syncookie, struct sock *, sk, void *, iph, u32, iph_len
- 	if (ret > 0)
- 		return 0;
- 
--	return -ENOENT;
-+	return -EACCES;
- #else
- 	return -EOPNOTSUPP;
- #endif
+  * 		*th* points to the start of the TCP header, while *th_len*
+- * 		contains **sizeof**\ (**struct tcphdr**).
++ *		contains the length of the TCP header (at least
++ *		**sizeof**\ (**struct tcphdr**)).
+  * 	Return
+  *		0 if *iph* and *th* are a valid SYN cookie ACK.
+  *
+@@ -3743,7 +3744,8 @@ union bpf_attr {
+  *		**sizeof**\ (**struct ip6hdr**).
+  *
+  *		*th* points to the start of the TCP header, while *th_len*
+- *		contains the length of the TCP header.
++ *		contains the length of the TCP header (at least
++ *		**sizeof**\ (**struct tcphdr**)).
+  *	Return
+  *		On success, lower 32 bits hold the generated SYN cookie in
+  *		followed by 16 bits which hold the MSS value for that cookie,
 diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 6fc59d61937a..2f12b11f1259 100644
+index 2f12b11f1259..efb2750f39c6 100644
 --- a/tools/include/uapi/linux/bpf.h
 +++ b/tools/include/uapi/linux/bpf.h
-@@ -3545,8 +3545,22 @@ union bpf_attr {
-  * 		*th* points to the start of the TCP header, while *th_len*
-  * 		contains **sizeof**\ (**struct tcphdr**).
-  * 	Return
-- * 		0 if *iph* and *th* are a valid SYN cookie ACK, or a negative
-- * 		error otherwise.
-+ *		0 if *iph* and *th* are a valid SYN cookie ACK.
-+ *
-+ *		On failure, the returned value is one of the following:
-+ *
-+ *		**-EACCES** if the SYN cookie is not valid.
-+ *
-+ *		**-EINVAL** if the packet or input arguments are invalid.
-+ *
-+ *		**-ENOENT** if SYN cookies are not issued (no SYN flood, or SYN
-+ *		cookies are disabled in sysctl).
-+ *
-+ *		**-EOPNOTSUPP** if the kernel configuration does not enable SYN
-+ *		cookies (CONFIG_SYN_COOKIES is off).
-+ *
-+ *		**-EPROTONOSUPPORT** if the IP version is not 4 or 6 (or 6, but
-+ *		CONFIG_IPV6 is disabled).
+@@ -3543,7 +3543,8 @@ union bpf_attr {
+  * 		**sizeof**\ (**struct ip6hdr**).
   *
-  * long bpf_sysctl_get_name(struct bpf_sysctl *ctx, char *buf, size_t buf_len, u64 flags)
-  *	Description
+  * 		*th* points to the start of the TCP header, while *th_len*
+- * 		contains **sizeof**\ (**struct tcphdr**).
++ *		contains the length of the TCP header (at least
++ *		**sizeof**\ (**struct tcphdr**)).
+  * 	Return
+  *		0 if *iph* and *th* are a valid SYN cookie ACK.
+  *
+@@ -3743,7 +3744,8 @@ union bpf_attr {
+  *		**sizeof**\ (**struct ip6hdr**).
+  *
+  *		*th* points to the start of the TCP header, while *th_len*
+- *		contains the length of the TCP header.
++ *		contains the length of the TCP header (at least
++ *		**sizeof**\ (**struct tcphdr**)).
+  *	Return
+  *		On success, lower 32 bits hold the generated SYN cookie in
+  *		followed by 16 bits which hold the MSS value for that cookie,
 -- 
 2.30.2
 
