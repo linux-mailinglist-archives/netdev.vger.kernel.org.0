@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17B0B4330C7
+	by mail.lfdr.de (Postfix) with ESMTP id 868474330C8
 	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 10:08:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234563AbhJSIKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S234594AbhJSIKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 19 Oct 2021 04:10:30 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:60125 "EHLO
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:54371 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234684AbhJSIK1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 04:10:27 -0400
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.nyi.internal (Postfix) with ESMTP id 1FDB55C00E8;
-        Tue, 19 Oct 2021 04:08:13 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S234595AbhJSIK2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 04:10:28 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id D9E125C015C;
+        Tue, 19 Oct 2021 04:08:15 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Tue, 19 Oct 2021 04:08:13 -0400
+  by compute3.internal (MEProxy); Tue, 19 Oct 2021 04:08:15 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=WZCQIaDRwDV1a/AkHXjdff3f+8Jp6b731zdlQSN1rKQ=; b=fZfawzhq
-        DuX32dkPXWpTdbhBwqOmmLa9QIRJIyhgxSppcujo3goR/a0YsTfsELBzC4MqdKsC
-        sFJRrfteD5QX3M1/7hsGkZmJ+j3h2vG6CoZKdKKaEsiLyRO1IJ+Exavyg9BAn35X
-        OGtmcPiPjquT0Vwl2MXrDBr6QORL9jegGRLyc36JA1e+oHsO1mwZx3I0THRC1d2h
-        uhyv64IkqEDuOTpX3rLIDPgeBLOwrcsxM1QQl6g3K8jMoTNRPFZ1fJG9nL/OC5nU
-        7/8fdSvV5mWayA6scNecHRlt/T5BK7XtE4VhClKf4YPC6ZJUtLQPbhEHCTwk67qP
-        fIcog8vzcnXCWQ==
-X-ME-Sender: <xms:7HxuYanUf5qUHoMUJ5ULxZRr8tRYb0qA7kFI4KSym192nIqD_eMFTw>
-    <xme:7HxuYR1-P4N61fzvIRjnMk430R9lVdAAmXQqItYNwwQ70tjb6NROIfuNUaapb4sGP
-    -rG9vQEJ8-wk7A>
-X-ME-Received: <xmr:7HxuYYoYc009sYAWPw20z3T8eFXu-N_Tki4NUQmr1WKHXPlXsYmtTJr5J4MmlI1cPCUzsjxS3aymRkpmijoI1Wqjy3ueZ6B9J88XmrF8VGs>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddvuddguddviecutefuodetggdotefrod
+        fm1; bh=dLhs0q0t+BsqvEdK5VFjN7LhlpVaGpeTLmjXpqpSUC0=; b=LSBzPnoy
+        Mngzbgr7dUW06QebQQT2mX2CAnWgUtymBrDA4WBRE+QDK2TlBy2nYeC2d4YZLWXY
+        Poo3wUFh8MmzrcIUz9Tlhxk2lST7Mvcg/vCD7HJ87JzEP1TJUq6hFmAvANAPBTEm
+        pS5vAFGBf+4TFgkOO6dG+RyS2xm9CxFuRJkM8m5lTkL5FmS6ddgfsiJCV2XFMOE1
+        GlgJQILvTZiAa63/J9eUZ5HbnsuBjoQ02nFtuA501LkBqGahtQEuaItZQ5CZlbxr
+        tugKObi07Cyhb4Q3+G8YKk6Y8Ry0d5/HomtUiOmOA5T4IZMghpWFOTCTEIByZRgG
+        ogJJDnArb7+wlA==
+X-ME-Sender: <xms:73xuYXbDKZ-AFQKBDzmkU55D9XSyqtQsk5Nyx9EshfQ2bOss37q1wA>
+    <xme:73xuYWZZIhc7GJ5L1-5OSbjnLkWsR7ljC9zKF6GXuxLQAqEHHdXgMS8_pRYUlnNDJ
+    j02kdtUZ17gOh8>
+X-ME-Received: <xmr:73xuYZ8MWosPxG-xhssjagT_BbAwUmvneeDRH1kGT8EorNo6-yB97ax6hOScqRQLAng9o3KkgL4s3PCtaa0k6O59utRMZRAi-MdZkMNAeL0>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddvuddguddvhecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
     ertdertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
     ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhf
-    ekhefgtdfftefhledvjefggfehgfevjeekhfenucevlhhushhtvghrufhiiigvpedtnecu
+    ekhefgtdfftefhledvjefggfehgfevjeekhfenucevlhhushhtvghrufhiiigvpedvnecu
     rfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:7HxuYenaKPKwLAMHAVDQ6fweb9naRl2YI42Rga1A3lDxovefqDH2Ow>
-    <xmx:7HxuYY1PIumDNZX79LjTCB_rzizOIWHImwnNMLizTe6QwfYIpodlFg>
-    <xmx:7HxuYVsp9zN2NiFxP2acSnJxF3gkdlqVHTSVrW69F31B-mX9zq2mIg>
-    <xmx:7XxuYSq2H6ICXGrj_ep4RlbJMpKhGmF4k36QJfqhA2aMxHV0fn81eA>
+X-ME-Proxy: <xmx:73xuYdqlJQZEorPMvojSD7m_h_AqczHbqOuVN-LK4JbIfJo3_UqDnw>
+    <xmx:73xuYSo-RZ52ihCKsrzymCz7XLODvw6MkMkjIvjclXJHf0xh0hSuIA>
+    <xmx:73xuYTTQ89TQXegfcU14fHvBqHuxVdwJykeYPhXf6pbJmMHmhuy04g>
+    <xmx:73xuYTfyBjp_DuMqaL3TA2X4MUSWitHdfMnLoBQLrfR6zQ9YqRtyVw>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 19 Oct 2021 04:08:10 -0400 (EDT)
+ 19 Oct 2021 04:08:13 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         petrm@nvidia.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 5/9] mlxsw: spectrum_qdisc: Unify graft validation
-Date:   Tue, 19 Oct 2021 11:07:08 +0300
-Message-Id: <20211019080712.705464-6-idosch@idosch.org>
+Subject: [PATCH net-next 6/9] mlxsw: spectrum_qdisc: Clean stats recursively when priomap changes
+Date:   Tue, 19 Oct 2021 11:07:09 +0300
+Message-Id: <20211019080712.705464-7-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211019080712.705464-1-idosch@idosch.org>
 References: <20211019080712.705464-1-idosch@idosch.org>
@@ -63,111 +63,81 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Petr Machata <petrm@nvidia.com>
 
-Qdisc graft operations have so far been reported at PRIO, ETS and RED, with
-RED events ignored, because RED was not considered a classful qdisc. A
-following patch will make mlxsw recognize RED and TBF as classful qdiscs,
-and thus it is necessary to validate grafting at these qdiscs as well.
-Rename the existing graft validator to make it clear that it is a generic
-function, and invoke for RED and TBF graft events as well. Drop the
-unnecessary PRIO helper and invoke the graft validator directly for PRIO as
-well.
+On Spectrum, there are no per-TC TX counters. Instead, mlxsw uses per-prio
+counters and aggregates them according to the priomap. Therefore when
+priomap changes, the counter base values need to be reset to reflect the
+change. Previously, this was only done for the sole child qdisc, but a
+following patch makes RED and TBF classful. Thus apply the request to the
+whole sub-tree.
 
 Signed-off-by: Petr Machata <petrm@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_qdisc.c  | 37 ++++++++++---------
- 1 file changed, 19 insertions(+), 18 deletions(-)
+ .../ethernet/mellanox/mlxsw/spectrum_qdisc.c  | 37 +++++++++++++++----
+ 1 file changed, 29 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
-index 8ececee1b79b..62ec3768c615 100644
+index 62ec3768c615..412394e02d2a 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
-@@ -739,6 +739,10 @@ static struct mlxsw_sp_qdisc_ops mlxsw_sp_qdisc_ops_red = {
- 	.find_class = mlxsw_sp_qdisc_leaf_find_class,
- };
- 
-+static int mlxsw_sp_qdisc_graft(struct mlxsw_sp_port *mlxsw_sp_port,
-+				struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
-+				u8 band, u32 child_handle);
-+
- static int __mlxsw_sp_setup_tc_red(struct mlxsw_sp_port *mlxsw_sp_port,
- 				   struct tc_red_qopt_offload *p)
- {
-@@ -766,6 +770,9 @@ static int __mlxsw_sp_setup_tc_red(struct mlxsw_sp_port *mlxsw_sp_port,
- 	case TC_RED_STATS:
- 		return mlxsw_sp_qdisc_get_stats(mlxsw_sp_port, mlxsw_sp_qdisc,
- 						&p->stats);
-+	case TC_RED_GRAFT:
-+		return mlxsw_sp_qdisc_graft(mlxsw_sp_port, mlxsw_sp_qdisc, 0,
-+					    p->child_handle);
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-@@ -976,6 +983,9 @@ static int __mlxsw_sp_setup_tc_tbf(struct mlxsw_sp_port *mlxsw_sp_port,
- 	case TC_TBF_STATS:
- 		return mlxsw_sp_qdisc_get_stats(mlxsw_sp_port, mlxsw_sp_qdisc,
- 						&p->stats);
-+	case TC_TBF_GRAFT:
-+		return mlxsw_sp_qdisc_graft(mlxsw_sp_port, mlxsw_sp_qdisc, 0,
-+					    p->child_handle);
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-@@ -1463,10 +1473,9 @@ static struct mlxsw_sp_qdisc_ops mlxsw_sp_qdisc_ops_ets = {
-  * grafted corresponds to the parent handle. If the two don't match, we
-  * unoffload the child.
-  */
--static int
--__mlxsw_sp_qdisc_ets_graft(struct mlxsw_sp_port *mlxsw_sp_port,
--			   struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
--			   u8 band, u32 child_handle)
-+static int mlxsw_sp_qdisc_graft(struct mlxsw_sp_port *mlxsw_sp_port,
-+				struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
-+				u8 band, u32 child_handle)
- {
- 	struct mlxsw_sp_qdisc *old_qdisc;
- 	u32 parent;
-@@ -1499,15 +1508,6 @@ __mlxsw_sp_qdisc_ets_graft(struct mlxsw_sp_port *mlxsw_sp_port,
- 	return -EOPNOTSUPP;
+@@ -1169,6 +1169,31 @@ mlxsw_sp_qdisc_prio_check_params(struct mlxsw_sp_port *mlxsw_sp_port,
+ 	return __mlxsw_sp_qdisc_ets_check_params(p->bands);
  }
  
--static int
--mlxsw_sp_qdisc_prio_graft(struct mlxsw_sp_port *mlxsw_sp_port,
--			  struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
--			  struct tc_prio_qopt_offload_graft_params *p)
--{
--	return __mlxsw_sp_qdisc_ets_graft(mlxsw_sp_port, mlxsw_sp_qdisc,
--					  p->band, p->child_handle);
--}
--
- static int __mlxsw_sp_setup_tc_prio(struct mlxsw_sp_port *mlxsw_sp_port,
- 				    struct tc_prio_qopt_offload *p)
- {
-@@ -1533,8 +1533,9 @@ static int __mlxsw_sp_setup_tc_prio(struct mlxsw_sp_port *mlxsw_sp_port,
- 		return mlxsw_sp_qdisc_get_stats(mlxsw_sp_port, mlxsw_sp_qdisc,
- 						&p->stats);
- 	case TC_PRIO_GRAFT:
--		return mlxsw_sp_qdisc_prio_graft(mlxsw_sp_port, mlxsw_sp_qdisc,
--						 &p->graft_params);
-+		return mlxsw_sp_qdisc_graft(mlxsw_sp_port, mlxsw_sp_qdisc,
-+					    p->graft_params.band,
-+					    p->graft_params.child_handle);
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-@@ -1577,9 +1578,9 @@ static int __mlxsw_sp_setup_tc_ets(struct mlxsw_sp_port *mlxsw_sp_port,
- 		return mlxsw_sp_qdisc_get_stats(mlxsw_sp_port, mlxsw_sp_qdisc,
- 						&p->stats);
- 	case TC_ETS_GRAFT:
--		return __mlxsw_sp_qdisc_ets_graft(mlxsw_sp_port, mlxsw_sp_qdisc,
--						  p->graft_params.band,
--						  p->graft_params.child_handle);
-+		return mlxsw_sp_qdisc_graft(mlxsw_sp_port, mlxsw_sp_qdisc,
-+					    p->graft_params.band,
-+					    p->graft_params.child_handle);
- 	default:
- 		return -EOPNOTSUPP;
- 	}
++static struct mlxsw_sp_qdisc *
++mlxsw_sp_qdisc_walk_cb_clean_stats(struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
++				   void *mlxsw_sp_port)
++{
++	u64 backlog;
++
++	if (mlxsw_sp_qdisc->ops) {
++		backlog = mlxsw_sp_qdisc->stats_base.backlog;
++		if (mlxsw_sp_qdisc->ops->clean_stats)
++			mlxsw_sp_qdisc->ops->clean_stats(mlxsw_sp_port,
++							 mlxsw_sp_qdisc);
++		mlxsw_sp_qdisc->stats_base.backlog = backlog;
++	}
++
++	return NULL;
++}
++
++static void
++mlxsw_sp_qdisc_tree_clean_stats(struct mlxsw_sp_port *mlxsw_sp_port,
++				struct mlxsw_sp_qdisc *mlxsw_sp_qdisc)
++{
++	mlxsw_sp_qdisc_walk(mlxsw_sp_qdisc, mlxsw_sp_qdisc_walk_cb_clean_stats,
++			    mlxsw_sp_port);
++}
++
+ static int
+ __mlxsw_sp_qdisc_ets_replace(struct mlxsw_sp_port *mlxsw_sp_port,
+ 			     struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
+@@ -1181,7 +1206,7 @@ __mlxsw_sp_qdisc_ets_replace(struct mlxsw_sp_port *mlxsw_sp_port,
+ 	struct mlxsw_sp_qdisc_ets_band *ets_band;
+ 	struct mlxsw_sp_qdisc *child_qdisc;
+ 	u8 old_priomap, new_priomap;
+-	int i, band, backlog;
++	int i, band;
+ 	int err;
+ 
+ 	if (!ets_data) {
+@@ -1229,13 +1254,9 @@ __mlxsw_sp_qdisc_ets_replace(struct mlxsw_sp_port *mlxsw_sp_port,
+ 
+ 		ets_band->prio_bitmap = new_priomap;
+ 
+-		if (old_priomap != new_priomap &&
+-		    child_qdisc->ops && child_qdisc->ops->clean_stats) {
+-			backlog = child_qdisc->stats_base.backlog;
+-			child_qdisc->ops->clean_stats(mlxsw_sp_port,
+-						      child_qdisc);
+-			child_qdisc->stats_base.backlog = backlog;
+-		}
++		if (old_priomap != new_priomap)
++			mlxsw_sp_qdisc_tree_clean_stats(mlxsw_sp_port,
++							child_qdisc);
+ 
+ 		err = mlxsw_sp_qdisc_future_fifo_replace(mlxsw_sp_port, handle,
+ 							 band, child_qdisc);
 -- 
 2.31.1
 
