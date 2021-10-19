@@ -2,64 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CA0B433E61
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 20:27:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A0B9433E6A
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 20:29:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234580AbhJSS3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 14:29:21 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:47336 "EHLO vps0.lunn.ch"
+        id S234832AbhJSSbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 14:31:45 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:47348 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234401AbhJSS3V (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Oct 2021 14:29:21 -0400
+        id S234738AbhJSSbo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Oct 2021 14:31:44 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=JH1NNHk3HUm92urj2ZC3chPYUD7KfljyzeK+oKIUyqs=; b=YdE8TiQk1w1vx/jpL2VBww16OT
-        hcvBxu9gJGs3ixjQfMlG4Sriy023sUu8YXo0/l3F0EG9gRpPIwX9K2nQ3MlJb0iH/pGaERbglVvN/
-        mxnrHX0iXwiZTqplaTTx/7MYdTcxgnxmmC14Lwwi6p9C12JyJj/DkW3NAqIxuZOCtgQQ=;
+        bh=K4bmpxjUABK2VjQu377WvFa/RSa+W3Zp84SaOUJXuSk=; b=R+Gf+Ofnbuja4TXNg0EcZhF4sH
+        b65vWitDJDTM4WliSU0kUbJoItMn9vxcem1ewn3OIVgPLRfEHbbrJdfeMLZCkuB5MoZQszSh84oBt
+        iyWL2FH5QDOuCjK1cX/Plya6EdwWAT/usfyfZvUErmiAyP/vwwZpoCdLwW/nG6v7+ado=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1mctpF-00B74M-MY; Tue, 19 Oct 2021 20:27:01 +0200
-Date:   Tue, 19 Oct 2021 20:27:01 +0200
+        id 1mctrc-00B75E-Ax; Tue, 19 Oct 2021 20:29:28 +0200
+Date:   Tue, 19 Oct 2021 20:29:28 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Erik Ekman <erik@kryo.se>
 Cc:     Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH] sfc: Export fibre-specific link modes for 1/10G
-Message-ID: <YW8N9RlRD8/15GLP@lunn.ch>
-References: <20211018183709.124744-1-erik@kryo.se>
- <YW7k6JVh5LxMNP98@lunn.ch>
- <20211019155306.ibxzmsixwb5rd6wx@gmail.com>
- <CAGgu=sAUj4g3v7u4ibW53js5U3M+9rdjW+jfcDdF1_A4H8ytaw@mail.gmail.com>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] sfc: Fix reading non-legacy supported link modes
+Message-ID: <YW8OiIpcncIaANzN@lunn.ch>
+References: <20211017171657.85724-1-erik@kryo.se>
+ <YW7idC0/+zq6dDNv@lunn.ch>
+ <CAGgu=sCBUU29tkjqOP9j7EZJL-T4O6NoTDNB+-PFNhUkOTdWuw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAGgu=sAUj4g3v7u4ibW53js5U3M+9rdjW+jfcDdF1_A4H8ytaw@mail.gmail.com>
+In-Reply-To: <CAGgu=sCBUU29tkjqOP9j7EZJL-T4O6NoTDNB+-PFNhUkOTdWuw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 19, 2021 at 07:34:16PM +0200, Erik Ekman wrote:
-> On Tue, 19 Oct 2021 at 17:53, Martin Habets <habetsm.xilinx@gmail.com> wrote:
+On Tue, Oct 19, 2021 at 07:41:46PM +0200, Erik Ekman wrote:
+> On Tue, 19 Oct 2021 at 17:21, Andrew Lunn <andrew@lunn.ch> wrote:
 > >
-> > On Tue, Oct 19, 2021 at 05:31:52PM +0200, Andrew Lunn wrote:
-> > > On Mon, Oct 18, 2021 at 08:37:08PM +0200, Erik Ekman wrote:
-> > > > These modes were added to ethtool.h in 5711a98221443 ("net: ethtool: add support
-> > > > for 1000BaseX and missing 10G link modes") back in 2016.
-> > > >
-> > > > Only setting CR mode for 10G, similar to how 25/40/50/100G modes are set up.
-> > > >
-> > > > Tested using SFN5122F-R7 (with 2 SFP+ ports) and a 1000BASE-BX10 SFP module.
+> > On Sun, Oct 17, 2021 at 07:16:57PM +0200, Erik Ekman wrote:
+> > > Everything except the first 32 bits was lost when the pause flags were
+> > > added. This makes the 50000baseCR2 mode flag (bit 34) not appear.
 > > >
-> > > Did you test with a Copper SFP modules?
-> > >
+> > > I have tested this with a 10G card (SFN5122F-R7) by modifying it to
+> > > return a non-legacy link mode (10000baseCR).
+> >
+> > Does this need a Fixes: tag? Should it be added to stable?
+> >
 > 
-> I have tested it with a copper SFP PHY at 1G and that works fine.
+> The speed flags in use that can be lost are for 50G and 100G.
+> The affected devices are ones based on the Solarflare EF100 networking
+> IP in Xilinx FPGAs supporting 10/25/40/100-gigabit.
+> I don't know how widespread these are, and if there might be enough
+> users for adding this to stable.
+> 
+> The gsettings api code for sfc was added in 7cafe8f82438ced6d ("net:
+> sfc: use new api ethtool_{get|set}_link_ksettings")
+> and the bug was introduced then, but bits would only be lost after
+> support for 25/50/100G was added in
+> 5abb5e7f916ee8d2d ("sfc: add bits for 25/50/100G supported/advertised speeds").
+> Not sure which of these should be used for a Fixes tag.
 
-Meaning ethtool returns 1000BaseT_FULL? Does the SFP also support
-10/100? Does ethtool list 10BaseT_Half, 10BaseT_Full, etc.
+I would you this second one, since that is when it becomes visible to
+users.
 
 	Andrew
