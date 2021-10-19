@@ -2,115 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8EAC433CCA
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 18:53:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C96A7433CFC
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 19:07:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234496AbhJSQzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 12:55:51 -0400
-Received: from mail-oi1-f173.google.com ([209.85.167.173]:39509 "EHLO
-        mail-oi1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbhJSQzt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 12:55:49 -0400
-Received: by mail-oi1-f173.google.com with SMTP id s9so3552502oiw.6;
-        Tue, 19 Oct 2021 09:53:36 -0700 (PDT)
+        id S231956AbhJSRJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 13:09:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45460 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234506AbhJSRJQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 13:09:16 -0400
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDDC6C06161C
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 10:07:03 -0700 (PDT)
+Received: by mail-oi1-x22f.google.com with SMTP id o83so5980195oif.4
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 10:07:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tRUzeHjn1JScYsy8o3opbyIOuIsB/FtwNfAyTowowWw=;
+        b=F832Pj/VWsWXq14tuowyPd+60g+tsKelOOjTQIFcBFAP/emkcy+rJkb3RhvyHAMBQx
+         oTaTU7qmIcc+o6biGXLnm8ai3mBaEULu/q1CiaNG+LvPn11thXJ0j2jxR87BY6MN2kcF
+         aXv8rFCEi9eHsCol+2ZxiCrh7kVm4do4XZHz0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fnwMHmBtcUTzeN7AT8ukQSoNU1knCjzi3Fwq9Ac0g90=;
-        b=HJdKu9Yc8oALg0EUXoUMBKenRfGSuc1q4BNOBnq1d3QPbXkCq0Q5jlBTo0ea8p8UZl
-         TFoRbrGnbWaGpIrHbQBqSuwUjDBjln3eaN2Tq7E0W56vbVBbTfmfC0AToRtbsfbJrN2f
-         TGQLAwhyx4BbOTgYtABGlXWrUetqHt59xqngUL10JUAD9n2+2D9oWEUJzviJL0Jxj5V5
-         1ehW808u32vCVZl2iVvCq3srHVgLn+AvHiMGVaozwkhe/dawpGSKvp7qDZAT2I5VNhxs
-         BJzngAMZ1t+SxOkjC/HJaDKF7a5CBdMUeB22usBCn/Xn19ZwnQcZOApGMc6tjISI+tdo
-         6Amw==
-X-Gm-Message-State: AOAM531GWuQFQ3L5WRDnGlhygdiI/0FEMysCTKio0KzcAOE7RqhVCKqw
-        nUgroemq5t+BnedFQmoE8w==
-X-Google-Smtp-Source: ABdhPJxG3M4MMDejwrse4k8mTAjT5I/40KR+eLLfq1+ZBF3yaKS308ugfGwsvK1xSATT6JQLbB2GBw==
-X-Received: by 2002:a05:6808:1185:: with SMTP id j5mr5157383oil.16.1634662416108;
-        Tue, 19 Oct 2021 09:53:36 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id l26sm3843004oti.45.2021.10.19.09.53.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Oct 2021 09:53:35 -0700 (PDT)
-Received: (nullmailer pid 427792 invoked by uid 1000);
-        Tue, 19 Oct 2021 16:53:33 -0000
-Date:   Tue, 19 Oct 2021 11:53:33 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Tony Luck <tony.luck@intel.com>,
-        Anton Vorontsov <anton@enomsg.org>,
-        Rob Herring <robh+dt@kernel.org>, bpf@vger.kernel.org,
-        Song Liu <songliubraving@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-riscv@lists.infradead.org, kvm-riscv@lists.infradead.org,
-        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>,
-        KP Singh <kpsingh@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-fsdevel@vger.kernel.org, Anup Patel <anup.patel@wdc.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Shuah Khan <shuah@kernel.org>,
-        Colin Cross <ccross@android.com>, Alex Shi <alexs@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Kees Cook <keescook@chromium.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>, kvm@vger.kernel.org,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        sparmaintainer@unisys.com,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Atish Patra <atish.patra@wdc.com>, devicetree@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jeff Layton <jlayton@kernel.org>
-Subject: Re: [PATCH v3 00/23] Fix some issues at documentation
-Message-ID: <YW74Dez4/3cIbe1Q@robh.at.kernel.org>
-References: <cover.1634630485.git.mchehab+huawei@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tRUzeHjn1JScYsy8o3opbyIOuIsB/FtwNfAyTowowWw=;
+        b=2Z2C5H4TUvxGzUv9hMoTmQ86Y8JAMOaAfT13hVjyUAWzu0/IyXU8FPAICEhyjg/vWD
+         bth6W0oi70eZ674yOURs59W7P9uEsEk+xelIdxVKn56o93PP191L9tICKNzQqehqOLmD
+         mtoZSHthxnlXYoIACKIwDpNuoknUMm4t1dX+lZ218hl6V3fCKd8/H5fAl0b82jw6i7Jz
+         WGclCSP6Lyp19sufakCa1iUEFYDLoYkMlSOrSrvY5C2lR1y/dfIK4Ni6rHVdvSd9USRf
+         IRVK5sX0JD3uKLhIQuzbztKIsAHDzeqVgnBDXB86OM/D/HI8cdckNkmdxof+z22v7G18
+         ClXw==
+X-Gm-Message-State: AOAM531B9a2Ge2HxooN3U3rGWnASq19gjRKJS1s4xqxGf47a1EKvyRJQ
+        G3KSdX0ydy/ZuhNvy6ozPNPUAnZeoCPnIw==
+X-Google-Smtp-Source: ABdhPJybP5TGYcGzp7geyxlsPcq+kX1h1HadQ6kSrbMaTpONME8mv+Z7Ref8LPcXzmkXuhHfa5+iig==
+X-Received: by 2002:aca:3c87:: with SMTP id j129mr5271598oia.157.1634663222663;
+        Tue, 19 Oct 2021 10:07:02 -0700 (PDT)
+Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com. [209.85.167.174])
+        by smtp.gmail.com with ESMTPSA id l19sm497368otu.11.2021.10.19.10.07.00
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Oct 2021 10:07:01 -0700 (PDT)
+Received: by mail-oi1-f174.google.com with SMTP id r6so5982193oiw.2
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 10:07:00 -0700 (PDT)
+X-Received: by 2002:aca:603:: with SMTP id 3mr5184997oig.117.1634663219994;
+ Tue, 19 Oct 2021 10:06:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1634630485.git.mchehab+huawei@kernel.org>
+References: <20211019033101.27658-1-wanjiabing@vivo.com> <1ae64510-0519-4852-a2a0-5c32490a195c@gmail.com>
+In-Reply-To: <1ae64510-0519-4852-a2a0-5c32490a195c@gmail.com>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Tue, 19 Oct 2021 10:06:45 -0700
+X-Gmail-Original-Message-ID: <CA+ASDXNbLHDJ4Z8DNzNuxVJuqgKoKJynedXdnUP_1_Vvxgvc+A@mail.gmail.com>
+Message-ID: <CA+ASDXNbLHDJ4Z8DNzNuxVJuqgKoKJynedXdnUP_1_Vvxgvc+A@mail.gmail.com>
+Subject: Re: [PATCH] mwifiex: Fix divide error in mwifiex_usb_dnld_fw
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Wan Jiabing <wanjiabing@vivo.com>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>, kael_w@yeah.net,
+        syzbot+4e7b6c94d22f4bfca9a0@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 19 Oct 2021 09:03:59 +0100, Mauro Carvalho Chehab wrote:
-> Hi Jon,
-> 
-> This series is against today's next (next-20211019) and addresses missing
-> links to Documentation/*.
-> 
-> The best would be to have the patches applied directly to the trees that
-> contain the patches that moved/renamed files, and then apply the
-> remaining ones either later during the merge window or just afterwards,
-> whatever works best for you.
-> 
-> Regards,
-> Mauro
-> 
-> Mauro Carvalho Chehab (23):
->   visorbus: fix a copyright symbol that was bad encoded
->   libbpf: update index.rst reference
->   docs: accounting: update delay-accounting.rst reference
->   MAINTAINERS: update arm,vic.yaml reference
->   MAINTAINERS: update aspeed,i2c.yaml reference
->   MAINTAINERS: update faraday,ftrtc010.yaml reference
->   MAINTAINERS: update ti,sci.yaml reference
->   MAINTAINERS: update intel,ixp46x-rng.yaml reference
->   MAINTAINERS: update nxp,imx8-jpeg.yaml reference
->   MAINTAINERS: update gemini.yaml reference
->   MAINTAINERS: update brcm,unimac-mdio.yaml reference
->   MAINTAINERS: update mtd-physmap.yaml reference
+On Mon, Oct 18, 2021 at 9:04 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> On 10/18/21 8:31 PM, Wan Jiabing wrote:
+> > --- a/drivers/net/wireless/marvell/mwifiex/usb.c
+> > +++ b/drivers/net/wireless/marvell/mwifiex/usb.c
+> > @@ -693,7 +693,7 @@ static int mwifiex_write_data_sync(struct mwifiex_adapter *adapter, u8 *pbuf,
+> >       struct usb_card_rec *card = adapter->card;
+> >       int actual_length, ret;
+> >
+> > -     if (!(*len % card->bulk_out_maxpktsize))
+> > +     if (card->bulk_out_maxpktsize && !(*len % card->bulk_out_maxpktsize))
+>
+>
+> Are you sure this fix is not working around the real bug ?
+>
+> In which cases bulk_out_maxpktsize would be zero ?
+>
+> If this is a valid case, this needs to be explained in the changelog.
 
-Applied patches 3-12.
+I'm with Eric here. This was a bug reported by a fuzzer, which throws
+invalid input at the driver. The right answer is likely that we should
+reject such invalid input when we receive it -- i.e., we should fail
+to probe() the device if it has invalid capabilities. In particular,
+we should fail to probe if wMaxPacketSize==0.
 
->   Documentation: update vcpu-requests.rst reference
->   bpftool: update bpftool-cgroup.rst reference
->   docs: translations: zn_CN: irq-affinity.rst: add a missing extension
->   docs: translations: zh_CN: memory-hotplug.rst: fix a typo
->   docs: fs: locks.rst: update comment about mandatory file locking
->   fs: remove a comment pointing to the removed mandatory-locking file
->   Documentation/process: fix a cross reference
->   dt-bindings: mfd: update x-powers,axp152.yaml reference
->   regulator: dt-bindings: update samsung,s2mpa01.yaml reference
->   regulator: dt-bindings: update samsung,s5m8767.yaml reference
->   dt-bindings: reserved-memory: ramoops: update ramoops.yaml references
+I was thinking of sending such a patch myself, but I don't have any
+USB mwifiex hardware to test, so I deferred. It's probably pretty low
+risk anyway, though.
+
+Brian
