@@ -2,78 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E393D43362D
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 14:42:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2E4C433637
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 14:43:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235607AbhJSMpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 08:45:06 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:33119 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230267AbhJSMpG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Oct 2021 08:45:06 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1634647373; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=EAEzTgD3dlRVMChpTEmeUHjEeqs0R/ykyjpNvM1MaPo=; b=ZmvX4yKo2ccoxPGKsyXTnxtEpqB2AlVWN8cSo9NG5W5se5CDBPmRBjBGuszIJ7oE1dwwvLEp
- jzW7r+IF1QJVGZEwbKyFg4Dr9wYhJ0sEmbT8PoZrX41TeAzo++zt9Ic6BgO8YOEU0IUy0UYf
- 3se4lgcn9EoWmsTucPMvS4IraQM=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 616ebd2eb03398c06ce26135 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 19 Oct 2021 12:42:22
- GMT
-Sender: quic_luoj=quicinc.com@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id CF637C43616; Tue, 19 Oct 2021 12:42:21 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A,SPF_FAIL autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from [10.92.1.38] (unknown [180.166.53.36])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: luoj)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 633B5C4360C;
-        Tue, 19 Oct 2021 12:42:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 633B5C4360C
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=fail (p=none dis=none) header.from=quicinc.com
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=quicinc.com
-Subject: Re: [PATCH v3 03/13] net: phy: at803x: improve the WOL feature
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Luo Jie <luoj@codeaurora.org>, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sricharan@codeaurora.org
-References: <20211018033333.17677-1-luoj@codeaurora.org>
- <20211018033333.17677-4-luoj@codeaurora.org> <YW2/wck2NPhgwjuL@lunn.ch>
- <0ba3022d-9879-bf85-251d-3f48b9cff93b@quicinc.com> <YW66DXOIt8GrR2IQ@lunn.ch>
-From:   Jie Luo <quic_luoj@quicinc.com>
-Message-ID: <8eebd0aa-7345-7c4b-8435-067b703ad59a@quicinc.com>
-Date:   Tue, 19 Oct 2021 20:42:16 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S230514AbhJSMpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 08:45:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40318 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235673AbhJSMpf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 08:45:35 -0400
+Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F3E0C061765
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 05:43:22 -0700 (PDT)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:b4c3:ba80:54db:46f])
+        by michel.telenet-ops.be with bizsmtp
+        id 7ojF2600T12AN0U06ojFz9; Tue, 19 Oct 2021 14:43:20 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1mcoSZ-0069O3-4O; Tue, 19 Oct 2021 14:43:15 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1mcoSY-00EESZ-FR; Tue, 19 Oct 2021 14:43:14 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        David Lechner <david@lechnology.com>,
+        Sebastian Reichel <sre@kernel.org>
+Cc:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH 0/3] dt-bindings: net: TI wlcore json schema conversion and fix
+Date:   Tue, 19 Oct 2021 14:43:10 +0200
+Message-Id: <cover.1634646975.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <YW66DXOIt8GrR2IQ@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+	Hi all,
 
-On 10/19/2021 8:29 PM, Andrew Lunn wrote:
->> Hi Andrew,
->>
->> when this register AT803X_INTR_STATUS bits are cleared after read, we can't
->> clear only WOL interrupt here.
-> O.K. But you do have the value of the interrupt status register. So
-> you could call phy_trigger_machine(phydev) if there are any other
-> interrupt pending. They won't get lost that way.
->
-> 	  Andrew
-This make sense, thanks for this comment, will add it in the next patch set.
+This patch series converts the Device Tree bindings for the Texas
+Instruments Wilink Wireless LAN and Bluetooth Controllers to
+json-schema, after fixing an issue in a Device Tree source file.
+
+Thanks for your comments!
+
+Geert Uytterhoeven (3):
+  ARM: dts: motorola-mapphone: Drop second ti,wlcore compatible value
+  dt-bindings: net: wireless: ti,wlcore: Convert to json-schema
+  dt-bindings: net: ti,bluetooth: Convert to json-schema
+
+ .../devicetree/bindings/net/ti,bluetooth.yaml |  91 ++++++++++++
+ .../devicetree/bindings/net/ti-bluetooth.txt  |  60 --------
+ .../bindings/net/wireless/ti,wlcore,spi.txt   |  57 --------
+ .../bindings/net/wireless/ti,wlcore.txt       |  45 ------
+ .../bindings/net/wireless/ti,wlcore.yaml      | 134 ++++++++++++++++++
+ .../boot/dts/motorola-mapphone-common.dtsi    |   2 +-
+ arch/arm/boot/dts/omap3-gta04a5.dts           |   2 +-
+ 7 files changed, 227 insertions(+), 164 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/ti,bluetooth.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/ti-bluetooth.txt
+ delete mode 100644 Documentation/devicetree/bindings/net/wireless/ti,wlcore,spi.txt
+ delete mode 100644 Documentation/devicetree/bindings/net/wireless/ti,wlcore.txt
+ create mode 100644 Documentation/devicetree/bindings/net/wireless/ti,wlcore.yaml
+
+-- 
+2.25.1
+
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
