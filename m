@@ -2,100 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48C9F43381B
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 16:12:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A598433849
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 16:21:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231236AbhJSOPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 10:15:00 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46686 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229584AbhJSOPA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Oct 2021 10:15:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=dxAB3/KI9gLEOMDEfLD6UlFEaKIHK37cTRFK56RYQ1s=; b=lkgtla6QQliqlIOSh91D1xnw/e
-        Q17Um7/THybOKNk6gCcZq8cL/vuavdOLGJ33EL6iiZiCdokXGy0x8oBFIWKNrVydBJ8iKcHRK6NtF
-        YkS6LUjxyCQrpYLmLI5/HClHPWWphnnCmRlHJ9I8EmleUit1CcafKR9Rg8sRRtZfsTJY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mcpr6-00B5FF-Sl; Tue, 19 Oct 2021 16:12:40 +0200
-Date:   Tue, 19 Oct 2021 16:12:40 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: fec: defer probe if PHY on external MDIO bus is not
- available
-Message-ID: <YW7SWKiUy8LfvSkl@lunn.ch>
-References: <20211014113043.3518-1-matthias.schiffer@ew.tq-group.com>
+        id S233040AbhJSOXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 10:23:08 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:26166 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229649AbhJSOXH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 10:23:07 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4HYbV15qmsz8tky;
+        Tue, 19 Oct 2021 22:19:37 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Tue, 19 Oct 2021 22:20:51 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Tue, 19 Oct 2021 22:20:50 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>
+Subject: [PATCH net 0/8] net: hns3: add some fixes for -net
+Date:   Tue, 19 Oct 2021 22:16:27 +0800
+Message-ID: <20211019141635.43695-1-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211014113043.3518-1-matthias.schiffer@ew.tq-group.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 14, 2021 at 01:30:43PM +0200, Matthias Schiffer wrote:
-> On some SoCs like i.MX6UL it is common to use the same MDIO bus for PHYs
-> on both Ethernet controllers. Currently device trees for such setups
-> have to make assumptions regarding the probe order of the controllers:
-> 
-> For example in imx6ul-14x14-evk.dtsi, the MDIO bus of fec2 is used for
-> the PHYs of both fec1 and fec2. The reason is that fec2 has a lower
-> address than fec1 and is thus loaded first, so the bus is already
-> available when fec1 is probed.
-> 
-> Besides being confusing, this limitation also makes it impossible to use
-> the same device tree for variants of the i.MX6UL with one Ethernet
-> controller (which have to use the MDIO of fec1, as fec2 does not exist)
-> and variants with two controllers (which have to use fec2 because of the
-> load order).
-> 
-> To fix this, defer the probe of the Ethernet controller when the PHY is
-> not on our own MDIO bus and not available.
-> 
-> Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-> ---
->  drivers/net/ethernet/freescale/fec_main.c | 23 ++++++++++++++++++++++-
->  1 file changed, 22 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-> index 47a6fc702ac7..dc070dd216e8 100644
-> --- a/drivers/net/ethernet/freescale/fec_main.c
-> +++ b/drivers/net/ethernet/freescale/fec_main.c
-> @@ -3820,7 +3820,28 @@ fec_probe(struct platform_device *pdev)
->  		goto failed_stop_mode;
->  
->  	phy_node = of_parse_phandle(np, "phy-handle", 0);
-> -	if (!phy_node && of_phy_is_fixed_link(np)) {
-> +	if (phy_node) {
-> +		struct device_node *mdio_parent =
-> +			of_get_next_parent(of_get_parent(phy_node));
-> +
-> +		ret = 0;
-> +
-> +		/* Skip PHY availability check for our own MDIO bus to avoid
-> +		 * cyclic dependency
-> +		 */
-> +		if (mdio_parent != np) {
-> +			struct phy_device *phy = of_phy_find_device(phy_node);
-> +
-> +			if (phy)
-> +				put_device(&phy->mdio.dev);
-> +			else
-> +				ret = -EPROBE_DEFER;
-> +		}
+This series adds some fixes for the HNS3 ethernet driver.
 
-I've not looked at the details yet, just back from vacation. But this
-seems wrong. I would of expected phylib to of returned -EPRODE_DEFER
-at some point, when asked for a PHY which does not exist yet. All the
-driver should need to do is make sure it returns the
--EPRODE_DEFER.
+Guangbin Huang (2):
+  net: hns3: reset DWRR of unused tc to zero
+  net: hns3: add limit ets dwrr bandwidth cannot be 0
 
-       Andrew
+Jiaran Zhang (1):
+  net: hns3: Add configuration of TM QCN error event
+
+Peng Li (1):
+  net: hns3: disable sriov before unload hclge layer
+
+Yufeng Mo (1):
+  net: hns3: fix vf reset workqueue cannot exit
+
+Yunsheng Lin (3):
+  net: hns3: fix the max tx size according to user manual
+  net: hns3: fix for miscalculation of rx unused desc
+  net: hns3: schedule the polling again when allocation fails
+
+ drivers/net/ethernet/hisilicon/hns3/hnae3.c   | 21 +++++++++++
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h   |  1 +
+ .../net/ethernet/hisilicon/hns3/hns3_enet.c   | 37 +++++++++++--------
+ .../net/ethernet/hisilicon/hns3/hns3_enet.h   |  7 ++--
+ .../hisilicon/hns3/hns3pf/hclge_dcb.c         |  9 +++++
+ .../hisilicon/hns3/hns3pf/hclge_err.c         |  5 ++-
+ .../hisilicon/hns3/hns3pf/hclge_err.h         |  2 +
+ .../hisilicon/hns3/hns3pf/hclge_main.c        |  1 +
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_tm.c |  2 +
+ .../hisilicon/hns3/hns3vf/hclgevf_main.c      |  6 +--
+ 10 files changed, 68 insertions(+), 23 deletions(-)
+
+-- 
+2.33.0
+
