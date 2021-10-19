@@ -2,73 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9484B432DEB
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 08:12:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A218432E45
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 08:26:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234100AbhJSGO5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 02:14:57 -0400
-Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:52801 "EHLO
-        wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233969AbhJSGO4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 02:14:56 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 1E5623200E60;
-        Tue, 19 Oct 2021 02:12:44 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 19 Oct 2021 02:12:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=eDbJOy
-        y842JXbwvh5DIfBZK7OjA8UDWj05ncj5SFUnA=; b=E/Ou1Y5oJdOur45JXlLuCK
-        TsKqcRzOsdxLVDwvLNS1U1jAHnyn6kFe8EAJfccDwl2ouyvaVwbiY/rT6P0FyyD+
-        qXw+XJtKTxkZLdcDtvCIOJ8xHfF9Dat4h8eOOOFNmCzfsjlPBuY6yr2kyegSpZks
-        6L6fGY4DsUWqHuOtTgztBhmwpL1FcZnLtsFQUeiqw2hubAIMzv8x4u1IsbtzMESI
-        HI2a6rPsj+7bItVfBo2h5K1XSkuEJ+duLbwJKMYnY4EB5JUP7/iql/Zly1Q+hJnl
-        LsdKxQJipAFnmTnGAb/wOVFheJeILKCLxj9gXXmdUDW+uMlOauXjHy2GwvQd9+fA
-        ==
-X-ME-Sender: <xms:22FuYaWbfce0_RjiouavLf0ZSAzUWEG3c0QthumKJafwrQUZWwTd9g>
-    <xme:22FuYWmfY6Qkxs8psyyRz1_nICwxH5IjmzyQfY6mPOsAeDSrxWv9ijp7PZ8XCrNSx
-    an6jCv82s8Ozvc>
-X-ME-Received: <xmr:22FuYeaNz3l8qtiTRRHjUyjBLwYMTGXiKdDz-IJPHHvg32vaqd7Bo5T6I8hZhN1nMboZCehmDzqfHrM_lyNoScR5j5Y>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddvuddguddtfecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhepfffhvffukfhfgggtuggjsehttd
-    ertddttddvnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
-    ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpedtffekkeefudffveegueejffejhf
-    etgfeuuefgvedtieehudeuueekhfduheelteenucevlhhushhtvghrufhiiigvpedtnecu
-    rfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:22FuYRV7x98FdqmkH8fSyg5-P_9tRFdt0mo1MFIMJIonriVwtSd4Eg>
-    <xmx:22FuYUkKJGq1dTikEClm6pMXyC34cv1-mAY2LZxZxRLahmxjxtN4cA>
-    <xmx:22FuYWeTyNxBW3Mzxk1m1jkyn026uqaVZrHpPAHswYno9K094eL_bQ>
-    <xmx:22FuYVB4VyZ5n9uMSHIdRePLDjU_gvWRxrLAukgRmmZwoOxl4TmTKA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 19 Oct 2021 02:12:42 -0400 (EDT)
-Date:   Tue, 19 Oct 2021 09:12:34 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, olteanv@gmail.com,
-        andrew@lunn.ch, f.fainelli@gmail.com, snelson@pensando.io
-Subject: Re: [PATCH net-next 5/6] ethernet: mlxsw: use eth_hw_addr_gen()
-Message-ID: <YW5h0tfphxnG+GYV@shredder>
-References: <20211018211007.1185777-1-kuba@kernel.org>
- <20211018211007.1185777-6-kuba@kernel.org>
+        id S233717AbhJSG3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 02:29:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38026 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234267AbhJSG3C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 02:29:02 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CDFFC06161C
+        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 23:26:49 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id u8-20020a05600c440800b0030d90076dabso1283096wmn.1
+        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 23:26:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=T3GJaGUMRU1cUcoEx8S8pRg7CxWQBhMFdydRT7Nj9P0=;
+        b=DvMUK73nVtN8p4hmizLqdXAhdXx06s6iVfuUir2/t6AJi4USmbBCRKqxdGQ0oEkCP2
+         /gEloT8BrbgBy/TkS3d4Nmm3jbUTi8NB9o5+pbXXz5cC5NFDINUURogOVvzUQdp/FYKc
+         WiJS6MrA13+5tH2+e8HebZblNf41lDXF2G9H21T5I8caegQhLWnG7eLZx6SGxOYwml/s
+         HwVJfl8cP0QoTx7Ny7WSK4U398HoYzXNOrlg4t3ODlZu+ZjUDg6zz+vhy5cuBH+0dKCL
+         dmQtBA/kdbbZV/fl0bG3I7k3grsBi0MXko9Dx2i24XcOMjJpa5gZdGn9ypBmPYFLiOSj
+         xFMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=T3GJaGUMRU1cUcoEx8S8pRg7CxWQBhMFdydRT7Nj9P0=;
+        b=GcnjrWV2FAouyORTtanvFaD+emAmU7B1h1GdzxnYFoCa8RC1AA6VjCUl9EITArrkif
+         YHfjV1SXUgM+5jXshL/8LUVkCUCFwPi2pFCpmPUDkMlLvJNDX5FJtwBZCWc0qyJfYWGi
+         3QfH4F+qxOIwRkEfv5aSz4FK9jCLpVEEwnsfrn1S9cMqtL8qmja3HomHEggi+Q/0yo+U
+         wZJm7vZ1PrX1oOjSVYoJ61qjkQxAnIqAh5c98ual3I3vrMTOor//w97JMyd8RvrjOrqK
+         ux7bqcJeHSDZccTq109JUh24TPfBDmjhl5cc2/ajJd9dWDp10fe6BX2EBcqgvwfkVEFi
+         9wIg==
+X-Gm-Message-State: AOAM5330W4Z/zzdFN/whF11OlApJdbGQyce6AOvhgipndq1EJ6dzYpQ6
+        6MFpqkJBvR93mMF6OrMKqKVo0Yckzs8uXw==
+X-Google-Smtp-Source: ABdhPJzran8eQR0cC9bzcQ9SGzbLTYgrsCS+3IKm1p05qltsR458UthsYbEYNMVP2o99pI2wYwe09A==
+X-Received: by 2002:a1c:7918:: with SMTP id l24mr3859096wme.137.1634624808272;
+        Mon, 18 Oct 2021 23:26:48 -0700 (PDT)
+Received: from localhost (tor-exit-15.zbau.f3netze.de. [185.220.100.242])
+        by smtp.gmail.com with ESMTPSA id y8sm1261287wmi.43.2021.10.18.23.26.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Oct 2021 23:26:47 -0700 (PDT)
+From:   =?UTF-8?q?J=CE=B5an=20Sacren?= <sakiwit@gmail.com>
+To:     Ariel Elior <aelior@marvell.com>
+Cc:     GR-everest-linux-l2@marvell.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next 1/2] net: qed_ptp: fix redundant check of rc and against -EINVAL
+Date:   Tue, 19 Oct 2021 00:26:41 -0600
+Message-Id: <492df79e1ae204ec455973e22002ca2c62c41d1e.1634621525.git.sakiwit@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <cover.1634621525.git.sakiwit@gmail.com>
+References: <cover.1634621525.git.sakiwit@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211018211007.1185777-6-kuba@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 18, 2021 at 02:10:06PM -0700, Jakub Kicinski wrote:
-> Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
-> of VLANs...") introduced a rbtree for faster Ethernet address look
-> up. To maintain netdev->dev_addr in this tree we need to make all
-> the writes to it got through appropriate helpers.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+From: Jean Sacren <sakiwit@gmail.com>
 
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+We should first check rc alone and then check it against -EINVAL to
+avoid repeating the same operation.
 
-Thanks!
+With this change, we could also use constant 0 for return.
+
+Signed-off-by: Jean Sacren <sakiwit@gmail.com>
+---
+ drivers/net/ethernet/qlogic/qed/qed_ptp.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_ptp.c b/drivers/net/ethernet/qlogic/qed/qed_ptp.c
+index 2c62d732e5c2..c927ff409109 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_ptp.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_ptp.c
+@@ -52,9 +52,9 @@ static int qed_ptp_res_lock(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
+ 	qed_mcp_resc_lock_default_init(&params, NULL, resource, true);
+ 
+ 	rc = qed_mcp_resc_lock(p_hwfn, p_ptt, &params);
+-	if (rc && rc != -EINVAL) {
+-		return rc;
+-	} else if (rc == -EINVAL) {
++	if (rc) {
++		if (rc != -EINVAL)
++			return rc;
+ 		/* MFW doesn't support resource locking, first PF on the port
+ 		 * has lock ownership.
+ 		 */
+@@ -63,12 +63,14 @@ static int qed_ptp_res_lock(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
+ 
+ 		DP_INFO(p_hwfn, "PF doesn't have lock ownership\n");
+ 		return -EBUSY;
+-	} else if (!rc && !params.b_granted) {
++	}
++
++	if (!params.b_granted) {
+ 		DP_INFO(p_hwfn, "Failed to acquire ptp resource lock\n");
+ 		return -EBUSY;
+ 	}
+ 
+-	return rc;
++	return 0;
+ }
+ 
+ static int qed_ptp_res_unlock(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
