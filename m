@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5701F432C2F
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 05:21:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F369432C32
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 05:21:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232249AbhJSDXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 23:23:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48660 "EHLO mail.kernel.org"
+        id S232260AbhJSDXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 23:23:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48678 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231479AbhJSDXE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231893AbhJSDXE (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 18 Oct 2021 23:23:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0A9F961360;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7AC7061361;
         Tue, 19 Oct 2021 03:20:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1634613652;
-        bh=RzoIWGf4EWtjKboUlVD5IZb/UI2vRE7N30uCV0JEOjQ=;
+        bh=c+jEgwwHXkMoLavBwBiVzzSt4nhgXIoVfe8l3UoP1KM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qJ/maXJXd8z/rBPvcFGpcRakL5cGIoQ/sczsW8MK2rrRJrKaJH596Rz4aM2PgaNWR
-         2+m7wHHjpRAMfMXrcWo/bQkAZjgFJ+7fZsGysUSwx2kxjR6FlO6jPkD1UinCfG7ZUw
-         qZjnkxiLRvGgJNe8egVRV6WSDWNfoYV3++xIrl2b+Fi5Jn/DRCLwszvvwsrHKCmR6L
-         w6Jo00fWBnBHyi6q0DUHWvUgM7cvJ9aNU+xg5aXPekWQnoRKzLJ6emDQbG9+L2vhBP
-         cRMiJ1ThkUn2tox6KIZLjs8BuYvCVKD5oDL+jIuLAgcEOaBXkuFUHjrv7eEYeH+CBb
-         vhIU3hXAeo0fA==
+        b=q10WDaal/oBJ1CjhVHEQlO7bZS/jUeDBh3Un6yHTcKbklHvmbVYcImk0gvPOKZHN0
+         gjG0oCfwIqZeWV77qKCkBNcf2jkh2JCftILSyY6khCyyNU0dxvzGmEMp7PgDyvCfTA
+         RRcGE5Z8sT1fufttrDjSWSBNtWr+AsAC3Th1fOTXkMo6cQtvTBQX/zZgdvc3/GhAsT
+         o1Uda4no6SXozh/WCmQbZLy4Ol/wKayqYBTvPeRrkcQvUBUxzbiWCphBpIfQuwkzzi
+         D4lt4Dglm/62Jnyph009VRJvr8BepGitgcKZz8llc/oldlEILIVBvD9M70nzEKrWWq
+         OXddPW5Jc9A0g==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Maor Gottlieb <maorg@nvidia.com>,
         Mark Bloch <mbloch@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 06/13] net/mlx5: Lag, set LAG traffic type mapping
-Date:   Mon, 18 Oct 2021 20:20:40 -0700
-Message-Id: <20211019032047.55660-7-saeed@kernel.org>
+Subject: [net-next 07/13] net/mlx5: Lag, set match mask according to the traffic type bitmap
+Date:   Mon, 18 Oct 2021 20:20:41 -0700
+Message-Id: <20211019032047.55660-8-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211019032047.55660-1-saeed@kernel.org>
 References: <20211019032047.55660-1-saeed@kernel.org>
@@ -43,108 +43,210 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maor Gottlieb <maorg@nvidia.com>
 
-Generate a traffic type bitmap that will define which
-steering objects we need to create for the steering
-based LAG.
-
-Bits in this bitmap are set according to the LAG hash type.
-In addition, have a field that indicate if the lag is in encap
-mode or not.
+Set the related bits in the match definer mask according to the
+TT mapping.
+This mask will be used to create the match definers.
 
 Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
 Reviewed-by: Mark Bloch <mbloch@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/lag/lag.h |  2 +
- .../mellanox/mlx5/core/lag/port_sel.c         | 37 +++++++++++++++++++
- .../mellanox/mlx5/core/lag/port_sel.h         | 14 +++++++
- 3 files changed, 53 insertions(+)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.h
+ .../mellanox/mlx5/core/lag/port_sel.c         | 182 ++++++++++++++++++
+ 1 file changed, 182 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h
-index c268663c89b4..670061e60d89 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h
-@@ -6,6 +6,7 @@
- 
- #include "mlx5_core.h"
- #include "mp.h"
-+#include "port_sel.h"
- 
- enum {
- 	MLX5_LAG_P1,
-@@ -49,6 +50,7 @@ struct mlx5_lag {
- 	struct delayed_work       bond_work;
- 	struct notifier_block     nb;
- 	struct lag_mp             lag_mp;
-+	struct mlx5_lag_port_sel  port_sel;
- };
- 
- static inline struct mlx5_lag *
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c
-new file mode 100644
-index 000000000000..7b4ad49c8438
---- /dev/null
+index 7b4ad49c8438..6095f1049bdb 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c
-@@ -0,0 +1,37 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. */
-+
-+#include <linux/netdevice.h>
-+#include "lag.h"
-+
-+static void set_tt_map(struct mlx5_lag_port_sel *port_sel,
-+		       enum netdev_lag_hash hash)
+@@ -4,6 +4,188 @@
+ #include <linux/netdevice.h>
+ #include "lag.h"
+ 
++static int mlx5_lag_set_definer_inner(u32 *match_definer_mask,
++				      enum mlx5_traffic_types tt)
 +{
-+	port_sel->tunnel = false;
++	int format_id;
++	u8 *ipv6;
 +
-+	switch (hash) {
-+	case NETDEV_LAG_HASH_E34:
-+		port_sel->tunnel = true;
-+		fallthrough;
-+	case NETDEV_LAG_HASH_L34:
-+		set_bit(MLX5_TT_IPV4_TCP, port_sel->tt_map);
-+		set_bit(MLX5_TT_IPV4_UDP, port_sel->tt_map);
-+		set_bit(MLX5_TT_IPV6_TCP, port_sel->tt_map);
-+		set_bit(MLX5_TT_IPV6_UDP, port_sel->tt_map);
-+		set_bit(MLX5_TT_IPV4, port_sel->tt_map);
-+		set_bit(MLX5_TT_IPV6, port_sel->tt_map);
-+		set_bit(MLX5_TT_ANY, port_sel->tt_map);
++	switch (tt) {
++	case MLX5_TT_IPV4_UDP:
++	case MLX5_TT_IPV4_TCP:
++		format_id = 23;
++		MLX5_SET_TO_ONES(match_definer_format_23, match_definer_mask,
++				 inner_l4_sport);
++		MLX5_SET_TO_ONES(match_definer_format_23, match_definer_mask,
++				 inner_l4_dport);
++		MLX5_SET_TO_ONES(match_definer_format_23, match_definer_mask,
++				 inner_ip_src_addr);
++		MLX5_SET_TO_ONES(match_definer_format_23, match_definer_mask,
++				 inner_ip_dest_addr);
 +		break;
-+	case NETDEV_LAG_HASH_E23:
-+		port_sel->tunnel = true;
-+		fallthrough;
-+	case NETDEV_LAG_HASH_L23:
-+		set_bit(MLX5_TT_IPV4, port_sel->tt_map);
-+		set_bit(MLX5_TT_IPV6, port_sel->tt_map);
-+		set_bit(MLX5_TT_ANY, port_sel->tt_map);
++	case MLX5_TT_IPV4:
++		format_id = 23;
++		MLX5_SET_TO_ONES(match_definer_format_23, match_definer_mask,
++				 inner_l3_type);
++		MLX5_SET_TO_ONES(match_definer_format_23, match_definer_mask,
++				 inner_dmac_47_16);
++		MLX5_SET_TO_ONES(match_definer_format_23, match_definer_mask,
++				 inner_dmac_15_0);
++		MLX5_SET_TO_ONES(match_definer_format_23, match_definer_mask,
++				 inner_smac_47_16);
++		MLX5_SET_TO_ONES(match_definer_format_23, match_definer_mask,
++				 inner_smac_15_0);
++		MLX5_SET_TO_ONES(match_definer_format_23, match_definer_mask,
++				 inner_ip_src_addr);
++		MLX5_SET_TO_ONES(match_definer_format_23, match_definer_mask,
++				 inner_ip_dest_addr);
++		break;
++	case MLX5_TT_IPV6_TCP:
++	case MLX5_TT_IPV6_UDP:
++		format_id = 31;
++		MLX5_SET_TO_ONES(match_definer_format_31, match_definer_mask,
++				 inner_l4_sport);
++		MLX5_SET_TO_ONES(match_definer_format_31, match_definer_mask,
++				 inner_l4_dport);
++		ipv6 = MLX5_ADDR_OF(match_definer_format_31, match_definer_mask,
++				    inner_ip_dest_addr);
++		memset(ipv6, 0xff, 16);
++		ipv6 = MLX5_ADDR_OF(match_definer_format_31, match_definer_mask,
++				    inner_ip_src_addr);
++		memset(ipv6, 0xff, 16);
++		break;
++	case MLX5_TT_IPV6:
++		format_id = 32;
++		ipv6 = MLX5_ADDR_OF(match_definer_format_32, match_definer_mask,
++				    inner_ip_dest_addr);
++		memset(ipv6, 0xff, 16);
++		ipv6 = MLX5_ADDR_OF(match_definer_format_32, match_definer_mask,
++				    inner_ip_src_addr);
++		memset(ipv6, 0xff, 16);
++		MLX5_SET_TO_ONES(match_definer_format_32, match_definer_mask,
++				 inner_dmac_47_16);
++		MLX5_SET_TO_ONES(match_definer_format_32, match_definer_mask,
++				 inner_dmac_15_0);
++		MLX5_SET_TO_ONES(match_definer_format_32, match_definer_mask,
++				 inner_smac_47_16);
++		MLX5_SET_TO_ONES(match_definer_format_32, match_definer_mask,
++				 inner_smac_15_0);
 +		break;
 +	default:
-+		set_bit(MLX5_TT_ANY, port_sel->tt_map);
++		format_id = 23;
++		MLX5_SET_TO_ONES(match_definer_format_23, match_definer_mask,
++				 inner_l3_type);
++		MLX5_SET_TO_ONES(match_definer_format_23, match_definer_mask,
++				 inner_dmac_47_16);
++		MLX5_SET_TO_ONES(match_definer_format_23, match_definer_mask,
++				 inner_dmac_15_0);
++		MLX5_SET_TO_ONES(match_definer_format_23, match_definer_mask,
++				 inner_smac_47_16);
++		MLX5_SET_TO_ONES(match_definer_format_23, match_definer_mask,
++				 inner_smac_15_0);
 +		break;
 +	}
++
++	return format_id;
 +}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.h b/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.h
-new file mode 100644
-index 000000000000..c55736d2484d
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.h
-@@ -0,0 +1,14 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-+/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. */
 +
-+#ifndef __MLX5_LAG_FS_H__
-+#define __MLX5_LAG_FS_H__
++static int mlx5_lag_set_definer(u32 *match_definer_mask,
++				enum mlx5_traffic_types tt, bool tunnel,
++				enum netdev_lag_hash hash)
++{
++	int format_id;
++	u8 *ipv6;
 +
-+#include "lib/fs_ttc.h"
++	if (tunnel)
++		return mlx5_lag_set_definer_inner(match_definer_mask, tt);
 +
-+struct mlx5_lag_port_sel {
-+	DECLARE_BITMAP(tt_map, MLX5_NUM_TT);
-+	bool   tunnel;
-+};
++	switch (tt) {
++	case MLX5_TT_IPV4_UDP:
++	case MLX5_TT_IPV4_TCP:
++		format_id = 22;
++		MLX5_SET_TO_ONES(match_definer_format_22, match_definer_mask,
++				 outer_l4_sport);
++		MLX5_SET_TO_ONES(match_definer_format_22, match_definer_mask,
++				 outer_l4_dport);
++		MLX5_SET_TO_ONES(match_definer_format_22, match_definer_mask,
++				 outer_ip_src_addr);
++		MLX5_SET_TO_ONES(match_definer_format_22, match_definer_mask,
++				 outer_ip_dest_addr);
++		break;
++	case MLX5_TT_IPV4:
++		format_id = 22;
++		MLX5_SET_TO_ONES(match_definer_format_22, match_definer_mask,
++				 outer_l3_type);
++		MLX5_SET_TO_ONES(match_definer_format_22, match_definer_mask,
++				 outer_dmac_47_16);
++		MLX5_SET_TO_ONES(match_definer_format_22, match_definer_mask,
++				 outer_dmac_15_0);
++		MLX5_SET_TO_ONES(match_definer_format_22, match_definer_mask,
++				 outer_smac_47_16);
++		MLX5_SET_TO_ONES(match_definer_format_22, match_definer_mask,
++				 outer_smac_15_0);
++		MLX5_SET_TO_ONES(match_definer_format_22, match_definer_mask,
++				 outer_ip_src_addr);
++		MLX5_SET_TO_ONES(match_definer_format_22, match_definer_mask,
++				 outer_ip_dest_addr);
++		break;
++	case MLX5_TT_IPV6_TCP:
++	case MLX5_TT_IPV6_UDP:
++		format_id = 29;
++		MLX5_SET_TO_ONES(match_definer_format_29, match_definer_mask,
++				 outer_l4_sport);
++		MLX5_SET_TO_ONES(match_definer_format_29, match_definer_mask,
++				 outer_l4_dport);
++		ipv6 = MLX5_ADDR_OF(match_definer_format_29, match_definer_mask,
++				    outer_ip_dest_addr);
++		memset(ipv6, 0xff, 16);
++		ipv6 = MLX5_ADDR_OF(match_definer_format_29, match_definer_mask,
++				    outer_ip_src_addr);
++		memset(ipv6, 0xff, 16);
++		break;
++	case MLX5_TT_IPV6:
++		format_id = 30;
++		ipv6 = MLX5_ADDR_OF(match_definer_format_30, match_definer_mask,
++				    outer_ip_dest_addr);
++		memset(ipv6, 0xff, 16);
++		ipv6 = MLX5_ADDR_OF(match_definer_format_30, match_definer_mask,
++				    outer_ip_src_addr);
++		memset(ipv6, 0xff, 16);
++		MLX5_SET_TO_ONES(match_definer_format_30, match_definer_mask,
++				 outer_dmac_47_16);
++		MLX5_SET_TO_ONES(match_definer_format_30, match_definer_mask,
++				 outer_dmac_15_0);
++		MLX5_SET_TO_ONES(match_definer_format_30, match_definer_mask,
++				 outer_smac_47_16);
++		MLX5_SET_TO_ONES(match_definer_format_30, match_definer_mask,
++				 outer_smac_15_0);
++		break;
++	default:
++		format_id = 0;
++		MLX5_SET_TO_ONES(match_definer_format_0, match_definer_mask,
++				 outer_smac_47_16);
++		MLX5_SET_TO_ONES(match_definer_format_0, match_definer_mask,
++				 outer_smac_15_0);
 +
-+#endif /* __MLX5_LAG_FS_H__ */
++		if (hash == NETDEV_LAG_HASH_VLAN_SRCMAC) {
++			MLX5_SET_TO_ONES(match_definer_format_0,
++					 match_definer_mask,
++					 outer_first_vlan_vid);
++			break;
++		}
++
++		MLX5_SET_TO_ONES(match_definer_format_0, match_definer_mask,
++				 outer_ethertype);
++		MLX5_SET_TO_ONES(match_definer_format_0, match_definer_mask,
++				 outer_dmac_47_16);
++		MLX5_SET_TO_ONES(match_definer_format_0, match_definer_mask,
++				 outer_dmac_15_0);
++		break;
++	}
++
++	return format_id;
++}
++
+ static void set_tt_map(struct mlx5_lag_port_sel *port_sel,
+ 		       enum netdev_lag_hash hash)
+ {
 -- 
 2.31.1
 
