@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A094A432C30
+	by mail.lfdr.de (Postfix) with ESMTP id 5701F432C2F
 	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 05:21:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232251AbhJSDXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 23:23:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48652 "EHLO mail.kernel.org"
+        id S232249AbhJSDXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 23:23:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48660 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231226AbhJSDXD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Oct 2021 23:23:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9278C61355;
-        Tue, 19 Oct 2021 03:20:51 +0000 (UTC)
+        id S231479AbhJSDXE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Oct 2021 23:23:04 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0A9F961360;
+        Tue, 19 Oct 2021 03:20:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634613651;
-        bh=5s1FvX4jwNnb3MJCcHKe8pbpW8z0vRtGjFdFaGsiTJY=;
+        s=k20201202; t=1634613652;
+        bh=RzoIWGf4EWtjKboUlVD5IZb/UI2vRE7N30uCV0JEOjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mAB4N9+RzmY9B9PRzdMSlivHgSrlGO4g34tFtM+lu3slYpGOH3RRpnzdd+Cr3tITH
-         QUYk6XIoP/vQz2aHBaoyXiac1LN1TqW4moEIwHGOKiXZGtbfMuzbUjstZA+Ls2QRye
-         O5OET9mEu+0S7fbQwXsTtoCnRRfLpsL1e6qZsRibkbdjy+erWAEYnqYrgdKf21Hr+o
-         UNRE7uXgAn015OuSwSnRzXYrkFCv5J+Rw9wfzmb7B0yvwYGzakluTHKA5rJgwhyfoN
-         paX0OILv5a8swKy62GDY2YpXTGmct89KG+lxTERdtbt7UcotVrwpekrLmt0hKpmBCg
-         gBkQeiqcBchbQ==
+        b=qJ/maXJXd8z/rBPvcFGpcRakL5cGIoQ/sczsW8MK2rrRJrKaJH596Rz4aM2PgaNWR
+         2+m7wHHjpRAMfMXrcWo/bQkAZjgFJ+7fZsGysUSwx2kxjR6FlO6jPkD1UinCfG7ZUw
+         qZjnkxiLRvGgJNe8egVRV6WSDWNfoYV3++xIrl2b+Fi5Jn/DRCLwszvvwsrHKCmR6L
+         w6Jo00fWBnBHyi6q0DUHWvUgM7cvJ9aNU+xg5aXPekWQnoRKzLJ6emDQbG9+L2vhBP
+         cRMiJ1ThkUn2tox6KIZLjs8BuYvCVKD5oDL+jIuLAgcEOaBXkuFUHjrv7eEYeH+CBb
+         vhIU3hXAeo0fA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Maor Gottlieb <maorg@nvidia.com>,
         Mark Bloch <mbloch@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 05/13] net/mlx5: Lag, move lag files into directory
-Date:   Mon, 18 Oct 2021 20:20:39 -0700
-Message-Id: <20211019032047.55660-6-saeed@kernel.org>
+Subject: [net-next 06/13] net/mlx5: Lag, set LAG traffic type mapping
+Date:   Mon, 18 Oct 2021 20:20:40 -0700
+Message-Id: <20211019032047.55660-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211019032047.55660-1-saeed@kernel.org>
 References: <20211019032047.55660-1-saeed@kernel.org>
@@ -43,100 +43,108 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maor Gottlieb <maorg@nvidia.com>
 
-Downstream patches add another lag related file so it makes
-sense to have all the lag files in a dedicated directory.
+Generate a traffic type bitmap that will define which
+steering objects we need to create for the steering
+based LAG.
+
+Bits in this bitmap are set according to the LAG hash type.
+In addition, have a field that indicate if the lag is in encap
+mode or not.
 
 Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
 Reviewed-by: Mark Bloch <mbloch@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/Makefile              | 4 ++--
- drivers/net/ethernet/mellanox/mlx5/core/{ => lag}/lag.c       | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/{ => lag}/lag.h       | 2 +-
- .../net/ethernet/mellanox/mlx5/core/{lag_mp.c => lag/mp.c}    | 4 ++--
- .../net/ethernet/mellanox/mlx5/core/{lag_mp.h => lag/mp.h}    | 0
- 5 files changed, 6 insertions(+), 6 deletions(-)
- rename drivers/net/ethernet/mellanox/mlx5/core/{ => lag}/lag.c (99%)
- rename drivers/net/ethernet/mellanox/mlx5/core/{ => lag}/lag.h (98%)
- rename drivers/net/ethernet/mellanox/mlx5/core/{lag_mp.c => lag/mp.c} (99%)
- rename drivers/net/ethernet/mellanox/mlx5/core/{lag_mp.h => lag/mp.h} (100%)
+ .../net/ethernet/mellanox/mlx5/core/lag/lag.h |  2 +
+ .../mellanox/mlx5/core/lag/port_sel.c         | 37 +++++++++++++++++++
+ .../mellanox/mlx5/core/lag/port_sel.h         | 14 +++++++
+ 3 files changed, 53 insertions(+)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.h
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-index a151575be51f..fb123e26927d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-@@ -14,7 +14,7 @@ obj-$(CONFIG_MLX5_CORE) += mlx5_core.o
- mlx5_core-y :=	main.o cmd.o debugfs.o fw.o eq.o uar.o pagealloc.o \
- 		health.o mcg.o cq.o alloc.o port.o mr.o pd.o \
- 		transobj.o vport.o sriov.o fs_cmd.o fs_core.o pci_irq.o \
--		fs_counters.o fs_ft_pool.o rl.o lag.o dev.o events.o wq.o lib/gid.o \
-+		fs_counters.o fs_ft_pool.o rl.o lag/lag.o dev.o events.o wq.o lib/gid.o \
- 		lib/devcom.o lib/pci_vsc.o lib/dm.o lib/fs_ttc.o diag/fs_tracepoint.o \
- 		diag/fw_tracer.o diag/crdump.o devlink.o diag/rsc_dump.o \
- 		fw_reset.o qos.o lib/tout.o
-@@ -37,7 +37,7 @@ mlx5_core-$(CONFIG_MLX5_EN_ARFS)     += en_arfs.o
- mlx5_core-$(CONFIG_MLX5_EN_RXNFC)    += en_fs_ethtool.o
- mlx5_core-$(CONFIG_MLX5_CORE_EN_DCB) += en_dcbnl.o en/port_buffer.o
- mlx5_core-$(CONFIG_PCI_HYPERV_INTERFACE) += en/hv_vhca_stats.o
--mlx5_core-$(CONFIG_MLX5_ESWITCH)     += lag_mp.o lib/geneve.o lib/port_tun.o \
-+mlx5_core-$(CONFIG_MLX5_ESWITCH)     += lag/mp.o lib/geneve.o lib/port_tun.o \
- 					en_rep.o en/rep/bond.o en/mod_hdr.o \
- 					en/mapping.o
- mlx5_core-$(CONFIG_MLX5_CLS_ACT)     += en_tc.o en/rep/tc.o en/rep/neigh.o \
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-similarity index 99%
-rename from drivers/net/ethernet/mellanox/mlx5/core/lag.c
-rename to drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-index f35c8ba48aac..b37724fc5387 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-@@ -38,7 +38,7 @@
- #include "mlx5_core.h"
- #include "eswitch.h"
- #include "lag.h"
--#include "lag_mp.h"
-+#include "mp.h"
- 
- /* General purpose, use for short periods of time.
-  * Beware of lock dependencies (preferably, no locks should be acquired
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.h b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h
-similarity index 98%
-rename from drivers/net/ethernet/mellanox/mlx5/core/lag.h
-rename to drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h
-index d4bae528954e..c268663c89b4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag.h
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h
+index c268663c89b4..670061e60d89 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h
-@@ -5,7 +5,7 @@
- #define __MLX5_LAG_H__
+@@ -6,6 +6,7 @@
  
  #include "mlx5_core.h"
--#include "lag_mp.h"
-+#include "mp.h"
+ #include "mp.h"
++#include "port_sel.h"
  
  enum {
  	MLX5_LAG_P1,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c
-similarity index 99%
-rename from drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-rename to drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c
-index f239b352a58a..810a15b83b9f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c
-@@ -3,8 +3,8 @@
+@@ -49,6 +50,7 @@ struct mlx5_lag {
+ 	struct delayed_work       bond_work;
+ 	struct notifier_block     nb;
+ 	struct lag_mp             lag_mp;
++	struct mlx5_lag_port_sel  port_sel;
+ };
  
- #include <linux/netdevice.h>
- #include <net/nexthop.h>
--#include "lag.h"
--#include "lag_mp.h"
-+#include "lag/lag.h"
-+#include "lag/mp.h"
- #include "mlx5_core.h"
- #include "eswitch.h"
- #include "lib/mlx5.h"
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.h b/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.h
-similarity index 100%
-rename from drivers/net/ethernet/mellanox/mlx5/core/lag_mp.h
-rename to drivers/net/ethernet/mellanox/mlx5/core/lag/mp.h
+ static inline struct mlx5_lag *
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c
+new file mode 100644
+index 000000000000..7b4ad49c8438
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c
+@@ -0,0 +1,37 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. */
++
++#include <linux/netdevice.h>
++#include "lag.h"
++
++static void set_tt_map(struct mlx5_lag_port_sel *port_sel,
++		       enum netdev_lag_hash hash)
++{
++	port_sel->tunnel = false;
++
++	switch (hash) {
++	case NETDEV_LAG_HASH_E34:
++		port_sel->tunnel = true;
++		fallthrough;
++	case NETDEV_LAG_HASH_L34:
++		set_bit(MLX5_TT_IPV4_TCP, port_sel->tt_map);
++		set_bit(MLX5_TT_IPV4_UDP, port_sel->tt_map);
++		set_bit(MLX5_TT_IPV6_TCP, port_sel->tt_map);
++		set_bit(MLX5_TT_IPV6_UDP, port_sel->tt_map);
++		set_bit(MLX5_TT_IPV4, port_sel->tt_map);
++		set_bit(MLX5_TT_IPV6, port_sel->tt_map);
++		set_bit(MLX5_TT_ANY, port_sel->tt_map);
++		break;
++	case NETDEV_LAG_HASH_E23:
++		port_sel->tunnel = true;
++		fallthrough;
++	case NETDEV_LAG_HASH_L23:
++		set_bit(MLX5_TT_IPV4, port_sel->tt_map);
++		set_bit(MLX5_TT_IPV6, port_sel->tt_map);
++		set_bit(MLX5_TT_ANY, port_sel->tt_map);
++		break;
++	default:
++		set_bit(MLX5_TT_ANY, port_sel->tt_map);
++		break;
++	}
++}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.h b/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.h
+new file mode 100644
+index 000000000000..c55736d2484d
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.h
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
++/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. */
++
++#ifndef __MLX5_LAG_FS_H__
++#define __MLX5_LAG_FS_H__
++
++#include "lib/fs_ttc.h"
++
++struct mlx5_lag_port_sel {
++	DECLARE_BITMAP(tt_map, MLX5_NUM_TT);
++	bool   tunnel;
++};
++
++#endif /* __MLX5_LAG_FS_H__ */
 -- 
 2.31.1
 
