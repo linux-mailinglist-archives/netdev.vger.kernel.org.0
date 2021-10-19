@@ -2,235 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9156B433640
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 14:43:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 828AD43364E
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 14:48:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235661AbhJSMpl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 08:45:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40334 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235714AbhJSMpg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 08:45:36 -0400
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B01AC061749
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 05:43:22 -0700 (PDT)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:b4c3:ba80:54db:46f])
-        by albert.telenet-ops.be with bizsmtp
-        id 7ojF2600S12AN0U06ojFsy; Tue, 19 Oct 2021 14:43:21 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1mcoSZ-0069O6-Dh; Tue, 19 Oct 2021 14:43:15 +0200
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1mcoSY-00EESt-I4; Tue, 19 Oct 2021 14:43:14 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Rob Herring <robh+dt@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        David Lechner <david@lechnology.com>,
-        Sebastian Reichel <sre@kernel.org>
-Cc:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 3/3] dt-bindings: net: ti,bluetooth: Convert to json-schema
-Date:   Tue, 19 Oct 2021 14:43:13 +0200
-Message-Id: <c1814db9aff7f09ea41b562a2da305312d8df2dd.1634646975.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1634646975.git.geert+renesas@glider.be>
-References: <cover.1634646975.git.geert+renesas@glider.be>
+        id S235722AbhJSMuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 08:50:52 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:54732 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231379AbhJSMut (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 08:50:49 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1634647716; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=ILJ6KUzz5UKYPnWbk1cGvixDN6iLtxb7woY6fRVqBHg=; b=dUQ1k9+GZjM+zXhfxdTN4pAu76Y7M5GBQBtjArMIBkKBsXGF0/pkhnoGR5ukQZB3FGmjJiqZ
+ y1lTBh/XGg7tMX6849B3JMUXKPygyyuIZNAITymnAm1A6wourto44OtusGpTKaoCXRTUlynX
+ ZfhP4JvwtK5y034SRi/vx0ZWcn4=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
+ 616ebe975ca800b6c1b80db8 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 19 Oct 2021 12:48:23
+ GMT
+Sender: quic_luoj=quicinc.com@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 5010AC4360C; Tue, 19 Oct 2021 12:48:23 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-5.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        NICE_REPLY_A,SPF_FAIL autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from [10.92.1.38] (unknown [180.166.53.36])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: luoj)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 98236C4338F;
+        Tue, 19 Oct 2021 12:48:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 98236C4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=fail (p=none dis=none) header.from=quicinc.com
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=quicinc.com
+Subject: Re: [PATCH v3 06/13] net: phy: add qca8081 read_status
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Luo Jie <luoj@codeaurora.org>, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        sricharan@codeaurora.org
+References: <20211018033333.17677-1-luoj@codeaurora.org>
+ <20211018033333.17677-7-luoj@codeaurora.org> <YW3qLe8iHe1wdMev@lunn.ch>
+ <0472b75b-9fd7-55e3-dc1b-f33786643103@quicinc.com> <YW66vT1HQsVfjZDz@lunn.ch>
+From:   Jie Luo <quic_luoj@quicinc.com>
+Message-ID: <e0c4aa61-e1ac-e1f3-8a26-635784336512@quicinc.com>
+Date:   Tue, 19 Oct 2021 20:48:18 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
+In-Reply-To: <YW66vT1HQsVfjZDz@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert the Texas Instruments serial-attached bluetooth Device Tree
-binding documentation to json-schema.
 
-Add missing max-speed property.
-Update the example.
+On 10/19/2021 8:31 PM, Andrew Lunn wrote:
+> On Tue, Oct 19, 2021 at 08:10:15PM +0800, Jie Luo wrote:
+>> On 10/19/2021 5:42 AM, Andrew Lunn wrote:
+>>>> +static int qca808x_read_status(struct phy_device *phydev)
+>>>> +{
+>>>> +	int ret;
+>>>> +
+>>>> +	ret = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_10GBT_STAT);
+>>>> +	if (ret < 0)
+>>>> +		return ret;
+>>>> +
+>>>> +	linkmode_mod_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, phydev->lp_advertising,
+>>>> +			ret & MDIO_AN_10GBT_STAT_LP2_5G);
+>>>> +
+>>> Could genphy_c45_read_lpa() be used here?
+>>>
+>>>         Andrew
+>> Hi Andrew,
+>>
+>> Thanks for the comments,  the MDIO_STAT1 of PHY does not follow the
+>> standard, bit0~bit6 of MDIO_STAT1 are
+>>
+>> always 0, genphy_c45_read_lpa can't be used.
+> O.K. It is a shame the hardware partially follow the standard, but
+> breaks it as well. Why go to the effort of partially following it,
+> when you don't gain anything from it because you need custom code
+> anyway?
+>
+> 	Andrew
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
-I listed David as maintainer, as he wrote the original bindings.
-Please scream if not appropriate.
----
- .../devicetree/bindings/net/ti,bluetooth.yaml | 91 +++++++++++++++++++
- .../devicetree/bindings/net/ti-bluetooth.txt  | 60 ------------
- 2 files changed, 91 insertions(+), 60 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/ti,bluetooth.yaml
- delete mode 100644 Documentation/devicetree/bindings/net/ti-bluetooth.txt
+Hi Andrew,
 
-diff --git a/Documentation/devicetree/bindings/net/ti,bluetooth.yaml b/Documentation/devicetree/bindings/net/ti,bluetooth.yaml
-new file mode 100644
-index 0000000000000000..9f6102977c9732d2
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/ti,bluetooth.yaml
-@@ -0,0 +1,91 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/ti,bluetooth.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Texas Instruments Bluetooth Chips
-+
-+maintainers:
-+  - David Lechner <david@lechnology.com>
-+
-+description: |
-+  This documents the binding structure and common properties for serial
-+  attached TI Bluetooth devices. The following chips are included in this
-+  binding:
-+
-+  * TI CC256x Bluetooth devices
-+  * TI WiLink 7/8 (wl12xx/wl18xx) Shared Transport BT/FM/GPS devices
-+
-+  TI WiLink devices have a UART interface for providing Bluetooth, FM radio,
-+  and GPS over what's called "shared transport". The shared transport is
-+  standard BT HCI protocol with additional channels for the other functions.
-+
-+  TI WiLink devices also have a separate WiFi interface as described in
-+  wireless/ti,wlcore.yaml.
-+
-+  This bindings follows the UART slave device binding in ../serial/serial.yaml.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - ti,cc2560
-+      - ti,wl1271-st
-+      - ti,wl1273-st
-+      - ti,wl1281-st
-+      - ti,wl1283-st
-+      - ti,wl1285-st
-+      - ti,wl1801-st
-+      - ti,wl1805-st
-+      - ti,wl1807-st
-+      - ti,wl1831-st
-+      - ti,wl1835-st
-+      - ti,wl1837-st
-+
-+  enable-gpios:
-+    maxItems: 1
-+
-+  vio-supply:
-+    description: Vio input supply (1.8V)
-+
-+  vbat-supply:
-+    description: Vbat input supply (2.9-4.8V)
-+
-+  clocks:
-+    maxItems: 1
-+
-+  clock-names:
-+    items:
-+      - const: ext_clock
-+
-+  max-speed: true
-+
-+  nvmem-cells:
-+    maxItems: 1
-+    description:
-+      Nvmem data cell that contains a 6 byte BD address with the most
-+      significant byte first (big-endian).
-+
-+  nvmem-cell-names:
-+    items:
-+      - const: bd-address
-+
-+required:
-+  - compatible
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+
-+    serial {
-+            bluetooth {
-+                    compatible = "ti,wl1835-st";
-+                    enable-gpios = <&gpio1 7 GPIO_ACTIVE_HIGH>;
-+                    clocks = <&clk32k_wl18xx>;
-+                    clock-names = "ext_clock";
-+                    nvmem-cells = <&bd_address>;
-+                    nvmem-cell-names = "bd-address";
-+            };
-+    };
-diff --git a/Documentation/devicetree/bindings/net/ti-bluetooth.txt b/Documentation/devicetree/bindings/net/ti-bluetooth.txt
-deleted file mode 100644
-index 3c01cfc1e12dc132..0000000000000000
---- a/Documentation/devicetree/bindings/net/ti-bluetooth.txt
-+++ /dev/null
-@@ -1,60 +0,0 @@
--Texas Instruments Bluetooth Chips
-----------------------------------
--
--This documents the binding structure and common properties for serial
--attached TI Bluetooth devices. The following chips are included in this
--binding:
--
--* TI CC256x Bluetooth devices
--* TI WiLink 7/8 (wl12xx/wl18xx) Shared Transport BT/FM/GPS devices
--
--TI WiLink devices have a UART interface for providing Bluetooth, FM radio,
--and GPS over what's called "shared transport". The shared transport is
--standard BT HCI protocol with additional channels for the other functions.
--
--TI WiLink devices also have a separate WiFi interface as described in
--wireless/ti,wlcore.yaml.
--
--This bindings follows the UART slave device binding in ../serial/serial.yaml.
--
--Required properties:
-- - compatible: should be one of the following:
--    "ti,cc2560"
--    "ti,wl1271-st"
--    "ti,wl1273-st"
--    "ti,wl1281-st"
--    "ti,wl1283-st"
--    "ti,wl1285-st"
--    "ti,wl1801-st"
--    "ti,wl1805-st"
--    "ti,wl1807-st"
--    "ti,wl1831-st"
--    "ti,wl1835-st"
--    "ti,wl1837-st"
--
--Optional properties:
-- - enable-gpios : GPIO signal controlling enabling of BT. Active high.
-- - vio-supply : Vio input supply (1.8V)
-- - vbat-supply : Vbat input supply (2.9-4.8V)
-- - clocks : Must contain an entry, for each entry in clock-names.
--   See ../clocks/clock-bindings.txt for details.
-- - clock-names : Must include the following entry:
--   "ext_clock" (External clock provided to the TI combo chip).
-- - nvmem-cells: phandle to nvmem data cell that contains a 6 byte BD address
--   with the most significant byte first (big-endian).
-- - nvmem-cell-names: "bd-address" (required when nvmem-cells is specified)
--
--Example:
--
--&serial0 {
--	compatible = "ns16550a";
--	...
--	bluetooth {
--		compatible = "ti,wl1835-st";
--		enable-gpios = <&gpio1 7 GPIO_ACTIVE_HIGH>;
--		clocks = <&clk32k_wl18xx>;
--		clock-names = "ext_clock";
--		nvmem-cells = <&bd_address>;
--		nvmem-cell-names = "bd-address";
--	};
--};
--- 
-2.25.1
+Thanks for the suggestion. qca8081 PHY indeed add 2.5G capability based 
+on the
+
+general 1G PHY, i will feedback this to the HW design team, thanks for 
+this comments.
 
