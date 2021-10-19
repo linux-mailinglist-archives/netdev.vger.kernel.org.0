@@ -2,90 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D283433502
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 13:48:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58DB9433509
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 13:49:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234955AbhJSLui (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 07:50:38 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:59021 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230129AbhJSLuf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Oct 2021 07:50:35 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1634644103; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=6L0eRGFpxh79Zpek57KC7JtYLuMfOQqMjbjJADNCPak=; b=VzU0HTiMjzAuV1FPmp0hmJSBjqGQb5kkGh0RRj/FJHa6InJ2MxSWngmhmATlIWFJxG19Kpue
- O5GSpQq+65cWvKU3IdDpLnaV344KDBZq/ye3LS1PryXFbjjqkZunE19o4hHhOXZfbFEtPjKl
- KOD69v4yWrUMkc/pFrU/PUkXd5I=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
- 616eb085321f24005169aff7 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 19 Oct 2021 11:48:21
- GMT
-Sender: quic_luoj=quicinc.com@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id D22FEC4338F; Tue, 19 Oct 2021 11:48:20 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A,SPF_FAIL,UPPERCASE_50_75 autolearn=unavailable
-        autolearn_force=no version=3.4.0
-Received: from [10.92.1.38] (unknown [180.166.53.36])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: luoj)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 43512C4360C;
-        Tue, 19 Oct 2021 11:48:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 43512C4360C
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=fail (p=none dis=none) header.from=quicinc.com
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=quicinc.com
-Subject: Re: [PATCH v3 05/13] net: phy: add qca8081 ethernet phy driver
-To:     Andrew Lunn <andrew@lunn.ch>, Luo Jie <luoj@codeaurora.org>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sricharan@codeaurora.org
-References: <20211018033333.17677-1-luoj@codeaurora.org>
- <20211018033333.17677-6-luoj@codeaurora.org> <YW3BLwiNGiQGUje9@lunn.ch>
-From:   Jie Luo <quic_luoj@quicinc.com>
-Message-ID: <2d8cca21-456f-8fb5-1590-e6c9b0f9a82c@quicinc.com>
-Date:   Tue, 19 Oct 2021 19:48:15 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S235364AbhJSLv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 07:51:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55960 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230097AbhJSLvz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 07:51:55 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05303C06161C;
+        Tue, 19 Oct 2021 04:49:42 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1mcnch-0004Vq-RG; Tue, 19 Oct 2021 13:49:39 +0200
+Date:   Tue, 19 Oct 2021 13:49:39 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Eugene Crosser <crosser@average.org>, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org,
+        Lahav Schlesinger <lschlesinger@drivenets.com>,
+        David Ahern <dsahern@kernel.org>
+Subject: Re: Commit 09e856d54bda5f288ef8437a90ab2b9b3eab83d1r "vrf: Reset skb
+ conntrack connection on VRF rcv" breaks expected netfilter behaviour
+Message-ID: <20211019114939.GD28644@breakpoint.cc>
+References: <bca5dcab-ef6b-8711-7f99-8d86e79d76eb@average.org>
+ <20211013092235.GA32450@breakpoint.cc>
+ <20211015210448.GA5069@breakpoint.cc>
+ <378ca299-4474-7e9a-3d36-2350c8c98995@gmail.com>
+ <20211018143430.GB28644@breakpoint.cc>
+ <a5422062-a0a8-a2bf-f4a8-d57eb7ddc4af@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <YW3BLwiNGiQGUje9@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a5422062-a0a8-a2bf-f4a8-d57eb7ddc4af@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+David Ahern <dsahern@gmail.com> wrote:
+> Thanks for the detailed summary and possible solutions.
+> 
+> NAT/MASQ rules with VRF were not really thought about during
+> development; it was not a use case (or use cases) Cumulus or other NOS
+> vendors cared about. Community users were popping up fairly early and
+> patches would get sent, but no real thought about how to handle both
+> sets of rules - VRF device and port devices.
+> 
+> What about adding an attribute on the VRF device to declare which side
+> to take -- rules against the port device or rules against the VRF device
+> and control the nf resets based on it?
 
-On 10/19/2021 2:47 AM, Andrew Lunn wrote:
->> @@ -1441,6 +1455,7 @@ static struct mdio_device_id __maybe_unused atheros_tbl[] = {
->>   	{ PHY_ID_MATCH_EXACT(ATH8032_PHY_ID) },
->>   	{ PHY_ID_MATCH_EXACT(ATH8035_PHY_ID) },
->>   	{ PHY_ID_MATCH_EXACT(ATH9331_PHY_ID) },
->> +	{ PHY_ID_MATCH_EXACT(QCA8081_PHY_ID) },
->>   	{ }
-> What tree is this against? I have:
->
-> static struct mdio_device_id __maybe_unused atheros_tbl[] = {
->          { ATH8030_PHY_ID, AT8030_PHY_ID_MASK },
->          { PHY_ID_MATCH_EXACT(ATH8031_PHY_ID) },
->          { PHY_ID_MATCH_EXACT(ATH8032_PHY_ID) },
->          { PHY_ID_MATCH_EXACT(ATH8035_PHY_ID) },
->          { PHY_ID_MATCH_EXACT(ATH9331_PHY_ID) },
->          { PHY_ID_MATCH_EXACT(QCA8337_PHY_ID) },
->          { PHY_ID_MATCH_EXACT(QCA8327_A_PHY_ID) },
->          { PHY_ID_MATCH_EXACT(QCA8327_B_PHY_ID) },
->          { PHY_ID_MATCH_EXACT(QCA9561_PHY_ID) },
->          { }
-> };
->
-> 	Andrew
-will update it based on the latest tree in the next patch set.
+This would need a way to suppress the NF_HOOK invocation from the
+normal IP path.  Any idea on how to do that?  AFAICS there is no way to
+get to the vrf device at that point, so no way to detect the toggle.
+
+Or did you mean to only suppress the 2nd conntrack round?
+
+For packets that get forwarded we'd always need to run those in the vrf
+context, afaics, because doing an nf_reset() may create a new conntrack
+entry (if flow has DNAT, then incoming address has been reversed
+already, so it won't match existing REPLY entry in the conntrack table anymore).
+
+For locally generated packets, we could skip conntrack for VRF context
+via 'skb->_nfct = UNTRACKED' + nf_reset_ct before xmit to lower device,
+and for lower device by eliding the reset entirely.
