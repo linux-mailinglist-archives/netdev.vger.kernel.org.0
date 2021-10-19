@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3655433E76
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 20:32:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41548433E77
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 20:32:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233413AbhJSSe3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 14:34:29 -0400
+        id S234361AbhJSSea (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 14:34:30 -0400
 Received: from mga11.intel.com ([192.55.52.93]:51639 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232130AbhJSSe3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233340AbhJSSe3 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 19 Oct 2021 14:34:29 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10142"; a="226058555"
+X-IronPort-AV: E=McAfee;i="6200,9189,10142"; a="226058556"
 X-IronPort-AV: E=Sophos;i="5.87,164,1631602800"; 
-   d="scan'208";a="226058555"
+   d="scan'208";a="226058556"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2021 11:32:15 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,164,1631602800"; 
-   d="scan'208";a="444602701"
+   d="scan'208";a="444602704"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga003.jf.intel.com with ESMTP; 19 Oct 2021 11:32:15 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, Tarun Singh <tarun.k.singh@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net-next 01/10] ice: Add support for VF rate limiting
-Date:   Tue, 19 Oct 2021 11:30:18 -0700
-Message-Id: <20211019183027.2820413-2-anthony.l.nguyen@intel.com>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        Gurucharan G <gurucharanx.g@intel.com>
+Subject: [PATCH net-next 02/10] ice: update dim usage and moderation
+Date:   Tue, 19 Oct 2021 11:30:19 -0700
+Message-Id: <20211019183027.2820413-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211019183027.2820413-1-anthony.l.nguyen@intel.com>
 References: <20211019183027.2820413-1-anthony.l.nguyen@intel.com>
@@ -38,636 +38,415 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Brett Creeley <brett.creeley@intel.com>
+From: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
-Implement ndo_set_vf_rate to support setting of min_tx_rate and
-max_tx_rate; set the appropriate bandwidth in the scheduler for the
-node representing the specified VF VSI.
+The driver was having trouble with unreliable latency when doing single
+threaded ping-pong tests. This was root caused to the DIM algorithm
+landing on a too slow interrupt value, which caused high latency, and it
+was especially present when queues were being switched frequently by the
+scheduler as happens on default setups today.
 
-Co-developed-by: Tarun Singh <tarun.k.singh@intel.com>
-Signed-off-by: Tarun Singh <tarun.k.singh@intel.com>
-Signed-off-by: Brett Creeley <brett.creeley@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+In attempting to improve this, we allow the upper rate limit for
+interrupts to move to rate limit of 4 microseconds as a max, which means
+that no vector can generate more than 250,000 interrupts per second. The
+old config was up to 100,000. The driver previously tried to program the
+rate limit too frequently and if the receive and transmit side were both
+active on the same vector, the INTRL would be set incorrectly, and this
+change fixes that issue as a side effect of the redesign.
+
+This driver will operate from now on with a slightly changed DIM table
+with more emphasis towards latency sensitivity by having more table
+entries with lower latency than with high latency (high being >= 64
+microseconds).
+
+The driver also resets the DIM algorithm state with a new stats set when
+there is no work done and the data becomes stale (older than 1 second),
+for the respective receive or transmit portion of the interrupt.
+
+Add a new helper for setting rate limit, which will be used more
+in a followup patch.
+
+Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Tested-by: Gurucharan G <gurucharanx.g@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c      | 174 ++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_lib.h      |   4 +-
- drivers/net/ethernet/intel/ice/ice_main.c     |   1 +
- drivers/net/ethernet/intel/ice/ice_sched.c    | 130 +++++++++++++
- drivers/net/ethernet/intel/ice/ice_sched.h    |   6 +
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 160 +++++++++++++++-
- .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |  15 +-
- 7 files changed, 486 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_lib.c  |  25 +++++
+ drivers/net/ethernet/intel/ice/ice_lib.h  |   1 +
+ drivers/net/ethernet/intel/ice/ice_main.c | 119 ++++++++++++----------
+ drivers/net/ethernet/intel/ice/ice_txrx.c |  84 ++++++++-------
+ 4 files changed, 142 insertions(+), 87 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index f981e77f72ad..acff8d3b1c97 100644
+index acff8d3b1c97..fd894e89be3b 100644
 --- a/drivers/net/ethernet/intel/ice/ice_lib.c
 +++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -3600,6 +3600,180 @@ int ice_clear_dflt_vsi(struct ice_sw *sw)
- 	return 0;
+@@ -1941,6 +1941,31 @@ void ice_write_itr(struct ice_ring_container *rc, u16 itr)
+ 	__ice_write_itr(q_vector, rc, itr);
  }
  
 +/**
-+ * ice_get_link_speed_mbps - get link speed in Mbps
-+ * @vsi: the VSI whose link speed is being queried
++ * ice_set_q_vector_intrl - set up interrupt rate limiting
++ * @q_vector: the vector to be configured
 + *
-+ * Return current VSI link speed and 0 if the speed is unknown.
++ * Interrupt rate limiting is local to the vector, not per-queue so we must
++ * detect if either ring container has dynamic moderation enabled to decide
++ * what to set the interrupt rate limit to via INTRL settings. In the case that
++ * dynamic moderation is disabled on both, write the value with the cached
++ * setting to make sure INTRL register matches the user visible value.
 + */
-+int ice_get_link_speed_mbps(struct ice_vsi *vsi)
++void ice_set_q_vector_intrl(struct ice_q_vector *q_vector)
 +{
-+	switch (vsi->port_info->phy.link_info.link_speed) {
-+	case ICE_AQ_LINK_SPEED_100GB:
-+		return SPEED_100000;
-+	case ICE_AQ_LINK_SPEED_50GB:
-+		return SPEED_50000;
-+	case ICE_AQ_LINK_SPEED_40GB:
-+		return SPEED_40000;
-+	case ICE_AQ_LINK_SPEED_25GB:
-+		return SPEED_25000;
-+	case ICE_AQ_LINK_SPEED_20GB:
-+		return SPEED_20000;
-+	case ICE_AQ_LINK_SPEED_10GB:
-+		return SPEED_10000;
-+	case ICE_AQ_LINK_SPEED_5GB:
-+		return SPEED_5000;
-+	case ICE_AQ_LINK_SPEED_2500MB:
-+		return SPEED_2500;
-+	case ICE_AQ_LINK_SPEED_1000MB:
-+		return SPEED_1000;
-+	case ICE_AQ_LINK_SPEED_100MB:
-+		return SPEED_100;
-+	case ICE_AQ_LINK_SPEED_10MB:
-+		return SPEED_10;
-+	case ICE_AQ_LINK_SPEED_UNKNOWN:
-+	default:
-+		return 0;
-+	}
-+}
-+
-+/**
-+ * ice_get_link_speed_kbps - get link speed in Kbps
-+ * @vsi: the VSI whose link speed is being queried
-+ *
-+ * Return current VSI link speed and 0 if the speed is unknown.
-+ */
-+static int ice_get_link_speed_kbps(struct ice_vsi *vsi)
-+{
-+	int speed_mbps;
-+
-+	speed_mbps = ice_get_link_speed_mbps(vsi);
-+
-+	return speed_mbps * 1000;
-+}
-+
-+/**
-+ * ice_set_min_bw_limit - setup minimum BW limit for Tx based on min_tx_rate
-+ * @vsi: VSI to be configured
-+ * @min_tx_rate: min Tx rate in Kbps to be configured as BW limit
-+ *
-+ * If the min_tx_rate is specified as 0 that means to clear the minimum BW limit
-+ * profile, otherwise a non-zero value will force a minimum BW limit for the VSI
-+ * on TC 0.
-+ */
-+int ice_set_min_bw_limit(struct ice_vsi *vsi, u64 min_tx_rate)
-+{
-+	struct ice_pf *pf = vsi->back;
-+	enum ice_status status;
-+	struct device *dev;
-+	int speed;
-+
-+	dev = ice_pf_to_dev(pf);
-+	if (!vsi->port_info) {
-+		dev_dbg(dev, "VSI %d, type %u specified doesn't have valid port_info\n",
-+			vsi->idx, vsi->type);
-+		return -EINVAL;
-+	}
-+
-+	speed = ice_get_link_speed_kbps(vsi);
-+	if (min_tx_rate > (u64)speed) {
-+		dev_err(dev, "invalid min Tx rate %llu Kbps specified for %s %d is greater than current link speed %u Kbps\n",
-+			min_tx_rate, ice_vsi_type_str(vsi->type), vsi->idx,
-+			speed);
-+		return -EINVAL;
-+	}
-+
-+	/* Configure min BW for VSI limit */
-+	if (min_tx_rate) {
-+		status = ice_cfg_vsi_bw_lmt_per_tc(vsi->port_info, vsi->idx, 0,
-+						   ICE_MIN_BW, min_tx_rate);
-+		if (status) {
-+			dev_err(dev, "failed to set min Tx rate(%llu Kbps) for %s %d\n",
-+				min_tx_rate, ice_vsi_type_str(vsi->type),
-+				vsi->idx);
-+			return -EIO;
-+		}
-+
-+		dev_dbg(dev, "set min Tx rate(%llu Kbps) for %s\n",
-+			min_tx_rate, ice_vsi_type_str(vsi->type));
++	if (ITR_IS_DYNAMIC(&q_vector->tx) || ITR_IS_DYNAMIC(&q_vector->rx)) {
++		/* in the case of dynamic enabled, cap each vector to no more
++		 * than (4 us) 250,000 ints/sec, which allows low latency
++		 * but still less than 500,000 interrupts per second, which
++		 * reduces CPU a bit in the case of the lowest latency
++		 * setting. The 4 here is a value in microseconds.
++		 */
++		ice_write_intrl(q_vector, 4);
 +	} else {
-+		status = ice_cfg_vsi_bw_dflt_lmt_per_tc(vsi->port_info,
-+							vsi->idx, 0,
-+							ICE_MIN_BW);
-+		if (status) {
-+			dev_err(dev, "failed to clear min Tx rate configuration for %s %d\n",
-+				ice_vsi_type_str(vsi->type), vsi->idx);
-+			return -EIO;
-+		}
-+
-+		dev_dbg(dev, "cleared min Tx rate configuration for %s %d\n",
-+			ice_vsi_type_str(vsi->type), vsi->idx);
++		ice_write_intrl(q_vector, q_vector->intrl);
 +	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_set_max_bw_limit - setup maximum BW limit for Tx based on max_tx_rate
-+ * @vsi: VSI to be configured
-+ * @max_tx_rate: max Tx rate in Kbps to be configured as BW limit
-+ *
-+ * If the max_tx_rate is specified as 0 that means to clear the maximum BW limit
-+ * profile, otherwise a non-zero value will force a maximum BW limit for the VSI
-+ * on TC 0.
-+ */
-+int ice_set_max_bw_limit(struct ice_vsi *vsi, u64 max_tx_rate)
-+{
-+	struct ice_pf *pf = vsi->back;
-+	enum ice_status status;
-+	struct device *dev;
-+	int speed;
-+
-+	dev = ice_pf_to_dev(pf);
-+	if (!vsi->port_info) {
-+		dev_dbg(dev, "VSI %d, type %u specified doesn't have valid port_info\n",
-+			vsi->idx, vsi->type);
-+		return -EINVAL;
-+	}
-+
-+	speed = ice_get_link_speed_kbps(vsi);
-+	if (max_tx_rate > (u64)speed) {
-+		dev_err(dev, "invalid max Tx rate %llu Kbps specified for %s %d is greater than current link speed %u Kbps\n",
-+			max_tx_rate, ice_vsi_type_str(vsi->type), vsi->idx,
-+			speed);
-+		return -EINVAL;
-+	}
-+
-+	/* Configure max BW for VSI limit */
-+	if (max_tx_rate) {
-+		status = ice_cfg_vsi_bw_lmt_per_tc(vsi->port_info, vsi->idx, 0,
-+						   ICE_MAX_BW, max_tx_rate);
-+		if (status) {
-+			dev_err(dev, "failed setting max Tx rate(%llu Kbps) for %s %d\n",
-+				max_tx_rate, ice_vsi_type_str(vsi->type),
-+				vsi->idx);
-+			return -EIO;
-+		}
-+
-+		dev_dbg(dev, "set max Tx rate(%llu Kbps) for %s %d\n",
-+			max_tx_rate, ice_vsi_type_str(vsi->type), vsi->idx);
-+	} else {
-+		status = ice_cfg_vsi_bw_dflt_lmt_per_tc(vsi->port_info,
-+							vsi->idx, 0,
-+							ICE_MAX_BW);
-+		if (status) {
-+			dev_err(dev, "failed clearing max Tx rate configuration for %s %d\n",
-+				ice_vsi_type_str(vsi->type), vsi->idx);
-+			return -EIO;
-+		}
-+
-+		dev_dbg(dev, "cleared max Tx rate configuration for %s %d\n",
-+			ice_vsi_type_str(vsi->type), vsi->idx);
-+	}
-+
-+	return 0;
 +}
 +
  /**
-  * ice_set_link - turn on/off physical link
-  * @vsi: VSI to modify physical link on
+  * ice_vsi_cfg_msix - MSIX mode Interrupt Config in the HW
+  * @vsi: the VSI being configured
 diff --git a/drivers/net/ethernet/intel/ice/ice_lib.h b/drivers/net/ethernet/intel/ice/ice_lib.h
-index b6c429c5875d..d395bd590e84 100644
+index d395bd590e84..c79fcbf82d8f 100644
 --- a/drivers/net/ethernet/intel/ice/ice_lib.h
 +++ b/drivers/net/ethernet/intel/ice/ice_lib.h
-@@ -116,7 +116,9 @@ bool ice_is_vsi_dflt_vsi(struct ice_sw *sw, struct ice_vsi *vsi);
- int ice_set_dflt_vsi(struct ice_sw *sw, struct ice_vsi *vsi);
+@@ -103,6 +103,7 @@ int ice_status_to_errno(enum ice_status err);
  
- int ice_clear_dflt_vsi(struct ice_sw *sw);
--
-+int ice_set_min_bw_limit(struct ice_vsi *vsi, u64 min_tx_rate);
-+int ice_set_max_bw_limit(struct ice_vsi *vsi, u64 max_tx_rate);
-+int ice_get_link_speed_mbps(struct ice_vsi *vsi);
- int
- ice_vsi_update_security(struct ice_vsi *vsi, void (*fill)(struct ice_vsi_ctx *));
+ void ice_write_intrl(struct ice_q_vector *q_vector, u8 intrl);
+ void ice_write_itr(struct ice_ring_container *rc, u16 itr);
++void ice_set_q_vector_intrl(struct ice_q_vector *q_vector);
  
+ enum ice_status
+ ice_vsi_cfg_mac_fltr(struct ice_vsi *vsi, const u8 *macaddr, bool set);
 diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index f531691a3e12..99647dceefc4 100644
+index 99647dceefc4..846623a97723 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
 +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -7390,6 +7390,7 @@ static const struct net_device_ops ice_netdev_ops = {
- 	.ndo_set_vf_vlan = ice_set_vf_port_vlan,
- 	.ndo_set_vf_link_state = ice_set_vf_link_state,
- 	.ndo_get_vf_stats = ice_get_vf_stats,
-+	.ndo_set_vf_rate = ice_set_vf_bw,
- 	.ndo_vlan_rx_add_vid = ice_vlan_rx_add_vid,
- 	.ndo_vlan_rx_kill_vid = ice_vlan_rx_kill_vid,
- 	.ndo_setup_tc = ice_setup_tc,
-diff --git a/drivers/net/ethernet/intel/ice/ice_sched.c b/drivers/net/ethernet/intel/ice/ice_sched.c
-index 9f07b6641705..560e52b99f83 100644
---- a/drivers/net/ethernet/intel/ice/ice_sched.c
-+++ b/drivers/net/ethernet/intel/ice/ice_sched.c
-@@ -3770,6 +3770,136 @@ ice_cfg_q_bw_dflt_lmt(struct ice_port_info *pi, u16 vsi_handle, u8 tc,
- 				      ICE_SCHED_DFLT_BW);
+@@ -5502,77 +5502,59 @@ int ice_vsi_cfg(struct ice_vsi *vsi)
  }
  
-+/**
-+ * ice_sched_get_node_by_id_type - get node from ID type
-+ * @pi: port information structure
-+ * @id: identifier
-+ * @agg_type: type of aggregator
-+ * @tc: traffic class
-+ *
-+ * This function returns node identified by ID of type aggregator, and
-+ * based on traffic class (TC). This function needs to be called with
-+ * the scheduler lock held.
-+ */
-+static struct ice_sched_node *
-+ice_sched_get_node_by_id_type(struct ice_port_info *pi, u32 id,
-+			      enum ice_agg_type agg_type, u8 tc)
-+{
-+	struct ice_sched_node *node = NULL;
-+
-+	switch (agg_type) {
-+	case ICE_AGG_TYPE_VSI: {
-+		struct ice_vsi_ctx *vsi_ctx;
-+		u16 vsi_handle = (u16)id;
-+
-+		if (!ice_is_vsi_valid(pi->hw, vsi_handle))
-+			break;
-+		/* Get sched_vsi_info */
-+		vsi_ctx = ice_get_vsi_ctx(pi->hw, vsi_handle);
-+		if (!vsi_ctx)
-+			break;
-+		node = vsi_ctx->sched.vsi_node[tc];
-+		break;
-+	}
-+
-+	case ICE_AGG_TYPE_AGG: {
-+		struct ice_sched_node *tc_node;
-+
-+		tc_node = ice_sched_get_tc_node(pi, tc);
-+		if (tc_node)
-+			node = ice_sched_get_agg_node(pi, tc_node, id);
-+		break;
-+	}
-+
-+	default:
-+		break;
-+	}
-+
-+	return node;
-+}
-+
-+/**
-+ * ice_sched_set_node_bw_lmt_per_tc - set node BW limit per TC
-+ * @pi: port information structure
-+ * @id: ID (software VSI handle or AGG ID)
-+ * @agg_type: aggregator type (VSI or AGG type node)
-+ * @tc: traffic class
-+ * @rl_type: min or max
-+ * @bw: bandwidth in Kbps
-+ *
-+ * This function sets BW limit of VSI or Aggregator scheduling node
-+ * based on TC information from passed in argument BW.
-+ */
-+static enum ice_status
-+ice_sched_set_node_bw_lmt_per_tc(struct ice_port_info *pi, u32 id,
-+				 enum ice_agg_type agg_type, u8 tc,
-+				 enum ice_rl_type rl_type, u32 bw)
-+{
-+	enum ice_status status = ICE_ERR_PARAM;
-+	struct ice_sched_node *node;
-+
-+	if (!pi)
-+		return status;
-+
-+	if (rl_type == ICE_UNKNOWN_BW)
-+		return status;
-+
-+	mutex_lock(&pi->sched_lock);
-+	node = ice_sched_get_node_by_id_type(pi, id, agg_type, tc);
-+	if (!node) {
-+		ice_debug(pi->hw, ICE_DBG_SCHED, "Wrong id, agg type, or tc\n");
-+		goto exit_set_node_bw_lmt_per_tc;
-+	}
-+	if (bw == ICE_SCHED_DFLT_BW)
-+		status = ice_sched_set_node_bw_dflt_lmt(pi, node, rl_type);
-+	else
-+		status = ice_sched_set_node_bw_lmt(pi, node, rl_type, bw);
-+
-+exit_set_node_bw_lmt_per_tc:
-+	mutex_unlock(&pi->sched_lock);
-+	return status;
-+}
-+
-+/**
-+ * ice_cfg_vsi_bw_lmt_per_tc - configure VSI BW limit per TC
-+ * @pi: port information structure
-+ * @vsi_handle: software VSI handle
-+ * @tc: traffic class
-+ * @rl_type: min or max
-+ * @bw: bandwidth in Kbps
-+ *
-+ * This function configures BW limit of VSI scheduling node based on TC
-+ * information.
-+ */
-+enum ice_status
-+ice_cfg_vsi_bw_lmt_per_tc(struct ice_port_info *pi, u16 vsi_handle, u8 tc,
-+			  enum ice_rl_type rl_type, u32 bw)
-+{
-+	return ice_sched_set_node_bw_lmt_per_tc(pi, vsi_handle,
-+						ICE_AGG_TYPE_VSI,
-+						tc, rl_type, bw);
-+}
-+
-+/**
-+ * ice_cfg_vsi_bw_dflt_lmt_per_tc - configure default VSI BW limit per TC
-+ * @pi: port information structure
-+ * @vsi_handle: software VSI handle
-+ * @tc: traffic class
-+ * @rl_type: min or max
-+ *
-+ * This function configures default BW limit of VSI scheduling node based on TC
-+ * information.
-+ */
-+enum ice_status
-+ice_cfg_vsi_bw_dflt_lmt_per_tc(struct ice_port_info *pi, u16 vsi_handle, u8 tc,
-+			       enum ice_rl_type rl_type)
-+{
-+	return ice_sched_set_node_bw_lmt_per_tc(pi, vsi_handle,
-+						ICE_AGG_TYPE_VSI,
-+						tc, rl_type,
-+						ICE_SCHED_DFLT_BW);
-+}
-+
- /**
-  * ice_cfg_rl_burst_size - Set burst size value
-  * @hw: pointer to the HW struct
-diff --git a/drivers/net/ethernet/intel/ice/ice_sched.h b/drivers/net/ethernet/intel/ice/ice_sched.h
-index 9beef8f0ec76..f89b80ba3499 100644
---- a/drivers/net/ethernet/intel/ice/ice_sched.h
-+++ b/drivers/net/ethernet/intel/ice/ice_sched.h
-@@ -103,6 +103,12 @@ ice_cfg_q_bw_lmt(struct ice_port_info *pi, u16 vsi_handle, u8 tc,
- enum ice_status
- ice_cfg_q_bw_dflt_lmt(struct ice_port_info *pi, u16 vsi_handle, u8 tc,
- 		      u16 q_handle, enum ice_rl_type rl_type);
-+enum ice_status
-+ice_cfg_vsi_bw_lmt_per_tc(struct ice_port_info *pi, u16 vsi_handle, u8 tc,
-+			  enum ice_rl_type rl_type, u32 bw);
-+enum ice_status
-+ice_cfg_vsi_bw_dflt_lmt_per_tc(struct ice_port_info *pi, u16 vsi_handle, u8 tc,
-+			       enum ice_rl_type rl_type);
- enum ice_status ice_cfg_rl_burst_size(struct ice_hw *hw, u32 bytes);
- void ice_sched_replay_agg_vsi_preinit(struct ice_hw *hw);
- void ice_sched_replay_agg(struct ice_hw *hw);
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index d90a3b7be713..86f265268ac8 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -5,6 +5,7 @@
- #include "ice_base.h"
- #include "ice_lib.h"
- #include "ice_fltr.h"
-+#include "ice_dcb_lib.h"
- #include "ice_flow.h"
- #include "ice_eswitch.h"
- #include "ice_virtchnl_allowlist.h"
-@@ -884,6 +885,40 @@ static int ice_calc_vf_first_vector_idx(struct ice_pf *pf, struct ice_vf *vf)
- 	return pf->sriov_base_vector + vf->vf_id * pf->num_msix_per_vf;
- }
- 
-+/**
-+ * ice_vf_rebuild_host_tx_rate_cfg - re-apply the Tx rate limiting configuration
-+ * @vf: VF to re-apply the configuration for
-+ *
-+ * Called after a VF VSI has been re-added/rebuild during reset. The PF driver
-+ * needs to re-apply the host configured Tx rate limiting configuration.
-+ */
-+static int ice_vf_rebuild_host_tx_rate_cfg(struct ice_vf *vf)
-+{
-+	struct device *dev = ice_pf_to_dev(vf->pf);
-+	struct ice_vsi *vsi = ice_get_vf_vsi(vf);
-+	int err;
-+
-+	if (vf->min_tx_rate) {
-+		err = ice_set_min_bw_limit(vsi, (u64)vf->min_tx_rate * 1000);
-+		if (err) {
-+			dev_err(dev, "failed to set min Tx rate to %d Mbps for VF %u, error %d\n",
-+				vf->min_tx_rate, vf->vf_id, err);
-+			return err;
-+		}
-+	}
-+
-+	if (vf->max_tx_rate) {
-+		err = ice_set_max_bw_limit(vsi, (u64)vf->max_tx_rate * 1000);
-+		if (err) {
-+			dev_err(dev, "failed to set max Tx rate to %d Mbps for VF %u, error %d\n",
-+				vf->max_tx_rate, vf->vf_id, err);
-+			return err;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
- /**
-  * ice_vf_rebuild_host_vlan_cfg - add VLAN 0 filter or rebuild the Port VLAN
-  * @vf: VF to add MAC filters for
-@@ -1420,6 +1455,11 @@ static void ice_vf_rebuild_host_cfg(struct ice_vf *vf)
- 	if (ice_vf_rebuild_host_vlan_cfg(vf))
- 		dev_err(dev, "failed to rebuild VLAN configuration for VF %u\n",
- 			vf->vf_id);
-+
-+	if (ice_vf_rebuild_host_tx_rate_cfg(vf))
-+		dev_err(dev, "failed to rebuild Tx rate limiting configuration for VF %u\n",
-+			vf->vf_id);
-+
- 	/* rebuild aggregator node config for main VF VSI */
- 	ice_vf_rebuild_aggregator_node_cfg(vsi);
- }
-@@ -4747,8 +4787,8 @@ ice_get_vf_cfg(struct net_device *netdev, int vf_id, struct ifla_vf_info *ivi)
- 		ivi->linkstate = IFLA_VF_LINK_STATE_ENABLE;
- 	else
- 		ivi->linkstate = IFLA_VF_LINK_STATE_DISABLE;
--	ivi->max_tx_rate = vf->tx_rate;
--	ivi->min_tx_rate = 0;
-+	ivi->max_tx_rate = vf->max_tx_rate;
-+	ivi->min_tx_rate = vf->min_tx_rate;
- 	return 0;
- }
- 
-@@ -4926,6 +4966,122 @@ int ice_set_vf_link_state(struct net_device *netdev, int vf_id, int link_state)
- 	return 0;
- }
- 
-+/**
-+ * ice_calc_all_vfs_min_tx_rate - calculate cumulative min Tx rate on all VFs
-+ * @pf: PF associated with VFs
-+ */
-+static int ice_calc_all_vfs_min_tx_rate(struct ice_pf *pf)
-+{
-+	int rate = 0, i;
-+
-+	ice_for_each_vf(pf, i)
-+		rate += pf->vf[i].min_tx_rate;
-+
-+	return rate;
-+}
-+
-+/**
-+ * ice_min_tx_rate_oversubscribed - check if min Tx rate causes oversubscription
-+ * @vf: VF trying to configure min_tx_rate
-+ * @min_tx_rate: min Tx rate in Mbps
-+ *
-+ * Check if the min_tx_rate being passed in will cause oversubscription of total
-+ * min_tx_rate based on the current link speed and all other VFs configured
-+ * min_tx_rate
-+ *
-+ * Return true if the passed min_tx_rate would cause oversubscription, else
-+ * return false
-+ */
-+static bool
-+ice_min_tx_rate_oversubscribed(struct ice_vf *vf, int min_tx_rate)
-+{
-+	int link_speed_mbps = ice_get_link_speed_mbps(ice_get_vf_vsi(vf));
-+	int all_vfs_min_tx_rate = ice_calc_all_vfs_min_tx_rate(vf->pf);
-+
-+	/* this VF's previous rate is being overwritten */
-+	all_vfs_min_tx_rate -= vf->min_tx_rate;
-+
-+	if (all_vfs_min_tx_rate + min_tx_rate > link_speed_mbps) {
-+		dev_err(ice_pf_to_dev(vf->pf), "min_tx_rate of %d Mbps on VF %u would cause oversubscription of %d Mbps based on the current link speed %d Mbps\n",
-+			min_tx_rate, vf->vf_id,
-+			all_vfs_min_tx_rate + min_tx_rate - link_speed_mbps,
-+			link_speed_mbps);
-+		return true;
-+	}
-+
-+	return false;
-+}
-+
-+/**
-+ * ice_set_vf_bw - set min/max VF bandwidth
-+ * @netdev: network interface device structure
-+ * @vf_id: VF identifier
-+ * @min_tx_rate: Minimum Tx rate in Mbps
-+ * @max_tx_rate: Maximum Tx rate in Mbps
-+ */
-+int
-+ice_set_vf_bw(struct net_device *netdev, int vf_id, int min_tx_rate,
-+	      int max_tx_rate)
-+{
-+	struct ice_pf *pf = ice_netdev_to_pf(netdev);
-+	struct ice_vsi *vsi;
-+	struct device *dev;
-+	struct ice_vf *vf;
-+	int ret;
-+
-+	dev = ice_pf_to_dev(pf);
-+	if (ice_validate_vf_id(pf, vf_id))
-+		return -EINVAL;
-+
-+	vf = &pf->vf[vf_id];
-+	ret = ice_check_vf_ready_for_cfg(vf);
-+	if (ret)
-+		return ret;
-+
-+	vsi = ice_get_vf_vsi(vf);
-+
-+	/* when max_tx_rate is zero that means no max Tx rate limiting, so only
-+	 * check if max_tx_rate is non-zero
-+	 */
-+	if (max_tx_rate && min_tx_rate > max_tx_rate) {
-+		dev_err(dev, "Cannot set min Tx rate %d Mbps greater than max Tx rate %d Mbps\n",
-+			min_tx_rate, max_tx_rate);
-+		return -EINVAL;
-+	}
-+
-+	if (min_tx_rate && ice_is_dcb_active(pf)) {
-+		dev_err(dev, "DCB on PF is currently enabled. VF min Tx rate limiting not allowed on this PF.\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (ice_min_tx_rate_oversubscribed(vf, min_tx_rate))
-+		return -EINVAL;
-+
-+	if (vf->min_tx_rate != (unsigned int)min_tx_rate) {
-+		ret = ice_set_min_bw_limit(vsi, (u64)min_tx_rate * 1000);
-+		if (ret) {
-+			dev_err(dev, "Unable to set min-tx-rate for VF %d\n",
-+				vf->vf_id);
-+			return ret;
-+		}
-+
-+		vf->min_tx_rate = min_tx_rate;
-+	}
-+
-+	if (vf->max_tx_rate != (unsigned int)max_tx_rate) {
-+		ret = ice_set_max_bw_limit(vsi, (u64)max_tx_rate * 1000);
-+		if (ret) {
-+			dev_err(dev, "Unable to set max-tx-rate for VF %d\n",
-+				vf->vf_id);
-+			return ret;
-+		}
-+
-+		vf->max_tx_rate = max_tx_rate;
-+	}
-+
-+	return 0;
-+}
-+
- /**
-  * ice_get_vf_stats - populate some stats for the VF
-  * @netdev: the netdev of the PF
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-index 3115284e5411..5ff93a08f54c 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-@@ -125,7 +125,8 @@ struct ice_vf {
- 	 * the main LAN VSI for the PF.
+ /* THEORY OF MODERATION:
+- * The below code creates custom DIM profiles for use by this driver, because
+- * the ice driver hardware works differently than the hardware that DIMLIB was
++ * The ice driver hardware works differently than the hardware that DIMLIB was
+  * originally made for. ice hardware doesn't have packet count limits that
+  * can trigger an interrupt, but it *does* have interrupt rate limit support,
+- * and this code adds that capability to be used by the driver when it's using
+- * DIMLIB. The DIMLIB code was always designed to be a suggestion to the driver
+- * for how to "respond" to traffic and interrupts, so this driver uses a
+- * slightly different set of moderation parameters to get best performance.
++ * which is hard-coded to a limit of 250,000 ints/second.
++ * If not using dynamic moderation, the INTRL value can be modified
++ * by ethtool rx-usecs-high.
+  */
+ struct ice_dim {
+ 	/* the throttle rate for interrupts, basically worst case delay before
+ 	 * an initial interrupt fires, value is stored in microseconds.
  	 */
- 	u16 lan_vsi_num;		/* ID as used by firmware */
--	unsigned int tx_rate;		/* Tx bandwidth limit in Mbps */
-+	unsigned int min_tx_rate;	/* Minimum Tx bandwidth limit in Mbps */
-+	unsigned int max_tx_rate;	/* Maximum Tx bandwidth limit in Mbps */
- 	DECLARE_BITMAP(vf_states, ICE_VF_STATES_NBITS);	/* VF runtime states */
+ 	u16 itr;
+-	/* the rate limit for interrupts, which can cap a delay from a small
+-	 * ITR at a certain amount of interrupts per second. f.e. a 2us ITR
+-	 * could yield as much as 500,000 interrupts per second, but with a
+-	 * 10us rate limit, it limits to 100,000 interrupts per second. Value
+-	 * is stored in microseconds.
+-	 */
+-	u16 intrl;
+ };
  
- 	u64 num_inval_msgs;		/* number of continuous invalid msgs */
-@@ -172,6 +173,10 @@ int
- ice_set_vf_port_vlan(struct net_device *netdev, int vf_id, u16 vlan_id, u8 qos,
- 		     __be16 vlan_proto);
+ /* Make a different profile for Rx that doesn't allow quite so aggressive
+- * moderation at the high end (it maxes out at 128us or about 8k interrupts a
+- * second. The INTRL/rate parameters here are only useful to cap small ITR
+- * values, which is why for larger ITR's - like 128, which can only generate
+- * 8k interrupts per second, there is no point to rate limit and the values
+- * are set to zero. The rate limit values do affect latency, and so must
+- * be reasonably small so to not impact latency sensitive tests.
++ * moderation at the high end (it maxes out at 126us or about 8k interrupts a
++ * second.
+  */
+ static const struct ice_dim rx_profile[] = {
+-	{2, 10},
+-	{8, 16},
+-	{32, 0},
+-	{96, 0},
+-	{128, 0}
++	{2},    /* 500,000 ints/s, capped at 250K by INTRL */
++	{8},    /* 125,000 ints/s */
++	{16},   /*  62,500 ints/s */
++	{62},   /*  16,129 ints/s */
++	{126}   /*   7,936 ints/s */
+ };
  
-+int
-+ice_set_vf_bw(struct net_device *netdev, int vf_id, int min_tx_rate,
-+	      int max_tx_rate);
-+
- int ice_set_vf_trust(struct net_device *netdev, int vf_id, bool trusted);
+ /* The transmit profile, which has the same sorts of values
+  * as the previous struct
+  */
+ static const struct ice_dim tx_profile[] = {
+-	{2, 10},
+-	{8, 16},
+-	{64, 0},
+-	{128, 0},
+-	{256, 0}
++	{2},    /* 500,000 ints/s, capped at 250K by INTRL */
++	{8},    /* 125,000 ints/s */
++	{40},   /*  16,125 ints/s */
++	{128},  /*   7,812 ints/s */
++	{256}   /*   3,906 ints/s */
+ };
  
- int ice_set_vf_link_state(struct net_device *netdev, int vf_id, int link_state);
-@@ -303,6 +308,14 @@ ice_set_vf_link_state(struct net_device __always_unused *netdev,
- 	return -EOPNOTSUPP;
+ static void ice_tx_dim_work(struct work_struct *work)
+ {
+ 	struct ice_ring_container *rc;
+-	struct ice_q_vector *q_vector;
+ 	struct dim *dim;
+-	u16 itr, intrl;
++	u16 itr;
+ 
+ 	dim = container_of(work, struct dim, work);
+-	rc = container_of(dim, struct ice_ring_container, dim);
+-	q_vector = container_of(rc, struct ice_q_vector, tx);
++	rc = (struct ice_ring_container *)dim->priv;
+ 
+-	if (dim->profile_ix >= ARRAY_SIZE(tx_profile))
+-		dim->profile_ix = ARRAY_SIZE(tx_profile) - 1;
++	WARN_ON(dim->profile_ix >= ARRAY_SIZE(tx_profile));
+ 
+ 	/* look up the values in our local table */
+ 	itr = tx_profile[dim->profile_ix].itr;
+-	intrl = tx_profile[dim->profile_ix].intrl;
+ 
+-	ice_trace(tx_dim_work, q_vector, dim);
++	ice_trace(tx_dim_work, container_of(rc, struct ice_q_vector, tx), dim);
+ 	ice_write_itr(rc, itr);
+-	ice_write_intrl(q_vector, intrl);
+ 
+ 	dim->state = DIM_START_MEASURE;
+ }
+@@ -5580,28 +5562,65 @@ static void ice_tx_dim_work(struct work_struct *work)
+ static void ice_rx_dim_work(struct work_struct *work)
+ {
+ 	struct ice_ring_container *rc;
+-	struct ice_q_vector *q_vector;
+ 	struct dim *dim;
+-	u16 itr, intrl;
++	u16 itr;
+ 
+ 	dim = container_of(work, struct dim, work);
+-	rc = container_of(dim, struct ice_ring_container, dim);
+-	q_vector = container_of(rc, struct ice_q_vector, rx);
++	rc = (struct ice_ring_container *)dim->priv;
+ 
+-	if (dim->profile_ix >= ARRAY_SIZE(rx_profile))
+-		dim->profile_ix = ARRAY_SIZE(rx_profile) - 1;
++	WARN_ON(dim->profile_ix >= ARRAY_SIZE(rx_profile));
+ 
+ 	/* look up the values in our local table */
+ 	itr = rx_profile[dim->profile_ix].itr;
+-	intrl = rx_profile[dim->profile_ix].intrl;
+ 
+-	ice_trace(rx_dim_work, q_vector, dim);
++	ice_trace(rx_dim_work, container_of(rc, struct ice_q_vector, rx), dim);
+ 	ice_write_itr(rc, itr);
+-	ice_write_intrl(q_vector, intrl);
+ 
+ 	dim->state = DIM_START_MEASURE;
  }
  
-+static inline int
-+ice_set_vf_bw(struct net_device __always_unused *netdev,
-+	      int __always_unused vf_id, int __always_unused min_tx_rate,
-+	      int __always_unused max_tx_rate)
++#define ICE_DIM_DEFAULT_PROFILE_IX 1
++
++/**
++ * ice_init_moderation - set up interrupt moderation
++ * @q_vector: the vector containing rings to be configured
++ *
++ * Set up interrupt moderation registers, with the intent to do the right thing
++ * when called from reset or from probe, and whether or not dynamic moderation
++ * is enabled or not. Take special care to write all the registers in both
++ * dynamic moderation mode or not in order to make sure hardware is in a known
++ * state.
++ */
++static void ice_init_moderation(struct ice_q_vector *q_vector)
 +{
-+	return -EOPNOTSUPP;
++	struct ice_ring_container *rc;
++	bool tx_dynamic, rx_dynamic;
++
++	rc = &q_vector->tx;
++	INIT_WORK(&rc->dim.work, ice_tx_dim_work);
++	rc->dim.mode = DIM_CQ_PERIOD_MODE_START_FROM_EQE;
++	rc->dim.profile_ix = ICE_DIM_DEFAULT_PROFILE_IX;
++	rc->dim.priv = rc;
++	tx_dynamic = ITR_IS_DYNAMIC(rc);
++
++	/* set the initial TX ITR to match the above */
++	ice_write_itr(rc, tx_dynamic ?
++		      tx_profile[rc->dim.profile_ix].itr : rc->itr_setting);
++
++	rc = &q_vector->rx;
++	INIT_WORK(&rc->dim.work, ice_rx_dim_work);
++	rc->dim.mode = DIM_CQ_PERIOD_MODE_START_FROM_EQE;
++	rc->dim.profile_ix = ICE_DIM_DEFAULT_PROFILE_IX;
++	rc->dim.priv = rc;
++	rx_dynamic = ITR_IS_DYNAMIC(rc);
++
++	/* set the initial RX ITR to match the above */
++	ice_write_itr(rc, rx_dynamic ? rx_profile[rc->dim.profile_ix].itr :
++				       rc->itr_setting);
++
++	ice_set_q_vector_intrl(q_vector);
 +}
 +
- static inline int
- ice_calc_vf_reg_idx(struct ice_vf __always_unused *vf,
- 		    struct ice_q_vector __always_unused *q_vector)
+ /**
+  * ice_napi_enable_all - Enable NAPI for all q_vectors in the VSI
+  * @vsi: the VSI being configured
+@@ -5616,11 +5635,7 @@ static void ice_napi_enable_all(struct ice_vsi *vsi)
+ 	ice_for_each_q_vector(vsi, q_idx) {
+ 		struct ice_q_vector *q_vector = vsi->q_vectors[q_idx];
+ 
+-		INIT_WORK(&q_vector->tx.dim.work, ice_tx_dim_work);
+-		q_vector->tx.dim.mode = DIM_CQ_PERIOD_MODE_START_FROM_EQE;
+-
+-		INIT_WORK(&q_vector->rx.dim.work, ice_rx_dim_work);
+-		q_vector->rx.dim.mode = DIM_CQ_PERIOD_MODE_START_FROM_EQE;
++		ice_init_moderation(q_vector);
+ 
+ 		if (q_vector->rx.rx_ring || q_vector->tx.tx_ring)
+ 			napi_enable(&q_vector->napi);
+diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
+index 01ae331927bd..1373b97b117a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_txrx.c
++++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
+@@ -1259,6 +1259,41 @@ int ice_clean_rx_irq(struct ice_rx_ring *rx_ring, int budget)
+ 	return failure ? budget : (int)total_rx_pkts;
+ }
+ 
++static void __ice_update_sample(struct ice_q_vector *q_vector,
++				struct ice_ring_container *rc,
++				struct dim_sample *sample,
++				bool is_tx)
++{
++	u64 packets = 0, bytes = 0;
++
++	if (is_tx) {
++		struct ice_tx_ring *tx_ring;
++
++		ice_for_each_tx_ring(tx_ring, *rc) {
++			packets += tx_ring->stats.pkts;
++			bytes += tx_ring->stats.bytes;
++		}
++	} else {
++		struct ice_rx_ring *rx_ring;
++
++		ice_for_each_rx_ring(rx_ring, *rc) {
++			packets += rx_ring->stats.pkts;
++			bytes += rx_ring->stats.bytes;
++		}
++	}
++
++	dim_update_sample(q_vector->total_events, packets, bytes, sample);
++	sample->comp_ctr = 0;
++
++	/* if dim settings get stale, like when not updated for 1
++	 * second or longer, force it to start again. This addresses the
++	 * frequent case of an idle queue being switched to by the
++	 * scheduler. The 1,000 here means 1,000 milliseconds.
++	 */
++	if (ktime_ms_delta(sample->time, rc->dim.start_sample.time) >= 1000)
++		rc->dim.state = DIM_START_MEASURE;
++}
++
+ /**
+  * ice_net_dim - Update net DIM algorithm
+  * @q_vector: the vector associated with the interrupt
+@@ -1274,34 +1309,16 @@ static void ice_net_dim(struct ice_q_vector *q_vector)
+ 	struct ice_ring_container *rx = &q_vector->rx;
+ 
+ 	if (ITR_IS_DYNAMIC(tx)) {
+-		struct dim_sample dim_sample = {};
+-		u64 packets = 0, bytes = 0;
+-		struct ice_tx_ring *ring;
+-
+-		ice_for_each_tx_ring(ring, q_vector->tx) {
+-			packets += ring->stats.pkts;
+-			bytes += ring->stats.bytes;
+-		}
+-
+-		dim_update_sample(q_vector->total_events, packets, bytes,
+-				  &dim_sample);
++		struct dim_sample dim_sample;
+ 
++		__ice_update_sample(q_vector, tx, &dim_sample, true);
+ 		net_dim(&tx->dim, dim_sample);
+ 	}
+ 
+ 	if (ITR_IS_DYNAMIC(rx)) {
+-		struct dim_sample dim_sample = {};
+-		u64 packets = 0, bytes = 0;
+-		struct ice_rx_ring *ring;
+-
+-		ice_for_each_rx_ring(ring, q_vector->rx) {
+-			packets += ring->stats.pkts;
+-			bytes += ring->stats.bytes;
+-		}
+-
+-		dim_update_sample(q_vector->total_events, packets, bytes,
+-				  &dim_sample);
++		struct dim_sample dim_sample;
+ 
++		__ice_update_sample(q_vector, rx, &dim_sample, false);
+ 		net_dim(&rx->dim, dim_sample);
+ 	}
+ }
+@@ -1328,15 +1345,14 @@ static u32 ice_buildreg_itr(u16 itr_idx, u16 itr)
+ }
+ 
+ /**
+- * ice_update_ena_itr - Update ITR moderation and re-enable MSI-X interrupt
++ * ice_enable_interrupt - re-enable MSI-X interrupt
+  * @q_vector: the vector associated with the interrupt to enable
+  *
+- * Update the net_dim() algorithm and re-enable the interrupt associated with
+- * this vector.
+- *
+- * If the VSI is down, the interrupt will not be re-enabled.
++ * If the VSI is down, the interrupt will not be re-enabled. Also,
++ * when enabling the interrupt always reset the wb_on_itr to false
++ * and trigger a software interrupt to clean out internal state.
+  */
+-static void ice_update_ena_itr(struct ice_q_vector *q_vector)
++static void ice_enable_interrupt(struct ice_q_vector *q_vector)
+ {
+ 	struct ice_vsi *vsi = q_vector->vsi;
+ 	bool wb_en = q_vector->wb_on_itr;
+@@ -1351,10 +1367,6 @@ static void ice_update_ena_itr(struct ice_q_vector *q_vector)
+ 	if (wb_en)
+ 		q_vector->wb_on_itr = false;
+ 
+-	/* This will do nothing if dynamic updates are not enabled. */
+-	ice_net_dim(q_vector);
+-
+-	/* net_dim() updates ITR out-of-band using a work item */
+ 	itr_val = ice_buildreg_itr(ICE_ITR_NONE, 0);
+ 	/* trigger an immediate software interrupt when exiting
+ 	 * busy poll, to make sure to catch any pending cleanups
+@@ -1482,10 +1494,12 @@ int ice_napi_poll(struct napi_struct *napi, int budget)
+ 	/* Exit the polling mode, but don't re-enable interrupts if stack might
+ 	 * poll us due to busy-polling
+ 	 */
+-	if (likely(napi_complete_done(napi, work_done)))
+-		ice_update_ena_itr(q_vector);
+-	else
++	if (likely(napi_complete_done(napi, work_done))) {
++		ice_net_dim(q_vector);
++		ice_enable_interrupt(q_vector);
++	} else {
+ 		ice_set_wb_on_itr(q_vector);
++	}
+ 
+ 	return min_t(int, work_done, budget - 1);
+ }
 -- 
 2.31.1
 
