@@ -2,144 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20A6B433BE8
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 18:18:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDA90433BF0
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 18:19:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232130AbhJSQUh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 12:20:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46410 "EHLO mail.kernel.org"
+        id S233784AbhJSQVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 12:21:19 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:47048 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229789AbhJSQUg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Oct 2021 12:20:36 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 274FA6113D;
-        Tue, 19 Oct 2021 16:18:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634660303;
-        bh=CSThRwfLLBbnWmpSAkjzo6ykAldK6QMiL9G46/Dm69w=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=nVlcNJMijXvUCkk4ZNOavUI5JqGD7uYB1LEujLRt6C24Y9Dp4GGcBQzIcpTEcUJ65
-         tIl/13gwTNZtxSAGmErXo80daX/BWtXLbTa3PNUN1uxc6Ja7E+JDGpYXeffBf50wPg
-         kzE9NUEhBmkIja6HvQtT8CEesZLNCZRmz7YFLMfrQcJefyplMnQMZpstSdel1NoPv8
-         5C9rrybmpr1+vpm3CxebjEowX9gfHUxxGHwg1syJ7mZ2CerpR+sPADgvGuru3tTLqQ
-         MGXAhGoeknfwRASCjuSqq5ImM2xpA+ylpNccmFZ/XU5FGNdZKmH8br7cHU2Go2HZLK
-         R2eW43Ge42x1Q==
-Received: by mail-ed1-f51.google.com with SMTP id i20so14731424edj.10;
-        Tue, 19 Oct 2021 09:18:23 -0700 (PDT)
-X-Gm-Message-State: AOAM533dLQZYmL+GnX1F1unmNbXkLQIxmzLkPhAxCSa0ATU6oPOFQhuS
-        t+0X4QjQyxSzUoRxzVpk19y2G/bv9XYC3Vr3lQ==
-X-Google-Smtp-Source: ABdhPJyECg/ex6JGhxYjfVAKj9ZTQDiYmMDq836QH65YEzFdOsqIbnkT+Rd0QJdZrzxam94/CGdjldneWAz1SLg2GHg=
-X-Received: by 2002:aa7:c357:: with SMTP id j23mr57477452edr.145.1634660136617;
- Tue, 19 Oct 2021 09:15:36 -0700 (PDT)
-MIME-Version: 1.0
-References: <20211013223921.4380-1-ansuelsmth@gmail.com> <20211013223921.4380-17-ansuelsmth@gmail.com>
- <YW2BcC2izFM6HjG5@robh.at.kernel.org> <YW2Cp6vWAYDM68rs@Ansuel-xps.localdomain>
-In-Reply-To: <YW2Cp6vWAYDM68rs@Ansuel-xps.localdomain>
-From:   Rob Herring <robh@kernel.org>
-Date:   Tue, 19 Oct 2021 11:15:24 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqJ7QAMRWQs4iuEmPpj2q2t0tCEGBNP+9QvTwZ=aeJn4vQ@mail.gmail.com>
-Message-ID: <CAL_JsqJ7QAMRWQs4iuEmPpj2q2t0tCEGBNP+9QvTwZ=aeJn4vQ@mail.gmail.com>
-Subject: Re: [net-next PATCH v7 16/16] dt-bindings: net: dsa: qca8k: convert
- to YAML schema
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        id S232137AbhJSQVN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Oct 2021 12:21:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=fJRLB42XQcsYfYfsYVcIV7s8kQ6rgyTZ6Dj+jrkJZ9E=; b=NSKzDMTQO6yn+mn0JvlksHP1Rb
+        Uc7zxbee4w0ttz09MF/1w7QhkBswOqsj5SR4b7AKN6UqbT/tV9SB40+gYMQ76NCV4G5B8WyiHTIrA
+        Q9eHhyZXBex9ypKAYVv5Y4GFs2vrUgoNIftPdIvMLHrWJZNMevnlNDJqPSPGbXWjdfrg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mcrpF-00B5wm-Dh; Tue, 19 Oct 2021 18:18:53 +0200
+Date:   Tue, 19 Oct 2021 18:18:53 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Volodymyr Mytnyk [C]" <vmytnyk@marvell.com>
+Cc:     "kuba@kernel.org" <kuba@kernel.org>,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        "Vadym Kochan [C]" <vkochan@marvell.com>,
+        Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        "Taras Chornyi [C]" <tchornyi@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        John Crispin <john@phrozen.org>,
-        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Matthew Hagan <mnhagan88@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v2] net: marvell: prestera: add firmware v4.0
+ support
+Message-ID: <YW7v7VjQF6ZZOb/L@lunn.ch>
+References: <1634623424-15011-1-git-send-email-volodymyr.mytnyk@plvision.eu>
+ <YW6+r9u2a9k6wKF+@lunn.ch>
+ <SJ0PR18MB40099BBA546BFBE941B969DCB2BD9@SJ0PR18MB4009.namprd18.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SJ0PR18MB40099BBA546BFBE941B969DCB2BD9@SJ0PR18MB4009.namprd18.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 18, 2021 at 9:22 AM Ansuel Smith <ansuelsmth@gmail.com> wrote:
->
-> On Mon, Oct 18, 2021 at 09:15:12AM -0500, Rob Herring wrote:
-> > On Thu, Oct 14, 2021 at 12:39:21AM +0200, Ansuel Smith wrote:
-> > > From: Matthew Hagan <mnhagan88@gmail.com>
-> > >
-> > > Convert the qca8k bindings to YAML format.
-> > >
-> > > Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
-> > > Co-developed-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > > ---
-> > >  .../devicetree/bindings/net/dsa/qca8k.txt     | 245 ------------
-> > >  .../devicetree/bindings/net/dsa/qca8k.yaml    | 362 ++++++++++++++++++
-> > >  2 files changed, 362 insertions(+), 245 deletions(-)
-> > >  delete mode 100644 Documentation/devicetree/bindings/net/dsa/qca8k.txt
-> > >  create mode 100644 Documentation/devicetree/bindings/net/dsa/qca8k.yaml
+> - Major changes have been made to new v4.0 FW ABI to add support of new features,
+>   introduce the stability of the FW ABI and ensure better forward compatibility
+>   for the future vesrions.
 
-> > > +patternProperties:
-> > > +  "^(ethernet-)?ports$":
-> > > +    type: object
-> > > +    properties:
-> > > +      '#address-cells':
-> > > +        const: 1
-> > > +      '#size-cells':
-> > > +        const: 0
-> > > +
-> > > +    patternProperties:
-> > > +      "^(ethernet-)?port@[0-6]$":
-> > > +        type: object
-> > > +        description: Ethernet switch ports
-> > > +
-> > > +        properties:
-> > > +          reg:
-> > > +            description: Port number
-> > > +
-> > > +          label:
-> > > +            description:
-> > > +              Describes the label associated with this port, which will become
-> > > +              the netdev name
-> > > +            $ref: /schemas/types.yaml#/definitions/string
-> > > +
-> > > +          link:
-> > > +            description:
-> > > +              Should be a list of phandles to other switch's DSA port. This
-> > > +              port is used as the outgoing port towards the phandle ports. The
-> > > +              full routing information must be given, not just the one hop
-> > > +              routes to neighbouring switches
-> > > +            $ref: /schemas/types.yaml#/definitions/phandle-array
-> > > +
-> > > +          ethernet:
-> > > +            description:
-> > > +              Should be a phandle to a valid Ethernet device node.  This host
-> > > +              device is what the switch port is connected to
-> > > +            $ref: /schemas/types.yaml#/definitions/phandle
-> >
-> > All of this is defined in dsa.yaml. Add a $ref to it and don't duplicate
-> > it here.
-> >
->
-> The reason I redefined it is because I didn't manage to find a way on
-> how to add additional bindings for the qca,sgmii... . Any hint about
-> that?
+So this point needs bring out in the commit message. You need to
+explain why you think you will never need another ABI break. How your
+new design allows extensible, what you have fixed in your old design
+which has causes two ABI breaks.
 
-The problem is we can't have a single schema for parent and child
-nodes and then allow additional properties in a child node at least if
-we want to make sure all child properties are defined.
+Given this is the second time you have broken the ABI, i need
+convincing.
 
-The port part of dsa.yaml needs to be split out either to a separate
-file or under '$defs' in the same file so that you can reference it
-and add properties.
+> - All current platforms using this driver have dedicated OOB mgmt port, thus the
+>   user still be able to do upgrade of the FW. So, no "Bricks in broom closets" :).
 
-As a separate file, you can then do:
+So your cabling guidelines suggest a dedicated Ethernet cable from the
+broom closet to the NOC for the OOB port? I suspect most users ignore
+this, and do management over the network. They only use the OOB port
+when they have bricked the device because they installed a kernel
+upgrade over the network, without upgrading the firmware.
 
-"^(ethernet-)?port@[0-9]+$":
-  $ref: dsa-port.yaml#
-  unevaluatedProperties: false
-  properties:
-    a-custom-prop: ...
-
->
-> I tried with allOf but the make check still printed errors in the
-> example with not valid binding about qca,sgmii.
+	Andrew
