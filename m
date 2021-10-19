@@ -2,69 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCD714340AE
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 23:39:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADAD04340B6
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 23:41:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229639AbhJSVmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 17:42:09 -0400
-Received: from mail-ot1-f48.google.com ([209.85.210.48]:41645 "EHLO
-        mail-ot1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbhJSVmJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 17:42:09 -0400
-Received: by mail-ot1-f48.google.com with SMTP id v2-20020a05683018c200b0054e3acddd91so3690342ote.8;
-        Tue, 19 Oct 2021 14:39:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sKNbAmszLsQhFT7DFncEwajZs0JtulmAZhcXAEilTy8=;
-        b=fkVlHXn6A8tHvWilj7MTv8t8qkckzLryKEwAMCqtJycfHGQH60kvyoOEoF3sDMa8nx
-         qqKzwpR4nIYXcQJ49mM4zBkxDj7fFMrnMqXHRsyjX5NeaMrUKDYvqZMB69o0AaDF4Khd
-         V6DGXQtGQc7I2ncV7+8Sbz9Or4Y1M//EBNPzJQI6Jby+xVOpNxCySAS1uju22aPrEKb+
-         UZbR6EhohZ26vz0NqkYPIIE6S5SwXuYiP/IlxospKeMLScUN7S/I3ITjqzcam8EDejCd
-         W4J6s6i2GH1N69H+W0yDsdu0EeLtqCwloWbfWsS4nQuKNE0poXeJRgUPMp6Z81/tRpM8
-         GnWg==
-X-Gm-Message-State: AOAM531rW/eEZplH+IyoS5J2sYUvA/PdaIekYJ7niqgGJm6VagtqVaiy
-        V4ht204MyERhEXIuuEFCCA==
-X-Google-Smtp-Source: ABdhPJzNM/V1GkO10wBoHVN8fdVxQS1rZrUnsyPZm07zkS4nFXr5zlcBNOs8/rjBJxOBn91wzmGCKQ==
-X-Received: by 2002:a05:6830:1e11:: with SMTP id s17mr7530141otr.100.1634679595660;
-        Tue, 19 Oct 2021 14:39:55 -0700 (PDT)
-Received: from robh.at.kernel.org (rrcs-67-78-118-34.sw.biz.rr.com. [67.78.118.34])
-        by smtp.gmail.com with ESMTPSA id n187sm48942oif.52.2021.10.19.14.39.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Oct 2021 14:39:55 -0700 (PDT)
-Received: (nullmailer pid 886061 invoked by uid 1000);
-        Tue, 19 Oct 2021 21:39:54 -0000
-Date:   Tue, 19 Oct 2021 16:39:54 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     David Heidelberg <david@ixit.cz>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, ~okias/devicetree@lists.sr.ht,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: net: marvell-bluetooth: Convert txt
- bindings to yaml
-Message-ID: <YW87KoSkFnn2Anw2@robh.at.kernel.org>
-References: <20211009104716.46162-1-david@ixit.cz>
+        id S229625AbhJSVn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 17:43:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44352 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229544AbhJSVn5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Oct 2021 17:43:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B543961074;
+        Tue, 19 Oct 2021 21:41:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634679703;
+        bh=h9rWMFHD9yM2tzMOtQwpsYaC5UHwqMyquTQ/4E5mkf0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=u/T+54Jj0i23OAei8dPO8ZFGvWaQZGq1E1hbM8Y/ul7D142u214cwag1FZxa36lTY
+         zZTb3gNsYUeTf60AQC+YmWjMB5Tle7L+6fNMzg5Jziab5WjkHFrDJrlPuIglnxwAxl
+         E5Fp9v1k6ums/QPbzMRz/CuBkCBME1tnjGjSe5PAkoxYbbA6cPwZUtYFvqvO6hIxhK
+         g99oYB5sFn35b2pLFjgxzUb4B5rAaHLYGES5ZNZePy+3PesWNC1NuT1fLTVsVWV7N+
+         MkiYCybMaCwpewhYeJ/voDPqlXALED/T+fC2MxP/J3KSksGms4tXFm6MERnasLC2e5
+         s6alrCR9ApWMw==
+Date:   Tue, 19 Oct 2021 14:41:42 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Florian Westphal <fw@strlen.de>, David Ahern <dsahern@kernel.org>
+Cc:     Eugene Crosser <crosser@average.org>, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org,
+        Lahav Schlesinger <lschlesinger@drivenets.com>
+Subject: Re: Commit 09e856d54bda5f288ef8437a90ab2b9b3eab83d1r "vrf: Reset
+ skb conntrack connection on VRF rcv" breaks expected netfilter behaviour
+Message-ID: <20211019144142.5308fc84@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211015210448.GA5069@breakpoint.cc>
+References: <bca5dcab-ef6b-8711-7f99-8d86e79d76eb@average.org>
+        <20211013092235.GA32450@breakpoint.cc>
+        <20211015210448.GA5069@breakpoint.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211009104716.46162-1-david@ixit.cz>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 09 Oct 2021 12:47:16 +0200, David Heidelberg wrote:
-> Convert documentation for The Marvell Avastar 88W8897 into YAML syntax.
+On Fri, 15 Oct 2021 23:04:48 +0200 Florian Westphal wrote:
+> Florian Westphal <fw@strlen.de> wrote:
+> > 'track' is hard to implement correctly because of RELATED traffic.
+> > 
+> > E.g. 'tcp dport 22 track' won't work correctly because icmp pmtu
+> > won't be handled.
+> > 
+> > I'd suggest to try a conditional nf_ct_reset that keeps the conntrack
+> > entry if its in another zone.
+> > 
+> > I can't think of another solution at the moment, the existing behaviour
+> > of resetting conntrack entry for postrouting/output is too old,
+> > otherwise the better solution IMO would be to keep that entry around on
+> > egress if a NAT rewrite has been done. This would avoid the 'double snat'
+> > problem that the 'reset on ingress' tries to solve.  
 > 
-> Signed-off-by: David Heidelberg <david@ixit.cz>
-> ---
->  .../bindings/net/marvell-bluetooth.txt        | 25 ---------------
->  .../bindings/net/marvell-bluetooth.yaml       | 31 +++++++++++++++++++
->  2 files changed, 31 insertions(+), 25 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/net/marvell-bluetooth.txt
->  create mode 100644 Documentation/devicetree/bindings/net/marvell-bluetooth.yaml
+> I'm working on this.
 > 
+> Eugene, I think it makes sense if you send a formal revert, a proper
+> fix for snat+vrf needs more work.
 
-Applied, thanks!
+If this is still the plan can we get some acks on the revert please?
+
+https://patchwork.kernel.org/project/netdevbpf/patch/20211018182250.23093-2-crosser@average.org/
