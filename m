@@ -2,110 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 966F2433096
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 10:05:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45EC543308A
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 10:05:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234832AbhJSIGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 04:06:55 -0400
-Received: from sender11-op-o11.zoho.eu ([31.186.226.225]:17209 "EHLO
-        sender11-op-o11.zoho.eu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234519AbhJSIGw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 04:06:52 -0400
-X-Greylist: delayed 905 seconds by postgrey-1.27 at vger.kernel.org; Tue, 19 Oct 2021 04:06:51 EDT
-ARC-Seal: i=1; a=rsa-sha256; t=1634629763; cv=none; 
-        d=zohomail.eu; s=zohoarc; 
-        b=jMqkoii54nOAzrz8G3qNQ0rzHwkWEM9fbAfoLyPXNc2n50cUFIau8xAX/IL5eISB79fggXqnk9THLxVYaPYb6oLqY2e/yw3mbpeSIt2Pnjh5wfliMq1Fq5Czz+Hd8qgsH+2kZoG42v0bdr4YRWq6iyHIVS+jMmqfKjLBbGw+HxE=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.eu; s=zohoarc; 
-        t=1634629763; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=Czx564W05Y+/SEPEv1luL1kRJ3nXcj6vqmTZ2XRacTg=; 
-        b=CdbdYKa0w+bTpj/acXCzeXnSWZmKpSGw/wyRqkrABJNXZ7yf8yc/pSXbM/AHjzUJSBjLh2yPgefPFTcwL709LnGHZknqinhbNkA1a7Z5180exAMpBGLB+/PlNFdVax8Z6iQduwkc5hG3quFzlSXBHIxvxuthYBDw6BIiwClBkHo=
-ARC-Authentication-Results: i=1; mx.zohomail.eu;
-        spf=pass  smtp.mailfrom=jes@trained-monkey.org;
-        dmarc=pass header.from=<jes@trained-monkey.org>
-Received: from [192.168.4.48] (85.184.170.180 [85.184.170.180]) by mx.zoho.eu
-        with SMTPS id 1634629762840830.7659684704782; Tue, 19 Oct 2021 09:49:22 +0200 (CEST)
-Date:   Tue, 19 Oct 2021 09:49:20 +0200
-From:   jes@trained-monkey.org
-To:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Message-ID: <038b450c-e27a-4f61-897b-50a92f29abc7.maildroid@localhost>
-In-Reply-To: <20211015221652.827253-4-kuba@kernel.org>
-References: <20211015221652.827253-1-kuba@kernel.org>
- <20211015221652.827253-4-kuba@kernel.org>
-Subject: Re: [PATCH net-next 03/12] ethernet: alteon: use eth_hw_addr_set()
+        id S234822AbhJSIGs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 04:06:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36330 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234722AbhJSIGl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Oct 2021 04:06:41 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E94EB61452;
+        Tue, 19 Oct 2021 08:04:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634630668;
+        bh=Uvci5l/z6Xl7igGPEJw1tvb5zXG8EEBvSjZvZQvPw7o=;
+        h=From:To:Cc:Subject:Date:From;
+        b=rpKkaVAryy3dOHI5Z0AVHWDGL+qYu3wofMEsdn+Pc8CjxVWvhXVazy7gZrKiPAaDD
+         xNVXTC8q0dsZKNR3ih1oPwNBgr4zydsOmvnv3poIDksXNNKT3SfE6lRbc6lup8jshp
+         UFeWO8R7fla6iyuPrQH95m37/OifKGJ7dEFFb9jjachmzIGkjNuxHpa2sx0ZtXdKS1
+         AGVBuul1FLqAXwuvTgrPKfeB7WXkylEdnmiuXkM/w4yevSt2//z+WrduhEbO7W0aHm
+         qsWGPEPZWnGjrqUdazSHMDIBy5fUq5IJo3r1SYMCGrtFiTcQmrOZ5eRKUX3tYFWXRU
+         876wQqSSyZ5qw==
+Received: by mail.kernel.org with local (Exim 4.94.2)
+        (envelope-from <mchehab@kernel.org>)
+        id 1mck6j-001oIo-02; Tue, 19 Oct 2021 09:04:25 +0100
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-kernel@vger.kernel.org,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Alex Shi <alexs@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Anton Vorontsov <anton@enomsg.org>,
+        Anup Patel <anup.patel@wdc.com>,
+        Atish Patra <atish.patra@wdc.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Chen-Yu Tsai <wens@csie.org>, Colin Cross <ccross@android.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Tony Luck <tony.luck@intel.com>, Yonghong Song <yhs@fb.com>,
+        bpf@vger.kernel.org, devicetree@vger.kernel.org,
+        kvm-riscv@lists.infradead.org, kvm@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, netdev@vger.kernel.org,
+        sparmaintainer@unisys.com
+Subject: [PATCH v3 00/23] Fix some issues at documentation
+Date:   Tue, 19 Oct 2021 09:03:59 +0100
+Message-Id: <cover.1634630485.git.mchehab+huawei@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Mailer: MailDroid/5.11 (Android 11)
-User-Agent: MailDroid/5.11 (Android 11)
-X-ZohoMailClient: External
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Sender: Mauro Carvalho Chehab <mchehab@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Acked-By: Jes Sorensen <jes@trained-monkey.org>
+Hi Jon,
 
-Sorry for top posting, mobile email clients suck.
+This series is against today's next (next-20211019) and addresses missing
+links to Documentation/*.
 
-Jes
+The best would be to have the patches applied directly to the trees that
+contain the patches that moved/renamed files, and then apply the
+remaining ones either later during the merge window or just afterwards,
+whatever works best for you.
 
-Sent from MailDroid
+Regards,
+Mauro
 
------Original Message-----
-From: Jakub Kicinski <kuba@kernel.org>
-To: davem@davemloft.net
-Cc: netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>, jes@trained-monkey.org, linux-acenic@sunsite.dk
-Sent: Sat, 16 Oct 2021 0:17
-Subject: [PATCH net-next 03/12] ethernet: alteon: use eth_hw_addr_set()
+Mauro Carvalho Chehab (23):
+  visorbus: fix a copyright symbol that was bad encoded
+  libbpf: update index.rst reference
+  docs: accounting: update delay-accounting.rst reference
+  MAINTAINERS: update arm,vic.yaml reference
+  MAINTAINERS: update aspeed,i2c.yaml reference
+  MAINTAINERS: update faraday,ftrtc010.yaml reference
+  MAINTAINERS: update ti,sci.yaml reference
+  MAINTAINERS: update intel,ixp46x-rng.yaml reference
+  MAINTAINERS: update nxp,imx8-jpeg.yaml reference
+  MAINTAINERS: update gemini.yaml reference
+  MAINTAINERS: update brcm,unimac-mdio.yaml reference
+  MAINTAINERS: update mtd-physmap.yaml reference
+  Documentation: update vcpu-requests.rst reference
+  bpftool: update bpftool-cgroup.rst reference
+  docs: translations: zn_CN: irq-affinity.rst: add a missing extension
+  docs: translations: zh_CN: memory-hotplug.rst: fix a typo
+  docs: fs: locks.rst: update comment about mandatory file locking
+  fs: remove a comment pointing to the removed mandatory-locking file
+  Documentation/process: fix a cross reference
+  dt-bindings: mfd: update x-powers,axp152.yaml reference
+  regulator: dt-bindings: update samsung,s2mpa01.yaml reference
+  regulator: dt-bindings: update samsung,s5m8767.yaml reference
+  dt-bindings: reserved-memory: ramoops: update ramoops.yaml references
 
-Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
-of VLANs...") introduced a rbtree for faster Ethernet address look
-up. To maintain netdev->dev_addr in this tree we need to make all
-the writes to it got through appropriate helpers.
+ Documentation/admin-guide/ramoops.rst         |  2 +-
+ Documentation/admin-guide/sysctl/kernel.rst   |  2 +-
+ Documentation/bpf/index.rst                   |  2 +-
+ .../devicetree/bindings/gpio/gpio-axp209.txt  |  2 +-
+ .../bindings/regulator/samsung,s2mpa01.yaml   |  2 +-
+ .../bindings/regulator/samsung,s5m8767.yaml   |  2 +-
+ Documentation/filesystems/locks.rst           | 17 +++++-----------
+ Documentation/process/submitting-patches.rst  |  4 ++--
+ .../zh_CN/core-api/irq/irq-affinity.rst       |  2 +-
+ .../zh_CN/core-api/memory-hotplug.rst         |  2 +-
+ MAINTAINERS                                   | 20 +++++++++----------
+ arch/riscv/kvm/vcpu.c                         |  2 +-
+ drivers/visorbus/visorbus_main.c              |  2 +-
+ fs/locks.c                                    |  1 -
+ .../selftests/bpf/test_bpftool_synctypes.py   |  2 +-
+ 15 files changed, 28 insertions(+), 36 deletions(-)
 
-Break the address apart into an array on the stack, then call
-eth_hw_addr_set().
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-CC: jes@trained-monkey.org
-CC: linux-acenic@sunsite.dk
----
- drivers/net/ethernet/alteon/acenic.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/ethernet/alteon/acenic.c b/drivers/net/ethernet/alteon/acenic.c
-index eeb86bd851f9..732da15a3827 100644
---- a/drivers/net/ethernet/alteon/acenic.c
-+++ b/drivers/net/ethernet/alteon/acenic.c
-@@ -869,6 +869,7 @@ static int ace_init(struct net_device *dev)
- 	int board_idx, ecode = 0;
- 	short i;
- 	unsigned char cache_size;
-+	u8 addr[ETH_ALEN];
- 
- 	ap = netdev_priv(dev);
- 	regs = ap->regs;
-@@ -988,12 +989,13 @@ static int ace_init(struct net_device *dev)
- 	writel(mac1, &regs->MacAddrHi);
- 	writel(mac2, &regs->MacAddrLo);
- 
--	dev->dev_addr[0] = (mac1 >> 8) & 0xff;
--	dev->dev_addr[1] = mac1 & 0xff;
--	dev->dev_addr[2] = (mac2 >> 24) & 0xff;
--	dev->dev_addr[3] = (mac2 >> 16) & 0xff;
--	dev->dev_addr[4] = (mac2 >> 8) & 0xff;
--	dev->dev_addr[5] = mac2 & 0xff;
-+	addr[0] = (mac1 >> 8) & 0xff;
-+	addr[1] = mac1 & 0xff;
-+	addr[2] = (mac2 >> 24) & 0xff;
-+	addr[3] = (mac2 >> 16) & 0xff;
-+	addr[4] = (mac2 >> 8) & 0xff;
-+	addr[5] = mac2 & 0xff;
-+	eth_hw_addr_set(dev, addr);
- 
- 	printk("MAC: %pM\n", dev->dev_addr);
- 
 -- 
 2.31.1
+
 
