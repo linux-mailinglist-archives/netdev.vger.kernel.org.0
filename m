@@ -2,59 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FE68432EC6
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 09:01:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43CF0432EE0
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 09:04:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234339AbhJSHDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 03:03:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45778 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229584AbhJSHDh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 03:03:37 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0F28C06161C
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 00:01:25 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id t184so15950334pfd.0
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 00:01:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-        b=ZeMwK2oadO0ZU4hiLT1BljgCDxoyNvDtTWdD97YkGh+znqlVZ74sOuwM2lXJbdK3fP
-         wACRbbDkE168gt8Dilv3IvsEdwF96Szk2xESIKDFKHKgsXYPQA1Iy4UM//9l52X0OzIb
-         iheTfeYROKGcmP/orDDOmgtqFMWrThWzcCUXo8+EHfpQSrM+eiwgNzm3O9GfPzDJTQTl
-         l+0RSJlIYbXsd5omvgEYLRGIPEP+pgsu/97a0u9egjFv6SBpYrJQAzDp05ghkRueDoF2
-         LsKRqEH++y05MLC58rVLU+R/cG46Kz3aIoAtJ76x7SkDuF4xEssG6onq3QdmrZnweW7A
-         PIMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-        b=dN+NUw+bV/aRADaa3GuSALAyZ6016+CDjQLgIEP63Tl5uwKHwZDwkgKNYVLfVg7e1q
-         v8CA4IoG3OaNEOYqz+PWw4Ebpu1ZqC+ZUaLeWwltT7FecizMcvIchkgUZL3BtSjkQpUL
-         Zo5CO85J0l+IMcaRVsxVLYEfzudmR0xKl7S7ftzvrPklNq2fPa4O/Nc/XNiX6Kc9q1fq
-         gwf0vmgYLoF8ZrQn49yokq0cuO+Ytfh2nQ9V6kfjfjWqfnboVKqOoJTno3rUOZ881UW1
-         92VTaugNM6fDlwmEmdN+ZPZWY04XXAL0jDtPP9hb/IR9oiMXeNbCO4M9piVbnScJGxA6
-         CQ6Q==
-X-Gm-Message-State: AOAM530lGteZiyVUDwl1K/7re3bAu3fYfrCaYpTUNQ05Ke+5c4ogY0PP
-        9TQW5ArW64s8fsSYkEBjLykHEe6GNMigWfrhPlI=
-X-Google-Smtp-Source: ABdhPJx39u2eAi9t8/R5K7AJwmP9rh3jDvYLkJYstP/mZ550YlYF6lXTTpNDWr8exQFvaiqCpqizCqdGUSAaTfohU9g=
-X-Received: by 2002:aa7:8f12:0:b0:44c:833f:9dad with SMTP id
- x18-20020aa78f12000000b0044c833f9dadmr33390954pfr.35.1634626881495; Tue, 19
- Oct 2021 00:01:21 -0700 (PDT)
+        id S234436AbhJSHGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 03:06:10 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.54]:15950 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234431AbhJSHGJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 03:06:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1634627032;
+    s=strato-dkim-0002; d=gerhold.net;
+    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=LqqeB6DceXFWyX7sgoc88gYwP71+I7K3TbIfjPLLW2Y=;
+    b=aDGNLEDBAsCzsBywjPlMbPSjUGQluq8ru6QGESYwJ+vh4AaJvzK6Jxj57m7iBAUALc
+    wH9p9cA0rBjTgGo6tIy9GW4RokDSXJYGNce6DQbsGawA8vD4xbN64+T7WZL32rk/bQoP
+    0OyUoWf/zy1DAwTyRoBHqznHjJPxvYW5MR0g8eB7+Eb4c7ED5kYW3035CiZWaV6WFf/e
+    l+yQwxUtz4WXv3/9tNOoHp6Q1L36X9f1pHXVKIjLEhR0SL5NM4d3ca2kXEe3xGVKlEgm
+    m5kpPxAZVDG4UdPej5/lfJ5b0L369+t5eATGkshiD+ta4ZnQv5tg/MgSAMQpVSUMTv3s
+    QTjg==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u267FZF9PwpcNKLVrKw5+aY="
+X-RZG-CLASS-ID: mo00
+Received: from gerhold.net
+    by smtp.strato.de (RZmta 47.33.8 AUTH)
+    with ESMTPSA id 301038x9J73obME
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Tue, 19 Oct 2021 09:03:50 +0200 (CEST)
+Date:   Tue, 19 Oct 2021 09:03:47 +0200
+From:   Stephan Gerhold <stephan@gerhold.net>
+To:     Rob Herring <robh@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        Aleksander Morgado <aleksander@aleksander.es>,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, phone-devel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Subject: Re: [PATCH net-next v2 3/4] dt-bindings: net: Add schema for
+ Qualcomm BAM-DMUX
+Message-ID: <YW5t01Su5ycLm67c@gerhold.net>
+References: <20211011141733.3999-1-stephan@gerhold.net>
+ <20211011141733.3999-4-stephan@gerhold.net>
+ <YW3XgaiT2jBv4D+L@robh.at.kernel.org>
 MIME-Version: 1.0
-Received: by 2002:a05:6a10:e2cb:0:0:0:0 with HTTP; Tue, 19 Oct 2021 00:01:21
- -0700 (PDT)
-Reply-To: michellebrow93@gmail.com
-From:   Michelle Brown <ambrosegnona@gmail.com>
-Date:   Tue, 19 Oct 2021 00:01:21 -0700
-Message-ID: <CAApYH-qxmvYfwacfhuin=3pens3_V+z7grMfP651G=xWruiCEw@mail.gmail.com>
-Subject: Hi, I have something to discuss with you, please reply me
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YW3XgaiT2jBv4D+L@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Oct 18, 2021 at 03:22:25PM -0500, Rob Herring wrote:
+> On Mon, Oct 11, 2021 at 04:17:35PM +0200, Stephan Gerhold wrote:
+> > The BAM Data Multiplexer provides access to the network data channels of
+> > modems integrated into many older Qualcomm SoCs, e.g. Qualcomm MSM8916 or
+> > MSM8974. It is built using a simple protocol layer on top of a DMA engine
+> > (Qualcomm BAM) and bidirectional interrupts to coordinate power control.
+> > 
+> > The device tree node combines the incoming interrupt with the outgoing
+> > interrupts (smem-states) as well as the two DMA channels, which allows
+> > the BAM-DMUX driver to request all necessary resources.
+> > 
+> > Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
+> > ---
+> > Changes since RFC: None.
+> > ---
+> >  .../bindings/net/qcom,bam-dmux.yaml           | 87 +++++++++++++++++++
+> >  1 file changed, 87 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/net/qcom,bam-dmux.yaml
+> > 
+> > diff --git a/Documentation/devicetree/bindings/net/qcom,bam-dmux.yaml b/Documentation/devicetree/bindings/net/qcom,bam-dmux.yaml
+> > new file mode 100644
+> > index 000000000000..33e125e70cb4
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/net/qcom,bam-dmux.yaml
+> > @@ -0,0 +1,87 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/net/qcom,bam-dmux.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Qualcomm BAM Data Multiplexer
+> > +
+> > +maintainers:
+> > +  - Stephan Gerhold <stephan@gerhold.net>
+> > +
+> > +description: |
+> > +  The BAM Data Multiplexer provides access to the network data channels
+> > +  of modems integrated into many older Qualcomm SoCs, e.g. Qualcomm MSM8916
+> > +  or MSM8974. It is built using a simple protocol layer on top of a DMA engine
+> > +  (Qualcomm BAM DMA) and bidirectional interrupts to coordinate power control.
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: qcom,bam-dmux
+> 
+> Is this block the same on every SoC? It needs to be SoC specific.
+> 
 
+Hm, I think describing it as *SoC*-specific wouldn't be accurate:
+This node does not describe any hardware block, it's more a "firmware
+convention". The only hardware involved is the BAM DMA engine, which
+already has SoC/IP-specific compatibles in its own device tree node.
+
+This means that if anything there should be "firmware version"-specific
+compatibles, because one SoC might have different (typically signed)
+firmware versions that provide slightly different functionality.
+However, I have to admit that I'm not familiar enough with the different
+firmware versions to come up with a reasonable naming schema for the
+compatible. :/
+
+In general, I cannot think of any difference between different versions
+that would matter to a driver. The protocol is quite simple, and minor
+firmware differences can be better handled through the control channel
+that sets up the connection for the modem.
+
+Does that make sense?
+
+Thanks!
+Stephan
