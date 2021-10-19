@@ -2,283 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0464432A85
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 01:53:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB7C0432AA6
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 02:01:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231450AbhJRX4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 19:56:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36144 "EHLO
+        id S233627AbhJSADP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Oct 2021 20:03:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229767AbhJRXz7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 19:55:59 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2FFEC06161C;
-        Mon, 18 Oct 2021 16:53:47 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id 21so12383230plo.13;
-        Mon, 18 Oct 2021 16:53:47 -0700 (PDT)
+        with ESMTP id S233662AbhJSADN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 20:03:13 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA93C06161C;
+        Mon, 18 Oct 2021 17:01:01 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id y7so16040668pfg.8;
+        Mon, 18 Oct 2021 17:01:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=svts9nZaEy6OKnlv34wbOeHh57oYk45H6XJF0+VFXr8=;
-        b=ELXzdS0I+72WEfT/xCzRMQNvrb8g4zm4XQlCAz9y82pIxy0kX7nwwVFo6sJx7nu6Vw
-         qbxbkmtaT3bOTaKm0X88OsHiFBhkp6iUqazuGQMKiYih4K6nbpLh25BZTL7iCbVMFWlG
-         8O45vdhsXhiYiMRyybx8kL7ySsWTQ/WCbymclAPP09FQpWRaiTAevV8gAsuXu0ups6HA
-         JoyCkyg1HIki5D1P5y0fZyAhNVm0j36L/uSYWbSv5fBuZLTthuJy+wDRxBxOrfod2asd
-         FnHNbTs+Zw/8NV0uSqFjBBhjpQw+GZi55veUwnS3Z8r/guvTdO1Zd17t7XxLb9yGPmog
-         dvDw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=CsvmshUK1J5oLgHlkNzVwU1CrFBDnoDJiUW4z7Gb9/k=;
+        b=UJWjY63bLaZzldwpkWRcKrmeXvsgYJu0Z59gypu6tOjd8wMJ5EYIeKpAkJ05nRmxzQ
+         yWYhvBpAcwi4K0JIFAMep9yV1a4DHcJwAx6N0Pumx9FG8aHHuUzM/u8N/d+hg8A4UqoV
+         4+kyLwF7MjLr7dv9YW/DMDiVQtem48XRPKRwF2Qn5kNOqzRDF2dfCPAK1/jS7eph+dXU
+         ldDdt4X1KZNm+yOEc+oRs+qrHeEkv4N6TaY1qTM5t6BKa7zC1G3NodhgSnfRBsi3Dxu+
+         nvxYl//ZiWslR+d9vub/OMCLrczrN7Cpbg7LzT4UQhR5AvY2MaHg2VvJ5hlfMcjUGLRs
+         wK5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=svts9nZaEy6OKnlv34wbOeHh57oYk45H6XJF0+VFXr8=;
-        b=pEgkd+PGAERGukojaCuwagpZAmtAC5KhKSUh66H7VipA9RNtP/v0tPbB5NA6bI5YN0
-         ej4NEqlEjHwgy6NsZcrASWV8l3rd02kGos0hH4ueftnP4oOUlKvK9hUQQss77Fb7aspr
-         RAZ8TmjTRQIsYMZGH7PWZZrtf0jdCjqCpeRcUn7llHeDU/zs17cLos9/cRD+L8A1XzIc
-         f4Z+n9REMYvZJ1prhv8HTx90xNbu7dbysTYzU5Cu6xutHdt08gOwrZrJQDaJOjbGbfhp
-         r+GglGTvYqCEQF/Qx5Z1B3D+O2znKx3OpdJmLxolMZt3WRY8/3lntEf8DOrgrSq7SAeX
-         wsNw==
-X-Gm-Message-State: AOAM533YPdRdd79DHKlTZR6MnVpMcj7yAahVUqpjrXrQMuv1GXbXidou
-        +VWH7A4Xz1A4jEe1XWaCnNA=
-X-Google-Smtp-Source: ABdhPJxiFOigyebdd0OcDMC2rhBsgefDAec6MkrxNVgD8jT6D96EOrjCH4qTktEl2yufivFEXfJHXQ==
-X-Received: by 2002:a17:90b:3b88:: with SMTP id pc8mr2283456pjb.93.1634601226266;
-        Mon, 18 Oct 2021 16:53:46 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id b13sm539809pjl.15.2021.10.18.16.53.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Oct 2021 16:53:45 -0700 (PDT)
-Subject: Re: [PATCH net-next 9/9] net: sched: Remove Qdisc::running sequence
- counter
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "Ahmed S. Darwish" <a.darwish@linutronix.de>,
-        Eric Dumazet <edumazet@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-References: <20211016084910.4029084-1-bigeasy@linutronix.de>
- <20211016084910.4029084-10-bigeasy@linutronix.de>
- <1cdc197a-f9c8-34e4-b19c-132dbbbcafb5@gmail.com>
- <d991d8a9-207d-e840-4167-39e58b3901cc@gmail.com>
-Message-ID: <97b921c1-0494-ab75-809e-d45408f8b30e@gmail.com>
-Date:   Mon, 18 Oct 2021 16:53:43 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=CsvmshUK1J5oLgHlkNzVwU1CrFBDnoDJiUW4z7Gb9/k=;
+        b=wyaF9ZOnu8yOQt9sObUoUg6OCpLMSkj6AsZdOiPfTH+2uhKnKMN1d6bANbTylzWcIh
+         Tw/eYSyoiuU5+yYom/4JU3cLWNd7NFx18NxzqyZ1HwZ+F1PpCaAZP71GFllK5vj41QyJ
+         lLvKYCqAP5hvnmkXrRBNqF58k5BcsiBlOmdVVXIRYR464ACj3a6Xysf0WujZcjM6+dAr
+         NISiHCe773czbBDpNK3hQPWEn2cgzAFp3QkqTmfg/d64gfCRGZ0BXBp4lWAoe9SXKfrY
+         wOFsOhEFoBqNkXchLxDIzNpFkuwqvQ5vkzYAhoG8h1M3SUuhRoxhFMVdThYFFhQ9AG9G
+         9kSg==
+X-Gm-Message-State: AOAM530oZlxgGCd6gxyUEaLEoyxtWtbhlEksr1W1Hquc7HoOj17lbDKq
+        MT4yi+2/D9ufLpzlof/6YCo=
+X-Google-Smtp-Source: ABdhPJz2uYeVgr44Dl+rmwluHMNM5vtCNcpNBtKHRctEMRzWIOonaskLJb2hbvfRXV5kjo3nNzTlwQ==
+X-Received: by 2002:a63:1d25:: with SMTP id d37mr26010213pgd.52.1634601660981;
+        Mon, 18 Oct 2021 17:01:00 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:400::5:f01f])
+        by smtp.gmail.com with ESMTPSA id mi8sm556618pjb.20.2021.10.18.17.00.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Oct 2021 17:01:00 -0700 (PDT)
+Date:   Mon, 18 Oct 2021 17:00:58 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Martin KaFai Lau <kafai@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Joanne Koong <joannekoong@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Kernel-team@fb.com
+Subject: Re: [PATCH bpf-next v2 0/3] Add XDP support for bpf_load_hdr_opt
+Message-ID: <20211019000058.ghklvg4saybzqk3o@ast-mbp>
+References: <20211006230543.3928580-1-joannekoong@fb.com>
+ <87h7dsnbh5.fsf@toke.dk>
+ <9f8c195c-9c03-b398-2803-386c7af99748@fb.com>
+ <43bfb0fe-5476-c62c-51f2-a83da9fef659@iogearbox.net>
+ <20211007235203.uksujks57djohg3p@kafai-mbp>
+ <87lf33jh04.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <d991d8a9-207d-e840-4167-39e58b3901cc@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87lf33jh04.fsf@toke.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Oct 09, 2021 at 12:20:27AM +0200, Toke Høiland-Jørgensen wrote:
+> 
+> So if we can't fix the verifier, maybe we could come up with a more
+> general helper for packet parsing? Something like:
+> 
+> bpf_for_each_pkt_chunk(ctx, offset, callback_fn, callback_arg)
+> {
+>   ptr = ctx->data + offset;
+>   while (ptr < ctx->data_end) {
+>     offset = callback_fn(ptr, ctx->data_end, callback_arg);
+>     if (offset == 0)
+>       return 0;
+>     ptr += offset;
+>   }
+>   
+>   // out of bounds before callback was done
+>   return -EINVAL;
+> }
 
+We're starting to work on this since it will be useful not only for
+packet parsing, TLV parsing, but potentially any kind of 'for' loop iteration.
 
-On 10/18/21 11:30 AM, Eric Dumazet wrote:
-> 
-> 
-> On 10/18/21 10:23 AM, Eric Dumazet wrote:
->>
->>
->> On 10/16/21 1:49 AM, Sebastian Andrzej Siewior wrote:
->>> From: "Ahmed S. Darwish" <a.darwish@linutronix.de>
->>>
->>> The Qdisc::running sequence counter has two uses:
->>>
->>>   1. Reliably reading qdisc's tc statistics while the qdisc is running
->>>      (a seqcount read/retry loop at gnet_stats_add_basic()).
->>>
->>>   2. As a flag, indicating whether the qdisc in question is running
->>>      (without any retry loops).
->>>
->>> For the first usage, the Qdisc::running sequence counter write section,
->>> qdisc_run_begin() => qdisc_run_end(), covers a much wider area than what
->>> is actually needed: the raw qdisc's bstats update. A u64_stats sync
->>> point was thus introduced (in previous commits) inside the bstats
->>> structure itself. A local u64_stats write section is then started and
->>> stopped for the bstats updates.
->>>
->>> Use that u64_stats sync point mechanism for the bstats read/retry loop
->>> at gnet_stats_add_basic().
->>>
->>> For the second qdisc->running usage, a __QDISC_STATE_RUNNING bit flag,
->>> accessed with atomic bitops, is sufficient. Using a bit flag instead of
->>> a sequence counter at qdisc_run_begin/end() and qdisc_is_running() leads
->>> to the SMP barriers implicitly added through raw_read_seqcount() and
->>> write_seqcount_begin/end() getting removed. All call sites have been
->>> surveyed though, and no required ordering was identified.
->>>
->>> Now that the qdisc->running sequence counter is no longer used, remove
->>> it.
->>>
->>> Note, using u64_stats implies no sequence counter protection for 64-bit
->>> architectures. This can lead to the qdisc tc statistics "packets" vs.
->>> "bytes" values getting out of sync on rare occasions. The individual
->>> values will still be valid.
->>>
->>> Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
->>> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
->>
->>
->> I see this has been merged this week end before we could test this thing during work days :/
->>
->> Just add a rate estimator on a qdisc:
->>
->> tc qd add dev lo root est 1sec 4sec pfifo
->>
->> then :
->>
->> [  140.824352] ------------[ cut here ]------------
->> [  140.824361] WARNING: CPU: 15 PID: 0 at net/core/gen_stats.c:157 gnet_stats_add_basic+0x97/0xc0
->> [  140.824378] Modules linked in: ipvlan bonding vfat fat w1_therm i2c_mux_pca954x i2c_mux ds2482 wire cdc_acm ehci_pci ehci_hcd bnx2x mdio xt_TCPMSS ip6table_mangle ip6_tables ipv6
->> [  140.824413] CPU: 15 PID: 0 Comm: swapper/15 Not tainted 5.15.0-smp-DEV #73
->> [  140.824415] Hardware name: Intel RML,PCH/Ibis_QC_18, BIOS 2.48.0 10/02/2019
->> [  140.824417] RIP: 0010:gnet_stats_add_basic+0x97/0xc0
->> [  140.824420] Code: 2c 38 4a 03 5c 38 08 48 c7 c6 68 15 51 a4 e8 60 00 c7 ff 44 39 e0 72 db 89 d8 eb 05 31 c0 45 31 ed 4d 01 2e 49 01 46 08 eb 17 <0f> 0b 4d 85 ff 75 96 48 8b 02 48 8b 4a 08 49 01 06 89 c8 49 01 46
->> [  140.824432] RSP: 0018:ffff99415fbc5e08 EFLAGS: 00010206
->> [  140.824434] RAX: 0000000080000100 RBX: ffff9939812f41d0 RCX: 0000000000000001
->> [  140.824436] RDX: ffff99399705e0b0 RSI: 0000000000000000 RDI: ffff99415fbc5e40
->> [  140.824438] RBP: ffff99415fbc5e30 R08: 0000000000000000 R09: 0000000000000000
->> [  140.824440] R10: 0000000000000000 R11: ffffffffffffffff R12: ffff99415fbd7740
->> [  140.824441] R13: dead000000000122 R14: ffff99415fbc5e40 R15: 0000000000000000
->> [  140.824443] FS:  0000000000000000(0000) GS:ffff99415fbc0000(0000) knlGS:0000000000000000
->> [  140.824445] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->> [  140.824447] CR2: 000000000087fff0 CR3: 0000000f11610006 CR4: 00000000000606e0
->> [  140.824449] Call Trace:
->> [  140.824450]  <IRQ>
->> [  140.824453]  ? local_bh_enable+0x20/0x20
->> [  140.824457]  est_timer+0x5e/0x130
->> [  140.824460]  call_timer_fn+0x2c/0x110
->> [  140.824464]  expire_timers+0x4c/0xf0
->> [  140.824467]  __run_timers+0x16f/0x1b0
->> [  140.824470]  run_timer_softirq+0x1d/0x40
->> [  140.824473]  __do_softirq+0x142/0x2a1
->> [  140.824477]  irq_exit_rcu+0x6b/0xb0
->> [  140.824480]  sysvec_apic_timer_interrupt+0x79/0x90
->> [  140.824483]  </IRQ>
->> [  140.824493]  asm_sysvec_apic_timer_interrupt+0x12/0x20
->> [  140.824497] RIP: 0010:cpuidle_enter_state+0x19b/0x300
->> [  140.824502] Code: ff 45 84 e4 74 20 48 c7 45 c8 00 00 00 00 9c 8f 45 c8 f7 45 c8 00 02 00 00 0f 85 e4 00 00 00 31 ff e8 c9 0d 88 ff fb 8b 45 bc <85> c0 78 52 48 89 de 89 c3 48 6b d3 68 48 8b 4c 16 48 4c 2b 6d b0
->> [  140.824503] RSP: 0018:ffff99398089be60 EFLAGS: 00000246
->> [  140.824505] RAX: 0000000000000004 RBX: ffffffffa446cb28 RCX: 000000000000001f
->> [  140.824506] RDX: 000000000000000f RSI: 0000000000000000 RDI: 0000000000000000
->> [  140.824507] RBP: ffff99398089beb0 R08: 0000000000000002 R09: 00000020cf9326e4
->> [  140.824508] R10: 0000000000638824 R11: 0000000000000000 R12: 0000000000000000
->> [  140.824509] R13: 00000020c9c8d180 R14: ffffc4733fbe1c50 R15: 0000000000000004
->> [  140.824511]  cpuidle_enter+0x2e/0x40
->> [  140.824514]  do_idle+0x19f/0x240
->> [  140.824517]  cpu_startup_entry+0x25/0x30
->> [  140.824519]  start_secondary+0x7c/0x80
->> [  140.824521]  secondary_startup_64_no_verify+0xc3/0xcb
->> [  140.824525] ---[ end trace d64fa4b3dc94b292 ]---
->>
->>
-> 
-> Is it just me, or is net-next broken ?
-> 
-> Pinging the default gateway from idle host shows huge and variable delays.
-> 
-> Other hosts still using older kernels are just fine.
-> 
-> It looks we miss real qdisc_run() or something.
-> 
-> lpk43:~# ping6 fe80::1%eth0
-> PING fe80::1%eth0(fe80::1) 56 data bytes
-> 64 bytes from fe80::1: icmp_seq=1 ttl=64 time=0.177 ms
-> 64 bytes from fe80::1: icmp_seq=2 ttl=64 time=0.138 ms
-> 64 bytes from fe80::1: icmp_seq=3 ttl=64 time=118 ms
-> 64 bytes from fe80::1: icmp_seq=4 ttl=64 time=394 ms
-> 64 bytes from fe80::1: icmp_seq=5 ttl=64 time=0.146 ms
-> 64 bytes from fe80::1: icmp_seq=6 ttl=64 time=823 ms
-> 64 bytes from fe80::1: icmp_seq=7 ttl=64 time=77.1 ms
-> 64 bytes from fe80::1: icmp_seq=8 ttl=64 time=0.165 ms
-> 64 bytes from fe80::1: icmp_seq=9 ttl=64 time=0.181 ms
-> 64 bytes from fe80::1: icmp_seq=10 ttl=64 time=276 ms
-> 64 bytes from fe80::1: icmp_seq=11 ttl=64 time=0.159 ms
-> 64 bytes from fe80::1: icmp_seq=12 ttl=64 time=17.3 ms
-> 64 bytes from fe80::1: icmp_seq=13 ttl=64 time=0.134 ms
-> 64 bytes from fe80::1: icmp_seq=14 ttl=64 time=0.210 ms
-> 64 bytes from fe80::1: icmp_seq=15 ttl=64 time=0.134 ms
-> 64 bytes from fe80::1: icmp_seq=16 ttl=64 time=414 ms
-> 64 bytes from fe80::1: icmp_seq=17 ttl=64 time=443 ms
-> 64 bytes from fe80::1: icmp_seq=18 ttl=64 time=0.142 ms
-> 64 bytes from fe80::1: icmp_seq=19 ttl=64 time=0.137 ms
-> 64 bytes from fe80::1: icmp_seq=20 ttl=64 time=121 ms
-> 64 bytes from fe80::1: icmp_seq=21 ttl=64 time=169 ms
-> ^C
-> --- fe80::1%eth0 ping statistics ---
-> 21 packets transmitted, 21 received, 0% packet loss, time 20300ms
-> rtt min/avg/max/mdev = 0.134/136.098/823.204/213.070 ms
-> 
+> This would work for parsing any kind of packet header or TLV-style data
+> without having to teach the kernel about each header type. It'll have
+> quite a bit of overhead if all the callbacks happen via indirect calls,
+> but maybe the verifier can inline the calls (or at least turn them into
+> direct CALL instructions)?
 
-So the issue was about a reverted test_and_set_bit() in qdisc_run_begin()
+Right. That's the main downside.
+If the bpf_for_each*() helper is simple enough the verifier can inline it
+similar to map_gen_lookup. In such case the indirect call will be a direct call,
+so the overhead won't be that bad, but it's still a function call and
+static function will have full prologue+epilogue.
+Converting static function into direct jump would be really challenging
+for the verifier and won't provide much benefit, since r6-r9 save/restore
+would need to happen anyway even for such 'inlined' static func, since
+llvm will be freely using r6-r9 for insns inside function body
+assuming that it's a normal function.
 
-Also, we should not use atomic operations when changing __QDISC_STATE_RUNNING,
-this is adding yet another pair of atomic ops in tx fast path.
+May be there is a way to avoid call overhead with with clang extensions.
+If we want to do:
+int mem_eq(char *p1, char *p2, int size)
+{
+  int i;
+  for (i = 0; i < size; i++)
+    if (p1[i] != p2[i])
+      return 0;
+  return 1;
+}
 
-I will test something like :
+With clang extension we might write it as:
+int bpf_mem_eq(char *p1, char *p2, int size)
+{
+  int i = 0;
+  int iter;
 
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index baad2ab4d971cd3fdc8d59acdd72d39fa6230370..ada02c4a4f518b732d62561a22b1d9033516b494 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -38,10 +38,13 @@ enum qdisc_state_t {
-        __QDISC_STATE_DEACTIVATED,
-        __QDISC_STATE_MISSED,
-        __QDISC_STATE_DRAINING,
-+};
-+
-+enum qdisc_state2_t {
-        /* Only for !TCQ_F_NOLOCK qdisc. Never access it directly.
-         * Use qdisc_run_begin/end() or qdisc_is_running() instead.
-         */
--       __QDISC_STATE_RUNNING,
-+       __QDISC_STATE2_RUNNING,
- };
- 
- #define QDISC_STATE_MISSED     BIT(__QDISC_STATE_MISSED)
-@@ -114,6 +117,7 @@ struct Qdisc {
-        struct gnet_stats_basic_sync bstats;
-        struct gnet_stats_queue qstats;
-        unsigned long           state;
-+       unsigned long           state2; /* must be written under qdisc spinlock */
-        struct Qdisc            *next_sched;
-        struct sk_buff_head     skb_bad_txq;
- 
-@@ -154,7 +158,7 @@ static inline bool qdisc_is_running(struct Qdisc *qdisc)
- {
-        if (qdisc->flags & TCQ_F_NOLOCK)
-                return spin_is_locked(&qdisc->seqlock);
--       return test_bit(__QDISC_STATE_RUNNING, &qdisc->state);
-+       return test_bit(__QDISC_STATE2_RUNNING, &qdisc->state2);
- }
- 
- static inline bool nolock_qdisc_is_empty(const struct Qdisc *qdisc)
-@@ -217,7 +221,7 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
-                 */
-                return spin_trylock(&qdisc->seqlock);
-        }
--       return test_and_set_bit(__QDISC_STATE_RUNNING, &qdisc->state);
-+       return !__test_and_set_bit(__QDISC_STATE2_RUNNING, &qdisc->state2);
- }
- 
- static inline void qdisc_run_end(struct Qdisc *qdisc)
-@@ -229,7 +233,7 @@ static inline void qdisc_run_end(struct Qdisc *qdisc)
-                                      &qdisc->state)))
-                        __netif_schedule(qdisc);
-        } else {
--               clear_bit(__QDISC_STATE_RUNNING, &qdisc->state);
-+               __clear_bit(__QDISC_STATE2_RUNNING, &qdisc->state2);
-        }
- }
- 
+  iter = __builtin_for_until(i, size, ({
+      if (p1[i] != p2[i])
+        goto out;
+  }));
+  out:
+  if (iter != size)
+    return 0;
+  return 1;
+}
 
+The llvm will generate pseudo insns for this __builtin_for.
+The verifier will analyze the loop body for the range [0, size)
+and replace pseudo insns with normal branches after the verification.
+We might even keep the normal C syntax for loops and use
+llvm HardwareLoops pass to add pseudo insns.
+It's more or less the same ideas for loops we discussed before
+bounded loops were introduced.
+The main problem with bounded loops is that the loop body will
+typically be verified the number of times equal to the number of iterations.
+So for any non-trivial loop such iteration count is not much more
+than 100. The verifier can do scalar evolution analysis, but
+it's likely won't work for many cases and user experience
+will suffer. With __builtin_for the scalar evolution is not necessary,
+since induction variable is one and explicit and its range is explicit too.
+That enables single pass over loop body.
+One might argue that for (i = 0; i < 10000; i += 10) loops are
+necessary too, but instead of complicating the verifier with sparse
+ranges it's better to put that on users that can do:
+  iter = __builtin_for_until(i, 10000 / 10, ({
+      j = i * 10;
+      use j;
+  }));
+Single explicit induction variable makes the verification practical.
+The loop body won't be as heavily optimized as normal loop,
+but it's a good thing.
