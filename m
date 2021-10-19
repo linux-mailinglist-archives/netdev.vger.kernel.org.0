@@ -2,102 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A78C3432E56
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 08:34:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 415A4432E99
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 08:50:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234130AbhJSGgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 02:36:12 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:1034 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229649AbhJSGgL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 02:36:11 -0400
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19J6MtVR001554;
-        Tue, 19 Oct 2021 02:33:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=CvIWIWZegw5geXGYTY/N3EkVK5pJ1TTtd9V7IPsX/VU=;
- b=ozKL91ufBGwUOOy7EGQpD92GvCGBnYdTa5YY9NsHwsMwyvEf5E/5jheq2bJlQx65HVQE
- tUYlBgPatELJEsQtdrdNV0wA5/h/OOIt8vm3Je4UicA91xjfXt3GgZU+u4qZGWOyGFf3
- aPwQehV98rwk2GXSLZ2TfzX8U7NExDJ0bWd6U3X2/wrmns8mhgTschvY6hr6+tmqxgxK
- IjhZ4gnkOOHZZpOr6ISSrX9HbChu+UE9WUnetDuN1YJBsifSeIMXA+KqRlQ0pAy335Xd
- wiK0Rf4G5OH3/1BLBwGgRgonFNz2Vz/rTNzo4at4ddDnlJnli2D9CL3Kl0Z0gyZMN2fN QA== 
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3bsnhhkev3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 19 Oct 2021 02:33:55 -0400
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 19J6DPba015996;
-        Tue, 19 Oct 2021 06:33:53 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma03fra.de.ibm.com with ESMTP id 3bqpc9bxgr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 19 Oct 2021 06:33:53 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 19J6XofS56492444
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 19 Oct 2021 06:33:50 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C000F11C04A;
-        Tue, 19 Oct 2021 06:33:50 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5CF5511C058;
-        Tue, 19 Oct 2021 06:33:50 +0000 (GMT)
-Received: from [9.171.65.69] (unknown [9.171.65.69])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 19 Oct 2021 06:33:50 +0000 (GMT)
-Message-ID: <ceb1a1ce-b4a4-7908-7d18-832cca1bfbe2@linux.ibm.com>
-Date:   Tue, 19 Oct 2021 08:33:51 +0200
+        id S229846AbhJSGxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 02:53:02 -0400
+Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:46129 "EHLO
+        wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229649AbhJSGxB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 02:53:01 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id E917A3200F6F;
+        Tue, 19 Oct 2021 02:50:48 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Tue, 19 Oct 2021 02:50:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=480Xut
+        i6WMD7oXbzl7SOf79XKVvGXiS+iqAnhPGVbxw=; b=ViC41NzXT3m4OL0/mMfsDM
+        lF6Bthhuh3QBTIsiftzoZsp5KH6Vc+VQivtHD5Ne/PhzMFO2GQop+Aw/llIvco01
+        R47K9fZePzmLpklRY2CFOSXDpafAv+nqZWeth5qpXfc/vreL/2bX6RhGVvc0uSfD
+        nPa3e/Vb1q3B+TsU5PIf5ytahbGyQazGh7DZr8Hf/u/a13Qm18YFL6T6AjiJMaBd
+        m5lu1Kd4ijKPyKBotcNTEns8X7TyiJqRLmroYdRGqmVesEniWM726xDTasrGd/oi
+        JvQ7X+udqJVTrsDmhLV0p5DBUbavyEs6q8q3LsFpHjvyrlnMKzYVg4laaWhjGdnw
+        ==
+X-ME-Sender: <xms:yGpuYexDPGGJl4Y_uVRf0VAk677W725zYTxwEocX2Mwxgj9pbozq8w>
+    <xme:yGpuYaQPNRlKZ-HDTo1ozAFG5PszDlLlHW4MY8_DIo548Y7ZKNo6ULLwiZEI_5oRa
+    zX-gZOfi6mzUPk>
+X-ME-Received: <xmr:yGpuYQVZNQLQy8qCHdsd-AAOgXkAnWV3qp3tctQkR06HlFIP5njsxMZnUDrVLj3H7CVXpb7QcQdMfMTXqpySuJJK0Tw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddvuddguddutdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
+    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
+    guohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:yGpuYUjRMIrRs5fo19Y0b-ifcMzgz_L5yMxMi6nB2MSv5vHwt_F9BA>
+    <xmx:yGpuYQCQc01-fSwzYNXcIDJYE0C_b65TzVuBEZ7dLfXfk49hohFIDg>
+    <xmx:yGpuYVLseg4aV8KUiH667Han4rrO_CXCUfW04O7CpkOQgKTpwmdVCQ>
+    <xmx:yGpuYT-JpC3msax1IgjDFOuDfNCVYxB3AAl771QLyEqex-n1MferwQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 19 Oct 2021 02:50:47 -0400 (EDT)
+Date:   Tue, 19 Oct 2021 09:50:44 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "Ahmed S . Darwish" <a.darwish@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH net-next 1/2] net: sched: fix logic error in
+ qdisc_run_begin()
+Message-ID: <YW5qxB8fovdP0JXh@shredder>
+References: <20211019003402.2110017-1-eric.dumazet@gmail.com>
+ <20211019003402.2110017-2-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Subject: Re: [PATCH][linux-next] net/smc: prevent NULL dereference in
- smc_find_rdma_v2_device_serv()
-Content-Language: en-US
-To:     Tim Gardner <tim.gardner@canonical.com>, linux-s390@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20211018183128.17743-1-tim.gardner@canonical.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <20211018183128.17743-1-tim.gardner@canonical.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: QGXdzv8rsRR0Q2JVRw8d6oCKuWvBrNo0
-X-Proofpoint-ORIG-GUID: QGXdzv8rsRR0Q2JVRw8d6oCKuWvBrNo0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-10-18_07,2021-10-18_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
- suspectscore=0 lowpriorityscore=0 mlxlogscore=999 bulkscore=0
- impostorscore=0 clxscore=1011 adultscore=0 mlxscore=0 priorityscore=1501
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109230001 definitions=main-2110190038
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211019003402.2110017-2-eric.dumazet@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/10/2021 20:31, Tim Gardner wrote:
-> Coverity complains of a possible NULL dereference in smc_find_rdma_v2_device_serv().
+On Mon, Oct 18, 2021 at 05:34:01PM -0700, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
 > 
-> 1782        smc_v2_ext = smc_get_clc_v2_ext(pclc);
-> CID 121151 (#1 of 1): Dereference null return value (NULL_RETURNS)
-> 5. dereference: Dereferencing a pointer that might be NULL smc_v2_ext when calling smc_clc_match_eid. [show details]
-> 1783        if (!smc_clc_match_eid(ini->negotiated_eid, smc_v2_ext, NULL, NULL))
-> 1784                goto not_found;
+> For non TCQ_F_NOLOCK qdisc, qdisc_run_begin() tries to set
+> __QDISC_STATE_RUNNING and should return true if the bit was not set.
 > 
-> Fix this by checking for NULL.
+> test_and_set_bit() returns old bit value, therefore we need to invert.
+> 
+> Fixes: 29cbcd858283 ("net: sched: Remove Qdisc::running sequence counter")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Ahmed S. Darwish <a.darwish@linutronix.de>
+> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-Hmm that's a fundamental question for me: do we want to make the code checkers happy?
-While I understand that those warnings give an uneasy feeling I am not sure
-if the code should have additional (unneeded) checks only to avoid them.
+Tested-by: Ido Schimmel <idosch@nvidia.com>
 
-In this case all NULL checks are initially done in smc_listen_v2_check(), 
-afterwards no more NULL checks are needed. When we would like to add them
-then a lot more checks are needed, e.g. 3 times in smc_find_ism_v2_device_serv()
-(not sure why coverity does not complain about them, too).
-
-Thoughts?
+Thanks!
