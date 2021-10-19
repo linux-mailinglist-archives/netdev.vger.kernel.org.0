@@ -2,135 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4054432D1D
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 07:21:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91558432D67
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 07:48:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229782AbhJSFXz convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 19 Oct 2021 01:23:55 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:49280 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbhJSFXz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 01:23:55 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 19J5LMzqC005662, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36503.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 19J5LMzqC005662
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 19 Oct 2021 13:21:23 +0800
-Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
- RTEXH36503.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.14; Tue, 19 Oct 2021 13:21:22 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Mon, 18 Oct 2021 22:21:22 -0700
-Received: from RTEXMBS04.realtek.com.tw ([fe80::cdd5:82a3:e854:7098]) by
- RTEXMBS04.realtek.com.tw ([fe80::cdd5:82a3:e854:7098%5]) with mapi id
- 15.01.2106.013; Tue, 19 Oct 2021 13:21:21 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     "cgel.zte@gmail.com" <cgel.zte@gmail.com>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "lv.ruyi@zte.com.cn" <lv.ruyi@zte.com.cn>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: RE: [PATCH] rtw89: fix error function parameter
-Thread-Topic: [PATCH] rtw89: fix error function parameter
-Thread-Index: AQHXxJzcl/L9Ey4To0qT1Twz/99G66vZyNbw
-Date:   Tue, 19 Oct 2021 05:21:21 +0000
-Message-ID: <90ac6c3911ef4f7385df3dde3d3b6d55@realtek.com>
-References: <20211019035311.974706-1-lv.ruyi@zte.com.cn>
-In-Reply-To: <20211019035311.974706-1-lv.ruyi@zte.com.cn>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/10/19_=3F=3F_03:04:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S233353AbhJSFu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 01:50:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57562 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229527AbhJSFu6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 01:50:58 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DB44C061749
+        for <netdev@vger.kernel.org>; Mon, 18 Oct 2021 22:48:46 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1mchzF-0004x1-86; Tue, 19 Oct 2021 07:48:33 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1mchzC-0004ue-Fz; Tue, 19 Oct 2021 07:48:30 +0200
+Date:   Tue, 19 Oct 2021 07:48:30 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Rob Herring <robh@kernel.org>
+Cc:     alexandru.tachici@analog.com, andrew@lunn.ch, davem@davemloft.net,
+        devicetree@vger.kernel.org, hkallweit1@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v3 7/8] dt-bindings: net: phy: Add 10-baseT1L 2.4 Vpp
+Message-ID: <20211019054830.GA16320@pengutronix.de>
+References: <20211011142215.9013-1-alexandru.tachici@analog.com>
+ <20211011142215.9013-8-alexandru.tachici@analog.com>
+ <YW3Fq7WMSB+TL2u4@robh.at.kernel.org>
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36503.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 10/19/2021 04:58:50
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 166808 [Oct 18 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: pkshih@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 463 463 5854868460de3f0d8e8c0a4df98aeb05fb764a09
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1;127.0.0.199:7.1.2
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 10/19/2021 05:02:00
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YW3Fq7WMSB+TL2u4@robh.at.kernel.org>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 07:32:09 up 243 days,  8:56, 111 users,  load average: 0.35, 0.20,
+ 0.19
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-> -----Original Message-----
-> From: cgel.zte@gmail.com <cgel.zte@gmail.com>
-> Sent: Tuesday, October 19, 2021 11:53 AM
-> To: kvalo@codeaurora.org
-> Cc: davem@davemloft.net; kuba@kernel.org; Pkshih <pkshih@realtek.com>; lv.ruyi@zte.com.cn;
-> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Zeal
-> Robot <zealci@zte.com.cn>
-> Subject: [PATCH] rtw89: fix error function parameter
+On Mon, Oct 18, 2021 at 02:06:19PM -0500, Rob Herring wrote:
+> On Mon, Oct 11, 2021 at 05:22:14PM +0300, alexandru.tachici@analog.com wrote:
+> > From: Alexandru Tachici <alexandru.tachici@analog.com>
+> > 
+> > Add a tristate property to advertise desired transmit level.
+> > 
+> > If the device supports the 2.4 Vpp operating mode for 10BASE-T1L,
+> > as defined in 802.3gc, and the 2.4 Vpp transmit voltage operation
+> > is desired, property should be set to 1. This property is used
+> > to select whether Auto-Negotiation advertises a request to
+> > operate the 10BASE-T1L PHY in increased transmit level mode.
+> > 
+> > If property is set to 1, the PHY shall advertise a request
+> > to operate the 10BASE-T1L PHY in increased transmit level mode.
+> > If property is set to zero, the PHY shall not advertise
+> > a request to operate the 10BASE-T1L PHY in increased transmit level mode.
+> > 
+> > Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+> > ---
+> >  Documentation/devicetree/bindings/net/ethernet-phy.yaml | 9 +++++++++
+> >  1 file changed, 9 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> > index 2766fe45bb98..2bb3a96612a2 100644
+> > --- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> > +++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> > @@ -77,6 +77,15 @@ properties:
+> >      description:
+> >        Maximum PHY supported speed in Mbits / seconds.
+> >  
+> > +  an-10base-t1l-2.4vpp:
 > 
-> From: Lv Ruyi <lv.ruyi@zte.com.cn>
+> What does 'an' mean?
+
+I assume, it is for Auto Negotiate.
+
+> > +    description: |
+> > +      tristate, request/disable 2.4 Vpp operating mode. The values are:
+> > +      0: Disable 2.4 Vpp operating mode.
+> > +      1: Request 2.4 Vpp operating mode from link partner.
+> > +      Absence of this property will leave configuration to default values.
+> > +    $ref: "/schemas/types.yaml#/definitions/uint32"
+> > +    enum: [0, 1]
 > 
-> This patch fixes the following Coccinelle warning:
-> drivers/net/wireless/realtek/rtw89/rtw8852a.c:753:
-> WARNING  possible condition with no effect (if == else)
+> What happened to this one doing the same thing?:
 > 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+> https://lore.kernel.org/lkml/20201117201555.26723-3-dmurphy@ti.com/
 
-Thanks for the catch.
+This one was not really synced with the IEEE 802.3 standard. According
+to the standard, there is optional 10base-t1l specific 2.4 Vpp operating mode.
+To be able to operate in this mode, HW should be designed to do so.
+And other way around, if HW is designed for explosive environment, it
+should never operate in 2.4 Vpp mode.
+So, depending on this property, the ability of the link-partner and user
+space configuration, we may allow to auto negotiate this mode.
 
-Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+The question is, should it actually be called "an-", since this property
+should limit automatic and manual link configuration
 
-> ---
->  drivers/net/wireless/realtek/rtw89/rtw8852a.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtw89/rtw8852a.c
-> b/drivers/net/wireless/realtek/rtw89/rtw8852a.c
-> index b1b87f0aadbb..5c6ffca3a324 100644
-> --- a/drivers/net/wireless/realtek/rtw89/rtw8852a.c
-> +++ b/drivers/net/wireless/realtek/rtw89/rtw8852a.c
-> @@ -753,11 +753,11 @@ static void rtw8852a_ctrl_ch(struct rtw89_dev *rtwdev, u8 central_ch,
->                 if (is_2g)
->                         rtw89_phy_write32_idx(rtwdev, R_P1_MODE,
->                                               B_P1_MODE_SEL,
->                                               1, phy_idx);
->  		else
->  			rtw89_phy_write32_idx(rtwdev, R_P1_MODE,
->  					      B_P1_MODE_SEL,
-> -					      1, phy_idx);
-> +					      0, phy_idx);
->  		/* SCO compensate FC setting */
->  		sco_comp = rtw8852a_sco_mapping(central_ch);
->  		rtw89_phy_write32_idx(rtwdev, R_FC0_BW, B_FC0_BW_INV,
-> --
-> 2.25.1
-
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
