@@ -2,225 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 201F3432B6C
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 03:16:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0812432B69
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 03:11:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230269AbhJSBSm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Oct 2021 21:18:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54160 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229588AbhJSBSl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 21:18:41 -0400
-X-Greylist: delayed 946 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 18 Oct 2021 18:16:29 PDT
-Received: from mxout017.mail.hostpoint.ch (mxout017.mail.hostpoint.ch [IPv6:2a00:d70:0:e::317])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89248C06161C;
-        Mon, 18 Oct 2021 18:16:29 -0700 (PDT)
-Received: from [10.0.2.44] (helo=asmtp014.mail.hostpoint.ch)
-        by mxout017.mail.hostpoint.ch with esmtp (Exim 4.94.2 (FreeBSD))
-        (envelope-from <code@reto-schneider.ch>)
-        id 1mcdUc-00081f-7G; Tue, 19 Oct 2021 03:00:38 +0200
-Received: from dynamic-145-014-211-090.glattnet.ch ([145.14.211.90] helo=eleanor.glattnet.ch)
-        by asmtp014.mail.hostpoint.ch with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2 (FreeBSD))
-        (envelope-from <code@reto-schneider.ch>)
-        id 1mcdUc-000Fvn-4s; Tue, 19 Oct 2021 03:00:38 +0200
-X-Authenticated-Sender-Id: reto-schneider@reto-schneider.ch
-From:   Reto Schneider <code@reto-schneider.ch>
-To:     linux-wireless@vger.kernel.org, chris.chiu@canonical.com,
-        Jes.Sorensen@gmail.com, pkshih@realtek.com
-Cc:     code@reto-schneider.ch, Larry.Finger@lwfinger.net,
-        Reto Schneider <reto.schneider@husqvarnagroup.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S233225AbhJSBN7 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 18 Oct 2021 21:13:59 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:55485 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229588AbhJSBN6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Oct 2021 21:13:58 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 19J1BQSc8013000, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36503.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 19J1BQSc8013000
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 19 Oct 2021 09:11:26 +0800
+Received: from RTEXMBS03.realtek.com.tw (172.21.6.96) by
+ RTEXH36503.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.14; Tue, 19 Oct 2021 09:11:26 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Mon, 18 Oct 2021 21:11:26 -0400
+Received: from RTEXMBS04.realtek.com.tw ([fe80::cdd5:82a3:e854:7098]) by
+ RTEXMBS04.realtek.com.tw ([fe80::cdd5:82a3:e854:7098%5]) with mapi id
+ 15.01.2106.013; Tue, 19 Oct 2021 09:11:26 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     Kalle Valo <kvalo@codeaurora.org>
+CC:     Colin King <colin.king@canonical.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [RFC PATCH] rtl8xxxu: rtl8188cus: Fix init of PHY registers
-Date:   Tue, 19 Oct 2021 02:59:27 +0200
-Message-Id: <20211019005927.4075251-1-code@reto-schneider.ch>
-X-Mailer: git-send-email 2.30.2
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH][next] rtw89: Fix potential dereference of the null pointer sta
+Thread-Topic: [PATCH][next] rtw89: Fix potential dereference of the null
+ pointer sta
+Thread-Index: AQHXwduziBNegQ3KtE6tzEeaYjpkJqvX/pCwgACwb0mAANdosA==
+Date:   Tue, 19 Oct 2021 01:11:25 +0000
+Message-ID: <abc2e3a274694d48aa468491df334349@realtek.com>
+References: <20211015154530.34356-1-colin.king@canonical.com>
+        <9cc681c217a449519aee524b35e6b6bc@realtek.com>
+ <87pms2ttvi.fsf@codeaurora.org>
+In-Reply-To: <87pms2ttvi.fsf@codeaurora.org>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS03.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/10/18_=3F=3F_11:09:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-KSE-ServerInfo: RTEXH36503.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 10/19/2021 00:52:27
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 166808 [Oct 18 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: pkshih@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 463 463 5854868460de3f0d8e8c0a4df98aeb05fb764a09
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: realtek.com:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 10/19/2021 00:54:00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 
-Use dedicated PHY register initialization table for RTL8188CUS devices
-(1T1R) as the values stored in the rtl8723a_phy_1t_init_table array
-slightly differ from the ones in the vendor drivers (8192cu, rtl8192u):
+> -----Original Message-----
+> From: kvalo=codeaurora.org@mg.codeaurora.org <kvalo=codeaurora.org@mg.codeaurora.org> On
+> Behalf Of Kalle Valo
+> Sent: Monday, October 18, 2021 8:12 PM
+> To: Pkshih <pkshih@realtek.com>
+> Cc: Colin King <colin.king@canonical.com>; David S . Miller <davem@davemloft.net>; Jakub
+> Kicinski <kuba@kernel.org>; linux-wireless@vger.kernel.org; netdev@vger.kernel.org;
+> kernel-janitors@vger.kernel.org; linux-kernel@vger.kernel.org
+> Subject: Re: [PATCH][next] rtw89: Fix potential dereference of the null pointer sta
+> 
+> Pkshih <pkshih@realtek.com> writes:
+> 
+> >> -----Original Message-----
+> >> From: Colin King <colin.king@canonical.com>
+> >> Sent: Friday, October 15, 2021 11:46 PM
+> >> To: Kalle Valo <kvalo@codeaurora.org>; David S . Miller <davem@davemloft.net>; Jakub Kicinski
+> >> <kuba@kernel.org>; Pkshih <pkshih@realtek.com>; linux-wireless@vger.kernel.org;
+> >> netdev@vger.kernel.org
+> >> Cc: kernel-janitors@vger.kernel.org; linux-kernel@vger.kernel.org
+> >> Subject: [PATCH][next] rtw89: Fix potential dereference of the null pointer sta
+> >>
+> >> From: Colin Ian King <colin.king@canonical.com>
+> >>
+> >> The pointer rtwsta is dereferencing pointer sta before sta is
+> >> being null checked, so there is a potential null pointer deference
+> >> issue that may occur. Fix this by only assigning rtwsta after sta
+> >> has been null checked. Add in a null pointer check on rtwsta before
+> >> dereferencing it too.
+> >>
+> >> Fixes: e3ec7017f6a2 ("rtw89: add Realtek 802.11ax driver")
+> >> Addresses-Coverity: ("Dereference before null check")
+> >> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> >> ---
+> >>  drivers/net/wireless/realtek/rtw89/core.c | 9 +++++++--
+> >>  1 file changed, 7 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/drivers/net/wireless/realtek/rtw89/core.c
+> >> b/drivers/net/wireless/realtek/rtw89/core.c
+> >> index 06fb6e5b1b37..26f52a25f545 100644
+> >> --- a/drivers/net/wireless/realtek/rtw89/core.c
+> >> +++ b/drivers/net/wireless/realtek/rtw89/core.c
+> >> @@ -1534,9 +1534,14 @@ static bool rtw89_core_txq_agg_wait(struct rtw89_dev *rtwdev,
+> >>  {
+> >>  	struct rtw89_txq *rtwtxq = (struct rtw89_txq *)txq->drv_priv;
+> >>  	struct ieee80211_sta *sta = txq->sta;
+> >> -	struct rtw89_sta *rtwsta = (struct rtw89_sta *)sta->drv_priv;
+> >
+> > 'sta->drv_priv' is only a pointer, we don't really dereference the
+> > data right here, so I think this is safe. More, compiler can optimize
+> > this instruction that reorder it to the place just right before using.
+> > So, it seems like a false alarm.
+> >
+> >> +	struct rtw89_sta *rtwsta;
+> >>
+> >> -	if (!sta || rtwsta->max_agg_wait <= 0)
+> >> +	if (!sta)
+> >> +		return false;
+> >> +	rtwsta = (struct rtw89_sta *)sta->drv_priv;
+> >> +	if (!rtwsta)
+> >> +		return false;
+> >> +	if (rtwsta->max_agg_wait <= 0)
+> >>  		return false;
+> >>
+> >>  	if (rtwdev->stats.tx_tfc_lv <= RTW89_TFC_MID)
+> >
+> > I check the size of object files before/after this patch, and
+> > the original one is smaller.
+> >
+> >    text    data     bss     dec     hex filename
+> >   16781    3392       1   20174    4ece core-0.o  // original
+> >   16819    3392       1   20212    4ef4 core-1.o  // after this patch
+> >
+> > Do you think it is worth to apply this patch?
+> 
+> I think that we should apply the patch. Even though the compiler _may_
+> reorder the code, it might choose not to do that.
 
-Offset | Name (REG_...)         | rtl8xxxu/8723a | [rtl]8192cu | XOR
--------+------------------------+----------------+-------------+-----------
-0x024  | AFE_XTAL_CTRL          | missing        | 0x0011800f  | unknown
-0x028  | AFE_PLL_CTRL           | missing        | 0x00ffdb83  | unknown
-0x804  | FPGA0_TX_INFO          | 0x00000003     | 0x00000001  | 0x00000002
-0x810  | FPGA0_RF_TIMING1       | 0x10001331     | 0x10000330  | 0x00001001
-0x860  | FPGA0_XA_RF_INT_OE     | 0x66f60110     | 0x66e60230  | 0x00100320
-0x870  | FPGA0_XA[B]_RF_SW_CTRL | 0x07000760     | 0x07000700  | 0x00000060
-0xa78  | unknown                | 0x00000900     | missing     | unknown
-0xc34  | OFDM0_RX_DETECTOR_2    | 0x469652af     | 0x469652cf  | 0x00000060
-0xc64  | OFDM0_XC_AGC_CORE2     | 0x7112848b     | 0x5116848b  | 0x20040000
-0xd00  | OFDM1_LSTF             | 0x00080740     | 0x00000740  | 0x00080000
+Understand.
 
-The meaning of those values are unknown to me, except maybe for
-FPGA0_TX_INFO, which refers to (only) path A (8192cu) instead of A and B
-(rtl8xxxu/8723a).
+I have another way to fix this coverity warning, like:
 
-Sadly, my benchmarks have not show any changes regarding throughput or
-number of retransmissions on my RTL8188CUS based device.
+@@ -1617,7 +1617,7 @@ static bool rtw89_core_txq_agg_wait(struct rtw89_dev *rtwdev,
+ {
+        struct rtw89_txq *rtwtxq = (struct rtw89_txq *)txq->drv_priv;
+        struct ieee80211_sta *sta = txq->sta;
+-       struct rtw89_sta *rtwsta = (struct rtw89_sta *)sta->drv_priv;
++       struct rtw89_sta *rtwsta = sta ? (struct rtw89_sta *)sta->drv_priv : NULL;
 
-Does anyone know how to interpret those register/values and whether the
-changes done are actually an improvement?
+        if (!sta || rtwsta->max_agg_wait <= 0)
+                return false;
 
-Signed-off-by: Reto Schneider <reto.schneider@husqvarnagroup.com>
----
+Is this acceptable?
+It has a little redundant checking of 'sta', but the code looks clean.
 
- .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 103 +++++++++++++++++-
- .../wireless/realtek/rtl8xxxu/rtl8xxxu_regs.h |   2 +
- 2 files changed, 104 insertions(+), 1 deletion(-)
+> 
+> Another question is that can txq->sta really be null? I didn't check the
+> code, but if it should be always set when the null check is not needed.
+> 
 
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index 0d374a294840..2130ad1da0e2 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -152,6 +152,104 @@ struct rtl8xxxu_reg8val rtl8xxxu_gen1_mac_init_table[] = {
- 	{0x70a, 0x65}, {0x70b, 0x87}, {0xffff, 0xff},
- };
- 
-+static struct rtl8xxxu_reg32val rtl8188cu_phy_1t_init_table[] = {
-+	{0x024, 0x0011800f}, {0x028, 0x00ffdb83},
-+	{0x800, 0x80040000}, {0x804, 0x00000001},
-+	{0x808, 0x0000fc00}, {0x80c, 0x0000000a},
-+	{0x810, 0x10000330}, {0x814, 0x020c3d10},
-+	{0x818, 0x02200385}, {0x81c, 0x00000000},
-+	{0x820, 0x01000100}, {0x824, 0x00390004},
-+	{0x828, 0x00000000}, {0x82c, 0x00000000},
-+	{0x830, 0x00000000}, {0x834, 0x00000000},
-+	{0x838, 0x00000000}, {0x83c, 0x00000000},
-+	{0x840, 0x00010000}, {0x844, 0x00000000},
-+	{0x848, 0x00000000}, {0x84c, 0x00000000},
-+	{0x850, 0x00000000}, {0x854, 0x00000000},
-+	{0x858, 0x569a569a}, {0x85c, 0x001b25a4},
-+	{0x860, 0x66e60230}, {0x864, 0x061f0130},
-+	{0x868, 0x00000000}, {0x86c, 0x32323200},
-+	{0x870, 0x07000700}, {0x874, 0x22004000},
-+	{0x878, 0x00000808}, {0x87c, 0x00000000},
-+	{0x880, 0xc0083070}, {0x884, 0x000004d5},
-+	{0x888, 0x00000000}, {0x88c, 0xccc000c0},
-+	{0x890, 0x00000800}, {0x894, 0xfffffffe},
-+	{0x898, 0x40302010}, {0x89c, 0x00706050},
-+	{0x900, 0x00000000}, {0x904, 0x00000023},
-+	{0x908, 0x00000000}, {0x90c, 0x81121111},
-+	{0xa00, 0x00d047c8}, {0xa04, 0x80ff000c},
-+	{0xa08, 0x8c838300}, {0xa0c, 0x2e68120f},
-+	{0xa10, 0x9500bb78}, {0xa14, 0x11144028},
-+	{0xa18, 0x00881117}, {0xa1c, 0x89140f00},
-+	{0xa20, 0x1a1b0000}, {0xa24, 0x090e1317},
-+	{0xa28, 0x00000204}, {0xa2c, 0x00d30000},
-+	{0xa70, 0x101fbf00}, {0xa74, 0x00000007},
-+	{0xc00, 0x48071d40}, {0xc04, 0x03a05611},
-+	{0xc08, 0x000000e4}, {0xc0c, 0x6c6c6c6c},
-+	{0xc10, 0x08800000}, {0xc14, 0x40000100},
-+	{0xc18, 0x08800000}, {0xc1c, 0x40000100},
-+	{0xc20, 0x00000000}, {0xc24, 0x00000000},
-+	{0xc28, 0x00000000}, {0xc2c, 0x00000000},
-+	{0xc30, 0x69e9ac44}, {0xc34, 0x469652cf},
-+	{0xc38, 0x49795994}, {0xc3c, 0x0a97971c},
-+	{0xc40, 0x1f7c403f}, {0xc44, 0x000100b7},
-+	{0xc48, 0xec020107}, {0xc4c, 0x007f037f},
-+	{0xc50, 0x69543420}, {0xc54, 0x43bc0094},
-+	{0xc58, 0x69543420}, {0xc5c, 0x433c0094},
-+	{0xc60, 0x00000000}, {0xc64, 0x5116848b},
-+	{0xc68, 0x47c00bff}, {0xc6c, 0x00000036},
-+	{0xc70, 0x2c7f000d}, {0xc74, 0x018610db},
-+	{0xc78, 0x0000001f}, {0xc7c, 0x00b91612},
-+	{0xc80, 0x40000100}, {0xc84, 0x20f60000},
-+	{0xc88, 0x40000100}, {0xc8c, 0x20200000},
-+	{0xc90, 0x00121820}, {0xc94, 0x00000000},
-+	{0xc98, 0x00121820}, {0xc9c, 0x00007f7f},
-+	{0xca0, 0x00000000}, {0xca4, 0x00000080},
-+	{0xca8, 0x00000000}, {0xcac, 0x00000000},
-+	{0xcb0, 0x00000000}, {0xcb4, 0x00000000},
-+	{0xcb8, 0x00000000}, {0xcbc, 0x28000000},
-+	{0xcc0, 0x00000000}, {0xcc4, 0x00000000},
-+	{0xcc8, 0x00000000}, {0xccc, 0x00000000},
-+	{0xcd0, 0x00000000}, {0xcd4, 0x00000000},
-+	{0xcd8, 0x64b22427}, {0xcdc, 0x00766932},
-+	{0xce0, 0x00222222}, {0xce4, 0x00000000},
-+	{0xce8, 0x37644302}, {0xcec, 0x2f97d40c},
-+	{0xd00, 0x00000740}, {0xd04, 0x00020401},
-+	{0xd08, 0x0000907f}, {0xd0c, 0x20010201},
-+	{0xd10, 0xa0633333}, {0xd14, 0x3333bc43},
-+	{0xd18, 0x7a8f5b6b}, {0xd2c, 0xcc979975},
-+	{0xd30, 0x00000000}, {0xd34, 0x80608000},
-+	{0xd38, 0x00000000}, {0xd3c, 0x00027293},
-+	{0xd40, 0x00000000}, {0xd44, 0x00000000},
-+	{0xd48, 0x00000000}, {0xd4c, 0x00000000},
-+	{0xd50, 0x6437140a}, {0xd54, 0x00000000},
-+	{0xd58, 0x00000000}, {0xd5c, 0x30032064},
-+	{0xd60, 0x4653de68}, {0xd64, 0x04518a3c},
-+	{0xd68, 0x00002101}, {0xd6c, 0x2a201c16},
-+	{0xd70, 0x1812362e}, {0xd74, 0x322c2220},
-+	{0xd78, 0x000e3c24}, {0xe00, 0x2a2a2a2a},
-+	{0xe04, 0x2a2a2a2a}, {0xe08, 0x03902a2a},
-+	{0xe10, 0x2a2a2a2a}, {0xe14, 0x2a2a2a2a},
-+	{0xe18, 0x2a2a2a2a}, {0xe1c, 0x2a2a2a2a},
-+	{0xe28, 0x00000000}, {0xe30, 0x1000dc1f},
-+	{0xe34, 0x10008c1f}, {0xe38, 0x02140102},
-+	{0xe3c, 0x681604c2}, {0xe40, 0x01007c00},
-+	{0xe44, 0x01004800}, {0xe48, 0xfb000000},
-+	{0xe4c, 0x000028d1}, {0xe50, 0x1000dc1f},
-+	{0xe54, 0x10008c1f}, {0xe58, 0x02140102},
-+	{0xe5c, 0x28160d05}, {0xe60, 0x00000008},
-+	{0xe68, 0x001b25a4}, {0xe6c, 0x631b25a0},
-+	{0xe70, 0x631b25a0}, {0xe74, 0x081b25a0},
-+	{0xe78, 0x081b25a0}, {0xe7c, 0x081b25a0},
-+	{0xe80, 0x081b25a0}, {0xe84, 0x631b25a0},
-+	{0xe88, 0x081b25a0}, {0xe8c, 0x631b25a0},
-+	{0xed0, 0x631b25a0}, {0xed4, 0x631b25a0},
-+	{0xed8, 0x631b25a0}, {0xedc, 0x001b25a0},
-+	{0xee0, 0x001b25a0}, {0xeec, 0x6b1b25a0},
-+	{0xf14, 0x00000003}, {0xf4c, 0x00000000},
-+	{0xf00, 0x00000300},
-+	{0xffff, 0xffffffff},
-+};
-+
- static struct rtl8xxxu_reg32val rtl8723a_phy_1t_init_table[] = {
- 	{0x800, 0x80040000}, {0x804, 0x00000003},
- 	{0x808, 0x0000fc00}, {0x80c, 0x0000000a},
-@@ -2227,6 +2325,8 @@ void rtl8xxxu_gen1_init_phy_bb(struct rtl8xxxu_priv *priv)
- 		rtl8xxxu_init_phy_regs(priv, rtl8188ru_phy_1t_highpa_table);
- 	else if (priv->tx_paths == 2)
- 		rtl8xxxu_init_phy_regs(priv, rtl8192cu_phy_2t_init_table);
-+	else if (priv->rtl_chip == RTL8188C)
-+		rtl8xxxu_init_phy_regs(priv, rtl8188cu_phy_1t_init_table);
- 	else
- 		rtl8xxxu_init_phy_regs(priv, rtl8723a_phy_1t_init_table);
- 
-@@ -3949,7 +4049,8 @@ static int rtl8xxxu_init_device(struct ieee80211_hw *hw)
- 		goto exit;
- 
- 	/* RFSW Control - clear bit 14 ?? */
--	if (priv->rtl_chip != RTL8723B && priv->rtl_chip != RTL8192E)
-+	if (priv->rtl_chip != RTL8723B && priv->rtl_chip != RTL8192E &&
-+	    priv->rtl_chip != RTL8188C)
- 		rtl8xxxu_write32(priv, REG_FPGA0_TX_INFO, 0x00000003);
- 
- 	val32 = FPGA0_RF_TRSW | FPGA0_RF_TRSWB | FPGA0_RF_ANTSW |
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_regs.h b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_regs.h
-index a2a31f374a82..0556c05afdbd 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_regs.h
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_regs.h
-@@ -966,6 +966,8 @@
- #define REG_OFDM0_XA_RX_IQ_IMBALANCE	0x0c14
- #define REG_OFDM0_XB_RX_IQ_IMBALANCE	0x0c1c
- 
-+#define REG_OFDM0_RX_DETECTOR_2		0x0c34
-+
- #define REG_OFDM0_ENERGY_CCA_THRES	0x0c4c
- 
- #define REG_OFDM0_RX_D_SYNC_PATH	0x0c40
--- 
-2.30.2
+It says
+
+* struct ieee80211_txq - Software intermediate tx queue
+* @sta: station table entry, %NULL for per-vif queue
+
+So, we need to check if 'sta' is NULL.
+
+--
+Ping-Ke
 
