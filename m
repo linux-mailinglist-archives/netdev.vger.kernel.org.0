@@ -2,92 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DC31433DAC
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 19:42:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 340DF433DB8
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 19:47:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234309AbhJSRoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 13:44:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53544 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231586AbhJSRoi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 13:44:38 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 284A0C06161C
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 10:42:25 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id r4so9132945edi.5
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 10:42:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kryo-se.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FBFB5TpvCM2ffvAvKnFSlCgvqyq0TJ9lHk49iX31/z4=;
-        b=wtDfIxAopPK3YdfWAUQxFYYuLqtBo5X09KwU4oRyNkF7nQ3w6UHKKBOR4Ss+YMbbz/
-         qxnISxkdk+5MlWe6Rqx/CLRN0StexKNEXbC8OfMGlA0jR7j6DjgVhoXuhav1jGTXfxiH
-         +9q1oyxgkI7HrI9WHfI54im6ovTg4kQWkndQvLF7xRz7MVe8YvInZsoKCU9wj88F8kDC
-         IWJ2Xp9sBk0dnKfPDznxlhHvOnpGEkiMEmuJEOS+DMBRlz7cGc45QJmay+soj5eah+sj
-         XHz3RJP7CvHhTDm8/kgY7a+KZVTbN1nNhYT+9s2XgnNk+3Mz2Yz7Qt7XzcahkKBdUznm
-         kE+g==
+        id S234697AbhJSRtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 13:49:32 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59506 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233460AbhJSRtc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 13:49:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634665638;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=6PHyQRAZi9qKxt2yBxkd/7kZehOiYCY3C1hQIr+uU+0=;
+        b=dIuvKohoHL5r5gwzITR2l9i29e+YnpiYYnjLRAcDqFPzRBmIKSN+2mbX67KvCx0eXalpWH
+        lOTv6gNqoIAZGa1NGqKToNnRnCgcHArPnFiu2fDCcIRHlfgfxPOhbRIzq3a0s6SHSJYgQI
+        RirsrIaWxt+lUnTTkQf9ipyI328Q9Ug=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-518-6kY8Z4PSNRK9TQrn2J18DA-1; Tue, 19 Oct 2021 13:47:17 -0400
+X-MC-Unique: 6kY8Z4PSNRK9TQrn2J18DA-1
+Received: by mail-ed1-f69.google.com with SMTP id l10-20020a056402230a00b003db6977b694so18318447eda.23
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 10:47:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FBFB5TpvCM2ffvAvKnFSlCgvqyq0TJ9lHk49iX31/z4=;
-        b=LOboUem8wuEyqpzpgm8gbxXXUcp3eDfy1APvwmS/Viy9AwvUlbL4WMWdMSnwUi3XSZ
-         iaKVtEYSsMTnw39AzoLUN/cUdCHtjVnKqZKQcMds780s7C+TqsHldI3yuKpFOyIR1NHj
-         t1A7Y3r8U2ebs/kfM/Ef+VIJ5DDpkCZWW51vdKPbNZacGCn7WBLW+Xj1jxqRE21XXPPM
-         Bgkl8BQW2g5bNMEdvjBs1StAUH7RB75RUJQOH7q/ig8hlMQL4Wrdchs3qWkRyD0dMjw1
-         6DrQ7r39S4UTGp8R67ZW+lMfNgP7Tay1OxR1RVOhTRkOwti/YyibxSMQuqipltUMr9aN
-         k3SA==
-X-Gm-Message-State: AOAM530ooNR/cwtGguLplvKnaHMIS1VhIM+iBt9bY4nudu9YjKmKPsje
-        oW1opB9khMVN5a3QpjxNpne83Oje+LClOcJxWrXGHp4l6RIZywpp9QI=
-X-Google-Smtp-Source: ABdhPJzfo2ze0heRi2KfK1PcOqBhINxGfn0+3IQEhHpQwsxkzsNldAQt0r8Dih8slmmDCBVknTt+nWf7OCHz68hJb8E=
-X-Received: by 2002:a17:907:168c:: with SMTP id hc12mr39661473ejc.570.1634665317380;
- Tue, 19 Oct 2021 10:41:57 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6PHyQRAZi9qKxt2yBxkd/7kZehOiYCY3C1hQIr+uU+0=;
+        b=CHmaolh0ZZ+SxYh1quP0i61n57G1Xfb6gWjdyLCAoPs+5nFQ085TvNyx9ZEmaqA74+
+         eUCD6uLX/PYeEUpCxN4ldE9kwBTLg1o2iJJkvk5wsR6M3Q22Qdy8axrDb+aRpEJOLqv0
+         b5A1glOno53R5D273Dvn/gYXydaJASXpwDnoRwsv+o1U2zkOCzAnHZwqYX8+uMUtSXtU
+         ihM8Xe2qUPbO9taxGGqereVIo0YJNlEQ+qt/BeG0xtD2qsOmHwL4fJ64pClz6AHyXTp8
+         S9fjW4TozQdFcBN+eznHJKKJKbZRp6pzK7WnWLCiDjXM+PqXdJKyP/4aJNYe1b7agO36
+         qyWw==
+X-Gm-Message-State: AOAM533xsCC0HoYeYXgSF5amFhisCEztenWiDN8HQWN0/69clzfsqaW8
+        3R9Z6F3Con/KynvYR78wMULqpRA27sbv91Roh8XVAqoRZ6OpdDqu0Y29xaKqCT3FNWovXr8wqsz
+        xVxbf6/GkmExI0vRd
+X-Received: by 2002:a17:906:11db:: with SMTP id o27mr39304094eja.540.1634665636019;
+        Tue, 19 Oct 2021 10:47:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxzJ2rs9DqZE7U5UGx1MwvryIN7WNY/QFuLTD5TqawfWX0LaQYXoGGX3P62D/q0VJO/GYRd3g==
+X-Received: by 2002:a17:906:11db:: with SMTP id o27mr39304038eja.540.1634665635585;
+        Tue, 19 Oct 2021 10:47:15 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id j1sm875100edk.53.2021.10.19.10.47.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Oct 2021 10:47:14 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 4D3AE18025D; Tue, 19 Oct 2021 19:47:13 +0200 (CEST)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org, edumazet@google.com
+Subject: [PATCH net-next v2] fq_codel: generalise ce_threshold marking for subset of traffic
+Date:   Tue, 19 Oct 2021 19:47:09 +0200
+Message-Id: <20211019174709.69081-1-toke@redhat.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-References: <20211017171657.85724-1-erik@kryo.se> <YW7idC0/+zq6dDNv@lunn.ch>
-In-Reply-To: <YW7idC0/+zq6dDNv@lunn.ch>
-From:   Erik Ekman <erik@kryo.se>
-Date:   Tue, 19 Oct 2021 19:41:46 +0200
-Message-ID: <CAGgu=sCBUU29tkjqOP9j7EZJL-T4O6NoTDNB+-PFNhUkOTdWuw@mail.gmail.com>
-Subject: Re: [PATCH] sfc: Fix reading non-legacy supported link modes
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 19 Oct 2021 at 17:21, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Sun, Oct 17, 2021 at 07:16:57PM +0200, Erik Ekman wrote:
-> > Everything except the first 32 bits was lost when the pause flags were
-> > added. This makes the 50000baseCR2 mode flag (bit 34) not appear.
-> >
-> > I have tested this with a 10G card (SFN5122F-R7) by modifying it to
-> > return a non-legacy link mode (10000baseCR).
->
-> Does this need a Fixes: tag? Should it be added to stable?
->
+The commit in the Fixes tag expanded the ce_threshold feature of FQ-CoDel
+so it can be applied to a subset of the traffic, using the ECT(1) bit of
+the ECN field as the classifier. However, hard-coding ECT(1) as the only
+classifier for this feature seems limiting, so let's expand it to be more
+general.
 
-The speed flags in use that can be lost are for 50G and 100G.
-The affected devices are ones based on the Solarflare EF100 networking
-IP in Xilinx FPGAs supporting 10/25/40/100-gigabit.
-I don't know how widespread these are, and if there might be enough
-users for adding this to stable.
+To this end, change the parameter from a ce_threshold_ect1 boolean, to a
+one-byte selector/mask pair (ce_threshold_{selector,mask}) which is applied
+to the whole diffserv/ECN field in the IP header. This makes it possible to
+classify packets by any value in either the ECN field or the diffserv
+field. In particular, setting a selector of INET_ECN_ECT_1 and a mask of
+INET_ECN_MASK corresponds to the functionality before this patch, and a
+mask of ~INET_ECN_MASK allows using the selector as a straight-forward
+match against a diffserv code point:
 
-The gsettings api code for sfc was added in 7cafe8f82438ced6d ("net:
-sfc: use new api ethtool_{get|set}_link_ksettings")
-and the bug was introduced then, but bits would only be lost after
-support for 25/50/100G was added in
-5abb5e7f916ee8d2d ("sfc: add bits for 25/50/100G supported/advertised speeds").
-Not sure which of these should be used for a Fixes tag.
+ # apply ce_threshold to ECT(1) traffic
+ tc qdisc replace dev eth0 root fq_codel ce_threshold 1ms ce_threshold_selector 0x1/0x3
 
-I only noticed this because I was using newer flags for signaling
-1G/10G fibre support in my other patch.
+ # apply ce_threshold to ECN-capable traffic marked as diffserv AF22
+ tc qdisc replace dev eth0 root fq_codel ce_threshold 1ms ce_threshold_selector 0x50/0xfc
 
-Thanks
-/Erik
+Regardless of the selector chosen, the normal rules for ECN-marking of
+packets still apply, i.e., the flow must still declare itself ECN-capable
+by setting one of the bits in the ECN field to get marked at all.
+
+v2:
+- Add tc usage examples to patch description
+
+Fixes: e72aeb9ee0e3 ("fq_codel: implement L4S style ce_threshold_ect1 marking")
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+---
+ include/net/codel.h            |  7 +++++--
+ include/net/codel_impl.h       | 14 +++++++-------
+ include/uapi/linux/pkt_sched.h |  3 ++-
+ net/mac80211/sta_info.c        |  3 ++-
+ net/sched/sch_fq_codel.c       | 13 +++++++++----
+ 5 files changed, 25 insertions(+), 15 deletions(-)
+
+diff --git a/include/net/codel.h b/include/net/codel.h
+index 5e8b181b76b8..a6c9e34e62b8 100644
+--- a/include/net/codel.h
++++ b/include/net/codel.h
+@@ -102,7 +102,9 @@ static inline u32 codel_time_to_us(codel_time_t val)
+  * @interval:	width of moving time window
+  * @mtu:	device mtu, or minimal queue backlog in bytes.
+  * @ecn:	is Explicit Congestion Notification enabled
+- * @ce_threshold_ect1: if ce_threshold only marks ECT(1) packets
++ * @ce_threshold_selector: apply ce_threshold to packets matching this value
++ *                         in the diffserv/ECN byte of the IP header
++ * @ce_threshold_mask: mask to apply to ce_threshold_selector comparison
+  */
+ struct codel_params {
+ 	codel_time_t	target;
+@@ -110,7 +112,8 @@ struct codel_params {
+ 	codel_time_t	interval;
+ 	u32		mtu;
+ 	bool		ecn;
+-	bool		ce_threshold_ect1;
++	u8		ce_threshold_selector;
++	u8		ce_threshold_mask;
+ };
+ 
+ /**
+diff --git a/include/net/codel_impl.h b/include/net/codel_impl.h
+index 7af2c3eb3c43..137d40d8cbeb 100644
+--- a/include/net/codel_impl.h
++++ b/include/net/codel_impl.h
+@@ -54,7 +54,8 @@ static void codel_params_init(struct codel_params *params)
+ 	params->interval = MS2TIME(100);
+ 	params->target = MS2TIME(5);
+ 	params->ce_threshold = CODEL_DISABLED_THRESHOLD;
+-	params->ce_threshold_ect1 = false;
++	params->ce_threshold_mask = 0;
++	params->ce_threshold_selector = 0;
+ 	params->ecn = false;
+ }
+ 
+@@ -250,13 +251,12 @@ static struct sk_buff *codel_dequeue(void *ctx,
+ 	if (skb && codel_time_after(vars->ldelay, params->ce_threshold)) {
+ 		bool set_ce = true;
+ 
+-		if (params->ce_threshold_ect1) {
+-			/* Note: if skb_get_dsfield() returns -1, following
+-			 * gives INET_ECN_MASK, which is != INET_ECN_ECT_1.
+-			 */
+-			u8 ecn = skb_get_dsfield(skb) & INET_ECN_MASK;
++		if (params->ce_threshold_mask) {
++			int dsfield = skb_get_dsfield(skb);
+ 
+-			set_ce = (ecn == INET_ECN_ECT_1);
++			set_ce = (dsfield >= 0 &&
++				  (((u8)dsfield & params->ce_threshold_mask) ==
++				   params->ce_threshold_selector));
+ 		}
+ 		if (set_ce && INET_ECN_set_ce(skb))
+ 			stats->ce_mark++;
+diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
+index 6be9a84cccfa..f292b467b27f 100644
+--- a/include/uapi/linux/pkt_sched.h
++++ b/include/uapi/linux/pkt_sched.h
+@@ -840,7 +840,8 @@ enum {
+ 	TCA_FQ_CODEL_CE_THRESHOLD,
+ 	TCA_FQ_CODEL_DROP_BATCH_SIZE,
+ 	TCA_FQ_CODEL_MEMORY_LIMIT,
+-	TCA_FQ_CODEL_CE_THRESHOLD_ECT1,
++	TCA_FQ_CODEL_CE_THRESHOLD_SELECTOR,
++	TCA_FQ_CODEL_CE_THRESHOLD_MASK,
+ 	__TCA_FQ_CODEL_MAX
+ };
+ 
+diff --git a/net/mac80211/sta_info.c b/net/mac80211/sta_info.c
+index a39830418434..bd52ac3bee90 100644
+--- a/net/mac80211/sta_info.c
++++ b/net/mac80211/sta_info.c
+@@ -513,7 +513,8 @@ struct sta_info *sta_info_alloc(struct ieee80211_sub_if_data *sdata,
+ 	sta->cparams.target = MS2TIME(20);
+ 	sta->cparams.interval = MS2TIME(100);
+ 	sta->cparams.ecn = true;
+-	sta->cparams.ce_threshold_ect1 = false;
++	sta->cparams.ce_threshold_selector = 0;
++	sta->cparams.ce_threshold_mask = 0;
+ 
+ 	sta_dbg(sdata, "Allocated STA %pM\n", sta->sta.addr);
+ 
+diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
+index 033d65d06eb1..839e1235db05 100644
+--- a/net/sched/sch_fq_codel.c
++++ b/net/sched/sch_fq_codel.c
+@@ -362,7 +362,8 @@ static const struct nla_policy fq_codel_policy[TCA_FQ_CODEL_MAX + 1] = {
+ 	[TCA_FQ_CODEL_CE_THRESHOLD] = { .type = NLA_U32 },
+ 	[TCA_FQ_CODEL_DROP_BATCH_SIZE] = { .type = NLA_U32 },
+ 	[TCA_FQ_CODEL_MEMORY_LIMIT] = { .type = NLA_U32 },
+-	[TCA_FQ_CODEL_CE_THRESHOLD_ECT1] = { .type = NLA_U8 },
++	[TCA_FQ_CODEL_CE_THRESHOLD_SELECTOR] = { .type = NLA_U8 },
++	[TCA_FQ_CODEL_CE_THRESHOLD_MASK] = { .type = NLA_U8 },
+ };
+ 
+ static int fq_codel_change(struct Qdisc *sch, struct nlattr *opt,
+@@ -409,8 +410,10 @@ static int fq_codel_change(struct Qdisc *sch, struct nlattr *opt,
+ 		q->cparams.ce_threshold = (val * NSEC_PER_USEC) >> CODEL_SHIFT;
+ 	}
+ 
+-	if (tb[TCA_FQ_CODEL_CE_THRESHOLD_ECT1])
+-		q->cparams.ce_threshold_ect1 = !!nla_get_u8(tb[TCA_FQ_CODEL_CE_THRESHOLD_ECT1]);
++	if (tb[TCA_FQ_CODEL_CE_THRESHOLD_SELECTOR])
++		q->cparams.ce_threshold_selector = nla_get_u8(tb[TCA_FQ_CODEL_CE_THRESHOLD_SELECTOR]);
++	if (tb[TCA_FQ_CODEL_CE_THRESHOLD_MASK])
++		q->cparams.ce_threshold_mask = nla_get_u8(tb[TCA_FQ_CODEL_CE_THRESHOLD_MASK]);
+ 
+ 	if (tb[TCA_FQ_CODEL_INTERVAL]) {
+ 		u64 interval = nla_get_u32(tb[TCA_FQ_CODEL_INTERVAL]);
+@@ -552,7 +555,9 @@ static int fq_codel_dump(struct Qdisc *sch, struct sk_buff *skb)
+ 		if (nla_put_u32(skb, TCA_FQ_CODEL_CE_THRESHOLD,
+ 				codel_time_to_us(q->cparams.ce_threshold)))
+ 			goto nla_put_failure;
+-		if (nla_put_u8(skb, TCA_FQ_CODEL_CE_THRESHOLD_ECT1, q->cparams.ce_threshold_ect1))
++		if (nla_put_u8(skb, TCA_FQ_CODEL_CE_THRESHOLD_SELECTOR, q->cparams.ce_threshold_selector))
++			goto nla_put_failure;
++		if (nla_put_u8(skb, TCA_FQ_CODEL_CE_THRESHOLD_MASK, q->cparams.ce_threshold_mask))
+ 			goto nla_put_failure;
+ 	}
+ 
+-- 
+2.33.0
+
