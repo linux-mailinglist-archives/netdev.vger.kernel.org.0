@@ -2,81 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C081B4339A1
-	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 17:02:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 510544339F5
+	for <lists+netdev@lfdr.de>; Tue, 19 Oct 2021 17:14:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233425AbhJSPEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 11:04:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44130 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233353AbhJSPEj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 11:04:39 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC26C06161C
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 08:02:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=0xczBOFznEKiydkdssDmvhHhjjkJOIO47q11K7PlmOE=; b=dgYh5TGyOjs2hQjFHexqlzXdR6
-        i4YogkbSQWJNCp5Ecs3QGVxA/qR3GKU3ZjrpH5XcfLNU94vKGwmNi/uc2MuG644ESv2tL9S+3cyHu
-        9l92I0Na50lhUX4zAePZeY1FEcLg9xihSMPpeQ9nd1LDp0eWkbDnJm2GoqFQ1W6z0h6GOKjh/v/GW
-        oY3XXy1Ke/2KQ7ApZLCyZneICUnTewxRe4zlKADiFpSpyFgdGODGGyzF3oAek8Obbm7wCxdbQYwYI
-        NIKhS1fOeqSpdXvux/7o1HoaeIYqBjZdFDQks29vAXgcYk7U7NhpJL13bdiiINcR0gTBuH/IqKVxK
-        fWBWpy1A==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55192)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mcqdA-0006JD-Cv; Tue, 19 Oct 2021 16:02:20 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mcqd8-0006vC-Hy; Tue, 19 Oct 2021 16:02:18 +0100
-Date:   Tue, 19 Oct 2021 16:02:18 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Antoine Tenart <atenart@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: Re: [PATCH v2 1/2] net: macb: Clean up macb_validate
-Message-ID: <YW7d+qm/hnTZ80Ar@shell.armlinux.org.uk>
-References: <20211011165517.2857893-1-sean.anderson@seco.com>
- <163402758460.4280.9175185858026827934@kwain>
- <YWhcEzZzrE5lMxD4@shell.armlinux.org.uk>
- <82025310-10f3-28fd-1b52-2b3969d5f00b@seco.com>
- <YWi4a5Jme5IDSuKE@shell.armlinux.org.uk>
- <95defe0f-542c-b93d-8d66-745130fbe580@seco.com>
- <YWoFAiCRZJGnkBJB@shell.armlinux.org.uk>
+        id S232231AbhJSPQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 11:16:21 -0400
+Received: from mail-vk1-f178.google.com ([209.85.221.178]:33723 "EHLO
+        mail-vk1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232601AbhJSPQT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 11:16:19 -0400
+Received: by mail-vk1-f178.google.com with SMTP id r26so1161098vkq.0;
+        Tue, 19 Oct 2021 08:14:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fB/2pInV/75e4NnyCMXXkeVh+Ni7M1P708BMXGlIBnc=;
+        b=MhyTJSAnXTBD24vluoR/dimjofvSMbNYVkIsjRDw8AlTKPkIzbOovwr2LCKjyluweU
+         pr12k5ZbMMmEMy776rFsN2h2dtSMKaRL1xovh80hVrJ5e1cakpkgebHum723oythGS+p
+         mAiys1XQQ8dLw0gez7rp/8YWfQFhLwnGejghxO0uL7w9JIt1XbqwSaBrBpYTjSjWmBc0
+         yH1LDmOHGVstMT9UJVhrmH4PDiTGNbxkYTx2Gvo1nFNH5Apgt9pZQ7uVughMRqgjdPwT
+         8lH7T/9EsFbzr40b5G0xKn6y9eg07zJbZfSnXF8ve5LCif2wsKXVSOBlPSCaYKqKammj
+         Dwdg==
+X-Gm-Message-State: AOAM530m3xw/uYRdZ0M4mCPSkqtfkv3+dmDsWWHe3kK81qTDMyEB770s
+        aInNzqQEEcPF/HLdSwUJZ7+QCi1sSRoHiQ==
+X-Google-Smtp-Source: ABdhPJydq6bpuaLUhng8Pj+QLHtGE+AmsJAHNijPKNzByPNr8UrriJTaKkmV8krptY5FCVK/Z4oFKg==
+X-Received: by 2002:a1f:1844:: with SMTP id 65mr32315692vky.3.1634656445571;
+        Tue, 19 Oct 2021 08:14:05 -0700 (PDT)
+Received: from mail-vk1-f171.google.com (mail-vk1-f171.google.com. [209.85.221.171])
+        by smtp.gmail.com with ESMTPSA id o18sm11083178vkb.21.2021.10.19.08.14.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Oct 2021 08:14:04 -0700 (PDT)
+Received: by mail-vk1-f171.google.com with SMTP id j12so10507435vka.4;
+        Tue, 19 Oct 2021 08:14:04 -0700 (PDT)
+X-Received: by 2002:a05:6122:a20:: with SMTP id 32mr32414786vkn.15.1634656444011;
+ Tue, 19 Oct 2021 08:14:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YWoFAiCRZJGnkBJB@shell.armlinux.org.uk>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+References: <20211019145719.122751-1-kory.maincent@bootlin.com>
+In-Reply-To: <20211019145719.122751-1-kory.maincent@bootlin.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 19 Oct 2021 17:13:52 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWghZ7HM5RRFRsZu8P_ikna0QWoRfCKeym61N-Lv-v4Xw@mail.gmail.com>
+Message-ID: <CAMuHMdWghZ7HM5RRFRsZu8P_ikna0QWoRfCKeym61N-Lv-v4Xw@mail.gmail.com>
+Subject: Re: [PATCH] net: renesas: Fix rgmii-id delays
+To:     Kory Maincent <kory.maincent@bootlin.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Adam Ford <aford173@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Yang Yingliang <yangyingliang@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 15, 2021 at 11:47:30PM +0100, Russell King (Oracle) wrote:
-> I have been working on it but haven't finished the patches yet. There's
-> a few issues that came up with e.g. DSA and mvneta being able to switch
-> between different speeds with some SFP modules that have needed other
-> tweaks.
+Hi Kory,
 
-Okay, have a look at:
+Thanks for your patch!
 
-http://git.armlinux.org.uk/cgit/linux-arm.git/log/?h=net-queue
+On Tue, Oct 19, 2021 at 4:57 PM Kory Maincent <kory.maincent@bootlin.com> wrote:
+> Invert the configuration of the RGMII delay selected by RGMII_RXID and
+> RGMII_TXID.
+>
+> The ravb MAC is adding RX delay if RGMII_RXID is selected and TX delay
+> if RGMII_TXID but that behavior is wrong.
+> Indeed according to the ethernet.txt documentation the ravb configuration
 
-and the patches from "net: enetc: remove interface checks in
-enetc_pl_mac_validate ()" down to the "net-merged" branch label.
+Do you mean ethernet-controller.yaml?
 
-That set of patches add the supported_interfaces bitmap, uses it for
-validation purposes, converts all but one of the ethernet drivers
-over to using it, and then simplifies the validate() implementations.
+> should be inverted:
+>   * "rgmii-rxid" (RGMII with internal RX delay provided by the PHY, the MAC
+>      should not add an RX delay in this case)
+>   * "rgmii-txid" (RGMII with internal TX delay provided by the PHY, the MAC
+>      should not add an TX delay in this case)
+>
+> This patch inverts the behavior, i.e adds TX delay when RGMII_RXID is
+> selected and RX delay when RGMII_TXID is selected.
+>
+> Signed-off-by: Kory Maincent <kory.maincent@bootlin.com>
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Does this fix an actual problem for you?
+
+> --- a/drivers/net/ethernet/renesas/ravb_main.c
+> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+> @@ -2114,13 +2114,13 @@ static void ravb_parse_delay_mode(struct device_node *np, struct net_device *nde
+>         /* Fall back to legacy rgmii-*id behavior */
+
+Note that in accordance with the comment above, the code section
+below is only present to support old DTBs.  Contemporary DTBs rely
+on the now mandatory "rx-internal-delay-ps" and "tx-internal-delay-ps"
+properties instead.
+Hence changing this code has no effect on DTS files as supplied with
+the kernel, but may have ill effects on DTB files in the field, which
+rely on the current behavior.
+
+>         if (priv->phy_interface == PHY_INTERFACE_MODE_RGMII_ID ||
+>             priv->phy_interface == PHY_INTERFACE_MODE_RGMII_RXID) {
+> -               priv->rxcidm = 1;
+> +               priv->txcidm = 1;
+>                 priv->rgmii_override = 1;
+>         }
+>
+>         if (priv->phy_interface == PHY_INTERFACE_MODE_RGMII_ID ||
+>             priv->phy_interface == PHY_INTERFACE_MODE_RGMII_TXID) {
+> -               priv->txcidm = 1;
+> +               priv->rxcidm = 1;
+>                 priv->rgmii_override = 1;
+>         }
+>  }
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
