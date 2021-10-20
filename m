@@ -2,107 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7B634344AD
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 07:29:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DF5A4344D0
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 07:46:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229972AbhJTFbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 01:31:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41024 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229920AbhJTFbM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 01:31:12 -0400
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D64C8C06161C;
-        Tue, 19 Oct 2021 22:28:58 -0700 (PDT)
-Received: by mail-il1-x12c.google.com with SMTP id l7so7486745iln.8;
-        Tue, 19 Oct 2021 22:28:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=+x9DXiYdDRIsiP7bgBCWfV0gd6Qocz/QJERxyybccio=;
-        b=jyJuoKIWUMZdOIzsh6Zzki6M9PPhovKho30K33Q2vROnKVzaxFAxSg5/ixtHvm4UE3
-         qJaXPA8wFMNENMUyrN4ejs+tVINnsxvfEhxguyOEKrrMFgmq7jMt9bSXt4dkv/m1fD6t
-         k5qU3UfsBcVHOzvTwQNNdpOMHodPPumKbvPnMkPKz+nObKvrU5uTxPTTt3iyHPAI0ybo
-         c4pbaup/0UnhrYPsRp6gcE5fIoGVqIFWxE0GHqWkdx8T5+D0PTzWPwxpKQNG8evKg655
-         099knVI7fESunUWgUWI/yBYKFGVOiwfQCieVK/Udb1oU5aCUl2Z7PhGqJ7tOT7Qy52zs
-         Iupg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=+x9DXiYdDRIsiP7bgBCWfV0gd6Qocz/QJERxyybccio=;
-        b=A3IbbpQ+/E6sG7TvvaZCzhvP8qvmCyxY5KMtvf0e5wNo/KaANE449aiEFJDi1uKwhb
-         KAjHO9cUKJLmMcnEmhn6K/aR1kAtmk5NLNgxldeCkYoZg5cveksxt2kdiRvmTiAs7Iyq
-         wvmqs4rxRUyGBNxI9ttt6+o07W4zxw4dDdXg9JzZ0oVfYJ5wmeaS7ptJ2s7Uy2pLkvNA
-         I+XUZD06uBtOHkqM8edKLF/wKrOmIqQrbNzkyPzRsl4D/OZ2EaiBGWhKKcSJde41EVAI
-         mipGlr5v9ajtL2XXzZWRJh35IPUibvH5VOD3gKyJeFmQRDb7djZOLQrHEmBDlHKRR5bf
-         q5zw==
-X-Gm-Message-State: AOAM530mW5Ufqf9qiswjMNc569NT2NsPmzii7ac05tfnOOqklqUwl2U8
-        DM/sI+OGrG/SqdV0Y2q/1hM=
-X-Google-Smtp-Source: ABdhPJy0+fvkPqyUPTvV2FCqQGNH8O7psuxTP4qz7OaNSIBDMVMNbyF0CBCrP747Vn3uUx/nkzQwBw==
-X-Received: by 2002:a92:cf50:: with SMTP id c16mr14215449ilr.145.1634707738196;
-        Tue, 19 Oct 2021 22:28:58 -0700 (PDT)
-Received: from localhost ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id c11sm604874ilk.22.2021.10.19.22.28.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Oct 2021 22:28:57 -0700 (PDT)
-Date:   Tue, 19 Oct 2021 22:28:50 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
-        joamaki@gmail.com, xiyou.wangcong@gmail.com
-Message-ID: <616fa9127fa63_340c7208ef@john-XPS-13-9370.notmuch>
-In-Reply-To: <87tuhdfpq4.fsf@cloudflare.com>
-References: <20211011191647.418704-1-john.fastabend@gmail.com>
- <20211011191647.418704-2-john.fastabend@gmail.com>
- <87tuhdfpq4.fsf@cloudflare.com>
-Subject: Re: [PATCH bpf 1/4] bpf, sockmap: Remove unhash handler for BPF
- sockmap usage
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        id S229809AbhJTFs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 01:48:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58490 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229591AbhJTFsZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Oct 2021 01:48:25 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0E5B8611F2;
+        Wed, 20 Oct 2021 05:46:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634708771;
+        bh=JPd61XPiLtPfzjEJFZKlH8gf++uxeVph6XmUzklYpCE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=d+qoXgYExOqgMQ8B3xm6/WO5VIhsFzLOy8WQmRDcsyLAWoW7+LMKZILM8qXCCYCUQ
+         aDJr/T6fy2TBDXCy56AT4EdNFFDg0NC2wtAUHHSTE4s4XW2j1WYg2hIbtlHqrWuh1Y
+         hP4hLB9VYqNJc06UmZn2m6M3JpULH8jrHir87QAjy2W9ZjfNxGNnJ47cUJ2IOhoWv3
+         LTtvH5czjntxn2Iq61BE2Y5rP0dF0p/CuiZZ/eSuC3BrmDYUfoVXy6EXDnlCGQX0aG
+         nVgttK2yk9/RgGJkZ3XA67qjEWYsqXwEec9R8oT1JJ/RyXC5eZPRzK3DEj9RUDexX1
+         K+ZjZXPWw2VBw==
+Date:   Wed, 20 Oct 2021 06:46:01 +0100
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Quentin Monnet <quentin@isovalent.com>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Roman Gushchin <guro@fb.com>, Shuah Khan <shuah@kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: [PATCH v3 14/23] bpftool: update bpftool-cgroup.rst reference
+Message-ID: <20211020064531.3bbd1127@sal.lan>
+In-Reply-To: <CAADnVQ+9+fXGXyEU+fWYGiM7HqzaJwPoSKBuXKd=qz3x25XfSw@mail.gmail.com>
+References: <cover.1634630485.git.mchehab+huawei@kernel.org>
+        <11f3dc3cfc192e2ee271467d7a6c7c1920006766.1634630486.git.mchehab+huawei@kernel.org>
+        <e11c38fa-22fa-a0ae-4dd1-cac5a208e021@isovalent.com>
+        <CAADnVQ+9+fXGXyEU+fWYGiM7HqzaJwPoSKBuXKd=qz3x25XfSw@mail.gmail.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Sitnicki wrote:
-> On Mon, Oct 11, 2021 at 09:16 PM CEST, John Fastabend wrote:
-> > We do not need to handle unhash from BPF side we can simply wait for the
-> > close to happen. The original concern was a socket could transition from
-> > ESTABLISHED state to a new state while the BPF hook was still attached.
-> > But, we convinced ourself this is no longer possible and we also
-> > improved BPF sockmap to handle listen sockets so this is no longer a
-> > problem.
+Em Tue, 19 Oct 2021 15:31:38 -0700
+Alexei Starovoitov <alexei.starovoitov@gmail.com> escreveu:
+
+> On Tue, Oct 19, 2021 at 2:35 AM Quentin Monnet <quentin@isovalent.com> wrote:
 > >
-> > More importantly though there are cases where unhash is called when data is
-> > in the receive queue. The BPF unhash logic will flush this data which is
-> > wrong. To be correct it should keep the data in the receive queue and allow
-> > a receiving application to continue reading the data. This may happen when
-> > tcp_abort is received for example. Instead of complicating the logic in
-> > unhash simply moving all this to tcp_close hook solves this.
+> > 2021-10-19 09:04 UTC+0100 ~ Mauro Carvalho Chehab
+> > <mchehab+huawei@kernel.org>  
+> > > The file name: Documentation/bpftool-cgroup.rst
+> > > should be, instead: tools/bpf/bpftool/Documentation/bpftool-cgroup.rst.
+> > >
+> > > Update its cross-reference accordingly.
+> > >
+> > > Fixes: a2b5944fb4e0 ("selftests/bpf: Check consistency between bpftool source, doc, completion")
+> > > Fixes: 5ccda64d38cc ("bpftool: implement cgroup bpf operations")
+> > > Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+> > > ---
+> > >
+> > > To mailbombing on a large number of people, only mailing lists were C/C on the cover.
+> > > See [PATCH v3 00/23] at: https://lore.kernel.org/all/cover.1634630485.git.mchehab+huawei@kernel.org/
+> > >
+> > >  tools/testing/selftests/bpf/test_bpftool_synctypes.py | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/tools/testing/selftests/bpf/test_bpftool_synctypes.py b/tools/testing/selftests/bpf/test_bpftool_synctypes.py
+> > > index be54b7335a76..617b8084c440 100755
+> > > --- a/tools/testing/selftests/bpf/test_bpftool_synctypes.py
+> > > +++ b/tools/testing/selftests/bpf/test_bpftool_synctypes.py
+> > > @@ -392,7 +392,7 @@ class ManCgroupExtractor(ManPageExtractor):
+> > >      """
+> > >      An extractor for bpftool-cgroup.rst.
+> > >      """
+> > > -    filename = os.path.join(BPFTOOL_DIR, 'Documentation/bpftool-cgroup.rst')
+> > > +    filename = os.path.join(BPFTOOL_DIR, 'tools/bpf/bpftool/Documentation/bpftool-cgroup.rst')
+> > >
+> > >      def get_attach_types(self):
+> > >          return self.get_rst_list('ATTACH_TYPE')
+> > >  
 > >
-> > Fixes: 51199405f9672 ("bpf: skb_verdict, support SK_PASS on RX BPF path")
-> > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-> > ---
+> > No, this change is incorrect. We have discussed it several times before
+> > [0][1]. Please drop this patch.  
 > 
-> Doesn't this open the possibility of having a TCP_CLOSE socket in
-> sockmap if I disconnect it, that is call connect(AF_UNSPEC), instead of
-> close it?
+> +1
 
-Correct it means we may have TCP_CLOSE socket in the map. I'm not
-seeing any problem with this though. A send on the socket would
-fail the sk_state checks in the send hooks. (tcp.c:1245). Receiving
-from the TCP stack would fail with normal TCP stack checks.
+Sorry, left-over. I dropped two other patches, but forgot to also drop
+this one.
 
-Maybe we want a check on redirect into ingress if the sock is in
-ESTABLISHED state as well? I might push that in its own patch
-though it seems related, but I think we should have that there
-regardless of this patch.
-
-Did you happen to see any issues on the sock_map side for close case?
-It looks good to me.
-
-.John
+Regards,
+Mauro
