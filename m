@@ -2,108 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E7E643527A
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 20:15:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B3C643527C
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 20:15:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231124AbhJTSRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 14:17:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47512 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230328AbhJTSRN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 14:17:13 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07FB6C06161C;
-        Wed, 20 Oct 2021 11:14:59 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id t127so20018042ybf.13;
-        Wed, 20 Oct 2021 11:14:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=d7/cVoDiFjayaQSkYQo+YyxTX5Kj53yItR5KqZ+dY+A=;
-        b=NDilO4BskZrB9SWFQJd8P/4cGZI4gzvLyrs/TGsFnwt6/70F2TlzN3OHphGfBsy4Qo
-         7+jq0eXW7efSlfNqV3uKOcURMj0423V2pUnybHjK3Ya5hMjL9qkIgcmmAUYQOyfuE8N7
-         FLx64HnsJUZVwAnm4RMMx4xvOj29ZpYMoswf6MhYa6JRXnFk9ZaSt65jPp8H4J4Ll2Tt
-         S5MSKYy1skTaNzgSK4q3zh8d3i0nOoSo/UbfLlrHmLfcD6ki4JCgqizMTA/yV+fwELAF
-         ms+sijUo/e3SXe1EOQpH/W7j49/q2K7plFDYPI1He8Okybzeq8Nx8C9su9My8CrmAASb
-         UqjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=d7/cVoDiFjayaQSkYQo+YyxTX5Kj53yItR5KqZ+dY+A=;
-        b=5zIyHahPfDADbs3BUJmT+STWi1dLpj1AMbrXjzs6rOPj3VLCnWQ5HldBL7mxoB36wp
-         Ia4MalywBv91SrXuvSEKv5qkUsazhvNi1Jn167sZSHRDcVtMdM8BnJHW3Z3azBRdhH5N
-         vMRpXVtkjCJPXsLjUDp5DeMTOrWGdHGyaD+1LD3lShoClH1ZKQP4UQ7/VDSqpEk/4ush
-         U1rfABg/NmvmEU55SxksYX8MbQCD8xJg8MVGObLrsQ754h+7hiyFCxj3BFUma19ARpZJ
-         Z7T5rOKBh1HxaiARdqHH6QwfrD8KLGAQycneFGYojxC8aGAVklF5SmypADsBd/kkVcyk
-         k7dg==
-X-Gm-Message-State: AOAM530pxiclSChDHvNgffy4bLNBuXvP5PJO9+ubZ5KloQQmc/Pv2y3H
-        B0YEZkRIsiPOzhm/oWpa5dJQYfyRxWb+SJ6vhpA=
-X-Google-Smtp-Source: ABdhPJwzZVDWkpX2FL536R0UeWaGWGrrVTgf3x7Lg0P2elSzY0G515FtAYG6kSljWBPRrD8guvPDh6UcgmTLeX10RAA=
-X-Received: by 2002:a25:918e:: with SMTP id w14mr623639ybl.225.1634753698299;
- Wed, 20 Oct 2021 11:14:58 -0700 (PDT)
+        id S230456AbhJTSRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 14:17:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49050 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230381AbhJTSRv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Oct 2021 14:17:51 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0C87F60EFE;
+        Wed, 20 Oct 2021 18:15:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634753737;
+        bh=vHv6LhMfkzatBcbM0zQVqNGSc+6vGVhqvJcWS0T303g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SF0boFGvh5iCaMuBgJFYfC9OqiRDrEA8r7ojCCphvvmu34UfEbb4xJwn0XbebG0I2
+         H1zsfugH0yUYOOypb3oAfp+gnrjS1Qc1hS3tEUMwmzLQQ//MzyzqeYqiZbFrHdk02r
+         wwYkGmChLAC7bHU2vzWw4OTX3W+ooxIPrIEN4/1ew0igquBIZb3KlfFqbfpe/1jfyX
+         40XZI1ZsjKbYQi+ZTacOUqoXVZzlJB6F5rwAzH4VdZHa5CR5cMxmVLqOnnA4VjkE46
+         c50j5yzy+n+Df2URtJZX3SEbKfBuIQufc08aSKrx5kP0jUJOOgP5CrAP8kR7AiTXkG
+         FXbp7tvVWSfjw==
+Date:   Wed, 20 Oct 2021 11:15:36 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeedm@nvidia.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] mlx5: don't write directly to netdev->dev_addr
+Message-ID: <20211020111536.0c896900@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <d11a744067a3481c37d013a1f770af9b761dd57f.camel@nvidia.com>
+References: <20211013202001.311183-1-kuba@kernel.org>
+        <d11a744067a3481c37d013a1f770af9b761dd57f.camel@nvidia.com>
 MIME-Version: 1.0
-References: <20211012161544.660286-1-sdf@google.com> <20211012161544.660286-2-sdf@google.com>
-In-Reply-To: <20211012161544.660286-2-sdf@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 20 Oct 2021 11:14:47 -0700
-Message-ID: <CAEf4BzaL1het=ihyMKqhj26tUB6A8s3hx7evaspn1bvn6qZ5og@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/3] libbpf: use func name when pinning
- programs with LIBBPF_STRICT_SEC_NAME
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 12, 2021 at 9:15 AM Stanislav Fomichev <sdf@google.com> wrote:
+On Wed, 20 Oct 2021 17:54:56 +0000 Saeed Mahameed wrote:
+> On Wed, 2021-10-13 at 13:20 -0700, Jakub Kicinski wrote:
+> > Use a local buffer and eth_hw_addr_set().
+> > 
+> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> > ---
+> > This takes care of Ethernet, mlx5/core/ipoib/ipoib.c
+> > will be changed as part of all the IB conversions.
 >
-> We can't use section name anymore because they are not unique
-> and pinning objects with multiple programs with the same
-> progtype/secname will fail.
->
-> Closes: https://github.com/libbpf/libbpf/issues/273
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
->  tools/lib/bpf/libbpf.c | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index ae0889bebe32..d1646b32188f 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -285,7 +285,7 @@ struct bpf_program {
->         size_t sub_insn_off;
->
->         char *name;
-> -       /* sec_name with / replaced by _; makes recursive pinning
-> +       /* name with / replaced by _; makes recursive pinning
->          * in bpf_object__pin_programs easier
->          */
->         char *pin_name;
-> @@ -614,7 +614,13 @@ static char *__bpf_program__pin_name(struct bpf_program *prog)
->  {
->         char *name, *p;
->
-> -       name = p = strdup(prog->sec_name);
-> +       if (libbpf_mode & LIBBPF_STRICT_SEC_NAME)
-> +               name = strdup(prog->name);
-> +       else
-> +               name = strdup(prog->sec_name);
-> +
-> +       p = name;
-> +
->         while ((p = strchr(p, '/')))
+> the patch looks fine, i will take it directly to net-next-mlx5,
 
-I bet this will SIGSEGV if p is NULL? Can you please add a check and Fixes: tag?
+Thanks!
 
->                 *p = '_';
->
-> --
-> 2.33.0.882.g93a45727a2-goog
->
+> I didn't get the part about IB conversions, where can i find that ?
+
+Here:
+
+https://lore.kernel.org/all/20211019182604.1441387-3-kuba@kernel.org/
