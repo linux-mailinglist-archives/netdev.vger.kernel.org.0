@@ -2,125 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEDF243482D
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 11:46:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF6DD434830
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 11:47:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230058AbhJTJtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 05:49:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42710 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230052AbhJTJtH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 05:49:07 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B8DC061746
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 02:46:53 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id d198-20020a1c1dcf000000b00322f53b9b89so8770904wmd.0
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 02:46:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GeWdIKHBF0SI3AbP7SbsLae9yLN/fn+RNWHpeLCDp48=;
-        b=NQcA0xbrHWJfeLAw6CRpOmW+dn1hmTi/9lQbZwDfKRjbqOfGX9t3j1UdMxEdgxX3Ui
-         jFEChQTTUjfPFqCybu0rzLMrfMVmN6dI4PETzOFYHgs6gVg1IyuZNMBhnXvdMBDyIcN2
-         eaW4srPc+J6h03PN1Jc6JLI8o5UqzrUtqSaliiLOMHB41NmVK2WSo9uFt1Zddr52B+ZC
-         9LwsBdp7ZQ2uyWV1sRiStGyrK6khm6hCnGHD/BXxHQFJ1xbsRbhHLSlyR1ropHuNnn1D
-         T4/EetD+hrYxftM/xzTvLEuIgipxwbYIAHxhInd0e9o+4oQc+64+P74l2WYryBNQfF06
-         C9Xg==
+        id S230029AbhJTJtT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 05:49:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:50284 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230061AbhJTJtQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 05:49:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634723221;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MmnjAvIGZuMXOqe+/bXaxv87jyZihvkxREajhAeaycU=;
+        b=C5Y2Ow4zS2eZqWjPndNoCcTQWQV1WWQzKFzCumF9arWkx7M+zAn8+yd+bWPRAcLd+nvc1/
+        VR4iaIqSVvG2v1XsJWwTuTC8qoJN7T3Y1/ySJOZkZI8EqBZ02hCoxAiYNLKyq2GBXnrmMI
+        SZzypQdXpPY2R6XbODVWLOgNlfzkoNw=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-304-RazJy68vNAmGLj8h8aO-lA-1; Wed, 20 Oct 2021 05:47:00 -0400
+X-MC-Unique: RazJy68vNAmGLj8h8aO-lA-1
+Received: by mail-ed1-f71.google.com with SMTP id r25-20020a05640216d900b003dca3501ab4so3998332edx.15
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 02:47:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GeWdIKHBF0SI3AbP7SbsLae9yLN/fn+RNWHpeLCDp48=;
-        b=CZvp5JqZj+uRtGK0RTbFVbihzTQ2QqvhjZG0kSKNvjplM0JNumUet1nB6bajww8jDC
-         0MCH6gGRtKYHgoknEVwk9kZj0cdlvFS0Kdvj3ecCBikhT5YZ0ClF1Krx4IiLWIGDjq41
-         3r64Qqv0UBq1e+TYDv613rHssYD8NAtWqRhHkRYEOnKUwrBc/l+lt7an73VtG/xq+13L
-         TcIYGDjs0vRxIwjlv3CXBfyqJyyq07Y/TR5SM2EUxiKILWbv1kySlYvDoMXPEdawn5tJ
-         4Q8AkLukc3knaOhsdrBQWtLppUG2wjWOHC3M7fhIKdPm/oMVejWcINKpzexp5P3BLDDl
-         ZWtw==
-X-Gm-Message-State: AOAM531lMPftsT+ck/jA3MROB2EULh7nv9fp2QUuB44wrXylGOiLlytH
-        YCUswqd03gjfB84OBCuwlYh0wHM5J3gGUZY4
-X-Google-Smtp-Source: ABdhPJz0ZHwJC9sZ4mJQxnhWL4CuW5XjYVeJ4v6gSWEVLErPtYTyE9JVjUscDC0GwmO5ycgFxy7b3A==
-X-Received: by 2002:a05:600c:b43:: with SMTP id k3mr12196401wmr.142.1634723212165;
-        Wed, 20 Oct 2021 02:46:52 -0700 (PDT)
-Received: from localhost.localdomain ([149.86.71.75])
-        by smtp.gmail.com with ESMTPSA id u5sm1553533wrg.57.2021.10.20.02.46.51
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=MmnjAvIGZuMXOqe+/bXaxv87jyZihvkxREajhAeaycU=;
+        b=rVXuy2YVmyS6BC0DRLNjHe7zcGRit28HE2XIAuP0RmtmpT+VnuyCU5c42Ju0wU2ZwH
+         Trd9khFeGigGroUIJz/OA8ywOu142GBbGUUr5xdDQK7Tw6QhfcRgMuac+ftwyi+dYlqt
+         gg8+OS2cBr8oVBlCfm22utKGH6+Nl3bib3mXcMJdV1E/1wklUT6hMNDLRQGEob7MO5Uk
+         yfi6eMgaouFNq3WyRSYt7iEbFpSSndf6oWm/9efjTrEcpncjXRvsyJrLR6PoaQ0oAlzG
+         3QYYdgN3NNcOsOTVSJq3ENF/nLU2WSYjq4adNQcNuSizhmSMVKP7iCsa0n2KZrjG2LK1
+         dOdQ==
+X-Gm-Message-State: AOAM531hrx9xV8TczYlJoHVKGw3jfnCBZ7iT6cE9xfC5/zKjYB+nwTaL
+        0ssekR4ZzEApycZ2DbV8k+mw5bc2eu8aLLBwuprglNWXmsO8KyDrFn1A1hk4QIRE8dTS4cI4lOL
+        i6Qj8KU1wea31uXIo
+X-Received: by 2002:a05:6402:5216:: with SMTP id s22mr63058934edd.167.1634723219337;
+        Wed, 20 Oct 2021 02:46:59 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxZ3Q6WhuzYdoLd1Ppez0eKaTA+F9/YDV65ZJKGvJfgG5Yp18XvUpLGeeHgiyLpU6/pIfe44w==
+X-Received: by 2002:a05:6402:5216:: with SMTP id s22mr63058884edd.167.1634723218938;
+        Wed, 20 Oct 2021 02:46:58 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id b7sm806718ejl.10.2021.10.20.02.46.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Oct 2021 02:46:51 -0700 (PDT)
-From:   Quentin Monnet <quentin@isovalent.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
+        Wed, 20 Oct 2021 02:46:58 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id DEF5B180262; Wed, 20 Oct 2021 11:46:57 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Quentin Monnet <quentin@isovalent.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: [PATCH bpf-next v2] bpf/preload: Clean up .gitignore and "clean-files" target
-Date:   Wed, 20 Oct 2021 10:46:47 +0100
-Message-Id: <20211020094647.15564-1-quentin@isovalent.com>
-X-Mailer: git-send-email 2.25.1
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Brendan Jackman <jackmanb@google.com>,
+        Florent Revest <revest@chromium.org>,
+        Joe Stringer <joe@cilium.io>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Tariq Toukan <tariqt@nvidia.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Maxim Mikityanskiy <maximmi@nvidia.com>
+Subject: Re: [PATCH bpf-next 07/10] bpf: Add helpers to query conntrack info
+In-Reply-To: <20211019144655.3483197-8-maximmi@nvidia.com>
+References: <20211019144655.3483197-1-maximmi@nvidia.com>
+ <20211019144655.3483197-8-maximmi@nvidia.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 20 Oct 2021 11:46:57 +0200
+Message-ID: <87ilxsf2pa.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-kernel/bpf/preload/Makefile was recently updated to have it install
-libbpf's headers locally instead of pulling them from tools/lib/bpf. But
-two items still need to be addressed.
 
-First, the local .gitignore file was not adjusted to ignore the files
-generated in the new kernel/bpf/preload/libbpf output directory.
+> +#if IS_BUILTIN(CONFIG_NF_CONNTRACK)
 
-Second, the "clean-files" target is now incorrect. The old artefacts
-names were not removed from the target, while the new ones were added
-incorrectly. This is because "clean-files" expects names relative to
-$(obj), but we passed the absolute path instead. This results in the
-output and header-destination directories for libbpf (and their
-contents) not being removed from kernel/bpf/preload on "make clean" from
-the root of the repository.
+This makes the helpers all but useless on distro kernels; I don't think
+this is the right way to go about it. As Kumar mentioned, he's working
+on an approach using kfuncs in modules; maybe you can collaborate on
+that?
 
-This commit fixes both issues. Note that $(userprogs) needs not be added
-to "clean-files", because the cleaning infrastructure already accounts
-for it.
-
-Cleaning the files properly also prevents make from printing the
-following message, for builds coming after a "make clean":
-"make[4]: Nothing to be done for 'install_headers'."
-
-v2: Simplify the "clean-files" target.
-
-Fixes: bf60791741d4 ("bpf: preload: Install libbpf headers when building")
-Signed-off-by: Quentin Monnet <quentin@isovalent.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
----
- kernel/bpf/preload/.gitignore | 4 +---
- kernel/bpf/preload/Makefile   | 3 +--
- 2 files changed, 2 insertions(+), 5 deletions(-)
-
-diff --git a/kernel/bpf/preload/.gitignore b/kernel/bpf/preload/.gitignore
-index 856a4c5ad0dd..9452322902a5 100644
---- a/kernel/bpf/preload/.gitignore
-+++ b/kernel/bpf/preload/.gitignore
-@@ -1,4 +1,2 @@
--/FEATURE-DUMP.libbpf
--/bpf_helper_defs.h
--/feature
-+/libbpf
- /bpf_preload_umd
-diff --git a/kernel/bpf/preload/Makefile b/kernel/bpf/preload/Makefile
-index 469d35e890eb..1400ac58178e 100644
---- a/kernel/bpf/preload/Makefile
-+++ b/kernel/bpf/preload/Makefile
-@@ -27,8 +27,7 @@ userccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi \
- 
- userprogs := bpf_preload_umd
- 
--clean-files := $(userprogs) bpf_helper_defs.h FEATURE-DUMP.libbpf staticobjs/ feature/
--clean-files += $(LIBBPF_OUT) $(LIBBPF_DESTDIR)
-+clean-files := libbpf/
- 
- $(obj)/iterators/iterators.o: | libbpf_hdrs
- 
--- 
-2.30.2
+-Toke
 
