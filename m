@@ -2,148 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59F7D435558
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 23:38:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 953F2435571
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 23:43:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230287AbhJTVkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 17:40:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:37104 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230288AbhJTVkd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 17:40:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1634765898;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XbdsG4EcQisr17Iskog0vXpruq6STxaIgx5C21IY1Zo=;
-        b=dcvAYsBIj9dPvwBdLInB84UjllLDfk6MPfF01FarLq13KxbBcGbi5J/eJozicze6eVjU9Y
-        ZAxXLBXCRtTipiU9+uHGQ2dNsHKgjXY5z1hE+R5D3upw16Oxw3d8qveG0ZUC+GSPsnQdFo
-        /AK2gZ/R/s8duNeahz/AFonLLWWbRvk=
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com
- [209.85.210.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-25-z9_6KhxeOXKuSIxuJsrA9A-1; Wed, 20 Oct 2021 17:38:16 -0400
-X-MC-Unique: z9_6KhxeOXKuSIxuJsrA9A-1
-Received: by mail-ot1-f71.google.com with SMTP id g12-20020a9d128c000000b0055305d94cd9so4158124otg.23
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 14:38:16 -0700 (PDT)
+        id S231346AbhJTVpb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 17:45:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38834 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230181AbhJTVpa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 17:45:30 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF60DC061749;
+        Wed, 20 Oct 2021 14:43:15 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id v195so14022100ybb.0;
+        Wed, 20 Oct 2021 14:43:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NLxhOL21uFNIWLDSCmZGrluiBbEIb6Tp/0GJSmli5XU=;
+        b=ADmPeU5eJwvh3K1oDREWtuXS/3cFrcy8kYa02+JLgbEYJ/j3RQvJexBaCipS3gg+vT
+         G/HgJ2eKNg3Rc0qrBmh+Y4uA/2HkLRWw2o7cphSKQdJPEUF6DHnjXfRf0/+73dKHzUvb
+         xuIvVlHrW5iatMgPBgrvC5GzCpIq/EuTfSdojiCCITnTHYfKdsJJPqM0sdNq7ed0fhrx
+         sEBvgt3Ue6QyB/De3XvYMpzp/bc6I6/DATO7yE0R3j5AI3HUTrS0GtySVkbv1SvM7yQ/
+         vNUoKr2jhjSMbbuEIEzCl2SsjXctxG9LlGMfYwmrYwgtHMDBiqg/lGuGqX9LBXDV3vzm
+         EsxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=XbdsG4EcQisr17Iskog0vXpruq6STxaIgx5C21IY1Zo=;
-        b=1iC4dbsGCmuOcYMHn93Ux7DakMCEjYane6h9SCQeFvqO7KFWehbxJvKKj29d38qsys
-         gwTgPI0XJCznm5WKhEhUKwB+RTTt+L9Eon5t3Y1CBadYtNpT0KPyK5R9N559gLVKBJ4H
-         GbLAYhTrmtsnd91Mv8khjJEC4R8nK6cqL/qNP0Pwo+T8TEdh6zFdqlUyDyTTgjL4y9uc
-         D0gjyeCG6Six66Em7qpAzAJ2qMnnEKHndisaxiOaGUxMdHlTwvYxmwmziNwaxf339Jcr
-         8/gSA+PkhG+k1CBLaSk42Vfk2qG72msK7uP1Mw4JG2mCJmut7N2UpOGvbTWZKZ+TnZon
-         7TNA==
-X-Gm-Message-State: AOAM533OMuHfMwm/bqhv5ddkejJzs+DId/Seo0VVXHxuaIWJJoUs3DQ9
-        AOL04hF/lHPZov15hWrmTR8bkZehs2/VMPxHCqWWy6Lb+PWgHktPFu1ys/N14tayo5AX+B4Kbzl
-        iR8VLjjiOq3RFe5qU
-X-Received: by 2002:a05:6830:23a6:: with SMTP id m6mr1395866ots.38.1634765896056;
-        Wed, 20 Oct 2021 14:38:16 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzcYwv8zbsaoSRcNVZjvX/sdYTsJO3gGahLP/SP6a466G/UR5ZPiviXT+kWQPZGr7oDTSa6RQ==
-X-Received: by 2002:a05:6830:23a6:: with SMTP id m6mr1395858ots.38.1634765895851;
-        Wed, 20 Oct 2021 14:38:15 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id n17sm646213oic.21.2021.10.20.14.38.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Oct 2021 14:38:15 -0700 (PDT)
-Date:   Wed, 20 Oct 2021 15:38:14 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
-        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com
-Subject: Re: [PATCH V2 mlx5-next 14/14] vfio/mlx5: Use its own PCI
- reset_done error handler
-Message-ID: <20211020153814.61477e2e.alex.williamson@redhat.com>
-In-Reply-To: <20211020185721.GA334@nvidia.com>
-References: <20211019105838.227569-1-yishaih@nvidia.com>
-        <20211019105838.227569-15-yishaih@nvidia.com>
-        <20211019125513.4e522af9.alex.williamson@redhat.com>
-        <20211019191025.GA4072278@nvidia.com>
-        <5cf3fb6c-2ca0-f54e-3a05-27762d29b8e2@nvidia.com>
-        <20211020164629.GG2744544@nvidia.com>
-        <20211020114514.560ce2fa.alex.williamson@redhat.com>
-        <20211020185721.GA334@nvidia.com>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NLxhOL21uFNIWLDSCmZGrluiBbEIb6Tp/0GJSmli5XU=;
+        b=Ys0xM45Id8O5SFaV01abU5TuNJFVNtrLsjq5HMx7g4J07wXdzPhzxFiNhTnz9LsRM2
+         nxj8rZxlYvO5NqfYbVVf8ucVq2zM+1Ul3nM9NPOwMOt0whinlCB7gsXFrnmaMQ5DGRZL
+         g0D5c1lBYzX6HdtZY4eTQ/oiH1Ex/5qHsHmDc285+kDBoF4WGL+Sr53adQHB3OAyU1h3
+         JujA0UWvAAGUBGuWMHcyDE6GvamiIuXi7PUB4BoCZQrzPQH0S3sBc4O2rqmE0QWGBq+5
+         ab60Sn4OEzB8t7WvVqzpftJI/W2xje0H3jcjSY25IqjJJqFndEelqe3Q5ifDDvtxgwF6
+         XQ8g==
+X-Gm-Message-State: AOAM5310X2q7dJq1zoUgXriQ2qOBWkvUlAQbLemJDui9NG4SZ/yyFIGd
+        ngUG6w2KBzSnIvWfkMTU4ykwJX/4vmFln8aVcAM=
+X-Google-Smtp-Source: ABdhPJxgXZ85DRGdZhjSufD07NvPT0QRrDJgOWXzfWc+WJOLihVGXYqVDwjMjwvZe/EawZCezVXF1roYX527iOGeGAo=
+X-Received: by 2002:a25:d3c8:: with SMTP id e191mr1712702ybf.455.1634766195138;
+ Wed, 20 Oct 2021 14:43:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20211020082956.8359-1-lmb@cloudflare.com> <20211020082956.8359-3-lmb@cloudflare.com>
+In-Reply-To: <20211020082956.8359-3-lmb@cloudflare.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 20 Oct 2021 14:43:04 -0700
+Message-ID: <CAEf4BzaRUK3we69HpsFsDYirjQV52w_nb6nY6u-WqhhGR8oBHA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/2] selftests: bpf: test RENAME_EXCHANGE and
+ RENAME_NOREPLACE on bpffs
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 20 Oct 2021 15:57:21 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
+On Wed, Oct 20, 2021 at 1:30 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+>
+> Add tests to exercise the behaviour of RENAME_EXCHANGE and RENAME_NOREPLACE
+> on bpffs. The former checks that after an exchange the inode of two
+> directories has changed. The latter checks that the source still exists
+> after a failed rename.
+>
+> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> ---
+>  .../selftests/bpf/prog_tests/test_bpffs.c     | 39 +++++++++++++++++++
+>  1 file changed, 39 insertions(+)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/test_bpffs.c b/tools/testing/selftests/bpf/prog_tests/test_bpffs.c
+> index 172c999e523c..9c28ae9589bf 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/test_bpffs.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/test_bpffs.c
+> @@ -1,6 +1,7 @@
+>  // SPDX-License-Identifier: GPL-2.0
+>  /* Copyright (c) 2020 Facebook */
+>  #define _GNU_SOURCE
+> +#include <stdio.h>
+>  #include <sched.h>
+>  #include <sys/mount.h>
+>  #include <sys/stat.h>
+> @@ -29,6 +30,7 @@ static int read_iter(char *file)
+>
+>  static int fn(void)
+>  {
+> +       struct stat a, b;
+>         int err, duration = 0;
+>
+>         err = unshare(CLONE_NEWNS);
+> @@ -67,6 +69,43 @@ static int fn(void)
+>         err = read_iter(TDIR "/fs2/progs.debug");
+>         if (CHECK(err, "reading " TDIR "/fs2/progs.debug", "failed\n"))
+>                 goto out;
+> +
+> +       err = mkdir(TDIR "/fs1/a", 0777);
+> +       if (CHECK(err, "creating " TDIR "/fs1/a", "failed\n"))
+> +               goto out;
+> +       err = mkdir(TDIR "/fs1/a/1", 0777);
+> +       if (CHECK(err, "creating " TDIR "/fs1/a/1", "failed\n"))
+> +               goto out;
+> +       err = mkdir(TDIR "/fs1/b", 0777);
+> +       if (CHECK(err, "creating " TDIR "/fs1/b", "failed\n"))
+> +               goto out;
+> +
+> +       /* Check that RENAME_EXCHANGE works. */
+> +       err = stat(TDIR "/fs1/a", &a);
+> +       if (CHECK(err, "stat(" TDIR "/fs1/a)", "failed\n"))
+> +               goto out;
+> +       err = renameat2(0, TDIR "/fs1/a", 0, TDIR "/fs1/b", RENAME_EXCHANGE);
+> +       if (CHECK(err, "renameat2(RENAME_EXCHANGE)", "failed\n"))
+> +               goto out;
+> +       err = stat(TDIR "/fs1/b", &b);
+> +       if (CHECK(err, "stat(" TDIR "/fs1/b)", "failed\n"))
+> +               goto out;
+> +       if (CHECK(a.st_ino != b.st_ino, "b should have a's inode", "failed\n"))
+> +               goto out;
+> +       err = access(TDIR "/fs1/b/1", F_OK);
+> +       if (CHECK(err, "access(" TDIR "/fs1/b/1)", "failed\n"))
+> +               goto out;
+> +
+> +       /* Check that RENAME_NOREPLACE works. */
+> +       err = renameat2(0, TDIR "/fs1/b", 0, TDIR "/fs1/a", RENAME_NOREPLACE);
+> +       if (CHECK(!err, "renameat2(RENAME_NOREPLACE)", "succeeded\n")) {
+> +               err = -EINVAL;
+> +               goto out;
+> +       }
+> +       err = access(TDIR "/fs1/b", F_OK);
+> +       if (CHECK(err, "access(" TDIR "/fs1/b)", "failed\n"))
+> +               goto out;
+> +
 
-> On Wed, Oct 20, 2021 at 11:45:14AM -0600, Alex Williamson wrote:
-> > On Wed, 20 Oct 2021 13:46:29 -0300
-> > Jason Gunthorpe <jgg@nvidia.com> wrote:
-> >   
-> > > On Wed, Oct 20, 2021 at 11:46:07AM +0300, Yishai Hadas wrote:
-> > >   
-> > > > What is the expectation for a reasonable delay ? we may expect this system
-> > > > WQ to run only short tasks and be very responsive.    
-> > > 
-> > > If the expectation is that qemu will see the error return and the turn
-> > > around and issue FLR followed by another state operation then it does
-> > > seem strange that there would be a delay.
-> > > 
-> > > On the other hand, this doesn't seem that useful. If qemu tries to
-> > > migrate and the device fails then the migration operation is toast and
-> > > possibly the device is wrecked. It can't really issue a FLR without
-> > > coordinating with the VM, and it cannot resume the VM as the device is
-> > > now irrecoverably messed up.
-> > > 
-> > > If we look at this from a RAS perspective would would be useful here
-> > > is a way for qemu to request a fail safe migration data. This must
-> > > always be available and cannot fail.
-> > > 
-> > > When the failsafe is loaded into the device it would trigger the
-> > > device's built-in RAS features to co-ordinate with the VM driver and
-> > > recover. Perhaps qemu would also have to inject an AER or something.
-> > > 
-> > > Basically instead of the device starting in an "empty ready to use
-> > > state" it would start in a "failure detected, needs recovery" state.  
-> > 
-> > The "fail-safe recovery state" is essentially the reset state of the
-> > device.  
-> 
-> This is only the case if qemu does work to isolate the recently FLR'd
-> device from the VM until the VM acknowledges that it understands it is
-> FLR'd.
-> 
-> At least it would have to remove it from CPU access and the IOMMU, as
-> though the memory enable bit was cleared.
-> 
-> Is it reasonable to do this using just qemu, AER and no device
-> support?
+Please use ASSERT_xxx() for new code.
 
-I suspect yes, worst case could be a surprise hot-remove or DPC event,
-but IIRC Linux will reset a device on a fatal AER error regardless of
-the driver.
-
-> > If a device enters an error state during migration, I would
-> > think the ultimate recovery procedure would be to abort the migration,
-> > send an AER to the VM, whereby the guest would trigger a reset, and
-> > the RAS capabilities of the guest would handle failing over to a
-> > multipath device, ejecting the failing device, etc.  
-> 
-> Yes, this is my thinking, except I would not abort the migration but
-> continue on to the new hypervisor and then do the RAS recovery with
-> the new device.
-
-Potentially a valid option, QEMU might optionally insert a subsection in
-the migration stream to indicate the device failed during the migration
-process.  The option might also allow migrating devices that don't
-support migration, ie. the recovery process on the target is the same.
-This is essentially a policy decision and I think QEMU probably leans
-more towards failing the migration and letting a management tool
-decided on the next course of action.  Thanks,
-
-Alex
-
+>  out:
+>         umount(TDIR "/fs1");
+>         umount(TDIR "/fs2");
+> --
+> 2.30.2
+>
