@@ -2,58 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B3C643527C
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 20:15:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA81B43527F
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 20:16:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230456AbhJTSRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 14:17:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49050 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230381AbhJTSRv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Oct 2021 14:17:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0C87F60EFE;
-        Wed, 20 Oct 2021 18:15:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634753737;
-        bh=vHv6LhMfkzatBcbM0zQVqNGSc+6vGVhqvJcWS0T303g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SF0boFGvh5iCaMuBgJFYfC9OqiRDrEA8r7ojCCphvvmu34UfEbb4xJwn0XbebG0I2
-         H1zsfugH0yUYOOypb3oAfp+gnrjS1Qc1hS3tEUMwmzLQQ//MzyzqeYqiZbFrHdk02r
-         wwYkGmChLAC7bHU2vzWw4OTX3W+ooxIPrIEN4/1ew0igquBIZb3KlfFqbfpe/1jfyX
-         40XZI1ZsjKbYQi+ZTacOUqoXVZzlJB6F5rwAzH4VdZHa5CR5cMxmVLqOnnA4VjkE46
-         c50j5yzy+n+Df2URtJZX3SEbKfBuIQufc08aSKrx5kP0jUJOOgP5CrAP8kR7AiTXkG
-         FXbp7tvVWSfjw==
-Date:   Wed, 20 Oct 2021 11:15:36 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeedm@nvidia.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] mlx5: don't write directly to netdev->dev_addr
-Message-ID: <20211020111536.0c896900@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <d11a744067a3481c37d013a1f770af9b761dd57f.camel@nvidia.com>
-References: <20211013202001.311183-1-kuba@kernel.org>
-        <d11a744067a3481c37d013a1f770af9b761dd57f.camel@nvidia.com>
+        id S231230AbhJTSTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 14:19:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47898 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230395AbhJTSS7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 14:18:59 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6932DC061749
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 11:16:44 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 4F0F592009C; Wed, 20 Oct 2021 20:16:42 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 4865F92009B;
+        Wed, 20 Oct 2021 20:16:42 +0200 (CEST)
+Date:   Wed, 20 Oct 2021 20:16:42 +0200 (CEST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Jakub Kicinski <kuba@kernel.org>
+cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 05/12] fddi: defxx,defza: use dev_addr_set()
+In-Reply-To: <20211020155617.1721694-6-kuba@kernel.org>
+Message-ID: <alpine.DEB.2.21.2110202009200.31442@angie.orcam.me.uk>
+References: <20211020155617.1721694-1-kuba@kernel.org> <20211020155617.1721694-6-kuba@kernel.org>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 20 Oct 2021 17:54:56 +0000 Saeed Mahameed wrote:
-> On Wed, 2021-10-13 at 13:20 -0700, Jakub Kicinski wrote:
-> > Use a local buffer and eth_hw_addr_set().
-> > 
-> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> > ---
-> > This takes care of Ethernet, mlx5/core/ipoib/ipoib.c
-> > will be changed as part of all the IB conversions.
->
-> the patch looks fine, i will take it directly to net-next-mlx5,
+On Wed, 20 Oct 2021, Jakub Kicinski wrote:
 
-Thanks!
+> Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
+> of VLANs...") introduced a rbtree for faster Ethernet address look
+> up. To maintain netdev->dev_addr in this tree we need to make all
+> the writes to it got through appropriate helpers.
 
-> I didn't get the part about IB conversions, where can i find that ?
+ FDDI does not have a concept of a VLAN, so I guess this is more of a 
+cosmetic nature rather than addressing an actual problem, right?
 
-Here:
+ As I noted in the other message I think this might best be abstracted,
+e.g. by calling the entry point here say `fddidev_addr_set' while the 
+entry point used by Ethernet devices could be `etherdev_addr_set', so that 
+it is immediately obvious that we have different data link layers, even if 
+the implementation of the handler would be the same for both.
 
-https://lore.kernel.org/all/20211019182604.1441387-3-kuba@kernel.org/
+ Otherwise:
+
+Acked-by: Maciej W. Rozycki <macro@orcam.me.uk>
+
+  Maciej
