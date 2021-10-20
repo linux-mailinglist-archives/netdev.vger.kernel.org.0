@@ -2,107 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C31B434ABC
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 14:05:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCC31434AB1
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 14:03:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230293AbhJTMHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 08:07:04 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:26104 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230265AbhJTMHC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 08:07:02 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4HZ8Pt6jHCz1DHh8;
-        Wed, 20 Oct 2021 20:02:58 +0800 (CST)
-Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Wed, 20 Oct 2021 20:04:43 +0800
-Received: from huawei.com (10.175.104.82) by kwepemm600001.china.huawei.com
- (7.193.23.3) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.15; Wed, 20 Oct
- 2021 20:04:42 +0800
-From:   Wang Hai <wanghai38@huawei.com>
-To:     <kvalo@codeaurora.org>, <briannorris@chromium.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <shenyang39@huawei.com>,
-        <marcelo@kvack.org>, <linville@tuxdriver.com>, <luisca@cozybit.com>
-CC:     <libertas-dev@lists.infradead.org>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 wireless-drivers 2/2] libertas: Fix possible memory leak in probe and disconnect
-Date:   Wed, 20 Oct 2021 20:03:45 +0800
-Message-ID: <20211020120345.2016045-3-wanghai38@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211020120345.2016045-1-wanghai38@huawei.com>
-References: <20211020120345.2016045-1-wanghai38@huawei.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600001.china.huawei.com (7.193.23.3)
-X-CFilter-Loop: Reflected
+        id S230162AbhJTMGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 08:06:10 -0400
+Received: from mx1.tq-group.com ([93.104.207.81]:16927 "EHLO mx1.tq-group.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229702AbhJTMGJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Oct 2021 08:06:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1634731435; x=1666267435;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=tJIhNGjamjphj7O59/7TRWCK3nfTGWmxe5ZyDBjSkEM=;
+  b=E5d2Fr5/HCOF9jf/1Rv97TszS5Trb1DukaqlBnJv/GcyeuUtCbbW6VA4
+   mnz72vhYi77HbA+xz8+lDErm7l4vSeijwMWoObMvb7CKS12uCuRak3oh2
+   c/H3ANKlk0DR4zftc7FefLkuUIEEn6X1hnonfUfIan2zwFvLbb7t649Sl
+   965DIwFjjxLNaZuPvgn+vp/s67XXhpXvDZVPXmRxFCMibkNUEttaOYpw+
+   uOwl7esVyoonaOrphtUlgc+SzdkHjEYBDtfMrN5yf2ThfL7k+9VWmcJTi
+   dnaN5k4vg/BP0AZQWefVhwf1xTK7z+hgpr7GWFq0ML9dQGpIx3EsjEX3b
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.87,166,1631570400"; 
+   d="scan'208";a="20155759"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 20 Oct 2021 14:03:52 +0200
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Wed, 20 Oct 2021 14:03:53 +0200
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Wed, 20 Oct 2021 14:03:53 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1634731433; x=1666267433;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=tJIhNGjamjphj7O59/7TRWCK3nfTGWmxe5ZyDBjSkEM=;
+  b=jy1xSZt8f2lEbCA7OqFVCfaJDu49DcmknN2/ZmRU8k+CZaaa2LVDrlVU
+   ocFrY12VKE+3ZKpIKq/yA7g6KBPPYIW0n4ZTPxa58H2CsFVUQEzXNwYgr
+   +OQ70g68+N0jItYLn6IFWL5+T3xB/jaw32INMtm+Y4+x102VxL3eFKv1k
+   vmQsgJmfFELMM2ekHgdJb2iKsBg1vPh3sylftU9pntZZbBVyqiN9qpXJY
+   eowc2AnMVDgOLybZ/zTHMICaLkWHtvtIUq7eRan6dydTZ8gbrayqTBV3J
+   Px8VCXsIqw3yoIqPSmkmOUsB2zQpUM8I73zxlpUqjl2xidYNi6iywkP+w
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.87,166,1631570400"; 
+   d="scan'208";a="20155756"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 20 Oct 2021 14:03:52 +0200
+Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.121.48.12])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id D4A42280065;
+        Wed, 20 Oct 2021 14:03:51 +0200 (CEST)
+Message-ID: <aae9573f89560a32da0786dc90cb7be0331acad4.camel@ew.tq-group.com>
+Subject: Re: [PATCH] net: fec: defer probe if PHY on external MDIO bus is
+ not available
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Wed, 20 Oct 2021 14:03:49 +0200
+In-Reply-To: <YW7SWKiUy8LfvSkl@lunn.ch>
+References: <20211014113043.3518-1-matthias.schiffer@ew.tq-group.com>
+         <YW7SWKiUy8LfvSkl@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I got memory leak as follows when doing fault injection test:
+On Tue, 2021-10-19 at 16:12 +0200, Andrew Lunn wrote:
+> On Thu, Oct 14, 2021 at 01:30:43PM +0200, Matthias Schiffer wrote:
+> > On some SoCs like i.MX6UL it is common to use the same MDIO bus for PHYs
+> > on both Ethernet controllers. Currently device trees for such setups
+> > have to make assumptions regarding the probe order of the controllers:
+> > 
+> > For example in imx6ul-14x14-evk.dtsi, the MDIO bus of fec2 is used for
+> > the PHYs of both fec1 and fec2. The reason is that fec2 has a lower
+> > address than fec1 and is thus loaded first, so the bus is already
+> > available when fec1 is probed.
+> > 
+> > Besides being confusing, this limitation also makes it impossible to use
+> > the same device tree for variants of the i.MX6UL with one Ethernet
+> > controller (which have to use the MDIO of fec1, as fec2 does not exist)
+> > and variants with two controllers (which have to use fec2 because of the
+> > load order).
+> > 
+> > To fix this, defer the probe of the Ethernet controller when the PHY is
+> > not on our own MDIO bus and not available.
+> > 
+> > Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+> > ---
+> >  drivers/net/ethernet/freescale/fec_main.c | 23 ++++++++++++++++++++++-
+> >  1 file changed, 22 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+> > index 47a6fc702ac7..dc070dd216e8 100644
+> > --- a/drivers/net/ethernet/freescale/fec_main.c
+> > +++ b/drivers/net/ethernet/freescale/fec_main.c
+> > @@ -3820,7 +3820,28 @@ fec_probe(struct platform_device *pdev)
+> >  		goto failed_stop_mode;
+> >  
+> >  	phy_node = of_parse_phandle(np, "phy-handle", 0);
+> > -	if (!phy_node && of_phy_is_fixed_link(np)) {
+> > +	if (phy_node) {
+> > +		struct device_node *mdio_parent =
+> > +			of_get_next_parent(of_get_parent(phy_node));
+> > +
+> > +		ret = 0;
+> > +
+> > +		/* Skip PHY availability check for our own MDIO bus to avoid
+> > +		 * cyclic dependency
+> > +		 */
+> > +		if (mdio_parent != np) {
+> > +			struct phy_device *phy = of_phy_find_device(phy_node);
+> > +
+> > +			if (phy)
+> > +				put_device(&phy->mdio.dev);
+> > +			else
+> > +				ret = -EPROBE_DEFER;
+> > +		}
+> 
+> I've not looked at the details yet, just back from vacation. But this
+> seems wrong. I would of expected phylib to of returned -EPRODE_DEFER
+> at some point, when asked for a PHY which does not exist yet. All the
+> driver should need to do is make sure it returns the
+> -EPRODE_DEFER.
 
-unreferenced object 0xffff88812c7d7400 (size 512):
-  comm "kworker/6:1", pid 176, jiffies 4295003332 (age 822.830s)
-  hex dump (first 32 bytes):
-    00 68 1e 04 81 88 ff ff 01 00 00 00 00 00 00 00  .h..............
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff8167939c>] slab_post_alloc_hook+0x9c/0x490
-    [<ffffffff8167f627>] kmem_cache_alloc_trace+0x1f7/0x470
-    [<ffffffffa02c9873>] if_usb_probe+0x63/0x446 [usb8xxx]
-    [<ffffffffa022668a>] usb_probe_interface+0x1aa/0x3c0 [usbcore]
-    [<ffffffff82b59630>] really_probe+0x190/0x480
-    [<ffffffff82b59a19>] __driver_probe_device+0xf9/0x180
-    [<ffffffff82b59af3>] driver_probe_device+0x53/0x130
-    [<ffffffff82b5a075>] __device_attach_driver+0x105/0x130
-    [<ffffffff82b55949>] bus_for_each_drv+0x129/0x190
-    [<ffffffff82b593c9>] __device_attach+0x1c9/0x270
-    [<ffffffff82b5a250>] device_initial_probe+0x20/0x30
-    [<ffffffff82b579c2>] bus_probe_device+0x142/0x160
-    [<ffffffff82b52e49>] device_add+0x829/0x1300
-    [<ffffffffa02229b1>] usb_set_configuration+0xb01/0xcc0 [usbcore]
-    [<ffffffffa0235c4e>] usb_generic_driver_probe+0x6e/0x90 [usbcore]
-    [<ffffffffa022641f>] usb_probe_device+0x6f/0x130 [usbcore]
+This is what I expected as well, however there are a few complications:
 
-cardp is missing being freed in the error handling path of the probe
-and the path of the disconnect, which will cause memory leak.
+- At the moment the first time the driver does anything with the PHY is
+  in fec_enet_open(), not in fec_probe() - way too late to defer
+  anything
 
-This patch adds the missing kfree().
+- phylib doesn't know about EPROBE_DEFER, or error returns in general,
+  everything just returns NULL. There is a fairly long chain of
+  functions that just return NULL here (which might be okay, as they
+  don't have a way to distinguish different errors anyways AFAICT):
+  of_phy_find_device() -> fwnode_phy_find_device() ->
+  fwnode_phy_find_device() -> fwnode_mdio_find_device() ->
+  bus_find_device_by_fwnode() -> bus_find_device()
 
-Fixes: 876c9d3aeb98 ("[PATCH] Marvell Libertas 8388 802.11b/g USB driver")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
----
- drivers/net/wireless/marvell/libertas/if_usb.c | 2 ++
- 1 file changed, 2 insertions(+)
+- Even if we implement the EPROBE_DEFER return somewhere in phylib,
+  there needs to be special handling for the internal MDIO case, where
+  the MDIO device is provided by the same driver that uses it. We can't
+  wait with the check until we registered the MDIO bus, as it is not
+  allowed to return EPROBE_DEFER after any devices have been
+  registered. Splitting out the MDIO bus to be probed separately does
+  not seem feasible, but I might be wrong?
 
-diff --git a/drivers/net/wireless/marvell/libertas/if_usb.c b/drivers/net/wireless/marvell/libertas/if_usb.c
-index 20436a289d5c..5d6dc1dd050d 100644
---- a/drivers/net/wireless/marvell/libertas/if_usb.c
-+++ b/drivers/net/wireless/marvell/libertas/if_usb.c
-@@ -292,6 +292,7 @@ static int if_usb_probe(struct usb_interface *intf,
- 	if_usb_reset_device(cardp);
- dealloc:
- 	if_usb_free(cardp);
-+	kfree(cardp);
- 
- error:
- 	return r;
-@@ -316,6 +317,7 @@ static void if_usb_disconnect(struct usb_interface *intf)
- 
- 	/* Unlink and free urb */
- 	if_usb_free(cardp);
-+	kfree(cardp);
- 
- 	usb_set_intfdata(intf, NULL);
- 	usb_put_dev(interface_to_usbdev(intf));
--- 
-2.25.1
+
+So I have a few ideas, but I'm not sure which approach to pursue:
+
+1. Make of_phy_find_device() return -EPROBE_DEFER (with or without
+   touching more of the call chain). Doesn't seem too convincing to me,
+   as it will just replace every case where of_phy_find_device()
+   return NULL with -EPROBE_DEFER, making it more complicated to use
+   for no gain.
+
+2. Create a helper in phylib ("of_phy_device_available()") or something
+   that encapsulates some of the code of this patch in a reuseable way,
+   returning 0 or -EPROBE_DEFER.
+
+ 2a. Move just the code in "if (mdio_parent != np) {"
+ 2b. Also include the check for the MDIO parent for special handling of
+     the internal MDIO. Not sure if this is approach is too specific
+     to the node structure for a generic helper, or if the structure is
+     common enough across different drivers.
+
+3. Create a wrapper for of_parse_phandle() in phylib that does
+   everything from 2b. 
+  - Change the driver to hold a reference to a phy_device instead of
+    its device_node
+  - Might require further work for the fixed-link case
+  - Will allow for an API similar to regulator_get[_optional]()
+  - I have no idea how to solve the internal MDIO case with this
+    approach nicely, as we don't be able to get a phy_device before the
+    MDIO bus is registered
+
+
+Matthias
+
+
+
+> 
+>        Andrew
 
