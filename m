@@ -2,61 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47988434FDF
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 18:12:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08785434FE8
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 18:14:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231309AbhJTQOO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 12:14:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47228 "EHLO
+        id S231223AbhJTQQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 12:16:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231308AbhJTQOE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 12:14:04 -0400
-Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE6EC061749;
-        Wed, 20 Oct 2021 09:11:49 -0700 (PDT)
-Received: from miraculix.mork.no ([IPv6:2a01:799:95d:2d0a:8f32:db9:5b33:3a2e])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 19KGBSIO3018628
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Wed, 20 Oct 2021 18:11:29 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1634746289; bh=jOOKfjFNnBsWJOZ7VQu8deXbka0Jh+Uk8RaP20SvTZk=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=X6ceJEXYHZJG6V8wvZ9TTk8uSwR6eLA6DQQGwWii3C9gyp8vLoU+m7gKurB0N3cb3
-         lMYBTLE3VplkGS0sM8hKw7KDo2cyfjNNW0mqBbRRNK0XjyPXVnBQVoTj3X7/gGxd5h
-         d3JQ1KQEmVpeAeSljqEcY2siCU4pO95pFu3MBOnk=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.94.2)
-        (envelope-from <bjorn@mork.no>)
-        id 1mdEBX-00067j-9r; Wed, 20 Oct 2021 18:11:23 +0200
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH net-next 03/12] net: qmi_wwan: use dev_addr_mod()
-Organization: m
-References: <20211020155617.1721694-1-kuba@kernel.org>
-        <20211020155617.1721694-4-kuba@kernel.org>
-Date:   Wed, 20 Oct 2021 18:11:23 +0200
-In-Reply-To: <20211020155617.1721694-4-kuba@kernel.org> (Jakub Kicinski's
-        message of "Wed, 20 Oct 2021 08:56:08 -0700")
-Message-ID: <878ryn65hw.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        with ESMTP id S231234AbhJTQQn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 12:16:43 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D70B7C061760;
+        Wed, 20 Oct 2021 09:14:28 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id c29so3381150pfp.2;
+        Wed, 20 Oct 2021 09:14:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xJAElodWUEbJrINM9N/fL8JP3Jfud76GbQ+m80oxwfU=;
+        b=eXyMZqCHl1gQkYmGZO4EEANXNwks7Bpsxxdn9kn4t+6M342wzlyzpdBb5KXbTuFviR
+         jvjdugsW+XijAazAhHQCxOxPNzil753Fb3Q4t9ZBor4halCYQ/IvpOtay9d0ZJrqrvTe
+         V8CYtpLEBpS9w3uHGHbvQOMZptTvPVRfMC5tO8VmKhATtS4Lp1GQxxfkp50OuSEKAvuT
+         ARKeSZ6o6c6irfpVTgJWZDdF7CZ7++tahIHy6D2ERtf+au8Jzmw6snUIzGCGTpnpamON
+         AkR/mKg6bNyhEJZWhFJoBXSu/RwbX4JuipyqCXKw5Mgh4z117sufhFbe9waki7yMtsQR
+         VGYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xJAElodWUEbJrINM9N/fL8JP3Jfud76GbQ+m80oxwfU=;
+        b=NPYZf4qA3mgVFQ+OjzOyrKqhPz93IxueNjcHuJ9/jzOOy2UEaEjns+7SbmalKbtEaA
+         /GPQjM4n4tnsxHXZl8fQf82Fg32CVJ18CxRWO1I3/9PQaQ2BskCQUEv+x3v6C1TCW3Ll
+         i8DTC8V5uvFF1nzjQDPyunJDKTZajBO4FSIJuw3a45uzyN5lOqMDUwg1jjQ1yb2HDYHd
+         3fmTeZxsxLg1nWeNoNpIrTqJS8fYl5aYWgVgc9e8mfJ7ivpq/MB2KmObl0phtXoOc4Vf
+         8+j4gHC+ldNiYKcjb7ruw1HSF/kB+xQdIkkU11QJnJDPypnxtJfkT/qGYhEYRhdh9wFJ
+         TdnQ==
+X-Gm-Message-State: AOAM533wPv2Px3joH+87oyFlcMrPMrJxriE/WNVJYHCdvjepw5pkYzqF
+        k1xkNYAEmw3z6IspegZua3EEWdhoqDE=
+X-Google-Smtp-Source: ABdhPJxwhKmSMHs/+lvMK+y/oIOrdN6RWwhuk9SWZ+AFhwPxQTOIF/EV38G5s+TBvjlT5OkV7SM6ng==
+X-Received: by 2002:a63:b54b:: with SMTP id u11mr131998pgo.163.1634746468414;
+        Wed, 20 Oct 2021 09:14:28 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id e12sm2939849pfl.67.2021.10.20.09.14.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Oct 2021 09:14:27 -0700 (PDT)
+Subject: Re: [PATCH net v9] skb_expand_head() adjust skb->truesize incorrectly
+To:     Vasily Averin <vvs@virtuozzo.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        Christoph Paasch <christoph.paasch@gmail.com>,
+        linux-kernel@vger.kernel.org, kernel@openvz.org
+References: <45b3cb13-8c6e-25a3-f568-921ab6f1ca8f@virtuozzo.com>
+ <2bd9c638-3038-5aba-1dae-ad939e13c0c4@virtuozzo.com>
+ <a1b83e46-27d6-d8f0-2327-bb3466e2de13@gmail.com>
+ <a7318420-0182-7e66-33e3-3368d4cc181f@virtuozzo.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <0e8fff74-b9a8-8ec8-71f6-4745fc82dd4b@gmail.com>
+Date:   Wed, 20 Oct 2021 09:14:26 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <a7318420-0182-7e66-33e3-3368d4cc181f@virtuozzo.com>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.103.3 at canardo
-X-Virus-Status: Clean
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> writes:
 
-> Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
-> of VLANs...") introduced a rbtree for faster Ethernet address look
-> up. To maintain netdev->dev_addr in this tree we need to make all
-> the writes to it got through appropriate helpers.
->
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
+On 10/4/21 10:57 PM, Vasily Averin wrote:
+
+>>>  
+>>> diff --git a/net/core/sock.c b/net/core/sock.c
+>>> index 62627e868e03..1932755ae9ba 100644
+>>> --- a/net/core/sock.c
+>>> +++ b/net/core/sock.c
+>>> @@ -2227,6 +2227,14 @@ void skb_set_owner_w(struct sk_buff *skb, struct sock *sk)
+>>>  }
+>>>  EXPORT_SYMBOL(skb_set_owner_w);
+>>>  
+>>> +bool is_skb_wmem(const struct sk_buff *skb)
+>>> +{
+>>> +	return skb->destructor == sock_wfree ||
+>>> +	       skb->destructor == __sock_wfree ||
+>>> +	       (IS_ENABLED(CONFIG_INET) && skb->destructor == tcp_wfree);
+>>> +}
+>>> +EXPORT_SYMBOL(is_skb_wmem);
+>>> +
+>>
+>> This probably should be inlined.
+> 
+> David Miller pointed me out in the comments to an early version of the patch
+> "Please do not use inline in foo.c files, let the compiler decide."
+> 
+
+Sure, my suggestion was to move this helper in an include file,
+and use
+
+static inline bool ....
+
+I would not suggest add an inline in a C file, unless absolutely critical.
