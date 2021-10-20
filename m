@@ -2,165 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EBF9434B63
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 14:40:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7B49434B88
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 14:46:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230272AbhJTMmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 08:42:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54484 "EHLO
+        id S230342AbhJTMsn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 08:48:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230217AbhJTMm3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 08:42:29 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F12BC06161C;
-        Wed, 20 Oct 2021 05:40:12 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id oa12-20020a17090b1bcc00b0019f715462a8so2334235pjb.3;
-        Wed, 20 Oct 2021 05:40:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=389FpW7hPbIjdCkK7vlPqqeyqpeuLs8PuLNGFsawgZM=;
-        b=GawgAzeOqixniffAQssHirkarO/hULRYc7TosQw4MuzirUZ4K49vHZs/IdyoSdxYQP
-         CtGQW5DHyGVjNkHCYC6p548ENHmYFa7VV3HAncdF+Tpfnp0Dw8zAsEAPhSqu0px1AYtI
-         yUOECu2Gkp4f+9csQd7HiYyg5GD3jgvyClF7+12ZV0JTKG3IF4aWooWNgh90bh1bkXzT
-         qS1UhEIU0yFS1/qAPG2BE7UJtMy8bncfCLbGpalNKW9FqHVnHqy6EUU8mDdyUZpUUYIH
-         d7wkP2ouhqXAWhaeHfhbcg1g9tqX8I5Cy1YcWTnNI0olvVjHPRBD5rOxSI7fj+sllIdT
-         P1oA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=389FpW7hPbIjdCkK7vlPqqeyqpeuLs8PuLNGFsawgZM=;
-        b=wkSEWgwe+C0U5vM3hlB75GuQyuACxYUafJj1OSwOh+CnI08oMpw7YAH80E9yJNLdGC
-         LL0OEo3BjN+l2zAFZjQYRc6l8jU3OeUFgGxkAg/VeP3jYPPS7R7JC81cOnHF5/KvZZuX
-         /wmtgBIyajRnuBa12kjmWH3brmS78WwLiqTP2viX+Lr0A9ErPaFDHNzyBw3VCQSKyF6h
-         b9uTlw8M3jqQcUZVBs+zUM7eiGYZVAz7JKET7y/7481xp+ZQ0FkKy8qJ+W8TUEVGpXTI
-         Sc++mSYqjiiFUVMkujMlyfoKfpPqZDYiEoOJ4HfEvig08w9nbl0749xPMfTOFywy04JJ
-         x/MQ==
-X-Gm-Message-State: AOAM531PegQVNnRrMC6mPc2gPtC1nYl74Ajjolc3g3FxNjnAIOBI93z1
-        jkODAUN9OhTaNeRqCUlXJdE=
-X-Google-Smtp-Source: ABdhPJzE9tMJxUEl8urLIBHjZ5oZMaISozLab93eMEu2PKkMoUoxJHF+JEsaId+Q2ILqOGRjzBQ17Q==
-X-Received: by 2002:a17:90a:6fc1:: with SMTP id e59mr7205512pjk.103.1634733611670;
-        Wed, 20 Oct 2021 05:40:11 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:6:8000::a31c? ([2404:f801:9000:18:efed::a31c])
-        by smtp.gmail.com with ESMTPSA id p16sm3126233pfh.97.2021.10.20.05.40.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Oct 2021 05:40:11 -0700 (PDT)
-Subject: Re: [PATCH] x86/sev-es: Expose __sev_es_ghcb_hv_call() to call ghcb
- hv call out of sev code
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Tianyu Lan <Tianyu.Lan@microsoft.com>, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
-        x86@kernel.org, hpa@zytor.com, dave.hansen@linux.intel.com,
-        luto@kernel.org, peterz@infradead.org, davem@davemloft.net,
-        kuba@kernel.org, gregkh@linuxfoundation.org, arnd@arndb.de,
-        jroedel@suse.de, brijesh.singh@amd.com, thomas.lendacky@amd.com,
-        pgonda@google.com, akpm@linux-foundation.org,
-        kirill.shutemov@linux.intel.com, rppt@kernel.org, tj@kernel.org,
-        aneesh.kumar@linux.ibm.com, saravanand@fb.com, hannes@cmpxchg.org,
-        rientjes@google.com, michael.h.kelley@microsoft.com,
-        linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, konrad.wilk@oracle.com, hch@lst.de,
-        robin.murphy@arm.com, joro@8bytes.org, parri.andrea@gmail.com,
-        dave.hansen@intel.com
-References: <2772390d-09c1-80c1-082f-225f32eae4aa@gmail.com>
- <20211020062321.3581158-1-ltykernel@gmail.com> <YW/oaZ2GN15hQdyd@zn.tnic>
-From:   Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <c5b55d93-14c4-81cf-e999-71ad5d6a1b41@gmail.com>
-Date:   Wed, 20 Oct 2021 20:39:59 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        with ESMTP id S231202AbhJTMsO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 08:48:14 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71144C06177C;
+        Wed, 20 Oct 2021 05:45:14 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1mdAxl-0002e4-9A; Wed, 20 Oct 2021 14:44:57 +0200
+Date:   Wed, 20 Oct 2021 14:44:57 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Toke =?iso-8859-15?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Brendan Jackman <jackmanb@google.com>,
+        Florent Revest <revest@chromium.org>,
+        Joe Stringer <joe@cilium.io>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Tariq Toukan <tariqt@nvidia.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: Re: [PATCH bpf-next 07/10] bpf: Add helpers to query conntrack info
+Message-ID: <20211020124457.GA7604@breakpoint.cc>
+References: <20211019144655.3483197-1-maximmi@nvidia.com>
+ <20211019144655.3483197-8-maximmi@nvidia.com>
+ <20211020035622.lgrxnrwfeak2e75a@apollo.localdomain>
+ <20211020092844.GI28644@breakpoint.cc>
+ <87h7dcf2n4.fsf@toke.dk>
+ <20211020095815.GJ28644@breakpoint.cc>
+ <875ytrga3p.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <YW/oaZ2GN15hQdyd@zn.tnic>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <875ytrga3p.fsf@toke.dk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 10/20/2021 5:59 PM, Borislav Petkov wrote:
-> On Wed, Oct 20, 2021 at 02:23:16AM -0400, Tianyu Lan wrote:
->> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
->>
->>
->> Hyper-V also needs to call ghcb hv call to write/read MSR in Isolation VM.
->> So expose __sev_es_ghcb_hv_call() to call it in the Hyper-V code.
->>
->> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
->> ---
->>   arch/x86/include/asm/sev.h   | 11 +++++++++++
->>   arch/x86/kernel/sev-shared.c | 24 +++++++++++++++++++-----
->>   2 files changed, 30 insertions(+), 5 deletions(-)
->>
->> diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
->> index fa5cd05d3b5b..295c847c3cd4 100644
->> --- a/arch/x86/include/asm/sev.h
->> +++ b/arch/x86/include/asm/sev.h
->> @@ -81,12 +81,23 @@ static __always_inline void sev_es_nmi_complete(void)
->>   		__sev_es_nmi_complete();
->>   }
->>   extern int __init sev_es_efi_map_ghcbs(pgd_t *pgd);
->> +extern enum es_result __sev_es_ghcb_hv_call(struct ghcb *ghcb,
->> +					    struct es_em_ctxt *ctxt,
->> +					    u64 exit_code, u64 exit_info_1,
->> +					    u64 exit_info_2);
+Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+> > Lookups should be fine.  Insertions are the problem.
+> >
+> > NAT hooks are expected to execute before the insertion into the
+> > conntrack table.
+> >
+> > If you insert before, NAT hooks won't execute, i.e.
+> > rules that use dnat/redirect/masquerade have no effect.
 > 
-> You can do here:
+> Well yes, if you insert the wrong state into the conntrack table, you're
+> going to get wrong behaviour. That's sorta expected, there are lots of
+> things XDP can do to disrupt the packet flow (like just dropping the
+> packets :)).
+
+Sure, but I'm not sure I understand the use case.
+
+Insertion at XDP layer turns off netfilters NAT capability, so its
+incompatible with the classic forwarding path.
+
+If thats fine, why do you need to insert into the conntrack table to
+begin with?  The entire infrastructure its designed for is disabled...
+
+> > I don't think there is anything that stands in the way of replicating
+> > this via XDP.
 > 
-> static inline enum es_result
-> __sev_es_ghcb_hv_call(struct ghcb *ghcb, u64 exit_code, u64 exit_info_1, u64 exit_info_2) { return ES_VMM_ERROR; }
+> What I want to be able to do is write an XDP program that does the following:
 > 
->> @@ -137,12 +141,22 @@ static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
->>   	ghcb_set_sw_exit_info_1(ghcb, exit_info_1);
->>   	ghcb_set_sw_exit_info_2(ghcb, exit_info_2);
->>   
->> -	sev_es_wr_ghcb_msr(__pa(ghcb));
->>   	VMGEXIT();
->>   
->>   	return verify_exception_info(ghcb, ctxt);
->>   }
->>   
->> +static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
->> +					  struct es_em_ctxt *ctxt,
->> +					  u64 exit_code, u64 exit_info_1,
->> +					  u64 exit_info_2)
->> +{
->> +	sev_es_wr_ghcb_msr(__pa(ghcb));
->> +
->> +	return __sev_es_ghcb_hv_call(ghcb, ctxt, exit_code, exit_info_1,
->> +				     exit_info_2);
->> +}
+> 1. Parse the packet header and determine if it's a packet type we know
+>    how to handle. If not, just return XDP_PASS and let the stack deal
+>    with corner cases.
 > 
-> Well, why does Hyper-V need this thing a bit differently, without the
-> setting of the GHCB's physical address?
-
-Hyper-V runs paravisor in guest VMPL0 which emulates some functions
-(e.g, timer, tsc, serial console and so on) via handling VC exception.
-GHCB pages are allocated and set up by the paravisor and report to Linux
-guest via MSR register.Hyper-V SEV implementation is unenlightened guest
-case which doesn't Linux doesn't handle VC and paravisor in the VMPL0
-handle it.
-
-
+> 2. If we know how to handle the packet (say, it's TCP or UDP), do a
+>    lookup into conntrack to figure out if there's state for it and we
+>    need to do things like NAT.
 > 
-> What if another hypervisor does yet another SEV implementation and yet
-> another HV call needs to be defined?
+> 3. If we need to NAT, rewrite the packet based on the information we got
+>    back from conntrack.
 
-In the early version, these ghcb operations are implemented in Hyper-V 
-code and get comments to use existing code in the SEV ES as much as 
-possible. So latter versions expose the API to re-use code.
+You could already do that by storing that info in bpf maps
+The ctnetlink event generated on conntrack insertion contains the NAT
+mapping information, so you could have a userspace daemon that
+intercepts those to update the map.
 
-Current two cases: enlightened guest and un-enlightened guest. Tom and
-brjesh pushed enlightened case. Hyper-V is un-enlightened case and a
-paravisor runs in VMPL0 to handle VC to emulate devices inside VM. GHCB
-is allocated and set up by paravisor in the un-enlightened case. The new
-__sev_es_ghcb_hv_call() is to handle these two cases.
+> 4. Update the conntrack state to be consistent with the packet, and then
+>    redirect it out the destination interface.
+> 
+> I.e., in the common case the packet doesn't go through the stack at all;
+> but we need to make conntrack aware that we processed the packet so the
+> entry doesn't expire (and any state related to the flow gets updated).
 
+In the HW offload case, conntrack is bypassed completely. There is an
+IPS_(HW)_OFFLOAD_BIT that prevents the flow from expiring.
 
+> Ideally we should also be able to create new state for a flow we haven't
+> seen before.
+
+The way HW offload was intended to work is to allow users to express
+what flows should be offloaded via 'flow add' expression in nftables, so
+they can e.g. use byte counters or rate estimators etc. to make such
+a decision.  So initial packet always passes via normal stack.
+
+This is also needed to consider e.g. XFRM -- nft_flow_offload.c won't
+offload if the packet has a secpath attached (i.e., will get encrypted
+later).
+
+I suspect we'd want a way to notify/call an ebpf program instead so we
+can avoid the ctnetlink -> userspace -> update dance and do the XDP
+'flow bypass information update' from inside the kernel and ebpf/XDP
+reimplementation of the nf flow table (it uses the netfilter ingress
+hook on the configured devices; everyhing it does should be doable
+from XDP).
+
+> This requires updating of state, but I see no reason why this shouldn't
+> be possible?
+
+Updating ct->status is problematic, there would have to be extra checks
+that prevent non-atomic writes and toggling of special bits such as
+CONFIRMED, TEMPLATE or DYING.  Adding a helper to toggle something
+specific, e.g. the offload state bit, should be okay.
