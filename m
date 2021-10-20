@@ -2,99 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C12F4342E1
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 03:30:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1F87434345
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 04:10:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229683AbhJTBc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 21:32:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45496 "EHLO
+        id S229789AbhJTCEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 22:04:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229653AbhJTBc0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 21:32:26 -0400
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E88CC06161C
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 18:30:11 -0700 (PDT)
-Received: by mail-qt1-x835.google.com with SMTP id g17so1700786qtk.8
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 18:30:11 -0700 (PDT)
+        with ESMTP id S229663AbhJTCEp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 22:04:45 -0400
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 722F1C06161C;
+        Tue, 19 Oct 2021 19:02:31 -0700 (PDT)
+Received: by mail-il1-x130.google.com with SMTP id g2so20471226ild.1;
+        Tue, 19 Oct 2021 19:02:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=Htqzr9Npnuf/0yddHPWnIH+PN+nQ7x9RP1q5QY81LA8=;
-        b=eUCWYcNKAnGfSGKAC/7kd/1Ex3yGJ6cbX0qpnCqHlS48z7hocVn8VYr75mxG0e/USi
-         Q5tggaFTW8/KdJAuG67LDFEb52sL51qoeBlXGfyHsH2Frkt9jNGjrbytgVmz78Sa0yV3
-         ELfzNmSk6HgXdCsZ34y/bYzbFVILfszxf03Z9mikNnlEjJ7bmLmx2qE8s73jrjYseYp4
-         SVmJ5dd2TLJPbLoiAOLhfL7RbfFeSpKTc3meI0XcJa6paH1SWVtSAercWWJ9RzjTQbN0
-         p9/+twr7vHXhDNe6wMXOzZX38XE8IoQo5Z7t96DDx9U4+FpMXqag3KHzgz+70dTQs74t
-         jm6Q==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=q2jYWlCNWClrtqnlx7YbYB8lDGyrA8nXyrUF7zcT2Ys=;
+        b=MI3Hog3FAWN6fF7dLObyz2Z0USsjwtbicgkCFam/SIeOR2khvc0oyogVAgVXzd2USR
+         6XnUIGkVfGJd8SOBIScfmAEeAb47IddWW7ZnysxnfUnUqm6Sb0gBt6n++TgDXzrF0+eq
+         +IoQgIgTWFmI/23q+3XY3octW5+GfPG4gGOql415iwdaHiLpYg6kba9Tq/qZSHNdtkm+
+         oIdITBdse66wY8VpC/gz23kRpXfnJfuc2QDkpEl7mTgOdaS0sl5p27qPE4ojpoOqzxDM
+         8Jxes8E6eV8Rz+H2N9nE/ARhWcJqVRBOa0lj2cTW0ttJaMklt/u3fA4yo2FqmUQwkG9X
+         vT1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=Htqzr9Npnuf/0yddHPWnIH+PN+nQ7x9RP1q5QY81LA8=;
-        b=qwda0ZR2y24Yiei4gI6j35lQur+wDFZeLOsZeNXXyocBQfUyoo0/BC/Qv3io9iCOx2
-         l7jwUemsGoy1QzUs4uljWHiiexU+1t0AjRaQUL56ViGR+3MYbK7tOb7dXtaV6Ojzxq9W
-         2mUkfzJujfFa0YdAj5wkHl6wlhtjvvSUJOZm0RavphOd49Ei6FGUbiUY2FvFouiABrS2
-         CuWvnbj+8+eXjRzzqdVWOklj2a+w1MRGnCnyUsS+QAVFqBp9kktPWMKKz1iAadUju6jo
-         rwP6Gn7uCqRBjM2u56R74Y76wHumCEVI9HpGDEAjB74/zZIrbkbWHvm/qAKnsHvXhhrf
-         ZD9A==
-X-Gm-Message-State: AOAM531G6sJZdljzj0QB8PHfiNqs0EAJouwdbkiKSWwSO1uDVajCQmFl
-        D0lalz1RWt7zvqxC6N/t262FL5uhSw==
-X-Google-Smtp-Source: ABdhPJw3/k2wWIzxcOnvQmxofu0pSql4K/O9Bajdgd7vj4w2lHsXR5ZIyz42DbBKAzB5jRqfEtkxkg==
-X-Received: by 2002:a05:622a:290:: with SMTP id z16mr3770744qtw.358.1634693410614;
-        Tue, 19 Oct 2021 18:30:10 -0700 (PDT)
-Received: from ICIPI.localdomain ([136.56.65.87])
-        by smtp.gmail.com with ESMTPSA id x22sm450590qkp.103.2021.10.19.18.30.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Oct 2021 18:30:10 -0700 (PDT)
-Date:   Tue, 19 Oct 2021 21:30:05 -0400
-From:   Stephen Suryaputra <ssuryaextr@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     a@unstable.cc
-Subject: Sysctl addr_gen_mode does not control tunnel link-local addr
-Message-ID: <20211020013005.GA4864@ICIPI.localdomain>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=q2jYWlCNWClrtqnlx7YbYB8lDGyrA8nXyrUF7zcT2Ys=;
+        b=qXCU6YMVS642ko+DZWfNzQQpbbyHD99vRJSx0ltpJUp51F0bLgmWbj8gCfXvaSjQx2
+         /XpLQUpsAg8F+LfgX9U3zo+seV1lN1YJOu79KwQ+BZtg0mPjPSCxc/YTGpTA31YASRWF
+         u/7C8hSxAjDmhF0rnyhGrPZy0khtWBu/iN55de1WWxsAmGNGJFsq3RPBxSmhXCH0rW+0
+         +Vyft3uaK/oyhX7USZZRw2BI1Uat0BaPXQd+il7q71uYl55bTP9poWG+Tav0szSnG1Do
+         E/XncIvbiNKM/G8hp9R0GdD4GAWc90kOziSwx07GPFhYMDjreW0nmB409HU5bt47JQBM
+         MraA==
+X-Gm-Message-State: AOAM531bGuXdumTqN/akbv8+OEotY+p9yDZSUsodFTZZhIHXEarKNVWe
+        uCJ8IuxTbMlImKKgbp2Mgn/rfKE8aEw=
+X-Google-Smtp-Source: ABdhPJwxw21nRHUZFUsJ3fel6NOQ3L8wQpmCK+GvpHLkzfDBnhqDDPf3klO4UprFCGgkmO7SnThVTw==
+X-Received: by 2002:a05:6e02:1bae:: with SMTP id n14mr22086374ili.253.1634695350651;
+        Tue, 19 Oct 2021 19:02:30 -0700 (PDT)
+Received: from [172.16.0.2] ([8.48.134.34])
+        by smtp.googlemail.com with ESMTPSA id v26sm407208iox.35.2021.10.19.19.02.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Oct 2021 19:02:30 -0700 (PDT)
+Message-ID: <e8dca460-7f5a-ee90-865c-dbb8bb0aa5d6@gmail.com>
+Date:   Tue, 19 Oct 2021 20:02:29 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.2.0
+Subject: Re: [PATCH net 1/1] vrf: Revert "Reset skb conntrack connection..."
+Content-Language: en-US
+To:     Eugene Crosser <crosser@average.org>, netdev@vger.kernel.org
+Cc:     netfilter-devel@vger.kernel.org, David Ahern <dsahern@gmail.com>,
+        Florian Westphal <fw@strlen.de>,
+        Lahav Schlesinger <lschlesinger@drivenets.com>
+References: <20211018182250.23093-1-crosser@average.org>
+ <20211018182250.23093-2-crosser@average.org>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20211018182250.23093-2-crosser@average.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 10/18/21 12:22 PM, Eugene Crosser wrote:
+> This reverts commit 09e856d54bda5f288ef8437a90ab2b9b3eab83d1.
+> 
+> When an interface is enslaved in a VRF, prerouting conntrack hook is
+> called twice: once in the context of the original input interface, and
+> once in the context of the VRF interface. If no special precausions are
+> taken, this leads to creation of two conntrack entries instead of one,
+> and breaks SNAT.
+> 
+> Commit above was intended to avoid creation of extra conntrack entries
+> when input interface is enslaved in a VRF. It did so by resetting
+> conntrack related data associated with the skb when it enters VRF context.
+> 
+> However it breaks netfilter operation. Imagine a use case when conntrack
+> zone must be assigned based on the original input interface, rather than
+> VRF interface (that would make original interfaces indistinguishable). One
+> could create netfilter rules similar to these:
+> 
+>         chain rawprerouting {
+>                 type filter hook prerouting priority raw;
+>                 iif realiface1 ct zone set 1 return
+>                 iif realiface2 ct zone set 2 return
+>         }
+> 
+> This works before the mentioned commit, but not after: zone assignment
+> is "forgotten", and any subsequent NAT or filtering that is dependent
+> on the conntrack zone does not work.
+> 
+...
 
-I noticed that tunnels, especially sit before commit e5dd729460ca8
-("ip/ip6_gre: use the same logic as SIT interfaces when computing v6LL
-address"), generates link-local addr regardless of addr_gen_mode
-setting. Is this a bug, or is there a specific reason?
+> 
+> Signed-off-by: Eugene Crosser <crosser@average.org>
+> ---
+>  drivers/net/vrf.c | 4 ----
+>  1 file changed, 4 deletions(-)
+> 
 
-In my system, the link-local addr are generated by a userspace process.
-So, we set net.ipv6.conf.<dev>.addr_gen_mode to 1 (IN6_ADDR_GEN_MODE_NONE).
+Acked-by: David Ahern <dsahern@kernel.org>
 
-The commit e5dd729460ca8 doesn't change the behavior as it is renaming
-sit_add_v4_addrs() to add_v4_addrs() as make it generic for GRE/IP6GRE
-cases. I'm not sure what the current behavior is for GRE, i.e. whether
-addr_gen_mode can control the generation of link-local addr.
 
-If this is a bug or oversight, I think this diff should fix it and I can
-put a formal patch.
-
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index c6a90b7bbb70..da7e83699eef 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -3392,6 +3392,8 @@ static void addrconf_sit_config(struct net_device
-*dev)
-                return;
-        }
-
-+       if (idev->cnf.addr_gen_mode == IN6_ADDR_GEN_MODE_NONE)
-+               return;
-        add_v4_addrs(idev);
-
-        if (dev->flags&IFF_POINTOPOINT)
-
-The commit mention about addressing violation of RFC4291 on GRE and the diff
-above doesn't cause it to change as the default addr_gen_mode is 0
-(IN6_ADDR_GEN_MODE_EUI64).
-
-Thanks,
-Stephen.
