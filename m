@@ -2,87 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EA32434AD0
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 14:06:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E1F2434AD9
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 14:10:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230157AbhJTMIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 08:08:32 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:48516 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230111AbhJTMI3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Oct 2021 08:08:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=khHKq/hpyIkq75CXxFNA6EgYxRX4fAEUeTeFeev128Y=; b=VK
-        p+igOruiAOaFhT7YQtbGqaQblELZCyWjIYqwG24+Xwo0+cZwg7DXgGorFC1Ae5tWMEvOLkDbrACkL
-        IXQ5E/GNhce68GOYgQszqHi13SbX2drp52eKuYTZAHaBt28houXdHiJ0ryLLma+Mqbk/IzhJqBSva
-        USU2ydao4bCu250=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mdAMI-00BBHg-65; Wed, 20 Oct 2021 14:06:14 +0200
-Date:   Wed, 20 Oct 2021 14:06:14 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     R W van Schagen <vschagen@cs.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: DSA slaves not inheriting hw_enc_features and xfrmdev_ops?
-Message-ID: <YXAGNmH+GsI5e9ly@lunn.ch>
-References: <CDEC9628-69B6-4A83-81CF-34407070214F.ref@cs.com>
- <CDEC9628-69B6-4A83-81CF-34407070214F@cs.com>
+        id S230162AbhJTMMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 08:12:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47510 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229548AbhJTMMY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 08:12:24 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44CDFC06161C
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 05:10:10 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id q19so2798397pfl.4
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 05:10:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ftphP/rRhj3HAi/sY+WrPVk0b2hRaTcyx6DeAasFrXQ=;
+        b=B0CIzVA8hGKlxBlbLI2TXw1a7ZZ4cI4SHyOME6mYX/zv8h4K7atw3/cZ4aDOymv95H
+         3X5Vg7NcqP2XVepAF19Wi7bXeCwcTyJNS4yhadeU5Yel9wMMCqgaqG/kbZboDs3juflh
+         OE4H7vqblU4SZteOWMPRSoradW0IED43Y4hJoBd/vB0TF3QdJelCYOyl4TRKsJ2w0Fil
+         H/LEvKfwxRdcV3teg2VNyy6KOYPaPnZ7GwhPlAPYg/UYt7Rc8/5J5YEB0C///25Qz+23
+         YAtZl6d8tjINLeAZV+twu5jaS3jbnj992LyKB5XZKTG0FSmplO5f+K9RWcH8Gt9V7S0M
+         BhIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ftphP/rRhj3HAi/sY+WrPVk0b2hRaTcyx6DeAasFrXQ=;
+        b=YLuYya5IXIFyLmeFV0AJmq8/AdzAArshnSjidmy2W4h7v2GmtsyBdSOykMckPI9MJT
+         uwY4w5eQNC343TMgFpFLARJrofDZY37i8YE4EOf6oNYGyEdYvd3WNtraDrr+PplwxJp1
+         6ezd4fI/ZQIbZ7hrBTW8H6BashYgTYjdcFH+SKA45313IPgga519CBv23ZTKNsqD53JS
+         OHHBRuOeAtLWt+10DEngyKjQgQEzZOXu5guD8n4GpTBdT7sij3YRaThgt3VAqhqIsl7U
+         eWAO4Ny65o+U/hy5TxAvmTu8V1iQ8cFVnnr2PPIBvUz+85iOIlZziwc+lMeIiulNVTFt
+         rJGw==
+X-Gm-Message-State: AOAM532ofhPonAAEMUPQN9he+KCSMwlKwla1TkiYztoHKsV5YuLcrsfl
+        us4gK75cth/93P55w60uDlk=
+X-Google-Smtp-Source: ABdhPJwDqkv/QWkMwSTv7clGOxVT91szFLgmv2smVxJYwGLdcgsCHe+9J6TNTh3Id5LSLIBBZl7wNQ==
+X-Received: by 2002:a05:6a00:815:b0:44d:2193:f688 with SMTP id m21-20020a056a00081500b0044d2193f688mr5972528pfk.4.1634731809690;
+        Wed, 20 Oct 2021 05:10:09 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id rm14sm5842795pjb.4.2021.10.20.05.10.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Oct 2021 05:10:09 -0700 (PDT)
+Date:   Wed, 20 Oct 2021 20:10:04 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>
+Cc:     netdev@vger.kernel.org, Nikolay Aleksandrov <razor@blackwall.org>,
+        roopa@nvidia.com, bridge@lists.linux-foundation.org,
+        davem@davemloft.net, kuba@kernel.org
+Subject: Re: [PATCHv2 net] net: bridge: mcast: QRI must be less than QI
+Message-ID: <YXAHHBYtFfXbd1hE@Laptop-X1>
+References: <20211020023604.695416-1-liuhangbin@gmail.com>
+ <20211020024016.695678-1-liuhangbin@gmail.com>
+ <c041a184-92cb-0ebd-25e9-13bfc6413fc9@nvidia.com>
+ <YW/tLekS17ZF9/w1@Laptop-X1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CDEC9628-69B6-4A83-81CF-34407070214F@cs.com>
+In-Reply-To: <YW/tLekS17ZF9/w1@Laptop-X1>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 20, 2021 at 09:28:40AM +0800, R W van Schagen wrote:
-> Hi all,
+On Wed, Oct 20, 2021 at 06:19:25PM +0800, Hangbin Liu wrote:
+> On Wed, Oct 20, 2021 at 12:49:17PM +0300, Nikolay Aleksandrov wrote:
+> > Nacked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+> > 
+> > I think we just discussed this a day ago? It is the same problem -
+> > while we all agree the values should follow the RFC, users have had
+> > the option to set any values forever (even non-RFC compliant ones).
+> > This change risks breaking user-space.
 > 
-> When I register a master device (eth0) with ESP hardware offload:
-> 
-> 	netdev->xfrmdev_ops = &mtk_xfrmdev_ops;
-> 	netdev->features |= NETIF_F_HW_ESP;
-> 	netdev->hw_enc_features |= NETIF_F_HW_ESP;
-> 
-> Only the “features” are inherited by the DSA slaves. When those
-> get registered without the xfrmdev_ops the HW_ESP feature is
-> dropped again.
-> 
-> Is this a “bug” and should I make a patch to fix this or is this actually
-> a design feature?
+> OK, I misunderstood your reply in last mail. I thought you only object to
+> disabling no meaning values(e.g. set timer to 0, which not is forbid by the
+> RFC). I don't know you also reject to follow a *MUST* rule defined in the RFC.
 
-Design feature.
+I know you denied the patch due to user-space compatibility. Forgive me
+if my last reply sound a little aggressive.
 
-The problem is, for most MAC devices, the additional DSA
-header/trailer messes up all acceleration. The HW does not understand
-the header/trailer, don't know they have to skip it, have trouble
-finding the IP header, etc. So in general, we turn off all
-acceleration features.
-
-If you pair a Marvell MAC with a Marvell Switch, there is a good
-chance it understands the Marvell DSA header and some forms of
-acceleration work. Same goes for a Broadcom MAC with a Broadcom
-switch. But pair a Freescale MAC with a Marvell Switch and even basic
-IP checksumming does not work, the FEC HW cannot find the IP header.
-
-> As a work-around I am using a notifier call and add those features but
-> I don’t think this is the proper way to do this in a production driver.
-
-It is not a simple problem to solve in a generic way. You end up with
-an M by S matrices for HW features which work, where M is the MAC and
-S is the switch.
-
-So for you board, with your specific pairing of MAC and Switch, which
-i assume is a mediatek MAC connected to a mediatek switch, using a
-notifier call is not too unreasonable.
-
-We could also consider DT properties, indicating which features work
-for this board. That should be a reasonably generic solution, which
-you can implement in the DSA core.
-
-	    Andrew
+Thanks
+Hangbin
