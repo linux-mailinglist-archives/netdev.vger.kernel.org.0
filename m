@@ -2,88 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AB83434B06
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 14:17:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4E7C434B0F
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 14:20:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230219AbhJTMTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 08:19:17 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:48550 "EHLO vps0.lunn.ch"
+        id S230196AbhJTMWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 08:22:43 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48580 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230205AbhJTMTQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Oct 2021 08:19:16 -0400
+        id S230174AbhJTMWl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Oct 2021 08:22:41 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=32GYkFGawk1EHwubKe3VWlQKW04GyjW6olYclX1Tk34=; b=RtVOIeZ3PSCRdaK6EFw6Mufldc
-        FCR2wMQvAml1Qlq2OYjJgctYcQ5iMmh7GJmitlPzROfHxV7aBjd2hV9GNCMR/KxBQjSp8DlhClDvf
-        +zi4IBK2/Lm4fk0gkMzLfzztsOGGqA+xRx/ioUUkN7cB284Gh0EsuFEEADsUCUpI7oNM=;
+        bh=YBO3q4jEfT92PWEmRoF47QEYl0r14ymXhDoJSvd0+ro=; b=vl8D85LS4Vbhi4CRvAYx6q6W9J
+        VgrDPYJEOMr30QH08xecELIRkjzsj4m55g842HPcrR7cHPN7AQJGoTh7BshwOgMrDU87qJC3EtRCL
+        OoaoQV0DeP5rvIpIHpm4QA8dadMQGx6feiRHcEnyJNToFrmo0uyYkyBjNVYz3vlSJBVU=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1mdAWd-00BBMp-US; Wed, 20 Oct 2021 14:16:55 +0200
-Date:   Wed, 20 Oct 2021 14:16:55 +0200
+        id 1mdAZw-00BBO0-Ab; Wed, 20 Oct 2021 14:20:20 +0200
+Date:   Wed, 20 Oct 2021 14:20:20 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     =?iso-8859-1?Q?K=F6ry?= Maincent <kory.maincent@bootlin.com>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Adam Ford <aford173@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Yang Yingliang <yangyingliang@huawei.com>
-Subject: Re: [PATCH] net: renesas: Fix rgmii-id delays
-Message-ID: <YXAIt3TOaCiEuHSt@lunn.ch>
-References: <20211019145719.122751-1-kory.maincent@bootlin.com>
- <CAMuHMdWghZ7HM5RRFRsZu8P_ikna0QWoRfCKeym61N-Lv-v4Xw@mail.gmail.com>
- <20211019173520.0154a8cb@kmaincent-XPS-13-7390>
- <YW7nPfzjstmeoMbf@lunn.ch>
- <20211019175746.11b388ce@windsurf>
- <CAMuHMdXiMhpU0vDV3KaOg4DY59cszAtoG1sDOgnTRY6C6cyitQ@mail.gmail.com>
- <20211020105328.411a712f@kmaincent-XPS-13-7390>
+To:     Jie Luo <quic_luoj@quicinc.com>
+Cc:     Luo Jie <luoj@codeaurora.org>, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        sricharan@codeaurora.org
+Subject: Re: [PATCH v3 07/13] net: phy: add qca8081 get_features
+Message-ID: <YXAJhM4/zCC/vY0U@lunn.ch>
+References: <20211018033333.17677-1-luoj@codeaurora.org>
+ <20211018033333.17677-8-luoj@codeaurora.org>
+ <YW3qrFRzvPlFrms0@lunn.ch>
+ <cf1c8c0a-eeab-d5d2-fa04-ff6e4d37b960@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211020105328.411a712f@kmaincent-XPS-13-7390>
+In-Reply-To: <cf1c8c0a-eeab-d5d2-fa04-ff6e4d37b960@quicinc.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > BTW, it's still not clear to me why the inversion would be needed.
-> > Cfr. Andrew's comment:
-> > 
-> > | So with rgmii-rxid, what is actually passed to the PHY? Is your
-> > | problem you get twice the delay in one direction, and no delay in the
-> > | other?
+On Wed, Oct 20, 2021 at 02:39:57PM +0800, Jie Luo wrote:
 > 
-> Yes, it was the problem I got.
-> The PHY I use have RX delay enabled by default, currently the PHY driver does
-> not support delay configuration, therefore I let the MAC handle TX delay. I
-> have stumbling over that legacy/wrong DTS on the old Kernel.
+> On 10/19/2021 5:44 AM, Andrew Lunn wrote:
+> > On Mon, Oct 18, 2021 at 11:33:27AM +0800, Luo Jie wrote:
+> > > Reuse the at803x phy driver get_features excepting
+> > > adding 2500M capability.
+> > > 
+> > > Signed-off-by: Luo Jie<luoj@codeaurora.org>
+> > > ---
+> > >   drivers/net/phy/at803x.c | 10 ++++++++++
+> > >   1 file changed, 10 insertions(+)
+> > > 
+> > > diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+> > > index 42d3f8ccca94..0c22ef735230 100644
+> > > --- a/drivers/net/phy/at803x.c
+> > > +++ b/drivers/net/phy/at803x.c
+> > > @@ -719,6 +719,15 @@ static int at803x_get_features(struct phy_device *phydev)
+> > >   	if (err)
+> > >   		return err;
+> > > +	if (phydev->drv->phy_id == QCA8081_PHY_ID) {
+> > > +		err = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_NG_EXTABLE);
+> > > +		if (err < 0)
+> > > +			return err;
+> > > +
+> > > +		linkmode_mod_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, phydev->supported,
+> > > +				err & MDIO_PMA_NG_EXTABLE_2_5GBT);
+> > > +	}
+> > genphy_c45_pma_read_abilities()?
+> > 
+> > 	Andrew
+> 
+> Hi Andrew,
+> 
+> Thanks for this comment, if we use genphy_c45_pma_read_abilities here, the
+> ETHTOOL_LINK_MODE_Autoneg_BIT
+> 
+> will be lost, since MDIO_MMD_AN.MDIO_STAT1 does not have bit
+> MDIO_AN_STAT1_ABLE.
+ 
+Yes, if your PHY breaks the standard, the helpers are not much use,
+that assume standard compliment PHYs.
 
-This is where we get into the horrible mess of RGMII delays.
-
-The real solution is to fix the PHY driver. If it is asked to do
-rgmii, but is actually doing rgmii-id, the PHY driver is broken. It
-either should do what it is told, or return -EINVAL/-EOPNOTSUPP etc to
-indicate it does not support what it is asked to do.
-
-But fixing things like this often breaks working systems, because the
-DT says rgmii, the PHY actually does rgmii-id, the board works, until
-the PHY is fixed to do what it is told, and all the bugs in the DT
-suddenly come to light.
-
-Now, you said you are using an old kernel. So it could be we have
-already fixed this, and had the pain of fixing broken DT. Please look
-at the current kernel PHY driver, and see if all you need to do is
-back port some PHY fixes, or better still, throw away your old kernel
-and use a modern one.
-
-       Andrew
+     Andrew
