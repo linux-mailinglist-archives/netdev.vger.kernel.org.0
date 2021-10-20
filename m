@@ -2,42 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20DB1434C1A
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 15:30:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9DF4434C17
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 15:30:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230243AbhJTNc2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 09:32:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41890 "EHLO mail.kernel.org"
+        id S229977AbhJTNc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 09:32:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41880 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230183AbhJTNcZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Oct 2021 09:32:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id B340B6138B;
+        id S230052AbhJTNcY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Oct 2021 09:32:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id A3ABB61390;
         Wed, 20 Oct 2021 13:30:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1634736610;
-        bh=xbn4yc7QTCfLe76IhXxYK9bwbKpk6YjlP4Oa+lF9OeE=;
+        bh=XLSDd/WOi6bQYdgykuOBwVSE30SK4md5jwoYHj4WcNo=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=RJO3mfZjpqPg3CfJHjtg6mi2P5lXrgwnTBeUjv/qqxF9wzWUHcQ2WE8332gZ2Abu/
-         UpEirTHZzFucbVbrSXSnSaCZXMc2LXG7Cprgszkc8tfGMUZRQ0b2cCn3qSmMHOR64G
-         izN2VKWvlBi5HP9TowWAt1l//CvWQYXjJvKU280AVIfO6XPH3KGiddBP59IN9/8Sju
-         xqRrahs/3yK+slsoWMfXNKGvA239Yb6fXO3jKa7l2Lx6Xd3csrUYd2io6nSy55Xy1V
-         Oc2V42FQNsHJrO0nuzulEQ0eE+36kXRhCs5gzxryZf+h7pS+OxdB1lXrihw6rzLLNI
-         eqoS6Bs3/Xk/Q==
+        b=agMR0mIK3jge+5ToaB+jB9mz/FS1kz69xrNzsKsppGnv625mQGHoKprXoV2TvdX6M
+         WcFgxZ+yEAXOZM01HsKwcoha46kE/VsHt16jZezzXVaE7g0HLhTvQ1nMfH58X0rK07
+         MRWiFKRmhqTqDyhlq537uFF+ffzQ24OcEin92uKFMvU5S0DSJKAc4G1dpXV2GvaLOf
+         7gAJsr/FQeciKeBsNQRgdY+MAqWtAtdOk1J5h2UKD8F9UatwYdIXtrAsICwQXIbYWI
+         GVvMgSkM+Tlb2q6hQZOX4BvqsZnHzdExKTca0DCRcykZHYsFYxrv73I8Hbfup8Ce4L
+         HCuFri0OE0dAQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id ABF6B60A4E;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 94B2360A69;
         Wed, 20 Oct 2021 13:30:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] batman-adv: use eth_hw_addr_set() instead of
- ether_addr_copy()
+Subject: Re: [net-next PATCH v2] net: dsa: qca8k: tidy for loop in setup and add
+ cpu port check
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163473661069.3411.9735167830822051485.git-patchwork-notify@kernel.org>
+Message-Id: <163473661060.3411.17432101259352940861.git-patchwork-notify@kernel.org>
 Date:   Wed, 20 Oct 2021 13:30:10 +0000
-References: <20211019163927.1386289-1-kuba@kernel.org>
-In-Reply-To: <20211019163927.1386289-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org
+References: <20211019000850.14235-1-ansuelsmth@gmail.com>
+In-Reply-To: <20211019000850.14235-1-ansuelsmth@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,19 +49,19 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Tue, 19 Oct 2021 09:39:27 -0700 you wrote:
-> Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
-> of VLANs...") introduced a rbtree for faster Ethernet address look
-> up. To maintain netdev->dev_addr in this tree we need to make all
-> the writes to it got through appropriate helpers.
+On Tue, 19 Oct 2021 02:08:50 +0200 you wrote:
+> Tidy and organize qca8k setup function from multiple for loop.
+> Change for loop in bridge leave/join to scan all port and skip cpu port.
+> No functional change intended.
 > 
-> Convert batman from ether_addr_copy() to eth_hw_addr_set():
-> 
-> [...]
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
+>  drivers/net/dsa/qca8k.c | 74 ++++++++++++++++++++++++-----------------
+>  1 file changed, 44 insertions(+), 30 deletions(-)
 
 Here is the summary with links:
-  - batman-adv: use eth_hw_addr_set() instead of ether_addr_copy()
-    https://git.kernel.org/netdev/net-next/c/0f00e70ef645
+  - [net-next,v2] net: dsa: qca8k: tidy for loop in setup and add cpu port check
+    https://git.kernel.org/netdev/net-next/c/040e926f5813
 
 You are awesome, thank you!
 --
