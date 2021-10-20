@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A017435666
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 01:19:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE0C5435667
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 01:19:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231381AbhJTXVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 19:21:09 -0400
-Received: from mga09.intel.com ([134.134.136.24]:7592 "EHLO mga09.intel.com"
+        id S231379AbhJTXVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 19:21:16 -0400
+Received: from mga09.intel.com ([134.134.136.24]:7594 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231358AbhJTXVG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231375AbhJTXVG (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 20 Oct 2021 19:21:06 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10143"; a="228775794"
+X-IronPort-AV: E=McAfee;i="6200,9189,10143"; a="228775795"
 X-IronPort-AV: E=Sophos;i="5.87,168,1631602800"; 
-   d="scan'208";a="228775794"
+   d="scan'208";a="228775795"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2021 16:18:50 -0700
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2021 16:18:51 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,168,1631602800"; 
-   d="scan'208";a="483921303"
+   d="scan'208";a="483921305"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga007.jf.intel.com with ESMTP; 20 Oct 2021 16:18:50 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -27,9 +27,9 @@ Cc:     Kiran Patil <kiran.patil@intel.com>, netdev@vger.kernel.org,
         anthony.l.nguyen@intel.com, sudheer.mogilappagari@intel.com,
         sridhar.samudrala@intel.com, amritha.nambiar@intel.com,
         Bharathi Sreenivas <bharathi.sreenivas@intel.com>
-Subject: [PATCH net-next 2/3] ice: enable ndo_setup_tc support for mqprio_qdisc
-Date:   Wed, 20 Oct 2021 16:17:02 -0700
-Message-Id: <20211020231703.3642650-3-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 3/3] ice: Add tc-flower filter support for channel
+Date:   Wed, 20 Oct 2021 16:17:03 -0700
+Message-Id: <20211020231703.3642650-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211020231703.3642650-1-anthony.l.nguyen@intel.com>
 References: <20211020231703.3642650-1-anthony.l.nguyen@intel.com>
@@ -41,1182 +41,673 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Kiran Patil <kiran.patil@intel.com>
 
-Add support in driver for TC_QDISC_SETUP_MQPRIO. This support
-enables instantiation of channels in HW using existing MQPRIO
-infrastructure which is extended to be offloadable. This
-provides a mechanism to configure dedicated set of queues for
-each TC.
+Add support to add/delete channel specific filter using tc-flower.
+For now, only supported action is "skip_sw hw_tc <tc_num>"
 
-Configuring channels using "tc mqprio":
---------------------------------------
-tc qdisc add dev <ethX> root mqprio num_tc 3 map 0 1 2 \
-	queues 4@0 4@4 4@8  hw 1 mode channel
+Filter criteria is specific to channel and it can be
+combination of L3, L3+L4, L2+L4.
 
-Above command configures 3 TCs having 4 queues each. "hw 1 mode channel"
-implies offload of channel configuration to HW. When driver processes
-configuration received via "ndo_setup_tc: QDISC_SETUP_MQPRIO", each
-TC maps to HW VSI with specified queues.
+Example:
+MATCH criteria       Action
+---------------------------
+src and/or dest IPv4[6]/mask -> Forward to "hw_tc <tc_num>"
+dest IPv4[6]/mask + dest L4 port -> Forward to "hw_tc <tc_num>"
+dest MAC + dest L4 port -> Forward to "hw_tc <tc_num>"
+src IPv4[6]/mask + src L4 port -> Forward to "hw_tc <tc_num>"
+src MAC + src L4 port -> Forward to "hw_tc <tc_num>"
 
-User can optionally specify bandwidth min and max rate limit per TC
-(see example below). If shaper params like min and/or max bandwidth
-rate limit are specified, driver configures VSI specific rate limiter
-in HW.
+Adding tc-flower filter for channel using "hw_tc"
+-------------------------------------------------
+tc qdisc add dev <ethX> clsact
 
-Configuring channels and bandwidth shaper parameters using "tc mqprio":
-----------------------------------------------------------------
-tc qdisc add dev <ethX> root mqprio \
-	num_tc 4 map 0 1 2 3 queues 4@0 4@4 4@8 4@12 hw 1 mode channel \
-	shaper bw_rlimit min_rate 1Gbit 2Gbit 3Gbit 4Gbit \
-	max_rate 4Gbit 5Gbit 6Gbit 7Gbit
+Above two steps are only needed the first time when adding
+tc-flower filter.
 
-Command to view configured TCs:
------------------------------
-tc qdisc show dev <ethX>
+tc filter add dev <ethX> protocol ip ingress prio 1 flower \
+     dst_ip 192.168.0.1/32 ip_proto tcp dst_port 5001 \
+     skip_sw hw_tc 1
 
-Deleting TCs:
-------------
-tc qdisc del dev <ethX> root mqprio
+tc filter show dev <ethX> ingress
+filter protocol ip pref 1 flower chain 0
+filter protocol ip pref 1 flower chain 0 handle 0x1 hw_tc 1
+  eth_type ipv4
+  ip_proto tcp
+  dst_ip 192.168.0.1
+  dst_port 5001
+  skip_sw
+  in_hw in_hw_count 1
 
-Signed-off-by: Kiran Patil <kiran.patil@intel.com>
+Delete specific filter:
+-------------------------
+tc filter del  dev <ethx> ingress pref 1 handle 0x1 flower
+
+Delete All filters:
+------------------
+tc filter del dev <ethX> ingress
+
+Co-developed-by: Amritha Nambiar <amritha.nambiar@intel.com>
 Signed-off-by: Amritha Nambiar <amritha.nambiar@intel.com>
+Signed-off-by: Kiran Patil <kiran.patil@intel.com>
 Signed-off-by: Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
 Tested-by: Bharathi Sreenivas <bharathi.sreenivas@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice.h         |  21 +
- drivers/net/ethernet/intel/ice/ice_ethtool.c |  10 +
- drivers/net/ethernet/intel/ice/ice_lib.c     |   2 +-
- drivers/net/ethernet/intel/ice/ice_lib.h     |   1 +
- drivers/net/ethernet/intel/ice/ice_main.c    | 889 ++++++++++++++++++-
- 5 files changed, 913 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/intel/ice/ice.h        |   9 +-
+ drivers/net/ethernet/intel/ice/ice_main.c   |  77 ++++++-
+ drivers/net/ethernet/intel/ice/ice_switch.c | 119 +++++++++++
+ drivers/net/ethernet/intel/ice/ice_switch.h |   2 +
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c | 217 +++++++++++++++++++-
+ drivers/net/ethernet/intel/ice/ice_tc_lib.h |  22 ++
+ 6 files changed, 438 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index c2814e31c438..4f94ecff87e8 100644
+index 4f94ecff87e8..967a90efcb11 100644
 --- a/drivers/net/ethernet/intel/ice/ice.h
 +++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -56,6 +56,7 @@
- #include "ice_dcb.h"
- #include "ice_switch.h"
- #include "ice_common.h"
-+#include "ice_flow.h"
- #include "ice_sched.h"
- #include "ice_idc_int.h"
- #include "ice_virtchnl_pf.h"
-@@ -126,6 +127,13 @@
- #define ICE_TX_CTX_DESC(R, i) (&(((struct ice_tx_ctx_desc *)((R)->desc))[i]))
- #define ICE_TX_FDIRDESC(R, i) (&(((struct ice_fltr_desc *)((R)->desc))[i]))
+@@ -39,6 +39,9 @@
+ #include <linux/cpu_rmap.h>
+ #include <linux/dim.h>
+ #include <net/pkt_cls.h>
++#include <net/tc_act/tc_mirred.h>
++#include <net/tc_act/tc_gact.h>
++#include <net/ip.h>
+ #include <net/devlink.h>
+ #include <net/ipv6.h>
+ #include <net/xdp_sock.h>
+@@ -402,6 +405,7 @@ struct ice_vsi {
+ 	u16 num_chnl_rxq;
+ 	u16 num_chnl_txq;
+ 	u16 ch_rss_size;
++	u16 num_chnl_fltr;
+ 	/* store away rss size info before configuring ADQ channels so that,
+ 	 * it can be used after tc-qdisc delete, to get back RSS setting as
+ 	 * they were before
+@@ -581,7 +585,10 @@ struct ice_pf {
+ 	struct auxiliary_device *adev;
+ 	int aux_idx;
+ 	u32 sw_int_count;
+-
++	/* count of tc_flower filters specific to channel (aka where filter
++	 * action is "hw_tc <tc_num>")
++	 */
++	u16 num_dmac_chnl_fltrs;
+ 	struct hlist_head tc_flower_fltr_list;
  
-+/* Minimum BW limit is 500 Kbps for any scheduler node */
-+#define ICE_MIN_BW_LIMIT		500
-+/* User can specify BW in either Kbit/Mbit/Gbit and OS converts it in bytes.
-+ * use it to convert user specified BW limit into Kbps
-+ */
-+#define ICE_BW_KBPS_DIVISOR		125
-+
- /* Macro for each VSI in a PF */
- #define ice_for_each_vsi(pf, i) \
- 	for ((i) = 0; (i) < (pf)->num_alloc_vsi; (i)++)
-@@ -440,6 +448,8 @@ struct ice_q_vector {
- 	cpumask_t affinity_mask;
- 	struct irq_affinity_notify affinity_notify;
- 
-+	struct ice_channel *ch;
-+
- 	char name[ICE_INT_NAME_STR_LEN];
- 
- 	u16 total_events;	/* net_dim(): number of interrupts processed */
-@@ -595,6 +605,17 @@ struct ice_netdev_priv {
- 	struct ice_repr *repr;
- };
- 
-+/**
-+ * ice_vector_ch_enabled
-+ * @qv: pointer to q_vector, can be NULL
-+ *
-+ * This function returns true if vector is channel enabled otherwise false
-+ */
-+static inline bool ice_vector_ch_enabled(struct ice_q_vector *qv)
-+{
-+	return !!qv->ch; /* Enable it to run with TC */
-+}
-+
- /**
-  * ice_irq_dynamic_ena - Enable default interrupt generation settings
-  * @hw: pointer to HW struct
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index 8b3eef6632e9..cfe96a127ed4 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -3194,6 +3194,11 @@ ice_set_rxfh(struct net_device *netdev, const u32 *indir, const u8 *key,
- 		return -EIO;
- 	}
- 
-+	if (ice_is_adq_active(pf)) {
-+		netdev_err(netdev, "Cannot change RSS params with ADQ configured.\n");
-+		return -EOPNOTSUPP;
-+	}
-+
- 	if (key) {
- 		if (!vsi->rss_hkey_user) {
- 			vsi->rss_hkey_user =
-@@ -3404,6 +3409,11 @@ static int ice_set_channels(struct net_device *dev, struct ethtool_channels *ch)
- 	if (ch->other_count != (test_bit(ICE_FLAG_FD_ENA, pf->flags) ? 1U : 0U))
- 		return -EINVAL;
- 
-+	if (ice_is_adq_active(pf)) {
-+		netdev_err(dev, "Cannot set channels with ADQ configured.\n");
-+		return -EOPNOTSUPP;
-+	}
-+
- 	if (test_bit(ICE_FLAG_FD_ENA, pf->flags) && pf->hw.fdir_active_fltr) {
- 		netdev_err(dev, "Cannot set channels when Flow Director filters are active\n");
- 		return -EOPNOTSUPP;
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 62adbb39670b..4904ae088daa 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -3954,7 +3954,7 @@ int ice_get_link_speed_mbps(struct ice_vsi *vsi)
-  *
-  * Return current VSI link speed and 0 if the speed is unknown.
-  */
--static int ice_get_link_speed_kbps(struct ice_vsi *vsi)
-+int ice_get_link_speed_kbps(struct ice_vsi *vsi)
- {
- 	int speed_mbps;
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.h b/drivers/net/ethernet/intel/ice/ice_lib.h
-index b44ceffe40bf..e7f4ecbb8549 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.h
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.h
-@@ -124,6 +124,7 @@ int ice_set_dflt_vsi(struct ice_sw *sw, struct ice_vsi *vsi);
- int ice_clear_dflt_vsi(struct ice_sw *sw);
- int ice_set_min_bw_limit(struct ice_vsi *vsi, u64 min_tx_rate);
- int ice_set_max_bw_limit(struct ice_vsi *vsi, u64 max_tx_rate);
-+int ice_get_link_speed_kbps(struct ice_vsi *vsi);
- int ice_get_link_speed_mbps(struct ice_vsi *vsi);
- int
- ice_vsi_update_security(struct ice_vsi *vsi, void (*fill)(struct ice_vsi_ctx *));
+ 	__le64 nvm_phy_type_lo; /* NVM PHY type low */
 diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 20c912842ad0..ff2d000bbbab 100644
+index ff2d000bbbab..cb82abd08a40 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
 +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -55,6 +55,9 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type);
+@@ -5255,6 +5255,12 @@ static int ice_set_mac_address(struct net_device *netdev, void *pi)
+ 		return -EBUSY;
+ 	}
  
- static void ice_vsi_release_all(struct ice_pf *pf);
- 
-+static int ice_rebuild_channels(struct ice_pf *pf);
-+static void ice_remove_q_channels(struct ice_vsi *vsi, bool rem_adv_fltr);
-+
- bool netif_is_ice(struct net_device *dev)
- {
- 	return dev && (dev->netdev_ops == &ice_netdev_ops);
-@@ -106,7 +109,12 @@ static void ice_check_for_hang_subtask(struct ice_pf *pf)
- 	ice_for_each_txq(vsi, i) {
- 		struct ice_tx_ring *tx_ring = vsi->tx_rings[i];
- 
--		if (tx_ring && tx_ring->desc) {
-+		if (!tx_ring)
-+			continue;
-+		if (ice_ring_ch_enabled(tx_ring))
-+			continue;
-+
-+		if (tx_ring->desc) {
- 			/* If packet counter has not changed the queue is
- 			 * likely stalled, so force an interrupt for this
- 			 * queue.
-@@ -458,17 +466,21 @@ static void ice_pf_dis_all_vsi(struct ice_pf *pf, bool locked)
- }
- 
- /**
-- * ice_prepare_for_reset - prep for the core to reset
-+ * ice_prepare_for_reset - prep for reset
-  * @pf: board private structure
-+ * @reset_type: reset type requested
-  *
-  * Inform or close all dependent features in prep for reset.
-  */
- static void
--ice_prepare_for_reset(struct ice_pf *pf)
-+ice_prepare_for_reset(struct ice_pf *pf, enum ice_reset_req reset_type)
- {
- 	struct ice_hw *hw = &pf->hw;
-+	struct ice_vsi *vsi;
- 	unsigned int i;
- 
-+	dev_dbg(ice_pf_to_dev(pf), "reset_type=%d\n", reset_type);
-+
- 	/* already prepared for reset */
- 	if (test_bit(ICE_PREPARED_FOR_RESET, pf->state))
- 		return;
-@@ -483,6 +495,38 @@ ice_prepare_for_reset(struct ice_pf *pf)
- 	ice_for_each_vf(pf, i)
- 		ice_set_vf_state_qs_dis(&pf->vf[i]);
- 
-+	/* release ADQ specific HW and SW resources */
-+	vsi = ice_get_main_vsi(pf);
-+	if (!vsi)
-+		goto skip;
-+
-+	/* to be on safe side, reset orig_rss_size so that normal flow
-+	 * of deciding rss_size can take precedence
-+	 */
-+	vsi->orig_rss_size = 0;
-+
-+	if (test_bit(ICE_FLAG_TC_MQPRIO, pf->flags)) {
-+		if (reset_type == ICE_RESET_PFR) {
-+			vsi->old_ena_tc = vsi->all_enatc;
-+			vsi->old_numtc = vsi->all_numtc;
-+		} else {
-+			ice_remove_q_channels(vsi, true);
-+
-+			/* for other reset type, do not support channel rebuild
-+			 * hence reset needed info
-+			 */
-+			vsi->old_ena_tc = 0;
-+			vsi->all_enatc = 0;
-+			vsi->old_numtc = 0;
-+			vsi->all_numtc = 0;
-+			vsi->req_txq = 0;
-+			vsi->req_rxq = 0;
-+			clear_bit(ICE_FLAG_TC_MQPRIO, pf->flags);
-+			memset(&vsi->mqprio_qopt, 0, sizeof(vsi->mqprio_qopt));
-+		}
++	if (ice_chnl_dmac_fltr_cnt(pf)) {
++		netdev_err(netdev, "can't set mac %pM. Device has tc-flower filters, delete all of them and try again\n",
++			   mac);
++		return -EAGAIN;
 +	}
-+skip:
 +
- 	/* clear SW filtering DB */
- 	ice_clear_hw_tbls(hw);
- 	/* disable the VSIs and their queues that are not already DOWN */
-@@ -502,8 +546,7 @@ ice_prepare_for_reset(struct ice_pf *pf)
- /**
-  * ice_do_reset - Initiate one of many types of resets
-  * @pf: board private structure
-- * @reset_type: reset type requested
-- * before this function was called.
-+ * @reset_type: reset type requested before this function was called.
-  */
- static void ice_do_reset(struct ice_pf *pf, enum ice_reset_req reset_type)
- {
-@@ -512,7 +555,7 @@ static void ice_do_reset(struct ice_pf *pf, enum ice_reset_req reset_type)
- 
- 	dev_dbg(dev, "reset_type 0x%x requested\n", reset_type);
- 
--	ice_prepare_for_reset(pf);
-+	ice_prepare_for_reset(pf, reset_type);
- 
- 	/* trigger the reset */
- 	if (ice_reset(hw, reset_type)) {
-@@ -570,7 +613,7 @@ static void ice_reset_subtask(struct ice_pf *pf)
- 		/* return if no valid reset type requested */
- 		if (reset_type == ICE_RESET_INVAL)
- 			return;
--		ice_prepare_for_reset(pf);
-+		ice_prepare_for_reset(pf, reset_type);
- 
- 		/* make sure we are ready to rebuild */
- 		if (ice_check_reset(&pf->hw)) {
-@@ -3243,6 +3286,13 @@ ice_pf_vsi_setup(struct ice_pf *pf, struct ice_port_info *pi)
- 	return ice_vsi_setup(pf, pi, ICE_VSI_PF, ICE_INVAL_VFID, NULL);
- }
- 
-+static struct ice_vsi *
-+ice_chnl_vsi_setup(struct ice_pf *pf, struct ice_port_info *pi,
-+		   struct ice_channel *ch)
-+{
-+	return ice_vsi_setup(pf, pi, ICE_VSI_CHNL, ICE_INVAL_VFID, ch);
-+}
+ 	netif_addr_lock_bh(netdev);
+ 	ether_addr_copy(old_mac, netdev->dev_addr);
+ 	/* change the netdev's MAC address */
+@@ -5511,6 +5517,13 @@ ice_set_features(struct net_device *netdev, netdev_features_t features)
+ 		dev_err(ice_pf_to_dev(pf), "ADQ is active, can't turn hw_tc_offload off\n");
+ 		return -EACCES;
+ 	}
 +
- /**
-  * ice_ctrl_vsi_setup - Set up a control VSI
-  * @pf: board private structure
-@@ -3361,6 +3411,9 @@ static int ice_setup_pf_sw(struct ice_pf *pf)
- 	if (!vsi)
- 		return -ENOMEM;
- 
-+	/* init channel list */
-+	INIT_LIST_HEAD(&vsi->ch_list);
++	if ((features & NETIF_F_HW_TC) &&
++	    !(netdev->features & NETIF_F_HW_TC))
++		set_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
++	else
++		clear_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
 +
- 	status = ice_cfg_netdev(vsi);
- 	if (status) {
- 		status = -ENODEV;
-@@ -4956,7 +5009,7 @@ ice_pci_err_detected(struct pci_dev *pdev, pci_channel_state_t err)
- 
- 		if (!test_bit(ICE_PREPARED_FOR_RESET, pf->state)) {
- 			set_bit(ICE_PFR_REQ, pf->state);
--			ice_prepare_for_reset(pf);
-+			ice_prepare_for_reset(pf, ICE_RESET_PFR);
- 		}
- 	}
- 
-@@ -5048,7 +5101,7 @@ static void ice_pci_err_reset_prepare(struct pci_dev *pdev)
- 
- 		if (!test_bit(ICE_PREPARED_FOR_RESET, pf->state)) {
- 			set_bit(ICE_PFR_REQ, pf->state);
--			ice_prepare_for_reset(pf);
-+			ice_prepare_for_reset(pf, ICE_RESET_PFR);
- 		}
- 	}
- }
-@@ -5453,6 +5506,11 @@ ice_set_features(struct net_device *netdev, netdev_features_t features)
- 		ice_clear_arfs(vsi);
- 	}
- 
-+	/* don't turn off hw_tc_offload when ADQ is already enabled */
-+	if (!(features & NETIF_F_HW_TC) && ice_is_adq_active(pf)) {
-+		dev_err(ice_pf_to_dev(pf), "ADQ is active, can't turn hw_tc_offload off\n");
-+		return -EACCES;
-+	}
  	return ret;
  }
  
-@@ -6307,6 +6365,9 @@ static void ice_vsi_release_all(struct ice_pf *pf)
- 		if (!pf->vsi[i])
- 			continue;
- 
-+		if (pf->vsi[i]->type == ICE_VSI_CHNL)
-+			continue;
-+
- 		err = ice_vsi_release(pf->vsi[i]);
- 		if (err)
- 			dev_dbg(ice_pf_to_dev(pf), "Failed to release pf->vsi[%d], err %d, vsi_num = %d\n",
-@@ -6517,6 +6578,15 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
- 		goto err_vsi_rebuild;
- 	}
- 
-+	if (reset_type == ICE_RESET_PFR) {
-+		err = ice_rebuild_channels(pf);
-+		if (err) {
-+			dev_err(dev, "failed to rebuild and replay ADQ VSIs, err %d\n",
-+				err);
-+			goto err_vsi_rebuild;
-+		}
-+	}
-+
- 	/* If Flow Director is active */
- 	if (test_bit(ICE_FLAG_FD_ENA, pf->flags)) {
- 		err = ice_vsi_rebuild_by_type(pf, ICE_VSI_CTRL);
-@@ -7183,6 +7253,799 @@ ice_setup_tc_block_cb(enum tc_setup_type type, void *type_data, void *cb_priv)
- 	}
+@@ -7649,6 +7662,57 @@ static int ice_create_q_channel(struct ice_vsi *vsi, struct ice_channel *ch)
+ 	return 0;
  }
  
 +/**
-+ * ice_validate_mqprio_qopt - Validate TCF input parameters
-+ * @vsi: Pointer to VSI
-+ * @mqprio_qopt: input parameters for mqprio queue configuration
++ * ice_rem_all_chnl_fltrs - removes all channel filters
++ * @pf: ptr to PF, TC-flower based filter are tracked at PF level
 + *
-+ * This function validates MQPRIO params, such as qcount (power of 2 wherever
-+ * needed), and make sure user doesn't specify qcount and BW rate limit
-+ * for TCs, which are more than "num_tc"
++ * Remove all advanced switch filters only if they are channel specific
++ * tc-flower based filter
 + */
-+static int
-+ice_validate_mqprio_qopt(struct ice_vsi *vsi,
-+			 struct tc_mqprio_qopt_offload *mqprio_qopt)
++static void ice_rem_all_chnl_fltrs(struct ice_pf *pf)
 +{
-+	u64 sum_max_rate = 0, sum_min_rate = 0;
-+	int non_power_of_2_qcount = 0;
++	struct ice_tc_flower_fltr *fltr;
++	struct hlist_node *node;
++
++	/* to remove all channel filters, iterate an ordered list of filters */
++	hlist_for_each_entry_safe(fltr, node,
++				  &pf->tc_flower_fltr_list,
++				  tc_flower_node) {
++		struct ice_rule_query_data rule;
++		int status;
++
++		/* for now process only channel specific filters */
++		if (!ice_is_chnl_fltr(fltr))
++			continue;
++
++		rule.rid = fltr->rid;
++		rule.rule_id = fltr->rule_id;
++		rule.vsi_handle = fltr->dest_id;
++		status = ice_rem_adv_rule_by_id(&pf->hw, &rule);
++		if (status) {
++			if (status == -ENOENT)
++				dev_dbg(ice_pf_to_dev(pf), "TC flower filter (rule_id %u) does not exist\n",
++					rule.rule_id);
++			else
++				dev_err(ice_pf_to_dev(pf), "failed to delete TC flower filter, status %d\n",
++					status);
++		} else if (fltr->dest_vsi) {
++			/* update advanced switch filter count */
++			if (fltr->dest_vsi->type == ICE_VSI_CHNL) {
++				u32 flags = fltr->flags;
++
++				fltr->dest_vsi->num_chnl_fltr--;
++				if (flags & (ICE_TC_FLWR_FIELD_DST_MAC |
++					     ICE_TC_FLWR_FIELD_ENC_DST_MAC))
++					pf->num_dmac_chnl_fltrs--;
++			}
++		}
++
++		hlist_del(&fltr->tc_flower_node);
++		kfree(fltr);
++	}
++}
++
+ /**
+  * ice_remove_q_channels - Remove queue channels for the TCs
+  * @vsi: VSI to be configured
+@@ -7656,11 +7720,16 @@ static int ice_create_q_channel(struct ice_vsi *vsi, struct ice_channel *ch)
+  *
+  * Remove queue channels for the TCs
+  */
+-static void ice_remove_q_channels(struct ice_vsi *vsi, bool __maybe_unused rem_fltr)
++static void ice_remove_q_channels(struct ice_vsi *vsi, bool rem_fltr)
+ {
+ 	struct ice_channel *ch, *ch_tmp;
 +	struct ice_pf *pf = vsi->back;
-+	int max_rss_q_cnt = 0;
-+	struct device *dev;
-+	int i, speed;
-+	u8 num_tc;
+ 	int i;
+ 
++	/* remove all tc-flower based filter if they are channel filters only */
++	if (rem_fltr)
++		ice_rem_all_chnl_fltrs(pf);
 +
-+	if (vsi->type != ICE_VSI_PF)
-+		return -EINVAL;
-+
-+	if (mqprio_qopt->qopt.offset[0] != 0 ||
-+	    mqprio_qopt->qopt.num_tc < 1 ||
-+	    mqprio_qopt->qopt.num_tc > ICE_CHNL_MAX_TC)
-+		return -EINVAL;
-+
-+	dev = ice_pf_to_dev(pf);
-+	vsi->ch_rss_size = 0;
-+	num_tc = mqprio_qopt->qopt.num_tc;
-+
-+	for (i = 0; num_tc; i++) {
-+		int qcount = mqprio_qopt->qopt.count[i];
-+		u64 max_rate, min_rate, rem;
-+
-+		if (!qcount)
-+			return -EINVAL;
-+
-+		if (is_power_of_2(qcount)) {
-+			if (non_power_of_2_qcount &&
-+			    qcount > non_power_of_2_qcount) {
-+				dev_err(dev, "qcount[%d] cannot be greater than non power of 2 qcount[%d]\n",
-+					qcount, non_power_of_2_qcount);
-+				return -EINVAL;
-+			}
-+			if (qcount > max_rss_q_cnt)
-+				max_rss_q_cnt = qcount;
-+		} else {
-+			if (non_power_of_2_qcount &&
-+			    qcount != non_power_of_2_qcount) {
-+				dev_err(dev, "Only one non power of 2 qcount allowed[%d,%d]\n",
-+					qcount, non_power_of_2_qcount);
-+				return -EINVAL;
-+			}
-+			if (qcount < max_rss_q_cnt) {
-+				dev_err(dev, "non power of 2 qcount[%d] cannot be less than other qcount[%d]\n",
-+					qcount, max_rss_q_cnt);
-+				return -EINVAL;
-+			}
-+			max_rss_q_cnt = qcount;
-+			non_power_of_2_qcount = qcount;
-+		}
-+
-+		/* TC command takes input in K/N/Gbps or K/M/Gbit etc but
-+		 * converts the bandwidth rate limit into Bytes/s when
-+		 * passing it down to the driver. So convert input bandwidth
-+		 * from Bytes/s to Kbps
+ 	/* perform cleanup for channels if they exist */
+ 	list_for_each_entry_safe(ch, ch_tmp, &vsi->ch_list, list) {
+ 		struct ice_vsi *ch_vsi;
+@@ -7926,6 +7995,12 @@ static int ice_setup_tc_mqprio_qdisc(struct net_device *netdev, void *type_data)
+ 		}
+ 		memcpy(&vsi->mqprio_qopt, mqprio_qopt, sizeof(*mqprio_qopt));
+ 		set_bit(ICE_FLAG_TC_MQPRIO, pf->flags);
++		/* don't assume state of hw_tc_offload during driver load
++		 * and set the flag for TC flower filter if hw_tc_offload
++		 * already ON
 +		 */
-+		max_rate = mqprio_qopt->max_rate[i];
-+		max_rate = div_u64(max_rate, ICE_BW_KBPS_DIVISOR);
-+		sum_max_rate += max_rate;
-+
-+		/* min_rate is minimum guaranteed rate and it can't be zero */
-+		min_rate = mqprio_qopt->min_rate[i];
-+		min_rate = div_u64(min_rate, ICE_BW_KBPS_DIVISOR);
-+		sum_min_rate += min_rate;
-+
-+		if (min_rate && min_rate < ICE_MIN_BW_LIMIT) {
-+			dev_err(dev, "TC%d: min_rate(%llu Kbps) < %u Kbps\n", i,
-+				min_rate, ICE_MIN_BW_LIMIT);
-+			return -EINVAL;
-+		}
-+
-+		iter_div_u64_rem(min_rate, ICE_MIN_BW_LIMIT, &rem);
-+		if (rem) {
-+			dev_err(dev, "TC%d: Min Rate not multiple of %u Kbps",
-+				i, ICE_MIN_BW_LIMIT);
-+			return -EINVAL;
-+		}
-+
-+		iter_div_u64_rem(max_rate, ICE_MIN_BW_LIMIT, &rem);
-+		if (rem) {
-+			dev_err(dev, "TC%d: Max Rate not multiple of %u Kbps",
-+				i, ICE_MIN_BW_LIMIT);
-+			return -EINVAL;
-+		}
-+
-+		/* min_rate can't be more than max_rate, except when max_rate
-+		 * is zero (implies max_rate sought is max line rate). In such
-+		 * a case min_rate can be more than max.
-+		 */
-+		if (max_rate && min_rate > max_rate) {
-+			dev_err(dev, "min_rate %llu Kbps can't be more than max_rate %llu Kbps\n",
-+				min_rate, max_rate);
-+			return -EINVAL;
-+		}
-+
-+		if (i >= mqprio_qopt->qopt.num_tc - 1)
-+			break;
-+		if (mqprio_qopt->qopt.offset[i + 1] !=
-+		    (mqprio_qopt->qopt.offset[i] + qcount))
-+			return -EINVAL;
-+	}
-+	if (vsi->num_rxq <
-+	    (mqprio_qopt->qopt.offset[i] + mqprio_qopt->qopt.count[i]))
-+		return -EINVAL;
-+	if (vsi->num_txq <
-+	    (mqprio_qopt->qopt.offset[i] + mqprio_qopt->qopt.count[i]))
-+		return -EINVAL;
-+
-+	speed = ice_get_link_speed_kbps(vsi);
-+	if (sum_max_rate && sum_max_rate > (u64)speed) {
-+		dev_err(dev, "Invalid max Tx rate(%llu) Kbps > speed(%u) Kbps specified\n",
-+			sum_max_rate, speed);
-+		return -EINVAL;
-+	}
-+	if (sum_min_rate && sum_min_rate > (u64)speed) {
-+		dev_err(dev, "Invalid min Tx rate(%llu) Kbps > speed (%u) Kbps specified\n",
-+			sum_min_rate, speed);
-+		return -EINVAL;
-+	}
-+
-+	/* make sure vsi->ch_rss_size is set correctly based on TC's qcount */
-+	vsi->ch_rss_size = max_rss_q_cnt;
-+
-+	return 0;
-+}
-+
++		if (vsi->netdev->features & NETIF_F_HW_TC)
++			set_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
+ 		break;
+ 	default:
+ 		return -EINVAL;
+diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
+index a4a299012f9f..2742e1c1e337 100644
+--- a/drivers/net/ethernet/intel/ice/ice_switch.c
++++ b/drivers/net/ethernet/intel/ice/ice_switch.c
+@@ -2272,6 +2272,125 @@ ice_remove_rule_internal(struct ice_hw *hw, u8 recp_id,
+ 	return status;
+ }
+ 
 +/**
-+ * ice_add_channel - add a channel by adding VSI
-+ * @pf: ptr to PF device
-+ * @sw_id: underlying HW switching element ID
-+ * @ch: ptr to channel structure
-+ *
-+ * Add a channel (VSI) using add_vsi and queue_map
++ * ice_mac_fltr_exist - does this MAC filter exist for given VSI
++ * @hw: pointer to the hardware structure
++ * @mac: MAC address to be checked (for MAC filter)
++ * @vsi_handle: check MAC filter for this VSI
 + */
-+static int ice_add_channel(struct ice_pf *pf, u16 sw_id, struct ice_channel *ch)
++bool ice_mac_fltr_exist(struct ice_hw *hw, u8 *mac, u16 vsi_handle)
 +{
-+	struct device *dev = ice_pf_to_dev(pf);
-+	struct ice_vsi *vsi;
++	struct ice_fltr_mgmt_list_entry *entry;
++	struct list_head *rule_head;
++	struct ice_switch_info *sw;
++	struct mutex *rule_lock; /* Lock to protect filter rule list */
++	u16 hw_vsi_id;
 +
-+	if (ch->type != ICE_VSI_CHNL) {
-+		dev_err(dev, "add new VSI failed, ch->type %d\n", ch->type);
-+		return -EINVAL;
-+	}
-+
-+	vsi = ice_chnl_vsi_setup(pf, pf->hw.port_info, ch);
-+	if (!vsi || vsi->type != ICE_VSI_CHNL) {
-+		dev_err(dev, "create chnl VSI failure\n");
-+		return -EINVAL;
-+	}
-+
-+	ch->sw_id = sw_id;
-+	ch->vsi_num = vsi->vsi_num;
-+	ch->info.mapping_flags = vsi->info.mapping_flags;
-+	ch->ch_vsi = vsi;
-+	/* set the back pointer of channel for newly created VSI */
-+	vsi->ch = ch;
-+
-+	memcpy(&ch->info.q_mapping, &vsi->info.q_mapping,
-+	       sizeof(vsi->info.q_mapping));
-+	memcpy(&ch->info.tc_mapping, vsi->info.tc_mapping,
-+	       sizeof(vsi->info.tc_mapping));
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_chnl_cfg_res
-+ * @vsi: the VSI being setup
-+ * @ch: ptr to channel structure
-+ *
-+ * Configure channel specific resources such as rings, vector.
-+ */
-+static void ice_chnl_cfg_res(struct ice_vsi *vsi, struct ice_channel *ch)
-+{
-+	int i;
-+
-+	for (i = 0; i < ch->num_txq; i++) {
-+		struct ice_q_vector *tx_q_vector, *rx_q_vector;
-+		struct ice_ring_container *rc;
-+		struct ice_tx_ring *tx_ring;
-+		struct ice_rx_ring *rx_ring;
-+
-+		tx_ring = vsi->tx_rings[ch->base_q + i];
-+		rx_ring = vsi->rx_rings[ch->base_q + i];
-+		if (!tx_ring || !rx_ring)
-+			continue;
-+
-+		/* setup ring being channel enabled */
-+		tx_ring->ch = ch;
-+		rx_ring->ch = ch;
-+
-+		/* following code block sets up vector specific attributes */
-+		tx_q_vector = tx_ring->q_vector;
-+		rx_q_vector = rx_ring->q_vector;
-+		if (!tx_q_vector && !rx_q_vector)
-+			continue;
-+
-+		if (tx_q_vector) {
-+			tx_q_vector->ch = ch;
-+			/* setup Tx and Rx ITR setting if DIM is off */
-+			rc = &tx_q_vector->tx;
-+			if (!ITR_IS_DYNAMIC(rc))
-+				ice_write_itr(rc, rc->itr_setting);
-+		}
-+		if (rx_q_vector) {
-+			rx_q_vector->ch = ch;
-+			/* setup Tx and Rx ITR setting if DIM is off */
-+			rc = &rx_q_vector->rx;
-+			if (!ITR_IS_DYNAMIC(rc))
-+				ice_write_itr(rc, rc->itr_setting);
-+		}
-+	}
-+
-+	/* it is safe to assume that, if channel has non-zero num_t[r]xq, then
-+	 * GLINT_ITR register would have written to perform in-context
-+	 * update, hence perform flush
-+	 */
-+	if (ch->num_txq || ch->num_rxq)
-+		ice_flush(&vsi->back->hw);
-+}
-+
-+/**
-+ * ice_cfg_chnl_all_res - configure channel resources
-+ * @vsi: pte to main_vsi
-+ * @ch: ptr to channel structure
-+ *
-+ * This function configures channel specific resources such as flow-director
-+ * counter index, and other resources such as queues, vectors, ITR settings
-+ */
-+static void
-+ice_cfg_chnl_all_res(struct ice_vsi *vsi, struct ice_channel *ch)
-+{
-+	/* configure channel (aka ADQ) resources such as queues, vectors,
-+	 * ITR settings for channel specific vectors and anything else
-+	 */
-+	ice_chnl_cfg_res(vsi, ch);
-+}
-+
-+/**
-+ * ice_setup_hw_channel - setup new channel
-+ * @pf: ptr to PF device
-+ * @vsi: the VSI being setup
-+ * @ch: ptr to channel structure
-+ * @sw_id: underlying HW switching element ID
-+ * @type: type of channel to be created (VMDq2/VF)
-+ *
-+ * Setup new channel (VSI) based on specified type (VMDq2/VF)
-+ * and configures Tx rings accordingly
-+ */
-+static int
-+ice_setup_hw_channel(struct ice_pf *pf, struct ice_vsi *vsi,
-+		     struct ice_channel *ch, u16 sw_id, u8 type)
-+{
-+	struct device *dev = ice_pf_to_dev(pf);
-+	int ret;
-+
-+	ch->base_q = vsi->next_base_q;
-+	ch->type = type;
-+
-+	ret = ice_add_channel(pf, sw_id, ch);
-+	if (ret) {
-+		dev_err(dev, "failed to add_channel using sw_id %u\n", sw_id);
-+		return ret;
-+	}
-+
-+	/* configure/setup ADQ specific resources */
-+	ice_cfg_chnl_all_res(vsi, ch);
-+
-+	/* make sure to update the next_base_q so that subsequent channel's
-+	 * (aka ADQ) VSI queue map is correct
-+	 */
-+	vsi->next_base_q = vsi->next_base_q + ch->num_rxq;
-+	dev_dbg(dev, "added channel: vsi_num %u, num_rxq %u\n", ch->vsi_num,
-+		ch->num_rxq);
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_setup_channel - setup new channel using uplink element
-+ * @pf: ptr to PF device
-+ * @vsi: the VSI being setup
-+ * @ch: ptr to channel structure
-+ *
-+ * Setup new channel (VSI) based on specified type (VMDq2/VF)
-+ * and uplink switching element
-+ */
-+static bool
-+ice_setup_channel(struct ice_pf *pf, struct ice_vsi *vsi,
-+		  struct ice_channel *ch)
-+{
-+	struct device *dev = ice_pf_to_dev(pf);
-+	u16 sw_id;
-+	int ret;
-+
-+	if (vsi->type != ICE_VSI_PF) {
-+		dev_err(dev, "unsupported parent VSI type(%d)\n", vsi->type);
++	if (!ice_is_vsi_valid(hw, vsi_handle))
 +		return false;
-+	}
 +
-+	sw_id = pf->first_sw->sw_id;
-+
-+	/* create channel (VSI) */
-+	ret = ice_setup_hw_channel(pf, vsi, ch, sw_id, ICE_VSI_CHNL);
-+	if (ret) {
-+		dev_err(dev, "failed to setup hw_channel\n");
++	hw_vsi_id = ice_get_hw_vsi_num(hw, vsi_handle);
++	sw = hw->switch_info;
++	rule_head = &sw->recp_list[ICE_SW_LKUP_MAC].filt_rules;
++	if (!rule_head)
 +		return false;
-+	}
-+	dev_dbg(dev, "successfully created channel()\n");
 +
-+	return ch->ch_vsi ? true : false;
-+}
++	rule_lock = &sw->recp_list[ICE_SW_LKUP_MAC].filt_rule_lock;
++	mutex_lock(rule_lock);
++	list_for_each_entry(entry, rule_head, list_entry) {
++		struct ice_fltr_info *f_info = &entry->fltr_info;
++		u8 *mac_addr = &f_info->l_data.mac.mac_addr[0];
 +
-+/**
-+ * ice_set_bw_limit - setup BW limit for Tx traffic based on max_tx_rate
-+ * @vsi: VSI to be configured
-+ * @max_tx_rate: max Tx rate in Kbps to be configured as maximum BW limit
-+ * @min_tx_rate: min Tx rate in Kbps to be configured as minimum BW limit
-+ */
-+static int
-+ice_set_bw_limit(struct ice_vsi *vsi, u64 max_tx_rate, u64 min_tx_rate)
-+{
-+	int err;
-+
-+	err = ice_set_min_bw_limit(vsi, min_tx_rate);
-+	if (err)
-+		return err;
-+
-+	return ice_set_max_bw_limit(vsi, max_tx_rate);
-+}
-+
-+/**
-+ * ice_create_q_channel - function to create channel
-+ * @vsi: VSI to be configured
-+ * @ch: ptr to channel (it contains channel specific params)
-+ *
-+ * This function creates channel (VSI) using num_queues specified by user,
-+ * reconfigs RSS if needed.
-+ */
-+static int ice_create_q_channel(struct ice_vsi *vsi, struct ice_channel *ch)
-+{
-+	struct ice_pf *pf = vsi->back;
-+	struct device *dev;
-+
-+	if (!ch)
-+		return -EINVAL;
-+
-+	dev = ice_pf_to_dev(pf);
-+	if (!ch->num_txq || !ch->num_rxq) {
-+		dev_err(dev, "Invalid num_queues requested: %d\n", ch->num_rxq);
-+		return -EINVAL;
-+	}
-+
-+	if (!vsi->cnt_q_avail || vsi->cnt_q_avail < ch->num_txq) {
-+		dev_err(dev, "cnt_q_avail (%u) less than num_queues %d\n",
-+			vsi->cnt_q_avail, ch->num_txq);
-+		return -EINVAL;
-+	}
-+
-+	if (!ice_setup_channel(pf, vsi, ch)) {
-+		dev_info(dev, "Failed to setup channel\n");
-+		return -EINVAL;
-+	}
-+	/* configure BW rate limit */
-+	if (ch->ch_vsi && (ch->max_tx_rate || ch->min_tx_rate)) {
-+		int ret;
-+
-+		ret = ice_set_bw_limit(ch->ch_vsi, ch->max_tx_rate,
-+				       ch->min_tx_rate);
-+		if (ret)
-+			dev_err(dev, "failed to set Tx rate of %llu Kbps for VSI(%u)\n",
-+				ch->max_tx_rate, ch->ch_vsi->vsi_num);
-+		else
-+			dev_dbg(dev, "set Tx rate of %llu Kbps for VSI(%u)\n",
-+				ch->max_tx_rate, ch->ch_vsi->vsi_num);
-+	}
-+
-+	vsi->cnt_q_avail -= ch->num_txq;
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_remove_q_channels - Remove queue channels for the TCs
-+ * @vsi: VSI to be configured
-+ * @rem_fltr: delete advanced switch filter or not
-+ *
-+ * Remove queue channels for the TCs
-+ */
-+static void ice_remove_q_channels(struct ice_vsi *vsi, bool __maybe_unused rem_fltr)
-+{
-+	struct ice_channel *ch, *ch_tmp;
-+	int i;
-+
-+	/* perform cleanup for channels if they exist */
-+	list_for_each_entry_safe(ch, ch_tmp, &vsi->ch_list, list) {
-+		struct ice_vsi *ch_vsi;
-+
-+		list_del(&ch->list);
-+		ch_vsi = ch->ch_vsi;
-+		if (!ch_vsi) {
-+			kfree(ch);
-+			continue;
-+		}
-+
-+		/* Reset queue contexts */
-+		for (i = 0; i < ch->num_rxq; i++) {
-+			struct ice_tx_ring *tx_ring;
-+			struct ice_rx_ring *rx_ring;
-+
-+			tx_ring = vsi->tx_rings[ch->base_q + i];
-+			rx_ring = vsi->rx_rings[ch->base_q + i];
-+			if (tx_ring) {
-+				tx_ring->ch = NULL;
-+				if (tx_ring->q_vector)
-+					tx_ring->q_vector->ch = NULL;
-+			}
-+			if (rx_ring) {
-+				rx_ring->ch = NULL;
-+				if (rx_ring->q_vector)
-+					rx_ring->q_vector->ch = NULL;
-+			}
-+		}
-+
-+		/* clear the VSI from scheduler tree */
-+		ice_rm_vsi_lan_cfg(ch->ch_vsi->port_info, ch->ch_vsi->idx);
-+
-+		/* Delete VSI from FW */
-+		ice_vsi_delete(ch->ch_vsi);
-+
-+		/* Delete VSI from PF and HW VSI arrays */
-+		ice_vsi_clear(ch->ch_vsi);
-+
-+		/* free the channel */
-+		kfree(ch);
-+	}
-+
-+	/* clear the channel VSI map which is stored in main VSI */
-+	ice_for_each_chnl_tc(i)
-+		vsi->tc_map_vsi[i] = NULL;
-+
-+	/* reset main VSI's all TC information */
-+	vsi->all_enatc = 0;
-+	vsi->all_numtc = 0;
-+}
-+
-+/**
-+ * ice_rebuild_channels - rebuild channel
-+ * @pf: ptr to PF
-+ *
-+ * Recreate channel VSIs and replay filters
-+ */
-+static int ice_rebuild_channels(struct ice_pf *pf)
-+{
-+	struct device *dev = ice_pf_to_dev(pf);
-+	struct ice_vsi *main_vsi;
-+	bool rem_adv_fltr = true;
-+	struct ice_channel *ch;
-+	struct ice_vsi *vsi;
-+	int tc_idx = 1;
-+	int i, err;
-+
-+	main_vsi = ice_get_main_vsi(pf);
-+	if (!main_vsi)
-+		return 0;
-+
-+	if (!test_bit(ICE_FLAG_TC_MQPRIO, pf->flags) ||
-+	    main_vsi->old_numtc == 1)
-+		return 0; /* nothing to be done */
-+
-+	/* reconfigure main VSI based on old value of TC and cached values
-+	 * for MQPRIO opts
-+	 */
-+	err = ice_vsi_cfg_tc(main_vsi, main_vsi->old_ena_tc);
-+	if (err) {
-+		dev_err(dev, "failed configuring TC(ena_tc:0x%02x) for HW VSI=%u\n",
-+			main_vsi->old_ena_tc, main_vsi->vsi_num);
-+		return err;
-+	}
-+
-+	/* rebuild ADQ VSIs */
-+	ice_for_each_vsi(pf, i) {
-+		enum ice_vsi_type type;
-+
-+		vsi = pf->vsi[i];
-+		if (!vsi || vsi->type != ICE_VSI_CHNL)
++		if (is_zero_ether_addr(mac_addr))
 +			continue;
 +
-+		type = vsi->type;
-+
-+		/* rebuild ADQ VSI */
-+		err = ice_vsi_rebuild(vsi, true);
-+		if (err) {
-+			dev_err(dev, "VSI (type:%s) at index %d rebuild failed, err %d\n",
-+				ice_vsi_type_str(type), vsi->idx, err);
-+			goto cleanup;
-+		}
-+
-+		/* Re-map HW VSI number, using VSI handle that has been
-+		 * previously validated in ice_replay_vsi() call above
-+		 */
-+		vsi->vsi_num = ice_get_hw_vsi_num(&pf->hw, vsi->idx);
-+
-+		/* replay filters for the VSI */
-+		err = ice_replay_vsi(&pf->hw, vsi->idx);
-+		if (err) {
-+			dev_err(dev, "VSI (type:%s) replay failed, err %d, VSI index %d\n",
-+				ice_vsi_type_str(type), err, vsi->idx);
-+			rem_adv_fltr = false;
-+			goto cleanup;
-+		}
-+		dev_info(dev, "VSI (type:%s) at index %d rebuilt successfully\n",
-+			 ice_vsi_type_str(type), vsi->idx);
-+
-+		/* store ADQ VSI at correct TC index in main VSI's
-+		 * map of TC to VSI
-+		 */
-+		main_vsi->tc_map_vsi[tc_idx++] = vsi;
-+	}
-+
-+	/* ADQ VSI(s) has been rebuilt successfully, so setup
-+	 * channel for main VSI's Tx and Rx rings
-+	 */
-+	list_for_each_entry(ch, &main_vsi->ch_list, list) {
-+		struct ice_vsi *ch_vsi;
-+
-+		ch_vsi = ch->ch_vsi;
-+		if (!ch_vsi)
++		if (f_info->flag != ICE_FLTR_TX ||
++		    f_info->src_id != ICE_SRC_ID_VSI ||
++		    f_info->lkup_type != ICE_SW_LKUP_MAC ||
++		    f_info->fltr_act != ICE_FWD_TO_VSI ||
++		    hw_vsi_id != f_info->fwd_id.hw_vsi_id)
 +			continue;
 +
-+		/* reconfig channel resources */
-+		ice_cfg_chnl_all_res(main_vsi, ch);
-+
-+		/* replay BW rate limit if it is non-zero */
-+		if (!ch->max_tx_rate && !ch->min_tx_rate)
-+			continue;
-+
-+		err = ice_set_bw_limit(ch_vsi, ch->max_tx_rate,
-+				       ch->min_tx_rate);
-+		if (err)
-+			dev_err(dev, "failed (err:%d) to rebuild BW rate limit, max_tx_rate: %llu Kbps, min_tx_rate: %llu Kbps for VSI(%u)\n",
-+				err, ch->max_tx_rate, ch->min_tx_rate,
-+				ch_vsi->vsi_num);
-+		else
-+			dev_dbg(dev, "successfully rebuild BW rate limit, max_tx_rate: %llu Kbps, min_tx_rate: %llu Kbps for VSI(%u)\n",
-+				ch->max_tx_rate, ch->min_tx_rate,
-+				ch_vsi->vsi_num);
++		if (ether_addr_equal(mac, mac_addr)) {
++			mutex_unlock(rule_lock);
++			return true;
++		}
 +	}
-+
-+	/* reconfig RSS for main VSI */
-+	if (main_vsi->ch_rss_size)
-+		ice_vsi_cfg_rss_lut_key(main_vsi);
-+
-+	return 0;
-+
-+cleanup:
-+	ice_remove_q_channels(main_vsi, rem_adv_fltr);
-+	return err;
++	mutex_unlock(rule_lock);
++	return false;
 +}
 +
 +/**
-+ * ice_create_q_channels - Add queue channel for the given TCs
-+ * @vsi: VSI to be configured
-+ *
-+ * Configures queue channel mapping to the given TCs
++ * ice_vlan_fltr_exist - does this VLAN filter exist for given VSI
++ * @hw: pointer to the hardware structure
++ * @vlan_id: VLAN ID
++ * @vsi_handle: check MAC filter for this VSI
 + */
-+static int ice_create_q_channels(struct ice_vsi *vsi)
++bool ice_vlan_fltr_exist(struct ice_hw *hw, u16 vlan_id, u16 vsi_handle)
 +{
-+	struct ice_pf *pf = vsi->back;
-+	struct ice_channel *ch;
-+	int ret = 0, i;
++	struct ice_fltr_mgmt_list_entry *entry;
++	struct list_head *rule_head;
++	struct ice_switch_info *sw;
++	struct mutex *rule_lock; /* Lock to protect filter rule list */
++	u16 hw_vsi_id;
 +
-+	ice_for_each_chnl_tc(i) {
-+		if (!(vsi->all_enatc & BIT(i)))
++	if (vlan_id > ICE_MAX_VLAN_ID)
++		return false;
++
++	if (!ice_is_vsi_valid(hw, vsi_handle))
++		return false;
++
++	hw_vsi_id = ice_get_hw_vsi_num(hw, vsi_handle);
++	sw = hw->switch_info;
++	rule_head = &sw->recp_list[ICE_SW_LKUP_VLAN].filt_rules;
++	if (!rule_head)
++		return false;
++
++	rule_lock = &sw->recp_list[ICE_SW_LKUP_VLAN].filt_rule_lock;
++	mutex_lock(rule_lock);
++	list_for_each_entry(entry, rule_head, list_entry) {
++		struct ice_fltr_info *f_info = &entry->fltr_info;
++		u16 entry_vlan_id = f_info->l_data.vlan.vlan_id;
++		struct ice_vsi_list_map_info *map_info;
++
++		if (entry_vlan_id > ICE_MAX_VLAN_ID)
 +			continue;
 +
-+		ch = kzalloc(sizeof(*ch), GFP_KERNEL);
-+		if (!ch) {
-+			ret = -ENOMEM;
-+			goto err_free;
-+		}
-+		INIT_LIST_HEAD(&ch->list);
-+		ch->num_rxq = vsi->mqprio_qopt.qopt.count[i];
-+		ch->num_txq = vsi->mqprio_qopt.qopt.count[i];
-+		ch->base_q = vsi->mqprio_qopt.qopt.offset[i];
-+		ch->max_tx_rate = vsi->mqprio_qopt.max_rate[i];
-+		ch->min_tx_rate = vsi->mqprio_qopt.min_rate[i];
++		if (f_info->flag != ICE_FLTR_TX ||
++		    f_info->src_id != ICE_SRC_ID_VSI ||
++		    f_info->lkup_type != ICE_SW_LKUP_VLAN)
++			continue;
 +
-+		/* convert to Kbits/s */
-+		if (ch->max_tx_rate)
-+			ch->max_tx_rate = div_u64(ch->max_tx_rate,
-+						  ICE_BW_KBPS_DIVISOR);
-+		if (ch->min_tx_rate)
-+			ch->min_tx_rate = div_u64(ch->min_tx_rate,
-+						  ICE_BW_KBPS_DIVISOR);
++		/* Only allowed filter action are FWD_TO_VSI/_VSI_LIST */
++		if (f_info->fltr_act != ICE_FWD_TO_VSI &&
++		    f_info->fltr_act != ICE_FWD_TO_VSI_LIST)
++			continue;
 +
-+		ret = ice_create_q_channel(vsi, ch);
-+		if (ret) {
-+			dev_err(ice_pf_to_dev(pf),
-+				"failed creating channel TC:%d\n", i);
-+			kfree(ch);
-+			goto err_free;
-+		}
-+		list_add_tail(&ch->list, &vsi->ch_list);
-+		vsi->tc_map_vsi[i] = ch->ch_vsi;
-+		dev_dbg(ice_pf_to_dev(pf),
-+			"successfully created channel: VSI %pK\n", ch->ch_vsi);
-+	}
-+	return 0;
-+
-+err_free:
-+	ice_remove_q_channels(vsi, false);
-+
-+	return ret;
-+}
-+
-+/**
-+ * ice_setup_tc_mqprio_qdisc - configure multiple traffic classes
-+ * @netdev: net device to configure
-+ * @type_data: TC offload data
-+ */
-+static int ice_setup_tc_mqprio_qdisc(struct net_device *netdev, void *type_data)
-+{
-+	struct tc_mqprio_qopt_offload *mqprio_qopt = type_data;
-+	struct ice_netdev_priv *np = netdev_priv(netdev);
-+	struct ice_vsi *vsi = np->vsi;
-+	struct ice_pf *pf = vsi->back;
-+	u16 mode, ena_tc_qdisc = 0;
-+	int cur_txq, cur_rxq;
-+	u8 hw = 0, num_tcf;
-+	struct device *dev;
-+	int ret, i;
-+
-+	dev = ice_pf_to_dev(pf);
-+	num_tcf = mqprio_qopt->qopt.num_tc;
-+	hw = mqprio_qopt->qopt.hw;
-+	mode = mqprio_qopt->mode;
-+	if (!hw) {
-+		clear_bit(ICE_FLAG_TC_MQPRIO, pf->flags);
-+		vsi->ch_rss_size = 0;
-+		memcpy(&vsi->mqprio_qopt, mqprio_qopt, sizeof(*mqprio_qopt));
-+		goto config_tcf;
-+	}
-+
-+	/* Generate queue region map for number of TCF requested */
-+	for (i = 0; i < num_tcf; i++)
-+		ena_tc_qdisc |= BIT(i);
-+
-+	switch (mode) {
-+	case TC_MQPRIO_MODE_CHANNEL:
-+
-+		ret = ice_validate_mqprio_qopt(vsi, mqprio_qopt);
-+		if (ret) {
-+			netdev_err(netdev, "failed to validate_mqprio_qopt(), ret %d\n",
-+				   ret);
-+			return ret;
-+		}
-+		memcpy(&vsi->mqprio_qopt, mqprio_qopt, sizeof(*mqprio_qopt));
-+		set_bit(ICE_FLAG_TC_MQPRIO, pf->flags);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+config_tcf:
-+
-+	/* Requesting same TCF configuration as already enabled */
-+	if (ena_tc_qdisc == vsi->tc_cfg.ena_tc &&
-+	    mode != TC_MQPRIO_MODE_CHANNEL)
-+		return 0;
-+
-+	/* Pause VSI queues */
-+	ice_dis_vsi(vsi, true);
-+
-+	if (!hw && !test_bit(ICE_FLAG_TC_MQPRIO, pf->flags))
-+		ice_remove_q_channels(vsi, true);
-+
-+	if (!hw && !test_bit(ICE_FLAG_TC_MQPRIO, pf->flags)) {
-+		vsi->req_txq = min_t(int, ice_get_avail_txq_count(pf),
-+				     num_online_cpus());
-+		vsi->req_rxq = min_t(int, ice_get_avail_rxq_count(pf),
-+				     num_online_cpus());
-+	} else {
-+		/* logic to rebuild VSI, same like ethtool -L */
-+		u16 offset = 0, qcount_tx = 0, qcount_rx = 0;
-+
-+		for (i = 0; i < num_tcf; i++) {
-+			if (!(ena_tc_qdisc & BIT(i)))
++		if (f_info->fltr_act == ICE_FWD_TO_VSI) {
++			if (hw_vsi_id != f_info->fwd_id.hw_vsi_id)
 +				continue;
-+
-+			offset = vsi->mqprio_qopt.qopt.offset[i];
-+			qcount_rx = vsi->mqprio_qopt.qopt.count[i];
-+			qcount_tx = vsi->mqprio_qopt.qopt.count[i];
++		} else if (f_info->fltr_act == ICE_FWD_TO_VSI_LIST) {
++			/* If filter_action is FWD_TO_VSI_LIST, make sure
++			 * that VSI being checked is part of VSI list
++			 */
++			if (entry->vsi_count == 1 &&
++			    entry->vsi_list_info) {
++				map_info = entry->vsi_list_info;
++				if (!test_bit(vsi_handle, map_info->vsi_map))
++					continue;
++			}
 +		}
-+		vsi->req_txq = offset + qcount_tx;
-+		vsi->req_rxq = offset + qcount_rx;
 +
-+		/* store away original rss_size info, so that it gets reused
-+		 * form ice_vsi_rebuild during tc-qdisc delete stage - to
-+		 * determine, what should be the rss_sizefor main VSI
-+		 */
-+		vsi->orig_rss_size = vsi->rss_size;
-+	}
-+
-+	/* save current values of Tx and Rx queues before calling VSI rebuild
-+	 * for fallback option
-+	 */
-+	cur_txq = vsi->num_txq;
-+	cur_rxq = vsi->num_rxq;
-+
-+	/* proceed with rebuild main VSI using correct number of queues */
-+	ret = ice_vsi_rebuild(vsi, false);
-+	if (ret) {
-+		/* fallback to current number of queues */
-+		dev_info(dev, "Rebuild failed with new queues, try with current number of queues\n");
-+		vsi->req_txq = cur_txq;
-+		vsi->req_rxq = cur_rxq;
-+		clear_bit(ICE_RESET_FAILED, pf->state);
-+		if (ice_vsi_rebuild(vsi, false)) {
-+			dev_err(dev, "Rebuild of main VSI failed again\n");
-+			return ret;
++		if (vlan_id == entry_vlan_id) {
++			mutex_unlock(rule_lock);
++			return true;
 +		}
 +	}
++	mutex_unlock(rule_lock);
 +
-+	vsi->all_numtc = num_tcf;
-+	vsi->all_enatc = ena_tc_qdisc;
-+	ret = ice_vsi_cfg_tc(vsi, ena_tc_qdisc);
-+	if (ret) {
-+		netdev_err(netdev, "failed configuring TC for VSI id=%d\n",
-+			   vsi->vsi_num);
++	return false;
++}
++
+ /**
+  * ice_add_mac - Add a MAC address based filter rule
+  * @hw: pointer to the hardware structure
+diff --git a/drivers/net/ethernet/intel/ice/ice_switch.h b/drivers/net/ethernet/intel/ice/ice_switch.h
+index d4c0a3b594af..c4dd2062c469 100644
+--- a/drivers/net/ethernet/intel/ice/ice_switch.h
++++ b/drivers/net/ethernet/intel/ice/ice_switch.h
+@@ -335,6 +335,8 @@ enum ice_status
+ ice_remove_eth_mac(struct ice_hw *hw, struct list_head *em_list);
+ int
+ ice_cfg_rdma_fltr(struct ice_hw *hw, u16 vsi_handle, bool enable);
++bool ice_mac_fltr_exist(struct ice_hw *hw, u8 *mac, u16 vsi_handle);
++bool ice_vlan_fltr_exist(struct ice_hw *hw, u16 vlan_id, u16 vsi_handle);
+ void ice_remove_vsi_fltr(struct ice_hw *hw, u16 vsi_handle);
+ enum ice_status
+ ice_add_vlan(struct ice_hw *hw, struct list_head *m_list);
+diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.c b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+index 1dccfd116bc9..725caa160b13 100644
+--- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+@@ -303,6 +303,136 @@ ice_eswitch_add_tc_fltr(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
+ 	return ret;
+ }
+ 
++/**
++ * ice_add_tc_flower_adv_fltr - add appropriate filter rules
++ * @vsi: Pointer to VSI
++ * @tc_fltr: Pointer to TC flower filter structure
++ *
++ * based on filter parameters using Advance recipes supported
++ * by OS package.
++ */
++static int
++ice_add_tc_flower_adv_fltr(struct ice_vsi *vsi,
++			   struct ice_tc_flower_fltr *tc_fltr)
++{
++	struct ice_tc_flower_lyr_2_4_hdrs *headers = &tc_fltr->outer_headers;
++	struct ice_adv_rule_info rule_info = {0};
++	struct ice_rule_query_data rule_added;
++	struct ice_adv_lkup_elem *list;
++	struct ice_pf *pf = vsi->back;
++	struct ice_hw *hw = &pf->hw;
++	u32 flags = tc_fltr->flags;
++	struct ice_vsi *ch_vsi;
++	struct device *dev;
++	u16 lkups_cnt = 0;
++	u16 l4_proto = 0;
++	int ret = 0;
++	u16 i = 0;
++
++	dev = ice_pf_to_dev(pf);
++	if (ice_is_safe_mode(pf)) {
++		NL_SET_ERR_MSG_MOD(tc_fltr->extack, "Unable to add filter because driver is in safe mode");
++		return -EOPNOTSUPP;
++	}
++
++	if (!flags || (flags & (ICE_TC_FLWR_FIELD_ENC_DEST_IPV4 |
++				ICE_TC_FLWR_FIELD_ENC_SRC_IPV4 |
++				ICE_TC_FLWR_FIELD_ENC_DEST_IPV6 |
++				ICE_TC_FLWR_FIELD_ENC_SRC_IPV6 |
++				ICE_TC_FLWR_FIELD_ENC_SRC_L4_PORT))) {
++		NL_SET_ERR_MSG_MOD(tc_fltr->extack, "Unsupported encap field(s)");
++		return -EOPNOTSUPP;
++	}
++
++	/* get the channel (aka ADQ VSI) */
++	if (tc_fltr->dest_vsi)
++		ch_vsi = tc_fltr->dest_vsi;
++	else
++		ch_vsi = vsi->tc_map_vsi[tc_fltr->action.tc_class];
++
++	lkups_cnt = ice_tc_count_lkups(flags, headers, tc_fltr);
++	list = kcalloc(lkups_cnt, sizeof(*list), GFP_ATOMIC);
++	if (!list)
++		return -ENOMEM;
++
++	i = ice_tc_fill_rules(hw, flags, tc_fltr, list, &rule_info, &l4_proto);
++	if (i != lkups_cnt) {
++		ret = -EINVAL;
 +		goto exit;
 +	}
 +
-+	if (test_bit(ICE_FLAG_TC_MQPRIO, pf->flags)) {
-+		u64 max_tx_rate = vsi->mqprio_qopt.max_rate[0];
-+		u64 min_tx_rate = vsi->mqprio_qopt.min_rate[0];
-+
-+		/* set TC0 rate limit if specified */
-+		if (max_tx_rate || min_tx_rate) {
-+			/* convert to Kbits/s */
-+			if (max_tx_rate)
-+				max_tx_rate = div_u64(max_tx_rate, ICE_BW_KBPS_DIVISOR);
-+			if (min_tx_rate)
-+				min_tx_rate = div_u64(min_tx_rate, ICE_BW_KBPS_DIVISOR);
-+
-+			ret = ice_set_bw_limit(vsi, max_tx_rate, min_tx_rate);
-+			if (!ret) {
-+				dev_dbg(dev, "set Tx rate max %llu min %llu for VSI(%u)\n",
-+					max_tx_rate, min_tx_rate, vsi->vsi_num);
-+			} else {
-+				dev_err(dev, "failed to set Tx rate max %llu min %llu for VSI(%u)\n",
-+					max_tx_rate, min_tx_rate, vsi->vsi_num);
-+				goto exit;
-+			}
-+		}
-+		ret = ice_create_q_channels(vsi);
-+		if (ret) {
-+			netdev_err(netdev, "failed configuring queue channels\n");
++	rule_info.sw_act.fltr_act = tc_fltr->action.fltr_act;
++	if (tc_fltr->action.tc_class >= ICE_CHNL_START_TC) {
++		if (!ch_vsi) {
++			NL_SET_ERR_MSG_MOD(tc_fltr->extack, "Unable to add filter because specified destination doesn't exist");
++			ret = -EINVAL;
 +			goto exit;
-+		} else {
-+			netdev_dbg(netdev, "successfully configured channels\n");
 +		}
++
++		rule_info.sw_act.fltr_act = ICE_FWD_TO_VSI;
++		rule_info.sw_act.vsi_handle = ch_vsi->idx;
++		rule_info.priority = 7;
++		rule_info.sw_act.src = hw->pf_id;
++		rule_info.rx = true;
++		dev_dbg(dev, "add switch rule for TC:%u vsi_idx:%u, lkups_cnt:%u\n",
++			tc_fltr->action.tc_class,
++			rule_info.sw_act.vsi_handle, lkups_cnt);
++	} else {
++		rule_info.sw_act.flag |= ICE_FLTR_TX;
++		rule_info.sw_act.src = vsi->idx;
++		rule_info.rx = false;
 +	}
 +
-+	if (vsi->ch_rss_size)
-+		ice_vsi_cfg_rss_lut_key(vsi);
++	/* specify the cookie as filter_rule_id */
++	rule_info.fltr_rule_id = tc_fltr->cookie;
 +
++	ret = ice_add_adv_rule(hw, list, lkups_cnt, &rule_info, &rule_added);
++	if (ret == -EEXIST) {
++		NL_SET_ERR_MSG_MOD(tc_fltr->extack,
++				   "Unable to add filter because it already exist");
++		ret = -EINVAL;
++		goto exit;
++	} else if (ret) {
++		NL_SET_ERR_MSG_MOD(tc_fltr->extack,
++				   "Unable to add filter due to error");
++		ret = -EIO;
++		goto exit;
++	}
++
++	/* store the output params, which are needed later for removing
++	 * advanced switch filter
++	 */
++	tc_fltr->rid = rule_added.rid;
++	tc_fltr->rule_id = rule_added.rule_id;
++	if (tc_fltr->action.tc_class > 0 && ch_vsi) {
++		/* For PF ADQ, VSI type is set as ICE_VSI_CHNL, and
++		 * for PF ADQ filter, it is not yet set in tc_fltr,
++		 * hence store the dest_vsi ptr in tc_fltr
++		 */
++		if (ch_vsi->type == ICE_VSI_CHNL)
++			tc_fltr->dest_vsi = ch_vsi;
++		/* keep track of advanced switch filter for
++		 * destination VSI (channel VSI)
++		 */
++		ch_vsi->num_chnl_fltr++;
++		/* in this case, dest_id is VSI handle (sw handle) */
++		tc_fltr->dest_id = rule_added.vsi_handle;
++
++		/* keeps track of channel filters for PF VSI */
++		if (vsi->type == ICE_VSI_PF &&
++		    (flags & (ICE_TC_FLWR_FIELD_DST_MAC |
++			      ICE_TC_FLWR_FIELD_ENC_DST_MAC)))
++			pf->num_dmac_chnl_fltrs++;
++	}
++	dev_dbg(dev, "added switch rule (lkups_cnt %u, flags 0x%x) for TC %u, rid %u, rule_id %u, vsi_idx %u\n",
++		lkups_cnt, flags,
++		tc_fltr->action.tc_class, rule_added.rid,
++		rule_added.rule_id, rule_added.vsi_handle);
 +exit:
-+	/* if error, reset the all_numtc and all_enatc */
-+	if (ret) {
-+		vsi->all_numtc = 0;
-+		vsi->all_enatc = 0;
-+	}
-+	/* resume VSI */
-+	ice_ena_vsi(vsi, true);
-+
++	kfree(list);
 +	return ret;
 +}
 +
- static LIST_HEAD(ice_block_cb_list);
- 
+ /**
+  * ice_tc_set_ipv4 - Parse IPv4 addresses from TC flower filter
+  * @match: Pointer to flow match structure
+@@ -561,10 +691,13 @@ ice_parse_cls_flower(struct net_device *filter_dev, struct ice_vsi *vsi,
  static int
-@@ -7190,6 +8053,8 @@ ice_setup_tc(struct net_device *netdev, enum tc_setup_type type,
- 	     void *type_data)
+ ice_add_switch_fltr(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
  {
- 	struct ice_netdev_priv *np = netdev_priv(netdev);
-+	struct ice_pf *pf = np->vsi->back;
-+	int err;
++	if (fltr->action.fltr_act == ICE_FWD_TO_QGRP)
++		return -EOPNOTSUPP;
++
+ 	if (ice_is_eswitch_mode_switchdev(vsi->back))
+ 		return ice_eswitch_add_tc_fltr(vsi, fltr);
  
- 	switch (type) {
- 	case TC_SETUP_BLOCK:
-@@ -7197,6 +8062,12 @@ ice_setup_tc(struct net_device *netdev, enum tc_setup_type type,
- 						  &ice_block_cb_list,
- 						  ice_setup_tc_block_cb,
- 						  np, np, true);
-+	case TC_SETUP_QDISC_MQPRIO:
-+		/* setup traffic classifier for receive side */
-+		mutex_lock(&pf->tc_mutex);
-+		err = ice_setup_tc_mqprio_qdisc(netdev, type_data);
-+		mutex_unlock(&pf->tc_mutex);
-+		return err;
- 	default:
- 		return -EOPNOTSUPP;
+-	return -EOPNOTSUPP;
++	return ice_add_tc_flower_adv_fltr(vsi, fltr);
+ }
+ 
+ /**
+@@ -581,6 +714,7 @@ ice_handle_tclass_action(struct ice_vsi *vsi,
+ 			 struct ice_tc_flower_fltr *fltr)
+ {
+ 	int tc = tc_classid_to_hwtc(vsi->netdev, cls_flower->classid);
++	struct ice_vsi *main_vsi;
+ 
+ 	if (tc < 0) {
+ 		NL_SET_ERR_MSG_MOD(fltr->extack, "Unable to add filter because specified destination is invalid");
+@@ -591,13 +725,69 @@ ice_handle_tclass_action(struct ice_vsi *vsi,
+ 		return -EINVAL;
  	}
+ 
+-	if (!(vsi->tc_cfg.ena_tc & BIT(tc))) {
++	if (!(vsi->all_enatc & BIT(tc))) {
+ 		NL_SET_ERR_MSG_MOD(fltr->extack, "Unable to add filter because of non-existence destination");
+ 		return -EINVAL;
+ 	}
+ 
+ 	/* Redirect to a TC class or Queue Group */
+-	fltr->action.fltr_act = ICE_FWD_TO_QGRP;
++	main_vsi = ice_get_main_vsi(vsi->back);
++	if (!main_vsi || !main_vsi->netdev) {
++		NL_SET_ERR_MSG_MOD(fltr->extack,
++				   "Unable to add filter because of invalid netdevice");
++		return -EINVAL;
++	}
++
++	if ((fltr->flags & ICE_TC_FLWR_FIELD_TENANT_ID) &&
++	    (fltr->flags & (ICE_TC_FLWR_FIELD_DST_MAC |
++			   ICE_TC_FLWR_FIELD_SRC_MAC))) {
++		NL_SET_ERR_MSG_MOD(fltr->extack,
++				   "Unable to add filter because filter using tunnel key and inner MAC is unsupported combination");
++		return -EOPNOTSUPP;
++	}
++
++	/* For ADQ, filter must include dest MAC address, otherwise unwanted
++	 * packets with unrelated MAC address get delivered to ADQ VSIs as long
++	 * as remaining filter criteria is satisfied such as dest IP address
++	 * and dest/src L4 port. Following code is trying to handle:
++	 * 1. For non-tunnel, if user specify MAC addresses, use them (means
++	 * this code won't do anything
++	 * 2. For non-tunnel, if user didn't specify MAC address, add implicit
++	 * dest MAC to be lower netdev's active unicast MAC address
++	 */
++	if (!(fltr->flags & ICE_TC_FLWR_FIELD_DST_MAC)) {
++		ether_addr_copy(fltr->outer_headers.l2_key.dst_mac,
++				main_vsi->netdev->dev_addr);
++		eth_broadcast_addr(fltr->outer_headers.l2_mask.dst_mac);
++		fltr->flags |= ICE_TC_FLWR_FIELD_DST_MAC;
++	}
++
++	/* validate specified dest MAC address, make sure either it belongs to
++	 * lower netdev or any of MACVLAN. MACVLANs MAC address are added as
++	 * unicast MAC filter destined to main VSI.
++	 */
++	if (!ice_mac_fltr_exist(&main_vsi->back->hw,
++				fltr->outer_headers.l2_key.dst_mac,
++				main_vsi->idx)) {
++		NL_SET_ERR_MSG_MOD(fltr->extack,
++				   "Unable to add filter because legacy MAC filter for specified destination doesn't exist");
++		return -EINVAL;
++	}
++
++	/* Make sure VLAN is already added to main VSI, before allowing ADQ to
++	 * add a VLAN based filter such as MAC + VLAN + L4 port.
++	 */
++	if (fltr->flags & ICE_TC_FLWR_FIELD_VLAN) {
++		u16 vlan_id = be16_to_cpu(fltr->outer_headers.vlan_hdr.vlan_id);
++
++		if (!ice_vlan_fltr_exist(&main_vsi->back->hw, vlan_id,
++					 main_vsi->idx)) {
++			NL_SET_ERR_MSG_MOD(fltr->extack,
++					   "Unable to add filter because legacy VLAN filter for specified destination doesn't exist");
++			return -EINVAL;
++		}
++	}
++	fltr->action.fltr_act = ICE_FWD_TO_VSI;
+ 	fltr->action.tc_class = tc;
+ 
+ 	return 0;
+@@ -639,8 +829,8 @@ ice_parse_tc_flower_actions(struct ice_vsi *vsi,
+ 
+ 		/* Drop action */
+ 		if (act->id == FLOW_ACTION_DROP) {
+-			fltr->action.fltr_act = ICE_DROP_PACKET;
+-			return 0;
++			NL_SET_ERR_MSG_MOD(fltr->extack, "Unsupported action DROP");
++			return -EINVAL;
+ 		}
+ 		fltr->action.fltr_act = ICE_FWD_TO_VSI;
+ 	}
+@@ -673,6 +863,20 @@ static int ice_del_tc_fltr(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
+ 		return -EIO;
+ 	}
+ 
++	/* update advanced switch filter count for destination
++	 * VSI if filter destination was VSI
++	 */
++	if (fltr->dest_vsi) {
++		if (fltr->dest_vsi->type == ICE_VSI_CHNL) {
++			fltr->dest_vsi->num_chnl_fltr--;
++
++			/* keeps track of channel filters for PF VSI */
++			if (vsi->type == ICE_VSI_PF &&
++			    (fltr->flags & (ICE_TC_FLWR_FIELD_DST_MAC |
++					    ICE_TC_FLWR_FIELD_ENC_DST_MAC)))
++				pf->num_dmac_chnl_fltrs--;
++		}
++	}
+ 	return 0;
+ }
+ 
+@@ -811,7 +1015,8 @@ ice_del_cls_flower(struct ice_vsi *vsi, struct flow_cls_offload *cls_flower)
+ 	/* find filter */
+ 	fltr = ice_find_tc_flower_fltr(pf, cls_flower->cookie);
+ 	if (!fltr) {
+-		if (hlist_empty(&pf->tc_flower_fltr_list))
++		if (!test_bit(ICE_FLAG_TC_MQPRIO, pf->flags) &&
++		    hlist_empty(&pf->tc_flower_fltr_list))
+ 			return 0;
+ 
+ 		NL_SET_ERR_MSG_MOD(cls_flower->common.extack, "failed to delete TC flower filter because unable to find it");
+diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.h b/drivers/net/ethernet/intel/ice/ice_tc_lib.h
+index d90e9e37ae25..ee9b284fcc02 100644
+--- a/drivers/net/ethernet/intel/ice/ice_tc_lib.h
++++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.h
+@@ -120,6 +120,28 @@ struct ice_tc_flower_fltr {
+ 	struct netlink_ext_ack *extack;
+ };
+ 
++/**
++ * ice_is_chnl_fltr - is this a valid channel filter
++ * @f: Pointer to tc-flower filter
++ *
++ * Criteria to determine of given filter is valid channel filter
++ * or not is based on its "destination". If destination is hw_tc (aka tc_class)
++ * and it is non-zero, then it is valid channel (aka ADQ) filter
++ */
++static inline bool ice_is_chnl_fltr(struct ice_tc_flower_fltr *f)
++{
++	return !!f->action.tc_class;
++}
++
++/**
++ * ice_chnl_dmac_fltr_cnt - DMAC based CHNL filter count
++ * @pf: Pointer to PF
++ */
++static inline int ice_chnl_dmac_fltr_cnt(struct ice_pf *pf)
++{
++	return pf->num_dmac_chnl_fltrs;
++}
++
+ int
+ ice_add_cls_flower(struct net_device *netdev, struct ice_vsi *vsi,
+ 		   struct flow_cls_offload *cls_flower);
 -- 
 2.31.1
 
