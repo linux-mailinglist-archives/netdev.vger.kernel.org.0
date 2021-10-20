@@ -2,81 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE1D7435146
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 19:28:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83843435158
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 19:33:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230233AbhJTRa7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 13:30:59 -0400
-Received: from smtp-out2.suse.de ([195.135.220.29]:41318 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229941AbhJTRa5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 13:30:57 -0400
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 3CE511F770;
-        Wed, 20 Oct 2021 17:28:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1634750922; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6iR1y/JL3F5bSNnhveF9tZ47D84ZakNWdr4w2O9FyR0=;
-        b=puC+JrAjKBLfJWIbDTKsG+jqaPcCcX5u7U5/ZJPdJv9ua4KfXtLpGNpcZ6nDxuFX4QPk29
-        tH5H30S6wh9+68I/f9eYApstnc7SF0fwjjwxQUWfmJo/sr8fbVEoANJKKaYLy1XOrjurZr
-        3bFQZWUJbGW4YVvD6mjDX9KxSO3oXew=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D480113BBD;
-        Wed, 20 Oct 2021 17:28:41 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id yleGMslRcGE4awAAMHmgww
-        (envelope-from <mkoutny@suse.com>); Wed, 20 Oct 2021 17:28:41 +0000
-Date:   Wed, 20 Oct 2021 19:28:40 +0200
-From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-To:     Quanyang Wang <quanyang.wang@windriver.com>
-Cc:     Ming Lei <ming.lei@redhat.com>, Tejun Heo <tj@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jens Axboe <axboe@kernel.dk>, Roman Gushchin <guro@fb.com>,
-        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [V2][PATCH] cgroup: fix memory leak caused by missing
- cgroup_bpf_offline
-Message-ID: <YXBRyJMru/RbUQK5@blackbook>
-References: <20211018075623.26884-1-quanyang.wang@windriver.com>
- <YW04Gqqm3lDisRTc@T590>
- <8fdcaded-474e-139b-a9bc-5ab6f91fbd4f@windriver.com>
- <YW1vuXh4C4tX9ZHP@T590>
- <a84aedfe-6ecf-7f48-505e-a11acfd6204c@windriver.com>
- <YW78AohHqgqM9Cuw@blackbook>
- <YW98RTBdzqin+9Ko@T590>
- <7a21a20d-eb12-e491-4e69-4e043b3b6d8d@windriver.com>
+        id S230383AbhJTRgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 13:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37956 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230357AbhJTRgH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 13:36:07 -0400
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B99C061749
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 10:33:52 -0700 (PDT)
+Received: by mail-ot1-x32e.google.com with SMTP id 34-20020a9d0325000000b00552cae0decbso7443097otv.0
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 10:33:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fdaRz+/HIqoZ+D6ASe4LTEi6mTmOeWkSvY06s8Isgz0=;
+        b=dxr9ZT1SPRYkdpGZIuvRMH2pBK3dL8EwUNYym6mFO4Zteaqbxx45lA4PG5/RqNnACG
+         aqlkFhP6xgZ8zOz9Hw+Rg1pIdSF7d41jbaI+QJzqSgtDqI0lz3L+8cS3Vou1Q9ah4Qyt
+         BJxnV7DRjHZvXSXYNOuhPXGh4Bnp17F2LUU2o=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fdaRz+/HIqoZ+D6ASe4LTEi6mTmOeWkSvY06s8Isgz0=;
+        b=6OiKXIItHAtb12nNc/oAZfN0XQgavezwZmY3IQawsDpQWomXv/Maz76eMUY/kg42Dg
+         gHn1EGZ09Jne4yALf78X9q/ajyXBtt67HnYUNDCQkuaW58wO8YxS5+k4pGk/FJ61lTyY
+         ZOf9uKEBZJ5W6yWbsM57xYO6b82VP7f2ulPwu9qjTfcHI9vBW06JQ3FQIDIe+QKG5fsO
+         sUclNq/NKMR2y9jflviHZcQWTbPMBumTTmv8QlWdJWS7CJcrCly9v/+zUAbsGUc49ZJI
+         9X46zg2YYGKFwftxzFnzJ8XzNLxQaFo1/XrIWFDQwxyV5M2ek+IKSuZLpWGjahJxOraC
+         yErQ==
+X-Gm-Message-State: AOAM5323Am2HPAMqi4ZT3v4kV1oppwp8J6zUZTp1SL6ydbdcqv8bLUM7
+        ao/wjQiLFHcPY7yH3ZpuzSFmOkhQ6EsrCg==
+X-Google-Smtp-Source: ABdhPJxsZLn0p+dwTKBZbuvfZqDIWd8Y8dYbt5UPYr91F0OiZpto6MpD2+oObxk+PM1fLTqr12nQzQ==
+X-Received: by 2002:a9d:67d8:: with SMTP id c24mr506511otn.308.1634751231469;
+        Wed, 20 Oct 2021 10:33:51 -0700 (PDT)
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com. [209.85.167.181])
+        by smtp.gmail.com with ESMTPSA id bg16sm612222oib.14.2021.10.20.10.33.48
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Oct 2021 10:33:49 -0700 (PDT)
+Received: by mail-oi1-f181.google.com with SMTP id t4so10525391oie.5
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 10:33:48 -0700 (PDT)
+X-Received: by 2002:a05:6808:1892:: with SMTP id bi18mr621637oib.105.1634751228418;
+ Wed, 20 Oct 2021 10:33:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7a21a20d-eb12-e491-4e69-4e043b3b6d8d@windriver.com>
+References: <20211020120345.2016045-1-wanghai38@huawei.com>
+In-Reply-To: <20211020120345.2016045-1-wanghai38@huawei.com>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Wed, 20 Oct 2021 10:33:37 -0700
+X-Gmail-Original-Message-ID: <CA+ASDXNUY_HevQm12Q0MZrYzcbb7br94xO6fkuFi0EuzdV_LjQ@mail.gmail.com>
+Message-ID: <CA+ASDXNUY_HevQm12Q0MZrYzcbb7br94xO6fkuFi0EuzdV_LjQ@mail.gmail.com>
+Subject: Re: [PATCH v2 wireless-drivers 0/2] libertas: Fix some memory leak bugs
+To:     Wang Hai <wanghai38@huawei.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, shenyang39@huawei.com,
+        marcelo@kvack.org, linville@tuxdriver.com, luisca@cozybit.com,
+        libertas-dev@lists.infradead.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 20, 2021 at 01:22:06PM +0800, Quanyang Wang <quanyang.wang@windriver.com> wrote:
-> > If only precpu_ref data is leaked, it is fine to add "Fixes: 2b0d3d3e4fcf",
-> > I thought cgroup_bpf_release() needs to release more for root cgroup, but
-> > looks not true.
-> For now, I can only observe that precpu_ref data is leaked when running ltp
-> testsuite.
+On Wed, Oct 20, 2021 at 5:04 AM Wang Hai <wanghai38@huawei.com> wrote:
+> This patchset fixes some memory leak bugs by adding the missing kfree().
 
-I assume you refer to ref->data. I considered the ref->percpu_count_ptr
-allocated with __alloc_percpu_gfp(). Could it be that kmemleak won't
-detect leaked percpu allocations?
+You could probably just as well switch the kzalloc()'s to be
+devm_kzalloc()'s, but either way works I guess.
 
-(The patch you sent resolves this as well, I'm just curious.)
-
-Michal
+Reviewed-by: Brian Norris <briannorris@chromium.org>
