@@ -2,202 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A9D54354CF
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 22:54:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEE4A4354D3
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 22:56:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230117AbhJTU4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 16:56:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:60826 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229695AbhJTU4o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 16:56:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1634763268;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JlVQH1uLv7ZatNMq1r21H30ERd3KdAhMXJbH64TljGg=;
-        b=egK39gZq3s9uqQYqZOtXXVqUmjg1+CgVk1+LoCtSwhzuVTPYX/dzMoNToq620wPIm7i9ga
-        aIj/OntW0YuhsDerSEuqD2P4w5iegdmXKbPBdBruVFqTkPvqr+e+lBk+o7+F1RlLHk44UG
-        JJQO/7x1+TU0yUFXWxUhYVYFgWX/DBI=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-39-oFWg-d5INPWruFrOk057Og-1; Wed, 20 Oct 2021 16:54:27 -0400
-X-MC-Unique: oFWg-d5INPWruFrOk057Og-1
-Received: by mail-ed1-f71.google.com with SMTP id v2-20020a50f082000000b003db24e28d59so22167788edl.5
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 13:54:27 -0700 (PDT)
+        id S230264AbhJTU7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 16:59:02 -0400
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:56246
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229695AbhJTU7B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 16:59:01 -0400
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com [209.85.167.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id BBB4A3FFE7
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 20:56:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1634763404;
+        bh=ej3tolcgPxSkmZKxTFzlEV+yeFLAQSjDBgYwepQ5Y2A=;
+        h=To:Cc:References:From:Subject:Message-ID:Date:MIME-Version:
+         In-Reply-To:Content-Type;
+        b=E4jWBuQcHPNGhupYX3qlsuIbG9SCZpbb5knizIWG+id5bnvEy/123OF9WSWAAVv/3
+         4Na9dTUvQlpdyI7lJ3p9gkURDJVtXTlIqchgm0SUGRKSHqo89L54kYs/YYm1yHOUH+
+         iwW1mpwuum5mmLSq85vdVfD/twAQHnrBdvpw3sDV0F2E/rRBw+AlcrVbN/jJdFjDMt
+         pN4OiSdw/3iPVDOVuyrmFqka35TQ91IoIJD4JbqlrVzGUEFAbwYesKPx8iJKef+tsK
+         7sEEwBBGEAQ4bgBOL/OrR3/sdhCAhxzK+usK/k8+jZF7YB/PN3zmx0FYCe5HfhtobU
+         tNECw/uCHZRiQ==
+Received: by mail-lf1-f69.google.com with SMTP id i1-20020a056512340100b003fdd5b951e0so3524968lfr.22
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 13:56:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=JlVQH1uLv7ZatNMq1r21H30ERd3KdAhMXJbH64TljGg=;
-        b=I9wS0bUbV12BevVtVV+XOborPiTb9rRayCYSfVfCkLlH1mTXtXor54BVIHQ9yq7xEd
-         hdw0Gu22I1HB9y+ADNwSjnlpeOIW7zditQ6n+g+f/2zVvNjkIhb+dZ198qVAooasUvRU
-         lLl6djQKX+Ag2tfVwpGpnFn76pnTyYOUgKn71WSsmFZUAWj3riKyW5iVtpf8elo8ZI6t
-         wxAcEWNtS8MSjVlLpbLvpoNNNdF6piX4FbmO7+KNzkNEMUzbC5hceQnisejO/JzRB2zS
-         D6I6IA0/RfzOyOQPwqxTMxkCGfk3TRtiPuJ8k44hQouT74AJ50ks6jAfShUGKAPddXyx
-         gkRw==
-X-Gm-Message-State: AOAM531LeEXgvuJtoNGLYKeO+2qerP+j2e3nsg7ERSArM/SOf4oP6kI5
-        0RDljilotxPXv3tpoJfcvgjrPiQurgpOC0UrIfCs88ANVeuZsrR+tJ33n9Pmwxr12Ns04pye+gK
-        O9Yh9SOKkbzMdE1Fn
-X-Received: by 2002:aa7:c952:: with SMTP id h18mr1775577edt.18.1634763265098;
-        Wed, 20 Oct 2021 13:54:25 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzGgpDILve4QU+ct7o+I2FcDLkohe/7Gcx2dPo5XAylibimIm0Ab7EUT/mMtP/nr2u79KjuaA==
-X-Received: by 2002:aa7:c952:: with SMTP id h18mr1775390edt.18.1634763263555;
-        Wed, 20 Oct 2021 13:54:23 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id u8sm1728823edo.50.2021.10.20.13.54.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Oct 2021 13:54:22 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 12B14180262; Wed, 20 Oct 2021 22:54:22 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Brendan Jackman <jackmanb@google.com>,
-        Florent Revest <revest@chromium.org>,
-        Joe Stringer <joe@cilium.io>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Tariq Toukan <tariqt@nvidia.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH bpf-next 07/10] bpf: Add helpers to query conntrack info
-In-Reply-To: <20211020124457.GA7604@breakpoint.cc>
-References: <20211019144655.3483197-1-maximmi@nvidia.com>
- <20211019144655.3483197-8-maximmi@nvidia.com>
- <20211020035622.lgrxnrwfeak2e75a@apollo.localdomain>
- <20211020092844.GI28644@breakpoint.cc> <87h7dcf2n4.fsf@toke.dk>
- <20211020095815.GJ28644@breakpoint.cc> <875ytrga3p.fsf@toke.dk>
- <20211020124457.GA7604@breakpoint.cc>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 20 Oct 2021 22:54:22 +0200
-Message-ID: <87r1cfe7sx.fsf@toke.dk>
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ej3tolcgPxSkmZKxTFzlEV+yeFLAQSjDBgYwepQ5Y2A=;
+        b=A8KydCm8u0lV/v1hek0GML21pZLjqSwmh+T1cHRuNJJ1ErpRynsEa+89WYczarWgqb
+         ECeUuIRswxAu8wEUicHkP0+ePKH7YfmY1dZV8dJb3laFvDpruslLBz7IJnkD0UJxAlv7
+         sMGwLCvUlUetUGIK6tXREHYIl5XtNAomXW0Z5+e2rPnQWX1es0IsKd0E4eTJCgerMnkB
+         wPFcmAi1glR5eftuB9h+m6WlIDhEic1pW4aFAh4ZqNQnjoM/nMkBuJyYrs40Jt+QBVrR
+         Oi/z2t7nM+b3pqY6iPp3K4Ib0CI57YosspSeHnTMWsL0KXSpE2itIXff50DLL72iSddk
+         kw7w==
+X-Gm-Message-State: AOAM533GHIjHKR5k+smJ8QFQ9Od1sOZtw+yHJqO44gujA5icJ1I+WGam
+        EihJ/wMxL7TRr8irjxKRJP12ZFK7jKSPsUQLPItq6ONsVAqb0lC/EVQpfogLjGGWYEkiBFGIcDu
+        ULZSFU7cXlL3kqT32M4NciwIzcKG3JmouhQ==
+X-Received: by 2002:a05:6512:398d:: with SMTP id j13mr1475185lfu.292.1634763404025;
+        Wed, 20 Oct 2021 13:56:44 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz2tKOF/ci/DGkUHWFKDCZAXymlCX1AGqtT/RSExx/aAtmHW/6GJnmDVixSy1cftLmb9dc03A==
+X-Received: by 2002:a05:6512:398d:: with SMTP id j13mr1475160lfu.292.1634763403744;
+        Wed, 20 Oct 2021 13:56:43 -0700 (PDT)
+Received: from [192.168.3.161] (89-77-68-124.dynamic.chello.pl. [89.77.68.124])
+        by smtp.gmail.com with ESMTPSA id a11sm276538lfl.157.2021.10.20.13.56.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Oct 2021 13:56:43 -0700 (PDT)
+To:     Alan Stern <stern@rowland.harvard.edu>,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     syzbot <syzbot+abd2e0dafb481b621869@syzkaller.appspotmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Thierry Escande <thierry.escande@collabora.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>
+References: <000000000000c644cd05c55ca652@google.com>
+ <9e06e977-9a06-f411-ab76-7a44116e883b@canonical.com>
+ <20210722144721.GA6592@rowland.harvard.edu>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: Re: [syzbot] INFO: task hung in port100_probe
+Message-ID: <b9695fc8-51b5-c61e-0a2f-fec9c2f0bae0@canonical.com>
+Date:   Wed, 20 Oct 2021 22:56:42 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
+In-Reply-To: <20210722144721.GA6592@rowland.harvard.edu>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Florian Westphal <fw@strlen.de> writes:
+On 22/07/2021 16:47, Alan Stern wrote:
+> On Thu, Jul 22, 2021 at 04:20:10PM +0200, Krzysztof Kozlowski wrote:
+>> On 22/06/2021 17:43, syzbot wrote:
+>>> Hello,
+>>>
+>>> syzbot found the following issue on:
+>>>
+>>> HEAD commit:    fd0aa1a4 Merge tag 'for-linus' of git://git.kernel.org/pub..
+>>> git tree:       upstream
+>>> console output: https://syzkaller.appspot.com/x/log.txt?x=13e1500c300000
+>>> kernel config:  https://syzkaller.appspot.com/x/.config?x=7ca96a2d153c74b0
+>>> dashboard link: https://syzkaller.appspot.com/bug?extid=abd2e0dafb481b621869
+>>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1792e284300000
+>>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13ad9d48300000
+>>>
+>>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+>>> Reported-by: syzbot+abd2e0dafb481b621869@syzkaller.appspotmail.com
+>>>
+>>> INFO: task kworker/0:1:7 blocked for more than 143 seconds.
+>>>       Not tainted 5.13.0-rc6-syzkaller #0
+>>> "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+>>> task:kworker/0:1     state:D stack:25584 pid:    7 ppid:     2 flags:0x00004000
+>>> Workqueue: usb_hub_wq hub_event
+>>> Call Trace:
+>>>  context_switch kernel/sched/core.c:4339 [inline]
+>>>  __schedule+0x916/0x23e0 kernel/sched/core.c:5147
+>>>  schedule+0xcf/0x270 kernel/sched/core.c:5226
+>>>  schedule_timeout+0x1db/0x250 kernel/time/timer.c:1868
+>>>  do_wait_for_common kernel/sched/completion.c:85 [inline]
+>>>  __wait_for_common kernel/sched/completion.c:106 [inline]
+>>>  wait_for_common kernel/sched/completion.c:117 [inline]
+>>>  wait_for_completion+0x168/0x270 kernel/sched/completion.c:138
+>>>  port100_send_cmd_sync drivers/nfc/port100.c:923 [inline]
+>>>  port100_get_command_type_mask drivers/nfc/port100.c:1008 [inline]
+>>>  port100_probe+0x9e4/0x1340 drivers/nfc/port100.c:1554
+>>>  usb_probe_interface+0x315/0x7f0 drivers/usb/core/driver.c:396
+> ...
+> 
+>> Cc: Thierry, Alan, Andrey,
+>>
+>> The issue is reproducible immediately on QEMU instance with
+>> USB_DUMMY_HCD and USB_RAW_GADGET. I don't know about real port100 NFC
+>> device.
+>>
+>> I spent some time looking into this and have no clue, except that it
+>> looks like an effect of a race condition.
+>>
+>> 1. When using syskaller reproducer against one USB device (In the C
+>> reproducer change the loop in main() to use procid=0) - issue does not
+>> happen.
+>>
+>> 2. With two threads or more talking to separate Dummy USB devices, the
+>> issue appears. The more of them, the better...
+>>
+>> 3. The reported problem is in missing complete. The correct flow is like:
+>> port100_probe()
+>> port100_get_command_type_mask()
+>> port100_send_cmd_sync()
+>> port100_send_cmd_async()
+>> port100_submit_urb_for_ack()
+>> port100_send_complete()
+>> [   63.363863] port100 2-1:0.0: NFC: Urb failure (status -71)
+>> port100_recv_ack()
+>> [   63.369942] port100 2-1:0.0: NFC: Urb failure (status -71)
+>>
+>> and schedule_work() which completes and unblocks port100_send_cmd_sync
+>>
+>> However in the failing case (hung task) the port100_recv_ack() is never
+>> called. It looks like USB core / HCD / gadget does not send the Ack/URB
+>> complete.
+>>
+>> I don't know why. The port100 NFC driver code looks OK, except it is not
+>> prepared for missing ack/urb so it waits indefinitely. I could try to
+>> convert it to wait_for_completion_timeout() but it won't be trivial and
+>> more important - I am not sure if this is the problem. Somehow the ACK
+>> with Urb failure is not sent back to the port100 device. Therefore I am
+>> guessing that the race condition is somwhere in USB stack, not in
+>> port100 driver.
+>>
+>> The lockdep and other testing tools did not find anything here.
+>>
+>> Anyone hints where the issue could be?
+> 
+> Here's what I wrote earlier: "It looks like the problem stems from the fact 
+> that port100_send_frame_async() submits two URBs, but 
+> port100_send_cmd_sync() only waits for one of them to complete.  The other 
+> URB may then still be active when the driver tries to reuse it."
+> 
+> Of course, there may be more than one problem, so we may not be talking 
+> about the same thing.
 
-> Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
->> > Lookups should be fine.  Insertions are the problem.
->> >
->> > NAT hooks are expected to execute before the insertion into the
->> > conntrack table.
->> >
->> > If you insert before, NAT hooks won't execute, i.e.
->> > rules that use dnat/redirect/masquerade have no effect.
->>=20
->> Well yes, if you insert the wrong state into the conntrack table, you're
->> going to get wrong behaviour. That's sorta expected, there are lots of
->> things XDP can do to disrupt the packet flow (like just dropping the
->> packets :)).
->
-> Sure, but I'm not sure I understand the use case.
->
-> Insertion at XDP layer turns off netfilters NAT capability, so its
-> incompatible with the classic forwarding path.
->
-> If thats fine, why do you need to insert into the conntrack table to
-> begin with?  The entire infrastructure its designed for is disabled...
+Hi Alan, Felipe, Greg and others,
 
-One of the major selling points of XDP is that you can reuse the
-existing kernel infrastructure instead of having to roll your own. So
-sure, one could implement their own conntrack using BPF maps (as indeed,
-e.g., Cilium has done), but why do that when you can take advantage of
-the existing one in the kernel? Same reason we have the bpf_fib_lookup()
-helper...
+This is an old issue reported by syzkaller for NFC port100 driver [1].
+There is something similar for pn533 [2].
 
->> > I don't think there is anything that stands in the way of replicating
->> > this via XDP.
->>=20
->> What I want to be able to do is write an XDP program that does the follo=
-wing:
->>=20
->> 1. Parse the packet header and determine if it's a packet type we know
->>    how to handle. If not, just return XDP_PASS and let the stack deal
->>    with corner cases.
->>=20
->> 2. If we know how to handle the packet (say, it's TCP or UDP), do a
->>    lookup into conntrack to figure out if there's state for it and we
->>    need to do things like NAT.
->>=20
->> 3. If we need to NAT, rewrite the packet based on the information we got
->>    back from conntrack.
->
-> You could already do that by storing that info in bpf maps The
-> ctnetlink event generated on conntrack insertion contains the NAT
-> mapping information, so you could have a userspace daemon that
-> intercepts those to update the map.
+I was looking at it some time ago, took a break and now I am trying to
+fix it again. Without success.
 
-Sure, but see above.
+The issue is reproducible via USB gadget on QEMU, not on real HW. I
+looked and debugged the code and I think previously mentioned
+double-URB-submit is not the reason here. Or I miss how the USB works
+(which is quite probable...).
 
->> 4. Update the conntrack state to be consistent with the packet, and then
->>    redirect it out the destination interface.
->>=20
->> I.e., in the common case the packet doesn't go through the stack at all;
->> but we need to make conntrack aware that we processed the packet so the
->> entry doesn't expire (and any state related to the flow gets updated).
->
-> In the HW offload case, conntrack is bypassed completely. There is an
-> IPS_(HW)_OFFLOAD_BIT that prevents the flow from expiring.
+1. The port100 driver calls port100_send_cmd_sync() which eventually
+goes to port100_send_frame_async(). After it, it waits for "sync"
+completion.
 
-That's comparable in execution semantics (stack is bypassed entirely),
-but not in control plane semantics (we lookup from XDP instead of
-pushing flows down to an offload).
+2. In port100_send_frame_async(), driver indeed first submits "out_urb"
+which quite fast is being processed by dummy_hcd with "no ep configured"
+and -EPROTO.
 
->> Ideally we should also be able to create new state for a flow we haven't
->> seen before.
->
-> The way HW offload was intended to work is to allow users to express
-> what flows should be offloaded via 'flow add' expression in nftables, so
-> they can e.g. use byte counters or rate estimators etc. to make such
-> a decision.  So initial packet always passes via normal stack.
->
-> This is also needed to consider e.g. XFRM -- nft_flow_offload.c won't
-> offload if the packet has a secpath attached (i.e., will get encrypted
-> later).
->
-> I suspect we'd want a way to notify/call an ebpf program instead so we
-> can avoid the ctnetlink -> userspace -> update dance and do the XDP
-> 'flow bypass information update' from inside the kernel and ebpf/XDP
-> reimplementation of the nf flow table (it uses the netfilter ingress
-> hook on the configured devices; everyhing it does should be doable
-> from XDP).
+3. Then (or sometimes before -EPROTO response from (2) above) the
+port100_send_frame_async() submits "in_urb" via
+port100_submit_urb_for_ack() and waits for its completion. Completion of
+"in_urb" (or the "ack") in port100_recv_ack() would schedule work to
+complete the (1) above - the sync completion.
 
-But the point is exactly that we don't have to duplicate the state into
-BPF, we can make XDP look it up directly.
+4. Usually, when reproducer works fine (does not trigger issue), the
+dummy_timer() from gadget responds with the same "no ep configured for
+urb" for this "in_urb" (3). This completes "in_urb", which eventually
+completes (1) and probe finishes with error. Error is expected, because
+it's random junk-gadget...
 
->> This requires updating of state, but I see no reason why this shouldn't
->> be possible?
->
-> Updating ct->status is problematic, there would have to be extra checks
-> that prevent non-atomic writes and toggling of special bits such as
-> CONFIRMED, TEMPLATE or DYING.  Adding a helper to toggle something
-> specific, e.g. the offload state bit, should be okay.
+The syzkaller reproducer fails if >1 of threads are running these usb
+gadgets.  When this happens, no "in_urb" completion happens. No this
+"ack" port100_recv_ack().
 
-We can certainly constrain the update so it's not possible to get into
-an unsafe state. The primary use case is accelerating the common case,
-punting to the stack is fine for corner cases.
+I added some debugs and simply dummy_hcd dummy_timer() is woken up on
+enqueuing in_urb and then is looping crazy on a previous URB (some older
+URB, coming from before port100 driver probe started). The dummy_timer()
+loop never reaches the second "in_urb" to process it, I think.
 
--Toke
+The pn533 NFC driver has similar design, but I have now really doubts it
+is a NFC driver issue. Instead an issue in dummy gadget HCD is somehow
+triggered by the reproducer.
 
+Reproduction - just follow [1] or [2]. Eventually I slightly tweaked the
+code and put here:
+https://github.com/krzk/tools/tree/master/tests-var/nfc/port100_probe
+$ make
+$ sudo ./port100_probe
+
+
+[1] https://syzkaller.appspot.com/bug?extid=abd2e0dafb481b621869
+[2] https://syzkaller.appspot.com/bug?extid=1dc8b460d6d48d7ef9ca
+
+
+Best regards,
+Krzysztof
