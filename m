@@ -2,111 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0669C4345B2
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 09:09:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 261334345D3
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 09:21:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229809AbhJTHLV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 03:11:21 -0400
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:51486
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229771AbhJTHLU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 03:11:20 -0400
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com [209.85.167.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 0B56A3F4BA
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 07:09:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1634713746;
-        bh=j8lUGUZ+hYeiPkhKZo4yfn4ldIjieSzUVsSX+lYwZ1U=;
-        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
-         In-Reply-To:Content-Type;
-        b=u4YJa21Y6sLQTlEdIE0zBvJPWID5a5fHPiWs87EYlCFSX7SeRvB6/ZRLqpGD2TvZ3
-         sB3vy8l25cgh+E3xtWuBAF3MRclWcKDu38oGE1dCcme14HtpW7CDUAx+MRbZAiCxEI
-         R5266MEMwZunOgADpFjbCCHOxp1+5xXObU7e5ZCvL+9RPcW+XekEIm9EKynw+nxNR4
-         l+Ck3d89z1nvXlNLcTjre7LZuClojnHZlxJwAcGmW6qMG1CpMr34k4Z9rI56zTf9lr
-         X9G9SOO9VhZuHavbP2kZNC/lygf7K2wXkP9ohzjkx42eYpw6LdX6sxdoU19TpljV4r
-         Evx+E93wowC7w==
-Received: by mail-lf1-f69.google.com with SMTP id br42-20020a056512402a00b003fd94a74905so2732682lfb.7
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 00:09:06 -0700 (PDT)
+        id S229823AbhJTHX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 03:23:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37602 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229771AbhJTHXZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 03:23:25 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632CFC06161C
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 00:21:11 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id r184so10185920ybc.10
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 00:21:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kce2qR2xgSeHC5Mx7D1hXgnLANsYdx4gJMG57iC0thM=;
+        b=GILxDG5ahW57iAeWs21x+fsM0PBBxl5rocf8TteNGaiEZxJCsMwiR8xaJCvsxBI/5O
+         D8kkPcETVj/Nk1y5shywUdd90ee0aMbfPBz6tx6oktMG9AK1jTxTYBq2A25D5U6KejSf
+         EASoKzke7tRzViekzf57v0QIQVwlJqI0Ftvlol09oiplTtKXEP+r62fZRDsv7OPdg8R/
+         zmf2S7axOE4gEfYT8YL4G/8KLGA6AzPch1Oi+Mq5BPpNRErj872qo+E4GCorXFW6SZnx
+         BEYwe539vNzk3hYgz3+y3VAYdCP4vuewq3h0jXpbL6zE1HGP8tEPa+CBjRenvcN09usq
+         ot8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=j8lUGUZ+hYeiPkhKZo4yfn4ldIjieSzUVsSX+lYwZ1U=;
-        b=x1crjdMeeTOzJOc30ICeKwThgqbw0u6svNkKabAD39of2fHCzM+YHurr7w+oLXtue5
-         uD0iiXufO/Qy5YPvrY2ByKAQ4ZADV21BsTg/kOUTEJhvOIY7GTU+War76svn09r/vIR6
-         s5NM5UKlm202ICX+SpRQdqvbYjLEA7jkl5Mu0C6wYR5YmHhBJ/+fnY5NTyZk1NhQRqud
-         j5Mr4OR4aDhSvV0CwjHsV2d+iS3osrK+VHBWifP0uf2Kc5yFv2KRkvQJb0J58MlU1UIa
-         YyEXCiLUwfqBKx0R9rem4qghkUQy3EjS9Bv9QJUaoUx/2iULF4kchyQrbmARsn4rNWIt
-         5kpw==
-X-Gm-Message-State: AOAM530cGyTmTx2pOLUZtk6jWASQYEUFXsdmrw2M6JDHulfYvTmPpW+S
-        U8SL1noZ8z88LmOCRAu7aKxKTe58K/sJQgnYsqCKW0BsXHCNGpW7Rlm9ZpE4jALCKrMyYDv7gqs
-        hOBX5xGrFLmiX9xX9Rp1wK/EWRdeUjkAj4A==
-X-Received: by 2002:ac2:5104:: with SMTP id q4mr10687835lfb.87.1634713745378;
-        Wed, 20 Oct 2021 00:09:05 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzoK9U8fW0DOZINVCUGWpc5mOgext9O1+WMHzVOlXzhJMHA5RE05+ZNMdJlV6pk8oIf47MPEw==
-X-Received: by 2002:ac2:5104:: with SMTP id q4mr10687823lfb.87.1634713745223;
-        Wed, 20 Oct 2021 00:09:05 -0700 (PDT)
-Received: from [192.168.3.161] (89-77-68-124.dynamic.chello.pl. [89.77.68.124])
-        by smtp.gmail.com with ESMTPSA id o12sm117851lft.254.2021.10.20.00.09.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Oct 2021 00:09:04 -0700 (PDT)
-Subject: Re: [PATCH] nfc: st95hf: Make spi remove() callback return zero
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     netdev@vger.kernel.org, kernel@pengutronix.de
-References: <20211019204916.3834554-1-u.kleine-koenig@pengutronix.de>
- <da88faf5-33db-b20d-e019-7cca6779b626@canonical.com>
- <20211020070526.4xsjqdi54iayen3l@pengutronix.de>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <5eaa4875-3d7a-f1cd-578b-c1ea8db2bf19@canonical.com>
-Date:   Wed, 20 Oct 2021 09:09:04 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kce2qR2xgSeHC5Mx7D1hXgnLANsYdx4gJMG57iC0thM=;
+        b=dYPIAUrZgL+T0rW4263S9k/fNOdUeJP7Qb6z81ZDc1EW3LoqATpWM3Z+GEODL+Wlqm
+         Ty24SBPmWYLO8W3ULERH3cp/xhq/qJHOuKv3WxH4CBqA/FE+IAFPRS461hOBlzxVBC4h
+         OHw3UcacV0OYSS47wi9BbC4x0kL4pGnNgdfdOSlQJMmnWbEMTxKlJBL2V8EEGIO+l99u
+         H9VvVAd+BdV8b+u8te8ToURFmMXOEnuczWieH0xHCeT5ghJTI2YIwJER8LlMI9NgUyfN
+         W/ynTRIoXjolJMsdyTIO82H1qQsUClyQld5WyU227qO1VqL/qw6Buz6iU6ltiYe+y05k
+         0XUw==
+X-Gm-Message-State: AOAM533Tr5b/bBoFZc/IV00EvBpLThOhqFb7xJDL98PVRP1/sP4GrLHl
+        VrKC43zxofnHn06GJNGkLsdGgFqQDNXIKNkNXBslyg==
+X-Google-Smtp-Source: ABdhPJwsyF9FMvt7PxQJBAQ5bCxRrypJBPKEcmabWajzCQvaQR0BVrdioLP40wR5SfHsAUpg2LEQTq9ymMiPXdjAGcw=
+X-Received: by 2002:a25:42c9:: with SMTP id p192mr40691704yba.339.1634714470596;
+ Wed, 20 Oct 2021 00:21:10 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20211020070526.4xsjqdi54iayen3l@pengutronix.de>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20211019150011.1355755-1-kuba@kernel.org> <20211019150011.1355755-2-kuba@kernel.org>
+In-Reply-To: <20211019150011.1355755-2-kuba@kernel.org>
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Date:   Wed, 20 Oct 2021 10:20:34 +0300
+Message-ID: <CAC_iWjJbjXm6PpaS5KeHXUrm1eA-t5FqVPzS6DQ6r_ZCBc4HXQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/6] ethernet: netsec: use eth_hw_addr_set()
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Jaswinder Singh <jaswinder.singh@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/10/2021 09:05, Uwe Kleine-König wrote:
-> Hello Krzysztof,
-> 
-> On Wed, Oct 20, 2021 at 08:55:51AM +0200, Krzysztof Kozlowski wrote:
->> On 19/10/2021 22:49, Uwe Kleine-König wrote:
->>> If something goes wrong in the remove callback, returning an error code
->>> just results in an error message. The device still disappears.
->>>
->>> So don't skip disabling the regulator in st95hf_remove() if resetting
->>> the controller via spi fails. Also don't return an error code which just
->>> results in two error messages.
->>>
->>> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
->>> ---
->>>  drivers/nfc/st95hf/core.c | 6 ++----
->>>  1 file changed, 2 insertions(+), 4 deletions(-)
->>
->> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> 
-> Given you're the listed maintainer for NFC, I wonder who will take this
-> patch? I expected you to take this patch and not "only" give your
-> Reviewed-by tag.
-> 
+Hi Jakub,
 
-Yeah, it's not that obvious. Maybe I should write subsystem/maintainer
-guide for NFC...
+On Tue, 19 Oct 2021 at 18:00, Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
+> of VLANs...") introduced a rbtree for faster Ethernet address look
+> up. To maintain netdev->dev_addr in this tree we need to make all
+> the writes to it got through appropriate helpers.
+>
+> Read the address into an array on the stack, then call
+> eth_hw_addr_set().
+>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> CC: jaswinder.singh@linaro.org
+> CC: ilias.apalodimas@linaro.org
+> ---
+>  drivers/net/ethernet/socionext/netsec.c | 16 +++++++++-------
+>  1 file changed, 9 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+> index baa9f5d1c549..de7d8bf2c226 100644
+> --- a/drivers/net/ethernet/socionext/netsec.c
+> +++ b/drivers/net/ethernet/socionext/netsec.c
+> @@ -2037,13 +2037,15 @@ static int netsec_probe(struct platform_device *pdev)
+>         if (ret && priv->eeprom_base) {
+>                 void __iomem *macp = priv->eeprom_base +
+>                                         NETSEC_EEPROM_MAC_ADDRESS;
+> -
+> -               ndev->dev_addr[0] = readb(macp + 3);
+> -               ndev->dev_addr[1] = readb(macp + 2);
+> -               ndev->dev_addr[2] = readb(macp + 1);
+> -               ndev->dev_addr[3] = readb(macp + 0);
+> -               ndev->dev_addr[4] = readb(macp + 7);
+> -               ndev->dev_addr[5] = readb(macp + 6);
+> +               u8 addr[ETH_ALEN];
+> +
+> +               addr[0] = readb(macp + 3);
+> +               addr[1] = readb(macp + 2);
+> +               addr[2] = readb(macp + 1);
+> +               addr[3] = readb(macp + 0);
+> +               addr[4] = readb(macp + 7);
+> +               addr[5] = readb(macp + 6);
+> +               eth_hw_addr_set(ndev, addr);
+>         }
+>
+>         if (!is_valid_ether_addr(ndev->dev_addr)) {
+> --
+> 2.31.1
+>
 
-All NFC patches are taken by netdev folks (David and Jakub) via
-patchwork. You did not CC them here, but you CC-ed the netdev, so let's
-hope it is enough. You also skipped linux-nfc, so you might need a file:
+Thanks!
 
-  $ cat .get_maintainer.conf
-  --s
-
-Best regards,
-Krzysztof
+Acked-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
