@@ -2,225 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2122243465F
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 10:02:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 750C8434667
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 10:04:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229764AbhJTIEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 04:04:34 -0400
-Received: from mail-dm6nam12on2079.outbound.protection.outlook.com ([40.107.243.79]:3619
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229663AbhJTIDs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Oct 2021 04:03:48 -0400
+        id S229603AbhJTIG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 04:06:28 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:46550 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229544AbhJTIG1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 04:06:27 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19JKfIRt014355;
+        Wed, 20 Oct 2021 01:04:01 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=QazTzDNy9hq19ClnT6ZuS4KhNfdj9LVvHKk6kM9n5fs=;
+ b=f22zBcCaonifggW1MBEUliCi6mQUaBQcfkz2UHaHfkuZ+S1Lx170RKWp3I+WL32MzVHb
+ BjIQmI2uqdJqwHLHpBTXFFAg0AmI0qy6Z+aYjmQ8/JQtLgWrck0lqhSk8lt7uep2vXWm
+ 0QJQNl5Qfv5ynrCwV90zVnbAZSkL1jQKsq4= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 3bt4rdkm7p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 20 Oct 2021 01:04:00 -0700
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.230) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.14; Wed, 20 Oct 2021 01:03:59 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Z71pGGNTSX+3GD6YQPB7T9aaWEYCQvEa7xUC1AvsOYmiPVQqHB5KA0iKDgB+jCWQ4b/exn99X9ly79rjYlI9GjRwKdyNsYeeTMRsUeg0sZkoHJewX7ZvuV7EyRAUQbzqzlqB4Af9ja78FcViwKfqLOcFolOa7ewbxoDp36FCtSDcoNpIrolQI4HAECxR2mFgjeFViavOcFeHrDXrAGD/6c997Bky3WAvM0lJHHEvp3e3InssQn12uTlugVT1IwzakBgJ+UVUZV0R6PlEBRfZv5f03yw+vY9LGP2551RQX5QDyBq+jRSepx7CBTmrIfuc9GpDqTaFvXpR6jeChaeSKQ==
+ b=hiTXtdgXEJH0PcbzuLsCCuZ9AqKN1W0xGp+6xlG5Osega6W6lzCzUombbFxJvfk9eRSy0lSc1P6I/v5PVvbJ1fHBbjTsgBOR+Q5QAulalYmSjt/MWihfaV1lKKsYBGuF/aT+q/DZAQLb9cnW+9loaDIJwox7Ad/WNlYWOXe6mIjn3JqC4xPVnQTghLk1vruZGQKnhxElRyVGqHrOlyG5D0DKuhwGUmOxgHm/xIMzE0l6I051rApSzg1i76qTNG3/QRbOn9+JlLVgGhtCHVIs8uhQufiPQq29qjPF2alNb7SizeWWBAHtUexWbZiZqyENgcBQ4S5qwynyi+I3kJPsjQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ulzNiQ/sv4sRvLSvlcCyESt9PglyDv9qxuuhHHx8bUk=;
- b=YJA73Qb6FuIj7JkCEarSQX5+3cOL9hPdjuUKCQhaEg6V+Zu2S1PA3PUJfl3rc+smSabMACCqET8B8/H9qe6jGYFzHkEzOIla5fzrUJpxEHl02SJ2KZ1nEAx93BaKA1OKjNALdWQspvvO2+Qu5D5M75YT0/Qxfaml7yQgRec+7t5B66p6RM72KWI1PwftTwjJ8zDuYj0I/EeSP0BuvdSgoBhgRan689I3RY0lAT4sZ6Md5xAb+BZPi4CEMoDvuxF8eyIF2NRScSsl3IMH4ifkrKCCdw2n7OHzZyE2ch/HJuGLpLK/CxEKBUFbNMb/nHCdj9vVdCKLRCR7KJ20RVwhWA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ulzNiQ/sv4sRvLSvlcCyESt9PglyDv9qxuuhHHx8bUk=;
- b=tRt52xdInh+6L8IE96fxaX3uuUnzWWzWXVLLXShXDw8qC1BvPkOZqHd5+pCLIrSr1vjNzrwLSWgJPg5+cFuKm+58x/QsSCS5GxQ/xuRh8heR+rpn/7Klfj75yw7HvZpR++iqqlFJbc5LXC07VeOJSyaa13B2QEiMHDaRry0aw/6FD5p3d7Ffp1LT+ffmpos0viTke02eI5w7l3GHdGN2v53gL8YBt/L9Ht+lVVS1bKjl+vS+37sWG8ebEg+1M89Kdf8gn5sDO/EuUOL3VJG7MZQqNvjG3E6Fo6fRzW3jVpSp5rFSZb3lYQQ5fDS3eU3DTrs+N8FQPKSCP6uRS6FmXQ==
-Received: from DM5PR21CA0062.namprd21.prod.outlook.com (2603:10b6:3:129::24)
- by BYAPR12MB3447.namprd12.prod.outlook.com (2603:10b6:a03:a9::25) with
+ bh=QazTzDNy9hq19ClnT6ZuS4KhNfdj9LVvHKk6kM9n5fs=;
+ b=oYwgNYk3PgxUnXLxdfHx0yGGz3emAfYK1JrnqXsG4BgInoRioiUP6uSzjO43wCda1ohksE+TkneSduZRx28Wu2nUCQh/awQlfftMUGxbCOOxfvO8onIKNy3W/YKK6wZuvh4tMy/oDH6A7RXqYszen9Z4u6B1Rp+Y1msdRJaEdY32ysCguZOGCmnNo8YlpumPKl8NLjRRK/SIk57mv/CRojdSCxfXE8Cr8SmNlBvfGmnf8gmvIp1Bqv5FBhn+YjEhpjnxMDaRN9KtZ1vTlYMy8ca0TP679O/lvOwlvDYWWcZ6Z8fKeRtdw/U32ksEeSb+E6OimIXWbF84oDkIBmBFCg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
+Received: from DM6PR15MB4039.namprd15.prod.outlook.com (2603:10b6:5:2b2::20)
+ by DM6PR15MB2410.namprd15.prod.outlook.com (2603:10b6:5:85::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.17; Wed, 20 Oct
- 2021 08:01:10 +0000
-Received: from DM6NAM11FT008.eop-nam11.prod.protection.outlook.com
- (2603:10b6:3:129:cafe::be) by DM5PR21CA0062.outlook.office365.com
- (2603:10b6:3:129::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.1 via Frontend
- Transport; Wed, 20 Oct 2021 08:01:10 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- DM6NAM11FT008.mail.protection.outlook.com (10.13.172.85) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4628.16 via Frontend Transport; Wed, 20 Oct 2021 08:01:07 +0000
-Received: from [172.27.15.75] (172.20.187.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 20 Oct
- 2021 08:01:03 +0000
-Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
- for mlx5 devices
-To:     Alex Williamson <alex.williamson@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-CC:     <bhelgaas@google.com>, <saeedm@nvidia.com>,
-        <linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <kuba@kernel.org>, <leonro@nvidia.com>,
-        <kwankhede@nvidia.com>, <mgurtovoy@nvidia.com>, <maorg@nvidia.com>
-References: <20211019105838.227569-1-yishaih@nvidia.com>
- <20211019105838.227569-13-yishaih@nvidia.com>
- <20211019124352.74c3b6ba.alex.williamson@redhat.com>
-From:   Yishai Hadas <yishaih@nvidia.com>
-Message-ID: <d5ba3528-22db-e06b-80bb-0db40a71e67a@nvidia.com>
-Date:   Wed, 20 Oct 2021 11:01:01 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-MIME-Version: 1.0
-In-Reply-To: <20211019124352.74c3b6ba.alex.williamson@redhat.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.16; Wed, 20 Oct
+ 2021 08:03:58 +0000
+Received: from DM6PR15MB4039.namprd15.prod.outlook.com
+ ([fe80::755e:51ae:f6c:3953]) by DM6PR15MB4039.namprd15.prod.outlook.com
+ ([fe80::755e:51ae:f6c:3953%6]) with mapi id 15.20.4628.016; Wed, 20 Oct 2021
+ 08:03:58 +0000
+Message-ID: <549f7100-ce3f-4754-a048-a2c824139a02@fb.com>
+Date:   Wed, 20 Oct 2021 04:03:55 -0400
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.2.0
+Subject: Re: [PATCH v2 bpf-next 1/2] bpf: add verified_insns to bpf_prog_info
+ and fdinfo
 Content-Language: en-US
-X-Originating-IP: [172.20.187.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+References: <20211011205415.234479-1-davemarchevsky@fb.com>
+ <20211011205415.234479-2-davemarchevsky@fb.com>
+ <CAEf4BzaMgv5otr9AQGHZW=sUCuBdt_Vkv_GqB9n8BYVcZWHjAQ@mail.gmail.com>
+From:   Dave Marchevsky <davemarchevsky@fb.com>
+In-Reply-To: <CAEf4BzaMgv5otr9AQGHZW=sUCuBdt_Vkv_GqB9n8BYVcZWHjAQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: BL0PR0102CA0067.prod.exchangelabs.com
+ (2603:10b6:208:25::44) To DM6PR15MB4039.namprd15.prod.outlook.com
+ (2603:10b6:5:2b2::20)
+MIME-Version: 1.0
+Received: from [IPV6:2620:10d:c0a8:11e1::1047] (2620:10d:c091:480::1:1ade) by BL0PR0102CA0067.prod.exchangelabs.com (2603:10b6:208:25::44) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.16 via Frontend Transport; Wed, 20 Oct 2021 08:03:57 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d9ec67d5-e3a4-4757-c163-08d9939fc602
-X-MS-TrafficTypeDiagnostic: BYAPR12MB3447:
-X-Microsoft-Antispam-PRVS: <BYAPR12MB3447D741EEA6E7B1D4208EB6C3BE9@BYAPR12MB3447.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Office365-Filtering-Correlation-Id: 62c339b3-bc16-480a-678b-08d993a02b58
+X-MS-TrafficTypeDiagnostic: DM6PR15MB2410:
+X-Microsoft-Antispam-PRVS: <DM6PR15MB2410252672DCC5B3615E87CBA0BE9@DM6PR15MB2410.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YzXa476lr9SjJIPX8/nKAmG/u7k0dtNOq2SxHVU0xpmlj0BsKyDtBsw4Gif4bNsRmYf1e42xJbXQosRm4/nOZhCk1VPqKlrEvC4PEM3MpQ2tYznBVgGhcVUogd8U1XKEphCgQynDZjKXnSnk7Ep3Z5u/v8plG+M7OjlyVYSIWxG4WmwQ7akLfdBelClb834uVLSebxvtlSqdzTnxN/Re+DbiqhlhMr8yUMpHpVASWpJbrtuPZY0vPCBHU+TnDZwmq1qfLArz4DtpRMQMNMHl8DvPD9X/NoY7vMn7fRuUjEZSV90/jt0S2KIWZW7J9kBqFGyTJH7lj5Q/XnVBlPN2UHuJe5qFgRHVWXOw7g4I0IaLRhMJrMa3XoJnC/ZQxqM1wXgb6867bRpUjKj7GYCNDA5SLsGQNaWH6JfPNEez60Z0hbSxM9j5kAcAa1BgXayaxin+f+UTPWWIpqLOfG8PcjjxsEW0D7QVcg5c23EgPu3PoD9Eblm7jHpZ5gAXgf3S8kgZFQRwrCFS3JXka0IyyPMCjHhJtSXQZ31bxXUEpzd8ZOAgATZQ+cKBZOIKLtaIMMFyNLuMssi3Ci3HgbYd+O1uk4Z8d7mvTT7YMVxFgfTGhbNVK8LDpncO1xeWfVja/rm/3wwBnytoaFov7elePIlHGgpPq0UqgLZfcB4iiYXFZiti4G67CXsSfa5LZVWx83MBZbEEYUsrqrY7cSvVo6p6IxAKhD+H/XisodhAUxo=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(26005)(356005)(36860700001)(426003)(70206006)(70586007)(54906003)(16526019)(186003)(7636003)(53546011)(8936002)(336012)(107886003)(86362001)(5660300002)(2906002)(316002)(16576012)(82310400003)(6636002)(31696002)(47076005)(8676002)(110136005)(2616005)(31686004)(36756003)(508600001)(4326008)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2021 08:01:07.6101
+X-Microsoft-Antispam-Message-Info: Mtsq+u2gDLeU+aD4g2NlqlOyLeyauYmOP6yda7DFOlaagZJIhqRyXXzKzoi7FXtUxj1BkLAfoTYou2vQxKJcbz21fKpWld3wuSzWGQiL25ONY/Yq3zs1/GFjPIEpH6zkmqPz8mLhsuAC0H75OZ0GirT2rzLb2dZf4z5lUX4fGs2Zme493vWjTC+L/OYvO4qSgOsRpv6Jh+mde6f9SM/PVUJ2XzGb0M40zzwADG0PQ76rK+Lm6kfEBBycTG4UDktpQNP1+2Uqk9QSJBbriKzTyxUAPfPe9ilIC4lJ9CwYhpIhYvEzlHyyfQ4rGZUZ+LfQ8uWGOUcLHgEz64ei5u/NGfZObIP/flfhQu9WdJCXu9hRCtmdOo4bUzTIGHabkyL4BZIpURFIoz0Q6vFsVLpMXhsdPByXaY+5u6TgXNa2pxW4X7wJ+6Z/HAwPylv6qdd3x1udMDGDHxfyYzrBhsaGHAYDFpPpSaw7yK9j8fGYov7eL2MDZ4KRglylVCLYdF+iJErPvPoUX9/yJWehjQLQcex32znWkdTEMHatGBFzwwHjX8toOnbH2aqeE8kEnzFo09iOTxEs3OR7fDNt7BZqnBN2us2GUiwLSaC/4EGLaCHX2hCSfJH7+oO+iPb4Kjr73ObhSZxnBbL8TzxC77glwvtyBJxnwUhgKAj0dWuOnwGaPWx5DQEZjGm/jmd9prQWxTf6noQgMiQmmPl9SxBNVw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR15MB4039.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(66476007)(36756003)(4326008)(15650500001)(8936002)(2906002)(66556008)(38100700002)(8676002)(5660300002)(316002)(31696002)(2616005)(53546011)(186003)(6916009)(6486002)(86362001)(66946007)(31686004)(83380400001)(508600001)(54906003)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?S3FiQmJZUUxnaWpURzh1M3FLRHJDaTNBZG4zb0hwaGcxdmg1NlNuek1FVWxS?=
+ =?utf-8?B?MTlEQ1ZURVVadXUwMFZsbi9nOXhBYkNpaEZTM3dRUEkxWEF3RGJKUGloTmVr?=
+ =?utf-8?B?RUpNaFdOaTBxYk90YWkySjc1Zi8zWlZVd09yQ0J4R2Y2MmFudVBsRGVWYUFq?=
+ =?utf-8?B?MXBDWFJrb1pEaUdVcUprZjk3QUhVblFMUFNtNndpWWZ2aDF6TUYrbDZETHRD?=
+ =?utf-8?B?NUtrMS9jYWp3ZGF3MXJ1UStlNEdkUnVHeEFhaEVHVTVaUmNialNNSXM4Q0J4?=
+ =?utf-8?B?TUFrc2MxZFgzcHFJNFFPV3pCOHNVSm5MTFJneFlMUXJvNzZHVi9nTjBTWmNk?=
+ =?utf-8?B?aWJqRUlWSmNsbkp4cTFqY1ZGOWxaSU41aWRrTERQN3BsTFJJYnhZM2dQeWxn?=
+ =?utf-8?B?aHJTaGF0eHpQNitvcEU3S0R5MUYxRVIxMnQ3L254SGVnKytKTUg5WWVQS01O?=
+ =?utf-8?B?TnlzdHdHY1I5cU5UVG0xMU1YZ0pqd05vcTJ6MVVjczF1eXNxU3NIY3FickFJ?=
+ =?utf-8?B?MFhTa2NublVGVEl2SGtRSWt0K2M3VytXVk5JZ0xDdVNNeFlWZi9vbk44MDlz?=
+ =?utf-8?B?clRXOGdSSHNRYXRXL3F1QWtlYjZXNDVDbG5NM3MzUm9Zd1paUFlOZlk1cTE3?=
+ =?utf-8?B?d2lwOVJYMzZtOWQrWktEVVg4SWVLTWZPUUM4eFhnNWJGYURvOWJRRW4vMzJl?=
+ =?utf-8?B?UjZlY2RmNndlL2pkcjBpNFprdGpBTFRNcXBmOEZJbFUvS1NLaStScDVMYnJE?=
+ =?utf-8?B?SVRpdG9GWjl1eFBRWW9qWVlhQ1dNY0k3dktRVG9vVjFhK25UcGpuNWsxMHhC?=
+ =?utf-8?B?em9nME5RSWl1TFl3OFltWUZ0dElNNGpxR1VYQXRUVUJwTmVGbFhpdHF5bTNk?=
+ =?utf-8?B?M2xUNUZ1UFd4c0toVjB2ek84ekVKMGVxdUdhSVFDV21wVWFtdWhuMis5dWdx?=
+ =?utf-8?B?VWIrTjZ1clF5VU4yOHJab2E4UkdJYTFndXduMks3a3p5ME1sSXhBQTZDVXJS?=
+ =?utf-8?B?TWRRcmtlMFhiSW1MdHBDTTR6emNTdjFkWHZidStSMVQvLzB4L0JxamNqcU9M?=
+ =?utf-8?B?M2N2RGZTR0t4MHBUU3JEYnZDWmVHeVZnajVYR1h6TzlOQTBUVFM2VTVPamRy?=
+ =?utf-8?B?ZjcrbVQrQ0JKd01SSk1KVXlVZWE4a25OTEYySnZjZTA2alBOVW9Gc0JzeG5Q?=
+ =?utf-8?B?SDhaRDFRQ3RaLzEvZkJ3dkZFVTNudmN0bldlUE9iNHhMbVN1VUx2ek5seHBY?=
+ =?utf-8?B?ZEFlWWN0ZEFDWEVXL0hYSmdKVDlRSkRXZGZkcVFSaWxXcXBiSUdEbU13YXEz?=
+ =?utf-8?B?TmxPbGZhcHM3ZEhsbElxMkhoSGVyaDh5OEU1cGNyQlZLTkdsMFN1UlFQSFRy?=
+ =?utf-8?B?elE3YkNnL0N4b2ltN1Qxb3U2ZkJVT21MMVBTUDZzNWNUZ0gxOVV5LytENW9P?=
+ =?utf-8?B?TVBxcGE2Ukp4Z2VUMDArbmlGd0dSUWFlTzFpdDE3MFM4WHhiN2VhVVl3cUVx?=
+ =?utf-8?B?V2s2eW5jUE11ME5FYk8vN2lMbzUwQm15ZGZBTWtpMlNWREdTckczbFcxU2J6?=
+ =?utf-8?B?eFpTbVpsRW15dU1pZFdPb2xKc0had0ZjaGdJWDIrYjVlbWsvUFRra2syQXFU?=
+ =?utf-8?B?T2ZRUlRuampXQ0daOTdmVnk3NkF4OUZmb1h2MWZjVVB6Tk9ReWQ0VEhaN2d5?=
+ =?utf-8?B?V3RsWTJXRHhPRC9tNDNVYnRhTWlQc1doVFlHSHdrcUhXQjdZcUpLZ1lXODEx?=
+ =?utf-8?B?QVNqSDgzTjlscWN0ZWdXQ2o3ek9jYUladnQyK1ROV2VXcW4rKzZZT0JSTHRu?=
+ =?utf-8?B?bDdIckM3QjNidEEzSXNCdz09?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 62c339b3-bc16-480a-678b-08d993a02b58
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR15MB4039.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2021 08:03:58.2921
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d9ec67d5-e3a4-4757-c163-08d9939fc602
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT008.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3447
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: davemarchevsky@fb.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB2410
+X-OriginatorOrg: fb.com
+X-Proofpoint-GUID: lwHDaJbc0NVaUzFwjJhNOMnkTfqgMWL5
+X-Proofpoint-ORIG-GUID: lwHDaJbc0NVaUzFwjJhNOMnkTfqgMWL5
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-10-20_04,2021-10-19_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 spamscore=0
+ impostorscore=0 mlxscore=0 malwarescore=0 mlxlogscore=999 suspectscore=0
+ clxscore=1011 phishscore=0 priorityscore=1501 lowpriorityscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109230001 definitions=main-2110200045
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/19/2021 9:43 PM, Alex Williamson wrote:
->
->> +
->> +	/* Resuming switches off */
->> +	if (((old_state ^ state) & VFIO_DEVICE_STATE_RESUMING) &&
->> +	    (old_state & VFIO_DEVICE_STATE_RESUMING)) {
->> +		/* deserialize state into the device */
->> +		ret = mlx5vf_load_state(mvdev);
->> +		if (ret) {
->> +			vmig->vfio_dev_state = VFIO_DEVICE_STATE_ERROR;
->> +			return ret;
->> +		}
->> +	}
->> +
->> +	/* Resuming switches on */
->> +	if (((old_state ^ state) & VFIO_DEVICE_STATE_RESUMING) &&
->> +	    (state & VFIO_DEVICE_STATE_RESUMING)) {
->> +		mlx5vf_reset_mig_state(mvdev);
->> +		ret = mlx5vf_pci_new_write_window(mvdev);
->> +		if (ret)
->> +			return ret;
->> +	}
-> A couple nits here...
->
-> Perhaps:
->
-> 	if ((old_state ^ state) & VFIO_DEVICE_STATE_RESUMING)) {
-> 		/* Resuming bit cleared */
-> 		if (old_state & VFIO_DEVICE_STATE_RESUMING) {
-> 			...
-> 		} else { /* Resuming bit set */
-> 			...
-> 		}
-> 	}
+On 10/18/21 5:22 PM, Andrii Nakryiko wrote:   
+> On Mon, Oct 11, 2021 at 1:54 PM Dave Marchevsky <davemarchevsky@fb.com> wrote:
+>>
+>> This stat is currently printed in the verifier log and not stored
+>> anywhere. To ease consumption of this data, add a field to bpf_prog_aux
+>> so it can be exposed via BPF_OBJ_GET_INFO_BY_FD and fdinfo.
+>>
+>> Signed-off-by: Dave Marchevsky <davemarchevsky@fb.com>
+>> ---
+>>  include/linux/bpf.h            | 1 +
+>>  include/uapi/linux/bpf.h       | 2 +-
+>>  kernel/bpf/syscall.c           | 8 ++++++--
+>>  kernel/bpf/verifier.c          | 1 +
+>>  tools/include/uapi/linux/bpf.h | 2 +-
+>>  5 files changed, 10 insertions(+), 4 deletions(-)
+>>
+> 
+> [...]
+> 
+>> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+>> index 6fc59d61937a..d053fc7e7995 100644
+>> --- a/tools/include/uapi/linux/bpf.h
+>> +++ b/tools/include/uapi/linux/bpf.h
+>> @@ -5591,7 +5591,7 @@ struct bpf_prog_info {
+>>         char name[BPF_OBJ_NAME_LEN];
+>>         __u32 ifindex;
+>>         __u32 gpl_compatible:1;
+>> -       __u32 :31; /* alignment pad */
+>> +       __u32 verified_insns:31;
+> 
+> These 31 unused bits seem like a good place to add extra generic
+> flags, not new counters. E.g., like a sleepable flag. So I wonder if
+> it's better to use a dedicated u32 field for counters like
+> verified_insns and keep these reserved fields for boolean flags?
+> 
+> Daniel, I know you proposed to reuse those 31 bits. How strong do you
+> feel about this? For any other kind of counter we seem to be using a
+> complete dedicated integer field, so it would be consistent to keep
+> doing that?
+> 
+> Having a sleepable bit still seems like a good idea, btw :) but it's a
+> separate change from Dave's.
 
-  I tried to avoid nested 'if's as of some previous notes.
+Re: use padding vs new field, I don't have a strong feeling either way,
+but if there are proper flags that could use that space in the near 
+future, this combined with consistency with other counters leans me 
+towards adding a new field.
 
-The 'resuming' two cases are handled already above so functional wise 
-the code covers this.
+Also, when using the bitfield space, clang complains about types in 
+selftest assert:
 
-Jason/Alex,
+tools/testing/selftests/bpf/prog_tests/verif_stats.c:23:17: error: ‘typeof’ applied to a bit-field
+   23 |  if (!ASSERT_GT(info.verified_insns, 0, "verified_insns"))
+      |                 ^~~~
+./test_progs.h:227:9: note: in definition of macro ‘ASSERT_GT’
+  227 |  typeof(actual) ___act = (actual);    \
 
-Please recommend what is the preferred way, both options seems to be 
-fine for me.
+Which necessitated a __u32 cast in this version of the patchset. Don't think
+it would cause issues outside of this specific selftest, but worth noting.
 
->
-> Also
->
-> 	u32 flipped_bits = old_state ^ state;
->
-> or similar would simplify all these cases slightly.
->
-
-Sure, will use it in V3.
-
->> +
->> +	/* Saving switches on */
->> +	if (((old_state ^ state) & VFIO_DEVICE_STATE_SAVING) &&
->> +	    (state & VFIO_DEVICE_STATE_SAVING)) {
->> +		if (!(state & VFIO_DEVICE_STATE_RUNNING)) {
->> +			/* serialize post copy */
->> +			ret = mlx5vf_pci_save_device_data(mvdev);
->> +			if (ret)
->> +				return ret;
->> +		}
->> +	}
-> This doesn't catch all the cases, and in fact misses the most expected
-> case where userspace clears the _RUNNING bit while _SAVING is already
-> enabled.  Does that mean this hasn't actually been tested with QEMU?
-
-
-I run QEMU with 'x-pre-copy-dirty-page-tracking=off' as current driver 
-doesn't support dirty-pages.
-
-As so, it seems that this flow wasn't triggered by QEMU in my save/load 
-test.
-
-> It seems like there also needs to be a clause in the case where
-> _RUNNING switches off to test if _SAVING is already set and has not
-> toggled.
->
-
-This can be achieved by adding the below to current code, this assumes 
-that we are fine with nested 'if's coding.
-
-Seems OK ?
-
-@@ -269,6 +269,7 @@ static int mlx5vf_pci_set_device_state(struct 
-mlx5vf_pci_core_device *mvdev,
-  {
-         struct mlx5vf_pci_migration_info *vmig = &mvdev->vmig;
-         u32 old_state = vmig->vfio_dev_state;
-+       u32 flipped_bits = old_state ^ state;
-         int ret = 0;
-
-         if (old_state == VFIO_DEVICE_STATE_ERROR ||
-@@ -277,7 +278,7 @@ static int mlx5vf_pci_set_device_state(struct 
-mlx5vf_pci_core_device *mvdev,
-                 return -EINVAL;
-
-         /* Running switches off */
--       if (((old_state ^ state) & VFIO_DEVICE_STATE_RUNNING) &&
-+       if ((flipped_bits & VFIO_DEVICE_STATE_RUNNING) &&
-             (old_state & VFIO_DEVICE_STATE_RUNNING)) {
-                 ret = mlx5vf_pci_quiesce_device(mvdev);
-                 if (ret)
-@@ -287,10 +288,18 @@ static int mlx5vf_pci_set_device_state(struct 
-mlx5vf_pci_core_device *mvdev,
-                         vmig->vfio_dev_state = VFIO_DEVICE_STATE_ERROR;
-                         return ret;
-                 }
-+               if (state & VFIO_DEVICE_STATE_SAVING) {
-+                       /* serialize post copy */
-+                       ret = mlx5vf_pci_save_device_data(mvdev);
-+                       if (ret) {
-+                               vmig->vfio_dev_state = 
-VFIO_DEVICE_STATE_ERROR;
-+                               return ret;
-+                       }
-+               }
-         }
-
-
-Yishai
+Anyways, sent a v3 of the patchset with 'new field' and other comments
+addressed.
