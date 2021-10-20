@@ -2,154 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63DE2434374
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 04:16:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 474F1434377
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 04:18:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229663AbhJTCSN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 22:18:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55418 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230235AbhJTCRq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 22:17:46 -0400
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F28AC061769
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 19:15:17 -0700 (PDT)
-Received: by mail-oi1-x22a.google.com with SMTP id o83so7809990oif.4
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 19:15:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=9bZ8jjpF06cd++M8WvcbJeYpvvXwWariX6eZZBJGh+w=;
-        b=FCxluqo+1JRIiA59SkvsMDRBmISn52jFwlz1sFgfUtESwG9RHSeMKQ4CSa/b+ikLZF
-         FjWrFz79VSKXvteWkWaHusnJKqyP2zgVSeUGIO7wppg1LQlrRysaSZylB0G3aDfo7Klh
-         7o9I1niS1OAJguggAEwEfa+j5NGWy43x3BeO86vbX0R0zi10q84RqCub7JnvJYEGgibk
-         uaddbFo5AiE/oRk2xbzck+MWNuHHANd2Oo9106tpvl/Cx5iRD6hBic9fEN8kp3mHk3HQ
-         WMHeIguwNPqGpM/zv2fBFcyvKoo4DG9KqI8WEpGpV/K35GhV58WYR1nV86Sm4N7tMsKY
-         /29w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=9bZ8jjpF06cd++M8WvcbJeYpvvXwWariX6eZZBJGh+w=;
-        b=HfMkRRVzMCTf4SqQCmPsZj1bOvSDJdKLTfaOcMOHLHkv6zfVokUB2TR/+ZvUHG+2rZ
-         S7aJQGgVyJrTA3hyfHQFRHgkRyXr6CSzdbfEntFmMqrb4vHLZwPveL4tND+f6ci6Li8/
-         yoqHKIIyLWUd9GWWjKkwt13VRJP9BY5G+Uhl5Ykjm0dGUmJQaomgJoi07u0IUWLXtC8O
-         FRhMfn4JslrIdr7kmfLQWOEj9s+Lrzw6i7ilNwInwsgjcWHIAynbbqjpJV52RxGTYG8N
-         b4mrlj/p8So4IoeEh+7/v155CkzT+lHwqkngtU0A7E0V2v2vSEozYTfbbZA7AXD2fb8s
-         jQeQ==
-X-Gm-Message-State: AOAM533zYmWZXSUS5AqdPDCan8po2W5vTDDgkzldDyXRVEPsM5x0PeqK
-        0uEk6WuRNIY0Knh/QY4f/ZQ=
-X-Google-Smtp-Source: ABdhPJyrFjJ68Z8dAMJ+nelIWevB0gzD3W5lFGYPhkv1keitBzqCBdNlIdppyeh5XwNUyonv30GE3Q==
-X-Received: by 2002:aca:a858:: with SMTP id r85mr7117940oie.9.1634696116391;
-        Tue, 19 Oct 2021 19:15:16 -0700 (PDT)
-Received: from [172.16.0.2] ([8.48.134.34])
-        by smtp.googlemail.com with ESMTPSA id c4sm190055ook.5.2021.10.19.19.15.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Oct 2021 19:15:15 -0700 (PDT)
-Message-ID: <0fa3610f-50e4-139e-f914-da2728ab5b6c@gmail.com>
-Date:   Tue, 19 Oct 2021 20:15:14 -0600
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.2.0
-Subject: Re: [PATCH v4] net: neighbour: introduce EVICT_NOCARRIER table option
-Content-Language: en-US
-To:     James Prestwood <prestwoj@gmail.com>, netdev@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
+        id S229715AbhJTCUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 22:20:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:22906 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229555AbhJTCU1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 22:20:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634696293;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=D74GYl4Q75+oXj/aMCjO7YTPXeKQjd+IcbtXAGLf308=;
+        b=Bs2r5YFJXMOX61pXNAEqEnnG1ilWnSguIV8DwERM8Ui4u6QEm0fbH07Fk03l2H7QT7Nz/L
+        IwS8bh7OOFq4SF9eWN7qw3ae07Y1g4t35BUABs2g3RRgp1YRhz3dGLJCsb2x52krb6UV5l
+        b/s2yWCaciS625SLcSsN74CSkvj0kSg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-151-8Kxz5JYxMzONNvmCRHlvSQ-1; Tue, 19 Oct 2021 22:18:10 -0400
+X-MC-Unique: 8Kxz5JYxMzONNvmCRHlvSQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5F264108088A;
+        Wed, 20 Oct 2021 02:18:07 +0000 (UTC)
+Received: from T590 (ovpn-8-20.pek2.redhat.com [10.72.8.20])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 22A5D103BAC7;
+        Wed, 20 Oct 2021 02:17:46 +0000 (UTC)
+Date:   Wed, 20 Oct 2021 10:17:41 +0800
+From:   Ming Lei <ming.lei@redhat.com>
+To:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+Cc:     Quanyang Wang <quanyang.wang@windriver.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Tong Zhu <zhutong@amazon.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jouni Malinen <jouni@codeaurora.org>
-References: <20211018192657.481274-1-prestwoj@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20211018192657.481274-1-prestwoj@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jens Axboe <axboe@kernel.dk>, Roman Gushchin <guro@fb.com>,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [V2][PATCH] cgroup: fix memory leak caused by missing
+ cgroup_bpf_offline
+Message-ID: <YW98RTBdzqin+9Ko@T590>
+References: <20211018075623.26884-1-quanyang.wang@windriver.com>
+ <YW04Gqqm3lDisRTc@T590>
+ <8fdcaded-474e-139b-a9bc-5ab6f91fbd4f@windriver.com>
+ <YW1vuXh4C4tX9ZHP@T590>
+ <a84aedfe-6ecf-7f48-505e-a11acfd6204c@windriver.com>
+ <YW78AohHqgqM9Cuw@blackbook>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YW78AohHqgqM9Cuw@blackbook>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/18/21 1:26 PM, James Prestwood wrote:
-> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-> index 16b8bf72feaf..e2aced01905a 100644
-> --- a/Documentation/networking/ip-sysctl.rst
-> +++ b/Documentation/networking/ip-sysctl.rst
-> @@ -200,6 +200,15 @@ neigh/default/unres_qlen - INTEGER
->  
->  	Default: 101
->  
-> +neigh/default/evict_nocarrier - BOOLEAN
-> +	Clears the neighbor cache on NOCARRIER events. This option is important
-> +	for wireless devices where the cache should not be cleared when roaming
-> +	between access points on the same network. In most cases this should
-> +	remain as the default (1).
-> +
-> +	- 1 - (default): Clear the neighbor cache on NOCARRIER events
-> +	- 0 - Do not clear neighbor cache on NOCARRIER events
-> +
->  mtu_expires - INTEGER
->  	Time, in seconds, that cached PMTU information is kept.
->  
-> diff --git a/include/net/neighbour.h b/include/net/neighbour.h
-> index e8e48be66755..71b28f83c3d3 100644
-> --- a/include/net/neighbour.h
-> +++ b/include/net/neighbour.h
-> @@ -54,7 +54,8 @@ enum {
->  	NEIGH_VAR_ANYCAST_DELAY,
->  	NEIGH_VAR_PROXY_DELAY,
->  	NEIGH_VAR_LOCKTIME,
-> -#define NEIGH_VAR_DATA_MAX (NEIGH_VAR_LOCKTIME + 1)
-> +	NEIGH_VAR_EVICT_NOCARRIER,
-> +#define NEIGH_VAR_DATA_MAX (NEIGH_VAR_EVICT_NOCARRIER + 1)
->  	/* Following are used as a second way to access one of the above */
->  	NEIGH_VAR_QUEUE_LEN, /* same data as NEIGH_VAR_QUEUE_LEN_BYTES */
->  	NEIGH_VAR_RETRANS_TIME_MS, /* same data as NEIGH_VAR_RETRANS_TIME */
-> diff --git a/include/uapi/linux/neighbour.h b/include/uapi/linux/neighbour.h
-> index db05fb55055e..1dc125dd4f50 100644
-> --- a/include/uapi/linux/neighbour.h
-> +++ b/include/uapi/linux/neighbour.h
-> @@ -152,6 +152,7 @@ enum {
->  	NDTPA_QUEUE_LENBYTES,		/* u32 */
->  	NDTPA_MCAST_REPROBES,		/* u32 */
->  	NDTPA_PAD,
-> +	NDTPA_EVICT_NOCARRIER,		/* u8 */
+On Tue, Oct 19, 2021 at 07:10:26PM +0200, Michal Koutný wrote:
+> Hi.
+> 
+> On Tue, Oct 19, 2021 at 06:41:14PM +0800, Quanyang Wang <quanyang.wang@windriver.com> wrote:
+> > So I add 2 "Fixes tags" here to indicate that 2 commits introduce two
+> > different issues.
+> 
+> AFAIU, both the changes are needed to cause the leak, a single patch
+> alone won't cause the issue. Is that correct? (Perhaps not as I realize,
+> see below.)
+> 
+> But on second thought, the problem is the missing percpu_ref_exit() in
+> the (root) cgroup release path and percpu counter would allocate the
+> percpu_count_ptr anyway, so 4bfc0bb2c60e is only making the leak more
+> visible. Is this correct?
+> 
+> I agree the commit 2b0d3d3e4fcf ("percpu_ref: reduce memory footprint of
+> percpu_ref in fast path") alone did nothing wrong.
 
-you are proposing a sysctl not a neighbor table attribute. ie., you
-don't need this.
+If only precpu_ref data is leaked, it is fine to add "Fixes: 2b0d3d3e4fcf",
+I thought cgroup_bpf_release() needs to release more for root cgroup, but
+looks not true.
 
 
->  	__NDTPA_MAX
->  };
->  #define NDTPA_MAX (__NDTPA_MAX - 1)
-> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> index 47931c8be04b..953253f3e491 100644
-> --- a/net/core/neighbour.c
-> +++ b/net/core/neighbour.c
-> @@ -318,7 +318,7 @@ static void pneigh_queue_purge(struct sk_buff_head *list)
->  }
->  
->  static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev,
-> -			    bool skip_perm)
-> +			    bool nocarrier)
+Thanks,
+Ming
 
-why are you dropping the skip_perm arg? These are orthogonal skip options.
-
-
-your change seems all over the board here.
-
-You should be adding a per netdevice sysctl to allow this setting to be
-controlled per device, not a global setting or a table setting.
-
-In neigh_carrier_down, check the sysctl for this device (and check 'all'
-device too) and if eviction on carrier down is not wanted, then skip the
-call to __neigh_ifdown.
