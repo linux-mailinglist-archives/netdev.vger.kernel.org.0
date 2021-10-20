@@ -2,198 +2,302 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67C004350DC
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 19:03:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99D01435117
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 19:19:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230187AbhJTRFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 13:05:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59234 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbhJTRFi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 13:05:38 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B6EEC06161C
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 10:03:23 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id om14so2904097pjb.5
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 10:03:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=uJCxU4kwRxM1pAsgJ4u9Ijs/Sad14IXM5teQZ4nxEb0=;
-        b=dKTjeQneobhM/Px1mWtjeAmAuXvEHWwa1aE8t1O825WsnvdR1LiUVJr4zRkVMWuUNC
-         jPo02y7tKMzzOClKcyoeR/iBOeOKuX+W/VIAmznCq/cQW7YQ/dG87bXZHYXBHWW3GkFK
-         NcNzdo9QqyeleeLsgeLZGjoI/Iq+8+vUcDAWoLWYKbgUgpNHuoYcUo+fBuixCes4XONI
-         v3wWreW+79VyKWVXbvFzb2jL08hW/VPI/XggZdA6fSWueoyYapmSx/mrIW/gLWJGKEfv
-         2sAefgI4T12axwFHbRAjNtFBGbFG0OUR3Rwd9omjnPeX8RQBiEGu9wS087dz+2/jmu0s
-         WqZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=uJCxU4kwRxM1pAsgJ4u9Ijs/Sad14IXM5teQZ4nxEb0=;
-        b=VwDvaboR7/8VvGL021EV5QDEGoKEZCLygRElmT3xoRpzeJfyvpMGymQuIPzPNLOOno
-         wZTy+whs3I23GwVh2FVSwuS0M0sEeZSsz2mSx/BEsmnywxy+6y+nSNZDKKmyE+oA2wtr
-         cUrTynsW5nB71PWai0DVLRyvOkifNzTEES2GVbc5MGDEnfSRShZi1zT50w6mAXhHmxYI
-         SJvn+N8yF6jqY+HwVlR+PSEf/aK+T3AC8ofqeYv2jQqwJ1LypFLsTrZ86rVxXnkzpxtS
-         q9hMwZ9N41CHM5QiqOjPGfpItYh4pzWlxulvAHLO5yu6ZlZhiJhOzyNjnjt0/QPFMEU6
-         l5Lg==
-X-Gm-Message-State: AOAM530Wtv7GGUyZuLIMRL9a6BCU5x8ORS31GWsCDDaJvlkMFwf4Wp8A
-        /hB4+IVW+A7UqgyFjBLRD5VlqVdy37+5hw==
-X-Google-Smtp-Source: ABdhPJz2abtV+SLSC+tBoQqFvkjG1dKNpxf6w0FXnTSQ0kysdUbiMBrGT/O0h1cBy3U8lbszYAIFpQ==
-X-Received: by 2002:a17:90b:1c09:: with SMTP id oc9mr190412pjb.33.1634749402395;
-        Wed, 20 Oct 2021 10:03:22 -0700 (PDT)
-Received: from [192.168.254.55] ([50.39.163.188])
-        by smtp.gmail.com with ESMTPSA id d19sm3286673pfl.129.2021.10.20.10.03.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Oct 2021 10:03:21 -0700 (PDT)
-Message-ID: <3955b3c158099ae01a76cee8f3e8f099956f27e3.camel@gmail.com>
-Subject: Re: [PATCH v4] net: neighbour: introduce EVICT_NOCARRIER table
- option
-From:   James Prestwood <prestwoj@gmail.com>
-To:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Tong Zhu <zhutong@amazon.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jouni Malinen <jouni@codeaurora.org>
-Date:   Wed, 20 Oct 2021 09:59:59 -0700
-In-Reply-To: <0fa3610f-50e4-139e-f914-da2728ab5b6c@gmail.com>
-References: <20211018192657.481274-1-prestwoj@gmail.com>
-         <0fa3610f-50e4-139e-f914-da2728ab5b6c@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+        id S230190AbhJTRVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 13:21:37 -0400
+Received: from spam.zju.edu.cn ([61.164.42.155]:32680 "EHLO zju.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229941AbhJTRVf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Oct 2021 13:21:35 -0400
+Received: by ajax-webmail-mail-app3 (Coremail) ; Thu, 21 Oct 2021 01:19:15
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.214.160.77]
+Date:   Thu, 21 Oct 2021 01:19:15 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   "Hanjie Wu" <nagi@zju.edu.cn>
+To:     linux-hams@vger.kernel.org
+Cc:     "Joerg Reuter" <jreuter@yaina.de>,
+        "Ralf Baechle" <ralf@linux-mips.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Bug: Race condition in AX25 device cleanup routine
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2021 www.mailtech.cn zju.edu.cn
+Content-Type: multipart/mixed; 
+        boundary="----=_Part_4241192_1594493050.1634750355043"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <8d9e417.13c67f.17c9eb6d663.Coremail.nagi@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cC_KCgBHR2yTT3BhbA_IBg--.43764W
+X-CM-SenderInfo: qtrxiiiquvmlo62m3hxhgxhubq/1tbiAwUEE1NG3EY7sAABsU
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+------=_Part_4241192_1594493050.1634750355043
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 
-On Tue, 2021-10-19 at 20:15 -0600, David Ahern wrote:
-> On 10/18/21 1:26 PM, James Prestwood wrote:
-> > diff --git a/Documentation/networking/ip-sysctl.rst
-> > b/Documentation/networking/ip-sysctl.rst
-> > index 16b8bf72feaf..e2aced01905a 100644
-> > --- a/Documentation/networking/ip-sysctl.rst
-> > +++ b/Documentation/networking/ip-sysctl.rst
-> > @@ -200,6 +200,15 @@ neigh/default/unres_qlen - INTEGER
-> >  
-> >         Default: 101
-> >  
-> > +neigh/default/evict_nocarrier - BOOLEAN
-> > +       Clears the neighbor cache on NOCARRIER events. This option
-> > is important
-> > +       for wireless devices where the cache should not be cleared
-> > when roaming
-> > +       between access points on the same network. In most cases
-> > this should
-> > +       remain as the default (1).
-> > +
-> > +       - 1 - (default): Clear the neighbor cache on NOCARRIER
-> > events
-> > +       - 0 - Do not clear neighbor cache on NOCARRIER events
-> > +
-> >  mtu_expires - INTEGER
-> >         Time, in seconds, that cached PMTU information is kept.
-> >  
-> > diff --git a/include/net/neighbour.h b/include/net/neighbour.h
-> > index e8e48be66755..71b28f83c3d3 100644
-> > --- a/include/net/neighbour.h
-> > +++ b/include/net/neighbour.h
-> > @@ -54,7 +54,8 @@ enum {
-> >         NEIGH_VAR_ANYCAST_DELAY,
-> >         NEIGH_VAR_PROXY_DELAY,
-> >         NEIGH_VAR_LOCKTIME,
-> > -#define NEIGH_VAR_DATA_MAX (NEIGH_VAR_LOCKTIME + 1)
-> > +       NEIGH_VAR_EVICT_NOCARRIER,
-> > +#define NEIGH_VAR_DATA_MAX (NEIGH_VAR_EVICT_NOCARRIER + 1)
-> >         /* Following are used as a second way to access one of the
-> > above */
-> >         NEIGH_VAR_QUEUE_LEN, /* same data as
-> > NEIGH_VAR_QUEUE_LEN_BYTES */
-> >         NEIGH_VAR_RETRANS_TIME_MS, /* same data as
-> > NEIGH_VAR_RETRANS_TIME */
-> > diff --git a/include/uapi/linux/neighbour.h
-> > b/include/uapi/linux/neighbour.h
-> > index db05fb55055e..1dc125dd4f50 100644
-> > --- a/include/uapi/linux/neighbour.h
-> > +++ b/include/uapi/linux/neighbour.h
-> > @@ -152,6 +152,7 @@ enum {
-> >         NDTPA_QUEUE_LENBYTES,           /* u32 */
-> >         NDTPA_MCAST_REPROBES,           /* u32 */
-> >         NDTPA_PAD,
-> > +       NDTPA_EVICT_NOCARRIER,          /* u8 */
-> 
-> you are proposing a sysctl not a neighbor table attribute. ie., you
-> don't need this.
+SGVsbG8gdGhlcmUsCgpPdXIgdGVhbSAoQmxvY2tTZWMpIGZvdW5kIGEgcmFjZS1jb25kaXRpb24g
+dnVsbmVyYWJpbGl0eSBpbiBMaW51eCdzIEFYLjI1IHBhY2tldCByYWRpbyBwcm90b2NvbCBpbXBs
+ZW1lbnRhdGlvbi4gSXQgbWF5IGNhdXNlIG51bGwgcG9pbnRlciBkZXJlZmVyZW5jZSBhbmQgdXNl
+LWFmdGVyLWZyZWUgYnVncyBhbmQgYWxsb3cgYXR0YWNrZXJzIHRvIGFkb3B0IGZ1cnRoZXIgZXhw
+bG9pdGF0aW9ucy4KCj0qPSo9Kj0qPSo9Kj0qPSo9IMKgQlVHIERFVEFJTFMgwqA9Kj0qPSo9Kj0q
+PSo9Kj0qPQoKTGludXggaW1wbGVtZW50cyBBWDI1IHByb3RvY29sIHRocm91Z2ggc29ja2V0IEFQ
+SSBhbmQgQUZfQVgyNSBhZGRyZXNzIGZhbWlseS4gQW4gQVgyNSBzb2NrZXQgc3RvcmVzIGEgcG9p
+bnRlciB0byB0aGUgQVgyNSBkZXZpY2UgaXQgaXMgYm91bmQgdG8gaW4gaXRzIGF4MjVfY2Igc3Ry
+dWN0LiBWYXJpb3VzIHN5c3RlbSBzb2NrZXQgY2FsbHMsIGZvciBleGFtcGxlLCBzZW5kbXNnKCkg
+YW5kIGdldHNvY2tvcHQoKSwgcmV0cmlldmUgaW5mb3JtYXRpb24gYWJvdXQgdGhlIEFYMjUgZGV2
+aWNlIHRocm91Z2ggdGhpcyBwb2ludGVyLgoKV2hlbiBhbiBBWDI1IGRldmljZSBpcyB1bnJlZ2lz
+dGVyZWQgZnJvbSB0aGUgc3lzdGVtLCB0aGUgbm90aWZpZXIgbGF5ZXIgd2lsbCBjYWxsIGF4MjVf
+a2lsbF9ieV9kZXZpY2UoKSB0byBkaXNzb2NpYXRlIHRoZSBib3VuZCBzb2NrZXRzIGZyb20gdGhp
+cyBkZXZpY2UsIHdoaWNoIGlzIGFjaGlldmVkIGJ5IHNldHRpbmcgdGhlIGF4MjVfZGV2IHBvaW50
+ZXIgZmllbGQgb2YgdGhlIGF4MjVfY2Igc3RydWN0IHRvIE5VTEwuIFRoZSBtZW1vcnkgYmxvY2sg
+b2YgYXgyNV9kZXYgc3RydWN0IGlzIHRoZW4gcmVsZWFzZWQgYnkgY2FsbGluZyBrZnJlZSgpIGlu
+IGF4MjVfZGV2X2RldmljZV9kb3duKCkuCgpIb3dldmVyLCB0aGUgY3VycmVudCBpbXBsZW1lbnRh
+dGlvbiBmYWlscyB0byBjb25zaWRlciB0aGUgc2l0dWF0aW9uIHRoYXQgYSBwZW5kaW5nIHNvY2tl
+dCByZXF1ZXN0IG9uIGFub3RoZXIga3RocmVhZCBtYXkgaG9sZCBhIHBvaW50ZXIgdG8gdGhlIGF4
+MjVfZGV2IGFuZCBhZnRlciB0aGUgZGV2aWNlIGlzIHVucmVnaXN0ZXJlZCBhbmQgZGVhbGxvY2F0
+ZWQsIHRoaXMga3RocmVhZCBtYXkgc3RpbGwgYWNjZXNzIHRoZSBpbnZhbGlkYXRlZCBwb2ludGVy
+LCBjYXVzaW5nIG51bGwgcG9pbnRlciBkZXJlZmVyZW5jZSBvciB1c2UtYWZ0ZXItZnJlZSBidWdz
+LgoKPSo9Kj0qPSo9Kj0qPSo9Kj0gwqBCVUcgRUZGRUNUUyDCoD0qPSo9Kj0qPSo9Kj0qPSo9CgpU
+aGVzZSBmdW5jdGlvbnMgYWNjZXNzIHRoZSBkYXRhIG1lbWJlcnMgb2YgdGhlIGF4MjVfZGV2IHN0
+cnVjdCBhbmQgdGh1cyBoYXZlIGNvbmN1cnJlbmN5IGlzc3VlcyB3aXRoIGF4MjVfa2lsbF9ieV9k
+ZXZpY2UoKToKCiogYXgyNV9nZXRzb2Nrb3B0KCkKKiBheDI1X3JlbGVhc2UoKQoqIGF4MjVfZ2V0
+bmFtZSgpCiogYXgyNV9zZW5kbXNnKCkKKiBheDI1X2luZm9fc2hvdygpCgpUYWtlIGF4MjVfc2Vu
+ZG1zZygpIGFzIGFuIGV4YW1wbGU6CgpzdGF0aWMgaW50IGF4MjVfc2VuZG1zZyhzdHJ1Y3Qgc29j
+a2V0ICpzb2NrLCBzdHJ1Y3QgbXNnaGRyICptc2csIHNpemVfdCBsZW4pCnsKICAgIGF4MjVfY2Ig
+KmF4MjU7Ci4uLgoJYXgyNSA9IHNrX3RvX2F4MjUoc2spOwoJaWYgKGF4MjUtPmF4MjVfZGV2ID09
+IE5VTEwpIHsgLy8gPDE+CgkJZXJyID0gLUVORVRVTlJFQUNIOwoJCWdvdG8gb3V0OwoJfQouLi4g
+Ly8gPDI+CglheDI1X3F1ZXVlX3htaXQoc2tiLCBheDI1LT5heDI1X2Rldi0+ZGV2KTsgLy8gPDM+
+Ci4uLgp9CgpBbHRob3VnaCA8MT4gY2hlY2tzIHRoZSB2YWxpZGl0eSBvZiB0aGUgZGV2aWNlIHRo
+ZSBzb2NrZXQgaXMgYm91bmQgdG8sIGEgZGV2aWNlIHVucmVnaXN0ZXIgZXZlbnQgbWF5IGhhcHBl
+biBhdCA8Mj4sIGFuZCBheDI1LT5heDI1X2RldiBiZWNvbWVzIE5VTEwsIGNhdXNpbmcgbnVsbCBw
+b2ludGVyIGRlcmVmZXJlbmNlIGF0IDwzPi4gQmFja3RyYWNlIG9mIHRoaXMgYnVnOgoKWyAgIDEx
+LjQ5MDM3OF0gQlVHOiBrZXJuZWwgTlVMTCBwb2ludGVyIGRlcmVmZXJlbmNlLCBhZGRyZXNzOiAw
+MDAwMDAwMDAwMDAwMDA4ClsgICAxMS40OTg1ODNdICNQRjogc3VwZXJ2aXNvciByZWFkIGFjY2Vz
+cyBpbiBrZXJuZWwgbW9kZQpbICAgMTEuNTAzMTc5XSAjUEY6IGVycm9yX2NvZGUoMHgwMDAwKSAt
+IG5vdC1wcmVzZW50IHBhZ2UKWyAgIDExLjUwNjYyOF0gUEdEIDAgUDREIDAKWyAgIDExLjUwODc2
+Ml0gT29wczogMDAwMCBbIzFdIFNNUCBQVEkKWyAgIDExLjUxMTI5OV0gQ1BVOiAwIFBJRDogMTE2
+IENvbW06IGF4MjUgTm90IHRhaW50ZWQgNS4xNS4wLXJjNisgIzIKWyAgIDExLjUxNjU0NV0gSGFy
+ZHdhcmUgbmFtZTogUUVNVSBTdGFuZGFyZCBQQyAoaTQ0MEZYICsgUElJWCwgMTk5NiksIEJJT1Mg
+cmVsLTEuMTQuMC0wLWcxNTU4MjFhMTk5MGItcHJlYnVpbHQucWVtdS5vcmcgMDQvMDEvMjAxNApb
+ICAgMTEuNTI2NDk2XSBSSVA6IDAwMTA6YXgyNV9zZW5kbXNnKzB4MmU0LzB4NDEwClsgICAxMS41
+MzAzNjBdIENvZGU6IGMwIDAwIDAwIDAwIDRjIDg5IGY3IDQxIDg5IGMwIDQ5IDhiIDg2IGM4IDAw
+IDAwIDAwIDQ4IDI5IGQwIDQ0IDAxIGMwIDY2IDQxIDg5IDg2IGIyIDAwIDAwIDAwIDBmIGI3IGMw
+IGM2IDA0IDAyIDAzIDQ5IDhiIDQ3IDI4IDw0OD4gOGIgNzAgMDggZTggMTMgYzkgZmYgZmYgNDQg
+ODkgNmMgMjQgMTAgZTkgYzIgZmUgZmYgZmYgNDEgMGYgYjcKWyAgIDExLjU0NDYzNF0gUlNQOiAw
+MDE4OmZmZmZiMTIzMDAxZTdkNDggRUZMQUdTOiAwMDAxMDIxNgpbICAgMTEuNTQ5Mjk3XSBSQVg6
+IDAwMDAwMDAwMDAwMDAwMDAgUkJYOiAwMDAwMDAwMDAwMDAwMDAwIFJDWDogMDAwMDAwMDAwMDAw
+MDAwMApbICAgMTEuNTU1MTIwXSBSRFg6IGZmZmZhMGY4ODJiMGI2MDAgUlNJOiBmZmZmYTBmODgy
+YjFhMDEwIFJESTogZmZmZmEwZjg4MTIwNzAwMApbICAgMTEuNTU5ODUzXSBSQlA6IGZmZmZiMTIz
+MDAxZTdlMzAgUjA4OiAwMDAwMDAwMDAwMDAwMDBlIFIwOTogMDAwMDAwMDAwMDAwMDAwZQpbICAg
+MTEuNTY2Mzc2XSBSMTA6IDAwMDAwMDAwMDAwMDAwMDEgUjExOiAwMDAwMDAwMDAwMDAwMDAxIFIx
+MjogZmZmZmEwZjg4MmIxOTgwMApbICAgMTEuNTcyMTYxXSBSMTM6IDAwMDAwMDAwMDAwMDAwNjQg
+UjE0OiBmZmZmYTBmODgxMjA3MDAwIFIxNTogZmZmZmEwZjg4MmIxYTAwMApbICAgMTEuNTc4Njc4
+XSBGUzogIDAwMDA3ZmU0NTZhZDc3NDAoMDAwMCkgR1M6ZmZmZmEwZjg4NDYwMDAwMCgwMDAwKSBr
+bmxHUzowMDAwMDAwMDAwMDAwMDAwClsgICAxMS41ODUwODZdIENTOiAgMDAxMCBEUzogMDAwMCBF
+UzogMDAwMCBDUjA6IDAwMDAwMDAwODAwNTAwMzMKWyAgIDExLjU4OTg0NV0gQ1IyOiAwMDAwMDAw
+MDAwMDAwMDA4IENSMzogMDAwMDAwMDAwMmFmYzAwMCBDUjQ6IDAwMDAwMDAwMDAwMDA2ZjAKWyAg
+IDExLjU5NDkxNl0gQ2FsbCBUcmFjZToKWyAgIDExLjU5NzE2M10gIHNvY2tfc2VuZG1zZysweDU5
+LzB4NjAKWyAgIDExLjU5OTY0MV0gIF9fc3lzX3NlbmR0bysweGVjLzB4MTYwClsgICAxMS42MDI0
+MjldICA/IGxvY2tkZXBfaGFyZGlycXNfb25fcHJlcGFyZSsweGQ0LzB4MTgwClsgICAxMS42MDY5
+MjBdICBfX3g2NF9zeXNfc2VuZHRvKzB4MjAvMHgzMApbICAgMTEuNjA5NzgyXSAgZG9fc3lzY2Fs
+bF82NCsweDNiLzB4OTAKWyAgIDExLjYxMjU3NV0gIGVudHJ5X1NZU0NBTExfNjRfYWZ0ZXJfaHdm
+cmFtZSsweDQ0LzB4YWUKWyAgIDExLjYxNjE1OV0gUklQOiAwMDMzOjB4N2ZlNDU2Y2E3ZjY0Clsg
+ICAxMS42MTg3MDFdIENvZGU6IDg5IDRjIDI0IDFjIGU4IGNkIGY4IGZmIGZmIDQ0IDhiIDU0IDI0
+IDFjIDhiIDNjIDI0IDQ1IDMxIGM5IDg5IGM1IDQ4IDhiIDU0IDI0IDEwIDQ4IDhiIDc0IDI0IDA4
+IDQ1IDMxIGMwIGI4IDJjIDAwIDAwIDAwIDBmIDA1IDw0OD4gM2QgMDAgZjAgZmYgZmYgNzcgMzAg
+ODkgZWYgNDggODkgMDQgMjQgZTggZjkgZjggZmYgZmYgNDggOGIgMDQKWyAgIDExLjYzMjE2Ml0g
+UlNQOiAwMDJiOjAwMDA3ZmZlZjYzMGY5NTAgRUZMQUdTOiAwMDAwMDI0NiBPUklHX1JBWDogMDAw
+MDAwMDAwMDAwMDAyYwpbICAgMTEuNjM4NjgxXSBSQVg6IGZmZmZmZmZmZmZmZmZmZGEgUkJYOiAw
+MDAwNTU5MThkODVhZDYwIFJDWDogMDAwMDdmZTQ1NmNhN2Y2NApbICAgMTEuNjQ0MzUyXSBSRFg6
+IDAwMDAwMDAwMDAwMDAwNjQgUlNJOiAwMDAwN2ZlNDU2Y2UxMDAwIFJESTogMDAwMDAwMDAwMDAw
+MDAwNgpbICAgMTEuNjQ5Mzc1XSBSQlA6IDAwMDAwMDAwMDAwMDAwMDAgUjA4OiAwMDAwMDAwMDAw
+MDAwMDAwIFIwOTogMDAwMDAwMDAwMDAwMDAwMApbICAgMTEuNjU0NjUxXSBSMTA6IDAwMDAwMDAw
+MDAwMDAwMDAgUjExOiAwMDAwMDAwMDAwMDAwMjQ2IFIxMjogMDAwMDdmZmVmNjMwZjk5MApbICAg
+MTEuNjYxNDA3XSBSMTM6IDAwMDA3ZmZlZjYzMGZhYjAgUjE0OiAwMDAwMDAwMDAwMDAwMDAwIFIx
+NTogMDAwMDAwMDAwMDAwMDAwMApbICAgMTEuNjY2NjQ1XSBNb2R1bGVzIGxpbmtlZCBpbjoKWyAg
+IDExLjY2OTI3NF0gQ1IyOiAwMDAwMDAwMDAwMDAwMDA4ClsgICAxMS42NzMwNTFdIC0tLVsgZW5k
+IHRyYWNlIDg4M2QxMjJmYzUzNmY0YjIgXS0tLQoKTW9yZW92ZXIsIGlmIHdlIHRha2UgYSBsb29r
+IGF0IGF4MjUtPmF4MjVfZGV2LT5kZXYgYXQgPDM+LCB3ZSBjYW4gZmluZCB0aGF0IGl0IGNvbnRh
+aW5zIHR3byBwb2ludGVyIGRlcmVmZXJlbmNlIG9wZXJhdGlvbnMsIHRoZSBmaXJzdCBpcyByZWFk
+aW5nIGF4MjVfZGV2IGZyb20gYXgyNV9jYiBzdHJ1Y3QsIHRoZSBzZWNvbmQgaXMgcmVhZGluZyBk
+ZXYgZnJvbSBheDI1X2Rldi4gSWYgdGhlIGRldmljZSB1bnJlZ2lzdGVyIGV2ZW50IGhhcHBlbnMg
+YmV0d2VlbiB0aGVzZSB0d28gb3BlcmF0aW9ucywgdGhlIHNlY29uZCByZWFkIG9wZXJhdGlvbiBi
+ZWNvbWVzIGEgdXNlLWFmdGVyLWZyZWUgYnVnLgoKPSo9Kj0qPSo9Kj0qPSo9Kj0gwqBCVUcgUkVQ
+Uk9EVUNFIMKgPSo9Kj0qPSo9Kj0qPSo9Kj0KClRoZSBheDI1X3NlbmRtc2coKSBjb3BpZXMgdGhl
+IG1lc3NhZ2UgZnJvbSB0aGUgdXNlcnNwYWNlIGJ1ZmZlciBieSBjYWxsaW5nIG1lbWNweV9mcm9t
+X21zZygpLCB3aGljaCBnaXZlcyB1cyBhIGNoYW5jZSB0byBwYXVzZSB0aGlzIGt0aHJlYWQgdXNp
+bmcgdXNlcmZhdWx0ZmQuIFdoZW4gbWVtY3B5X2Zyb21fbXNnKCkgcmVhZHMgZGF0YSBmcm9tIHVz
+ZXJzcGFjZSBwYWdlcywgb3VyIHBhZ2UgZmF1bHQgaGFuZGxlciBpcyBjYWxsZWQgYW5kIHdlIHVu
+cmVnaXN0ZXIgdGhlIEFYMjUgZGV2aWNlIGluIHRoZSBoYW5kbGVyIGZ1bmN0aW9uLiBBZnRlciBy
+ZXR1cm5pbmcgZnJvbSBwYWdlIGZhdWx0LCB0aGUgYXgyNS0+YXgyNV9kZXYgaXMgc2V0IHRvIE5V
+TEwsIGFuZCBhIG51bGwgcG9pbnRlciBkZXJlZmVyZW5jZSB3aWxsIGJlIHRyaWdnZXJlZC4KCkEg
+cHJvb2Ytb2YtY29uY2VwdCBjb2RlIHRvIHJlcHJvZHVjZSB0aGUgYWZvcmVtZW50aW9uZWQgYnVn
+IGlzIHByb3ZpZGVkIGluIHRoZSBhdHRhY2htZW50LgoKVW5mb3J0dW5hdGVseSwgd2UgYXJlIG5v
+dCBhYmxlIHRvIHBhdXNlIG90aGVyIGZ1bmN0aW9ucywgc28gdGhlIGJ1Z3MgaW4gdGhlc2UgZnVu
+Y3Rpb25zIGNhbm5vdCBiZSBzdGFibHkgcmVwcm9kdWNlZC4gVGhlIHJhY2UgY29uZGl0aW9uIGJ1
+ZyBjYW4gc3RpbGwgaGFwcGVuIGluIHRoZXNlIGZ1bmN0aW9ucywgYnV0IGl0IHJlcXVpcmVzIHNw
+ZWNpZmljIGV4ZWN1dGlvbiBvcmRlciBhbmQgdGhpcyBkZXBlbmRzIG9uIHRoZSBrZXJuZWwgc2No
+ZWR1bGVyLgoKPSo9Kj0qPSo9Kj0qPSo9Kj0gwqBTVUdHRVNURUQgRklYIMKgPSo9Kj0qPSo9Kj0q
+PSo9Kj0KCkZyb20gdGhlIGRpc2N1c3Npb24gYWJvdmUsIHdlIGNvbmNsdWRlIHRoYXQgdGhlIGxh
+Y2sgb2YgbXV0dWFsIGV4Y2x1c2lvbiBiZXR3ZWVuIGF4MjVfa2lsbF9ieV9kZXZpY2UoKSBhbmQg
+b3RoZXIgQVgyNSBzb2NrZXQgZnVuY3Rpb25zIGlzIHRoZSByb290IGNhdXNlIG9mIHRoaXMgYnVn
+LiBBIHBvc3NpYmxlIGZpeCBpcyB0byBpbnRyb2R1Y2UgbG9ja19zb2NrKCkgaW50byB0aGUgZGlz
+c29jaWF0aW9uIHByb2Nlc3MgaW4gYXgyNV9raWxsX2J5X2RldmljZSgpLCBhbmQgdGhpcyBjYW4g
+Z3VhcmFudGVlIHRoYXQgdGhlIHVucmVnaXN0ZXIgcm91dGluZSBjYW5ub3QgcHJvY2VlZCB3aGVu
+IGFub3RoZXIgc29ja2V0IHJlcXVlc3QgaXMgcGVuZGluZy4KCkJlbG93IGlzIG91ciBzdWdnZXN0
+ZWQgcGF0Y2g6CgpGcm9tIDAxNjM3OTk2YTUxMjY5ZmY1NjZhMTA0ODc5YTUzOWZmNDVlNmU3ODIg
+TW9uIFNlcCAxNyAwMDowMDowMCAyMDAxCkZyb206IEhhbmppZSBXdSA8bmFnaUB6anUuZWR1LmNu
+PgpEYXRlOiBUaHUsIDIxIE9jdCAyMDIxIDAwOjA5OjMwICswODAwClN1YmplY3Q6IFtQQVRDSF0g
+YXgyNTogZml4IHJhY2UgY29uZGl0aW9uIGluIEFYMjUgZGV2aWNlIHVucmVnaXN0ZXIgcm91dGlu
+ZQoKVGhlIGF4MjVfa2lsbF9ieV9kZXZpY2UoKSBmdW5jdGlvbiBpbiB0aGUgdW5yZWdpc3RlciBy
+b3V0aW5lIGhhcwpjb25jdXJyZW5jeSBpc3N1ZXMgd2l0aCBvdGhlciBBWDI1IHNvY2tldCBmdW5j
+dGlvbnMuIFRoZSBheDI1X2Rldgpwb2ludGVyIGZpZWxkIG9mIGF4MjVfY2IgaXMgc2V0IHRvIE5V
+TEwgYW5kIHRoZSBheDI1X2RldiBzdHJ1Y3QgaXMgdGhlbgpkZWFsbG9jYXRlZCBieSBheDI1X3J0
+X2RldmljZV9kb3duKCkuIEhvd2V2ZXIsIG90aGVyIHNvY2tldCBmdW5jdGlvbnMKbGlrZSBheDI1
+X3NlbmRtc2coKSBtYXkgc3RpbGwgYWNjZXNzIHRoZSBpbnZhbGlkYXRlZCBwb2ludGVyLgoKVGhp
+cyBwYXRjaCBpbnRyb2R1Y2UgbG9ja19zb2NrKCkgaW50byBheDI1X2tpbGxfYnlfZGV2aWNlKCks
+IGluIG9yZGVyIHRvCmd1YXJhbnRlZSB0aGF0IHRoZSB1bnJlZ2lzdGVyIHJvdXRpbmUgY2Fubm90
+IHByb2NlZWQgd2hlbiBhbm90aGVyIHNvY2tldApyZXF1ZXN0IGlzIHBlbmRpbmcuCgpTaWduZWQt
+b2ZmLWJ5OiBIYW5qaWUgV3UgPG5hZ2lAemp1LmVkdS5jbj4KLS0tCiBuZXQvYXgyNS9hZl9heDI1
+LmMgfCA0ICsrKy0KIDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24o
+LSkKCmRpZmYgLS1naXQgYS9uZXQvYXgyNS9hZl9heDI1LmMgYi9uZXQvYXgyNS9hZl9heDI1LmMK
+aW5kZXggMjYzMWVmYzZlLi5hYTc3ODU2ODcgMTAwNjQ0Ci0tLSBhL25ldC9heDI1L2FmX2F4MjUu
+YworKysgYi9uZXQvYXgyNS9hZl9heDI1LmMKQEAgLTg1LDggKzg1LDEwIEBAIHN0YXRpYyB2b2lk
+IGF4MjVfa2lsbF9ieV9kZXZpY2Uoc3RydWN0IG5ldF9kZXZpY2UgKmRldikKIGFnYWluOgogCWF4
+MjVfZm9yX2VhY2gocywgJmF4MjVfbGlzdCkgewogCQlpZiAocy0+YXgyNV9kZXYgPT0gYXgyNV9k
+ZXYpIHsKLQkJCXMtPmF4MjVfZGV2ID0gTlVMTDsKIAkJCXNwaW5fdW5sb2NrX2JoKCZheDI1X2xp
+c3RfbG9jayk7CisJCQlsb2NrX3NvY2socy0+c2spOworCQkJcy0+YXgyNV9kZXYgPSBOVUxMOwor
+CQkJcmVsZWFzZV9zb2NrKHMtPnNrKTsKIAkJCWF4MjVfZGlzY29ubmVjdChzLCBFTkVUVU5SRUFD
+SCk7CiAJCQlzcGluX2xvY2tfYmgoJmF4MjVfbGlzdF9sb2NrKTsKIAotLSAKMi4yNS4xCgpCZXN0
+IFJlZ2FyZHMKCkhhbmppZSBXdQo=
+------=_Part_4241192_1594493050.1634750355043
+Content-Type: text/x-patch; 
+	name=0001-ax25-fix-race-condition-in-AX25-device-unregister-ro.patch
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="0001-ax25-fix-race-condition-in-AX25-device-unregister-ro.patch"
 
-Can't there be both, as there are with several of the other attributes?
-I very well could have done it wrong, but my intent was to make this
-settable via sysctl and RTNL.
+RnJvbSAwMTYzNzk5NmE1MTI2OWZmNTY2YTEwNDg3OWE1MzlmZjQ1ZTZlNzgyIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQ0KRnJvbTogSGFuamllIFd1IDxuYWdpQHpqdS5lZHUuY24+DQpEYXRlOiBU
+aHUsIDIxIE9jdCAyMDIxIDAwOjA5OjMwICswODAwDQpTdWJqZWN0OiBbUEFUQ0hdIGF4MjU6IGZp
+eCByYWNlIGNvbmRpdGlvbiBpbiBBWDI1IGRldmljZSB1bnJlZ2lzdGVyIHJvdXRpbmUNCg0KVGhl
+IGF4MjVfa2lsbF9ieV9kZXZpY2UoKSBmdW5jdGlvbiBpbiB0aGUgdW5yZWdpc3RlciByb3V0aW5l
+IGhhcw0KY29uY3VycmVuY3kgaXNzdWVzIHdpdGggb3RoZXIgQVgyNSBzb2NrZXQgZnVuY3Rpb25z
+LiBUaGUgYXgyNV9kZXYNCnBvaW50ZXIgZmllbGQgb2YgYXgyNV9jYiBpcyBzZXQgdG8gTlVMTCBh
+bmQgdGhlIGF4MjVfZGV2IHN0cnVjdCBpcyB0aGVuDQpkZWFsbG9jYXRlZCBieSBheDI1X3J0X2Rl
+dmljZV9kb3duKCkuIEhvd2V2ZXIsIG90aGVyIHNvY2tldCBmdW5jdGlvbnMNCmxpa2UgYXgyNV9z
+ZW5kbXNnKCkgbWF5IHN0aWxsIGFjY2VzcyB0aGUgaW52YWxpZGF0ZWQgcG9pbnRlci4NCg0KVGhp
+cyBwYXRjaCBpbnRyb2R1Y2UgbG9ja19zb2NrKCkgaW50byBheDI1X2tpbGxfYnlfZGV2aWNlKCks
+IGluIG9yZGVyIHRvDQpndWFyYW50ZWUgdGhhdCB0aGUgdW5yZWdpc3RlciByb3V0aW5lIGNhbm5v
+dCBwcm9jZWVkIHdoZW4gYW5vdGhlciBzb2NrZXQNCnJlcXVlc3QgaXMgcGVuZGluZy4NCg0KU2ln
+bmVkLW9mZi1ieTogSGFuamllIFd1IDxuYWdpQHpqdS5lZHUuY24+DQotLS0NCiBuZXQvYXgyNS9h
+Zl9heDI1LmMgfCA0ICsrKy0NCiAxIGZpbGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAxIGRl
+bGV0aW9uKC0pDQoNCmRpZmYgLS1naXQgYS9uZXQvYXgyNS9hZl9heDI1LmMgYi9uZXQvYXgyNS9h
+Zl9heDI1LmMNCmluZGV4IDI2MzFlZmM2ZS4uYWE3Nzg1Njg3IDEwMDY0NA0KLS0tIGEvbmV0L2F4
+MjUvYWZfYXgyNS5jDQorKysgYi9uZXQvYXgyNS9hZl9heDI1LmMNCkBAIC04NSw4ICs4NSwxMCBA
+QCBzdGF0aWMgdm9pZCBheDI1X2tpbGxfYnlfZGV2aWNlKHN0cnVjdCBuZXRfZGV2aWNlICpkZXYp
+DQogYWdhaW46DQogCWF4MjVfZm9yX2VhY2gocywgJmF4MjVfbGlzdCkgew0KIAkJaWYgKHMtPmF4
+MjVfZGV2ID09IGF4MjVfZGV2KSB7DQotCQkJcy0+YXgyNV9kZXYgPSBOVUxMOw0KIAkJCXNwaW5f
+dW5sb2NrX2JoKCZheDI1X2xpc3RfbG9jayk7DQorCQkJbG9ja19zb2NrKHMtPnNrKTsNCisJCQlz
+LT5heDI1X2RldiA9IE5VTEw7DQorCQkJcmVsZWFzZV9zb2NrKHMtPnNrKTsNCiAJCQlheDI1X2Rp
+c2Nvbm5lY3QocywgRU5FVFVOUkVBQ0gpOw0KIAkJCXNwaW5fbG9ja19iaCgmYXgyNV9saXN0X2xv
+Y2spOw0KIA0KLS0gDQoyLjI1LjENCg0K
+------=_Part_4241192_1594493050.1634750355043
+Content-Type: application/zip; name=ax25_poc.zip
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="ax25_poc.zip"
 
-But going the per netdev route as you describe below, yes this won't be
-needed.
-
-> 
-> 
-> >         __NDTPA_MAX
-> >  };
-> >  #define NDTPA_MAX (__NDTPA_MAX - 1)
-> > diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> > index 47931c8be04b..953253f3e491 100644
-> > --- a/net/core/neighbour.c
-> > +++ b/net/core/neighbour.c
-> > @@ -318,7 +318,7 @@ static void pneigh_queue_purge(struct
-> > sk_buff_head *list)
-> >  }
-> >  
-> >  static void neigh_flush_dev(struct neigh_table *tbl, struct
-> > net_device *dev,
-> > -                           bool skip_perm)
-> > +                           bool nocarrier)
-> 
-> why are you dropping the skip_perm arg? These are orthogonal skip
-> options.
-
-I felt it was more appropriate to describe the reason/event (no
-carrier) that triggered the flush after adding this option. Rather than
-using something called 'skip_perm' to skip non-perminant entries.
-
-> 
-> 
-> your change seems all over the board here.
-
-If it wasn't obvious this subsystem is totally new to me :)
-
-> 
-> You should be adding a per netdevice sysctl to allow this setting to
-> be
-> controlled per device, not a global setting or a table setting.
-> 
-> In neigh_carrier_down, check the sysctl for this device (and check
-> 'all'
-> device too) and if eviction on carrier down is not wanted, then skip
-> the
-> call to __neigh_ifdown.
-
-Sure, this seems like a good path forward. I was not a fan of needing
-to go into the neighbor iteration loop since we want to skip everything
-for a given netdev anyways.
-
-Thanks for the feedback
-
-- James
-
-
+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
+DwAAAAA=
+------=_Part_4241192_1594493050.1634750355043--
 
