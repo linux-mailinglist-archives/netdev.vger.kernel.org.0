@@ -2,84 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A377C4346EE
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 10:30:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84AA54346F4
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 10:30:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229548AbhJTIcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 04:32:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53228 "EHLO
+        id S229911AbhJTIc2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 04:32:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbhJTIcU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 04:32:20 -0400
+        with ESMTP id S229632AbhJTIcW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 04:32:22 -0400
 Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26386C06161C
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 01:30:06 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id y74-20020a1c7d4d000000b00322f53b9bbfso9240287wmc.3
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 01:30:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4929BC061746
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 01:30:07 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id d198-20020a1c1dcf000000b00322f53b9b89so8303901wmd.0
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 01:30:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=36K3eo2kvYLnIh7MhO6B56uMEJ0wK8B7qHZgdAK1xZM=;
-        b=EKW7Gw+rFN0RDhEHdg2dCdCR2u4ot0V5t8Gf97hnoGypa0zIbUSVi/LrNTgx8FkIgR
-         26ti5ULugpFdi6U/1Y+T6CArPklIAtZCdedtAeCOqaDFUPZO6hKEckVyLjIj6WwmtLxZ
-         gQDFAKJetsCFDmCbt9xt72FI9Sl0wxeXDaLQ0=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=CbvtrLjcUbfgAMTLROLIlvj1tZ7LmmnXHpndaPRCItA=;
+        b=UCGyUGeVpWan4WCX6U/T8SPsoDfVI8CRM1oqIfsJkpGsZUjZ1PJjuoy0Yx2XdBYhOA
+         FDjDLlXRKmgBMVew3f4H+plLhk3YEnccbeLeSMewyXqwlvLWiTZXI6oGP5do8odiS9yj
+         oG7NPxnJhXvgZTREotbgPMKNA+K7wPzH1puMc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=36K3eo2kvYLnIh7MhO6B56uMEJ0wK8B7qHZgdAK1xZM=;
-        b=EVBJzQEZCJJSiwGNXR6nWbEsNoC4kty0KrLbQGScs7zha1WcR31PrkV4rE87gfc3Wv
-         4eFJVAZPV8ivhsdA3zeZUEWGWu5TZdQjFqxDK/WFGoy0zFEG2XLcew4Dp/nGQtC8TLN3
-         fbxIya0T3UJu6sOcaT5m9MGl0NA5sl+iQ+X1W7HrHmXaL5wPLhMXLpA04Jn2x9VT+n6C
-         ySwUduJGxOuDVtViuGEICZXV2790ekqAEXFZnkZcQ5pW8oRQ6dyaV+oimNAwq+ExBs9z
-         B/U7EP0OU6xYhaYlWxCh0PKLORBmrv4jl+yGJ3b0konJPYQmus6Uo90Y9SkAyzp8l/ij
-         xDNw==
-X-Gm-Message-State: AOAM530QHxiJJkFSwsEYvg+3hAs6gage/iEZ/2HNN5luw6N7WSOcmucd
-        5gFKVfY4uyT1Nz0AY7bArWud2g==
-X-Google-Smtp-Source: ABdhPJyVYtM/WKGa3w08DC0RC6YUzXqtv+7iro0D/nQ+V0iQQBARwtqXKCnOrURvQFQ2p4TQl+daZw==
-X-Received: by 2002:a1c:f002:: with SMTP id a2mr11871816wmb.79.1634718604721;
-        Wed, 20 Oct 2021 01:30:04 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=CbvtrLjcUbfgAMTLROLIlvj1tZ7LmmnXHpndaPRCItA=;
+        b=C27h1ctAIkoTOTj/C0d8J5gpq8e6ytVQ/8JqZ3q54BhSE3pXlgB/kGBOVfK7i2jd6J
+         n/3RmYwxQCSEsjKe1cGIlWzqrgDhocM8ieij1UeoH2T09LE1L3xXEE89GHminmNm5whs
+         dpxR7xCbMJAHW1wo8tjKSPQMDCoWdVLcRCjtHHWSl1WKiofJfvSeBKElxNY6qE/QUex/
+         rqJ6fCct+MTaKcrEAeF1PIsyIMDExwsPMFMmjiR6NfF9G/HO+tZV+7OuoAgcptyVeIAS
+         Lw9+6RAwrtwc/Ah1bKaQMNsIgr0Zkd8puJ6SVpaO6E035S5+tw8relfTzvjD5PMP9Zd/
+         8y1w==
+X-Gm-Message-State: AOAM530hFRvobqLiNhL0OdhpVygdH47Ltf9zpEx1nvIYtQ4Zdsg4CnoH
+        hHCWyNfNVmOOfaS0XfFr0nYSdA==
+X-Google-Smtp-Source: ABdhPJyg6rc1ETglY+0y14Mx0eWUrqdIrqIr0lV69WB2xP4oiYg+1LoVvxPsJJ+sjjQmknd4sqwsyQ==
+X-Received: by 2002:a05:6000:1acc:: with SMTP id i12mr49580282wry.249.1634718605797;
+        Wed, 20 Oct 2021 01:30:05 -0700 (PDT)
 Received: from antares.. (d.5.c.c.6.2.1.6.f.5.3.5.c.9.c.f.f.f.6.2.a.5.a.7.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:7a5a:26ff:fc9c:535f:6126:cc5d])
-        by smtp.gmail.com with ESMTPSA id s13sm4473133wmc.47.2021.10.20.01.30.04
+        by smtp.gmail.com with ESMTPSA id s13sm4473133wmc.47.2021.10.20.01.30.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Oct 2021 01:30:04 -0700 (PDT)
+        Wed, 20 Oct 2021 01:30:05 -0700 (PDT)
 From:   Lorenz Bauer <lmb@cloudflare.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
+To:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>
 Cc:     kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH bpf-next 0/2] Support RENAME_EXCHANGE on bpffs
-Date:   Wed, 20 Oct 2021 09:29:54 +0100
-Message-Id: <20211020082956.8359-1-lmb@cloudflare.com>
+Subject: [PATCH bpf-next 1/2] libfs: support RENAME_EXCHANGE in simple_rename()
+Date:   Wed, 20 Oct 2021 09:29:55 +0100
+Message-Id: <20211020082956.8359-2-lmb@cloudflare.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20211020082956.8359-1-lmb@cloudflare.com>
+References: <20211020082956.8359-1-lmb@cloudflare.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for renameat2(RENAME_EXCHANGE) on bpffs. This is useful
-for atomic upgrades of our sk_lookup control plane.
+Allow atomic exchange via RENAME_EXCHANGE when using simple_rename.
+This affects binderfs, ramfs, hubetlbfs and bpffs. There isn't much
+to do except update the various *time fields.
 
-* Create a temporary directory on bpffs
-* Migrate maps and pin them into temporary directory
-* Load new sk_lookup BPF, attach it and pin the link into temp dir
-* renameat2(temp dir, state dir, RENAME_EXCHANGE)
-* rmdir temp dir
+Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+---
+ fs/libfs.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-Due to the sk_lookup semantics this means we can never end up in a
-situation where an upgrade breaks the existing control plane.
-
-Lorenz Bauer (2):
-  libfs: support RENAME_EXCHANGE in simple_rename()
-  selftests: bpf: test RENAME_EXCHANGE and RENAME_NOREPLACE on bpffs
-
- fs/libfs.c                                    |  6 ++-
- .../selftests/bpf/prog_tests/test_bpffs.c     | 39 +++++++++++++++++++
- 2 files changed, 44 insertions(+), 1 deletion(-)
-
+diff --git a/fs/libfs.c b/fs/libfs.c
+index 51b4de3b3447..93c03d593749 100644
+--- a/fs/libfs.c
++++ b/fs/libfs.c
+@@ -455,9 +455,12 @@ int simple_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
+ 	struct inode *inode = d_inode(old_dentry);
+ 	int they_are_dirs = d_is_dir(old_dentry);
+ 
+-	if (flags & ~RENAME_NOREPLACE)
++	if (flags & ~(RENAME_NOREPLACE | RENAME_EXCHANGE))
+ 		return -EINVAL;
+ 
++	if (flags & RENAME_EXCHANGE)
++		goto done;
++
+ 	if (!simple_empty(new_dentry))
+ 		return -ENOTEMPTY;
+ 
+@@ -472,6 +475,7 @@ int simple_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
+ 		inc_nlink(new_dir);
+ 	}
+ 
++done:
+ 	old_dir->i_ctime = old_dir->i_mtime = new_dir->i_ctime =
+ 		new_dir->i_mtime = inode->i_ctime = current_time(old_dir);
+ 
 -- 
 2.30.2
 
