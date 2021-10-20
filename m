@@ -2,116 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBA7B43462D
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 09:48:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C29643464C
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 09:54:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229873AbhJTHu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 03:50:57 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:31226 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229627AbhJTHu4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 03:50:56 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19JNw0ne020365
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 00:48:42 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=l+EXY5ITIrA2bTA1mE+9i19+7GeZDrDna/h5jdbRXlc=;
- b=Xke9xPmWOAtOZ7B1beTWH/REPXvbq9KQhtVpQ8arNDrHHQunsfWPq6F91tIsOgCAJyi2
- IyHxvNPMVZ/QNd3phNwAlTYH6qzL5h+fdAgjdn/Y4FLsYgqn3ZUs0X/CoEiKpdj5xbIz
- ZU5WomgFCDRjTVFBBpUmruqcZfVMmjtbwJc= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3bt85gj4dh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 00:48:42 -0700
-Received: from intmgw001.25.frc3.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.14; Wed, 20 Oct 2021 00:48:40 -0700
-Received: by devbig030.frc3.facebook.com (Postfix, from userid 158236)
-        id 1C03E84FD53A; Wed, 20 Oct 2021 00:48:33 -0700 (PDT)
-From:   Dave Marchevsky <davemarchevsky@fb.com>
-To:     <bpf@vger.kernel.org>
-CC:     <netdev@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Dave Marchevsky <davemarchevsky@fb.com>
-Subject: [PATCH v3 bpf-next 2/2] selftests/bpf: add verif_stats test
-Date:   Wed, 20 Oct 2021 00:48:18 -0700
-Message-ID: <20211020074818.1017682-3-davemarchevsky@fb.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211020074818.1017682-1-davemarchevsky@fb.com>
-References: <20211020074818.1017682-1-davemarchevsky@fb.com>
+        id S229881AbhJTH46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 03:56:58 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:42926 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229632AbhJTH4x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Oct 2021 03:56:53 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1634716480; h=Date: Message-ID: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=l1wCt2XwuXKYZBLiuE4Mb1G+nUelwSpcbnLazoCaWbw=;
+ b=qgkz911Wi4llTSxZYgCuZctjF+5kNfdJsLvrsNfUo9HBKEzUWPGwlS7Nfl/Hfr1x9AB+tkMu
+ UxDOONUfnCFKhc2dYBny2G7innrez04Nk5ue0BSdJK4n3sdc4fO/uhswNMKhQjFYf0OE/Fq9
+ ImyIfPHdjl7xtG0WErj0RI8LPSc=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
+ 616fcb32b03398c06c89d62c (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 20 Oct 2021 07:54:26
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id A0B87C4360D; Wed, 20 Oct 2021 07:54:25 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.5 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id D33B8C4360C;
+        Wed, 20 Oct 2021 07:54:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org D33B8C4360C
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-FB-Source: Intern
-X-Proofpoint-GUID: 3fnyaD7-K0fYSlb1fCYNjaVz9DlztiDk
-X-Proofpoint-ORIG-GUID: 3fnyaD7-K0fYSlb1fCYNjaVz9DlztiDk
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-10-20_02,2021-10-19_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- malwarescore=0 priorityscore=1501 impostorscore=0 bulkscore=0
- suspectscore=0 mlxscore=0 phishscore=0 mlxlogscore=769 adultscore=0
- clxscore=1015 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109230001 definitions=main-2110200042
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH V2] ath10k: don't fail if IRAM write fails
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20210722193459.7474-1-ojab@ojab.ru>
+References: <20210722193459.7474-1-ojab@ojab.ru>
+To:     ojab <ojab@ojab.ru>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, ojab <ojab@ojab.ru>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <163471645955.23156.7506403648173685920.kvalo@codeaurora.org>
+Date:   Wed, 20 Oct 2021 07:54:25 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-verified_insns field was added to response of bpf_obj_get_info_by_fd
-call on a prog. Confirm that it's being populated by loading a simple
-program and asking for its info.
+ojab <ojab@ojab.ru> wrote:
 
-Signed-off-by: Dave Marchevsky <davemarchevsky@fb.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
----
- .../selftests/bpf/prog_tests/verif_stats.c    | 28 +++++++++++++++++++
- 1 file changed, 28 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/verif_stats.c
+> After reboot with kernel & firmware updates I found `failed to copy
+> target iram contents:` in dmesg and missing wlan interfaces for both
+> of my QCA9984 compex cards. Rolling back kernel/firmware didn't fixed
+> it, so while I have no idea what's actually happening, I don't see why
+> we should fail in this case, looks like some optional firmware ability
+> that could be skipped.
+> 
+> Also with additional logging there is
+> ```
+> [    6.839858] ath10k_pci 0000:04:00.0: No hardware memory
+> [    6.841205] ath10k_pci 0000:04:00.0: failed to copy target iram contents: -12
+> [    6.873578] ath10k_pci 0000:07:00.0: No hardware memory
+> [    6.875052] ath10k_pci 0000:07:00.0: failed to copy target iram contents: -12
+> ```
+> so exact branch could be seen.
+> 
+> Signed-off-by: Slava Kardakov <ojab@ojab.ru>
+> Tested-by: Axel Rasmussen <axelrasmussen@google.com>
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/verif_stats.c b/tools=
-/testing/selftests/bpf/prog_tests/verif_stats.c
-new file mode 100644
-index 000000000000..b4bae1340cf1
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/verif_stats.c
-@@ -0,0 +1,28 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+
-+#include <test_progs.h>
-+
-+#include "trace_vprintk.lskel.h"
-+
-+void test_verif_stats(void)
-+{
-+	__u32 len =3D sizeof(struct bpf_prog_info);
-+	struct bpf_prog_info info =3D {};
-+	struct trace_vprintk *skel;
-+	int err;
-+
-+	skel =3D trace_vprintk__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "trace_vprintk__open_and_load"))
-+		goto cleanup;
-+
-+	err =3D bpf_obj_get_info_by_fd(skel->progs.sys_enter.prog_fd, &info, &l=
-en);
-+	if (!ASSERT_OK(err, "bpf_obj_get_info_by_fd"))
-+		goto cleanup;
-+
-+	if (!ASSERT_GT(info.verified_insns, 0, "verified_insns"))
-+		goto cleanup;
-+
-+cleanup:
-+	trace_vprintk__destroy(skel);
-+}
---=20
-2.30.2
+I'm planning to take this patch instead:
+
+https://patchwork.kernel.org/project/linux-wireless/patch/20211020075054.23061-1-kvalo@codeaurora.org/
+
+Patch set to Superseded.
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20210722193459.7474-1-ojab@ojab.ru/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
