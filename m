@@ -2,127 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96760435622
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 00:50:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1BC6435624
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 00:50:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231146AbhJTWwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 18:52:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53652 "EHLO
+        id S231240AbhJTWwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 18:52:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbhJTWw1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 18:52:27 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316C8C061749
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 15:50:12 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id b126-20020a251b84000000b005bd8aca71a2so32871718ybb.4
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 15:50:12 -0700 (PDT)
+        with ESMTP id S230361AbhJTWw2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 18:52:28 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F31D8C061749
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 15:50:13 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id r13-20020a17090a1bcd00b001a1b1747cd2so396669pjr.9
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 15:50:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=rBNogD71QwX1yFi87rfGNRLIga0/VwtxkfUp9rDUZvc=;
-        b=C6xt0MvA6xauf5TQ9xfR57d1BTQRzEBmFwnNCfsTj3aXWXKnIUgsp5CyDELUF6Icfb
-         iFtjLEm+fct/ShCneeMKfW4dUN7/dXPIh8V22CqvyZdUeUmi9UJoMmtfVEFTlJ10fV9P
-         YFSInC7Kya0Ob8uXfFRAb47LJXmVZ0Dk+5AojFbPZBHyMvzjRTaYBaB+3ILCnHq/0AfQ
-         ZZzMOfXDiewTIJ5XCrKLM64Q7bHaeS/Z9/gq5LS1ZuCBO+f9T5NkrITnfYVNjCERrq4j
-         fHBgSScQBDO3g3BQmnb8d2u+xBYHWYEi02otwuqapDONTnX7s93JjtDWlQoXSjUyX4vA
-         wdmg==
+        bh=cW6HnFPnxVttXYlllvO2YbONJSMhxty7Sc5+0SAjPIg=;
+        b=jtgkvZuItEYvDKVEAy/vvYC549Z1ccriJUPqqcHb29Pj1nKLN7L3GhYJ7VB/LrbJWD
+         PdWw7lga9wxwhTNbkaxN+9O30u++b3Iu0A+97TjrCkCYZVKaIXzxH05xGw/jRvOA/ZXy
+         J5bdKCrfi52rGvgtvGt7K5K5dm3vBzxyu0yMgyE2Mij48RIgt3ykic6s9DjYUzo+HDm3
+         DoxPstc+A/nL7wt/EAfYqkuSlWV9mZtGyz1im66s86QHHqyomBnDu0b0fQYfKjNaB+PL
+         Gw4MypL7Y/dIRBZhgvGXTZjwHRMUCn+U3/TbIsGk952TwcRJz2HCyObUqxd+MbrKOQz5
+         Lfqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=rBNogD71QwX1yFi87rfGNRLIga0/VwtxkfUp9rDUZvc=;
-        b=7OPHtpA75t0mfsC7MH2dftWbqgvvnW+s/MmUtQ1juzEQvZyhHGPwrkn0uvIkGSKtr+
-         4j5RLFLU/mrmbyC9VEdmGrf5WTGuhcQlCqZ3veBIMcEJjPKb5zxf+QfrNUwuMP0u5wgV
-         1cwWfyDIbMxMlGeQSDDF5R8hcl/NYIxuATfwj452VTAQGMlza+RRgXQcAbJPry/juG1x
-         4f7YsbEKWzkCpSe+tFrebbNF6ynJbqvY22dBzEsHC9jDSLm6jYGvJjuMGlGEBrx0t5mV
-         rPvzZEZi5YWoknDa+fW9sg0emCrhZKviw0P1Bj9pAR6atnY+l4yXtdkzFFGaK8T9eLtV
-         5C2Q==
-X-Gm-Message-State: AOAM533aSywDOEK4flATIkr/UcJo0o9J4Fo5W6s3SA8I53PvpUbgIJ97
-        NA1jbphIly1J1zIQXMXVnW9VkMFllHDLsCvH4lG2RRCMMzBhEI6To+lsicCZysizEXMXXyljltR
-        Rx3A9ipRkhmcZkP+8kCRomuIARJ0CcdQESHIMYvVBN2FpVde7GzP3EA==
-X-Google-Smtp-Source: ABdhPJxARQOrMmkzQMj8NYyUfG6aqUlUOHEqNT0BPimeGmaRxa7RJvpqzNed/ocTcAdE+uX+xLxmFK0=
+        bh=cW6HnFPnxVttXYlllvO2YbONJSMhxty7Sc5+0SAjPIg=;
+        b=HjREs6G+ciuOx0MNMb3xwFdVbODbMAIYGeE4s8f6FHXI2nX2tEk6/OL7tzH1jqlsec
+         q/FVxQFO5b0hK/lge+0n5CECRASUeymqKWRsUniaXwdOWmaWde2XHdOYcja/SAT8krSy
+         vSgE59xsB2PtPR0H4SOkss4NwmDo+Dmxs0RChumnAaLGPoL/j6PNK3xcfgoWWcdX+Lr7
+         V2WdE2W60+XM9Af6rGjMF6JGto9JPY+tf4mIHIDgPW04mxbsNfnRh5Bi7oOHVOJV84QZ
+         0fo0l+zIGaNk/YoFd0vCvf5YCWa45CtJ8pM5XvXlAIrbgOSD1WT7C98MGCgFayCnZXRc
+         bBzQ==
+X-Gm-Message-State: AOAM532R8SNO/YOo0mGPA1+19WF7vUadyhVvBQQz+pHJtgcIZbOSZnDD
+        cGDE46ny8j7U/HX5zDyGuAJ+i7/qwjRJNhZD4jPhugYyS64jEz42MPGUZzD9TCbePeBzYqSf4HO
+        9W+G2ZLpvqITfkhvbfn5Y/e4ZTWHQExZ9LQLI5GE5GasULZx2wMMBxw==
+X-Google-Smtp-Source: ABdhPJyGJrI+IYbh6uloCgmkr4dCkC6+p5FlygHxsXU+AT33iBaLYb4J8Vu5kLVCmyHXRONJ2uMprno=
 X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:dcf9:6f58:d879:8452])
- (user=sdf job=sendgmr) by 2002:a25:37d1:: with SMTP id e200mr2077940yba.34.1634770211380;
- Wed, 20 Oct 2021 15:50:11 -0700 (PDT)
-Date:   Wed, 20 Oct 2021 15:50:04 -0700
+ (user=sdf job=sendgmr) by 2002:a17:902:7ec2:b0:13d:b563:c39 with SMTP id
+ p2-20020a1709027ec200b0013db5630c39mr1856094plb.14.1634770213341; Wed, 20 Oct
+ 2021 15:50:13 -0700 (PDT)
+Date:   Wed, 20 Oct 2021 15:50:05 -0700
 In-Reply-To: <20211020225005.2986729-1-sdf@google.com>
-Message-Id: <20211020225005.2986729-3-sdf@google.com>
+Message-Id: <20211020225005.2986729-4-sdf@google.com>
 Mime-Version: 1.0
 References: <20211020225005.2986729-1-sdf@google.com>
 X-Mailer: git-send-email 2.33.0.1079.g6e70778dc9-goog
-Subject: [PATCH bpf-next v3 2/3] bpftool: don't append / to the progtype
+Subject: [PATCH bpf-next v3 3/3] selftests/bpf: fix flow dissector tests
 From:   Stanislav Fomichev <sdf@google.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        Stanislav Fomichev <sdf@google.com>,
-        Quentin Monnet <quentin@isovalent.com>
+        Stanislav Fomichev <sdf@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Otherwise, attaching with bpftool doesn't work with strict section names.
+- update custom loader to search by name, not section name
+- update bpftool commands to use proper pin path
 
-Also, switch to libbpf strict mode to use the latest conventions
-(note, I don't think we have any cli api guarantees?).
-
-Cc: Quentin Monnet <quentin@isovalent.com>
 Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
- tools/bpf/bpftool/main.c |  4 ++++
- tools/bpf/bpftool/prog.c | 15 +--------------
- 2 files changed, 5 insertions(+), 14 deletions(-)
+ .../selftests/bpf/flow_dissector_load.c        | 18 +++++++++++-------
+ .../selftests/bpf/flow_dissector_load.h        | 10 ++--------
+ .../selftests/bpf/test_flow_dissector.sh       | 10 +++++-----
+ 3 files changed, 18 insertions(+), 20 deletions(-)
 
-diff --git a/tools/bpf/bpftool/main.c b/tools/bpf/bpftool/main.c
-index 02eaaf065f65..8223bac1e401 100644
---- a/tools/bpf/bpftool/main.c
-+++ b/tools/bpf/bpftool/main.c
-@@ -409,6 +409,10 @@ int main(int argc, char **argv)
- 	block_mount = false;
- 	bin_name = argv[0];
+diff --git a/tools/testing/selftests/bpf/flow_dissector_load.c b/tools/testing/selftests/bpf/flow_dissector_load.c
+index 3fd83b9dc1bf..87fd1aa323a9 100644
+--- a/tools/testing/selftests/bpf/flow_dissector_load.c
++++ b/tools/testing/selftests/bpf/flow_dissector_load.c
+@@ -17,7 +17,7 @@
+ const char *cfg_pin_path = "/sys/fs/bpf/flow_dissector";
+ const char *cfg_map_name = "jmp_table";
+ bool cfg_attach = true;
+-char *cfg_section_name;
++char *cfg_prog_name;
+ char *cfg_path_name;
  
+ static void load_and_attach_program(void)
+@@ -25,7 +25,11 @@ static void load_and_attach_program(void)
+ 	int prog_fd, ret;
+ 	struct bpf_object *obj;
+ 
+-	ret = bpf_flow_load(&obj, cfg_path_name, cfg_section_name,
 +	ret = libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
 +	if (ret)
-+		p_err("failed to enable libbpf strict mode: %d", ret);
++		error(1, 0, "failed to enable libbpf strict mode: %d", ret);
 +
- 	hash_init(prog_table.table);
- 	hash_init(map_table.table);
- 	hash_init(link_table.table);
-diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
-index 277d51c4c5d9..17505dc1243e 100644
---- a/tools/bpf/bpftool/prog.c
-+++ b/tools/bpf/bpftool/prog.c
-@@ -1396,8 +1396,6 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
++	ret = bpf_flow_load(&obj, cfg_path_name, cfg_prog_name,
+ 			    cfg_map_name, NULL, &prog_fd, NULL);
+ 	if (ret)
+ 		error(1, 0, "bpf_flow_load %s", cfg_path_name);
+@@ -75,15 +79,15 @@ static void parse_opts(int argc, char **argv)
+ 			break;
+ 		case 'p':
+ 			if (cfg_path_name)
+-				error(1, 0, "only one prog name can be given");
++				error(1, 0, "only one path can be given");
  
- 	while (argc) {
- 		if (is_prefix(*argv, "type")) {
--			char *type;
--
- 			NEXT_ARG();
+ 			cfg_path_name = optarg;
+ 			break;
+ 		case 's':
+-			if (cfg_section_name)
+-				error(1, 0, "only one section can be given");
++			if (cfg_prog_name)
++				error(1, 0, "only one prog can be given");
  
- 			if (common_prog_type != BPF_PROG_TYPE_UNSPEC) {
-@@ -1407,19 +1405,8 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
- 			if (!REQ_ARGS(1))
- 				goto err_free_reuse_maps;
+-			cfg_section_name = optarg;
++			cfg_prog_name = optarg;
+ 			break;
+ 		}
+ 	}
+@@ -94,7 +98,7 @@ static void parse_opts(int argc, char **argv)
+ 	if (cfg_attach && !cfg_path_name)
+ 		error(1, 0, "must provide a path to the BPF program");
  
--			/* Put a '/' at the end of type to appease libbpf */
--			type = malloc(strlen(*argv) + 2);
--			if (!type) {
--				p_err("mem alloc failed");
--				goto err_free_reuse_maps;
--			}
--			*type = 0;
--			strcat(type, *argv);
--			strcat(type, "/");
--
--			err = get_prog_type_by_name(type, &common_prog_type,
-+			err = get_prog_type_by_name(*argv, &common_prog_type,
- 						    &expected_attach_type);
--			free(type);
- 			if (err < 0)
- 				goto err_free_reuse_maps;
+-	if (cfg_attach && !cfg_section_name)
++	if (cfg_attach && !cfg_prog_name)
+ 		error(1, 0, "must provide a section name");
+ }
  
+diff --git a/tools/testing/selftests/bpf/flow_dissector_load.h b/tools/testing/selftests/bpf/flow_dissector_load.h
+index 7290401ec172..9d0acc2fc6cc 100644
+--- a/tools/testing/selftests/bpf/flow_dissector_load.h
++++ b/tools/testing/selftests/bpf/flow_dissector_load.h
+@@ -7,7 +7,7 @@
+ 
+ static inline int bpf_flow_load(struct bpf_object **obj,
+ 				const char *path,
+-				const char *section_name,
++				const char *prog_name,
+ 				const char *map_name,
+ 				const char *keys_map_name,
+ 				int *prog_fd,
+@@ -23,13 +23,7 @@ static inline int bpf_flow_load(struct bpf_object **obj,
+ 	if (ret)
+ 		return ret;
+ 
+-	main_prog = NULL;
+-	bpf_object__for_each_program(prog, *obj) {
+-		if (strcmp(section_name, bpf_program__section_name(prog)) == 0) {
+-			main_prog = prog;
+-			break;
+-		}
+-	}
++	main_prog = bpf_object__find_program_by_name(*obj, prog_name);
+ 	if (!main_prog)
+ 		return -1;
+ 
+diff --git a/tools/testing/selftests/bpf/test_flow_dissector.sh b/tools/testing/selftests/bpf/test_flow_dissector.sh
+index 174b72a64a4c..dbd91221727d 100755
+--- a/tools/testing/selftests/bpf/test_flow_dissector.sh
++++ b/tools/testing/selftests/bpf/test_flow_dissector.sh
+@@ -26,22 +26,22 @@ if [[ -z $(ip netns identify $$) ]]; then
+ 			type flow_dissector
+ 
+ 		if ! unshare --net $bpftool prog attach pinned \
+-			/sys/fs/bpf/flow/flow_dissector flow_dissector; then
++			/sys/fs/bpf/flow/_dissect flow_dissector; then
+ 			echo "Unexpected unsuccessful attach in namespace" >&2
+ 			err=1
+ 		fi
+ 
+-		$bpftool prog attach pinned /sys/fs/bpf/flow/flow_dissector \
++		$bpftool prog attach pinned /sys/fs/bpf/flow/_dissect \
+ 			flow_dissector
+ 
+ 		if unshare --net $bpftool prog attach pinned \
+-			/sys/fs/bpf/flow/flow_dissector flow_dissector; then
++			/sys/fs/bpf/flow/_dissect flow_dissector; then
+ 			echo "Unexpected successful attach in namespace" >&2
+ 			err=1
+ 		fi
+ 
+ 		if ! $bpftool prog detach pinned \
+-			/sys/fs/bpf/flow/flow_dissector flow_dissector; then
++			/sys/fs/bpf/flow/_dissect flow_dissector; then
+ 			echo "Failed to detach flow dissector" >&2
+ 			err=1
+ 		fi
+@@ -95,7 +95,7 @@ else
+ fi
+ 
+ # Attach BPF program
+-./flow_dissector_load -p bpf_flow.o -s flow_dissector
++./flow_dissector_load -p bpf_flow.o -s _dissect
+ 
+ # Setup
+ tc qdisc add dev lo ingress
 -- 
 2.33.0.1079.g6e70778dc9-goog
 
