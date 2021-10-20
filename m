@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6323F435214
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 19:56:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0138F435216
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 19:56:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230400AbhJTR6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 13:58:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35230 "EHLO mail.kernel.org"
+        id S230436AbhJTR6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 13:58:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35254 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230360AbhJTR6p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230311AbhJTR6p (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 20 Oct 2021 13:58:45 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6842361391;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D9EA26128B;
         Wed, 20 Oct 2021 17:56:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634752590;
-        bh=p8Y+J81QzNGdDvwGOkrfgOKajAbHq6Lq23uFhT1FR4k=;
+        s=k20201202; t=1634752591;
+        bh=a5u1Em+0H7/rUSigzLNoKk3dHZf3RGZQo76gA7yzGCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KCTC/Dso5NPHqvG4MatMpaQu5+k6yuLjHfwfVgsgsiHi1ndVJ/txtbfCeJlpVM+Qu
-         shvlAymkFtu0zOJex59VUX46UjvQ5jliETBjT0+XlQOjof6jl7vNNRErGCshhs1z5A
-         ISKFPdZhFtuOtkZjETtydlkaOFYN04MnwIcHmITCuFjfZ9smTlx+TQFyoK2rvWll76
-         esUMIYNQt16oz57BOxSJ+zWybCt7yfBAF2BqWk/R9wsAUsWUPTe3JdO/9WncV3j4We
-         XRD188hN+faLKrw0qBaPZTX4MYhrqGUWQSwJKwZuM3l0O4Ta49y/OXAJ0QIa1vcJxI
-         reNWsN2/Hi5jg==
+        b=WOfJZPKwa8lEbJIfGlMT85HBtUUFlko8ulhCqHqF70mS0u0yq/vBEXOYjBmTPGFWd
+         IKMLm0i78Nj2GvjIy1wHv4Y5BtFAbpcfIanUeDAZKrHzAQ0m790FVIMLkS3i4W0nD0
+         9Q2a89HnCPrUxODOsIDBADBlYzDQJLwXZMVpmgRdyoWrPJVHQ4M4CCvhxAVR+GVN/x
+         9BqesqE4Korj5NSowDgcWZ952YUS47euVTlYoAxSuq4ZYSYtm+xuyp+VurdLYlKT+S
+         KOxV1DwNNYJRgkq/cRhi03qoPNmzzHb8WhEoVUMo/ODuelbOtTL2emxp+pE97h2tFH
+         x2DBlWWEO8Q0w==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Emeel Hakim <ehakim@nvidia.com>,
+        Raed Salem <raeds@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 3/5] net/mlx5e: Fix vlan data lost during suspend flow
-Date:   Wed, 20 Oct 2021 10:56:25 -0700
-Message-Id: <20211020175627.269138-4-saeed@kernel.org>
+Subject: [net 4/5] net/mlx5e: IPsec: Fix a misuse of the software parser's fields
+Date:   Wed, 20 Oct 2021 10:56:26 -0700
+Message-Id: <20211020175627.269138-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211020175627.269138-1-saeed@kernel.org>
 References: <20211020175627.269138-1-saeed@kernel.org>
@@ -41,129 +41,118 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Moshe Shemesh <moshe@nvidia.com>
+From: Emeel Hakim <ehakim@nvidia.com>
 
-During suspend flow the driver calls mlx5e_destroy_vlan_table() which
-does not only delete the vlans steering flow rules, but also frees the
-data on currently active vlans, thus it is not restored during resume
-flow.
+IPsec crypto offload current Software Parser (SWP) fields settings in
+the ethernet segment (eseg) are not aligned with PRM/HW expectations.
+Among others in case of IP|ESP|TCP packet, current driver sets the
+offsets for inner_l3 and inner_l4 although there is no inner l3/l4
+headers relative to ESP header in such packets.
 
-This fix keeps the vlan data on suspend flow and frees it only on driver
-remove flow.
+SWP provides the offsets for HW ,so it can be used to find csum fields
+to offload the checksum, however these are not necessarily used by HW
+and are used as fallback in case HW fails to parse the packet, e.g
+when performing IPSec Transport Aware (IP | ESP | TCP) there is no
+need to add SW parse on inner packet. So in some cases packets csum
+was calculated correctly , whereas in other cases it failed. The later
+faced csum errors (caused by wrong packet length calculations) which
+led to lots of packet drops hence the low throughput.
 
-Fixes: 6783f0a21a3c ("net/mlx5e: Dynamic alloc vlan table for netdev when needed")
-Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Fix by setting the SWP fields as expected in a IP|ESP|TCP packet.
+
+the following describe the expected SWP offsets:
+* Tunnel Mode:
+* SWP:      OutL3       InL3  InL4
+* Pkt: MAC  IP     ESP  IP    L4
+*
+* Transport Mode:
+* SWP:      OutL3       OutL4
+* Pkt: MAC  IP     ESP  L4
+*
+* Tunnel(VXLAN TCP/UDP) over Transport Mode
+* SWP:      OutL3                   InL3  InL4
+* Pkt: MAC  IP     ESP  UDP  VXLAN  IP    L4
+
+Fixes: f1267798c980 ("net/mlx5: Fix checksum issue of VXLAN and IPsec crypto offload")
+Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
+Reviewed-by: Raed Salem <raeds@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/fs.h   |  3 ++
- .../net/ethernet/mellanox/mlx5/core/en_fs.c   | 28 +++++++++++--------
- .../net/ethernet/mellanox/mlx5/core/en_main.c |  7 +++++
- 3 files changed, 26 insertions(+), 12 deletions(-)
+ .../mellanox/mlx5/core/en_accel/ipsec_rxtx.c  | 51 ++++++++++---------
+ 1 file changed, 27 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h b/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
-index 41684a6c44e9..a88a1a48229f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
-@@ -199,6 +199,9 @@ void mlx5e_disable_cvlan_filter(struct mlx5e_priv *priv);
- int mlx5e_create_flow_steering(struct mlx5e_priv *priv);
- void mlx5e_destroy_flow_steering(struct mlx5e_priv *priv);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
+index 33de8f0092a6..fb5397324aa4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
+@@ -141,8 +141,7 @@ static void mlx5e_ipsec_set_swp(struct sk_buff *skb,
+ 	 * Pkt: MAC  IP     ESP  IP    L4
+ 	 *
+ 	 * Transport Mode:
+-	 * SWP:      OutL3       InL4
+-	 *           InL3
++	 * SWP:      OutL3       OutL4
+ 	 * Pkt: MAC  IP     ESP  L4
+ 	 *
+ 	 * Tunnel(VXLAN TCP/UDP) over Transport Mode
+@@ -171,31 +170,35 @@ static void mlx5e_ipsec_set_swp(struct sk_buff *skb,
+ 		return;
  
-+int mlx5e_fs_init(struct mlx5e_priv *priv);
-+void mlx5e_fs_cleanup(struct mlx5e_priv *priv);
-+
- int mlx5e_add_vlan_trap(struct mlx5e_priv *priv, int  trap_id, int tir_num);
- void mlx5e_remove_vlan_trap(struct mlx5e_priv *priv);
- int mlx5e_add_mac_trap(struct mlx5e_priv *priv, int  trap_id, int tir_num);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
-index c06b4b938ae7..d226cc5ab1d1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
-@@ -1186,10 +1186,6 @@ static int mlx5e_create_vlan_table(struct mlx5e_priv *priv)
- 	struct mlx5e_flow_table *ft;
- 	int err;
- 
--	priv->fs.vlan = kvzalloc(sizeof(*priv->fs.vlan), GFP_KERNEL);
--	if (!priv->fs.vlan)
--		return -ENOMEM;
--
- 	ft = &priv->fs.vlan->ft;
- 	ft->num_groups = 0;
- 
-@@ -1198,10 +1194,8 @@ static int mlx5e_create_vlan_table(struct mlx5e_priv *priv)
- 	ft_attr.prio = MLX5E_NIC_PRIO;
- 
- 	ft->t = mlx5_create_flow_table(priv->fs.ns, &ft_attr);
--	if (IS_ERR(ft->t)) {
--		err = PTR_ERR(ft->t);
--		goto err_free_t;
+ 	if (!xo->inner_ipproto) {
+-		eseg->swp_inner_l3_offset = skb_network_offset(skb) / 2;
+-		eseg->swp_inner_l4_offset = skb_inner_transport_offset(skb) / 2;
+-		if (skb->protocol == htons(ETH_P_IPV6))
+-			eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L3_IPV6;
+-		if (xo->proto == IPPROTO_UDP)
++		switch (xo->proto) {
++		case IPPROTO_UDP:
++			eseg->swp_flags |= MLX5_ETH_WQE_SWP_OUTER_L4_UDP;
++			fallthrough;
++		case IPPROTO_TCP:
++			/* IP | ESP | TCP */
++			eseg->swp_outer_l4_offset = skb_inner_transport_offset(skb) / 2;
++			break;
++		default:
++			break;
++		}
++	} else {
++		/* Tunnel(VXLAN TCP/UDP) over Transport Mode */
++		switch (xo->inner_ipproto) {
++		case IPPROTO_UDP:
+ 			eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L4_UDP;
+-		return;
 -	}
-+	if (IS_ERR(ft->t))
-+		return PTR_ERR(ft->t);
+-
+-	/* Tunnel(VXLAN TCP/UDP) over Transport Mode */
+-	switch (xo->inner_ipproto) {
+-	case IPPROTO_UDP:
+-		eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L4_UDP;
+-		fallthrough;
+-	case IPPROTO_TCP:
+-		eseg->swp_inner_l3_offset = skb_inner_network_offset(skb) / 2;
+-		eseg->swp_inner_l4_offset = (skb->csum_start + skb->head - skb->data) / 2;
+-		if (skb->protocol == htons(ETH_P_IPV6))
+-			eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L3_IPV6;
+-		break;
+-	default:
+-		break;
++			fallthrough;
++		case IPPROTO_TCP:
++			eseg->swp_inner_l3_offset = skb_inner_network_offset(skb) / 2;
++			eseg->swp_inner_l4_offset =
++				(skb->csum_start + skb->head - skb->data) / 2;
++			if (skb->protocol == htons(ETH_P_IPV6))
++				eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L3_IPV6;
++			break;
++		default:
++			break;
++		}
+ 	}
  
- 	ft->g = kcalloc(MLX5E_NUM_VLAN_GROUPS, sizeof(*ft->g), GFP_KERNEL);
- 	if (!ft->g) {
-@@ -1221,9 +1215,6 @@ static int mlx5e_create_vlan_table(struct mlx5e_priv *priv)
- 	kfree(ft->g);
- err_destroy_vlan_table:
- 	mlx5_destroy_flow_table(ft->t);
--err_free_t:
--	kvfree(priv->fs.vlan);
--	priv->fs.vlan = NULL;
- 
- 	return err;
- }
-@@ -1232,7 +1223,6 @@ static void mlx5e_destroy_vlan_table(struct mlx5e_priv *priv)
- {
- 	mlx5e_del_vlan_rules(priv);
- 	mlx5e_destroy_flow_table(&priv->fs.vlan->ft);
--	kvfree(priv->fs.vlan);
- }
- 
- static void mlx5e_destroy_inner_ttc_table(struct mlx5e_priv *priv)
-@@ -1351,3 +1341,17 @@ void mlx5e_destroy_flow_steering(struct mlx5e_priv *priv)
- 	mlx5e_arfs_destroy_tables(priv);
- 	mlx5e_ethtool_cleanup_steering(priv);
- }
-+
-+int mlx5e_fs_init(struct mlx5e_priv *priv)
-+{
-+	priv->fs.vlan = kvzalloc(sizeof(*priv->fs.vlan), GFP_KERNEL);
-+	if (!priv->fs.vlan)
-+		return -ENOMEM;
-+	return 0;
-+}
-+
-+void mlx5e_fs_cleanup(struct mlx5e_priv *priv)
-+{
-+	kvfree(priv->fs.vlan);
-+	priv->fs.vlan = NULL;
-+}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 09c8b71b186c..41ef6eb70a58 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -4578,6 +4578,12 @@ static int mlx5e_nic_init(struct mlx5_core_dev *mdev,
- 
- 	mlx5e_timestamp_init(priv);
- 
-+	err = mlx5e_fs_init(priv);
-+	if (err) {
-+		mlx5_core_err(mdev, "FS initialization failed, %d\n", err);
-+		return err;
-+	}
-+
- 	err = mlx5e_ipsec_init(priv);
- 	if (err)
- 		mlx5_core_err(mdev, "IPSec initialization failed, %d\n", err);
-@@ -4595,6 +4601,7 @@ static void mlx5e_nic_cleanup(struct mlx5e_priv *priv)
- 	mlx5e_health_destroy_reporters(priv);
- 	mlx5e_tls_cleanup(priv);
- 	mlx5e_ipsec_cleanup(priv);
-+	mlx5e_fs_cleanup(priv);
+-	return;
  }
  
- static int mlx5e_init_nic_rx(struct mlx5e_priv *priv)
+ void mlx5e_ipsec_set_iv_esn(struct sk_buff *skb, struct xfrm_state *x,
 -- 
 2.31.1
 
