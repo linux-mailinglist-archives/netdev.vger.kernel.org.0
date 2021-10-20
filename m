@@ -2,118 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5ABB8434826
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 11:46:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEDF243482D
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 11:46:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229900AbhJTJso (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 05:48:44 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:39147 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229632AbhJTJsn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 05:48:43 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 19K9kAowD011478, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36503.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 19K9kAowD011478
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 20 Oct 2021 17:46:10 +0800
-Received: from RTEXMBS01.realtek.com.tw (172.21.6.94) by
- RTEXH36503.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.14; Wed, 20 Oct 2021 17:46:10 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Wed, 20 Oct 2021 05:46:10 -0400
-Received: from RTEXMBS04.realtek.com.tw ([fe80::5cc6:b604:a3b5:9abe]) by
- RTEXMBS04.realtek.com.tw ([fe80::5cc6:b604:a3b5:9abe%5]) with mapi id
- 15.01.2308.008; Wed, 20 Oct 2021 17:46:09 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     Kalle Valo <kvalo@codeaurora.org>,
-        "cgel.zte@gmail.com" <cgel.zte@gmail.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "lv.ruyi@zte.com.cn" <lv.ruyi@zte.com.cn>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: RE: [PATCH] rtw89: fix error function parameter
-Thread-Topic: [PATCH] rtw89: fix error function parameter
-Thread-Index: AQHXxJzcl/L9Ey4To0qT1Twz/99G66vbD7qAgAAPjTA=
-Date:   Wed, 20 Oct 2021 09:46:09 +0000
-Message-ID: <3aa076f0e39a485ca090f8c14682b694@realtek.com>
-References: <20211019035311.974706-1-lv.ruyi@zte.com.cn>
- <163471982441.1743.9901035714649893101.kvalo@codeaurora.org>
-In-Reply-To: <163471982441.1743.9901035714649893101.kvalo@codeaurora.org>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS01.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzEwLzIwIOS4iuWNiCAwNjoxMjowMA==?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S230058AbhJTJtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 05:49:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42710 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230052AbhJTJtH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 05:49:07 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B8DC061746
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 02:46:53 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id d198-20020a1c1dcf000000b00322f53b9b89so8770904wmd.0
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 02:46:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GeWdIKHBF0SI3AbP7SbsLae9yLN/fn+RNWHpeLCDp48=;
+        b=NQcA0xbrHWJfeLAw6CRpOmW+dn1hmTi/9lQbZwDfKRjbqOfGX9t3j1UdMxEdgxX3Ui
+         jFEChQTTUjfPFqCybu0rzLMrfMVmN6dI4PETzOFYHgs6gVg1IyuZNMBhnXvdMBDyIcN2
+         eaW4srPc+J6h03PN1Jc6JLI8o5UqzrUtqSaliiLOMHB41NmVK2WSo9uFt1Zddr52B+ZC
+         9LwsBdp7ZQ2uyWV1sRiStGyrK6khm6hCnGHD/BXxHQFJ1xbsRbhHLSlyR1ropHuNnn1D
+         T4/EetD+hrYxftM/xzTvLEuIgipxwbYIAHxhInd0e9o+4oQc+64+P74l2WYryBNQfF06
+         C9Xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GeWdIKHBF0SI3AbP7SbsLae9yLN/fn+RNWHpeLCDp48=;
+        b=CZvp5JqZj+uRtGK0RTbFVbihzTQ2QqvhjZG0kSKNvjplM0JNumUet1nB6bajww8jDC
+         0MCH6gGRtKYHgoknEVwk9kZj0cdlvFS0Kdvj3ecCBikhT5YZ0ClF1Krx4IiLWIGDjq41
+         3r64Qqv0UBq1e+TYDv613rHssYD8NAtWqRhHkRYEOnKUwrBc/l+lt7an73VtG/xq+13L
+         TcIYGDjs0vRxIwjlv3CXBfyqJyyq07Y/TR5SM2EUxiKILWbv1kySlYvDoMXPEdawn5tJ
+         4Q8AkLukc3knaOhsdrBQWtLppUG2wjWOHC3M7fhIKdPm/oMVejWcINKpzexp5P3BLDDl
+         ZWtw==
+X-Gm-Message-State: AOAM531lMPftsT+ck/jA3MROB2EULh7nv9fp2QUuB44wrXylGOiLlytH
+        YCUswqd03gjfB84OBCuwlYh0wHM5J3gGUZY4
+X-Google-Smtp-Source: ABdhPJz0ZHwJC9sZ4mJQxnhWL4CuW5XjYVeJ4v6gSWEVLErPtYTyE9JVjUscDC0GwmO5ycgFxy7b3A==
+X-Received: by 2002:a05:600c:b43:: with SMTP id k3mr12196401wmr.142.1634723212165;
+        Wed, 20 Oct 2021 02:46:52 -0700 (PDT)
+Received: from localhost.localdomain ([149.86.71.75])
+        by smtp.gmail.com with ESMTPSA id u5sm1553533wrg.57.2021.10.20.02.46.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Oct 2021 02:46:51 -0700 (PDT)
+From:   Quentin Monnet <quentin@isovalent.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Quentin Monnet <quentin@isovalent.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: [PATCH bpf-next v2] bpf/preload: Clean up .gitignore and "clean-files" target
+Date:   Wed, 20 Oct 2021 10:46:47 +0100
+Message-Id: <20211020094647.15564-1-quentin@isovalent.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36503.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 10/20/2021 09:28:46
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 166841 [Oct 20 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: pkshih@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 463 463 5854868460de3f0d8e8c0a4df98aeb05fb764a09
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1;127.0.0.199:7.1.2
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 10/20/2021 09:31:00
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IGt2YWxvPWNvZGVhdXJvcmEu
-b3JnQG1nLmNvZGVhdXJvcmEub3JnIDxrdmFsbz1jb2RlYXVyb3JhLm9yZ0BtZy5jb2RlYXVyb3Jh
-Lm9yZz4gT24gQmVoYWxmIE9mIEthbGxlDQo+IFZhbG8NCj4gU2VudDogV2VkbmVzZGF5LCBPY3Rv
-YmVyIDIwLCAyMDIxIDQ6NTAgUE0NCj4gVG86IGNnZWwuenRlQGdtYWlsLmNvbQ0KPiBDYzogZGF2
-ZW1AZGF2ZW1sb2Z0Lm5ldDsga3ViYUBrZXJuZWwub3JnOyBQa3NoaWggPHBrc2hpaEByZWFsdGVr
-LmNvbT47IGx2LnJ1eWlAenRlLmNvbS5jbjsNCj4gbGludXgtd2lyZWxlc3NAdmdlci5rZXJuZWwu
-b3JnOyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3Jn
-OyBaZWFsIFJvYm90DQo+IDx6ZWFsY2lAenRlLmNvbS5jbj4NCj4gU3ViamVjdDogUmU6IFtQQVRD
-SF0gcnR3ODk6IGZpeCBlcnJvciBmdW5jdGlvbiBwYXJhbWV0ZXINCj4gDQo+IGNnZWwuenRlQGdt
-YWlsLmNvbSB3cm90ZToNCj4gDQo+ID4gRnJvbTogTHYgUnV5aSA8bHYucnV5aUB6dGUuY29tLmNu
-Pg0KPiA+DQo+ID4gVGhpcyBwYXRjaCBmaXhlcyB0aGUgZm9sbG93aW5nIENvY2NpbmVsbGUgd2Fy
-bmluZzoNCj4gPiBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg5L3J0dzg4NTJhLmM6
-NzUzOg0KPiA+IFdBUk5JTkcgIHBvc3NpYmxlIGNvbmRpdGlvbiB3aXRoIG5vIGVmZmVjdCAoaWYg
-PT0gZWxzZSkNCj4gPg0KPiA+IFJlcG9ydGVkLWJ5OiBaZWFsIFJvYm90IDx6ZWFsY2lAenRlLmNv
-bS5jbj4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBMdiBSdXlpIDxsdi5ydXlpQHp0ZS5jb20uY24+DQo+
-ID4gQWNrZWQtYnk6IFBpbmctS2UgU2hpaCA8cGtzaGloQHJlYWx0ZWsuY29tPg0KPiANCj4gRmFp
-bGVkIHRvIGFwcGx5LCBwbGVhc2UgcmViYXNlIG9uIHRvcCBvZiB3aXJlbGVzcy1kcml2ZXJzLW5l
-eHQuDQo+IA0KPiBlcnJvcjogcGF0Y2ggZmFpbGVkOiBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFs
-dGVrL3J0dzg5L3J0dzg4NTJhLmM6NzUzDQo+IGVycm9yOiBkcml2ZXJzL25ldC93aXJlbGVzcy9y
-ZWFsdGVrL3J0dzg5L3J0dzg4NTJhLmM6IHBhdGNoIGRvZXMgbm90IGFwcGx5DQo+IGVycm9yOiBE
-aWQgeW91IGhhbmQgZWRpdCB5b3VyIHBhdGNoPw0KPiBJdCBkb2VzIG5vdCBhcHBseSB0byBibG9i
-cyByZWNvcmRlZCBpbiBpdHMgaW5kZXguDQo+IGhpbnQ6IFVzZSAnZ2l0IGFtIC0tc2hvdy1jdXJy
-ZW50LXBhdGNoJyB0byBzZWUgdGhlIGZhaWxlZCBwYXRjaA0KPiBBcHBseWluZzogcnR3ODk6IGZp
-eCBlcnJvciBmdW5jdGlvbiBwYXJhbWV0ZXINCj4gVXNpbmcgaW5kZXggaW5mbyB0byByZWNvbnN0
-cnVjdCBhIGJhc2UgdHJlZS4uLg0KPiBQYXRjaCBmYWlsZWQgYXQgMDAwMSBydHc4OTogZml4IGVy
-cm9yIGZ1bmN0aW9uIHBhcmFtZXRlcg0KPiANCj4gUGF0Y2ggc2V0IHRvIENoYW5nZXMgUmVxdWVz
-dGVkLg0KPiANCg0KSSB0aGluayB0aGlzIGlzIGJlY2F1c2UgdGhlIHBhdGNoIGlzIHRyYW5zbGF0
-ZWQgaW50byBzcGFjZXMgaW5zdGVhZCBvZiB0YWJzLCANCmluIHRoaXMgYW5kIGZvbGxvd2luZyBz
-dGF0ZW1lbnRzLg0KIiAgICAgICAgICAgICAgICBpZiAoaXNfMmcpIg0KDQotLQ0KUGluZy1LZQ0K
-DQoNCg==
+kernel/bpf/preload/Makefile was recently updated to have it install
+libbpf's headers locally instead of pulling them from tools/lib/bpf. But
+two items still need to be addressed.
+
+First, the local .gitignore file was not adjusted to ignore the files
+generated in the new kernel/bpf/preload/libbpf output directory.
+
+Second, the "clean-files" target is now incorrect. The old artefacts
+names were not removed from the target, while the new ones were added
+incorrectly. This is because "clean-files" expects names relative to
+$(obj), but we passed the absolute path instead. This results in the
+output and header-destination directories for libbpf (and their
+contents) not being removed from kernel/bpf/preload on "make clean" from
+the root of the repository.
+
+This commit fixes both issues. Note that $(userprogs) needs not be added
+to "clean-files", because the cleaning infrastructure already accounts
+for it.
+
+Cleaning the files properly also prevents make from printing the
+following message, for builds coming after a "make clean":
+"make[4]: Nothing to be done for 'install_headers'."
+
+v2: Simplify the "clean-files" target.
+
+Fixes: bf60791741d4 ("bpf: preload: Install libbpf headers when building")
+Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+---
+ kernel/bpf/preload/.gitignore | 4 +---
+ kernel/bpf/preload/Makefile   | 3 +--
+ 2 files changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/kernel/bpf/preload/.gitignore b/kernel/bpf/preload/.gitignore
+index 856a4c5ad0dd..9452322902a5 100644
+--- a/kernel/bpf/preload/.gitignore
++++ b/kernel/bpf/preload/.gitignore
+@@ -1,4 +1,2 @@
+-/FEATURE-DUMP.libbpf
+-/bpf_helper_defs.h
+-/feature
++/libbpf
+ /bpf_preload_umd
+diff --git a/kernel/bpf/preload/Makefile b/kernel/bpf/preload/Makefile
+index 469d35e890eb..1400ac58178e 100644
+--- a/kernel/bpf/preload/Makefile
++++ b/kernel/bpf/preload/Makefile
+@@ -27,8 +27,7 @@ userccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi \
+ 
+ userprogs := bpf_preload_umd
+ 
+-clean-files := $(userprogs) bpf_helper_defs.h FEATURE-DUMP.libbpf staticobjs/ feature/
+-clean-files += $(LIBBPF_OUT) $(LIBBPF_DESTDIR)
++clean-files := libbpf/
+ 
+ $(obj)/iterators/iterators.o: | libbpf_hdrs
+ 
+-- 
+2.30.2
+
