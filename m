@@ -2,99 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00FED4345AE
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 09:05:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FC084345B0
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 09:07:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229836AbhJTHHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 03:07:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34168 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229741AbhJTHHq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 03:07:46 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF29C06161C
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 00:05:32 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1md5fG-0005Cc-JX; Wed, 20 Oct 2021 09:05:30 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1md5fG-0005Eo-2R; Wed, 20 Oct 2021 09:05:30 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1md5fG-0001fL-1i; Wed, 20 Oct 2021 09:05:30 +0200
-Date:   Wed, 20 Oct 2021 09:05:26 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     netdev@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: [PATCH] nfc: st95hf: Make spi remove() callback return zero
-Message-ID: <20211020070526.4xsjqdi54iayen3l@pengutronix.de>
-References: <20211019204916.3834554-1-u.kleine-koenig@pengutronix.de>
- <da88faf5-33db-b20d-e019-7cca6779b626@canonical.com>
+        id S229817AbhJTHKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 03:10:01 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:33691 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229771AbhJTHKA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Oct 2021 03:10:00 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1634713667; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=LYXNK56VnUPKwkD/Q/0iGPAE63E7ZSvi9gqsmGRi4QQ=; b=E+hM3JHiG1t3TXMT2Q8hQaRSaiCFmTsrmuoZJsVpwoS256O+Rs/v2bQFnNXy8VWXhqrfeN7k
+ /7TQE7sL8vm2z5eSw31034uNQR2+ZBbKkwRXA5ufzqCsr+V7h79vyhzAF54otIy16XKONCP+
+ IOS0U9AY4LOCEps3edN6PsieKLc=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
+ 616fc02d5ca800b6c1dc0a52 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 20 Oct 2021 07:07:25
+ GMT
+Sender: quic_luoj=quicinc.com@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 6B788C4360C; Wed, 20 Oct 2021 07:07:25 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-5.2 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        NICE_REPLY_A,SPF_FAIL autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from [10.92.1.38] (unknown [180.166.53.36])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: luoj)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 93D3EC4338F;
+        Wed, 20 Oct 2021 07:07:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 93D3EC4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=fail (p=none dis=none) header.from=quicinc.com
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=quicinc.com
+Subject: Re: [PATCH v3 10/13] net: phy: add qca8081 config_init
+To:     Andrew Lunn <andrew@lunn.ch>, Luo Jie <luoj@codeaurora.org>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sricharan@codeaurora.org
+References: <20211018033333.17677-1-luoj@codeaurora.org>
+ <20211018033333.17677-11-luoj@codeaurora.org> <YW3riurwBofqOmUL@lunn.ch>
+From:   Jie Luo <quic_luoj@quicinc.com>
+Message-ID: <32e72ff0-b540-a459-de07-09cfb3216143@quicinc.com>
+Date:   Wed, 20 Oct 2021 15:07:18 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="t6qo6sfqmqkb7uat"
-Content-Disposition: inline
-In-Reply-To: <da88faf5-33db-b20d-e019-7cca6779b626@canonical.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <YW3riurwBofqOmUL@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---t6qo6sfqmqkb7uat
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 10/19/2021 5:47 AM, Andrew Lunn wrote:
+>> +static int qca808x_phy_fast_retrain_config(struct phy_device *phydev)
+>> +{
+>> +	int ret;
+>> +
+>> +	ret = phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_10GBT_CTRL,
+>> +			MDIO_AN_10GBT_CTRL_ADV2_5G |
+>> +			MDIO_AN_10GBT_CTRL_ADVFSRT2_5G |
+>> +			MDIO_AN_10GBT_CTRL_ADVLPTIMING);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	ret = phy_write_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_10GBR_FSRT_CSR,
+>> +			MDIO_PMA_10GBR_FSRT_ENABLE);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	ret = phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_CTRL2, MDIO_AN_THP_BP2_5GT);
+>> +	if (ret)
+>> +		return ret;
+> Could that be made generic and put into phy-c45.c? Is there anything
+> specific to your PHY here?
+>
+> 	 Andrew
 
-Hello Krzysztof,
+Hi Andrew,
 
-On Wed, Oct 20, 2021 at 08:55:51AM +0200, Krzysztof Kozlowski wrote:
-> On 19/10/2021 22:49, Uwe Kleine-K=F6nig wrote:
-> > If something goes wrong in the remove callback, returning an error code
-> > just results in an error message. The device still disappears.
-> >=20
-> > So don't skip disabling the regulator in st95hf_remove() if resetting
-> > the controller via spi fails. Also don't return an error code which just
-> > results in two error messages.
-> >=20
-> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> > ---
-> >  drivers/nfc/st95hf/core.c | 6 ++----
-> >  1 file changed, 2 insertions(+), 4 deletions(-)
->=20
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Thanks for the comments, there is no specific to the PHY, will put it 
+into phy-c45.c in the next patch set.
 
-Given you're the listed maintainer for NFC, I wonder who will take this
-patch? I expected you to take this patch and not "only" give your
-Reviewed-by tag.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---t6qo6sfqmqkb7uat
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmFvv7MACgkQwfwUeK3K
-7AnMFAf+KUqy3frIseGOlOyH1HbwhTND6fhKwRWUauJVZVizxVIo8k6d7SWuJrxz
-u9NUUayoMfbl2l/5tqzHGaVRgDhlUTIeloeTfA21JuNp0WAAbsKnZLi9dqR9kiuh
-iHR19cdfL+W7bY7MsHrJGCI06ynGJSXYKU1A00X15fYD3es7DqjS7tovY7WckhkT
-6LMHYzcbP8bduuCLlwAO002fThF/VtFWZbHEYZrr3O9sTtdIg9VBTlBfXYiMhazC
-RAZZXbaDhwzU6T8PoN8DzEzz3htcdIhL2tKHLLqCemobkgCYv8ORYjsP1jYv2dAq
-yTNP4hESpM+TkE+6/RC0dt/6u5RjUw==
-=jIlV
------END PGP SIGNATURE-----
-
---t6qo6sfqmqkb7uat--
