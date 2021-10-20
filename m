@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AC42434F6A
+	by mail.lfdr.de (Postfix) with ESMTP id F07B4434F6C
 	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 17:56:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230500AbhJTP6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 11:58:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34434 "EHLO mail.kernel.org"
+        id S230522AbhJTP6k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 11:58:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34458 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230501AbhJTP6j (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230219AbhJTP6j (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 20 Oct 2021 11:58:39 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 90CCE613A9;
-        Wed, 20 Oct 2021 15:56:24 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 15A6861391;
+        Wed, 20 Oct 2021 15:56:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634745384;
-        bh=R+swL9rmtFSenC2ia6irgU9Xg+bV/QFrmjtvxo3XbsE=;
+        s=k20201202; t=1634745385;
+        bh=Q6GukgSxum5heAjWu5WVyDdY9rzmygiOSc8He3sQwrE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g7dmnVbOEq0DGrt2G18FaHqWKUjiiogE7RW0GmNbyB4M3tXS0BH4nYaYWeeDx9LNa
-         ncqgJkB+qH7CU0awEMRWLgSP6mttePSpz4ZY9JjXJuaC3satz0ip88ZGT1ebV2OnrU
-         RCuPbSgBARIpPJ18V8GxooYJgPHh9oiPvLuskfadSQdWjQG+b26879eVPNHkwg2h8Z
-         WyVtWxwYaSmyw2N1d3i3kI9bsMzakCU13AWlwmajuEEcnKGACcfEFSGfuIeUqsx5is
-         xKL3mOJYvhllJ7/V8F5JVnxmj+s4E0rbbmwwjY9YzuTmqiVEK1crtF6CoqNMIkzKoY
-         mE+bHAZMu6OJg==
+        b=IR4Gnr2XMuyGLrAh4Wgp2n7WVebOkBKwoenrs0vDN7Fk1lQRD3njkHRI5QnSGIWU/
+         BHLlOjW8SS8hwNHRxd5NlTzHOdqAZ/VL/NDvmga+FACCVe+ft4q9xCqgppaqguwdjt
+         PsPceZg1Wh1y7Sf92ToeOKem8Aht29iYMxy0g6nJrA4xTOtbtsyUJmdrpm/MWjzzlq
+         Y/h6Osj6wzxQE8JtL/Lvv7/dMrSxZSWti8GcJ5BhpVx4W/OGRo0gICVaJQJoPnXhCb
+         4jg794KV2ImAGmjtjmXoqQXCbYOrb6jByWldoRMdMsOQfwQxNc0eD7ZlrgpdKzSRDY
+         mgc8SfBpQuK/Q==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        wei.liu@kernel.org, paul@xen.org, boris.ostrovsky@oracle.com,
-        jgross@suse.com, sstabellini@kernel.org,
-        xen-devel@lists.xenproject.org
-Subject: [PATCH net-next 01/12] net: xen: use eth_hw_addr_set()
-Date:   Wed, 20 Oct 2021 08:56:06 -0700
-Message-Id: <20211020155617.1721694-2-kuba@kernel.org>
+        steve.glendinning@shawell.net, UNGLinuxDriver@microchip.com,
+        linux-usb@vger.kernel.org
+Subject: [PATCH net-next 02/12] usb: smsc: use eth_hw_addr_set()
+Date:   Wed, 20 Oct 2021 08:56:07 -0700
+Message-Id: <20211020155617.1721694-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211020155617.1721694-1-kuba@kernel.org>
 References: <20211020155617.1721694-1-kuba@kernel.org>
@@ -48,67 +47,62 @@ the writes to it got through appropriate helpers.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: wei.liu@kernel.org
-CC: paul@xen.org
-CC: boris.ostrovsky@oracle.com
-CC: jgross@suse.com
-CC: sstabellini@kernel.org
-CC: xen-devel@lists.xenproject.org
+CC: steve.glendinning@shawell.net
+CC: UNGLinuxDriver@microchip.com
+CC: linux-usb@vger.kernel.org
 ---
- drivers/net/xen-netback/interface.c | 6 ++++--
- drivers/net/xen-netfront.c          | 4 +++-
- 2 files changed, 7 insertions(+), 3 deletions(-)
+ drivers/net/usb/smsc75xx.c | 6 ++++--
+ drivers/net/usb/smsc95xx.c | 6 ++++--
+ 2 files changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/xen-netback/interface.c b/drivers/net/xen-netback/interface.c
-index c58996c1e230..fe8e21ad8ed9 100644
---- a/drivers/net/xen-netback/interface.c
-+++ b/drivers/net/xen-netback/interface.c
-@@ -494,6 +494,9 @@ static const struct net_device_ops xenvif_netdev_ops = {
- struct xenvif *xenvif_alloc(struct device *parent, domid_t domid,
- 			    unsigned int handle)
+diff --git a/drivers/net/usb/smsc75xx.c b/drivers/net/usb/smsc75xx.c
+index 3b6987bb4fbe..95de452ff4da 100644
+--- a/drivers/net/usb/smsc75xx.c
++++ b/drivers/net/usb/smsc75xx.c
+@@ -757,6 +757,8 @@ static int smsc75xx_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
+ 
+ static void smsc75xx_init_mac_address(struct usbnet *dev)
  {
-+	static const u8 dummy_addr[ETH_ALEN] = {
-+		0xfe, 0xff, 0xff, 0xff, 0xff, 0xff,
-+	};
- 	int err;
- 	struct net_device *dev;
- 	struct xenvif *vif;
-@@ -551,8 +554,7 @@ struct xenvif *xenvif_alloc(struct device *parent, domid_t domid,
- 	 * stolen by an Ethernet bridge for STP purposes.
- 	 * (FE:FF:FF:FF:FF:FF)
- 	 */
--	eth_broadcast_addr(dev->dev_addr);
--	dev->dev_addr[0] &= ~0x01;
-+	eth_hw_addr_set(dev, dummy_addr);
- 
- 	netif_carrier_off(dev);
- 
-diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-index e31b98403f31..57437e4b8a94 100644
---- a/drivers/net/xen-netfront.c
-+++ b/drivers/net/xen-netfront.c
-@@ -2157,6 +2157,7 @@ static int talk_to_netback(struct xenbus_device *dev,
- 	unsigned int max_queues = 0;
- 	struct netfront_queue *queue = NULL;
- 	unsigned int num_queues = 1;
 +	u8 addr[ETH_ALEN];
- 
- 	info->netdev->irq = 0;
- 
-@@ -2170,11 +2171,12 @@ static int talk_to_netback(struct xenbus_device *dev,
- 					"feature-split-event-channels", 0);
- 
- 	/* Read mac addr. */
--	err = xen_net_read_mac(dev, info->netdev->dev_addr);
-+	err = xen_net_read_mac(dev, addr);
- 	if (err) {
- 		xenbus_dev_fatal(dev, err, "parsing %s/mac", dev->nodename);
- 		goto out_unlocked;
++
+ 	/* maybe the boot loader passed the MAC address in devicetree */
+ 	if (!platform_get_ethdev_address(&dev->udev->dev, dev->net)) {
+ 		if (is_valid_ether_addr(dev->net->dev_addr)) {
+@@ -767,8 +769,8 @@ static void smsc75xx_init_mac_address(struct usbnet *dev)
  	}
-+	eth_hw_addr_set(info->netdev, addr);
  
- 	info->netback_has_xdp_headroom = xenbus_read_unsigned(info->xbdev->otherend,
- 							      "feature-xdp-headroom", 0);
+ 	/* try reading mac address from EEPROM */
+-	if (smsc75xx_read_eeprom(dev, EEPROM_MAC_OFFSET, ETH_ALEN,
+-			dev->net->dev_addr) == 0) {
++	if (smsc75xx_read_eeprom(dev, EEPROM_MAC_OFFSET, ETH_ALEN, addr) == 0) {
++		eth_hw_addr_set(dev->net, addr);
+ 		if (is_valid_ether_addr(dev->net->dev_addr)) {
+ 			/* eeprom values are valid so use them */
+ 			netif_dbg(dev, ifup, dev->net,
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index 21a42a6527dc..20fe4cd8f784 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -755,6 +755,8 @@ static int smsc95xx_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
+ 
+ static void smsc95xx_init_mac_address(struct usbnet *dev)
+ {
++	u8 addr[ETH_ALEN];
++
+ 	/* maybe the boot loader passed the MAC address in devicetree */
+ 	if (!platform_get_ethdev_address(&dev->udev->dev, dev->net)) {
+ 		if (is_valid_ether_addr(dev->net->dev_addr)) {
+@@ -765,8 +767,8 @@ static void smsc95xx_init_mac_address(struct usbnet *dev)
+ 	}
+ 
+ 	/* try reading mac address from EEPROM */
+-	if (smsc95xx_read_eeprom(dev, EEPROM_MAC_OFFSET, ETH_ALEN,
+-			dev->net->dev_addr) == 0) {
++	if (smsc95xx_read_eeprom(dev, EEPROM_MAC_OFFSET, ETH_ALEN, addr) == 0) {
++		eth_hw_addr_set(dev->net, addr);
+ 		if (is_valid_ether_addr(dev->net->dev_addr)) {
+ 			/* eeprom values are valid so use them */
+ 			netif_dbg(dev, ifup, dev->net, "MAC address read from EEPROM\n");
 -- 
 2.31.1
 
