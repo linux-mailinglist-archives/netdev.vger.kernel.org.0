@@ -2,95 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCA5B4351DE
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 19:47:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 902AC4351E4
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 19:48:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230213AbhJTRtT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 13:49:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40712 "EHLO
+        id S230281AbhJTRua (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 13:50:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231392AbhJTRtD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 13:49:03 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFA5AC061753;
-        Wed, 20 Oct 2021 10:46:38 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id v195so12636405ybb.0;
-        Wed, 20 Oct 2021 10:46:38 -0700 (PDT)
+        with ESMTP id S230031AbhJTRua (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 13:50:30 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 925F4C06161C;
+        Wed, 20 Oct 2021 10:48:15 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id o134so12234024ybc.2;
+        Wed, 20 Oct 2021 10:48:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=sOKBPHMdWljkZNSIDrjUwmzeBvLMb2d21VbPwWacTgM=;
-        b=fuvYz9EiYxo+eAIB8lLKMZjoVGkpQhjptDXD7t+bH2LGHwLxNuORBHqD1+aGki/29m
-         i3EKQZOhqRpXiuRC2Zm4sQYgBCuMPwBm1dGN9n3MkQ0A6YJEq8sWqdKlhju3FghSEFGL
-         vTuPceVxHo5Lm2sX5h9jQYrUb9Kop382Wa5/dGGHRc5Hbc9Qvs7IiN8Hg3IAXjkuRijt
-         eWd5+ACFNktNe7+DxVYf7BPTXZLRLOfuWIzS3JTFiG8+PieISTfdQwSzv6n+nG57DE8x
-         uGo/A1znriTj0fcp2Mj2omTwSp+zw+BxxnpGAwxgkLwlfpvTYoRM0G/H3ZUNFpczG821
-         k45w==
+        bh=9it6yRx0Dy5jek9mfIinBGo3kKz2j0Pzxy4NyrmiiyQ=;
+        b=kjmHnDL0KIfrh3TiyhvUFE0ArVTiLuDPfZz24yIGSU9vVk9GtFks4KgLmiqo5Fa3yy
+         4WD0ijbK2004U8ccR7kNEDJK/i1o/cU8GIkvlLbGwA/JRcJQ4m3Z9dJc15v45G1khCrn
+         sIPHW1tJ1sZVubGKC1XV5xYHZNFjyUjyK8AmxpIX8R2NajHh8Wn56DPLQz4Eis3NiEk5
+         elbr8mpEYOXrRmu4dudCsAXC3XC9a30hwUtOH4xj5cqng8n4K0YTLLB0WYQ7bj7L1W5m
+         s8uDGBX0Xvkzx88O0rKBPVAMCFbKohrErYPxRgiOrnbTvp9xqvO92jXuCE9O0qoR9QQW
+         Er3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=sOKBPHMdWljkZNSIDrjUwmzeBvLMb2d21VbPwWacTgM=;
-        b=LCXhYdW/BbswA7D2CBUMj0q71PSPQ4q5tl+fhj+STUnb5nBiB25crKtM9R68uE8t+6
-         chqHxav8kK7lqyGfFhDWW2t0Ueqd3XcQFve4ZYpMYIGXZE7g3SCQ8KLhWcmtyI8N8H+b
-         8FrsY7lCyNHTflthQeXdJn3/1NsQACX4OKIhCzggpG6VluhABjK52pzySomhc4ST8I4Q
-         aNNVv3xEXg/kb3M1kzPWO1thWnAxnBpL6rbwaQstnCNHQ77LqU3XuwlEWWcjmVag3ZtO
-         QAoGchDjNDrEcmmO0pAc0oUs/7uk6sA+5TELhyVxKqstkVc2ftgePdd3fTwaY2+p6hC+
-         KnRA==
-X-Gm-Message-State: AOAM530tVnpEtXYMSnovegjjgF+uzJaPmHwBA0SDi+SmV6wP9SfF83cJ
-        aZ395Lj5526hUs8500TtLvBOG1LPNXjTlRtKFZk=
-X-Google-Smtp-Source: ABdhPJy1/YWZivJtSDC696TGHVh7c8JDcR90h3/DoB2Lt5zT45YYfw4swcV8w8OngSAn2svPXmcGkpXF4IMshFTPFB0=
-X-Received: by 2002:a25:d3c8:: with SMTP id e191mr444609ybf.455.1634751998190;
- Wed, 20 Oct 2021 10:46:38 -0700 (PDT)
+        bh=9it6yRx0Dy5jek9mfIinBGo3kKz2j0Pzxy4NyrmiiyQ=;
+        b=7Dd23XNvGx4TUVhphoQ1nfBfUClJ8Ael4pyGNnDWANBl+narIFSMUjocvpqQTt6xfD
+         PcGoXbOE6dmdEvFcaBt/4qUqugzc8muadS6qU4dnn26zb3n4Hmoc5tFgr3tRzP8Vb8Ov
+         6Wdgv/m5Y1A1Pt0f5pYFnQWsJWrfyPrZ0yViobzSyy0/Iy/eSIF0wddKLWJ/HBipkttW
+         iP7jAnbqoYr4ey5Ftov+74oO/MSyKpsJ8wdGs9w7b5JExNNjfvCIlhCTkYIRQD7nSQWf
+         eIgKP/bCNOivyjbxCgb4RHI0mC/hIWKk0gM0Lu4FDUTrxD3eeXvX/fkZWXZFOseyA+Gz
+         5eCQ==
+X-Gm-Message-State: AOAM530VtxVMRNfXHbc7AqiHuysaSwZ7UKp7GcsXuLfxd7aAFPmWP9Ym
+        u6uoNIOT+X8ND30cvgeMF8R7Vd5sUse3ZI3U5vs=
+X-Google-Smtp-Source: ABdhPJxdJtmTIcLdhvm+FFM0wHc/o9aZ9TvLHRJKKFQdqaKQ/GTjc07lRyMESDpGr3ArgMGfdb5yoeeyqqyL+6JiNjw=
+X-Received: by 2002:a25:afcd:: with SMTP id d13mr523625ybj.504.1634752094832;
+ Wed, 20 Oct 2021 10:48:14 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211012023231.19911-1-wanjiabing@vivo.com> <616d9ba173075_1eb12088b@john-XPS-13-9370.notmuch>
-In-Reply-To: <616d9ba173075_1eb12088b@john-XPS-13-9370.notmuch>
+References: <20211020094826.16046-1-quentin@isovalent.com>
+In-Reply-To: <20211020094826.16046-1-quentin@isovalent.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 20 Oct 2021 10:46:27 -0700
-Message-ID: <CAEf4BzaAmvoT-n8pusycm_q1-Tp4B+KMxu3yw1BXkM3xHY2-HQ@mail.gmail.com>
-Subject: Re: [PATCH] [v2] selftests: bpf: Remove duplicated include in cgroup_helpers
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Wan Jiabing <wanjiabing@vivo.com>, Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+Date:   Wed, 20 Oct 2021 10:48:03 -0700
+Message-ID: <CAEf4BzYjer110+RfsHjoRRbVwKpzMQs=XY+qMTzZh9eHe5KiSw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpftool: remove useless #include to <perf-sys.h>
+ from map_perf_ring.c
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>, kael_w@yeah.net
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 18, 2021 at 9:07 AM John Fastabend <john.fastabend@gmail.com> wrote:
+On Wed, Oct 20, 2021 at 2:48 AM Quentin Monnet <quentin@isovalent.com> wrote:
 >
-> Wan Jiabing wrote:
-> > Fix following checkincludes.pl warning:
-> > ./scripts/checkincludes.pl tools/testing/selftests/bpf/cgroup_helpers.c
-> > tools/testing/selftests/bpf/cgroup_helpers.c: unistd.h is included more
-> > than once.
-> >
-> > Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-> > ---
-> > Changelog:
-> > v2:
-> > - Fix the commit description.
-> > ---
+> The header is no longer needed since the event_pipe implementation
+> was updated to rely on libbpf's perf_buffer. This makes bpftool free of
+> dependencies to perf files, and we can update the Makefile accordingly.
 >
-> The Subject is a bit unusual. Typically it would be something like,
->
->  "[PATCH bpf-next] selftests, remove duplicated include in cgroup_helpers"
+> Fixes: 9b190f185d2f ("tools/bpftool: switch map event_pipe to libbpf's perf_buffer")
+> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+> ---
 
-Also for selftests we use "selftests/bpf: " prefix (at least we
-generally try, for consistency). Fixed up, applied to bpf-next.
-Thanks.
 
+Great, thanks. It's in bpf-next.
+
+>  tools/bpf/bpftool/Makefile        | 3 +--
+>  tools/bpf/bpftool/map_perf_ring.c | 1 -
+>  2 files changed, 1 insertion(+), 3 deletions(-)
 >
-> For the actual patch though LGTM.
+> diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
+> index abcef1f72d65..098d762e111a 100644
+> --- a/tools/bpf/bpftool/Makefile
+> +++ b/tools/bpf/bpftool/Makefile
+> @@ -73,8 +73,7 @@ CFLAGS += -DPACKAGE='"bpftool"' -D__EXPORTED_HEADERS__ \
+>         -I$(LIBBPF_INCLUDE) \
+>         -I$(srctree)/kernel/bpf/ \
+>         -I$(srctree)/tools/include \
+> -       -I$(srctree)/tools/include/uapi \
+> -       -I$(srctree)/tools/perf
+> +       -I$(srctree)/tools/include/uapi
+>  CFLAGS += -DBPFTOOL_VERSION='"$(BPFTOOL_VERSION)"'
+>  ifneq ($(EXTRA_CFLAGS),)
+>  CFLAGS += $(EXTRA_CFLAGS)
+> diff --git a/tools/bpf/bpftool/map_perf_ring.c b/tools/bpf/bpftool/map_perf_ring.c
+> index 825f29f93a57..b98ea702d284 100644
+> --- a/tools/bpf/bpftool/map_perf_ring.c
+> +++ b/tools/bpf/bpftool/map_perf_ring.c
+> @@ -22,7 +22,6 @@
+>  #include <sys/syscall.h>
 >
-> Acked-by: John Fastabend <john.fastabend@gmail.com>
+>  #include <bpf/bpf.h>
+> -#include <perf-sys.h>
+>
+>  #include "main.h"
+>
+> --
+> 2.30.2
+>
