@@ -2,102 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20A074347A2
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 11:07:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCA1F4347C1
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 11:17:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229878AbhJTJJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 05:09:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55582 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229555AbhJTJJr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Oct 2021 05:09:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1A3B660F25;
-        Wed, 20 Oct 2021 09:07:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634720853;
-        bh=jTUKR+Xf/qDYN96zbVV7NGYiZBynFhnV+TqkshXTLhw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Hd8M+wEDqUgR0CDmyM92YxlmvueFDTMDwiT0YaLIvAHhTtxPgEDBBGLDbXZjDUDKg
-         oD/e/75nKCnvsciIXfDVJevR/f/Q5eZX1hd3Un5NU/pxr66J3qAFL8QVB23UYWpDFB
-         KfGQvcaaeyoYjiOFTE79RRJK/iwHIbo4mhVptaj9Ufkfl6qsTNNuq5uBJSwOZqzRI3
-         P0AQwUlT+erRG5goaAOlkpTSzVF8pRwuus+nvn1kNShlrxFD396pytvmot8YFlj2xl
-         qt3Z3XEId14UYRCzVurMbMXohZY5obdQndPzgVrDdKxa05QQD3ylbIrcmidoSJS/Po
-         OVaCdmotQCOuw==
-Date:   Wed, 20 Oct 2021 11:07:29 +0200
-From:   Simon Horman <horms@kernel.org>
-To:     luo penghao <cgel.zte@gmail.com>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, penghao luo <luo.penghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH linux-next] xfrm: Remove redundant fields
-Message-ID: <20211020090729.GC3935@kernel.org>
-References: <20211018091758.858899-1-luo.penghao@zte.com.cn>
+        id S230031AbhJTJUE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 05:20:04 -0400
+Received: from smtp-out2.suse.de ([195.135.220.29]:40792 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229977AbhJTJTu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 05:19:50 -0400
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id EB9691FD47;
+        Wed, 20 Oct 2021 09:17:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1634721455; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=g+R9ECcr894LWO3oSHMxjA3nZr4l2pEpfIypzba5F2I=;
+        b=nbZQoKJEVWuICnzQbxKjPevg8SLPrnELUDuRCzhErN6vBVmRjUwRbOjgkxYCtpaBVH9083
+        /XOUUJU/gjcfKd4QCCyMKhNqgJPXl5OdTK557VZq6CqMGl3TXdehfpuRxFZDLA/mNBlB57
+        Qaxz+sKW0If1Iksl3FWhF76oT8UGOWQ=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9B1F313F81;
+        Wed, 20 Oct 2021 09:17:35 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id tmYlJK/eb2FcegAAMHmgww
+        (envelope-from <oneukum@suse.com>); Wed, 20 Oct 2021 09:17:35 +0000
+From:   Oliver Neukum <oneukum@suse.com>
+To:     syzkaller-bugs@googlegroups.com, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        syzbot+76bb1d34ffa0adc03baa@syzkaller.appspotmail.com
+Subject: [PATCH] usbnet: sanity check for maxpacket
+Date:   Wed, 20 Oct 2021 11:17:33 +0200
+Message-Id: <20211020091733.20085-1-oneukum@suse.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211018091758.858899-1-luo.penghao@zte.com.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 18, 2021 at 09:17:58AM +0000, luo penghao wrote:
-> From: penghao luo <luo.penghao@zte.com.cn>
-> 
-> the variable err is not necessary in such places. It should be revmoved
-> for the simplicity of the code.
-> 
-> The clang_analyzer complains as follows:
-> 
-> net/xfrm/xfrm_input.c:530: warning:
-> 
-> Although the value stored to 'err' is used in the enclosing expression,
-> the value is never actually read from 'err'.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: penghao luo <luo.penghao@zte.com.cn>
-> ---
->  net/xfrm/xfrm_input.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-> index 3df0861..ff34667 100644
-> --- a/net/xfrm/xfrm_input.c
-> +++ b/net/xfrm/xfrm_input.c
-> @@ -530,7 +530,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
->  				goto drop;
->  			}
->  
-> -			if ((err = xfrm_parse_spi(skb, nexthdr, &spi, &seq)) != 0) {
-> +			if ((xfrm_parse_spi(skb, nexthdr, &spi, &seq)) != 0) {
+maxpacket of 0 makes no sense and oopdses as we need to divide
+by it. Give up.
 
-I agree that assigning the value to err is not needed.
-But you may also wish to consider:
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Reported-by: syzbot+76bb1d34ffa0adc03baa@syzkaller.appspotmail.com
+---
+ drivers/net/usb/usbnet.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-1. Dropping the () around the call to xfrm_parse_spi, which seem out of
-   place now.
-2. Dropping the explicit check against zero
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+index 840c1c2ab16a..396f5e677bf0 100644
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -1788,6 +1788,9 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
+ 	if (!dev->rx_urb_size)
+ 		dev->rx_urb_size = dev->hard_mtu;
+ 	dev->maxpacket = usb_maxpacket (dev->udev, dev->out, 1);
++	if (dev->maxpacket == 0)
++		/* that is a broken device */
++		goto out4;
+ 
+ 	/* let userspace know we have a random address */
+ 	if (ether_addr_equal(net->dev_addr, node_id))
+-- 
+2.26.2
 
-Which would leave you with:
-
-			if (xfrm_parse_spi(skb, nexthdr, &spi, &seq)) {
-
->  				XFRM_INC_STATS(net, LINUX_MIB_XFRMINHDRERROR);
->  				goto drop;
->  			}
-> @@ -560,7 +560,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
->  	}
->  
->  	seq = 0;
-> -	if (!spi && (err = xfrm_parse_spi(skb, nexthdr, &spi, &seq)) != 0) {
-> +	if (!spi && (xfrm_parse_spi(skb, nexthdr, &spi, &seq)) != 0) {
->  		secpath_reset(skb);
->  		XFRM_INC_STATS(net, LINUX_MIB_XFRMINHDRERROR);
->  		goto drop;
-> -- 
-> 2.15.2
-> 
-> 
