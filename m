@@ -2,113 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F90143486B
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 11:58:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE7D0434870
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 11:59:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229895AbhJTKAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 06:00:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45410 "EHLO
+        id S230058AbhJTKBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 06:01:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229809AbhJTKAq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 06:00:46 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B99B4C06161C;
-        Wed, 20 Oct 2021 02:58:32 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1md8MR-0001sI-1c; Wed, 20 Oct 2021 11:58:15 +0200
-Date:   Wed, 20 Oct 2021 11:58:15 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Toke =?iso-8859-15?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Brendan Jackman <jackmanb@google.com>,
-        Florent Revest <revest@chromium.org>,
-        Joe Stringer <joe@cilium.io>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Tariq Toukan <tariqt@nvidia.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH bpf-next 07/10] bpf: Add helpers to query conntrack info
-Message-ID: <20211020095815.GJ28644@breakpoint.cc>
-References: <20211019144655.3483197-1-maximmi@nvidia.com>
- <20211019144655.3483197-8-maximmi@nvidia.com>
- <20211020035622.lgrxnrwfeak2e75a@apollo.localdomain>
- <20211020092844.GI28644@breakpoint.cc>
- <87h7dcf2n4.fsf@toke.dk>
+        with ESMTP id S229809AbhJTKBW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 06:01:22 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA156C06161C;
+        Wed, 20 Oct 2021 02:59:08 -0700 (PDT)
+Received: from zn.tnic (p200300ec2f0db300e25116189b6f3930.dip0.t-ipconnect.de [IPv6:2003:ec:2f0d:b300:e251:1618:9b6f:3930])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id F41EA1EC0541;
+        Wed, 20 Oct 2021 11:59:06 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1634723947;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=yYD0zgbH5UOus3UngmRiFbvOTmQXCCS6PVOjejhkpfw=;
+        b=OXYIE6y7qReAd9h1BdwVEOL7La9YgctHRa9BrMJadKK64LFiu/kVaPAn7A6b3kUVbleuIb
+        KMjteEH5HMlu2HQSi72yCktE5uwGE0svHBa7bHCpCsezwsdpJRFArAqzpox83vRWOMfVY2
+        x3CaC672i4q/f67PE48XBg1wA8VFI0s=
+Date:   Wed, 20 Oct 2021 11:59:05 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Tianyu Lan <ltykernel@gmail.com>
+Cc:     Tianyu Lan <Tianyu.Lan@microsoft.com>, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
+        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
+        x86@kernel.org, hpa@zytor.com, dave.hansen@linux.intel.com,
+        luto@kernel.org, peterz@infradead.org, davem@davemloft.net,
+        kuba@kernel.org, gregkh@linuxfoundation.org, arnd@arndb.de,
+        jroedel@suse.de, brijesh.singh@amd.com, thomas.lendacky@amd.com,
+        pgonda@google.com, akpm@linux-foundation.org,
+        kirill.shutemov@linux.intel.com, rppt@kernel.org, tj@kernel.org,
+        aneesh.kumar@linux.ibm.com, saravanand@fb.com, hannes@cmpxchg.org,
+        rientjes@google.com, michael.h.kelley@microsoft.com,
+        linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        vkuznets@redhat.com, konrad.wilk@oracle.com, hch@lst.de,
+        robin.murphy@arm.com, joro@8bytes.org, parri.andrea@gmail.com,
+        dave.hansen@intel.com
+Subject: Re: [PATCH] x86/sev-es: Expose __sev_es_ghcb_hv_call() to call ghcb
+ hv call out of sev code
+Message-ID: <YW/oaZ2GN15hQdyd@zn.tnic>
+References: <2772390d-09c1-80c1-082f-225f32eae4aa@gmail.com>
+ <20211020062321.3581158-1-ltykernel@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87h7dcf2n4.fsf@toke.dk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20211020062321.3581158-1-ltykernel@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Toke Høiland-Jørgensen <toke@redhat.com> wrote:
-> Florian Westphal <fw@strlen.de> writes:
+On Wed, Oct 20, 2021 at 02:23:16AM -0400, Tianyu Lan wrote:
+> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 > 
-> > Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
-> >> On Tue, Oct 19, 2021 at 08:16:52PM IST, Maxim Mikityanskiy wrote:
-> >> > The new helpers (bpf_ct_lookup_tcp and bpf_ct_lookup_udp) allow to query
-> >> > connection tracking information of TCP and UDP connections based on
-> >> > source and destination IP address and port. The helper returns a pointer
-> >> > to struct nf_conn (if the conntrack entry was found), which needs to be
-> >> > released with bpf_ct_release.
-> >> >
-> >> > Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-> >> > Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-> >> 
-> >> The last discussion on this [0] suggested that stable BPF helpers for conntrack
-> >> were not desired, hence the recent series [1] to extend kfunc support to modules
-> >> and base the conntrack work on top of it, which I'm working on now (supporting
-> >> both CT lookup and insert).
-> >
-> > This will sabotage netfilter pipeline and the way things work more and
-> > more 8-(
 > 
-> Why?
-
-Lookups should be fine.  Insertions are the problem.
-
-NAT hooks are expected to execute before the insertion into the
-conntrack table.
-
-If you insert before, NAT hooks won't execute, i.e.
-rules that use dnat/redirect/masquerade have no effect.
-
-> > If you want to use netfilter with ebpf, please have a look at the RFC
-> > I posted and lets work on adding a netfilter specific program type
-> > that can run ebpf programs directly from any of the existing netfilter
-> > hook points.
+> Hyper-V also needs to call ghcb hv call to write/read MSR in Isolation VM.
+> So expose __sev_es_ghcb_hv_call() to call it in the Hyper-V code.
 > 
-> Accelerating netfilter using BPF is a worthy goal in itself, but I also
-> think having the ability to lookup into conntrack from XDP is useful for
-> cases where someone wants to bypass the stack entirely (for accelerating
-> packet forwarding, say). I don't think these goals are in conflict
-> either, what makes you say they are?
+> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> ---
+>  arch/x86/include/asm/sev.h   | 11 +++++++++++
+>  arch/x86/kernel/sev-shared.c | 24 +++++++++++++++++++-----
+>  2 files changed, 30 insertions(+), 5 deletions(-)
+> 
+> diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
+> index fa5cd05d3b5b..295c847c3cd4 100644
+> --- a/arch/x86/include/asm/sev.h
+> +++ b/arch/x86/include/asm/sev.h
+> @@ -81,12 +81,23 @@ static __always_inline void sev_es_nmi_complete(void)
+>  		__sev_es_nmi_complete();
+>  }
+>  extern int __init sev_es_efi_map_ghcbs(pgd_t *pgd);
+> +extern enum es_result __sev_es_ghcb_hv_call(struct ghcb *ghcb,
+> +					    struct es_em_ctxt *ctxt,
+> +					    u64 exit_code, u64 exit_info_1,
+> +					    u64 exit_info_2);
 
-Lookup is fine, I don't see fundamental issues with XDP-based bypass,
-there are flowtables that also bypass classic forward path via the
-netfilter ingress hook (first packet needs to go via classic path to
-pass through all filter + nat rules and is offlloaded to HW or SW via
-the 'flow add' statement in nftables.
+You can do here:
 
-I don't think there is anything that stands in the way of replicating
-this via XDP.
+static inline enum es_result
+__sev_es_ghcb_hv_call(struct ghcb *ghcb, u64 exit_code, u64 exit_info_1, u64 exit_info_2) { return ES_VMM_ERROR; }
+
+> @@ -137,12 +141,22 @@ static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
+>  	ghcb_set_sw_exit_info_1(ghcb, exit_info_1);
+>  	ghcb_set_sw_exit_info_2(ghcb, exit_info_2);
+>  
+> -	sev_es_wr_ghcb_msr(__pa(ghcb));
+>  	VMGEXIT();
+>  
+>  	return verify_exception_info(ghcb, ctxt);
+>  }
+>  
+> +static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
+> +					  struct es_em_ctxt *ctxt,
+> +					  u64 exit_code, u64 exit_info_1,
+> +					  u64 exit_info_2)
+> +{
+> +	sev_es_wr_ghcb_msr(__pa(ghcb));
+> +
+> +	return __sev_es_ghcb_hv_call(ghcb, ctxt, exit_code, exit_info_1,
+> +				     exit_info_2);
+> +}
+
+Well, why does Hyper-V need this thing a bit differently, without the
+setting of the GHCB's physical address?
+
+What if another hypervisor does yet another SEV implementation and yet
+another HV call needs to be defined?
+
+If stuff is going to be exported to other users, then stuff better be
+defined properly so that it is used by multiple hypervisors.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
