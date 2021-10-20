@@ -2,88 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D99F84347DE
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 11:25:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D32CE4347E4
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 11:29:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229704AbhJTJ15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 05:27:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40328 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229503AbhJTJ14 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Oct 2021 05:27:56 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id F3E4D610EA;
-        Wed, 20 Oct 2021 09:25:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634721941;
-        bh=5j2NUaDRml2UEYq1ijWuh7CqRu3+GudwsIOWQ4VzLyY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hGXYa09GMpEFO+0V+wzM56y0glURH5WykLAzqaSiH/vYTat3DP/1E6o7W0MyPj2Dr
-         q3HfSWs4S6RKl6iEgkS2qhK9tcnC3PmdA184xjidGEvgQcNbM6QNHRNA3zeWjTDfqP
-         zoBBqxZYlZL8di8HK9oPNeSbwOocApVR3kwefJPsJkVKiwuTQ77kADaRdLBfcCFCBa
-         N//j7+Wwv8LDg6CZWdh7DWGubrae25NaYaQ6nXYdEE6P05tAlbMl7L+yiLuku1brAT
-         XL19oHLrKXnZYBa6I9QWqQUI758681DOV1wjuc7ZWslWAArSXlT9knK8y+043+G492
-         YzDDkmS2zcfLQ==
-Date:   Wed, 20 Oct 2021 11:25:37 +0200
-From:   Simon Horman <horms@kernel.org>
-To:     luo penghao <cgel.zte@gmail.com>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S229704AbhJTJbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 05:31:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38662 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229686AbhJTJbS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 05:31:18 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913EDC06161C;
+        Wed, 20 Oct 2021 02:29:04 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1md7ts-0001iL-VA; Wed, 20 Oct 2021 11:28:45 +0200
+Date:   Wed, 20 Oct 2021 11:28:44 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luo penghao <luo.penghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH linux-next] e1000: Remove redundant statement
-Message-ID: <20211020092537.GF3935@kernel.org>
-References: <20211018085305.853996-1-luo.penghao@zte.com.cn>
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Brendan Jackman <jackmanb@google.com>,
+        Florent Revest <revest@chromium.org>,
+        Joe Stringer <joe@cilium.io>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Tariq Toukan <tariqt@nvidia.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: Re: [PATCH bpf-next 07/10] bpf: Add helpers to query conntrack info
+Message-ID: <20211020092844.GI28644@breakpoint.cc>
+References: <20211019144655.3483197-1-maximmi@nvidia.com>
+ <20211019144655.3483197-8-maximmi@nvidia.com>
+ <20211020035622.lgrxnrwfeak2e75a@apollo.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211018085305.853996-1-luo.penghao@zte.com.cn>
+In-Reply-To: <20211020035622.lgrxnrwfeak2e75a@apollo.localdomain>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 18, 2021 at 08:53:05AM +0000, luo penghao wrote:
-
-nit: s/linux-next/net-next/ in subject
-
-> This statement is redundant in the context, because there will be
-> an identical statement next. otherwise, the variable initialization
-> is actually unnecessary.
+Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
+> On Tue, Oct 19, 2021 at 08:16:52PM IST, Maxim Mikityanskiy wrote:
+> > The new helpers (bpf_ct_lookup_tcp and bpf_ct_lookup_udp) allow to query
+> > connection tracking information of TCP and UDP connections based on
+> > source and destination IP address and port. The helper returns a pointer
+> > to struct nf_conn (if the conntrack entry was found), which needs to be
+> > released with bpf_ct_release.
+> >
+> > Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+> > Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 > 
-> The clang_analyzer complains as follows:
-> 
-> drivers/net/ethernet/intel/e1000/e1000_ethtool.c:1218:2 warning:
-> 
-> Value stored to 'ctrl_reg' is never read.
+> The last discussion on this [0] suggested that stable BPF helpers for conntrack
+> were not desired, hence the recent series [1] to extend kfunc support to modules
+> and base the conntrack work on top of it, which I'm working on now (supporting
+> both CT lookup and insert).
 
-I agree this does seem to be the case.
+This will sabotage netfilter pipeline and the way things work more and
+more 8-(
 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: luo penghao <luo.penghao@zte.com.cn>
+If you want to use netfilter with ebpf, please have a look at the RFC I
+posted and lets work on adding a netfilter specific program type that
+can run ebpf programs directly from any of the existing netfilter hook
+points.
 
-Reviewed-by: Simon Horman <horms@kernel.org>
-
-> ---
->  drivers/net/ethernet/intel/e1000/e1000_ethtool.c | 2 --
->  1 file changed, 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/e1000/e1000_ethtool.c b/drivers/net/ethernet/intel/e1000/e1000_ethtool.c
-> index 0a57172..8951f2a 100644
-> --- a/drivers/net/ethernet/intel/e1000/e1000_ethtool.c
-> +++ b/drivers/net/ethernet/intel/e1000/e1000_ethtool.c
-> @@ -1215,8 +1215,6 @@ static int e1000_integrated_phy_loopback(struct e1000_adapter *adapter)
->  		e1000_write_phy_reg(hw, PHY_CTRL, 0x8140);
->  	}
->  
-> -	ctrl_reg = er32(CTRL);
-> -
->  	/* force 1000, set loopback */
->  	e1000_write_phy_reg(hw, PHY_CTRL, 0x4140);
->  
-> -- 
-> 2.15.2
-> 
-> 
+Thanks.
