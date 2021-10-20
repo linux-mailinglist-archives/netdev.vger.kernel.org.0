@@ -2,76 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCA1F4347C1
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 11:17:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 622564347C6
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 11:19:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230031AbhJTJUE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 05:20:04 -0400
-Received: from smtp-out2.suse.de ([195.135.220.29]:40792 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229977AbhJTJTu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 05:19:50 -0400
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id EB9691FD47;
-        Wed, 20 Oct 2021 09:17:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1634721455; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=g+R9ECcr894LWO3oSHMxjA3nZr4l2pEpfIypzba5F2I=;
-        b=nbZQoKJEVWuICnzQbxKjPevg8SLPrnELUDuRCzhErN6vBVmRjUwRbOjgkxYCtpaBVH9083
-        /XOUUJU/gjcfKd4QCCyMKhNqgJPXl5OdTK557VZq6CqMGl3TXdehfpuRxFZDLA/mNBlB57
-        Qaxz+sKW0If1Iksl3FWhF76oT8UGOWQ=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9B1F313F81;
-        Wed, 20 Oct 2021 09:17:35 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id tmYlJK/eb2FcegAAMHmgww
-        (envelope-from <oneukum@suse.com>); Wed, 20 Oct 2021 09:17:35 +0000
-From:   Oliver Neukum <oneukum@suse.com>
-To:     syzkaller-bugs@googlegroups.com, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
-Cc:     Oliver Neukum <oneukum@suse.com>,
-        syzbot+76bb1d34ffa0adc03baa@syzkaller.appspotmail.com
-Subject: [PATCH] usbnet: sanity check for maxpacket
-Date:   Wed, 20 Oct 2021 11:17:33 +0200
-Message-Id: <20211020091733.20085-1-oneukum@suse.com>
-X-Mailer: git-send-email 2.26.2
+        id S229833AbhJTJVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 05:21:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35014 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229809AbhJTJVX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Oct 2021 05:21:23 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A5CD160F9E;
+        Wed, 20 Oct 2021 09:18:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634721537;
+        bh=SZkUpO9qIzjwLT/liQ99qcq9w70D9d2LQUSdkfGd2hc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FXHRhtW/B1oof8UF1yc1OaigQiX5End8FkOjLmBTRq0Aha/RPZEyTgSgbfIv4Bz4b
+         4aJqReCwosaf2eKO01xcErvBljgCuFe2T7gBX/QBX5SUzXT4eDI7Ct8VYTSAJsCQ03
+         dfR8QdJZ1WGoBunS6UM75FYMl7fHKIW1hBJS6u/kdtsd5SvL1kbjTxa3axlvHfSlxQ
+         V5h84eMWDENMmWAzqxwI0lR28FaQibrIXZShW0p3yNCvbemsSHVtsYXjWJQZWzWdvP
+         MnG26NAyIoY2ZcixlmnplBWw2xg3nOamdf65do8NNjKgfVupTa61qHNUsXL2BQJzLj
+         f+BZHFzp1bTlw==
+Date:   Wed, 20 Oct 2021 11:18:53 +0200
+From:   Simon Horman <horms@kernel.org>
+To:     luo penghao <cgel.zte@gmail.com>
+Cc:     Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, penghao luo <luo.penghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH linux-next] octeontx2-af: Remove redundant assignment
+ operations
+Message-ID: <20211020091853.GD3935@kernel.org>
+References: <20211018091612.858462-1-luo.penghao@zte.com.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211018091612.858462-1-luo.penghao@zte.com.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-maxpacket of 0 makes no sense and oopdses as we need to divide
-by it. Give up.
+On Mon, Oct 18, 2021 at 09:16:12AM +0000, luo penghao wrote:
+> From: penghao luo <luo.penghao@zte.com.cn>
 
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Reported-by: syzbot+76bb1d34ffa0adc03baa@syzkaller.appspotmail.com
----
- drivers/net/usb/usbnet.c | 3 +++
- 1 file changed, 3 insertions(+)
+I think the correct patch-prefix for this would be:
 
-diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-index 840c1c2ab16a..396f5e677bf0 100644
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -1788,6 +1788,9 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
- 	if (!dev->rx_urb_size)
- 		dev->rx_urb_size = dev->hard_mtu;
- 	dev->maxpacket = usb_maxpacket (dev->udev, dev->out, 1);
-+	if (dev->maxpacket == 0)
-+		/* that is a broken device */
-+		goto out4;
- 
- 	/* let userspace know we have a random address */
- 	if (ether_addr_equal(net->dev_addr, node_id))
--- 
-2.26.2
+[PATCH net-next] sky2:
 
+> 
+> the variable err will be reassigned on subsequent branches, and this
+> assignment does not perform related value operations.
+> 
+> clang_analyzer complains as follows:
+> 
+> drivers/net/ethernet/marvell/sky2.c:4988: warning:
+> 
+> Although the value stored to 'err' is used in the enclosing expression,
+> the value is never actually read from 'err'.
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: penghao luo <luo.penghao@zte.com.cn>
+> ---
+>  drivers/net/ethernet/marvell/sky2.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/marvell/sky2.c b/drivers/net/ethernet/marvell/sky2.c
+> index 3cb9c12..6428ae5 100644
+> --- a/drivers/net/ethernet/marvell/sky2.c
+> +++ b/drivers/net/ethernet/marvell/sky2.c
+> @@ -4907,7 +4907,7 @@ static int sky2_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	pci_set_master(pdev);
+>  
+>  	if (sizeof(dma_addr_t) > sizeof(u32) &&
+> -	    !(err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64)))) {
+> +	    !(dma_set_mask(&pdev->dev, DMA_BIT_MASK(64)))) {
+
+I think you can drop the parentheses around the call to dma_set_mask()
+
+>  		using_dac = 1;
+>  		err = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64));
+>  		if (err < 0) {
+> -- 
+> 2.15.2
+> 
+> 
