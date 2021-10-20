@@ -2,97 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3BE443564C
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 01:10:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F555435664
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 01:18:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230409AbhJTXMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 19:12:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58156 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229702AbhJTXMx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 19:12:53 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF0C4C06161C
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 16:10:38 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id v20so17177415plo.7
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 16:10:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=tA7dbZ5NEJkKQUncpuFcl0/mmniOX0dfo36d790QLlE=;
-        b=b7AXjfO4cddXU7/bWRO3Jy4vsB5m64Whb/NGRKOHHEq6xaMIzHxvaB8T0UvvgmQm2I
-         DAndWYy1psrK9nQleta7lyzOLuDhc21uYYLSGYoKQbhUwaZUYY/X3YovIjBAB5cfnUTL
-         KKGHncuffqbnlhgy94kEDAAd6bOawozmHHUNk8ke8Qrv5fky7SCC8suQ+SEMVvlVvs0D
-         EgwsM4Quk7a/6AVzrNf/7rjbVgRLt2rEYvUwpirHqJQ+a20rtl2tQ2Xv6DjY3HUeEFw2
-         Qbw5SvkQFWQddqkXMHDjLbKRhCCOarIdbFHII/FDzMTpwVLV+dRXFX0XhSRMbU05YXTh
-         +pVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=tA7dbZ5NEJkKQUncpuFcl0/mmniOX0dfo36d790QLlE=;
-        b=b/dmocc/GicYE4Yq9fy7jH2Vd8uibxyK3tVvpYcYsnbXCK4g6WTJIuwQLEkbHCnMyD
-         m0XLS/el5M97UB+ZZisS559RxS1rlUUms2zL1EsXlLLSHuoBYTKzrK87cGQfEqK7OkDz
-         u2NZVAkn+tzFYl7Zu69E1nPjQukD2PmcYZXWT0lrvA60M3DffS9S/D5BvRQ2zsnb4DUm
-         2TdiXLxH37SUM4KMOce/S0ZVRWdKuQ70ceLR0UdVgeTNwUKWFCMjvdbf4zQ+aDPU2Nzr
-         s9WXx4y4kGUfuuAGr2O8tIXTLd+IK2xlJWVXugp4LLgH/VIONvOVY95oWA0sEa6592Ah
-         ejlQ==
-X-Gm-Message-State: AOAM532SQ4FLDvgrI7xEyKfR47sTDv6hSPXBJec0HCcwo8MQjUo2IcYQ
-        s5f7S2r88Za+6QXK/Uuu6m8=
-X-Google-Smtp-Source: ABdhPJyiIgH53/r3qLoH0hznXLgPOtZOyS6fi//cnAkKyxka26ieD4hxiQm9tipX5iPCJcP/+dpSSA==
-X-Received: by 2002:a17:90a:df02:: with SMTP id gp2mr2122407pjb.196.1634771438281;
-        Wed, 20 Oct 2021 16:10:38 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id k127sm3821059pfd.1.2021.10.20.16.10.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Oct 2021 16:10:37 -0700 (PDT)
-Subject: Re: [PATCH RESEND v3 net-next 1/7] net: dsa: introduce helpers for
- iterating through ports using dp
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-References: <20211020174955.1102089-1-vladimir.oltean@nxp.com>
- <20211020174955.1102089-2-vladimir.oltean@nxp.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <09987a3f-4137-6115-0947-784712c4678f@gmail.com>
-Date:   Wed, 20 Oct 2021 16:10:35 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S231355AbhJTXVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 19:21:06 -0400
+Received: from mga09.intel.com ([134.134.136.24]:7592 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229702AbhJTXVF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Oct 2021 19:21:05 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10143"; a="228775792"
+X-IronPort-AV: E=Sophos;i="5.87,168,1631602800"; 
+   d="scan'208";a="228775792"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2021 16:18:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,168,1631602800"; 
+   d="scan'208";a="483921295"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga007.jf.intel.com with ESMTP; 20 Oct 2021 16:18:50 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sudheer.mogilappagari@intel.com, sridhar.samudrala@intel.com,
+        amritha.nambiar@intel.com
+Subject: [PATCH net-next 0/3][pull request] 100GbE Intel Wired LAN Driver Updates 2021-10-20
+Date:   Wed, 20 Oct 2021 16:17:00 -0700
+Message-Id: <20211020231703.3642650-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <20211020174955.1102089-2-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/20/21 10:49 AM, Vladimir Oltean wrote:
-> Since the DSA conversion from the ds->ports array into the dst->ports
-> list, the DSA API has encouraged driver writers, as well as the core
-> itself, to write inefficient code.
-> 
-> Currently, code that wants to filter by a specific type of port when
-> iterating, like {!unused, user, cpu, dsa}, uses the dsa_is_*_port helper.
-> Under the hood, this uses dsa_to_port which iterates again through
-> dst->ports. But the driver iterates through the port list already, so
-> the complexity is quadratic for the typical case of a single-switch
-> tree.
-> 
-> This patch introduces some iteration helpers where the iterator is
-> already a struct dsa_port *dp, so that the other variant of the
-> filtering functions, dsa_port_is_{unused,user,cpu_dsa}, can be used
-> directly on the iterator. This eliminates the second lookup.
-> 
-> These functions can be used both by the core and by drivers.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Sudheer Mogilappagari says:
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+This series introduces initial support for Application Device Queues(ADQ)
+in ice driver. ADQ provides traffic isolation for application flows in
+hardware and ability to steer traffic to a given traffic class. This
+helps in aligning NIC queues to application threads.
+
+Traffic classes are configured using mqprio framework of tc command
+and mapped to HW channels(VSIs) in the driver. The queue set of each
+traffic class is managed by corresponding VSI. Each traffic channel
+can be configured with bandwidth rate-limiting limits and is offloaded
+to the hardware through the mqprio framework by specifying the mode
+option as 'channel' and shaper option as 'bw_rlimit'.
+
+Next, the flows of application can be steered into a given traffic class
+using "tc filter" command. The option "skip_sw hw_tc x" indicates 
+hw-offload of filtering and steering filtered traffic into specified TC.
+Non-matching traffic flows through TC0.
+
+When channel configuration are removed queue configuration is set to
+default and filters configured on individual traffic classes are deleted.
+
+example:
+$ ethtool -K eth0 hw-tc-offload on
+
+Configure 3 traffic classes and map priority 0,1,2 to TC0, TC1 and TC2
+respectively. TC0 has 2 queues from offset 0 & TC1 has 8 queues from
+offset 2 and TC2 has 4 queues from offset 10. Enable hardware offload
+of channels.
+
+$ tc qdisc add dev eth0 root mqprio num_tc 3 map 0 1 2 queues \
+        2@0 8@2 4@10 hw 1 mode channel
+
+$ tc qdisc show dev eth0
+qdisc mqprio 8001: root  tc 2 map 0 1 2 0 0 0 0 0 0 0 0 0 0 0 0 0
+             queues:(0:1) (2:9) (10:13)
+             mode:channel
+
+
+Configure two filters to match based on dst ipaddr, dst tcp port and
+redirect to TC1 and TC2.
+$ tc qdisc add dev eth0 clsact
+
+$ tc filter add dev eth0 protocol ip ingress prio 1 flower\
+  dst_ip 192.168.1.1/32 ip_proto tcp dst_port 80\
+  skip_sw hw_tc 1
+$ tc filter add dev eth0 protocol ip ingress prio 1 flower\
+  dst_ip 192.168.1.1/32 ip_proto tcp dst_port 5001\
+  skip_sw hw_tc 2
+
+$ tc filter show dev eth0 ingress
+
+Delete traffic classes configuration:
+$ sudo tc qdisc del dev eth0 root
+
+---
+The following are changes since commit 2641b62d2fab52648e34cdc6994b2eacde2d27c1:
+  phy: micrel: ksz8041nl: do not use power down mode
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
+
+Kiran Patil (3):
+  ice: Add infrastructure for mqprio support via ndo_setup_tc
+  ice: enable ndo_setup_tc support for mqprio_qdisc
+  ice: Add tc-flower filter support for channel
+
+ drivers/net/ethernet/intel/ice/ice.h          | 108 +-
+ drivers/net/ethernet/intel/ice/ice_base.c     |  34 +-
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c  | 201 ++--
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.h  |  10 +-
+ drivers/net/ethernet/intel/ice/ice_eswitch.c  |   2 +-
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |  10 +
+ drivers/net/ethernet/intel/ice/ice_lib.c      | 384 ++++++-
+ drivers/net/ethernet/intel/ice/ice_lib.h      |  12 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     | 970 +++++++++++++++++-
+ drivers/net/ethernet/intel/ice/ice_sched.c    |  68 +-
+ drivers/net/ethernet/intel/ice/ice_sched.h    |   2 +
+ drivers/net/ethernet/intel/ice/ice_switch.c   | 119 +++
+ drivers/net/ethernet/intel/ice/ice_switch.h   |   2 +
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c   | 217 +++-
+ drivers/net/ethernet/intel/ice/ice_tc_lib.h   |  22 +
+ drivers/net/ethernet/intel/ice/ice_txrx.h     |   7 +
+ drivers/net/ethernet/intel/ice/ice_type.h     |   3 +
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |   4 +-
+ 18 files changed, 2021 insertions(+), 154 deletions(-)
+
 -- 
-Florian
+2.31.1
+
