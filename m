@@ -2,65 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08F9B434C45
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 15:40:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1925B434CA3
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 15:50:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230178AbhJTNmW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 09:42:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45492 "EHLO mail.kernel.org"
+        id S230199AbhJTNw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 09:52:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49526 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229639AbhJTNmV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Oct 2021 09:42:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2AC476128E;
-        Wed, 20 Oct 2021 13:40:07 +0000 (UTC)
+        id S229570AbhJTNw3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Oct 2021 09:52:29 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id EC8A46128E;
+        Wed, 20 Oct 2021 13:50:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634737207;
-        bh=psDnb6swTAQZFyrUSsOqz3Z1+AjypfuNwCTPBV4oj8E=;
+        s=k20201202; t=1634737815;
+        bh=EbinZXx73KJ7AL6seHnWmg4Nw19yaI8pz4p0ozIq3IE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Yga/wxKmbf7ckrRuWKlnm7QYPCxQEbZ3STj0+uGaaOssVUfdWsnkcYs0YRjc7AL//
-         5JCFRCrQ7qPvKBLL4HTQBVtBw0D/t01/xy7O6o7B+3jfO7+trpElLZVS3t+HloZETN
-         aV+TujZqCoQUsk+tYK0tA4EHGk4vrfRY/9kSXYtmcMf7nSGUk2nO9b28LwgKdNJ6dV
-         1ZmFE7yLYYQIG3Jwd7xSqHo/peJCirLKZ1m7JElDZxOY6oUpUR6U7u97v4LQPntbk8
-         7t1aTPafs8xv+N3GSx9IM65ga335tmlIknVsy/YSmveS1Q6cbK31m2kJRDU0bgmHRi
-         EFnng1yb2lWug==
+        b=Qe8ErUKUTx7npJlnGQVvQW+iqyn8+qyXEQNCd9xZqtfOngyZNMb74mUB1RYsptS+h
+         6AzmW9jbk0jZr7dyV1BEa6RJi52eG6v8q0+ZFV8FyqJ/P0Rj9EMwjWOwUC+Dbp/lOn
+         pioaojfSjnU9rKg8JwuwcXf3rWuYiyPiMCAxAT+iWxUgFozfIjhNphr6E+DSefv/dE
+         InhZVNQHLgdhRhmk571mjOhMlS9Vk918v4kk79QqXx7Wk/hRcsn/4KGSBYToZTskUq
+         XBDx0wtZXA1rbSIrv4VSstB2IHDwH/fgJ+Y1TWVxPxMbzfA+95R5m4SjFTGuRXyBA+
+         j0wGCzglht15g==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1E55C609D1;
-        Wed, 20 Oct 2021 13:40:07 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E700B609D1;
+        Wed, 20 Oct 2021 13:50:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net-core: use netdev_* calls for kernel messages
+Subject: Re: [PATCH] ptp: Fix possible memory leak in ptp_clock_register()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163473720711.8032.2122892195290628048.git-patchwork-notify@kernel.org>
-Date:   Wed, 20 Oct 2021 13:40:07 +0000
-References: <20211019164228.338538-1-jesse.brandeburg@intel.com>
-In-Reply-To: <20211019164228.338538-1-jesse.brandeburg@intel.com>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
-Cc:     netdev@vger.kernel.org
+Message-Id: <163473781494.13902.12873542605821488682.git-patchwork-notify@kernel.org>
+Date:   Wed, 20 Oct 2021 13:50:14 +0000
+References: <20211020081834.2952888-1-yangyingliang@huawei.com>
+In-Reply-To: <20211020081834.2952888-1-yangyingliang@huawei.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        richardcochran@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Tue, 19 Oct 2021 09:42:28 -0700 you wrote:
-> While loading a driver and changing the number of queues, I noticed this
-> message in the kernel log:
+On Wed, 20 Oct 2021 16:18:34 +0800 you wrote:
+> I got memory leak as follows when doing fault injection test:
 > 
-> "[253489.070080] Number of in use tx queues changed invalidating tc
-> mappings. Priority traffic classification disabled!"
-> 
-> But I had no idea what interface was being talked about because this
-> message used pr_warn().
+> unreferenced object 0xffff88800906c618 (size 8):
+>   comm "i2c-idt82p33931", pid 4421, jiffies 4294948083 (age 13.188s)
+>   hex dump (first 8 bytes):
+>     70 74 70 30 00 00 00 00                          ptp0....
+>   backtrace:
+>     [<00000000312ed458>] __kmalloc_track_caller+0x19f/0x3a0
+>     [<0000000079f6e2ff>] kvasprintf+0xb5/0x150
+>     [<0000000026aae54f>] kvasprintf_const+0x60/0x190
+>     [<00000000f323a5f7>] kobject_set_name_vargs+0x56/0x150
+>     [<000000004e35abdd>] dev_set_name+0xc0/0x100
+>     [<00000000f20cfe25>] ptp_clock_register+0x9f4/0xd30 [ptp]
+>     [<000000008bb9f0de>] idt82p33_probe.cold+0x8b6/0x1561 [ptp_idt82p33]
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net-core: use netdev_* calls for kernel messages
-    https://git.kernel.org/netdev/net-next/c/5b92be649605
+  - ptp: Fix possible memory leak in ptp_clock_register()
+    https://git.kernel.org/netdev/net/c/4225fea1cb28
 
 You are awesome, thank you!
 --
