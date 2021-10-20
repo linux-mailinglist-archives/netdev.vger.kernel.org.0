@@ -2,91 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7BC24347D7
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 11:21:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D99F84347DE
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 11:25:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230031AbhJTJXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 05:23:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36886 "EHLO mail.kernel.org"
+        id S229704AbhJTJ15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 05:27:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40328 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230091AbhJTJXm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Oct 2021 05:23:42 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CADA360F9E;
-        Wed, 20 Oct 2021 09:21:26 +0000 (UTC)
+        id S229503AbhJTJ14 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Oct 2021 05:27:56 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F3E4D610EA;
+        Wed, 20 Oct 2021 09:25:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634721688;
-        bh=FNi0gv59TSHJ+dDXba/R1ZQh+Fy3b7uknpRZNj19rzE=;
+        s=k20201202; t=1634721941;
+        bh=5j2NUaDRml2UEYq1ijWuh7CqRu3+GudwsIOWQ4VzLyY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=keG6yS6i8TlAKosrleGcMh2k70MnA6xRNqq2LdTHxqEtUGV1wfvuxcz7Lxp2xbHd0
-         8hDIvhGkC1z9e0288RB0LFdO7doVWTy2HbM2K9gc1bbFQDdVIEgCCmgSEChMr+G7fQ
-         rRoCH83r8qjtJlY4r8/qOGRysfvxwEP1l5I4GJHQDe1W7Y2PTJe+KG0PUDCxuIpawG
-         qfy+2QXleAS/NI3oS3kYUj+ORnn8CUKehOuCBuIX5gczBXmoSof8lOtwIfhNT68XwI
-         jO20OzAm/I9gYIm5r4Bc1LVDJYjljF06W+eHNOnwLDADPpmojuYt0MxTJO+upd3Q5W
-         BvifslsH4TDAQ==
-Date:   Wed, 20 Oct 2021 11:21:25 +0200
+        b=hGXYa09GMpEFO+0V+wzM56y0glURH5WykLAzqaSiH/vYTat3DP/1E6o7W0MyPj2Dr
+         q3HfSWs4S6RKl6iEgkS2qhK9tcnC3PmdA184xjidGEvgQcNbM6QNHRNA3zeWjTDfqP
+         zoBBqxZYlZL8di8HK9oPNeSbwOocApVR3kwefJPsJkVKiwuTQ77kADaRdLBfcCFCBa
+         N//j7+Wwv8LDg6CZWdh7DWGubrae25NaYaQ6nXYdEE6P05tAlbMl7L+yiLuku1brAT
+         XL19oHLrKXnZYBa6I9QWqQUI758681DOV1wjuc7ZWslWAArSXlT9knK8y+043+G492
+         YzDDkmS2zcfLQ==
+Date:   Wed, 20 Oct 2021 11:25:37 +0200
 From:   Simon Horman <horms@kernel.org>
 To:     luo penghao <cgel.zte@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        penghao luo <luo.penghao@zte.com.cn>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luo penghao <luo.penghao@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH linux-next] net/core: Remove unused assignment operations
- and variable
-Message-ID: <20211020092124.GE3935@kernel.org>
-References: <20211018091356.858036-1-luo.penghao@zte.com.cn>
+Subject: Re: [PATCH linux-next] e1000: Remove redundant statement
+Message-ID: <20211020092537.GF3935@kernel.org>
+References: <20211018085305.853996-1-luo.penghao@zte.com.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211018091356.858036-1-luo.penghao@zte.com.cn>
+In-Reply-To: <20211018085305.853996-1-luo.penghao@zte.com.cn>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 18, 2021 at 09:13:56AM +0000, luo penghao wrote:
-> From: penghao luo <luo.penghao@zte.com.cn>
+On Mon, Oct 18, 2021 at 08:53:05AM +0000, luo penghao wrote:
 
-I think the correct patch prefix for this patch would be:
+nit: s/linux-next/net-next/ in subject
 
-[PATCH net-next] rtnetlink:
-
-> Although if_info_size is assigned, it has not been used. And the variable
-> should also be deleted.
+> This statement is redundant in the context, because there will be
+> an identical statement next. otherwise, the variable initialization
+> is actually unnecessary.
 > 
 > The clang_analyzer complains as follows:
 > 
-> net/core/rtnetlink.c:3806: warning:
+> drivers/net/ethernet/intel/e1000/e1000_ethtool.c:1218:2 warning:
 > 
-> Although the value stored to 'if_info_size' is used in the enclosing expression,
-> the value is never actually read from 'if_info_size'.
-> 
+> Value stored to 'ctrl_reg' is never read.
+
+I agree this does seem to be the case.
+
 > Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: penghao luo <luo.penghao@zte.com.cn>
+> Signed-off-by: luo penghao <luo.penghao@zte.com.cn>
+
+Reviewed-by: Simon Horman <horms@kernel.org>
+
 > ---
->  net/core/rtnetlink.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  drivers/net/ethernet/intel/e1000/e1000_ethtool.c | 2 --
+>  1 file changed, 2 deletions(-)
 > 
-> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-> index 327ca6b..52dc51a 100644
-> --- a/net/core/rtnetlink.c
-> +++ b/net/core/rtnetlink.c
-> @@ -3804,9 +3804,9 @@ struct sk_buff *rtmsg_ifinfo_build_skb(int type, struct net_device *dev,
->  	struct net *net = dev_net(dev);
->  	struct sk_buff *skb;
->  	int err = -ENOBUFS;
-> -	size_t if_info_size;
+> diff --git a/drivers/net/ethernet/intel/e1000/e1000_ethtool.c b/drivers/net/ethernet/intel/e1000/e1000_ethtool.c
+> index 0a57172..8951f2a 100644
+> --- a/drivers/net/ethernet/intel/e1000/e1000_ethtool.c
+> +++ b/drivers/net/ethernet/intel/e1000/e1000_ethtool.c
+> @@ -1215,8 +1215,6 @@ static int e1000_integrated_phy_loopback(struct e1000_adapter *adapter)
+>  		e1000_write_phy_reg(hw, PHY_CTRL, 0x8140);
+>  	}
 >  
-> -	skb = nlmsg_new((if_info_size = if_nlmsg_size(dev, 0)), flags);
-> +
-> +	skb = nlmsg_new((if_nlmsg_size(dev, 0)), flags);
-
-I think you can also drop the parentheses around the call to if_nlmsg_size.
-
->  	if (skb == NULL)
->  		goto errout;
+> -	ctrl_reg = er32(CTRL);
+> -
+>  	/* force 1000, set loopback */
+>  	e1000_write_phy_reg(hw, PHY_CTRL, 0x4140);
 >  
 > -- 
 > 2.15.2
+> 
 > 
