@@ -2,169 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C858143534C
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 20:57:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF06D435353
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 20:59:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231425AbhJTS7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 14:59:39 -0400
-Received: from mail-dm6nam11on2052.outbound.protection.outlook.com ([40.107.223.52]:40375
-        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        id S231431AbhJTTBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 15:01:40 -0400
+Received: from mail-bn8nam08on2080.outbound.protection.outlook.com ([40.107.100.80]:18607
+        "EHLO NAM04-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230076AbhJTS7i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Oct 2021 14:59:38 -0400
+        id S230076AbhJTTBh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Oct 2021 15:01:37 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DR2Ju+mNaAulOoZVqA8FYU7+LmU5Ym+LFfa6fWGMFQl+riUvAc8j15a163CYYHGjYQT3Mah3Mk336tjiomuF1J5TnPocHVAhB37Er/Sv9viFK9vKbmnCrZVflznWmdoh6VgRlaiiMUlS50iGwugyWd4s2SHJZo3lJg2sspnUpGtIg3WuiwDFnpZrJPm8bobfdGs19WfluDV7LB2f3e3/94F07zsLAdnSF6ACilirSwzW3ibCIJmyqNchkxpM0VbMcpzs+RuO4wFohf6VfE6qaZhreU1307XQZcTjlA7MYV8mL2PEuOpXkAonvAOX4gTVYPYXx3f4/NA0nuYoxNM16w==
+ b=NFLxlCBwkgvL6hQxMnw8zhM/5SCf3GX8frPd01JMEMaHpWg/Pe+DKUBfxm1CUf4Bl4qjFM5+T7ADTtnS1RBkPX6dAc9kWP0rCKCQlv4EYoPki9ZD0NzpMJfQsU8yHVVuFeVTdnGG8ovM8Ow17F801gFfekfnylNNpExC8vB/IyKf0wtqRVHKqW9dY4xm+SaiUuMDGYfL1aEqsnzUg+a826TcPU6q8+kUy6IT+GwtUBNbZ7IXxeP89itEVEc0jGQl9kS8wGg9M5shkWuKWqqz7JuxbKUrP63guZgMvMoG/jDJ/lG4zlqmGyQ3lZJll0fRn1v1GzA+DEFWLq6r21Rh+g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ou6q5DX0fBbYxkn91N8uNybgyqU5RktsY1MNVUTy7Nk=;
- b=fS3wjeAVrKPjKKj2CETn7fuMvAP1/txQJbLr/FrWdEuPWPvCdUg3FBra1XkKjEbDYOnPMkzfAFbKpqwQ0ahxsZhYtdV8Mm+cTSgPjWFEd2tv5cwNzwXkvPBjsXAK/PAL46vD3vpixCjC5dNNO16MAZ1p+/Y2ShR1CGOkKzaNEYOeO9c6scEOEd9l91kOKWPJrt6O8O7Nw4H+ozhwEDDmAQ16kykB5NO/P73uag9x/ENGWUAjXaQtMe3cKcR5mL53cGdZHwsWU0pnETK2E7+kHMBtBpjjHU38nBwBeOSvyZeCLRtRHWtxbU6nBTP0gbFICobsg/N2sWE6yR3CKgw5DA==
+ bh=vBbvUhyYow1GAucMPBSKuq3pLX8oQ0dXN5aBdeApgz8=;
+ b=efSkE1mDVdUrbk4BxBSIQx0AYEqFh/6sw9hLwkW4cj2fvOtdgDOsmg+9d762aZdrAO8SBg7YK4bJ97JOmOVrT2mWvJX0VC8UNLMNZycPcyrQkNPGyjBljKmwk2UUwhdbgRodwdrd4mjFZ3Iu3W/kgqzlRbmsOxkiQc7BiIKPWEUJIwFNCT1wuV6MkyFYiVaNtdtcFOCe3qW5lNH1Xz/Z+qQp4gfykDoNZ/42C00NYQ0LVvO0Ryx4D2O3sDgMWK2WklhpnlmYYfHrfYWBRGIfAuDG4ziunRjlole/s1Q2M8w5Le1lRDFZb9vZf6pKD2ffNuVlhagQZbnot8roNSzk3A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ou6q5DX0fBbYxkn91N8uNybgyqU5RktsY1MNVUTy7Nk=;
- b=LbwfPOtfWwy0FZJgW246A2/DrwXLFVZVvtWAZ68dtCtB2Vr25AU1oWWbGlLMGytMXyVw5uZdAoDAEKKIgXZTxeNL1nupvcUag9nnbKuLGVjoWopyZ707gdjqxnCAkY1E6ujr4VYZQyGXzldrEKgL94KpfAbV3shCKQhIWaQ52W6DMnDgKC/ee3QE9JYmal2NWV1vb8mYsoy7NRlcuF5b4MQzKoj0V9IBIRTNWAexAjRZ35Uun3gSrYjPFg3Afgd1waYfcV15LLn+KKTGD+LNZdCeyQyu6TlVDmqZz8ZMThKDP2GbSSpUDpspfTcZLtA5Q3nQBmMKmF7Hc/BVeL/XJg==
+ bh=vBbvUhyYow1GAucMPBSKuq3pLX8oQ0dXN5aBdeApgz8=;
+ b=g9B+oz/zGkwjNpbJVOEuHmua0ZI9MXAkeR1POVlfEul86ZuLFWsgadaD/CsaN6JftuTusotfh37qxhwFNC5s+qtM7MekFNXDhJXTy3rFtrNJiOrgxVQsWlbdxSUwEr1DMoJgzYm0wZPiabDFjD92Yhkc5zQTPmiz7dXQeq9KwmL9liAKA3M3yxgLR/8X4fsdldOnWyJ25Vtb0t8oV/ijYbD6qUZrOmF4ctkKHun6Gwjicm/+fRMJrzGuecxxozE/tO4m30yNmibQigqN76MoLj4hcbkZvECioFy4f5Gzu36uKjgAdS4xeMkirHOhkbq3ZX+mKIvfu9V+Z4MD8VaoNw==
 Authentication-Results: redhat.com; dkim=none (message not signed)
  header.d=none;redhat.com; dmarc=none action=none header.from=nvidia.com;
 Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5254.namprd12.prod.outlook.com (2603:10b6:208:31e::21) with
+ by BL1PR12MB5239.namprd12.prod.outlook.com (2603:10b6:208:315::24) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.17; Wed, 20 Oct
- 2021 18:57:22 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.16; Wed, 20 Oct
+ 2021 18:59:21 +0000
 Received: from BL0PR12MB5506.namprd12.prod.outlook.com
  ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
  ([fe80::e8af:232:915e:2f95%8]) with mapi id 15.20.4628.016; Wed, 20 Oct 2021
- 18:57:22 +0000
-Date:   Wed, 20 Oct 2021 15:57:21 -0300
+ 18:59:21 +0000
+Date:   Wed, 20 Oct 2021 15:59:19 -0300
 From:   Jason Gunthorpe <jgg@nvidia.com>
 To:     Alex Williamson <alex.williamson@redhat.com>
 Cc:     Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
         saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
         netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com
-Subject: Re: [PATCH V2 mlx5-next 14/14] vfio/mlx5: Use its own PCI reset_done
- error handler
-Message-ID: <20211020185721.GA334@nvidia.com>
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>,
+        Cornelia Huck <cohuck@redhat.com>
+Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
+ for mlx5 devices
+Message-ID: <20211020185919.GH2744544@nvidia.com>
 References: <20211019105838.227569-1-yishaih@nvidia.com>
- <20211019105838.227569-15-yishaih@nvidia.com>
- <20211019125513.4e522af9.alex.williamson@redhat.com>
- <20211019191025.GA4072278@nvidia.com>
- <5cf3fb6c-2ca0-f54e-3a05-27762d29b8e2@nvidia.com>
- <20211020164629.GG2744544@nvidia.com>
- <20211020114514.560ce2fa.alex.williamson@redhat.com>
+ <20211019105838.227569-13-yishaih@nvidia.com>
+ <20211019124352.74c3b6ba.alex.williamson@redhat.com>
+ <20211019192328.GZ2744544@nvidia.com>
+ <20211019145856.2fa7f7c8.alex.williamson@redhat.com>
+ <20211019230431.GA2744544@nvidia.com>
+ <5a496713-ae1d-11f2-1260-e4c1956e1eda@nvidia.com>
+ <20211020105230.524e2149.alex.williamson@redhat.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211020114514.560ce2fa.alex.williamson@redhat.com>
-X-ClientProxiedBy: BL0PR0102CA0010.prod.exchangelabs.com
- (2603:10b6:207:18::23) To BL0PR12MB5506.namprd12.prod.outlook.com
+In-Reply-To: <20211020105230.524e2149.alex.williamson@redhat.com>
+X-ClientProxiedBy: BL1PR13CA0389.namprd13.prod.outlook.com
+ (2603:10b6:208:2c0::34) To BL0PR12MB5506.namprd12.prod.outlook.com
  (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
-Received: from mlx.ziepe.ca (142.162.113.129) by BL0PR0102CA0010.prod.exchangelabs.com (2603:10b6:207:18::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.18 via Frontend Transport; Wed, 20 Oct 2021 18:57:22 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1mdGm9-0002A5-CS; Wed, 20 Oct 2021 15:57:21 -0300
+Received: from mlx.ziepe.ca (142.162.113.129) by BL1PR13CA0389.namprd13.prod.outlook.com (2603:10b6:208:2c0::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.11 via Frontend Transport; Wed, 20 Oct 2021 18:59:20 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1mdGo3-0002BR-Mu; Wed, 20 Oct 2021 15:59:19 -0300
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3bd9ac66-3274-4c1d-22dd-08d993fb72e2
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5254:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BL1PR12MB5254977C82C2270486CCB15FC2BE9@BL1PR12MB5254.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: a0b92a8d-5ea7-413d-87f1-08d993fbb994
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5239:
+X-Microsoft-Antispam-PRVS: <BL1PR12MB5239C8616F1B575D8609957BC2BE9@BL1PR12MB5239.namprd12.prod.outlook.com>
 X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mjG84jGD+Kqsr8ToaUF0ue7zo1hXOpjls64E31/2j0iletA8HxElzD0MXEVRJkti61m12PnJsBu4V71ZLL9n05b5b29tK4HKtgbH2dk4Q8rDqbAPLVpTotFT+GoCnKNC6JqDEK97fxbAntNMFK2cu/+iae5r0q8TfUoF7iEyhSP5sdccwq8oFyOPml6uLZnoh8Ll6y9aw0h3qxCmBsATyXlDuVyZpzZAKHO3SKgr1Xbl34qhn7APY7AZrEncxN8MyZ0akbNcU1HWPOdFfo1EeRkLRYt0wahvmc3kkM/3vKwVaisNuAWYlnrUvkQoQWKD/u74nAItKr1AoYV+C2MzjxWfu/L7c5qnuTKc1ZSxRFBY8E3PsWOo8GmX2hI/bXyhfvQgptrJxScxl13hNyu/9o8VXyNkxy4n44dT4yAbQK1Sf+/+rbo572y4FWDe3lo22qspCwGHM0PqWKuKv8R57AXEh6Ezl6KWX7D3cY8aNzh0dJxantoK7pN4e/bjacSYE5lP1sdP5n5laNFtuZA62TdcrICqQKub1r13mE8ChH5feVXjW46N/p/IIDqnZ9bRrICUUj/Ah0K21h24iBJZq+9nYY5ejx9r6GHr2g2XOIkc6S4u1ijqsvTo/yI7WDnYJa2inNP8XWWb5fNv1RwB2w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(8676002)(26005)(38100700002)(66556008)(2616005)(66476007)(33656002)(6916009)(36756003)(4326008)(426003)(83380400001)(107886003)(9786002)(508600001)(186003)(2906002)(86362001)(9746002)(316002)(1076003)(5660300002)(8936002)(66946007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: yPq1oM6nYkjdLuWaXUaTga1IUCH28yZ2P1nhCrvUtFGd1EcDGDa8/8AxbUiRdMMrc5w1+JMInApy+82RF4MVLij55sQtVfR/4oei9gGHmOLIALGa8Sb/7DSZVmSogjwBrErTGzX+80fz3DGXjVRVtTM7Ee4M/JjdvRw1nRvRp8HQDMLoXti96w/IwshN1S8kQGh4ynkz7urohL8LuyXTHC/GU49EoXansR/Lz9xL4yscpy3swwLszSxdjPNxtlSuM1FYG10T3/I5DAowsbIAfcoZgnhRAvIWchgaWnKlageV4NmQUqaRM8py7q/EIiP8jrbgVQPgm1VhJmpFMFyvGOH/cpwjgGR8lfIOuRVf9uQeMrnFbN6geY8FhcT92IIznDlitzhWpzAnK5G2kCPTI5RIn/jEGiUDZIK+T7CociLTa+dZnGCtjFEGlLhGwQ1HDNgJu8CQ+411lpKYlcwlJGiZCo0NRu22OPXFdi+SsREx2GYYemiR62eVeJqdpyC75n9mWbFA0YXQfO7MYV7/l26a0kOw1xxTb8MyNccn/eLEhXelvivKHezx98HWRRY28vO5W3MxQYglKvXeZEoA73u5BUYFsSsss1J9um7XnT7E7jO0eDDu+xNZjkgqkcP8oKWBzW/3jL/IZKXzTHBouw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(508600001)(8676002)(83380400001)(66946007)(66556008)(9746002)(9786002)(6916009)(5660300002)(66476007)(186003)(54906003)(26005)(2616005)(4326008)(33656002)(2906002)(1076003)(8936002)(86362001)(36756003)(38100700002)(426003)(316002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?yNEmwWs1miRbEXcyZ1VvYYgWOUWqxPDtSFjwrjoA467b0tljSJwWpCF1S92N?=
- =?us-ascii?Q?uaQ9TpIeDZc/C9EBWlf0T7iwkTrGSuN0kB2fQ1h8kmWr6aNR+0lMttJ4rQ22?=
- =?us-ascii?Q?/B1aD8Z2/35b6458ge5kRlsnpu1zgM/kDmL6gv8R7S1aIxGfE5Le6bNYbICV?=
- =?us-ascii?Q?oH6y1770Z3POpBnAv/PwaLFItbMN/v8YqJJHO3BGq8GkNrfUvVjotCj6h5B8?=
- =?us-ascii?Q?xORz+wTb/feNySc/6HcCgHpghlDq6/xG9WhhhCI05sfb3Hmg2dIi7aEAdHj8?=
- =?us-ascii?Q?pEwsX45Qwi52L3ggDxp8aoNBDn+QZDyJqIuNAy8tJ7IGFOKP/pfHHu5wjR9I?=
- =?us-ascii?Q?tDJAMJqpC30ijWV6DJ5TC5upjvAWtSSHqDNucAFt1/+k5NgcykcbhwDjUz9H?=
- =?us-ascii?Q?F12JiuTuNz/0RdoNefMIMi8ZPNKBYAJvmRPaXkUkdUqxwcVRFPXojPwsFsNe?=
- =?us-ascii?Q?QQV4GBxzJGQ4ef2SMfVX5lRmDVfnFqhjVmkiYyhQYw2dZO8eBp1A86z4c8+h?=
- =?us-ascii?Q?rvImzcfrNYXv7aLEsWRPMKoqJbYAKKOoTk2HpsNfMub/AEnaTz6um84zmEVA?=
- =?us-ascii?Q?C5xGHUfM6jeTY84ulww+mLlhKD436bvPaKKehX4134ecz9SdbrX3l1ox8Z0M?=
- =?us-ascii?Q?pH4JFMAzcb2w4wsVn70v5yWc0re+eTK4U0hUUyyFJZCfchJmJdIijOKe9Zy+?=
- =?us-ascii?Q?IGZSYeI2n7Ige+rYU7C3fN6auCGqEolvitIIw+Ng/aif//6cWzDcQnYkWHD7?=
- =?us-ascii?Q?gcZt6mz+39Cj7bPuKh2vu1LMLp3LBgoco1m4+smEBVfoPKsMJLx+iNXxTmyR?=
- =?us-ascii?Q?11LIrYo1DmMSlI5utAKxbI4Ww+4IX9TearShdKlE/CFm0pWpNk9EKQmnLz15?=
- =?us-ascii?Q?Mwo6915A5tj7U5DfT9L71qOrKo22EqDWcS2K1K/CMa4w2iQNZjCMwqvLfX4N?=
- =?us-ascii?Q?XkO1XLEq9C55fK+wh6OpLG0PKiR3RrmBqcDCUGKAoynqu9ITXH4LbL+dNyot?=
- =?us-ascii?Q?7ndMBBGD/irOpYua7SbbH8Zbp3cBrVsIFPVjBlQoL83zFpogMMMjqen+13lX?=
- =?us-ascii?Q?8lubUaDTeQwtPY8EVf1bWy9RXbXfgQX5jOfUw5Mx3bHO1QTxJ6NSquFcbOIm?=
- =?us-ascii?Q?GvTtyj3idVGGj0uqZzwwWihyZ19C9I9MJIJs/4Iocotj5pZwOLPIsYdtBKPp?=
- =?us-ascii?Q?kfVSjzvFL3xMMmfo9s1WbMxJWszPPUpRhzGNksWtoEKfoWlXzvX1s6WpsTfE?=
- =?us-ascii?Q?VNpc0Li110ln5oBFTkipIqoGhgLMQW558iz3Jcuame1j3rrCUwnO8lexgIBJ?=
- =?us-ascii?Q?ezgcU8zJlC4swQLg0xZgnWW2?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?71cBFJMze/yEqTiYCv/1hAwNGYYmfntl27MYvOxUxQtwGkPHFtEi9wMvXEL+?=
+ =?us-ascii?Q?j5DZU+5bL0WN3cC8zeCe1MAVgWTOfYBgYoG6U1XcdJhqsOsPxPL0NfnGxqIO?=
+ =?us-ascii?Q?EtKNSCttvlmgfqcS++6LbXvGIBqSVVHk4eKVSAYYPJu6LxLBmAp+4xQZFJub?=
+ =?us-ascii?Q?EGl5Iq7viL0YBXnm/8e3nYO3X2SDu0GIY/H8sfrAaHnivDRTLDCacKbszY0W?=
+ =?us-ascii?Q?AHGKNYmTGMavM+/QONqJwDERBO7Jc2S4YPxu0T9b1cOC0ZA+dZERdYeITpLt?=
+ =?us-ascii?Q?1E2l1Emrmo8SJ9QNZ81FNnre6TJXnH1+3E9PtQ20A15wRvav963Lkolom/IQ?=
+ =?us-ascii?Q?xsh2Aasxw7wOGOXjRZIc4HRgmm/roCrF9fgv8/r6BINVHz4C5xEMFRFD2xIj?=
+ =?us-ascii?Q?YA0pNnDqthfxBscU6fXtPJRXK4w5+lD7obHmNYjO2+Ia3yllMEkdW9dnn8Hh?=
+ =?us-ascii?Q?Z1ZJcYiLZDkmWZ+PpxPHzC+UobDZxdR9ATTEPMB+phQ0+fd3M8uNaAn4RhAi?=
+ =?us-ascii?Q?lMMq3fkJMp42oeRjXC1PZcSyuU+HczH5XFkbKvYdy51zgV4VnczLl7p3e6NM?=
+ =?us-ascii?Q?wSIC5FXdZzB0W9RooeOoqOHkIFFAO70DJGirvV9N7uTCamXvC4su2qrZqpMX?=
+ =?us-ascii?Q?tnzGbRO0SUCpsq4N+iPvMxpuSsQ3HS9JbqPz5Y8h/MaG80Q/0+LRnahgSesu?=
+ =?us-ascii?Q?wetBJ67ntXqf7EL4yTBXzE5Jq26DUuyBt4B6HYMDVgbS65r5MzSRwfoJuCSU?=
+ =?us-ascii?Q?jHvOgeKLfKZXtnLbuT7/4eFI57Wj9qBQjrNClp2ofJ5PhDBJyIHPWQ6/kySV?=
+ =?us-ascii?Q?u0DuI1I0nm4OOclk2UsOK4KUqu5seNys67PPles6Z9NHCNKcSYjk10BAUpp2?=
+ =?us-ascii?Q?7Rd2LC9LA2TJjCnF90pgyrM2zxCzS/yONfTDnM2E2D/BaU5/HMLWPuT71Jsc?=
+ =?us-ascii?Q?0FiR6vtjLePFwXq4/spF/TfxbhJEmkkCNd4hC1y9QSx9zB/J1hamVtE5GaAG?=
+ =?us-ascii?Q?CRS7JwVEgrtY+O4L+7OvLd+z55jcN+V1vuchllre86HoHVbtIMK5v+xgrAP/?=
+ =?us-ascii?Q?clSK90rUnxOVPThosaMm9WGNwSbUqFl2RD8ucSee2MMqGKi/W7dmV3JyYMc7?=
+ =?us-ascii?Q?Iptg77PWTinz3HMXkiLnNbAH6aBeo5WeO0ldT89sXVFw/B2L5cJQLU2PjqQu?=
+ =?us-ascii?Q?97aDf7Y8gp1dsEco4X7yMSnEpPKhS6f+Ujn/WK9GECQB8c6DuCL/IWvwbs6D?=
+ =?us-ascii?Q?o78V3NnsOM+TmFaFq/XB3ydasSN/avmAzbowa1mDT6/FihO8hMw9CNEKW9Uv?=
+ =?us-ascii?Q?83lBYwVU0MVfmnpd9HNuhw71qCpSCpBV/at4BJMG9KukGdIDWWmNZtM/tNX3?=
+ =?us-ascii?Q?VL+mySHyn80KrepMw4qWEEtAb5wMQDfZ22/GMZ4gKinCsxSZPCECucziAt6y?=
+ =?us-ascii?Q?g9OpCmnnpZs=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3bd9ac66-3274-4c1d-22dd-08d993fb72e2
+X-MS-Exchange-CrossTenant-Network-Message-Id: a0b92a8d-5ea7-413d-87f1-08d993fbb994
 X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2021 18:57:22.5353
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2021 18:59:21.1240
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
 X-MS-Exchange-CrossTenant-UserPrincipalName: jgg@nvidia.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5254
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5239
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 20, 2021 at 11:45:14AM -0600, Alex Williamson wrote:
-> On Wed, 20 Oct 2021 13:46:29 -0300
-> Jason Gunthorpe <jgg@nvidia.com> wrote:
-> 
-> > On Wed, Oct 20, 2021 at 11:46:07AM +0300, Yishai Hadas wrote:
-> > 
-> > > What is the expectation for a reasonable delay ? we may expect this system
-> > > WQ to run only short tasks and be very responsive.  
-> > 
-> > If the expectation is that qemu will see the error return and the turn
-> > around and issue FLR followed by another state operation then it does
-> > seem strange that there would be a delay.
-> > 
-> > On the other hand, this doesn't seem that useful. If qemu tries to
-> > migrate and the device fails then the migration operation is toast and
-> > possibly the device is wrecked. It can't really issue a FLR without
-> > coordinating with the VM, and it cannot resume the VM as the device is
-> > now irrecoverably messed up.
-> > 
-> > If we look at this from a RAS perspective would would be useful here
-> > is a way for qemu to request a fail safe migration data. This must
-> > always be available and cannot fail.
-> > 
-> > When the failsafe is loaded into the device it would trigger the
-> > device's built-in RAS features to co-ordinate with the VM driver and
-> > recover. Perhaps qemu would also have to inject an AER or something.
-> > 
-> > Basically instead of the device starting in an "empty ready to use
-> > state" it would start in a "failure detected, needs recovery" state.
-> 
-> The "fail-safe recovery state" is essentially the reset state of the
-> device.
+On Wed, Oct 20, 2021 at 10:52:30AM -0600, Alex Williamson wrote:
 
-This is only the case if qemu does work to isolate the recently FLR'd
-device from the VM until the VM acknowledges that it understands it is
-FLR'd.
+> I'm wondering if we're imposing extra requirements on the !_RUNNING
+> state that don't need to be there.  For example, if we can assume that
+> all devices within a userspace context are !_RUNNING before any of the
+> devices begin to retrieve final state, then clearing of the _RUNNING
+> bit becomes the device quiesce point and the beginning of reading
+> device data is the point at which the device state is frozen and
+> serialized.  No new states required and essentially works with a slight
+> rearrangement of the callbacks in this series.  Why can't we do that?
 
-At least it would have to remove it from CPU access and the IOMMU, as
-though the memory enable bit was cleared.
+It sounds worth checking carefully. I didn't come up with a major
+counter scenario.
 
-Is it reasonable to do this using just qemu, AER and no device
-support?
+We would need to specifically define which user action triggers the
+device to freeze and serialize. Reading pending_bytes I suppose?
 
-> If a device enters an error state during migration, I would
-> think the ultimate recovery procedure would be to abort the migration,
-> send an AER to the VM, whereby the guest would trigger a reset, and
-> the RAS capabilities of the guest would handle failing over to a
-> multipath device, ejecting the failing device, etc.
+Since freeze is a device command we need to be able to report failure
+and to move the state to error, that feels bad hidden inside reading
+pending_bytes.
 
-Yes, this is my thinking, except I would not abort the migration but
-continue on to the new hypervisor and then do the RAS recovery with
-the new device.
+> Maybe a clarification of the uAPI spec is sufficient to achieve this,
+> ex. !_RUNNING devices may still update their internal state machine
+> based on external access.  Userspace is expected to quiesce all external
+> access prior to initiating the retrieval of the final device state from
+> the data section of the migration region.  Failure to do so may result
+> in inconsistent device state or optionally the device driver may induce
+> a fault if a quiescent state is not maintained.
+
+But on the other hand this seem so subtle and tricky way to design a
+uAPI that devices and users are unlikely to implement it completely
+correctly.
+
+IMHO the point of the state is to control the current behavior of the
+device - yes we can control behavior on other operations, but it feels
+obfuscated.
+
+Especially when the userspace that needs to know about this isn't even
+deployed yet, let's just do it cleanly?
 
 Jason
