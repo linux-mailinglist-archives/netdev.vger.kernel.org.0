@@ -2,168 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32EBD434519
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 08:23:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0483B434548
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 08:40:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229817AbhJTGZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 02:25:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53002 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229591AbhJTGZn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 02:25:43 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE70C06161C;
-        Tue, 19 Oct 2021 23:23:30 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id oa4so1741116pjb.2;
-        Tue, 19 Oct 2021 23:23:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=AS3THJKxv0JL37o2aLKkOBmpQLeWF9n67xbjGYeiXl8=;
-        b=pFVISFxCrmv9oA/r8AkteD5HRSPspcaow+A7VF+W/84o2P2yQ2dIQ8aPyA/X8CEOE2
-         k+hwl+1pqEIpuK2w7oS4OsGtL9mDXBvBKTx7r0JIkOnWQnOnGjyWkn29YQVOGRh28XTU
-         5+3zngVjfx8xmeMJaA21XbQ0bAUQFd0cl8RoYb23hOjxpXTNa2Wf1iyY5OdR0qidsoNB
-         KuyYVyTDi2TnRKcsu26JZMKG18IyRnwTOVm40DIMey8NerrLM47XnKmM4sZ4Zv9Sp8yj
-         NL6m5MA+gWOYPWd51U0K6tfM6gyVcne23J3UzQnvxsa3P5vBzacrrJm8p7Ags50ZNTCu
-         Wj1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=AS3THJKxv0JL37o2aLKkOBmpQLeWF9n67xbjGYeiXl8=;
-        b=mozOvPS4zfpnNZwydWl3JnJLQGGeQMsMAEyytvaRR5kHXr40LGmSksaqWUrcPmMb9M
-         +H6Zitrg+Lc2HcLOk/wr2WGA6NhcUA90gZ/EKyR3aMMqFRcwU/l9x5h4nTzsgD1W2egU
-         EKHBYyuD2bmIWWyYzaXrhIJpD4w7LsJjlkwhwsevM1vhBqe1CEiAYSZyW3Ptx6A18hP3
-         dni08XiRhA/I+b0O6/WOlgTWcNY6AJoW/7PpfP/fmxMRHGNG09055UQ0AWE8/ITcAAMg
-         hSxnVPaVtmXRAoKIibjUYtrU852zK1zrwnD7bpBetzUQaET3Hn+dI2os7WcG8hpxJQzQ
-         KtfA==
-X-Gm-Message-State: AOAM532/ryr0WoTImeOcoHNlUwxKQpWvC6biRBCEzPqpw354UCs3Og7B
-        LIxoZ7wMnLlBMQcnbI3cYiA=
-X-Google-Smtp-Source: ABdhPJxrpjBZRgLXHF0IC6ZBiZedOwvYyZvMQeeICCM2fEbazI782zWH2QfhI1nAK6SF4oDgwy4P9Q==
-X-Received: by 2002:a17:90b:3b85:: with SMTP id pc5mr5215312pjb.74.1634711009746;
-        Tue, 19 Oct 2021 23:23:29 -0700 (PDT)
-Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:38:f8a6:5db8:3270:8932])
-        by smtp.gmail.com with ESMTPSA id c4sm1284498pfv.144.2021.10.19.23.23.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Oct 2021 23:23:29 -0700 (PDT)
-From:   Tianyu Lan <ltykernel@gmail.com>
-To:     bp@alien8.de
-Cc:     Tianyu Lan <Tianyu.Lan@microsoft.com>, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
-        x86@kernel.org, hpa@zytor.com, dave.hansen@linux.intel.com,
-        luto@kernel.org, peterz@infradead.org, davem@davemloft.net,
-        kuba@kernel.org, gregkh@linuxfoundation.org, arnd@arndb.de,
-        jroedel@suse.de, brijesh.singh@amd.com, thomas.lendacky@amd.com,
-        pgonda@google.com, akpm@linux-foundation.org,
-        kirill.shutemov@linux.intel.com, rppt@kernel.org, tj@kernel.org,
-        aneesh.kumar@linux.ibm.com, saravanand@fb.com, hannes@cmpxchg.org,
-        rientjes@google.com, michael.h.kelley@microsoft.com,
-        linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, konrad.wilk@oracle.com, hch@lst.de,
-        robin.murphy@arm.com, joro@8bytes.org, parri.andrea@gmail.com,
-        dave.hansen@intel.com
-Subject: [PATCH] x86/sev-es: Expose __sev_es_ghcb_hv_call() to call ghcb hv call out of sev code
-Date:   Wed, 20 Oct 2021 02:23:16 -0400
-Message-Id: <20211020062321.3581158-1-ltykernel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <2772390d-09c1-80c1-082f-225f32eae4aa@gmail.com>
-References: <2772390d-09c1-80c1-082f-225f32eae4aa@gmail.com>
+        id S229920AbhJTGmf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 02:42:35 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:63786 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229846AbhJTGma (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Oct 2021 02:42:30 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1634712016; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: References: Cc: To:
+ Subject: From: Sender; bh=izrFRDPPIJzzSEpnDqJmdzIPU5ZzreLatzyS3F4RNbo=;
+ b=dnQQDjjESUHTEI1WjQkFh3y+WVV1dXf2BNutUM3JzgtpK2t0trB3Mpmp2uhDaBK/+Q/wbPe4
+ XXURY351JwXd33JP3YduRHz7Y9JZEyLZfXxmfqI/wRFaL9NqYFS2gYFILESJsE4SI9T5H3AD
+ idMnR33tw3WzK53l+ya25P7f8HM=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
+ 616fb9c559612e010088f259 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 20 Oct 2021 06:40:05
+ GMT
+Sender: quic_luoj=quicinc.com@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id B9A90C4360D; Wed, 20 Oct 2021 06:40:04 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-5.2 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        NICE_REPLY_A,SPF_FAIL,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+        version=3.4.0
+Received: from [10.92.1.38] (unknown [180.166.53.36])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: luoj)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 118FCC4338F;
+        Wed, 20 Oct 2021 06:40:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 118FCC4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=fail (p=none dis=none) header.from=quicinc.com
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=quicinc.com
+From:   Jie Luo <quic_luoj@quicinc.com>
+Subject: Re: [PATCH v3 07/13] net: phy: add qca8081 get_features
+To:     Andrew Lunn <andrew@lunn.ch>, Luo Jie <luoj@codeaurora.org>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sricharan@codeaurora.org
+References: <20211018033333.17677-1-luoj@codeaurora.org>
+ <20211018033333.17677-8-luoj@codeaurora.org> <YW3qrFRzvPlFrms0@lunn.ch>
+Message-ID: <cf1c8c0a-eeab-d5d2-fa04-ff6e4d37b960@quicinc.com>
+Date:   Wed, 20 Oct 2021 14:39:57 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <YW3qrFRzvPlFrms0@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
+On 10/19/2021 5:44 AM, Andrew Lunn wrote:
+> On Mon, Oct 18, 2021 at 11:33:27AM +0800, Luo Jie wrote:
+>> Reuse the at803x phy driver get_features excepting
+>> adding 2500M capability.
+>>
+>> Signed-off-by: Luo Jie<luoj@codeaurora.org>
+>> ---
+>>   drivers/net/phy/at803x.c | 10 ++++++++++
+>>   1 file changed, 10 insertions(+)
+>>
+>> diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+>> index 42d3f8ccca94..0c22ef735230 100644
+>> --- a/drivers/net/phy/at803x.c
+>> +++ b/drivers/net/phy/at803x.c
+>> @@ -719,6 +719,15 @@ static int at803x_get_features(struct phy_device *phydev)
+>>   	if (err)
+>>   		return err;
+>>   
+>> +	if (phydev->drv->phy_id == QCA8081_PHY_ID) {
+>> +		err = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_NG_EXTABLE);
+>> +		if (err < 0)
+>> +			return err;
+>> +
+>> +		linkmode_mod_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, phydev->supported,
+>> +				err & MDIO_PMA_NG_EXTABLE_2_5GBT);
+>> +	}
+> genphy_c45_pma_read_abilities()?
+>
+> 	Andrew
 
-Hyper-V also needs to call ghcb hv call to write/read MSR in Isolation VM.
-So expose __sev_es_ghcb_hv_call() to call it in the Hyper-V code.
+Hi Andrew,
 
-Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
----
- arch/x86/include/asm/sev.h   | 11 +++++++++++
- arch/x86/kernel/sev-shared.c | 24 +++++++++++++++++++-----
- 2 files changed, 30 insertions(+), 5 deletions(-)
+Thanks for this comment, if we use genphy_c45_pma_read_abilities here, 
+the ETHTOOL_LINK_MODE_Autoneg_BIT
 
-diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
-index fa5cd05d3b5b..295c847c3cd4 100644
---- a/arch/x86/include/asm/sev.h
-+++ b/arch/x86/include/asm/sev.h
-@@ -81,12 +81,23 @@ static __always_inline void sev_es_nmi_complete(void)
- 		__sev_es_nmi_complete();
- }
- extern int __init sev_es_efi_map_ghcbs(pgd_t *pgd);
-+extern enum es_result __sev_es_ghcb_hv_call(struct ghcb *ghcb,
-+					    struct es_em_ctxt *ctxt,
-+					    u64 exit_code, u64 exit_info_1,
-+					    u64 exit_info_2);
- #else
- static inline void sev_es_ist_enter(struct pt_regs *regs) { }
- static inline void sev_es_ist_exit(void) { }
- static inline int sev_es_setup_ap_jump_table(struct real_mode_header *rmh) { return 0; }
- static inline void sev_es_nmi_complete(void) { }
- static inline int sev_es_efi_map_ghcbs(pgd_t *pgd) { return 0; }
-+static inline enum es_result
-+__sev_es_ghcb_hv_call(struct ghcb *ghcb,
-+		      u64 exit_code, u64 exit_info_1,
-+		      u64 exit_info_2)
-+{
-+	return ES_VMM_ERROR;
-+}
- #endif
- 
- #endif
-diff --git a/arch/x86/kernel/sev-shared.c b/arch/x86/kernel/sev-shared.c
-index ea9abd69237e..08c97cb057fa 100644
---- a/arch/x86/kernel/sev-shared.c
-+++ b/arch/x86/kernel/sev-shared.c
-@@ -124,10 +124,14 @@ static enum es_result verify_exception_info(struct ghcb *ghcb, struct es_em_ctxt
- 	return ES_VMM_ERROR;
- }
- 
--static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
--					  struct es_em_ctxt *ctxt,
--					  u64 exit_code, u64 exit_info_1,
--					  u64 exit_info_2)
-+/*
-+ * __sev_es_ghcb_hv_call() is also used in the other platform code(e.g
-+ * Hyper-V).
-+ */
-+enum es_result __sev_es_ghcb_hv_call(struct ghcb *ghcb,
-+				     struct es_em_ctxt *ctxt,
-+				     u64 exit_code, u64 exit_info_1,
-+				     u64 exit_info_2)
- {
- 	/* Fill in protocol and format specifiers */
- 	ghcb->protocol_version = GHCB_PROTOCOL_MAX;
-@@ -137,12 +141,22 @@ static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
- 	ghcb_set_sw_exit_info_1(ghcb, exit_info_1);
- 	ghcb_set_sw_exit_info_2(ghcb, exit_info_2);
- 
--	sev_es_wr_ghcb_msr(__pa(ghcb));
- 	VMGEXIT();
- 
- 	return verify_exception_info(ghcb, ctxt);
- }
- 
-+static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
-+					  struct es_em_ctxt *ctxt,
-+					  u64 exit_code, u64 exit_info_1,
-+					  u64 exit_info_2)
-+{
-+	sev_es_wr_ghcb_msr(__pa(ghcb));
-+
-+	return __sev_es_ghcb_hv_call(ghcb, ctxt, exit_code, exit_info_1,
-+				     exit_info_2);
-+}
-+
- /*
-  * Boot VC Handler - This is the first VC handler during boot, there is no GHCB
-  * page yet, so it only supports the MSR based communication with the
--- 
-2.25.1
+will be lost, since MDIO_MMD_AN.MDIO_STAT1 does not have bit 
+MDIO_AN_STAT1_ABLE.
+
 
