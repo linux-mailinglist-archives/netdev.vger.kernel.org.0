@@ -2,122 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F08E434715
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 10:40:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0406434719
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 10:40:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229881AbhJTImQ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 20 Oct 2021 04:42:16 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:60332 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229600AbhJTImO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 04:42:14 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-26-9od0xuhxN2eU-4dqV5Rppg-1; Wed, 20 Oct 2021 09:39:58 +0100
-X-MC-Unique: 9od0xuhxN2eU-4dqV5Rppg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.23; Wed, 20 Oct 2021 09:39:56 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.023; Wed, 20 Oct 2021 09:39:56 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Arnd Bergmann' <arnd@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>
-CC:     Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        "Nick Desaulniers" <ndesaulniers@google.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Aya Levin <ayal@nvidia.com>,
-        "Eran Ben Elisha" <eranbe@nvidia.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
-Subject: RE: [PATCH] [v2] mlx5: stop warning for 64KB pages
-Thread-Topic: [PATCH] [v2] mlx5: stop warning for 64KB pages
-Thread-Index: AQHXwdhG9T7OOxgcJU2hLtnyJfvXJqvbl/VQ
-Date:   Wed, 20 Oct 2021 08:39:56 +0000
-Message-ID: <b12bfefcace143bd9aed95213e1bd8f1@AcuMS.aculab.com>
-References: <20211015152056.2434853-1-arnd@kernel.org>
-In-Reply-To: <20211015152056.2434853-1-arnd@kernel.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S229943AbhJTImo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 04:42:44 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:35945 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229817AbhJTImo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 04:42:44 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1634719230; h=Date: Message-ID: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=ngiA4F+Xq1nJ5EtozeFV5N0OpfSzo6oaCKX4IXNUDKg=;
+ b=wDFFsPa1gBwS8NI9vTHlFhqUMhNaKnHhImHcuxBTMRYy5YTogwvKxjzP+NV97psAQx3Wj+HH
+ S4whWuy0qmeDI/7EKir9MuKqSS9YJ6FpQp4LUbNev646OrpKnnsD4Z1BIhvhcobxoI3F7iLR
+ PVDJmWqXrVlkmCIl2s+7iolNUqQ=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
+ 616fd5eb5ca800b6c12cb638 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 20 Oct 2021 08:40:11
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 68239C43460; Wed, 20 Oct 2021 08:40:11 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.5 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id EB110C4338F;
+        Wed, 20 Oct 2021 08:40:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org EB110C4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH net] rsi: stop thread firstly in rsi_91x_init() error
+ handling
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20211015040335.1021546-1-william.xuanziyang@huawei.com>
+References: <20211015040335.1021546-1-william.xuanziyang@huawei.com>
+To:     Ziyang Xuan <william.xuanziyang@huawei.com>
+Cc:     <amitkarwar@gmail.com>, <siva8118@gmail.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <163471920135.1743.399816436682216881.kvalo@codeaurora.org>
+Date:   Wed, 20 Oct 2021 08:40:11 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann
-> Sent: 15 October 2021 16:21
-> 
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> When building with 64KB pages, clang points out that xsk->chunk_size
-> can never be PAGE_SIZE:
-> 
-> drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c:19:22: error: result of comparison of constant
-> 65536 with expression of type 'u16' (aka 'unsigned short') is always false [-Werror,-Wtautological-
-> constant-out-of-range-compare]
->         if (xsk->chunk_size > PAGE_SIZE ||
->             ~~~~~~~~~~~~~~~ ^ ~~~~~~~~~
-> 
-> In older versions of this code, using PAGE_SIZE was the only
-> possibility, so this would have never worked on 64KB page kernels,
-> but the patch apparently did not address this case completely.
-> 
-> As Maxim Mikityanskiy suggested, 64KB chunks are really not all that
-> useful, so just shut up the warning by adding a cast.
-> 
-> Fixes: 282c0c798f8e ("net/mlx5e: Allow XSK frames smaller than a page")
-> Link: https://lore.kernel.org/netdev/20211013150232.2942146-1-arnd@kernel.org/
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-> b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-> index 538bc2419bd8..228257010f32 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-> @@ -15,8 +15,10 @@ bool mlx5e_validate_xsk_param(struct mlx5e_params *params,
->  			      struct mlx5e_xsk_param *xsk,
->  			      struct mlx5_core_dev *mdev)
->  {
-> -	/* AF_XDP doesn't support frames larger than PAGE_SIZE. */
-> -	if (xsk->chunk_size > PAGE_SIZE ||
-> +	/* AF_XDP doesn't support frames larger than PAGE_SIZE,
-> +	 * and xsk->chunk_size is limited to 65535 bytes.
-> +	 */
-> +	if ((size_t)xsk->chunk_size > PAGE_SIZE ||
->  			xsk->chunk_size < MLX5E_MIN_XSK_CHUNK_SIZE)
->  		return false;
+Ziyang Xuan <william.xuanziyang@huawei.com> wrote:
 
-How much smaller does the kernel get if you change 'chunk_size' from
-_u16 to 'unsigned int'. ?
-Especially for a non-x86 build?
-Or is it a hardware constrained size??
+> When fail to init coex module, free 'common' and 'adapter' directly, but
+> common->tx_thread which will access 'common' and 'adapter' is running at
+> the same time. That will trigger the UAF bug.
+> 
+> ==================================================================
+> BUG: KASAN: use-after-free in rsi_tx_scheduler_thread+0x50f/0x520 [rsi_91x]
+> Read of size 8 at addr ffff8880076dc000 by task Tx-Thread/124777
+> CPU: 0 PID: 124777 Comm: Tx-Thread Not tainted 5.15.0-rc5+ #19
+> Call Trace:
+>  dump_stack_lvl+0xe2/0x152
+>  print_address_description.constprop.0+0x21/0x140
+>  ? rsi_tx_scheduler_thread+0x50f/0x520
+>  kasan_report.cold+0x7f/0x11b
+>  ? rsi_tx_scheduler_thread+0x50f/0x520
+>  rsi_tx_scheduler_thread+0x50f/0x520
+> ...
+> 
+> Freed by task 111873:
+>  kasan_save_stack+0x1b/0x40
+>  kasan_set_track+0x1c/0x30
+>  kasan_set_free_info+0x20/0x30
+>  __kasan_slab_free+0x109/0x140
+>  kfree+0x117/0x4c0
+>  rsi_91x_init+0x741/0x8a0 [rsi_91x]
+>  rsi_probe+0x9f/0x1750 [rsi_usb]
+> 
+> Stop thread before free 'common' and 'adapter' to fix it.
+> 
+> Fixes: 2108df3c4b18 ("rsi: add coex support")
+> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
 
-	David
+Patch applied to wireless-drivers-next.git, thanks.
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+515e7184bdf0 rsi: stop thread firstly in rsi_91x_init() error handling
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20211015040335.1021546-1-william.xuanziyang@huawei.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
