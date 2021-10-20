@@ -2,114 +2,334 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A24E435634
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 00:55:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22D57435641
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 01:02:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231279AbhJTW5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 18:57:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54826 "EHLO
+        id S231162AbhJTXEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 19:04:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230474AbhJTW5r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 18:57:47 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E601C06161C;
-        Wed, 20 Oct 2021 15:55:32 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id l24-20020a9d1c98000000b00552a5c6b23cso10109066ota.9;
-        Wed, 20 Oct 2021 15:55:32 -0700 (PDT)
+        with ESMTP id S231278AbhJTXE3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 19:04:29 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E74E7C061753;
+        Wed, 20 Oct 2021 16:02:14 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id r184so15864604ybc.10;
+        Wed, 20 Oct 2021 16:02:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=cPiacAHVzcrhdUz4ZTtN/fpqDLeX0mVZT75Tk2+KOqw=;
-        b=L8asQJGAEwxHpeR4LQzteEVcYbiffD6v+eiSn0f+mFF+oaQty5UWPv9e0WUaLOznRD
-         g8IUWWgrJy12oMlvets+kJj1BXVInfpNJHOJIXmgQEjDvTRvcMy4XBlUfX/R7FVw6Cl1
-         C4fX7J7mWHMipTS47kt522zjhDC7dlFyMjM0x+tG9UchiImgcvlpcatBAVP8oT5/cK/F
-         O7POA++sR2wSX21NsiDYktuLmgZ82DIVwjaz/TX/BNaHTdjWaA/0Hmgl6s0sb3PIuzvn
-         n8V/UMKXfLB9sC51/L7ZXZ1Y8OJS4mrAEe6ZCt/Au+klp+sc/ArwoLWNnELGvFHS1sKD
-         MDNQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RVhYIarSWZE8BXpUxqb7NLQxJjfl+O9Hp2K98jz+RM4=;
+        b=KQzaieknGy7KMvT5SygmrkKJbHzDP0o1/vim8/n8L2yFNHskPUX6PY++Xkiu3n9ty8
+         MeQcku0NTlunsfMj76GoMF81/yGwHCK5kGe2L8zf7U9+2o9hPgbKGsvu5xIYJ3jNYOQZ
+         EjYgc46YMdIvlO7Lzgxqko2zQnfCY1yNYR9MI6saReASsSZGgUNSfr8DTZhkNU0aiWy1
+         fGlvWBAm6R+8J+be6BBQ5OnGephElMEHVdKXVAWoEg7vzq92K1V93QEeZaZDg+NsgYBF
+         d4M3eMElp8fKJtkq5mgQN8N9inxqOgjHpBrqtYjVp68cD+lCrbkDDwD6imoyznNkz0I9
+         ea6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=cPiacAHVzcrhdUz4ZTtN/fpqDLeX0mVZT75Tk2+KOqw=;
-        b=kTQKWTXUtWpfg40QxBDSWZm+dQyH76Ux/vaW3TTwUS1mmh2IbxtdLCWygE8VQULvR9
-         TJ03CFI7+b2yK6jZ5Y1nu0eJBj5cQG0STBiBg7j58DQuMmqlzj++naIkYUhFh9G/XKqu
-         9WZmDCUVXEU1nus59qnSfG1nw0KfS6lQsNvCiB/lYqqSZOiCrUNATIq7+2golEWhW3ku
-         MKMm0++fZq5b/lGPdRbbZ8s65vv30OF1NOcNQq4Q8+v9aw74OlvDuNzBXB4I9m0VZ/4n
-         xVXxU64uhI39HOg7rWcag0157sTPdnICFfZScX7mMfCJ7s4I0RIhE/snjEG+dTU8PXoD
-         uMmw==
-X-Gm-Message-State: AOAM532UTsC5VZ188HXBk20HpmhJzgLQz8Jpt2tzURlCOZzCW1tW7XGN
-        uUnggXyWLMO0z+IG9scYocc=
-X-Google-Smtp-Source: ABdhPJy9i16Y51nszpIvaloQtDYHYhAYpRTzu/gSXP6PUAwfskLa0IzCFihTwQ8uQEm0RIIgsuE4Dw==
-X-Received: by 2002:a05:6830:31a8:: with SMTP id q8mr1708511ots.156.1634770531707;
-        Wed, 20 Oct 2021 15:55:31 -0700 (PDT)
-Received: from [172.16.0.2] ([8.48.134.34])
-        by smtp.googlemail.com with ESMTPSA id y4sm707047oix.23.2021.10.20.15.55.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Oct 2021 15:55:31 -0700 (PDT)
-Message-ID: <cc00fa9d-3f18-f850-4cdc-eb81145bdc47@gmail.com>
-Date:   Wed, 20 Oct 2021 16:55:28 -0600
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RVhYIarSWZE8BXpUxqb7NLQxJjfl+O9Hp2K98jz+RM4=;
+        b=4vh12d09v6GCnmd4ifU5vMqLrsG+9xSablv3shmYDq9GyMND7/iWW/Yx3xXsbeAd1K
+         vmmdSBm8vHIQAf5zWkQ10CTB9o9/LyPym6ql3UPubqD6ZxvpV/czK/8HpK1z+yG5cFMI
+         cluhz7ro371W5pIiYOQ/LhnpZTHWjv998hfJI1+oaQw8VbU+T+Ny8Yqp7YXka8hlI0n5
+         2KW9qIGJdSrFunwKcSaahdNOJQyTRJkYK5TAmBtvpp5jIG4FjNpF8eNvUIcQ5HJrFUXi
+         vm6RjI90xcGvv37tVLQkT345iGC0y60GaGVqeYSMLWG/d03raWkmHhQCSlzwaZZaCIgm
+         S8Yw==
+X-Gm-Message-State: AOAM5310SvD1ivMyw7v9lqTWGt0twrsfXHX4HbMjl1Xosm4Bk0DATWjM
+        ex5aRGpz7a/MnFPGziL2sgWuHlcdyR4WPNE5V7mS5XFO/qPDpA==
+X-Google-Smtp-Source: ABdhPJzangV2d+8Ys5pHQopS2MBXhqRHXfbJfxLJknGT8AHP+AF6eYJ8Emwj49NtgtrWHPrUSVdiNazaMPomrkylntw=
+X-Received: by 2002:a25:918e:: with SMTP id w14mr2050835ybl.225.1634770934101;
+ Wed, 20 Oct 2021 16:02:14 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.2.0
-Subject: Re: [PATCH bpf-next 07/10] bpf: Add helpers to query conntrack info
-Content-Language: en-US
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Florian Westphal <fw@strlen.de>
-Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
+References: <20211020191526.2306852-1-memxor@gmail.com> <20211020191526.2306852-5-memxor@gmail.com>
+ <CAEf4BzbWeVOATjjRTdoKUvrwdmObcRO1X_FBKOm4zHjP5Rie4w@mail.gmail.com> <20211020223322.luzn2ptajxhi2keo@apollo.localdomain>
+In-Reply-To: <20211020223322.luzn2ptajxhi2keo@apollo.localdomain>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 20 Oct 2021 16:02:03 -0700
+Message-ID: <CAEf4BzYneSm9+Mx7TM=Oze=w5uSCdi21SBzM7MwaNRoXqDRfmg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 4/8] libbpf: Ensure that BPF syscall fds are
+ never 0, 1, or 2
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Song Liu <songliubraving@fb.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Brendan Jackman <jackmanb@google.com>,
-        Florent Revest <revest@chromium.org>,
-        Joe Stringer <joe@cilium.io>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Tariq Toukan <tariqt@nvidia.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
-References: <20211019144655.3483197-1-maximmi@nvidia.com>
- <20211019144655.3483197-8-maximmi@nvidia.com>
- <20211020035622.lgrxnrwfeak2e75a@apollo.localdomain>
- <20211020092844.GI28644@breakpoint.cc> <87h7dcf2n4.fsf@toke.dk>
- <20211020095815.GJ28644@breakpoint.cc> <875ytrga3p.fsf@toke.dk>
- <20211020124457.GA7604@breakpoint.cc> <87r1cfe7sx.fsf@toke.dk>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <87r1cfe7sx.fsf@toke.dk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/20/21 2:54 PM, Toke Høiland-Jørgensen wrote:
->> Sure, but I'm not sure I understand the use case.
->>
->> Insertion at XDP layer turns off netfilters NAT capability, so its
->> incompatible with the classic forwarding path.
->>
->> If thats fine, why do you need to insert into the conntrack table to
->> begin with?  The entire infrastructure its designed for is disabled...
-> One of the major selling points of XDP is that you can reuse the
-> existing kernel infrastructure instead of having to roll your own. So
-> sure, one could implement their own conntrack using BPF maps (as indeed,
-> e.g., Cilium has done), but why do that when you can take advantage of
-> the existing one in the kernel? Same reason we have the bpf_fib_lookup()
-> helper...
-> 
+On Wed, Oct 20, 2021 at 3:33 PM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
+>
+> On Thu, Oct 21, 2021 at 03:39:08AM IST, Andrii Nakryiko wrote:
+> > On Wed, Oct 20, 2021 at 12:15 PM Kumar Kartikeya Dwivedi
+> > <memxor@gmail.com> wrote:
+> > >
+> > > Add a simple wrapper for passing an fd and getting a new one >= 3 if it
+> > > is one of 0, 1, or 2. There are two primary reasons to make this change:
+> > > First, libbpf relies on the assumption a certain BPF fd is never 0 (e.g.
+> > > most recently noticed in [0]). Second, Alexei pointed out in [1] that
+> > > some environments reset stdin, stdout, and stderr if they notice an
+> > > invalid fd at these numbers. To protect against both these cases, switch
+> > > all internal BPF syscall wrappers in libbpf to always return an fd >= 3.
+> > > We only need to modify the syscall wrappers and not other code that
+> > > assumes a valid fd by doing >= 0, to avoid pointless churn, and because
+> > > it is still a valid assumption. The cost paid is two additional syscalls
+> > > if fd is in range [0, 2].
+> > >
+> > > This is only done for fds that are held by objects created using libbpf,
+> > > or returned from libbpf functions, not for intermediate fds closed soon
+> > > after their use is over. This implies that one of the assumptions is
+> > > that the environment resetting fds in the starting range [0, 2] only do
+> > > so before libbpf function call or after, but never in parallel, since
+> > > that would close fds while we dup them.
+> > >
+> > > [0]: e31eec77e4ab ("bpf: selftests: Fix fd cleanup in get_branch_snapshot")
+> > > [1]: https://lore.kernel.org/bpf/CAADnVQKVKY8o_3aU8Gzke443+uHa-eGoM0h7W4srChMXU1S4Bg@mail.gmail.com
 
-Exactly, and a key point is that it allows consistency between XDP fast
-path and full stack slow path. e.g., the BPF program is removed or
-defers a flow to full stack for some reason.
+see my recent reply to Dave, so far such references were always
+indented by two spaces (AFAIK)
+
+> > >
+> > > Acked-by: Song Liu <songliubraving@fb.com>
+> > > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> > > ---
+> > >  tools/lib/bpf/bpf.c             | 28 ++++++++++++-------------
+> > >  tools/lib/bpf/libbpf.c          | 36 ++++++++++++++++-----------------
+> > >  tools/lib/bpf/libbpf_internal.h | 23 +++++++++++++++++++++
+> > >  tools/lib/bpf/linker.c          |  2 +-
+> > >  tools/lib/bpf/ringbuf.c         |  2 +-
+> > >  tools/lib/bpf/skel_internal.h   | 35 +++++++++++++++++++++++++++++++-
+> > >  6 files changed, 91 insertions(+), 35 deletions(-)
+> > >
+> > > diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+> > > index 7d1741ceaa32..0e1dedd94ebf 100644
+> > > --- a/tools/lib/bpf/bpf.c
+> > > +++ b/tools/lib/bpf/bpf.c
+> > > @@ -74,7 +74,7 @@ static inline int sys_bpf_prog_load(union bpf_attr *attr, unsigned int size)
+> > >                 fd = sys_bpf(BPF_PROG_LOAD, attr, size);
+> > >         } while (fd < 0 && errno == EAGAIN && retries-- > 0);
+> > >
+> > > -       return fd;
+> > > +       return ensure_good_fd(fd);
+> > >  }
+> > >
+> > >  int bpf_create_map_xattr(const struct bpf_create_map_attr *create_attr)
+> > > @@ -104,7 +104,7 @@ int bpf_create_map_xattr(const struct bpf_create_map_attr *create_attr)
+> > >                 attr.inner_map_fd = create_attr->inner_map_fd;
+> > >
+> > >         fd = sys_bpf(BPF_MAP_CREATE, &attr, sizeof(attr));
+> > > -       return libbpf_err_errno(fd);
+> > > +       return libbpf_err_errno(ensure_good_fd(fd));
+> >
+> > I think it will be cleaner in all the places to do
+> >
+> > fd = ensure_good_fd(fd);
+> >
+> > That's especially true for more complicated multi-line invocations,
+> > like the ones with perf_event_open syscall.
+> >
+>
+> Ok, will fix.
+>
+> > But also, I feel like adding a sys_bpf_fd() wrapper to use for all bpf
+> > syscalls that can return FDs would be cleaner still and will make it
+> > more obvious which APIs return "objects" (that is, FDs). Then you'll
+> > have ensure_good_fd() business in one or maybe just a few places,
+> > instead of spread around a dozen functions.
+> >
+>
+> Can you give a short example?
+
+Sure.
+
+static inline int sys_bpf_fd(enum bpf_cmd cmd, union bpf_attr *attr)
+{
+    int fd;
+
+    fd = syscall(__NR_BPF, cmd, attr, sizeof(*attr));
+    fd = ensure_good_fd(fd);
+    return fd;
+}
+
+>
+> > >  }
+> > >
+
+[...]
+
+> > >         /* pid filter is meaningful only for uprobes */
+> > > -       pfd = syscall(__NR_perf_event_open, &attr,
+> > > -                     pid < 0 ? -1 : pid /* pid */,
+> > > -                     pid == -1 ? 0 : -1 /* cpu */,
+> > > -                     -1 /* group_fd */, PERF_FLAG_FD_CLOEXEC);
+> > > +       pfd = ensure_good_fd(syscall(__NR_perf_event_open, &attr,
+> > > +                            pid < 0 ? -1 : pid /* pid */,
+> > > +                            pid == -1 ? 0 : -1 /* cpu */,
+> > > +                            -1 /* group_fd */, PERF_FLAG_FD_CLOEXEC));
+> >
+> > see above, pfd = ensure_good_fd(pfd) on a separate line after
+> > syscall() is much cleaner
+> >
+> > but thinking about this some more... do we ever pass perf_event_fd
+> > into BPF UAPI? I don't think so, so there is no need to enforce FD >
+> > 0. Let's drop that everywhere for perf_event_open().
+> >
+>
+> I thought it was not just about BPF UAPI anymore, but also the first three fds
+> that can be closed by the runtime. So any fds held across calls, inside objects,
+> or returned from libbpf syscall functions needed to go through this. For fds
+> that are temporarily open and then closed later, it doesn't matter (because even
+> when duplicating the fd, we temporarily open an fd in the invalid slot, so if
+> someone was closing it in parallel, it would already be a problem).
+
+I think you are a bit overzealous about "preventing" this FD > 2
+problem here. If it was such an easy problem to run into, not just
+libbpf, but any library that opens files would be broken. So clearly
+this doesn't happen all the time. I assume that apps where such
+stdin/stdout/stderr forcing happens get those FD 0, 1, 2 "fixed" way
+before libbpf gets involved. If someone is trying to be clever and
+manipulates FD 0, 1, 2 manually, sure, then they will run into
+troubles. But libbpf doesn't do anything clever like that. So it's
+fine if we enforce FD > 2, not just FD > 0 (it's one fcntl() syscall
+anyway), but let's not overdo it. We should be intentional about doing
+this only for BPF objects (progs, btfs, maps, links; that's it).
+
+>
+> >
+> > >         if (pfd < 0) {
+> > >                 err = -errno;
+> > >                 pr_warn("%s perf_event_open() failed: %s\n",
+
+[...]
+
+> > >
+> > > @@ -472,4 +474,25 @@ static inline bool is_ldimm64_insn(struct bpf_insn *insn)
+> > >         return insn->code == (BPF_LD | BPF_IMM | BPF_DW);
+> > >  }
+> > >
+> > > +/* if fd is stdin, stdout, or stderr, dup to a fd greater than 2
+> > > + * Takes ownership of the fd passed in, and closes it if calling
+> > > + * fcntl(fd, F_DUPFD_CLOEXEC, 3).
+> > > + */
+> > > +static inline int ensure_good_fd(int fd)
+> > > +{
+> > > +       int old_fd = fd, save_errno;
+> > > +
+> > > +       if (unlikely(fd >= 0 && fd < 3)) {
+> > > +               fd = fcntl(fd, F_DUPFD_CLOEXEC, 3);
+> > > +               if (fd < 0) {
+> > > +                       save_errno = errno;
+> > > +                       pr_warn("failed to dup FD %d to FD > 2: %d\n", old_fd, -errno);
+> > > +               }
+> > > +               close(old_fd);
+> > > +               if (fd < 0)
+> > > +                       errno = save_errno;
+> > > +       }
+> > > +       return fd;
+> >
+> > with all the if nestedness it looks more complicated than it needs to.
+> > How about something like this:
+> >
+> > if (fd < 0)
+> >     return fd;
+> >
+> > if (fd < 3) {
+> >     fd = fcnt(...);
+> >     save_errno = errno;
+> >     close(old_fd);
+> >     if (fd < 0) {
+> >        pr_warn(...);
+> >        errno = saved_errno;
+> >     }
+> > }
+> >
+> > return fd;
+> >
+> >
+> > WDYT?
+> >
+>
+> Looks better, I'll do it like this.
+>
+
+Thanks.
+
+> > > +}
+> > > +
+
+[...]
+
+>
+> >
+> > But also, why do still need to "reserve" bad FDs at all with all the
+> > ensure_good_fd() business?
+> >
+>
+> This file is included in light skeleton, so it never goes through libbpf syscall
+
+
+oh yeah? ;) how about bpf_create_map_name() just a few lines below?..
+
+But in general, I don't think you should worry about this FD problem
+for skeleton at all. Even if FD 0 is unused,
+skel_sys_bpf(BPF_PROG_LOAD) will take it, so whatever loader prog is
+doing in the kernel will get FD > 0 automatically. I think you can
+drop this fragile "FD reservation" logic.
+
+> wrappers, also, not only will it invoke bpf syscall before calling
+> BPF_PROG_TEST_RUN, but also inside the syscall loader program. In there, doing
+> the fcntl stuff is much ugly (add a helper, more BPF assembly in gen_loader), so
+> I just reserve 3 fds in the beginning of the code sequence where fds are
+> acquired, and release them after we're done.
+>
+> > > +                       close(fd);
+> > > +                       break;
+> > > +               }
+> > > +               fds[i] = fd;
+> > > +       }
+> > > +       return 0;
+> > > +}
+> > > +
+> > >  static inline int bpf_load_and_run(struct bpf_load_and_run_opts *opts)
+> > >  {
+> > > -       int map_fd = -1, prog_fd = -1, key = 0, err;
+> > > +       int map_fd = -1, prog_fd = -1, key = 0, err, i;
+> > > +       int res_fds[3] = { -1, -1, -1 };
+> > >         union bpf_attr attr;
+> > >
+> > > +       /* ensures that we don't open fd 0, 1, or 2 from here on out */
+> > > +       err = skel_reserve_bad_fds(opts, res_fds);
+> > > +       if (err < 0) {
+> > > +               errno = -err;
+> > > +               goto out;
+> > > +       }
+> > > +
+> > >         map_fd = bpf_create_map_name(BPF_MAP_TYPE_ARRAY, "__loader.map", 4,
+> > >                                      opts->data_sz, 1, 0);
+> > >         if (map_fd < 0) {
+> > > @@ -115,6 +144,10 @@ static inline int bpf_load_and_run(struct bpf_load_and_run_opts *opts)
+> > >         }
+> > >         err = 0;
+> > >  out:
+> > > +       for (i = 0; i < 3; i++) {
+> > > +               if (res_fds[i] >= 0)
+> > > +                       close(res_fds[i]);
+> > > +       }
+> > >         if (map_fd >= 0)
+> > >                 close(map_fd);
+> > >         if (prog_fd >= 0)
+> > > --
+> > > 2.33.1
+> > >
+>
+> --
+> Kartikeya
