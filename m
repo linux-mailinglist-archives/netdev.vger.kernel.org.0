@@ -2,61 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAD4643438F
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 04:36:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9AE5434394
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 04:40:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229657AbhJTCic (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 22:38:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60140 "EHLO
+        id S229657AbhJTCmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 22:42:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbhJTCib (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 22:38:31 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53419C06161C
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 19:36:18 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id d9so1650772pfl.6
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 19:36:18 -0700 (PDT)
+        with ESMTP id S229555AbhJTCml (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 22:42:41 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65C67C06161C
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 19:40:28 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id lk8-20020a17090b33c800b001a0a284fcc2so1377468pjb.2
+        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 19:40:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uP74WpUfIxkFQrw13QDTf0eyIC/o9Ip6dzTaEPhVPzY=;
-        b=HXX1pftRzORTj8Px5lEdsuaix32dXDrAzRrLMT4qb8+nQ19QkoDo8IfUJcH4WFm2M2
-         aP3znHPiJ5Z/OgRt4qlU3oMrhzz4HzGOAGwAg1kLxCIyEDDPI7NnhBtaMKrHSIRsN62O
-         w5bA1Y8ada/17UO6bUAl6Tt94fm9GpBGooLZS5L57b0Ob0BqBs9q8VtXOa+s4HtkIH2n
-         ui7iyGpclZKWSTd+JOUTkRwnuSRDiTCAxdKg0ASSHQHlie+1syy4orPzNuORgS2XKcC8
-         VpH5mcKmTw/rdk3BNIWWyhkebhZALuh4LG3OoNx1SIAYToi/UEOSyhp02XFZsrT7zIAi
-         YbZg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=g/k6QV2vpt3vH8xJxkTx+3DiBVC3hLVwkQHeAK5Mgfk=;
+        b=Q4nrYsya+U9yJCD42B+ksihz8DeeiDjP1VfdJd73Pys4FFsx7kSFFTQ9NcOFSmo+br
+         R8Z/n7RebPdXUn6VtdcSktRY2xcKlktxC9iETn+uFHH3+qCrdCI8TJWERAxDPLz1fF3m
+         a/YAW3Xgk/We2IYSLR3eQb6gjPgdMtQ38UVyl37vRZ+nLiWSL6IxJRv9rwNHIN4sR/dX
+         prf2BYq+NHtc5tuTgNMMSxeK8lnFA91sdDHgbTrJoqKbhI9ZDeThKnhVlISaTydDUHCG
+         mDcy742Yw3XMCRxB8b8+OtwQWaEDYWjVpoOxuvXJa9weX5cFkXL+xGrfkKfzAC28obto
+         5tMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uP74WpUfIxkFQrw13QDTf0eyIC/o9Ip6dzTaEPhVPzY=;
-        b=sL7ArKRIa9oO8+Y5W1wOzUUcI/l+4lRXaOlIbNEEmmcmCHUKy3H8J4YSADNAK3z0kf
-         u010bvMt2IdIKr0GXp+beXqrPSGSkPl9DUPR9AKTRQMYIxJ4yh7L6GxbFhY3M/NPvMjC
-         eODNte9/DvoImA8H7Oye+iGSW3VbjNs/FkBJQ0pp9YZsoGD3cQjlRWigRugS+43QX0x6
-         n9DRjXG8gQiHuHDTrdmjKabuNWJPFWi29nIRV1VRoS6EPEFZ+WUhFsOH1G33RZ2kcJ08
-         URIAjHc5KjEGqSYqbTbimfrqzHEy32U3hMXobFGX7f2MnHsGI7ed1Vy5ummPT/azNees
-         s3Sg==
-X-Gm-Message-State: AOAM533TCdr/HJ9MSJ+kcF2PTz0jCzVt/lWlwcdmEbS1EVc1p2YSxvj8
-        XqquStp6LElZQeAJiVe2qn0dQUgvjf8=
-X-Google-Smtp-Source: ABdhPJwtuBEQXDL1cCrt1KWlpUZ29vCJwIMVSQE/rzbHQCUkD77aNjUwGn3r0qw7dg1aNj4G4l59sA==
-X-Received: by 2002:a62:1887:0:b0:44c:872e:27ed with SMTP id 129-20020a621887000000b0044c872e27edmr3448411pfy.71.1634697377682;
-        Tue, 19 Oct 2021 19:36:17 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=g/k6QV2vpt3vH8xJxkTx+3DiBVC3hLVwkQHeAK5Mgfk=;
+        b=yFhHBVF8lltv3YcM0uArujmsXepXTa6cbVVZlx/vPixiI1K8eOy9CLZKx17McRrjsK
+         5ZUtkeLrBmyGc5H4eawPFsXAuDFcpqWV79NKHrHyKSaXHXO1+TQ/IE2Yp2N4Pmz2tq0B
+         eC/7goYCUiTO+MXJXxlNlpogpmgRQ8QOrLbcsYBSJhdpJqZfmFj4FAm3jtBldQuxfYzC
+         1jPNCwh57xFxFtYO6HRoCXzDEq1nUuLgd2xuWoe+bgvjBH6IUtdFjJdiMCLTeDG692xl
+         ATdXmidxVebYNGa41BzOt7ZEco33aZs+yzCK4WEHPexY+Rec6JF4Q+B5E8Z1SIA5Ohi8
+         hKpg==
+X-Gm-Message-State: AOAM532g4qd5vb2OLS402g5/g2OA0GiZHKbDWQ5tx0Om3otCSYL7J+VD
+        g03XMGBQnwC1XteAXVBB3hhp5KutBRg=
+X-Google-Smtp-Source: ABdhPJyedc2O5NAOq/eUVV0gGxa6O7q5oShLShXdyhgQaO6s66znvqXDXyE/YTLys9d9qbwR9jp7DA==
+X-Received: by 2002:a17:902:7ec2:b0:13d:b563:c39 with SMTP id p2-20020a1709027ec200b0013db5630c39mr36455928plb.14.1634697622837;
+        Tue, 19 Oct 2021 19:40:22 -0700 (PDT)
 Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id w2sm524699pfq.207.2021.10.19.19.36.14
+        by smtp.gmail.com with ESMTPSA id bp19sm439990pjb.46.2021.10.19.19.40.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Oct 2021 19:36:17 -0700 (PDT)
+        Tue, 19 Oct 2021 19:40:22 -0700 (PDT)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Nikolay Aleksandrov <razor@blackwall.org>, roopa@nvidia.com,
         bridge@lists.linux-foundation.org, davem@davemloft.net,
         kuba@kernel.org, Nikolay Aleksandrov <nikolay@nvidia.com>,
         Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net] net: bridge: mcast: QRI must be less than QI
-Date:   Wed, 20 Oct 2021 10:36:04 +0800
-Message-Id: <20211020023604.695416-1-liuhangbin@gmail.com>
+Subject: [PATCHv2 net] net: bridge: mcast: QRI must be less than QI
+Date:   Wed, 20 Oct 2021 10:40:16 +0800
+Message-Id: <20211020024016.695678-1-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20211020023604.695416-1-liuhangbin@gmail.com>
+References: <20211020023604.695416-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -78,7 +80,7 @@ Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
  5 files changed, 45 insertions(+), 8 deletions(-)
 
 diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index f3d751105343..1a865d08a87f 100644
+index f3d751105343..5931f7c81519 100644
 --- a/net/bridge/br_multicast.c
 +++ b/net/bridge/br_multicast.c
 @@ -4522,6 +4522,33 @@ int br_multicast_set_mld_version(struct net_bridge_mcast *brmctx,
@@ -94,10 +96,10 @@ index f3d751105343..1a865d08a87f 100644
 +	if (val > brmctx->multicast_query_response_interval) {
 +		brmctx->multicast_query_interval = val;
 +		return 0;
-+	} else {
-+		NL_SET_ERR_MSG(extack, "Invalid QI, must greater than QRI");
-+		return -EINVAL;
 +	}
++
++	NL_SET_ERR_MSG(extack, "Invalid QI, must greater than QRI");
++	return -EINVAL;
 +}
 +
 +int br_multicast_set_qri(struct net_bridge_mcast *brmctx, unsigned long val,
@@ -106,10 +108,10 @@ index f3d751105343..1a865d08a87f 100644
 +	if (val < brmctx->multicast_query_interval) {
 +		brmctx->multicast_query_response_interval = val;
 +		return 0;
-+	} else {
-+		NL_SET_ERR_MSG(extack, "Invalid QRI, must less than QI");
-+		return -EINVAL;
 +	}
++
++	NL_SET_ERR_MSG(extack, "Invalid QRI, must less than QI");
++	return -EINVAL;
 +}
 +
  /**
