@@ -2,94 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C11B0434E1E
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 16:41:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC13B434E4F
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 16:53:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230105AbhJTOnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 10:43:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37312 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229639AbhJTOne (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Oct 2021 10:43:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id F01076135F;
-        Wed, 20 Oct 2021 14:41:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634740879;
-        bh=ToeXNrIVSqKeCw0+EPhZDTiVKtXJGcgdSvi2IhlgTcg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Mbu//0DEzrS9xFXp5bJTwNxCeG7h71ZqvvDo8xNdCQSU2x+taqomOcn2n991+v7l9
-         USYCi2ye6530nAd4us8VPzIZXNPmBr7sHpmEAXZO9BKs9RzIgxX1RtIbsJ7TWra9yh
-         nEGUj3BwApBYrY0Q46pq6yXWjz4d/DJY/CXA6cE6bsADBLU3IHYuvrXlkjRbYHF3q4
-         3GFhV8y+ebEiMtrYQ18JmKZwBSohjXJxIx6t0SixY7R2fKlrZ/7DAa1G9agYdQ2lZ1
-         nroERlY/jYG/8DTGYtJ7LNQCZc52EldjBz0/7xzXGmeFf6Fs+hLWaUXOC4IkkzzdVv
-         44qtQ+9q6fwtA==
-Date:   Wed, 20 Oct 2021 07:41:17 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Po Liu <po.liu@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Yangbo Lu <yangbo.lu@nxp.com>,
-        Hongbo Wang <hongbo.wang@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next 5/5] net: mscc: ocelot: track the port pvid
- using a pointer
-Message-ID: <20211020074117.7adb31c5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211020105602.770329-6-vladimir.oltean@nxp.com>
-References: <20211020105602.770329-1-vladimir.oltean@nxp.com>
-        <20211020105602.770329-6-vladimir.oltean@nxp.com>
+        id S230119AbhJTOzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 10:55:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57186 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229695AbhJTOzQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 10:55:16 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65800C06161C
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 07:53:01 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id d13so13184147ljg.0
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 07:53:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=2Y8NayuLnfX3GwLkDMn7ZTyD7RtMsOyjIifS8+INynY=;
+        b=aM0irm+7LfhAcn5Jf4APXX2dBMzX+4wB2yPwzdlHqxesifEMN7WCFqkQ2Aa4GE7Y3J
+         xftDrUNbrCsbEdZ/b4L5jSMXYQBXiwNGyUG75ymtAm+E2ZNTHd7JokFe2WZT6AcRooEp
+         JCSJWjA6nyK6MOYvMH/M3jAJYgszPhZaIKVXu0VClymfcVmeXXwM4DAGPN/atrghaVc2
+         cKLxXAAcRnAmUOyEfsP0g6efp7/D51jLX3VQgtOaUoyHUFxlnM9klssqHgvvMU1Z9afM
+         EM1OOo/Z2QXwDFaTZQsspSJD9xkttvsDezKGH/wGof21CY5gtpXbNVFchChXTulYnXCY
+         mrgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=2Y8NayuLnfX3GwLkDMn7ZTyD7RtMsOyjIifS8+INynY=;
+        b=LQwWL32JhoULHOv6aB7OQ+d1TpWcIrC+IlFpfU+aUR6K5CSnBJ2iSyA8uRYKeQ+E1e
+         b0XCMNSkNyJjujC6LIm1yz+0glgx95dkmR9zXsJsfVl2fPIDDSo7N2uEXfUaTR7mI1SV
+         gzsdo98b4tHSXF+aC09EJq7B/Tk+02EqaNxtRwc5W3hEvcCzMUWwWh7GZyr2QG/DKhk1
+         b+X/LHdZvPLYZQKwGiv/gNPWTRdixRBgDLDfH57lBuvwwZQWevsvaSmjty6BEv8fdFUJ
+         vYsHltg/hRhee6Q91Vxex8VnPiHyp5Xoz7b6kKgsVVs9H212fi8762qYvTwaE6TSOow+
+         r3CA==
+X-Gm-Message-State: AOAM531uEKJDQfxzFvIqhd9tCRJ7j/ADlLxyN5T51AH98f//iLIeQBGO
+        F/GreFPchCnTSqd3maaUwUzLxYw6NNiBkYZiu3o=
+X-Google-Smtp-Source: ABdhPJzxlFJLjVyd/A+5w9k/x7oUwo0Pe+j6hfduHaJY4WGhmosduHDThpnAlUTMIMY38W925gfe1+R/KWl46orJA/4=
+X-Received: by 2002:a2e:bd82:: with SMTP id o2mr149044ljq.246.1634741579714;
+ Wed, 20 Oct 2021 07:52:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Received: by 2002:a05:6520:1c3:b0:148:473e:d1c9 with HTTP; Wed, 20 Oct 2021
+ 07:52:59 -0700 (PDT)
+Reply-To: mrsaishag45@gmail.com
+From:   Mrs Aisha Al-Qaddafi <mrsaishag4@gmail.com>
+Date:   Wed, 20 Oct 2021 07:52:59 -0700
+Message-ID: <CA+L6gkms0op1-g=eTWaJNhtEEbXhWUP+28V76-_BFcP5qanqiA@mail.gmail.com>
+Subject: Dear Friend,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 20 Oct 2021 13:56:02 +0300 Vladimir Oltean wrote:
-> Now that we have a list of struct ocelot_bridge_vlan entries, we can
-> rewrite the pvid logic to simply point to one of those structures,
-> instead of having a separate structure with a "bool valid".
-> The NULL pointer will represent the lack of a bridge pvid (not to be
-> confused with the lack of a hardware pvid on the port, that is present
-> at all times).
+Dear Friend,
 
-drivers/net/ethernet/mscc/ocelot_mrp.c: In function =E2=80=98ocelot_mrp_sav=
-e_mac=E2=80=99:
-drivers/net/ethernet/mscc/ocelot_mrp.c:119:21: error: =E2=80=98port->pvid_v=
-lan=E2=80=99 is a pointer; did you mean to use =E2=80=98->=E2=80=99?
-  119 |      port->pvid_vlan.vid, ENTRYTYPE_LOCKED);
-      |                     ^
-      |                     ->
-drivers/net/ethernet/mscc/ocelot_mrp.c:121:21: error: =E2=80=98port->pvid_v=
-lan=E2=80=99 is a pointer; did you mean to use =E2=80=98->=E2=80=99?
-  121 |      port->pvid_vlan.vid, ENTRYTYPE_LOCKED);
-      |                     ^
-      |                     ->
-drivers/net/ethernet/mscc/ocelot_mrp.c: In function =E2=80=98ocelot_mrp_del=
-_mac=E2=80=99:
-drivers/net/ethernet/mscc/ocelot_mrp.c:127:59: error: =E2=80=98port->pvid_v=
-lan=E2=80=99 is a pointer; did you mean to use =E2=80=98->=E2=80=99?
-  127 |  ocelot_mact_forget(ocelot, mrp_test_dmac, port->pvid_vlan.vid);
-      |                                                           ^
-      |                                                           ->
-drivers/net/ethernet/mscc/ocelot_mrp.c:128:62: error: =E2=80=98port->pvid_v=
-lan=E2=80=99 is a pointer; did you mean to use =E2=80=98->=E2=80=99?
-  128 |  ocelot_mact_forget(ocelot, mrp_control_dmac, port->pvid_vlan.vid);
-      |                                                              ^
-      |                                                              ->
-make[5]: *** [drivers/net/ethernet/mscc/ocelot_mrp.o] Error 1
-make[5]: *** Waiting for unfinished jobs....
-make[4]: *** [drivers/net/ethernet/mscc] Error 2
-make[3]: *** [drivers/net/ethernet] Error 2
-make[3]: *** Waiting for unfinished jobs....
-make[2]: *** [drivers/net] Error 2
-make[2]: *** Waiting for unfinished jobs....
-make[1]: *** [drivers] Error 2
-make[1]: *** Waiting for unfinished jobs....
-make: *** [__sub-make] Error 2
+I came across your e-mail contact prior to a private search while in
+need of your assistance. I am Aisha Al-Qaddafi, the only biological
+Daughter of Former President of Libya Col. Muammar Al-Qaddafi. Am a
+single Mother and a Widow with three Children.
+
+I have investment funds worth Twenty Seven Million Five Hundred
+Thousand United State Dollar ($27.500.000.00 ) and i need a trusted
+investment Manager/Partner because of my current refugee status,
+however, I am interested in you for investment project assistance in
+your country, may be from there, we can build business relationship in
+the nearest future.
+
+I am willing to negotiate an investment/business profit sharing ratio
+with you based on the future investment earning profits.
+
+If you are willing to handle this project on my behalf kindly reply
+urgently to enable me to provide you more information about the
+investment funds.
+Best Regards
+Mrs Aisha Al-Qaddafi
