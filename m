@@ -2,119 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE1C2434A56
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 13:42:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F759434A58
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 13:43:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230157AbhJTLpH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 07:45:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41072 "EHLO
+        id S230173AbhJTLpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 07:45:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230091AbhJTLpG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 07:45:06 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DDA3C06174E;
-        Wed, 20 Oct 2021 04:42:52 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id g39so14155776wmp.3;
-        Wed, 20 Oct 2021 04:42:52 -0700 (PDT)
+        with ESMTP id S229952AbhJTLpI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 07:45:08 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF76BC06161C;
+        Wed, 20 Oct 2021 04:42:53 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id o24so10883175wms.0;
+        Wed, 20 Oct 2021 04:42:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nT0vvr2O+8IIwQyISUa6v1lK5uZqlveAWGKvgf9ibMc=;
-        b=klVjV/H/kosME/WZRRAMQmZMdeZuHz/DfrclkSVfKQ8iIvEMgvtt5IFPTQFzlbBVeE
-         5YDNviYuRq8foBz69ULrZkl/+9yb4fFT+n2cNDi/HYlelUNdliv1b6basDsLVlCsk+Q0
-         S/TKZuXlgLkR1aRPED7VoANFXZCwW4yW7UgwOAAMf6IuOAuBekMLzyPcuYceXwGN1uSp
-         cNnlvAJesZ86S9EtiyYjcurRtbcTNJWcse8F0paEixsOObs+UpCoec+4VR5CCBZ6DlYH
-         S0wh97ZlMeiHfSh884S3LTWh9/C5lD884TibjNZlo4L1N/S7ukf8orQiZIqyRAr6eM3f
-         nFhg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=VwHJhYODjs1JSakaHf2SUd7FFDGYoerS9uZirIeSeZA=;
+        b=XL6TcxdzCHgzWt635ibKqiwgHKJJfEf/xzN4qReUVE6u0dsDDFfDFvk1aUOXzVfwvG
+         Y72b+L3Rz8HGFPD14o20q+A3kfYa8qaZJ+iikukZyBnbFLSU0lvn2JpqUtiysDsQmRmy
+         aWAtypA1f6k0JS25RsbYD1qWqrivAdCQvvhWdWlVXcHhrlgX91TWLyfhMqaWQ4/HESRU
+         jpTvLg3/4AwKH1CvS4j14yA/NQ+btx4vN8hDV/Z8yypGn8u+z6rig2Cu+ZffHiDvG20o
+         GdCNGkeBsryItAEfLnJqa8O6KvFS2ewEXz4pDBIu7WG3qPErAoP7HHz4fOaNxHzYpZ7R
+         X87A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nT0vvr2O+8IIwQyISUa6v1lK5uZqlveAWGKvgf9ibMc=;
-        b=3XWG/dGM67e/MvuZMPgUUWNEjFRwrCAL9Kgtyooe1C+dJAhUb7VJjUmsxa0WQnWHGS
-         q5A9/syn6dMgHVsagiNK+kfIR72QLeTCZYoX1ywK89MZypWeWNyhZjn8PFLaAH6tXQ6q
-         kjh5HqiwnfisJDP2rKNR70pnl35Mxa6jGfZO5NRpv+10lK+Uz142J/F6ejzlCQU876lN
-         K+08gRy/1kX1GmQVetpPX3kpAxYZUwilGWm80X3wu9H7sc8alQO7jHt/6QxIWS7YqTau
-         5argmjg6egXshsvxs/YahyKd7BWvsJBgqGMfseehZ6y/KzRgUcs0VQzCJhlDHDkcXE7x
-         ARig==
-X-Gm-Message-State: AOAM533BnH7249GVKpkOJauCWj9P2Ox6zpKstzs7nh5vZjxwbDy54OuL
-        JstU1ohvdEhNChrJ8Ib0jh+rRTZ6FaY/bw==
-X-Google-Smtp-Source: ABdhPJwySwly7O0/GRSj3cdHL56vnSobjtAs393cDl6x+HRvyvMcPWGGEZ3DhHIyPCNV1mtFDcH9ww==
-X-Received: by 2002:adf:a1cc:: with SMTP id v12mr52354744wrv.48.1634730170848;
-        Wed, 20 Oct 2021 04:42:50 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=VwHJhYODjs1JSakaHf2SUd7FFDGYoerS9uZirIeSeZA=;
+        b=jXyHlIolTwcgq5lQZCxO07AxVF9H2YkDpLxnCcHCS9Z9GAiUuaQJn5jeoik+sd7YGY
+         uaKfRhTvSGmWMIyADx/qVfemQ7OG+QOEHiPLtDODmF4xgIRS7lBpsyJ9aKanL8tyE08S
+         IOZy23BRDY5ewOF1GzeeAV9vkLj1nEWzgoXjOH67yzZUpBOgZjC0cZHiX9mOUE1a4SLs
+         0PCjZnsp5WruTFgKAUeZADp/HUiLs2wMs0HpOyJcsY2FQRgjgR1MgINQFm4xNLfItps1
+         /2j2c/cDtyL3fMc3IbkLm/j8AaiV0gD73MHhtrSMYu531VBlTx7xrlcphjPeDCOwYnw+
+         OZuw==
+X-Gm-Message-State: AOAM530aw9wEUmZ2Cj47RprQy0fxJ8WLPcWVsLd96iNdc300VNnmXCYZ
+        dRhp7d5iIThHTWjw3IhLcGjpDt7xZwi7ZQ==
+X-Google-Smtp-Source: ABdhPJyuw2w6Z7MFDaSvdNxk8Ec8Y879r3oYhqzANIdSZDhPQUmhaKtwGUTIUUo5aJDscUx7hrAvkg==
+X-Received: by 2002:a1c:3b06:: with SMTP id i6mr13134171wma.172.1634730172188;
+        Wed, 20 Oct 2021 04:42:52 -0700 (PDT)
 Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id 186sm4988989wmc.20.2021.10.20.04.42.49
+        by smtp.gmail.com with ESMTPSA id 186sm4988989wmc.20.2021.10.20.04.42.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Oct 2021 04:42:50 -0700 (PDT)
+        Wed, 20 Oct 2021 04:42:51 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
         kuba@kernel.org, linux-sctp@vger.kernel.org
 Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         michael.tuexen@lurchi.franken.de
-Subject: [PATCH net 0/7] sctp: enhancements for the verification tag
-Date:   Wed, 20 Oct 2021 07:42:40 -0400
-Message-Id: <cover.1634730082.git.lucien.xin@gmail.com>
+Subject: [PATCH net 1/7] sctp: use init_tag from inithdr for ABORT chunk
+Date:   Wed, 20 Oct 2021 07:42:41 -0400
+Message-Id: <c89756464182e3010232c63eb02791be8d743bfa.1634730082.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <cover.1634730082.git.lucien.xin@gmail.com>
+References: <cover.1634730082.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset is to address CVE-2021-3772:
+Currently Linux SCTP uses the verification tag of the existing SCTP
+asoc when failing to process and sending the packet with the ABORT
+chunk. This will result in the peer accepting the ABORT chunk and
+removing the SCTP asoc. One could exploit this to terminate a SCTP
+asoc.
 
-  A flaw was found in the Linux SCTP stack. A blind attacker may be able to
-  kill an existing SCTP association through invalid chunks if the attacker
-  knows the IP-addresses and port numbers being used and the attacker can
-  send packets with spoofed IP addresses.
+This patch is to fix it by always using the initiate tag of the
+received INIT chunk for the ABORT chunk to be sent.
 
-This is caused by the missing VTAG verification for the received chunks
-and the incorrect vtag for the ABORT used to reply to these invalid
-chunks.
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/sctp/sm_statefuns.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-This patchset is to go over all processing functions for the received
-chunks and do:
-
-1. Make sure sctp_vtag_verify() is called firstly to verify the vtag from
-   the received chunk and discard this chunk if it fails. With some
-   exceptions:
-
-   a. sctp_sf_do_5_1B_init()/5_2_2_dupinit()/9_2_reshutack(), processing
-      INIT chunk, as sctphdr vtag is always 0 in INIT chunk.
-
-   b. sctp_sf_do_5_2_4_dupcook(), processing dupicate COOKIE_ECHO chunk,
-      as the vtag verification will be done by sctp_tietags_compare() and
-      then it takes right actions according to the return.
-
-   c. sctp_sf_shut_8_4_5(), processing SHUTDOWN_ACK chunk for cookie_wait
-      and cookie_echoed state, as RFC demand sending a SHUTDOWN_COMPLETE
-      even if the vtag verification failed.
-
-   d. sctp_sf_ootb(), called in many types of chunks for closed state or
-      no asoc, as the same reason to c.
-
-2. Always use the vtag from the received INIT chunk to make the response
-   ABORT in sctp_ootb_pkt_new().
-
-3. Fix the order for some checks and add some missing checks for the
-   received chunk.
-
-This patch series has been tested with SCTP TAHI testing to make sure no
-regression caused on protocol conformance.
-
-Xin Long (7):
-  sctp: use init_tag from inithdr for ABORT chunk
-  sctp: fix the processing for INIT chunk
-  sctp: fix the processing for INIT_ACK chunk
-  sctp: fix the processing for COOKIE_ECHO chunk
-  sctp: add vtag check in sctp_sf_violation
-  sctp: add vtag check in sctp_sf_do_8_5_1_E_sa
-  sctp: add vtag check in sctp_sf_ootb
-
- net/sctp/sm_statefuns.c | 139 ++++++++++++++++++++++++----------------
- 1 file changed, 85 insertions(+), 54 deletions(-)
-
+diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
+index 32df65f68c12..7f8306968c39 100644
+--- a/net/sctp/sm_statefuns.c
++++ b/net/sctp/sm_statefuns.c
+@@ -6348,6 +6348,7 @@ static struct sctp_packet *sctp_ootb_pkt_new(
+ 		 * yet.
+ 		 */
+ 		switch (chunk->chunk_hdr->type) {
++		case SCTP_CID_INIT:
+ 		case SCTP_CID_INIT_ACK:
+ 		{
+ 			struct sctp_initack_chunk *initack;
 -- 
 2.27.0
 
