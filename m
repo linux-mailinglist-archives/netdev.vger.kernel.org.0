@@ -2,148 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 953F2435571
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 23:43:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D568435578
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 23:47:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231346AbhJTVpb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 17:45:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38834 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230181AbhJTVpa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 17:45:30 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF60DC061749;
-        Wed, 20 Oct 2021 14:43:15 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id v195so14022100ybb.0;
-        Wed, 20 Oct 2021 14:43:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NLxhOL21uFNIWLDSCmZGrluiBbEIb6Tp/0GJSmli5XU=;
-        b=ADmPeU5eJwvh3K1oDREWtuXS/3cFrcy8kYa02+JLgbEYJ/j3RQvJexBaCipS3gg+vT
-         G/HgJ2eKNg3Rc0qrBmh+Y4uA/2HkLRWw2o7cphSKQdJPEUF6DHnjXfRf0/+73dKHzUvb
-         xuIvVlHrW5iatMgPBgrvC5GzCpIq/EuTfSdojiCCITnTHYfKdsJJPqM0sdNq7ed0fhrx
-         sEBvgt3Ue6QyB/De3XvYMpzp/bc6I6/DATO7yE0R3j5AI3HUTrS0GtySVkbv1SvM7yQ/
-         vNUoKr2jhjSMbbuEIEzCl2SsjXctxG9LlGMfYwmrYwgtHMDBiqg/lGuGqX9LBXDV3vzm
-         EsxA==
+        id S230235AbhJTVtR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 17:49:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58049 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229977AbhJTVtR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 17:49:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634766421;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cNmNbFiusSQEhvTQhL3QXrQHS2adP+qMkCylFAPSqDE=;
+        b=CyLZKg22vzRLsFtJQPyf9n6zlVCH0X4X4k3QFkvxeWqABihM0OCZWksli4QmV6wo2QZfYs
+        Qc1xs1dJi4SwAeJ0ev7YIRyOzIsIE3yWLTxZpxNYEjBKgRUnfxlsiip7WZYsjDNkVpctME
+        +/ZVBQNJUNXAOMtLpmJ4yDDm5AdqHbs=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-517-BfOH2vpQNHKGDM9GflD-Tw-1; Wed, 20 Oct 2021 17:47:00 -0400
+X-MC-Unique: BfOH2vpQNHKGDM9GflD-Tw-1
+Received: by mail-ed1-f69.google.com with SMTP id g28-20020a50d0dc000000b003dae69dfe3aso22290987edf.7
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 14:47:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NLxhOL21uFNIWLDSCmZGrluiBbEIb6Tp/0GJSmli5XU=;
-        b=Ys0xM45Id8O5SFaV01abU5TuNJFVNtrLsjq5HMx7g4J07wXdzPhzxFiNhTnz9LsRM2
-         nxj8rZxlYvO5NqfYbVVf8ucVq2zM+1Ul3nM9NPOwMOt0whinlCB7gsXFrnmaMQ5DGRZL
-         g0D5c1lBYzX6HdtZY4eTQ/oiH1Ex/5qHsHmDc285+kDBoF4WGL+Sr53adQHB3OAyU1h3
-         JujA0UWvAAGUBGuWMHcyDE6GvamiIuXi7PUB4BoCZQrzPQH0S3sBc4O2rqmE0QWGBq+5
-         ab60Sn4OEzB8t7WvVqzpftJI/W2xje0H3jcjSY25IqjJJqFndEelqe3Q5ifDDvtxgwF6
-         XQ8g==
-X-Gm-Message-State: AOAM5310X2q7dJq1zoUgXriQ2qOBWkvUlAQbLemJDui9NG4SZ/yyFIGd
-        ngUG6w2KBzSnIvWfkMTU4ykwJX/4vmFln8aVcAM=
-X-Google-Smtp-Source: ABdhPJxgXZ85DRGdZhjSufD07NvPT0QRrDJgOWXzfWc+WJOLihVGXYqVDwjMjwvZe/EawZCezVXF1roYX527iOGeGAo=
-X-Received: by 2002:a25:d3c8:: with SMTP id e191mr1712702ybf.455.1634766195138;
- Wed, 20 Oct 2021 14:43:15 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=cNmNbFiusSQEhvTQhL3QXrQHS2adP+qMkCylFAPSqDE=;
+        b=Hlc2zhAQMf4uvfirnUsQhUQwzUAJXssRplUNaohJNNlA5g5j8nX9zDkIsoIpph3V6f
+         V1jr3E/vvqVtoSkEQrQ4u+IX7C4Li970wv2PYyXVYLWyFlJcTTxV0IQF1k+uVVDS/mFm
+         qhz3aA1f3Mvro2JNQSOX2qc9Vnk8BGnl6vLBU9AIEALXycdGOctZKenYUhSmdr6iFMPb
+         t34f0+xl5x0ZyPgcl+jAP30TrJwtUptQ/eL4fV7oNzT8YPrI5dNoT0yhO/paj+KEaffC
+         k5IxgeXks+ZWrHDN/2GwWfcX1OLYfSoGI+NiDAQ9bZ7novMsjAUfqBWor00P/Gm2E0Ct
+         NdYQ==
+X-Gm-Message-State: AOAM531Azi64i9RwEu2wlk3dcJ2g33XKEw8v9E7+utKhlAP04mc4nxry
+        SjFdF9s0T8F5pCXCT0ggwkxSm3y+Up8UES2xBXeSBKiA4tU7e1N4N3PPkE7Kb8JrxWkzvVyXmgn
+        kCigsLR8Pam9DhtvJ
+X-Received: by 2002:a17:906:3944:: with SMTP id g4mr2425612eje.426.1634766418545;
+        Wed, 20 Oct 2021 14:46:58 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzloBJ0ABfZKxvJ5oddxXMS5yn5sGhM6dX9QUIQs8sZ8439h25LVLfEzWQ/MhRWWuU9jIQPcQ==
+X-Received: by 2002:a17:906:3944:: with SMTP id g4mr2425476eje.426.1634766416761;
+        Wed, 20 Oct 2021 14:46:56 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id nd36sm1620589ejc.17.2021.10.20.14.46.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Oct 2021 14:46:56 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id E4A10180262; Wed, 20 Oct 2021 23:46:54 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, edumazet@google.com
+Subject: Re: [PATCH net-next v2] fq_codel: generalise ce_threshold marking
+ for subset of traffic
+In-Reply-To: <190a2292-8903-b4e9-954e-d07f5dbd8693@gmail.com>
+References: <20211019174709.69081-1-toke@redhat.com>
+ <9cec30c9-ede1-82aa-9eca-ca76bcb206d5@gmail.com> <87ilxre6rz.fsf@toke.dk>
+ <190a2292-8903-b4e9-954e-d07f5dbd8693@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 20 Oct 2021 23:46:54 +0200
+Message-ID: <87fssve5dd.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20211020082956.8359-1-lmb@cloudflare.com> <20211020082956.8359-3-lmb@cloudflare.com>
-In-Reply-To: <20211020082956.8359-3-lmb@cloudflare.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 20 Oct 2021 14:43:04 -0700
-Message-ID: <CAEf4BzaRUK3we69HpsFsDYirjQV52w_nb6nY6u-WqhhGR8oBHA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/2] selftests: bpf: test RENAME_EXCHANGE and
- RENAME_NOREPLACE on bpffs
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 20, 2021 at 1:30 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
->
-> Add tests to exercise the behaviour of RENAME_EXCHANGE and RENAME_NOREPLACE
-> on bpffs. The former checks that after an exchange the inode of two
-> directories has changed. The latter checks that the source still exists
-> after a failed rename.
->
-> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-> ---
->  .../selftests/bpf/prog_tests/test_bpffs.c     | 39 +++++++++++++++++++
->  1 file changed, 39 insertions(+)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/test_bpffs.c b/tools/testing/selftests/bpf/prog_tests/test_bpffs.c
-> index 172c999e523c..9c28ae9589bf 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/test_bpffs.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/test_bpffs.c
-> @@ -1,6 +1,7 @@
->  // SPDX-License-Identifier: GPL-2.0
->  /* Copyright (c) 2020 Facebook */
->  #define _GNU_SOURCE
-> +#include <stdio.h>
->  #include <sched.h>
->  #include <sys/mount.h>
->  #include <sys/stat.h>
-> @@ -29,6 +30,7 @@ static int read_iter(char *file)
->
->  static int fn(void)
->  {
-> +       struct stat a, b;
->         int err, duration = 0;
->
->         err = unshare(CLONE_NEWNS);
-> @@ -67,6 +69,43 @@ static int fn(void)
->         err = read_iter(TDIR "/fs2/progs.debug");
->         if (CHECK(err, "reading " TDIR "/fs2/progs.debug", "failed\n"))
->                 goto out;
-> +
-> +       err = mkdir(TDIR "/fs1/a", 0777);
-> +       if (CHECK(err, "creating " TDIR "/fs1/a", "failed\n"))
-> +               goto out;
-> +       err = mkdir(TDIR "/fs1/a/1", 0777);
-> +       if (CHECK(err, "creating " TDIR "/fs1/a/1", "failed\n"))
-> +               goto out;
-> +       err = mkdir(TDIR "/fs1/b", 0777);
-> +       if (CHECK(err, "creating " TDIR "/fs1/b", "failed\n"))
-> +               goto out;
-> +
-> +       /* Check that RENAME_EXCHANGE works. */
-> +       err = stat(TDIR "/fs1/a", &a);
-> +       if (CHECK(err, "stat(" TDIR "/fs1/a)", "failed\n"))
-> +               goto out;
-> +       err = renameat2(0, TDIR "/fs1/a", 0, TDIR "/fs1/b", RENAME_EXCHANGE);
-> +       if (CHECK(err, "renameat2(RENAME_EXCHANGE)", "failed\n"))
-> +               goto out;
-> +       err = stat(TDIR "/fs1/b", &b);
-> +       if (CHECK(err, "stat(" TDIR "/fs1/b)", "failed\n"))
-> +               goto out;
-> +       if (CHECK(a.st_ino != b.st_ino, "b should have a's inode", "failed\n"))
-> +               goto out;
-> +       err = access(TDIR "/fs1/b/1", F_OK);
-> +       if (CHECK(err, "access(" TDIR "/fs1/b/1)", "failed\n"))
-> +               goto out;
-> +
-> +       /* Check that RENAME_NOREPLACE works. */
-> +       err = renameat2(0, TDIR "/fs1/b", 0, TDIR "/fs1/a", RENAME_NOREPLACE);
-> +       if (CHECK(!err, "renameat2(RENAME_NOREPLACE)", "succeeded\n")) {
-> +               err = -EINVAL;
-> +               goto out;
-> +       }
-> +       err = access(TDIR "/fs1/b", F_OK);
-> +       if (CHECK(err, "access(" TDIR "/fs1/b)", "failed\n"))
-> +               goto out;
-> +
+Eric Dumazet <eric.dumazet@gmail.com> writes:
 
-Please use ASSERT_xxx() for new code.
-
->  out:
->         umount(TDIR "/fs1");
->         umount(TDIR "/fs2");
-> --
-> 2.30.2
+> On 10/20/21 2:16 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> Eric Dumazet <eric.dumazet@gmail.com> writes:
+>>=20
+>>> On 10/19/21 10:47 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>>>> The commit in the Fixes tag expanded the ce_threshold feature of FQ-Co=
+Del
+>>>> so it can be applied to a subset of the traffic, using the ECT(1) bit =
+of
+>>>> the ECN field as the classifier. However, hard-coding ECT(1) as the on=
+ly
+>>>> classifier for this feature seems limiting, so let's expand it to be m=
+ore
+>>>> general.
+>>>>
+>>>> To this end, change the parameter from a ce_threshold_ect1 boolean, to=
+ a
+>>>> one-byte selector/mask pair (ce_threshold_{selector,mask}) which is ap=
+plied
+>>>> to the whole diffserv/ECN field in the IP header. This makes it possib=
+le to
+>>>> classify packets by any value in either the ECN field or the diffserv
+>>>> field. In particular, setting a selector of INET_ECN_ECT_1 and a mask =
+of
+>>>> INET_ECN_MASK corresponds to the functionality before this patch, and a
+>>>> mask of ~INET_ECN_MASK allows using the selector as a straight-forward
+>>>> match against a diffserv code point:
+>>>>
+>>>>  # apply ce_threshold to ECT(1) traffic
+>>>>  tc qdisc replace dev eth0 root fq_codel ce_threshold 1ms ce_threshold=
+_selector 0x1/0x3
+>>>>
+>>>>  # apply ce_threshold to ECN-capable traffic marked as diffserv AF22
+>>>>  tc qdisc replace dev eth0 root fq_codel ce_threshold 1ms ce_threshold=
+_selector 0x50/0xfc
+>>>>
+>>>> Regardless of the selector chosen, the normal rules for ECN-marking of
+>>>> packets still apply, i.e., the flow must still declare itself ECN-capa=
+ble
+>>>> by setting one of the bits in the ECN field to get marked at all.
+>>>>
+>>>> v2:
+>>>> - Add tc usage examples to patch description
+>>>>
+>>>> Fixes: e72aeb9ee0e3 ("fq_codel: implement L4S style ce_threshold_ect1 =
+marking")
+>>>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>>>> ---
+>>>
+>>> Reviewed-by: Eric Dumazet <edumazet@google.com>
+>>=20
+>> Thanks!
+>>=20
+>>> BTW, the Fixes: tag seems not really needed, your patch is a
+>>> followup/generalization.
+>>=20
+>> Yeah, I included it because I don't know of any other way to express
+>> "this is a follow-up commit to this other one, and the two should be
+>> kept together" - for e.g., backports. And I figured that since this
+>> changes the UAPI from your initial patch, this was important to express
+>> in case someone does backport that.
 >
+> The patch targeted net-next, and was not stable material.
+>
+> Also, this is pure opt-in behavior, so there was no risk
+> of breaking something.
+>
+> Note that I have not provided yet an iproute2 patch, so only your
+> iproute2 change will possibly enable the new behavior.
+>
+>>=20
+>> Is there another way to express this that I'm not aware of?
+>
+> Just mentioning the commit directly in the changelog is what I
+> do for followups.
+
+Right, I'll do that next time. Thanks :)
+
+-Toke
+
