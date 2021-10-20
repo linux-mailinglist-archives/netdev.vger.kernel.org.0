@@ -2,209 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9AE5434394
-	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 04:40:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B53E34343E3
+	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 05:28:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229657AbhJTCmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Oct 2021 22:42:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32790 "EHLO
+        id S229735AbhJTDak (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Oct 2021 23:30:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbhJTCml (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 22:42:41 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65C67C06161C
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 19:40:28 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id lk8-20020a17090b33c800b001a0a284fcc2so1377468pjb.2
-        for <netdev@vger.kernel.org>; Tue, 19 Oct 2021 19:40:28 -0700 (PDT)
+        with ESMTP id S229555AbhJTDak (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Oct 2021 23:30:40 -0400
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46168C06161C;
+        Tue, 19 Oct 2021 20:28:26 -0700 (PDT)
+Received: by mail-il1-x133.google.com with SMTP id w10so20562081ilc.13;
+        Tue, 19 Oct 2021 20:28:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=g/k6QV2vpt3vH8xJxkTx+3DiBVC3hLVwkQHeAK5Mgfk=;
-        b=Q4nrYsya+U9yJCD42B+ksihz8DeeiDjP1VfdJd73Pys4FFsx7kSFFTQ9NcOFSmo+br
-         R8Z/n7RebPdXUn6VtdcSktRY2xcKlktxC9iETn+uFHH3+qCrdCI8TJWERAxDPLz1fF3m
-         a/YAW3Xgk/We2IYSLR3eQb6gjPgdMtQ38UVyl37vRZ+nLiWSL6IxJRv9rwNHIN4sR/dX
-         prf2BYq+NHtc5tuTgNMMSxeK8lnFA91sdDHgbTrJoqKbhI9ZDeThKnhVlISaTydDUHCG
-         mDcy742Yw3XMCRxB8b8+OtwQWaEDYWjVpoOxuvXJa9weX5cFkXL+xGrfkKfzAC28obto
-         5tMQ==
+        bh=eBIDOwTiVEDpLZJCtDQ9qFP0TuQHVkD3tTneVRsqqv4=;
+        b=Nk3tgkVzH7dUY3M5cYsipgUGd2ehfDSaBrjS+n/n5+uhCIgB1NCkcjvDgkyvLvFBQj
+         vQ8cPHpJiq5C3hkCnBiMRkNtxXoGOMec70OJbGrXETc8KU36ZBwmx4Vy1Ltspeaf6PLi
+         DM9yuKkP4DToS/mihj7RJRCsmG1a0TM/E0UEXs8TyxNpY5fu5gOv79cS4Vh62AFtYhL8
+         4ZdJ/GVl98/aFb8RSAdBmnvYdMStG45+4Ng80KKR1X8MuzR22cnWZcmg38OMp4TvjZzv
+         uzucOhIYyd0FR2Al3ucCpW8PpxG2cZVb39a+XfulYpIqp8ggsDoy0KP2wEoOyK0V+SHP
+         b2zA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=g/k6QV2vpt3vH8xJxkTx+3DiBVC3hLVwkQHeAK5Mgfk=;
-        b=yFhHBVF8lltv3YcM0uArujmsXepXTa6cbVVZlx/vPixiI1K8eOy9CLZKx17McRrjsK
-         5ZUtkeLrBmyGc5H4eawPFsXAuDFcpqWV79NKHrHyKSaXHXO1+TQ/IE2Yp2N4Pmz2tq0B
-         eC/7goYCUiTO+MXJXxlNlpogpmgRQ8QOrLbcsYBSJhdpJqZfmFj4FAm3jtBldQuxfYzC
-         1jPNCwh57xFxFtYO6HRoCXzDEq1nUuLgd2xuWoe+bgvjBH6IUtdFjJdiMCLTeDG692xl
-         ATdXmidxVebYNGa41BzOt7ZEco33aZs+yzCK4WEHPexY+Rec6JF4Q+B5E8Z1SIA5Ohi8
-         hKpg==
-X-Gm-Message-State: AOAM532g4qd5vb2OLS402g5/g2OA0GiZHKbDWQ5tx0Om3otCSYL7J+VD
-        g03XMGBQnwC1XteAXVBB3hhp5KutBRg=
-X-Google-Smtp-Source: ABdhPJyedc2O5NAOq/eUVV0gGxa6O7q5oShLShXdyhgQaO6s66znvqXDXyE/YTLys9d9qbwR9jp7DA==
-X-Received: by 2002:a17:902:7ec2:b0:13d:b563:c39 with SMTP id p2-20020a1709027ec200b0013db5630c39mr36455928plb.14.1634697622837;
-        Tue, 19 Oct 2021 19:40:22 -0700 (PDT)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id bp19sm439990pjb.46.2021.10.19.19.40.19
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=eBIDOwTiVEDpLZJCtDQ9qFP0TuQHVkD3tTneVRsqqv4=;
+        b=Gn6s9IDSyZ9jEALv75qttXZOCmoeHYuS+XEYV0NUz65szAYMKzAjCIcl+MmTrXslOK
+         rs1UjM0eIhwU1rfzIijKMnD9H6t3Thw7IiRQPdIAPtC8WQiZmfyxgSIkuO53lwfcgQWo
+         fMc4/R2IHNAhzU9G6HIA/gwk+Zlb6dBDefih2GONIeV6aZxfHr4PaoiWxwQqP7YBjifX
+         SXPWOqbxigaDPt0bwPnuswfiao9JMlYF/oBSTQnthkH571U6FEo3YunU9irC4e7ZhB6l
+         QffgcYTHURiol6EWYulf3XguXlh3yPyY0emAOqr5xAoUCoBQc6Lqat5qd5xmban6YLV7
+         JjPQ==
+X-Gm-Message-State: AOAM533mC+/DinVD4BP2pgsl0ypHGu5HJzeSXguroGrQbyBfvvV5/IPi
+        BwOT+YXqeaAr5uWP3ZcySCdkVSWewS0BEksi
+X-Google-Smtp-Source: ABdhPJwnbPzirbnLmdcyp0XfSK5R5Skc5QcvbUFMKLxJIerSX/IePoumRvxY+Px2YRR/cKNIYx94/A==
+X-Received: by 2002:a05:6e02:19ca:: with SMTP id r10mr15540186ill.148.1634700505518;
+        Tue, 19 Oct 2021 20:28:25 -0700 (PDT)
+Received: from localhost ([172.243.157.240])
+        by smtp.gmail.com with ESMTPSA id x5sm474959ioh.23.2021.10.19.20.28.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Oct 2021 19:40:22 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Nikolay Aleksandrov <razor@blackwall.org>, roopa@nvidia.com,
-        bridge@lists.linux-foundation.org, davem@davemloft.net,
-        kuba@kernel.org, Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv2 net] net: bridge: mcast: QRI must be less than QI
-Date:   Wed, 20 Oct 2021 10:40:16 +0800
-Message-Id: <20211020024016.695678-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211020023604.695416-1-liuhangbin@gmail.com>
-References: <20211020023604.695416-1-liuhangbin@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 19 Oct 2021 20:28:24 -0700 (PDT)
+Date:   Tue, 19 Oct 2021 20:28:16 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Brendan Jackman <jackmanb@google.com>,
+        Florent Revest <revest@chromium.org>,
+        Joe Stringer <joe@cilium.io>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Tariq Toukan <tariqt@nvidia.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Maxim Mikityanskiy <maximmi@nvidia.com>
+Message-ID: <616f8cd0a0c6c_340c7208ae@john-XPS-13-9370.notmuch>
+In-Reply-To: <20211019144655.3483197-5-maximmi@nvidia.com>
+References: <20211019144655.3483197-1-maximmi@nvidia.com>
+ <20211019144655.3483197-5-maximmi@nvidia.com>
+Subject: RE: [PATCH bpf-next 04/10] bpf: Make errors of
+ bpf_tcp_check_syncookie distinguishable
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Based on RFC3376 8.3:
-The number of seconds represented by the [Query Response Interval]
-must be less than the [Query Interval].
+Maxim Mikityanskiy wrote:
+> bpf_tcp_check_syncookie returns errors when SYN cookie generation is
+> disabled (EINVAL) or when no cookies were recently generated (ENOENT).
+> The same error codes are used for other kinds of errors: invalid
+> parameters (EINVAL), invalid packet (EINVAL, ENOENT), bad cookie
+> (ENOENT). Such an overlap makes it impossible for a BPF program to
+> distinguish different cases that may require different handling.
 
-Fixes: d902eee43f19 ("bridge: Add multicast count/interval sysfs entries")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- net/bridge/br_multicast.c    | 27 +++++++++++++++++++++++++++
- net/bridge/br_netlink.c      |  8 ++++++--
- net/bridge/br_private.h      |  4 ++++
- net/bridge/br_sysfs_br.c     |  6 ++----
- net/bridge/br_vlan_options.c |  8 ++++++--
- 5 files changed, 45 insertions(+), 8 deletions(-)
+I'm not sure we can change these errors now. They are embedded in
+the helper API. I think a BPF program could uncover the meaning
+of the error anyways with some error path handling?
 
-diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index f3d751105343..5931f7c81519 100644
---- a/net/bridge/br_multicast.c
-+++ b/net/bridge/br_multicast.c
-@@ -4522,6 +4522,33 @@ int br_multicast_set_mld_version(struct net_bridge_mcast *brmctx,
- }
- #endif
- 
-+/* RFC3376 8.3: The number of seconds represented by the
-+ * [Query Response Interval] must be less than the [Query Interval].
-+ */
-+int br_multicast_set_qi(struct net_bridge_mcast *brmctx, unsigned long val,
-+			struct netlink_ext_ack *extack)
-+{
-+	if (val > brmctx->multicast_query_response_interval) {
-+		brmctx->multicast_query_interval = val;
-+		return 0;
-+	}
-+
-+	NL_SET_ERR_MSG(extack, "Invalid QI, must greater than QRI");
-+	return -EINVAL;
-+}
-+
-+int br_multicast_set_qri(struct net_bridge_mcast *brmctx, unsigned long val,
-+			 struct netlink_ext_ack *extack)
-+{
-+	if (val < brmctx->multicast_query_interval) {
-+		brmctx->multicast_query_response_interval = val;
-+		return 0;
-+	}
-+
-+	NL_SET_ERR_MSG(extack, "Invalid QRI, must less than QI");
-+	return -EINVAL;
-+}
-+
- /**
-  * br_multicast_list_adjacent - Returns snooped multicast addresses
-  * @dev:	The bridge port adjacent to which to retrieve addresses
-diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index 5c6c4305ed23..2b32d7d2ce31 100644
---- a/net/bridge/br_netlink.c
-+++ b/net/bridge/br_netlink.c
-@@ -1357,13 +1357,17 @@ static int br_changelink(struct net_device *brdev, struct nlattr *tb[],
- 	if (data[IFLA_BR_MCAST_QUERY_INTVL]) {
- 		u64 val = nla_get_u64(data[IFLA_BR_MCAST_QUERY_INTVL]);
- 
--		br->multicast_ctx.multicast_query_interval = clock_t_to_jiffies(val);
-+		err = br_multicast_set_qi(&br->multicast_ctx, clock_t_to_jiffies(val), extack);
-+		if (err)
-+			return err;
- 	}
- 
- 	if (data[IFLA_BR_MCAST_QUERY_RESPONSE_INTVL]) {
- 		u64 val = nla_get_u64(data[IFLA_BR_MCAST_QUERY_RESPONSE_INTVL]);
- 
--		br->multicast_ctx.multicast_query_response_interval = clock_t_to_jiffies(val);
-+		err = br_multicast_set_qri(&br->multicast_ctx, clock_t_to_jiffies(val), extack);
-+		if (err)
-+			return err;
- 	}
- 
- 	if (data[IFLA_BR_MCAST_STARTUP_QUERY_INTVL]) {
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 37ca76406f1e..5019c601f689 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -906,6 +906,10 @@ int br_multicast_set_igmp_version(struct net_bridge_mcast *brmctx,
- int br_multicast_set_mld_version(struct net_bridge_mcast *brmctx,
- 				 unsigned long val);
- #endif
-+int br_multicast_set_qi(struct net_bridge_mcast *brmctx, unsigned long val,
-+			struct netlink_ext_ack *extack);
-+int br_multicast_set_qri(struct net_bridge_mcast *brmctx, unsigned long val,
-+			 struct netlink_ext_ack *extack);
- struct net_bridge_mdb_entry *
- br_mdb_ip_get(struct net_bridge *br, struct br_ip *dst);
- struct net_bridge_mdb_entry *
-diff --git a/net/bridge/br_sysfs_br.c b/net/bridge/br_sysfs_br.c
-index d9a89ddd0331..f794652f8592 100644
---- a/net/bridge/br_sysfs_br.c
-+++ b/net/bridge/br_sysfs_br.c
-@@ -658,8 +658,7 @@ static ssize_t multicast_query_interval_show(struct device *d,
- static int set_query_interval(struct net_bridge *br, unsigned long val,
- 			      struct netlink_ext_ack *extack)
- {
--	br->multicast_ctx.multicast_query_interval = clock_t_to_jiffies(val);
--	return 0;
-+	return br_multicast_set_qi(&br->multicast_ctx, clock_t_to_jiffies(val), extack);
- }
- 
- static ssize_t multicast_query_interval_store(struct device *d,
-@@ -682,8 +681,7 @@ static ssize_t multicast_query_response_interval_show(
- static int set_query_response_interval(struct net_bridge *br, unsigned long val,
- 				       struct netlink_ext_ack *extack)
- {
--	br->multicast_ctx.multicast_query_response_interval = clock_t_to_jiffies(val);
--	return 0;
-+	return br_multicast_set_qri(&br->multicast_ctx, clock_t_to_jiffies(val), extack);
- }
- 
- static ssize_t multicast_query_response_interval_store(
-diff --git a/net/bridge/br_vlan_options.c b/net/bridge/br_vlan_options.c
-index 8ffd4ed2563c..71e94ff9d926 100644
---- a/net/bridge/br_vlan_options.c
-+++ b/net/bridge/br_vlan_options.c
-@@ -521,14 +521,18 @@ static int br_vlan_process_global_one_opts(const struct net_bridge *br,
- 		u64 val;
- 
- 		val = nla_get_u64(tb[BRIDGE_VLANDB_GOPTS_MCAST_QUERY_INTVL]);
--		v->br_mcast_ctx.multicast_query_interval = clock_t_to_jiffies(val);
-+		err = br_multicast_set_qi(&v->br_mcast_ctx, clock_t_to_jiffies(val), extack);
-+		if (err)
-+			return err;
- 		*changed = true;
- 	}
- 	if (tb[BRIDGE_VLANDB_GOPTS_MCAST_QUERY_RESPONSE_INTVL]) {
- 		u64 val;
- 
- 		val = nla_get_u64(tb[BRIDGE_VLANDB_GOPTS_MCAST_QUERY_RESPONSE_INTVL]);
--		v->br_mcast_ctx.multicast_query_response_interval = clock_t_to_jiffies(val);
-+		err = br_multicast_set_qri(&v->br_mcast_ctx, clock_t_to_jiffies(val), extack);
-+		if (err)
-+			return err;
- 		*changed = true;
- 	}
- 	if (tb[BRIDGE_VLANDB_GOPTS_MCAST_STARTUP_QUERY_INTVL]) {
--- 
-2.31.1
+Anyways even if we do change these most of us who run programs
+on multiple kernel versions would not be able to rely on them
+being one way or the other easily.
 
+> 
+> For a BPF program that accelerates generating and checking SYN cookies,
+> typical logic looks like this (with current error codes annotated):
+> 
+> 1. Drop invalid packets (EINVAL, ENOENT).
+> 
+> 2. Drop packets with bad cookies (ENOENT).
+> 
+> 3. Pass packets with good cookies (0).
+> 
+> 4. Pass all packets when cookies are not in use (EINVAL, ENOENT).
+> 
+> The last point also matches the behavior of cookie_v4_check and
+> cookie_v6_check that skip all checks if cookie generation is disabled or
+> no cookies were recently generated. Overlapping error codes, however,
+> make it impossible to distinguish case 4 from cases 1 and 2.
+> 
+> The original commit message of commit 399040847084 ("bpf: add helper to
+> check for a valid SYN cookie") mentions another use case, though:
+> traffic classification, where it's important to distinguish new
+> connections from existing ones, and case 4 should be distinguishable
+> from case 3.
+> 
+> To match the requirements of both use cases, this patch reassigns error
+> codes of bpf_tcp_check_syncookie and adds missing documentation:
+> 
+> 1. EINVAL: Invalid packets.
+> 
+> 2. EACCES: Packets with bad cookies.
+> 
+> 3. 0: Packets with good cookies.
+> 
+> 4. ENOENT: Cookies are not in use.
+> 
+> This way all four cases are easily distinguishable.
+> 
+> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+
+At very leasst this would need a fixes tag and should be backported
+as a bug. Then we at least have a chance stable and LTS kernels
+report the same thing.
+
+[...]
+
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+ 
+I'll take a stab at how a program can learn the error cause today.
+
+BPF_CALL_5(bpf_tcp_check_syncookie, struct sock *, sk, void *, iph, u32, iph_len,
+	   struct tcphdr *, th, u32, th_len)
+{
+#ifdef CONFIG_SYN_COOKIES
+	u32 cookie;
+	int ret;
+
+// BPF program should know it pass bad values and can check
+	if (unlikely(!sk || th_len < sizeof(*th)))
+		return -EINVAL;
+
+// sk_protocol and sk_state are exposed in sk and can be read directly 
+	/* sk_listener() allows TCP_NEW_SYN_RECV, which makes no sense here. */
+	if (sk->sk_protocol != IPPROTO_TCP || sk->sk_state != TCP_LISTEN)
+		return -EINVAL;
+
+// This is a user space knob right? I think this is a misconfig user can
+// check before loading a program with check_syncookie?
+	if (!sock_net(sk)->ipv4.sysctl_tcp_syncookies)
+		return -EINVAL;
+
+// We have th pointer can't we just check?
+	if (!th->ack || th->rst || th->syn)
+		return -ENOENT;
+
+	if (tcp_synq_no_recent_overflow(sk))
+		return -ENOENT;
+
+	cookie = ntohl(th->ack_seq) - 1;
+
+	switch (sk->sk_family) {
+	case AF_INET:
+// misconfiguration but can be checked.
+		if (unlikely(iph_len < sizeof(struct iphdr)))
+			return -EINVAL;
+
+		ret = __cookie_v4_check((struct iphdr *)iph, th, cookie);
+		break;
+
+#if IS_BUILTIN(CONFIG_IPV6)
+	case AF_INET6:
+// misconfiguration can check as well
+		if (unlikely(iph_len < sizeof(struct ipv6hdr)))
+			return -EINVAL;
+
+		ret = __cookie_v6_check((struct ipv6hdr *)iph, th, cookie);
+		break;
+#endif /* CONFIG_IPV6 */
+
+	default:
+		return -EPROTONOSUPPORT;
+	}
+
+	if (ret > 0)
+		return 0;
+
+	return -ENOENT;
+#else
+	return -ENOTSUPP;
+#endif
+}
+
+
+So I guess my point is we have all the fields we could write a bit
+of BPF to find the error cause if necessary. Might be better than
+dealing with changing the error code and having to deal with the
+differences in kernels. I do see how it would have been better
+to get errors correct on the first patch though :/
+
+By the way I haven't got to the next set of patches with the
+actual features, but why not push everything above this patch
+as fixes in its own series. Then the fixes can get going why
+we review the feature.
+
+Thanks,
+John
