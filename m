@@ -2,42 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F13A4349CF
+	by mail.lfdr.de (Postfix) with ESMTP id B900F4349D1
 	for <lists+netdev@lfdr.de>; Wed, 20 Oct 2021 13:10:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229864AbhJTLMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 07:12:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58316 "EHLO mail.kernel.org"
+        id S230205AbhJTLMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 07:12:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58364 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230181AbhJTLM1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230180AbhJTLM1 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 20 Oct 2021 07:12:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id D2783613E6;
+Received: by mail.kernel.org (Postfix) with ESMTPS id E1B5761409;
         Wed, 20 Oct 2021 11:10:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1634728212;
-        bh=1ufr3JCCPTDF4UHHjYhBe5K+6viZjdecGfVaaVds82Q=;
+        bh=l1SO9g7J0R9qXSU4ykxOIJIFyZ31oiOl7zV4A6VDNJM=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=U9xzvhKV6cPdmo1GGtPO0rURcWmubOfi9t8goYJGbay1HV3Jdh3r6/OW7lrKskEVi
-         0O1ROjNWA7QrDwIXIETAcNx20KQPXsOKEuffi7zxCE5wzOm8TNOvVqsYt8+wNkBWrz
-         5ef02u6srMTvYy62gnpjQyeH65sqeCDqFkxThiFQAHUzOMe9H85zryPFXD0DtVpTTl
-         XiOkrn36yEwHufa9sjv17b+nMuOCLmV9Lah2x0nRFXk2KfoE2OKwI8b688WNKfhhlN
-         Ei+I6Jp4u+njObQLbwKYcKmV+nx0hnNYEt7tZEzmLfn5NJAGlYH9ZRFqN81LILsfST
-         H70K87OFw13Xw==
+        b=bL5cDKjvGYfeW6uPXuVgWYj5PJK+HwPv7cXc8tbt7gVi820qssPhM9GlDTbMmEYXR
+         vGgMjEDBFin/5x1ce9ucEZ0XXarCc0hdCNbqolwgkfFOKF8qY6g7CeevOdFaRsUpXm
+         R2h2kluS2TQfu+vZFiZvDrHrVN20hCPnYyaRdlypiyJaitMYyB8xt32yzzr+n9W8/Y
+         B7ZIPulB+VETIWVb6TzHF49l3GLrwrLDBDwLcCRs7yTrERb6qpE2/nbtyWPTF+9UKf
+         EZNH/3vBk/aDDcViDnJxxi6RHxORnH5dp/ZytJ+HJDv9IYilRK28u5bD4QWCL/uINA
+         TPpUuPRta5Asw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C2BD3609D1;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D659560A47;
         Wed, 20 Oct 2021 11:10:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/10][pull request] 100GbE Intel Wired LAN Driver
- Updates 2021-10-19
+Subject: Re: [PATCH net-next 0/4] New RGMII delay DT bindings for the SJA1105 DSA
+ driver
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163472821279.2036.12556887164174208256.git-patchwork-notify@kernel.org>
+Message-Id: <163472821287.2036.7867829179866355496.git-patchwork-notify@kernel.org>
 Date:   Wed, 20 Oct 2021 11:10:12 +0000
-References: <20211019183027.2820413-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20211019183027.2820413-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+References: <20211018192952.2736913-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20211018192952.2736913-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        robh+dt@kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, prasanna.vengateshan@microchip.com,
+        ansuelsmth@gmail.com, alsi@bang-olufsen.dk
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -45,40 +50,32 @@ X-Mailing-List: netdev@vger.kernel.org
 Hello:
 
 This series was applied to netdev/net-next.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+by David S. Miller <davem@davemloft.net>:
 
-On Tue, 19 Oct 2021 11:30:17 -0700 you wrote:
-> This series contains updates to ice driver only.
+On Mon, 18 Oct 2021 22:29:48 +0300 you wrote:
+> During recent reviews I've been telling people that new MAC drivers
+> should adopt a certain DT binding format for RGMII delays in order to
+> avoid conflicting interpretations. Some suggestions were better received
+> than others, and it appears we are still far from a consensus.
 > 
-> Brett implements support for ndo_set_vf_rate allowing for min_tx_rate
-> and max_tx_rate to be set for a VF.
-> 
-> Jesse updates DIM moderation to improve latency and resolves problems
-> with reported rate limit and extra software generated interrupts.
+> Part of the problem seems to be that there are still drivers that apply
+> RGMII delays based on an incorrect interpretation of the device tree,
+> and these serve as a bad example for others.
+> I happen to maintain one of those drivers and I am able to test it, so I
+> figure that one of the ways in which I can make a change is to stop
+> providing a bad example.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,01/10] ice: Add support for VF rate limiting
-    https://git.kernel.org/netdev/net-next/c/4ecc8633056b
-  - [net-next,02/10] ice: update dim usage and moderation
-    https://git.kernel.org/netdev/net-next/c/d8eb7ad5e46c
-  - [net-next,03/10] ice: fix rate limit update after coalesce change
-    https://git.kernel.org/netdev/net-next/c/d16a4f45f3a3
-  - [net-next,04/10] ice: fix software generating extra interrupts
-    https://git.kernel.org/netdev/net-next/c/23be7075b318
-  - [net-next,05/10] ice: Forbid trusted VFs in switchdev mode
-    https://git.kernel.org/netdev/net-next/c/1281b7459657
-  - [net-next,06/10] ice: Manage act flags for switchdev offloads
-    https://git.kernel.org/netdev/net-next/c/73b483b79029
-  - [net-next,07/10] ice: Refactor PR ethtool ops
-    https://git.kernel.org/netdev/net-next/c/3f13f570ff2c
-  - [net-next,08/10] ice: Make use of the helper function devm_add_action_or_reset()
-    https://git.kernel.org/netdev/net-next/c/7c1b694adab1
-  - [net-next,09/10] ice: use devm_kcalloc() instead of devm_kzalloc()
-    https://git.kernel.org/netdev/net-next/c/6f3323536aa8
-  - [net-next,10/10] ice: fix an error code in ice_ena_vfs()
-    https://git.kernel.org/netdev/net-next/c/8702ed0b0de1
+  - [net-next,1/4] dt-bindings: net: dsa: sja1105: fix example so all ports have a phy-handle of fixed-link
+    https://git.kernel.org/netdev/net-next/c/7a414b6e1a1c
+  - [net-next,2/4] dt-bindings: net: dsa: inherit the ethernet-controller DT schema
+    https://git.kernel.org/netdev/net-next/c/e00eb643324c
+  - [net-next,3/4] dt-bindings: net: dsa: sja1105: add {rx,tx}-internal-delay-ps
+    https://git.kernel.org/netdev/net-next/c/ac41ac81e331
+  - [net-next,4/4] net: dsa: sja1105: parse {rx, tx}-internal-delay-ps properties for RGMII delays
+    https://git.kernel.org/netdev/net-next/c/9ca482a246f0
 
 You are awesome, thank you!
 --
