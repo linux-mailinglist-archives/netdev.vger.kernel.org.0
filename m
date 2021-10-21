@@ -2,152 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 157B84364B9
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 16:49:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 811FC4364D2
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 16:55:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231599AbhJUOve (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 10:51:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43922 "EHLO
+        id S231256AbhJUO6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 10:58:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231574AbhJUOvb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 10:51:31 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 881F3C0613B9;
-        Thu, 21 Oct 2021 07:49:15 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1mdZNZ-00015I-VE; Thu, 21 Oct 2021 16:49:13 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     netfilter-devel@vger.kernel.org, dsahern@kernel.org,
-        pablo@netfilter.org, crosser@average.org,
-        lschlesinger@drivenets.com, Florian Westphal <fw@strlen.de>
-Subject: [PATCH net-next 2/2] vrf: run conntrack only in context of lower/physdev for locally generated packets
-Date:   Thu, 21 Oct 2021 16:48:57 +0200
-Message-Id: <20211021144857.29714-3-fw@strlen.de>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211021144857.29714-1-fw@strlen.de>
-References: <20211021144857.29714-1-fw@strlen.de>
+        with ESMTP id S229450AbhJUO6F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 10:58:05 -0400
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56ACEC0613B9
+        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 07:55:49 -0700 (PDT)
+Received: by mail-oi1-x230.google.com with SMTP id t4so1182599oie.5
+        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 07:55:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=AMFoNCzjo2neTJQLcr/2BEBCXIQ9jw04IP8o4kR5iuE=;
+        b=ATTklKGbE1CbnC1iH5KtDrB0ILidV+K7UVgbgCfaE28Z9VMOsZrAOwqYOvnNTCo06v
+         9EUtu2v12M6kHBLhiU0B3l7NJ1WyV8YLkO8ynAP6E148LjuZ74UChRCgo2aDFEwrvKSn
+         yXzzHdb8YN09RTPkPw40nsY1DCsTAAll7lpQkuMN1dF8Dax0jJcolhDl4e9ux0jUNrNY
+         4xFtUepjPQeWz8j7JSnTSi2PLCLFIYDIK3EyZlSEBGByyLluA0X1OrMUZkt+MuowR02g
+         MMxkh17d7D9OZ3NkM/WTvjav6KxN3IVHXfU+PoypxUPBc/Tx6affEsAZO+//PNkfNfHY
+         Ky0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=AMFoNCzjo2neTJQLcr/2BEBCXIQ9jw04IP8o4kR5iuE=;
+        b=eaGT3D4frLiGBPo4r3ylLurc2Fr4PH2c3SGYYhx/PeOTFhp9U/5D4Fb/qiJoicUmzP
+         FXO1gqu3EqAXK4YECuscKjJUnERO0hbyXRBLad7kOizgd+AN6dIyPbXQjxpJgVIn9/lf
+         n0Z9ZagXSbNnw0Eb3FSIevG3nXCJFpBpgtn61lD4/s//UnB0JtzLRrL91Xd3JrVEUieD
+         2vO7x6nTPHlXDRaMN3cScvItFQAAeG42H4ga6G3S1eqY7KYfrO7kRx3h+QYS7qxspanw
+         k8YiKrOkHZ2Xe/UZZqUy5G9JgVAbrlOf/q1nUosBVtTrm5x5J1mSgnmSnFo6FjSShCfy
+         0w9A==
+X-Gm-Message-State: AOAM532nu7LH1vyZzuTZyxuyfJBiGesiQP0wrR0uXpJvNOmZxzgMdb/1
+        e9hH2Fyf/R/j8D12sItGec6MqrEkUBU=
+X-Google-Smtp-Source: ABdhPJwN6LQ0olRgR6ylK+BCKv1TfDKq0pKzZIZvwMZ/4JAMycJz0A5Ag1xr3O9zLaGoTfdAwSobVA==
+X-Received: by 2002:a05:6808:1921:: with SMTP id bf33mr5161155oib.71.1634828148718;
+        Thu, 21 Oct 2021 07:55:48 -0700 (PDT)
+Received: from [172.16.0.2] ([8.48.134.34])
+        by smtp.googlemail.com with ESMTPSA id j4sm1125087oia.56.2021.10.21.07.55.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Oct 2021 07:55:47 -0700 (PDT)
+Message-ID: <1ee8e8ec-734b-eec7-1826-340c0d48f26e@gmail.com>
+Date:   Thu, 21 Oct 2021 08:55:46 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.2.0
+Subject: Re: [PATCH iproute2 v2] xfrm: enable to manage default policies
+Content-Language: en-US
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        stephen@networkplumber.org
+Cc:     netdev@vger.kernel.org, antony.antony@secunet.com,
+        steffen.klassert@secunet.com
+References: <20210923061342.8522-1-nicolas.dichtel@6wind.com>
+ <20211018083045.27406-1-nicolas.dichtel@6wind.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20211018083045.27406-1-nicolas.dichtel@6wind.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The VRF driver invokes netfilter for output+postrouting hooks so that users
-can create rules that check for 'oif $vrf' rather than lower device name.
+On 10/18/21 2:30 AM, Nicolas Dichtel wrote:
+> diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
+> index ecd06396eb16..378b4092f26a 100644
+> --- a/include/uapi/linux/xfrm.h
+> +++ b/include/uapi/linux/xfrm.h
+> @@ -213,13 +213,13 @@ enum {
+>  	XFRM_MSG_GETSPDINFO,
+>  #define XFRM_MSG_GETSPDINFO XFRM_MSG_GETSPDINFO
+>  
+> +	XFRM_MSG_MAPPING,
+> +#define XFRM_MSG_MAPPING XFRM_MSG_MAPPING
+> +
+>  	XFRM_MSG_SETDEFAULT,
+>  #define XFRM_MSG_SETDEFAULT XFRM_MSG_SETDEFAULT
+>  	XFRM_MSG_GETDEFAULT,
+>  #define XFRM_MSG_GETDEFAULT XFRM_MSG_GETDEFAULT
+> -
+> -	XFRM_MSG_MAPPING,
+> -#define XFRM_MSG_MAPPING XFRM_MSG_MAPPING
+>  	__XFRM_MSG_MAX
+>  };
+>  #define XFRM_MSG_MAX (__XFRM_MSG_MAX - 1)
+> @@ -514,9 +514,12 @@ struct xfrm_user_offload {
+>  #define XFRM_OFFLOAD_INBOUND	2
+>  
+>  struct xfrm_userpolicy_default {
+> -#define XFRM_USERPOLICY_DIRMASK_MAX	(sizeof(__u8) * 8)
+> -	__u8				dirmask;
+> -	__u8				action;
+> +#define XFRM_USERPOLICY_UNSPEC	0
+> +#define XFRM_USERPOLICY_BLOCK	1
+> +#define XFRM_USERPOLICY_ACCEPT	2
+> +	__u8				in;
+> +	__u8				fwd;
+> +	__u8				out;
+>  };
+>  
+>  /* backwards compatibility for userspace */
 
-This is a problem when NAT rules are configured.
+that is already updated in iproute2-next.
 
-To avoid any conntrack involvement in round 1, tag skbs as 'untracked'
-to prevent conntrack from picking them up.
 
-This gets cleared before the packet gets handed to the ip stack so
-conntrack will be active on the second iteration.
+> diff --git a/ip/xfrm_policy.c b/ip/xfrm_policy.c
+> index 7cc00e7c2f5b..744f331ff564 100644
+> --- a/ip/xfrm_policy.c
+> +++ b/ip/xfrm_policy.c
+> @@ -1124,6 +1126,121 @@ static int xfrm_spd_getinfo(int argc, char **argv)
+>  	return 0;
+>  }
+>  
+> +static int xfrm_spd_setdefault(int argc, char **argv)
+> +{
+> +	struct rtnl_handle rth;
+> +	struct {
+> +		struct nlmsghdr			n;
+> +		struct xfrm_userpolicy_default  up;
+> +	} req = {
+> +		.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct xfrm_userpolicy_default)),
+> +		.n.nlmsg_flags = NLM_F_REQUEST,
+> +		.n.nlmsg_type = XFRM_MSG_SETDEFAULT,
+> +	};
+> +
+> +	while (argc > 0) {
+> +		if (strcmp(*argv, "in") == 0) {
+> +			if (req.up.in)
+> +				duparg("in", *argv);
+> +
+> +			NEXT_ARG();
+> +			if (strcmp(*argv, "block") == 0)
+> +				req.up.in = XFRM_USERPOLICY_BLOCK;
+> +			else if (strcmp(*argv, "accept") == 0)
+> +				req.up.in = XFRM_USERPOLICY_ACCEPT;
+> +			else
+> +				invarg("in policy value is invalid", *argv);
+> +		} else if (strcmp(*argv, "fwd") == 0) {
+> +			if (req.up.fwd)
+> +				duparg("fwd", *argv);
+> +
+> +			NEXT_ARG();
+> +			if (strcmp(*argv, "block") == 0)
+> +				req.up.fwd = XFRM_USERPOLICY_BLOCK;
+> +			else if (strcmp(*argv, "accept") == 0)
+> +				req.up.fwd = XFRM_USERPOLICY_ACCEPT;
+> +			else
+> +				invarg("fwd policy value is invalid", *argv);
+> +		} else if (strcmp(*argv, "out") == 0) {
+> +			if (req.up.out)
+> +				duparg("out", *argv);
+> +
+> +			NEXT_ARG();
+> +			if (strcmp(*argv, "block") == 0)
+> +				req.up.out = XFRM_USERPOLICY_BLOCK;
+> +			else if (strcmp(*argv, "accept") == 0)
+> +				req.up.out = XFRM_USERPOLICY_ACCEPT;
+> +			else
+> +				invarg("out policy value is invalid", *argv);
+> +		} else {
+> +			invarg("unknown direction", *argv);
+> +		}
+> +
+> +		argc--; argv++;
+> +	}
+> +
+> +	if (rtnl_open_byproto(&rth, 0, NETLINK_XFRM) < 0)
+> +		exit(1);
+> +
+> +	if (rtnl_talk(&rth, &req.n, NULL) < 0)
+> +		exit(2);
+> +
+> +	rtnl_close(&rth);
+> +
+> +	return 0;
+> +}
+> +
+> +int xfrm_policy_default_print(struct nlmsghdr *n, FILE *fp)
+> +{
+> +	struct xfrm_userpolicy_default *up = NLMSG_DATA(n);
+> +	int len = n->nlmsg_len - NLMSG_SPACE(sizeof(*up));
+> +
+> +	if (len < 0) {
+> +		fprintf(stderr,
+> +			"BUG: short nlmsg len %u (expect %lu) for XFRM_MSG_GETDEFAULT\n",
+> +			n->nlmsg_len, NLMSG_SPACE(sizeof(*up)));
+> +		return -1;
+> +	}
+> +
+> +	fprintf(fp, "Default policies:\n");
+> +	fprintf(fp, " in:  %s\n",
+> +		up->in == XFRM_USERPOLICY_BLOCK ? "block" : "accept");
+> +	fprintf(fp, " fwd: %s\n",
+> +		up->fwd == XFRM_USERPOLICY_BLOCK ? "block" : "accept");
+> +	fprintf(fp, " out: %s\n",
+> +		up->out == XFRM_USERPOLICY_BLOCK ? "block" : "accept");
+> +	fflush(fp);
+> +
+> +	return 0;
+> +}
+> +
 
-For ingress, conntrack has already been done before the packet makes it
-to the vrf driver, with this patch egress does connection tracking with
-lower/physical device as well.
+create xfrm_str_to_policy and xfrm_policy_to_str helpers for the
+conversions between "block" and "accept" to XFRM_USERPOLICY_BLOCK and
+XFRM_USERPOLICY_ACCEPT and back.
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- drivers/net/vrf.c | 28 ++++++++++++++++++++++++----
- 1 file changed, 24 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
-index bf2fac913942..c813d03159bf 100644
---- a/drivers/net/vrf.c
-+++ b/drivers/net/vrf.c
-@@ -35,6 +35,7 @@
- #include <net/l3mdev.h>
- #include <net/fib_rules.h>
- #include <net/netns/generic.h>
-+#include <net/netfilter/nf_conntrack.h>
- 
- #define DRV_NAME	"vrf"
- #define DRV_VERSION	"1.1"
-@@ -424,12 +425,26 @@ static int vrf_local_xmit(struct sk_buff *skb, struct net_device *dev,
- 	return NETDEV_TX_OK;
- }
- 
-+static void vrf_nf_set_untracked(struct sk_buff *skb)
-+{
-+	if (skb_get_nfct(skb) == 0)
-+		nf_ct_set(skb, 0, IP_CT_UNTRACKED);
-+}
-+
-+static void vrf_nf_reset_ct(struct sk_buff *skb)
-+{
-+	if (skb_get_nfct(skb) == IP_CT_UNTRACKED)
-+		nf_reset_ct(skb);
-+}
-+
- #if IS_ENABLED(CONFIG_IPV6)
- static int vrf_ip6_local_out(struct net *net, struct sock *sk,
- 			     struct sk_buff *skb)
- {
- 	int err;
- 
-+	vrf_nf_reset_ct(skb);
-+
- 	err = nf_hook(NFPROTO_IPV6, NF_INET_LOCAL_OUT, net,
- 		      sk, skb, NULL, skb_dst(skb)->dev, dst_output);
- 
-@@ -508,6 +523,8 @@ static int vrf_ip_local_out(struct net *net, struct sock *sk,
- {
- 	int err;
- 
-+	vrf_nf_reset_ct(skb);
-+
- 	err = nf_hook(NFPROTO_IPV4, NF_INET_LOCAL_OUT, net, sk,
- 		      skb, NULL, skb_dst(skb)->dev, dst_output);
- 	if (likely(err == 1))
-@@ -626,8 +643,7 @@ static void vrf_finish_direct(struct sk_buff *skb)
- 		skb_pull(skb, ETH_HLEN);
- 	}
- 
--	/* reset skb device */
--	nf_reset_ct(skb);
-+	vrf_nf_reset_ct(skb);
- }
- 
- #if IS_ENABLED(CONFIG_IPV6)
-@@ -641,7 +657,7 @@ static int vrf_finish_output6(struct net *net, struct sock *sk,
- 	struct neighbour *neigh;
- 	int ret;
- 
--	nf_reset_ct(skb);
-+	vrf_nf_reset_ct(skb);
- 
- 	skb->protocol = htons(ETH_P_IPV6);
- 	skb->dev = dev;
-@@ -752,6 +768,8 @@ static struct sk_buff *vrf_ip6_out_direct(struct net_device *vrf_dev,
- 
- 	skb->dev = vrf_dev;
- 
-+	vrf_nf_set_untracked(skb);
-+
- 	err = nf_hook(NFPROTO_IPV6, NF_INET_LOCAL_OUT, net, sk,
- 		      skb, NULL, vrf_dev, vrf_ip6_out_direct_finish);
- 
-@@ -858,7 +876,7 @@ static int vrf_finish_output(struct net *net, struct sock *sk, struct sk_buff *s
- 	struct neighbour *neigh;
- 	bool is_v6gw = false;
- 
--	nf_reset_ct(skb);
-+	vrf_nf_reset_ct(skb);
- 
- 	/* Be paranoid, rather than too clever. */
- 	if (unlikely(skb_headroom(skb) < hh_len && dev->header_ops)) {
-@@ -980,6 +998,8 @@ static struct sk_buff *vrf_ip_out_direct(struct net_device *vrf_dev,
- 
- 	skb->dev = vrf_dev;
- 
-+	vrf_nf_set_untracked(skb);
-+
- 	err = nf_hook(NFPROTO_IPV4, NF_INET_LOCAL_OUT, net, sk,
- 		      skb, NULL, vrf_dev, vrf_ip_out_direct_finish);
- 
--- 
-2.32.0
 
