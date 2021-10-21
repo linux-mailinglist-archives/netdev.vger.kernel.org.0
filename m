@@ -2,90 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3915D436E5B
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 01:35:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31C80436E63
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 01:40:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230500AbhJUXhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 19:37:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51890 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbhJUXhU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 19:37:20 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA97CC061764
-        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 16:35:03 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id o20so1964709wro.3
-        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 16:35:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=UAOvT72nEzyjB3EaBfIB4vBLAlWNhJb9FUU2K5PC8fM=;
-        b=Jh8v8x5AR9wQlWye431C+od0fTVWyRXBjwV6m3Q7kiiZg7/+ZsOgzZ5x5Hc5B+u+6K
-         DcQnez7ZKV1EXLLRmXre6S6ZTIa04kkbKBHi7o87HKauKV9Eoxi7uXixRz6LYwPpD1gQ
-         4I0pa/Fk84LYs3SdiOHgh6SYm/HrI+AXe23b5lN3D5Sm/c6Jwr3K1NukpBABG2lThhYA
-         BmAEuAPMCB1b2rsYBVsQY/gNlyvoGs9JWE9QnGWFbJ6Al4oEJ4FTIN/ElKbBo1Xt6dOW
-         lYPaJiUhkrcAbxJqvNxfatTpOqesZ9/oVApEXjKkWlxKl/NBUkjQkzgHWOXij4GLvN5Z
-         fucw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=UAOvT72nEzyjB3EaBfIB4vBLAlWNhJb9FUU2K5PC8fM=;
-        b=CB+R56wdZ9XDLb4FeCyaLLoXRYTtEeIQM9RwMxEoKgT4HuTtrFJ1Lu7SjQi0YKOGVG
-         nvv/wmIVq6HWCMwgdNicDI9c436NSeiEvFw9DJvlQaSbbBOQY0ySELswhU0VKkDMzOPH
-         cSmTWskFy3lmMBrK5dNCuQR8qKoXVJ7TTSfP6PrDWtvYwaRPURFTHOt1N772wCO8TzZi
-         pulZhnh4tDTCUmzwUIgm5qesapfiYN7uV2nQ0fSSxl8iyy3BZ2a1uftbPMEf3xTXTUZE
-         kNbCeIhItWZJOnR7VeVSw+X4uR6NERu7T89VOMRLEnWsRlI3mLoG4XHSxJ8fu9jMkdDh
-         KaIw==
-X-Gm-Message-State: AOAM531ybOU3AStNtBzlxCbZyZqjYo2TroQ/Cd5YTU/5F9WkemGtxdE4
-        3GVCD7L9GAKHCx0VGHaJ1gcO0PZdh4jp0KcbJz4=
-X-Google-Smtp-Source: ABdhPJzMvAaJ2awRZoQ07/HD+2L7YhEfvurKfNVKxrhvHUsdBpsM0+4m5izVz4nv4V47k7SoBhfY7AURMuYFai2/5/0=
-X-Received: by 2002:a05:6000:10c7:: with SMTP id b7mr11062520wrx.36.1634859302370;
- Thu, 21 Oct 2021 16:35:02 -0700 (PDT)
+        id S232164AbhJUXm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 19:42:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54554 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229512AbhJUXmZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Oct 2021 19:42:25 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id CB0D861208;
+        Thu, 21 Oct 2021 23:40:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634859608;
+        bh=TRjAishGZW/mEXzyo6a17dS1h5NFtEhAgreGj7cD/MY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=T8SQPXfJP7vEXxhrov9+kLkKPRmnzAMqGNa7NJp9tVU08qobJl241ezro29id3PwI
+         lxh/9QxECcW/U1E+f+J+Pz1qLHUTF+iIJ4P+vPuYhKTFHKh0Z1Y8Pe6jBSMMvOsa5W
+         f5zIWi31KFIIozWRK/zimVQ9sXXWlgmHtvP3I65U48uob2LaeafMPNbE1aYbLtWQdf
+         lsxAVkraK53s9UurYNpRx8iW0m8bf2ul+/pUjaPpaTTXLastBWiPiVq4F+Pf1ubcYd
+         0VZUUPkeqSW5+FPMI7rNE19nZPV4sUUt/AXm8tC5v5vEyElTHK1K3/+ynk4FAe7xP3
+         8hLHIsqIjhpVg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BC4D460A24;
+        Thu, 21 Oct 2021 23:40:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Reply-To: jennybezoss14@gmail.com
-Sender: mrs.bintousawadogo2015@gmail.com
-Received: by 2002:a5d:4dcf:0:0:0:0:0 with HTTP; Thu, 21 Oct 2021 16:35:02
- -0700 (PDT)
-From:   Mrs Jenny Bezos <jennybezos1@gmail.com>
-Date:   Thu, 21 Oct 2021 23:35:02 +0000
-X-Google-Sender-Auth: _QhKUCpHT5_zzkOAJtcEsukuH30
-Message-ID: <CA+ZUSh6U6JePuk2xPECjLs=HJzu0gu1MmShTq6WkHZYXSUnQog@mail.gmail.com>
-Subject: Dearest Friend,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v17 0/3] AX88796C SPI Ethernet Adapter
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163485960876.25151.11012064455389480138.git-patchwork-notify@kernel.org>
+Date:   Thu, 21 Oct 2021 23:40:08 +0000
+References: <20211020182422.362647-1-l.stelmach@samsung.com>
+In-Reply-To: <20211020182422.362647-1-l.stelmach@samsung.com>
+To:     =?utf-8?q?=C5=81ukasz_Stelmach_=3Cl=2Estelmach=40samsung=2Ecom=3E?=@ci.codeaurora.org
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        jim.cromie@gmail.com, hkallweit1@gmail.com, robh+dt@kernel.org,
+        kgene@kernel.org, krzk@kernel.org, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, b.zolnierkie@samsung.com,
+        m.szyprowski@samsung.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Wed, 20 Oct 2021 20:24:19 +0200 you wrote:
+> This is a driver for AX88796C Ethernet Adapter connected in SPI mode as
+> found on ARTIK5 evaluation board. The driver has been ported from a
+> v3.10.9 vendor kernel for ARTIK5 board.
+> 
+> Changes in v17:
+>   - marked no_regs_list as const
+>   - added myself as MODULE_AUTHOR()
+>   - rearranged locking in ax88796c_close() to prevent race condition in
+>     case ax88796c_work() wakes the queue after trasmission.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v17,1/3] dt-bindings: vendor-prefixes: Add asix prefix
+    https://git.kernel.org/netdev/net-next/c/4def0acb63ce
+  - [net-next,v17,2/3] dt-bindings: net: Add bindings for AX88796C SPI Ethernet Adapter
+    https://git.kernel.org/netdev/net-next/c/b13c7a88a7b6
+  - [net-next,v17,3/3] net: ax88796c: ASIX AX88796C SPI Ethernet Adapter Driver
+    https://git.kernel.org/netdev/net-next/c/a97c69ba4f30
+
+You are awesome, thank you!
 -- 
-Dearest Friend,
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-I am Mrs. Jenny Bezos from America  USA, I decided to donate what I
-have to you  for investment towards the good work of charity
-organizations, and also  to help the motherless and the less
-privileged ones and to carry out charitable works in your Country and
-around the World on my Behalf.
 
-I am diagnosing of throat Cancer, hospitalize for good 2 years and
-some months now and quite obvious that I have few days to live, and I
-am a Widow no child; I decided to will/donate the sum of $7.8 million
-to you for the good work of God, and also to help the motherless and
-less privilege and also forth assistance of the widows. At the moment
-I cannot take any telephone calls right now due to the fact that my
-relatives (who have squandered the funds for this purpose before) are
-around me and my health also. I have adjusted my will and my Bank  is
-aware.
-
- I have willed those properties to you by quoting my Personal File
-Routing and Account Information. And I have also notified the bank
-that I am willing to give that property to you for good, effective and
-prudent work. It is right to say that I have been directed to do this
-by God. I will be going in for a surgery soon and I want to make sure
-that I make this donation before undergoing this surgery.  I will need
-your support to make this dream come through, could you let me know
-your interest to enable me to give you further information. And I
-hereby advise you to contact me by this email address.
-
-Thanks
-Mrs. Jenny Bezos.
