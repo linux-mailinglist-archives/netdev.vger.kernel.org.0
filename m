@@ -2,39 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE3D1435782
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 02:25:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFABF435791
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 02:25:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232640AbhJUA0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 20:26:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44978 "EHLO mail.kernel.org"
+        id S232349AbhJUA1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 20:27:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44376 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231775AbhJUAZi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Oct 2021 20:25:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4A9186137C;
-        Thu, 21 Oct 2021 00:23:22 +0000 (UTC)
+        id S232344AbhJUAZx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Oct 2021 20:25:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9644461221;
+        Thu, 21 Oct 2021 00:23:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634775803;
-        bh=lyOwcLhwhVwmAYtjBQyZZI002ToHdIlfZyj4oPigm/0=;
+        s=k20201202; t=1634775817;
+        bh=FYq6S9ih2L0A6RmAzBjbIhueiwdGUCvB+RSXXjh22Gg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u7OkPsoQ7cXFIpqv6n3NvoMppTWyS7JvleY/6dR9HJkDPQ8oBO1gS4YEXUif4xQpR
-         aRci9CqRMwOxO5YQOp4g0RLQysRi2dL9BR/XDzjGVeVS55NhY0RXXAoCrOF4V68ar4
-         w7FvhW6ajNPJSOf3H4xh5ou43wR7QhVXFoZWFAYmzWaQxmihPWchzChEzJmeZTxcIl
-         6f6X14+n7Do9p59mDf98q5y32QJx/5iHIqqWL3rsTQntEyDHtFWuyVxOfHVEqq/ABq
-         pOYXObMGVJP+HTmyVdkvt/g/+GlVYZu8DEhAY4nDLsucTRB/yPmVPtdGdxzbr6s+qJ
-         XNdsGJD3VukfA==
+        b=uPAzK55+Rz0L0YrU7ddiMtLydFYBemTcCUe+R6hUc3YHRvWCW2dnQnIjW+stQ+smJ
+         mSCOjJT7nAQMsnWP3LHI87o0mcJlOL5GHzak6GdWQ0Frpo10+JvNI5T2ZlD4xcF1F2
+         7HbOkcagOXTz0zwUD3oV4cJ0suavKWLgZBHByWXjFEqpGhrLXVX8/pK1LLbzMR/6nJ
+         Kq7FStMof9y5MOcANWuIwJd5k+2oac/BARF6l1TvbTX+BXAENwaEMA/fBCCm4qpban
+         o/G7Bh5kv1WIyeBLFUJbRfSNSkJJ++XtqFqAAzWPwnrT1WmYQg+AnIv6M1stXVIp15
+         txqj9q8C8VfHA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+Cc:     Herve Codina <herve.codina@bootlin.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, isdn@linux-pingi.de,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 07/10] isdn: mISDN: Fix sleeping function called from invalid context
-Date:   Wed, 20 Oct 2021 20:23:02 -0400
-Message-Id: <20211021002305.1129633-7-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        kuba@kernel.org, mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.14 2/9] net: stmmac: add support for dwmac 3.40a
+Date:   Wed, 20 Oct 2021 20:23:26 -0400
+Message-Id: <20211021002333.1129824-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211021002305.1129633-1-sashal@kernel.org>
-References: <20211021002305.1129633-1-sashal@kernel.org>
+In-Reply-To: <20211021002333.1129824-1-sashal@kernel.org>
+References: <20211021002333.1129824-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,78 +46,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Herve Codina <herve.codina@bootlin.com>
 
-[ Upstream commit 6510e80a0b81b5d814e3aea6297ba42f5e76f73c ]
+[ Upstream commit 9cb1d19f47fafad7dcf7c8564e633440c946cfd7 ]
 
-The driver can call card->isac.release() function from an atomic
-context.
+dwmac 3.40a is an old ip version that can be found on SPEAr3xx soc.
 
-Fix this by calling this function after releasing the lock.
-
-The following log reveals it:
-
-[   44.168226 ] BUG: sleeping function called from invalid context at kernel/workqueue.c:3018
-[   44.168941 ] in_atomic(): 1, irqs_disabled(): 1, non_block: 0, pid: 5475, name: modprobe
-[   44.169574 ] INFO: lockdep is turned off.
-[   44.169899 ] irq event stamp: 0
-[   44.170160 ] hardirqs last  enabled at (0): [<0000000000000000>] 0x0
-[   44.170627 ] hardirqs last disabled at (0): [<ffffffff814209ed>] copy_process+0x132d/0x3e00
-[   44.171240 ] softirqs last  enabled at (0): [<ffffffff81420a1a>] copy_process+0x135a/0x3e00
-[   44.171852 ] softirqs last disabled at (0): [<0000000000000000>] 0x0
-[   44.172318 ] Preemption disabled at:
-[   44.172320 ] [<ffffffffa009b0a9>] nj_release+0x69/0x500 [netjet]
-[   44.174441 ] Call Trace:
-[   44.174630 ]  dump_stack_lvl+0xa8/0xd1
-[   44.174912 ]  dump_stack+0x15/0x17
-[   44.175166 ]  ___might_sleep+0x3a2/0x510
-[   44.175459 ]  ? nj_release+0x69/0x500 [netjet]
-[   44.175791 ]  __might_sleep+0x82/0xe0
-[   44.176063 ]  ? start_flush_work+0x20/0x7b0
-[   44.176375 ]  start_flush_work+0x33/0x7b0
-[   44.176672 ]  ? trace_irq_enable_rcuidle+0x85/0x170
-[   44.177034 ]  ? kasan_quarantine_put+0xaa/0x1f0
-[   44.177372 ]  ? kasan_quarantine_put+0xaa/0x1f0
-[   44.177711 ]  __flush_work+0x11a/0x1a0
-[   44.177991 ]  ? flush_work+0x20/0x20
-[   44.178257 ]  ? lock_release+0x13c/0x8f0
-[   44.178550 ]  ? __kasan_check_write+0x14/0x20
-[   44.178872 ]  ? do_raw_spin_lock+0x148/0x360
-[   44.179187 ]  ? read_lock_is_recursive+0x20/0x20
-[   44.179530 ]  ? __kasan_check_read+0x11/0x20
-[   44.179846 ]  ? do_raw_spin_unlock+0x55/0x900
-[   44.180168 ]  ? ____kasan_slab_free+0x116/0x140
-[   44.180505 ]  ? _raw_spin_unlock_irqrestore+0x41/0x60
-[   44.180878 ]  ? skb_queue_purge+0x1a3/0x1c0
-[   44.181189 ]  ? kfree+0x13e/0x290
-[   44.181438 ]  flush_work+0x17/0x20
-[   44.181695 ]  mISDN_freedchannel+0xe8/0x100
-[   44.182006 ]  isac_release+0x210/0x260 [mISDNipac]
-[   44.182366 ]  nj_release+0xf6/0x500 [netjet]
-[   44.182685 ]  nj_remove+0x48/0x70 [netjet]
-[   44.182989 ]  pci_device_remove+0xa9/0x250
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Herve Codina <herve.codina@bootlin.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/isdn/hardware/mISDN/netjet.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-generic.c   | 1 +
+ drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 8 ++++++++
+ 2 files changed, 9 insertions(+)
 
-diff --git a/drivers/isdn/hardware/mISDN/netjet.c b/drivers/isdn/hardware/mISDN/netjet.c
-index 448370da2c3f..4a342daac98d 100644
---- a/drivers/isdn/hardware/mISDN/netjet.c
-+++ b/drivers/isdn/hardware/mISDN/netjet.c
-@@ -963,8 +963,8 @@ nj_release(struct tiger_hw *card)
- 		nj_disable_hwirq(card);
- 		mode_tiger(&card->bc[0], ISDN_P_NONE);
- 		mode_tiger(&card->bc[1], ISDN_P_NONE);
--		card->isac.release(&card->isac);
- 		spin_unlock_irqrestore(&card->lock, flags);
-+		card->isac.release(&card->isac);
- 		release_region(card->base, card->base_s);
- 		card->base_s = 0;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-generic.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-generic.c
+index 3304095c934c..47842a796c3b 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-generic.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-generic.c
+@@ -71,6 +71,7 @@ static int dwmac_generic_probe(struct platform_device *pdev)
+ 
+ static const struct of_device_id dwmac_generic_match[] = {
+ 	{ .compatible = "st,spear600-gmac"},
++	{ .compatible = "snps,dwmac-3.40a"},
+ 	{ .compatible = "snps,dwmac-3.50a"},
+ 	{ .compatible = "snps,dwmac-3.610"},
+ 	{ .compatible = "snps,dwmac-3.70a"},
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+index d48cc32dc507..d008e9d1518b 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+@@ -458,6 +458,14 @@ stmmac_probe_config_dt(struct platform_device *pdev, const char **mac)
+ 		plat->pmt = 1;
  	}
+ 
++	if (of_device_is_compatible(np, "snps,dwmac-3.40a")) {
++		plat->has_gmac = 1;
++		plat->enh_desc = 1;
++		plat->tx_coe = 1;
++		plat->bugged_jumbo = 1;
++		plat->pmt = 1;
++	}
++
+ 	if (of_device_is_compatible(np, "snps,dwmac-4.00") ||
+ 	    of_device_is_compatible(np, "snps,dwmac-4.10a")) {
+ 		plat->has_gmac4 = 1;
 -- 
 2.33.0
 
