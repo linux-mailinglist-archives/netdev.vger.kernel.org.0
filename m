@@ -2,125 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99E5E436C9B
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 23:23:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF59A436D07
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 23:47:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231138AbhJUVZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 17:25:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50414 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230272AbhJUVZT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 17:25:19 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E903C061764
-        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 14:23:03 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id e12so750075wra.4
-        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 14:23:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QTzBsF0uPhtTetxf452rXfr2CifhV3tj5ZpB28I4wNY=;
-        b=KgsThTaO6rk2gxEMoyosDfhlWkZ7x+S+Vl7L7+0t5gBwwzaGwscZeBrOl3hxMjhxud
-         fzxOBHQpOmTnPxwwV0TUWC0jCkdQMllAOlXa4r3dnQ94yLMpfW2Alibrbf80LP/SP/47
-         CT+BrDh8F46ChWA48tMZiWhZG7zLROxkWze/E/3p6rQXHe/rPT/rSoDeYX7urTxYMN0v
-         tyPP50KD1MtvDLyIv1uKBk809cjWcbvai7ToUWZcZ5DPMK2l+GczLYnKT8Hg4M59a0e0
-         htLB8ju2jDpFqg0OVewXqoWoxqsO7P8R0mCuna9+w6ZQSoDH09VZEhrn0/567FVZ8ZvA
-         QY6g==
+        id S232021AbhJUVtx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 17:49:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:29915 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231138AbhJUVtw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 17:49:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634852855;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QX0K+ol2Lenj9SRy5tdw8mHtG1vzf/+KLfCSzAQPQCc=;
+        b=RlX6rB1U/lIDAw1KL8azFDMeLkHTDahR3oaC3WSFqnnawlzr074UgWlhUXCZbxKtS/jLkL
+        PSJxYpX8oN3H4ZTmP5NwsJ8eU/XPgH71n9dW2us1Etj9lTsiYDvSgQ4uqt2+yqgnxtDy3N
+        SFbrRiWD74JIPAESK4H4fFfypQwJcgE=
+Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com
+ [209.85.210.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-7-U9VemS1xNy-IbwI-Y6eEfw-1; Thu, 21 Oct 2021 17:47:32 -0400
+X-MC-Unique: U9VemS1xNy-IbwI-Y6eEfw-1
+Received: by mail-ot1-f71.google.com with SMTP id l70-20020a9d1b4c000000b005533f3e3789so884606otl.18
+        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 14:47:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=QTzBsF0uPhtTetxf452rXfr2CifhV3tj5ZpB28I4wNY=;
-        b=qKTqYcVSOQCkfK5XFBXLyEh0K8BQcIaY+GiqQL7PHJm7hQtC8WqYV/hiPSzJPKucZm
-         r03CSLzTRjdogibMw2m6VhhVAb9SvSCidDlMyEHd/IAMk3CLoP8guQ3/9zzqUz6uFUzD
-         gL3AbFVOpoSYvu/0bOf6waRUI1m4vSjglAesIKS6npV56eccxe5hfXnCnl+b1zM12r+Q
-         wQPuxzBCD4F7fEDDtSuJ6hvj9KyhvpRzhS6JXC/D1ZPfGFR2Ni8tBH9CfQingBNmcNBw
-         093TwMgMhhgpGjpJU1NOINxSzQ0qM5QSOKAjtwKNhVW2RSJHfQGlA39goaBSpm+Un6OF
-         ugkA==
-X-Gm-Message-State: AOAM532xeVhMJJayNilvqI1boSXGvdMDwonXGA7z6OxL3JRZs4LGlKfg
-        zFMPBRMsUPFzmY2oWZyj3TCZ4A==
-X-Google-Smtp-Source: ABdhPJwQa9HBJoaXcEX1jfAveedIZDO3de2BFCPCxJ+xyV/F1/cqDLVguiFKPL9R5hZsOFw8XKNU3Q==
-X-Received: by 2002:a05:6000:186a:: with SMTP id d10mr10636346wri.279.1634851381963;
-        Thu, 21 Oct 2021 14:23:01 -0700 (PDT)
-Received: from ?IPv6:2a01:e0a:410:bb00:d823:ddbd:7cb9:1a2a? ([2a01:e0a:410:bb00:d823:ddbd:7cb9:1a2a])
-        by smtp.gmail.com with ESMTPSA id o16sm5921844wrn.29.2021.10.21.14.23.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Oct 2021 14:23:01 -0700 (PDT)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH iproute2 v2] xfrm: enable to manage default policies
-To:     David Ahern <dsahern@gmail.com>, stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org, antony.antony@secunet.com,
-        steffen.klassert@secunet.com
-References: <20210923061342.8522-1-nicolas.dichtel@6wind.com>
- <20211018083045.27406-1-nicolas.dichtel@6wind.com>
- <1ee8e8ec-734b-eec7-1826-340c0d48f26e@gmail.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <9acfb0e5-872d-e527-9feb-6e9f5cf2f447@6wind.com>
-Date:   Thu, 21 Oct 2021 23:23:01 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=QX0K+ol2Lenj9SRy5tdw8mHtG1vzf/+KLfCSzAQPQCc=;
+        b=WHXqIL3lDvakzNxvpM+gEy8IzqSU3BDUQn1lZD1UhEoaJV0CWpMc7L2SC5ebuMvPsQ
+         plOH/U7A9tRBZG+j45ZFrX1Z8gTIHdiHdk8gvbKzKW0ooIRxML0d+fJphh0c85pwQgQZ
+         9qxneuvyEza9lURSfyaOmklrY6PgE0hBAvnpuF/n4jycj+4EJ8vISRLCwn7Mo4bRwlZj
+         HoTBvQuJ++Ed7N2P+gSIAqfAIIDzFz8SlvDDF84TOfDakQszrSlsoLPfF1uaxmQ7z3qV
+         dUrdWY53TBl139cCj/DQfmHNU6SzgTKZ5N6ENXNDZ2jbkov1SkoZZ4Pxz6IG/gsgjrdO
+         H9ig==
+X-Gm-Message-State: AOAM532V+BOgbkPPGEHMB0zHiuVE2jUeFUJgH3bx3X04CmkvwQsKyiej
+        A1fUqUoHReJugNhXfiEbLRqpc2xlhfN3EKTWds5gzZwOdj/PbxZKowhZUuxvp9h7MVRAO37iJ/F
+        Zwap/6Fe5IMQEexO1
+X-Received: by 2002:a9d:4b95:: with SMTP id k21mr6844952otf.345.1634852851213;
+        Thu, 21 Oct 2021 14:47:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyGtR3NFRWaPJeO+7/DPajK4J4hqs651VUuk49wM4FBsssY4SSkK+siLHZJ+Vceo3C1DN8erg==
+X-Received: by 2002:a9d:4b95:: with SMTP id k21mr6844926otf.345.1634852850828;
+        Thu, 21 Oct 2021 14:47:30 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id s18sm1307854otd.55.2021.10.21.14.47.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Oct 2021 14:47:30 -0700 (PDT)
+Date:   Thu, 21 Oct 2021 15:47:29 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Cornelia Huck <cohuck@redhat.com>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>,
+        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
+ for mlx5 devices
+Message-ID: <20211021154729.0e166e67.alex.williamson@redhat.com>
+In-Reply-To: <87o87isovr.fsf@redhat.com>
+References: <20211019105838.227569-1-yishaih@nvidia.com>
+        <20211019105838.227569-13-yishaih@nvidia.com>
+        <20211019124352.74c3b6ba.alex.williamson@redhat.com>
+        <20211019192328.GZ2744544@nvidia.com>
+        <20211019145856.2fa7f7c8.alex.williamson@redhat.com>
+        <20211019230431.GA2744544@nvidia.com>
+        <5a496713-ae1d-11f2-1260-e4c1956e1eda@nvidia.com>
+        <20211020105230.524e2149.alex.williamson@redhat.com>
+        <20211020185919.GH2744544@nvidia.com>
+        <20211020150709.7cff2066.alex.williamson@redhat.com>
+        <87o87isovr.fsf@redhat.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <1ee8e8ec-734b-eec7-1826-340c0d48f26e@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 21 Oct 2021 11:34:00 +0200
+Cornelia Huck <cohuck@redhat.com> wrote:
 
-
-Le 21/10/2021 à 16:55, David Ahern a écrit :
-> On 10/18/21 2:30 AM, Nicolas Dichtel wrote:
->> diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
->> index ecd06396eb16..378b4092f26a 100644
->> --- a/include/uapi/linux/xfrm.h
->> +++ b/include/uapi/linux/xfrm.h
->> @@ -213,13 +213,13 @@ enum {
->>  	XFRM_MSG_GETSPDINFO,
->>  #define XFRM_MSG_GETSPDINFO XFRM_MSG_GETSPDINFO
->>  
->> +	XFRM_MSG_MAPPING,
->> +#define XFRM_MSG_MAPPING XFRM_MSG_MAPPING
->> +
->>  	XFRM_MSG_SETDEFAULT,
->>  #define XFRM_MSG_SETDEFAULT XFRM_MSG_SETDEFAULT
->>  	XFRM_MSG_GETDEFAULT,
->>  #define XFRM_MSG_GETDEFAULT XFRM_MSG_GETDEFAULT
->> -
->> -	XFRM_MSG_MAPPING,
->> -#define XFRM_MSG_MAPPING XFRM_MSG_MAPPING
->>  	__XFRM_MSG_MAX
->>  };
->>  #define XFRM_MSG_MAX (__XFRM_MSG_MAX - 1)
->> @@ -514,9 +514,12 @@ struct xfrm_user_offload {
->>  #define XFRM_OFFLOAD_INBOUND	2
->>  
->>  struct xfrm_userpolicy_default {
->> -#define XFRM_USERPOLICY_DIRMASK_MAX	(sizeof(__u8) * 8)
->> -	__u8				dirmask;
->> -	__u8				action;
->> +#define XFRM_USERPOLICY_UNSPEC	0
->> +#define XFRM_USERPOLICY_BLOCK	1
->> +#define XFRM_USERPOLICY_ACCEPT	2
->> +	__u8				in;
->> +	__u8				fwd;
->> +	__u8				out;
->>  };
->>  
->>  /* backwards compatibility for userspace */
+> On Wed, Oct 20 2021, Alex Williamson <alex.williamson@redhat.com> wrote:
 > 
-> that is already updated in iproute2-next.
-But this is needed for the iproute2 also. These will be in the linux v5.15 release.
-
-[snip]
-
+> > On Wed, 20 Oct 2021 15:59:19 -0300
+> > Jason Gunthorpe <jgg@nvidia.com> wrote:
+> >  
+> >> On Wed, Oct 20, 2021 at 10:52:30AM -0600, Alex Williamson wrote:
+> >>   
+> >> > I'm wondering if we're imposing extra requirements on the !_RUNNING
+> >> > state that don't need to be there.  For example, if we can assume that
+> >> > all devices within a userspace context are !_RUNNING before any of the
+> >> > devices begin to retrieve final state, then clearing of the _RUNNING
+> >> > bit becomes the device quiesce point and the beginning of reading
+> >> > device data is the point at which the device state is frozen and
+> >> > serialized.  No new states required and essentially works with a slight
+> >> > rearrangement of the callbacks in this series.  Why can't we do that?    
+> >> 
+> >> It sounds worth checking carefully. I didn't come up with a major
+> >> counter scenario.
+> >> 
+> >> We would need to specifically define which user action triggers the
+> >> device to freeze and serialize. Reading pending_bytes I suppose?  
+> >
+> > The first read of pending_bytes after clearing the _RUNNING bit would
+> > be the logical place to do this since that's what we define as the start
+> > of the cycle for reading the device state.
+> >
+> > "Freezing" the device is a valid implementation, but I don't think it's
+> > strictly required per the uAPI.  For instance there's no requirement
+> > that pending_bytes is reduced by data_size on each iteratio; we
+> > specifically only define that the state is complete when the user reads
+> > a pending_bytes value of zero.  So a driver could restart the device
+> > state if the device continues to change (though it's debatable whether
+> > triggering an -errno on the next migration region access might be a
+> > more supportable approach to enforce that userspace has quiesced
+> > external access).  
 > 
-> create xfrm_str_to_policy and xfrm_policy_to_str helpers for the
-> conversions between "block" and "accept" to XFRM_USERPOLICY_BLOCK and
-> XFRM_USERPOLICY_ACCEPT and back.
-Ok.
+> Hm, not so sure. From my reading of the uAPI, transitioning from
+> pre-copy to stop-and-copy (i.e. clearing _RUNNING) implies that we
+> freeze the device (at least, that's how I interpret "On state transition
+> from pre-copy to stop-and-copy, the driver must stop the device, save
+> the device state and send it to the user application through the
+> migration region.")
+
+"[S]end it to the user application through the migration region" is
+certainly not something that's encompassed just by clearing the _RUNNING
+bit.  There's a sequence of operations there.  If the device is
+quiesced for outbound DMA and frozen from inbound DMA (or can
+reasonably expect no further inbound DMA) before the user reads the
+data, I think that meets the description.
+
+We can certainly clarify the spec in the process if we agree that we
+can do this without adding another state bit.
+
+I recall that we previously suggested a very strict interpretation of
+clearing the _RUNNING bit, but again I'm questioning if that's a real
+requirement or simply a nice-to-have feature for some undefined
+debugging capability.  In raising the p2p DMA issue, we can see that a
+hard stop independent of other devices is not really practical but I
+also don't see that introducing a new state bit solves this problem any
+more elegantly than proposed here.  Thanks,
+
+Alex
+
