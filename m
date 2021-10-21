@@ -2,148 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 898EE435E7C
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 11:59:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FB28435E92
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 12:05:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231629AbhJUKBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 06:01:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60940 "EHLO
+        id S231527AbhJUKHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 06:07:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231624AbhJUKBj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 06:01:39 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02023C06174E;
-        Thu, 21 Oct 2021 02:59:23 -0700 (PDT)
-Date:   Thu, 21 Oct 2021 11:59:19 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1634810361;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=OL0pK6Dja6OFwt9P0STH6Hk8jRb77fx4V/3DfAlCWo0=;
-        b=r1lvf6V5x2mK5X2V4JCDNxR5auizhnZfBhP2mBdfxThmqxVGpmWSSv4XBBcRhgcxoDmboj
-        EHhfbmzy7Z9eOLDNuFYcxqjjDt9cR/WCXhlSO+mR9bOjRKFszXUvIWNRZe4jsg4ZPPZVCv
-        N80EdD3728XW8algd6sZgRqZpeO/4Jciz0DgRXUbXMPsmGcIYC8suWTe0q5KqYv1G9EyY0
-        Q2qmC4rUZTANCwfLhuRpHYxPcFmOHo5H7Rc9jl91y3yfvQJv8eUXUKdN0gicRv7qgQZ+M6
-        koNGRsoUd8n1hMnQL9wvdmC9Hl9VS9QS/XFXVosNW1BUl6mMjQ0SXYgIjaouQg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1634810361;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=OL0pK6Dja6OFwt9P0STH6Hk8jRb77fx4V/3DfAlCWo0=;
-        b=UQB6HYxcIOKLxWaoVFz9VyzWlzlDLqFogQlynBRAxMZ7DB7jUh84ay7K3of1ZgrazTK9VH
-        dgVNE4puyyICrMDg==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        lkft-triage@lists.linaro.org,
+        with ESMTP id S231334AbhJUKHn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 06:07:43 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B649C06161C;
+        Thu, 21 Oct 2021 03:05:27 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id e12so203150wra.4;
+        Thu, 21 Oct 2021 03:05:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=tah8PDEbclsQOol1LU6jCoydc+LBYkt5+WcFgMuEGco=;
+        b=Vd43G0EevL9Axeu4tTjQpvoqvWxqEl5iA3KmQ8dVma853RLgsiBV0RBzea9nk5szSC
+         xlO1bodDlPo4ux1eYifEZpKK+/Dj28sfPbQIgDmlli2Ukhk+Cl5cdmgrAP/UxZDzqIkf
+         XZlaI1Q7mw3b7QXQIGdv9pflfG/KNfrt2/03bYbxOjzQdPQ5M5wyBvCNEQpPgZ2Qai1J
+         edvf5qT7n8gfeHlGW2VeVly1GG95htlGCgn52iZbNNfZidGkQ/07NoUIjIErApY90CPs
+         AfrRPMOIc6gpEd+oMN4VW9dEUWHq559ayop1Wvc4wqoh4f2Zyh7lz2M0Uyqwe2T1EZC2
+         6P8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to:user-agent;
+        bh=tah8PDEbclsQOol1LU6jCoydc+LBYkt5+WcFgMuEGco=;
+        b=y7hBRrbbgxKFvdeCAGTaV7oPXcTkpxjH1VgQJaU9RywrsX3kKX2Kr1CeYqOZG8AZ//
+         d6FF1ezIKFzIKYtQtut7hM8ViVpw/OY6VOfKggykkodTaVeWZCcmiykhJS6Ms7PjFq77
+         9Vdo6jbzdQUM2alhxolqb8slDm4HTQX2ctGLNqPVt+3zRbAbRwwt+d9OYZxtjbIFFr4O
+         0lUL3pthkNA2SR9eyMa19DPP3OuVuh3UgT9JwNrt4yHU1sQK6h2C16bgoksVEYivKLaz
+         ZonR4L0/E3ziH9cFNhNTY7NxT39zE5oJogPqJI5mF4Zpa6nlYDHm4/v45kNospcl41PW
+         5/tA==
+X-Gm-Message-State: AOAM533vIY+aDgkYc3BB+PGS/hW59yItGIM9tdPhhVqeELifubfFqh1s
+        9XtyKyUXETIxIAkyQntajWUSCoii6F4=
+X-Google-Smtp-Source: ABdhPJxBV9t4mhIlwRqaHBdNJSgo5NV0aV9A58F7MotUkLTDMf6k7ebOAU1Nlkz7TAocmTUCuHkCqw==
+X-Received: by 2002:a05:6000:1449:: with SMTP id v9mr5844584wrx.433.1634810726116;
+        Thu, 21 Oct 2021 03:05:26 -0700 (PDT)
+Received: from gmail.com ([81.168.73.77])
+        by smtp.gmail.com with ESMTPSA id b9sm361485wrp.77.2021.10.21.03.05.25
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 21 Oct 2021 03:05:25 -0700 (PDT)
+Date:   Thu, 21 Oct 2021 11:05:23 +0100
+From:   Martin Habets <habetsm.xilinx@gmail.com>
+To:     Erik Ekman <erik@kryo.se>
+Cc:     Edward Cree <ecree.xilinx@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Ahmed S. Darwish" <a.darwish@linutronix.de>
-Subject: [PATCH net-next] net: stats: Read the statistics in
- ___gnet_stats_copy_basic() instead of adding.
-Message-ID: <20211021095919.bi3szpt3c2kcoiso@linutronix.de>
-References: <CA+G9fYu8oby3LZ732W5xR0VS0WZ8D1XFWOuP-Tu7wogULcuNCA@mail.gmail.com>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] sfc: Export fibre-specific supported link modes
+Message-ID: <20211021100523.4i6xntouyiuhcl3q@gmail.com>
+Mail-Followup-To: Erik Ekman <erik@kryo.se>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20211019211333.19494-1-erik@kryo.se>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CA+G9fYu8oby3LZ732W5xR0VS0WZ8D1XFWOuP-Tu7wogULcuNCA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211019211333.19494-1-erik@kryo.se>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since the rework, the statistics code always adds up the byte and packet
-value(s). On 32bit architectures a seqcount_t is used in
-gnet_stats_basic_sync to ensure that the 64bit values are not modified
-during the read since two 32bit loads are required. The usage of a
-seqcount_t requires a lock to ensure that only one writer is active at a
-time. This lock leads to disabled preemption during the update.
+On Tue, Oct 19, 2021 at 11:13:32PM +0200, Erik Ekman wrote:
+> The 1/10GbaseT modes were set up for cards with SFP+ cages in
+> 3497ed8c852a5 ("sfc: report supported link speeds on SFP connections").
+> 10GbaseT was likely used since no 10G fibre mode existed.
+> 
+> The missing fibre modes for 1/10G were added to ethtool.h in 5711a9822144
+> ("net: ethtool: add support for 1000BaseX and missing 10G link modes")
+> shortly thereafter.
+> 
+> The user guide available at https://support-nic.xilinx.com/wp/drivers
+> lists support for the following cable and transceiver types in section 2.9:
+> - QSFP28 100G Direct Attach Cables
+> - QSFP28 100G SR Optical Transceivers (with SR4 modules listed)
+> - SFP28 25G Direct Attach Cables
+> - SFP28 25G SR Optical Transceivers
+> - QSFP+ 40G Direct Attach Cables
+> - QSFP+ 40G Active Optical Cables
+> - QSFP+ 40G SR4 Optical Transceivers
+> - QSFP+ to SFP+ Breakout Direct Attach Cables
+> - QSFP+ to SFP+ Breakout Active Optical Cables
+> - SFP+ 10G Direct Attach Cables
+> - SFP+ 10G SR Optical Transceivers
+> - SFP+ 10G LR Optical Transceivers
+> - SFP 1000BASE‐T Transceivers
+> - 1G Optical Transceivers
+> (From user guide issue 28. Issue 16 which also includes older cards like
+> SFN5xxx/SFN6xxx has matching lists for 1/10/40G transceiver types.)
+> 
+> Regarding SFP+ 10GBASE‐T transceivers the latest guide says:
+> "Solarflare adapters do not support 10GBASE‐T transceiver modules."
 
-The lack of disabling preemption is now creating a warning as reported
-by Naresh since the query done by gnet_stats_copy_basic() is in
-preemptible context.
+This is because all SFN5xxx/SFN6xxx NICs are end-of-life now. We no longer
+sell them. Many of them are still finding a 2nd or 3rd life.
 
-For ___gnet_stats_copy_basic() there is no need to disable preemption
-since the update is performed on stack and can't be modified by another
-writer. Instead of disabling preemption, to avoid the warning,
-simply create a read function to just read the values and return as u64.
+> Tested using SFN5122F-R7 (with 2 SFP+ ports). Supported link modes do not change
+> depending on module used (tested with 1000BASE-T, 1000BASE-BX10, 10GBASE-LR).
+> Before:
+> 
+> $ ethtool ext
+> Settings for ext:
+> 	Supported ports: [ FIBRE ]
+> 	Supported link modes:   1000baseT/Full
+> 	                        10000baseT/Full
+> 	Supported pause frame use: Symmetric Receive-only
+> 	Supports auto-negotiation: No
+> 	Supported FEC modes: Not reported
+> 	Advertised link modes:  Not reported
+> 	Advertised pause frame use: No
+> 	Advertised auto-negotiation: No
+> 	Advertised FEC modes: Not reported
+> 	Link partner advertised link modes:  Not reported
+> 	Link partner advertised pause frame use: No
+> 	Link partner advertised auto-negotiation: No
+> 	Link partner advertised FEC modes: Not reported
+> 	Speed: 1000Mb/s
+> 	Duplex: Full
+> 	Auto-negotiation: off
+> 	Port: FIBRE
+> 	PHYAD: 255
+> 	Transceiver: internal
+>         Current message level: 0x000020f7 (8439)
+>                                drv probe link ifdown ifup rx_err tx_err hw
+> 	Link detected: yes
+> 
+> After:
+> 
+> $ ethtool ext
+> Settings for ext:
+> 	Supported ports: [ FIBRE ]
+> 	Supported link modes:   1000baseT/Full
+> 	                        1000baseX/Full
+> 	                        10000baseCR/Full
+> 	                        10000baseSR/Full
+> 	                        10000baseLR/Full
+> 	Supported pause frame use: Symmetric Receive-only
+> 	Supports auto-negotiation: No
+> 	Supported FEC modes: Not reported
+> 	Advertised link modes:  Not reported
+> 	Advertised pause frame use: No
+> 	Advertised auto-negotiation: No
+> 	Advertised FEC modes: Not reported
+> 	Link partner advertised link modes:  Not reported
+> 	Link partner advertised pause frame use: No
+> 	Link partner advertised auto-negotiation: No
+> 	Link partner advertised FEC modes: Not reported
+> 	Speed: 1000Mb/s
+> 	Duplex: Full
+> 	Auto-negotiation: off
+> 	Port: FIBRE
+> 	PHYAD: 255
+> 	Transceiver: internal
+> 	Supports Wake-on: g
+> 	Wake-on: d
+>         Current message level: 0x000020f7 (8439)
+>                                drv probe link ifdown ifup rx_err tx_err hw
+> 	Link detected: yes
+> 
+> Signed-off-by: Erik Ekman <erik@kryo.se>
 
-Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-Fixes: 67c9e6270f301 ("net: sched: Protect Qdisc::bstats with u64_stats")
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- net/core/gen_stats.c | 43 +++++++++++++++++++++++++++++++++++++------
- 1 file changed, 37 insertions(+), 6 deletions(-)
+Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
 
-diff --git a/net/core/gen_stats.c b/net/core/gen_stats.c
-index 15c270e22c5ef..a10335b4ba2d0 100644
---- a/net/core/gen_stats.c
-+++ b/net/core/gen_stats.c
-@@ -171,20 +171,51 @@ void gnet_stats_add_basic(struct gnet_stats_basic_sync *bstats,
- }
- EXPORT_SYMBOL(gnet_stats_add_basic);
- 
-+static void gnet_stats_read_basic(u64 *ret_bytes, u64 *ret_packets,
-+				  struct gnet_stats_basic_sync __percpu *cpu,
-+				  struct gnet_stats_basic_sync *b, bool running)
-+{
-+	unsigned int start;
-+
-+	if (cpu) {
-+		u64 t_bytes = 0, t_packets = 0;
-+		int i;
-+
-+		for_each_possible_cpu(i) {
-+			struct gnet_stats_basic_sync *bcpu = per_cpu_ptr(cpu, i);
-+			unsigned int start;
-+			u64 bytes, packets;
-+
-+			do {
-+				start = u64_stats_fetch_begin_irq(&bcpu->syncp);
-+				bytes = u64_stats_read(&bcpu->bytes);
-+				packets = u64_stats_read(&bcpu->packets);
-+			} while (u64_stats_fetch_retry_irq(&bcpu->syncp, start));
-+
-+			t_bytes += bytes;
-+			t_packets += packets;
-+		}
-+		*ret_bytes = t_bytes;
-+		*ret_packets = t_packets;
-+		return;
-+	}
-+	do {
-+		if (running)
-+			start = u64_stats_fetch_begin_irq(&b->syncp);
-+		*ret_bytes = u64_stats_read(&b->bytes);
-+		*ret_packets = u64_stats_read(&b->packets);
-+	} while (running && u64_stats_fetch_retry_irq(&b->syncp, start));
-+}
-+
- static int
- ___gnet_stats_copy_basic(struct gnet_dump *d,
- 			 struct gnet_stats_basic_sync __percpu *cpu,
- 			 struct gnet_stats_basic_sync *b,
- 			 int type, bool running)
- {
--	struct gnet_stats_basic_sync bstats;
- 	u64 bstats_bytes, bstats_packets;
- 
--	gnet_stats_basic_sync_init(&bstats);
--	gnet_stats_add_basic(&bstats, cpu, b, running);
--
--	bstats_bytes = u64_stats_read(&bstats.bytes);
--	bstats_packets = u64_stats_read(&bstats.packets);
-+	gnet_stats_read_basic(&bstats_bytes, &bstats_packets, cpu, b, running);
- 
- 	if (d->compat_tc_stats && type == TCA_STATS_BASIC) {
- 		d->tc_stats.bytes = bstats_bytes;
--- 
-2.33.0
-
+> ---
+>  drivers/net/ethernet/sfc/mcdi_port_common.c | 37 +++++++++++++++------
+>  1 file changed, 26 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/sfc/mcdi_port_common.c b/drivers/net/ethernet/sfc/mcdi_port_common.c
+> index 4bd3ef8f3384..c4fe3c48ac46 100644
+> --- a/drivers/net/ethernet/sfc/mcdi_port_common.c
+> +++ b/drivers/net/ethernet/sfc/mcdi_port_common.c
+> @@ -132,16 +132,27 @@ void mcdi_to_ethtool_linkset(u32 media, u32 cap, unsigned long *linkset)
+>  	case MC_CMD_MEDIA_SFP_PLUS:
+>  	case MC_CMD_MEDIA_QSFP_PLUS:
+>  		SET_BIT(FIBRE);
+> -		if (cap & (1 << MC_CMD_PHY_CAP_1000FDX_LBN))
+> +		if (cap & (1 << MC_CMD_PHY_CAP_1000FDX_LBN)) {
+>  			SET_BIT(1000baseT_Full);
+> -		if (cap & (1 << MC_CMD_PHY_CAP_10000FDX_LBN))
+> -			SET_BIT(10000baseT_Full);
+> -		if (cap & (1 << MC_CMD_PHY_CAP_40000FDX_LBN))
+> +			SET_BIT(1000baseX_Full);
+> +		}
+> +		if (cap & (1 << MC_CMD_PHY_CAP_10000FDX_LBN)) {
+> +			SET_BIT(10000baseCR_Full);
+> +			SET_BIT(10000baseLR_Full);
+> +			SET_BIT(10000baseSR_Full);
+> +		}
+> +		if (cap & (1 << MC_CMD_PHY_CAP_40000FDX_LBN)) {
+>  			SET_BIT(40000baseCR4_Full);
+> -		if (cap & (1 << MC_CMD_PHY_CAP_100000FDX_LBN))
+> +			SET_BIT(40000baseSR4_Full);
+> +		}
+> +		if (cap & (1 << MC_CMD_PHY_CAP_100000FDX_LBN)) {
+>  			SET_BIT(100000baseCR4_Full);
+> -		if (cap & (1 << MC_CMD_PHY_CAP_25000FDX_LBN))
+> +			SET_BIT(100000baseSR4_Full);
+> +		}
+> +		if (cap & (1 << MC_CMD_PHY_CAP_25000FDX_LBN)) {
+>  			SET_BIT(25000baseCR_Full);
+> +			SET_BIT(25000baseSR_Full);
+> +		}
+>  		if (cap & (1 << MC_CMD_PHY_CAP_50000FDX_LBN))
+>  			SET_BIT(50000baseCR2_Full);
+>  		break;
+> @@ -192,15 +203,19 @@ u32 ethtool_linkset_to_mcdi_cap(const unsigned long *linkset)
+>  		result |= (1 << MC_CMD_PHY_CAP_100FDX_LBN);
+>  	if (TEST_BIT(1000baseT_Half))
+>  		result |= (1 << MC_CMD_PHY_CAP_1000HDX_LBN);
+> -	if (TEST_BIT(1000baseT_Full) || TEST_BIT(1000baseKX_Full))
+> +	if (TEST_BIT(1000baseT_Full) || TEST_BIT(1000baseKX_Full) ||
+> +			TEST_BIT(1000baseX_Full))
+>  		result |= (1 << MC_CMD_PHY_CAP_1000FDX_LBN);
+> -	if (TEST_BIT(10000baseT_Full) || TEST_BIT(10000baseKX4_Full))
+> +	if (TEST_BIT(10000baseT_Full) || TEST_BIT(10000baseKX4_Full) ||
+> +			TEST_BIT(10000baseCR_Full) || TEST_BIT(10000baseLR_Full) ||
+> +			TEST_BIT(10000baseSR_Full))
+>  		result |= (1 << MC_CMD_PHY_CAP_10000FDX_LBN);
+> -	if (TEST_BIT(40000baseCR4_Full) || TEST_BIT(40000baseKR4_Full))
+> +	if (TEST_BIT(40000baseCR4_Full) || TEST_BIT(40000baseKR4_Full) ||
+> +			TEST_BIT(40000baseSR4_Full))
+>  		result |= (1 << MC_CMD_PHY_CAP_40000FDX_LBN);
+> -	if (TEST_BIT(100000baseCR4_Full))
+> +	if (TEST_BIT(100000baseCR4_Full) || TEST_BIT(100000baseSR4_Full))
+>  		result |= (1 << MC_CMD_PHY_CAP_100000FDX_LBN);
+> -	if (TEST_BIT(25000baseCR_Full))
+> +	if (TEST_BIT(25000baseCR_Full) || TEST_BIT(25000baseSR_Full))
+>  		result |= (1 << MC_CMD_PHY_CAP_25000FDX_LBN);
+>  	if (TEST_BIT(50000baseCR2_Full))
+>  		result |= (1 << MC_CMD_PHY_CAP_50000FDX_LBN);
+> -- 
+> 2.31.1
