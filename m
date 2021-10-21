@@ -2,70 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E64843621D
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 14:52:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DCCF436251
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 15:03:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230359AbhJUMyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 08:54:37 -0400
-Received: from s2.neomailbox.net ([5.148.176.60]:14371 "EHLO s2.neomailbox.net"
+        id S230436AbhJUNFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 09:05:41 -0400
+Received: from todd.t-8ch.de ([159.69.126.157]:51261 "EHLO todd.t-8ch.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230231AbhJUMyg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Oct 2021 08:54:36 -0400
-Subject: Re: [PATCH net-next] gre/sit: Don't generate link-local addr if
- addr_gen_mode is IN6_ADDR_GEN_MODE_NONE
-To:     Stephen Suryaputra <ssuryaextr@gmail.com>, netdev@vger.kernel.org
-Cc:     kuba@kernel.org, davem@davemloft.net
-References: <20211020200618.467342-1-ssuryaextr@gmail.com>
-From:   Antonio Quartulli <a@unstable.cc>
-Message-ID: <9bd488de-f675-d879-97aa-d27948494ed1@unstable.cc>
-Date:   Thu, 21 Oct 2021 14:52:44 +0200
+        id S230190AbhJUNFk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Oct 2021 09:05:40 -0400
+From:   =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=weissschuh.net;
+        s=mail; t=1634821397;
+        bh=4YdKHvN93yhq8+9juz+qrXE/FDAOs4WQpC3s82kIpYY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ANysfixJonxu2KHFisv92/hdJqmcHpqRwjYtE1I7s3BPC6PnveWTakAuG1qfPg6X+
+         T5rxYNJYSX99ixp8eoRnB5i59zo4W1iT1+LuZMXJSze+uB8dzLHVuJDcRR8Frm+8TR
+         3pZBn7AyWdjrgsa3c5UAJNVBnwfrPvzZDiX2KETc=
+To:     Simon Horman <horms@verge.net.au>, Julian Anastasov <ja@ssi.bg>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org
+Cc:     =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ipvs: autoload ipvs on genl access
+Date:   Thu, 21 Oct 2021 15:02:55 +0200
+Message-Id: <20211021130255.4177-1-linux@weissschuh.net>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-In-Reply-To: <20211020200618.467342-1-ssuryaextr@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+The kernel provides the functionality to automatically load modules
+providing genl families. Use this to remove the need for users to
+manually load the module.
 
-On 20/10/2021 22:06, Stephen Suryaputra wrote:
-> When addr_gen_mode is set to IN6_ADDR_GEN_MODE_NONE, the link-local addr
-> should not be generated. But it isn't the case for GRE (as well as GRE6)
-> and SIT tunnels. Make it so that tunnels consider the addr_gen_mode,
-> especially for IN6_ADDR_GEN_MODE_NONE.
-> 
-> Do this in add_v4_addrs() to cover both GRE and SIT only if the addr
-> scope is link.
-> 
-> Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
-> ---
->  net/ipv6/addrconf.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-> index d4fae16deec4..9e1463a2acae 100644
-> --- a/net/ipv6/addrconf.c
-> +++ b/net/ipv6/addrconf.c
-> @@ -3110,6 +3110,9 @@ static void add_v4_addrs(struct inet6_dev *idev)
->  	memcpy(&addr.s6_addr32[3], idev->dev->dev_addr + offset, 4);
->  
->  	if (idev->dev->flags&IFF_POINTOPOINT) {
-> +		if (idev->cnf.addr_gen_mode == IN6_ADDR_GEN_MODE_NONE)
-> +			return;
-> +
+Signed-off-by: Thomas Weißschuh <linux@weissschuh.net>
+---
+ net/netfilter/ipvs/ip_vs_ctl.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Maybe I am missing something, but why checking the mode only for
-pointtopoint? If mode is NONE shouldn't this routine just abort
-regardless of the interface setup?
+diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
+index 29ec3ef63edc..0ff94c66641f 100644
+--- a/net/netfilter/ipvs/ip_vs_ctl.c
++++ b/net/netfilter/ipvs/ip_vs_ctl.c
+@@ -48,6 +48,8 @@
+ 
+ #include <net/ip_vs.h>
+ 
++MODULE_ALIAS_GENL_FAMILY(IPVS_GENL_NAME);
++
+ /* semaphore for IPVS sockopts. And, [gs]etsockopt may sleep. */
+ static DEFINE_MUTEX(__ip_vs_mutex);
+ 
 
-Cheers,
-
->  		addr.s6_addr32[0] = htonl(0xfe800000);
->  		scope = IFA_LINK;
->  		plen = 64;
-> 
-
+base-commit: d9aaaf223297f6146d9d7f36caca927c92ab855a
 -- 
-Antonio Quartulli
+2.33.1
+
