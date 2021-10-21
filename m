@@ -2,68 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F44F4360CF
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 13:50:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 436614360CB
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 13:50:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231365AbhJULwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 07:52:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49202 "EHLO mail.kernel.org"
+        id S230393AbhJULwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 07:52:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49176 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230347AbhJULwe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230179AbhJULwe (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 21 Oct 2021 07:52:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id ED43061221;
+Received: by mail.kernel.org (Postfix) with ESMTPS id B378061208;
         Thu, 21 Oct 2021 11:50:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634817019;
-        bh=sVDvQ1ZxQLoeujN9G3l7GDrhXRKOKxA4BjyR6L+ybD8=;
+        s=k20201202; t=1634817018;
+        bh=sVZhOdim6P0Tvyp+gwrfDL7NI8I/xu0bMvIoOHGBp1U=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=KfoNrYgqPFlLcaAAMs0wsl50RV35RfcGjNxlTL8tktIlXNLlYEgLa8aT3BziBfnQM
-         wW6Jv/NqgsBVox5sdte9DzoCmoObWipdcTyB3n1EVx03+8ni4nnYbyrWdVDz8SL9pc
-         cuiHo7B/xu5iZI7K60degyy4SdWzbtwsTlATnUnHob+OJ02FuC2UoANZ1+sdhIDSPj
-         1CyV8x231rVfodVybvPm9cWVqMghwZByMBb6vEnmjvPgioUw84pBgmhzYp6SpIYIUo
-         1BruhzWQ6dIogAcmxLDf7yA8bsH882T036nK7qZ5HTKFhoytZPtNlpRZRSZ2f3jIJr
-         Z+UiW/lXHNHCw==
+        b=XPJETXqnbn9oFCknqpTSseI3rSTRtCKIt1uq/tG5pV8R/XdY+3jgdA9rgIAeO+Pob
+         rqgQFN3nVTEsoKIbB/moouJ4QBuFKQT7ivbXQcG0noO7kh9vxW3ZBr7Ds3mE9HGBHh
+         Q90BvRz39j83Nal0k+7zEW4X0kBgTpiL/tAStmoOWXrHro2xkD2OgChrjZaOf3OqPs
+         dmrTaZ+wCWwPshyyhYx53+YGCtBxElkOR9gYHG26CxUPsyLSDyIZF7UhRiPW5dlCSm
+         TJrAegsq6iYyiinA/IxCqgJMuqor1LIaBdJvbMDm5Nod1pfRcTEKA2/Zab7e5BDqpX
+         ehpIXzwJAYpSg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E0006609E7;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A920B609E2;
         Thu, 21 Oct 2021 11:50:18 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: stats: Read the statistics in
- ___gnet_stats_copy_basic() instead of adding.
+Subject: Re: [PATCH RESEND v3 net-next 0/7] Remove the "dsa_to_port in a loop"
+ antipattern
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163481701891.17414.17028188432816254517.git-patchwork-notify@kernel.org>
+Message-Id: <163481701868.17414.100686950748332359.git-patchwork-notify@kernel.org>
 Date:   Thu, 21 Oct 2021 11:50:18 +0000
-References: <20211021095919.bi3szpt3c2kcoiso@linutronix.de>
-In-Reply-To: <20211021095919.bi3szpt3c2kcoiso@linutronix.de>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     naresh.kamboju@linaro.org, netdev@vger.kernel.org,
-        linux-next@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lkft-triage@lists.linaro.org, davem@davemloft.net, kuba@kernel.org,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        tglx@linutronix.de, a.darwish@linutronix.de
+References: <20211020174955.1102089-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20211020174955.1102089-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        olteanv@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Thu, 21 Oct 2021 11:59:19 +0200 you wrote:
-> Since the rework, the statistics code always adds up the byte and packet
-> value(s). On 32bit architectures a seqcount_t is used in
-> gnet_stats_basic_sync to ensure that the 64bit values are not modified
-> during the read since two 32bit loads are required. The usage of a
-> seqcount_t requires a lock to ensure that only one writer is active at a
-> time. This lock leads to disabled preemption during the update.
+On Wed, 20 Oct 2021 20:49:48 +0300 you wrote:
+> I noticed that v3 was dropped with "Changes requested" without actually
+> requesting any change:
+> https://patchwork.kernel.org/project/netdevbpf/list/?series=565665&state=*
+> I suppose it has to do with the simultaneous build errors in mlx5, so
+> I'm just resending now that those are fixed.
+> 
+> v1->v2: more patches
+> v2->v3: less patches
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: stats: Read the statistics in ___gnet_stats_copy_basic() instead of adding.
-    https://git.kernel.org/netdev/net-next/c/c5c6e589a8c8
+  - [RESEND,v3,net-next,1/7] net: dsa: introduce helpers for iterating through ports using dp
+    https://git.kernel.org/netdev/net-next/c/82b318983c51
+  - [RESEND,v3,net-next,2/7] net: dsa: remove the "dsa_to_port in a loop" antipattern from the core
+    https://git.kernel.org/netdev/net-next/c/d0004a020bb5
+  - [RESEND,v3,net-next,3/7] net: dsa: do not open-code dsa_switch_for_each_port
+    https://git.kernel.org/netdev/net-next/c/65c563a67755
+  - [RESEND,v3,net-next,4/7] net: dsa: remove gratuitous use of dsa_is_{user,dsa,cpu}_port
+    https://git.kernel.org/netdev/net-next/c/57d77986e742
+  - [RESEND,v3,net-next,5/7] net: dsa: convert cross-chip notifiers to iterate using dp
+    https://git.kernel.org/netdev/net-next/c/fac6abd5f132
+  - [RESEND,v3,net-next,6/7] net: dsa: tag_sja1105: do not open-code dsa_switch_for_each_port
+    https://git.kernel.org/netdev/net-next/c/5068887a4fbe
+  - [RESEND,v3,net-next,7/7] net: dsa: tag_8021q: make dsa_8021q_{rx,tx}_vid take dp as argument
+    https://git.kernel.org/netdev/net-next/c/992e5cc7be8e
 
 You are awesome, thank you!
 -- 
