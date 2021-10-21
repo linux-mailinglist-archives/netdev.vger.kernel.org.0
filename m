@@ -2,78 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 099EC4361DE
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 14:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8705B4361C6
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 14:37:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230383AbhJUMkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 08:40:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41356 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230444AbhJUMki (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Oct 2021 08:40:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0CED660E05;
-        Thu, 21 Oct 2021 12:38:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634819901;
-        bh=T3Ke85gRqLotKwqhbroI8pmVVoX9PeyZrn1+k6eWjUM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YKMYU0PwspwDS5Hyjnwq2aYgtYS5mnQZQhrtFw/D5efF1Qz1eAh4VFW/1NYVcEn1W
-         YPEV+rlIh45KoHiW5WUwongaCXWWylZPI+4SiyBtFgADsXj6vkQ+VU/sbGj9W68oM/
-         BMgGNANxDSF/2onSHyFC7BT3D2tN8u37uTfXcDnGq7tpliq0K9q0x8kbvpnpZKK2d/
-         Tk6FnP5Y64+jlsGJB9sjRj+KtIFK18GS7pUMCOXlgpSF9Rx6yw06vyKDOKGLL1+7aM
-         88oj93sbargOT5fkPjTbdD/zmf7cCbJ4jwzT3EBUoHwIJdl9a+lSa7zBWhp/2lEN9H
-         UDvjsJlQB0n+g==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1mdXKi-0005yo-4m; Thu, 21 Oct 2021 14:38:08 +0200
-Date:   Thu, 21 Oct 2021 14:38:08 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Oliver Neukum <oneukum@suse.com>
-Cc:     syzkaller-bugs@googlegroups.com, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        syzbot+76bb1d34ffa0adc03baa@syzkaller.appspotmail.com
-Subject: Re: [PATCHv2] usbnet: sanity check for maxpacket
-Message-ID: <YXFfMCZA3XHzHfgQ@hovoldconsulting.com>
-References: <20211021122944.21816-1-oneukum@suse.com>
+        id S231623AbhJUMjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 08:39:39 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:25307 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230508AbhJUMji (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 08:39:38 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HZn1n73CVzbglW;
+        Thu, 21 Oct 2021 20:32:45 +0800 (CST)
+Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Thu, 21 Oct 2021 20:37:20 +0800
+Received: from ubuntu1804.huawei.com (10.67.174.98) by
+ dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Thu, 21 Oct 2021 20:37:20 +0800
+From:   Pu Lehui <pulehui@huawei.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
+        <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
+        <nathan@kernel.org>, <ndesaulniers@google.com>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <llvm@lists.linux.dev>,
+        <pulehui@huawei.com>
+Subject: [PATCH bpf-next] samples: bpf: Suppress readelf stderr when probing for BTF support
+Date:   Thu, 21 Oct 2021 20:39:13 +0800
+Message-ID: <20211021123913.48833-1-pulehui@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211021122944.21816-1-oneukum@suse.com>
+Content-Type: text/plain
+X-Originating-IP: [10.67.174.98]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500019.china.huawei.com (7.185.36.180)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 21, 2021 at 02:29:44PM +0200, Oliver Neukum wrote:
-> maxpacket of 0 makes no sense and oopses as we need to divide
-> by it. Give up.
-> 
-> V2: fixed typo in log and stylistic issues
+When compiling bpf samples, the following warning appears:
 
-Changelog goes below the ---
+readelf: Error: Missing knowledge of 32-bit reloc types used in DWARF
+sections of machine number 247
+readelf: Warning: unable to apply unsupported reloc type 10 to section
+.debug_info
+readelf: Warning: unable to apply unsupported reloc type 1 to section
+.debug_info
+readelf: Warning: unable to apply unsupported reloc type 10 to section
+.debug_info
 
-> Signed-off-by: Oliver Neukum <oneukum@suse.com>
-> Reported-by: syzbot+76bb1d34ffa0adc03baa@syzkaller.appspotmail.com
+Same problem was mentioned in commit 2f0921262ba9 ("selftests/bpf:
+suppress readelf stderr when probing for BTF support"), let's use
+readelf that supports btf.
 
-Again,
+Signed-off-by: Pu Lehui <pulehui@huawei.com>
+---
+ samples/bpf/Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Reviewed-by: Johan Hovold <johan@kernel.org>
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index 2366242edb7c..a886dff1ba89 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -229,6 +229,7 @@ CLANG ?= clang
+ OPT ?= opt
+ LLVM_DIS ?= llvm-dis
+ LLVM_OBJCOPY ?= llvm-objcopy
++LLVM_READELF ?= llvm-readelf
+ BTF_PAHOLE ?= pahole
+ 
+ # Detect that we're cross compiling and use the cross compiler
+@@ -252,7 +253,7 @@ BTF_PAHOLE_PROBE := $(shell $(BTF_PAHOLE) --help 2>&1 | grep BTF)
+ BTF_OBJCOPY_PROBE := $(shell $(LLVM_OBJCOPY) --help 2>&1 | grep -i 'usage.*llvm')
+ BTF_LLVM_PROBE := $(shell echo "int main() { return 0; }" | \
+ 			  $(CLANG) -target bpf -O2 -g -c -x c - -o ./llvm_btf_verify.o; \
+-			  readelf -S ./llvm_btf_verify.o | grep BTF; \
++			  $(LLVM_READELF) -S ./llvm_btf_verify.o | grep BTF; \
+ 			  /bin/rm -f ./llvm_btf_verify.o)
+ 
+ BPF_EXTRA_CFLAGS += -fno-stack-protector
+-- 
+2.17.1
 
-> ---
->  drivers/net/usb/usbnet.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-> index 840c1c2ab16a..80432ee0ce69 100644
-> --- a/drivers/net/usb/usbnet.c
-> +++ b/drivers/net/usb/usbnet.c
-> @@ -1788,6 +1788,10 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
->  	if (!dev->rx_urb_size)
->  		dev->rx_urb_size = dev->hard_mtu;
->  	dev->maxpacket = usb_maxpacket (dev->udev, dev->out, 1);
-> +	if (dev->maxpacket == 0) {
-> +		/* that is a broken device */
-> +		goto out4;
-> +	}
->  
->  	/* let userspace know we have a random address */
->  	if (ether_addr_equal(net->dev_addr, node_id))
