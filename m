@@ -2,68 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DCCF436251
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 15:03:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91D54436254
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 15:05:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230436AbhJUNFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 09:05:41 -0400
-Received: from todd.t-8ch.de ([159.69.126.157]:51261 "EHLO todd.t-8ch.de"
+        id S230372AbhJUNH2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 09:07:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50778 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230190AbhJUNFk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Oct 2021 09:05:40 -0400
-From:   =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=weissschuh.net;
-        s=mail; t=1634821397;
-        bh=4YdKHvN93yhq8+9juz+qrXE/FDAOs4WQpC3s82kIpYY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ANysfixJonxu2KHFisv92/hdJqmcHpqRwjYtE1I7s3BPC6PnveWTakAuG1qfPg6X+
-         T5rxYNJYSX99ixp8eoRnB5i59zo4W1iT1+LuZMXJSze+uB8dzLHVuJDcRR8Frm+8TR
-         3pZBn7AyWdjrgsa3c5UAJNVBnwfrPvzZDiX2KETc=
-To:     Simon Horman <horms@verge.net.au>, Julian Anastasov <ja@ssi.bg>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org
-Cc:     =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ipvs: autoload ipvs on genl access
-Date:   Thu, 21 Oct 2021 15:02:55 +0200
-Message-Id: <20211021130255.4177-1-linux@weissschuh.net>
-X-Mailer: git-send-email 2.33.1
+        id S230181AbhJUNH1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Oct 2021 09:07:27 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4C0FD60F6E;
+        Thu, 21 Oct 2021 13:05:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634821511;
+        bh=t/8qabPBNvjn1ixPBs/tBRYFKvKAXx6Bpv9UbxtYlKE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KLoJXdvEu8upd9SH5EvZYtldJJ0MRs0tWFWj+zjlBQbA2t70DwEWEp3kCDq3KkGFu
+         OgyqbRIayl+z2fFmgMMTLOHWY4G1VG09K9/ycZC7o5xYs+fLHcGUs1vkVWG6WPTCF8
+         FITLdk7QzhbWEVLBljxcEL+RcHXkmgseC3f6Ey+vtzYJ1hKrUeaSAUtP5o3mxXzcce
+         IcmFnr74yU1BW95pu0QjsYKzW6w2a1Zodu3ZwlsakvERUwwiXuyaTskXAjSzAMDVl0
+         DyWdITQMwMdv033k4EEOJGEkoKsqlLLzcdGtPv/C1NKIH7Nf9hJA3A3+PFII1rIZ4W
+         UBTzIs9FLfLoQ==
+Date:   Thu, 21 Oct 2021 06:05:08 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Julian Wiedmann <jwi@linux.ibm.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kgraul@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com,
+        linux-s390@vger.kernel.org
+Subject: Re: [PATCH net-next 09/12] net: s390: constify and use
+ eth_hw_addr_set()
+Message-ID: <20211021060508.44358d5a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <a028714d-6e69-dc7b-1b94-d946a7ecc942@linux.ibm.com>
+References: <20211020155617.1721694-1-kuba@kernel.org>
+        <20211020155617.1721694-10-kuba@kernel.org>
+        <a028714d-6e69-dc7b-1b94-d946a7ecc942@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The kernel provides the functionality to automatically load modules
-providing genl families. Use this to remove the need for users to
-manually load the module.
+On Thu, 21 Oct 2021 00:30:23 +0200 Julian Wiedmann wrote:
+> On 20.10.21 17:56, Jakub Kicinski wrote:
+> > Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
+> > of VLANs...") introduced a rbtree for faster Ethernet address look
+> > up. To maintain netdev->dev_addr in this tree we need to make all
+> > the writes to it got through appropriate helpers.
+> > 
+> > Make sure local references to netdev->dev_addr are constant.
+> >   
+> 
+> Acked-by: Julian Wiedmann <jwi@linux.ibm.com>
+> 
+> Thanks Jakub. I suppose at some point __dev_addr_set() will then
+> become more than just a memcpy, correct?
 
-Signed-off-by: Thomas Weißschuh <linux@weissschuh.net>
----
- net/netfilter/ipvs/ip_vs_ctl.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
-index 29ec3ef63edc..0ff94c66641f 100644
---- a/net/netfilter/ipvs/ip_vs_ctl.c
-+++ b/net/netfilter/ipvs/ip_vs_ctl.c
-@@ -48,6 +48,8 @@
- 
- #include <net/ip_vs.h>
- 
-+MODULE_ALIAS_GENL_FAMILY(IPVS_GENL_NAME);
-+
- /* semaphore for IPVS sockopts. And, [gs]etsockopt may sleep. */
- static DEFINE_MUTEX(__ip_vs_mutex);
- 
-
-base-commit: d9aaaf223297f6146d9d7f36caca927c92ab855a
--- 
-2.33.1
-
+Yup, once all places are converted it will also adjust the position of
+the address on the tree.
