@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D52B43667A
+	by mail.lfdr.de (Postfix) with ESMTP id DAA5843667E
 	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 17:41:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231777AbhJUPnf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 11:43:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56668 "EHLO
+        id S231845AbhJUPni (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 11:43:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbhJUPnd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 11:43:33 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B836FC061764;
-        Thu, 21 Oct 2021 08:41:17 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id nn3-20020a17090b38c300b001a03bb6c4ebso845713pjb.1;
-        Thu, 21 Oct 2021 08:41:17 -0700 (PDT)
+        with ESMTP id S231721AbhJUPnf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 11:43:35 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E5C4C061764;
+        Thu, 21 Oct 2021 08:41:19 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id ls18so782980pjb.3;
+        Thu, 21 Oct 2021 08:41:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=REujtU9gub3oBk0GQBuKzifvsq8Uofe+BQdo9S6ffY8=;
-        b=n5Ev2HLBa7uMI0zKL1+N7fzFGoDYov3zimPcm7ybqqO8BB1Vm4Ug/SR+DhEYkFEfcu
-         qZwlhoBBjp7k96MuTTFzTMtEkWKCMyfw7GjDzBIKe5xXhp2ZM9Gydc6WV9NgsleqXVrh
-         U41uFJFWsct82x4AMkMGQbMJICsxL1oKRS/Q5Fr4RLwea40GEKGUu3kUPXybXuwpGmV1
-         JrrVfgo72MvPEepqlV/12jUD3u7u9fzPe5tCP8USa4xEE3S/Td/wyG5d7b888EZdYr93
-         iTQu7Snt2JlBFAWkX+xwDTUVy3Se73Lx/NBvvUTjUgaMrkeptjq/rLoyrZ4hkoY1dMQ9
-         iaVw==
+        bh=nPmGrLtDkKne+Kxzs4l26xSiBaVw17KkF8YRLryQASU=;
+        b=q0CWaVVwxVCfhKqhL0Fke5u4tv1uTMbLmRyjBSoxY3qaLHEjg21Neq26AXBhDTP1aC
+         TtkwSLRhk5FlkXt/w87x9i8xYG2EkvtnxcNerOywf/oQMKhcJq+B3gziXIWLgNg0S4L4
+         oPpe98dQwA+UK5HaDWRfNcvdKZxjN4HPdwQj3AGhR6xeMolPgPJ0DbAad8HXboU26hOQ
+         dVLQY5hCHcv3UvjpmYfC3raE/vmIQ/HWu/WKpTMYDr+IGTcktSZGwPUJWL6qS4bOGJaY
+         VG4df3ZvFK4tYm3LGX4e8qc65TOulCcz8tOHviiqWGaZPKMm5CcxXzTk1buwaVzSXBrW
+         wZYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=REujtU9gub3oBk0GQBuKzifvsq8Uofe+BQdo9S6ffY8=;
-        b=cRCjL/Ayy/P2DG9RhRtuBNgorvSpG2J7se6WosJc7/2KiZgFxTVLWH08J0pnIvHAaM
-         27smkXG9J9m2l51Tpc9HsXqVSAPFk0ipgnJo+GESYWko2sYWN/HrPXnxF9a3/ZkCkazP
-         DwFkbx44fnYqKq715JDND5jSOE8jv6rW5lvvFUjp3b6M+umpwB/ML4iIs6i3b+87W890
-         o3B6eHLWZZ/vRh5RcDquK1GsKPfPmMZpTW0TAF6NP1N9v08pISr5EwtLonTKpgipzECg
-         3/s1WSuxuskA8tEzjGwsmH+DLcwCy+sy4zc1xAP+Y8VqkvNQpMo19cwlnxEfhleL3mIL
-         4Y2Q==
-X-Gm-Message-State: AOAM531nXiH4wNJYqWj6vVhbi5jBtmM1KP6ILUr3wPlihJXGCOTCgTSC
-        F7+2Tj5km15GB0/eXsv/HJ8=
-X-Google-Smtp-Source: ABdhPJxAHp63stAt2qIOYOWsEXOcg3UlootWrxuj+25vWR/2fpxZZSsevS8qr2O3Xeow3lKO72/gGg==
-X-Received: by 2002:a17:903:24c:b0:13f:2377:ef3a with SMTP id j12-20020a170903024c00b0013f2377ef3amr5861904plh.59.1634830877219;
-        Thu, 21 Oct 2021 08:41:17 -0700 (PDT)
+        bh=nPmGrLtDkKne+Kxzs4l26xSiBaVw17KkF8YRLryQASU=;
+        b=iJk9MSFrEswLGY1/LJQtele4SzvK2sMiEI/nJLrrpME8Yg2UMTavcPhix9v5E0lrIh
+         JMNE7Z0Z1bviYP3N4bWpzwhkKRkJy0+uZCHLikwH5SA2Vx5FVtkI0Gu6laCAQSIhPCYG
+         qZfKWTXGG5tQoYqSR9VJlKBvu08kXR8SMBiHEK6AmTQudhKLvwlqQjTdihHh3HYnG3oU
+         osEcVGMlaS3V5QRpt2Iw0Axwipejrt8L4+Eq4wIhQKQuXEEFhfMIN6eVY1b115oobEVS
+         qQ/48Lotxg5nMwa+5YBXO1A82qipCYJmcXVbK4/TUDdh6vf2ZPhy8yzUoW0Vl3xGpZd0
+         /Vmw==
+X-Gm-Message-State: AOAM530dvVr8lIx86eTGG44AOWnjDXsl0p2jlAhv9HWdT71Qj/MaYa0l
+        WO5h8gTuZ2YKXrE2pV69CMo=
+X-Google-Smtp-Source: ABdhPJxzALconG8olzzr6RUMuicH54P4fwSsTen2zayqwhtAk3ZNZsgSy0nU11/befwFYubHmgs8FA==
+X-Received: by 2002:a17:90a:e010:: with SMTP id u16mr7565326pjy.217.1634830878827;
+        Thu, 21 Oct 2021 08:41:18 -0700 (PDT)
 Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:f:a76d:53a5:b89f:c2a0])
-        by smtp.gmail.com with ESMTPSA id p9sm6384130pfn.7.2021.10.21.08.41.16
+        by smtp.gmail.com with ESMTPSA id p9sm6384130pfn.7.2021.10.21.08.41.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Oct 2021 08:41:16 -0700 (PDT)
+        Thu, 21 Oct 2021 08:41:18 -0700 (PDT)
 From:   Tianyu Lan <ltykernel@gmail.com>
 To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
         wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
@@ -64,9 +64,9 @@ Cc:     linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
         vkuznets@redhat.com, konrad.wilk@oracle.com, hch@lst.de,
         robin.murphy@arm.com, joro@8bytes.org, parri.andrea@gmail.com,
         dave.hansen@intel.com
-Subject: [PATCH V8 1/9] x86/hyperv: Initialize GHCB page in Isolation VM
-Date:   Thu, 21 Oct 2021 11:41:01 -0400
-Message-Id: <20211021154110.3734294-2-ltykernel@gmail.com>
+Subject: [PATCH V8 2/9] x86/hyperv: Initialize shared memory boundary in the Isolation VM.
+Date:   Thu, 21 Oct 2021 11:41:02 -0400
+Message-Id: <20211021154110.3734294-3-ltykernel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211021154110.3734294-1-ltykernel@gmail.com>
 References: <20211021154110.3734294-1-ltykernel@gmail.com>
@@ -78,222 +78,60 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-Hyperv exposes GHCB page via SEV ES GHCB MSR for SNP guest
-to communicate with hypervisor. Map GHCB page for all
-cpus to read/write MSR register and submit hvcall request
-via ghcb page.
+Hyper-V exposes shared memory boundary via cpuid
+HYPERV_CPUID_ISOLATION_CONFIG and store it in the
+shared_gpa_boundary of ms_hyperv struct. This prepares
+to share memory with host for SNP guest.
 
 Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 ---
 Change since v4:
-	* Fix typo comment
+	* Rename reserve field.
 
-Chagne since v3:
-        * Rename ghcb_base to hv_ghcb_pg and move it out of
-	  struct ms_hyperv_info.
-	* Allocate hv_ghcb_pg before cpuhp_setup_state() and leverage
-	  hv_cpu_init() to initialize ghcb page.
+Change since v3:
+	* user BIT_ULL to get shared_gpa_boundary
+	* Rename field Reserved* to reserved
 ---
- arch/x86/hyperv/hv_init.c       | 68 +++++++++++++++++++++++++++++----
- arch/x86/include/asm/mshyperv.h |  4 ++
- arch/x86/kernel/cpu/mshyperv.c  |  3 ++
- include/asm-generic/mshyperv.h  |  6 +++
- 4 files changed, 74 insertions(+), 7 deletions(-)
+ arch/x86/kernel/cpu/mshyperv.c |  2 ++
+ include/asm-generic/mshyperv.h | 12 +++++++++++-
+ 2 files changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
-index 708a2712a516..a7e922755ad1 100644
---- a/arch/x86/hyperv/hv_init.c
-+++ b/arch/x86/hyperv/hv_init.c
-@@ -20,6 +20,7 @@
- #include <linux/kexec.h>
- #include <linux/version.h>
- #include <linux/vmalloc.h>
-+#include <linux/io.h>
- #include <linux/mm.h>
- #include <linux/hyperv.h>
- #include <linux/slab.h>
-@@ -36,12 +37,42 @@ EXPORT_SYMBOL_GPL(hv_current_partition_id);
- void *hv_hypercall_pg;
- EXPORT_SYMBOL_GPL(hv_hypercall_pg);
- 
-+void __percpu **hv_ghcb_pg;
-+
- /* Storage to save the hypercall page temporarily for hibernation */
- static void *hv_hypercall_pg_saved;
- 
- struct hv_vp_assist_page **hv_vp_assist_page;
- EXPORT_SYMBOL_GPL(hv_vp_assist_page);
- 
-+static int hyperv_init_ghcb(void)
-+{
-+	u64 ghcb_gpa;
-+	void *ghcb_va;
-+	void **ghcb_base;
-+
-+	if (!hv_isolation_type_snp())
-+		return 0;
-+
-+	if (!hv_ghcb_pg)
-+		return -EINVAL;
-+
-+	/*
-+	 * GHCB page is allocated by paravisor. The address
-+	 * returned by MSR_AMD64_SEV_ES_GHCB is above shared
-+	 * memory boundary and map it here.
-+	 */
-+	rdmsrl(MSR_AMD64_SEV_ES_GHCB, ghcb_gpa);
-+	ghcb_va = memremap(ghcb_gpa, HV_HYP_PAGE_SIZE, MEMREMAP_WB);
-+	if (!ghcb_va)
-+		return -ENOMEM;
-+
-+	ghcb_base = (void **)this_cpu_ptr(hv_ghcb_pg);
-+	*ghcb_base = ghcb_va;
-+
-+	return 0;
-+}
-+
- static int hv_cpu_init(unsigned int cpu)
- {
- 	union hv_vp_assist_msr_contents msr = { 0 };
-@@ -85,7 +116,7 @@ static int hv_cpu_init(unsigned int cpu)
- 		}
- 	}
- 
--	return 0;
-+	return hyperv_init_ghcb();
- }
- 
- static void (*hv_reenlightenment_cb)(void);
-@@ -177,6 +208,14 @@ static int hv_cpu_die(unsigned int cpu)
- {
- 	struct hv_reenlightenment_control re_ctrl;
- 	unsigned int new_cpu;
-+	void **ghcb_va;
-+
-+	if (hv_ghcb_pg) {
-+		ghcb_va = (void **)this_cpu_ptr(hv_ghcb_pg);
-+		if (*ghcb_va)
-+			memunmap(*ghcb_va);
-+		*ghcb_va = NULL;
-+	}
- 
- 	hv_common_cpu_die(cpu);
- 
-@@ -366,10 +405,16 @@ void __init hyperv_init(void)
- 		goto common_free;
- 	}
- 
-+	if (hv_isolation_type_snp()) {
-+		hv_ghcb_pg = alloc_percpu(void *);
-+		if (!hv_ghcb_pg)
-+			goto free_vp_assist_page;
-+	}
-+
- 	cpuhp = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "x86/hyperv_init:online",
- 				  hv_cpu_init, hv_cpu_die);
- 	if (cpuhp < 0)
--		goto free_vp_assist_page;
-+		goto free_ghcb_page;
- 
- 	/*
- 	 * Setup the hypercall page and enable hypercalls.
-@@ -383,10 +428,8 @@ void __init hyperv_init(void)
- 			VMALLOC_END, GFP_KERNEL, PAGE_KERNEL_ROX,
- 			VM_FLUSH_RESET_PERMS, NUMA_NO_NODE,
- 			__builtin_return_address(0));
--	if (hv_hypercall_pg == NULL) {
--		wrmsrl(HV_X64_MSR_GUEST_OS_ID, 0);
--		goto remove_cpuhp_state;
--	}
-+	if (hv_hypercall_pg == NULL)
-+		goto clean_guest_os_id;
- 
- 	rdmsrl(HV_X64_MSR_HYPERCALL, hypercall_msr.as_uint64);
- 	hypercall_msr.enable = 1;
-@@ -456,8 +499,11 @@ void __init hyperv_init(void)
- 	hv_query_ext_cap(0);
- 	return;
- 
--remove_cpuhp_state:
-+clean_guest_os_id:
-+	wrmsrl(HV_X64_MSR_GUEST_OS_ID, 0);
- 	cpuhp_remove_state(cpuhp);
-+free_ghcb_page:
-+	free_percpu(hv_ghcb_pg);
- free_vp_assist_page:
- 	kfree(hv_vp_assist_page);
- 	hv_vp_assist_page = NULL;
-@@ -559,3 +605,11 @@ bool hv_is_isolation_supported(void)
- {
- 	return hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE;
- }
-+
-+DEFINE_STATIC_KEY_FALSE(isolation_type_snp);
-+
-+bool hv_isolation_type_snp(void)
-+{
-+	return static_branch_unlikely(&isolation_type_snp);
-+}
-+EXPORT_SYMBOL_GPL(hv_isolation_type_snp);
-diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
-index adccbc209169..37739a277ac6 100644
---- a/arch/x86/include/asm/mshyperv.h
-+++ b/arch/x86/include/asm/mshyperv.h
-@@ -11,6 +11,8 @@
- #include <asm/paravirt.h>
- #include <asm/mshyperv.h>
- 
-+DECLARE_STATIC_KEY_FALSE(isolation_type_snp);
-+
- typedef int (*hyperv_fill_flush_list_func)(
- 		struct hv_guest_mapping_flush_list *flush,
- 		void *data);
-@@ -39,6 +41,8 @@ extern void *hv_hypercall_pg;
- 
- extern u64 hv_current_partition_id;
- 
-+extern void __percpu **hv_ghcb_pg;
-+
- int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages);
- int hv_call_add_logical_proc(int node, u32 lp_index, u32 acpi_id);
- int hv_call_create_vp(int node, u64 partition_id, u32 vp_index, u32 flags);
 diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
-index e095c28d27ae..b09ade389040 100644
+index b09ade389040..4794b716ec79 100644
 --- a/arch/x86/kernel/cpu/mshyperv.c
 +++ b/arch/x86/kernel/cpu/mshyperv.c
-@@ -316,6 +316,9 @@ static void __init ms_hyperv_init_platform(void)
+@@ -313,6 +313,8 @@ static void __init ms_hyperv_init_platform(void)
+ 	if (ms_hyperv.priv_high & HV_ISOLATION) {
+ 		ms_hyperv.isolation_config_a = cpuid_eax(HYPERV_CPUID_ISOLATION_CONFIG);
+ 		ms_hyperv.isolation_config_b = cpuid_ebx(HYPERV_CPUID_ISOLATION_CONFIG);
++		ms_hyperv.shared_gpa_boundary =
++			BIT_ULL(ms_hyperv.shared_gpa_boundary_bits);
  
  		pr_info("Hyper-V: Isolation Config: Group A 0x%x, Group B 0x%x\n",
  			ms_hyperv.isolation_config_a, ms_hyperv.isolation_config_b);
-+
-+		if (hv_get_isolation_type() == HV_ISOLATION_TYPE_SNP)
-+			static_branch_enable(&isolation_type_snp);
- 	}
- 
- 	if (hv_max_functions_eax >= HYPERV_CPUID_NESTED_FEATURES) {
 diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
-index d3eae6cdbacb..2d88aa855f7e 100644
+index 2d88aa855f7e..a8ac497167d2 100644
 --- a/include/asm-generic/mshyperv.h
 +++ b/include/asm-generic/mshyperv.h
-@@ -254,12 +254,18 @@ bool hv_is_hyperv_initialized(void);
- bool hv_is_hibernation_supported(void);
- enum hv_isolation_type hv_get_isolation_type(void);
- bool hv_is_isolation_supported(void);
-+bool hv_isolation_type_snp(void);
- void hyperv_cleanup(void);
- bool hv_query_ext_cap(u64 cap_query);
- #else /* CONFIG_HYPERV */
- static inline bool hv_is_hyperv_initialized(void) { return false; }
- static inline bool hv_is_hibernation_supported(void) { return false; }
- static inline void hyperv_cleanup(void) {}
-+static inline bool hv_is_isolation_supported(void) { return false; }
-+static inline enum hv_isolation_type hv_get_isolation_type(void)
-+{
-+	return HV_ISOLATION_TYPE_NONE;
-+}
- #endif /* CONFIG_HYPERV */
+@@ -35,7 +35,17 @@ struct ms_hyperv_info {
+ 	u32 max_vp_index;
+ 	u32 max_lp_index;
+ 	u32 isolation_config_a;
+-	u32 isolation_config_b;
++	union {
++		u32 isolation_config_b;
++		struct {
++			u32 cvm_type : 4;
++			u32 reserved1 : 1;
++			u32 shared_gpa_boundary_active : 1;
++			u32 shared_gpa_boundary_bits : 6;
++			u32 reserved2 : 20;
++		};
++	};
++	u64 shared_gpa_boundary;
+ };
+ extern struct ms_hyperv_info ms_hyperv;
  
- #endif
 -- 
 2.25.1
 
