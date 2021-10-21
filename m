@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91D54436254
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 15:05:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F019743625A
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 15:06:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230372AbhJUNH2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 09:07:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50778 "EHLO mail.kernel.org"
+        id S231134AbhJUNIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 09:08:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51044 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230181AbhJUNH1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Oct 2021 09:07:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4C0FD60F6E;
-        Thu, 21 Oct 2021 13:05:11 +0000 (UTC)
+        id S230444AbhJUNIw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Oct 2021 09:08:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 54B0260FE8;
+        Thu, 21 Oct 2021 13:06:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634821511;
-        bh=t/8qabPBNvjn1ixPBs/tBRYFKvKAXx6Bpv9UbxtYlKE=;
+        s=k20201202; t=1634821596;
+        bh=+mLSzKOMFevHHTNK1ZvqnU8FThaU5AqVuhwLuwr0Yn4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KLoJXdvEu8upd9SH5EvZYtldJJ0MRs0tWFWj+zjlBQbA2t70DwEWEp3kCDq3KkGFu
-         OgyqbRIayl+z2fFmgMMTLOHWY4G1VG09K9/ycZC7o5xYs+fLHcGUs1vkVWG6WPTCF8
-         FITLdk7QzhbWEVLBljxcEL+RcHXkmgseC3f6Ey+vtzYJ1hKrUeaSAUtP5o3mxXzcce
-         IcmFnr74yU1BW95pu0QjsYKzW6w2a1Zodu3ZwlsakvERUwwiXuyaTskXAjSzAMDVl0
-         DyWdITQMwMdv033k4EEOJGEkoKsqlLLzcdGtPv/C1NKIH7Nf9hJA3A3+PFII1rIZ4W
-         UBTzIs9FLfLoQ==
-Date:   Thu, 21 Oct 2021 06:05:08 -0700
+        b=psYxRlsUeD7F2CDhwSQDlA1uCxX4cBqUm8ZvvnLIdECgLoWdlvko+uQA3xNEjql55
+         XIDItym44FSsM7/ER+86s6ixtgQiAXt15nayUcqNOwXP6bNixSAbVrjfJKTQGN4K1g
+         yjEDGFJpULScaC5D6wfWT3iltJtdjvc0SNd/ez5ndspMbwfAC7Mk1QjYrD5T3WFoeQ
+         ZlAMRoto4QvhY0eFJ4uxBFBr0coBCEHvCKTZxzOEAf6Nz+mtjRI3jhML0AKbYHtZti
+         ahl1vWW6CtWzP60RbrKIW+s+sCszERw9Ahr3i75VX0Lj4noGQyuOK/vsgjrCHgIEwL
+         rIZWFzgzBsVtg==
+Date:   Thu, 21 Oct 2021 06:06:35 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Julian Wiedmann <jwi@linux.ibm.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kgraul@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com,
-        linux-s390@vger.kernel.org
-Subject: Re: [PATCH net-next 09/12] net: s390: constify and use
- eth_hw_addr_set()
-Message-ID: <20211021060508.44358d5a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <a028714d-6e69-dc7b-1b94-d946a7ecc942@linux.ibm.com>
+To:     Oliver Neukum <oneukum@suse.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH net-next 04/12] net: usb: don't write directly to
+ netdev->dev_addr
+Message-ID: <20211021060635.43526d0a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <be00cea5-3074-5a27-3e04-97c08ae60fd8@suse.com>
 References: <20211020155617.1721694-1-kuba@kernel.org>
-        <20211020155617.1721694-10-kuba@kernel.org>
-        <a028714d-6e69-dc7b-1b94-d946a7ecc942@linux.ibm.com>
+        <20211020155617.1721694-5-kuba@kernel.org>
+        <be00cea5-3074-5a27-3e04-97c08ae60fd8@suse.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -43,20 +42,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 21 Oct 2021 00:30:23 +0200 Julian Wiedmann wrote:
+On Thu, 21 Oct 2021 11:55:00 +0200 Oliver Neukum wrote:
 > On 20.10.21 17:56, Jakub Kicinski wrote:
 > > Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
 > > of VLANs...") introduced a rbtree for faster Ethernet address look
 > > up. To maintain netdev->dev_addr in this tree we need to make all
 > > the writes to it got through appropriate helpers.
-> > 
-> > Make sure local references to netdev->dev_addr are constant.
-> >   
+> >
+> > Manually fix all net/usb drivers without separate maintainers.
+> >
+> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> > ---  
 > 
-> Acked-by: Julian Wiedmann <jwi@linux.ibm.com>
-> 
-> Thanks Jakub. I suppose at some point __dev_addr_set() will then
-> become more than just a memcpy, correct?
+> this looks good except for catc, which needs a more complicated fix.
+> Do you want me to do it and drop it from this patch?
 
-Yup, once all places are converted it will also adjust the position of
-the address on the tree.
+Sure, thanks!
