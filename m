@@ -2,64 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73E1F435815
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 03:12:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0066F435823
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 03:22:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231468AbhJUBPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 21:15:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56880 "EHLO
+        id S231404AbhJUBYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 21:24:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229702AbhJUBPA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 21:15:00 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B00AC06161C
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 18:12:45 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id k3so13739602ilo.7
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 18:12:45 -0700 (PDT)
+        with ESMTP id S230103AbhJUBYv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 21:24:51 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90771C06161C;
+        Wed, 20 Oct 2021 18:22:36 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id k26so4457607pfi.5;
+        Wed, 20 Oct 2021 18:22:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=ANhoqFIvutey4Kjwwv4uowGEBiP8Sw6NlRI3E6SZ9JM=;
-        b=klPSBF9/BQhREF7FY/2eJJAiYsnS1RLe3ykiOFlS108K3kFMUQOvbYviNPjQIoeIc3
-         ThQqZkXISM8go1UZTW3uMVSA59rhENV1YzTykr1vxw22Rkx6YVEq5GVU9wK/VhJSnKWt
-         dG8vz4QKss+ztSmiYWjmJWwACurp/SuRHmABJbrGZr1QhIWAnny9+tH/Q2g9nUpRmRpU
-         ifIvapUbZVaple+mmkILJukEd2rHK+oqLgdCt6k95aVN67Xo2p6ffNRGJ0oUA1TO57XZ
-         XKVrqTE0wRofxFGFdYd41qtW+upwZVRNkbUGYOruJ6lLpi+badh94GysvA3mWQK38sU7
-         yeBQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GRLMpz20W+uWjSSx3JO2MLjsrcVU2TkHeUAxLEmJB58=;
+        b=R3SUN5E4mDf3iv5WJwjMQdSDM5mATS7L6fZHzSHe+IBMasEJ/Skwfld6uw08RE2dcm
+         Wn4Nl6EKnHup9cBEeoC0bugXURgBysYenN2rJIb4i+hN+i2wLLuATTGkWYVTfyO7ldhO
+         RHWs4d+LMbrAwKh2zhrmjsOMmN+i66Y436NntymrMczeRQLQntR4L69eWFXD2vowRncc
+         0WvweQzeqCMOqOY/lhpC0b8Y9Wx3KJMmjexUZJpolM1Cm5pkG0LTzQEKPGYwVxYfSnz2
+         xJibmt2ut51V0ez9w9pfNXrII/JzI8TvL1HDc81hvi6etz7eIv/NsEnVTqXWL986MobG
+         Y32w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=ANhoqFIvutey4Kjwwv4uowGEBiP8Sw6NlRI3E6SZ9JM=;
-        b=cf3GvutpYkAXRmTh+spPKBES0iC9QRZgOj0hMcXBzKcaPoh0oMgVGMXhL25pdBk7Nm
-         67ASN/nNGh3uwRMvKNLEmgBpxnWOaAr28uShCkYNHgJaMuHWidrb3du2RBIbx6gpca3H
-         d4Ta1h5ssTInzZ4aRL6uqLV5rvbLLuW+I8iV/onD6UtWmTDwS+aBi4DrsjFgVJaA9YWz
-         mAYSAE8yhcyOd20GOqOsrBgONIsJEXEl5m8nB+1vp/p7K2knNIUH3H8OFxe/YO0YFKX6
-         UpkzNs+jrpX9c07coib9vZpDTAdstxXLPDIMJTrFPaoC+fNVy6/G9vrkcdngzpvIN1v9
-         qzog==
-X-Gm-Message-State: AOAM530xp9y4PjIkvtp5RwEDGbwEssVsk2fv0FX/QXNhdRPJAekxwk6k
-        VBQK0R9Yv8EQ76xd4adO4x1gBw4PH2khUnhPeUA=
-X-Google-Smtp-Source: ABdhPJydHxhToMns5XxkFe5j+NdMWnTFM53NL3ckDC93v25q1em66LTqml3mxHMlKzzGD+FWIw2xL/kMPkmEqfVbVMU=
-X-Received: by 2002:a05:6e02:1807:: with SMTP id a7mr1521041ilv.285.1634778764303;
- Wed, 20 Oct 2021 18:12:44 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GRLMpz20W+uWjSSx3JO2MLjsrcVU2TkHeUAxLEmJB58=;
+        b=be5LHpFcA2muojTWsIQj/85U3RteHOipLgdG4hk9j65y5d3/u3ABd01JXS/DpmMzdc
+         SbD4tJbhXnlOJdD15J/o4u8CcmpK++jQPIT59kI0bZbgvF/zGlbLONfdAZHC63N3ZTKG
+         A2BrcTK+myA8Xt9fquIJjbtltvyEfy8pxf08qu+U3XvsTVhBi5lSG9HrTyiih9u/gI2A
+         oJ5UM2ipKp7QXOVH7z+V4E+vNqj5kMfVICwJGjTkOpCOcBk212BfeaRI8fVy8KgIJqDG
+         2jrr5fr6CZjscRtff8g8uaEkMxEnbJMdpc2ZOTBY4WpFFUmFWMljQQXwciSRd8E5zu2N
+         S/GA==
+X-Gm-Message-State: AOAM531gUoVzYSJ4+4EN4XLZe73NNOPVnOyioVlettGbFSJ+itT6+KNO
+        YpSV0plesqWfjOIRxB0O779CMDdedBdKUS3ebBI=
+X-Google-Smtp-Source: ABdhPJytfbK6iVZ4JeBA2xLyuOJ57QviX7QpjPKNosl6WEl0zzOnxGXZ9AlPU1P8coSQxpPKhaH86KdqqpGYMK1x7Oo=
+X-Received: by 2002:a65:4008:: with SMTP id f8mr2062629pgp.310.1634779356017;
+ Wed, 20 Oct 2021 18:22:36 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a05:6638:32a0:0:0:0:0 with HTTP; Wed, 20 Oct 2021 18:12:43
- -0700 (PDT)
-Reply-To: mrs.chantal166@gmail.com
-From:   Mrs chantal <misschantal10014@gmail.com>
-Date:   Thu, 21 Oct 2021 03:12:43 +0200
-Message-ID: <CANYMfiuY9bn4XcVtHgYmWVMH7Mb9G3geAB8m9z3Gme7riwk3iQ@mail.gmail.com>
-Subject: Dear Beneficiary
-To:     undisclosed-recipients:;
+References: <20211014142554.53120-1-lmb@cloudflare.com>
+In-Reply-To: <20211014142554.53120-1-lmb@cloudflare.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 20 Oct 2021 18:22:24 -0700
+Message-ID: <CAADnVQJRUz81YeBqM-Kk4OM7FXAw07TNA_mOY1ZGAZ5MHpsE2A@mail.gmail.com>
+Subject: Re: [PATCH v3 0/3] Fix up bpf_jit_limit some more
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend
-You have been compensated with the sum of 4.3 million dollars in this
-united nation the payment will be issue into atm visa card and send to
-you from the santander bank we need your address and your whatsapp
-number
-Fill the followings with your details;1. Your Name:2. Country:
-3. Age and Sex:4. Occupation:5. Id Card Identification
+On Thu, Oct 14, 2021 at 7:26 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+>
+> Fix some inconsistencies of bpf_jit_limit on non-x86 platforms.
+> I've dropped exposing bpf_jit_current since we couldn't agree on
+> file modes, correct names, etc.
+
+Applied to bpf tree. Seems more appropriate there.
