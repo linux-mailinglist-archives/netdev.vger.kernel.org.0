@@ -2,85 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 257EA4361D8
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 14:38:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D803E4361DB
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 14:38:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230463AbhJUMka (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 08:40:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59568 "EHLO
+        id S231531AbhJUMkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 08:40:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:51350 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231138AbhJUMkX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 08:40:23 -0400
+        by vger.kernel.org with ESMTP id S231232AbhJUMk2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 08:40:28 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1634819887;
+        s=mimecast20190719; t=1634819891;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=yYLGkQsNsgBUFsGjRdMzLFPWPWHahKiW0zK6GQ9fG54=;
-        b=J4wclVYhsBSUfrxi5k4LlQazXEMzUhZ5HV0ddPXW+0GHi1DaiPZRPmMPqQTDZTLBgLybyA
-        gslYi6gyPY9OAbJbrZGu5QETjCbcWJrSP154ACnaywZt2IE8l5wJ4W4e7TQuNQtygbG/wH
-        MWSx5ZRrK4N71kaM/t9BZpoVrezvI4s=
+        bh=FxSLK+HAlyV2x9DBqilIGmaJn0wdCYP5yKFxkCOkl5Q=;
+        b=N73q2BV7TEWAq43O/GhOHDRwWpGwd6BVDWHUhMV4nFXVzkczI4hhFQpl1e579t7q+qOpQx
+        rKHZjFaUfp9cMUFB/KpIcD9SgsVBZD2nAp3rnKREchjkPd0EjDBxjBIlf55ETpIaNCwcKQ
+        H8LSA0997/JVrNN7lQN0jdR8Ao/uSLk=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-296-C5lCnJmbPbOOVKbRZ4My3g-1; Thu, 21 Oct 2021 08:38:03 -0400
-X-MC-Unique: C5lCnJmbPbOOVKbRZ4My3g-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+ us-mta-21-PNWplLLrOx2LDJXN3Fa1kg-1; Thu, 21 Oct 2021 08:38:08 -0400
+X-MC-Unique: PNWplLLrOx2LDJXN3Fa1kg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5AE5A8066EF;
-        Thu, 21 Oct 2021 12:38:02 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4FC848066EF;
+        Thu, 21 Oct 2021 12:38:07 +0000 (UTC)
 Received: from localhost (unknown [10.39.208.31])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7D2665FC22;
-        Thu, 21 Oct 2021 12:38:01 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2081B5B826;
+        Thu, 21 Oct 2021 12:38:05 +0000 (UTC)
 From:   =?UTF-8?q?Marc-Andr=C3=A9=20Lureau?= <marcandre.lureau@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, sgarzare@redhat.com,
         davem@davemloft.net, kuba@kernel.org,
         =?UTF-8?q?Marc-Andr=C3=A9=20Lureau?= <marcandre.lureau@redhat.com>
-Subject: [PATCH 07/10] vsock/loopback: implement copy_peercred()
-Date:   Thu, 21 Oct 2021 16:37:11 +0400
-Message-Id: <20211021123714.1125384-8-marcandre.lureau@redhat.com>
+Subject: [PATCH 08/10] vhost/vsock: save owner pid & creds
+Date:   Thu, 21 Oct 2021 16:37:12 +0400
+Message-Id: <20211021123714.1125384-9-marcandre.lureau@redhat.com>
 In-Reply-To: <20211021123714.1125384-1-marcandre.lureau@redhat.com>
 References: <20211021123714.1125384-1-marcandre.lureau@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+After VHOST_SET_OWNER success, save the owner process credentials.
+
 Signed-off-by: Marc-André Lureau <marcandre.lureau@redhat.com>
 ---
- net/vmw_vsock/vsock_loopback.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/vhost/vsock.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/net/vmw_vsock/vsock_loopback.c b/net/vmw_vsock/vsock_loopback.c
-index 169a8cf65b39..59317baa4e5c 100644
---- a/net/vmw_vsock/vsock_loopback.c
-+++ b/net/vmw_vsock/vsock_loopback.c
-@@ -41,6 +41,12 @@ static int vsock_loopback_send_pkt(struct virtio_vsock_pkt *pkt)
- 	return len;
- }
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index 938aefbc75ec..3067436cddfc 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -58,6 +58,8 @@ struct vhost_vsock {
  
-+static void vsock_loopback_copy_peercred(struct sock *sk, struct virtio_vsock_pkt *pkt)
-+{
-+	/* on vsock loopback, set both peers by swaping the creds */
-+	sock_swap_peercred(sk, sk_vsock(pkt->vsk));
-+}
-+
- static int vsock_loopback_cancel_pkt(struct vsock_sock *vsk)
- {
- 	struct vsock_loopback *vsock = &the_vsock_loopback;
-@@ -110,6 +116,7 @@ static struct virtio_transport loopback_transport = {
- 	},
- 
- 	.send_pkt = vsock_loopback_send_pkt,
-+	.copy_peercred = vsock_loopback_copy_peercred,
+ 	u32 guest_cid;
+ 	bool seqpacket_allow;
++	struct pid *owner_pid;
++	const struct cred *owner_cred;
  };
  
- static bool vsock_loopback_seqpacket_allow(u32 remote_cid)
+ static u32 vhost_transport_get_local_cid(void)
+@@ -774,6 +776,10 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
+ 
+ 	vhost_dev_cleanup(&vsock->dev);
+ 	kfree(vsock->dev.vqs);
++
++	put_pid(vsock->owner_pid);
++	put_cred(vsock->owner_cred);
++
+ 	vhost_vsock_free(vsock);
+ 	return 0;
+ }
+@@ -851,6 +857,22 @@ static int vhost_vsock_set_features(struct vhost_vsock *vsock, u64 features)
+ 	return -EFAULT;
+ }
+ 
++static long vhost_vsock_set_owner(struct vhost_vsock *vsock)
++{
++	long r;
++
++	mutex_lock(&vsock->dev.mutex);
++	r = vhost_dev_set_owner(&vsock->dev);
++	if (r)
++		goto out;
++	vsock->owner_pid = get_pid(task_tgid(current));
++	vsock->owner_cred = get_current_cred();
++	vhost_vsock_flush(vsock);
++out:
++	mutex_unlock(&vsock->dev.mutex);
++	return r;
++}
++
+ static long vhost_vsock_dev_ioctl(struct file *f, unsigned int ioctl,
+ 				  unsigned long arg)
+ {
+@@ -894,6 +916,8 @@ static long vhost_vsock_dev_ioctl(struct file *f, unsigned int ioctl,
+ 			return -EOPNOTSUPP;
+ 		vhost_set_backend_features(&vsock->dev, features);
+ 		return 0;
++	case VHOST_SET_OWNER:
++		return vhost_vsock_set_owner(vsock);
+ 	default:
+ 		mutex_lock(&vsock->dev.mutex);
+ 		r = vhost_dev_ioctl(&vsock->dev, ioctl, argp);
 -- 
 2.33.0.721.g106298f7f9
 
