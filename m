@@ -2,85 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44A0643606A
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 13:40:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE96D43606F
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 13:41:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230323AbhJULmc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 07:42:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46606 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229765AbhJULm2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Oct 2021 07:42:28 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 326B0610FF;
-        Thu, 21 Oct 2021 11:40:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634816412;
-        bh=B69kHncm3+fZAwkbgcBS9BvkN6mONRI9FWmom9jPw/0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=UKXtvstloZrrR71cXl1dJV72wTTY/0QtaQDjcwGyBxyCl3BthYaY4bGcOyz/hhD/D
-         pMKg2uMSJW0UKb//eSg3pN1ShWrZQryeU9UkEz3zdzmILQheoRP8VyFHQ8x3GlxU+A
-         dyPGFuZo+2MjK/n3agE5bzSf0MAEaIIJx2nd+nujLLbSFdKJVHt43SoOLke8GeYkja
-         QVdnhSrrMY+EEvPoXbUJrbwmN6xTxA2sAiTHvzU+Rvj09Nh+mIzucVX75WW4jYpdQK
-         W6vyQ9DGUus7yLDFgs2OPYgwJo1J0FPqRgUsQvq9SRkgXyx25MSrHzk4G0Y49CUtHq
-         3OVYQz942qktg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 274F560A24;
-        Thu, 21 Oct 2021 11:40:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S230325AbhJULny (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 07:43:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57765 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229765AbhJULnx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 07:43:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634816497;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=L2e4spOXfMpskoS1N0H4A7qUNY78c1wAiks2CIeTGAQ=;
+        b=WGLVZtEmqK1zsETvOMLTClkuxoNouCGM+YRWgeTy5ZQpliHjgrekQ2REpUrX6zG/OZqlj4
+        L9i8aWoPM61VLtZz+71d8zPsc3guA+BW//vqQo7xAF+duVDlnN8FvwhYLqeIy9KxbC6LHm
+        UGDHsApasSI2RneNY6cMUDqqC2i0xEg=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-555-u48ZTiUMOCGuP4K5gzwbVA-1; Thu, 21 Oct 2021 07:41:34 -0400
+X-MC-Unique: u48ZTiUMOCGuP4K5gzwbVA-1
+Received: by mail-ed1-f69.google.com with SMTP id d11-20020a50cd4b000000b003da63711a8aso23937911edj.20
+        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 04:41:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=L2e4spOXfMpskoS1N0H4A7qUNY78c1wAiks2CIeTGAQ=;
+        b=BR16CXkgBin2tMpYYF0QudAW96FVXNDvsxLCBqq9nWqIN4n8obAVaLG6bsMEaHO3rU
+         sUAkfXVZsy1/g5mjTO3sm1vFuhGwmTREtasAI8KM6GdiDIlRsQpN4RM+dHm5Q/NgZb3P
+         QjykL6T6sGAvw5njIgVG0Dekqtpf7Jtw+QprQ/IIdFscrBfG41Bd2uQq1bO2qL2iAw8u
+         1Mq3WV40RYmB3ffxWvpgIiyMyQuzNugF+r3rNAPeBOct3REPxmdW2XKcDtlPrHuz5WHy
+         P6ta03w9CNd1ubEdHU3236+CeE5p0BeXzNjdnRTsl8MAxXBJ4u5IrNpZWFyN2Y8IgbLJ
+         b9CA==
+X-Gm-Message-State: AOAM531cPwCyOb7XxxUx+aaNdlDb3dKy9f0wa6r2QAG++wJ1W7wUHY+x
+        pESSm8kiJvAaw2cazImVkWOc+0h6fkvRe2qWHtMYuKQZZ6V5HiLD2ATxozy7VmaoovcIjnuM4a5
+        VXHB8JUkHWJz+xZYO
+X-Received: by 2002:a05:6402:2553:: with SMTP id l19mr6934936edb.321.1634816493335;
+        Thu, 21 Oct 2021 04:41:33 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw0/PpaJBgA3ZF+GNCyLqQ+YOun7Y/ZtdJIj1MoEWgtX6K0YICG+8Suaaa0E9xfjgwyIjkUAg==
+X-Received: by 2002:a05:6402:2553:: with SMTP id l19mr6934908edb.321.1634816493207;
+        Thu, 21 Oct 2021 04:41:33 -0700 (PDT)
+Received: from krava.cust.in.nbox.cz ([83.240.63.48])
+        by smtp.gmail.com with ESMTPSA id y6sm2459996ejf.58.2021.10.21.04.41.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Oct 2021 04:41:32 -0700 (PDT)
+From:   Jiri Olsa <jolsa@redhat.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: [PATCH bpf-next 0/3] selftests/bpf: Fixes for perf_buffer test
+Date:   Thu, 21 Oct 2021 13:41:29 +0200
+Message-Id: <20211021114132.8196-1-jolsa@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 1/8] netfilter: xt_IDLETIMER: fix panic that occurs when
- timer_type has garbage value
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163481641215.11574.15881715403045755138.git-patchwork-notify@kernel.org>
-Date:   Thu, 21 Oct 2021 11:40:12 +0000
-References: <20211021100821.964677-2-pablo@netfilter.org>
-In-Reply-To: <20211021100821.964677-2-pablo@netfilter.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+hi,
+sending fixes for perf_buffer test on systems
+with offline cpus.
 
-This series was applied to netdev/net.git (master)
-by Pablo Neira Ayuso <pablo@netfilter.org>:
+v2:
+  - resend due to delivery issues, no changes
 
-On Thu, 21 Oct 2021 12:08:14 +0200 you wrote:
-> From: Juhee Kang <claudiajkang@gmail.com>
-> 
-> Currently, when the rule related to IDLETIMER is added, idletimer_tg timer
-> structure is initialized by kmalloc on executing idletimer_tg_create
-> function. However, in this process timer->timer_type is not defined to
-> a specific value. Thus, timer->timer_type has garbage value and it occurs
-> kernel panic. So, this commit fixes the panic by initializing
-> timer->timer_type using kzalloc instead of kmalloc.
-> 
-> [...]
+thanks,
+jirka
 
-Here is the summary with links:
-  - [net,1/8] netfilter: xt_IDLETIMER: fix panic that occurs when timer_type has garbage value
-    https://git.kernel.org/netdev/net/c/902c0b188752
-  - [net,2/8] netfilter: Kconfig: use 'default y' instead of 'm' for bool config option
-    https://git.kernel.org/netdev/net/c/77076934afdc
-  - [net,3/8] netfilter: nf_tables: skip netdev events generated on netns removal
-    https://git.kernel.org/netdev/net/c/68a3765c659f
-  - [net,4/8] selftests: nft_nat: add udp hole punch test case
-    https://git.kernel.org/netdev/net/c/465f15a6d1a8
-  - [net,5/8] netfilter: ip6t_rt: fix rt0_hdr parsing in rt_mt6
-    https://git.kernel.org/netdev/net/c/a482c5e00a9b
-  - [net,6/8] netfilter: ipvs: make global sysctl readonly in non-init netns
-    https://git.kernel.org/netdev/net/c/174c37627894
-  - [net,7/8] selftests: netfilter: remove stray bash debug line
-    https://git.kernel.org/netdev/net/c/3e6ed7703dae
-  - [net,8/8] netfilter: ebtables: allocate chainstack on CPU local nodes
-    https://git.kernel.org/netdev/net/c/d9aaaf223297
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+---
+Jiri Olsa (3):
+      selftests/bpf: Fix perf_buffer test on system with offline cpus
+      selftests/bpf: Fix possible/online index mismatch in perf_buffer test
+      selftests/bpf: Use nanosleep tracepoint in perf buffer test
 
+ tools/testing/selftests/bpf/prog_tests/perf_buffer.c | 17 +++++++++--------
+ tools/testing/selftests/bpf/progs/test_perf_buffer.c |  2 +-
+ 2 files changed, 10 insertions(+), 9 deletions(-)
 
