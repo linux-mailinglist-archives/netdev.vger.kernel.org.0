@@ -2,79 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27C294366E1
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 17:55:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32A23436788
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 18:22:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231687AbhJUP5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 11:57:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59988 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229597AbhJUP5g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 11:57:36 -0400
-Received: from mail-ua1-x92b.google.com (mail-ua1-x92b.google.com [IPv6:2607:f8b0:4864:20::92b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583D2C061764;
-        Thu, 21 Oct 2021 08:55:20 -0700 (PDT)
-Received: by mail-ua1-x92b.google.com with SMTP id q13so2148443uaq.2;
-        Thu, 21 Oct 2021 08:55:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=HRHfFhz4fMPUx9YOtOao9Bpb9t5tjPxJMHEqRqglFwM=;
-        b=D/HrhN/0LrDrsGRfgdFeR48W6kC4c+X4yDSCCgDvMY9Yfj+9RBHFpF8xdRSQNWWeFd
-         ChlvcCLRdG6+AHyAxGQk/4Urb67IFT4Mqo/xOJvEW0jBCqbV8mGubGjEcpdQkw5saWMX
-         0RyxJqfrpZwZWb0NxtD/1tSR8chgREekcK+cL82ldGb/Mn0wIKA3a2fVgATgIlPSTMvl
-         Yk7N3lAB1FA0x0BMeeGeqI4X3gntqERs/5yqCE/uDddwEZ+rXA0fUZDjq+DAzSPRNX/f
-         HoTskTjC3uh6iF00W5+CFFV9COkir+vZWCptrM3qPB43dWNhSw/9GD5loHcfHhbhKGZx
-         KPfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HRHfFhz4fMPUx9YOtOao9Bpb9t5tjPxJMHEqRqglFwM=;
-        b=Ffk4YTdIrTwD1d76vlR/87Wi2w7tLJjAqRGjMtsSFeXzPgiZCOjyI+h9MDkl3ZFSWL
-         CkaaUtbmm1ndJVB/9Y6hwL3pQArNGMR8wr3GOsxBAMvwYGTftZwXtUSO/QBRAz6jWTbU
-         22xxYob6fyBLRXwjDWJsSAsrNqzCAHvJTFh0hgYK188h5KGHfxXuJiG356/cPJOoDNVI
-         gcTmlLCbyJQFk7iw+8wo+ikfbxwUR9hhbDxKrBfZeyfKNYGuD5OvC5qBGkOyqobDqy6r
-         3l7dS4sUhmeiB/jlga4vDYtAXXOQx9+Ip/QlxNNZv2A/wh4Oz/gEeSfBIMz0Vchs+NDM
-         Rmbw==
-X-Gm-Message-State: AOAM531282/kYwYqzMlePJX7nLjIWVOg6VkIkdeXXg0E2d8o/MoqEf/P
-        KQfeQ0PVX4dGwK/zNJ6OIbM=
-X-Google-Smtp-Source: ABdhPJwyivgybU33oIRvY5+h4YNrbl1bvQ3Lb+fx0N0Gk+ezb51O3awZYpxI7qSBJLWqMSS11HA4Kg==
-X-Received: by 2002:a05:6102:a4f:: with SMTP id i15mr6981375vss.49.1634831719443;
-        Thu, 21 Oct 2021 08:55:19 -0700 (PDT)
-Received: from t14s.localdomain ([2001:1284:f013:eca9:86b:fb8c:36a9:6a8f])
-        by smtp.gmail.com with ESMTPSA id m184sm3296920vsc.6.2021.10.21.08.55.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Oct 2021 08:55:18 -0700 (PDT)
-Received: by t14s.localdomain (Postfix, from userid 1000)
-        id 1AB9E91D02; Thu, 21 Oct 2021 12:55:17 -0300 (-03)
-Date:   Thu, 21 Oct 2021 12:55:17 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Ondrej Mosnacek <omosnace@redhat.com>
-Cc:     Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        selinux@vger.kernel.org, linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Richard Haines <richard_c_haines@btinternet.com>,
-        Xin Long <lucien.xin@gmail.com>
-Subject: Re: [PATCH] sctp: initialize endpoint LSM labels also on the client
- side
-Message-ID: <YXGNZTJPxL9Q/GHt@t14s.localdomain>
-References: <20211021153846.745289-1-omosnace@redhat.com>
+        id S231388AbhJUQYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 12:24:47 -0400
+Received: from mail.skyhub.de ([5.9.137.197]:45878 "EHLO mail.skyhub.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230072AbhJUQYq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Oct 2021 12:24:46 -0400
+Received: from zn.tnic (p200300ec2f191200ee5ad10a1c627015.dip0.t-ipconnect.de [IPv6:2003:ec:2f19:1200:ee5a:d10a:1c62:7015])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 229661EC011B;
+        Thu, 21 Oct 2021 18:22:29 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1634833349;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=s9B7TcJbpJamc03KXDCXQuXf1+/ogvmvN6UH47r0t44=;
+        b=ViCKbfkrxBNFBw9sV4dQEIRuYioGwgmaVA8GvvP+1GAYxiIAzKzmb9Rie6jAt9cV5OrGsU
+        HtSbyZJdONQ2tN3ELB2DRGPD/mr3vaOmS5XQoSlGJkpzXo49ujTlMTwkbgprJPAkI1yxSN
+        2b1jb3B/MwUtUKcSij1cujLYU/sAmlE=
+Date:   Thu, 21 Oct 2021 18:22:26 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Tianyu Lan <ltykernel@gmail.com>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, x86@kernel.org, hpa@zytor.com,
+        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+        davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
+        arnd@arndb.de, brijesh.singh@amd.com, jroedel@suse.de,
+        Tianyu.Lan@microsoft.com, thomas.lendacky@amd.com,
+        rientjes@google.com, pgonda@google.com, akpm@linux-foundation.org,
+        kirill.shutemov@linux.intel.com, rppt@kernel.org,
+        saravanand@fb.com, aneesh.kumar@linux.ibm.com, hannes@cmpxchg.org,
+        tj@kernel.org, michael.h.kelley@microsoft.com,
+        linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        vkuznets@redhat.com, konrad.wilk@oracle.com, hch@lst.de,
+        robin.murphy@arm.com, joro@8bytes.org, parri.andrea@gmail.com,
+        dave.hansen@intel.com
+Subject: Re: [PATCH V8 5/9] x86/sev-es: Expose sev_es_ghcb_hv_call() to call
+ ghcb hv call out of sev code
+Message-ID: <YXGTwppQ8syUyJ72@zn.tnic>
+References: <20211021154110.3734294-1-ltykernel@gmail.com>
+ <20211021154110.3734294-6-ltykernel@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20211021153846.745289-1-omosnace@redhat.com>
+In-Reply-To: <20211021154110.3734294-6-ltykernel@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 21, 2021 at 05:38:46PM +0200, Ondrej Mosnacek wrote:
-> The secid* fields in struct sctp_endpoint are used to initialize the
-> labels of a peeloff socket created from the given association. Currently
-> they are initialized properly when a new association is created on the
-> server side (upon receiving an INIT packet), but not on the client side.
+On Thu, Oct 21, 2021 at 11:41:05AM -0400, Tianyu Lan wrote:
+> diff --git a/arch/x86/kernel/sev-shared.c b/arch/x86/kernel/sev-shared.c
+> index ea9abd69237e..368ed36971e3 100644
+> --- a/arch/x86/kernel/sev-shared.c
+> +++ b/arch/x86/kernel/sev-shared.c
+> @@ -124,10 +124,9 @@ static enum es_result verify_exception_info(struct ghcb *ghcb, struct es_em_ctxt
+>  	return ES_VMM_ERROR;
+>  }
+>  
+> -static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
+> -					  struct es_em_ctxt *ctxt,
+> -					  u64 exit_code, u64 exit_info_1,
+> -					  u64 exit_info_2)
+> +enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb, bool set_ghcb_msr,
+> +				   struct es_em_ctxt *ctxt, u64 exit_code,
+> +				   u64 exit_info_1, u64 exit_info_2)
+>  {
+>  	/* Fill in protocol and format specifiers */
+>  	ghcb->protocol_version = GHCB_PROTOCOL_MAX;
+> @@ -137,7 +136,15 @@ static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
+>  	ghcb_set_sw_exit_info_1(ghcb, exit_info_1);
+>  	ghcb_set_sw_exit_info_2(ghcb, exit_info_2);
+>  
+> -	sev_es_wr_ghcb_msr(__pa(ghcb));
+> +	/*
+> +	 * Hyper-V unenlightened guests use a paravisor for communicating and
+> +	 * GHCB pages are being allocated and set up by that paravisor. Linux
+> +	 * should not change ghcb page pa in such case and so add set_ghcb_msr
 
-+Cc Xin
+"... not change the GHCB page's physical address."
+
+Remove the "so add... " rest.
+
+Otherwise, LGTM.
+
+Do you want me to take it through the tip tree?
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
