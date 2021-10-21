@@ -2,94 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A09443690C
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 19:31:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4322043690F
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 19:31:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231873AbhJURdT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 13:33:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54330 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231728AbhJURdP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 13:33:15 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F083C061764
-        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 10:30:59 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id 5so3883537edw.7
-        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 10:30:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=gxHeh0GciZ37eCPetS5TvwY6AandmGmZTZ4ZmmR/uwQ=;
-        b=IeuhyY8/SBQSiPHbmbIfk/ILHBMp7QM+KYxzmUSprpnl3U+bpojiE5VkKdjdBE1N5E
-         9N4a1IseOsji6e03kMNzjqbrgEkmqNdzxVDWDh/E2m6QoWrl6c+hYZrtMMH1LWVbtpA3
-         tUQXypZtcOzEf3NOiy+/z7GJCrA0lLKFsdDPhnq9ywAeyfA5h/KIMm15uhj4gTdJ5oin
-         pB+A685axmusF9+KGrnPOqljfuWzMYSkcE5q9mIeavd6ywYFTiujT8A5YYqs6gpY0kq8
-         m/c+syyQws9dcSSilNui2t3/1aRuiLUxysNpuqDafzZ16gX00bwr/MI2ocvU6SOkYXK3
-         6sdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=gxHeh0GciZ37eCPetS5TvwY6AandmGmZTZ4ZmmR/uwQ=;
-        b=rxTLpY0RqMU4R9+1zPqMs2vVT1IbZhOVgGrojT0OEVBhMGnLZRuTGBLR/+a+VwHBNH
-         viKuOm2XAIV8swjpGEjcbnJCsoi3d9zivZUhsAyIEK34PUqORcL9ea5xq8g2qOG52zQ4
-         C8zG9JdFqTRjxiwP+VE07zxmJhYrSJJjFo1AACzk5EFSxjRUMC4xK2iewXmZSTwSGysK
-         h2ifIsiaZ4iQJt9q2iNg+/FkyMIKsHwvu9bnYfwCX2Aq6CTac0LT7hTvmY8CuIoWpEMe
-         7G+V/hA/6mNwlx5u+3fqRRAJXD56ek4XbKOb8/KWJscYaMKpX/tiGa5bN1u8SG/t1pE7
-         OwYg==
-X-Gm-Message-State: AOAM533r+spOUcYDODsPmtudTpD6SmRQSqbw8VsH4Uwdxs8HapeX0LGf
-        xauWTbyI3j1bwpbnI1WV1Ueb+2mq2qVjkmidXtI=
-X-Google-Smtp-Source: ABdhPJy8i5MS/0T+vzdXmGJNBen98nhcV4ZxfzDsMj637sRPXvLpN8KQYJgnBsb4wkR1wRszqudpeCBhcUagr35jwvM=
-X-Received: by 2002:aa7:c956:: with SMTP id h22mr9767834edt.24.1634837457849;
- Thu, 21 Oct 2021 10:30:57 -0700 (PDT)
+        id S231604AbhJURdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 13:33:44 -0400
+Received: from mail-dm6nam08on2066.outbound.protection.outlook.com ([40.107.102.66]:19744
+        "EHLO NAM04-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231281AbhJURdk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Oct 2021 13:33:40 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cCCEn8nUSKmIVVY8hN+V3Ed289BtKsTNY5PnHBmcJwfW597+rUrfxFplp2dylAxQQkaspSBcJDY8WFSwWjVoCIUz6BkL1B6+DE1VI6Ok50KRwN0m6dnroLXtM68q/zgMPEIQckcv18b5Zz045gQygIdQ1RX/9UTyIIFmmsxd1hQrmP30D8bPdQr0Rn34Dj0VYrTqx9oephBPrvaNwOLqGOUAuU6y9DWg0QcjieuY5GVOiTenkUNw59BysAU0oGUHKlPR4RITl9IC3moCVno5HQ3LRR/4TqreoF7IN+oEPae2Q+6hB2T1YZZIUGEqrkrG2+RGjtP40QlxhczP7t68ag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=M6C9s3/LUsDNZy57CHUwlmB+nZMt26rI4LWN5wAcOGw=;
+ b=M7V7aP2z4RUhgs9FdpHNxqB6+iwMiJ+t02F8TPazsFSygEXWzuXtaEWd+73NIQwwHtwlGwtw9swjlru8MgKyBfevbkuUrKplwkpVUNdvmjKPEZJIXsfG3OscXauzgvYdI8YoQcCT5RN4IarIAC5s/D4TH5RfZwPPR1g1gA8edmCiD2dQIpBXjW82dwsz3p+gMMb9kMqJoBR/w5Nxr23pX7f3qjiuIGo71QRlDFxGu/beBPxoq1LTYUNTb1tRV86DMQ7er/X8SJg4RHH0YX26VDD248jq+6ke9osY/UiWupZrk9tYuuW7+BtrOlRo9GfmTPp1ZIuYa7tkaPuuli+Rww==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=nvidia.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=M6C9s3/LUsDNZy57CHUwlmB+nZMt26rI4LWN5wAcOGw=;
+ b=EAV1LSV7hsMF/F3HcsCpTWjn9//tjiadBKUzzM/kfX4Qi3qwMG2i1UzUyt0vep+G+WHJzsV/qBf3cy/ynDVuy+cacpBLIJ9reXFvzGBDa+p0ws9kYPCcp9xbaV5EvKBBWZbKQpuULHd3BnAMYFIq8Pd6Xi9yewaKDxg1fO8myVmL5dEhPniOEg6CcFlFK69dyHr9zC9lUCbm+idN17QWZAiBxMBHAjIuChtmf+NCT2ehqOOZOad9R0U02iwJkeWh9cXJ3tkoPpcSoJf+vQAQQoGCPcUBMMORxPl01UuAgvo8TssrcFMRCfCp2KhYhAdN2HvlauiYMv4XwGHRrk2iIw==
+Received: from MWHPR1401CA0004.namprd14.prod.outlook.com
+ (2603:10b6:301:4b::14) by BL1PR12MB5255.namprd12.prod.outlook.com
+ (2603:10b6:208:315::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.15; Thu, 21 Oct
+ 2021 17:31:21 +0000
+Received: from CO1NAM11FT014.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:301:4b:cafe::f1) by MWHPR1401CA0004.outlook.office365.com
+ (2603:10b6:301:4b::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.16 via Frontend
+ Transport; Thu, 21 Oct 2021 17:31:21 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ CO1NAM11FT014.mail.protection.outlook.com (10.13.175.99) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4628.16 via Frontend Transport; Thu, 21 Oct 2021 17:31:20 +0000
+Received: from [172.27.0.234] (172.20.187.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 21 Oct
+ 2021 17:31:10 +0000
+Message-ID: <055556e9-8028-a399-a099-f141a63cfbb5@nvidia.com>
+Date:   Thu, 21 Oct 2021 20:31:06 +0300
 MIME-Version: 1.0
-Received: by 2002:a50:7791:0:0:0:0:0 with HTTP; Thu, 21 Oct 2021 10:30:57
- -0700 (PDT)
-Reply-To: mstheresaheidi8@gmail.com
-From:   Ms Theresa Heidi <enginjoeb@gmail.com>
-Date:   Thu, 21 Oct 2021 17:30:57 +0000
-Message-ID: <CAHk_fxX_Q=v4T_YcBsJ3fM4vXC6=ugRRfWnO-AUnWX6XYqcVSQ@mail.gmail.com>
-Subject: =?UTF-8?B?57eK5oCl5rGC5Yqp77yB?=
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Subject: Re: [PATCH bpf-next 10/10] bpf: Add sample for raw syncookie helpers
+Content-Language: en-US
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        "Jesper Dangaard Brouer" <hawk@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        "Nick Desaulniers" <ndesaulniers@google.com>,
+        Brendan Jackman <jackmanb@google.com>,
+        Florent Revest <revest@chromium.org>,
+        Joe Stringer <joe@cilium.io>,
+        "Lorenz Bauer" <lmb@cloudflare.com>,
+        Tariq Toukan <tariqt@nvidia.com>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <clang-built-linux@googlegroups.com>
+References: <20211019144655.3483197-1-maximmi@nvidia.com>
+ <20211019144655.3483197-11-maximmi@nvidia.com>
+ <20211021010605.osyvspqie63asgn4@ast-mbp.dhcp.thefacebook.com>
+From:   Maxim Mikityanskiy <maximmi@nvidia.com>
+In-Reply-To: <20211021010605.osyvspqie63asgn4@ast-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.20.187.5]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 34e0d999-6fc2-4b2b-702f-08d994b898d0
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5255:
+X-Microsoft-Antispam-PRVS: <BL1PR12MB52551E4EF4BE591234C1D4BBDCBF9@BL1PR12MB5255.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: jsipfv9pgXCnzcmeghPUBsulJWnjVonKXa8ggtPwnHZtQ1i/b/BZaRBPBHoQkJDXMUepprL1vMgClVusX4dEDs4N6F2CCumKNCYxYi9JnKezc2LydMw/awI/rMqc1IFVl5hgfJvfXy+VbQrwWufJlJwSfzxMk0PeCwfPdE0+UX1BYWVGPhn+yum1l+0zA3O/ByQcEQtdsj7uwf1SGNlOd8+zuu1xepkKvL0CmgXkwZvuA6iEPUZakzafMyxZMmQLvBzHnTMznbZdLcioFVnQl86O1fpkcAGSMCOiEqLnRuJ1cSYHh44d2hP9idOP2tCypmG9A9QWCw8MzI2drzabWeIC9cfP6EfcLxLqExu12PAWPCgO2XMhrarYIE1oPViSA2ooDfSU4nis/aU8hwdHBqxH8ZLAo33PULPNj4BcAJLEanjEW5XA3nA3ro2qLgxtn/LKUB4K0YVft/kMX8MXxu05wxOOpy2TzV7eqwwwvoWGAMxYiW9D5tNXwqDwpvDETvdrySIBKWMnXx5OJIAHDamE/YcTUEYyhX7YPhq6NEKxtFm5cBAAOzuIjZIJ6NiFB/9e9qiP44B0w+jnMtOolipGUgf0XLbyU9I5waHQAp2euCKDC6PPP4qceHPh+4onA/bDxzHv4GH52tnMkgoNmygOc/6zzdtQrsr3Mkx0bbOu0THj9jDKG0U+OGdI5PkrVl+Z2/0k/6JSnOBC79xv4dc5TPKBN2Pqze8uO4DTE0g=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(316002)(53546011)(7416002)(8676002)(5660300002)(16576012)(508600001)(31696002)(2616005)(336012)(426003)(36756003)(8936002)(31686004)(356005)(16526019)(6916009)(7636003)(4326008)(47076005)(2906002)(26005)(186003)(36860700001)(70206006)(54906003)(70586007)(82310400003)(4001150100001)(6666004)(86362001)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Oct 2021 17:31:20.3388
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 34e0d999-6fc2-4b2b-702f-08d994b898d0
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT014.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5255
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-6Kaq5oSb55qE77yMDQoNCuaFiOWWhOaNkOi0iCDoq4vku5TntLDplrHoroDvvIzmiJHnn6XpgZPp
-gJnlsIHkv6Hlj6/og73mnIPntabmgqjluLbkvobpqZrllpzjgILlnKjpnIDopoHmgqjnmoTluavl
-iqnmmYLvvIzmiJHpgJrpgY7np4HkurrmkJzntKLmib7liLDkuobmgqjnmoTpm7vlrZDpg7Xku7bo
-ga/nuavmlrnlvI/jgILmiJHmh7fokZfmsonph43nmoTlv4Pmg4Xntabmgqjlr6vpgJnlsIHpg7Xk
-u7bvvIzmiJHpgbjmk4fpgJrpgY7kupLoga/ntrLoiIfmgqjoga/nuavvvIzlm6DngrrlroPku43n
-hLbmmK/mnIDlv6vnmoTmup3pgJrlqpLku4vjgIINCg0K5oiR55qE5ZCN5a2X5pivVGhlcmVzYSBI
-ZWlkaeWkq+S6uuaIkeWHuueUn+WcqOazleWci++8jOePvuaZguWboOiCuueZjOWcqOS7peiJsuWI
-l+eahOS4gOWutuengeeri+mGq+mZouS9j+mZouaIkeS7iuW5tDYy5q2y77yM5Zyo5oiR5LiI5aSr
-5Y675LiW5b6M77yM5oiR6KKr6Ki65pa354K66IK655mM5bey57aT5pyJ5aSn57SENOW5tOS6huOA
-guaIkeS4iOWkq+aKiuS7lueCuuaIkeW3peS9nOeahOS4gOWIh+mDveeVmee1puS6huaIkeOAguaI
-keW4tuiRl+aIkeeahOethuiomOWei+mbu+iFpuWcqOmAmeijoeeahOS4gOWutumGq+mZouijj+aO
-peWPl+iCuueZjOayu+eZguOAguaIkeW+nuaIkeW3suaVheeahOS4iOWkq+mCo+ijoee5vOaJv+S6
-huS4gOS6m+izh+mHke+8jOe4vemhjeWDheeCuuS6jOeZvuS6lOWNgeiQrOe+juWFg++8iDI1MDAw
-MDAsMDDnvo7lhYPvvInjgILnj77lnKjlvojmmI7poa/vvIzmiJHlt7LntpPmjqXov5HnlJ/lkb3n
-moTmnIDlvozlub7lpKnkuobvvIzmiJHoqo3ngrrmiJHkuI3lho3pnIDopoHpgJnnrYbpjKLkuobj
-gILmiJHnmoTphqvnlJ/orpPmiJHmmI7nmb3vvIznlLHmlrzogrrnmYznmoTllY/poYzvvIzmiJHm
-tLvkuI3kuobkuIDlubTjgIINCg0K6YCZ562G6Yyi5LuN5Zyo5aSW5ZyL6YqA6KGM77yM566h55CG
-5bGk5a+r5L+h57Wm5oiR77yM6K6T5oiR5L2c54K655yf5q2j55qE5omA5pyJ6ICF56uZ5Ye65L6G
-5o6l5Y+X6YCZ562G6Yyi77yM5oiW6ICF5pu056K65YiH5Zyw6Kqq77yM5ZCR5p+Q5Lq655m85Ye6
-5o6I5qyK5pu477yM5Luj6KGo5oiR5o6l5Y+X6YCZ562G6Yyi77yM5Zug54K65oiR5Zug55eF5LiN
-6IO96YGO5L6G44CC5aaC5p6c5LiN5o6h5Y+W6KGM5YuV77yM6YqA6KGM5Y+v6IO95pyD5Zug54K6
-6ZW35pyf5oyB5pyJ6LOH6YeR6ICM6KKr5rKS5pS244CCDQoNCuaIkeWGs+WumuiIh+aCqOiBr+ez
-u++8jOWmguaenOaCqOWPr+iDvemhmOaEj+S4puacieiIiOi2o+W5q+WKqeaIkeW+nuWkluWci+mK
-gOihjOmBuOWPlumAmeethuizh+mHke+8jOeEtuW+jOWwh+mAmeS6m+izh+mHkeeUqOaWvOaFiOWW
-hOS6i+alre+8jOW5q+WKqeW8seWLoue+pOmrlO+8jOS4puWcqOekvuacg+S4iuaKl+aTiuaWsOWG
-oOeWq+aDheOAguaIkeimgeS9oOWcqOaIkeWHuuS6i+S5i+WJje+8jOiqoOWvpuWcsOiZleeQhumA
-meS6m+S/oeiol+WfuumHkeOAgumAmeS4jeaYr+WBt+S+hueahOmMou+8jOaykuacieWNsemaqu+8
-jDEwMCXnhKHpoqjpmqrvvIzmnInlhYXliIbnmoTms5XlvovorYnmk5rjgIINCg0K5oiR5biM5pyb
-5L2g5oqK57i95pS25YWl55qENDUl55So5pa85YCL5Lq655So6YCU77yM6ICMNTUl55So5pa85oWI
-5ZaE5LqL5qWt44CC5oiR5bCH5oSf6Kyd5oKo5Zyo6YCZ5Lu25LqL5LiK55qE5pyA5aSn5L+h5Lu7
-5ZKM5L+d5a+G77yM5Lul5a+m54++5oiR5YWn5b+D55qE6aGY5pyb77yM5Zug54K65oiR5LiN5oOz
-6KaB5Lu75L2V5pyD5Y2x5Y+K5oiR5pyA5b6M6aGY5pyb55qE5p2x6KW/44CC5oiR5b6I5oqx5q2J
-77yM5aaC5p6c5L2g5pS25Yiw6YCZ5bCB5L+h5Zyo5L2g55qE5Z6D5Zy+6YO15Lu277yM5piv55Sx
-5pa85pyA6L+R55qE6YCj5o6l6Yyv6Kqk5Zyo6YCZ6KOh55qE5ZyL5a6244CCDQoNCuS9oOimquaE
-m+eahOWnkOWnkOOAgg0K54m56JW+6I6OwrfmtbfokoLlpKvkuroNCg==
+On 2021-10-21 04:06, Alexei Starovoitov wrote:
+> On Tue, Oct 19, 2021 at 05:46:55PM +0300, Maxim Mikityanskiy wrote:
+>> This commit adds a sample for the new BPF helpers: bpf_ct_lookup_tcp,
+>> bpf_tcp_raw_gen_syncookie and bpf_tcp_raw_check_syncookie.
+>>
+>> samples/bpf/syncookie_kern.c is a BPF program that generates SYN cookies
+>> on allowed TCP ports and sends SYNACKs to clients, accelerating synproxy
+>> iptables module.
+>>
+>> samples/bpf/syncookie_user.c is a userspace control application that
+>> allows to configure the following options in runtime: list of allowed
+>> ports, MSS, window scale, TTL.
+>>
+>> samples/bpf/syncookie_test.sh is a script that demonstrates the setup of
+>> synproxy with XDP acceleration.
+>>
+>> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+>> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+>> ---
+>>   samples/bpf/.gitignore        |   1 +
+>>   samples/bpf/Makefile          |   3 +
+>>   samples/bpf/syncookie_kern.c  | 591 ++++++++++++++++++++++++++++++++++
+>>   samples/bpf/syncookie_test.sh |  55 ++++
+>>   samples/bpf/syncookie_user.c  | 388 ++++++++++++++++++++++
+>>   5 files changed, 1038 insertions(+)
+>>   create mode 100644 samples/bpf/syncookie_kern.c
+>>   create mode 100755 samples/bpf/syncookie_test.sh
+>>   create mode 100644 samples/bpf/syncookie_user.c
+> 
+> Tests should be in selftests/bpf.
+> Samples are for samples only.
+
+It's not a test, please don't be confused by the name of 
+syncookie_test.sh - it's more like a demo script.
+
+syncookie_user.c and syncookie_kern.c are 100% a sample, they show how 
+to use the new helpers and are themselves a more or less 
+feature-complete solution to protect from SYN flood. syncookie_test.sh 
+should probably be named syncookie_demo.sh, it demonstrates how to bring 
+pieces together.
+
+These files aren't aimed to be a unit test for the new helpers, their 
+purpose is to show the usage.
+
+> 
+>> +// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
+> 
+> Isn't it deprecated?
+> LICENSES/deprecated/Linux-OpenIB
+
+Honestly, I had no idea, I just used our template. I'll ask whoever is 
+responsible for the license.
+
+If it's deprecated, what should be used instead?
+
+> 
+>> +	// Don't combine additions to avoid 32-bit overflow.
+> 
+> c++ style comment?
+> did you run checkpatch?
+
+Sure I did, and it doesn't complain on such comments. If such comments 
+are a problem, please tell me, but I also saw them in other BPF samples.
+
+Thanks for reviewing!
