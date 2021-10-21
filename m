@@ -2,214 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 811FC4364D2
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 16:55:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33F5B4364FC
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 17:04:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231256AbhJUO6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 10:58:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45502 "EHLO
+        id S231524AbhJUPHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 11:07:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbhJUO6F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 10:58:05 -0400
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56ACEC0613B9
-        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 07:55:49 -0700 (PDT)
-Received: by mail-oi1-x230.google.com with SMTP id t4so1182599oie.5
-        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 07:55:49 -0700 (PDT)
+        with ESMTP id S231256AbhJUPHA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 11:07:00 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1348BC061348
+        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 08:04:45 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id v20so608894plo.7
+        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 08:04:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=AMFoNCzjo2neTJQLcr/2BEBCXIQ9jw04IP8o4kR5iuE=;
-        b=ATTklKGbE1CbnC1iH5KtDrB0ILidV+K7UVgbgCfaE28Z9VMOsZrAOwqYOvnNTCo06v
-         9EUtu2v12M6kHBLhiU0B3l7NJ1WyV8YLkO8ynAP6E148LjuZ74UChRCgo2aDFEwrvKSn
-         yXzzHdb8YN09RTPkPw40nsY1DCsTAAll7lpQkuMN1dF8Dax0jJcolhDl4e9ux0jUNrNY
-         4xFtUepjPQeWz8j7JSnTSi2PLCLFIYDIK3EyZlSEBGByyLluA0X1OrMUZkt+MuowR02g
-         MMxkh17d7D9OZ3NkM/WTvjav6KxN3IVHXfU+PoypxUPBc/Tx6affEsAZO+//PNkfNfHY
-         Ky0A==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+7ZZ5NEQvmKMVpumrFViPwChqWqhssGnPZ02YAN9YdY=;
+        b=i95t92b2Q4lUhdSuI0qG+4TT7Epm7Ya6L8Xna+yyPox+5giXcQhMxkdGkR9A2OutPL
+         unj/zai0nOc2rvGY6EbfoKm8gi3TlJlWlavzPmCOQNpaHC2M95jsEr1GoVyi7kF/8MIw
+         lJtQURZT+tjTUadZUWf/310mY0iCpk8OJbUZk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=AMFoNCzjo2neTJQLcr/2BEBCXIQ9jw04IP8o4kR5iuE=;
-        b=eaGT3D4frLiGBPo4r3ylLurc2Fr4PH2c3SGYYhx/PeOTFhp9U/5D4Fb/qiJoicUmzP
-         FXO1gqu3EqAXK4YECuscKjJUnERO0hbyXRBLad7kOizgd+AN6dIyPbXQjxpJgVIn9/lf
-         n0Z9ZagXSbNnw0Eb3FSIevG3nXCJFpBpgtn61lD4/s//UnB0JtzLRrL91Xd3JrVEUieD
-         2vO7x6nTPHlXDRaMN3cScvItFQAAeG42H4ga6G3S1eqY7KYfrO7kRx3h+QYS7qxspanw
-         k8YiKrOkHZ2Xe/UZZqUy5G9JgVAbrlOf/q1nUosBVtTrm5x5J1mSgnmSnFo6FjSShCfy
-         0w9A==
-X-Gm-Message-State: AOAM532nu7LH1vyZzuTZyxuyfJBiGesiQP0wrR0uXpJvNOmZxzgMdb/1
-        e9hH2Fyf/R/j8D12sItGec6MqrEkUBU=
-X-Google-Smtp-Source: ABdhPJwN6LQ0olRgR6ylK+BCKv1TfDKq0pKzZIZvwMZ/4JAMycJz0A5Ag1xr3O9zLaGoTfdAwSobVA==
-X-Received: by 2002:a05:6808:1921:: with SMTP id bf33mr5161155oib.71.1634828148718;
-        Thu, 21 Oct 2021 07:55:48 -0700 (PDT)
-Received: from [172.16.0.2] ([8.48.134.34])
-        by smtp.googlemail.com with ESMTPSA id j4sm1125087oia.56.2021.10.21.07.55.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Oct 2021 07:55:47 -0700 (PDT)
-Message-ID: <1ee8e8ec-734b-eec7-1826-340c0d48f26e@gmail.com>
-Date:   Thu, 21 Oct 2021 08:55:46 -0600
+        bh=+7ZZ5NEQvmKMVpumrFViPwChqWqhssGnPZ02YAN9YdY=;
+        b=PY1uKIpEvyGht6942ienBPxP4n8PvQEFEm5gJCOwCt2NW3WSX3GLf82Pl5D9Nk1E9T
+         cnSbwXhdt3WN5d8a2y37QoPJjgWfoaMIx0eMmLRJZTuc0ofWYS6DFtgaFvK99faHiH8a
+         nzvanZJc1XUfcGgMlUruunY63FtYeDmtJ8tZZwPkdTkXrXyuVCFklR/xbwA3KklYbUy8
+         4BbpMIupSapzAIcn4KehJblcAspcaJp66/4ks7l5E8TfNK1ODI4UskDdEYHYYy1F/4wB
+         noLAoL/0oG58lQ13EdxCcRnO+/L68B4bFZbRF2NhY6L+AFIQ0jFojIqq2AvQvI6JUywg
+         3rjw==
+X-Gm-Message-State: AOAM532JaqWkzU26Pme/QjCGzpWbAKVDqcFeyT0BuViJ2jbM0sQK8ykX
+        KbMYwWQs6f3Bjp3D8F1H3vEcEQ==
+X-Google-Smtp-Source: ABdhPJz3ggWax17jrJJfhyp5cR5clwL26aLQhXGER64HejHwJ01ao3uMXFtcT3GQqQrbnDZnso4sLQ==
+X-Received: by 2002:a17:903:234a:b0:13e:f01a:24f with SMTP id c10-20020a170903234a00b0013ef01a024fmr5673861plh.43.1634828684485;
+        Thu, 21 Oct 2021 08:04:44 -0700 (PDT)
+Received: from josephsih-z840.tpe.corp.google.com ([2401:fa00:1:10:acf2:287:fa53:43f4])
+        by smtp.gmail.com with ESMTPSA id 21sm9546045pjg.57.2021.10.21.08.04.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Oct 2021 08:04:43 -0700 (PDT)
+From:   Joseph Hwang <josephsih@chromium.org>
+To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
+        luiz.dentz@gmail.com, pali@kernel.org
+Cc:     chromeos-bluetooth-upstreaming@chromium.org, josephsih@google.com,
+        Joseph Hwang <josephsih@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v6 1/3] Bluetooth: Add struct of reading AOSP vendor capabilities
+Date:   Thu, 21 Oct 2021 23:04:23 +0800
+Message-Id: <20211021230356.v6.1.I139e71adfd3f00b88fe9edb63d013f9cd3e24506@changeid>
+X-Mailer: git-send-email 2.33.0.1079.g6e70778dc9-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.2.0
-Subject: Re: [PATCH iproute2 v2] xfrm: enable to manage default policies
-Content-Language: en-US
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org, antony.antony@secunet.com,
-        steffen.klassert@secunet.com
-References: <20210923061342.8522-1-nicolas.dichtel@6wind.com>
- <20211018083045.27406-1-nicolas.dichtel@6wind.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20211018083045.27406-1-nicolas.dichtel@6wind.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/18/21 2:30 AM, Nicolas Dichtel wrote:
-> diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
-> index ecd06396eb16..378b4092f26a 100644
-> --- a/include/uapi/linux/xfrm.h
-> +++ b/include/uapi/linux/xfrm.h
-> @@ -213,13 +213,13 @@ enum {
->  	XFRM_MSG_GETSPDINFO,
->  #define XFRM_MSG_GETSPDINFO XFRM_MSG_GETSPDINFO
->  
-> +	XFRM_MSG_MAPPING,
-> +#define XFRM_MSG_MAPPING XFRM_MSG_MAPPING
-> +
->  	XFRM_MSG_SETDEFAULT,
->  #define XFRM_MSG_SETDEFAULT XFRM_MSG_SETDEFAULT
->  	XFRM_MSG_GETDEFAULT,
->  #define XFRM_MSG_GETDEFAULT XFRM_MSG_GETDEFAULT
-> -
-> -	XFRM_MSG_MAPPING,
-> -#define XFRM_MSG_MAPPING XFRM_MSG_MAPPING
->  	__XFRM_MSG_MAX
->  };
->  #define XFRM_MSG_MAX (__XFRM_MSG_MAX - 1)
-> @@ -514,9 +514,12 @@ struct xfrm_user_offload {
->  #define XFRM_OFFLOAD_INBOUND	2
->  
->  struct xfrm_userpolicy_default {
-> -#define XFRM_USERPOLICY_DIRMASK_MAX	(sizeof(__u8) * 8)
-> -	__u8				dirmask;
-> -	__u8				action;
-> +#define XFRM_USERPOLICY_UNSPEC	0
-> +#define XFRM_USERPOLICY_BLOCK	1
-> +#define XFRM_USERPOLICY_ACCEPT	2
-> +	__u8				in;
-> +	__u8				fwd;
-> +	__u8				out;
->  };
->  
->  /* backwards compatibility for userspace */
+This patch adds the struct of reading AOSP vendor capabilities.
+New capabilities are added incrementally. Note that the
+version_supported octets will be used to determine whether a
+capability has been defined for the version.
 
-that is already updated in iproute2-next.
+Signed-off-by: Joseph Hwang <josephsih@chromium.org>
 
+---
 
-> diff --git a/ip/xfrm_policy.c b/ip/xfrm_policy.c
-> index 7cc00e7c2f5b..744f331ff564 100644
-> --- a/ip/xfrm_policy.c
-> +++ b/ip/xfrm_policy.c
-> @@ -1124,6 +1126,121 @@ static int xfrm_spd_getinfo(int argc, char **argv)
->  	return 0;
->  }
->  
-> +static int xfrm_spd_setdefault(int argc, char **argv)
-> +{
-> +	struct rtnl_handle rth;
-> +	struct {
-> +		struct nlmsghdr			n;
-> +		struct xfrm_userpolicy_default  up;
-> +	} req = {
-> +		.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct xfrm_userpolicy_default)),
-> +		.n.nlmsg_flags = NLM_F_REQUEST,
-> +		.n.nlmsg_type = XFRM_MSG_SETDEFAULT,
-> +	};
-> +
-> +	while (argc > 0) {
-> +		if (strcmp(*argv, "in") == 0) {
-> +			if (req.up.in)
-> +				duparg("in", *argv);
-> +
-> +			NEXT_ARG();
-> +			if (strcmp(*argv, "block") == 0)
-> +				req.up.in = XFRM_USERPOLICY_BLOCK;
-> +			else if (strcmp(*argv, "accept") == 0)
-> +				req.up.in = XFRM_USERPOLICY_ACCEPT;
-> +			else
-> +				invarg("in policy value is invalid", *argv);
-> +		} else if (strcmp(*argv, "fwd") == 0) {
-> +			if (req.up.fwd)
-> +				duparg("fwd", *argv);
-> +
-> +			NEXT_ARG();
-> +			if (strcmp(*argv, "block") == 0)
-> +				req.up.fwd = XFRM_USERPOLICY_BLOCK;
-> +			else if (strcmp(*argv, "accept") == 0)
-> +				req.up.fwd = XFRM_USERPOLICY_ACCEPT;
-> +			else
-> +				invarg("fwd policy value is invalid", *argv);
-> +		} else if (strcmp(*argv, "out") == 0) {
-> +			if (req.up.out)
-> +				duparg("out", *argv);
-> +
-> +			NEXT_ARG();
-> +			if (strcmp(*argv, "block") == 0)
-> +				req.up.out = XFRM_USERPOLICY_BLOCK;
-> +			else if (strcmp(*argv, "accept") == 0)
-> +				req.up.out = XFRM_USERPOLICY_ACCEPT;
-> +			else
-> +				invarg("out policy value is invalid", *argv);
-> +		} else {
-> +			invarg("unknown direction", *argv);
-> +		}
-> +
-> +		argc--; argv++;
-> +	}
-> +
-> +	if (rtnl_open_byproto(&rth, 0, NETLINK_XFRM) < 0)
-> +		exit(1);
-> +
-> +	if (rtnl_talk(&rth, &req.n, NULL) < 0)
-> +		exit(2);
-> +
-> +	rtnl_close(&rth);
-> +
-> +	return 0;
-> +}
-> +
-> +int xfrm_policy_default_print(struct nlmsghdr *n, FILE *fp)
-> +{
-> +	struct xfrm_userpolicy_default *up = NLMSG_DATA(n);
-> +	int len = n->nlmsg_len - NLMSG_SPACE(sizeof(*up));
-> +
-> +	if (len < 0) {
-> +		fprintf(stderr,
-> +			"BUG: short nlmsg len %u (expect %lu) for XFRM_MSG_GETDEFAULT\n",
-> +			n->nlmsg_len, NLMSG_SPACE(sizeof(*up)));
-> +		return -1;
-> +	}
-> +
-> +	fprintf(fp, "Default policies:\n");
-> +	fprintf(fp, " in:  %s\n",
-> +		up->in == XFRM_USERPOLICY_BLOCK ? "block" : "accept");
-> +	fprintf(fp, " fwd: %s\n",
-> +		up->fwd == XFRM_USERPOLICY_BLOCK ? "block" : "accept");
-> +	fprintf(fp, " out: %s\n",
-> +		up->out == XFRM_USERPOLICY_BLOCK ? "block" : "accept");
-> +	fflush(fp);
-> +
-> +	return 0;
-> +}
-> +
+Changes in v6:
+- Add historical versions of struct aosp_rp_le_get_vendor_capabilities.
+- Perform the basic check about the struct length.
+- Through the version, bluetooth_quality_report_support can be checked.
 
-create xfrm_str_to_policy and xfrm_policy_to_str helpers for the
-conversions between "block" and "accept" to XFRM_USERPOLICY_BLOCK and
-XFRM_USERPOLICY_ACCEPT and back.
+Changes in v5:
+- This is a new patch.
+- Add struct aosp_rp_le_get_vendor_capabilities so that next patch
+  can determine whether a particular capability is supported or not.
 
+ include/net/bluetooth/hci_core.h |   1 +
+ net/bluetooth/aosp.c             | 116 ++++++++++++++++++++++++++++++-
+ 2 files changed, 116 insertions(+), 1 deletion(-)
+
+diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
+index dd8840e70e25..32b3774227f2 100644
+--- a/include/net/bluetooth/hci_core.h
++++ b/include/net/bluetooth/hci_core.h
+@@ -603,6 +603,7 @@ struct hci_dev {
+ 
+ #if IS_ENABLED(CONFIG_BT_AOSPEXT)
+ 	bool			aosp_capable;
++	bool			aosp_quality_report;
+ #endif
+ 
+ 	int (*open)(struct hci_dev *hdev);
+diff --git a/net/bluetooth/aosp.c b/net/bluetooth/aosp.c
+index a1b7762335a5..64684b2bf79b 100644
+--- a/net/bluetooth/aosp.c
++++ b/net/bluetooth/aosp.c
+@@ -8,9 +8,53 @@
+ 
+ #include "aosp.h"
+ 
++/* Command complete parameters of LE_Get_Vendor_Capabilities_Command
++ * The parameters grow over time. The first version that declares the
++ * version_supported field is v0.95. Refer to
++ * https://cs.android.com/android/platform/superproject/+/master:system/
++ *         bt/gd/hci/controller.cc;l=452?q=le_get_vendor_capabilities_handler
++ */
++
++/* the base capabilities struct with the version_supported field */
++struct aosp_rp_le_get_vendor_capa_v95 {
++	__u8	status;
++	__u8	max_advt_instances;
++	__u8	offloaded_resolution_of_private_address;
++	__u16	total_scan_results_storage;
++	__u8	max_irk_list_sz;
++	__u8	filtering_support;
++	__u8	max_filter;
++	__u8	activity_energy_info_support;
++	__u16	version_supported;
++	__u16	total_num_of_advt_tracked;
++	__u8	extended_scan_support;
++	__u8	debug_logging_supported;
++} __packed;
++
++struct aosp_rp_le_get_vendor_capa_v96 {
++	struct aosp_rp_le_get_vendor_capa_v95 v95;
++	/* v96 */
++	__u8	le_address_generation_offloading_support;
++} __packed;
++
++struct aosp_rp_le_get_vendor_capa_v98 {
++	struct aosp_rp_le_get_vendor_capa_v96 v96;
++	/* v98 */
++	__u32	a2dp_source_offload_capability_mask;
++	__u8	bluetooth_quality_report_support;
++} __packed;
++
++struct aosp_rp_le_get_vendor_capa_v100 {
++	struct aosp_rp_le_get_vendor_capa_v98 v98;
++	/* v100 */
++	__u32	dynamic_audio_buffer_support;
++} __packed;
++
+ void aosp_do_open(struct hci_dev *hdev)
+ {
+ 	struct sk_buff *skb;
++	struct aosp_rp_le_get_vendor_capa_v95 *base_rp;
++	u16 version_supported;
+ 
+ 	if (!hdev->aosp_capable)
+ 		return;
+@@ -20,9 +64,79 @@ void aosp_do_open(struct hci_dev *hdev)
+ 	/* LE Get Vendor Capabilities Command */
+ 	skb = __hci_cmd_sync(hdev, hci_opcode_pack(0x3f, 0x153), 0, NULL,
+ 			     HCI_CMD_TIMEOUT);
+-	if (IS_ERR(skb))
++	if (IS_ERR(skb)) {
++		bt_dev_warn(hdev, "AOSP get vendor capabilities (%ld)",
++			    PTR_ERR(skb));
+ 		return;
++	}
++
++	bt_dev_dbg(hdev, "aosp le vendor capabilities length %d", skb->len);
++
++	base_rp = (struct aosp_rp_le_get_vendor_capa_v95 *)skb->data;
++
++	if (base_rp->status) {
++		bt_dev_err(hdev, "AOSP LE Get Vendor Capabilities status %d",
++			   base_rp->status);
++		goto done;
++	}
++
++	version_supported = le16_to_cpu(base_rp->version_supported);
++	bt_dev_info(hdev, "AOSP version %u", version_supported);
++
++	/* Do not support very old versions. */
++	if (version_supported < 95) {
++		bt_dev_err(hdev, "capabilities version %u too old",
++			   version_supported);
++		goto done;
++	}
++
++	if (version_supported >= 95) {
++		struct aosp_rp_le_get_vendor_capa_v95 *rp;
++
++		rp = (struct aosp_rp_le_get_vendor_capa_v95 *)skb->data;
++		if (skb->len < sizeof(*rp))
++			goto length_error;
++	}
++
++	if (version_supported >= 96) {
++		struct aosp_rp_le_get_vendor_capa_v96 *rp;
++
++		rp = (struct aosp_rp_le_get_vendor_capa_v96 *)skb->data;
++		if (skb->len < sizeof(*rp))
++			goto length_error;
++	}
++
++	if (version_supported >= 98) {
++		struct aosp_rp_le_get_vendor_capa_v98 *rp;
++
++		rp = (struct aosp_rp_le_get_vendor_capa_v98 *)skb->data;
++		if (skb->len < sizeof(*rp))
++			goto length_error;
++
++		/* The bluetooth_quality_report_support is defined at version v0.98.
++		 * Refer to https://cs.android.com/android/platform/superproject/+/
++		 *                  master:system/bt/gd/hci/controller.cc;l=477
++		 */
++		if (rp->bluetooth_quality_report_support) {
++			hdev->aosp_quality_report = true;
++			bt_dev_info(hdev, "bluetooth quality report is supported");
++		}
++	}
++
++	if (version_supported >= 100) {
++		struct aosp_rp_le_get_vendor_capa_v100 *rp;
++
++		rp = (struct aosp_rp_le_get_vendor_capa_v100 *)skb->data;
++		if (skb->len < sizeof(*rp))
++			goto length_error;
++	}
++
++	goto done;
++
++length_error:
++	bt_dev_err(hdev, "AOSP capabilities length %d too short", skb->len);
+ 
++done:
+ 	kfree_skb(skb);
+ }
+ 
+-- 
+2.33.0.1079.g6e70778dc9-goog
 
