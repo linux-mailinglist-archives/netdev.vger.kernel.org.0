@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13A17436286
+	by mail.lfdr.de (Postfix) with ESMTP id 8A58F436287
 	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 15:12:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231282AbhJUNOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 09:14:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52508 "EHLO mail.kernel.org"
+        id S231381AbhJUNOy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 09:14:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52516 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231230AbhJUNOh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231129AbhJUNOh (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 21 Oct 2021 09:14:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 62C006124D;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A703661251;
         Thu, 21 Oct 2021 13:12:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1634821941;
-        bh=K8IIQzRrXwqKD/fneGJaop/PWBAqXpOUhyRz0OJY0Ac=;
+        bh=56uBqX54Cz8tzQrAtZG6EhGIGci5rVwdVzJNP6UWE3w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rUGrh6DOIAYFAOK3LMWaGc4OrqjwaR6IKOFC+u82rYv12c6lSCWJJ4iXN6aJ3xMfN
-         hLrrfQYpZfJmgkgBq390gnTbubDTzPxsn5IMSPzGfnL3Vk/bDPL16Cmx+A7B9yAL9R
-         l2E4qWO/35v8XBKCydheYcb/67hy0r3WxR2GEarxzRvu+tKU9HZlP5KIJOy1PlHY5Z
-         8Q2NsBXHDkl3YMtS0ULJFuY0YyoXBKUAGj7yVPFRscGSLIjtz1PUG7b1yMDfXpPYiS
-         0tjzdVNXGeYDJCkRwZC2j7WiPqTh9ej9Qa8KuqXCLCzs5krQFMQ3Ak+tPy7m6OU/8i
-         yCjSNtEW1u6UA==
+        b=S0k9xPkE5U3wUGqhw4DJCyXYRRoJhNb5FHHqQxJeFPZXdYdhH+aDxG2ZjOoNViRrm
+         NxPDur5fOjnyeIDqEIdt2NbmNETvY5WVtsvg1GRE9NtrzKKmc9vzbgAmeNTJbMOp99
+         lZKmvuogqQikZvJMBaHK1nXptA5jqVVEgQVav7V6beZN+JhzWYZUPngctFGhc99lQe
+         sbOzOmo12ncVbwl0V6lVEUQB5OVmW0cvfRLu4Ux8O11PJZbtcSoSelXCLmcoChpiW3
+         0yTcUrLbz+eZhaV0njVnMA526obs8z8oKcwkkKuZs9ADJ8+3eQpSMM+6Ps6K+HqrOn
+         sUeBA6M/DxtXw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 06/12] fddi: skfp: constify and use dev_addr_set()
-Date:   Thu, 21 Oct 2021 06:12:08 -0700
-Message-Id: <20211021131214.2032925-7-kuba@kernel.org>
+Subject: [PATCH net-next v2 07/12] net: fjes: constify and use eth_hw_addr_set()
+Date:   Thu, 21 Oct 2021 06:12:09 -0700
+Message-Id: <20211021131214.2032925-8-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211021131214.2032925-1-kuba@kernel.org>
 References: <20211021131214.2032925-1-kuba@kernel.org>
@@ -42,59 +42,70 @@ Get it ready for constant netdev->dev_addr.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/fddi/skfp/h/smc.h   | 2 +-
- drivers/net/fddi/skfp/skfddi.c  | 2 +-
- drivers/net/fddi/skfp/smtinit.c | 4 ++--
- 3 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/fjes/fjes_hw.c   |  3 ++-
+ drivers/net/fjes/fjes_hw.h   |  2 +-
+ drivers/net/fjes/fjes_main.c | 14 ++++++++------
+ 3 files changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/fddi/skfp/h/smc.h b/drivers/net/fddi/skfp/h/smc.h
-index 3814a2ff64ae..b0e6ce0d893e 100644
---- a/drivers/net/fddi/skfp/h/smc.h
-+++ b/drivers/net/fddi/skfp/h/smc.h
-@@ -470,7 +470,7 @@ void card_stop(struct s_smc *smc);
- void init_board(struct s_smc *smc, u_char *mac_addr);
- int init_fplus(struct s_smc *smc);
- void init_plc(struct s_smc *smc);
--int init_smt(struct s_smc *smc, u_char *mac_addr);
-+int init_smt(struct s_smc *smc, const u_char *mac_addr);
- void mac1_irq(struct s_smc *smc, u_short stu, u_short stl);
- void mac2_irq(struct s_smc *smc, u_short code_s2u, u_short code_s2l);
- void mac3_irq(struct s_smc *smc, u_short code_s3u, u_short code_s3l);
-diff --git a/drivers/net/fddi/skfp/skfddi.c b/drivers/net/fddi/skfp/skfddi.c
-index 652cb174302e..2b6a607ac0b7 100644
---- a/drivers/net/fddi/skfp/skfddi.c
-+++ b/drivers/net/fddi/skfp/skfddi.c
-@@ -925,7 +925,7 @@ static int skfp_ctl_set_mac_address(struct net_device *dev, void *addr)
- 	unsigned long Flags;
+diff --git a/drivers/net/fjes/fjes_hw.c b/drivers/net/fjes/fjes_hw.c
+index 065bb0a40b1d..704e949484d0 100644
+--- a/drivers/net/fjes/fjes_hw.c
++++ b/drivers/net/fjes/fjes_hw.c
+@@ -137,7 +137,8 @@ static void fjes_hw_free_epbuf(struct epbuf_handler *epbh)
+ 	epbh->ring = NULL;
+ }
  
- 
--	memcpy(dev->dev_addr, p_sockaddr->sa_data, FDDI_K_ALEN);
-+	dev_addr_set(dev, p_sockaddr->sa_data);
- 	spin_lock_irqsave(&bp->DriverLock, Flags);
- 	ResetAdapter(smc);
- 	spin_unlock_irqrestore(&bp->DriverLock, Flags);
-diff --git a/drivers/net/fddi/skfp/smtinit.c b/drivers/net/fddi/skfp/smtinit.c
-index c9898c83fe30..8b172c195685 100644
---- a/drivers/net/fddi/skfp/smtinit.c
-+++ b/drivers/net/fddi/skfp/smtinit.c
-@@ -19,7 +19,7 @@
- #include "h/fddi.h"
- #include "h/smc.h"
- 
--void init_fddi_driver(struct s_smc *smc, u_char *mac_addr);
-+void init_fddi_driver(struct s_smc *smc, const u_char *mac_addr);
- 
- /* define global debug variable */
- #if defined(DEBUG) && !defined(DEBUG_BRD)
-@@ -57,7 +57,7 @@ static void set_oem_spec_val(struct s_smc *smc)
- /*
-  * Init SMT
-  */
--int init_smt(struct s_smc *smc, u_char *mac_addr)
-+int init_smt(struct s_smc *smc, const u_char *mac_addr)
- /* u_char *mac_addr;	canonical address or NULL */
+-void fjes_hw_setup_epbuf(struct epbuf_handler *epbh, u8 *mac_addr, u32 mtu)
++void fjes_hw_setup_epbuf(struct epbuf_handler *epbh, const u8 *mac_addr,
++			 u32 mtu)
  {
- 	int	p ;
+ 	union ep_buffer_info *info = epbh->info;
+ 	u16 vlan_id[EP_BUFFER_SUPPORT_VLAN_MAX];
+diff --git a/drivers/net/fjes/fjes_hw.h b/drivers/net/fjes/fjes_hw.h
+index b4608ea2a2d5..997c7b37a402 100644
+--- a/drivers/net/fjes/fjes_hw.h
++++ b/drivers/net/fjes/fjes_hw.h
+@@ -330,7 +330,7 @@ int fjes_hw_register_buff_addr(struct fjes_hw *, int,
+ int fjes_hw_unregister_buff_addr(struct fjes_hw *, int);
+ void fjes_hw_init_command_registers(struct fjes_hw *,
+ 				    struct fjes_device_command_param *);
+-void fjes_hw_setup_epbuf(struct epbuf_handler *, u8 *, u32);
++void fjes_hw_setup_epbuf(struct epbuf_handler *, const u8 *, u32);
+ int fjes_hw_raise_interrupt(struct fjes_hw *, int, enum REG_ICTL_MASK);
+ void fjes_hw_set_irqmask(struct fjes_hw *, enum REG_ICTL_MASK, bool);
+ u32 fjes_hw_capture_interrupt_status(struct fjes_hw *);
+diff --git a/drivers/net/fjes/fjes_main.c b/drivers/net/fjes/fjes_main.c
+index 185c8a398681..b06c17ac8d4e 100644
+--- a/drivers/net/fjes/fjes_main.c
++++ b/drivers/net/fjes/fjes_main.c
+@@ -1203,6 +1203,7 @@ static int fjes_probe(struct platform_device *plat_dev)
+ 	struct net_device *netdev;
+ 	struct resource *res;
+ 	struct fjes_hw *hw;
++	u8 addr[ETH_ALEN];
+ 	int err;
+ 
+ 	err = -ENOMEM;
+@@ -1266,12 +1267,13 @@ static int fjes_probe(struct platform_device *plat_dev)
+ 		goto err_free_control_wq;
+ 
+ 	/* setup MAC address (02:00:00:00:00:[epid])*/
+-	netdev->dev_addr[0] = 2;
+-	netdev->dev_addr[1] = 0;
+-	netdev->dev_addr[2] = 0;
+-	netdev->dev_addr[3] = 0;
+-	netdev->dev_addr[4] = 0;
+-	netdev->dev_addr[5] = hw->my_epid; /* EPID */
++	addr[0] = 2;
++	addr[1] = 0;
++	addr[2] = 0;
++	addr[3] = 0;
++	addr[4] = 0;
++	addr[5] = hw->my_epid; /* EPID */
++	eth_hw_addr_set(netdev, addr);
+ 
+ 	err = register_netdev(netdev);
+ 	if (err)
 -- 
 2.31.1
 
