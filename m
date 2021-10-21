@@ -2,124 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CDEC436D1D
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 23:55:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AD97436D22
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 23:55:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231923AbhJUV5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 17:57:38 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:55225 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231573AbhJUV5h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 17:57:37 -0400
-Received: by mail-il1-f198.google.com with SMTP id 2-20020a920d02000000b002589c563709so1187008iln.21
-        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 14:55:21 -0700 (PDT)
+        id S232258AbhJUV6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 17:58:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57774 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232021AbhJUV57 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 17:57:59 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F580C061764;
+        Thu, 21 Oct 2021 14:55:43 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id 67so2534153yba.6;
+        Thu, 21 Oct 2021 14:55:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZCWSb4CNcUutmy67uPScB/N0o+yGwGltNZHm45vcOhk=;
+        b=oCz0HlMe3i8pvE64pfiQxaOUsu9XUUMN5xWybWUwvozJ0s2n5tiW+pW/bwvs37ylSL
+         cdrLjH9w95N1ZZUQnXKWpTckKiGhTa37QL52SsgRwxMkYwhJz2E1i8ofqI0mXmLOqXnI
+         rgAXJk7seMHgDZAo/mF6KzY3RPOBSlQ9x7dwpqXPA99wGCa13yvRlKjm5Fdkb6kooUdR
+         qbqqvoQWXpLWot3R/iDV2EQJCw3089PvAmI6FXiygyYWG3H30y87zvHDj+hKllx2ZJG+
+         2/e4A0Fgn/bQFQSWCq1D8KNReyBhETh6izE1N4qQfVp1H1x9HWzClPhzaR5HFS24lhZO
+         k5Kg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=Hdk5nhIh5sLeDO5IdMEc5g0BesKce0ZswLkd6aApq38=;
-        b=16O6kM0H1q1bZM7+jX/+ZSTvmp6XHxc5A0C53TeaYnriYIbwOSM4vy4lsOArpEVQ+d
-         YQNrPRZw2DbSJzYXTr2t/3qC7XNEDwcdtYo10870esakymsskP+cApi207fTx0PAP2+j
-         6A06kSzV9lOCy5SIZ4oGohZsQxQ/n4Vw+wvHWjIQm5W6w4LHHEM/1VqFJBsAzNKJmaqZ
-         l1aNsKkWeNPadmJ1b/e6eINsirBTLK/YEARoqSLCVOSqi1j6Zau9WfkrMNSNQyp3v8Ct
-         bgC3GXoKImRdMLwLUdlVzb+E5koxWvfT1tZyn6s0B3HVEXONgACwBnGsprg8LulfY3X0
-         wqJA==
-X-Gm-Message-State: AOAM53271IFeODRDI8no/yOYMb82e3BxDLhA/bAcS4H5N42guNCmaf3n
-        /P1+jejUhsJpERmBQjPHHHuCIHgycMXElB5LICqEBYvlp6Fm
-X-Google-Smtp-Source: ABdhPJx5XM7QufQ3wSVU0f5YXrNUk+MPsJdyBzoANfpzmm6FVUXdyZWMHEodjUzXfJMAe3QQHVg2VyDe+4ZpbTTZSMzJVUAycG6H
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZCWSb4CNcUutmy67uPScB/N0o+yGwGltNZHm45vcOhk=;
+        b=Y+qNHHNN3ykkQHi2fbI0Xt8OIcvAoXmeL7Y3kfB7vIYe/px/mCuCHI2t3fleuqcBm4
+         rjptd7wV5fNvyV0YaLEo1b0pkq7ZT0ZStfTmvXVM7p1ogyC8dSfFnM8LMma8FLkPBzT/
+         bHOoDjcULwvgzgipLInoGBTX1cqkqPX8oyNq69sbOiyT+VPlQJmgRIqWmZ7fpwFj1KhL
+         HbQn17ExFYeHWzoP69pNyq+nU939khWLaSiV1Z9QHW5xdC8lZ1BN1tw8e9bSiEFlb9Ej
+         Ld++jkUw7sHP3iE9KcAD8C0sAWaVB1MFLfHZ87Fg3Fv23FOCd9kKbYizny046tt8v0pu
+         yHug==
+X-Gm-Message-State: AOAM533S1TUc5Vzxazef5PVDX+UUnBjKvCCGFxQPCeczO75470mtuwrQ
+        rBj/9BEiYieyiCFzNFghbfu7Ca9QXvdTMUxZDgI=
+X-Google-Smtp-Source: ABdhPJwAwl8RViPtIS5dyd7tQAtoGE+y8lEBBFlWKgnWIrQnjKbXS84OdOvxzGdFdIi80lqcpZxtfcD5HgdVhO0cX1c=
+X-Received: by 2002:a25:d3c8:: with SMTP id e191mr9414694ybf.455.1634853341849;
+ Thu, 21 Oct 2021 14:55:41 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:3052:: with SMTP id u18mr5774324jak.148.1634853320905;
- Thu, 21 Oct 2021 14:55:20 -0700 (PDT)
-Date:   Thu, 21 Oct 2021 14:55:20 -0700
-In-Reply-To: <0000000000000cda0605c8bf219e@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000073d78505cee3f389@google.com>
-Subject: Re: [syzbot] WARNING: proc registration bug in clusterip_tg_check (3)
-From:   syzbot <syzbot+08e6343a8cbd89b0c9d8@syzkaller.appspotmail.com>
-To:     ap420073@gmail.com, coreteam@netfilter.org, davem@davemloft.net,
-        dsahern@kernel.org, fw@strlen.de, kadlec@blackhole.kfki.hu,
-        kadlec@netfilter.org, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+References: <20211021034516.4400-1-laoar.shao@gmail.com> <20211021034516.4400-4-laoar.shao@gmail.com>
+In-Reply-To: <20211021034516.4400-4-laoar.shao@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 21 Oct 2021 14:55:31 -0700
+Message-ID: <CAEf4Bzb0YSwqoKn2N4gPJS40atWBRHLkK9fBy=wghkXUC5Sqmw@mail.gmail.com>
+Subject: Re: [PATCH v5 03/15] sched.h: introduce TASK_COMM_LEN_16
+To:     Yafang Shao <laoar.shao@gmail.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Peter Ziljstra <peterz@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        qiang.zhang@windriver.com, robdclark@chromium.org,
+        Christian Brauner <christian@brauner.io>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ingo Molnar <mingo@redhat.com>, juri.lelli@redhat.com,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>,
+        oliver.sang@intel.com, kbuild test robot <lkp@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+On Wed, Oct 20, 2021 at 8:45 PM Yafang Shao <laoar.shao@gmail.com> wrote:
+>
+> There're many hard-coded 16 used to store task comm in the kernel, that
+> makes it error prone if we want to change the value of TASK_COMM_LEN. A
+> new marco TASK_COMM_LEN_16 is introduced to replace these old ones, then
+> we can easily grep them.
+>
+> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Steven Rostedt <rostedt@goodmis.org>
+> Cc: Kees Cook <keescook@chromium.org>
+> Cc: Al Viro <viro@zeniv.linux.org.uk>
+> Cc: Petr Mladek <pmladek@suse.com>
+> ---
+>  include/linux/sched.h | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/include/linux/sched.h b/include/linux/sched.h
+> index c1a927ddec64..62d5b30d310c 100644
+> --- a/include/linux/sched.h
+> +++ b/include/linux/sched.h
+> @@ -274,6 +274,8 @@ struct task_group;
+>
+>  #define get_current_state()    READ_ONCE(current->__state)
+>
+> +/* To replace the old hard-coded 16 */
+> +#define TASK_COMM_LEN_16               16
+>  /* Task command name length: */
+>  #define TASK_COMM_LEN                  16
 
-HEAD commit:    2f111a6fd5b5 Merge tag 'ceph-for-5.15-rc7' of git://github..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=13e33db4b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=1f7f46d98a0da80e
-dashboard link: https://syzkaller.appspot.com/bug?extid=08e6343a8cbd89b0c9d8
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10f70630b00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1033ffecb00000
+Can we please convert these two constants into enum? That will allow
+BPF applications to deal with such kernel change more easily because
+these constants will now be available as part of kernel BTF.
 
-The issue was bisected to:
+Something like this should be completely equivalent for all the kernel uses:
 
-commit 2a61d8b883bbad26b06d2e6cc3777a697e78830d
-Author: Taehee Yoo <ap420073@gmail.com>
-Date:   Mon Nov 5 09:23:13 2018 +0000
+enum {
+    TASK_COMM_LEN = 16,
+    TASK_COMM_LEN_16 = 16,
+};
 
-    netfilter: ipt_CLUSTERIP: fix sleep-in-atomic bug in clusterip_config_entry_put()
+When later TASK_COMM_LEN is defined as = 24, BPF applications will be
+able to deal with that by querying BTF through BPF CO-RE.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16ce2121300000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=15ce2121300000
-console output: https://syzkaller.appspot.com/x/log.txt?x=11ce2121300000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+08e6343a8cbd89b0c9d8@syzkaller.appspotmail.com
-Fixes: 2a61d8b883bb ("netfilter: ipt_CLUSTERIP: fix sleep-in-atomic bug in clusterip_config_entry_put()")
-
-------------[ cut here ]------------
-proc_dir_entry 'ipt_CLUSTERIP/224.0.0.1' already registered
-WARNING: CPU: 1 PID: 24819 at fs/proc/generic.c:376 proc_register+0x34c/0x700 fs/proc/generic.c:376
-Modules linked in:
-CPU: 1 PID: 24819 Comm: syz-executor269 Not tainted 5.15.0-rc6-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:proc_register+0x34c/0x700 fs/proc/generic.c:376
-Code: df 48 89 f9 48 c1 e9 03 80 3c 01 00 0f 85 5d 03 00 00 48 8b 44 24 28 48 c7 c7 e0 b1 9c 89 48 8b b0 d8 00 00 00 e8 a0 2c 01 07 <0f> 0b 48 c7 c7 40 ac b4 8b e8 26 c0 46 07 48 8b 4c 24 38 48 b8 00
-RSP: 0018:ffffc900041df268 EFLAGS: 00010286
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff88806ca35580 RSI: ffffffff815e88a8 RDI: fffff5200083be3f
-RBP: ffff88801af3c838 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff815e264e R11: 0000000000000000 R12: ffff88801ee5b498
-R13: ffff88801ee5bd40 R14: dffffc0000000000 R15: 0000000000000009
-FS:  00007f976a6aa700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f976a6aa718 CR3: 00000000697b9000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- proc_create_data+0x130/0x190 fs/proc/generic.c:575
- clusterip_config_init net/ipv4/netfilter/ipt_CLUSTERIP.c:292 [inline]
- clusterip_tg_check+0x1b83/0x2300 net/ipv4/netfilter/ipt_CLUSTERIP.c:517
- xt_check_target+0x26c/0x9e0 net/netfilter/x_tables.c:1038
- check_target net/ipv4/netfilter/ip_tables.c:511 [inline]
- find_check_entry.constprop.0+0x7a9/0x9a0 net/ipv4/netfilter/ip_tables.c:553
- translate_table+0xc26/0x16a0 net/ipv4/netfilter/ip_tables.c:717
- do_replace net/ipv4/netfilter/ip_tables.c:1135 [inline]
- do_ipt_set_ctl+0x56e/0xb80 net/ipv4/netfilter/ip_tables.c:1629
- nf_setsockopt+0x83/0xe0 net/netfilter/nf_sockopt.c:101
- ip_setsockopt+0x3c3/0x3a60 net/ipv4/ip_sockglue.c:1435
- tcp_setsockopt+0x136/0x2530 net/ipv4/tcp.c:3658
- __sys_setsockopt+0x2db/0x610 net/socket.c:2176
- __do_sys_setsockopt net/socket.c:2187 [inline]
- __se_sys_setsockopt net/socket.c:2184 [inline]
- __x64_sys_setsockopt+0xba/0x150 net/socket.c:2184
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f976af2bd19
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 31 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f976a6aa208 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
-RAX: ffffffffffffffda RBX: 00007f976afb4278 RCX: 00007f976af2bd19
-RDX: 0000000000000040 RSI: 0000000000000000 RDI: 0000000000000004
-RBP: 00007f976afb4270 R08: 0000000000000298 R09: 0000000000000000
-R10: 00000000200002c0 R11: 0000000000000246 R12: 00007f976afb427c
-R13: 00007fff7aa240bf R14: 00007f976a6aa300 R15: 0000000000022000
-
+>
+> --
+> 2.17.1
+>
