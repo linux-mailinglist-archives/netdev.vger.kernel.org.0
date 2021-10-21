@@ -2,84 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5A364358C4
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 05:02:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3735A4358DE
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 05:11:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231167AbhJUDEm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 23:04:42 -0400
-Received: from out10.migadu.com ([46.105.121.227]:53008 "EHLO out10.migadu.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231166AbhJUDEl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Oct 2021 23:04:41 -0400
-X-Greylist: delayed 533 seconds by postgrey-1.27 at vger.kernel.org; Wed, 20 Oct 2021 23:04:41 EDT
+        id S230347AbhJUDNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 23:13:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54400 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231174AbhJUDM7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 23:12:59 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CA78C06161C;
+        Wed, 20 Oct 2021 20:10:44 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id t11so17507046plq.11;
+        Wed, 20 Oct 2021 20:10:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=LKUtJj0x5HNA1lDir25VXzXO+gDs3DC1h02o1eB01cc=;
+        b=QzoDiFraU1a1PM00HOXBrZLVjITiJ2Jv1Q0V1vgMn5/16iiXPZuvU8IN2vbGDf0pvO
+         q0LogBW/dABYTTPI3SQ5RijZpzTbvyANGstUVipoavx4YIaxpEAvVd6x/eeY+dAcJCU1
+         Cicz90mRtrlJHGKXsYLvSqt1kOMrVEhYdTb+STBnmbX6rR4i2cHf8gGye8PwMew4hNBq
+         KX2FvSf7yC3iaWAe+8oyIOqmen7nOML78Jy6P8K/VKmSJ1JZ7PsC2wQSfK00P3oJXhaF
+         BiY4brpryRSXgIvcA6Zw+FPiwVXoRwHqjgkFngrkf2wH5jHtJjDqvJeAWWvplX15Tk0w
+         exZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LKUtJj0x5HNA1lDir25VXzXO+gDs3DC1h02o1eB01cc=;
+        b=llQHv3ilggLD5JHyCV3ODJddokBVdBU8wDvoKU57wjYC6tjSPjH9w1Mh1q01O/jIV6
+         1kVidQh98mzBxN5ge8LPkJm6L5TBlEdlIcmhqQ0WG02+W4PAk1LQwWE8/KSs5RdThIZQ
+         TU7iK8+IzKnfcWUvM8T2zY86rlXWP8J5gm/RfOtx7kRyjRA8N5DToG4aY346fSaJ4J61
+         F6V4IMxGvHnjf9KAYiztn+eIlyG1kYOXhKJSMnWkFVgkOrzl2TE0RxW14iBi66mpm9wJ
+         1nkEwyRMn/XtBG9Gtg7nnR0rFXkbGjVwUcmO0g0rvSRcyrZipBF0VQRfQNdJTEWQdmTV
+         YyYQ==
+X-Gm-Message-State: AOAM533VUFzByMP74KCmCDsbfRm8aNWKAFaLSPsLycFIARA79hOiNaaG
+        GKBcCavyvZCLw9oSoT8yMG4=
+X-Google-Smtp-Source: ABdhPJw1r4kzM4NNvycTJ1Oekjgi9rZ0ViPsPoYnmwu08hWlyWjpGE1ii0KfUWYdSGYUushxmtPBjA==
+X-Received: by 2002:a17:90b:3a88:: with SMTP id om8mr3454187pjb.71.1634785844137;
+        Wed, 20 Oct 2021 20:10:44 -0700 (PDT)
+Received: from localhost ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id i18sm3976856pfq.198.2021.10.20.20.10.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Oct 2021 20:10:43 -0700 (PDT)
+Message-ID: <6170da33.1c69fb81.4050d.c355@mx.google.com>
+X-Google-Original-Message-ID: <20211021031041.GA1041483@cgel.zte@gmail.com>
+Date:   Thu, 21 Oct 2021 03:10:41 +0000
+From:   CGEL <cgel.zte@gmail.com>
+To:     Pkshih <pkshih@realtek.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "lv.ruyi@zte.com.cn" <lv.ruyi@zte.com.cn>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH] rtw89: fix error function parameter
+References: <20211019035311.974706-1-lv.ruyi@zte.com.cn>
+ <163471982441.1743.9901035714649893101.kvalo@codeaurora.org>
+ <3aa076f0e39a485ca090f8c14682b694@realtek.com>
+ <878ryof1xc.fsf@codeaurora.org>
+ <3e121f8f6dd4411eace22a7030824ce4@realtek.com>
 MIME-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1634784811;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FZI/suxCWksYSV2TZOx89MblgpL1R04FJyLzdqHA0Jg=;
-        b=A356h4EjFqpCrBOSKPvVYmpjZXFibzy2J9HwZk0d8AcRiSxPit3P7M4s4r1WljZGw11CZ6
-        ajSHGXyaR2fd37pNX9/AiF81qUOR0dAR4HjfJ5I6VaaGYuhVFeD+DfrsOnyPInKXhdsuk6
-        ieDTrNxCJI9GWL3IH64NYpoET7cK5VY=
-Date:   Thu, 21 Oct 2021 02:53:30 +0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   yanjun.zhu@linux.dev
-Message-ID: <a3770ad64d2232cbdc19f86bc4e42a16@linux.dev>
-Subject: Re: [PATCH 1/1] ice: remove the unused function
- ice_aq_nvm_update_empr
-To:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Keller, Jacob E" <jacob.e.keller@intel.com>,
-        netdev@vger.kernel.org, davem@davemloft.net,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        intel-wired-lan@lists.osuosl.org, kuba@kernel.org
-In-Reply-To: <adf52e0ca3fbe0c9726f283a9690bd335afbf3a6.camel@intel.com>
-References: <adf52e0ca3fbe0c9726f283a9690bd335afbf3a6.camel@intel.com>
- <20211019091743.12046-1-yanjun.zhu@linux.dev>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: yanjun.zhu@linux.dev
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3e121f8f6dd4411eace22a7030824ce4@realtek.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-October 21, 2021 2:49 AM, "Nguyen, Anthony L" <anthony.l.nguyen@intel.com=
-> wrote:=0A=0A> On Tue, 2021-10-19 at 05:17 -0400, yanjun.zhu@linux.dev w=
-rote:=0A> =0A>> From: Zhu Yanjun <yanjun.zhu@linux.dev>=0A>> =0A>> The fu=
-nction ice_aq_nvm_update_empr is not used, so remove it.=0A> =0A> Thanks =
-for the patch, but there is another one coming soon that will be=0A> usin=
-g this function[1]. I'd prefer to keep this to save us from another=0A> p=
-atch reintroducing it in the near future.=0A=0AGot it.=0A=0AZhu Yanjun=0A=
-=0A> =0A> Thanks,=0A> Tony=0A> =0A> [1] https://patchwork.ozlabs.org/proj=
-ect/intel-wired-=0A> lan/patch/20211019215423.3383750-1-jacob.e.keller@in=
-tel.com/=0A> =0A>> Signed-off-by: Zhu Yanjun <yanjun.zhu@linux.dev>=0A>> =
----=0A>> drivers/net/ethernet/intel/ice/ice_nvm.c | 16 ----------------=
-=0A>> drivers/net/ethernet/intel/ice/ice_nvm.h |  1 -=0A>> 2 files change=
-d, 17 deletions(-)=0A>> =0A>> diff --git a/drivers/net/ethernet/intel/ice=
-/ice_nvm.c=0A>> b/drivers/net/ethernet/intel/ice/ice_nvm.c=0A>> index fee=
-37a5844cf..bad374bd7ab3 100644=0A>> --- a/drivers/net/ethernet/intel/ice/=
-ice_nvm.c=0A>> +++ b/drivers/net/ethernet/intel/ice/ice_nvm.c=0A>> @@ -11=
-06,22 +1106,6 @@ enum ice_status ice_nvm_write_activate(struct=0A>> ice_h=
-w *hw, u8 cmd_flags)=0A>> return ice_aq_send_cmd(hw, &desc, NULL, 0, NULL=
-);=0A>> }=0A>> =0A>> -/**=0A>> - * ice_aq_nvm_update_empr=0A>> - * @hw: p=
-ointer to the HW struct=0A>> - *=0A>> - * Update empr (0x0709). This comm=
-and allows SW to=0A>> - * request an EMPR to activate new FW.=0A>> - */=
-=0A>> -enum ice_status ice_aq_nvm_update_empr(struct ice_hw *hw)=0A>> -{=
-=0A>> -       struct ice_aq_desc desc;=0A>> -=0A>> -       ice_fill_dflt_=
-direct_cmd_desc(&desc,=0A>> ice_aqc_opc_nvm_update_empr);=0A>> -=0A>> -  =
-     return ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);=0A>> -}=0A>> -=0A>=
-> /* ice_nvm_set_pkg_data=0A>> * @hw: pointer to the HW struct=0A>> * @de=
-l_pkg_data_flag: If is set then the current pkg_data store by=0A>> FW=0A>=
-> diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.h=0A>> b/drivers/ne=
-t/ethernet/intel/ice/ice_nvm.h=0A>> index c6f05f43d593..925225905491 1006=
-44=0A>> --- a/drivers/net/ethernet/intel/ice/ice_nvm.h=0A>> +++ b/drivers=
-/net/ethernet/intel/ice/ice_nvm.h=0A>> @@ -39,7 +39,6 @@ enum ice_status=
-=0A>> ice_aq_erase_nvm(struct ice_hw *hw, u16 module_typeid, struct=0A>> =
-ice_sq_cd *cd);=0A>> enum ice_status ice_nvm_validate_checksum(struct ice=
-_hw *hw);=0A>> enum ice_status ice_nvm_write_activate(struct ice_hw *hw, =
-u8=0A>> cmd_flags);=0A>> -enum ice_status ice_aq_nvm_update_empr(struct i=
-ce_hw *hw);=0A>> enum ice_status=0A>> ice_nvm_set_pkg_data(struct ice_hw =
-*hw, bool del_pkg_data_flag, u8=0A>> *data,=0A>> u16 length, struct ice_s=
-q_cd *cd);
+On Thu, Oct 21, 2021 at 01:34:25AM +0000, Pkshih wrote:
+> 
+> > -----Original Message-----
+> > From: kvalo=codeaurora.org@mg.codeaurora.org <kvalo=codeaurora.org@mg.codeaurora.org> On Behalf Of Kalle
+> > Valo
+> > Sent: Wednesday, October 20, 2021 6:04 PM
+> > To: Pkshih <pkshih@realtek.com>
+> > Cc: cgel.zte@gmail.com; davem@davemloft.net; kuba@kernel.org; lv.ruyi@zte.com.cn;
+> > linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Zeal Robot
+> > <zealci@zte.com.cn>
+> > Subject: Re: [PATCH] rtw89: fix error function parameter
+> > 
+> > Pkshih <pkshih@realtek.com> writes:
+> > 
+> > >> -----Original Message-----
+> > >> From: kvalo=codeaurora.org@mg.codeaurora.org
+> > >> <kvalo=codeaurora.org@mg.codeaurora.org> On Behalf Of Kalle
+> > >> Valo
+> > >> Sent: Wednesday, October 20, 2021 4:50 PM
+> > >> To: cgel.zte@gmail.com
+> > >> Cc: davem@davemloft.net; kuba@kernel.org; Pkshih
+> > >> <pkshih@realtek.com>; lv.ruyi@zte.com.cn;
+> > >> linux-wireless@vger.kernel.org; netdev@vger.kernel.org;
+> > >> linux-kernel@vger.kernel.org; Zeal Robot
+> > >> <zealci@zte.com.cn>
+> > >> Subject: Re: [PATCH] rtw89: fix error function parameter
+> > >>
+> > >> cgel.zte@gmail.com wrote:
+> > >>
+> > >> > From: Lv Ruyi <lv.ruyi@zte.com.cn>
+> > >> >
+> > >> > This patch fixes the following Coccinelle warning:
+> > >> > drivers/net/wireless/realtek/rtw89/rtw8852a.c:753:
+> > >> > WARNING  possible condition with no effect (if == else)
+> > >> >
+> > >> > Reported-by: Zeal Robot <zealci@zte.com.cn>
+> > >> > Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+> > >> > Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+> > >>
+> > >> Failed to apply, please rebase on top of wireless-drivers-next.
+> > >>
+> > >> error: patch failed: drivers/net/wireless/realtek/rtw89/rtw8852a.c:753
+> > >> error: drivers/net/wireless/realtek/rtw89/rtw8852a.c: patch does not apply
+> > >> error: Did you hand edit your patch?
+> > >> It does not apply to blobs recorded in its index.
+> > >> hint: Use 'git am --show-current-patch' to see the failed patch
+> > >> Applying: rtw89: fix error function parameter
+> > >> Using index info to reconstruct a base tree...
+> > >> Patch failed at 0001 rtw89: fix error function parameter
+> > >>
+> > >> Patch set to Changes Requested.
+> > >>
+> > >
+> > > I think this is because the patch is translated into spaces instead of tabs,
+> > > in this and following statements.
+> > > "                if (is_2g)"
+> > 
+> > Ah, I did wonder why it failed as I didn't see any similar patches. We
+> > have an item about this in the wiki:
+> > 
+> > https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches#format_issues
+> > 
+> 
+> I don't know why neither.
+> 
+> I check the mail header of this patch, the mailer is
+> "X-Mailer: git-send-email 2.25.1". It should work properly.
+> 
+> Lv Ruyi, could you help to check what happens?
+> 
+> --
+> Ping-Ke
+
+Thanks for Ping-Ke's suggestion,you are right.The previous patch
+is translated into spaces instead of tabs,and I will submitt a
+new correct one.
