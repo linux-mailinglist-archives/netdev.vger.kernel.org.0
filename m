@@ -2,510 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97C00435916
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 05:43:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A69C443593B
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 05:45:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231401AbhJUDpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 23:45:44 -0400
-Received: from pi.codeconstruct.com.au ([203.29.241.158]:40738 "EHLO
-        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231388AbhJUDpn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 23:45:43 -0400
-Received: by codeconstruct.com.au (Postfix, from userid 10000)
-        id 0AAB120223; Thu, 21 Oct 2021 11:43:24 +0800 (AWST)
-From:   Jeremy Kerr <jk@codeconstruct.com.au>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        Eugene Syromiatnikov <esyr@redhat.com>
-Subject: [PATCH net-next v4] mctp: Implement extended addressing
-Date:   Thu, 21 Oct 2021 11:40:32 +0800
-Message-Id: <20211021034032.2216808-1-jk@codeconstruct.com.au>
-X-Mailer: git-send-email 2.30.2
+        id S231199AbhJUDrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 23:47:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33878 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230020AbhJUDri (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 23:47:38 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BC58C06161C;
+        Wed, 20 Oct 2021 20:45:23 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id t184so4738930pfd.0;
+        Wed, 20 Oct 2021 20:45:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5kRttFnqDyMni18OAxsto47TLeLeI3Z8fqyF7mE1Fis=;
+        b=kLRVNCc05x5aMMjJPHURO3uO5yA6yK8P7nuiOxqIMaJpJRtzMsYEDfh/i74qsxVHmC
+         6e7nz8q9C9OEg/sM4FO08Z2HpbQF+t0/jShPa7XyK9r/N+B6bD0M5E+dl+CsRbD31qGW
+         0Qfu5p3JMmqgwcpGpi2SS0/JLUFWvSH1181NwLJdWbdqLGrYQJglCKkDnoRq+yDY30+v
+         9D8I2MPD6nLvvMG16iOczMpbkd0gwWrCtlGvA2tMAZTb29tMlg5xXKNWwD3JF8K6Pk5P
+         Em1thcMLiIQOeyATJgfeJ2M08i9bopTCdv6BV2RPDgXADvotw0tpOWI4gOBK0co3Egph
+         N+bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5kRttFnqDyMni18OAxsto47TLeLeI3Z8fqyF7mE1Fis=;
+        b=vIjoTpLVY438YCwBXU29+9jxOfjvxB5Tgxk99M7H3YqrPzWfcwJSOtC2n4uxIwpaPd
+         9r3XkeFmn2bVpZCAArl3322riwOJPfyIzbuup01XSquLXmUmz1IajGikvSK30LCwqyHB
+         62qTapjFVMr4WnjqKsD8nrKNmcl3lUsBQqVGrprs/40WqUEOGTBciOT3ziRwqCp7LH1t
+         kddmHPSOXTwWlXp55K8JVpc6Ni9+hKMKAtaodSPdOgYIUEVxvY9WTlTkKRlG+hJ7aVPc
+         WUvE6I7c+ZTMuB+I3vxZIAd1YLSiLPaK2ta5NdwQ17FMWsZK0u98AoyI2/BxL0JzvSIN
+         kyHQ==
+X-Gm-Message-State: AOAM533nK0QcGtp2j/qgm0kU7bDEyhfpyUghHC52FrIlmvG3PQ3o0Sv3
+        ANVkNVifxIx6KGr2hxBZV4A=
+X-Google-Smtp-Source: ABdhPJxDUWZxORefBHkXUWJn7UmjFJRQi36sfn7/BgQlaQ/sisJbzvS6natUXJR1teZtLta231GinQ==
+X-Received: by 2002:aa7:88c2:0:b0:46c:3c50:bcc2 with SMTP id k2-20020aa788c2000000b0046c3c50bcc2mr1239865pff.71.1634787922886;
+        Wed, 20 Oct 2021 20:45:22 -0700 (PDT)
+Received: from localhost.localdomain ([140.82.17.67])
+        by smtp.gmail.com with ESMTPSA id bp19sm3651077pjb.46.2021.10.20.20.45.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Oct 2021 20:45:22 -0700 (PDT)
+From:   Yafang Shao <laoar.shao@gmail.com>
+To:     keescook@chromium.org, rostedt@goodmis.org,
+        mathieu.desnoyers@efficios.com, arnaldo.melo@gmail.com,
+        pmladek@suse.com, peterz@infradead.org, viro@zeniv.linux.org.uk,
+        akpm@linux-foundation.org, valentin.schneider@arm.com,
+        qiang.zhang@windriver.com, robdclark@chromium.org,
+        christian@brauner.io, dietmar.eggemann@arm.com, mingo@redhat.com,
+        juri.lelli@redhat.com, vincent.guittot@linaro.org,
+        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, oliver.sang@intel.com, lkp@intel.com,
+        Yafang Shao <laoar.shao@gmail.com>
+Subject: [PATCH v5 00/15] extend task comm from 16 to 24 for CONFIG_BASE_FULL 
+Date:   Thu, 21 Oct 2021 03:45:07 +0000
+Message-Id: <20211021034516.4400-1-laoar.shao@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This change allows an extended address struct - struct sockaddr_mctp_ext
-- to be passed to sendmsg/recvmsg. This allows userspace to specify
-output ifindex and physical address information (for sendmsg) or receive
-the input ifindex/physaddr for incoming messages (for recvmsg). This is
-typically used by userspace for MCTP address discovery and assignment
-operations.
+This patchset changes files among many subsystems. I don't know which
+tree it should be applied to, so I just base it on Linus's tree.
 
-The extended addressing facility is conditional on a new sockopt:
-MCTP_OPT_ADDR_EXT; userspace must explicitly enable addressing before
-the kernel will consume/populate the extended address data.
+There're many truncated kthreads in the kernel, which may make trouble
+for the user, for example, the user can't get detailed device
+information from the task comm.
 
-Includes a fix for an uninitialised var:
-Reported-by: kernel test robot <lkp@intel.com>
+This patchset tries to improve this problem fundamentally by extending
+the task comm size from 16 to 24. In order to do that, we have to do
+some cleanups first.
 
-Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
+1. Make the copy of task comm always safe no matter what the task
+comm size is. For example,
 
----
-v4:
- - move SOL_MCTP to linux/sockets.h
+  Unsafe                 Safe
+  strlcpy                strscpy_pad
+  strncpy                strscpy_pad
+  bpf_probe_read_kernel  bpf_probe_read_kernel_str
+                         bpf_core_read_str
+                         bpf_get_current_comm
+                         perf_event__prepare_comm
+                         prctl(2)
 
-v3:
- - avoid uninitialised rc if we hit the !rt->dev WARN.
+2. Replace the old hard-coded 16 with a new macro TASK_COMM_LEN_16 to
+make it more grepable.
 
-v2:
- - non-RFC
- - learn to spell "typically"
+3. Extend the task comm size to 24 for CONFIG_BASE_FULL case and keep it
+as 16 for CONFIG_BASE_SMALL.
 
-RFC: this patch adds a bit of an new ABI, in that the struct sockaddr
-for MCTP has been extended, with extra addressing data being available
-for applications after setting a sockopt.
+4. Print a warning if the kthread comm is still truncated.
 
-Using something like IP_PKTINFO might be suitable instead, but that
-requires sendmsg/recvmsg, and control message setup, whereas this is a
-a simpler interface, and also allows extended addressing info in
-sendto/recvfrom too. Comments most welcome!
----
- include/linux/socket.h    |  1 +
- include/net/mctp.h        | 16 +++++--
- include/uapi/linux/mctp.h | 10 ++++
- net/mctp/af_mctp.c        | 86 ++++++++++++++++++++++++++++++----
- net/mctp/route.c          | 98 +++++++++++++++++++++++++++++----------
- 5 files changed, 171 insertions(+), 40 deletions(-)
+Changes since v4:
+- introduce TASK_COMM_LEN_16 and TASK_COMM_LEN_24 per Steven
+- replace hard-coded 16 with TASK_COMM_LEN_16 per Kees
+- use strscpy_pad() instead of strlcpy()/strncpy() per Kees
+- make perf test adopt to task comm size change per Arnaldo and Mathieu
+- fix warning reported by kernel test robot
 
-diff --git a/include/linux/socket.h b/include/linux/socket.h
-index 7612d760b6a9..8ef26d89ef49 100644
---- a/include/linux/socket.h
-+++ b/include/linux/socket.h
-@@ -365,6 +365,7 @@ struct ucred {
- #define SOL_TLS		282
- #define SOL_XDP		283
- #define SOL_MPTCP	284
-+#define SOL_MCTP	285
- 
- /* IPX options */
- #define IPX_TYPE	1
-diff --git a/include/net/mctp.h b/include/net/mctp.h
-index b9ed62a63c24..716405e0294c 100644
---- a/include/net/mctp.h
-+++ b/include/net/mctp.h
-@@ -58,6 +58,9 @@ struct mctp_sock {
- 	mctp_eid_t	bind_addr;
- 	__u8		bind_type;
- 
-+	/* sendmsg()/recvmsg() uses struct sockaddr_mctp_ext */
-+	bool		addr_ext;
-+
- 	/* list of mctp_sk_key, for incoming tag lookup. updates protected
- 	 * by sk->net->keys_lock
- 	 */
-@@ -152,10 +155,16 @@ struct mctp_sk_key {
- 
- struct mctp_skb_cb {
- 	unsigned int	magic;
--	unsigned int	net;
-+	int		net;
-+	int		ifindex; /* extended/direct addressing if set */
-+	unsigned char	halen;
- 	mctp_eid_t	src;
-+	unsigned char	haddr[];
- };
- 
-+#define MCTP_SKB_CB_HADDR_MAXLEN (sizeof((((struct sk_buff *)(NULL))->cb)) \
-+				  - offsetof(struct mctp_skb_cb, haddr))
-+
- /* skb control-block accessors with a little extra debugging for initial
-  * development.
-  *
-@@ -189,8 +198,7 @@ static inline struct mctp_skb_cb *mctp_cb(struct sk_buff *skb)
-  *
-  * Updates to the route table are performed under rtnl; all reads under RCU,
-  * so routes cannot be referenced over a RCU grace period. Specifically: A
-- * caller cannot block between mctp_route_lookup and passing the route to
-- * mctp_do_route.
-+ * caller cannot block between mctp_route_lookup and mctp_route_release()
-  */
- struct mctp_route {
- 	mctp_eid_t		min, max;
-@@ -210,8 +218,6 @@ struct mctp_route {
- struct mctp_route *mctp_route_lookup(struct net *net, unsigned int dnet,
- 				     mctp_eid_t daddr);
- 
--int mctp_do_route(struct mctp_route *rt, struct sk_buff *skb);
--
- int mctp_local_output(struct sock *sk, struct mctp_route *rt,
- 		      struct sk_buff *skb, mctp_eid_t daddr, u8 req_tag);
- 
-diff --git a/include/uapi/linux/mctp.h b/include/uapi/linux/mctp.h
-index 52b54d13f385..b5f503e5fc3b 100644
---- a/include/uapi/linux/mctp.h
-+++ b/include/uapi/linux/mctp.h
-@@ -10,6 +10,7 @@
- #define __UAPI_MCTP_H
- 
- #include <linux/types.h>
-+#include <linux/netdevice.h>
- 
- typedef __u8			mctp_eid_t;
- 
-@@ -25,6 +26,13 @@ struct sockaddr_mctp {
- 	__u8			smctp_tag;
- };
- 
-+struct sockaddr_mctp_ext {
-+	struct sockaddr_mctp	smctp_base;
-+	int			smctp_ifindex;
-+	unsigned char		smctp_halen;
-+	unsigned char		smctp_haddr[MAX_ADDR_LEN];
-+};
-+
- #define MCTP_NET_ANY		0x0
- 
- #define MCTP_ADDR_NULL		0x00
-@@ -33,4 +41,6 @@ struct sockaddr_mctp {
- #define MCTP_TAG_MASK		0x07
- #define MCTP_TAG_OWNER		0x08
- 
-+#define MCTP_OPT_ADDR_EXT	1
-+
- #endif /* __UAPI_MCTP_H */
-diff --git a/net/mctp/af_mctp.c b/net/mctp/af_mctp.c
-index 66a411d60b6c..5eae06aaf65c 100644
---- a/net/mctp/af_mctp.c
-+++ b/net/mctp/af_mctp.c
-@@ -77,6 +77,7 @@ static int mctp_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 	const int hlen = MCTP_HEADER_MAXLEN + sizeof(struct mctp_hdr);
- 	int rc, addrlen = msg->msg_namelen;
- 	struct sock *sk = sock->sk;
-+	struct mctp_sock *msk = container_of(sk, struct mctp_sock, sk);
- 	struct mctp_skb_cb *cb;
- 	struct mctp_route *rt;
- 	struct sk_buff *skb;
-@@ -100,11 +101,6 @@ static int mctp_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 	if (addr->smctp_network == MCTP_NET_ANY)
- 		addr->smctp_network = mctp_default_net(sock_net(sk));
- 
--	rt = mctp_route_lookup(sock_net(sk), addr->smctp_network,
--			       addr->smctp_addr.s_addr);
--	if (!rt)
--		return -EHOSTUNREACH;
--
- 	skb = sock_alloc_send_skb(sk, hlen + 1 + len,
- 				  msg->msg_flags & MSG_DONTWAIT, &rc);
- 	if (!skb)
-@@ -116,19 +112,45 @@ static int mctp_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 	*(u8 *)skb_put(skb, 1) = addr->smctp_type;
- 
- 	rc = memcpy_from_msg((void *)skb_put(skb, len), msg, len);
--	if (rc < 0) {
--		kfree_skb(skb);
--		return rc;
--	}
-+	if (rc < 0)
-+		goto err_free;
- 
- 	/* set up cb */
- 	cb = __mctp_cb(skb);
- 	cb->net = addr->smctp_network;
- 
-+	/* direct addressing */
-+	if (msk->addr_ext && addrlen >= sizeof(struct sockaddr_mctp_ext)) {
-+		DECLARE_SOCKADDR(struct sockaddr_mctp_ext *,
-+				 extaddr, msg->msg_name);
-+
-+		if (extaddr->smctp_halen > MCTP_SKB_CB_HADDR_MAXLEN) {
-+			rc = -EINVAL;
-+			goto err_free;
-+		}
-+
-+		cb->ifindex = extaddr->smctp_ifindex;
-+		cb->halen = extaddr->smctp_halen;
-+		memcpy(cb->haddr, extaddr->smctp_haddr, cb->halen);
-+
-+		rt = NULL;
-+	} else {
-+		rt = mctp_route_lookup(sock_net(sk), addr->smctp_network,
-+				       addr->smctp_addr.s_addr);
-+		if (!rt) {
-+			rc = -EHOSTUNREACH;
-+			goto err_free;
-+		}
-+	}
-+
- 	rc = mctp_local_output(sk, rt, skb, addr->smctp_addr.s_addr,
- 			       addr->smctp_tag);
- 
- 	return rc ? : len;
-+
-+err_free:
-+	kfree_skb(skb);
-+	return rc;
- }
- 
- static int mctp_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
-@@ -136,6 +158,7 @@ static int mctp_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- {
- 	DECLARE_SOCKADDR(struct sockaddr_mctp *, addr, msg->msg_name);
- 	struct sock *sk = sock->sk;
-+	struct mctp_sock *msk = container_of(sk, struct mctp_sock, sk);
- 	struct sk_buff *skb;
- 	size_t msglen;
- 	u8 type;
-@@ -181,6 +204,16 @@ static int mctp_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 		addr->smctp_tag = hdr->flags_seq_tag &
- 					(MCTP_HDR_TAG_MASK | MCTP_HDR_FLAG_TO);
- 		msg->msg_namelen = sizeof(*addr);
-+
-+		if (msk->addr_ext) {
-+			DECLARE_SOCKADDR(struct sockaddr_mctp_ext *, ae,
-+					 msg->msg_name);
-+			msg->msg_namelen = sizeof(*ae);
-+			ae->smctp_ifindex = cb->ifindex;
-+			ae->smctp_halen = cb->halen;
-+			memset(ae->smctp_haddr, 0x0, sizeof(ae->smctp_haddr));
-+			memcpy(ae->smctp_haddr, cb->haddr, cb->halen);
-+		}
- 	}
- 
- 	rc = len;
-@@ -196,12 +229,45 @@ static int mctp_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- static int mctp_setsockopt(struct socket *sock, int level, int optname,
- 			   sockptr_t optval, unsigned int optlen)
- {
--	return -EINVAL;
-+	struct mctp_sock *msk = container_of(sock->sk, struct mctp_sock, sk);
-+	int val;
-+
-+	if (level != SOL_MCTP)
-+		return -EINVAL;
-+
-+	if (optname == MCTP_OPT_ADDR_EXT) {
-+		if (optlen != sizeof(int))
-+			return -EINVAL;
-+		if (copy_from_sockptr(&val, optval, sizeof(int)))
-+			return -EFAULT;
-+		msk->addr_ext = val;
-+		return 0;
-+	}
-+
-+	return -ENOPROTOOPT;
- }
- 
- static int mctp_getsockopt(struct socket *sock, int level, int optname,
- 			   char __user *optval, int __user *optlen)
- {
-+	struct mctp_sock *msk = container_of(sock->sk, struct mctp_sock, sk);
-+	int len, val;
-+
-+	if (level != SOL_MCTP)
-+		return -EINVAL;
-+
-+	if (get_user(len, optlen))
-+		return -EFAULT;
-+
-+	if (optname == MCTP_OPT_ADDR_EXT) {
-+		if (len != sizeof(int))
-+			return -EINVAL;
-+		val = !!msk->addr_ext;
-+		if (copy_to_user(optval, &val, len))
-+			return -EFAULT;
-+		return 0;
-+	}
-+
- 	return -EINVAL;
- }
- 
-diff --git a/net/mctp/route.c b/net/mctp/route.c
-index 82fb5ae524f6..c23ab3547ee5 100644
---- a/net/mctp/route.c
-+++ b/net/mctp/route.c
-@@ -434,6 +434,7 @@ static unsigned int mctp_route_mtu(struct mctp_route *rt)
- 
- static int mctp_route_output(struct mctp_route *route, struct sk_buff *skb)
- {
-+	struct mctp_skb_cb *cb = mctp_cb(skb);
- 	struct mctp_hdr *hdr = mctp_hdr(skb);
- 	char daddr_buf[MAX_ADDR_LEN];
- 	char *daddr = NULL;
-@@ -448,9 +449,14 @@ static int mctp_route_output(struct mctp_route *route, struct sk_buff *skb)
- 		return -EMSGSIZE;
- 	}
- 
--	/* If lookup fails let the device handle daddr==NULL */
--	if (mctp_neigh_lookup(route->dev, hdr->dest, daddr_buf) == 0)
--		daddr = daddr_buf;
-+	if (cb->ifindex) {
-+		/* direct route; use the hwaddr we stashed in sendmsg */
-+		daddr = cb->haddr;
-+	} else {
-+		/* If lookup fails let the device handle daddr==NULL */
-+		if (mctp_neigh_lookup(route->dev, hdr->dest, daddr_buf) == 0)
-+			daddr = daddr_buf;
-+	}
- 
- 	rc = dev_hard_header(skb, skb->dev, ntohs(skb->protocol),
- 			     daddr, skb->dev->dev_addr, skb->len);
-@@ -649,16 +655,6 @@ static struct mctp_route *mctp_route_lookup_null(struct net *net,
- 	return NULL;
- }
- 
--/* sends a skb to rt and releases the route. */
--int mctp_do_route(struct mctp_route *rt, struct sk_buff *skb)
--{
--	int rc;
--
--	rc = rt->output(rt, skb);
--	mctp_route_release(rt);
--	return rc;
--}
--
- static int mctp_do_fragment_route(struct mctp_route *rt, struct sk_buff *skb,
- 				  unsigned int mtu, u8 tag)
- {
-@@ -725,7 +721,7 @@ static int mctp_do_fragment_route(struct mctp_route *rt, struct sk_buff *skb,
- 		/* copy message payload */
- 		skb_copy_bits(skb, pos, skb_transport_header(skb2), size);
- 
--		/* do route, but don't drop the rt reference */
-+		/* do route */
- 		rc = rt->output(rt, skb2);
- 		if (rc)
- 			break;
-@@ -734,7 +730,6 @@ static int mctp_do_fragment_route(struct mctp_route *rt, struct sk_buff *skb,
- 		pos += size;
- 	}
- 
--	mctp_route_release(rt);
- 	consume_skb(skb);
- 	return rc;
- }
-@@ -744,15 +739,51 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
- {
- 	struct mctp_sock *msk = container_of(sk, struct mctp_sock, sk);
- 	struct mctp_skb_cb *cb = mctp_cb(skb);
-+	struct mctp_route tmp_rt;
-+	struct net_device *dev;
- 	struct mctp_hdr *hdr;
- 	unsigned long flags;
- 	unsigned int mtu;
- 	mctp_eid_t saddr;
-+	bool ext_rt;
- 	int rc;
- 	u8 tag;
- 
--	if (WARN_ON(!rt->dev))
-+	rc = -ENODEV;
-+
-+	if (rt) {
-+		ext_rt = false;
-+		dev = NULL;
-+
-+		if (WARN_ON(!rt->dev))
-+			goto out_release;
-+
-+	} else if (cb->ifindex) {
-+		ext_rt = true;
-+		rt = &tmp_rt;
-+
-+		rcu_read_lock();
-+		dev = dev_get_by_index_rcu(sock_net(sk), cb->ifindex);
-+		if (!dev) {
-+			rcu_read_unlock();
-+			return rc;
-+		}
-+
-+		rt->dev = __mctp_dev_get(dev);
-+		rcu_read_unlock();
-+
-+		if (!rt->dev)
-+			goto out_release;
-+
-+		/* establish temporary route - we set up enough to keep
-+		 * mctp_route_output happy
-+		 */
-+		rt->output = mctp_route_output;
-+		rt->mtu = 0;
-+
-+	} else {
- 		return -EINVAL;
-+	}
- 
- 	spin_lock_irqsave(&rt->dev->addrs_lock, flags);
- 	if (rt->dev->num_addrs == 0) {
-@@ -765,18 +796,17 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
- 	spin_unlock_irqrestore(&rt->dev->addrs_lock, flags);
- 
- 	if (rc)
--		return rc;
-+		goto out_release;
- 
- 	if (req_tag & MCTP_HDR_FLAG_TO) {
- 		rc = mctp_alloc_local_tag(msk, saddr, daddr, &tag);
- 		if (rc)
--			return rc;
-+			goto out_release;
- 		tag |= MCTP_HDR_FLAG_TO;
- 	} else {
- 		tag = req_tag;
- 	}
- 
--
- 	skb->protocol = htons(ETH_P_MCTP);
- 	skb->priority = 0;
- 	skb_reset_transport_header(skb);
-@@ -796,12 +826,22 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
- 	mtu = mctp_route_mtu(rt);
- 
- 	if (skb->len + sizeof(struct mctp_hdr) <= mtu) {
--		hdr->flags_seq_tag = MCTP_HDR_FLAG_SOM | MCTP_HDR_FLAG_EOM |
--			tag;
--		return mctp_do_route(rt, skb);
-+		hdr->flags_seq_tag = MCTP_HDR_FLAG_SOM |
-+			MCTP_HDR_FLAG_EOM | tag;
-+		rc = rt->output(rt, skb);
- 	} else {
--		return mctp_do_fragment_route(rt, skb, mtu, tag);
-+		rc = mctp_do_fragment_route(rt, skb, mtu, tag);
- 	}
-+
-+out_release:
-+	if (!ext_rt)
-+		mctp_route_release(rt);
-+
-+	if (dev)
-+		dev_put(dev);
-+
-+	return rc;
-+
- }
- 
- /* route management */
-@@ -942,8 +982,15 @@ static int mctp_pkttype_receive(struct sk_buff *skb, struct net_device *dev,
- 	if (mh->ver < MCTP_VER_MIN || mh->ver > MCTP_VER_MAX)
- 		goto err_drop;
- 
--	cb = __mctp_cb(skb);
-+	/* MCTP drivers must populate halen/haddr */
-+	if (dev->type == ARPHRD_MCTP) {
-+		cb = mctp_cb(skb);
-+	} else {
-+		cb = __mctp_cb(skb);
-+		cb->halen = 0;
-+	}
- 	cb->net = READ_ONCE(mdev->net);
-+	cb->ifindex = dev->ifindex;
- 
- 	rt = mctp_route_lookup(net, cb->net, mh->dest);
- 
-@@ -954,7 +1001,8 @@ static int mctp_pkttype_receive(struct sk_buff *skb, struct net_device *dev,
- 	if (!rt)
- 		goto err_drop;
- 
--	mctp_do_route(rt, skb);
-+	rt->output(rt, skb);
-+	mctp_route_release(rt);
- 
- 	return NET_RX_SUCCESS;
- 
+Changes since v3:
+- fixes -Wstringop-truncation warning reported by kernel test robot
+
+Changes since v2:
+- avoid change UAPI code per Kees
+- remove the description of out of tree code from commit log per Peter
+
+Changes since v1:
+- extend task comm to 24bytes, per Petr
+- improve the warning per Petr
+- make the checkpatch warning a separate patch
+
+Yafang Shao (15):
+  fs/exec: make __set_task_comm always set a nul ternimated string
+  fs/exec: make __get_task_comm always get a nul terminated string
+  sched.h: introduce TASK_COMM_LEN_16
+  cn_proc: make connector comm always nul ternimated
+  drivers/infiniband: make setup_ctxt always get a nul terminated task
+    comm
+  elfcore: make prpsinfo always get a nul terminated task comm
+  samples/bpf/kern: use TASK_COMM_LEN instead of hard-coded 16
+  samples/bpf/user: use TASK_COMM_LEN_16 instead of hard-coded 16
+  tools/include: introduce TASK_COMM_LEN_16
+  tools/lib/perf: use TASK_COMM_LEN_16 instead of hard-coded 16
+  tools/bpf/bpftool: use TASK_COMM_LEN_16 instead of hard-coded 16
+  tools/perf/test: make perf test adopt to task comm size change
+  tools/testing/selftests/bpf: use TASK_COMM_LEN_16 instead of
+    hard-coded 16
+  sched.h: extend task comm from 16 to 24 for CONFIG_BASE_FULL
+  kernel/kthread: show a warning if kthread's comm is truncated
+
+ drivers/connector/cn_proc.c                   |  5 +++-
+ drivers/infiniband/hw/qib/qib.h               |  4 +--
+ drivers/infiniband/hw/qib/qib_file_ops.c      |  2 +-
+ fs/binfmt_elf.c                               |  2 +-
+ fs/exec.c                                     |  5 ++--
+ include/linux/elfcore-compat.h                |  3 ++-
+ include/linux/elfcore.h                       |  4 +--
+ include/linux/sched.h                         | 11 +++++++-
+ include/uapi/linux/cn_proc.h                  |  7 ++++-
+ kernel/kthread.c                              |  7 ++++-
+ samples/bpf/offwaketime_kern.c                | 10 +++----
+ samples/bpf/offwaketime_user.c                |  6 ++---
+ samples/bpf/test_overhead_kprobe_kern.c       | 11 ++++----
+ samples/bpf/test_overhead_tp_kern.c           |  5 ++--
+ samples/bpf/tracex2_kern.c                    |  3 ++-
+ samples/bpf/tracex2_user.c                    |  7 ++---
+ tools/bpf/bpftool/Makefile                    |  1 +
+ tools/bpf/bpftool/main.h                      |  3 ++-
+ tools/bpf/bpftool/skeleton/pid_iter.bpf.c     |  4 +--
+ tools/bpf/bpftool/skeleton/pid_iter.h         |  4 ++-
+ tools/include/linux/sched/task.h              |  3 +++
+ tools/lib/perf/include/perf/event.h           |  5 ++--
+ tools/perf/tests/evsel-tp-sched.c             | 26 ++++++++++++++-----
+ tools/testing/selftests/bpf/Makefile          |  2 +-
+ .../selftests/bpf/prog_tests/ringbuf.c        |  3 ++-
+ .../selftests/bpf/prog_tests/ringbuf_multi.c  |  3 ++-
+ .../bpf/prog_tests/sk_storage_tracing.c       |  3 ++-
+ .../selftests/bpf/prog_tests/test_overhead.c  |  3 ++-
+ .../bpf/prog_tests/trampoline_count.c         |  3 ++-
+ tools/testing/selftests/bpf/progs/profiler.h  |  7 ++---
+ .../selftests/bpf/progs/profiler.inc.h        |  8 +++---
+ tools/testing/selftests/bpf/progs/pyperf.h    |  4 +--
+ .../testing/selftests/bpf/progs/strobemeta.h  |  6 ++---
+ .../bpf/progs/test_core_reloc_kernel.c        |  3 ++-
+ .../selftests/bpf/progs/test_ringbuf.c        |  3 ++-
+ .../selftests/bpf/progs/test_ringbuf_multi.c  |  3 ++-
+ .../bpf/progs/test_sk_storage_tracing.c       |  5 ++--
+ .../selftests/bpf/progs/test_skb_helpers.c    |  5 ++--
+ .../selftests/bpf/progs/test_stacktrace_map.c |  5 ++--
+ .../selftests/bpf/progs/test_tracepoint.c     |  5 ++--
+ 40 files changed, 135 insertions(+), 74 deletions(-)
+
 -- 
-2.30.2
+2.17.1
 
