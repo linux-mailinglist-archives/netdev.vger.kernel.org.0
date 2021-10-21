@@ -2,139 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5505D435B5D
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 09:08:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DD45435B69
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 09:09:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231282AbhJUHKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 03:10:40 -0400
-Received: from mx1.tq-group.com ([93.104.207.81]:44971 "EHLO mx1.tq-group.com"
+        id S231422AbhJUHMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 03:12:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56218 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230220AbhJUHKi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Oct 2021 03:10:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1634800103; x=1666336103;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=66rOrQeN+xfmoNg6r4UCYTzu2221zyQ3mTB2Kq6ryGo=;
-  b=J8BnNJy8oY3SWvpR0cNl2qxbXC2kznt79KyT+cLrqjOYmp7lQJdTFGQc
-   /fyiAG57Askr2V+zNrLxmu2UxQtdoPIVHzWnmduXa6GuDyK1USKRU1/4H
-   8ZnNJa6aQCi9eHRHBURQrY73Vc1+r/VmgwW7Psw/tdbS+gkJXzAzSUdDf
-   p/R01TRF1xvLYQVc/dku3/B+RPKSo+JV2oYiIeFaiSpNVYOA/Gjhkpqvz
-   2pVuzQxWlImcCsatAlfffg+Tv0tjjAq6SeMF6DUJMFFRl9iVBF7Rm37RG
-   Rb3AsuclgPSljvayIH6j8qtLBsk1F7QALwFh7aV6cCtcwswp5deeicw4r
-   A==;
-X-IronPort-AV: E=Sophos;i="5.87,169,1631570400"; 
-   d="scan'208";a="20167327"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 21 Oct 2021 09:08:21 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Thu, 21 Oct 2021 09:08:21 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Thu, 21 Oct 2021 09:08:21 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1634800101; x=1666336101;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=66rOrQeN+xfmoNg6r4UCYTzu2221zyQ3mTB2Kq6ryGo=;
-  b=B9PypCYcjmdUhu5qgr7SLyUp01H2zjkuDZgHO5ltgyytlEMlCH9dDiJU
-   fOvPDfCpchG1uiBz6aNFkheuGtcbJMUFTricIS3mnNCYeDvdLZA3GsFnW
-   S2HmhpLv+mzOwXFRHj8Arrroh6IdDw5Lw0lvc/pe+Xh8DnHkOe8eypwl2
-   /aq2hP5OUuOIQgqC54E62KIZfCv0m1gAgzM/v9Fa9KFZ+43Gjb/CYBvWm
-   7emYiPE0mXJenELbwwRp/nGEGI6JugX40byql4+BhRmkGpwLZ5PrSi1BM
-   6wG1FhaaK3qZTOseeCw7LXyH+q/48Nd+dRLbsOFfPoGSUQ3OqyoBCVTBR
-   w==;
-X-IronPort-AV: E=Sophos;i="5.87,169,1631570400"; 
-   d="scan'208";a="20167326"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 21 Oct 2021 09:08:21 +0200
-Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.121.48.12])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 6B230280065;
-        Thu, 21 Oct 2021 09:08:21 +0200 (CEST)
-Message-ID: <c286107376a99ca2201db058e1973e2b2264e9fb.camel@ew.tq-group.com>
-Subject: Re: (EXT) Re: [PATCH] net: fec: defer probe if PHY on external MDIO
- bus is not available
-From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 21 Oct 2021 09:08:19 +0200
-In-Reply-To: <YXBk8gwuCqrxDbVY@lunn.ch>
-References: <20211014113043.3518-1-matthias.schiffer@ew.tq-group.com>
-         <YW7SWKiUy8LfvSkl@lunn.ch>
-         <aae9573f89560a32da0786dc90cb7be0331acad4.camel@ew.tq-group.com>
-         <YXBk8gwuCqrxDbVY@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S231357AbhJUHMB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Oct 2021 03:12:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 759C7606A5;
+        Thu, 21 Oct 2021 07:09:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634800185;
+        bh=jSUySDz8lzTVjjSD+1bRdCp3Zigy7nDut3K7EhQ19Ss=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZgSZM0i0iMVGrkWnBIazW/Qx49Yz3PQWFlRDu8Vo0r8yKsOQLlI3jFLApU4vDCkr2
+         cFdABA9S5CblrjvDriVFWzwrlw+PtWeJvCND32jOWTw5fbTgAJdxIS6guoYTON2TQg
+         sfx0oAyWAkeDYgDzZddL2WjhUu35bKWBR8lETlRpXgHPZRSFM8K0LLNGlDzYXwn7Tl
+         nd/c1YUBzK1zBnvRewtf//2EOg+2oyNjU5jRlgMm1L7cCc6M5CJWovTGoYKEe70uV/
+         /qP3JBGBESFNNPGa6OtZ1uBc3Ke3Cfeo75PbvyjMAdwRLTDyCA2PxbbKenIFDqJbJJ
+         8Y5uuVzfrIltw==
+Date:   Thu, 21 Oct 2021 09:09:40 +0200
+From:   Simon Horman <horms@kernel.org>
+To:     Jesse Brandeburg <jesse.brandeburg@gmail.com>
+Cc:     luo penghao <cgel.zte@gmail.com>,
+        NetDEV list <netdev@vger.kernel.org>,
+        Zeal Robot <zealci@zte.com.cn>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        intel-wired-lan@lists.osuosl.org, Jakub Kicinski <kuba@kernel.org>,
+        luo penghao <luo.penghao@zte.com.cn>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [Intel-wired-lan] [PATCH linux-next] e1000: Remove redundant
+ statement
+Message-ID: <20211021070937.GA9814@kernel.org>
+References: <20211018085305.853996-1-luo.penghao@zte.com.cn>
+ <20211020092537.GF3935@kernel.org>
+ <CAEuXFEzXSU-Ws6T_8TBVfgskh4VA14LmirFYSjdQpwtndfeeww@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEuXFEzXSU-Ws6T_8TBVfgskh4VA14LmirFYSjdQpwtndfeeww@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-10-20 at 20:50 +0200, Andrew Lunn wrote:
-> > > I've not looked at the details yet, just back from vacation. But this
-> > > seems wrong. I would of expected phylib to of returned -EPRODE_DEFER
-> > > at some point, when asked for a PHY which does not exist yet. All the
-> > > driver should need to do is make sure it returns the
-> > > -EPRODE_DEFER.
-> > 
-> > This is what I expected as well, however there are a few complications:
-> > 
-> > - At the moment the first time the driver does anything with the PHY is
-> >   in fec_enet_open(), not in fec_probe() - way too late to defer
-> >   anything
+On Wed, Oct 20, 2021 at 11:08:11AM -0700, Jesse Brandeburg wrote:
+> Apologies for the duplicates, mail from my intel account going out
+> through outlook.com is not being delivered.
 > 
-> O.K. Right. Are you using NFS root? For normal user space opening of
-> the interface, this has all been sorted out by the time user space
-> does anything. The NFS root changes the time in a big way.
-
-NFS root is one of our usecases.
-
+> On Wed, Oct 20, 2021 at 7:00 AM Simon Horman <horms@kernel.org> wrote:
 > 
-> Anyway, i would say some bits of code need moving from open to probe
-> so EPROBE_DEFER can be used.
+> > > Value stored to 'ctrl_reg' is never read.
+> >
+> > I agree this does seem to be the case.
+> >
+> > > Reported-by: Zeal Robot <zealci@zte.com.cn>
+> > > Signed-off-by: luo penghao <luo.penghao@zte.com.cn>
+> >
+> > Reviewed-by: Simon Horman <horms@kernel.org>
 > 
-> We already have:
-> 
->         phy_node = of_parse_phandle(np, "phy-handle", 0);
->         if (!phy_node && of_phy_is_fixed_link(np)) {
->                 ret = of_phy_register_fixed_link(np);
->                 if (ret < 0) {
->                         dev_err(&pdev->dev,
->                                 "broken fixed-link specification\n");
->                         goto failed_phy;
->                 }
->                 phy_node = of_node_get(np);
->         }
->         fep->phy_node = phy_node;
-> 
-> Go one step further. If fep->phy_node is not NULL, we know there
-> should be a PHY. So call of_phy_find_device(). If it returns NULL,
-> then -EPROBE_DEFER. Otherwise store the phydev into fep, and use it in
-> open.
-> 
-> You will need to move the call to fec_enet_mii_init(pdev) earlier, so
-> the MDIO bus is available.
+> Thanks for the review, but (davem/kuba) please do not apply.
 
-I would love to do this, but driver-api/driver-model/driver.rst
-contains the following warning:
-
-      -EPROBE_DEFER must not be returned if probe() has already created
-      child devices, even if those child devices are removed again
-      in a cleanup path. If -EPROBE_DEFER is returned after a child
-      device has been registered, it may result in an infinite loop of
-      .probe() calls to the same driver.
-
-My understanding of this is that there is simply no way to return
--EPROBE_DEFER after fec_enet_mii_init(pdev).
-
-
+Thanks, and sorry for misunderstanding the patch.
 
 > 
->     Andrew
-
+> > > @@ -1215,8 +1215,6 @@ static int e1000_integrated_phy_loopback(struct e1000_adapter *adapter)
+> > >               e1000_write_phy_reg(hw, PHY_CTRL, 0x8140);
+> > >       }
+> > >
+> > > -     ctrl_reg = er32(CTRL);
+> 
+> Thanks for your patch, but this change is not safe. you're removing a
+> read that could do two things. The first is that the read "flushes"
+> the write just above to PCI (it's a PCI barrier), and the second is
+> that the read can have some side effects.
+> 
+> If this change must be done, the code should be to remove the
+> assignment to ctrl_reg, but leave the read, so the line would just
+> look like:
+>         er32(CTRL);
+> 
+> This will get rid of the warning and not change the flow from the
+> hardware perspective.
+> 
+> > > -
+> > >       /* force 1000, set loopback */
+> > >       e1000_write_phy_reg(hw, PHY_CTRL, 0x4140);
+> > >
+> 
+> Please do not apply this.
+> 
