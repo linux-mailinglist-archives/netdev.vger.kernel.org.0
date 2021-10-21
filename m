@@ -2,62 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3216436215
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 14:50:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E64843621D
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 14:52:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230374AbhJUMwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 08:52:32 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:50526 "EHLO vps0.lunn.ch"
+        id S230359AbhJUMyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 08:54:37 -0400
+Received: from s2.neomailbox.net ([5.148.176.60]:14371 "EHLO s2.neomailbox.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230231AbhJUMwc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Oct 2021 08:52:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=oy6v5iVZJiolJ9FVtEYshkEVwEiT0r5Ra+Ipjg/HDbk=; b=PmR/RcgwEJVNtnk+3hE/VaFcvl
-        SHUY571C09KsfJSTzbO6avyBCe7XyZM9lUgV0PrYb0dc/KEljI4+zSccxATxqbEANncuEzrLXHDyu
-        QmFfZF/InF6N7kBX/3ZY73tG/Ld/TouoBqrpxwszNHAzVVfaj+ysbvBMZI8t4nMrhwpQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mdXWI-00BHp2-MK; Thu, 21 Oct 2021 14:50:06 +0200
-Date:   Thu, 21 Oct 2021 14:50:06 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: (EXT) Re: [PATCH] net: fec: defer probe if PHY on external MDIO
- bus is not available
-Message-ID: <YXFh/nLTqvCsLAXj@lunn.ch>
-References: <20211014113043.3518-1-matthias.schiffer@ew.tq-group.com>
- <YW7SWKiUy8LfvSkl@lunn.ch>
- <aae9573f89560a32da0786dc90cb7be0331acad4.camel@ew.tq-group.com>
- <YXBk8gwuCqrxDbVY@lunn.ch>
- <c286107376a99ca2201db058e1973e2b2264e9fb.camel@ew.tq-group.com>
+        id S230231AbhJUMyg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Oct 2021 08:54:36 -0400
+Subject: Re: [PATCH net-next] gre/sit: Don't generate link-local addr if
+ addr_gen_mode is IN6_ADDR_GEN_MODE_NONE
+To:     Stephen Suryaputra <ssuryaextr@gmail.com>, netdev@vger.kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net
+References: <20211020200618.467342-1-ssuryaextr@gmail.com>
+From:   Antonio Quartulli <a@unstable.cc>
+Message-ID: <9bd488de-f675-d879-97aa-d27948494ed1@unstable.cc>
+Date:   Thu, 21 Oct 2021 14:52:44 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c286107376a99ca2201db058e1973e2b2264e9fb.camel@ew.tq-group.com>
+In-Reply-To: <20211020200618.467342-1-ssuryaextr@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I would love to do this, but driver-api/driver-model/driver.rst
-> contains the following warning:
-> 
->       -EPROBE_DEFER must not be returned if probe() has already created
->       child devices, even if those child devices are removed again
->       in a cleanup path. If -EPROBE_DEFER is returned after a child
->       device has been registered, it may result in an infinite loop of
->       .probe() calls to the same driver.
-> 
-> My understanding of this is that there is simply no way to return
-> -EPROBE_DEFER after fec_enet_mii_init(pdev).
+Hi,
 
-It might say that, but lots of network drivers actually do this. I've
-not seen an endless loop.
+On 20/10/2021 22:06, Stephen Suryaputra wrote:
+> When addr_gen_mode is set to IN6_ADDR_GEN_MODE_NONE, the link-local addr
+> should not be generated. But it isn't the case for GRE (as well as GRE6)
+> and SIT tunnels. Make it so that tunnels consider the addr_gen_mode,
+> especially for IN6_ADDR_GEN_MODE_NONE.
+> 
+> Do this in add_v4_addrs() to cover both GRE and SIT only if the addr
+> scope is link.
+> 
+> Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
+> ---
+>  net/ipv6/addrconf.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+> index d4fae16deec4..9e1463a2acae 100644
+> --- a/net/ipv6/addrconf.c
+> +++ b/net/ipv6/addrconf.c
+> @@ -3110,6 +3110,9 @@ static void add_v4_addrs(struct inet6_dev *idev)
+>  	memcpy(&addr.s6_addr32[3], idev->dev->dev_addr + offset, 4);
+>  
+>  	if (idev->dev->flags&IFF_POINTOPOINT) {
+> +		if (idev->cnf.addr_gen_mode == IN6_ADDR_GEN_MODE_NONE)
+> +			return;
+> +
 
-    Andrew
+Maybe I am missing something, but why checking the mode only for
+pointtopoint? If mode is NONE shouldn't this routine just abort
+regardless of the interface setup?
+
+Cheers,
+
+>  		addr.s6_addr32[0] = htonl(0xfe800000);
+>  		scope = IFA_LINK;
+>  		plen = 64;
+> 
+
+-- 
+Antonio Quartulli
