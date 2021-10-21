@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 946384357B2
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 02:26:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59FBD4357BE
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 02:26:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232476AbhJUA2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 20:28:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46148 "EHLO mail.kernel.org"
+        id S232814AbhJUA22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 20:28:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43110 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232021AbhJUA0c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Oct 2021 20:26:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 405EB61130;
-        Thu, 21 Oct 2021 00:24:16 +0000 (UTC)
+        id S231493AbhJUA0z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Oct 2021 20:26:55 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 13CCC613A3;
+        Thu, 21 Oct 2021 00:24:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634775857;
-        bh=1hDDKPFMJeNG8aC4u1Bz+JJb9z8HGt06R9e7A0KG3hM=;
+        s=k20201202; t=1634775872;
+        bh=e2a7wykQIQgoocBC1Glgb9Z8xdwyFo1gb+Rb3N/O0xU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YF9ZDMbBWpJBdB4dTWfpaKDJnjCkUPxSgT1NjWi8OeGEGIDt999Lfc8wDoRbokF6o
-         8cVlfeN9Q88MnpzewRCnjRXogVNtb2U201DfT3DHwk19bH845mT21Lj6hWJBn1Mev+
-         v53yh5OXEIgkDvDsCgh/AbDf1Dz24BYodZOsCRW82Y83AHM1XHLvAR/6KeRKIc62+D
-         IOtoZiKlm3MSDrkBGy/IkV3FYDth24YS88WG6fcbe4DNIAAIeX5gFZ4xygz+7MFGwA
-         f2i05wUekKpGbN4Pad5UHQLAOw+pI0zgiZOEwggz8ouQ1XdsWPfKOkyY3ay0TQt83i
-         N5I9OyzEFqjkA==
+        b=jsiJBtD9AIqp2/rIW82vBuh2ois+EWev8au9c+EwYrM5+wQifLIYLLZeDId5XAIGb
+         A6HQOCuYzadxbSPH7UiHhHQzXKyeeTS0kwkLzuz5HXwt4N/R4r/gnHUiKD5jQ2dt8C
+         exITpNHYW5Vlcu7RZzQPL9WrL4l5efaR+bEeV4PEF6ZGzBws75vKN+zRNgHUTSRv3m
+         ueW5aV38OeQsRujDMxarm4rhmj5HhqRHMpF7QUjriXUK0iSz9hpDQPUdyzOQJ3itzb
+         nqdgWzrRWI/TYsgxkH15i17y8Z00zTwr/cHJyN2L4BlXGsavkouaYg3p7Fe5Sig7iT
+         fNoFCIxT7Ao2g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+Cc:     Lin Ma <linma@zju.edu.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, isdn@linux-pingi.de,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 4/7] isdn: mISDN: Fix sleeping function called from invalid context
-Date:   Wed, 20 Oct 2021 20:24:00 -0400
-Message-Id: <20211021002404.1129946-4-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        bongsu.jeon@samsung.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 2/7] nfc: nci: fix the UAF of rf_conn_info object
+Date:   Wed, 20 Oct 2021 20:24:21 -0400
+Message-Id: <20211021002427.1130044-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211021002404.1129946-1-sashal@kernel.org>
-References: <20211021002404.1129946-1-sashal@kernel.org>
+In-Reply-To: <20211021002427.1130044-1-sashal@kernel.org>
+References: <20211021002427.1130044-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,77 +44,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Lin Ma <linma@zju.edu.cn>
 
-[ Upstream commit 6510e80a0b81b5d814e3aea6297ba42f5e76f73c ]
+[ Upstream commit 1b1499a817c90fd1ce9453a2c98d2a01cca0e775 ]
 
-The driver can call card->isac.release() function from an atomic
-context.
+The nci_core_conn_close_rsp_packet() function will release the conn_info
+with given conn_id. However, it needs to set the rf_conn_info to NULL to
+prevent other routines like nci_rf_intf_activated_ntf_packet() to trigger
+the UAF.
 
-Fix this by calling this function after releasing the lock.
-
-The following log reveals it:
-
-[   44.168226 ] BUG: sleeping function called from invalid context at kernel/workqueue.c:3018
-[   44.168941 ] in_atomic(): 1, irqs_disabled(): 1, non_block: 0, pid: 5475, name: modprobe
-[   44.169574 ] INFO: lockdep is turned off.
-[   44.169899 ] irq event stamp: 0
-[   44.170160 ] hardirqs last  enabled at (0): [<0000000000000000>] 0x0
-[   44.170627 ] hardirqs last disabled at (0): [<ffffffff814209ed>] copy_process+0x132d/0x3e00
-[   44.171240 ] softirqs last  enabled at (0): [<ffffffff81420a1a>] copy_process+0x135a/0x3e00
-[   44.171852 ] softirqs last disabled at (0): [<0000000000000000>] 0x0
-[   44.172318 ] Preemption disabled at:
-[   44.172320 ] [<ffffffffa009b0a9>] nj_release+0x69/0x500 [netjet]
-[   44.174441 ] Call Trace:
-[   44.174630 ]  dump_stack_lvl+0xa8/0xd1
-[   44.174912 ]  dump_stack+0x15/0x17
-[   44.175166 ]  ___might_sleep+0x3a2/0x510
-[   44.175459 ]  ? nj_release+0x69/0x500 [netjet]
-[   44.175791 ]  __might_sleep+0x82/0xe0
-[   44.176063 ]  ? start_flush_work+0x20/0x7b0
-[   44.176375 ]  start_flush_work+0x33/0x7b0
-[   44.176672 ]  ? trace_irq_enable_rcuidle+0x85/0x170
-[   44.177034 ]  ? kasan_quarantine_put+0xaa/0x1f0
-[   44.177372 ]  ? kasan_quarantine_put+0xaa/0x1f0
-[   44.177711 ]  __flush_work+0x11a/0x1a0
-[   44.177991 ]  ? flush_work+0x20/0x20
-[   44.178257 ]  ? lock_release+0x13c/0x8f0
-[   44.178550 ]  ? __kasan_check_write+0x14/0x20
-[   44.178872 ]  ? do_raw_spin_lock+0x148/0x360
-[   44.179187 ]  ? read_lock_is_recursive+0x20/0x20
-[   44.179530 ]  ? __kasan_check_read+0x11/0x20
-[   44.179846 ]  ? do_raw_spin_unlock+0x55/0x900
-[   44.180168 ]  ? ____kasan_slab_free+0x116/0x140
-[   44.180505 ]  ? _raw_spin_unlock_irqrestore+0x41/0x60
-[   44.180878 ]  ? skb_queue_purge+0x1a3/0x1c0
-[   44.181189 ]  ? kfree+0x13e/0x290
-[   44.181438 ]  flush_work+0x17/0x20
-[   44.181695 ]  mISDN_freedchannel+0xe8/0x100
-[   44.182006 ]  isac_release+0x210/0x260 [mISDNipac]
-[   44.182366 ]  nj_release+0xf6/0x500 [netjet]
-[   44.182685 ]  nj_remove+0x48/0x70 [netjet]
-[   44.182989 ]  pci_device_remove+0xa9/0x250
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/isdn/hardware/mISDN/netjet.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/nfc/nci/rsp.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/isdn/hardware/mISDN/netjet.c b/drivers/isdn/hardware/mISDN/netjet.c
-index 6dea4c180c49..feada9d7cbcc 100644
---- a/drivers/isdn/hardware/mISDN/netjet.c
-+++ b/drivers/isdn/hardware/mISDN/netjet.c
-@@ -963,8 +963,8 @@ nj_release(struct tiger_hw *card)
- 		nj_disable_hwirq(card);
- 		mode_tiger(&card->bc[0], ISDN_P_NONE);
- 		mode_tiger(&card->bc[1], ISDN_P_NONE);
--		card->isac.release(&card->isac);
- 		spin_unlock_irqrestore(&card->lock, flags);
-+		card->isac.release(&card->isac);
- 		release_region(card->base, card->base_s);
- 		card->base_s = 0;
+diff --git a/net/nfc/nci/rsp.c b/net/nfc/nci/rsp.c
+index 9b6eb913d801..74e4d5e8c275 100644
+--- a/net/nfc/nci/rsp.c
++++ b/net/nfc/nci/rsp.c
+@@ -274,6 +274,8 @@ static void nci_core_conn_close_rsp_packet(struct nci_dev *ndev,
+ 		conn_info = nci_get_conn_info_by_conn_id(ndev, ndev->cur_id);
+ 		if (conn_info) {
+ 			list_del(&conn_info->list);
++			if (conn_info == ndev->rf_conn_info)
++				ndev->rf_conn_info = NULL;
+ 			devm_kfree(&ndev->nfc_dev->dev, conn_info);
+ 		}
  	}
 -- 
 2.33.0
