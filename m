@@ -2,80 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 436614360CB
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 13:50:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 076714360E6
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 14:00:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230393AbhJULwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 07:52:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49176 "EHLO mail.kernel.org"
+        id S230324AbhJUMC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 08:02:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52274 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230179AbhJULwe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Oct 2021 07:52:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id B378061208;
-        Thu, 21 Oct 2021 11:50:18 +0000 (UTC)
+        id S229765AbhJUMC0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Oct 2021 08:02:26 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 5E93960F9E;
+        Thu, 21 Oct 2021 12:00:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634817018;
-        bh=sVZhOdim6P0Tvyp+gwrfDL7NI8I/xu0bMvIoOHGBp1U=;
+        s=k20201202; t=1634817610;
+        bh=LjxLzV+RTYqFwMPpNZnK9drf+mkPKeYj+QbsRTfqVYI=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=XPJETXqnbn9oFCknqpTSseI3rSTRtCKIt1uq/tG5pV8R/XdY+3jgdA9rgIAeO+Pob
-         rqgQFN3nVTEsoKIbB/moouJ4QBuFKQT7ivbXQcG0noO7kh9vxW3ZBr7Ds3mE9HGBHh
-         Q90BvRz39j83Nal0k+7zEW4X0kBgTpiL/tAStmoOWXrHro2xkD2OgChrjZaOf3OqPs
-         dmrTaZ+wCWwPshyyhYx53+YGCtBxElkOR9gYHG26CxUPsyLSDyIZF7UhRiPW5dlCSm
-         TJrAegsq6iYyiinA/IxCqgJMuqor1LIaBdJvbMDm5Nod1pfRcTEKA2/Zab7e5BDqpX
-         ehpIXzwJAYpSg==
+        b=H39bujwJBUQilS2VrG7D73SiYKNX3GmfpqquakJYZWrm5ZSR3C4FvgBch+owao9De
+         RJaco7hcR9Fz5dr1cukhhiWTgR1g88UpbwYbWh1Ix73ELhlMGKiFRoMyYYhIRjYwdk
+         U57hXBvYepX9ZfF2/Memi/IIpi6b0+Jtt1NZeRQhdLFNCN6dCfWfEJss2tXppEUSDH
+         BWRebkS+1rKHlVP67JrQCqVzJw7cK7fqE/ckjmmflEERBYLNHXQig2WPTlnh9sfiVm
+         sOKzomUV3q8VMp1yMebPHjewyCku6j2rQcTJO1plNgzxpqti6lCGMVb141DOkZ8E0I
+         7pX9GE3ch/zZw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A920B609E2;
-        Thu, 21 Oct 2021 11:50:18 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 54B0060A22;
+        Thu, 21 Oct 2021 12:00:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH RESEND v3 net-next 0/7] Remove the "dsa_to_port in a loop"
- antipattern
+Subject: Re: [PATCH -net] ptp: free 'vclock_index' in ptp_clock_release()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163481701868.17414.100686950748332359.git-patchwork-notify@kernel.org>
-Date:   Thu, 21 Oct 2021 11:50:18 +0000
-References: <20211020174955.1102089-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20211020174955.1102089-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        olteanv@gmail.com
+Message-Id: <163481761034.21729.18037093655482212990.git-patchwork-notify@kernel.org>
+Date:   Thu, 21 Oct 2021 12:00:10 +0000
+References: <20211021091353.457508-1-yangyingliang@huawei.com>
+In-Reply-To: <20211021091353.457508-1-yangyingliang@huawei.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        richardcochran@gmail.com, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Wed, 20 Oct 2021 20:49:48 +0300 you wrote:
-> I noticed that v3 was dropped with "Changes requested" without actually
-> requesting any change:
-> https://patchwork.kernel.org/project/netdevbpf/list/?series=565665&state=*
-> I suppose it has to do with the simultaneous build errors in mlx5, so
-> I'm just resending now that those are fixed.
+On Thu, 21 Oct 2021 17:13:53 +0800 you wrote:
+> 'vclock_index' is accessed from sysfs, it shouled be freed
+> in release function, so move it from ptp_clock_unregister()
+> to ptp_clock_release().
 > 
-> v1->v2: more patches
-> v2->v3: less patches
-> 
-> [...]
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+>  drivers/ptp/ptp_clock.c | 5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
 
 Here is the summary with links:
-  - [RESEND,v3,net-next,1/7] net: dsa: introduce helpers for iterating through ports using dp
-    https://git.kernel.org/netdev/net-next/c/82b318983c51
-  - [RESEND,v3,net-next,2/7] net: dsa: remove the "dsa_to_port in a loop" antipattern from the core
-    https://git.kernel.org/netdev/net-next/c/d0004a020bb5
-  - [RESEND,v3,net-next,3/7] net: dsa: do not open-code dsa_switch_for_each_port
-    https://git.kernel.org/netdev/net-next/c/65c563a67755
-  - [RESEND,v3,net-next,4/7] net: dsa: remove gratuitous use of dsa_is_{user,dsa,cpu}_port
-    https://git.kernel.org/netdev/net-next/c/57d77986e742
-  - [RESEND,v3,net-next,5/7] net: dsa: convert cross-chip notifiers to iterate using dp
-    https://git.kernel.org/netdev/net-next/c/fac6abd5f132
-  - [RESEND,v3,net-next,6/7] net: dsa: tag_sja1105: do not open-code dsa_switch_for_each_port
-    https://git.kernel.org/netdev/net-next/c/5068887a4fbe
-  - [RESEND,v3,net-next,7/7] net: dsa: tag_8021q: make dsa_8021q_{rx,tx}_vid take dp as argument
-    https://git.kernel.org/netdev/net-next/c/992e5cc7be8e
+  - [-net] ptp: free 'vclock_index' in ptp_clock_release()
+    https://git.kernel.org/netdev/net/c/b6b19a71c8bb
 
 You are awesome, thank you!
 -- 
