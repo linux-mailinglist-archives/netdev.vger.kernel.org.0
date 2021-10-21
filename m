@@ -2,209 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C59564357DC
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 02:37:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 188A14357EF
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 02:50:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231348AbhJUAkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 20:40:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49178 "EHLO
+        id S230260AbhJUAwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 20:52:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231200AbhJUAkC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 20:40:02 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BCCEC061749
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 17:37:47 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id q187so615732pgq.2
-        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 17:37:47 -0700 (PDT)
+        with ESMTP id S229702AbhJUAwk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 20:52:40 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04510C06161C;
+        Wed, 20 Oct 2021 17:50:26 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id v20so17312196plo.7;
+        Wed, 20 Oct 2021 17:50:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=CYdH6A8vfhWqL5BtovMJn3N4qQAcZBZVg7EUuFSZS8g=;
-        b=HFBaChGYgH+/L7OCNf/KjxCO9ZLlEU9swZd5wZFXqnYq//+GlXyM0HNwUzK13A2oow
-         hVRc1Gwwayg876CJ0wWOCIMp89KZ2sAZFJC57se8mQn/aCaLASIGOXZAI2MSjUmS9yYO
-         /6C8DRWpcLvojeyzQnBueqIkwDk6+WECA+PD3GBRsyFA2KCPiVE93/d4VjBBO1JU9MrA
-         RIRjLmvBnrW4dEdWQU+7QfrRmWpEJzKmUD3+dB7RajriALtqY9Yz8y8yyGouA6PyDoNe
-         X+Bq+RYkYxfmaSHIuBWuj2STRCdd6ZELJhkI8Famghr5timRILNRz81yflxyLfdTCIYk
-         1v/Q==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=LBP5Fct0djt6mKAEsqcCGlc9cav1Q45SnSe6amQOB6w=;
+        b=D8p1eYu7WKL5aIY3QZokqwN22izeZJ4rqn010YaHFupnD+2WIt/2bcobqw20XT4OVt
+         lg7YFwFdiumPIYDF9Fvjh9eIDzU8QB4jPmoi/GsLYTPrQ60BA/t+3E5PIijAzfkupVOP
+         TN+8EUcNpk7Kdjrx99Iydrw3At6KfgJ9OmK1hahJUl4uiTOu3ErDPqmLY+mtcocpQEPH
+         ISbTjbozQuHMOa269P/uaBYYO3YjAZZc188CPfjJfpSFXi8aJJJQAb/eP57N+Qr8uK6Q
+         9SHyLATS22oLm+yTdGgRygP8e8P4WkEmy2iaD/GrAGTRj+bOuw+zeLGFZe9aN9RDBNUT
+         0pCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=CYdH6A8vfhWqL5BtovMJn3N4qQAcZBZVg7EUuFSZS8g=;
-        b=s9K3BKm4VjkEsNV3Vd7FoGA2jmJwElINLnuVnHM4RmsNe7w9BI6ZKc+wJPSrvSL4jr
-         WHT0sJODjKY5188nn+GXz2cGHXhYc7EqgNaMhdKDj7kzePHRkwsSr9ebmHpMa2c6aGlz
-         iuGiYdMZdTXkiQzi/rib6aPSjcJRF9BFSmBK6YnK4Gd32I8LxLBQdvI6ulT27VxH3qD6
-         89yC8EwErgUKXGSJQjSrNyNaO5CO4i7hZE3Qegz4VADRRL+MErGtmIkKjg+YGPorJZOs
-         kSe+5hV1PLf4vPWxATkrtTSM1q/5qv/CKH76EkDZbXbFrp8wjiZWuCqJeZyC3AhYDw5p
-         OQOQ==
-X-Gm-Message-State: AOAM531TPgQPP36WrB6NO/P4sKLRpOH/jzAIJ8SivOBkQ5eYkAoWYJq5
-        Z4L8OV31Q/5ERKsCEJ9n2XvvwSLKbRk=
-X-Google-Smtp-Source: ABdhPJzEUrmOcpAZ2vD/3zWyusQecOh9U+MqRP0mEQtECZQTmwJH/U//DFxSD2yCTaXQ+aGAS2IfYQ==
-X-Received: by 2002:a63:7402:: with SMTP id p2mr1921864pgc.472.1634776666655;
-        Wed, 20 Oct 2021 17:37:46 -0700 (PDT)
-Received: from localhost.localdomain ([50.39.163.188])
-        by smtp.gmail.com with ESMTPSA id t22sm4164755pfg.148.2021.10.20.17.37.46
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LBP5Fct0djt6mKAEsqcCGlc9cav1Q45SnSe6amQOB6w=;
+        b=FJez0v6+RKAMLTeBpIhOv5c1LyFxOWy6KvNG6BHlPD50fTa8SyLWGlhHdKWaUJYoDT
+         wcspnSSPa36TxMaVm30knFNhJnzhXEmZJ7cxzAzA5WKaXCvwInTDMhRdWgBfxNaBREuv
+         ccFDgZYWq4K7+8qSF+Uh4s8cfPqtbLZXFC6woAACgWldQL6AlVv/Fyo4zIT82BYmIM0I
+         X3ZNN1LBiLvPxESsekna2jDt2LRsps/CpVjW9HhXlKNNKrIJkxFYaHQjDF/0M1v1Q3/h
+         7Qars0rCaRm+2BGVGo4l4/pAN+LeoYQLI24kJvJykievIWCW8os+juB46+U6zlrq0qld
+         1EfA==
+X-Gm-Message-State: AOAM533Pbn/TZgaexEtYtpwL1xKrR4AylrGDylU7vl772hsXqV6B+68Y
+        5b0X6U+XllgmbccPUUNCww0=
+X-Google-Smtp-Source: ABdhPJywHU/Hz8d43jjpz4uz6OCVKLTqiD/kJIw4bhZUxYU62fExEg+dK86/xdoRwVS3Dbv7PPaEvw==
+X-Received: by 2002:a17:902:7783:b0:13d:fee6:8095 with SMTP id o3-20020a170902778300b0013dfee68095mr2293640pll.7.1634777424113;
+        Wed, 20 Oct 2021 17:50:24 -0700 (PDT)
+Received: from postoffice.intern (192.243.120.180.16clouds.com. [192.243.120.180])
+        by smtp.gmail.com with ESMTPSA id d137sm4001604pfd.72.2021.10.20.17.50.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Oct 2021 17:37:46 -0700 (PDT)
-From:   James Prestwood <prestwoj@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     James Prestwood <prestwoj@gmail.com>
-Subject: [PATCH v5 2/2] net: ndisc: introduce ndisc_evict_nocarrier sysctl parameter
-Date:   Wed, 20 Oct 2021 17:32:12 -0700
-Message-Id: <20211021003212.878786-3-prestwoj@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211021003212.878786-1-prestwoj@gmail.com>
-References: <20211021003212.878786-1-prestwoj@gmail.com>
+        Wed, 20 Oct 2021 17:50:23 -0700 (PDT)
+Date:   Thu, 21 Oct 2021 08:50:13 +0800
+From:   David Yang <davidcomponentone@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH] Fix application of sizeof to pointer
+Message-ID: <YXC5RS1iziEqPlHK@postoffice.intern>
+References: <20211012111649.983253-1-davidcomponentone@gmail.com>
+ <CAEf4BzYTNZ=TNqMiGNg_Nj03K9fMM_xnoc=yaEYn8zbyE1rVjg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYTNZ=TNqMiGNg_Nj03K9fMM_xnoc=yaEYn8zbyE1rVjg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In most situations the neighbor discovery cache should be cleared on a
-NOCARRIER event which is currently done unconditionally. But for wireless
-roams the neighbor discovery cache can and should remain intact since
-the underlying network has not changed.
+OK, Thanks.
 
-This patch introduces a sysctl option ndisc_evict_nocarrier which can
-be disabled by a wireless supplicant during a roam. This allows packets
-to be sent after a roam immediately without having to wait for
-neighbor discovery.
-
-A user reported roughly a 1 second delay after a roam before packets
-could be sent out (note, on IPv4). This delay was due to the ARP
-cache being cleared. During testing of this same scenario using IPv6
-no delay was noticed, but regardless there is no reason to clear
-the ndisc cache for wireless roams.
-
-Signed-off-by: James Prestwood <prestwoj@gmail.com>
----
- Documentation/networking/ip-sysctl.rst |  9 +++++++++
- include/linux/ipv6.h                   |  1 +
- include/uapi/linux/ipv6.h              |  1 +
- net/ipv6/addrconf.c                    | 12 ++++++++++++
- net/ipv6/ndisc.c                       |  9 ++++++++-
- 5 files changed, 31 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index 18fde4ed7a5e..c61cc0219f4c 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -2350,6 +2350,15 @@ ndisc_tclass - INTEGER
- 
- 	* 0 - (default)
- 
-+ndisc_evict_nocarrier - BOOLEAN
-+	Clears the neighbor discovery table on NOCARRIER events. This option is
-+	important for wireless devices where the neighbor discovery cache should
-+	not be cleared when roaming between access points on the same network.
-+	In most cases this should remain as the default (1).
-+
-+	- 1 - (default): Clear neighbor discover cache on NOCARRIER events.
-+	- 0 - Do not clear neighbor discovery cache on NOCARRIER events.
-+
- mldv1_unsolicited_report_interval - INTEGER
- 	The interval in milliseconds in which the next unsolicited
- 	MLDv1 report retransmit will take place.
-diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
-index ef4a69865737..753e5c0db2a3 100644
---- a/include/linux/ipv6.h
-+++ b/include/linux/ipv6.h
-@@ -79,6 +79,7 @@ struct ipv6_devconf {
- 	__u32		ioam6_id;
- 	__u32		ioam6_id_wide;
- 	__u8		ioam6_enabled;
-+	__u8		ndisc_evict_nocarrier;
- 
- 	struct ctl_table_header *sysctl_header;
- };
-diff --git a/include/uapi/linux/ipv6.h b/include/uapi/linux/ipv6.h
-index b243a53fa985..d4178dace0bf 100644
---- a/include/uapi/linux/ipv6.h
-+++ b/include/uapi/linux/ipv6.h
-@@ -193,6 +193,7 @@ enum {
- 	DEVCONF_IOAM6_ENABLED,
- 	DEVCONF_IOAM6_ID,
- 	DEVCONF_IOAM6_ID_WIDE,
-+	DEVCONF_NDISC_EVICT_NOCARRIER,
- 	DEVCONF_MAX
- };
- 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index d4fae16deec4..398294aa8348 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -241,6 +241,7 @@ static struct ipv6_devconf ipv6_devconf __read_mostly = {
- 	.ioam6_enabled		= 0,
- 	.ioam6_id               = IOAM6_DEFAULT_IF_ID,
- 	.ioam6_id_wide		= IOAM6_DEFAULT_IF_ID_WIDE,
-+	.ndisc_evict_nocarrier	= 1,
- };
- 
- static struct ipv6_devconf ipv6_devconf_dflt __read_mostly = {
-@@ -300,6 +301,7 @@ static struct ipv6_devconf ipv6_devconf_dflt __read_mostly = {
- 	.ioam6_enabled		= 0,
- 	.ioam6_id               = IOAM6_DEFAULT_IF_ID,
- 	.ioam6_id_wide		= IOAM6_DEFAULT_IF_ID_WIDE,
-+	.ndisc_evict_nocarrier	= 1,
- };
- 
- /* Check if link is ready: is it up and is a valid qdisc available */
-@@ -5542,6 +5544,7 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
- 	array[DEVCONF_IOAM6_ENABLED] = cnf->ioam6_enabled;
- 	array[DEVCONF_IOAM6_ID] = cnf->ioam6_id;
- 	array[DEVCONF_IOAM6_ID_WIDE] = cnf->ioam6_id_wide;
-+	array[DEVCONF_NDISC_EVICT_NOCARRIER] = cnf->ndisc_evict_nocarrier;
- }
- 
- static inline size_t inet6_ifla6_size(void)
-@@ -6983,6 +6986,15 @@ static const struct ctl_table addrconf_sysctl[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_douintvec,
- 	},
-+	{
-+		.procname	= "ndisc_evict_nocarrier",
-+		.data		= &ipv6_devconf.ndisc_evict_nocarrier,
-+		.maxlen		= sizeof(u8),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dou8vec_minmax,
-+		.extra1		= (void *)SYSCTL_ZERO,
-+		.extra2		= (void *)SYSCTL_ONE,
-+	},
- 	{
- 		/* sentinel */
- 	}
-diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-index 184190b9ea25..4db58c29ab53 100644
---- a/net/ipv6/ndisc.c
-+++ b/net/ipv6/ndisc.c
-@@ -1794,6 +1794,7 @@ static int ndisc_netdev_event(struct notifier_block *this, unsigned long event,
- 	struct netdev_notifier_change_info *change_info;
- 	struct net *net = dev_net(dev);
- 	struct inet6_dev *idev;
-+	bool evict_nocarrier;
- 
- 	switch (event) {
- 	case NETDEV_CHANGEADDR:
-@@ -1810,10 +1811,16 @@ static int ndisc_netdev_event(struct notifier_block *this, unsigned long event,
- 		in6_dev_put(idev);
- 		break;
- 	case NETDEV_CHANGE:
-+		idev = in6_dev_get(dev);
-+		if (!idev)
-+			evict_nocarrier = true;
-+		else
-+			evict_nocarrier = idev->cnf.ndisc_evict_nocarrier;
-+
- 		change_info = ptr;
- 		if (change_info->flags_changed & IFF_NOARP)
- 			neigh_changeaddr(&nd_tbl, dev);
--		if (!netif_carrier_ok(dev))
-+		if (evict_nocarrier && !netif_carrier_ok(dev))
- 			neigh_carrier_down(&nd_tbl, dev);
- 		break;
- 	case NETDEV_DOWN:
--- 
-2.31.1
-
+On Wed, Oct 20, 2021 at 10:55:27AM -0700, Andrii Nakryiko wrote:
+> On Tue, Oct 12, 2021 at 4:17 AM <davidcomponentone@gmail.com> wrote:
+> >
+> > From: David Yang <davidcomponentone@gmail.com>
+> >
+> > The coccinelle check report:
+> > "./samples/bpf/xdp_redirect_cpu_user.c:397:32-38:
+> > ERROR: application of sizeof to pointer"
+> > Using the "strlen" to fix it.
+> >
+> > Reported-by: Zeal Robot <zealci@zte.com.cn>
+> > Signed-off-by: David Yang <davidcomponentone@gmail.com>
+> > ---
+> 
+> For future submissions, please use [PATCH bpf-next] subject prefix.
+> For changes that are targeted against BPF samples, please use
+> samples/bpf: prefix as well. So in this case the patch subject should
+> have been something like:
+> 
+> [PATCH bpf-next] samples/bpf: Fix application of sizeof to pointer
+> 
+> I've fixed it up and applied to bpf-next, thanks.
+> 
+> >  samples/bpf/xdp_redirect_cpu_user.c | 6 ++----
+> >  1 file changed, 2 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/samples/bpf/xdp_redirect_cpu_user.c b/samples/bpf/xdp_redirect_cpu_user.c
+> > index 6e25fba64c72..d84e6949007c 100644
+> > --- a/samples/bpf/xdp_redirect_cpu_user.c
+> > +++ b/samples/bpf/xdp_redirect_cpu_user.c
+> > @@ -325,7 +325,6 @@ int main(int argc, char **argv)
+> >         int add_cpu = -1;
+> >         int ifindex = -1;
+> >         int *cpu, i, opt;
+> > -       char *ifname;
+> >         __u32 qsize;
+> >         int n_cpus;
+> >
+> > @@ -393,9 +392,8 @@ int main(int argc, char **argv)
+> >                                 fprintf(stderr, "-d/--dev name too long\n");
+> >                                 goto end_cpu;
+> >                         }
+> > -                       ifname = (char *)&ifname_buf;
+> > -                       safe_strncpy(ifname, optarg, sizeof(ifname));
+> > -                       ifindex = if_nametoindex(ifname);
+> > +                       safe_strncpy(ifname_buf, optarg, strlen(ifname_buf));
+> > +                       ifindex = if_nametoindex(ifname_buf);
+> >                         if (!ifindex)
+> >                                 ifindex = strtoul(optarg, NULL, 0);
+> >                         if (!ifindex) {
+> > --
+> > 2.30.2
+> >
