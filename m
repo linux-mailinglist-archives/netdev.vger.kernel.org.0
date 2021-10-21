@@ -2,119 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9C6E436C43
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 22:35:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24B8A436C4B
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 22:41:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232122AbhJUUhd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 16:37:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39842 "EHLO
+        id S231822AbhJUUnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 16:43:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231502AbhJUUhc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 16:37:32 -0400
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BFB6C0613B9
-        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 13:35:16 -0700 (PDT)
-Received: by mail-io1-xd2b.google.com with SMTP id z69so2593880iof.9
-        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 13:35:16 -0700 (PDT)
+        with ESMTP id S230272AbhJUUnO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 16:43:14 -0400
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16320C061764
+        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 13:40:58 -0700 (PDT)
+Received: by mail-qt1-x832.google.com with SMTP id y11so1669652qtn.13
+        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 13:40:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Wg0Jus9TL4rCInXKPmpU7yOccL+OmPZ9RnN1FPY/86c=;
-        b=akrkvWstL+3WOecYTO0PLNiiDc0WcMR8iMjDJN29uVq6E7oe5C07mh6zjJq8DsaaUh
-         7ysysm8AJ978/Upa9Ap1QP7OMZECXUUuffq4VEXB8nEOHpVx4cIOialsQo4mAiikBXyc
-         HpqxRb9EMBOT+q2fVDVEHkLwDk0qrrGI324DY=
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WtfuqbWRubAkNJb/Ji9fqYFzDNLlB/8GCYwd4CC82Jg=;
+        b=lDkwGDG//rxPiV+Dz8vtU3V75pHyQ0OQMu1zUU5GuzjQGzW/Oy8hDRQpc0TwKZqugG
+         sjgaztZfThSeLp98LvTmgQlmkvbBO90rwchYSQ0A4Zxc1NqrCvvWbQ3d15uHqQtNmx/r
+         azLmC9ayb4p8DkXMqnIByCNbgfwChprhkd7Oee+wW9fhvK+z4/6IxtWpMic3P4Ve315X
+         fNxaua2YSCv+ytNn0sau+kJx/4nkkixRc7kvgTVOLAIMPA1ukZzwBVQH6iZikw4sX+iY
+         REi2UwQjPO3TMcqY5oN1l+Tq4irdwhtS6j0eo5cMh6kpYc6oBHYc3AXdF4zJjdGt4H/g
+         IEyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Wg0Jus9TL4rCInXKPmpU7yOccL+OmPZ9RnN1FPY/86c=;
-        b=I6Ul+MwiHAIXlAyC//qWIGcSO7I/JSX1+6BTeis9TOncyzAkGQswUxvoJfcCAtzsyY
-         bY3XXDvbTQHqzAX77jx6QUU8N0+7WC6O0pz/a4oVYQDy+JSLG+DiwSv6FEyospv5yWYO
-         UHoj84KhHlhEO6Ylq60G9UDvsUByxzLPtuDycITXX+GHkK9K3ktjVetfdfDFtEnsaB5G
-         OqZ70CapSJbYMB9IUj10C8WXzo3a1gnlO6qSsVK1fDqWEa94bAiaSKMM9duXPWLbC2X7
-         3Qj7Fg7RAdqlVJle16HIw/WeFKsuP1+gNuNjaGt83O4q7T9TD/o+MLYRrciQyxyiyfGt
-         ykDQ==
-X-Gm-Message-State: AOAM533TMZmjy8XQkjI3QGi9C4256FyfaiOPhb9a2p870KvjxhnOVE/p
-        YbDB6JIeszhDOJOWI7VkeZdQOA==
-X-Google-Smtp-Source: ABdhPJxUpkvVKJYdnJ8nWqoBfp2mW3VqpjVlNca8iPS3DV7G82q7NyyNf02/PAqc1mnDNnnBbp4A5Q==
-X-Received: by 2002:a5d:9d82:: with SMTP id ay2mr5527961iob.128.1634848515695;
-        Thu, 21 Oct 2021 13:35:15 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id e11sm829754ils.34.2021.10.21.13.35.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Oct 2021 13:35:15 -0700 (PDT)
-Subject: Re: [PATCH 1/2] dt-bindings: net: qcom,ipa: describe IPA v4.5
- interconnects
-To:     David Heidelberg <david@ixit.cz>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, Alex Elder <elder@kernel.org>
-Cc:     ~okias/devicetree@lists.sr.ht, linux-arm-msm@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20211020225435.274628-1-david@ixit.cz>
-From:   Alex Elder <elder@ieee.org>
-Message-ID: <05b2cc69-d8a4-750d-d98d-db8580546a15@ieee.org>
-Date:   Thu, 21 Oct 2021 15:35:14 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WtfuqbWRubAkNJb/Ji9fqYFzDNLlB/8GCYwd4CC82Jg=;
+        b=2OJ3RQwcNgKcIzKXg2z0Gxp60wCvWk1mXo6RNdks7F9l8ccW0B/xd9uyKy6YVqLs4N
+         YenEz5rDXqRjbTdlisQx3eLrW12mYIPqvzHvqsX+NYgoz8/Ai3KcTdxccqjjeJtG3pkZ
+         GTb+SswaIiqJ9RQKeZchMPvuhewDzL2afknV+GXoJFSQFlAs49F/1Plo3bIw+egjUXRW
+         WwYPHmmHwSyBMp/zQfxIKClt79RI9yxOncQ6XiIOwD9EjpZ7PoJnqUXCnJX7Nss5Q4Bl
+         FRTLFQH8j5n3l3sM3JjZhEit9V4NqgKas1mskxZWKfXUVP+KFRFpxbQcLkKk+QKJfGn3
+         mg3Q==
+X-Gm-Message-State: AOAM5326qmmnrathE7nxhsLTc/nfXr5BZGQHYY12Kugz/jQi/glXRjah
+        eqfcAUXbMNcf8sh45hlVSi7kl0+ctZEU/wWgNxhf3lNvnZiHOIqc
+X-Google-Smtp-Source: ABdhPJw35A8cCQ7MgQBb+LihU21lorvv1rQc9/q4gj8FBFSTgD7FMEDcwUIez92lRuqEL3aqD3xQCLOb+QfsrQnJrG4=
+X-Received: by 2002:ac8:5cd0:: with SMTP id s16mr8555269qta.287.1634848856961;
+ Thu, 21 Oct 2021 13:40:56 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20211020225435.274628-1-david@ixit.cz>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20211021165618.178352-1-sdf@google.com> <20211021165618.178352-3-sdf@google.com>
+ <2f2fd146-222a-ecdb-7fe1-d9f67f5ac1de@isovalent.com>
+In-Reply-To: <2f2fd146-222a-ecdb-7fe1-d9f67f5ac1de@isovalent.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Thu, 21 Oct 2021 13:40:46 -0700
+Message-ID: <CAKH8qBvMMX9BfzRwLZqYquzes=TO=eya17BmO0BDZKX9Pg1b=g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 2/3] bpftool: conditionally append / to the progtype
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/20/21 5:54 PM, David Heidelberg wrote:
-> IPA v4.5 interconnects was missing from dt-schema, which was trigering
-> warnings while validation.
-> 
-> Signed-off-by: David Heidelberg <david@ixit.cz>
+On Thu, Oct 21, 2021 at 12:55 PM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> 2021-10-21 09:56 UTC-0700 ~ Stanislav Fomichev <sdf@google.com>
+> > Otherwise, attaching with bpftool doesn't work with strict section names.
+> >
+> > Also, switch to libbpf strict mode to use the latest conventions
+> > (note, I don't think we have any cli api guarantees?).
+> >
+> > Cc: Quentin Monnet <quentin@isovalent.com>
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > ---
+> >  tools/bpf/bpftool/main.c | 4 ++++
+> >  tools/bpf/bpftool/prog.c | 9 +++++++--
+> >  2 files changed, 11 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/tools/bpf/bpftool/main.c b/tools/bpf/bpftool/main.c
+> > index 02eaaf065f65..8223bac1e401 100644
+> > --- a/tools/bpf/bpftool/main.c
+> > +++ b/tools/bpf/bpftool/main.c
+> > @@ -409,6 +409,10 @@ int main(int argc, char **argv)
+> >       block_mount = false;
+> >       bin_name = argv[0];
+> >
+> > +     ret = libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
+> > +     if (ret)
+> > +             p_err("failed to enable libbpf strict mode: %d", ret);
+> > +
+> >       hash_init(prog_table.table);
+> >       hash_init(map_table.table);
+> >       hash_init(link_table.table);
+> > diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+> > index 277d51c4c5d9..b04990588ccf 100644
+> > --- a/tools/bpf/bpftool/prog.c
+> > +++ b/tools/bpf/bpftool/prog.c
+> > @@ -1420,8 +1420,13 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
+> >                       err = get_prog_type_by_name(type, &common_prog_type,
+> >                                                   &expected_attach_type);
+> >                       free(type);
+> > -                     if (err < 0)
+> > -                             goto err_free_reuse_maps;
+>
+> Thanks a lot for the change! Can you please test it for e.g. an XDP
+> program? You should see that "bpftool prog load prog.o <path> type xdp"
+> prints a debug message from libbpf about the first attempt (above)
+> failing, before the second attempt (below) succeeds.
+>
+> We need to get rid of this message. I think it should be easy, because
+> we explicitly "ask" for that message in get_prog_type_by_name(), in the
+> same file, if it fails to load in the first place.
+>
+> Could you please update get_prog_type_by_name() to take an additional
+> switch as an argument, to tell if the debug-info should be retrieved
+> (then first attempt here would skip it, second would keep it)?
+> An alternative could be to move all the '/' and retries handling to that
+> function, and I think it would end up in bpftool keeping support for the
+> legacy object files with the former convention - but that would somewhat
+> defeat the objectives of the strict mode, so maybe not the best option.
 
-Can you please tell me a command to use to trigger
-the warnings you are seeing?  I don't see an error
-when building "dtbs" or doing "dt_binding_check".
+How about we call libbpf_prog_type_by_name with the provided argv
+first and then, if it doesn't work, we fallback to appending '\' and
+using get_prog_type_by_name ?
 
-Thanks.
+> > +                     if (err < 0) {
+>
+> We could run the second attempt only on libbpf returning -ESRCH, maybe?
 
-					-Alex
+Not sure it matters here, why not always retry on error?
 
-> ---
->   Documentation/devicetree/bindings/net/qcom,ipa.yaml | 10 ++++++++++
->   1 file changed, 10 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-> index b8a0b392b24e..a2835ed52076 100644
-> --- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-> +++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-> @@ -95,6 +95,11 @@ properties:
->             - description: Path leading to system memory
->             - description: Path leading to internal memory
->             - description: Path between the AP and IPA config space
-> +      - items: # IPA v4.5
-> +          - description: Path leading to system memory region A
-> +          - description: Path leading to system memory region B
-> +          - description: Path leading to internal memory
-> +          - description: Path between the AP and IPA config space
->   
->     interconnect-names:
->       oneOf:
-> @@ -105,6 +110,11 @@ properties:
->             - const: memory
->             - const: imem
->             - const: config
-> +      - items: # IPA v4.5
-> +          - const: memory-a
-> +          - const: memory-b
-> +          - const: imem
-> +          - const: config
->   
->     qcom,smem-states:
->       $ref: /schemas/types.yaml#/definitions/phandle-array
-> 
-
+> > +                             err = get_prog_type_by_name(*argv, &common_prog_type,
+> > +                                                         &expected_attach_type);
+> > +                             if (err < 0)
+> > +
+> > +                                     goto err_free_reuse_maps;
+> > +                     }
+> >
+> >                       NEXT_ARG();
+> >               } else if (is_prefix(*argv, "map")) {
+> >
+>
