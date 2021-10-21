@@ -2,62 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35895436273
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 15:11:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C8E3436278
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 15:12:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230283AbhJUNNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 09:13:50 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:50548 "EHLO vps0.lunn.ch"
+        id S230231AbhJUNOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 09:14:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52448 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230190AbhJUNNt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Oct 2021 09:13:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ZS2BKWKxWDvBf/K0rbJ3g0MkLzVvuskgDJd+t6tRQgE=; b=k3nfYSEJLQKmQYgxBfm02bOy+q
-        mERjDCCERiUdHGZQ9iTkXrNZOsXJQI52BQD9wWrgFArch3OTd2QxM2w8rcZas/ee4IGmmVjkypVfG
-        JRtGLq5xr+rV88u7rG+ME1xny2dVUWopdw38cPjzuZ3mliPn1y0O5gkaYNxcnWevzLj8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mdXr2-00BHtk-Vz; Thu, 21 Oct 2021 15:11:32 +0200
-Date:   Thu, 21 Oct 2021 15:11:32 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     R W van Schagen <vschagen@cs.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: DSA slaves not inheriting hw_enc_features and xfrmdev_ops?
-Message-ID: <YXFnBHFlOt8AvcLe@lunn.ch>
-References: <CDEC9628-69B6-4A83-81CF-34407070214F.ref@cs.com>
- <CDEC9628-69B6-4A83-81CF-34407070214F@cs.com>
- <YXAGNmH+GsI5e9ly@lunn.ch>
- <A08F0571-5705-4FD6-9C5D-55B4C0734712@cs.com>
+        id S230372AbhJUNOf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Oct 2021 09:14:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2392D60EE5;
+        Thu, 21 Oct 2021 13:12:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634821939;
+        bh=2HHUiBwVMYryjfovIZVggBaC9rNeTdssNFkuGbjRNYA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VkpEZTXYRcIfB41A2FkGoq4VuXgyF4PwIV7q87F8aPdbh44rwvEqiERs+X0RGdcKg
+         eE+u7Z/ijrwgAIQiEawJpycLji72y08QeNrbhV+VZdKYhrQXlJEE+h5ZeytCjxlEdS
+         LLpM8lhlfXvsn2m7uZRPzFxc/4iLN5JbfG3BNoLFxcfgDaB5ldnLAMUmpqmfWTi2Lz
+         u30QAJEd90BjqkXXdBP9WW2sQDIjZL/XFC82S0AOXcEyk2IrBnpLoFFr+mmLwYgNcM
+         hNGAU1/FSLeP3O37y0DoGwmodPmdyyczPFxztdc3hUBAqtoKVp+9p7UDE71efb45tD
+         OwOGaCXSQN9UQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v2 00/12] net: don't write directly to netdev->dev_addr
+Date:   Thu, 21 Oct 2021 06:12:02 -0700
+Message-Id: <20211021131214.2032925-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <A08F0571-5705-4FD6-9C5D-55B4C0734712@cs.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Thanks for the explanation. For now I will proceed using notifier callbacks.
-> 
-> One more strange thing I am noticing: Even if I set NETIF_F_GSO_ESP
-> I am still not getting any GSO packets (skb_is_gso is always false) so my
-> transmit speeds are like 2/3 of the receive speeds. Hardware Decryption vs
-> Encryption is not 100% the same, but it is close.
-> 
-> I am getting the esp_gro_receive callbacks, but not the esp_gso_segment,
-> BUT: for some reason my packets still get TCP GSO.
+More conversions, mostly in usb/net.
 
-I'm not too familiar with GSO. But my understanding is that you create
-a template set of headers which need to be placed onto each frame when
-the segmentation actually happens. For DSA, that template would need
-to include the DSA header. As far as i understand, there is nothing in
-the DSA core that allows for adding the DSA headers into the template.
-So you might be able to do GSO at the slave interface, but when the
-slave passes frames to the master, you then require segmentation to
-happen, so the tag driver can add the DSA header.
+v2: leave out catc (patch 4)
 
-	Andrew
+Jakub Kicinski (12):
+  net: xen: use eth_hw_addr_set()
+  usb: smsc: use eth_hw_addr_set()
+  net: qmi_wwan: use dev_addr_mod()
+  net: usb: don't write directly to netdev->dev_addr
+  fddi: defxx,defza: use dev_addr_set()
+  fddi: skfp: constify and use dev_addr_set()
+  net: fjes: constify and use eth_hw_addr_set()
+  net: hippi: use dev_addr_set()
+  net: s390: constify and use eth_hw_addr_set()
+  net: plip: use eth_hw_addr_set()
+  net: sb1000,rionet: use eth_hw_addr_set()
+  net: hldc_fr: use dev_addr_set()
+
+ drivers/net/fddi/defxx.c            |  6 +++---
+ drivers/net/fddi/defza.c            |  2 +-
+ drivers/net/fddi/skfp/h/smc.h       |  2 +-
+ drivers/net/fddi/skfp/skfddi.c      |  2 +-
+ drivers/net/fddi/skfp/smtinit.c     |  4 ++--
+ drivers/net/fjes/fjes_hw.c          |  3 ++-
+ drivers/net/fjes/fjes_hw.h          |  2 +-
+ drivers/net/fjes/fjes_main.c        | 14 ++++++++------
+ drivers/net/hippi/rrunner.c         |  6 ++++--
+ drivers/net/plip/plip.c             |  8 ++++++--
+ drivers/net/rionet.c                | 14 ++++++++------
+ drivers/net/sb1000.c                | 12 ++++++++----
+ drivers/net/usb/ch9200.c            |  4 +++-
+ drivers/net/usb/cx82310_eth.c       |  5 +++--
+ drivers/net/usb/kaweth.c            |  3 +--
+ drivers/net/usb/mcs7830.c           |  4 +++-
+ drivers/net/usb/qmi_wwan.c          |  7 +++++--
+ drivers/net/usb/sierra_net.c        |  6 ++++--
+ drivers/net/usb/smsc75xx.c          |  6 ++++--
+ drivers/net/usb/smsc95xx.c          |  6 ++++--
+ drivers/net/usb/sr9700.c            |  4 +++-
+ drivers/net/usb/sr9800.c            |  5 +++--
+ drivers/net/usb/usbnet.c            |  6 ++++--
+ drivers/net/wan/hdlc_fr.c           |  4 +++-
+ drivers/net/xen-netback/interface.c |  6 ++++--
+ drivers/net/xen-netfront.c          |  4 +++-
+ drivers/s390/net/lcs.c              |  2 +-
+ drivers/s390/net/qeth_core_main.c   |  4 ++--
+ drivers/s390/net/qeth_l2_main.c     |  6 +++---
+ drivers/s390/net/qeth_l3_main.c     |  3 +--
+ 30 files changed, 99 insertions(+), 61 deletions(-)
+
+-- 
+2.31.1
 
