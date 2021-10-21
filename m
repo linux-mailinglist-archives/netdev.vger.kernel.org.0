@@ -2,133 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AD97436D22
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 23:55:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74CB2436D35
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 00:02:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232258AbhJUV6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 17:58:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57774 "EHLO
+        id S231497AbhJUWEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 18:04:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232021AbhJUV57 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 17:57:59 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F580C061764;
-        Thu, 21 Oct 2021 14:55:43 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id 67so2534153yba.6;
-        Thu, 21 Oct 2021 14:55:43 -0700 (PDT)
+        with ESMTP id S230233AbhJUWEt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 18:04:49 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E87EC061764
+        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 15:02:33 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id f5so1489903pgc.12
+        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 15:02:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZCWSb4CNcUutmy67uPScB/N0o+yGwGltNZHm45vcOhk=;
-        b=oCz0HlMe3i8pvE64pfiQxaOUsu9XUUMN5xWybWUwvozJ0s2n5tiW+pW/bwvs37ylSL
-         cdrLjH9w95N1ZZUQnXKWpTckKiGhTa37QL52SsgRwxMkYwhJz2E1i8ofqI0mXmLOqXnI
-         rgAXJk7seMHgDZAo/mF6KzY3RPOBSlQ9x7dwpqXPA99wGCa13yvRlKjm5Fdkb6kooUdR
-         qbqqvoQWXpLWot3R/iDV2EQJCw3089PvAmI6FXiygyYWG3H30y87zvHDj+hKllx2ZJG+
-         2/e4A0Fgn/bQFQSWCq1D8KNReyBhETh6izE1N4qQfVp1H1x9HWzClPhzaR5HFS24lhZO
-         k5Kg==
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=WnJ8dTET/uElGQB+u+TeGLr7xa/N5ihJJAuq9m/mi/w=;
+        b=GtKwPrTITzUWVxRxe9zVWaParHEQN7+p67bbgE6IfmZQQmn4Sdo7bIihoV/+xs0w8C
+         Hsf96WdNgavTTgvAs+81Gnj3wwBuCaHSJjRIpg1s9oE2Wu/ojRMDE/OGI9JQoOaSKEjt
+         fUpP62Gi/JlnkovtvyBFhe5q8Qh86lb1qfVpfwCY4TQGFAzHSxU1ZP7AR05arPVZlQOE
+         nHu6hkhomZATff9zGrGfFeT97PkEJQbuhrYnDQPYta/fKlUPH/oNUrnp7+gRNkGd2+SK
+         2ExO7zc97oYkJXyj/mC76syov1PukGGfzUg/lOuM9OODMltu2k8G94KCIFmb8uvcvVeb
+         8hbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZCWSb4CNcUutmy67uPScB/N0o+yGwGltNZHm45vcOhk=;
-        b=Y+qNHHNN3ykkQHi2fbI0Xt8OIcvAoXmeL7Y3kfB7vIYe/px/mCuCHI2t3fleuqcBm4
-         rjptd7wV5fNvyV0YaLEo1b0pkq7ZT0ZStfTmvXVM7p1ogyC8dSfFnM8LMma8FLkPBzT/
-         bHOoDjcULwvgzgipLInoGBTX1cqkqPX8oyNq69sbOiyT+VPlQJmgRIqWmZ7fpwFj1KhL
-         HbQn17ExFYeHWzoP69pNyq+nU939khWLaSiV1Z9QHW5xdC8lZ1BN1tw8e9bSiEFlb9Ej
-         Ld++jkUw7sHP3iE9KcAD8C0sAWaVB1MFLfHZ87Fg3Fv23FOCd9kKbYizny046tt8v0pu
-         yHug==
-X-Gm-Message-State: AOAM533S1TUc5Vzxazef5PVDX+UUnBjKvCCGFxQPCeczO75470mtuwrQ
-        rBj/9BEiYieyiCFzNFghbfu7Ca9QXvdTMUxZDgI=
-X-Google-Smtp-Source: ABdhPJwAwl8RViPtIS5dyd7tQAtoGE+y8lEBBFlWKgnWIrQnjKbXS84OdOvxzGdFdIi80lqcpZxtfcD5HgdVhO0cX1c=
-X-Received: by 2002:a25:d3c8:: with SMTP id e191mr9414694ybf.455.1634853341849;
- Thu, 21 Oct 2021 14:55:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <20211021034516.4400-1-laoar.shao@gmail.com> <20211021034516.4400-4-laoar.shao@gmail.com>
-In-Reply-To: <20211021034516.4400-4-laoar.shao@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 21 Oct 2021 14:55:31 -0700
-Message-ID: <CAEf4Bzb0YSwqoKn2N4gPJS40atWBRHLkK9fBy=wghkXUC5Sqmw@mail.gmail.com>
-Subject: Re: [PATCH v5 03/15] sched.h: introduce TASK_COMM_LEN_16
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Peter Ziljstra <peterz@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        qiang.zhang@windriver.com, robdclark@chromium.org,
-        Christian Brauner <christian@brauner.io>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@redhat.com>, juri.lelli@redhat.com,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=WnJ8dTET/uElGQB+u+TeGLr7xa/N5ihJJAuq9m/mi/w=;
+        b=Wk6WGj6uajusSwmH2Cy2YyTuABW/8ciKOKmGXozatI9EN2Ewv4eh1I33nOgk2nG9jV
+         ZyotDpkvzWOGURRqblGnqDN8EPokEHw55nTG8+BXBLeAf2rjs5ILrEE64SZlbJp99942
+         whKAV30gTHsRC5fFezuhchZ3jsw60PxYZiuKfgDm5hxSNllXu+cEHxJSPb6H8H2xGr1I
+         E0f3KtZnfy5ESEEEmBu0tREiFwyDG3YPvr3vz4JniYD9c4Tqrhd6K8KE99OZeNvrUlOI
+         j1v6iqoPbc6E6BnZqebl2tCMhqQ79ICPIjB0oaZBqtJ3CcuLYDborYyeCsdX6rHfrEBX
+         uMMQ==
+X-Gm-Message-State: AOAM5333o60MqRQ/euBaCwDyA/x2ocsC7fgqCrjWQ/cIvzWkiP+965L1
+        m0RfOXi1+AHp+gQUDX8ULAk=
+X-Google-Smtp-Source: ABdhPJyz1btGi4m7F90RcJ0A6o5wekvpsMxhw3NGuFIaEM9n5diJFeVI2s0OpGhR0ujYxdl8sqZ4CQ==
+X-Received: by 2002:a63:6a05:: with SMTP id f5mr6378007pgc.97.1634853753073;
+        Thu, 21 Oct 2021 15:02:33 -0700 (PDT)
+Received: from [192.168.254.15] ([50.39.163.188])
+        by smtp.gmail.com with ESMTPSA id 17sm6738943pgr.10.2021.10.21.15.02.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Oct 2021 15:02:32 -0700 (PDT)
+Message-ID: <1903d7cb20ac31d95e2440424a00190522facb47.camel@gmail.com>
+Subject: Re: [PATCH v5 0/2] Make neighbor eviction controllable by userspace
+From:   James Prestwood <prestwoj@gmail.com>
+To:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>,
-        oliver.sang@intel.com, kbuild test robot <lkp@intel.com>
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Chinmay Agarwal <chinagar@codeaurora.org>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Tong Zhu <zhutong@amazon.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jouni Malinen <jouni@codeaurora.org>
+Date:   Thu, 21 Oct 2021 14:59:09 -0700
+In-Reply-To: <a33c3f84-7333-294a-9e78-580cbdac6ec1@gmail.com>
+References: <20211021003212.878786-1-prestwoj@gmail.com>
+         <a33c3f84-7333-294a-9e78-580cbdac6ec1@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 20, 2021 at 8:45 PM Yafang Shao <laoar.shao@gmail.com> wrote:
->
-> There're many hard-coded 16 used to store task comm in the kernel, that
-> makes it error prone if we want to change the value of TASK_COMM_LEN. A
-> new marco TASK_COMM_LEN_16 is introduced to replace these old ones, then
-> we can easily grep them.
->
-> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Steven Rostedt <rostedt@goodmis.org>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Al Viro <viro@zeniv.linux.org.uk>
-> Cc: Petr Mladek <pmladek@suse.com>
-> ---
->  include/linux/sched.h | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/include/linux/sched.h b/include/linux/sched.h
-> index c1a927ddec64..62d5b30d310c 100644
-> --- a/include/linux/sched.h
-> +++ b/include/linux/sched.h
-> @@ -274,6 +274,8 @@ struct task_group;
->
->  #define get_current_state()    READ_ONCE(current->__state)
->
-> +/* To replace the old hard-coded 16 */
-> +#define TASK_COMM_LEN_16               16
->  /* Task command name length: */
->  #define TASK_COMM_LEN                  16
+Hi David,
 
-Can we please convert these two constants into enum? That will allow
-BPF applications to deal with such kernel change more easily because
-these constants will now be available as part of kernel BTF.
+On Wed, 2021-10-20 at 20:33 -0600, David Ahern wrote:
+> On 10/20/21 6:32 PM, James Prestwood wrote:
+> > v1 -> v2:
+> > 
+> >  - It was suggested by Daniel Borkmann to extend the neighbor table
+> > settings
+> >    rather than adding IPv4/IPv6 options for ARP/NDISC separately. I
+> > agree
+> >    this way is much more concise since there is now only one place
+> > where the
+> >    option is checked and defined.
+> >  - Moved documentation/code into the same patch
+> >  - Explained in more detail the test scenario and results
+> > 
+> > v2 -> v3:
+> > 
+> >  - Renamed 'skip_perm' to 'nocarrier'. The way this parameter is
+> > used
+> >    matches this naming.
+> >  - Changed logic to still flush if 'nocarrier' is false.
+> > 
+> > v3 -> v4:
+> > 
+> >  - Moved NDTPA_EVICT_NOCARRIER after NDTPA_PAD
+> > 
+> > v4 -> v5:
+> > 
+> >  - Went back to the original v1 patchset and changed:
+> >  - Used ANDCONF for IN_DEV macro
+> >  - Got RCU lock prior to __in_dev_get_rcu(). Do note that the logic
+> >    here was extended to handle if __in_dev_get_rcu() fails. If this
+> >    happens the existing behavior should be maintained and set the
+> >    carrier down. I'm unsure if get_rcu() can fail in this context
+> >    though. Similar logic was used for in6_dev_get.
+> >  - Changed ndisc_evict_nocarrier to use a u8, proper handler, and
+> >    set min/max values.
+> > 
+> 
+> I'll take a deep dive on the patches tomorrow.
+> 
+> You need to add a selftests script under tools/testing/selftests/net
+> that shows this behavior with the new setting set and unset. This is
+> easily done with veth pairs and network namespaces (one end of the
+> veth
+> pair down sets the other into no-carrier). Take a look at the scripts
+> there - e.g., fib_nexthops.sh should provide a template for a start
+> point.
 
-Something like this should be completely equivalent for all the kernel uses:
+So the test itself is pretty simple. The part I'm unsure about is how
+you actually set the carrier state from userspace. I see "ip link set
+<dev> carrier {on,off}" but this reports not supported for veths,
+wlans, and eth interfaces I have tried. AFAIK the driver controls the
+carrier state. Maybe some drivers do support this?
 
-enum {
-    TASK_COMM_LEN = 16,
-    TASK_COMM_LEN_16 = 16,
-};
+Is there a way to set the carrier state that you, or anyone is aware
+of?
 
-When later TASK_COMM_LEN is defined as = 24, BPF applications will be
-able to deal with that by querying BTF through BPF CO-RE.
+Thanks,
+James
 
->
-> --
-> 2.17.1
->
