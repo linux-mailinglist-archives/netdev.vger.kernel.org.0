@@ -2,39 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26C7D43577C
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 02:25:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D3BC435775
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 02:25:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232133AbhJUA0b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 20:26:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44782 "EHLO mail.kernel.org"
+        id S231477AbhJUA01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 20:26:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44862 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232137AbhJUAZ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Oct 2021 20:25:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AA6B661260;
-        Thu, 21 Oct 2021 00:23:10 +0000 (UTC)
+        id S231445AbhJUAZb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Oct 2021 20:25:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 22CE561215;
+        Thu, 21 Oct 2021 00:23:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634775791;
-        bh=qmnfZ1A8ecuIGUREcjAFkojUBDHknIeD//6jyvwyaOo=;
+        s=k20201202; t=1634775795;
+        bh=dvmS/3+wKffXFp5H4Wbw2bRep6wqx8nbVPuPvQXFW3w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZuCfCP7N4PJgKo6WR55noBmkvz/YpSgQiydD56d12/uOG/0ZiiDQ1eJUn2f0VYMUM
-         hYmBOGunoOQl6Dm9coDk9J3TXvP9gW/jrGkmI5mf0HxbC/rbPa7Nrd0DOnmJRrjxBZ
-         OXyFfMQBMNZgVsFY3QSAa4MImfDNgavdeRZmXOszNS3/TpHrd14PsBAQr10FOynvI5
-         pmyzZwn7dzV3Zy/EJeBvJDamVzqLGUjCrdHKQu4rHoYNU5xBtjfBe3+Lr8RO4U9YfZ
-         Hb9j3wT73nzuyg9A5yBYWprxSBdJtvHEVoggSmK6MDeKynt5TSYFCYt4q+RIov8AXC
-         Nx7722oTZudBw==
+        b=NyzLxnNd5xkc0CLHpzpWI0JxEw7YboCbcmzCqKd7RnN3crtCF8b8O9Vnpw7VSFsLm
+         AffzGahEjXhdXWqGAshs0wiOT3v2l0NIvk6/m9ET5fM/9fB5jBxpS6Yi48ioskDBge
+         pY0sr0TazGGHJWgUoRXtdGibiAlLMCqtGxDLZwD9NEOvGOum3ndP+Nnxn9GebnNzYS
+         SsL6z8bqMSRgXNO+nvkR4zIhl7BmeOUzfIiYus7PBt4rDTgzRpbJdiG8D4LWkQiHsd
+         9pt4vuN3I4WNC68Cm2oyDsYWFsPp2m76umXGZbP65dlLpTh3EACf2mjt1qodUmqIJv
+         znMlsgHrMPMLg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Herve Codina <herve.codina@bootlin.com>,
+Cc:     Lin Ma <linma@zju.edu.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        kuba@kernel.org, mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 03/10] net: stmmac: add support for dwmac 3.40a
-Date:   Wed, 20 Oct 2021 20:22:58 -0400
-Message-Id: <20211021002305.1129633-3-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        bongsu.jeon@samsung.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 05/10] nfc: nci: fix the UAF of rf_conn_info object
+Date:   Wed, 20 Oct 2021 20:23:00 -0400
+Message-Id: <20211021002305.1129633-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211021002305.1129633-1-sashal@kernel.org>
 References: <20211021002305.1129633-1-sashal@kernel.org>
@@ -46,51 +44,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Herve Codina <herve.codina@bootlin.com>
+From: Lin Ma <linma@zju.edu.cn>
 
-[ Upstream commit 9cb1d19f47fafad7dcf7c8564e633440c946cfd7 ]
+[ Upstream commit 1b1499a817c90fd1ce9453a2c98d2a01cca0e775 ]
 
-dwmac 3.40a is an old ip version that can be found on SPEAr3xx soc.
+The nci_core_conn_close_rsp_packet() function will release the conn_info
+with given conn_id. However, it needs to set the rf_conn_info to NULL to
+prevent other routines like nci_rf_intf_activated_ntf_packet() to trigger
+the UAF.
 
-Signed-off-by: Herve Codina <herve.codina@bootlin.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-generic.c   | 1 +
- drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 8 ++++++++
- 2 files changed, 9 insertions(+)
+ net/nfc/nci/rsp.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-generic.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-generic.c
-index fad503820e04..b3365b34cac7 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-generic.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-generic.c
-@@ -71,6 +71,7 @@ static int dwmac_generic_probe(struct platform_device *pdev)
- 
- static const struct of_device_id dwmac_generic_match[] = {
- 	{ .compatible = "st,spear600-gmac"},
-+	{ .compatible = "snps,dwmac-3.40a"},
- 	{ .compatible = "snps,dwmac-3.50a"},
- 	{ .compatible = "snps,dwmac-3.610"},
- 	{ .compatible = "snps,dwmac-3.70a"},
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-index 2b800ce1d5bf..05f5084158bf 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-@@ -469,6 +469,14 @@ stmmac_probe_config_dt(struct platform_device *pdev, const char **mac)
- 		plat->pmt = 1;
+diff --git a/net/nfc/nci/rsp.c b/net/nfc/nci/rsp.c
+index e3bbf1937d0e..7681f89dc312 100644
+--- a/net/nfc/nci/rsp.c
++++ b/net/nfc/nci/rsp.c
+@@ -289,6 +289,8 @@ static void nci_core_conn_close_rsp_packet(struct nci_dev *ndev,
+ 							 ndev->cur_conn_id);
+ 		if (conn_info) {
+ 			list_del(&conn_info->list);
++			if (conn_info == ndev->rf_conn_info)
++				ndev->rf_conn_info = NULL;
+ 			devm_kfree(&ndev->nfc_dev->dev, conn_info);
+ 		}
  	}
- 
-+	if (of_device_is_compatible(np, "snps,dwmac-3.40a")) {
-+		plat->has_gmac = 1;
-+		plat->enh_desc = 1;
-+		plat->tx_coe = 1;
-+		plat->bugged_jumbo = 1;
-+		plat->pmt = 1;
-+	}
-+
- 	if (of_device_is_compatible(np, "snps,dwmac-4.00") ||
- 	    of_device_is_compatible(np, "snps,dwmac-4.10a") ||
- 	    of_device_is_compatible(np, "snps,dwmac-4.20a")) {
 -- 
 2.33.0
 
