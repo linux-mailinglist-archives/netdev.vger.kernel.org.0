@@ -2,143 +2,275 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11B8D4357DA
+	by mail.lfdr.de (Postfix) with ESMTP id 5B4A84357DB
 	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 02:37:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231358AbhJUAkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S231359AbhJUAkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 20 Oct 2021 20:40:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49168 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229702AbhJUAkB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 20:40:01 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C4DAC06161C
+        with ESMTP id S231348AbhJUAkC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 20:40:02 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F37D0C06161C
         for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 17:37:46 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id q2-20020a17090a2e0200b001a0fd4efd49so4713035pjd.1
+Received: by mail-pj1-x1031.google.com with SMTP id ls14-20020a17090b350e00b001a00e2251c8so3630538pjb.4
         for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 17:37:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VCY6buxruuWHeABeyFy1uxLNrBUhAzhty4X5Yus45LM=;
-        b=bA1FVJsxUeb4K8uwI9/5gyGPdBEvK+pvFLgVzV2DPRvFJfeIUSj8xLrr0DEz7u1I/k
-         nNPt3U+DUTI4/ceSbKcPgFmtuNmhFh5NNrcKXD2ugx1P6Rn1um9ikMVyjyl6QtbRo4tN
-         +C0F/GJx+icDjrq+IChOWMRWtJ4Z7aY7awH3dDDei8/DKImtNGqqnZiMknoSha9JB2g4
-         KhU1GUBGCkhjBMKum+dAcqbJwMmTSU2EW5bih03q+OnTM3xM4+QB1q3Q/cS0v7V6H0Z+
-         9pPrYHjfLsAk2hIc9m1F+9VFRtpJVC5a55q3VyUeBl4ZuoQCyn0L7BKVh2AuDA0+txzU
-         ViFw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=rKBIJ00qRdzdlGOy8XxqGX6no7UnYVkYCackeXmiY0I=;
+        b=cCi6ts8KhwQhdvQe1JrkbqdY2H0DZPjBLTIBTHypwrVmF8Zp/kZ8z9ybgwM+BzqLG8
+         2UHNfy1aIAgbq4erjZO08//Triqt06iQfuCRMraQKjEAYU81rzGrjbIZvjDrxm33Cyoj
+         A5tsIB4c79ryUDvCxPSFM8R1ntl/kpdlEa2W6qnsbSrLiQdpg/9IS6Lw9hYN275qS5x6
+         Db8w4Kip1h/uhDqoKzXybPqmQuoGn/CeSmlUzZMvJZOvbvzkZmXAB+QzYNhZrlSq6CI5
+         bCehg8f9GnbJgO26STjga2HjAVFGqTG7Mny5bJ/bt112yo8NX13T8auCHwed8tAFn4pN
+         +BcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VCY6buxruuWHeABeyFy1uxLNrBUhAzhty4X5Yus45LM=;
-        b=i9qNtkxEbknPU3mE3V3XGJ2pCq5EH9nI5c80AxLUnEOVvCJoNby48BQlkjst+xorez
-         XKkSe3rwvhW9a5MbPJcur0ADKA2yDEiekk+nf3S8bgg+j7owLg/tDsAD5LkDqYVPr7sH
-         J6rh7l752/+HKBq6V2Z4JQ10UO/9OeEF/cu76bS3E7aQoKZ6YXd+KELo9OlM8CXvXsNj
-         urB+rbkQhBDf3JMUhE/o/FndOu7Uc0nho5LlOV1OYRDwzQyec65f3J1J5gtaru3K/qYQ
-         IZBWl0IiPw+7q1rKjplh3OoUzq+yftkImUVYC6h3CpECzNe+ILW7fGb0oN3RcICmTqkY
-         1PsQ==
-X-Gm-Message-State: AOAM5337jjsqkEDPSB+A2bEIY1kCzGHpw3KAqHdL1bz5JC2r0q0wXk7d
-        uL2pQYcbdOBZM4pIznZQXlAdB63KsrLZ+Q==
-X-Google-Smtp-Source: ABdhPJyuDNWXHhG35mep/385xBTVOFiAoXEYHtqEulIBYQIsYFdbPqbn59+T9zL8l8A58hZOEr4WuQ==
-X-Received: by 2002:a17:90b:224c:: with SMTP id hk12mr2718538pjb.242.1634776665355;
-        Wed, 20 Oct 2021 17:37:45 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=rKBIJ00qRdzdlGOy8XxqGX6no7UnYVkYCackeXmiY0I=;
+        b=scOLdWm7+6q1YmZK2WSdSFRS31GyhzNXifLikGBMbDzHIRgjpk+tyIYcz+wt08KQ/3
+         W1wu0uyrMjC1ipPOrF0oE4VJl16MqNLuFiYU6J8HllUsJrmxdkftspIlKO50jd2XimlT
+         3uPvVJJgEyvQJszx8NUxT6MxcCtSZ7y5Tz9EN0ZBrk+DXlHlPLDK/Hz9lXx15ifuh4Hl
+         ry7KpfLHjoqPLhxHm6ePcNcIKid/FeHWXEc/79nml861tWVXGOVh+dIcRdKWrx7bwf0d
+         e2Ho0NjUyU1HESqzde6IwJLUztcLyjUx/7djpEDQB4o/eTdVE1/I+wAHfly26zgnM24E
+         54rg==
+X-Gm-Message-State: AOAM533ywfuSXR8MfWdLdJzbA08V5ciHFeGjf2Go6WcbvHCl5WCzCNhw
+        3dQGSrdOEiTHDH3JvoW1xMqiDVVgJEQ=
+X-Google-Smtp-Source: ABdhPJy5awv+UFz2YGOOmCZ/nuGsLYrPwwUkgxFg99NGN36caAz7pXGRsSISh4twRIqCL0jeSCNSwQ==
+X-Received: by 2002:a17:90b:3687:: with SMTP id mj7mr2736663pjb.196.1634776666118;
+        Wed, 20 Oct 2021 17:37:46 -0700 (PDT)
 Received: from localhost.localdomain ([50.39.163.188])
-        by smtp.gmail.com with ESMTPSA id t22sm4164755pfg.148.2021.10.20.17.37.44
+        by smtp.gmail.com with ESMTPSA id t22sm4164755pfg.148.2021.10.20.17.37.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Wed, 20 Oct 2021 17:37:45 -0700 (PDT)
 From:   James Prestwood <prestwoj@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     James Prestwood <prestwoj@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Chinmay Agarwal <chinagar@codeaurora.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Tong Zhu <zhutong@amazon.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jouni Malinen <jouni@codeaurora.org>
-Subject: [PATCH v5 0/2] Make neighbor eviction controllable by userspace
-Date:   Wed, 20 Oct 2021 17:32:10 -0700
-Message-Id: <20211021003212.878786-1-prestwoj@gmail.com>
+Cc:     James Prestwood <prestwoj@gmail.com>
+Subject: [PATCH v5 1/2] net: arp: introduce arp_evict_nocarrier sysctl parameter
+Date:   Wed, 20 Oct 2021 17:32:11 -0700
+Message-Id: <20211021003212.878786-2-prestwoj@gmail.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20211021003212.878786-1-prestwoj@gmail.com>
+References: <20211021003212.878786-1-prestwoj@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-v1 -> v2:
+This change introduces a new sysctl parameter, arp_evict_nocarrier.
+When set (default) the ARP cache will be cleared on a NOCARRIER event.
+This new option has been defaulted to '1' which maintains existing
+behavior.
 
- - It was suggested by Daniel Borkmann to extend the neighbor table settings
-   rather than adding IPv4/IPv6 options for ARP/NDISC separately. I agree
-   this way is much more concise since there is now only one place where the
-   option is checked and defined.
- - Moved documentation/code into the same patch
- - Explained in more detail the test scenario and results
+Clearing the ARP cache on NOCARRIER is relatively new, introduced by:
 
-v2 -> v3:
+commit 859bd2ef1fc1110a8031b967ee656c53a6260a76
+Author: David Ahern <dsahern@gmail.com>
+Date:   Thu Oct 11 20:33:49 2018 -0700
 
- - Renamed 'skip_perm' to 'nocarrier'. The way this parameter is used
-   matches this naming.
- - Changed logic to still flush if 'nocarrier' is false.
+    net: Evict neighbor entries on carrier down
 
-v3 -> v4:
+The reason for this changes is to prevent the ARP cache from being
+cleared when a wireless device roams. Specifically for wireless roams
+the ARP cache should not be cleared because the underlying network has not
+changed. Clearing the ARP cache in this case can introduce significant
+delays sending out packets after a roam.
 
- - Moved NDTPA_EVICT_NOCARRIER after NDTPA_PAD
+A user reported such a situation here:
 
-v4 -> v5:
+https://lore.kernel.org/linux-wireless/CACsRnHWa47zpx3D1oDq9JYnZWniS8yBwW1h0WAVZ6vrbwL_S0w@mail.gmail.com/
 
- - Went back to the original v1 patchset and changed:
- - Used ANDCONF for IN_DEV macro
- - Got RCU lock prior to __in_dev_get_rcu(). Do note that the logic
-   here was extended to handle if __in_dev_get_rcu() fails. If this
-   happens the existing behavior should be maintained and set the
-   carrier down. I'm unsure if get_rcu() can fail in this context
-   though. Similar logic was used for in6_dev_get.
- - Changed ndisc_evict_nocarrier to use a u8, proper handler, and
-   set min/max values.
+After some investigation it was found that the kernel was holding onto
+packets until ARP finished which resulted in this 1 second delay. It
+was also found that the first ARP who-has was never responded to,
+which is actually what caues the delay. This change is more or less
+working around this behavior, but again, there is no reason to clear
+the cache on a roam anyways.
 
+As for the unanswered who-has, we know the packet made it OTA since
+it was seen while monitoring. Why it never received a response is
+unknown. In any case, since this is a problem on the AP side of things
+all that can be done is to work around it until it is solved.
 
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Roopa Prabhu <roopa@nvidia.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc: Ido Schimmel <idosch@nvidia.com>
-Cc: Nikolay Aleksandrov <nikolay@nvidia.com>
-Cc: Chinmay Agarwal <chinagar@codeaurora.org>
-Cc: Yajun Deng <yajun.deng@linux.dev>
-Cc: Tong Zhu <zhutong@amazon.com>
-Cc: Johannes Berg <johannes@sipsolutions.net>
-Cc: Jouni Malinen <jouni@codeaurora.org>
+Some background on testing/reproducing the packet delay:
 
-James Prestwood (2):
-  net: arp: introduce arp_evict_nocarrier sysctl parameter
-  net: ndisc: introduce ndisc_evict_nocarrier sysctl parameter
+Hardware:
+ - 2 access points configured for Fast BSS Transition (Though I don't
+   see why regular reassociation wouldn't have the same behavior)
+ - Wireless station running IWD as supplicant
+ - A device on network able to respond to pings (I used one of the APs)
 
- Documentation/networking/ip-sysctl.rst | 18 ++++++++++++++++++
+Procedure:
+ - Connect to first AP
+ - Ping once to establish an ARP entry
+ - Start a tcpdump
+ - Roam to second AP
+ - Wait for operstate UP event, and note the timestamp
+ - Start pinging
+
+Results:
+
+Below is the tcpdump after UP. It was recorded the interface went UP at
+10:42:01.432875.
+
+10:42:01.461871 ARP, Request who-has 192.168.254.1 tell 192.168.254.71, length 28
+10:42:02.497976 ARP, Request who-has 192.168.254.1 tell 192.168.254.71, length 28
+10:42:02.507162 ARP, Reply 192.168.254.1 is-at ac:86:74:55:b0:20, length 46
+10:42:02.507185 IP 192.168.254.71 > 192.168.254.1: ICMP echo request, id 52792, seq 1, length 64
+10:42:02.507205 IP 192.168.254.71 > 192.168.254.1: ICMP echo request, id 52792, seq 2, length 64
+10:42:02.507212 IP 192.168.254.71 > 192.168.254.1: ICMP echo request, id 52792, seq 3, length 64
+10:42:02.507219 IP 192.168.254.71 > 192.168.254.1: ICMP echo request, id 52792, seq 4, length 64
+10:42:02.507225 IP 192.168.254.71 > 192.168.254.1: ICMP echo request, id 52792, seq 5, length 64
+10:42:02.507232 IP 192.168.254.71 > 192.168.254.1: ICMP echo request, id 52792, seq 6, length 64
+10:42:02.515373 IP 192.168.254.1 > 192.168.254.71: ICMP echo reply, id 52792, seq 1, length 64
+10:42:02.521399 IP 192.168.254.1 > 192.168.254.71: ICMP echo reply, id 52792, seq 2, length 64
+10:42:02.521612 IP 192.168.254.1 > 192.168.254.71: ICMP echo reply, id 52792, seq 3, length 64
+10:42:02.521941 IP 192.168.254.1 > 192.168.254.71: ICMP echo reply, id 52792, seq 4, length 64
+10:42:02.522419 IP 192.168.254.1 > 192.168.254.71: ICMP echo reply, id 52792, seq 5, length 64
+10:42:02.523085 IP 192.168.254.1 > 192.168.254.71: ICMP echo reply, id 52792, seq 6, length 64
+
+You can see the first ARP who-has went out very quickly after UP, but
+was never responded to. Nearly a second later the kernel retries and
+gets a response. Only then do the ping packets go out. If an ARP entry
+is manually added prior to UP (after the cache is cleared) it is seen
+that the first ping is never responded to, so its not only an issue with
+ARP but with data packets in general.
+
+As mentioned prior, the wireless interface was also monitored to verify
+the ping/ARP packet made it OTA which was observed to be true.
+
+Signed-off-by: James Prestwood <prestwoj@gmail.com>
+---
+ Documentation/networking/ip-sysctl.rst |  9 +++++++++
  include/linux/inetdevice.h             |  2 ++
- include/linux/ipv6.h                   |  1 +
  include/uapi/linux/ip.h                |  1 +
- include/uapi/linux/ipv6.h              |  1 +
  include/uapi/linux/sysctl.h            |  1 +
  net/ipv4/arp.c                         | 13 ++++++++++++-
  net/ipv4/devinet.c                     |  4 ++++
- net/ipv6/addrconf.c                    | 12 ++++++++++++
- net/ipv6/ndisc.c                       |  5 ++++-
- 10 files changed, 56 insertions(+), 2 deletions(-)
+ 6 files changed, 29 insertions(+), 1 deletion(-)
 
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index 16b8bf72feaf..18fde4ed7a5e 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -1611,6 +1611,15 @@ arp_accept - BOOLEAN
+ 	gratuitous arp frame, the arp table will be updated regardless
+ 	if this setting is on or off.
+ 
++arp_evict_nocarrier - BOOLEAN
++	Clears the ARP cache on NOCARRIER events. This option is important for
++	wireless devices where the ARP cache should not be cleared when roaming
++	between access points on the same network. In most cases this should
++	remain as the default (1).
++
++	- 1 - (default): Clear the ARP cache on NOCARRIER events
++	- 0 - Do not clear ARP cache on NOCARRIER events
++
+ mcast_solicit - INTEGER
+ 	The maximum number of multicast probes in INCOMPLETE state,
+ 	when the associated hardware address is unknown.  Defaults
+diff --git a/include/linux/inetdevice.h b/include/linux/inetdevice.h
+index a038feb63f23..518b484a7f07 100644
+--- a/include/linux/inetdevice.h
++++ b/include/linux/inetdevice.h
+@@ -133,6 +133,8 @@ static inline void ipv4_devconf_setall(struct in_device *in_dev)
+ #define IN_DEV_ARP_ANNOUNCE(in_dev)	IN_DEV_MAXCONF((in_dev), ARP_ANNOUNCE)
+ #define IN_DEV_ARP_IGNORE(in_dev)	IN_DEV_MAXCONF((in_dev), ARP_IGNORE)
+ #define IN_DEV_ARP_NOTIFY(in_dev)	IN_DEV_MAXCONF((in_dev), ARP_NOTIFY)
++#define IN_DEV_ARP_EVICT_NOCARRIER(in_dev) IN_DEV_ANDCONF((in_dev), \
++							  ARP_EVICT_NOCARRIER)
+ 
+ struct in_ifaddr {
+ 	struct hlist_node	hash;
+diff --git a/include/uapi/linux/ip.h b/include/uapi/linux/ip.h
+index e42d13b55cf3..e00bbb9c47bb 100644
+--- a/include/uapi/linux/ip.h
++++ b/include/uapi/linux/ip.h
+@@ -169,6 +169,7 @@ enum
+ 	IPV4_DEVCONF_DROP_UNICAST_IN_L2_MULTICAST,
+ 	IPV4_DEVCONF_DROP_GRATUITOUS_ARP,
+ 	IPV4_DEVCONF_BC_FORWARDING,
++	IPV4_DEVCONF_ARP_EVICT_NOCARRIER,
+ 	__IPV4_DEVCONF_MAX
+ };
+ 
+diff --git a/include/uapi/linux/sysctl.h b/include/uapi/linux/sysctl.h
+index 1e05d3caa712..6a3b194c50fe 100644
+--- a/include/uapi/linux/sysctl.h
++++ b/include/uapi/linux/sysctl.h
+@@ -482,6 +482,7 @@ enum
+ 	NET_IPV4_CONF_PROMOTE_SECONDARIES=20,
+ 	NET_IPV4_CONF_ARP_ACCEPT=21,
+ 	NET_IPV4_CONF_ARP_NOTIFY=22,
++	NET_IPV4_CONF_ARP_EVICT_NOCARRIER=23,
+ };
+ 
+ /* /proc/sys/net/ipv4/netfilter */
+diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
+index 922dd73e5740..4d3b8d1463b7 100644
+--- a/net/ipv4/arp.c
++++ b/net/ipv4/arp.c
+@@ -1247,6 +1247,8 @@ static int arp_netdev_event(struct notifier_block *this, unsigned long event,
+ {
+ 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+ 	struct netdev_notifier_change_info *change_info;
++	struct in_device *in_dev;
++	bool evict_nocarrier;
+ 
+ 	switch (event) {
+ 	case NETDEV_CHANGEADDR:
+@@ -1257,7 +1259,16 @@ static int arp_netdev_event(struct notifier_block *this, unsigned long event,
+ 		change_info = ptr;
+ 		if (change_info->flags_changed & IFF_NOARP)
+ 			neigh_changeaddr(&arp_tbl, dev);
+-		if (!netif_carrier_ok(dev))
++
++		rcu_read_lock();
++		in_dev = __in_dev_get_rcu(dev);
++		if (!in_dev)
++			evict_nocarrier = true;
++		else
++			evict_nocarrier = IN_DEV_ARP_EVICT_NOCARRIER(in_dev);
++		rcu_read_unlock();
++
++		if (evict_nocarrier && !netif_carrier_ok(dev))
+ 			neigh_carrier_down(&arp_tbl, dev);
+ 		break;
+ 	default:
+diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
+index f4468980b675..ec73a0d52d3e 100644
+--- a/net/ipv4/devinet.c
++++ b/net/ipv4/devinet.c
+@@ -75,6 +75,7 @@ static struct ipv4_devconf ipv4_devconf = {
+ 		[IPV4_DEVCONF_SHARED_MEDIA - 1] = 1,
+ 		[IPV4_DEVCONF_IGMPV2_UNSOLICITED_REPORT_INTERVAL - 1] = 10000 /*ms*/,
+ 		[IPV4_DEVCONF_IGMPV3_UNSOLICITED_REPORT_INTERVAL - 1] =  1000 /*ms*/,
++		[IPV4_DEVCONF_ARP_EVICT_NOCARRIER - 1] = 1,
+ 	},
+ };
+ 
+@@ -87,6 +88,7 @@ static struct ipv4_devconf ipv4_devconf_dflt = {
+ 		[IPV4_DEVCONF_ACCEPT_SOURCE_ROUTE - 1] = 1,
+ 		[IPV4_DEVCONF_IGMPV2_UNSOLICITED_REPORT_INTERVAL - 1] = 10000 /*ms*/,
+ 		[IPV4_DEVCONF_IGMPV3_UNSOLICITED_REPORT_INTERVAL - 1] =  1000 /*ms*/,
++		[IPV4_DEVCONF_ARP_EVICT_NOCARRIER - 1] = 1,
+ 	},
+ };
+ 
+@@ -2532,6 +2534,8 @@ static struct devinet_sysctl_table {
+ 		DEVINET_SYSCTL_RW_ENTRY(ARP_IGNORE, "arp_ignore"),
+ 		DEVINET_SYSCTL_RW_ENTRY(ARP_ACCEPT, "arp_accept"),
+ 		DEVINET_SYSCTL_RW_ENTRY(ARP_NOTIFY, "arp_notify"),
++		DEVINET_SYSCTL_RW_ENTRY(ARP_EVICT_NOCARRIER,
++					"arp_evict_nocarrier"),
+ 		DEVINET_SYSCTL_RW_ENTRY(PROXY_ARP_PVLAN, "proxy_arp_pvlan"),
+ 		DEVINET_SYSCTL_RW_ENTRY(FORCE_IGMP_VERSION,
+ 					"force_igmp_version"),
 -- 
 2.31.1
 
