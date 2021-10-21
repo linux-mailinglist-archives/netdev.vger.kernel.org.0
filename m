@@ -2,162 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A616435871
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 03:49:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 119EA4358AB
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 04:33:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230360AbhJUBvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 21:51:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36660 "EHLO
+        id S230393AbhJUCfp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 22:35:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbhJUBvT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 21:51:19 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E45C06161C;
-        Wed, 20 Oct 2021 18:49:04 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id x1so27009623iof.7;
-        Wed, 20 Oct 2021 18:49:04 -0700 (PDT)
+        with ESMTP id S230272AbhJUCfo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 22:35:44 -0400
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A489C06161C
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 19:33:29 -0700 (PDT)
+Received: by mail-ot1-x336.google.com with SMTP id l16-20020a9d6a90000000b0054e7ab56f27so10566836otq.12
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 19:33:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=F8i24HkaoIEfH0KIiAP2xmE50SVVRPGmgxng9YFCm3w=;
-        b=EJ1Ii606IDL3waAbKwNi+0gqeUM11VYA7bQEqPKh8UqxM/zHTU7AEUGWdT2PlGm5RH
-         D7jnSVyZJsrCSjjRFh4SxF2EA27XZXG+++xtKmICt83oaFG48TQashh4O00BJbJkgN3A
-         5AhqqppG5Zu5Bn1MIm+Bjx8tguevTwT/ZZAFRj3w9rAxVZ3FzVRRshuZFZOI4unlY/x4
-         YLr+iDE5e3suFEPow8ETMAuaDDLK8RhK5jmagSkvQlBdRz0Wm4D4AeoLOS8LgvZYdTTZ
-         U0DCYZHMu3jznROry+1zXOQDOejhCMcFHJv4GH4ujuB1X9RJ5xFmX0cFc7njmGYbEr8u
-         OMlQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=stkmHhx1iKeWjBm6oYkdsXBtypyKpsolsaCEB2scX+A=;
+        b=GuJWwgC9bgUh17oyqeDp4Nlmp2IjlERxCfYntPE3lf/Rq8+EbDpr1eFrcf5ZkLMnrw
+         mfMlKKAmK1ac5VnJgIOC1f6/WEAuy9tJiUY+KdC8M386fL+GMGKXj5JT3uPzL2T3PyQq
+         mmrCfcpfep7ZHzYR3TKbKooqTvN6QdkY0B7CvgIxwCB+SgGZeDNDofM9m9MBZOKlk8/N
+         e3I1VA4+ORy5YJbg4WQJvR6T3AQd0ufYOfRLsR3guqd4CwyAdcTaVrrljrRa430hokLX
+         gn5uBvSqh0DeXlAC8tV1+3796dQ5lba4rEKx8sYaZNn8z/C8p0/Q93OVIkV677ac/284
+         kMiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=F8i24HkaoIEfH0KIiAP2xmE50SVVRPGmgxng9YFCm3w=;
-        b=d4yHXtROhtMW1QR2KrMN/OWDt96j6zBtFSv7T1cw/nJ89BbyufGJZLm6QySkVPKog4
-         unhXZPj/IXV0BQCRMCyUD212qHiBNeqXE5V3s3HUh70TGAZ39Qn9FHyVQZ+FeDV8K5OL
-         GA4n8BcS/ciLnabtOxtj7TzOY/8C8r6esmH6UqxisE3f6kPu5sQL2OpscVaDv61UcTxC
-         B37Zgcev20cH7LkNaTYxzfZjAboktUIeKivhIUg6DP/088jOgZ4Qw265Gz3WiQO6WwLb
-         B4I4/J9bW/yMymMM/6Pxo/Bw9lGupfWgQsWxOHfSHLp9bH3LPbNGjQ/usHfKhYXzrdCi
-         eG/g==
-X-Gm-Message-State: AOAM5334ikJEwGeirSgvouWq/d33KAKRMbpfPY4wmqwD/QiAdOeGNlBZ
-        ImAYLUBgsR05LnYmjCGrPuqModHUqvNkwKuAcZ0=
-X-Google-Smtp-Source: ABdhPJybobrhwD1ECPVAbJeZqQEBoyANTyR5DCwvXKb4Eb/1tLLBL/mErAlL+4WmBfyHW+Cp+8u6GKCK6U+8jQfAUdU=
-X-Received: by 2002:a02:a18c:: with SMTP id n12mr1890279jah.130.1634780943320;
- Wed, 20 Oct 2021 18:49:03 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=stkmHhx1iKeWjBm6oYkdsXBtypyKpsolsaCEB2scX+A=;
+        b=zACOlHPnnJyw1Ca4vTipdR7rYqboHrnmXzPdiJHtQBlj7Ky7uymK0V9sCaiXzU1iTA
+         CWn3N4f3mGOpO7TJSjR/M6J8iJHMnkGzXa5mMvdvfKz57RRLuhfUVzuD9wRyZzF05Lrd
+         0A1d+kuS6RmQAYEEfbN5NjyoKZDqrTclp2xiR6YNCXplvhwUQZS3DL9quteeVZ2wLeym
+         THh1se1xqiiSR0/RQdei0jQPX6z97Aj4eSlLT+haxGJQNSFxyiXOG2FQxnejXpMXVkzJ
+         kayqlkXJ9efKNMPWAjMaT6G73JJE/POnmXFLlCFyYri1TI8fSBbl1Rv/LgOfqXY13wd9
+         uVHQ==
+X-Gm-Message-State: AOAM530+ZE2cWbpapbzRwX1n119vsgSxG5znB8ng/7M0Ce9LuiNUue2A
+        zoGdCwUIeuRoSJIM3TZTbXk=
+X-Google-Smtp-Source: ABdhPJwMuP6EV6LRWDE6MDEZYGaNkDAk7W8GO+6D6j4YcAwD+ClHI8Tf9b4aD4tPOJ02aarD9dEYrw==
+X-Received: by 2002:a05:6830:30ba:: with SMTP id g26mr2397063ots.32.1634783608723;
+        Wed, 20 Oct 2021 19:33:28 -0700 (PDT)
+Received: from [172.16.0.2] ([8.48.134.34])
+        by smtp.googlemail.com with ESMTPSA id s206sm823079oia.33.2021.10.20.19.33.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Oct 2021 19:33:28 -0700 (PDT)
+Message-ID: <a33c3f84-7333-294a-9e78-580cbdac6ec1@gmail.com>
+Date:   Wed, 20 Oct 2021 20:33:26 -0600
 MIME-Version: 1.0
-References: <20211020232447.9548-1-jmaxwell37@gmail.com> <CANn89i+e3n6RveyuOhdfnQdJESdFvjgkgMjXSHCyuTRDB-E8Bw@mail.gmail.com>
-In-Reply-To: <CANn89i+e3n6RveyuOhdfnQdJESdFvjgkgMjXSHCyuTRDB-E8Bw@mail.gmail.com>
-From:   Jonathan Maxwell <jmaxwell37@gmail.com>
-Date:   Thu, 21 Oct 2021 12:48:27 +1100
-Message-ID: <CAGHK07AP3Em02rvuON0x__cWYxqCSkbDtxWatKScnZ6KU4wrGQ@mail.gmail.com>
-Subject: Re: [net-next] tcp: don't free a FIN sk_buff in tcp_remove_empty_skb()
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     David Miller <davem@davemloft.net>,
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.2.0
+Subject: Re: [PATCH v5 0/2] Make neighbor eviction controllable by userspace
+Content-Language: en-US
+To:     James Prestwood <prestwoj@gmail.com>, netdev@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Roopa Prabhu <roopa@nvidia.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Chinmay Agarwal <chinagar@codeaurora.org>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Tong Zhu <zhutong@amazon.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jouni Malinen <jouni@codeaurora.org>
+References: <20211021003212.878786-1-prestwoj@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20211021003212.878786-1-prestwoj@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 21, 2021 at 12:11 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Wed, Oct 20, 2021 at 4:25 PM Jon Maxwell <jmaxwell37@gmail.com> wrote:
-> >
-> > A customer reported sockets stuck in the CLOSING state. A Vmcore reveal=
-ed that
-> > the write_queue was not empty as determined by tcp_write_queue_empty() =
-but the
-> > sk_buff containing the FIN flag had been freed and the socket was zombi=
-ed in
-> > that state. Corresponding pcaps show no FIN from the Linux kernel on th=
-e wire.
-> >
-> > Some instrumentation was added to the kernel and it was found that ther=
-e is a
-> > timing window where tcp_sendmsg() can run after tcp_send_fin().
-> >
-> > tcp_sendmsg() will hit an error, for example:
-> >
-> > 1269 =E2=96=B9       if (sk->sk_err || (sk->sk_shutdown & SEND_SHUTDOWN=
-))=E2=86=A9
-> > 1270 =E2=96=B9       =E2=96=B9       goto do_error;=E2=86=A9
-> >
-> > tcp_remove_empty_skb() will then free the FIN sk_buff as "skb->len =3D=
-=3D 0". The
-> > TCP socket is now wedged in the FIN-WAIT-1 state because the FIN is nev=
-er sent.
-> >
-> > If the other side sends a FIN packet the socket will transition to CLOS=
-ING and
-> > remain that way until the system is rebooted.
-> >
-> > Fix this by checking for the FIN flag in the sk_buff and don't free it =
-if that
-> > is the case. Testing confirmed that fixed the issue.
-> >
-> > Fixes: fdfc5c8594c2 ("tcp: remove empty skb from write queue in error c=
-ases")
-> > Signed-off-by: Jon Maxwell <jmaxwell37@gmail.com>
-> > ---
-> >  net/ipv4/tcp.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> > index c2d9830136d2..d2b06d8f0c37 100644
-> > --- a/net/ipv4/tcp.c
-> > +++ b/net/ipv4/tcp.c
-> > @@ -938,7 +938,7 @@ int tcp_send_mss(struct sock *sk, int *size_goal, i=
-nt flags)
-> >   */
-> >  void tcp_remove_empty_skb(struct sock *sk, struct sk_buff *skb)
-> >  {
-> > -       if (skb && !skb->len) {
-> > +       if (skb && !skb->len && !TCP_SKB_CB(skb)->tcp_flags & TCPHDR_FI=
-N) {
-> >                 tcp_unlink_write_queue(skb, sk);
-> >                 if (tcp_write_queue_empty(sk))
-> >                         tcp_chrono_stop(sk, TCP_CHRONO_BUSY);
-> >
->
-> Very nice catch !
->
+On 10/20/21 6:32 PM, James Prestwood wrote:
+> v1 -> v2:
+> 
+>  - It was suggested by Daniel Borkmann to extend the neighbor table settings
+>    rather than adding IPv4/IPv6 options for ARP/NDISC separately. I agree
+>    this way is much more concise since there is now only one place where the
+>    option is checked and defined.
+>  - Moved documentation/code into the same patch
+>  - Explained in more detail the test scenario and results
+> 
+> v2 -> v3:
+> 
+>  - Renamed 'skip_perm' to 'nocarrier'. The way this parameter is used
+>    matches this naming.
+>  - Changed logic to still flush if 'nocarrier' is false.
+> 
+> v3 -> v4:
+> 
+>  - Moved NDTPA_EVICT_NOCARRIER after NDTPA_PAD
+> 
+> v4 -> v5:
+> 
+>  - Went back to the original v1 patchset and changed:
+>  - Used ANDCONF for IN_DEV macro
+>  - Got RCU lock prior to __in_dev_get_rcu(). Do note that the logic
+>    here was extended to handle if __in_dev_get_rcu() fails. If this
+>    happens the existing behavior should be maintained and set the
+>    carrier down. I'm unsure if get_rcu() can fail in this context
+>    though. Similar logic was used for in6_dev_get.
+>  - Changed ndisc_evict_nocarrier to use a u8, proper handler, and
+>    set min/max values.
+> 
 
-Thanks Eric.
+I'll take a deep dive on the patches tomorrow.
 
-> The FIN flag is a really special case here.
->
-> What we need is to make sure the skb is 'empty' .
->
-> What about using a single condition ?
->
-> if (skb && TCP_SKB_CB(skb)->seq =3D=3D TCP_SKB_CB(skb)->end_seq)
+You need to add a selftests script under tools/testing/selftests/net
+that shows this behavior with the new setting set and unset. This is
+easily done with veth pairs and network namespaces (one end of the veth
+pair down sets the other into no-carrier). Take a look at the scripts
+there - e.g., fib_nexthops.sh should provide a template for a start point.
 
-Good call as the end_seq will be +1 for a FIN. So that's better.
-
-Let me give the customer a kernel with your idea:
-
---- net/ipv4/tcp.c 2021-10-20 22:50:35.836001950 +0530
-+++ net/ipv4/tcp.c.patch 2021-10-21 01:42:08.493569483 +0530
-@@ -955,7 +955,7 @@
-  */
- void tcp_remove_empty_skb(struct sock *sk, struct sk_buff *skb)
- {
-- if (skb && !skb->len) {
-+ if (skb && TCP_SKB_CB(skb)->seq =3D=3D TCP_SKB_CB(skb)->end_seq) {
-  tcp_unlink_write_queue(skb, sk);
-  if (tcp_write_queue_empty(sk))
-  tcp_chrono_stop(sk, TCP_CHRONO_BUSY);
-
-I'll ask the customer to confirm that the v1 patch as above also resolves
-the issue. Although I expect it will.
-
-Then I'll resubmit a v1 patch with your suggestion probably early next week=
-.
-
-Regards
-
-Jon
