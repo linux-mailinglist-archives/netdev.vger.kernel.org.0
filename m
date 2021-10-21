@@ -2,123 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 419A5435D3B
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 10:44:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3AE8435D4D
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 10:48:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231183AbhJUIrF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 04:47:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43792 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231394AbhJUIrF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 04:47:05 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62FF4C061749
-        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 01:44:49 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id s61-20020a17090a69c300b0019f663cfcd1so2597635pjj.1
-        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 01:44:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=NSfOG4pHa+efY4fWKGvQNvn7KP1IkrBtjwZg+u3ax7A=;
-        b=NoF5VUMKfXkPBRVSwItawV8gW4gURA0TEcBx1+Xu5bddphrzf7zPzm2fym6nuJVTSG
-         fKZCMvvL/FndFiNe+6uXxLEt1Qg5A0ApwzugcRCqDwP12OWK98aTMmmo1d9wXLX4x/dm
-         LX7o6Xcd35tt9gqFH1W5X3K1NpWFftvxKloDqUfMuztrOt297Yno70edLhQsPZcE2WMd
-         t9a+h1OY7pFayhPP9RfzvkhtIfkOnNmWjrsX56U8cxN/var46tuJOb5SwobP/Z2f1gMp
-         /i0+3Qr+tac3E6o0EM7C0E7OQ8rNLhjxa+Q/PtDbFi+MxDLWZxxM+1ifkj41Ni24iPUD
-         8Fdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=NSfOG4pHa+efY4fWKGvQNvn7KP1IkrBtjwZg+u3ax7A=;
-        b=VQnp6LF+vhsVLXml6CyzU+mDUGbFGv+M88qY1Np8KCrFLLf+yh3kI/PMrk9o47/guK
-         h34qdGjEY1d+HOqB/iNoZRB31P5moOeqzucmQLr4KQASNyk6SVK8H74Nn9sYLesbIvU6
-         LPfpGUtqzM/uCh5Nu7W+eOjEWm8Vq+i3yVz68kp3pSp2/x6J9dV1kJ0f5FFBAAEhc/2P
-         ujrrNuXMqhsETtKKpBUVO3VNaQzt0ABbvxL1wIdroYIdwSU3pKFJxEyaIi70PdS9vaEG
-         Xs8dv1Bm90f5hn0MIMR2JMcrXmY/tecDQpem9wW3kEfC/fGoHZjJMRFJ+JM62DqfF6LR
-         DmVw==
-X-Gm-Message-State: AOAM532a12/I1Mrg+x5hl2xEZBL/170E8OggncuAe9IfxGqb0LM/KkmF
-        1zA4jkN9jgnkCjqCN/SSpRUnahq6ml0=
-X-Google-Smtp-Source: ABdhPJwB+yraEn/o27yATAW0NbBQTYELQVAduZii23fjKyiCjjQXySe92Z4gdTNN/EIy/cLFrvGtpQ==
-X-Received: by 2002:a17:90a:cb92:: with SMTP id a18mr4141006pju.157.1634805888724;
-        Thu, 21 Oct 2021 01:44:48 -0700 (PDT)
-Received: from Laptop-X1 ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id k14sm4797403pgg.92.2021.10.21.01.44.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Oct 2021 01:44:48 -0700 (PDT)
-Date:   Thu, 21 Oct 2021 16:44:42 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
+        id S231419AbhJUIui (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 04:50:38 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:26334 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230385AbhJUIuh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Oct 2021 04:50:37 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1634806101; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=fGTORJsyflzni7NU7S3f+ketqwKwriawQfcTUKvSUSo=; b=GOW2HwA3+ck7TdunG7zz86OMf7Af4EsUMD+/0v5Bpwn0tj4Acxy2gspEExkwJeTw9vcsKUrn
+ oGj4kLb2DjbvNEUX9h1lhiWqvvtOEWw80SCpWEegc4XHivfZHs3XFpuoBa/oYpVI3zKrvptJ
+ PEJQbaitIyzwreM1SzU6jHln/3Q=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
+ 6171295559612e010090ef91 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 21 Oct 2021 08:48:21
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 99081C4360D; Thu, 21 Oct 2021 08:48:20 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id BCF07C4338F;
+        Thu, 21 Oct 2021 08:48:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org BCF07C4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Pkshih <pkshih@realtek.com>
+Cc:     Colin King <colin.king@canonical.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Li RongQing <lirongqing@baidu.com>,
-        Kevin Cernekee <cernekee@chromium.org>,
-        Taehee Yoo <ap420073@gmail.com>
-Subject: [IGMP discuss] Should we let the membership report contains 1 or
- multi-group records?
-Message-ID: <YXEoekVoLZK7ttUd@Laptop-X1>
+        "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-janitors\@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH][next] rtw89: Fix potential dereference of the null pointer sta
+References: <20211015154530.34356-1-colin.king@canonical.com>
+        <9cc681c217a449519aee524b35e6b6bc@realtek.com>
+        <87pms2ttvi.fsf@codeaurora.org>
+        <abc2e3a274694d48aa468491df334349@realtek.com>
+        <87h7dcf5zj.fsf@codeaurora.org>
+        <35c096e5251f49c1abfbb51f761eab82@realtek.com>
+Date:   Thu, 21 Oct 2021 11:48:13 +0300
+In-Reply-To: <35c096e5251f49c1abfbb51f761eab82@realtek.com> (Pkshih's message
+        of "Thu, 21 Oct 2021 05:46:15 +0000")
+Message-ID: <87y26mepbm.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi IGMP experts,
+Pkshih <pkshih@realtek.com> writes:
 
-One of our customers reported that when replying to a general query, the
-membership report contains multi group records. But they think each
-report should only contain 1 group record, based on
+>> >> > I check the size of object files before/after this patch, and
+>> >> > the original one is smaller.
+>> >> >
+>> >> >    text    data     bss     dec     hex filename
+>> >> >   16781    3392       1   20174    4ece core-0.o  // original
+>> >> >   16819    3392       1   20212    4ef4 core-1.o  // after this patch
+>> >> >
+>> >> > Do you think it is worth to apply this patch?
+>> >>
+>> >> I think that we should apply the patch. Even though the compiler _may_
+>> >> reorder the code, it might choose not to do that.
+>> >
+>> > Understand.
+>> >
+>> > I have another way to fix this coverity warning, like:
+>> >
+>> > @@ -1617,7 +1617,7 @@ static bool rtw89_core_txq_agg_wait(struct rtw89_dev *rtwdev,
+>> >  {
+>> >         struct rtw89_txq *rtwtxq = (struct rtw89_txq *)txq->drv_priv;
+>> >         struct ieee80211_sta *sta = txq->sta;
+>> > -       struct rtw89_sta *rtwsta = (struct rtw89_sta *)sta->drv_priv;
+>> > +       struct rtw89_sta *rtwsta = sta ? (struct rtw89_sta *)sta->drv_priv : NULL;
+>> >
+>> >         if (!sta || rtwsta->max_agg_wait <= 0)
+>> >                 return false;
+>> >
+>> > Is this acceptable?
+>> > It has a little redundant checking of 'sta', but the code looks clean.
+>> 
+>> I feel that Colin's fix is more readable, but this is just matter of
+>> taste. You can choose.
+>
+> I would like my version. 
+>
+> There are three similar warnings reported by smatch, so I will fix them by
+> myself. Please drop this patch.
 
-RFC 3376, 5.2. Action on Reception of a Query:
+Ok, dropped.
 
-   1. If the expired timer is the interface timer (i.e., it is a pending
-      response to a General Query), then one Current-State Record is
-      sent for each multicast address for which the specified interface
-      has reception state, as described in section 3.2.  The Current-
-      State Record carries the multicast address and its associated
-      filter mode (MODE_IS_INCLUDE or MODE_IS_EXCLUDE) and source list.
-      Multiple Current-State Records are packed into individual Report
-      messages, to the extent possible.
+> But, still thank Colin to point out this issue.
 
-      This naive algorithm may result in bursts of packets when a system
-      is a member of a large number of groups.  Instead of using a
-      single interface timer, implementations are recommended to spread
-      transmission of such Report messages over the interval (0, [Max
-      Resp Time]).  Note that any such implementation MUST avoid the
-      "ack-implosion" problem, i.e., MUST NOT send a Report immediately
-      on reception of a General Query.
+Indeed, thanks Colin. A good way to thank is to add Reported-by to the
+commit log.
 
-So they think each group state record should be sent separately.
-I pointed that in the RFC, it also said
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-A.2  Host Suppression
-
-...
-
-   4. In IGMPv3, a single membership report now bundles multiple
-      multicast group records to decrease the number of packets sent.
-      In comparison, the previous versions of IGMP required that each
-      multicast group be reported in a separate message.
-
-So this looks like two conflicting goals.
-
-After talking, what customer concerned about is that if there are a thousand groups,
-each has like 50 source addresses. The final reports will be a burst of
-40 messages, with each has 25 source addresses. The router needs to handle these
-records in a few microseconds, which will take a very high resource for router
-to process.
-
-If each report only has 1 group record. The 1000 reports could be sent
-separately in max response time, say 10s, with each report in 10ms. This will
-make router much easier to handle the groups' records.
-
-So what do you think? Do you think if there is a need to implement a way/option
-to make group records send separately? Do anyone know if it's a press to let
-router handle a thousand groups with each having 25 sources address in a few
-microseconds?
-
-Thanks
-Hangbin
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
