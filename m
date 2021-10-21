@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3DB7435EB2
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 12:08:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6E14435EB7
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 12:08:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230350AbhJUKKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 06:10:49 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:33832 "EHLO
+        id S230522AbhJUKKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 06:10:52 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:33842 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231724AbhJUKKp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 06:10:45 -0400
+        with ESMTP id S231734AbhJUKKr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 06:10:47 -0400
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 4FB2C63F3F;
+        by mail.netfilter.org (Postfix) with ESMTPSA id E464263F40;
         Thu, 21 Oct 2021 12:06:46 +0200 (CEST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 4/8] selftests: nft_nat: add udp hole punch test case
-Date:   Thu, 21 Oct 2021 12:08:17 +0200
-Message-Id: <20211021100821.964677-5-pablo@netfilter.org>
+Subject: [PATCH net 5/8] netfilter: ip6t_rt: fix rt0_hdr parsing in rt_mt6
+Date:   Thu, 21 Oct 2021 12:08:18 +0200
+Message-Id: <20211021100821.964677-6-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211021100821.964677-1-pablo@netfilter.org>
 References: <20211021100821.964677-1-pablo@netfilter.org>
@@ -29,190 +29,141 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Xin Long <lucien.xin@gmail.com>
 
-Add a test case that demonstrates port shadowing via UDP.
+In rt_mt6(), when it's a nonlinear skb, the 1st skb_header_pointer()
+only copies sizeof(struct ipv6_rt_hdr) to _route that rh points to.
+The access by ((const struct rt0_hdr *)rh)->reserved will overflow
+the buffer. So this access should be moved below the 2nd call to
+skb_header_pointer().
 
-ns2 sends packet to ns1, from source port used by a udp service on the
-router, ns0.  Then, ns1 sends packet to ns0:service, but that ends up getting
-forwarded to ns2.
+Besides, after the 2nd skb_header_pointer(), its return value should
+also be checked, othersize, *rp may cause null-pointer-ref.
 
-Also add three test cases that demonstrate mitigations:
-1. disable use of $port as source from 'unstrusted' origin
-2. make the service untracked.  This prevents masquerade entries
-   from having any effects.
-3. add forced PAT via 'random' mode to translate the "wrong" sport
-   into an acceptable range.
+v1->v2:
+  - clean up some old debugging log.
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Acked-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- tools/testing/selftests/netfilter/nft_nat.sh | 145 +++++++++++++++++++
- 1 file changed, 145 insertions(+)
+ net/ipv6/netfilter/ip6t_rt.c | 48 +++++-------------------------------
+ 1 file changed, 6 insertions(+), 42 deletions(-)
 
-diff --git a/tools/testing/selftests/netfilter/nft_nat.sh b/tools/testing/selftests/netfilter/nft_nat.sh
-index d7e07f4c3d7f..da1c1e4b6c86 100755
---- a/tools/testing/selftests/netfilter/nft_nat.sh
-+++ b/tools/testing/selftests/netfilter/nft_nat.sh
-@@ -741,6 +741,149 @@ EOF
- 	return $lret
+diff --git a/net/ipv6/netfilter/ip6t_rt.c b/net/ipv6/netfilter/ip6t_rt.c
+index 733c83d38b30..4ad8b2032f1f 100644
+--- a/net/ipv6/netfilter/ip6t_rt.c
++++ b/net/ipv6/netfilter/ip6t_rt.c
+@@ -25,12 +25,7 @@ MODULE_AUTHOR("Andras Kis-Szabo <kisza@sch.bme.hu>");
+ static inline bool
+ segsleft_match(u_int32_t min, u_int32_t max, u_int32_t id, bool invert)
+ {
+-	bool r;
+-	pr_debug("segsleft_match:%c 0x%x <= 0x%x <= 0x%x\n",
+-		 invert ? '!' : ' ', min, id, max);
+-	r = (id >= min && id <= max) ^ invert;
+-	pr_debug(" result %s\n", r ? "PASS" : "FAILED");
+-	return r;
++	return (id >= min && id <= max) ^ invert;
  }
  
-+# test port shadowing.
-+# create two listening services, one on router (ns0), one
-+# on client (ns2), which is masqueraded from ns1 point of view.
-+# ns2 sends udp packet coming from service port to ns1, on a highport.
-+# Later, if n1 uses same highport to connect to ns0:service, packet
-+# might be port-forwarded to ns2 instead.
-+
-+# second argument tells if we expect the 'fake-entry' to take effect
-+# (CLIENT) or not (ROUTER).
-+test_port_shadow()
-+{
-+	local test=$1
-+	local expect=$2
-+	local daddrc="10.0.1.99"
-+	local daddrs="10.0.1.1"
-+	local result=""
-+	local logmsg=""
-+
-+	echo ROUTER | ip netns exec "$ns0" nc -w 5 -u -l -p 1405 >/dev/null 2>&1 &
-+	nc_r=$!
-+
-+	echo CLIENT | ip netns exec "$ns2" nc -w 5 -u -l -p 1405 >/dev/null 2>&1 &
-+	nc_c=$!
-+
-+	# make shadow entry, from client (ns2), going to (ns1), port 41404, sport 1405.
-+	echo "fake-entry" | ip netns exec "$ns2" nc -w 1 -p 1405 -u "$daddrc" 41404 > /dev/null
-+
-+	# ns1 tries to connect to ns0:1405.  With default settings this should connect
-+	# to client, it matches the conntrack entry created above.
-+
-+	result=$(echo "" | ip netns exec "$ns1" nc -w 1 -p 41404 -u "$daddrs" 1405)
-+
-+	if [ "$result" = "$expect" ] ;then
-+		echo "PASS: portshadow test $test: got reply from ${expect}${logmsg}"
-+	else
-+		echo "ERROR: portshadow test $test: got reply from \"$result\", not $expect as intended"
-+		ret=1
-+	fi
-+
-+	kill $nc_r $nc_c 2>/dev/null
-+
-+	# flush udp entries for next test round, if any
-+	ip netns exec "$ns0" conntrack -F >/dev/null 2>&1
-+}
-+
-+# This prevents port shadow of router service via packet filter,
-+# packets claiming to originate from service port from internal
-+# network are dropped.
-+test_port_shadow_filter()
-+{
-+	local family=$1
-+
-+ip netns exec "$ns0" nft -f /dev/stdin <<EOF
-+table $family filter {
-+	chain forward {
-+		type filter hook forward priority 0; policy accept;
-+		meta iif veth1 udp sport 1405 drop
-+	}
-+}
-+EOF
-+	test_port_shadow "port-filter" "ROUTER"
-+
-+	ip netns exec "$ns0" nft delete table $family filter
-+}
-+
-+# This prevents port shadow of router service via notrack.
-+test_port_shadow_notrack()
-+{
-+	local family=$1
-+
-+ip netns exec "$ns0" nft -f /dev/stdin <<EOF
-+table $family raw {
-+	chain prerouting {
-+		type filter hook prerouting priority -300; policy accept;
-+		meta iif veth0 udp dport 1405 notrack
-+		udp dport 1405 notrack
-+	}
-+	chain output {
-+		type filter hook output priority -300; policy accept;
-+		udp sport 1405 notrack
-+	}
-+}
-+EOF
-+	test_port_shadow "port-notrack" "ROUTER"
-+
-+	ip netns exec "$ns0" nft delete table $family raw
-+}
-+
-+# This prevents port shadow of router service via sport remap.
-+test_port_shadow_pat()
-+{
-+	local family=$1
-+
-+ip netns exec "$ns0" nft -f /dev/stdin <<EOF
-+table $family pat {
-+	chain postrouting {
-+		type nat hook postrouting priority -1; policy accept;
-+		meta iif veth1 udp sport <= 1405 masquerade to : 1406-65535 random
-+	}
-+}
-+EOF
-+	test_port_shadow "pat" "ROUTER"
-+
-+	ip netns exec "$ns0" nft delete table $family pat
-+}
-+
-+test_port_shadowing()
-+{
-+	local family="ip"
-+
-+	ip netns exec "$ns0" sysctl net.ipv4.conf.veth0.forwarding=1 > /dev/null
-+	ip netns exec "$ns0" sysctl net.ipv4.conf.veth1.forwarding=1 > /dev/null
-+
-+	ip netns exec "$ns0" nft -f /dev/stdin <<EOF
-+table $family nat {
-+	chain postrouting {
-+		type nat hook postrouting priority 0; policy accept;
-+		meta oif veth0 masquerade
-+	}
-+}
-+EOF
-+	if [ $? -ne 0 ]; then
-+		echo "SKIP: Could not add add $family masquerade hook"
-+		return $ksft_skip
-+	fi
-+
-+	# test default behaviour. Packet from ns1 to ns0 is redirected to ns2.
-+	test_port_shadow "default" "CLIENT"
-+
-+	# test packet filter based mitigation: prevent forwarding of
-+	# packets claiming to come from the service port.
-+	test_port_shadow_filter "$family"
-+
-+	# test conntrack based mitigation: connections going or coming
-+	# from router:service bypass connection tracking.
-+	test_port_shadow_notrack "$family"
-+
-+	# test nat based mitigation: fowarded packets coming from service port
-+	# are masqueraded with random highport.
-+	test_port_shadow_pat "$family"
-+
-+	ip netns exec "$ns0" nft delete table $family nat
-+}
+ static bool rt_mt6(const struct sk_buff *skb, struct xt_action_param *par)
+@@ -65,30 +60,6 @@ static bool rt_mt6(const struct sk_buff *skb, struct xt_action_param *par)
+ 		return false;
+ 	}
  
- # ip netns exec "$ns0" ping -c 1 -q 10.0.$i.99
- for i in 0 1 2; do
-@@ -861,6 +1004,8 @@ reset_counters
- $test_inet_nat && test_redirect inet
- $test_inet_nat && test_redirect6 inet
+-	pr_debug("IPv6 RT LEN %u %u ", hdrlen, rh->hdrlen);
+-	pr_debug("TYPE %04X ", rh->type);
+-	pr_debug("SGS_LEFT %u %02X\n", rh->segments_left, rh->segments_left);
+-
+-	pr_debug("IPv6 RT segsleft %02X ",
+-		 segsleft_match(rtinfo->segsleft[0], rtinfo->segsleft[1],
+-				rh->segments_left,
+-				!!(rtinfo->invflags & IP6T_RT_INV_SGS)));
+-	pr_debug("type %02X %02X %02X ",
+-		 rtinfo->rt_type, rh->type,
+-		 (!(rtinfo->flags & IP6T_RT_TYP) ||
+-		  ((rtinfo->rt_type == rh->type) ^
+-		   !!(rtinfo->invflags & IP6T_RT_INV_TYP))));
+-	pr_debug("len %02X %04X %02X ",
+-		 rtinfo->hdrlen, hdrlen,
+-		 !(rtinfo->flags & IP6T_RT_LEN) ||
+-		  ((rtinfo->hdrlen == hdrlen) ^
+-		   !!(rtinfo->invflags & IP6T_RT_INV_LEN)));
+-	pr_debug("res %02X %02X %02X ",
+-		 rtinfo->flags & IP6T_RT_RES,
+-		 ((const struct rt0_hdr *)rh)->reserved,
+-		 !((rtinfo->flags & IP6T_RT_RES) &&
+-		   (((const struct rt0_hdr *)rh)->reserved)));
+-
+ 	ret = (segsleft_match(rtinfo->segsleft[0], rtinfo->segsleft[1],
+ 			      rh->segments_left,
+ 			      !!(rtinfo->invflags & IP6T_RT_INV_SGS))) &&
+@@ -107,22 +78,22 @@ static bool rt_mt6(const struct sk_buff *skb, struct xt_action_param *par)
+ 						       reserved),
+ 					sizeof(_reserved),
+ 					&_reserved);
++		if (!rp) {
++			par->hotdrop = true;
++			return false;
++		}
  
-+test_port_shadowing
-+
- if [ $ret -ne 0 ];then
- 	echo -n "FAIL: "
- 	nft --version
+ 		ret = (*rp == 0);
+ 	}
+ 
+-	pr_debug("#%d ", rtinfo->addrnr);
+ 	if (!(rtinfo->flags & IP6T_RT_FST)) {
+ 		return ret;
+ 	} else if (rtinfo->flags & IP6T_RT_FST_NSTRICT) {
+-		pr_debug("Not strict ");
+ 		if (rtinfo->addrnr > (unsigned int)((hdrlen - 8) / 16)) {
+-			pr_debug("There isn't enough space\n");
+ 			return false;
+ 		} else {
+ 			unsigned int i = 0;
+ 
+-			pr_debug("#%d ", rtinfo->addrnr);
+ 			for (temp = 0;
+ 			     temp < (unsigned int)((hdrlen - 8) / 16);
+ 			     temp++) {
+@@ -138,26 +109,20 @@ static bool rt_mt6(const struct sk_buff *skb, struct xt_action_param *par)
+ 					return false;
+ 				}
+ 
+-				if (ipv6_addr_equal(ap, &rtinfo->addrs[i])) {
+-					pr_debug("i=%d temp=%d;\n", i, temp);
++				if (ipv6_addr_equal(ap, &rtinfo->addrs[i]))
+ 					i++;
+-				}
+ 				if (i == rtinfo->addrnr)
+ 					break;
+ 			}
+-			pr_debug("i=%d #%d\n", i, rtinfo->addrnr);
+ 			if (i == rtinfo->addrnr)
+ 				return ret;
+ 			else
+ 				return false;
+ 		}
+ 	} else {
+-		pr_debug("Strict ");
+ 		if (rtinfo->addrnr > (unsigned int)((hdrlen - 8) / 16)) {
+-			pr_debug("There isn't enough space\n");
+ 			return false;
+ 		} else {
+-			pr_debug("#%d ", rtinfo->addrnr);
+ 			for (temp = 0; temp < rtinfo->addrnr; temp++) {
+ 				ap = skb_header_pointer(skb,
+ 							ptr
+@@ -173,7 +138,6 @@ static bool rt_mt6(const struct sk_buff *skb, struct xt_action_param *par)
+ 				if (!ipv6_addr_equal(ap, &rtinfo->addrs[temp]))
+ 					break;
+ 			}
+-			pr_debug("temp=%d #%d\n", temp, rtinfo->addrnr);
+ 			if (temp == rtinfo->addrnr &&
+ 			    temp == (unsigned int)((hdrlen - 8) / 16))
+ 				return ret;
 -- 
 2.30.2
 
