@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF556436281
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 15:12:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2221D436285
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 15:12:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231489AbhJUNOs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 09:14:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52546 "EHLO mail.kernel.org"
+        id S230521AbhJUNOw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 09:14:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52554 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230520AbhJUNOi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Oct 2021 09:14:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BBDBA61354;
-        Thu, 21 Oct 2021 13:12:22 +0000 (UTC)
+        id S231169AbhJUNOj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Oct 2021 09:14:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 12C0A6135A;
+        Thu, 21 Oct 2021 13:12:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634821942;
-        bh=txmVNN0hLjbw9YKaQiBsAl86Vw+FAG8CaBtPXu0Y250=;
+        s=k20201202; t=1634821943;
+        bh=311L13dF8ywQGNgF2OOj+VRKp+Sqe4XJ0RRZTcUERBE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iCKVcb2Z+rDGCeLEBoiyII0me6t41asKYlO8DZrgVDqsHm4IOgf7nYIH6SDOGI/OH
-         RzOnSu9NaPSbQ3yeP47++kKo2Di+rIrjwFUBmQbNXBjtnHBSkmmrtBDS4EhP2QzpSe
-         j68EE5C+8OKVO0OwZNUMyHQBSJnn/M5dGB8lfHG8hNu1P3JuwSe7SqOawV7Ew9BCrc
-         aD7FngIF8h0nDlwq9vqJCXnNRHydmW8Jko6oC0KNEG8/D1u/QrjswkIWJbnCmwmW8w
-         t4z8F+WTalqoG2hXRRjxMc5N8wM5MbrEvR9O6VxK+03cKfpJFarMWnAFPgeQTlPion
-         TBo4ALGgifSKQ==
+        b=a/D/mypDtTs2oXCgpKiQhXH9aCwJHs4g8diHnoGXKhK3Vy/4+hf8BBaKedbzyFLC+
+         vOT4CVYX4Vx6cC9naMEN07v+7RLO8ydwwyFx9HTtlnMEPJP51HFiHH97jdbE022BFG
+         SOJAqInML2KcY5HWn2PFQ5dTeboEGEcGFlMAMguERAZnZuhVND/n3+Uzsh3zSTLYXu
+         3bN1WyLQDH+7yCS/09PfPyHbyRTjvUQVJTsvbvoYVlNb8nDOINEtwhccjFMK6kZLsu
+         16OSm+SI9VCkPDDURy2nKw476FWpL8BGNJTrWpqjalp2NH9l2PHGX0c0hJ8ccCCzdX
+         kpiDvqn1k6/yQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 10/12] net: plip: use eth_hw_addr_set()
-Date:   Thu, 21 Oct 2021 06:12:12 -0700
-Message-Id: <20211021131214.2032925-11-kuba@kernel.org>
+Subject: [PATCH net-next v2 11/12] net: sb1000,rionet: use eth_hw_addr_set()
+Date:   Thu, 21 Oct 2021 06:12:13 -0700
+Message-Id: <20211021131214.2032925-12-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211021131214.2032925-1-kuba@kernel.org>
 References: <20211021131214.2032925-1-kuba@kernel.org>
@@ -38,43 +38,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Get it ready for constant netdev->dev_addr.
+Get these two oldies ready for constant netdev->dev_addr.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/plip/plip.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/rionet.c | 14 ++++++++------
+ drivers/net/sb1000.c | 12 ++++++++----
+ 2 files changed, 16 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/plip/plip.c b/drivers/net/plip/plip.c
-index 82d609401711..0d491b4d6667 100644
---- a/drivers/net/plip/plip.c
-+++ b/drivers/net/plip/plip.c
-@@ -284,12 +284,16 @@ static const struct net_device_ops plip_netdev_ops = {
- static void
- plip_init_netdev(struct net_device *dev)
+diff --git a/drivers/net/rionet.c b/drivers/net/rionet.c
+index 2056d6ad04b5..1a95f3beb784 100644
+--- a/drivers/net/rionet.c
++++ b/drivers/net/rionet.c
+@@ -482,6 +482,7 @@ static int rionet_setup_netdev(struct rio_mport *mport, struct net_device *ndev)
  {
-+	static const u8 addr_init[ETH_ALEN] = {
-+		0xfc, 0xfc, 0xfc,
-+		0xfc, 0xfc, 0xfc,
-+	};
- 	struct net_local *nl = netdev_priv(dev);
+ 	int rc = 0;
+ 	struct rionet_private *rnet;
++	u8 addr[ETH_ALEN];
+ 	u16 device_id;
+ 	const size_t rionet_active_bytes = sizeof(void *) *
+ 				RIO_MAX_ROUTE_ENTRIES(mport->sys_size);
+@@ -501,12 +502,13 @@ static int rionet_setup_netdev(struct rio_mport *mport, struct net_device *ndev)
  
- 	/* Then, override parts of it */
- 	dev->tx_queue_len 	 = 10;
- 	dev->flags	         = IFF_POINTOPOINT|IFF_NOARP;
--	memset(dev->dev_addr, 0xfc, ETH_ALEN);
-+	eth_hw_addr_set(dev, addr_init);
+ 	/* Set the default MAC address */
+ 	device_id = rio_local_get_device_id(mport);
+-	ndev->dev_addr[0] = 0x00;
+-	ndev->dev_addr[1] = 0x01;
+-	ndev->dev_addr[2] = 0x00;
+-	ndev->dev_addr[3] = 0x01;
+-	ndev->dev_addr[4] = device_id >> 8;
+-	ndev->dev_addr[5] = device_id & 0xff;
++	addr[0] = 0x00;
++	addr[1] = 0x01;
++	addr[2] = 0x00;
++	addr[3] = 0x01;
++	addr[4] = device_id >> 8;
++	addr[5] = device_id & 0xff;
++	eth_hw_addr_set(ndev, addr);
  
- 	dev->netdev_ops		 = &plip_netdev_ops;
- 	dev->header_ops          = &plip_header_ops;
-@@ -1109,7 +1113,7 @@ plip_open(struct net_device *dev)
- 		   plip_init_dev(). */
- 		const struct in_ifaddr *ifa = rcu_dereference(in_dev->ifa_list);
- 		if (ifa != NULL) {
--			memcpy(dev->dev_addr+2, &ifa->ifa_local, 4);
-+			dev_addr_mod(dev, 2, &ifa->ifa_local, 4);
- 		}
- 	}
+ 	ndev->netdev_ops = &rionet_netdev_ops;
+ 	ndev->mtu = RIONET_MAX_MTU;
+diff --git a/drivers/net/sb1000.c b/drivers/net/sb1000.c
+index f01c9db01b16..57a6d598467b 100644
+--- a/drivers/net/sb1000.c
++++ b/drivers/net/sb1000.c
+@@ -149,6 +149,7 @@ sb1000_probe_one(struct pnp_dev *pdev, const struct pnp_device_id *id)
+ 	unsigned short ioaddr[2], irq;
+ 	unsigned int serial_number;
+ 	int error = -ENODEV;
++	u8 addr[ETH_ALEN];
+ 
+ 	if (pnp_device_attach(pdev) < 0)
+ 		return -ENODEV;
+@@ -203,10 +204,13 @@ sb1000_probe_one(struct pnp_dev *pdev, const struct pnp_device_id *id)
+ 	dev->netdev_ops	= &sb1000_netdev_ops;
+ 
+ 	/* hardware address is 0:0:serial_number */
+-	dev->dev_addr[2]	= serial_number >> 24 & 0xff;
+-	dev->dev_addr[3]	= serial_number >> 16 & 0xff;
+-	dev->dev_addr[4]	= serial_number >>  8 & 0xff;
+-	dev->dev_addr[5]	= serial_number >>  0 & 0xff;
++	addr[0] = 0;
++	addr[1] = 0;
++	addr[2]	= serial_number >> 24 & 0xff;
++	addr[3]	= serial_number >> 16 & 0xff;
++	addr[4]	= serial_number >>  8 & 0xff;
++	addr[5]	= serial_number >>  0 & 0xff;
++	eth_hw_addr_set(dev, addr);
+ 
+ 	pnp_set_drvdata(pdev, dev);
  
 -- 
 2.31.1
