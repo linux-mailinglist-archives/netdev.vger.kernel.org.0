@@ -2,69 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CB204364A3
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 16:46:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E6AB4364B5
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 16:49:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231206AbhJUOsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 10:48:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43264 "EHLO
+        id S231256AbhJUOvZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 10:51:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230072AbhJUOsg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 10:48:36 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16C92C0613B9
-        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 07:46:20 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id bq11so1161640lfb.10
-        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 07:46:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=/rT1hA1V6TwIe3kkbQAyfSmKG8a/76abevktLRbU9MQ=;
-        b=nce9JUZ1JDoTfiUxJwVfKjUl73WvYD4UDqft/Vdh5vegUvKavpSx7JdmI2kgjd6Iwv
-         GH4FUa8J7HfCKE/xzwB7OeC+84RSH+uMaEoxPitULsqWZp4jVkS+ZXVxQ3U4DKdi+BDx
-         +k8lY8+pRgHjPo6165yCB+oaD4Qe3F9uNq7EkO5NabotWzw2/qUYRyHGtu31DS1H95yL
-         O4yDKU9/noS2NpozgQ0BIh2rdT0oaml62ldIAt3Mo44ByHMUpnvNlSIIzowKGShTFtjO
-         YPf5E2G3lF/iJ96yC9QXTRHTyQ/lu0vnA29WbiJ54WYfq0cOWBTEXE5e3zyb8jb/XnhU
-         kz6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=/rT1hA1V6TwIe3kkbQAyfSmKG8a/76abevktLRbU9MQ=;
-        b=JujpQ8kn1z6AC8A/07SzBmbkWnTgqSzOuGp6MHrNOE6bcXBu7iGAJyUzOgEMAFzSfF
-         G0mgB1sj00hD1zMEaiE9mL844osYIJd+QWBWfMrLhPzScwTdzcnoZthl3KteUdnW7OBS
-         doKrK7leaSTXG/tu+0EXIZgwdmKUI1SZWIUQTWF6tqNwSXFNU571UBYQbSRQMj9W8e4E
-         86WdSQcUratr4rFSMmX2T5Vz038/CDutWomM1lApYcV/KlB4qFfVPwMP/zHRZ5rPpwZY
-         p1MZUlUa16/CY49Wy2K7rfy9XnTMyWOjSPiyIEPyP83Ph14HLmDw3LC5ptwbAPCfhBrj
-         LyNg==
-X-Gm-Message-State: AOAM530RLOssGq7pI3yJNpIPaGiN3qqr/xs3u/NkUpS795SHGk98ShB4
-        IRWWbPapwVdDx94F3jgzecD5AL68/FoUzrKOoSfjnrqx0WLS7Q==
-X-Google-Smtp-Source: ABdhPJwgfXkujMRqE7S/4IT0l11cniRhUrjmmfM7WYrT2UG/zt32dd+l+YtWBXOPPec1jo8xJhli3DCMqkhXjoamA9Y=
-X-Received: by 2002:ac2:5c51:: with SMTP id s17mr5794517lfp.32.1634827578278;
- Thu, 21 Oct 2021 07:46:18 -0700 (PDT)
+        with ESMTP id S231424AbhJUOvX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 10:51:23 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A3BC0613B9;
+        Thu, 21 Oct 2021 07:49:07 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1mdZNR-00014c-IX; Thu, 21 Oct 2021 16:49:05 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     <netdev@vger.kernel.org>
+Cc:     netfilter-devel@vger.kernel.org, dsahern@kernel.org,
+        pablo@netfilter.org, crosser@average.org,
+        lschlesinger@drivenets.com, Florian Westphal <fw@strlen.de>
+Subject: [PATCH net-next 0/2] vrf: rework interaction with netfilter/conntrack
+Date:   Thu, 21 Oct 2021 16:48:55 +0200
+Message-Id: <20211021144857.29714-1-fw@strlen.de>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Received: by 2002:a2e:954a:0:0:0:0:0 with HTTP; Thu, 21 Oct 2021 07:46:17
- -0700 (PDT)
-Reply-To: mrhabibkone075@gmail.com
-From:   mr habib kone <mrbibkone@gmail.com>
-Date:   Thu, 21 Oct 2021 07:46:17 -0700
-Message-ID: <CAKtxJY48TzxHhfLX8m2T_ffOvTJKCihvkP+w84bRg2fXw2qg0g@mail.gmail.com>
-Subject: Good Day to you,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I have something very Important to Discuss with you about inheritance
-fund left at my Bank with a customer who work with the shell company
-here in my country and died years ago with out any of his family
-members coming as his next of kin, I write you because he has the_same
-last name with you which I do not know if he is A member of your
-family, I Am Mr Habib Kone,A Banker and the director of operation of
-the said Bank were the inheritance fund was deposited, I will like you
-to contact me on email so we can talk more about this issue.
-Regards,
-Habib Kone
-Director,Banque Atlantique
-mrhabibkone075@gmail.com
+This patch series aims to solve the to-be-reverted change 09e856d54bda5f288e
+("vrf: Reset skb conntrack connection on VRF rcv") in a different way.
+
+Rather than have skbs pass through conntrack and nat hooks twice, suppress
+conntrack invocation if the conntrack/nat hook is called from the vrf driver.
+
+First patch deals with 'incoming connection' case:
+1. suppress NAT transformations
+2. skip conntrack confirmation
+
+NAT and conntrack confirmation is done when ip/ipv6 stack calls
+the postrouting hook.
+
+Second patch deals with local packets:
+in vrf driver, mark the skbs as 'untracked', so conntrack output
+hook ignores them.  This skips all nat hooks as well.
+
+Afterwards, remove the untracked state again so the second
+round will pick them up.
+
+One alternative to the chosen implementation would be to add a 'caller
+id' field to 'struct nf_hook_state' and then use that, these patches
+use the more straightforward check of VRF flag on the state->out device.
+
+The two patches apply to both net and net-next, i am targeting -next
+because I think that since snat did not work correctly for so long that
+we can take the longer route.  If you disagree, apply to net at your
+discretion.
+
+The patches apply both with 09e856d54bda5f288e reverted or still
+in-place, but only with the revert in place ingress conntrack settings
+(zone, notrack etc) start working again.
+
+I've already submitted selftests for vrf+nfqueue and conntrack+vrf.
+
+Florian Westphal (2):
+  netfilter: conntrack: skip confirmation and nat hooks in postrouting
+    for vrf
+  vrf: run conntrack only in context of lower/physdev for locally
+    generated packets
+
+ drivers/net/vrf.c                  | 28 ++++++++++++++++++++++++----
+ net/netfilter/nf_conntrack_proto.c | 16 ++++++++++++++++
+ net/netfilter/nf_nat_core.c        | 12 +++++++++++-
+ 3 files changed, 51 insertions(+), 5 deletions(-)
+
+-- 
+2.32.0
+
