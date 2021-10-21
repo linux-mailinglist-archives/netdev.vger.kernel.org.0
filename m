@@ -2,110 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AC4A435E09
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 11:34:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EF5E435E11
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 11:37:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231489AbhJUJgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 05:36:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:22810 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231446AbhJUJgc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 05:36:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1634808856;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BgYp1wM9v5szx8eQy5srhotQAwAp3AJGV5n1/wdRCz0=;
-        b=TwnuhnSoQtn4OmWgHPfjambMExrD53Z1+Tbhj7WBVwPVmX61LWLm8w55O067XKooBGpWDu
-        By/+G76Ov2WaxlOdUck54R7docBljGFIL+svNSh7a1PHKxSfM7YWpDbJRgI6tJ5qWgEedd
-        ZWaxAnjvtCUCiPTFR8WaAhWWl5fFk+E=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-343-d2QqRd5lNGaafCMkpoMi7A-1; Thu, 21 Oct 2021 05:34:13 -0400
-X-MC-Unique: d2QqRd5lNGaafCMkpoMi7A-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 466F7362FA;
-        Thu, 21 Oct 2021 09:34:11 +0000 (UTC)
-Received: from localhost (unknown [10.39.193.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id CBD55E2CD;
-        Thu, 21 Oct 2021 09:34:02 +0000 (UTC)
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Alex Williamson <alex.williamson@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
-        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
-        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
- for mlx5 devices
-In-Reply-To: <20211020150709.7cff2066.alex.williamson@redhat.com>
-Organization: Red Hat GmbH
-References: <20211019105838.227569-1-yishaih@nvidia.com>
- <20211019105838.227569-13-yishaih@nvidia.com>
- <20211019124352.74c3b6ba.alex.williamson@redhat.com>
- <20211019192328.GZ2744544@nvidia.com>
- <20211019145856.2fa7f7c8.alex.williamson@redhat.com>
- <20211019230431.GA2744544@nvidia.com>
- <5a496713-ae1d-11f2-1260-e4c1956e1eda@nvidia.com>
- <20211020105230.524e2149.alex.williamson@redhat.com>
- <20211020185919.GH2744544@nvidia.com>
- <20211020150709.7cff2066.alex.williamson@redhat.com>
-User-Agent: Notmuch/0.32.1 (https://notmuchmail.org)
-Date:   Thu, 21 Oct 2021 11:34:00 +0200
-Message-ID: <87o87isovr.fsf@redhat.com>
+        id S231522AbhJUJjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 05:39:41 -0400
+Received: from mail-eopbgr20048.outbound.protection.outlook.com ([40.107.2.48]:57270
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231475AbhJUJji (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Oct 2021 05:39:38 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZR7Glo419vd658u5A801nnirh4MzA6iTNscS/1REb83iLyEMeS9YPTMSquDX7d0sKqjd64Rl4SCdhuILnb+zdfyFqp6JAthImrX6rUpjVk5ACK0NwN7TPcjqJUwXBO4Hn6cbd7gUvYrHPc1kPJGHJlySlVqIafov9UI2gwMoC7M6rw8gYnb/lAXRWIylwd4/vgr75bdTKrhbiq9KD+T77BUteh1oBEEbwocrgEe22o6hjNL/xVI82hltFQgIE3TEXQ0sumB9mh6IPCYM4MnAACV0/ZITuqRoMw767CapMTjl0Hv8N9pskxF6S/a00nn3Yz33Pyx08PiV5+WQkY22DQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kTbgQMaG0UtNTn5ECHZQFu3jxi3UKJ0rsuX1adMvbpg=;
+ b=e/QkBXnzIVkiR0p1CGWp7omBJkki49zl0M7yJ78csR/WqWc5SV1Wm1RirAsydOR8E3k64uVkMH3HZhyAvW23SGVDmTEstRpsptilunF9mdeiNjTHBknFGbiy5ax3pJUZH6fAMwuoZz5k//rSWia5I5yX3GEyx5yAK0IjpObK/CSZUOF0qN3hkr6O06cScKwarMy5eytN3Htjb0hW25Un00qnthyZUkEhdXpY2ZYUms8BoAi7mjpMguH6CZ8/gqqkLJwBsGcQS8IQzF/jXJ6gpveH6QNZqW+mXCa32GxzM3GQl2D89hnLRdNQVMrq1oBFbvScLKkW7gLbNJKLUlDPJw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kTbgQMaG0UtNTn5ECHZQFu3jxi3UKJ0rsuX1adMvbpg=;
+ b=pqf5Hfk0LGev2+L+j8VFdzTz/NYd/8xrqrOfb0AHBjaZZvtN22dqMxi+xj7vrP1Az6JL3A0G3YVrX6/VCZnxxIcnlUkl70hE+eVeKsXHA108mXL6AkHYYqTfjwvCzvBU52cnDMeZ98pBvbdBUJ7owHqVmHw6rpJm8K0tfM6NDLQ=
+Received: from DB9PR04MB8395.eurprd04.prod.outlook.com (2603:10a6:10:247::15)
+ by DB3PR0402MB3673.eurprd04.prod.outlook.com (2603:10a6:8:c::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.18; Thu, 21 Oct
+ 2021 09:37:20 +0000
+Received: from DB9PR04MB8395.eurprd04.prod.outlook.com
+ ([fe80::d8af:597:3279:448e]) by DB9PR04MB8395.eurprd04.prod.outlook.com
+ ([fe80::d8af:597:3279:448e%7]) with mapi id 15.20.4608.018; Thu, 21 Oct 2021
+ 09:37:20 +0000
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: RE: [PATCH net] net: enetc: fix ethtool counter name for PM0_TERR
+Thread-Topic: [PATCH net] net: enetc: fix ethtool counter name for PM0_TERR
+Thread-Index: AQHXxdLXmfATDocqqUqtFHyn0HQoSavdMdpw
+Date:   Thu, 21 Oct 2021 09:37:20 +0000
+Message-ID: <DB9PR04MB8395B43BB0033D177A6248C696BF9@DB9PR04MB8395.eurprd04.prod.outlook.com>
+References: <20211020165206.1069889-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20211020165206.1069889-1-vladimir.oltean@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: nxp.com; dkim=none (message not signed)
+ header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6eb7d20b-cfe5-4150-8c5e-08d99476613d
+x-ms-traffictypediagnostic: DB3PR0402MB3673:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB3PR0402MB3673B6D959903BC664E8850996BF9@DB3PR0402MB3673.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3631;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: QPzoy2MzVY9FSBbwcvQmzdFjsscxGWkQMprdgyDYD7fCS/PpXux/xINh1hEPMRrBA6+qRrynqiaKk+X0fX9Jq7q8jgTa4iy1Ox3wAm3eqk5JauXMCDIfnEqRqaY4Aex4nS9R2xtST6QUJ2ezjBNXGs88FEtU9JufQ078rrX+HefkkV+I/Obv/8vUNacxnfb2eTcXlVEuT8QQa55pjbaakmHIWgziISHg395R3sVMSkXq3uOBJG+kSrMmvOKv0cMeN4HWmNFfOQwNxcGUf6aPJcjrsCiYKAHOdZ/kWjXJ09OSJbzWrahYpQeOYg3cOTU59HErBJIgWr1tJTgyVqvJQM1DaMjq2mNK0s5jaqGzbf+pbh+p0PoEG6ZJl/ECr7hGZ/Za1izl1TpXdnyqEqGKppzsfHMmpFnzdrJiw2UEx71aPamBMbRyf/a7/SHdohhu9AKKXmRJEjgD+jqNXMm0CAPJEgXAQu2axATGs3GAKDc5/Dz/21tF1wUiRGesUJpe2iEpI/It5mB1WPEMCZDcYURfp2Tq2BXJvA8WT3iPkxNfUnCRroMqGH2NlXKsGJbniP8+x803oplAKLDCHiSaiQ5vGynpNnplLLONULmOxWRJSyH38kxNlu9LZ3LlUCuC5o7z/VlL4caurEAE2gycO16T+FAmu1riGpPX6Gcd08wpbJtKZiVFc6pC78moXd1tYEr9UmhMU7Qc3MNAP7Un1A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8395.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(66446008)(9686003)(122000001)(86362001)(8676002)(52536014)(44832011)(66476007)(38100700002)(7696005)(316002)(66556008)(508600001)(55016002)(38070700005)(66946007)(4744005)(64756008)(53546011)(8936002)(83380400001)(33656002)(76116006)(5660300002)(6506007)(186003)(26005)(2906002)(110136005)(71200400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?qeopEthzpnvi1pZ98VznITQ/oTFnyj7DtfO+40u+ZrLdFW7A2RP+ZpKqQhUI?=
+ =?us-ascii?Q?PC8UNps58tFQmjhFPGwofLT6sD3jtq+pDgupaWoq/SvauNXViWoxV0XaeBGG?=
+ =?us-ascii?Q?fmumrBqwPapADna61aiWcnAzeSC/BarzcC0GgmplA5ikRBHwEecL+/Vp7J9r?=
+ =?us-ascii?Q?bIC/xZb8DRrP5GIwvIwDf11P4XQyk2nugSdJIrW990eLJ3qokZWoWtNoiet3?=
+ =?us-ascii?Q?0Uh2Rdov5czZl0GlUgCKZC3Wz4p2vQGdRdUQ4coazAHShuamhf5Tjp459FGH?=
+ =?us-ascii?Q?GQRGTiLtzyxzqjcyS/aCHESHjaMsqckHX/rMe9kw8SRmOs6MTC6SNeP7qdoc?=
+ =?us-ascii?Q?ri62K1WrpmfoMy6oes3K7aZy27dZcpWgnTqtcxI0VOpvZq1Fd5u7NBLex5Fj?=
+ =?us-ascii?Q?xZy4U3CMDuz/1vLLt5yrbo+VW1kmDoT0iteig7+/KclHIjIOUFI8i9mq/Pc9?=
+ =?us-ascii?Q?MMEd9hw4wkz5J7hht3ZkwVs9Dq9R9ngb9Vf+rqQ9sPJ9dilGbcUWTyGuAfln?=
+ =?us-ascii?Q?nxyb4zO38oSQ7bY9NR4q7gDp474CLabAdboXRK8Ma4qqMdaz8tqZOPLtOobD?=
+ =?us-ascii?Q?vZIMNg08CwQLclWc2gOl7UauUv9WxHN4qJCCC+qEtnkxW+eSb8cyKjVLYhLQ?=
+ =?us-ascii?Q?/YwhQSIey6DGIe3tOPwFZ2etQ0roC4+gDUGNALc/ERd3vsBL2WBcukNluxF0?=
+ =?us-ascii?Q?2LL/sslcK38SGeHLM0koENBIl318d5COqBWWOc8admlpsKR++SWD0z64d5L0?=
+ =?us-ascii?Q?iTklZ+k0xis2QhhSebKrSfFzWxUES0R+9XcPaMnt08PZCzmNGgHh5LsHNRNd?=
+ =?us-ascii?Q?+xKgm21pu8HBsUl8QV9Ts8Lk/8MB9+Nog/L+XxzMjbjf+Tt4OXG2Z8XJnT+d?=
+ =?us-ascii?Q?OuGxJeYLiG2mrK7RvdMOXm++H+1mMdzevaRnYjA/0rGTuooux8u03kepX+m0?=
+ =?us-ascii?Q?mNU2LRTnveNjVzBeKlSmYnUAlKzn9XojODVSUO13Hjl2VqrwyKwVzGhErvt+?=
+ =?us-ascii?Q?30KUOmfu7XNmieSICHyByfIhbrAKfIwRmJ5N2bY2yIBvtRlK8lC6Vlw4dXpi?=
+ =?us-ascii?Q?NgNJRfFfqCTZe+XLcTnMyEcUrmPYlZ6dUaClJtnjB3jauZEuvIcC3hiVqN7n?=
+ =?us-ascii?Q?R43jE32P3vfwxhwlHQiZiB0QB3Nis7egyEOxY8JtMdVPQdYtTcGIwAk+hpCv?=
+ =?us-ascii?Q?B7T9h/qyfYjez/08jbbUgYT7ys5HY75fW5z1cNKuxSWEy5jUA3023KiPFGAa?=
+ =?us-ascii?Q?k6lATFfXsmz3aJGa3c5n5RC0ezP860jMAac4Ot2VvCmimD0Ihmuk8J8sCc/Y?=
+ =?us-ascii?Q?iPQoa7AZ9ZFhzv0osrb3+hyk?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8395.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6eb7d20b-cfe5-4150-8c5e-08d99476613d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Oct 2021 09:37:20.6319
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: claudiu.manoil@nxp.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR0402MB3673
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 20 2021, Alex Williamson <alex.williamson@redhat.com> wrote:
+> -----Original Message-----
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Sent: Wednesday, October 20, 2021 7:52 PM
+[...]
+> Subject: [PATCH net] net: enetc: fix ethtool counter name for PM0_TERR
+>=20
+> There are two counters named "MAC tx frames", one of them is actually
+> incorrect. The correct name for that counter should be "MAC tx error
+> frames", which is symmetric to the existing "MAC rx error frames".
+>=20
+> Fixes: 16eb4c85c964 ("enetc: Add ethtool statistics")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
 
-> On Wed, 20 Oct 2021 15:59:19 -0300
-> Jason Gunthorpe <jgg@nvidia.com> wrote:
->
->> On Wed, Oct 20, 2021 at 10:52:30AM -0600, Alex Williamson wrote:
->> 
->> > I'm wondering if we're imposing extra requirements on the !_RUNNING
->> > state that don't need to be there.  For example, if we can assume that
->> > all devices within a userspace context are !_RUNNING before any of the
->> > devices begin to retrieve final state, then clearing of the _RUNNING
->> > bit becomes the device quiesce point and the beginning of reading
->> > device data is the point at which the device state is frozen and
->> > serialized.  No new states required and essentially works with a slight
->> > rearrangement of the callbacks in this series.  Why can't we do that?  
->> 
->> It sounds worth checking carefully. I didn't come up with a major
->> counter scenario.
->> 
->> We would need to specifically define which user action triggers the
->> device to freeze and serialize. Reading pending_bytes I suppose?
->
-> The first read of pending_bytes after clearing the _RUNNING bit would
-> be the logical place to do this since that's what we define as the start
-> of the cycle for reading the device state.
->
-> "Freezing" the device is a valid implementation, but I don't think it's
-> strictly required per the uAPI.  For instance there's no requirement
-> that pending_bytes is reduced by data_size on each iteratio; we
-> specifically only define that the state is complete when the user reads
-> a pending_bytes value of zero.  So a driver could restart the device
-> state if the device continues to change (though it's debatable whether
-> triggering an -errno on the next migration region access might be a
-> more supportable approach to enforce that userspace has quiesced
-> external access).
-
-Hm, not so sure. From my reading of the uAPI, transitioning from
-pre-copy to stop-and-copy (i.e. clearing _RUNNING) implies that we
-freeze the device (at least, that's how I interpret "On state transition
-from pre-copy to stop-and-copy, the driver must stop the device, save
-the device state and send it to the user application through the
-migration region.")
-
-Maybe the uAPI is simply not yet clear enough.
-
+Reviewed-by: <Claudiu Manoil <claudiu.manoil@nxp.com>
