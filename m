@@ -2,620 +2,510 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F04494358F4
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 05:25:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97C00435916
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 05:43:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230285AbhJUD1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 23:27:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57598 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229817AbhJUD1v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 23:27:51 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB7C1C06161C;
-        Wed, 20 Oct 2021 20:25:35 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id a25so287508edx.8;
-        Wed, 20 Oct 2021 20:25:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5D1Lj1rhaFfVcX+OLVy6Q+hJnTLdg9jZ1cOhHvP6TZw=;
-        b=AUevg0t7loN9XqU9V5fkWzUA6f5cHWPOdvVSaAk+eLb3xd0GD2rZ7MSUhTejnNog0I
-         oiM3jvSZnB1jywK5NwNqnI/TenSuk/eNecDFFeUwURZEMbuOleGIEdCymqMKHHHMfdxY
-         xEQlt6b2XSiEFvyo9jGyUHd8n7w7FnWKjGDijOVxb5qqfusa9sM6zBKgGEBi9xtkfqwo
-         sZ5DUQdQP2MypC3ybADYDR6s0f8oNomfTUe7hBr6ChuMrn4T1w+P1Bj/tkO0oP/Telvi
-         iDuS44q/r3xwXYwLxyDL3JlG6DjLMPOXlcikKvdjZWBLtj3397UbofJDaNPWWlZFWcN5
-         vS/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5D1Lj1rhaFfVcX+OLVy6Q+hJnTLdg9jZ1cOhHvP6TZw=;
-        b=WTnY//z+mi0hLeWFFr2nNBHpTXdk+9YC3RZmQc7C34o1SlUiV3xNkTMk1OppEuDTwN
-         20eKI8nj5wS0DDjX8Ls8T7nRdYG76gumVMrpWIZfygcX5HuBb4MAsGQqW5W1UZjnnI6C
-         5vS3MrI+ouVO31MI38maTQzsc82+lyQsZ1ec/ExOWA1j8ceMk9UrnldfCb708twQEVI6
-         Z4lkFuD9PDMX7RUwZi5P7oADWk605K7PulI8dte2/CUTdZ9hC4hy/2rtfoYBuSPPgnM4
-         tCXFa+jm5r4qnhBC+M9RBC3NEZpqbPzwnVankSQ8SpyInkVlYAy+yp5Z08UcVvwFVD4S
-         iHSg==
-X-Gm-Message-State: AOAM530WY7pIq78fxhsjxrIpYMdh0G7SP/KhFH/xy54LfCNPZz/7l4+w
-        pDPGPegaiU6Jh+wDjuCEpYCOgr6zvha0wRHSD/8=
-X-Google-Smtp-Source: ABdhPJwD1ysoPJddaiPESCWb/TQYIZOfdsjOHpTiSikvisEXdztFGe28IcnADiU9UecnD4BK1eb889P+/U8EPEkLC9c=
-X-Received: by 2002:a50:cd97:: with SMTP id p23mr4066779edi.206.1634786734210;
- Wed, 20 Oct 2021 20:25:34 -0700 (PDT)
+        id S231401AbhJUDpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 23:45:44 -0400
+Received: from pi.codeconstruct.com.au ([203.29.241.158]:40738 "EHLO
+        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231388AbhJUDpn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 23:45:43 -0400
+Received: by codeconstruct.com.au (Postfix, from userid 10000)
+        id 0AAB120223; Thu, 21 Oct 2021 11:43:24 +0800 (AWST)
+From:   Jeremy Kerr <jk@codeconstruct.com.au>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Eugene Syromiatnikov <esyr@redhat.com>
+Subject: [PATCH net-next v4] mctp: Implement extended addressing
+Date:   Thu, 21 Oct 2021 11:40:32 +0800
+Message-Id: <20211021034032.2216808-1-jk@codeconstruct.com.au>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <CAOzhvcO3a-GiipELoztmGWOmABuSC=b5vcBu8bC_Q-aT=Fe5ng@mail.gmail.com>
- <20211005005908.GR880162@paulmck-ThinkPad-P17-Gen-1> <CAOzhvcPLjH_qh4-PEA-MukiRhzkYHQ0UnE21Un+UP9dgpQV3zw@mail.gmail.com>
- <20211005163956.GV880162@paulmck-ThinkPad-P17-Gen-1> <CAOzhvcPv59zwq26a9wKbFudLBdxd8tDr6OVDvKwzje2cm2woJw@mail.gmail.com>
- <CAOzhvcOt1gaLiOKFOAYutfDLZy3xyZMPo1N6T+1HYYXzsCpxTw@mail.gmail.com>
- <20211018234646.GX880162@paulmck-ThinkPad-P17-Gen-1> <CAOzhvcMJ4zuTczUK07_FQB3q+=XV-k6bLh-K3+Jf_LR2CmYxwA@mail.gmail.com>
- <20211020183757.GL880162@paulmck-ThinkPad-P17-Gen-1> <CAOzhvcNiaFM9pAEURdoZSUo8nVfBMMA-+Fwd6QBWr2pk_j48cw@mail.gmail.com>
- <20211020213300.GN880162@paulmck-ThinkPad-P17-Gen-1>
-In-Reply-To: <20211020213300.GN880162@paulmck-ThinkPad-P17-Gen-1>
-From:   Zhouyi Zhou <zhouzhouyi@gmail.com>
-Date:   Thu, 21 Oct 2021 11:25:22 +0800
-Message-ID: <CAABZP2xHJBz4HsHHj3bquXc+G=MJ3+SEtBTCTNZF5r9jsEs3DQ@mail.gmail.com>
-Subject: Re: RCU: rcu stall issues and an approach to the fix
-To:     paulmck@kernel.org
-Cc:     donghai qiao <donghai.w.qiao@gmail.com>,
-        Boqun Feng <boqun.feng@gmail.com>, rcu <rcu@vger.kernel.org>,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hi,
-I try to run 5.15.0-rc6+ in a x86-64 qemu-kvm virtual machine with
-CONFIG_PREEMPT=n,  then modprobe rcutore, and run netstrain (a open
-source network performance stress tool) in it, and run following
-program on nohz_full cpus:
-int main()
-{
-    unsigned long l;
-    while (1) {
-      l*=0.3333;
-      l/=0.3333;
-    }
-}
-It seems nothing happens
-I am glad to study the knowledge around this email thread more
-thoroughly, and perform more tests on x86-64 host (instead of a
-virtual machine) and aarch64 host  later on ;-)
-Zhouyi
+This change allows an extended address struct - struct sockaddr_mctp_ext
+- to be passed to sendmsg/recvmsg. This allows userspace to specify
+output ifindex and physical address information (for sendmsg) or receive
+the input ifindex/physaddr for incoming messages (for recvmsg). This is
+typically used by userspace for MCTP address discovery and assignment
+operations.
 
-On Thu, Oct 21, 2021 at 5:33 AM Paul E. McKenney <paulmck@kernel.org> wrote:
->
-> On Wed, Oct 20, 2021 at 04:05:59PM -0400, donghai qiao wrote:
-> > On Wed, Oct 20, 2021 at 2:37 PM Paul E. McKenney <paulmck@kernel.org> wrote:
-> > >
-> > > On Wed, Oct 20, 2021 at 01:48:15PM -0400, donghai qiao wrote:
-> > > > On Mon, Oct 18, 2021 at 7:46 PM Paul E. McKenney <paulmck@kernel.org> wrote:
-> > > > >
-> > > > > On Mon, Oct 18, 2021 at 05:18:40PM -0400, donghai qiao wrote:
-> > > > > > I just want to follow up this discussion. First off, the latest issue
-> > > > > > I mentioned in the email of Oct 4th which
-> > > > > > exhibited a symptom of networking appeared to be a problem in
-> > > > > > qrwlock.c. Particularly the problem is
-> > > > > > caused by the 'if' statement in the function queued_read_lock_slowpath() below :
-> > > > > >
-> > > > > > void queued_read_lock_slowpath(struct qrwlock *lock)
-> > > > > > {
-> > > > > >         /*
-> > > > > >          * Readers come here when they cannot get the lock without waiting
-> > > > > >          */
-> > > > > >         if (unlikely(in_interrupt())) {
-> > > > > >                 /*
-> > > > > >                  * Readers in interrupt context will get the lock immediately
-> > > > > >                  * if the writer is just waiting (not holding the lock yet),
-> > > > > >                  * so spin with ACQUIRE semantics until the lock is available
-> > > > > >                  * without waiting in the queue.
-> > > > > >                  */
-> > > > > >                 atomic_cond_read_acquire(&lock->cnts, !(VAL & _QW_LOCKED));
-> > > > > >                 return;
-> > > > > >         }
-> > > > > >         ...
-> > > > > > }
-> > > > > >
-> > > > > > That 'if' statement said, if we are in an interrupt context and we are
-> > > > > > a reader, then
-> > > > > > we will be allowed to enter the lock as a reader no matter if there
-> > > > > > are writers waiting
-> > > > > > for it or not. So, in the circumstance when the network packets steadily come in
-> > > > > > and the intervals are relatively small enough, then the writers will
-> > > > > > have no chance to
-> > > > > > acquire the lock. This should be the root cause for that case.
-> > > > > >
-> > > > > > I have verified it by removing the 'if' and rerun the test multiple
-> > > > > > times.
-> > > > >
-> > > > > That could do it!
-> > > > >
-> > > > > Would it make sense to keep the current check, but to also check if a
-> > > > > writer had been waiting for more than (say) 100ms?  The reason that I
-> > > > > ask is that I believe that this "if" statement is there for a reason.
-> > > >
-> > > > The day before I also got this to Waiman Long who initially made these
-> > > > changes in
-> > > > the qrwlock.c file. Turns out, the 'if' block was introduced to
-> > > > resolve the particular
-> > > > requirement of tasklist_lock reentering as reader.  He said he will
-> > > > perhaps come up
-> > > > with another code change to take care of this new write lock
-> > > > starvation issue. The
-> > > > idea is to only allow the tasklist_lock clients to acquire the read
-> > > > lock through the 'if'
-> > > > statement,  others are not.
-> > > >
-> > > > This sounds like a temporary solution if we cannot think of other
-> > > > alternative ways
-> > > > to fix the tasklist_lock issue. The principle here is that we should
-> > > > not make the
-> > > > locking primitives more special just in favor of a particular usage or scenario.
-> > >
-> > > When principles meet practice, results can vary.  Still, it would be
-> > > better to have a less troublesome optimization.
-> >
-> > This is a philosophical debate. Let's put it aside.
->
-> Exactly!
->
-> > > > > >        The same
-> > > > > > symptom hasn't been reproduced.  As far as rcu stall is concerned as a
-> > > > > > broader range
-> > > > > > of problems,  this is absolutely not the only root cause I have seen.
-> > > > > > Actually too many
-> > > > > > things can delay context switching.  Do you have a long term plan to
-> > > > > > fix this issue,
-> > > > > > or just want to treat it case by case?
-> > > > >
-> > > > > If you are running a CONFIG_PREEMPT=n kernel, then the plan has been to
-> > > > > leverage the calls to cond_resched().  If the grace period is old enough,
-> > > > > cond_resched() will supply a quiescent state.
-> > > >
-> > > > So far, all types of rcu stall I am aware of are originated to the
-> > > > CONFIG_PREEMPT=n
-> > > > kernel. Isn't it impossible to let rcu not rely on context switch ?
-> > > > As we know too many
-> > > > things can delay context switch, so it is not a quite reliable
-> > > > mechanism if timing and
-> > > > performance are crucial.
-> > >
-> > > Yes, you could build with CONFIG_PREEMPT=y and RCU would not always
-> > > need to wait for an actual context switch.  But there can be
-> > > performance issues for some workloads.
-> > >
-> > I can give this config (CONFIG_PREEMPT=y) a try when I have time.
->
-> Very good!
->
-> > > But please note that cond_resched() is not necessarily a context switch.
-> > >
-> > > Besides, for a great many workloads, delaying a context switch for
-> > > very long is a first-class bug anyway.  For example, many internet data
-> > > centers are said to have sub-second response-time requirements, and such
-> > > requirements cannot be met if context switches are delayed too long.
-> > >
-> > Agreed.
-> >
-> > But on the other hand, if rcu relies on that,  the situation could be
-> > even worse.
-> > Simply put, when a gp cannot end soon, some rcu write-side will be delayed,
-> > and the callbacks on the rcu-stalled CPU will be delayed. Thus in the case of
-> > lack of free memory, this situation could form a deadlock.
->
-> Would this situation exist in the first place if a blocking form of
-> allocation were not being (erroneously) invoked within an RCU read-side
-> critical section?  Either way, that bug needs to be fixed.
->
-> > > > > In a CONFIG_PREEMPT=y kernel, when the grace period is old enough,
-> > > > > RCU forces a schedule on the holdout CPU.  As long as the CPU is not
-> > > > > eternally non-preemptible (for example, eternally in an interrupt
-> > > > > handler), the grace period will end.
-> > > >
-> > > > Among the rcu stall instances I have seen so far, quite a lot of them occurred
-> > > > on the CPUs which were running in the interrupt context or spinning on spinlocks
-> > > > with interrupt disabled. In these scenarios, forced schedules will be
-> > > > delayed until
-> > > > these activities end.
-> > >
-> > > But running for several seconds in interrupt context is not at all good.
-> > > As is spinning on a spinlock for several seconds.  These are performance
-> > > bugs in and of themselves.
-> >
-> > Agreed.
-> >
-> > >
-> > > More on this later in this email...
-> > >
-> > > > > But beyond a certain point, case-by-case analysis and handling is
-> > > > > required.
-> > > > >
-> > > > > > Secondly, back to the following code I brought up that day. Actually
-> > > > > > it is not as simple
-> > > > > > as spinlock.
-> > > > > >
-> > > > > >       rcu_read_lock();
-> > > > > >       ip_protocol_deliver_rcu(net, skb, ip_hdr(skb)->protocol);
-> > > > > >       rcu_read_unlock();
-> > > > > >
-> > > > > > Are you all aware of all the potential functions that
-> > > > > > ip_protocol_deliver_rcu will call?
-> > > > > > As I can see, there is a code path from ip_protocol_deliver_rcu to
-> > > > > > kmem_cache_alloc
-> > > > > > which will end up a call to cond_resched().
-> > > > >
-> > > > > Can't say that I am familiar with everything that ip_protocol_deliver_rcu().
-> > > > > There are some tens of millions of lines of code in the kernel, and I have
-> > > > > but one brain.  ;-)
-> > > > >
-> > > > > And this cond_resched() should set things straight for a CONFIG_PREEMPT=n
-> > > > > kernel.  Except that there should not be a call to cond_resched() within
-> > > > > an RCU read-side critical section.
-> > > >
-> > > > with that 3 line snippet from the networking, a call to cond_resched() would
-> > > > happen within the read-side critical section when the level of variable memory
-> > > > is very low.
-> > >
-> > > That is a bug.  If you build your kernel with CONFIG_PROVE_LOCKING=y,
-> > > it will complain about a cond_resched() in an RCU read-side critical
-> > > section.  But, as you say, perhaps only with the level of variable memory
-> > > is very low.
-> >
-> > There is a typo in my previous email. I meant available (or free).
-> > Sorry for that.
->
-> OK, good, that was my guess.  But invoking a potentially blocking form
-> of a kernel memory allocator is still a bug.  And that bug needs to
-> be fixed.  And fixing it might clear up a large fraction of your RCU
-> grace-period issues.
->
-> > > Please do not invoke cond_resched() within an RCU read-side critical
-> > > section.  Doing so can result in random memory corruption.
-> > >
-> > > > > Does the code momentarily exit that
-> > > > > critical section via something like rcu_read_unlock(); cond_resched();
-> > > > > rcu_read_lock()?
-> > > >
-> > > > As far as I can see, cond_resched would be called between a pair of
-> > > > rcu_read_lock and rcu_read_unlock.
-> > >
-> > > Again, this is a bug.  The usual fix is the GFP_ thing I noted below.
-> > >
-> > > > > Or does something prevent the code from getting there
-> > > > > while in an RCU read-side critical section?  (The usual trick here is
-> > > > > to have different GFP_ flags depending on the context.)
-> > > >
-> > > > Once we invoke kmem_cache_alloc or its variants, we cannot really
-> > > > predict where we will go and how long this whole process is going to
-> > > > take in this very large area from kmem to the virtual memory subsystem.
-> > > > There is a flag __GFP_NOFAIL that determines whether or not cond_resched
-> > > > should be called before retry, but this flag should be used from page level,
-> > > > not from the kmem consumer level.  So I think there is little we can do
-> > > > to avoid the resched.
-> > >
-> > > If you are invoking the allocator within an RCU read-side critical
-> > > section, you should be using GFP_ATOMIC.  Except that doing this has
-> > > many negative consequences, so it is better to allocate outside of
-> > > the RCU read-side critical section.
-> > >
-> > > The same rules apply when allocating while holding a spinlock, so
-> > > this is not just RCU placing restrictions on you.  ;-)
-> >
-> > yep, absolutely.
-> >
-> > >
-> > > > > >                                              Because the operations in memory
-> > > > > > allocation are too complicated, we cannot alway expect a prompt return
-> > > > > > with success.
-> > > > > > When the system is running out of memory, then rcu cannot close the
-> > > > > > current gp, then
-> > > > > > great number of callbacks will be delayed and the freeing of the
-> > > > > > memory they held
-> > > > > > will be delayed as well. This sounds like a deadlock in the resource flow.
-> > > > >
-> > > > > That would of course be bad.  Though I am not familiar with all of the
-> > > > > details of how the networking guys handle out-of-memory conditions.
-> > > > >
-> > > > > The usual advice would be to fail the request, but that does not appear
-> > > > > to be an easy option for ip_protocol_deliver_rcu().  At this point, I
-> > > > > must defer to the networking folks.
-> > > >
-> > > > Thanks for the advice.
-> > >
-> > > Another question...  Why the endless interrupts?  Or is it just one
-> > > very long interrupt?  Last I knew (admittedly a very long time ago),
-> > > the high-rate networking drivers used things like NAPI in order to avoid
-> > > this very problem.
-> >
-> > These should be long enough interrupts. The symptom in the networking
-> > as the previous email said is one of them.  In that case, due to  rwlock
-> > in favor of the readers in the interrupt context, the writer side would be
-> > blocked as long as the readers keep coming.
->
-> OK, and hopefully Longman finds a way to get his optimization in some
-> less destructive way.
->
-> > > Or is this some sort of special case where you are trying to do something
-> > > special, for example, to achieve extremely low communications latencies?
-> >
-> > No, nothing special I am trying to do.
->
-> OK, good.
->
-> > > If this is a deliberate design, and if it is endless interrupts instead
-> > > of one big long one, and if you are deliberately interrupt-storming
-> > > a particular CPU, another approach is to build the kernel with
-> > > CONFIG_NO_HZ_FULL=y, and boot with nohz_full=n, where "n" is the number of
-> > > the CPU that is to be interrupt-stormed.  If you are interrupt storming
-> > > multiple CPUs, you can specify them, for example, nohz_full=1-5,13 to
-> > > specify CPUs 1, 2, 3, 4, 5, and 13.  In recent kernels, "N" stands for
-> > > the CPU with the largest CPU number.
-> >
-> > I did this before, and I saw rcu stall as well with this kinda config.
->
-> When you said you had long enough interrupts, how long were they?
->
-> If they were long enough, then yes, you would get a stall.
->
-> Suppose that some kernel code still executes on that CPU despite trying to
-> move things off of it.  As soon as the interrupt hits kernel execution
-> instead of nohz_full userspace execution, there will be no more RCU
-> quiescent states, and thus you can see stalls.
->
-> > > Then read Documentation/admin-guide/kernel-per-CPU-kthreads.rst, which is
-> > > probably a bit outdated, but a good place to start.  Follow its guidelines
-> > > (and, as needed, come up with additional ones) to ensure that CPU "n"
-> > > is not doing anything.  If you do come up with additional guidelines,
-> > > please submit a patch to kernel-per-CPU-kthreads.rst so that others can
-> > > also benefit, as you are benefiting from those before you.
-> >
-> > Thanks for the suggestion.
-> > >
-> > > Create a CPU-bound usermode application (a "while (1) continue;" loop or
-> > > similar), and run that application on CPU "n".  Then start up whatever
-> > > it is that interrupt-storms CPU "n".
-> > >
-> > > Every time CPU "n" returns from interrupt, RCU will see a quiescent state,
-> > > which will prevent the interrupt storm from delaying RCU grace periods.
-> > >
-> > > On the other hand, if this is one big long interrupt, you need to make
-> > > that interrupt end every so often.  Or move some of the work out of
-> > > interrupt context, perhaps even to usermode.
-> > >
-> > > Much depends on exactly what you are trying to achieve.
-> >
-> > The things that can affect rcu stall are too many. So let's deal with
-> > it case by case
-> > before there is a permanent solution.
->
-> Getting the bugs fixed should be a good start.
->
->                                                         Thanx, Paul
->
-> > Thanks
-> > Donghai
-> >
-> >
-> >
-> >
-> > >
-> > >                                                         Thanx, Paul
-> > >
-> > > > Donghai
-> > > > >
-> > > > >                                                         Thanx, Paul
-> > > > >
-> > > > > > Thanks
-> > > > > > Donghai
-> > > > > >
-> > > > > >
-> > > > > > On Tue, Oct 5, 2021 at 8:25 PM donghai qiao <donghai.w.qiao@gmail.com> wrote:
-> > > > > > >
-> > > > > > > On Tue, Oct 5, 2021 at 12:39 PM Paul E. McKenney <paulmck@kernel.org> wrote:
-> > > > > > > >
-> > > > > > > > On Tue, Oct 05, 2021 at 12:10:25PM -0400, donghai qiao wrote:
-> > > > > > > > > On Mon, Oct 4, 2021 at 8:59 PM Paul E. McKenney <paulmck@kernel.org> wrote:
-> > > > > > > > > >
-> > > > > > > > > > On Mon, Oct 04, 2021 at 05:22:52PM -0400, donghai qiao wrote:
-> > > > > > > > > > > Hello Paul,
-> > > > > > > > > > > Sorry it has been long..
-> > > > > > > > > >
-> > > > > > > > > > On this problem, your schedule is my schedule.  At least as long as your
-> > > > > > > > > > are not expecting instantaneous response.  ;-)
-> > > > > > > > > >
-> > > > > > > > > > > > > Because I am dealing with this issue in multiple kernel versions, sometimes
-> > > > > > > > > > > > > the configurations in these kernels may different. Initially the
-> > > > > > > > > > > > > problem I described
-> > > > > > > > > > > > > originated to rhel-8 on which the problem occurs more often and is a bit easier
-> > > > > > > > > > > > > to reproduce than others.
-> > > > > > > > > > > >
-> > > > > > > > > > > > Understood, that does make things more difficult.
-> > > > > > > > > > > >
-> > > > > > > > > > > > > Regarding these dynticks* parameters, I collected the data for CPU 0 as below :
-> > > > > > > > > > > > >    - dynticks = 0x6eab02    which indicated the CPU was not in eqs.
-> > > > > > > > > > > > >    - dynticks_nesting = 1    which is in its initial state, so it said
-> > > > > > > > > > > > > it was not in eqs either.
-> > > > > > > > > > > > >    - dynticks_nmi_nesting = 4000000000000004    which meant that this
-> > > > > > > > > > > > > CPU had been
-> > > > > > > > > > > > >      interrupted when it was in the middle of the first interrupt.
-> > > > > > > > > > > > > And this is true: the first
-> > > > > > > > > > > > >      interrupt was the sched_timer interrupt, and the second was a NMI
-> > > > > > > > > > > > > when another
-> > > > > > > > > > > > >     CPU detected the RCU stall on CPU 0.  So it looks all identical.
-> > > > > > > > > > > > > If the kernel missed
-> > > > > > > > > > > > >     a rcu_user_enter or rcu_user_exit, would these items remain
-> > > > > > > > > > > > > identical ?  But I'll
-> > > > > > > > > > > > >     investigate that possibility seriously as you pointed out.
-> > > > > > > > > > > >
-> > > > > > > > > > > > So is the initial state non-eqs because it was interrupted from kernel
-> > > > > > > > > > > > mode?  Or because a missing rcu_user_enter() left ->dynticks_nesting
-> > > > > > > > > > > > incorrectly equal to the value of 1?  Or something else?
-> > > > > > > > > > >
-> > > > > > > > > > > As far as the original problem is concerned, the user thread was interrupted by
-> > > > > > > > > > > the timer, so the CPU was not working in the nohz mode. But I saw the similar
-> > > > > > > > > > > problems on CPUs working in nohz mode with different configurations.
-> > > > > > > > > >
-> > > > > > > > > > OK.
-> > > > > > > > > >
-> > > > > > > > > > > > > > There were some issues of this sort around the v5.8 timeframe.  Might
-> > > > > > > > > > > > > > there be another patch that needs to be backported?  Or a patch that
-> > > > > > > > > > > > > > was backported, but should not have been?
-> > > > > > > > > > > > >
-> > > > > > > > > > > > > Good to know that clue. I'll take a look into the log history.
-> > > > > > > > > > > > >
-> > > > > > > > > > > > > > Is it possible to bisect this?
-> > > > > > > > > > > > > >
-> > > > > > > > > > > > > > Or, again, to run with CONFIG_RCU_EQS_DEBUG=y?
-> > > > > > > > > > > > >
-> > > > > > > > > > > > > I am building the latest 5.14 kernel with this config and give it a try when the
-> > > > > > > > > > > > > machine is set up, see how much it can help.
-> > > > > > > > > > > >
-> > > > > > > > > > > > Very good, as that will help determine whether or not the problem is
-> > > > > > > > > > > > due to backporting issues.
-> > > > > > > > > > >
-> > > > > > > > > > > I enabled CONFIG_RCU_EQS_DEBUG=y as you suggested and
-> > > > > > > > > > > tried it for both the latest rhel8 and a later upstream version 5.15.0-r1,
-> > > > > > > > > > > turns out no new warning messages related to this came out. So,
-> > > > > > > > > > > rcu_user_enter/rcu_user_exit() should be paired right.
-> > > > > > > > > >
-> > > > > > > > > > OK, good.
-> > > > > > > > > >
-> > > > > > > > > > > > > > Either way, what should happen is that dyntick_save_progress_counter() or
-> > > > > > > > > > > > > > rcu_implicit_dynticks_qs() should see the rdp->dynticks field indicating
-> > > > > > > > > > > > > > nohz_full user execution, and then the quiescent state will be supplied
-> > > > > > > > > > > > > > on behalf of that CPU.
-> > > > > > > > > > > > >
-> > > > > > > > > > > > > Agreed. But the counter rdp->dynticks of the CPU can only be updated
-> > > > > > > > > > > > > by rcu_dynticks_eqs_enter() or rcu_dynticks_exit() when rcu_eqs_enter()
-> > > > > > > > > > > > > or rcu_eqs_exit() is called, which in turn depends on the context switch.
-> > > > > > > > > > > > > So, when the context switch never happens, the counter rdp->dynticks
-> > > > > > > > > > > > > never advances. That's the thing I try to fix here.
-> > > > > > > > > > > >
-> > > > > > > > > > > > First, understand the problem.  Otherwise, your fix is not so likely
-> > > > > > > > > > > > to actually fix anything.  ;-)
-> > > > > > > > > > > >
-> > > > > > > > > > > > If kernel mode was interrupted, there is probably a missing cond_resched().
-> > > > > > > > > > > > But in sufficiently old kernels, cond_resched() doesn't do anything for
-> > > > > > > > > > > > RCU unless a context switch actually happened.  In some of those kernels,
-> > > > > > > > > > > > you can use cond_resched_rcu_qs() instead to get RCU's attention.  In
-> > > > > > > > > > > > really old kernels, life is hard and you will need to do some backporting.
-> > > > > > > > > > > > Or move to newer kernels.
-> > > > > > > > > > > >
-> > > > > > > > > > > > In short, if an in-kernel code path runs for long enough without hitting
-> > > > > > > > > > > > a cond_resched() or similar, that is a bug.  The RCU CPU stall warning
-> > > > > > > > > > > > that you will get is your diagnostic.
-> > > > > > > > > > >
-> > > > > > > > > > > Probably this is the case. With the test for 5.15.0-r1, I have seen different
-> > > > > > > > > > > scenarios, among them the most frequent ones were caused by the networking
-> > > > > > > > > > > in which a bunch of networking threads were spinning on the same rwlock.
-> > > > > > > > > > >
-> > > > > > > > > > > For instance in one of them, the ticks_this_gp of a rcu_data could go as
-> > > > > > > > > > > large as 12166 (ticks) which is 12+ seconds. The thread on this cpu was
-> > > > > > > > > > > doing networking work and finally it was spinning as a writer on a rwlock
-> > > > > > > > > > > which had been locked by 16 readers.  By the way, there were 70 this
-> > > > > > > > > > > kinds of writers were blocked on the same rwlock.
-> > > > > > > > > >
-> > > > > > > > > > OK, a lock-contention problem.  The networking folks have fixed a
-> > > > > > > > > > very large number of these over the years, though, so I wonder what is
-> > > > > > > > > > special about this one so that it is just now showing up.  I have added
-> > > > > > > > > > a networking list on CC for their thoughts.
-> > > > > > > > >
-> > > > > > > > > Thanks for pulling the networking in. If they need the coredump, I can
-> > > > > > > > > forward it to them.  It's definitely worth analyzing it as this contention
-> > > > > > > > > might be a performance issue.  Or we can discuss this further in this
-> > > > > > > > > email thread if they are fine, or we can discuss it over with a separate
-> > > > > > > > > email thread with netdev@ only.
-> > > > > > > > >
-> > > > > > > > > So back to my original problem, this might be one of the possibilities that
-> > > > > > > > > led to RCU stall panic.  Just imagining this type of contention might have
-> > > > > > > > > occurred and lasted long enough. When it finally came to the end, the
-> > > > > > > > > timer interrupt occurred, therefore rcu_sched_clock_irq detected the RCU
-> > > > > > > > > stall on the CPU and panic.
-> > > > > > > > >
-> > > > > > > > > So definitely we need to understand these networking activities here as
-> > > > > > > > > to why the readers could hold the rwlock too long.
-> > > > > > > >
-> > > > > > > > I strongly suggest that you also continue to do your own analysis on this.
-> > > > > > > > So please see below.
-> > > > > > >
-> > > > > > > This is just a brief of my analysis and the stack info below is not enough
-> > > > > > > for other people to figure out anything useful. I meant if they are really
-> > > > > > > interested, I can upload the core file. I think this is fair.
-> > > > > > >
-> > > > > > > >
-> > > > > > > > > > > When examining the readers of the lock, except the following code,
-> > > > > > > > > > > don't see any other obvious problems: e.g
-> > > > > > > > > > >  #5 [ffffad3987254df8] __sock_queue_rcv_skb at ffffffffa49cd2ee
-> > > > > > > > > > >  #6 [ffffad3987254e18] raw_rcv at ffffffffa4ac75c8
-> > > > > > > > > > >  #7 [ffffad3987254e38] raw_local_deliver at ffffffffa4ac7819
-> > > > > > > > > > >  #8 [ffffad3987254e88] ip_protocol_deliver_rcu at ffffffffa4a8dea4
-> > > > > > > > > > >  #9 [ffffad3987254ea8] ip_local_deliver_finish at ffffffffa4a8e074
-> > > > > > > > > > > #10 [ffffad3987254eb0] __netif_receive_skb_one_core at ffffffffa49f3057
-> > > > > > > > > > > #11 [ffffad3987254ed0] process_backlog at ffffffffa49f3278
-> > > > > > > > > > > #12 [ffffad3987254f08] __napi_poll at ffffffffa49f2aba
-> > > > > > > > > > > #13 [ffffad3987254f30] net_rx_action at ffffffffa49f2f33
-> > > > > > > > > > > #14 [ffffad3987254fa0] __softirqentry_text_start at ffffffffa50000d0
-> > > > > > > > > > > #15 [ffffad3987254ff0] do_softirq at ffffffffa40e12f6
-> > > > > > > > > > >
-> > > > > > > > > > > In the function ip_local_deliver_finish() of this stack, a lot of the work needs
-> > > > > > > > > > > to be done with ip_protocol_deliver_rcu(). But this function is invoked from
-> > > > > > > > > > > a rcu reader side section.
-> > > > > > > > > > >
-> > > > > > > > > > > static int ip_local_deliver_finish(struct net *net, struct sock *sk,
-> > > > > > > > > > > struct sk_buff *skb)
-> > > > > > > > > > > {
-> > > > > > > > > > >         __skb_pull(skb, skb_network_header_len(skb));
-> > > > > > > > > > >
-> > > > > > > > > > >         rcu_read_lock();
-> > > > > > > > > > >         ip_protocol_deliver_rcu(net, skb, ip_hdr(skb)->protocol);
-> > > > > > > > > > >         rcu_read_unlock();
-> > > > > > > > > > >
-> > > > > > > > > > >         return 0;
-> > > > > > > > > > > }
-> > > > > > > > > > >
-> > > > > > > > > > > Actually there are multiple chances that this code path can hit
-> > > > > > > > > > > spinning locks starting from ip_protocol_deliver_rcu(). This kind
-> > > > > > > > > > > usage looks not quite right. But I'd like to know your opinion on this first ?
-> > > > > > > > > >
-> > > > > > > > > > It is perfectly legal to acquire spinlocks in RCU read-side critical
-> > > > > > > > > > sections.  In fact, this is one of the few ways to safely acquire a
-> > > > > > > > > > per-object lock while still maintaining good performance and
-> > > > > > > > > > scalability.
-> > > > > > > > >
-> > > > > > > > > Sure, understand. But the RCU related docs said that anything causing
-> > > > > > > > > the reader side to block must be avoided.
-> > > > > > > >
-> > > > > > > > True.  But this is the Linux kernel, where "block" means something
-> > > > > > > > like "invoke schedule()" or "sleep" instead of the academic-style
-> > > > > > > > non-blocking-synchronization definition.  So it is perfectly legal to
-> > > > > > > > acquire spinlocks within RCU read-side critical sections.
-> > > > > > > >
-> > > > > > > > And before you complain that practitioners are not following the academic
-> > > > > > > > definitions, please keep in mind that our definitions were here first.  ;-)
-> > > > > > > >
-> > > > > > > > > > My guess is that the thing to track down is the cause of the high contention
-> > > > > > > > > > on that reader-writer spinlock.  Missed patches, misconfiguration, etc.
-> > > > > > > > >
-> > > > > > > > > Actually, the test was against a recent upstream 5.15.0-r1  But I can try
-> > > > > > > > > the latest r4.  Regarding the network configure, I believe I didn't do anything
-> > > > > > > > > special, just use the default.
-> > > > > > > >
-> > > > > > > > Does this occur on older mainline kernels?  If not, I strongly suggest
-> > > > > > > > bisecting, as this often quickly and easily finds the problem.
-> > > > > > >
-> > > > > > > Actually It does. But let's focus on the latest upstream and the latest rhel8.
-> > > > > > > This way, we will not worry about missing the needed rcu patches.
-> > > > > > > However, in rhel8, the kernel stack running on the rcu-stalled CPU is not
-> > > > > > > networking related, which I am still working on.  So, there might be
-> > > > > > > multiple root causes.
-> > > > > > >
-> > > > > > > > Bisection can also help you find the patch to be backported if a later
-> > > > > > > > release fixes the bug, though things like gitk can also be helpful.
-> > > > > > >
-> > > > > > > Unfortunately, this is reproducible on the latest bit.
-> > > > > > >
-> > > > > > > Thanks
-> > > > > > > Donghai
-> > > > > > > >
-> > > > > > > >                                                         Thanx, Paul
+The extended addressing facility is conditional on a new sockopt:
+MCTP_OPT_ADDR_EXT; userspace must explicitly enable addressing before
+the kernel will consume/populate the extended address data.
+
+Includes a fix for an uninitialised var:
+Reported-by: kernel test robot <lkp@intel.com>
+
+Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
+
+---
+v4:
+ - move SOL_MCTP to linux/sockets.h
+
+v3:
+ - avoid uninitialised rc if we hit the !rt->dev WARN.
+
+v2:
+ - non-RFC
+ - learn to spell "typically"
+
+RFC: this patch adds a bit of an new ABI, in that the struct sockaddr
+for MCTP has been extended, with extra addressing data being available
+for applications after setting a sockopt.
+
+Using something like IP_PKTINFO might be suitable instead, but that
+requires sendmsg/recvmsg, and control message setup, whereas this is a
+a simpler interface, and also allows extended addressing info in
+sendto/recvfrom too. Comments most welcome!
+---
+ include/linux/socket.h    |  1 +
+ include/net/mctp.h        | 16 +++++--
+ include/uapi/linux/mctp.h | 10 ++++
+ net/mctp/af_mctp.c        | 86 ++++++++++++++++++++++++++++++----
+ net/mctp/route.c          | 98 +++++++++++++++++++++++++++++----------
+ 5 files changed, 171 insertions(+), 40 deletions(-)
+
+diff --git a/include/linux/socket.h b/include/linux/socket.h
+index 7612d760b6a9..8ef26d89ef49 100644
+--- a/include/linux/socket.h
++++ b/include/linux/socket.h
+@@ -365,6 +365,7 @@ struct ucred {
+ #define SOL_TLS		282
+ #define SOL_XDP		283
+ #define SOL_MPTCP	284
++#define SOL_MCTP	285
+ 
+ /* IPX options */
+ #define IPX_TYPE	1
+diff --git a/include/net/mctp.h b/include/net/mctp.h
+index b9ed62a63c24..716405e0294c 100644
+--- a/include/net/mctp.h
++++ b/include/net/mctp.h
+@@ -58,6 +58,9 @@ struct mctp_sock {
+ 	mctp_eid_t	bind_addr;
+ 	__u8		bind_type;
+ 
++	/* sendmsg()/recvmsg() uses struct sockaddr_mctp_ext */
++	bool		addr_ext;
++
+ 	/* list of mctp_sk_key, for incoming tag lookup. updates protected
+ 	 * by sk->net->keys_lock
+ 	 */
+@@ -152,10 +155,16 @@ struct mctp_sk_key {
+ 
+ struct mctp_skb_cb {
+ 	unsigned int	magic;
+-	unsigned int	net;
++	int		net;
++	int		ifindex; /* extended/direct addressing if set */
++	unsigned char	halen;
+ 	mctp_eid_t	src;
++	unsigned char	haddr[];
+ };
+ 
++#define MCTP_SKB_CB_HADDR_MAXLEN (sizeof((((struct sk_buff *)(NULL))->cb)) \
++				  - offsetof(struct mctp_skb_cb, haddr))
++
+ /* skb control-block accessors with a little extra debugging for initial
+  * development.
+  *
+@@ -189,8 +198,7 @@ static inline struct mctp_skb_cb *mctp_cb(struct sk_buff *skb)
+  *
+  * Updates to the route table are performed under rtnl; all reads under RCU,
+  * so routes cannot be referenced over a RCU grace period. Specifically: A
+- * caller cannot block between mctp_route_lookup and passing the route to
+- * mctp_do_route.
++ * caller cannot block between mctp_route_lookup and mctp_route_release()
+  */
+ struct mctp_route {
+ 	mctp_eid_t		min, max;
+@@ -210,8 +218,6 @@ struct mctp_route {
+ struct mctp_route *mctp_route_lookup(struct net *net, unsigned int dnet,
+ 				     mctp_eid_t daddr);
+ 
+-int mctp_do_route(struct mctp_route *rt, struct sk_buff *skb);
+-
+ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
+ 		      struct sk_buff *skb, mctp_eid_t daddr, u8 req_tag);
+ 
+diff --git a/include/uapi/linux/mctp.h b/include/uapi/linux/mctp.h
+index 52b54d13f385..b5f503e5fc3b 100644
+--- a/include/uapi/linux/mctp.h
++++ b/include/uapi/linux/mctp.h
+@@ -10,6 +10,7 @@
+ #define __UAPI_MCTP_H
+ 
+ #include <linux/types.h>
++#include <linux/netdevice.h>
+ 
+ typedef __u8			mctp_eid_t;
+ 
+@@ -25,6 +26,13 @@ struct sockaddr_mctp {
+ 	__u8			smctp_tag;
+ };
+ 
++struct sockaddr_mctp_ext {
++	struct sockaddr_mctp	smctp_base;
++	int			smctp_ifindex;
++	unsigned char		smctp_halen;
++	unsigned char		smctp_haddr[MAX_ADDR_LEN];
++};
++
+ #define MCTP_NET_ANY		0x0
+ 
+ #define MCTP_ADDR_NULL		0x00
+@@ -33,4 +41,6 @@ struct sockaddr_mctp {
+ #define MCTP_TAG_MASK		0x07
+ #define MCTP_TAG_OWNER		0x08
+ 
++#define MCTP_OPT_ADDR_EXT	1
++
+ #endif /* __UAPI_MCTP_H */
+diff --git a/net/mctp/af_mctp.c b/net/mctp/af_mctp.c
+index 66a411d60b6c..5eae06aaf65c 100644
+--- a/net/mctp/af_mctp.c
++++ b/net/mctp/af_mctp.c
+@@ -77,6 +77,7 @@ static int mctp_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 	const int hlen = MCTP_HEADER_MAXLEN + sizeof(struct mctp_hdr);
+ 	int rc, addrlen = msg->msg_namelen;
+ 	struct sock *sk = sock->sk;
++	struct mctp_sock *msk = container_of(sk, struct mctp_sock, sk);
+ 	struct mctp_skb_cb *cb;
+ 	struct mctp_route *rt;
+ 	struct sk_buff *skb;
+@@ -100,11 +101,6 @@ static int mctp_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 	if (addr->smctp_network == MCTP_NET_ANY)
+ 		addr->smctp_network = mctp_default_net(sock_net(sk));
+ 
+-	rt = mctp_route_lookup(sock_net(sk), addr->smctp_network,
+-			       addr->smctp_addr.s_addr);
+-	if (!rt)
+-		return -EHOSTUNREACH;
+-
+ 	skb = sock_alloc_send_skb(sk, hlen + 1 + len,
+ 				  msg->msg_flags & MSG_DONTWAIT, &rc);
+ 	if (!skb)
+@@ -116,19 +112,45 @@ static int mctp_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 	*(u8 *)skb_put(skb, 1) = addr->smctp_type;
+ 
+ 	rc = memcpy_from_msg((void *)skb_put(skb, len), msg, len);
+-	if (rc < 0) {
+-		kfree_skb(skb);
+-		return rc;
+-	}
++	if (rc < 0)
++		goto err_free;
+ 
+ 	/* set up cb */
+ 	cb = __mctp_cb(skb);
+ 	cb->net = addr->smctp_network;
+ 
++	/* direct addressing */
++	if (msk->addr_ext && addrlen >= sizeof(struct sockaddr_mctp_ext)) {
++		DECLARE_SOCKADDR(struct sockaddr_mctp_ext *,
++				 extaddr, msg->msg_name);
++
++		if (extaddr->smctp_halen > MCTP_SKB_CB_HADDR_MAXLEN) {
++			rc = -EINVAL;
++			goto err_free;
++		}
++
++		cb->ifindex = extaddr->smctp_ifindex;
++		cb->halen = extaddr->smctp_halen;
++		memcpy(cb->haddr, extaddr->smctp_haddr, cb->halen);
++
++		rt = NULL;
++	} else {
++		rt = mctp_route_lookup(sock_net(sk), addr->smctp_network,
++				       addr->smctp_addr.s_addr);
++		if (!rt) {
++			rc = -EHOSTUNREACH;
++			goto err_free;
++		}
++	}
++
+ 	rc = mctp_local_output(sk, rt, skb, addr->smctp_addr.s_addr,
+ 			       addr->smctp_tag);
+ 
+ 	return rc ? : len;
++
++err_free:
++	kfree_skb(skb);
++	return rc;
+ }
+ 
+ static int mctp_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+@@ -136,6 +158,7 @@ static int mctp_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ {
+ 	DECLARE_SOCKADDR(struct sockaddr_mctp *, addr, msg->msg_name);
+ 	struct sock *sk = sock->sk;
++	struct mctp_sock *msk = container_of(sk, struct mctp_sock, sk);
+ 	struct sk_buff *skb;
+ 	size_t msglen;
+ 	u8 type;
+@@ -181,6 +204,16 @@ static int mctp_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 		addr->smctp_tag = hdr->flags_seq_tag &
+ 					(MCTP_HDR_TAG_MASK | MCTP_HDR_FLAG_TO);
+ 		msg->msg_namelen = sizeof(*addr);
++
++		if (msk->addr_ext) {
++			DECLARE_SOCKADDR(struct sockaddr_mctp_ext *, ae,
++					 msg->msg_name);
++			msg->msg_namelen = sizeof(*ae);
++			ae->smctp_ifindex = cb->ifindex;
++			ae->smctp_halen = cb->halen;
++			memset(ae->smctp_haddr, 0x0, sizeof(ae->smctp_haddr));
++			memcpy(ae->smctp_haddr, cb->haddr, cb->halen);
++		}
+ 	}
+ 
+ 	rc = len;
+@@ -196,12 +229,45 @@ static int mctp_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ static int mctp_setsockopt(struct socket *sock, int level, int optname,
+ 			   sockptr_t optval, unsigned int optlen)
+ {
+-	return -EINVAL;
++	struct mctp_sock *msk = container_of(sock->sk, struct mctp_sock, sk);
++	int val;
++
++	if (level != SOL_MCTP)
++		return -EINVAL;
++
++	if (optname == MCTP_OPT_ADDR_EXT) {
++		if (optlen != sizeof(int))
++			return -EINVAL;
++		if (copy_from_sockptr(&val, optval, sizeof(int)))
++			return -EFAULT;
++		msk->addr_ext = val;
++		return 0;
++	}
++
++	return -ENOPROTOOPT;
+ }
+ 
+ static int mctp_getsockopt(struct socket *sock, int level, int optname,
+ 			   char __user *optval, int __user *optlen)
+ {
++	struct mctp_sock *msk = container_of(sock->sk, struct mctp_sock, sk);
++	int len, val;
++
++	if (level != SOL_MCTP)
++		return -EINVAL;
++
++	if (get_user(len, optlen))
++		return -EFAULT;
++
++	if (optname == MCTP_OPT_ADDR_EXT) {
++		if (len != sizeof(int))
++			return -EINVAL;
++		val = !!msk->addr_ext;
++		if (copy_to_user(optval, &val, len))
++			return -EFAULT;
++		return 0;
++	}
++
+ 	return -EINVAL;
+ }
+ 
+diff --git a/net/mctp/route.c b/net/mctp/route.c
+index 82fb5ae524f6..c23ab3547ee5 100644
+--- a/net/mctp/route.c
++++ b/net/mctp/route.c
+@@ -434,6 +434,7 @@ static unsigned int mctp_route_mtu(struct mctp_route *rt)
+ 
+ static int mctp_route_output(struct mctp_route *route, struct sk_buff *skb)
+ {
++	struct mctp_skb_cb *cb = mctp_cb(skb);
+ 	struct mctp_hdr *hdr = mctp_hdr(skb);
+ 	char daddr_buf[MAX_ADDR_LEN];
+ 	char *daddr = NULL;
+@@ -448,9 +449,14 @@ static int mctp_route_output(struct mctp_route *route, struct sk_buff *skb)
+ 		return -EMSGSIZE;
+ 	}
+ 
+-	/* If lookup fails let the device handle daddr==NULL */
+-	if (mctp_neigh_lookup(route->dev, hdr->dest, daddr_buf) == 0)
+-		daddr = daddr_buf;
++	if (cb->ifindex) {
++		/* direct route; use the hwaddr we stashed in sendmsg */
++		daddr = cb->haddr;
++	} else {
++		/* If lookup fails let the device handle daddr==NULL */
++		if (mctp_neigh_lookup(route->dev, hdr->dest, daddr_buf) == 0)
++			daddr = daddr_buf;
++	}
+ 
+ 	rc = dev_hard_header(skb, skb->dev, ntohs(skb->protocol),
+ 			     daddr, skb->dev->dev_addr, skb->len);
+@@ -649,16 +655,6 @@ static struct mctp_route *mctp_route_lookup_null(struct net *net,
+ 	return NULL;
+ }
+ 
+-/* sends a skb to rt and releases the route. */
+-int mctp_do_route(struct mctp_route *rt, struct sk_buff *skb)
+-{
+-	int rc;
+-
+-	rc = rt->output(rt, skb);
+-	mctp_route_release(rt);
+-	return rc;
+-}
+-
+ static int mctp_do_fragment_route(struct mctp_route *rt, struct sk_buff *skb,
+ 				  unsigned int mtu, u8 tag)
+ {
+@@ -725,7 +721,7 @@ static int mctp_do_fragment_route(struct mctp_route *rt, struct sk_buff *skb,
+ 		/* copy message payload */
+ 		skb_copy_bits(skb, pos, skb_transport_header(skb2), size);
+ 
+-		/* do route, but don't drop the rt reference */
++		/* do route */
+ 		rc = rt->output(rt, skb2);
+ 		if (rc)
+ 			break;
+@@ -734,7 +730,6 @@ static int mctp_do_fragment_route(struct mctp_route *rt, struct sk_buff *skb,
+ 		pos += size;
+ 	}
+ 
+-	mctp_route_release(rt);
+ 	consume_skb(skb);
+ 	return rc;
+ }
+@@ -744,15 +739,51 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
+ {
+ 	struct mctp_sock *msk = container_of(sk, struct mctp_sock, sk);
+ 	struct mctp_skb_cb *cb = mctp_cb(skb);
++	struct mctp_route tmp_rt;
++	struct net_device *dev;
+ 	struct mctp_hdr *hdr;
+ 	unsigned long flags;
+ 	unsigned int mtu;
+ 	mctp_eid_t saddr;
++	bool ext_rt;
+ 	int rc;
+ 	u8 tag;
+ 
+-	if (WARN_ON(!rt->dev))
++	rc = -ENODEV;
++
++	if (rt) {
++		ext_rt = false;
++		dev = NULL;
++
++		if (WARN_ON(!rt->dev))
++			goto out_release;
++
++	} else if (cb->ifindex) {
++		ext_rt = true;
++		rt = &tmp_rt;
++
++		rcu_read_lock();
++		dev = dev_get_by_index_rcu(sock_net(sk), cb->ifindex);
++		if (!dev) {
++			rcu_read_unlock();
++			return rc;
++		}
++
++		rt->dev = __mctp_dev_get(dev);
++		rcu_read_unlock();
++
++		if (!rt->dev)
++			goto out_release;
++
++		/* establish temporary route - we set up enough to keep
++		 * mctp_route_output happy
++		 */
++		rt->output = mctp_route_output;
++		rt->mtu = 0;
++
++	} else {
+ 		return -EINVAL;
++	}
+ 
+ 	spin_lock_irqsave(&rt->dev->addrs_lock, flags);
+ 	if (rt->dev->num_addrs == 0) {
+@@ -765,18 +796,17 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
+ 	spin_unlock_irqrestore(&rt->dev->addrs_lock, flags);
+ 
+ 	if (rc)
+-		return rc;
++		goto out_release;
+ 
+ 	if (req_tag & MCTP_HDR_FLAG_TO) {
+ 		rc = mctp_alloc_local_tag(msk, saddr, daddr, &tag);
+ 		if (rc)
+-			return rc;
++			goto out_release;
+ 		tag |= MCTP_HDR_FLAG_TO;
+ 	} else {
+ 		tag = req_tag;
+ 	}
+ 
+-
+ 	skb->protocol = htons(ETH_P_MCTP);
+ 	skb->priority = 0;
+ 	skb_reset_transport_header(skb);
+@@ -796,12 +826,22 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
+ 	mtu = mctp_route_mtu(rt);
+ 
+ 	if (skb->len + sizeof(struct mctp_hdr) <= mtu) {
+-		hdr->flags_seq_tag = MCTP_HDR_FLAG_SOM | MCTP_HDR_FLAG_EOM |
+-			tag;
+-		return mctp_do_route(rt, skb);
++		hdr->flags_seq_tag = MCTP_HDR_FLAG_SOM |
++			MCTP_HDR_FLAG_EOM | tag;
++		rc = rt->output(rt, skb);
+ 	} else {
+-		return mctp_do_fragment_route(rt, skb, mtu, tag);
++		rc = mctp_do_fragment_route(rt, skb, mtu, tag);
+ 	}
++
++out_release:
++	if (!ext_rt)
++		mctp_route_release(rt);
++
++	if (dev)
++		dev_put(dev);
++
++	return rc;
++
+ }
+ 
+ /* route management */
+@@ -942,8 +982,15 @@ static int mctp_pkttype_receive(struct sk_buff *skb, struct net_device *dev,
+ 	if (mh->ver < MCTP_VER_MIN || mh->ver > MCTP_VER_MAX)
+ 		goto err_drop;
+ 
+-	cb = __mctp_cb(skb);
++	/* MCTP drivers must populate halen/haddr */
++	if (dev->type == ARPHRD_MCTP) {
++		cb = mctp_cb(skb);
++	} else {
++		cb = __mctp_cb(skb);
++		cb->halen = 0;
++	}
+ 	cb->net = READ_ONCE(mdev->net);
++	cb->ifindex = dev->ifindex;
+ 
+ 	rt = mctp_route_lookup(net, cb->net, mh->dest);
+ 
+@@ -954,7 +1001,8 @@ static int mctp_pkttype_receive(struct sk_buff *skb, struct net_device *dev,
+ 	if (!rt)
+ 		goto err_drop;
+ 
+-	mctp_do_route(rt, skb);
++	rt->output(rt, skb);
++	mctp_route_release(rt);
+ 
+ 	return NET_RX_SUCCESS;
+ 
+-- 
+2.30.2
+
