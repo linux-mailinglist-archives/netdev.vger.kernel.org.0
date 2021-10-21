@@ -2,90 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C0744362F0
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 15:30:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17BCD43631E
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 15:34:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230374AbhJUNc2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Oct 2021 09:32:28 -0400
-Received: from mail-oi1-f182.google.com ([209.85.167.182]:40694 "EHLO
-        mail-oi1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230072AbhJUNcX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 09:32:23 -0400
-Received: by mail-oi1-f182.google.com with SMTP id n63so852673oif.7;
-        Thu, 21 Oct 2021 06:30:07 -0700 (PDT)
+        id S231450AbhJUNgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Oct 2021 09:36:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34546 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229878AbhJUNgq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Oct 2021 09:36:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634823270;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hHZMSTz6eML2+E9JkvtukKVjxlVK42u/5TgPQ/XIGcw=;
+        b=DVPpOMH5jF8Lv6fP1HvcIAwRSDklGNnzr9JFT/iC9VDg71dhGyZraWI8f4oH8LiYJFDht/
+        cLv+gslrOW6Lm1Q+LYp69yhhcT+fzDxehNoJyhXPGkTedvAJMRTdxrxdCiFaXNFCCYLxUR
+        pgB35y22e8enI4ls2SJtuSeAnKXBPsc=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-587-gxvxxf-3MYWnG68Gh-xdlg-1; Thu, 21 Oct 2021 09:34:28 -0400
+X-MC-Unique: gxvxxf-3MYWnG68Gh-xdlg-1
+Received: by mail-ed1-f71.google.com with SMTP id f4-20020a50e084000000b003db585bc274so316184edl.17
+        for <netdev@vger.kernel.org>; Thu, 21 Oct 2021 06:34:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=V5N+7zO5qSAX0L4/A84OsXTp0ekly+BVlSHh5ax6RkA=;
-        b=kpaPyr29eBdZo09OjqgpqJd6tfqpGAT4xfbRltAhVb4Sxku1vy/4FC4nTqUZVBEf5E
-         mQThlWtywXlJtWpmEV8beKUbjqJd6aRa0arQO+vhFr/+k5hP1asNm54Ovf/aaYlePmAE
-         oohS2+qBzLOogL9ZvZ0HvBkydPOGMuNPiHapU2+akoPvRkEbqhbZjGUij1UlbqMiuxCL
-         oxr9JcS7ytxm04/ZrXtGwmsoIjQRUFk/WvwgP8HbUnnaBbzHCLoNasLrAJUpa54HnrDZ
-         nsZ/b2Uaxub2t5KD92xOehhBCuN2OD7d3u7jJmTIoQZzghePg5i1fzW5BX/JyTSWyQuf
-         eUTw==
-X-Gm-Message-State: AOAM530ieOPCjRiqEt230ZvU4gN3Y4+QLy7C3VEwMGXzP/duXOQPhI0D
-        XmBM+vCNKANIn3VseujvVQ==
-X-Google-Smtp-Source: ABdhPJxbuh6jA4gLSE0j+Dt9lkKZIvpY3rCZOZ3TrDSn8R8XfMbnISH64PC+pQyPK0CUUwig7P7CFg==
-X-Received: by 2002:a05:6808:13d2:: with SMTP id d18mr4837768oiw.73.1634823006689;
-        Thu, 21 Oct 2021 06:30:06 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id x8sm1033148ota.75.2021.10.21.06.30.05
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=hHZMSTz6eML2+E9JkvtukKVjxlVK42u/5TgPQ/XIGcw=;
+        b=ggc5byq1u1RMzxJFTVfF7IhKw4BrtxPuKt3s6S1gsKYGU7PVg/yY7IGQcKwA4No87z
+         /CNLxptPwEH62e/BOaCobT7IIaX+v6LsfZcyA5LXyRNy6/xfmdFdyGrrSL7eZl1KFvma
+         nYVQqzzDMh8uLSkzSZM9SBLQI6+YvS96RTrbPs1l6dMAZbB+Ctyj7un6Vj2qCZUtSwso
+         EUykJy2AV1G9eT3NrkCeSExVILiX0yKDEQCsI8zTlqexwhLC8eQf2Rz4ha5+WrwvfCMw
+         DgCV0mPcMMckf7tlXP/ELq973jxEucBmz6u8KC2UvW59YymcrZDc4WxY4F6LF86/GGN9
+         JJIQ==
+X-Gm-Message-State: AOAM530oMLYj4lSF3HfmQBKJuPcyANtscUo0uvyh7udgdJRo6u8CzLdK
+        RanqcFouccPtzei6JBdwYq6VCCpPbbhwOfMJTzoZ4To3gc9567VGU02Az2D/BD3xMVw/8zYnYk4
+        m+rlEiPkarfN2ub50
+X-Received: by 2002:a05:6402:2553:: with SMTP id l19mr7669604edb.321.1634823267546;
+        Thu, 21 Oct 2021 06:34:27 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzr8iBU2vHeRmTajZRd4sREXPn+BDTVd+wjRgZC9wmWlyyBUc6qHTTx5nfcjBc2uQ2zIiV2uw==
+X-Received: by 2002:a05:6402:2553:: with SMTP id l19mr7669581edb.321.1634823267359;
+        Thu, 21 Oct 2021 06:34:27 -0700 (PDT)
+Received: from steredhat (host-79-30-88-77.retail.telecomitalia.it. [79.30.88.77])
+        by smtp.gmail.com with ESMTPSA id f12sm2518135ejl.5.2021.10.21.06.34.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Oct 2021 06:30:06 -0700 (PDT)
-Received: (nullmailer pid 353164 invoked by uid 1000);
-        Thu, 21 Oct 2021 13:30:05 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     David Heidelberg <david@ixit.cz>
-Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        ~okias/devicetree@lists.sr.ht, linux-arm-msm@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alex Elder <elder@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org
-In-Reply-To: <20211020225435.274628-2-david@ixit.cz>
-References: <20211020225435.274628-1-david@ixit.cz> <20211020225435.274628-2-david@ixit.cz>
-Subject: Re: [PATCH 2/2] dt-bindings: net: qcom,ipa: IPA does support up to two iommus
-Date:   Thu, 21 Oct 2021 08:30:05 -0500
-Message-Id: <1634823005.083640.353162.nullmailer@robh.at.kernel.org>
+        Thu, 21 Oct 2021 06:34:27 -0700 (PDT)
+Date:   Thu, 21 Oct 2021 15:34:25 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     =?utf-8?Q?Marc-Andr=C3=A9?= Lureau <marcandre.lureau@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org
+Subject: Re: [PATCH 00/10] RFC: SO_PEERCRED for AF_VSOCK
+Message-ID: <20211021133425.tfgntfq6tq6em6up@steredhat>
+References: <20211021123714.1125384-1-marcandre.lureau@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211021123714.1125384-1-marcandre.lureau@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 21 Oct 2021 00:54:35 +0200, David Heidelberg wrote:
-> Fix warnings as:
-> arch/arm/boot/dts/qcom-sdx55-mtp.dt.yaml: ipa@1e40000: iommus: [[21, 1504, 0], [21, 1506, 0]] is too long
-> 	From schema: Documentation/devicetree/bindings/net/qcom,ipa.yaml
-> 
-> Signed-off-by: David Heidelberg <david@ixit.cz>
-> ---
->  Documentation/devicetree/bindings/net/qcom,ipa.yaml | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
+Hi,
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+On Thu, Oct 21, 2021 at 04:37:04PM +0400, Marc-André Lureau wrote:
+>Hi,
+>
+>This RFC aims to implement some support for SO_PEERCRED with AF_VSOCK,
+>so vsock servers & clients can lookup the basic peer credentials.
+>(further support for SO_PEERSEC could also be useful)
 
-yamllint warnings/errors:
+Thanks for this RFC! Just had a quick look, Monday I hope to give you 
+better feedback :-)
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/qcom,ipa.example.dt.yaml: ipa@1e40000: iommus: [[4294967295, 1824, 3]] is too short
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+>
+>This is pretty straightforward for loopback transport, where both ends
+>are on the same host.
+>
+>For vhost transport, the host will set the peer credentials associated with
+>the process who called VHOST_SET_OWNER (ex QEMU).
+>
+>For virtio transport, the credentials are cleared upon connect, as
+>providing foreign credentials wouldn't make much sense.
+>
+>I haven't looked at other transports. What do you think of this 
+>approach?
 
-doc reference errors (make refcheckdocs):
+So IIUC, SO_PEERCRED will make sense only in the host and will return 
+the credentials of the VMM (e.g. QEMU) that manages the VM of the peer 
+to which we are connected.
 
-See https://patchwork.ozlabs.org/patch/1544063
+So the features should be supported by the following type of transports:
+- VSOCK_TRANSPORT_F_LOCAL (vsock_loopback)
+- VSOCK_TRANSPORT_F_H2G (vhost-vsock, vmci)
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+>
+>Note: I think it would be a better to set the peer credentials when we
+>actually can provide them, rather than at creation time, but I haven't
+>found a way yet. Help welcome!
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
+Yep, I agree, cleaning credentials after connecting in the guest seems a 
+bit strange.
+As you also said, would be better to set them only after a successful 
+connect(), which should be similar to what AF_UNIX does.
 
-pip3 install dtschema --upgrade
+Maybe we can add an helper in af_vsock.c that will be called from the 
+transports that support this feature at the end the connection setup.
 
-Please check and re-submit.
+I'll think better of it and get back to you.
+
+Thanks,
+Stefano
 
