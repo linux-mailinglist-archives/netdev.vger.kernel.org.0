@@ -2,119 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 995B94357CC
-	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 02:27:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11B8D4357DA
+	for <lists+netdev@lfdr.de>; Thu, 21 Oct 2021 02:37:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232041AbhJUA3J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Oct 2021 20:29:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45108 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231869AbhJUA05 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Oct 2021 20:26:57 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6D1D96137C;
-        Thu, 21 Oct 2021 00:24:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634775880;
-        bh=IgUCRDNb3WGhSq9cNhFqYHT/kpvfrJ2Ow7LO8w7EZro=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N2ex6KfEHkiXHbLgLLxTJ2NnqpYB/5HqYyOGK+WC9T4eRUeiWk21rgbRuEH9KU76v
-         1oMEx52c9xpTC2f99MGxdYvphqnoLv/wLUXDBqX4YJTDknZzze/8mypng0dwQ5M4zb
-         LQzqXXqb5KcO+MkOV2/EfQi59TKE/mHiw+rMJB9bdJojK7M/1ucZz9fAVeGDjU6xFq
-         V+x0T48QO4WWtB6YxUpx2B7M1vrwwrL6BIWALOCyf362Aeb9cbMRTLWFRu9GvEFKgW
-         rD5e8gc8RrzHGaYGTRZhrYNVv1Mjx9ZcWaey+eGlk5xqy8hgiMi3SASAD5o6tyUCw+
-         lTHfdf1T+q3pA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+        id S231358AbhJUAkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Oct 2021 20:40:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49168 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229702AbhJUAkB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Oct 2021 20:40:01 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C4DAC06161C
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 17:37:46 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id q2-20020a17090a2e0200b001a0fd4efd49so4713035pjd.1
+        for <netdev@vger.kernel.org>; Wed, 20 Oct 2021 17:37:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VCY6buxruuWHeABeyFy1uxLNrBUhAzhty4X5Yus45LM=;
+        b=bA1FVJsxUeb4K8uwI9/5gyGPdBEvK+pvFLgVzV2DPRvFJfeIUSj8xLrr0DEz7u1I/k
+         nNPt3U+DUTI4/ceSbKcPgFmtuNmhFh5NNrcKXD2ugx1P6Rn1um9ikMVyjyl6QtbRo4tN
+         +C0F/GJx+icDjrq+IChOWMRWtJ4Z7aY7awH3dDDei8/DKImtNGqqnZiMknoSha9JB2g4
+         KhU1GUBGCkhjBMKum+dAcqbJwMmTSU2EW5bih03q+OnTM3xM4+QB1q3Q/cS0v7V6H0Z+
+         9pPrYHjfLsAk2hIc9m1F+9VFRtpJVC5a55q3VyUeBl4ZuoQCyn0L7BKVh2AuDA0+txzU
+         ViFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VCY6buxruuWHeABeyFy1uxLNrBUhAzhty4X5Yus45LM=;
+        b=i9qNtkxEbknPU3mE3V3XGJ2pCq5EH9nI5c80AxLUnEOVvCJoNby48BQlkjst+xorez
+         XKkSe3rwvhW9a5MbPJcur0ADKA2yDEiekk+nf3S8bgg+j7owLg/tDsAD5LkDqYVPr7sH
+         J6rh7l752/+HKBq6V2Z4JQ10UO/9OeEF/cu76bS3E7aQoKZ6YXd+KELo9OlM8CXvXsNj
+         urB+rbkQhBDf3JMUhE/o/FndOu7Uc0nho5LlOV1OYRDwzQyec65f3J1J5gtaru3K/qYQ
+         IZBWl0IiPw+7q1rKjplh3OoUzq+yftkImUVYC6h3CpECzNe+ILW7fGb0oN3RcICmTqkY
+         1PsQ==
+X-Gm-Message-State: AOAM5337jjsqkEDPSB+A2bEIY1kCzGHpw3KAqHdL1bz5JC2r0q0wXk7d
+        uL2pQYcbdOBZM4pIznZQXlAdB63KsrLZ+Q==
+X-Google-Smtp-Source: ABdhPJyuDNWXHhG35mep/385xBTVOFiAoXEYHtqEulIBYQIsYFdbPqbn59+T9zL8l8A58hZOEr4WuQ==
+X-Received: by 2002:a17:90b:224c:: with SMTP id hk12mr2718538pjb.242.1634776665355;
+        Wed, 20 Oct 2021 17:37:45 -0700 (PDT)
+Received: from localhost.localdomain ([50.39.163.188])
+        by smtp.gmail.com with ESMTPSA id t22sm4164755pfg.148.2021.10.20.17.37.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Oct 2021 17:37:45 -0700 (PDT)
+From:   James Prestwood <prestwoj@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     James Prestwood <prestwoj@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, isdn@linux-pingi.de,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 4/7] isdn: mISDN: Fix sleeping function called from invalid context
-Date:   Wed, 20 Oct 2021 20:24:23 -0400
-Message-Id: <20211021002427.1130044-4-sashal@kernel.org>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211021002427.1130044-1-sashal@kernel.org>
-References: <20211021002427.1130044-1-sashal@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Chinmay Agarwal <chinagar@codeaurora.org>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Tong Zhu <zhutong@amazon.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jouni Malinen <jouni@codeaurora.org>
+Subject: [PATCH v5 0/2] Make neighbor eviction controllable by userspace
+Date:   Wed, 20 Oct 2021 17:32:10 -0700
+Message-Id: <20211021003212.878786-1-prestwoj@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+v1 -> v2:
 
-[ Upstream commit 6510e80a0b81b5d814e3aea6297ba42f5e76f73c ]
+ - It was suggested by Daniel Borkmann to extend the neighbor table settings
+   rather than adding IPv4/IPv6 options for ARP/NDISC separately. I agree
+   this way is much more concise since there is now only one place where the
+   option is checked and defined.
+ - Moved documentation/code into the same patch
+ - Explained in more detail the test scenario and results
 
-The driver can call card->isac.release() function from an atomic
-context.
+v2 -> v3:
 
-Fix this by calling this function after releasing the lock.
+ - Renamed 'skip_perm' to 'nocarrier'. The way this parameter is used
+   matches this naming.
+ - Changed logic to still flush if 'nocarrier' is false.
 
-The following log reveals it:
+v3 -> v4:
 
-[   44.168226 ] BUG: sleeping function called from invalid context at kernel/workqueue.c:3018
-[   44.168941 ] in_atomic(): 1, irqs_disabled(): 1, non_block: 0, pid: 5475, name: modprobe
-[   44.169574 ] INFO: lockdep is turned off.
-[   44.169899 ] irq event stamp: 0
-[   44.170160 ] hardirqs last  enabled at (0): [<0000000000000000>] 0x0
-[   44.170627 ] hardirqs last disabled at (0): [<ffffffff814209ed>] copy_process+0x132d/0x3e00
-[   44.171240 ] softirqs last  enabled at (0): [<ffffffff81420a1a>] copy_process+0x135a/0x3e00
-[   44.171852 ] softirqs last disabled at (0): [<0000000000000000>] 0x0
-[   44.172318 ] Preemption disabled at:
-[   44.172320 ] [<ffffffffa009b0a9>] nj_release+0x69/0x500 [netjet]
-[   44.174441 ] Call Trace:
-[   44.174630 ]  dump_stack_lvl+0xa8/0xd1
-[   44.174912 ]  dump_stack+0x15/0x17
-[   44.175166 ]  ___might_sleep+0x3a2/0x510
-[   44.175459 ]  ? nj_release+0x69/0x500 [netjet]
-[   44.175791 ]  __might_sleep+0x82/0xe0
-[   44.176063 ]  ? start_flush_work+0x20/0x7b0
-[   44.176375 ]  start_flush_work+0x33/0x7b0
-[   44.176672 ]  ? trace_irq_enable_rcuidle+0x85/0x170
-[   44.177034 ]  ? kasan_quarantine_put+0xaa/0x1f0
-[   44.177372 ]  ? kasan_quarantine_put+0xaa/0x1f0
-[   44.177711 ]  __flush_work+0x11a/0x1a0
-[   44.177991 ]  ? flush_work+0x20/0x20
-[   44.178257 ]  ? lock_release+0x13c/0x8f0
-[   44.178550 ]  ? __kasan_check_write+0x14/0x20
-[   44.178872 ]  ? do_raw_spin_lock+0x148/0x360
-[   44.179187 ]  ? read_lock_is_recursive+0x20/0x20
-[   44.179530 ]  ? __kasan_check_read+0x11/0x20
-[   44.179846 ]  ? do_raw_spin_unlock+0x55/0x900
-[   44.180168 ]  ? ____kasan_slab_free+0x116/0x140
-[   44.180505 ]  ? _raw_spin_unlock_irqrestore+0x41/0x60
-[   44.180878 ]  ? skb_queue_purge+0x1a3/0x1c0
-[   44.181189 ]  ? kfree+0x13e/0x290
-[   44.181438 ]  flush_work+0x17/0x20
-[   44.181695 ]  mISDN_freedchannel+0xe8/0x100
-[   44.182006 ]  isac_release+0x210/0x260 [mISDNipac]
-[   44.182366 ]  nj_release+0xf6/0x500 [netjet]
-[   44.182685 ]  nj_remove+0x48/0x70 [netjet]
-[   44.182989 ]  pci_device_remove+0xa9/0x250
+ - Moved NDTPA_EVICT_NOCARRIER after NDTPA_PAD
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/isdn/hardware/mISDN/netjet.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+v4 -> v5:
 
-diff --git a/drivers/isdn/hardware/mISDN/netjet.c b/drivers/isdn/hardware/mISDN/netjet.c
-index 59eec2014b82..a74741d28ca8 100644
---- a/drivers/isdn/hardware/mISDN/netjet.c
-+++ b/drivers/isdn/hardware/mISDN/netjet.c
-@@ -963,8 +963,8 @@ nj_release(struct tiger_hw *card)
- 		nj_disable_hwirq(card);
- 		mode_tiger(&card->bc[0], ISDN_P_NONE);
- 		mode_tiger(&card->bc[1], ISDN_P_NONE);
--		card->isac.release(&card->isac);
- 		spin_unlock_irqrestore(&card->lock, flags);
-+		card->isac.release(&card->isac);
- 		release_region(card->base, card->base_s);
- 		card->base_s = 0;
- 	}
+ - Went back to the original v1 patchset and changed:
+ - Used ANDCONF for IN_DEV macro
+ - Got RCU lock prior to __in_dev_get_rcu(). Do note that the logic
+   here was extended to handle if __in_dev_get_rcu() fails. If this
+   happens the existing behavior should be maintained and set the
+   carrier down. I'm unsure if get_rcu() can fail in this context
+   though. Similar logic was used for in6_dev_get.
+ - Changed ndisc_evict_nocarrier to use a u8, proper handler, and
+   set min/max values.
+
+
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc: David Ahern <dsahern@kernel.org>
+Cc: Roopa Prabhu <roopa@nvidia.com>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc: Ido Schimmel <idosch@nvidia.com>
+Cc: Nikolay Aleksandrov <nikolay@nvidia.com>
+Cc: Chinmay Agarwal <chinagar@codeaurora.org>
+Cc: Yajun Deng <yajun.deng@linux.dev>
+Cc: Tong Zhu <zhutong@amazon.com>
+Cc: Johannes Berg <johannes@sipsolutions.net>
+Cc: Jouni Malinen <jouni@codeaurora.org>
+
+James Prestwood (2):
+  net: arp: introduce arp_evict_nocarrier sysctl parameter
+  net: ndisc: introduce ndisc_evict_nocarrier sysctl parameter
+
+ Documentation/networking/ip-sysctl.rst | 18 ++++++++++++++++++
+ include/linux/inetdevice.h             |  2 ++
+ include/linux/ipv6.h                   |  1 +
+ include/uapi/linux/ip.h                |  1 +
+ include/uapi/linux/ipv6.h              |  1 +
+ include/uapi/linux/sysctl.h            |  1 +
+ net/ipv4/arp.c                         | 13 ++++++++++++-
+ net/ipv4/devinet.c                     |  4 ++++
+ net/ipv6/addrconf.c                    | 12 ++++++++++++
+ net/ipv6/ndisc.c                       |  5 ++++-
+ 10 files changed, 56 insertions(+), 2 deletions(-)
+
 -- 
-2.33.0
+2.31.1
 
