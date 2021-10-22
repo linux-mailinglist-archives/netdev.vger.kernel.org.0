@@ -2,121 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DC7B437912
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 16:33:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DF824379AB
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 17:13:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233097AbhJVOgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 10:36:00 -0400
-Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:52021 "EHLO
-        wout1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232949AbhJVOf7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 10:35:59 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 876D43200A2F;
-        Fri, 22 Oct 2021 10:33:41 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Fri, 22 Oct 2021 10:33:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
-        date:from:to:cc:subject:message-id:mime-version:content-type; s=
-        fm1; bh=la47Egwy6Y/rRPx3RH82DEySo4XXahG+teKFgq7ZosY=; b=A3JnhrLt
-        Bezz1ZX8ytp6kDztCHRLcDzy3PydIli1Q9Xr6H26BzRj6Y1v+zxdjyb5Ihx6OYGh
-        tpWAtDp1JSdn6oU+h35toQY5LZLkB52dZEhI9LSZEaQtlpmAC15nRrT1XxRV5ZBp
-        GLpS1lbjUwZ3uFfkh1UldBwq8YV0wBaejSxMsEE9Ck34VgxKC1Mvm8I9lOIkrpbC
-        2jOayUUnlKyv/3mCfZy4n11A9LcCnnVYlTD1tUyd6vaizXbRVDE1C8bPe9fx4KMA
-        BncF4p17zeHUnyeUsmllzXMREZTkVt1BbqrJjnRZi+JOSeN2GWfoDgXJ79l4AEPz
-        GfRWfCtSXPAYfA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:message-id
-        :mime-version:subject:to:x-me-proxy:x-me-proxy:x-me-sender
-        :x-me-sender:x-sasl-enc; s=fm1; bh=la47Egwy6Y/rRPx3RH82DEySo4XXa
-        hG+teKFgq7ZosY=; b=SEMzn2BMINSVzAF+703koNzKCwxR8UBH7eS+yuTbb3LOw
-        9oMK6YnupNrzc9P5s6Zt5dXU6il2+YI1tJRIFsfJCW48oGnqlrvxKtiIVgcMqrsP
-        NpMmzODSKo6UOe13C8h0g3ViUOWSoNiatjRg3i3coPt656yaOo5wuuRW2i2+8kRI
-        SFI/+MNg3ypMbgxM3An8bTzZoHeYvH6zx8zT6us2b0drZY/b5ZgRUSj7pQyj4O6K
-        MnRc1BuF/tgtRZ4ZP+aJsHvJ82wyH+krIvz+SgpqYzhXMnvg26ZrBC1p/LQHuoUE
-        PuTF9WZLDvVvBI5H4Tc+m66xbK07Zs7pP1Forn5LA==
-X-ME-Sender: <xms:xMtyYaeKdic_3mD06wqfFaiwZTkWGvlOML6Sm0L0Nkp3vq5I-iMe9Q>
-    <xme:xMtyYUMv9TmHxdJsCHCaG4KLcqnne6ekE0lvcx9Sf3fUkJkI2Hpig1CT6MTqvhYLm
-    UDqi2uiztDF_dIaCGE>
-X-ME-Received: <xmr:xMtyYbip_5gnF5LJNI5nlp1LXeegLYJhvaKaqpSaWWMIL3kOUEeiuIGj5ccGDETnbaXzhyjCCuibI7RmqRDNCWEiUqjb_iebwVHbLlme>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddvkedgjedvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfggtggusehgtderredttddvnecuhfhrohhmpeforgigihhmvgcu
-    tfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrthhtvg
-    hrnhepuefgueelvedvjeejfeeltedtgffhkeevgfeugfelgeekjeetgeetkeefleffffek
-    necuffhomhgrihhnpehprghsthgvsghinhdrtghomhdpkhgvrhhnvghlrdhorhhgnecuve
-    hluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgv
-    segtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:xMtyYX__2SH1B3ij1GANHUUdheUrNHXXaoUa73LlKIqZ9gPmA72JTQ>
-    <xmx:xMtyYWuntSw_AHHeYT9XwFrt0pfXmiZNUAoNJhzINpxksHMLRTXX9A>
-    <xmx:xMtyYeEGTd_06q2Xu2MguJ35S8dMS76quo8Hll4k22AG3c6rdFWiCA>
-    <xmx:xctyYYJrFzut8Iiv2Gybu1uZWCyUoY5ZVecrHSvZoSZciwa1PnawaA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 22 Oct 2021 10:33:40 -0400 (EDT)
-Date:   Fri, 22 Oct 2021 16:33:37 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Stefan Wahren <stefan.wahren@i2se.com>
-Subject: GENET and UNIMAC MDIO probe issue?
-Message-ID: <20211022143337.jorflirdb6ctc5or@gilmour>
+        id S233321AbhJVPQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 11:16:03 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:42653 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231635AbhJVPQD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 11:16:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1634915625; x=1666451625;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=0pgSFMhFrjUwp8nUnDZv1E2iTrfi+4h7xkTesoJnttA=;
+  b=kzgiyll2hBme7qBeqYylCSKA91vAzbt+UjoAEaCvVrV6UR2oRNuj2VUF
+   +dad6v2uMxS9jga/DjScnw9EaTlmXg5jw4TQKycsql5CpMBAsvu+ZVdtf
+   mQE2L/t5AZyJ60ZwAY/qQgS3Jd//MrkWk0wCE4V191kxfWUhdYehon3D9
+   NrfD6P8Grw8wj70Bg6y9MHGpkfOvSt/v+4lUvcxZDx7PR2QokAwR+kb00
+   Q+cffC/KO8BUzhRhIPb94pIKoGG22NWKXjQMc4l5Iwy0yY5/gVcdOs0fc
+   wZGANqalahNPDtx4A+rJsHxvKlgNyKlMOiLwP7Zs7ap/Ne5q5lxsTkdKB
+   A==;
+IronPort-SDR: Ss6X8wYeLFLk1NWJmZOJoQyv3MeOHpX/Wsxj+Milba3Xs9xe3XaxzVlGE6T0/ewbzu28/hK5eu
+ tXYbn7TllAd6L6ChM/rOv8OP2TOyOJj+DMX69bZPXXYQTPtP6V1lAe9Gdnx+00zCsNNrnkGvbL
+ CMCDztRgNGrPOttQJjmjRg9yDfrbH0RTCorycMzYWRfdpWoxBwnsk4RTk34h80NiI9AdfnVy1U
+ qWxOYrq+PS+83sFU1znVNkiPsIt0B+xPnodt08HmeAmvsahK7WVRm7tOmwiS+WCInRvqOepNoi
+ lAhAKpfU6jQTiZSs3raPgioB
+X-IronPort-AV: E=Sophos;i="5.87,173,1631602800"; 
+   d="scan'208";a="141365468"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Oct 2021 08:13:45 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Fri, 22 Oct 2021 08:13:45 -0700
+Received: from validation1-XPS-8900.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Fri, 22 Oct 2021 08:13:44 -0700
+From:   Yuiko Oshino <yuiko.oshino@microchip.com>
+To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
+CC:     <bryan.whitehead@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        "Yuiko Oshino" <yuiko.oshino@microchip.com>
+Subject: [PATCH net] net: ethernet: microchip: lan743x: Fix driver crash when lan743x_pm_resume fails
+Date:   Fri, 22 Oct 2021 11:13:53 -0400
+Message-ID: <20211022151353.89908-1-yuiko.oshino@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="gwmvh4j2paigd32i"
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The driver needs to clean up and return when the initialization fails on resume.
 
---gwmvh4j2paigd32i
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Fixes: 23f0703c125b ("lan743x: Add main source files for new lan743x driver")
+Signed-off-by: Yuiko Oshino <yuiko.oshino@microchip.com>
+---
+ drivers/net/ethernet/microchip/lan743x_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Hi Florian, Doug,
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+index 03d02403c19e..3f8cce7cce77 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.c
++++ b/drivers/net/ethernet/microchip/lan743x_main.c
+@@ -3019,6 +3019,8 @@ static int lan743x_pm_resume(struct device *dev)
+ 	if (ret) {
+ 		netif_err(adapter, probe, adapter->netdev,
+ 			  "lan743x_hardware_init returned %d\n", ret);
++		lan743x_pci_cleanup(adapter);
++		return ret;
+ 	}
+ 
+ 	/* open netdev when netdev is at running state while resume.
+-- 
+2.25.1
 
-I'm currently trying to make the RaspberryPi CM4 IO board probe its
-ethernet controller, and it looks like genet doesn't manage to find its
-PHY and errors out with:
-
-[    3.240435] libphy: Fixed MDIO Bus: probed
-[    3.248849] bcmgenet fd580000.ethernet: GENET 5.0 EPHY: 0x0000
-[    3.259118] libphy: bcmgenet MII bus: probed
-[    3.278420] mdio_bus unimac-mdio--19: MDIO device at address 1 is missing.
-[    3.285661] unimac-mdio unimac-mdio.-19: Broadcom UniMAC MDIO bus
-
-....
-
-[   13.082281] could not attach to PHY
-[   13.089762] bcmgenet fd580000.ethernet eth0: failed to connect to PHY
-[   74.739621] could not attach to PHY
-[   74.746492] bcmgenet fd580000.ethernet eth0: failed to connect to PHY
-
-Here's the full boot log:
-https://pastebin.com/8RhuezSn
-
-It looks like it's related to the following bugzilla entry:
-https://bugzilla.kernel.org/show_bug.cgi?id=213485
-
-However, that commit has been merged for a while apparently, and even
-next-20211022 shows that behavior, both with the drivers built-in or as
-modules. The other suggested fix to set probe_type to
-PROBE_FORCE_SYNCHRONOUS doesn't seem to fix it either.
-
-Maxime
-
---gwmvh4j2paigd32i
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYXLLvAAKCRDj7w1vZxhR
-xfoKAPoDjeCSlyj1tImOb/wINm56CRX1zGyedJ3J5PgCIWAevQEAmhhE916Ghqyz
-f1++UC8xjpTnoqAhFv7QCgwrxyLPlQU=
-=ryie
------END PGP SIGNATURE-----
-
---gwmvh4j2paigd32i--
