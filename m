@@ -2,198 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ECAB437AC6
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 18:17:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1290437AC8
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 18:17:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233580AbhJVQTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 12:19:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50908 "EHLO
+        id S233585AbhJVQUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 12:20:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233516AbhJVQT3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 12:19:29 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A86EC061764;
-        Fri, 22 Oct 2021 09:17:11 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id g184so3757793pgc.6;
-        Fri, 22 Oct 2021 09:17:11 -0700 (PDT)
+        with ESMTP id S233510AbhJVQUG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 12:20:06 -0400
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8239C061764
+        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 09:17:48 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id bk18so5626857oib.8
+        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 09:17:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WXbmJaulO9/0IuhRPsYWAyYuPJMPjmxreH9KY1srL8E=;
-        b=WQyN/Zoj1RTznGl1rmGRsnJdHCRq5HTIivu9ZCk+UGjJ6inWAJlNxkDkbxPdnJPaxs
-         v2BGufr22CaAmm+TxkU7tOYns6kZgCTaBv7gvFj3ZAGRGMUF5BcNmAkzbHOnk4dw5uxH
-         eysVvxiIou1WOmEyRGu0RYgeaExceUKsZXXEsWFn5h4pIPl6Km4eNaRpS+mwzCCg9LM5
-         HZ+RasCBnGafhKy/MbB/rPGi8tdEPmnssmgwn6A29fysE/1oWJRjqNk3DEWCDYpw+ntr
-         sL8ZBqTUg/18pJzt6p+N1UX/ujogqfIbC7l/yhHJwTlfhIoowluiJja0FlkZ0pSvOk+o
-         dQKQ==
+        d=forshee.me; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qEG5uMlDEShJNnOz6XnTDSYbhgHxWBxfy3mReuFm6cQ=;
+        b=mXPIXez/Gt5I16UP8ypVFahbxUTpy2dhUrkBfAMhRIvIqRDRFqoOuIlv6n3qlHqGVU
+         0jTzMUBcgoLG1xhF/dC/HXkzW5iJux0c9zWSKtKZxtAoCw8jdxr/cyzShYW5MTcjelFX
+         BAciEDlglgW5id63BU2Oak+Acj7MI8isU0QGx+SZN3deHn0bjdhGuafa2oWMV1smpONl
+         4aL8rmN7iNqcpdFo/J2DIzQnYIVcvTrSgTnJip9qwi7ISMdObCzjZ+zpFLZkI9RkX0V7
+         hfpKwRS5Kts/1Cde50S68s8Ejy6A+1/2Q4yRXgCmXT3IdhahZwr4/1Arv4113cql6i0O
+         Zdfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WXbmJaulO9/0IuhRPsYWAyYuPJMPjmxreH9KY1srL8E=;
-        b=Ve4V8NJBk5DkEs+FUMgez5JF1jeX49geVf+d3NAncGphOddip1mqDRdxcrimvkzaVZ
-         DocmMe22XGsFmbFuLE67VKstNuXQWWOWpusGAy4SU6GPw9TEn7UnKDPcJEIJN39AZm4x
-         nEdGkY3KiDAqbQRe2VzpvxJ/QqEdScaCKuKEXggMeUYYBPmO0lqPEkNZZ730guLhay9v
-         iTPHrbWHj8e6S+qL8EKoaaBWGl7TJxPcrkZowq4CthzpvOSRAxk6bqX49D1u5LAAdpPN
-         i7X1YGE/zhUNedQvrpdmJ0SIgalSbqZWIzHKgtH6KOfbrALSIJ8NVNt/66/5rihjQ0Ju
-         rQnw==
-X-Gm-Message-State: AOAM530UBwRb1I6BaYsZNQFJXG1Hyi0EWegmIAGLlu1D+XsZ87tCT31O
-        oedn1m5jLv/2P4yVB227cOqmMNDpSdo=
-X-Google-Smtp-Source: ABdhPJyIhAf9KgwZev2LZ1FuSLB8CcGyfFAKKNWq/75Blc1PJg2sqPuzNq6VVP98rQwcc4gQA7QKDw==
-X-Received: by 2002:a05:6a00:731:b0:44c:7c1b:fe6a with SMTP id 17-20020a056a00073100b0044c7c1bfe6amr989849pfm.44.1634919430629;
-        Fri, 22 Oct 2021 09:17:10 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id nn14sm9866556pjb.27.2021.10.22.09.17.09
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qEG5uMlDEShJNnOz6XnTDSYbhgHxWBxfy3mReuFm6cQ=;
+        b=o7HJc+WY7GqAUNTjassZyXW6TgP8k3E270roz4S1eu9KwRDqsMdBeDRgScFObWrEg/
+         5ihy4CVZ0/ccHgh8ltUGUBzYlhTDQMrUE0jmfren1Nt4OGOA+Q3BQvAFbijbFzo0NfWP
+         ZJrW6ZHSWG7Zzfc4E5qwkQXaUQQueOTw6zWF7lapT3Rb4eDptsVnv5KmgXRy+XG7Tz68
+         jdOxFOO23NxM+ZO8cKoJNzffA06EsjIGxUj9F1iQlAoHkqnfpwZOTR0o3Rv318DPJHKU
+         AdHo/C3YZZgYBgUxGnrFeyfMts1YqGJUlYLXKu43roTfET+O1SO5wUcF6AFwCh58UmDU
+         9qtg==
+X-Gm-Message-State: AOAM5317trdo7lEVuf85s+8oZ6VnfSv8+YEPYzF3nx+ixL3gWRrowNeO
+        k5k4NJ3DLMvltDFAxJwch1VX5w==
+X-Google-Smtp-Source: ABdhPJzNXWFBSCHxbdsHSZ4ijP9y2TtQiwlL4DJ/yhHj2fQflSHhrfPdmVGUEz8jUoJvfa40o4DneA==
+X-Received: by 2002:a05:6808:1246:: with SMTP id o6mr481376oiv.136.1634919468070;
+        Fri, 22 Oct 2021 09:17:48 -0700 (PDT)
+Received: from localhost ([2605:a601:ac0f:820:12a9:d5f6:9bd1:6937])
+        by smtp.gmail.com with ESMTPSA id f10sm1712446otl.57.2021.10.22.09.17.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Oct 2021 09:17:10 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Doug Berger <opendmb@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Fri, 22 Oct 2021 09:17:47 -0700 (PDT)
+From:   Seth Forshee <seth@forshee.me>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com (open list:BROADCOM GENET
-        ETHERNET DRIVER), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next 3/3] net: bcmgenet: Add support for 7712 16nm internal EPHY
-Date:   Fri, 22 Oct 2021 09:17:03 -0700
-Message-Id: <20211022161703.3360330-4-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211022161703.3360330-1-f.fainelli@gmail.com>
-References: <20211022161703.3360330-1-f.fainelli@gmail.com>
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: sch: eliminate unnecessary RCU waits in mini_qdisc_pair_swap()
+Date:   Fri, 22 Oct 2021 11:17:46 -0500
+Message-Id: <20211022161747.81609-1-seth@forshee.me>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 16nm internal EPHY that is present in 7712 is actually a 16nm
-Gigabit PHY which has been forced to operate in 10/100 mode. Its
-controls are therefore via the EXT_GPHY_CTRL registers and not via the
-EXT_EPHY_CTRL which are used for all GENETv5 adapters. Add a match on
-the 7712 compatible string to allow that differentiation to happen.
+From: Seth Forshee <sforshee@digitalocean.com>
 
-On previous GENETv4 chips the EXT_CFG_IDDQ_GLOBAL_PWR bit was cleared by
-default, but this is not the case with this chip, so we need to make
-sure we clear it to power on the EPHY.
+Currently rcu_barrier() is used to ensure that no readers of the
+inactive mini_Qdisc buffer remain before it is reused. This waits for
+any pending RCU callbacks to complete, when all that is actually
+required is to wait for one RCU grace period to elapse after the buffer
+was made inactive. This means that using rcu_barrier() may result in
+unnecessary waits.
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+To improve this, store the current RCU state when a buffer is made
+inactive and use poll_state_synchronize_rcu() to check whether a full
+grace period has elapsed before reusing it. If a full grace period has
+not elapsed, wait for a grace period to elapse, and in the non-RT case
+use synchronize_rcu_expedited() to hasten it.
+
+Since this approach eliminates the RCU callback it is no longer
+necessary to synchronize_rcu() in the tp_head==NULL case. However, the
+RCU state should still be saved for the previously active buffer.
+
+Before this change I would typically see mini_qdisc_pair_swap() take
+tens of milliseconds to complete. After this change it typcially
+finishes in less than 1 ms, and often it takes just a few microseconds.
+
+Thanks to Paul for walking me through the options for improving this.
+
+Cc: "Paul E. McKenney" <paulmck@kernel.org>
+Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
 ---
- drivers/net/ethernet/broadcom/genet/bcmgenet.c | 13 +++++++++++--
- drivers/net/ethernet/broadcom/genet/bcmgenet.h |  2 ++
- drivers/net/ethernet/broadcom/genet/bcmmii.c   |  7 ++++---
- 3 files changed, 17 insertions(+), 5 deletions(-)
+ include/net/sch_generic.h |  2 +-
+ net/sched/sch_generic.c   | 38 +++++++++++++++++++-------------------
+ 2 files changed, 20 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index 5da9c00b43b1..226f4403cfed 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -1653,7 +1653,7 @@ static int bcmgenet_power_down(struct bcmgenet_priv *priv,
- 		/* Power down LED */
- 		if (priv->hw_params->flags & GENET_HAS_EXT) {
- 			reg = bcmgenet_ext_readl(priv, EXT_EXT_PWR_MGMT);
--			if (GENET_IS_V5(priv))
-+			if (GENET_IS_V5(priv) && !priv->ephy_16nm)
- 				reg |= EXT_PWR_DOWN_PHY_EN |
- 				       EXT_PWR_DOWN_PHY_RD |
- 				       EXT_PWR_DOWN_PHY_SD |
-@@ -1690,7 +1690,7 @@ static void bcmgenet_power_up(struct bcmgenet_priv *priv,
- 	case GENET_POWER_PASSIVE:
- 		reg &= ~(EXT_PWR_DOWN_DLL | EXT_PWR_DOWN_BIAS |
- 			 EXT_ENERGY_DET_MASK);
--		if (GENET_IS_V5(priv)) {
-+		if (GENET_IS_V5(priv) && !priv->ephy_16nm) {
- 			reg &= ~(EXT_PWR_DOWN_PHY_EN |
- 				 EXT_PWR_DOWN_PHY_RD |
- 				 EXT_PWR_DOWN_PHY_SD |
-@@ -3910,6 +3910,7 @@ static void bcmgenet_set_hw_params(struct bcmgenet_priv *priv)
- struct bcmgenet_plat_data {
- 	enum bcmgenet_version version;
- 	u32 dma_max_burst_length;
-+	bool ephy_16nm;
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index f8631ad3c868..c725464be814 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -1299,7 +1299,7 @@ struct mini_Qdisc {
+ 	struct tcf_block *block;
+ 	struct gnet_stats_basic_cpu __percpu *cpu_bstats;
+ 	struct gnet_stats_queue	__percpu *cpu_qstats;
+-	struct rcu_head rcu;
++	unsigned long rcu_state;
  };
  
- static const struct bcmgenet_plat_data v1_plat_data = {
-@@ -3942,6 +3943,12 @@ static const struct bcmgenet_plat_data bcm2711_plat_data = {
- 	.dma_max_burst_length = 0x08,
- };
+ static inline void mini_qdisc_bstats_cpu_update(struct mini_Qdisc *miniq,
+diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+index 854d2b38db85..8540c12c9a62 100644
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -1407,10 +1407,6 @@ void psched_ratecfg_precompute(struct psched_ratecfg *r,
+ }
+ EXPORT_SYMBOL(psched_ratecfg_precompute);
  
-+static const struct bcmgenet_plat_data bcm7712_plat_data = {
-+	.version = GENET_V5,
-+	.dma_max_burst_length = DMA_MAX_BURST_LENGTH,
-+	.ephy_16nm = true,
-+};
-+
- static const struct of_device_id bcmgenet_match[] = {
- 	{ .compatible = "brcm,genet-v1", .data = &v1_plat_data },
- 	{ .compatible = "brcm,genet-v2", .data = &v2_plat_data },
-@@ -3949,6 +3956,7 @@ static const struct of_device_id bcmgenet_match[] = {
- 	{ .compatible = "brcm,genet-v4", .data = &v4_plat_data },
- 	{ .compatible = "brcm,genet-v5", .data = &v5_plat_data },
- 	{ .compatible = "brcm,bcm2711-genet-v5", .data = &bcm2711_plat_data },
-+	{ .compatible = "brcm,bcm7712-genet-v5", .data = &bcm7712_plat_data },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, bcmgenet_match);
-@@ -4029,6 +4037,7 @@ static int bcmgenet_probe(struct platform_device *pdev)
- 	if (pdata) {
- 		priv->version = pdata->version;
- 		priv->dma_max_burst_length = pdata->dma_max_burst_length;
-+		priv->ephy_16nm = pdata->ephy_16nm;
- 	} else {
- 		priv->version = pd->genet_version;
- 		priv->dma_max_burst_length = DMA_MAX_BURST_LENGTH;
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.h b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
-index 1cc2838e52c6..946f6e283c4e 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.h
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
-@@ -329,6 +329,7 @@ struct bcmgenet_mib_counters {
- #define  EXT_CFG_IDDQ_BIAS		(1 << 0)
- #define  EXT_CFG_PWR_DOWN		(1 << 1)
- #define  EXT_CK25_DIS			(1 << 4)
-+#define  EXT_CFG_IDDQ_GLOBAL_PWR	(1 << 3)
- #define  EXT_GPHY_RESET			(1 << 5)
+-static void mini_qdisc_rcu_func(struct rcu_head *head)
+-{
+-}
+-
+ void mini_qdisc_pair_swap(struct mini_Qdisc_pair *miniqp,
+ 			  struct tcf_proto *tp_head)
+ {
+@@ -1423,28 +1419,30 @@ void mini_qdisc_pair_swap(struct mini_Qdisc_pair *miniqp,
  
- /* DMA rings size */
-@@ -612,6 +613,7 @@ struct bcmgenet_priv {
- 	phy_interface_t phy_interface;
- 	int phy_addr;
- 	int ext_phy;
-+	bool ephy_16nm;
+ 	if (!tp_head) {
+ 		RCU_INIT_POINTER(*miniqp->p_miniq, NULL);
+-		/* Wait for flying RCU callback before it is freed. */
+-		rcu_barrier();
+-		return;
+-	}
++	} else {
++		miniq = !miniq_old || miniq_old == &miniqp->miniq2 ?
++			&miniqp->miniq1 : &miniqp->miniq2;
  
- 	/* Interrupt variables */
- 	struct work_struct bcmgenet_irq_work;
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
-index ad56f54eda0a..5f259641437a 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
-@@ -139,14 +139,15 @@ void bcmgenet_phy_power_set(struct net_device *dev, bool enable)
- 	u32 reg = 0;
+-	miniq = !miniq_old || miniq_old == &miniqp->miniq2 ?
+-		&miniqp->miniq1 : &miniqp->miniq2;
++		/* We need to make sure that readers won't see the miniq
++		 * we are about to modify. So ensure that at least one RCU
++		 * grace period has elapsed since the miniq was made
++		 * inactive.
++		 */
++		if (IS_ENABLED(CONFIG_PREEMPT_RT))
++			cond_synchronize_rcu(miniq->rcu_state);
++		else if (!poll_state_synchronize_rcu(miniq->rcu_state))
++			synchronize_rcu_expedited();
  
- 	/* EXT_GPHY_CTRL is only valid for GENETv4 and onward */
--	if (GENET_IS_V4(priv)) {
-+	if (GENET_IS_V4(priv) || priv->ephy_16nm) {
- 		reg = bcmgenet_ext_readl(priv, EXT_GPHY_CTRL);
- 		if (enable) {
- 			reg &= ~EXT_CK25_DIS;
- 			bcmgenet_ext_writel(priv, reg, EXT_GPHY_CTRL);
- 			mdelay(1);
+-	/* We need to make sure that readers won't see the miniq
+-	 * we are about to modify. So wait until previous call_rcu callback
+-	 * is done.
+-	 */
+-	rcu_barrier();
+-	miniq->filter_list = tp_head;
+-	rcu_assign_pointer(*miniqp->p_miniq, miniq);
++		miniq->filter_list = tp_head;
++		rcu_assign_pointer(*miniqp->p_miniq, miniq);
++	}
  
--			reg &= ~(EXT_CFG_IDDQ_BIAS | EXT_CFG_PWR_DOWN);
-+			reg &= ~(EXT_CFG_IDDQ_BIAS | EXT_CFG_PWR_DOWN |
-+				 EXT_CFG_IDDQ_GLOBAL_PWR);
- 			reg |= EXT_GPHY_RESET;
- 			bcmgenet_ext_writel(priv, reg, EXT_GPHY_CTRL);
- 			mdelay(1);
-@@ -154,7 +155,7 @@ void bcmgenet_phy_power_set(struct net_device *dev, bool enable)
- 			reg &= ~EXT_GPHY_RESET;
- 		} else {
- 			reg |= EXT_CFG_IDDQ_BIAS | EXT_CFG_PWR_DOWN |
--			       EXT_GPHY_RESET;
-+			       EXT_GPHY_RESET | EXT_CFG_IDDQ_GLOBAL_PWR;
- 			bcmgenet_ext_writel(priv, reg, EXT_GPHY_CTRL);
- 			mdelay(1);
- 			reg |= EXT_CK25_DIS;
+ 	if (miniq_old)
+-		/* This is counterpart of the rcu barriers above. We need to
++		/* This is counterpart of the rcu sync above. We need to
+ 		 * block potential new user of miniq_old until all readers
+ 		 * are not seeing it.
+ 		 */
+-		call_rcu(&miniq_old->rcu, mini_qdisc_rcu_func);
++		miniq_old->rcu_state = start_poll_synchronize_rcu();
+ }
+ EXPORT_SYMBOL(mini_qdisc_pair_swap);
+ 
+@@ -1463,6 +1461,8 @@ void mini_qdisc_pair_init(struct mini_Qdisc_pair *miniqp, struct Qdisc *qdisc,
+ 	miniqp->miniq1.cpu_qstats = qdisc->cpu_qstats;
+ 	miniqp->miniq2.cpu_bstats = qdisc->cpu_bstats;
+ 	miniqp->miniq2.cpu_qstats = qdisc->cpu_qstats;
++	miniqp->miniq1.rcu_state = get_state_synchronize_rcu();
++	miniqp->miniq2.rcu_state = miniqp->miniq1.rcu_state;
+ 	miniqp->p_miniq = p_miniq;
+ }
+ EXPORT_SYMBOL(mini_qdisc_pair_init);
 -- 
-2.25.1
+2.30.2
 
