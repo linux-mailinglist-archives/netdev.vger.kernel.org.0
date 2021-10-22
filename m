@@ -2,123 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A45E437502
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 11:47:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3E2E43750E
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 11:50:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232460AbhJVJuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 05:50:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47490 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231992AbhJVJuG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 05:50:06 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E5FCC061766
-        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 02:47:49 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id d198-20020a1c1dcf000000b00322f53b9b89so2033384wmd.0
-        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 02:47:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XuyoO0KwbnJlAvuwrNyqN2UzjOrfqN6yescFAavqV+0=;
-        b=l9uS1gic+zy8IAayhWSJyK+m593hBUWrhkXaAbTdjCdOzFfqaFnDlCuVL3Oy/dDmGm
-         sPc5lm9q6bbNcR7K95BFCnDLTS3tMlWm9l2aLq2tBE9C8MVpdpjiwE2U5FV20VUfGOtp
-         Rr/Oy2aF71mJ1qVZGaLER3haWX7dEr6lZPRfh/G7EyNQpzSnRt7BBzSmOIRsC9fq4gAv
-         0fqAAKz0AMQ9ORVSpAfSIKqg7cp6Cyla8c5TD2fMqGzOK/0fJw/8g9+uxU9FXQ9mtcLJ
-         7CcU9OQHyNAoI+0xT5xvEBnqxuJDN/SZbcuUCZb65jbAYjDyyaGPHpw9WzdkQyQHamXK
-         +6NQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XuyoO0KwbnJlAvuwrNyqN2UzjOrfqN6yescFAavqV+0=;
-        b=ICpALCTLwirXJs9yM28AjUhzBDrubUg9/xGg3LhNv7M1XOQaBX2r9M9rXUiFSfmHMB
-         PfarZRfh5gvWOXxE6zekGL1NKJPX1kdMIwiKaHjPttLgTYk3MFKBIUyVWsPzLRbKyrkf
-         NYgFrNIGu6QPmvetkpLHxVyGcXAdkHGLm5YEClKh7a6sBUPWtOKoz8LfmbfK6lssYa+A
-         Q5EAjjMZDq6qa2fRoa0HOitrq5H3o4vNmvw7l9teoc8rIrFLt6iGxA4fZAei8fDAVHhw
-         XVTV8FwQ6Cs/Wzg+P42705o7s3vzDf320qfO+LbjUroxG8/sBXXYuRLAyJzL7BJPLIc/
-         vUhQ==
-X-Gm-Message-State: AOAM531McX6TXnkfG9eeqWnGUpByEqkO3jd4h7MP1rng0oZhe/oe6KKk
-        jf73P+f+Jy8FvhcXniS7mWGx10ntsW+gB4he
-X-Google-Smtp-Source: ABdhPJwMtcgjSWPbcQlGaNLO9zs6nwoMjl5M9xyy52UDXBAyjJNLhsHxSyCANAy2N9NYBOZpNBBwoA==
-X-Received: by 2002:a7b:c757:: with SMTP id w23mr12821745wmk.84.1634896067692;
-        Fri, 22 Oct 2021 02:47:47 -0700 (PDT)
-Received: from localhost.localdomain ([149.86.70.166])
-        by smtp.gmail.com with ESMTPSA id g2sm7277368wrq.62.2021.10.22.02.47.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Oct 2021 02:47:47 -0700 (PDT)
-From:   Quentin Monnet <quentin@isovalent.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Quentin Monnet <quentin@isovalent.com>,
-        YiFei Zhu <zhuyifei@google.com>
-Subject: [PATCH bpf-next] bpftool: avoid leaking the JSON writer prepared for program metadata
-Date:   Fri, 22 Oct 2021 10:47:43 +0100
-Message-Id: <20211022094743.11052-1-quentin@isovalent.com>
-X-Mailer: git-send-email 2.25.1
+        id S232415AbhJVJww (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 05:52:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55598 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231992AbhJVJww (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Oct 2021 05:52:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0C87A611CB;
+        Fri, 22 Oct 2021 09:50:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634896235;
+        bh=aCRXavwbJdSY/K+s4FvrFyrCNo4Wxkh04CP/XaQOMc8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=tZcb4Z9mZmnjxXHiP3rpnpgR8pvv8ELAxLnHg5qupT/GGi5W13GIAMEQR2MDerdcL
+         1K06LF+nD4prq1IIUxO7qLKCn7TSmH8tPrhtVHKPvTT6xuJEiFYfOPN3UtL5b5PFRC
+         kJ3jl/8/E2KyRwo62DZcpNWPdX9QXgvDqJRirLp3YxCysd2/ygxCvEI4YqchpSnPOv
+         sF/LzCdPwB7u4CU3mCVGMcMkwaND2nrqP3Hi0VXaAOmdSg0Bc57nPF62G7WVWTp2/R
+         Ewsmxzey+lPwRT29R7anY33B2FkSuwEYsdVm4X6p7DBXRL+NVXYkVG635BKz8s7zzJ
+         SWr0glNUtHA3w==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F3ED2609E7;
+        Fri, 22 Oct 2021 09:50:34 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [GIT PULL] Networking for 5.15-rc7
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163489623499.18872.8059195415527012685.git-patchwork-notify@kernel.org>
+Date:   Fri, 22 Oct 2021 09:50:34 +0000
+References: <20211021153226.788611-1-kuba@kernel.org>
+In-Reply-To: <20211021153226.788611-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     torvalds@linux-foundation.org, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bpftool creates a new JSON object for writing program metadata in plain
-text mode, regardless of metadata being present or not. Then this writer
-is freed if any metadata has been found and printed, but it leaks
-otherwise. We cannot destroy the object unconditionally, because the
-destructor prints an undesirable line break. Instead, make sure the
-writer is created only after we have found program metadata to print.
+Hello:
 
-Found with valgrind.
+This pull request was applied to netdev/net.git (master)
+by Linus Torvalds <torvalds@linux-foundation.org>:
 
-Cc: YiFei Zhu <zhuyifei@google.com>
-Fixes: aff52e685eb3 ("bpftool: Support dumping metadata")
-Signed-off-by: Quentin Monnet <quentin@isovalent.com>
----
- tools/bpf/bpftool/prog.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+On Thu, 21 Oct 2021 08:32:26 -0700 you wrote:
+> Hi Linus!
+> 
+> We'll have one more fix for a socket accounting regression,
+> it's still getting polished. Otherwise things look fine.
+> 
+> The following changes since commit ec681c53f8d2d0ee362ff67f5b98dd8263c15002:
+> 
+> [...]
 
-diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
-index 277d51c4c5d9..f633299b1261 100644
---- a/tools/bpf/bpftool/prog.c
-+++ b/tools/bpf/bpftool/prog.c
-@@ -307,18 +307,12 @@ static void show_prog_metadata(int fd, __u32 num_maps)
- 		if (printed_header)
- 			jsonw_end_object(json_wtr);
- 	} else {
--		json_writer_t *btf_wtr = jsonw_new(stdout);
-+		json_writer_t *btf_wtr;
- 		struct btf_dumper d = {
- 			.btf = btf,
--			.jw = btf_wtr,
- 			.is_plain_text = true,
- 		};
- 
--		if (!btf_wtr) {
--			p_err("jsonw alloc failed");
--			goto out_free;
--		}
--
- 		for (i = 0; i < vlen; i++, vsi++) {
- 			t_var = btf__type_by_id(btf, vsi->type);
- 			name = btf__name_by_offset(btf, t_var->name_off);
-@@ -328,6 +322,14 @@ static void show_prog_metadata(int fd, __u32 num_maps)
- 
- 			if (!printed_header) {
- 				printf("\tmetadata:");
-+
-+				btf_wtr = jsonw_new(stdout);
-+				if (!btf_wtr) {
-+					p_err("jsonw alloc failed");
-+					goto out_free;
-+				}
-+				d.jw = btf_wtr,
-+
- 				printed_header = true;
- 			}
- 
+Here is the summary with links:
+  - [GIT,PULL] Networking for 5.15-rc7
+    https://git.kernel.org/netdev/net/c/6c2c712767ee
+
+You are awesome, thank you!
 -- 
-2.30.2
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
