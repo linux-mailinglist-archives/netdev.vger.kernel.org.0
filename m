@@ -2,115 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FCEF4379F9
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 17:34:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19C884379FF
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 17:36:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232384AbhJVPhG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 11:37:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41182 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231133AbhJVPhG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 11:37:06 -0400
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFEFEC061764;
-        Fri, 22 Oct 2021 08:34:48 -0700 (PDT)
-Received: by mail-il1-x134.google.com with SMTP id j6so4452995ila.1;
-        Fri, 22 Oct 2021 08:34:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=n5H9Bf9ZcCtG40Soap2ANs+z3ZAK6GVAhwLSpZUSWec=;
-        b=BZDTYMK4Rxq99wt3oQTT9VDAGhX7uLuCcVFpuvTqcHIm54ZyTbTkt98x2ysZJnNCDB
-         vx3fbAlM7fxQ+KW79p7FlW2mkY0KN9WdUckx2+xm4rbrRMWdmDti8gULQgpTP9kH1wv7
-         5Ht1JHuiBWjUcHA1jmlpkeb8kghz5jzPyesJxfDVy7nKcMHamdg5ia46frs7zTY+C8cS
-         2qss4ScebggBeZFbwKPG64LOG2XhgOFfuomRyAZZtiOEkt7Z2PttGd8OCIQOzTOcpp2q
-         eCQneacDrQ6Lb7CfgGxXtIZcDLgGKDw8xK9krX7t4gl1eruVcIyYMAmAvlSgNqpKlySm
-         0cFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=n5H9Bf9ZcCtG40Soap2ANs+z3ZAK6GVAhwLSpZUSWec=;
-        b=B3zMiAbZMg16y4ptk2wR5wLANi3vim352eblTrfB/VmQwCxX3M33D7tz1n0zelmlwM
-         DKKc6yuFW+AGVSMXOa76WwheymoyFLzEZ69epzDuAQa8Wz6em0KBLxWxWYJKmeJwXFXq
-         C91bIQgpWxPGIB7EfXRl1Res7DfPaSZZ9vlqG+npp3/lvQ1UWUrD8cKkpQIsVvKmgHc5
-         DqvoHKFt5IwlajI7Xw9o6JXfPXZiLpCoa5yUUKQ3r2XPy8NW+2rz2inbA9pZ/oAwuc7B
-         aJH9DBnoEGfZ9yuN87jFLAulq6JDEFh18WUfOUWTd9tqTmDYbDHDUVqQT7ZYdcn6K41F
-         bjdg==
-X-Gm-Message-State: AOAM532hiRjZhAnbpyFTERt3lZ+r0LEkT5P5kl252BGLZ8wNsRn4C999
-        9geUkZk49Xkd2orfcdkD3d8=
-X-Google-Smtp-Source: ABdhPJxYUhGJB+jUFDS/oaJSwUrqOLFdIMm6eNh2dKxmBCkq8HfxtUW1Ye/rjByuUAtzFN8bDwN9Mg==
-X-Received: by 2002:a92:de47:: with SMTP id e7mr468500ilr.282.1634916888379;
-        Fri, 22 Oct 2021 08:34:48 -0700 (PDT)
-Received: from localhost ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id c4sm4392167ioo.48.2021.10.22.08.34.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Oct 2021 08:34:48 -0700 (PDT)
-Date:   Fri, 22 Oct 2021 08:34:40 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Message-ID: <6172da1091904_82a7f20833@john-XPS-13-9370.notmuch>
-In-Reply-To: <20211008203306.37525-1-xiyou.wangcong@gmail.com>
-References: <20211008203306.37525-1-xiyou.wangcong@gmail.com>
-Subject: RE: [Patch bpf v4 0/4] sock_map: fix ->poll() and update selftests
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S233247AbhJVPiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 11:38:25 -0400
+Received: from mga11.intel.com ([192.55.52.93]:42037 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231133AbhJVPiY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Oct 2021 11:38:24 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10144"; a="226778478"
+X-IronPort-AV: E=Sophos;i="5.87,173,1631602800"; 
+   d="scan'208";a="226778478"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2021 08:36:06 -0700
+X-IronPort-AV: E=Sophos;i="5.87,173,1631602800"; 
+   d="scan'208";a="569231223"
+Received: from smile.fi.intel.com ([10.237.72.184])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2021 08:36:03 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@intel.com>)
+        id 1mdwa4-000917-Nn;
+        Fri, 22 Oct 2021 18:35:40 +0300
+Date:   Fri, 22 Oct 2021 18:35:40 +0300
+From:   Andy Shevchenko <andriy.shevchenko@intel.com>
+To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
+        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
+        haijun.liu@mediatek.com
+Subject: Re: [PATCH 00/14] net: wwan: t7xx: PCIe driver for MediaTek M.2 modem
+Message-ID: <YXLaTOIydG6mML0m@smile.fi.intel.com>
+References: <20211021202738.729-1-ricardo.martinez@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211021202738.729-1-ricardo.martinez@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
+On Thu, Oct 21, 2021 at 01:27:24PM -0700, Ricardo Martinez wrote:
+> t7xx is the PCIe host device driver for Intel 5G 5000 M.2 solution which is based on MediaTek's T700 modem to provide WWAN connectivity.
+> The driver uses the WWAN framework infrastructure to create the following control ports and network interfaces:
+> * /dev/wwan0mbim0 - Interface conforming to the MBIM protocol. Applications like libmbim [1] or Modem Manager [2] from v1.16 onwards with [3][4] can use it to enable data communication towards WWAN.
+> * /dev/wwan0at0 - Interface that supports AT commands.
+> * wwan0 - Primary network interface for IP traffic.
 > 
-> This patchset fixes ->poll() for sockets in sockmap and updates
-> selftests accordingly with select(). Please check each patch
-> for more details.
+> The main blocks in t7xx driver are:
+> * PCIe layer - Implements driver probe, removal, and power management callbacks.
+> * Port-proxy - Provides a common interface to interact with different types of ports such as WWAN ports.
+> * Modem control & status monitor - Implement the entry point for modem initialization, reset and exit, as well as exception handling.
+> * CLDMA (Control Layer DMA) - Manages the HW used by the port layer to send control messages to the modem using MediaTek's CCCI (Cross-Core Communication Interface) protocol.
+> * DPMAIF (Data Plane Modem AP Interface) - Controls the HW that provides uplink and downlink queues for the data path. The data exchange takes place using circular buffers to share data buffer addresses and metadata to describe the packets.
+> * MHCCIF (Modem Host Cross-Core Interface) - Provides interrupt channels for bidirectional event notification such as handshake, exception, PM and port enumeration.
 > 
-> Fixes: c50524ec4e3a ("Merge branch 'sockmap: add sockmap support for unix datagram socket'")
-> Fixes: 89d69c5d0fbc ("Merge branch 'sockmap: introduce BPF_SK_SKB_VERDICT and support UDP'")
-> Acked-by: John Fastabend <john.fastabend@gmail.com>
+> The compilation of the t7xx driver is enabled by the CONFIG_MTK_T7XX config option which depends on CONFIG_WWAN.
+> This driver was originally developed by MediaTek. Intel adapted t7xx to the WWAN framework, optimized and refactored the driver source in close collaboration with MediaTek. This will enable getting the t7xx driver on Approved Vendor List for interested OEM's and ODM's productization plans with Intel 5G 5000 M.2 solution.
 > 
-> ---
-> v4: add a comment in udp_poll()
+
+Something wrong with indentation here. Please, be sure that you have it packed
+to ~76 characters per line.
+
+> List of contributors:
+> Amir Hanania <amir.hanania@intel.com>
+> Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
+> Dinesh Sharma <dinesh.sharma@intel.com>
+> Eliot Lee <eliot.lee@intel.com>
+> Haijun Liu <haijun.liu@mediatek.com>
+> M Chetan Kumar <m.chetan.kumar@intel.com>
+> Mika Westerberg <mika.westerberg@linux.intel.com>
+> Moises Veleta <moises.veleta@intel.com>
+> Pierre-louis Bossart <pierre-louis.bossart@intel.com>
+> Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
+> Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> Muralidharan Sethuraman <muralidharan.sethuraman@intel.com>
+> Soumya Prakash Mishra <Soumya.Prakash.Mishra@intel.com>
+> Sreehari Kancharla <sreehari.kancharla@intel.com>
+> Suresh Nagaraj <suresh.nagaraj@intel.com>
+
+You mentioned all these people and only few are in Cc list.
+Note, you may utilize `git format-patch --cc ...` for that.
+
+> [1] https://www.freedesktop.org/software/libmbim/
+> [2] https://www.freedesktop.org/software/ModemManager/
+> [3] https://gitlab.freedesktop.org/mobile-broadband/ModemManager/-/merge_requests/582
+> [4] https://gitlab.freedesktop.org/mobile-broadband/ModemManager/-/merge_requests/523
 > 
-> v3: drop sk_psock_get_checked()
->     reuse tcp_bpf_sock_is_readable()
+> Ricardo Martinez (14):
+>   net: wwan: Add default MTU size
+>   net: wwan: t7xx: Add control DMA interface
+>   net: wwan: t7xx: Add core components
+>   net: wwan: t7xx: Add port proxy infrastructure
+>   net: wwan: t7xx: Add control port
+>   net: wwan: t7xx: Add AT and MBIM WWAN ports
+>   net: wwan: t7xx: Data path HW layer
+>   net: wwan: t7xx: Add data path interface
+>   net: wwan: t7xx: Add WWAN network interface
+>   net: wwan: t7xx: Introduce power management support
+>   net: wwan: t7xx: Runtime PM
+>   net: wwan: t7xx: Device deep sleep lock/unlock
+>   net: wwan: t7xx: Add debug and test ports
+>   net: wwan: t7xx: Add maintainers and documentation
 > 
-> v2: rename and reuse ->stream_memory_read()
->     fix a compile error in sk_psock_get_checked()
-> 
-> Cong Wang (3):
->   net: rename ->stream_memory_read to ->sock_is_readable
->   skmsg: extract and reuse sk_msg_is_readable()
->   net: implement ->sock_is_readable() for UDP and AF_UNIX
-> 
-> Yucong Sun (1):
->   selftests/bpf: use recv_timeout() instead of retries
-> 
->  include/linux/skmsg.h                         |  1 +
->  include/net/sock.h                            |  8 +-
->  include/net/tls.h                             |  2 +-
->  net/core/skmsg.c                              | 14 ++++
->  net/ipv4/tcp.c                                |  5 +-
->  net/ipv4/tcp_bpf.c                            | 15 +---
->  net/ipv4/udp.c                                |  3 +
->  net/ipv4/udp_bpf.c                            |  1 +
->  net/tls/tls_main.c                            |  4 +-
->  net/tls/tls_sw.c                              |  2 +-
->  net/unix/af_unix.c                            |  4 +
->  net/unix/unix_bpf.c                           |  2 +
->  .../selftests/bpf/prog_tests/sockmap_listen.c | 75 +++++--------------
->  13 files changed, 58 insertions(+), 78 deletions(-)
+>  .../networking/device_drivers/wwan/index.rst  |    1 +
+>  .../networking/device_drivers/wwan/t7xx.rst   |  120 ++
+>  MAINTAINERS                                   |   11 +
+>  drivers/net/wwan/Kconfig                      |   14 +
+>  drivers/net/wwan/Makefile                     |    1 +
+>  drivers/net/wwan/t7xx/Makefile                |   24 +
+>  drivers/net/wwan/t7xx/t7xx_cldma.c            |  270 +++
+>  drivers/net/wwan/t7xx/t7xx_cldma.h            |  162 ++
+>  drivers/net/wwan/t7xx/t7xx_common.h           |   69 +
+>  drivers/net/wwan/t7xx/t7xx_dpmaif.c           | 1515 +++++++++++++++
+>  drivers/net/wwan/t7xx/t7xx_dpmaif.h           |  160 ++
+>  drivers/net/wwan/t7xx/t7xx_hif_cldma.c        | 1653 +++++++++++++++++
+>  drivers/net/wwan/t7xx/t7xx_hif_cldma.h        |  148 ++
+>  drivers/net/wwan/t7xx/t7xx_hif_dpmaif.c       |  630 +++++++
+>  drivers/net/wwan/t7xx/t7xx_hif_dpmaif.h       |  271 +++
+>  drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c    | 1553 ++++++++++++++++
+>  drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.h    |  110 ++
+>  drivers/net/wwan/t7xx/t7xx_hif_dpmaif_tx.c    |  834 +++++++++
+>  drivers/net/wwan/t7xx/t7xx_hif_dpmaif_tx.h    |   74 +
+>  drivers/net/wwan/t7xx/t7xx_mhccif.c           |  118 ++
+>  drivers/net/wwan/t7xx/t7xx_mhccif.h           |   29 +
+>  drivers/net/wwan/t7xx/t7xx_modem_ops.c        |  741 ++++++++
+>  drivers/net/wwan/t7xx/t7xx_modem_ops.h        |   84 +
+>  drivers/net/wwan/t7xx/t7xx_monitor.h          |  140 ++
+>  drivers/net/wwan/t7xx/t7xx_netdev.c           |  535 ++++++
+>  drivers/net/wwan/t7xx/t7xx_netdev.h           |   56 +
+>  drivers/net/wwan/t7xx/t7xx_pci.c              |  779 ++++++++
+>  drivers/net/wwan/t7xx/t7xx_pci.h              |  114 ++
+>  drivers/net/wwan/t7xx/t7xx_pcie_mac.c         |  270 +++
+>  drivers/net/wwan/t7xx/t7xx_pcie_mac.h         |   29 +
+>  drivers/net/wwan/t7xx/t7xx_port.h             |  155 ++
+>  drivers/net/wwan/t7xx/t7xx_port_char.c        |  416 +++++
+>  drivers/net/wwan/t7xx/t7xx_port_ctrl_msg.c    |  142 ++
+>  drivers/net/wwan/t7xx/t7xx_port_proxy.c       |  819 ++++++++
+>  drivers/net/wwan/t7xx/t7xx_port_proxy.h       |   94 +
+>  drivers/net/wwan/t7xx/t7xx_port_tty.c         |  185 ++
+>  drivers/net/wwan/t7xx/t7xx_port_wwan.c        |  271 +++
+>  drivers/net/wwan/t7xx/t7xx_reg.h              |  389 ++++
+>  drivers/net/wwan/t7xx/t7xx_skb_util.c         |  354 ++++
+>  drivers/net/wwan/t7xx/t7xx_skb_util.h         |  102 +
+>  drivers/net/wwan/t7xx/t7xx_state_monitor.c    |  620 +++++++
+>  drivers/net/wwan/t7xx/t7xx_tty_ops.c          |  200 ++
+>  drivers/net/wwan/t7xx/t7xx_tty_ops.h          |   39 +
+>  include/linux/wwan.h                          |    5 +
+>  44 files changed, 14306 insertions(+)
+>  create mode 100644 Documentation/networking/device_drivers/wwan/t7xx.rst
+>  create mode 100644 drivers/net/wwan/t7xx/Makefile
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_cldma.c
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_cldma.h
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_common.h
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_dpmaif.c
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_dpmaif.h
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_hif_cldma.c
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_hif_cldma.h
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_hif_dpmaif.c
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_hif_dpmaif.h
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.h
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_hif_dpmaif_tx.c
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_hif_dpmaif_tx.h
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_mhccif.c
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_mhccif.h
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_modem_ops.c
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_modem_ops.h
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_monitor.h
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_netdev.c
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_netdev.h
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_pci.c
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_pci.h
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_pcie_mac.c
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_pcie_mac.h
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_port.h
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_port_char.c
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_port_ctrl_msg.c
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_port_proxy.c
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_port_proxy.h
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_port_tty.c
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_port_wwan.c
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_reg.h
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_skb_util.c
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_skb_util.h
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_state_monitor.c
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_tty_ops.c
+>  create mode 100644 drivers/net/wwan/t7xx/t7xx_tty_ops.h
 > 
 > -- 
-> 2.30.2
+> 2.17.1
+> 
 > 
 
-For the series. Thanks.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+
