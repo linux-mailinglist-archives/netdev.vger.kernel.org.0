@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60A09437C71
+	by mail.lfdr.de (Postfix) with ESMTP id B2786437C72
 	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 20:07:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233659AbhJVSJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 14:09:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47350 "EHLO
+        id S233677AbhJVSJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 14:09:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233417AbhJVSJE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 14:09:04 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48678C061766
-        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 11:06:47 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id j190so4074303pgd.0
-        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 11:06:47 -0700 (PDT)
+        with ESMTP id S233380AbhJVSJG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 14:09:06 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D002C061764
+        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 11:06:48 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id t184so4021689pgd.8
+        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 11:06:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0yyllo3WZB48et++gRw1Kfy98Sxb28FBJZIHRNJzrAQ=;
-        b=bt3UlQ/Ao8mS3tRu0yYGTgBOw1c6O0hJfXgZefZavTxNvww76io70AWJOtHHWVUcyJ
-         VMFO1LnW3cKKYge8zkzbYn733OaRYIUI3lSG0yTABW83iY2pfM+GezxWThLvaSSjiRBr
-         d0QvvYx+cuvhUJLQjAqegDIVfGxNeKxT3os5i8ityKFaO0XkR7fuHvwSYQMoTGMHdv6K
-         A7a7HFkteXnbuacfHmAMWcWUhkTvWLZDmO1bH653+wrwtGbeJS/cCJQIrKwchZhEQXCc
-         /S8VDDiShguwY97iJc47lpGyxGUmFSsU6zVYexw+O/qOE23732aEm5B/TsSU8NU4Y/P7
-         El6w==
+        bh=rGhsFZtty3TfuZLdBWUVogOBgtU5kynOQyqpH9Svcbs=;
+        b=i15LFuMmejjOUGHBZfVk1ylhL1AzO3minHn67Z9uCpCNqJXAFIhZhhI6Jp6vRAOMoZ
+         fWQb2yBOu3Lu5weaUab7YUr1AlkJXuWymigoZh6l44JUhxjD5By02aUSzBnacCOynO+v
+         SIPYgDzb7120hMzHKl2K5I10w/BbuONm8VCX6yfzZCsTOPg2/T4TCAFBOXS/nID0sYZC
+         xlk60292obTZ1U3p0r0bilcGN+5pdFGOAWStna6ss2U0rfSYRVhQ0duWlrqmLMHpRzVa
+         JTMalkPdyZzYduhLNJ1j3659FUbwyvx1b2Jk/fpEvrg5EIxXnjusV1lN5u/vV9ksc9yp
+         Dclw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0yyllo3WZB48et++gRw1Kfy98Sxb28FBJZIHRNJzrAQ=;
-        b=Rvf+PDmsqrsIhk2AFgtTW4gn2N1PeZRzPLWVWklgc8Xl7L0j/epDRhfytLJwFqM1sJ
-         czXXTYhwhtuNxo2IJzikAV0Az8zr/X3SjQrbHUL2RY4iXTiAWVekuBgG9B43v/BIb3Fp
-         mtsdbSFrPkm2i8/BZNqGgPBZaap3ZaUhsOWE9dPS7p5U2qhHaJXj8HfWtmURAuC+EJLO
-         BoLxtIdRuDDkNKcwwNYkucsAof9LxpvMPHp32v89BPkS/ay2BEI2Ldcg36x8BAHipbR0
-         T6zbB0Bvld64TW+JhAvrqIOFEVBeh9vRR1932jVuqJKUY+W0GjieqNcO9QvVy3cnfXAD
-         Clfg==
-X-Gm-Message-State: AOAM532uq4lVV22+w78ibIQ+zPQPmx3MLO6LlqzoGMo5wSVG5W9IcenE
-        1Re6+s10Iogtv4Coiaw9PzloNV1TQ9M=
-X-Google-Smtp-Source: ABdhPJw59Nv3jPoH8KtQxCcJKFmVv4PXFaJK8C7lU4YnMgyfl9bbaQHMjRYF/3ZOm4f17C8SNph8Zw==
-X-Received: by 2002:a63:2a97:: with SMTP id q145mr947832pgq.217.1634926006486;
-        Fri, 22 Oct 2021 11:06:46 -0700 (PDT)
+        bh=rGhsFZtty3TfuZLdBWUVogOBgtU5kynOQyqpH9Svcbs=;
+        b=va/DA9h9pJ9VFHmI7xBaqxM2BB4aSPfzM4iqpsE071+RXcm4qmnVLJj/e5oGPk74Bk
+         HR2GXulbv66GK3hKKyG5UEqL4S7iUed2YwCVxyfEkDzGpva/zCqd8dcjWE4hxzwQGr3r
+         ONRkMIhdgwmhyrYV1gnYkB0Llc+ysHLv7BMymjLaex9zEDvyBRTt+RvK9z33Akcau+sF
+         e3n3vFk2kXmrQc3WKa7IjcXjkzyWWP/3VDIw/8Sfpf1cm4yAjvChKA1FVQ6DoV3BkCeK
+         4kvPUgP65aJFhT9UCbfQMu8nWTabzle+0kJAmt4ly3dzO9ZnJ/mggzJU38Ia7ExwQelp
+         2oLA==
+X-Gm-Message-State: AOAM530K7c09HIUqOois1vZsYJIDL9egWvZ7iuno2cZZmCXYdM2ygDeS
+        w8PJCyodz9vPgcOHGZ8yY1+kkNONq9E=
+X-Google-Smtp-Source: ABdhPJwG7tWnU1OuzLy083DUouz6nXnsOv5IXR5dermNParjquwHE9bzqTiyAeU12AkK+gDbxVPqDQ==
+X-Received: by 2002:a05:6a00:1488:b0:44d:25b2:f80b with SMTP id v8-20020a056a00148800b0044d25b2f80bmr1601165pfu.20.1634926007504;
+        Fri, 22 Oct 2021 11:06:47 -0700 (PDT)
 Received: from localhost.localdomain ([50.39.163.188])
         by smtp.gmail.com with ESMTPSA id a3sm11912576pfv.174.2021.10.22.11.06.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
@@ -50,9 +50,9 @@ Received: from localhost.localdomain ([50.39.163.188])
 From:   James Prestwood <prestwoj@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     James Prestwood <prestwoj@gmail.com>
-Subject: [PATCH v6 2/3] net: ndisc: introduce ndisc_evict_nocarrier sysctl parameter
-Date:   Fri, 22 Oct 2021 11:00:57 -0700
-Message-Id: <20211022180058.1045776-3-prestwoj@gmail.com>
+Subject: [PATCH v6 3/3] selftests: net: add arp_ndisc_evict_nocarrier
+Date:   Fri, 22 Oct 2021 11:00:58 -0700
+Message-Id: <20211022180058.1045776-4-prestwoj@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211022180058.1045776-1-prestwoj@gmail.com>
 References: <20211022180058.1045776-1-prestwoj@gmail.com>
@@ -62,152 +62,204 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In most situations the neighbor discovery cache should be cleared on a
-NOCARRIER event which is currently done unconditionally. But for wireless
-roams the neighbor discovery cache can and should remain intact since
-the underlying network has not changed.
+This tests the sysctl options for ARP/ND:
 
-This patch introduces a sysctl option ndisc_evict_nocarrier which can
-be disabled by a wireless supplicant during a roam. This allows packets
-to be sent after a roam immediately without having to wait for
-neighbor discovery.
-
-A user reported roughly a 1 second delay after a roam before packets
-could be sent out (note, on IPv4). This delay was due to the ARP
-cache being cleared. During testing of this same scenario using IPv6
-no delay was noticed, but regardless there is no reason to clear
-the ndisc cache for wireless roams.
+/net/ipv4/conf/<iface>/arp_evict_nocarrier
+/net/ipv6/conf/<iface>/ndisc_evict_nocarrier
 
 Signed-off-by: James Prestwood <prestwoj@gmail.com>
 ---
- Documentation/networking/ip-sysctl.rst |  9 +++++++++
- include/linux/ipv6.h                   |  1 +
- include/uapi/linux/ipv6.h              |  1 +
- net/ipv6/addrconf.c                    | 12 ++++++++++++
- net/ipv6/ndisc.c                       | 12 +++++++++++-
- 5 files changed, 34 insertions(+), 1 deletion(-)
+ .../net/arp_ndisc_evict_nocarrier.sh          | 181 ++++++++++++++++++
+ 1 file changed, 181 insertions(+)
+ create mode 100755 tools/testing/selftests/net/arp_ndisc_evict_nocarrier.sh
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index 18fde4ed7a5e..c61cc0219f4c 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -2350,6 +2350,15 @@ ndisc_tclass - INTEGER
- 
- 	* 0 - (default)
- 
-+ndisc_evict_nocarrier - BOOLEAN
-+	Clears the neighbor discovery table on NOCARRIER events. This option is
-+	important for wireless devices where the neighbor discovery cache should
-+	not be cleared when roaming between access points on the same network.
-+	In most cases this should remain as the default (1).
+diff --git a/tools/testing/selftests/net/arp_ndisc_evict_nocarrier.sh b/tools/testing/selftests/net/arp_ndisc_evict_nocarrier.sh
+new file mode 100755
+index 000000000000..f0853e19cb84
+--- /dev/null
++++ b/tools/testing/selftests/net/arp_ndisc_evict_nocarrier.sh
+@@ -0,0 +1,181 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++#
++# Tests sysctl options {arp,ndisc}_evict_nocarrier={0,1}
++#
++# Create a veth pair and set IPs/routes on both. Then ping to establish
++# an entry in the ARP/ND table. Depending on the test set sysctl option to
++# 1 or 0. Set remote veth down which will cause local veth to go into a no
++# carrier state. Depending on the test check the ARP/ND table:
++#
++# {arp,ndisc}_evict_nocarrier=1 should contain no ARP/ND after no carrier
++# {arp,ndisc}_evict_nocarrer=0 should still contain the single ARP/ND entry
++#
 +
-+	- 1 - (default): Clear neighbor discover cache on NOCARRIER events.
-+	- 0 - Do not clear neighbor discovery cache on NOCARRIER events.
++readonly PEER_NS="ns-peer-$(mktemp -u XXXXXX)"
++readonly V4_ADDR0=10.0.10.1
++readonly V4_ADDR1=10.0.10.2
++readonly V6_ADDR0=2001:db8:91::1
++readonly V6_ADDR1=2001:db8:91::2
++nsid=100
 +
- mldv1_unsolicited_report_interval - INTEGER
- 	The interval in milliseconds in which the next unsolicited
- 	MLDv1 report retransmit will take place.
-diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
-index ef4a69865737..753e5c0db2a3 100644
---- a/include/linux/ipv6.h
-+++ b/include/linux/ipv6.h
-@@ -79,6 +79,7 @@ struct ipv6_devconf {
- 	__u32		ioam6_id;
- 	__u32		ioam6_id_wide;
- 	__u8		ioam6_enabled;
-+	__u8		ndisc_evict_nocarrier;
- 
- 	struct ctl_table_header *sysctl_header;
- };
-diff --git a/include/uapi/linux/ipv6.h b/include/uapi/linux/ipv6.h
-index b243a53fa985..d4178dace0bf 100644
---- a/include/uapi/linux/ipv6.h
-+++ b/include/uapi/linux/ipv6.h
-@@ -193,6 +193,7 @@ enum {
- 	DEVCONF_IOAM6_ENABLED,
- 	DEVCONF_IOAM6_ID,
- 	DEVCONF_IOAM6_ID_WIDE,
-+	DEVCONF_NDISC_EVICT_NOCARRIER,
- 	DEVCONF_MAX
- };
- 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index d4fae16deec4..398294aa8348 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -241,6 +241,7 @@ static struct ipv6_devconf ipv6_devconf __read_mostly = {
- 	.ioam6_enabled		= 0,
- 	.ioam6_id               = IOAM6_DEFAULT_IF_ID,
- 	.ioam6_id_wide		= IOAM6_DEFAULT_IF_ID_WIDE,
-+	.ndisc_evict_nocarrier	= 1,
- };
- 
- static struct ipv6_devconf ipv6_devconf_dflt __read_mostly = {
-@@ -300,6 +301,7 @@ static struct ipv6_devconf ipv6_devconf_dflt __read_mostly = {
- 	.ioam6_enabled		= 0,
- 	.ioam6_id               = IOAM6_DEFAULT_IF_ID,
- 	.ioam6_id_wide		= IOAM6_DEFAULT_IF_ID_WIDE,
-+	.ndisc_evict_nocarrier	= 1,
- };
- 
- /* Check if link is ready: is it up and is a valid qdisc available */
-@@ -5542,6 +5544,7 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
- 	array[DEVCONF_IOAM6_ENABLED] = cnf->ioam6_enabled;
- 	array[DEVCONF_IOAM6_ID] = cnf->ioam6_id;
- 	array[DEVCONF_IOAM6_ID_WIDE] = cnf->ioam6_id_wide;
-+	array[DEVCONF_NDISC_EVICT_NOCARRIER] = cnf->ndisc_evict_nocarrier;
- }
- 
- static inline size_t inet6_ifla6_size(void)
-@@ -6983,6 +6986,15 @@ static const struct ctl_table addrconf_sysctl[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_douintvec,
- 	},
-+	{
-+		.procname	= "ndisc_evict_nocarrier",
-+		.data		= &ipv6_devconf.ndisc_evict_nocarrier,
-+		.maxlen		= sizeof(u8),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dou8vec_minmax,
-+		.extra1		= (void *)SYSCTL_ZERO,
-+		.extra2		= (void *)SYSCTL_ONE,
-+	},
- 	{
- 		/* sentinel */
- 	}
-diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-index 184190b9ea25..98342de5eaf7 100644
---- a/net/ipv6/ndisc.c
-+++ b/net/ipv6/ndisc.c
-@@ -1794,6 +1794,7 @@ static int ndisc_netdev_event(struct notifier_block *this, unsigned long event,
- 	struct netdev_notifier_change_info *change_info;
- 	struct net *net = dev_net(dev);
- 	struct inet6_dev *idev;
-+	bool evict_nocarrier;
- 
- 	switch (event) {
- 	case NETDEV_CHANGEADDR:
-@@ -1810,10 +1811,19 @@ static int ndisc_netdev_event(struct notifier_block *this, unsigned long event,
- 		in6_dev_put(idev);
- 		break;
- 	case NETDEV_CHANGE:
-+		idev = in6_dev_get(dev);
-+		if (!idev)
-+			evict_nocarrier = true;
-+		else {
-+			evict_nocarrier = idev->cnf.ndisc_evict_nocarrier ||
-+					  net->ipv6.devconf_all->ndisc_evict_nocarrier;
-+			in6_dev_put(idev);
-+		}
++cleanup_v6()
++{
++    ip netns del me
++    ip netns del peer
++}
 +
- 		change_info = ptr;
- 		if (change_info->flags_changed & IFF_NOARP)
- 			neigh_changeaddr(&nd_tbl, dev);
--		if (!netif_carrier_ok(dev))
-+		if (evict_nocarrier && !netif_carrier_ok(dev))
- 			neigh_carrier_down(&nd_tbl, dev);
- 		break;
- 	case NETDEV_DOWN:
++create_ns()
++{
++    local n=${1}
++
++    ip netns del ${n} 2>/dev/null
++
++    ip netns add ${n}
++    ip netns set ${n} $((nsid++))
++    ip -netns ${n} link set lo up
++}
++
++
++setup_v6() {
++    create_ns me
++    create_ns peer
++
++    IP="ip -netns me"
++
++    $IP li add veth1 type veth peer name veth2
++    $IP li set veth1 up
++    $IP -6 addr add $V6_ADDR0/64 dev veth1 nodad
++    $IP li set veth2 netns peer up
++    ip -netns peer -6 addr add $V6_ADDR1/64 dev veth2 nodad
++
++    ip netns exec me sysctl -w net.ipv6.conf.veth1.ndisc_evict_nocarrier=$1 \
++                            >/dev/null 2>&1
++
++    # Establish an ND cache entry
++    ip netns exec me ping -6 -c1 -Iveth1 $V6_ADDR1 >/dev/null 2>&1
++    # Should have the veth1 entry in ND table
++    ip netns exec me ip -6 neigh get $V6_ADDR1 dev veth1 >/dev/null 2>&1
++    if [ $? -ne 0 ]; then
++        cleanup_v6
++        echo "failed"
++        exit
++    fi
++
++    # Set veth2 down, which will put veth1 in NOCARRIER state
++    ip netns exec peer ip link set veth2 down
++}
++
++setup_v4() {
++    ip netns add "${PEER_NS}"
++    ip link add name veth0 type veth peer name veth1
++    ip link set dev veth0 up
++    ip link set dev veth1 netns "${PEER_NS}"
++    ip netns exec "${PEER_NS}" ip link set dev veth1 up
++    ip addr add $V4_ADDR0/24 dev veth0
++    ip netns exec "${PEER_NS}" ip addr add $V4_ADDR1/24 dev veth1
++    ip netns exec ${PEER_NS} ip route add default via $V4_ADDR1 dev veth1
++    ip route add default via $V4_ADDR0 dev veth0
++
++    sysctl -w net.ipv4.conf.veth0.arp_evict_nocarrier=$1 >/dev/null 2>&1
++
++    # Establish an ARP cache entry
++    ping -c1 -I veth0 $V4_ADDR1 -q >/dev/null 2>&1
++    # Should have the veth1 entry in ARP table
++    ip neigh get $V4_ADDR1 dev veth0 >/dev/null 2>&1
++    if [ $? -ne 0 ]; then
++        cleanup_v4
++        echo "failed"
++        exit
++    fi
++
++    # Set veth1 down, which will put veth0 in NOCARRIER state
++    ip netns exec "${PEER_NS}" ip link set veth1 down
++}
++
++cleanup_v4() {
++    ip neigh flush dev veth0
++    ip link del veth0
++    local -r ns="$(ip netns list|grep $PEER_NS)"
++    [ -n "$ns" ] && ip netns del $ns 2>/dev/null
++}
++
++# Run test when arp_evict_nocarrier = 1 (default).
++run_arp_evict_nocarrier_enabled() {
++    echo "run arp_evict_nocarrier=1 test"
++    setup_v4 "1"
++
++    # ARP table should be empty
++    ip neigh get $V4_ADDR1 dev veth0 >/dev/null 2>&1
++
++    if [ $? -eq 0 ];then
++        echo "failed"
++    else
++        echo "ok"
++    fi
++
++    cleanup_v4
++}
++
++# Run test when arp_evict_nocarrier = 0
++run_arp_evict_nocarrier_disabled() {
++    echo "run arp_evict_nocarrier=0 test"
++    setup_v4 "0"
++
++    # ARP table should still contain the entry
++    ip neigh get $V4_ADDR1 dev veth0 >/dev/null 2>&1
++
++    if [ $? -eq 0 ];then
++        echo "ok"
++    else
++        echo "failed"
++    fi
++
++    cleanup_v4
++}
++
++run_ndisc_evict_nocarrier_enabled() {
++    echo "run ndisc_evict_nocarrier=1 test"
++
++    setup_v6 "1"
++
++    ip netns exec me ip -6 neigh get $V6_ADDR1 dev veth1 >/dev/null 2>&1
++
++    if [ $? -eq 0 ];then
++        echo "failed"
++    else
++        echo "ok"
++    fi
++
++    cleanup_v6
++}
++
++run_ndisc_evict_nocarrier_disabled() {
++    echo "run ndisc_evict_nocarrier=0 test"
++
++    setup_v6 "0"
++
++    ip netns exec me ip -6 neigh get $V6_ADDR1 dev veth1 >/dev/null 2>&1
++
++    if [ $? -eq 0 ];then
++        echo "ok"
++    else
++        echo "failed"
++    fi
++
++    cleanup_v6
++}
++
++run_all_tests() {
++    run_arp_evict_nocarrier_enabled
++    run_arp_evict_nocarrier_disabled
++    run_ndisc_evict_nocarrier_enabled
++    run_ndisc_evict_nocarrier_disabled
++}
++
++if [ "$(id -u)" -ne 0 ];then
++	echo "SKIP: Need root privileges"
++	exit $ksft_skip;
++fi
++
++run_all_tests
 -- 
 2.31.1
 
