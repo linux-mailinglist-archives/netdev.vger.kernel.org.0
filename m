@@ -2,67 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2625B437C14
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 19:40:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A80C437C2C
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 19:42:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233909AbhJVRmi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 13:42:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45786 "EHLO mail.kernel.org"
+        id S233648AbhJVRoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 13:44:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46412 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233890AbhJVRmi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Oct 2021 13:42:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 693D16124D;
-        Fri, 22 Oct 2021 17:40:20 +0000 (UTC)
+        id S233538AbhJVRoz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Oct 2021 13:44:55 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9143861037;
+        Fri, 22 Oct 2021 17:42:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634924420;
-        bh=xr13CsTU+hkw2yTPuJuqSK9WupxaQ5AwvfuboE7Urpg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=YO5HoVNu2xW0irzZJUeSvt3wG9aEUceDE0CQ2Vo/+j2perqfgNpQ259cFzDXBssxv
-         uuCNjCI1YcfzwaFkhUDmphqnTKGTZ7l72aREWek6gMTzEMmSqxAok3r3d6xAvVwewC
-         g5oVB1wo6qKYMvGY0Nbo9kk90gwLBVlWUL9BLvHiOF0ATm3QTW97m8UKuA1tZC8b7l
-         IaKqCiMPaQJ+FPf3//vhOYXJd23yqJ6r11tY6SUXdbdN3srqivf5K1gAbkR/Ko6dnA
-         dzE8XKpEfOHNvtaH0G259wEAy6Npdt5V3/gyxsdciDkR3o1WxshEIDehUstlgDc/xV
-         LLJJJ60gIrfiw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 58EDF609E7;
-        Fri, 22 Oct 2021 17:40:20 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1634924557;
+        bh=yL4tnrPPnh+3ueFbEtazjR6LwrhamC6ZzSwBcviuphs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=LdP5ITdrPlOATgr/I9JpwW3U/AzZOilvgAfQEFW2ZawY7vF4R0pShCIn6pg5H3JMe
+         yOjMLMxEuLgN2+FYNJ1Kg58eK70yvjnlyunbH2r5Ep+uBq1UuVaDRXgDKU8K4G533r
+         e/o+zbM64xQMSC6yNOPVaMp9qEm1OfdMarcaZibVmpKO87NPp7+rYsWMCW7crynQ9z
+         yAmIMrXC29sGilajKsSWofX518AGuFB+e9bzpecGurpgci5pqPpxu3B5kbru7gD5yT
+         LbaaHTeN3pvxvYmO2ka4Dix1RojuhfEWgn7W/lmxdquSSlriYkkXhcd4MjYSebsJf1
+         5GEHTpXs9E/cw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        marcel@holtmann.org, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 0/2] bluetooth: don't write directly to netdev->dev_addr
+Date:   Fri, 22 Oct 2021 10:42:30 -0700
+Message-Id: <20211022174232.2510917-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: wireless-drivers-next-2021-10-22
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163492442035.3618.7680388973441384759.git-patchwork-notify@kernel.org>
-Date:   Fri, 22 Oct 2021 17:40:20 +0000
-References: <20211022075845.0E679C4360D@smtp.codeaurora.org>
-In-Reply-To: <20211022075845.0E679C4360D@smtp.codeaurora.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+The usual conversions.
 
-This pull request was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+These are intended to be merged to net-next directly,
+because bluetooth tree is missing one of the pre-req
+changes at the moment.
 
-On Fri, 22 Oct 2021 07:58:45 +0000 (UTC) you wrote:
-> Hi,
-> 
-> here's a pull request to net-next tree, more info below. Please let me know if
-> there are any problems.
-> 
-> Kalle
-> 
-> [...]
+Jakub Kicinski (2):
+  bluetooth: use eth_hw_addr_set()
+  bluetooth: use dev_addr_set()
 
-Here is the summary with links:
-  - pull-request: wireless-drivers-next-2021-10-22
-    https://git.kernel.org/netdev/net-next/c/d1a3f40951bb
+ net/bluetooth/6lowpan.c   | 4 +++-
+ net/bluetooth/bnep/core.c | 2 +-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.31.1
 
