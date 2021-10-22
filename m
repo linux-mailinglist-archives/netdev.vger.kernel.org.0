@@ -2,67 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33E42437A5C
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 17:53:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DF70437A5B
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 17:53:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232169AbhJVPz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 11:55:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45578 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231524AbhJVPz5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 11:55:57 -0400
-Received: from mail-ua1-x934.google.com (mail-ua1-x934.google.com [IPv6:2607:f8b0:4864:20::934])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE37C061764;
-        Fri, 22 Oct 2021 08:53:40 -0700 (PDT)
-Received: by mail-ua1-x934.google.com with SMTP id e10so8606526uab.3;
-        Fri, 22 Oct 2021 08:53:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=o7tbFS9qrfqSlJTs8nJFhBp8hx7F/c4cT0wa5yen+WA=;
-        b=UYyUDNmz2oq8WKKtGEB44bjHW7r4qFVp+HfV5MqQ6bW008fLhs/8SGoVgyoYDf1OSf
-         JKd95p1OCwY1elMNoIrIE9tJvtEquaTSwa+VjNWgdBttuFOo13xddquv5b1NfkymgejH
-         3f5iygTZQbsJT5gjz4t7Y49aWUA+rtNR2seXvrhhg0lSMuP9BWMFwLgDZRKMwRzqpjDV
-         t0Ddq7GKvWaxEm6Dsi+cIBtsHfhZMKYep3Oz9h+zQy7t2YgLxorxTKKpjCUOWS2xZpQE
-         9LznQkFOSaqY4H9EVVxISC9bdxe+mFShjubcl+zMHGod7UaEFNpf6ss6T9Fkw9NCgQVr
-         F/8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=o7tbFS9qrfqSlJTs8nJFhBp8hx7F/c4cT0wa5yen+WA=;
-        b=63uWC9laW1HgRSu6yw1yz3IQjoMB9ZAMNpyAtZ3cvj+LiYIdrt/2vPwpwBeS7DQs5/
-         rw6X7ZNMy6JD9aBGc6kQuOY52SjxRUoAQujM8Xck+zjrGI+6cVigTw9pbyTn9XqpKYQM
-         fvOJoiaMuLHDwWRVtnkTQnqGJlv1jMO9NdplTPZSjSSpTrQj6vYaSCrUueJId+3NfVlD
-         3BjYkPmSnxzBlx5cP+pz5tdMUv8bTmLz+wy+mPqgIRzoIrI+yrlcbhlvqqCUXLN2MQYb
-         /ZmZM2JWXE2GvH3kIchE2O+Io8lXeRJExUbW5R0jq7DEr584nfDKUbEcykKQYs49fL+C
-         gAfg==
-X-Gm-Message-State: AOAM5327mFWXzENOMIPBacR7sP9EkbLyj16ysMBb5+ZgAH/0yJDy3h/J
-        uogUXsVS8ky9PxlxeXp7ggliouWe7doiM2h7HbBRt2m2d3E=
-X-Google-Smtp-Source: ABdhPJzk5OL0oMSoZb+L0++up544jUAsZWSYHmO8+4ftHvjMafms3ps/20awAUBZn6XpcoFIis/Rzuq0a+MaBzThhBI=
-X-Received: by 2002:a67:f544:: with SMTP id z4mr348851vsn.19.1634918019064;
- Fri, 22 Oct 2021 08:53:39 -0700 (PDT)
+        id S230340AbhJVPz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 11:55:57 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:7034 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229484AbhJVPz4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 11:55:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1634918021; x=1666454021;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=0tlHHuiMm8lnErn5V27t3ajdulg+qS8R0CqBufmjxlA=;
+  b=HlCbjxmfTk/+uPxDu1jts5SfEb1zTEMUAck7j5xoDvcsmyYwhZQihs1C
+   JbHkJtvurXtsgLBDfg37pgTAFvXhugi+XogP9lpX6f95YEDdrV5IpesDP
+   uzwSzDbonREZV/49V4bLb1e0wjKjVkFetGpssJ9CNeOfw4110ffrfSQyz
+   u21twM/g/1S8OZDwxVMWn6Ja1i5MX9UEYIGynmLXy4s1YS8delZSD6V9Y
+   9o+1l9Jk2Q++jPYsv74GCJaRnjKOTGpc+ol1mpzblKJKzZhoYEQ2dGp6e
+   kO6ONOWd1kHF6l6BDrtgsJwKWiRavF+CgUp/5cLzhUZsRTflgNu0p0Zqh
+   A==;
+IronPort-SDR: jsw2Ypl+pVt+8Hqs4wdbYCWymoDIkZMkEmcRMV1wRmbBsOc7y9NvpYA2Ifm9wcIjwH2Erv9Pfx
+ QiRiZS/qmXgynfzQeXjc98pDYmB9BZpJUou7nvyh4GwYH8bn/YG3LS4Sgb8yRoCJy6vI2zIzQa
+ fByNHhsyZka7+SaCTftVod8H+CuI/qT/ZgqnM7xSHddpaCqYHiW4UkFRWHd/edRSds36yqABor
+ ptUUjs2fmAw/cZ3Ayc8x9HF6QOStcCVBWeUp8Rmfvsw0aHQETfywL5EBpM707rINKvJRtloP5b
+ Q9Lbp20yXi7nJKsP7JmbdDaX
+X-IronPort-AV: E=Sophos;i="5.87,173,1631602800"; 
+   d="scan'208";a="140767056"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Oct 2021 08:53:40 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Fri, 22 Oct 2021 08:53:38 -0700
+Received: from validation1-XPS-8900.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Fri, 22 Oct 2021 08:53:38 -0700
+From:   Yuiko Oshino <yuiko.oshino@microchip.com>
+To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
+CC:     <bryan.whitehead@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        "Yuiko Oshino" <yuiko.oshino@microchip.com>
+Subject: [PATCH net] net: ethernet: microchip: lan743x: Fix dma allocation failure by using dma_set_mask_and_coherent
+Date:   Fri, 22 Oct 2021 11:53:43 -0400
+Message-ID: <20211022155343.91841-1-yuiko.oshino@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-From:   Lijun Pan <lijunp213@gmail.com>
-Date:   Fri, 22 Oct 2021 10:53:28 -0500
-Message-ID: <CAOhMmr7bWv_UgdkFZz89O4=WRfUFhXHH5hHEOBBfBaAR8f4Ygw@mail.gmail.com>
-Subject: Unsubscription Incident
-To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+The dma failure was reported in the raspberry pi github (issue #4117).
+https://github.com/raspberrypi/linux/issues/4117
+The use of dma_set_mask_and_coherent fixes the issue.
+Tested on 32/64-bit raspberry pi CM4 and 64-bit ubuntu x86 PC with EVB-LAN7430.
 
-From Oct 11, I did not receive any emails from both linux-kernel and
-netdev mailing list. Did anyone encounter the same issue? I subscribed
-again and I can receive incoming emails now. However, I figured out
-that anyone can unsubscribe your email without authentication. Maybe
-it is just a one-time issue that someone accidentally unsubscribed my
-email. But I would recommend that our admin can add one more
-authentication step before unsubscription to make the process more
-secure.
+Fixes: 23f0703c125b ("lan743x: Add main source files for new lan743x driver")
+Signed-off-by: Yuiko Oshino <yuiko.oshino@microchip.com>
+---
+ drivers/net/ethernet/microchip/lan743x_main.c | 20 +++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-Thanks,
-Lijun
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+index 03d02403c19e..6ffcd1b06f2d 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.c
++++ b/drivers/net/ethernet/microchip/lan743x_main.c
+@@ -1743,6 +1743,16 @@ static int lan743x_tx_ring_init(struct lan743x_tx *tx)
+ 		ret = -EINVAL;
+ 		goto cleanup;
+ 	}
++	if (dma_set_mask_and_coherent(&tx->adapter->pdev->dev,
++				      DMA_BIT_MASK(64))) {
++		if (dma_set_mask_and_coherent(&tx->adapter->pdev->dev,
++					      DMA_BIT_MASK(32))) {
++			dev_warn(&tx->adapter->pdev->dev,
++				 "lan743x_: No suitable DMA available\n");
++			ret = -ENOMEM;
++			goto cleanup;
++		}
++	}
+ 	ring_allocation_size = ALIGN(tx->ring_size *
+ 				     sizeof(struct lan743x_tx_descriptor),
+ 				     PAGE_SIZE);
+@@ -2276,6 +2286,16 @@ static int lan743x_rx_ring_init(struct lan743x_rx *rx)
+ 		ret = -EINVAL;
+ 		goto cleanup;
+ 	}
++	if (dma_set_mask_and_coherent(&rx->adapter->pdev->dev,
++				      DMA_BIT_MASK(64))) {
++		if (dma_set_mask_and_coherent(&rx->adapter->pdev->dev,
++					      DMA_BIT_MASK(32))) {
++			dev_warn(&rx->adapter->pdev->dev,
++				 "lan743x_: No suitable DMA available\n");
++			ret = -ENOMEM;
++			goto cleanup;
++		}
++	}
+ 	ring_allocation_size = ALIGN(rx->ring_size *
+ 				     sizeof(struct lan743x_rx_descriptor),
+ 				     PAGE_SIZE);
+-- 
+2.25.1
+
