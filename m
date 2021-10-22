@@ -2,505 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0E69437BBA
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 19:17:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F21D437BBC
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 19:17:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233674AbhJVRTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 13:19:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36232 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233799AbhJVRTO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 13:19:14 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B623C061767
-        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 10:16:56 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id 193-20020a1c01ca000000b00327775075f7so4129015wmb.5
-        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 10:16:56 -0700 (PDT)
+        id S233799AbhJVRT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 13:19:27 -0400
+Received: from mail-vi1eur05on2089.outbound.protection.outlook.com ([40.107.21.89]:34401
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233862AbhJVRT0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Oct 2021 13:19:26 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HSC0YXANCI5mAsbDexwPkHNCt7pelV5jjLruLjOnwbLZjhdU71hJ3X+p+XPPmaBIPvO97XiAXB/BpK2By38GuqPLeA96xYHAkWxrUwmIFm4spR3ZR7O8s9bFjxe85oOR71MeylnImz6GfRtMCBqgSWbYmR111EK82uILxKpVnuiSlMg+a6Uq90nQXqW/NZxKatSSmMbmu8IBaxMBqeSSUo7kdWmrdbuHuSa0ENMoHz4QTwtfTj5/yv0Z9OqKZy2mppu92l1YWzvfm0aLDtZEJmStvsO/QXMMytQ+DPtf4B3ZpFu8YCEi2CmAGlfOinsmCUd0fCObKnFRWuSNTIKbDg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=js0ADT2bMlknr698JeTHeIizhGfhLbD/HG/NUD+dcM0=;
+ b=XabgH5W9PnDyPp+aD5d6BVOVqk+lmKoaR5wqUPw2EWbZfG7qBHbpRX2VYs0+5ff5tJ7PRDo2p4XYmbbwJ8fwjueHp6fJyLDIQ0JDDE6/yCnmmTYQs9EEoDe3DAUuGdAAwMzXx4gVKbhXX0Ql2Tfmu25tFmqCShdg7aE4itYSLMqaNd5nqGwCZmApMyG2O2W/CCdeB8bkyG45CXCRIuIt2LxM4p5LV7AB4xoICjuhqmdM8ch7DVQOvlrA4qEbbzPjDCxs+1rc7Ff7VnhGlBtVtpVQsOnsb7wnQBLcXnBfPqht4RTAjYYIMfrsnjRVEQimysR9Gv/N8/PBxaVOUNF84w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=HTHo6ZbXBFvF2A/wD9Er2v7eFpQ0QuPWVWjrIjNpQJM=;
-        b=pQR8nPaiD603ypyXFEdndsOwslaIJkVJeIu8q96WF2wV66J0kePcuioicP/wXq+jis
-         ilAHXsubgiXmIeNW/5m1hoV0T5FiQFsX7FAt/uk4jzp2cj1vilh3/oVlfUIo45e5pN9O
-         bwqTQ/1PUfvB7jns+rDA9UBWDRrMX+/Q4s0KRGMIKpet5O2J7ITpdNtc2E7rtdEgYJ4p
-         MQHGpyTRgPdw6oKX273HosQpjpslUDJY7tM5sZL0ZMTSRCmjDZyg3zUOQQ8XvNqQAew5
-         bW6qVU9XwrbSfxQIEshhfOCrlhgD+eICB1d+gm/pMbONRrhYTIINWrbLkzPM5cALOXfd
-         aFDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=HTHo6ZbXBFvF2A/wD9Er2v7eFpQ0QuPWVWjrIjNpQJM=;
-        b=PYHL8BLKg58Q9u8aC+PTBNhagqoIPp0uE7ZvR69RqAu+BGZvBupbAlCHaroH095QDq
-         67e2m/8fBH02rmAFQtNaWUiV6LoSpU4XB/0lE281cd/dbQsxSGUXwJMsZEHtHR3Azuh7
-         6vV0KPR+Lbj246XS5icLDJhnFQAivOJxkOJ5FxWWmp9/Q/fMpx6Vg79l7VSIKJcHR5B1
-         +87rwpoW+GRKxdxI8FP1fmYcwXuV7+EvJeiSBWf74NmF140mtcjoBq89zhbVAoEnpwxv
-         eDlxFScE3CU0Hd5lhEbdk/KLtUJSuZZt0Tm6pCRvt/xwQ5n/TeD9GziyCCAuqsiNtRGV
-         yHzQ==
-X-Gm-Message-State: AOAM533fptNr+R0v2MEkTMXwA75kLZeaGqWVa88UQNFj2kyBBSDuHojc
-        dRsK/JPWCbZLtFAZBLEvQXz+vg==
-X-Google-Smtp-Source: ABdhPJynttB+Uf1xYvfmvBCaJoT1eWRxydXXnm/YlhKVld5sbYZlTnPF9ZYMjAPZXGo+cBR2o0Jt3Q==
-X-Received: by 2002:a05:600c:3511:: with SMTP id h17mr29891892wmq.144.1634923014886;
-        Fri, 22 Oct 2021 10:16:54 -0700 (PDT)
-Received: from localhost.localdomain ([149.86.74.50])
-        by smtp.gmail.com with ESMTPSA id 6sm4427367wma.48.2021.10.22.10.16.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Oct 2021 10:16:54 -0700 (PDT)
-From:   Quentin Monnet <quentin@isovalent.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Quentin Monnet <quentin@isovalent.com>
-Subject: [PATCH bpf-next 5/5] bpftool: Switch to libbpf's hashmap for PIDs/names references
-Date:   Fri, 22 Oct 2021 18:16:47 +0100
-Message-Id: <20211022171647.27885-6-quentin@isovalent.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211022171647.27885-1-quentin@isovalent.com>
-References: <20211022171647.27885-1-quentin@isovalent.com>
+ d=secospa.onmicrosoft.com; s=selector2-secospa-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=js0ADT2bMlknr698JeTHeIizhGfhLbD/HG/NUD+dcM0=;
+ b=vZanzm10EygRAn09X7+yym1FigAiw+y1asxoXl65s1YwbR0qjprQQi+LryRikBLDXBMA+Bg1KSLuoQ4k5hY9JdOQ98mo9Xcd+AEUfHu43nsxVO/A067J16fs2pmqSR1T4SSo0DJC81r0RZPmcQg73ZwsS6k0IL9cFuYHLImKhpc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
+ by DBBPR03MB5365.eurprd03.prod.outlook.com (2603:10a6:10:f1::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.15; Fri, 22 Oct
+ 2021 17:17:05 +0000
+Received: from DB7PR03MB4523.eurprd03.prod.outlook.com
+ ([fe80::a9aa:f363:66e:fadf]) by DB7PR03MB4523.eurprd03.prod.outlook.com
+ ([fe80::a9aa:f363:66e:fadf%6]) with mapi id 15.20.4608.018; Fri, 22 Oct 2021
+ 17:17:05 +0000
+From:   Sean Anderson <sean.anderson@seco.com>
+Subject: Re: [net-next PATCH v2] net: phylink: Add helpers for c22 registers
+ without MDIO
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>
+References: <20211022160959.3350916-1-sean.anderson@seco.com>
+ <20211022100637.566fcdb0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Message-ID: <d3477486-24e7-e6be-7969-08947840923c@seco.com>
+Date:   Fri, 22 Oct 2021 13:16:59 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <20211022100637.566fcdb0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MN2PR15CA0025.namprd15.prod.outlook.com
+ (2603:10b6:208:1b4::38) To DB7PR03MB4523.eurprd03.prod.outlook.com
+ (2603:10a6:10:19::27)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: from [172.27.1.65] (50.195.82.171) by MN2PR15CA0025.namprd15.prod.outlook.com (2603:10b6:208:1b4::38) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18 via Frontend Transport; Fri, 22 Oct 2021 17:17:04 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 71d60b12-2108-4e6b-fc50-08d9957fc539
+X-MS-TrafficTypeDiagnostic: DBBPR03MB5365:
+X-Microsoft-Antispam-PRVS: <DBBPR03MB536570D37CD8FDCE45260B8596809@DBBPR03MB5365.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: xPgO5DHAE4oPRQL14cAUHoZOj5eHWreUh+qFl3r7cg6RvXBgvhKjbKyrocS2C105ey/8CdxuZAiiWinMj2AVaAGBPjdPJq0C+DFbTn57agCSx8xTXcQA5jDl+CCXBvhw8pUqLDH5D9m5zSQMN6KB68WeZq8D+wkh0wxMCz/rmTdiCiNtzLK6/sNUpq60M7XQ11EmMGKDMjDnJsguipnaJI7HYsrXFa137orwhD0EGDNWB8A4pLHKdwxQ98veNQt+a0RMHJAMUHP+CCxhNxbdigkSWgKLE+ROk8ZaAsLYDj21ckKYfUHqkx7TR5MlqGaOAGPOTosAepsRymfdaIwhmIOVdKwn0B/tYwOlizjXxOp8r//aEm3CCzptOuVev1cIpn0b1E/F22JJPSKOnJ9d+A/o1OoPkYoDUPW/ADy59sGLNgetbP5KM2RHTea0PcY5zWjjrC6+qPGhHdgK9DP9Xoq//9d5ZZPxpemqj9J4ojlTJ1nh3ayKT10Hdj59UPe3RKfyAGuYN0tnoz0tomatSw53sklWLNLEj7a46s7se/P4NvKa2BMoj0WdBkH08lfWlXwCAjqukBFIcqwtmjxdM+c+Wmoa6HjKV//4z86OCiv0SVwXA8bHsA17Hb8vrRn9u/fzJFGxZ7Z7108MMow7g5sFJ5Q2CLGu6rq2FCh2pWKt/bL7dOAyYv8ChCwuibdmoiJsGpNgF9icvUyCS39IlC1OmWkwL/9TfZIDGztalr7CrViFkW/7sbauiVqicHa0x2ZuqtrsQFQ1X3tKQAH0Gg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(26005)(956004)(66946007)(66556008)(52116002)(53546011)(508600001)(186003)(66476007)(4744005)(5660300002)(8676002)(6916009)(54906003)(16576012)(6486002)(38350700002)(36756003)(38100700002)(316002)(86362001)(31686004)(44832011)(6666004)(8936002)(4326008)(2906002)(2616005)(31696002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QnVpZU0vbzFSWno4SzRsOG43cUFjSmYrRWFPRmJtMVRxZmdQWEs5T3V0NFlQ?=
+ =?utf-8?B?dmZUYk1ESlpiUnpJZzVrS2VzaGRnU2hhTEVIZXZNTGFYNFlpZGJaYVI0akFp?=
+ =?utf-8?B?eEV1S29UejdYeUZ3K2tiSnpYTkgyNGo2bTYwSFJ3VFI3cjhOTGJlRkNMRXJy?=
+ =?utf-8?B?QXM3NDM3K0NNUlBZSlArRG9MRkMySVpuMjBGMlpxOGRlUm14MlczcHRZdXNE?=
+ =?utf-8?B?cFZXQkFEeG9heHZUMFN0cXliRXE3U0k3Qkp4Y1V4WmRjK2NWN0NPdkJaWUxz?=
+ =?utf-8?B?a2R5eU1ERlMvb1lkekx1TmdoTi95cmU4aXpRVTVZb0txNTAxMjJ0MkQ3Yzho?=
+ =?utf-8?B?aUNWbkdVZnRDMURBaFlZMWpUWGpvcUhwTnl6RThrYksvNS9QRExnaU9ReVpm?=
+ =?utf-8?B?ZmZVV0QwZ2hLUG16c1g1ZmkydVlWOXFkS3M2NzcxdU1WaVhzMlJnU1ZZQjF4?=
+ =?utf-8?B?aE9yQzk4Q2dSTXF5QnRFRktsaXQwYzJmNy9vNnAxRzJtUmR0bERBZHArRis5?=
+ =?utf-8?B?a2YzeEErbjBjdUtxajFHaTZLK1I2R0dZd29nU1doRFFpdDVrdzZBYktWcDhF?=
+ =?utf-8?B?NHYwUGpIUTZzeEhCczQ2dzhTVnU1dERzT1pVdnJTS0VWUGI5bEVWdGhFdnhG?=
+ =?utf-8?B?amZ3dUdlcDFpbFBETlg0VS9wL2Z5WTNFSVhPUXV1N1AvRW9DeHJNQm9zUnh1?=
+ =?utf-8?B?ZHVkVVVnQ2dKQU1hSkh5LzU5a1ZkTGI0MVdBS2UyNHJWWFlXNjcwK0FBZHBF?=
+ =?utf-8?B?ZE9qS2pMN21DV1ZEN3lVdCtYaERDdGUrejd5L2RVYldmeS9RaFRvWkRpTzgr?=
+ =?utf-8?B?MjVHaWlaT1h3NUZxcGxscWhNa1Z0STVyV244eFZzYTBUc2lQR2VGRlJaWkpL?=
+ =?utf-8?B?OUk3elVEb1d6WjBpOGhSdUE4U3VINWQ4M293NGgxSEVLSVltNnZCZzdMWUNF?=
+ =?utf-8?B?MVU4K1JYbW5VbCs4YXpnWDB4SEFnaTB4d3hickFYZGEyUFRxZWs5WkJBaDd1?=
+ =?utf-8?B?S29hMEFyckNHSjluTFo4UDZKSHFSNzVxQkNzQ0NuNWQ0Vml5L09pdjV0MmZt?=
+ =?utf-8?B?Q2YrNnNMdmprdDcxQmRSVUVZQjF0VHJlN3l6OVAxZGxRVDk5QThVcjd4elpX?=
+ =?utf-8?B?anBwejNMd3VmUHZMaTRXM2JKMDE0TTd2TjRRcHdRRmUxSzhiZjVDYzVPcVNy?=
+ =?utf-8?B?RFZ2L1hsQ1BoN3NPU0RFUzBwMlN3bmxMRFRDWUlrTHF4V0xEbE9WRE1FVWJu?=
+ =?utf-8?B?SGVPQ2dOQytRYWc4WWQvSzZ0ajA3NmM1M2E2bWo1UmlBUjdONlZQc3oyRmFP?=
+ =?utf-8?B?bTVuNWswNFRMMmpTTnVjWDV4NklsSnZSMUVlejl0TWx6U0Uzd2JFRHVUSHda?=
+ =?utf-8?B?cEs1Y0pqQXBHMWV4RFVyVzJNekxkUityeEVEQ2JYbWRmQ2FleEN3SkpVcis2?=
+ =?utf-8?B?Rjh0Tm5kM0F4ZFNNMGN5UHJqTnBHd1lmcHZYSEUvUHo3TzhleTBvVHV6eVdk?=
+ =?utf-8?B?WDF5VGI2VHcxM3p4bHc3c1R2T1kzVkhOMW8wWmd3a0ZpOGxMVWZMWkd2aWlR?=
+ =?utf-8?B?OEdkVGtLY2ZkSER3OVVTektwdnFCV0xaQml5SGtkQ1ZPQ0JUOGdFcG9pQjNQ?=
+ =?utf-8?B?ai95c28wQnJnS3ljVnRzdFo4MDYzNlBWbFZqWEpBejc2NFYxYlNIMGtTMmha?=
+ =?utf-8?B?YzNvYXQwSXJsaGhPb3RlSEhEUlEydHovMjZ1Rk5VbW1tZm42bHQyNDBXaFZk?=
+ =?utf-8?B?OGwzRHVBNGpxeVVLOGx2bW1vNFB5QUM4VWdCbDlBNDhRZUg3WGFVYmpsZGUy?=
+ =?utf-8?B?TWNlNGNmcWR2QkFyaWoxUWFvS0hrU2drY0RDQlhGRDVraVpYaTV2N21yR25p?=
+ =?utf-8?B?amVwcUhmWlB2R2prUWdQcUc0WDBRMTB1TzJrYUVRdEpLWmRwN2gwaHVibU4r?=
+ =?utf-8?Q?3wLLSsinnICjWhsHwkZLOvy+TVRNZdil?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 71d60b12-2108-4e6b-fc50-08d9957fc539
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4523.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2021 17:17:05.3112
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sean.anderson@seco.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR03MB5365
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to show PIDs and names for processes holding references to BPF
-programs, maps, links, or BTF objects, bpftool creates hash maps to
-store all relevant information. This commit is part of a set that
-transitions from the kernel's hash map implementation to the one coming
-with libbpf.
+Hi Jakub,
 
-The motivation is to make bpftool less dependent of kernel headers, to
-ease the path to a potential out-of-tree mirror, like libbpf has.
+On 10/22/21 1:06 PM, Jakub Kicinski wrote:
+> On Fri, 22 Oct 2021 12:09:59 -0400 Sean Anderson wrote:
+>> This series depends on [2].
+>
+> You should have just made it part of that series then. Now you'll have
+> to repost once the dependency is merged.
+>
 
-This is the third and final step of the transition, in which we convert
-the hash maps used for storing the information about the processes
-holding references to BPF objects (programs, maps, links, BTF), and at
-last we drop the inclusion of tools/include/linux/hashtable.h.
+Err, I should have worded that better. This series does not depend
+conceptually on that one, but they modify adjacent lines. Because of
+this, I have based the diff for this patch on that series so that if that
+series is applied first, then this patch will apply cleanly.
 
-Note: Checkpatch complains about the use of __weak declarations, and the
-missing empty lines after the bunch of empty function declarations when
-compiling without the BPF skeletons (none of these were introduced in
-this patch). We want to keep things as they are, and the reports should
-be safe to ignore.
-
-Signed-off-by: Quentin Monnet <quentin@isovalent.com>
----
- tools/bpf/bpftool/btf.c  |  7 ++--
- tools/bpf/bpftool/link.c |  6 +--
- tools/bpf/bpftool/main.c |  5 ++-
- tools/bpf/bpftool/main.h | 17 +++-----
- tools/bpf/bpftool/map.c  |  6 +--
- tools/bpf/bpftool/pids.c | 84 ++++++++++++++++++++++------------------
- tools/bpf/bpftool/prog.c |  6 +--
- 7 files changed, 67 insertions(+), 64 deletions(-)
-
-diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
-index 84959aa05265..2a07b460d728 100644
---- a/tools/bpf/bpftool/btf.c
-+++ b/tools/bpf/bpftool/btf.c
-@@ -9,7 +9,6 @@
- #include <string.h>
- #include <unistd.h>
- #include <linux/btf.h>
--#include <linux/hashtable.h>
- #include <sys/types.h>
- #include <sys/stat.h>
- 
-@@ -790,7 +789,7 @@ show_btf_plain(struct bpf_btf_info *info, int fd,
- 		printf("%s%u", n++ == 0 ? "  map_ids " : ",",
- 		       hash_field_as_u32(entry->value));
- 
--	emit_obj_refs_plain(&refs_table, info->id, "\n\tpids ");
-+	emit_obj_refs_plain(refs_table, info->id, "\n\tpids ");
- 
- 	printf("\n");
- }
-@@ -821,7 +820,7 @@ show_btf_json(struct bpf_btf_info *info, int fd,
- 		jsonw_uint(json_wtr, hash_field_as_u32(entry->value));
- 	jsonw_end_array(json_wtr);	/* map_ids */
- 
--	emit_obj_refs_json(&refs_table, info->id, json_wtr); /* pids */
-+	emit_obj_refs_json(refs_table, info->id, json_wtr); /* pids */
- 
- 	jsonw_bool_field(json_wtr, "kernel", info->kernel_btf);
- 
-@@ -950,7 +949,7 @@ static int do_show(int argc, char **argv)
- exit_free:
- 	hashmap__free(btf_prog_table);
- 	hashmap__free(btf_map_table);
--	delete_obj_refs_table(&refs_table);
-+	delete_obj_refs_table(refs_table);
- 
- 	return err;
- }
-diff --git a/tools/bpf/bpftool/link.c b/tools/bpf/bpftool/link.c
-index be802e6ccc53..00cb8aea6eec 100644
---- a/tools/bpf/bpftool/link.c
-+++ b/tools/bpf/bpftool/link.c
-@@ -170,7 +170,7 @@ static int show_link_close_json(int fd, struct bpf_link_info *info)
- 		jsonw_end_array(json_wtr);
- 	}
- 
--	emit_obj_refs_json(&refs_table, info->id, json_wtr);
-+	emit_obj_refs_json(refs_table, info->id, json_wtr);
- 
- 	jsonw_end_object(json_wtr);
- 
-@@ -253,7 +253,7 @@ static int show_link_close_plain(int fd, struct bpf_link_info *info)
- 					    u32_as_hash_field(info->id))
- 			printf("\n\tpinned %s", (char *)entry->value);
- 	}
--	emit_obj_refs_plain(&refs_table, info->id, "\n\tpids ");
-+	emit_obj_refs_plain(refs_table, info->id, "\n\tpids ");
- 
- 	printf("\n");
- 
-@@ -351,7 +351,7 @@ static int do_show(int argc, char **argv)
- 	if (json_output)
- 		jsonw_end_array(json_wtr);
- 
--	delete_obj_refs_table(&refs_table);
-+	delete_obj_refs_table(refs_table);
- 
- 	return errno == ENOENT ? 0 : -1;
- }
-diff --git a/tools/bpf/bpftool/main.c b/tools/bpf/bpftool/main.c
-index 7a33f0e6da28..28237d7cef67 100644
---- a/tools/bpf/bpftool/main.c
-+++ b/tools/bpf/bpftool/main.c
-@@ -10,8 +10,9 @@
- #include <string.h>
- 
- #include <bpf/bpf.h>
--#include <bpf/libbpf.h>
- #include <bpf/btf.h>
-+#include <bpf/hashmap.h>
-+#include <bpf/libbpf.h>
- 
- #include "main.h"
- 
-@@ -31,7 +32,7 @@ bool verifier_logs;
- bool relaxed_maps;
- bool use_loader;
- struct btf *base_btf;
--struct obj_refs_table refs_table;
-+struct hashmap *refs_table;
- 
- static void __noreturn clean_and_exit(int i)
- {
-diff --git a/tools/bpf/bpftool/main.h b/tools/bpf/bpftool/main.h
-index a8e71ead848c..0344afd1dbbd 100644
---- a/tools/bpf/bpftool/main.h
-+++ b/tools/bpf/bpftool/main.h
-@@ -11,7 +11,6 @@
- #include <linux/bpf.h>
- #include <linux/compiler.h>
- #include <linux/kernel.h>
--#include <linux/hashtable.h>
- #include <tools/libc_compat.h>
- 
- #include <bpf/hashmap.h>
-@@ -92,7 +91,7 @@ extern bool verifier_logs;
- extern bool relaxed_maps;
- extern bool use_loader;
- extern struct btf *base_btf;
--extern struct obj_refs_table refs_table;
-+extern struct hashmap *refs_table;
- 
- void __printf(1, 2) p_err(const char *fmt, ...);
- void __printf(1, 2) p_info(const char *fmt, ...);
-@@ -106,18 +105,12 @@ void set_max_rlimit(void);
- 
- int mount_tracefs(const char *target);
- 
--struct obj_refs_table {
--	DECLARE_HASHTABLE(table, 16);
--};
--
- struct obj_ref {
- 	int pid;
- 	char comm[16];
- };
- 
- struct obj_refs {
--	struct hlist_node node;
--	__u32 id;
- 	int ref_cnt;
- 	struct obj_ref *refs;
- };
-@@ -128,12 +121,12 @@ struct bpf_line_info;
- int build_pinned_obj_table(struct hashmap *table,
- 			   enum bpf_obj_type type);
- void delete_pinned_obj_table(struct hashmap *table);
--__weak int build_obj_refs_table(struct obj_refs_table *table,
-+__weak int build_obj_refs_table(struct hashmap **table,
- 				enum bpf_obj_type type);
--__weak void delete_obj_refs_table(struct obj_refs_table *table);
--__weak void emit_obj_refs_json(struct obj_refs_table *table, __u32 id,
-+__weak void delete_obj_refs_table(struct hashmap *table);
-+__weak void emit_obj_refs_json(struct hashmap *table, __u32 id,
- 			       json_writer_t *json_wtr);
--__weak void emit_obj_refs_plain(struct obj_refs_table *table, __u32 id,
-+__weak void emit_obj_refs_plain(struct hashmap *table, __u32 id,
- 				const char *prefix);
- void print_dev_plain(__u32 ifindex, __u64 ns_dev, __u64 ns_inode);
- void print_dev_json(__u32 ifindex, __u64 ns_dev, __u64 ns_inode);
-diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
-index a2c19324efa7..3479639664d0 100644
---- a/tools/bpf/bpftool/map.c
-+++ b/tools/bpf/bpftool/map.c
-@@ -549,7 +549,7 @@ static int show_map_close_json(int fd, struct bpf_map_info *info)
- 		jsonw_end_array(json_wtr);
- 	}
- 
--	emit_obj_refs_json(&refs_table, info->id, json_wtr);
-+	emit_obj_refs_json(refs_table, info->id, json_wtr);
- 
- 	jsonw_end_object(json_wtr);
- 
-@@ -637,7 +637,7 @@ static int show_map_close_plain(int fd, struct bpf_map_info *info)
- 	if (frozen)
- 		printf("%sfrozen", info->btf_id ? "  " : "");
- 
--	emit_obj_refs_plain(&refs_table, info->id, "\n\tpids ");
-+	emit_obj_refs_plain(refs_table, info->id, "\n\tpids ");
- 
- 	printf("\n");
- 	return 0;
-@@ -747,7 +747,7 @@ static int do_show(int argc, char **argv)
- 	if (json_output)
- 		jsonw_end_array(json_wtr);
- 
--	delete_obj_refs_table(&refs_table);
-+	delete_obj_refs_table(refs_table);
- 
- 	if (show_pinned)
- 		delete_pinned_obj_table(map_table);
-diff --git a/tools/bpf/bpftool/pids.c b/tools/bpf/bpftool/pids.c
-index 477e55d59c34..02fea61243c8 100644
---- a/tools/bpf/bpftool/pids.c
-+++ b/tools/bpf/bpftool/pids.c
-@@ -6,35 +6,37 @@
- #include <stdlib.h>
- #include <string.h>
- #include <unistd.h>
-+
- #include <bpf/bpf.h>
-+#include <bpf/hashmap.h>
- 
- #include "main.h"
- #include "skeleton/pid_iter.h"
- 
- #ifdef BPFTOOL_WITHOUT_SKELETONS
- 
--int build_obj_refs_table(struct obj_refs_table *table, enum bpf_obj_type type)
-+int build_obj_refs_table(struct hashmap **map, enum bpf_obj_type type)
- {
- 	return -ENOTSUP;
- }
--void delete_obj_refs_table(struct obj_refs_table *table) {}
--void emit_obj_refs_plain(struct obj_refs_table *table, __u32 id, const char *prefix) {}
--void emit_obj_refs_json(struct obj_refs_table *table, __u32 id, json_writer_t *json_writer) {}
-+void delete_obj_refs_table(struct hashmap *map) {}
-+void emit_obj_refs_plain(struct hashmap *map, __u32 id, const char *prefix) {}
-+void emit_obj_refs_json(struct hashmap *map, __u32 id, json_writer_t *json_writer) {}
- 
- #else /* BPFTOOL_WITHOUT_SKELETONS */
- 
- #include "pid_iter.skel.h"
- 
--static void add_ref(struct obj_refs_table *table, struct pid_iter_entry *e)
-+static void add_ref(struct hashmap *map, struct pid_iter_entry *e)
- {
-+	struct hashmap_entry *entry;
- 	struct obj_refs *refs;
- 	struct obj_ref *ref;
- 	void *tmp;
- 	int i;
- 
--	hash_for_each_possible(table->table, refs, node, e->id) {
--		if (refs->id != e->id)
--			continue;
-+	hashmap__for_each_key_entry(map, entry, u32_as_hash_field(e->id)) {
-+		refs = entry->value;
- 
- 		for (i = 0; i < refs->ref_cnt; i++) {
- 			if (refs->refs[i].pid == e->pid)
-@@ -64,7 +66,6 @@ static void add_ref(struct obj_refs_table *table, struct pid_iter_entry *e)
- 		return;
- 	}
- 
--	refs->id = e->id;
- 	refs->refs = malloc(sizeof(*refs->refs));
- 	if (!refs->refs) {
- 		free(refs);
-@@ -76,7 +77,7 @@ static void add_ref(struct obj_refs_table *table, struct pid_iter_entry *e)
- 	ref->pid = e->pid;
- 	memcpy(ref->comm, e->comm, sizeof(ref->comm));
- 	refs->ref_cnt = 1;
--	hash_add(table->table, &refs->node, e->id);
-+	hashmap__append(map, u32_as_hash_field(e->id), refs);
- }
- 
- static int __printf(2, 0)
-@@ -87,7 +88,7 @@ libbpf_print_none(__maybe_unused enum libbpf_print_level level,
- 	return 0;
- }
- 
--int build_obj_refs_table(struct obj_refs_table *table, enum bpf_obj_type type)
-+int build_obj_refs_table(struct hashmap **map, enum bpf_obj_type type)
- {
- 	struct pid_iter_entry *e;
- 	char buf[4096 / sizeof(*e) * sizeof(*e)];
-@@ -95,7 +96,11 @@ int build_obj_refs_table(struct obj_refs_table *table, enum bpf_obj_type type)
- 	int err, ret, fd = -1, i;
- 	libbpf_print_fn_t default_print;
- 
--	hash_init(table->table);
-+	*map = hashmap__new(bpftool_hash_fn, bpftool_equal_fn, NULL);
-+	if (!*map) {
-+		p_err("failed to create hashmap for PID references");
-+		return -1;
-+	}
- 	set_max_rlimit();
- 
- 	skel = pid_iter_bpf__open();
-@@ -151,7 +156,7 @@ int build_obj_refs_table(struct obj_refs_table *table, enum bpf_obj_type type)
- 
- 		e = (void *)buf;
- 		for (i = 0; i < ret; i++, e++) {
--			add_ref(table, e);
-+			add_ref(*map, e);
- 		}
- 	}
- 	err = 0;
-@@ -162,39 +167,44 @@ int build_obj_refs_table(struct obj_refs_table *table, enum bpf_obj_type type)
- 	return err;
- }
- 
--void delete_obj_refs_table(struct obj_refs_table *table)
-+void delete_obj_refs_table(struct hashmap *map)
- {
--	struct obj_refs *refs;
--	struct hlist_node *tmp;
--	unsigned int bkt;
-+	struct hashmap_entry *entry;
-+	size_t bkt;
-+
-+	if (!map)
-+		return;
-+
-+	hashmap__for_each_entry(map, entry, bkt) {
-+		struct obj_refs *refs = entry->value;
- 
--	hash_for_each_safe(table->table, bkt, tmp, refs, node) {
--		hash_del(&refs->node);
- 		free(refs->refs);
- 		free(refs);
- 	}
-+
-+	hashmap__free(map);
- }
- 
--void emit_obj_refs_json(struct obj_refs_table *table, __u32 id,
-+void emit_obj_refs_json(struct hashmap *map, __u32 id,
- 			json_writer_t *json_writer)
- {
--	struct obj_refs *refs;
--	struct obj_ref *ref;
--	int i;
-+	struct hashmap_entry *entry;
- 
--	if (hash_empty(table->table))
-+	if (hashmap__empty(map))
- 		return;
- 
--	hash_for_each_possible(table->table, refs, node, id) {
--		if (refs->id != id)
--			continue;
-+	hashmap__for_each_key_entry(map, entry, u32_as_hash_field(id)) {
-+		struct obj_refs *refs = entry->value;
-+		int i;
-+
- 		if (refs->ref_cnt == 0)
- 			break;
- 
- 		jsonw_name(json_writer, "pids");
- 		jsonw_start_array(json_writer);
- 		for (i = 0; i < refs->ref_cnt; i++) {
--			ref = &refs->refs[i];
-+			struct obj_ref *ref = &refs->refs[i];
-+
- 			jsonw_start_object(json_writer);
- 			jsonw_int_field(json_writer, "pid", ref->pid);
- 			jsonw_string_field(json_writer, "comm", ref->comm);
-@@ -205,24 +215,24 @@ void emit_obj_refs_json(struct obj_refs_table *table, __u32 id,
- 	}
- }
- 
--void emit_obj_refs_plain(struct obj_refs_table *table, __u32 id, const char *prefix)
-+void emit_obj_refs_plain(struct hashmap *map, __u32 id, const char *prefix)
- {
--	struct obj_refs *refs;
--	struct obj_ref *ref;
--	int i;
-+	struct hashmap_entry *entry;
- 
--	if (hash_empty(table->table))
-+	if (hashmap__empty(map))
- 		return;
- 
--	hash_for_each_possible(table->table, refs, node, id) {
--		if (refs->id != id)
--			continue;
-+	hashmap__for_each_key_entry(map, entry, u32_as_hash_field(id)) {
-+		struct obj_refs *refs = entry->value;
-+		int i;
-+
- 		if (refs->ref_cnt == 0)
- 			break;
- 
- 		printf("%s", prefix);
- 		for (i = 0; i < refs->ref_cnt; i++) {
--			ref = &refs->refs[i];
-+			struct obj_ref *ref = &refs->refs[i];
-+
- 			printf("%s%s(%d)", i == 0 ? "" : ", ", ref->comm, ref->pid);
- 		}
- 		break;
-diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
-index 20026b4178b0..11a250f60cd5 100644
---- a/tools/bpf/bpftool/prog.c
-+++ b/tools/bpf/bpftool/prog.c
-@@ -428,7 +428,7 @@ static void print_prog_json(struct bpf_prog_info *info, int fd)
- 		jsonw_end_array(json_wtr);
- 	}
- 
--	emit_obj_refs_json(&refs_table, info->id, json_wtr);
-+	emit_obj_refs_json(refs_table, info->id, json_wtr);
- 
- 	show_prog_metadata(fd, info->nr_map_ids);
- 
-@@ -499,7 +499,7 @@ static void print_prog_plain(struct bpf_prog_info *info, int fd)
- 	if (info->btf_id)
- 		printf("\n\tbtf_id %d", info->btf_id);
- 
--	emit_obj_refs_plain(&refs_table, info->id, "\n\tpids ");
-+	emit_obj_refs_plain(refs_table, info->id, "\n\tpids ");
- 
- 	printf("\n");
- 
-@@ -616,7 +616,7 @@ static int do_show(int argc, char **argv)
- 	if (json_output)
- 		jsonw_end_array(json_wtr);
- 
--	delete_obj_refs_table(&refs_table);
-+	delete_obj_refs_table(refs_table);
- 
- 	if (show_pinned)
- 		delete_pinned_obj_table(prog_table);
--- 
-2.30.2
-
+--Sean
