@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A811437C4D
+	by mail.lfdr.de (Postfix) with ESMTP id EBC30437C4E
 	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 19:55:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233919AbhJVR6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S233930AbhJVR6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 22 Oct 2021 13:58:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48140 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:48130 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233819AbhJVR6F (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231893AbhJVR6F (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 22 Oct 2021 13:58:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 40D2D6128E;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9A9CC61354;
         Fri, 22 Oct 2021 17:55:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1634925347;
-        bh=UDm13/DlYX5kxzkXwKMn/jquT/nzW8+8dZTJOc+eL6M=;
+        bh=DBtJcUbWo9rmiI2kTleTgnDgyAIUq/e+5MnRRJtItQo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P735MVWXdQ+HgPAkfqSfiyJYGN1HSYQLhItoGOTNCiDjiHFQE3p72kHBWrj7LWXn8
-         jYy05/SEqAcU+KSTCwIt3U9Kg/KxUwYgwRglylgZ649fkh02sEeNdfEp++kwNnU3C/
-         5s8vja570ea42gAedJWazAkSHYUEUpFeEZgGNwNW2q3nHyS2JLmhYwy+smBq/TGj95
-         WOYrAYqh+nStNOXAiX+JMScFNWhuCbAM4E5i8Xqf4vfU8xFgwkY5GA4ZuKrnJbOZhK
-         01VDs0WRdbW3v3BDjiX4Az7fS4cd7c6a5oK5Pf6V2aBksp8J+/OGcimu4UPMaBLEEK
-         PN7J3acvUEhRg==
+        b=Vr/L6haznt1Jayy6YWA1090xhPccUGa98qIz9rpbJ7+ce74SIGVfjNBUG2XfslHjO
+         IiKdrXdGiS2b69zK0Lav4oGuLGyKlEUjV2FGDAA18OmcnLv6MFN0st2xS6Fsm14Ao+
+         3GWBVGfuICkxmhyx4S97jWv+feIhK3tCQhKuBLOKG/TcB1DSMGdnzo2eRVDWPBvNPa
+         hnQiRo3vkB93hhQMR9kApD/+nGZlpYanhoJ0cvgyMq9pd7y/Rs5h2+kWOXy1cPyZAY
+         2lQRrl+3cnCLgeVVslOcMMBRaLWbo/gwnVHTLCdLtDgcA5JD5IF60hjGYNqZBP3F8o
+         0htbYKEKQaihw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk
-Subject: [PATCH net-next 3/8] net: phy: constify netdev->dev_addr references
-Date:   Fri, 22 Oct 2021 10:55:38 -0700
-Message-Id: <20211022175543.2518732-4-kuba@kernel.org>
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net
+Subject: [PATCH net-next 4/8] net: bonding: constify and use dev_addr_set()
+Date:   Fri, 22 Oct 2021 10:55:39 -0700
+Message-Id: <20211022175543.2518732-5-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211022175543.2518732-1-kuba@kernel.org>
 References: <20211022175543.2518732-1-kuba@kernel.org>
@@ -39,63 +39,153 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-netdev->dev_addr will become a const soon(ish),
-constify the local variables referring to it.
+Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
+of VLANs...") introduced a rbtree for faster Ethernet address look
+up. To maintain netdev->dev_addr in this tree we need to make all
+the writes to it got through appropriate helpers.
+
+Make sure local references to netdev->dev_addr are constant.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: andrew@lunn.ch
-CC: hkallweit1@gmail.com
-CC: linux@armlinux.org.uk
+CC: j.vosburgh@gmail.com
+CC: vfalico@gmail.com
+CC: andy@greyhouse.net
 ---
- drivers/net/phy/dp83867.c | 4 ++--
- drivers/net/phy/dp83869.c | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/bonding/bond_alb.c  | 28 +++++++++++++---------------
+ drivers/net/bonding/bond_main.c |  2 +-
+ 2 files changed, 14 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-index 914619f3f0e3..8561f2d4443b 100644
---- a/drivers/net/phy/dp83867.c
-+++ b/drivers/net/phy/dp83867.c
-@@ -182,7 +182,7 @@ static int dp83867_set_wol(struct phy_device *phydev,
+diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
+index 7d3752cbf761..2ec8e015c7b3 100644
+--- a/drivers/net/bonding/bond_alb.c
++++ b/drivers/net/bonding/bond_alb.c
+@@ -50,7 +50,7 @@ struct arp_pkt {
+ #pragma pack()
+ 
+ /* Forward declaration */
+-static void alb_send_learning_packets(struct slave *slave, u8 mac_addr[],
++static void alb_send_learning_packets(struct slave *slave, const u8 mac_addr[],
+ 				      bool strict_match);
+ static void rlb_purge_src_ip(struct bonding *bond, struct arp_pkt *arp);
+ static void rlb_src_unlink(struct bonding *bond, u32 index);
+@@ -353,7 +353,8 @@ static struct slave *rlb_next_rx_slave(struct bonding *bond)
+  *
+  * Caller must hold RTNL
+  */
+-static void rlb_teach_disabled_mac_on_primary(struct bonding *bond, u8 addr[])
++static void rlb_teach_disabled_mac_on_primary(struct bonding *bond,
++					      const u8 addr[])
  {
- 	struct net_device *ndev = phydev->attached_dev;
- 	u16 val_rxcfg, val_micr;
--	u8 *mac;
-+	const u8 *mac;
+ 	struct slave *curr_active = rtnl_dereference(bond->curr_active_slave);
  
- 	val_rxcfg = phy_read_mmd(phydev, DP83867_DEVADDR, DP83867_RXFCFG);
- 	val_micr = phy_read(phydev, MII_DP83867_MICR);
-@@ -193,7 +193,7 @@ static int dp83867_set_wol(struct phy_device *phydev,
- 		val_micr |= MII_DP83867_MICR_WOL_INT_EN;
+@@ -904,7 +905,7 @@ static void rlb_clear_vlan(struct bonding *bond, unsigned short vlan_id)
  
- 		if (wol->wolopts & WAKE_MAGIC) {
--			mac = (u8 *)ndev->dev_addr;
-+			mac = (const u8 *)ndev->dev_addr;
+ /*********************** tlb/rlb shared functions *********************/
  
- 			if (!is_valid_ether_addr(mac))
- 				return -EINVAL;
-diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
-index 755220c6451f..7113925606f7 100644
---- a/drivers/net/phy/dp83869.c
-+++ b/drivers/net/phy/dp83869.c
-@@ -246,7 +246,7 @@ static int dp83869_set_wol(struct phy_device *phydev,
+-static void alb_send_lp_vid(struct slave *slave, u8 mac_addr[],
++static void alb_send_lp_vid(struct slave *slave, const u8 mac_addr[],
+ 			    __be16 vlan_proto, u16 vid)
  {
- 	struct net_device *ndev = phydev->attached_dev;
- 	int val_rxcfg, val_micr;
--	u8 *mac;
-+	const u8 *mac;
- 	int ret;
+ 	struct learning_pkt pkt;
+@@ -940,7 +941,7 @@ static void alb_send_lp_vid(struct slave *slave, u8 mac_addr[],
+ struct alb_walk_data {
+ 	struct bonding *bond;
+ 	struct slave *slave;
+-	u8 *mac_addr;
++	const u8 *mac_addr;
+ 	bool strict_match;
+ };
  
- 	val_rxcfg = phy_read_mmd(phydev, DP83869_DEVADDR, DP83869_RXFCFG);
-@@ -264,7 +264,7 @@ static int dp83869_set_wol(struct phy_device *phydev,
+@@ -949,9 +950,9 @@ static int alb_upper_dev_walk(struct net_device *upper,
+ {
+ 	struct alb_walk_data *data = (struct alb_walk_data *)priv->data;
+ 	bool strict_match = data->strict_match;
++	const u8 *mac_addr = data->mac_addr;
+ 	struct bonding *bond = data->bond;
+ 	struct slave *slave = data->slave;
+-	u8 *mac_addr = data->mac_addr;
+ 	struct bond_vlan_tag *tags;
  
- 		if (wol->wolopts & WAKE_MAGIC ||
- 		    wol->wolopts & WAKE_MAGICSECURE) {
--			mac = (u8 *)ndev->dev_addr;
-+			mac = (const u8 *)ndev->dev_addr;
+ 	if (is_vlan_dev(upper) &&
+@@ -982,7 +983,7 @@ static int alb_upper_dev_walk(struct net_device *upper,
+ 	return 0;
+ }
  
- 			if (!is_valid_ether_addr(mac))
- 				return -EINVAL;
+-static void alb_send_learning_packets(struct slave *slave, u8 mac_addr[],
++static void alb_send_learning_packets(struct slave *slave, const u8 mac_addr[],
+ 				      bool strict_match)
+ {
+ 	struct bonding *bond = bond_get_bond_by_slave(slave);
+@@ -1006,14 +1007,14 @@ static void alb_send_learning_packets(struct slave *slave, u8 mac_addr[],
+ 	rcu_read_unlock();
+ }
+ 
+-static int alb_set_slave_mac_addr(struct slave *slave, u8 addr[],
++static int alb_set_slave_mac_addr(struct slave *slave, const u8 addr[],
+ 				  unsigned int len)
+ {
+ 	struct net_device *dev = slave->dev;
+ 	struct sockaddr_storage ss;
+ 
+ 	if (BOND_MODE(slave->bond) == BOND_MODE_TLB) {
+-		memcpy(dev->dev_addr, addr, len);
++		__dev_addr_set(dev, addr, len);
+ 		return 0;
+ 	}
+ 
+@@ -1242,8 +1243,7 @@ static int alb_set_mac_address(struct bonding *bond, void *addr)
+ 		res = dev_set_mac_address(slave->dev, addr, NULL);
+ 
+ 		/* restore net_device's hw address */
+-		bond_hw_addr_copy(slave->dev->dev_addr, tmp_addr,
+-				  slave->dev->addr_len);
++		dev_addr_set(slave->dev, tmp_addr);
+ 
+ 		if (res)
+ 			goto unwind;
+@@ -1263,8 +1263,7 @@ static int alb_set_mac_address(struct bonding *bond, void *addr)
+ 				  rollback_slave->dev->addr_len);
+ 		dev_set_mac_address(rollback_slave->dev,
+ 				    (struct sockaddr *)&ss, NULL);
+-		bond_hw_addr_copy(rollback_slave->dev->dev_addr, tmp_addr,
+-				  rollback_slave->dev->addr_len);
++		dev_addr_set(rollback_slave->dev, tmp_addr);
+ 	}
+ 
+ 	return res;
+@@ -1727,8 +1726,7 @@ void bond_alb_handle_active_change(struct bonding *bond, struct slave *new_slave
+ 		dev_set_mac_address(new_slave->dev, (struct sockaddr *)&ss,
+ 				    NULL);
+ 
+-		bond_hw_addr_copy(new_slave->dev->dev_addr, tmp_addr,
+-				  new_slave->dev->addr_len);
++		dev_addr_set(new_slave->dev, tmp_addr);
+ 	}
+ 
+ 	/* curr_active_slave must be set before calling alb_swap_mac_addr */
+@@ -1761,7 +1759,7 @@ int bond_alb_set_mac_address(struct net_device *bond_dev, void *addr)
+ 	if (res)
+ 		return res;
+ 
+-	bond_hw_addr_copy(bond_dev->dev_addr, ss->__data, bond_dev->addr_len);
++	dev_addr_set(bond_dev, ss->__data);
+ 
+ 	/* If there is no curr_active_slave there is nothing else to do.
+ 	 * Otherwise we'll need to pass the new address to it and handle
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 0c52612cb8e9..ff8da720a33a 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -923,7 +923,7 @@ static int bond_set_dev_addr(struct net_device *bond_dev,
+ 	if (err)
+ 		return err;
+ 
+-	memcpy(bond_dev->dev_addr, slave_dev->dev_addr, slave_dev->addr_len);
++	__dev_addr_set(bond_dev, slave_dev->dev_addr, slave_dev->addr_len);
+ 	bond_dev->addr_assign_type = NET_ADDR_STOLEN;
+ 	call_netdevice_notifiers(NETDEV_CHANGEADDR, bond_dev);
+ 	return 0;
 -- 
 2.31.1
 
