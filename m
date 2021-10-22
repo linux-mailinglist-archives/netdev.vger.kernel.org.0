@@ -2,55 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A80C437C2C
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 19:42:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59D82437C2F
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 19:42:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233648AbhJVRoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 13:44:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46412 "EHLO mail.kernel.org"
+        id S233406AbhJVRo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 13:44:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46418 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233538AbhJVRoz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233305AbhJVRoz (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 22 Oct 2021 13:44:55 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9143861037;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id ED5296109D;
         Fri, 22 Oct 2021 17:42:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634924557;
-        bh=yL4tnrPPnh+3ueFbEtazjR6LwrhamC6ZzSwBcviuphs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=LdP5ITdrPlOATgr/I9JpwW3U/AzZOilvgAfQEFW2ZawY7vF4R0pShCIn6pg5H3JMe
-         yOjMLMxEuLgN2+FYNJ1Kg58eK70yvjnlyunbH2r5Ep+uBq1UuVaDRXgDKU8K4G533r
-         e/o+zbM64xQMSC6yNOPVaMp9qEm1OfdMarcaZibVmpKO87NPp7+rYsWMCW7crynQ9z
-         yAmIMrXC29sGilajKsSWofX518AGuFB+e9bzpecGurpgci5pqPpxu3B5kbru7gD5yT
-         LbaaHTeN3pvxvYmO2ka4Dix1RojuhfEWgn7W/lmxdquSSlriYkkXhcd4MjYSebsJf1
-         5GEHTpXs9E/cw==
+        s=k20201202; t=1634924558;
+        bh=QOVNcAcQ6j4lXFQzvAxlv4geOgG9g056VbLlYNNJGz8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=EnhKvWn92LHM0bajjcJl+t2P4oF2t3FJyHYxIWdt9QNvmY4o5jBIkA8XqqC3lpFdC
+         HNLd7GFssBEaxazNMY7+CT2fzpHl02BfHwDp2UA/syqafPjn6tSeNUoZpr5crSBHC1
+         IIRs22aMavHHNvYgiOaSz8y/Nlig4cf/YEt0mhVApcoOfznhrTS/vQ0369FXje8diu
+         Dn+YTxM3CPV+NCNNinmGVDgGyboRu9hPL+YOc3v3ThZLqBSKEOwcBsCUtfG7VmCYLn
+         Q2+FpUcsiqmGg5H9/xyVhUE9yTHE/qJ5PqMQcF7YjVS1bMu3YMFcqAxW7L7tkWo5IW
+         cfyba2klAKAnA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org,
         marcel@holtmann.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 0/2] bluetooth: don't write directly to netdev->dev_addr
-Date:   Fri, 22 Oct 2021 10:42:30 -0700
-Message-Id: <20211022174232.2510917-1-kuba@kernel.org>
+Subject: [PATCH net-next 1/2] bluetooth: use eth_hw_addr_set()
+Date:   Fri, 22 Oct 2021 10:42:31 -0700
+Message-Id: <20211022174232.2510917-2-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20211022174232.2510917-1-kuba@kernel.org>
+References: <20211022174232.2510917-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The usual conversions.
+Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
+of VLANs...") introduced a rbtree for faster Ethernet address look
+up. To maintain netdev->dev_addr in this tree we need to make all
+the writes to it got through appropriate helpers.
 
-These are intended to be merged to net-next directly,
-because bluetooth tree is missing one of the pre-req
-changes at the moment.
+Convert bluetooth from memcpy(... ETH_ADDR) to eth_hw_addr_set():
 
-Jakub Kicinski (2):
-  bluetooth: use eth_hw_addr_set()
-  bluetooth: use dev_addr_set()
+  @@
+  expression dev, np;
+  @@
+  - memcpy(dev->dev_addr, np, ETH_ALEN)
+  + eth_hw_addr_set(dev, np)
 
- net/bluetooth/6lowpan.c   | 4 +++-
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Marcel Holtmann <marcel@holtmann.org>
+Acked-by: Marcel Holtmann <marcel@holtmann.org>
+---
  net/bluetooth/bnep/core.c | 2 +-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/net/bluetooth/bnep/core.c b/net/bluetooth/bnep/core.c
+index 72f47b372705..c9add7753b9f 100644
+--- a/net/bluetooth/bnep/core.c
++++ b/net/bluetooth/bnep/core.c
+@@ -594,7 +594,7 @@ int bnep_add_connection(struct bnep_connadd_req *req, struct socket *sock)
+ 	 * ie. eh.h_dest is our local address. */
+ 	memcpy(s->eh.h_dest,   &src, ETH_ALEN);
+ 	memcpy(s->eh.h_source, &dst, ETH_ALEN);
+-	memcpy(dev->dev_addr, s->eh.h_dest, ETH_ALEN);
++	eth_hw_addr_set(dev, s->eh.h_dest);
+ 
+ 	s->dev   = dev;
+ 	s->sock  = sock;
 -- 
 2.31.1
 
