@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D0BC437683
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 14:08:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 244FE43766F
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 14:07:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233015AbhJVMKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 08:10:49 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:63375 "EHLO
+        id S231724AbhJVMJb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 08:09:31 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:20293 "EHLO
         so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232371AbhJVMJy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 08:09:54 -0400
+        with ESMTP id S231814AbhJVMJY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 08:09:24 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1634904457; h=References: In-Reply-To: Message-Id: Date:
+ s=smtp; t=1634904426; h=References: In-Reply-To: Message-Id: Date:
  Subject: Cc: To: From: Sender;
- bh=7zahY8FGLfXbTxBHrZgxPC3+TNZQHFPBnh8b/yiXqO4=; b=O9SQUjoADz2OoMh1oXpLiYzywIzI/xR2KYp6SLQKJPSfn+SXRPqqf97zYPPVK80uupwc7fh+
- XAKclDVjGKVo8J6BNs3n0YFaoBw74DpXq1qSlL4R3NQQNB/RaHG1nGwAv4r+AxmKQz1kbf4r
- 5VEghxoYfCIJLJWlr5aL10sEJQs=
+ bh=+oajzsf1fl9Gw8kku/wIe9EdIdkDw2TeU2ygjiesPhQ=; b=dFPyhMz2nyLrlDpDEj0K57Rc1eSoS5F3oofttyk/VZZoeqWAq1+H1eG4y7II4VYEOyoo4sPk
+ G3SI8kakWbujmhQUKhE4gcEFUFyu9w6Ic63QW673whIKQk50GLKbazTb7Wc+GrFtmTNrKMfO
+ Lax/53CvFCN8rjr+DZQAxU524D4=
 X-Mailgun-Sending-Ip: 198.61.254.9
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
- 6172a9665ca800b6c18f79df (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 22 Oct 2021 12:07:02
+ smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
+ 6172a969b03398c06c06e009 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 22 Oct 2021 12:07:05
  GMT
 Sender: luoj=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 69E86C4361A; Fri, 22 Oct 2021 12:07:02 +0000 (UTC)
+        id 2C6DAC43637; Fri, 22 Oct 2021 12:07:05 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -37,9 +37,9 @@ Received: from akronite-sh-dev02.qualcomm.com (unknown [180.166.53.21])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: luoj)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 3242CC4338F;
-        Fri, 22 Oct 2021 12:06:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 3242CC4338F
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id D090EC43616;
+        Fri, 22 Oct 2021 12:07:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org D090EC43616
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
 From:   Luo Jie <luoj@codeaurora.org>
@@ -47,9 +47,9 @@ To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
         davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         sricharan@codeaurora.org, Luo Jie <luoj@codeaurora.org>
-Subject: [PATCH v4 09/14] net: phy: add constants for fast retrain related register
-Date:   Fri, 22 Oct 2021 20:06:19 +0800
-Message-Id: <20211022120624.18069-10-luoj@codeaurora.org>
+Subject: [PATCH v4 10/14] net: phy: add genphy_c45_fast_retrain
+Date:   Fri, 22 Oct 2021 20:06:20 +0800
+Message-Id: <20211022120624.18069-11-luoj@codeaurora.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211022120624.18069-1-luoj@codeaurora.org>
 References: <20211022120624.18069-1-luoj@codeaurora.org>
@@ -57,62 +57,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the constants for 2.5G fast retrain capability
-in 10G AN control register, fast retrain status and
-control register and THP bypass register into mdio.h.
+Add generic fast retrain auto-negotiation function for C45 PHYs.
 
 Signed-off-by: Luo Jie <luoj@codeaurora.org>
 ---
- include/uapi/linux/mdio.h | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/net/phy/phy-c45.c | 34 ++++++++++++++++++++++++++++++++++
+ include/linux/phy.h       |  1 +
+ 2 files changed, 35 insertions(+)
 
-diff --git a/include/uapi/linux/mdio.h b/include/uapi/linux/mdio.h
-index bdf77dffa5a4..c54e6eae5366 100644
---- a/include/uapi/linux/mdio.h
-+++ b/include/uapi/linux/mdio.h
-@@ -53,12 +53,14 @@
- #define MDIO_AN_EEE_LPABLE	61	/* EEE link partner ability */
- #define MDIO_AN_EEE_ADV2	62	/* EEE advertisement 2 */
- #define MDIO_AN_EEE_LPABLE2	63	/* EEE link partner ability 2 */
-+#define MDIO_AN_CTRL2		64	/* AN THP bypass request control */
+diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+index c617dbcad6ea..b01180e1f578 100644
+--- a/drivers/net/phy/phy-c45.c
++++ b/drivers/net/phy/phy-c45.c
+@@ -611,6 +611,40 @@ int genphy_c45_loopback(struct phy_device *phydev, bool enable)
+ }
+ EXPORT_SYMBOL_GPL(genphy_c45_loopback);
  
- /* Media-dependent registers. */
- #define MDIO_PMA_10GBT_SWAPPOL	130	/* 10GBASE-T pair swap & polarity */
- #define MDIO_PMA_10GBT_TXPWR	131	/* 10GBASE-T TX power control */
- #define MDIO_PMA_10GBT_SNR	133	/* 10GBASE-T SNR margin, lane A.
- 					 * Lanes B-D are numbered 134-136. */
-+#define MDIO_PMA_10GBR_FSRT_CSR	147	/* 10GBASE-R fast retrain status and control */
- #define MDIO_PMA_10GBR_FECABLE	170	/* 10GBASE-R FEC ability */
- #define MDIO_PCS_10GBX_STAT1	24	/* 10GBASE-X PCS status 1 */
- #define MDIO_PCS_10GBRT_STAT1	32	/* 10GBASE-R/-T PCS status 1 */
-@@ -239,6 +241,9 @@
- #define MDIO_PMA_10GBR_FECABLE_ABLE	0x0001	/* FEC ability */
- #define MDIO_PMA_10GBR_FECABLE_ERRABLE	0x0002	/* FEC error indic. ability */
- 
-+/* PMA 10GBASE-R Fast Retrain status and control register. */
-+#define MDIO_PMA_10GBR_FSRT_ENABLE	0x0001	/* Fast retrain enable */
++/**
++ * genphy_c45_fast_retrain - configure fast retrain registers
++ * @phydev: target phy_device struct
++ *
++ * Description: If fast-retrain is enabled, we configure PHY as
++ *   advertising fast retrain capable and THP Bypass Request, then
++ *   enable fast retrain. If it is not enabled, we configure fast
++ *   retrain disabled.
++ */
++int genphy_c45_fast_retrain(struct phy_device *phydev, bool enable)
++{
++	int ret;
 +
- /* PCS 10GBASE-R/-T status register 1. */
- #define MDIO_PCS_10GBRT_STAT1_BLKLK	0x0001	/* Block lock attained */
- 
-@@ -247,6 +252,7 @@
- #define MDIO_PCS_10GBRT_STAT2_BER	0x3f00
- 
- /* AN 10GBASE-T control register. */
-+#define MDIO_AN_10GBT_CTRL_ADVFSRT2_5G	0x0020	/* Advertise 2.5GBASE-T fast retrain */
- #define MDIO_AN_10GBT_CTRL_ADV2_5G	0x0080	/* Advertise 2.5GBASE-T */
- #define MDIO_AN_10GBT_CTRL_ADV5G	0x0100	/* Advertise 5GBASE-T */
- #define MDIO_AN_10GBT_CTRL_ADV10G	0x1000	/* Advertise 10GBASE-T */
-@@ -289,6 +295,9 @@
- #define MDIO_EEE_2_5GT		0x0001	/* 2.5GT EEE cap */
- #define MDIO_EEE_5GT		0x0002	/* 5GT EEE cap */
- 
-+/* AN MultiGBASE-T AN control 2 */
-+#define MDIO_AN_THP_BP2_5GT	0x0008	/* 2.5GT THP bypass request */
++	if (!enable)
++		return phy_clear_bits_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_10GBR_FSRT_CSR,
++				MDIO_PMA_10GBR_FSRT_ENABLE);
 +
- /* 2.5G/5G Extended abilities register. */
- #define MDIO_PMA_NG_EXTABLE_2_5GBT	0x0001	/* 2.5GBASET ability */
- #define MDIO_PMA_NG_EXTABLE_5GBT	0x0002	/* 5GBASET ability */
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, phydev->supported)) {
++		ret = phy_set_bits_mmd(phydev, MDIO_MMD_AN, MDIO_AN_10GBT_CTRL,
++				MDIO_AN_10GBT_CTRL_ADVFSRT2_5G);
++		if (ret)
++			return ret;
++
++		ret = phy_set_bits_mmd(phydev, MDIO_MMD_AN, MDIO_AN_CTRL2,
++				MDIO_AN_THP_BP2_5GT);
++		if (ret)
++			return ret;
++	}
++
++	return phy_set_bits_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_10GBR_FSRT_CSR,
++			MDIO_PMA_10GBR_FSRT_ENABLE);
++}
++EXPORT_SYMBOL_GPL(genphy_c45_fast_retrain);
++
+ struct phy_driver genphy_c45_driver = {
+ 	.phy_id         = 0xffffffff,
+ 	.phy_id_mask    = 0xffffffff,
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 736e1d1a47c4..04e90423fa88 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1584,6 +1584,7 @@ int genphy_c45_config_aneg(struct phy_device *phydev);
+ int genphy_c45_loopback(struct phy_device *phydev, bool enable);
+ int genphy_c45_pma_resume(struct phy_device *phydev);
+ int genphy_c45_pma_suspend(struct phy_device *phydev);
++int genphy_c45_fast_retrain(struct phy_device *phydev, bool enable);
+ 
+ /* Generic C45 PHY driver */
+ extern struct phy_driver genphy_c45_driver;
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
