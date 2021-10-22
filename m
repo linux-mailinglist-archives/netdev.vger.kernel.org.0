@@ -2,68 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3E2E43750E
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 11:50:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0A34437510
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 11:51:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232415AbhJVJww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 05:52:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55598 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231992AbhJVJww (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Oct 2021 05:52:52 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0C87A611CB;
-        Fri, 22 Oct 2021 09:50:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634896235;
-        bh=aCRXavwbJdSY/K+s4FvrFyrCNo4Wxkh04CP/XaQOMc8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tZcb4Z9mZmnjxXHiP3rpnpgR8pvv8ELAxLnHg5qupT/GGi5W13GIAMEQR2MDerdcL
-         1K06LF+nD4prq1IIUxO7qLKCn7TSmH8tPrhtVHKPvTT6xuJEiFYfOPN3UtL5b5PFRC
-         kJ3jl/8/E2KyRwo62DZcpNWPdX9QXgvDqJRirLp3YxCysd2/ygxCvEI4YqchpSnPOv
-         sF/LzCdPwB7u4CU3mCVGMcMkwaND2nrqP3Hi0VXaAOmdSg0Bc57nPF62G7WVWTp2/R
-         Ewsmxzey+lPwRT29R7anY33B2FkSuwEYsdVm4X6p7DBXRL+NVXYkVG635BKz8s7zzJ
-         SWr0glNUtHA3w==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F3ED2609E7;
-        Fri, 22 Oct 2021 09:50:34 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232502AbhJVJxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 05:53:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48162 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232465AbhJVJxL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 05:53:11 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6448BC061764;
+        Fri, 22 Oct 2021 02:50:53 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id 187so3127228pfc.10;
+        Fri, 22 Oct 2021 02:50:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DV/7C61f6fqM78yHZsRiqCOwwU+HfAoXATfWQmENNkU=;
+        b=aXMXjEoEs6VoofcakCamdi3WkcuGEzRWpbCPUGhw9OKm/0CkiK7WcyAkWkwq9qDhAQ
+         /idixeSZ0dXF9DGAHfdhqVaqKtqgSxFku2yRzA6xY/6JJQ8GfbV/PK5kRQGPI9TlyoIu
+         47tEuX3KPB9NJMrgQTqc1Ylchol42SdMfng++vaXrpU50myGYearSaU/ztciTji3dr2I
+         +KjzJEFHdpAAw19gPb3r+Yng4W3jzRywop9FThYNEfugT4jnkBi8u10TAq3UVDGYddaO
+         1V6lH8HFdLWmw0xl/ARZR9TbyRNtIqj33CkBC8f+yUCjLf19FCK4MrXakb5kAN90YK3W
+         QUBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DV/7C61f6fqM78yHZsRiqCOwwU+HfAoXATfWQmENNkU=;
+        b=R8Zva8mZeY1XmlrgsZ2o2/IQaDOSlZ11hzreMQGhidSwx9MdiAp5uaIjzXKkPWByel
+         Dqq3CkOYc3oJC2wzRWfeXVXslM8VQe3zcBJeMVds7DobbP11QMA4IIW5MyfZ/wOzWqrL
+         oUQxlWXBIV9/gBmzDWfeQNACNnRBSqSnxhyLsDRn56Kq99aFXPz85ziae2RGURtSxgy0
+         3LTH8J6OpEHppHhoPfQcJ74BBvmJ/uHX9pZojipbUO+XWVYyG1G1ywgJyfA+J9I8zXiL
+         T877i75m3iDKGaae7YhQa2pIOmJrngJ+5MSEfmwun+KQk+dqFmAToqPrwFY5qwjYIbyG
+         qSRQ==
+X-Gm-Message-State: AOAM533B6gbwkKz8TzqpryqXHb3mE/KZD3JJG636chmNhx9TL4jTIzpX
+        8MrJbsimAGd4BJeolKIveso=
+X-Google-Smtp-Source: ABdhPJzuuduBX5UKa2o5JHEP2vtgwg5rWAjRQ5+e825Leufi8NL9GRMOfqsQcp/qLvvjH38ZhzAEnQ==
+X-Received: by 2002:a05:6a00:2405:b0:3e1:9f65:9703 with SMTP id z5-20020a056a00240500b003e19f659703mr11365941pfh.6.1634896252935;
+        Fri, 22 Oct 2021 02:50:52 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id f15sm10174837pfe.132.2021.10.22.02.50.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Oct 2021 02:50:52 -0700 (PDT)
+From:   luo penghao <cgel.zte@gmail.com>
+X-Google-Original-From: luo penghao <luo.penghao@zte.com.cn>
+To:     SimonHorman <horms@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        luo penghao <luo.penghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] net/core: Remove unused assignment and extra parentheses
+Date:   Fri, 22 Oct 2021 09:50:43 +0000
+Message-Id: <20211022095043.1065856-1-luo.penghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [GIT PULL] Networking for 5.15-rc7
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163489623499.18872.8059195415527012685.git-patchwork-notify@kernel.org>
-Date:   Fri, 22 Oct 2021 09:50:34 +0000
-References: <20211021153226.788611-1-kuba@kernel.org>
-In-Reply-To: <20211021153226.788611-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Although if_info_size is assigned, it has not been used. it should
+be deleted.This will cause the double parentheses to be redundant, 
+and the inner parentheses should be deleted.
 
-This pull request was applied to netdev/net.git (master)
-by Linus Torvalds <torvalds@linux-foundation.org>:
+The clang_analyzer complains as follows:
 
-On Thu, 21 Oct 2021 08:32:26 -0700 you wrote:
-> Hi Linus!
-> 
-> We'll have one more fix for a socket accounting regression,
-> it's still getting polished. Otherwise things look fine.
-> 
-> The following changes since commit ec681c53f8d2d0ee362ff67f5b98dd8263c15002:
-> 
-> [...]
+net/core/rtnetlink.c:3806: warning:
 
-Here is the summary with links:
-  - [GIT,PULL] Networking for 5.15-rc7
-    https://git.kernel.org/netdev/net/c/6c2c712767ee
+Although the value stored to 'if_info_size' is used in the enclosing
+expression, the value is never actually read from 'if_info_size'.
 
-You are awesome, thank you!
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: luo penghao <luo.penghao@zte.com.cn>
+---
+ net/core/rtnetlink.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 10e2a0e..c218ad0 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -3807,9 +3807,8 @@ struct sk_buff *rtmsg_ifinfo_build_skb(int type, struct net_device *dev,
+ 	struct net *net = dev_net(dev);
+ 	struct sk_buff *skb;
+ 	int err = -ENOBUFS;
+-	size_t if_info_size;
+ 
+-	skb = nlmsg_new((if_info_size = if_nlmsg_size(dev, 0)), flags);
++	skb = nlmsg_new(if_nlmsg_size(dev, 0), flags);
+ 	if (skb == NULL)
+ 		goto errout;
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+2.15.2
 
 
