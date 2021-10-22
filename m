@@ -2,102 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F7A4437515
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 11:53:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B86A4437522
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 11:54:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232469AbhJVJzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 05:55:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48722 "EHLO
+        id S232598AbhJVJ4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 05:56:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231992AbhJVJzp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 05:55:45 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14896C061764;
-        Fri, 22 Oct 2021 02:53:28 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id i5so2336818pla.5;
-        Fri, 22 Oct 2021 02:53:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=z6nOP1lwZ+z8CNapkxtzMDg1jYNFiKTrWl52nW3rMjE=;
-        b=e7QddlBr7J8kMUrp83JvopWegDYKHDuy52p5f2Ato3Jx9MG5SdxlslMJNCGmn3UYD/
-         nvBa4UTxxV07cShTGQdG/jpyHI9Md3ikZpO9heQ//qFGl7inpalwc927TYltgSSrbfcW
-         Wm1wvCICw+8LoVUTbaWcN3B8i8ckXPSYl855ZBj8r9zhtKHFaeCyUuCE0VJ5Z9UOQqx/
-         vgTIIi/JNG3fHuiPEp9lyYZykVCSpSM+6nfqiKqePAK8KhIfUfEQ6oIs0GkXyTnnt5j8
-         K6cTlfajpsYKv2HCO44DKEnws/bzZZTtvIqL8CLCyQPV5GjgOmq5rG39I0RCmdX2z4mg
-         YxvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=z6nOP1lwZ+z8CNapkxtzMDg1jYNFiKTrWl52nW3rMjE=;
-        b=wbzgO5BcXzQvNFrFVFC0gB92+MIMSlCfu65xoe2gXDg3PTRPNFx3N0deuoGbXIDq7J
-         7QEXwqVOBpe8XZHipRhLu9nAYe2sPcEnD7XrQkhPZnDL0Y4ovRbibOCbu9lLOA5YPqw0
-         Gv3v54ASJY48Z8POkD4Gfiz165mydBf5kt74vl1WANSWjJHrC+O7eMY1f62nL63ARYW5
-         RB6K/p/tvLYJjT/cLtxNuxh5WdnmjBLw8ApheICiw1pg8gWEEKHpFApC3FLZwgtVeBmo
-         YVoskip6Vp6zgGUyl2LqdFQFBhUX7F1SxG12OuKXDy/7zd/gFtJlmmPr/PG+6bBpPBKd
-         OzCg==
-X-Gm-Message-State: AOAM531PhdFzRy/qdkQLr+XRdGS0gOEjZ394J4X8XMeQ3O3nbzxUvi2v
-        mTJURKrieFIUfuD9GpkOFBI=
-X-Google-Smtp-Source: ABdhPJy0vlsKGUGlR07VwMx3HDLDnQdQTrUb+/JWV2e76pZ4fnLku9oWgRT4Fmtg4JQMRDMiy604GA==
-X-Received: by 2002:a17:90b:20d2:: with SMTP id ju18mr12901632pjb.66.1634896407680;
-        Fri, 22 Oct 2021 02:53:27 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id p8sm9785747pfo.112.2021.10.22.02.53.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Oct 2021 02:53:27 -0700 (PDT)
-From:   luo penghao <cgel.zte@gmail.com>
-X-Google-Original-From: luo penghao <luo.penghao@zte.com.cn>
-To:     SimonHorman <horms@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        luo penghao <luo.penghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] octeontx2-af: Remove redundant assignment and parentheses
-Date:   Fri, 22 Oct 2021 09:53:21 +0000
-Message-Id: <20211022095321.1065922-1-luo.penghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S232523AbhJVJ4m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 05:56:42 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B69F6C061764
+        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 02:54:24 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1mdrFd-0001gz-6D; Fri, 22 Oct 2021 11:54:13 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1mdrFa-00064w-0n; Fri, 22 Oct 2021 11:54:10 +0200
+Date:   Fri, 22 Oct 2021 11:54:09 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Zhang Changzhong <zhangchangzhong@huawei.com>
+Cc:     Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 1/3] can: j1939: j1939_tp_cmd_recv(): ignore abort
+ message in the BAM transport
+Message-ID: <20211022095409.GA20681@pengutronix.de>
+References: <1634825057-47915-1-git-send-email-zhangchangzhong@huawei.com>
+ <1634825057-47915-2-git-send-email-zhangchangzhong@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1634825057-47915-2-git-send-email-zhangchangzhong@huawei.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 11:53:46 up 246 days, 13:17, 122 users,  load average: 0.27, 0.19,
+ 0.20
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The variable err will be reassigned on subsequent branches, and this
-assignment does not perform related value operations. This will cause
-the double parentheses to be redundant, so the inner parentheses should
-be deleted.
+On Thu, Oct 21, 2021 at 10:04:15PM +0800, Zhang Changzhong wrote:
+> This patch prevents BAM transport from being closed by receiving abort
+> message, as specified in SAE-J1939-82 2015 (A.3.3 Row 4).
+> 
+> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
 
-clang_analyzer complains as follows:
+Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-drivers/net/ethernet/marvell/sky2.c:4988: warning:
+Thank you!
 
-Although the value stored to 'err' is used in the enclosing expression,
-the value is never actually read from 'err'.
+> ---
+>  net/can/j1939/transport.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
+> index bb5c4b8..2efa606 100644
+> --- a/net/can/j1939/transport.c
+> +++ b/net/can/j1939/transport.c
+> @@ -2081,6 +2081,9 @@ static void j1939_tp_cmd_recv(struct j1939_priv *priv, struct sk_buff *skb)
+>  		break;
+>  
+>  	case J1939_ETP_CMD_ABORT: /* && J1939_TP_CMD_ABORT */
+> +		if (j1939_cb_is_broadcast(skcb))
+> +			return;
+> +
+>  		if (j1939_tp_im_transmitter(skcb))
+>  			j1939_xtp_rx_abort(priv, skb, true);
+>  
+> -- 
+> 2.9.5
+> 
+> 
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: luo penghao <luo.penghao@zte.com.cn>
----
- drivers/net/ethernet/marvell/sky2.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/marvell/sky2.c b/drivers/net/ethernet/marvell/sky2.c
-index 8b8bff5..33558aa 100644
---- a/drivers/net/ethernet/marvell/sky2.c
-+++ b/drivers/net/ethernet/marvell/sky2.c
-@@ -4985,7 +4985,7 @@ static int sky2_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	pci_set_master(pdev);
- 
- 	if (sizeof(dma_addr_t) > sizeof(u32) &&
--	    !(err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64)))) {
-+	    !dma_set_mask(&pdev->dev, DMA_BIT_MASK(64))) {
- 		using_dac = 1;
- 		err = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64));
- 		if (err < 0) {
 -- 
-2.15.2
-
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
