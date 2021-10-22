@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF2A9437CBA
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 20:44:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26E9A437CBB
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 20:44:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232324AbhJVSqv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 14:46:51 -0400
-Received: from mail-vi1eur05on2068.outbound.protection.outlook.com ([40.107.21.68]:37921
+        id S232133AbhJVSqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 14:46:54 -0400
+Received: from mail-vi1eur05on2058.outbound.protection.outlook.com ([40.107.21.58]:9427
         "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232133AbhJVSqt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Oct 2021 14:46:49 -0400
+        id S232296AbhJVSqv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Oct 2021 14:46:51 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Fr/wsPFX3ufm7I6relE9Q4NUAnJCz5kulU6LBk98flO8y39SVcO1FCF7NGhj703Rm9Ym9RcQ4eRiuALZsvjp5lbYbti1HKg/IpLz3gV0wRVgUXkNue1bXGhH5sgwd3i/VYRzzL4WDMKfIRqz5krcV0P/uIBFT+IwtYCzvHw5IAIzbd85/nznQH+sPf3+glAOf3mikH4s4RF53rrCwarx4cKANzmpeG9ODVUmUNM9/mTF2Ag4EMMsIRx9aKiwaut325nIFGN7vNEoBoCIMyLiRl1U9bcUuj6JsmuOEYbN0qEAbjwJr2j8CKpILMeiKpsxqnzj4JWrZbKA9fSLIaOkNA==
+ b=LOc3/fCit6/IaZEZRIoCQJfcaW1kAKXLr3q2N8j1iM6eP4/Xv+bpLPkkkNYfuCv4v8WA8ZWS2tmC+YK79k0OTIxyAjuR3BqivhFtWQ9Mmb/d1kp+VpfF/PIYX3PGbaSC+NpPLKNfp1lV+6tA20lbtX8putL80gK01weIkR5QUJNWPswo+Sj3JHemP4PgP+SfpZDcYk7l5SeFrO+SXcLV5BudIxFyhs6tvGDWp0yXBMf/mhXl+I1ap18a8Q3iUDXFMd9NjBRwgbAdqixYlK7aTm9DibG/pGZ0RjWxuni58MIA5ymFz/rlh0eDXchmQKbtqSU90p5iukUP5wYhxJ/GGw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sBdC782UZkM/yWhoDg+6wYhkF5/RenlaAHFVNcRwwo0=;
- b=K+rGOdeq9mq9x2Qul5FqwpDW4VTl9dPq782aj9upJy1Y1p3xI9pLux5rLM8atWpLLc4taaiIwRXPwSaQyDkL39ik9Rs/OW/G0RBNUlbQgLGFtfUKwO7BwWvYy+zcodv1dke/EsiePf4mBqSZFqqC1xXUXSbYeTNMlKtmjNhWbF/pMTFLA0S6wj02XIg0PJT08pr/klzETrGe5KXndC89ECjC3BdK7gXMQx6hd8hV+EMds4nlw7HaWhak+C1utIfJ5cZlmSahYiH48AprKx6neNmSFX73HAtvcHNzMHcEENMtKTn2uebnunHIvIYHkWEItF0eDQ/S58b+lKAGwQoVJg==
+ bh=gstyh8iE0GJ5B7sZF/bRFIzSFBHwM4f1o/Pm79ZRtDw=;
+ b=O3UZx6AOtXBYmJVuIqkE1kEE1ImgmSoZ492GRQKCkVZ6/RzcIv2di70vjiRbANBiHmHoP92yxZtBwL3og9aOfPuzsi5lDp7LVHQOCMtRJHlkGaUx1qRax4VH8xoJ9QE2dOZpxkUWTsimvSfbFxZu+T3ZdgUElbvN5fKGxL2ta/6QpZrwIWkGHvxiUYYpWdkRZ9NVKBSZCGFnVfmiEMBX+2YAOpv2F4j3o0HZgT2zrSem0hgFoYz3hAdqO9N7/ND9tDSRkWbOJhPjaahcvck1ge1UNUNnygo6dwewkEWpbKqpXPnJmSWD0DcZaHqwDu3VGuFbxn0f8YzMshrypdOifg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sBdC782UZkM/yWhoDg+6wYhkF5/RenlaAHFVNcRwwo0=;
- b=iRp3/hqCPK4qordAXyKqhYWVZJT0axwUsBtqk7rNGTd4YBH7igu+mr3p2dipSWcdmi4+13E54Tuz80D4cP75YcSGuTZa5yC0935hOEdkg9hUaJvBcs1rIHVUrkHNDZ3C9VEFh3+T5RbY2o4rDU8xDXo79wrpkIuszZr5Vf97iAQ=
+ bh=gstyh8iE0GJ5B7sZF/bRFIzSFBHwM4f1o/Pm79ZRtDw=;
+ b=PDKZ4K7BTrNWCsNKiB8+1QQ1UUUj34bX2sDx/9O5c/Uy+nVRNL+keHlP6w8snYakDzbUmMDB++CkPqPwqhYywsOiv+Oc+THU9XmYLmIQ/+NYW4Xr5G8VtSnKehzO4E5So5FuFGlySlXbZu6VQhXSOCVGm/4F6guCuxOmATXhU9o=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR0402MB2862.eurprd04.prod.outlook.com (2603:10a6:800:b6::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18; Fri, 22 Oct
- 2021 18:44:30 +0000
+ 2021 18:44:32 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4608.018; Fri, 22 Oct 2021
- 18:44:30 +0000
+ 18:44:32 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -61,9 +61,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
         Claudiu Manoil <claudiu.manoil@nxp.com>
-Subject: [PATCH v4 net-next 5/9] net: dsa: lantiq_gswip: serialize access to the PCE table
-Date:   Fri, 22 Oct 2021 21:43:08 +0300
-Message-Id: <20211022184312.2454746-6-vladimir.oltean@nxp.com>
+Subject: [PATCH v4 net-next 6/9] net: dsa: introduce locking for the address lists on CPU and DSA ports
+Date:   Fri, 22 Oct 2021 21:43:09 +0300
+Message-Id: <20211022184312.2454746-7-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211022184312.2454746-1-vladimir.oltean@nxp.com>
 References: <20211022184312.2454746-1-vladimir.oltean@nxp.com>
@@ -73,48 +73,48 @@ X-ClientProxiedBy: AM0PR01CA0103.eurprd01.prod.exchangelabs.com
  (2603:10a6:208:10e::44) To VI1PR04MB5136.eurprd04.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Received: from localhost.localdomain (188.25.174.251) by AM0PR01CA0103.eurprd01.prod.exchangelabs.com (2603:10a6:208:10e::44) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18 via Frontend Transport; Fri, 22 Oct 2021 18:44:28 +0000
+Received: from localhost.localdomain (188.25.174.251) by AM0PR01CA0103.eurprd01.prod.exchangelabs.com (2603:10a6:208:10e::44) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18 via Frontend Transport; Fri, 22 Oct 2021 18:44:30 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 48ed52c2-39e2-48cb-3f1f-08d9958bfb44
+X-MS-Office365-Filtering-Correlation-Id: 813467d0-b6e0-4a26-7453-08d9958bfc66
 X-MS-TrafficTypeDiagnostic: VI1PR0402MB2862:
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB2862626BE4918CA10DDCAB48E0809@VI1PR0402MB2862.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB2862489E090041EF8D24BC8CE0809@VI1PR0402MB2862.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: yf4bLSTLyT23lDDUKcHzaq31p5Twnmv0KqnRMQxRo2Pv8cWFg7dSuxvpK8i8zEY+UlmAXgyIBFKasma2GXFYjbA498y7atoXeCU5i1ewxqPEzmI1VoWTHgCCWKhSJG+weL1ccD36iQqlYBEe6vgCjVn/uCTTAa5Osc+FMierHsL0VXICQR7rz6KyUAitLTHsk+ThxuvPmMGi/6ieoS8FZIPqsCYdKuX5+smbU5bZ42LJv/Kj8cpZpVQ/dowCnS8fJFBzsEEFYIGebJuizsOpiH7KBws+GMqwgqZl0WvT7mnCAnoHjqXkpJjMgeUKj0R4OheQ2TVrCrWFH5GSqVqGFfjF0Bbsh7/ooNAgB+yDCVyjU+VWZCSL9FNOQ7BwoUJxnzVXhIRRn+BX9A1lk5AiZDKTO5dDrV6H3q4DDLnv1TE8+iokPTkphkgf7MnDQ1OD25S38bNJx4h1RKrrW/rbU9jUJG7Ftk7jHMDe+2IBTU7YbFIPuiMqB664hyFMECNSggouKn8N+XlLz6ubwtpiK8kudetwkDY/ycolRpQ6qaHVplJO2idn+4lZnh7qgXX7+10CgZJBc8cJmHBpEzdVV9iY3FR22GlhhliHoWPtBC5ErW0pe2u/hVT3vw2WqarqdstQ4+GCZf7PuvW/lAzwM56XQ1MDxY1cMDAK+o9UrH2leIj+izcenatjIyxxHyh+I6flDD4oPYtKh+nufzCeRA==
+X-Microsoft-Antispam-Message-Info: 5IICkUNTIpeiZ/eVT1nFZ3e0YDqR9RxqThSRCJDxyl/WcPVM0J+OE9DqDB9MnKELjSVvBZXNXyUFoEeInzkFVBmZfyoXD6FeAsBP+oIG20xdZjV9H/HXRddSnCRT3Bp6yPLTMAvBTsu84I2/nZRjmhfXzsAi/aPJGc+5ga6fc+HeOVIBNwISGolI768yLr0yEGC4QeYbnmvvsdVXuFp89zmtWTwAr7oxjFHHnMTcaGGlrfBDbhBXnGJYzCmcPlZ0fRBZd1t6iXqRQBE4Na4/Y7DaQQQyfpOrJN+DdvRiUubuDLNVCQBD+YnCH/yFfmNrINPEHZitHBAzjdR0UqC/vBtGXRw41vZlvVcTBSJgb25IEcM+RvoRXzJCUiy0vlDqbWi4xTUHPeE1ExnWzDFz7oQigHXxPNOb25CfTEPVHoGA/+GDjod2hoNhPWxqrC98Pagorv/DuSPsjCT2SpHTlGVqMO4bEPzgWnlHgHXEFU6RuBfGnP1H/iBSIAcTum7BuANqwuL8C7IG5lH2VyRKmTzuZC3Dap0H/ARWAZtW5Gp0q7je56xl+RhiWmPG3vvvaIvq9UEyNcXlWhyg12k7gpW5bk17HnaH4/ziJFKeI+nH2STp2gkjBpJEooFROOGo5JjJZKbJtAFOfhyVMHmD5LjbB7Mo6Vq9zNy1nqzFkGUAJ9rZ2rnpUZunkwZwcnG94yPZayGv+1FF19xQ+/8Kvg==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(38350700002)(2906002)(38100700002)(83380400001)(52116002)(508600001)(1076003)(36756003)(6512007)(6666004)(54906003)(6916009)(86362001)(6486002)(316002)(956004)(66946007)(2616005)(44832011)(4326008)(186003)(7416002)(6506007)(8676002)(8936002)(26005)(5660300002)(66556008)(66476007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3xl0Hi7n0/oydW7/ESVZtx6bHhStljGWRdfvsyLYrFNI4wRAjzi48Ko+2wGA?=
- =?us-ascii?Q?WYdti3MD3EUUjuU7WtFxX4HJ9UUaw5V5Hr+YOSkcR4iDjXzdzFX1ZgtadxMT?=
- =?us-ascii?Q?+hJiwBBX7BI6gP+ycm4ZsxSbpJwGKSbKGPz3bLsI8lm0A+a+m6yp2k1gXRBH?=
- =?us-ascii?Q?A+J/y5e7sLpG//kwTxwHYMgP0GOLxH4EtMHEbU1/pGotr5rrvvPtF2HZM8si?=
- =?us-ascii?Q?UQe1uObeWCxM3tMDtQnisvaSxh0pRTMcdNg3RqIf1jWtCxjy8OFN10aXXKOr?=
- =?us-ascii?Q?IM830Tl6bNwLcSQUqXw5YpNRKZ4Ftr2k988FAzfZFQmkSsdVR4pSO91seO29?=
- =?us-ascii?Q?+U+I3KNli33ttahxFOwczDWJ49OkFwkYIWACZikK1DvEsqO2rSPxln6XlUv2?=
- =?us-ascii?Q?vbfrqFeHF/ZzRhTha4VA7/N3kNkjjwjdNU54dLZZYb7QpQXMaPFuqp0yUf5L?=
- =?us-ascii?Q?+FCzsVLD/5poTMKNfdFQ4DUfA2gmRs3hdA1PdcH7zip+SnPr9T05/ecbMRXp?=
- =?us-ascii?Q?6nHJgtZpSHKEhRsGKOA05eLI1Cxvn6zFYaGO84N4jlPb5i6ipok15eR7tf1e?=
- =?us-ascii?Q?2jB+t5lCaXE5dOdMob5LiLpvo+BzKVNDYdz2K9b/s+rr+jeA7pTN+0rRG6DL?=
- =?us-ascii?Q?Vm23Cg9aSU0s7v769WtSvU852AihyfdqAuvWpjIofVyK5ViLVo+D3Owu3tjv?=
- =?us-ascii?Q?gVOsCbOF7cvkzvioba7rwKa5UyonMZOA5K8+pI2Oxy09rGdv6GsxR5Ng/eWW?=
- =?us-ascii?Q?2yPfdKm4Ar7SQYuSXKSThndQph5tVtxBkjM9ix2G2jjrbbsCv4t5Mm5UElWN?=
- =?us-ascii?Q?hOWBqCVAAulQ0i+zMKZL2/BVQkp/37wIkUGBg4K0Gdim63EPfEeqUmBj640F?=
- =?us-ascii?Q?0g2MVd0lBJdvv0c5NWq+tZRnHd82h3W5Zv0xT8rii+JXDDy1JfjWfSvzCW0l?=
- =?us-ascii?Q?WANjNEm+WIq8DsngbFvYTFR/uHbYwZ98oaLFX2loicnXzfuEkudrRGpIAt0R?=
- =?us-ascii?Q?ObkrXV4K+WahI4LlY7a8+Y/CvFBlP8kiL5OwmjzJWUWW2Q5zb5EatezLw/qu?=
- =?us-ascii?Q?xCA3hRmExGLYyt2vXZcDtR1IbC360pjVSsmTRLZwYC2ETIZLjSbDqIj9ahh6?=
- =?us-ascii?Q?Yd0UXUguAz4BOuP90wHrg6ixXooAnws3xncy0H+kEbSixAOLkAnCm3KKRhGk?=
- =?us-ascii?Q?/fJPMfN5RU8FFfw9R8VJU/Mackxtbx+TTXlKfR5rQzUF9JJBq2Hvi5DT+w6L?=
- =?us-ascii?Q?2rp2jJJmACOVfgPjVTFRv7aXA5PRCwaOM21W4xRpa6hgMI33xBvNCm4OjX1l?=
- =?us-ascii?Q?5DNEJWpUWyNbjP2HWyzSBGTThVGtg7kjFjNNJHobhgumwtrvD68FuGuti4P6?=
- =?us-ascii?Q?PPL41+p7ZIHeyduVGcXnFLDd2aDHClQtBoRbfNoTQhZ7YEmbTPcadTbDk5Xd?=
- =?us-ascii?Q?tW5MMlI9ObgsnUO4gKPdx4Yze3HP62BO?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Y5uf14+BAmyHV88WNSvo4gZFLHWgov04I6F+Ip70bULg4H40E8eNhiOKV57z?=
+ =?us-ascii?Q?yIDeLdv5GK6zWEvslZPH8YqzrrRNGIOCHG8CaSYQJsXJ1xNIvbLh2I0OsgnC?=
+ =?us-ascii?Q?9JnZ0lUF1bk/COeTLUv2Dyr+/jU4/wcCWVYenj+Yw7LuXjLB/o6kZTcvPoIr?=
+ =?us-ascii?Q?Yn6gxymwswxXwoYMT+QW5VJd3a8iAJP5GO0qq3FBQduiArQLpdK6P6nlzty8?=
+ =?us-ascii?Q?Lx+i2+Mx7XwPYSJ85Gbr0RUWWUbXDc8Km30USwWOk3uqh1xOqxUNpVElVchj?=
+ =?us-ascii?Q?IuJIccuxRD3nR/pW4DJyZMz/3R0fyf8iDFwkU3a048UcxfmLfDNFj/sHGxHu?=
+ =?us-ascii?Q?DnTub81o8EM+izz9YFjHD2JaFY95U09zm4SzNqeg/J7hzd28PynxXF6eC/Qy?=
+ =?us-ascii?Q?uTJcMVcEKXMSlVUXQ/UegPXrepz8ukZ80b7YJL+dLl2+t6DyU5hV7vykGCna?=
+ =?us-ascii?Q?nUuTfdA08leMPAdgWEmaW8SGAbbg6C0gyZT92S4Um2lUBT1jKxRJWVjfJDPf?=
+ =?us-ascii?Q?6DZCNDFfrN1ivNcTRoJ4iC3a1mLZaDiLJNzbIKQbM1wjeI4Tbg058cNXNWPQ?=
+ =?us-ascii?Q?Z4/VfNR3QGZ+Xj4f/33f+yu5C0W0k1i3vJ/imj6lc40EMdykMRMFD+BPqvC1?=
+ =?us-ascii?Q?C4A+rFe5RCLJ9uY16FfOmpM6WRoCDD+hxXLhjA4sE6/5eSnFoNyV8QMC804A?=
+ =?us-ascii?Q?0kSWs2AghYEB/S68FjFTRPzmwctfpoW5/Y5fdcvLha6Yl8aBsqdqmTlGOWQt?=
+ =?us-ascii?Q?zmEUy/Gm0PdeOiJiDEnLRqRFNOu326cBqk1z4McMLR8lAxwHKu7lgoM/oyl3?=
+ =?us-ascii?Q?yQKrhVvxH/tqc3NaZPqy6KruZS6fAiPw+HLeRBR0x1o/dZYb95r8nivk5ed/?=
+ =?us-ascii?Q?qxOpPVR66sXytHz3J5X6/VTam8iz+2TyhOuuDZ9U1hDFZ00D5WH/EQCUyqjN?=
+ =?us-ascii?Q?ZAlxHLOUoMxsPAWFVFHd/PxXqwXx75pwMfIVRcOXjc42V2CBr7F0g+nhtABZ?=
+ =?us-ascii?Q?DmhUUIEXAbxMefFOPW4hT6CniW+L9E+WvWo650wa1J8bngb/TzawvCaBa5U9?=
+ =?us-ascii?Q?08eMSdVDrxsFY+peqfl4H0flMT8HcKP0i3PcLfwnG1jQOpsGzrb2aW9fCHgm?=
+ =?us-ascii?Q?zjHuhVf59pGNzSNeVNV5BnL4H9n9U/iYiGIqO6G6LN4H38hiYGE7eVSQKf3n?=
+ =?us-ascii?Q?R7qqchWTN5TnJrwWRZDAa+mdel80F3WWcpk1tHTrGZ0TZmkjWQGdbPbvxFIC?=
+ =?us-ascii?Q?Ob2qdAFfJGIMI84x8IuEkIqnvWWLuPPq7Q+IURmDQcIiHOurU/Ya1H/uZlve?=
+ =?us-ascii?Q?31X0LxnJKvY0S1rtRk1DIrAA3eAMR0U4DGmQsprugD1/dpV2Rlw7tIYNxvIC?=
+ =?us-ascii?Q?m0dgPjDkayJN2O3mFdtqLfGc+2ArlkAvMaRfanBR8Ofy+5RI+FmzJkULbsni?=
+ =?us-ascii?Q?QQ/eJd7mHP9pLjYRe4l0pPF0GnhUy9EG?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 48ed52c2-39e2-48cb-3f1f-08d9958bfb44
+X-MS-Exchange-CrossTenant-Network-Message-Id: 813467d0-b6e0-4a26-7453-08d9958bfc66
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2021 18:44:30.0061
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2021 18:44:31.9020
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
@@ -125,113 +125,255 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Looking at the code, the GSWIP switch appears to hold bridging service
-structures (VLANs, FDBs, forwarding rules) in PCE table entries.
-Hardware access to the PCE table is non-atomic, and is comprised of
-several register reads and writes.
+Now that the rtnl_mutex is going away for dsa_port_{host_,}fdb_{add,del},
+no one is serializing access to the address lists that DSA keeps for the
+purpose of reference counting on shared ports (CPU and cascade ports).
 
-These accesses are currently serialized by the rtnl_lock, but DSA is
-changing its driver API and that lock will no longer be held when
-calling ->port_fdb_add() and ->port_fdb_del().
+It can happen for one dsa_switch_do_fdb_del to do list_del on a dp->fdbs
+element while another dsa_switch_do_fdb_{add,del} is traversing dp->fdbs.
+We need to avoid that.
 
-So this driver needs to serialize the access to the PCE table using its
-own locking scheme. This patch adds that.
+Currently dp->mdbs is not at risk, because dsa_switch_do_mdb_{add,del}
+still runs under the rtnl_mutex. But it would be nice if it would not
+depend on that being the case. So let's introduce a mutex per port (the
+address lists are per port too) and share it between dp->mdbs and
+dp->fdbs.
+
+The place where we put the locking is interesting. It could be tempting
+to put a DSA-level lock which still serializes calls to
+.port_fdb_{add,del}, but it would still not avoid concurrency with other
+driver code paths that are currently under rtnl_mutex (.port_fdb_dump,
+.port_fast_age). So it would add a very false sense of security (and
+adding a global switch-wide lock in DSA to resynchronize with the
+rtnl_lock is also counterproductive and hard).
+
+So the locking is intentionally done only where the dp->fdbs and dp->mdbs
+lists are traversed. That means, from a driver perspective, that
+.port_fdb_add will be called with the dp->addr_lists_lock mutex held on
+the CPU port, but not held on user ports. This is done so that driver
+writers are not encouraged to rely on any guarantee offered by
+dp->addr_lists_lock.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
-v3->v4: call mutex_init
+v1->v4: none
 
- drivers/net/dsa/lantiq_gswip.c | 28 +++++++++++++++++++++++-----
- 1 file changed, 23 insertions(+), 5 deletions(-)
+ include/net/dsa.h |  1 +
+ net/dsa/dsa2.c    |  1 +
+ net/dsa/switch.c  | 76 ++++++++++++++++++++++++++++++++---------------
+ 3 files changed, 54 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-index dbd4486a173f..1a96df70d1e8 100644
---- a/drivers/net/dsa/lantiq_gswip.c
-+++ b/drivers/net/dsa/lantiq_gswip.c
-@@ -276,6 +276,7 @@ struct gswip_priv {
- 	int num_gphy_fw;
- 	struct gswip_gphy_fw *gphy_fw;
- 	u32 port_vlan_filter;
-+	struct mutex pce_table_lock;
- };
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 1cd9c2461f0d..badd214f7470 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -287,6 +287,7 @@ struct dsa_port {
+ 	/* List of MAC addresses that must be forwarded on this port.
+ 	 * These are only valid on CPU ports and DSA links.
+ 	 */
++	struct mutex		addr_lists_lock;
+ 	struct list_head	fdbs;
+ 	struct list_head	mdbs;
  
- struct gswip_pce_table_entry {
-@@ -523,10 +524,14 @@ static int gswip_pce_table_entry_read(struct gswip_priv *priv,
- 	u16 addr_mode = tbl->key_mode ? GSWIP_PCE_TBL_CTRL_OPMOD_KSRD :
- 					GSWIP_PCE_TBL_CTRL_OPMOD_ADRD;
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index f5270114dcb8..826957b6442b 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -433,6 +433,7 @@ static int dsa_port_setup(struct dsa_port *dp)
+ 	if (dp->setup)
+ 		return 0;
  
-+	mutex_lock(&priv->pce_table_lock);
++	mutex_init(&dp->addr_lists_lock);
+ 	INIT_LIST_HEAD(&dp->fdbs);
+ 	INIT_LIST_HEAD(&dp->mdbs);
+ 
+diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+index 2b1b21bde830..6871e5f9b597 100644
+--- a/net/dsa/switch.c
++++ b/net/dsa/switch.c
+@@ -215,26 +215,30 @@ static int dsa_port_do_mdb_add(struct dsa_port *dp,
+ 	struct dsa_switch *ds = dp->ds;
+ 	struct dsa_mac_addr *a;
+ 	int port = dp->index;
+-	int err;
++	int err = 0;
+ 
+ 	/* No need to bother with refcounting for user ports */
+ 	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp)))
+ 		return ds->ops->port_mdb_add(ds, port, mdb);
+ 
++	mutex_lock(&dp->addr_lists_lock);
 +
- 	err = gswip_switch_r_timeout(priv, GSWIP_PCE_TBL_CTRL,
- 				     GSWIP_PCE_TBL_CTRL_BAS);
--	if (err)
-+	if (err) {
-+		mutex_unlock(&priv->pce_table_lock);
- 		return err;
+ 	a = dsa_mac_addr_find(&dp->mdbs, mdb->addr, mdb->vid);
+ 	if (a) {
+ 		refcount_inc(&a->refcount);
+-		return 0;
++		goto out;
+ 	}
+ 
+ 	a = kzalloc(sizeof(*a), GFP_KERNEL);
+-	if (!a)
+-		return -ENOMEM;
++	if (!a) {
++		err = -ENOMEM;
++		goto out;
 +	}
  
- 	gswip_switch_w(priv, tbl->index, GSWIP_PCE_TBL_ADDR);
- 	gswip_switch_mask(priv, GSWIP_PCE_TBL_CTRL_ADDR_MASK |
-@@ -536,8 +541,10 @@ static int gswip_pce_table_entry_read(struct gswip_priv *priv,
+ 	err = ds->ops->port_mdb_add(ds, port, mdb);
+ 	if (err) {
+ 		kfree(a);
+-		return err;
++		goto out;
+ 	}
  
- 	err = gswip_switch_r_timeout(priv, GSWIP_PCE_TBL_CTRL,
- 				     GSWIP_PCE_TBL_CTRL_BAS);
--	if (err)
-+	if (err) {
-+		mutex_unlock(&priv->pce_table_lock);
- 		return err;
-+	}
+ 	ether_addr_copy(a->addr, mdb->addr);
+@@ -242,7 +246,10 @@ static int dsa_port_do_mdb_add(struct dsa_port *dp,
+ 	refcount_set(&a->refcount, 1);
+ 	list_add_tail(&a->list, &dp->mdbs);
  
- 	for (i = 0; i < ARRAY_SIZE(tbl->key); i++)
- 		tbl->key[i] = gswip_switch_r(priv, GSWIP_PCE_TBL_KEY(i));
-@@ -553,6 +560,8 @@ static int gswip_pce_table_entry_read(struct gswip_priv *priv,
- 	tbl->valid = !!(crtl & GSWIP_PCE_TBL_CTRL_VLD);
- 	tbl->gmap = (crtl & GSWIP_PCE_TBL_CTRL_GMAP_MASK) >> 7;
- 
-+	mutex_unlock(&priv->pce_table_lock);
-+
- 	return 0;
- }
- 
-@@ -565,10 +574,14 @@ static int gswip_pce_table_entry_write(struct gswip_priv *priv,
- 	u16 addr_mode = tbl->key_mode ? GSWIP_PCE_TBL_CTRL_OPMOD_KSWR :
- 					GSWIP_PCE_TBL_CTRL_OPMOD_ADWR;
- 
-+	mutex_lock(&priv->pce_table_lock);
-+
- 	err = gswip_switch_r_timeout(priv, GSWIP_PCE_TBL_CTRL,
- 				     GSWIP_PCE_TBL_CTRL_BAS);
--	if (err)
-+	if (err) {
-+		mutex_unlock(&priv->pce_table_lock);
- 		return err;
-+	}
- 
- 	gswip_switch_w(priv, tbl->index, GSWIP_PCE_TBL_ADDR);
- 	gswip_switch_mask(priv, GSWIP_PCE_TBL_CTRL_ADDR_MASK |
-@@ -600,8 +613,12 @@ static int gswip_pce_table_entry_write(struct gswip_priv *priv,
- 	crtl |= GSWIP_PCE_TBL_CTRL_BAS;
- 	gswip_switch_w(priv, crtl, GSWIP_PCE_TBL_CTRL);
- 
--	return gswip_switch_r_timeout(priv, GSWIP_PCE_TBL_CTRL,
--				      GSWIP_PCE_TBL_CTRL_BAS);
-+	err = gswip_switch_r_timeout(priv, GSWIP_PCE_TBL_CTRL,
-+				     GSWIP_PCE_TBL_CTRL_BAS);
-+
-+	mutex_unlock(&priv->pce_table_lock);
+-	return 0;
++out:
++	mutex_unlock(&dp->addr_lists_lock);
 +
 +	return err;
  }
  
- /* Add the LAN port into a bridge with the CPU port by
-@@ -2106,6 +2123,7 @@ static int gswip_probe(struct platform_device *pdev)
- 	priv->ds->priv = priv;
- 	priv->ds->ops = priv->hw_info->ops;
- 	priv->dev = dev;
-+	mutex_init(&priv->pce_table_lock);
- 	version = gswip_switch_r(priv, GSWIP_VERSION);
+ static int dsa_port_do_mdb_del(struct dsa_port *dp,
+@@ -251,29 +258,36 @@ static int dsa_port_do_mdb_del(struct dsa_port *dp,
+ 	struct dsa_switch *ds = dp->ds;
+ 	struct dsa_mac_addr *a;
+ 	int port = dp->index;
+-	int err;
++	int err = 0;
  
- 	np = dev->of_node;
+ 	/* No need to bother with refcounting for user ports */
+ 	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp)))
+ 		return ds->ops->port_mdb_del(ds, port, mdb);
+ 
++	mutex_lock(&dp->addr_lists_lock);
++
+ 	a = dsa_mac_addr_find(&dp->mdbs, mdb->addr, mdb->vid);
+-	if (!a)
+-		return -ENOENT;
++	if (!a) {
++		err = -ENOENT;
++		goto out;
++	}
+ 
+ 	if (!refcount_dec_and_test(&a->refcount))
+-		return 0;
++		goto out;
+ 
+ 	err = ds->ops->port_mdb_del(ds, port, mdb);
+ 	if (err) {
+ 		refcount_inc(&a->refcount);
+-		return err;
++		goto out;
+ 	}
+ 
+ 	list_del(&a->list);
+ 	kfree(a);
+ 
+-	return 0;
++out:
++	mutex_unlock(&dp->addr_lists_lock);
++
++	return err;
+ }
+ 
+ static int dsa_port_do_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+@@ -282,26 +296,30 @@ static int dsa_port_do_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+ 	struct dsa_switch *ds = dp->ds;
+ 	struct dsa_mac_addr *a;
+ 	int port = dp->index;
+-	int err;
++	int err = 0;
+ 
+ 	/* No need to bother with refcounting for user ports */
+ 	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp)))
+ 		return ds->ops->port_fdb_add(ds, port, addr, vid);
+ 
++	mutex_lock(&dp->addr_lists_lock);
++
+ 	a = dsa_mac_addr_find(&dp->fdbs, addr, vid);
+ 	if (a) {
+ 		refcount_inc(&a->refcount);
+-		return 0;
++		goto out;
+ 	}
+ 
+ 	a = kzalloc(sizeof(*a), GFP_KERNEL);
+-	if (!a)
+-		return -ENOMEM;
++	if (!a) {
++		err = -ENOMEM;
++		goto out;
++	}
+ 
+ 	err = ds->ops->port_fdb_add(ds, port, addr, vid);
+ 	if (err) {
+ 		kfree(a);
+-		return err;
++		goto out;
+ 	}
+ 
+ 	ether_addr_copy(a->addr, addr);
+@@ -309,7 +327,10 @@ static int dsa_port_do_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+ 	refcount_set(&a->refcount, 1);
+ 	list_add_tail(&a->list, &dp->fdbs);
+ 
+-	return 0;
++out:
++	mutex_unlock(&dp->addr_lists_lock);
++
++	return err;
+ }
+ 
+ static int dsa_port_do_fdb_del(struct dsa_port *dp, const unsigned char *addr,
+@@ -318,29 +339,36 @@ static int dsa_port_do_fdb_del(struct dsa_port *dp, const unsigned char *addr,
+ 	struct dsa_switch *ds = dp->ds;
+ 	struct dsa_mac_addr *a;
+ 	int port = dp->index;
+-	int err;
++	int err = 0;
+ 
+ 	/* No need to bother with refcounting for user ports */
+ 	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp)))
+ 		return ds->ops->port_fdb_del(ds, port, addr, vid);
+ 
++	mutex_lock(&dp->addr_lists_lock);
++
+ 	a = dsa_mac_addr_find(&dp->fdbs, addr, vid);
+-	if (!a)
+-		return -ENOENT;
++	if (!a) {
++		err = -ENOENT;
++		goto out;
++	}
+ 
+ 	if (!refcount_dec_and_test(&a->refcount))
+-		return 0;
++		goto out;
+ 
+ 	err = ds->ops->port_fdb_del(ds, port, addr, vid);
+ 	if (err) {
+ 		refcount_inc(&a->refcount);
+-		return err;
++		goto out;
+ 	}
+ 
+ 	list_del(&a->list);
+ 	kfree(a);
+ 
+-	return 0;
++out:
++	mutex_unlock(&dp->addr_lists_lock);
++
++	return err;
+ }
+ 
+ static int dsa_switch_host_fdb_add(struct dsa_switch *ds,
 -- 
 2.25.1
 
