@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54CD643767D
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 14:08:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC9E7437671
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 14:07:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231516AbhJVMKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 08:10:16 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:32996 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231574AbhJVMJi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Oct 2021 08:09:38 -0400
+        id S232138AbhJVMJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 08:09:37 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:25723 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231452AbhJVMJ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 08:09:26 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1634904440; h=References: In-Reply-To: Message-Id: Date:
+ s=smtp; t=1634904428; h=References: In-Reply-To: Message-Id: Date:
  Subject: Cc: To: From: Sender;
- bh=aY65j9vxBg7/QzphvwkDmiIVeFQsges62vXwljq/XjA=; b=e/2tfKDcbDHIHsMAxHdJEUwAYuFj9K08Avnshr5y7nh5LccaZHiuLC04uXQSMeXlxoekWp3d
- 3d+iljReZ7RtGZ23e5LiT5Uu/28Pech14OaMHnVC1pSaQlWeWurNcuQbBl5gxJEz+YB3jLRO
- 5qy1gIXlmQA1s8djQdvhf28G/z0=
-X-Mailgun-Sending-Ip: 69.72.43.7
+ bh=udjfCplsA+/erjKFZrONey8j9k/1hCXKa9nQxxquIP4=; b=WBFS1LZ0jfLuqvJE2dSUDULch6J36+gTMUTBqqtmILheCBCj2urLtZXdEcyx6xTRx+cLQSBS
+ EJlPAuH+K+j42Ig1GreZCH0+YGKnMzo9iGWbFnhvYETqNgtOmVT5arcPOtuZgSPMmHq7zfAp
+ zCK+U6+iCf9gAJIn4eqPeZ8ljgg=
+X-Mailgun-Sending-Ip: 198.61.254.9
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
- 6172a95cb03398c06c0690c8 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 22 Oct 2021 12:06:52
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 6172a95d67f107c611a3b3e9 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 22 Oct 2021 12:06:53
  GMT
 Sender: luoj=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 6CC2BC4361A; Fri, 22 Oct 2021 12:06:51 +0000 (UTC)
+        id D3B57C43617; Fri, 22 Oct 2021 12:06:53 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -37,9 +37,9 @@ Received: from akronite-sh-dev02.qualcomm.com (unknown [180.166.53.21])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: luoj)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 5A790C43619;
-        Fri, 22 Oct 2021 12:06:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 5A790C43619
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 10D36C43618;
+        Fri, 22 Oct 2021 12:06:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 10D36C43618
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
 From:   Luo Jie <luoj@codeaurora.org>
@@ -47,9 +47,9 @@ To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
         davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         sricharan@codeaurora.org, Luo Jie <luoj@codeaurora.org>
-Subject: [PATCH v4 05/14] net: phy: add qca8081 ethernet phy driver
-Date:   Fri, 22 Oct 2021 20:06:15 +0800
-Message-Id: <20211022120624.18069-6-luoj@codeaurora.org>
+Subject: [PATCH v4 06/14] net: phy: add qca8081 read_status
+Date:   Fri, 22 Oct 2021 20:06:16 +0800
+Message-Id: <20211022120624.18069-7-luoj@codeaurora.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211022120624.18069-1-luoj@codeaurora.org>
 References: <20211022120624.18069-1-luoj@codeaurora.org>
@@ -57,66 +57,172 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-qca8081 is a single port ethernet phy chip that supports
-10/100/1000/2500 Mbps mode.
+1. Separate the function at803x_read_specific_status from
+the at803x_read_status, since it can be reused by the
+read_status of qca8081 phy driver excepting adding the
+2500M speed.
 
-Add the basic phy driver features, and reuse the at803x
-phy driver functions.
+2. Add the qca8081 read_status function qca808x_read_status.
 
 Signed-off-by: Luo Jie <luoj@codeaurora.org>
 ---
- drivers/net/phy/at803x.c | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+ drivers/net/phy/at803x.c | 95 ++++++++++++++++++++++++++++++----------
+ 1 file changed, 73 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index ef21a84a3a55..460881320ebb 100644
+index 460881320ebb..738f5a84cca6 100644
 --- a/drivers/net/phy/at803x.c
 +++ b/drivers/net/phy/at803x.c
-@@ -156,6 +156,8 @@
- #define QCA8337_PHY_ID				0x004dd036
- #define QCA8K_PHY_ID_MASK			0xffffffff
+@@ -41,6 +41,9 @@
+ #define AT803X_SS_SPEED_DUPLEX_RESOLVED		BIT(11)
+ #define AT803X_SS_MDIX				BIT(6)
  
-+#define QCA8081_PHY_ID				0x004dd101
++#define QCA808X_SS_SPEED_MASK			GENMASK(9, 7)
++#define QCA808X_SS_SPEED_2500			4
 +
- #define QCA8K_DEVFLAGS_REVISION_MASK		GENMASK(2, 0)
+ #define AT803X_INTR_ENABLE			0x12
+ #define AT803X_INTR_ENABLE_AUTONEG_ERR		BIT(15)
+ #define AT803X_INTR_ENABLE_SPEED_CHANGED	BIT(14)
+@@ -951,27 +954,9 @@ static void at803x_link_change_notify(struct phy_device *phydev)
+ 	}
+ }
  
- #define AT803X_PAGE_FIBER			0
-@@ -165,7 +167,7 @@
- #define AT803X_KEEP_PLL_ENABLED			BIT(0)
- #define AT803X_DISABLE_SMARTEEE			BIT(1)
+-static int at803x_read_status(struct phy_device *phydev)
++static int at803x_read_specific_status(struct phy_device *phydev)
+ {
+-	int ss, err, old_link = phydev->link;
+-
+-	/* Update the link, but return if there was an error */
+-	err = genphy_update_link(phydev);
+-	if (err)
+-		return err;
+-
+-	/* why bother the PHY if nothing can have changed */
+-	if (phydev->autoneg == AUTONEG_ENABLE && old_link && phydev->link)
+-		return 0;
+-
+-	phydev->speed = SPEED_UNKNOWN;
+-	phydev->duplex = DUPLEX_UNKNOWN;
+-	phydev->pause = 0;
+-	phydev->asym_pause = 0;
+-
+-	err = genphy_read_lpa(phydev);
+-	if (err < 0)
+-		return err;
++	int ss;
  
--MODULE_DESCRIPTION("Qualcomm Atheros AR803x PHY driver");
-+MODULE_DESCRIPTION("Qualcomm Atheros AR803x and QCA808X PHY driver");
- MODULE_AUTHOR("Matus Ujhelyi");
- MODULE_LICENSE("GPL");
+ 	/* Read the AT8035 PHY-Specific Status register, which indicates the
+ 	 * speed and duplex that the PHY is actually using, irrespective of
+@@ -982,13 +967,19 @@ static int at803x_read_status(struct phy_device *phydev)
+ 		return ss;
  
-@@ -1480,6 +1482,18 @@ static struct phy_driver at803x_driver[] = {
- 	.get_stats		= at803x_get_stats,
+ 	if (ss & AT803X_SS_SPEED_DUPLEX_RESOLVED) {
+-		int sfc;
++		int sfc, speed;
+ 
+ 		sfc = phy_read(phydev, AT803X_SPECIFIC_FUNCTION_CONTROL);
+ 		if (sfc < 0)
+ 			return sfc;
+ 
+-		switch (FIELD_GET(AT803X_SS_SPEED_MASK, ss)) {
++		/* qca8081 takes the different bits for speed value from at803x */
++		if (phydev->drv->phy_id == QCA8081_PHY_ID)
++			speed = FIELD_GET(QCA808X_SS_SPEED_MASK, ss);
++		else
++			speed = FIELD_GET(AT803X_SS_SPEED_MASK, ss);
++
++		switch (speed) {
+ 		case AT803X_SS_SPEED_10:
+ 			phydev->speed = SPEED_10;
+ 			break;
+@@ -998,6 +989,9 @@ static int at803x_read_status(struct phy_device *phydev)
+ 		case AT803X_SS_SPEED_1000:
+ 			phydev->speed = SPEED_1000;
+ 			break;
++		case QCA808X_SS_SPEED_2500:
++			phydev->speed = SPEED_2500;
++			break;
+ 		}
+ 		if (ss & AT803X_SS_DUPLEX)
+ 			phydev->duplex = DUPLEX_FULL;
+@@ -1022,6 +1016,35 @@ static int at803x_read_status(struct phy_device *phydev)
+ 		}
+ 	}
+ 
++	return 0;
++}
++
++static int at803x_read_status(struct phy_device *phydev)
++{
++	int err, old_link = phydev->link;
++
++	/* Update the link, but return if there was an error */
++	err = genphy_update_link(phydev);
++	if (err)
++		return err;
++
++	/* why bother the PHY if nothing can have changed */
++	if (phydev->autoneg == AUTONEG_ENABLE && old_link && phydev->link)
++		return 0;
++
++	phydev->speed = SPEED_UNKNOWN;
++	phydev->duplex = DUPLEX_UNKNOWN;
++	phydev->pause = 0;
++	phydev->asym_pause = 0;
++
++	err = genphy_read_lpa(phydev);
++	if (err < 0)
++		return err;
++
++	err = at803x_read_specific_status(phydev);
++	if (err < 0)
++		return err;
++
+ 	if (phydev->autoneg == AUTONEG_ENABLE && phydev->autoneg_complete)
+ 		phy_resolve_aneg_pause(phydev);
+ 
+@@ -1341,6 +1364,33 @@ static int qca83xx_config_init(struct phy_device *phydev)
+ 	return 0;
+ }
+ 
++static int qca808x_read_status(struct phy_device *phydev)
++{
++	int ret;
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_10GBT_STAT);
++	if (ret < 0)
++		return ret;
++
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, phydev->lp_advertising,
++			ret & MDIO_AN_10GBT_STAT_LP2_5G);
++
++	ret = genphy_read_status(phydev);
++	if (ret)
++		return ret;
++
++	ret = at803x_read_specific_status(phydev);
++	if (ret < 0)
++		return ret;
++
++	if (phydev->link && phydev->speed == SPEED_2500)
++		phydev->interface = PHY_INTERFACE_MODE_2500BASEX;
++	else
++		phydev->interface = PHY_INTERFACE_MODE_SMII;
++
++	return 0;
++}
++
+ static struct phy_driver at803x_driver[] = {
+ {
+ 	/* Qualcomm Atheros AR8035 */
+@@ -1494,6 +1544,7 @@ static struct phy_driver at803x_driver[] = {
+ 	.get_wol		= at803x_get_wol,
  	.suspend		= genphy_suspend,
  	.resume			= genphy_resume,
-+}, {
-+	/* Qualcomm QCA8081 */
-+	PHY_ID_MATCH_EXACT(QCA8081_PHY_ID),
-+	.name			= "Qualcomm QCA8081",
-+	.config_intr		= at803x_config_intr,
-+	.handle_interrupt	= at803x_handle_interrupt,
-+	.get_tunable		= at803x_get_tunable,
-+	.set_tunable		= at803x_set_tunable,
-+	.set_wol		= at803x_set_wol,
-+	.get_wol		= at803x_get_wol,
-+	.suspend		= genphy_suspend,
-+	.resume			= genphy_resume,
++	.read_status		= qca808x_read_status,
  }, };
  
  module_phy_driver(at803x_driver);
-@@ -1493,6 +1507,7 @@ static struct mdio_device_id __maybe_unused atheros_tbl[] = {
- 	{ PHY_ID_MATCH_EXACT(QCA8337_PHY_ID) },
- 	{ PHY_ID_MATCH_EXACT(QCA8327_A_PHY_ID) },
- 	{ PHY_ID_MATCH_EXACT(QCA8327_B_PHY_ID) },
-+	{ PHY_ID_MATCH_EXACT(QCA8081_PHY_ID) },
- 	{ }
- };
- 
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
