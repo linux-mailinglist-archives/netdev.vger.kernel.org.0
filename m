@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24F5B4378E6
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 16:17:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E91244378E7
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 16:18:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232986AbhJVOUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 10:20:08 -0400
+        id S233006AbhJVOUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 10:20:10 -0400
 Received: from mail-eopbgr60040.outbound.protection.outlook.com ([40.107.6.40]:37344
         "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232825AbhJVOUH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Oct 2021 10:20:07 -0400
+        id S232974AbhJVOUI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Oct 2021 10:20:08 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZHELiKVZThVfgokVjEvnwo0L+Yrflw+q4IRZ2ZsNJEbcojgnI4XqRnjgN1226k/IUypMwUS3lD1A2sSys09ldEe59qLJr02g8H5G0o/SAuoFkyDLf/OpRATqCgO2d5ODtPxU5NG1SpggFEVp6vD6srAW6o6HTG+LYz0GUWE3cOeCbjzuf7IfBA8uhqB5ikXjhav9xgO6UnRZt1wA5B4lxNe+OohC6h4aGHcOWDmEuk94Flfscybtm38q2Nkf7UNtYg3V0shn2hPzYgIyrL/52adpkgdXSR78ZvBXhgDWN1FPSK3lpbYkft3F1c3/Ln8HCrWT0DB7qSfalrotXGlp7w==
+ b=jWyfdRfiIbGW5/a0+HfHfagdTnZ31nOsuItMOmkh6zJzq+gKMVQm3AWx+TS7smWgvXCJYY9viNLWe9GoStgXgDqWJiuJY2YhAz/NdtldLGJY4TZqcpfgp3mXmvtqkXJOaaXhz91r0nCAKRVQ/aBx7JeauzJFZKj+0KxBXbq5jLpARMiC1faLxVCH1KOJP4fkpEI5DHqkX9e1rh6ouheGzhS5YHbbLI46wrNhjDInO9xm1OxzfBOVivTiJWjen8Yz2xDZ8G3AJPsFbekpdf97T3O+gYW2IcwYQIMb6Gslp3TQw7HMn7PuortbWN7wJrOw6V9S/aP62bspf3U+EY9K2A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=daexkmKrS3BX0SDYNibpa2yu4covnDNLCv5FYKJbB4k=;
- b=NcENSnFM+mmR2sT5MsEF4hhIFeWwL+aSqI9kdZDw9Qb7Lczi5eH8TRLO2Wv/WLjnwDCjBNJmQpNwGicbiV4HvwRE75f6y99K9KGUtJs2czaGBAYdO0gD2hVTLnERVhcgZ7CUAgX7JVgGl4fT+e9M7LzjMYnXoOcQOcb4Vmy7kohU+CPiNyrmTzCl7aVMOr2JvsmRSefK3pTGe0Oqp9A8w5hjO32q+CuqnBTEj7WsLtvirLe3H1r8TvL0TywwlVa4Q4km0gwf0oZgpogvVbeV1kbCYuLlFqL5S0y2P4XD+FeFdkEPe/EIyavC3z+hp20D1j0glC3lARqM+oNkEG6UzA==
+ bh=uXPQ1kGmLDc4MxjhE3mZ9yd1U45r/8dJzMYU0u1a4cU=;
+ b=SfKYXi3W8Bog0Tr2EU9wf6sX+OhGoie6CXT+VOeD8U7Z43wqII5Xeg8Pg6X6/2ZOZp9+sYR6JMJlwW+VB1O3jxK1sYjaorjAxG4mGNzBC6Vc2liUbMUeIX0lnkR8lpnAzyBmoRSAjQb7ansgS3mcsne4ZM490TfNNEY0l1VNwLzFhYW+DzO5cwR1mQR02vrINiQzZ0uKoYtKv7CotrPOED2GJxCaeixw4mnqDuQG31pcXhoS0N3ptJVPusRvg5ZXBMDLPBsC/9inJeY6ZXEk0rHprHjMpwEWtgcFgdkyQYFlmlmKoSJrj+SHFPEp1j20fnCoJNcJ3qxm0tWWHW29ug==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=daexkmKrS3BX0SDYNibpa2yu4covnDNLCv5FYKJbB4k=;
- b=sJbJ6mxLNFbxNJDNdxmI/mKs/F0QdZLTGwxAQldjkU92x4aB+6PKfOZfJP4zMYBw7V+HDAWm4RK5QnVtH97o8P6N80tz545UMEOg4uekzRzFRNr147nRcRmKXHyVBSGfVOJOWDEltr1IJc5sfTpfPRSTEgbM/rjSJZXRZ/jxU5M=
+ bh=uXPQ1kGmLDc4MxjhE3mZ9yd1U45r/8dJzMYU0u1a4cU=;
+ b=pIrq/cA4O7cuejio4ZXBhyKdA9E0hruCL3nWSDOIEn6LQiAmBZJpGlL/5vJur2q+SDQzT1EqRywh3gRqGbT5IqpYve06ixOZVOiGXYpDrQ5NTHNU8sZCw9pP1N+KbjIZhPFzOKxezxKoySvIcXtJ4rSLeMRmtXC977RWexZz0s4=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR0402MB3406.eurprd04.prod.outlook.com (2603:10a6:803:c::27) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18; Fri, 22 Oct
- 2021 14:17:47 +0000
+ 2021 14:17:49 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4608.018; Fri, 22 Oct 2021
- 14:17:47 +0000
+ 14:17:49 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -58,58 +58,60 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Prasanna Vengateshan <prasanna.vengateshan@microchip.com>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>
-Subject: [PATCH v2 net-next 0/9] Drop rtnl_lock from DSA .port_fdb_{add,del}
-Date:   Fri, 22 Oct 2021 17:16:07 +0300
-Message-Id: <20211022141616.2088304-1-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 1/9] net: dsa: sja1105: wait for dynamic config command completion on writes too
+Date:   Fri, 22 Oct 2021 17:16:08 +0300
+Message-Id: <20211022141616.2088304-2-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20211022141616.2088304-1-vladimir.oltean@nxp.com>
+References: <20211022141616.2088304-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: AM0PR02CA0159.eurprd02.prod.outlook.com
  (2603:10a6:20b:28d::26) To VI1PR04MB5136.eurprd04.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Received: from localhost.localdomain (188.25.174.251) by AM0PR02CA0159.eurprd02.prod.outlook.com (2603:10a6:20b:28d::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.16 via Frontend Transport; Fri, 22 Oct 2021 14:17:45 +0000
+Received: from localhost.localdomain (188.25.174.251) by AM0PR02CA0159.eurprd02.prod.outlook.com (2603:10a6:20b:28d::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.16 via Frontend Transport; Fri, 22 Oct 2021 14:17:47 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3650bb80-9886-44fa-758b-08d99566b8c9
+X-MS-Office365-Filtering-Correlation-Id: 7449d8bd-16e6-4735-88e6-08d99566b9e0
 X-MS-TrafficTypeDiagnostic: VI1PR0402MB3406:
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB3406338EC3D1D3D4B5F8A0ECE0809@VI1PR0402MB3406.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB3406852AFBDC43DC46D27323E0809@VI1PR0402MB3406.eurprd04.prod.outlook.com>
 X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 10eQwsyW/TAyRmAAU4l+bIFbRsmRbH9yhlIoOGFmnXjwfQZMdfD7nPKQQk5W05Kzmnn1OFiH6Zohd/Rk/OjwDhn4C0NK57sj9Ck0VL8XtT7l9Xtm5D3rm8Pjsnm/vcTrL1xWlYu/nw6HXEoFD7d7OVxg5k6ydIsHX394QX2jSlY8imLejgPXtb501fHJpOiTPPwgl8c/edhrbCZ2QorZO4ltknf0LVI+rSJQ3a5mE0lwRhdUtc1bxsONPOvNOQx+ISgxBu8yRTrwINpCGT/iNFm3OPTyNcs6hfoRdhY6Ix2OwO3iLOScw/QbdwFIGX2CnmoyxiblbhH+VROTP0O64lc+hDs1kSl0PdBjZPRUgqdR7HUXPV8MMPqF6oaE0iwR7vi/PGYiMvd6otr3dFv91wXRTkXOp2NV8wV0XMbxAjD9T6XJMCI34TQUqUY8tlQB55VK/lt8KrezQDRrmpB+dYMArzgpdoX2oH9QKs08mcOxh3KThZN0hdB3D8JIyAFNQPUodJjmvQcqzYovp72LxSsciwABncnjTWYsGrQOHnicqFLbtkRdrDjnufhOvAIzj8XTw6GwgYOqZDcPtCzNr4vIJ11EIGpf7ouGXke6qVlIOmuq4qWIRTtrYwdVAuXP/HSama/+EoUurdAePqkAiToBW/8glLm0+kOmq4A/b0g+X3RZr3D8mFz1J6jZTMEAAsKloWctpKsbNedu+deedlPtiuHdxNu5/BcFlEHb2t4KIuaIo/WHTFoAWVNA/2W4BSKF7Kd0z+WtDmNBKtaTUInXYfaQMxorF7oV60kLQkex4OUZYvTTUDJKOr8KvOYG
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(966005)(7416002)(8936002)(44832011)(38350700002)(6916009)(956004)(83380400001)(54906003)(66556008)(508600001)(66476007)(66946007)(6512007)(86362001)(4326008)(6486002)(52116002)(5660300002)(2616005)(316002)(6506007)(1076003)(8676002)(36756003)(2906002)(186003)(38100700002)(26005)(6666004)(142923001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: QIY8hlXDmfaEtbTn1IJKNQSipxZDy84xh9ynhrpYDuHBytQDE0zP5Ay7nZmkN9pALcHGOj2axYAdgCUtaxetu75hGaL8wKQzS0Wu+EG3Jof+JKROUYXO7rKkvFN5rApKZ9aRKRtKbUIFNeLUnSQhETA9jcIfh5TLzX597NSOuTzhU+ZxrqY1HY5wYTqBxvOpF87qHxBPleYisHqdW3a2PzORIAXEUqXKKTqsTM5tcr68rK+4wriXW0jCBw0JJXczgXHhPLzXteLpOeF0eXv/mdFL0/FHnVu4NfFM9fuXqDEto4S4VGyUlSHc75ASdv3Uvq0g+wm6boRWYjq70dWEJi3B0YqHpjdQjQIWF9p6oRb3ZG8h4irGYx0h4r5tWQAQFBoa4tMCY0o3L92W3RAYO13ND8jfIfyE11mugSGwuuHq545a6l1kvcJYmvh4P1W11Fzlss7phCqnDyB2MtNf1eFxi4nnaPa1IgW/6DAJ1L8OE2J0ziDcRbf/kQtkbfqw6eiwucOUZ9ChsgmGPXlXEcZrkVeVhy7qLYl4ytKy+O/UxRdigQSI1Gf3y5xmtii8youH8TjCzQOUEEbXtCraGa6kLfXTyyz1KxjJCFR1g9VuzeH0LT/3ULaGWcf85nrEwnfw8cHoPnLyTQb4e49qFYMX0Dt/WMOafXB40WHv3GYBJgKdr/+1BX7bixJ+o3edXa8jl62IDD1mJmUVATNxng==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(7416002)(8936002)(44832011)(38350700002)(6916009)(956004)(83380400001)(54906003)(66556008)(508600001)(66476007)(66946007)(6512007)(86362001)(4326008)(6486002)(52116002)(5660300002)(2616005)(316002)(6506007)(1076003)(8676002)(36756003)(2906002)(186003)(38100700002)(26005)(6666004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Nq64BVfebcg3l3G+DsvfBkLwQQIrXtHdvKxs88MN02SFZqU2PPpNx2WiGqRn?=
- =?us-ascii?Q?wlEYYE2TchWb+F6H0ILULEgNE44Uu9PxKReerjsljyDy9EAtNuQ2Vau8omZ3?=
- =?us-ascii?Q?1KQ/8o3h2XYztLQmlZEN39bNGvzFhT/fitzzhdyyM1yD/l+XeTDVz9oY73ND?=
- =?us-ascii?Q?B6YKvHm8B4HJi7+jOMVr+AP/DWZpxrk0uf6Ir7grZgMzHLxtGH6ZxmJQzxhz?=
- =?us-ascii?Q?W10GxRaPyZcYr8KmNDsPk7bdHD7zEVYEwvvPtIR7vdRfb6wwmo1kpN7RGWYY?=
- =?us-ascii?Q?tIH8ivqoeadKYwwpiWNnG/e8DeogHMXRiev4CsqRW+1r4LbN33p/j77yPlYm?=
- =?us-ascii?Q?1TV3E+2gFkgjE9aD/ess89ImXwMp7De6QsUz/yQA2V4d21LvEGKmJX+uXNWx?=
- =?us-ascii?Q?HO0fBn3AA0eNa8C1ykfr7fKQHcU+/gRvubhE68N1RW9sGTkmDKFJCa0RF9MP?=
- =?us-ascii?Q?pgHnN3TNoz/0aqKz/oL84WROE5dVvHaEuMVRlGKuHAd+zpb/0oSFBtaNbdpZ?=
- =?us-ascii?Q?kzFnEtU+x1lviwyZCsu23qw1nXP3dlEX2t1uojsusA/yEoi0g+ZRgeyNNVJe?=
- =?us-ascii?Q?WMvnbTNTcJ7QUN4fTTc7+BspObSs48EvMFeRSfq8tTiuwQr7u8+p1Q8VGLwc?=
- =?us-ascii?Q?M+F3crxpWkbzEuISByTbbVw1AaiERZT49z/7VRL+jQlUGJ2hOR1O+Vg823bi?=
- =?us-ascii?Q?0IPrqSI6Q9AKDRaRPsQQfhMXK7WHDR/tWBDAkMP26nrNL6GkvJLyn6dc7rO1?=
- =?us-ascii?Q?PpYUQWbDgKEsa5W6x9krMKyhv/qKu4DKcNk+YhLSjkmmG6n01ImeU9C2copW?=
- =?us-ascii?Q?C87W4gRJIGvsgL8d+kN79z5ft0EGUefARUqsGycHRNon6274CVPTesdJaBer?=
- =?us-ascii?Q?k+UE3vS9K4p8adIut0I44KCK3LS40xAlxx2Une0dgl09s3kgs7tl1KUqWZwI?=
- =?us-ascii?Q?0o3FDckZn0bhaVEL5mfkpyf6YIF90JppXvUGLlte1/n3/Gxs0eDQG5+7JtsO?=
- =?us-ascii?Q?JvNgfTKTVm+xVr4195yGmk/RIQ/IzkIp22IAqjg2H7JXtebhiWMM4mcq1Kev?=
- =?us-ascii?Q?gv0ExkRuOItgFZ/cimqGzNg6ASCWVdMMAc6uXK30F8SUJ7fjbeAv9wnLhtHN?=
- =?us-ascii?Q?KYAF3MdLjeFwBjfBP+NcKCEZejlxqX1rlS/IS82b+0V9mqCA2LqwJjBuhKEu?=
- =?us-ascii?Q?4OpmA9Rp2CsMkcBRafUWoIT6D3czOTpA7gspmG/dwzrPNrpd7bbs5xIWpyx7?=
- =?us-ascii?Q?F1anu1LT3naoUSiElRmRw9aRu4wfyPQIxTUNDDo6ij69O+bfhJEiUYLU6UUh?=
- =?us-ascii?Q?3wRsX4JDghufwGAcygiBMq8lwtCeJZWyT8+ySvOqjWgfJaMGRClzWW5DaCpQ?=
- =?us-ascii?Q?30OYly8gzhkiyo0jP2lD2BH6BPHn5X6HTMGGgr19D7s8HUgFYS0lo/RA+akA?=
- =?us-ascii?Q?jxPh59Bsb7guighDRcRM5lcCXUQVd4Sp?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?36E+/rtCU7WvFpS8wMOD/yMkgaDvNVH7qIMA4Y9U+7JQ4KZD4bxMzS4zz6gB?=
+ =?us-ascii?Q?UyVGStB5jkFjqyuxrYI+Y+P83vTM0TOHt18oL6VjxGvXrhx422P4o7RGQpKT?=
+ =?us-ascii?Q?6E749i9lPIBKxae08O7IpP8WQZJwSMOcyGfCgXQJkpoVqxZiJINRFuylEqvs?=
+ =?us-ascii?Q?wSV9fIXiU4Obj2U4GEVArg35ITCZhuW4jZhNuNhrthL+Z2Iqx9Hh2lxAwzXh?=
+ =?us-ascii?Q?rDTU8Tzf7W3l+O8RZXEK51Uhbsugk0Z5X43yB6rP1Y5n88yLdRjLcdozN4dd?=
+ =?us-ascii?Q?AUHKqonO4sihUKcpHZ9qP709CIncDOeT/v2LLyffmtctZVUzvIhKLsp712LM?=
+ =?us-ascii?Q?YBpGPGTRUTZPRYpc6jitdAjgW7h+Lv1PLVRtT39YxNgPJ49kQpix3hMFNRxQ?=
+ =?us-ascii?Q?McHKryeSUnqTDWfGgwQG/Z1gKYgTrI1oyooBXI1vn20W9lPnCRlWGjCQLoLt?=
+ =?us-ascii?Q?2G/sJgQbWp6WBL8Tcm9ZEk6SiyAhD05GFJmHm95wdfmxG9h9r8DRnFjeh9cw?=
+ =?us-ascii?Q?1e33oLFsdJEZysWglQ8qrOcyOI6m/k0GUGj3XB7jfk57+c2E7p7w2Dgz+s8Q?=
+ =?us-ascii?Q?NJeBnqwHfU44SUtqBCDLF6hRv4ebOfMtKzix3QCdiwC442V2eD0h1Hz7ksaG?=
+ =?us-ascii?Q?YcOdsk/zQOdxjdyq6qRBef1GyJMENLMz8uNUFkkSXRbLau9RP3ReOnnN2Dp1?=
+ =?us-ascii?Q?KCah+ygT6DoR98rnUpPLZ2sNyzRxu9kxBMAGzXcS2Tjglgp2l/JJAw1BawOv?=
+ =?us-ascii?Q?nufhH1MtM3pVk6U02y5Zjb/zopmEGHiemLu3GY2Y2ThLZg2dSBTQvPpP68Vc?=
+ =?us-ascii?Q?2QxO8KZb8sF7zIegYZHhzjKRL3LYm6yt4QYqsDsBhwHdAVydX6v28y0qc0J2?=
+ =?us-ascii?Q?L+pfHgouPOeGEduv8JOHalQjOChX3q9yHoOv6sU/IZzyBqGs2jb2wXam78VN?=
+ =?us-ascii?Q?l5LUK839t4nvJ17qNHacT3HsTkPa3OTj5UsDjj55AMSK/6vk3cAq1fJN6mQk?=
+ =?us-ascii?Q?Y/Tk81pdx/SUdbRzi4RyUTOkTCXNKE0zuYmieUm3ZZ/k4b4gYGAg7fzziISU?=
+ =?us-ascii?Q?evOqpD+XXaxfdFfMaHrYefvVZvjAdrIkgfncgi+QUPmXycqbJG1ORxjeIt+0?=
+ =?us-ascii?Q?gQWLUeg89YSs7UhNErTY5g1nxxLz/ocgs/Ro6fqTH7Fd02nyI1kchohizRhn?=
+ =?us-ascii?Q?uZytFjq95OzcrSoRaoPsFfR1Pm9NUZHHnYV4dEBBUFGVsUHdn7aLGg+cg67a?=
+ =?us-ascii?Q?xabuardtmVNIGeJFmsW3a0+tGeNTuEf2TOoxRqCW8ib5CpgaopwzFJA0f3zX?=
+ =?us-ascii?Q?fOgtlT7js84Ztsz8E8je3b6Sq/mXNHN4PfNpzDrj9UZa4+6/i5euOjGnW3c0?=
+ =?us-ascii?Q?W0BdBxUKPCg/blFhLWTgue9/z9FfmbRcorqKvA+lXiEtRkQOpCsmY1e4bGy4?=
+ =?us-ascii?Q?rjUY3nNXzUmXt3HaTDQfP8GTLUqYVyII?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3650bb80-9886-44fa-758b-08d99566b8c9
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7449d8bd-16e6-4735-88e6-08d99566b9e0
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2021 14:17:47.0828
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2021 14:17:48.8707
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
@@ -120,83 +122,151 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As mentioned in the RFC posted 2 months ago:
-https://patchwork.kernel.org/project/netdevbpf/cover/20210824114049.3814660-1-vladimir.oltean@nxp.com/
+The hardware manual says that software should attempt a new dynamic
+config access (be it a a write or a read-back) only while the VALID bit
+is cleared. The VALID bit is set by software to 1, and it remains set as
+long as the hardware is still processing the request.
 
-DSA is transitioning to a driver API where the rtnl_lock is not held
-when calling ds->ops->port_fdb_add() and ds->ops->port_fdb_del().
-Drivers cannot take that lock privately from those callbacks either.
+Currently the driver only polls for the command completion only for
+reads, because that's when we need the actual data read back. Writes
+have been more or less "asynchronous", although this has never been an
+observable issue.
 
-This change is required so that DSA can wait for switchdev FDB work
-items to finish before leaving the bridge. That change will be made in a
-future patch series.
+This change makes sja1105_dynamic_config_write poll the VALID bit as
+well, to absolutely ensure that a follow-up access to the static config
+finds the VALID bit cleared.
 
-A small selftest is provided with the patch set in the hope that
-concurrency issues uncovered by this series, but not spotted by me by
-code inspection, will be caught.
+So VALID means "work in progress", while VALIDENT means "entry being
+read is valid". On reads we check the VALIDENT bit too, while on writes
+that bit is not always defined. So we need to factor it out of the loop,
+and make the loop provide back the unpacked command structure, so that
+sja1105_dynamic_config_read can check the VALIDENT bit.
 
-A status of the existing drivers:
+The change also attempts to convert the open-coded loop to use the
+read_poll_timeout macro, since I know this will come up during review.
+It's more code, but hey, it uses read_poll_timeout!
 
-- mv88e6xxx_port_fdb_add() and mv88e6xxx_port_fdb_del() take
-  mv88e6xxx_reg_lock() so they should be safe.
+Tested on SJA1105T, SJA1105S, SJA1110A.
 
-- qca8k_fdb_add() and qca8k_fdb_del() take mutex_lock(&priv->reg_mutex)
-  so they should be safe.
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ .../net/dsa/sja1105/sja1105_dynamic_config.c  | 81 ++++++++++++++-----
+ 1 file changed, 59 insertions(+), 22 deletions(-)
 
-- hellcreek_fdb_add() and hellcreek_fdb_add() take mutex_lock(&hellcreek->reg_lock)
-  so they should be safe.
-
-- ksz9477_port_fdb_add() and ksz9477_port_fdb_del() take mutex_lock(&dev->alu_mutex)
-  so they should be safe.
-
-- b53_fdb_add() and b53_fdb_del() did not have locking, so I've added a
-  scheme based on my own judgement there (not tested).
-
-- felix_fdb_add() and felix_fdb_del() did not have locking, I've added
-  and tested a locking scheme there.
-
-- mt7530_port_fdb_add() and mt7530_port_fdb_del() take
-  mutex_lock(&priv->reg_mutex), so they should be safe.
-
-- gswip_port_fdb() did not have locking, so I've added a non-expert
-  locking scheme based on my own judgement (not tested).
-
-- lan9303_alr_add_port() and lan9303_alr_del_port() take
-  mutex_lock(&chip->alr_mutex) so they should be safe.
-
-- sja1105_fdb_add() and sja1105_fdb_del() did not have locking, I've
-  added and tested a locking scheme.
-
-Vladimir Oltean (9):
-  net: dsa: sja1105: wait for dynamic config command completion on
-    writes too
-  net: dsa: sja1105: serialize access to the dynamic config interface
-  net: mscc: ocelot: serialize access to the MAC table
-  net: dsa: b53: serialize access to the ARL table
-  net: dsa: lantiq_gswip: serialize access to the PCE table
-  net: dsa: introduce locking for the address lists on CPU and DSA ports
-  net: dsa: drop rtnl_lock from dsa_slave_switchdev_event_work
-  selftests: lib: forwarding: allow tests to not require mz and jq
-  selftests: net: dsa: add a stress test for unlocked FDB operations
-
- MAINTAINERS                                   |  1 +
- drivers/net/dsa/b53/b53_common.c              | 41 +++++++--
- drivers/net/dsa/b53/b53_priv.h                |  1 +
- drivers/net/dsa/lantiq_gswip.c                | 27 +++++-
- drivers/net/dsa/sja1105/sja1105.h             |  2 +
- .../net/dsa/sja1105/sja1105_dynamic_config.c  | 91 ++++++++++++++-----
- drivers/net/dsa/sja1105/sja1105_main.c        |  1 +
- drivers/net/ethernet/mscc/ocelot.c            | 53 ++++++++---
- include/net/dsa.h                             |  1 +
- include/soc/mscc/ocelot.h                     |  3 +
- net/dsa/dsa2.c                                |  1 +
- net/dsa/slave.c                               |  2 -
- net/dsa/switch.c                              | 76 +++++++++++-----
- .../drivers/net/dsa/test_bridge_fdb_stress.sh | 48 ++++++++++
- tools/testing/selftests/net/forwarding/lib.sh | 10 +-
- 15 files changed, 284 insertions(+), 74 deletions(-)
- create mode 100755 tools/testing/selftests/drivers/net/dsa/test_bridge_fdb_stress.sh
-
+diff --git a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
+index f2049f52833c..32ec34f181de 100644
+--- a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
++++ b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
+@@ -1170,6 +1170,56 @@ const struct sja1105_dynamic_table_ops sja1110_dyn_ops[BLK_IDX_MAX_DYN] = {
+ 	},
+ };
+ 
++#define SJA1105_DYNAMIC_CONFIG_SLEEP_US		10
++#define SJA1105_DYNAMIC_CONFIG_TIMEOUT_US	100000
++
++static int
++sja1105_dynamic_config_poll_valid(struct sja1105_private *priv,
++				  struct sja1105_dyn_cmd *cmd,
++				  const struct sja1105_dynamic_table_ops *ops)
++{
++	u8 packed_buf[SJA1105_MAX_DYN_CMD_SIZE] = {};
++	int rc;
++
++	/* We don't _need_ to read the full entry, just the command area which
++	 * is a fixed SJA1105_SIZE_DYN_CMD. But our cmd_packing() API expects a
++	 * buffer that contains the full entry too. Additionally, our API
++	 * doesn't really know how many bytes into the buffer does the command
++	 * area really begin. So just read back the whole entry.
++	 */
++	rc = sja1105_xfer_buf(priv, SPI_READ, ops->addr, packed_buf,
++			      ops->packed_size);
++	if (rc)
++		return rc;
++
++	/* Unpack the command structure, and return it to the caller in case it
++	 * needs to perform further checks on it (VALIDENT).
++	 */
++	memset(cmd, 0, sizeof(*cmd));
++	ops->cmd_packing(packed_buf, cmd, UNPACK);
++
++	/* Hardware hasn't cleared VALID => still working on it */
++	return cmd->valid ? -EAGAIN : 0;
++}
++
++/* Poll the dynamic config entry's control area until the hardware has
++ * cleared the VALID bit, which means we have confirmation that it has
++ * finished processing the command.
++ */
++static int
++sja1105_dynamic_config_wait_complete(struct sja1105_private *priv,
++				     struct sja1105_dyn_cmd *cmd,
++				     const struct sja1105_dynamic_table_ops *ops)
++{
++	int rc;
++
++	return read_poll_timeout(sja1105_dynamic_config_poll_valid,
++				 rc, rc != -EAGAIN,
++				 SJA1105_DYNAMIC_CONFIG_SLEEP_US,
++				 SJA1105_DYNAMIC_CONFIG_TIMEOUT_US,
++				 false, priv, cmd, ops);
++}
++
+ /* Provides read access to the settings through the dynamic interface
+  * of the switch.
+  * @blk_idx	is used as key to select from the sja1105_dynamic_table_ops.
+@@ -1196,7 +1246,6 @@ int sja1105_dynamic_config_read(struct sja1105_private *priv,
+ 	struct sja1105_dyn_cmd cmd = {0};
+ 	/* SPI payload buffer */
+ 	u8 packed_buf[SJA1105_MAX_DYN_CMD_SIZE] = {0};
+-	int retries = 3;
+ 	int rc;
+ 
+ 	if (blk_idx >= BLK_IDX_MAX_DYN)
+@@ -1239,28 +1288,12 @@ int sja1105_dynamic_config_read(struct sja1105_private *priv,
+ 	if (rc < 0)
+ 		return rc;
+ 
+-	/* Loop until we have confirmation that hardware has finished
+-	 * processing the command and has cleared the VALID field
+-	 */
+-	do {
+-		memset(packed_buf, 0, ops->packed_size);
+-
+-		/* Retrieve the read operation's result */
+-		rc = sja1105_xfer_buf(priv, SPI_READ, ops->addr, packed_buf,
+-				      ops->packed_size);
+-		if (rc < 0)
+-			return rc;
+-
+-		cmd = (struct sja1105_dyn_cmd) {0};
+-		ops->cmd_packing(packed_buf, &cmd, UNPACK);
+-
+-		if (!cmd.valident && !(ops->access & OP_VALID_ANYWAY))
+-			return -ENOENT;
+-		cpu_relax();
+-	} while (cmd.valid && --retries);
++	rc = sja1105_dynamic_config_wait_complete(priv, &cmd, ops);
++	if (rc < 0)
++		return rc;
+ 
+-	if (cmd.valid)
+-		return -ETIMEDOUT;
++	if (!cmd.valident && !(ops->access & OP_VALID_ANYWAY))
++		return -ENOENT;
+ 
+ 	/* Don't dereference possibly NULL pointer - maybe caller
+ 	 * only wanted to see whether the entry existed or not.
+@@ -1321,6 +1354,10 @@ int sja1105_dynamic_config_write(struct sja1105_private *priv,
+ 	if (rc < 0)
+ 		return rc;
+ 
++	rc = sja1105_dynamic_config_wait_complete(priv, &cmd, ops);
++	if (rc < 0)
++		return rc;
++
+ 	cmd = (struct sja1105_dyn_cmd) {0};
+ 	ops->cmd_packing(packed_buf, &cmd, UNPACK);
+ 	if (cmd.errors)
 -- 
 2.25.1
 
