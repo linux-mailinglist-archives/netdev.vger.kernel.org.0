@@ -2,585 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E1D7437853
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 15:47:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24F5B4378E6
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 16:17:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232880AbhJVNuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 09:50:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44852 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230342AbhJVNuB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 09:50:01 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4895C061764;
-        Fri, 22 Oct 2021 06:47:43 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id q19so3682357pfl.4;
-        Fri, 22 Oct 2021 06:47:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=1slrhrvGSTWclslLHTMuhHHF+5rjmiSUEtkzD9Yamdc=;
-        b=d7+MYCZKo1k30XkKKm8QmrCHB/1Eh+1+u5Bm/p35ZZMsUskIYXY7/GOh0fVFSkINxO
-         JjHqyGPfBBf/Uut0AAkJ2ARMlybYWaglGpe5YqI1vsc9GhL4su9EMD99+GMDPqoSBHKW
-         VD9GaGvoMuNZJaa7/KpmSjfBMq7d5pMAfcuzai27DmXgKM8izTc+XKOip5mi4eubgxdj
-         QZHFtytwEruYDY7FB4ETmQ3JHrNGRjfVBxFvy0pZYR2rz9lbfIG/jKmFHMAxxv7f9CH+
-         uUGjqx5Zh6ULmhWn1BR+1iu1ogCprJo3aIz5HIgpZjv/rZZ4CYX6UglVeWmvpCEQZC4B
-         4gKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1slrhrvGSTWclslLHTMuhHHF+5rjmiSUEtkzD9Yamdc=;
-        b=UuvmWX4c/XdaemaOA5FIem1Jsd604lwAk2sFnVlewlJ1hI/jCIor75eNOlRWJVBqUZ
-         Qy/0kuA662FftUnRuoOoW9q1e+Z8Wi/Q8lOGfVCz6kkCy5FRDy0PRyuGHewwuK2Tou9G
-         yRwyg8kBpclnNLOka0JOGMkT6icRqxJAaMJ4dn76vWXLDWxH9wWrhQeeHntgcCAqaJJg
-         DLHKgXYAK1vLr1XIQ6YZjJmXN4vVbltBMUtkrE2kX8CZeqkqZdtK+S8E8/Ew8Qaz5P4L
-         CLCXZT18e3iklkDiaRfLh7NGovbE3cnJMbHdkn3RkeMk/DCPC24lVppA15q5z6k0cuek
-         5G3A==
-X-Gm-Message-State: AOAM5335nGAHz1AMuq+foNLxm2ZFLuPfUcNUAFOKCsh5JZknp8s/B1QR
-        gNEXQacwPCygaYI3bTQZJyQ=
-X-Google-Smtp-Source: ABdhPJwL+cAV98t80TICD4aI87XHtKjgMrC09jjqXXIquaSg46fFB1IBEgP8/qTiLBiG0cbSEpdgbA==
-X-Received: by 2002:a05:6a00:1a01:b0:44d:af99:19c9 with SMTP id g1-20020a056a001a0100b0044daf9919c9mr12386971pfv.36.1634910463275;
-        Fri, 22 Oct 2021 06:47:43 -0700 (PDT)
-Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:f:1cbf:b595:fc2c:720f])
-        by smtp.gmail.com with ESMTPSA id i2sm9752732pfa.34.2021.10.22.06.47.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Oct 2021 06:47:42 -0700 (PDT)
-From:   Tianyu Lan <ltykernel@gmail.com>
-To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
-        arnd@arndb.de, brijesh.singh@amd.com, jroedel@suse.de,
-        Tianyu.Lan@microsoft.com, thomas.lendacky@amd.com,
-        pgonda@google.com, akpm@linux-foundation.org,
-        kirill.shutemov@linux.intel.com, rppt@kernel.org, david@redhat.com,
-        aneesh.kumar@linux.ibm.com, saravanand@fb.com, rientjes@google.com,
-        michael.h.kelley@microsoft.com
-Cc:     linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, konrad.wilk@oracle.com, hch@lst.de,
-        robin.murphy@arm.com, joro@8bytes.org, parri.andrea@gmail.com,
-        dave.hansen@intel.com
-Subject: [PATCH V8.1 6/9] x86/hyperv: Add Write/Read MSR registers via ghcb page
-Date:   Fri, 22 Oct 2021 09:47:38 -0400
-Message-Id: <20211022134739.2216-1-ltykernel@gmail.com>
+        id S232986AbhJVOUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 10:20:08 -0400
+Received: from mail-eopbgr60040.outbound.protection.outlook.com ([40.107.6.40]:37344
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232825AbhJVOUH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Oct 2021 10:20:07 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZHELiKVZThVfgokVjEvnwo0L+Yrflw+q4IRZ2ZsNJEbcojgnI4XqRnjgN1226k/IUypMwUS3lD1A2sSys09ldEe59qLJr02g8H5G0o/SAuoFkyDLf/OpRATqCgO2d5ODtPxU5NG1SpggFEVp6vD6srAW6o6HTG+LYz0GUWE3cOeCbjzuf7IfBA8uhqB5ikXjhav9xgO6UnRZt1wA5B4lxNe+OohC6h4aGHcOWDmEuk94Flfscybtm38q2Nkf7UNtYg3V0shn2hPzYgIyrL/52adpkgdXSR78ZvBXhgDWN1FPSK3lpbYkft3F1c3/Ln8HCrWT0DB7qSfalrotXGlp7w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=daexkmKrS3BX0SDYNibpa2yu4covnDNLCv5FYKJbB4k=;
+ b=NcENSnFM+mmR2sT5MsEF4hhIFeWwL+aSqI9kdZDw9Qb7Lczi5eH8TRLO2Wv/WLjnwDCjBNJmQpNwGicbiV4HvwRE75f6y99K9KGUtJs2czaGBAYdO0gD2hVTLnERVhcgZ7CUAgX7JVgGl4fT+e9M7LzjMYnXoOcQOcb4Vmy7kohU+CPiNyrmTzCl7aVMOr2JvsmRSefK3pTGe0Oqp9A8w5hjO32q+CuqnBTEj7WsLtvirLe3H1r8TvL0TywwlVa4Q4km0gwf0oZgpogvVbeV1kbCYuLlFqL5S0y2P4XD+FeFdkEPe/EIyavC3z+hp20D1j0glC3lARqM+oNkEG6UzA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=daexkmKrS3BX0SDYNibpa2yu4covnDNLCv5FYKJbB4k=;
+ b=sJbJ6mxLNFbxNJDNdxmI/mKs/F0QdZLTGwxAQldjkU92x4aB+6PKfOZfJP4zMYBw7V+HDAWm4RK5QnVtH97o8P6N80tz545UMEOg4uekzRzFRNr147nRcRmKXHyVBSGfVOJOWDEltr1IJc5sfTpfPRSTEgbM/rjSJZXRZ/jxU5M=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR0402MB3406.eurprd04.prod.outlook.com (2603:10a6:803:c::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18; Fri, 22 Oct
+ 2021 14:17:47 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4608.018; Fri, 22 Oct 2021
+ 14:17:47 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        UNGLinuxDriver@microchip.com, DENG Qingfang <dqfext@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Aleksander Jan Bajkowski <olek2@wp.pl>,
+        Egil Hjelmeland <privat@egil-hjelmeland.no>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Prasanna Vengateshan <prasanna.vengateshan@microchip.com>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>
+Subject: [PATCH v2 net-next 0/9] Drop rtnl_lock from DSA .port_fdb_{add,del}
+Date:   Fri, 22 Oct 2021 17:16:07 +0300
+Message-Id: <20211022141616.2088304-1-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211021154110.3734294-1-ltykernel@gmail.com>
-References: <20211021154110.3734294-1-ltykernel@gmail.com>
-MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR02CA0159.eurprd02.prod.outlook.com
+ (2603:10a6:20b:28d::26) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
+Received: from localhost.localdomain (188.25.174.251) by AM0PR02CA0159.eurprd02.prod.outlook.com (2603:10a6:20b:28d::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.16 via Frontend Transport; Fri, 22 Oct 2021 14:17:45 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3650bb80-9886-44fa-758b-08d99566b8c9
+X-MS-TrafficTypeDiagnostic: VI1PR0402MB3406:
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB3406338EC3D1D3D4B5F8A0ECE0809@VI1PR0402MB3406.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 10eQwsyW/TAyRmAAU4l+bIFbRsmRbH9yhlIoOGFmnXjwfQZMdfD7nPKQQk5W05Kzmnn1OFiH6Zohd/Rk/OjwDhn4C0NK57sj9Ck0VL8XtT7l9Xtm5D3rm8Pjsnm/vcTrL1xWlYu/nw6HXEoFD7d7OVxg5k6ydIsHX394QX2jSlY8imLejgPXtb501fHJpOiTPPwgl8c/edhrbCZ2QorZO4ltknf0LVI+rSJQ3a5mE0lwRhdUtc1bxsONPOvNOQx+ISgxBu8yRTrwINpCGT/iNFm3OPTyNcs6hfoRdhY6Ix2OwO3iLOScw/QbdwFIGX2CnmoyxiblbhH+VROTP0O64lc+hDs1kSl0PdBjZPRUgqdR7HUXPV8MMPqF6oaE0iwR7vi/PGYiMvd6otr3dFv91wXRTkXOp2NV8wV0XMbxAjD9T6XJMCI34TQUqUY8tlQB55VK/lt8KrezQDRrmpB+dYMArzgpdoX2oH9QKs08mcOxh3KThZN0hdB3D8JIyAFNQPUodJjmvQcqzYovp72LxSsciwABncnjTWYsGrQOHnicqFLbtkRdrDjnufhOvAIzj8XTw6GwgYOqZDcPtCzNr4vIJ11EIGpf7ouGXke6qVlIOmuq4qWIRTtrYwdVAuXP/HSama/+EoUurdAePqkAiToBW/8glLm0+kOmq4A/b0g+X3RZr3D8mFz1J6jZTMEAAsKloWctpKsbNedu+deedlPtiuHdxNu5/BcFlEHb2t4KIuaIo/WHTFoAWVNA/2W4BSKF7Kd0z+WtDmNBKtaTUInXYfaQMxorF7oV60kLQkex4OUZYvTTUDJKOr8KvOYG
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(966005)(7416002)(8936002)(44832011)(38350700002)(6916009)(956004)(83380400001)(54906003)(66556008)(508600001)(66476007)(66946007)(6512007)(86362001)(4326008)(6486002)(52116002)(5660300002)(2616005)(316002)(6506007)(1076003)(8676002)(36756003)(2906002)(186003)(38100700002)(26005)(6666004)(142923001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Nq64BVfebcg3l3G+DsvfBkLwQQIrXtHdvKxs88MN02SFZqU2PPpNx2WiGqRn?=
+ =?us-ascii?Q?wlEYYE2TchWb+F6H0ILULEgNE44Uu9PxKReerjsljyDy9EAtNuQ2Vau8omZ3?=
+ =?us-ascii?Q?1KQ/8o3h2XYztLQmlZEN39bNGvzFhT/fitzzhdyyM1yD/l+XeTDVz9oY73ND?=
+ =?us-ascii?Q?B6YKvHm8B4HJi7+jOMVr+AP/DWZpxrk0uf6Ir7grZgMzHLxtGH6ZxmJQzxhz?=
+ =?us-ascii?Q?W10GxRaPyZcYr8KmNDsPk7bdHD7zEVYEwvvPtIR7vdRfb6wwmo1kpN7RGWYY?=
+ =?us-ascii?Q?tIH8ivqoeadKYwwpiWNnG/e8DeogHMXRiev4CsqRW+1r4LbN33p/j77yPlYm?=
+ =?us-ascii?Q?1TV3E+2gFkgjE9aD/ess89ImXwMp7De6QsUz/yQA2V4d21LvEGKmJX+uXNWx?=
+ =?us-ascii?Q?HO0fBn3AA0eNa8C1ykfr7fKQHcU+/gRvubhE68N1RW9sGTkmDKFJCa0RF9MP?=
+ =?us-ascii?Q?pgHnN3TNoz/0aqKz/oL84WROE5dVvHaEuMVRlGKuHAd+zpb/0oSFBtaNbdpZ?=
+ =?us-ascii?Q?kzFnEtU+x1lviwyZCsu23qw1nXP3dlEX2t1uojsusA/yEoi0g+ZRgeyNNVJe?=
+ =?us-ascii?Q?WMvnbTNTcJ7QUN4fTTc7+BspObSs48EvMFeRSfq8tTiuwQr7u8+p1Q8VGLwc?=
+ =?us-ascii?Q?M+F3crxpWkbzEuISByTbbVw1AaiERZT49z/7VRL+jQlUGJ2hOR1O+Vg823bi?=
+ =?us-ascii?Q?0IPrqSI6Q9AKDRaRPsQQfhMXK7WHDR/tWBDAkMP26nrNL6GkvJLyn6dc7rO1?=
+ =?us-ascii?Q?PpYUQWbDgKEsa5W6x9krMKyhv/qKu4DKcNk+YhLSjkmmG6n01ImeU9C2copW?=
+ =?us-ascii?Q?C87W4gRJIGvsgL8d+kN79z5ft0EGUefARUqsGycHRNon6274CVPTesdJaBer?=
+ =?us-ascii?Q?k+UE3vS9K4p8adIut0I44KCK3LS40xAlxx2Une0dgl09s3kgs7tl1KUqWZwI?=
+ =?us-ascii?Q?0o3FDckZn0bhaVEL5mfkpyf6YIF90JppXvUGLlte1/n3/Gxs0eDQG5+7JtsO?=
+ =?us-ascii?Q?JvNgfTKTVm+xVr4195yGmk/RIQ/IzkIp22IAqjg2H7JXtebhiWMM4mcq1Kev?=
+ =?us-ascii?Q?gv0ExkRuOItgFZ/cimqGzNg6ASCWVdMMAc6uXK30F8SUJ7fjbeAv9wnLhtHN?=
+ =?us-ascii?Q?KYAF3MdLjeFwBjfBP+NcKCEZejlxqX1rlS/IS82b+0V9mqCA2LqwJjBuhKEu?=
+ =?us-ascii?Q?4OpmA9Rp2CsMkcBRafUWoIT6D3czOTpA7gspmG/dwzrPNrpd7bbs5xIWpyx7?=
+ =?us-ascii?Q?F1anu1LT3naoUSiElRmRw9aRu4wfyPQIxTUNDDo6ij69O+bfhJEiUYLU6UUh?=
+ =?us-ascii?Q?3wRsX4JDghufwGAcygiBMq8lwtCeJZWyT8+ySvOqjWgfJaMGRClzWW5DaCpQ?=
+ =?us-ascii?Q?30OYly8gzhkiyo0jP2lD2BH6BPHn5X6HTMGGgr19D7s8HUgFYS0lo/RA+akA?=
+ =?us-ascii?Q?jxPh59Bsb7guighDRcRM5lcCXUQVd4Sp?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3650bb80-9886-44fa-758b-08d99566b8c9
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2021 14:17:47.0828
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: vladimir.oltean@nxp.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3406
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+As mentioned in the RFC posted 2 months ago:
+https://patchwork.kernel.org/project/netdevbpf/cover/20210824114049.3814660-1-vladimir.oltean@nxp.com/
 
-Hyperv provides GHCB protocol to write Synthetic Interrupt
-Controller MSR registers in Isolation VM with AMD SEV SNP
-and these registers are emulated by hypervisor directly.
-Hyperv requires to write SINTx MSR registers twice. First
-writes MSR via GHCB page to communicate with hypervisor
-and then writes wrmsr instruction to talk with paravisor
-which runs in VMPL0. Guest OS ID MSR also needs to be set
-via GHCB page.
+DSA is transitioning to a driver API where the rtnl_lock is not held
+when calling ds->ops->port_fdb_add() and ds->ops->port_fdb_del().
+Drivers cannot take that lock privately from those callbacks either.
 
-Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
----
-Change since v8:
-	* Export hv_ghcb_msr_write/read() to fix compile error.  
+This change is required so that DSA can wait for switchdev FDB work
+items to finish before leaving the bridge. That change will be made in a
+future patch series.
 
-Change since v6:
-	* Spilt sev-es code into separate patch
-	* Add hv_get/set_register() dummy function under CONFIG_HYPERV
-	  is not selected to fix compile error.
+A small selftest is provided with the patch set in the hope that
+concurrency issues uncovered by this series, but not spotted by me by
+code inspection, will be caught.
 
-Change since v5:
-	* Adjust change layout in the asm/mshyperv.h
-	  to make hv_is_synic_reg(), hv_get_register()
-	  and hv_set_register() ahead of the #include
-	  of asm-generic/mshyperv.h
-	* Remove Spurious blank line
+A status of the existing drivers:
 
-Change since v4:
-	* Remove hv_get_simp(), hv_get_siefp()  hv_get_synint_*()
-	  helper function. Move the logic into hv_get/set_register().
+- mv88e6xxx_port_fdb_add() and mv88e6xxx_port_fdb_del() take
+  mv88e6xxx_reg_lock() so they should be safe.
 
-Change since v3:
-	* Pass old_msg_type to hv_signal_eom() as parameter.
-	* Use HV_REGISTER_* marcro instead of HV_X64_MSR_*
-	* Add hv_isolation_type_snp() weak function.
-	* Add maros to set syinc register in ARM code.
+- qca8k_fdb_add() and qca8k_fdb_del() take mutex_lock(&priv->reg_mutex)
+  so they should be safe.
 
-Change since v1:
-	* Introduce sev_es_ghcb_hv_call_simple() and share code
-	  between SEV and Hyper-V code.
----
- arch/x86/hyperv/hv_init.c       |  36 ++---------
- arch/x86/hyperv/ivm.c           | 109 ++++++++++++++++++++++++++++++++
- arch/x86/include/asm/mshyperv.h |  57 +++++++++++++----
- drivers/hv/hv.c                 |  74 +++++++++++++++++-----
- drivers/hv/hv_common.c          |   6 ++
- include/asm-generic/mshyperv.h  |   1 +
- 6 files changed, 224 insertions(+), 59 deletions(-)
+- hellcreek_fdb_add() and hellcreek_fdb_add() take mutex_lock(&hellcreek->reg_lock)
+  so they should be safe.
 
-diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
-index d57df6825527..a16a83e46a30 100644
---- a/arch/x86/hyperv/hv_init.c
-+++ b/arch/x86/hyperv/hv_init.c
-@@ -37,7 +37,7 @@ EXPORT_SYMBOL_GPL(hv_current_partition_id);
- void *hv_hypercall_pg;
- EXPORT_SYMBOL_GPL(hv_hypercall_pg);
- 
--void __percpu **hv_ghcb_pg;
-+union hv_ghcb __percpu **hv_ghcb_pg;
- 
- /* Storage to save the hypercall page temporarily for hibernation */
- static void *hv_hypercall_pg_saved;
-@@ -406,7 +406,7 @@ void __init hyperv_init(void)
- 	}
- 
- 	if (hv_isolation_type_snp()) {
--		hv_ghcb_pg = alloc_percpu(void *);
-+		hv_ghcb_pg = alloc_percpu(union hv_ghcb *);
- 		if (!hv_ghcb_pg)
- 			goto free_vp_assist_page;
- 	}
-@@ -424,6 +424,9 @@ void __init hyperv_init(void)
- 	guest_id = generate_guest_id(0, LINUX_VERSION_CODE, 0);
- 	wrmsrl(HV_X64_MSR_GUEST_OS_ID, guest_id);
- 
-+	/* Hyper-V requires to write guest os id via ghcb in SNP IVM. */
-+	hv_ghcb_msr_write(HV_X64_MSR_GUEST_OS_ID, guest_id);
-+
- 	hv_hypercall_pg = __vmalloc_node_range(PAGE_SIZE, 1, VMALLOC_START,
- 			VMALLOC_END, GFP_KERNEL, PAGE_KERNEL_ROX,
- 			VM_FLUSH_RESET_PERMS, NUMA_NO_NODE,
-@@ -501,6 +504,7 @@ void __init hyperv_init(void)
- 
- clean_guest_os_id:
- 	wrmsrl(HV_X64_MSR_GUEST_OS_ID, 0);
-+	hv_ghcb_msr_write(HV_X64_MSR_GUEST_OS_ID, 0);
- 	cpuhp_remove_state(cpuhp);
- free_ghcb_page:
- 	free_percpu(hv_ghcb_pg);
-@@ -522,6 +526,7 @@ void hyperv_cleanup(void)
- 
- 	/* Reset our OS id */
- 	wrmsrl(HV_X64_MSR_GUEST_OS_ID, 0);
-+	hv_ghcb_msr_write(HV_X64_MSR_GUEST_OS_ID, 0);
- 
- 	/*
- 	 * Reset hypercall page reference before reset the page,
-@@ -592,30 +597,3 @@ bool hv_is_hyperv_initialized(void)
- 	return hypercall_msr.enable;
- }
- EXPORT_SYMBOL_GPL(hv_is_hyperv_initialized);
--
--enum hv_isolation_type hv_get_isolation_type(void)
--{
--	if (!(ms_hyperv.priv_high & HV_ISOLATION))
--		return HV_ISOLATION_TYPE_NONE;
--	return FIELD_GET(HV_ISOLATION_TYPE, ms_hyperv.isolation_config_b);
--}
--EXPORT_SYMBOL_GPL(hv_get_isolation_type);
--
--bool hv_is_isolation_supported(void)
--{
--	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
--		return false;
--
--	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV))
--		return false;
--
--	return hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE;
--}
--
--DEFINE_STATIC_KEY_FALSE(isolation_type_snp);
--
--bool hv_isolation_type_snp(void)
--{
--	return static_branch_unlikely(&isolation_type_snp);
--}
--EXPORT_SYMBOL_GPL(hv_isolation_type_snp);
-diff --git a/arch/x86/hyperv/ivm.c b/arch/x86/hyperv/ivm.c
-index 79e7fb83472a..e2ab3e06f85a 100644
---- a/arch/x86/hyperv/ivm.c
-+++ b/arch/x86/hyperv/ivm.c
-@@ -6,12 +6,121 @@
-  *  Tianyu Lan <Tianyu.Lan@microsoft.com>
-  */
- 
-+#include <linux/types.h>
-+#include <linux/bitfield.h>
- #include <linux/hyperv.h>
- #include <linux/types.h>
- #include <linux/bitfield.h>
- #include <linux/slab.h>
-+#include <asm/svm.h>
-+#include <asm/sev.h>
- #include <asm/io.h>
- #include <asm/mshyperv.h>
-+#include <asm/hypervisor.h>
-+
-+union hv_ghcb {
-+	struct ghcb ghcb;
-+} __packed __aligned(HV_HYP_PAGE_SIZE);
-+
-+void hv_ghcb_msr_write(u64 msr, u64 value)
-+{
-+	union hv_ghcb *hv_ghcb;
-+	void **ghcb_base;
-+	unsigned long flags;
-+	struct es_em_ctxt ctxt;
-+
-+	if (!hv_ghcb_pg)
-+		return;
-+
-+	WARN_ON(in_nmi());
-+
-+	local_irq_save(flags);
-+	ghcb_base = (void **)this_cpu_ptr(hv_ghcb_pg);
-+	hv_ghcb = (union hv_ghcb *)*ghcb_base;
-+	if (!hv_ghcb) {
-+		local_irq_restore(flags);
-+		return;
-+	}
-+
-+	ghcb_set_rcx(&hv_ghcb->ghcb, msr);
-+	ghcb_set_rax(&hv_ghcb->ghcb, lower_32_bits(value));
-+	ghcb_set_rdx(&hv_ghcb->ghcb, upper_32_bits(value));
-+
-+	if (sev_es_ghcb_hv_call(&hv_ghcb->ghcb, false, &ctxt,
-+				SVM_EXIT_MSR, 1, 0))
-+		pr_warn("Fail to write msr via ghcb %llx.\n", msr);
-+
-+	local_irq_restore(flags);
-+}
-+EXPORT_SYMBOL_GPL(hv_ghcb_msr_write);
-+
-+void hv_ghcb_msr_read(u64 msr, u64 *value)
-+{
-+	union hv_ghcb *hv_ghcb;
-+	void **ghcb_base;
-+	unsigned long flags;
-+	struct es_em_ctxt ctxt;
-+
-+	/* Check size of union hv_ghcb here. */
-+	BUILD_BUG_ON(sizeof(union hv_ghcb) != HV_HYP_PAGE_SIZE);
-+
-+	if (!hv_ghcb_pg)
-+		return;
-+
-+	WARN_ON(in_nmi());
-+
-+	local_irq_save(flags);
-+	ghcb_base = (void **)this_cpu_ptr(hv_ghcb_pg);
-+	hv_ghcb = (union hv_ghcb *)*ghcb_base;
-+	if (!hv_ghcb) {
-+		local_irq_restore(flags);
-+		return;
-+	}
-+
-+	ghcb_set_rcx(&hv_ghcb->ghcb, msr);
-+	if (sev_es_ghcb_hv_call(&hv_ghcb->ghcb, false, &ctxt,
-+				SVM_EXIT_MSR, 0, 0))
-+		pr_warn("Fail to read msr via ghcb %llx.\n", msr);
-+	else
-+		*value = (u64)lower_32_bits(hv_ghcb->ghcb.save.rax)
-+			| ((u64)lower_32_bits(hv_ghcb->ghcb.save.rdx) << 32);
-+	local_irq_restore(flags);
-+}
-+EXPORT_SYMBOL_GPL(hv_ghcb_msr_read);
-+
-+enum hv_isolation_type hv_get_isolation_type(void)
-+{
-+	if (!(ms_hyperv.priv_high & HV_ISOLATION))
-+		return HV_ISOLATION_TYPE_NONE;
-+	return FIELD_GET(HV_ISOLATION_TYPE, ms_hyperv.isolation_config_b);
-+}
-+EXPORT_SYMBOL_GPL(hv_get_isolation_type);
-+
-+/*
-+ * hv_is_isolation_supported - Check system runs in the Hyper-V
-+ * isolation VM.
-+ */
-+bool hv_is_isolation_supported(void)
-+{
-+	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
-+		return false;
-+
-+	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV))
-+		return false;
-+
-+	return hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE;
-+}
-+
-+DEFINE_STATIC_KEY_FALSE(isolation_type_snp);
-+
-+/*
-+ * hv_isolation_type_snp - Check system runs in the AMD SEV-SNP based
-+ * isolation VM.
-+ */
-+bool hv_isolation_type_snp(void)
-+{
-+	return static_branch_unlikely(&isolation_type_snp);
-+}
- 
- /*
-  * hv_mark_gpa_visibility - Set pages visible to host via hvcall.
-diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
-index f3154ca41ac4..eb1ba33da113 100644
---- a/arch/x86/include/asm/mshyperv.h
-+++ b/arch/x86/include/asm/mshyperv.h
-@@ -11,25 +11,14 @@
- #include <asm/paravirt.h>
- #include <asm/mshyperv.h>
- 
-+union hv_ghcb;
-+
- DECLARE_STATIC_KEY_FALSE(isolation_type_snp);
- 
- typedef int (*hyperv_fill_flush_list_func)(
- 		struct hv_guest_mapping_flush_list *flush,
- 		void *data);
- 
--static inline void hv_set_register(unsigned int reg, u64 value)
--{
--	wrmsrl(reg, value);
--}
--
--static inline u64 hv_get_register(unsigned int reg)
--{
--	u64 value;
--
--	rdmsrl(reg, value);
--	return value;
--}
--
- #define hv_get_raw_timer() rdtsc_ordered()
- 
- void hyperv_vector_handler(struct pt_regs *regs);
-@@ -41,7 +30,7 @@ extern void *hv_hypercall_pg;
- 
- extern u64 hv_current_partition_id;
- 
--extern void __percpu **hv_ghcb_pg;
-+extern union hv_ghcb  __percpu **hv_ghcb_pg;
- 
- int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages);
- int hv_call_add_logical_proc(int node, u32 lp_index, u32 acpi_id);
-@@ -193,6 +182,44 @@ int hv_map_ioapic_interrupt(int ioapic_id, bool level, int vcpu, int vector,
- 		struct hv_interrupt_entry *entry);
- int hv_unmap_ioapic_interrupt(int ioapic_id, struct hv_interrupt_entry *entry);
- int hv_set_mem_host_visibility(unsigned long addr, int numpages, bool visible);
-+void hv_ghcb_msr_write(u64 msr, u64 value);
-+void hv_ghcb_msr_read(u64 msr, u64 *value);
-+
-+extern bool hv_isolation_type_snp(void);
-+
-+static inline bool hv_is_synic_reg(unsigned int reg)
-+{
-+	if ((reg >= HV_REGISTER_SCONTROL) &&
-+	    (reg <= HV_REGISTER_SINT15))
-+		return true;
-+	return false;
-+}
-+
-+static inline u64 hv_get_register(unsigned int reg)
-+{
-+	u64 value;
-+
-+	if (hv_is_synic_reg(reg) && hv_isolation_type_snp())
-+		hv_ghcb_msr_read(reg, &value);
-+	else
-+		rdmsrl(reg, value);
-+	return value;
-+}
-+
-+static inline void hv_set_register(unsigned int reg, u64 value)
-+{
-+	if (hv_is_synic_reg(reg) && hv_isolation_type_snp()) {
-+		hv_ghcb_msr_write(reg, value);
-+
-+		/* Write proxy bit via wrmsl instruction */
-+		if (reg >= HV_REGISTER_SINT0 &&
-+		    reg <= HV_REGISTER_SINT15)
-+			wrmsrl(reg, value | 1 << 20);
-+	} else {
-+		wrmsrl(reg, value);
-+	}
-+}
-+
- #else /* CONFIG_HYPERV */
- static inline void hyperv_init(void) {}
- static inline void hyperv_setup_mmu_ops(void) {}
-@@ -209,6 +236,8 @@ static inline int hyperv_flush_guest_mapping_range(u64 as,
- {
- 	return -1;
- }
-+static inline void hv_set_register(unsigned int reg, u64 value) { }
-+static inline u64 hv_get_register(unsigned int reg) { return 0; }
- static inline int hv_set_mem_host_visibility(unsigned long addr, int numpages,
- 					     bool visible)
- {
-diff --git a/drivers/hv/hv.c b/drivers/hv/hv.c
-index e83507f49676..943392db9e8a 100644
---- a/drivers/hv/hv.c
-+++ b/drivers/hv/hv.c
-@@ -8,6 +8,7 @@
-  */
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
- 
-+#include <linux/io.h>
- #include <linux/kernel.h>
- #include <linux/mm.h>
- #include <linux/slab.h>
-@@ -136,17 +137,24 @@ int hv_synic_alloc(void)
- 		tasklet_init(&hv_cpu->msg_dpc,
- 			     vmbus_on_msg_dpc, (unsigned long) hv_cpu);
- 
--		hv_cpu->synic_message_page =
--			(void *)get_zeroed_page(GFP_ATOMIC);
--		if (hv_cpu->synic_message_page == NULL) {
--			pr_err("Unable to allocate SYNIC message page\n");
--			goto err;
--		}
-+		/*
-+		 * Synic message and event pages are allocated by paravisor.
-+		 * Skip these pages allocation here.
-+		 */
-+		if (!hv_isolation_type_snp()) {
-+			hv_cpu->synic_message_page =
-+				(void *)get_zeroed_page(GFP_ATOMIC);
-+			if (hv_cpu->synic_message_page == NULL) {
-+				pr_err("Unable to allocate SYNIC message page\n");
-+				goto err;
-+			}
- 
--		hv_cpu->synic_event_page = (void *)get_zeroed_page(GFP_ATOMIC);
--		if (hv_cpu->synic_event_page == NULL) {
--			pr_err("Unable to allocate SYNIC event page\n");
--			goto err;
-+			hv_cpu->synic_event_page =
-+				(void *)get_zeroed_page(GFP_ATOMIC);
-+			if (hv_cpu->synic_event_page == NULL) {
-+				pr_err("Unable to allocate SYNIC event page\n");
-+				goto err;
-+			}
- 		}
- 
- 		hv_cpu->post_msg_page = (void *)get_zeroed_page(GFP_ATOMIC);
-@@ -201,16 +209,35 @@ void hv_synic_enable_regs(unsigned int cpu)
- 	/* Setup the Synic's message page */
- 	simp.as_uint64 = hv_get_register(HV_REGISTER_SIMP);
- 	simp.simp_enabled = 1;
--	simp.base_simp_gpa = virt_to_phys(hv_cpu->synic_message_page)
--		>> HV_HYP_PAGE_SHIFT;
-+
-+	if (hv_isolation_type_snp()) {
-+		hv_cpu->synic_message_page
-+			= memremap(simp.base_simp_gpa << HV_HYP_PAGE_SHIFT,
-+				   HV_HYP_PAGE_SIZE, MEMREMAP_WB);
-+		if (!hv_cpu->synic_message_page)
-+			pr_err("Fail to map syinc message page.\n");
-+	} else {
-+		simp.base_simp_gpa = virt_to_phys(hv_cpu->synic_message_page)
-+			>> HV_HYP_PAGE_SHIFT;
-+	}
- 
- 	hv_set_register(HV_REGISTER_SIMP, simp.as_uint64);
- 
- 	/* Setup the Synic's event page */
- 	siefp.as_uint64 = hv_get_register(HV_REGISTER_SIEFP);
- 	siefp.siefp_enabled = 1;
--	siefp.base_siefp_gpa = virt_to_phys(hv_cpu->synic_event_page)
--		>> HV_HYP_PAGE_SHIFT;
-+
-+	if (hv_isolation_type_snp()) {
-+		hv_cpu->synic_event_page =
-+			memremap(siefp.base_siefp_gpa << HV_HYP_PAGE_SHIFT,
-+				 HV_HYP_PAGE_SIZE, MEMREMAP_WB);
-+
-+		if (!hv_cpu->synic_event_page)
-+			pr_err("Fail to map syinc event page.\n");
-+	} else {
-+		siefp.base_siefp_gpa = virt_to_phys(hv_cpu->synic_event_page)
-+			>> HV_HYP_PAGE_SHIFT;
-+	}
- 
- 	hv_set_register(HV_REGISTER_SIEFP, siefp.as_uint64);
- 
-@@ -257,6 +284,8 @@ int hv_synic_init(unsigned int cpu)
-  */
- void hv_synic_disable_regs(unsigned int cpu)
- {
-+	struct hv_per_cpu_context *hv_cpu
-+		= per_cpu_ptr(hv_context.cpu_context, cpu);
- 	union hv_synic_sint shared_sint;
- 	union hv_synic_simp simp;
- 	union hv_synic_siefp siefp;
-@@ -273,14 +302,27 @@ void hv_synic_disable_regs(unsigned int cpu)
- 				shared_sint.as_uint64);
- 
- 	simp.as_uint64 = hv_get_register(HV_REGISTER_SIMP);
-+	/*
-+	 * In Isolation VM, sim and sief pages are allocated by
-+	 * paravisor. These pages also will be used by kdump
-+	 * kernel. So just reset enable bit here and keep page
-+	 * addresses.
-+	 */
- 	simp.simp_enabled = 0;
--	simp.base_simp_gpa = 0;
-+	if (hv_isolation_type_snp())
-+		memunmap(hv_cpu->synic_message_page);
-+	else
-+		simp.base_simp_gpa = 0;
- 
- 	hv_set_register(HV_REGISTER_SIMP, simp.as_uint64);
- 
- 	siefp.as_uint64 = hv_get_register(HV_REGISTER_SIEFP);
- 	siefp.siefp_enabled = 0;
--	siefp.base_siefp_gpa = 0;
-+
-+	if (hv_isolation_type_snp())
-+		memunmap(hv_cpu->synic_event_page);
-+	else
-+		siefp.base_siefp_gpa = 0;
- 
- 	hv_set_register(HV_REGISTER_SIEFP, siefp.as_uint64);
- 
-diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
-index c0d9048a4112..1fc82d237161 100644
---- a/drivers/hv/hv_common.c
-+++ b/drivers/hv/hv_common.c
-@@ -249,6 +249,12 @@ bool __weak hv_is_isolation_supported(void)
- }
- EXPORT_SYMBOL_GPL(hv_is_isolation_supported);
- 
-+bool __weak hv_isolation_type_snp(void)
-+{
-+	return false;
-+}
-+EXPORT_SYMBOL_GPL(hv_isolation_type_snp);
-+
- void __weak hv_setup_vmbus_handler(void (*handler)(void))
- {
- }
-diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
-index a8ac497167d2..6d3ba902ebb0 100644
---- a/include/asm-generic/mshyperv.h
-+++ b/include/asm-generic/mshyperv.h
-@@ -54,6 +54,7 @@ extern void  __percpu  **hyperv_pcpu_output_arg;
- 
- extern u64 hv_do_hypercall(u64 control, void *inputaddr, void *outputaddr);
- extern u64 hv_do_fast_hypercall8(u16 control, u64 input8);
-+extern bool hv_isolation_type_snp(void);
- 
- /* Helper functions that provide a consistent pattern for checking Hyper-V hypercall status. */
- static inline int hv_result(u64 status)
+- ksz9477_port_fdb_add() and ksz9477_port_fdb_del() take mutex_lock(&dev->alu_mutex)
+  so they should be safe.
+
+- b53_fdb_add() and b53_fdb_del() did not have locking, so I've added a
+  scheme based on my own judgement there (not tested).
+
+- felix_fdb_add() and felix_fdb_del() did not have locking, I've added
+  and tested a locking scheme there.
+
+- mt7530_port_fdb_add() and mt7530_port_fdb_del() take
+  mutex_lock(&priv->reg_mutex), so they should be safe.
+
+- gswip_port_fdb() did not have locking, so I've added a non-expert
+  locking scheme based on my own judgement (not tested).
+
+- lan9303_alr_add_port() and lan9303_alr_del_port() take
+  mutex_lock(&chip->alr_mutex) so they should be safe.
+
+- sja1105_fdb_add() and sja1105_fdb_del() did not have locking, I've
+  added and tested a locking scheme.
+
+Vladimir Oltean (9):
+  net: dsa: sja1105: wait for dynamic config command completion on
+    writes too
+  net: dsa: sja1105: serialize access to the dynamic config interface
+  net: mscc: ocelot: serialize access to the MAC table
+  net: dsa: b53: serialize access to the ARL table
+  net: dsa: lantiq_gswip: serialize access to the PCE table
+  net: dsa: introduce locking for the address lists on CPU and DSA ports
+  net: dsa: drop rtnl_lock from dsa_slave_switchdev_event_work
+  selftests: lib: forwarding: allow tests to not require mz and jq
+  selftests: net: dsa: add a stress test for unlocked FDB operations
+
+ MAINTAINERS                                   |  1 +
+ drivers/net/dsa/b53/b53_common.c              | 41 +++++++--
+ drivers/net/dsa/b53/b53_priv.h                |  1 +
+ drivers/net/dsa/lantiq_gswip.c                | 27 +++++-
+ drivers/net/dsa/sja1105/sja1105.h             |  2 +
+ .../net/dsa/sja1105/sja1105_dynamic_config.c  | 91 ++++++++++++++-----
+ drivers/net/dsa/sja1105/sja1105_main.c        |  1 +
+ drivers/net/ethernet/mscc/ocelot.c            | 53 ++++++++---
+ include/net/dsa.h                             |  1 +
+ include/soc/mscc/ocelot.h                     |  3 +
+ net/dsa/dsa2.c                                |  1 +
+ net/dsa/slave.c                               |  2 -
+ net/dsa/switch.c                              | 76 +++++++++++-----
+ .../drivers/net/dsa/test_bridge_fdb_stress.sh | 48 ++++++++++
+ tools/testing/selftests/net/forwarding/lib.sh | 10 +-
+ 15 files changed, 284 insertions(+), 74 deletions(-)
+ create mode 100755 tools/testing/selftests/drivers/net/dsa/test_bridge_fdb_stress.sh
+
 -- 
 2.25.1
 
