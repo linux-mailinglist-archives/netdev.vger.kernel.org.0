@@ -2,117 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D9EA437C65
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 20:01:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ABA2437C6F
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 20:06:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232936AbhJVSDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 14:03:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46080 "EHLO
+        id S233413AbhJVSJE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 14:09:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233508AbhJVSDO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 14:03:14 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13986C061764
-        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 11:00:57 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id ec8so4684262edb.6
-        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 11:00:57 -0700 (PDT)
+        with ESMTP id S233380AbhJVSJD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 14:09:03 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB011C061764
+        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 11:06:45 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id r2so4003934pgl.10
+        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 11:06:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=5pkW5lcLZcXID6UT1fXQnxupeGqAGQ+6dUXEtzTlTB4=;
-        b=l89j0FJBpv04W7NAzlvw0hjg0Cl7jgScz7XzT5S9TVBdgd8HAWlwYoiVdzhy28iy5U
-         9MjXiFbAyWMLRmaPoOf+clakSpQH/DRnGtPJkdApEIJ8oPVI6esyuHfkVzbfnIL1El3Q
-         t88dD/jA0Hpq9gb6b1mJpLdyEJ+CENlBGGqUej5FGsLC430O6fiZqnGXfxyh4pm0tVc1
-         vdNIjoGjocU4Lo1KQCNrYkoq2QGyePwxZAYzL7YeslfSsDvb3omXbLk/Q1DQyDVT++ik
-         GAUjrVuFOdSn3tqN5QnaVHnqIWtWNtq3+xAPaJ8Bd2gNAKWvPfbZzIsiogJyFGCw8ZJ3
-         xz/w==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Kst33Atxyziwhqg9ncbCIxRcKeHmtIkpqf40LNSwl1I=;
+        b=kCNqSInVgfuj9cxD3cp0i2tjS8NTMHA9/MpabODqMYf71e+Ygol2W1JRLe8iw0YMyY
+         +SIzQq2pZLEgCQ/x9vZIhyAunxCntEWlSvErEjSByVJ0iAEb65C6/EcbGtL0O0FvxcoP
+         fibbNGnB2xxZN7cUI9Eo57Ggoegw2NDsOgdUVLXni2mWUf507VIZEdo0/w8EzBlHTuqn
+         znWm5kOTLH68P/BayRqlW91ESM5F/bQuP/xqC20Yi99qkEDoeoPdDw1XCB4gecyDBZYV
+         tI031om2v/qM7Uqm15X5vk+at6rhAW+6hs7A9f4OHyeAUagPAjEDRLZubIjio9NJ8rJM
+         KzbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5pkW5lcLZcXID6UT1fXQnxupeGqAGQ+6dUXEtzTlTB4=;
-        b=gF/amjFqPFGn2+ZgOazclzmZAGAaXZtkYEtzMp+u6ViD4ZvXdPKOqYxM5XZaRMrmsP
-         iN/tfZQ300eQbZEf/qoWc7Wcna+lrInCr7bIH3EMTIMKWMESlTLjR5HNUV2ns0Ahyb24
-         U+Faz5jeofQIBp3GxvaVZR9abxWFtY1roj1GtzQpPpCK0qzy1xbiZwInV7sSN+vvn4yN
-         YZhbRV14GywdUUzqYiL3FIcF1DolvHeMDZpBK7vA36f6iCpLbsouaxKdn+iVb9XImLpA
-         twc0o65vNdeq/vu/VejbQMpmI62wCjUDSE9PPH3qxaHA4btivmFK9aIaCnDPg4WOB+Ei
-         ZCOQ==
-X-Gm-Message-State: AOAM533BECEactFlB7Kvr4JOvqjPU1AnhCb393peZ1pz3fcqfOAJiKeV
-        uFHz0qyURFTOuDmNwRKVqX8=
-X-Google-Smtp-Source: ABdhPJy2zyevuNGYJvTN0H0mLX7D6WhxATw3l58i54eO2vCnxotLyO4Rd9/cEi8tvEaXSoEzwQMOtQ==
-X-Received: by 2002:aa7:cd99:: with SMTP id x25mr1968715edv.266.1634925655568;
-        Fri, 22 Oct 2021 11:00:55 -0700 (PDT)
-Received: from skbuf ([188.25.174.251])
-        by smtp.gmail.com with ESMTPSA id h10sm4890656edk.41.2021.10.22.11.00.54
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Kst33Atxyziwhqg9ncbCIxRcKeHmtIkpqf40LNSwl1I=;
+        b=CWM8Eeflu0mXgqydVJjkrj0GLc6whG4KfiKlabAH0P9yL7OR0t640x5FhkZUIXhfel
+         tYe+Ro8nUVJlBRO87bhTzwNG7rH9PDEOWx/dpCsbEmsCjoLqIeXQK3GybMaT4ZxpfH1Q
+         1djCateRYv7Rb1K446tPKgwV4kapRxPmISY9VUmQDZqVBjGbZccr7cqSkquGc6QdEaJQ
+         8MbMbY6ttyJ3VS4ZNWg8Z3vWXEHFzKxhT/bcTMylTV8KmpA+xCxvH88Lz5AZCfIyYR7n
+         27M/E/KUXblFwfSLj1MgjTZnE2dJ1fB1wDj5PtJal5+ZHBJ/u8lbXnB64Kr0kdjqjD2M
+         CN+w==
+X-Gm-Message-State: AOAM530jH2aL/PnuCW4CFk8MoSG0GmP70RH8d5ydkoLCu+EOvxl3oqyJ
+        5XBN+yT63o57dAbfpf66TIEZSHObEXxAVg==
+X-Google-Smtp-Source: ABdhPJys7vCfziMrQkkJUIP6gJh/LAh3WKIPbb58pG6/uTgHwPger4XyyzfzYfS9wlBR++dCkzJYgQ==
+X-Received: by 2002:a63:7247:: with SMTP id c7mr908654pgn.365.1634926005075;
+        Fri, 22 Oct 2021 11:06:45 -0700 (PDT)
+Received: from localhost.localdomain ([50.39.163.188])
+        by smtp.gmail.com with ESMTPSA id a3sm11912576pfv.174.2021.10.22.11.06.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Oct 2021 11:00:55 -0700 (PDT)
-Date:   Fri, 22 Oct 2021 21:00:52 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        UNGLinuxDriver@microchip.com, DENG Qingfang <dqfext@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Aleksander Jan Bajkowski <olek2@wp.pl>,
-        Egil Hjelmeland <privat@egil-hjelmeland.no>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Prasanna Vengateshan <prasanna.vengateshan@microchip.com>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>
-Subject: Re: [PATCH v3 net-next 3/9] net: mscc: ocelot: serialize access to
- the MAC table
-Message-ID: <20211022180052.5dqafsdv7sa2bckw@skbuf>
-References: <20211022172728.2379321-1-vladimir.oltean@nxp.com>
- <20211022172728.2379321-4-vladimir.oltean@nxp.com>
- <9628072d-612a-ec6f-ce18-03c7f95ad5dd@gmail.com>
+        Fri, 22 Oct 2021 11:06:44 -0700 (PDT)
+From:   James Prestwood <prestwoj@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     James Prestwood <prestwoj@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Tong Zhu <zhutong@amazon.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jouni Malinen <jouni@codeaurora.org>
+Subject: [PATCH v6 0/3] Make neighbor eviction controllable by userspace
+Date:   Fri, 22 Oct 2021 11:00:55 -0700
+Message-Id: <20211022180058.1045776-1-prestwoj@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9628072d-612a-ec6f-ce18-03c7f95ad5dd@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 22, 2021 at 10:34:04AM -0700, Florian Fainelli wrote:
-> On 10/22/21 10:27 AM, Vladimir Oltean wrote:
-> > DSA would like to remove the rtnl_lock from its
-> > SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE handlers, and the felix driver uses
-> > the same MAC table functions as ocelot.
-> > 
-> > This means that the MAC table functions will no longer be implicitly
-> > serialized with respect to each other by the rtnl_mutex, we need to add
-> > a dedicated lock in ocelot for the non-atomic operations of selecting a
-> > MAC table row, reading/writing what we want and polling for completion.
-> > 
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > ---
-> >  drivers/net/ethernet/mscc/ocelot.c | 53 +++++++++++++++++++++++-------
-> >  include/soc/mscc/ocelot.h          |  3 ++
-> >  2 files changed, 44 insertions(+), 12 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-> > index 4e5ae687d2e2..72925529b27c 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot.c
-> > +++ b/drivers/net/ethernet/mscc/ocelot.c
-> > @@ -20,11 +20,13 @@ struct ocelot_mact_entry {
-> >  	enum macaccess_entry_type type;
-> >  };
-> >  
-> > +/* Must be called with &ocelot->mact_lock held */
-> 
-> I don't know if the sparse annotations: __must_hold() would work here,
-> but if they do, they serve as both comment and static verification,
-> might as well use them?
+v1 -> v2:
 
-I've never come across that annotation before, thanks.
-I'll fix this and the other issue and resend once the build tests for
-this series finish.
+ - It was suggested by Daniel Borkmann to extend the neighbor table settings
+   rather than adding IPv4/IPv6 options for ARP/NDISC separately. I agree
+   this way is much more concise since there is now only one place where the
+   option is checked and defined.
+ - Moved documentation/code into the same patch
+ - Explained in more detail the test scenario and results
+
+v2 -> v3:
+
+ - Renamed 'skip_perm' to 'nocarrier'. The way this parameter is used
+   matches this naming.
+ - Changed logic to still flush if 'nocarrier' is false.
+
+v3 -> v4:
+
+ - Moved NDTPA_EVICT_NOCARRIER after NDTPA_PAD
+
+v4 -> v5:
+
+ - Went back to the original v1 patchset and changed:
+ - Used ANDCONF for IN_DEV macro
+ - Got RCU lock prior to __in_dev_get_rcu(). Do note that the logic
+   here was extended to handle if __in_dev_get_rcu() fails. If this
+   happens the existing behavior should be maintained and set the
+   carrier down. I'm unsure if get_rcu() can fail in this context
+   though. Similar logic was used for in6_dev_get.
+ - Changed ndisc_evict_nocarrier to use a u8, proper handler, and
+   set min/max values.
+
+v5 -> v6
+
+ - Added selftests for both sysctl options
+ - (arp) Used __in_dev_get_rtnl rather than getting the rcu lock
+ - (ndisc) Added in6_dev_put
+ - (ndisc) Check 'all' option as well as device specific
+
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc: David Ahern <dsahern@kernel.org>
+Cc: Roopa Prabhu <roopa@nvidia.com>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc: Ido Schimmel <idosch@nvidia.com>
+Cc: Nikolay Aleksandrov <nikolay@nvidia.com>
+Cc: Yajun Deng <yajun.deng@linux.dev>
+Cc: Tong Zhu <zhutong@amazon.com>
+Cc: Johannes Berg <johannes@sipsolutions.net>
+Cc: Jouni Malinen <jouni@codeaurora.org>
+
+James Prestwood (3):
+  net: arp: introduce arp_evict_nocarrier sysctl parameter
+  net: ndisc: introduce ndisc_evict_nocarrier sysctl parameter
+  selftests: net: add arp_ndisc_evict_nocarrier
+
+ Documentation/networking/ip-sysctl.rst        |  18 ++
+ include/linux/inetdevice.h                    |   2 +
+ include/linux/ipv6.h                          |   1 +
+ include/uapi/linux/ip.h                       |   1 +
+ include/uapi/linux/ipv6.h                     |   1 +
+ include/uapi/linux/sysctl.h                   |   1 +
+ net/ipv4/arp.c                                |  11 +-
+ net/ipv4/devinet.c                            |   4 +
+ net/ipv6/addrconf.c                           |  12 ++
+ net/ipv6/ndisc.c                              |  12 +-
+ .../net/arp_ndisc_evict_nocarrier.sh          | 181 ++++++++++++++++++
+ 11 files changed, 242 insertions(+), 2 deletions(-)
+ create mode 100755 tools/testing/selftests/net/arp_ndisc_evict_nocarrier.sh
+
+-- 
+2.31.1
+
