@@ -2,34 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00C35437C51
+	by mail.lfdr.de (Postfix) with ESMTP id 6C9C4437C52
 	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 19:55:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233937AbhJVR6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 13:58:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48184 "EHLO mail.kernel.org"
+        id S233941AbhJVR6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 13:58:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48198 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233901AbhJVR6G (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233819AbhJVR6G (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 22 Oct 2021 13:58:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9325661371;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E406361374;
         Fri, 22 Oct 2021 17:55:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634925348;
-        bh=KcKBNLfbCfbtFE0C0qkwoVRS6kdQoaVuFNTo+tLxiH8=;
+        s=k20201202; t=1634925349;
+        bh=KGX3YvwR7bEltMniLsB8vGKOmRwopAe0MZ/Rwh0yQZ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nHxnFYVP4U/Eh0jTQzsKmKi4CjmfjU90Kh/ap6LncBOu1j+mVSotu9g+Mo1ADk9vC
-         fE/cofSSTC5ZsMb3hT6IMiZ+p7v+RkT9WHV9kZDud35GdTC+widktHzIax/AVliM0j
-         zi3ptIEUVqktJ3qVl+mkvN8WwaOzS69tBEEK79eHGKIrqsENnJBZeRHPEFx/ano44m
-         5htT1M9bayXxy3cST8Od/cp50DplMpKb23GiNr9ZPs0kyrab4GO/jB+7cLf8+3uGT8
-         rOz4GJacQfWloFy4kv1lE8V7Wf3YlmUUDPRW1tz2Z9gjlgLq4OL2pYWgKrimregilw
-         s2g8/Wkk+1a1Q==
+        b=qf3Voz223Xba15rkbjrHoYKo/oVtpzuEP8jK4jBJk0sCLDLEHqaXTfoqffyehX96E
+         qFPKOcJ4HM8PD2Lu3BFywuI0bSDUUcDkVM9LZFXVvHbV4F8dP45w+3KDATDh5Jtoun
+         UAHKYQRSWuE1V+iZ/mTgt3gPIZviWhs4I/q/VFpqsXqaxvk87JPEiEKjmAv3KE71P7
+         QAoyRGbdZ2x5kjqnUULHvk3jpHTNW3KY65ieEllEKh24YrcZL/xAtwhgjVHZP31Qss
+         hc9gm+xToshVZa3o+GV+Jkja5aQe83HISLHuILxsyvA/ms5SfsX7Vtf2MoUkQdNe4d
+         mJuTPsHwkd0EA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        doshir@vmware.com, pv-drivers@vmware.com
-Subject: [PATCH net-next 7/8] net: drivers: get ready for const netdev->dev_addr
-Date:   Fri, 22 Oct 2021 10:55:42 -0700
-Message-Id: <20211022175543.2518732-8-kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 8/8] net: atm: use address setting helpers
+Date:   Fri, 22 Oct 2021 10:55:43 -0700
+Message-Id: <20211022175543.2518732-9-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211022175543.2518732-1-kuba@kernel.org>
 References: <20211022175543.2518732-1-kuba@kernel.org>
@@ -39,73 +38,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
-of VLANs...") introduced a rbtree for faster Ethernet address look
-up. To maintain netdev->dev_addr in this tree we need to make all
-the writes to it got through appropriate helpers. We will make
-netdev->dev_addr a const.
-
-Make sure local references to netdev->dev_addr are constant.
+Get it ready for constant netdev->dev_addr.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: doshir@vmware.com
-CC: pv-drivers@vmware.com
----
- drivers/net/macsec.c              | 2 +-
- drivers/net/macvlan.c             | 3 ++-
- drivers/net/vmxnet3/vmxnet3_drv.c | 4 ++--
- 3 files changed, 5 insertions(+), 4 deletions(-)
+ net/atm/br2684.c | 4 +++-
+ net/atm/lec.c    | 5 ++---
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 18b6dba9394e..16aa3a478e9e 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -250,7 +250,7 @@ static bool send_sci(const struct macsec_secy *secy)
- 		(secy->n_rx_sc > 1 && !tx_sc->end_station && !tx_sc->scb);
- }
+diff --git a/net/atm/br2684.c b/net/atm/br2684.c
+index 11854fde52db..f666f2f98ba5 100644
+--- a/net/atm/br2684.c
++++ b/net/atm/br2684.c
+@@ -577,10 +577,12 @@ static int br2684_regvcc(struct atm_vcc *atmvcc, void __user * arg)
+ 	pr_debug("vcc=%p, encaps=%d, brvcc=%p\n", atmvcc, be.encaps, brvcc);
+ 	if (list_empty(&brdev->brvccs) && !brdev->mac_was_set) {
+ 		unsigned char *esi = atmvcc->dev->esi;
++		const u8 one = 1;
++
+ 		if (esi[0] | esi[1] | esi[2] | esi[3] | esi[4] | esi[5])
+ 			dev_addr_set(net_dev, esi);
+ 		else
+-			net_dev->dev_addr[2] = 1;
++			dev_addr_mod(net_dev, 2, &one, 1);
+ 	}
+ 	list_add(&brvcc->brvccs, &brdev->brvccs);
+ 	write_unlock_irq(&devs_lock);
+diff --git a/net/atm/lec.c b/net/atm/lec.c
+index 8eaea4a4bbd6..6257bf12e5a0 100644
+--- a/net/atm/lec.c
++++ b/net/atm/lec.c
+@@ -340,12 +340,12 @@ static int lec_close(struct net_device *dev)
  
--static sci_t make_sci(u8 *addr, __be16 port)
-+static sci_t make_sci(const u8 *addr, __be16 port)
+ static int lec_atm_send(struct atm_vcc *vcc, struct sk_buff *skb)
  {
- 	sci_t sci;
++	static const u8 zero_addr[ETH_ALEN] = {};
+ 	unsigned long flags;
+ 	struct net_device *dev = (struct net_device *)vcc->proto_data;
+ 	struct lec_priv *priv = netdev_priv(dev);
+ 	struct atmlec_msg *mesg;
+ 	struct lec_arp_table *entry;
+-	int i;
+ 	char *tmp;		/* FIXME */
  
-diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
-index 6189acb33973..d2f830ec2969 100644
---- a/drivers/net/macvlan.c
-+++ b/drivers/net/macvlan.c
-@@ -698,7 +698,8 @@ static int macvlan_stop(struct net_device *dev)
- 	return 0;
- }
- 
--static int macvlan_sync_address(struct net_device *dev, unsigned char *addr)
-+static int macvlan_sync_address(struct net_device *dev,
-+				const unsigned char *addr)
- {
- 	struct macvlan_dev *vlan = netdev_priv(dev);
- 	struct net_device *lowerdev = vlan->lowerdev;
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 7a205ddf0060..3e1b7746cce4 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -46,7 +46,7 @@ MODULE_DEVICE_TABLE(pci, vmxnet3_pciid_table);
- static int enable_mq = 1;
- 
- static void
--vmxnet3_write_mac_addr(struct vmxnet3_adapter *adapter, u8 *mac);
-+vmxnet3_write_mac_addr(struct vmxnet3_adapter *adapter, const u8 *mac);
- 
- /*
-  *    Enable/Disable the given intr
-@@ -2806,7 +2806,7 @@ vmxnet3_quiesce_dev(struct vmxnet3_adapter *adapter)
- 
- 
- static void
--vmxnet3_write_mac_addr(struct vmxnet3_adapter *adapter, u8 *mac)
-+vmxnet3_write_mac_addr(struct vmxnet3_adapter *adapter, const u8 *mac)
- {
- 	u32 tmp;
- 
+ 	WARN_ON(refcount_sub_and_test(skb->truesize, &sk_atm(vcc)->sk_wmem_alloc));
+@@ -358,8 +358,7 @@ static int lec_atm_send(struct atm_vcc *vcc, struct sk_buff *skb)
+ 		eth_hw_addr_set(dev, mesg->content.normal.mac_addr);
+ 		break;
+ 	case l_del_mac_addr:
+-		for (i = 0; i < 6; i++)
+-			dev->dev_addr[i] = 0;
++		eth_hw_addr_set(dev, zero_addr);
+ 		break;
+ 	case l_addr_delete:
+ 		lec_addr_delete(priv, mesg->content.normal.atm_addr,
 -- 
 2.31.1
 
