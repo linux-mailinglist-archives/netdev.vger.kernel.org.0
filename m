@@ -2,96 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9E96438096
-	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 01:21:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92FC04380A3
+	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 01:30:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232153AbhJVXXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 19:23:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40962 "EHLO mail.kernel.org"
+        id S232130AbhJVXc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 19:32:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44862 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231691AbhJVXX3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Oct 2021 19:23:29 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6C41961037;
-        Fri, 22 Oct 2021 23:21:11 +0000 (UTC)
+        id S230086AbhJVXc0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Oct 2021 19:32:26 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id C51FA61037;
+        Fri, 22 Oct 2021 23:30:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634944871;
-        bh=KGX3YvwR7bEltMniLsB8vGKOmRwopAe0MZ/Rwh0yQZ8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sw4yCrNif99JY/VYhXDLn4bJd/TgCUGNvBklAgovjt+k10EJRFg+b2ra/LdUDjqlE
-         EZsbIUi0Lj7SNwDAFTfAFybvXwF21wRDnn0T5ZmiIvCWFjebv2ntM7XmdbQFWZmGAY
-         lObbVM9AxIGixl2jRcGg5Apjwids0evorFzvVLrJ7xc+h8G7zRx8Qhigi8E9YZuAsl
-         ZyoNM0GvMQFBKJkpqC8kB5Pghv9QUX91MMBFeGyQbFHEXmDcQlct/Elxkf/onDc7Qw
-         J6ZXg8v0i0RTIjkn4n7wzEEHwvZd+o03KSOnnpIm/cgorQM1xw9JMuyd6H8dGpX82v
-         F9LhOFr3F2PFw==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 8/8] net: atm: use address setting helpers
-Date:   Fri, 22 Oct 2021 16:21:03 -0700
-Message-Id: <20211022232103.2715312-9-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211022232103.2715312-1-kuba@kernel.org>
-References: <20211022232103.2715312-1-kuba@kernel.org>
+        s=k20201202; t=1634945407;
+        bh=wCzLRSne1yFxq/2gRBYVkpE3tJsoqmF0PS7wnKEJiNU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=K7lS71kx9cfrQHFI/TqzS5SD6Ls+ejxqBoHbKSUkHNZ0OMO6jtVbvV68XAfxDb7db
+         Zxxo0zN3DwPmUnsM6AMn+53UfTOO0p5i14rRQyGibeDacuYLTsSBT2uI0QaBUIG3R1
+         tbVWeOv556/VD3P46niIuzdgHNbGH2glkxtPmZr8JjkS+7ooEyRboBD12btG4fS9If
+         +t19vu1ahZ8hm0h05GT7kBKNiEN6wRjjF3bnI8mAuGifIdqG1w1Yl6WoBnu/i6+JmU
+         6lwMC0up8Hve6olifqQkfMvuyVfBnk6tjfXY9pVqTG3baWjVgCvcBmxIqG/fBuiZRB
+         zuG7Fbc8San7w==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B7AF560A47;
+        Fri, 22 Oct 2021 23:30:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/4] Delete impossible devlink notifications
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163494540774.28829.5859060207065094181.git-patchwork-notify@kernel.org>
+Date:   Fri, 22 Oct 2021 23:30:07 +0000
+References: <cover.1634825474.git.leonro@nvidia.com>
+In-Reply-To: <cover.1634825474.git.leonro@nvidia.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, leonro@nvidia.com,
+        jiri@nvidia.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Get it ready for constant netdev->dev_addr.
+Hello:
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- net/atm/br2684.c | 4 +++-
- net/atm/lec.c    | 5 ++---
- 2 files changed, 5 insertions(+), 4 deletions(-)
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-diff --git a/net/atm/br2684.c b/net/atm/br2684.c
-index 11854fde52db..f666f2f98ba5 100644
---- a/net/atm/br2684.c
-+++ b/net/atm/br2684.c
-@@ -577,10 +577,12 @@ static int br2684_regvcc(struct atm_vcc *atmvcc, void __user * arg)
- 	pr_debug("vcc=%p, encaps=%d, brvcc=%p\n", atmvcc, be.encaps, brvcc);
- 	if (list_empty(&brdev->brvccs) && !brdev->mac_was_set) {
- 		unsigned char *esi = atmvcc->dev->esi;
-+		const u8 one = 1;
-+
- 		if (esi[0] | esi[1] | esi[2] | esi[3] | esi[4] | esi[5])
- 			dev_addr_set(net_dev, esi);
- 		else
--			net_dev->dev_addr[2] = 1;
-+			dev_addr_mod(net_dev, 2, &one, 1);
- 	}
- 	list_add(&brvcc->brvccs, &brdev->brvccs);
- 	write_unlock_irq(&devs_lock);
-diff --git a/net/atm/lec.c b/net/atm/lec.c
-index 8eaea4a4bbd6..6257bf12e5a0 100644
---- a/net/atm/lec.c
-+++ b/net/atm/lec.c
-@@ -340,12 +340,12 @@ static int lec_close(struct net_device *dev)
- 
- static int lec_atm_send(struct atm_vcc *vcc, struct sk_buff *skb)
- {
-+	static const u8 zero_addr[ETH_ALEN] = {};
- 	unsigned long flags;
- 	struct net_device *dev = (struct net_device *)vcc->proto_data;
- 	struct lec_priv *priv = netdev_priv(dev);
- 	struct atmlec_msg *mesg;
- 	struct lec_arp_table *entry;
--	int i;
- 	char *tmp;		/* FIXME */
- 
- 	WARN_ON(refcount_sub_and_test(skb->truesize, &sk_atm(vcc)->sk_wmem_alloc));
-@@ -358,8 +358,7 @@ static int lec_atm_send(struct atm_vcc *vcc, struct sk_buff *skb)
- 		eth_hw_addr_set(dev, mesg->content.normal.mac_addr);
- 		break;
- 	case l_del_mac_addr:
--		for (i = 0; i < 6; i++)
--			dev->dev_addr[i] = 0;
-+		eth_hw_addr_set(dev, zero_addr);
- 		break;
- 	case l_addr_delete:
- 		lec_addr_delete(priv, mesg->content.normal.atm_addr,
+On Thu, 21 Oct 2021 17:16:12 +0300 you wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> This series is a followup to the delayed devlink notification scheme.
+> 
+> I removed the impossible notifications together with attempt to annotate
+> various calls in order to mark them as pre/post devlink)register().
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,1/4] devlink: Delete obsolete parameters publish API
+    https://git.kernel.org/netdev/net-next/c/99ad92eff764
+  - [net-next,2/4] devlink: Remove not-executed trap policer notifications
+    https://git.kernel.org/netdev/net-next/c/22849b5ea595
+  - [net-next,3/4] devlink: Remove not-executed trap group notifications
+    https://git.kernel.org/netdev/net-next/c/8bbeed485823
+  - [net-next,4/4] devlink: Clean not-executed param notifications
+    https://git.kernel.org/netdev/net-next/c/7a690ad499e7
+
+You are awesome, thank you!
 -- 
-2.31.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
