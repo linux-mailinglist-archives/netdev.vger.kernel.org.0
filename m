@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC4AA4378E9
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 16:18:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 319E34378EA
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 16:18:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233069AbhJVOUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 10:20:14 -0400
+        id S233071AbhJVOUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 10:20:15 -0400
 Received: from mail-eopbgr60040.outbound.protection.outlook.com ([40.107.6.40]:37344
         "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232974AbhJVOUM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Oct 2021 10:20:12 -0400
+        id S232825AbhJVOUN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Oct 2021 10:20:13 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kJZQVa3tAYrgw1PA9ZiUz6dbg8dirIZf1p1J7tq8f/w63GLhN65jIIgCFrmiK9cVCfPiHjUZkY/QquxAOLZBx7NMMf2NCjIKEuO0qeUMD/x2ROQCRQjhA2NGs2/AGgyQN7E0QhQLfoHX4zMZGEZnfDz04goa1v1PD+SDxjDEIpNSqxhrscnxtfWVcgvsCUlQukCaEI2ozrS+WmJ7VcZJ8rFekgTkZw6q8vfJFeSV7ICiN4Ix7f7rEOjT9JKra8xfOLYIkiW5UnABMvBkCv35vktcsK8wakqEmCw3w/ri6ntLpW27M+4xt/A8YsxHYfYVXdhSKL5ehNagK8qvP2hvTw==
+ b=mOCWKtxuF9Vn7HkJ7ePO4SvnnzusI8T1ZiBYiQvNk/lpenUKCheZPUygAIF7k9sNMRf+EXH4wsU07skdKX3y87V5ezTOmt0DXFw54DrMkE3Ewu5q6lnLryWUMFhLZpYS0Nlnm/Yea8h6WMu+Bye+vg5DnYClOmA3IHThYu3Du2wSvNaiyb2mnckWR94VnDhK2u0rrOGRXYzEfuF6zsTCMUFovb/GWPNYN9JpzmXFHvJzxLtf1C8CyTgQFDSifntuAHQDKKuDWpn9dWtf6zYuWV3HGgu8b5kuak8+BSR7Bk8CHIv1prYEo0q8FqV4lqHfAVxpfAPt5n2872ZKKlco1g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ITOiY2f0G4/Q5EwGadBA2Pphs/9an4p9N8Qvna5SQdM=;
- b=THTDJK5zDz/u5WYHd/lUfQGxIcnQjKEHRWpRFEFxgP42XyzLuMpvR+kSMy7cyc0p7EgTe+EOB5NZkUgnqOuNnAk6wKGPzUU/OvZLxo7voJcIughgsSexmwIuxLFK6OIGo9BsAE5GsN+OW1955qPa4w0Wk4uTO6KlIZl9Yfl5HeauNs6+hqL4SpjQG3+Kj/Q/uibCG7SvJcSSPlmKiX5i1xUEIe7+i3QbDMDrd7+ufpcaklUYhliSJ2EQzDVmgefGJuQn59hwuX/FceF2N60331zO9NFLf9V7TS64U0T4zc7e8izgwBlIa+MKVDqs9kAQf+tXcJHlhqew4H0Jwt9RmQ==
+ bh=G8tuqUgp79V7Am++ArotmvPBOiP/B4srEdjqcUJtZYk=;
+ b=W+7jzfv5USMt7ATJMFRANbhcZWj404vutj4QYFbFNs8DlwbdDBR+3cZ5Usj1bW4w34n9muXwNAiXtOytyj6mShHSTtZPJMM0hgGUdu8DgaV6WNadyaWfLtrnjA2zmlbsj3U8zQrHZ19XpkVrr5OFGGy5vrl083LGB9yCx86IVdvhFf4eMvzBw5ObiE+7i/ErUt26mfHfbDRlZaiGcTw4qkdo3D2eE+jrcIJsoPmMBnkVTw+W132SLfzy4jbKGKkUNWnNpOaSYCg6BdlYd8JMTgcFS6rr2dyEvvRYdMNTc0vQPcI0/BiicDzoqjygJpauDNpK5TCxytidvG/R3K2mfQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ITOiY2f0G4/Q5EwGadBA2Pphs/9an4p9N8Qvna5SQdM=;
- b=eucEwo6xdXOduHjBXfSHXgBL3h8X1eGNvtFRObVeTJ3FiXirHdns+uHMxvsfDuRqGMuqvxSBG3D9bvmm9DiMfFM6tzoJXUDS2GeoBxi9e1+0QGd5v68Hr0Uz+MZRf5a1hmknHFYj/s1MEoCSjXxAxRQudOKiTdFf7X/C9v4LrM8=
+ bh=G8tuqUgp79V7Am++ArotmvPBOiP/B4srEdjqcUJtZYk=;
+ b=QcWgQd5rTSY0WrIwmrytna2kdpEjmzi1WQG6xPPLpQr2y9Eq4OmO/mucQr1zZayrnKqhBmXm+if+iOqnTrEcz1pedLRhkHTIWf4E33IyeMhieUhmgFjKocrUpa3DUkosI92OK8hep4xdU06mp1RUl4BymvsjnotKNkTTvKo4v5w=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR0402MB3406.eurprd04.prod.outlook.com (2603:10a6:803:c::27) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18; Fri, 22 Oct
- 2021 14:17:52 +0000
+ 2021 14:17:54 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4608.018; Fri, 22 Oct 2021
- 14:17:52 +0000
+ 14:17:54 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -58,9 +58,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Prasanna Vengateshan <prasanna.vengateshan@microchip.com>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>
-Subject: [PATCH v2 net-next 3/9] net: mscc: ocelot: serialize access to the MAC table
-Date:   Fri, 22 Oct 2021 17:16:10 +0300
-Message-Id: <20211022141616.2088304-4-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 4/9] net: dsa: b53: serialize access to the ARL table
+Date:   Fri, 22 Oct 2021 17:16:11 +0300
+Message-Id: <20211022141616.2088304-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211022141616.2088304-1-vladimir.oltean@nxp.com>
 References: <20211022141616.2088304-1-vladimir.oltean@nxp.com>
@@ -70,48 +70,48 @@ X-ClientProxiedBy: AM0PR02CA0159.eurprd02.prod.outlook.com
  (2603:10a6:20b:28d::26) To VI1PR04MB5136.eurprd04.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Received: from localhost.localdomain (188.25.174.251) by AM0PR02CA0159.eurprd02.prod.outlook.com (2603:10a6:20b:28d::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.16 via Frontend Transport; Fri, 22 Oct 2021 14:17:50 +0000
+Received: from localhost.localdomain (188.25.174.251) by AM0PR02CA0159.eurprd02.prod.outlook.com (2603:10a6:20b:28d::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.16 via Frontend Transport; Fri, 22 Oct 2021 14:17:52 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2546f02e-1e2f-4545-1883-08d99566bc03
+X-MS-Office365-Filtering-Correlation-Id: 856e81ee-d414-4207-82e2-08d99566bd16
 X-MS-TrafficTypeDiagnostic: VI1PR0402MB3406:
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB3406F13CC79CF72F87482147E0809@VI1PR0402MB3406.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB3406E5D2E389145B01F1D220E0809@VI1PR0402MB3406.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qi4QRouiIO73a2fTmjh1zUbNt6cdoVRnt04bhZoy0pe4TQqZChsOmxA0/kgTrddRWs6F8t73wvgPs2Q+5xqKBAuGoj69tGAaTzaZmiIgfAQI1GufDj3Tg+WaqpFzxwHKl/5PI8Xs9st/BMGZ3ch8D5EDrupDzNLjUOaWhmfIldDQMVztA0v5fn5Cs5YUKyKQK8+OF/hGU+nTJFu7R3VJYEmqusz6g/XZIPFjxSJrzxEDpWOekV/813ilCHYTJYT1JiatakqgoCdXLgj9lhlvddsL5szxm804erdRDnHq8R4Ycbhsd6FpxteNZ0A9wXqRRFopmiKl7t2jDOhjC53xhNQRM5kfCYvleL/zaEXefJfMOrl87MVXL27KAjSxQ250D219UYFSwE1D1bPXI2zPyNvhDPpdkdttNOpu+MGbeyB+cOS9fjjtZpL5BsSl9enl9LzC6fmFTYoXxBQx2AdaXrrApT+yqQDIZEk3+DJKTCyCnmvG26lqdIMtHKl6P5BGBCCQpy9gCkZJCAPuzTTUHV8E4DaNpByipPmwcZyT5cKjqBuzqrFqt3vuoWe3leIyKrBkjNu2CDIPCXP0TvG/ZqKskbDF5Bm7SNGizQnwJTy7qrbxASdq8S3HKaV/ixyk4UmTFs0+bQsRPXi/nbZxE0RfB8aJvvnwC2lqXvkV2qnDX4JLPVLvdYtm2Ebqo7kmDmGcS5eTqp593dJO8zBdeg==
+X-Microsoft-Antispam-Message-Info: a7OF++HiZJ91IIofPCfn7/r3/pIHVUY8Rl68+gcj/vrezxo8ZhWNoNebC2BlZUmCc99s6JqHOVkjQL2P2/1R0eqTHbd/zDjFTCClvEk9fY0cbSsWaSTEwn99kN9DxA72fxHQ48WDcMLp5e5ME+mSPLDRN8ctH1VeicYUJvLAgJ24dokOBszIllTWJGudjce1Q4t4Oiq7I7VK69POTML0UzsMjcAmKInPhvcTk/KtBd4gosmjVALWvzFJxKdAUeCMJD7UdSVunDWPR+mCoknHdJMRTi2sWF1iq1XtsBgbh0akQSON38D2JrRgVE39c5VhnOOGNOaMdhBkC4UfxCLZjwRWzuoTW3koLCaSS8EmdFkzb+eIcQgEI//1PtJs20WWR9N3mLvFxd1D9MpgrpPyWJ1/eg1xVAyhPLP3ElrgIgdnYLFWFOdVslMLQ7Yqq6hfZRA37SXOhmYNJSJFv/sp0vmB1C7tncMtbIXVqRXNCgar1Il/MJCOyXVpVMc3d/IoLA2zIqVF/rizB7kALnW6oIey6f0NVEpUqWbRR/k5De0+4KdKyx+PugOIvBrxnWKGciKmZHw6BR9NDFGEOcxgWnYRHlo3KWXMjwhQ+4mXaAHIOL4EaI91wHbR+wkeZGc0tE0oFlYg8qmgKy1Jt4yPw68ATioVzDbbDg75w5xVhre6IzOun0yRNuVKgKKevG5ZIrptqIsN6nbeouhV0NrIcQ==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(7416002)(8936002)(44832011)(38350700002)(6916009)(956004)(83380400001)(54906003)(66556008)(508600001)(66476007)(66946007)(6512007)(86362001)(4326008)(6486002)(52116002)(5660300002)(2616005)(316002)(6506007)(1076003)(8676002)(36756003)(2906002)(186003)(38100700002)(26005)(6666004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Y+1a1pOvKyBzeorXgehK+jvOtZq9OomwzUGG+fyo504BhFk7jy0f7yZUZ8S6?=
- =?us-ascii?Q?mNOJhKnNJ4j450V2zf5U+y2OcPb1mVTjb87zemUuu2XPEzmOEs+0q3SbRL4a?=
- =?us-ascii?Q?1nRhsnGcC7V8Li9UV8kEy8X+kbu1SW5hyK460629SW4MA7k4qHirc/y5/2K3?=
- =?us-ascii?Q?iYXxKtC9Px/bmI2ZGll4/didwi7ujo0oqQs2I3H8WC7WR/kFmVf2acJRmVDZ?=
- =?us-ascii?Q?nPc2oZAkfMEO/hMnPFxp5le2DYtZCxV3dP539uzYugliE5GEL3M2BMITTD3x?=
- =?us-ascii?Q?A3i+aM0Gq91txawlIF6cN6jtQZIvFQKqdGSheG48TsvmeKF93tN/XXnHTzbb?=
- =?us-ascii?Q?W6g6wWH6kjcGmJ0n49drKufJx4uItJu+vcFBTRqe9uArgJJS5TMkLS3OMZzF?=
- =?us-ascii?Q?oRBvjqah7D9ojo25XCgDHUuTZIhgk02hha2cZ2f9hvfFHf/QyfheInmb5PHr?=
- =?us-ascii?Q?+Hw7oN8DyRLchD5ECV87McWRY/pAA2y1R3X/v+N3alN9vXBg6xIqrKlKjD9A?=
- =?us-ascii?Q?/YuktJnM3CIXMsf18WAfo8stuON3kgbsrOJYwrSyd4xGmgXbID23Qaa27+Zj?=
- =?us-ascii?Q?tdh6EKPQHUIow653agei1FV3ve1D7OeROfomGYy5kEf5oVffLAeNPOGhO5OE?=
- =?us-ascii?Q?HO9peh73rw8hBxUw5WlDvLsinzZf9/o37fQ1oomISvyoxL9xkqmhbQJdOqXa?=
- =?us-ascii?Q?s1CvEXJT9LLRqzOevjvK8w0RZYNZ1FiB15CDMoHl/XRf5y2LDjT4KrWzmG2V?=
- =?us-ascii?Q?GHFaUPaKmc8ZbjRTzGLld9kC5oDW/ajkOW/8J0e9coTApITDATzboVpreVCJ?=
- =?us-ascii?Q?Uanhq9VQXEcBAKrksT/ncpdgsgdKzuVfmZ1z6sFXuv+mAwffmeH+ejbiGcs7?=
- =?us-ascii?Q?76VrxuloZ+A97gDD7IU6hEiC+4aj9yRcSotBXg8KWU5S95iepF/CQpv1qYdy?=
- =?us-ascii?Q?NO2bqPIFsUpiuHdebNGvsBqVlPOF966XplLbX0finQQ9rJd4C9xocOEQbUs9?=
- =?us-ascii?Q?zicFTYpB4MRjdojBW1c+2LMaEZ2aB1iidJpLZmxFcljfnXi1QJvgjG4DlaVx?=
- =?us-ascii?Q?sHmdfAQIHOc6F8vEOIgLlcPAvtRa0a6Jo9Z4SVKpOP8cNlUGk7rwWg2/ve96?=
- =?us-ascii?Q?r2HSnzED5Dx6Wi9gepjHgEdC171BwClojGVm6v30tMF8GCulBN7UXJh2MX/t?=
- =?us-ascii?Q?O8eJT/L5unHVqfFzbRq3qSpOl9MvRLFuQYLOXikv508GUYchw/oCN63Iqa/6?=
- =?us-ascii?Q?8k9rZGr1dlNbgAxNIKxKr/BDDl9bGJ7oEe6RsrkKpwghpUHpXxFg5k6hSwju?=
- =?us-ascii?Q?I2cLAzy134K+z8kWQMlO7PHgMOOcyFr3NrUGTtAlKJYVpwsYXsvwVlYrm2nD?=
- =?us-ascii?Q?ey22Gp5idPbkPamMFih814GdZxTgOywkGIagcbsMcO9cFgakaazQ0MJp4wTw?=
- =?us-ascii?Q?dPQFuVm2BDRd3xqkNWh9mzw4U4MilwXn?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PtEFbFmjsGX9f4HgE5/+7bfA8aRr0Mdi543N2K8Z7ppvp1Xz5Idy10do92Jg?=
+ =?us-ascii?Q?ny6dCTuPQAZxZxaB+6pKBl3i20KU55hVEJXFb8GbKxvEPFKy2UO0YFjQFfhA?=
+ =?us-ascii?Q?xwAH9mw34xmSSbjfjofo5iCFWZnbPdVYIqU2tspJ7W3Jk+lwOMl9iaGei+KN?=
+ =?us-ascii?Q?zYjFFtlN4dW9TBnwhkdr+iH7NLd3Cs+Hku+SJV5DGVqi/uWmiwjlIJj3dkox?=
+ =?us-ascii?Q?Gptn0VChE7zv+EJAUXPP+S/rRzbSBGJS6D3gcZmUpR527OXxkpics3l+11uZ?=
+ =?us-ascii?Q?sJuEOe9EAOaGFErBHyJlu8EnmJklrw4wd28GLGEBqRl+LooCLU5QswqpEwHN?=
+ =?us-ascii?Q?QQQFInjiXODDYzpZJs+ZA89rWSc0THmfMAAVpnN/NjicRInIChtr1F2ciE72?=
+ =?us-ascii?Q?Hng2oxP7nqMgLN0Zu+SSTlqFOnU83p7bmMJ5KS8C9bbMtW44pBUzVC3mC73u?=
+ =?us-ascii?Q?AECdkIcDXDAIk2U4D0DlcW+XnxcjGstNbrFddy57gl2aOXZoeW9I/+GMOONT?=
+ =?us-ascii?Q?ZYazvI9K6dQPYmmDGhCgwXbWZpwt70GvtZHH+ToiJsDS8kNDdAeqg4K+5BpD?=
+ =?us-ascii?Q?+eMD5OoeKM/VHRAPPTuuRQCc5+ZRFl9Gzsac4OGeO3hcSh8wWvpfy3DUk7i8?=
+ =?us-ascii?Q?V3m2uzo1xDYEDj5fa6g3jB4aX3Yi2oj36Z2zuBw+cSB+EClzxP9jRhHAPNuV?=
+ =?us-ascii?Q?FQtJxoqemVzdVFxzUAWE0gYCupzuF/2oy07fCRgZGcsFVK7qsE37ZFQ3P67e?=
+ =?us-ascii?Q?Hrz+UdKY9WCvDAJS1H9quLKeRJC8X8qqLAzgluXexfxaeGmDjziefTVXtexz?=
+ =?us-ascii?Q?ybvUPeM7exeirQKtvWO5BdHuZNyv6y8TxYk+CHxplnIwQO2ll8IILQc43vn6?=
+ =?us-ascii?Q?H0sUP1SNrQwwgLHE4ZWHArrsdJ8njFy/2mewsCBfojO/FV/xw/MbY4mtD8e2?=
+ =?us-ascii?Q?zgx8LN5WHiBtNyMkhLnDhdRZNQJcyptwGDxO4cGHVGpHSfFOE43wXlkjsrgs?=
+ =?us-ascii?Q?64GRfSAlLDE6CLki2YHgPIhEs+GLK7AEkgibSo4ybUQPLTxA1VD1Ii7CfmKR?=
+ =?us-ascii?Q?kVF0aFa4d1gwaUpwpV0L4o/VLF4XgTXY/TyUtoWMwHFXELNzjS1eV9mBLR1Z?=
+ =?us-ascii?Q?4F3u9qIlx9ydGHed6r4DTglpD8vHYlLORyYH1mpzS95Q9UV+VUi3XokFHA6j?=
+ =?us-ascii?Q?oX15GkTDtuGu3ftA7qPd1IbFMYbS3ihqTIsW6vx/5hv9fpqg5JV3JAQ6Fu1D?=
+ =?us-ascii?Q?f4aqCHlmMBuEw7KtHBeN2tmNfRomhkx0G/UFAO7APQEoV7yHI2R4uj2xWw98?=
+ =?us-ascii?Q?qbq092xgrdc7011ZshZDL7lUY4CXK2RXL3B89rAinDXVFKHSnvfevnZeWdci?=
+ =?us-ascii?Q?nIKoc4viHJ68P4NsYcteAD9sn3eAoRdm+uYsux9PoCI4esnnQbcOKuKPP+2A?=
+ =?us-ascii?Q?0V/d8IjVf9JVbzIzinZ/ne0sCeSCh5jn?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2546f02e-1e2f-4545-1883-08d99566bc03
+X-MS-Exchange-CrossTenant-Network-Message-Id: 856e81ee-d414-4207-82e2-08d99566bd16
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2021 14:17:52.4587
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2021 14:17:54.2437
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
@@ -122,189 +122,168 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DSA would like to remove the rtnl_lock from its
-SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE handlers, and the felix driver uses
-the same MAC table functions as ocelot.
+The b53 driver performs non-atomic transactions to the ARL table when
+adding, deleting and reading FDB and MDB entries.
 
-This means that the MAC table functions will no longer be implicitly
-serialized with respect to each other by the rtnl_mutex, we need to add
-a dedicated lock in ocelot for the non-atomic operations of selecting a
-MAC table row, reading/writing what we want and polling for completion.
+Traditionally these were all serialized by the rtnl_lock(), but now it
+is possible that DSA calls ->port_fdb_add and ->port_fdb_del without
+holding that lock.
+
+So the driver must have its own serialization logic. Add a mutex and
+hold it from all entry points (->port_fdb_{add,del,dump},
+->port_mdb_{add,del}).
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/mscc/ocelot.c | 53 +++++++++++++++++++++++-------
- include/soc/mscc/ocelot.h          |  3 ++
- 2 files changed, 44 insertions(+), 12 deletions(-)
+ drivers/net/dsa/b53/b53_common.c | 41 +++++++++++++++++++++++++++-----
+ drivers/net/dsa/b53/b53_priv.h   |  1 +
+ 2 files changed, 36 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 4e5ae687d2e2..72925529b27c 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -20,11 +20,13 @@ struct ocelot_mact_entry {
- 	enum macaccess_entry_type type;
- };
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index 06279ba64cc8..22a6e3934a6f 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -1630,6 +1630,7 @@ static int b53_arl_read(struct b53_device *dev, u64 mac,
+ 	return -ENOENT;
+ }
  
-+/* Must be called with &ocelot->mact_lock held */
- static inline u32 ocelot_mact_read_macaccess(struct ocelot *ocelot)
++/* Caller must hold &dev->arl_mutex */
+ static int b53_arl_op(struct b53_device *dev, int op, int port,
+ 		      const unsigned char *addr, u16 vid, bool is_valid)
  {
- 	return ocelot_read(ocelot, ANA_TABLES_MACACCESS);
- }
- 
-+/* Must be called with &ocelot->mact_lock held */
- static inline int ocelot_mact_wait_for_completion(struct ocelot *ocelot)
+@@ -1709,6 +1710,7 @@ int b53_fdb_add(struct dsa_switch *ds, int port,
+ 		const unsigned char *addr, u16 vid)
  {
- 	u32 val;
-@@ -36,6 +38,7 @@ static inline int ocelot_mact_wait_for_completion(struct ocelot *ocelot)
- 		TABLE_UPDATE_SLEEP_US, TABLE_UPDATE_TIMEOUT_US);
+ 	struct b53_device *priv = ds->priv;
++	int ret;
+ 
+ 	/* 5325 and 5365 require some more massaging, but could
+ 	 * be supported eventually
+@@ -1716,7 +1718,11 @@ int b53_fdb_add(struct dsa_switch *ds, int port,
+ 	if (is5325(priv) || is5365(priv))
+ 		return -EOPNOTSUPP;
+ 
+-	return b53_arl_op(priv, 0, port, addr, vid, true);
++	mutex_lock(&priv->arl_mutex);
++	ret = b53_arl_op(priv, 0, port, addr, vid, true);
++	mutex_unlock(&priv->arl_mutex);
++
++	return ret;
  }
+ EXPORT_SYMBOL(b53_fdb_add);
  
-+/* Must be called with &ocelot->mact_lock held */
- static void ocelot_mact_select(struct ocelot *ocelot,
- 			       const unsigned char mac[ETH_ALEN],
- 			       unsigned int vid)
-@@ -67,6 +70,7 @@ int ocelot_mact_learn(struct ocelot *ocelot, int port,
- 		ANA_TABLES_MACACCESS_ENTRYTYPE(type) |
- 		ANA_TABLES_MACACCESS_MAC_TABLE_CMD(MACACCESS_CMD_LEARN);
- 	unsigned int mc_ports;
-+	int err;
- 
- 	/* Set MAC_CPU_COPY if the CPU port is used by a multicast entry */
- 	if (type == ENTRYTYPE_MACv4)
-@@ -79,18 +83,28 @@ int ocelot_mact_learn(struct ocelot *ocelot, int port,
- 	if (mc_ports & BIT(ocelot->num_phys_ports))
- 		cmd |= ANA_TABLES_MACACCESS_MAC_CPU_COPY;
- 
-+	mutex_lock(&ocelot->mact_lock);
-+
- 	ocelot_mact_select(ocelot, mac, vid);
- 
- 	/* Issue a write command */
- 	ocelot_write(ocelot, cmd, ANA_TABLES_MACACCESS);
- 
--	return ocelot_mact_wait_for_completion(ocelot);
-+	err = ocelot_mact_wait_for_completion(ocelot);
-+
-+	mutex_unlock(&ocelot->mact_lock);
-+
-+	return err;
- }
- EXPORT_SYMBOL(ocelot_mact_learn);
- 
- int ocelot_mact_forget(struct ocelot *ocelot,
- 		       const unsigned char mac[ETH_ALEN], unsigned int vid)
+@@ -1724,8 +1730,13 @@ int b53_fdb_del(struct dsa_switch *ds, int port,
+ 		const unsigned char *addr, u16 vid)
  {
-+	int err;
-+
-+	mutex_lock(&ocelot->mact_lock);
-+
- 	ocelot_mact_select(ocelot, mac, vid);
+ 	struct b53_device *priv = ds->priv;
++	int ret;
  
- 	/* Issue a forget command */
-@@ -98,7 +112,11 @@ int ocelot_mact_forget(struct ocelot *ocelot,
- 		     ANA_TABLES_MACACCESS_MAC_TABLE_CMD(MACACCESS_CMD_FORGET),
- 		     ANA_TABLES_MACACCESS);
- 
--	return ocelot_mact_wait_for_completion(ocelot);
-+	err = ocelot_mact_wait_for_completion(ocelot);
+-	return b53_arl_op(priv, 0, port, addr, vid, false);
++	mutex_lock(&priv->arl_mutex);
++	ret = b53_arl_op(priv, 0, port, addr, vid, false);
++	mutex_unlock(&priv->arl_mutex);
 +
-+	mutex_unlock(&ocelot->mact_lock);
-+
-+	return err;
++	return ret;
  }
- EXPORT_SYMBOL(ocelot_mact_forget);
+ EXPORT_SYMBOL(b53_fdb_del);
  
-@@ -114,7 +132,9 @@ static void ocelot_mact_init(struct ocelot *ocelot)
- 		   | ANA_AGENCTRL_LEARN_IGNORE_VLAN,
- 		   ANA_AGENCTRL);
+@@ -1782,25 +1793,33 @@ int b53_fdb_dump(struct dsa_switch *ds, int port,
+ 	int ret;
+ 	u8 reg;
  
--	/* Clear the MAC table */
-+	/* Clear the MAC table. We are not concurrent with anyone, so
-+	 * holding &ocelot->mact_lock is pointless.
-+	 */
- 	ocelot_write(ocelot, MACACCESS_CMD_INIT, ANA_TABLES_MACACCESS);
- }
- 
-@@ -1170,6 +1190,7 @@ int ocelot_port_fdb_do_dump(const unsigned char *addr, u16 vid,
- }
- EXPORT_SYMBOL(ocelot_port_fdb_do_dump);
- 
-+/* Must be called with &ocelot->mact_lock held */
- static int ocelot_mact_read(struct ocelot *ocelot, int port, int row, int col,
- 			    struct ocelot_mact_entry *entry)
- {
-@@ -1220,33 +1241,40 @@ static int ocelot_mact_read(struct ocelot *ocelot, int port, int row, int col,
- int ocelot_fdb_dump(struct ocelot *ocelot, int port,
- 		    dsa_fdb_dump_cb_t *cb, void *data)
- {
-+	int err = 0;
- 	int i, j;
- 
-+	/* We could take the lock just around ocelot_mact_read, but doing so
-+	 * thousands of times in a row seems rather pointless and inefficient.
-+	 */
-+	mutex_lock(&ocelot->mact_lock);
++	mutex_lock(&priv->arl_mutex);
 +
- 	/* Loop through all the mac tables entries. */
- 	for (i = 0; i < ocelot->num_mact_rows; i++) {
- 		for (j = 0; j < 4; j++) {
- 			struct ocelot_mact_entry entry;
- 			bool is_static;
--			int ret;
+ 	/* Start search operation */
+ 	reg = ARL_SRCH_STDN;
+ 	b53_write8(priv, B53_ARLIO_PAGE, B53_ARL_SRCH_CTL, reg);
  
--			ret = ocelot_mact_read(ocelot, port, i, j, &entry);
-+			err = ocelot_mact_read(ocelot, port, i, j, &entry);
- 			/* If the entry is invalid (wrong port, invalid...),
- 			 * skip it.
- 			 */
--			if (ret == -EINVAL)
-+			if (err == -EINVAL)
- 				continue;
--			else if (ret)
--				return ret;
-+			else if (err)
-+				break;
+ 	do {
+ 		ret = b53_arl_search_wait(priv);
+-		if (ret)
++		if (ret) {
++			mutex_unlock(&priv->arl_mutex);
+ 			return ret;
++		}
  
- 			is_static = (entry.type == ENTRYTYPE_LOCKED);
+ 		b53_arl_search_rd(priv, 0, &results[0]);
+ 		ret = b53_fdb_copy(port, &results[0], cb, data);
+-		if (ret)
++		if (ret) {
++			mutex_unlock(&priv->arl_mutex);
+ 			return ret;
++		}
  
--			ret = cb(entry.mac, entry.vid, is_static, data);
+ 		if (priv->num_arl_bins > 2) {
+ 			b53_arl_search_rd(priv, 1, &results[1]);
+ 			ret = b53_fdb_copy(port, &results[1], cb, data);
 -			if (ret)
--				return ret;
-+			err = cb(entry.mac, entry.vid, is_static, data);
-+			if (err)
-+				break;
- 		}
- 	}
++			if (ret) {
++				mutex_unlock(&priv->arl_mutex);
+ 				return ret;
++			}
  
--	return 0;
-+	mutex_unlock(&ocelot->mact_lock);
+ 			if (!results[0].is_valid && !results[1].is_valid)
+ 				break;
+@@ -1808,6 +1827,8 @@ int b53_fdb_dump(struct dsa_switch *ds, int port,
+ 
+ 	} while (count++ < b53_max_arl_entries(priv) / 2);
+ 
++	mutex_unlock(&priv->arl_mutex);
 +
-+	return err;
+ 	return 0;
  }
- EXPORT_SYMBOL(ocelot_fdb_dump);
+ EXPORT_SYMBOL(b53_fdb_dump);
+@@ -1816,6 +1837,7 @@ int b53_mdb_add(struct dsa_switch *ds, int port,
+ 		const struct switchdev_obj_port_mdb *mdb)
+ {
+ 	struct b53_device *priv = ds->priv;
++	int ret;
  
-@@ -2231,6 +2259,7 @@ int ocelot_init(struct ocelot *ocelot)
+ 	/* 5325 and 5365 require some more massaging, but could
+ 	 * be supported eventually
+@@ -1823,7 +1845,11 @@ int b53_mdb_add(struct dsa_switch *ds, int port,
+ 	if (is5325(priv) || is5365(priv))
+ 		return -EOPNOTSUPP;
  
- 	mutex_init(&ocelot->stats_lock);
- 	mutex_init(&ocelot->ptp_lock);
-+	mutex_init(&ocelot->mact_lock);
- 	spin_lock_init(&ocelot->ptp_clock_lock);
- 	spin_lock_init(&ocelot->ts_id_lock);
- 	snprintf(queue_name, sizeof(queue_name), "%s-stats",
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index 9b872da0c246..fef3a36b0210 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -675,6 +675,9 @@ struct ocelot {
- 	struct delayed_work		stats_work;
- 	struct workqueue_struct		*stats_queue;
- 
-+	/* Lock for serializing access to the MAC table */
-+	struct mutex			mact_lock;
+-	return b53_arl_op(priv, 0, port, mdb->addr, mdb->vid, true);
++	mutex_lock(&priv->arl_mutex);
++	ret = b53_arl_op(priv, 0, port, mdb->addr, mdb->vid, true);
++	mutex_unlock(&priv->arl_mutex);
 +
- 	struct workqueue_struct		*owq;
++	return ret;
+ }
+ EXPORT_SYMBOL(b53_mdb_add);
  
- 	u8				ptp:1;
+@@ -1833,7 +1859,9 @@ int b53_mdb_del(struct dsa_switch *ds, int port,
+ 	struct b53_device *priv = ds->priv;
+ 	int ret;
+ 
++	mutex_lock(&priv->arl_mutex);
+ 	ret = b53_arl_op(priv, 0, port, mdb->addr, mdb->vid, false);
++	mutex_unlock(&priv->arl_mutex);
+ 	if (ret)
+ 		dev_err(ds->dev, "failed to delete MDB entry\n");
+ 
+@@ -2670,6 +2698,7 @@ struct b53_device *b53_switch_alloc(struct device *base,
+ 
+ 	mutex_init(&dev->reg_mutex);
+ 	mutex_init(&dev->stats_mutex);
++	mutex_init(&dev->arl_mutex);
+ 
+ 	return dev;
+ }
+diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
+index 544101e74bca..579da74ada64 100644
+--- a/drivers/net/dsa/b53/b53_priv.h
++++ b/drivers/net/dsa/b53/b53_priv.h
+@@ -107,6 +107,7 @@ struct b53_device {
+ 
+ 	struct mutex reg_mutex;
+ 	struct mutex stats_mutex;
++	struct mutex arl_mutex;
+ 	const struct b53_io_ops *ops;
+ 
+ 	/* chip specific data */
 -- 
 2.25.1
 
