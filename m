@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F1DB437B02
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 18:36:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF5D0437B04
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 18:36:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233543AbhJVQiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 12:38:21 -0400
+        id S229968AbhJVQiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 12:38:24 -0400
 Received: from mail-eopbgr140042.outbound.protection.outlook.com ([40.107.14.42]:5957
         "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229968AbhJVQiU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Oct 2021 12:38:20 -0400
+        id S233286AbhJVQiW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Oct 2021 12:38:22 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QyR88000TtF6L/qp+nYoD9DEq8hPChYP25S0yD1ilwp1kd7lhRqT34l7dFiR3EzMcpDShOEJ49Mx15KmKu9kjrDog/mAfbW2VuWI0p6e4LbrAfRHrglU6gBQLAgMXlf+K4uVvr9MYXEYw3IPajeiZoks1wnfzwc7ooM7IhdMVShA2eGgWjB+OiC7O6mVZZKA9MWV3ysFkRfeVfSz6iZ6t+BnBSceG3jovpwULvDdNIrVL60QYt+/sI0HG1y/nqHa0NSZyp9EgmwwopUqPGvSTM729sSW6asz2AEj0VIcFddWF02Dzfr0ex8lPDzL7h+Olp1uoz9FBcKTj/GQeblQ6g==
+ b=befMDD5MgoyG+sj1gvXenQzJPq5rUK1jvFn0zqBpGaaip+NgzjFefpM9RyGwUeTUL3ixHPrQcePnee3tmje0SB2Hx9IVwikEGNFTe4s4x2vNSfgeJLQCYidI/YDYwvgI8AHZAvSGRfg4NpbfNbxveU97Yi/fq9MMgEp1dsQQjBkzsAEICWUgOPQ9c/vRlmYdDN9WI9Z336lkc32ADtlibbIKA0P1RzcyKukBDEDCLGVvRbmFth3trpblmqESO9Mpfm1+VbQaerMhynClEFlQeuipl4ZLZ6DuxI5eOTGuMDTVoKFcM+fLdxh6v6P4jikzF1ualCnZER3w3iQXOhvxyw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8Y4tLCv3Y3CiM7gtJUwihWe+hjKK4/oPQp2dMCrg7bM=;
- b=OSebc0hBnGK04VCKIM55AAiwKughBbfml2arH7ezwvmcM5PGr8QykyjAUVKqebyWZZbg53+4rOwoqQhyxWbpR39yt1NMKFI7nTQUd0y8Yt0pp9XN4MdDyXM0iQD5YMoNm+e90uNdd7GOlGoYHaMtGkv4KVVK3Xq0M2Wzm1WX/PIKULmXDW1WiAKpiXZ8u6ShDeXbgDRWXQxjwegkXQ65cDMaSvCf+Qklmfyi0Vei6e0PDsTiYij3KlnTSTheLIrGF7vaRy+y3nBqTLwbpRiQKWJd+D+HQH7RQiNg2zjxEA5Cmsrres9/iKXBnL4agaBhTla+VoTFkM5FriwIhEEGTQ==
+ bh=Cs6u1U73+C620clvNsnEjmWMLA92QYcErv3CdrhFQ8M=;
+ b=FGjkJIW4hpcp3OCU2a+IErTvgVInGk+u5DBWZ4gu0WdBb226mQI5uHHYO4i5GaXVYBH/ipglmMRRIUuzbgZvcrsCYTE/nzIJPjzeRYYZ754kqKBCJD+6QfdQcGiSzh+7xmHvphOAmEIthf/sMGMt5FeaWrh4jpPU5y4TymcLT9/a7Dt7+WxRdVpkdPNqQVPS2bKKHQBfB4Wg81e5u3XS2na87X86yoy6VJ3ucb7zmiW598/NNFbioB6MRnlGngb9pGkATTMsTYTxAgyDdHYydqImk1S2K3e3HdYCKBmLzCMyzKU6iFoU9R4UtWAHjY9VuIA4d65MOYUn9QiIRUI1lg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=secospa.onmicrosoft.com; s=selector2-secospa-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8Y4tLCv3Y3CiM7gtJUwihWe+hjKK4/oPQp2dMCrg7bM=;
- b=TZ5nICyaEWZVvonVoXaLaa4Qqttp4QHqQdVFTzBtgJ43/4RkRY2UbrNPQewdg9wHLQ2y5VNJxwWIqwRXBZFwe2d6zk5pwR5MN7pd1+DYqM3xO9ldR345Dl8F9F1dMyaMJMSNM5Drcq81a5z7os/wKf1UfsmDslPAOPyoHcQxQZE=
+ bh=Cs6u1U73+C620clvNsnEjmWMLA92QYcErv3CdrhFQ8M=;
+ b=M0Ui6dIq/bWsjPHTIhwITYyIMeeSujqAmRloe4qlwMsdYXcQyxQVJiOo/aY1yOBmhTXLuW7DPi42Kf/vKiGopVVwzCOMIJJerq2aMUBdDtEYcx3hmlYJbB8oToTUUEf/xWjsHBbBcfIM82OABKhKHGgxivXCCVYb/HF3fuT/fVs=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
  by DB9PR03MB7418.eurprd03.prod.outlook.com (2603:10a6:10:22e::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.18; Fri, 22 Oct
- 2021 16:35:59 +0000
+ 2021 16:36:01 +0000
 Received: from DB7PR03MB4523.eurprd03.prod.outlook.com
  ([fe80::a9aa:f363:66e:fadf]) by DB7PR03MB4523.eurprd03.prod.outlook.com
  ([fe80::a9aa:f363:66e:fadf%6]) with mapi id 15.20.4608.018; Fri, 22 Oct 2021
- 16:35:59 +0000
+ 16:36:01 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     netdev@vger.kernel.org,
         Nicolas Ferre <nicolas.ferre@microchip.com>,
@@ -45,59 +45,60 @@ To:     netdev@vger.kernel.org,
 Cc:     Jakub Kicinski <kuba@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
         linux-kernel@vger.kernel.org,
-        Sean Anderson <sean.anderson@seco.com>,
-        Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
-Subject: [net-next PATCH 1/2] dt-bindings: net: macb: Add mdio bus child node
-Date:   Fri, 22 Oct 2021 12:35:47 -0400
-Message-Id: <20211022163548.3380625-1-sean.anderson@seco.com>
+        Sean Anderson <sean.anderson@seco.com>
+Subject: [net-next PATCH 2/2] net: macb: Use mdio child node for MDIO bus if it exists
+Date:   Fri, 22 Oct 2021 12:35:48 -0400
+Message-Id: <20211022163548.3380625-2-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20211022163548.3380625-1-sean.anderson@seco.com>
+References: <20211022163548.3380625-1-sean.anderson@seco.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: MN2PR13CA0017.namprd13.prod.outlook.com
  (2603:10b6:208:160::30) To DB7PR03MB4523.eurprd03.prod.outlook.com
  (2603:10a6:10:19::27)
 MIME-Version: 1.0
-Received: from plantagenet.inhand.com (50.195.82.171) by MN2PR13CA0017.namprd13.prod.outlook.com (2603:10b6:208:160::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.11 via Frontend Transport; Fri, 22 Oct 2021 16:35:58 +0000
+Received: from plantagenet.inhand.com (50.195.82.171) by MN2PR13CA0017.namprd13.prod.outlook.com (2603:10b6:208:160::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.11 via Frontend Transport; Fri, 22 Oct 2021 16:36:00 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4cc4d16e-e8a3-4900-c1cc-08d9957a078d
+X-MS-Office365-Filtering-Correlation-Id: 79c56583-e3fc-49eb-e250-08d9957a086a
 X-MS-TrafficTypeDiagnostic: DB9PR03MB7418:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB9PR03MB74189895132202B58E08869D96809@DB9PR03MB7418.eurprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
+X-Microsoft-Antispam-PRVS: <DB9PR03MB741860EA7A5E8BD6E4E4A2FA96809@DB9PR03MB7418.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1751;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: emipfumIICNl31Y69Jk/zUVVe5bOBRgg1Z6UQ4IjhOL6g2K3dFabbZMzUzThimmVVd4z1qW2b31o7BFyd9kLM5D5ux+D5lkfUugLFf26rFBFni6p5qFIEQq3V57z8pOPw6QuG8Ohsh7S1xa8lKuRYgbh2Az5Y/itDIUKecLdJ1lZiGcxUAdvIzJktpQPjIwx3iTwykgP5MXzwHGRAVdw5ysZ0HWSg44s/ud5ZriH5p1v/u2pE3ryMpuwFi6hhzsc9vfUMaLajHR/n7OzS6YU0iWHfc01MR2+qOwtnW3Rg5ZnkXvim0RnqTO79fHYUxAsnO1zApZTbp1oZAuhDMsnM2sisadjmyxopDEy/Zy4Vqyvq90PpSp4xhkWXfgRctWrPYk4slcqrdtSBeTB3Pv5ksNPEP1EBgtIu0cWl/Abp5buKSP+1QFi8hDpwhyqYz48HIDGfWGiwVhWwlQBZ11h3KgiooR8aBCQN1pOIwhN+Y1xWXEAUOq4uLgEF9DoXfqKWFlo7+l/Y6Dd1DkvmD6d0MTimLya3zJOBExU+b3lSz9hUiALyJKRQoIwEDdfKsOTZHdYiigjB+Bw1TBoH9IhLzi8YNfyZb2oX10K9vNkUrUKUBFs2dTIfx07TX9OXVuZXWRBiC70s6SwP3/kCUa5JITPxhyU6GL1mu0+86WeTDlUzFyldAjIrSFanmpKnHKlJvHFmi+n5Q3Ym+bWGDg1OA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(956004)(8936002)(508600001)(66476007)(66556008)(38100700002)(38350700002)(2616005)(4326008)(6666004)(1076003)(6512007)(5660300002)(4744005)(110136005)(54906003)(36756003)(66946007)(86362001)(83380400001)(44832011)(26005)(52116002)(186003)(316002)(2906002)(8676002)(6486002)(6506007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: wg4fqpkA+YeCp7j4sMLplJDMTfS9+4FjlTvJBEczUS6fbK22k0ieaOkOmSCn59EjRLu1tTmFPosWXJbD4xxhOe3IXtOBdHMUewmtkXVXGkSHOhsqqDFIg01J8MxnLNKpD2zJllMpJGNs7ozhrKxPxxmYe4I/i+T2+PjFtimWvf9hVhBbsySh9vpO8ODI7HZuJPRzxx3LYk+FZxRE4UNTtUSkrEsC9UaFswZc6dt9o4JCyHHPNIMPZ7cEcENnGGKt+2m4MyR4EtDd4kVejqNYH2r0UpOKbdOKCTxruxxBItUajOlAiydNc+1mfUTjb/3wW8dpmCGZj3uUguQlgLYg8Vr2YtJG0wl40TcFAmD2W22sKr+fS/XMNiHfFpODcOQ5eqP8xGPPtTqv+eJp9dRMREGZ7LLtUVkAWHDofCRPTqoEFlULMd2nBtXHqAR9yi3QzcLPNkW1zTD2TBhFPSH+kOjmTi0goDmjIlVhuhsa27TeopPqybxgyUsvqVgsxhJg4ZhMw+ncCp5jd6IJJvIl7+vTNUoRdyV9sS/MxFc8JTMlyBm6vw/5L+KseD1UMNzFVUU5ILL2/3UC7/OmWC4s7evG3EoC/3gscWoMX+MISaf7pek8KAwfjAVAbr8giNsNPqY48jDGzyUQEBs7iU3fL6j76bjxEK3zmBOyeFU1agxWDGAwDeuvzl4hd5zu1ujEZxWEorieCnHyyPWWEaoLzw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(956004)(8936002)(508600001)(66476007)(66556008)(38100700002)(38350700002)(2616005)(4326008)(6666004)(1076003)(6512007)(5660300002)(4744005)(110136005)(54906003)(36756003)(66946007)(86362001)(44832011)(26005)(52116002)(186003)(316002)(107886003)(2906002)(8676002)(6486002)(6506007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SyPfogVQeq6r/OKd29w4O/Vke2mWSwjWnClT7apayxf98lFLioj4nMTjjhCA?=
- =?us-ascii?Q?JCh9lL82zHv/uLQJMy35q+iSIpzaizrjP9j0HMm4T6biyVkEHAHtZ6OuKiCD?=
- =?us-ascii?Q?Zw16BWNXW9Ty4WCgXtdWbCfvhvAmwyd9v8LYYCnkLI9Uk3aN91e8v9K/vYvX?=
- =?us-ascii?Q?KEtVJVNr8iZd4ZztTzJ+FcxTk3brb5iDLcbkQUtnHboVzfN2CvwT+zH0f61u?=
- =?us-ascii?Q?vLYu1cev84sH7RSMekIISeucrpWm/RlYOf8AP1gUYMUuDaC0Vkd+arH2Jpbi?=
- =?us-ascii?Q?Kqj3dKdLglt6wXQkSOB1X+fhmV5MGE9qUwP47bREvrpbwgGxuxARQH1xPDj9?=
- =?us-ascii?Q?VIMKX9xQYMC4M6OHMcxdX3wJKQXMe139PQnsd4q9v+H9Non4to8W3jRRMWFZ?=
- =?us-ascii?Q?NKEUe3w3bIbDD2dclEbiPKwETlcC7Hf/oKwop7r2YCf2m7+0cXBtGQxMTjUT?=
- =?us-ascii?Q?tjIsZ8NkR8as+NtPEQtSTdqYNeIEh8fVcOFCGj9gMXErbyH1rdWMFplaJAyH?=
- =?us-ascii?Q?A2mKX1l3WrJlHjPfc1Ov6xPB9s1+3D9mxaaks3fp1uqYuddYmk+R3r2rgUnh?=
- =?us-ascii?Q?gqMWkP3fiFY9WLkjbhJ7mBF3KOWOUPFtd/TnN5rlgpJX67E/lvdp+Lk4koSp?=
- =?us-ascii?Q?5+Ch2joM+rsMa7Twtl5DF2qABxpNOa5F8occNMky8mea5vL6l0nbNdGsIesy?=
- =?us-ascii?Q?qQfxBazN7BVugbcqY0pYVNT7IfYhsrgK5xHN14adMRNDyX3dC3rGOkb2gQAT?=
- =?us-ascii?Q?IwEclQKrnhMzYygMnQYvbnlcWj1FvSu3bAfobKTFU2AzAiEKDea3OY5nxQi+?=
- =?us-ascii?Q?wD7IgH7i76lHTrT63zUXvDZEtPnduJcH7WqygcH8hmbUxlMSWxSIfhiC46Fc?=
- =?us-ascii?Q?ArjW+/mqdXr6dZpsiToG1rleNGUPBusm+o7rFBKCpAj/jmpUB58cO+UbRtv4?=
- =?us-ascii?Q?nAPM3h0bqCJa4HFdsMPKRwa/EAvyxp87DgdKuUroq4EinnWMHdwWj3/vgzQN?=
- =?us-ascii?Q?oimeP08II0vg//PzH/hMXQHcuIryQYg1af1ufNHIaO1lD3iCKOCK9kurZ6Q2?=
- =?us-ascii?Q?n4z+JL0BFg93ed0jkH3xlQis2ohaknCWfXC43gws+yIaAuKovfadmBELvveJ?=
- =?us-ascii?Q?fcWKSJclwxyyWOETFdQew+m06q7PRbKESOzriWvzW8ta43O7vAgDxeyIj58Y?=
- =?us-ascii?Q?vctKEq343WRaYSOwAX0y18knnLkLPYf39Dlr2eFkhiG/4Wk0JwYD1kvLoWcz?=
- =?us-ascii?Q?y5jy+clRek83XrVfAN6UEanNqBfWVSCYTIavx3OVvjeDockiyLDM4bz6KQyc?=
- =?us-ascii?Q?KNNMV7H4L289VZY490TnpHWd?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?24MCXtyDyiktnqrIEHVxdneFPlS8VM9bL+QWmpKaV+oRvW3Inf1eBh/Sgj/Q?=
+ =?us-ascii?Q?sOmyBWvCBjke4trkCxHXSA/k7xc7ybX3XKbJ/mGfFgLJI7+NZugUUne7wQ3C?=
+ =?us-ascii?Q?ktJ5IvkmyqLN1RiCjaOOPa642rFzaXtpG7QxzGHE8AuyA6yzQ4eTsbNWXNBZ?=
+ =?us-ascii?Q?D/0yj7AjP9kTEXrkooWhKoCFTjny6dsB0DEbKTp+3rmTtwlBjTDecO2FmpOb?=
+ =?us-ascii?Q?QoKIDK1HhQNGM++zkvKd08IaV7AHRkD8tYrRBTsX2MoYPdOgUvYB1EKWBuTZ?=
+ =?us-ascii?Q?urInqxPYh0dShoNmzdOYV6H8Wn9oa+LSeJFAUjCT/NhwdL9jvkVuU58d+XXN?=
+ =?us-ascii?Q?OYstb5Y1TsFIe2CBtp31hp4bDUSlU0YCM/DOVbeFbHqPTK50ZpfsFNeFNqP3?=
+ =?us-ascii?Q?0NJPHLGdnOWqnluExnIQB4P31rcEigYq3pJFJ3CdkV1ZTSBewi3G2hOmt7gG?=
+ =?us-ascii?Q?Z17a9VMoEoQbV2SPR3VVTOk7Y9Itbg4PgiDO+qM9RflXxve/kor5lk8Z+3UT?=
+ =?us-ascii?Q?EVMT1VDUyc67hnjqCqL5zhOCd5taNH9euksv59d0+EnbZ72sm/JAZ95pruME?=
+ =?us-ascii?Q?cY1SdbUz9egWOnAmSeM7cXlmQFnYwBSUZUKQFlSHHIyTmJFvFvsJMwXazs8c?=
+ =?us-ascii?Q?IsuaFD4C7J4dqbsszf2jtRjIqtD8mM4yI+3GG3RQo0DaoAaLNWxWTiyRf9Pe?=
+ =?us-ascii?Q?dtAkhvQVi1ZzBhEm2RyEEX83kUeDJ9m/gyYG48KZxoeV8sa2HAYVFxOhqOxW?=
+ =?us-ascii?Q?9XvQZRRPFlJmHFP2JSq+jVT8qlZmETw8D1ljkWKFo8OS8UX5ZDa33qsZA2Re?=
+ =?us-ascii?Q?QGuYqQ5Na1AANVEox33/liaJR+CoAQPe7WwmBv1ZxK6HRHVjvzPXZM+tpesJ?=
+ =?us-ascii?Q?3SiHa/rOFtvctj5pdXm5jQvKnGQDKeqEpUvx7CoCXvGdSnYtV8PK6cCWAVmr?=
+ =?us-ascii?Q?fwUxI0xkks6fqQeScrRKGMwOkfw29amiXp3PTkVZLodyE6mhOsY7dk0588P0?=
+ =?us-ascii?Q?/YKxN11ElZNvPUlQ8HIrLUY07Gn5qPJUhQ+UA25WbSc1c5qV78PSY7ecLUww?=
+ =?us-ascii?Q?9OhDBj26qKzjkJNfrMy0J7o4N70kLgZ6YOT30ItFR2kADECArUmhxpQVR3wO?=
+ =?us-ascii?Q?8VCJdQY/QHI50fg+dZeF1GrJgS/eBu+ME2dhhpxuWhkYFDjxLeIHMhnDTQPM?=
+ =?us-ascii?Q?pDH7Ql1LJMjA47aS/qWSMEyiW5dWXb88r8UkUV6Z7fqqFOCm6L/puVIxxOVt?=
+ =?us-ascii?Q?e3DgELnS8sSyeve142fjWDrihgwoHWGqpyx/C0WWmPrlEbbFdjfFX+/VgJ5r?=
+ =?us-ascii?Q?ixu0AYIHOOH5HqhgDlnbcqDq?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4cc4d16e-e8a3-4900-c1cc-08d9957a078d
+X-MS-Exchange-CrossTenant-Network-Message-Id: 79c56583-e3fc-49eb-e250-08d9957a086a
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4523.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2021 16:35:59.6984
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2021 16:36:01.1385
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
@@ -108,31 +109,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds an optional mdio bus child node. If present, the mac will
-look for PHYs there instead of directly under the top-level node. This
-eliminates any ambiguity about whether child nodes are PHYs, and allows
-the MDIO bus to contain non-PHY devices.
+This allows explicitly specifying which children are present on the mdio
+bus. Additionally, it allows for non-phy MDIO devices on the bus.
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 ---
 
- Documentation/devicetree/bindings/net/macb.txt | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/cadence/macb_main.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/macb.txt b/Documentation/devicetree/bindings/net/macb.txt
-index af9df2f01a1c..a1b06fd1962e 100644
---- a/Documentation/devicetree/bindings/net/macb.txt
-+++ b/Documentation/devicetree/bindings/net/macb.txt
-@@ -30,6 +30,10 @@ Required properties:
- 	Optional elements: 'tsu_clk'
- - clocks: Phandles to input clocks.
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 029dea2873e3..30a65cac9e87 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -898,6 +898,17 @@ static int macb_mdiobus_register(struct macb *bp)
+ {
+ 	struct device_node *child, *np = bp->pdev->dev.of_node;
  
-+Optional properties:
-+- mdio: node containing PHY children. If this node is not present, then PHYs
-+        will be direct children.
++	/* If we have a child named mdio, probe it instead of looking for PHYs
++	 * directly under the MAC node
++	 */
++	child = of_get_child_by_name(np, "mdio");
++	if (np) {
++		int ret = of_mdiobus_register(bp->mii_bus, child);
 +
- The MAC address will be determined using the optional properties
- defined in ethernet.txt.
++		of_node_put(child);
++		return ret;
++	}
++
+ 	if (of_phy_is_fixed_link(np))
+ 		return mdiobus_register(bp->mii_bus);
  
 -- 
 2.25.1
