@@ -2,66 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FAE54379F4
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 17:31:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FCEF4379F9
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 17:34:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233268AbhJVPdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 11:33:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40426 "EHLO
+        id S232384AbhJVPhG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 11:37:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233206AbhJVPdg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 11:33:36 -0400
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DED0C061764;
-        Fri, 22 Oct 2021 08:31:19 -0700 (PDT)
-Received: by mail-il1-x12b.google.com with SMTP id j6so4441025ila.1;
-        Fri, 22 Oct 2021 08:31:19 -0700 (PDT)
+        with ESMTP id S231133AbhJVPhG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 11:37:06 -0400
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFEFEC061764;
+        Fri, 22 Oct 2021 08:34:48 -0700 (PDT)
+Received: by mail-il1-x134.google.com with SMTP id j6so4452995ila.1;
+        Fri, 22 Oct 2021 08:34:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=+Ego1ZrG/Lm7+Pvcc9hjkB+81oiSDXMAJi4vz0qrb0c=;
-        b=nVr/tUjK9tm2H9KcK/tPnGrfR7naUAf65YcUkEYf25XOwwQnJufPcN9cKMba4tSAQY
-         19mw63sYOt9m/Gmy+XMwoU4wjqxKDSe8H3yVz8mxjMv0FuGQ+Qwwy68nk3K9JFDgpSNO
-         /QV1xvST3koD8wjWrbNKSlYxmb94cOSpoNXnAS2kZ23mKG2EJ0PsT8U7y3IyXvyyFr/T
-         Pg5bmxRMFvnUAQJdim6dwdYnf4QPunJeQPD750dlOZEimZfsZyImHp9CY7QIJ4QXdLG7
-         B0mM+qUHScKtJSuM2PILdBcR141M7utTAYUOZV5YF9TTVYaoZFuvghyA1YyDlwPBHoBU
-         IBow==
+        bh=n5H9Bf9ZcCtG40Soap2ANs+z3ZAK6GVAhwLSpZUSWec=;
+        b=BZDTYMK4Rxq99wt3oQTT9VDAGhX7uLuCcVFpuvTqcHIm54ZyTbTkt98x2ysZJnNCDB
+         vx3fbAlM7fxQ+KW79p7FlW2mkY0KN9WdUckx2+xm4rbrRMWdmDti8gULQgpTP9kH1wv7
+         5Ht1JHuiBWjUcHA1jmlpkeb8kghz5jzPyesJxfDVy7nKcMHamdg5ia46frs7zTY+C8cS
+         2qss4ScebggBeZFbwKPG64LOG2XhgOFfuomRyAZZtiOEkt7Z2PttGd8OCIQOzTOcpp2q
+         eCQneacDrQ6Lb7CfgGxXtIZcDLgGKDw8xK9krX7t4gl1eruVcIyYMAmAvlSgNqpKlySm
+         0cFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=+Ego1ZrG/Lm7+Pvcc9hjkB+81oiSDXMAJi4vz0qrb0c=;
-        b=3uoryBejlOWAIMnYv7cx8xK7VIjBaIwjMJY5H/tVxBRkiDKuyek2uFbfxAv3dyaO4s
-         SpCYWBfesDh6wFtOSYz7di0cRlxhi3KUso3PQ9rogO6hvdVdGY5rDBc3Ze0WgVu5sH5p
-         9cfu8t4HKp5K6UuKJPJ0Jg2VnWrUGFefITo6AO4krKzMtDV3X/6IXJc8S9bjPWMDTXi9
-         wxsugcoesXfqj/99RMsPm/MzLl2HqlGGta7lDw1aRXy6I0THCimkQG4q4aZDuNKIIxVK
-         awbTjuKrjq2mMiaC2trQTAh2UvuAZDKLeNOqAklk13ASzSnYFKJweMjIhTKOPA2a1gxB
-         hPeg==
-X-Gm-Message-State: AOAM532iknvDu67liqvSa2s4ZEfC1EaDnM4tJTksr/vK1mVpy0zNUJ0E
-        Ni8OdPCXBD+4A7N/KpBCNlo=
-X-Google-Smtp-Source: ABdhPJw0Ay4k7KXUPfIZFm0OnzfvobmrKd7GvT/ti3wApXtJJOBit9UZUPVxSJBt85q+o6Oh0RcyTg==
-X-Received: by 2002:a92:cd89:: with SMTP id r9mr430524ilb.261.1634916678482;
-        Fri, 22 Oct 2021 08:31:18 -0700 (PDT)
+        bh=n5H9Bf9ZcCtG40Soap2ANs+z3ZAK6GVAhwLSpZUSWec=;
+        b=B3zMiAbZMg16y4ptk2wR5wLANi3vim352eblTrfB/VmQwCxX3M33D7tz1n0zelmlwM
+         DKKc6yuFW+AGVSMXOa76WwheymoyFLzEZ69epzDuAQa8Wz6em0KBLxWxWYJKmeJwXFXq
+         C91bIQgpWxPGIB7EfXRl1Res7DfPaSZZ9vlqG+npp3/lvQ1UWUrD8cKkpQIsVvKmgHc5
+         DqvoHKFt5IwlajI7Xw9o6JXfPXZiLpCoa5yUUKQ3r2XPy8NW+2rz2inbA9pZ/oAwuc7B
+         aJH9DBnoEGfZ9yuN87jFLAulq6JDEFh18WUfOUWTd9tqTmDYbDHDUVqQT7ZYdcn6K41F
+         bjdg==
+X-Gm-Message-State: AOAM532hiRjZhAnbpyFTERt3lZ+r0LEkT5P5kl252BGLZ8wNsRn4C999
+        9geUkZk49Xkd2orfcdkD3d8=
+X-Google-Smtp-Source: ABdhPJxYUhGJB+jUFDS/oaJSwUrqOLFdIMm6eNh2dKxmBCkq8HfxtUW1Ye/rjByuUAtzFN8bDwN9Mg==
+X-Received: by 2002:a92:de47:: with SMTP id e7mr468500ilr.282.1634916888379;
+        Fri, 22 Oct 2021 08:34:48 -0700 (PDT)
 Received: from localhost ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id i15sm4214561ilb.30.2021.10.22.08.31.15
+        by smtp.gmail.com with ESMTPSA id c4sm4392167ioo.48.2021.10.22.08.34.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Oct 2021 08:31:18 -0700 (PDT)
-Date:   Fri, 22 Oct 2021 08:31:10 -0700
+        Fri, 22 Oct 2021 08:34:48 -0700 (PDT)
+Date:   Fri, 22 Oct 2021 08:34:40 -0700
 From:   John Fastabend <john.fastabend@gmail.com>
-To:     Liu Jian <liujian56@huawei.com>, john.fastabend@gmail.com,
-        daniel@iogearbox.net, jakub@cloudflare.com, lmb@cloudflare.com,
-        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        xiyou.wangcong@gmail.com
-Cc:     liujian56@huawei.com
-Message-ID: <6172d93e2a470_82a7f2083@john-XPS-13-9370.notmuch>
-In-Reply-To: <20211012065705.224643-3-liujian56@huawei.com>
-References: <20211012065705.224643-1-liujian56@huawei.com>
- <20211012065705.224643-3-liujian56@huawei.com>
-Subject: RE: [PATHC bpf v5 3/3] selftests, bpf: Add one test for sockmap with
- strparser
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Message-ID: <6172da1091904_82a7f20833@john-XPS-13-9370.notmuch>
+In-Reply-To: <20211008203306.37525-1-xiyou.wangcong@gmail.com>
+References: <20211008203306.37525-1-xiyou.wangcong@gmail.com>
+Subject: RE: [Patch bpf v4 0/4] sock_map: fix ->poll() and update selftests
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -70,29 +64,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Liu Jian wrote:
-> Add the test to check sockmap with strparser is working well.
+Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
 > 
-> Signed-off-by: Liu Jian <liujian56@huawei.com>
+> This patchset fixes ->poll() for sockets in sockmap and updates
+> selftests accordingly with select(). Please check each patch
+> for more details.
+> 
+> Fixes: c50524ec4e3a ("Merge branch 'sockmap: add sockmap support for unix datagram socket'")
+> Fixes: 89d69c5d0fbc ("Merge branch 'sockmap: introduce BPF_SK_SKB_VERDICT and support UDP'")
+> Acked-by: John Fastabend <john.fastabend@gmail.com>
+> 
 > ---
->  tools/testing/selftests/bpf/test_sockmap.c | 33 ++++++++++++++++++++--
->  1 file changed, 30 insertions(+), 3 deletions(-)
+> v4: add a comment in udp_poll()
+> 
+> v3: drop sk_psock_get_checked()
+>     reuse tcp_bpf_sock_is_readable()
+> 
+> v2: rename and reuse ->stream_memory_read()
+>     fix a compile error in sk_psock_get_checked()
+> 
+> Cong Wang (3):
+>   net: rename ->stream_memory_read to ->sock_is_readable
+>   skmsg: extract and reuse sk_msg_is_readable()
+>   net: implement ->sock_is_readable() for UDP and AF_UNIX
+> 
+> Yucong Sun (1):
+>   selftests/bpf: use recv_timeout() instead of retries
+> 
+>  include/linux/skmsg.h                         |  1 +
+>  include/net/sock.h                            |  8 +-
+>  include/net/tls.h                             |  2 +-
+>  net/core/skmsg.c                              | 14 ++++
+>  net/ipv4/tcp.c                                |  5 +-
+>  net/ipv4/tcp_bpf.c                            | 15 +---
+>  net/ipv4/udp.c                                |  3 +
+>  net/ipv4/udp_bpf.c                            |  1 +
+>  net/tls/tls_main.c                            |  4 +-
+>  net/tls/tls_sw.c                              |  2 +-
+>  net/unix/af_unix.c                            |  4 +
+>  net/unix/unix_bpf.c                           |  2 +
+>  .../selftests/bpf/prog_tests/sockmap_listen.c | 75 +++++--------------
+>  13 files changed, 58 insertions(+), 78 deletions(-)
+> 
+> -- 
+> 2.30.2
+> 
 
-Hi Liu,
-
-This is a good test, but we should also add one with a parser returning
-a value that is not skb->len. This doesn't cover the case fixed in
-patch 1/3 correct? For that we would need to modify the BPF prog
-itself as well sockmap_parse_prog.c.
-
-For this patch though,
+For the series. Thanks.
 
 Acked-by: John Fastabend <john.fastabend@gmail.com>
-
-Then one more patch is all we need something to break up the skb from
-the parser. We really need the test because its not something we
-can easily test otherwise and I don't have any use cases that do this
-so wouldn't catch it.
-
-Thanks!
-John
