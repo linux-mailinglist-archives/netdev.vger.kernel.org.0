@@ -2,227 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 218D34380BC
-	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 01:41:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E63F4380BF
+	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 01:48:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232318AbhJVXn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 19:43:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37398 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230086AbhJVXn4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 19:43:56 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37695C061766;
-        Fri, 22 Oct 2021 16:41:38 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id o12so6406910ybk.1;
-        Fri, 22 Oct 2021 16:41:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nPJ9a7CQIvAdyA+WOKxT08L5sahv9vJ6Iua2FzEHVIU=;
-        b=WtcpSq41dJe0VvXdxdUm8KzkiMObft9FRmxcA9JDbHLfAY3q7Uwq2XQ4XtM9E8tCoH
-         xdR3ZBrnXBX+1jVHlDx2jpKWL24wnXkXNV15j2CSsivMNMB8umth3+T3V6SBnPb70eJ7
-         CkqtJvdPbmLPX/wnjviTuwKP5usyoPl5+9QTywCHMp7+Y7nYTWkO+v3bkwDhNTSvhjZn
-         hLpQCh5pKJnaMfm97v1ESbM5UuJxA0hEkOEl5ZzlJe62rBRyUiJwGiIvGj+mJmF8RUep
-         vO7q586reyeSc+Oiv/MlFiyTZhuDtCTnqoZQsswLx3dNThZ4d0MQ0n3ojuWH6bYuDXs8
-         AG7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nPJ9a7CQIvAdyA+WOKxT08L5sahv9vJ6Iua2FzEHVIU=;
-        b=rcaidWWUvW84xOLimWYDuN0FI+Ki9mtP1oQMHh4yUJ1RBmYE1SwDzykJ6haf8vL1VA
-         cEMlN4ltFN0qLNSg4AdFVxAPkXzn/fI93VBWhQg0izRih4RU/xLdOedGMO6ipmD6NgGa
-         6BpDAbfORVPBEWeetXpO6dg4Dymi/+Y+NMMVunstXshINu89w0XDYPWCCuRPp2WX6DbP
-         p0WsUaw1yTwIzgqgMgdAdEmlMvXQSVUlYu/EMBAX1Cuakr9B//cezqUz5szyD9uTIwUd
-         TzAaIwxw1yOhOwZE3jbiPQRq4bac7C3wHTlYgCQMtVrrrWNe5MLrA5R/cNpnJMnwui5B
-         Ml1Q==
-X-Gm-Message-State: AOAM530YBVgDAZuSR7nL1tK9Gj/Vi37LQwchciuXjcHjtH5VMTDumq9Y
-        XnW62gAzJbO0xCYpJqfuIXJpWSQG2wqOlqZig8A=
-X-Google-Smtp-Source: ABdhPJzSmDh/m1Z6b+6/xf79h92UrL7VtHeA/YDtBqv7ZXX0MjHsHM5t0iqxRutu4F9NwwQT14weZ0q8pLK92LXQgEU=
-X-Received: by 2002:a25:e7d7:: with SMTP id e206mr2669663ybh.267.1634946097494;
- Fri, 22 Oct 2021 16:41:37 -0700 (PDT)
+        id S231877AbhJVXur (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 19:50:47 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:3606 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231624AbhJVXur (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 19:50:47 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19MNlSXX017209
+        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 16:48:29 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=zgFZgn3XzLa3XFa50o5bvPzG+RtReeoJG1ORt/ZMQOs=;
+ b=bsZXRGQS3vUcFGk9zUKwp4JFRfzTwzyFmxTk9BMtVgwTfWAqr5eCJZg+DOL2hNjjSrEj
+ qKzVfkhaVFfCUQtNHyPatmEckBtYYAZaFlrhB7jKjsi1esaSxE99tq5Zp+n0emq4NDqG
+ NHal7Xbt18xg0QMWLUrJmRr0vHErGwXbb/w= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 3bv79hg02f-16
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 16:48:29 -0700
+Received: from intmgw001.37.frc1.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.14; Fri, 22 Oct 2021 16:48:26 -0700
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id E4EFA19E2A367; Fri, 22 Oct 2021 16:48:21 -0700 (PDT)
+From:   Song Liu <songliubraving@fb.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, Song Liu <songliubraving@fb.com>
+Subject: [PATCH bpf-next] selftests/bpf: guess function end for test_get_branch_snapshot
+Date:   Fri, 22 Oct 2021 16:48:14 -0700
+Message-ID: <20211022234814.318457-1-songliubraving@fb.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20211021034603.4458-1-laoar.shao@gmail.com> <20211021034603.4458-4-laoar.shao@gmail.com>
- <CAEf4BzYTEoDwWzXd91MeMH5Qr9L853Ff3Qq8_wnwfJ8GK0oLnw@mail.gmail.com> <CALOAHbB6KS8iscsz6y7zd=aGfKfo4jPbyMBKXL4ORY8taZRa8A@mail.gmail.com>
-In-Reply-To: <CALOAHbB6KS8iscsz6y7zd=aGfKfo4jPbyMBKXL4ORY8taZRa8A@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 22 Oct 2021 16:41:26 -0700
-Message-ID: <CAEf4Bzb6AcoiKotHD5Fg1gT3psAC34s54Yo7fmGUZtwcGBW2zQ@mail.gmail.com>
-Subject: Re: [PATCH v5 13/15] tools/testing/selftests/bpf: use
- TASK_COMM_LEN_16 instead of hard-coded 16
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Peter Ziljstra <peterz@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Qiang Zhang <qiang.zhang@windriver.com>,
-        robdclark <robdclark@chromium.org>,
-        Christian Brauner <christian@brauner.io>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>,
-        kernel test robot <oliver.sang@intel.com>,
-        kbuild test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-FB-Source: Intern
+X-Proofpoint-GUID: ADeUvHC_U3TV9zpHyIPjfaX9a6RVf7JR
+X-Proofpoint-ORIG-GUID: ADeUvHC_U3TV9zpHyIPjfaX9a6RVf7JR
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-10-22_05,2021-10-22_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ adultscore=0 spamscore=0 lowpriorityscore=0 clxscore=1015 phishscore=0
+ mlxscore=0 bulkscore=0 mlxlogscore=999 impostorscore=0 priorityscore=1501
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109230001 definitions=main-2110220135
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 21, 2021 at 11:36 PM Yafang Shao <laoar.shao@gmail.com> wrote:
->
-> On Fri, Oct 22, 2021 at 6:44 AM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Wed, Oct 20, 2021 at 8:46 PM Yafang Shao <laoar.shao@gmail.com> wrote:
-> > >
-> > > The hard-coded 16 is used in various bpf progs. These progs get task
-> > > comm either via bpf_get_current_comm() or prctl() or
-> > > bpf_core_read_str(), all of which can work well even if the task comm size
-> > > is changed.
-> > > Below is the detailed information,
-> > >
-> > > bpf_get_current_comm:
-> > >     progs/test_ringbuf.c
-> > >     progs/test_ringbuf_multi.c
-> > >
-> > > prctl:
-> > >     prog_tests/test_overhead.c
-> > >     prog_tests/trampoline_count.c
-> > >
-> > > bpf_core_read_str:
-> > >     progs/test_core_reloc_kernel.c
-> > >     progs/test_sk_storage_tracing.c
-> > >
-> > > We'd better replace the hard-coded 16 with TASK_COMM_LEN_16 to make it
-> > > more grepable.
-> > >
-> > > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> > > Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> > > Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-> > > Cc: Peter Zijlstra <peterz@infradead.org>
-> > > Cc: Steven Rostedt <rostedt@goodmis.org>
-> > > Cc: Kees Cook <keescook@chromium.org>
-> > > Cc: Al Viro <viro@zeniv.linux.org.uk>
-> > > Cc: Petr Mladek <pmladek@suse.com>
-> > > ---
-> > >  tools/testing/selftests/bpf/Makefile                      | 2 +-
-> > >  tools/testing/selftests/bpf/prog_tests/ringbuf.c          | 3 ++-
-> > >  tools/testing/selftests/bpf/prog_tests/ringbuf_multi.c    | 3 ++-
-> > >  .../testing/selftests/bpf/prog_tests/sk_storage_tracing.c | 3 ++-
-> > >  tools/testing/selftests/bpf/prog_tests/test_overhead.c    | 3 ++-
-> > >  tools/testing/selftests/bpf/prog_tests/trampoline_count.c | 3 ++-
-> > >  tools/testing/selftests/bpf/progs/profiler.h              | 7 ++++---
-> > >  tools/testing/selftests/bpf/progs/profiler.inc.h          | 8 ++++----
-> > >  tools/testing/selftests/bpf/progs/pyperf.h                | 4 ++--
-> > >  tools/testing/selftests/bpf/progs/strobemeta.h            | 6 +++---
-> > >  .../testing/selftests/bpf/progs/test_core_reloc_kernel.c  | 3 ++-
-> > >  tools/testing/selftests/bpf/progs/test_ringbuf.c          | 3 ++-
-> > >  tools/testing/selftests/bpf/progs/test_ringbuf_multi.c    | 3 ++-
-> > >  .../testing/selftests/bpf/progs/test_sk_storage_tracing.c | 5 +++--
-> > >  tools/testing/selftests/bpf/progs/test_skb_helpers.c      | 5 ++---
-> > >  tools/testing/selftests/bpf/progs/test_stacktrace_map.c   | 5 +++--
-> > >  tools/testing/selftests/bpf/progs/test_tracepoint.c       | 5 +++--
-> > >  17 files changed, 41 insertions(+), 30 deletions(-)
-> > >
-> > > diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> > > index 799b88152e9e..5e72d783d3fe 100644
-> > > --- a/tools/testing/selftests/bpf/Makefile
-> > > +++ b/tools/testing/selftests/bpf/Makefile
-> > > @@ -279,7 +279,7 @@ MENDIAN=$(if $(IS_LITTLE_ENDIAN),-mlittle-endian,-mbig-endian)
-> > >
-> > >  CLANG_SYS_INCLUDES = $(call get_sys_includes,$(CLANG))
-> > >  BPF_CFLAGS = -g -D__TARGET_ARCH_$(SRCARCH) $(MENDIAN)                  \
-> > > -            -I$(INCLUDE_DIR) -I$(CURDIR) -I$(APIDIR)                   \
-> > > +            -I$(INCLUDE_DIR) -I$(CURDIR) -I$(APIDIR) -I${TOOLSINCDIR}  \
-> >
-> > please don't add new include paths unnecessarily. See my comment on
-> > another patch, if you add those new constants as enums, they will be
-> > automatically available in vmlinux BTF and thus in auto-generated
-> > vmlinux.h header (for those programs using it).
->
-> Yes, after converting it to enum, the BPF programs can get it from the
-> generated vmlinux.h.
->
-> > For others, I'd just
-> > leave hard-coded 16 or re-defined TASK_COMM_LEN_16 where appropriate.
-> >
->
-> It seems not all the BPF programs can include the vmlinux.h.
-> What we really care about here is the copy of task comm should be with
-> a nul terminator, if we can assure it, then the size used by the BPF
-> is not important.
-> I have checked the copy of task comm in all these BPF programs one by
-> one, and replaced the unsafe bpf_probe_read_kernel() with
-> bpf_probe_read_kernel_str(), after that change, I think we can leave
-> hard-coded 16 for the progs which can't include vmlinux.h.
+Function in modules could appear in /proc/kallsyms in random order.
 
-SGTM, thanks.
+ffffffffa02608a0 t bpf_testmod_loop_test
+ffffffffa02600c0 t __traceiter_bpf_testmod_test_writable_bare
+ffffffffa0263b60 d __tracepoint_bpf_testmod_test_write_bare
+ffffffffa02608c0 T bpf_testmod_test_read
+ffffffffa0260d08 t __SCT__tp_func_bpf_testmod_test_writable_bare
+ffffffffa0263300 d __SCK__tp_func_bpf_testmod_test_read
+ffffffffa0260680 T bpf_testmod_test_write
+ffffffffa0260860 t bpf_testmod_test_mod_kfunc
 
->
-> > >              -I$(abspath $(OUTPUT)/../usr/include)
-> > >
-> > >  CLANG_CFLAGS = $(CLANG_SYS_INCLUDES) \
-> > > diff --git a/tools/testing/selftests/bpf/prog_tests/ringbuf.c b/tools/testing/selftests/bpf/prog_tests/ringbuf.c
-> > > index 4706cee84360..ac82d57c09dc 100644
-> > > --- a/tools/testing/selftests/bpf/prog_tests/ringbuf.c
-> > > +++ b/tools/testing/selftests/bpf/prog_tests/ringbuf.c
-> > > @@ -12,6 +12,7 @@
-> > >  #include <sys/sysinfo.h>
-> > >  #include <linux/perf_event.h>
-> > >  #include <linux/ring_buffer.h>
-> > > +#include <linux/sched/task.h>
-> > >  #include "test_ringbuf.lskel.h"
-> > >
-> > >  #define EDONE 7777
-> > > @@ -22,7 +23,7 @@ struct sample {
-> > >         int pid;
-> > >         int seq;
-> > >         long value;
-> > > -       char comm[16];
-> > > +       char comm[TASK_COMM_LEN_16];
-> >
-> > how much value is in this "grep-ability", really? I'm not convinced
-> > all this code churn is justified.
-> >
-> > >  };
-> > >
-> > >  static int sample_cnt;
-> > > diff --git a/tools/testing/selftests/bpf/prog_tests/ringbuf_multi.c b/tools/testing/selftests/bpf/prog_tests/ringbuf_multi.c
-> > > index 167cd8a2edfd..f0748305ffd6 100644
-> > > --- a/tools/testing/selftests/bpf/prog_tests/ringbuf_multi.c
-> > > +++ b/tools/testing/selftests/bpf/prog_tests/ringbuf_multi.c
-> > > @@ -2,6 +2,7 @@
-> > >  #define _GNU_SOURCE
-> > >  #include <test_progs.h>
-> > >  #include <sys/epoll.h>
-> > > +#include <linux/sched/task.h>
-> > >  #include "test_ringbuf_multi.skel.h"
-> > >
-> > >  static int duration = 0;
-> >
-> > [...]
->
->
-> --
-> Thanks
-> Yafang
+Therefore, we cannot reliably use kallsyms_find_next() to find the end of
+a function. Replace it with a simple guess (start + 128). This is good
+enough for this test.
+
+Signed-off-by: Song Liu <songliubraving@fb.com>
+---
+ .../bpf/prog_tests/get_branch_snapshot.c      |  7 ++--
+ tools/testing/selftests/bpf/trace_helpers.c   | 36 -------------------
+ tools/testing/selftests/bpf/trace_helpers.h   |  5 ---
+ 3 files changed, 4 insertions(+), 44 deletions(-)
+
+diff --git a/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c=
+ b/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
+index d6d70a359aeb5..bc2b6e6d167d4 100644
+--- a/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
++++ b/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
+@@ -91,9 +91,10 @@ void serial_test_get_branch_snapshot(void)
+ 	if (!ASSERT_OK(err, "kallsyms_find"))
+ 		goto cleanup;
+=20
+-	err =3D kallsyms_find_next("bpf_testmod_loop_test", &skel->bss->address=
+_high);
+-	if (!ASSERT_OK(err, "kallsyms_find_next"))
+-		goto cleanup;
++	/* Just a guess for the end of this function, as module functions
++	 * in /proc/kallsyms could come in any order.
++	 */
++	skel->bss->address_high =3D skel->bss->address_low + 128;
+=20
+ 	err =3D get_branch_snapshot__attach(skel);
+ 	if (!ASSERT_OK(err, "get_branch_snapshot__attach"))
+diff --git a/tools/testing/selftests/bpf/trace_helpers.c b/tools/testing/=
+selftests/bpf/trace_helpers.c
+index 5100a169b72b1..7b7f918eda776 100644
+--- a/tools/testing/selftests/bpf/trace_helpers.c
++++ b/tools/testing/selftests/bpf/trace_helpers.c
+@@ -118,42 +118,6 @@ int kallsyms_find(const char *sym, unsigned long lon=
+g *addr)
+ 	return err;
+ }
+=20
+-/* find the address of the next symbol of the same type, this can be use=
+d
+- * to determine the end of a function.
+- */
+-int kallsyms_find_next(const char *sym, unsigned long long *addr)
+-{
+-	char type, found_type, name[500];
+-	unsigned long long value;
+-	bool found =3D false;
+-	int err =3D 0;
+-	FILE *f;
+-
+-	f =3D fopen("/proc/kallsyms", "r");
+-	if (!f)
+-		return -EINVAL;
+-
+-	while (fscanf(f, "%llx %c %499s%*[^\n]\n", &value, &type, name) > 0) {
+-		/* Different types of symbols in kernel modules are mixed
+-		 * in /proc/kallsyms. Only return the next matching type.
+-		 * Use tolower() for type so that 'T' matches 't'.
+-		 */
+-		if (found && found_type =3D=3D tolower(type)) {
+-			*addr =3D value;
+-			goto out;
+-		}
+-		if (strcmp(name, sym) =3D=3D 0) {
+-			found =3D true;
+-			found_type =3D tolower(type);
+-		}
+-	}
+-	err =3D -ENOENT;
+-
+-out:
+-	fclose(f);
+-	return err;
+-}
+-
+ void read_trace_pipe(void)
+ {
+ 	int trace_fd;
+diff --git a/tools/testing/selftests/bpf/trace_helpers.h b/tools/testing/=
+selftests/bpf/trace_helpers.h
+index bc8ed86105d94..d907b445524d5 100644
+--- a/tools/testing/selftests/bpf/trace_helpers.h
++++ b/tools/testing/selftests/bpf/trace_helpers.h
+@@ -16,11 +16,6 @@ long ksym_get_addr(const char *name);
+ /* open kallsyms and find addresses on the fly, faster than load + searc=
+h. */
+ int kallsyms_find(const char *sym, unsigned long long *addr);
+=20
+-/* find the address of the next symbol, this can be used to determine th=
+e
+- * end of a function
+- */
+-int kallsyms_find_next(const char *sym, unsigned long long *addr);
+-
+ void read_trace_pipe(void);
+=20
+ ssize_t get_uprobe_offset(const void *addr, ssize_t base);
+--=20
+2.30.2
+
