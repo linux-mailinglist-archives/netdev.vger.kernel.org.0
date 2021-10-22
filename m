@@ -2,277 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0D93437CA7
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 20:39:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6539437CAD
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 20:41:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231624AbhJVSl2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 14:41:28 -0400
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:37048
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231511AbhJVSl1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 14:41:27 -0400
-Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 27CDC40010
-        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 18:39:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1634927949;
-        bh=n86mKXHUmQMd2j1fhrUQnfMYmml77VBOLV1EynYUhhY=;
-        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
-         Content-Type:Date:Message-ID;
-        b=HKl3xTblTMo7M3fumamz7tUNzOOlXt01PK4GjR6az8shU57h1r2JeZcS05IAQdMXy
-         J8q/z6nKCVixcu5jcw/SkUzadlGu0K8P1fFjN1YTzNXv7dswpSeAZYInRNxZpJAb7x
-         4ZI1tAzs1WNFd9Ac1nqM8wfxE7Bife1TMJCAyBpV6lURhlTpEeVQqsc0m1w0GTUk1F
-         1pgTg/22lrRnr0RfPBSMXFn35tsDMn9qYw6MWIWQtz7lqujExVruPkufLfhC6VI0gE
-         rvIyo8dbM3pa2fWvmXwg21Cm+do60aXjSd1g/9EPl6T9d3Rfj3TGmLOrQSblZH63a/
-         buOVkIXSCvhhQ==
-Received: by mail-pl1-f197.google.com with SMTP id m10-20020a1709026bca00b0013f8e975b31so2083850plt.5
-        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 11:39:09 -0700 (PDT)
+        id S232090AbhJVSnn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 14:43:43 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:54956 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232029AbhJVSnn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 14:43:43 -0400
+Received: by mail-io1-f72.google.com with SMTP id ay23-20020a5d9d97000000b005de70aa0cb9so1194423iob.21
+        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 11:41:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references
-         :comments:mime-version:content-id:content-transfer-encoding:date
-         :message-id;
-        bh=n86mKXHUmQMd2j1fhrUQnfMYmml77VBOLV1EynYUhhY=;
-        b=WKdgV9QcI5RSraYR+KDAlbMQ3BznkgslbpMN+yFcyrwqGL3k6aHiH0rA90WSzqPVYg
-         rjvJfLrc0K+WhSYOmJbBhn6O0TCIePlzlTmm7Op6mHaqEMXqdJvr+cdC3BwhPI7HYS2t
-         gnJ/CUyQNJET6XiCYTH0dfRTQZHZ9RTmP6wQvBXWG+RAqpcmzZAI6p6phbF2GSlDCBiV
-         7QA8yfvw74i5++zOBCnJCWmF1IM5agIKq4J6u7N9ELoEAC8YGiFpYDVLSWE5ApOK6f8i
-         OoUsHCeeUE2YiS66G/QaYv9pfw0tzx5/jS8Ndn8jNvzG0oviNF8md4N+mfogBtzj52n/
-         F6iQ==
-X-Gm-Message-State: AOAM531BiK9lxaw88xg9kfl/qzKBGna2B45FX1xJ1QYPfMenQWvnC6Bs
-        A6rWXi3NEAqURjycO48xNo9fJqeMe9xOS93S0p+xKXonmQ5s/bvXM6M+hEmJmAUOyORJFwUluCN
-        yXKr4uqbipLf5s9c5IGyYC0UX4J81FzF9/w==
-X-Received: by 2002:a17:90b:3a81:: with SMTP id om1mr16654186pjb.184.1634927947594;
-        Fri, 22 Oct 2021 11:39:07 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyr0k2tHvFjYosAvYccPc7j2GWcS5YtlC6EJ6ASX8+JynI78K6CcwXsy3RFuazSDXjjzkOUIw==
-X-Received: by 2002:a17:90b:3a81:: with SMTP id om1mr16654167pjb.184.1634927947318;
-        Fri, 22 Oct 2021 11:39:07 -0700 (PDT)
-Received: from famine.localdomain ([50.125.80.157])
-        by smtp.gmail.com with ESMTPSA id g16sm5608111pfv.192.2021.10.22.11.39.06
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 22 Oct 2021 11:39:06 -0700 (PDT)
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 2F2495FBC4; Fri, 22 Oct 2021 11:39:06 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 26A9EA0409;
-        Fri, 22 Oct 2021 11:39:06 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-cc:     davem@davemloft.net, netdev@vger.kernel.org, vfalico@gmail.com,
-        andy@greyhouse.net
-Subject: Re: [PATCH net-next 4/8] net: bonding: constify and use dev_addr_set()
-In-reply-to: <20211022175543.2518732-5-kuba@kernel.org>
-References: <20211022175543.2518732-1-kuba@kernel.org> <20211022175543.2518732-5-kuba@kernel.org>
-Comments: In-reply-to Jakub Kicinski <kuba@kernel.org>
-   message dated "Fri, 22 Oct 2021 10:55:39 -0700."
-X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=uzHEu8JcrOhTmWUji7U7XIAkxlSL4g7hVEq0Ja4DQ40=;
+        b=ve03iEDOnxAIriIH/0ZFcJkLa1NrgPddHOC2WG5aEcGCD3fMV1JJMh68gjzo0A38gZ
+         31xM6YzmvFnOeyk0j2Vf/CyXCOWDRevlaTkgwt0a8oOEB26HkN4C2F+dZcaQVlKUy7QK
+         qATN0rZ9KVWtbMSBq/JOC0aytrrfjiXkXQ5G5re2aXV5VKfgLoy6ORnfwzECuzObzNbd
+         i4CHX6f615Bc6ENgKaORH/5ntof6GOzutDgvNK9I9Ud3Op6NPHqd7tMaV9l5xjYOJ5BN
+         uGvblTu2iNynvdHDTpUPXpMNo3wZFfy1DXCipReESAMO7GnyP+4lGO324nMAIIecyK4O
+         lZAg==
+X-Gm-Message-State: AOAM530BwOXYkwIz2TemI9+dDjsNK+tqjgZSFihGdedmtS3V0UnAaB88
+        VtLDiZxAWj3KebHrEA8ALzZYr1/THMgXZU/EY9Iofn4waTUK
+X-Google-Smtp-Source: ABdhPJxRQqZLZSCanV9ISO1MVWEVuagxTVVVIOCj0tH6GVZa8TIqZbGVlUZT+7dHExrn8qUR3kJiXPj3je7oQOLcGm1sK2ZZyGxe
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <7527.1634927946.1@famine>
-Content-Transfer-Encoding: quoted-printable
-Date:   Fri, 22 Oct 2021 11:39:06 -0700
-Message-ID: <7528.1634927946@famine>
+X-Received: by 2002:a6b:cd8c:: with SMTP id d134mr860000iog.191.1634928085221;
+ Fri, 22 Oct 2021 11:41:25 -0700 (PDT)
+Date:   Fri, 22 Oct 2021 11:41:25 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c0c8d505cef55b23@google.com>
+Subject: [syzbot] WARNING: ODEBUG bug in batadv_nc_mesh_free
+From:   syzbot <syzbot+1dca817d274a3fb19f2b@syzkaller.appspotmail.com>
+To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
+        sven@narfation.org, sw@simonwunderlich.de,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> wrote:
+Hello,
 
->Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
->of VLANs...") introduced a rbtree for faster Ethernet address look
->up. To maintain netdev->dev_addr in this tree we need to make all
->the writes to it got through appropriate helpers.
+syzbot found the following issue on:
 
-	Should the above be "go through"?
+HEAD commit:    e0bfcf9c77d9 Merge tag 'mlx5-fixes-2021-10-20' of git://gi..
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=17900a0cb00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=bab9d35f204746a7
+dashboard link: https://syzkaller.appspot.com/bug?extid=1dca817d274a3fb19f2b
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=144d76b4b00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14732b80b00000
 
-	-J
+Bisection is inconclusive: the issue happens on the oldest tested release.
 
->Make sure local references to netdev->dev_addr are constant.
->
->Signed-off-by: Jakub Kicinski <kuba@kernel.org>
->---
->CC: j.vosburgh@gmail.com
->CC: vfalico@gmail.com
->CC: andy@greyhouse.net
->---
-> drivers/net/bonding/bond_alb.c  | 28 +++++++++++++---------------
-> drivers/net/bonding/bond_main.c |  2 +-
-> 2 files changed, 14 insertions(+), 16 deletions(-)
->
->diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_al=
-b.c
->index 7d3752cbf761..2ec8e015c7b3 100644
->--- a/drivers/net/bonding/bond_alb.c
->+++ b/drivers/net/bonding/bond_alb.c
->@@ -50,7 +50,7 @@ struct arp_pkt {
-> #pragma pack()
-> =
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14093652b00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=16093652b00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=12093652b00000
 
-> /* Forward declaration */
->-static void alb_send_learning_packets(struct slave *slave, u8 mac_addr[]=
-,
->+static void alb_send_learning_packets(struct slave *slave, const u8 mac_=
-addr[],
-> 				      bool strict_match);
-> static void rlb_purge_src_ip(struct bonding *bond, struct arp_pkt *arp);
-> static void rlb_src_unlink(struct bonding *bond, u32 index);
->@@ -353,7 +353,8 @@ static struct slave *rlb_next_rx_slave(struct bonding=
- *bond)
->  *
->  * Caller must hold RTNL
->  */
->-static void rlb_teach_disabled_mac_on_primary(struct bonding *bond, u8 a=
-ddr[])
->+static void rlb_teach_disabled_mac_on_primary(struct bonding *bond,
->+					      const u8 addr[])
-> {
-> 	struct slave *curr_active =3D rtnl_dereference(bond->curr_active_slave)=
-;
-> =
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+1dca817d274a3fb19f2b@syzkaller.appspotmail.com
 
->@@ -904,7 +905,7 @@ static void rlb_clear_vlan(struct bonding *bond, unsi=
-gned short vlan_id)
-> =
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+------------[ cut here ]------------
+ODEBUG: assert_init not available (active state 0) object type: timer_list hint: 0x0
+WARNING: CPU: 0 PID: 6548 at lib/debugobjects.c:505 debug_print_object+0x16e/0x250 lib/debugobjects.c:505
+Modules linked in:
+CPU: 0 PID: 6548 Comm: syz-executor286 Not tainted 5.15.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:debug_print_object+0x16e/0x250 lib/debugobjects.c:505
+Code: ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 af 00 00 00 48 8b 14 dd 80 3e e4 89 4c 89 ee 48 c7 c7 80 32 e4 89 e8 5e 1d 15 05 <0f> 0b 83 05 d5 39 90 09 01 48 83 c4 18 5b 5d 41 5c 41 5d 41 5e c3
+RSP: 0018:ffffc90002d7ecc0 EFLAGS: 00010086
+RAX: 0000000000000000 RBX: 0000000000000005 RCX: 0000000000000000
+RDX: ffff8880163c8000 RSI: ffffffff815e88a8 RDI: fffff520005afd8a
+RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff815e264e R11: 0000000000000000 R12: ffffffff898de560
+R13: ffffffff89e43900 R14: ffffffff81658550 R15: 1ffff920005afda3
+FS:  0000555555c03300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fef3003e098 CR3: 0000000073ad0000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ debug_object_assert_init lib/debugobjects.c:895 [inline]
+ debug_object_assert_init+0x1f4/0x2e0 lib/debugobjects.c:866
+ debug_timer_assert_init kernel/time/timer.c:739 [inline]
+ debug_assert_init kernel/time/timer.c:784 [inline]
+ del_timer+0x6d/0x110 kernel/time/timer.c:1204
+ try_to_grab_pending+0x6d/0xd0 kernel/workqueue.c:1270
+ __cancel_work_timer+0xa6/0x570 kernel/workqueue.c:3129
+ batadv_nc_mesh_free+0x41/0x120 net/batman-adv/network-coding.c:1869
+ batadv_mesh_free+0x7d/0x170 net/batman-adv/main.c:245
+ batadv_mesh_init+0x62f/0x710 net/batman-adv/main.c:226
+ batadv_softif_init_late+0xad4/0xdd0 net/batman-adv/soft-interface.c:804
+ register_netdevice+0x51e/0x1500 net/core/dev.c:10229
+ batadv_softif_newlink+0x6e/0x90 net/batman-adv/soft-interface.c:1068
+ __rtnl_newlink+0x106d/0x1750 net/core/rtnetlink.c:3458
+ rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3506
+ rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5572
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2510
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1935
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:724
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2492
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f14439a87e9
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffda1fa6268 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f14439a87e9
+RDX: 0000000000000000 RSI: 0000000020000140 RDI: 0000000000000003
+RBP: 00007ffda1fa6270 R08: 0000000000000002 R09: 00007f1443003531
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000004
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
 
-> /*********************** tlb/rlb shared functions *********************/
-> =
-
->-static void alb_send_lp_vid(struct slave *slave, u8 mac_addr[],
->+static void alb_send_lp_vid(struct slave *slave, const u8 mac_addr[],
-> 			    __be16 vlan_proto, u16 vid)
-> {
-> 	struct learning_pkt pkt;
->@@ -940,7 +941,7 @@ static void alb_send_lp_vid(struct slave *slave, u8 m=
-ac_addr[],
-> struct alb_walk_data {
-> 	struct bonding *bond;
-> 	struct slave *slave;
->-	u8 *mac_addr;
->+	const u8 *mac_addr;
-> 	bool strict_match;
-> };
-> =
-
->@@ -949,9 +950,9 @@ static int alb_upper_dev_walk(struct net_device *uppe=
-r,
-> {
-> 	struct alb_walk_data *data =3D (struct alb_walk_data *)priv->data;
-> 	bool strict_match =3D data->strict_match;
->+	const u8 *mac_addr =3D data->mac_addr;
-> 	struct bonding *bond =3D data->bond;
-> 	struct slave *slave =3D data->slave;
->-	u8 *mac_addr =3D data->mac_addr;
-> 	struct bond_vlan_tag *tags;
-> =
-
-> 	if (is_vlan_dev(upper) &&
->@@ -982,7 +983,7 @@ static int alb_upper_dev_walk(struct net_device *uppe=
-r,
-> 	return 0;
-> }
-> =
-
->-static void alb_send_learning_packets(struct slave *slave, u8 mac_addr[]=
-,
->+static void alb_send_learning_packets(struct slave *slave, const u8 mac_=
-addr[],
-> 				      bool strict_match)
-> {
-> 	struct bonding *bond =3D bond_get_bond_by_slave(slave);
->@@ -1006,14 +1007,14 @@ static void alb_send_learning_packets(struct slav=
-e *slave, u8 mac_addr[],
-> 	rcu_read_unlock();
-> }
-> =
-
->-static int alb_set_slave_mac_addr(struct slave *slave, u8 addr[],
->+static int alb_set_slave_mac_addr(struct slave *slave, const u8 addr[],
-> 				  unsigned int len)
-> {
-> 	struct net_device *dev =3D slave->dev;
-> 	struct sockaddr_storage ss;
-> =
-
-> 	if (BOND_MODE(slave->bond) =3D=3D BOND_MODE_TLB) {
->-		memcpy(dev->dev_addr, addr, len);
->+		__dev_addr_set(dev, addr, len);
-> 		return 0;
-> 	}
-> =
-
->@@ -1242,8 +1243,7 @@ static int alb_set_mac_address(struct bonding *bond=
-, void *addr)
-> 		res =3D dev_set_mac_address(slave->dev, addr, NULL);
-> =
-
-> 		/* restore net_device's hw address */
->-		bond_hw_addr_copy(slave->dev->dev_addr, tmp_addr,
->-				  slave->dev->addr_len);
->+		dev_addr_set(slave->dev, tmp_addr);
-> =
-
-> 		if (res)
-> 			goto unwind;
->@@ -1263,8 +1263,7 @@ static int alb_set_mac_address(struct bonding *bond=
-, void *addr)
-> 				  rollback_slave->dev->addr_len);
-> 		dev_set_mac_address(rollback_slave->dev,
-> 				    (struct sockaddr *)&ss, NULL);
->-		bond_hw_addr_copy(rollback_slave->dev->dev_addr, tmp_addr,
->-				  rollback_slave->dev->addr_len);
->+		dev_addr_set(rollback_slave->dev, tmp_addr);
-> 	}
-> =
-
-> 	return res;
->@@ -1727,8 +1726,7 @@ void bond_alb_handle_active_change(struct bonding *=
-bond, struct slave *new_slave
-> 		dev_set_mac_address(new_slave->dev, (struct sockaddr *)&ss,
-> 				    NULL);
-> =
-
->-		bond_hw_addr_copy(new_slave->dev->dev_addr, tmp_addr,
->-				  new_slave->dev->addr_len);
->+		dev_addr_set(new_slave->dev, tmp_addr);
-> 	}
-> =
-
-> 	/* curr_active_slave must be set before calling alb_swap_mac_addr */
->@@ -1761,7 +1759,7 @@ int bond_alb_set_mac_address(struct net_device *bon=
-d_dev, void *addr)
-> 	if (res)
-> 		return res;
-> =
-
->-	bond_hw_addr_copy(bond_dev->dev_addr, ss->__data, bond_dev->addr_len);
->+	dev_addr_set(bond_dev, ss->__data);
-> =
-
-> 	/* If there is no curr_active_slave there is nothing else to do.
-> 	 * Otherwise we'll need to pass the new address to it and handle
->diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_m=
-ain.c
->index 0c52612cb8e9..ff8da720a33a 100644
->--- a/drivers/net/bonding/bond_main.c
->+++ b/drivers/net/bonding/bond_main.c
->@@ -923,7 +923,7 @@ static int bond_set_dev_addr(struct net_device *bond_=
-dev,
-> 	if (err)
-> 		return err;
-> =
-
->-	memcpy(bond_dev->dev_addr, slave_dev->dev_addr, slave_dev->addr_len);
->+	__dev_addr_set(bond_dev, slave_dev->dev_addr, slave_dev->addr_len);
-> 	bond_dev->addr_assign_type =3D NET_ADDR_STOLEN;
-> 	call_netdevice_notifiers(NETDEV_CHANGEADDR, bond_dev);
-> 	return 0;
->-- =
-
->2.31.1
->
 
 ---
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
