@@ -2,112 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDDBA437533
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 11:59:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DF0F437561
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 12:23:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232483AbhJVKBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 06:01:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50088 "EHLO
+        id S232527AbhJVKZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 06:25:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231944AbhJVKBf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 06:01:35 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F802C061764;
-        Fri, 22 Oct 2021 02:59:18 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id h193so2871152pgc.1;
-        Fri, 22 Oct 2021 02:59:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WFk/unDSLeN6Zd2YH9wtowdJH9wzXmq91/MwWlpCQJE=;
-        b=cFnt1qhhWpeOXRNTDuUSjSMo3dFyGY+C5QZ97og1qwnYMtSrMPWt9UJDnJifPFIh1H
-         1IgHTPwJ7yZF8xsHIuSPfar1JSnQalD+on7A2QH+s4MI2WUBh+Wb26D4feFN4jxPY9wQ
-         w/oDYod4oDjFnov0BAhO3krLfgHbaNdRcryuxPpRfZ7uyNApZx8hdI8U5g+rWfhArBc7
-         4GS3ZPWERELZtR2JRSB7aESuEdKO1hceZapmD6hyVfeaO9sH99oMagYX0jLuhvBVbQ1n
-         XFRDQbMCIDfP6yPjyH1UxNhCdmP3xc9KUahTxBXB6ildohSRXB9/bTS3M5HbC6DHnl65
-         fodw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WFk/unDSLeN6Zd2YH9wtowdJH9wzXmq91/MwWlpCQJE=;
-        b=UsPj8voK8POZERbVu/l21SQCWokH597QXBxRppm21WYYmB9KfeW9fs5YJ3L+ZDZQHV
-         XcaJUaZY2+HBpx7GCFZ17fgxJ7aTVcQXKueWWWEWTSnmofJbOPaAuMm0ftXDtoEaaczl
-         d0ARg60PV99q6ADZPkADTR5vYv+kTYXI2BWWFyF47mWNsny6tPrg4pnVgvxGAluBTcb2
-         6vzW0t6eqs3D4xIcSREIUlL0NasCkHKWIvj4Y7liUzn6UcAlJpre2U1jMvQchbyfO2r5
-         ibwR6OJPUBFyiNFqcveBA95uEezOKT4vhXYqxful992+0qoMI4G9Nz8F9eSY+dm20GYf
-         3AuQ==
-X-Gm-Message-State: AOAM5312K5qs3UX9MSowyN4QWmjbicyUsEC0GQhyR7KDDD98EEZnlc07
-        DCURuSS/YqqCDvamSMTz2hfHD/+9hqo=
-X-Google-Smtp-Source: ABdhPJxUyN7O3+WgKI8PIt0fvXk/1fgMbV2lMQbIsYOkrxbDgaOYzSDOIe4OFyBr5+qF1IuFJzLwig==
-X-Received: by 2002:a63:b502:: with SMTP id y2mr8535285pge.214.1634896758188;
-        Fri, 22 Oct 2021 02:59:18 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id y3sm8929028pfo.188.2021.10.22.02.59.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Oct 2021 02:59:17 -0700 (PDT)
-From:   luo penghao <cgel.zte@gmail.com>
-X-Google-Original-From: luo penghao <luo.penghao@zte.com.cn>
-To:     SimonHorman <horms@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S232483AbhJVKZd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 06:25:33 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B82DDC061764
+        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 03:23:15 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1mdrhb-0004xv-Ph; Fri, 22 Oct 2021 12:23:07 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1mdrha-0000Bq-D4; Fri, 22 Oct 2021 12:23:06 +0200
+Date:   Fri, 22 Oct 2021 12:23:06 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Zhang Changzhong <zhangchangzhong@huawei.com>
+Cc:     Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        luo penghao <luo.penghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] xfrm: Remove redundant fields and related parentheses
-Date:   Fri, 22 Oct 2021 09:59:11 +0000
-Message-Id: <20211022095911.1066475-1-luo.penghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org
+Subject: Re: [PATCH net 2/3] can: j1939: j1939_can_recv(): ignore messages
+ with invalid source address
+Message-ID: <20211022102306.GB20681@pengutronix.de>
+References: <1634825057-47915-1-git-send-email-zhangchangzhong@huawei.com>
+ <1634825057-47915-3-git-send-email-zhangchangzhong@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1634825057-47915-3-git-send-email-zhangchangzhong@huawei.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 12:22:09 up 246 days, 13:46, 123 users,  load average: 0.07, 0.13,
+ 0.15
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The variable err is not necessary in such places. It should be revmoved
-for the simplicity of the code. This will cause the double parentheses
-to be redundant, and the inner parentheses should be deleted.
+On Thu, Oct 21, 2021 at 10:04:16PM +0800, Zhang Changzhong wrote:
+> According to SAE-J1939-82 2015 (A.3.6 Row 2), a receiver should never
+> send TP.CM_CTS to the global address, so we can add a check in
+> j1939_can_recv() to drop messages with invalid source address.
+> 
+> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
 
-The clang_analyzer complains as follows:
+NACK. This will break Address Claiming, where first message is SA == 0xff
 
-net/xfrm/xfrm_input.c:533: warning:
-net/xfrm/xfrm_input.c:563: warning:
+> ---
+>  net/can/j1939/main.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/net/can/j1939/main.c b/net/can/j1939/main.c
+> index 08c8606..4f1e4bb 100644
+> --- a/net/can/j1939/main.c
+> +++ b/net/can/j1939/main.c
+> @@ -75,6 +75,10 @@ static void j1939_can_recv(struct sk_buff *iskb, void *data)
+>  	skcb->addr.pgn = (cf->can_id >> 8) & J1939_PGN_MAX;
+>  	/* set default message type */
+>  	skcb->addr.type = J1939_TP;
+> +	if (!j1939_address_is_valid(skcb->addr.sa))
+> +		/* ignore messages whose sa is broadcast address */
+> +		goto done;
+> +
+>  	if (j1939_pgn_is_pdu1(skcb->addr.pgn)) {
+>  		/* Type 1: with destination address */
+>  		skcb->addr.da = skcb->addr.pgn;
+> -- 
+> 2.9.5
+> 
+> 
+> 
 
-Although the value stored to 'err' is used in the enclosing expression,
-the value is never actually read from 'err'.
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: luo penghao <luo.penghao@zte.com.cn>
----
- net/xfrm/xfrm_input.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-index 3df0861..70a8c36 100644
---- a/net/xfrm/xfrm_input.c
-+++ b/net/xfrm/xfrm_input.c
-@@ -530,7 +530,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
- 				goto drop;
- 			}
- 
--			if ((err = xfrm_parse_spi(skb, nexthdr, &spi, &seq)) != 0) {
-+			if (xfrm_parse_spi(skb, nexthdr, &spi, &seq)) {
- 				XFRM_INC_STATS(net, LINUX_MIB_XFRMINHDRERROR);
- 				goto drop;
- 			}
-@@ -560,7 +560,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
- 	}
- 
- 	seq = 0;
--	if (!spi && (err = xfrm_parse_spi(skb, nexthdr, &spi, &seq)) != 0) {
-+	if (!spi && xfrm_parse_spi(skb, nexthdr, &spi, &seq)) {
- 		secpath_reset(skb);
- 		XFRM_INC_STATS(net, LINUX_MIB_XFRMINHDRERROR);
- 		goto drop;
 -- 
-2.15.2
-
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
