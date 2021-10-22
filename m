@@ -2,33 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33C70438094
-	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 01:21:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B01EB438093
+	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 01:21:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232130AbhJVXXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 19:23:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40936 "EHLO mail.kernel.org"
+        id S232116AbhJVXXa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 19:23:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40950 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231928AbhJVXX3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232070AbhJVXX3 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 22 Oct 2021 19:23:29 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C82456109E;
-        Fri, 22 Oct 2021 23:21:10 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1905161040;
+        Fri, 22 Oct 2021 23:21:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634944870;
-        bh=JmujLODs90EQYkA6yxgqKOW5oFpOHbnZPFpbgJvwfaw=;
+        s=k20201202; t=1634944871;
+        bh=QPOakY5+9OJdcLHn3ogELawrsiWZGpVipTLW181m8UI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G5XQ2ghnnKGZfYIThyij4V3lbPxDIlmpAiNoUnAYl63+F3SvbtnYEKsrfNR0SZ2NC
-         rcT2uGrhBIFLVXftVQ3dOJ0ey9VDmI/9LkrFWxZcK96Ggg5ISPuSQWBUQ5EP2kAtcL
-         5o4BAulJB7pSIxgMTEbKNBMv4vursTZAnR39ROjK6poma/F7adBL6Twy2ub1SmGb4r
-         Nn+M4vODi1LcFFSC3K/AcyUhZ5XAIiV8h1cl9fG83Y+pw7m/XXGRvpiZIjJxKp/agu
-         Xx+/sKYlDlJgtsHSG1ftU7DAjm+g+aCmKnDs1NHWXjo7XqA+1YfcqBQ5pix4+jHHYi
-         iVIhXogzSdYUg==
+        b=V5V0DnPKPlKVzZYtuGuN5i2GJ2t+C9xhMFHL5csF9yU4Z9HJaPieH02DB7rSSTIUA
+         Ta6vZv3qorZgum97umuuPAGY+Dlu+u2G/EZtA0PQGRooeOG5tiYhOaX19kJAvPWqG2
+         Qo4oA+cNyzWd0YQmBN8CcNNzY4ie/1Gs/QaFJbm4fIWWJ6dnQKyWDVdwEphBza18TK
+         4i8lBxe4kk2AzYOhUcM0ggJKKRHjCG6GjM5t/bPAouxvsbzvEsUAFDrsctfSemUxlq
+         h1BpSgklKY+7AjIng9C2ZU8hWwa+7haEmIt8+vSlYNPsGu+qk4tO2ZZmeo6J9jQa42
+         /yt4SQLtXw4YA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 6/8] net: caif: get ready for const netdev->dev_addr
-Date:   Fri, 22 Oct 2021 16:21:01 -0700
-Message-Id: <20211022232103.2715312-7-kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        doshir@vmware.com, pv-drivers@vmware.com
+Subject: [PATCH net-next v2 7/8] net: drivers: get ready for const netdev->dev_addr
+Date:   Fri, 22 Oct 2021 16:21:02 -0700
+Message-Id: <20211022232103.2715312-8-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211022232103.2715312-1-kuba@kernel.org>
 References: <20211022232103.2715312-1-kuba@kernel.org>
@@ -38,26 +39,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Get it ready for constant netdev->dev_addr.
+Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
+of VLANs...") introduced a rbtree for faster Ethernet address look
+up. To maintain netdev->dev_addr in this tree we need to make all
+the writes to it go through appropriate helpers. We will make
+netdev->dev_addr a const.
+
+Make sure local references to netdev->dev_addr are constant.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- net/caif/caif_usb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+CC: doshir@vmware.com
+CC: pv-drivers@vmware.com
+---
+ drivers/net/macsec.c              | 2 +-
+ drivers/net/macvlan.c             | 3 ++-
+ drivers/net/vmxnet3/vmxnet3_drv.c | 4 ++--
+ 3 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/net/caif/caif_usb.c b/net/caif/caif_usb.c
-index b02e1292f7f1..4be6b04879a1 100644
---- a/net/caif/caif_usb.c
-+++ b/net/caif/caif_usb.c
-@@ -81,7 +81,7 @@ static void cfusbl_ctrlcmd(struct cflayer *layr, enum caif_ctrlcmd ctrl,
- 		layr->up->ctrlcmd(layr->up, ctrl, layr->id);
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index 18b6dba9394e..16aa3a478e9e 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -250,7 +250,7 @@ static bool send_sci(const struct macsec_secy *secy)
+ 		(secy->n_rx_sc > 1 && !tx_sc->end_station && !tx_sc->scb);
  }
  
--static struct cflayer *cfusbl_create(int phyid, u8 ethaddr[ETH_ALEN],
-+static struct cflayer *cfusbl_create(int phyid, const u8 ethaddr[ETH_ALEN],
- 				      u8 braddr[ETH_ALEN])
+-static sci_t make_sci(u8 *addr, __be16 port)
++static sci_t make_sci(const u8 *addr, __be16 port)
  {
- 	struct cfusbl *this = kmalloc(sizeof(struct cfusbl), GFP_ATOMIC);
+ 	sci_t sci;
+ 
+diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+index 6189acb33973..d2f830ec2969 100644
+--- a/drivers/net/macvlan.c
++++ b/drivers/net/macvlan.c
+@@ -698,7 +698,8 @@ static int macvlan_stop(struct net_device *dev)
+ 	return 0;
+ }
+ 
+-static int macvlan_sync_address(struct net_device *dev, unsigned char *addr)
++static int macvlan_sync_address(struct net_device *dev,
++				const unsigned char *addr)
+ {
+ 	struct macvlan_dev *vlan = netdev_priv(dev);
+ 	struct net_device *lowerdev = vlan->lowerdev;
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 7a205ddf0060..3e1b7746cce4 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -46,7 +46,7 @@ MODULE_DEVICE_TABLE(pci, vmxnet3_pciid_table);
+ static int enable_mq = 1;
+ 
+ static void
+-vmxnet3_write_mac_addr(struct vmxnet3_adapter *adapter, u8 *mac);
++vmxnet3_write_mac_addr(struct vmxnet3_adapter *adapter, const u8 *mac);
+ 
+ /*
+  *    Enable/Disable the given intr
+@@ -2806,7 +2806,7 @@ vmxnet3_quiesce_dev(struct vmxnet3_adapter *adapter)
+ 
+ 
+ static void
+-vmxnet3_write_mac_addr(struct vmxnet3_adapter *adapter, u8 *mac)
++vmxnet3_write_mac_addr(struct vmxnet3_adapter *adapter, const u8 *mac)
+ {
+ 	u32 tmp;
+ 
 -- 
 2.31.1
 
