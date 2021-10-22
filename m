@@ -2,101 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC3EF437BC3
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 19:20:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 554F3437BDB
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 19:26:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233305AbhJVRW2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 13:22:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41950 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231893AbhJVRW1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Oct 2021 13:22:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 1270F60FBF;
-        Fri, 22 Oct 2021 17:20:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634923210;
-        bh=5WrfZBH4dudcmt09PoRMo9VUuGBiPBVwLQHiEXWX24Y=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=J1U4DBlrRUIxxMD0II/uhfFpTYvPLRZr8J8W1IpoKYmGTUE8p4gKEGJMgme/EgxtO
-         5UL2K7p4kIE8wWceFs2lC/A7jnraaP8PKy97058GAK/Ojcx0TQn5t2exdHfsKGU19T
-         Veh8Cxb1LvWzjWEOuR9p0n1xJQGPSf2coNC5Jm+FJue1Kxfcrq1Ve0n57uFJpKfVDT
-         mZFJHW4QfbpQEgYZmhMfI/WQIZPe8HnpEvWkWrBObhWzgSbwyNG0BDhQLY7OfwSlcJ
-         uVTAdT1DYYEbAzB5E3yiSt2Car+O5gqE4OT3rsK6nNVwEZ4W8W0Qwo+mLan8a/98mN
-         QwwQ7iZKr78TQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 06CCD60A2A;
-        Fri, 22 Oct 2021 17:20:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 00/12] net: don't write directly to
- netdev->dev_addr
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163492321002.27565.17266900633363672746.git-patchwork-notify@kernel.org>
-Date:   Fri, 22 Oct 2021 17:20:10 +0000
-References: <20211021131214.2032925-1-kuba@kernel.org>
-In-Reply-To: <20211021131214.2032925-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
+        id S233674AbhJVR23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 13:28:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38344 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233305AbhJVR22 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 13:28:28 -0400
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67BCAC061764;
+        Fri, 22 Oct 2021 10:26:10 -0700 (PDT)
+Received: by mail-io1-xd2f.google.com with SMTP id h196so6377075iof.2;
+        Fri, 22 Oct 2021 10:26:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=a+64Df8HIOf/CrsD8pa8xZ1JJyjhEuVc8/fC1OnXF38=;
+        b=VrHGQbU0JPpN++Qu/+D6kJVpRi0cOHnY0XYbm3uLjNE2V76AeT2lDlxWa/D1DHNCmc
+         UV+4IS304/2EkUvexjLq0Of6PTyyczZ2B0w+OwsWgH+gtodKHhW+HkMFyMkhnCuxGVQM
+         ceGx8CU/F3JpZznbWQy/VW7PnAvrbUQNUECOV/okgFnQQp+b1tmpvG/QnnZFzEjFJ7wy
+         dNorxiXUZuAISZ0UgeocVzOHBy9g97kz2vTSVl1xM7R4L04PHZ1c/MQQmUD32Hhy/DzM
+         ShNxa4FMETz8r5saw211ybbET20+nyJquKl5waZywTHs231adWmWktN6rF3i36lrzDh1
+         I7/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=a+64Df8HIOf/CrsD8pa8xZ1JJyjhEuVc8/fC1OnXF38=;
+        b=SyxG4FICNiXhdYbZxG9V+YJBL9fRJZnJL0dHla3MJxBc/uZn116hOXJrborJ5qlcM2
+         NHClwfTXenqwGiAjRAp6y3QBVtETvpm7hkeIi7ia1P9QRBxKy+AydLYrQyzl25nqDfUk
+         keTnpiAEM1yNkNJk1Zt7kpiS+YtA3GXs+aeaxqdwrAhFcCc8TOS+VoLoSUfKgXveq6kh
+         QCQMsvJVn9R/upx6Rk8HugvNMKbOBEHdK6h4S8MjCJgOyMQWmslK93M/dpPZJ8DVqjan
+         uynSe8WSmIBHH23dZnnm0ak+XLYBu2/ZM+o4jkw9YkxkPJ/Ut1j3UuAf9ymRL0BeUHsm
+         ijUg==
+X-Gm-Message-State: AOAM530QL1k+Mt/ZrzYzFieFAtlx0fooBLkUTs5JmyNoyBq4+k+eqbDS
+        /gjBDglKqU//ljq+aM351sLKkprqSvvjtbds
+X-Google-Smtp-Source: ABdhPJzQPE4AJ8jRq/AOrpDNBTpupaVcpkZCFxLqmCIHmhw1dWl0SAKBsXy8rl+s2cKZPjnTu21DHw==
+X-Received: by 2002:a02:a409:: with SMTP id c9mr796662jal.39.1634923569771;
+        Fri, 22 Oct 2021 10:26:09 -0700 (PDT)
+Received: from localhost ([172.243.157.240])
+        by smtp.gmail.com with ESMTPSA id l10sm4355411ioq.8.2021.10.22.10.26.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Oct 2021 10:26:08 -0700 (PDT)
+Date:   Fri, 22 Oct 2021 10:26:00 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        Stanislav Fomichev <sdf@google.com>
+Message-ID: <6172f428e4174_86bab20824@john-XPS-13-9370.notmuch>
+In-Reply-To: <6172ef4180b84_840632087a@john-XPS-13-9370.notmuch>
+References: <20211011155636.2666408-1-sdf@google.com>
+ <20211011155636.2666408-2-sdf@google.com>
+ <6172ef4180b84_840632087a@john-XPS-13-9370.notmuch>
+Subject: RE: [PATCH bpf-next 2/3] bpftool: don't append / to the progtype
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 21 Oct 2021 06:12:02 -0700 you wrote:
-> More conversions, mostly in usb/net.
+John Fastabend wrote:
+> Stanislav Fomichev wrote:
+> > Otherwise, attaching with bpftool doesn't work with strict section names.
+> > 
+> > Also, switch to libbpf strict mode to use the latest conventions
+> > (note, I don't think we have any cli api guarantees?).
+> > 
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > ---
+> >  tools/bpf/bpftool/main.c |  4 ++++
+> >  tools/bpf/bpftool/prog.c | 15 +--------------
+> >  2 files changed, 5 insertions(+), 14 deletions(-)
+> > 
+> > diff --git a/tools/bpf/bpftool/main.c b/tools/bpf/bpftool/main.c
+> > index 02eaaf065f65..8223bac1e401 100644
+> > --- a/tools/bpf/bpftool/main.c
+> > +++ b/tools/bpf/bpftool/main.c
+> > @@ -409,6 +409,10 @@ int main(int argc, char **argv)
+> >  	block_mount = false;
+> >  	bin_name = argv[0];
+> >  
+> > +	ret = libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
+> > +	if (ret)
+> > +		p_err("failed to enable libbpf strict mode: %d", ret);
+> > +
 > 
-> v2: leave out catc (patch 4)
+> Would it better to just warn? Seems like this shouldn't be fatal from
+> bpftool side?
 > 
-> Jakub Kicinski (12):
->   net: xen: use eth_hw_addr_set()
->   usb: smsc: use eth_hw_addr_set()
->   net: qmi_wwan: use dev_addr_mod()
->   net: usb: don't write directly to netdev->dev_addr
->   fddi: defxx,defza: use dev_addr_set()
->   fddi: skfp: constify and use dev_addr_set()
->   net: fjes: constify and use eth_hw_addr_set()
->   net: hippi: use dev_addr_set()
->   net: s390: constify and use eth_hw_addr_set()
->   net: plip: use eth_hw_addr_set()
->   net: sb1000,rionet: use eth_hw_addr_set()
->   net: hldc_fr: use dev_addr_set()
+> Also this is a potentially breaking change correct? Programs that _did_
+> work in the unstrict might suddently fail in the strict mode? If this
+> is the case whats the versioning plan? We don't want to leak these
+> type of changes across multiple versions, idealy we have a hard
+> break and bump the version.
 > 
-> [...]
+> I didn't catch a cover letter on the series. A small
+> note about versioning and upgrading bpftool would be helpful.
+> 
+> 
+> >  	hash_init(prog_table.table);
+> >  	hash_init(map_table.table);
+> >  	hash_init(link_table.table);
+> > diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+> > index 277d51c4c5d9..17505dc1243e 100644
+> > --- a/tools/bpf/bpftool/prog.c
+> > +++ b/tools/bpf/bpftool/prog.c
+> > @@ -1396,8 +1396,6 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
+> >  
+> >  	while (argc) {
+> >  		if (is_prefix(*argv, "type")) {
+> > -			char *type;
+> > -
+> >  			NEXT_ARG();
+> >  
+> >  			if (common_prog_type != BPF_PROG_TYPE_UNSPEC) {
+> > @@ -1407,19 +1405,8 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
+> >  			if (!REQ_ARGS(1))
+> >  				goto err_free_reuse_maps;
+> >  
+> > -			/* Put a '/' at the end of type to appease libbpf */
+> > -			type = malloc(strlen(*argv) + 2);
+> > -			if (!type) {
+> > -				p_err("mem alloc failed");
+> > -				goto err_free_reuse_maps;
+> > -			}
+> > -			*type = 0;
+> > -			strcat(type, *argv);
+> > -			strcat(type, "/");
+> > -
+> > -			err = get_prog_type_by_name(type, &common_prog_type,
+> > +			err = get_prog_type_by_name(*argv, &common_prog_type,
+> >  						    &expected_attach_type);
+> > -			free(type);
+> >  			if (err < 0)
+> >  				goto err_free_reuse_maps;
+> 
+> This wont potentially break existing programs correct? It looks like
+> just adding a '/' should be fine.
+> 
+> Thanks,
+> John
 
-Here is the summary with links:
-  - [net-next,v2,01/12] net: xen: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/93772114413e
-  - [net-next,v2,02/12] usb: smsc: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/a7021af707a3
-  - [net-next,v2,03/12] net: qmi_wwan: use dev_addr_mod()
-    https://git.kernel.org/netdev/net-next/c/18867486fea3
-  - [net-next,v2,04/12] net: usb: don't write directly to netdev->dev_addr
-    https://git.kernel.org/netdev/net-next/c/2674e7ea22ba
-  - [net-next,v2,05/12] fddi: defxx,defza: use dev_addr_set()
-    https://git.kernel.org/netdev/net-next/c/1e9258c389ee
-  - [net-next,v2,06/12] fddi: skfp: constify and use dev_addr_set()
-    https://git.kernel.org/netdev/net-next/c/2e0566aeb9ff
-  - [net-next,v2,07/12] net: fjes: constify and use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/ed088907563d
-  - [net-next,v2,08/12] net: hippi: use dev_addr_set()
-    https://git.kernel.org/netdev/net-next/c/5ed5b1912a81
-  - [net-next,v2,09/12] net: s390: constify and use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/978bb0ae8b83
-  - [net-next,v2,10/12] net: plip: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/7996acffd7cc
-  - [net-next,v2,11/12] net: sb1000,rionet: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/5f07da89bcd0
-  - [net-next,v2,12/12] net: hldc_fr: use dev_addr_set()
-    https://git.kernel.org/netdev/net-next/c/65a4fbbf2263
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Oops  wrong version of the patch. I'll reply in the more recent one.
