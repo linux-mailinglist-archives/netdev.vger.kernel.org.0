@@ -2,99 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 933A7437212
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 08:47:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E30E4372A3
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 09:22:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232139AbhJVGte (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 02:49:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58008 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231991AbhJVGtd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Oct 2021 02:49:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E8E0160FE7;
-        Fri, 22 Oct 2021 06:47:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634885236;
-        bh=dZfeTaEbXXLP/qmwnJNpC77V3RzRnTM4fFBelnrubhA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=cYaquShgz7lL/mis13ATVxEMijlZLt0EVc9QeVdt8mmTyrIgx542AldvpfVypusI6
-         u5za2WY0uV3NtuRYZiuZMU2HOBlM3KH7tvmmZqOFp7jFQFFnUWB+6qeZpII31N5GKd
-         Vbrz1aQ2hoccw08icgRI2DoHfor4uJfBENKsNwVk5iJQRB5fr2uD00QLD6m9ugREoO
-         uts6u3un/gcfyDjQz2pm1nOjgeLT1AaB5VI8UoTLYQ4ffyFd1qpy3VLEYV+MPLVzqs
-         BXhIndch1n8X2lizXIZuCj/FxmbZZ742XYNr9LAvWL5oMrjGDYTTrYXqSku98KUpg7
-         HpculnfupWmpg==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Moosa Baransi <moosab@nvidia.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Meir Lichtinger <meirl@nvidia.com>,
-        Yufeng Mo <moyufeng@huawei.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net/mlx5i: avoid unused function warning for mlx5i_flow_type_mask
-Date:   Fri, 22 Oct 2021 08:47:03 +0200
-Message-Id: <20211022064710.4158669-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        id S231991AbhJVHY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 03:24:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42532 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231773AbhJVHY0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 03:24:26 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B3C3C061764
+        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 00:22:09 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id r4so3243667edi.5
+        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 00:22:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=RbxGn8rvlnJonem+I51mG2O5Nb4QJa213IRNxjEHDzc=;
+        b=idoDBpxK3g/Y8jwFbbjLfCUbrdl3cfF4/Xt4dK/+g6y/v8Pm7vzJ1gjVy4+sGAGD3W
+         RbMqC4MPYDKCXbTnyrEn1wR9qgqxcVHXVphUXHK2XhECVKm85EcVVSVIWrzH+q29ZpkL
+         fubwFEEpamJCjVIDBqXmZfdp/1TB9e5+ZqIx9UzW4CP1Ce6U6+4IfUldbLP6kxxvMcH5
+         HMM/pDb2wn02KOWQK/ryIPnM2E/DPc0qfJr0fT74HWwJH1zn53Mvi8dGbzVeV40ko7Zd
+         VoYuDuzW0cOzCeV5QTkWYCcvT5i9pB89UkAPkBs1aG1zNfB79fok/K9mrllQIzIqeddA
+         8HoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=RbxGn8rvlnJonem+I51mG2O5Nb4QJa213IRNxjEHDzc=;
+        b=GaJKdLCJQNYrP4avxa5cWSrWBrGXXYBplEitDQsZ5gW9XBGVwbikWsbWdgJhOWg0gJ
+         PeU49R8QESee6OLIaw2CSCf4AJJ6EHUgwsP2bply/U2BWb9oa/ld9d9/NYTMtKJPHhoN
+         GgOp4kn8O/ESaF+9EJIheVlFELejWCMXhq18YrARyIUn2z27F2hZyRWEB5Wny1Jg1Hn4
+         vFHZNkZde7v2mbonrdrGoH32tpVaC6NY436uVnnZfyhFHB9I94lnnkzv6MsfBGNLb7NV
+         Tnr+i2zkvQgVegwJm481C/FRgrxbhfxJdEARv85Zwjn6J0lZ+jLQB7VsJ5eKpR1a9hqo
+         NsVg==
+X-Gm-Message-State: AOAM530EE2mL9biMvjeaZFTWbrg5xPM8zkjDLZZ6fOoXBovQDL+yogbE
+        izEjqI7SbZXUbAfjx6NtNlqa1mt/2Ik=
+X-Google-Smtp-Source: ABdhPJwyL+UItn/YEDXHshQ+g0TJKkj60vQsd6GMIX84mKyStSO7wVN78j7AE77Ap/h6l+ACVM7I5A==
+X-Received: by 2002:a05:6402:4308:: with SMTP id m8mr14709732edc.188.1634887327088;
+        Fri, 22 Oct 2021 00:22:07 -0700 (PDT)
+Received: from [192.168.178.46] ([213.211.156.121])
+        by smtp.gmail.com with ESMTPSA id j21sm3824944edr.64.2021.10.22.00.22.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Oct 2021 00:22:06 -0700 (PDT)
+Message-ID: <7323f833-08e7-5b90-6175-c88696b73e63@tessares.net>
+Date:   Fri, 22 Oct 2021 09:22:05 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.2
+Subject: Re: [PATCH net-next v1] net: mptcp, Fast Open Mechanism
+Content-Language: en-GB
+To:     Dmytro Shytyi <dmytro@shytyi.net>,
+        mathewjmartineau <mathew.j.martineau@linux.intel.com>
+Cc:     Davem <davem@davemloft.net>, Kuba <kuba@kernel.org>,
+        mptcp <mptcp@lists.linux.dev>, netdev <netdev@vger.kernel.org>
+References: <17ca66cd439.10a0a3ce11621928.1543611905599720914@shytyi.net>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+In-Reply-To: <17ca66cd439.10a0a3ce11621928.1543611905599720914@shytyi.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+Hi Dmytro,
 
-Without CONFIG_MLX5_EN_RXNFC, the function is unused, breaking the
-build with CONFIG_WERROR:
+On 22/10/2021 07:15, Dmytro Shytyi wrote:
+> This set of patches will bring "Fast Open" Option support to MPTCP.
+> The aim of Fast Open Mechanism is to eliminate one round trip 
+> time from a TCP conversation by allowing data to be included as 
+> part of the SYN segment that initiates the connection. 
+> 
+> IETF RFC 8684: Appendix B.  TCP Fast Open and MPTCP.
+> 
+> [PATCH v1] includes "client" partial support for :
+> 1. send request for cookie;
+> 2. send syn+data+cookie.
 
-mlx5/core/ipoib/ethtool.c:36:12: error: unused function 'mlx5i_flow_type_mask' [-Werror,-Wunused-function]
-static u32 mlx5i_flow_type_mask(u32 flow_type)
+Thank you for working on that and sharing this patch with us!
 
-We could add another #ifdef or mark this function inline, but
-replacing the existing #ifdef with a __maybe_unused seems best
-because that improves build coverage and avoids introducing
-similar problems the next time this code changes.
+It looks like some modifications are going to be needed, e.g. after a
+very quick look, it seems all tabs have been converted to spaces causing
+the patch not being applicable on git[1]: did you not use git
+format-patch to generate it? Also, some issues will be reported by
+checkpatch.pl, the "reversed XMas tree" order is not respected for
+variables declaration, etc.
 
-Fixes: 9fbe1c25ecca ("net/mlx5i: Enable Rx steering for IPoIB via ethtool")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- .../net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c    | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+Do you mind if we continue the discussion on MPTCP mailing list only? In
+other words, without Netdev mailing list and Net maintainers, not to
+bother everybody for MPTCP specific stuff?
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
-index ee0eb4a4b819..ae95677a01f0 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
-@@ -222,8 +222,8 @@ static int mlx5i_get_link_ksettings(struct net_device *netdev,
- 	return 0;
- }
- 
--#ifdef CONFIG_MLX5_EN_RXNFC
--static int mlx5i_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd)
-+static __maybe_unused int mlx5i_set_rxnfc(struct net_device *dev,
-+					  struct ethtool_rxnfc *cmd)
- {
- 	struct mlx5e_priv *priv = mlx5i_epriv(dev);
- 	struct ethtool_rx_flow_spec *fs = &cmd->fs;
-@@ -234,14 +234,14 @@ static int mlx5i_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd)
- 	return mlx5e_ethtool_set_rxnfc(priv, cmd);
- }
- 
--static int mlx5i_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *info,
--			   u32 *rule_locs)
-+static __maybe_unused int mlx5i_get_rxnfc(struct net_device *dev,
-+					  struct ethtool_rxnfc *info,
-+					  u32 *rule_locs)
- {
- 	struct mlx5e_priv *priv = mlx5i_epriv(dev);
- 
- 	return mlx5e_ethtool_get_rxnfc(priv, info, rule_locs);
- }
--#endif
- 
- const struct ethtool_ops mlx5i_ethtool_ops = {
- 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+Our usual way of working for MPTCP patches is to have the code review on
+MPTCP ML only, then apply accepted patches in our tree first and once a
+validation has been done, send patches later to Netdev ML for inclusion
+in the -net or net-next tree.
+
+Cheers,
+Matt
+
+[1]
+https://patchew.org/logs/17ca66cd439.10a0a3ce11621928.1543611905599720914@shytyi.net/git/
 -- 
-2.29.2
-
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
