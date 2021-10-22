@@ -2,83 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07927437A2D
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 17:39:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDE51437A53
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 17:51:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233386AbhJVPlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 11:41:16 -0400
-Received: from mga17.intel.com ([192.55.52.151]:5593 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233313AbhJVPlO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Oct 2021 11:41:14 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10144"; a="210112356"
-X-IronPort-AV: E=Sophos;i="5.87,173,1631602800"; 
-   d="scan'208";a="210112356"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2021 08:38:24 -0700
-X-IronPort-AV: E=Sophos;i="5.87,173,1631602800"; 
-   d="scan'208";a="569231738"
-Received: from smile.fi.intel.com ([10.237.72.184])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2021 08:38:21 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1mdwcI-00092C-F4;
-        Fri, 22 Oct 2021 18:37:58 +0300
-Date:   Fri, 22 Oct 2021 18:37:58 +0300
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com
-Subject: Re: [PATCH 14/14] net: wwan: t7xx: Add maintainers and documentation
-Message-ID: <YXLa1sQH9Mo83F0S@smile.fi.intel.com>
-References: <20211021202738.729-1-ricardo.martinez@linux.intel.com>
- <20211021202738.729-15-ricardo.martinez@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211021202738.729-15-ricardo.martinez@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+        id S233086AbhJVPxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 11:53:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44978 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229484AbhJVPxQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 11:53:16 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE4FC061764;
+        Fri, 22 Oct 2021 08:50:58 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id r134so5906095iod.11;
+        Fri, 22 Oct 2021 08:50:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=twCWyKn/uuejyopzmhFlIyMEHdeqJMR+lwKeohJhhD0=;
+        b=KbvZVn5Tds2Bhar42foeGUmsVophEgQxbcTLKcvx6/K9krvy8whv714qL72Jssa6bh
+         QfMibvtBiq/Vglaeuxgcs8HVOUlj6xyJg65ieKdkJEEcbZUF9FGD41xfcR/fgrrTE28a
+         025A2rqjtsMtqyU+NiD1ZwLbbmXEMEIF/qNAcZmNk4KnCoR6ZBkcgfB6dN0+Z517zL7a
+         AMH5R7nnyjUNkez/RplYhVfZ1M6MFTa+OEADS87PYzRXKnfyowxiVx4UBFEguPeXP8tU
+         /miU3iUtYCGLZsujIM33UIb+Rmv4Tk4HmaIevMpY5JFkbgDQfUwoahcWnNgFiUJCSImg
+         AR7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=twCWyKn/uuejyopzmhFlIyMEHdeqJMR+lwKeohJhhD0=;
+        b=4yAbukxGUalA5fssOH1m8VX8ivnTD9ZiaA4tkthTtQ37nesR6CzB3V2U6rrJQUawiP
+         nVmEIt/txKPd6SrJA4OCa9yvhJtc2myC77yNPeSUdLRIPVx3YBQD1TGljEPMr2s7mS1e
+         ahaeK7dj+dbE3b2tGASWcQryySoD3suy20ogf8OJgzZz8sdsK6OmHH1QphLKH0sRVJ7z
+         jSXue6tQb8gpKfyrctDnjeIxhI1CeGcc+7g0VINZGEQeTWVI6yvUf/N/tUxzE98zjC6B
+         w03Zt4kOgad0xjeB+v7cb5y9ekvwoswcOfP70Z3wkzCkxXpaWc3+lIz6m8gFXaxvs1Eu
+         /Xaw==
+X-Gm-Message-State: AOAM532ZELLXjRiSIlZethO0Wnw9BG9C9BtN7CFqWgSDiY/tlq1l1iVN
+        uGX/j/U6xDB6EyZcsyqrW6M=
+X-Google-Smtp-Source: ABdhPJw2we6RLfuN8vF/6l6xnZ9CYQqeigaDZDvKKyrd4WikJuV8cq5jx5Ft/spVZnrVqOl0ak3pIg==
+X-Received: by 2002:a05:6602:14d2:: with SMTP id b18mr296487iow.72.1634917858180;
+        Fri, 22 Oct 2021 08:50:58 -0700 (PDT)
+Received: from localhost ([172.243.157.240])
+        by smtp.gmail.com with ESMTPSA id t10sm4302067ile.29.2021.10.22.08.50.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Oct 2021 08:50:57 -0700 (PDT)
+Date:   Fri, 22 Oct 2021 08:50:48 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Roman Gushchin <guro@fb.com>,
+        =?UTF-8?B?TWljaGFsIEtvdXRuw70=?= <mkoutny@suse.com>
+Cc:     quanyang.wang@windriver.com, Tejun Heo <tj@kernel.org>,
+        Li Zefan <lizefan@huawei.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jens Axboe <axboe@kernel.dk>, Ming Lei <ming.lei@redhat.com>,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Message-ID: <6172ddd8c3f59_82a7f208e4@john-XPS-13-9370.notmuch>
+In-Reply-To: <YWRmYk4hHhPf602i@carbon.dhcp.thefacebook.com>
+References: <20211007121603.1484881-1-quanyang.wang@windriver.com>
+ <20211011162128.GC61605@blackbody.suse.cz>
+ <YWRmYk4hHhPf602i@carbon.dhcp.thefacebook.com>
+Subject: Re: [PATCH] cgroup: fix memory leak caused by missing
+ cgroup_bpf_offline
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 21, 2021 at 01:27:38PM -0700, Ricardo Martinez wrote:
-> Adds maintainers and documentation for MediaTek t7xx 5G WWAN modem
-> device driver.
+Roman Gushchin wrote:
+> On Mon, Oct 11, 2021 at 06:21:28PM +0200, Michal Koutny wrote:
+> > Hello.
+> > 
+> > On Thu, Oct 07, 2021 at 08:16:03PM +0800, quanyang.wang@windriver.com wrote:
+> > > This is because that root_cgrp->bpf.refcnt.data is allocated by the
+> > > function percpu_ref_init in cgroup_bpf_inherit which is called by
+> > > cgroup_setup_root when mounting, but not freed along with root_cgrp
+> > > when umounting.
+> > 
+> > Good catch!
 > 
-> Signed-off-by: Haijun Lio <haijun.liu@mediatek.com>
-> Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
+> +1
+> 
+> > 
+> > > Adding cgroup_bpf_offline which calls percpu_ref_kill to
+> > > cgroup_kill_sb can free root_cgrp->bpf.refcnt.data in umount path.
+> > 
+> > That is sensible.
+> > 
+> > > Fixes: 2b0d3d3e4fcfb ("percpu_ref: reduce memory footprint of percpu_ref in fast path")
+> > 
+> > Why this Fixes:? Is the leak absent before the percpu_ref refactoring?
+> 
+> I agree, the "fixes" tag looks dubious to me.
+> 
+> > I guess the embedded data are free'd together with cgroup. Makes me
+> > wonder why struct cgroup_bpf has a separate percpu_ref counter from
+> > struct cgroup...
+> 
+> This is because a cgroup can stay a long time (sometimes effectively forever)
+> in a dying state, so we want to release bpf structures earlier.
+> 
+> Thanks!
 
-Are they co-developers or who? This SoB chain seems broken.
+Other than whitespace LGTM.
 
-> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-
-...
-
-> +MEDIATEK T7XX 5G WWAN MODEM DRIVER
-> +M:	Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
-> +M:	Intel Corporation <linuxwwan@intel.com>
-> +R:	Chiranjeevi Rapolu <chiranjeevi.rapolu@linux.intel.com>
-> +R:	Liu Haijun <haijun.liu@mediatek.com>
-> +R:	M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-> +R:	Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> +L:	netdev@vger.kernel.org
-
-> +S:	Maintained
-
-You are not getting paid for this?
-
-	Supported:   Someone is actually paid to look after this.
-	Maintained:  Someone actually looks after it.
-
-> +F:	drivers/net/wwan/t7xx/
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Acked-by: John Fastabend <john.fastabend@gmail.com>
