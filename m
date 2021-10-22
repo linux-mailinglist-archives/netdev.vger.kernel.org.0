@@ -2,108 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DF70437A5B
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 17:53:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD61E437A6C
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 17:54:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230340AbhJVPz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 11:55:57 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:7034 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbhJVPz4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 11:55:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1634918021; x=1666454021;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=0tlHHuiMm8lnErn5V27t3ajdulg+qS8R0CqBufmjxlA=;
-  b=HlCbjxmfTk/+uPxDu1jts5SfEb1zTEMUAck7j5xoDvcsmyYwhZQihs1C
-   JbHkJtvurXtsgLBDfg37pgTAFvXhugi+XogP9lpX6f95YEDdrV5IpesDP
-   uzwSzDbonREZV/49V4bLb1e0wjKjVkFetGpssJ9CNeOfw4110ffrfSQyz
-   u21twM/g/1S8OZDwxVMWn6Ja1i5MX9UEYIGynmLXy4s1YS8delZSD6V9Y
-   9o+1l9Jk2Q++jPYsv74GCJaRnjKOTGpc+ol1mpzblKJKzZhoYEQ2dGp6e
-   kO6ONOWd1kHF6l6BDrtgsJwKWiRavF+CgUp/5cLzhUZsRTflgNu0p0Zqh
-   A==;
-IronPort-SDR: jsw2Ypl+pVt+8Hqs4wdbYCWymoDIkZMkEmcRMV1wRmbBsOc7y9NvpYA2Ifm9wcIjwH2Erv9Pfx
- QiRiZS/qmXgynfzQeXjc98pDYmB9BZpJUou7nvyh4GwYH8bn/YG3LS4Sgb8yRoCJy6vI2zIzQa
- fByNHhsyZka7+SaCTftVod8H+CuI/qT/ZgqnM7xSHddpaCqYHiW4UkFRWHd/edRSds36yqABor
- ptUUjs2fmAw/cZ3Ayc8x9HF6QOStcCVBWeUp8Rmfvsw0aHQETfywL5EBpM707rINKvJRtloP5b
- Q9Lbp20yXi7nJKsP7JmbdDaX
-X-IronPort-AV: E=Sophos;i="5.87,173,1631602800"; 
-   d="scan'208";a="140767056"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Oct 2021 08:53:40 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Fri, 22 Oct 2021 08:53:38 -0700
-Received: from validation1-XPS-8900.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Fri, 22 Oct 2021 08:53:38 -0700
-From:   Yuiko Oshino <yuiko.oshino@microchip.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     <bryan.whitehead@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        "Yuiko Oshino" <yuiko.oshino@microchip.com>
-Subject: [PATCH net] net: ethernet: microchip: lan743x: Fix dma allocation failure by using dma_set_mask_and_coherent
-Date:   Fri, 22 Oct 2021 11:53:43 -0400
-Message-ID: <20211022155343.91841-1-yuiko.oshino@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        id S233386AbhJVP5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 11:57:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45884 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233371AbhJVP5J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 11:57:09 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F52C061766;
+        Fri, 22 Oct 2021 08:54:51 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id ec8so3447449edb.6;
+        Fri, 22 Oct 2021 08:54:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VDQvFzNmfDK3jhO+7jpcrhMCqkQL2cVQ1kfnY5TX604=;
+        b=qpM61jR7LD0bA8EQfDwaSY5OtUgumwtFBfGUsCzN7q0LQZGJ/POfQhRCc8JuOUD6Z7
+         sDSL876CMem9SRlsM+VcUMRGUW9ruM+a8adBHCpVnuh4E6cxeWBDhzecQfy7p7mFVgsV
+         UgJOFrCrPHjZIYd3nsDgmhDUFybJ0A0B9WyRnYOurgVrzPzOrSiVG8sbeWMbzcra36oN
+         D4L0nW/tt30fsZjFKcY7PiJUHK6F0K+d2k8Pnz5OkWUbDP3ujMOvZfOzLxur5p8baUS7
+         yhL54zlZ0yZT9Vw5eIVIqMuoshTVmPdlJ87V/h7Xv/rXqU109u++8Jug/mdhCEX4kBGO
+         vNHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VDQvFzNmfDK3jhO+7jpcrhMCqkQL2cVQ1kfnY5TX604=;
+        b=dNVEdca/AzpdiivNVSkSaDBjC9TqXFRKdL+FYdPNnv6ZMGyjHeVFqV9K6y8go44CIc
+         yIqJ+/yFrKR3xwHuDy6qFgyCr336WDFKWbRAb0jlj6OrF0sx+p9spjqjwTtZmQvD+Hic
+         zVdo2LvTDPVsfYp/+HEGc1hQ5d4u0qOD7svf/gSaCtpTuNaXGDWJSFnwCKqppCPpeIbv
+         ECfvClSJl+myIvzGnCmTLAnFF24YWwjUtFyqXI2ZwY44vJjOQobevdkUgPqW8vEcA5Ay
+         92NGhB7rCr0+tPMEw/nDHEZQC6kDzMh6ZgFi9c1K6oi3QU+E37eW9juGZGaGBzIj7kKr
+         2ogA==
+X-Gm-Message-State: AOAM533oK/bZe1M9A3xVxpqqmwKCNyW4Zji982mx/WVyKB/NdRgNIjcT
+        qgPMtcjf+F6NJvTQN4vM03ylQvk+v7lJr9sOOvX+HP5z
+X-Google-Smtp-Source: ABdhPJx7Qh2wotC8d3QFr/ramxsDE1vs7RPk9exrSbJ8swO5Xt6tf36SeltWuB7PkW4LF5/kmuRqYDUHR5FXPggdjwc=
+X-Received: by 2002:a17:906:f0ca:: with SMTP id dk10mr513886ejb.94.1634918089833;
+ Fri, 22 Oct 2021 08:54:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <CAOhMmr7bWv_UgdkFZz89O4=WRfUFhXHH5hHEOBBfBaAR8f4Ygw@mail.gmail.com>
+In-Reply-To: <CAOhMmr7bWv_UgdkFZz89O4=WRfUFhXHH5hHEOBBfBaAR8f4Ygw@mail.gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Fri, 22 Oct 2021 18:54:38 +0300
+Message-ID: <CA+h21hqrX32qBmmdcNiNkp6_QvzsX61msyJ5_g+-FFJazxLgDw@mail.gmail.com>
+Subject: Re: Unsubscription Incident
+To:     Lijun Pan <lijunp213@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The dma failure was reported in the raspberry pi github (issue #4117).
-https://github.com/raspberrypi/linux/issues/4117
-The use of dma_set_mask_and_coherent fixes the issue.
-Tested on 32/64-bit raspberry pi CM4 and 64-bit ubuntu x86 PC with EVB-LAN7430.
+On Fri, 22 Oct 2021 at 18:53, Lijun Pan <lijunp213@gmail.com> wrote:
+>
+> Hi,
+>
+> From Oct 11, I did not receive any emails from both linux-kernel and
+> netdev mailing list. Did anyone encounter the same issue? I subscribed
+> again and I can receive incoming emails now. However, I figured out
+> that anyone can unsubscribe your email without authentication. Maybe
+> it is just a one-time issue that someone accidentally unsubscribed my
+> email. But I would recommend that our admin can add one more
+> authentication step before unsubscription to make the process more
+> secure.
+>
+> Thanks,
+> Lijun
 
-Fixes: 23f0703c125b ("lan743x: Add main source files for new lan743x driver")
-Signed-off-by: Yuiko Oshino <yuiko.oshino@microchip.com>
----
- drivers/net/ethernet/microchip/lan743x_main.c | 20 +++++++++++++++++++
- 1 file changed, 20 insertions(+)
-
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index 03d02403c19e..6ffcd1b06f2d 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.c
-+++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -1743,6 +1743,16 @@ static int lan743x_tx_ring_init(struct lan743x_tx *tx)
- 		ret = -EINVAL;
- 		goto cleanup;
- 	}
-+	if (dma_set_mask_and_coherent(&tx->adapter->pdev->dev,
-+				      DMA_BIT_MASK(64))) {
-+		if (dma_set_mask_and_coherent(&tx->adapter->pdev->dev,
-+					      DMA_BIT_MASK(32))) {
-+			dev_warn(&tx->adapter->pdev->dev,
-+				 "lan743x_: No suitable DMA available\n");
-+			ret = -ENOMEM;
-+			goto cleanup;
-+		}
-+	}
- 	ring_allocation_size = ALIGN(tx->ring_size *
- 				     sizeof(struct lan743x_tx_descriptor),
- 				     PAGE_SIZE);
-@@ -2276,6 +2286,16 @@ static int lan743x_rx_ring_init(struct lan743x_rx *rx)
- 		ret = -EINVAL;
- 		goto cleanup;
- 	}
-+	if (dma_set_mask_and_coherent(&rx->adapter->pdev->dev,
-+				      DMA_BIT_MASK(64))) {
-+		if (dma_set_mask_and_coherent(&rx->adapter->pdev->dev,
-+					      DMA_BIT_MASK(32))) {
-+			dev_warn(&rx->adapter->pdev->dev,
-+				 "lan743x_: No suitable DMA available\n");
-+			ret = -ENOMEM;
-+			goto cleanup;
-+		}
-+	}
- 	ring_allocation_size = ALIGN(rx->ring_size *
- 				     sizeof(struct lan743x_rx_descriptor),
- 				     PAGE_SIZE);
--- 
-2.25.1
-
+Yes, the exact same thing happened to me. I got unsubscribed from all
+vger mailing lists.
