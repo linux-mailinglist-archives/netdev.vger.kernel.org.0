@@ -2,117 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6952A437AF9
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 18:33:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F1DB437B02
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 18:36:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233540AbhJVQfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 12:35:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54508 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233286AbhJVQfJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 12:35:09 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6E4DC061764
-        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 09:32:51 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id y4so3137911plb.0
-        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 09:32:51 -0700 (PDT)
+        id S233543AbhJVQiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 12:38:21 -0400
+Received: from mail-eopbgr140042.outbound.protection.outlook.com ([40.107.14.42]:5957
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229968AbhJVQiU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Oct 2021 12:38:20 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QyR88000TtF6L/qp+nYoD9DEq8hPChYP25S0yD1ilwp1kd7lhRqT34l7dFiR3EzMcpDShOEJ49Mx15KmKu9kjrDog/mAfbW2VuWI0p6e4LbrAfRHrglU6gBQLAgMXlf+K4uVvr9MYXEYw3IPajeiZoks1wnfzwc7ooM7IhdMVShA2eGgWjB+OiC7O6mVZZKA9MWV3ysFkRfeVfSz6iZ6t+BnBSceG3jovpwULvDdNIrVL60QYt+/sI0HG1y/nqHa0NSZyp9EgmwwopUqPGvSTM729sSW6asz2AEj0VIcFddWF02Dzfr0ex8lPDzL7h+Olp1uoz9FBcKTj/GQeblQ6g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8Y4tLCv3Y3CiM7gtJUwihWe+hjKK4/oPQp2dMCrg7bM=;
+ b=OSebc0hBnGK04VCKIM55AAiwKughBbfml2arH7ezwvmcM5PGr8QykyjAUVKqebyWZZbg53+4rOwoqQhyxWbpR39yt1NMKFI7nTQUd0y8Yt0pp9XN4MdDyXM0iQD5YMoNm+e90uNdd7GOlGoYHaMtGkv4KVVK3Xq0M2Wzm1WX/PIKULmXDW1WiAKpiXZ8u6ShDeXbgDRWXQxjwegkXQ65cDMaSvCf+Qklmfyi0Vei6e0PDsTiYij3KlnTSTheLIrGF7vaRy+y3nBqTLwbpRiQKWJd+D+HQH7RQiNg2zjxEA5Cmsrres9/iKXBnL4agaBhTla+VoTFkM5FriwIhEEGTQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=5rpii9ljeyCTGBIGGGZyeVodcjyEXnb0CBrwOPHqZOw=;
-        b=SulFKpzExi2y2Cau6iGyGMCMbWWQPvKoR3l+n13o2oTonwKo0v6rM90YhAsce9C6tk
-         MHDzGOTls0LUBe5tK8vuVnuP8VxRJ7jm02LYP+IE+fWH6qCVX63p16EG7AzNhTyc8dZ2
-         L/zrKKoSK1Q1NnlcIqkeOMZHFcasQcvnTN0kLVzvDv+w/h06+SbHJHqX4xkhY3fZ8fJm
-         tXKsrzH/26BzGmnsaiNiQIJyT0X5m3/D00/7HAKhuEJAU/4bxPL7O8Ngrg7mBOuIhU/4
-         JmvTM3T8Fm9h+p0lMaX2Nk2Lz1UvV2WzEwOUIjeHy7PzNFjd3Fy/lGNzI0ShUPkf2uFy
-         M+tA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=5rpii9ljeyCTGBIGGGZyeVodcjyEXnb0CBrwOPHqZOw=;
-        b=E/F/t6IM4i0p5jDi+9qP64vu+8skDgFK6TDHBvPuoFR40Pbwia1Z9ewlg+xNYkfb4l
-         tSp1ZiTcSk5av5NuhTmdC1+3EY4ByD8BXXKTdk21J/X2p78+7DzXZ+AGE0XBYDSsXmFw
-         l6UB7kJjCyJE+Mqhbgbo3JaHqbCdDzwWVrAPCv8M1QpYtEWjQOwbgZYHBlxpW4SN/VL8
-         vnuTqRGkpz4DR1mnHHDx4u2v7ZDbPm4pR7yA1nXw6LIZ0Iz/zrK6h4uUrzTmFmSZj0wy
-         wI1Osz+4/Q+JKNR+CxtQFw36CSPkWN30Ct2HrZp5rr1JdvzudpQGu/UlIgmmy5RNeUmz
-         8Xcw==
-X-Gm-Message-State: AOAM533izjeabJKR2tPzyDNCWfEj8g/9NexGEy+DlKtw9SFEM0YXkSnv
-        T8T4h7YQtwI+zIp1fRi836g=
-X-Google-Smtp-Source: ABdhPJxBW8VHTjGKnH4KyuZrzMludIrv+iEuN3GnJ2SohHqmR5KU6cwUArV0CRMrtD7BevlP0y2e4g==
-X-Received: by 2002:a17:90b:4d84:: with SMTP id oj4mr1079009pjb.58.1634920371393;
-        Fri, 22 Oct 2021 09:32:51 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id n14sm8590334pgd.68.2021.10.22.09.32.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Oct 2021 09:32:50 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next 4/9] net: dsa: b53: serialize access to the
- ARL table
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        UNGLinuxDriver@microchip.com, DENG Qingfang <dqfext@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Aleksander Jan Bajkowski <olek2@wp.pl>,
-        Egil Hjelmeland <privat@egil-hjelmeland.no>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Prasanna Vengateshan <prasanna.vengateshan@microchip.com>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>
-References: <20211022141616.2088304-1-vladimir.oltean@nxp.com>
- <20211022141616.2088304-5-vladimir.oltean@nxp.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <a370b7c1-d4b6-7fee-0405-d3e9f9c9837b@gmail.com>
-Date:   Fri, 22 Oct 2021 09:32:47 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+ d=secospa.onmicrosoft.com; s=selector2-secospa-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8Y4tLCv3Y3CiM7gtJUwihWe+hjKK4/oPQp2dMCrg7bM=;
+ b=TZ5nICyaEWZVvonVoXaLaa4Qqttp4QHqQdVFTzBtgJ43/4RkRY2UbrNPQewdg9wHLQ2y5VNJxwWIqwRXBZFwe2d6zk5pwR5MN7pd1+DYqM3xO9ldR345Dl8F9F1dMyaMJMSNM5Drcq81a5z7os/wKf1UfsmDslPAOPyoHcQxQZE=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
+ by DB9PR03MB7418.eurprd03.prod.outlook.com (2603:10a6:10:22e::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.18; Fri, 22 Oct
+ 2021 16:35:59 +0000
+Received: from DB7PR03MB4523.eurprd03.prod.outlook.com
+ ([fe80::a9aa:f363:66e:fadf]) by DB7PR03MB4523.eurprd03.prod.outlook.com
+ ([fe80::a9aa:f363:66e:fadf%6]) with mapi id 15.20.4608.018; Fri, 22 Oct 2021
+ 16:35:59 +0000
+From:   Sean Anderson <sean.anderson@seco.com>
+To:     netdev@vger.kernel.org,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org,
+        Sean Anderson <sean.anderson@seco.com>,
+        Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
+Subject: [net-next PATCH 1/2] dt-bindings: net: macb: Add mdio bus child node
+Date:   Fri, 22 Oct 2021 12:35:47 -0400
+Message-Id: <20211022163548.3380625-1-sean.anderson@seco.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MN2PR13CA0017.namprd13.prod.outlook.com
+ (2603:10b6:208:160::30) To DB7PR03MB4523.eurprd03.prod.outlook.com
+ (2603:10a6:10:19::27)
 MIME-Version: 1.0
-In-Reply-To: <20211022141616.2088304-5-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: from plantagenet.inhand.com (50.195.82.171) by MN2PR13CA0017.namprd13.prod.outlook.com (2603:10b6:208:160::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.11 via Frontend Transport; Fri, 22 Oct 2021 16:35:58 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4cc4d16e-e8a3-4900-c1cc-08d9957a078d
+X-MS-TrafficTypeDiagnostic: DB9PR03MB7418:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DB9PR03MB74189895132202B58E08869D96809@DB9PR03MB7418.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: emipfumIICNl31Y69Jk/zUVVe5bOBRgg1Z6UQ4IjhOL6g2K3dFabbZMzUzThimmVVd4z1qW2b31o7BFyd9kLM5D5ux+D5lkfUugLFf26rFBFni6p5qFIEQq3V57z8pOPw6QuG8Ohsh7S1xa8lKuRYgbh2Az5Y/itDIUKecLdJ1lZiGcxUAdvIzJktpQPjIwx3iTwykgP5MXzwHGRAVdw5ysZ0HWSg44s/ud5ZriH5p1v/u2pE3ryMpuwFi6hhzsc9vfUMaLajHR/n7OzS6YU0iWHfc01MR2+qOwtnW3Rg5ZnkXvim0RnqTO79fHYUxAsnO1zApZTbp1oZAuhDMsnM2sisadjmyxopDEy/Zy4Vqyvq90PpSp4xhkWXfgRctWrPYk4slcqrdtSBeTB3Pv5ksNPEP1EBgtIu0cWl/Abp5buKSP+1QFi8hDpwhyqYz48HIDGfWGiwVhWwlQBZ11h3KgiooR8aBCQN1pOIwhN+Y1xWXEAUOq4uLgEF9DoXfqKWFlo7+l/Y6Dd1DkvmD6d0MTimLya3zJOBExU+b3lSz9hUiALyJKRQoIwEDdfKsOTZHdYiigjB+Bw1TBoH9IhLzi8YNfyZb2oX10K9vNkUrUKUBFs2dTIfx07TX9OXVuZXWRBiC70s6SwP3/kCUa5JITPxhyU6GL1mu0+86WeTDlUzFyldAjIrSFanmpKnHKlJvHFmi+n5Q3Ym+bWGDg1OA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(956004)(8936002)(508600001)(66476007)(66556008)(38100700002)(38350700002)(2616005)(4326008)(6666004)(1076003)(6512007)(5660300002)(4744005)(110136005)(54906003)(36756003)(66946007)(86362001)(83380400001)(44832011)(26005)(52116002)(186003)(316002)(2906002)(8676002)(6486002)(6506007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SyPfogVQeq6r/OKd29w4O/Vke2mWSwjWnClT7apayxf98lFLioj4nMTjjhCA?=
+ =?us-ascii?Q?JCh9lL82zHv/uLQJMy35q+iSIpzaizrjP9j0HMm4T6biyVkEHAHtZ6OuKiCD?=
+ =?us-ascii?Q?Zw16BWNXW9Ty4WCgXtdWbCfvhvAmwyd9v8LYYCnkLI9Uk3aN91e8v9K/vYvX?=
+ =?us-ascii?Q?KEtVJVNr8iZd4ZztTzJ+FcxTk3brb5iDLcbkQUtnHboVzfN2CvwT+zH0f61u?=
+ =?us-ascii?Q?vLYu1cev84sH7RSMekIISeucrpWm/RlYOf8AP1gUYMUuDaC0Vkd+arH2Jpbi?=
+ =?us-ascii?Q?Kqj3dKdLglt6wXQkSOB1X+fhmV5MGE9qUwP47bREvrpbwgGxuxARQH1xPDj9?=
+ =?us-ascii?Q?VIMKX9xQYMC4M6OHMcxdX3wJKQXMe139PQnsd4q9v+H9Non4to8W3jRRMWFZ?=
+ =?us-ascii?Q?NKEUe3w3bIbDD2dclEbiPKwETlcC7Hf/oKwop7r2YCf2m7+0cXBtGQxMTjUT?=
+ =?us-ascii?Q?tjIsZ8NkR8as+NtPEQtSTdqYNeIEh8fVcOFCGj9gMXErbyH1rdWMFplaJAyH?=
+ =?us-ascii?Q?A2mKX1l3WrJlHjPfc1Ov6xPB9s1+3D9mxaaks3fp1uqYuddYmk+R3r2rgUnh?=
+ =?us-ascii?Q?gqMWkP3fiFY9WLkjbhJ7mBF3KOWOUPFtd/TnN5rlgpJX67E/lvdp+Lk4koSp?=
+ =?us-ascii?Q?5+Ch2joM+rsMa7Twtl5DF2qABxpNOa5F8occNMky8mea5vL6l0nbNdGsIesy?=
+ =?us-ascii?Q?qQfxBazN7BVugbcqY0pYVNT7IfYhsrgK5xHN14adMRNDyX3dC3rGOkb2gQAT?=
+ =?us-ascii?Q?IwEclQKrnhMzYygMnQYvbnlcWj1FvSu3bAfobKTFU2AzAiEKDea3OY5nxQi+?=
+ =?us-ascii?Q?wD7IgH7i76lHTrT63zUXvDZEtPnduJcH7WqygcH8hmbUxlMSWxSIfhiC46Fc?=
+ =?us-ascii?Q?ArjW+/mqdXr6dZpsiToG1rleNGUPBusm+o7rFBKCpAj/jmpUB58cO+UbRtv4?=
+ =?us-ascii?Q?nAPM3h0bqCJa4HFdsMPKRwa/EAvyxp87DgdKuUroq4EinnWMHdwWj3/vgzQN?=
+ =?us-ascii?Q?oimeP08II0vg//PzH/hMXQHcuIryQYg1af1ufNHIaO1lD3iCKOCK9kurZ6Q2?=
+ =?us-ascii?Q?n4z+JL0BFg93ed0jkH3xlQis2ohaknCWfXC43gws+yIaAuKovfadmBELvveJ?=
+ =?us-ascii?Q?fcWKSJclwxyyWOETFdQew+m06q7PRbKESOzriWvzW8ta43O7vAgDxeyIj58Y?=
+ =?us-ascii?Q?vctKEq343WRaYSOwAX0y18knnLkLPYf39Dlr2eFkhiG/4Wk0JwYD1kvLoWcz?=
+ =?us-ascii?Q?y5jy+clRek83XrVfAN6UEanNqBfWVSCYTIavx3OVvjeDockiyLDM4bz6KQyc?=
+ =?us-ascii?Q?KNNMV7H4L289VZY490TnpHWd?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4cc4d16e-e8a3-4900-c1cc-08d9957a078d
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4523.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2021 16:35:59.6984
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sean.anderson@seco.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR03MB7418
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/22/21 7:16 AM, Vladimir Oltean wrote:
-> The b53 driver performs non-atomic transactions to the ARL table when
-> adding, deleting and reading FDB and MDB entries.
-> 
-> Traditionally these were all serialized by the rtnl_lock(), but now it
-> is possible that DSA calls ->port_fdb_add and ->port_fdb_del without
-> holding that lock.
-> 
-> So the driver must have its own serialization logic. Add a mutex and
-> hold it from all entry points (->port_fdb_{add,del,dump},
-> ->port_mdb_{add,del}).
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+This adds an optional mdio bus child node. If present, the mac will
+look for PHYs there instead of directly under the top-level node. This
+eliminates any ambiguity about whether child nodes are PHYs, and allows
+the MDIO bus to contain non-PHY devices.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+---
 
-Only if you need to spin a v2, small nit below:
+ Documentation/devicetree/bindings/net/macb.txt | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-[snip]
+diff --git a/Documentation/devicetree/bindings/net/macb.txt b/Documentation/devicetree/bindings/net/macb.txt
+index af9df2f01a1c..a1b06fd1962e 100644
+--- a/Documentation/devicetree/bindings/net/macb.txt
++++ b/Documentation/devicetree/bindings/net/macb.txt
+@@ -30,6 +30,10 @@ Required properties:
+ 	Optional elements: 'tsu_clk'
+ - clocks: Phandles to input clocks.
+ 
++Optional properties:
++- mdio: node containing PHY children. If this node is not present, then PHYs
++        will be direct children.
++
+ The MAC address will be determined using the optional properties
+ defined in ethernet.txt.
+ 
+-- 
+2.25.1
 
-> +		if (ret) {
-> +			mutex_unlock(&priv->arl_mutex);
->  			return ret;
-
-I would be tempted to create an out label and have all of those tests
-goto that label in case of error, just so there is a single place where
-we unlock the arl_mutex.
-
-Thanks!
---
-Florian
