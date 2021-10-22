@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A0DE4378EE
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 16:18:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3BD94378EF
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 16:18:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233113AbhJVOU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 10:20:29 -0400
+        id S233059AbhJVOUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 10:20:42 -0400
 Received: from mail-eopbgr60040.outbound.protection.outlook.com ([40.107.6.40]:37344
         "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233059AbhJVOU1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Oct 2021 10:20:27 -0400
+        id S233026AbhJVOU3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Oct 2021 10:20:29 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=S08G8mr9kTVhKY4+JXekZYJ7XYcibfrr+A9fC5M3vxLWPVOlpCEDH48nuVUdtAgPR8rQS/9n0ImtB7lqj5LanwsxcmimlYBX/WwSm+rPyzOAnaHOd4SryDiGUl/cy0DsajVQvsD8En+kpDAI4l339JtI9UU9/2jpL/wttFNX96h6IWcdodJ6ISvQzFfay6X+b+1/diqAFeD2IFGXIHnxpJjchDadqhcKwFM6YEoIdq2FAubkSn0nPEhzrZU2e+kA3v7+UqXxOGAgQQWz3htnzSSFlNCGc8HyMxJdaDllyeSA2qF5RE/0Bvfgig2xYRopWRiwuAPLFu0a7pCnG+mbUA==
+ b=T4ezYwm6l96L1FJYKaWnAhOiH/YbXxW7knVqHF/+xhx/RkYzoV72KV0ckZWXj/NvXZQkUitBrhsognc8SwtsUzu5R+Emncex6LuawS55DTFcN7F2mu7VL/kbRuR+xghONKs9xNPYeIk33WsNpH3+BRdNXKd8RJehjnXFrBOoOmGNtkGuk+QQQS1XhK0oGSORO5A2rK6RAEkwWeGv09ub5QpWGm9Y3ApYTQXqjRQVd25JsMWM/O84n6m0nytosQiRJsa1dRPsvqrmkCi3AAnoBPMf7HoVNG1sGFMEz4jx/6NVDkY2fptaRaF0WuIuKiM3IgX3mlS0AidL68akLHmAVg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Wp6y/wQG3E6+O1ToLzm5Cn0t+pqax6RObs/OjdtECwY=;
- b=DsvaSeXXXrtMyc+ySa1dVZdVC8e7o/IHVWPoAOeGkqj0NpVFO7eGmTMNRBWwQgofYTKu2DSb29tRl7ZV17FJuDFzIWEeOt5ewKSrTtRYD+zCNWEx97LXA/cpgq2jEnoYa2mmcPJ3dwFUf5r/f/JfzRTnFzt0FBTTUJy1qEuAPboWypgC7UEdmQr4syvmFWBRvE165N8KjEtG6UIfGphVrGsmS9nAyjqHxVqf+opmYWOUbUIQ8X38Sht4/iuykOpjuO+E4BH+KW20XAhYQiwTSmQEJdPvKhbzlEmfXkQvZ+VCDEY2YV0sLcNlwE6BLgOKhSFZ12LjHHyivo89gYfyoQ==
+ bh=3PWTbqITJPkSQdgm2xTfieSUveBWc5U1KkmzMOQDlEA=;
+ b=jshhYtUhRDbtyNKSuZOCpjmSGi4SweZ7tXFfxEHmjQIFs3qT0nXELxs3rNlYeKY5Io9vGHez05Iraw9xhVyEXfBOOHgJupn+il/yMGLFnGewpivpylBumgYILOU1mMO4wW3gNipxjZZYqNMLgyMKuHkt/dlrZ4D39GHod7Tk36ZkY3c/H1+5o2Zoii9ctdg1xJBPVguYgMsQglpGuKFZcUsCTuORPeW3gV9yWiryOQEDM/aJwOCkf/9dq9SYMdIRgW/nbUnB/vCh9tiCootccZefDRi7k/68iyhncHAP/jxUJbrAIm0mqsrkrwbO81oCh+3RuoMDMAHKHNYmE7xJng==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Wp6y/wQG3E6+O1ToLzm5Cn0t+pqax6RObs/OjdtECwY=;
- b=Xt/TH7ISPxAiQLl7yt3onJen8Txl5IDYjvZF+c/Xh4lpUNBYfadLPbAefhvYIhOwU0D78Lhb7/P7Pnn9UNpSY2aaU3daZ8iiAVD8E5yR/GHg3+kQOfrs2EE3x0hKYhgQk26AG53iV6BynDyPK5qMSG3NsnjHla6ZQPCLP8XFmQE=
+ bh=3PWTbqITJPkSQdgm2xTfieSUveBWc5U1KkmzMOQDlEA=;
+ b=dzyD/84aVM5uOtzAV0mcpcq7gEQS/o484FyU8hJKPr/SGSe1uIBk3RtHmamHAAunGwjNue2hl0rDSmdQYawnPYlDMQywl8heaYxcP2VIY+YIkwEGK9AAVjbwD44NudhCiLVHb3Z0knmyPmgbO2RIpkddhk6fmTF/retuwSiRRCY=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR0402MB3406.eurprd04.prod.outlook.com (2603:10a6:803:c::27) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18; Fri, 22 Oct
- 2021 14:18:01 +0000
+ 2021 14:18:03 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4608.018; Fri, 22 Oct 2021
- 14:18:01 +0000
+ 14:18:03 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -57,14 +57,10 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Oleksij Rempel <o.rempel@pengutronix.de>,
         Prasanna Vengateshan <prasanna.vengateshan@microchip.com>,
         Ansuel Smith <ansuelsmth@gmail.com>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Po-Hsu Lin <po-hsu.lin@canonical.com>
-Subject: [PATCH v2 net-next 8/9] selftests: lib: forwarding: allow tests to not require mz and jq
-Date:   Fri, 22 Oct 2021 17:16:15 +0300
-Message-Id: <20211022141616.2088304-9-vladimir.oltean@nxp.com>
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>
+Subject: [PATCH v2 net-next 9/9] selftests: net: dsa: add a stress test for unlocked FDB operations
+Date:   Fri, 22 Oct 2021 17:16:16 +0300
+Message-Id: <20211022141616.2088304-10-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211022141616.2088304-1-vladimir.oltean@nxp.com>
 References: <20211022141616.2088304-1-vladimir.oltean@nxp.com>
@@ -74,48 +70,48 @@ X-ClientProxiedBy: AM0PR02CA0159.eurprd02.prod.outlook.com
  (2603:10a6:20b:28d::26) To VI1PR04MB5136.eurprd04.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Received: from localhost.localdomain (188.25.174.251) by AM0PR02CA0159.eurprd02.prod.outlook.com (2603:10a6:20b:28d::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.16 via Frontend Transport; Fri, 22 Oct 2021 14:17:59 +0000
+Received: from localhost.localdomain (188.25.174.251) by AM0PR02CA0159.eurprd02.prod.outlook.com (2603:10a6:20b:28d::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.16 via Frontend Transport; Fri, 22 Oct 2021 14:18:01 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f839f287-7571-46a5-7c62-08d99566c186
+X-MS-Office365-Filtering-Correlation-Id: e36b1317-00c8-4e21-0955-08d99566c29c
 X-MS-TrafficTypeDiagnostic: VI1PR0402MB3406:
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB34067D1FFBF074FF849D1A86E0809@VI1PR0402MB3406.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1079;
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB34064BB6F80BCEA38B685CCCE0809@VI1PR0402MB3406.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0WTiZ9gfGA9VsnX+mb8OByr2R9MahiGRH3UF5nY67K8AmMMdsBq5hSayAzXwuoIfZo1uukJzm/DAYihYkJQzAjRaiXzo3Ggc7zoHJOQ+Zr0hnKONMn0VPSgkCutqeKEAtona6QkwZzC9E2agmF00YgiDjgQnwrI0PotRqOS7bHucSHYuoPsVMyGGWiARYZeXs04Eiz4osjEwHvReq/smBJdAK80cNm/SjCOVUtqz4SFFhFVQLuMg6Jj+O3BodZ5ZhFakmr7a0HuNOZNG47eas52Pzr66jyfljCAHccQ4kTCiKJJ1oB2UJFISIeKhjRpCpOaTsFOvDKbCNO2F/TGpk4m9Qbsirpqp8Lr3kextipPq2KJPscQ44vTenFkkAQ9fbj9kHMBRIJyBKjJpDuxsUqi1xRcv7XsZwGZBmukqS+b2u/NSOBYKpB88VUX5JmhyzguMdGx1P9qpEvCYMG+p5rVzRXIhw6he9VUsNg2Conr1Jqi3MUUlW659X3UYfCMHXQIOe9J1ov/Cd/PfUgr0ucabcHWbr6GF9Othea2coH4z7ZKzdbz7xadkBMd9Voee1Ot3fp+35+ccMxdjnP8QQA9H0yGNKi0FUhVCziVEgOL/x0TSzTrmQVBGOMHlCMJQXGPhfHp5lgmg7YbZYLA53b3tTqK5fzFhogS8UjurSKcG5Ms7VGqcBP/IeveszGcW+zXWMuDxKNPQevMkrbKAAA==
+X-Microsoft-Antispam-Message-Info: UU7ZLxPfMKYn/Gecv+XMzTN0XBW2p1wLm3e0VmvfjK8lA/8UKAQ8hKsQv6V/zgmbuJjnr2U0kx24SiW6bMVVHFRp8pVFxzdaEogRdWufWeiW7BTgRzwxYrSvplzM3o0swRafbGsTDPhs6AWBRWvwDpXjsFe8Z1hFRvh/GB6p7Bl8TrnDlNUXXb0C66AEnTbxpagweuyh8UoPCgUszAhpSyMsUHdNumihlWKQE98EK11SF44s8d7b388uC+nMoHHsfOWX3RZVMOOCN9Qq+YIS7XqfouWl1P+PhVV/zpCVPWKY+kk28sY1bEghglLMx/9tXmaSjU9veXN9itHHzM83QqmoACw1icD4LK9Nj8v9CPV1AJahHixnZyb1WublIoUL731W2PROgyJXyYWIhocPlWeD+IZH0Q67+EvSUBcR8TIdLhLYnVn3xGYSXXCBoQxm5iN1c/GRTSHWzkcGFW6UAgyuN4Rv9Jcns/36fogwgOquiA+Na2/Fr1RErNBkpd9MQBxUHiffJiJQk7KZf/N1+RMlrquVnKmW0ZKQ36lvz+OlVMye93fpa9OXuLE9JWPzDIMEowx/6p3lgidT/zXGJKJFhwHxWPHxabnn37npaYAnOXMxFgUGkPhkTLy6g4sS//mRG4fNWYbd5Bg+zwFrQ1qQVI2fpN+x14tXQn3v8Dt86Z4zGxjpW5rZubQZnuHxUbLoLJG/ZUty/LcQUxkzkw==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(7416002)(8936002)(44832011)(38350700002)(6916009)(956004)(83380400001)(54906003)(66556008)(508600001)(66476007)(66946007)(6512007)(86362001)(4326008)(6486002)(52116002)(5660300002)(2616005)(316002)(6506007)(1076003)(8676002)(36756003)(2906002)(186003)(38100700002)(26005)(6666004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YjeetYWFZ+zTNIBPHTUyXCTtj836OPOWOpbNt4gmNN0T1+y4QnhsoR+Bzuc9?=
- =?us-ascii?Q?ZXrksghRf33osK7S6/nvZ2KDdLWTA+VFEdDkPIlflZhRyeVYso9c6ihnwy+r?=
- =?us-ascii?Q?e3HYJLBCFoXQrqk6Uk1BxOD7NN8QeSTlUIDzekQgCwXr2AS1J6toZr0rshzs?=
- =?us-ascii?Q?F3AyMif4rd+HceSHqMb3x+LX4hEBjfYOF+D847kh3U5rqEa6ED5wp58cURYQ?=
- =?us-ascii?Q?Pn+/wlX3StzMRCZ2O1aC9X6Egt9Rsbz+fE71Fp5CjCMMTq6lVYNzUvG/SHqv?=
- =?us-ascii?Q?1jvomEsH6rW4iGE3linj7/ntrDhEJwtFlJMsozVxGJ56qghZBXkVaTBr/GnB?=
- =?us-ascii?Q?ls1yNEe4l7p4wAOdqfTWeSz1gasx2e4Jbg44v4ma9yiR40AYO1Sxws02Neee?=
- =?us-ascii?Q?EBxWdCcdu0u/4HvlH+M3QHrDTp5F9aYDhEPjMSfl48P+rHXUhJA0RDB21GvA?=
- =?us-ascii?Q?+GhQcUUcNIPIquS+7ypQLV6eZWeuMRC4KEKE7vDckql72qI/ofAmwKS+zQ5D?=
- =?us-ascii?Q?p7vnmp/7sCOSUgyozpefNuE5hgiU0kpxIC5C6Qa32GzomVC9+0E7cAgZ8iMJ?=
- =?us-ascii?Q?UmhmY++rKUuatUhMSP8ON3z55tet/PNeabhWiLGPdtJUu5edd33Jb5bN7d1F?=
- =?us-ascii?Q?fM+m1Wvw4O6wgneKJNuiNvksUrkOfSbrG1EUw+6MsiBWPwaEekP/2/4MKQpE?=
- =?us-ascii?Q?jUW5XxIh5j1e6T670lHKRZRHgMV+JRexa5ihQFLnl436+yntH6jFtGfJnmIX?=
- =?us-ascii?Q?IfmETyfuCtMb5rB8naeN1ddp+h00lx76mYm+buD/yu/muvp3oGJ7jsmv2/gu?=
- =?us-ascii?Q?vcFb5YlX47NnrV211AZ4BSNSPTv5GYrthm2xqvDAJ7MFgM+0II/bEKrWowpj?=
- =?us-ascii?Q?bWHfpCyvim1aDliVO/LCi9XNN5LVxI1ZSG6TiizILlDIvGC2WHiV3MYSHaVs?=
- =?us-ascii?Q?13GhTVtvW/RV4GstV1zVVKMmYEkdFG0UwDKeFw2wUAMTAUp5qT5/lYDK5ceY?=
- =?us-ascii?Q?/BVQ6RqfyumwLhuyRAz//POkniaWZNf1RRcOztGe1zI6Thn6Ytu5J9VKRbaj?=
- =?us-ascii?Q?S+E5DJgIGLKrMUAvXcVsafpZvWB8DpcfmlQcbXy2qV2xJ+LbIXyLqGmQsBF1?=
- =?us-ascii?Q?EJqPU4u6rUXuI3As+j9NMqF+wYc/sPXzozb5obB89ZysNyPG3DC+cQb7ABVq?=
- =?us-ascii?Q?IgshYAuo90nvTpR4Cuk0MrJmgxaWbgqhxJirEBHm20zUm0UDpkG7pHVVzYBY?=
- =?us-ascii?Q?kmchL+Ymfk30CneB3lDqGLLcs5Kror5aCrwlQWxITBkDrrsC4CA8TsgkwTUt?=
- =?us-ascii?Q?TEhHLrkmDLb88P1GT3bbvOEQy7R2CSgpDbtnYkFx7mo5XL7bBuZQuMxdsk1u?=
- =?us-ascii?Q?6epfehTX5KVniXpBONX1alC8XrQWdsANVStwJQS0ySOiU5217cfS4Om4m6Fa?=
- =?us-ascii?Q?PEMJCA/Bt9AFsUojOGGKWChsLvmmTDcR?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bajAzMrbAlE7ykddJc80HlaFzHAOf3c8gk//sxc/+JlnZ9Jgj1N9NIZydidU?=
+ =?us-ascii?Q?v2lVOJhGf+U480gttZGqofGMAmv0BEdCYtx/SXDoNMxiI/DxWcx0VW/0r5Hl?=
+ =?us-ascii?Q?B+kWK5Z4WC2EbX65yu8PIiJ9bfZLlRjWqPtcu/X9fmhK3ZLpZEACNNt0HAmc?=
+ =?us-ascii?Q?zfsB9wZY1VZTRRoixJWnJUl8G5pi2yraolrnYY6+9tbLwZnf4NZEq1NuxDJ3?=
+ =?us-ascii?Q?LG7bBWnQ0y7u24yhXJMBk/ZPn7H8ixMTp0uMnh6ogq/fjKdP/YwJP/Y/KWix?=
+ =?us-ascii?Q?gqS/DdsHykT0i/j7AXndr819eC06iuJKelbU+QiD4HmWnfRLSQC+9xuie2YI?=
+ =?us-ascii?Q?J0F/pTV1bg1AUD6tQ+nWd+Q0q6nYuvM9LPu85LeBqEGYxXcZpONwMtebnnpV?=
+ =?us-ascii?Q?h3Wz87VPm6SC5nYRC4wAKhJ2Wlh7JwMFK+5pDoCU110W6U/n83yqEYckWHax?=
+ =?us-ascii?Q?unC+OK7P1Tb2DL1iDQoDylRiMTzvElt/15T0iamRRRz9PszhAGls9teTPMgc?=
+ =?us-ascii?Q?zqXM50URdKoUXkmhRcJAXR48jih3nXabj4K+x+rGcdBkpZB35laEhT1JAh7+?=
+ =?us-ascii?Q?sgCINPxCtmkpKyZ0g2HuZUR4ydgD1qQMk0X9UmPF+Ayn+S238jOQbEJ/gtxi?=
+ =?us-ascii?Q?R3ncxWetKBsSdDdrmx5Vc427Q6gsrTAKIAWL+IF0brI/AeEXrZmo6A6qfulZ?=
+ =?us-ascii?Q?dcr6MkGznmlmHq9R8Zg0fq826Csf2a1TGOmCq6XIGR8S9REQxgkd7K1Vb5Gg?=
+ =?us-ascii?Q?nMBaLaEMbj2SqyBFIOAz90Ez4ebdiRvJUCBUSy9e/D8Ic6q1vUApvezcNBkC?=
+ =?us-ascii?Q?VEcOmCNMa98y2O+/kjHXTE63nUvy0q5CXJfz2p4bR9ty0EOtCYw+2L5LE/RJ?=
+ =?us-ascii?Q?FtU1tFD3rgqqeE6tMoPHMEk9+pRyzpZ3bX/90sc5Entmh+wZP1oiXi3gXWxE?=
+ =?us-ascii?Q?JhzriPb5lxxI8g+NjvyTRr1x/5k4wqk/YpiNdIa06/nzSJ97iZvqO079ReGy?=
+ =?us-ascii?Q?weeWBxWlRKUhHdYWyZA8yQmAWvyCX2cgC0fvNZRW5pj+84P8oxDyZvxHgkIT?=
+ =?us-ascii?Q?QKwEYKMVBsoGfAT9f7kj581HGCOQRUziLAHXOqRWimtfc0T/hwklJCehoWd1?=
+ =?us-ascii?Q?3cxxuP46o6K4ahBNQ/QHnM1E5t4ACSHQO8aCuy/ljlxv4En0/dm68vpuOBqk?=
+ =?us-ascii?Q?6xA+pJWEDjLUB+5jmRX3nDuA9PZK9Wyv4NVWZbT6MAt43P96H7Xnaacc8E8S?=
+ =?us-ascii?Q?S89mtKRjoFNT/OWzX+x9EBi91VY1LTssaNi0Cx2uo7TcZtO6R+nXalE7fjKH?=
+ =?us-ascii?Q?WQTn13cuBO3sK5Ygqrarsn0tLBviGvUMfDD4SEEDB4AfFirDs+0Vx7+HUnhL?=
+ =?us-ascii?Q?fIAj6R/knSDd0lngjIV/utpnqPC8pzmb2/dOO2DGpgC/Iu/TMNcrOJgs+MnT?=
+ =?us-ascii?Q?0NAX19Eu/XAwgAxag70YWbmQ29GurJn0?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f839f287-7571-46a5-7c62-08d99566c186
+X-MS-Exchange-CrossTenant-Network-Message-Id: e36b1317-00c8-4e21-0955-08d99566c29c
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2021 14:18:01.7004
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2021 14:18:03.5193
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
@@ -126,53 +122,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These programs are useful, but not all selftests require them.
+This test is a bit strange in that it is perhaps more manual than
+others: it does not transmit a clear OK/FAIL verdict, because user space
+does not have synchronous feedback from the kernel. If a hardware access
+fails, it is in deferred context.
 
-Additionally, on embedded boards without package management (things like
-buildroot), installing mausezahn or jq is not always as trivial as
-downloading a package from the web.
+Nonetheless, on sja1105 I have used it successfully to find and solve a
+concurrency issue, so it can be used as a starting point for other
+driver maintainers too.
 
-So it is actually a bit annoying to require programs that are not used.
-Introduce options that can be set by scripts to not enforce these
-dependencies. For compatibility, default to "yes".
-
-Cc: Nikolay Aleksandrov <nikolay@nvidia.com>
-Cc: Ido Schimmel <idosch@nvidia.com>
-Cc: Guillaume Nault <gnault@redhat.com>
-Cc: Po-Hsu Lin <po-hsu.lin@canonical.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- tools/testing/selftests/net/forwarding/lib.sh | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ MAINTAINERS                                   |  1 +
+ .../drivers/net/dsa/test_bridge_fdb_stress.sh | 48 +++++++++++++++++++
+ 2 files changed, 49 insertions(+)
+ create mode 100755 tools/testing/selftests/drivers/net/dsa/test_bridge_fdb_stress.sh
 
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index e7fc5c35b569..eb8c783f35b0 100644
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -23,6 +23,8 @@ MC_CLI=${MC_CLI:=smcroutectl}
- PING_TIMEOUT=${PING_TIMEOUT:=5}
- WAIT_TIMEOUT=${WAIT_TIMEOUT:=20}
- INTERFACE_TIMEOUT=${INTERFACE_TIMEOUT:=600}
-+REQUIRE_JQ=${REQUIRE_JQ:=yes}
-+REQUIRE_MZ=${REQUIRE_MZ:=yes}
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 20ea3338404f..997bdbf615f4 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -13054,6 +13054,7 @@ F:	include/linux/dsa/
+ F:	include/linux/platform_data/dsa.h
+ F:	include/net/dsa.h
+ F:	net/dsa/
++F:	tools/testing/selftests/drivers/net/dsa/
  
- relative_path="${BASH_SOURCE%/*}"
- if [[ "$relative_path" == "${BASH_SOURCE}" ]]; then
-@@ -141,8 +143,12 @@ require_command()
- 	fi
- }
- 
--require_command jq
--require_command $MZ
-+if [[ "$REQUIRE_JQ" = "yes" ]]; then
-+	require_command jq
-+fi
-+if [[ "$REQUIRE_MZ" = "yes" ]]; then
-+	require_command $MZ
-+fi
- 
- if [[ ! -v NUM_NETIFS ]]; then
- 	echo "SKIP: importer does not define \"NUM_NETIFS\""
+ NETWORKING [GENERAL]
+ M:	"David S. Miller" <davem@davemloft.net>
+diff --git a/tools/testing/selftests/drivers/net/dsa/test_bridge_fdb_stress.sh b/tools/testing/selftests/drivers/net/dsa/test_bridge_fdb_stress.sh
+new file mode 100755
+index 000000000000..cdb7f9ca2251
+--- /dev/null
++++ b/tools/testing/selftests/drivers/net/dsa/test_bridge_fdb_stress.sh
+@@ -0,0 +1,48 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++
++# Bridge FDB entries can be offloaded to DSA switches without holding the
++# rtnl_mutex. Traditionally this mutex has conferred drivers implicit
++# serialization, which means their code paths are not well tested in the
++# presence of concurrency.
++# This test creates a background task that stresses the FDB by adding and
++# deleting an entry many times in a row without the rtnl_mutex held.
++# It then tests the driver resistance to concurrency by calling .ndo_fdb_dump
++# (with rtnl_mutex held) from a foreground task.
++# Since either the FDB dump or the additions/removals can fail, but the
++# additions and removals are performed in deferred as opposed to process
++# context, we cannot simply check for user space error codes.
++
++WAIT_TIME=1
++NUM_NETIFS=1
++REQUIRE_JQ="no"
++REQUIRE_MZ="no"
++NETIF_CREATE="no"
++lib_dir=$(dirname $0)/../../../net/forwarding
++source $lib_dir/lib.sh
++
++cleanup() {
++	echo "Cleaning up"
++	ip link del br0
++	kill $pid
++	killall bash
++	echo "Please check kernel log for errors"
++}
++trap 'cleanup' EXIT
++
++eth=${NETIFS[p1]}
++
++ip link del br0 2&>1 >/dev/null || :
++ip link add br0 type bridge && ip link set $eth master br0
++
++(while :; do
++	bridge fdb add 00:01:02:03:04:05 dev $eth master static
++	bridge fdb del 00:01:02:03:04:05 dev $eth master static
++done) &
++pid=$!
++
++for i in $(seq 1 50); do
++	bridge fdb show > /dev/null
++	sleep 3
++	echo "$((${i} * 2))% complete..."
++done
 -- 
 2.25.1
 
