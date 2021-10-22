@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 966464371E2
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 08:36:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC8E44371E8
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 08:36:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232130AbhJVGio (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 02:38:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60396 "EHLO
+        id S232057AbhJVGip (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 02:38:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231944AbhJVGii (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 02:38:38 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7442C061766;
-        Thu, 21 Oct 2021 23:36:21 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id a20-20020a1c7f14000000b003231d13ee3cso2172799wmd.3;
-        Thu, 21 Oct 2021 23:36:21 -0700 (PDT)
+        with ESMTP id S231935AbhJVGin (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 02:38:43 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A734EC061243;
+        Thu, 21 Oct 2021 23:36:23 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id z14so2143039wrg.6;
+        Thu, 21 Oct 2021 23:36:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=sVupCt1NbGHaxE4sy+Ut1rFdUNCXquJ9cOxmfS4P2+o=;
-        b=mjqEdSsIMQ0kBruWl7XBJZvP4I0esKYoY4I3flCd7qE/c5x1w2OIyMUIcBAbEyLfCJ
-         eOWDl+/7hF0XH2ENnZMybjmHKF064Vlelc+0cODnuVSzltiacA3N67d/1HIjFoDYWlui
-         rgWs/4XvxzrTy1jQf2JuCqPJvr20NDTxN1MeF5Rwa7BmGZ0k3w6Et2oedB041OoWsq2V
-         mmXl++/ty1n4yxKsC1mPDrYy7RtiPKqScdrKn4mA4zsqXJBYoFoGrOtB5xumom9qe3bC
-         JL3BEbvd5PUkqN9CSscRhWAx/PTmfLhlavTU/UYBb6V4xzfNudFKB+yQ06P2ypFiVdXW
-         fqsQ==
+        bh=s2i2bAYmALhhytziHf98MliwPYuJKllV5e3emMbFmoM=;
+        b=kd2EfN70C0Zr6Ykp59AHyw7wo1GjxpRElOt+Nb4IfpXqO6ToPsahJNhybck14SOhZ/
+         qv79O3OWalOvjOz/O4Tq+NlmDFb8rWOouuXdDt4/akZQVJ09+qAItCq7JxqpbcZcofXf
+         MneNzri7bqAD67sCZjNsg6x6e7013P1bG7lFxOQ+FfWZ5Xngzu7tJpIEeUf7l9OmIL63
+         pk9v+w+U/jworaurbacIy2GVfxIEMQ14NIPXafyzSvYdYWGKjuLzl7WARWfsk518QVv7
+         kiTmETuBmI2vpgUVNajzIZeLe6WdYXLslDqaMyjZBT+NM0QM0TK1zaEmgTB6ICkYZUma
+         vQcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=sVupCt1NbGHaxE4sy+Ut1rFdUNCXquJ9cOxmfS4P2+o=;
-        b=fhBc8nA1TL7vmJQfp7FH8+p9XtN6xclO+FZ8tdjhggQHEHxfVq1xeu8GeTl9DZX20g
-         QD3e2+0n3waH2RXD2AzhKCkW5m2m4TOvOsUqZvBNGvJY9N05Tfgf7gA02oNhvE+F3iJW
-         K0BHyCw6qyfoS7zB/6Z8VZeXu76/eMQvmK0ii/XLCtjjA9JYMumB2lDLGcTGJoeMeg1b
-         E5FKv6+B3pG8EOZX6ZT1tWGlP6uObLFteXy2A3FFGN4ZtuxNAO5CC5n+IQ/goqwfUwFg
-         rMVqHi1khHk5rJPsH+iyjEhr2sF5s+D/y412oDmwycvOUUywPHQ9BEQ155CxQfyAFFik
-         inDw==
-X-Gm-Message-State: AOAM530pidscPZAO6xxYrBQr4XVRQo4yzChoyerPu7mf1qwSG/Pu6mIC
-        VfeopaACTFN8QeMW9Z/uHT8nkxnyg5Ivhw==
-X-Google-Smtp-Source: ABdhPJytfZBUsMFPj/eT07cNw3ISYcy5Lgo6xPkXBgk+Br8Q+e3SvypXKlGiPg8dF4hSmmRz5JJU4w==
-X-Received: by 2002:a05:600c:410e:: with SMTP id j14mr12035231wmi.49.1634884580180;
-        Thu, 21 Oct 2021 23:36:20 -0700 (PDT)
+        bh=s2i2bAYmALhhytziHf98MliwPYuJKllV5e3emMbFmoM=;
+        b=nV6Ra8ZqykdnQ+DjKvupexSNaO/NytpzN5WR8jFRXKdNxoHsfPUDmMLZbFurM/I7cv
+         WzBCSoxoHnjsgViQtWto+fyh4rcq+P3z3BAZD+TAlPAGqc0MYwNqaoOwHkAEujYf1WTo
+         +6IOxQsVsxSn0cEGE0kpoJXziX0/k4rGZ9Ks9Rf0jZNPa374+zqf/5avRWTtKlC1J0NI
+         zC/9zZ6/CnmNtA9FfpIcnBD1LAskepUcegNd2ZqSEosq0sC4CAhJxBdM5kIfHKaKxv73
+         YlQ43lPr5hOJIcEMBciQzNIQqHka+bUz94dh9oFqrBEPIOf+Bw9hbCbHUTf013UO79xt
+         pTMw==
+X-Gm-Message-State: AOAM533PmxbrXNJ1BEhMFWo/wiH+yGSpEkD4HdQ42rw/jlnIU4uRntkl
+        /D/LDjbjCy5ofNaLYgPSMo7Ba5Z8087ycg==
+X-Google-Smtp-Source: ABdhPJxRKJWcSksKCp6W0Fl0ok+ZMFh4g8BF+3JbueHyAi+L39VU3M60g8zNw19+Co89+iA7p07XfQ==
+X-Received: by 2002:adf:d1c3:: with SMTP id b3mr13412983wrd.237.1634884582093;
+        Thu, 21 Oct 2021 23:36:22 -0700 (PDT)
 Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id c7sm4099733wrp.51.2021.10.21.23.36.18
+        by smtp.gmail.com with ESMTPSA id c7sm4099733wrp.51.2021.10.21.23.36.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Oct 2021 23:36:19 -0700 (PDT)
+        Thu, 21 Oct 2021 23:36:21 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, selinux@vger.kernel.org,
         linux-security-module@vger.kernel.org, linux-sctp@vger.kernel.org
@@ -56,9 +56,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         Paul Moore <paul@paul-moore.com>,
         Richard Haines <richard_c_haines@btinternet.com>,
         Ondrej Mosnacek <omosnace@redhat.com>
-Subject: [PATCH net 2/4] security: call security_sctp_assoc_request in sctp_sf_do_5_1D_ce
-Date:   Fri, 22 Oct 2021 02:36:10 -0400
-Message-Id: <ba8724d10da0f7545e5b91d1540a984c2b398a6a.1634884487.git.lucien.xin@gmail.com>
+Subject: [PATCH net 3/4] security: add sctp_assoc_established hook
+Date:   Fri, 22 Oct 2021 02:36:11 -0400
+Message-Id: <71602ec3cff6bf67d47fef520f64cb6bccba928c.1634884487.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <cover.1634884487.git.lucien.xin@gmail.com>
 References: <cover.1634884487.git.lucien.xin@gmail.com>
@@ -68,68 +68,183 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The asoc created when receives the INIT chunk is a temporary one, it
-will be delete after INIT_ACK chunk is replied. So for the real asoc
-created in sctp_sf_do_5_1D_ce() when receives the COOKIE_ECHO chunk,
-security_sctp_assoc_request() should also be called.
+security_sctp_assoc_established() is added to replace
+security_inet_conn_established() called in
+sctp_sf_do_5_1E_ca(), so that asoc can be accessed in security
+subsystem and save the peer secid to asoc->peer_secid.
 
 Fixes: 72e89f50084c ("security: Add support for SCTP security hooks")
 Reported-by: Prashanth Prahlad <pprahlad@redhat.com>
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- Documentation/security/SCTP.rst | 15 +++++++++------
- net/sctp/sm_statefuns.c         |  5 +++++
- 2 files changed, 14 insertions(+), 6 deletions(-)
+ Documentation/security/SCTP.rst | 22 ++++++++++------------
+ include/linux/lsm_hook_defs.h   |  2 ++
+ include/linux/lsm_hooks.h       |  5 +++++
+ include/linux/security.h        |  8 ++++++++
+ net/sctp/sm_statefuns.c         |  2 +-
+ security/security.c             |  7 +++++++
+ 6 files changed, 33 insertions(+), 13 deletions(-)
 
 diff --git a/Documentation/security/SCTP.rst b/Documentation/security/SCTP.rst
-index 415b548d9ce0..9a38067762e5 100644
+index 9a38067762e5..3ebbcd80b3e7 100644
 --- a/Documentation/security/SCTP.rst
 +++ b/Documentation/security/SCTP.rst
-@@ -151,9 +151,9 @@ establishing an association.
-          INIT --------------------------------------------->
-                                                    sctp_sf_do_5_1B_init()
-                                                  Respond to an INIT chunk.
--                                             SCTP peer endpoint "A" is
--                                             asking for an association. Call
--                                             security_sctp_assoc_request()
-+                                             SCTP peer endpoint "A" is asking
-+                                             for an temporary association.
-+                                             Call security_sctp_assoc_request()
-                                              to set the peer label if first
-                                              association.
-                                              If not first association, check
-@@ -163,9 +163,12 @@ establishing an association.
-           |                                       discard the packet.
-           |
-     COOKIE ECHO ------------------------------------------>
--                                                          |
--                                                          |
--                                                          |
-+                                                  sctp_sf_do_5_1D_ce()
-+                                             Respond to an COOKIE ECHO chunk.
-+                                             Confirm the cookie and create an
-+                                             permanent association.
-+                                             Call security_sctp_assoc_request() to
-+                                             do the same as for INIT chunk Response.
+@@ -15,10 +15,7 @@ For security module support, three SCTP specific hooks have been implemented::
+     security_sctp_assoc_request()
+     security_sctp_bind_connect()
+     security_sctp_sk_clone()
+-
+-Also the following security hook has been utilised::
+-
+-    security_inet_conn_established()
++    security_sctp_assoc_established()
+ 
+ The usage of these hooks are described below with the SELinux implementation
+ described in the `SCTP SELinux Support`_ chapter.
+@@ -122,11 +119,12 @@ calls **sctp_peeloff**\(3).
+     @newsk - pointer to new sock structure.
+ 
+ 
+-security_inet_conn_established()
++security_sctp_assoc_established()
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-Called when a COOKIE ACK is received::
++Called when a COOKIE ACK is received, and the peer secid will be
++saved into ``@asoc->peer_secid`` for client::
+ 
+-    @sk  - pointer to sock structure.
++    @asoc - pointer to sctp association structure.
+     @skb - pointer to skbuff of the COOKIE ACK packet.
+ 
+ 
+@@ -134,7 +132,7 @@ Security Hooks used for Association Establishment
+ -------------------------------------------------
+ 
+ The following diagram shows the use of ``security_sctp_bind_connect()``,
+-``security_sctp_assoc_request()``, ``security_inet_conn_established()`` when
++``security_sctp_assoc_request()``, ``security_sctp_assoc_established()`` when
+ establishing an association.
+ ::
+ 
+@@ -172,7 +170,7 @@ establishing an association.
            <------------------------------------------- COOKIE ACK
            |                                               |
      sctp_sf_do_5_1E_ca                                    |
+- Call security_inet_conn_established()                    |
++ Call security_sctp_assoc_established()                   |
+  to set the peer label.                                   |
+           |                                               |
+           |                               If SCTP_SOCKET_TCP or peeled off
+@@ -198,7 +196,7 @@ hooks with the SELinux specifics expanded below::
+     security_sctp_assoc_request()
+     security_sctp_bind_connect()
+     security_sctp_sk_clone()
+-    security_inet_conn_established()
++    security_sctp_assoc_established()
+ 
+ 
+ security_sctp_assoc_request()
+@@ -271,12 +269,12 @@ sockets sid and peer sid to that contained in the ``@asoc sid`` and
+     @newsk - pointer to new sock structure.
+ 
+ 
+-security_inet_conn_established()
++security_sctp_assoc_established()
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Called when a COOKIE ACK is received where it sets the connection's peer sid
+ to that in ``@skb``::
+ 
+-    @sk  - pointer to sock structure.
++    @asoc - pointer to sctp association structure.
+     @skb - pointer to skbuff of the COOKIE ACK packet.
+ 
+ 
+diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
+index 0024273a7382..e9870118cc67 100644
+--- a/include/linux/lsm_hook_defs.h
++++ b/include/linux/lsm_hook_defs.h
+@@ -334,6 +334,8 @@ LSM_HOOK(int, 0, sctp_bind_connect, struct sock *sk, int optname,
+ 	 struct sockaddr *address, int addrlen)
+ LSM_HOOK(void, LSM_RET_VOID, sctp_sk_clone, struct sctp_association *asoc,
+ 	 struct sock *sk, struct sock *newsk)
++LSM_HOOK(void, LSM_RET_VOID, sctp_assoc_established, struct sctp_association *asoc,
++	 struct sk_buff *skb)
+ #endif /* CONFIG_SECURITY_NETWORK */
+ 
+ #ifdef CONFIG_SECURITY_INFINIBAND
+diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
+index 240b92d89852..ba42c22204e2 100644
+--- a/include/linux/lsm_hooks.h
++++ b/include/linux/lsm_hooks.h
+@@ -1047,6 +1047,11 @@
+  *	@asoc pointer to current sctp association structure.
+  *	@sk pointer to current sock structure.
+  *	@newsk pointer to new sock structure.
++ * @sctp_assoc_established:
++ *	Passes the @asoc and @chunk->skb of the association COOKIE_ACK packet
++ *	to the security module.
++ *	@asoc pointer to sctp association structure.
++ *	@skb pointer to skbuff of association packet.
+  *
+  * Security hooks for Infiniband
+  *
+diff --git a/include/linux/security.h b/include/linux/security.h
+index a16407444871..11cdddf9685c 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -1423,6 +1423,8 @@ int security_sctp_bind_connect(struct sock *sk, int optname,
+ 			       struct sockaddr *address, int addrlen);
+ void security_sctp_sk_clone(struct sctp_association *asoc, struct sock *sk,
+ 			    struct sock *newsk);
++void security_sctp_assoc_established(struct sctp_association *asoc,
++				     struct sk_buff *skb);
+ 
+ #else	/* CONFIG_SECURITY_NETWORK */
+ static inline int security_unix_stream_connect(struct sock *sock,
+@@ -1642,6 +1644,12 @@ static inline void security_sctp_sk_clone(struct sctp_association *asoc,
+ 					  struct sock *newsk)
+ {
+ }
++
++static inline void security_sctp_assoc_established(struct sctp_association *asoc,
++						   struct sk_buff *skb)
++{
++	return 0;
++}
+ #endif	/* CONFIG_SECURITY_NETWORK */
+ 
+ #ifdef CONFIG_SECURITY_INFINIBAND
 diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
-index 3206374209bc..b818532c3fc2 100644
+index b818532c3fc2..5fabaa54b77d 100644
 --- a/net/sctp/sm_statefuns.c
 +++ b/net/sctp/sm_statefuns.c
-@@ -781,6 +781,11 @@ enum sctp_disposition sctp_sf_do_5_1D_ce(struct net *net,
- 		}
- 	}
+@@ -946,7 +946,7 @@ enum sctp_disposition sctp_sf_do_5_1E_ca(struct net *net,
+ 	sctp_add_cmd_sf(commands, SCTP_CMD_INIT_COUNTER_RESET, SCTP_NULL());
  
-+	if (security_sctp_assoc_request(new_asoc, chunk->skb)) {
-+		sctp_association_free(new_asoc);
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-+	}
-+
- 	/* Delay state machine commands until later.
+ 	/* Set peer label for connection. */
+-	security_inet_conn_established(ep->base.sk, chunk->skb);
++	security_sctp_assoc_established((struct sctp_association *)asoc, chunk->skb);
+ 
+ 	/* RFC 2960 5.1 Normal Establishment of an Association
  	 *
- 	 * Re-build the bind address for the association is done in
+diff --git a/security/security.c b/security/security.c
+index b0f1c007aa3b..4b2b4b5beb27 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -2387,6 +2387,13 @@ void security_sctp_sk_clone(struct sctp_association *asoc, struct sock *sk,
+ }
+ EXPORT_SYMBOL(security_sctp_sk_clone);
+ 
++void security_sctp_assoc_established(struct sctp_association *asoc,
++				     struct sk_buff *skb)
++{
++	call_void_hook(sctp_assoc_established, asoc, skb);
++}
++EXPORT_SYMBOL(security_sctp_assoc_established);
++
+ #endif	/* CONFIG_SECURITY_NETWORK */
+ 
+ #ifdef CONFIG_SECURITY_INFINIBAND
 -- 
 2.27.0
 
