@@ -2,74 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9713F437A9F
-	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 18:10:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70E7A437AAF
+	for <lists+netdev@lfdr.de>; Fri, 22 Oct 2021 18:14:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232258AbhJVQMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 12:12:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55088 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231453AbhJVQMZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Oct 2021 12:12:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 77FC961163;
-        Fri, 22 Oct 2021 16:10:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634919007;
-        bh=SPlMHyht+w/MLteefYniQ3lbjF7zRKUSnY88v5UDeDk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HWLbitFHgifXGTmKpwto5yEyRRYXaoBgZy53n51cB5Ym0uqsyl7QEZuvNQP7Q87D1
-         tYrVlI3R0Mo9sn1gcpNp/S4rbGoeGA24es4x5x/Sbw2hshEs75ZCz1PjD0QPDoOgmf
-         +yGo42TxYWgJBWdWdm9zrE2BL7FpTDufFSqnxIzVaRx+fkiM5YRLoR2Ii8F+pGggD2
-         CO6ys8FALP+uKEDBSVu+t/V1uAn9WNldgX1tsMj/PUE8HAEgkL6SN4D/ED2Gs/1Mvl
-         Sl3V4VeA/mFhftQtIlZGji4iGKH4Qzg3pL9a9HXJ8pb7ZC1kw/lCxdoUczxNZ6utoT
-         v05M+vvJXmiZg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6479E60A2A;
-        Fri, 22 Oct 2021 16:10:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S233356AbhJVQQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 12:16:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50218 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232176AbhJVQQc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 12:16:32 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C01BC061764;
+        Fri, 22 Oct 2021 09:14:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=3jfvma+SoFb/JGqbF3ogD4CFnp4C2wV64tpDuV2Jgnk=; b=JIe7azIZ5FUVA0hUKdYGDGzi0f
+        S3tbfFyGh2bzM4xiFTMn4H0VH3lqlv4XA+cXECFG+rqNcnsmhanxswg/30BSFP3yNvXRMZho2CDtY
+        CFGik5rxjFHgX4wc/u8Xs1HoS73+5VxgyT0fkQeOarPJ6LC9NLkk2Fvdt/42pfAlOJJxEKxBEVJ+B
+        wa9xS+cbXp12XrGUH+2GOU6yyp9ITPlnpD+WzfBMaNfbEAtYi1MCEBt92nUoNxLY4VsScldsla+MZ
+        eFlDh8VzcoIWoCZl/TDCyCm9LpIwbbzu9fzgzEdzDJbh7fQRHFUxVrPpnUsmItS9g1NpmGZl8571D
+        vQI06hxA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55238)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mdxBL-0001vC-Bk; Fri, 22 Oct 2021 17:14:11 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mdxBJ-0001Ip-IQ; Fri, 22 Oct 2021 17:14:09 +0100
+Date:   Fri, 22 Oct 2021 17:14:09 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [net-next PATCH v2 1/3] net: mdio: Add helper functions for
+ accessing MDIO devices
+Message-ID: <YXLjUZBs5VgYSiIn@shell.armlinux.org.uk>
+References: <20211022155914.3347672-1-sean.anderson@seco.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: linux-next: build failure after merge of the net-next tree
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163491900740.27396.7600994383536368181.git-patchwork-notify@kernel.org>
-Date:   Fri, 22 Oct 2021 16:10:07 +0000
-References: <20211022112436.4c46b5a4@canb.auug.org.au>
-In-Reply-To: <20211022112436.4c46b5a4@canb.auug.org.au>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, maorg@nvidia.com,
-        maord@nvidia.com, saeedm@nvidia.com, linux-kernel@vger.kernel.org,
-        linux-next@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211022155914.3347672-1-sean.anderson@seco.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Fri, 22 Oct 2021 11:24:36 +1100 you wrote:
-> Hi all,
+On Fri, Oct 22, 2021 at 11:59:12AM -0400, Sean Anderson wrote:
+> This adds some helpers for accessing non-phy MDIO devices. They are
+> analogous to phy_(read|write|modify), except that they take an mdio_device
+> and not a phy_device.
 > 
-> After merging the net-next tree, today's linux-next build (x86_64
-> allmodconfig) failed like this:
-> 
-> drivers/net/ethernet/mellanox/mlx5/core/en_tc.c:71:10: fatal error: lag.h: No such file or directory
->    71 | #include "lag.h"
->       |          ^~~~~~~
-> drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c:13:10: fatal error: lag.h: No such file or directory
->    13 | #include "lag.h"
->       |          ^~~~~~~
-> 
-> [...]
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 
-Here is the summary with links:
-  - linux-next: build failure after merge of the net-next tree
-    https://git.kernel.org/netdev/net-next/c/016c89460d34
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-You are awesome, thank you!
+Thanks.
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
