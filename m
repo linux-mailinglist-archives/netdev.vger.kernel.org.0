@@ -2,410 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79E9D4384F5
+	by mail.lfdr.de (Postfix) with ESMTP id C3B6E4384F6
 	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 21:33:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231496AbhJWTe5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Oct 2021 15:34:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39382 "EHLO
+        id S231537AbhJWTe6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Oct 2021 15:34:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231482AbhJWTeu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 15:34:50 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46B2C061764
-        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:32:30 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id m21so6602516pgu.13
-        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:32:30 -0700 (PDT)
+        with ESMTP id S231483AbhJWTev (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 15:34:51 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C3BAC061766
+        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:32:32 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id d9so6727854pfl.6
+        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:32:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=jHIQlx9jjO5yDzCaZ7KKdVcTkba5a39ulfjKxvA43Is=;
-        b=Ku6ekY5FsVGZXCpadAtcR+E1EZ5WZOdXWcYA0p/SIV6F/MpHl/GiG77stxjLHipgNt
-         B/uvBNTg0Pgqhuw3cvPc8lKvVjJm0tukMTNZH3xcIjC7GmsEjUmBrkpJJre9gqGgem/S
-         v3vWhkf89hLMj3UMK9MlezrNVq2IVPZ13miSM=
+        bh=bpkCSv/XqJ293zUbVZ9mw4K+yZF4w5cqUEuyDLjttv0=;
+        b=eWDWc+NKVLm0l1n16T7Ud0r5xGnyaimIEfYDUaTHVWnassmMA7rSC8JRrqTpImdxkU
+         myANgf3makC0Y5LxruVywDtdwpMcLc2qn4HR74NWd64TLdc40lmjjxWkb/m5oFSvIrO5
+         dRyRvn2dzciZ9WRdihWUC9z4ojR+w69RK9kn4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=jHIQlx9jjO5yDzCaZ7KKdVcTkba5a39ulfjKxvA43Is=;
-        b=KRsRSeA3NUghoRKd7iSRkFPCd3ylIs9AfptJkFG2ftXKFLQV4rjNKTwP7mC5tRLnNY
-         qax/SZHROiT9gywhaWzvThO3BfIdZK+mjgda2j6d2KkIom/1m5Qhz5JJczhflLnNLEem
-         a3DNeNV+7YRoft1inm7ZRaeaaGC8y0S45w04WqUISfuJrLdL3iz5yIg46ynwLo3to0zX
-         OiEn30y2ZWTROAeGHnzHd5X1eaOB8moh9MJ1ZC0W3KXb6zf4dqUXOT5+HfUyzf47fO8G
-         i2mSgueaMeq52aMgqEMQav+BJgK5/ur33OZEwpcXZqKgwW0WqkUO8V8dDsIJaPXSY4oX
-         D2rw==
-X-Gm-Message-State: AOAM532k3RPgUJXVR5KE3SM7a06dvhXgzTqjj8RF4bBh4/po2C8OYORd
-        C3U8ZQHRPtKqlRdsU+h1vXyqlstcfeZyWg==
-X-Google-Smtp-Source: ABdhPJwDQjrCs5jIvOs9YY8minvQx0pQYAgGfqyOXr8mhS1EgoHYDWTVI+EDYRztGLHK6vkOTBHNrg==
-X-Received: by 2002:a05:6a00:1748:b0:44c:ca52:b261 with SMTP id j8-20020a056a00174800b0044cca52b261mr7875298pfc.17.1635017549939;
-        Sat, 23 Oct 2021 12:32:29 -0700 (PDT)
+        bh=bpkCSv/XqJ293zUbVZ9mw4K+yZF4w5cqUEuyDLjttv0=;
+        b=H/45yHLXEpf5Jdq3YWHo0PrvUwY8uU/TzzdPv1uUgTL3f6vm9tHhVA02FPf3tM/fji
+         PSh2v85+v5Tef12cqibQ31TVfekB298WmXEEJxwuUIAx/jkEQZVN6V6j/88dppQ4f+YT
+         cl8PbGVoC6kmpUibYpgTA40EdOfSMG9TqWHyXvTwPIUIjxvpTHGe7FfFbsMj0ZLiODJG
+         sHMskc1945Tq99mE6CGHsgkt5QGn3U2z04/vDBTiQGQTp6Byc/2rTKqaDt+gQ9OIvKFp
+         4hZi9Cyyj091brrYMYSlje3PpVDkpifAqGRM/RiwLxMMf+fV/VX7dEY6tr72GqJAUOAV
+         ObRQ==
+X-Gm-Message-State: AOAM533/lwQ+c922Tb4whEf2gIEWcz5ae+AbYVwJ/kdjep8riVQ/ZSEE
+        ped2893FFIzvlk/nQjPfT9HAew==
+X-Google-Smtp-Source: ABdhPJwxBAuiDskjsWceLiMjudWfNtuTBChvle/pAcZyBZ0Rp6Hwjc3qdFdgqEC/vvmhZu007ib7uw==
+X-Received: by 2002:a05:6a00:1503:b0:472:df2c:d821 with SMTP id q3-20020a056a00150300b00472df2cd821mr7665930pfu.60.1635017551096;
+        Sat, 23 Oct 2021 12:32:31 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id f7sm2461532pfv.152.2021.10.23.12.32.28
+        by smtp.gmail.com with ESMTPSA id f7sm2461532pfv.152.2021.10.23.12.32.30
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 23 Oct 2021 12:32:29 -0700 (PDT)
+        Sat, 23 Oct 2021 12:32:30 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
         gospo@broadcom.com, jiri@nvidia.com
-Subject: [PATCH net-next 09/19] bnxt_en: improve fw diagnose devlink health messages
-Date:   Sat, 23 Oct 2021 15:31:56 -0400
-Message-Id: <1635017526-16963-10-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 10/19] bnxt_en: Refactor coredump functions
+Date:   Sat, 23 Oct 2021 15:31:57 -0400
+Message-Id: <1635017526-16963-11-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1635017526-16963-1-git-send-email-michael.chan@broadcom.com>
 References: <1635017526-16963-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000004cd6a705cf0a3004"
+        boundary="00000000000060db2e05cf0a30ec"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000004cd6a705cf0a3004
+--00000000000060db2e05cf0a30ec
 
 From: Edwin Peer <edwin.peer@broadcom.com>
 
-Add firmware event counters as well as health state severity. In
-the unhealthy state, recommend a remedy and inform the user as to
-its impact.
+The coredump functionality will be used by devlink health. Refactor
+these functions that get coredump and coredump length. There is no
+functional change, but the following checkpatch warnings were
+addressed:
 
-Readability of the devlink tool's output is negatively impacted by
-adding these fields to the diagnosis. The single line of text, as
-rendered by devlink health diagnose, benefits from more terse
-descriptions, which can be substituted without loss of clarity, even
-in pretty printed JSON mode.
+  - strscpy is preferred over strlcpy.
+  - sscanf results should be checked, with an additional warning.
 
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  19 ++-
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  25 ++++
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 131 ++++++++++++++----
- 3 files changed, 148 insertions(+), 27 deletions(-)
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 48 ++++++++++++-------
+ 1 file changed, 31 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index a766236d330f..d619064ab330 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -2138,10 +2138,12 @@ static int bnxt_async_event_process(struct bnxt *bp,
- 			set_bit(BNXT_STATE_FW_ACTIVATE_RESET, &bp->state);
- 		} else if (EVENT_DATA1_RESET_NOTIFY_FATAL(data1)) {
- 			type_str = "Fatal";
-+			bp->fw_health->fatalities++;
- 			set_bit(BNXT_STATE_FW_FATAL_COND, &bp->state);
- 		} else if (data2 && BNXT_FW_STATUS_HEALTHY !=
- 			   EVENT_DATA2_RESET_NOTIFY_FW_STATUS_CODE(data2)) {
- 			type_str = "Non-fatal";
-+			bp->fw_health->survivals++;
- 			set_bit(BNXT_STATE_FW_NON_FATAL_COND, &bp->state);
- 		}
- 		netif_warn(bp, hw, bp->dev,
-@@ -7604,6 +7606,7 @@ static int __bnxt_alloc_fw_health(struct bnxt *bp)
- 	if (!bp->fw_health)
- 		return -ENOMEM;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 15c518024965..fe832f97f905 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -3808,7 +3808,7 @@ bnxt_fill_coredump_record(struct bnxt *bp, struct bnxt_coredump_record *record,
+ 	record->low_version = 0;
+ 	record->high_version = 1;
+ 	record->asic_state = 0;
+-	strlcpy(record->system_name, utsname()->nodename,
++	strscpy(record->system_name, utsname()->nodename,
+ 		sizeof(record->system_name));
+ 	record->year = cpu_to_le16(tm.tm_year + 1900);
+ 	record->month = cpu_to_le16(tm.tm_mon + 1);
+@@ -3820,11 +3820,12 @@ bnxt_fill_coredump_record(struct bnxt *bp, struct bnxt_coredump_record *record,
+ 	strcpy(record->commandline, "ethtool -w");
+ 	record->total_segments = cpu_to_le32(total_segs);
  
-+	mutex_init(&bp->fw_health->lock);
+-	sscanf(utsname()->release, "%u.%u", &os_ver_major, &os_ver_minor);
++	if (sscanf(utsname()->release, "%u.%u", &os_ver_major, &os_ver_minor) != 2)
++		netdev_warn(bp->dev, "Unknown OS release in coredump\n");
+ 	record->os_ver_major = cpu_to_le32(os_ver_major);
+ 	record->os_ver_minor = cpu_to_le32(os_ver_minor);
+ 
+-	strlcpy(record->os_name, utsname()->sysname, 32);
++	strscpy(record->os_name, utsname()->sysname, sizeof(record->os_name));
+ 	time64_to_tm(end, 0, &tm);
+ 	record->end_year = cpu_to_le16(tm.tm_year + 1900);
+ 	record->end_month = cpu_to_le16(tm.tm_mon + 1);
+@@ -3842,7 +3843,7 @@ bnxt_fill_coredump_record(struct bnxt *bp, struct bnxt_coredump_record *record,
+ 	record->ioctl_high_version = 0;
+ }
+ 
+-static int bnxt_get_coredump(struct bnxt *bp, void *buf, u32 *dump_len)
++static int __bnxt_get_coredump(struct bnxt *bp, void *buf, u32 *dump_len)
+ {
+ 	u32 ver_get_resp_len = sizeof(struct hwrm_ver_get_output);
+ 	u32 offset = 0, seg_hdr_len, seg_record_len, buf_len = 0;
+@@ -3945,6 +3946,30 @@ static int bnxt_get_coredump(struct bnxt *bp, void *buf, u32 *dump_len)
+ 	return rc;
+ }
+ 
++static int bnxt_get_coredump(struct bnxt *bp, u16 dump_type, void *buf, u32 *dump_len)
++{
++	if (dump_type == BNXT_DUMP_CRASH) {
++#ifdef CONFIG_TEE_BNXT_FW
++		return tee_bnxt_copy_coredump(buf, 0, *dump_len);
++#else
++		return -EOPNOTSUPP;
++#endif
++	} else {
++		return __bnxt_get_coredump(bp, buf, dump_len);
++	}
++}
++
++static u32 bnxt_get_coredump_length(struct bnxt *bp, u16 dump_type)
++{
++	u32 len = 0;
++
++	if (dump_type == BNXT_DUMP_CRASH)
++		len = BNXT_CRASH_DUMP_LEN;
++	else
++		__bnxt_get_coredump(bp, NULL, &len);
++	return len;
++}
++
+ static int bnxt_set_dump(struct net_device *dev, struct ethtool_dump *dump)
+ {
+ 	struct bnxt *bp = netdev_priv(dev);
+@@ -3976,10 +4001,7 @@ static int bnxt_get_dump_flag(struct net_device *dev, struct ethtool_dump *dump)
+ 			bp->ver_resp.hwrm_fw_rsvd_8b;
+ 
+ 	dump->flag = bp->dump_flag;
+-	if (bp->dump_flag == BNXT_DUMP_CRASH)
+-		dump->len = BNXT_CRASH_DUMP_LEN;
+-	else
+-		bnxt_get_coredump(bp, NULL, &dump->len);
++	dump->len = bnxt_get_coredump_length(bp, bp->dump_flag);
  	return 0;
  }
  
-@@ -7650,12 +7653,16 @@ static void bnxt_inv_fw_health_reg(struct bnxt *bp)
- 	struct bnxt_fw_health *fw_health = bp->fw_health;
- 	u32 reg_type;
+@@ -3994,15 +4016,7 @@ static int bnxt_get_dump_data(struct net_device *dev, struct ethtool_dump *dump,
+ 	memset(buf, 0, dump->len);
  
--	if (!fw_health || !fw_health->status_reliable)
-+	if (!fw_health)
- 		return;
- 
- 	reg_type = BNXT_FW_HEALTH_REG_TYPE(fw_health->regs[BNXT_FW_HEALTH_REG]);
- 	if (reg_type == BNXT_FW_HEALTH_REG_TYPE_GRC)
- 		fw_health->status_reliable = false;
-+
-+	reg_type = BNXT_FW_HEALTH_REG_TYPE(fw_health->regs[BNXT_FW_RESET_CNT_REG]);
-+	if (reg_type == BNXT_FW_HEALTH_REG_TYPE_GRC)
-+		fw_health->resets_reliable = false;
- }
- 
- static void bnxt_try_map_fw_health_reg(struct bnxt *bp)
-@@ -7712,6 +7719,7 @@ static int bnxt_map_fw_health_regs(struct bnxt *bp)
- 	int i;
- 
- 	bp->fw_health->status_reliable = false;
-+	bp->fw_health->resets_reliable = false;
- 	/* Only pre-map the monitoring GRC registers using window 3 */
- 	for (i = 0; i < 4; i++) {
- 		u32 reg = fw_health->regs[i];
-@@ -7725,6 +7733,7 @@ static int bnxt_map_fw_health_regs(struct bnxt *bp)
- 		fw_health->mapped_regs[i] = BNXT_FW_HEALTH_WIN_OFF(reg);
- 	}
- 	bp->fw_health->status_reliable = true;
-+	bp->fw_health->resets_reliable = true;
- 	if (reg_base == 0xffffffff)
- 		return 0;
- 
-@@ -11264,14 +11273,18 @@ static void bnxt_fw_health_check(struct bnxt *bp)
- 	}
- 
- 	val = bnxt_fw_health_readl(bp, BNXT_FW_HEARTBEAT_REG);
--	if (val == fw_health->last_fw_heartbeat)
-+	if (val == fw_health->last_fw_heartbeat) {
-+		fw_health->arrests++;
- 		goto fw_reset;
-+	}
- 
- 	fw_health->last_fw_heartbeat = val;
- 
- 	val = bnxt_fw_health_readl(bp, BNXT_FW_RESET_CNT_REG);
--	if (val != fw_health->last_fw_reset_cnt)
-+	if (val != fw_health->last_fw_reset_cnt) {
-+		fw_health->discoveries++;
- 		goto fw_reset;
-+	}
- 
- 	fw_health->tmr_counter = fw_health->tmr_multiplier;
- 	return;
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 2873f600a7dd..bbbc63e882d1 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1523,6 +1523,21 @@ struct bnxt_ctx_mem_info {
- 	struct bnxt_mem_init	mem_init[BNXT_CTX_MEM_INIT_MAX];
- };
- 
-+enum bnxt_health_severity {
-+	SEVERITY_NORMAL = 0,
-+	SEVERITY_WARNING,
-+	SEVERITY_RECOVERABLE,
-+	SEVERITY_FATAL,
-+};
-+
-+enum bnxt_health_remedy {
-+	REMEDY_DEVLINK_RECOVER,
-+	REMEDY_POWER_CYCLE_DEVICE,
-+	REMEDY_POWER_CYCLE_HOST,
-+	REMEDY_FW_UPDATE,
-+	REMEDY_HW_REPLACE,
-+};
-+
- struct bnxt_fw_health {
- 	u32 flags;
- 	u32 polling_dsecs;
-@@ -1542,6 +1557,7 @@ struct bnxt_fw_health {
- 	u8 enabled:1;
- 	u8 primary:1;
- 	u8 status_reliable:1;
-+	u8 resets_reliable:1;
- 	u8 tmr_multiplier;
- 	u8 tmr_counter;
- 	u8 fw_reset_seq_cnt;
-@@ -1551,6 +1567,15 @@ struct bnxt_fw_health {
- 	u32 echo_req_data1;
- 	u32 echo_req_data2;
- 	struct devlink_health_reporter	*fw_reporter;
-+	/* Protects severity and remedy */
-+	struct mutex lock;
-+	enum bnxt_health_severity severity;
-+	enum bnxt_health_remedy remedy;
-+	u32 arrests;
-+	u32 discoveries;
-+	u32 survivals;
-+	u32 fatalities;
-+	u32 diagnoses;
- };
- 
- #define BNXT_FW_HEALTH_REG_TYPE_MASK	3
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index d6967b0233c9..5d9869a61305 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -71,43 +71,110 @@ static int bnxt_hwrm_remote_dev_reset_set(struct bnxt *bp, bool remote_reset)
- 	return hwrm_req_send(bp, req);
- }
- 
-+static char *bnxt_health_severity_str(enum bnxt_health_severity severity)
-+{
-+	switch (severity) {
-+	case SEVERITY_NORMAL: return "normal";
-+	case SEVERITY_WARNING: return "warning";
-+	case SEVERITY_RECOVERABLE: return "recoverable";
-+	case SEVERITY_FATAL: return "fatal";
-+	default: return "unknown";
-+	}
-+}
-+
-+static char *bnxt_health_remedy_str(enum bnxt_health_remedy remedy)
-+{
-+	switch (remedy) {
-+	case REMEDY_DEVLINK_RECOVER: return "devlink recover";
-+	case REMEDY_POWER_CYCLE_DEVICE: return "device power cycle";
-+	case REMEDY_POWER_CYCLE_HOST: return "host power cycle";
-+	case REMEDY_FW_UPDATE: return "update firmware";
-+	case REMEDY_HW_REPLACE: return "replace hardware";
-+	default: return "unknown";
-+	}
-+}
-+
- static int bnxt_fw_diagnose(struct devlink_health_reporter *reporter,
- 			    struct devlink_fmsg *fmsg,
- 			    struct netlink_ext_ack *extack)
- {
- 	struct bnxt *bp = devlink_health_reporter_priv(reporter);
--	u32 val;
-+	struct bnxt_fw_health *h = bp->fw_health;
-+	u32 fw_status, fw_resets;
- 	int rc;
- 
- 	if (test_bit(BNXT_STATE_IN_FW_RESET, &bp->state))
--		return 0;
-+		return devlink_fmsg_string_pair_put(fmsg, "Status", "recovering");
- 
--	val = bnxt_fw_health_readl(bp, BNXT_FW_HEALTH_REG);
-+	if (!h->status_reliable)
-+		return devlink_fmsg_string_pair_put(fmsg, "Status", "unknown");
- 
--	if (BNXT_FW_IS_BOOTING(val)) {
--		rc = devlink_fmsg_string_pair_put(fmsg, "Description",
--						  "Not yet completed initialization");
-+	mutex_lock(&h->lock);
-+	fw_status = bnxt_fw_health_readl(bp, BNXT_FW_HEALTH_REG);
-+	if (BNXT_FW_IS_BOOTING(fw_status)) {
-+		rc = devlink_fmsg_string_pair_put(fmsg, "Status", "initializing");
- 		if (rc)
--			return rc;
--	} else if (BNXT_FW_IS_ERR(val)) {
--		rc = devlink_fmsg_string_pair_put(fmsg, "Description",
--						  "Encountered fatal error and cannot recover");
-+			goto unlock;
-+	} else if (h->severity || fw_status != BNXT_FW_STATUS_HEALTHY) {
-+		if (!h->severity) {
-+			h->severity = SEVERITY_FATAL;
-+			h->remedy = REMEDY_POWER_CYCLE_DEVICE;
-+			h->diagnoses++;
-+			devlink_health_report(h->fw_reporter,
-+					      "FW error diagnosed", h);
-+		}
-+		rc = devlink_fmsg_string_pair_put(fmsg, "Status", "error");
- 		if (rc)
--			return rc;
-+			goto unlock;
-+		rc = devlink_fmsg_u32_pair_put(fmsg, "Syndrome", fw_status);
-+		if (rc)
-+			goto unlock;
-+	} else {
-+		rc = devlink_fmsg_string_pair_put(fmsg, "Status", "healthy");
-+		if (rc)
-+			goto unlock;
- 	}
- 
--	if (val >> 16) {
--		rc = devlink_fmsg_u32_pair_put(fmsg, "Error code", val >> 16);
-+	rc = devlink_fmsg_string_pair_put(fmsg, "Severity",
-+					  bnxt_health_severity_str(h->severity));
-+	if (rc)
-+		goto unlock;
-+
-+	if (h->severity) {
-+		rc = devlink_fmsg_string_pair_put(fmsg, "Remedy",
-+						  bnxt_health_remedy_str(h->remedy));
- 		if (rc)
--			return rc;
-+			goto unlock;
-+		if (h->remedy == REMEDY_DEVLINK_RECOVER) {
-+			rc = devlink_fmsg_string_pair_put(fmsg, "Impact",
-+							  "traffic+ntuple_cfg");
-+			if (rc)
-+				goto unlock;
-+		}
- 	}
- 
--	val = bnxt_fw_health_readl(bp, BNXT_FW_RESET_CNT_REG);
--	rc = devlink_fmsg_u32_pair_put(fmsg, "Reset count", val);
--	if (rc)
-+unlock:
-+	mutex_unlock(&h->lock);
-+	if (rc || !h->resets_reliable)
- 		return rc;
- 
--	return 0;
-+	fw_resets = bnxt_fw_health_readl(bp, BNXT_FW_RESET_CNT_REG);
-+	rc = devlink_fmsg_u32_pair_put(fmsg, "Resets", fw_resets);
-+	if (rc)
-+		return rc;
-+	rc = devlink_fmsg_u32_pair_put(fmsg, "Arrests", h->arrests);
-+	if (rc)
-+		return rc;
-+	rc = devlink_fmsg_u32_pair_put(fmsg, "Survivals", h->survivals);
-+	if (rc)
-+		return rc;
-+	rc = devlink_fmsg_u32_pair_put(fmsg, "Discoveries", h->discoveries);
-+	if (rc)
-+		return rc;
-+	rc = devlink_fmsg_u32_pair_put(fmsg, "Fatalities", h->fatalities);
-+	if (rc)
-+		return rc;
-+	return devlink_fmsg_u32_pair_put(fmsg, "Diagnoses", h->diagnoses);
- }
- 
- static int bnxt_fw_recover(struct devlink_health_reporter *reporter,
-@@ -116,6 +183,9 @@ static int bnxt_fw_recover(struct devlink_health_reporter *reporter,
- {
- 	struct bnxt *bp = devlink_health_reporter_priv(reporter);
- 
-+	if (bp->fw_health->severity == SEVERITY_FATAL)
-+		return -ENODEV;
-+
- 	set_bit(BNXT_STATE_RECOVER, &bp->state);
- 	__bnxt_fw_recover(bp);
- 
-@@ -165,6 +235,7 @@ void bnxt_dl_fw_reporters_destroy(struct bnxt *bp, bool all)
- void bnxt_devlink_health_fw_report(struct bnxt *bp)
- {
- 	struct bnxt_fw_health *fw_health = bp->fw_health;
-+	int rc;
- 
- 	if (!fw_health)
- 		return;
-@@ -174,20 +245,32 @@ void bnxt_devlink_health_fw_report(struct bnxt *bp)
- 		return;
- 	}
- 
--	devlink_health_report(fw_health->fw_reporter, "FW error reported", NULL);
-+	mutex_lock(&fw_health->lock);
-+	fw_health->severity = SEVERITY_RECOVERABLE;
-+	fw_health->remedy = REMEDY_DEVLINK_RECOVER;
-+	mutex_unlock(&fw_health->lock);
-+	rc = devlink_health_report(fw_health->fw_reporter, "FW error reported",
-+				   fw_health);
-+	if (rc == -ECANCELED)
-+		__bnxt_fw_recover(bp);
- }
- 
- void bnxt_dl_health_fw_status_update(struct bnxt *bp, bool healthy)
- {
--	struct bnxt_fw_health *health = bp->fw_health;
-+	struct bnxt_fw_health *fw_health = bp->fw_health;
- 	u8 state;
- 
--	if (healthy)
-+	mutex_lock(&fw_health->lock);
-+	if (healthy) {
-+		fw_health->severity = SEVERITY_NORMAL;
- 		state = DEVLINK_HEALTH_REPORTER_STATE_HEALTHY;
--	else
-+	} else {
-+		fw_health->severity = SEVERITY_FATAL;
-+		fw_health->remedy = REMEDY_POWER_CYCLE_DEVICE;
- 		state = DEVLINK_HEALTH_REPORTER_STATE_ERROR;
+ 	dump->flag = bp->dump_flag;
+-	if (dump->flag == BNXT_DUMP_CRASH) {
+-#ifdef CONFIG_TEE_BNXT_FW
+-		return tee_bnxt_copy_coredump(buf, 0, dump->len);
+-#endif
+-	} else {
+-		return bnxt_get_coredump(bp, buf, &dump->len);
+-	}
 -
--	devlink_health_reporter_state_update(health->fw_reporter, state);
-+	}
-+	mutex_unlock(&fw_health->lock);
-+	devlink_health_reporter_state_update(fw_health->fw_reporter, state);
+-	return 0;
++	return bnxt_get_coredump(bp, dump->flag, buf, &dump->len);
  }
  
- void bnxt_dl_health_fw_recovery_done(struct bnxt *bp)
+ static int bnxt_get_ts_info(struct net_device *dev,
 -- 
 2.18.1
 
 
---0000000000004cd6a705cf0a3004
+--00000000000060db2e05cf0a30ec
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -476,13 +249,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPhFCWfRC+/m/nn7v5mYfzWvw9BpoA6C
-tM7kVBb9AzLWMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTAy
-MzE5MzIzMFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIACMwbw2RnXGzJnXdeDJkugya3Th7pQJ
+I9Ohf/0N9iLQMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTAy
+MzE5MzIzMVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQB3eNOSLSTZaxyNPQL16TAUipEVR1HGtAMR7T5QMmid6Yy5VED1
-oAsWk5mFvnHMr42ldYQ3G7DZ/l/C5P70ZuxT/tZHk1kVrutGLm6r1jdihq1vG5FCijUBdyP0N7jE
-4k9txZt+dvAztMY5C054xu9TljnAeFdZw8Nw4+ojTRtnl8UltKqxBHFUgf+KLg3LM5w5pxAojIli
-MMqPTkNzYXYE4yAR1uaylOt35Tld8cbkE677UzW4aLJOgC2Yfrv+y0qWe7vDbFAT66XHKw7Cu2Km
-gWc4B2AuuwJItiyWGY7L+edLp7TZ4Ih14nw9T+9sI1ZDKTCGYigKUpwnAIv0j8B6
---0000000000004cd6a705cf0a3004--
+ATANBgkqhkiG9w0BAQEFAASCAQCkUTsIsXrl1eGALq7z44dTXhv98hSxK7ili3paBqT+RNitdSHL
+q1Xz1B+oOHnFUKrvlOdrtA6eFci89qapChRtoslCpG8qhnzDwl7V1KVlmgVq5sIXLfYpiT5YaiJx
+MmGL6XspLFxcSkVD+n249JJUrLipVX0RHyX7uMbfQvOXefgd/tWFcsk9tdkBP10dnIJLKIRNlCFq
+Jw/3YVjpJvkXZMtFPcyp99LIXoutFXwhcTyBVi7QNVLkSkCSVnd6J0bx9kG/4PGj3UOH9i/tJ+Bf
+XnnynaKpz3Otwv4tum9iOUIJkByNUtrBgBLfVBKulvgSn4+VYZKbkJPZ3G772JYZ
+--00000000000060db2e05cf0a30ec--
