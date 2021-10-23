@@ -2,191 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A6CE4384FB
-	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 21:33:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BCAC4384FF
+	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 21:33:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231483AbhJWTfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Oct 2021 15:35:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39440 "EHLO
+        id S231453AbhJWTfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Oct 2021 15:35:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231511AbhJWTfB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 15:35:01 -0400
+        with ESMTP id S231564AbhJWTfC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 15:35:02 -0400
 Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D7CC061767
-        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:32:41 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id g184so6623669pgc.6
-        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:32:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566DCC061348
+        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:32:43 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id c4so6614713pgv.11
+        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:32:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=9hJ2MF3G239ANJAAegU4aqKH19TwWM2AUz2l2H4ke90=;
-        b=JEhMANUjkgMpxFrxyQJWr5hKTR3SX7Rd/ETkGDmxHXSLpePcWUzUSSCigXNf8An/ap
-         mO1n/KUK5VbFdhEUEAQMzaS1RuebugrTg3gVBw6Y0TMtOLhkM2coUcj42V0/1KJU1YP+
-         9394euHF+ZY9qkRlpsBbNmlbgRYgsEDs5NmPY=
+        bh=9EJDhASbwkdQfdpta0drLFmeI0BvcGsGH/c2nqyaMcA=;
+        b=EoxONza2lDEsJTSWSuGaARmRndlbYKyrb/ZFFTvB4SNKdcuIJzWMqBqKCIYCj6hG6y
+         dIa0hBrYdnV6n1M/K39IFsg8M2yV/ukwT3zzqGFbfm2nH5P4Auoe09HqR4RbLoQQDq5N
+         S+bghkRCdLcN1gTvf5WS8Hkv1Mp9amBGHMgGA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=9hJ2MF3G239ANJAAegU4aqKH19TwWM2AUz2l2H4ke90=;
-        b=cJMiMTaT3qAFm45uuEtgg1yYyJYsBd5/JWWp6PoopWxFyiamRfo8GdjM5QTfPkG3Y1
-         pjQICDJ9FWyuePQmgITRp5YfO+Yuy4TUcPtezxNvjCulOLTMj8cQ+w930CopS+g9Ggao
-         50/ZbiUqOYvZabYs2o4bao3iF5JB1VBefOCRjI4c4HeFBopzv4ckMU+wVsY7yodBfxBZ
-         8aC6gwlhL3ZvHHJilPAbEsTmHlW4LGHFeigeCG8WSbxaJT9xtQbfXIHzT5yzdD+9QfVx
-         U/voo/x/HLkdxRaNvGausMPjst34kIXa8JY0+yeCxFcbe2rbVfofB+t08BBqiO+/6Q+d
-         DCYg==
-X-Gm-Message-State: AOAM532H+YDp2x1CsuZlr5iW/orBhBrQ3GgPsTw9SusOVgrurufH23Ph
-        R/USgQzCJP3b7yoYf7kiJuvV+w==
-X-Google-Smtp-Source: ABdhPJwgpIur3okqRvLBroV5fGYNSJyH/DGDmHiYlgXb1mh7B9MsYQ7EKw8tsvmZdTnHYkXy8TZS2A==
-X-Received: by 2002:a05:6a00:17a9:b0:44c:b95f:50a4 with SMTP id s41-20020a056a0017a900b0044cb95f50a4mr7954876pfg.6.1635017561195;
-        Sat, 23 Oct 2021 12:32:41 -0700 (PDT)
+        bh=9EJDhASbwkdQfdpta0drLFmeI0BvcGsGH/c2nqyaMcA=;
+        b=u8aTFT5lpIZTmaNdoI3HNZ5Tu1uw5Q2ceTWt0WXt9HJkEny+K8R8ukLs/3ZBpkIyFM
+         Cc6PdCMKZj3oA4Qa6gkYO04zj0xooIVBR+i+bS3MnzHKHEv55k4bJk6avBXV+oCUw/GQ
+         CPXMJ0tMa4zywtNSusMYpydtaNXgzL+Tx/d9Ku6UXcPZBkJTSQ57lFZIaVgD2RdD+Wgd
+         DQnnm4EegVaB4MpjOIA1/gGskmTIR9pjab/V74RUV0KzvU4TdoWYmXwmzy5w060CZZ5/
+         zfBFf1Ws89TfaTlJ8QUvvj6yFR1Hk6wwmGCYugKxaKOak0h4xoLSXUj8qE6ck5AHPWde
+         tCKw==
+X-Gm-Message-State: AOAM533mefw5hJBSyXvS6y/1VVWJzgZKOg4xIVa+7p8kUID8pA/zlZGD
+        dP9PBSSThxP2+iyfzf5veVZvbw==
+X-Google-Smtp-Source: ABdhPJyX7AT7WURen8+Vb9B6ogVdO3uUs9FY0vxJf0jnRES88nQQs3KXM/0kS2bg9o8rok6IVLV5vg==
+X-Received: by 2002:a62:3606:0:b0:445:38d5:98bf with SMTP id d6-20020a623606000000b0044538d598bfmr8091269pfa.4.1635017562578;
+        Sat, 23 Oct 2021 12:32:42 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id f7sm2461532pfv.152.2021.10.23.12.32.40
+        by smtp.gmail.com with ESMTPSA id f7sm2461532pfv.152.2021.10.23.12.32.41
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 23 Oct 2021 12:32:40 -0700 (PDT)
+        Sat, 23 Oct 2021 12:32:42 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
         gospo@broadcom.com, jiri@nvidia.com
-Subject: [PATCH net-next 18/19] bnxt_en: Provide stored devlink "fw" version on older firmware
-Date:   Sat, 23 Oct 2021 15:32:05 -0400
-Message-Id: <1635017526-16963-19-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 19/19] bnxt_en: Update bnxt.rst devlink documentation
+Date:   Sat, 23 Oct 2021 15:32:06 -0400
+Message-Id: <1635017526-16963-20-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1635017526-16963-1-git-send-email-michael.chan@broadcom.com>
 References: <1635017526-16963-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000f6e84505cf0a30fe"
+        boundary="0000000000000d4ca505cf0a3165"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000f6e84505cf0a30fe
+--0000000000000d4ca505cf0a3165
 
-From: Vikas Gupta <vikas.gupta@broadcom.com>
+Add 'enable_remote_dev_reset' documentation to bnxt.rst.
 
-On older firmware that doesn't support the HWRM_NVM_GET_DEV_INFO
-command that returns detailed stored firmware versions, fallback
-to use the same firmware package version that is reported to ethtool.
-Refactor bnxt_get_pkgver() in bnxt_ethtool.c so that devlink can call
-and get the package version.
-
-Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c |  7 +++-
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 41 +++++++++++++------
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.h |  1 +
- 3 files changed, 36 insertions(+), 13 deletions(-)
+ Documentation/networking/devlink/bnxt.rst | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index bba5cb9f0fec..a502aea92952 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -906,8 +906,13 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
+diff --git a/Documentation/networking/devlink/bnxt.rst b/Documentation/networking/devlink/bnxt.rst
+index 3dfd84ccb1c7..a4fb27663cd6 100644
+--- a/Documentation/networking/devlink/bnxt.rst
++++ b/Documentation/networking/devlink/bnxt.rst
+@@ -22,6 +22,8 @@ Parameters
+      - Permanent
+    * - ``msix_vec_per_pf_min``
+      - Permanent
++   * - ``enable_remote_dev_reset``
++     - Runtime
  
- 	rc = bnxt_hwrm_nvm_get_dev_info(bp, &nvm_dev_info);
- 	if (rc ||
--	    !(nvm_dev_info.flags & NVM_GET_DEV_INFO_RESP_FLAGS_FW_VER_VALID))
-+	    !(nvm_dev_info.flags & NVM_GET_DEV_INFO_RESP_FLAGS_FW_VER_VALID)) {
-+		if (!bnxt_get_pkginfo(bp->dev, buf, sizeof(buf)))
-+			return bnxt_dl_info_put(bp, req, BNXT_VERSION_STORED,
-+						DEVLINK_INFO_VERSION_GENERIC_FW,
-+						buf);
- 		return 0;
-+	}
- 
- 	buf[0] = 0;
- 	strncat(buf, nvm_dev_info.pkg_name, HWRM_FW_VER_STR_LEN);
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 334ada053246..8188d55722e4 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -2832,39 +2832,56 @@ static char *bnxt_parse_pkglog(int desired_field, u8 *data, size_t datalen)
- 	return retval;
- }
- 
--static void bnxt_get_pkgver(struct net_device *dev)
-+int bnxt_get_pkginfo(struct net_device *dev, char *ver, int size)
- {
- 	struct bnxt *bp = netdev_priv(dev);
- 	u16 index = 0;
- 	char *pkgver;
- 	u32 pkglen;
- 	u8 *pkgbuf;
--	int len;
-+	int rc;
- 
--	if (bnxt_find_nvram_item(dev, BNX_DIR_TYPE_PKG_LOG,
--				 BNX_DIR_ORDINAL_FIRST, BNX_DIR_EXT_NONE,
--				 &index, NULL, &pkglen) != 0)
--		return;
-+	rc = bnxt_find_nvram_item(dev, BNX_DIR_TYPE_PKG_LOG,
-+				  BNX_DIR_ORDINAL_FIRST, BNX_DIR_EXT_NONE,
-+				  &index, NULL, &pkglen);
-+	if (rc)
-+		return rc;
- 
- 	pkgbuf = kzalloc(pkglen, GFP_KERNEL);
- 	if (!pkgbuf) {
- 		dev_err(&bp->pdev->dev, "Unable to allocate memory for pkg version, length = %u\n",
- 			pkglen);
--		return;
-+		return -ENOMEM;
- 	}
- 
--	if (bnxt_get_nvram_item(dev, index, 0, pkglen, pkgbuf))
-+	rc = bnxt_get_nvram_item(dev, index, 0, pkglen, pkgbuf);
-+	if (rc)
- 		goto err;
- 
- 	pkgver = bnxt_parse_pkglog(BNX_PKG_LOG_FIELD_IDX_PKG_VERSION, pkgbuf,
- 				   pkglen);
--	if (pkgver && *pkgver != 0 && isdigit(*pkgver)) {
-+	if (pkgver && *pkgver != 0 && isdigit(*pkgver))
-+		strscpy(ver, pkgver, size);
-+	else
-+		rc = -ENOENT;
-+
-+err:
-+	kfree(pkgbuf);
-+
-+	return rc;
-+}
-+
-+static void bnxt_get_pkgver(struct net_device *dev)
-+{
-+	struct bnxt *bp = netdev_priv(dev);
-+	char buf[FW_VER_STR_LEN];
-+	int len;
-+
-+	if (!bnxt_get_pkginfo(dev, buf, sizeof(buf))) {
- 		len = strlen(bp->fw_ver_str);
- 		snprintf(bp->fw_ver_str + len, FW_VER_STR_LEN - len - 1,
--			 "/pkg %s", pkgver);
-+			 "/pkg %s", buf);
- 	}
--err:
--	kfree(pkgbuf);
- }
- 
- static int bnxt_get_eeprom(struct net_device *dev,
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
-index 4f7eaba65dcb..6aa44840f13a 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
-@@ -55,6 +55,7 @@ int bnxt_hwrm_firmware_reset(struct net_device *dev, u8 proc_type,
- 			     u8 self_reset, u8 flags);
- int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware *fw,
- 				   u32 install_type);
-+int bnxt_get_pkginfo(struct net_device *dev, char *ver, int size);
- void bnxt_ethtool_init(struct bnxt *bp);
- void bnxt_ethtool_free(struct bnxt *bp);
- 
+ The ``bnxt`` driver also implements the following driver-specific
+ parameters.
 -- 
 2.18.1
 
 
---000000000000f6e84505cf0a30fe
+--0000000000000d4ca505cf0a3165
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -257,13 +156,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIGBg2/HGkLt9ky+08xB8WrOtItsLZq6C
-1BaNxz81+Zz4MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTAy
-MzE5MzI0MVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEICq6GccnLLtO8q12tJgLaYmaFGfQ8SrB
+spRiMkGEaeYeMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTAy
+MzE5MzI0M1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQDM8PfTspT1ACFoc5bLR5d8xIyd875P1hRuN/E+KYoyW3BKI1qV
-H/K4Mfg1pc9DBd4d1w8IA0fdGpzhrjbb8BWoNwHwsuM2pgY9mqO3JBewHoa+c3vquBIHytfeELBy
-1wrzviTphhwoo1R48z/luYSMZdT9y6sje78spgWODBa7bCGdquGG9oCaipDoEzUlVtmFY6sx0akS
-yqT+f41tRRCoNsZIuRqc+bPdFBKW4wLxz8CMLnEbr7vNjjh5aRLSqmjF9ZYtU+BKPMBjnFMHKpp6
-8cnBIYIsCBTacvsrvOT1jxoaaGqjKIvNF/C0i7oKCTXQA1avQ88Tl257m75oMB11
---000000000000f6e84505cf0a30fe--
+ATANBgkqhkiG9w0BAQEFAASCAQBalxsox3O2EGrA3jnnaCjrTjUX4dcA3EYw0jH2kvCkpMzHklzL
+tWWNVdEcxhUzg+NFjNTZSRolnCOZklOULX4uXCjYgEYRNXlkkQnSOLS2EaU2BnUC/HXlmEbshi4s
+DT4Qgzb1X5tUS+DFx+EYbh0sZYF7nVquUK4IGjGAFdIXX7OH/l9TeFwBgsLBi3e0tTX+CoWpUjT6
+m25joIBX9b/UwpdT9Z+kOC1K+gQU5+yXceefy+3523I16qScAiVqd3KZOgC2J8iGLa5fS4W0QpYF
+f5uMHvku/BuxmnzfRKWboU2aqvpehfk1QUwVYcYacutzDqAXCRwRCTSLxYRfolzI
+--0000000000000d4ca505cf0a3165--
