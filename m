@@ -2,103 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7CCE438233
-	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 09:30:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B2D043823E
+	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 09:41:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230046AbhJWHc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Oct 2021 03:32:58 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:15783 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229978AbhJWHc6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 03:32:58 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1634974239; h=Date: Message-ID: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=6prkHAzg/ianVXk7VNqt9m/tBBvysRNdknkhwFj3piw=;
- b=uNKBukWTW7nQkuiAQCDAgK1PwZWGhhGB/v4EzonFS/17rQF4m5SYLmhpPzo+KvbnpyYdKL2w
- V7ENvyXll0+8fQq/LVjwaqwOBNoqPr2V21LeveCeQHUqix+2Xf+DUK22FMLj16JmISQPjufi
- lyLu19zHqQ8qGh1d9zQdOzJFmck=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
- 6173ba0167f107c611dbe0b3 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 23 Oct 2021 07:30:09
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 7C0D2C43460; Sat, 23 Oct 2021 07:30:09 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.5 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,SPF_FAIL autolearn=no autolearn_force=no version=3.4.0
-Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id C3F41C4338F;
-        Sat, 23 Oct 2021 07:30:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org C3F41C4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S229818AbhJWHnd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Oct 2021 03:43:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55468 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229666AbhJWHnc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 03:43:32 -0400
+Received: from dvalin.narfation.org (dvalin.narfation.org [IPv6:2a00:17d8:100::8b1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC87C061764
+        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 00:41:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
+        s=20121; t=1634974870;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bp+h9Q3F8cNFhhE6LBcWdJCOqb72uOO1D9u4WGGgbLw=;
+        b=jVkq8h0ICsmmaP4HsZD2zNJZm5SuBexP0sOMKNKTJq7mDDbEWbbx2aqMZX0sRPc5abdUmK
+        81hEq68BztnAp8/lcDcTy3veJzp5xP3q/FKfh7rYh+SidFJ0pxWD214vJHEcXASU8K3zfo
+        B6YkfTu1RQDc3OEkTAFZzaH+4kjQ8qs=
+From:   Sven Eckelmann <sven@narfation.org>
+To:     syzbot <syzbot+28b0702ada0bf7381f58@syzkaller.appspotmail.com>,
+        a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
+        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com,
+        Pavel Skripkin <paskripkin@gmail.com>, linus.luessing@c0d3.blue
+Subject: Re: [syzbot] WARNING in batadv_nc_mesh_free
+Date:   Sat, 23 Oct 2021 09:41:04 +0200
+Message-ID: <2056331.oJahCzYEoq@sven-desktop>
+In-Reply-To: <5e29e63c-d2b5-ae72-0e33-5a22e727be3c@gmail.com>
+References: <000000000000c87fbd05cef6bcb0@google.com> <1639fcba-e543-e071-f17c-941b8c7a948f@gmail.com> <5e29e63c-d2b5-ae72-0e33-5a22e727be3c@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [RFC,v2] mt76: mt7615: mt7622: fix ibss and meshpoint
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20211007225725.2615-1-vincent@systemli.org>
-References: <20211007225725.2615-1-vincent@systemli.org>
-To:     Nick Hainke <vincent@systemli.org>
-Cc:     nbd@nbd.name, lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
-        davem@davemloft.net, kuba@kernel.org, matthias.bgg@gmail.com,
-        sean.wang@mediatek.com, shayne.chen@mediatek.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Robert Foss <robert.foss@linaro.org>,
-        Nick Hainke <vincent@systemli.org>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <163497420151.29616.16838354269777236200.kvalo@codeaurora.org>
-Date:   Sat, 23 Oct 2021 07:30:09 +0000 (UTC)
+Content-Type: multipart/signed; boundary="nextPart6490338.QC3ak14lfZ"; micalg="pgp-sha512"; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nick Hainke <vincent@systemli.org> wrote:
+--nextPart6490338.QC3ak14lfZ
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
+From: Sven Eckelmann <sven@narfation.org>
+To: syzbot <syzbot+28b0702ada0bf7381f58@syzkaller.appspotmail.com>, a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org, davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org, mareklindner@neomailbox.ch, netdev@vger.kernel.org, sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com, Pavel Skripkin <paskripkin@gmail.com>, linus.luessing@c0d3.blue
+Subject: Re: [syzbot] WARNING in batadv_nc_mesh_free
+Date: Sat, 23 Oct 2021 09:41:04 +0200
+Message-ID: <2056331.oJahCzYEoq@sven-desktop>
+In-Reply-To: <5e29e63c-d2b5-ae72-0e33-5a22e727be3c@gmail.com>
+References: <000000000000c87fbd05cef6bcb0@google.com> <1639fcba-e543-e071-f17c-941b8c7a948f@gmail.com> <5e29e63c-d2b5-ae72-0e33-5a22e727be3c@gmail.com>
 
-> commit 7f4b7920318b ("mt76: mt7615: add ibss support") introduced IBSS
-> and commit f4ec7fdf7f83 ("mt76: mt7615: enable support for mesh")
-> meshpoint support.
-> 
-> Both used in the "get_omac_idx"-function:
-> 
-> 	if (~mask & BIT(HW_BSSID_0))
-> 		return HW_BSSID_0;
-> 
-> With commit d8d59f66d136 ("mt76: mt7615: support 16 interfaces") the
-> ibss and meshpoint mode should "prefer hw bssid slot 1-3". However,
-> with that change the ibss or meshpoint mode will not send any beacon on
-> the mt7622 wifi anymore. Devices were still able to exchange data but
-> only if a bssid already existed. Two mt7622 devices will never be able
-> to communicate.
-> 
-> This commits reverts the preferation of slot 1-3 for ibss and
-> meshpoint. Only NL80211_IFTYPE_STATION will still prefer slot 1-3.
-> 
-> Tested on Banana Pi R64.
-> 
-> Fixes: d8d59f66d136 ("mt76: mt7615: support 16 interfaces")
-> Signed-off-by: Nick Hainke <vincent@systemli.org>
-> Acked-by: Felix Fietkau <nbd@nbd.name>
+On Friday, 22 October 2021 22:58:15 CEST Pavel Skripkin wrote:
+[...]
+> > Oh, ok. Next clean up call in batadv_nc_mesh_free() caused GPF, since
+> > fields are not initialized. Let's try to clean up one by one and do not
+> > break dependencies.
+> > 
+> > Quite ugly one, but idea is correct, I guess
+> > 
+> > Also, make each *_init() call clean up all allocated stuff to not call
+> > corresponding *_free() on error handling path, since it introduces
+> > problems, as syzbot reported
 
-Patch applied to wireless-drivers-next.git, thanks.
+Thanks for the patch + syzbot interactions. I just wanted to implement a 
+change - which would most likely have ended up the same way. Can you please 
+send it to netdev and Cc b.a.t.m.a.n@lists.open-mesh.org? We don't have 
+anything else to submit at the moment for netdev and this patch can be applied 
+by netdev directly. I will add my Acked-by in this process.
 
-753453afacc0 mt76: mt7615: mt7622: fix ibss and meshpoint
+Not sure about the Fixes. It is definitely wrong in the initial commit.... but 
+it got only really problematic when other features got introduced. I would 
+still say that the initial one should be mentioned.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20211007225725.2615-1-vincent@systemli.org/
+Fixes: c6c8fea29769 ("net: Add batman-adv meshing protocol")
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+@Linus, @Marek, @Antonio: Please check whether it is ok to move the 
+batadv_v_mesh_init after batadv_tt_init + batadv_originator_init. 
+batadv_v_mesh_init is basically there to initialize:
+
+* bat_priv->bat_v.ogm_buff(|_len|_mutex)
+* bat_priv->bat_v.ogm_seqno
+* bat_priv->bat_v.ogm_wq
+
+batadv_originator_init is there to initialize the 
+
+* bat_priv->orig_hash
+* bat_priv->orig_work (batadv_purge_orig) + queue it up
+
+batadv_tt_init is a lot more complex but should in theory not interact with 
+ogm specific algo ops.
+
+I wouldn't know why there could be a problem but I would leave it to the 
+experts.
+
+Kind regards,
+	Sven
+--nextPart6490338.QC3ak14lfZ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAmFzvJAACgkQXYcKB8Em
+e0Zxcw/7BhvGwY42rdxsBw3mezOekP3zB3tq0ScjTg5xypXRDcLiKWvxzcC6CSqV
+xKkN5hK5hfqt1WExhmJN6IZGCUO423QcqElaqvr0dsTkuBfv7LN/mjbQgMj1SZ3F
+i5pfN2oOe0kuV38J70YuntkjpxKQNT1a8ej05Ko6ZGqFRlqE+EP+7ILgV+76HeHB
+OXkyGaVTPnN+xr293qc+15JzxNN2MGKcLJXI9HYPtMiLGY5cPT4Z8SXRfKNhFFi9
+wvTjlNqeTZIzi6uFtdNUqkq/A9Q7AiADICs1AJ+fK4RJ78k4CV07V2UB41bSxjn8
+yCn0tXFQiALIX7oMwUGlBPxU1q3rwXiHIBkNUrRkyIcdu4aK1gyGgfU5bIE/NQto
+KxxPVqhGUv70bjhr9R7/k6pUl3oNUaxPosd4mise0CTapVMgGYO/EL3F2fufxXaI
+/iek4gLrks71hQPjXL9npfWcEoN8dV+d95CXJ6fhvRcxpwenKIIDGG+T1rGsA7BI
+rYLE8dd3mpJeFxO3xu47C2OQR2JHEuGlbtp7L0bBjEifUPGlHoOJtad5MV/7rJXE
+s9PINuPpc1CtA1W+YguwkpnTAbLQF/1YgGH6RkNFFjq99oBmDrTIsvmZZ/lkrpta
+XtGY0rreN2vKwAgGkcQ3T5psUJgjbR37/lNur+IoI80jM/dzT0k=
+=GCx5
+-----END PGP SIGNATURE-----
+
+--nextPart6490338.QC3ak14lfZ--
+
+
 
