@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4A8A438560
-	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 22:51:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FBF9438562
+	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 22:51:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230359AbhJWUxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Oct 2021 16:53:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56486 "EHLO
+        id S230361AbhJWUxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Oct 2021 16:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230159AbhJWUxO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 16:53:14 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52245C061764
-        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 13:50:54 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id z14so3518627wrg.6
-        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 13:50:54 -0700 (PDT)
+        with ESMTP id S230159AbhJWUxl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 16:53:41 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E932C061764
+        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 13:51:22 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id y132-20020a1c7d8a000000b0032ca5765d6cso3450034wmc.0
+        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 13:51:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=isovalent-com.20210112.gappssmtp.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=u5tOprzfZxY9dYzPdeQe4CIXAQ7I+IIO+8ZPmz5/Nm0=;
-        b=XE9Z1GITD/yve6kA5C7F2A9m+evUq6YmNG5o/bRVKSCvqbcHriC8xL83AAcztGXCBi
-         NfATYY2iMytAxeoSnQlEBs8yc6+hiRQVcAEj2vTaG089JxMvqe1IuHtIELwPq4L9FqAX
-         2t5rJ6e1H7nT4TQIyPBwfWs5n7kDNXbLHp2k1MYzAvsHeVLzwtSm4LWmiGsNFIkd7POJ
-         YF+4M29rR2znRQRZbVO+yBE9EGRQ07tzXglI+qMhVqe1XHAPHfiJJuQmQFlZJvCY9tSs
-         8b68fV2QalXluiuLU/5gq4RVahKadQbsMDmrcM3kaqVG/05YIJMtXMhLSa0O+igFz1yJ
-         nslQ==
+        bh=kEwYolz4VIQFPnenm8oXWVvdwRHOXPlOP+RR+wPyyMI=;
+        b=06JEttD3lkLMmYwZA7v20BFi0ChSC1HuE/WIfMGpHJ3GLAqNRNejK/SOi2TUcm42uj
+         zZu91P0pwLg45Z+YuPt6mU9VaIxCfk+pSUzAG14+H8DdIDn5wLVKLTG6Sc5MeIO3sdLl
+         wCwne/nQXbOHmeHQj3WEa1+yMSXYFcNCmVOMVzoB2bfVCDv0cUTf9MSduU87ZtbKJ2uO
+         7JwDq7udefpO/RbuHFgi9u8O+YpYHOMHE/hZnAB8mwGPGIZ6mcXaXZag//KONy48vhU7
+         +ZB3eXsWOV7nEQ+W5klnrlTGi6eERDOLGGn1PXdpkevIX5yB/MrgBmUtXpZghXSFGfNE
+         bkfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=u5tOprzfZxY9dYzPdeQe4CIXAQ7I+IIO+8ZPmz5/Nm0=;
-        b=B4JaBwaPKHbEyWSj+jwv43x3tb57ZXyFoQxUsVeJT2xOZPbeMk1mF/bozOlEuPk0f1
-         0aUmmCH+2BNj8EDcgGrEMndOdrAiQoBsgixwEAxd6rSxy83bSlZWQ/3pBW5VvjTDeDL2
-         Dyst2SqQelPMdrrIjrFXk4B0AMV8fGNokP+Lv64dTZqVDdiSU4lO1RofFVYKtVdY24cz
-         Z2vlywmdcECWpyKQyFXvWrEjIkLyGn4JXn7R9/T55MnroA1V0tUL90nOqRCpwr9ZEicx
-         2Y7N+swj+1NdotwlNEQXaoVwIr0PQO/SowPx8oEn8ka8u9EtA6OhbGNUzXt4e3STg1Y0
-         dX0w==
-X-Gm-Message-State: AOAM530Sxmq60qFdusLBepQKwXWirRJJy4GscEgkGXXpPny9WSbi1CKf
-        3lOH+F9MBX1FAr/TvCNQr75f7w==
-X-Google-Smtp-Source: ABdhPJy8Y1/C3DAISfDs4wNpa6m2dY0bCRdl+vBWw02IFQWFErKZo179mY1zekeE9AcDtpnhm8kMKQ==
-X-Received: by 2002:a5d:564d:: with SMTP id j13mr10161655wrw.402.1635022252736;
-        Sat, 23 Oct 2021 13:50:52 -0700 (PDT)
+        bh=kEwYolz4VIQFPnenm8oXWVvdwRHOXPlOP+RR+wPyyMI=;
+        b=PCY+pWzPfiuak3ffdw5E0fDXQb6Dd+5AKigbKFPFt6rQ1h/ZsVNY4cb253aO1aFsED
+         fC3YGGVfYIyyODMmN1NSjxdYCnVhX/1ZXPHGTcM//nsjxuebYgOW1blaR7E0MmTTeBa4
+         jiAAE7wMPxR5pG/lAFpehmnmCHmdBSMVaAHWdzptQ/WzdZTj7j/H3PN+LykodU+2CXht
+         8S8r/aCH6IlLUZ/a3wWYQT6xCIynO4692lZNEWmJ2Vo4uYzp1f859HBcF8mk9pwxoa00
+         josKq90yfQRGjBxe3lsp813/OHKhFSI440mMMTOiClpNS3HfENP0Ry90U9REypzoiu44
+         BXIA==
+X-Gm-Message-State: AOAM532o6u5T49wFwfT711VlWKOpvBMuW5QpMQ9jv83Wp05vqevO09KF
+        nVTtxrI31cpsTb8tugTP7VKSeljXiUjV3JI7
+X-Google-Smtp-Source: ABdhPJxG+eX5S0wGZLbFkYGmCFnRP+E72bVW2eatzXWAVybX0k9F7RFqiV4mB21BZi+DCPIjaEf9xw==
+X-Received: by 2002:a1c:7c0e:: with SMTP id x14mr8965699wmc.128.1635022280612;
+        Sat, 23 Oct 2021 13:51:20 -0700 (PDT)
 Received: from [192.168.1.11] ([149.86.74.50])
-        by smtp.gmail.com with ESMTPSA id c7sm8629285wrp.51.2021.10.23.13.50.51
+        by smtp.gmail.com with ESMTPSA id u5sm12156898wrg.57.2021.10.23.13.51.19
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 23 Oct 2021 13:50:52 -0700 (PDT)
-Message-ID: <d6da1761-1da8-b7e0-0be5-663d37929072@isovalent.com>
-Date:   Sat, 23 Oct 2021 21:50:51 +0100
+        Sat, 23 Oct 2021 13:51:20 -0700 (PDT)
+Message-ID: <88f7e7f6-1a60-f229-b5f7-570059c33597@isovalent.com>
+Date:   Sat, 23 Oct 2021 21:51:19 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.2.1
-Subject: Re: [PATCH bpf-next 2/5] bpftool: Do not expose and init hash maps
- for pinned path in main.c
+Subject: Re: [PATCH bpf-next 3/5] bpftool: Switch to libbpf's hashmap for
+ pinned paths of BPF objects
 Content-Language: en-US
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -62,73 +62,133 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 References: <20211022171647.27885-1-quentin@isovalent.com>
- <20211022171647.27885-3-quentin@isovalent.com>
- <CAEf4BzYouGby=iKWb18E7XH9RDg+vNt=8DuUv9AAEKgM74b4sA@mail.gmail.com>
+ <20211022171647.27885-4-quentin@isovalent.com>
+ <CAEf4BzbgGSS6p5Xyx6Sp34hLZQ8XwQN7Fg6ykPZ5VHFw6doUJw@mail.gmail.com>
 From:   Quentin Monnet <quentin@isovalent.com>
-In-Reply-To: <CAEf4BzYouGby=iKWb18E7XH9RDg+vNt=8DuUv9AAEKgM74b4sA@mail.gmail.com>
+In-Reply-To: <CAEf4BzbgGSS6p5Xyx6Sp34hLZQ8XwQN7Fg6ykPZ5VHFw6doUJw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2021-10-22 17:13 UTC-0700 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
+2021-10-22 17:54 UTC-0700 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
 > On Fri, Oct 22, 2021 at 10:16 AM Quentin Monnet <quentin@isovalent.com> wrote:
 >>
->> BPF programs, maps, and links, can all be listed with their pinned paths
->> by bpftool, when the "-f" option is provided. To do so, bpftool builds
->> hash maps containing all pinned paths for each kind of objects.
+>> In order to show pinned paths for BPF programs, maps, or links when
+>> listing them with the "-f" option, bpftool creates hash maps to store
+>> all relevant paths under the bpffs. So far, it would rely on the
+>> kernel implementation (from tools/include/linux/hashtable.h).
 >>
->> These three hash maps are always initialised in main.c, and exposed
->> through main.h. There appear to be no particular reason to do so: we can
->> just as well make them static to the files that need them (prog.c,
->> map.c, and link.c respectively), and initialise them only when we want
->> to show objects and the "-f" switch is provided.
+>> We can make bpftool rely on libbpf's implementation instead. The
+>> motivation is to make bpftool less dependent of kernel headers, to ease
+>> the path to a potential out-of-tree mirror, like libbpf has.
 >>
->> This may prevent unnecessary memory allocations if the implementation of
->> the hash maps was to change in the future.
+>> This commit is the first step of the conversion: the hash maps for
+>> pinned paths for programs, maps, and links are converted to libbpf's
+>> hashmap.{c,h}. Other hash maps used for the PIDs of process holding
+>> references to BPF objects are left unchanged for now. On the build side,
+>> this requires adding a dependency to a second header internal to libbpf,
+>> and making it a dependency for the bootstrap bpftool version as well.
+>> The rest of the changes are a rather straightforward conversion.
 >>
 >> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
 >> ---
->>  tools/bpf/bpftool/link.c |  9 ++++++++-
->>  tools/bpf/bpftool/main.c | 12 ------------
->>  tools/bpf/bpftool/main.h |  3 ---
->>  tools/bpf/bpftool/map.c  |  9 ++++++++-
->>  tools/bpf/bpftool/prog.c |  9 ++++++++-
->>  5 files changed, 24 insertions(+), 18 deletions(-)
+>>  tools/bpf/bpftool/Makefile |  8 +++---
+>>  tools/bpf/bpftool/common.c | 50 ++++++++++++++++++++------------------
+>>  tools/bpf/bpftool/link.c   | 35 ++++++++++++++------------
+>>  tools/bpf/bpftool/main.h   | 29 +++++++++++++---------
+>>  tools/bpf/bpftool/map.c    | 35 ++++++++++++++------------
+>>  tools/bpf/bpftool/prog.c   | 35 ++++++++++++++------------
+>>  6 files changed, 105 insertions(+), 87 deletions(-)
 >>
->> diff --git a/tools/bpf/bpftool/link.c b/tools/bpf/bpftool/link.c
->> index 8cc3e36f8cc6..ebf29be747b3 100644
->> --- a/tools/bpf/bpftool/link.c
->> +++ b/tools/bpf/bpftool/link.c
->> @@ -20,6 +20,8 @@ static const char * const link_type_name[] = {
->>         [BPF_LINK_TYPE_NETNS]                   = "netns",
->>  };
->>
->> +static struct pinned_obj_table link_table;
->> +
->>  static int link_parse_fd(int *argc, char ***argv)
->>  {
->>         int fd;
->> @@ -302,8 +304,10 @@ static int do_show(int argc, char **argv)
->>         __u32 id = 0;
->>         int err, fd;
->>
->> -       if (show_pinned)
->> +       if (show_pinned) {
->> +               hash_init(link_table.table);
->>                 build_pinned_obj_table(&link_table, BPF_OBJ_LINK);
->> +       }
->>         build_obj_refs_table(&refs_table, BPF_OBJ_LINK);
->>
->>         if (argc == 2) {
->> @@ -384,6 +388,9 @@ static int do_detach(int argc, char **argv)
->>         if (json_output)
->>                 jsonw_null(json_wtr);
->>
->> +       if (show_pinned)
->> +               delete_pinned_obj_table(&link_table);
 > 
-> Shouldn't this be in do_show rather than do_detach?
+> [...]
+> 
+>> @@ -420,28 +421,20 @@ static int do_build_table_cb(const char *fpath, const struct stat *sb,
+>>         if (bpf_obj_get_info_by_fd(fd, &pinned_info, &len))
+>>                 goto out_close;
+>>
+>> -       obj_node = calloc(1, sizeof(*obj_node));
+>> -       if (!obj_node) {
+>> +       path = strdup(fpath);
+>> +       if (!path) {
+>>                 err = -1;
+>>                 goto out_close;
+>>         }
+>>
+>> -       obj_node->id = pinned_info.id;
+>> -       obj_node->path = strdup(fpath);
+>> -       if (!obj_node->path) {
+>> -               err = -1;
+>> -               free(obj_node);
+>> -               goto out_close;
+>> -       }
+>> -
+>> -       hash_add(build_fn_table->table, &obj_node->hash, obj_node->id);
+>> +       hashmap__append(build_fn_table, u32_as_hash_field(pinned_info.id), path);
+> 
+> handle errors? operation can fail
 
-Yikes! How did it end up here? Thanks for the catch, sure, I'll fix it.
+Right, I missed it for hashmap__append(). I'll address everywhere.
+
+> 
+>>  out_close:
+>>         close(fd);
+>>  out_ret:
+>>         return err;
+>>  }
+> 
+> [...]
+> 
+>>
+>>  unsigned int get_page_size(void)
+>> @@ -962,3 +956,13 @@ int map_parse_fd_and_info(int *argc, char ***argv, void *info, __u32 *info_len)
+>>
+>>         return fd;
+>>  }
+>> +
+>> +size_t bpftool_hash_fn(const void *key, void *ctx)
+>> +{
+>> +       return (size_t)key;
+>> +}
+>> +
+>> +bool bpftool_equal_fn(const void *k1, const void *k2, void *ctx)
+> 
+> kind of too generic and too assuming function (hash_fn and
+> equal_fn)... Maybe either use static functions near each hashmap use
+> case, or name it to specify that it works when keys are ids?
+
+Makes sense. I'll probably just rename them in that case, because the
+functions are the same for all hash maps and I don't really feel like
+having five copies of it.
+
+> 
+>> +{
+>> +       return k1 == k2;
+>> +}
+> 
+> [...]
+> 
+>> @@ -256,4 +247,18 @@ int do_filter_dump(struct tcmsg *ifinfo, struct nlattr **tb, const char *kind,
+>>
+>>  int print_all_levels(__maybe_unused enum libbpf_print_level level,
+>>                      const char *format, va_list args);
+>> +
+>> +size_t bpftool_hash_fn(const void *key, void *ctx);
+>> +bool bpftool_equal_fn(const void *k1, const void *k2, void *ctx);
+>> +
+>> +static inline void *u32_as_hash_field(__u32 x)
+> 
+> it's used for keys only, right? so u32_as_hash_key?
+
+Yes for this patch, but we're calling it on a value in the following
+patch, in build_btf_type_table(), to store the ID of a program or a map
+associated to a given BTF object ID.
+
+So I'll keep the current name here for v2, but I'll address all your
+other comments.
+
+Thanks for the review,
+Quentin
+
