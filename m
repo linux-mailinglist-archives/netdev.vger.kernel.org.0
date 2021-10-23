@@ -2,104 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E93F438401
-	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 17:08:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61CCA438456
+	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 18:40:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230388AbhJWPKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Oct 2021 11:10:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38968 "EHLO
+        id S230446AbhJWQmq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Oct 2021 12:42:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229819AbhJWPKU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 11:10:20 -0400
-Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F277AC061714
-        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 08:08:00 -0700 (PDT)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4Hc4Mx61hMzQkJM;
-        Sat, 23 Oct 2021 17:07:57 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hauke-m.de; s=MBO0001;
-        t=1635001675;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=z5w+PPsi+iT9XfGWM1K580HqRWCzTpIr4O28tJCOeW0=;
-        b=y1PztHIRP/qOatBYM1uUUqWrmlFyPzijbU1f26stqwy5otALrHNbtcAPQmwtUmSzCWdvSF
-        XMBMMNE1xpA+mSq0h00/5sbhL6wlKckbPMVW5ZTLe1OVMIISduR/UJ8SmGOqxTod2Ipah2
-        aHJcyHfZtgdiepT0E8VL3AiXokr78wXtxv3AHRdbKvjd+q4WkcqWFZGmTqycQP0pFLqcA7
-        CsAXfgdOB9d6oa+QfxpfDVUHefGe2xSQK2p5BljC9l7vkBAX6Ah/KH3QmoeOMTqs5GoFtt
-        /rnSEMyrmaRrItzcod+7qWIXE54hDSjBSzTxCYW6mplFxDujApbzXaVAB9isNg==
-Subject: Re: [PATCH v4 net-next 5/9] net: dsa: lantiq_gswip: serialize access
- to the PCE table
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        UNGLinuxDriver@microchip.com, DENG Qingfang <dqfext@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Aleksander Jan Bajkowski <olek2@wp.pl>,
-        Egil Hjelmeland <privat@egil-hjelmeland.no>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Prasanna Vengateshan <prasanna.vengateshan@microchip.com>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-References: <20211022184312.2454746-1-vladimir.oltean@nxp.com>
- <20211022184312.2454746-6-vladimir.oltean@nxp.com>
-From:   Hauke Mehrtens <hauke@hauke-m.de>
-Message-ID: <fdee4167-4eb9-774f-b28d-1d59db4b295e@hauke-m.de>
-Date:   Sat, 23 Oct 2021 17:07:49 +0200
+        with ESMTP id S229901AbhJWQmp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 12:42:45 -0400
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C3BC061714
+        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 09:40:26 -0700 (PDT)
+Received: by mail-oi1-x236.google.com with SMTP id bk18so9127836oib.8
+        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 09:40:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=11NI8rJSPz43D1gV7A+JL1F9+LdB46OYj4gEDUOX0Xg=;
+        b=ixfHTOY8yukyEt9hwGOdEFyjFv9a9rB4xI59qjc09vK0cRneJl3Ww2mCZLuAylUZCE
+         uFCDKbffXyxiw0RKstT47r82QowqDbyRpJtp8vz32lvezkPL0gfTcCtvV2FSDo7pKIkz
+         VLlnEsPi/yeOgTs54A/mWoES+dTV+mP04TP6telTBQLC6oSR8K0D55wWhf8SOdWCKwKx
+         vIXSbhhCbJ2F5KT6cyoRlC3hdxcJnIFuK1AcOgJsbEa/eIUoWyM2c4K+sRV8MHlxuaH9
+         5yTsmaHW9ElPAVP5iSp94xdR2RSjCjDqiR2u4IpQLs0MYesP7fIKesoZeBHnHVphTW6P
+         r3KQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=11NI8rJSPz43D1gV7A+JL1F9+LdB46OYj4gEDUOX0Xg=;
+        b=L8FSyB4XCGh6rEpRLPbNhZ3QlChWMgUe8JydvJ5lve01eRb02RLUKcXpOLa9Lrhdg7
+         ikgGkVGJD7IVKjBzARCymCKXgXsZBVIp5w9l6q3mRagETGYq+KpD80KgWj7i9MUHeaYi
+         hTj6RZA/nhZk8G0j9it6EIM8APtBjLEHHLleV3x7JNyWDMxlr35EXhM/351LKRVEmiiw
+         ookhkh1RkWmk7qWaMyztk6zNeLjjEVehuUd40ofJBhO9/hOamQVfZ+hF5aPwpiR3YXX6
+         mkYvBflP0CLAMzASdURkc76aH+ZoHU5DDAvysre7XfKzdqcryLmxoUQJWYbLGod7cKkt
+         PEhA==
+X-Gm-Message-State: AOAM5309ISOzykp/8eNdw6VHDRVzpeBk0gYdf9BRXJ9PE3uPSW/NQSWl
+        uL7EFQE3m5kpivsvMYVILOK+TcARVGS7IlybZsc=
+X-Google-Smtp-Source: ABdhPJx7OoI3lNwTVnU6cnsqoNlGegONNQH9pkjG+sWAVaKyTZbV6qq1JJNWPQ1lEVGM3xuziPA/FijAhvo3TAdSYlY=
+X-Received: by 2002:aca:917:: with SMTP id 23mr5193796oij.133.1635007225428;
+ Sat, 23 Oct 2021 09:40:25 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20211022184312.2454746-6-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Queue-Id: 9F72A22F
+Received: by 2002:a05:6830:4c7:0:0:0:0 with HTTP; Sat, 23 Oct 2021 09:40:25
+ -0700 (PDT)
+Reply-To: ms.lisahugh000@gmail.com
+From:   Ms Lisa Hugh <safi.kabore000@gmail.com>
+Date:   Sat, 23 Oct 2021 18:40:25 +0200
+Message-ID: <CAN7WVKNCeSg9Yccc6j1T=boyTkm-VcYJpid2E0GRFY4vU0PfNA@mail.gmail.com>
+Subject: QUICK REPLY AND DETAILS >>MS LISA HUGH.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/22/21 8:43 PM, Vladimir Oltean wrote:
-> Looking at the code, the GSWIP switch appears to hold bridging service
-> structures (VLANs, FDBs, forwarding rules) in PCE table entries.
-> Hardware access to the PCE table is non-atomic, and is comprised of
-> several register reads and writes.
+Dear Friend,
 
-The switch has multiple tables which can be accessed with indirect 
-addressing over the PCE registers.
+I am Ms Lisa Hugh accountant and files keeping by profession with the bank.
 
-> These accesses are currently serialized by the rtnl_lock, but DSA is
-> changing its driver API and that lock will no longer be held when
-> calling ->port_fdb_add() and ->port_fdb_del().
-> 
-> So this driver needs to serialize the access to the PCE table using its
-> own locking scheme. This patch adds that.
+I need Your help for this transfer($4,500,000,00 ,U.S.DOLLARS)to your
+bank account with your co-operation for both of us benefit.
 
-The driver also uses the gswip_pce_load_microcode() function to load a 
-static configuration for the packet classification engine into a table 
-using the same registers. It is currently not protected, but only called 
-by the DSA setup callback.
-
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
-> v3->v4: call mutex_init
-> 
->   drivers/net/dsa/lantiq_gswip.c | 28 +++++++++++++++++++++++-----
->   1 file changed, 23 insertions(+), 5 deletions(-)
-> 
-Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
-
-
+Please send the follow below,
+1)AGE....2)TELEPHONE NUMBER,,,,,...,3)COUNTRY.....4)OCCUPATION......
+Thanks.
+Ms Lisa Hugh
