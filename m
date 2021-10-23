@@ -2,104 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BEFB4380D4
-	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 01:58:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22C8F4380E2
+	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 02:14:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232657AbhJWAAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 20:00:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41046 "EHLO
+        id S231604AbhJWAQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 20:16:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232363AbhJWAAt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 20:00:49 -0400
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB9FC061348
-        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 16:58:31 -0700 (PDT)
-Received: by mail-il1-x12f.google.com with SMTP id a8so5955294ilj.10
-        for <netdev@vger.kernel.org>; Fri, 22 Oct 2021 16:58:31 -0700 (PDT)
+        with ESMTP id S230086AbhJWAQS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 20:16:18 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFBDEC061764;
+        Fri, 22 Oct 2021 17:13:59 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id v7so10683845ybq.0;
+        Fri, 22 Oct 2021 17:13:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=squareup.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Si5lbp2a5j1U0HCfBdV44/FetwO/pG2+HucWazNTbKw=;
-        b=DGLA132M8/FcLhmK+vR/nRo3FP1yMAFtCW/wpXyxgIuPQ4cAfUllbs2aMQTKChayMT
-         ouvOy/ViIQ6lgP6RqHy9eK1V3UiZS9nC2NDrqj+fcF7iPabCMtmPhFpN9oifDJYDnv0E
-         Q4n+llSZ3HBSJCUYzMarAU1D84l0/OZ9Rp1Yg=
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RVC/3H4XWoFsWku2XRUprMXaLMrvDr0CYPvZlI8J200=;
+        b=dxawzenDsCVVCg2MGVWBJ2zoY7v9NxiwyudtQDvlB921wnO//5SlDRLeZ7rxORsGTm
+         3edbNkWBPeybLEcRkc0Jrv9VhtWAiwT0w4FuMS/yUddcTsjBaZfzRhCL8+MOSaoFcM9F
+         Y+T0UcQPDweOrDhtVZGkjcDCtxiwoMGiB/pdjQSWAeBJre2vOMqzJ/KJNJlzc178JsX4
+         syTguG3f2XfS4hcbmQcvIqF7pizCGNM8gM3ZI1Z2Q9Zc5ntK0y4Le1eJRx0Mw3g6tWUJ
+         +k3IGVNxo+85yFTm/cbyb+kq+iJnuYX/7nhN/NYDmCwpseOBbiqqRh/CGsBZ+m9Q4rNa
+         udAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Si5lbp2a5j1U0HCfBdV44/FetwO/pG2+HucWazNTbKw=;
-        b=PT0wX20Mw3rLoKUtgHdE83Y+XVjtRYHj2f9KCHzsnWeBDoYHdCoJ1mTEU1PED92A8y
-         /8Fl7mO+fFi58IYArMZ0beBOr4LJNM5XprBcOquHnSSlapxEOBDEuHpeCps5HwNK9th7
-         DKPUNm/sLTzFTz4lAbqzKVFHLKdwq7ZnjrZ1TDfNOfb6qGfXZgO5WYrKLKfQlZvgf1kv
-         KFOwv3cUUAX+JMj6OasXWP2IuUbo8scNCnd4Y3F0pWMn9xI35I6/vfskkQ7pAQARusAt
-         +1LKxRuI8IZrExDkg/5EW+3WoIAbsczemiyGfvdn+pxrYVZmgOnQKy4lGptFSdGcIWrO
-         1mmA==
-X-Gm-Message-State: AOAM533F+gkmMg+A20c7bGcJiRZwLul16SbtLZvmy73JjFJMqOk5I/EE
-        NZzfObLQkMaVQ+mg5b/bQbnT3Q==
-X-Google-Smtp-Source: ABdhPJzRtntF5c8V3sfCqUww06qkit5at7Z11doVNrjArRmWDnnYm4qe/iI+e9PNGrKVL0wN2RzvKQ==
-X-Received: by 2002:a05:6e02:1d13:: with SMTP id i19mr1815550ila.182.1634947110542;
-        Fri, 22 Oct 2021 16:58:30 -0700 (PDT)
-Received: from localhost ([2600:6c50:4d00:cd01::382])
-        by smtp.gmail.com with ESMTPSA id z11sm4761784ilb.11.2021.10.22.16.58.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Oct 2021 16:58:29 -0700 (PDT)
-From:   Benjamin Li <benl@squareup.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        linux-arm-msm@vger.kernel.org, Benjamin Li <benl@squareup.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] wcn36xx: add missing 5GHz channels 136 and 144
-Date:   Fri, 22 Oct 2021 16:57:38 -0700
-Message-Id: <20211022235738.2970167-3-benl@squareup.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211022235738.2970167-1-benl@squareup.com>
-References: <20211022235738.2970167-1-benl@squareup.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RVC/3H4XWoFsWku2XRUprMXaLMrvDr0CYPvZlI8J200=;
+        b=6qnJ2y7PG1pzrw3phpLnoG9PbYBE05Xym3i0bNg1qcdA4LsEvxHEGcHighjZWGLXHc
+         CpemXJ+lm+FHC07VzycUXN+ghXwqvjsvu5UpzKpd3OrnV4nxmX/tE58nOKFCKJYCnCu0
+         N7GKoRCUaZiu97KI1oqYXll9nY9kUDeNDFcF2gV5aQ6Y9BNtHkZi9XCMSqGW3j9cGRyP
+         oavIjgAVWqwaOHqjeMpOo05A/w/aR8tcExV/HZG2pMXMtYtNhO3zQ9nLWN0iRl7rYzy1
+         yI3cZ1svuNQimMTGw4jrTHuQQMyqsgs4KmMSA+2pYlXzh+PZmXLx1aWAox7aXCf9vOG1
+         ySQQ==
+X-Gm-Message-State: AOAM531DVD5EFCFRpsTqHXQ287kWkO2mtBSCGwDeJJ4FCjUesn6WhIWE
+        3PrDWnLIUwegyF5VCagwIJv8XxbOLVReu2jTEWY=
+X-Google-Smtp-Source: ABdhPJzMo/B5icVddrSHgsfKhLLPPiFR7Jy/f4mOZmhdDRjX9eRkUtUs+1z2b1z++PVfJ5PuK5OgEsOr5rtwEryLhM8=
+X-Received: by 2002:a25:afcf:: with SMTP id d15mr2875817ybj.433.1634948038982;
+ Fri, 22 Oct 2021 17:13:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211022171647.27885-1-quentin@isovalent.com> <20211022171647.27885-3-quentin@isovalent.com>
+In-Reply-To: <20211022171647.27885-3-quentin@isovalent.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 22 Oct 2021 17:13:48 -0700
+Message-ID: <CAEf4BzYouGby=iKWb18E7XH9RDg+vNt=8DuUv9AAEKgM74b4sA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/5] bpftool: Do not expose and init hash maps
+ for pinned path in main.c
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These channels missing from scan results are a regression from downstream
-prima.
+On Fri, Oct 22, 2021 at 10:16 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> BPF programs, maps, and links, can all be listed with their pinned paths
+> by bpftool, when the "-f" option is provided. To do so, bpftool builds
+> hash maps containing all pinned paths for each kind of objects.
+>
+> These three hash maps are always initialised in main.c, and exposed
+> through main.h. There appear to be no particular reason to do so: we can
+> just as well make them static to the files that need them (prog.c,
+> map.c, and link.c respectively), and initialise them only when we want
+> to show objects and the "-f" switch is provided.
+>
+> This may prevent unnecessary memory allocations if the implementation of
+> the hash maps was to change in the future.
+>
+> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+> ---
+>  tools/bpf/bpftool/link.c |  9 ++++++++-
+>  tools/bpf/bpftool/main.c | 12 ------------
+>  tools/bpf/bpftool/main.h |  3 ---
+>  tools/bpf/bpftool/map.c  |  9 ++++++++-
+>  tools/bpf/bpftool/prog.c |  9 ++++++++-
+>  5 files changed, 24 insertions(+), 18 deletions(-)
+>
+> diff --git a/tools/bpf/bpftool/link.c b/tools/bpf/bpftool/link.c
+> index 8cc3e36f8cc6..ebf29be747b3 100644
+> --- a/tools/bpf/bpftool/link.c
+> +++ b/tools/bpf/bpftool/link.c
+> @@ -20,6 +20,8 @@ static const char * const link_type_name[] = {
+>         [BPF_LINK_TYPE_NETNS]                   = "netns",
+>  };
+>
+> +static struct pinned_obj_table link_table;
+> +
+>  static int link_parse_fd(int *argc, char ***argv)
+>  {
+>         int fd;
+> @@ -302,8 +304,10 @@ static int do_show(int argc, char **argv)
+>         __u32 id = 0;
+>         int err, fd;
+>
+> -       if (show_pinned)
+> +       if (show_pinned) {
+> +               hash_init(link_table.table);
+>                 build_pinned_obj_table(&link_table, BPF_OBJ_LINK);
+> +       }
+>         build_obj_refs_table(&refs_table, BPF_OBJ_LINK);
+>
+>         if (argc == 2) {
+> @@ -384,6 +388,9 @@ static int do_detach(int argc, char **argv)
+>         if (json_output)
+>                 jsonw_null(json_wtr);
+>
+> +       if (show_pinned)
+> +               delete_pinned_obj_table(&link_table);
 
-Signed-off-by: Benjamin Li <benl@squareup.com>
----
- drivers/net/wireless/ath/wcn36xx/main.c | 2 ++
- drivers/net/wireless/ath/wcn36xx/smd.c  | 1 +
- 2 files changed, 3 insertions(+)
+Shouldn't this be in do_show rather than do_detach?
 
-diff --git a/drivers/net/wireless/ath/wcn36xx/main.c b/drivers/net/wireless/ath/wcn36xx/main.c
-index 263af65a889a..13d09c66ae92 100644
---- a/drivers/net/wireless/ath/wcn36xx/main.c
-+++ b/drivers/net/wireless/ath/wcn36xx/main.c
-@@ -85,7 +85,9 @@ static struct ieee80211_channel wcn_5ghz_channels[] = {
- 	CHAN5G(5620, 124, PHY_QUADRUPLE_CHANNEL_20MHZ_LOW_40MHZ_HIGH),
- 	CHAN5G(5640, 128, PHY_QUADRUPLE_CHANNEL_20MHZ_HIGH_40MHZ_HIGH),
- 	CHAN5G(5660, 132, PHY_QUADRUPLE_CHANNEL_20MHZ_LOW_40MHZ_LOW),
-+	CHAN5G(5680, 136, PHY_QUADRUPLE_CHANNEL_20MHZ_HIGH_40MHZ_LOW),
- 	CHAN5G(5700, 140, PHY_QUADRUPLE_CHANNEL_20MHZ_LOW_40MHZ_HIGH),
-+	CHAN5G(5720, 144, PHY_QUADRUPLE_CHANNEL_20MHZ_HIGH_40MHZ_HIGH),
- 	CHAN5G(5745, 149, PHY_QUADRUPLE_CHANNEL_20MHZ_LOW_40MHZ_LOW),
- 	CHAN5G(5765, 153, PHY_QUADRUPLE_CHANNEL_20MHZ_HIGH_40MHZ_LOW),
- 	CHAN5G(5785, 157, PHY_QUADRUPLE_CHANNEL_20MHZ_LOW_40MHZ_HIGH),
-diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
-index be6442b3c80b..9785327593d2 100644
---- a/drivers/net/wireless/ath/wcn36xx/smd.c
-+++ b/drivers/net/wireless/ath/wcn36xx/smd.c
-@@ -2396,6 +2396,7 @@ int wcn36xx_smd_feature_caps_exchange(struct wcn36xx *wcn)
- 	set_feat_caps(msg_body.feat_caps, STA_POWERSAVE);
- 	if (wcn->rf_id == RF_IRIS_WCN3680) {
- 		set_feat_caps(msg_body.feat_caps, DOT11AC);
-+		set_feat_caps(msg_body.feat_caps, WLAN_CH144);
- 		set_feat_caps(msg_body.feat_caps, ANTENNA_DIVERSITY_SELECTION);
- 	}
- 
--- 
-2.25.1
+> +
+>         return 0;
+>  }
+>
 
+[...]
