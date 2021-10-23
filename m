@@ -2,316 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80C814382F9
-	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 11:57:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B31A74382B6
+	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 11:54:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232336AbhJWJ7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Oct 2021 05:59:15 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:16753 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232403AbhJWJ60 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 05:58:26 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1634982967; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=jd2deF2YxusSRH51J8Ex/OzLOal+8HgV10cMCq32q1E=; b=LVlQQ7gtq7eHC0BD33p9bp4X5bQ/+/BWGjwgWvDWAml1aKaa5MOFHM5DuflBymY6FRco0aTN
- OA4SRdApMEOq00bCcibdzofqWbxor/FLlGjUOTF/tuStBZDlDNAJPHXiF07DG9+0j2ijsmgW
- hD/JfA4zOEhJkVfDC9cMXTZxqQk=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
- 6173dc278e67b5f04e1b0c9e (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 23 Oct 2021 09:55:51
- GMT
-Sender: luoj=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 7F869C43635; Sat, 23 Oct 2021 09:55:50 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from akronite-sh-dev02.qualcomm.com (unknown [180.166.53.21])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: luoj)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 1F10FC14918;
-        Sat, 23 Oct 2021 09:55:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 1F10FC14918
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-From:   Luo Jie <luoj@codeaurora.org>
-To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sricharan@codeaurora.org, Luo Jie <luoj@codeaurora.org>
-Subject: [PATCH v6 14/14] net: phy: add qca8081 cdt feature
-Date:   Sat, 23 Oct 2021 17:54:53 +0800
-Message-Id: <20211023095453.22615-15-luoj@codeaurora.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20211023095453.22615-1-luoj@codeaurora.org>
-References: <20211023095453.22615-1-luoj@codeaurora.org>
+        id S230312AbhJWJ4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Oct 2021 05:56:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55748 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230224AbhJWJ4I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 05:56:08 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D9DC061766
+        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 02:53:49 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id a16so1307713wrh.12
+        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 02:53:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=tLEUfVhaDWp4OwmTFc7w3FrsNdUkC3A1CsKAQ60ZYsI=;
+        b=RCQbvFmpEDM7OfDrUhK5FEK4+iKN8U+oeK/J2gWF4EK2lmX+KMf2c1SdtxEbYGwpIR
+         dA2PoziDFLz3rmpiyeudghfcLBBq8RaWBuJZ/Vts55l/+Yivgy/2vagT2miT6raGn7lq
+         EaNCuwpMXUJCdj4FICc3mZN2LRzfaVTYksfPfkF5oqjc+hRtwBsv6TpQP9u5QngXjFje
+         7nZpQRkln/xfofTNDsRvjyz2Uln5DEhtwUhFG24HqfcH5zkSmRS/LMkeoeK3DCgid0Pu
+         Idm2Y74MWwPlgB3txWBbOLgXF/GCf371JVdmTW5w2ZQUjWKm7NxQuHgn0dXRRxYc5CKz
+         56Bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=tLEUfVhaDWp4OwmTFc7w3FrsNdUkC3A1CsKAQ60ZYsI=;
+        b=EPXzuIS8GbZWNMLWPJfPgx31Jyyx2Gh1AjahJH1Xkuf1JAYXR849KeS8e37b1/agUU
+         h6bIIycXPJkRXvi/6p1dhNlTTW+bGh1xF+sDVs66G5sal8CibcLfeEiU8C6tPAHGdFR0
+         XOSSPua2pEHFO4F/rU+ZZblY2ya1n0yXMlGftYf0pHOLaQlNTmpe4+4UJxtkbjnvjWnj
+         alESHMB+ZxIwOuEFzhrv7ix1XtQxhwd+kCnXJ8EYdeeSGDK+Yyh/gDDJ2QLoPveLBHmu
+         fQDy5T7CvPeP8x4rSiIDFQlE8f5ksu8WPgW20UsISh0r8jEdiBGaAwZwJ7HTE1lloAWR
+         FniQ==
+X-Gm-Message-State: AOAM531o2W7MAoJ3M31KgtMuSwhIix4DCfj50QXavJLug8eXU7noz9+t
+        M7L6Asg9OQqblmIxvp/orWsnAQ==
+X-Google-Smtp-Source: ABdhPJwEezcVRcVFKWLFEMF1rpA0ueoOO4uTdT37OlZWy/RfmP8+IZ/Pguz8Pk+6u45gDuVsJ9oESw==
+X-Received: by 2002:a5d:6c65:: with SMTP id r5mr6630830wrz.26.1634982827717;
+        Sat, 23 Oct 2021 02:53:47 -0700 (PDT)
+Received: from [192.168.0.162] (188-141-3-169.dynamic.upc.ie. [188.141.3.169])
+        by smtp.gmail.com with ESMTPSA id h22sm11290195wmq.42.2021.10.23.02.53.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 23 Oct 2021 02:53:46 -0700 (PDT)
+Message-ID: <f060ea87-12d8-afaf-fc7d-2b2fd461b7e7@linaro.org>
+Date:   Sat, 23 Oct 2021 10:55:48 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.1
+Subject: Re: [PATCH 2/2] wcn36xx: add missing 5GHz channels 136 and 144
+Content-Language: en-US
+To:     Benjamin Li <benl@squareup.com>, Kalle Valo <kvalo@codeaurora.org>
+Cc:     Loic Poulain <loic.poulain@linaro.org>,
+        linux-arm-msm@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, wcn36xx@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20211022235738.2970167-1-benl@squareup.com>
+ <20211022235738.2970167-3-benl@squareup.com>
+From:   Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+In-Reply-To: <20211022235738.2970167-3-benl@squareup.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To perform CDT of qca8081 phy:
-1. disable hibernation.
-2. force phy working in MDI mode.
-3. force phy working in 1000BASE-T mode.
-4. configure the related thresholds.
+On 23/10/2021 00:57, Benjamin Li wrote:
+> These channels missing from scan results are a regression from downstream
+> prima.
+> 
+> Signed-off-by: Benjamin Li <benl@squareup.com>
+> ---
+>   drivers/net/wireless/ath/wcn36xx/main.c | 2 ++
+>   drivers/net/wireless/ath/wcn36xx/smd.c  | 1 +
+>   2 files changed, 3 insertions(+)
+> 
+> diff --git a/drivers/net/wireless/ath/wcn36xx/main.c b/drivers/net/wireless/ath/wcn36xx/main.c
+> index 263af65a889a..13d09c66ae92 100644
+> --- a/drivers/net/wireless/ath/wcn36xx/main.c
+> +++ b/drivers/net/wireless/ath/wcn36xx/main.c
+> @@ -85,7 +85,9 @@ static struct ieee80211_channel wcn_5ghz_channels[] = {
+>   	CHAN5G(5620, 124, PHY_QUADRUPLE_CHANNEL_20MHZ_LOW_40MHZ_HIGH),
+>   	CHAN5G(5640, 128, PHY_QUADRUPLE_CHANNEL_20MHZ_HIGH_40MHZ_HIGH),
+>   	CHAN5G(5660, 132, PHY_QUADRUPLE_CHANNEL_20MHZ_LOW_40MHZ_LOW),
+> +	CHAN5G(5680, 136, PHY_QUADRUPLE_CHANNEL_20MHZ_HIGH_40MHZ_LOW),
+>   	CHAN5G(5700, 140, PHY_QUADRUPLE_CHANNEL_20MHZ_LOW_40MHZ_HIGH),
+> +	CHAN5G(5720, 144, PHY_QUADRUPLE_CHANNEL_20MHZ_HIGH_40MHZ_HIGH),
+>   	CHAN5G(5745, 149, PHY_QUADRUPLE_CHANNEL_20MHZ_LOW_40MHZ_LOW),
+>   	CHAN5G(5765, 153, PHY_QUADRUPLE_CHANNEL_20MHZ_HIGH_40MHZ_LOW),
+>   	CHAN5G(5785, 157, PHY_QUADRUPLE_CHANNEL_20MHZ_LOW_40MHZ_HIGH),
+> diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
+> index be6442b3c80b..9785327593d2 100644
+> --- a/drivers/net/wireless/ath/wcn36xx/smd.c
+> +++ b/drivers/net/wireless/ath/wcn36xx/smd.c
+> @@ -2396,6 +2396,7 @@ int wcn36xx_smd_feature_caps_exchange(struct wcn36xx *wcn)
+>   	set_feat_caps(msg_body.feat_caps, STA_POWERSAVE);
+>   	if (wcn->rf_id == RF_IRIS_WCN3680) {
+>   		set_feat_caps(msg_body.feat_caps, DOT11AC);
+> +		set_feat_caps(msg_body.feat_caps, WLAN_CH144);
+>   		set_feat_caps(msg_body.feat_caps, ANTENNA_DIVERSITY_SELECTION);
+>   	}
+>   
+> 
 
-Signed-off-by: Luo Jie <luoj@codeaurora.org>
----
- drivers/net/phy/at803x.c | 194 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 191 insertions(+), 3 deletions(-)
+LGTM
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 00733badcda5..f1cbe1f6ddec 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -229,6 +229,32 @@
- #define QCA808X_MASTER_SLAVE_SEED_CFG		GENMASK(12, 2)
- #define QCA808X_MASTER_SLAVE_SEED_RANGE		0x32
- 
-+/* Hibernation yields lower power consumpiton in contrast with normal operation mode.
-+ * when the copper cable is unplugged, the PHY enters into hibernation mode in about 10s.
-+ */
-+#define QCA808X_DBG_AN_TEST			0xb
-+#define QCA808X_HIBERNATION_EN			BIT(15)
-+
-+#define QCA808X_CDT_ENABLE_TEST			BIT(15)
-+#define QCA808X_CDT_INTER_CHECK_DIS		BIT(13)
-+#define QCA808X_CDT_LENGTH_UNIT			BIT(10)
-+
-+#define QCA808X_MMD3_CDT_STATUS			0x8064
-+#define QCA808X_MMD3_CDT_DIAG_PAIR_A		0x8065
-+#define QCA808X_MMD3_CDT_DIAG_PAIR_B		0x8066
-+#define QCA808X_MMD3_CDT_DIAG_PAIR_C		0x8067
-+#define QCA808X_MMD3_CDT_DIAG_PAIR_D		0x8068
-+#define QCA808X_CDT_DIAG_LENGTH			GENMASK(7, 0)
-+
-+#define QCA808X_CDT_CODE_PAIR_A			GENMASK(15, 12)
-+#define QCA808X_CDT_CODE_PAIR_B			GENMASK(11, 8)
-+#define QCA808X_CDT_CODE_PAIR_C			GENMASK(7, 4)
-+#define QCA808X_CDT_CODE_PAIR_D			GENMASK(3, 0)
-+#define QCA808X_CDT_STATUS_STAT_FAIL		0
-+#define QCA808X_CDT_STATUS_STAT_NORMAL		1
-+#define QCA808X_CDT_STATUS_STAT_OPEN		2
-+#define QCA808X_CDT_STATUS_STAT_SHORT		3
-+
- MODULE_DESCRIPTION("Qualcomm Atheros AR803x and QCA808X PHY driver");
- MODULE_AUTHOR("Matus Ujhelyi");
- MODULE_LICENSE("GPL");
-@@ -1319,8 +1345,14 @@ static int at803x_cdt_start(struct phy_device *phydev, int pair)
- {
- 	u16 cdt;
- 
--	cdt = FIELD_PREP(AT803X_CDT_MDI_PAIR_MASK, pair) |
--	      AT803X_CDT_ENABLE_TEST;
-+	/* qca8081 takes the different bit 15 to enable CDT test */
-+	if (phydev->drv->phy_id == QCA8081_PHY_ID)
-+		cdt = QCA808X_CDT_ENABLE_TEST |
-+			QCA808X_CDT_LENGTH_UNIT |
-+			QCA808X_CDT_INTER_CHECK_DIS;
-+	else
-+		cdt = FIELD_PREP(AT803X_CDT_MDI_PAIR_MASK, pair) |
-+			AT803X_CDT_ENABLE_TEST;
- 
- 	return phy_write(phydev, AT803X_CDT, cdt);
- }
-@@ -1328,10 +1360,16 @@ static int at803x_cdt_start(struct phy_device *phydev, int pair)
- static int at803x_cdt_wait_for_completion(struct phy_device *phydev)
- {
- 	int val, ret;
-+	u16 cdt_en;
-+
-+	if (phydev->drv->phy_id == QCA8081_PHY_ID)
-+		cdt_en = QCA808X_CDT_ENABLE_TEST;
-+	else
-+		cdt_en = AT803X_CDT_ENABLE_TEST;
- 
- 	/* One test run takes about 25ms */
- 	ret = phy_read_poll_timeout(phydev, AT803X_CDT, val,
--				    !(val & AT803X_CDT_ENABLE_TEST),
-+				    !(val & cdt_en),
- 				    30000, 100000, true);
- 
- 	return ret < 0 ? ret : 0;
-@@ -1685,6 +1723,153 @@ static int qca808x_soft_reset(struct phy_device *phydev)
- 	return qca808x_phy_ms_seed_enable(phydev, true);
- }
- 
-+static bool qca808x_cdt_fault_length_valid(int cdt_code)
-+{
-+	switch (cdt_code) {
-+	case QCA808X_CDT_STATUS_STAT_SHORT:
-+	case QCA808X_CDT_STATUS_STAT_OPEN:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+static int qca808x_cable_test_result_trans(int cdt_code)
-+{
-+	switch (cdt_code) {
-+	case QCA808X_CDT_STATUS_STAT_NORMAL:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_OK;
-+	case QCA808X_CDT_STATUS_STAT_SHORT:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_SAME_SHORT;
-+	case QCA808X_CDT_STATUS_STAT_OPEN:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_OPEN;
-+	case QCA808X_CDT_STATUS_STAT_FAIL:
-+	default:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_UNSPEC;
-+	}
-+}
-+
-+static int qca808x_cdt_fault_length(struct phy_device *phydev, int pair)
-+{
-+	int val;
-+	u32 cdt_length_reg = 0;
-+
-+	switch (pair) {
-+	case ETHTOOL_A_CABLE_PAIR_A:
-+		cdt_length_reg = QCA808X_MMD3_CDT_DIAG_PAIR_A;
-+		break;
-+	case ETHTOOL_A_CABLE_PAIR_B:
-+		cdt_length_reg = QCA808X_MMD3_CDT_DIAG_PAIR_B;
-+		break;
-+	case ETHTOOL_A_CABLE_PAIR_C:
-+		cdt_length_reg = QCA808X_MMD3_CDT_DIAG_PAIR_C;
-+		break;
-+	case ETHTOOL_A_CABLE_PAIR_D:
-+		cdt_length_reg = QCA808X_MMD3_CDT_DIAG_PAIR_D;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	val = phy_read_mmd(phydev, MDIO_MMD_PCS, cdt_length_reg);
-+	if (val < 0)
-+		return val;
-+
-+	return (FIELD_GET(QCA808X_CDT_DIAG_LENGTH, val) * 824) / 10;
-+}
-+
-+static int qca808x_cable_test_start(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	/* perform CDT with the following configs:
-+	 * 1. disable hibernation.
-+	 * 2. force PHY working in MDI mode.
-+	 * 3. for PHY working in 1000BaseT.
-+	 * 4. configure the threshold.
-+	 */
-+
-+	ret = at803x_debug_reg_mask(phydev, QCA808X_DBG_AN_TEST, QCA808X_HIBERNATION_EN, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = at803x_config_mdix(phydev, ETH_TP_MDI);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Force 1000base-T needs to configure PMA/PMD and MII_BMCR */
-+	phydev->duplex = DUPLEX_FULL;
-+	phydev->speed = SPEED_1000;
-+	ret = genphy_c45_pma_setup_forced(phydev);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = genphy_setup_forced(phydev);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* configure the thresholds for open, short, pair ok test */
-+	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x8074, 0xc040);
-+	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x8076, 0xc040);
-+	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x8077, 0xa060);
-+	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x8078, 0xc050);
-+	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x807a, 0xc060);
-+	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x807e, 0xb060);
-+
-+	return 0;
-+}
-+
-+static int qca808x_cable_test_get_status(struct phy_device *phydev, bool *finished)
-+{
-+	int ret, val;
-+	int pair_a, pair_b, pair_c, pair_d;
-+
-+	*finished = false;
-+
-+	ret = at803x_cdt_start(phydev, 0);
-+	if (ret)
-+		return ret;
-+
-+	ret = at803x_cdt_wait_for_completion(phydev);
-+	if (ret)
-+		return ret;
-+
-+	val = phy_read_mmd(phydev, MDIO_MMD_PCS, QCA808X_MMD3_CDT_STATUS);
-+	if (val < 0)
-+		return val;
-+
-+	pair_a = FIELD_GET(QCA808X_CDT_CODE_PAIR_A, val);
-+	pair_b = FIELD_GET(QCA808X_CDT_CODE_PAIR_B, val);
-+	pair_c = FIELD_GET(QCA808X_CDT_CODE_PAIR_C, val);
-+	pair_d = FIELD_GET(QCA808X_CDT_CODE_PAIR_D, val);
-+
-+	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_A,
-+				qca808x_cable_test_result_trans(pair_a));
-+	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_B,
-+				qca808x_cable_test_result_trans(pair_b));
-+	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_C,
-+				qca808x_cable_test_result_trans(pair_c));
-+	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_D,
-+				qca808x_cable_test_result_trans(pair_d));
-+
-+	if (qca808x_cdt_fault_length_valid(pair_a))
-+		ethnl_cable_test_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_A,
-+				qca808x_cdt_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_A));
-+	if (qca808x_cdt_fault_length_valid(pair_b))
-+		ethnl_cable_test_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_B,
-+				qca808x_cdt_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_B));
-+	if (qca808x_cdt_fault_length_valid(pair_c))
-+		ethnl_cable_test_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_C,
-+				qca808x_cdt_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_C));
-+	if (qca808x_cdt_fault_length_valid(pair_d))
-+		ethnl_cable_test_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_D,
-+				qca808x_cdt_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_D));
-+
-+	*finished = true;
-+
-+	return 0;
-+}
-+
- static struct phy_driver at803x_driver[] = {
- {
- 	/* Qualcomm Atheros AR8035 */
-@@ -1848,6 +2033,7 @@ static struct phy_driver at803x_driver[] = {
- 	/* Qualcomm QCA8081 */
- 	PHY_ID_MATCH_EXACT(QCA8081_PHY_ID),
- 	.name			= "Qualcomm QCA8081",
-+	.flags			= PHY_POLL_CABLE_TEST,
- 	.config_intr		= at803x_config_intr,
- 	.handle_interrupt	= at803x_handle_interrupt,
- 	.get_tunable		= at803x_get_tunable,
-@@ -1861,6 +2047,8 @@ static struct phy_driver at803x_driver[] = {
- 	.read_status		= qca808x_read_status,
- 	.config_init		= qca808x_config_init,
- 	.soft_reset		= qca808x_soft_reset,
-+	.cable_test_start	= qca808x_cable_test_start,
-+	.cable_test_get_status	= qca808x_cable_test_get_status,
- }, };
- 
- module_phy_driver(at803x_driver);
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
-
+Reviewed-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
