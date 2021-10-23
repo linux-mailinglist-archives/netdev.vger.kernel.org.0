@@ -2,167 +2,419 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BCAC4384FF
-	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 21:33:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C899E438505
+	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 21:36:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231453AbhJWTfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Oct 2021 15:35:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39446 "EHLO
+        id S230513AbhJWTir (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Oct 2021 15:38:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231564AbhJWTfC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 15:35:02 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566DCC061348
-        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:32:43 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id c4so6614713pgv.11
-        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:32:43 -0700 (PDT)
+        with ESMTP id S230142AbhJWTir (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 15:38:47 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1E87C061714
+        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:36:27 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id f4so2368675plt.3
+        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:36:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=9EJDhASbwkdQfdpta0drLFmeI0BvcGsGH/c2nqyaMcA=;
-        b=EoxONza2lDEsJTSWSuGaARmRndlbYKyrb/ZFFTvB4SNKdcuIJzWMqBqKCIYCj6hG6y
-         dIa0hBrYdnV6n1M/K39IFsg8M2yV/ukwT3zzqGFbfm2nH5P4Auoe09HqR4RbLoQQDq5N
-         S+bghkRCdLcN1gTvf5WS8Hkv1Mp9amBGHMgGA=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=Qo1ctV0CRCEFwHZTNsKT8mMG3X00iVc1y9dvPZq8/0s=;
+        b=FjkWgZLwgokDSQ7KLsSG34wfoQl9yhgeN6F4ZObz8KgW9xz9Q7geLWDeq2RxdertC0
+         yVBGVMUS01+srkByECboB2PDTRhl5T4jDxL9e0dl0qjzG/7gSYeOjoYKgQtZn9yje6/c
+         Dd3ewXROTibaCr0QAsrlsIVKehRBiW/NZl1M8fdN34Cx+ysEvYrtt0Ou7pb6vWWnxEaX
+         qgs1Ca6lVwsmLJoJiJSiSCvYJljV4Va9pwgdGBhkiXcq3Ld03e+gbsJ53eNyjGro6unJ
+         lLacqAFOjpICzTwMVmnSUINsrhtCBrNPzl6L9tQmHdTqZjsslFou/b6Up+UiGPoR5UTE
+         XPrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=9EJDhASbwkdQfdpta0drLFmeI0BvcGsGH/c2nqyaMcA=;
-        b=u8aTFT5lpIZTmaNdoI3HNZ5Tu1uw5Q2ceTWt0WXt9HJkEny+K8R8ukLs/3ZBpkIyFM
-         Cc6PdCMKZj3oA4Qa6gkYO04zj0xooIVBR+i+bS3MnzHKHEv55k4bJk6avBXV+oCUw/GQ
-         CPXMJ0tMa4zywtNSusMYpydtaNXgzL+Tx/d9Ku6UXcPZBkJTSQ57lFZIaVgD2RdD+Wgd
-         DQnnm4EegVaB4MpjOIA1/gGskmTIR9pjab/V74RUV0KzvU4TdoWYmXwmzy5w060CZZ5/
-         zfBFf1Ws89TfaTlJ8QUvvj6yFR1Hk6wwmGCYugKxaKOak0h4xoLSXUj8qE6ck5AHPWde
-         tCKw==
-X-Gm-Message-State: AOAM533mefw5hJBSyXvS6y/1VVWJzgZKOg4xIVa+7p8kUID8pA/zlZGD
-        dP9PBSSThxP2+iyfzf5veVZvbw==
-X-Google-Smtp-Source: ABdhPJyX7AT7WURen8+Vb9B6ogVdO3uUs9FY0vxJf0jnRES88nQQs3KXM/0kS2bg9o8rok6IVLV5vg==
-X-Received: by 2002:a62:3606:0:b0:445:38d5:98bf with SMTP id d6-20020a623606000000b0044538d598bfmr8091269pfa.4.1635017562578;
-        Sat, 23 Oct 2021 12:32:42 -0700 (PDT)
-Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id f7sm2461532pfv.152.2021.10.23.12.32.41
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 23 Oct 2021 12:32:42 -0700 (PDT)
-From:   Michael Chan <michael.chan@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
-        gospo@broadcom.com, jiri@nvidia.com
-Subject: [PATCH net-next 19/19] bnxt_en: Update bnxt.rst devlink documentation
-Date:   Sat, 23 Oct 2021 15:32:06 -0400
-Message-Id: <1635017526-16963-20-git-send-email-michael.chan@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1635017526-16963-1-git-send-email-michael.chan@broadcom.com>
-References: <1635017526-16963-1-git-send-email-michael.chan@broadcom.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000000d4ca505cf0a3165"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Qo1ctV0CRCEFwHZTNsKT8mMG3X00iVc1y9dvPZq8/0s=;
+        b=aTUohdYEJJTSfZ2+J2ltA8eK3BWBJIgQF8Y7tOpDGnaxoQEWzPrhZ4vB8vqd66HaES
+         l126Xb9NQhORDVFsWt/kVJ8+Yntee1OaV9WtVY2ug4RwK33sHT5+gThchMGHq2dlsFMH
+         ot1XA4fP3eu1qNA0NjsN1l2eajN6AH8HZckbniDnC0O89mYciFYykZ+eyr+nJUUCqQ2t
+         4XJT8wlcg8CVYB2NWYuNoPG5UXQ5KBxYLkG7PKU2r2CmjWCNoVxWDrNXhyJEZ/RWhGTm
+         9iCWh4Ytv1ggOBQRC1xivy0mMs4EA9SiTSkR3CzoRhiQ0RCFvgTn9XNtIjepA9u9ctPU
+         nFag==
+X-Gm-Message-State: AOAM532EKq2TXcQE7EmUHUKjNYs7fhlQjeGblp7HLtwAMBghnuzSoONu
+        IbGW51/0j3tTm7IzeMVpLjA=
+X-Google-Smtp-Source: ABdhPJxeP3BORf52M3WG19zNq3CuF4icbtGjKpeC+Rcwh8lTA3oVkntce1OjIr7yW1EZDOgChZvzDQ==
+X-Received: by 2002:a17:903:120e:b0:138:d732:3b01 with SMTP id l14-20020a170903120e00b00138d7323b01mr7251251plh.21.1635017787055;
+        Sat, 23 Oct 2021 12:36:27 -0700 (PDT)
+Received: from localhost.localdomain ([49.173.165.50])
+        by smtp.gmail.com with ESMTPSA id k3sm16529302pjg.43.2021.10.23.12.36.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 23 Oct 2021 12:36:26 -0700 (PDT)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     stephen@networkplumber.org, dsahern@gmail.com,
+        netdev@vger.kernel.org
+Cc:     ap420073@gmail.com
+Subject: [PATCH iproute2-next] ip: add AMT support
+Date:   Sat, 23 Oct 2021 19:36:11 +0000
+Message-Id: <20211023193611.11540-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000000d4ca505cf0a3165
+Add basic support for Automatic Multicast Tunneling (AMT) network devices.
 
-Add 'enable_remote_dev_reset' documentation to bnxt.rst.
-
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
- Documentation/networking/devlink/bnxt.rst | 2 ++
- 1 file changed, 2 insertions(+)
+ ip/Makefile           |   3 +-
+ ip/ip.c               |   4 +-
+ ip/iplink.c           |   2 +-
+ ip/iplink_amt.c       | 227 ++++++++++++++++++++++++++++++++++++++++++
+ man/man8/ip-link.8.in |  46 +++++++++
+ 5 files changed, 278 insertions(+), 4 deletions(-)
+ create mode 100644 ip/iplink_amt.c
 
-diff --git a/Documentation/networking/devlink/bnxt.rst b/Documentation/networking/devlink/bnxt.rst
-index 3dfd84ccb1c7..a4fb27663cd6 100644
---- a/Documentation/networking/devlink/bnxt.rst
-+++ b/Documentation/networking/devlink/bnxt.rst
-@@ -22,6 +22,8 @@ Parameters
-      - Permanent
-    * - ``msix_vec_per_pf_min``
-      - Permanent
-+   * - ``enable_remote_dev_reset``
-+     - Runtime
+diff --git a/ip/Makefile b/ip/Makefile
+index bcc5f816..2a7a51c3 100644
+--- a/ip/Makefile
++++ b/ip/Makefile
+@@ -11,7 +11,8 @@ IPOBJ=ip.o ipaddress.o ipaddrlabel.o iproute.o iprule.o ipnetns.o \
+     iplink_bridge.o iplink_bridge_slave.o ipfou.o iplink_ipvlan.o \
+     iplink_geneve.o iplink_vrf.o iproute_lwtunnel.o ipmacsec.o ipila.o \
+     ipvrf.o iplink_xstats.o ipseg6.o iplink_netdevsim.o iplink_rmnet.o \
+-    ipnexthop.o ipmptcp.o iplink_bareudp.o iplink_wwan.o ipioam6.o
++    ipnexthop.o ipmptcp.o iplink_bareudp.o iplink_wwan.o ipioam6.o \
++    iplink_amt.o
  
- The ``bnxt`` driver also implements the following driver-specific
- parameters.
+ RTMONOBJ=rtmon.o
+ 
+diff --git a/ip/ip.c b/ip/ip.c
+index b07a5c7d..c784f819 100644
+--- a/ip/ip.c
++++ b/ip/ip.c
+@@ -64,8 +64,8 @@ static void usage(void)
+ 	fprintf(stderr,
+ 		"Usage: ip [ OPTIONS ] OBJECT { COMMAND | help }\n"
+ 		"       ip [ -force ] -batch filename\n"
+-		"where  OBJECT := { address | addrlabel | fou | help | ila | ioam | l2tp | link |\n"
+-		"                   macsec | maddress | monitor | mptcp | mroute | mrule |\n"
++		"where  OBJECT := { address | addrlabel | amt | fou | help | ila | ioam | l2tp |\n"
++		"                   link | macsec | maddress | monitor | mptcp | mroute | mrule |\n"
+ 		"                   neighbor | neighbour | netconf | netns | nexthop | ntable |\n"
+ 		"                   ntbl | route | rule | sr | tap | tcpmetrics |\n"
+ 		"                   token | tunnel | tuntap | vrf | xfrm }\n"
+diff --git a/ip/iplink.c b/ip/iplink.c
+index 4e74512e..a3ea775d 100644
+--- a/ip/iplink.c
++++ b/ip/iplink.c
+@@ -50,7 +50,7 @@ void iplink_types_usage(void)
+ {
+ 	/* Remember to add new entry here if new type is added. */
+ 	fprintf(stderr,
+-		"TYPE := { bareudp | bond | bond_slave | bridge | bridge_slave |\n"
++		"TYPE := { amt | bareudp | bond | bond_slave | bridge | bridge_slave |\n"
+ 		"          dummy | erspan | geneve | gre | gretap | ifb |\n"
+ 		"          ip6erspan | ip6gre | ip6gretap | ip6tnl |\n"
+ 		"          ipip | ipoib | ipvlan | ipvtap |\n"
+diff --git a/ip/iplink_amt.c b/ip/iplink_amt.c
+new file mode 100644
+index 00000000..e751d692
+--- /dev/null
++++ b/ip/iplink_amt.c
+@@ -0,0 +1,227 @@
++/*
++ * iplink_amt.c	AMT device support
++ *
++ *		This program is free software; you can redistribute it and/or
++ *		modify it under the terms of the GNU General Public License
++ *		as published by the Free Software Foundation; either version
++ *		2 of the License, or (at your option) any later version.
++ *
++ * Authors:	Taehee Yoo <ap420073@gmail.com>
++ */
++
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <net/if.h>
++#include <linux/ip.h>
++#include <linux/if_link.h>
++#include <arpa/inet.h>
++#include <linux/amt.h>
++
++#include "rt_names.h"
++#include "utils.h"
++#include "ip_common.h"
++
++#define AMT_ATTRSET(attrs, type) (((attrs) & (1L << (type))) != 0)
++
++static void print_usage(FILE *f)
++{
++	fprintf(f,
++		"Usage: ... amt\n"
++		"               [ discovery IP_ADDRESS ]\n"
++		"               [ mode MODE ]\n"
++		"               [ local ADDR ]\n"
++		"               [ dev PHYS_DEV ]\n"
++		"               [ relay_port PORT ]\n"
++		"               [ gateway_port PORT ]\n"
++		"               [ max_tunnels NUMBER ]\n"
++		"\n"
++		"Where: ADDR	:= { IP_ADDRESS }\n"
++		"       MODE	:= { gateway | relay }\n"
++		);
++}
++
++static char *modename[] = {"gateway", "relay"};
++
++static void usage(void)
++{
++	print_usage(stderr);
++}
++
++static void check_duparg(__u64 *attrs, int type, const char *key,
++		const char *argv)
++{
++	if (!AMT_ATTRSET(*attrs, type)) {
++		*attrs |= (1L << type);
++		return;
++	}
++	duparg2(key, argv);
++}
++
++static int amt_parse_opt(struct link_util *lu, int argc, char **argv,
++			 struct nlmsghdr *n)
++{
++	unsigned int mode, max_tunnels;
++	inet_prefix saddr, daddr;
++	__u64 attrs = 0;
++	__u16 port;
++
++	saddr.family = daddr.family = AF_UNSPEC;
++
++	inet_prefix_reset(&saddr);
++	inet_prefix_reset(&daddr);
++
++	while (argc > 0) {
++		if (matches(*argv, "mode") == 0) {
++			NEXT_ARG();
++			if (strcmp(*argv, "gateway") == 0) {
++				mode = 0;
++			} else if (strcmp(*argv, "relay") == 0) {
++				mode = 1;
++			} else {
++				usage();
++				return -1;
++			}
++			addattr32(n, 1024, IFLA_AMT_MODE, mode);
++		} else if (matches(*argv, "relay_port") == 0) {
++			NEXT_ARG();
++			if (get_u16(&port, *argv, 0))
++				invarg("relay_port", *argv);
++			addattr16(n, 1024, IFLA_AMT_RELAY_PORT, htons(port));
++		} else if (matches(*argv, "gateway_port") == 0) {
++			NEXT_ARG();
++			if (get_u16(&port, *argv, 0))
++				invarg("gateway_port", *argv);
++			addattr16(n, 1024, IFLA_AMT_GATEWAY_PORT, htons(port));
++		} else if (matches(*argv, "max_tunnels") == 0) {
++			NEXT_ARG();
++			if (get_u32(&max_tunnels, *argv, 0))
++				invarg("max_tunnels", *argv);
++			addattr32(n, 1024, IFLA_AMT_MAX_TUNNELS, max_tunnels);
++		} else if (matches(*argv, "dev") == 0) {
++			unsigned int link;
++
++			NEXT_ARG();
++			link = ll_name_to_index(*argv);
++			if (!link)
++				exit(nodev(*argv));
++			addattr32(n, 1024, IFLA_AMT_LINK, link);
++		} else if (matches(*argv, "local") == 0) {
++			NEXT_ARG();
++			check_duparg(&attrs, IFLA_AMT_LOCAL_IP, "local", *argv);
++			get_addr(&saddr, *argv, daddr.family);
++
++			if (is_addrtype_inet(&saddr))
++				addattr_l(n, 1024, IFLA_AMT_LOCAL_IP,
++					  saddr.data, saddr.bytelen);
++		} else if (matches(*argv, "discovery") == 0) {
++			NEXT_ARG();
++			check_duparg(&attrs, IFLA_AMT_DISCOVERY_IP,
++				     "discovery", *argv);
++			get_addr(&daddr, *argv, daddr.family);
++			if (is_addrtype_inet(&daddr))
++				addattr_l(n, 1024, IFLA_AMT_DISCOVERY_IP,
++					  daddr.data, daddr.bytelen);
++		} else if (matches(*argv, "help") == 0) {
++			usage();
++			return -1;
++		} else {
++			fprintf(stderr, "amt: unknown command \"%s\"?\n", *argv);
++			usage();
++			return -1;
++		}
++		argc--, argv++;
++	}
++
++	return 0;
++}
++
++static void amt_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
++{
++	if (!tb)
++		return;
++
++	if (tb[IFLA_AMT_MODE] && RTA_PAYLOAD(tb[IFLA_AMT_MODE]) < sizeof(__u32))
++		return;
++
++	if (tb[IFLA_AMT_MODE]) {
++		print_string(PRINT_ANY,
++			     "mode",
++			     "%s ",
++			     modename[rta_getattr_u32(tb[IFLA_AMT_MODE])]);
++	}
++
++	if (tb[IFLA_AMT_GATEWAY_PORT]) {
++		print_uint(PRINT_ANY,
++			   "gateway_port",
++			   "gateway_port %u ",
++			   rta_getattr_be16(tb[IFLA_AMT_GATEWAY_PORT]));
++	}
++
++	if (tb[IFLA_AMT_RELAY_PORT]) {
++		print_uint(PRINT_ANY,
++			   "relay_port",
++			   "relay_port %u ",
++			   rta_getattr_be16(tb[IFLA_AMT_RELAY_PORT]));
++	}
++
++	if (tb[IFLA_AMT_LOCAL_IP]) {
++		__be32 addr = rta_getattr_u32(tb[IFLA_AMT_LOCAL_IP]);
++
++		if (addr)
++			print_string(PRINT_ANY,
++				     "local",
++				     "local %s ",
++				     format_host(AF_INET, 4, &addr));
++	}
++
++	if (tb[IFLA_AMT_REMOTE_IP]) {
++		__be32 addr = rta_getattr_u32(tb[IFLA_AMT_REMOTE_IP]);
++
++		if (addr)
++			print_string(PRINT_ANY,
++				     "remote",
++				     "remote %s ",
++				     format_host(AF_INET, 4, &addr));
++	}
++
++	if (tb[IFLA_AMT_DISCOVERY_IP]) {
++		__be32 addr = rta_getattr_u32(tb[IFLA_AMT_DISCOVERY_IP]);
++
++		if (addr) {
++			print_string(PRINT_ANY,
++				     "discovery",
++				     "discovery %s ",
++				     format_host(AF_INET, 4, &addr));
++		}
++	}
++
++	if (tb[IFLA_AMT_LINK]) {
++		unsigned int link = rta_getattr_u32(tb[IFLA_AMT_LINK]);
++
++		if (link)
++			print_string(PRINT_ANY, "link", "dev %s ",
++				     ll_index_to_name(link));
++	}
++
++	if (tb[IFLA_AMT_MAX_TUNNELS]) {
++		unsigned int tunnels = rta_getattr_u32(tb[IFLA_AMT_MAX_TUNNELS]);
++
++		if (tunnels)
++			print_uint(PRINT_ANY, "max_tunnels", "max_tunnels %u ",
++				   rta_getattr_u32(tb[IFLA_AMT_MAX_TUNNELS]));
++	}
++}
++
++static void amt_print_help(struct link_util *lu, int argc, char **argv, FILE *f)
++{
++	print_usage(f);
++}
++
++struct link_util amt_link_util = {
++	.id		= "amt",
++	.maxattr	= IFLA_AMT_MAX,
++	.parse_opt	= amt_parse_opt,
++	.print_opt	= amt_print_opt,
++	.print_help	= amt_print_help,
++};
+diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
+index c0cbb5e8..1d67c9a4 100644
+--- a/man/man8/ip-link.8.in
++++ b/man/man8/ip-link.8.in
+@@ -198,6 +198,7 @@ ip-link \- network device configuration
+ 
+ .ti -8
+ .IR TYPE " := [ "
++.BR amt " | "
+ .BR bridge " | "
+ .BR bond " | "
+ .BR can " | "
+@@ -364,6 +365,9 @@ Link types:
+ .BR bareudp
+ - Bare UDP L3 encapsulation support
+ .sp
++.BR amt
++- Automatic Multicast Tunneling (AMT)
++.sp
+ .BR macsec
+ - Interface for IEEE 802.1AE MAC Security (MACsec)
+ .sp
+@@ -1344,6 +1348,48 @@ When
+ is "ipv4", this allows the tunnel to also handle IPv6. This option is disabled
+ by default.
+ 
++.TP
++AMT Type Support
++For a link of type
++.I AMT
++the following additional arguments are supported:
++
++.BI "ip link add " DEVICE
++.BI type " AMT " discovery " IPADDR " mode " { " gateway " | " relay " } "
++.BI local " IPADDR " dev " PHYS_DEV " [
++.BI relay_port " PORT " ]
++[
++.BI gateway_port " PORT " ]
++[
++.BI max_tunnels " NUMBER "
++]
++
++.in +8
++.sp
++.BI discovery " IPADDR"
++- specifies the unicast discovery IP address to use to find remote IP address.
++
++.BR mode " { " gateway " | " relay " } "
++- specifies the role of AMT, Gateway or Relay
++
++.BI local " IPADDR "
++- specifies the source IP address to use in outgoing packets.
++
++.BI dev " PHYS_DEV "
++- specifies the underlying physical interface from which transform traffic
++is sent and received.
++
++.BI relay_port " PORT "
++- specifies the UDP Relay port to communicate to the Relay.
++
++.BI gateway_port " PORT "
++- specifies the UDP Gateway port to communicate to the Gateway.
++
++.BI max_tunnels " NUMBER "
++- specifies the maximum number of tunnels.
++
++.in -8
++
+ .TP
+ MACVLAN and MACVTAP Type Support
+ For a link of type
 -- 
-2.18.1
+2.17.1
 
-
---0000000000000d4ca505cf0a3165
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-xV4Em+0wQoEIR2kPG6yiZNtUK0tNCaZejYU/Mf/bzdKSwud3pLgHV8ls83y2OU/ha9xgJMLpRswv
-xucFCxMsPmk0yoVmpbr92kIpLm+TomNZsL++LcDRa2ECAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUz2bMvqtXpXM0u3vAvRkalz60
-CjswDQYJKoZIhvcNAQELBQADggEBAGUgeqqI/q2pkETeLr6oS7nnm1bkeNmtnJ2bnybNO/RdrbPj
-DHVSiDCCrWr6xrc+q6OiZDKm0Ieq6BN+Wfr8h5mCkZMUdJikI85WcQTRk6EEF2lzIiaULmFD7U15
-FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
-1CHkODrS2JGwDQxXKmyF64MhJiOutWHmqoGmLJVz1jnDvClsYtgT4zcNtoqKtjpWDYAefncWDPIQ
-DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEICq6GccnLLtO8q12tJgLaYmaFGfQ8SrB
-spRiMkGEaeYeMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTAy
-MzE5MzI0M1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBalxsox3O2EGrA3jnnaCjrTjUX4dcA3EYw0jH2kvCkpMzHklzL
-tWWNVdEcxhUzg+NFjNTZSRolnCOZklOULX4uXCjYgEYRNXlkkQnSOLS2EaU2BnUC/HXlmEbshi4s
-DT4Qgzb1X5tUS+DFx+EYbh0sZYF7nVquUK4IGjGAFdIXX7OH/l9TeFwBgsLBi3e0tTX+CoWpUjT6
-m25joIBX9b/UwpdT9Z+kOC1K+gQU5+yXceefy+3523I16qScAiVqd3KZOgC2J8iGLa5fS4W0QpYF
-f5uMHvku/BuxmnzfRKWboU2aqvpehfk1QUwVYcYacutzDqAXCRwRCTSLxYRfolzI
---0000000000000d4ca505cf0a3165--
