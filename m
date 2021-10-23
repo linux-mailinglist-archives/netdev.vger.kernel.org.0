@@ -2,157 +2,427 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91E184384F2
+	by mail.lfdr.de (Postfix) with ESMTP id DB5C04384F3
 	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 21:32:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231469AbhJWTer (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Oct 2021 15:34:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39360 "EHLO
+        id S231528AbhJWTey (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Oct 2021 15:34:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230463AbhJWTeq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 15:34:46 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F91C061764
+        with ESMTP id S231452AbhJWTer (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 15:34:47 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD2B2C061714
         for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:32:27 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id d5so6757033pfu.1
+Received: by mail-pf1-x42c.google.com with SMTP id d9so6727775pfl.6
         for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:32:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=FBNTlum7vK3Z6YhDIQeGv50aVWl9VisJ3yup2NiFleI=;
-        b=gtaR7Wwt+/1ApSVu9FbG84JwGlYzMRlL4wo+8gY2fct4exE6ZoDWWABT+sci4B9lUR
-         dOnsOP9M4PtbemvcOTnGm+i594tO066zemTMrEzD+h5VCQGy/mM11TLz9nCofHAEmEpx
-         Ak0fWvSmwSicg9uLX30w2Hw2eA0Dl4HkvEtjo=
+        bh=wol0E8rPHR8S5U4UaPx2hWX6Sr7gM6AhKSlpk2C04/c=;
+        b=Hm693hgwWTHoeOYANv1orngR6wPpBikzCOakvyWEfe79D1YfZCreKlgzN/Qn6XLYah
+         AsDjJ90JCO2WUVuzhX4YOr7De8vNaFNimhhs6aBjBihfub+a2wwqEZ9+DaznSqkGhtes
+         Ejd5gv2nkfw/RbOPT7+yt507HSIaUSaaHppqo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=FBNTlum7vK3Z6YhDIQeGv50aVWl9VisJ3yup2NiFleI=;
-        b=b9AqMpwoTf/shybjJEl+i6hJSBmacCSaW/69LG2mEcHq/Zj7w2QVW4bCg8l3qcKGqH
-         bYtDuYI5y28cyV9F9zM9SEelkPTOsS7i8FBuI/2TsT5FpS3qeHOk8VjmajgzPIo97gIM
-         lE0gIT8SH0Qbd5/VbefumHJugQaVnFZOJfqALUn2CprGC3bFIuKrUhztRwfww9q57/S0
-         84IKwhLU25zhbP7o+Gs6ee3/b22YIpQHnMEzVFfytINj2hJlzD2AfeRibRAcoldGaF0Z
-         me6kJgdl7LOHnxOC1iRY2vfMTWJc328g1OyHqzCw3fJdTYeGp4tMTxzE+Tk0xMAaWY9k
-         XGDA==
-X-Gm-Message-State: AOAM530Q/91CnNP9ThaUf+sKsIVLbA6uFq3StmvmRukwUx6yl8v3m4lD
-        pDQ8R9WiE2TK1vUgLOdKQxhBgQ==
-X-Google-Smtp-Source: ABdhPJxFIgMEz3Fa/p0RhSsIvvKv4Emh92grZIzMjmFiiaQyFaPF8pNQtP9OHDtXOGxbqRhQi59PUg==
-X-Received: by 2002:a63:920b:: with SMTP id o11mr5758914pgd.314.1635017545938;
-        Sat, 23 Oct 2021 12:32:25 -0700 (PDT)
+        bh=wol0E8rPHR8S5U4UaPx2hWX6Sr7gM6AhKSlpk2C04/c=;
+        b=w5KYpn5jCcX9dHR47lPTqgUyjFTaQQ3JjAoPUpYIOx8vdnqtUOtnlOLu7U4ffGLgQE
+         ieKsPwV5UYuGDGhsWelIoG3axnSvD/CXEDb/wr/+am5ShcE6kQ5gAvu+hvNP09ia3+Mo
+         iWpq/htfaiih20Sh43eh0UIs8kGDlYdr7o+f6HqcGUowDUJn57v75j3U7tX91mtTJntd
+         pzVlzOo3iH9KcTvF1DQZkLmIudrTs5mGbgpu2cFYsrxLs2E7jZKeCuVK9y3tvM4/55Up
+         9bR1QES42kj0NyrI13nVc5ouYzl5a3etR+/p8naS6weID1/ZV9OLFsvgGs7LB9BglvC+
+         h9Gw==
+X-Gm-Message-State: AOAM533Di3kZaiduyrePWJ//ObJ1//2HZyVylpw9WaaX0I4duMS2iPK6
+        Hwy7GFJTD9oIyyMM3GB1tF5f8yCrPDollA==
+X-Google-Smtp-Source: ABdhPJyPWQKDLxLy4B7AbGNeaAhl/YlJusMnDxZfIjexlOrmU0YIIcJ1UBgIB/7wmf7U5oPgJNmKaA==
+X-Received: by 2002:a63:9841:: with SMTP id l1mr5561079pgo.318.1635017547080;
+        Sat, 23 Oct 2021 12:32:27 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id f7sm2461532pfv.152.2021.10.23.12.32.24
+        by smtp.gmail.com with ESMTPSA id f7sm2461532pfv.152.2021.10.23.12.32.26
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 23 Oct 2021 12:32:25 -0700 (PDT)
+        Sat, 23 Oct 2021 12:32:26 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
         gospo@broadcom.com, jiri@nvidia.com
-Subject: [PATCH net-next 06/19] bnxt_en: improve error recovery information messages
-Date:   Sat, 23 Oct 2021 15:31:53 -0400
-Message-Id: <1635017526-16963-7-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 07/19] bnxt_en: remove fw_reset devlink health reporter
+Date:   Sat, 23 Oct 2021 15:31:54 -0400
+Message-Id: <1635017526-16963-8-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1635017526-16963-1-git-send-email-michael.chan@broadcom.com>
 References: <1635017526-16963-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000015589505cf0a30da"
+        boundary="00000000000021067b05cf0a30b6"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000015589505cf0a30da
+--00000000000021067b05cf0a30b6
 
 From: Edwin Peer <edwin.peer@broadcom.com>
 
-The recovery election messages are often mistaken for errors. Improve
-the wording to clarify the meaning of these frequent and expected
-events. Also, take the first step towards more inclusive language.
+Firmware resets initiated by the user are not errors and should not
+be reported via devlink. Once only unsolicited resets remain, it is no
+longer sensible to maintain a separate fw_reset reporter.
 
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 20 ++++++++++++--------
- drivers/net/ethernet/broadcom/bnxt/bnxt.h |  2 +-
- 2 files changed, 13 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  33 +++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  12 +-
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 118 ++++--------------
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.h |   6 +-
+ 4 files changed, 53 insertions(+), 116 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 44653a8255bb..8752c1dcc66e 100644
+index 8752c1dcc66e..a766236d330f 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -2150,17 +2150,18 @@ static int bnxt_async_event_process(struct bnxt *bp,
- 	}
- 	case ASYNC_EVENT_CMPL_EVENT_ID_ERROR_RECOVERY: {
- 		struct bnxt_fw_health *fw_health = bp->fw_health;
-+		char *status_desc = "healthy";
-+		u32 status;
+@@ -2122,7 +2122,7 @@ static int bnxt_async_event_process(struct bnxt *bp,
+ 		set_bit(BNXT_RESET_TASK_SILENT_SP_EVENT, &bp->sp_event);
+ 		break;
+ 	case ASYNC_EVENT_CMPL_EVENT_ID_RESET_NOTIFY: {
+-		char *fatal_str = "non-fatal";
++		char *type_str = "Solicited";
  
- 		if (!fw_health)
+ 		if (!bp->fw_health)
  			goto async_event_process_exit;
- 
- 		if (!EVENT_DATA1_RECOVERY_ENABLED(data1)) {
- 			fw_health->enabled = false;
--			netif_info(bp, drv, bp->dev,
--				   "Error recovery info: error recovery[0]\n");
-+			netif_info(bp, drv, bp->dev, "Driver recovery watchdog is disabled\n");
- 			break;
+@@ -2137,12 +2137,16 @@ static int bnxt_async_event_process(struct bnxt *bp,
+ 		if (EVENT_DATA1_RESET_NOTIFY_FW_ACTIVATION(data1)) {
+ 			set_bit(BNXT_STATE_FW_ACTIVATE_RESET, &bp->state);
+ 		} else if (EVENT_DATA1_RESET_NOTIFY_FATAL(data1)) {
+-			fatal_str = "fatal";
++			type_str = "Fatal";
+ 			set_bit(BNXT_STATE_FW_FATAL_COND, &bp->state);
++		} else if (data2 && BNXT_FW_STATUS_HEALTHY !=
++			   EVENT_DATA2_RESET_NOTIFY_FW_STATUS_CODE(data2)) {
++			type_str = "Non-fatal";
++			set_bit(BNXT_STATE_FW_NON_FATAL_COND, &bp->state);
  		}
--		fw_health->master = EVENT_DATA1_RECOVERY_MASTER_FUNC(data1);
-+		fw_health->primary = EVENT_DATA1_RECOVERY_MASTER_FUNC(data1);
- 		fw_health->tmr_multiplier =
- 			DIV_ROUND_UP(fw_health->polling_dsecs * HZ,
- 				     bp->current_interval * 10);
-@@ -2170,10 +2171,13 @@ static int bnxt_async_event_process(struct bnxt *bp,
- 				bnxt_fw_health_readl(bp, BNXT_FW_HEARTBEAT_REG);
- 		fw_health->last_fw_reset_cnt =
- 			bnxt_fw_health_readl(bp, BNXT_FW_RESET_CNT_REG);
-+		status = bnxt_fw_health_readl(bp, BNXT_FW_HEALTH_REG);
-+		if (status != BNXT_FW_STATUS_HEALTHY)
-+			status_desc = "unhealthy";
- 		netif_info(bp, drv, bp->dev,
--			   "Error recovery info: error recovery[1], master[%d], reset count[%u], health status: 0x%x\n",
--			   fw_health->master, fw_health->last_fw_reset_cnt,
--			   bnxt_fw_health_readl(bp, BNXT_FW_HEALTH_REG));
-+			   "Driver recovery watchdog, role: %s, firmware status: 0x%x (%s), resets: %u\n",
-+			   fw_health->primary ? "primary" : "backup", status,
-+			   status_desc, fw_health->last_fw_reset_cnt);
- 		if (!fw_health->enabled) {
- 			/* Make sure tmr_counter is set and visible to
- 			 * bnxt_health_check() before setting enabled to true.
-@@ -11469,7 +11473,7 @@ static void bnxt_force_fw_reset(struct bnxt *bp)
+ 		netif_warn(bp, hw, bp->dev,
+-			   "Firmware %s reset event, data1: 0x%x, data2: 0x%x, min wait %u ms, max wait %u ms\n",
+-			   fatal_str, data1, data2,
++			   "%s firmware reset event, data1: 0x%x, data2: 0x%x, min wait %u ms, max wait %u ms\n",
++			   type_str, data1, data2,
+ 			   bp->fw_reset_min_dsecs * 100,
+ 			   bp->fw_reset_max_dsecs * 100);
+ 		set_bit(BNXT_FW_RESET_NOTIFY_SP_EVENT, &bp->sp_event);
+@@ -11737,13 +11741,17 @@ static void bnxt_sp_task(struct work_struct *work)
+ 	if (test_and_clear_bit(BNXT_RST_RING_SP_EVENT, &bp->sp_event))
+ 		bnxt_rx_ring_reset(bp);
+ 
+-	if (test_and_clear_bit(BNXT_FW_RESET_NOTIFY_SP_EVENT, &bp->sp_event))
+-		bnxt_devlink_health_report(bp, BNXT_FW_RESET_NOTIFY_SP_EVENT);
++	if (test_and_clear_bit(BNXT_FW_RESET_NOTIFY_SP_EVENT, &bp->sp_event)) {
++		if (test_bit(BNXT_STATE_FW_FATAL_COND, &bp->state) ||
++		    test_bit(BNXT_STATE_FW_NON_FATAL_COND, &bp->state))
++			bnxt_devlink_health_fw_report(bp);
++		else
++			bnxt_fw_reset(bp);
++	}
+ 
+ 	if (test_and_clear_bit(BNXT_FW_EXCEPTION_SP_EVENT, &bp->sp_event)) {
+ 		if (!is_bnxt_fw_ok(bp))
+-			bnxt_devlink_health_report(bp,
+-						   BNXT_FW_EXCEPTION_SP_EVENT);
++			bnxt_devlink_health_fw_report(bp);
  	}
- 	bnxt_fw_reset_close(bp);
- 	wait_dsecs = fw_health->master_func_wait_dsecs;
--	if (fw_health->master) {
-+	if (fw_health->primary) {
- 		if (fw_health->flags & ERROR_RECOVERY_QCFG_RESP_FLAGS_CO_CPU)
- 			wait_dsecs = 0;
- 		bp->fw_reset_state = BNXT_FW_RESET_STATE_RESET_FW;
-@@ -12141,7 +12145,7 @@ static void bnxt_fw_reset_task(struct work_struct *work)
- 			return;
+ 
+ 	smp_mb__before_atomic();
+@@ -12079,7 +12087,7 @@ static void bnxt_fw_reset_abort(struct bnxt *bp, int rc)
+ 	clear_bit(BNXT_STATE_IN_FW_RESET, &bp->state);
+ 	if (bp->fw_reset_state != BNXT_FW_RESET_STATE_POLL_VF) {
+ 		bnxt_ulp_start(bp, rc);
+-		bnxt_dl_health_status_update(bp, false);
++		bnxt_dl_health_fw_status_update(bp, false);
+ 	}
+ 	bp->fw_reset_state = 0;
+ 	dev_close(bp->dev);
+@@ -12178,6 +12186,7 @@ static void bnxt_fw_reset_task(struct work_struct *work)
+ 			}
  		}
- 
--		if (!bp->fw_health->master) {
-+		if (!bp->fw_health->primary) {
- 			u32 wait_dsecs = bp->fw_health->normal_func_wait_dsecs;
- 
- 			bp->fw_reset_state = BNXT_FW_RESET_STATE_ENABLE_DEV;
+ 		clear_bit(BNXT_STATE_FW_FATAL_COND, &bp->state);
++		clear_bit(BNXT_STATE_FW_NON_FATAL_COND, &bp->state);
+ 		if (test_and_clear_bit(BNXT_STATE_FW_ACTIVATE_RESET, &bp->state) &&
+ 		    !test_bit(BNXT_STATE_FW_ACTIVATE, &bp->state))
+ 			bnxt_dl_remote_reload(bp);
+@@ -12230,9 +12239,11 @@ static void bnxt_fw_reset_task(struct work_struct *work)
+ 		bnxt_vf_reps_alloc(bp);
+ 		bnxt_vf_reps_open(bp);
+ 		bnxt_ptp_reapply_pps(bp);
+-		bnxt_dl_health_recovery_done(bp);
+-		bnxt_dl_health_status_update(bp, true);
+ 		clear_bit(BNXT_STATE_FW_ACTIVATE, &bp->state);
++		if (test_and_clear_bit(BNXT_STATE_RECOVER, &bp->state)) {
++			bnxt_dl_health_fw_recovery_done(bp);
++			bnxt_dl_health_fw_status_update(bp, true);
++		}
+ 		rtnl_unlock();
+ 		break;
+ 	}
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index e56f2a27c67a..16d33d00973e 100644
+index 16d33d00973e..e640df62d296 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1536,7 +1536,7 @@ struct bnxt_fw_health {
- 	u32 last_fw_heartbeat;
+@@ -494,6 +494,10 @@ struct rx_tpa_end_cmp_ext {
+ 	  ASYNC_EVENT_CMPL_RESET_NOTIFY_EVENT_DATA1_REASON_CODE_MASK) ==\
+ 	ASYNC_EVENT_CMPL_RESET_NOTIFY_EVENT_DATA1_REASON_CODE_FW_ACTIVATION)
+ 
++#define EVENT_DATA2_RESET_NOTIFY_FW_STATUS_CODE(data2)			\
++	((data2) &							\
++	ASYNC_EVENT_CMPL_RESET_NOTIFY_EVENT_DATA2_FW_STATUS_CODE_MASK)
++
+ #define EVENT_DATA1_RECOVERY_MASTER_FUNC(data1)				\
+ 	!!((data1) &							\
+ 	   ASYNC_EVENT_CMPL_ERROR_RECOVERY_EVENT_DATA1_FLAGS_MASTER_FUNC)
+@@ -1537,7 +1541,6 @@ struct bnxt_fw_health {
  	u32 last_fw_reset_cnt;
  	u8 enabled:1;
--	u8 master:1;
-+	u8 primary:1;
- 	u8 fatal:1;
+ 	u8 primary:1;
+-	u8 fatal:1;
  	u8 status_reliable:1;
  	u8 tmr_multiplier;
+ 	u8 tmr_counter;
+@@ -1548,14 +1551,9 @@ struct bnxt_fw_health {
+ 	u32 echo_req_data1;
+ 	u32 echo_req_data2;
+ 	struct devlink_health_reporter	*fw_reporter;
+-	struct devlink_health_reporter *fw_reset_reporter;
+ 	struct devlink_health_reporter *fw_fatal_reporter;
+ };
+ 
+-struct bnxt_fw_reporter_ctx {
+-	unsigned long sp_event;
+-};
+-
+ #define BNXT_FW_HEALTH_REG_TYPE_MASK	3
+ #define BNXT_FW_HEALTH_REG_TYPE_CFG	0
+ #define BNXT_FW_HEALTH_REG_TYPE_GRC	1
+@@ -1894,6 +1892,8 @@ struct bnxt {
+ #define BNXT_STATE_PCI_CHANNEL_IO_FROZEN	8
+ #define BNXT_STATE_NAPI_DISABLED	9
+ #define BNXT_STATE_FW_ACTIVATE		11
++#define BNXT_STATE_RECOVER		12
++#define BNXT_STATE_FW_NON_FATAL_COND	13
+ #define BNXT_STATE_FW_ACTIVATE_RESET	14
+ 
+ #define BNXT_NO_FW_ACCESS(bp)					\
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+index 71855e463b06..d4918956db20 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -19,6 +19,15 @@
+ #include "bnxt_ulp.h"
+ #include "bnxt_ptp.h"
+ 
++static void __bnxt_fw_recover(struct bnxt *bp)
++{
++	if (test_bit(BNXT_STATE_FW_FATAL_COND, &bp->state) ||
++	    test_bit(BNXT_STATE_FW_NON_FATAL_COND, &bp->state))
++		bnxt_fw_reset(bp);
++	else
++		bnxt_fw_exception(bp);
++}
++
+ static int
+ bnxt_dl_flash_update(struct devlink *dl,
+ 		     struct devlink_flash_update_params *params,
+@@ -106,42 +115,14 @@ static const struct devlink_health_reporter_ops bnxt_dl_fw_reporter_ops = {
+ 	.diagnose = bnxt_fw_reporter_diagnose,
+ };
+ 
+-static int bnxt_fw_reset_recover(struct devlink_health_reporter *reporter,
+-				 void *priv_ctx,
+-				 struct netlink_ext_ack *extack)
+-{
+-	struct bnxt *bp = devlink_health_reporter_priv(reporter);
+-
+-	if (!priv_ctx)
+-		return -EOPNOTSUPP;
+-
+-	bnxt_fw_reset(bp);
+-	return -EINPROGRESS;
+-}
+-
+-static const
+-struct devlink_health_reporter_ops bnxt_dl_fw_reset_reporter_ops = {
+-	.name = "fw_reset",
+-	.recover = bnxt_fw_reset_recover,
+-};
+-
+ static int bnxt_fw_fatal_recover(struct devlink_health_reporter *reporter,
+ 				 void *priv_ctx,
+ 				 struct netlink_ext_ack *extack)
+ {
+ 	struct bnxt *bp = devlink_health_reporter_priv(reporter);
+-	struct bnxt_fw_reporter_ctx *fw_reporter_ctx = priv_ctx;
+-	unsigned long event;
+-
+-	if (!priv_ctx)
+-		return -EOPNOTSUPP;
+ 
+-	bp->fw_health->fatal = true;
+-	event = fw_reporter_ctx->sp_event;
+-	if (event == BNXT_FW_RESET_NOTIFY_SP_EVENT)
+-		bnxt_fw_reset(bp);
+-	else if (event == BNXT_FW_EXCEPTION_SP_EVENT)
+-		bnxt_fw_exception(bp);
++	set_bit(BNXT_STATE_RECOVER, &bp->state);
++	__bnxt_fw_recover(bp);
+ 
+ 	return -EINPROGRESS;
+ }
+@@ -159,24 +140,6 @@ void bnxt_dl_fw_reporters_create(struct bnxt *bp)
+ 	if (!health)
+ 		return;
+ 
+-	if (!(bp->fw_cap & BNXT_FW_CAP_HOT_RESET) || health->fw_reset_reporter)
+-		goto err_recovery;
+-
+-	health->fw_reset_reporter =
+-		devlink_health_reporter_create(bp->dl,
+-					       &bnxt_dl_fw_reset_reporter_ops,
+-					       0, bp);
+-	if (IS_ERR(health->fw_reset_reporter)) {
+-		netdev_warn(bp->dev, "Failed to create FW fatal health reporter, rc = %ld\n",
+-			    PTR_ERR(health->fw_reset_reporter));
+-		health->fw_reset_reporter = NULL;
+-		bp->fw_cap &= ~BNXT_FW_CAP_HOT_RESET;
+-	}
+-
+-err_recovery:
+-	if (!(bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY))
+-		return;
+-
+ 	if (!health->fw_reporter) {
+ 		health->fw_reporter =
+ 			devlink_health_reporter_create(bp->dl,
+@@ -186,7 +149,6 @@ void bnxt_dl_fw_reporters_create(struct bnxt *bp)
+ 			netdev_warn(bp->dev, "Failed to create FW health reporter, rc = %ld\n",
+ 				    PTR_ERR(health->fw_reporter));
+ 			health->fw_reporter = NULL;
+-			bp->fw_cap &= ~BNXT_FW_CAP_ERROR_RECOVERY;
+ 			return;
+ 		}
+ 	}
+@@ -213,12 +175,6 @@ void bnxt_dl_fw_reporters_destroy(struct bnxt *bp, bool all)
+ 	if (!health)
+ 		return;
+ 
+-	if ((all || !(bp->fw_cap & BNXT_FW_CAP_HOT_RESET)) &&
+-	    health->fw_reset_reporter) {
+-		devlink_health_reporter_destroy(health->fw_reset_reporter);
+-		health->fw_reset_reporter = NULL;
+-	}
+-
+ 	if ((bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY) && !all)
+ 		return;
+ 
+@@ -233,43 +189,23 @@ void bnxt_dl_fw_reporters_destroy(struct bnxt *bp, bool all)
+ 	}
+ }
+ 
+-void bnxt_devlink_health_report(struct bnxt *bp, unsigned long event)
++void bnxt_devlink_health_fw_report(struct bnxt *bp)
+ {
+ 	struct bnxt_fw_health *fw_health = bp->fw_health;
+-	struct bnxt_fw_reporter_ctx fw_reporter_ctx;
+-
+-	fw_reporter_ctx.sp_event = event;
+-	switch (event) {
+-	case BNXT_FW_RESET_NOTIFY_SP_EVENT:
+-		if (test_bit(BNXT_STATE_FW_FATAL_COND, &bp->state)) {
+-			if (!fw_health->fw_fatal_reporter)
+-				return;
+-
+-			devlink_health_report(fw_health->fw_fatal_reporter,
+-					      "FW fatal async event received",
+-					      &fw_reporter_ctx);
+-			return;
+-		}
+-		if (!fw_health->fw_reset_reporter)
+-			return;
+ 
+-		devlink_health_report(fw_health->fw_reset_reporter,
+-				      "FW non-fatal reset event received",
+-				      &fw_reporter_ctx);
++	if (!fw_health)
+ 		return;
+ 
+-	case BNXT_FW_EXCEPTION_SP_EVENT:
+-		if (!fw_health->fw_fatal_reporter)
+-			return;
+-
+-		devlink_health_report(fw_health->fw_fatal_reporter,
+-				      "FW fatal error reported",
+-				      &fw_reporter_ctx);
++	if (!fw_health->fw_fatal_reporter) {
++		__bnxt_fw_recover(bp);
+ 		return;
+ 	}
++
++	devlink_health_report(fw_health->fw_fatal_reporter,
++			      "FW fatal error reported", NULL);
+ }
+ 
+-void bnxt_dl_health_status_update(struct bnxt *bp, bool healthy)
++void bnxt_dl_health_fw_status_update(struct bnxt *bp, bool healthy)
+ {
+ 	struct bnxt_fw_health *health = bp->fw_health;
+ 	u8 state;
+@@ -279,25 +215,15 @@ void bnxt_dl_health_status_update(struct bnxt *bp, bool healthy)
+ 	else
+ 		state = DEVLINK_HEALTH_REPORTER_STATE_ERROR;
+ 
+-	if (health->fatal)
+-		devlink_health_reporter_state_update(health->fw_fatal_reporter,
+-						     state);
+-	else
+-		devlink_health_reporter_state_update(health->fw_reset_reporter,
+-						     state);
+-
+-	health->fatal = false;
++	devlink_health_reporter_state_update(health->fw_fatal_reporter, state);
+ }
+ 
+-void bnxt_dl_health_recovery_done(struct bnxt *bp)
++void bnxt_dl_health_fw_recovery_done(struct bnxt *bp)
+ {
+ 	struct bnxt_fw_health *hlth = bp->fw_health;
+ 	struct bnxt_dl *dl = devlink_priv(bp->dl);
+ 
+-	if (hlth->fatal)
+-		devlink_health_reporter_recovery_done(hlth->fw_fatal_reporter);
+-	else
+-		devlink_health_reporter_recovery_done(hlth->fw_reset_reporter);
++	devlink_health_reporter_recovery_done(hlth->fw_fatal_reporter);
+ 	bnxt_hwrm_remote_dev_reset_set(bp, dl->remote_reset);
+ }
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
+index 456e18c4badf..a715458abc30 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
+@@ -71,9 +71,9 @@ enum bnxt_dl_version_type {
+ 	BNXT_VERSION_STORED,
+ };
+ 
+-void bnxt_devlink_health_report(struct bnxt *bp, unsigned long event);
+-void bnxt_dl_health_status_update(struct bnxt *bp, bool healthy);
+-void bnxt_dl_health_recovery_done(struct bnxt *bp);
++void bnxt_devlink_health_fw_report(struct bnxt *bp);
++void bnxt_dl_health_fw_status_update(struct bnxt *bp, bool healthy);
++void bnxt_dl_health_fw_recovery_done(struct bnxt *bp);
+ void bnxt_dl_fw_reporters_create(struct bnxt *bp);
+ void bnxt_dl_fw_reporters_destroy(struct bnxt *bp, bool all);
+ int bnxt_dl_register(struct bnxt *bp);
 -- 
 2.18.1
 
 
---00000000000015589505cf0a30da
+--00000000000021067b05cf0a30b6
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -223,13 +493,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIO22A0/Tq3idfCzbkDQeYm3JuS4g9wiG
-8Ks6Vk+6ngdNMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTAy
-MzE5MzIyNlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIFfDhFXiE/2oFs+Gj3IEvZBPyh/WRw+i
+VJBhlthjYN78MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTAy
+MzE5MzIyN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBxiF2toiYnXUFZYWzY1NAq48hUTxJ5E8YzOo6oDO6fpc2Elt6Z
-5Bq8EYoCm0Fp8rMYRTo0UI49o0eVkuU3P9RV2r+PKxPKrVd6bAR8w2nTV5g+wd3d6ng3mWqH/9Jr
-Tdt3yqQzf59ffUwMLRpNWekb+q57GuLHdEqx/5gcEkuuPqS8KmpbfbNFVEJ7GFxJO9+Hh67J4W0h
-dmqFmv9WI4MA6KUf3xoXZo1hNHzo6uqw0hMIk16P5nlLk1F/DgTEq7UA4fhToFCrElJh9gr1nRqM
-inJoamVNV5nB7yox4QsDl1un4xp93i+g9lyYL7Ec6o+32C2r3e1DGTApPWpRmBni
---00000000000015589505cf0a30da--
+ATANBgkqhkiG9w0BAQEFAASCAQCsTKKM/ERcLNBxpS2F+HfPJpnfv3Cd+DbZlkvPJwerNvZo/rZ+
++u+052LmFsRGHJ2tO32Ewu4fhlLZFRrWEQjCA2JoBVgPBfB96DU7RpuT1inZRkystGKtVEUOOU1A
+2AVXWpQFctHBr+FuE+s/jAQ2XqUSbypgMDVMKvi4CMT5rm5BB1w8JJ1bKCOteApZST+39zemZgbf
+QeJa1HZ16sFellCxTUdOLemsUH1J1KFlDgYAYb/SVXWv5REzusDahtziWvam30mfCKl6HC4YW/63
+uGPs5oqZbA0xAbxLZZ3kOD/XVW3J9jvFG5WzL3TlNPfq0negHFYKv4AfffEx0nC/
+--00000000000021067b05cf0a30b6--
