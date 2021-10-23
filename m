@@ -2,332 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD07B4384FD
+	by mail.lfdr.de (Postfix) with ESMTP id 4A6CE4384FB
 	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 21:33:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231519AbhJWTfM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Oct 2021 15:35:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39434 "EHLO
+        id S231483AbhJWTfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Oct 2021 15:35:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231486AbhJWTfA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 15:35:00 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA9AC061766
-        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:32:40 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id n12so418419plc.2
-        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:32:40 -0700 (PDT)
+        with ESMTP id S231511AbhJWTfB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 15:35:01 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D7CC061767
+        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:32:41 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id g184so6623669pgc.6
+        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:32:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=TANaEXrgBlOdzwBVf+qsnGs0u70XSNYvucyILWvxOjY=;
-        b=KG43scoVy9mUGK3d9IQ/dACCxajkkMwsGc7ffYZPFWDDR8u3qjUPFzX6ExMLD6NYsr
-         CnNk1agtgX3DLqorHTqAykGU1RVCArSpJERUcEPa1sF0NIqv+mePl7uJoOKm30sFNT05
-         lTydMG/PEt1SHqAlRHSkqMufwT7NOT2daVUIE=
+        bh=9hJ2MF3G239ANJAAegU4aqKH19TwWM2AUz2l2H4ke90=;
+        b=JEhMANUjkgMpxFrxyQJWr5hKTR3SX7Rd/ETkGDmxHXSLpePcWUzUSSCigXNf8An/ap
+         mO1n/KUK5VbFdhEUEAQMzaS1RuebugrTg3gVBw6Y0TMtOLhkM2coUcj42V0/1KJU1YP+
+         9394euHF+ZY9qkRlpsBbNmlbgRYgsEDs5NmPY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=TANaEXrgBlOdzwBVf+qsnGs0u70XSNYvucyILWvxOjY=;
-        b=75qBScDixX5lkKe2FsAF0FN/O67q1Xw+c1voj4cu0zR/frWzFPl2CQTotQGwVNGjHd
-         1f0lez7NLjQJhX2jFMIDrrJY6PYTeO/dr0lUBF1ZkJ6sesoWHQzwouoBrcksxuBXcZ4s
-         OXQ292/TAd6I6sTlbTteNRfDPsVJLvj6TeTMsIUH3I7MlOzg5/AhqS1eJ9YjMRNBY6uq
-         BR7qrzOtgkMvQ92xM1eyHQ9Q1Re3/DXNP0wQv1+awq1FrkGjmLALvLd2r+74KprC4xUU
-         UFNgqHIlRHmcDRL6/Dhh3GcFhjFiAfzWEt7m4oSGXkwldiHbiCTiu/TtqWPqmEZpTOtZ
-         rpOg==
-X-Gm-Message-State: AOAM532N6Oh1ab46/JuYl4K3vlm58eKW11TrbpZytrNdFVAKVcKeaD9l
-        upTNFbotrorLKKvXwBN7u8H2Ycgmyi0=
-X-Google-Smtp-Source: ABdhPJwtikuwf8xE/trjaoIJ6EPm4j85RzJUlfWFMn/4zdJa9alHjBFg+jcm6GPcpq9lFWwv7SZ47Q==
-X-Received: by 2002:a17:90a:5b0c:: with SMTP id o12mr23614923pji.11.1635017559871;
-        Sat, 23 Oct 2021 12:32:39 -0700 (PDT)
+        bh=9hJ2MF3G239ANJAAegU4aqKH19TwWM2AUz2l2H4ke90=;
+        b=cJMiMTaT3qAFm45uuEtgg1yYyJYsBd5/JWWp6PoopWxFyiamRfo8GdjM5QTfPkG3Y1
+         pjQICDJ9FWyuePQmgITRp5YfO+Yuy4TUcPtezxNvjCulOLTMj8cQ+w930CopS+g9Ggao
+         50/ZbiUqOYvZabYs2o4bao3iF5JB1VBefOCRjI4c4HeFBopzv4ckMU+wVsY7yodBfxBZ
+         8aC6gwlhL3ZvHHJilPAbEsTmHlW4LGHFeigeCG8WSbxaJT9xtQbfXIHzT5yzdD+9QfVx
+         U/voo/x/HLkdxRaNvGausMPjst34kIXa8JY0+yeCxFcbe2rbVfofB+t08BBqiO+/6Q+d
+         DCYg==
+X-Gm-Message-State: AOAM532H+YDp2x1CsuZlr5iW/orBhBrQ3GgPsTw9SusOVgrurufH23Ph
+        R/USgQzCJP3b7yoYf7kiJuvV+w==
+X-Google-Smtp-Source: ABdhPJwgpIur3okqRvLBroV5fGYNSJyH/DGDmHiYlgXb1mh7B9MsYQ7EKw8tsvmZdTnHYkXy8TZS2A==
+X-Received: by 2002:a05:6a00:17a9:b0:44c:b95f:50a4 with SMTP id s41-20020a056a0017a900b0044cb95f50a4mr7954876pfg.6.1635017561195;
+        Sat, 23 Oct 2021 12:32:41 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id f7sm2461532pfv.152.2021.10.23.12.32.38
+        by smtp.gmail.com with ESMTPSA id f7sm2461532pfv.152.2021.10.23.12.32.40
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 23 Oct 2021 12:32:39 -0700 (PDT)
+        Sat, 23 Oct 2021 12:32:40 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
         gospo@broadcom.com, jiri@nvidia.com
-Subject: [PATCH net-next 17/19] bnxt_en: implement firmware live patching
-Date:   Sat, 23 Oct 2021 15:32:04 -0400
-Message-Id: <1635017526-16963-18-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 18/19] bnxt_en: Provide stored devlink "fw" version on older firmware
+Date:   Sat, 23 Oct 2021 15:32:05 -0400
+Message-Id: <1635017526-16963-19-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1635017526-16963-1-git-send-email-michael.chan@broadcom.com>
 References: <1635017526-16963-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000e5e33705cf0a300a"
+        boundary="000000000000f6e84505cf0a30fe"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000e5e33705cf0a300a
+--000000000000f6e84505cf0a30fe
 
-From: Edwin Peer <edwin.peer@broadcom.com>
+From: Vikas Gupta <vikas.gupta@broadcom.com>
 
-Live patches are activated by using the 'limit no_reset' option when
-performing a devlink dev reload fw_activate operation. These packages
-must first be installed on the device in the usual way. For example,
-via devlink dev flash or ethtool -f.
+On older firmware that doesn't support the HWRM_NVM_GET_DEV_INFO
+command that returns detailed stored firmware versions, fallback
+to use the same firmware package version that is reported to ethtool.
+Refactor bnxt_get_pkgver() in bnxt_ethtool.c so that devlink can call
+and get the package version.
 
-The devlink device info has also been enhanced to render stored and
-running live patch versions.
-
-Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     |   2 +
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   1 +
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 173 +++++++++++++++++-
- 3 files changed, 174 insertions(+), 2 deletions(-)
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.c |  7 +++-
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 41 +++++++++++++------
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.h |  1 +
+ 3 files changed, 36 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 137734cd585d..9b928e5f0f68 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -7490,6 +7490,8 @@ static int __bnxt_hwrm_func_qcaps(struct bnxt *bp)
- 		bp->fw_cap |= BNXT_FW_CAP_PTP_PPS;
- 	if (BNXT_PF(bp) && (flags_ext & FUNC_QCAPS_RESP_FLAGS_EXT_HOT_RESET_IF_SUPPORT))
- 		bp->fw_cap |= BNXT_FW_CAP_HOT_RESET_IF;
-+	if (BNXT_PF(bp) && (flags_ext & FUNC_QCAPS_RESP_FLAGS_EXT_FW_LIVEPATCH_SUPPORTED))
-+		bp->fw_cap |= BNXT_FW_CAP_LIVEPATCH;
- 
- 	bp->tx_push_thresh = 0;
- 	if ((flags & FUNC_QCAPS_RESP_FLAGS_PUSH_MODE_SUPPORTED) &&
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 4fecfdb430b3..d0d5da9b78f8 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1958,6 +1958,7 @@ struct bnxt {
- 	#define BNXT_FW_CAP_VLAN_RX_STRIP		0x01000000
- 	#define BNXT_FW_CAP_VLAN_TX_INSERT		0x02000000
- 	#define BNXT_FW_CAP_EXT_HW_STATS_SUPPORTED	0x04000000
-+	#define BNXT_FW_CAP_LIVEPATCH			0x08000000
- 	#define BNXT_FW_CAP_PTP_PPS			0x10000000
- 	#define BNXT_FW_CAP_HOT_RESET_IF		0x20000000
- 	#define BNXT_FW_CAP_RING_MONITOR		0x40000000
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index ae6ca2d2927d..bba5cb9f0fec 100644
+index bba5cb9f0fec..a502aea92952 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -326,6 +326,111 @@ void bnxt_dl_health_fw_recovery_done(struct bnxt *bp)
- static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
- 			    struct netlink_ext_ack *extack);
+@@ -906,8 +906,13 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
  
-+static void
-+bnxt_dl_livepatch_report_err(struct bnxt *bp, struct netlink_ext_ack *extack,
-+			     struct hwrm_fw_livepatch_output *resp)
-+{
-+	int err = ((struct hwrm_err_output *)resp)->cmd_err;
-+
-+	switch (err) {
-+	case FW_LIVEPATCH_CMD_ERR_CODE_INVALID_OPCODE:
-+		netdev_err(bp->dev, "Illegal live patch opcode");
-+		NL_SET_ERR_MSG_MOD(extack, "Invalid opcode");
-+		break;
-+	case FW_LIVEPATCH_CMD_ERR_CODE_NOT_SUPPORTED:
-+		NL_SET_ERR_MSG_MOD(extack, "Live patch operation not supported");
-+		break;
-+	case FW_LIVEPATCH_CMD_ERR_CODE_NOT_INSTALLED:
-+		NL_SET_ERR_MSG_MOD(extack, "Live patch not found");
-+		break;
-+	case FW_LIVEPATCH_CMD_ERR_CODE_NOT_PATCHED:
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Live patch deactivation failed. Firmware not patched.");
-+		break;
-+	case FW_LIVEPATCH_CMD_ERR_CODE_AUTH_FAIL:
-+		NL_SET_ERR_MSG_MOD(extack, "Live patch not authenticated");
-+		break;
-+	case FW_LIVEPATCH_CMD_ERR_CODE_INVALID_HEADER:
-+		NL_SET_ERR_MSG_MOD(extack, "Incompatible live patch");
-+		break;
-+	case FW_LIVEPATCH_CMD_ERR_CODE_INVALID_SIZE:
-+		NL_SET_ERR_MSG_MOD(extack, "Live patch has invalid size");
-+		break;
-+	case FW_LIVEPATCH_CMD_ERR_CODE_ALREADY_PATCHED:
-+		NL_SET_ERR_MSG_MOD(extack, "Live patch already applied");
-+		break;
-+	default:
-+		netdev_err(bp->dev, "Unexpected live patch error: %hhd\n", err);
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to activate live patch");
-+		break;
+ 	rc = bnxt_hwrm_nvm_get_dev_info(bp, &nvm_dev_info);
+ 	if (rc ||
+-	    !(nvm_dev_info.flags & NVM_GET_DEV_INFO_RESP_FLAGS_FW_VER_VALID))
++	    !(nvm_dev_info.flags & NVM_GET_DEV_INFO_RESP_FLAGS_FW_VER_VALID)) {
++		if (!bnxt_get_pkginfo(bp->dev, buf, sizeof(buf)))
++			return bnxt_dl_info_put(bp, req, BNXT_VERSION_STORED,
++						DEVLINK_INFO_VERSION_GENERIC_FW,
++						buf);
+ 		return 0;
 +	}
-+}
-+
-+static int
-+bnxt_dl_livepatch_activate(struct bnxt *bp, struct netlink_ext_ack *extack)
-+{
-+	struct hwrm_fw_livepatch_query_output *query_resp;
-+	struct hwrm_fw_livepatch_query_input *query_req;
-+	struct hwrm_fw_livepatch_output *patch_resp;
-+	struct hwrm_fw_livepatch_input *patch_req;
-+	u32 installed = 0;
-+	u16 flags;
-+	u8 target;
+ 
+ 	buf[0] = 0;
+ 	strncat(buf, nvm_dev_info.pkg_name, HWRM_FW_VER_STR_LEN);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 334ada053246..8188d55722e4 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -2832,39 +2832,56 @@ static char *bnxt_parse_pkglog(int desired_field, u8 *data, size_t datalen)
+ 	return retval;
+ }
+ 
+-static void bnxt_get_pkgver(struct net_device *dev)
++int bnxt_get_pkginfo(struct net_device *dev, char *ver, int size)
+ {
+ 	struct bnxt *bp = netdev_priv(dev);
+ 	u16 index = 0;
+ 	char *pkgver;
+ 	u32 pkglen;
+ 	u8 *pkgbuf;
+-	int len;
 +	int rc;
-+
-+	if (~bp->fw_cap & BNXT_FW_CAP_LIVEPATCH) {
-+		NL_SET_ERR_MSG_MOD(extack, "Device does not support live patch");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	rc = hwrm_req_init(bp, query_req, HWRM_FW_LIVEPATCH_QUERY);
+ 
+-	if (bnxt_find_nvram_item(dev, BNX_DIR_TYPE_PKG_LOG,
+-				 BNX_DIR_ORDINAL_FIRST, BNX_DIR_EXT_NONE,
+-				 &index, NULL, &pkglen) != 0)
+-		return;
++	rc = bnxt_find_nvram_item(dev, BNX_DIR_TYPE_PKG_LOG,
++				  BNX_DIR_ORDINAL_FIRST, BNX_DIR_EXT_NONE,
++				  &index, NULL, &pkglen);
 +	if (rc)
 +		return rc;
-+	query_resp = hwrm_req_hold(bp, query_req);
-+
-+	rc = hwrm_req_init(bp, patch_req, HWRM_FW_LIVEPATCH);
-+	if (rc) {
-+		hwrm_req_drop(bp, query_req);
-+		return rc;
-+	}
-+	patch_req->opcode = FW_LIVEPATCH_REQ_OPCODE_ACTIVATE;
-+	patch_req->loadtype = FW_LIVEPATCH_REQ_LOADTYPE_NVM_INSTALL;
-+	patch_resp = hwrm_req_hold(bp, patch_req);
-+
-+	for (target = 1; target <= FW_LIVEPATCH_REQ_FW_TARGET_LAST; target++) {
-+		query_req->fw_target = target;
-+		rc = hwrm_req_send(bp, query_req);
-+		if (rc) {
-+			NL_SET_ERR_MSG_MOD(extack, "Failed to query packages");
-+			break;
-+		}
-+
-+		flags = le16_to_cpu(query_resp->status_flags);
-+		if (~flags & FW_LIVEPATCH_QUERY_RESP_STATUS_FLAGS_INSTALL)
-+			continue;
-+		if ((flags & FW_LIVEPATCH_QUERY_RESP_STATUS_FLAGS_ACTIVE) &&
-+		    !strncmp(query_resp->active_ver, query_resp->install_ver,
-+			     sizeof(query_resp->active_ver)))
-+			continue;
-+
-+		patch_req->fw_target = target;
-+		rc = hwrm_req_send(bp, patch_req);
-+		if (rc) {
-+			bnxt_dl_livepatch_report_err(bp, extack, patch_resp);
-+			break;
-+		}
-+		installed++;
-+	}
-+
-+	if (!rc && !installed) {
-+		NL_SET_ERR_MSG_MOD(extack, "No live patches found");
-+		rc = -ENOENT;
-+	}
-+	hwrm_req_drop(bp, query_req);
-+	hwrm_req_drop(bp, patch_req);
-+	return rc;
-+}
-+
- static int bnxt_dl_reload_down(struct devlink *dl, bool netns_change,
- 			       enum devlink_reload_action action,
- 			       enum devlink_reload_limit limit,
-@@ -367,6 +472,8 @@ static int bnxt_dl_reload_down(struct devlink *dl, bool netns_change,
- 		break;
+ 
+ 	pkgbuf = kzalloc(pkglen, GFP_KERNEL);
+ 	if (!pkgbuf) {
+ 		dev_err(&bp->pdev->dev, "Unable to allocate memory for pkg version, length = %u\n",
+ 			pkglen);
+-		return;
++		return -ENOMEM;
  	}
- 	case DEVLINK_RELOAD_ACTION_FW_ACTIVATE: {
-+		if (limit == DEVLINK_RELOAD_LIMIT_NO_RESET)
-+			return bnxt_dl_livepatch_activate(bp, extack);
- 		if (~bp->fw_cap & BNXT_FW_CAP_HOT_RESET) {
- 			NL_SET_ERR_MSG_MOD(extack, "Device not capable, requires reboot");
- 			return -EOPNOTSUPP;
-@@ -423,6 +530,8 @@ static int bnxt_dl_reload_up(struct devlink *dl, enum devlink_reload_action acti
- 		unsigned long start = jiffies;
- 		unsigned long timeout = start + BNXT_DFLT_FW_RST_MAX_DSECS * HZ / 10;
  
-+		if (limit == DEVLINK_RELOAD_LIMIT_NO_RESET)
-+			break;
- 		if (bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY)
- 			timeout = start + bp->fw_health->normal_func_wait_dsecs * HZ / 10;
- 		if (!netif_running(bp->dev))
-@@ -476,6 +585,7 @@ static const struct devlink_ops bnxt_dl_ops = {
- 	.flash_update	  = bnxt_dl_flash_update,
- 	.reload_actions	  = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
- 			    BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE),
-+	.reload_limits	  = BIT(DEVLINK_RELOAD_LIMIT_NO_RESET),
- 	.reload_down	  = bnxt_dl_reload_down,
- 	.reload_up	  = bnxt_dl_reload_up,
- };
-@@ -621,6 +731,57 @@ static int bnxt_dl_info_put(struct bnxt *bp, struct devlink_info_req *req,
- 	return 0;
- }
- 
-+#define BNXT_FW_SRT_PATCH	"fw.srt.patch"
-+#define BNXT_FW_CRT_PATCH	"fw.crt.patch"
-+
-+static int bnxt_dl_livepatch_info_put(struct bnxt *bp,
-+				      struct devlink_info_req *req,
-+				      const char *key)
-+{
-+	struct hwrm_fw_livepatch_query_input *query;
-+	struct hwrm_fw_livepatch_query_output *resp;
-+	u16 flags;
-+	int rc;
-+
-+	if (~bp->fw_cap & BNXT_FW_CAP_LIVEPATCH)
-+		return 0;
-+
-+	rc = hwrm_req_init(bp, query, HWRM_FW_LIVEPATCH_QUERY);
+-	if (bnxt_get_nvram_item(dev, index, 0, pkglen, pkgbuf))
++	rc = bnxt_get_nvram_item(dev, index, 0, pkglen, pkgbuf);
 +	if (rc)
-+		return rc;
-+
-+	if (!strcmp(key, BNXT_FW_SRT_PATCH))
-+		query->fw_target = FW_LIVEPATCH_QUERY_REQ_FW_TARGET_SECURE_FW;
-+	else if (!strcmp(key, BNXT_FW_CRT_PATCH))
-+		query->fw_target = FW_LIVEPATCH_QUERY_REQ_FW_TARGET_COMMON_FW;
+ 		goto err;
+ 
+ 	pkgver = bnxt_parse_pkglog(BNX_PKG_LOG_FIELD_IDX_PKG_VERSION, pkgbuf,
+ 				   pkglen);
+-	if (pkgver && *pkgver != 0 && isdigit(*pkgver)) {
++	if (pkgver && *pkgver != 0 && isdigit(*pkgver))
++		strscpy(ver, pkgver, size);
 +	else
-+		goto exit;
++		rc = -ENOENT;
 +
-+	resp = hwrm_req_hold(bp, query);
-+	rc = hwrm_req_send(bp, query);
-+	if (rc)
-+		goto exit;
++err:
++	kfree(pkgbuf);
 +
-+	flags = le16_to_cpu(resp->status_flags);
-+	if (flags & FW_LIVEPATCH_QUERY_RESP_STATUS_FLAGS_ACTIVE) {
-+		resp->active_ver[sizeof(resp->active_ver) - 1] = '\0';
-+		rc = devlink_info_version_running_put(req, key, resp->active_ver);
-+		if (rc)
-+			goto exit;
-+	}
-+
-+	if (flags & FW_LIVEPATCH_QUERY_RESP_STATUS_FLAGS_INSTALL) {
-+		resp->install_ver[sizeof(resp->install_ver) - 1] = '\0';
-+		rc = devlink_info_version_stored_put(req, key, resp->install_ver);
-+		if (rc)
-+			goto exit;
-+	}
-+
-+exit:
-+	hwrm_req_drop(bp, query);
 +	return rc;
 +}
 +
- #define HWRM_FW_VER_STR_LEN	16
- 
- static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
-@@ -774,8 +935,16 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
- 	snprintf(roce_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
- 		 nvm_dev_info.roce_fw_major, nvm_dev_info.roce_fw_minor,
- 		 nvm_dev_info.roce_fw_build, nvm_dev_info.roce_fw_patch);
--	return bnxt_dl_info_put(bp, req, BNXT_VERSION_STORED,
--				DEVLINK_INFO_VERSION_GENERIC_FW_ROCE, roce_ver);
-+	rc = bnxt_dl_info_put(bp, req, BNXT_VERSION_STORED,
-+			      DEVLINK_INFO_VERSION_GENERIC_FW_ROCE, roce_ver);
-+	if (rc)
-+		return rc;
++static void bnxt_get_pkgver(struct net_device *dev)
++{
++	struct bnxt *bp = netdev_priv(dev);
++	char buf[FW_VER_STR_LEN];
++	int len;
 +
-+	rc = bnxt_dl_livepatch_info_put(bp, req, BNXT_FW_SRT_PATCH);
-+	if (rc)
-+		return rc;
-+	return bnxt_dl_livepatch_info_put(bp, req, BNXT_FW_CRT_PATCH);
-+
++	if (!bnxt_get_pkginfo(dev, buf, sizeof(buf))) {
+ 		len = strlen(bp->fw_ver_str);
+ 		snprintf(bp->fw_ver_str + len, FW_VER_STR_LEN - len - 1,
+-			 "/pkg %s", pkgver);
++			 "/pkg %s", buf);
+ 	}
+-err:
+-	kfree(pkgbuf);
  }
  
- static int bnxt_hwrm_nvm_req(struct bnxt *bp, u32 param_id, void *msg,
+ static int bnxt_get_eeprom(struct net_device *dev,
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
+index 4f7eaba65dcb..6aa44840f13a 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
+@@ -55,6 +55,7 @@ int bnxt_hwrm_firmware_reset(struct net_device *dev, u8 proc_type,
+ 			     u8 self_reset, u8 flags);
+ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware *fw,
+ 				   u32 install_type);
++int bnxt_get_pkginfo(struct net_device *dev, char *ver, int size);
+ void bnxt_ethtool_init(struct bnxt *bp);
+ void bnxt_ethtool_free(struct bnxt *bp);
+ 
 -- 
 2.18.1
 
 
---000000000000e5e33705cf0a300a
+--000000000000f6e84505cf0a30fe
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -398,13 +257,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPgEq9Dn1kY4kvvV8irYvp5+OUwqF8IN
-HRJq9tm3jYhaMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTAy
-MzE5MzI0MFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIGBg2/HGkLt9ky+08xB8WrOtItsLZq6C
+1BaNxz81+Zz4MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTAy
+MzE5MzI0MVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAR4yQl9fFteOJU1H3GwafyM2RfxjmNOCyqReM9rXzERCVCfHY5
-ViuzVUDOuh1u7Sgr73P7L705npxRHAosjpT+iBNABZ2KxNKwNCsH/w3t9fJqRFkULjNLud64OMox
-zqdr9D5CAJUOAuku+Eke/HXqVDYYmE4kLIbPYAgRmiU0ZjnXxOi0FXBugPThxezjunsFH76Qu65j
-Odd+tL9J/sQZY27mL/HlvGC8pwMC+isCnVJLUBCJ4d8G0fbkZz0sgB/LCCUqZjPYiJNPxTOf7yEr
-8V53sfbUyDi+srnbXZ/7jFIcANcfrHVuPOwwj4esoKQpXMjo+yYxKHPf0Ct9Cc6U
---000000000000e5e33705cf0a300a--
+ATANBgkqhkiG9w0BAQEFAASCAQDM8PfTspT1ACFoc5bLR5d8xIyd875P1hRuN/E+KYoyW3BKI1qV
+H/K4Mfg1pc9DBd4d1w8IA0fdGpzhrjbb8BWoNwHwsuM2pgY9mqO3JBewHoa+c3vquBIHytfeELBy
+1wrzviTphhwoo1R48z/luYSMZdT9y6sje78spgWODBa7bCGdquGG9oCaipDoEzUlVtmFY6sx0akS
+yqT+f41tRRCoNsZIuRqc+bPdFBKW4wLxz8CMLnEbr7vNjjh5aRLSqmjF9ZYtU+BKPMBjnFMHKpp6
+8cnBIYIsCBTacvsrvOT1jxoaaGqjKIvNF/C0i7oKCTXQA1avQ88Tl257m75oMB11
+--000000000000f6e84505cf0a30fe--
