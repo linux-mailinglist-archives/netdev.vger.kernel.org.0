@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B68BA438231
-	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 09:29:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7CCE438233
+	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 09:30:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbhJWHcD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Oct 2021 03:32:03 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:19546 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229818AbhJWHcC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 23 Oct 2021 03:32:02 -0400
+        id S230046AbhJWHc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Oct 2021 03:32:58 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:15783 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229978AbhJWHc6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 03:32:58 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1634974183; h=Date: Message-ID: Cc: To: References:
+ s=smtp; t=1634974239; h=Date: Message-ID: Cc: To: References:
  In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=EgTeU6Vkr3NhQq7X+wDt/Q6cik6UwYvhxwAg6xdACwQ=;
- b=e44XeOe+YXJrLwBuoaeSdfjD1vftSF5o9Lg2fTWABm4WMjieGn+kyVgp5K/qZrQVhAMwl6ih
- EfuR3Pk0wl1REeDzmYOXoL+bzPZEq2NpAC9A8HVhXkkJ6JsEwn6fTz9iH5RpS5nXtu6zJ6pb
- XBmAiW1MSGh3qcp8REKl+H+kSNk=
-X-Mailgun-Sending-Ip: 69.72.43.7
+ Content-Type: Sender; bh=6prkHAzg/ianVXk7VNqt9m/tBBvysRNdknkhwFj3piw=;
+ b=uNKBukWTW7nQkuiAQCDAgK1PwZWGhhGB/v4EzonFS/17rQF4m5SYLmhpPzo+KvbnpyYdKL2w
+ V7ENvyXll0+8fQq/LVjwaqwOBNoqPr2V21LeveCeQHUqix+2Xf+DUK22FMLj16JmISQPjufi
+ lyLu19zHqQ8qGh1d9zQdOzJFmck=
+X-Mailgun-Sending-Ip: 198.61.254.9
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
- 6173b9d48e67b5f04ec5b1df (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 23 Oct 2021 07:29:24
+ smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
+ 6173ba0167f107c611dbe0b3 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 23 Oct 2021 07:30:09
  GMT
 Sender: kvalo=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 88C13C4360D; Sat, 23 Oct 2021 07:29:23 +0000 (UTC)
+        id 7C0D2C43460; Sat, 23 Oct 2021 07:30:09 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -38,56 +38,67 @@ Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 86696C4338F;
-        Sat, 23 Oct 2021 07:29:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 86696C4338F
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id C3F41C4338F;
+        Sat, 23 Oct 2021 07:30:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org C3F41C4338F
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net] mt76: mt7921: fix Wformat build warning
+Content-Transfer-Encoding: 7bit
+Subject: Re: [RFC,v2] mt76: mt7615: mt7622: fix ibss and meshpoint
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20211022233251.29987-1-rdunlap@infradead.org>
-References: <20211022233251.29987-1-rdunlap@infradead.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     netdev@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        linux-wireless@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>
+In-Reply-To: <20211007225725.2615-1-vincent@systemli.org>
+References: <20211007225725.2615-1-vincent@systemli.org>
+To:     Nick Hainke <vincent@systemli.org>
+Cc:     nbd@nbd.name, lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
+        davem@davemloft.net, kuba@kernel.org, matthias.bgg@gmail.com,
+        sean.wang@mediatek.com, shayne.chen@mediatek.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Robert Foss <robert.foss@linaro.org>,
+        Nick Hainke <vincent@systemli.org>
 User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <163497415831.29616.6366174077923713050.kvalo@codeaurora.org>
-Date:   Sat, 23 Oct 2021 07:29:23 +0000 (UTC)
+Message-ID: <163497420151.29616.16838354269777236200.kvalo@codeaurora.org>
+Date:   Sat, 23 Oct 2021 07:30:09 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Randy Dunlap <rdunlap@infradead.org> wrote:
+Nick Hainke <vincent@systemli.org> wrote:
 
-> ARRAY_SIZE() is of type size_t, so the format specfier should
-> be %zu instead of %lu.
+> commit 7f4b7920318b ("mt76: mt7615: add ibss support") introduced IBSS
+> and commit f4ec7fdf7f83 ("mt76: mt7615: enable support for mesh")
+> meshpoint support.
 > 
-> Fixes this build warning:
+> Both used in the "get_omac_idx"-function:
 > 
-> ../drivers/net/wireless/mediatek/mt76/mt7921/main.c: In function ‘mt7921_get_et_stats’:
-> ../drivers/net/wireless/mediatek/mt76/mt7921/main.c:1024:26: warning: format ‘%lu’ expects argument of type ‘long unsigned int’, but argument 4 has type ‘unsigned int’ [-Wformat=]
->    dev_err(dev->mt76.dev, "ei: %d  SSTATS_LEN: %lu",
+> 	if (~mask & BIT(HW_BSSID_0))
+> 		return HW_BSSID_0;
 > 
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Sean Wang <sean.wang@mediatek.com>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: Felix Fietkau <nbd@nbd.name>
-> Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-> Cc: Ryder Lee <ryder.lee@mediatek.com>
-> Cc: Kalle Valo <kvalo@codeaurora.org>
+> With commit d8d59f66d136 ("mt76: mt7615: support 16 interfaces") the
+> ibss and meshpoint mode should "prefer hw bssid slot 1-3". However,
+> with that change the ibss or meshpoint mode will not send any beacon on
+> the mt7622 wifi anymore. Devices were still able to exchange data but
+> only if a bssid already existed. Two mt7622 devices will never be able
+> to communicate.
+> 
+> This commits reverts the preferation of slot 1-3 for ibss and
+> meshpoint. Only NL80211_IFTYPE_STATION will still prefer slot 1-3.
+> 
+> Tested on Banana Pi R64.
+> 
+> Fixes: d8d59f66d136 ("mt76: mt7615: support 16 interfaces")
+> Signed-off-by: Nick Hainke <vincent@systemli.org>
+> Acked-by: Felix Fietkau <nbd@nbd.name>
 
 Patch applied to wireless-drivers-next.git, thanks.
 
-a88cae727b3e mt76: mt7921: fix Wformat build warning
+753453afacc0 mt76: mt7615: mt7622: fix ibss and meshpoint
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20211022233251.29987-1-rdunlap@infradead.org/
+https://patchwork.kernel.org/project/linux-wireless/patch/20211007225725.2615-1-vincent@systemli.org/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
