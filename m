@@ -2,262 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F02CB4384ED
-	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 21:32:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 451474384EE
+	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 21:32:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231391AbhJWTel (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Oct 2021 15:34:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39328 "EHLO
+        id S231394AbhJWTem (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Oct 2021 15:34:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230359AbhJWTek (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 15:34:40 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012CEC061714
+        with ESMTP id S231376AbhJWTel (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 15:34:41 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6DBAC061764
         for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:32:21 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id m26so6726724pff.3
-        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:32:20 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id q2-20020a17090a2e0200b001a0fd4efd49so9337785pjd.1
+        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 12:32:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=QItRxK+CCOab87YB93ZE+qJZunlUZYgYkpFH9KRQnDk=;
-        b=RULlgtU1sNBIZ0F2KmakPWuFNgS4EyWmDnUmBOyHR8tq0h+3K44wbybt7DEcQf/xo3
-         JB6qOBJc2yXDnxaVpdlIgM7guBl5NXlPdZp+fvA6r0AQZl8Fw/qfZCqLEL27icNRIpmn
-         6IUDe9bAyk5GozggXNvlfO9HxF+HGQjiL6y8U=
+        bh=unfNoNnhAVJfP0FaDxnd8g9JWZcjg8gOtFfO6eXRuhg=;
+        b=HobdWndRcRNwgLu3Jat7qzednObEckLQvLYMp1sgTktI24B9JW7jpd1ZXVjXMQRaMT
+         CHunj5bnMbJko0fOizcbUznBt06zEUmTAkaIjoYBbjtmTS3MEOa63a7v5udthEbiHon9
+         nXGZ2Hfg2bAhEBCLTW4Bdrvx8YMN7YYNqz0qQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=QItRxK+CCOab87YB93ZE+qJZunlUZYgYkpFH9KRQnDk=;
-        b=7yynnB/y+oH26tujwaR9bODa4xDqwJMaKEaF6CcVNMebH5fli5mTsAlbmcJ6H6fMh+
-         /jxg/NX9QVBuUJEHN8MhzGuZN8zwXcYRS2cZPJQTRopfTS0QaShf7WHCXUEqDlrMQday
-         qe/UwTRJRzqnBhm8DiLo95+3YlFIkAriiXJJCVYdd8s4CeyjNqVJCxD4N/JVr0bLyZox
-         7KzxslBrCYxwTOK5dg+c+bRxPNSW5LFuSsEF13dvzcLBVy5jlACNivbEaBZPZXgRR717
-         uh3XJGn4nH4OYdP0Fh0URkgNO7ABUAwIJ1633LzINZtJM9Az175q1kMY/VbTCK8dxixu
-         /J+g==
-X-Gm-Message-State: AOAM532dw/Q1ggrpTtwQGupF3UGE64elAtJHXUbrd70vuL2r+N1N2ZlC
-        Xu6Wj2p+GjWrT2en8S9X0JMHYg==
-X-Google-Smtp-Source: ABdhPJwg58le4m/WVbAtear4lfeQ/9v/g3z1HzCYSw3nAIIpL1qksffCKD1Ln64HNElFQs6Q0t+8sA==
-X-Received: by 2002:a05:6a00:1592:b0:44d:25e9:759e with SMTP id u18-20020a056a00159200b0044d25e9759emr7827772pfk.19.1635017539705;
-        Sat, 23 Oct 2021 12:32:19 -0700 (PDT)
+        bh=unfNoNnhAVJfP0FaDxnd8g9JWZcjg8gOtFfO6eXRuhg=;
+        b=69ghhRuRFjdG0t5qIpJRFFleHmdcvMp4kv4CZJQDAi0sPXPqjUX0+Z50/rqyGiaTWZ
+         OwapDDBsNy2EQn2k46Ynfg7ZDO4gkZGqhdveOYs+Q4kY+sK9Z01gbttr9TsGE3p+JzkU
+         EIfgweIV4iCGoLHFivLryygTjZTCxQJLmedFA+CFhXr5hPdH75rMhA0saDw/GIMiLTBM
+         6K0bSPp2zKD8nvt8t230a3rISg+nNR2Hd5nE0d5IgkEGtnAtg9LeDAu1Jo5XmhV3bBka
+         DV3TxlJUeN9bk0sKpEluacIgAK564MKcArqbmje/6IkjVAfQ58VrWL4WewacgiGGAclS
+         UOMw==
+X-Gm-Message-State: AOAM533AqfZZKmsHTrkuGIwV3eq70ANsQASJoU/v3Vra0onx9S88qz1V
+        ntOZ65b83IDlRUrl9FmPcGnQjA==
+X-Google-Smtp-Source: ABdhPJz/Cq9AHOpqcWpgwnYb0Wo0Wf2dgGiOsVEbVKpnPaXm+AjpkT1/ZDnQUfjX7pIUmNlgt8Jqiw==
+X-Received: by 2002:a17:90b:3ec6:: with SMTP id rm6mr23635720pjb.27.1635017540827;
+        Sat, 23 Oct 2021 12:32:20 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id f7sm2461532pfv.152.2021.10.23.12.32.18
+        by smtp.gmail.com with ESMTPSA id f7sm2461532pfv.152.2021.10.23.12.32.19
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 23 Oct 2021 12:32:19 -0700 (PDT)
+        Sat, 23 Oct 2021 12:32:20 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
         gospo@broadcom.com, jiri@nvidia.com
-Subject: [PATCH net-next 01/19] bnxt_en: refactor printing of device info
-Date:   Sat, 23 Oct 2021 15:31:48 -0400
-Message-Id: <1635017526-16963-2-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 02/19] bnxt_en: refactor cancellation of resource reservations
+Date:   Sat, 23 Oct 2021 15:31:49 -0400
+Message-Id: <1635017526-16963-3-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1635017526-16963-1-git-send-email-michael.chan@broadcom.com>
 References: <1635017526-16963-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000b79c0305cf0a2f93"
+        boundary="000000000000c425eb05cf0a2f6c"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000b79c0305cf0a2f93
+--000000000000c425eb05cf0a2f6c
 
 From: Edwin Peer <edwin.peer@broadcom.com>
 
-The device info logged during probe will be reused by the devlink
-driver_reinit code in a following patch. Extract this logic into
-the new bnxt_print_device_info() function. The board index needs
-to be saved in the driver context so that the board information
-can be retrieved at a later time, outside of the probe function.
+Resource reservations will also need to be reset after FUNC_DRV_UNRGTR
+in the following devlink driver_reinit patch. Extract this logic into a
+reusable function.
 
-Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 67 +++++------------------
- drivers/net/ethernet/broadcom/bnxt/bnxt.h | 51 ++++++++++++++++-
- 2 files changed, 63 insertions(+), 55 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 47 ++++++++++++++---------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h |  1 +
+ 2 files changed, 29 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 66263aa0d96b..8ff398525488 100644
+index 8ff398525488..8471e47d0480 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -85,55 +85,7 @@ MODULE_DESCRIPTION("Broadcom BCM573xx network driver");
- 
- #define BNXT_TX_PUSH_THRESH 164
- 
--enum board_idx {
--	BCM57301,
--	BCM57302,
--	BCM57304,
--	BCM57417_NPAR,
--	BCM58700,
--	BCM57311,
--	BCM57312,
--	BCM57402,
--	BCM57404,
--	BCM57406,
--	BCM57402_NPAR,
--	BCM57407,
--	BCM57412,
--	BCM57414,
--	BCM57416,
--	BCM57417,
--	BCM57412_NPAR,
--	BCM57314,
--	BCM57417_SFP,
--	BCM57416_SFP,
--	BCM57404_NPAR,
--	BCM57406_NPAR,
--	BCM57407_SFP,
--	BCM57407_NPAR,
--	BCM57414_NPAR,
--	BCM57416_NPAR,
--	BCM57452,
--	BCM57454,
--	BCM5745x_NPAR,
--	BCM57508,
--	BCM57504,
--	BCM57502,
--	BCM57508_NPAR,
--	BCM57504_NPAR,
--	BCM57502_NPAR,
--	BCM58802,
--	BCM58804,
--	BCM58808,
--	NETXTREME_E_VF,
--	NETXTREME_C_VF,
--	NETXTREME_S_VF,
--	NETXTREME_C_VF_HV,
--	NETXTREME_E_VF_HV,
--	NETXTREME_E_P5_VF,
--	NETXTREME_E_P5_VF_HV,
--};
--
--/* indexed by enum above */
-+/* indexed by enum board_idx */
- static const struct {
- 	char *name;
- } board_info[] = {
-@@ -13186,6 +13138,15 @@ static int bnxt_map_db_bar(struct bnxt *bp)
- 	return 0;
+@@ -9691,6 +9691,33 @@ static int bnxt_try_recover_fw(struct bnxt *bp)
+ 	return -ENODEV;
  }
  
-+void bnxt_print_device_info(struct bnxt *bp)
++int bnxt_cancel_reservations(struct bnxt *bp, bool fw_reset)
 +{
-+	netdev_info(bp->dev, "%s found at mem %lx, node addr %pM\n",
-+		    board_info[bp->board_idx].name,
-+		    (long)pci_resource_start(bp->pdev, 0), bp->dev->dev_addr);
++	struct bnxt_hw_resc *hw_resc = &bp->hw_resc;
++	int rc;
 +
-+	pcie_print_link_status(bp->pdev);
++	if (!BNXT_NEW_RM(bp))
++		return 0; /* no resource reservations required */
++
++	rc = bnxt_hwrm_func_resc_qcaps(bp, true);
++	if (rc)
++		netdev_err(bp->dev, "resc_qcaps failed\n");
++
++	hw_resc->resv_cp_rings = 0;
++	hw_resc->resv_stat_ctxs = 0;
++	hw_resc->resv_irqs = 0;
++	hw_resc->resv_tx_rings = 0;
++	hw_resc->resv_rx_rings = 0;
++	hw_resc->resv_hw_ring_grps = 0;
++	hw_resc->resv_vnics = 0;
++	if (!fw_reset) {
++		bp->tx_nr_rings = 0;
++		bp->rx_nr_rings = 0;
++	}
++
++	return rc;
 +}
 +
- static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ static int bnxt_hwrm_if_change(struct bnxt *bp, bool up)
  {
- 	struct net_device *dev;
-@@ -13209,10 +13170,11 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		return -ENOMEM;
- 
- 	bp = netdev_priv(dev);
-+	bp->board_idx = ent->driver_data;
- 	bp->msg_enable = BNXT_DEF_MSG_ENABLE;
- 	bnxt_set_max_func_irqs(bp, max_irqs);
- 
--	if (bnxt_vf_pciid(ent->driver_data))
-+	if (bnxt_vf_pciid(bp->board_idx))
- 		bp->flags |= BNXT_FLAG_VF;
- 
- 	if (pdev->msix_cap)
-@@ -13382,10 +13344,7 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		devlink_port_type_eth_set(&bp->dl_port, bp->dev);
- 	bnxt_dl_fw_reporters_create(bp);
- 
--	netdev_info(dev, "%s found at mem %lx, node addr %pM\n",
--		    board_info[ent->driver_data].name,
--		    (long)pci_resource_start(pdev, 0), dev->dev_addr);
--	pcie_print_link_status(pdev);
-+	bnxt_print_device_info(bp);
- 
- 	pci_save_state(pdev);
- 	return 0;
+ 	struct hwrm_func_drv_if_change_output *resp;
+@@ -9774,25 +9801,7 @@ static int bnxt_hwrm_if_change(struct bnxt *bp, bool up)
+ 				return rc;
+ 			}
+ 		}
+-		if (BNXT_NEW_RM(bp)) {
+-			struct bnxt_hw_resc *hw_resc = &bp->hw_resc;
+-
+-			rc = bnxt_hwrm_func_resc_qcaps(bp, true);
+-			if (rc)
+-				netdev_err(bp->dev, "resc_qcaps failed\n");
+-
+-			hw_resc->resv_cp_rings = 0;
+-			hw_resc->resv_stat_ctxs = 0;
+-			hw_resc->resv_irqs = 0;
+-			hw_resc->resv_tx_rings = 0;
+-			hw_resc->resv_rx_rings = 0;
+-			hw_resc->resv_hw_ring_grps = 0;
+-			hw_resc->resv_vnics = 0;
+-			if (!fw_reset) {
+-				bp->tx_nr_rings = 0;
+-				bp->rx_nr_rings = 0;
+-			}
+-		}
++		rc = bnxt_cancel_reservations(bp, fw_reset);
+ 	}
+ 	return rc;
+ }
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 19fe6478e9b4..55da89cb62b5 100644
+index 55da89cb62b5..5ca4f19936c3 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1586,6 +1586,54 @@ struct bnxt_fw_reporter_ctx {
- #define BNXT_FW_RETRY			5
- #define BNXT_FW_IF_RETRY		10
- 
-+enum board_idx {
-+	BCM57301,
-+	BCM57302,
-+	BCM57304,
-+	BCM57417_NPAR,
-+	BCM58700,
-+	BCM57311,
-+	BCM57312,
-+	BCM57402,
-+	BCM57404,
-+	BCM57406,
-+	BCM57402_NPAR,
-+	BCM57407,
-+	BCM57412,
-+	BCM57414,
-+	BCM57416,
-+	BCM57417,
-+	BCM57412_NPAR,
-+	BCM57314,
-+	BCM57417_SFP,
-+	BCM57416_SFP,
-+	BCM57404_NPAR,
-+	BCM57406_NPAR,
-+	BCM57407_SFP,
-+	BCM57407_NPAR,
-+	BCM57414_NPAR,
-+	BCM57416_NPAR,
-+	BCM57452,
-+	BCM57454,
-+	BCM5745x_NPAR,
-+	BCM57508,
-+	BCM57504,
-+	BCM57502,
-+	BCM57508_NPAR,
-+	BCM57504_NPAR,
-+	BCM57502_NPAR,
-+	BCM58802,
-+	BCM58804,
-+	BCM58808,
-+	NETXTREME_E_VF,
-+	NETXTREME_C_VF,
-+	NETXTREME_S_VF,
-+	NETXTREME_C_VF_HV,
-+	NETXTREME_E_VF_HV,
-+	NETXTREME_E_P5_VF,
-+	NETXTREME_E_P5_VF_HV,
-+};
-+
- struct bnxt {
- 	void __iomem		*bar0;
- 	void __iomem		*bar1;
-@@ -2049,6 +2097,7 @@ struct bnxt {
- 	struct list_head	tc_indr_block_list;
- 	struct dentry		*debugfs_pdev;
- 	struct device		*hwmon_dev;
-+	enum board_idx		board_idx;
- };
- 
- #define BNXT_NUM_RX_RING_STATS			8
-@@ -2219,5 +2268,5 @@ int bnxt_get_port_parent_id(struct net_device *dev,
- 			    struct netdev_phys_item_id *ppid);
- void bnxt_dim_work(struct work_struct *work);
- int bnxt_hwrm_set_ring_coal(struct bnxt *bp, struct bnxt_napi *bnapi);
--
-+void bnxt_print_device_info(struct bnxt *bp);
- #endif
+@@ -2246,6 +2246,7 @@ void bnxt_tx_enable(struct bnxt *bp);
+ int bnxt_update_link(struct bnxt *bp, bool chng_link_state);
+ int bnxt_hwrm_set_pause(struct bnxt *);
+ int bnxt_hwrm_set_link_setting(struct bnxt *, bool, bool);
++int bnxt_cancel_reservations(struct bnxt *bp, bool fw_reset);
+ int bnxt_hwrm_alloc_wol_fltr(struct bnxt *bp);
+ int bnxt_hwrm_free_wol_fltr(struct bnxt *bp);
+ int bnxt_hwrm_func_resc_qcaps(struct bnxt *bp, bool all);
 -- 
 2.18.1
 
 
---000000000000b79c0305cf0a2f93
+--000000000000c425eb05cf0a2f6c
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -328,13 +226,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEICAQblpFbSjwuFa0vTQmmvHexXSyaP4X
-aLzgbbZVA+bgMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTAy
-MzE5MzIyMFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBSo9thFilcsVFmoB7pHj/jH8AlXM5nI
+u22u030oyt0ZMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTAy
+MzE5MzIyMVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCew88msekiin8z/Xc3dW1sx9+OFz9KKw0gDovxJ2CFoANkqIi0
-mRu/LEOY0u2dvCPDGxsavLtw4gbktG1pUrwQpgIpfIPkseItQy96dDaE8YMuGhuI00Az4oknGyJo
-zf0AOsg+7XzcqZzrbAm8wYQGG68aEEEAR95/ynlx80zvfBp6otECaZUZiRMCJJtoVGtdE2S0LMKu
-i4o67Gue87XhGyYVWlp1JntTDB/LtrceG7bRxK3yoTqpBiMiZGQcKRzJHwF9B90JdKanQJ/6dqjF
-3HbPwKgexJq1vTYhYxxMWpj87xp9pFVS06Z60hPPrJfFJdwSTbWf1pimn2XV2uvN
---000000000000b79c0305cf0a2f93--
+ATANBgkqhkiG9w0BAQEFAASCAQC9C0nk1cQwnGPrlveG1eibmSkf1j4JEPZuOwJ+O3JaDUuad1Jj
+CsHwq2dytHr01Ki6y23i8Kdhw5O6YBsi6IjbVbRKv/7/jFXUk1WNYmgy/Cqf2NzYDXjdwDNA/r8L
+Pql5j6qcQkbUH0AlpwvS8dTXL3bKUJrL2/sJ+oLljqjo5KtrRFHQA8mwwpp3N/hh/CkqvExK+42j
+AYXxbjAlzfjBdQq3MZzhkEwmLMwM0ES2WbcLaeC61Ut8LBwwqKPhlz/VIX7rxohuRbr1o5IZwFc/
+Q8YsiRxuoA5Mg91koqhpq69RXj+yu6THH21zck6ihsdMUergH2342nGB8zh3h7Af
+--000000000000c425eb05cf0a2f6c--
