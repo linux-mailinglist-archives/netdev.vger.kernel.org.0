@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0A1E438185
-	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 05:28:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E56943818B
+	for <lists+netdev@lfdr.de>; Sat, 23 Oct 2021 05:28:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232057AbhJWD1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Oct 2021 23:27:31 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:11861 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231408AbhJWD1L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Oct 2021 23:27:11 -0400
+        id S231567AbhJWD1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Oct 2021 23:27:45 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:45512 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231732AbhJWD1S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Oct 2021 23:27:18 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1634959493; h=References: In-Reply-To: Message-Id: Date:
+ s=smtp; t=1634959500; h=References: In-Reply-To: Message-Id: Date:
  Subject: Cc: To: From: Sender;
- bh=hhkQtx6GPVOl2NoneqLBxumGzrhDd8i+gHLRAuM18TY=; b=hJj1a5bdQZOfV7BxVuoe4UNOncbWAMTvOa1ZWbLsO8PnynXTKrpoJYNQDtM7YlZMGnXTp4aS
- E0SmB2wJpa03bA1wkVio19mrffgX5GjSCKBKsHYYrP/+0jvxNCqHoUs9Urc3uwTnmuyqM/xP
- /A2nSy0dRvReId3b7Yx146UaAeI=
-X-Mailgun-Sending-Ip: 198.61.254.9
+ bh=7zahY8FGLfXbTxBHrZgxPC3+TNZQHFPBnh8b/yiXqO4=; b=DJsAsg0w7ONjTv2NtcMIh8zG0MwutIcbFsQ1dG1pEGp2l7rX7Xyg9g/9r7vSXcyZRLUUeRTr
+ bNdcqqoytrmfTzkyeglpsTMpkssutItR9nUR8otk3e+CL+6VJ4HVnQlfrcMcBp0TxLq+Mzby
+ Ku+u5I/50O4SaFX3JQk20v4muwI=
+X-Mailgun-Sending-Ip: 69.72.43.7
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
- 6173807edaa899cf74a47eea (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 23 Oct 2021 03:24:46
+ smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
+ 617380828e67b5f04e4710cb (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 23 Oct 2021 03:24:50
  GMT
 Sender: luoj=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id CF849C4360D; Sat, 23 Oct 2021 03:24:46 +0000 (UTC)
+        id 02849C43618; Sat, 23 Oct 2021 03:24:50 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -37,9 +37,9 @@ Received: from akronite-sh-dev02.qualcomm.com (unknown [180.166.53.21])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: luoj)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 446EDC43618;
-        Sat, 23 Oct 2021 03:24:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 446EDC43618
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 08EB4C43617;
+        Sat, 23 Oct 2021 03:24:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 08EB4C43617
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
 From:   Luo Jie <luoj@codeaurora.org>
@@ -47,9 +47,9 @@ To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
         davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         sricharan@codeaurora.org, Luo Jie <luoj@codeaurora.org>
-Subject: [PATCH v5 08/14] net: phy: add qca8081 config_aneg
-Date:   Sat, 23 Oct 2021 11:24:06 +0800
-Message-Id: <20211023032412.30479-9-luoj@codeaurora.org>
+Subject: [PATCH v5 09/14] net: phy: add constants for fast retrain related register
+Date:   Sat, 23 Oct 2021 11:24:07 +0800
+Message-Id: <20211023032412.30479-10-luoj@codeaurora.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211023032412.30479-1-luoj@codeaurora.org>
 References: <20211023032412.30479-1-luoj@codeaurora.org>
@@ -57,58 +57,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reuse at803x phy driver config_aneg excepting
-adding 2500M auto-negotiation.
+Add the constants for 2.5G fast retrain capability
+in 10G AN control register, fast retrain status and
+control register and THP bypass register into mdio.h.
 
 Signed-off-by: Luo Jie <luoj@codeaurora.org>
 ---
- drivers/net/phy/at803x.c | 26 +++++++++++++++++++++++++-
- 1 file changed, 25 insertions(+), 1 deletion(-)
+ include/uapi/linux/mdio.h | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index c4b7ac03cd35..70c1025e8e5d 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -1109,7 +1109,30 @@ static int at803x_config_aneg(struct phy_device *phydev)
- 			return ret;
- 	}
+diff --git a/include/uapi/linux/mdio.h b/include/uapi/linux/mdio.h
+index bdf77dffa5a4..c54e6eae5366 100644
+--- a/include/uapi/linux/mdio.h
++++ b/include/uapi/linux/mdio.h
+@@ -53,12 +53,14 @@
+ #define MDIO_AN_EEE_LPABLE	61	/* EEE link partner ability */
+ #define MDIO_AN_EEE_ADV2	62	/* EEE advertisement 2 */
+ #define MDIO_AN_EEE_LPABLE2	63	/* EEE link partner ability 2 */
++#define MDIO_AN_CTRL2		64	/* AN THP bypass request control */
  
--	return genphy_config_aneg(phydev);
-+	/* Do not restart auto-negotiation by setting ret to 0 defautly,
-+	 * when calling __genphy_config_aneg later.
-+	 */
-+	ret = 0;
-+
-+	if (phydev->drv->phy_id == QCA8081_PHY_ID) {
-+		int phy_ctrl = 0;
-+
-+		/* The reg MII_BMCR also needs to be configured for force mode, the
-+		 * genphy_config_aneg is also needed.
-+		 */
-+		if (phydev->autoneg == AUTONEG_DISABLE)
-+			genphy_c45_pma_setup_forced(phydev);
-+
-+		if (linkmode_test_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, phydev->advertising))
-+			phy_ctrl = MDIO_AN_10GBT_CTRL_ADV2_5G;
-+
-+		ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_10GBT_CTRL,
-+				MDIO_AN_10GBT_CTRL_ADV2_5G, phy_ctrl);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	return __genphy_config_aneg(phydev, ret);
- }
+ /* Media-dependent registers. */
+ #define MDIO_PMA_10GBT_SWAPPOL	130	/* 10GBASE-T pair swap & polarity */
+ #define MDIO_PMA_10GBT_TXPWR	131	/* 10GBASE-T TX power control */
+ #define MDIO_PMA_10GBT_SNR	133	/* 10GBASE-T SNR margin, lane A.
+ 					 * Lanes B-D are numbered 134-136. */
++#define MDIO_PMA_10GBR_FSRT_CSR	147	/* 10GBASE-R fast retrain status and control */
+ #define MDIO_PMA_10GBR_FECABLE	170	/* 10GBASE-R FEC ability */
+ #define MDIO_PCS_10GBX_STAT1	24	/* 10GBASE-X PCS status 1 */
+ #define MDIO_PCS_10GBRT_STAT1	32	/* 10GBASE-R/-T PCS status 1 */
+@@ -239,6 +241,9 @@
+ #define MDIO_PMA_10GBR_FECABLE_ABLE	0x0001	/* FEC ability */
+ #define MDIO_PMA_10GBR_FECABLE_ERRABLE	0x0002	/* FEC error indic. ability */
  
- static int at803x_get_downshift(struct phy_device *phydev, u8 *d)
-@@ -1663,6 +1686,7 @@ static struct phy_driver at803x_driver[] = {
- 	.set_wol		= at803x_set_wol,
- 	.get_wol		= at803x_get_wol,
- 	.get_features		= at803x_get_features,
-+	.config_aneg		= at803x_config_aneg,
- 	.suspend		= genphy_suspend,
- 	.resume			= genphy_resume,
- 	.read_status		= qca808x_read_status,
++/* PMA 10GBASE-R Fast Retrain status and control register. */
++#define MDIO_PMA_10GBR_FSRT_ENABLE	0x0001	/* Fast retrain enable */
++
+ /* PCS 10GBASE-R/-T status register 1. */
+ #define MDIO_PCS_10GBRT_STAT1_BLKLK	0x0001	/* Block lock attained */
+ 
+@@ -247,6 +252,7 @@
+ #define MDIO_PCS_10GBRT_STAT2_BER	0x3f00
+ 
+ /* AN 10GBASE-T control register. */
++#define MDIO_AN_10GBT_CTRL_ADVFSRT2_5G	0x0020	/* Advertise 2.5GBASE-T fast retrain */
+ #define MDIO_AN_10GBT_CTRL_ADV2_5G	0x0080	/* Advertise 2.5GBASE-T */
+ #define MDIO_AN_10GBT_CTRL_ADV5G	0x0100	/* Advertise 5GBASE-T */
+ #define MDIO_AN_10GBT_CTRL_ADV10G	0x1000	/* Advertise 10GBASE-T */
+@@ -289,6 +295,9 @@
+ #define MDIO_EEE_2_5GT		0x0001	/* 2.5GT EEE cap */
+ #define MDIO_EEE_5GT		0x0002	/* 5GT EEE cap */
+ 
++/* AN MultiGBASE-T AN control 2 */
++#define MDIO_AN_THP_BP2_5GT	0x0008	/* 2.5GT THP bypass request */
++
+ /* 2.5G/5G Extended abilities register. */
+ #define MDIO_PMA_NG_EXTABLE_2_5GBT	0x0001	/* 2.5GBASET ability */
+ #define MDIO_PMA_NG_EXTABLE_5GBT	0x0002	/* 5GBASET ability */
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
