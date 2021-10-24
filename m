@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFE5D438C62
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 00:35:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 722AF438C64
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 00:35:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231922AbhJXWhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Oct 2021 18:37:32 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:52447 "EHLO
+        id S231946AbhJXWhe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Oct 2021 18:37:34 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:50299 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231726AbhJXWha (ORCPT
+        by vger.kernel.org with ESMTP id S231786AbhJXWha (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 18:37:30 -0400
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id 0D84E5C0767;
-        Sun, 24 Oct 2021 03:19:40 -0400 (EDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 8553F5C0771;
+        Sun, 24 Oct 2021 03:19:42 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Sun, 24 Oct 2021 03:19:40 -0400
+  by compute4.internal (MEProxy); Sun, 24 Oct 2021 03:19:42 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=jyjp8ooEIEfLpIBv0MEsrf76JaiG81wZYe2oxL/5xkg=; b=PB1/kYc6
-        5zf56BEGphB9NH91T7GGu8tUCy8GukmHbC2rbBbkwwLNZ2AQq/tekeEU/IS7p+v0
-        A7ba84/caz/RVYITvrhT+yWNFa70UCKXuT0mYyG1FXL+cXj+9hcRXwwe6PFmzs5W
-        p5vp3bw626wGKbSGSEvw68EOxmhsrVTmtSIuSakHylbi8lQDLwYsBF/qN+unkb2f
-        /28c/C46uldgyz9CFxlchgfmmLE4kyilAHYATENLll0SAfDb9+Sk1taEQnsWvaVj
-        Wmyt59cW8zVCarNLKMigk7zUKoGXdWCL08JSITLI1xCDz3Ska2Q8wvMd8DCAW7Fs
-        r5Mh+0l2pCrQBA==
-X-ME-Sender: <xms:Cwl1YfMfnF0JowHoCeExxRGd6GUTVE64fsMSUnu2E-JIqfkh5Gr-Sg>
-    <xme:Cwl1YZ8IKJYstChH1sE_ywipFxYl2O4tLoviMKTm255-BbZzMfW_0Th414FbHGXfD
-    BYvKTEPn_en2_k>
-X-ME-Received: <xmr:Cwl1YeTdvrJEfVTVVYkce1zNlITsj_QzzhtkxAF17sA6_Z0N3lf5z1dJ-A7V8IVn_-CfZGUC5CRkYTifb54UAGNW1k2ccew>
+        fm1; bh=tH0odi6+dOJB/ftCaHwWrWWRwsYj4EliDFdp51KoBGQ=; b=RihaIJGk
+        nfUqpXQQk9Oc8efPlhNnvpPwKb3GKDDXNypWiUgY+F+ZeBPir7PyT6BFctyZZo5s
+        xaXVnwpZ9RQpQeiYwijnlAu0YMEJueir0YuaN4chy12nm1sc1u01VWzlWMfrckn8
+        9z4jMSya/KBsUu9WZh6I4cDqK5IEcDkd/7OedF+nB9F6zO2+Iw26Vf7XXGLmFoXE
+        sEasmuxd/cQenCxH08Hp64TmsBk5EO/GgLz2eWU79s9oB/aLxZNnNWUI0wblLixg
+        mN8yet9Ed9Drhwvv6syFNQa/qCWOXN1cEwbu5GxA9f+98+2dH213w7aeQGagrSUj
+        fQ3VpjrLptf2Qw==
+X-ME-Sender: <xms:DQl1YYEgHKG_IajU6saGMJIOS5dYOV7s9JUaaqKt2S3LEPREs7N6Gw>
+    <xme:DQl1YRXZD_sDjqe976xvyxLdWKdMZe7p_Tl83eB5Ds-BFt0XmYYm_fxk09rsk_1mB
+    1OSdOdwvgTCU9Y>
+X-ME-Received: <xmr:DQl1YSKkhG8l2q6Q6ccJgd2Rcu3lYWAPHEavlQ-1DaBiPDA_DNDmG18gy1xWP-Q98UrcoqoRaTHlO_DA3MBO70v-lQ3B_cg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvdefvddgudekucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,20 +38,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvdefvddgudekucetufdoteggod
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgeptdenucfr
     rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:Cwl1YTu-siGuAZ-tragxoPEOfIT1gJWN7X4RWx38B4F4gZLpas6a0Q>
-    <xmx:Cwl1YXfFq7SXchwOnWN4gDTjad15ML5BAuvjV0seygNK6lY8m_RgZg>
-    <xmx:Cwl1Yf2ZJv2FLI7IkhxgslTZbfX14veyER_4w7V5wPtTbmMdseRccA>
-    <xmx:DAl1Ye4ntIz_icEBRDYW4EMiL2C2k5ZwD1um6-sU4fVW9ZM8VGPKjA>
+X-ME-Proxy: <xmx:DQl1YaHaK7dgtTiGI4N8zWglYfJRzW66_alwIpkpnWTQynA0Dgs6_A>
+    <xmx:DQl1YeWAyMovApKnMsDLzy5mrUK-q5Fb72pxEDpInDGQHj9Pv5Sn9w>
+    <xmx:DQl1YdM7L2V3tV1TN_AxTT3SAgfEkw1UxuHqyjDLNoNnKyG1tbmO9A>
+    <xmx:Dgl1Ycx5MU0fEsJwmCabOhwwzMGXfEzEK8j0f66-cgOekGILD6ykQw>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 24 Oct 2021 03:19:37 -0400 (EDT)
+ 24 Oct 2021 03:19:40 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         petrm@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 2/3] selftests: mlxsw: Use permanent neighbours instead of reachable ones
-Date:   Sun, 24 Oct 2021 10:19:10 +0300
-Message-Id: <20211024071911.1064322-3-idosch@idosch.org>
+Subject: [PATCH net-next 3/3] selftests: mlxsw: Reduce test run time
+Date:   Sun, 24 Oct 2021 10:19:11 +0300
+Message-Id: <20211024071911.1064322-4-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211024071911.1064322-1-idosch@idosch.org>
 References: <20211024071911.1064322-1-idosch@idosch.org>
@@ -63,96 +63,87 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-The nexthop objects tests configure dummy reachable neighbours so that
-the nexthops will have a MAC address and be programmed to the device.
-
-Since these are dummy reachable neighbours, they can be transitioned by
-the kernel to a failed state if they are around for too long. This can
-happen, for example, if the "TIMEOUT" variable is configured with a too
-high value.
-
-Make the tests more robust by configuring the neighbours as permanent,
-so that the tests do not depend on the configured timeout value.
+Instead of iterating over all the available trap policers, only perform
+the tests with three policers: The first, the last and the one in the
+middle of the range. On a Spectrum-3 system, this reduces the run time
+from almost an hour to a few minutes.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 Reviewed-by: Petr Machata <petrm@nvidia.com>
 ---
- .../selftests/drivers/net/mlxsw/rtnetlink.sh  | 22 +++++++++----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ .../drivers/net/mlxsw/devlink_trap_policer.sh | 32 ++++++++++++-------
+ .../selftests/net/forwarding/devlink_lib.sh   |  6 ----
+ 2 files changed, 20 insertions(+), 18 deletions(-)
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/rtnetlink.sh b/tools/testing/selftests/drivers/net/mlxsw/rtnetlink.sh
-index a217f9f6775b..1075d70e8f25 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/rtnetlink.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/rtnetlink.sh
-@@ -779,7 +779,7 @@ nexthop_obj_offload_test()
- 	setup_wait
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_policer.sh b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_policer.sh
+index 508a702f0021..0bd5ffc218ac 100755
+--- a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_policer.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_policer.sh
+@@ -272,13 +272,17 @@ __rate_test()
  
- 	ip nexthop add id 1 via 192.0.2.2 dev $swp1
--	ip neigh replace 192.0.2.2 lladdr 00:11:22:33:44:55 nud reachable \
-+	ip neigh replace 192.0.2.2 lladdr 00:11:22:33:44:55 nud perm \
- 		dev $swp1
+ rate_test()
+ {
+-	local id
++	local last_policer=$(devlink -j -p trap policer show |
++			     jq '[.[]["'$DEVLINK_DEV'"][].policer] | max')
  
- 	busywait "$TIMEOUT" wait_for_offload \
-@@ -791,7 +791,7 @@ nexthop_obj_offload_test()
- 		ip nexthop show id 1
- 	check_err $? "nexthop marked as offloaded after setting neigh to failed state"
+-	for id in $(devlink_trap_policer_ids_get); do
+-		echo
+-		log_info "Running rate test for policer $id"
+-		__rate_test $id
+-	done
++	log_info "Running rate test for policer 1"
++	__rate_test 1
++
++	log_info "Running rate test for policer $((last_policer / 2))"
++	__rate_test $((last_policer / 2))
++
++	log_info "Running rate test for policer $last_policer"
++	__rate_test $last_policer
+ }
  
--	ip neigh replace 192.0.2.2 lladdr 00:11:22:33:44:55 nud reachable \
-+	ip neigh replace 192.0.2.2 lladdr 00:11:22:33:44:55 nud perm \
- 		dev $swp1
- 	busywait "$TIMEOUT" wait_for_offload \
- 		ip nexthop show id 1
-@@ -828,11 +828,11 @@ nexthop_obj_group_offload_test()
- 	ip nexthop add id 1 via 192.0.2.2 dev $swp1
- 	ip nexthop add id 2 via 2001:db8:1::2 dev $swp1
- 	ip nexthop add id 10 group 1/2
--	ip neigh replace 192.0.2.2 lladdr 00:11:22:33:44:55 nud reachable \
-+	ip neigh replace 192.0.2.2 lladdr 00:11:22:33:44:55 nud perm \
- 		dev $swp1
--	ip neigh replace 192.0.2.3 lladdr 00:11:22:33:44:55 nud reachable \
-+	ip neigh replace 192.0.2.3 lladdr 00:11:22:33:44:55 nud perm \
- 		dev $swp1
--	ip neigh replace 2001:db8:1::2 lladdr 00:11:22:33:44:55 nud reachable \
-+	ip neigh replace 2001:db8:1::2 lladdr 00:11:22:33:44:55 nud perm \
- 		dev $swp1
+ __burst_test()
+@@ -342,13 +346,17 @@ __burst_test()
  
- 	busywait "$TIMEOUT" wait_for_offload \
-@@ -888,11 +888,11 @@ nexthop_obj_bucket_offload_test()
- 	ip nexthop add id 1 via 192.0.2.2 dev $swp1
- 	ip nexthop add id 2 via 2001:db8:1::2 dev $swp1
- 	ip nexthop add id 10 group 1/2 type resilient buckets 32 idle_timer 0
--	ip neigh replace 192.0.2.2 lladdr 00:11:22:33:44:55 nud reachable \
-+	ip neigh replace 192.0.2.2 lladdr 00:11:22:33:44:55 nud perm \
- 		dev $swp1
--	ip neigh replace 192.0.2.3 lladdr 00:11:22:33:44:55 nud reachable \
-+	ip neigh replace 192.0.2.3 lladdr 00:11:22:33:44:55 nud perm \
- 		dev $swp1
--	ip neigh replace 2001:db8:1::2 lladdr 00:11:22:33:44:55 nud reachable \
-+	ip neigh replace 2001:db8:1::2 lladdr 00:11:22:33:44:55 nud perm \
- 		dev $swp1
+ burst_test()
+ {
+-	local id
++	local last_policer=$(devlink -j -p trap policer show |
++			     jq '[.[]["'$DEVLINK_DEV'"][].policer] | max')
++
++	log_info "Running burst test for policer 1"
++	__burst_test 1
++
++	log_info "Running burst test for policer $((last_policer / 2))"
++	__burst_test $((last_policer / 2))
  
- 	busywait "$TIMEOUT" wait_for_offload \
-@@ -921,7 +921,7 @@ nexthop_obj_bucket_offload_test()
- 	check_err $? "nexthop bucket not marked as offloaded after revalidating nexthop"
+-	for id in $(devlink_trap_policer_ids_get); do
+-		echo
+-		log_info "Running burst size test for policer $id"
+-		__burst_test $id
+-	done
++	log_info "Running burst test for policer $last_policer"
++	__burst_test $last_policer
+ }
  
- 	# Revalidate nexthop id 2 by changing its neighbour
--	ip neigh replace 2001:db8:1::2 lladdr 00:11:22:33:44:55 nud reachable \
-+	ip neigh replace 2001:db8:1::2 lladdr 00:11:22:33:44:55 nud perm \
- 		dev $swp1
- 	busywait "$TIMEOUT" wait_for_offload \
- 		ip nexthop bucket show nhid 2
-@@ -971,9 +971,9 @@ nexthop_obj_route_offload_test()
- 	setup_wait
+ trap cleanup EXIT
+diff --git a/tools/testing/selftests/net/forwarding/devlink_lib.sh b/tools/testing/selftests/net/forwarding/devlink_lib.sh
+index 2c14a86adaaa..de9944d42027 100644
+--- a/tools/testing/selftests/net/forwarding/devlink_lib.sh
++++ b/tools/testing/selftests/net/forwarding/devlink_lib.sh
+@@ -563,12 +563,6 @@ devlink_trap_group_policer_get()
+ 		| jq '.[][][]["policer"]'
+ }
  
- 	ip nexthop add id 1 via 192.0.2.2 dev $swp1
--	ip neigh replace 192.0.2.2 lladdr 00:11:22:33:44:55 nud reachable \
-+	ip neigh replace 192.0.2.2 lladdr 00:11:22:33:44:55 nud perm \
- 		dev $swp1
--	ip neigh replace 192.0.2.3 lladdr 00:11:22:33:44:55 nud reachable \
-+	ip neigh replace 192.0.2.3 lladdr 00:11:22:33:44:55 nud perm \
- 		dev $swp1
- 
- 	ip route replace 198.51.100.0/24 nhid 1
+-devlink_trap_policer_ids_get()
+-{
+-	devlink -j -p trap policer show \
+-		| jq '.[]["'$DEVLINK_DEV'"][]["policer"]'
+-}
+-
+ devlink_port_by_netdev()
+ {
+ 	local if_name=$1
 -- 
 2.31.1
 
