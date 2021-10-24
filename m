@@ -2,68 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 062E04388E0
-	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 14:40:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 343164388EB
+	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 14:50:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231597AbhJXMma (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Oct 2021 08:42:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43314 "EHLO mail.kernel.org"
+        id S231534AbhJXMw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Oct 2021 08:52:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48288 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230300AbhJXMm2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 24 Oct 2021 08:42:28 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 780E260FE7;
-        Sun, 24 Oct 2021 12:40:07 +0000 (UTC)
+        id S229867AbhJXMw2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 24 Oct 2021 08:52:28 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0DB5160F45;
+        Sun, 24 Oct 2021 12:50:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635079207;
-        bh=vEsz1uJ/6kRB/fN8p8/QjebUEZBt5W5x5M4m5TL4nrE=;
+        s=k20201202; t=1635079808;
+        bh=uiOmLM3b53ai3GE8eZ4wkG3yUbrDJt691bFzcbfWnt8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=EcBjvZ48RmupRI1a0cxvLEoZCOV83FpS9fZnNetaqAaGU0ubtiuiXF9Z2FcnCf30G
-         59PuCver5tSDknCfJiBzCyaKTcmewnF1beLtjMuRpw7MkkfNB5F8tOyQmJ/mKaz0Fm
-         2k6AKvT+30/fFWH5KFNcl9O3AyVue7Hv3xIPm6l0AKsv54F9PrterglNbV3C8cCa+9
-         qyoWya4I3TXtneZ92Ou0iAJ1LDLZdrehe8YheLVsE0SV+eMm5VfdLioPUiBnXn2v91
-         tm2L52fTHvLDjcRKHogvDmJ0dQAXl6Lxpy23bW6ugecjxQkbPi5SGfdr47GFnCwg/y
-         EqrH1h1KvH3rw==
+        b=L5Vgm8O7T6fZtPhv+0lQjH5kwTywSyjzAhREHHYzU1WW1AUJzxGJzTGT0ZyXcxpYC
+         2BFIjl3vVMHdPGDlQfgjAzyjPEZ77qzSPcUaPLkUAasHkC2mXWmOE9w5ANvtfLxzwv
+         UVokdbltfb1fnjvYT/qPsuhX5yXwGlsIJAXcvKPNLgCzqVJZ7Ozpsco5FB++TnO8pB
+         uY6fYqQevn9lR0SA0hLSRc+FJo8gn3b2ENyC/FAsEjvtNY02oy+esvc3dYl+BGX7lm
+         QObvRlrV2ovsxukEoTnkTKgsLWXpV5RKyTGjGbbPEagZEbAgshv2EFRTa4WKPfWBRU
+         Yv/g5f201PPWQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6B0B8609D5;
-        Sun, 24 Oct 2021 12:40:07 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F371360A90;
+        Sun, 24 Oct 2021 12:50:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next PATCH] octeontx2-af: Increase number of reserved entries in
- KPU
+Subject: Re: [net-next PATCH v2 1/3] net: mdio: Add helper functions for accessing
+ MDIO devices
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163507920743.28969.12375546554086732873.git-patchwork-notify@kernel.org>
-Date:   Sun, 24 Oct 2021 12:40:07 +0000
-References: <20211022124537.3101126-1-kirankumark@marvell.com>
-In-Reply-To: <20211022124537.3101126-1-kirankumark@marvell.com>
-To:     <kirankumark@marvell.com>
-Cc:     sgoutham@marvell.com, lcherian@marvell.com, gakula@marvell.com,
-        jerinj@marvell.com, hkelam@marvell.com, sbhatta@marvell.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Message-Id: <163507980799.1741.3571164239572057045.git-patchwork-notify@kernel.org>
+Date:   Sun, 24 Oct 2021 12:50:07 +0000
+References: <20211022155914.3347672-1-sean.anderson@seco.com>
+In-Reply-To: <20211022155914.3347672-1-sean.anderson@seco.com>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 22 Oct 2021 18:15:37 +0530 you wrote:
-> From: Kiran Kumar K <kirankumark@marvell.com>
+On Fri, 22 Oct 2021 11:59:12 -0400 you wrote:
+> This adds some helpers for accessing non-phy MDIO devices. They are
+> analogous to phy_(read|write|modify), except that they take an mdio_device
+> and not a phy_device.
 > 
-> With current KPU profile, we have 2 reserved entries which can
-> be loaded from firmware to parse custom headers. Adding changes
-> to increase these reserved entries to 6.
-> And also removed KPU entries for unused LTYPEs like
-> NPC_LT_LA_IH_8_ETHER, NPC_LT_LA_IH_4_ETHER, NPC_LT_LA_IH_2_ETHER
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> ---
+> This patch was originally submitted as [1].
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] octeontx2-af: Increase number of reserved entries in KPU
-    https://git.kernel.org/netdev/net-next/c/db690aecafd1
+  - [net-next,v2,1/3] net: mdio: Add helper functions for accessing MDIO devices
+    https://git.kernel.org/netdev/net-next/c/0ebecb2644c8
+  - [net-next,v2,2/3] net: phylink: Convert some users of mdiobus_* to mdiodev_*
+    https://git.kernel.org/netdev/net-next/c/c8fb89a7a7d1
+  - [net-next,v2,3/3] net: Convert more users of mdiobus_* to mdiodev_*
+    https://git.kernel.org/netdev/net-next/c/65aa371ea52a
 
 You are awesome, thank you!
 -- 
