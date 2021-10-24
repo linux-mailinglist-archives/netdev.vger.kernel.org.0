@@ -2,802 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B543B438B7E
-	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 20:43:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CF22438B7F
+	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 20:43:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231721AbhJXSpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Oct 2021 14:45:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57898 "EHLO
+        id S231946AbhJXSpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Oct 2021 14:45:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231912AbhJXSpR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 14:45:17 -0400
+        with ESMTP id S231912AbhJXSpS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 14:45:18 -0400
 Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B986C061764
-        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 11:42:56 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id r13-20020a17090a1bcd00b001a1b1747cd2so5666153pjr.9
-        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 11:42:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CB2DC061745
+        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 11:42:58 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id mm1-20020a17090b358100b001a0a81b8664so5485479pjb.6
+        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 11:42:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=yPRbv5Yx/hHxn+0MiCf8/VuTG1mlFiZud3xTaP9B2GA=;
-        b=R0KRc6ZPM9WMz+2E3Q8RVqXNNUABR2tKcoIIsX5cJnG8ludvkPCDFXxjqMUk+O2Nt5
-         0mMZCUK4kYKjSs6tDBg7HEQAlRtNJs5HyAf8JhHjhmnqMB6WiTWoLJ0AY9yo2ap8m+mQ
-         KRI58vTxzjt/9ALgkPa4GAENEUymP9gZ1/1prSm7HF7aKBPUih7OXqazT0WjqtXMeyWs
-         ldTDzdc8OJ4i8GvFPYE3tkXerwh4dW4OQPj/rauXLUH+N+nEpkwFVdE6aInO/QAvverS
-         D+gfBWa6juTq9sQQmmZ5yFYEaaOF41dt81arcygxkhl6sawd/5K1HPCljgZ5Xo9MsERt
-         GO3g==
+        bh=4efNYA+fJXkTzMvmqOGZBOMBHDvpro7VjwyYWiUTufo=;
+        b=AuyUqlKDfC88zvqU+xMEKLvIpMZPs4C1+paxV/sncc+RqYwnAfcW4kBV9MhFB83Ksb
+         y7F/dlqiA907jtrsTQaCFFcsXrfPudP9nQQsS3pUyi086f845dibBoZ7j1f5bvw5blzg
+         yG2yCPS6fgoryxw6SG9+J2ODIkPDqmVsT/NM1fAE+zEZdJxfefkMhScPb28eNAcVsv/C
+         2VkYUD+JRkQUGdsWTlg5mcPWTIEMHR+AI5lhy9F4GiAnLsTVjxjz1n4it61tD8iROauc
+         ZNmd+uMx4+UDDK89P5QnDOcvf1BY5rZ5HNuUn0L5MUbqhrnTWG7MHelJX/CCF60G/YY+
+         6eNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=yPRbv5Yx/hHxn+0MiCf8/VuTG1mlFiZud3xTaP9B2GA=;
-        b=XJfqmwO44fTClsUgtvHe/FHHq1GKj41ZlcjRppI0AvPki+SnsN5jGLlStzUi0sgtj5
-         TFDlmGnrhaAaRUH4mcKrl2+9uBCwTxL5ganQ4+gV4U+SUjVGwtGYpEJHGz641ZMuFav5
-         yWIV5/RgzyLhthoZpHLMd9Say4mHp2W4GCeRo2eHsjgXBLfjRTkTGVFZWkCRf9/DeAEG
-         V8O/oYjNcyBD02R7Kk0gzCIimzr7ZsRA/B6I1dGxk5KpKN1bDdbqzInnmw4qKjQfx7ri
-         89pZ523LMf5fTIoKo25DLH6BjHi1aceLAyZt5icQGIPJm87wqKt8JgZvti3UKzSaX+Ob
-         NB9w==
-X-Gm-Message-State: AOAM530L+AJxTxfsqxI600LBL9pPRWwDKFjWGhViV6PQyyr0K3kt6ba1
-        dHT9IMPKcBoCzKMSPSIRtn6Xm0KDFzmxqbAdRMmiPE5nwj7kIliTdLI2Car2IJTNDujPoROt+Ln
-        m4pZyQ8PUT7WU/AnHGEb0PyztT6nBEmzy6p3Q+afFNu7c1hFrlBJXxEzZdxAEPQ1JLlE=
-X-Google-Smtp-Source: ABdhPJzPwJpNWaV84i6uMx+i+XIBfUkKyvfZHOaz1hGFq/xRB+zDEcVkzL6xKnoRURXNxreOxz5TCGTLd8tMYQ==
+        bh=4efNYA+fJXkTzMvmqOGZBOMBHDvpro7VjwyYWiUTufo=;
+        b=y7lAU1pJJr3HqfU0nR4Z9ooYA6J/hzm/Y1cU18PPNtiqsplYc9Az2STV5d3x0StbIw
+         I9oqQJhiVJOadqMRxoGLR/zgjPB1yuEDGdCmSWKe14khZ6h6enYlaxb4P4pTVpOrrCDW
+         d8xFNJJqjxsxKgg1+ghRYWNv5a3lhm2ie8YpouQtKOy/HbbLNFwiM/stJNyL5e9b/SC8
+         nhSbUTJwAeA786idWFUxRDGy37CMZQmQoDEZM6DX/tgNsjh2Pg86CvGyPhfo7bamC3UD
+         0WIwhcQQxsXAIQzyY8estE84pR2ejisNhYUHQjY714rFSnC/OqZdcbImYocenXbI0h0i
+         Z2+g==
+X-Gm-Message-State: AOAM532Ze5CuHx3GI/cmldEh/hZhtm3vy/lkhVz7Evls62i38IMdCkVS
+        CqG3W0JcJfDoEi5zHMp4CNTPKFQvIm8AGbTYGqLeB4TPRFYYxbpoWPfDxQQNe0JP3L/7GyAYrlf
+        viC90WRfykSEyaORvaSX1Z9EK0Hp0gwO0KUcRqRBhbXnn9OtMcMbBkeIIKIT7hfsKWpE=
+X-Google-Smtp-Source: ABdhPJxfbgMmJ3qbe5d2uS3Msc960nVUecEKd4b3ZSTTwVC8CiavN17t6ussHOrS275DG5Lxb7SvIa5ADmLeXA==
 X-Received: from jeroendb.sea.corp.google.com ([2620:15c:100:202:e3d1:fd04:4781:9855])
- (user=jeroendb job=sendgmr) by 2002:a62:2944:0:b0:44d:b731:4228 with SMTP id
- p65-20020a622944000000b0044db7314228mr13348158pfp.9.1635100975754; Sun, 24
- Oct 2021 11:42:55 -0700 (PDT)
-Date:   Sun, 24 Oct 2021 11:42:37 -0700
+ (user=jeroendb job=sendgmr) by 2002:a05:6a00:1312:b0:44c:becf:b329 with SMTP
+ id j18-20020a056a00131200b0044cbecfb329mr13551155pfu.5.1635100977473; Sun, 24
+ Oct 2021 11:42:57 -0700 (PDT)
+Date:   Sun, 24 Oct 2021 11:42:38 -0700
 In-Reply-To: <20211024184238.409589-1-jeroendb@google.com>
-Message-Id: <20211024184238.409589-3-jeroendb@google.com>
+Message-Id: <20211024184238.409589-4-jeroendb@google.com>
 Mime-Version: 1.0
 References: <20211024184238.409589-1-jeroendb@google.com>
 X-Mailer: git-send-email 2.33.0.1079.g6e70778dc9-goog
-Subject: [PATCH net-next 2/3] gve: Implement packet continuation for RX.
+Subject: [PATCH net-next 3/3] gve: Add a jumbo-frame device option.
 From:   Jeroen de Borst <jeroendb@google.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
-        David Awogbemila <awogbemila@google.com>,
-        Jeroen de Borst <jeroendb@google.com>,
-        Catherine Sullivan <csully@google.com>
+        Shailend Chand <shailend@google.com>,
+        Jeroen de Borst <jeroendb@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Awogbemila <awogbemila@google.com>
+From: Shailend Chand <shailend@google.com>
 
-This enables the driver to receive RX packets spread across multiple
-buffers:
+A widely deployed driver has a bug that will cause the driver not
+to load when a max_mtu > 2048 is present in the device descriptor.
 
-For a given multi-fragment packet the "packet continuation" bit is set
-on all descriptors except the last one. These descriptors' payloads are
-combined into a single SKB before the SKB is handed to the
-networking stack.
+To avoid this bug while still enabling jumbo frames, we present a lower
+max_mtu in the device descriptor and pass the actual max_mtu in
+a separate device option.
 
-This change adds a "packet buffer size" notion for RX queues. The
-CreateRxQueue AdminQueue command sent to the device now includes the
-packet_buffer_size.
+The driver supports 2 different queue formats. To enable features
+on one queue format, but not the other, a supported_features mask
+was added to the device options in the device descriptor.
 
-We opt for a packet_buffer_size of PAGE_SIZE / 2 to give the
-driver the opportunity to flip pages where we can instead of copying.
-
-Signed-off-by: David Awogbemila <awogbemila@google.com>
+Signed-off-by: Shailend Chand <shailend@google.com>
 Signed-off-by: Jeroen de Borst <jeroendb@google.com>
-Reviewed-by: Catherine Sullivan <csully@google.com>
 ---
- drivers/net/ethernet/google/gve/gve.h         |   8 +
- drivers/net/ethernet/google/gve/gve_adminq.c  |   1 +
- drivers/net/ethernet/google/gve/gve_desc.h    |  13 +-
- drivers/net/ethernet/google/gve/gve_ethtool.c |   4 +
- drivers/net/ethernet/google/gve/gve_main.c    |   8 -
- drivers/net/ethernet/google/gve/gve_rx.c      | 347 +++++++++++++-----
- drivers/net/ethernet/google/gve/gve_rx_dqo.c  |   2 +-
- drivers/net/ethernet/google/gve/gve_utils.c   |  33 +-
- drivers/net/ethernet/google/gve/gve_utils.h   |   2 +-
- 9 files changed, 292 insertions(+), 126 deletions(-)
+ drivers/net/ethernet/google/gve/gve_adminq.c | 58 ++++++++++++++++++--
+ drivers/net/ethernet/google/gve/gve_adminq.h | 14 +++++
+ 2 files changed, 68 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
-index 03ef8e039065..b719f72281c4 100644
---- a/drivers/net/ethernet/google/gve/gve.h
-+++ b/drivers/net/ethernet/google/gve/gve.h
-@@ -149,6 +149,10 @@ struct gve_rx_ctx {
- 	/* head and tail of skb chain for the current packet or NULL if none */
- 	struct sk_buff *skb_head;
- 	struct sk_buff *skb_tail;
-+	u16 total_expected_size;
-+	u8 expected_frag_cnt;
-+	u8 curr_frag_cnt;
-+	u8 reuse_frags;
- };
- 
- /* Contains datapath state used to represent an RX queue. */
-@@ -162,6 +166,7 @@ struct gve_rx_ring {
- 
- 			/* threshold for posting new buffs and descs */
- 			u32 db_threshold;
-+			u16 packet_buffer_size;
- 		};
- 
- 		/* DQO fields. */
-@@ -209,6 +214,9 @@ struct gve_rx_ring {
- 	u64 rx_skb_alloc_fail; /* free-running count of skb alloc fails */
- 	u64 rx_buf_alloc_fail; /* free-running count of buffer alloc fails */
- 	u64 rx_desc_err_dropped_pkt; /* free-running count of packets dropped by descriptor error */
-+	u64 rx_cont_packet_cnt; /* free-running multi-fragment packets received */
-+	u64 rx_frag_flip_cnt; /* free-running count of rx segments where page_flip was used */
-+	u64 rx_frag_copy_cnt; /* free-running count of rx segments copied into skb linear portion */
- 	u32 q_num; /* queue index */
- 	u32 ntfy_id; /* notification block index */
- 	struct gve_queue_resources *q_resources; /* head and tail pointer idx */
 diff --git a/drivers/net/ethernet/google/gve/gve_adminq.c b/drivers/net/ethernet/google/gve/gve_adminq.c
-index af2c1d1535f5..3dfda6da6a96 100644
+index 3dfda6da6a96..83ae56c310d3 100644
 --- a/drivers/net/ethernet/google/gve/gve_adminq.c
 +++ b/drivers/net/ethernet/google/gve/gve_adminq.c
-@@ -530,6 +530,7 @@ static int gve_adminq_create_rx_queue(struct gve_priv *priv, u32 queue_index)
- 			cpu_to_be64(rx->data.data_bus),
- 		cmd.create_rx_queue.index = cpu_to_be32(queue_index);
- 		cmd.create_rx_queue.queue_page_list_id = cpu_to_be32(qpl_id);
-+		cmd.create_rx_queue.packet_buffer_size = cpu_to_be16(rx->packet_buffer_size);
- 	} else {
- 		cmd.create_rx_queue.rx_ring_size =
- 			cpu_to_be16(priv->rx_desc_cnt);
-diff --git a/drivers/net/ethernet/google/gve/gve_desc.h b/drivers/net/ethernet/google/gve/gve_desc.h
-index 05ae6300e984..4d225a18d8ce 100644
---- a/drivers/net/ethernet/google/gve/gve_desc.h
-+++ b/drivers/net/ethernet/google/gve/gve_desc.h
-@@ -90,12 +90,13 @@ union gve_rx_data_slot {
- 
- /* GVE Recive Packet Descriptor Flags */
- #define GVE_RXFLG(x)	cpu_to_be16(1 << (3 + (x)))
--#define	GVE_RXF_FRAG	GVE_RXFLG(3)	/* IP Fragment			*/
--#define	GVE_RXF_IPV4	GVE_RXFLG(4)	/* IPv4				*/
--#define	GVE_RXF_IPV6	GVE_RXFLG(5)	/* IPv6				*/
--#define	GVE_RXF_TCP	GVE_RXFLG(6)	/* TCP Packet			*/
--#define	GVE_RXF_UDP	GVE_RXFLG(7)	/* UDP Packet			*/
--#define	GVE_RXF_ERR	GVE_RXFLG(8)	/* Packet Error Detected	*/
-+#define	GVE_RXF_FRAG		GVE_RXFLG(3)	/* IP Fragment			*/
-+#define	GVE_RXF_IPV4		GVE_RXFLG(4)	/* IPv4				*/
-+#define	GVE_RXF_IPV6		GVE_RXFLG(5)	/* IPv6				*/
-+#define	GVE_RXF_TCP		GVE_RXFLG(6)	/* TCP Packet			*/
-+#define	GVE_RXF_UDP		GVE_RXFLG(7)	/* UDP Packet			*/
-+#define	GVE_RXF_ERR		GVE_RXFLG(8)	/* Packet Error Detected	*/
-+#define	GVE_RXF_PKT_CONT	GVE_RXFLG(10)	/* Multi Fragment RX packet	*/
- 
- /* GVE IRQ */
- #define GVE_IRQ_ACK	BIT(31)
-diff --git a/drivers/net/ethernet/google/gve/gve_ethtool.c b/drivers/net/ethernet/google/gve/gve_ethtool.c
-index 618a3e1d858e..c8df47a97fa4 100644
---- a/drivers/net/ethernet/google/gve/gve_ethtool.c
-+++ b/drivers/net/ethernet/google/gve/gve_ethtool.c
-@@ -43,6 +43,7 @@ static const char gve_gstrings_main_stats[][ETH_GSTRING_LEN] = {
- 
- static const char gve_gstrings_rx_stats[][ETH_GSTRING_LEN] = {
- 	"rx_posted_desc[%u]", "rx_completed_desc[%u]", "rx_bytes[%u]",
-+	"rx_cont_packet_cnt[%u]", "rx_frag_flip_cnt[%u]", "rx_frag_copy_cnt[%u]",
- 	"rx_dropped_pkt[%u]", "rx_copybreak_pkt[%u]", "rx_copied_pkt[%u]",
- 	"rx_queue_drop_cnt[%u]", "rx_no_buffers_posted[%u]",
- 	"rx_drops_packet_over_mru[%u]", "rx_drops_invalid_checksum[%u]",
-@@ -265,6 +266,9 @@ gve_get_ethtool_stats(struct net_device *netdev,
- 			} while (u64_stats_fetch_retry(&priv->rx[ring].statss,
- 						       start));
- 			data[i++] = tmp_rx_bytes;
-+			data[i++] = rx->rx_cont_packet_cnt;
-+			data[i++] = rx->rx_frag_flip_cnt;
-+			data[i++] = rx->rx_frag_copy_cnt;
- 			/* rx dropped packets */
- 			data[i++] = tmp_rx_skb_alloc_fail +
- 				tmp_rx_buf_alloc_fail +
-diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
-index 7647cd05b1d2..6b02ef432eda 100644
---- a/drivers/net/ethernet/google/gve/gve_main.c
-+++ b/drivers/net/ethernet/google/gve/gve_main.c
-@@ -1371,14 +1371,6 @@ static int gve_init_priv(struct gve_priv *priv, bool skip_describe_device)
- 			"Could not get device information: err=%d\n", err);
- 		goto err;
- 	}
--	if (gve_is_gqi(priv) && priv->dev->max_mtu > PAGE_SIZE) {
--		priv->dev->max_mtu = PAGE_SIZE;
--		err = gve_adminq_set_mtu(priv, priv->dev->mtu);
--		if (err) {
--			dev_err(&priv->pdev->dev, "Could not set mtu");
--			goto err;
--		}
--	}
- 	priv->dev->mtu = priv->dev->max_mtu;
- 	num_ntfy = pci_msix_vec_count(priv->pdev);
- 	if (num_ntfy <= 0) {
-diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
-index 95bc4d8a1811..c8500babbd1d 100644
---- a/drivers/net/ethernet/google/gve/gve_rx.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx.c
-@@ -143,6 +143,16 @@ static int gve_prefill_rx_pages(struct gve_rx_ring *rx)
- 	return err;
- }
- 
-+static void gve_rx_ctx_clear(struct gve_rx_ctx *ctx)
-+{
-+	ctx->curr_frag_cnt = 0;
-+	ctx->total_expected_size = 0;
-+	ctx->expected_frag_cnt = 0;
-+	ctx->skb_head = NULL;
-+	ctx->skb_tail = NULL;
-+	ctx->reuse_frags = false;
-+}
-+
- static int gve_rx_alloc_ring(struct gve_priv *priv, int idx)
+@@ -38,7 +38,8 @@ void gve_parse_device_option(struct gve_priv *priv,
+ 			     struct gve_device_option *option,
+ 			     struct gve_device_option_gqi_rda **dev_op_gqi_rda,
+ 			     struct gve_device_option_gqi_qpl **dev_op_gqi_qpl,
+-			     struct gve_device_option_dqo_rda **dev_op_dqo_rda)
++			     struct gve_device_option_dqo_rda **dev_op_dqo_rda,
++			     struct gve_device_option_jumbo_frames **dev_op_jumbo_frames)
  {
- 	struct gve_rx_ring *rx = &priv->rx[idx];
-@@ -209,6 +219,12 @@ static int gve_rx_alloc_ring(struct gve_priv *priv, int idx)
- 	rx->cnt = 0;
- 	rx->db_threshold = priv->rx_desc_cnt / 2;
- 	rx->desc.seqno = 1;
+ 	u32 req_feat_mask = be32_to_cpu(option->required_features_mask);
+ 	u16 option_length = be16_to_cpu(option->option_length);
+@@ -111,6 +112,24 @@ void gve_parse_device_option(struct gve_priv *priv,
+ 		}
+ 		*dev_op_dqo_rda = (void *)(option + 1);
+ 		break;
++	case GVE_DEV_OPT_ID_JUMBO_FRAMES:
++		if (option_length < sizeof(**dev_op_jumbo_frames) ||
++		    req_feat_mask != GVE_DEV_OPT_REQ_FEAT_MASK_JUMBO_FRAMES) {
++			dev_warn(&priv->pdev->dev, GVE_DEVICE_OPTION_ERROR_FMT,
++				 "Jumbo Frames",
++				 (int)sizeof(**dev_op_jumbo_frames),
++				 GVE_DEV_OPT_REQ_FEAT_MASK_JUMBO_FRAMES,
++				 option_length, req_feat_mask);
++			break;
++		}
 +
-+	/* Allocating half-page buffers allows page-flipping which is faster
-+	 * than copying or allocating new pages.
-+	 */
-+	rx->packet_buffer_size = PAGE_SIZE / 2;
-+	gve_rx_ctx_clear(&rx->ctx);
- 	gve_rx_add_to_block(priv, idx);
++		if (option_length > sizeof(**dev_op_jumbo_frames)) {
++			dev_warn(&priv->pdev->dev,
++				 GVE_DEVICE_OPTION_TOO_BIG_FMT,
++				 "Jumbo Frames");
++		}
++		*dev_op_jumbo_frames = (void *)(option + 1);
++		break;
+ 	default:
+ 		/* If we don't recognize the option just continue
+ 		 * without doing anything.
+@@ -126,7 +145,8 @@ gve_process_device_options(struct gve_priv *priv,
+ 			   struct gve_device_descriptor *descriptor,
+ 			   struct gve_device_option_gqi_rda **dev_op_gqi_rda,
+ 			   struct gve_device_option_gqi_qpl **dev_op_gqi_qpl,
+-			   struct gve_device_option_dqo_rda **dev_op_dqo_rda)
++			   struct gve_device_option_dqo_rda **dev_op_dqo_rda,
++			   struct gve_device_option_jumbo_frames **dev_op_jumbo_frames)
+ {
+ 	const int num_options = be16_to_cpu(descriptor->num_device_options);
+ 	struct gve_device_option *dev_opt;
+@@ -146,7 +166,7 @@ gve_process_device_options(struct gve_priv *priv,
  
+ 		gve_parse_device_option(priv, descriptor, dev_opt,
+ 					dev_op_gqi_rda, dev_op_gqi_qpl,
+-					dev_op_dqo_rda);
++					dev_op_dqo_rda, dev_op_jumbo_frames);
+ 		dev_opt = next_opt;
+ 	}
+ 
+@@ -661,12 +681,31 @@ gve_set_desc_cnt_dqo(struct gve_priv *priv,
  	return 0;
-@@ -275,18 +291,28 @@ static enum pkt_hash_types gve_rss_type(__be16 pkt_flags)
- 	return PKT_HASH_TYPE_L2;
  }
  
-+static u16 gve_rx_ctx_padding(struct gve_rx_ctx *ctx)
++static void gve_enable_supported_features(struct gve_priv *priv,
++					  u32 supported_features_mask,
++					  const struct gve_device_option_jumbo_frames
++						  *dev_op_jumbo_frames)
 +{
-+	return (ctx->curr_frag_cnt == 0) ? GVE_RX_PAD : 0;
-+}
-+
- static struct sk_buff *gve_rx_add_frags(struct napi_struct *napi,
- 					struct gve_rx_slot_page_info *page_info,
--					u16 len)
-+					u16 packet_buffer_size, u16 len,
-+					struct gve_rx_ctx *ctx)
- {
--	struct sk_buff *skb = napi_get_frags(napi);
-+	u32 offset = page_info->page_offset +  gve_rx_ctx_padding(ctx);
-+	struct sk_buff *skb;
-+
-+	if (!ctx->skb_head)
-+		ctx->skb_head = napi_get_frags(napi);
- 
--	if (unlikely(!skb))
-+	if (unlikely(!ctx->skb_head))
- 		return NULL;
- 
--	skb_add_rx_frag(skb, 0, page_info->page,
--			page_info->page_offset +
--			GVE_RX_PAD, len, PAGE_SIZE / 2);
-+	skb = ctx->skb_head;
-+	skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, page_info->page,
-+			offset, len, packet_buffer_size);
- 
- 	return skb;
- }
-@@ -300,12 +326,6 @@ static void gve_rx_flip_buff(struct gve_rx_slot_page_info *page_info, __be64 *sl
- 	*(slot_addr) ^= offset;
- }
- 
--static bool gve_rx_can_flip_buffers(struct net_device *netdev)
--{
--	return PAGE_SIZE >= 4096
--		? netdev->mtu + GVE_RX_PAD + ETH_HLEN <= PAGE_SIZE / 2 : false;
--}
--
- static int gve_rx_can_recycle_buffer(struct gve_rx_slot_page_info *page_info)
- {
- 	int pagecount = page_count(page_info->page);
-@@ -325,11 +345,11 @@ static struct sk_buff *
- gve_rx_raw_addressing(struct device *dev, struct net_device *netdev,
- 		      struct gve_rx_slot_page_info *page_info, u16 len,
- 		      struct napi_struct *napi,
--		      union gve_rx_data_slot *data_slot)
-+		      union gve_rx_data_slot *data_slot,
-+		      u16 packet_buffer_size, struct gve_rx_ctx *ctx)
- {
--	struct sk_buff *skb;
-+	struct sk_buff *skb = gve_rx_add_frags(napi, page_info, packet_buffer_size, len, ctx);
- 
--	skb = gve_rx_add_frags(napi, page_info, len);
- 	if (!skb)
- 		return NULL;
- 
-@@ -348,6 +368,7 @@ gve_rx_qpl(struct device *dev, struct net_device *netdev,
- 	   u16 len, struct napi_struct *napi,
- 	   union gve_rx_data_slot *data_slot)
- {
-+	struct gve_rx_ctx *ctx = &rx->ctx;
- 	struct sk_buff *skb;
- 
- 	/* if raw_addressing mode is not enabled gvnic can only receive into
-@@ -355,8 +376,8 @@ gve_rx_qpl(struct device *dev, struct net_device *netdev,
- 	 * choice is to copy the data out of it so that we can return it to the
- 	 * device.
- 	 */
--	if (page_info->can_flip) {
--		skb = gve_rx_add_frags(napi, page_info, len);
-+	if (ctx->reuse_frags) {
-+		skb = gve_rx_add_frags(napi, page_info, rx->packet_buffer_size, len, ctx);
- 		/* No point in recycling if we didn't get the skb */
- 		if (skb) {
- 			/* Make sure that the page isn't freed. */
-@@ -364,114 +385,247 @@ gve_rx_qpl(struct device *dev, struct net_device *netdev,
- 			gve_rx_flip_buff(page_info, &data_slot->qpl_offset);
- 		}
- 	} else {
--		skb = gve_rx_copy(netdev, napi, page_info, len, GVE_RX_PAD);
-+		const u16 padding = gve_rx_ctx_padding(ctx);
-+
-+		skb = gve_rx_copy(netdev, napi, page_info, len, padding, ctx);
- 		if (skb) {
- 			u64_stats_update_begin(&rx->statss);
--			rx->rx_copied_pkt++;
-+			rx->rx_frag_copy_cnt++;
- 			u64_stats_update_end(&rx->statss);
- 		}
- 	}
- 	return skb;
- }
- 
--static bool gve_rx(struct gve_rx_ring *rx, struct gve_rx_desc *rx_desc,
--		   netdev_features_t feat, u32 idx)
-+#define GVE_PKTCONT_BIT_IS_SET(x) (GVE_RXF_PKT_CONT & (x))
-+static u16 gve_rx_get_fragment_size(struct gve_rx_ctx *ctx, struct gve_rx_desc *desc)
- {
-+	return be16_to_cpu(desc->len) - gve_rx_ctx_padding(ctx);
-+}
-+
-+static bool gve_rx_ctx_init(struct gve_rx_ctx *ctx, struct gve_rx_ring *rx)
-+{
-+	bool qpl_mode = !rx->data.raw_addressing, packet_size_error = false;
-+	bool buffer_error = false, desc_error = false, seqno_error = false;
- 	struct gve_rx_slot_page_info *page_info;
- 	struct gve_priv *priv = rx->gve;
--	struct napi_struct *napi = &priv->ntfy_blocks[rx->ntfy_id].napi;
--	struct net_device *dev = priv->dev;
--	union gve_rx_data_slot *data_slot;
--	struct sk_buff *skb = NULL;
--	dma_addr_t page_bus;
--	void *va;
--	u16 len;
-+	u32 idx = rx->cnt & rx->mask;
-+	bool reuse_frags, can_flip;
-+	struct gve_rx_desc *desc;
-+	u16 packet_size = 0;
-+	u16 n_frags = 0;
-+	int recycle;
- 
--	/* Prefetch two packet pages ahead, we will need it soon. */
--	page_info = &rx->data.page_info[(idx + 2) & rx->mask];
--	va = page_info->page_address + GVE_RX_PAD +
--		page_info->page_offset;
-+	/** In QPL mode, we only flip buffers when all buffers containing the packet
-+	 * can be flipped. RDA can_flip decisions will be made later, per frag.
++	/* Before control reaches this point, the page-size-capped max MTU from
++	 * the gve_device_descriptor field has already been stored in
++	 * priv->dev->max_mtu. We overwrite it with the true max MTU below.
 +	 */
-+	can_flip = qpl_mode;
-+	reuse_frags = can_flip;
-+	do {
-+		u16 frag_size;
-+
-+		n_frags++;
-+		desc = &rx->desc.desc_ring[idx];
-+		desc_error = unlikely(desc->flags_seq & GVE_RXF_ERR) || desc_error;
-+		if (GVE_SEQNO(desc->flags_seq) != rx->desc.seqno) {
-+			seqno_error = true;
-+			netdev_warn(priv->dev,
-+				    "RX seqno error: want=%d, got=%d, dropping packet and scheduling reset.",
-+				    rx->desc.seqno, GVE_SEQNO(desc->flags_seq));
-+		}
-+		frag_size = be16_to_cpu(desc->len);
-+		packet_size += frag_size;
-+		if (frag_size > rx->packet_buffer_size) {
-+			packet_size_error = true;
-+			netdev_warn(priv->dev,
-+				    "RX fragment error: packet_buffer_size=%d, frag_size=%d, droping packet.",
-+				    rx->packet_buffer_size, be16_to_cpu(desc->len));
-+		}
-+		page_info = &rx->data.page_info[idx];
-+		if (can_flip) {
-+			recycle = gve_rx_can_recycle_buffer(page_info);
-+			reuse_frags = reuse_frags && recycle > 0;
-+			buffer_error = buffer_error || unlikely(recycle < 0);
-+		}
-+		idx = (idx + 1) & rx->mask;
-+		rx->desc.seqno = gve_next_seqno(rx->desc.seqno);
-+	} while (GVE_PKTCONT_BIT_IS_SET(desc->flags_seq));
- 
--	prefetch(page_info->page); /* Kernel page struct. */
--	prefetch(va);              /* Packet header. */
--	prefetch(va + 64);         /* Next cacheline too. */
-+	prefetch(rx->desc.desc_ring + idx);
- 
--	/* drop this packet */
--	if (unlikely(rx_desc->flags_seq & GVE_RXF_ERR)) {
-+	ctx->curr_frag_cnt = 0;
-+	ctx->total_expected_size = packet_size - GVE_RX_PAD;
-+	ctx->expected_frag_cnt = n_frags;
-+	ctx->skb_head = NULL;
-+	ctx->reuse_frags = reuse_frags;
-+
-+	if (ctx->expected_frag_cnt > 1) {
- 		u64_stats_update_begin(&rx->statss);
--		rx->rx_desc_err_dropped_pkt++;
-+		rx->rx_cont_packet_cnt++;
-+		u64_stats_update_end(&rx->statss);
++	if (dev_op_jumbo_frames &&
++	    (supported_features_mask & GVE_SUP_JUMBO_FRAMES_MASK)) {
++		dev_info(&priv->pdev->dev,
++			 "JUMBO FRAMES device option enabled.\n");
++		priv->dev->max_mtu = be16_to_cpu(dev_op_jumbo_frames->max_mtu);
 +	}
-+	if (ctx->total_expected_size > priv->rx_copybreak && !ctx->reuse_frags && qpl_mode) {
-+		u64_stats_update_begin(&rx->statss);
-+		rx->rx_copied_pkt++;
- 		u64_stats_update_end(&rx->statss);
-+	}
-+
-+	if (unlikely(buffer_error || seqno_error || packet_size_error)) {
-+		gve_schedule_reset(priv);
- 		return false;
- 	}
- 
--	len = be16_to_cpu(rx_desc->len) - GVE_RX_PAD;
--	page_info = &rx->data.page_info[idx];
-+	if (unlikely(desc_error)) {
-+		u64_stats_update_begin(&rx->statss);
-+		rx->rx_desc_err_dropped_pkt++;
-+		u64_stats_update_end(&rx->statss);
-+		return false;
-+	}
-+	return true;
 +}
++
+ int gve_adminq_describe_device(struct gve_priv *priv)
+ {
++	struct gve_device_option_jumbo_frames *dev_op_jumbo_frames = NULL;
+ 	struct gve_device_option_gqi_rda *dev_op_gqi_rda = NULL;
+ 	struct gve_device_option_gqi_qpl *dev_op_gqi_qpl = NULL;
+ 	struct gve_device_option_dqo_rda *dev_op_dqo_rda = NULL;
+ 	struct gve_device_descriptor *descriptor;
++	u32 supported_features_mask = 0;
+ 	union gve_adminq_command cmd;
+ 	dma_addr_t descriptor_bus;
+ 	int err = 0;
+@@ -690,7 +729,8 @@ int gve_adminq_describe_device(struct gve_priv *priv)
+ 		goto free_device_descriptor;
  
--	data_slot = &rx->data.data_ring[idx];
--	page_bus = (rx->data.raw_addressing) ?
--			be64_to_cpu(data_slot->addr) & GVE_DATA_SLOT_ADDR_PAGE_MASK :
--			rx->data.qpl->page_buses[idx];
--	dma_sync_single_for_cpu(&priv->pdev->dev, page_bus,
--				PAGE_SIZE, DMA_FROM_DEVICE);
-+static struct sk_buff *gve_rx_skb(struct gve_priv *priv, struct gve_rx_ring *rx,
-+				  struct gve_rx_slot_page_info *page_info, struct napi_struct *napi,
-+				  u16 len, union gve_rx_data_slot *data_slot)
-+{
-+	struct net_device *netdev = priv->dev;
-+	struct gve_rx_ctx *ctx = &rx->ctx;
-+	struct sk_buff *skb = NULL;
+ 	err = gve_process_device_options(priv, descriptor, &dev_op_gqi_rda,
+-					 &dev_op_gqi_qpl, &dev_op_dqo_rda);
++					 &dev_op_gqi_qpl, &dev_op_dqo_rda,
++					 &dev_op_jumbo_frames);
+ 	if (err)
+ 		goto free_device_descriptor;
  
--	if (len <= priv->rx_copybreak) {
-+	if (len <= priv->rx_copybreak && ctx->expected_frag_cnt == 1) {
- 		/* Just copy small packets */
--		skb = gve_rx_copy(dev, napi, page_info, len, GVE_RX_PAD);
--		u64_stats_update_begin(&rx->statss);
--		rx->rx_copied_pkt++;
--		rx->rx_copybreak_pkt++;
--		u64_stats_update_end(&rx->statss);
-+		skb = gve_rx_copy(netdev, napi, page_info, len, GVE_RX_PAD, ctx);
-+		if (skb) {
-+			u64_stats_update_begin(&rx->statss);
-+			rx->rx_copied_pkt++;
-+			rx->rx_frag_copy_cnt++;
-+			rx->rx_copybreak_pkt++;
-+		}	u64_stats_update_end(&rx->statss);
+@@ -705,12 +745,19 @@ int gve_adminq_describe_device(struct gve_priv *priv)
+ 		priv->queue_format = GVE_DQO_RDA_FORMAT;
+ 		dev_info(&priv->pdev->dev,
+ 			 "Driver is running with DQO RDA queue format.\n");
++		supported_features_mask =
++			be32_to_cpu(dev_op_dqo_rda->supported_features_mask);
+ 	} else if (dev_op_gqi_rda) {
+ 		priv->queue_format = GVE_GQI_RDA_FORMAT;
+ 		dev_info(&priv->pdev->dev,
+ 			 "Driver is running with GQI RDA queue format.\n");
++		supported_features_mask =
++			be32_to_cpu(dev_op_gqi_rda->supported_features_mask);
  	} else {
--		u8 can_flip = gve_rx_can_flip_buffers(dev);
--		int recycle = 0;
-+		if (rx->data.raw_addressing) {
-+			int recycle = gve_rx_can_recycle_buffer(page_info);
- 
--		if (can_flip) {
--			recycle = gve_rx_can_recycle_buffer(page_info);
--			if (recycle < 0) {
--				if (!rx->data.raw_addressing)
--					gve_schedule_reset(priv);
--				return false;
-+			if (unlikely(recycle < 0)) {
-+				gve_schedule_reset(priv);
-+				return NULL;
- 			}
--		}
--
--		page_info->can_flip = can_flip && recycle;
--		if (rx->data.raw_addressing) {
--			skb = gve_rx_raw_addressing(&priv->pdev->dev, dev,
-+			page_info->can_flip = recycle;
-+			if (page_info->can_flip) {
-+				u64_stats_update_begin(&rx->statss);
-+				rx->rx_frag_flip_cnt++;
-+				u64_stats_update_end(&rx->statss);
-+			}
-+			skb = gve_rx_raw_addressing(&priv->pdev->dev, netdev,
- 						    page_info, len, napi,
--						    data_slot);
-+						    data_slot,
-+						    rx->packet_buffer_size, ctx);
- 		} else {
--			skb = gve_rx_qpl(&priv->pdev->dev, dev, rx,
-+			if (ctx->reuse_frags) {
-+				u64_stats_update_begin(&rx->statss);
-+				rx->rx_frag_flip_cnt++;
-+				u64_stats_update_end(&rx->statss);
-+			}
-+			skb = gve_rx_qpl(&priv->pdev->dev, netdev, rx,
- 					 page_info, len, napi, data_slot);
- 		}
+ 		priv->queue_format = GVE_GQI_QPL_FORMAT;
++		if (dev_op_gqi_qpl)
++			supported_features_mask =
++				be32_to_cpu(dev_op_gqi_qpl->supported_features_mask);
+ 		dev_info(&priv->pdev->dev,
+ 			 "Driver is running with GQI QPL queue format.\n");
  	}
-+	return skb;
-+}
- 
--	if (!skb) {
--		u64_stats_update_begin(&rx->statss);
--		rx->rx_skb_alloc_fail++;
--		u64_stats_update_end(&rx->statss);
--		return false;
-+static bool gve_rx(struct gve_rx_ring *rx, netdev_features_t feat,
-+		   u64 *packet_size_bytes, u32 *work_done)
-+{
-+	struct gve_rx_slot_page_info *page_info;
-+	struct gve_rx_ctx *ctx = &rx->ctx;
-+	union gve_rx_data_slot *data_slot;
-+	struct gve_priv *priv = rx->gve;
-+	struct gve_rx_desc *first_desc;
-+	struct sk_buff *skb = NULL;
-+	struct gve_rx_desc *desc;
-+	struct napi_struct *napi;
-+	dma_addr_t page_bus;
-+	u32 work_cnt = 0;
-+	void *va;
-+	u32 idx;
-+	u16 len;
-+
-+	idx = rx->cnt & rx->mask;
-+	first_desc = &rx->desc.desc_ring[idx];
-+	desc = first_desc;
-+	napi = &priv->ntfy_blocks[rx->ntfy_id].napi;
-+
-+	if (unlikely(!gve_rx_ctx_init(ctx, rx)))
-+		goto skb_alloc_fail;
-+
-+	while (ctx->curr_frag_cnt < ctx->expected_frag_cnt) {
-+		/* Prefetch two packet buffers ahead, we will need it soon. */
-+		page_info = &rx->data.page_info[(idx + 2) & rx->mask];
-+		va = page_info->page_address + page_info->page_offset;
-+
-+		prefetch(page_info->page); /* Kernel page struct. */
-+		prefetch(va);              /* Packet header. */
-+		prefetch(va + 64);         /* Next cacheline too. */
-+
-+		len = gve_rx_get_fragment_size(ctx, desc);
-+
-+		page_info = &rx->data.page_info[idx];
-+		data_slot = &rx->data.data_ring[idx];
-+		page_bus = rx->data.raw_addressing ?
-+			   be64_to_cpu(data_slot->addr) - page_info->page_offset :
-+			   rx->data.qpl->page_buses[idx];
-+		dma_sync_single_for_cpu(&priv->pdev->dev, page_bus, PAGE_SIZE, DMA_FROM_DEVICE);
-+
-+		skb = gve_rx_skb(priv, rx, page_info, napi, len, data_slot);
-+		if (!skb) {
-+			u64_stats_update_begin(&rx->statss);
-+			rx->rx_skb_alloc_fail++;
-+			u64_stats_update_end(&rx->statss);
-+			goto skb_alloc_fail;
-+		}
-+
-+		ctx->curr_frag_cnt++;
-+		rx->cnt++;
-+		idx = rx->cnt & rx->mask;
-+		work_cnt++;
-+		desc = &rx->desc.desc_ring[idx];
+@@ -747,6 +794,9 @@ int gve_adminq_describe_device(struct gve_priv *priv)
  	}
+ 	priv->default_num_queues = be16_to_cpu(descriptor->default_num_queues);
  
- 	if (likely(feat & NETIF_F_RXCSUM)) {
- 		/* NIC passes up the partial sum */
--		if (rx_desc->csum)
-+		if (first_desc->csum)
- 			skb->ip_summed = CHECKSUM_COMPLETE;
- 		else
- 			skb->ip_summed = CHECKSUM_NONE;
--		skb->csum = csum_unfold(rx_desc->csum);
-+		skb->csum = csum_unfold(first_desc->csum);
- 	}
- 
- 	/* parse flags & pass relevant info up */
- 	if (likely(feat & NETIF_F_RXHASH) &&
--	    gve_needs_rss(rx_desc->flags_seq))
--		skb_set_hash(skb, be32_to_cpu(rx_desc->rss_hash),
--			     gve_rss_type(rx_desc->flags_seq));
-+	    gve_needs_rss(first_desc->flags_seq))
-+		skb_set_hash(skb, be32_to_cpu(first_desc->rss_hash),
-+			     gve_rss_type(first_desc->flags_seq));
- 
-+	*packet_size_bytes = skb->len + (skb->protocol ? ETH_HLEN : 0);
-+	*work_done = work_cnt;
- 	if (skb_is_nonlinear(skb))
- 		napi_gro_frags(napi);
- 	else
- 		napi_gro_receive(napi, skb);
++	gve_enable_supported_features(priv, supported_features_mask,
++				      dev_op_jumbo_frames);
 +
-+	gve_rx_ctx_clear(ctx);
- 	return true;
+ free_device_descriptor:
+ 	dma_free_coherent(&priv->pdev->dev, PAGE_SIZE, descriptor,
+ 			  descriptor_bus);
+diff --git a/drivers/net/ethernet/google/gve/gve_adminq.h b/drivers/net/ethernet/google/gve/gve_adminq.h
+index 3953f6f7a427..83c0b40cd2d9 100644
+--- a/drivers/net/ethernet/google/gve/gve_adminq.h
++++ b/drivers/net/ethernet/google/gve/gve_adminq.h
+@@ -108,6 +108,14 @@ struct gve_device_option_dqo_rda {
+ 
+ static_assert(sizeof(struct gve_device_option_dqo_rda) == 8);
+ 
++struct gve_device_option_jumbo_frames {
++	__be32 supported_features_mask;
++	__be16 max_mtu;
++	u8 padding[2];
++};
 +
-+skb_alloc_fail:
-+	if (napi->skb)
-+		napi_free_frags(napi);
-+	*packet_size_bytes = 0;
-+	*work_done = ctx->expected_frag_cnt;
-+	while (ctx->curr_frag_cnt < ctx->expected_frag_cnt) {
-+		rx->cnt++;
-+		ctx->curr_frag_cnt++;
-+	}
-+	gve_rx_ctx_clear(ctx);
-+	return false;
- }
- 
- bool gve_rx_work_pending(struct gve_rx_ring *rx)
-@@ -529,7 +683,6 @@ static bool gve_rx_refill_buffers(struct gve_priv *priv, struct gve_rx_ring *rx)
- 				union gve_rx_data_slot *data_slot =
- 						&rx->data.data_ring[idx];
- 				struct device *dev = &priv->pdev->dev;
--
- 				gve_rx_free_buffer(dev, page_info, data_slot);
- 				page_info->page = NULL;
- 				if (gve_rx_alloc_buffer(priv, dev, page_info,
-@@ -550,16 +703,17 @@ static bool gve_rx_refill_buffers(struct gve_priv *priv, struct gve_rx_ring *rx)
- static int gve_clean_rx_done(struct gve_rx_ring *rx, int budget,
- 			     netdev_features_t feat)
- {
-+	u32 work_done = 0, total_packet_cnt = 0, ok_packet_cnt = 0;
- 	struct gve_priv *priv = rx->gve;
--	u32 work_done = 0, packets = 0;
-+	u32 idx = rx->cnt & rx->mask;
- 	struct gve_rx_desc *desc;
--	u32 cnt = rx->cnt;
--	u32 idx = cnt & rx->mask;
- 	u64 bytes = 0;
- 
--	desc = rx->desc.desc_ring + idx;
-+	desc = &rx->desc.desc_ring[idx];
- 	while ((GVE_SEQNO(desc->flags_seq) == rx->desc.seqno) &&
- 	       work_done < budget) {
-+		u64 packet_size_bytes = 0;
-+		u32 work_cnt = 0;
- 		bool dropped;
- 
- 		netif_info(priv, rx_status, priv->dev,
-@@ -570,37 +724,32 @@ static int gve_clean_rx_done(struct gve_rx_ring *rx, int budget,
- 			   rx->q_num, GVE_SEQNO(desc->flags_seq),
- 			   rx->desc.seqno);
- 
--		/* prefetch two descriptors ahead */
--		prefetch(rx->desc.desc_ring + ((cnt + 2) & rx->mask));
--
--		dropped = !gve_rx(rx, desc, feat, idx);
-+		dropped = !gve_rx(rx, feat, &packet_size_bytes, &work_cnt);
- 		if (!dropped) {
--			bytes += be16_to_cpu(desc->len) - GVE_RX_PAD;
--			packets++;
-+			bytes += packet_size_bytes;
-+			ok_packet_cnt++;
- 		}
--		cnt++;
--		idx = cnt & rx->mask;
--		desc = rx->desc.desc_ring + idx;
--		rx->desc.seqno = gve_next_seqno(rx->desc.seqno);
--		work_done++;
-+		total_packet_cnt++;
-+		idx = rx->cnt & rx->mask;
-+		desc = &rx->desc.desc_ring[idx];
-+		work_done += work_cnt;
- 	}
- 
--	if (!work_done && rx->fill_cnt - cnt > rx->db_threshold)
-+	if (!work_done && rx->fill_cnt - rx->cnt > rx->db_threshold)
- 		return 0;
- 
- 	if (work_done) {
- 		u64_stats_update_begin(&rx->statss);
--		rx->rpackets += packets;
-+		rx->rpackets += ok_packet_cnt;
- 		rx->rbytes += bytes;
- 		u64_stats_update_end(&rx->statss);
--		rx->cnt = cnt;
- 	}
- 
- 	/* restock ring slots */
- 	if (!rx->data.raw_addressing) {
- 		/* In QPL mode buffs are refilled as the desc are processed */
- 		rx->fill_cnt += work_done;
--	} else if (rx->fill_cnt - cnt <= rx->db_threshold) {
-+	} else if (rx->fill_cnt - rx->cnt <= rx->db_threshold) {
- 		/* In raw addressing mode buffs are only refilled if the avail
- 		 * falls below a threshold.
- 		 */
-@@ -610,14 +759,14 @@ static int gve_clean_rx_done(struct gve_rx_ring *rx, int budget,
- 		/* If we were not able to completely refill buffers, we'll want
- 		 * to schedule this queue for work again to refill buffers.
- 		 */
--		if (rx->fill_cnt - cnt <= rx->db_threshold) {
-+		if (rx->fill_cnt - rx->cnt <= rx->db_threshold) {
- 			gve_rx_write_doorbell(priv, rx);
- 			return budget;
- 		}
- 	}
- 
- 	gve_rx_write_doorbell(priv, rx);
--	return work_done;
-+	return total_packet_cnt;
- }
- 
- int gve_rx_poll(struct gve_notify_block *block, int budget)
-diff --git a/drivers/net/ethernet/google/gve/gve_rx_dqo.c b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
-index 9765c92a5c29..beb8bb079023 100644
---- a/drivers/net/ethernet/google/gve/gve_rx_dqo.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
-@@ -568,7 +568,7 @@ static int gve_rx_dqo(struct napi_struct *napi, struct gve_rx_ring *rx,
- 
- 	if (eop && buf_len <= priv->rx_copybreak) {
- 		rx->ctx.skb_head = gve_rx_copy(priv->dev, napi,
--					       &buf_state->page_info, buf_len, 0);
-+					       &buf_state->page_info, buf_len, 0, NULL);
- 		if (unlikely(!rx->ctx.skb_head))
- 			goto error;
- 		rx->ctx.skb_tail = rx->ctx.skb_head;
-diff --git a/drivers/net/ethernet/google/gve/gve_utils.c b/drivers/net/ethernet/google/gve/gve_utils.c
-index 45ff7a9ab5f9..88ca49cbc1e2 100644
---- a/drivers/net/ethernet/google/gve/gve_utils.c
-+++ b/drivers/net/ethernet/google/gve/gve_utils.c
-@@ -50,20 +50,31 @@ void gve_rx_add_to_block(struct gve_priv *priv, int queue_idx)
- 
- struct sk_buff *gve_rx_copy(struct net_device *dev, struct napi_struct *napi,
- 			    struct gve_rx_slot_page_info *page_info, u16 len,
--			    u16 pad)
-+			    u16 padding, struct gve_rx_ctx *ctx)
- {
--	struct sk_buff *skb = napi_alloc_skb(napi, len);
--	void *va = page_info->page_address + pad +
--		   page_info->page_offset;
--
--	if (unlikely(!skb))
--		return NULL;
--
-+	void *va = page_info->page_address + padding + page_info->page_offset;
-+	int skb_linear_offset = 0;
-+	bool set_protocol = false;
-+	struct sk_buff *skb;
++static_assert(sizeof(struct gve_device_option_jumbo_frames) == 8);
 +
-+	if (ctx) {
-+		if (!ctx->skb_head)
-+			ctx->skb_head = napi_alloc_skb(napi, ctx->total_expected_size);
+ /* Terminology:
+  *
+  * RDA - Raw DMA Addressing - Buffers associated with SKBs are directly DMA
+@@ -121,6 +129,7 @@ enum gve_dev_opt_id {
+ 	GVE_DEV_OPT_ID_GQI_RDA = 0x2,
+ 	GVE_DEV_OPT_ID_GQI_QPL = 0x3,
+ 	GVE_DEV_OPT_ID_DQO_RDA = 0x4,
++	GVE_DEV_OPT_ID_JUMBO_FRAMES = 0x8,
+ };
+ 
+ enum gve_dev_opt_req_feat_mask {
+@@ -128,6 +137,11 @@ enum gve_dev_opt_req_feat_mask {
+ 	GVE_DEV_OPT_REQ_FEAT_MASK_GQI_RDA = 0x0,
+ 	GVE_DEV_OPT_REQ_FEAT_MASK_GQI_QPL = 0x0,
+ 	GVE_DEV_OPT_REQ_FEAT_MASK_DQO_RDA = 0x0,
++	GVE_DEV_OPT_REQ_FEAT_MASK_JUMBO_FRAMES = 0x0,
++};
 +
-+		if (unlikely(!ctx->skb_head))
-+			return NULL;
-+		skb = ctx->skb_head;
-+		skb_linear_offset = skb->len;
-+		set_protocol = ctx->curr_frag_cnt == ctx->expected_frag_cnt - 1;
-+	} else {
-+		skb = napi_alloc_skb(napi, len);
-+		set_protocol = true;
-+	}
- 	__skb_put(skb, len);
-+	skb_copy_to_linear_data_offset(skb, skb_linear_offset, va, len);
++enum gve_sup_feature_mask {
++	GVE_SUP_JUMBO_FRAMES_MASK = 1 << 2,
+ };
  
--	skb_copy_to_linear_data(skb, va, len);
--
--	skb->protocol = eth_type_trans(skb, dev);
-+	if (set_protocol)
-+		skb->protocol = eth_type_trans(skb, dev);
- 
- 	return skb;
- }
-diff --git a/drivers/net/ethernet/google/gve/gve_utils.h b/drivers/net/ethernet/google/gve/gve_utils.h
-index 79595940b351..6d98e69fd3b8 100644
---- a/drivers/net/ethernet/google/gve/gve_utils.h
-+++ b/drivers/net/ethernet/google/gve/gve_utils.h
-@@ -19,7 +19,7 @@ void gve_rx_add_to_block(struct gve_priv *priv, int queue_idx);
- 
- struct sk_buff *gve_rx_copy(struct net_device *dev, struct napi_struct *napi,
- 			    struct gve_rx_slot_page_info *page_info, u16 len,
--			    u16 pad);
-+			    u16 pad, struct gve_rx_ctx *ctx);
- 
- /* Decrement pagecnt_bias. Set it back to INT_MAX if it reached zero. */
- void gve_dec_pagecnt_bias(struct gve_rx_slot_page_info *page_info);
+ #define GVE_DEV_OPT_LEN_GQI_RAW_ADDRESSING 0x0
 -- 
 2.33.0.1079.g6e70778dc9-goog
 
