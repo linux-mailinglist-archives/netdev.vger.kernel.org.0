@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 700FF438C45
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 00:13:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBCD0438C74
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 01:02:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229641AbhJXWPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Oct 2021 18:15:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47098 "EHLO
+        id S231803AbhJXXEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Oct 2021 19:04:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229533AbhJXWPt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 18:15:49 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0454C061745
-        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 15:13:28 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id r15so10056330qkp.8
-        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 15:13:28 -0700 (PDT)
+        with ESMTP id S229625AbhJXXEU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 19:04:20 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA34AC061745
+        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 16:01:58 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id l13so9001562lfg.6
+        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 16:01:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:reply-to:sender:from:date:message-id:subject:to
          :content-transfer-encoding;
-        bh=F26I+cBcpyIkdxRfcHLvmvj+TTSmfbBclURHJNpWXCA=;
-        b=WQHqVBDTK0OeXAFnVMrtk4OcH2GCKhhwxNxaveOPhvrlVi1ExJRRQIYZaFHncIFd7a
-         MHcZKOSGz0wyKy7fWKf7AttDt3CK+5SDJtWkSg8aU5cVTR8B6poXUjUpogyNXywuSLhe
-         vw9UnFEVnsMGpgHncGv6gFIzEKWRzxwJr3j7U5TqyBojuEobKXKjKlCyLKFOIC0tjqHl
-         7Tb0m+EjdFPP6zrbOYgFKCrGrnl7FPnoqUFAxSFHo+U2oHeoxWUuCFJmZBCFXSMJy94i
-         l1i5bI7IxC0C+J89Le225rIJP2NnQr1N2WcBE1rR7jCa1haeyHtJe3w+vnGKhYaq/4Ik
-         rzdQ==
+        bh=RQgVC+ltN8D/EW+qvOnxBd3BkC8aGKQOGFo20+oSs0k=;
+        b=HgkAEXn3z2tuiRW35k6imQc1H5oCgVwnR/K0nnC5fU0fG1IGuzqmcibV7ZBWPl11FA
+         sf/upkX5Ehnf8m5deSI38vk8Z7E9XNFZ3CBjkdEM3hFSmWRiWTSmEmDV8RC/yG2ZFSrg
+         g9fLPz/aWuCDZ/gmLQJXTcfd8CNX/4TfScuvuEpKuRtR3Oe32lAuhNHJJ535y16T0Yyx
+         izlQIQDtLLi+7Erx1aavsMSlEAbk5X9k3H5xasPblurd9FgxQqAWMtDuiXq/YysxsmVv
+         ln6cZ57l7RzgcerwqAcQGSzu7YOn/UcfOuJfDx44UmADf6dRGzTb4cBeilcmujkDFSJY
+         gvTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:reply-to:sender:from:date
          :message-id:subject:to:content-transfer-encoding;
-        bh=F26I+cBcpyIkdxRfcHLvmvj+TTSmfbBclURHJNpWXCA=;
-        b=atd+wAk6u2n5Dw+xwSoHogVS9cpEGrnVsJoIpYEvPU5nTDYl2yW2Kfe4r/MllwPFyW
-         RWogvSNDgKHvzDWF09xUZ9cHbtI0aPuxdeZSD2S9pFHV5Zm2wawVs7wjETcx7MBIsTS0
-         H+JXvuTpBBHsP6CHsK4R2BJU/NQXprvG2y7XqWxdieTZGyH6RzRsMxEDxtYd/Av1GCi0
-         bR5IViemAEhGfFBopAEiZUW1nQoOknLZSNl/uMF0olxNiXRXYlY3Hs9fKdI5edBakl7Y
-         2Kx5cd+iTmnUve6BFliap67g8ZWDIvx0I4yoRUomEkoNfZINFoZNOz7McAgSoppqBZLR
-         uljw==
-X-Gm-Message-State: AOAM531e9okfEE62h/yHyb+Ks9XBNuDoUmvOjUyPh5iqF2ZBOUbP+Lk7
-        957IUckGd1zJibdUaoGtOJn87qyZR0kZKR94rRw=
-X-Google-Smtp-Source: ABdhPJx67jyi/HmSmHBZM+FcFkJeyrez28bG9xl/OPrPkCXn9z9eZAhkFn9/cJsNlDDD2LmJpEq3DQmV9RcIt7ODiyg=
-X-Received: by 2002:a37:67cc:: with SMTP id b195mr10615937qkc.99.1635113607495;
- Sun, 24 Oct 2021 15:13:27 -0700 (PDT)
+        bh=RQgVC+ltN8D/EW+qvOnxBd3BkC8aGKQOGFo20+oSs0k=;
+        b=M3bpeXwwc11pZAXTfL+E5iMd76vkg1X5Y9klXFUf9+xu9dQgpfL/bnzR1zMwgh0mFn
+         sxrFFjG6iTPWYc0GNoNNA3vkmJay+42oIDCOBwJ+DHGfyOWPwRI1iRqToz8PULaIraWM
+         D/QfjVFoA1bVOD/OdXdmYRhFulcNQmxKrBf2V02W3a90tGmbinsJW8qavnzTtdJdo9CB
+         at5d1h9boWmPIvWO6RRRQe5jxNu4ruGSThMzhSbHcjrlxLs+ya5n6P6k5HRtXnQc0Ssf
+         ij4eqNOIq717Pw7yBxr6h8wAAqGN+laKiQDqt18wxNJeOi/szCA1/zBTw4GmWY+8g+KS
+         E79w==
+X-Gm-Message-State: AOAM531vpHJJQ7vViIS400BONqo8RO3taNCuBWJ/Edw55Ehg4hYDKffu
+        fqGddME3zhUP04rWe5JROt53FE27oeRxj4iMJwU=
+X-Google-Smtp-Source: ABdhPJx/jDRExyuvlzh/a+k7DaKt65LLFwTrL5dCIPVtXeccVjekKwj01O0tsH24aikFOBb0S2VIsDEooxTWZ5BtXjM=
+X-Received: by 2002:ac2:5f61:: with SMTP id c1mr9979314lfc.566.1635116517097;
+ Sun, 24 Oct 2021 16:01:57 -0700 (PDT)
 MIME-Version: 1.0
-Reply-To: martinafrancis01@gmail.com
-Sender: castillomarima22@gmail.com
-Received: by 2002:a0c:a60a:0:0:0:0:0 with HTTP; Sun, 24 Oct 2021 15:13:26
+Reply-To: millasmith7010@gmail.com
+Sender: edwigesambou500@gmail.com
+Received: by 2002:ab3:6e8c:0:0:0:0:0 with HTTP; Sun, 24 Oct 2021 16:01:56
  -0700 (PDT)
-From:   Martina Francis <martinafrancis655@gmail.com>
-Date:   Sun, 24 Oct 2021 15:13:26 -0700
-X-Google-Sender-Auth: 7iXNQLATDYy3Yh59-8DyeQYIZn4
-Message-ID: <CAG-aamxLHYD3mZ1eVvytjG4B_LTjFtznQMcCnAeb2cAqBXYgSg@mail.gmail.com>
-Subject: =?UTF-8?Q?Dobry_dzie=C5=84_moja_droga?=
+From:   "Ms. Milla Smith" <ondzyy222@gmail.com>
+Date:   Sun, 24 Oct 2021 16:01:56 -0700
+X-Google-Sender-Auth: YIx7814y1_ZlxPQGV1wMWVlYeE4
+Message-ID: <CAE+tcMNy0xF3GX9+bxFYZ+fisROrUx_UxxcD7yQqEsN86O0ckg@mail.gmail.com>
+Subject: compensation
 To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
@@ -60,35 +60,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=20
-Dobry dzie=C5=84 moja droga
-Jak si=C4=99 masz i twoja rodzina.
-Jestem pani Martina Francis, chora wdowa pisz=C4=85ca ze szpitalnego =C5=82=
-=C3=B3=C5=BCka
-bez dziecka. Kontaktuj=C4=99 si=C4=99 z Pa=C5=84stwem, aby=C5=9Bcie dowiedz=
-ieli si=C4=99 o moim
-pragnieniu przekazania sumy (2 700 000,00 USD MILION=C3=93W USD), kt=C3=B3r=
-=C4=85
-odziedziczy=C5=82am po moim zmar=C5=82ym m=C4=99=C5=BCu na cele charytatywn=
-e, obecnie
-fundusz jest nadal w banku. Niedawno m=C3=B3j lekarz powiedzia=C5=82 mi, =
-=C5=BCe mam
-powa=C5=BCn=C4=85 chorob=C4=99 nowotworow=C4=85 i moje =C5=BCycie nie jest =
-ju=C5=BC gwarantowane,
-dlatego podejmuj=C4=99 t=C4=99 decyzj=C4=99..
+Dear Friend,
 
-Chc=C4=99, aby=C5=9Bcie skorzystali z tego funduszu dla ludzi ubogich,
-maltretowanych dzieci, mniej uprzywilejowanych, ko=C5=9Bcio=C5=82=C3=B3w, s=
-ieroci=C5=84c=C3=B3w
-i cierpi=C4=85cych wd=C3=B3w w spo=C5=82ecze=C5=84stwie.
+I am sorry, but happy to inform you about my success in getting those
+funds transferred under the cooperation of a new partner from Vietnam.
+Though, I I tried my best to involve you in the business, but
+everything changed completely. Presently, I am in Vietnam for
+investment projects with my own share of the total sum. Meanwhile, I
+didn't forget your past efforts and attempts to assist me in
+transferring those funds despite that it failed us somehow.
 
-Prosz=C4=99, wr=C3=B3=C4=87 do mnie natychmiast po przeczytaniu tej wiadomo=
-=C5=9Bci, aby
-uzyska=C4=87 wi=C4=99cej szczeg=C3=B3=C5=82=C3=B3w dotycz=C4=85cych tej age=
-ndy humanitarnej.
+Now contact my secretary in Burkina Faso. Her name is Ms. Milla Smith.
+Her email address is  millasmith7010@gmail.com
 
-Niech B=C3=B3g ci=C4=99 b=C5=82ogos=C5=82awi, kiedy czekam na twoj=C4=85 od=
-powied=C5=BA.
+Ask her to send you the total sum of $450,000.00 which I kept for your
+compensation over the past efforts and attempts to assist me in this
+matter. I appreciated your efforts at that time very much. So feel
+free and contact my secretary Ms. Milla Smith and instruct her where
+to send the amount to you. Please, do let me know immediately you
+receive it so that wecan share joy after all the sufferings at that
+time.
 
-Twoja siostra.
-Pani Martina Francis.
+At the moment, I=E2=80=99m very busy here. Because of the investment projec=
+ts
+which I and my new partner are having at hand. Finally, remember that
+I had forwarded instructions to the secretary on your behalf to
+receive that money. So, feel free and get in touch with Ms. Milla
+Smith.
+
+Extend my greetings to your family.
+
+
+Best regards,
+
+Yours brother
+Mr. Abu Salam
+Greetings from Vietnam
