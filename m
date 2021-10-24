@@ -2,85 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35877438CA3
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 01:52:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA8F6438CAD
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 01:59:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230109AbhJXXy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Oct 2021 19:54:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40226 "EHLO
+        id S229981AbhJYABx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Oct 2021 20:01:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbhJXXyu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 19:54:50 -0400
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28166C061745
-        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 16:52:29 -0700 (PDT)
-Received: by mail-oi1-x22a.google.com with SMTP id u69so13202915oie.3
-        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 16:52:29 -0700 (PDT)
+        with ESMTP id S229554AbhJYABw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 20:01:52 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42661C061745;
+        Sun, 24 Oct 2021 16:59:31 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id om14so6912302pjb.5;
+        Sun, 24 Oct 2021 16:59:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=nwbLzTWpNBPchWK3vFoOd1B7C3oWHwVhfv6VCOWBn1Q=;
-        b=Bf7cfzwIXQtC80DvLss0tTqnOWcQmJq7KKB+gLQ3J2v+7NwpTfvtA0+SMKacvGzN8U
-         iZgsdSaTNHAS7ZtGgp50GZvFMnbplhPRnn7kdUvuOGwKSZWd+R181H2P5hW3QuLNcEPB
-         9UeRgTndjEX4cDSuOLoVU/HOZk4R6lsEuwmklO4CnMZC309H6d9Ez3y3B3pJJW5yQYVn
-         8hLQ87xH4l2vUDOU4TZFoZ2NDgH7lKN4GciFZKAurW0BvT/++JIRLVaCFXskiHeMF9As
-         RfiHB3FB59J0rmNomUjSfC677Y5D4+k87d2pvfQM6pnMj7JDDux5gDLp5BW6HLTlnElj
-         kcTg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UdgLpBv9vUiEAI9nTW/FcpPBhUsrQ/P7VYlSz31nv50=;
+        b=Gms+8I7iaJEgEXiIv/FGzWD9TR0ORSFGUhDym/fmuiDnyjg4Nt7R5pH4dS+AuS/uK0
+         LucW5KThyrVQgzMbntBLB0rljHjolwOGcDA4OF4yeZIAf/LnxyColxJ6Yhotj+TVLkCZ
+         dBZ6UA4nPGDVYQAqILTQxevfu3VuZ47sPPRtp6RlOTpyHABB5iqhcJCoKlPM6+xbeTOH
+         gUZDpyVykiWrV3mfYLJUlmYrflwLVs823wQ/CzQoMLb+2R7wpT6COOt4C0TVyE0siLD4
+         ksqG9ZHMhWzcMRPlDNNkdGTvay02HvnJdJJUcuc9Xok1GRXWIDCU73/DsiiziWLTQAHK
+         NUGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=nwbLzTWpNBPchWK3vFoOd1B7C3oWHwVhfv6VCOWBn1Q=;
-        b=ZjaINlB4Es9eFLq2Udj0Jn4ee+K6tH+EkImLCaNQkbYxFb388Tq5yfZPCvws5CuDiD
-         E0+8dV+dU5YyMjg16OjqUWwSvRUGb6iDkOLN4OKYuWkLBufRMIVDGQsmJzXGPTrZvV+M
-         OqaFhs3ij2RMW5yZCenFAMFgaeKWs48jq3VnEY11YJTbcgoZq455fRavrn1Ej4TFzfyp
-         a7invRCAuwMJPSaWCLzo0IfjYuUbnRGoRbiXF0xvWKVasgzCPy5IySZI74hNd8jhaxfz
-         OgIT38SrwQNw3F4aPVz7iip9NAWeeEWC9SAqdCcPgc7DqFWV8Q1zXZEzJx+VsQH9UcFV
-         qBGw==
-X-Gm-Message-State: AOAM530g12AOS/lSaU8U0CemLbqYd9quj9sQg0RVZqAgr3rHWCuEb8aL
-        6bAvoya0q1sBXAYYyTst0ZajH4Iv/TE=
-X-Google-Smtp-Source: ABdhPJxcQaUD3U6ufh4ekjoIluW/WUL0vSaoLYRYepR1jRJgeDrEVH5LFnV3qvdIeMEPS6mYBpZ/7Q==
-X-Received: by 2002:a05:6808:144c:: with SMTP id x12mr18507522oiv.6.1635119548586;
-        Sun, 24 Oct 2021 16:52:28 -0700 (PDT)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id o12sm3223638oti.21.2021.10.24.16.52.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 24 Oct 2021 16:52:28 -0700 (PDT)
-Message-ID: <acab97fc-e134-47a5-0385-4dc3754a818e@gmail.com>
-Date:   Sun, 24 Oct 2021 17:52:27 -0600
+        bh=UdgLpBv9vUiEAI9nTW/FcpPBhUsrQ/P7VYlSz31nv50=;
+        b=LUeYU7WdC2HuLg9sXXzQ15M4YUMf0N8mr9X4kSEQ8hw6Zgk06f7REZYzA4iKMFiQzz
+         emsuXmnWj45vMDA9L3Yi/yf6MVHe+EtT2V3vugj8jz2ZRZOl0RCmZi27AJrrf042HVNC
+         J5YFt9tJX+5DL+kxU8uKtefL4apLUfqTjdmKne4Sb3iyrufDon82Nl6JF+r0JyOqVYKw
+         d6cA1g4Q/8qNS8oCovWVLs2Et+DCwId7WHqvBcZcfmGPoIURq2KmstYY0MQYNVB3EKNr
+         HlRJdD+scH30ST1heF9TxQ4xk7n/yyBNM7V9p5BxDtYHPIFR1FZWYiOsJMX0SJ61ABIc
+         J+MQ==
+X-Gm-Message-State: AOAM533GWP9kj6mBUNqp/XWGFNNheJvbrc8IRSxNXXvm5ZY7jG6Igoxq
+        jMTg3LNe2HB+LEhdO97qn5U=
+X-Google-Smtp-Source: ABdhPJyqH14nH/Dlyi7vBdkZc8TyTinpzmNMw6iyZIloODpmX5/zNdd5vQRMlLSCiVxKpZc8PlBasg==
+X-Received: by 2002:a17:90a:1485:: with SMTP id k5mr18901264pja.74.1635119970599;
+        Sun, 24 Oct 2021 16:59:30 -0700 (PDT)
+Received: from 192-168-1-105.tpgi.com.com (115-64-195-55.static.tpgi.com.au. [115.64.195.55])
+        by smtp.gmail.com with ESMTPSA id d19sm17104677pfl.129.2021.10.24.16.59.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Oct 2021 16:59:29 -0700 (PDT)
+From:   Jon Maxwell <jmaxwell37@gmail.com>
+To:     edumazet@google.com
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jmaxwell37@gmail.com
+Subject: [net-next v1] tcp: don't free a FIN sk_buff in tcp_remove_empty_skb()
+Date:   Mon, 25 Oct 2021 10:59:03 +1100
+Message-Id: <20211024235903.371430-1-jmaxwell37@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.2.0
-Subject: Re: [PATCH iproute2-next] ip: add AMT support
-Content-Language: en-US
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        Taehee Yoo <ap420073@gmail.com>
-Cc:     netdev@vger.kernel.org
-References: <20211023193611.11540-1-ap420073@gmail.com>
- <20211024164526.2e1e9204@hermes.local>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20211024164526.2e1e9204@hermes.local>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/24/21 5:45 PM, Stephen Hemminger wrote:
-> On Sat, 23 Oct 2021 19:36:11 +0000
-> Taehee Yoo <ap420073@gmail.com> wrote:
-> 
->> +	while (argc > 0) {
->> +		if (matches(*argv, "mode") == 0) {
-> 
-> Try and reduce/eliminate use of matches() since it creates
+v1: Implement a more general statement as recommended by Eric Dumazet. The 
+sequence number will be advanced, so this check will fix the FIN case and 
+other cases. 
 
-Make that do not use matches. We are not accepting that for any new
-command line arguments.
+A customer reported sockets stuck in the CLOSING state. A Vmcore revealed that 
+the write_queue was not empty as determined by tcp_write_queue_empty() but the 
+sk_buff containing the FIN flag had been freed and the socket was zombied in 
+that state. Corresponding pcaps show no FIN from the Linux kernel on the wire.
 
-> lots of problems when arguments collides.  For example "m" matches
-> mode only because it is compared first (vs "max_tunnels").
-> 
+Some instrumentation was added to the kernel and it was found that there is a 
+timing window where tcp_sendmsg() can run after tcp_send_fin().
+
+tcp_sendmsg() will hit an error, for example:
+
+1269 ▹       if (sk->sk_err || (sk->sk_shutdown & SEND_SHUTDOWN))↩
+1270 ▹       ▹       goto do_error;↩
+
+tcp_remove_empty_skb() will then free the FIN sk_buff as "skb->len == 0". The
+TCP socket is now wedged in the FIN-WAIT-1 state because the FIN is never sent.
+
+If the other side sends a FIN packet the socket will transition to CLOSING and
+remain that way until the system is rebooted.
+
+Fix this by checking for the FIN flag in the sk_buff and don't free it if that 
+is the case. Testing confirmed that fixed the issue.
+
+Fixes: fdfc5c8594c2 ("tcp: remove empty skb from write queue in error cases")
+Signed-off-by: Jon Maxwell <jmaxwell37@gmail.com>
+Reported-by: Monir Zouaoui <Monir.Zouaoui@mail.schwarz>
+Reported-by: Simon Stier <simon.stier@mail.schwarz>
+---
+ net/ipv4/tcp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index c2d9830136d2..56ff7c746f88 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -938,7 +938,7 @@ int tcp_send_mss(struct sock *sk, int *size_goal, int flags)
+  */
+ void tcp_remove_empty_skb(struct sock *sk, struct sk_buff *skb)
+ {
+-	if (skb && !skb->len) {
++	if (skb && TCP_SKB_CB(skb)->seq == TCP_SKB_CB(skb)->end_seq) {
+ 		tcp_unlink_write_queue(skb, sk);
+ 		if (tcp_write_queue_empty(sk))
+ 			tcp_chrono_stop(sk, TCP_CHRONO_BUSY);
+-- 
+2.27.0
 
