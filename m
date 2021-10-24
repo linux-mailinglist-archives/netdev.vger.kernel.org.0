@@ -2,120 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B6FA438C29
-	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 23:40:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F0E6438C66
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 00:35:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231730AbhJXVmc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Oct 2021 17:42:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39898 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbhJXVmb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 17:42:31 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 901D3C061745
-        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 14:40:10 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1melDs-0003ih-7V; Sun, 24 Oct 2021 23:40:08 +0200
-Received: from pengutronix.de (unknown [195.138.59.174])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 3821B69C6F9;
-        Sun, 24 Oct 2021 21:38:30 +0000 (UTC)
-Date:   Sun, 24 Oct 2021 23:37:59 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     linux-can <linux-can@vger.kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
-Subject: ethtool: ring configuration for CAN devices
-Message-ID: <20211024213759.hwhlb4e3repkvo6y@pengutronix.de>
+        id S231733AbhJXWhg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Oct 2021 18:37:36 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:52011 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231840AbhJXWhb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 18:37:31 -0400
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id AD08D5C049C;
+        Sun, 24 Oct 2021 02:41:08 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Sun, 24 Oct 2021 02:41:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=KU1wrUEWrB7Dk9gp4
+        yE8KimKwjnsqXFYKvrk+twmNsY=; b=TeBrAxnSIH1pHCuw4AVSfDY8uaYqhBRx2
+        uFU4C6qWjkdPE8Fw6OKLcggpVYHBkgNT8lYvfCp0I7oCaww3SKC0quPc8j7fuQrn
+        /gvLWrHDsBdlMLu0dT+8g4NEjaSxKyTPXSpQFlceArDXVKwEg4tAPBbZ6JUx625m
+        jVh8W1o/CsSalYxENRsOffshboDkwuHvVBghNXXH/NKf/mGmnRGz8Xm0fpaBjVLG
+        tZB6iTZMc77tfvGY9LSAQo4+Uk4vYXKdOIxQTRVxNoZUpOSi94OtzQM9VOEMzeBr
+        2gQ+VFlKk9eWYNAjoQZycTmCC6mGa2tvOkYWIkq5SlUijUh1oyCHQ==
+X-ME-Sender: <xms:BAB1YaGz6_4SQCRxm4Hb7Y2zJqvzGOklTa92XZ6ZZbNg_C5VUTVVTA>
+    <xme:BAB1YbU9IMwOjzHo6RNBoAKzQser_X_ViFnUdwLQyNOn5V7YDDGPflwwQyNeSszJE
+    aOeNCrpt-JKFMk>
+X-ME-Received: <xmr:BAB1YUI8Z7F-w4q2bAz55f71lmiJW7NHvXeLde42yNWIaRi1y8h-zbi0p-Ni_DSQmr_gY_4dIccM978a5rnHnL4cuNu12HM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvdefvddguddtucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
+    etffeikeegheevfedvgeelvdffudfhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghr
+    rghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:BAB1YUFg01ajTCWS2pNnawIov_T9zNeT32iEV4rt77GRbqoRKQoKhA>
+    <xmx:BAB1YQUmqjb3vsu4XfmvwCIdkTA1zzI3MieyddBOux-I6frf37DjEg>
+    <xmx:BAB1YXNKHQj1pfk9jk8VqmRL25291bZFMyXBZYZZu1t7K0CFhpWDcQ>
+    <xmx:BAB1YeyXKkyNWecXiX76KXtswsHLk3ggFAjdDhvqlg1M9sE_QwvIpQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 24 Oct 2021 02:41:06 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
+        petrm@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net] mlxsw: pci: Recycle received packet upon allocation failure
+Date:   Sun, 24 Oct 2021 09:40:14 +0300
+Message-Id: <20211024064014.1060919-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="k6qgxznwttbrrlr2"
-Content-Disposition: inline
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Ido Schimmel <idosch@nvidia.com>
 
---k6qgxznwttbrrlr2
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+When the driver fails to allocate a new Rx buffer, it passes an empty Rx
+descriptor (contains zero address and size) to the device and marks it
+as invalid by setting the skb pointer in the descriptor's metadata to
+NULL.
 
-Hello,
+After processing enough Rx descriptors, the driver will try to process
+the invalid descriptor, but will return immediately seeing that the skb
+pointer is NULL. Since the driver no longer passes new Rx descriptors to
+the device, the Rx queue will eventually become full and the device will
+start to drop packets.
 
-I'm currently working on runtime configurable RX/TX ring sizes for a the
-mcp251xfd CAN driver.
+Fix this by recycling the received packet if allocation of the new
+packet failed. This means that allocation is no longer performed at the
+end of the Rx routine, but at the start, before tearing down the DMA
+mapping of the received packet.
 
-Unlike modern Ethernet cards with DMA support, most CAN IP cores come
-with a fixed size on chip RAM that's used to store received CAN frames
-and frames that should be sent.
+Remove the comment about the descriptor being zeroed as it is no longer
+correct. This is OK because we either use the descriptor as-is (when
+recycling) or overwrite its address and size fields with that of the
+newly allocated Rx buffer.
 
-For CAN-2.0 only devices that can be directly supported via ethtools's
-set/get_ringparam. A minor unaesthetic is, as the on chip RAM is usually
-shared between RX and TX, the maximum values for RX and TX cannot be set
-at the same time.
+The issue was discovered when a process ("perf") consumed too much
+memory and put the system under memory pressure. It can be reproduced by
+injecting slab allocation failures [1]. After the fix, the Rx queue no
+longer comes to a halt.
 
-The mcp251xfd chip I'm enhancing supports CAN-2.0 and CAN-FD mode. The
-relevant difference of these modes is the size of the CAN frame. 8 vs 64
-bytes of payload + 12 bytes of header. This means we have different
-maximum values for both RX and TX for those modes.
+[1]
+ # echo 10 > /sys/kernel/debug/failslab/times
+ # echo 1000 > /sys/kernel/debug/failslab/interval
+ # echo 100 > /sys/kernel/debug/failslab/probability
 
-How do we want to deal with the configuration of the two different
-modes? As the current set/get_ringparam interface can configure the
-mini- and jumbo frames for RX, but has only a single TX value.
+ FAULT_INJECTION: forcing a failure.
+ name failslab, interval 1000, probability 100, space 0, times 8
+ [...]
+ Call Trace:
+  <IRQ>
+  dump_stack_lvl+0x34/0x44
+  should_fail.cold+0x32/0x37
+  should_failslab+0x5/0x10
+  kmem_cache_alloc_node+0x23/0x190
+  __alloc_skb+0x1f9/0x280
+  __netdev_alloc_skb+0x3a/0x150
+  mlxsw_pci_rdq_skb_alloc+0x24/0x90
+  mlxsw_pci_cq_tasklet+0x3dc/0x1200
+  tasklet_action_common.constprop.0+0x9f/0x100
+  __do_softirq+0xb5/0x252
+  irq_exit_rcu+0x7a/0xa0
+  common_interrupt+0x83/0xa0
+  </IRQ>
+  asm_common_interrupt+0x1e/0x40
+ RIP: 0010:cpuidle_enter_state+0xc8/0x340
+ [...]
+ mlxsw_spectrum2 0000:06:00.0: Failed to alloc skb for RDQ
 
-Hao Chen and Guangbin Huang are laying the groundwork to extend the
-ringparam interface via netlink:
+Fixes: eda6500a987a ("mlxsw: Add PCI bus implementation")
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Petr Machata <petrm@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/pci.c | 25 +++++++++++------------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
 
-| https://lore.kernel.org/all/20211014113943.16231-1-huangguangbin2@huawei.=
-com
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+index 13b0259f7ea6..fcace73eae40 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+@@ -353,13 +353,10 @@ static int mlxsw_pci_rdq_skb_alloc(struct mlxsw_pci *mlxsw_pci,
+ 	struct sk_buff *skb;
+ 	int err;
+ 
+-	elem_info->u.rdq.skb = NULL;
+ 	skb = netdev_alloc_skb_ip_align(NULL, buf_len);
+ 	if (!skb)
+ 		return -ENOMEM;
+ 
+-	/* Assume that wqe was previously zeroed. */
+-
+ 	err = mlxsw_pci_wqe_frag_map(mlxsw_pci, wqe, 0, skb->data,
+ 				     buf_len, DMA_FROM_DEVICE);
+ 	if (err)
+@@ -597,21 +594,26 @@ static void mlxsw_pci_cqe_rdq_handle(struct mlxsw_pci *mlxsw_pci,
+ 	struct pci_dev *pdev = mlxsw_pci->pdev;
+ 	struct mlxsw_pci_queue_elem_info *elem_info;
+ 	struct mlxsw_rx_info rx_info = {};
+-	char *wqe;
++	char wqe[MLXSW_PCI_WQE_SIZE];
+ 	struct sk_buff *skb;
+ 	u16 byte_count;
+ 	int err;
+ 
+ 	elem_info = mlxsw_pci_queue_elem_info_consumer_get(q);
+-	skb = elem_info->u.sdq.skb;
+-	if (!skb)
+-		return;
+-	wqe = elem_info->elem;
+-	mlxsw_pci_wqe_frag_unmap(mlxsw_pci, wqe, 0, DMA_FROM_DEVICE);
++	skb = elem_info->u.rdq.skb;
++	memcpy(wqe, elem_info->elem, MLXSW_PCI_WQE_SIZE);
+ 
+ 	if (q->consumer_counter++ != consumer_counter_limit)
+ 		dev_dbg_ratelimited(&pdev->dev, "Consumer counter does not match limit in RDQ\n");
+ 
++	err = mlxsw_pci_rdq_skb_alloc(mlxsw_pci, elem_info);
++	if (err) {
++		dev_err_ratelimited(&pdev->dev, "Failed to alloc skb for RDQ\n");
++		goto out;
++	}
++
++	mlxsw_pci_wqe_frag_unmap(mlxsw_pci, wqe, 0, DMA_FROM_DEVICE);
++
+ 	if (mlxsw_pci_cqe_lag_get(cqe_v, cqe)) {
+ 		rx_info.is_lag = true;
+ 		rx_info.u.lag_id = mlxsw_pci_cqe_lag_id_get(cqe_v, cqe);
+@@ -647,10 +649,7 @@ static void mlxsw_pci_cqe_rdq_handle(struct mlxsw_pci *mlxsw_pci,
+ 	skb_put(skb, byte_count);
+ 	mlxsw_core_skb_receive(mlxsw_pci->core, skb, &rx_info);
+ 
+-	memset(wqe, 0, q->elem_size);
+-	err = mlxsw_pci_rdq_skb_alloc(mlxsw_pci, elem_info);
+-	if (err)
+-		dev_dbg_ratelimited(&pdev->dev, "Failed to alloc skb for RDQ\n");
++out:
+ 	/* Everything is set up, ring doorbell to pass elem to HW */
+ 	q->producer_counter++;
+ 	mlxsw_pci_queue_doorbell_producer_ring(mlxsw_pci, q);
+-- 
+2.31.1
 
-I was thinking about adding rx/tx_pending for CAN-FD. The use case would
-be to configure the ring parameters independent of the current active
-CAN mode. For example in systemd the RX/TX ring parameters are
-configured in the .link file, while the CAN FD mode is configured in a
-=2Enetwork file. When switching to the other CAN mode, the previously
-configured ring configuration of that CAN mode will be applied to the
-hardware.
-
-In my proof of concept implementation I'm misusing the struct
-ethtool_ringparam's mini and jumbo values to pre-configure the CAN-2.0
-and CAN-FD mode's RX ring size, but this is not mainlinable from my
-point of view.
-
-I'm interested in your opinion and use cases.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---k6qgxznwttbrrlr2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmF10jQACgkQqclaivrt
-76kKMAf/QqxTFD6/g6hOCAsmJsLhJc74APW89HWaHdI4Zq7eupmc/S0wdNwJmkIz
-mzodDbwtU8ivZ6QutoHdHJ8pqt4yHDCtC6j8qeb6ETGNA6BjjsKnRLaeM9f5teus
-QnnmZEHssArArafijZEV+Qs28ItB/KTk9rHhk21wgSM5djjos7pOwSPQ1y1R+TcE
-sX1TjbwhIdQf53CPUtc3E04qq5aNjNjFmTmXei4ms2KAp1YpZjXHIWDzkuco7Jf/
-k+HPF4CZy28MsvdubkTMRcAxHTQfQokcP/B7zLyP0OjggJK43YM6RzVWmWhVGAY0
-GcGgO0zm1Y/pHnetI1bFXBVwUOQrvw==
-=xnsg
------END PGP SIGNATURE-----
-
---k6qgxznwttbrrlr2--
