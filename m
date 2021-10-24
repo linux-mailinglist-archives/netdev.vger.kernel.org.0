@@ -2,316 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE8F8438773
-	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 10:29:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85B35438779
+	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 10:31:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232069AbhJXIbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Oct 2021 04:31:12 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:23511 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231869AbhJXIau (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 24 Oct 2021 04:30:50 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1635064110; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=jd2deF2YxusSRH51J8Ex/OzLOal+8HgV10cMCq32q1E=; b=PftHK4oNgpVliBMwMrlRbCYReQ8ZOYHQgoNXP4G4go1qT5sMjJ0x7fnKS/CvQnGQH6jhi7qo
- Qd/QGHEY8kN4wQ1PrVMFGacQJqyYEauETQOoFAO2n/TLnioKmdsI3Y5MjsCl0yZVMrGi7LzN
- ai4PYUqWxvcEzB/ZJ0uYRtGYHZI=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 61751928b03398c06c72550f (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 24 Oct 2021 08:28:24
- GMT
-Sender: luoj=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 6345FC43638; Sun, 24 Oct 2021 08:28:23 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from akronite-sh-dev02.qualcomm.com (unknown [180.166.53.21])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: luoj)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id DEAFFC43617;
-        Sun, 24 Oct 2021 08:28:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org DEAFFC43617
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-From:   Luo Jie <luoj@codeaurora.org>
-To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sricharan@codeaurora.org, Luo Jie <luoj@codeaurora.org>
-Subject: [PATCH v7 14/14] net: phy: add qca8081 cdt feature
-Date:   Sun, 24 Oct 2021 16:27:38 +0800
-Message-Id: <20211024082738.849-15-luoj@codeaurora.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20211024082738.849-1-luoj@codeaurora.org>
-References: <20211024082738.849-1-luoj@codeaurora.org>
+        id S229867AbhJXIeA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Oct 2021 04:34:00 -0400
+Received: from mail-dm6nam10on2079.outbound.protection.outlook.com ([40.107.93.79]:29536
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229638AbhJXId7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 24 Oct 2021 04:33:59 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QDjneWzs5u8f9N6qYEclibHh29X4vNOMncV8L18xhgDN2X9MWHlBParLvn+EbjZkYgqQu764C5lYtUpntTWQJRwuUzykwv+ukB6XvJedAmc52QQIZhFNbB1JzFwTCat95fZVPpA/LZ/nDEoThI6XPnhxqGUqNRjPYhC4K0Nh98hSFDwj7L6VOmWnUek/RXRVMMv/7hp0XpE7zJf5OxKohbUxzdTwYL9n6se89DrfOuaZPpNIg3oBt8A6E5bCe+JMGXAyQgFl2ioZo+/O1CRM4dl5DFlDu2jRPOtvyE9ZKM1wHBAsIeVfZrz8OWSRwASwob8AyO3xLW7sf/psmdmlsA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=y769OZ8LD/y216NOT+Iab2kGIgBuUiZo/YG+13mjcDQ=;
+ b=Jod9UFDDd5B6F4ZJvIeNUSUx+T5cnAV1mDd+OKq0aQofqN8Ig5d6lLfxfwNbTTH/ZLn8sn74ZQAvrugBR+hSVI3p6ZU1lXq4DGFtaQAXqbUQvCRqQgLdtoX96gmSoiNVx7PdNWJsQQaYThIQ3CYhdTckD7CwOagdWBPcOG0iqCsZripA8SdaIEi7OztYE0BcuM9GbbzeZPKXqLJQM1WLXHn9Nbn/P3k/BhcvJbiLPvTyu/04W8VbUKYrFi6B5UPaZSJhlY7ep2SibTO63nIEh2iLNpcs1HXon29h3tuapYzHPxc8XTl/ZQK5jCwUZQ03c3THqrtx6uE1p8uxy0meEw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=nvidia.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=y769OZ8LD/y216NOT+Iab2kGIgBuUiZo/YG+13mjcDQ=;
+ b=m2CpoqzV/MrVx12SDPSEMjFteMNGD5sjBgJmfLFngHAgC9bMuVfvlOlHTOlek7XprzIIXFDBElPwD9ACz2Be5jVO7deFqWD9sCm2xZ1+9YpUvYtOPp0tunjn1y35uR3Gel1E7p/+J8qTHtsJ1SIyKyNfJduRG3B2H0Zy40XikJU46bENnrGNHGT2JAcFhDEsY7Qthnuyt+IysIDySwo+kZr+9UIiifd2pGtjLpVcook7sdj6iH3t83XPcbpAHwGmZPEzpXw7btXYqFn5VweiYBytTbncMVXOurzqCrepyKtUKmeQWbeMgYBtL98UB0Ozvf4LtaSjceNe90EjS0eRYQ==
+Received: from BN6PR1101CA0013.namprd11.prod.outlook.com
+ (2603:10b6:405:4a::23) by MW3PR12MB4393.namprd12.prod.outlook.com
+ (2603:10b6:303:2c::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18; Sun, 24 Oct
+ 2021 08:31:35 +0000
+Received: from BN8NAM11FT011.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:405:4a:cafe::53) by BN6PR1101CA0013.outlook.office365.com
+ (2603:10b6:405:4a::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.16 via Frontend
+ Transport; Sun, 24 Oct 2021 08:31:34 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ BN8NAM11FT011.mail.protection.outlook.com (10.13.176.140) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4628.16 via Frontend Transport; Sun, 24 Oct 2021 08:31:34 +0000
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Sun, 24 Oct
+ 2021 08:31:33 +0000
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Sun, 24 Oct
+ 2021 08:31:33 +0000
+Received: from vdi.nvidia.com (172.20.187.6) by mail.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Sun, 24 Oct 2021 01:31:30 -0700
+From:   Yishai Hadas <yishaih@nvidia.com>
+To:     <alex.williamson@redhat.com>, <bhelgaas@google.com>,
+        <jgg@nvidia.com>, <saeedm@nvidia.com>
+CC:     <linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <kuba@kernel.org>, <leonro@nvidia.com>,
+        <kwankhede@nvidia.com>, <mgurtovoy@nvidia.com>,
+        <yishaih@nvidia.com>, <maorg@nvidia.com>
+Subject: [PATCH V3 mlx5-next 00/13] Add mlx5 live migration driver
+Date:   Sun, 24 Oct 2021 11:30:06 +0300
+Message-ID: <20211024083019.232813-1-yishaih@nvidia.com>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d9e4c036-f340-465a-96f7-08d996c8b070
+X-MS-TrafficTypeDiagnostic: MW3PR12MB4393:
+X-Microsoft-Antispam-PRVS: <MW3PR12MB4393B1E6CD5B1B47FBB8A673C3829@MW3PR12MB4393.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 9R4Tg3BapM2WzA2l4JtxgndUuWSGwLfQlbiGnUhTmBIzYByU8Lqflk2Bi9ptRtbpsVvsayV2Tb4ZLg156nuteYZezvpYt7tLjfckWo/TCPy0Jb9zmzPXn4PbC7/bsYreErwaJU07b3tQCiXb6S1VHPfmBEjamXACaLGDa/qDQRWivI7bHcws1CGyI4Ux3fg8YkjoSzdMyCl1oADKaxP7o5c6DMvru6v+guq7kQqe9KhlZzOrGr/JqNL9mAItZn9oWIJfhjnC0rKHnlguyhib9hFKDA+g/qj6tgazrDXQx0zIm4DBaByQLbbEkjOZR/IyG9SykUxRQDIjE2vXUf+YMpm7GIZJ+nuZoQfVjYcRB1SzyooENE2c8SpgKmbIKeAURd60870bMDsTr+lqL4/Cj8NNsc3jip5jdpWhFWEDG2VUupV3ipLD6BTgg/FHLo8yyDh9Pmde/ECd4nZqpXpJwP7Mmedz+ccHSlJN8bH0w6p367rLXMesws+3egxqwA68NNlnKF32dUrnYFT+R+e3kbTurUbK7VwgQvnmOO9U/18jodlQ7ItWqjbtyfz4zVozpg0lgjjfQQLN0G9TkZuxGIVYjxMkpJHCIdPBc1cDLbryVPIQaGqyVXhvbCtOF37/VqleHEtYc8EMyLK+UessetoU94di0dI0J+KdLlDtlojK+/vtP3h08oWFnZNVklOuVzIAUM8mFcmKik6/4hw9rg==
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(356005)(5660300002)(83380400001)(8936002)(186003)(70206006)(70586007)(36906005)(8676002)(316002)(336012)(4326008)(508600001)(7636003)(2906002)(54906003)(110136005)(107886003)(426003)(6666004)(36756003)(86362001)(82310400003)(36860700001)(2616005)(1076003)(7696005)(26005)(6636002)(47076005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Oct 2021 08:31:34.5661
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d9e4c036-f340-465a-96f7-08d996c8b070
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT011.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4393
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To perform CDT of qca8081 phy:
-1. disable hibernation.
-2. force phy working in MDI mode.
-3. force phy working in 1000BASE-T mode.
-4. configure the related thresholds.
+This series adds mlx5 live migration driver for VFs that are migrated
+capable.
 
-Signed-off-by: Luo Jie <luoj@codeaurora.org>
----
- drivers/net/phy/at803x.c | 194 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 191 insertions(+), 3 deletions(-)
+It uses vfio_pci_core to register to the VFIO subsystem and then
+implements the mlx5 specific logic in the migration area.
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 00733badcda5..f1cbe1f6ddec 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -229,6 +229,32 @@
- #define QCA808X_MASTER_SLAVE_SEED_CFG		GENMASK(12, 2)
- #define QCA808X_MASTER_SLAVE_SEED_RANGE		0x32
- 
-+/* Hibernation yields lower power consumpiton in contrast with normal operation mode.
-+ * when the copper cable is unplugged, the PHY enters into hibernation mode in about 10s.
-+ */
-+#define QCA808X_DBG_AN_TEST			0xb
-+#define QCA808X_HIBERNATION_EN			BIT(15)
-+
-+#define QCA808X_CDT_ENABLE_TEST			BIT(15)
-+#define QCA808X_CDT_INTER_CHECK_DIS		BIT(13)
-+#define QCA808X_CDT_LENGTH_UNIT			BIT(10)
-+
-+#define QCA808X_MMD3_CDT_STATUS			0x8064
-+#define QCA808X_MMD3_CDT_DIAG_PAIR_A		0x8065
-+#define QCA808X_MMD3_CDT_DIAG_PAIR_B		0x8066
-+#define QCA808X_MMD3_CDT_DIAG_PAIR_C		0x8067
-+#define QCA808X_MMD3_CDT_DIAG_PAIR_D		0x8068
-+#define QCA808X_CDT_DIAG_LENGTH			GENMASK(7, 0)
-+
-+#define QCA808X_CDT_CODE_PAIR_A			GENMASK(15, 12)
-+#define QCA808X_CDT_CODE_PAIR_B			GENMASK(11, 8)
-+#define QCA808X_CDT_CODE_PAIR_C			GENMASK(7, 4)
-+#define QCA808X_CDT_CODE_PAIR_D			GENMASK(3, 0)
-+#define QCA808X_CDT_STATUS_STAT_FAIL		0
-+#define QCA808X_CDT_STATUS_STAT_NORMAL		1
-+#define QCA808X_CDT_STATUS_STAT_OPEN		2
-+#define QCA808X_CDT_STATUS_STAT_SHORT		3
-+
- MODULE_DESCRIPTION("Qualcomm Atheros AR803x and QCA808X PHY driver");
- MODULE_AUTHOR("Matus Ujhelyi");
- MODULE_LICENSE("GPL");
-@@ -1319,8 +1345,14 @@ static int at803x_cdt_start(struct phy_device *phydev, int pair)
- {
- 	u16 cdt;
- 
--	cdt = FIELD_PREP(AT803X_CDT_MDI_PAIR_MASK, pair) |
--	      AT803X_CDT_ENABLE_TEST;
-+	/* qca8081 takes the different bit 15 to enable CDT test */
-+	if (phydev->drv->phy_id == QCA8081_PHY_ID)
-+		cdt = QCA808X_CDT_ENABLE_TEST |
-+			QCA808X_CDT_LENGTH_UNIT |
-+			QCA808X_CDT_INTER_CHECK_DIS;
-+	else
-+		cdt = FIELD_PREP(AT803X_CDT_MDI_PAIR_MASK, pair) |
-+			AT803X_CDT_ENABLE_TEST;
- 
- 	return phy_write(phydev, AT803X_CDT, cdt);
- }
-@@ -1328,10 +1360,16 @@ static int at803x_cdt_start(struct phy_device *phydev, int pair)
- static int at803x_cdt_wait_for_completion(struct phy_device *phydev)
- {
- 	int val, ret;
-+	u16 cdt_en;
-+
-+	if (phydev->drv->phy_id == QCA8081_PHY_ID)
-+		cdt_en = QCA808X_CDT_ENABLE_TEST;
-+	else
-+		cdt_en = AT803X_CDT_ENABLE_TEST;
- 
- 	/* One test run takes about 25ms */
- 	ret = phy_read_poll_timeout(phydev, AT803X_CDT, val,
--				    !(val & AT803X_CDT_ENABLE_TEST),
-+				    !(val & cdt_en),
- 				    30000, 100000, true);
- 
- 	return ret < 0 ? ret : 0;
-@@ -1685,6 +1723,153 @@ static int qca808x_soft_reset(struct phy_device *phydev)
- 	return qca808x_phy_ms_seed_enable(phydev, true);
- }
- 
-+static bool qca808x_cdt_fault_length_valid(int cdt_code)
-+{
-+	switch (cdt_code) {
-+	case QCA808X_CDT_STATUS_STAT_SHORT:
-+	case QCA808X_CDT_STATUS_STAT_OPEN:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+static int qca808x_cable_test_result_trans(int cdt_code)
-+{
-+	switch (cdt_code) {
-+	case QCA808X_CDT_STATUS_STAT_NORMAL:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_OK;
-+	case QCA808X_CDT_STATUS_STAT_SHORT:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_SAME_SHORT;
-+	case QCA808X_CDT_STATUS_STAT_OPEN:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_OPEN;
-+	case QCA808X_CDT_STATUS_STAT_FAIL:
-+	default:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_UNSPEC;
-+	}
-+}
-+
-+static int qca808x_cdt_fault_length(struct phy_device *phydev, int pair)
-+{
-+	int val;
-+	u32 cdt_length_reg = 0;
-+
-+	switch (pair) {
-+	case ETHTOOL_A_CABLE_PAIR_A:
-+		cdt_length_reg = QCA808X_MMD3_CDT_DIAG_PAIR_A;
-+		break;
-+	case ETHTOOL_A_CABLE_PAIR_B:
-+		cdt_length_reg = QCA808X_MMD3_CDT_DIAG_PAIR_B;
-+		break;
-+	case ETHTOOL_A_CABLE_PAIR_C:
-+		cdt_length_reg = QCA808X_MMD3_CDT_DIAG_PAIR_C;
-+		break;
-+	case ETHTOOL_A_CABLE_PAIR_D:
-+		cdt_length_reg = QCA808X_MMD3_CDT_DIAG_PAIR_D;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	val = phy_read_mmd(phydev, MDIO_MMD_PCS, cdt_length_reg);
-+	if (val < 0)
-+		return val;
-+
-+	return (FIELD_GET(QCA808X_CDT_DIAG_LENGTH, val) * 824) / 10;
-+}
-+
-+static int qca808x_cable_test_start(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	/* perform CDT with the following configs:
-+	 * 1. disable hibernation.
-+	 * 2. force PHY working in MDI mode.
-+	 * 3. for PHY working in 1000BaseT.
-+	 * 4. configure the threshold.
-+	 */
-+
-+	ret = at803x_debug_reg_mask(phydev, QCA808X_DBG_AN_TEST, QCA808X_HIBERNATION_EN, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = at803x_config_mdix(phydev, ETH_TP_MDI);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Force 1000base-T needs to configure PMA/PMD and MII_BMCR */
-+	phydev->duplex = DUPLEX_FULL;
-+	phydev->speed = SPEED_1000;
-+	ret = genphy_c45_pma_setup_forced(phydev);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = genphy_setup_forced(phydev);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* configure the thresholds for open, short, pair ok test */
-+	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x8074, 0xc040);
-+	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x8076, 0xc040);
-+	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x8077, 0xa060);
-+	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x8078, 0xc050);
-+	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x807a, 0xc060);
-+	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x807e, 0xb060);
-+
-+	return 0;
-+}
-+
-+static int qca808x_cable_test_get_status(struct phy_device *phydev, bool *finished)
-+{
-+	int ret, val;
-+	int pair_a, pair_b, pair_c, pair_d;
-+
-+	*finished = false;
-+
-+	ret = at803x_cdt_start(phydev, 0);
-+	if (ret)
-+		return ret;
-+
-+	ret = at803x_cdt_wait_for_completion(phydev);
-+	if (ret)
-+		return ret;
-+
-+	val = phy_read_mmd(phydev, MDIO_MMD_PCS, QCA808X_MMD3_CDT_STATUS);
-+	if (val < 0)
-+		return val;
-+
-+	pair_a = FIELD_GET(QCA808X_CDT_CODE_PAIR_A, val);
-+	pair_b = FIELD_GET(QCA808X_CDT_CODE_PAIR_B, val);
-+	pair_c = FIELD_GET(QCA808X_CDT_CODE_PAIR_C, val);
-+	pair_d = FIELD_GET(QCA808X_CDT_CODE_PAIR_D, val);
-+
-+	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_A,
-+				qca808x_cable_test_result_trans(pair_a));
-+	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_B,
-+				qca808x_cable_test_result_trans(pair_b));
-+	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_C,
-+				qca808x_cable_test_result_trans(pair_c));
-+	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_D,
-+				qca808x_cable_test_result_trans(pair_d));
-+
-+	if (qca808x_cdt_fault_length_valid(pair_a))
-+		ethnl_cable_test_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_A,
-+				qca808x_cdt_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_A));
-+	if (qca808x_cdt_fault_length_valid(pair_b))
-+		ethnl_cable_test_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_B,
-+				qca808x_cdt_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_B));
-+	if (qca808x_cdt_fault_length_valid(pair_c))
-+		ethnl_cable_test_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_C,
-+				qca808x_cdt_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_C));
-+	if (qca808x_cdt_fault_length_valid(pair_d))
-+		ethnl_cable_test_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_D,
-+				qca808x_cdt_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_D));
-+
-+	*finished = true;
-+
-+	return 0;
-+}
-+
- static struct phy_driver at803x_driver[] = {
- {
- 	/* Qualcomm Atheros AR8035 */
-@@ -1848,6 +2033,7 @@ static struct phy_driver at803x_driver[] = {
- 	/* Qualcomm QCA8081 */
- 	PHY_ID_MATCH_EXACT(QCA8081_PHY_ID),
- 	.name			= "Qualcomm QCA8081",
-+	.flags			= PHY_POLL_CABLE_TEST,
- 	.config_intr		= at803x_config_intr,
- 	.handle_interrupt	= at803x_handle_interrupt,
- 	.get_tunable		= at803x_get_tunable,
-@@ -1861,6 +2047,8 @@ static struct phy_driver at803x_driver[] = {
- 	.read_status		= qca808x_read_status,
- 	.config_init		= qca808x_config_init,
- 	.soft_reset		= qca808x_soft_reset,
-+	.cable_test_start	= qca808x_cable_test_start,
-+	.cable_test_get_status	= qca808x_cable_test_get_status,
- }, };
- 
- module_phy_driver(at803x_driver);
+The migration implementation follows the definition from uapi/vfio.h and
+uses the mlx5 VF->PF command channel to achieve it.
+
+As part of the migration process the VF doesn't ride on mlx5_core, the
+device is driving *two* different PCI devices, the PF owned by mlx5_core
+and the VF owned by the mlx5 vfio driver.
+
+The mlx5_core of the PF is accessed only during the narrow window of the
+VF's ioctl that requires its services.
+
+To let that work properly a new API was added in the PCI layer (i.e.
+pci_iov_get_pf_drvdata) that lets the VF access safely to the PF
+drvdata. It was used in this series as part of mlx5_core and mlx5_vdpa
+when a VF needed that functionality.
+
+In addition, mlx5_core was aligned with other drivers to disable SRIOV
+before PF has gone as part of the remove_one() call back.
+
+This enables proper usage of the above new PCI API and prevents some
+warning message that exists today when it's not done.
+
+The series also exposes from the PCI sub system an API named
+pci_iov_vf_id() to get the index of the VF. The PCI core uses this index
+internally, often called the vf_id, during the setup of the VF, eg
+pci_iov_add_virtfn().
+
+The returned VF index is needed by the mlx5 vfio driver for its internal
+operations to configure/control its VFs as part of the migration
+process.
+
+With the above functionality in place the driver implements the
+suspend/resume flows to work over QEMU.
+
+Changes from V2:
+vfio:
+- Put and use the new macro VFIO_DEVICE_STATE_SET_ERROR as Alex asked.
+vfio/mlx5:
+- Improve/fix state checking as was asked by Alex & Jason.
+- Let things be done in a deterministic way upon 'reset_done' following
+  the suggested algorithm by Jason.
+- Align with mlx5 latest specification when calling the SAVE command.
+- Fix some typos.
+vdpa/mlx5:
+- Drop the patch from the series based on the discussion in the mailing
+  list.
+
+Changes from V1:
+PCI/IOV:
+- Add actual interface in the subject as was asked by Bjorn and add
+  his Acked-by.
+- Move to check explicitly for !dev->is_virtfn as was asked by Alex.
+vfio:
+- Come with a separate patch for fixing the non-compiled
+  VFIO_DEVICE_STATE_SET_ERROR macro.
+- Expose vfio_pci_aer_err_detected() to be set by drivers on their own
+  pci error handles.
+- Add a macro for VFIO_DEVICE_STATE_ERROR in the uapi header file as was
+  suggested by Alex.
+vfio/mlx5:
+- Improve to use xor as part of checking the 'state' change command as
+  was suggested by Alex.
+- Set state to VFIO_DEVICE_STATE_ERROR when an error occurred instead of
+  VFIO_DEVICE_STATE_INVALID.
+- Improve state checking as was suggested by Jason.
+- Use its own PCI reset_done error handler as was suggested by Jason and
+  fix the locking scheme around the state mutex to work properly.
+
+Changes from V0:
+PCI/IOV:
+- Add an API (i.e. pci_iov_get_pf_drvdata()) that allows SRVIO VF
+  drivers to reach the drvdata of a PF.
+net/mlx5:
+- Add an extra patch to disable SRIOV before PF removal.
+- Adapt to use the above PCI/IOV API as part of mlx5_vf_get_core_dev().
+- Reuse the exported PCI/IOV virtfn index function call (i.e.
+  pci_iov_vf_id().
+vfio:
+- Add support in the pci_core to let a driver be notified when
+  'reset_done' to let it sets its internal state accordingly.
+- Add some helper stuff for 'invalid' state handling.
+vfio/mlx5:
+- Move to use the 'command mode' instead of the 'state machine'
+  scheme as was discussed in the mailing list.
+-Handle the RESET scenario when called by vfio_pci_core to sets
+ its internal state accordingly.
+- Set initial state as RUNNING.
+- Put the driver files as sub-folder under drivers/vfio/pci named mlx5
+  and update the MAINTAINER file as was asked.
+vdpa/mlx5:
+Add a new patch to use mlx5_vf_get_core_dev() to get the PF device.
+
+---------------------------------------------------------------
+Alex,
+
+This series touches our ethernet and RDMA drivers, so we will need to
+route the patches through separate shared branch (mlx5-next) in order to
+eliminate the chances of merge conflicts between different subsystems.
+
+Are you fine with taking this V3 series through mlx5-next and we'll send
+a PR to you to include ?
+
+Thanks,
+Yishai
+
+Jason Gunthorpe (2):
+  PCI/IOV: Add pci_iov_vf_id() to get VF index
+  PCI/IOV: Add pci_iov_get_pf_drvdata() to allow VF reaching the drvdata
+    of a PF
+
+Leon Romanovsky (1):
+  net/mlx5: Reuse exported virtfn index function call
+
+Yishai Hadas (10):
+  net/mlx5: Disable SRIOV before PF removal
+  net/mlx5: Expose APIs to get/put the mlx5 core device
+  vfio: Fix VFIO_DEVICE_STATE_SET_ERROR macro
+  vfio: Add a macro for VFIO_DEVICE_STATE_ERROR
+  vfio/pci_core: Make the region->release() function optional
+  net/mlx5: Introduce migration bits and structures
+  vfio/mlx5: Expose migration commands over mlx5 device
+  vfio/mlx5: Implement vfio_pci driver for mlx5 devices
+  vfio/pci: Expose vfio_pci_aer_err_detected()
+  vfio/mlx5: Use its own PCI reset_done error handler
+
+ MAINTAINERS                                   |   6 +
+ .../net/ethernet/mellanox/mlx5/core/main.c    |  44 ++
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   1 +
+ .../net/ethernet/mellanox/mlx5/core/sriov.c   |  17 +-
+ drivers/pci/iov.c                             |  43 +
+ drivers/vfio/pci/Kconfig                      |   3 +
+ drivers/vfio/pci/Makefile                     |   2 +
+ drivers/vfio/pci/mlx5/Kconfig                 |  10 +
+ drivers/vfio/pci/mlx5/Makefile                |   4 +
+ drivers/vfio/pci/mlx5/cmd.c                   | 354 +++++++++
+ drivers/vfio/pci/mlx5/cmd.h                   |  43 +
+ drivers/vfio/pci/mlx5/main.c                  | 746 ++++++++++++++++++
+ drivers/vfio/pci/vfio_pci_core.c              |   8 +-
+ include/linux/mlx5/driver.h                   |   3 +
+ include/linux/mlx5/mlx5_ifc.h                 | 147 +++-
+ include/linux/pci.h                           |  15 +-
+ include/linux/vfio_pci_core.h                 |   2 +
+ include/uapi/linux/vfio.h                     |   8 +-
+ 18 files changed, 1433 insertions(+), 23 deletions(-)
+ create mode 100644 drivers/vfio/pci/mlx5/Kconfig
+ create mode 100644 drivers/vfio/pci/mlx5/Makefile
+ create mode 100644 drivers/vfio/pci/mlx5/cmd.c
+ create mode 100644 drivers/vfio/pci/mlx5/cmd.h
+ create mode 100644 drivers/vfio/pci/mlx5/main.c
+
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.18.1
 
