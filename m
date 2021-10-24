@@ -2,74 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 285E14387E8
-	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 11:27:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E99E438805
+	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 11:45:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230134AbhJXJaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Oct 2021 05:30:03 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:26186 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229886AbhJXJaC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 05:30:02 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4HcXlL181Fz8tk6;
-        Sun, 24 Oct 2021 17:26:22 +0800 (CST)
-Received: from dggpeml500025.china.huawei.com (7.185.36.35) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+        id S231372AbhJXJr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Oct 2021 05:47:59 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:29928 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229886AbhJXJr5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 05:47:57 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HcY495P3Vzbmyx;
+        Sun, 24 Oct 2021 17:40:57 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Sun, 24 Oct 2021 17:27:40 +0800
-Received: from [10.174.176.117] (10.174.176.117) by
- dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
+ 15.1.2308.15; Sun, 24 Oct 2021 17:45:34 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Sun, 24 Oct 2021 17:27:40 +0800
-From:   Hou Tao <houtao1@huawei.com>
-Subject: Re: [PATCH bpf-next v3 2/4] bpf: factor out helpers to check ctx
- access for BTF function
-To:     Martin KaFai Lau <kafai@fb.com>
-CC:     Alexei Starovoitov <ast@kernel.org>, Yonghong Song <yhs@fb.com>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-References: <20211022075511.1682588-1-houtao1@huawei.com>
- <20211022075511.1682588-3-houtao1@huawei.com>
- <20211023001832.jvz5lbnj33l4y3jb@kafai-mbp.dhcp.thefacebook.com>
-Message-ID: <64e808b8-a1e8-1b64-15a4-179f84c06fa6@huawei.com>
-Date:   Sun, 24 Oct 2021 17:27:39 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+ 15.1.2308.15; Sun, 24 Oct 2021 17:45:33 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <wangjie125@huawei.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>
+Subject: [PATCH V2 net-next 0/8] net: hns3: updates for -next
+Date:   Sun, 24 Oct 2021 17:41:07 +0800
+Message-ID: <20211024094115.42158-1-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-In-Reply-To: <20211023001832.jvz5lbnj33l4y3jb@kafai-mbp.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.174.176.117]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500025.china.huawei.com (7.185.36.35)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Martin,
+This series includes some updates for the HNS3 ethernet driver.
 
-On 10/23/2021 8:18 AM, Martin KaFai Lau wrote:
-> On Fri, Oct 22, 2021 at 03:55:09PM +0800, Hou Tao wrote:
->> @@ -1649,6 +1649,33 @@ bool bpf_prog_test_check_kfunc_call(u32 kfunc_id, struct module *owner);
->>  bool btf_ctx_access(int off, int size, enum bpf_access_type type,
->>  		    const struct bpf_prog *prog,
->>  		    struct bpf_insn_access_aux *info);
->> +
->> +/*
->> + * The maximum number of BTF function arguments is MAX_BPF_FUNC_ARGS.
->> + * And only aligned read is allowed.
-> It is not always 'BTF' function arguments.  Lets remove this comment.
-> The function is short and its intention is clear.
-Yes, you are right, BTF is not necessary for BPF_PROG_TYPE_RAW_TRACEPOINT program.
-I will remove the inaccurate comments and update commit message accordingly.
-> Others lgtm.
->
-> Acked-by: Martin KaFai Lau <kafai@fb.com>
-Thanks for your detailed suggestions and careful review.
+#1 debugfs support for dumping interrupt coalesce.
+#2~#3 improve compatibility of mac statistic and add pause/pfc durations
+      for it.
+#5~#6 add update ethtool advertised link modes for FIBRE port when autoneg
+      off.
+#7~#8 add some error types for ras.
 
-Regards,
-Tao
+
+Guangbin Huang (5):
+  net: hns3: modify mac statistics update process for compatibility
+  net: hns3: device specifications add number of mac statistics
+  net: hns3: add support pause/pfc durations for mac statistics
+  net: hns3: modify functions of converting speed ability to ethtool
+    link mode
+  net: hns3: add update ethtool advertised link modes for FIBRE port
+    when autoneg off
+
+Huazhong Tan (1):
+  net: hns3: add debugfs support for interrupt coalesce
+
+Jiaran Zhang (1):
+  net: hns3: add error recovery module and type for himac
+
+Weihang Li (1):
+  net: hns3: add new ras error type for roce
+
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h   |   2 +
+ .../ethernet/hisilicon/hns3/hns3_debugfs.c    | 121 +++++
+ .../net/ethernet/hisilicon/hns3/hns3_enet.h   |   3 +-
+ .../hisilicon/hns3/hns3pf/hclge_cmd.c         |   1 +
+ .../hisilicon/hns3/hns3pf/hclge_cmd.h         |   1 +
+ .../hisilicon/hns3/hns3pf/hclge_err.c         |  14 +-
+ .../hisilicon/hns3/hns3pf/hclge_err.h         |   4 +
+ .../hisilicon/hns3/hns3pf/hclge_main.c        | 507 ++++++++++++------
+ .../hisilicon/hns3/hns3pf/hclge_main.h        |  32 +-
+ 9 files changed, 504 insertions(+), 181 deletions(-)
+
+-- 
+2.33.0
+
