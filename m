@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33BC24388DE
-	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 14:40:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEC0E4388DD
+	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 14:40:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231454AbhJXMm3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Oct 2021 08:42:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43268 "EHLO mail.kernel.org"
+        id S231397AbhJXMm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Oct 2021 08:42:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43272 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230021AbhJXMm1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229867AbhJXMm1 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sun, 24 Oct 2021 08:42:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 20C7E60F46;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 302E260F45;
         Sun, 24 Oct 2021 12:40:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1635079207;
-        bh=uGP3LmzkYq67dd3v96nK4s87J11YBL7AtQFFFF7ZRhA=;
+        bh=o7yue6WtkU4vnlDTWpyPInVW12kLaUYuydp3aqZlXcQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=o8XN0lT8gTmy11/TB7kQe4wJysZx2moTq2bzLg8/DSfYhB4cfqCrEaBDLVYv9bGt6
-         quOLCUVZTn0qeKlMTK4xJmqj2ABBZmVFl96P9S15IoF6GbHWUq6eKv+5i/9YeY5eDX
-         2RxHgooCS29Qo7n47AnXdW6G+wqLpPpQkaL6UMAsAmW2aeUYDOoh2LAgYALMMirt/T
-         XE1XzSC5fpedlFT5dpyhtwxJ/2taccF9kf6yWFTkj1AjVVaNXISiVTNYDKFfar2gwx
-         KUVvP+hXL1yRyKdx4QivxbwzmHUYIM0NMgiuBmTOj1T0O9z05RLvFoTKkgQQB9cYG7
-         /TNVTCB7epwXA==
+        b=Z4l0YeP9O8TzVsWJ5kAVBXZuVFs+TWblH00kRIoZ687cHEPinnUCUfmFK4pF4M3T7
+         QpfJbq7IjP+sp8I1o9Y9paHPio+kWEfMeiwnwN9efPzW+EXRrmc0OLRWeSgpJSb5+U
+         1JTV2ThtrZeeKIhVzAGKr++W4CmN7BABh6DTxoFbcSxKRPf8GmXajNu2Y7wj+ZmQHb
+         A7U8LX6NAGAYua98k/VWEHKVI97ei6BjnQLLpWipbGvXxfsQelZI8N+nU8DTEBQtdf
+         MhdT5PaIEpwCx3XyDZckeJsuuFgB2PCvG7e57jHTgIz6b6+VDC/6xMLeyt2sfUkVe8
+         mEW2RRiEt45Kg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1334B60A21;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1DD7960AA3;
         Sun, 24 Oct 2021 12:40:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: ethernet: microchip: lan743x: Fix driver crash when
- lan743x_pm_resume fails
+Subject: Re: [PATCH net] net: ethernet: microchip: lan743x: Fix dma allocation
+ failure by using dma_set_mask_and_coherent
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163507920707.28969.15646010045695299411.git-patchwork-notify@kernel.org>
+Message-Id: <163507920711.28969.16811399167147186936.git-patchwork-notify@kernel.org>
 Date:   Sun, 24 Oct 2021 12:40:07 +0000
-References: <20211022151353.89908-1-yuiko.oshino@microchip.com>
-In-Reply-To: <20211022151353.89908-1-yuiko.oshino@microchip.com>
+References: <20211022155343.91841-1-yuiko.oshino@microchip.com>
+In-Reply-To: <20211022155343.91841-1-yuiko.oshino@microchip.com>
 To:     Yuiko Oshino <yuiko.oshino@microchip.com>
 Cc:     davem@davemloft.net, netdev@vger.kernel.org,
         bryan.whitehead@microchip.com, UNGLinuxDriver@microchip.com
@@ -48,18 +48,20 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 22 Oct 2021 11:13:53 -0400 you wrote:
-> The driver needs to clean up and return when the initialization fails on resume.
+On Fri, 22 Oct 2021 11:53:43 -0400 you wrote:
+> The dma failure was reported in the raspberry pi github (issue #4117).
+> https://github.com/raspberrypi/linux/issues/4117
+> The use of dma_set_mask_and_coherent fixes the issue.
+> Tested on 32/64-bit raspberry pi CM4 and 64-bit ubuntu x86 PC with EVB-LAN7430.
 > 
 > Fixes: 23f0703c125b ("lan743x: Add main source files for new lan743x driver")
 > Signed-off-by: Yuiko Oshino <yuiko.oshino@microchip.com>
-> ---
->  drivers/net/ethernet/microchip/lan743x_main.c | 2 ++
->  1 file changed, 2 insertions(+)
+> 
+> [...]
 
 Here is the summary with links:
-  - [net] net: ethernet: microchip: lan743x: Fix driver crash when lan743x_pm_resume fails
-    https://git.kernel.org/netdev/net/c/d6423d2ec39c
+  - [net] net: ethernet: microchip: lan743x: Fix dma allocation failure by using dma_set_mask_and_coherent
+    https://git.kernel.org/netdev/net/c/95a359c95533
 
 You are awesome, thank you!
 -- 
