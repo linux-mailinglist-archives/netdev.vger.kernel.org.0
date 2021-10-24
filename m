@@ -2,97 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBCD0438C74
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 01:02:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FECC438C9B
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 01:45:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231803AbhJXXEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Oct 2021 19:04:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57548 "EHLO
+        id S231912AbhJXXrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Oct 2021 19:47:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229625AbhJXXEU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 19:04:20 -0400
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA34AC061745
-        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 16:01:58 -0700 (PDT)
-Received: by mail-lf1-x144.google.com with SMTP id l13so9001562lfg.6
-        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 16:01:58 -0700 (PDT)
+        with ESMTP id S229706AbhJXXrv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 19:47:51 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C3CC061745
+        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 16:45:30 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id oa12-20020a17090b1bcc00b0019f715462a8so7032292pjb.3
+        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 16:45:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=RQgVC+ltN8D/EW+qvOnxBd3BkC8aGKQOGFo20+oSs0k=;
-        b=HgkAEXn3z2tuiRW35k6imQc1H5oCgVwnR/K0nnC5fU0fG1IGuzqmcibV7ZBWPl11FA
-         sf/upkX5Ehnf8m5deSI38vk8Z7E9XNFZ3CBjkdEM3hFSmWRiWTSmEmDV8RC/yG2ZFSrg
-         g9fLPz/aWuCDZ/gmLQJXTcfd8CNX/4TfScuvuEpKuRtR3Oe32lAuhNHJJ535y16T0Yyx
-         izlQIQDtLLi+7Erx1aavsMSlEAbk5X9k3H5xasPblurd9FgxQqAWMtDuiXq/YysxsmVv
-         ln6cZ57l7RzgcerwqAcQGSzu7YOn/UcfOuJfDx44UmADf6dRGzTb4cBeilcmujkDFSJY
-         gvTQ==
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ZR2Hyrml6H0773jTh+6sC2KJ2Sr2eOvYaYV1TYp/dN0=;
+        b=dus9V/SfCQ98obSvBlCnAkzYA2QTo6+oF3vXkBJdWap9znM7UQJQ8qFMxcnrijOlVe
+         tIk0VyUExkjrkPATK+LW4FPz+E5XutFuE6q/2NAXMhevY2XBfNtc6qvVBmjcZeRh2AnK
+         238Xn0PsahoeUGbG6sNZGs3oAC08eKrgsBMxUs5HT9niEpXA62TZCcDgCVz6fDWNYFhj
+         dryZuRRSb+fsKLsUTrrk5g1HyexW21SAL4BY9MAh7MuJDwBbIsBz1qNY/zytwiGnbEo4
+         k11snUwcu6GBHrcbtb9JAE/NVISWelok62xEpKdAnjt5gWeJY1YwiCsS24LUTlHL37hP
+         2Hrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=RQgVC+ltN8D/EW+qvOnxBd3BkC8aGKQOGFo20+oSs0k=;
-        b=M3bpeXwwc11pZAXTfL+E5iMd76vkg1X5Y9klXFUf9+xu9dQgpfL/bnzR1zMwgh0mFn
-         sxrFFjG6iTPWYc0GNoNNA3vkmJay+42oIDCOBwJ+DHGfyOWPwRI1iRqToz8PULaIraWM
-         D/QfjVFoA1bVOD/OdXdmYRhFulcNQmxKrBf2V02W3a90tGmbinsJW8qavnzTtdJdo9CB
-         at5d1h9boWmPIvWO6RRRQe5jxNu4ruGSThMzhSbHcjrlxLs+ya5n6P6k5HRtXnQc0Ssf
-         ij4eqNOIq717Pw7yBxr6h8wAAqGN+laKiQDqt18wxNJeOi/szCA1/zBTw4GmWY+8g+KS
-         E79w==
-X-Gm-Message-State: AOAM531vpHJJQ7vViIS400BONqo8RO3taNCuBWJ/Edw55Ehg4hYDKffu
-        fqGddME3zhUP04rWe5JROt53FE27oeRxj4iMJwU=
-X-Google-Smtp-Source: ABdhPJx/jDRExyuvlzh/a+k7DaKt65LLFwTrL5dCIPVtXeccVjekKwj01O0tsH24aikFOBb0S2VIsDEooxTWZ5BtXjM=
-X-Received: by 2002:ac2:5f61:: with SMTP id c1mr9979314lfc.566.1635116517097;
- Sun, 24 Oct 2021 16:01:57 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ZR2Hyrml6H0773jTh+6sC2KJ2Sr2eOvYaYV1TYp/dN0=;
+        b=WkSS57ZdOQLCzRMyGK7EjF6oeKRfnYImuwcXp2d7lM4xB3wRJxYdIFgsi9/LpE6GrT
+         1saWntwg/er7kpu9JjgV0xk4Lyteh225R7LY3lBShopVsWNDS2bpsCepKDYUjxwMZbVz
+         bCLi4bE0BEv88k/NlpyNslHZVZ+ARnFsjdp9BP9mjU1f0SqwgPgXJMN/NX96iA9jQhq1
+         C9rY1vDpNi5cFJq4OzQR3hShYxJJTLDSeFbc1SU5bhoO/8XsglqnvaJJas0O2tSTkrgQ
+         x5vOZMmBF+kzPBza0QKOzmFkDS2N9k/nFy4wNh2gYDJl+LHrX0b4JaWMzvZD/4Tnm9ym
+         nnug==
+X-Gm-Message-State: AOAM530G3G6ZGbb8UTGzZqJ540DvINwfxW5qezZXV+QeoTFlKfF8cYKV
+        c0S2Dr/OvdBHb/ck9XQgBfU663bL+GPXpg==
+X-Google-Smtp-Source: ABdhPJzoUIwh1+8XMRyEwYc/nfHVak9KTh8FTZv5pF2xpG+vRQ2OeSgFV925Xa9wZiH5nVji8OfTZQ==
+X-Received: by 2002:a17:90a:6542:: with SMTP id f2mr30682243pjs.159.1635119129597;
+        Sun, 24 Oct 2021 16:45:29 -0700 (PDT)
+Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
+        by smtp.gmail.com with ESMTPSA id z10sm3573105pfh.106.2021.10.24.16.45.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Oct 2021 16:45:29 -0700 (PDT)
+Date:   Sun, 24 Oct 2021 16:45:26 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     dsahern@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2-next] ip: add AMT support
+Message-ID: <20211024164526.2e1e9204@hermes.local>
+In-Reply-To: <20211023193611.11540-1-ap420073@gmail.com>
+References: <20211023193611.11540-1-ap420073@gmail.com>
 MIME-Version: 1.0
-Reply-To: millasmith7010@gmail.com
-Sender: edwigesambou500@gmail.com
-Received: by 2002:ab3:6e8c:0:0:0:0:0 with HTTP; Sun, 24 Oct 2021 16:01:56
- -0700 (PDT)
-From:   "Ms. Milla Smith" <ondzyy222@gmail.com>
-Date:   Sun, 24 Oct 2021 16:01:56 -0700
-X-Google-Sender-Auth: YIx7814y1_ZlxPQGV1wMWVlYeE4
-Message-ID: <CAE+tcMNy0xF3GX9+bxFYZ+fisROrUx_UxxcD7yQqEsN86O0ckg@mail.gmail.com>
-Subject: compensation
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+On Sat, 23 Oct 2021 19:36:11 +0000
+Taehee Yoo <ap420073@gmail.com> wrote:
 
-I am sorry, but happy to inform you about my success in getting those
-funds transferred under the cooperation of a new partner from Vietnam.
-Though, I I tried my best to involve you in the business, but
-everything changed completely. Presently, I am in Vietnam for
-investment projects with my own share of the total sum. Meanwhile, I
-didn't forget your past efforts and attempts to assist me in
-transferring those funds despite that it failed us somehow.
+> +	while (argc > 0) {
+> +		if (matches(*argv, "mode") == 0) {
 
-Now contact my secretary in Burkina Faso. Her name is Ms. Milla Smith.
-Her email address is  millasmith7010@gmail.com
-
-Ask her to send you the total sum of $450,000.00 which I kept for your
-compensation over the past efforts and attempts to assist me in this
-matter. I appreciated your efforts at that time very much. So feel
-free and contact my secretary Ms. Milla Smith and instruct her where
-to send the amount to you. Please, do let me know immediately you
-receive it so that wecan share joy after all the sufferings at that
-time.
-
-At the moment, I=E2=80=99m very busy here. Because of the investment projec=
-ts
-which I and my new partner are having at hand. Finally, remember that
-I had forwarded instructions to the secretary on your behalf to
-receive that money. So, feel free and get in touch with Ms. Milla
-Smith.
-
-Extend my greetings to your family.
-
-
-Best regards,
-
-Yours brother
-Mr. Abu Salam
-Greetings from Vietnam
+Try and reduce/eliminate use of matches() since it creates
+lots of problems when arguments collides.  For example "m" matches
+mode only because it is compared first (vs "max_tunnels").
