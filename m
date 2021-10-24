@@ -2,94 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45836438736
-	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 09:18:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38FDF438761
+	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 10:28:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229867AbhJXHUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Oct 2021 03:20:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49762 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229638AbhJXHUS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 03:20:18 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F168C061764
-        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 00:17:58 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id oa4so5884838pjb.2
-        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 00:17:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=f5Gys53IETTypytcj25cLNa+pAceZY+D2jJPgxuWCEk=;
-        b=UCzds9EJ1ityKTW5POP9ZJajhpeOK9IMqppC1vvUikpu7Au/pz/BltxAYPlcXu+gGm
-         g7tYD9nwbOFwSVWceMY3dj496lKeW06UByDKtPUMh28C9MMx7NXsYXij4+f5/twROKld
-         VV/4YidMeNu1Ebnb/qDf4TjV48FB+yvoymuEUB0rqEMAwSIvB1NeMUf3143G0tM27gHl
-         CQeOie5jWRgbyZwDeeCNwZJuMGyLQpqMnBVFYenrEAGYGT8teCjEOZEmNL8qMzQlYhdx
-         Jwmj9/O/oIcwPaogSZp6QepCE0lxaekwR3cponImbpHy3TRoayZ8OaTatK+Tj++8DCsv
-         1dHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=f5Gys53IETTypytcj25cLNa+pAceZY+D2jJPgxuWCEk=;
-        b=pNnBsqaw+jHR06l61huBV3RMkY38ZIcBvAk9+fUulH5lpFKl8pPMor7qjcccOtg3A7
-         i0B12udfIqfTJxHZY5MRX4pyjB0KTGzwwR2QZ5piLeZVLYNhetgY9uIHN9i9Q6RgdPUg
-         stOgi1RKpypRbNOeh2M8yUAVhlCtREsFQFVCyqMmVnSxTk/I7riWqvZ1k+rchY6rN4Z/
-         FPwmhi3nXtkxafUoy8EewEpdf5zqhH2mO5hcYUwOEKhLEDQ+UDCSUClqwMzX2680dCaq
-         A4EQug1AAHt9HHdnVhmZ2t8Au7Pl0JDR/niWn2WVJjUT5ZFAonEpJW6v4fuA5EOL4kh0
-         SuvA==
-X-Gm-Message-State: AOAM53080hm7kn1p7WbbgDlIWG8T9WmeqBII1dZdbwFrYhe1LA23MV2W
-        pb1QVvoBhTtRST0OPkAKEiCmxaKSW4zFbBVydZ0=
-X-Google-Smtp-Source: ABdhPJyH+Iv6n5oKGqNwM6bioBFcBU7CULAJHv+v8XuCdBW7BrusZRB+UfFvfcmxUN4dU+5ROg3oKIwu/ZXs9Eu/n3U=
-X-Received: by 2002:a17:90b:38c7:: with SMTP id nn7mr26485534pjb.214.1635059877217;
- Sun, 24 Oct 2021 00:17:57 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:a05:7300:2323:b0:40:38b7:ed29 with HTTP; Sun, 24 Oct 2021
- 00:17:56 -0700 (PDT)
-Reply-To: ahmadmustafa.7800@gmail.com
-From:   Ahmad Mustafa <rubenherbert789@gmail.com>
-Date:   Sun, 24 Oct 2021 08:17:56 +0100
-Message-ID: <CAOTeY0=WO3Ci0Hc2d35ZZ1x9qRV1gj2J3bedYh8Kc5oouSuaeA@mail.gmail.com>
-Subject: LOANS AND INVESTMENT
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+        id S231611AbhJXIab (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Oct 2021 04:30:31 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:35454 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231406AbhJXIa3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 04:30:29 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1635064089; h=Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=4EWCEvmP/Qd/5vfp73f6UjpAmTRX8idsfBtb3rDwEu4=; b=VyA2XTIILxCLBvbTErpLAwmR94KCGdzeI/dXzJnj56MrfNO54uKIwj7dsixtgZ0xa8AqVwUm
+ IKhhEsuYjnT3SzlRlFjOKTCPEeQVYiI8OxMjMBGcYT79xHVuTVokCyux/0InSrL3GAlTZNvg
+ DvaRPynVjOLSC4jC1QFyyYCrxnQ=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
+ 61751906b03398c06c72163d (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 24 Oct 2021 08:27:50
+ GMT
+Sender: luoj=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 89F2EC43618; Sun, 24 Oct 2021 08:27:49 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from akronite-sh-dev02.qualcomm.com (unknown [180.166.53.21])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: luoj)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 02ED6C4338F;
+        Sun, 24 Oct 2021 08:27:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 02ED6C4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Luo Jie <luoj@codeaurora.org>
+To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        sricharan@codeaurora.org, Luo Jie <luoj@codeaurora.org>
+Subject: [PATCH v7 0/14] net: phy: Add qca8081 ethernet phy driver
+Date:   Sun, 24 Oct 2021 16:27:24 +0800
+Message-Id: <20211024082738.849-1-luoj@codeaurora.org>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Sir,
+This patch series add the qca8081 ethernet phy driver support, which
+improve the wol feature, leverage at803x phy driver and add the fast
+retrain, master/slave seed and CDT feature.
 
-Aseel Islamic finance PJSC is private joint stock company that was
-established in 2006 and has built a leading market position for itself
-in the UAE's Islamic finance market which specializes in loan finance
-and investment activities in real estate, hospitality, industrial &
-sustainable technologies, strategic financial investments, specialized
-education, healthcare services, agriculture, manufacturing,
-minning,energy and additional environmentally sustainable projects.
+Changes in v7:
+	* update Reviewed-by tags.
 
-My name is Mr. Ibn Ahmad Mustafa . Do you have projects that require
-funding? We have finance available for your projects with over 2
-trillion private and corporate investment portfolios.  Aseel Islamic
-finance PJSC is looking for equity partners, entrepreneur, fund
-raisers and portfolio managers who will pay up to 4.5% interest and/or
-part equity position with a 5 to 10 year hold. In 2030, we plan on
-acquiring up to 2 trillion in high-quality, low risk assets and
-investments to capitalize on the current market cycle.
+Changes in v6:
+	* add Reviewed-by tags on the applicable patches.
 
-Aseel Islamic finance PJSC is acting as a lender and the fund will be
-disbursed on a clear interest rate of 3.5% annually to the equity
-partners and entrepreneurs for their investment projects. We also give
-a 2% commission to brokers, who bring project owners for finance or
-other opportunities.
+Changes in v5:
+	* rebase the patches on net-next/master.
 
-For further details, kindly send us your business plans or project summary.
+Changes in v4:
+	* handle other interrupts in set_wol.
+	* add genphy_c45_fast_retrain.
 
-Regards,
+Changes in v3:
+	* correct a typo "excpet".
+	* remove the suffix "PHY" from phy name.
 
+Changes in v2:
+	* add definitions of fast retrain related registers in mdio.h.
+	* break up the patch into small patches.
+	* improve the at803x legacy code.
 
-Mr. Ibn Ahmad Mustafa
-International Business Coordinator
-Aseel Islamic Finance PJSC
-Al Mankhool, Dubai C2 Tower,
-Ground floor,P.O 94669 Dubai, UAE
-Abu Dhabi - United Arab Emirates
-Email : ahmadmustafa.7800@gmail.com
+Changes in v1:
+	* merge qca8081 phy driver into at803x.
+	* add cdt feature.
+	* leverage at803x phy driver helpers.
+
+Luo Jie (14):
+  net: phy: at803x: replace AT803X_DEVICE_ADDR with MDIO_MMD_PCS
+  net: phy: at803x: use phy_modify()
+  net: phy: at803x: improve the WOL feature
+  net: phy: at803x: use GENMASK() for speed status
+  net: phy: add qca8081 ethernet phy driver
+  net: phy: add qca8081 read_status
+  net: phy: add qca8081 get_features
+  net: phy: add qca8081 config_aneg
+  net: phy: add constants for fast retrain related register
+  net: phy: add genphy_c45_fast_retrain
+  net: phy: add qca8081 config_init
+  net: phy: add qca8081 soft_reset and enable master/slave seed
+  net: phy: adjust qca8081 master/slave seed value if link down
+  net: phy: add qca8081 cdt feature
+
+ drivers/net/phy/at803x.c  | 580 +++++++++++++++++++++++++++++++++++---
+ drivers/net/phy/phy-c45.c |  34 +++
+ include/linux/phy.h       |   1 +
+ include/uapi/linux/mdio.h |   9 +
+ 4 files changed, 577 insertions(+), 47 deletions(-)
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
+
