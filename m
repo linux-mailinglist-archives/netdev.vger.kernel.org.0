@@ -2,49 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6834438BE0
-	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 22:45:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B6FA438C29
+	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 23:40:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232048AbhJXUrP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Oct 2021 16:47:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55994 "EHLO
+        id S231730AbhJXVmc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Oct 2021 17:42:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231960AbhJXUrN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 16:47:13 -0400
+        with ESMTP id S229519AbhJXVmb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 17:42:31 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70845C061767
-        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 13:44:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 901D3C061745
+        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 14:40:10 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1mekMM-0006HN-Le
-        for netdev@vger.kernel.org; Sun, 24 Oct 2021 22:44:50 +0200
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 4CBCE69C62A
-        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 20:43:35 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        id 1melDs-0003ih-7V; Sun, 24 Oct 2021 23:40:08 +0200
+Received: from pengutronix.de (unknown [195.138.59.174])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 62FB469C5B5;
-        Sun, 24 Oct 2021 20:43:32 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 2a396ce4;
-        Sun, 24 Oct 2021 20:43:28 +0000 (UTC)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 3821B69C6F9;
+        Sun, 24 Oct 2021 21:38:30 +0000 (UTC)
+Date:   Sun, 24 Oct 2021 23:37:59 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Dongliang Mu <mudongliangabcd@gmail.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 15/15] can: xilinx_can: xcan_remove(): remove redundant netif_napi_del()
-Date:   Sun, 24 Oct 2021 22:43:25 +0200
-Message-Id: <20211024204325.3293425-16-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211024204325.3293425-1-mkl@pengutronix.de>
-References: <20211024204325.3293425-1-mkl@pengutronix.de>
+To:     linux-can <linux-can@vger.kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+Subject: ethtool: ring configuration for CAN devices
+Message-ID: <20211024213759.hwhlb4e3repkvo6y@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="k6qgxznwttbrrlr2"
+Content-Disposition: inline
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -53,37 +44,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-Since netif_napi_del() is already done in the free_candev(), we remove
-this redundant netif_napi_del() invocation. In addition, this patch
-can match the operations in the xcan_probe() and xcan_remove()
-functions.
+--k6qgxznwttbrrlr2
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Link: https://lore.kernel.org/all/20211017125022.3100329-1-mudongliangabcd@gmail.com
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- drivers/net/can/xilinx_can.c | 2 --
- 1 file changed, 2 deletions(-)
+Hello,
 
-diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
-index 85c2ed5df4c7..e2b15d29d15e 100644
---- a/drivers/net/can/xilinx_can.c
-+++ b/drivers/net/can/xilinx_can.c
-@@ -1843,11 +1843,9 @@ static int xcan_probe(struct platform_device *pdev)
- static int xcan_remove(struct platform_device *pdev)
- {
- 	struct net_device *ndev = platform_get_drvdata(pdev);
--	struct xcan_priv *priv = netdev_priv(ndev);
- 
- 	unregister_candev(ndev);
- 	pm_runtime_disable(&pdev->dev);
--	netif_napi_del(&priv->napi);
- 	free_candev(ndev);
- 
- 	return 0;
--- 
-2.33.0
+I'm currently working on runtime configurable RX/TX ring sizes for a the
+mcp251xfd CAN driver.
 
+Unlike modern Ethernet cards with DMA support, most CAN IP cores come
+with a fixed size on chip RAM that's used to store received CAN frames
+and frames that should be sent.
 
+For CAN-2.0 only devices that can be directly supported via ethtools's
+set/get_ringparam. A minor unaesthetic is, as the on chip RAM is usually
+shared between RX and TX, the maximum values for RX and TX cannot be set
+at the same time.
+
+The mcp251xfd chip I'm enhancing supports CAN-2.0 and CAN-FD mode. The
+relevant difference of these modes is the size of the CAN frame. 8 vs 64
+bytes of payload + 12 bytes of header. This means we have different
+maximum values for both RX and TX for those modes.
+
+How do we want to deal with the configuration of the two different
+modes? As the current set/get_ringparam interface can configure the
+mini- and jumbo frames for RX, but has only a single TX value.
+
+Hao Chen and Guangbin Huang are laying the groundwork to extend the
+ringparam interface via netlink:
+
+| https://lore.kernel.org/all/20211014113943.16231-1-huangguangbin2@huawei.=
+com
+
+I was thinking about adding rx/tx_pending for CAN-FD. The use case would
+be to configure the ring parameters independent of the current active
+CAN mode. For example in systemd the RX/TX ring parameters are
+configured in the .link file, while the CAN FD mode is configured in a
+=2Enetwork file. When switching to the other CAN mode, the previously
+configured ring configuration of that CAN mode will be applied to the
+hardware.
+
+In my proof of concept implementation I'm misusing the struct
+ethtool_ringparam's mini and jumbo values to pre-configure the CAN-2.0
+and CAN-FD mode's RX ring size, but this is not mainlinable from my
+point of view.
+
+I'm interested in your opinion and use cases.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--k6qgxznwttbrrlr2
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmF10jQACgkQqclaivrt
+76kKMAf/QqxTFD6/g6hOCAsmJsLhJc74APW89HWaHdI4Zq7eupmc/S0wdNwJmkIz
+mzodDbwtU8ivZ6QutoHdHJ8pqt4yHDCtC6j8qeb6ETGNA6BjjsKnRLaeM9f5teus
+QnnmZEHssArArafijZEV+Qs28ItB/KTk9rHhk21wgSM5djjos7pOwSPQ1y1R+TcE
+sX1TjbwhIdQf53CPUtc3E04qq5aNjNjFmTmXei4ms2KAp1YpZjXHIWDzkuco7Jf/
+k+HPF4CZy28MsvdubkTMRcAxHTQfQokcP/B7zLyP0OjggJK43YM6RzVWmWhVGAY0
+GcGgO0zm1Y/pHnetI1bFXBVwUOQrvw==
+=xnsg
+-----END PGP SIGNATURE-----
+
+--k6qgxznwttbrrlr2--
