@@ -2,154 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A65C243865E
-	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 04:43:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45836438736
+	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 09:18:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231481AbhJXCoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Oct 2021 22:44:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47044 "EHLO
+        id S229867AbhJXHUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Oct 2021 03:20:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229868AbhJXCoC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Oct 2021 22:44:02 -0400
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A5EC061764
-        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 19:41:42 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id c28so7175004qtv.11
-        for <netdev@vger.kernel.org>; Sat, 23 Oct 2021 19:41:42 -0700 (PDT)
+        with ESMTP id S229638AbhJXHUS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 03:20:18 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F168C061764
+        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 00:17:58 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id oa4so5884838pjb.2
+        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 00:17:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HS7Xz9JbXx1vEGCcYNCKZ37pGlnCEW9ma4hOljJDXVQ=;
-        b=DiDjj3vne5wyM4tm2kGUC3PBW/fSaKpPtpeRf+wweDzpTtqZ0D4bDqKtLy2KehSz0B
-         PwnDeDHax9OU4A7MlWC9Ni4fwBepsDZOsMIPysgKHbcJNiK+rBBrNrCWoum7n9k5CTYZ
-         3aWRn+mJAc52Haeh9l68H7JSVvk8uqmWss/64Tt2S+hudqHWu+DZcLgcXeC7vUYdDGsC
-         EQlhpdTzXRwTSgXPZgXrbmMtkTwj/1xrQF68GPVE34EX4HpXmrz9K79acKt6Kz/phr12
-         xhWXYBijDBiRvnKSCsNup3INnln/s0uF+FeDm+JeaWH3z5K2e2BYVBmQRaWSKcwSNqfc
-         E/Jw==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=f5Gys53IETTypytcj25cLNa+pAceZY+D2jJPgxuWCEk=;
+        b=UCzds9EJ1ityKTW5POP9ZJajhpeOK9IMqppC1vvUikpu7Au/pz/BltxAYPlcXu+gGm
+         g7tYD9nwbOFwSVWceMY3dj496lKeW06UByDKtPUMh28C9MMx7NXsYXij4+f5/twROKld
+         VV/4YidMeNu1Ebnb/qDf4TjV48FB+yvoymuEUB0rqEMAwSIvB1NeMUf3143G0tM27gHl
+         CQeOie5jWRgbyZwDeeCNwZJuMGyLQpqMnBVFYenrEAGYGT8teCjEOZEmNL8qMzQlYhdx
+         Jwmj9/O/oIcwPaogSZp6QepCE0lxaekwR3cponImbpHy3TRoayZ8OaTatK+Tj++8DCsv
+         1dHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HS7Xz9JbXx1vEGCcYNCKZ37pGlnCEW9ma4hOljJDXVQ=;
-        b=gh2SasAQVWa/xmbnM1nC+1wFyT09kuX9VL554HWd9soJkQnrxptLNhEnpaPnIqsjwg
-         cwCIBReyyn0wjR4OZbMT9ME9RyGTLNh6nTTXq2oCbGVQ9GcXkLxLt/AjqmVvnviEnDj0
-         +zlmz09kjLmkKeMse7zQVQlC+l7TeJiwr1BtGEVXr7FN4oULlzKsi09lXqDeDtYxvBwF
-         UGxNlGEJInKT5m9xvSElfrgxCZiDPrPlj5L4MBH9ZKIVpu4vTpNXB04igsPY1hk7vCi2
-         KjMYuQEruuhHdJldNGAKnhNk9YPNsVl1ZLdTpe1xdFa9/flsX/vyNuOFOt7oGphRyY/O
-         MAOA==
-X-Gm-Message-State: AOAM532l7hyjWuhgSO+SwrPH1rv/RIXtBiqlAKEguxa98WGBH/Ah7Xz3
-        kPIZEj2/vGst7ukukf8jRph2i/HL6SOCfaFxk7n/dGFP
-X-Google-Smtp-Source: ABdhPJx7GwjEeapuKUbDMxBn/rPtpY92rJKOA8aDgdJi2FlI0atDXgpe8Y9SR8SiL4gWWvod9ht20kmqI5puTVcL7H0=
-X-Received: by 2002:a05:622a:3c9:: with SMTP id k9mr9474106qtx.170.1635043302030;
- Sat, 23 Oct 2021 19:41:42 -0700 (PDT)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=f5Gys53IETTypytcj25cLNa+pAceZY+D2jJPgxuWCEk=;
+        b=pNnBsqaw+jHR06l61huBV3RMkY38ZIcBvAk9+fUulH5lpFKl8pPMor7qjcccOtg3A7
+         i0B12udfIqfTJxHZY5MRX4pyjB0KTGzwwR2QZ5piLeZVLYNhetgY9uIHN9i9Q6RgdPUg
+         stOgi1RKpypRbNOeh2M8yUAVhlCtREsFQFVCyqMmVnSxTk/I7riWqvZ1k+rchY6rN4Z/
+         FPwmhi3nXtkxafUoy8EewEpdf5zqhH2mO5hcYUwOEKhLEDQ+UDCSUClqwMzX2680dCaq
+         A4EQug1AAHt9HHdnVhmZ2t8Au7Pl0JDR/niWn2WVJjUT5ZFAonEpJW6v4fuA5EOL4kh0
+         SuvA==
+X-Gm-Message-State: AOAM53080hm7kn1p7WbbgDlIWG8T9WmeqBII1dZdbwFrYhe1LA23MV2W
+        pb1QVvoBhTtRST0OPkAKEiCmxaKSW4zFbBVydZ0=
+X-Google-Smtp-Source: ABdhPJyH+Iv6n5oKGqNwM6bioBFcBU7CULAJHv+v8XuCdBW7BrusZRB+UfFvfcmxUN4dU+5ROg3oKIwu/ZXs9Eu/n3U=
+X-Received: by 2002:a17:90b:38c7:: with SMTP id nn7mr26485534pjb.214.1635059877217;
+ Sun, 24 Oct 2021 00:17:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <CA+FuTSdqS2gpdoXcyo3URn5A=yYCuW55b=grFkmiMbX2hzXcfg@mail.gmail.com>
- <20211023232608.1095185-1-cyril.strejc@skoda.cz>
-In-Reply-To: <20211023232608.1095185-1-cyril.strejc@skoda.cz>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sat, 23 Oct 2021 22:41:06 -0400
-Message-ID: <CAF=yD-K_-i1wCaRg4VqocMqL9m7OrcCy3AXVn4d8k7yXg6yz5g@mail.gmail.com>
-Subject: Re: [PATCH] net: multicast: calculate csum of looped-back and
- forwarded packets
-To:     Cyril Strejc <cyril.strejc@skoda.cz>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>
+Received: by 2002:a05:7300:2323:b0:40:38b7:ed29 with HTTP; Sun, 24 Oct 2021
+ 00:17:56 -0700 (PDT)
+Reply-To: ahmadmustafa.7800@gmail.com
+From:   Ahmad Mustafa <rubenherbert789@gmail.com>
+Date:   Sun, 24 Oct 2021 08:17:56 +0100
+Message-ID: <CAOTeY0=WO3Ci0Hc2d35ZZ1x9qRV1gj2J3bedYh8Kc5oouSuaeA@mail.gmail.com>
+Subject: LOANS AND INVESTMENT
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 23, 2021 at 7:26 PM Cyril Strejc <cyril.strejc@skoda.cz> wrote:
->
-> On 10/22/21 9:08 PM, Willem de Bruijn wrote:
-> >> We could fix this as follows:
-> >>
-> >> 1. Not set CHECKSUM_UNNECESSARY in dev_loopback_xmit(), because it
-> >>    is just not true.
-> >
-> > I think this is the right approach. The receive path has to be able to
-> > handle packets looped from the transmit path with CHECKSUM_PARTIAL
-> > set.
->
-> As You clarified, the receive path handles CHECKSUM_PARTIAL.
->
-> There is a problem with CHECKSUM_NONE -- the case when TX checksum
-> offload is not supported by a NIC. Kernel does not set
-> CHECKSUM_UNNECESSARY with a correct value of csum_level when a packet
-> is being prepared for transmission, but just set the CHECKSUM_NONE.
->
-> >> 2. I assume, the original idea behind setting CHECKSUM_UNNECESSARY in
-> >>    dev_loopback_xmit() is to prevent checksum validation of looped-back
-> >>    local multicast packets. We can adjust
-> >>    __skb_checksum_validate_needed() to handle this as the special case.
-> >>
-> >> Signed-off-by: Cyril Strejc <cyril.strejc@skoda.cz>
-> >> ---
-> >>  include/linux/skbuff.h | 4 +++-
-> >>  net/core/dev.c         | 1 -
-> >>  2 files changed, 3 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> >> index 841e2f0f5240..95aa0014c3d6 100644
-> >> --- a/include/linux/skbuff.h
-> >> +++ b/include/linux/skbuff.h
-> >> @@ -4048,7 +4048,9 @@ static inline bool __skb_checksum_validate_needed(struct sk_buff *skb,
-> >>                                                   bool zero_okay,
-> >>                                                   __sum16 check)
-> >>  {
-> >> -       if (skb_csum_unnecessary(skb) || (zero_okay && !check)) {
-> >> +       if (skb_csum_unnecessary(skb) ||
-> >> +           (zero_okay && !check) ||
-> >> +           skb->pkt_type == PACKET_LOOPBACK) {
-> >
-> > This should not be needed, as skb_csum_unnecessary already handles
-> > CHECKSUM_PARTIAL?
-> >
->
-> Still we need some solution for the CHECKSUM_NONE case which triggers
-> checksum validation.
->
-> >> diff --git a/net/core/dev.c b/net/core/dev.c
-> >> index 7ee9fecd3aff..ba4a0994d97b 100644
-> >> --- a/net/core/dev.c
-> >> +++ b/net/core/dev.c
-> >> @@ -3906,7 +3906,6 @@ int dev_loopback_xmit(struct net *net, struct sock *sk, struct sk_buff *skb)
-> >>         skb_reset_mac_header(skb);
-> >>         __skb_pull(skb, skb_network_offset(skb));
-> >>         skb->pkt_type = PACKET_LOOPBACK;
-> >> -       skb->ip_summed = CHECKSUM_UNNECESSARY;
-> >>         WARN_ON(!skb_dst(skb));
-> >>         skb_dst_force(skb);
-> >>         netif_rx_ni(skb);
-> >> --
-> >> 2.25.1
-> >>
-> >
->
-> Alternatively, we could solve the CHECKSUM_NONE case by a simple,
-> practical and historical compatible "TX->RX translation" of ip_summed
-> in dev_loopback_xmit(), which keeps CHECKSUM_PARTIAL and leaves
-> __skb_checksum_validate_needed() as is:
->
->         if (skb->ip_summed == CHECKSUM_NONE)
->                 skb->ip_summed = CHECKSUM_UNNECESSARY;
->
-> or:
->         if (skb->ip_summed != CHECKSUM_PARTIAL)
->                 skb->ip_summed = CHECKSUM_UNNECESSARY;
+Dear Sir,
 
-Based on the idea that these packets are fully checksummed, so even if
-they loop to the tx path again with ip_summed CHECKSUM_UNNECESSARY,
-they will not cause the bug that you originally reported?
+Aseel Islamic finance PJSC is private joint stock company that was
+established in 2006 and has built a leading market position for itself
+in the UAE's Islamic finance market which specializes in loan finance
+and investment activities in real estate, hospitality, industrial &
+sustainable technologies, strategic financial investments, specialized
+education, healthcare services, agriculture, manufacturing,
+minning,energy and additional environmentally sustainable projects.
 
-Yes, that looks like a nice solution.
+My name is Mr. Ibn Ahmad Mustafa . Do you have projects that require
+funding? We have finance available for your projects with over 2
+trillion private and corporate investment portfolios.  Aseel Islamic
+finance PJSC is looking for equity partners, entrepreneur, fund
+raisers and portfolio managers who will pay up to 4.5% interest and/or
+part equity position with a 5 to 10 year hold. In 2030, we plan on
+acquiring up to 2 trillion in high-quality, low risk assets and
+investments to capitalize on the current market cycle.
 
-I wonder what the behavior is for unicast packets. As it makes sense
-for the two to work the same. For instance, packets traveling over
-veth_xmit to a local socket. Their ip_summed is not adjusted as far as
-I know. If created with CHECKSUM_NONE, these will then incur an
-unnecessary checksum validation, too. Such packets are built, e.g.,
-for udp sockets with corking. They could benefit from a similar
-solution. Not suggesting for this patch, to be clear.
+Aseel Islamic finance PJSC is acting as a lender and the fund will be
+disbursed on a clear interest rate of 3.5% annually to the equity
+partners and entrepreneurs for their investment projects. We also give
+a 2% commission to brokers, who bring project owners for finance or
+other opportunities.
+
+For further details, kindly send us your business plans or project summary.
+
+Regards,
+
+
+Mr. Ibn Ahmad Mustafa
+International Business Coordinator
+Aseel Islamic Finance PJSC
+Al Mankhool, Dubai C2 Tower,
+Ground floor,P.O 94669 Dubai, UAE
+Abu Dhabi - United Arab Emirates
+Email : ahmadmustafa.7800@gmail.com
