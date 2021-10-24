@@ -2,89 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77566438BBD
-	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 22:01:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 516F3438BCD
+	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 22:25:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231610AbhJXUD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Oct 2021 16:03:26 -0400
-Received: from mleia.com ([178.79.152.223]:47018 "EHLO mail.mleia.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231259AbhJXUDZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 24 Oct 2021 16:03:25 -0400
-X-Greylist: delayed 349 seconds by postgrey-1.27 at vger.kernel.org; Sun, 24 Oct 2021 16:03:25 EDT
-Received: from mail.mleia.com (localhost [127.0.0.1])
-        by mail.mleia.com (Postfix) with ESMTP id E0A2B2E3E5;
-        Sun, 24 Oct 2021 19:55:13 +0000 (UTC)
-Subject: Re: [PATCH] net: nxp: lpc_eth.c: avoid hang when bringing interface
- down
-To:     Trevor Woerner <twoerner@gmail.com>, linux-kernel@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "moderated list:ARM/LPC32XX SOC SUPPORT" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>
-References: <20211024175003.7879-1-twoerner@gmail.com>
-From:   Vladimir Zapolskiy <vz@mleia.com>
-Message-ID: <47e68cfd-6c59-3d47-78cc-c2971c379146@mleia.com>
-Date:   Sun, 24 Oct 2021 22:55:13 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        id S231954AbhJXU1y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Oct 2021 16:27:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51768 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231942AbhJXU1u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 16:27:50 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C89BC061745
+        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 13:25:29 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1mek3Z-0004WZ-8J; Sun, 24 Oct 2021 22:25:25 +0200
+Received: from pengutronix.de (unknown [195.138.59.174])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id B674869C4BD;
+        Sun, 24 Oct 2021 18:30:38 +0000 (UTC)
+Date:   Sun, 24 Oct 2021 20:30:07 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] can: dev: replace can_priv::ctrlmode_static by
+ can_get_static_ctrlmode()
+Message-ID: <20211024183007.u5pvfnlawhf36lfn@pengutronix.de>
+References: <20211009131304.19729-1-mailhol.vincent@wanadoo.fr>
+ <20211009131304.19729-2-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-In-Reply-To: <20211024175003.7879-1-twoerner@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-49551924 
-X-CRM114-CacheID: sfid-20211024_195513_938277_201D596E 
-X-CRM114-Status: GOOD (  17.13  )
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="j2t56hliosb7bl7z"
+Content-Disposition: inline
+In-Reply-To: <20211009131304.19729-2-mailhol.vincent@wanadoo.fr>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Trevor,
 
-On 10/24/21 8:50 PM, Trevor Woerner wrote:
-> A hard hang is observed whenever the ethernet interface is brought
-> down. If the PHY is stopped before the LPC core block is reset,
-> the SoC will hang. Comparing lpc_eth_close() and lpc_eth_open() I
-> re-arranged the ordering of the functions calls in lpc_eth_close() to
-> reset the hardware before stopping the PHY.
-> 
-> Signed-off-by: Trevor Woerner <twoerner@gmail.com>
-> ---
->   drivers/net/ethernet/nxp/lpc_eth.c | 5 ++---
->   1 file changed, 2 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/nxp/lpc_eth.c b/drivers/net/ethernet/nxp/lpc_eth.c
-> index d29fe562b3de..c910fa2f40a4 100644
-> --- a/drivers/net/ethernet/nxp/lpc_eth.c
-> +++ b/drivers/net/ethernet/nxp/lpc_eth.c
-> @@ -1015,9 +1015,6 @@ static int lpc_eth_close(struct net_device *ndev)
->   	napi_disable(&pldat->napi);
->   	netif_stop_queue(ndev);
->   
-> -	if (ndev->phydev)
-> -		phy_stop(ndev->phydev);
-> -
->   	spin_lock_irqsave(&pldat->lock, flags);
->   	__lpc_eth_reset(pldat);
->   	netif_carrier_off(ndev);
-> @@ -1025,6 +1022,8 @@ static int lpc_eth_close(struct net_device *ndev)
->   	writel(0, LPC_ENET_MAC2(pldat->net_base));
->   	spin_unlock_irqrestore(&pldat->lock, flags);
->   
-> +	if (ndev->phydev)
-> +		phy_stop(ndev->phydev);
->   	clk_disable_unprepare(pldat->clk);
->   
->   	return 0;
-> 
+--j2t56hliosb7bl7z
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-thank you for the fix!
+On 09.10.2021 22:13:02, Vincent Mailhol wrote:
+> The statically enabled features of a CAN controller can be retrieved
+> using below formula:
+>=20
+> | u32 ctrlmode_static =3D priv->ctrlmode & ~priv->ctrlmode_supported;
+>=20
+> As such, there is no need to store this information. This patch remove
+> the field ctrlmode_static of struct can_priv and provides, in
+> replacement, the inline function can_get_static_ctrlmode() which
+> returns the same value.
+>=20
+> A condition sine qua non for this to work is that the controller
+> static modes should never be set in can_priv::ctrlmode_supported. This
+> is already the case for existing drivers, however, we added a warning
+> message in can_set_static_ctrlmode() to check that.
 
-Fixes: b7370112f519 ("lpc32xx: Added ethernet driver")
-Acked-by: Vladimir Zapolskiy <vz@mleia.com>
+Please make the can_set_static_ctrlmode to return an error in case of a
+problem. Adjust the drivers using the function is this patch, too.
 
---
-Best wishes,
-Vladimir
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--j2t56hliosb7bl7z
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmF1piwACgkQqclaivrt
+76kLnggAoub6uxZSjw+RAuu+7oCV8QIq8RMmqNioSlIxS+ioE8a8cA/UOwuIE9Er
+wYCqsiSeF45Hdw+UHM7Vo97STc4P+SiKNcvvEUfcrXK0bdt2rcHeG9TvcargTm4a
+RJ99/EdATlozz5r0uHElYu3jpOX9retnf8OIAVfYgqpLKhmMDE+hnI0p30TWPxqy
+g65v2IZjWtkWZwuhBUbcSVn+YfgMrorzPkKCTzt01twrV4x/9o0BiqDIjK+WXzP+
+5T89refE08e1sclogONO5hUaVN1aQSYm6Kni2NAJciuYhzqyLG4nJVBBBZHZxH7W
+fWwvIKN4BMwvNYE5rq89gcMmFDjeDQ==
+=K7iG
+-----END PGP SIGNATURE-----
+
+--j2t56hliosb7bl7z--
