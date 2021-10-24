@@ -2,142 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64016438BC4
-	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 22:17:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5B73438BEB
+	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 22:45:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231864AbhJXUTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Oct 2021 16:19:23 -0400
-Received: from smtp.skoda.cz ([185.50.127.80]:38868 "EHLO smtp.skoda.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229638AbhJXUTW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 24 Oct 2021 16:19:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; d=skoda.cz; s=plzenaugust2021; c=relaxed/simple;
-        q=dns/txt; i=@skoda.cz; t=1635106619; x=1635711419;
-        h=From:Sender:Reply-To:Subject:Date:Message-Id:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=dL7ig5f91ceHpdYenapsZAoHOlbl4yJxodwkpIUiazE=;
-        b=J7y4bkRAIMoMsTctE7jmxG6u6GTzeOpgnxSQQkW3WpbOJpUZOO7kgXXuRb42Cjt9
-        wNjg3Eh8rYPiNQ0iX00cTHodMFnDHJW9ETI63Pn6mQevGuev5+LiSQ3nsDpKYfBY
-        yfJkCvo3ZQVCpvOvAUJMCfttUaW1Qnlj139pwat27RAooS8QYYNiJDFmVQ8QJQ4z
-        FYf80oihZgPw8oLHTZi2AcWRSzaj5ih4KWONUvgS+xwFYfuPPAnyc7IDs1cDRLH8
-        pzmluKNNRXO9iz7WTvOmbheoOmEPpwGtKFeJOTpRu3V4l8i1HsgZb0008ZfkdMNf
-        +290x7OhSywpn3FC1fJ+Lg==;
-X-AuditID: 0a2a0137-1666f70000011b28-d0-6175bf3b1a4c
-Received: from trnn1532h.skoda.cz (TRNN1501.skoda.cz [10.99.100.53])
-        (using TLS with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S232140AbhJXUrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Oct 2021 16:47:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56002 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232078AbhJXUrQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 16:47:16 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C2C5C061767
+        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 13:44:55 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1mekMP-0006NL-Sk
+        for netdev@vger.kernel.org; Sun, 24 Oct 2021 22:44:53 +0200
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id A6BBF69C575
+        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 20:43:30 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by smtp.skoda.cz (Mail Gateway) with SMTP id BA.6A.06952.B3FB5716; Sun, 24 Oct 2021 22:16:59 +0200 (CEST)
-From:   Cyril Strejc <cyril.strejc@skoda.cz>
-To:     davem@davemloft.net, kuba@kernel.org,
-        willemdebruijn.kernel@gmail.com
-Cc:     netdev@vger.kernel.org, cyril.strejc@skoda.cz
-Subject: [PATCH v2] net: multicast: calculate csum of looped-back and forwarded packets
-Date:   Sun, 24 Oct 2021 22:14:25 +0200
-Message-Id: <20211024201423.1367844-1-cyril.strejc@skoda.cz>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211019114441.1943131-1-cyril.strejc@skoda.cz>
-References: <20211019114441.1943131-1-cyril.strejc@skoda.cz>
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 9020E69C552;
+        Sun, 24 Oct 2021 20:43:28 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 09a09ddf;
+        Sun, 24 Oct 2021 20:43:27 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: pull-request: can-next 2021-10-24
+Date:   Sun, 24 Oct 2021 22:43:10 +0200
+Message-Id: <20211024204325.3293425-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupiluLIzCtJLcpLzFFi42LhSk4x1bXeX5po8PqmicXe11vZLeacb2Gx
-        uLCtj9Xi2AIxi8U/NzA5sHpsWXmTyWPnrLvsHptWdbJ5vLhxkdXj8ya5ANYoLpuU1JzMstQi
-        fbsEroyGz33sBb3SFWsO97A0MH4X7WLk5JAQMJG4vegcUxcjF4eQwDwmiUuXTzGCJNgEtCTm
-        dk5mBrFFBHwlTvYfYwOxmQWMJRZ9WckOYgsLhEtc278ezGYRUJV4/ecuE4jNK2AjcX3/HmaI
-        BfISMy99B6vhFLCVOPtsLZgtBFQz98oeqHpBiZMzn7BAzJeXaN46m3kCI+8sJKlZSFILGJlW
-        MfIW55YU6BVn56ck6iVXbWIEhZcWo/kOxhun3A4xMnEwHmKU4GBWEuG1+VSSKMSbklhZlVqU
-        H19UmpNafIhRmoNFSZzXfa5OopBAemJJanZqakFqEUyWiYNTqoExP/xSSWkbE2+B2/bSMv+E
-        5Rfr3TpF8zQ+t2yx69n17azGbe6UjR1h6nOerPCYuIQ758HF+V5C6/l360UmX+ad4LjomJzy
-        KdcFdxYqnebN+K9qyFTdWOYc/DDjzqv28IgTE3Imzt7Ba6Puf2VBgOaHNx+8nl2WjbjPmK33
-        sucn5z6+lRZ6OwKVWIozEg21mIuKEwGSi0KeHQIAAA==
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-During a testing of an user-space application which transmits UDP
-multicast datagrams and utilizes multicast routing to send the UDP
-datagrams out of defined network interfaces, I've found a multicast
-router does not fill-in UDP checksum into locally produced, looped-back
-and forwarded UDP datagrams, if an original output NIC the datagrams
-are sent to has UDP TX checksum offload enabled.
+Hello Jakub, hello David,
 
-The datagrams are sent malformed out of the NIC the datagrams have been
-forwarded to.
+this is a pull request of 15 patches for net-next/master.
 
-It is because:
+The first patch is by Thomas Gleixner and makes use of
+hrtimer_forward_now() in the CAN broad cast manager (bcm).
 
-1. If TX checksum offload is enabled on the output NIC, UDP checksum
-   is not calculated by kernel and is not filled into skb data.
+The next patch is by me and changes the type of the variables used in
+the CAN bit timing calculation can_fixup_bittiming() to unsigned int.
 
-2. dev_loopback_xmit(), which is called solely by
-   ip_mc_finish_output(), sets skb->ip_summed = CHECKSUM_UNNECESSARY
-   unconditionally.
+Vincent Mailhol provides 6 patches targeting the CAN device
+infrastructure. The CAN-FD specific Transmitter Delay Compensation
+(TDC) is updated and configuration via the CAN netlink interface is
+added.
 
-3. Since 35fc92a9 ("[NET]: Allow forwarding of ip_summed except
-   CHECKSUM_COMPLETE"), the ip_summed value is preserved during
-   forwarding.
+Qing Wang's patch updates the at91 and janz-ican3 drivers to use
+sysfs_emit() instead of snprintf() in the sysfs show functions.
 
-4. If ip_summed != CHECKSUM_PARTIAL, checksum is not calculated during
-   a packet egress.
+Geert Uytterhoeven's patch drops the unneeded ARM dependency from the
+rar Kconfig.
 
-The minimum fix in dev_loopback_xmit():
+Cai Huoqing's patch converts the mscan driver to make use of the
+dev_err_probe() helper function.
 
-1. Preserves skb->ip_summed CHECKSUM_PARTIAL. This is the
-   case when the original output NIC has TX checksum offload enabled.
-   The effects are:
+A patch by me against the gsusb driver changes the printf format
+strings to use %u to print unsigned values.
 
-     a) If the forwarding destination interface supports TX checksum
-        offloading, the NIC driver is responsible to fill-in the
-        checksum.
+Stephane Grosjean's patch updates the peak_usb CAN-FD driver to use
+the 64 bit timestamps provided by the hardware.
 
-     b) If the forwarding destination interface does NOT support TX
-        checksum offloading, checksums are filled-in by kernel before
-        skb is submitted to the NIC driver.
+The last 2 patches target the xilinx_can driver. Michal Simek provides
+a patch that removes repeated word from the kernel-doc and Dongliang
+Mu's patch removes a redundant netif_napi_del() from the xcan_remove()
+function.
 
-     c) For local delivery, checksum validation is skipped as in the
-        case of CHECKSUM_UNNECESSARY, thanks to skb_csum_unnecessary().
+regards,
+Marc
 
-2. Translates ip_summed CHECKSUM_NONE to CHECKSUM_UNNECESSARY. It
-   means, for CHECKSUM_NONE, the behavior is unmodified and is there
-   to skip a looped-back packet local delivery checksum validation.
-
-Signed-off-by: Cyril Strejc <cyril.strejc@skoda.cz>
 ---
- include/net/udp.h | 5 +++--
- net/core/dev.c    | 3 ++-
- 2 files changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/udp.h b/include/net/udp.h
-index 360df454356c..909ecf447e0f 100644
---- a/include/net/udp.h
-+++ b/include/net/udp.h
-@@ -494,8 +494,9 @@ static inline struct sk_buff *udp_rcv_segment(struct sock *sk,
- 	 * CHECKSUM_NONE in __udp_gso_segment. UDP GRO indeed builds partial
- 	 * packets in udp_gro_complete_segment. As does UDP GSO, verified by
- 	 * udp_send_skb. But when those packets are looped in dev_loopback_xmit
--	 * their ip_summed is set to CHECKSUM_UNNECESSARY. Reset in this
--	 * specific case, where PARTIAL is both correct and required.
-+	 * their ip_summed CHECKSUM_NONE is changed to CHECKSUM_UNNECESSARY.
-+	 * Reset in this specific case, where PARTIAL is both correct and
-+	 * required.
- 	 */
- 	if (skb->pkt_type == PACKET_LOOPBACK)
- 		skb->ip_summed = CHECKSUM_PARTIAL;
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 7ee9fecd3aff..c0009c3f88a0 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -3906,7 +3906,8 @@ int dev_loopback_xmit(struct net *net, struct sock *sk, struct sk_buff *skb)
- 	skb_reset_mac_header(skb);
- 	__skb_pull(skb, skb_network_offset(skb));
- 	skb->pkt_type = PACKET_LOOPBACK;
--	skb->ip_summed = CHECKSUM_UNNECESSARY;
-+	if (skb->ip_summed == CHECKSUM_NONE)
-+		skb->ip_summed = CHECKSUM_UNNECESSARY;
- 	WARN_ON(!skb_dst(skb));
- 	skb_dst_force(skb);
- 	netif_rx_ni(skb);
--- 
-2.25.1
+The following changes since commit 4d98bb0d7ec2d0b417df6207b0bafe1868bad9f8:
+
+  net: macb: Use mdio child node for MDIO bus if it exists (2021-10-24 13:44:39 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git tags/linux-can-next-for-5.16-20211024
+
+for you to fetch changes up to b9b8218bb3c064628799f83c754dbebd124bd498:
+
+  can: xilinx_can: xcan_remove(): remove redundant netif_napi_del() (2021-10-24 16:26:05 +0200)
+
+----------------------------------------------------------------
+linux-can-next-for-5.16-20211024
+
+----------------------------------------------------------------
+Cai Huoqing (1):
+      can: mscan: mpc5xxx_can: Make use of the helper function dev_err_probe()
+
+Dongliang Mu (1):
+      can: xilinx_can: xcan_remove(): remove redundant netif_napi_del()
+
+Geert Uytterhoeven (1):
+      can: rcar: drop unneeded ARM dependency
+
+Marc Kleine-Budde (2):
+      can: bittiming: can_fixup_bittiming(): change type of tseg1 and alltseg to unsigned int
+      can: gs_usb: use %u to print unsigned values
+
+Michal Simek (1):
+      can: xilinx_can: remove repeated word from the kernel-doc
+
+Qing Wang (1):
+      can: at91/janz-ican3: replace snprintf() in show functions with sysfs_emit()
+
+Stephane Grosjean (1):
+      can: peak_usb: CANFD: store 64-bits hw timestamps
+
+Thomas Gleixner (1):
+      can: bcm: Use hrtimer_forward_now()
+
+Vincent Mailhol (6):
+      can: bittiming: allow TDC{V,O} to be zero and add can_tdc_const::tdc{v,o,f}_min
+      can: bittiming: change unit of TDC parameters to clock periods
+      can: bittiming: change can_calc_tdco()'s prototype to not directly modify priv
+      can: netlink: add interface for CAN-FD Transmitter Delay Compensation (TDC)
+      can: netlink: add can_priv::do_get_auto_tdcv() to retrieve tdcv from device
+      can: dev: add can_tdc_get_relative_tdco() helper function
+
+ drivers/net/can/at91_can.c                   |   4 +-
+ drivers/net/can/dev/bittiming.c              |  30 ++--
+ drivers/net/can/dev/netlink.c                | 221 ++++++++++++++++++++++++++-
+ drivers/net/can/janz-ican3.c                 |   2 +-
+ drivers/net/can/mscan/mpc5xxx_can.c          |   6 +-
+ drivers/net/can/rcar/Kconfig                 |   4 +-
+ drivers/net/can/usb/etas_es58x/es58x_fd.c    |   7 +-
+ drivers/net/can/usb/gs_usb.c                 |  12 +-
+ drivers/net/can/usb/peak_usb/pcan_usb_core.c |  13 ++
+ drivers/net/can/usb/peak_usb/pcan_usb_core.h |   1 +
+ drivers/net/can/usb/peak_usb/pcan_usb_fd.c   |   9 +-
+ drivers/net/can/xilinx_can.c                 |   7 +-
+ include/linux/can/bittiming.h                |  89 ++++++++---
+ include/linux/can/dev.h                      |  34 +++++
+ include/uapi/linux/can/netlink.h             |  31 +++-
+ net/can/bcm.c                                |   2 +-
+ 16 files changed, 402 insertions(+), 70 deletions(-)
+
 
