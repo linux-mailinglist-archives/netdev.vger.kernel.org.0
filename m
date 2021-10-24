@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64FE5438808
-	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 11:45:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26B2843880A
+	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 11:45:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231511AbhJXJsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Oct 2021 05:48:00 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:26114 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230227AbhJXJr6 (ORCPT
+        id S231569AbhJXJsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Oct 2021 05:48:02 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:14852 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230249AbhJXJr6 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 05:47:58 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4HcY7M0QZGz1DG8m;
-        Sun, 24 Oct 2021 17:43:43 +0800 (CST)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HcY3l2lvdz8yYh;
+        Sun, 24 Oct 2021 17:40:35 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
  dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -27,9 +27,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <wangjie125@huawei.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
         <chenhao288@hisilicon.com>
-Subject: [PATCH net-next 1/8] net: hns3: add debugfs support for interrupt coalesce
-Date:   Sun, 24 Oct 2021 17:41:08 +0800
-Message-ID: <20211024094115.42158-2-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 2/8] net: hns3: modify mac statistics update process for compatibility
+Date:   Sun, 24 Oct 2021 17:41:09 +0800
+Message-ID: <20211024094115.42158-3-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211024094115.42158-1-huangguangbin2@huawei.com>
 References: <20211024094115.42158-1-huangguangbin2@huawei.com>
@@ -44,222 +44,213 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Huazhong Tan <tanhuazhong@huawei.com>
+After querying mac statistics from firmware, driver copies data from
+descriptors to struct mac_stats of hdev, and the number of copied data
+is just according to the register number queried from firmware. There is
+a problem that if the register number queried from firmware is larger
+than data number of struct mac_stats, it will cause a copy overflow.
 
-Since user may need to check the current configuration of the
-interrupt coalesce, so add debugfs support for query this info.
+So if the firmware adds more mac statistics in later version, it is not
+compatible with driver of old version.
 
-Create a single file "coalesce_info" for it, and query it by
-"cat coalesce_info", return the result to userspace.
+To fix this problem, the number of copied data needs to be used the
+minimum value between the register number queried from firmware and
+data number of struct mac_stats.
 
-For device whose version is above V3(include V3), the GL's register
-contains usecs and 1us unit configuration. When get the usecs
-configuration from this register, it will include the confusing unit
-configuration, so add a GL mask to get the correct value, and add
-a QL mask for the frames configuration as well.
+The first descriptor has three data and there is one reserved, to
+optimize the copy process, add this reserverd data to struct mac_stats.
 
-The display style is below:
-$ cat coalesce_info
-tx interrupt coalesce info:
-VEC_ID  ALGO_STATE  PROFILE_ID  CQE_MODE  TUNE_STATE  STEPS_LEFT...
-0       IN_PROG     4           EQE       ON_TOP      0...
-1       START       3           EQE       LEFT        1...
-
-rx interrupt coalesce info:
-VEC_ID  ALGO_STATE  PROFILE_ID  CQE_MODE  TUNE_STATE  STEPS_LEFT...
-0       IN_PROG     3           EQE       LEFT        1...
-1       IN_PROG     0           EQE       ON_TOP      0...
-
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h   |   1 +
- .../ethernet/hisilicon/hns3/hns3_debugfs.c    | 119 ++++++++++++++++++
- .../net/ethernet/hisilicon/hns3/hns3_enet.h   |   3 +-
- 3 files changed, 122 insertions(+), 1 deletion(-)
+ .../hisilicon/hns3/hns3pf/hclge_main.c        | 90 +++++++++----------
+ .../hisilicon/hns3/hns3pf/hclge_main.h        |  5 +-
+ 2 files changed, 48 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index 30a3954b78e0..07c83af36831 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -299,6 +299,7 @@ enum hnae3_dbg_cmd {
- 	HNAE3_DBG_CMD_SERV_INFO,
- 	HNAE3_DBG_CMD_UMV_INFO,
- 	HNAE3_DBG_CMD_PAGE_POOL_INFO,
-+	HNAE3_DBG_CMD_COAL_INFO,
- 	HNAE3_DBG_CMD_UNKNOWN,
- };
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index be6f0a6229aa..a4e3349d2157 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -451,8 +451,9 @@ static int hclge_mac_update_stats_defective(struct hclge_dev *hdev)
+ 	u64 *data = (u64 *)(&hdev->mac_stats);
+ 	struct hclge_desc desc[HCLGE_MAC_CMD_NUM];
+ 	__le64 *desc_data;
+-	int i, k, n;
++	u32 data_size;
+ 	int ret;
++	u32 i;
  
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-index b26d43c9c088..578d693b23c2 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-@@ -343,6 +343,13 @@ static struct hns3_dbg_cmd_info hns3_dbg_cmd[] = {
- 		.buf_len = HNS3_DBG_READ_LEN,
- 		.init = hns3_dbg_common_file_init,
- 	},
-+	{
-+		.name = "coalesce_info",
-+		.cmd = HNAE3_DBG_CMD_COAL_INFO,
-+		.dentry = HNS3_DBG_DENTRY_COMMON,
-+		.buf_len = HNS3_DBG_READ_LEN_1MB,
-+		.init = hns3_dbg_common_file_init,
-+	},
- };
- 
- static struct hns3_dbg_cap_info hns3_dbg_cap[] = {
-@@ -391,6 +398,26 @@ static struct hns3_dbg_cap_info hns3_dbg_cap[] = {
+ 	hclge_cmd_setup_basic_desc(&desc[0], HCLGE_OPC_STATS_MAC, true);
+ 	ret = hclge_cmd_send(&hdev->hw, desc, HCLGE_MAC_CMD_NUM);
+@@ -463,33 +464,36 @@ static int hclge_mac_update_stats_defective(struct hclge_dev *hdev)
+ 		return ret;
  	}
- };
  
-+static const struct hns3_dbg_item coal_info_items[] = {
-+	{ "VEC_ID", 2 },
-+	{ "ALGO_STATE", 2 },
-+	{ "PROFILE_ID", 2 },
-+	{ "CQE_MODE", 2 },
-+	{ "TUNE_STATE", 2 },
-+	{ "STEPS_LEFT", 2 },
-+	{ "STEPS_RIGHT", 2 },
-+	{ "TIRED", 2 },
-+	{ "SW_GL", 2 },
-+	{ "SW_QL", 2 },
-+	{ "HW_GL", 2 },
-+	{ "HW_QL", 2 },
-+};
-+
-+static const char * const dim_cqe_mode_str[] = { "EQE", "CQE" };
-+static const char * const dim_state_str[] = { "START", "IN_PROG", "APPLY" };
-+static const char * const
-+dim_tune_stat_str[] = { "ON_TOP", "TIRED", "RIGHT", "LEFT" };
-+
- static void hns3_dbg_fill_content(char *content, u16 len,
- 				  const struct hns3_dbg_item *items,
- 				  const char **result, u16 size)
-@@ -412,6 +439,94 @@ static void hns3_dbg_fill_content(char *content, u16 len,
- 	*pos++ = '\0';
+-	for (i = 0; i < HCLGE_MAC_CMD_NUM; i++) {
+-		/* for special opcode 0032, only the first desc has the head */
+-		if (unlikely(i == 0)) {
+-			desc_data = (__le64 *)(&desc[i].data[0]);
+-			n = HCLGE_RD_FIRST_STATS_NUM;
+-		} else {
+-			desc_data = (__le64 *)(&desc[i]);
+-			n = HCLGE_RD_OTHER_STATS_NUM;
+-		}
++	/* The first desc has a 64-bit header, so data size need to minus 1 */
++	data_size = sizeof(desc) / (sizeof(u64)) - 1;
+ 
+-		for (k = 0; k < n; k++) {
+-			*data += le64_to_cpu(*desc_data);
+-			data++;
+-			desc_data++;
+-		}
++	desc_data = (__le64 *)(&desc[0].data[0]);
++	for (i = 0; i < data_size; i++) {
++		/* data memory is continuous becase only the first desc has a
++		 * header in this command
++		 */
++		*data += le64_to_cpu(*desc_data);
++		data++;
++		desc_data++;
+ 	}
+ 
+ 	return 0;
  }
  
-+static void hns3_get_coal_info(struct hns3_enet_tqp_vector *tqp_vector,
-+			       char **result, int i, bool is_tx)
-+{
-+	unsigned int gl_offset, ql_offset;
-+	struct hns3_enet_coalesce *coal;
-+	unsigned int reg_val;
-+	unsigned int j = 0;
-+	struct dim *dim;
-+	bool ql_enable;
+-static int hclge_mac_update_stats_complete(struct hclge_dev *hdev, u32 desc_num)
++static int hclge_mac_update_stats_complete(struct hclge_dev *hdev, u32 reg_num)
+ {
++#define HCLGE_REG_NUM_PER_DESC		4
 +
-+	if (is_tx) {
-+		coal = &tqp_vector->tx_group.coal;
-+		dim = &tqp_vector->tx_group.dim;
-+		gl_offset = HNS3_VECTOR_GL1_OFFSET;
-+		ql_offset = HNS3_VECTOR_TX_QL_OFFSET;
-+		ql_enable = tqp_vector->tx_group.coal.ql_enable;
-+	} else {
-+		coal = &tqp_vector->rx_group.coal;
-+		dim = &tqp_vector->rx_group.dim;
-+		gl_offset = HNS3_VECTOR_GL0_OFFSET;
-+		ql_offset = HNS3_VECTOR_RX_QL_OFFSET;
-+		ql_enable = tqp_vector->rx_group.coal.ql_enable;
-+	}
+ 	u64 *data = (u64 *)(&hdev->mac_stats);
+ 	struct hclge_desc *desc;
+ 	__le64 *desc_data;
+-	u16 i, k, n;
++	u32 data_size;
++	u32 desc_num;
+ 	int ret;
++	u32 i;
 +
-+	sprintf(result[j++], "%d", i);
-+	sprintf(result[j++], "%s", dim_state_str[dim->state]);
-+	sprintf(result[j++], "%u", dim->profile_ix);
-+	sprintf(result[j++], "%s", dim_cqe_mode_str[dim->mode]);
-+	sprintf(result[j++], "%s",
-+		dim_tune_stat_str[dim->tune_state]);
-+	sprintf(result[j++], "%u", dim->steps_left);
-+	sprintf(result[j++], "%u", dim->steps_right);
-+	sprintf(result[j++], "%u", dim->tired);
-+	sprintf(result[j++], "%u", coal->int_gl);
-+	sprintf(result[j++], "%u", coal->int_ql);
-+	reg_val = readl(tqp_vector->mask_addr + gl_offset) &
-+		  HNS3_VECTOR_GL_MASK;
-+	sprintf(result[j++], "%u", reg_val);
-+	if (ql_enable) {
-+		reg_val = readl(tqp_vector->mask_addr + ql_offset) &
-+			  HNS3_VECTOR_QL_MASK;
-+		sprintf(result[j++], "%u", reg_val);
-+	} else {
-+		sprintf(result[j++], "NA");
-+	}
-+}
-+
-+static void hns3_dump_coal_info(struct hnae3_handle *h, char *buf, int len,
-+				int *pos, bool is_tx)
-+{
-+	char data_str[ARRAY_SIZE(coal_info_items)][HNS3_DBG_DATA_STR_LEN];
-+	char *result[ARRAY_SIZE(coal_info_items)];
-+	struct hns3_enet_tqp_vector *tqp_vector;
-+	struct hns3_nic_priv *priv = h->priv;
-+	char content[HNS3_DBG_INFO_LEN];
-+	unsigned int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(coal_info_items); i++)
-+		result[i] = &data_str[i][0];
-+
-+	*pos += scnprintf(buf + *pos, len - *pos,
-+			  "%s interrupt coalesce info:\n",
-+			  is_tx ? "tx" : "rx");
-+	hns3_dbg_fill_content(content, sizeof(content), coal_info_items,
-+			      NULL, ARRAY_SIZE(coal_info_items));
-+	*pos += scnprintf(buf + *pos, len - *pos, "%s", content);
-+
-+	for (i = 0; i < priv->vector_num; i++) {
-+		tqp_vector = &priv->tqp_vector[i];
-+		hns3_get_coal_info(tqp_vector, result, i, is_tx);
-+		hns3_dbg_fill_content(content, sizeof(content), coal_info_items,
-+				      (const char **)result,
-+				      ARRAY_SIZE(coal_info_items));
-+		*pos += scnprintf(buf + *pos, len - *pos, "%s", content);
-+	}
-+}
-+
-+static int hns3_dbg_coal_info(struct hnae3_handle *h, char *buf, int len)
-+{
-+	int pos = 0;
-+
-+	hns3_dump_coal_info(h, buf, len, &pos, true);
-+	pos += scnprintf(buf + pos, len - pos, "\n");
-+	hns3_dump_coal_info(h, buf, len, &pos, false);
-+
-+	return 0;
-+}
-+
- static const struct hns3_dbg_item tx_spare_info_items[] = {
- 	{ "QUEUE_ID", 2 },
- 	{ "COPYBREAK", 2 },
-@@ -1056,6 +1171,10 @@ static const struct hns3_dbg_func hns3_dbg_cmd_func[] = {
- 		.cmd = HNAE3_DBG_CMD_PAGE_POOL_INFO,
- 		.dbg_dump = hns3_dbg_page_pool_info,
- 	},
-+	{
-+		.cmd = HNAE3_DBG_CMD_COAL_INFO,
-+		.dbg_dump = hns3_dbg_coal_info,
-+	},
- };
++	/* The first desc has a 64-bit header, so need to consider it */
++	desc_num = reg_num / HCLGE_REG_NUM_PER_DESC + 1;
  
- static int hns3_dbg_read_cmd(struct hns3_dbg_data *dbg_data,
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index f09a61d9c626..1715c98d906d 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -189,12 +189,13 @@ enum hns3_nic_state {
- #define HNS3_MAX_TSO_SIZE			1048576U
- #define HNS3_MAX_NON_TSO_SIZE			9728U
+ 	/* This may be called inside atomic sections,
+ 	 * so GFP_ATOMIC is more suitalbe here
+@@ -505,21 +509,16 @@ static int hclge_mac_update_stats_complete(struct hclge_dev *hdev, u32 desc_num)
+ 		return ret;
+ 	}
  
+-	for (i = 0; i < desc_num; i++) {
+-		/* for special opcode 0034, only the first desc has the head */
+-		if (i == 0) {
+-			desc_data = (__le64 *)(&desc[i].data[0]);
+-			n = HCLGE_RD_FIRST_STATS_NUM;
+-		} else {
+-			desc_data = (__le64 *)(&desc[i]);
+-			n = HCLGE_RD_OTHER_STATS_NUM;
+-		}
++	data_size = min_t(u32, sizeof(hdev->mac_stats) / sizeof(u64), reg_num);
+ 
+-		for (k = 0; k < n; k++) {
+-			*data += le64_to_cpu(*desc_data);
+-			data++;
+-			desc_data++;
+-		}
++	desc_data = (__le64 *)(&desc[0].data[0]);
++	for (i = 0; i < data_size; i++) {
++		/* data memory is continuous becase only the first desc has a
++		 * header in this command
++		 */
++		*data += le64_to_cpu(*desc_data);
++		data++;
++		desc_data++;
+ 	}
+ 
+ 	kfree(desc);
+@@ -527,40 +526,41 @@ static int hclge_mac_update_stats_complete(struct hclge_dev *hdev, u32 desc_num)
+ 	return 0;
+ }
+ 
+-static int hclge_mac_query_reg_num(struct hclge_dev *hdev, u32 *desc_num)
++static int hclge_mac_query_reg_num(struct hclge_dev *hdev, u32 *reg_num)
+ {
+ 	struct hclge_desc desc;
+-	__le32 *desc_data;
+-	u32 reg_num;
+ 	int ret;
+ 
+ 	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_QUERY_MAC_REG_NUM, true);
+ 	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
+-	if (ret)
++	if (ret) {
++		dev_err(&hdev->pdev->dev,
++			"failed to query mac statistic reg number, ret = %d\n",
++			ret);
+ 		return ret;
++	}
+ 
+-	desc_data = (__le32 *)(&desc.data[0]);
+-	reg_num = le32_to_cpu(*desc_data);
 -
-+#define HNS3_VECTOR_GL_MASK			GENMASK(11, 0)
- #define HNS3_VECTOR_GL0_OFFSET			0x100
- #define HNS3_VECTOR_GL1_OFFSET			0x200
- #define HNS3_VECTOR_GL2_OFFSET			0x300
- #define HNS3_VECTOR_RL_OFFSET			0x900
- #define HNS3_VECTOR_RL_EN_B			6
-+#define HNS3_VECTOR_QL_MASK			GENMASK(9, 0)
- #define HNS3_VECTOR_TX_QL_OFFSET		0xe00
- #define HNS3_VECTOR_RX_QL_OFFSET		0xf00
+-	*desc_num = 1 + ((reg_num - 3) >> 2) +
+-		    (u32)(((reg_num - 3) & 0x3) ? 1 : 0);
++	*reg_num = le32_to_cpu(desc.data[0]);
++	if (*reg_num == 0) {
++		dev_err(&hdev->pdev->dev,
++			"mac statistic reg number is invalid!\n");
++		return -ENODATA;
++	}
  
+ 	return 0;
+ }
+ 
+ static int hclge_mac_update_stats(struct hclge_dev *hdev)
+ {
+-	u32 desc_num;
++	u32 reg_num;
+ 	int ret;
+ 
+-	ret = hclge_mac_query_reg_num(hdev, &desc_num);
++	ret = hclge_mac_query_reg_num(hdev, &reg_num);
+ 	/* The firmware supports the new statistics acquisition method */
+ 	if (!ret)
+-		ret = hclge_mac_update_stats_complete(hdev, desc_num);
++		ret = hclge_mac_update_stats_complete(hdev, reg_num);
+ 	else if (ret == -EOPNOTSUPP)
+ 		ret = hclge_mac_update_stats_defective(hdev);
+-	else
+-		dev_err(&hdev->pdev->dev, "query mac reg num fail!\n");
+ 
+ 	return ret;
+ }
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+index ca25e2edf3f0..36f1847b1c59 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+@@ -412,6 +412,7 @@ struct hclge_comm_stats_str {
+ struct hclge_mac_stats {
+ 	u64 mac_tx_mac_pause_num;
+ 	u64 mac_rx_mac_pause_num;
++	u64 rsv0;
+ 	u64 mac_tx_pfc_pri0_pkt_num;
+ 	u64 mac_tx_pfc_pri1_pkt_num;
+ 	u64 mac_tx_pfc_pri2_pkt_num;
+@@ -448,7 +449,7 @@ struct hclge_mac_stats {
+ 	u64 mac_tx_1519_2047_oct_pkt_num;
+ 	u64 mac_tx_2048_4095_oct_pkt_num;
+ 	u64 mac_tx_4096_8191_oct_pkt_num;
+-	u64 rsv0;
++	u64 rsv1;
+ 	u64 mac_tx_8192_9216_oct_pkt_num;
+ 	u64 mac_tx_9217_12287_oct_pkt_num;
+ 	u64 mac_tx_12288_16383_oct_pkt_num;
+@@ -475,7 +476,7 @@ struct hclge_mac_stats {
+ 	u64 mac_rx_1519_2047_oct_pkt_num;
+ 	u64 mac_rx_2048_4095_oct_pkt_num;
+ 	u64 mac_rx_4096_8191_oct_pkt_num;
+-	u64 rsv1;
++	u64 rsv2;
+ 	u64 mac_rx_8192_9216_oct_pkt_num;
+ 	u64 mac_rx_9217_12287_oct_pkt_num;
+ 	u64 mac_rx_12288_16383_oct_pkt_num;
 -- 
 2.33.0
 
