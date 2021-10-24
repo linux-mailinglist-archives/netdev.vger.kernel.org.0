@@ -2,82 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9132C438BB2
-	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 21:48:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77566438BBD
+	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 22:01:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232130AbhJXTuq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Oct 2021 15:50:46 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:55958 "EHLO vps0.lunn.ch"
+        id S231610AbhJXUD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Oct 2021 16:03:26 -0400
+Received: from mleia.com ([178.79.152.223]:47018 "EHLO mail.mleia.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232008AbhJXTup (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 24 Oct 2021 15:50:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:From:Sender:Reply-To:Subject:Date:
-        Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=9Jw2ytqm18+RHu+g2ogdNjEmcgbT3lBIHrOnWZPPB8Y=; b=NcNbMqwv16rMdjFIT/a2s5hD9C
-        eWWDinRQ/gqgN6RYYk7oBBbG67S2ob+N2ZxNVszpPxRS4XYHUQ2n06D9gDkKtMN+eR2YzjOCyw6/k
-        XOKscPNO/rlTlAGDOEDt3Sf2jL/xj5/0F0jnkMXh7tC+JpPGMewJHjhfx7RhiXKQ2t5k=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mejTf-00Baci-Af; Sun, 24 Oct 2021 21:48:19 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>, Walter.Stoll@duagon.com,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net 4/4] phy: phy_ethtool_ksettings_set: Lock the PHY while changing settings
-Date:   Sun, 24 Oct 2021 21:48:05 +0200
-Message-Id: <20211024194805.2762333-5-andrew@lunn.ch>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211024194805.2762333-1-andrew@lunn.ch>
-References: <20211024194805.2762333-1-andrew@lunn.ch>
+        id S231259AbhJXUDZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 24 Oct 2021 16:03:25 -0400
+X-Greylist: delayed 349 seconds by postgrey-1.27 at vger.kernel.org; Sun, 24 Oct 2021 16:03:25 EDT
+Received: from mail.mleia.com (localhost [127.0.0.1])
+        by mail.mleia.com (Postfix) with ESMTP id E0A2B2E3E5;
+        Sun, 24 Oct 2021 19:55:13 +0000 (UTC)
+Subject: Re: [PATCH] net: nxp: lpc_eth.c: avoid hang when bringing interface
+ down
+To:     Trevor Woerner <twoerner@gmail.com>, linux-kernel@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "moderated list:ARM/LPC32XX SOC SUPPORT" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>
+References: <20211024175003.7879-1-twoerner@gmail.com>
+From:   Vladimir Zapolskiy <vz@mleia.com>
+Message-ID: <47e68cfd-6c59-3d47-78cc-c2971c379146@mleia.com>
+Date:   Sun, 24 Oct 2021 22:55:13 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211024175003.7879-1-twoerner@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-49551924 
+X-CRM114-CacheID: sfid-20211024_195513_938277_201D596E 
+X-CRM114-Status: GOOD (  17.13  )
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a race condition where the PHY state machine can change
-members of the phydev structure at the same time userspace requests a
-change via ethtool. To prevent this, have phy_ethtool_ksettings_set
-take the PHY lock.
+Hi Trevor,
 
-Fixes: 2d55173e71b0 ("phy: add generic function to support ksetting support")
-Reported-by: Walter Stoll <Walter.Stoll@duagon.com>
-Suggested-by: Walter Stoll <Walter.Stoll@duagon.com>
-Tested-by: Walter Stoll <Walter.Stoll@duagon.com>
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/phy/phy.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+On 10/24/21 8:50 PM, Trevor Woerner wrote:
+> A hard hang is observed whenever the ethernet interface is brought
+> down. If the PHY is stopped before the LPC core block is reset,
+> the SoC will hang. Comparing lpc_eth_close() and lpc_eth_open() I
+> re-arranged the ordering of the functions calls in lpc_eth_close() to
+> reset the hardware before stopping the PHY.
+> 
+> Signed-off-by: Trevor Woerner <twoerner@gmail.com>
+> ---
+>   drivers/net/ethernet/nxp/lpc_eth.c | 5 ++---
+>   1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/nxp/lpc_eth.c b/drivers/net/ethernet/nxp/lpc_eth.c
+> index d29fe562b3de..c910fa2f40a4 100644
+> --- a/drivers/net/ethernet/nxp/lpc_eth.c
+> +++ b/drivers/net/ethernet/nxp/lpc_eth.c
+> @@ -1015,9 +1015,6 @@ static int lpc_eth_close(struct net_device *ndev)
+>   	napi_disable(&pldat->napi);
+>   	netif_stop_queue(ndev);
+>   
+> -	if (ndev->phydev)
+> -		phy_stop(ndev->phydev);
+> -
+>   	spin_lock_irqsave(&pldat->lock, flags);
+>   	__lpc_eth_reset(pldat);
+>   	netif_carrier_off(ndev);
+> @@ -1025,6 +1022,8 @@ static int lpc_eth_close(struct net_device *ndev)
+>   	writel(0, LPC_ENET_MAC2(pldat->net_base));
+>   	spin_unlock_irqrestore(&pldat->lock, flags);
+>   
+> +	if (ndev->phydev)
+> +		phy_stop(ndev->phydev);
+>   	clk_disable_unprepare(pldat->clk);
+>   
+>   	return 0;
+> 
 
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index d845afab1af7..a3bfb156c83d 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -798,6 +798,7 @@ int phy_ethtool_ksettings_set(struct phy_device *phydev,
- 	      duplex != DUPLEX_FULL)))
- 		return -EINVAL;
- 
-+	mutex_lock(&phydev->lock);
- 	phydev->autoneg = autoneg;
- 
- 	if (autoneg == AUTONEG_DISABLE) {
-@@ -814,8 +815,9 @@ int phy_ethtool_ksettings_set(struct phy_device *phydev,
- 	phydev->mdix_ctrl = cmd->base.eth_tp_mdix_ctrl;
- 
- 	/* Restart the PHY */
--	phy_start_aneg(phydev);
-+	_phy_start_aneg(phydev);
- 
-+	mutex_unlock(&phydev->lock);
- 	return 0;
- }
- EXPORT_SYMBOL(phy_ethtool_ksettings_set);
--- 
-2.33.0
+thank you for the fix!
 
+Fixes: b7370112f519 ("lpc32xx: Added ethernet driver")
+Acked-by: Vladimir Zapolskiy <vz@mleia.com>
+
+--
+Best wishes,
+Vladimir
