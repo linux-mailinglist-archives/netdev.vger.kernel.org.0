@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 274CF438AEC
-	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 19:18:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BD0B438AED
+	for <lists+netdev@lfdr.de>; Sun, 24 Oct 2021 19:19:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231694AbhJXRVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Oct 2021 13:21:05 -0400
+        id S231765AbhJXRVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Oct 2021 13:21:09 -0400
 Received: from mail-am6eur05on2062.outbound.protection.outlook.com ([40.107.22.62]:57952
         "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231722AbhJXRU7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 24 Oct 2021 13:20:59 -0400
+        id S231684AbhJXRVF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 24 Oct 2021 13:21:05 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XW+9U6pVSAf6BJr2Kj8a6fU/2dp72/BTsH6kxKBL3+/oaIbwbmTjUwFRaDWXWxhN2Pep8sY4htUAnZ5ojLSPAA7GBi8CmETiQXcwNYE68uKzJgFhgQjh0Ws4EwgPkM67VFWXJkdyQ4fahU/Eo/XzZ6Lcjl3FaW7fS/7K5Iix3HOpjigjXce3rOAHdKT4EhR17uJOxVpzEYDWoW2wfoLEvoo4Dhu87A4JVBbW0Av+0EkK8TxdPpeygBRus/iTkSiX+98mL0HRsBJfHvAGXMvMhN5SjjG4HYgzgWsuA15qI9xRm0NjM2cVD8q7S+lCF+yBEoAvZWlfQafgr9kENe84Ew==
+ b=jEyfnjg6234Ok/NpMKH20zqezRksXS3JUklIG2d8Gn+f3eNZ6fxrT/dutCAC1a7bfRAAI0AOfivrzVCvO9byL4eUrAP/RCnnwargpvCTuSQM+xxjYDHe7Ic7NorDNLt5/r1IAOO/AWW/SmR+k3c4/Qzwi1MRm99KNrZCXcn+Cfd/5AWun2Jaj2YctemYtJFkH3yjt/+l0uLYoGLpVCjkEycXTWWpZv4+d/G1Tu3qbpQo5Dpi+3cv+1ZXDvCA9wehl7la9EzKN196MeyU3dlouu0epGR+LRMu44+lp6esHqiGYCrc3tVBLjLkP30hjhuPJXetdY7q4BgjPQa3tnY6bA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Tvfr3WGvmQ8qzx7BveEKan7WyK5HZF3GuDvHnhgBrUU=;
- b=BigfToBkR18vAm6aGfsA9vCS2XnYjFyAjjLAw+mU/2fkF0K3c6G7afPEmsCHxeHKnqNmyQAWSc1M7CEfgP9A9yJWGVpEEdVRt0E8XmTFjfZunKg+bszMWiKRUy9Bz/FZhV6FGU78BINgjDVKXLjilGHsnHuW4kghcCJRR0+ItJsM/AWJFKK61NuW77mGrvs4WIsv/yAPdm2/pmKtwUXmC71S2RNxNDs6p0n1fG2xBVuLWSlTRodreX3sf+SC/t6Ne4QUBkk3c0gmx/3mcprgaKEVD4tRR8LnK33yYrTDBUBl6yOsfogJETKeGAP/uS+Bt+zSyRi3DjoHYiDwzAZSAw==
+ bh=h7lBnpFYrtc6djAupnyaNsXnaoEAdK35uBV7rqFrUoM=;
+ b=UQvOfBezl/MOv13JNplneLPkbgETElUvIr0jnLrXqAgUwo/5fGr6v1OlnQz2ejxRM6AF9mkLHOYMnUKChsZbS7isqy/e2gV7l1vwIBXt4e6YADFekMvlAtlVtCxl6DpCXxtrHn0lqKwmQsb+vMHR+i6B2W/xpITgiuSDgYYvnYkdvZlTMq6H8nGoMKTwba3Xi9dlnrA83dMlCw86R6PB/K6/AnMXW6i0xqTIp5yVlN5K2yoH+HQq1cN7Igo6BzYZBhpCnxdis1nvE7865LM7MOPiOq6HF0oqoL2z+t/xAjZLA43K0UvfId9nwJdfpLNo0PqBydgv3RLDwCI+SeXY+g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Tvfr3WGvmQ8qzx7BveEKan7WyK5HZF3GuDvHnhgBrUU=;
- b=jFn/AyagMY+Bgyvb+HFFgaDU3F+bt1Ux8psQf+GcELulI9ye5Bgj20pRT2tF7CC3Fq65XsBa7TOR1ZlNOh5o+9GNubjwnMGvGkpAkBKUbNcVbxdx7/e8C+E56cYHPMkC1vMIINdermJNgqfIhxSe2eHxlUWBradvc+iwiruwPGU=
+ bh=h7lBnpFYrtc6djAupnyaNsXnaoEAdK35uBV7rqFrUoM=;
+ b=Hpg//tX+cug1nEagxCPBvUZebBsU6GevM7I4Z7msxy3wvXry/mGmoqN0RkiFMJq3b5rTicEu9K5ouZZHuLJwp7ItvhYvHlYhhxgUjWsKyNqm2zb60BfBTDAqAdW5ICrQ5jF0N6lblw7qQJx8ObijCI6pEjgG5MMbdsZwVBN5nkU=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR0402MB3552.eurprd04.prod.outlook.com (2603:10a6:803:9::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18; Sun, 24 Oct
- 2021 17:18:34 +0000
+ 2021 17:18:36 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4628.020; Sun, 24 Oct 2021
- 17:18:34 +0000
+ 17:18:36 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -61,9 +61,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
         Claudiu Manoil <claudiu.manoil@nxp.com>
-Subject: [PATCH v5 net-next 05/10] net: dsa: b53: serialize access to the ARL table
-Date:   Sun, 24 Oct 2021 20:17:52 +0300
-Message-Id: <20211024171757.3753288-6-vladimir.oltean@nxp.com>
+Subject: [PATCH v5 net-next 06/10] net: dsa: lantiq_gswip: serialize access to the PCE registers
+Date:   Sun, 24 Oct 2021 20:17:53 +0300
+Message-Id: <20211024171757.3753288-7-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211024171757.3753288-1-vladimir.oltean@nxp.com>
 References: <20211024171757.3753288-1-vladimir.oltean@nxp.com>
@@ -73,223 +73,176 @@ X-ClientProxiedBy: AM6P193CA0123.EURP193.PROD.OUTLOOK.COM
  (2603:10a6:209:85::28) To VI1PR04MB5136.eurprd04.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Received: from localhost.localdomain (188.25.174.251) by AM6P193CA0123.EURP193.PROD.OUTLOOK.COM (2603:10a6:209:85::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18 via Frontend Transport; Sun, 24 Oct 2021 17:18:33 +0000
+Received: from localhost.localdomain (188.25.174.251) by AM6P193CA0123.EURP193.PROD.OUTLOOK.COM (2603:10a6:209:85::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18 via Frontend Transport; Sun, 24 Oct 2021 17:18:34 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1297cc72-1616-4ac6-39b2-08d997124f4e
+X-MS-Office365-Filtering-Correlation-Id: ff83b70c-b9f4-4398-077b-08d99712506a
 X-MS-TrafficTypeDiagnostic: VI1PR0402MB3552:
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB35521BB229A05D6A1226825FE0829@VI1PR0402MB3552.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB35521849E25F036AB48A57DDE0829@VI1PR0402MB3552.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:949;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZIIurYiz3ywlY+pq21/5kgO1hAw5DCr0jqC7jDq7r/CbddqPyPS/r+qzR77SpZRGwmn/Rn+SiSex5ZZFRqxc0B+6oV1R5GM90Rpd2D/B1SBK7G+0o1jTGixWmeQj2fPc3F868yeggl6bXKOfjA+dH0UMzC0rhwKOf50Jsue5+/wwFZJENCtZ698pFXzHGvzZ5ng7ogFLQsefPac0vJhkOl8A7pm20QP7njV5pEo/O/hxKkXJ7ZxSXHQG8tCxoBznveNC5/qDBAyeM9QqmauY4OzorQXnDqjnRaWlp9SAmepD5hHJGp/4JmUufbSqLUyoXHQriiOw6u1JTCLZcEFthwiq9K+a4WJoagLUBo+YCouvX8mduvC9T1+QKJ7+TYQFVJ748B8sRaeQdUf9gYuJdkB5RFasKp26Okj6IAlyyOh6FORJcVv/WaaK/Duu3/Lr5ZzzqkqhOz28LjGkNf4OkdyGJqV/NCJZk/0Nq4MqRPUZrruFXnUyywXyDlb2La7jQhk2VgOwblVqWwx9tQWrnpPVnr9+KsEVz2uBiaUoTWNGhoCE2Nli8qYYwClCZdKlbdlxYxWmXSTHycnEtMoosxnrMeHgZX2JssE6PBZHYv+0SjKDHQUtVLc5SDew6WnXSr94+dB9jZYVnsk+8kabOif2CXbzyWurZ13x1R/izKgIaaCPjy8TYGOZa7gqPXOX73Q5wxeFIQyqS84Rb3wKMQ==
+X-Microsoft-Antispam-Message-Info: dfoPnra3poGjytfHHMDM0S+eYkGayeLyB55KA4UcDaBs1frX78Feuhf1HV1xmx33MUyGO0bynWFkXUUZj/0f1QVejs8LJbSdKihlp/scPz2XYETLISxE5s3prnA6kpVcPsFJGTCKVoujbiJwdATsxgGK3srPeaVDlEm8TwG49RmBm88aEWgAGIEqwU58IkOeAv647qCUaUdE1gv50MsJ0Eyi7Mr07kAdSoDsrwgZg0VoOrE8ZgRW6wFcuvql50YF4zn+8P7QGjtKK7HPoE51K5CHP8gH0M9HJmi/OnJtSezf1A2r9WAGuxUnvd5WyNcvVgVrQNSJEmZ/eZrpvf6A43WzJDf8Sns2qjN7zh6q5HjUuCx2MQYKBZLkvsgPL689GTMAjHbvspy6ovbj8yXbx62qKXUe+f4eVfjyiIXz3aW/kfZJEximw+Xd/WxMaG1YMWsRQbZYNiQtuEHOTVqGiKr+aANQh1u5Jg50ugo5LFjnrqULtkw+IFrTSEq2YEmZvn06zkA+zh7xhnHPmN6HL1MVTd6snPwVUv/D356eVzTg/UK81g3MXnT8XuTOjXqEjtNWEzDGy/eMyVS5/zEXhHyvs790lD0VgtkHJZXYGHKZd6KToQeme4W30qWDC/Cp3wKxF5YzDkKka8JiKF6lMrTnCWWtJ0bPFWarTa8LSTAXTmYzBLutf0OUnyiqt6K6UGcBn8u5GLtKmiXDk6xaQQ==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6916009)(6666004)(316002)(54906003)(6512007)(38350700002)(38100700002)(26005)(2616005)(6486002)(956004)(36756003)(86362001)(7416002)(8936002)(1076003)(186003)(8676002)(508600001)(44832011)(83380400001)(2906002)(66476007)(6506007)(66556008)(52116002)(5660300002)(4326008)(66946007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Vv5si5Kng3zCzcnQpmpF8t02jmSYXT9g51o1vuhJ8Vp2wCiOf1cB1ugd5noR?=
- =?us-ascii?Q?FfINrC/7rPVHhsMmt/csX6TaOtrzVxlpXCoVrWRBZj3t7XYSKg1KYQ/+s6Xl?=
- =?us-ascii?Q?GXCOkageVqjiRuR23up+80oXAeYIsm3mE9LsKS78swyexYweTjZLir/w69sK?=
- =?us-ascii?Q?pYTiNppGye2R6pOqsX/m8YkhBrF9xrjS8wBW1yqucwS/oChiXlJaFj45khXG?=
- =?us-ascii?Q?J50s2uCSOyUxW7BAYJppgyfcdo+KBGeXcvqnhYLI3IB2kez9j+jXqrA9qYPK?=
- =?us-ascii?Q?Q55xb/G1jMaFhZsNtSF20GC+GRF675LL+HUMMWVMGu9HKrze9N6xDhyct+29?=
- =?us-ascii?Q?eSP5s00N1AVHMXtagWxb26jmesd6IfHtfdeO3fGLS3Q3E2keGrOyj4awrF1F?=
- =?us-ascii?Q?3KL3LmdxQWCtkRKhxd9WbEN66Eal5ON2Q0z9PpB+SvBtXyXIxj1cRDWaaXtf?=
- =?us-ascii?Q?g+QXsiZbVKKYUcz+N+K2B49LeB9rl9+SOelY78dz0FQ2JGrmY/vlMjze/YHp?=
- =?us-ascii?Q?jQ8U9zHaochKngOy/a08yYXMD1JWgFrRNBHe6D4uCTg8h1s9iuuNV2Zn5xob?=
- =?us-ascii?Q?Fdh/xltrprOKobsEcuDkqYbHQs7CRQkRnfW671DmBK3BM7dOyxiVt0Q/47fr?=
- =?us-ascii?Q?y8kCI9+m5ehq+Ws9swtfFO/tVbf43xza7LFG4YORr85YO53A6UmyZc/NVV/r?=
- =?us-ascii?Q?Y6DDnPgVya3TlJyTr2Jae1/ih5LGWnd6runaLjs/RsEFnZuJn5zlTrgAiPOE?=
- =?us-ascii?Q?7S3VV4RoJfDHytgPG5Awc9KELSGsleq6ytdkukIqRkSrmxaUTOq34lnX3CZ9?=
- =?us-ascii?Q?Pn2r3YXuNUJcJGrp9Evk6mm4uy8Z1kjqfi25iCh+Xg1jjRcuPQ3pY8moYlcv?=
- =?us-ascii?Q?mTfIHS4aUCWjYWhWbM9Ew3RD9dy2KOC8RJD7VqNn1KSPkzt5Ur7sCReeqFNw?=
- =?us-ascii?Q?OHKn8DFvS1KlW3mYyVhaidxggI1iNqUdLG7mOluETy+sFutwmFdiDeHV6mhT?=
- =?us-ascii?Q?/98pcelhDwp0MX59foFTkNnR5Cp91PtZ5CjiZprtKHL6A9BY+1ZTto/7a/KK?=
- =?us-ascii?Q?u5iufD6xA3IrVO8XNKek97gf4D13kx8A7rJGp2GE4OMa62UDMsFyntgFAh0z?=
- =?us-ascii?Q?yLVzZ4ag1hCeGu+jn8I4oVkjkVvXhHjE92lyw+2nxVjLoiAgEMhb8wqECief?=
- =?us-ascii?Q?UWP/H49SiNOubPscrwadnPCGYeqfV4Tt2R49IEXpU1+/sZ3q5KVlSl1qjBS4?=
- =?us-ascii?Q?unzcUOXhyh+U9oeqljd1l5lkIClKe0yEgrGS8Bbze1s8LHkgSFjtN0KLU0dD?=
- =?us-ascii?Q?BlljSiEHJJkOCMumieDmvO/KAb3dSYkUyS1/eUenD9dSI8YeDJe2HEQ+yLyV?=
- =?us-ascii?Q?RpXCrMqa4aeHLiGNssl6GEkQiqJyo5SBeEgvXveYr40KtvoSfMTYmVCAOurq?=
- =?us-ascii?Q?tiNM3f3hLbUHU2AuJH8YAZ0ejhzqOTZ1VtNGhLUnY8b4TNruWmqY3Gayi8+Y?=
- =?us-ascii?Q?0gu8WOJ+6A642XjmOYcCcj6EdP7QlQDm3rjskXBJOvSH2vsAppNS380JZcPq?=
- =?us-ascii?Q?oRfxHuzD8Z5tZoE+7v7+xo3eOgagF/F8G4hvRDwTqdAH0jF9W3qVSyKiNbgK?=
- =?us-ascii?Q?Ozt/o8BEFYfHt2OrHTvSpdc=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?boKksoYeQnGenOgrxFDEujFugWeLK7jTPbh+aBTcuToXSRkN6oamO6J/sVCJ?=
+ =?us-ascii?Q?bSp02XI8LrKN1b+0+kMWZqpy62oZ6HeoLjh5a7iyWW3rJ5i9vMDjH+f6D+8d?=
+ =?us-ascii?Q?C9QaSNVSV025VPU8boenuVaIDw+Hcgg6sKo1MmyH5ERhvh12bXrErvyDSO2k?=
+ =?us-ascii?Q?fDKs6QsgJ+neyB4aYgR1qsqDzHohaPu4CoUOQ9QdJk42vEKJXfEUXiJX16FC?=
+ =?us-ascii?Q?YcFP/GLSqzQ4Dl551aEy2nTo1qjzz5HMEKNRlLXmNxPQm6oHNuQAvaY0Vu/x?=
+ =?us-ascii?Q?dYxCcpo9hjT+O3sHC+mFQYMTRmm1TbVGhq3tnodxt/9etYSWrUPxmn8JRFmC?=
+ =?us-ascii?Q?kVzTFwPmytx9Z5CgQBZzE3nVVWAOmHKpTnnYDY4mTkvLGM/sMX4SLEZnb86H?=
+ =?us-ascii?Q?zVPTLimw5a/Nb9AEhRebjAifYf6l2wgA14q0CC1/GJ4M9bNoGlyhWCliJbE1?=
+ =?us-ascii?Q?3ANJRrHBYrQ3AiWJG1HLsHVLp8A7tjjghleHZ0rZPGG8yJxp6pnCV4GRZc1U?=
+ =?us-ascii?Q?jyewotQKTMe+xxJQDkC6qScXfjcufDGPRy7SEbgDzHtljAlUKSEfro7BFRgD?=
+ =?us-ascii?Q?tGihyXOt+wG8dHCKmjrCEC6ICOtP42y20SSVynokAYmuDqb/7xjONu4YbX+7?=
+ =?us-ascii?Q?DhH+VCpTzIOOpHU+Gc32Jmo1Ec3qkfBoLyF2d6Qx1zOng3R1jQPuzi4S1Z5z?=
+ =?us-ascii?Q?ivDeWEhHK/tw2X0t/Pz/vNDY5x/jnDDgfT56D5VuW7I6MZDVR4pEITVvHL8Q?=
+ =?us-ascii?Q?Cvy8l3FRun69pYkiR8WmvZbGM6AohJ+d76OF2MdzZbFSu86srSMmi4vnAhj4?=
+ =?us-ascii?Q?1RzN1tflmwNrss5ho3Y2Dx6Qkl6yERpqLg/JqxxVJ9nb5LkemtFAkqxtHaNO?=
+ =?us-ascii?Q?NQNCxq42HB2uR5DZxb63ried5OHQOdeCwp7DwxmTJHswhjJkzkHebmUb6Gd9?=
+ =?us-ascii?Q?uxgLJiwpEyPIFQn3HGk3YHpV0FD27eFsGzVve2ObYVCsEGetC5e7h7bD1wFK?=
+ =?us-ascii?Q?TM7o/LdcHnlvpNMJdVrtDW+v9fAwJ6vBON4J0IsjodzDkJsIm3pmdq4/2XW6?=
+ =?us-ascii?Q?VxTBxE3Hg5sCLEEq72/UvptsTbuGZcRqKfSA/2UQC21Ja2qVKLBuGb9dFXHO?=
+ =?us-ascii?Q?KdMGHYxEVJ5HPqomdGuDFRogPD2MU3GuWDzeGmq8R2WC9929jXMBbG/uiAni?=
+ =?us-ascii?Q?ABaV8d/3IHX6u0Yi500ckNH7mbxEM43LEmcVpGdwu7DFMSS4GSGbp0t1E/Wo?=
+ =?us-ascii?Q?MPR81cdzR4Sa0616iEh94Wz+uVs9bU+unrzcYqLxyL+VzUikjCHmZhoPg7YH?=
+ =?us-ascii?Q?+J7n+jOkP1LoumjNWmOxO35iXhtP9R5voOR9iwjkS1RWoHjjsN90hf6W0ITD?=
+ =?us-ascii?Q?DCHXOK5LGPdQTT1Nzx7c4AdS4kldIf9cPRD6HtLzSvrsYnX1vw88gwlaJom/?=
+ =?us-ascii?Q?Hy6dJF47DBw/jtm39k5PoqEX7E/o4brxz14GRblVm4injHj+6CMo2i4TL7tK?=
+ =?us-ascii?Q?frYwdx3H0afuF6HCUp4OI4pJgFBMY2RLv0LzB1Yv2u4nY5u9l1G9XM3YN8kX?=
+ =?us-ascii?Q?PNsXfEu2q0IB1jU4x8s7OD6WAoAcIPZdq2n/FVhBJf6DBgja8SrnACIL3TlE?=
+ =?us-ascii?Q?QrdfyKtLJ+U9afDUbKC0KWY=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1297cc72-1616-4ac6-39b2-08d997124f4e
+X-MS-Exchange-CrossTenant-Network-Message-Id: ff83b70c-b9f4-4398-077b-08d99712506a
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Oct 2021 17:18:34.6647
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Oct 2021 17:18:36.5336
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cqPaNPtkKhgcgI5sdMc9Z31zQ4hcPL2L6+TZmqTCVYa98BnAxdcxawrl31Q9ZPprjOMj/ikV3Jryt7Yn22Sqww==
+X-MS-Exchange-CrossTenant-UserPrincipalName: EAFVK9jyIB09cpy8QspMsVPNIjXKcLl9AyAo/IbKRr765etlsp4QL1UPpdQyRaywQYj0wgLqyK0RJdJLtEFTeQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3552
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The b53 driver performs non-atomic transactions to the ARL table when
-adding, deleting and reading FDB and MDB entries.
+The GSWIP switch accesses various bridging layer tables (VLANs, FDBs,
+forwarding rules) indirectly through PCE registers. These hardware
+accesses are non-atomic, being comprised of several register reads and
+writes.
 
-Traditionally these were all serialized by the rtnl_lock(), but now it
-is possible that DSA calls ->port_fdb_add and ->port_fdb_del without
-holding that lock.
+These accesses are currently serialized by the rtnl_lock, but DSA is
+changing its driver API and that lock will no longer be held when
+calling ->port_fdb_add() and ->port_fdb_del().
 
-So the driver must have its own serialization logic. Add a mutex and
-hold it from all entry points (->port_fdb_{add,del,dump},
-->port_mdb_{add,del}).
+So this driver needs to serialize the access to the PCE registers using
+its own locking scheme. This patch adds that.
+
+Note that the driver also uses the gswip_pce_load_microcode() function
+to load a static configuration for the packet classification engine into
+a table using the same registers. It is currently not protected, but
+since that configuration is only done from the dsa_switch_ops :: setup
+method, there is no risk of it being concurrent with other operations.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
 ---
-v2->v3: unlock arl_mutex centrally in b53_fdb_dump
-v3->v4: use __must_hold
-v4->v5: revert changes made in v4
+v3->v4: call mutex_init
+v4->v5: slightly reword the commit message according to Hauke's indications
 
- drivers/net/dsa/b53/b53_common.c | 36 +++++++++++++++++++++++++-------
- drivers/net/dsa/b53/b53_priv.h   |  1 +
- 2 files changed, 30 insertions(+), 7 deletions(-)
+ drivers/net/dsa/lantiq_gswip.c | 28 +++++++++++++++++++++++-----
+ 1 file changed, 23 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 06279ba64cc8..651ac72eed7f 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -1544,7 +1544,7 @@ int b53_vlan_del(struct dsa_switch *ds, int port,
- }
- EXPORT_SYMBOL(b53_vlan_del);
+diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
+index dbd4486a173f..1a96df70d1e8 100644
+--- a/drivers/net/dsa/lantiq_gswip.c
++++ b/drivers/net/dsa/lantiq_gswip.c
+@@ -276,6 +276,7 @@ struct gswip_priv {
+ 	int num_gphy_fw;
+ 	struct gswip_gphy_fw *gphy_fw;
+ 	u32 port_vlan_filter;
++	struct mutex pce_table_lock;
+ };
  
--/* Address Resolution Logic routines */
-+/* Address Resolution Logic routines. Caller must hold &dev->arl_mutex. */
- static int b53_arl_op_wait(struct b53_device *dev)
- {
- 	unsigned int timeout = 10;
-@@ -1709,6 +1709,7 @@ int b53_fdb_add(struct dsa_switch *ds, int port,
- 		const unsigned char *addr, u16 vid)
- {
- 	struct b53_device *priv = ds->priv;
-+	int ret;
+ struct gswip_pce_table_entry {
+@@ -523,10 +524,14 @@ static int gswip_pce_table_entry_read(struct gswip_priv *priv,
+ 	u16 addr_mode = tbl->key_mode ? GSWIP_PCE_TBL_CTRL_OPMOD_KSRD :
+ 					GSWIP_PCE_TBL_CTRL_OPMOD_ADRD;
  
- 	/* 5325 and 5365 require some more massaging, but could
- 	 * be supported eventually
-@@ -1716,7 +1717,11 @@ int b53_fdb_add(struct dsa_switch *ds, int port,
- 	if (is5325(priv) || is5365(priv))
- 		return -EOPNOTSUPP;
- 
--	return b53_arl_op(priv, 0, port, addr, vid, true);
-+	mutex_lock(&priv->arl_mutex);
-+	ret = b53_arl_op(priv, 0, port, addr, vid, true);
-+	mutex_unlock(&priv->arl_mutex);
++	mutex_lock(&priv->pce_table_lock);
 +
-+	return ret;
- }
- EXPORT_SYMBOL(b53_fdb_add);
+ 	err = gswip_switch_r_timeout(priv, GSWIP_PCE_TBL_CTRL,
+ 				     GSWIP_PCE_TBL_CTRL_BAS);
+-	if (err)
++	if (err) {
++		mutex_unlock(&priv->pce_table_lock);
+ 		return err;
++	}
  
-@@ -1724,8 +1729,13 @@ int b53_fdb_del(struct dsa_switch *ds, int port,
- 		const unsigned char *addr, u16 vid)
- {
- 	struct b53_device *priv = ds->priv;
-+	int ret;
+ 	gswip_switch_w(priv, tbl->index, GSWIP_PCE_TBL_ADDR);
+ 	gswip_switch_mask(priv, GSWIP_PCE_TBL_CTRL_ADDR_MASK |
+@@ -536,8 +541,10 @@ static int gswip_pce_table_entry_read(struct gswip_priv *priv,
  
--	return b53_arl_op(priv, 0, port, addr, vid, false);
-+	mutex_lock(&priv->arl_mutex);
-+	ret = b53_arl_op(priv, 0, port, addr, vid, false);
-+	mutex_unlock(&priv->arl_mutex);
-+
-+	return ret;
- }
- EXPORT_SYMBOL(b53_fdb_del);
+ 	err = gswip_switch_r_timeout(priv, GSWIP_PCE_TBL_CTRL,
+ 				     GSWIP_PCE_TBL_CTRL_BAS);
+-	if (err)
++	if (err) {
++		mutex_unlock(&priv->pce_table_lock);
+ 		return err;
++	}
  
-@@ -1782,6 +1792,8 @@ int b53_fdb_dump(struct dsa_switch *ds, int port,
- 	int ret;
- 	u8 reg;
+ 	for (i = 0; i < ARRAY_SIZE(tbl->key); i++)
+ 		tbl->key[i] = gswip_switch_r(priv, GSWIP_PCE_TBL_KEY(i));
+@@ -553,6 +560,8 @@ static int gswip_pce_table_entry_read(struct gswip_priv *priv,
+ 	tbl->valid = !!(crtl & GSWIP_PCE_TBL_CTRL_VLD);
+ 	tbl->gmap = (crtl & GSWIP_PCE_TBL_CTRL_GMAP_MASK) >> 7;
  
-+	mutex_lock(&priv->arl_mutex);
-+
- 	/* Start search operation */
- 	reg = ARL_SRCH_STDN;
- 	b53_write8(priv, B53_ARLIO_PAGE, B53_ARL_SRCH_CTL, reg);
-@@ -1789,18 +1801,18 @@ int b53_fdb_dump(struct dsa_switch *ds, int port,
- 	do {
- 		ret = b53_arl_search_wait(priv);
- 		if (ret)
--			return ret;
-+			break;
- 
- 		b53_arl_search_rd(priv, 0, &results[0]);
- 		ret = b53_fdb_copy(port, &results[0], cb, data);
- 		if (ret)
--			return ret;
-+			break;
- 
- 		if (priv->num_arl_bins > 2) {
- 			b53_arl_search_rd(priv, 1, &results[1]);
- 			ret = b53_fdb_copy(port, &results[1], cb, data);
- 			if (ret)
--				return ret;
-+				break;
- 
- 			if (!results[0].is_valid && !results[1].is_valid)
- 				break;
-@@ -1808,6 +1820,8 @@ int b53_fdb_dump(struct dsa_switch *ds, int port,
- 
- 	} while (count++ < b53_max_arl_entries(priv) / 2);
- 
-+	mutex_unlock(&priv->arl_mutex);
++	mutex_unlock(&priv->pce_table_lock);
 +
  	return 0;
  }
- EXPORT_SYMBOL(b53_fdb_dump);
-@@ -1816,6 +1830,7 @@ int b53_mdb_add(struct dsa_switch *ds, int port,
- 		const struct switchdev_obj_port_mdb *mdb)
- {
- 	struct b53_device *priv = ds->priv;
-+	int ret;
  
- 	/* 5325 and 5365 require some more massaging, but could
- 	 * be supported eventually
-@@ -1823,7 +1838,11 @@ int b53_mdb_add(struct dsa_switch *ds, int port,
- 	if (is5325(priv) || is5365(priv))
- 		return -EOPNOTSUPP;
+@@ -565,10 +574,14 @@ static int gswip_pce_table_entry_write(struct gswip_priv *priv,
+ 	u16 addr_mode = tbl->key_mode ? GSWIP_PCE_TBL_CTRL_OPMOD_KSWR :
+ 					GSWIP_PCE_TBL_CTRL_OPMOD_ADWR;
  
--	return b53_arl_op(priv, 0, port, mdb->addr, mdb->vid, true);
-+	mutex_lock(&priv->arl_mutex);
-+	ret = b53_arl_op(priv, 0, port, mdb->addr, mdb->vid, true);
-+	mutex_unlock(&priv->arl_mutex);
++	mutex_lock(&priv->pce_table_lock);
 +
-+	return ret;
+ 	err = gswip_switch_r_timeout(priv, GSWIP_PCE_TBL_CTRL,
+ 				     GSWIP_PCE_TBL_CTRL_BAS);
+-	if (err)
++	if (err) {
++		mutex_unlock(&priv->pce_table_lock);
+ 		return err;
++	}
+ 
+ 	gswip_switch_w(priv, tbl->index, GSWIP_PCE_TBL_ADDR);
+ 	gswip_switch_mask(priv, GSWIP_PCE_TBL_CTRL_ADDR_MASK |
+@@ -600,8 +613,12 @@ static int gswip_pce_table_entry_write(struct gswip_priv *priv,
+ 	crtl |= GSWIP_PCE_TBL_CTRL_BAS;
+ 	gswip_switch_w(priv, crtl, GSWIP_PCE_TBL_CTRL);
+ 
+-	return gswip_switch_r_timeout(priv, GSWIP_PCE_TBL_CTRL,
+-				      GSWIP_PCE_TBL_CTRL_BAS);
++	err = gswip_switch_r_timeout(priv, GSWIP_PCE_TBL_CTRL,
++				     GSWIP_PCE_TBL_CTRL_BAS);
++
++	mutex_unlock(&priv->pce_table_lock);
++
++	return err;
  }
- EXPORT_SYMBOL(b53_mdb_add);
  
-@@ -1833,7 +1852,9 @@ int b53_mdb_del(struct dsa_switch *ds, int port,
- 	struct b53_device *priv = ds->priv;
- 	int ret;
+ /* Add the LAN port into a bridge with the CPU port by
+@@ -2106,6 +2123,7 @@ static int gswip_probe(struct platform_device *pdev)
+ 	priv->ds->priv = priv;
+ 	priv->ds->ops = priv->hw_info->ops;
+ 	priv->dev = dev;
++	mutex_init(&priv->pce_table_lock);
+ 	version = gswip_switch_r(priv, GSWIP_VERSION);
  
-+	mutex_lock(&priv->arl_mutex);
- 	ret = b53_arl_op(priv, 0, port, mdb->addr, mdb->vid, false);
-+	mutex_unlock(&priv->arl_mutex);
- 	if (ret)
- 		dev_err(ds->dev, "failed to delete MDB entry\n");
- 
-@@ -2670,6 +2691,7 @@ struct b53_device *b53_switch_alloc(struct device *base,
- 
- 	mutex_init(&dev->reg_mutex);
- 	mutex_init(&dev->stats_mutex);
-+	mutex_init(&dev->arl_mutex);
- 
- 	return dev;
- }
-diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
-index 544101e74bca..579da74ada64 100644
---- a/drivers/net/dsa/b53/b53_priv.h
-+++ b/drivers/net/dsa/b53/b53_priv.h
-@@ -107,6 +107,7 @@ struct b53_device {
- 
- 	struct mutex reg_mutex;
- 	struct mutex stats_mutex;
-+	struct mutex arl_mutex;
- 	const struct b53_io_ops *ops;
- 
- 	/* chip specific data */
+ 	np = dev->of_node;
 -- 
 2.25.1
 
