@@ -2,146 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9550439EB5
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 20:51:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71701439EBF
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 20:54:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231128AbhJYSyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 14:54:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44774 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232653AbhJYSyC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 14:54:02 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97631C061767
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 11:51:39 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1mf53b-0008I3-JX; Mon, 25 Oct 2021 20:50:51 +0200
-Received: from pengutronix.de (2a03-f580-87bc-d400-e094-d8e8-b5aa-4a00.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:e094:d8e8:b5aa:4a00])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 8048569DABA;
-        Mon, 25 Oct 2021 18:50:41 +0000 (UTC)
-Date:   Mon, 25 Oct 2021 20:50:40 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Guangbin Huang <huangguangbin2@huawei.com>, davem@davemloft.net,
-        mkubecek@suse.cz, andrew@lunn.ch, amitc@mellanox.com,
-        idosch@idosch.org, danieller@nvidia.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        jdike@addtoit.com, richard@nod.at, anton.ivanov@cambridgegreys.com,
-        netanel@amazon.com, akiyano@amazon.com, saeedb@amazon.com,
-        chris.snook@gmail.com, ulli.kroll@googlemail.com,
-        linus.walleij@linaro.org, jeroendb@google.com, csully@google.com,
-        awogbemila@google.com, jdmason@kudzu.us, rain.1986.08.12@gmail.com,
-        zyjzyj2000@gmail.com, kys@microsoft.com, haiyangz@microsoft.com,
-        mst@redhat.com, jasowang@redhat.com, doshir@vmware.com,
-        pv-drivers@vmware.com, jwi@linux.ibm.com, kgraul@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, johannes@sipsolutions.net,
-        netdev@vger.kernel.org, lipeng321@huawei.com,
-        chenhao288@hisilicon.com, linux-s390@vger.kernel.org
-Subject: Re: [PATCH V4 net-next 4/6] ethtool: extend ringparam setting uAPI
- with rx_buf_len
-Message-ID: <20211025185040.xj27ujo5wubirz6u@pengutronix.de>
-References: <20211014113943.16231-1-huangguangbin2@huawei.com>
- <20211014113943.16231-5-huangguangbin2@huawei.com>
- <20211025131149.ya42sw64vkh7zrcr@pengutronix.de>
- <20211025132718.5wtos3oxjhzjhymr@pengutronix.de>
- <20211025104505.43461b53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S233610AbhJYS46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 14:56:58 -0400
+Received: from netrider.rowland.org ([192.131.102.5]:52097 "HELO
+        netrider.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with SMTP id S232161AbhJYS4w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Oct 2021 14:56:52 -0400
+Received: (qmail 1268304 invoked by uid 1000); 25 Oct 2021 14:54:26 -0400
+Date:   Mon, 25 Oct 2021 14:54:26 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        syzbot <syzbot+abd2e0dafb481b621869@syzkaller.appspotmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Thierry Escande <thierry.escande@collabora.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>
+Subject: Re: [syzbot] INFO: task hung in port100_probe
+Message-ID: <20211025185426.GF1258186@rowland.harvard.edu>
+References: <000000000000c644cd05c55ca652@google.com>
+ <9e06e977-9a06-f411-ab76-7a44116e883b@canonical.com>
+ <20210722144721.GA6592@rowland.harvard.edu>
+ <b9695fc8-51b5-c61e-0a2f-fec9c2f0bae0@canonical.com>
+ <20211020220503.GB1140001@rowland.harvard.edu>
+ <7d26fa0f-3a45-cefc-fd83-e8979ba6107c@canonical.com>
+ <20211025162200.GC1258186@rowland.harvard.edu>
+ <1927ec9b-d1d0-9c70-992b-925ddfbba79a@canonical.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="zmvvm7jx7bbxbmoe"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211025104505.43461b53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <1927ec9b-d1d0-9c70-992b-925ddfbba79a@canonical.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Oct 25, 2021 at 07:13:59PM +0200, Krzysztof Kozlowski wrote:
+> On 25/10/2021 18:22, Alan Stern wrote:
+> > On Mon, Oct 25, 2021 at 04:57:23PM +0200, Krzysztof Kozlowski wrote:
+> >> The URB which causes crazy loop is the port100 driver second URB, the
+> >> one called ack or in_urb.
+> >>
+> >> The flow is:
+> >> 1. probe()
+> >> 2. port100_get_command_type_mask()
+> >> 3. port100_send_cmd_async()
+> >> 4. port100_send_frame_async()
+> >> 5. usb_submit_urb(dev->out_urb)
+> >>    The call succeeds, the dummy_hcd picks it up and immediately ends the
+> >> timer-loop with -EPROTO
+> > 
+> > So that URB completes immediately.
+> > 
+> >> The completion here does not resubmit another/same URB. I checked this
+> >> carefully and I hope I did not miss anything.
+> > 
+> > Yeah, I see the same thing.
+> > 
+> >> 6. port100_submit_urb_for_ack() which sends the in_urb:
+> >>    usb_submit_urb(dev->in_urb)
+> >> ... wait for completion
+> >> ... dummy_hcd loops on this URB around line 2000:
+> >> if (status == -EINPROGRESS)
+> >>   continue
+> > 
+> > Do I understand this correctly?  You're saying that dummy-hcd executes 
+> > the following jump at line 1975:
+> > 
+> > 		/* incomplete transfer? */
+> > 		if (status == -EINPROGRESS)
+> > 			continue;
+> > 
+> > which goes back up to the loop head on line 1831:
+> > 
+> > 	list_for_each_entry_safe(urbp, tmp, &dum_hcd->urbp_list, urbp_list) {
+> > 
+> > Is that right?
+> 
+> Yes, exactly. The loop continues, iterating over list finishes thus the
+> loops and dummy timer function exits. Then immediately it is being
+> rescheduled by something (I don't know by what yet).
 
---zmvvm7jx7bbxbmoe
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+There's a timer (dum_hcd->timer) which fires every millisecond.  If 
+syzbot creates a lot of dummy-hcd instances then each instance will have 
+its own timer, which could use up a large part of the available CPU 
+time.  But you say this isn't the real problem...
 
-On 25.10.2021 10:45:05, Jakub Kicinski wrote:
-> On Mon, 25 Oct 2021 15:27:18 +0200 Marc Kleine-Budde wrote:
-> > On 25.10.2021 15:11:49, Marc Kleine-Budde wrote:
-> > > On 14.10.2021 19:39:41, Guangbin Huang wrote: =20
-> > > > From: Hao Chen <chenhao288@hisilicon.com>
-> > > >=20
-> > > > Add two new parameters ringparam_ext and extack for
-> > > > .get_ringparam and .set_ringparam to extend more ring params
-> > > > through netlink.
-> > > >=20
-> > > > Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
-> > > > Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com> =20
-> > >=20
-> > > While discussing a different ethtool ring param extension, =20
-> >=20
-> > Let me explain my requirements:
-> >=20
-> > There is a not Ethernet based bus system, called CAN (mainly used in the
-> > automotive and industrial world). It comes in 2 different generations or
-> > modes (CAN-2.0 and CAN-FD) and the 3rd one CAN-XL has already been
-> > specified.
-> >=20
-> > Due to different frame sizes used in these CAN modes and HW limitations,
-> > we need the possibility to set a RX/TX ring configuration for each of
-> > these modes.
-> >=20
-> > The approach Andrew suggested is two-fold. First introduce a "struct
-> > ethtool_kringparam" that's only used inside the kernel, as "struct
-> > ethtool_ringparam" is ABI. Then extend "struct ethtool_kringparam" as
-> > needed.
->=20
-> Indeed, there are different ways to extend the API for drivers,
-> I think it comes down to personal taste. I find the "inheritance"=20
-> models in C (kstruct usually contains the old struct as some "base")
-> awkward.
->=20
-> I don't think we have agreed-on best practice in the area.
+> To remind - the syzbot reproducer must run at least two threads
+> (spawning USB gadgets so creating separate dummy devices) at the same
+> time. However only one of dummy HCD devices seems to timer-loop
+> endlessly... but this might not be important, e.g. maybe it's how syzbot
+> reproducer works.
+> 
+> >  I don't see why this should cause any problem.  It won't 
+> > loop back to the same URB; it will make its way through the list.  
+> > (Unless the list has somehow gotten corrupted...)  dum_hcd->urbp_list 
+> > should be short (perhaps 32 entries at most), so the loop should reach 
+> > the end of the list fairly quickly.
+> 
+> The list has actually only one element - only this one URB coming from
+> port100 device (which I was always calling second URB/ack, in_urb).
 
-The set/get_coalesce as just extended, using a 3rd parameter for the new
-values:
+Okay, good.
 
-| 	int	(*set_coalesce)(struct net_device *,
-| 				struct ethtool_coalesce *,
-| 				struct kernel_ethtool_coalesce *,
-| 				struct netlink_ext_ack *);
+> > Now, doing all this 1000 times per second could use up a significant 
+> > portion of the available time.  Do you think that's the reason for the 
+> > problem?  It seems pretty unlikely.
+> 
+> No, this timer-looping itself is not a problem. Problem is that this URB
+> never reaches some final state, e.g. -EPROTO.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=
-=3Df3ccfda19319
+The -EPROTO completion should happen very quickly once the gadget driver 
+unregisters or disconnects itself.  This is because the call to 
+find_endpoint at line 1856 should return NULL:
 
-regards,
-Marc
+		ep = find_endpoint(dum, address);
+		if (!ep) {
+			/* set_configuration() disagreement */
+			dev_dbg(dummy_dev(dum_hcd),
+				"no ep configured for urb %p\n",
+				urb);
+			status = -EPROTO;
+			goto return_urb;
+		}
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+The NULL return should be caused by the !is_active test at the 
+beginning of find_endpoint:
 
---zmvvm7jx7bbxbmoe
-Content-Type: application/pgp-signature; name="signature.asc"
+static struct dummy_ep *find_endpoint(struct dummy *dum, u8 address)
+{
+	int		i;
 
------BEGIN PGP SIGNATURE-----
+	if (!is_active((dum->gadget.speed == USB_SPEED_SUPER ?
+			dum->ss_hcd : dum->hs_hcd)))
+		return NULL;
 
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmF2/HsACgkQqclaivrt
-76nIXggAnPumYY/CZI//RmCZL3I5ORqzeWWPSJ894gSIwmskhycjPlah1mvi+MUM
-fOaahsRlvENVgBO1YHF9rHH54glllHP7r0p3boZsolOOXCwIJ+KVcgD3jfhPrRBu
-dC7+4N6yiBXCZ0EwbJt3uxn2ooiSTZtbVrkB+rC1AX9SkJqOPHNc0OszYq3+54J0
-zezwjT4rXCyabF5NBvxRwp0oVV+9oh7wMQsxVF/y/bUtOQBDDUkAJMU4KhRKwYjN
-c1A0Fx5clY0FTw0PsLncWvcDNRpuLPKBxU1U+9j1EuZCXHy21UIP75+Fw4K7bL1P
-qhgyZFlcwBXXCbjm5fPokysPou58yA==
-=+ovD
------END PGP SIGNATURE-----
+is_active is defined as a macro:
 
---zmvvm7jx7bbxbmoe--
+#define is_active(dum_hcd)	((dum_hcd->port_status & \
+		(USB_PORT_STAT_CONNECTION | USB_PORT_STAT_ENABLE | \
+			USB_PORT_STAT_SUSPEND)) \
+		== (USB_PORT_STAT_CONNECTION | USB_PORT_STAT_ENABLE))
+
+and a disconnection should turn off the USB_PORT_STAT_CONNECTION bit, as 
+follows:
+
+	usb_gadget_unregister_driver calls usb_gadget_remove_driver
+		(in drivers/usb/gadget/udc/core.c),
+
+	which calls usb_gadget_disconnect,
+
+	which calls dummy_pullup with value = 0,
+
+	which sets dum->pullup to 0 and calls set_link_state,
+
+	which calls set_link_state_by_speed,
+
+	which turns off the USB_PORT_STATE_CONNECTION bit in 
+		dum_hcd->port_status because dum->pullup is 0.
+
+You can try tracing through this sequence of events to see if they're 
+not taking place as intended.
+
+> In normal operation, e.g. when reproducer did not hit the issue, both
+> URBs from port100 (the first out_urb and second in_urb) complete with
+> -EPROTO. In the case leading to hang ("task kworker/0:0:5 blocked for
+> more than 143 seconds"), the in_urb does not complete therefore the
+> port100 driver waits.
+
+Those "... blocked for more than 143 seconds" errors occur when some 
+task or interrupt loop is using up all the CPU time, preventing normal 
+processes from running.  In this case the culprit has got to be the 
+timer routine and loop in dummy_hcd.  However, the loop should terminate 
+once the gadget driver unregisters itself, as described above.
+
+> Whether this intensive timer-loop is important (processing the same URB
+> and continuing), I don't know.
+
+Yes, that's how dummy_hcd gets its work done.
+
+Alan Stern
