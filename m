@@ -2,76 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B977439A93
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 17:34:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8611A439A9E
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 17:40:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233592AbhJYPgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 11:36:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:56504 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230348AbhJYPgu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 11:36:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635176067;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=YwfmUEaIE65kckhigKIeO5UdqtC2rRmoFNbtu9Az7TY=;
-        b=PrCagFbqe2SftCWQtqF1pSbrGBo1zy5/PaSWX/pW80axNUXqwhw70ZoOvI33D6gAfSP0yz
-        iPiwe8+fTO25AoS114l2ngLgvH00Po8eTbI7mb9N75u8XAOdX+NGMlhfjKbZ7Cbp1+6wvU
-        b+b60vY7BXhmsHDAl7F1c+fKt86ANOU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-18-N-kBO1zsOkaw3lre8tgruQ-1; Mon, 25 Oct 2021 11:34:24 -0400
-X-MC-Unique: N-kBO1zsOkaw3lre8tgruQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5113091273;
-        Mon, 25 Oct 2021 15:34:23 +0000 (UTC)
-Received: from asgard.redhat.com (unknown [10.36.110.5])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5863A69119;
-        Mon, 25 Oct 2021 15:34:21 +0000 (UTC)
-Date:   Mon, 25 Oct 2021 17:34:18 +0200
-From:   Eugene Syromiatnikov <esyr@redhat.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     jk@codeconstruct.com.au, netdev@vger.kernel.org, kuba@kernel.org,
-        matt@codeconstruct.com.au
-Subject: Re: [PATCH net-next v5] mctp: Implement extended addressing
-Message-ID: <20211025153418.GA6853@asgard.redhat.com>
-References: <20211025032757.2317020-1-jk@codeconstruct.com.au>
- <20211025.161549.899716517054473254.davem@davemloft.net>
+        id S232051AbhJYPmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 11:42:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58286 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231859AbhJYPma (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Oct 2021 11:42:30 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id E611960E97;
+        Mon, 25 Oct 2021 15:40:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635176407;
+        bh=ivjh99f3sqGlLnX11lyTPWapHMC1Nka/Qt2ZsoVzk/o=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ay6vBTasmVOK0M3lhjzpwYmBLCNMznZrZHA8enBoREbtgYEYy5vZ4/Q4XyLYm+09t
+         QspaGAlByGSqQZSASOdvb+kkdtFRvJNmppUmRhNnocI7wro6hw1B/cXQNzX6+R4ebR
+         DSJ46pz6R6qt8QGRF9Aclh2suBlFh4GeSuzna+IyxkNtEvlKICxww01ZlpFyHqSTP3
+         3f0WABGh1N9NOEMgQX+ywKgmVwoTJ7h+CYwjrZpW3OtZ5SXsrxvXtAcy4RY4//DG7w
+         io6K2Xo3uAMSFtAOO2TzyO58X2Phrx7eS7e4nKVhBcMDBYJ3kBClKbp/puDQ6/LJT+
+         xTMBbokxBfc0w==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D8B6B60A21;
+        Mon, 25 Oct 2021 15:40:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211025.161549.899716517054473254.davem@davemloft.net>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net/tls: tls_crypto_context add supported algorithms context
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163517640788.4268.815624619292262773.git-patchwork-notify@kernel.org>
+Date:   Mon, 25 Oct 2021 15:40:07 +0000
+References: <20211025130439.92746-1-tianjia.zhang@linux.alibaba.com>
+In-Reply-To: <20211025130439.92746-1-tianjia.zhang@linux.alibaba.com>
+To:     Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, borisp@nvidia.com,
+        john.fastabend@gmail.com, daniel@iogearbox.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 25, 2021 at 04:15:49PM +0100, David Miller wrote:
-> From: Jeremy Kerr <jk@codeconstruct.com.au>
-> Date: Mon, 25 Oct 2021 11:27:57 +0800
-> 
-> > @@ -152,10 +155,16 @@ struct mctp_sk_key {
-> >  
-> >  struct mctp_skb_cb {
-> >  	unsigned int	magic;
-> > -	unsigned int	net;
-> > +	int		net;
-> > +	int		ifindex; /* extended/direct addressing if set */
-> > +	unsigned char	halen;
-> >  	mctp_eid_t	src;
-> > +	unsigned char	haddr[];
-> >  };
-> >  
-> putting a variably sized type in the skb control blocxk is not a good idea.
-> Overruns will be silent, nothing in the typing protects you from udsing more space
-> han exists in skb->cb.
-> 
-> Plrease find another way, thank you.
+Hello:
 
-haddr[MAX_ADDR_LEN]?  It is defined to 32 bytes.
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Mon, 25 Oct 2021 21:04:39 +0800 you wrote:
+> tls already supports the SM4 GCM/CCM algorithms. It is also necessary
+> to add support for these two algorithms in tls_crypto_context to avoid
+> potential issues caused by forced type conversion.
+> 
+> Signed-off-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+> ---
+>  include/net/tls.h | 2 ++
+>  1 file changed, 2 insertions(+)
+
+Here is the summary with links:
+  - net/tls: tls_crypto_context add supported algorithms context
+    https://git.kernel.org/netdev/net-next/c/39d8fb96e3d7
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
