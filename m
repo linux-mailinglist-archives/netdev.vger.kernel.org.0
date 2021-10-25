@@ -2,74 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A1134396E3
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 14:59:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2515F4396E8
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 15:00:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233440AbhJYNBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 09:01:22 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:57060 "EHLO vps0.lunn.ch"
+        id S233431AbhJYNCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 09:02:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59004 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233431AbhJYNBV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Oct 2021 09:01:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=1xIvz9EZnq8Pwmitec8eQkiJzbdl6+HYNApMxU/1L10=; b=vRUMtf5DaFs1A7ElnNsb5YJoOz
-        LbuLEzxraMMB6OaGUxIGmwx/s76P7p+zU15ljgU7tleoOqtttW93+w5X8C8GM+kMz0i+5uVP8Yx24
-        UA+ugLJDgDSOuP6wBDWsSaRFalmuSp7I8lpYsA92BRhka/1dI3JDyM9yh3F1nrN0UtkI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mezZ4-00BeHt-H8; Mon, 25 Oct 2021 14:58:58 +0200
-Date:   Mon, 25 Oct 2021 14:58:58 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can <linux-can@vger.kernel.org>, netdev@vger.kernel.org
-Subject: Re: ethtool: ring configuration for CAN devices
-Message-ID: <YXaqEk97/WcCxcFE@lunn.ch>
-References: <20211024213759.hwhlb4e3repkvo6y@pengutronix.de>
- <YXaimhlXkpBKRQin@lunn.ch>
- <20211025124331.d7r7qbadkzfk7i4f@pengutronix.de>
+        id S233387AbhJYNCa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Oct 2021 09:02:30 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 70AD961039;
+        Mon, 25 Oct 2021 13:00:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635166808;
+        bh=v77wx+z38xJQ+aMTUWSVLHBZ9+jgDqJ1AGLDZUIN2I4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=XnRcQ88ISKT/uVQITv5MIIquA0TD6kMzrL/HAKrl61zkcxLo8uwIem/drpG2nDMwN
+         TF9UPozpQ14x9FAQ5AmjjshfrnmaHTeIaSSIV17Mkz80F/gY5GEk1mBkHyEssokwuJ
+         WtDSLU4zm0QVKKmtUN3Ijbarr1nbJhAdqwW/A7eRcq9Yt4w3V9CJ6zZIpHYcPenI5H
+         YyHFTm5+fuvnc7C3ECem2vE1t8bMWJQfIeFXLHDeV8qSaKvl0VMh8X7EbKW/4omvUg
+         Y2HHA1otTW9AT0W2E9+s335SW3mcEniMKcKkLiZAxduW5N1ZM3QEICzPVtNHL2zBl7
+         rTVyHI2lDo0dw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 658F860A21;
+        Mon, 25 Oct 2021 13:00:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211025124331.d7r7qbadkzfk7i4f@pengutronix.de>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/9] s390/qeth: updates 2021-10-25
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163516680841.24806.1994768160149085786.git-patchwork-notify@kernel.org>
+Date:   Mon, 25 Oct 2021 13:00:08 +0000
+References: <20211025095658.3527635-1-jwi@linux.ibm.com>
+In-Reply-To: <20211025095658.3527635-1-jwi@linux.ibm.com>
+To:     Julian Wiedmann <jwi@linux.ibm.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, hca@linux.ibm.com, kgraul@linux.ibm.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > struct ethtool_kringparam {
-> > 	__u32	cmd;
-> > 	__u32   mode;
-> > 	__u32	rx_max_pending;
-> > 	__u32	rx_mini_max_pending;
-> > 	__u32	rx_jumbo_max_pending;
-> > 	__u32	tx_max_pending;
-> > 	__u32	rx_pending;
-> > 	__u32	rx_mini_pending;
-> > 	__u32	rx_jumbo_pending;
-> > 	__u32	tx_pending;
-> > };
-> > 
-> > and use this structure between the ethtool core and the drivers. This
-> > has already been done at least once to allow extending the
-> > API. Semantic patches are good for making the needed changes to all
-> > the drivers.
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Mon, 25 Oct 2021 11:56:49 +0200 you wrote:
+> Hi Dave & Jakub,
 > 
-> What about the proposed "two new parameters ringparam_ext and extack for
-> .get_ringparam and .set_ringparam to extend more ring params through
-> netlink." by Hao Chen/Guangbin Huang in:
+> please apply the following patch series for qeth to netdev's net-next tree.
 > 
-> https://lore.kernel.org/all/20211014113943.16231-5-huangguangbin2@huawei.com/
->
-> I personally like the conversion of the in in-kernel API to struct
-> ethtool_kringparam better than adding ringparam_ext.
+> This brings some minor maintenance improvements, and a bunch of cleanups
+> so that the W=1 build passes without warning.
+> 
+> [...]
 
-Ah, i missed that development. I don't like it.
+Here is the summary with links:
+  - [net-next,1/9] s390/qeth: improve trace entries for MAC address (un)registration
+    https://git.kernel.org/netdev/net-next/c/0969becb5f76
+  - [net-next,2/9] s390/qeth: remove .do_ioctl() callback from driver discipline
+    https://git.kernel.org/netdev/net-next/c/2decb0b7ba2d
+  - [net-next,3/9] s390/qeth: move qdio's QAOB cache into qeth
+    https://git.kernel.org/netdev/net-next/c/a18c28f0aeeb
+  - [net-next,4/9] s390/qeth: clarify remaining dev_kfree_skb_any() users
+    https://git.kernel.org/netdev/net-next/c/fdd3c5f076b6
+  - [net-next,5/9] s390/qeth: don't keep track of Input Queue count
+    https://git.kernel.org/netdev/net-next/c/dc15012bb083
+  - [net-next,6/9] s390/qeth: fix various format strings
+    https://git.kernel.org/netdev/net-next/c/22e2b5cdb0b9
+  - [net-next,7/9] s390/qeth: add __printf format attribute to qeth_dbf_longtext
+    https://git.kernel.org/netdev/net-next/c/79140e22d245
+  - [net-next,8/9] s390/qeth: fix kernel doc comments
+    https://git.kernel.org/netdev/net-next/c/7ffaef824c9a
+  - [net-next,9/9] s390/qeth: update kerneldoc for qeth_add_hw_header()
+    https://git.kernel.org/netdev/net-next/c/56c5af2566a7
 
-You should probably jump into that discussion and explain your
-requirements. Make sure it is heading in a direction you can extend
-for your needs.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-    Andrew
+
