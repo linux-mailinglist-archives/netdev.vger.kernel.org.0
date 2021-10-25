@@ -2,99 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61722439BF9
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 18:45:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40714439C16
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 18:51:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234085AbhJYQsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 12:48:03 -0400
-Received: from mout-p-202.mailbox.org ([80.241.56.172]:59386 "EHLO
-        mout-p-202.mailbox.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231127AbhJYQsD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 12:48:03 -0400
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4HdLRk2wvLzQk12;
-        Mon, 25 Oct 2021 18:45:38 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Message-ID: <2157749e-4e88-76c1-bdc9-f01656f5a292@v0yd.nl>
-Date:   Mon, 25 Oct 2021 18:45:29 +0200
+        id S234102AbhJYQxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 12:53:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45326 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234014AbhJYQxv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 12:53:51 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4267C061745
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 09:51:28 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id x1-20020a17090a530100b001a1efa4ebe6so346117pjh.0
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 09:51:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8YeOxeNxCzH560m2MlNGrV8Ri03BGKw/sb3lzrSX+jU=;
+        b=FtpPS1+Sny1mD+h/wkrOriAp0g1SHLJbheqdyQgKMWBbADFFG9R/DOyS6BRSXpJKnk
+         k2NQvp6sE2ogc/3uv+JEYADlvhgPU18bffByi/H7F3+Mp3bPKG+QYSqAQoMGuX3ZHxYy
+         7XE+8W9CtMHIopBVBAEz7Dycd6OQ6sUuVG1jXRSzm0neLwp6nzjVGhcnyvMlDvKnEvl3
+         wm6AU3zBpS8QS/FCicxS9Szm+XrAUqW7yTOVh9kC+sx2GI514OXYyMQHCxrhELATPXy6
+         ycMcpr004798z5KDX0LGzfJdOCOU3l+MXmLE6EcHQNgEzW8XexjQHXEODdka22Wtif99
+         VnRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8YeOxeNxCzH560m2MlNGrV8Ri03BGKw/sb3lzrSX+jU=;
+        b=I2RmkC/n0rdeeZjl1tlWjnfHhFs49gBRkJYImog62jiyvSbBbhgNZC8DFp9lPQ0pX1
+         5ElbzaWGXUocIsQXDRJG1K+bCvDSllDwuAUbooZ2i7oi7PqO21Pjpos1inblVfbYUx4u
+         yYG4jO0SzDqj9H/b0uni0aIGYmdxfRLe+d50D5eRKhCdUkO3c382WGTP4oYHc8bMm6c9
+         KeSiThsYvGn4NYDSkNxmkj+fQg0Dd5ON0f26tupqmT1DMN2uZqvzLKgRzml8XVh+HPkg
+         hobn2zVxSsAlfZFOsYp0JkLWKp1a65cb6UYXJCfCzIIy9Z6QDfFR0opatBPz/2kIAjFj
+         yVig==
+X-Gm-Message-State: AOAM530d7ANnKzZckgw+2+yZDl9fE0lABRyHs5W2VptUjyrTdTCnr0wG
+        sPcSvSriKDRNPONp+WsjItXga/Jobp0=
+X-Google-Smtp-Source: ABdhPJxgLcq3yCegmy2VKvUjtwcKq+D/n3Qknl7xMPNHL2mk3NoIFFUyCfAxNCtP7S8423Jhdu28ew==
+X-Received: by 2002:a17:90a:4306:: with SMTP id q6mr36602987pjg.202.1635180687997;
+        Mon, 25 Oct 2021 09:51:27 -0700 (PDT)
+Received: from localhost.localdomain ([50.39.163.188])
+        by smtp.gmail.com with ESMTPSA id h1sm13390531pfh.118.2021.10.25.09.51.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Oct 2021 09:51:24 -0700 (PDT)
+From:   James Prestwood <prestwoj@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, roopa@nvidia.com,
+        daniel@iogearbox.net, vladimir.oltean@nxp.com, idosch@nvidia.com,
+        nikolay@nvidia.com, yajun.deng@linux.dev, zhutong@amazon.com,
+        johannes@sipsolutions.net, jouni@codeaurora.org,
+        James Prestwood <prestwoj@gmail.com>
+Subject: [RESEND PATCH v7 0/3] Make neighbor eviction controllable by userspace
+Date:   Mon, 25 Oct 2021 09:45:44 -0700
+Message-Id: <20211025164547.1097091-1-prestwoj@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Subject: Re: [PATCH] mwifiex: Add quirk resetting the PCI bridge on MS Surface
- devices
-Content-Language: en-US
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Brian Norris <briannorris@chromium.org>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Vidya Sagar <vidyas@nvidia.com>,
-        Victor Ding <victording@google.com>
-References: <20211018153529.GA2235731@bhelgaas>
-From:   =?UTF-8?Q?Jonas_Dre=c3=9fler?= <verdre@v0yd.nl>
-In-Reply-To: <20211018153529.GA2235731@bhelgaas>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 62ADB4A3
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/18/21 17:35, Bjorn Helgaas wrote:
-> On Thu, Oct 14, 2021 at 12:08:31AM +0200, Jonas Dreßler wrote:
->> On 10/12/21 17:39, Bjorn Helgaas wrote:
->>> [+cc Vidya, Victor, ASPM L1.2 config issue; beginning of thread:
->>> https://lore.kernel.org/all/20211011134238.16551-1-verdre@v0yd.nl/]
-> 
->>> I wonder if this reset quirk works because pci_reset_function() saves
->>> and restores much of config space, but it currently does *not* restore
->>> the L1 PM Substates capability, so those T_POWER_ON,
->>> Common_Mode_Restore_Time, and LTR_L1.2_THRESHOLD values probably get
->>> cleared out by the reset.  We did briefly save/restore it [1], but we
->>> had to revert that because of a regression that AFAIK was never
->>> resolved [2].  I expect we will eventually save/restore this, so if
->>> the quirk depends on it *not* being restored, that would be a problem.
->>>
->>> You should be able to test whether this is the critical thing by
->>> clearing those registers with setpci instead of doing the reset.  Per
->>> spec, they can only be modified when L1.2 is disabled, so you would
->>> have to disable it via sysfs (for the endpoint, I think)
->>> /sys/.../l1_2_aspm and /sys/.../l1_2_pcipm, do the setpci on the root
->>> port, then re-enable L1.2.
->>>
->>> [1] https://git.kernel.org/linus/4257f7e008ea
->>> [2] https://lore.kernel.org/all/20210127160449.2990506-1-helgaas@kernel.org/
->>
->> Hmm, interesting, thanks for those links.
->>
->> Are you sure the config values will get lost on the reset? If we only reset
->> the port by going into D3hot and back into D0, the device will remain powered
->> and won't lose the config space, will it?
-> 
-> I think you're doing a PM reset (transition to D3hot and back to D0).
-> Linux only does this when PCI_PM_CTRL_NO_SOFT_RESET == 0.  The spec
-> doesn't actually *require* the device to be reset; it only says the
-> internal state of the device is undefined after these transitions.
-> 
+v1 -> v2:
 
-Not requiring the device to be reset sounds sensible to me given that
-D3hot is what devices are transitioned into during suspend.
+ - It was suggested by Daniel Borkmann to extend the neighbor table settings
+   rather than adding IPv4/IPv6 options for ARP/NDISC separately. I agree
+   this way is much more concise since there is now only one place where the
+   option is checked and defined.
+ - Moved documentation/code into the same patch
+ - Explained in more detail the test scenario and results
 
-But anyway, that doesn't really get us any further except it somewhat
-gives an explanation why the LTR is suddenly 0 after the reset. Or are
-you making the point that we shouldn't rely on "undefined state" for this
-hack because not all PCI bridges/ports will necessarily behave the same?
+v2 -> v3:
+
+ - Renamed 'skip_perm' to 'nocarrier'. The way this parameter is used
+   matches this naming.
+ - Changed logic to still flush if 'nocarrier' is false.
+
+v3 -> v4:
+
+ - Moved NDTPA_EVICT_NOCARRIER after NDTPA_PAD
+
+v4 -> v5:
+
+ - Went back to the original v1 patchset and changed:
+ - Used ANDCONF for IN_DEV macro
+ - Got RCU lock prior to __in_dev_get_rcu(). Do note that the logic
+   here was extended to handle if __in_dev_get_rcu() fails. If this
+   happens the existing behavior should be maintained and set the
+   carrier down. I'm unsure if get_rcu() can fail in this context
+   though. Similar logic was used for in6_dev_get.
+ - Changed ndisc_evict_nocarrier to use a u8, proper handler, and
+   set min/max values.
+
+v5 -> v6
+
+ - Added selftests for both sysctl options
+ - (arp) Used __in_dev_get_rtnl rather than getting the rcu lock
+ - (ndisc) Added in6_dev_put
+ - (ndisc) Check 'all' option as well as device specific
+
+v6 -> v7
+
+ - Corrected logic checking all and netdev option
+
+Resend v7:
+
+ - Fixed (hopefully) the issue with CC's only getting the cover letter
+
+James Prestwood (3):
+  net: arp: introduce arp_evict_nocarrier sysctl parameter
+  net: ndisc: introduce ndisc_evict_nocarrier sysctl parameter
+  selftests: net: add arp_ndisc_evict_nocarrier
+
+ Documentation/networking/ip-sysctl.rst        |  18 ++
+ include/linux/inetdevice.h                    |   2 +
+ include/linux/ipv6.h                          |   1 +
+ include/uapi/linux/ip.h                       |   1 +
+ include/uapi/linux/ipv6.h                     |   1 +
+ include/uapi/linux/sysctl.h                   |   1 +
+ net/ipv4/arp.c                                |  11 +-
+ net/ipv4/devinet.c                            |   4 +
+ net/ipv6/addrconf.c                           |  12 ++
+ net/ipv6/ndisc.c                              |  12 +-
+ .../net/arp_ndisc_evict_nocarrier.sh          | 181 ++++++++++++++++++
+ 11 files changed, 242 insertions(+), 2 deletions(-)
+ create mode 100755 tools/testing/selftests/net/arp_ndisc_evict_nocarrier.sh
+
+-- 
+2.31.1
+
