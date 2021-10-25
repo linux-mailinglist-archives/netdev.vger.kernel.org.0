@@ -2,89 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0394443A50D
+	by mail.lfdr.de (Postfix) with ESMTP id 4ECA843A50E
 	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 22:54:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232992AbhJYU46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 16:56:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34174 "EHLO mail.kernel.org"
+        id S233279AbhJYU47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 16:56:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34182 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232287AbhJYU45 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Oct 2021 16:56:57 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A833560EDF;
-        Mon, 25 Oct 2021 20:54:34 +0000 (UTC)
+        id S230464AbhJYU46 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Oct 2021 16:56:58 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1389F61073;
+        Mon, 25 Oct 2021 20:54:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635195274;
-        bh=jCa+cmYCTAu8GyPMMbSQ3BCXoOdHA6e3s2G3EdXaSsU=;
+        s=k20201202; t=1635195275;
+        bh=SkWGNoyrFi/HNvnUEYjPF/EfVyvaQVn4pdzjGIL1VJ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cJiTlRPWgsJ8b3iYAuXtLH8nLi2ENZBwxGalIaTXNivPEaO0ZR4G0WPt6sL28epb6
-         tDcog+SbsQQVumfdeTfBOtJ21bZC+tW33z5yIiMZcOkc8O50KsNxSQZpsKbZJVHa5L
-         xQEpvzOuP1agauoJ3fiXMdONd9pFJGfIRNIKQTpj2LOCQa9ae/cmEmh9tjB6qakp4M
-         2VZqFO7b6uxyBQayAgiEi93Qi9Vpv9YE4JlvtYXf5Soo2XvWB+EV82ZHCPEL0HuIsO
-         5ZNGBVLlxj/dRuNJol1Wf0wo6kDqM1d45zBSt2y+MgNV4GycqEO6a+BDT349YFBP6I
-         GRWhJJ/J7qw0A==
+        b=W+cCnrkwR7pSt8djiRsM6RSGD2l3Cak1LcYCS52qUYBCdPiLbw/8VXG6OEoe9LeWL
+         4/vk7MFMYAn7ldPR+mplwqEJVanz6py46W4U7MQyWfzCEBQtBwvKHbGnwPY9o705Zd
+         W2Ivs3DDFlM5YYy+kOFQpcScrOl35Eb1m+U91moVkQs/EXq/AK4tobuqEULOjSWvqc
+         NWCWzuBwoV92lG55LB9NnoXhZxnAx7mcovobRDd5faLeZlUC8WfmiGntQMvPE7i8cX
+         c0TCeGKipIiv1N9j3juCAio572VEaXPqPxzbAaj5F6yY3wjYjjjCr3K9rgcwFgucwn
+         Nov4HG4mnCqwQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Shay Drory <shayd@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Avihai Horon <avihaih@nvidia.com>,
+        Mark Bloch <mbloch@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 03/14] net/mlx5: Fix unused function warning of mlx5i_flow_type_mask
-Date:   Mon, 25 Oct 2021 13:54:20 -0700
-Message-Id: <20211025205431.365080-4-saeed@kernel.org>
+Subject: [net-next 04/14] net/mlx5: Reduce flow counters bulk query buffer size for SFs
+Date:   Mon, 25 Oct 2021 13:54:21 -0700
+Message-Id: <20211025205431.365080-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211025205431.365080-1-saeed@kernel.org>
 References: <20211025205431.365080-1-saeed@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shay Drory <shayd@nvidia.com>
+From: Avihai Horon <avihaih@nvidia.com>
 
-The cited commit is causing unused-function warning[1] when
-CONFIG_MLX5_EN_RXNFC is not set.
-Fix this by moving the function into the ifdef, where it's only used
+Currently, the flow counters bulk query buffer takes a little more than
+512KB of memory, which is aligned to the next power of 2, to 1MB.
 
-[1]
-warning: ‘mlx5i_flow_type_mask’ defined but not used [-Wunused-function]
+The buffer size determines the maximum number of flow counters that can
+be queried at a time. Thus, having a bigger buffer can improve
+performance for users that need to query many flow counters.
 
-Fixes: 9fbe1c25ecca ("net/mlx5i: Enable Rx steering for IPoIB via ethtool")
-Signed-off-by: Shay Drory <shayd@nvidia.com>
+SFs don't use many flow counters and don't need a big buffer. Since this
+size is critical with large scale, reduce the size of the bulk query
+buffer for SFs.
+
+Signed-off-by: Avihai Horon <avihaih@nvidia.com>
+Reviewed-by: Mark Bloch <mbloch@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c    | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
-index ee0eb4a4b819..962d41418ce7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
-@@ -33,11 +33,6 @@
- #include "en.h"
- #include "ipoib.h"
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c
+index f542a36be62c..60c9df1bc912 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c
+@@ -40,6 +40,7 @@
+ #define MLX5_FC_STATS_PERIOD msecs_to_jiffies(1000)
+ /* Max number of counters to query in bulk read is 32K */
+ #define MLX5_SW_MAX_COUNTERS_BULK BIT(15)
++#define MLX5_SF_NUM_COUNTERS_BULK 6
+ #define MLX5_FC_POOL_MAX_THRESHOLD BIT(18)
+ #define MLX5_FC_POOL_USED_BUFF_RATIO 10
  
--static u32 mlx5i_flow_type_mask(u32 flow_type)
--{
--	return flow_type & ~(FLOW_EXT | FLOW_MAC_EXT | FLOW_RSS);
--}
--
- static void mlx5i_get_drvinfo(struct net_device *dev,
- 			      struct ethtool_drvinfo *drvinfo)
+@@ -146,8 +147,12 @@ static void mlx5_fc_stats_remove(struct mlx5_core_dev *dev,
+ 
+ static int get_max_bulk_query_len(struct mlx5_core_dev *dev)
  {
-@@ -223,6 +218,11 @@ static int mlx5i_get_link_ksettings(struct net_device *netdev,
+-	return min_t(int, MLX5_SW_MAX_COUNTERS_BULK,
+-			  (1 << MLX5_CAP_GEN(dev, log_max_flow_counter_bulk)));
++	int num_counters_bulk = mlx5_core_is_sf(dev) ?
++					MLX5_SF_NUM_COUNTERS_BULK :
++					MLX5_SW_MAX_COUNTERS_BULK;
++
++	return min_t(int, num_counters_bulk,
++		     (1 << MLX5_CAP_GEN(dev, log_max_flow_counter_bulk)));
  }
  
- #ifdef CONFIG_MLX5_EN_RXNFC
-+static u32 mlx5i_flow_type_mask(u32 flow_type)
-+{
-+	return flow_type & ~(FLOW_EXT | FLOW_MAC_EXT | FLOW_RSS);
-+}
-+
- static int mlx5i_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd)
- {
- 	struct mlx5e_priv *priv = mlx5i_epriv(dev);
+ static void update_counter_cache(int index, u32 *bulk_raw_data,
 -- 
 2.31.1
 
