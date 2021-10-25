@@ -2,83 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A5084395FB
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 14:17:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC31E439612
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 14:21:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233301AbhJYMUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 08:20:03 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:16819 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232524AbhJYMT4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 08:19:56 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1635164255; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=fWKxaBJfbZu62J4f9mK3WB8slIxGA4Es1JIHrQ2zcEE=; b=G812fT27aaG1sJZ1P9Dlzywwre/wOKssnfKWDczJREj9FNChUxjmOuMLUGKDb/fF8PVibe/k
- NRwkI+41uc1m8QHT0+WA5sn7SEldOIQxY9ctxw+mq/Bk+JwliyOzdYoiLMNvssIi3NUOaYqD
- b5cR3luhlfJuMsYU5dcUqSmBYzQ=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
- 6176a052c75c436a3052b922 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 25 Oct 2021 12:17:22
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id BA3BDC4338F; Mon, 25 Oct 2021 12:17:21 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from tykki (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id D3BEBC4338F;
-        Mon, 25 Oct 2021 12:17:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org D3BEBC4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Srinivasan Raju <srini.raju@purelifi.com>
-Cc:     Kari Argillander <kari.argillander@gmail.com>,
-        Mostafa Afgani <mostafa.afgani@purelifi.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list\:NETWORKING DRIVERS \(WIRELESS\)" 
-        <linux-wireless@vger.kernel.org>,
-        "open list\:NETWORKING DRIVERS" <netdev@vger.kernel.org>
-Subject: Re: [EXTERNAL] Re: [PATCH v20 2/2] wireless: Initial driver submission for pureLiFi STA devices
-References: <20200928102008.32568-1-srini.raju@purelifi.com>
-        <20211018100143.7565-1-srini.raju@purelifi.com>
-        <20211018100143.7565-3-srini.raju@purelifi.com>
-        <20211025095927.cssdlblcdprdwfsy@kari-VirtualBox>
-        <CWLP265MB321780AB502EF147F6AAF197E0839@CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM>
-Date:   Mon, 25 Oct 2021 15:17:15 +0300
-In-Reply-To: <CWLP265MB321780AB502EF147F6AAF197E0839@CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM>
-        (Srinivasan Raju's message of "Mon, 25 Oct 2021 11:23:58 +0000")
-Message-ID: <87mtmxcn90.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S233222AbhJYMXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 08:23:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38720 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233166AbhJYMXl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 08:23:41 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C85C2C061220;
+        Mon, 25 Oct 2021 05:21:19 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id i5so7795001pla.5;
+        Mon, 25 Oct 2021 05:21:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dLLKItC7FJu7DzJkO6gr5HZ4zqC5MTkAAgVJ19/8B+w=;
+        b=V+a3mi8UwVO2EcZtMdvR/agwMP60yr6EHScXG7imE2PVTqdp1CoqbWYlFnUeJ2v0Wb
+         7WtEfKCtAjsYrqf+GT9RSQBl5E8+n8Jni+4PSXPuE2LQaPCJRkLzgueH5VBpMHUDYX4I
+         CD/lXhVcCaUn+VFeYLF3aZHtWHAyYJsUwtijZmkLEMZ/LgbYIQ3FGXdri9FXUE5/h53K
+         KXaAprk/fLyKTsGtHt3J+i3XNnlgCUbeih+IChvtzCXr4oUY6GON6XVZziMUH559F7tU
+         MkTRqbPxwAiEySGs++yEeoH943QUD08xYInpAGPW4524eiUchYG+t04bsU+lsuXkGc0Y
+         J0HA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dLLKItC7FJu7DzJkO6gr5HZ4zqC5MTkAAgVJ19/8B+w=;
+        b=nllu+ktI/XbQSl8u05ZDzJZQvW0oHu0pmpcFrRV96UetoY4/4U1e0akf5qkfIMOLNc
+         IrERGgE0GGXhvatxiKV02GcqP3jkMFZRiO4x4yzU4hJ3Sr0OdI/teQw6oDo7521hwL1f
+         m32hRmMFZW7sbPEyrMeUvn6nNZ1TRJ/RJpeI7GIZHKRZKsgAnRvDUOZMv0/v6JBdACUx
+         S9G66o0LH5Df1aIMlPK4EU6kBRrehp1HlYKYwB7LWVwxUw2mINcIs+7D5NhruzYMRbWp
+         8oEqtycLbao2+VJ8tMEqQl+kkRYGWCA7pS0Iu7cBEPMRxVZJA2BaeVDrq8OB2SqhLS8g
+         5LRg==
+X-Gm-Message-State: AOAM5321d9gHNRZEaU0m4xFs9RxkJH4/EqYQ1qr0eshjlvsN7FvBD/7M
+        lb8BxsRUDzSjOrcDwzG5jT8=
+X-Google-Smtp-Source: ABdhPJwLApssT12J7nzjBoEV6nnMpHAInbtP1EyhuYNxE3A+huPjA16wU0ZOPueujc4qLImbf+0jbQ==
+X-Received: by 2002:a17:90a:a88e:: with SMTP id h14mr23101946pjq.41.1635164479273;
+        Mon, 25 Oct 2021 05:21:19 -0700 (PDT)
+Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:8:bcf6:9813:137f:2b6])
+        by smtp.gmail.com with ESMTPSA id mi11sm2786166pjb.5.2021.10.25.05.21.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Oct 2021 05:21:18 -0700 (PDT)
+From:   Tianyu Lan <ltykernel@gmail.com>
+To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+        davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
+        arnd@arndb.de, brijesh.singh@amd.com, jroedel@suse.de,
+        Tianyu.Lan@microsoft.com, thomas.lendacky@amd.com,
+        pgonda@google.com, akpm@linux-foundation.org,
+        kirill.shutemov@linux.intel.com, rppt@kernel.org, tj@kernel.org,
+        aneesh.kumar@linux.ibm.com, saravanand@fb.com,
+        sfr@canb.auug.org.au, michael.h.kelley@microsoft.com
+Cc:     linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        vkuznets@redhat.com, konrad.wilk@oracle.com, hch@lst.de,
+        robin.murphy@arm.com, joro@8bytes.org, parri.andrea@gmail.com,
+        dave.hansen@intel.com
+Subject: [PATCH V9 0/9] x86/Hyper-V: Add Hyper-V Isolation VM support(First part)
+Date:   Mon, 25 Oct 2021 08:21:05 -0400
+Message-Id: <20211025122116.264793-1-ltykernel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Srinivasan Raju <srini.raju@purelifi.com> writes:
+From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
->> Thease are just what I found myself.
->
-> Thanks ! I will check and fix.
+Hyper-V provides two kinds of Isolation VMs. VBS(Virtualization-based
+security) and AMD SEV-SNP unenlightened Isolation VMs. This patchset
+is to add support for these Isolation VM support in Linux.
 
-Please don't use HTML, our lists drop those.
+The memory of these vms are encrypted and host can't access guest
+memory directly. Hyper-V provides new host visibility hvcall and
+the guest needs to call new hvcall to mark memory visible to host
+before sharing memory with host. For security, all network/storage
+stack memory should not be shared with host and so there is bounce
+buffer requests.
+
+Vmbus channel ring buffer already plays bounce buffer role because
+all data from/to host needs to copy from/to between the ring buffer
+and IO stack memory. So mark vmbus channel ring buffer visible.
+
+For SNP isolation VM, guest needs to access the shared memory via
+extra address space which is specified by Hyper-V CPUID HYPERV_CPUID_
+ISOLATION_CONFIG. The access physical address of the shared memory
+should be bounce buffer memory GPA plus with shared_gpa_boundary
+reported by CPUID.
+
+This patchset is rebased on the commit d9abdee of Linux mainline tree
+and plus clean up patch from Borislav Petkov(https://lore.kernel.org/r/
+YWRwxImd9Qcls/Yy@zn.tnic)
+
+
+Change since v8
+        - Fix compile issue in the patch "  x86/sev-es: Expose sev_es_ghcb_hv_call()
+	  to call ghcb hv call out of sev code via adding check AMD SEV option
+          in the ivm.c and not compile the ghcb related function when the option
+	  is not selected.
+
+Change since v7
+	- Rework sev_es_ghcb_hv_call() and export it for Hyper-V
+	  according to suggestion from Borislav Petkov.
+
+Change since v6
+	- Add hv_set_mem_host_visibility() when CONFIG_HYPERV is no.
+	  Fix compile error.
+	- Add comment to describe __set_memory_enc_pgtable().
+	- Split SEV change into patch "Expose __sev_es_ghcb_hv_call()
+	  to call ghcb hv call out of sev code"
+ 	- Add comment about calling memunmap() in the non-snp IVM.
+
+Change since v5
+	- Replace HVPFN_UP() with PFN_UP() in the __vmbus_establish_gpadl()
+	- Remove unused variable gpadl in the __vmbus_open() and vmbus_close_
+	  internal()
+	- Clean gpadl_handle in the vmbus_teardown_gpadl().
+	- Adjust change layout in the asm/mshyperv.h to make
+	  hv_is_synic_reg(), hv_get_register() and hv_set_register()
+	  ahead of the #include of asm-generic/mshyperv.h
+	- Change vmbus_connection.monitor_pages_pa type from unsigned
+	  long to phys_addr_t
+
+Change since v4:
+	- Hide hv_mark_gpa_visibility() and set memory visibility via
+	  set_memory_encrypted/decrypted() 
+	- Change gpadl handle in netvsc and uio driver from u32 to
+	  struct vmbus_gpadl.
+	- Change vmbus_establish_gpadl()'s gpadl_handle parameter
+	  to vmbus_gpadl data structure.
+	- Remove hv_get_simp(), hv_get_siefp()  hv_get_synint_*()
+	  helper function. Move the logic into hv_get/set_register().
+	- Use scsi_dma_map/unmap() instead of dma_map/unmap_sg() in storvsc driver.
+	- Allocate rx/tx ring buffer via alloc_pages() in Isolation VM  
+
+Change since V3:
+	- Initalize GHCB page in the cpu init callbac.
+	- Change vmbus_teardown_gpadl() parameter in order to
+	  mask the memory back to non-visible to host.
+	- Merge hv_ringbuffer_post_init() into hv_ringbuffer_init().
+	- Keep Hyper-V bounce buffer size as same as AMD SEV VM
+	- Use dma_map_sg() instead of dm_map_page() in the storvsc driver.
+
+Change since V2:
+       - Drop x86_set_memory_enc static call and use platform check
+         in the __set_memory_enc_dec() to run platform callback of
+	 set memory encrypted or decrypted.
+
+Change since V1:
+       - Introduce x86_set_memory_enc static call and so platforms can
+         override __set_memory_enc_dec() with their implementation
+       - Introduce sev_es_ghcb_hv_call_simple() and share code
+         between SEV and Hyper-V code.
+       - Not remap monitor pages in the non-SNP isolation VM
+       - Make swiotlb_init_io_tlb_mem() return error code and return
+         error when dma_map_decrypted() fails.
+
+Change since RFC V4:
+       - Introduce dma map decrypted function to remap bounce buffer
+          and provide dma map decrypted ops for platform to hook callback.        
+       - Split swiotlb and dma map decrypted change into two patches
+       - Replace vstart with vaddr in swiotlb changes.
+
+Change since RFC v3:
+       - Add interface set_memory_decrypted_map() to decrypt memory and
+         map bounce buffer in extra address space
+       - Remove swiotlb remap function and store the remap address
+         returned by set_memory_decrypted_map() in swiotlb mem data structure.
+       - Introduce hv_set_mem_enc() to make code more readable in the __set_memory_enc_dec().
+
+Change since RFC v2:
+       - Remove not UIO driver in Isolation VM patch
+       - Use vmap_pfn() to replace ioremap_page_range function in
+       order to avoid exposing symbol ioremap_page_range() and
+       ioremap_page_range()
+       - Call hv set mem host visibility hvcall in set_memory_encrypted/decrypted()
+       - Enable swiotlb force mode instead of adding Hyper-V dma map/unmap hook
+       - Fix code style
+
+Tianyu Lan (9):
+  x86/hyperv: Initialize GHCB page in Isolation VM
+  x86/hyperv: Initialize shared memory boundary in the Isolation VM.
+  x86/hyperv: Add new hvcall guest address host visibility  support
+  Drivers: hv: vmbus: Mark vmbus ring buffer visible to host in
+    Isolation VM
+  x86/sev-es: Expose sev_es_ghcb_hv_call() to call ghcb hv call out of
+    sev code
+  x86/hyperv: Add Write/Read MSR registers via ghcb page
+  x86/hyperv: Add ghcb hvcall support for SNP VM
+  Drivers: hv: vmbus: Add SNP support for VMbus channel initiate 
+    message
+  Drivers: hv : vmbus: Initialize VMbus ring buffer for Isolation VM
+
+ arch/x86/hyperv/Makefile           |   2 +-
+ arch/x86/hyperv/hv_init.c          |  78 ++++++--
+ arch/x86/hyperv/ivm.c              | 291 +++++++++++++++++++++++++++++
+ arch/x86/include/asm/hyperv-tlfs.h |  17 ++
+ arch/x86/include/asm/mshyperv.h    |  70 +++++--
+ arch/x86/include/asm/sev.h         |   5 +
+ arch/x86/kernel/cpu/mshyperv.c     |   5 +
+ arch/x86/kernel/sev-shared.c       |  25 ++-
+ arch/x86/kernel/sev.c              |  13 +-
+ arch/x86/mm/pat/set_memory.c       |  23 ++-
+ drivers/hv/Kconfig                 |   1 +
+ drivers/hv/channel.c               |  72 ++++---
+ drivers/hv/connection.c            | 101 +++++++++-
+ drivers/hv/hv.c                    |  82 ++++++--
+ drivers/hv/hv_common.c             |  12 ++
+ drivers/hv/hyperv_vmbus.h          |   2 +
+ drivers/hv/ring_buffer.c           |  55 ++++--
+ drivers/net/hyperv/hyperv_net.h    |   5 +-
+ drivers/net/hyperv/netvsc.c        |  15 +-
+ drivers/uio/uio_hv_generic.c       |  18 +-
+ include/asm-generic/hyperv-tlfs.h  |   1 +
+ include/asm-generic/mshyperv.h     |  20 +-
+ include/linux/hyperv.h             |  12 +-
+ 23 files changed, 786 insertions(+), 139 deletions(-)
+ create mode 100644 arch/x86/hyperv/ivm.c
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.25.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
