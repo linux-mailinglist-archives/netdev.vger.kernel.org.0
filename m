@@ -2,41 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AE48439C85
+	by mail.lfdr.de (Postfix) with ESMTP id BC6C3439C86
 	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 19:01:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234314AbhJYRD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 13:03:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55660 "EHLO mail.kernel.org"
+        id S234676AbhJYRD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 13:03:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55738 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234307AbhJYRDD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Oct 2021 13:03:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6B04760FBF;
-        Mon, 25 Oct 2021 17:00:40 +0000 (UTC)
+        id S234304AbhJYRDF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Oct 2021 13:03:05 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0E73F6108C;
+        Mon, 25 Oct 2021 17:00:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635181241;
-        bh=pPSGWUuXi7JNj3fCppNPAytjD6qYZABDSAvksdujfGk=;
+        s=k20201202; t=1635181243;
+        bh=MzF9bSoY4XRFpqWztlQq8RFU/pScLG1NEx9c9VCoIXY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cj45TVyVO3wW8Bu8t+mx9864Yr7zdLJa8js0RyUVlK3hUN8fgfl9ioNd6pJQBg0m9
-         RWdD8BJeamy9M4aO6Rfw+3pApjePzdr3GptmKe/0nDQl8Zddu8bKqEYOEig2ttkMbw
-         0FpJK9kDKqumPty9AnRYEOgIVOR5esl3VokPareFVaifggEggUdC3hdO/Id+Bv103q
-         CLf+kMkCF6/FB55/9iBTbDoKV9L88czcwWjIKnvmWFJ7U8dCJtZhk3+kzkH9sOhLTH
-         Vt3KcJCDIhTF8oKZLvrfY/qOFmZvWTeV7a1ANBH1N7pQnPfKgVbHv9ptv66Z9kufqV
-         Gqf5blXVcv4Rg==
+        b=Czm/f3383SG3P+1WgqRQfZzaTqQlIBB49j0+frVdG8hLVd+rKCzTGGxPwKlYBduGT
+         oM5GOhOXXwV4LGyC5tpFIRAyXuOUh6oXRlW5FwO1YOUpvFxGbfzI9dtBlgLVK9p8+C
+         FRq81Kq/9Me19GsOgRMqB3S4rzPPefIe0ac3mIGErP2wcUcCBlBo11LAw6mJ4Q3mBU
+         GUgbk/P3Kp5OtJAcRd6VgIv/np1G7ldt5IO4gK0FCsmw0kWuZcQtHhbKxlDCHAr+qc
+         1leVCus9SfuggtLrRCSVe/EUrLk8oSwT3f8ZzKDZw2c/Rid84fhHLOmy9liOnipKt+
+         9TKpLUv85Nh6g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eugene Crosser <crosser@average.org>,
-        David Ahern <dsahern@kernel.org>,
+Cc:     Erik Ekman <erik@kryo.se>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 09/13] vrf: Revert "Reset skb conntrack connection..."
-Date:   Mon, 25 Oct 2021 13:00:18 -0400
-Message-Id: <20211025170023.1394358-9-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, ecree.xilinx@gmail.com,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 10/13] sfc: Export fibre-specific supported link modes
+Date:   Mon, 25 Oct 2021 13:00:19 -0400
+Message-Id: <20211025170023.1394358-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211025170023.1394358-1-sashal@kernel.org>
 References: <20211025170023.1394358-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -44,132 +45,174 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eugene Crosser <crosser@average.org>
+From: Erik Ekman <erik@kryo.se>
 
-[ Upstream commit 55161e67d44fdd23900be166a81e996abd6e3be9 ]
+[ Upstream commit c62041c5baa9ded3bc6fd38d3f724de70683b489 ]
 
-This reverts commit 09e856d54bda5f288ef8437a90ab2b9b3eab83d1.
+The 1/10GbaseT modes were set up for cards with SFP+ cages in
+3497ed8c852a5 ("sfc: report supported link speeds on SFP connections").
+10GbaseT was likely used since no 10G fibre mode existed.
 
-When an interface is enslaved in a VRF, prerouting conntrack hook is
-called twice: once in the context of the original input interface, and
-once in the context of the VRF interface. If no special precausions are
-taken, this leads to creation of two conntrack entries instead of one,
-and breaks SNAT.
+The missing fibre modes for 1/10G were added to ethtool.h in 5711a9822144
+("net: ethtool: add support for 1000BaseX and missing 10G link modes")
+shortly thereafter.
 
-Commit above was intended to avoid creation of extra conntrack entries
-when input interface is enslaved in a VRF. It did so by resetting
-conntrack related data associated with the skb when it enters VRF context.
+The user guide available at https://support-nic.xilinx.com/wp/drivers
+lists support for the following cable and transceiver types in section 2.9:
+- QSFP28 100G Direct Attach Cables
+- QSFP28 100G SR Optical Transceivers (with SR4 modules listed)
+- SFP28 25G Direct Attach Cables
+- SFP28 25G SR Optical Transceivers
+- QSFP+ 40G Direct Attach Cables
+- QSFP+ 40G Active Optical Cables
+- QSFP+ 40G SR4 Optical Transceivers
+- QSFP+ to SFP+ Breakout Direct Attach Cables
+- QSFP+ to SFP+ Breakout Active Optical Cables
+- SFP+ 10G Direct Attach Cables
+- SFP+ 10G SR Optical Transceivers
+- SFP+ 10G LR Optical Transceivers
+- SFP 1000BASE‐T Transceivers
+- 1G Optical Transceivers
+(From user guide issue 28. Issue 16 which also includes older cards like
+SFN5xxx/SFN6xxx has matching lists for 1/10/40G transceiver types.)
 
-However it breaks netfilter operation. Imagine a use case when conntrack
-zone must be assigned based on the original input interface, rather than
-VRF interface (that would make original interfaces indistinguishable). One
-could create netfilter rules similar to these:
+Regarding SFP+ 10GBASE‐T transceivers the latest guide says:
+"Solarflare adapters do not support 10GBASE‐T transceiver modules."
 
-        chain rawprerouting {
-                type filter hook prerouting priority raw;
-                iif realiface1 ct zone set 1 return
-                iif realiface2 ct zone set 2 return
-        }
+Tested using SFN5122F-R7 (with 2 SFP+ ports). Supported link modes do not change
+depending on module used (tested with 1000BASE-T, 1000BASE-BX10, 10GBASE-LR).
+Before:
 
-This works before the mentioned commit, but not after: zone assignment
-is "forgotten", and any subsequent NAT or filtering that is dependent
-on the conntrack zone does not work.
+$ ethtool ext
+Settings for ext:
+	Supported ports: [ FIBRE ]
+	Supported link modes:   1000baseT/Full
+	                        10000baseT/Full
+	Supported pause frame use: Symmetric Receive-only
+	Supports auto-negotiation: No
+	Supported FEC modes: Not reported
+	Advertised link modes:  Not reported
+	Advertised pause frame use: No
+	Advertised auto-negotiation: No
+	Advertised FEC modes: Not reported
+	Link partner advertised link modes:  Not reported
+	Link partner advertised pause frame use: No
+	Link partner advertised auto-negotiation: No
+	Link partner advertised FEC modes: Not reported
+	Speed: 1000Mb/s
+	Duplex: Full
+	Auto-negotiation: off
+	Port: FIBRE
+	PHYAD: 255
+	Transceiver: internal
+        Current message level: 0x000020f7 (8439)
+                               drv probe link ifdown ifup rx_err tx_err hw
+	Link detected: yes
 
-Here is a reproducer script that demonstrates the difference in behaviour.
+After:
 
-==========
-#!/bin/sh
+$ ethtool ext
+Settings for ext:
+	Supported ports: [ FIBRE ]
+	Supported link modes:   1000baseT/Full
+	                        1000baseX/Full
+	                        10000baseCR/Full
+	                        10000baseSR/Full
+	                        10000baseLR/Full
+	Supported pause frame use: Symmetric Receive-only
+	Supports auto-negotiation: No
+	Supported FEC modes: Not reported
+	Advertised link modes:  Not reported
+	Advertised pause frame use: No
+	Advertised auto-negotiation: No
+	Advertised FEC modes: Not reported
+	Link partner advertised link modes:  Not reported
+	Link partner advertised pause frame use: No
+	Link partner advertised auto-negotiation: No
+	Link partner advertised FEC modes: Not reported
+	Speed: 1000Mb/s
+	Duplex: Full
+	Auto-negotiation: off
+	Port: FIBRE
+	PHYAD: 255
+	Transceiver: internal
+	Supports Wake-on: g
+	Wake-on: d
+        Current message level: 0x000020f7 (8439)
+                               drv probe link ifdown ifup rx_err tx_err hw
+	Link detected: yes
 
-# This script demonstrates unexpected change of nftables behaviour
-# caused by commit 09e856d54bda5f28 ""vrf: Reset skb conntrack
-# connection on VRF rcv"
-# https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=09e856d54bda5f288ef8437a90ab2b9b3eab83d1
-#
-# Before the commit, it was possible to assign conntrack zone to a
-# packet (or mark it for `notracking`) in the prerouting chanin, raw
-# priority, based on the `iif` (interface from which the packet
-# arrived).
-# After the change, # if the interface is enslaved in a VRF, such
-# assignment is lost. Instead, assignment based on the `iif` matching
-# the VRF master interface is honored. Thus it is impossible to
-# distinguish packets based on the original interface.
-#
-# This script demonstrates this change of behaviour: conntrack zone 1
-# or 2 is assigned depending on the match with the original interface
-# or the vrf master interface. It can be observed that conntrack entry
-# appears in different zone in the kernel versions before and after
-# the commit.
-
-IPIN=172.30.30.1
-IPOUT=172.30.30.2
-PFXL=30
-
-ip li sh vein >/dev/null 2>&1 && ip li del vein
-ip li sh tvrf >/dev/null 2>&1 && ip li del tvrf
-nft list table testct >/dev/null 2>&1 && nft delete table testct
-
-ip li add vein type veth peer veout
-ip li add tvrf type vrf table 9876
-ip li set veout master tvrf
-ip li set vein up
-ip li set veout up
-ip li set tvrf up
-/sbin/sysctl -w net.ipv4.conf.veout.accept_local=1
-/sbin/sysctl -w net.ipv4.conf.veout.rp_filter=0
-ip addr add $IPIN/$PFXL dev vein
-ip addr add $IPOUT/$PFXL dev veout
-
-nft -f - <<__END__
-table testct {
-	chain rawpre {
-		type filter hook prerouting priority raw;
-		iif { veout, tvrf } meta nftrace set 1
-		iif veout ct zone set 1 return
-		iif tvrf ct zone set 2 return
-		notrack
-	}
-	chain rawout {
-		type filter hook output priority raw;
-		notrack
-	}
-}
-__END__
-
-uname -rv
-conntrack -F
-ping -W 1 -c 1 -I vein $IPOUT
-conntrack -L
-
-Signed-off-by: Eugene Crosser <crosser@average.org>
-Acked-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: Erik Ekman <erik@kryo.se>
+Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/vrf.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/net/ethernet/sfc/mcdi_port_common.c | 37 +++++++++++++++------
+ 1 file changed, 26 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
-index d406da82b4fb..2746f77745e4 100644
---- a/drivers/net/vrf.c
-+++ b/drivers/net/vrf.c
-@@ -1313,8 +1313,6 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
- 	bool need_strict = rt6_need_strict(&ipv6_hdr(skb)->daddr);
- 	bool is_ndisc = ipv6_ndisc_frame(skb);
- 
--	nf_reset_ct(skb);
--
- 	/* loopback, multicast & non-ND link-local traffic; do not push through
- 	 * packet taps again. Reset pkt_type for upper layers to process skb.
- 	 * For strict packets with a source LLA, determine the dst using the
-@@ -1371,8 +1369,6 @@ static struct sk_buff *vrf_ip_rcv(struct net_device *vrf_dev,
- 	skb->skb_iif = vrf_dev->ifindex;
- 	IPCB(skb)->flags |= IPSKB_L3SLAVE;
- 
--	nf_reset_ct(skb);
--
- 	if (ipv4_is_multicast(ip_hdr(skb)->daddr))
- 		goto out;
- 
+diff --git a/drivers/net/ethernet/sfc/mcdi_port_common.c b/drivers/net/ethernet/sfc/mcdi_port_common.c
+index 4bd3ef8f3384..c4fe3c48ac46 100644
+--- a/drivers/net/ethernet/sfc/mcdi_port_common.c
++++ b/drivers/net/ethernet/sfc/mcdi_port_common.c
+@@ -132,16 +132,27 @@ void mcdi_to_ethtool_linkset(u32 media, u32 cap, unsigned long *linkset)
+ 	case MC_CMD_MEDIA_SFP_PLUS:
+ 	case MC_CMD_MEDIA_QSFP_PLUS:
+ 		SET_BIT(FIBRE);
+-		if (cap & (1 << MC_CMD_PHY_CAP_1000FDX_LBN))
++		if (cap & (1 << MC_CMD_PHY_CAP_1000FDX_LBN)) {
+ 			SET_BIT(1000baseT_Full);
+-		if (cap & (1 << MC_CMD_PHY_CAP_10000FDX_LBN))
+-			SET_BIT(10000baseT_Full);
+-		if (cap & (1 << MC_CMD_PHY_CAP_40000FDX_LBN))
++			SET_BIT(1000baseX_Full);
++		}
++		if (cap & (1 << MC_CMD_PHY_CAP_10000FDX_LBN)) {
++			SET_BIT(10000baseCR_Full);
++			SET_BIT(10000baseLR_Full);
++			SET_BIT(10000baseSR_Full);
++		}
++		if (cap & (1 << MC_CMD_PHY_CAP_40000FDX_LBN)) {
+ 			SET_BIT(40000baseCR4_Full);
+-		if (cap & (1 << MC_CMD_PHY_CAP_100000FDX_LBN))
++			SET_BIT(40000baseSR4_Full);
++		}
++		if (cap & (1 << MC_CMD_PHY_CAP_100000FDX_LBN)) {
+ 			SET_BIT(100000baseCR4_Full);
+-		if (cap & (1 << MC_CMD_PHY_CAP_25000FDX_LBN))
++			SET_BIT(100000baseSR4_Full);
++		}
++		if (cap & (1 << MC_CMD_PHY_CAP_25000FDX_LBN)) {
+ 			SET_BIT(25000baseCR_Full);
++			SET_BIT(25000baseSR_Full);
++		}
+ 		if (cap & (1 << MC_CMD_PHY_CAP_50000FDX_LBN))
+ 			SET_BIT(50000baseCR2_Full);
+ 		break;
+@@ -192,15 +203,19 @@ u32 ethtool_linkset_to_mcdi_cap(const unsigned long *linkset)
+ 		result |= (1 << MC_CMD_PHY_CAP_100FDX_LBN);
+ 	if (TEST_BIT(1000baseT_Half))
+ 		result |= (1 << MC_CMD_PHY_CAP_1000HDX_LBN);
+-	if (TEST_BIT(1000baseT_Full) || TEST_BIT(1000baseKX_Full))
++	if (TEST_BIT(1000baseT_Full) || TEST_BIT(1000baseKX_Full) ||
++			TEST_BIT(1000baseX_Full))
+ 		result |= (1 << MC_CMD_PHY_CAP_1000FDX_LBN);
+-	if (TEST_BIT(10000baseT_Full) || TEST_BIT(10000baseKX4_Full))
++	if (TEST_BIT(10000baseT_Full) || TEST_BIT(10000baseKX4_Full) ||
++			TEST_BIT(10000baseCR_Full) || TEST_BIT(10000baseLR_Full) ||
++			TEST_BIT(10000baseSR_Full))
+ 		result |= (1 << MC_CMD_PHY_CAP_10000FDX_LBN);
+-	if (TEST_BIT(40000baseCR4_Full) || TEST_BIT(40000baseKR4_Full))
++	if (TEST_BIT(40000baseCR4_Full) || TEST_BIT(40000baseKR4_Full) ||
++			TEST_BIT(40000baseSR4_Full))
+ 		result |= (1 << MC_CMD_PHY_CAP_40000FDX_LBN);
+-	if (TEST_BIT(100000baseCR4_Full))
++	if (TEST_BIT(100000baseCR4_Full) || TEST_BIT(100000baseSR4_Full))
+ 		result |= (1 << MC_CMD_PHY_CAP_100000FDX_LBN);
+-	if (TEST_BIT(25000baseCR_Full))
++	if (TEST_BIT(25000baseCR_Full) || TEST_BIT(25000baseSR_Full))
+ 		result |= (1 << MC_CMD_PHY_CAP_25000FDX_LBN);
+ 	if (TEST_BIT(50000baseCR2_Full))
+ 		result |= (1 << MC_CMD_PHY_CAP_50000FDX_LBN);
 -- 
 2.33.0
 
