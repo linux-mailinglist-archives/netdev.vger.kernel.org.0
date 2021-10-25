@@ -2,110 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A30D543932E
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 11:57:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0882243933F
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 11:59:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232721AbhJYKAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 06:00:05 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:56482 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232734AbhJYJ7g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 05:59:36 -0400
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19P9PxGu020661;
-        Mon, 25 Oct 2021 09:57:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=raKGaq7KbvGpgVfi7/Y+T3jPC8X2N0kxS80GlNBhIYE=;
- b=SgMdP7uheI9DqstsgIHY0/PWDfCG/EsO7INfuSxxnp8/ozyfzZt7F8k11HlPwrPjh/yG
- pqWUCNBumKZFtB6taXpmRo+izWAtrXsLIIj7dTYh+LRFBsxgMAb1AEr/zHVMBTKeg1ra
- PzwsIPUMBrDgZYOjWAkwi6NQ0khtUCKDQXe356Zy5Tkc0ir5GmavUfDsLnnxr/Qus4rZ
- sWxbbtopOuqztivHhliwd0cFIDkjkaZBhPbQF8fflbtAC4rkVQ10rMAxf0fCatRJba7m
- D2yK6xAD0sMH8gNF8dYh9OMVlVxQjg5v91+Ibm1rjcmRdccx7WrhtWLlLBPbzfjVXLE/ 1g== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3bwsxs0m44-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 25 Oct 2021 09:57:12 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 19P9h4GD010060;
-        Mon, 25 Oct 2021 09:57:10 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3bva19m9cj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 25 Oct 2021 09:57:10 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 19P9v7cd60686672
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 25 Oct 2021 09:57:07 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3743211C06E;
-        Mon, 25 Oct 2021 09:57:07 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E5FC211C05C;
-        Mon, 25 Oct 2021 09:57:06 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 25 Oct 2021 09:57:06 +0000 (GMT)
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-netdev <netdev@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH net-next 9/9] s390/qeth: update kerneldoc for qeth_add_hw_header()
-Date:   Mon, 25 Oct 2021 11:56:58 +0200
-Message-Id: <20211025095658.3527635-10-jwi@linux.ibm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211025095658.3527635-1-jwi@linux.ibm.com>
-References: <20211025095658.3527635-1-jwi@linux.ibm.com>
+        id S232711AbhJYKB5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 06:01:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34236 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230297AbhJYKBx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 06:01:53 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8349C061745;
+        Mon, 25 Oct 2021 02:59:30 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id q16so8229807ljg.3;
+        Mon, 25 Oct 2021 02:59:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+TIj5y8QsMaTWrj/bXk+5lqEByFxDn6ZBGaeeKVM1t4=;
+        b=gmHqC4hXEi/uZzQY9R3wXUpk8h9YSkzbPgGyvI3qxU923udgW1KbfxMv1NdrplM5hl
+         P7KAA6WxIimu2DyeqQCxdo4jUKFwLATk3mOgXJh3BI66u6wbXZw7oN0lroexTTbdg1Ov
+         NUs817d0u5leYI7bCHlEDmPjxHJR3pNk3fp8SLEirwNbmHpeIsuZuAJ/+X2jIPQG8WPp
+         U5SqGQeBWn8eeTzxCaVMx0+BKIkStLLaaEDh73d4NgiwYJpfcQCA7BZ3fV1CGir9zx87
+         +Mhkp8TrR0B4ZHLqEqvCul1fa6HPXMJ0RwIu8NuNQJwcZ7yV8/Yqj5pkXeLX0zaZcovD
+         mUSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+TIj5y8QsMaTWrj/bXk+5lqEByFxDn6ZBGaeeKVM1t4=;
+        b=lzFiOax7ZZKPGtsLFyrJvn0wrzfIGBmjOUjR1OP6TfL5a4TIJqEndj0GJN+3+K0gyI
+         oJLonGV54bWTRqRJl2wu1Nh+WfiXNCHPYtx+i9Y8OA6OqxHOe6twxNSG8SXBF4lM5975
+         doXWaZOFLM796MIMcl+xd1cQxOGsy/Jhfxr1rjBqsiue17J5gs/M8S7rwJbl0uagrVpO
+         pjf08SN0T1GvKup3QHtn5iVleJhxcx83ZQvhAHlB9e22DDTWNjo2O7x2MYExW45/dwcy
+         0lEt2D8g+JN3XGuN1Oi1j4xduwowbW3p7GhBJ2xMyFTnu+mRSgJWN2Wz1P+lnA/Z+Oq2
+         0wfA==
+X-Gm-Message-State: AOAM532I+MQ87NspxfQtge4thLnGqydLT65B8XcL50zBcbJl80KgTj0e
+        guXRNaWE/+tAXZC1wu0unNU=
+X-Google-Smtp-Source: ABdhPJwehqJNnfIOxj7asWNT4mHVfIICRvlh5rfggFDthwIhGRiIVTpHn+T8Kld3zmZQ6HMr9pe3LA==
+X-Received: by 2002:a05:651c:554:: with SMTP id q20mr17890375ljp.118.1635155969220;
+        Mon, 25 Oct 2021 02:59:29 -0700 (PDT)
+Received: from kari-VirtualBox (85-23-89-224.bb.dnainternet.fi. [85.23.89.224])
+        by smtp.gmail.com with ESMTPSA id b16sm1534228lfb.220.2021.10.25.02.59.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Oct 2021 02:59:28 -0700 (PDT)
+Date:   Mon, 25 Oct 2021 12:59:27 +0300
+From:   Kari Argillander <kari.argillander@gmail.com>
+To:     Srinivasan Raju <srini.raju@purelifi.com>
+Cc:     mostafa.afgani@purelifi.com, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS (WIRELESS)" 
+        <linux-wireless@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v20 2/2] wireless: Initial driver submission for pureLiFi
+ STA devices
+Message-ID: <20211025095927.cssdlblcdprdwfsy@kari-VirtualBox>
+References: <20200928102008.32568-1-srini.raju@purelifi.com>
+ <20211018100143.7565-1-srini.raju@purelifi.com>
+ <20211018100143.7565-3-srini.raju@purelifi.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: c4NNRu9oXs6kHe1QKI7zN6FEFf2GvPrO
-X-Proofpoint-GUID: c4NNRu9oXs6kHe1QKI7zN6FEFf2GvPrO
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-10-25_03,2021-10-25_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
- lowpriorityscore=0 adultscore=0 phishscore=0 mlxscore=0 spamscore=0
- malwarescore=0 clxscore=1015 impostorscore=0 mlxlogscore=999
- priorityscore=1501 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2109230001 definitions=main-2110250058
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211018100143.7565-3-srini.raju@purelifi.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-qeth_add_hw_header() is missing documentation for some of its
-parameters, fix that up.
+On Mon, Oct 18, 2021 at 11:00:55AM +0100, Srinivasan Raju wrote:
+> This driver implementation has been based on the zd1211rw driver
+> 
+> Driver is based on 802.11 softMAC Architecture and uses
+> native 802.11 for configuration and management
+> 
+> The driver is compiled and tested in ARM, x86 architectures and
+> compiled in powerpc architecture
 
-Reported-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
----
- drivers/s390/net/qeth_core_main.c | 2 ++
- 1 file changed, 2 insertions(+)
+I have run some static analyzing tools against this driver. Here is my
+findings. If you have CI system in house I strongly recommend that you
+take these in use. Note that I have included just what might be real
+warnings but they might also not be. Please check them.
 
-diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
-index 6e410497826a..26c55f67289f 100644
---- a/drivers/s390/net/qeth_core_main.c
-+++ b/drivers/s390/net/qeth_core_main.c
-@@ -3873,12 +3873,14 @@ static unsigned int qeth_count_elements(struct sk_buff *skb,
- 
- /**
-  * qeth_add_hw_header() - add a HW header to an skb.
-+ * @queue: TX queue that the skb will be placed on.
-  * @skb: skb that the HW header should be added to.
-  * @hdr: double pointer to a qeth_hdr. When returning with >= 0,
-  *	 it contains a valid pointer to a qeth_hdr.
-  * @hdr_len: length of the HW header.
-  * @proto_len: length of protocol headers that need to be in same page as the
-  *	       HW header.
-+ * @elements: returns the required number of buffer elements for this skb.
-  *
-  * Returns the pushed length. If the header can't be pushed on
-  * (eg. because it would cross a page boundary), it is allocated from
--- 
-2.25.1
+------------------------------------------
+Thease are just what I found myself.
 
+drivers/net/wireless/purelifi/plfxlc/usb.c:47:
+Has static. Will not work with multiple device.
+
+drivers/net/wireless/purelifi/plfxlc/mac.h:75: You use spaces over tabs.
+drivers/net/wireless/purelifi/plfxlc/mac.c:704: You use spaces over tabs.
+drivers/net/wireless/purelifi/plfxlc/usb.c:920: You use spaces over tabs.
+There is more of these. Please find all of them.
+
+------------------------------------------
+$ cppcheck drivers/net/wireless/purelifi/plfxlc/*.[ch] --enable=all
+
+drivers/net/wireless/purelifi/plfxlc/usb.c:55:31: style:
+Boolean result is used in bitwise operation. Clarify expression with
+parentheses. [clarifyCondition]
+
+drivers/net/wireless/purelifi/plfxlc/mac.c:447:6: style:
+Condition '!bad_frame' is always true [knownConditionTrueFalse]
+
+drivers/net/wireless/purelifi/plfxlc/mac.c:572:16: style:
+Variable 'changed_flags' is assigned a value that is never used.
+[unreadVariable]
+        Please check next comment line 577. There you talk about use of
+        changed_flags but you never use it.
+
+Unused functions. I do not have opinion if you should remove these or
+not, but some times there is bug if some function is unused. Please at
+least comment if these are not mistakes.
+
+drivers/net/wireless/purelifi/plfxlc/usb.c:38:0: style: The function 'get_bcd_device' is never used. [unusedFunction]
+drivers/net/wireless/purelifi/plfxlc/usb.c:398:0: style: The function 'purelifi_usb_tx' is never used. [unusedFunction]
+drivers/net/wireless/purelifi/plfxlc/chip.h:64:0: style: The function 'purelifi_mc_clear' is never used. [unusedFunction]
+drivers/net/wireless/purelifi/plfxlc/chip.c:75:0: style: The function 'purelifi_chip_disable_rxtx' is never used. [unusedFunction]
+drivers/net/wireless/purelifi/plfxlc/chip.h:79:0: style: The function 'purelifi_mc_add_addr' is never used. [unusedFunction]
+drivers/net/wireless/purelifi/plfxlc/mac.c:89:0: style: The function 'purelifi_mac_init_hw' is never used. [unusedFunction]
+
+------------------------------------------
+$ codespell drivers/net/wireless/purelifi/plfxlc/*.[ch]
+
+mac.c:237: ocasions ==> occasions
+------------------------------------------
+$ ./scripts/checkpatch.pl --strict drivers/net/wireless/purelifi/plfxlc/*.[ch]
+$ make coccicheck M=drivers/net/wireless/purelifi/plfxlc/
+$ flawfinder drivers/net/wireless/purelifi/plfxlc/*.[ch]
+
+$ touch drivers/net/wireless/purelifi/plfxlc/*.[ch]
+$ make -j6 W=1
+
+These were all good.
+------------------------------------------
+$ touch drivers/net/wireless/purelifi/plfxlc/*.[ch]
+$ make -j6 CC=clang W=1 drivers/net/wireless/purelifi/plfxlc/
+
+drivers/net/wireless/purelifi/plfxlc/usb.c:38:19: warning:
+unused function 'get_bcd_device' [-Wunused-function]
+
+drivers/net/wireless/purelifi/plfxlc/usb.c:55:7: warning:
+logical not is only applied to the left hand side of this bitwise
+operator [-Wlogical-not-parentheses]
+------------------------------------------
+$ ~/smatch/smatch_scripts/build_kernel_data.sh
+$ ~/smatch/smatch_scripts/kchecker drivers/net/wireless/purelifi/plfxlc/
+
+drivers/net/wireless/purelifi/plfxlc/usb.c:55
+purelifi_send_packet_from_data_queue() warn: add some parenthesis here?
+
+drivers/net/wireless/purelifi/plfxlc/mac.c:685
+purelifi_get_et_strings() error: memcpy() '*et_strings' too small (32 vs 64)
+
+  Argillander
