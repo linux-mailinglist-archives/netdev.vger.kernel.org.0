@@ -2,58 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DDD5439747
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 15:12:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14E6043974D
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 15:14:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233464AbhJYNPR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 09:15:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50790 "EHLO
+        id S232111AbhJYNQt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 09:16:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233371AbhJYNPQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 09:15:16 -0400
+        with ESMTP id S231960AbhJYNQs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 09:16:48 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D0E4C061745
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 06:12:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84CC5C061745
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 06:14:26 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1mezlf-0000lR-Oi; Mon, 25 Oct 2021 15:11:59 +0200
+        id 1mezo0-0001ED-JF; Mon, 25 Oct 2021 15:14:24 +0200
 Received: from pengutronix.de (2a03-f580-87bc-d400-d7c8-7df6-a4ac-55f0.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:d7c8:7df6:a4ac:55f0])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
         (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 51E3C69D67D;
-        Mon, 25 Oct 2021 13:11:50 +0000 (UTC)
-Date:   Mon, 25 Oct 2021 15:11:49 +0200
+        by smtp.blackshift.org (Postfix) with ESMTPSA id DE5D269D683;
+        Mon, 25 Oct 2021 13:14:23 +0000 (UTC)
+Date:   Mon, 25 Oct 2021 15:14:23 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, mkubecek@suse.cz,
-        andrew@lunn.ch, amitc@mellanox.com, idosch@idosch.org,
-        danieller@nvidia.com, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, jdike@addtoit.com, richard@nod.at,
-        anton.ivanov@cambridgegreys.com, netanel@amazon.com,
-        akiyano@amazon.com, gtzalik@amazon.com, saeedb@amazon.com,
-        chris.snook@gmail.com, ulli.kroll@googlemail.com,
-        linus.walleij@linaro.org, jeroendb@google.com, csully@google.com,
-        awogbemila@google.com, jdmason@kudzu.us, rain.1986.08.12@gmail.com,
-        zyjzyj2000@gmail.com, kys@microsoft.com, haiyangz@microsoft.com,
-        mst@redhat.com, jasowang@redhat.com, doshir@vmware.com,
-        pv-drivers@vmware.com, jwi@linux.ibm.com, kgraul@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, johannes@sipsolutions.net,
-        netdev@vger.kernel.org, lipeng321@huawei.com,
-        chenhao288@hisilicon.com, linux-s390@vger.kernel.org
-Subject: Re: [PATCH V4 net-next 4/6] ethtool: extend ringparam setting uAPI
- with rx_buf_len
-Message-ID: <20211025131149.ya42sw64vkh7zrcr@pengutronix.de>
-References: <20211014113943.16231-1-huangguangbin2@huawei.com>
- <20211014113943.16231-5-huangguangbin2@huawei.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     linux-can <linux-can@vger.kernel.org>, netdev@vger.kernel.org
+Subject: Re: ethtool: ring configuration for CAN devices
+Message-ID: <20211025131423.q2o6oybl5mj5rq6x@pengutronix.de>
+References: <20211024213759.hwhlb4e3repkvo6y@pengutronix.de>
+ <YXaimhlXkpBKRQin@lunn.ch>
+ <20211025124331.d7r7qbadkzfk7i4f@pengutronix.de>
+ <YXaqEk97/WcCxcFE@lunn.ch>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ntrls4rhrigaspck"
+        protocol="application/pgp-signature"; boundary="lvk2bzg6xv455nw4"
 Content-Disposition: inline
-In-Reply-To: <20211014113943.16231-5-huangguangbin2@huawei.com>
+In-Reply-To: <YXaqEk97/WcCxcFE@lunn.ch>
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -63,26 +50,47 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---ntrls4rhrigaspck
+--lvk2bzg6xv455nw4
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On 14.10.2021 19:39:41, Guangbin Huang wrote:
-> From: Hao Chen <chenhao288@hisilicon.com>
+On 25.10.2021 14:58:58, Andrew Lunn wrote:
+> > > struct ethtool_kringparam {
+> > > 	__u32	cmd;
+> > > 	__u32   mode;
+> > > 	__u32	rx_max_pending;
+> > > 	__u32	rx_mini_max_pending;
+> > > 	__u32	rx_jumbo_max_pending;
+> > > 	__u32	tx_max_pending;
+> > > 	__u32	rx_pending;
+> > > 	__u32	rx_mini_pending;
+> > > 	__u32	rx_jumbo_pending;
+> > > 	__u32	tx_pending;
+> > > };
+> > >=20
+> > > and use this structure between the ethtool core and the drivers. This
+> > > has already been done at least once to allow extending the
+> > > API. Semantic patches are good for making the needed changes to all
+> > > the drivers.
+> >=20
+> > What about the proposed "two new parameters ringparam_ext and extack for
+> > .get_ringparam and .set_ringparam to extend more ring params through
+> > netlink." by Hao Chen/Guangbin Huang in:
+> >=20
+> > https://lore.kernel.org/all/20211014113943.16231-5-huangguangbin2@huawe=
+i.com/
+> >
+> > I personally like the conversion of the in in-kernel API to struct
+> > ethtool_kringparam better than adding ringparam_ext.
 >=20
-> Add two new parameters ringparam_ext and extack for
-> .get_ringparam and .set_ringparam to extend more ring params
-> through netlink.
+> Ah, i missed that development. I don't like it.
 >=20
-> Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
-> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+> You should probably jump into that discussion and explain your
+> requirements. Make sure it is heading in a direction you can extend
+> for your needs.
 
-While discussing a different ethtool ring param extension, Andrew Lunn
-suggested a different approach to extend the get/set_ringparam
-callbacks. See:
-
-https://lore.kernel.org/all/YXaimhlXkpBKRQin@lunn.ch/
+Will do. I've added you on Cc.
 
 regards,
 Marc
@@ -93,19 +101,19 @@ Embedded Linux                   | https://www.pengutronix.de  |
 Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
---ntrls4rhrigaspck
+--lvk2bzg6xv455nw4
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmF2rRIACgkQqclaivrt
-76n5tgf/TDqh5rLwE8ioUgOIyWQQ89IWZEELsdebvOV3prQCQ5JwbHhDeYuRawkk
-uReapAiNI0n6rb2CRf2hO85ngwPMrJcWbWoMK0pkn6ih/YRgeamEMASs7EYaB6xT
-YE7SUWnEfbQYxmJUNPqizL+0hJqAOaMqQ1Bcb73b1vT1UVT3Yafla0rbqRmoqBLm
-ZVwefAkU+eKMhxUt4eAo4XvB52ui9ahLoug8M19u1h6aMlOCak+y9LLDwO1/lItE
-0osicrwTmbL4DNPjiZBF9Nhp5vd26ni1j/Npjv4kWQQ2rU443aw2FEKe++dGaGC7
-0iF42Hq4PtTVLmlxdzTxi/JKiGK40A==
-=gUwe
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmF2rawACgkQqclaivrt
+76l8rAf/ftPf0PHIfUtxgi1pSTEEL6t7HS8unn423bD847e5gsylA7rl44f3Xwrr
+7EPEVSbTvD9Nvso1qDqaSuRmO12XPhSfGQVmtKVZEwk1BOLugazaj7JlT+6WM09D
+vTujgno9eVMirZDSiyqFFh/hO48Z6icJRnwWP4mbQwJzn6pktZuh8fDfTfcP5Bv4
+Jt9xkQW+do/Cpq/Dd1CZY/a58gW8C8O5klLjAEjv5HJP3j54zjyPxw588U9pTrv5
+G0uv31zLEklUpmy7lx9Ud8i111Uo5LHqXHOPPw9slkwVssE6t9RRYCmAaOxSl/j/
+n3pYkvxfOvbZhkEAS32nbYTnUpE71A==
+=0Qqn
 -----END PGP SIGNATURE-----
 
---ntrls4rhrigaspck--
+--lvk2bzg6xv455nw4--
