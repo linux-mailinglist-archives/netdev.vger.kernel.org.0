@@ -2,246 +2,265 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB0D043A4AF
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 22:27:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E91543A4B3
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 22:28:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234690AbhJYU3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 16:29:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36790 "EHLO
+        id S234589AbhJYUab (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 16:30:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236160AbhJYU3a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 16:29:30 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFFF4C061233
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 13:26:57 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id g8so3719905edb.2
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 13:26:57 -0700 (PDT)
+        with ESMTP id S234401AbhJYUaa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 16:30:30 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F4049C061745
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 13:28:07 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id z14so13858870wrg.6
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 13:28:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kryo-se.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=rtr9OwUa7jkMkBZzG7jOnPoeoZwSwwFeWYRqbtbwgSQ=;
-        b=33pMN6HhC2a748U+UxsvFhxiUVoZwH/JtzV5DTY46+R/EHRFjDZncowkTvCXkWmEaw
-         IKKayOjj252QaRwBEQhGNm6j/7WDY1VROUpuySiZsJTlbSH5QvQYo0ddUYKh6RPGpWoM
-         arR+RVO6oMm9L3wZJKL8mD26x3GC6DI6Zh7s5qaAA6aJD/IVkRM38IwrH1PJu+KbmyXW
-         DA1nKcRfUZtqRrm/kfjcprerwUqHavkSswOQy8HlWXDGKUQLeU9ut9zt1JySOo6T2CsM
-         VfW4US+pn2H6/p/9kP7vrR+FNC0ii9qNO8yQJxcOYmLga5zptRbUITL9nEsUYvuuGyNl
-         ZIWg==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=CrseSsIN3gGcmGh1Bkj0VTH8TDZ98/KEmc7OElVs92g=;
+        b=bchZwvvZGJrvJz0P1i/WdXlfkpPvvg9AqV6W1GIvFYVjgLG/ceU0zNgJrRyj+xFr0c
+         VWR/bL30/xlDEZ4okLKFO8XSfk2LLd+1beZaMjAdbmpCgl5On+vyF/6pu0SAR9kH61F5
+         9jfiCQOnM9LGx6qhOof6AE/M4/4eRkP0R3kzH1ehhp3jYgtm/kGeAX0bLagddNPkA/f2
+         pWjgOqvxyFy6XStzgif5Y/laBvYtNALiw1KU4xt6YNob4uqmhZ2hpKcyajoz1f3qIF6R
+         eqVQF8YOsAmd7I6HUHFhRN8DAo2X33ToujWbhTefd/pxeZ1rK1vZ0ZA3aOQQx17VUtFS
+         8NSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=rtr9OwUa7jkMkBZzG7jOnPoeoZwSwwFeWYRqbtbwgSQ=;
-        b=FKcIqzS1BhrkVLRUj+6NGV06Yyiw1qQkCiCunVj805+TifpZZRhFxq5xYxO10Bbp8e
-         t5hSlpNITBpKE3oR6XgFzQLY+CZBH7XrX5XFcvvCCF4IbxABEQ9RQoiOUrgSTnNhrpaF
-         BHb2SmfqLA+Ew++dH033EkTRuIgsdPbMl3Pf5b25w17IZeo6+uLztNAn3TpN1EgZhRr5
-         BR0WpfU3mnc0aaobcxRDhwiqBSf6GIN7Qcg3FZ3SNj2QM34jTEu4iqAtn48MtthGHpCb
-         kaakF4iUc0gr3QfLAXiHGwenaX/z07SMZgFBVf8LAvPYl+t/fKTDUFS6C6LX7WAODhWw
-         XRUA==
-X-Gm-Message-State: AOAM531H3vTVOBnpGjytMIYclFoDnkQtSlUN6KGjRzZ+zr0vsXHZTrLI
-        uXF0OcOOlN+vqg13mQuqL+oj+mcFe/ZdXlAjMzLBAw==
-X-Google-Smtp-Source: ABdhPJzY3fziBMfyeS/hxRFuJ6b9UHR0j+AhP+61NZ1Cu2HtoXSWiyu/aepPq5ba0DwIgIPYUa75LcLA477ZZ12v4/I=
-X-Received: by 2002:aa7:de12:: with SMTP id h18mr17539631edv.109.1635193616287;
- Mon, 25 Oct 2021 13:26:56 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=CrseSsIN3gGcmGh1Bkj0VTH8TDZ98/KEmc7OElVs92g=;
+        b=vTbSlFEXpgU4SKRZxIUIWDtndX+eOSrRVh7dWiYoDBrYzqd9n7Q6C9rKGvSJbujJFk
+         mUqwZur6DX48FH7k480grmkhGqli9UdgKJ344495y0XdwiuHpuY2ll7IlL3M7Zljn9sW
+         Z/vmpFmSU9ADjyZDLzCc6mKurSP3tui6O88ado2zjPJdFSbSNrhOgXK0pC6D8s0Ws1NS
+         JKe6nLMKK9bzlGJExWXzaDwXzsxF7M72lcKHcl7G1YUeopcoJKB0LP7sEIoGgOtX0kZk
+         OfGwni1//wjfSsXZzUDAwHy9o0bWIiKQcAzN6jxtwpHGtOjUyzrD+02VcVn+H/4iH1pU
+         mjFA==
+X-Gm-Message-State: AOAM532c+w2KEIpBYK5ZOSF9JWFf7me1AOrVivtG7e/aqBZq7/R5lJwT
+        Dw1/3t8upJPlmhSjE23yPsVwLVigig4=
+X-Google-Smtp-Source: ABdhPJxpL7OBcZTEsujt2jcQv8yABJH0J8Z4F+kVBhXPNUK157uwMhypfsxIJPOLuDok0S5lrt3NIw==
+X-Received: by 2002:a05:6000:128f:: with SMTP id f15mr26176773wrx.143.1635193686581;
+        Mon, 25 Oct 2021 13:28:06 -0700 (PDT)
+Received: from ?IPV6:2003:ea:8f1a:f00:f8b4:d976:9fed:ad5b? (p200300ea8f1a0f00f8b4d9769fedad5b.dip0.t-ipconnect.de. [2003:ea:8f1a:f00:f8b4:d976:9fed:ad5b])
+        by smtp.googlemail.com with ESMTPSA id f20sm19993940wmq.38.2021.10.25.13.28.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Oct 2021 13:28:04 -0700 (PDT)
+Message-ID: <ab517ec9-4930-474f-eb7e-34548afd5aaa@gmail.com>
+Date:   Mon, 25 Oct 2021 22:27:55 +0200
 MIME-Version: 1.0
-References: <20211019211333.19494-1-erik@kryo.se>
-In-Reply-To: <20211019211333.19494-1-erik@kryo.se>
-From:   Erik Ekman <erik@kryo.se>
-Date:   Mon, 25 Oct 2021 22:26:45 +0200
-Message-ID: <CAGgu=sA9HF03iQar9xa1LRnX8iK1_JYvYif4MD_BQDgb9U0mGQ@mail.gmail.com>
-Subject: Re: [PATCH v2] sfc: Export fibre-specific supported link modes
-To:     Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.1
+Subject: Re: [PATCH] r8169: Add device 10ec:8162 to driver r8169
+Content-Language: en-US
+To:     Janghyub Seo <jhyub06@gmail.com>, nic_swsd@realtek.com
+Cc:     netdev@vger.kernel.org
+References: <1635173498973.1185636578.3510859947@gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+In-Reply-To: <1635173498973.1185636578.3510859947@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 19 Oct 2021 at 23:13, Erik Ekman <erik@kryo.se> wrote:
->
-> The 1/10GbaseT modes were set up for cards with SFP+ cages in
-> 3497ed8c852a5 ("sfc: report supported link speeds on SFP connections").
-> 10GbaseT was likely used since no 10G fibre mode existed.
->
-> The missing fibre modes for 1/10G were added to ethtool.h in 5711a9822144
-> ("net: ethtool: add support for 1000BaseX and missing 10G link modes")
-> shortly thereafter.
->
-> The user guide available at https://support-nic.xilinx.com/wp/drivers
-> lists support for the following cable and transceiver types in section 2.=
-9:
-> - QSFP28 100G Direct Attach Cables
-> - QSFP28 100G SR Optical Transceivers (with SR4 modules listed)
-> - SFP28 25G Direct Attach Cables
-> - SFP28 25G SR Optical Transceivers
-> - QSFP+ 40G Direct Attach Cables
-> - QSFP+ 40G Active Optical Cables
-> - QSFP+ 40G SR4 Optical Transceivers
-> - QSFP+ to SFP+ Breakout Direct Attach Cables
-> - QSFP+ to SFP+ Breakout Active Optical Cables
-> - SFP+ 10G Direct Attach Cables
-> - SFP+ 10G SR Optical Transceivers
-> - SFP+ 10G LR Optical Transceivers
-> - SFP 1000BASE=E2=80=90T Transceivers
-> - 1G Optical Transceivers
-> (From user guide issue 28. Issue 16 which also includes older cards like
-> SFN5xxx/SFN6xxx has matching lists for 1/10/40G transceiver types.)
->
-> Regarding SFP+ 10GBASE=E2=80=90T transceivers the latest guide says:
-> "Solarflare adapters do not support 10GBASE=E2=80=90T transceiver modules=
-."
->
-> Tested using SFN5122F-R7 (with 2 SFP+ ports). Supported link modes do not=
- change
-> depending on module used (tested with 1000BASE-T, 1000BASE-BX10, 10GBASE-=
-LR).
-> Before:
->
-> $ ethtool ext
-> Settings for ext:
->         Supported ports: [ FIBRE ]
->         Supported link modes:   1000baseT/Full
->                                 10000baseT/Full
->         Supported pause frame use: Symmetric Receive-only
->         Supports auto-negotiation: No
->         Supported FEC modes: Not reported
->         Advertised link modes:  Not reported
->         Advertised pause frame use: No
->         Advertised auto-negotiation: No
->         Advertised FEC modes: Not reported
->         Link partner advertised link modes:  Not reported
->         Link partner advertised pause frame use: No
->         Link partner advertised auto-negotiation: No
->         Link partner advertised FEC modes: Not reported
->         Speed: 1000Mb/s
->         Duplex: Full
->         Auto-negotiation: off
->         Port: FIBRE
->         PHYAD: 255
->         Transceiver: internal
->         Current message level: 0x000020f7 (8439)
->                                drv probe link ifdown ifup rx_err tx_err h=
-w
->         Link detected: yes
->
-> After:
->
-> $ ethtool ext
-> Settings for ext:
->         Supported ports: [ FIBRE ]
->         Supported link modes:   1000baseT/Full
->                                 1000baseX/Full
->                                 10000baseCR/Full
->                                 10000baseSR/Full
->                                 10000baseLR/Full
->         Supported pause frame use: Symmetric Receive-only
->         Supports auto-negotiation: No
->         Supported FEC modes: Not reported
->         Advertised link modes:  Not reported
->         Advertised pause frame use: No
->         Advertised auto-negotiation: No
->         Advertised FEC modes: Not reported
->         Link partner advertised link modes:  Not reported
->         Link partner advertised pause frame use: No
->         Link partner advertised auto-negotiation: No
->         Link partner advertised FEC modes: Not reported
->         Speed: 1000Mb/s
->         Duplex: Full
->         Auto-negotiation: off
->         Port: FIBRE
->         PHYAD: 255
->         Transceiver: internal
->         Supports Wake-on: g
->         Wake-on: d
->         Current message level: 0x000020f7 (8439)
->                                drv probe link ifdown ifup rx_err tx_err h=
-w
->         Link detected: yes
->
-> Signed-off-by: Erik Ekman <erik@kryo.se>
+On 25.10.2021 16:55, Janghyub Seo wrote:
+> 
+> This patch makes the driver r8169 pick up device Realtek Semiconductor Co.
+> , Ltd. Device [10ec:8162].
+> 
+
+Interesting that still new PCI ID's are assigned. Can you post the output
+of dmesg | grep r8169 ? I'd be interested to know which chip version this is.
+What kind of system is this? 
+
+
+> Signed-off-by: Janghyub Seo <jhyub06@gmail.com>
+> Suggested-by: Rushab Shah <rushabshah32@gmail.com>
 > ---
+> Below is result of `lspci -nnvv` on my machine, with the following patch applied:
+> 
+> 03:00.0 Ethernet controller [0200]: Realtek Semiconductor Co., Ltd. Device [10ec:8162] (rev 05)
+>         Subsystem: ASUSTeK Computer Inc. Device [1043:208f]
+>         Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx+
+>         Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+>         Latency: 0, Cache Line Size: 64 bytes
+>         Interrupt: pin A routed to IRQ 57
+>         IOMMU group: 12
+>         Region 0: I/O ports at d000 [size=256]
+>         Region 2: Memory at fc700000 (64-bit, non-prefetchable) [size=64K]
+>         Region 4: Memory at fc710000 (64-bit, non-prefetchable) [size=16K]
+>         Capabilities: [40] Power Management version 3
+>                 Flags: PMEClk- DSI- D1+ D2+ AuxCurrent=375mA PME(D0+,D1+,D2+,D3hot+,D3cold+)
+>                 Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=0 PME-
+>         Capabilities: [50] MSI: Enable- Count=1/1 Maskable+ 64bit+
+>                 Address: 0000000000000000  Data: 0000
+>                 Masking: 00000000  Pending: 00000000
+>         Capabilities: [70] Express (v2) Endpoint, MSI 01
+>                 DevCap: MaxPayload 256 bytes, PhantFunc 0, Latency L0s <512ns, L1 <64us
+>                         ExtTag- AttnBtn- AttnInd- PwrInd- RBE+ FLReset- SlotPowerLimit 75.000W
+>                 DevCtl: CorrErr- NonFatalErr- FatalErr- UnsupReq-
+>                         RlxdOrd+ ExtTag- PhantFunc- AuxPwr- NoSnoop-
+>                         MaxPayload 256 bytes, MaxReadReq 4096 bytes
+>                 DevSta: CorrErr+ NonFatalErr- FatalErr- UnsupReq+ AuxPwr+ TransPend-
+>                 LnkCap: Port #0, Speed 5GT/s, Width x1, ASPM L0s L1, Exit Latency L0s unlimited, L1 <64us
+>                         ClockPM+ Surprise- LLActRep- BwNot- ASPMOptComp+
+>                 LnkCtl: ASPM Disabled; RCB 64 bytes, Disabled- CommClk+
+>                         ExtSynch- ClockPM+ AutWidDis- BWInt- AutBWInt-
+>                 LnkSta: Speed 5GT/s (ok), Width x1 (ok)
+>                         TrErr- Train- SlotClk+ DLActive- BWMgmt- ABWMgmt-
+>                 DevCap2: Completion Timeout: Range ABCD, TimeoutDis+ NROPrPrP- LTR+
+>                          10BitTagComp- 10BitTagReq- OBFF Via message/WAKE#, ExtFmt- EETLPPrefix-
+>                          EmergencyPowerReduction Not Supported, EmergencyPowerReductionInit-
+>                          FRS- TPHComp+ ExtTPHComp-
+>                          AtomicOpsCap: 32bit- 64bit- 128bitCAS-
+>                 DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis- LTR- OBFF Disabled,
+>                          AtomicOpsCtl: ReqEn-
+>                 LnkCap2: Supported Link Speeds: 2.5-5GT/s, Crosslink- Retimer- 2Retimers- DRS-
+>                 LnkCtl2: Target Link Speed: 5GT/s, EnterCompliance- SpeedDis-
+>                          Transmit Margin: Normal Operating Range, EnterModifiedCompliance- ComplianceSOS-
+>                          Compliance De-emphasis: -6dB
+>                 LnkSta2: Current De-emphasis Level: -3.5dB, EqualizationComplete- EqualizationPhase1-
+>                          EqualizationPhase2- EqualizationPhase3- LinkEqualizationRequest-
+>                          Retimer- 2Retimers- CrosslinkRes: unsupported
+>         Capabilities: [b0] MSI-X: Enable+ Count=32 Masked-
+>                 Vector table: BAR=4 offset=00000000
+>                 PBA: BAR=4 offset=00000800
+>         Capabilities: [d0] Vital Product Data
+> pcilib: sysfs_read_vpd: read failed: Input/output error
+>                 Not readable
+>         Capabilities: [100 v2] Advanced Error Reporting
+>                 UESta:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
+>                 UEMsk:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
+>                 UESvrt: DLP+ SDES+ TLP- FCP+ CmpltTO- CmpltAbrt- UnxCmplt- RxOF+ MalfTLP+ ECRC- UnsupReq- ACSViol-
+>                 CESta:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr-
+>                 CEMsk:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
+>                 AERCap: First Error Pointer: 00, ECRCGenCap+ ECRCGenEn- ECRCChkCap+ ECRCChkEn-
+>                         MultHdrRecCap- MultHdrRecEn- TLPPfxPres- HdrLogCap-
+>                 HeaderLog: 00000000 00000000 00000000 00000000
+>         Capabilities: [148 v1] Virtual Channel
+>                 Caps:   LPEVC=0 RefClk=100ns PATEntryBits=1
+>                 Arb:    Fixed- WRR32- WRR64- WRR128-
+>                 Ctrl:   ArbSelect=Fixed
+>                 Status: InProgress-
+>                 VC0:    Caps:   PATOffset=00 MaxTimeSlots=1 RejSnoopTrans-
+>                         Arb:    Fixed- WRR32- WRR64- WRR128- TWRR128- WRR256-
+>                         Ctrl:   Enable+ ID=0 ArbSelect=Fixed TC/VC=01
+>                         Status: NegoPending- InProgress-
+>         Capabilities: [168 v1] Device Serial Number 01-00-00-00-68-4c-e0-00
+>         Capabilities: [178 v1] Transaction Processing Hints
+>                 No steering table available
+>         Capabilities: [204 v1] Latency Tolerance Reporting
+>                 Max snoop latency: 0ns
+>                 Max no snoop latency: 0ns
+>         Capabilities: [20c v1] L1 PM Substates
+>                 L1SubCap: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ ASPM_L1.1+ L1_PM_Substates+
+>                           PortCommonModeRestoreTime=150us PortTPowerOnTime=150us
+>                 L1SubCtl1: PCI-PM_L1.2- PCI-PM_L1.1- ASPM_L1.2- ASPM_L1.1-
+>                            T_CommonMode=0us LTR1.2_Threshold=0ns
+>                 L1SubCtl2: T_PwrOn=10us
+>         Capabilities: [21c v1] Vendor Specific Information: ID=0002 Rev=4 Len=100 <?>
+>         Kernel driver in use: r8169
+>         Kernel modules: r8169
+> 
+> Below is result of `lspci -nnvv` on suggester Rushab Shah's machine, without the following patch applied but after running `echo 10ec 8162 > /sys/bus/pci/drivers/r8169/new_id`:
+> 
+> 03:00.0 Ethernet controller [0200]: Realtek Semiconductor Co., Ltd. Device [10ec:8162] (rev 05)
+>     Subsystem: ASUSTeK Computer Inc. Device [1043:208f]
+>     Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx+
+>     Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+>     Latency: 0, Cache Line Size: 64 bytes
+>     Interrupt: pin A routed to IRQ 78
+>     IOMMU group: 11
+>     Region 0: I/O ports at d000 [size=256]
+>     Region 2: Memory at fc700000 (64-bit, non-prefetchable) [size=64K]
+>     Region 4: Memory at fc710000 (64-bit, non-prefetchable) [size=16K]
+>     Capabilities: [40] Power Management version 3
+>         Flags: PMEClk- DSI- D1+ D2+ AuxCurrent=375mA PME(D0+,D1+,D2+,D3hot+,D3cold+)
+>         Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=0 PME-
+>     Capabilities: [50] MSI: Enable- Count=1/1 Maskable+ 64bit+
+>         Address: 0000000000000000  Data: 0000
+>         Masking: 00000000  Pending: 00000000
+>     Capabilities: [70] Express (v2) Endpoint, MSI 01
+>         DevCap:    MaxPayload 256 bytes, PhantFunc 0, Latency L0s <512ns, L1 <64us
+>             ExtTag- AttnBtn- AttnInd- PwrInd- RBE+ FLReset- SlotPowerLimit 75.000W
+>         DevCtl:    CorrErr- NonFatalErr- FatalErr- UnsupReq-
+>             RlxdOrd+ ExtTag- PhantFunc- AuxPwr- NoSnoop-
+>             MaxPayload 256 bytes, MaxReadReq 4096 bytes
+>         DevSta:    CorrErr- NonFatalErr- FatalErr- UnsupReq- AuxPwr+ TransPend-
+>         LnkCap:    Port #0, Speed 5GT/s, Width x1, ASPM L0s L1, Exit Latency L0s unlimited, L1 <64us
+>             ClockPM+ Surprise- LLActRep- BwNot- ASPMOptComp+
+>         LnkCtl:    ASPM Disabled; RCB 64 bytes, Disabled- CommClk+
+>             ExtSynch- ClockPM+ AutWidDis- BWInt- AutBWInt-
+>         LnkSta:    Speed 5GT/s (ok), Width x1 (ok)
+>             TrErr- Train- SlotClk+ DLActive- BWMgmt- ABWMgmt-
+>         DevCap2: Completion Timeout: Range ABCD, TimeoutDis+ NROPrPrP- LTR+
+>              10BitTagComp- 10BitTagReq- OBFF Via message/WAKE#, ExtFmt- EETLPPrefix-
+>              EmergencyPowerReduction Not Supported, EmergencyPowerReductionInit-
+>              FRS- TPHComp+ ExtTPHComp-
+>              AtomicOpsCap: 32bit- 64bit- 128bitCAS-
+>         DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis- LTR- OBFF Disabled,
+>              AtomicOpsCtl: ReqEn-
+>         LnkCap2: Supported Link Speeds: 2.5-5GT/s, Crosslink- Retimer- 2Retimers- DRS-
+>         LnkCtl2: Target Link Speed: 5GT/s, EnterCompliance- SpeedDis-
+>              Transmit Margin: Normal Operating Range, EnterModifiedCompliance- ComplianceSOS-
+>              Compliance De-emphasis: -6dB
+>         LnkSta2: Current De-emphasis Level: -3.5dB, EqualizationComplete- EqualizationPhase1-
+>              EqualizationPhase2- EqualizationPhase3- LinkEqualizationRequest-
+>              Retimer- 2Retimers- CrosslinkRes: unsupported
+>     Capabilities: [b0] MSI-X: Enable+ Count=32 Masked-
+>         Vector table: BAR=4 offset=00000000
+>         PBA: BAR=4 offset=00000800
+>     Capabilities: [d0] Vital Product Data
+>         Not readable
+>     Capabilities: [100 v2] Advanced Error Reporting
+>         UESta:    DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
+>         UEMsk:    DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
+>         UESvrt:    DLP+ SDES+ TLP- FCP+ CmpltTO- CmpltAbrt- UnxCmplt- RxOF+ MalfTLP+ ECRC- UnsupReq- ACSViol-
+>         CESta:    RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr-
+>         CEMsk:    RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
+>         AERCap:    First Error Pointer: 00, ECRCGenCap+ ECRCGenEn- ECRCChkCap+ ECRCChkEn-
+>             MultHdrRecCap- MultHdrRecEn- TLPPfxPres- HdrLogCap-
+>         HeaderLog: 00000000 00000000 00000000 00000000
+>     Capabilities: [148 v1] Virtual Channel
+>         Caps:    LPEVC=0 RefClk=100ns PATEntryBits=1
+>         Arb:    Fixed- WRR32- WRR64- WRR128-
+>         Ctrl:    ArbSelect=Fixed
+>         Status:    InProgress-
+>         VC0:    Caps:    PATOffset=00 MaxTimeSlots=1 RejSnoopTrans-
+>             Arb:    Fixed- WRR32- WRR64- WRR128- TWRR128- WRR256-
+>             Ctrl:    Enable+ ID=0 ArbSelect=Fixed TC/VC=01
+>             Status:    NegoPending- InProgress-
+>     Capabilities: [168 v1] Device Serial Number 01-00-00-00-68-4c-e0-00
+>     Capabilities: [178 v1] Transaction Processing Hints
+>         No steering table available
+>     Capabilities: [204 v1] Latency Tolerance Reporting
+>         Max snoop latency: 0ns
+>         Max no snoop latency: 0ns
+>     Capabilities: [20c v1] L1 PM Substates
+>         L1SubCap: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ ASPM_L1.1+ L1_PM_Substates+
+>               PortCommonModeRestoreTime=150us PortTPowerOnTime=150us
+>         L1SubCtl1: PCI-PM_L1.2- PCI-PM_L1.1- ASPM_L1.2- ASPM_L1.1-
+>                T_CommonMode=0us LTR1.2_Threshold=0ns
+>         L1SubCtl2: T_PwrOn=10us
+>     Capabilities: [21c v1] Vendor Specific Information: ID=0002 Rev=4 Len=100 <?>
+>     Kernel driver in use: r8169
+> 
+>  drivers/net/ethernet/realtek/r8169_main.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> index 46a6ff9a782d..2918947dd57c 100644
+> --- a/drivers/net/ethernet/realtek/r8169_main.c
+> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> @@ -157,6 +157,7 @@ static const struct pci_device_id rtl8169_pci_tbl[] = {
+>      { PCI_VDEVICE(REALTEK,    0x8129) },
+>      { PCI_VDEVICE(REALTEK,    0x8136), RTL_CFG_NO_GBIT },
+>      { PCI_VDEVICE(REALTEK,    0x8161) },
+> +    { PCI_VDEVICE(REALTEK,    0x8162) },
+>      { PCI_VDEVICE(REALTEK,    0x8167) },
+>      { PCI_VDEVICE(REALTEK,    0x8168) },
+>      { PCI_VDEVICE(NCUBE,    0x8168) },
 
-Sorry, this patch is on top of net-next 041c61488236a5a8 ("sfc: Fix
-reading non-legacy supported link modes").
-I expected this one to go to net-next only as well - I should have
-been clearer about that.
-
-/Erik
-
->  drivers/net/ethernet/sfc/mcdi_port_common.c | 37 +++++++++++++++------
->  1 file changed, 26 insertions(+), 11 deletions(-)
->
-> diff --git a/drivers/net/ethernet/sfc/mcdi_port_common.c b/drivers/net/et=
-hernet/sfc/mcdi_port_common.c
-> index 4bd3ef8f3384..c4fe3c48ac46 100644
-> --- a/drivers/net/ethernet/sfc/mcdi_port_common.c
-> +++ b/drivers/net/ethernet/sfc/mcdi_port_common.c
-> @@ -132,16 +132,27 @@ void mcdi_to_ethtool_linkset(u32 media, u32 cap, un=
-signed long *linkset)
->         case MC_CMD_MEDIA_SFP_PLUS:
->         case MC_CMD_MEDIA_QSFP_PLUS:
->                 SET_BIT(FIBRE);
-> -               if (cap & (1 << MC_CMD_PHY_CAP_1000FDX_LBN))
-> +               if (cap & (1 << MC_CMD_PHY_CAP_1000FDX_LBN)) {
->                         SET_BIT(1000baseT_Full);
-> -               if (cap & (1 << MC_CMD_PHY_CAP_10000FDX_LBN))
-> -                       SET_BIT(10000baseT_Full);
-> -               if (cap & (1 << MC_CMD_PHY_CAP_40000FDX_LBN))
-> +                       SET_BIT(1000baseX_Full);
-> +               }
-> +               if (cap & (1 << MC_CMD_PHY_CAP_10000FDX_LBN)) {
-> +                       SET_BIT(10000baseCR_Full);
-> +                       SET_BIT(10000baseLR_Full);
-> +                       SET_BIT(10000baseSR_Full);
-> +               }
-> +               if (cap & (1 << MC_CMD_PHY_CAP_40000FDX_LBN)) {
->                         SET_BIT(40000baseCR4_Full);
-> -               if (cap & (1 << MC_CMD_PHY_CAP_100000FDX_LBN))
-> +                       SET_BIT(40000baseSR4_Full);
-> +               }
-> +               if (cap & (1 << MC_CMD_PHY_CAP_100000FDX_LBN)) {
->                         SET_BIT(100000baseCR4_Full);
-> -               if (cap & (1 << MC_CMD_PHY_CAP_25000FDX_LBN))
-> +                       SET_BIT(100000baseSR4_Full);
-> +               }
-> +               if (cap & (1 << MC_CMD_PHY_CAP_25000FDX_LBN)) {
->                         SET_BIT(25000baseCR_Full);
-> +                       SET_BIT(25000baseSR_Full);
-> +               }
->                 if (cap & (1 << MC_CMD_PHY_CAP_50000FDX_LBN))
->                         SET_BIT(50000baseCR2_Full);
->                 break;
-> @@ -192,15 +203,19 @@ u32 ethtool_linkset_to_mcdi_cap(const unsigned long=
- *linkset)
->                 result |=3D (1 << MC_CMD_PHY_CAP_100FDX_LBN);
->         if (TEST_BIT(1000baseT_Half))
->                 result |=3D (1 << MC_CMD_PHY_CAP_1000HDX_LBN);
-> -       if (TEST_BIT(1000baseT_Full) || TEST_BIT(1000baseKX_Full))
-> +       if (TEST_BIT(1000baseT_Full) || TEST_BIT(1000baseKX_Full) ||
-> +                       TEST_BIT(1000baseX_Full))
->                 result |=3D (1 << MC_CMD_PHY_CAP_1000FDX_LBN);
-> -       if (TEST_BIT(10000baseT_Full) || TEST_BIT(10000baseKX4_Full))
-> +       if (TEST_BIT(10000baseT_Full) || TEST_BIT(10000baseKX4_Full) ||
-> +                       TEST_BIT(10000baseCR_Full) || TEST_BIT(10000baseL=
-R_Full) ||
-> +                       TEST_BIT(10000baseSR_Full))
->                 result |=3D (1 << MC_CMD_PHY_CAP_10000FDX_LBN);
-> -       if (TEST_BIT(40000baseCR4_Full) || TEST_BIT(40000baseKR4_Full))
-> +       if (TEST_BIT(40000baseCR4_Full) || TEST_BIT(40000baseKR4_Full) ||
-> +                       TEST_BIT(40000baseSR4_Full))
->                 result |=3D (1 << MC_CMD_PHY_CAP_40000FDX_LBN);
-> -       if (TEST_BIT(100000baseCR4_Full))
-> +       if (TEST_BIT(100000baseCR4_Full) || TEST_BIT(100000baseSR4_Full))
->                 result |=3D (1 << MC_CMD_PHY_CAP_100000FDX_LBN);
-> -       if (TEST_BIT(25000baseCR_Full))
-> +       if (TEST_BIT(25000baseCR_Full) || TEST_BIT(25000baseSR_Full))
->                 result |=3D (1 << MC_CMD_PHY_CAP_25000FDX_LBN);
->         if (TEST_BIT(50000baseCR2_Full))
->                 result |=3D (1 << MC_CMD_PHY_CAP_50000FDX_LBN);
-> --
-> 2.31.1
->
