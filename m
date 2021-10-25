@@ -2,84 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 499204394BB
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 13:24:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D471439519
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 13:43:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232454AbhJYL0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 07:26:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53652 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229499AbhJYL0s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 07:26:48 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B45EC061745;
-        Mon, 25 Oct 2021 04:24:25 -0700 (PDT)
-Received: from zn.tnic (p200300ec2f0f4e0014f3333d144d8f4c.dip0.t-ipconnect.de [IPv6:2003:ec:2f0f:4e00:14f3:333d:144d:8f4c])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 13FEA1EC01A2;
-        Mon, 25 Oct 2021 13:24:23 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1635161063;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=GB4wwUoNrSKvD0FFHFrXixqZowcWitH6npE3fw5REDE=;
-        b=qdBi9f6jWqvSTvTaHXXYJI0NAkbh1H9pqmdm9QaoRq0DEgw3j1xMJ6maBpwpSlaOGLgBpl
-        j/KO5S8D3wCIMCDWRRtf1aIPRiPq3PLSrsqTgQpz3taWrttvBiYsmMHLDPFAeUonc7rxPT
-        qBNNWiJglHCfktyMXroK9xhwICV3Za0=
-Date:   Mon, 25 Oct 2021 13:24:20 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Wei Liu <wei.liu@kernel.org>
-Cc:     Tianyu Lan <ltykernel@gmail.com>, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com,
-        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
-        x86@kernel.org, hpa@zytor.com, dave.hansen@linux.intel.com,
-        luto@kernel.org, peterz@infradead.org, davem@davemloft.net,
-        kuba@kernel.org, gregkh@linuxfoundation.org, arnd@arndb.de,
-        brijesh.singh@amd.com, jroedel@suse.de, Tianyu.Lan@microsoft.com,
-        thomas.lendacky@amd.com, rientjes@google.com, pgonda@google.com,
-        akpm@linux-foundation.org, kirill.shutemov@linux.intel.com,
-        rppt@kernel.org, saravanand@fb.com, aneesh.kumar@linux.ibm.com,
-        hannes@cmpxchg.org, tj@kernel.org, michael.h.kelley@microsoft.com,
-        linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, konrad.wilk@oracle.com, hch@lst.de,
-        robin.murphy@arm.com, joro@8bytes.org, parri.andrea@gmail.com,
-        dave.hansen@intel.com
-Subject: Re: [PATCH V8 5/9] x86/sev-es: Expose sev_es_ghcb_hv_call() to call
- ghcb hv call out of sev code
-Message-ID: <YXaT5HcLoX59jZH2@zn.tnic>
-References: <20211021154110.3734294-1-ltykernel@gmail.com>
- <20211021154110.3734294-6-ltykernel@gmail.com>
- <YXGTwppQ8syUyJ72@zn.tnic>
- <00946764-7fe0-675f-7b3e-9fb3b8e3eb89@gmail.com>
- <20211025112033.eqelx54p2dmlhykw@liuwe-devbox-debian-v2>
+        id S233228AbhJYLpm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 07:45:42 -0400
+Received: from www62.your-server.de ([213.133.104.62]:33680 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233190AbhJYLpm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 07:45:42 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1meyNq-000BAA-Iz; Mon, 25 Oct 2021 13:43:18 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1meyNq-0003OW-E8; Mon, 25 Oct 2021 13:43:18 +0200
+Subject: Re: [PATCH iproute2 -next 3/4] ip, neigh: Add missing NTF_USE support
+To:     David Ahern <dsahern@gmail.com>, dsahern@kernel.org
+Cc:     netdev@vger.kernel.org
+References: <20211015225319.2284-1-daniel@iogearbox.net>
+ <20211015225319.2284-4-daniel@iogearbox.net>
+ <4e842bc5-116b-66c6-b8dc-487b4b5d15ed@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <8f029272-466a-3231-9f75-664496ae1dfd@iogearbox.net>
+Date:   Mon, 25 Oct 2021 13:43:18 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20211025112033.eqelx54p2dmlhykw@liuwe-devbox-debian-v2>
+In-Reply-To: <4e842bc5-116b-66c6-b8dc-487b4b5d15ed@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26333/Mon Oct 25 10:29:40 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 25, 2021 at 11:20:33AM +0000, Wei Liu wrote:
-> Borislav, please take the whole series via the tip tree if possible.
-> That's perhaps the easiest thing for both of us because the rest of the
-> series depends on this patch. Or else I will have to base hyperv-next on
-> the tip tree once you merge this patch.
->
-> Let me know what you think.
+On 10/16/21 2:18 AM, David Ahern wrote:
+> On 10/15/21 4:53 PM, Daniel Borkmann wrote:
+>> diff --git a/ip/ipneigh.c b/ip/ipneigh.c
+>> index 564e787c..9510e03e 100644
+>> --- a/ip/ipneigh.c
+>> +++ b/ip/ipneigh.c
+>> @@ -51,7 +51,7 @@ static void usage(void)
+>>   	fprintf(stderr,
+>>   		"Usage: ip neigh { add | del | change | replace }\n"
+>>   		"		{ ADDR [ lladdr LLADDR ] [ nud STATE ] proxy ADDR }\n"
+>> -		"		[ dev DEV ] [ router ] [ extern_learn ] [ protocol PROTO ]\n"
+>> +		"		[ dev DEV ] [ router ] [ use ] [ extern_learn ] [ protocol PROTO ]\n"
+>>   		"\n"
+>>   		"	ip neigh { show | flush } [ proxy ] [ to PREFIX ] [ dev DEV ] [ nud STATE ]\n"
+>>   		"				  [ vrf NAME ]\n"
+> 
+> 
+> does not apply to iproute2-next; looks like you made the change against
+> main branch.
 
-You'll be able to simply merge the tip/x86/sev branch which will have it
-and then base everything ontop.
+Sorry for the delay, was on PTO whole last week. Looks like it, will rebase and send a v2.
 
-However, there's still a question open - see my reply to Michael.
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Thanks!
+Daniel
