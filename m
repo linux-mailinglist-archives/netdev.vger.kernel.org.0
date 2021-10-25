@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C57A943A51A
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 22:54:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCA9843A51C
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 22:54:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234435AbhJYU5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 16:57:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34306 "EHLO mail.kernel.org"
+        id S233470AbhJYU5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 16:57:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34330 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233920AbhJYU5C (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232868AbhJYU5C (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 25 Oct 2021 16:57:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6EF9461073;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DD1AE61078;
         Mon, 25 Oct 2021 20:54:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635195279;
-        bh=IGwjR3jcAbRA7JFHtSS2ia+bVyOm1a9J8cuxnEbKcSg=;
+        s=k20201202; t=1635195280;
+        bh=lihve8XgaL5xeOvxQZThiTTwVFWnFHFLAPOX4qTUTIU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fdCsQd0YNcmwhikLOE2SXTPdbLuvZFrVlrFQuiquOuZKY0HbbKFvN4YIx0QdjKld4
-         GJKbPTvsx3xSIoTkHxagGD2ck90AinC8drvvAjfqtK+Tkmq6ajaainOlKPkmR2vJXr
-         cURojAB4rwJvpRk2NYxKpkhK+snZm/WMV1LNFJVq4Tuvy0y4T663AgWmobKqG57Xd/
-         o+b3+h4zaV6OAKp+dYIwDstKQ+jfV/v+ELff0YkGKKf2j2hqiKd+ehqAPfiTlyEuXH
-         xRH5rH2ttRENs8ljRBXM8Je0w7+CXeLDG9Bowe4s/AI/sInfI2DWeuSRbqna0r5fCX
-         Bf+fmcxemcLrA==
+        b=sZd1dSghpAnlIvp6I2UfVGIQm+X21+QtyVgEvs2JLo4rJaCNYd2QYK9+cZDUQQ5Bv
+         LIQVJl8MVVLl+/mH6ORwOjG9EMBTpdpDmpk+xUxjHIQZbbjphQl3RPYaLRkorVvlWP
+         ZF5qDtqut3x0C6oXVuwK+hP/ipe5BkS2S6GekCMe/B2/0NxHMxjnjxSZADqzQB7mWT
+         GsNGwtDgO3wRst+Y2K5GoYN5ze9soD3e72fxo3ESY2HeVjHJs/Y3fv125qeGXnpfjg
+         5ctuJ8YLWLHT+4EujQkos/wPiofuPguF24/o5acH9zb8MXj0Et1++9Xit9+e8Z04KC
+         +poXcgleeHA1w==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Parav Pandit <parav@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 13/14] net/mlx5: SF, Add SF trace points
-Date:   Mon, 25 Oct 2021 13:54:30 -0700
-Message-Id: <20211025205431.365080-14-saeed@kernel.org>
+Subject: [net-next 14/14] net/mlx5: SF_DEV Add SF device trace points
+Date:   Mon, 25 Oct 2021 13:54:31 -0700
+Message-Id: <20211025205431.365080-15-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211025205431.365080-1-saeed@kernel.org>
 References: <20211025205431.365080-1-saeed@kernel.org>
@@ -42,347 +42,285 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Parav Pandit <parav@nvidia.com>
 
-Add support for trace events for SFs to improve debugging.
-This covers
-(a) port add and free trace points
-(b) device level trace points
-(c) SF hardware context add, free trace points.
-(d) SF function activate/deacticate and state trace points
+Add SF device add and delete specific trace points.
 
-SF events examples:
-echo mlx5:mlx5_sf_add >> /sys/kernel/debug/tracing/set_event
-echo mlx5:mlx5_sf_free >> /sys/kernel/debug/tracing/set_event
-echo mlx5:mlx5_sf_hwc_alloc >> /sys/kernel/debug/tracing/set_event
-echo mlx5:mlx5_sf_hwc_free >> /sys/kernel/debug/tracing/set_event
-echo mlx5:mlx5_sf_hwc_deferred_free >> /sys/kernel/debug/tracing/set_event
-echo mlx5:mlx5_sf_update_state >> /sys/kernel/debug/tracing/set_event
-echo mlx5:mlx5_sf_activate >> /sys/kernel/debug/tracing/set_event
-echo mlx5:mlx5_sf_deactivate >> /sys/kernel/debug/tracing/set_event
+echo mlx5:mlx5_sf_dev_add >> /sys/kernel/debug/tracing/set_event
+echo mlx5:mlx5_sf_dev_del >> /sys/kernel/debug/tracing/set_event
+echo mlx5:mlx5_sf_vhca_event >> /sys/kernel/debug/tracing/set_event
 
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../device_drivers/ethernet/mellanox/mlx5.rst |  37 ++++
- .../ethernet/mellanox/mlx5/core/sf/devlink.c  |   8 +
- .../mlx5/core/sf/diag/sf_tracepoint.h         | 173 ++++++++++++++++++
- .../ethernet/mellanox/mlx5/core/sf/hw_table.c |   4 +
- 4 files changed, 222 insertions(+)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/diag/sf_tracepoint.h
+ .../device_drivers/ethernet/mellanox/mlx5.rst | 21 +++++++
+ .../ethernet/mellanox/mlx5/core/sf/dev/dev.c  | 23 ++++++--
+ .../ethernet/mellanox/mlx5/core/sf/dev/dev.h  |  1 +
+ .../mlx5/core/sf/dev/diag/dev_tracepoint.h    | 58 +++++++++++++++++++
+ .../mlx5/core/sf/diag/vhca_tracepoint.h       | 40 +++++++++++++
+ .../mellanox/mlx5/core/sf/vhca_event.c        |  3 +
+ 6 files changed, 140 insertions(+), 6 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/dev/diag/dev_tracepoint.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/diag/vhca_tracepoint.h
 
 diff --git a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-index 2ee74a49be9d..d6c10408adc4 100644
+index d6c10408adc4..5edf50d7dbd5 100644
 --- a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
 +++ b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-@@ -702,3 +702,40 @@ Eswitch QoS tracepoints:
+@@ -739,3 +739,24 @@ SF tracepoints:
      $ cat /sys/kernel/debug/tracing/trace
      ...
-     <...>-27418   [006] .... 76547.187258: mlx5_esw_group_qos_destroy: (0000:82:00.0) group=000000007b576bb3 tsar_ix=1
+     devlink-9519    [046] ..... 24624.400271: mlx5_sf_hwc_deferred_free: (0000:06:00.0) hw_id=0x8000
 +
-+SF tracepoints:
++- mlx5_sf_vhca_event: trace SF vhca event and state::
 +
-+- mlx5_sf_add: trace addition of the SF port::
-+
-+    $ echo mlx5:mlx5_sf_add >> /sys/kernel/debug/tracing/set_event
++    $ echo mlx5:mlx5_sf_vhca_event >> /sys/kernel/debug/tracing/set_event
 +    $ cat /sys/kernel/debug/tracing/trace
 +    ...
-+    devlink-9363    [031] ..... 24610.188722: mlx5_sf_add: (0000:06:00.0) port_index=32768 controller=0 hw_id=0x8000 sfnum=88
++    kworker/u128:3-9093    [046] ..... 24625.365525: mlx5_sf_vhca_event: (0000:06:00.0) hw_id=0x8000 sfnum=88 vhca_state=1
 +
-+- mlx5_sf_free: trace freeing of the SF port::
++- mlx5_sf_dev_add : trace SF device add event::
 +
-+    $ echo mlx5:mlx5_sf_free >> /sys/kernel/debug/tracing/set_event
++    $ echo mlx5:mlx5_sf_dev_add>> /sys/kernel/debug/tracing/set_event
 +    $ cat /sys/kernel/debug/tracing/trace
 +    ...
-+    devlink-9830    [038] ..... 26300.404749: mlx5_sf_free: (0000:06:00.0) port_index=32768 controller=0 hw_id=0x8000
++    kworker/u128:3-9093    [000] ..... 24616.524495: mlx5_sf_dev_add: (0000:06:00.0) sfdev=00000000fc5d96fd aux_id=4 hw_id=0x8000 sfnum=88
 +
-+- mlx5_sf_hwc_alloc: trace allocating of the hardware SF context::
++- mlx5_sf_dev_del : trace SF device delete event::
 +
-+    $ echo mlx5:mlx5_sf_hwc_alloc >> /sys/kernel/debug/tracing/set_event
++    $ echo mlx5:mlx5_sf_dev_del >> /sys/kernel/debug/tracing/set_event
 +    $ cat /sys/kernel/debug/tracing/trace
 +    ...
-+    devlink-9775    [031] ..... 26296.385259: mlx5_sf_hwc_alloc: (0000:06:00.0) controller=0 hw_id=0x8000 sfnum=88
-+
-+- mlx5_sf_hwc_free: trace freeing of the hardware SF context::
-+
-+    $ echo mlx5:mlx5_sf_hwc_free >> /sys/kernel/debug/tracing/set_event
-+    $ cat /sys/kernel/debug/tracing/trace
-+    ...
-+    kworker/u128:3-9093    [046] ..... 24625.365771: mlx5_sf_hwc_free: (0000:06:00.0) hw_id=0x8000
-+
-+- mlx5_sf_hwc_deferred_free : trace deferred freeing of the hardware SF context::
-+
-+    $ echo mlx5:mlx5_sf_hwc_deferred_free >> /sys/kernel/debug/tracing/set_event
-+    $ cat /sys/kernel/debug/tracing/trace
-+    ...
-+    devlink-9519    [046] ..... 24624.400271: mlx5_sf_hwc_deferred_free: (0000:06:00.0) hw_id=0x8000
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
-index e1bb3acf45e6..3be659cd91f1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
-@@ -8,6 +8,8 @@
- #include "mlx5_ifc_vhca_event.h"
- #include "vhca_event.h"
++    kworker/u128:3-9093    [044] ..... 24624.400749: mlx5_sf_dev_del: (0000:06:00.0) sfdev=00000000fc5d96fd aux_id=4 hw_id=0x8000 sfnum=88
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
+index 871c2fbe18d3..f37db7cc32a6 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
+@@ -9,6 +9,8 @@
+ #include "sf/sf.h"
+ #include "sf/mlx5_ifc_vhca_event.h"
  #include "ecpf.h"
 +#define CREATE_TRACE_POINTS
-+#include "diag/sf_tracepoint.h"
++#include "diag/dev_tracepoint.h"
  
- struct mlx5_sf {
- 	struct devlink_port dl_port;
-@@ -112,6 +114,7 @@ static void mlx5_sf_free(struct mlx5_sf_table *table, struct mlx5_sf *sf)
+ struct mlx5_sf_dev_table {
+ 	struct xarray devices;
+@@ -66,13 +68,18 @@ static void mlx5_sf_dev_release(struct device *device)
+ 	kfree(sf_dev);
+ }
+ 
+-static void mlx5_sf_dev_remove(struct mlx5_sf_dev *sf_dev)
++static void mlx5_sf_dev_remove(struct mlx5_core_dev *dev, struct mlx5_sf_dev *sf_dev)
  {
- 	mlx5_sf_id_erase(table, sf);
- 	mlx5_sf_hw_table_sf_free(table->dev, sf->controller, sf->id);
-+	trace_mlx5_sf_free(table->dev, sf->port_index, sf->controller, sf->hw_fn_id);
- 	kfree(sf);
++	int id;
++
++	id = sf_dev->adev.id;
++	trace_mlx5_sf_dev_del(dev, sf_dev, id);
++
+ 	auxiliary_device_delete(&sf_dev->adev);
+ 	auxiliary_device_uninit(&sf_dev->adev);
  }
  
-@@ -209,6 +212,7 @@ static int mlx5_sf_activate(struct mlx5_core_dev *dev, struct mlx5_sf *sf,
- 		return err;
+-static void mlx5_sf_dev_add(struct mlx5_core_dev *dev, u16 sf_index, u32 sfnum)
++static void mlx5_sf_dev_add(struct mlx5_core_dev *dev, u16 sf_index, u16 fn_id, u32 sfnum)
+ {
+ 	struct mlx5_sf_dev_table *table = dev->priv.sf_dev_table;
+ 	struct mlx5_sf_dev *sf_dev;
+@@ -100,6 +107,7 @@ static void mlx5_sf_dev_add(struct mlx5_core_dev *dev, u16 sf_index, u32 sfnum)
+ 	sf_dev->adev.dev.groups = sf_attr_groups;
+ 	sf_dev->sfnum = sfnum;
+ 	sf_dev->parent_mdev = dev;
++	sf_dev->fn_id = fn_id;
  
- 	sf->hw_state = MLX5_VHCA_STATE_ACTIVE;
-+	trace_mlx5_sf_activate(dev, sf->port_index, sf->controller, sf->hw_fn_id);
- 	return 0;
+ 	if (!table->max_sfs) {
+ 		mlx5_adev_idx_free(id);
+@@ -109,6 +117,8 @@ static void mlx5_sf_dev_add(struct mlx5_core_dev *dev, u16 sf_index, u32 sfnum)
+ 	}
+ 	sf_dev->bar_base_addr = table->base_address + (sf_index * table->sf_bar_length);
+ 
++	trace_mlx5_sf_dev_add(dev, sf_dev, id);
++
+ 	err = auxiliary_device_init(&sf_dev->adev);
+ 	if (err) {
+ 		mlx5_adev_idx_free(id);
+@@ -128,7 +138,7 @@ static void mlx5_sf_dev_add(struct mlx5_core_dev *dev, u16 sf_index, u32 sfnum)
+ 	return;
+ 
+ xa_err:
+-	mlx5_sf_dev_remove(sf_dev);
++	mlx5_sf_dev_remove(dev, sf_dev);
+ add_err:
+ 	mlx5_core_err(dev, "SF DEV: fail device add for index=%d sfnum=%d err=%d\n",
+ 		      sf_index, sfnum, err);
+@@ -139,7 +149,7 @@ static void mlx5_sf_dev_del(struct mlx5_core_dev *dev, struct mlx5_sf_dev *sf_de
+ 	struct mlx5_sf_dev_table *table = dev->priv.sf_dev_table;
+ 
+ 	xa_erase(&table->devices, sf_index);
+-	mlx5_sf_dev_remove(sf_dev);
++	mlx5_sf_dev_remove(dev, sf_dev);
  }
  
-@@ -224,6 +228,7 @@ static int mlx5_sf_deactivate(struct mlx5_core_dev *dev, struct mlx5_sf *sf)
- 		return err;
+ static int
+@@ -178,7 +188,8 @@ mlx5_sf_dev_state_change_handler(struct notifier_block *nb, unsigned long event_
+ 		break;
+ 	case MLX5_VHCA_STATE_ACTIVE:
+ 		if (!sf_dev)
+-			mlx5_sf_dev_add(table->dev, sf_index, event->sw_function_id);
++			mlx5_sf_dev_add(table->dev, sf_index, event->function_id,
++					event->sw_function_id);
+ 		break;
+ 	default:
+ 		break;
+@@ -260,7 +271,7 @@ static void mlx5_sf_dev_destroy_all(struct mlx5_sf_dev_table *table)
  
- 	sf->hw_state = MLX5_VHCA_STATE_TEARDOWN_REQUEST;
-+	trace_mlx5_sf_deactivate(dev, sf->port_index, sf->controller, sf->hw_fn_id);
- 	return 0;
+ 	xa_for_each(&table->devices, index, sf_dev) {
+ 		xa_erase(&table->devices, index);
+-		mlx5_sf_dev_remove(sf_dev);
++		mlx5_sf_dev_remove(table->dev, sf_dev);
+ 	}
  }
  
-@@ -293,6 +298,7 @@ static int mlx5_sf_add(struct mlx5_core_dev *dev, struct mlx5_sf_table *table,
- 	if (err)
- 		goto esw_err;
- 	*new_port_index = sf->port_index;
-+	trace_mlx5_sf_add(dev, sf->port_index, sf->controller, sf->hw_fn_id, new_attr->sfnum);
- 	return 0;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h
+index 149fd9e698cf..2a66a427ef15 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h
+@@ -16,6 +16,7 @@ struct mlx5_sf_dev {
+ 	struct mlx5_core_dev *mdev;
+ 	phys_addr_t bar_base_addr;
+ 	u32 sfnum;
++	u16 fn_id;
+ };
  
- esw_err:
-@@ -442,6 +448,8 @@ static int mlx5_sf_vhca_event(struct notifier_block *nb, unsigned long opcode, v
- 	update = mlx5_sf_state_update_check(sf, event->new_vhca_state);
- 	if (update)
- 		sf->hw_state = event->new_vhca_state;
-+	trace_mlx5_sf_update_state(table->dev, sf->port_index, sf->controller,
-+				   sf->hw_fn_id, sf->hw_state);
- sf_err:
- 	mutex_unlock(&table->sf_state_lock);
- 	mlx5_sf_table_put(table);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/diag/sf_tracepoint.h b/drivers/net/ethernet/mellanox/mlx5/core/sf/diag/sf_tracepoint.h
+ void mlx5_sf_dev_table_create(struct mlx5_core_dev *dev);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/diag/dev_tracepoint.h b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/diag/dev_tracepoint.h
 new file mode 100644
-index 000000000000..8bf1cd90930d
+index 000000000000..7f7c9af5deed
 --- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/diag/sf_tracepoint.h
-@@ -0,0 +1,173 @@
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/diag/dev_tracepoint.h
+@@ -0,0 +1,58 @@
 +/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
 +/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
 +
 +#undef TRACE_SYSTEM
 +#define TRACE_SYSTEM mlx5
 +
-+#if !defined(_MLX5_SF_TP_) || defined(TRACE_HEADER_MULTI_READ)
-+#define _MLX5_SF_TP_
++#if !defined(_MLX5_SF_DEV_TP_) || defined(TRACE_HEADER_MULTI_READ)
++#define _MLX5_SF_DEV_TP_
++
++#include <linux/tracepoint.h>
++#include <linux/mlx5/driver.h>
++#include "../../dev/dev.h"
++
++DECLARE_EVENT_CLASS(mlx5_sf_dev_template,
++		    TP_PROTO(const struct mlx5_core_dev *dev,
++			     const struct mlx5_sf_dev *sfdev,
++			     int aux_id),
++		    TP_ARGS(dev, sfdev, aux_id),
++		    TP_STRUCT__entry(__string(devname, dev_name(dev->device))
++				     __field(const struct mlx5_sf_dev*, sfdev)
++				     __field(int, aux_id)
++				     __field(u16, hw_fn_id)
++				     __field(u32, sfnum)
++		    ),
++		    TP_fast_assign(__assign_str(devname, dev_name(dev->device));
++				   __entry->sfdev = sfdev;
++				   __entry->aux_id = aux_id;
++				   __entry->hw_fn_id = sfdev->fn_id;
++				   __entry->sfnum = sfdev->sfnum;
++		    ),
++		    TP_printk("(%s) sfdev=%pK aux_id=%d hw_id=0x%x sfnum=%u\n",
++			      __get_str(devname), __entry->sfdev,
++			      __entry->aux_id, __entry->hw_fn_id,
++			      __entry->sfnum)
++);
++
++DEFINE_EVENT(mlx5_sf_dev_template, mlx5_sf_dev_add,
++	     TP_PROTO(const struct mlx5_core_dev *dev,
++		      const struct mlx5_sf_dev *sfdev,
++		      int aux_id),
++	     TP_ARGS(dev, sfdev, aux_id)
++	     );
++
++DEFINE_EVENT(mlx5_sf_dev_template, mlx5_sf_dev_del,
++	     TP_PROTO(const struct mlx5_core_dev *dev,
++		      const struct mlx5_sf_dev *sfdev,
++		      int aux_id),
++	     TP_ARGS(dev, sfdev, aux_id)
++	     );
++
++#endif /* _MLX5_SF_DEV_TP_ */
++
++/* This part must be outside protection */
++#undef TRACE_INCLUDE_PATH
++#define TRACE_INCLUDE_PATH sf/dev/diag
++#undef TRACE_INCLUDE_FILE
++#define TRACE_INCLUDE_FILE dev_tracepoint
++#include <trace/define_trace.h>
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/diag/vhca_tracepoint.h b/drivers/net/ethernet/mellanox/mlx5/core/sf/diag/vhca_tracepoint.h
+new file mode 100644
+index 000000000000..fd814a190b8b
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/diag/vhca_tracepoint.h
+@@ -0,0 +1,40 @@
++/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
++/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
++
++#undef TRACE_SYSTEM
++#define TRACE_SYSTEM mlx5
++
++#if !defined(_MLX5_SF_VHCA_TP_) || defined(TRACE_HEADER_MULTI_READ)
++#define _MLX5_SF_VHCA_TP_
 +
 +#include <linux/tracepoint.h>
 +#include <linux/mlx5/driver.h>
 +#include "sf/vhca_event.h"
 +
-+TRACE_EVENT(mlx5_sf_add,
++TRACE_EVENT(mlx5_sf_vhca_event,
 +	    TP_PROTO(const struct mlx5_core_dev *dev,
-+		     unsigned int port_index,
-+		     u32 controller,
-+		     u16 hw_fn_id,
-+		     u32 sfnum),
-+	    TP_ARGS(dev, port_index, controller, hw_fn_id, sfnum),
++		     const struct mlx5_vhca_state_event *event),
++	    TP_ARGS(dev, event),
 +	    TP_STRUCT__entry(__string(devname, dev_name(dev->device))
-+			     __field(unsigned int, port_index)
-+			     __field(u32, controller)
 +			     __field(u16, hw_fn_id)
 +			     __field(u32, sfnum)
++			     __field(u8, vhca_state)
 +			    ),
 +	    TP_fast_assign(__assign_str(devname, dev_name(dev->device));
-+		    __entry->port_index = port_index;
-+		    __entry->controller = controller;
-+		    __entry->hw_fn_id = hw_fn_id;
-+		    __entry->sfnum = sfnum;
++		    __entry->hw_fn_id = event->function_id;
++		    __entry->sfnum = event->sw_function_id;
++		    __entry->vhca_state = event->new_vhca_state;
 +	    ),
-+	    TP_printk("(%s) port_index=%u controller=%u hw_id=0x%x sfnum=%u\n",
-+		      __get_str(devname), __entry->port_index, __entry->controller,
-+		      __entry->hw_fn_id, __entry->sfnum)
++	    TP_printk("(%s) hw_id=0x%x sfnum=%u vhca_state=%d\n",
++		      __get_str(devname), __entry->hw_fn_id,
++		      __entry->sfnum, __entry->vhca_state)
 +);
 +
-+TRACE_EVENT(mlx5_sf_free,
-+	    TP_PROTO(const struct mlx5_core_dev *dev,
-+		     unsigned int port_index,
-+		     u32 controller,
-+		     u16 hw_fn_id),
-+	    TP_ARGS(dev, port_index, controller, hw_fn_id),
-+	    TP_STRUCT__entry(__string(devname, dev_name(dev->device))
-+			     __field(unsigned int, port_index)
-+			     __field(u32, controller)
-+			     __field(u16, hw_fn_id)
-+			    ),
-+	    TP_fast_assign(__assign_str(devname, dev_name(dev->device));
-+		    __entry->port_index = port_index;
-+		    __entry->controller = controller;
-+		    __entry->hw_fn_id = hw_fn_id;
-+	    ),
-+	    TP_printk("(%s) port_index=%u controller=%u hw_id=0x%x\n",
-+		      __get_str(devname), __entry->port_index, __entry->controller,
-+		      __entry->hw_fn_id)
-+);
-+
-+TRACE_EVENT(mlx5_sf_hwc_alloc,
-+	    TP_PROTO(const struct mlx5_core_dev *dev,
-+		     u32 controller,
-+		     u16 hw_fn_id,
-+		     u32 sfnum),
-+	    TP_ARGS(dev, controller, hw_fn_id, sfnum),
-+	    TP_STRUCT__entry(__string(devname, dev_name(dev->device))
-+			     __field(u32, controller)
-+			     __field(u16, hw_fn_id)
-+			     __field(u32, sfnum)
-+			    ),
-+	    TP_fast_assign(__assign_str(devname, dev_name(dev->device));
-+		    __entry->controller = controller;
-+		    __entry->hw_fn_id = hw_fn_id;
-+		    __entry->sfnum = sfnum;
-+	    ),
-+	    TP_printk("(%s) controller=%u hw_id=0x%x sfnum=%u\n",
-+		      __get_str(devname), __entry->controller, __entry->hw_fn_id,
-+		      __entry->sfnum)
-+);
-+
-+TRACE_EVENT(mlx5_sf_hwc_free,
-+	    TP_PROTO(const struct mlx5_core_dev *dev,
-+		     u16 hw_fn_id),
-+	    TP_ARGS(dev, hw_fn_id),
-+	    TP_STRUCT__entry(__string(devname, dev_name(dev->device))
-+			     __field(u16, hw_fn_id)
-+			    ),
-+	    TP_fast_assign(__assign_str(devname, dev_name(dev->device));
-+		    __entry->hw_fn_id = hw_fn_id;
-+	    ),
-+	    TP_printk("(%s) hw_id=0x%x\n", __get_str(devname), __entry->hw_fn_id)
-+);
-+
-+TRACE_EVENT(mlx5_sf_hwc_deferred_free,
-+	    TP_PROTO(const struct mlx5_core_dev *dev,
-+		     u16 hw_fn_id),
-+	    TP_ARGS(dev, hw_fn_id),
-+	    TP_STRUCT__entry(__string(devname, dev_name(dev->device))
-+			     __field(u16, hw_fn_id)
-+			    ),
-+	    TP_fast_assign(__assign_str(devname, dev_name(dev->device));
-+		    __entry->hw_fn_id = hw_fn_id;
-+	    ),
-+	    TP_printk("(%s) hw_id=0x%x\n", __get_str(devname), __entry->hw_fn_id)
-+);
-+
-+DECLARE_EVENT_CLASS(mlx5_sf_state_template,
-+		    TP_PROTO(const struct mlx5_core_dev *dev,
-+			     u32 port_index,
-+			     u32 controller,
-+			     u16 hw_fn_id),
-+		    TP_ARGS(dev, port_index, controller, hw_fn_id),
-+		    TP_STRUCT__entry(__string(devname, dev_name(dev->device))
-+				     __field(unsigned int, port_index)
-+				     __field(u32, controller)
-+				     __field(u16, hw_fn_id)),
-+		    TP_fast_assign(__assign_str(devname, dev_name(dev->device));
-+				   __entry->port_index = port_index;
-+				   __entry->controller = controller;
-+				   __entry->hw_fn_id = hw_fn_id;
-+		    ),
-+		    TP_printk("(%s) port_index=%u controller=%u hw_id=0x%x\n",
-+			      __get_str(devname), __entry->port_index, __entry->controller,
-+			      __entry->hw_fn_id)
-+);
-+
-+DEFINE_EVENT(mlx5_sf_state_template, mlx5_sf_activate,
-+	     TP_PROTO(const struct mlx5_core_dev *dev,
-+		      u32 port_index,
-+		      u32 controller,
-+		      u16 hw_fn_id),
-+	     TP_ARGS(dev, port_index, controller, hw_fn_id)
-+	     );
-+
-+DEFINE_EVENT(mlx5_sf_state_template, mlx5_sf_deactivate,
-+	     TP_PROTO(const struct mlx5_core_dev *dev,
-+		      u32 port_index,
-+		      u32 controller,
-+		      u16 hw_fn_id),
-+	     TP_ARGS(dev, port_index, controller, hw_fn_id)
-+	     );
-+
-+TRACE_EVENT(mlx5_sf_update_state,
-+	    TP_PROTO(const struct mlx5_core_dev *dev,
-+		     unsigned int port_index,
-+		     u32 controller,
-+		     u16 hw_fn_id,
-+		     u8 state),
-+	    TP_ARGS(dev, port_index, controller, hw_fn_id, state),
-+	    TP_STRUCT__entry(__string(devname, dev_name(dev->device))
-+			     __field(unsigned int, port_index)
-+			     __field(u32, controller)
-+			     __field(u16, hw_fn_id)
-+			     __field(u8, state)
-+			    ),
-+	    TP_fast_assign(__assign_str(devname, dev_name(dev->device));
-+		    __entry->port_index = port_index;
-+		    __entry->controller = controller;
-+		    __entry->hw_fn_id = hw_fn_id;
-+		    __entry->state = state;
-+	    ),
-+	    TP_printk("(%s) port_index=%u controller=%u hw_id=0x%x state=%u\n",
-+		      __get_str(devname), __entry->port_index, __entry->controller,
-+		      __entry->hw_fn_id, __entry->state)
-+);
-+
-+#endif /* _MLX5_SF_TP_ */
++#endif /* _MLX5_SF_VHCA_TP_ */
 +
 +/* This part must be outside protection */
 +#undef TRACE_INCLUDE_PATH
 +#define TRACE_INCLUDE_PATH sf/diag
 +#undef TRACE_INCLUDE_FILE
-+#define TRACE_INCLUDE_FILE sf_tracepoint
++#define TRACE_INCLUDE_FILE vhca_tracepoint
 +#include <trace/define_trace.h>
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
-index d9c69123c1ab..252d6017387d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
-@@ -8,6 +8,7 @@
- #include "ecpf.h"
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/vhca_event.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/vhca_event.c
+index 28b14b05086f..d908fba968f0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/sf/vhca_event.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/vhca_event.c
+@@ -6,6 +6,8 @@
  #include "mlx5_core.h"
- #include "eswitch.h"
-+#include "diag/sf_tracepoint.h"
+ #include "vhca_event.h"
+ #include "ecpf.h"
++#define CREATE_TRACE_POINTS
++#include "diag/vhca_tracepoint.h"
  
- struct mlx5_sf_hw {
- 	u32 usr_sfnum;
-@@ -142,6 +143,7 @@ int mlx5_sf_hw_table_sf_alloc(struct mlx5_core_dev *dev, u32 controller, u32 usr
- 			goto vhca_err;
- 	}
+ struct mlx5_vhca_state_notifier {
+ 	struct mlx5_core_dev *dev;
+@@ -82,6 +84,7 @@ mlx5_vhca_event_notify(struct mlx5_core_dev *dev, struct mlx5_vhca_state_event *
+ 					 vhca_state_context.vhca_state);
  
-+	trace_mlx5_sf_hwc_alloc(dev, controller, hw_fn_id, usr_sfnum);
- 	mutex_unlock(&table->table_lock);
- 	return sw_id;
+ 	mlx5_vhca_event_arm(dev, event->function_id);
++	trace_mlx5_sf_vhca_event(dev, event);
  
-@@ -172,6 +174,7 @@ static void mlx5_sf_hw_table_hwc_sf_free(struct mlx5_core_dev *dev,
- 	mlx5_cmd_dealloc_sf(dev, hwc->start_fn_id + idx);
- 	hwc->sfs[idx].allocated = false;
- 	hwc->sfs[idx].pending_delete = false;
-+	trace_mlx5_sf_hwc_free(dev, hwc->start_fn_id + idx);
+ 	blocking_notifier_call_chain(&dev->priv.vhca_state_notifier->n_head, 0, event);
  }
- 
- void mlx5_sf_hw_table_sf_deferred_free(struct mlx5_core_dev *dev, u32 controller, u16 id)
-@@ -195,6 +198,7 @@ void mlx5_sf_hw_table_sf_deferred_free(struct mlx5_core_dev *dev, u32 controller
- 		hwc->sfs[id].allocated = false;
- 	} else {
- 		hwc->sfs[id].pending_delete = true;
-+		trace_mlx5_sf_hwc_deferred_free(dev, hw_fn_id);
- 	}
- err:
- 	mutex_unlock(&table->table_lock);
 -- 
 2.31.1
 
