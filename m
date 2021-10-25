@@ -2,82 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1501143A7F0
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 00:54:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B88C943A7FD
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 01:10:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234554AbhJYW5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 18:57:12 -0400
-Received: from www62.your-server.de ([213.133.104.62]:49534 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232586AbhJYW5J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 18:57:09 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mf8rY-0000FB-RX; Tue, 26 Oct 2021 00:54:40 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mf8rY-0002oR-Gs; Tue, 26 Oct 2021 00:54:40 +0200
-Subject: Re: [PATCH] powerpc/bpf: fix write protecting JIT code
-To:     "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, ast@kernel.org,
-        christophe.leroy@csgroup.eu, Hari Bathini <hbathini@linux.ibm.com>,
-        jniethe5@gmail.com, mpe@ellerman.id.au
-Cc:     andrii@kernel.org, bpf@vger.kernel.org, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@kernel.org, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org, paulus@samba.org, songliubraving@fb.com,
-        stable@vger.kernel.org, yhs@fb.com
-References: <20211025055649.114728-1-hbathini@linux.ibm.com>
- <1635142354.46h6w5c2rx.naveen@linux.ibm.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c8d7390b-c07c-75cd-e9e9-4b8f0b786cc6@iogearbox.net>
-Date:   Tue, 26 Oct 2021 00:54:39 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S232664AbhJYXMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 19:12:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46896 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231478AbhJYXMd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 19:12:33 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8918AC061745
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 16:10:10 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id y12so6251764eda.4
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 16:10:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lFwaPl5bxAdhvr1VVYuzXHbRgwNQI9ZonkHn/942SIo=;
+        b=V6arbEeuSuth9mDxKkUDr5DX0EVPt8DEsx/6sBHsNZ0Mnus3jBTodAxKoFEFuLif2Y
+         IAbq3kCDwUXn/HUtpTdFwq52wHqCbEc8qaYwBwjyXX6Z5sI0EpbMcRmfrn6LCqkr+I7Z
+         2WF45+XJcC4rHcfV4pw2mc5PHaVfuT4AvAaX+Cl1eKTwG6zyrih++9iPjeuzyDgNntXI
+         SuelY6DNyH95ZXa2EXtBYHS9UL+/qomgeMh+ddb5TAJXEqJomw75lmrW0dfDQ6ML5xAI
+         aGfSpqgj7w86vxD5BKYkKVBXRUt2EVH44DOymUj+DwUrutZdW6rL93MZCZlOPfgFbi1K
+         uZ+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lFwaPl5bxAdhvr1VVYuzXHbRgwNQI9ZonkHn/942SIo=;
+        b=Ry28NegiyfaGOTADiKbuGWV+3s5uHmxmxfurUmg64rxALrCt11WgGWhqqS6Pli2JYq
+         ADImWk0+fupDzXb16AcR59IjdlZYGfVwzunP3po53bm+YLpgOhLS4Xw3Va7YsQZMxeXI
+         kbRWAsxGRekwDopyCrvwODAWdQZJnfq31ev9V62Q6x8JPxNti6FY+oLmcyfB5dqV5KBD
+         aELkgtspnysp9Cy4quX0hPjhfI9UkCd0TUGXyTAFP5ha2MvNLrmW2rKj5Iy0NsW7Iq9A
+         S3KAvWSPTvpQju6woGPTO9kWp8KlpZ52UiwPO9COEwFpFmDf3kOpwRCHZUDGQHZFBD8V
+         ZoHQ==
+X-Gm-Message-State: AOAM531eO3ubzVLF5Jrvmje1M78F1v/NYFt50ccF+04sEsV4AZk6an+O
+        2l/CmC/ETuFWC0khlBbRq5KMuBb4ClLadDYfBkwBB8he4EU=
+X-Google-Smtp-Source: ABdhPJyddl9SBuAs2L2+JGa+624CDN8bdd1NGfKRh0uAk1JPFBa1fAAjEQgW8KKdk1x5n4uqVZ2kdE5Wb7a9qtjhDZg=
+X-Received: by 2002:a17:906:7304:: with SMTP id di4mr25909099ejc.179.1635203408832;
+ Mon, 25 Oct 2021 16:10:08 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1635142354.46h6w5c2rx.naveen@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26333/Mon Oct 25 10:29:40 2021)
+References: <20211025221342.806029-1-eric.dumazet@gmail.com> <20211025221342.806029-3-eric.dumazet@gmail.com>
+In-Reply-To: <20211025221342.806029-3-eric.dumazet@gmail.com>
+From:   Soheil Hassas Yeganeh <soheil@google.com>
+Date:   Mon, 25 Oct 2021 19:09:31 -0400
+Message-ID: <CACSApvZiBpLG-CO64BuhjoVypGJwqCNF5AnTWsPCbN3M_vtqFg@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/3] tcp: use MAX_TCP_HEADER in tcp_stream_alloc_skb
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/25/21 8:15 AM, Naveen N. Rao wrote:
-> Hari Bathini wrote:
->> Running program with bpf-to-bpf function calls results in data access
->> exception (0x300) with the below call trace:
->>
->>     [c000000000113f28] bpf_int_jit_compile+0x238/0x750 (unreliable)
->>     [c00000000037d2f8] bpf_check+0x2008/0x2710
->>     [c000000000360050] bpf_prog_load+0xb00/0x13a0
->>     [c000000000361d94] __sys_bpf+0x6f4/0x27c0
->>     [c000000000363f0c] sys_bpf+0x2c/0x40
->>     [c000000000032434] system_call_exception+0x164/0x330
->>     [c00000000000c1e8] system_call_vectored_common+0xe8/0x278
->>
->> as bpf_int_jit_compile() tries writing to write protected JIT code
->> location during the extra pass.
->>
->> Fix it by holding off write protection of JIT code until the extra
->> pass, where branch target addresses fixup happens.
->>
->> Cc: stable@vger.kernel.org
->> Fixes: 62e3d4210ac9 ("powerpc/bpf: Write protect JIT code")
->> Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
->> ---
->>  arch/powerpc/net/bpf_jit_comp.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> Thanks for the fix!
-> 
-> Reviewed-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+On Mon, Oct 25, 2021 at 6:13 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> From: Eric Dumazet <edumazet@google.com>
+>
+> Both IPv4 and IPv6 uses same reserve, no need risking
+> cache line misses to fetch its value.
+>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-LGTM, I presume this fix will be routed via Michael.
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
 
-BPF selftests have plenty of BPF-to-BPF calls in there, too bad this was
-caught so late. :/
+> ---
+>  net/ipv4/tcp.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index 68dd580dba3d0e04412466868135c49225a4a33b..121400557fde898283a8eae3b09d93479c4a089e 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -867,7 +867,7 @@ struct sk_buff *tcp_stream_alloc_skb(struct sock *sk, int size, gfp_t gfp,
+>         if (unlikely(tcp_under_memory_pressure(sk)))
+>                 sk_mem_reclaim_partial(sk);
+>
+> -       skb = alloc_skb_fclone(size + sk->sk_prot->max_header, gfp);
+> +       skb = alloc_skb_fclone(size + MAX_TCP_HEADER, gfp);
+>         if (likely(skb)) {
+>                 bool mem_scheduled;
+>
+> @@ -878,7 +878,7 @@ struct sk_buff *tcp_stream_alloc_skb(struct sock *sk, int size, gfp_t gfp,
+>                         mem_scheduled = sk_wmem_schedule(sk, skb->truesize);
+>                 }
+>                 if (likely(mem_scheduled)) {
+> -                       skb_reserve(skb, sk->sk_prot->max_header);
+> +                       skb_reserve(skb, MAX_TCP_HEADER);
+>                         /*
+>                          * Make sure that we have exactly size bytes
+>                          * available to the caller, no more, no less.
+> --
+> 2.33.0.1079.g6e70778dc9-goog
+>
