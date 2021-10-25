@@ -2,438 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C198438DDE
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 05:38:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43A03438DFC
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 06:06:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229750AbhJYDlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Oct 2021 23:41:01 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:14857 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229637AbhJYDlA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 23:41:00 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Hd0zX2rg8z90CJ;
-        Mon, 25 Oct 2021 11:38:32 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Mon, 25 Oct 2021 11:38:33 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Mon, 25 Oct 2021 11:38:32 +0800
-From:   Tong Tiangen <tongtiangen@huawei.com>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmerdabbelt@google.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        "Song Liu" <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-CC:     <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        Tong Tiangen <tongtiangen@huawei.com>
-Subject: [PATCH bpf-next,v2] riscv, bpf: Add BPF exception tables
-Date:   Mon, 25 Oct 2021 03:53:24 +0000
-Message-ID: <20211025035324.517263-1-tongtiangen@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S232298AbhJYEJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 00:09:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39212 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232292AbhJYEJG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 00:09:06 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65B8EC061745
+        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 21:06:45 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id v8so9459973pfu.11
+        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 21:06:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=GymdKRroj1FAVlvaBNMo/zyk//kRVKqXRyIxvDsJaxY=;
+        b=fO1R4TDsZdENrfZIVPu0+QxqHXMxKBUcBlvCiKIcNjvXvqbwmxikdqNec7EBpoNqj9
+         ivabdW4JegH1h6QNHNPAOPnO2hLfJQHEAKII3mbL1doNirNOc5msZZuX781LqbEIV1Nh
+         ZfzQ1SqCxnxly350lWfo9DQGkI/bVzHQrkA9hDLdUIuRIZF7kDsmNXjQe2XvbI6yKeCI
+         rz9dC61huSkYKafxQlvDGvirdLpD8SPalKayh/K3fR1T1VTH0wWYuEx6/2/mIwj/r4i0
+         roTu0GR12QLQFBfZ1xTYi/XEDn5NbGMhs7m8bgTC4b2djamos/wmAzbINfxuqy9dpWt+
+         itkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=GymdKRroj1FAVlvaBNMo/zyk//kRVKqXRyIxvDsJaxY=;
+        b=Gki9wPCez0z6Qoqc5PVN/Euu+74qRR5eSXxgiJSMNXkJ/8PXwgI1oIM1bcqOnx0oYP
+         Q3lLYDgrLhZ4c8wEEKTSqzRry5PspFchsVUA+m/GZHvA1+pz2LCbLFKr2h20fuPewztF
+         z+oeXOo/kyLlqJF2ls4Vegui3mSHAw+OE2a+bmi6+DOFHDVdqjrwaEnt1T2cgbM1RsT9
+         3AdMfw4T/LDgklrbCrK1EAVsivh8Cp4EAV4Q07GLZjQd1kSvlxMkG59/bwaVYQ8RV6bv
+         9bz7ZbfXA9EOW/Mc7Di4aULAO7sGCZ/nNhz8KGHn6zyiyFcGsZ83kgm8ONTLqMapyndd
+         dCtw==
+X-Gm-Message-State: AOAM530qW3owRe/tcChRdvMXgsj8kJtYWIdDkt0HdZiemZ9TzoDzi+Ue
+        JhYGP1JOae5iNqigOEdCcoRndVhD6gc=
+X-Google-Smtp-Source: ABdhPJyR+vaWx/gqQ3Zodo/vxWs7Nc2/CFrwMIfI9H1uhXAiGYIMBzGyIjGH6rFLuhHTZFxM/7Zm6A==
+X-Received: by 2002:a62:e90d:0:b0:44d:35a1:e5a0 with SMTP id j13-20020a62e90d000000b0044d35a1e5a0mr16034543pfh.54.1635134804891;
+        Sun, 24 Oct 2021 21:06:44 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id i2sm20880230pjt.19.2021.10.24.21.06.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Oct 2021 21:06:44 -0700 (PDT)
+Date:   Mon, 25 Oct 2021 12:06:38 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Xiumei Mu <xmu@redhat.com>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>, wireguard@lists.zx2c4.com
+Subject: Re: [PATCH net] wireguard: remove peer cache in netns_pre_exit
+Message-ID: <YXYtTs/04zZ1SU6f@Laptop-X1>
+References: <20210901122904.9094-1-liuhangbin@gmail.com>
+ <YS+GX/Y85bch4gMU@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="y"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+In-Reply-To: <YS+GX/Y85bch4gMU@zx2c4.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a tracing BPF program attempts to read memory without using the
-bpf_probe_read() helper, the verifier marks the load instruction with
-the BPF_PROBE_MEM flag. Since the riscv JIT does not currently recognize
-this flag it falls back to the interpreter.
+Hi Jason,
 
-Add support for BPF_PROBE_MEM, by appending an exception table to the
-BPF program. If the load instruction causes a data abort, the fixup
-infrastructure finds the exception table and fixes up the fault, by
-clearing the destination register and jumping over the faulting
-instruction.
+Do you have a schedule to post this patch to upstream?
 
-A more generic solution would add a "handler" field to the table entry,
-like on x86 and s390.
-
-The same issue in ARM64 is fixed in:
-commit 800834285361 ("bpf, arm64: Add BPF exception tables")
-
-Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
-Tested-by: Pu Lehui <pulehui@huawei.com>
----
-v2:
-Modify according to BjÃ¶rn's comments, mainly removes redundant head files
-extable.h and some code style issues.
-
- arch/riscv/mm/extable.c         |  27 ++++-
- arch/riscv/net/bpf_jit.h        |   1 +
- arch/riscv/net/bpf_jit_comp64.c | 185 +++++++++++++++++++++++++-------
- arch/riscv/net/bpf_jit_core.c   |  18 +++-
- 4 files changed, 185 insertions(+), 46 deletions(-)
-
-diff --git a/arch/riscv/mm/extable.c b/arch/riscv/mm/extable.c
-index 2fc729422151..442695393131 100644
---- a/arch/riscv/mm/extable.c
-+++ b/arch/riscv/mm/extable.c
-@@ -11,14 +11,31 @@
- #include <linux/module.h>
- #include <linux/uaccess.h>
- 
-+#ifdef CONFIG_BPF_JIT
-+static inline bool in_bpf_jit(struct pt_regs *regs)
-+{
-+	if (!IS_ENABLED(CONFIG_BPF_JIT))
-+		return false;
-+
-+	return regs->epc >= BPF_JIT_REGION_START && regs->epc < BPF_JIT_REGION_END;
-+}
-+
-+int rv_bpf_fixup_exception(const struct exception_table_entry *ex, struct pt_regs *regs);
-+#endif
-+
- int fixup_exception(struct pt_regs *regs)
- {
- 	const struct exception_table_entry *fixup;
- 
- 	fixup = search_exception_tables(regs->epc);
--	if (fixup) {
--		regs->epc = fixup->fixup;
--		return 1;
--	}
--	return 0;
-+	if (!fixup)
-+		return 0;
-+
-+#ifdef CONFIG_BPF_JIT
-+	if (in_bpf_jit(regs))
-+		return rv_bpf_fixup_exception(fixup, regs);
-+#endif
-+
-+	regs->epc = fixup->fixup;
-+	return 1;
- }
-diff --git a/arch/riscv/net/bpf_jit.h b/arch/riscv/net/bpf_jit.h
-index 75c1e9996867..8f2e5670c1aa 100644
---- a/arch/riscv/net/bpf_jit.h
-+++ b/arch/riscv/net/bpf_jit.h
-@@ -71,6 +71,7 @@ struct rv_jit_context {
- 	int ninsns;
- 	int epilogue_offset;
- 	int *offset;		/* BPF to RV */
-+	int nexentrys;
- 	unsigned long flags;
- 	int stack_size;
- };
-diff --git a/arch/riscv/net/bpf_jit_comp64.c b/arch/riscv/net/bpf_jit_comp64.c
-index 3af4131c22c7..a1b9fe14ead3 100644
---- a/arch/riscv/net/bpf_jit_comp64.c
-+++ b/arch/riscv/net/bpf_jit_comp64.c
-@@ -5,6 +5,7 @@
-  *
-  */
- 
-+#include <linux/bitfield.h>
- #include <linux/bpf.h>
- #include <linux/filter.h>
- #include "bpf_jit.h"
-@@ -27,6 +28,21 @@ static const int regmap[] = {
- 	[BPF_REG_AX] =	RV_REG_T0,
- };
- 
-+static const int pt_regmap[] = {
-+	[RV_REG_A5] = offsetof(struct pt_regs, a5),
-+	[RV_REG_A0] = offsetof(struct pt_regs, a0),
-+	[RV_REG_A1] = offsetof(struct pt_regs, a1),
-+	[RV_REG_A2] = offsetof(struct pt_regs, a2),
-+	[RV_REG_A3] = offsetof(struct pt_regs, a3),
-+	[RV_REG_A4] = offsetof(struct pt_regs, a4),
-+	[RV_REG_S1] = offsetof(struct pt_regs, s1),
-+	[RV_REG_S2] = offsetof(struct pt_regs, s2),
-+	[RV_REG_S3] = offsetof(struct pt_regs, s3),
-+	[RV_REG_S4] = offsetof(struct pt_regs, s4),
-+	[RV_REG_S5] = offsetof(struct pt_regs, s5),
-+	[RV_REG_T0] = offsetof(struct pt_regs, t0),
-+};
-+
- enum {
- 	RV_CTX_F_SEEN_TAIL_CALL =	0,
- 	RV_CTX_F_SEEN_CALL =		RV_REG_RA,
-@@ -440,6 +456,69 @@ static int emit_call(bool fixed, u64 addr, struct rv_jit_context *ctx)
- 	return 0;
- }
- 
-+#define BPF_FIXUP_OFFSET_MASK   GENMASK(26, 0)
-+#define BPF_FIXUP_REG_MASK      GENMASK(31, 27)
-+
-+int rv_bpf_fixup_exception(const struct exception_table_entry *ex,
-+				struct pt_regs *regs)
-+{
-+	off_t offset = FIELD_GET(BPF_FIXUP_OFFSET_MASK, ex->fixup);
-+	int regs_offset = FIELD_GET(BPF_FIXUP_REG_MASK, ex->fixup);
-+
-+	*(unsigned long *)((unsigned char *)regs + pt_regmap[regs_offset]) = 0;
-+	regs->epc = (unsigned long)&ex->fixup - offset;
-+
-+	return 1;
-+}
-+
-+/* For accesses to BTF pointers, add an entry to the exception table */
-+static int add_exception_handler(const struct bpf_insn *insn,
-+				 struct rv_jit_context *ctx,
-+				 int dst_reg, int insn_len)
-+{
-+	struct exception_table_entry *ex;
-+	unsigned long pc;
-+	off_t offset;
-+
-+	if (!ctx->insns || !ctx->prog->aux->extable || BPF_MODE(insn->code) != BPF_PROBE_MEM)
-+		return 0;
-+
-+	if (WARN_ON_ONCE(ctx->nexentrys >= ctx->prog->aux->num_exentries))
-+		return -EINVAL;
-+
-+	if (WARN_ON_ONCE(insn_len > ctx->ninsns))
-+		return -EINVAL;
-+
-+	if (WARN_ON_ONCE(!rvc_enabled() && insn_len == 1))
-+		return -EINVAL;
-+
-+	ex = &ctx->prog->aux->extable[ctx->nexentrys];
-+	pc = (unsigned long)&ctx->insns[ctx->ninsns - insn_len];
-+
-+	offset = pc - (long)&ex->insn;
-+	if (WARN_ON_ONCE(offset >= 0 || offset < INT_MIN))
-+		return -ERANGE;
-+	ex->insn = pc;
-+
-+	/*
-+	 * Since the extable follows the program, the fixup offset is always
-+	 * negative and limited to BPF_JIT_REGION_SIZE. Store a positive value
-+	 * to keep things simple, and put the destination register in the upper
-+	 * bits. We don't need to worry about buildtime or runtime sort
-+	 * modifying the upper bits because the table is already sorted, and
-+	 * isn't part of the main exception table.
-+	 */
-+	offset = (long)&ex->fixup - (pc + insn_len * sizeof(u16));
-+	if (!FIELD_FIT(BPF_FIXUP_OFFSET_MASK, offset))
-+		return -ERANGE;
-+
-+	ex->fixup = FIELD_PREP(BPF_FIXUP_OFFSET_MASK, offset) |
-+		FIELD_PREP(BPF_FIXUP_REG_MASK, dst_reg);
-+
-+	ctx->nexentrys++;
-+	return 0;
-+}
-+
- int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
- 		      bool extra_pass)
- {
-@@ -893,52 +972,86 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
- 
- 	/* LDX: dst = *(size *)(src + off) */
- 	case BPF_LDX | BPF_MEM | BPF_B:
--		if (is_12b_int(off)) {
--			emit(rv_lbu(rd, off, rs), ctx);
-+	case BPF_LDX | BPF_MEM | BPF_H:
-+	case BPF_LDX | BPF_MEM | BPF_W:
-+	case BPF_LDX | BPF_MEM | BPF_DW:
-+	case BPF_LDX | BPF_PROBE_MEM | BPF_B:
-+	case BPF_LDX | BPF_PROBE_MEM | BPF_H:
-+	case BPF_LDX | BPF_PROBE_MEM | BPF_W:
-+	case BPF_LDX | BPF_PROBE_MEM | BPF_DW:
-+	{
-+		int insn_len, insns_start;
-+
-+		switch (BPF_SIZE(code)) {
-+		case BPF_B:
-+			if (is_12b_int(off)) {
-+				insns_start = ctx->ninsns;
-+				emit(rv_lbu(rd, off, rs), ctx);
-+				insn_len = ctx->ninsns - insns_start;
-+				break;
-+			}
-+
-+			emit_imm(RV_REG_T1, off, ctx);
-+			emit_add(RV_REG_T1, RV_REG_T1, rs, ctx);
-+			insns_start = ctx->ninsns;
-+			emit(rv_lbu(rd, 0, RV_REG_T1), ctx);
-+			insn_len = ctx->ninsns - insns_start;
-+			if (insn_is_zext(&insn[1]))
-+				return 1;
- 			break;
--		}
-+		case BPF_H:
-+			if (is_12b_int(off)) {
-+				insns_start = ctx->ninsns;
-+				emit(rv_lhu(rd, off, rs), ctx);
-+				insn_len = ctx->ninsns - insns_start;
-+				break;
-+			}
- 
--		emit_imm(RV_REG_T1, off, ctx);
--		emit_add(RV_REG_T1, RV_REG_T1, rs, ctx);
--		emit(rv_lbu(rd, 0, RV_REG_T1), ctx);
--		if (insn_is_zext(&insn[1]))
--			return 1;
--		break;
--	case BPF_LDX | BPF_MEM | BPF_H:
--		if (is_12b_int(off)) {
--			emit(rv_lhu(rd, off, rs), ctx);
-+			emit_imm(RV_REG_T1, off, ctx);
-+			emit_add(RV_REG_T1, RV_REG_T1, rs, ctx);
-+			insns_start = ctx->ninsns;
-+			emit(rv_lhu(rd, 0, RV_REG_T1), ctx);
-+			insn_len = ctx->ninsns - insns_start;
-+			if (insn_is_zext(&insn[1]))
-+				return 1;
- 			break;
--		}
-+		case BPF_W:
-+			if (is_12b_int(off)) {
-+				insns_start = ctx->ninsns;
-+				emit(rv_lwu(rd, off, rs), ctx);
-+				insn_len = ctx->ninsns - insns_start;
-+				break;
-+			}
- 
--		emit_imm(RV_REG_T1, off, ctx);
--		emit_add(RV_REG_T1, RV_REG_T1, rs, ctx);
--		emit(rv_lhu(rd, 0, RV_REG_T1), ctx);
--		if (insn_is_zext(&insn[1]))
--			return 1;
--		break;
--	case BPF_LDX | BPF_MEM | BPF_W:
--		if (is_12b_int(off)) {
--			emit(rv_lwu(rd, off, rs), ctx);
-+			emit_imm(RV_REG_T1, off, ctx);
-+			emit_add(RV_REG_T1, RV_REG_T1, rs, ctx);
-+			insns_start = ctx->ninsns;
-+			emit(rv_lwu(rd, 0, RV_REG_T1), ctx);
-+			insn_len = ctx->ninsns - insns_start;
-+			if (insn_is_zext(&insn[1]))
-+				return 1;
- 			break;
--		}
-+		case BPF_DW:
-+			if (is_12b_int(off)) {
-+				insns_start = ctx->ninsns;
-+				emit_ld(rd, off, rs, ctx);
-+				insn_len = ctx->ninsns - insns_start;
-+				break;
-+			}
- 
--		emit_imm(RV_REG_T1, off, ctx);
--		emit_add(RV_REG_T1, RV_REG_T1, rs, ctx);
--		emit(rv_lwu(rd, 0, RV_REG_T1), ctx);
--		if (insn_is_zext(&insn[1]))
--			return 1;
--		break;
--	case BPF_LDX | BPF_MEM | BPF_DW:
--		if (is_12b_int(off)) {
--			emit_ld(rd, off, rs, ctx);
-+			emit_imm(RV_REG_T1, off, ctx);
-+			emit_add(RV_REG_T1, RV_REG_T1, rs, ctx);
-+			insns_start = ctx->ninsns;
-+			emit_ld(rd, 0, RV_REG_T1, ctx);
-+			insn_len = ctx->ninsns - insns_start;
- 			break;
- 		}
- 
--		emit_imm(RV_REG_T1, off, ctx);
--		emit_add(RV_REG_T1, RV_REG_T1, rs, ctx);
--		emit_ld(rd, 0, RV_REG_T1, ctx);
-+		ret = add_exception_handler(insn, ctx, rd, insn_len);
-+		if (ret)
-+			return ret;
- 		break;
--
-+	}
- 	/* speculation barrier */
- 	case BPF_ST | BPF_NOSPEC:
- 		break;
-diff --git a/arch/riscv/net/bpf_jit_core.c b/arch/riscv/net/bpf_jit_core.c
-index fed86f42dfbe..5f2a842ec6f3 100644
---- a/arch/riscv/net/bpf_jit_core.c
-+++ b/arch/riscv/net/bpf_jit_core.c
-@@ -41,12 +41,12 @@ bool bpf_jit_needs_zext(void)
- 
- struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- {
-+	unsigned int image_size, prog_size, extable_size;
- 	bool tmp_blinded = false, extra_pass = false;
- 	struct bpf_prog *tmp, *orig_prog = prog;
- 	int pass = 0, prev_ninsns = 0, i;
- 	struct rv_jit_data *jit_data;
- 	struct rv_jit_context *ctx;
--	unsigned int image_size = 0;
- 
- 	if (!prog->jit_requested)
- 		return orig_prog;
-@@ -73,7 +73,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 
- 	if (ctx->offset) {
- 		extra_pass = true;
--		image_size = sizeof(*ctx->insns) * ctx->ninsns;
-+		prog_size = sizeof(*ctx->insns) * ctx->ninsns;
- 		goto skip_init_ctx;
- 	}
- 
-@@ -102,8 +102,12 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 		if (ctx->ninsns == prev_ninsns) {
- 			if (jit_data->header)
- 				break;
-+			/* obtain the actual image size */
-+			extable_size = prog->aux->num_exentries *
-+				sizeof(struct exception_table_entry);
-+			prog_size = sizeof(*ctx->insns) * ctx->ninsns;
-+			image_size = prog_size + extable_size;
- 
--			image_size = sizeof(*ctx->insns) * ctx->ninsns;
- 			jit_data->header =
- 				bpf_jit_binary_alloc(image_size,
- 						     &jit_data->image,
-@@ -130,9 +134,13 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 		goto out_offset;
- 	}
- 
-+	if (extable_size)
-+		prog->aux->extable = (void *)ctx->insns + prog_size;
-+
- skip_init_ctx:
- 	pass++;
- 	ctx->ninsns = 0;
-+	ctx->nexentrys = 0;
- 
- 	bpf_jit_build_prologue(ctx);
- 	if (build_body(ctx, extra_pass, NULL)) {
-@@ -143,11 +151,11 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 	bpf_jit_build_epilogue(ctx);
- 
- 	if (bpf_jit_enable > 1)
--		bpf_jit_dump(prog->len, image_size, pass, ctx->insns);
-+		bpf_jit_dump(prog->len, prog_size, pass, ctx->insns);
- 
- 	prog->bpf_func = (void *)ctx->insns;
- 	prog->jited = 1;
--	prog->jited_len = image_size;
-+	prog->jited_len = prog_size;
- 
- 	bpf_flush_icache(jit_data->header, ctx->insns + ctx->ninsns);
- 
--- 
-2.25.1
-
+Thanks
+Hangbin
+On Wed, Sep 01, 2021 at 03:55:43PM +0200, Jason A. Donenfeld wrote:
+> 
+> From f9984a41eeaebfdcef5aba8a71966b77ba0de8c0 Mon Sep 17 00:00:00 2001
+> From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+> Date: Wed, 1 Sep 2021 14:53:39 +0200
+> Subject: [PATCH] wireguard: device: reset peer src endpoint when netns exits
+> MIME-Version: 1.0
+> Content-Type: text/plain; charset=UTF-8
+> Content-Transfer-Encoding: 8bit
+> 
+> Each peer's endpoint contains a dst_cache entry that takes a reference
+> to another netdev. When the containing namespace exits, we take down the
+> socket and prevent future sockets from being created (by setting
+> creating_net to NULL), which removes that potential reference on the
+> netns. However, it doesn't release references to the netns that a netdev
+> cached in dst_cache might be taking, so the netns still might fail to
+> exit. Since the socket is gimped anyway, we can simply clear all the
+> dst_caches (by way of clearing the endpoint src), which will release all
+> references.
+> 
+> However, the current dst_cache_reset function only releases those
+> references lazily. But it turns out that all of our usages of
+> wg_socket_clear_peer_endpoint_src are called from contexts that are not
+> exactly high-speed or bottle-necked. For example, when there's
+> connection difficulty, or when userspace is reconfiguring the interface.
+> And in particular for this patch, when the netns is exiting. So for
+> those cases, it makes more sense to call dst_release immediately. For
+> that, we add a small helper function to dst_cache.
+> 
+> This patch also adds a test to netns.sh from Hangbin Liu to ensure this
+> doesn't regress.
+> 
+> Test-by: Hangbin Liu <liuhangbin@gmail.com>
+> Reported-by: Xiumei Mu <xmu@redhat.com>
+> Cc: Hangbin Liu <liuhangbin@gmail.com>
+> Cc: Toke Høiland-Jørgensen <toke@redhat.com>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Fixes: 900575aa33a3 ("wireguard: device: avoid circular netns references")
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+>  drivers/net/wireguard/device.c             |  3 +++
+>  drivers/net/wireguard/socket.c             |  2 +-
+>  include/net/dst_cache.h                    | 11 ++++++++++
+>  net/core/dst_cache.c                       | 19 +++++++++++++++++
+>  tools/testing/selftests/wireguard/netns.sh | 24 +++++++++++++++++++++-
+>  5 files changed, 57 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
+> index 551ddaaaf540..77e64ea6be67 100644
+> --- a/drivers/net/wireguard/device.c
+> +++ b/drivers/net/wireguard/device.c
+> @@ -398,6 +398,7 @@ static struct rtnl_link_ops link_ops __read_mostly = {
+>  static void wg_netns_pre_exit(struct net *net)
+>  {
+>  	struct wg_device *wg;
+> +	struct wg_peer *peer;
+>  
+>  	rtnl_lock();
+>  	list_for_each_entry(wg, &device_list, device_list) {
+> @@ -407,6 +408,8 @@ static void wg_netns_pre_exit(struct net *net)
+>  			mutex_lock(&wg->device_update_lock);
+>  			rcu_assign_pointer(wg->creating_net, NULL);
+>  			wg_socket_reinit(wg, NULL, NULL);
+> +			list_for_each_entry(peer, &wg->peer_list, peer_list)
+> +				wg_socket_clear_peer_endpoint_src(peer);
+>  			mutex_unlock(&wg->device_update_lock);
+>  		}
+>  	}
+> diff --git a/drivers/net/wireguard/socket.c b/drivers/net/wireguard/socket.c
+> index 8c496b747108..6f07b949cb81 100644
+> --- a/drivers/net/wireguard/socket.c
+> +++ b/drivers/net/wireguard/socket.c
+> @@ -308,7 +308,7 @@ void wg_socket_clear_peer_endpoint_src(struct wg_peer *peer)
+>  {
+>  	write_lock_bh(&peer->endpoint_lock);
+>  	memset(&peer->endpoint.src6, 0, sizeof(peer->endpoint.src6));
+> -	dst_cache_reset(&peer->endpoint_cache);
+> +	dst_cache_reset_now(&peer->endpoint_cache);
+>  	write_unlock_bh(&peer->endpoint_lock);
+>  }
+>  
+> diff --git a/include/net/dst_cache.h b/include/net/dst_cache.h
+> index 67634675e919..df6622a5fe98 100644
+> --- a/include/net/dst_cache.h
+> +++ b/include/net/dst_cache.h
+> @@ -79,6 +79,17 @@ static inline void dst_cache_reset(struct dst_cache *dst_cache)
+>  	dst_cache->reset_ts = jiffies;
+>  }
+>  
+> +/**
+> + *	dst_cache_reset_now - invalidate the cache contents immediately
+> + *	@dst_cache: the cache
+> + *
+> + *	The caller must be sure there are no concurrent users, as this frees
+> + *	all dst_cache users immediately, rather than waiting for the next
+> + *	per-cpu usage like dst_cache_reset does. Most callers should use the
+> + *	higher speed lazily-freed dst_cache_reset function instead.
+> + */
+> +void dst_cache_reset_now(struct dst_cache *dst_cache);
+> +
+>  /**
+>   *	dst_cache_init - initialize the cache, allocating the required storage
+>   *	@dst_cache: the cache
+> diff --git a/net/core/dst_cache.c b/net/core/dst_cache.c
+> index be74ab4551c2..0ccfd5fa5cb9 100644
+> --- a/net/core/dst_cache.c
+> +++ b/net/core/dst_cache.c
+> @@ -162,3 +162,22 @@ void dst_cache_destroy(struct dst_cache *dst_cache)
+>  	free_percpu(dst_cache->cache);
+>  }
+>  EXPORT_SYMBOL_GPL(dst_cache_destroy);
+> +
+> +void dst_cache_reset_now(struct dst_cache *dst_cache)
+> +{
+> +	int i;
+> +
+> +	if (!dst_cache->cache)
+> +		return;
+> +
+> +	dst_cache->reset_ts = jiffies;
+> +	for_each_possible_cpu(i) {
+> +		struct dst_cache_pcpu *idst = per_cpu_ptr(dst_cache->cache, i);
+> +		struct dst_entry *dst = idst->dst;
+> +
+> +		idst->cookie = 0;
+> +		idst->dst = NULL;
+> +		dst_release(dst);
+> +	}
+> +}
+> +EXPORT_SYMBOL_GPL(dst_cache_reset_now);
+> diff --git a/tools/testing/selftests/wireguard/netns.sh b/tools/testing/selftests/wireguard/netns.sh
+> index 2e5c1630885e..8a9461aa0878 100755
+> --- a/tools/testing/selftests/wireguard/netns.sh
+> +++ b/tools/testing/selftests/wireguard/netns.sh
+> @@ -613,6 +613,28 @@ ip0 link set wg0 up
+>  kill $ncat_pid
+>  ip0 link del wg0
+>  
+> +# Ensure that dst_cache references don't outlive netns lifetime
+> +ip1 link add dev wg0 type wireguard
+> +ip2 link add dev wg0 type wireguard
+> +configure_peers
+> +ip1 link add veth1 type veth peer name veth2
+> +ip1 link set veth2 netns $netns2
+> +ip1 addr add fd00:aa::1/64 dev veth1
+> +ip2 addr add fd00:aa::2/64 dev veth2
+> +ip1 link set veth1 up
+> +ip2 link set veth2 up
+> +waitiface $netns1 veth1
+> +waitiface $netns2 veth2
+> +ip1 -6 route add default dev veth1 via fd00:aa::2
+> +ip2 -6 route add default dev veth2 via fd00:aa::1
+> +n1 wg set wg0 peer "$pub2" endpoint [fd00:aa::2]:2
+> +n2 wg set wg0 peer "$pub1" endpoint [fd00:aa::1]:1
+> +n1 ping6 -c 1 fd00::2
+> +pp ip netns delete $netns1
+> +pp ip netns delete $netns2
+> +pp ip netns add $netns1
+> +pp ip netns add $netns2
+> +
+>  # Ensure there aren't circular reference loops
+>  ip1 link add wg1 type wireguard
+>  ip2 link add wg2 type wireguard
+> @@ -631,7 +653,7 @@ while read -t 0.1 -r line 2>/dev/null || [[ $? -ne 142 ]]; do
+>  done < /dev/kmsg
+>  alldeleted=1
+>  for object in "${!objects[@]}"; do
+> -	if [[ ${objects["$object"]} != *createddestroyed ]]; then
+> +	if [[ ${objects["$object"]} != *createddestroyed && ${objects["$object"]} != *createdcreateddestroyeddestroyed ]]; then
+>  		echo "Error: $object: merely ${objects["$object"]}" >&3
+>  		alldeleted=0
+>  	fi
+> -- 
+> 2.32.0
