@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75111439C0B
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 18:48:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BCCC439C0C
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 18:48:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234104AbhJYQvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 12:51:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44682 "EHLO
+        id S234114AbhJYQvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 12:51:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234109AbhJYQvB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 12:51:01 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE45C061767
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 09:48:38 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id u12so4688445pjy.1
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 09:48:38 -0700 (PDT)
+        with ESMTP id S234086AbhJYQvC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 12:51:02 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC36C061348
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 09:48:40 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id n11-20020a17090a2bcb00b001a1e7a0a6a6so8216488pje.0
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 09:48:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=U8PghNy/avxVQfHWNjAjlXaqoKopvj9ocRaUMCgv5H0=;
-        b=mxBu7WhTI5eWJAWz0NSTeIjAWPQH7N6QuVUFKD6nRvOVyfKIh74zAIbBkX3gSOPHRH
-         yfShXPPPfEEezBQ88W4kyOGdo/1/Y84BwIywqxnLMNwu52gNGKHXo/lJJtg75VC0CvAn
-         XnoewJIJ8gpBeuq67EtOAV0WqMgPv55HEuiC/yMQSO7to5ABODYMxdLkZ+KHdB90bqzv
-         b+9mIrGHuVIBdlnnXu+POB4JI+QXr/HWXUl2BWWR0UTOUTs57hSZ3TRNnVr119VpijEG
-         a4XkhV4OaBRbrvvo+r2p/dBsuk9DDQb1F3Laghznf3XTDX+IexbIKvDq192k+4TCsZ2k
-         TOPg==
+        bh=UJz1lAu5C9MAqZ8KnyZ8z6mVntpBW4i3HKAaMu3gS2I=;
+        b=njRZINMKN4HmIIQ/J68W9QM4fviQu+Jb+LxnjUVkyOmXiDznuaSdmLuMyoSOJAmFZJ
+         m4Og5Re+MCSOnDGC9qpu3GwDh2SxLAuPwOcJmzFsc5K2lnVHsMzQsWAYHrxwb9wEK1G8
+         WKUEMBdX3kanKrt8U87GjHa9p4eJMwkIG8VRSt+skT0lEZsDLdHAnE4fLgqkQrbWi9Jb
+         baiGDIvPs0+huVkaYGQy6+SnqS9/Q7bdjmEY2cdb4OZeT8eenTv4vz3SDDLjqtsc4hZa
+         5656rg/Fjz0wiRlsQqXn/WHNu912NdO/0FC7RTYml4vM0xJLEDkqVGubavbZzOYgLDTd
+         B8nQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=U8PghNy/avxVQfHWNjAjlXaqoKopvj9ocRaUMCgv5H0=;
-        b=Rb+pGESpQRvORufOmRKeCODfIoru4MIh+wn415f+n9M2HEQq1ABvyNPG/aVxsi3V0l
-         AmkPNZUrorH5yK5LOCVrK7XHsz+xDvmWeZDSUsoNaF/ZHEd4NoTZbU4bXav5PvZ7z0H1
-         vKCGzL/Ve9v1KFRuIIbORMUdX7BO6WxMrLAcXE8BJpx623vzRZ5StPQSAPFUwNHURj8Z
-         A9CfcOIxjy9IiB9o5D/m0NGCGyPD2UW8ZWUu+UR83CENfCSthPKE6C25L10KmXItV8EL
-         9W9RLtyyEVoZ56kMfQFP7C9WEsvry947Y4XOTfTh8uQ9zRetf9aH6P+NbcztfrlCsAy0
-         e/XQ==
-X-Gm-Message-State: AOAM5329R+jeDbM728ASsBvMkpeBUo70vJY0egbHugWUzCzQw/IA/VSh
-        b4qcqz1lEG5/thMENzyzyi0=
-X-Google-Smtp-Source: ABdhPJyJFZxsCioHc5ojYvDNgrEdexAhjIppLFzFOW2CFDewRl6Y3gDNFSs+RbWudeY143/5Nevk0Q==
-X-Received: by 2002:a17:902:aa03:b0:13f:a07e:da04 with SMTP id be3-20020a170902aa0300b0013fa07eda04mr17681273plb.80.1635180518478;
-        Mon, 25 Oct 2021 09:48:38 -0700 (PDT)
+        bh=UJz1lAu5C9MAqZ8KnyZ8z6mVntpBW4i3HKAaMu3gS2I=;
+        b=OMsHmuScD/j0tkOxG/JC9JLRG1R+nWH1a9cB/DNEIEZaarRbLGFc31MWJ506F7KGFv
+         wjj9lczh5s+On6dkA1YE8hYq96C5EhWqbD/pmTKpK++mx4hYCb+/w64oJ4s2tz6aQhc1
+         DiITp107AvYz2mmQvPDRwkMHEveaVoZQ9oN2dvirszMEgMb46cDB2mPQgZw7SM+7eNu1
+         KaSh0ieQLYvlEnnrXKk5F8znB5i7QCb87ADznhF+qZaskRju+fet8Fu7z7KklqAxRt6p
+         eScT3fldB4Ef5fRVwpyQMPSZyM8bhw2QCDGW/Qj25E257EPElySl8G7FCv9HK9smJ7xQ
+         yY+g==
+X-Gm-Message-State: AOAM5324v8N3RZz5mhIUsd52nAx/P6GrZ8n2AYc4ioJnBVXbTRkkuUlj
+        AFb0D/8aNy6iBMM7ZfG+OFU=
+X-Google-Smtp-Source: ABdhPJz3FnQgzqPBX3W+RaBrkaWF88N2vIPdaJAS8wfKC0IR5X7L+W8bJX7ISvbMn5Oosn/6z8Czow==
+X-Received: by 2002:a17:902:9a41:b0:140:4ca:761e with SMTP id x1-20020a1709029a4100b0014004ca761emr17295656plv.51.1635180519656;
+        Mon, 25 Oct 2021 09:48:39 -0700 (PDT)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:b7cd:daa3:a144:1652])
-        by smtp.gmail.com with ESMTPSA id b3sm17052582pfm.54.2021.10.25.09.48.37
+        by smtp.gmail.com with ESMTPSA id b3sm17052582pfm.54.2021.10.25.09.48.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Oct 2021 09:48:38 -0700 (PDT)
+        Mon, 25 Oct 2021 09:48:39 -0700 (PDT)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -55,9 +55,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <eric.dumazet@gmail.com>,
         Soheil Hassas Yeganeh <soheil@google.com>,
         Neal Cardwell <ncardwell@google.com>
-Subject: [PATCH v2 net-next 08/10] ipv4: annotate data races arount inet->min_ttl
-Date:   Mon, 25 Oct 2021 09:48:23 -0700
-Message-Id: <20211025164825.259415-9-eric.dumazet@gmail.com>
+Subject: [PATCH v2 net-next 09/10] ipv4: guard IP_MINTTL with a static key
+Date:   Mon, 25 Oct 2021 09:48:24 -0700
+Message-Id: <20211025164825.259415-10-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.33.0.1079.g6e70778dc9-goog
 In-Reply-To: <20211025164825.259415-1-eric.dumazet@gmail.com>
 References: <20211025164825.259415-1-eric.dumazet@gmail.com>
@@ -69,56 +69,104 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-No report yet from KCSAN, yet worth documenting the races.
+RFC 5082 IP_MINTTL option is rarely used on hosts.
+
+Add a static key to remove from TCP fast path useless code,
+and potential cache line miss to fetch inet_sk(sk)->min_ttl
+
+Note that once ip4_min_ttl static key has been enabled,
+it stays enabled until next boot.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
 ---
- net/ipv4/ip_sockglue.c | 5 ++++-
- net/ipv4/tcp_ipv4.c    | 7 +++++--
- 2 files changed, 9 insertions(+), 3 deletions(-)
+ include/net/ip.h       |  2 ++
+ net/ipv4/ip_sockglue.c |  6 ++++++
+ net/ipv4/tcp_ipv4.c    | 20 ++++++++++++--------
+ 3 files changed, 20 insertions(+), 8 deletions(-)
 
+diff --git a/include/net/ip.h b/include/net/ip.h
+index cf229a53119428307da898af4b0dc23e1cecc053..b71e88507c4a0907011c41e1ed0148eb873b5186 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -24,6 +24,7 @@
+ #include <linux/skbuff.h>
+ #include <linux/jhash.h>
+ #include <linux/sockptr.h>
++#include <linux/static_key.h>
+ 
+ #include <net/inet_sock.h>
+ #include <net/route.h>
+@@ -750,6 +751,7 @@ void ip_cmsg_recv_offset(struct msghdr *msg, struct sock *sk,
+ 			 struct sk_buff *skb, int tlen, int offset);
+ int ip_cmsg_send(struct sock *sk, struct msghdr *msg,
+ 		 struct ipcm_cookie *ipc, bool allow_ipv6);
++DECLARE_STATIC_KEY_FALSE(ip4_min_ttl);
+ int ip_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
+ 		  unsigned int optlen);
+ int ip_getsockopt(struct sock *sk, int level, int optname, char __user *optval,
 diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
-index b297bb28556ec5cf383068f67ee910af38591cc3..d5487c8580674a01df8c7d8ce88f97c9add846b6 100644
+index d5487c8580674a01df8c7d8ce88f97c9add846b6..38d29b175ca6646c280e0626e8e935b348f00f08 100644
 --- a/net/ipv4/ip_sockglue.c
 +++ b/net/ipv4/ip_sockglue.c
-@@ -1352,7 +1352,10 @@ static int do_ip_setsockopt(struct sock *sk, int level, int optname,
+@@ -886,6 +886,8 @@ static int compat_ip_mcast_join_leave(struct sock *sk, int optname,
+ 	return ip_mc_leave_group(sk, &mreq);
+ }
+ 
++DEFINE_STATIC_KEY_FALSE(ip4_min_ttl);
++
+ static int do_ip_setsockopt(struct sock *sk, int level, int optname,
+ 		sockptr_t optval, unsigned int optlen)
+ {
+@@ -1352,6 +1354,10 @@ static int do_ip_setsockopt(struct sock *sk, int level, int optname,
  			goto e_inval;
  		if (val < 0 || val > 255)
  			goto e_inval;
--		inet->min_ttl = val;
-+		/* tcp_v4_err() and tcp_v4_rcv() might read min_ttl
-+		 * while we are changint it.
-+		 */
-+		WRITE_ONCE(inet->min_ttl, val);
- 		break;
- 
- 	default:
++
++		if (val)
++			static_branch_enable(&ip4_min_ttl);
++
+ 		/* tcp_v4_err() and tcp_v4_rcv() might read min_ttl
+ 		 * while we are changint it.
+ 		 */
 diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 2bdc32c1afb65bb123a27444d9f6e4d01a188074..a9cbc8e6b796207f4880b2b32ff9289321080068 100644
+index a9cbc8e6b796207f4880b2b32ff9289321080068..13d868c43284584ee0c58ddfd411bb52c8b0c830 100644
 --- a/net/ipv4/tcp_ipv4.c
 +++ b/net/ipv4/tcp_ipv4.c
-@@ -508,7 +508,8 @@ int tcp_v4_err(struct sk_buff *skb, u32 info)
+@@ -508,10 +508,12 @@ int tcp_v4_err(struct sk_buff *skb, u32 info)
  	if (sk->sk_state == TCP_CLOSE)
  		goto out;
  
--	if (unlikely(iph->ttl < inet_sk(sk)->min_ttl)) {
-+	/* min_ttl can be changed concurrently from do_ip_setsockopt() */
-+	if (unlikely(iph->ttl < READ_ONCE(inet_sk(sk)->min_ttl))) {
- 		__NET_INC_STATS(net, LINUX_MIB_TCPMINTTLDROP);
- 		goto out;
+-	/* min_ttl can be changed concurrently from do_ip_setsockopt() */
+-	if (unlikely(iph->ttl < READ_ONCE(inet_sk(sk)->min_ttl))) {
+-		__NET_INC_STATS(net, LINUX_MIB_TCPMINTTLDROP);
+-		goto out;
++	if (static_branch_unlikely(&ip4_min_ttl)) {
++		/* min_ttl can be changed concurrently from do_ip_setsockopt() */
++		if (unlikely(iph->ttl < READ_ONCE(inet_sk(sk)->min_ttl))) {
++			__NET_INC_STATS(net, LINUX_MIB_TCPMINTTLDROP);
++			goto out;
++		}
  	}
-@@ -2068,7 +2069,9 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 			return 0;
+ 
+ 	tp = tcp_sk(sk);
+@@ -2070,10 +2072,12 @@ int tcp_v4_rcv(struct sk_buff *skb)
  		}
  	}
--	if (unlikely(iph->ttl < inet_sk(sk)->min_ttl)) {
-+
-+	/* min_ttl can be changed concurrently from do_ip_setsockopt() */
-+	if (unlikely(iph->ttl < READ_ONCE(inet_sk(sk)->min_ttl))) {
- 		__NET_INC_STATS(net, LINUX_MIB_TCPMINTTLDROP);
- 		goto discard_and_relse;
+ 
+-	/* min_ttl can be changed concurrently from do_ip_setsockopt() */
+-	if (unlikely(iph->ttl < READ_ONCE(inet_sk(sk)->min_ttl))) {
+-		__NET_INC_STATS(net, LINUX_MIB_TCPMINTTLDROP);
+-		goto discard_and_relse;
++	if (static_branch_unlikely(&ip4_min_ttl)) {
++		/* min_ttl can be changed concurrently from do_ip_setsockopt() */
++		if (unlikely(iph->ttl < READ_ONCE(inet_sk(sk)->min_ttl))) {
++			__NET_INC_STATS(net, LINUX_MIB_TCPMINTTLDROP);
++			goto discard_and_relse;
++		}
  	}
+ 
+ 	if (!xfrm4_policy_check(sk, XFRM_POLICY_IN, skb))
 -- 
 2.33.0.1079.g6e70778dc9-goog
 
