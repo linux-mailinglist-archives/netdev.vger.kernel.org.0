@@ -2,197 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7658343A7FF
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 01:11:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D11DF43A80E
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 01:16:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232992AbhJYXNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 19:13:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47032 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230464AbhJYXNJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 19:13:09 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBD1AC061745
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 16:10:46 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id g10so5570207edj.1
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 16:10:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CA1hCrnNEiN9PjtWjq+0aUtpQWw3q7TaqrA02cqfYjs=;
-        b=Huk3uO1M7/p4MQ3q/uX907upeFwM+rI9NyZlCxaSOhvKz4rd4ZpxJq6AGnCAr7LvC9
-         w/vsAubbbhRXejYf9eHKz4YbA2g/JFlD3ix7NApnvFXPuL3n6GQDRNk82cfAoMSb+B0u
-         3CZBfBIw83eJOd6Hm3P+NIy3Tp6MS0CPA07e4UUjXImxsViU5m6G5u9AVr1LT6JmDy7J
-         7LRgHzCcsEJEvujI5u2evfT07JFCzvQ+Uel0vRUyQ4QEYvc1I8euPm0UnIsax2Wp/A6l
-         rhZ1pwe5gTf/0venju04GWs40lV4tDjBd4ufvq43bV8g4DZ0SjAn0ECLt0yaeycoyREZ
-         lFFw==
+        id S234077AbhJYXTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 19:19:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:28264 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232664AbhJYXTP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 19:19:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1635203812;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QMXbK4ePzk3n+ceTQNajazYCa4xaMoaeqduI1Kwqi4A=;
+        b=CvBfrkCBhs+OyeRuWQQXoPUx02PtBxgCTRWrncuVCFVh3YAILf/Qh+7GY1Jyq7+C2EMF1h
+        D9dS9rALa2uhQRKOGg9X2FpjqwKJMKhmQBNIhxbKpTnCzL6x1NdDbmZy64z3WnnjAZgT1C
+        KBZhltSDoVJnA9n3tQlA76jn81ACHAU=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-167-81zPqRDgOfydnqRbqPaEYw-1; Mon, 25 Oct 2021 19:16:50 -0400
+X-MC-Unique: 81zPqRDgOfydnqRbqPaEYw-1
+Received: by mail-ed1-f71.google.com with SMTP id q6-20020a056402518600b003dd81fc405eso466168edd.1
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 16:16:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CA1hCrnNEiN9PjtWjq+0aUtpQWw3q7TaqrA02cqfYjs=;
-        b=7kNF/M9rIM+Pbr3RxUj2u1J6bsCbmYtR3ygXx3OJy6ZYEJxVkAa1DtMua/2zvgxhSQ
-         7RmGBZNnCBQS9O0QPkDqHyBspCgL1TZ+JZod3nCaF6T9Cou4nFNbLQMV4aXXTePsszjO
-         a1TI/15h8tR8oMQEMq0Ew2x5DWhWi8lZqy59NqWdY7BOL4lI4A70IU+gPZSmlWcRU6FB
-         +W353GvX8sKlPEZNTwJp+N8jYsBCfKQEqX8beYnG/U7BFB5zLE0HceVlCfyJsi3Jj7OP
-         /JZKgQDEdR6uUOgR4L2Q6rDALFY05m/OH3CY9jzM/MKTJ2liyatyakadfVE0LwWmafFQ
-         wZNA==
-X-Gm-Message-State: AOAM5301bn7OnWnLr4Knd0R6m5ViJWeIIjZ20bSy+vbMCOklnT0Sbj6p
-        lssXf9ZkInF74AIuSUNoey5ufPCetYVhvgyYkVtHpA==
-X-Google-Smtp-Source: ABdhPJyMbHCRmwFjCAW9svQlMMloscreY71nsFL8SaaihXk1hcUJUg0OEjHXdoC/eH9PKK6VE9FO1vjLOsohqmaiIhU=
-X-Received: by 2002:a17:907:1b25:: with SMTP id mp37mr26520445ejc.140.1635203443648;
- Mon, 25 Oct 2021 16:10:43 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=QMXbK4ePzk3n+ceTQNajazYCa4xaMoaeqduI1Kwqi4A=;
+        b=xfNmHRWYSKE6bv/VKHIn2LMz7KATBI8SUDj7udvzAxAQcUiZiJbFCvvvDOtI8LWL0y
+         hRTGJ0JIxKLBZPXlIP3LiHJHofAJUK+mV5/7UcjSPTfJsbYsKFh4TULi/8Llwx9GZBh7
+         jJpsbM8dkr1DesHWGjuEzWCvTutQTa5J8JyN2qVwyJbGYsuc+Ic+5KzVMTdiFhyDArmE
+         etX+uTKsCauPyFhSJH9pCZXczQkcWZrJkCUGH6275Pid9jb52CRWpqCDEOUggI4o8aNm
+         t/W9DecKwio+rurQrrAh8fULJoMiOPwKK9a3tUB4NhW30jJVNsCwn9KlZRjg9AuTPiOz
+         wZQA==
+X-Gm-Message-State: AOAM530+EdvxbHKM5hjQzFsfEINVtH87vB/P3jMDcJGSXQ/2Iy8mAbcC
+        A/4B5bOopdb6zFfrb2uWv5uP7Sz/scJz5tQ+9BHanP5TWjJPvyY3jzgADMXMet3sB/1AnCqfejD
+        05aJ/n1NJjQpjQfVk
+X-Received: by 2002:a50:cd87:: with SMTP id p7mr30310508edi.205.1635203808117;
+        Mon, 25 Oct 2021 16:16:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzrKHHm8lIXLTrCOnw7KkbsrL+gOfuT7m5ziKQ/AyQBnD+BmD2waJkj9SGGtlDGGwMG4Dt7dg==
+X-Received: by 2002:a50:cd87:: with SMTP id p7mr30310428edi.205.1635203807122;
+        Mon, 25 Oct 2021 16:16:47 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id qa16sm2908667ejc.120.2021.10.25.16.16.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Oct 2021 16:16:46 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 13B08180262; Tue, 26 Oct 2021 01:16:45 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf v2] bpf: fix potential race in tail call
+ compatibility check
+In-Reply-To: <c1244c73-bc61-89b8-dca3-f06dca85f64e@iogearbox.net>
+References: <20211025130809.314707-1-toke@redhat.com>
+ <YXa/A4eQhlPPsn+n@lore-desk>
+ <c1244c73-bc61-89b8-dca3-f06dca85f64e@iogearbox.net>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 26 Oct 2021 01:16:45 +0200
+Message-ID: <878rygbspu.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20211025221342.806029-1-eric.dumazet@gmail.com> <20211025221342.806029-2-eric.dumazet@gmail.com>
-In-Reply-To: <20211025221342.806029-2-eric.dumazet@gmail.com>
-From:   Soheil Hassas Yeganeh <soheil@google.com>
-Date:   Mon, 25 Oct 2021 19:10:07 -0400
-Message-ID: <CACSApvZnfWBYXObAUUnJacXX6Ny+p-HuKh6=1b_mwaA+bkF7dA@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/3] tcp: rename sk_stream_alloc_skb
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 25, 2021 at 6:13 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
-> From: Eric Dumazet <edumazet@google.com>
->
-> sk_stream_alloc_skb() is only used by TCP.
->
-> Rename it to make this clear, and move its declaration
-> to include/net/tcp.h
->
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+Daniel Borkmann <daniel@iogearbox.net> writes:
 
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+> On 10/25/21 4:28 PM, Lorenzo Bianconi wrote:
+>>> Lorenzo noticed that the code testing for program type compatibility of
+>>> tail call maps is potentially racy in that two threads could encounter a
+>>> map with an unset type simultaneously and both return true even though =
+they
+>>> are inserting incompatible programs.
+>>>
+>>> The race window is quite small, but artificially enlarging it by adding=
+ a
+>>> usleep_range() inside the check in bpf_prog_array_compatible() makes it
+>>> trivial to trigger from userspace with a program that does, essentially:
+>>>
+>>>          map_fd =3D bpf_create_map(BPF_MAP_TYPE_PROG_ARRAY, 4, 4, 2, 0);
+>>>          pid =3D fork();
+>>>          if (pid) {
+>>>                  key =3D 0;
+>>>                  value =3D xdp_fd;
+>>>          } else {
+>>>                  key =3D 1;
+>>>                  value =3D tc_fd;
+>>>          }
+>>>          err =3D bpf_map_update_elem(map_fd, &key, &value, 0);
+>>>
+>>> While the race window is small, it has potentially serious ramification=
+s in
+>>> that triggering it would allow a BPF program to tail call to a program =
+of a
+>>> different type. So let's get rid of it by protecting the update with a
+>>> spinlock. The commit in the Fixes tag is the last commit that touches t=
+he
+>>> code in question.
+>>>
+>>> v2:
+>>> - Use a spinlock instead of an atomic variable and cmpxchg() (Alexei)
+>>>
+>>> Fixes: 3324b584b6f6 ("ebpf: misc core cleanup")
+>>> Reported-by: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+>>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>>> ---
+>>>   include/linux/bpf.h   |  1 +
+>>>   kernel/bpf/arraymap.c |  1 +
+>>>   kernel/bpf/core.c     | 14 ++++++++++----
+>>>   kernel/bpf/syscall.c  |  2 ++
+>>>   4 files changed, 14 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+>>> index 020a7d5bf470..98d906176d89 100644
+>>> --- a/include/linux/bpf.h
+>>> +++ b/include/linux/bpf.h
+>>> @@ -929,6 +929,7 @@ struct bpf_array_aux {
+>>>   	 * stored in the map to make sure that all callers and callees have
+>>>   	 * the same prog type and JITed flag.
+>>>   	 */
+>>> +	spinlock_t type_check_lock;
+>>=20
+>> I was wondering if we can use a mutex instead of a spinlock here since i=
+t is
+>> run from a syscall AFAIU. The only downside is mutex_lock is run inside
+>> aux->used_maps_mutex critical section. Am I missing something?
+>
+> Hm, potentially it could work, but then it's also 32 vs 4 extra bytes. Th=
+ere's
+> also poke_mutex or freeze_mutex, but feels to hacky to 'generalize for re=
+use',
+> so I think the spinlock in bpf_array_aux is fine.
+>
+>>>   	enum bpf_prog_type type;
+>>>   	bool jited;
+>>>   	/* Programs with direct jumps into programs part of this array. */
+>>> diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+>>> index cebd4fb06d19..da9b1e96cadc 100644
+>>> --- a/kernel/bpf/arraymap.c
+>>> +++ b/kernel/bpf/arraymap.c
+>>> @@ -1072,6 +1072,7 @@ static struct bpf_map *prog_array_map_alloc(union=
+ bpf_attr *attr)
+>>>   	INIT_WORK(&aux->work, prog_array_map_clear_deferred);
+>>>   	INIT_LIST_HEAD(&aux->poke_progs);
+>>>   	mutex_init(&aux->poke_mutex);
+>>> +	spin_lock_init(&aux->type_check_lock);
+>
+> Just as a tiny nit, I would probably name it slightly different, since ty=
+pe_check_lock
+> mainly refers to the type property but there's also jit vs non-jit and as=
+ pointed out
+> there could be other extensions that need checking in future as well. May=
+be 'compat_lock'
+> would be a more generic one or just:
+>
+>          struct {
+>                  enum bpf_prog_type type;
+>                  bool jited;
+>                  spinlock_t lock;
+>          } owner;
 
-> ---
->  include/net/sock.h    |  3 ---
->  include/net/tcp.h     |  2 ++
->  net/ipv4/tcp.c        | 12 ++++++------
->  net/ipv4/tcp_output.c | 10 +++++-----
->  4 files changed, 13 insertions(+), 14 deletions(-)
->
-> diff --git a/include/net/sock.h b/include/net/sock.h
-> index b76be30674efc88434ed45d46b9c4600261b6271..ff4e62aa62e51a68d086e9e2b8429cba5731be00 100644
-> --- a/include/net/sock.h
-> +++ b/include/net/sock.h
-> @@ -2422,9 +2422,6 @@ static inline void sk_stream_moderate_sndbuf(struct sock *sk)
->         WRITE_ONCE(sk->sk_sndbuf, max_t(u32, val, SOCK_MIN_SNDBUF));
->  }
->
-> -struct sk_buff *sk_stream_alloc_skb(struct sock *sk, int size, gfp_t gfp,
-> -                                   bool force_schedule);
-> -
->  /**
->   * sk_page_frag - return an appropriate page_frag
->   * @sk: socket
-> diff --git a/include/net/tcp.h b/include/net/tcp.h
-> index d62467a0094fe016ee2f5d9581631e1425e8f201..701587af685296a6b2372fee7b3e94f998c3bbe8 100644
-> --- a/include/net/tcp.h
-> +++ b/include/net/tcp.h
-> @@ -337,6 +337,8 @@ void tcp_twsk_destructor(struct sock *sk);
->  ssize_t tcp_splice_read(struct socket *sk, loff_t *ppos,
->                         struct pipe_inode_info *pipe, size_t len,
->                         unsigned int flags);
-> +struct sk_buff *tcp_stream_alloc_skb(struct sock *sk, int size, gfp_t gfp,
-> +                                    bool force_schedule);
->
->  void tcp_enter_quickack_mode(struct sock *sk, unsigned int max_quickacks);
->  static inline void tcp_dec_quickack_mode(struct sock *sk,
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index c2d9830136d298a27abc12a5633bf77d1224759c..68dd580dba3d0e04412466868135c49225a4a33b 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -856,8 +856,8 @@ ssize_t tcp_splice_read(struct socket *sock, loff_t *ppos,
->  }
->  EXPORT_SYMBOL(tcp_splice_read);
->
-> -struct sk_buff *sk_stream_alloc_skb(struct sock *sk, int size, gfp_t gfp,
-> -                                   bool force_schedule)
-> +struct sk_buff *tcp_stream_alloc_skb(struct sock *sk, int size, gfp_t gfp,
-> +                                    bool force_schedule)
->  {
->         struct sk_buff *skb;
->
-> @@ -960,8 +960,8 @@ static struct sk_buff *tcp_build_frag(struct sock *sk, int size_goal, int flags,
->                 if (!sk_stream_memory_free(sk))
->                         return NULL;
->
-> -               skb = sk_stream_alloc_skb(sk, 0, sk->sk_allocation,
-> -                                         tcp_rtx_and_write_queues_empty(sk));
-> +               skb = tcp_stream_alloc_skb(sk, 0, sk->sk_allocation,
-> +                                          tcp_rtx_and_write_queues_empty(sk));
->                 if (!skb)
->                         return NULL;
->
-> @@ -1289,8 +1289,8 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
->                                         goto restart;
->                         }
->                         first_skb = tcp_rtx_and_write_queues_empty(sk);
-> -                       skb = sk_stream_alloc_skb(sk, 0, sk->sk_allocation,
-> -                                                 first_skb);
-> +                       skb = tcp_stream_alloc_skb(sk, 0, sk->sk_allocation,
-> +                                                  first_skb);
->                         if (!skb)
->                                 goto wait_for_space;
->
-> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-> index 3a01e5593a171d8e8978c11c9880eb9314feeda9..c0c55a8be8f79857e176714f240fddcb0580fa6b 100644
-> --- a/net/ipv4/tcp_output.c
-> +++ b/net/ipv4/tcp_output.c
-> @@ -1564,7 +1564,7 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp_queue,
->                 return -ENOMEM;
->
->         /* Get a new skb... force flag on. */
-> -       buff = sk_stream_alloc_skb(sk, nsize, gfp, true);
-> +       buff = tcp_stream_alloc_skb(sk, nsize, gfp, true);
->         if (!buff)
->                 return -ENOMEM; /* We'll just try again later. */
->         skb_copy_decrypted(buff, skb);
-> @@ -2121,7 +2121,7 @@ static int tso_fragment(struct sock *sk, struct sk_buff *skb, unsigned int len,
->                 return tcp_fragment(sk, TCP_FRAG_IN_WRITE_QUEUE,
->                                     skb, len, mss_now, gfp);
->
-> -       buff = sk_stream_alloc_skb(sk, 0, gfp, true);
-> +       buff = tcp_stream_alloc_skb(sk, 0, gfp, true);
->         if (unlikely(!buff))
->                 return -ENOMEM;
->         skb_copy_decrypted(buff, skb);
-> @@ -2388,7 +2388,7 @@ static int tcp_mtu_probe(struct sock *sk)
->                 return -1;
->
->         /* We're allowed to probe.  Build it now. */
-> -       nskb = sk_stream_alloc_skb(sk, probe_size, GFP_ATOMIC, false);
-> +       nskb = tcp_stream_alloc_skb(sk, probe_size, GFP_ATOMIC, false);
->         if (!nskb)
->                 return -1;
->         sk_wmem_queued_add(sk, nskb->truesize);
-> @@ -3754,7 +3754,7 @@ static int tcp_send_syn_data(struct sock *sk, struct sk_buff *syn)
->         /* limit to order-0 allocations */
->         space = min_t(size_t, space, SKB_MAX_HEAD(MAX_TCP_HEADER));
->
-> -       syn_data = sk_stream_alloc_skb(sk, space, sk->sk_allocation, false);
-> +       syn_data = tcp_stream_alloc_skb(sk, space, sk->sk_allocation, false);
->         if (!syn_data)
->                 goto fallback;
->         syn_data->ip_summed = CHECKSUM_PARTIAL;
-> @@ -3835,7 +3835,7 @@ int tcp_connect(struct sock *sk)
->                 return 0;
->         }
->
-> -       buff = sk_stream_alloc_skb(sk, 0, sk->sk_allocation, true);
-> +       buff = tcp_stream_alloc_skb(sk, 0, sk->sk_allocation, true);
->         if (unlikely(!buff))
->                 return -ENOBUFS;
->
-> --
-> 2.33.0.1079.g6e70778dc9-goog
->
+Uh, I like that! Makes it easier to move as well (which we're doing as
+part of the xdp_mb series). Will send a v3 with this :)
+
+-Toke
+
