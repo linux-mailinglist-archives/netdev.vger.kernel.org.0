@@ -2,304 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2597439136
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 10:30:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ECAE439141
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 10:33:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231561AbhJYIdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 04:33:03 -0400
-Received: from mail-co1nam11on2048.outbound.protection.outlook.com ([40.107.220.48]:28512
-        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230019AbhJYIdC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Oct 2021 04:33:02 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ftf8s0gtGw45U3RG1rzk6Fhapceb+yTAmvWvIJpREc5u8w0qYa8XoyQcTQtfOBRvwGuGLV0vD1mgSRDfFf+3nKCPnjyVPG+wdm9h/k//LJQnzZwWQsV5gV04YUdhcN+wCL/q8dBTausHjpxiIFHRowLwbOI1x0xLyUEi53s2dLnjAZ1604zhV7mgwQgdqIJR+p4h3+Bqmr9NdQMmg3ESpnWLEHVf+WdlT6iHWqxW+79B1M9Cr6VDy/wIjrux2p4+XRn+gTXC3JFEFCN9AGlzJjvZGsQ2M8bmWXGbufR+sAZZVgdvZAmrqBs9qgmj1yw8+eagt/NVMDmmfMeYx7kRMQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FSuMfpSONWjPIAcX6BQqjXzhr4sa3xSKKC4Z37lKqiM=;
- b=jenb4bT+JgqgfVD4n4bdb7hzrwwyXyBKhAKtezGAngiwukeZcfW2w+XSEJtnP8CKDa8uyTaCcU+DvsqHUvD9cIYI3giYGCv1/xL1l9dO1Fbqtp98jHDU5NmxKl7LeQYeuQ6XC6iqxnf5XacxRN4QF6a4dqI3jTf0XBcmMSB8WrO2rcsblhknvKrR1k6m2RAo44+1X4id0k0V9MmDl3D3nGg3PcVuWWQhm7pfNJz9wYhXxg01g2CbLDj0D6faJeHT2jvDg+Q+kkilKrVfkzrRv0Tn+qtmz5xZHMGpFptgLjaJaT5xjpqRzJzFnkeBE2fX0smZsN7mB5gf+XvWhsiJ9w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FSuMfpSONWjPIAcX6BQqjXzhr4sa3xSKKC4Z37lKqiM=;
- b=Zl57rbDnrVZmQziQuIQECPXBEd0Ku93EMhjPo00D0oQDfbWZLaT/JB7/EbqUDM+ljiZHzcoBImYyo6n8RH0/ifkq/XfYTQiUsWw0Wi3kiiOCYIZakodQ+bD+p42dNS1BZRbs27+vJlL652+SgQNs995iCPJVBtXTH9yuKGEDJmsxCE4KOj+TVq/Zf+OMEJlxnziojM83C3PvipfjuMjBYpDQzqqL9fle5Z1P4RfnKZPm5EDHxKmYNe60XfcLWTypiGpvA25gacy8aOnUMf9YjsrfqMwanip9htreofv1DdILn8qSbdO2aOqNPqtxTNctCfj4jyPzxKowuncl3iP1xw==
-Received: from DS7PR03CA0308.namprd03.prod.outlook.com (2603:10b6:8:2b::31) by
- CY4PR1201MB2535.namprd12.prod.outlook.com (2603:10b6:903:db::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18; Mon, 25 Oct
- 2021 08:30:37 +0000
-Received: from DM6NAM11FT049.eop-nam11.prod.protection.outlook.com
- (2603:10b6:8:2b:cafe::ce) by DS7PR03CA0308.outlook.office365.com
- (2603:10b6:8:2b::31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.16 via Frontend
- Transport; Mon, 25 Oct 2021 08:30:37 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- DM6NAM11FT049.mail.protection.outlook.com (10.13.172.188) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4628.16 via Frontend Transport; Mon, 25 Oct 2021 08:30:37 +0000
-Received: from [172.27.13.250] (172.20.187.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 25 Oct
- 2021 08:30:34 +0000
-Message-ID: <382d9360-1a3e-a027-eb46-f59c422b5ee9@nvidia.com>
-Date:   Mon, 25 Oct 2021 11:30:30 +0300
+        id S232171AbhJYIgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 04:36:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42660 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231241AbhJYIgE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 04:36:04 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0759CC061745;
+        Mon, 25 Oct 2021 01:33:43 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id gn3so7715160pjb.0;
+        Mon, 25 Oct 2021 01:33:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=baWGvL41dy19+4BZX6uDav+aolsx9Dk7kQUgS64bb1g=;
+        b=as4g3fNzeC53JV1QW9l3PceZ7FSLOqm+yJq6vNLpKffQFUNwOQ+76VDeleJozGL7V5
+         iIlFN02m6BFIhPRcEpe89vDEbCKxXwF0QDCz+IjNrDjf7Ob6aZdvBz2N/w4XeY5Fsyo/
+         HVIzT0+QzJxtY5uoGe4XRnu56S79bMx0ec9tlZ7EBU7jt1MXf7O/Ljv5tf7eAYgyeeFB
+         Hr/mNV8SFuF6TX8jVuKlzv985B1MruvJuXFg/kLvO/xXhxVRdiHnIgIRaToqE9uYh8ku
+         UWborlia3oFOLcABtOiMjP7UPbJZuv5ik1GjBmrgKJxHZHS+xlL7r2v7mKniBRH6ng4V
+         3r4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=baWGvL41dy19+4BZX6uDav+aolsx9Dk7kQUgS64bb1g=;
+        b=JyM9pOinhbe3Dx/ak2td5DFtWBMmhhnCWX+3gWwe88vZlf+4bIh3hADgEoA/GCZU1q
+         mHSPxunAFzfViLb2kIQQqAd45wpV4HEbjyTgfQjd60Dq3N5Ng3YyFp88d1T8jBKZsswf
+         Fc2OMQ0ORHPhU06NcvkXDLmQIvE+uscgbCRDcSrjjMjlZEVoDEGha1dZWlkPzylOnbUO
+         n8eqtJo6++t4iHU2tQoXE9pTuF24enBmSS7f7UMut/Avm8XRxwhUcrv4muLYU7yM2Veu
+         b/KCEc9AL5jqOj9CfvBayuj7ybl4SSM+q8t2mpVW8aXma2Rfd0JvJ/HbuAOFptcfEV9R
+         gqHg==
+X-Gm-Message-State: AOAM5332xMsSp74YeD/m6SwoQJRrtUbmEqQoHWP1R53lphvUqu0x1nly
+        ILfwQ/CJGoUFf9NEkWlfjRM=
+X-Google-Smtp-Source: ABdhPJwKKV3YHe5Kx2TD+5yPgrUQbt8S2s5EfBAbZQQPLcMJjqzjQTN1qjux7zaNTymJGxsM9r7acw==
+X-Received: by 2002:a17:90b:2247:: with SMTP id hk7mr4087767pjb.159.1635150822423;
+        Mon, 25 Oct 2021 01:33:42 -0700 (PDT)
+Received: from localhost.localdomain ([140.82.17.67])
+        by smtp.gmail.com with ESMTPSA id p13sm2495694pfo.102.2021.10.25.01.33.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Oct 2021 01:33:42 -0700 (PDT)
+From:   Yafang Shao <laoar.shao@gmail.com>
+To:     akpm@linux-foundation.org, keescook@chromium.org,
+        rostedt@goodmis.org, mathieu.desnoyers@efficios.com,
+        arnaldo.melo@gmail.com, pmladek@suse.com, peterz@infradead.org,
+        viro@zeniv.linux.org.uk, valentin.schneider@arm.com,
+        qiang.zhang@windriver.com, robdclark@chromium.org,
+        christian@brauner.io, dietmar.eggemann@arm.com, mingo@redhat.com,
+        juri.lelli@redhat.com, vincent.guittot@linaro.org,
+        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, dennis.dalessandro@cornelisnetworks.com,
+        mike.marciniszyn@cornelisnetworks.com, dledford@redhat.com,
+        jgg@ziepe.ca
+Cc:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, oliver.sang@intel.com, lkp@intel.com,
+        Yafang Shao <laoar.shao@gmail.com>
+Subject: [PATCH v6 00/12] extend task comm from 16 to 24
+Date:   Mon, 25 Oct 2021 08:33:03 +0000
+Message-Id: <20211025083315.4752-1-laoar.shao@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.1
-Subject: Re: [mst-vhost:vhost 4/47] drivers/block/virtio_blk.c:238:24: sparse:
- sparse: incorrect type in return expression (different base types)
-Content-Language: en-US
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        kernel test robot <lkp@intel.com>
-CC:     <kbuild-all@lists.01.org>, <kvm@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, "Israel Rukshin" <israelr@nvidia.com>,
-        Feng Li <lifeng1519@gmail.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Christoph Hellwig <hch@lst.de>
-References: <202110251506.OFYmNDFp-lkp@intel.com>
- <20211025034645-mutt-send-email-mst@kernel.org>
-From:   Max Gurtovoy <mgurtovoy@nvidia.com>
-In-Reply-To: <20211025034645-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.20.187.6]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: aceddc7a-a4ce-4504-9138-08d99791b8c4
-X-MS-TrafficTypeDiagnostic: CY4PR1201MB2535:
-X-Microsoft-Antispam-PRVS: <CY4PR1201MB2535EC3E6F4C4036B2FFC391DE839@CY4PR1201MB2535.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:119;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: M30ULslmXs6vVdGo/+WRnD0Aa5njhIj7YRAffsZ4c6/8Q/N1b0PYLVrycMsF9dfTRK0RksBKjpkO2aetAFFNVDZ35s7GSe73psHCm3P3E0XadSELcJmnY0o2w8EMkrDLny3wrThwesdltxwg8oC0ZliY8bx2a9Z5DKJmk1vZpR8pxA83mjeoXkM9hhnyYV5r4mdPilZomyiZePDqdaKiZC84Vmt2k3V5i9XnuvnjNceGB0m6z9zWIpgtVSb8lagAxhZzQVc8At8FtbBR79i5GjpqAWsCsKCZa+AF4b12L8UnanMjXkT6LewN5DLVaaxRBdgjGEKRkktXabHgnWaqE64pIkTWykGijgiqu5gQKknHohPv9+m2YUgTXobEweDkJKhfUdmsm0d4ta0d9pTD3ezu04QRfEdccHG7rQWspSPdex1uAEZI4Zp569GRMGbt0CaKdZZWKo/vH1szwiclzctB9W7ly1ymIGafGvSEj60I45Ixd0i+9aIAfjkL6P+nqV88GAM9m7OtDFwpNLS7d9rUk29RdNnIIdofZsZuKUDoeORyFMqq41/yoT32awkmR0P7g3NIAT8cmoO4ugLjMh9W21mWkRBK3CzA+nZKWtBCds86Q5N94ZA0VEXUpxR8HOl2jgjd2eQDrraqEFhwHMV/BWlGCOT/KHv5r8AWrdfy1FgH8RGPN1Tp5lkopK0LNfcUmjOEczD7r2EiPknSwENFvelGrJzn1Nc4tMHFHYxZj0ocxUBA9f6Z64xCT0yt7nS1lj7QLh7iw0fiYKtk3zg/zKzoGUlFmZTaFD4HQmM/u9hpt0+mD9eZheXC/8xIyfzozGqmz5Jp/67U9cVbv3/NYiJvGuZHvZcOhtFKsTM=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(2616005)(426003)(336012)(47076005)(86362001)(186003)(31686004)(6666004)(16526019)(966005)(83380400001)(82310400003)(356005)(508600001)(26005)(36756003)(45080400002)(70586007)(31696002)(7636003)(8936002)(36860700001)(316002)(5660300002)(53546011)(2906002)(8676002)(16576012)(110136005)(70206006)(54906003)(4326008)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2021 08:30:37.4318
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: aceddc7a-a4ce-4504-9138-08d99791b8c4
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT049.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1201MB2535
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+There're many truncated kthreads in the kernel, which may make trouble
+for the user, for example, the user can't get detailed device
+information from the task comm.
 
-On 10/25/2021 10:59 AM, Michael S. Tsirkin wrote:
-> On Mon, Oct 25, 2021 at 03:24:16PM +0800, kernel test robot wrote:
->> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git vhost
->> head:   2b109044b081148b58974f5696ffd4383c3e9abb
->> commit: b2c5221fd074fbb0e57d6707bed5b7386bf430ed [4/47] virtio-blk: avoid preallocating big SGL for data
->> config: i386-randconfig-s001-20211025 (attached as .config)
->> compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
->> reproduce:
->>          # apt-get install sparse
->>          # sparse version: v0.6.4-dirty
->>          # https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git/commit/?id=b2c5221fd074fbb0e57d6707bed5b7386bf430ed
->>          git remote add mst-vhost https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git
->>          git fetch --no-tags mst-vhost vhost
->>          git checkout b2c5221fd074fbb0e57d6707bed5b7386bf430ed
->>          # save the attached .config to linux build tree
->>          make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' ARCH=i386
->>
->> If you fix the issue, kindly add following tag as appropriate
->> Reported-by: kernel test robot <lkp@intel.com>
->
-> Patch sent. Max can you take a look pls?
+This patchset tries to improve this problem fundamentally by extending
+the task comm size from 16 to 24. In order to do that, we have to do
+some cleanups first.
 
-I think it will disappear after your patch with the returned status values.
+1. Make the copy of task comm always safe no matter what the task
+   comm size is. For example,
 
+      Unsafe                 Safe
+      strlcpy                strscpy_pad
+      strncpy                strscpy_pad
+      bpf_probe_read_kernel  bpf_probe_read_kernel_str
+                             bpf_core_read_str
+                             bpf_get_current_comm
+                             perf_event__prepare_comm
+                             prctl(2)
 
->> sparse warnings: (new ones prefixed by >>)
->>>> drivers/block/virtio_blk.c:238:24: sparse: sparse: incorrect type in return expression (different base types) @@     expected int @@     got restricted blk_status_t [usertype] @@
->>     drivers/block/virtio_blk.c:238:24: sparse:     expected int
->>     drivers/block/virtio_blk.c:238:24: sparse:     got restricted blk_status_t [usertype]
->>     drivers/block/virtio_blk.c:246:32: sparse: sparse: incorrect type in return expression (different base types) @@     expected int @@     got restricted blk_status_t [usertype] @@
->>     drivers/block/virtio_blk.c:246:32: sparse:     expected int
->>     drivers/block/virtio_blk.c:246:32: sparse:     got restricted blk_status_t [usertype]
->>>> drivers/block/virtio_blk.c:320:24: sparse: sparse: incorrect type in return expression (different base types) @@     expected restricted blk_status_t @@     got int [assigned] err @@
->>     drivers/block/virtio_blk.c:320:24: sparse:     expected restricted blk_status_t
->>     drivers/block/virtio_blk.c:320:24: sparse:     got int [assigned] err
->>
->> vim +238 drivers/block/virtio_blk.c
->>
->>     203	
->>     204	static int virtblk_setup_cmd(struct virtio_device *vdev, struct request *req,
->>     205			struct virtblk_req *vbr)
->>     206	{
->>     207		bool unmap = false;
->>     208		u32 type;
->>     209	
->>     210		vbr->out_hdr.sector = 0;
->>     211	
->>     212		switch (req_op(req)) {
->>     213		case REQ_OP_READ:
->>     214			type = VIRTIO_BLK_T_IN;
->>     215			vbr->out_hdr.sector = cpu_to_virtio64(vdev,
->>     216							      blk_rq_pos(req));
->>     217			break;
->>     218		case REQ_OP_WRITE:
->>     219			type = VIRTIO_BLK_T_OUT;
->>     220			vbr->out_hdr.sector = cpu_to_virtio64(vdev,
->>     221							      blk_rq_pos(req));
->>     222			break;
->>     223		case REQ_OP_FLUSH:
->>     224			type = VIRTIO_BLK_T_FLUSH;
->>     225			break;
->>     226		case REQ_OP_DISCARD:
->>     227			type = VIRTIO_BLK_T_DISCARD;
->>     228			break;
->>     229		case REQ_OP_WRITE_ZEROES:
->>     230			type = VIRTIO_BLK_T_WRITE_ZEROES;
->>     231			unmap = !(req->cmd_flags & REQ_NOUNMAP);
->>     232			break;
->>     233		case REQ_OP_DRV_IN:
->>     234			type = VIRTIO_BLK_T_GET_ID;
->>     235			break;
->>     236		default:
->>     237			WARN_ON_ONCE(1);
->>   > 238			return BLK_STS_IOERR;
->>     239		}
->>     240	
->>     241		vbr->out_hdr.type = cpu_to_virtio32(vdev, type);
->>     242		vbr->out_hdr.ioprio = cpu_to_virtio32(vdev, req_get_ioprio(req));
->>     243	
->>     244		if (type == VIRTIO_BLK_T_DISCARD || type == VIRTIO_BLK_T_WRITE_ZEROES) {
->>     245			if (virtblk_setup_discard_write_zeroes(req, unmap))
->>     246				return BLK_STS_RESOURCE;
->>     247		}
->>     248	
->>     249		return 0;
->>     250	}
->>     251	
->>     252	static inline void virtblk_request_done(struct request *req)
->>     253	{
->>     254		struct virtblk_req *vbr = blk_mq_rq_to_pdu(req);
->>     255	
->>     256		virtblk_unmap_data(req, vbr);
->>     257		virtblk_cleanup_cmd(req);
->>     258		blk_mq_end_request(req, virtblk_result(vbr));
->>     259	}
->>     260	
->>     261	static void virtblk_done(struct virtqueue *vq)
->>     262	{
->>     263		struct virtio_blk *vblk = vq->vdev->priv;
->>     264		bool req_done = false;
->>     265		int qid = vq->index;
->>     266		struct virtblk_req *vbr;
->>     267		unsigned long flags;
->>     268		unsigned int len;
->>     269	
->>     270		spin_lock_irqsave(&vblk->vqs[qid].lock, flags);
->>     271		do {
->>     272			virtqueue_disable_cb(vq);
->>     273			while ((vbr = virtqueue_get_buf(vblk->vqs[qid].vq, &len)) != NULL) {
->>     274				struct request *req = blk_mq_rq_from_pdu(vbr);
->>     275	
->>     276				if (likely(!blk_should_fake_timeout(req->q)))
->>     277					blk_mq_complete_request(req);
->>     278				req_done = true;
->>     279			}
->>     280			if (unlikely(virtqueue_is_broken(vq)))
->>     281				break;
->>     282		} while (!virtqueue_enable_cb(vq));
->>     283	
->>     284		/* In case queue is stopped waiting for more buffers. */
->>     285		if (req_done)
->>     286			blk_mq_start_stopped_hw_queues(vblk->disk->queue, true);
->>     287		spin_unlock_irqrestore(&vblk->vqs[qid].lock, flags);
->>     288	}
->>     289	
->>     290	static void virtio_commit_rqs(struct blk_mq_hw_ctx *hctx)
->>     291	{
->>     292		struct virtio_blk *vblk = hctx->queue->queuedata;
->>     293		struct virtio_blk_vq *vq = &vblk->vqs[hctx->queue_num];
->>     294		bool kick;
->>     295	
->>     296		spin_lock_irq(&vq->lock);
->>     297		kick = virtqueue_kick_prepare(vq->vq);
->>     298		spin_unlock_irq(&vq->lock);
->>     299	
->>     300		if (kick)
->>     301			virtqueue_notify(vq->vq);
->>     302	}
->>     303	
->>     304	static blk_status_t virtio_queue_rq(struct blk_mq_hw_ctx *hctx,
->>     305				   const struct blk_mq_queue_data *bd)
->>     306	{
->>     307		struct virtio_blk *vblk = hctx->queue->queuedata;
->>     308		struct request *req = bd->rq;
->>     309		struct virtblk_req *vbr = blk_mq_rq_to_pdu(req);
->>     310		unsigned long flags;
->>     311		unsigned int num;
->>     312		int qid = hctx->queue_num;
->>     313		int err;
->>     314		bool notify = false;
->>     315	
->>     316		BUG_ON(req->nr_phys_segments + 2 > vblk->sg_elems);
->>     317	
->>     318		err = virtblk_setup_cmd(vblk->vdev, req, vbr);
->>     319		if (unlikely(err))
->>   > 320			return err;
->>     321	
->>     322		blk_mq_start_request(req);
->>     323	
->>     324		num = virtblk_map_data(hctx, req, vbr);
->>     325		if (unlikely(num < 0)) {
->>     326			virtblk_cleanup_cmd(req);
->>     327			return BLK_STS_RESOURCE;
->>     328		}
->>     329	
->>     330		spin_lock_irqsave(&vblk->vqs[qid].lock, flags);
->>     331		err = virtblk_add_req(vblk->vqs[qid].vq, vbr, vbr->sg_table.sgl, num);
->>     332		if (err) {
->>     333			virtqueue_kick(vblk->vqs[qid].vq);
->>     334			/* Don't stop the queue if -ENOMEM: we may have failed to
->>     335			 * bounce the buffer due to global resource outage.
->>     336			 */
->>     337			if (err == -ENOSPC)
->>     338				blk_mq_stop_hw_queue(hctx);
->>     339			spin_unlock_irqrestore(&vblk->vqs[qid].lock, flags);
->>     340			virtblk_unmap_data(req, vbr);
->>     341			virtblk_cleanup_cmd(req);
->>     342			switch (err) {
->>     343			case -ENOSPC:
->>     344				return BLK_STS_DEV_RESOURCE;
->>     345			case -ENOMEM:
->>     346				return BLK_STS_RESOURCE;
->>     347			default:
->>     348				return BLK_STS_IOERR;
->>     349			}
->>     350		}
->>     351	
->>     352		if (bd->last && virtqueue_kick_prepare(vblk->vqs[qid].vq))
->>     353			notify = true;
->>     354		spin_unlock_irqrestore(&vblk->vqs[qid].lock, flags);
->>     355	
->>     356		if (notify)
->>     357			virtqueue_notify(vblk->vqs[qid].vq);
->>     358		return BLK_STS_OK;
->>     359	}
->>     360	
->>
->> ---
->> 0-DAY CI Kernel Test Service, Intel Corporation
->> https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Flists.01.org%2Fhyperkitty%2Flist%2Fkbuild-all%40lists.01.org&amp;data=04%7C01%7Cmgurtovoy%40nvidia.com%7Cbf2909ef00c34a40373708d9978d58cd%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637707455621298762%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=BbUjkMGWBZUAfGJLrUOG625%2FU%2BvhXzkBBYAhdy8vQ4U%3D&amp;reserved=0
->
+   After this step, the comm size change won't make any trouble to the 
+   kernel or the in-tree tools for example perf, BPF programs.
+
+2. Cleanup some old hard-coded 16
+   Actually we don't need to convert all of them to TASK_COMM_LEN or
+   TASK_COMM_LEN_16, what we really care about is if the convert can
+   make the code more reasonable or easier to understand. For
+   example, some in-tree tools read the comm from sched:sched_switch
+   tracepoint, as it is derived from the kernel, we'd better make them
+   consistent with the kernel.
+
+3. Extend the task comm size from 16 to 24
+   task_struct is growing rather regularly by 8 bytes. This size change
+   should be acceptable. We used to think about extending the size for
+   CONFIG_BASE_FULL only, but that would be a burden for maintenance 
+   and introduce code complexity.
+
+4. Print a warning if the kthread comm is still truncated.
+
+5. What will happen to the out-of-tree tools after this change?
+   If the tool get task comm through kernel API, for example prctl(2),
+   bpf_get_current_comm() and etc, then it doesn't matter how large the
+   user buffer is, because it will always get a string with a nul
+   terminator. While if it gets the task comm through direct string copy,
+   the user tool must make sure the copied string has a nul terminator
+   itself. As TASK_COMM_LEN is not exposed to userspace, there's no
+   reason that it must require a fixed-size task comm.
+
+Changes since v5:
+- extend the comm size for both CONFIG_BASE_{FULL, SMALL} that could
+  make the code more simple and easier to maintain.
+- avoid changing too much hard-coded 16 in BPF programs per Andrii. 
+
+Changes since v4:
+- introduce TASK_COMM_LEN_16 and TASK_COMM_LEN_24 per Steven
+- replace hard-coded 16 with TASK_COMM_LEN_16 per Kees
+- use strscpy_pad() instead of strlcpy()/strncpy() per Kees
+- make perf test adopt to task comm size change per Arnaldo and Mathieu
+- fix warning reported by kernel test robot
+
+Changes since v3:
+- fixes -Wstringop-truncation warning reported by kernel test robot
+
+Changes since v2:
+- avoid change UAPI code per Kees
+- remove the description of out of tree code from commit log per Peter
+
+Changes since v1:
+- extend task comm to 24bytes, per Petr
+- improve the warning per Petr
+- make the checkpatch warning a separate patch
+
+Yafang Shao (12):
+  fs/exec: make __set_task_comm always set a nul ternimated string
+  fs/exec: make __get_task_comm always get a nul terminated string
+  drivers/connector: make connector comm always nul ternimated
+  drivers/infiniband: make setup_ctxt always get a nul terminated task
+    comm
+  elfcore: make prpsinfo always get a nul terminated task comm
+  samples/bpf/test_overhead_kprobe_kern: make it adopt to task comm size
+    change
+  samples/bpf/offwaketime_kern: make sched_switch tracepoint args adopt
+    to comm size change
+  tools/bpf/bpftool/skeleton: make it adopt to task comm size change
+  tools/perf/test: make perf test adopt to task comm size change
+  tools/testing/selftests/bpf: make it adopt to task comm size change
+  sched.h: extend task comm from 16 to 24
+  kernel/kthread: show a warning if kthread's comm is truncated
+
+ drivers/connector/cn_proc.c                   |  5 +++-
+ drivers/infiniband/hw/qib/qib.h               |  2 +-
+ drivers/infiniband/hw/qib/qib_file_ops.c      |  2 +-
+ fs/binfmt_elf.c                               |  2 +-
+ fs/exec.c                                     |  5 ++--
+ include/linux/elfcore-compat.h                |  3 ++-
+ include/linux/elfcore.h                       |  4 +--
+ include/linux/sched.h                         |  9 +++++--
+ kernel/kthread.c                              |  7 ++++-
+ samples/bpf/offwaketime_kern.c                |  4 +--
+ samples/bpf/test_overhead_kprobe_kern.c       | 11 ++++----
+ samples/bpf/test_overhead_tp_kern.c           |  5 ++--
+ tools/bpf/bpftool/skeleton/pid_iter.bpf.c     |  4 +--
+ tools/include/linux/sched.h                   | 11 ++++++++
+ tools/perf/tests/evsel-tp-sched.c             | 26 ++++++++++++++-----
+ .../selftests/bpf/progs/test_stacktrace_map.c |  6 ++---
+ .../selftests/bpf/progs/test_tracepoint.c     |  6 ++---
+ 17 files changed, 77 insertions(+), 35 deletions(-)
+ create mode 100644 tools/include/linux/sched.h
+
+-- 
+2.17.1
+
