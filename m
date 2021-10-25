@@ -2,105 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA3A043A813
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 01:19:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F418C43A877
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 01:48:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234467AbhJYXWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 19:22:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49008 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230169AbhJYXWH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 19:22:07 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D2EC061767
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 16:19:44 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id v200so29980942ybe.11
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 16:19:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=h/m+rGDyPgmkHNSDFPzk2eBpp1e1IMILcUX8qA35d4c=;
-        b=ZQ2OHZJWoDMsFYhDGZXV/ORisGPqxd+Bine/TFp7oPJtkJQ7DtE0bbuZ0BO8fNc/sF
-         fdXcgyvqS23e/mOtOMb+VNFBwU9qEgoLlqID5zfZgidGUhTYQIQk0Mf1RZzTiTQO+HqU
-         Ye6ZJ4j4Vwg/WsyREgDOqShiYwfifOfxhhb+Y=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=h/m+rGDyPgmkHNSDFPzk2eBpp1e1IMILcUX8qA35d4c=;
-        b=jyh5pMMnm7FOanH8lXWUVNkcN85jxC2CGyEGfOvUB/9ZD8k/775SLdA/LwWAu+baHi
-         ORXIH5R6BAKq3p1l1D58IptqZbO80EQ48Yy00EBlpjbgBItKFH5hYs0Xh5o5++S4eCLS
-         8rjCI+1Zo3AGREPCDltiEBlAEDN/AKtgQRUL2Ne5tPAld9UePSK2MoZGUro8nbEWpnrr
-         +z4islPxWl91EZL++XbJwP9+wMx2pJ0GFSTAX7uhesb0ZYVZu4g29slfht1yVQI+my6j
-         WkpGCDEPuP9PmrJdVJwKIBRTQJVZsskOs77JEdH2BHGfnqkWFMXgyMPcqw9WGeFUNnd4
-         XHdQ==
-X-Gm-Message-State: AOAM532ku0t2nFJvMY2CtV98xbuAYTmYx6R0V7jG/M+xiW757rX0QK9e
-        mXV1lx2obXwMluncLW53gLT1HsLMBm5ORSRvUNVB0Q==
-X-Google-Smtp-Source: ABdhPJwQSDBIopxs6IO5I0vryH6ivhJw6gNvrARjSQOfppAImQtW0pAnwoQptiqF2lvTM5ezwXXHIG/POjMYu8hRwpw=
-X-Received: by 2002:a25:4054:: with SMTP id n81mr21034759yba.85.1635203983180;
- Mon, 25 Oct 2021 16:19:43 -0700 (PDT)
+        id S235255AbhJYXuZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 19:50:25 -0400
+Received: from mout.gmx.net ([212.227.17.22]:56759 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235335AbhJYXuY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Oct 2021 19:50:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1635205677;
+        bh=9ZzIzwFZHpLrRGh6ZqoCfRowYa6SvOfFS6MFS83wlgM=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=XPk3mu9yQ3awZUQm7z2LnCjGmhGTZz/jW1d9r2AWGurX0QBqieXXbFByLDr7EgP/K
+         w47Ap1nnGQQ8OFFdPkVaNko/Jz/AD+UMWj/jFlOzWNvsA3j56nioRsgBMNCNDwh9xo
+         hS+Mxqtj1OIIjz4QlphSH/CnK7ckGvmji502NocY=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [91.64.35.151] ([91.64.35.151]) by web-mail.gmx.net
+ (3c-app-gmx-bap12.server.lan [172.19.172.82]) (via HTTP); Tue, 26 Oct 2021
+ 01:47:57 +0200
 MIME-Version: 1.0
-References: <725e121f05362da4328dda08d5814211a0725dac.1635064599.git.leonro@nvidia.com>
- <YXUhyLXsc2egWNKx@shredder>
-In-Reply-To: <YXUhyLXsc2egWNKx@shredder>
-From:   Edwin Peer <edwin.peer@broadcom.com>
-Date:   Mon, 25 Oct 2021 16:19:07 -0700
-Message-ID: <CAKOOJTzc9pJ1KKDHuGTFDeHb77B2GynA9HEVWKys=zvh_kY+Hw@mail.gmail.com>
-Subject: Re: [PATCH net-next] netdevsim: Register and unregister devlink traps
- on probe/remove device
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzbot+93d5accfaefceedf43c1@syzkaller.appspotmail.com,
-        Michael Chan <michael.chan@broadcom.com>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <trinity-b6836216-b49e-4e59-80af-7b9c48918b19-1635205677415@3c-app-gmx-bap12>
+From:   Robert Schlabbach <Robert.Schlabbach@gmx.net>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org
+Subject: Re: ixgbe: How to do this without a module parameter?
+Content-Type: text/plain; charset=UTF-8
+Date:   Tue, 26 Oct 2021 01:47:57 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <YXcdmyONutFH8E6l@lunn.ch>
+References: <trinity-50d23c05-6cfa-484b-be21-5177fcb07b75-1635193435489@3c-app-gmx-bap58>
+ <87k0i0bz2a.fsf@toke.dk> <YXcdmyONutFH8E6l@lunn.ch>
+Content-Transfer-Encoding: quoted-printable
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:54KcvzwVUzZn/GxSoPHIsHDWwdWKgDTAKIGa1RPX38bfhFylbMb/IIA5A8L/yd3hyAwRW
+ ZRo36Jm+rR3/NrQCYzcWhU/Hwmh/AcPDaYl87uhONsyVDKugkD3RT2FSGhZNYWFY1gLY5DA2HCj2
+ ALCDYVHj9Q8UwNJRfoKZFFzV30Mhf3HTUmiwKqgLEqYnlm0uvulUSIaeFDbLrsD5+4OzBzMowLSi
+ d6950vHNgWav9E/oPnd/updpF4daT14kTGCkSJ+RN7u9ebdSyXqvQyMBw5WgimLSExWPoI19Ejp3
+ q4=
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:TL1juFPjPLE=:0iUZILhTIWu8c5hSUSknJt
+ nCgLGuKH93mJXxcgSB3Tvcp4XvgdH0H6cqYsVofuLE/0TFMq+0XLitdIVHKkb0jkwtuoaWAFM
+ JQ6nj6PzrzTkH1yjAiT3BcLWeaIMJLusgU0uT3W/CcQOHJvrDbQBbtTWI60BJKlfGwRT11v07
+ KgyWUK/DLk5p8Et8N9Xt/DSa3FahNQGQwnJP/EbyoX9yHr/LDMTkKS1We+Y3DzOXVdYkHGspB
+ 3MrsUafDPEIMv7wwQQKgEuibgbL2wozuz8yIPg5LDka4jnHvXBjSyx34HLkuyvIKmSe0dBH2q
+ diIss2CwDcFGMCnYTX9oyYvssttnH5lov+3LfjkugxOJ/kyAM64cIkNisIfbklSPOik6RMic9
+ TOTBlvouOMxXPWx9nLGAW71LJ/agyajgOpPX4yfZF0lUGKKsd0n1FjsdYo5lOx+M3dKdbF4cr
+ MaTU7hZKlvkhazbouoPYvGbRJp+XpKHs0FXCZsK99OYUGHFPxTtaAe6YnNwSoAq9bbgT7p0Sy
+ AOemt0jsS3bCuwRXTKoZHIqt/tjInQjFCQZoZWW7rB2XFs9w4YQsOnAvkmMKpyUB8hSMIMc9H
+ CPh3nhsMs98Rm5b0Ulwo6rsI6tfpM8V4xO3GuPRh4rSX7APnwcobQfyiEPZm7M/ATMinrOPyC
+ MCLzCwsCyk6dpBNj+gwy8k4xnidoM5vvuKo8pnDk/qLTzf7YHdrV15jECaDJBOWroIFHXxNsO
+ k5Pgf77OWujRHgD51nuwdzbGtVTJJfNuUmsELeLQU6z7kaT1fLHBBVCiD+5xKC0jWBWMlzOpr
+ ux+qTx/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 24, 2021 at 3:35 PM Ido Schimmel <idosch@idosch.org> wrote:
+From:=C2=A0"Andrew Lunn" <andrew@lunn=2Ech>
+> What is also useful is that you can put ethtool settings into
+> /etc/network/interfaces=2E
 
-> On Sun, Oct 24, 2021 at 11:42:11AM +0300, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> >
-> > Align netdevsim to be like all other physical devices that register and
-> > unregister devlink traps during their probe and removal respectively.
->
-> No, this is incorrect. Out of the three drivers that support both reload
-> and traps, both netdevsim and mlxsw unregister the traps during reload.
-> Here is another report from syzkaller about mlxsw [1].
->
-> Please revert both 22849b5ea595 ("devlink: Remove not-executed trap
-> policer notifications") and 8bbeed485823 ("devlink: Remove not-executed
-> trap group notifications").
+Thank you very much, that was very helpful! I tried it, and indeed, I only=
+ had
+to add one line to /etc/network/interfaces (the first three lines below we=
+re
+already there):
 
-Could we also revert 82465bec3e97 ("devlink: Delete reload
-enable/disable interface")? This interface is needed because bnxt_en
-cannot reorder devlink last. If Leon had fully carried out the
-re-ordering in our driver he would have introduced a udev
-phys_port_name regression because of:
+# The primary network interface
+allow-hotplug eno3
+iface eno3 inet dhcp
+     pre-up ethtool -s eno3 advertise 0x1800000001028 || true
 
-cda2cab0771 ("bnxt_en: Move devlink_register before registering netdev")
+And I found this to work just as well as the module parameter - the link c=
+ame
+right up at NBASE-T speed after boot=2E
 
-and:
+This was on a Debian 11=2E1 setup=2E I suppose this may not work on all di=
+stros,
+but it works well enough for me=2E
 
-ab178b058c4 ("bnxt: remove ndo_get_phys_port_name implementation")
+So I realize using ethtool is a viable solution after all and the module
+parameter is not needed=2E I'd still wish the ixgbe driver would default t=
+o full
+functionality and require the users with the "bad" switches in their netwo=
+rks
+to employ ethtool to cripple its function, but I suppose that'd be tough t=
+o
+sell to Intel=2E=2E=2E
 
-I think this went unnoticed for bnxt_en, because Michael had not yet
-posted our devlink reload patches, which presently rely on the reload
-enable/disable API. Absent horrible kludges in reload down/up which
-currently depends on the netdev, there doesn't appear to be a clean
-way to resolve the circular dependency without the interlocks this API
-provides.
-
-I imagine other subtle regressions are lying in wait.
-
-Regards,
-Edwin Peer
+Best regards,
+-Robert Schlabbach
