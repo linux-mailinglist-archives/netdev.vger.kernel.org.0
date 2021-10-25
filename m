@@ -2,84 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0164743A59A
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 23:13:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B93343A5A0
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 23:14:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234980AbhJYVPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 17:15:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43872 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232947AbhJYVPc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Oct 2021 17:15:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9821D61076;
-        Mon, 25 Oct 2021 21:13:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635196390;
-        bh=c6x2a88MQiWLoeRudW1085kFp+7uZbDkUgE4fWXHX6Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V11DS4EhoXg/IP836OngKffoHlWvCmfDiYB+ZyodhbececGE+474cAzIoM2YE1ZB8
-         QRymtDMVVMFaGmCFiaRfKII90IBhWZo1Uvk5Rq1ihjhVtHf/qXuiIP/jFMINQCFFmW
-         S/hyRUg8H6Jq9Jis7Xf5TPCFHjjZA4ZYT6OB7Ax3uNfbK0n7yzGbrdGgBw82xmYkj8
-         7RRVJSVvVl3xARpU0PReLY9pdqSirIsz5vTdaihbG9hM+HBAzdXPg8bYloX715t8Tp
-         +3FSNs9Fwu9VfXqNenD52Ir6pwtaMRdOLYLWbdvyYjO5ByeZA7JpT5ZdEIgb5OSzI+
-         SWPtMom0xD0iw==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     =?UTF-8?q?=C5=81ukasz=20Stelmach?= <l.stelmach@samsung.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH 2/2] net: ax88796c: Remove pointless check in ax88796c_open()
-Date:   Mon, 25 Oct 2021 14:12:39 -0700
-Message-Id: <20211025211238.178768-2-nathan@kernel.org>
-X-Mailer: git-send-email 2.33.1.637.gf443b226ca
-In-Reply-To: <20211025211238.178768-1-nathan@kernel.org>
-References: <20211025211238.178768-1-nathan@kernel.org>
+        id S235037AbhJYVRJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 17:17:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48918 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234984AbhJYVRE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 17:17:04 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85934C061224
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 14:14:37 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id f11so12127728pfc.12
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 14:14:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=z00lUsatKc2imgSiGWIDZF0uIcC3k7FGBboNiOBf+rE=;
+        b=eId9LLzyLrwvA9SohTjGnv3oVmE6ccHoQVKehocpPnrGwwPgiFRy84ppKNC+f37VpV
+         mRt73YFIU/x33pg3q5YAAetghE/xrqlePxhK0vjYN35FOjfLpjl+tvmFfeY2XYDAeKh6
+         sn/dyNA2Nqsw61mI5VTCzsVgIk1CFPaNCLrGQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=z00lUsatKc2imgSiGWIDZF0uIcC3k7FGBboNiOBf+rE=;
+        b=OUD29kehvOjysTW4N0fppesFTmrZQ+9rOnS3ijWDrEV7BR/tSlq6FzePeU76gHntoJ
+         rCNei2Vm9qq2AcpAnZAGJrI+N+u2Pw/uLauJ2an5RWL+V/YGAfE/SHGLv2xS5iacH6Vr
+         +3oDwx4LSPksdkTqOGZuRzQk2Z9n8RE9KUY0GFFpqEYHsugpnpttPX8lHNzFWVGQbdmO
+         rrzNm2km2erAuGGjOi5rHBjHryxvoEQqSFVPS8eEVYTTlezk6U14hJWEuZN5SzZmX2+L
+         rwO+XALPZudBK9tRiIuyxdR/j+Bj4EyvDsHqhk5VGhEsCIsFCSAi6FGE8WLRPjMgpjCa
+         2Q0Q==
+X-Gm-Message-State: AOAM531R1tF2JAHYccTKi1fbvmVoqpVGOXIegKaSuKI3NzbDed4A29rx
+        ZLlqcM1Qa6yKY5Xa1qDGKTLiWA==
+X-Google-Smtp-Source: ABdhPJxC8V4in0W+okVM7nD41XtGYGFz6iLA1Rdh91iNuWdlW5+5qNUga5c7e3xlWKMxb0NrgoI4Ww==
+X-Received: by 2002:a05:6a00:2388:b0:44d:4b5d:d5e with SMTP id f8-20020a056a00238800b0044d4b5d0d5emr20949254pfc.80.1635196477239;
+        Mon, 25 Oct 2021 14:14:37 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id t3sm16694772pgu.87.2021.10.25.14.14.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Oct 2021 14:14:36 -0700 (PDT)
+Date:   Mon, 25 Oct 2021 14:14:36 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Yafang Shao <laoar.shao@gmail.com>
+Cc:     akpm@linux-foundation.org, rostedt@goodmis.org,
+        mathieu.desnoyers@efficios.com, arnaldo.melo@gmail.com,
+        pmladek@suse.com, peterz@infradead.org, viro@zeniv.linux.org.uk,
+        valentin.schneider@arm.com, qiang.zhang@windriver.com,
+        robdclark@chromium.org, christian@brauner.io,
+        dietmar.eggemann@arm.com, mingo@redhat.com, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        dennis.dalessandro@cornelisnetworks.com,
+        mike.marciniszyn@cornelisnetworks.com, dledford@redhat.com,
+        jgg@ziepe.ca, linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, oliver.sang@intel.com, lkp@intel.com,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Vladimir Zapolskiy <vzapolskiy@gmail.com>,
+        David Howells <dhowells@redhat.com>
+Subject: Re: [PATCH v6 03/12] drivers/connector: make connector comm always
+ nul ternimated
+Message-ID: <202110251411.93B477676B@keescook>
+References: <20211025083315.4752-1-laoar.shao@gmail.com>
+ <20211025083315.4752-4-laoar.shao@gmail.com>
 MIME-Version: 1.0
-X-Patchwork-Bot: notify
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211025083315.4752-4-laoar.shao@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang warns:
+On Mon, Oct 25, 2021 at 08:33:06AM +0000, Yafang Shao wrote:
+> connector comm was introduced in commit
+> f786ecba4158 ("connector: add comm change event report to proc connector").
+> struct comm_proc_event was defined in include/linux/cn_proc.h first and
+> then been moved into file include/uapi/linux/cn_proc.h in commit
+> 607ca46e97a1 ("UAPI: (Scripted) Disintegrate include/linux").
+> 
+> As this is the UAPI code, we can't change it without potentially breaking
+> things (i.e. userspace binaries have this size built in, so we can't just
+> change the size). To prepare for the followup change - extending task
+> comm, we have to use __get_task_comm() to avoid the BUILD_BUG_ON() in
+> proc_comm_connector().
 
-drivers/net/ethernet/asix/ax88796c_main.c:851:24: error: address of
-array 'ax_local->phydev->advertising' will always evaluate to 'true'
-[-Werror,-Wpointer-bool-conversion]
-        if (ax_local->phydev->advertising &&
-            ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~ ~~
+I wonder, looking at this again, if it might make more sense to avoid
+this cn_proc.c change, and instead, adjust get_task_comm() like so:
 
-advertising cannot be NULL here if ax_local is not NULL, which cannot
-happen due to the check in ax88796c_probe(). Remove the check.
+#define get_task_comm(buf, tsk)
+        __get_task_comm(buf, __must_be_array(buf) + sizeof(buf), tsk)
 
-Link: https://github.com/ClangBuiltLinux/linux/issues/1492
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
----
- drivers/net/ethernet/asix/ax88796c_main.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+This would still enforce the original goal of making sure
+get_task_comm() is being used on a char array, and now that
+__get_task_comm() will truncate & pad, it's safe to use on both
+too-small and too-big arrays.
 
-diff --git a/drivers/net/ethernet/asix/ax88796c_main.c b/drivers/net/ethernet/asix/ax88796c_main.c
-index cf0f96f93f3b..528a0c43540b 100644
---- a/drivers/net/ethernet/asix/ax88796c_main.c
-+++ b/drivers/net/ethernet/asix/ax88796c_main.c
-@@ -850,11 +850,10 @@ ax88796c_open(struct net_device *ndev)
- 	/* Setup flow-control configuration */
- 	phy_support_asym_pause(ax_local->phydev);
- 
--	if (ax_local->phydev->advertising &&
--	    (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
--			       ax_local->phydev->advertising) ||
--	     linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
--			       ax_local->phydev->advertising)))
-+	if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
-+			      ax_local->phydev->advertising) ||
-+	    linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
-+			      ax_local->phydev->advertising))
- 		fc |= AX_FC_ANEG;
- 
- 	fc |= linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
 -- 
-2.33.1.637.gf443b226ca
-
+Kees Cook
