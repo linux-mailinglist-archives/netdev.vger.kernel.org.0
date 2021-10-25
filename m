@@ -2,121 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21B32439F2F
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 21:15:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38A04439F29
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 21:15:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232904AbhJYTSD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 15:18:03 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:55130 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S234021AbhJYTRv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 15:17:51 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19PIFPXp001259;
-        Mon, 25 Oct 2021 12:15:26 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=x2KHYI46y1HmIizOKdm4wUpZd15UeW/0fqHFRoTzbaI=;
- b=RR3mu5YXeYpQm2Cc9aVMzeCUhKV68dhEJnrTrDgji1D/9oXGKLO8zbm3PSqgycF8pVhD
- lM/291hMM3HQJmY6EB4yhToTiDmga8N01Cz7CxZdGbVEqG9fNT/rvPxG89lPX2YXJcCx
- lMfedzwbnmiFBSjYjfsKbRUlLYaXc/jL5nQKpZ6suY+sCkMLWyxWfMJbpIWZqOlcJK1M
- yGKmfK2fS+obRz2XC9QjFTvBTmEZqss1RNJ/YSph7AOMQ0ZDA7uJiXvBtPQjIo4Vqtxj
- aHpCVUNZjqUmU0G3hToHxwPu99TV5AB43j6rW09Lfb4o2XM9nebVVavtLBuln7FqH0/a Ig== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 3bwtjrj8nb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 25 Oct 2021 12:15:26 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 25 Oct
- 2021 12:15:25 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Mon, 25 Oct 2021 12:15:25 -0700
-Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id 7C6803F704A;
-        Mon, 25 Oct 2021 12:15:22 -0700 (PDT)
-From:   Rakesh Babu <rsaladi2@marvell.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <sgoutham@marvell.com>,
-        <gakula@marvell.com>, <sbhatta@marvell.com>, <hkelam@marvell.com>
-CC:     Rakesh Babu <rsaladi2@marvell.com>
-Subject: [net-next PATCH 3/3] octeontx2-af: debugfs: Add channel and channel mask.
-Date:   Tue, 26 Oct 2021 00:44:42 +0530
-Message-ID: <20211025191442.10084-4-rsaladi2@marvell.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20211025191442.10084-1-rsaladi2@marvell.com>
-References: <20211025191442.10084-1-rsaladi2@marvell.com>
+        id S234408AbhJYTR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 15:17:56 -0400
+Received: from mail-mw2nam10on2040.outbound.protection.outlook.com ([40.107.94.40]:21655
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S234168AbhJYTRf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Oct 2021 15:17:35 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=n2khnePs8luFPw1IhopokPGKLeto/B+2yzesGb6T3SG5/UubxmQwKYJ5JbuJaX5lPd0MFyg28zdKCZ/Bu9V3EAeQiGUJIiHvl9AgP6Gf2rLKUTh9ZsoyOZwLhT08ujY/JQ2ODlXn3HeheD9rL8DUGqAjRNb3YaEhIXJRpRhYMScov1+9gPuyW21fzP2G+ERgKWm1ZYKPSBLvOdhJhKhWHcqU6i16J2k9OlPyHbF0hKLCMZqMzTxMhdnPrs002pK74r1PhliZ8Caj2yyAquwddWT89r6EEhlZ6haiT9kjdYG9fzohtYckKGC2+z8YED0W7sHOPDhhdaqWHnuL6eJmMw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AdRzcI5XXKHSpAaV0K3YiHxjUZ4msr6YNjRiLiNFTog=;
+ b=UOYo828eTQmD4lR/jneJUYs0jrJ86TEWqrORIemEAgGKkLNCH8UWQXT0TPCrfjnryz9MU8NerLMsdLfAsstGH/rBW6Q1KzpkRYjeQIf8VpMvHWgfkT78SVMBa7iEzf8Io/5Cdhp2MxqjGEfCr1/XyIxJT46nxgdM1mStFL32fIvjGo9pbCsgpB48AjsiS5EuDWDhGCOjxzFAVzO/HEiIzk71DH5blMAF/IdDdBfYJR0P20NLUVlBvhHqDW82Rbeaxsa35kBewly/v6XyxT0RxzZwn/8UVS8A4MN1Y+aMBG6Uow+dc7Le49uEMx6h3NiMTPBRsPyOhj5gWi60rS9XeA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AdRzcI5XXKHSpAaV0K3YiHxjUZ4msr6YNjRiLiNFTog=;
+ b=bTgSnHu52TTJXFx3e6nogk6m3zt3xdZkSfCD53HsyplHgkERUPVsNB3eL9FnTbqYbBY7WM0WcCirYywdkLLecWYy4nrFbFBQNdFEze26SX9xH/5qnTmd7hPTFbgPb2nmTdTswOgZkCBpRiFEWMSv8yIy5lI4PuBw77inzoG7fP7AygTrpi9wEnQ0pWFrV/4uCZ3CdhfRUU7pc/itVXTYjUjnluaUp7ZHS9k+u4hh/8gmg99/trNNr1w5iqMF58l4QYLGcESGoykI9tklZtJ0NKkMHsF46E/ojpo1kgw25qAMhQo0tRpQTmXktouQoOq35epgYt39BmS3K8B96WATtA==
+Authentication-Results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5190.namprd12.prod.outlook.com (2603:10b6:208:31c::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18; Mon, 25 Oct
+ 2021 19:15:11 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::e8af:232:915e:2f95%8]) with mapi id 15.20.4628.020; Mon, 25 Oct 2021
+ 19:15:11 +0000
+Date:   Mon, 25 Oct 2021 16:15:09 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Cc:     Alex Williamson <alex.williamson@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
+        Cornelia Huck <cohuck@redhat.com>
+Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
+ for mlx5 devices
+Message-ID: <20211025191509.GB2744544@nvidia.com>
+References: <20211019105838.227569-13-yishaih@nvidia.com>
+ <20211019124352.74c3b6ba.alex.williamson@redhat.com>
+ <20211019192328.GZ2744544@nvidia.com>
+ <20211019145856.2fa7f7c8.alex.williamson@redhat.com>
+ <20211019230431.GA2744544@nvidia.com>
+ <5a496713-ae1d-11f2-1260-e4c1956e1eda@nvidia.com>
+ <20211020105230.524e2149.alex.williamson@redhat.com>
+ <YXbceaVo0q6hOesg@work-vm>
+ <20211025115535.49978053.alex.williamson@redhat.com>
+ <YXb7wejD1qckNrhC@work-vm>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YXb7wejD1qckNrhC@work-vm>
+X-ClientProxiedBy: YT3PR01CA0085.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:84::16) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: RTt_G6CxTh6FX2_LYtaAyfQJ99oPXbGZ
-X-Proofpoint-GUID: RTt_G6CxTh6FX2_LYtaAyfQJ99oPXbGZ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-10-25_06,2021-10-25_02,2020-04-07_01
+Received: from mlx.ziepe.ca (206.223.160.26) by YT3PR01CA0085.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:84::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.16 via Frontend Transport; Mon, 25 Oct 2021 19:15:10 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1mf5R7-001pfr-DE; Mon, 25 Oct 2021 16:15:09 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1f85461f-f930-4013-3712-08d997ebc3d9
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5190:
+X-Microsoft-Antispam-PRVS: <BL1PR12MB5190773F3101D0D3C251F65FC2839@BL1PR12MB5190.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8dSmWnW4CJ2z79//nme4ba3i9bIaXgx8dIQ+YqLH+ZSnaQwOZBsTjcq3pTjWrmVdIA77huf5J9AKqoaSjEg1qdBZkN76f/2bqoT0LOt1AbCxfVKIxgqI0ywt4Yv/iNcfBXS/dMhTAWbd+UwYZVLfC8zkecC72YyeSPSsOoBXVkA3MWsnmzD94r3zDymofjI+fElsPH44txEjjwRwD13ZMtqz8ERsSdUBj/hDwAel9Edlci0E3cJHazoNJ0Mj7HohD18UJbvChT5mdkPvkauOQ4rVXSfYryRsd4nSZUoSMdDVvGRZPIpkHFasrNEB8GBPzHhtxBBvU1Xhvdr8Bbvz6aW9vB4bFXSJAFKgoxCTJ8CJ16rztuIG008eV7/YNkAvMotNuTxnz4RgGCdk8vHXwOBPU1TGjaAviXEsgvWF99X2yTZfePHyFQYGiEA18w68v7jsBOXNyH8LmDsTx7XJnRE7gopvCLOV4us/iuClyFoo1vs/yQkVQbzhzMjPZ9oBmICd/MFGi8Sq1mSQwlk/wEvUjmhu2Wn9ZA7E4szICwDtLOvnzAHi0+pqxhQCw10JSfcNVBZEwXf9ZYU2HQH0GmReD43Y+1WUvzCzpBi4Nl/gGDmRCIdi4vO88mlUMUe5wvmqsQFU4Moi9a6nqwFZbw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(38100700002)(8936002)(316002)(9746002)(8676002)(66946007)(54906003)(6916009)(66556008)(508600001)(9786002)(33656002)(66476007)(4326008)(186003)(36756003)(2906002)(426003)(26005)(2616005)(83380400001)(4744005)(86362001)(1076003)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?mvaXTLWBIoZ8zgydsS5nlCCGCj9mSXMVWRj2Z7RRfhrzAbEPoPUxviGNBY8w?=
+ =?us-ascii?Q?K2kqlWfr2+yt7Z1TcnL5Xey0NeoTvKb/hFDH8O5VjqtYZJXQUA70xHXL5DCf?=
+ =?us-ascii?Q?iOw1fS3z/KrodY2ZCZWEm0SagBnHFgkFaGpJD/mgNwvJBU4/V31Yxejc68Ai?=
+ =?us-ascii?Q?eBxhO3dxl3cgP7+0ZAwr8E31v12MqwIa1Si5MnSL/lowVxUao/yDBsCm4qE4?=
+ =?us-ascii?Q?QdeZ9J4XPqXFq9fV619IbF2BxptOEqubPjW+bTYj6tWvINMQ5gywYSjeIsmz?=
+ =?us-ascii?Q?hsfqbP4yuWewCP0H6mAOAo0bub2O7+PSO/0YNlBxZ5eFg53IRXUg8OmW8N9z?=
+ =?us-ascii?Q?8Nmdnf+ro4i9A55ZemcWrX2a5AlPBomw0XdHWl3yodL5P9m01TGAX2pxJYqT?=
+ =?us-ascii?Q?HNlSedeBm8BQmg/nKqfSXT7MzK6Q6tAw/5ZOwgjo/u+cXQfAry/DeI9gVloH?=
+ =?us-ascii?Q?JP3bAbtOD2JhCYSIKjkUYQKn/RLLAKBrblt2ynb2wqy3KcXTCmYoqf7mXPIE?=
+ =?us-ascii?Q?89jvN9GUfXsNJPm9ddzzBHcpV/Z7HPtbm+nakFP0o1f262wV0f8Erwv+woI8?=
+ =?us-ascii?Q?iOPcJBziK0D+WRCJl219ZhWMfpTE92EteWPh0X9cN+X4ccI4SsUEjssZFd9R?=
+ =?us-ascii?Q?5sMUiSc+icP3uA0dd31wgq8lWBCAqFOzSQgCeLLP5pSti+T2EUiR9z48JWqZ?=
+ =?us-ascii?Q?R7r1ES5+HN9A+LC7E/ZFhYSZCyeR9gDIDe2jPXeSlGyP2LhYhjfum+d9dubC?=
+ =?us-ascii?Q?RpJLWWgRXLC05E6HiN1HHXqxHWAatdIXMk/pSgRGY8f0i3y4l50LsBNOuD89?=
+ =?us-ascii?Q?/9NEl7lA4Y0shTrtpsfZ2bkxpwFNxwEih8GCAcgMxmKAJb9iMTMRODfMqqTO?=
+ =?us-ascii?Q?To/SqzTvzqBaEpysWOCL3CgtVzg0AAN5y2wM9EnmCcWOZH5ve3NwBXZsT80H?=
+ =?us-ascii?Q?1iBPytBiuQGF1QPs0kF958d6M8Gt4qlba8VMW+CkcJgMPOFM8PT0FXvyfmgP?=
+ =?us-ascii?Q?0lT7AKLjqjjvZmCFx/xP4HxxSByWm76HrWugzKF1dpevp6Ut9L4zhSFFbB9/?=
+ =?us-ascii?Q?1ccihlXSjizsdf8sJ6BQxElepcIhzwkgCB8HlmJRNm04/EO7ViZAbk5yjsIy?=
+ =?us-ascii?Q?Ib3jVQyaw2jmj0nmXgeSP6s6gzRdR77nJDZivRie+g+gJzgNmz3d5QaJZjGI?=
+ =?us-ascii?Q?AB5RrIYf0EvJfpWZinoZRo6hloebhtQtDUgv8GOtKVvuPCG3fG3Fo2YeoL6P?=
+ =?us-ascii?Q?TCrNVVyngwaiOLXbb1jly15sMRZfZNo4YkOWLigrSdoMCHsSCJwHKH9EH1o8?=
+ =?us-ascii?Q?TMArWrZAFRILEhOyGgAbXj7cqEUwCvlbpKNVMLOyrWUACrbn+iPfhkvRE1JK?=
+ =?us-ascii?Q?+bi489xMBnjjMAiIs0WkquXeOMeQX5KMkSQMwq7W8W2WEL8Au4A7sZ3el6gK?=
+ =?us-ascii?Q?cKRfDnromFXeHA6UP6ITeLlrpc43muFX+ek7BWyPs0vi2aCXmrFeHdrFTGO6?=
+ =?us-ascii?Q?sF/e5dqY76KJldg5t91FsEf6nLHE0FRo6M2Ef6bsYJ/Poa7rImJJeujztV4O?=
+ =?us-ascii?Q?9DqkdeqPliPeS9mNhZU=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1f85461f-f930-4013-3712-08d997ebc3d9
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2021 19:15:11.0777
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uOWlaZTSJv/AYlfZ+UyGZmeGTnIInKUqKdj+/TZQV8+c4Nm6NwCvV9y7QfUhVXFM
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5190
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to dispaly channel and channel_mask for each RX
-interface of NPC MCAM rule.
+On Mon, Oct 25, 2021 at 07:47:29PM +0100, Dr. David Alan Gilbert wrote:
 
-Signed-off-by: Rakesh Babu <rsaladi2@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
----
- drivers/net/ethernet/marvell/octeontx2/af/npc.h         | 4 ++++
- drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c | 2 ++
- drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c  | 3 +++
- 3 files changed, 9 insertions(+)
+> It may need some further refinement; for example in that quiesed state
+> do counters still tick? will a NIC still respond to packets that don't
+> get forwarded to the host?
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/npc.h b/drivers/net/ethernet/marvell/octeontx2/af/npc.h
-index 3144d309783c..77fd39e2c8db 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/npc.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/npc.h
-@@ -8,6 +8,8 @@
- #ifndef NPC_H
- #define NPC_H
- 
-+#define NPC_KEX_CHAN_MASK	0xFFFULL
-+
- enum NPC_LID_E {
- 	NPC_LID_LA = 0,
- 	NPC_LID_LB,
-@@ -591,6 +593,8 @@ struct rvu_npc_mcam_rule {
- 	u8 default_rule;
- 	bool enable;
- 	bool vfvlan_cfg;
-+	u16 chan;
-+	u16 chan_mask;
- };
- 
- #endif /* NPC_H */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-index 7ff8f4045223..fb27bab33f3f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-@@ -2490,6 +2490,8 @@ static int rvu_dbg_npc_mcam_show_rules(struct seq_file *s, void *unused)
- 				seq_printf(s, "VF%d", vf);
- 			}
- 			seq_puts(s, "\n");
-+			seq_printf(s, "\tchannel: 0x%x\n", iter->chan);
-+			seq_printf(s, "\tchannel_mask: 0x%x\n", iter->chan_mask);
- 		}
- 
- 		rvu_dbg_npc_mcam_show_action(s, iter);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
-index 51ddc7b81d0b..ff2b21999f36 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
-@@ -1119,6 +1119,9 @@ static int npc_install_flow(struct rvu *rvu, int blkaddr, u16 target,
- 	rule->default_rule = req->default_rule;
- 	rule->owner = owner;
- 	rule->enable = enable;
-+	rule->chan_mask = write_req.entry_data.kw_mask[0] & NPC_KEX_CHAN_MASK;
-+	rule->chan = write_req.entry_data.kw[0] & NPC_KEX_CHAN_MASK;
-+	rule->chan &= rule->chan_mask;
- 	if (is_npc_intf_tx(req->intf))
- 		rule->intf = pfvf->nix_tx_intf;
- 	else
--- 
-2.17.1
+At least for the mlx5 NIC the two states are 'able to issue outbound
+DMA' and 'all internal memories and state are frozen and unchanging'.
 
+The later means it should not respond/count/etc to network packets
+either.
+
+Roughly it is
+ 'able to mutate external state' / 'able to mutate internal state'
+
+The invariant should be that successive calls to serialize the
+internal state while frozen should return the same serialization.
+
+We may find that migratable PCI functions must have some limited
+functionality. Ie anything with a realtime compoment - for instance a
+sync-ethernet clock synchronization control loop, may become
+challenging to migrate without creating a serious functional
+distortion.
+
+Jason
