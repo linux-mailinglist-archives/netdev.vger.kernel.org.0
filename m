@@ -2,85 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A820439821
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 16:08:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C822A439836
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 16:11:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232679AbhJYOKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 10:10:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35180 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231512AbhJYOKU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 10:10:20 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A45FFC061243
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 07:07:58 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id d5so10904525pfu.1
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 07:07:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TO0wBLaTkp83hOdg+u/tBpfJyVl6JWe0FqNIjJeveOA=;
-        b=bXD7/wUVOsYvJ9uJAwEZEVJtHZKis0op0fWk6Y3PXIu+qchM6lXOKv8GJuM/33HnqA
-         TzTwPOnrlusbbL3PHqoupO+u0dvqR+MmIdDVbtFEJm2cyuEueKJOV6TSysUzJYxh3YRU
-         2WqTw3hpQiOAoiivstXxyzsOZ9lzQ5E4kFHqmbv/4PYfd4ezGAYUJvHyPbZZc7esHeTT
-         ebBQWVsb+4VSjZ3Lj2jMRdO7ARIdhks3hra/PB6aCX6ae9UYggM5pBTZomksp0ol5u29
-         JvjQXV7s+mtx6TyOpZldRZPt5JBkzVGBF/AUz6tNC6Rt1/8xrzUcnYA0au/LKLQNGJ+4
-         k0GQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=TO0wBLaTkp83hOdg+u/tBpfJyVl6JWe0FqNIjJeveOA=;
-        b=ERG7iwWT8Q7J3pISkSY+csqFpN7Ls50TtL3JE/h8xe/x3ZYQWSPskwN3Pvj/0SPzNp
-         qaBKsm12jr8NyHyhjx1JDGn48VMLYvc+W38nVvlFRUik42l/zscosqeCK06ck9WvgC59
-         RCtQd+4aATFzdDyDbM6n5yuFXZSgK7nd3NmWPjNgvElsIzD+qlLlLdd4Q/3MD11PWQya
-         UGNAeOd7BpY2ua/RPvfse1pNnwktCE9wnQzrgA9Txfn6T2p43u2C7gqjjCOuckKAvaBU
-         eHdoGMtQgFJdzIUeFW4sGMzIKolWvmkIGo0tQ5K+39K85xW8Locu4QNVn/EXR2NXiUvB
-         2Qmg==
-X-Gm-Message-State: AOAM530lf0CCxiPcVy1MrXK3RA5zF6dKXEEFK9O98Cpt1Ddo5avK2Gln
-        17yjpauj6cAHHN19Q7mbnUOrWWKodzhsSA==
-X-Google-Smtp-Source: ABdhPJztTsVLk3XbJLE9Sj8rEhQoIAHSWkXXYoV5rw3PPE2DMcmZr/cJcWCxmJtMIFPl432eG4unhQ==
-X-Received: by 2002:a63:8bc2:: with SMTP id j185mr4317135pge.14.1635170877881;
-        Mon, 25 Oct 2021 07:07:57 -0700 (PDT)
-Received: from [192.168.0.4] ([49.173.165.50])
-        by smtp.gmail.com with ESMTPSA id n14sm1800783pfo.156.2021.10.25.07.07.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Oct 2021 07:07:57 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next] ip: add AMT support
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     dsahern@gmail.com, netdev@vger.kernel.org
-References: <20211023193611.11540-1-ap420073@gmail.com>
- <20211024164641.3e14e35d@hermes.local>
-From:   Taehee Yoo <ap420073@gmail.com>
-Message-ID: <4f26fd10-4f17-502f-05e4-763f59a57de2@gmail.com>
-Date:   Mon, 25 Oct 2021 23:07:54 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S233378AbhJYONs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 10:13:48 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:49856 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233384AbhJYONr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 10:13:47 -0400
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id B09CD2193C;
+        Mon, 25 Oct 2021 14:11:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1635171084; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=OTjSY7GSGw0G3NioSQABoRLAMGiPnBKkRoos8pwLTqc=;
+        b=kiuorOvH9YQGwEpt5DZ2I/rRf3/sB3+Zyrlf1dm9zZxWCtXjAGcLAub6ReU0t8ULp4sxry
+        2vsPdeRIrbb70ZzJhm1L+z0gIBbChLxXEdkOKTkNhBXQImZhtxHvqOKhrAOac+WSdLNnwl
+        jTtvNJWvkJrXNWgni7A2jVf9J6bN34g=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6F04C13C0B;
+        Mon, 25 Oct 2021 14:11:24 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id OjXyGAy7dmG6cgAAMHmgww
+        (envelope-from <oneukum@suse.com>); Mon, 25 Oct 2021 14:11:24 +0000
+From:   Oliver Neukum <oneukum@suse.com>
+To:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     Oliver Neukum <oneukum@suse.com>
+Subject: [PATCH] usbb: catc: use correct API for MAC addresses
+Date:   Mon, 25 Oct 2021 16:11:21 +0200
+Message-Id: <20211025141121.14828-1-oneukum@suse.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20211024164641.3e14e35d@hermes.local>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stephen,
+Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
+of VLANs...") introduced a rbtree for faster Ethernet address look
+up. To maintain netdev->dev_addr in this tree we need to make all
+the writes to it got through appropriate helpers.
 
-On 10/25/21 8:46 AM, Stephen Hemminger wrote:
- > On Sat, 23 Oct 2021 19:36:11 +0000
- > Taehee Yoo <ap420073@gmail.com> wrote:
- >
- >> +	if (tb[IFLA_AMT_MODE] && RTA_PAYLOAD(tb[IFLA_AMT_MODE]) < 
-sizeof(__u32))
- >> +		return;
- >
- > What is this check here for? Is there a case where kernel returns
- > data without valid mode?
- >
+In the case of catc we need a new temporary buffer to conform
+to the rules for DMA coherency. That in turn necessitates
+a reworking of error handling in probe().
 
-This is an unnecessary check. So I will drop this code at the v2 patch.
-Thanks a lot!
-Taehee
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+---
+ drivers/net/usb/catc.c | 22 +++++++++++++++++-----
+ 1 file changed, 17 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/usb/catc.c b/drivers/net/usb/catc.c
+index 24db5768a3c0..e7fe9c0f63a9 100644
+--- a/drivers/net/usb/catc.c
++++ b/drivers/net/usb/catc.c
+@@ -770,17 +770,23 @@ static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id
+ 	struct net_device *netdev;
+ 	struct catc *catc;
+ 	u8 broadcast[ETH_ALEN];
+-	int pktsz, ret;
++	u8 *macbuf;
++	int pktsz, ret = -ENOMEM;
++
++	macbuf = kmalloc(ETH_ALEN, GFP_KERNEL);
++	if (!macbuf)
++		goto error;
+ 
+ 	if (usb_set_interface(usbdev,
+ 			intf->altsetting->desc.bInterfaceNumber, 1)) {
+ 		dev_err(dev, "Can't set altsetting 1.\n");
+-		return -EIO;
++		ret = -EIO;
++		goto fail_mem;;
+ 	}
+ 
+ 	netdev = alloc_etherdev(sizeof(struct catc));
+ 	if (!netdev)
+-		return -ENOMEM;
++		goto fail_mem;
+ 
+ 	catc = netdev_priv(netdev);
+ 
+@@ -870,7 +876,8 @@ static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id
+ 	  
+ 		dev_dbg(dev, "Getting MAC from SEEROM.\n");
+ 	  
+-		catc_get_mac(catc, netdev->dev_addr);
++		catc_get_mac(catc, macbuf);
++		eth_hw_addr_set(netdev, macbuf);
+ 		
+ 		dev_dbg(dev, "Setting MAC into registers.\n");
+ 	  
+@@ -899,7 +906,8 @@ static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id
+ 	} else {
+ 		dev_dbg(dev, "Performing reset\n");
+ 		catc_reset(catc);
+-		catc_get_mac(catc, netdev->dev_addr);
++		catc_get_mac(catc, macbuf);
++		eth_hw_addr_set(netdev, macbuf);
+ 		
+ 		dev_dbg(dev, "Setting RX Mode\n");
+ 		catc->rxmode[0] = RxEnable | RxPolarity | RxMultiCast;
+@@ -917,6 +925,7 @@ static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id
+ 	if (ret)
+ 		goto fail_clear_intfdata;
+ 
++	kfree(macbuf);
+ 	return 0;
+ 
+ fail_clear_intfdata:
+@@ -927,6 +936,9 @@ static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id
+ 	usb_free_urb(catc->rx_urb);
+ 	usb_free_urb(catc->irq_urb);
+ 	free_netdev(netdev);
++fail_mem:
++	kfree(macbuf);
++error:
+ 	return ret;
+ }
+ 
+-- 
+2.26.2
+
