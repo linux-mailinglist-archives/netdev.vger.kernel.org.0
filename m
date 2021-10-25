@@ -2,114 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA8F6438CAD
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 01:59:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6EBD438CBA
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 02:09:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229981AbhJYABx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Oct 2021 20:01:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41730 "EHLO
+        id S230110AbhJYALY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Oct 2021 20:11:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbhJYABw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 20:01:52 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42661C061745;
-        Sun, 24 Oct 2021 16:59:31 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id om14so6912302pjb.5;
-        Sun, 24 Oct 2021 16:59:31 -0700 (PDT)
+        with ESMTP id S229814AbhJYALX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Oct 2021 20:11:23 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA06BC061745
+        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 17:09:01 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id m22so6200739wrb.0
+        for <netdev@vger.kernel.org>; Sun, 24 Oct 2021 17:09:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UdgLpBv9vUiEAI9nTW/FcpPBhUsrQ/P7VYlSz31nv50=;
-        b=Gms+8I7iaJEgEXiIv/FGzWD9TR0ORSFGUhDym/fmuiDnyjg4Nt7R5pH4dS+AuS/uK0
-         LucW5KThyrVQgzMbntBLB0rljHjolwOGcDA4OF4yeZIAf/LnxyColxJ6Yhotj+TVLkCZ
-         dBZ6UA4nPGDVYQAqILTQxevfu3VuZ47sPPRtp6RlOTpyHABB5iqhcJCoKlPM6+xbeTOH
-         gUZDpyVykiWrV3mfYLJUlmYrflwLVs823wQ/CzQoMLb+2R7wpT6COOt4C0TVyE0siLD4
-         ksqG9ZHMhWzcMRPlDNNkdGTvay02HvnJdJJUcuc9Xok1GRXWIDCU73/DsiiziWLTQAHK
-         NUGg==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=geczGTHn5VeCvub+uTma/PXREfA+zQbHUxfmekOcdTU=;
+        b=qw297bs6OqmCQ2L8GbP2E01vRHOvEu7QWFF2SExs5NX+vh7HdywhvH6XdKF7iWVuAx
+         ChhskTP+HMxy6lk2PhKv9cUHkbdxZjvf/id/Vn+QTg3stwU3CfeqUk7R69bio3dV5DK5
+         s7y12aqUZpqlUNLPw/Ca1cVfjMP0IxiOHmfoHVsynjnR+y3S9JdLN7oCShZvVVPo3PFQ
+         SMqvQpl645VWcqM5pvwB1S8fP9IXF+rO3LYntpi2ekkkKiXhl5Cuec9MwAcXKUzZa6da
+         1kdGJuqNjciF1ao1vEW8zlTPoGzuzafMDsZZmLT1dolLLiA4FbH3kfUSOk998o2gkh6t
+         JKWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UdgLpBv9vUiEAI9nTW/FcpPBhUsrQ/P7VYlSz31nv50=;
-        b=LUeYU7WdC2HuLg9sXXzQ15M4YUMf0N8mr9X4kSEQ8hw6Zgk06f7REZYzA4iKMFiQzz
-         emsuXmnWj45vMDA9L3Yi/yf6MVHe+EtT2V3vugj8jz2ZRZOl0RCmZi27AJrrf042HVNC
-         J5YFt9tJX+5DL+kxU8uKtefL4apLUfqTjdmKne4Sb3iyrufDon82Nl6JF+r0JyOqVYKw
-         d6cA1g4Q/8qNS8oCovWVLs2Et+DCwId7WHqvBcZcfmGPoIURq2KmstYY0MQYNVB3EKNr
-         HlRJdD+scH30ST1heF9TxQ4xk7n/yyBNM7V9p5BxDtYHPIFR1FZWYiOsJMX0SJ61ABIc
-         J+MQ==
-X-Gm-Message-State: AOAM533GWP9kj6mBUNqp/XWGFNNheJvbrc8IRSxNXXvm5ZY7jG6Igoxq
-        jMTg3LNe2HB+LEhdO97qn5U=
-X-Google-Smtp-Source: ABdhPJyqH14nH/Dlyi7vBdkZc8TyTinpzmNMw6iyZIloODpmX5/zNdd5vQRMlLSCiVxKpZc8PlBasg==
-X-Received: by 2002:a17:90a:1485:: with SMTP id k5mr18901264pja.74.1635119970599;
-        Sun, 24 Oct 2021 16:59:30 -0700 (PDT)
-Received: from 192-168-1-105.tpgi.com.com (115-64-195-55.static.tpgi.com.au. [115.64.195.55])
-        by smtp.gmail.com with ESMTPSA id d19sm17104677pfl.129.2021.10.24.16.59.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Oct 2021 16:59:29 -0700 (PDT)
-From:   Jon Maxwell <jmaxwell37@gmail.com>
-To:     edumazet@google.com
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jmaxwell37@gmail.com
-Subject: [net-next v1] tcp: don't free a FIN sk_buff in tcp_remove_empty_skb()
-Date:   Mon, 25 Oct 2021 10:59:03 +1100
-Message-Id: <20211024235903.371430-1-jmaxwell37@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=geczGTHn5VeCvub+uTma/PXREfA+zQbHUxfmekOcdTU=;
+        b=aZsbs31LEiEQgfdUyyYObWrLMRvKfP+PyCtbFUZpVHpVMie8JdXpVdsxjEoXaygPcq
+         8bdrKPAjetVsMKMYkhKWhPTyjlYnyGo5B1xg7LcGUo0age3WbU1EmM8uc/X+lORc2jdb
+         s3tW6UyrjGz4p9j9tGjNcuC0L2bDQPlJVg+TnTHMgSLRHyqvLpzRTMKWLhbKtWLdz5nn
+         L1PiUhdK6/4Z6UV5MLAFXVhzL2BkZ0ZA/Q94+s6l4s5sMyeusm56U5I2ltWf/4ToyOx7
+         O1AR++XkHQnzGkQtNy78KpbHOiRI8oWk7yCS+7Ejp2yjr6SchpODwj/h5ba2Z6advsmu
+         r3nQ==
+X-Gm-Message-State: AOAM533mHoewEwLlhuwQzmWYTbcdfxnqds1nIP8FIycLBk644kIp6s1U
+        lGAVfN4Uz0+sTWBiYIC4yrf3e/e3lUrRT7bMnZQ=
+X-Google-Smtp-Source: ABdhPJxuuHGSSjKiZraB/0zrc7R8rYumWplyAC/H2mhJI0gSxL6/CAIXVfF4/UlzBoHniU+4ykZzgEPmPLD1LRRqQfE=
+X-Received: by 2002:adf:ab03:: with SMTP id q3mr19379246wrc.396.1635120540364;
+ Sun, 24 Oct 2021 17:09:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Received: by 2002:adf:ff82:0:0:0:0:0 with HTTP; Sun, 24 Oct 2021 17:08:59
+ -0700 (PDT)
+Reply-To: Mrs_Bill.Chantal.Lawrence@email.com
+From:   "mrs.Bill Chantal" <bgfdytre4@gmail.com>
+Date:   Mon, 25 Oct 2021 01:08:59 +0100
+Message-ID: <CA+X6MqKF9_q_buiZkvzJNnxO16Dprte0B5ZLvsgaX0pWMrgkrA@mail.gmail.com>
+Subject: Dear Friend
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-v1: Implement a more general statement as recommended by Eric Dumazet. The 
-sequence number will be advanced, so this check will fix the FIN case and 
-other cases. 
-
-A customer reported sockets stuck in the CLOSING state. A Vmcore revealed that 
-the write_queue was not empty as determined by tcp_write_queue_empty() but the 
-sk_buff containing the FIN flag had been freed and the socket was zombied in 
-that state. Corresponding pcaps show no FIN from the Linux kernel on the wire.
-
-Some instrumentation was added to the kernel and it was found that there is a 
-timing window where tcp_sendmsg() can run after tcp_send_fin().
-
-tcp_sendmsg() will hit an error, for example:
-
-1269 ▹       if (sk->sk_err || (sk->sk_shutdown & SEND_SHUTDOWN))↩
-1270 ▹       ▹       goto do_error;↩
-
-tcp_remove_empty_skb() will then free the FIN sk_buff as "skb->len == 0". The
-TCP socket is now wedged in the FIN-WAIT-1 state because the FIN is never sent.
-
-If the other side sends a FIN packet the socket will transition to CLOSING and
-remain that way until the system is rebooted.
-
-Fix this by checking for the FIN flag in the sk_buff and don't free it if that 
-is the case. Testing confirmed that fixed the issue.
-
-Fixes: fdfc5c8594c2 ("tcp: remove empty skb from write queue in error cases")
-Signed-off-by: Jon Maxwell <jmaxwell37@gmail.com>
-Reported-by: Monir Zouaoui <Monir.Zouaoui@mail.schwarz>
-Reported-by: Simon Stier <simon.stier@mail.schwarz>
----
- net/ipv4/tcp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index c2d9830136d2..56ff7c746f88 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -938,7 +938,7 @@ int tcp_send_mss(struct sock *sk, int *size_goal, int flags)
-  */
- void tcp_remove_empty_skb(struct sock *sk, struct sk_buff *skb)
- {
--	if (skb && !skb->len) {
-+	if (skb && TCP_SKB_CB(skb)->seq == TCP_SKB_CB(skb)->end_seq) {
- 		tcp_unlink_write_queue(skb, sk);
- 		if (tcp_write_queue_empty(sk))
- 			tcp_chrono_stop(sk, TCP_CHRONO_BUSY);
--- 
-2.27.0
-
+Dear Friend
+You have been compensated with the sum of 4.4 million dollars in this
+united nation the payment will be Issue into ATM visa card and send to
+you from the bank  we need your address passport and your Whatsapp
+Number.
+Thanks
+Mrs. Bill Chantal
