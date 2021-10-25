@@ -2,295 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3596C439783
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 15:25:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1195C43978E
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 15:28:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232750AbhJYN10 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 25 Oct 2021 09:27:26 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:46046 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232424AbhJYN1V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 09:27:21 -0400
-Received: from smtpclient.apple (p4ff9f2d2.dip0.t-ipconnect.de [79.249.242.210])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 5013BCED19;
-        Mon, 25 Oct 2021 15:24:57 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
-Subject: Re: [PATCH v6 2/3] Bluetooth: aosp: Support AOSP Bluetooth Quality
- Report
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20211021230356.v6.2.Iaa4a0269e51d8e8d8784a6ac8e05899b49a1377d@changeid>
-Date:   Mon, 25 Oct 2021 15:24:56 +0200
-Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        =?utf-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
-        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Joseph Hwang <josephsih@google.com>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <A4DD9326-EDC4-47EF-9C8E-909D1ABD7504@holtmann.org>
-References: <20211021230356.v6.1.I139e71adfd3f00b88fe9edb63d013f9cd3e24506@changeid>
- <20211021230356.v6.2.Iaa4a0269e51d8e8d8784a6ac8e05899b49a1377d@changeid>
-To:     Joseph Hwang <josephsih@chromium.org>
-X-Mailer: Apple Mail (2.3654.120.0.1.13)
+        id S230111AbhJYNae (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 09:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54304 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230246AbhJYNae (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 09:30:34 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D743FC061745
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 06:28:11 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1mf00d-00034N-5t; Mon, 25 Oct 2021 15:27:27 +0200
+Received: from pengutronix.de (2a03-f580-87bc-d400-d7c8-7df6-a4ac-55f0.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:d7c8:7df6:a4ac:55f0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id F250369D6B4;
+        Mon, 25 Oct 2021 13:27:18 +0000 (UTC)
+Date:   Mon, 25 Oct 2021 15:27:18 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, mkubecek@suse.cz,
+        andrew@lunn.ch, amitc@mellanox.com, idosch@idosch.org,
+        danieller@nvidia.com, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, jdike@addtoit.com, richard@nod.at,
+        anton.ivanov@cambridgegreys.com, netanel@amazon.com,
+        akiyano@amazon.com, saeedb@amazon.com, chris.snook@gmail.com,
+        ulli.kroll@googlemail.com, linus.walleij@linaro.org,
+        jeroendb@google.com, csully@google.com, awogbemila@google.com,
+        jdmason@kudzu.us, rain.1986.08.12@gmail.com, zyjzyj2000@gmail.com,
+        kys@microsoft.com, haiyangz@microsoft.com, mst@redhat.com,
+        jasowang@redhat.com, doshir@vmware.com, pv-drivers@vmware.com,
+        jwi@linux.ibm.com, kgraul@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, johannes@sipsolutions.net,
+        netdev@vger.kernel.org, lipeng321@huawei.com,
+        chenhao288@hisilicon.com, linux-s390@vger.kernel.org
+Subject: Re: [PATCH V4 net-next 4/6] ethtool: extend ringparam setting uAPI
+ with rx_buf_len
+Message-ID: <20211025132718.5wtos3oxjhzjhymr@pengutronix.de>
+References: <20211014113943.16231-1-huangguangbin2@huawei.com>
+ <20211014113943.16231-5-huangguangbin2@huawei.com>
+ <20211025131149.ya42sw64vkh7zrcr@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="a5nxfjdi3kj6ctbj"
+Content-Disposition: inline
+In-Reply-To: <20211025131149.ya42sw64vkh7zrcr@pengutronix.de>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Joseph,
 
-> This patch adds the support of the AOSP Bluetooth Quality Report
-> (BQR) events.
-> 
-> Multiple vendors have supported the AOSP Bluetooth Quality Report.
-> When a Bluetooth controller supports the capability, it can enable
-> the aosp capability through hci_set_aosp_capable. Then hci_core will
-> set up the hdev->aosp_set_quality_report callback through aosp_do_open
-> if the controller responds to support the quality report capability.
-> 
-> Note that Intel also supports a distinct telemetry quality report
-> specification. Intel sets up the hdev->set_quality_report callback
-> in the btusb driver module.
-> 
-> Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
-> Signed-off-by: Joseph Hwang <josephsih@chromium.org>
-> 
-> ---
-> 
-> Changes in v6:
-> - Use the decimal version instead of hexadecimal version to be
->  consistent with the AOSP specification.
-> - Move the code of checking the bluetooth_quality_report_support field
->  to the previous patch.
-> 
-> Changes in v5:
-> - Fix the patch per
->  [RFC PATCH] Bluetooth: Add framework for AOSP quality report setting
-> - Declare aosp_set_quality_report.
-> - Use aosp_do_open() to set hdev->aosp_set_quality_report.
-> - Add aosp_has_quality_report().
-> - In mgmt, use hdev->aosp_set_quality_report and
->  hdev->set_quality_report separately.
-> 
-> Changes in v4:
-> - Move the AOSP BQR support from the driver level to net/bluetooth/aosp.
-> - Fix the drivers to use hci_set_aosp_capable to enable aosp.
-> - Add Mediatek to support the capability too.
-> 
-> Changes in v3:
-> - Fix the auto build test ERROR
->  "undefined symbol: btandroid_set_quality_report" that occurred
->  with some kernel configs.
-> - Note that the mgmt-tester "Read Exp Feature - Success" failed.
->  But on my test device, the same test passed. Please kindly let me
->  know what may be going wrong. These patches do not actually
->  modify read/set experimental features.
-> - As to CheckPatch failed. No need to modify the MAINTAINERS file.
->  Thanks.
-> 
-> Changes in v2:
-> - Fix the titles of patches 2/3 and 3/3 and reduce their lengths.
-> 
-> net/bluetooth/aosp.c | 87 ++++++++++++++++++++++++++++++++++++++++++++
-> net/bluetooth/aosp.h | 13 +++++++
-> net/bluetooth/mgmt.c | 18 ++++++---
-> 3 files changed, 113 insertions(+), 5 deletions(-)
-> 
-> diff --git a/net/bluetooth/aosp.c b/net/bluetooth/aosp.c
-> index 64684b2bf79b..582c380a29fa 100644
-> --- a/net/bluetooth/aosp.c
-> +++ b/net/bluetooth/aosp.c
-> @@ -147,3 +147,90 @@ void aosp_do_close(struct hci_dev *hdev)
-> 
-> 	bt_dev_dbg(hdev, "Cleanup of AOSP extension");
-> }
-> +
-> +/* BQR command */
-> +#define BQR_OPCODE			hci_opcode_pack(0x3f, 0x015e)
-> +
-> +/* BQR report action */
-> +#define REPORT_ACTION_ADD		0x00
-> +#define REPORT_ACTION_DELETE		0x01
-> +#define REPORT_ACTION_CLEAR		0x02
-> +
-> +/* BQR event masks */
-> +#define QUALITY_MONITORING		BIT(0)
-> +#define APPRAOCHING_LSTO		BIT(1)
-> +#define A2DP_AUDIO_CHOPPY		BIT(2)
-> +#define SCO_VOICE_CHOPPY		BIT(3)
-> +
-> +#define DEFAULT_BQR_EVENT_MASK	(QUALITY_MONITORING | APPRAOCHING_LSTO | \
-> +				 A2DP_AUDIO_CHOPPY | SCO_VOICE_CHOPPY)
-> +
-> +/* Reporting at milliseconds so as not to stress the controller too much.
-> + * Range: 0 ~ 65535 ms
-> + */
-> +#define DEFALUT_REPORT_INTERVAL_MS	5000
-> +
-> +struct aosp_bqr_cp {
-> +	__u8	report_action;
-> +	__u32	event_mask;
-> +	__u16	min_report_interval;
-> +} __packed;
-> +
-> +static int enable_quality_report(struct hci_dev *hdev)
-> +{
-> +	struct sk_buff *skb;
-> +	struct aosp_bqr_cp cp;
-> +
-> +	cp.report_action = REPORT_ACTION_ADD;
-> +	cp.event_mask = DEFAULT_BQR_EVENT_MASK;
-> +	cp.min_report_interval = DEFALUT_REPORT_INTERVAL_MS;
-> +
-> +	skb = __hci_cmd_sync(hdev, BQR_OPCODE, sizeof(cp), &cp,
-> +			     HCI_CMD_TIMEOUT);
-> +	if (IS_ERR(skb)) {
-> +		bt_dev_err(hdev, "Enabling Android BQR failed (%ld)",
-> +			   PTR_ERR(skb));
-> +		return PTR_ERR(skb);
-> +	}
-> +
-> +	kfree_skb(skb);
-> +	return 0;
-> +}
-> +
-> +static int disable_quality_report(struct hci_dev *hdev)
-> +{
-> +	struct sk_buff *skb;
-> +	struct aosp_bqr_cp cp = { 0 };
-> +
-> +	cp.report_action = REPORT_ACTION_CLEAR;
-> +
-> +	skb = __hci_cmd_sync(hdev, BQR_OPCODE, sizeof(cp), &cp,
-> +			     HCI_CMD_TIMEOUT);
-> +	if (IS_ERR(skb)) {
-> +		bt_dev_err(hdev, "Disabling Android BQR failed (%ld)",
-> +			   PTR_ERR(skb));
-> +		return PTR_ERR(skb);
-> +	}
-> +
-> +	kfree_skb(skb);
-> +	return 0;
-> +}
-> +
-> +bool aosp_has_quality_report(struct hci_dev *hdev)
-> +{
-> +	return hdev->aosp_quality_report;
-> +}
-> +
-> +int aosp_set_quality_report(struct hci_dev *hdev, bool enable)
-> +{
-> +	if (!aosp_has_quality_report(hdev))
-> +		return -EOPNOTSUPP;
-> +
-> +	bt_dev_dbg(hdev, "quality report enable %d", enable);
-> +
-> +	/* Enable or disable the quality report feature. */
-> +	if (enable)
-> +		return enable_quality_report(hdev);
-> +	else
-> +		return disable_quality_report(hdev);
-> +}
-> diff --git a/net/bluetooth/aosp.h b/net/bluetooth/aosp.h
-> index 328fc6d39f70..2fd8886d51b2 100644
-> --- a/net/bluetooth/aosp.h
-> +++ b/net/bluetooth/aosp.h
-> @@ -8,9 +8,22 @@
-> void aosp_do_open(struct hci_dev *hdev);
-> void aosp_do_close(struct hci_dev *hdev);
-> 
-> +bool aosp_has_quality_report(struct hci_dev *hdev);
-> +int aosp_set_quality_report(struct hci_dev *hdev, bool enable);
-> +
-> #else
-> 
-> static inline void aosp_do_open(struct hci_dev *hdev) {}
-> static inline void aosp_do_close(struct hci_dev *hdev) {}
-> 
-> +static inline bool aosp_has_quality_report(struct hci_dev *hdev)
-> +{
-> +	return false;
-> +}
-> +
-> +static inline int aosp_set_quality_report(struct hci_dev *hdev, bool enable)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
-> +
-> #endif
-> diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-> index 44683443300c..d6c322763567 100644
-> --- a/net/bluetooth/mgmt.c
-> +++ b/net/bluetooth/mgmt.c
-> @@ -39,6 +39,7 @@
-> #include "mgmt_config.h"
-> #include "msft.h"
-> #include "eir.h"
-> +#include "aosp.h"
-> 
-> #define MGMT_VERSION	1
-> #define MGMT_REVISION	21
-> @@ -3863,7 +3864,8 @@ static int read_exp_features_info(struct sock *sk, struct hci_dev *hdev,
-> 		idx++;
-> 	}
-> 
-> -	if (hdev && hdev->set_quality_report) {
-> +	if (hdev && (aosp_has_quality_report(hdev) ||
-> +		     hdev->set_quality_report)) {
-> 		if (hci_dev_test_flag(hdev, HCI_QUALITY_REPORT))
-> 			flags = BIT(0);
-> 		else
-> @@ -4127,7 +4129,8 @@ static int set_quality_report_func(struct sock *sk, struct hci_dev *hdev,
-> 	val = !!cp->param[0];
-> 	changed = (val != hci_dev_test_flag(hdev, HCI_QUALITY_REPORT));
-> 
-> -	if (!hdev->set_quality_report) {
-> +	if (!aosp_has_quality_report(hdev) && !hdev->set_quality_report) {
-> +		BT_INFO("quality report not supported");
+--a5nxfjdi3kj6ctbj
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-this is a debug print. It does not belong here. Just remove it. You can use btmgmt to check the status if quality report is supported or not.
+On 25.10.2021 15:11:49, Marc Kleine-Budde wrote:
+> On 14.10.2021 19:39:41, Guangbin Huang wrote:
+> > From: Hao Chen <chenhao288@hisilicon.com>
+> >=20
+> > Add two new parameters ringparam_ext and extack for
+> > .get_ringparam and .set_ringparam to extend more ring params
+> > through netlink.
+> >=20
+> > Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+> > Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+>=20
+> While discussing a different ethtool ring param extension,
 
-> 		err = mgmt_cmd_status(sk, hdev->id,
-> 				      MGMT_OP_SET_EXP_FEATURE,
-> 				      MGMT_STATUS_NOT_SUPPORTED);
-> @@ -4135,13 +4138,18 @@ static int set_quality_report_func(struct sock *sk, struct hci_dev *hdev,
-> 	}
-> 
-> 	if (changed) {
-> -		err = hdev->set_quality_report(hdev, val);
-> +		if (hdev->set_quality_report)
-> +			err = hdev->set_quality_report(hdev, val);
-> +		else
-> +			err = aosp_set_quality_report(hdev, val);
-> +
-> 		if (err) {
-> 			err = mgmt_cmd_status(sk, hdev->id,
-> 					      MGMT_OP_SET_EXP_FEATURE,
-> 					      MGMT_STATUS_FAILED);
-> 			goto unlock_quality_report;
-> 		}
-> +
-> 		if (val)
-> 			hci_dev_set_flag(hdev, HCI_QUALITY_REPORT);
-> 		else
-> @@ -4153,8 +4161,8 @@ static int set_quality_report_func(struct sock *sk, struct hci_dev *hdev,
-> 	memcpy(rp.uuid, quality_report_uuid, 16);
-> 	rp.flags = cpu_to_le32(val ? BIT(0) : 0);
-> 	hci_sock_set_flag(sk, HCI_MGMT_EXP_FEATURE_EVENTS);
-> -	err = mgmt_cmd_complete(sk, hdev->id,
-> -				MGMT_OP_SET_EXP_FEATURE, 0,
-> +
-> +	err = mgmt_cmd_complete(sk, hdev->id, MGMT_OP_SET_EXP_FEATURE, 0,
-> 				&rp, sizeof(rp));
-> 
+Let me explain my requirements:
 
-Regards
+There is a not Ethernet based bus system, called CAN (mainly used in the
+automotive and industrial world). It comes in 2 different generations or
+modes (CAN-2.0 and CAN-FD) and the 3rd one CAN-XL has already been
+specified.
 
-Marcel
+Due to different frame sizes used in these CAN modes and HW limitations,
+we need the possibility to set a RX/TX ring configuration for each of
+these modes.
 
+The approach Andrew suggested is two-fold. First introduce a "struct
+ethtool_kringparam" that's only used inside the kernel, as "struct
+ethtool_ringparam" is ABI. Then extend "struct ethtool_kringparam" as
+needed.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--a5nxfjdi3kj6ctbj
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmF2sLMACgkQqclaivrt
+76mD4ggAiGfmXNdWCHSK3g0D5S8ey5SEX+qxEf7WBkQ0F6pQcZmaCT+cGJu8ZuN6
+Kh1kk102/iRQnA+/kGBZfNbHyUcBN6yvAB4QrXLxWDKm6klE3VwcZXbIn06Xfy+5
+Cuf63DbshxEcLLalTJW+a1ZX7SXHc3ErJ3Ve6P26wdYQT+Cn42y14se8odbTALBT
+gevTE9B1jPFvaWBE3kD0E18H1S99iygpXWU+j83pGNslvXrNTxgv/wHkYkTAgk07
+d/tG7LWD9cggcQPlzlLSeKg/C8SquOq6e01yIAJqdq2Kg+jRQHWbqsLth8FVvmrE
+4h4DmYg0THrrekJ/gp2L8GwPjJTdGg==
+=n9LB
+-----END PGP SIGNATURE-----
+
+--a5nxfjdi3kj6ctbj--
