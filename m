@@ -2,68 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E71D443A64C
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 00:04:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ECEE43A650
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 00:05:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232745AbhJYWGe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 18:06:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60314 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229910AbhJYWGb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 18:06:31 -0400
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F610C061745
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 15:04:08 -0700 (PDT)
-Received: by mail-qt1-x830.google.com with SMTP id z24so11700849qtv.9
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 15:04:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=PWmLgUUUIEpm43pJPQUHS3z3qqZFxLkrBTS877KAD78=;
-        b=LuqDcbd8H7qkopzr1USIK1akm3Yd5d4jB9T0sLzmEu1HSOx58p/VM6UJBY8IbXxYVN
-         qvtsEhATKck6w6Y8HkDdwrvlMgw0c/2SQnRKhkJ3WGG+FqUETDumP4KkLrMoVw4ifI/H
-         cW1znoaQ3ZDiNxpy5XByJhUGOf3+XbfZr9F7QSIj7A0HGk5HdQNAJjR+YeBJEWpVxejb
-         0ELctdm3eN8T3q47O15sCHDKog2fmFrUPy/gRW5pdobpOHVUdVlOAQsA6xMbU0nuooaE
-         1/OcjtgqpMqvbOD7qVkZOfNV0Ms6bQUFvoAfTpJ+qLCXT/qMJYww2cntO0OzrGenv63k
-         b7bQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=PWmLgUUUIEpm43pJPQUHS3z3qqZFxLkrBTS877KAD78=;
-        b=wmNfGc3gkmKner0HFeW71+r4hlTj8r5oHrUr70ciNZPaz/stAb/nIb3zxnBxj1rzqc
-         F6LrkWHQNY8xMocig4nxw+1whkuRVvagVckH0kitpui2KvXzwEs2nsvYXPFICIZivqU4
-         faJKQgXP4fsXz1mLrQZU5trCdb/GB3TZTbPT5UGUJc3EJ7u7bRv1Up4bLTGcP5PRtkb1
-         VNpbCyi8JzgRtpLEPk+okQlVRt189yy+EjZi2UQS7UdFXjoI90OjRenbrKe8lR+JSCL/
-         CEBUefxlhVJ2/NfrTca89jjxCYkmChnMaKcC/OXjaSZiNRz396BFGRTK7O5nIkxbAGzs
-         TIFg==
-X-Gm-Message-State: AOAM530XGk6qdeHY8srRk1bLfwgLwoStbL/gk4scpJM2p3NjxDQPggH0
-        PIJKKH/27e1H0FzABvrIgtasS73VBSuG1NfvrinroBngKwg=
-X-Google-Smtp-Source: ABdhPJxQfVEW70Xrc06qM6Or8dbtl9EmIa8p7P+czceY/8Bt8Y/FonkO9SRNf5zBy0taTents9WvzJQd+denR8YQatg=
-X-Received: by 2002:a05:622a:285:: with SMTP id z5mr20112711qtw.315.1635199447299;
- Mon, 25 Oct 2021 15:04:07 -0700 (PDT)
+        id S232893AbhJYWHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 18:07:22 -0400
+Received: from www62.your-server.de ([213.133.104.62]:43472 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229910AbhJYWHV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 18:07:21 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mf85N-0009q2-Q7; Tue, 26 Oct 2021 00:04:53 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mf85N-0003xz-Kj; Tue, 26 Oct 2021 00:04:53 +0200
+Subject: Re: [PATCH bpf v2] bpf: fix potential race in tail call compatibility
+ check
+To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <20211025130809.314707-1-toke@redhat.com>
+ <YXa/A4eQhlPPsn+n@lore-desk>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <c1244c73-bc61-89b8-dca3-f06dca85f64e@iogearbox.net>
+Date:   Tue, 26 Oct 2021 00:04:53 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-From:   Gilberto Ferreira <gilberto.nunes32@gmail.com>
-Date:   Mon, 25 Oct 2021 19:03:30 -0300
-Message-ID: <CAOKSTBt2ak2BNZ-MvX+2d6gxRk9-sSUeZ8_DmA5gV9Xk=j+ddQ@mail.gmail.com>
-Subject: Laptop NIC just run at 100Mbps!
-To:     Realtek and the Linux r8168 crew <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <YXa/A4eQhlPPsn+n@lore-desk>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26333/Mon Oct 25 10:29:40 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi there
+On 10/25/21 4:28 PM, Lorenzo Bianconi wrote:
+>> Lorenzo noticed that the code testing for program type compatibility of
+>> tail call maps is potentially racy in that two threads could encounter a
+>> map with an unset type simultaneously and both return true even though they
+>> are inserting incompatible programs.
+>>
+>> The race window is quite small, but artificially enlarging it by adding a
+>> usleep_range() inside the check in bpf_prog_array_compatible() makes it
+>> trivial to trigger from userspace with a program that does, essentially:
+>>
+>>          map_fd = bpf_create_map(BPF_MAP_TYPE_PROG_ARRAY, 4, 4, 2, 0);
+>>          pid = fork();
+>>          if (pid) {
+>>                  key = 0;
+>>                  value = xdp_fd;
+>>          } else {
+>>                  key = 1;
+>>                  value = tc_fd;
+>>          }
+>>          err = bpf_map_update_elem(map_fd, &key, &value, 0);
+>>
+>> While the race window is small, it has potentially serious ramifications in
+>> that triggering it would allow a BPF program to tail call to a program of a
+>> different type. So let's get rid of it by protecting the update with a
+>> spinlock. The commit in the Fixes tag is the last commit that touches the
+>> code in question.
+>>
+>> v2:
+>> - Use a spinlock instead of an atomic variable and cmpxchg() (Alexei)
+>>
+>> Fixes: 3324b584b6f6 ("ebpf: misc core cleanup")
+>> Reported-by: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+>> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+>> ---
+>>   include/linux/bpf.h   |  1 +
+>>   kernel/bpf/arraymap.c |  1 +
+>>   kernel/bpf/core.c     | 14 ++++++++++----
+>>   kernel/bpf/syscall.c  |  2 ++
+>>   4 files changed, 14 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+>> index 020a7d5bf470..98d906176d89 100644
+>> --- a/include/linux/bpf.h
+>> +++ b/include/linux/bpf.h
+>> @@ -929,6 +929,7 @@ struct bpf_array_aux {
+>>   	 * stored in the map to make sure that all callers and callees have
+>>   	 * the same prog type and JITed flag.
+>>   	 */
+>> +	spinlock_t type_check_lock;
+> 
+> I was wondering if we can use a mutex instead of a spinlock here since it is
+> run from a syscall AFAIU. The only downside is mutex_lock is run inside
+> aux->used_maps_mutex critical section. Am I missing something?
 
-Why my laptop Acer A515-41G-13U1 which has a giga ethernet realtek
-network card just run at 100Mbps even using most recent kernel (AKA
-5.14.14-051414)
+Hm, potentially it could work, but then it's also 32 vs 4 extra bytes. There's
+also poke_mutex or freeze_mutex, but feels to hacky to 'generalize for reuse',
+so I think the spinlock in bpf_array_aux is fine.
 
-lspci | grep Ether
-01:00.1 Ethernet controller: Realtek Semiconductor Co., Ltd.
-RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller (rev 12)
+>>   	enum bpf_prog_type type;
+>>   	bool jited;
+>>   	/* Programs with direct jumps into programs part of this array. */
+>> diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+>> index cebd4fb06d19..da9b1e96cadc 100644
+>> --- a/kernel/bpf/arraymap.c
+>> +++ b/kernel/bpf/arraymap.c
+>> @@ -1072,6 +1072,7 @@ static struct bpf_map *prog_array_map_alloc(union bpf_attr *attr)
+>>   	INIT_WORK(&aux->work, prog_array_map_clear_deferred);
+>>   	INIT_LIST_HEAD(&aux->poke_progs);
+>>   	mutex_init(&aux->poke_mutex);
+>> +	spin_lock_init(&aux->type_check_lock);
 
+Just as a tiny nit, I would probably name it slightly different, since type_check_lock
+mainly refers to the type property but there's also jit vs non-jit and as pointed out
+there could be other extensions that need checking in future as well. Maybe 'compat_lock'
+would be a more generic one or just:
 
-Thanks
----
-Gilberto Nunes Ferreira
-(47) 99676-7530 - Whatsapp / Telegram
+         struct {
+                 enum bpf_prog_type type;
+                 bool jited;
+                 spinlock_t lock;
+         } owner;
+
+>>   	map = array_map_alloc(attr);
+>>   	if (IS_ERR(map)) {
+>> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+>> index c1e7eb3f1876..9439c839d279 100644
+>> --- a/kernel/bpf/core.c
+>> +++ b/kernel/bpf/core.c
+>> @@ -1823,20 +1823,26 @@ static unsigned int __bpf_prog_ret0_warn(const void *ctx,
+>>   bool bpf_prog_array_compatible(struct bpf_array *array,
+>>   			       const struct bpf_prog *fp)
+>>   {
+>> +	bool ret;
+>> +
+>>   	if (fp->kprobe_override)
+>>   		return false;
+>>   
+>> +	spin_lock(&array->aux->type_check_lock);
+>> +
+>>   	if (!array->aux->type) {
+>>   		/* There's no owner yet where we could check for
+>>   		 * compatibility.
+>>   		 */
+>>   		array->aux->type  = fp->type;
+>>   		array->aux->jited = fp->jited;
+>> -		return true;
+>> +		ret = true;
+>> +	} else {
+>> +		ret = array->aux->type  == fp->type &&
+>> +		      array->aux->jited == fp->jited;
+>>   	}
+>> -
+>> -	return array->aux->type  == fp->type &&
+>> -	       array->aux->jited == fp->jited;
+>> +	spin_unlock(&array->aux->type_check_lock);
+>> +	return ret;
+>>   }
+>>   
+>>   static int bpf_check_tail_call(const struct bpf_prog *fp)
+>> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+>> index 4e50c0bfdb7d..955011c7df29 100644
+>> --- a/kernel/bpf/syscall.c
+>> +++ b/kernel/bpf/syscall.c
+>> @@ -543,8 +543,10 @@ static void bpf_map_show_fdinfo(struct seq_file *m, struct file *filp)
+>>   
+>>   	if (map->map_type == BPF_MAP_TYPE_PROG_ARRAY) {
+>>   		array = container_of(map, struct bpf_array, map);
+>> +		spin_lock(&array->aux->type_check_lock);
+>>   		type  = array->aux->type;
+>>   		jited = array->aux->jited;
+>> +		spin_unlock(&array->aux->type_check_lock);
+>>   	}
+>>   
+>>   	seq_printf(m,
+>> -- 
+>> 2.33.0
+>>
+
