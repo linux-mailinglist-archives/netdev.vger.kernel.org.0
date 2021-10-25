@@ -2,242 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BBA4438F6D
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 08:25:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47064438FD0
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 08:59:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230365AbhJYG1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 02:27:36 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:26192 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230199AbhJYG1d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 02:27:33 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Hd4fD5wQPz8ttV;
-        Mon, 25 Oct 2021 14:23:48 +0800 (CST)
-Received: from dggpeml500025.china.huawei.com (7.185.36.35) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+        id S231455AbhJYHCC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 03:02:02 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:13977 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231458AbhJYHCB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 03:02:01 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Hd5PJ4ksszZcSF;
+        Mon, 25 Oct 2021 14:57:40 +0800 (CST)
+Received: from dggpeml500006.china.huawei.com (7.185.36.76) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Mon, 25 Oct 2021 14:25:08 +0800
-Received: from huawei.com (10.175.124.27) by dggpeml500025.china.huawei.com
- (7.185.36.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.15; Mon, 25 Oct
- 2021 14:25:07 +0800
-From:   Hou Tao <houtao1@huawei.com>
-To:     Alexei Starovoitov <ast@kernel.org>
-CC:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <houtao1@huawei.com>
-Subject: [PATCH bpf-next v4 4/4] selftests/bpf: add test cases for struct_ops prog
-Date:   Mon, 25 Oct 2021 14:40:25 +0800
-Message-ID: <20211025064025.2567443-5-houtao1@huawei.com>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20211025064025.2567443-1-houtao1@huawei.com>
-References: <20211025064025.2567443-1-houtao1@huawei.com>
+ 15.1.2308.15; Mon, 25 Oct 2021 14:59:32 +0800
+Received: from [10.174.178.240] (10.174.178.240) by
+ dggpeml500006.china.huawei.com (7.185.36.76) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Mon, 25 Oct 2021 14:59:32 +0800
+Subject: Re: [PATCH net 3/3] can: j1939: j1939_tp_cmd_recv(): check the dst
+ address of TP.CM_BAM
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+CC:     Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        <kernel@pengutronix.de>, Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <linux-can@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <1634825057-47915-1-git-send-email-zhangchangzhong@huawei.com>
+ <1634825057-47915-4-git-send-email-zhangchangzhong@huawei.com>
+ <20211022102858.GC20681@pengutronix.de>
+From:   Zhang Changzhong <zhangchangzhong@huawei.com>
+Message-ID: <671f5813-4d36-2c67-fea6-4dd9504e661f@huawei.com>
+Date:   Mon, 25 Oct 2021 14:59:32 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml500025.china.huawei.com (7.185.36.35)
+In-Reply-To: <20211022102858.GC20681@pengutronix.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.240]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpeml500006.china.huawei.com (7.185.36.76)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Running a BPF_PROG_TYPE_STRUCT_OPS prog for dummy_st_ops::test_N()
-through bpf_prog_test_run(). Four test cases are added:
-(1) attach dummy_st_ops should fail
-(2) function return value of bpf_dummy_ops::test_1() is expected
-(3) pointer argument of bpf_dummy_ops::test_1() works as expected
-(4) multiple arguments passed to bpf_dummy_ops::test_2() are correct
+On 2021/10/22 18:28, Oleksij Rempel wrote:
+> On Thu, Oct 21, 2021 at 10:04:17PM +0800, Zhang Changzhong wrote:
+>> The TP.CM_BAM message must be sent to the global address [1], so add a
+>> check to drop TP.CM_BAM sent to a non-global address.
+>>
+>> Without this patch, the receiver will treat the following packets as
+>> normal RTS/CTS tranport:
+>> 18EC0102#20090002FF002301
+>> 18EB0102#0100000000000000
+>> 18EB0102#020000FFFFFFFFFF
+>>
+>> [1] SAE-J1939-82 2015 A.3.3 Row 1.
+>>
+>> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+>> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+>> ---
+>>  net/can/j1939/transport.c | 2 ++
+>>  1 file changed, 2 insertions(+)
+>>
+>> diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
+>> index 2efa606..93ec0c3 100644
+>> --- a/net/can/j1939/transport.c
+>> +++ b/net/can/j1939/transport.c
+>> @@ -2019,6 +2019,8 @@ static void j1939_tp_cmd_recv(struct j1939_priv *priv, struct sk_buff *skb)
+>>  		extd = J1939_ETP;
+>>  		fallthrough;
+>>  	case J1939_TP_CMD_BAM:
+>> +		if (!j1939_cb_is_broadcast(skcb))
+> 
+> Please add here netdev_err_once("with some message"), we need to know if
+> some MCU makes bad things.
 
-Signed-off-by: Hou Tao <houtao1@huawei.com>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
----
- .../selftests/bpf/prog_tests/dummy_st_ops.c   | 115 ++++++++++++++++++
- .../selftests/bpf/progs/dummy_st_ops.c        |  50 ++++++++
- 2 files changed, 165 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/dummy_st_ops.c
- create mode 100644 tools/testing/selftests/bpf/progs/dummy_st_ops.c
+Ok, will do.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/dummy_st_ops.c b/tools/testing/selftests/bpf/prog_tests/dummy_st_ops.c
-new file mode 100644
-index 000000000000..cbaa44ffb8c6
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/dummy_st_ops.c
-@@ -0,0 +1,115 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (C) 2021. Huawei Technologies Co., Ltd */
-+#include <test_progs.h>
-+#include "dummy_st_ops.skel.h"
-+
-+/* Need to keep consistent with definition in include/linux/bpf.h */
-+struct bpf_dummy_ops_state {
-+	int val;
-+};
-+
-+static void test_dummy_st_ops_attach(void)
-+{
-+	struct dummy_st_ops *skel;
-+	struct bpf_link *link;
-+
-+	skel = dummy_st_ops__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "dummy_st_ops_load"))
-+		return;
-+
-+	link = bpf_map__attach_struct_ops(skel->maps.dummy_1);
-+	ASSERT_EQ(libbpf_get_error(link), -EOPNOTSUPP, "dummy_st_ops_attach");
-+
-+	dummy_st_ops__destroy(skel);
-+}
-+
-+static void test_dummy_init_ret_value(void)
-+{
-+	__u64 args[1] = {0};
-+	struct bpf_prog_test_run_attr attr = {
-+		.ctx_size_in = sizeof(args),
-+		.ctx_in = args,
-+	};
-+	struct dummy_st_ops *skel;
-+	int fd, err;
-+
-+	skel = dummy_st_ops__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "dummy_st_ops_load"))
-+		return;
-+
-+	fd = bpf_program__fd(skel->progs.test_1);
-+	attr.prog_fd = fd;
-+	err = bpf_prog_test_run_xattr(&attr);
-+	ASSERT_OK(err, "test_run");
-+	ASSERT_EQ(attr.retval, 0xf2f3f4f5, "test_ret");
-+
-+	dummy_st_ops__destroy(skel);
-+}
-+
-+static void test_dummy_init_ptr_arg(void)
-+{
-+	int exp_retval = 0xbeef;
-+	struct bpf_dummy_ops_state in_state = {
-+		.val = exp_retval,
-+	};
-+	__u64 args[1] = {(unsigned long)&in_state};
-+	struct bpf_prog_test_run_attr attr = {
-+		.ctx_size_in = sizeof(args),
-+		.ctx_in = args,
-+	};
-+	struct dummy_st_ops *skel;
-+	int fd, err;
-+
-+	skel = dummy_st_ops__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "dummy_st_ops_load"))
-+		return;
-+
-+	fd = bpf_program__fd(skel->progs.test_1);
-+	attr.prog_fd = fd;
-+	err = bpf_prog_test_run_xattr(&attr);
-+	ASSERT_OK(err, "test_run");
-+	ASSERT_EQ(in_state.val, 0x5a, "test_ptr_ret");
-+	ASSERT_EQ(attr.retval, exp_retval, "test_ret");
-+
-+	dummy_st_ops__destroy(skel);
-+}
-+
-+static void test_dummy_multiple_args(void)
-+{
-+	__u64 args[5] = {0, -100, 0x8a5f, 'c', 0x1234567887654321ULL};
-+	struct bpf_prog_test_run_attr attr = {
-+		.ctx_size_in = sizeof(args),
-+		.ctx_in = args,
-+	};
-+	struct dummy_st_ops *skel;
-+	int fd, err;
-+	size_t i;
-+	char name[8];
-+
-+	skel = dummy_st_ops__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "dummy_st_ops_load"))
-+		return;
-+
-+	fd = bpf_program__fd(skel->progs.test_2);
-+	attr.prog_fd = fd;
-+	err = bpf_prog_test_run_xattr(&attr);
-+	ASSERT_OK(err, "test_run");
-+	for (i = 0; i < ARRAY_SIZE(args); i++) {
-+		snprintf(name, sizeof(name), "arg %zu", i);
-+		ASSERT_EQ(skel->bss->test_2_args[i], args[i], name);
-+	}
-+
-+	dummy_st_ops__destroy(skel);
-+}
-+
-+void test_dummy_st_ops(void)
-+{
-+	if (test__start_subtest("dummy_st_ops_attach"))
-+		test_dummy_st_ops_attach();
-+	if (test__start_subtest("dummy_init_ret_value"))
-+		test_dummy_init_ret_value();
-+	if (test__start_subtest("dummy_init_ptr_arg"))
-+		test_dummy_init_ptr_arg();
-+	if (test__start_subtest("dummy_multiple_args"))
-+		test_dummy_multiple_args();
-+}
-diff --git a/tools/testing/selftests/bpf/progs/dummy_st_ops.c b/tools/testing/selftests/bpf/progs/dummy_st_ops.c
-new file mode 100644
-index 000000000000..ead87edb75e2
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/dummy_st_ops.c
-@@ -0,0 +1,50 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (C) 2021. Huawei Technologies Co., Ltd */
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+struct bpf_dummy_ops_state {
-+	int val;
-+} __attribute__((preserve_access_index));
-+
-+struct bpf_dummy_ops {
-+	int (*test_1)(struct bpf_dummy_ops_state *state);
-+	int (*test_2)(struct bpf_dummy_ops_state *state, int a1, unsigned short a2,
-+		      char a3, unsigned long a4);
-+};
-+
-+char _license[] SEC("license") = "GPL";
-+
-+SEC("struct_ops/test_1")
-+int BPF_PROG(test_1, struct bpf_dummy_ops_state *state)
-+{
-+	int ret;
-+
-+	if (!state)
-+		return 0xf2f3f4f5;
-+
-+	ret = state->val;
-+	state->val = 0x5a;
-+	return ret;
-+}
-+
-+__u64 test_2_args[5];
-+
-+SEC("struct_ops/test_2")
-+int BPF_PROG(test_2, struct bpf_dummy_ops_state *state, int a1, unsigned short a2,
-+	     char a3, unsigned long a4)
-+{
-+	test_2_args[0] = (unsigned long)state;
-+	test_2_args[1] = a1;
-+	test_2_args[2] = a2;
-+	test_2_args[3] = a3;
-+	test_2_args[4] = a4;
-+	return 0;
-+}
-+
-+SEC(".struct_ops")
-+struct bpf_dummy_ops dummy_1 = {
-+	.test_1 = (void *)test_1,
-+	.test_2 = (void *)test_2,
-+};
--- 
-2.29.2
+The current patch breaks ETP functionality as the J1939_ETP_CMD_RTS fallthrough
+to J1939_TP_CMD_BAM, this will also be fixed in v2.
 
+> 
+>> +			return;
+>>  		fallthrough;
+>>  	case J1939_TP_CMD_RTS:
+>>  		if (skcb->addr.type != extd)
+>> -- 
+>> 2.9.5
+>>
+>>
+> 
