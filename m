@@ -2,165 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3228439E5D
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 20:20:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E60AF439E70
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 20:25:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233005AbhJYSXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 14:23:14 -0400
-Received: from mail-mw2nam12on2113.outbound.protection.outlook.com ([40.107.244.113]:31841
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232658AbhJYSXJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Oct 2021 14:23:09 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gW0kDQd9PGi+he3BWFPDakDBlT58iGB1pyn4bbzAqAfjnDAH4MdHNiVXHODVnlhlIIVU0TyG/xvUMAWtmMAHVp+54dxsw/+fsDl8yuSPx4C67CdtHzKS+OXw9cLdk5VWmKPLcoCbhhoz6nhexAdAkQsEJII8Pug7dIROc8m2LwaojrO+PedyY8FGTwdGdYQzdDxmnUZiY/QMpNTs1hD+SYJLPGBVqJgLd+p6KCkZK0gHv3P/xLn0PLLgWKqXYG83WbR3VA+ckgdq2DZihgTX2Wb5bVacU9fKzkSKGt/9c0LB9AvebP0oEC0U3R5qgvPe/ysjMMl4V3oOYNjb/TqzJA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fp539HxF44tOmwRBNe6Woyi3i0CQf7P2I4MdOclU4m4=;
- b=YIJY9oWMm2UEHaCEUhnNZNDQ8BYiSVc5Yv1swXDsE/S2sJU6jBb9fIaZepkD7u04+g/13DDZ9lUijvEYiucU677xu16+f6dV0NSgXIbpgbVcSr2L+us1wqZU5Iq+NE3Qvs+On2mCaF3INomXkDtn8iMS7oFYJ0+poheKnxbSg7ZSQAvzWuURoxqMsHEN2J7o/wxJs7SFqKzPWHeX0kB95oSreAmwJvzNoDbkYW6f+5mrc3wFCLxX6IaDjxBTMSgfdPiyrbqatepZFTxfFJmdUB7Tu+X5Y6eiXjK+b4zk8S3z52+PZbiSPeu9fYCE0lanIEarZfBRZW5eFm8ng81o/w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=cornelisnetworks.com; dmarc=pass action=none
- header.from=cornelisnetworks.com; dkim=pass header.d=cornelisnetworks.com;
- arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cornelisnetworks.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fp539HxF44tOmwRBNe6Woyi3i0CQf7P2I4MdOclU4m4=;
- b=WxpXZRqN6iPDGo2eANjak7KV/K6TceZvYDwYAwoBWiGQU8xWwGBqrjsNfso+yrq0sj/gjO6o7gcNcF7mbs9BbSGPq+cFN7EN0rMiEILqQ1DPaYE6jjlVUIRwVIsPA8Q5iV2h1WhgPEEDkFLE2j/JkY4tKB82HmBHM2y5Hm+sQ/228Jbk1LSb8/avjyWHhh0E8JZtFujhDTTiR7uBYW6fUr7F17zIJEbEfaaY3rnS/Xv6lpQtvsQdRYgizcm5pYcbPrKFXbDTthY9SjHe0mQ3XrMTJ/Wv3brBQXQxDsvdq4dmAyx6jvHuDv9INWTt+XePrxqOHJqmLml4IxdqGbOOxA==
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none
- header.from=cornelisnetworks.com;
-Received: from PH0PR01MB6439.prod.exchangelabs.com (2603:10b6:510:d::22) by
- PH0PR01MB7476.prod.exchangelabs.com (2603:10b6:510:f3::5) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4628.18; Mon, 25 Oct 2021 18:20:44 +0000
-Received: from PH0PR01MB6439.prod.exchangelabs.com
- ([fe80::88df:62ca:347:917f]) by PH0PR01MB6439.prod.exchangelabs.com
- ([fe80::88df:62ca:347:917f%7]) with mapi id 15.20.4628.020; Mon, 25 Oct 2021
- 18:20:44 +0000
-Message-ID: <e07e29ab-4cae-73b5-0836-c3cf39f3df00@cornelisnetworks.com>
-Date:   Mon, 25 Oct 2021 14:20:36 -0400
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.2.1
-Subject: Re: [PATCH v6 04/12] drivers/infiniband: make setup_ctxt always get a
- nul terminated task comm
-Content-Language: en-US
-To:     Yafang Shao <laoar.shao@gmail.com>, akpm@linux-foundation.org,
-        keescook@chromium.org, rostedt@goodmis.org,
-        mathieu.desnoyers@efficios.com, arnaldo.melo@gmail.com,
-        pmladek@suse.com, peterz@infradead.org, viro@zeniv.linux.org.uk,
-        valentin.schneider@arm.com, qiang.zhang@windriver.com,
-        robdclark@chromium.org, christian@brauner.io,
-        dietmar.eggemann@arm.com, mingo@redhat.com, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        mike.marciniszyn@cornelisnetworks.com, dledford@redhat.com,
-        jgg@ziepe.ca
-Cc:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, oliver.sang@intel.com, lkp@intel.com,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-References: <20211025083315.4752-1-laoar.shao@gmail.com>
- <20211025083315.4752-5-laoar.shao@gmail.com>
-From:   Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-In-Reply-To: <20211025083315.4752-5-laoar.shao@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BLAPR03CA0047.namprd03.prod.outlook.com
- (2603:10b6:208:32d::22) To PH0PR01MB6439.prod.exchangelabs.com
- (2603:10b6:510:d::22)
+        id S233140AbhJYS1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 14:27:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38828 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233217AbhJYS13 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 14:27:29 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 880E0C061220
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 11:25:05 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id y12so3525350eda.4
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 11:25:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kryo-se.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=a5QlcGbLUwoR2MnKfG4abvIGn8UPx/Lfcbl0Cd7jJvw=;
+        b=v67Gi+20fe1gMeXVC7GoRQnSarW1kpfPJv5xdsK0DmeApaUYbVx4MOLpBqvxjuzMRk
+         Gg1Pl2JGBeXg+o/vhllduaD0PUkrzpo8tRGpY+Avaon9GUE7vzXSiSmdccabyaKETArc
+         /0Abog58+3y7BuEFfpqvhWKD3AAMp8oDthiKm3sXjQ6kRMGOHnUvYMevx4Cfnxsh/jHw
+         o1C7scFlidZWAVr65kEljLIwjkA0sOL06Ztqv2iK7/ea0lqN/GqLSh5VcP9y9KnnlTbo
+         YEa10W64TbMt3xnDATknphk5gaxnN9ERLh0SONfKalz72J/eXzT5k6CEe80t363DIEA2
+         HLzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=a5QlcGbLUwoR2MnKfG4abvIGn8UPx/Lfcbl0Cd7jJvw=;
+        b=X/+wgPLETV/wrHVEFOPmqqIdBBI6bLUa29APLNc/CMmlIXQATdYD3Hhak77BIlc6l4
+         l8vnfRJqApGMjgpqlKxA3dv/glib9UcAW+Sge2KBaV8Ni7sIy4SKS7iuiGrH2aDj3HOg
+         6+FL/ZbJ8NzuN+gT4Q3Mg265hHwlbj4UQl/ja9h7gBAqVBJGVR6yoTWpmYb+VKO2WT7c
+         niRLNfMVTlSH8a3kdL38I0rrVyFKSLnZmdTE6LxZY5l0zFU5p2abU2FnnNu8SR9o86TE
+         Eu9NbUjL+9q3lTwQijsowQ6DLKJLLFAjdlk7/vIw90c4sZvriGAUYTOdOZqyVC7+lnMd
+         e0jA==
+X-Gm-Message-State: AOAM533lZiGlxdfG2ZEAKAE86s4M0MYS5JLfUiSvzqlxrAVNLVolMfSs
+        YDsux9IT6BbK+WLfW6K/ZxGwP6m2LxrUZ/o4iiosBA==
+X-Google-Smtp-Source: ABdhPJzHAKi1xEMNbKB7FVEhP7Q5bMd9Az+tZ9zVeufwiLYtaTaqqAKhtS4P5Y6iijCC8mZa7YWevnXJUdQh10z/fAo=
+X-Received: by 2002:a05:6402:643:: with SMTP id u3mr28816971edx.164.1635186303854;
+ Mon, 25 Oct 2021 11:25:03 -0700 (PDT)
 MIME-Version: 1.0
-Received: from [192.168.40.173] (24.154.216.5) by BLAPR03CA0047.namprd03.prod.outlook.com (2603:10b6:208:32d::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18 via Frontend Transport; Mon, 25 Oct 2021 18:20:39 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4bff85a7-4515-4627-275e-08d997e4286f
-X-MS-TrafficTypeDiagnostic: PH0PR01MB7476:
-X-Microsoft-Antispam-PRVS: <PH0PR01MB7476C29755B177CE515380C5F4839@PH0PR01MB7476.prod.exchangelabs.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:741;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cRCb5gVhKCqifggviULiAHoU6jGgXiHcnagOSDdYi4DbpnKhK4c8DCONfDZEStpcPxSjxtAq1YcvLxUGge/1DjT3vBq4tW5wZNBLt4kLI0wNe+NeJ6aEEf+XbuLcZQPo5mXiZAAlkRGGVy+wMF6mEGE9jSgy2ntLQf9Dq+4E7WtS6IYqiINeX4hidQFU84WMBtesRFCH+qWrSn+3QLwUwJ8UCfl4L7wlC+92rcYyOp1QZ2gRsSD2/L+p7SC2Hpst7AgUKcz2ThWFGkjuw+kiRs+TV40EmqqkuYOw65BrNkO/sBQvskshyi+FRudJaRWV7dKSxlmeFzZzns+lcTIQLzdRrZRfBKfGsrgpr8A9FMYLWo/FCdIEmgHkXFJGs7D5ajmVjMDcjSNPfjW7GQddfIWy/8e8LGBjW15oTSBZaZbBZg9U6xLAUPDQkgp0JGgpV16v21TqR/MgduA8HJ0/BfOllldsR2iwGmXTMKZxhAj/b7cxDxMhgSlq+fgWaJyZMtMaElzhOkn3YQYf5IW9irxgpPdUgkBKytva3Sv0dKBVwDvDV+OAQjNuUWM2WQCk9keIL0un06YE+E3eK9kr57y/DBWBlAdQqgMg2oiPmzOik7jEz2skbjtlFLLqLsRjfAFciavBaEFBEgQXtJke3sgyTFGGSet3WaQR0oU2RDvLVQSnnhQEDk6LVy4ZZuLj0nC5fRg1tsIYPzOCUk3I5JddH0BJP9IjPXXFJDrbnk+d7Lm+MUifNQc0y+Idww0e7a9paWye08Ujh7PbD/JwBlMJyEMH6LbngYTvoU+AKCo=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR01MB6439.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(136003)(376002)(366004)(39840400004)(396003)(8936002)(508600001)(2906002)(52116002)(7416002)(36756003)(7406005)(6666004)(316002)(4326008)(38350700002)(8676002)(38100700002)(31686004)(921005)(4744005)(16576012)(2616005)(44832011)(5660300002)(956004)(83380400001)(6486002)(66476007)(66556008)(66946007)(186003)(86362001)(26005)(31696002)(53546011)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?U2tsT1ppU0ZuZE90RkpYeEd1bE5KN1RwNHpscFhlUElhc3BEVlpLZHNpdkZ1?=
- =?utf-8?B?ZHRxNmVWcTBlUFFhWnppSXRwYmVvTTBQSXMzMzFEUVpKU3dWdmdOMmpieFV6?=
- =?utf-8?B?My9wd0tLQ2I5dXMxRTJ1TmlaVFlNOVBVZnpBUEh3MXY4dkxqempyUUVzU0xH?=
- =?utf-8?B?TS9QdERkaUw1Wnl1OG9iTmxhNW9GZ1h6cUtrN2xaV1o4Ums2NDFwWGRFalNp?=
- =?utf-8?B?R21EQ0xZR0ZxNWs5VnVTZ2dvUE5PV1JnVEhRVnkxYTFGZklmVjdkREhpRUFj?=
- =?utf-8?B?Y25MSzJwUGE0U25jVWV2clNzUzFqWlRPSW4zL2RXa0crUTZpVHZDNWhLaEhi?=
- =?utf-8?B?ZUZVK3FNTDVDZFp2RGZVZE1mblJFLyt4RFJOU0hUaVpDTmxoV1kwdjVpc2VD?=
- =?utf-8?B?dXRGbzJhRDRFeStPNTJ4eGVaRWFqRXA5R29qendIRnpELzIvMFNWZ1hGS2RK?=
- =?utf-8?B?K3pjSGZPdGVZcUhXOFh0Q0ZBcWNsdVBPMWlPWnBvTjY0OHM4RGRGQU9LK3I0?=
- =?utf-8?B?VWV1clRCWXAxTjN4Qk11empVYk5zdHcvZTcwMms5d0ZaMTg3VTlDdVRybXJk?=
- =?utf-8?B?STFFYnJTQThxakVQQ1dNcGFrWHRFUDRuR3ZuTXQxbVVEV3J2a051emZ2QSth?=
- =?utf-8?B?clZYWjFYWk9aRC9ZQWh4Qm81bUhuSDhJanNLV0hrRVdyN0Y2Tkpmb1ZmV0FF?=
- =?utf-8?B?TXJOMCtuKzE3cGQ2VDVFem90dVVUd0FkR09lN1BQaHl3b2tyczArVzNJOVNZ?=
- =?utf-8?B?Vm9kenpHQk9KdjkvNTJ2a0gzL1g1TmJnTS81NWRoeG5CbVdwZHpPQ3N2K05N?=
- =?utf-8?B?UUw4TXM1SjU1KzlOUjBaLzNqZW8xZlVPRnJheHNUaEhBRzRTbVEzUDN2TVJD?=
- =?utf-8?B?NUVvNUpoUmhtVlYyVGExd1pLSFVMaHd5bzNqOFEwOWRQZ3d2cWdjSDh2cURk?=
- =?utf-8?B?Y3V0bzUrKzVDSGVlZHVDL3kzeHBlVDZqa2dvYnAzay9KRHJqaE9uUjZ2N3FK?=
- =?utf-8?B?NnlGQ240ejdYMW9FazZzbkZJRHRXdzA1QWQveEJEWXAwUXpEVVdYdzRYSXNx?=
- =?utf-8?B?eWUvL1FWTHBIWTd0N2dIT05FVGJhb2FOeEgwSDRlYk1VSUZSc2V5WWFCTVpJ?=
- =?utf-8?B?OEo0VlhoTXVRSzdWdUtVZktTWGVldmtGNWJhSWRNeEgrL0RxdWhlUGdqbjZ2?=
- =?utf-8?B?clRnMlhFYStCVnViZU1XL3FJRDdLSzQwcVhoT01FSXZ6b2JIVWttejI3cUxE?=
- =?utf-8?B?NW1ScWhWUDJPQkF0QjVWRUdDd0dTZTRERXZ2SW9wV3Rsak11OVZsVTR1YXg3?=
- =?utf-8?B?aHFQcTBnSWZMWlZkQ2JJUTdZR284MDlUVk1VMG1zZThxQzJqL0c1NXZTOXNH?=
- =?utf-8?B?TDlwbStseG5ERFRFamp1bE5FYWU4a25YOVNleEJyd05Ob1poaU5FdUxaU2Yz?=
- =?utf-8?B?WXoyV3R3OVV5Y0NaNDIyamhzei9TeEZJUWMyRTVmSGFPZ2pKZGpvSVQ0QUFG?=
- =?utf-8?B?WUtBLzA0cHFFUWZ0SDRGQzVEYmRNTkliaFEvVmNSUmJWUHp5cWE0TnVIUnFw?=
- =?utf-8?B?ZVNEcHhaZERzcEhzM2lBQ1M4SUE0dkgvREtLUEJkaHJXVEFnbnUrU09lZ2gz?=
- =?utf-8?B?aGFuVSt0c3pWbHpONXd5bHp1Vkhjdmx0TGt4T1JjdVRjZTVIMFQ0TjR6Q3Y2?=
- =?utf-8?B?VHdIZDJOWjE0NWEwV3oyWVc5b2VuVDd3OFZDRXB0VUp1OEh3OFU3WGZQemRM?=
- =?utf-8?B?ZUtyaDk2YUNDMC83R0hWQkVyY0QvK3dHVEFMVTR3N0poUnlPZzlGVnVuLzNF?=
- =?utf-8?B?SmVxeVd1UGJ1d2tGRDIyeTFXOUd4TlJSQkRXc2dTSnR5ZTlrc0Fkd2VSZFlj?=
- =?utf-8?B?dS9tem9YdWJPY0lMT0g0TkNDTEZ1cHp3SmwwSWwwQ2Z6R3hYQ0dTODBaYlBM?=
- =?utf-8?B?ZCs4QjZFRStLMHVlTW91MFZsSytkcm1yaUVucEFxOTdQa1pMWnpZWjVDV1RJ?=
- =?utf-8?B?bWpiaE5XMWZlelhHeDdIb1k1Znkrd3pZS1NCcnY2UDQ1Ry9rMzZEWGZQeTlW?=
- =?utf-8?B?ZytRNVIra2lZQWExU2QzUm40SXVkZHJrSkYrMUh2MXYxVXBPVFYxb1VpcFF6?=
- =?utf-8?B?TUlsOGNTL3VHMXRPOFE2TTRCVVYvVHZ0REltL2NuQlFUdXFyd2tIR1YrOFov?=
- =?utf-8?B?WmVJZHBDV0ZLT0MwUU5nWkY4VlRVVFVqU09PamoxMk83S25vOTR5aFlERERM?=
- =?utf-8?B?RXM5NVN0czQvenVJL1hEdDNiMml4Y1N0ZmFUNTdTNjRrZm1BRmNubmxwYzFI?=
- =?utf-8?B?ZWNJTWhleDBjYmxLdU02VjVKSWMxWnUxSVkxNEYwZWFTMm4vK0FrQT09?=
-X-OriginatorOrg: cornelisnetworks.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4bff85a7-4515-4627-275e-08d997e4286f
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR01MB6439.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2021 18:20:44.0359
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4dbdb7da-74ee-4b45-8747-ef5ce5ebe68a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tUTTpQj2VqJ/riel8HbpjyHdadlzpyWpIpH6diahkVfxLqdSJd51Ux5gWNgfhYNiYFerfkMsVR5SJJxyZ1m94uZPu6KsQoB09RDl2R7+4l8wRrPcRuyL7rDEV1ccTVjm
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR01MB7476
+References: <20211025165939.1393655-1-sashal@kernel.org> <20211025165939.1393655-15-sashal@kernel.org>
+In-Reply-To: <20211025165939.1393655-15-sashal@kernel.org>
+From:   Erik Ekman <erik@kryo.se>
+Date:   Mon, 25 Oct 2021 20:24:52 +0200
+Message-ID: <CAGgu=sCeJNqWaTBUpOZNGeVo+OJp--3W8CP9gmbR9mknR8qN8w@mail.gmail.com>
+Subject: Re: [PATCH AUTOSEL 5.14 15/18] sfc: Export fibre-specific supported
+ link modes
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, ecree.xilinx@gmail.com,
+        kuba@kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This needs 041c61488236a5a8 ("sfc: Fix reading non-legacy supported
+link modes") from net-next to work for 10G/25G/50G/100G.
 
+Thanks/
+Erik
 
-On 10/25/21 4:33 AM, Yafang Shao wrote:
-> Use strscpy_pad() instead of strlcpy() to make the comm always nul
-> terminated. As the comment above the hard-coded 16, we can replace it
-> with TASK_COMM_LEN, then it will adopt to the comm size change.
-> 
-> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-> Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Steven Rostedt <rostedt@goodmis.org>
-> Cc: Al Viro <viro@zeniv.linux.org.uk>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Petr Mladek <pmladek@suse.com>
+On Mon, 25 Oct 2021 at 19:00, Sasha Levin <sashal@kernel.org> wrote:
+>
+> From: Erik Ekman <erik@kryo.se>
+>
+> [ Upstream commit c62041c5baa9ded3bc6fd38d3f724de70683b489 ]
+>
+> The 1/10GbaseT modes were set up for cards with SFP+ cages in
+> 3497ed8c852a5 ("sfc: report supported link speeds on SFP connections").
+> 10GbaseT was likely used since no 10G fibre mode existed.
+>
+> The missing fibre modes for 1/10G were added to ethtool.h in 5711a9822144
+> ("net: ethtool: add support for 1000BaseX and missing 10G link modes")
+> shortly thereafter.
+>
+> The user guide available at https://support-nic.xilinx.com/wp/drivers
+> lists support for the following cable and transceiver types in section 2.=
+9:
+> - QSFP28 100G Direct Attach Cables
+> - QSFP28 100G SR Optical Transceivers (with SR4 modules listed)
+> - SFP28 25G Direct Attach Cables
+> - SFP28 25G SR Optical Transceivers
+> - QSFP+ 40G Direct Attach Cables
+> - QSFP+ 40G Active Optical Cables
+> - QSFP+ 40G SR4 Optical Transceivers
+> - QSFP+ to SFP+ Breakout Direct Attach Cables
+> - QSFP+ to SFP+ Breakout Active Optical Cables
+> - SFP+ 10G Direct Attach Cables
+> - SFP+ 10G SR Optical Transceivers
+> - SFP+ 10G LR Optical Transceivers
+> - SFP 1000BASE=E2=80=90T Transceivers
+> - 1G Optical Transceivers
+> (From user guide issue 28. Issue 16 which also includes older cards like
+> SFN5xxx/SFN6xxx has matching lists for 1/10/40G transceiver types.)
+>
+> Regarding SFP+ 10GBASE=E2=80=90T transceivers the latest guide says:
+> "Solarflare adapters do not support 10GBASE=E2=80=90T transceiver modules=
+."
+>
+> Tested using SFN5122F-R7 (with 2 SFP+ ports). Supported link modes do not=
+ change
+> depending on module used (tested with 1000BASE-T, 1000BASE-BX10, 10GBASE-=
+LR).
+> Before:
+>
+> $ ethtool ext
+> Settings for ext:
+>         Supported ports: [ FIBRE ]
+>         Supported link modes:   1000baseT/Full
+>                                 10000baseT/Full
+>         Supported pause frame use: Symmetric Receive-only
+>         Supports auto-negotiation: No
+>         Supported FEC modes: Not reported
+>         Advertised link modes:  Not reported
+>         Advertised pause frame use: No
+>         Advertised auto-negotiation: No
+>         Advertised FEC modes: Not reported
+>         Link partner advertised link modes:  Not reported
+>         Link partner advertised pause frame use: No
+>         Link partner advertised auto-negotiation: No
+>         Link partner advertised FEC modes: Not reported
+>         Speed: 1000Mb/s
+>         Duplex: Full
+>         Auto-negotiation: off
+>         Port: FIBRE
+>         PHYAD: 255
+>         Transceiver: internal
+>         Current message level: 0x000020f7 (8439)
+>                                drv probe link ifdown ifup rx_err tx_err h=
+w
+>         Link detected: yes
+>
+> After:
+>
+> $ ethtool ext
+> Settings for ext:
+>         Supported ports: [ FIBRE ]
+>         Supported link modes:   1000baseT/Full
+>                                 1000baseX/Full
+>                                 10000baseCR/Full
+>                                 10000baseSR/Full
+>                                 10000baseLR/Full
+>         Supported pause frame use: Symmetric Receive-only
+>         Supports auto-negotiation: No
+>         Supported FEC modes: Not reported
+>         Advertised link modes:  Not reported
+>         Advertised pause frame use: No
+>         Advertised auto-negotiation: No
+>         Advertised FEC modes: Not reported
+>         Link partner advertised link modes:  Not reported
+>         Link partner advertised pause frame use: No
+>         Link partner advertised auto-negotiation: No
+>         Link partner advertised FEC modes: Not reported
+>         Speed: 1000Mb/s
+>         Duplex: Full
+>         Auto-negotiation: off
+>         Port: FIBRE
+>         PHYAD: 255
+>         Transceiver: internal
+>         Supports Wake-on: g
+>         Wake-on: d
+>         Current message level: 0x000020f7 (8439)
+>                                drv probe link ifdown ifup rx_err tx_err h=
+w
+>         Link detected: yes
+>
+> Signed-off-by: Erik Ekman <erik@kryo.se>
+> Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+> Signed-off-by: David S. Miller <davem@davemloft.net>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
 > ---
->  drivers/infiniband/hw/qib/qib.h          | 2 +-
->  drivers/infiniband/hw/qib/qib_file_ops.c | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-
-This qib patch looks fine.
-
-Acked-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+>  drivers/net/ethernet/sfc/mcdi_port_common.c | 37 +++++++++++++++------
+>  1 file changed, 26 insertions(+), 11 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/sfc/mcdi_port_common.c b/drivers/net/et=
+hernet/sfc/mcdi_port_common.c
+> index 4bd3ef8f3384..c4fe3c48ac46 100644
+> --- a/drivers/net/ethernet/sfc/mcdi_port_common.c
+> +++ b/drivers/net/ethernet/sfc/mcdi_port_common.c
+> @@ -132,16 +132,27 @@ void mcdi_to_ethtool_linkset(u32 media, u32 cap, un=
+signed long *linkset)
+>         case MC_CMD_MEDIA_SFP_PLUS:
+>         case MC_CMD_MEDIA_QSFP_PLUS:
+>                 SET_BIT(FIBRE);
+> -               if (cap & (1 << MC_CMD_PHY_CAP_1000FDX_LBN))
+> +               if (cap & (1 << MC_CMD_PHY_CAP_1000FDX_LBN)) {
+>                         SET_BIT(1000baseT_Full);
+> -               if (cap & (1 << MC_CMD_PHY_CAP_10000FDX_LBN))
+> -                       SET_BIT(10000baseT_Full);
+> -               if (cap & (1 << MC_CMD_PHY_CAP_40000FDX_LBN))
+> +                       SET_BIT(1000baseX_Full);
+> +               }
+> +               if (cap & (1 << MC_CMD_PHY_CAP_10000FDX_LBN)) {
+> +                       SET_BIT(10000baseCR_Full);
+> +                       SET_BIT(10000baseLR_Full);
+> +                       SET_BIT(10000baseSR_Full);
+> +               }
+> +               if (cap & (1 << MC_CMD_PHY_CAP_40000FDX_LBN)) {
+>                         SET_BIT(40000baseCR4_Full);
+> -               if (cap & (1 << MC_CMD_PHY_CAP_100000FDX_LBN))
+> +                       SET_BIT(40000baseSR4_Full);
+> +               }
+> +               if (cap & (1 << MC_CMD_PHY_CAP_100000FDX_LBN)) {
+>                         SET_BIT(100000baseCR4_Full);
+> -               if (cap & (1 << MC_CMD_PHY_CAP_25000FDX_LBN))
+> +                       SET_BIT(100000baseSR4_Full);
+> +               }
+> +               if (cap & (1 << MC_CMD_PHY_CAP_25000FDX_LBN)) {
+>                         SET_BIT(25000baseCR_Full);
+> +                       SET_BIT(25000baseSR_Full);
+> +               }
+>                 if (cap & (1 << MC_CMD_PHY_CAP_50000FDX_LBN))
+>                         SET_BIT(50000baseCR2_Full);
+>                 break;
+> @@ -192,15 +203,19 @@ u32 ethtool_linkset_to_mcdi_cap(const unsigned long=
+ *linkset)
+>                 result |=3D (1 << MC_CMD_PHY_CAP_100FDX_LBN);
+>         if (TEST_BIT(1000baseT_Half))
+>                 result |=3D (1 << MC_CMD_PHY_CAP_1000HDX_LBN);
+> -       if (TEST_BIT(1000baseT_Full) || TEST_BIT(1000baseKX_Full))
+> +       if (TEST_BIT(1000baseT_Full) || TEST_BIT(1000baseKX_Full) ||
+> +                       TEST_BIT(1000baseX_Full))
+>                 result |=3D (1 << MC_CMD_PHY_CAP_1000FDX_LBN);
+> -       if (TEST_BIT(10000baseT_Full) || TEST_BIT(10000baseKX4_Full))
+> +       if (TEST_BIT(10000baseT_Full) || TEST_BIT(10000baseKX4_Full) ||
+> +                       TEST_BIT(10000baseCR_Full) || TEST_BIT(10000baseL=
+R_Full) ||
+> +                       TEST_BIT(10000baseSR_Full))
+>                 result |=3D (1 << MC_CMD_PHY_CAP_10000FDX_LBN);
+> -       if (TEST_BIT(40000baseCR4_Full) || TEST_BIT(40000baseKR4_Full))
+> +       if (TEST_BIT(40000baseCR4_Full) || TEST_BIT(40000baseKR4_Full) ||
+> +                       TEST_BIT(40000baseSR4_Full))
+>                 result |=3D (1 << MC_CMD_PHY_CAP_40000FDX_LBN);
+> -       if (TEST_BIT(100000baseCR4_Full))
+> +       if (TEST_BIT(100000baseCR4_Full) || TEST_BIT(100000baseSR4_Full))
+>                 result |=3D (1 << MC_CMD_PHY_CAP_100000FDX_LBN);
+> -       if (TEST_BIT(25000baseCR_Full))
+> +       if (TEST_BIT(25000baseCR_Full) || TEST_BIT(25000baseSR_Full))
+>                 result |=3D (1 << MC_CMD_PHY_CAP_25000FDX_LBN);
+>         if (TEST_BIT(50000baseCR2_Full))
+>                 result |=3D (1 << MC_CMD_PHY_CAP_50000FDX_LBN);
+> --
+> 2.33.0
+>
