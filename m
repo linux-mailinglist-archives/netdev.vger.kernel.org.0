@@ -2,92 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53A6C4395D5
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 14:16:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A5084395FB
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 14:17:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233008AbhJYMTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 08:19:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37586 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232455AbhJYMTM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 08:19:12 -0400
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8995EC061745;
-        Mon, 25 Oct 2021 05:16:50 -0700 (PDT)
-Received: from mail.denx.de (unknown [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        id S233301AbhJYMUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 08:20:03 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:16819 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232524AbhJYMT4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 08:19:56 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1635164255; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=fWKxaBJfbZu62J4f9mK3WB8slIxGA4Es1JIHrQ2zcEE=; b=G812fT27aaG1sJZ1P9Dlzywwre/wOKssnfKWDczJREj9FNChUxjmOuMLUGKDb/fF8PVibe/k
+ NRwkI+41uc1m8QHT0+WA5sn7SEldOIQxY9ctxw+mq/Bk+JwliyOzdYoiLMNvssIi3NUOaYqD
+ b5cR3luhlfJuMsYU5dcUqSmBYzQ=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
+ 6176a052c75c436a3052b922 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 25 Oct 2021 12:17:22
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id BA3BDC4338F; Mon, 25 Oct 2021 12:17:21 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: festevam@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id B29E383458;
-        Mon, 25 Oct 2021 14:16:47 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1635164208;
-        bh=/bi2Lna2q3if+ZR8iIXkezIgXIztKk7HdQozvn7cW8A=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EVsSpL665IR13w58rNPUH6aO7jhthC4qeNUpwba0EGXliRXEsWCkgg0uHUwl815qu
-         vr/pv9yHWpidrFqUciY3NRcJdrwVrLYMZLFdhLomYEmQFJaLFkgHc+ZS59PvhJUYm+
-         +iR42X3rh2uxGTkAc/Kax+F/Vm6qO0+tb5w/a2AtKn6uYLSWgBeuhpPxQ/jjPY8oDn
-         DPsNFi7bni1784DUKT5LPHxdKYEmtTI29TCrROIgLWugDrYSR66wkVLw8PL+zMGHW0
-         bQkcy46BN+Taa61NF/tCljl0bU4RJG+S/jS0elJnsl2MgEp8FIEaXCOvOSqc29YNpB
-         dgFPZyR64MB/w==
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 25 Oct 2021 09:16:47 -0300
-From:   Fabio Estevam <festevam@denx.de>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        Alagu Sankar <alagusankar@silex-india.com>,
-        Arnd Bergmann <arnd@arndb.de>,
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id D3BEBC4338F;
+        Mon, 25 Oct 2021 12:17:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org D3BEBC4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Srinivasan Raju <srini.raju@purelifi.com>
+Cc:     Kari Argillander <kari.argillander@gmail.com>,
+        Mostafa Afgani <mostafa.afgani@purelifi.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Brian Norris <briannorris@chromium.org>,
-        Wen Gong <wgong@codeaurora.org>,
-        Tamizh Chelvam <tamizhr@codeaurora.org>,
-        Carl Huang <cjhuang@codeaurora.org>,
-        Miaoqing Pan <miaoqing@codeaurora.org>,
-        Ben Greear <greearb@candelatech.com>,
-        Erik Stromdahl <erik.stromdahl@gmail.com>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ath10k: fix invalid dma_addr_t token assignment
-In-Reply-To: <20211014075153.3655910-1-arnd@kernel.org>
-References: <20211014075153.3655910-1-arnd@kernel.org>
-Message-ID: <82b2d5d74674379c3346c00ffb352c8b@denx.de>
-X-Sender: festevam@denx.de
-User-Agent: Roundcube Webmail/1.3.6
-X-Virus-Scanned: clamav-milter 0.103.2 at phobos.denx.de
-X-Virus-Status: Clean
+        Johannes Berg <johannes@sipsolutions.net>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list\:NETWORKING DRIVERS \(WIRELESS\)" 
+        <linux-wireless@vger.kernel.org>,
+        "open list\:NETWORKING DRIVERS" <netdev@vger.kernel.org>
+Subject: Re: [EXTERNAL] Re: [PATCH v20 2/2] wireless: Initial driver submission for pureLiFi STA devices
+References: <20200928102008.32568-1-srini.raju@purelifi.com>
+        <20211018100143.7565-1-srini.raju@purelifi.com>
+        <20211018100143.7565-3-srini.raju@purelifi.com>
+        <20211025095927.cssdlblcdprdwfsy@kari-VirtualBox>
+        <CWLP265MB321780AB502EF147F6AAF197E0839@CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM>
+Date:   Mon, 25 Oct 2021 15:17:15 +0300
+In-Reply-To: <CWLP265MB321780AB502EF147F6AAF197E0839@CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM>
+        (Srinivasan Raju's message of "Mon, 25 Oct 2021 11:23:58 +0000")
+Message-ID: <87mtmxcn90.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/10/2021 04:51, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> Using a kernel pointer in place of a dma_addr_t token can
-> lead to undefined behavior if that makes it into cache
-> management functions. The compiler caught one such attempt
-> in a cast:
-> 
-> drivers/net/wireless/ath/ath10k/mac.c: In function 
-> 'ath10k_add_interface':
-> drivers/net/wireless/ath/ath10k/mac.c:5586:47: error: cast from
-> pointer to integer of different size [-Werror=pointer-to-int-cast]
->  5586 |                         arvif->beacon_paddr =
-> (dma_addr_t)arvif->beacon_buf;
->       |                                               ^
-> 
-> Looking through how this gets used down the way, I'm fairly
-> sure that beacon_paddr is never accessed again for ATH10K_DEV_TYPE_HL
-> devices, and if it was accessed, that would be a bug.
-> 
-> Change the assignment to use a known-invalid address token
-> instead, which avoids the warning and makes it easier to catch
-> bugs if it does end up getting used.
-> 
-> Fixes: e263bdab9c0e ("ath10k: high latency fixes for beacon buffer")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Srinivasan Raju <srini.raju@purelifi.com> writes:
 
-Reviewed-by: Fabio Estevam <festevam@denx.de>
+>> Thease are just what I found myself.
+>
+> Thanks ! I will check and fix.
+
+Please don't use HTML, our lists drop those.
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
