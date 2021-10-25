@@ -2,117 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9252A43964C
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 14:27:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2FA5439651
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 14:27:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233034AbhJYM3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 08:29:30 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:57016 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232951AbhJYM33 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Oct 2021 08:29:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=GEJMIp1Co7EQbihLV9HM0uM2vYDqN3IJKvgEFJVwY50=; b=uzIzKIarGL49x+1Kr6N08KTUp6
-        TNbdDakDIhgFq4EMg40r3tdrn8rgDHZEOlkxzduQExNgepNuOdmw1m92PU3mKv5H9ov5e5qiyhscA
-        bDhXUCegbWldcGzzTlpCNvTSBu6HrE/i6Sew7hTJ5FkvM+LSXmpIGOKaLR9R2HuldrkU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mez4E-00BeA6-BB; Mon, 25 Oct 2021 14:27:06 +0200
-Date:   Mon, 25 Oct 2021 14:27:06 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can <linux-can@vger.kernel.org>, netdev@vger.kernel.org
-Subject: Re: ethtool: ring configuration for CAN devices
-Message-ID: <YXaimhlXkpBKRQin@lunn.ch>
-References: <20211024213759.hwhlb4e3repkvo6y@pengutronix.de>
+        id S233077AbhJYMaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 08:30:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40230 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232951AbhJYMaL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 08:30:11 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C855DC061745;
+        Mon, 25 Oct 2021 05:27:49 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id oa4so8158765pjb.2;
+        Mon, 25 Oct 2021 05:27:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=p8WaOHRGKmCaDSlRzJCYAFZWQ0rBLs7pDgy7EDMtyv8=;
+        b=L3ZA9KP749BkYnNdoLq4iP7i1iR+Inqszxis10+kYWlw8gMmznXCDRlWSk8/2W8+Ed
+         9bDXkV+bYYJe9UKKOcIICGmZU+DR1h5CcBxZnvDZgIDl/oug/Akndp3keMCbwTbIbaBF
+         5rdvHNz0ZL5YeCmsrx+Z+io4+jf8NyPwyGvCbqH69zBVzaMv9XE43xcDy0L5z6rENGpq
+         Foc1NEQN6bXXudQD3feVI4XK/k6oZtmy5+WyLRbLtSz+GtPPrrK6YbssXo7wiSx53xpp
+         CGnvIQo8fLJ4M0P23prTJJ3wBJPkpOux9B4wd5S8LvAaTF83kEBJrnI/u9vvmT3SJYT3
+         Pqjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=p8WaOHRGKmCaDSlRzJCYAFZWQ0rBLs7pDgy7EDMtyv8=;
+        b=ZHyIepDo11CU0lJjro8IPdGQrtOg63uFii2bqa9hJN7+fm8qO7cDM+zeLDDI+RPo4a
+         XnFCq6RwPm+3cslntn/3NthwpXer1l3vRSSyWAfsPhNK/D8Hl30sG9vHtg9Ka/E6P6JS
+         DabDFYbNwPYne5SMdOIiP2/ra7NLSq+vNlmoQoSfB+gxi7VPGJPFUOMjb+tc3G3CXEBJ
+         0Y0F2j3krWBZq34/enGXSWXhv4mxAJrV/QUK2sQ30kdCUVYuVLgxq1z132m6NGK1DhiC
+         u31DMtdAjM1LJ1Fs/js7N3sq8gBn5WOW0N+yCzfnMl2+R20TwdNuYcSNd8hIcIyZ/Qf+
+         oKsg==
+X-Gm-Message-State: AOAM53172bF3CZPS0Lw6+Xkfu1SjV/nIu3LLpxKylVDw0gDrwcsx93gx
+        oubMfcVayPsRy4QMXHUkMlA=
+X-Google-Smtp-Source: ABdhPJyKPJBKL8xU27ieGid+51hzfeq0fdWcgDM9p/IEj6NGJE/Azd0kkuSJAyEkc02dcJFZkZDQgA==
+X-Received: by 2002:a17:902:db0a:b0:13e:e968:e144 with SMTP id m10-20020a170902db0a00b0013ee968e144mr16394794plx.43.1635164869361;
+        Mon, 25 Oct 2021 05:27:49 -0700 (PDT)
+Received: from ?IPV6:2404:f801:0:5:8000::50b? ([2404:f801:9000:1a:efea::50b])
+        by smtp.gmail.com with ESMTPSA id c4sm9143338pfl.53.2021.10.25.05.27.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Oct 2021 05:27:49 -0700 (PDT)
+Message-ID: <f5b6f9e8-5888-bd5f-143f-a7b12ec17bbb@gmail.com>
+Date:   Mon, 25 Oct 2021 20:27:39 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211024213759.hwhlb4e3repkvo6y@pengutronix.de>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Subject: Re: [PATCH V8 5/9] x86/sev-es: Expose sev_es_ghcb_hv_call() to call
+ ghcb hv call out of sev code
+Content-Language: en-US
+To:     Borislav Petkov <bp@alien8.de>, Wei Liu <wei.liu@kernel.org>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
+        x86@kernel.org, hpa@zytor.com, dave.hansen@linux.intel.com,
+        luto@kernel.org, peterz@infradead.org, davem@davemloft.net,
+        kuba@kernel.org, gregkh@linuxfoundation.org, arnd@arndb.de,
+        brijesh.singh@amd.com, jroedel@suse.de, Tianyu.Lan@microsoft.com,
+        thomas.lendacky@amd.com, rientjes@google.com, pgonda@google.com,
+        akpm@linux-foundation.org, kirill.shutemov@linux.intel.com,
+        rppt@kernel.org, saravanand@fb.com, aneesh.kumar@linux.ibm.com,
+        hannes@cmpxchg.org, tj@kernel.org, michael.h.kelley@microsoft.com,
+        linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        vkuznets@redhat.com, konrad.wilk@oracle.com, hch@lst.de,
+        robin.murphy@arm.com, joro@8bytes.org, parri.andrea@gmail.com,
+        dave.hansen@intel.com
+References: <20211021154110.3734294-1-ltykernel@gmail.com>
+ <20211021154110.3734294-6-ltykernel@gmail.com> <YXGTwppQ8syUyJ72@zn.tnic>
+ <00946764-7fe0-675f-7b3e-9fb3b8e3eb89@gmail.com>
+ <20211025112033.eqelx54p2dmlhykw@liuwe-devbox-debian-v2>
+ <YXaT5HcLoX59jZH2@zn.tnic>
+From:   Tianyu Lan <ltykernel@gmail.com>
+In-Reply-To: <YXaT5HcLoX59jZH2@zn.tnic>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 24, 2021 at 11:37:59PM +0200, Marc Kleine-Budde wrote:
-> Hello,
+On 10/25/2021 7:24 PM, Borislav Petkov wrote:
+> On Mon, Oct 25, 2021 at 11:20:33AM +0000, Wei Liu wrote:
+>> Borislav, please take the whole series via the tip tree if possible.
+>> That's perhaps the easiest thing for both of us because the rest of the
+>> series depends on this patch. Or else I will have to base hyperv-next on
+>> the tip tree once you merge this patch.
+>>
+>> Let me know what you think.
 > 
-> I'm currently working on runtime configurable RX/TX ring sizes for a the
-> mcp251xfd CAN driver.
+> You'll be able to simply merge the tip/x86/sev branch which will have it
+> and then base everything ontop.
 > 
-> Unlike modern Ethernet cards with DMA support, most CAN IP cores come
-> with a fixed size on chip RAM that's used to store received CAN frames
-> and frames that should be sent.
-> 
-> For CAN-2.0 only devices that can be directly supported via ethtools's
-> set/get_ringparam. A minor unaesthetic is, as the on chip RAM is usually
-> shared between RX and TX, the maximum values for RX and TX cannot be set
-> at the same time.
-> 
-> The mcp251xfd chip I'm enhancing supports CAN-2.0 and CAN-FD mode. The
-> relevant difference of these modes is the size of the CAN frame. 8 vs 64
-> bytes of payload + 12 bytes of header. This means we have different
-> maximum values for both RX and TX for those modes.
-> 
-> How do we want to deal with the configuration of the two different
-> modes? As the current set/get_ringparam interface can configure the
-> mini- and jumbo frames for RX, but has only a single TX value.
+> However, there's still a question open - see my reply to Michael.
 
-Hi Marc
+Hi Boris:
+       I just sent out v9 version and compile hv ghcb related functions
+when CONFIG_AMD_MEM_ENCRYPT is selected. The sev_es_ghcb_hv_call() stub
+is not necessary in the series and remove it. Please have a look and
+give your ack if it's ok. Then Wei can merge it through Hyper-V next
+branch.
 
-I would not consider it as two different modes, but as N modes. That
-way, we are prepared for CAN-3.0 which might need other ring
-parameters.
+Thanks.
 
-The netlink API is extensible, unlike the IOCTL interface. I would add
-an additional optional attribute, ETHTOOL_A_RINGS_MODE, with values like:
 
-ETHTOOL_A_RINGS_MODE_DEFAULT
-ETHTOOL_A_RINGS_MODE_CAN_2
-ETHTOOL_A_RINGS_MODE_CAN_FD
-
-The IOCTL would always be for mode _DEFAULT, and it would get/set the
-current used setting. If the optionally attribute is missing, then the
-calling into the driver would also use _DEFAULT. However, if it is
-present, the driver can store away the ring parameters for a
-particular mode, and maybe actually put them into use if the mode is
-currently active.
-
-You cannot change
-
-struct ethtool_ringparam {
-	__u32	cmd;
-	__u32	rx_max_pending;
-	__u32	rx_mini_max_pending;
-	__u32	rx_jumbo_max_pending;
-	__u32	tx_max_pending;
-	__u32	rx_pending;
-	__u32	rx_mini_pending;
-	__u32	rx_jumbo_pending;
-	__u32	tx_pending;
-};
-
-Since that is ABI. But you can add an
-
-struct ethtool_kringparam {
-	__u32	cmd;
-	__u32   mode;
-	__u32	rx_max_pending;
-	__u32	rx_mini_max_pending;
-	__u32	rx_jumbo_max_pending;
-	__u32	tx_max_pending;
-	__u32	rx_pending;
-	__u32	rx_mini_pending;
-	__u32	rx_jumbo_pending;
-	__u32	tx_pending;
-};
-
-and use this structure between the ethtool core and the drivers. This
-has already been done at least once to allow extending the
-API. Semantic patches are good for making the needed changes to all
-the drivers.
-
-     Andrew
