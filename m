@@ -2,100 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 811FA43A50C
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 22:54:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0394443A50D
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 22:54:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232827AbhJYU46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S232992AbhJYU46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 25 Oct 2021 16:56:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34166 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:34174 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231618AbhJYU45 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232287AbhJYU45 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 25 Oct 2021 16:56:57 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 404A06101C;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A833560EDF;
         Mon, 25 Oct 2021 20:54:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1635195274;
-        bh=DDTFhRSeoev1NOp/8TacfsqzL1VF6XeExbvXlgaaJc4=;
+        bh=jCa+cmYCTAu8GyPMMbSQ3BCXoOdHA6e3s2G3EdXaSsU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jXOPj/Y6lh+Jz6voYVUsO0aAExyDiiKrCPzHLdGyBZYbApWiDplPxETxR/TJmRJoe
-         /MS7z9awswkPNdX9RX/T7p3ncSzooKjZclWoaaEggDJW8KIi2kzMPx95eyYjYmDbyS
-         GzsDaUgBOOQYXhpJ5YKCaNqIdYGWeHkYVd4O3/D95DvuibDDzCs61bGzTIaCHY0guV
-         aLXKgnPT032g6vHFjTGsCHxFk0oRr5BzyA+o5+3ztB4P9qHE8qVTF1GZbPStCfz5G4
-         0ABXThAZCrJeSbb+j0LC67M5T76x/7p2dj4ocHW+n6hyyhO3ncfeGNbPqKz5c1D23e
-         vBrFoIBH6R/AA==
+        b=cJiTlRPWgsJ8b3iYAuXtLH8nLi2ENZBwxGalIaTXNivPEaO0ZR4G0WPt6sL28epb6
+         tDcog+SbsQQVumfdeTfBOtJ21bZC+tW33z5yIiMZcOkc8O50KsNxSQZpsKbZJVHa5L
+         xQEpvzOuP1agauoJ3fiXMdONd9pFJGfIRNIKQTpj2LOCQa9ae/cmEmh9tjB6qakp4M
+         2VZqFO7b6uxyBQayAgiEi93Qi9Vpv9YE4JlvtYXf5Soo2XvWB+EV82ZHCPEL0HuIsO
+         5ZNGBVLlxj/dRuNJol1Wf0wo6kDqM1d45zBSt2y+MgNV4GycqEO6a+BDT349YFBP6I
+         GRWhJJ/J7qw0A==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Paul Blakey <paulb@nvidia.com>,
-        Maor Dickman <maord@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Shay Drory <shayd@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 02/14] net/mlx5: Remove unnecessary checks for slow path flag
-Date:   Mon, 25 Oct 2021 13:54:19 -0700
-Message-Id: <20211025205431.365080-3-saeed@kernel.org>
+Subject: [net-next 03/14] net/mlx5: Fix unused function warning of mlx5i_flow_type_mask
+Date:   Mon, 25 Oct 2021 13:54:20 -0700
+Message-Id: <20211025205431.365080-4-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211025205431.365080-1-saeed@kernel.org>
 References: <20211025205431.365080-1-saeed@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paul Blakey <paulb@nvidia.com>
+From: Shay Drory <shayd@nvidia.com>
 
-After previous changes, caller (mlx5e_tc_offload_fdb_rules()) already
-checks for the slow path flag, and if set won't call offload/unoffload
-sample.
+The cited commit is causing unused-function warning[1] when
+CONFIG_MLX5_EN_RXNFC is not set.
+Fix this by moving the function into the ifdef, where it's only used
 
-Signed-off-by: Paul Blakey <paulb@nvidia.com>
-Reviewed-by: Maor Dickman <maord@nvidia.com>
+[1]
+warning: ‘mlx5i_flow_type_mask’ defined but not used [-Wunused-function]
+
+Fixes: 9fbe1c25ecca ("net/mlx5i: Enable Rx steering for IPoIB via ethtool")
+Signed-off-by: Shay Drory <shayd@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/tc/sample.c  | 17 +----------------
- 1 file changed, 1 insertion(+), 16 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c    | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
-index d1d7e4b9f7ad..1046b7ea5c88 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
-@@ -509,13 +509,6 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
- 	if (IS_ERR_OR_NULL(tc_psample))
- 		return ERR_PTR(-EOPNOTSUPP);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
+index ee0eb4a4b819..962d41418ce7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
+@@ -33,11 +33,6 @@
+ #include "en.h"
+ #include "ipoib.h"
  
--	/* If slow path flag is set, eg. when the neigh is invalid for encap,
--	 * don't offload sample action.
--	 */
--	esw = tc_psample->esw;
--	if (attr->flags & MLX5_ESW_ATTR_FLAG_SLOW_PATH)
--		return mlx5_eswitch_add_offloaded_rule(esw, spec, attr);
+-static u32 mlx5i_flow_type_mask(u32 flow_type)
+-{
+-	return flow_type & ~(FLOW_EXT | FLOW_MAC_EXT | FLOW_RSS);
+-}
 -
- 	sample_flow = kzalloc(sizeof(*sample_flow), GFP_KERNEL);
- 	if (!sample_flow)
- 		return ERR_PTR(-ENOMEM);
-@@ -527,6 +520,7 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
- 	 * Only match the fte id instead of the same match in the
- 	 * original flow table.
- 	 */
-+	esw = tc_psample->esw;
- 	if (MLX5_CAP_GEN(esw->dev, reg_c_preserve) ||
- 	    attr->action & MLX5_FLOW_CONTEXT_ACTION_DECAP) {
- 		struct mlx5_flow_table *ft;
-@@ -634,15 +628,6 @@ mlx5e_tc_sample_unoffload(struct mlx5e_tc_psample *tc_psample,
- 	if (IS_ERR_OR_NULL(tc_psample))
- 		return;
+ static void mlx5i_get_drvinfo(struct net_device *dev,
+ 			      struct ethtool_drvinfo *drvinfo)
+ {
+@@ -223,6 +218,11 @@ static int mlx5i_get_link_ksettings(struct net_device *netdev,
+ }
  
--	/* If slow path flag is set, sample action is not offloaded.
--	 * No need to delete sample rule.
--	 */
--	esw = tc_psample->esw;
--	if (attr->flags & MLX5_ESW_ATTR_FLAG_SLOW_PATH) {
--		mlx5_eswitch_del_offloaded_rule(esw, rule, attr);
--		return;
--	}
--
- 	/* The following delete order can't be changed, otherwise,
- 	 * will hit fw syndromes.
- 	 */
+ #ifdef CONFIG_MLX5_EN_RXNFC
++static u32 mlx5i_flow_type_mask(u32 flow_type)
++{
++	return flow_type & ~(FLOW_EXT | FLOW_MAC_EXT | FLOW_RSS);
++}
++
+ static int mlx5i_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd)
+ {
+ 	struct mlx5e_priv *priv = mlx5i_epriv(dev);
 -- 
 2.31.1
 
