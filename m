@@ -2,108 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9299E4395CD
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 14:14:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53A6C4395D5
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 14:16:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233053AbhJYMQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 08:16:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36978 "EHLO
+        id S233008AbhJYMTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 08:19:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233037AbhJYMQl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 08:16:41 -0400
-X-Greylist: delayed 69 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 25 Oct 2021 05:14:18 PDT
-Received: from forwardcorp1j.mail.yandex.net (forwardcorp1j.mail.yandex.net [IPv6:2a02:6b8:0:1619::183])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79B48C061348
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 05:14:18 -0700 (PDT)
-Received: from sas1-3cba3404b018.qloud-c.yandex.net (sas1-3cba3404b018.qloud-c.yandex.net [IPv6:2a02:6b8:c08:bd26:0:640:3cba:3404])
-        by forwardcorp1j.mail.yandex.net (Yandex) with ESMTP id 87AEA2E19CB;
-        Mon, 25 Oct 2021 15:13:06 +0300 (MSK)
-Received: from sas2-d40aa8807eff.qloud-c.yandex.net (2a02:6b8:c08:b921:0:640:d40a:a880 [2a02:6b8:c08:b921:0:640:d40a:a880])
-        by sas1-3cba3404b018.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id Dxf9on6fH3-D6umiVbT;
-        Mon, 25 Oct 2021 15:13:06 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1635163986; bh=wwORDBwWC2HI1hVUur0PkhEfeaL0su2hjidUnYrVcSE=;
-        h=Date:Subject:To:From:Message-Id:Cc;
-        b=en8ioFQIqk3FiJLewulAAazykge3zCmEQHKLFIKdTzp+8kUZj1wJHK88pVudGovOX
-         zG6g3Mna6V6OeqgFJUaIRfQFKwjepivx7mdc6NuZWzA0VrCt2te9TeK3fGxAMZRknw
-         nRAMSJOvkaAcbvp6SJHT2c0CiEFkV1CFlJQCM2SM=
-Authentication-Results: sas1-3cba3404b018.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: from vmhmukos.sas.yp-c.yandex.net (2a02:6b8:c07:895:0:696:abd4:0 [2a02:6b8:c07:895:0:696:abd4:0])
-        by sas2-d40aa8807eff.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPS id m7VxuhwG7r-D6xC6djq;
-        Mon, 25 Oct 2021 15:13:06 +0300
+        with ESMTP id S232455AbhJYMTM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 08:19:12 -0400
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8995EC061745;
+        Mon, 25 Oct 2021 05:16:50 -0700 (PDT)
+Received: from mail.denx.de (unknown [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-X-Yandex-Fwd: 2
-From:   Akhmat Karakotov <hmukos@yandex-team.ru>
-To:     netdev@vger.kernel.org
-Cc:     hmukos@yandex-team.ru, mitradir@yandex-team.ru,
-        zeil@yandex-team.ru, brakmo@fb.com
-Subject: [PATCH] tcp: Use BPF timeout setting for SYN ACK RTO
-Date:   Mon, 25 Oct 2021 15:12:53 +0300
-Message-Id: <20211025121253.8643-1-hmukos@yandex-team.ru>
+        (No client certificate requested)
+        (Authenticated sender: festevam@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id B29E383458;
+        Mon, 25 Oct 2021 14:16:47 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1635164208;
+        bh=/bi2Lna2q3if+ZR8iIXkezIgXIztKk7HdQozvn7cW8A=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EVsSpL665IR13w58rNPUH6aO7jhthC4qeNUpwba0EGXliRXEsWCkgg0uHUwl815qu
+         vr/pv9yHWpidrFqUciY3NRcJdrwVrLYMZLFdhLomYEmQFJaLFkgHc+ZS59PvhJUYm+
+         +iR42X3rh2uxGTkAc/Kax+F/Vm6qO0+tb5w/a2AtKn6uYLSWgBeuhpPxQ/jjPY8oDn
+         DPsNFi7bni1784DUKT5LPHxdKYEmtTI29TCrROIgLWugDrYSR66wkVLw8PL+zMGHW0
+         bQkcy46BN+Taa61NF/tCljl0bU4RJG+S/jS0elJnsl2MgEp8FIEaXCOvOSqc29YNpB
+         dgFPZyR64MB/w==
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 25 Oct 2021 09:16:47 -0300
+From:   Fabio Estevam <festevam@denx.de>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        Alagu Sankar <alagusankar@silex-india.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Brian Norris <briannorris@chromium.org>,
+        Wen Gong <wgong@codeaurora.org>,
+        Tamizh Chelvam <tamizhr@codeaurora.org>,
+        Carl Huang <cjhuang@codeaurora.org>,
+        Miaoqing Pan <miaoqing@codeaurora.org>,
+        Ben Greear <greearb@candelatech.com>,
+        Erik Stromdahl <erik.stromdahl@gmail.com>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ath10k: fix invalid dma_addr_t token assignment
+In-Reply-To: <20211014075153.3655910-1-arnd@kernel.org>
+References: <20211014075153.3655910-1-arnd@kernel.org>
+Message-ID: <82b2d5d74674379c3346c00ffb352c8b@denx.de>
+X-Sender: festevam@denx.de
+User-Agent: Roundcube Webmail/1.3.6
+X-Virus-Scanned: clamav-milter 0.103.2 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When setting RTO through BPF program, SYN ACK packets were unaffected and
-continued to use TCP_TIMEOUT_INIT constant. This patch makes SYN ACK
-retransmits use tcp_timeout_init() function instead.
+On 14/10/2021 04:51, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> Using a kernel pointer in place of a dma_addr_t token can
+> lead to undefined behavior if that makes it into cache
+> management functions. The compiler caught one such attempt
+> in a cast:
+> 
+> drivers/net/wireless/ath/ath10k/mac.c: In function 
+> 'ath10k_add_interface':
+> drivers/net/wireless/ath/ath10k/mac.c:5586:47: error: cast from
+> pointer to integer of different size [-Werror=pointer-to-int-cast]
+>  5586 |                         arvif->beacon_paddr =
+> (dma_addr_t)arvif->beacon_buf;
+>       |                                               ^
+> 
+> Looking through how this gets used down the way, I'm fairly
+> sure that beacon_paddr is never accessed again for ATH10K_DEV_TYPE_HL
+> devices, and if it was accessed, that would be a bug.
+> 
+> Change the assignment to use a known-invalid address token
+> instead, which avoids the warning and makes it easier to catch
+> bugs if it does end up getting used.
+> 
+> Fixes: e263bdab9c0e ("ath10k: high latency fixes for beacon buffer")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Signed-off-by: Akhmat Karakotov <hmukos@yandex-team.ru>
----
- net/ipv4/inet_connection_sock.c | 2 +-
- net/ipv4/tcp_minisocks.c        | 4 ++--
- net/ipv4/tcp_timer.c            | 2 +-
- 3 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index 0d477c816309..41663d1ffd0a 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -870,7 +870,7 @@ static void reqsk_timer_handler(struct timer_list *t)
- 
- 		if (req->num_timeout++ == 0)
- 			atomic_dec(&queue->young);
--		timeo = min(TCP_TIMEOUT_INIT << req->num_timeout, TCP_RTO_MAX);
-+		timeo = min(tcp_timeout_init((struct sock *)req) << req->num_timeout, TCP_RTO_MAX);
- 		mod_timer(&req->rsk_timer, jiffies + timeo);
- 
- 		if (!nreq)
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index 0a4f3f16140a..8ddc3aa9e3a6 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -590,7 +590,7 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
- 			 * it can be estimated (approximately)
- 			 * from another data.
- 			 */
--			tmp_opt.ts_recent_stamp = ktime_get_seconds() - ((TCP_TIMEOUT_INIT/HZ)<<req->num_timeout);
-+			tmp_opt.ts_recent_stamp = ktime_get_seconds() - ((tcp_timeout_init((struct sock *)req)/HZ)<<req->num_timeout);
- 			paws_reject = tcp_paws_reject(&tmp_opt, th->rst);
- 		}
- 	}
-@@ -629,7 +629,7 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
- 		    !inet_rtx_syn_ack(sk, req)) {
- 			unsigned long expires = jiffies;
- 
--			expires += min(TCP_TIMEOUT_INIT << req->num_timeout,
-+			expires += min(tcp_timeout_init((struct sock *)req) << req->num_timeout,
- 				       TCP_RTO_MAX);
- 			if (!fastopen)
- 				mod_timer_pending(&req->rsk_timer, expires);
-diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
-index 20cf4a98c69d..0954e3685ad2 100644
---- a/net/ipv4/tcp_timer.c
-+++ b/net/ipv4/tcp_timer.c
-@@ -430,7 +430,7 @@ static void tcp_fastopen_synack_timer(struct sock *sk, struct request_sock *req)
- 	if (!tp->retrans_stamp)
- 		tp->retrans_stamp = tcp_time_stamp(tp);
- 	inet_csk_reset_xmit_timer(sk, ICSK_TIME_RETRANS,
--			  TCP_TIMEOUT_INIT << req->num_timeout, TCP_RTO_MAX);
-+			  tcp_timeout_init((struct sock *)req) << req->num_timeout, TCP_RTO_MAX);
- }
- 
- 
--- 
-2.17.1
-
+Reviewed-by: Fabio Estevam <festevam@denx.de>
