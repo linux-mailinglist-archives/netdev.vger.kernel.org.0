@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ECAE439141
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 10:33:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6754439145
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 10:34:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232171AbhJYIgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 04:36:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42660 "EHLO
+        id S232259AbhJYIgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 04:36:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231241AbhJYIgE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 04:36:04 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0759CC061745;
-        Mon, 25 Oct 2021 01:33:43 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id gn3so7715160pjb.0;
-        Mon, 25 Oct 2021 01:33:43 -0700 (PDT)
+        with ESMTP id S231241AbhJYIgH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 04:36:07 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5B0C061745;
+        Mon, 25 Oct 2021 01:33:45 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id f11so10013309pfc.12;
+        Mon, 25 Oct 2021 01:33:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=baWGvL41dy19+4BZX6uDav+aolsx9Dk7kQUgS64bb1g=;
-        b=as4g3fNzeC53JV1QW9l3PceZ7FSLOqm+yJq6vNLpKffQFUNwOQ+76VDeleJozGL7V5
-         iIlFN02m6BFIhPRcEpe89vDEbCKxXwF0QDCz+IjNrDjf7Ob6aZdvBz2N/w4XeY5Fsyo/
-         HVIzT0+QzJxtY5uoGe4XRnu56S79bMx0ec9tlZ7EBU7jt1MXf7O/Ljv5tf7eAYgyeeFB
-         Hr/mNV8SFuF6TX8jVuKlzv985B1MruvJuXFg/kLvO/xXhxVRdiHnIgIRaToqE9uYh8ku
-         UWborlia3oFOLcABtOiMjP7UPbJZuv5ik1GjBmrgKJxHZHS+xlL7r2v7mKniBRH6ng4V
-         3r4g==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=tb2DLSHt7yEoDSj1xonLMAUM0KyNZsEaGyv5bBEUpu8=;
+        b=oYlyi3lonUU6Fa8XZ2e7zj+Xij1FY4rsdKgLByteR1YoxJaXWn0b+9E04KwplgPwen
+         Nsyc4c9ZtY3k38kLVKWr4UpYSbaABNZRdpSExH5nuGb3+YWWsIS4+YyBPSUGBFurjTCU
+         E0r982qEh5Dd3WP8mqTWX1MQoiNzsPO0G0x9u8jvrqPNkmLCIxRNvLPQQZgXaoOfXaDN
+         kaPzNZ1W1O5wHYsrZCyowbYAkbsOKKXpRCd6MsdvrN1ds01r0ejvZnHwygt9j9a35bCk
+         Cf2hKPGffK2GWb7AtSjLShunf3C66hJNoQRYhRnelFTTOniybfDGnJeB/MIbgD338RDP
+         Pnuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=baWGvL41dy19+4BZX6uDav+aolsx9Dk7kQUgS64bb1g=;
-        b=JyM9pOinhbe3Dx/ak2td5DFtWBMmhhnCWX+3gWwe88vZlf+4bIh3hADgEoA/GCZU1q
-         mHSPxunAFzfViLb2kIQQqAd45wpV4HEbjyTgfQjd60Dq3N5Ng3YyFp88d1T8jBKZsswf
-         Fc2OMQ0ORHPhU06NcvkXDLmQIvE+uscgbCRDcSrjjMjlZEVoDEGha1dZWlkPzylOnbUO
-         n8eqtJo6++t4iHU2tQoXE9pTuF24enBmSS7f7UMut/Avm8XRxwhUcrv4muLYU7yM2Veu
-         b/KCEc9AL5jqOj9CfvBayuj7ybl4SSM+q8t2mpVW8aXma2Rfd0JvJ/HbuAOFptcfEV9R
-         gqHg==
-X-Gm-Message-State: AOAM5332xMsSp74YeD/m6SwoQJRrtUbmEqQoHWP1R53lphvUqu0x1nly
-        ILfwQ/CJGoUFf9NEkWlfjRM=
-X-Google-Smtp-Source: ABdhPJwKKV3YHe5Kx2TD+5yPgrUQbt8S2s5EfBAbZQQPLcMJjqzjQTN1qjux7zaNTymJGxsM9r7acw==
-X-Received: by 2002:a17:90b:2247:: with SMTP id hk7mr4087767pjb.159.1635150822423;
-        Mon, 25 Oct 2021 01:33:42 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=tb2DLSHt7yEoDSj1xonLMAUM0KyNZsEaGyv5bBEUpu8=;
+        b=wqckCDcr1jjU34dQC58DeAXjOW9JF+zB9Reuxt3Q2vYidR1dBPL0nJQ9osXfXdY5c9
+         iKwS2vin+dPS/ku/5XtYJ7lkYgV5gn3dzrSK3u5+GENINVppXHxTj7T1nPheZ3s9rOgH
+         KEQi4HfQhNYEvzkKrhbTTuvAe7vkIiSHU1BXufQBMypbcLIRCf/XSr4fqm1YKoJDZUEi
+         TOr3ejRk+XVqDrQUWVRdki3fd8AoJFaRtoaxc63ip2KRuBm0QbX3vENqj7Z4AKTmnYNi
+         rpW/a42dGAd9JpKh2tx5/6B0qbD5AAK2igUBcz+6jN2disaf7os0TEEOaRN23cFqByhF
+         sbDA==
+X-Gm-Message-State: AOAM530tJ04N4Al+m67ayhw9Q8gSAABRKYuOXHlNidq2PMBn95pDN3cc
+        f6GsyWfop0/4Ym2vziVrBSU=
+X-Google-Smtp-Source: ABdhPJww37Zh1A/cWqYLv8cApefSTpVITM+SVBpIEk1zj0/wZq+xUgY47FOrn91DuZ+bARyzae7T1A==
+X-Received: by 2002:a05:6a00:23d3:b0:44c:a67f:49af with SMTP id g19-20020a056a0023d300b0044ca67f49afmr17110818pfc.50.1635150824679;
+        Mon, 25 Oct 2021 01:33:44 -0700 (PDT)
 Received: from localhost.localdomain ([140.82.17.67])
-        by smtp.gmail.com with ESMTPSA id p13sm2495694pfo.102.2021.10.25.01.33.40
+        by smtp.gmail.com with ESMTPSA id p13sm2495694pfo.102.2021.10.25.01.33.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Oct 2021 01:33:42 -0700 (PDT)
+        Mon, 25 Oct 2021 01:33:44 -0700 (PDT)
 From:   Yafang Shao <laoar.shao@gmail.com>
 To:     akpm@linux-foundation.org, keescook@chromium.org,
         rostedt@goodmis.org, mathieu.desnoyers@efficios.com,
@@ -65,126 +65,48 @@ Cc:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, linux-perf-users@vger.kernel.org,
         linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org, oliver.sang@intel.com, lkp@intel.com,
-        Yafang Shao <laoar.shao@gmail.com>
-Subject: [PATCH v6 00/12] extend task comm from 16 to 24
-Date:   Mon, 25 Oct 2021 08:33:03 +0000
-Message-Id: <20211025083315.4752-1-laoar.shao@gmail.com>
+        Yafang Shao <laoar.shao@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Subject: [PATCH v6 01/12] fs/exec: make __set_task_comm always set a nul ternimated string
+Date:   Mon, 25 Oct 2021 08:33:04 +0000
+Message-Id: <20211025083315.4752-2-laoar.shao@gmail.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20211025083315.4752-1-laoar.shao@gmail.com>
+References: <20211025083315.4752-1-laoar.shao@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There're many truncated kthreads in the kernel, which may make trouble
-for the user, for example, the user can't get detailed device
-information from the task comm.
+Make sure the string set to task comm is always nul ternimated.
 
-This patchset tries to improve this problem fundamentally by extending
-the task comm size from 16 to 24. In order to do that, we have to do
-some cleanups first.
+Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Petr Mladek <pmladek@suse.com>
+---
+ fs/exec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-1. Make the copy of task comm always safe no matter what the task
-   comm size is. For example,
-
-      Unsafe                 Safe
-      strlcpy                strscpy_pad
-      strncpy                strscpy_pad
-      bpf_probe_read_kernel  bpf_probe_read_kernel_str
-                             bpf_core_read_str
-                             bpf_get_current_comm
-                             perf_event__prepare_comm
-                             prctl(2)
-
-   After this step, the comm size change won't make any trouble to the 
-   kernel or the in-tree tools for example perf, BPF programs.
-
-2. Cleanup some old hard-coded 16
-   Actually we don't need to convert all of them to TASK_COMM_LEN or
-   TASK_COMM_LEN_16, what we really care about is if the convert can
-   make the code more reasonable or easier to understand. For
-   example, some in-tree tools read the comm from sched:sched_switch
-   tracepoint, as it is derived from the kernel, we'd better make them
-   consistent with the kernel.
-
-3. Extend the task comm size from 16 to 24
-   task_struct is growing rather regularly by 8 bytes. This size change
-   should be acceptable. We used to think about extending the size for
-   CONFIG_BASE_FULL only, but that would be a burden for maintenance 
-   and introduce code complexity.
-
-4. Print a warning if the kthread comm is still truncated.
-
-5. What will happen to the out-of-tree tools after this change?
-   If the tool get task comm through kernel API, for example prctl(2),
-   bpf_get_current_comm() and etc, then it doesn't matter how large the
-   user buffer is, because it will always get a string with a nul
-   terminator. While if it gets the task comm through direct string copy,
-   the user tool must make sure the copied string has a nul terminator
-   itself. As TASK_COMM_LEN is not exposed to userspace, there's no
-   reason that it must require a fixed-size task comm.
-
-Changes since v5:
-- extend the comm size for both CONFIG_BASE_{FULL, SMALL} that could
-  make the code more simple and easier to maintain.
-- avoid changing too much hard-coded 16 in BPF programs per Andrii. 
-
-Changes since v4:
-- introduce TASK_COMM_LEN_16 and TASK_COMM_LEN_24 per Steven
-- replace hard-coded 16 with TASK_COMM_LEN_16 per Kees
-- use strscpy_pad() instead of strlcpy()/strncpy() per Kees
-- make perf test adopt to task comm size change per Arnaldo and Mathieu
-- fix warning reported by kernel test robot
-
-Changes since v3:
-- fixes -Wstringop-truncation warning reported by kernel test robot
-
-Changes since v2:
-- avoid change UAPI code per Kees
-- remove the description of out of tree code from commit log per Peter
-
-Changes since v1:
-- extend task comm to 24bytes, per Petr
-- improve the warning per Petr
-- make the checkpatch warning a separate patch
-
-Yafang Shao (12):
-  fs/exec: make __set_task_comm always set a nul ternimated string
-  fs/exec: make __get_task_comm always get a nul terminated string
-  drivers/connector: make connector comm always nul ternimated
-  drivers/infiniband: make setup_ctxt always get a nul terminated task
-    comm
-  elfcore: make prpsinfo always get a nul terminated task comm
-  samples/bpf/test_overhead_kprobe_kern: make it adopt to task comm size
-    change
-  samples/bpf/offwaketime_kern: make sched_switch tracepoint args adopt
-    to comm size change
-  tools/bpf/bpftool/skeleton: make it adopt to task comm size change
-  tools/perf/test: make perf test adopt to task comm size change
-  tools/testing/selftests/bpf: make it adopt to task comm size change
-  sched.h: extend task comm from 16 to 24
-  kernel/kthread: show a warning if kthread's comm is truncated
-
- drivers/connector/cn_proc.c                   |  5 +++-
- drivers/infiniband/hw/qib/qib.h               |  2 +-
- drivers/infiniband/hw/qib/qib_file_ops.c      |  2 +-
- fs/binfmt_elf.c                               |  2 +-
- fs/exec.c                                     |  5 ++--
- include/linux/elfcore-compat.h                |  3 ++-
- include/linux/elfcore.h                       |  4 +--
- include/linux/sched.h                         |  9 +++++--
- kernel/kthread.c                              |  7 ++++-
- samples/bpf/offwaketime_kern.c                |  4 +--
- samples/bpf/test_overhead_kprobe_kern.c       | 11 ++++----
- samples/bpf/test_overhead_tp_kern.c           |  5 ++--
- tools/bpf/bpftool/skeleton/pid_iter.bpf.c     |  4 +--
- tools/include/linux/sched.h                   | 11 ++++++++
- tools/perf/tests/evsel-tp-sched.c             | 26 ++++++++++++++-----
- .../selftests/bpf/progs/test_stacktrace_map.c |  6 ++---
- .../selftests/bpf/progs/test_tracepoint.c     |  6 ++---
- 17 files changed, 77 insertions(+), 35 deletions(-)
- create mode 100644 tools/include/linux/sched.h
-
+diff --git a/fs/exec.c b/fs/exec.c
+index a098c133d8d7..404156b5b314 100644
+--- a/fs/exec.c
++++ b/fs/exec.c
+@@ -1224,7 +1224,7 @@ void __set_task_comm(struct task_struct *tsk, const char *buf, bool exec)
+ {
+ 	task_lock(tsk);
+ 	trace_task_rename(tsk, buf);
+-	strlcpy(tsk->comm, buf, sizeof(tsk->comm));
++	strscpy_pad(tsk->comm, buf, sizeof(tsk->comm));
+ 	task_unlock(tsk);
+ 	perf_event_comm(tsk, exec);
+ }
 -- 
 2.17.1
 
