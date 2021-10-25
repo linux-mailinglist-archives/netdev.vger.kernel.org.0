@@ -2,41 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61688439CCC
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 19:04:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 921FF439D15
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 19:08:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234372AbhJYRGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 13:06:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56708 "EHLO mail.kernel.org"
+        id S235007AbhJYRLK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 13:11:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55354 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234640AbhJYRDz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Oct 2021 13:03:55 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AD11560F70;
-        Mon, 25 Oct 2021 17:01:17 +0000 (UTC)
+        id S234299AbhJYRD7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Oct 2021 13:03:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D117F61050;
+        Mon, 25 Oct 2021 17:01:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635181278;
-        bh=yAUPeMRMR5WBXzQ+VGOAyFWKkfCcGA1CA7S0hx/Gdls=;
+        s=k20201202; t=1635181284;
+        bh=s+9bTljS9y6leYPbe4rvFcnuMjm4iGZNTbc+xPqEjE8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e9XQsdcYouWZgnR3sbK/V9UGAANy5NGhrImR6biQ4epPal848E6sOTx/ciURvZha/
-         +T1apMmE20OP6BePV/O2Z0RfFfvZkb+pu9UbjZQnskcrb5bQurWISWC04L1TsF1KU9
-         e1zbKJsPg/9IMnblr5AJX5rO2utrroMHC31kkj7mT8BC8Uwg97hETqyIVJ1CArgmqD
-         O2uMc+1AcKgftcqPeZ3n4Xs5t+AxkQSR4KpR9l7GXhr64S93w4FTUxI/5OHqliHGVA
-         J8f/S0mNzMwKfJr8aK2cM1DA3Ak/rYqwpDqzu2s6pNsP8mGXyOQU7hNJkXrDSgnxL+
-         7GGunpZ7tF8Uw==
+        b=Yw15SZTWx+MIZokSR+pZXug7cvXgPRN+LvbwBB1MXsWkD1kp8z7VoaaotEU5zMbQx
+         qaX+QF7fTdvZCktH1fXqYy0ouly7apGHsRA8y7FkLCFClwaK6kzKyw4OQGmr8eH+V3
+         LZ/Zi8pvWMvn0fzdjHZolhSIgTemoGH1+yEs7yt2DAk9p9lyMtIGUl7/AFFYWZCfHL
+         hl947GT7ZZgtSrcPWqmevu8Qg4e24V4F4Ej06RKlzAdnSBc+M3tEKmNEzB8L/w+d8c
+         7aSaCbXbIKFiTf9sQtNMmhgz+6U6ClRaLhv5v/3i8bIyfPBq8HG38gAXzc7gexZdw/
+         psiO8or+QV+tg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Oliver Neukum <oneukum@suse.com>,
-        syzbot+76bb1d34ffa0adc03baa@syzkaller.appspotmail.com,
-        Johan Hovold <johan@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 6/7] usbnet: sanity check for maxpacket
-Date:   Mon, 25 Oct 2021 13:01:01 -0400
-Message-Id: <20211025170103.1394651-6-sashal@kernel.org>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, sgoutham@marvell.com,
+        kuba@kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 2/7] cavium: Return negative value when pci_alloc_irq_vectors() fails
+Date:   Mon, 25 Oct 2021 13:01:15 -0400
+Message-Id: <20211025170120.1394792-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211025170103.1394651-1-sashal@kernel.org>
-References: <20211025170103.1394651-1-sashal@kernel.org>
+In-Reply-To: <20211025170120.1394792-1-sashal@kernel.org>
+References: <20211025170120.1394792-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -45,40 +44,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 397430b50a363d8b7bdda00522123f82df6adc5e ]
+[ Upstream commit b2cddb44bddc1a9c5949a978bb454bba863264db ]
 
-maxpacket of 0 makes no sense and oopses as we need to divide
-by it. Give up.
+During the process of driver probing, the probe function should return < 0
+for failure, otherwise, the kernel will treat value > 0 as success.
 
-V2: fixed typo in log and stylistic issues
-
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Reported-by: syzbot+76bb1d34ffa0adc03baa@syzkaller.appspotmail.com
-Reviewed-by: Johan Hovold <johan@kernel.org>
-Link: https://lore.kernel.org/r/20211021122944.21816-1-oneukum@suse.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/usbnet.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/cavium/thunder/nic_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-index 84b354f76dea..0598bc7aff89 100644
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -1784,6 +1784,10 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
- 	if (!dev->rx_urb_size)
- 		dev->rx_urb_size = dev->hard_mtu;
- 	dev->maxpacket = usb_maxpacket (dev->udev, dev->out, 1);
-+	if (dev->maxpacket == 0) {
-+		/* that is a broken device */
-+		goto out4;
-+	}
+diff --git a/drivers/net/ethernet/cavium/thunder/nic_main.c b/drivers/net/ethernet/cavium/thunder/nic_main.c
+index 819f38a3225d..7f8ea16ad0d0 100644
+--- a/drivers/net/ethernet/cavium/thunder/nic_main.c
++++ b/drivers/net/ethernet/cavium/thunder/nic_main.c
+@@ -1128,7 +1128,7 @@ static int nic_register_interrupts(struct nicpf *nic)
+ 		dev_err(&nic->pdev->dev,
+ 			"Request for #%d msix vectors failed, returned %d\n",
+ 			   nic->num_vec, ret);
+-		return 1;
++		return ret;
+ 	}
  
- 	/* let userspace know we have a random address */
- 	if (ether_addr_equal(net->dev_addr, node_id))
+ 	/* Register mailbox interrupt handler */
 -- 
 2.33.0
 
