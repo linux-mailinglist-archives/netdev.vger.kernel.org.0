@@ -2,107 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB7DA438F91
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 08:36:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8710E438F67
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 08:25:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230004AbhJYGjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 02:39:10 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:54713 "EHLO
-        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229823AbhJYGjJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 02:39:09 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 344705806A7;
-        Mon, 25 Oct 2021 02:36:47 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 25 Oct 2021 02:36:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=3jaAj+
-        gBSUpvJ7BuI4E8o6kxGEsZFrotiqAwq1+dtoQ=; b=GY03+DJHQ0KK/9zk6QGX4w
-        NzGmVIJxoXYjoWhI3ryE+cuRIKjaFHvFMtNLzqQSmGFIenqXwJ1DA1p4E62VLN9O
-        iTRhCaQBc3bRASnzP5b9m34CNcJMxl3ysF5VAY3e0YYhpDo1niRuPQaNTrJzF35q
-        iB0Db2+PKD7UhT8yK8+0NFeC5Of+3juPppBQV+8On73S3bNJIQpfy1rMmZLpn4io
-        uz3hx2feifYrcWQVUVCWPauikYWXdXflwpxWpsAFIfK0aC4IbPc04o//0nCeP+zp
-        UoOIiEUjZC7aRFbW0pNA+sgIuYE6iWZ2mUulU70cTMT5BwHgmlxyB94dxYc+KMRA
-        ==
-X-ME-Sender: <xms:fFB2YQbVNIq2Wo6eUMY0IvAfWoJ0ZYzHcLZXbHDn_uVsOj5HkAks4A>
-    <xme:fFB2YbYzYC1V0fZ27o3p_kyXdKf7oHUp6Ul9eykk6MU-l9wcyfWVPEdMjFD_3ylW8
-    fhKSDHaGCCYLUA>
-X-ME-Received: <xmr:fFB2Ya_gkzeQ_cxPcnTKi08ZUx7E1nvJjQHmd4vLNbrO5dFEnZx94FWrUCyVGmcbzaLa9jYD8pXTSqRjGBMgBpzjPf4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvdefgedguddtjecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
-    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:fVB2YapQC673689NWqhkV9HBUaySV-5bLYkUUN14Q-JtWFKSBckAnw>
-    <xmx:fVB2YbrYRUozKI8NqY74RCGByPzy0akaVDqGdeA1ADDCzvzBQoNu6w>
-    <xmx:fVB2YYT_0vj908vLcl2cDVyra8afh30h62_oYkS-K5w32Bx4UfwE6g>
-    <xmx:f1B2YW8hwtun6c8jUIMiei66wXgzqhWZThhIMKzrkv9bmoYSwnfrbA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 25 Oct 2021 02:36:44 -0400 (EDT)
-Date:   Mon, 25 Oct 2021 09:36:41 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        UNGLinuxDriver@microchip.com, DENG Qingfang <dqfext@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Aleksander Jan Bajkowski <olek2@wp.pl>,
-        Egil Hjelmeland <privat@egil-hjelmeland.no>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Prasanna Vengateshan <prasanna.vengateshan@microchip.com>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Po-Hsu Lin <po-hsu.lin@canonical.com>
-Subject: Re: [PATCH v5 net-next 09/10] selftests: lib: forwarding: allow
- tests to not require mz and jq
-Message-ID: <YXZQedit6YT4ivVo@shredder>
-References: <20211024171757.3753288-1-vladimir.oltean@nxp.com>
- <20211024171757.3753288-10-vladimir.oltean@nxp.com>
+        id S230285AbhJYG1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 02:27:32 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:14859 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230194AbhJYG1b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 02:27:31 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Hd4gh6FKFz909f;
+        Mon, 25 Oct 2021 14:25:04 +0800 (CST)
+Received: from dggpeml500025.china.huawei.com (7.185.36.35) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Mon, 25 Oct 2021 14:25:06 +0800
+Received: from huawei.com (10.175.124.27) by dggpeml500025.china.huawei.com
+ (7.185.36.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.15; Mon, 25 Oct
+ 2021 14:25:05 +0800
+From:   Hou Tao <houtao1@huawei.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+CC:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <houtao1@huawei.com>
+Subject: [PATCH bpf-next v4 0/4] introduce dummy BPF STRUCT_OPS
+Date:   Mon, 25 Oct 2021 14:40:21 +0800
+Message-ID: <20211025064025.2567443-1-houtao1@huawei.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211024171757.3753288-10-vladimir.oltean@nxp.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500025.china.huawei.com (7.185.36.35)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 24, 2021 at 08:17:56PM +0300, Vladimir Oltean wrote:
-> These programs are useful, but not all selftests require them.
-> 
-> Additionally, on embedded boards without package management (things like
-> buildroot), installing mausezahn or jq is not always as trivial as
-> downloading a package from the web.
-> 
-> So it is actually a bit annoying to require programs that are not used.
-> Introduce options that can be set by scripts to not enforce these
-> dependencies. For compatibility, default to "yes".
-> 
-> Cc: Nikolay Aleksandrov <nikolay@nvidia.com>
-> Cc: Ido Schimmel <idosch@nvidia.com>
-> Cc: Guillaume Nault <gnault@redhat.com>
-> Cc: Po-Hsu Lin <po-hsu.lin@canonical.com>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Hi,
 
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Currently the test of BPF STRUCT_OPS depends on the specific bpf
+implementation (e.g, tcp_congestion_ops), but it can not cover all
+basic functionalities (e.g, return value handling), so introduce
+a dummy BPF STRUCT_OPS for test purpose.
+
+Instead of loading a userspace-implemeted bpf_dummy_ops map into
+kernel and calling the specific function by writing to sysfs provided
+by bpf_testmode.ko, only loading bpf_dummy_ops related prog into
+kernel and calling these prog by bpf_prog_test_run(). The latter
+is more flexible and has no dependency on extra kernel module.
+
+Now the return value handling is supported by test_1(...) ops,
+and passing multiple arguments is supported by test_2(...) ops.
+If more is needed, test_x(...) ops can be added afterwards.
+
+Comments are always welcome.
+Regards,
+Hou
+
+Change Log:
+v4:
+ * add Acked-by tags in patch 1~4
+ * patch 2: remove unncessary comments and update commit message
+            accordingly
+ * patch 4: remove unnecessary nr checking in dummy_ops_init_args()
+
+v3: https://www.spinics.net/lists/bpf/msg48303.html
+ * rebase on bpf-next
+ * address comments for Martin, mainly include: merge patch 3 &
+   patch 4 in v2, fix names of btf ctx access check helpers,
+   handle CONFIG_NET, fix leak in dummy_ops_init_args(), and
+   simplify bpf_dummy_init()
+ * patch 4: use a loop to check args in test_dummy_multiple_args()
+
+v2: https://www.spinics.net/lists/bpf/msg47948.html
+ * rebase on bpf-next
+ * add test_2(...) ops to test the passing of multiple arguments
+ * a new patch (patch #2) is added to factor out ctx access helpers
+ * address comments from Martin & Andrii
+
+v1: https://www.spinics.net/lists/bpf/msg46787.html
+
+RFC: https://www.spinics.net/lists/bpf/msg46117.html
+
+
+Hou Tao (4):
+  bpf: factor out a helper to prepare trampoline for struct_ops prog
+  bpf: factor out helpers for ctx access checking
+  bpf: add dummy BPF STRUCT_OPS for test purpose
+  selftests/bpf: add test cases for struct_ops prog
+
+ include/linux/bpf.h                           |  43 ++++
+ kernel/bpf/bpf_struct_ops.c                   |  32 ++-
+ kernel/bpf/bpf_struct_ops_types.h             |   3 +
+ kernel/trace/bpf_trace.c                      |  16 +-
+ net/bpf/Makefile                              |   3 +
+ net/bpf/bpf_dummy_struct_ops.c                | 200 ++++++++++++++++++
+ net/ipv4/bpf_tcp_ca.c                         |   9 +-
+ .../selftests/bpf/prog_tests/dummy_st_ops.c   | 115 ++++++++++
+ .../selftests/bpf/progs/dummy_st_ops.c        |  50 +++++
+ 9 files changed, 439 insertions(+), 32 deletions(-)
+ create mode 100644 net/bpf/bpf_dummy_struct_ops.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/dummy_st_ops.c
+ create mode 100644 tools/testing/selftests/bpf/progs/dummy_st_ops.c
+
+-- 
+2.29.2
+
