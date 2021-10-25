@@ -2,241 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34DDB439635
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 14:22:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9252A43964C
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 14:27:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233141AbhJYMYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 08:24:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38708 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232582AbhJYMYD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 08:24:03 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9CCFC06122F;
-        Mon, 25 Oct 2021 05:21:33 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id oa4so8145376pjb.2;
-        Mon, 25 Oct 2021 05:21:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=rjA9Km5RNAIhCojwd6r90HC+YkWUUuhzZ0o+qCDoGUI=;
-        b=aUlauNk/3VsTu/qMuSkUtPFZSBYL6eZyvUnXjJcfWEkIDTWH46fzXBCoX+xIvlnIMm
-         fzZgiGEeaovRwCvGXd8/Et/qXqNU+EtO3WUI83mde/FmLukxsYwOtaHAVmVtwIULk/pG
-         t5sEVBSoPMhfaLcHw3bDw3Ih/Kf51TMibtDH4HQUP6Z0OZfmdT6CQnycaOcgLj44N71X
-         QIJXfhFqW2TO3DC30Zf2vcdznx+PEFBXXVPIqZM/GifOVwMEN0ErvTm9Tcp6m9x7V8hA
-         jjkJtJIiTsRo50fbpTVDMmse2X6O66Tw+QIBzYLTV2RBjtwKN/NYVtDYzYBKHGH6wXkU
-         +OkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=rjA9Km5RNAIhCojwd6r90HC+YkWUUuhzZ0o+qCDoGUI=;
-        b=FxGlZT328oTqiy6kDgJsFoOGa06fmjEdTM7gp0wiARLSNIwuOC6lEGRfsH5dQGU+AV
-         nJcTP3T6Ed4cyi4EMDgJQUmgRD7EyXxcGVDGWJvKmlhcTRD477KQDnnhmEdBvblGQEfH
-         yp1Eg6prVY/lHL/L3iGfIWiG+gZS3yzlcgiS2whyJRTDNqP7XWoKG835fHRFmJmPCjCr
-         2fWhEtZ1zPx+vjPeGYaBWDjJoHngM3EYRrKD0rLSOG3oH8kKgrwZizxJ2aQ+O7TxVeRd
-         LVjCG3I9IaaXiMC154FLmPcCNlipChS9Bqefyy0v7fvmWMr9OYNnBQFJuX/SvJv/hXlc
-         HjZg==
-X-Gm-Message-State: AOAM530uekeXXNINF81xq1MkovrErmYdYk6EO8WgKrNtDEdoueEAQx39
-        SXHw0ZKvAjlVBEeAcricdog=
-X-Google-Smtp-Source: ABdhPJyOzrw1VPMh6YoqOsIE8iJK4EM/aaEHO1BJ9JQuZb+0QAX5HCakbZX03Q29M+VUsjeyQBU3NQ==
-X-Received: by 2002:a17:90b:3ecc:: with SMTP id rm12mr20355750pjb.48.1635164493237;
-        Mon, 25 Oct 2021 05:21:33 -0700 (PDT)
-Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:8:bcf6:9813:137f:2b6])
-        by smtp.gmail.com with ESMTPSA id mi11sm2786166pjb.5.2021.10.25.05.21.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Oct 2021 05:21:32 -0700 (PDT)
-From:   Tianyu Lan <ltykernel@gmail.com>
-To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
-        arnd@arndb.de, brijesh.singh@amd.com, jroedel@suse.de,
-        mikelley@microsoft.com, Tianyu.Lan@microsoft.com,
-        thomas.lendacky@amd.com, pgonda@google.com,
-        akpm@linux-foundation.org, rppt@kernel.org,
-        kirill.shutemov@linux.intel.com, saravanand@fb.com,
-        aneesh.kumar@linux.ibm.com, sfr@canb.auug.org.au, david@redhat.com,
-        michael.h.kelley@microsoft.com
-Cc:     linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, konrad.wilk@oracle.com, hch@lst.de,
-        robin.murphy@arm.com, joro@8bytes.org, parri.andrea@gmail.com,
-        dave.hansen@intel.com
-Subject: [PATCH V9 9/9] Drivers: hv : vmbus: Initialize VMbus ring buffer for Isolation VM
-Date:   Mon, 25 Oct 2021 08:21:14 -0400
-Message-Id: <20211025122116.264793-10-ltykernel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211025122116.264793-1-ltykernel@gmail.com>
-References: <20211025122116.264793-1-ltykernel@gmail.com>
+        id S233034AbhJYM3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 08:29:30 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:57016 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232951AbhJYM33 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Oct 2021 08:29:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=GEJMIp1Co7EQbihLV9HM0uM2vYDqN3IJKvgEFJVwY50=; b=uzIzKIarGL49x+1Kr6N08KTUp6
+        TNbdDakDIhgFq4EMg40r3tdrn8rgDHZEOlkxzduQExNgepNuOdmw1m92PU3mKv5H9ov5e5qiyhscA
+        bDhXUCegbWldcGzzTlpCNvTSBu6HrE/i6Sew7hTJ5FkvM+LSXmpIGOKaLR9R2HuldrkU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mez4E-00BeA6-BB; Mon, 25 Oct 2021 14:27:06 +0200
+Date:   Mon, 25 Oct 2021 14:27:06 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-can <linux-can@vger.kernel.org>, netdev@vger.kernel.org
+Subject: Re: ethtool: ring configuration for CAN devices
+Message-ID: <YXaimhlXkpBKRQin@lunn.ch>
+References: <20211024213759.hwhlb4e3repkvo6y@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211024213759.hwhlb4e3repkvo6y@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+On Sun, Oct 24, 2021 at 11:37:59PM +0200, Marc Kleine-Budde wrote:
+> Hello,
+> 
+> I'm currently working on runtime configurable RX/TX ring sizes for a the
+> mcp251xfd CAN driver.
+> 
+> Unlike modern Ethernet cards with DMA support, most CAN IP cores come
+> with a fixed size on chip RAM that's used to store received CAN frames
+> and frames that should be sent.
+> 
+> For CAN-2.0 only devices that can be directly supported via ethtools's
+> set/get_ringparam. A minor unaesthetic is, as the on chip RAM is usually
+> shared between RX and TX, the maximum values for RX and TX cannot be set
+> at the same time.
+> 
+> The mcp251xfd chip I'm enhancing supports CAN-2.0 and CAN-FD mode. The
+> relevant difference of these modes is the size of the CAN frame. 8 vs 64
+> bytes of payload + 12 bytes of header. This means we have different
+> maximum values for both RX and TX for those modes.
+> 
+> How do we want to deal with the configuration of the two different
+> modes? As the current set/get_ringparam interface can configure the
+> mini- and jumbo frames for RX, but has only a single TX value.
 
-VMbus ring buffer are shared with host and it's need to
-be accessed via extra address space of Isolation VM with
-AMD SNP support. This patch is to map the ring buffer
-address in extra address space via vmap_pfn(). Hyperv set
-memory host visibility hvcall smears data in the ring buffer
-and so reset the ring buffer memory to zero after mapping.
+Hi Marc
 
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
----
-Change since v4:
-	* Use PFN_DOWN instead of HVPFN_DOWN in the hv_ringbuffer_init()
+I would not consider it as two different modes, but as N modes. That
+way, we are prepared for CAN-3.0 which might need other ring
+parameters.
 
-Change since v3:
-	* Remove hv_ringbuffer_post_init(), merge map
-	operation for Isolation VM into hv_ringbuffer_init()
-	* Call hv_ringbuffer_init() after __vmbus_establish_gpadl().
----
- drivers/hv/Kconfig       |  1 +
- drivers/hv/channel.c     | 19 +++++++-------
- drivers/hv/ring_buffer.c | 55 ++++++++++++++++++++++++++++++----------
- 3 files changed, 53 insertions(+), 22 deletions(-)
+The netlink API is extensible, unlike the IOCTL interface. I would add
+an additional optional attribute, ETHTOOL_A_RINGS_MODE, with values like:
 
-diff --git a/drivers/hv/Kconfig b/drivers/hv/Kconfig
-index d1123ceb38f3..dd12af20e467 100644
---- a/drivers/hv/Kconfig
-+++ b/drivers/hv/Kconfig
-@@ -8,6 +8,7 @@ config HYPERV
- 		|| (ARM64 && !CPU_BIG_ENDIAN))
- 	select PARAVIRT
- 	select X86_HV_CALLBACK_VECTOR if X86
-+	select VMAP_PFN
- 	help
- 	  Select this option to run Linux as a Hyper-V client operating
- 	  system.
-diff --git a/drivers/hv/channel.c b/drivers/hv/channel.c
-index b37ff4a39224..dc5c35210c16 100644
---- a/drivers/hv/channel.c
-+++ b/drivers/hv/channel.c
-@@ -683,15 +683,6 @@ static int __vmbus_open(struct vmbus_channel *newchannel,
- 	if (!newchannel->max_pkt_size)
- 		newchannel->max_pkt_size = VMBUS_DEFAULT_MAX_PKT_SIZE;
- 
--	err = hv_ringbuffer_init(&newchannel->outbound, page, send_pages, 0);
--	if (err)
--		goto error_clean_ring;
--
--	err = hv_ringbuffer_init(&newchannel->inbound, &page[send_pages],
--				 recv_pages, newchannel->max_pkt_size);
--	if (err)
--		goto error_clean_ring;
--
- 	/* Establish the gpadl for the ring buffer */
- 	newchannel->ringbuffer_gpadlhandle.gpadl_handle = 0;
- 
-@@ -703,6 +694,16 @@ static int __vmbus_open(struct vmbus_channel *newchannel,
- 	if (err)
- 		goto error_clean_ring;
- 
-+	err = hv_ringbuffer_init(&newchannel->outbound,
-+				 page, send_pages, 0);
-+	if (err)
-+		goto error_free_gpadl;
-+
-+	err = hv_ringbuffer_init(&newchannel->inbound, &page[send_pages],
-+				 recv_pages, newchannel->max_pkt_size);
-+	if (err)
-+		goto error_free_gpadl;
-+
- 	/* Create and init the channel open message */
- 	open_info = kzalloc(sizeof(*open_info) +
- 			   sizeof(struct vmbus_channel_open_channel),
-diff --git a/drivers/hv/ring_buffer.c b/drivers/hv/ring_buffer.c
-index 314015d9e912..931802ae985c 100644
---- a/drivers/hv/ring_buffer.c
-+++ b/drivers/hv/ring_buffer.c
-@@ -17,6 +17,8 @@
- #include <linux/vmalloc.h>
- #include <linux/slab.h>
- #include <linux/prefetch.h>
-+#include <linux/io.h>
-+#include <asm/mshyperv.h>
- 
- #include "hyperv_vmbus.h"
- 
-@@ -183,8 +185,10 @@ void hv_ringbuffer_pre_init(struct vmbus_channel *channel)
- int hv_ringbuffer_init(struct hv_ring_buffer_info *ring_info,
- 		       struct page *pages, u32 page_cnt, u32 max_pkt_size)
- {
--	int i;
- 	struct page **pages_wraparound;
-+	unsigned long *pfns_wraparound;
-+	u64 pfn;
-+	int i;
- 
- 	BUILD_BUG_ON((sizeof(struct hv_ring_buffer) != PAGE_SIZE));
- 
-@@ -192,23 +196,48 @@ int hv_ringbuffer_init(struct hv_ring_buffer_info *ring_info,
- 	 * First page holds struct hv_ring_buffer, do wraparound mapping for
- 	 * the rest.
- 	 */
--	pages_wraparound = kcalloc(page_cnt * 2 - 1, sizeof(struct page *),
--				   GFP_KERNEL);
--	if (!pages_wraparound)
--		return -ENOMEM;
-+	if (hv_isolation_type_snp()) {
-+		pfn = page_to_pfn(pages) +
-+			PFN_DOWN(ms_hyperv.shared_gpa_boundary);
-+
-+		pfns_wraparound = kcalloc(page_cnt * 2 - 1,
-+			sizeof(unsigned long), GFP_KERNEL);
-+		if (!pfns_wraparound)
-+			return -ENOMEM;
-+
-+		pfns_wraparound[0] = pfn;
-+		for (i = 0; i < 2 * (page_cnt - 1); i++)
-+			pfns_wraparound[i + 1] = pfn + i % (page_cnt - 1) + 1;
- 
--	pages_wraparound[0] = pages;
--	for (i = 0; i < 2 * (page_cnt - 1); i++)
--		pages_wraparound[i + 1] = &pages[i % (page_cnt - 1) + 1];
-+		ring_info->ring_buffer = (struct hv_ring_buffer *)
-+			vmap_pfn(pfns_wraparound, page_cnt * 2 - 1,
-+				 PAGE_KERNEL);
-+		kfree(pfns_wraparound);
- 
--	ring_info->ring_buffer = (struct hv_ring_buffer *)
--		vmap(pages_wraparound, page_cnt * 2 - 1, VM_MAP, PAGE_KERNEL);
-+		if (!ring_info->ring_buffer)
-+			return -ENOMEM;
-+
-+		/* Zero ring buffer after setting memory host visibility. */
-+		memset(ring_info->ring_buffer, 0x00, PAGE_SIZE * page_cnt);
-+	} else {
-+		pages_wraparound = kcalloc(page_cnt * 2 - 1,
-+					   sizeof(struct page *),
-+					   GFP_KERNEL);
-+
-+		pages_wraparound[0] = pages;
-+		for (i = 0; i < 2 * (page_cnt - 1); i++)
-+			pages_wraparound[i + 1] =
-+				&pages[i % (page_cnt - 1) + 1];
- 
--	kfree(pages_wraparound);
-+		ring_info->ring_buffer = (struct hv_ring_buffer *)
-+			vmap(pages_wraparound, page_cnt * 2 - 1, VM_MAP,
-+				PAGE_KERNEL);
- 
-+		kfree(pages_wraparound);
-+		if (!ring_info->ring_buffer)
-+			return -ENOMEM;
-+	}
- 
--	if (!ring_info->ring_buffer)
--		return -ENOMEM;
- 
- 	ring_info->ring_buffer->read_index =
- 		ring_info->ring_buffer->write_index = 0;
--- 
-2.25.1
+ETHTOOL_A_RINGS_MODE_DEFAULT
+ETHTOOL_A_RINGS_MODE_CAN_2
+ETHTOOL_A_RINGS_MODE_CAN_FD
 
+The IOCTL would always be for mode _DEFAULT, and it would get/set the
+current used setting. If the optionally attribute is missing, then the
+calling into the driver would also use _DEFAULT. However, if it is
+present, the driver can store away the ring parameters for a
+particular mode, and maybe actually put them into use if the mode is
+currently active.
+
+You cannot change
+
+struct ethtool_ringparam {
+	__u32	cmd;
+	__u32	rx_max_pending;
+	__u32	rx_mini_max_pending;
+	__u32	rx_jumbo_max_pending;
+	__u32	tx_max_pending;
+	__u32	rx_pending;
+	__u32	rx_mini_pending;
+	__u32	rx_jumbo_pending;
+	__u32	tx_pending;
+};
+
+Since that is ABI. But you can add an
+
+struct ethtool_kringparam {
+	__u32	cmd;
+	__u32   mode;
+	__u32	rx_max_pending;
+	__u32	rx_mini_max_pending;
+	__u32	rx_jumbo_max_pending;
+	__u32	tx_max_pending;
+	__u32	rx_pending;
+	__u32	rx_mini_pending;
+	__u32	rx_jumbo_pending;
+	__u32	tx_pending;
+};
+
+and use this structure between the ethtool core and the drivers. This
+has already been done at least once to allow extending the
+API. Semantic patches are good for making the needed changes to all
+the drivers.
+
+     Andrew
