@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B88C943A7FD
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 01:10:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BF7443A7FE
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 01:10:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232664AbhJYXMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 19:12:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46896 "EHLO
+        id S232792AbhJYXMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 19:12:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231478AbhJYXMd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 19:12:33 -0400
+        with ESMTP id S230464AbhJYXMz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 19:12:55 -0400
 Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8918AC061745
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 16:10:10 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id y12so6251764eda.4
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 16:10:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 693D1C061767
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 16:10:32 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id u13so5728700edy.10
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 16:10:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=lFwaPl5bxAdhvr1VVYuzXHbRgwNQI9ZonkHn/942SIo=;
-        b=V6arbEeuSuth9mDxKkUDr5DX0EVPt8DEsx/6sBHsNZ0Mnus3jBTodAxKoFEFuLif2Y
-         IAbq3kCDwUXn/HUtpTdFwq52wHqCbEc8qaYwBwjyXX6Z5sI0EpbMcRmfrn6LCqkr+I7Z
-         2WF45+XJcC4rHcfV4pw2mc5PHaVfuT4AvAaX+Cl1eKTwG6zyrih++9iPjeuzyDgNntXI
-         SuelY6DNyH95ZXa2EXtBYHS9UL+/qomgeMh+ddb5TAJXEqJomw75lmrW0dfDQ6ML5xAI
-         aGfSpqgj7w86vxD5BKYkKVBXRUt2EVH44DOymUj+DwUrutZdW6rL93MZCZlOPfgFbi1K
-         uZ+w==
+        bh=q9nYLFY16TpSUSeiU/susrMvUEGG5Bn8jAFAq+AkdM0=;
+        b=cS3cstA4yfOqBjNC7/3/JTw8AyVUEWpvTJdGLaho2Vp2S9kxsTxXWbL21IMlEZc7GL
+         iXSJQNu6tpgzO9kuFx8xzQOT5+8Hf6fCOwzXRZvrBqKRcdIzw2ARFV4taK3taL1Jwpaw
+         wxqSg+CQ3s27fp9tI8tKSGoRjoiXaiy+DT781/lVowFfgzQK3Hd6lxOZRorfBfW32BFh
+         XPUS4KvqVu1aNif1fT/78/G2HgHoO6gWhfg2wCfSJ4Kvq1XTJJgfe79O8jcRxfApnSur
+         YThIGWx8+qWgiUTvskA8A1tZJCMmHJFa6iun+3Kupr860TaTMBR9luY1RPqcp/l9HJrn
+         IOww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=lFwaPl5bxAdhvr1VVYuzXHbRgwNQI9ZonkHn/942SIo=;
-        b=Ry28NegiyfaGOTADiKbuGWV+3s5uHmxmxfurUmg64rxALrCt11WgGWhqqS6Pli2JYq
-         ADImWk0+fupDzXb16AcR59IjdlZYGfVwzunP3po53bm+YLpgOhLS4Xw3Va7YsQZMxeXI
-         kbRWAsxGRekwDopyCrvwODAWdQZJnfq31ev9V62Q6x8JPxNti6FY+oLmcyfB5dqV5KBD
-         aELkgtspnysp9Cy4quX0hPjhfI9UkCd0TUGXyTAFP5ha2MvNLrmW2rKj5Iy0NsW7Iq9A
-         S3KAvWSPTvpQju6woGPTO9kWp8KlpZ52UiwPO9COEwFpFmDf3kOpwRCHZUDGQHZFBD8V
-         ZoHQ==
-X-Gm-Message-State: AOAM531eO3ubzVLF5Jrvmje1M78F1v/NYFt50ccF+04sEsV4AZk6an+O
-        2l/CmC/ETuFWC0khlBbRq5KMuBb4ClLadDYfBkwBB8he4EU=
-X-Google-Smtp-Source: ABdhPJyddl9SBuAs2L2+JGa+624CDN8bdd1NGfKRh0uAk1JPFBa1fAAjEQgW8KKdk1x5n4uqVZ2kdE5Wb7a9qtjhDZg=
-X-Received: by 2002:a17:906:7304:: with SMTP id di4mr25909099ejc.179.1635203408832;
- Mon, 25 Oct 2021 16:10:08 -0700 (PDT)
+        bh=q9nYLFY16TpSUSeiU/susrMvUEGG5Bn8jAFAq+AkdM0=;
+        b=TbWHYhXGaLHCgxWJXI/yZOU+taF2JbvIAnGNkpO5vc1KCQvxKYi43gqyDaBQ35TJNK
+         cYFJq/SbW5ttoMA4vpDHVsjioAsNR15p8/DavBB+5WCdJYuHxTfVFsxRJkoQJKjpvvZx
+         RNTJZXb6z1fU/LEUlwUWya7T/fCbHIvtFQtDyNtijMB3Xzps8RPVvQGoYIQf3AGMC5tK
+         60ua8ZBBAEze7743puDZB5cBXU4bJgcSzVHGSbX2mVi3iA3lLnFDJfNF1ZxaDYejjavp
+         baqZHKHwaThBaM2GJxQtkZCjDhXftitz7SfKODFXEXGDJpGjQ+VRVFi6+K8Q9RkfHMJ7
+         +7fA==
+X-Gm-Message-State: AOAM5309PbvCWRQ2+AhoShMiioglAVWPJs9xYvelyYr1AFj5Fs5fewYs
+        u+N0/94Fa6I6qL8rpUmBopp+6B4yqddiArVZo7wFBg==
+X-Google-Smtp-Source: ABdhPJzJSLBhJuaQI88QwX1JmYhOhevLFc/6Vp/N5jcHcU5ZTRnrtXntToP0wZxpTIEVDMSon9NvQv+vZb+nKKEQknM=
+X-Received: by 2002:a05:6402:2d0:: with SMTP id b16mr15142194edx.193.1635203430784;
+ Mon, 25 Oct 2021 16:10:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211025221342.806029-1-eric.dumazet@gmail.com> <20211025221342.806029-3-eric.dumazet@gmail.com>
-In-Reply-To: <20211025221342.806029-3-eric.dumazet@gmail.com>
+References: <20211025221342.806029-1-eric.dumazet@gmail.com> <20211025221342.806029-4-eric.dumazet@gmail.com>
+In-Reply-To: <20211025221342.806029-4-eric.dumazet@gmail.com>
 From:   Soheil Hassas Yeganeh <soheil@google.com>
-Date:   Mon, 25 Oct 2021 19:09:31 -0400
-Message-ID: <CACSApvZiBpLG-CO64BuhjoVypGJwqCNF5AnTWsPCbN3M_vtqFg@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/3] tcp: use MAX_TCP_HEADER in tcp_stream_alloc_skb
+Date:   Mon, 25 Oct 2021 19:09:54 -0400
+Message-ID: <CACSApva-YtkNDw7a=zJ1QuFdhv8tiLsavfbNp6+93yW62k0g2A@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/3] tcp: remove unneeded code from tcp_stream_alloc_skb()
 To:     Eric Dumazet <eric.dumazet@gmail.com>
 Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -64,39 +64,34 @@ On Mon, Oct 25, 2021 at 6:13 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
 >
 > From: Eric Dumazet <edumazet@google.com>
 >
-> Both IPv4 and IPv6 uses same reserve, no need risking
-> cache line misses to fetch its value.
+> Aligning @size argument to 4 bytes is not needed.
+>
+> The header alignment has nothing to do with @size.
+>
+> It really depends on skb->head alignment and MAX_TCP_HEADER.
 >
 > Signed-off-by: Eric Dumazet <edumazet@google.com>
 
 Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
 
 > ---
->  net/ipv4/tcp.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  net/ipv4/tcp.c | 3 ---
+>  1 file changed, 3 deletions(-)
 >
 > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index 68dd580dba3d0e04412466868135c49225a4a33b..121400557fde898283a8eae3b09d93479c4a089e 100644
+> index 121400557fde898283a8eae3b09d93479c4a089e..0a27b7ef1a9db8aea8d98cff4b8ab7092994febd 100644
 > --- a/net/ipv4/tcp.c
 > +++ b/net/ipv4/tcp.c
-> @@ -867,7 +867,7 @@ struct sk_buff *tcp_stream_alloc_skb(struct sock *sk, int size, gfp_t gfp,
+> @@ -861,9 +861,6 @@ struct sk_buff *tcp_stream_alloc_skb(struct sock *sk, int size, gfp_t gfp,
+>  {
+>         struct sk_buff *skb;
+>
+> -       /* The TCP header must be at least 32-bit aligned.  */
+> -       size = ALIGN(size, 4);
+> -
 >         if (unlikely(tcp_under_memory_pressure(sk)))
 >                 sk_mem_reclaim_partial(sk);
 >
-> -       skb = alloc_skb_fclone(size + sk->sk_prot->max_header, gfp);
-> +       skb = alloc_skb_fclone(size + MAX_TCP_HEADER, gfp);
->         if (likely(skb)) {
->                 bool mem_scheduled;
->
-> @@ -878,7 +878,7 @@ struct sk_buff *tcp_stream_alloc_skb(struct sock *sk, int size, gfp_t gfp,
->                         mem_scheduled = sk_wmem_schedule(sk, skb->truesize);
->                 }
->                 if (likely(mem_scheduled)) {
-> -                       skb_reserve(skb, sk->sk_prot->max_header);
-> +                       skb_reserve(skb, MAX_TCP_HEADER);
->                         /*
->                          * Make sure that we have exactly size bytes
->                          * available to the caller, no more, no less.
 > --
 > 2.33.0.1079.g6e70778dc9-goog
 >
