@@ -2,142 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73F3043A69E
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 00:33:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1501143A7F0
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 00:54:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234049AbhJYWfr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 18:35:47 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:57281 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233848AbhJYWfq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 18:35:46 -0400
-Received: by mail-il1-f197.google.com with SMTP id h17-20020a056e021d9100b0025a38d5fea8so3588579ila.23
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 15:33:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=vyhnJoZIovOdZyzH8Y8MrbUmNDPLYUWR/YD6MJ+0O5M=;
-        b=V1mDJGQZJbYVQWeLH744x9cIUhhXyYCfdE+rqrxQHabB2i5rXjTqecm9nhse6b1C3k
-         JnHyDpsoFtnJ4xItmUmi4hT/Q3O9MH43k65schVVjvPxYFo7DoFSP2bApc+lUQpz8Anj
-         9pJ1OlJ3I4RbEyjACKiqFCimKUnJS9GhhjfVA0uVO0Rj4lcL9zy5OYbhbtju8c/If+Ji
-         sajoy5ss2E1Y4Bbt4W6GVC5Qtg6bk9gGlcgA6BCphCqKhYSnWFBZtxU0phAUV4vM/qVC
-         H58VQXMJ4xLEK/X171hEghok1W1KQl8hfe5b+WenYITvV5HPqH8EVJ/GLgZ+aQZCe9KF
-         wHFw==
-X-Gm-Message-State: AOAM533gwUnS7G794QVdUy1Rp+dQIM1mk7Jkm9DnOg31OVtfZfi8HbW/
-        CQH8GBRWrr1e0Cxd4EZOL2L4Pc5sJedWftN6C5liJ5mTUuvV
-X-Google-Smtp-Source: ABdhPJxcekNuFURt+wY3TpojJBaYMtxjZZ9itMECXazo2bnY4iJCYwLHHeehCVLVTlUNB9ifOjIXhJzrR84h5WPzQ2a186BleC8D
+        id S234554AbhJYW5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 18:57:12 -0400
+Received: from www62.your-server.de ([213.133.104.62]:49534 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232586AbhJYW5J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 18:57:09 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mf8rY-0000FB-RX; Tue, 26 Oct 2021 00:54:40 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mf8rY-0002oR-Gs; Tue, 26 Oct 2021 00:54:40 +0200
+Subject: Re: [PATCH] powerpc/bpf: fix write protecting JIT code
+To:     "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, ast@kernel.org,
+        christophe.leroy@csgroup.eu, Hari Bathini <hbathini@linux.ibm.com>,
+        jniethe5@gmail.com, mpe@ellerman.id.au
+Cc:     andrii@kernel.org, bpf@vger.kernel.org, john.fastabend@gmail.com,
+        kafai@fb.com, kpsingh@kernel.org, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org, paulus@samba.org, songliubraving@fb.com,
+        stable@vger.kernel.org, yhs@fb.com
+References: <20211025055649.114728-1-hbathini@linux.ibm.com>
+ <1635142354.46h6w5c2rx.naveen@linux.ibm.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <c8d7390b-c07c-75cd-e9e9-4b8f0b786cc6@iogearbox.net>
+Date:   Tue, 26 Oct 2021 00:54:39 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-X-Received: by 2002:a6b:8d8a:: with SMTP id p132mr12406022iod.96.1635201203634;
- Mon, 25 Oct 2021 15:33:23 -0700 (PDT)
-Date:   Mon, 25 Oct 2021 15:33:23 -0700
-In-Reply-To: <000000000000f632ba05c3cb12c2@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e1063f05cf34f2a8@google.com>
-Subject: Re: [syzbot] memory leak in cfg80211_inform_single_bss_frame_data
-From:   syzbot <syzbot+7a942657a255a9d9b18a@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        mudongliangabcd@gmail.com, netdev@vger.kernel.org,
-        phind.uet@gmail.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1635142354.46h6w5c2rx.naveen@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26333/Mon Oct 25 10:29:40 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+On 10/25/21 8:15 AM, Naveen N. Rao wrote:
+> Hari Bathini wrote:
+>> Running program with bpf-to-bpf function calls results in data access
+>> exception (0x300) with the below call trace:
+>>
+>>     [c000000000113f28] bpf_int_jit_compile+0x238/0x750 (unreliable)
+>>     [c00000000037d2f8] bpf_check+0x2008/0x2710
+>>     [c000000000360050] bpf_prog_load+0xb00/0x13a0
+>>     [c000000000361d94] __sys_bpf+0x6f4/0x27c0
+>>     [c000000000363f0c] sys_bpf+0x2c/0x40
+>>     [c000000000032434] system_call_exception+0x164/0x330
+>>     [c00000000000c1e8] system_call_vectored_common+0xe8/0x278
+>>
+>> as bpf_int_jit_compile() tries writing to write protected JIT code
+>> location during the extra pass.
+>>
+>> Fix it by holding off write protection of JIT code until the extra
+>> pass, where branch target addresses fixup happens.
+>>
+>> Cc: stable@vger.kernel.org
+>> Fixes: 62e3d4210ac9 ("powerpc/bpf: Write protect JIT code")
+>> Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
+>> ---
+>>  arch/powerpc/net/bpf_jit_comp.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> Thanks for the fix!
+> 
+> Reviewed-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
 
-HEAD commit:    87066fdd2e30 Revert "mm/secretmem: use refcount_t instead ..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=16b55554b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d25eeb482b0f99b
-dashboard link: https://syzkaller.appspot.com/bug?extid=7a942657a255a9d9b18a
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=171cf464b00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1396b19f300000
+LGTM, I presume this fix will be routed via Michael.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+7a942657a255a9d9b18a@syzkaller.appspotmail.com
-
-BUG: memory leak
-unreferenced object 0xffff88810f3c7980 (size 96):
-  comm "kworker/u4:0", pid 8, jiffies 4294948721 (age 17.180s)
-  hex dump (first 32 bytes):
-    e5 90 aa e8 34 cf 05 00 00 00 00 00 00 00 00 00  ....4...........
-    00 00 00 00 00 00 00 00 28 00 00 00 01 00 06 10  ........(.......
-  backtrace:
-    [<ffffffff83ee74a9>] cfg80211_inform_single_bss_frame_data+0x139/0x640 net/wireless/scan.c:2383
-    [<ffffffff83ee79fb>] cfg80211_inform_bss_frame_data+0x4b/0x470 net/wireless/scan.c:2444
-    [<ffffffff83f8865e>] ieee80211_bss_info_update+0x16e/0x460 net/mac80211/scan.c:190
-    [<ffffffff83f9687a>] ieee80211_rx_bss_info net/mac80211/ibss.c:1119 [inline]
-    [<ffffffff83f9687a>] ieee80211_rx_mgmt_probe_beacon+0x61a/0x970 net/mac80211/ibss.c:1608
-    [<ffffffff83f972dc>] ieee80211_ibss_rx_queued_mgmt+0x23c/0x6e0 net/mac80211/ibss.c:1635
-    [<ffffffff83f99347>] ieee80211_iface_process_skb net/mac80211/iface.c:1439 [inline]
-    [<ffffffff83f99347>] ieee80211_iface_work+0x5f7/0x770 net/mac80211/iface.c:1493
-    [<ffffffff81265dbf>] process_one_work+0x2cf/0x620 kernel/workqueue.c:2297
-    [<ffffffff812666c9>] worker_thread+0x59/0x5d0 kernel/workqueue.c:2444
-    [<ffffffff8126fc48>] kthread+0x188/0x1d0 kernel/kthread.c:319
-    [<ffffffff810022cf>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-
-BUG: memory leak
-unreferenced object 0xffff88810f3c7b00 (size 96):
-  comm "kworker/u4:0", pid 8, jiffies 4294948721 (age 17.180s)
-  hex dump (first 32 bytes):
-    f5 90 aa e8 34 cf 05 00 00 00 00 00 00 00 00 00  ....4...........
-    00 00 00 00 00 00 00 00 28 00 00 00 01 00 06 10  ........(.......
-  backtrace:
-    [<ffffffff83ee74a9>] cfg80211_inform_single_bss_frame_data+0x139/0x640 net/wireless/scan.c:2383
-    [<ffffffff83ee79fb>] cfg80211_inform_bss_frame_data+0x4b/0x470 net/wireless/scan.c:2444
-    [<ffffffff83f8865e>] ieee80211_bss_info_update+0x16e/0x460 net/mac80211/scan.c:190
-    [<ffffffff83f9687a>] ieee80211_rx_bss_info net/mac80211/ibss.c:1119 [inline]
-    [<ffffffff83f9687a>] ieee80211_rx_mgmt_probe_beacon+0x61a/0x970 net/mac80211/ibss.c:1608
-    [<ffffffff83f972dc>] ieee80211_ibss_rx_queued_mgmt+0x23c/0x6e0 net/mac80211/ibss.c:1635
-    [<ffffffff83f99347>] ieee80211_iface_process_skb net/mac80211/iface.c:1439 [inline]
-    [<ffffffff83f99347>] ieee80211_iface_work+0x5f7/0x770 net/mac80211/iface.c:1493
-    [<ffffffff81265dbf>] process_one_work+0x2cf/0x620 kernel/workqueue.c:2297
-    [<ffffffff812666c9>] worker_thread+0x59/0x5d0 kernel/workqueue.c:2444
-    [<ffffffff8126fc48>] kthread+0x188/0x1d0 kernel/kthread.c:319
-    [<ffffffff810022cf>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-
-BUG: memory leak
-unreferenced object 0xffff88810f3c7680 (size 96):
-  comm "kworker/u4:1", pid 146, jiffies 4294948731 (age 17.080s)
-  hex dump (first 32 bytes):
-    e9 20 ac e8 34 cf 05 00 00 00 00 00 00 00 00 00  . ..4...........
-    00 00 00 00 00 00 00 00 28 00 00 00 01 00 06 10  ........(.......
-  backtrace:
-    [<ffffffff83ee74a9>] cfg80211_inform_single_bss_frame_data+0x139/0x640 net/wireless/scan.c:2383
-    [<ffffffff83ee79fb>] cfg80211_inform_bss_frame_data+0x4b/0x470 net/wireless/scan.c:2444
-    [<ffffffff83f8865e>] ieee80211_bss_info_update+0x16e/0x460 net/mac80211/scan.c:190
-    [<ffffffff83f9687a>] ieee80211_rx_bss_info net/mac80211/ibss.c:1119 [inline]
-    [<ffffffff83f9687a>] ieee80211_rx_mgmt_probe_beacon+0x61a/0x970 net/mac80211/ibss.c:1608
-    [<ffffffff83f972dc>] ieee80211_ibss_rx_queued_mgmt+0x23c/0x6e0 net/mac80211/ibss.c:1635
-    [<ffffffff83f99347>] ieee80211_iface_process_skb net/mac80211/iface.c:1439 [inline]
-    [<ffffffff83f99347>] ieee80211_iface_work+0x5f7/0x770 net/mac80211/iface.c:1493
-    [<ffffffff81265dbf>] process_one_work+0x2cf/0x620 kernel/workqueue.c:2297
-    [<ffffffff812666c9>] worker_thread+0x59/0x5d0 kernel/workqueue.c:2444
-    [<ffffffff8126fc48>] kthread+0x188/0x1d0 kernel/kthread.c:319
-    [<ffffffff810022cf>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-
-BUG: memory leak
-unreferenced object 0xffff888111520f80 (size 96):
-  comm "kworker/u4:1", pid 146, jiffies 4294948731 (age 17.080s)
-  hex dump (first 32 bytes):
-    fb 20 ac e8 34 cf 05 00 00 00 00 00 00 00 00 00  . ..4...........
-    00 00 00 00 00 00 00 00 28 00 00 00 01 00 06 10  ........(.......
-  backtrace:
-    [<ffffffff83ee74a9>] cfg80211_inform_single_bss_frame_data+0x139/0x640 net/wireless/scan.c:2383
-    [<ffffffff83ee79fb>] cfg80211_inform_bss_frame_data+0x4b/0x470 net/wireless/scan.c:2444
-    [<ffffffff83f8865e>] ieee80211_bss_info_update+0x16e/0x460 net/mac80211/scan.c:190
-    [<ffffffff83f9687a>] ieee80211_rx_bss_info net/mac80211/ibss.c:1119 [inline]
-    [<ffffffff83f9687a>] ieee80211_rx_mgmt_probe_beacon+0x61a/0x970 net/mac80211/ibss.c:1608
-    [<ffffffff83f972dc>] ieee80211_ibss_rx_queued_mgmt+0x23c/0x6e0 net/mac80211/ibss.c:1635
-    [<ffffffff83f99347>] ieee80211_iface_process_skb net/mac80211/iface.c:1439 [inline]
-    [<ffffffff83f99347>] ieee80211_iface_work+0x5f7/0x770 net/mac80211/iface.c:1493
-    [<ffffffff81265dbf>] process_one_work+0x2cf/0x620 kernel/workqueue.c:2297
-    [<ffffffff812666c9>] worker_thread+0x59/0x5d0 kernel/workqueue.c:2444
-    [<ffffffff8126fc48>] kthread+0x188/0x1d0 kernel/kthread.c:319
-    [<ffffffff810022cf>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-
-
+BPF selftests have plenty of BPF-to-BPF calls in there, too bad this was
+caught so late. :/
