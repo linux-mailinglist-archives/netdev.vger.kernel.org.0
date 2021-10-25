@@ -2,88 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B8814396B1
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 14:52:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FEC7439738
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 15:10:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233351AbhJYMyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 08:54:41 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:26195 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233071AbhJYMyk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 08:54:40 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4HdFDw2P45z8tvH;
-        Mon, 25 Oct 2021 20:50:56 +0800 (CST)
-Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Mon, 25 Oct 2021 20:52:15 +0800
-Received: from huawei.com (10.175.104.82) by kwepemm600001.china.huawei.com
- (7.193.23.3) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.15; Mon, 25 Oct
- 2021 20:52:14 +0800
-From:   Wang Hai <wanghai38@huawei.com>
-To:     <isdn@linux-pingi.de>, <marcel@holtmann.org>,
-        <johan.hedberg@gmail.com>, <luiz.dentz@gmail.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <cascardo@canonical.com>
-CC:     <netdev@vger.kernel.org>, <linux-bluetooth@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] Bluetooth: cmtp: fix possible panic when cmtp_init_sockets() fails
-Date:   Mon, 25 Oct 2021 21:10:12 +0800
-Message-ID: <20211025131012.2771062-1-wanghai38@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S233343AbhJYNMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 09:12:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35072 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230170AbhJYNMf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Oct 2021 09:12:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id CCD2360F9D;
+        Mon, 25 Oct 2021 13:10:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635167412;
+        bh=eHA66VsrPZv2BLMkIYMn616g+UfpD2V6IIYj6SGiLLM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=R9RVgb4W22nVCLC4fGss+mSERX3vBWQIuP2nG7B7Igh8+FkQSdjo/GaVftF69J6mj
+         YY4kna0Oz0ge/RguR965FEp1U7+r8SFYIlmzTxPMo2FmmMbAvQaeuQHIlfz9cFKpKV
+         KiNNRj/7Hyr2Y3irS1k0Kz7yr3uHF5SV0G9rnIUJvhYwHVNb3jT8d1DtKyGPoYz9AM
+         3NW6ZKLTgcf50sIyxPGmWYLjfI+z2NjBja+CQEuIoCSAVjx9cF7eILH1DnyFta+w80
+         1iSe+hIqPkO9Ce1K8LEY9MwfUJddELdBI5zAjUrLi979eKE/ZLPvCnqJxaCg/ZDex1
+         l3fuGI3Swo0Eg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BB47660A0A;
+        Mon, 25 Oct 2021 13:10:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600001.china.huawei.com (7.193.23.3)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v7 0/14] net: phy: Add qca8081 ethernet phy driver
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163516741276.29679.5814223959477940197.git-patchwork-notify@kernel.org>
+Date:   Mon, 25 Oct 2021 13:10:12 +0000
+References: <20211024082738.849-1-luoj@codeaurora.org>
+In-Reply-To: <20211024082738.849-1-luoj@codeaurora.org>
+To:     Luo Jie <luoj@codeaurora.org>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sricharan@codeaurora.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I got a kernel BUG report when doing fault injection test:
+Hello:
 
-------------[ cut here ]------------
-kernel BUG at lib/list_debug.c:45!
-...
-RIP: 0010:__list_del_entry_valid.cold+0x12/0x4d
-...
-Call Trace:
- proto_unregister+0x83/0x220
- cmtp_cleanup_sockets+0x37/0x40 [cmtp]
- cmtp_exit+0xe/0x1f [cmtp]
- do_syscall_64+0x35/0xb0
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-If cmtp_init_sockets() in cmtp_init() fails, cmtp_init() still returns
-success. This will cause a kernel bug when accessing uncreated ctmp
-related data when the module exits.
+On Sun, 24 Oct 2021 16:27:24 +0800 you wrote:
+> This patch series add the qca8081 ethernet phy driver support, which
+> improve the wol feature, leverage at803x phy driver and add the fast
+> retrain, master/slave seed and CDT feature.
+> 
+> Changes in v7:
+> 	* update Reviewed-by tags.
+> 
+> [...]
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
----
-v1->v2: remove the temporary variable "err"
- net/bluetooth/cmtp/core.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+Here is the summary with links:
+  - [v7,01/14] net: phy: at803x: replace AT803X_DEVICE_ADDR with MDIO_MMD_PCS
+    https://git.kernel.org/netdev/net-next/c/c0f0b563f8c0
+  - [v7,02/14] net: phy: at803x: use phy_modify()
+    https://git.kernel.org/netdev/net-next/c/2d4284e88a59
+  - [v7,03/14] net: phy: at803x: improve the WOL feature
+    https://git.kernel.org/netdev/net-next/c/7beecaf7d507
+  - [v7,04/14] net: phy: at803x: use GENMASK() for speed status
+    https://git.kernel.org/netdev/net-next/c/9540cdda9113
+  - [v7,05/14] net: phy: add qca8081 ethernet phy driver
+    https://git.kernel.org/netdev/net-next/c/daf61732a49a
+  - [v7,06/14] net: phy: add qca8081 read_status
+    https://git.kernel.org/netdev/net-next/c/79c7bc052154
+  - [v7,07/14] net: phy: add qca8081 get_features
+    https://git.kernel.org/netdev/net-next/c/765c22aad157
+  - [v7,08/14] net: phy: add qca8081 config_aneg
+    https://git.kernel.org/netdev/net-next/c/f884d449bf28
+  - [v7,09/14] net: phy: add constants for fast retrain related register
+    https://git.kernel.org/netdev/net-next/c/1cf4e9a6fbdb
+  - [v7,10/14] net: phy: add genphy_c45_fast_retrain
+    https://git.kernel.org/netdev/net-next/c/63c67f526db8
+  - [v7,11/14] net: phy: add qca8081 config_init
+    https://git.kernel.org/netdev/net-next/c/2acdd43fe009
+  - [v7,12/14] net: phy: add qca8081 soft_reset and enable master/slave seed
+    https://git.kernel.org/netdev/net-next/c/9d4dae29624f
+  - [v7,13/14] net: phy: adjust qca8081 master/slave seed value if link down
+    https://git.kernel.org/netdev/net-next/c/8bc1c5430c4b
+  - [v7,14/14] net: phy: add qca8081 cdt feature
+    https://git.kernel.org/netdev/net-next/c/8c84d7528d8d
 
-diff --git a/net/bluetooth/cmtp/core.c b/net/bluetooth/cmtp/core.c
-index 0a2d78e811cf..83eb84e8e688 100644
---- a/net/bluetooth/cmtp/core.c
-+++ b/net/bluetooth/cmtp/core.c
-@@ -501,9 +501,7 @@ static int __init cmtp_init(void)
- {
- 	BT_INFO("CMTP (CAPI Emulation) ver %s", VERSION);
- 
--	cmtp_init_sockets();
--
--	return 0;
-+	return cmtp_init_sockets();
- }
- 
- static void __exit cmtp_exit(void)
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
