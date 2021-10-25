@@ -2,86 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC2D84398BC
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 16:36:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C2414398D0
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 16:40:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231350AbhJYOiP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 10:38:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41710 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229727AbhJYOiN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 10:38:13 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB56CC061745
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 07:35:50 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id w15so271584edc.9
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 07:35:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=QXi5kHjHWd6fjjRgTXkyGAMS+MMuGm4cZgmMpd4J85s=;
-        b=Xp8zYiTexfnxn6NChCWKF+4dJAPfTSZhxydGx3piyq2EBUHcHvDpZbaCPAsN5tQ48e
-         NlBdsp2F76SWAHg8TnlWWzB3XRkNxkYPt+cAmbMsN6LmvEZMy01UWrGV9M7aZtVUba+g
-         4lWOXRdRXQGajHsgFT2BhhSR5I3xtMZP/VBI46QnS1/aj2S+9qLvIMo9jHIxFpFdBC8E
-         YdxwVg24nbm4PvMAkhM/YHjKigDb/J8mKENuL9VQCXPICFrV3+s8j8G+JFl3f5PWJLlQ
-         //bFgzCGMuvXoy+IBYK85XpNNDSPUkEhPOFMs2WeuqIuTqOOnpbwGT4UByrYpd2l5GvM
-         XmJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=QXi5kHjHWd6fjjRgTXkyGAMS+MMuGm4cZgmMpd4J85s=;
-        b=bUb/RzoI7jB65GR2tvQYIeyaoXg943xJDFjzDESZtNoA1XPAuOTRV6KneqAbjM/k3q
-         3CACoAwlSBGFdKBe/Mlqfgs7KSBVEauK1ByeVtF/gxqa+dFZoqjhwf6wfNp9yy1rTw7E
-         UuKIt44RmtgCQ4b27vbTSYJXSs30QWo38u+wKJPA0a/Zg4lb/KbBgy2L1xTuNzx8+jaM
-         Eh8k9+SF81O70LZm1DM2Y+nz/7PEl6t0832Pk7XNa4jfVaQLFZX11aqbLrLhUR3nu2cW
-         kXecG63NqBS06u4xlW1uoLp/Veg+MxSvEJ07XVSOUs8x43CCTncJDiYniXw8uT6vpNH0
-         0srA==
-X-Gm-Message-State: AOAM5315BBEtoxL71/zX09xQGNIueNZ8nKtr8cidedRXwI0S5zKbxf9k
-        Azb+/0ma3dbPCASsMnIxzbJswmMQJ6dvmwZHYn0=
-X-Google-Smtp-Source: ABdhPJxnpOET68pmwNETpO6l0YIUyyJ0ebYReWZgfrnpyqtGCM00fXk6NoV0+DKFePvn3dQHLTdsi+Vjq2xXGV7E8rc=
-X-Received: by 2002:a17:906:2506:: with SMTP id i6mr22735123ejb.186.1635172521673;
- Mon, 25 Oct 2021 07:35:21 -0700 (PDT)
+        id S233033AbhJYOmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 10:42:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34640 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232779AbhJYOm3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Oct 2021 10:42:29 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6FFB060F4F;
+        Mon, 25 Oct 2021 14:40:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635172807;
+        bh=/6abjMQS5xEYvS/FjEnWDsVCa5+gy5AlYE2h4/ddhwQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=rAI5ZIVkxpPC0elvZGRJ7bG6gwz3oDDt0ETYYk5yD9BTBKDwf3Ov/YD2zEAcTfwPE
+         5b3DQwAQdajoqqlh2ayZFSLNxslTH7r8Q1ITOJYhbaDPG+uhMmOLLjtpbUeHOAQLe6
+         fH7POmZr8PWuC6F6Jm+Npn4bV5A7wZO5cNCQn7cwTOj/wEONW12Syr6zr4Mo1GxkYu
+         iSOM3tyuCfpHiWTedZ4dN3kDD6+SWzUL/Zm6vW1iDUC4MJOeN5Ybb2RCmDUoUurDlV
+         24QOIKoU0eRedoaOS4nk75u78FOFULaNDOhb1vqEWBciQ6fFfxmR6Zi6QTFrzBVBFt
+         S/mODMzYB0FjA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5805E60A90;
+        Mon, 25 Oct 2021 14:40:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Sender: fdhfgfujffuhjfgdfdhffdcf@gmail.com
-Received: by 2002:a17:907:3f0a:0:0:0:0 with HTTP; Mon, 25 Oct 2021 07:35:21
- -0700 (PDT)
-From:   "helen.carlsen" <helen.carlsen26@gmail.com>
-Date:   Mon, 25 Oct 2021 15:35:21 +0100
-X-Google-Sender-Auth: XGjSo0W3UaDkbsSbqEExWFL-G9s
-Message-ID: <CAMnHgDq67mQqyM4La5za0LF=9_1dy5BC3CjQf3Afnmy5Gw9ajQ@mail.gmail.com>
-Subject: Hello
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] usbb: catc: use correct API for MAC addresses
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163517280735.8080.10052885339658850678.git-patchwork-notify@kernel.org>
+Date:   Mon, 25 Oct 2021 14:40:07 +0000
+References: <20211025141121.14828-1-oneukum@suse.com>
+In-Reply-To: <20211025141121.14828-1-oneukum@suse.com>
+To:     Oliver Neukum <oneukum@suse.com>
+Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
- I sent this mail praying it will found you in a good condition of
-health, since I myself are in a very critical health condition in
-which I  sleep every night without knowing if I may be alive to see
-the next day. I'm Mrs. Helen John carlsen, wife of late Mrs. Helen
-John carlsen, a widow suffering from long time illness. I have some
-funds I inherited from my late husband, the sum of($ 11.000.000,eleven
-million dollars)my Doctor told me recently that I have serious
-sickness which is cancer problem. What disturbs me most is my stroke
-sickness.Having known my condition, I decided to donate this fund to a
-good person that will utilize it the way i am going to instruct
-herein. I need a very honest and God fearing person who can claim this
-money and use it for Charity works, for orphanages, widows and also
-build schools for less privileges that will be named after my late
-husband if possible and to promote the word of God and the effort that
-the house of God is maintained.
+Hello:
 
-I do not want a situation where this money will be used in an ungodly
-manner. That's why I'm taking this decision. I'm not afraid of death
-so I know where I'm going. I accept this decision because I do not
-have any child who will inherit this money after I die. Please I want
-your sincerely and urgent answer to know if you will be able to
-execute this project, and I will give you more information on how the
-fund will be transferred to your bank account. I am waiting for your
-reply.
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Best Regards,
+On Mon, 25 Oct 2021 16:11:21 +0200 you wrote:
+> Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
+> of VLANs...") introduced a rbtree for faster Ethernet address look
+> up. To maintain netdev->dev_addr in this tree we need to make all
+> the writes to it got through appropriate helpers.
+> 
+> In the case of catc we need a new temporary buffer to conform
+> to the rules for DMA coherency. That in turn necessitates
+> a reworking of error handling in probe().
+> 
+> [...]
 
-Mrs. Helen John carlsen,
+Here is the summary with links:
+  - usbb: catc: use correct API for MAC addresses
+    https://git.kernel.org/netdev/net-next/c/7ce9a701ac8f
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
