@@ -2,157 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 027B443944D
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 12:56:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7D204394AE
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 13:21:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232295AbhJYK6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 06:58:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42694 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232090AbhJYK6n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Oct 2021 06:58:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A68B660F46;
-        Mon, 25 Oct 2021 10:56:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635159381;
-        bh=7j8ynqn/OK6718s9WxLto/Xdf9z2pakrrTtvt+j7xhc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VdFWBz5UALHdb++MOrmOPw/Omjz7jBCyDwttDm5mHNLX92Z6X0cxLGJVwzoyQpyFd
-         xtL0x2hX7Xow/1sZ3UW737AecMYlEdvWE1J0Umuf/4hOW3aH/0+W3RklDJvTVC3qIv
-         1cL2f2T47ub3Tc1i4d+2TmdyjfDEyqf3O2j8goeu8OC3NnZDSCQwOGEVSm4UmEBvQQ
-         N53BwVW/jjz+aJVOlif2ZJHmnhP0HV4a9idKt9MRRSICsxKmQzyslgs0aGOl6q/JlO
-         MHrrhGqALjThygprksogupPh3/XElCSZv6+tr6X97O/LdTkAdQeENJnboKU2suULxV
-         q3xC/OaOrNTyA==
-Date:   Mon, 25 Oct 2021 13:56:17 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org,
-        syzbot+93d5accfaefceedf43c1@syzkaller.appspotmail.com
-Subject: Re: [PATCH net-next] netdevsim: Register and unregister devlink
- traps on probe/remove device
-Message-ID: <YXaNUQv8RwDc0lif@unreal>
-References: <725e121f05362da4328dda08d5814211a0725dac.1635064599.git.leonro@nvidia.com>
- <YXUhyLXsc2egWNKx@shredder>
- <YXUtbOpjmmWr71dU@unreal>
- <YXU5+XLhQ9zkBGNY@shredder>
- <YXZB/3+IR6I0b2xE@unreal>
- <YXZl4Gmq6DYSdDM3@shredder>
+        id S232051AbhJYLYD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 07:24:03 -0400
+Received: from mail-wm1-f47.google.com ([209.85.128.47]:35623 "EHLO
+        mail-wm1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230126AbhJYLW7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 07:22:59 -0400
+Received: by mail-wm1-f47.google.com with SMTP id 84-20020a1c0457000000b003232b0f78f8so12778652wme.0;
+        Mon, 25 Oct 2021 04:20:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jlGpSAspkabd1CBRf3wOMeuw9ekgHDwWbfgDd4L4Pmo=;
+        b=cJFGCF6wChm1PKA9EqaVvm62HO9Fg3zkPHTg43sLaqZ2FxKDLrSZkQyHZQa6TMX5mF
+         TXmhbB3POOqCdW8w4JBPSuQAelkDTfKqG5H5eQc6XSklPC7u3xYzWRk+/mxs6XexsxAM
+         HsY/T2hexvsjyFRUm4CWg0qelWrLh1XviqekPShWp97iF3yKNNK/OKmMaFlFJiBCbHa2
+         gJcYF3AeAlDCHN700iUlig2Ag+qx4ypW4gD0RmF/kPxlGKgVwCZYBRVGBN9SFwvfw4fv
+         p9o3Z8tHepf9UKm7PEAKD1WA5t01kC62yVkeEEBhw8+qcoLfGXJqI3iGuP88e//swxrG
+         lmsA==
+X-Gm-Message-State: AOAM530ZsWeR4rsSMIf5v7L1ByhFTO99lmhbX3QiDCGwSFwGfuATmVk+
+        hulbWBS8+SAmUEXXajGQ/eI=
+X-Google-Smtp-Source: ABdhPJxOD8l7t1pxirZMFfL27LzJZ/aVBiiSMiOCWM0OpPk22nL9FXAMtDtAGlRR7nqZiUAy7ovAzQ==
+X-Received: by 2002:a05:600c:3b82:: with SMTP id n2mr14465885wms.50.1635160835970;
+        Mon, 25 Oct 2021 04:20:35 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id o40sm10381489wms.10.2021.10.25.04.20.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Oct 2021 04:20:35 -0700 (PDT)
+Date:   Mon, 25 Oct 2021 11:20:33 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Tianyu Lan <ltykernel@gmail.com>
+Cc:     Borislav Petkov <bp@alien8.de>, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
+        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
+        x86@kernel.org, hpa@zytor.com, dave.hansen@linux.intel.com,
+        luto@kernel.org, peterz@infradead.org, davem@davemloft.net,
+        kuba@kernel.org, gregkh@linuxfoundation.org, arnd@arndb.de,
+        brijesh.singh@amd.com, jroedel@suse.de, Tianyu.Lan@microsoft.com,
+        thomas.lendacky@amd.com, rientjes@google.com, pgonda@google.com,
+        akpm@linux-foundation.org, kirill.shutemov@linux.intel.com,
+        rppt@kernel.org, saravanand@fb.com, aneesh.kumar@linux.ibm.com,
+        hannes@cmpxchg.org, tj@kernel.org, michael.h.kelley@microsoft.com,
+        linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        vkuznets@redhat.com, konrad.wilk@oracle.com, hch@lst.de,
+        robin.murphy@arm.com, joro@8bytes.org, parri.andrea@gmail.com,
+        dave.hansen@intel.com
+Subject: Re: [PATCH V8 5/9] x86/sev-es: Expose sev_es_ghcb_hv_call() to call
+ ghcb hv call out of sev code
+Message-ID: <20211025112033.eqelx54p2dmlhykw@liuwe-devbox-debian-v2>
+References: <20211021154110.3734294-1-ltykernel@gmail.com>
+ <20211021154110.3734294-6-ltykernel@gmail.com>
+ <YXGTwppQ8syUyJ72@zn.tnic>
+ <00946764-7fe0-675f-7b3e-9fb3b8e3eb89@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YXZl4Gmq6DYSdDM3@shredder>
+In-Reply-To: <00946764-7fe0-675f-7b3e-9fb3b8e3eb89@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 25, 2021 at 11:08:00AM +0300, Ido Schimmel wrote:
-> On Mon, Oct 25, 2021 at 08:34:55AM +0300, Leon Romanovsky wrote:
-> > On Sun, Oct 24, 2021 at 01:48:25PM +0300, Ido Schimmel wrote:
-> > > On Sun, Oct 24, 2021 at 12:54:52PM +0300, Leon Romanovsky wrote:
-> > > > On Sun, Oct 24, 2021 at 12:05:12PM +0300, Ido Schimmel wrote:
-> > > > > On Sun, Oct 24, 2021 at 11:42:11AM +0300, Leon Romanovsky wrote:
-> > > > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > > > > 
-> > > > > > Align netdevsim to be like all other physical devices that register and
-> > > > > > unregister devlink traps during their probe and removal respectively.
-> > > > > 
-> > > > > No, this is incorrect. Out of the three drivers that support both reload
-> > > > > and traps, both netdevsim and mlxsw unregister the traps during reload.
-> > > > > Here is another report from syzkaller about mlxsw [1].
-> > > > 
-> > > > Sorry, I overlooked it.
-> > > > 
-> > > > > 
-> > > > > Please revert both 22849b5ea595 ("devlink: Remove not-executed trap
-> > > > > policer notifications") and 8bbeed485823 ("devlink: Remove not-executed
-> > > > > trap group notifications").
-> > > > 
-> > > > However, before we rush and revert commit, can you please explain why
-> > > > current behavior to reregister traps on reload is correct?
-> > > > 
-> > > > I think that you are not changing traps during reload, so traps before
-> > > > reload will be the same as after reload, am I right?
-> > > 
-> > > During reload we tear down the entire driver and load it again. As part
-> > > of the reload_down() operation we tear down the various objects from
-> > > both devlink and the device (e.g., shared buffer, ports, traps, etc.).
-> > > As part of the reload_up() operation we issue a device reset and
-> > > register everything back.
+On Fri, Oct 22, 2021 at 09:39:48PM +0800, Tianyu Lan wrote:
+> On 10/22/2021 12:22 AM, Borislav Petkov wrote:
+> > On Thu, Oct 21, 2021 at 11:41:05AM -0400, Tianyu Lan wrote:
+> > > diff --git a/arch/x86/kernel/sev-shared.c b/arch/x86/kernel/sev-shared.c
+> > > index ea9abd69237e..368ed36971e3 100644
+> > > --- a/arch/x86/kernel/sev-shared.c
+> > > +++ b/arch/x86/kernel/sev-shared.c
+> > > @@ -124,10 +124,9 @@ static enum es_result verify_exception_info(struct ghcb *ghcb, struct es_em_ctxt
+> > >   	return ES_VMM_ERROR;
+> > >   }
+> > > -static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
+> > > -					  struct es_em_ctxt *ctxt,
+> > > -					  u64 exit_code, u64 exit_info_1,
+> > > -					  u64 exit_info_2)
+> > > +enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb, bool set_ghcb_msr,
+> > > +				   struct es_em_ctxt *ctxt, u64 exit_code,
+> > > +				   u64 exit_info_1, u64 exit_info_2)
+> > >   {
+> > >   	/* Fill in protocol and format specifiers */
+> > >   	ghcb->protocol_version = GHCB_PROTOCOL_MAX;
+> > > @@ -137,7 +136,15 @@ static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
+> > >   	ghcb_set_sw_exit_info_1(ghcb, exit_info_1);
+> > >   	ghcb_set_sw_exit_info_2(ghcb, exit_info_2);
+> > > -	sev_es_wr_ghcb_msr(__pa(ghcb));
+> > > +	/*
+> > > +	 * Hyper-V unenlightened guests use a paravisor for communicating and
+> > > +	 * GHCB pages are being allocated and set up by that paravisor. Linux
+> > > +	 * should not change ghcb page pa in such case and so add set_ghcb_msr
 > > 
-> > This is an implementation which is arguably questionable and pinpoints
-> > problem with devlink reload. It mixes different SW layers into one big
-> > mess which I tried to untangle.
+> > "... not change the GHCB page's physical address."
 > > 
-> > The devlink "feature" that driver reregisters itself again during execution
-> > of other user-visible devlink command can't be right design.
+> > Remove the "so add... " rest.
 > > 
-> > > 
-> > > While the list of objects doesn't change, their properties (e.g., shared
-> > > buffer size, trap action, policer rate) do change back to the default
-> > > after reload and we cannot go back on that as it's a user-visible
-> > > change.
+> > Otherwise, LGTM.
 > > 
-> > I don't propose to go back, just prefer to see fixed mlxsw that
-> > shouldn't touch already created and registered objects from net/core/devlink.c.
-> > 
-> > All reset-to-default should be performed internally to the driver
-> > without any need to devlink_*_register() again, so we will be able to
-> > clean rest devlink notifications.
-> > 
-> > So at least for the netdevsim, this change looks like the correct one,
-> > while mlxsw should be fixed next.
+> > Do you want me to take it through the tip tree?
 > 
-> No, it's not correct. After your patch, trap properties like action are
-> not set back to the default. Regardless of what you think is the "right
-> design", you cannot introduce such regressions.
+> Yes, please and this patch is based on the your clean up patch which is
+> already in the tip sev branch.
 
-Again, I'm not against fixing the regression, I'm trying to understand
-why it is impossible to fix mlxsw and netdevsim to honor SW layering
-properly.
+Borislav, please take the whole series via the tip tree if possible.
+That's perhaps the easiest thing for both of us because the rest of the
+series depends on this patch. Or else I will have to base hyperv-next on
+the tip tree once you merge this patch.
 
-> 
-> Calling devlink_*_unregister() in reload_down() and devlink_*_register()
-> in reload_up() is not new. It is done for multiple objects (e.g., ports,
-> regions, shared buffer, etc). After your patch, netdevsim is still doing
-> it.
+Let me know what you think.
 
-Yeah, it was introduced by same developers who did it in mlxsw, so no
-wonders that same patterns exist in both drivers.
-
-> 
-> Again, please revert the two commits I mentioned. If you think they are
-> necessary, you can re-submit them in the future, after proper review and
-> testing of the affected code paths.
-
-It was posted for review in the ML, no one objected.
-
-Can you please explain why is it so important to touch devlink SW
-objects, reallocate them again and again on every reload in mlxsw?
-
-The flow is convoluted without any reason:
-devlink reload ->
-  mlxsw reload_down -> 
-    devlink ... unregister -> 
-      mlxsw reload_down again ->
-        devlink reload again ->
-	  mlxsw reload_up ->
-	    devlink ... register ->
-	      mlxsw to handle register ->
-	        mlxsw reload_up again ->
-		  devlink reload finish
-
-Instead of:
-devlink reload ->
- mlxsw reload_down ->
-   devlink reload again ->
-     mlxsw reload_up ->
-       devlink reload finish
-
-Thanks
-
-> 
-> Thanks
+Thanks,
+Wei.
