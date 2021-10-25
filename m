@@ -2,100 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC982439064
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 09:31:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E73B1439080
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 09:42:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231653AbhJYHdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 03:33:23 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:26193 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231162AbhJYHdX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 03:33:23 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Hd66B4KSSz8tv4;
-        Mon, 25 Oct 2021 15:29:38 +0800 (CST)
-Received: from dggpeml500006.china.huawei.com (7.185.36.76) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Mon, 25 Oct 2021 15:30:58 +0800
-Received: from [10.174.178.240] (10.174.178.240) by
- dggpeml500006.china.huawei.com (7.185.36.76) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Mon, 25 Oct 2021 15:30:57 +0800
-Subject: Re: [PATCH net 2/3] can: j1939: j1939_can_recv(): ignore messages
- with invalid source address
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-CC:     Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        <kernel@pengutronix.de>, Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-can@vger.kernel.org>
-References: <1634825057-47915-1-git-send-email-zhangchangzhong@huawei.com>
- <1634825057-47915-3-git-send-email-zhangchangzhong@huawei.com>
- <20211022102306.GB20681@pengutronix.de>
-From:   Zhang Changzhong <zhangchangzhong@huawei.com>
-Message-ID: <9c636d7f-70df-18c9-66ed-46eb21f4ffbb@huawei.com>
-Date:   Mon, 25 Oct 2021 15:30:57 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        id S229521AbhJYHoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 03:44:30 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:46968 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231770AbhJYHo3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 03:44:29 -0400
+Received: by mail-il1-f199.google.com with SMTP id x18-20020a92cc92000000b00259b4330356so6109474ilo.13
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 00:42:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=FRp5DFjNkB5DYili8ZiV7kEXz8tHdesF7it/j+y3PY0=;
+        b=OykthaNx7IQV5pTcCllaoysemD1sgd85KA8nd+67ShgpTpe2wnLKjrwmngT+mbqNar
+         91s8gOTQI7oOGWcqtPu6oACbDkFDLtMvuV6xhOab0OT1jtYvg46p0hFYQmfrNY67LDAa
+         DMrcM6EX9wnN3v6E0U7hX6MvFq7QvV9klmzzvJJ47kztPXSLBcyJ5rGbIGIOMF4P4Vb/
+         z9rbj9EgY981XlY6u6Z4Jb3xTcPCm4tbW2+bHrZK8W0W1bJUKDDXpb4dBlQRbsajWGWB
+         rYy+NN8GCox9RbyD8+mAk4iSnNnXFTnh0nqQrRn0BiZuAzrkcM5Nl5A36mLAaYNrrqdI
+         761A==
+X-Gm-Message-State: AOAM531dd6GLRXr6z7Ig4A70E8s2gaboMY8f0OaSRd24EbP/qMGc9OCV
+        NeKt0uSEDzVy+tcl4ItAQHwVTThlXun3F8q0gFOS8PZ5jen/
+X-Google-Smtp-Source: ABdhPJyY3BE6Hexn4GAHUITeNQNHgSQLr4zZ1XijU4QpLsYOvdQlTqckWVWab9qr7zgTSAsIBnAEP48S7JkF97KWJ3GsV36XpeUH
 MIME-Version: 1.0
-In-Reply-To: <20211022102306.GB20681@pengutronix.de>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.178.240]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500006.china.huawei.com (7.185.36.76)
-X-CFilter-Loop: Reflected
+X-Received: by 2002:a05:6e02:1607:: with SMTP id t7mr9303589ilu.296.1635147727196;
+ Mon, 25 Oct 2021 00:42:07 -0700 (PDT)
+Date:   Mon, 25 Oct 2021 00:42:07 -0700
+In-Reply-To: <000000000000d5efd605ccc6a5df@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006f55c405cf287f25@google.com>
+Subject: Re: [syzbot] general protection fault in nf_tables_dump_tables
+From:   syzbot <syzbot+0e3358e5ebb1956c271d@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/10/22 18:23, Oleksij Rempel wrote:
-> On Thu, Oct 21, 2021 at 10:04:16PM +0800, Zhang Changzhong wrote:
->> According to SAE-J1939-82 2015 (A.3.6 Row 2), a receiver should never
->> send TP.CM_CTS to the global address, so we can add a check in
->> j1939_can_recv() to drop messages with invalid source address.
->>
->> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
->> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-> 
-> NACK. This will break Address Claiming, where first message is SA == 0xff
+syzbot suspects this issue was fixed by commit:
 
-I know that 0xfe can be used as a source address, but which message has a source
-address of 0xff?
+commit a499b03bf36b0c2e3b958a381d828678ab0ffc5e
+Author: Florian Westphal <fw@strlen.de>
+Date:   Mon Sep 13 12:42:33 2021 +0000
 
-According to SAE-J1939-81 2017 4.2.2.8：
+    netfilter: nf_tables: unlink table before deleting it
 
-  The network address 255, also known as the Global address, is permitted in the
-  Destination Address field of the SAE J1939 message identifier but never in the
-  Source Address field.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13efcb0cb00000
+start commit:   9bc62afe03af Merge tag 'net-5.15-rc3' of git://git.kernel...
+git tree:       net
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e917f3dfc452c977
+dashboard link: https://syzkaller.appspot.com/bug?extid=0e3358e5ebb1956c271d
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14374e5f300000
 
-> 
->> ---
->>  net/can/j1939/main.c | 4 ++++
->>  1 file changed, 4 insertions(+)
->>
->> diff --git a/net/can/j1939/main.c b/net/can/j1939/main.c
->> index 08c8606..4f1e4bb 100644
->> --- a/net/can/j1939/main.c
->> +++ b/net/can/j1939/main.c
->> @@ -75,6 +75,10 @@ static void j1939_can_recv(struct sk_buff *iskb, void *data)
->>  	skcb->addr.pgn = (cf->can_id >> 8) & J1939_PGN_MAX;
->>  	/* set default message type */
->>  	skcb->addr.type = J1939_TP;
->> +	if (!j1939_address_is_valid(skcb->addr.sa))
->> +		/* ignore messages whose sa is broadcast address */
->> +		goto done;
->> +
->>  	if (j1939_pgn_is_pdu1(skcb->addr.pgn)) {
->>  		/* Type 1: with destination address */
->>  		skcb->addr.da = skcb->addr.pgn;
->> -- 
->> 2.9.5
->>
->>
->>
-> 
+If the result looks correct, please mark the issue as fixed by replying with:
+
+#syz fix: netfilter: nf_tables: unlink table before deleting it
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
