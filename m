@@ -2,70 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFD9E439DB7
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 19:40:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4540439DD5
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 19:45:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231760AbhJYRma (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 13:42:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41524 "EHLO mail.kernel.org"
+        id S233874AbhJYRrb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 13:47:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44392 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230505AbhJYRma (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Oct 2021 13:42:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id E4A0160F9D;
-        Mon, 25 Oct 2021 17:40:07 +0000 (UTC)
+        id S232657AbhJYRra (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Oct 2021 13:47:30 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C39B460F4F;
+        Mon, 25 Oct 2021 17:45:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635183607;
-        bh=yW3lUePvKstBIOR1swEYN9bl86+OVV2pt1fDGkAz3Ks=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=l+t4NmKUjjOz3xix5aAFc1GKmdyWNazIOPrVRG9dOTnhyaEk5dP9lR91bW515eya0
-         ICDn2YT1QgdsnB8xJ5RKLp0Nnm0zTgruefon9kBAibNzqNlIg0zuzS3zN5dCYmIK8d
-         yg97Ag65uFimLe0PbDJzyzH5rySyneCU9odV8mulvsxoaf6M+Aos36JfTBRHNZTs3l
-         QxA6VsOlUN6I0sQ+HzOnRpZnYBNhcF3DoKnweEsIRamMTpD2QIntII9BfnE4T+9THJ
-         ie5xxYgJRiSFN0V7VWyTbd39BP3YFtNS6nMUbjY5wZ8CdDqgZl14Jsb/EiwJ2wz4uR
-         9tdDya8toKq1g==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D9BAE60A47;
-        Mon, 25 Oct 2021 17:40:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1635183908;
+        bh=bhjdTGOIGvU3IA/dEUMtefq7QpPdbxtZdNryKp8NUgY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SQz6JfrCueWoQ0oWcVHw6w8nKPyKw1iqJNIwb5WLWtPivB1hSfO1iD+HVNtbGSShm
+         Fz1VGjLjvHRdE5+qjAMNPvj3XygelMqo8CAN3f5XBn4fNOVZa0eDVGDOHZgzogi2/A
+         u/UKp3BK+mfmcg2781YUPkDPv2QdkwAD6tA1MuHTZlGoE02ixVg1K9zXRSOo9CM8p7
+         PcBUM0GZbCjvB3m/YtJITaa+vG7sdM0/+xWWMGM4uzrZpsn95hNvf8opRtDDG63t9P
+         tAOMHbFCrVDC37XaxCYSFcTQ9RgM3amrsU9flWt8qMG7rSiAmpcGWTxSIW0wpbS0zE
+         FnG+N9P8eJbsA==
+Date:   Mon, 25 Oct 2021 10:45:05 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Guangbin Huang <huangguangbin2@huawei.com>, davem@davemloft.net,
+        mkubecek@suse.cz, andrew@lunn.ch, amitc@mellanox.com,
+        idosch@idosch.org, danieller@nvidia.com,
+        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        jdike@addtoit.com, richard@nod.at, anton.ivanov@cambridgegreys.com,
+        netanel@amazon.com, akiyano@amazon.com, saeedb@amazon.com,
+        chris.snook@gmail.com, ulli.kroll@googlemail.com,
+        linus.walleij@linaro.org, jeroendb@google.com, csully@google.com,
+        awogbemila@google.com, jdmason@kudzu.us, rain.1986.08.12@gmail.com,
+        zyjzyj2000@gmail.com, kys@microsoft.com, haiyangz@microsoft.com,
+        mst@redhat.com, jasowang@redhat.com, doshir@vmware.com,
+        pv-drivers@vmware.com, jwi@linux.ibm.com, kgraul@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, johannes@sipsolutions.net,
+        netdev@vger.kernel.org, lipeng321@huawei.com,
+        chenhao288@hisilicon.com, linux-s390@vger.kernel.org
+Subject: Re: [PATCH V4 net-next 4/6] ethtool: extend ringparam setting uAPI
+ with rx_buf_len
+Message-ID: <20211025104505.43461b53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211025132718.5wtos3oxjhzjhymr@pengutronix.de>
+References: <20211014113943.16231-1-huangguangbin2@huawei.com>
+        <20211014113943.16231-5-huangguangbin2@huawei.com>
+        <20211025131149.ya42sw64vkh7zrcr@pengutronix.de>
+        <20211025132718.5wtos3oxjhzjhymr@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] fddi: defza: add missing pointer type cast
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163518360788.30294.1257539339445417106.git-patchwork-notify@kernel.org>
-Date:   Mon, 25 Oct 2021 17:40:07 +0000
-References: <20211025160000.2803818-1-kuba@kernel.org>
-In-Reply-To: <20211025160000.2803818-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, macro@orcam.me.uk,
-        lkp@intel.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon, 25 Oct 2021 09:00:00 -0700 you wrote:
-> hw_addr is a uint AKA unsigned int. dev_addr_set() takes
-> a u8 *.
+On Mon, 25 Oct 2021 15:27:18 +0200 Marc Kleine-Budde wrote:
+> On 25.10.2021 15:11:49, Marc Kleine-Budde wrote:
+> > On 14.10.2021 19:39:41, Guangbin Huang wrote:  
+> > > From: Hao Chen <chenhao288@hisilicon.com>
+> > > 
+> > > Add two new parameters ringparam_ext and extack for
+> > > .get_ringparam and .set_ringparam to extend more ring params
+> > > through netlink.
+> > > 
+> > > Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+> > > Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>  
+> > 
+> > While discussing a different ethtool ring param extension,  
 > 
->   drivers/net/fddi/defza.c:1383:27: error: passing argument 2 of 'dev_addr_set' from incompatible pointer type [-Werror=incompatible-pointer-types]
+> Let me explain my requirements:
 > 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Fixes: 1e9258c389ee ("fddi: defxx,defza: use dev_addr_set()")
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> There is a not Ethernet based bus system, called CAN (mainly used in the
+> automotive and industrial world). It comes in 2 different generations or
+> modes (CAN-2.0 and CAN-FD) and the 3rd one CAN-XL has already been
+> specified.
 > 
-> [...]
+> Due to different frame sizes used in these CAN modes and HW limitations,
+> we need the possibility to set a RX/TX ring configuration for each of
+> these modes.
+> 
+> The approach Andrew suggested is two-fold. First introduce a "struct
+> ethtool_kringparam" that's only used inside the kernel, as "struct
+> ethtool_ringparam" is ABI. Then extend "struct ethtool_kringparam" as
+> needed.
 
-Here is the summary with links:
-  - [net-next] fddi: defza: add missing pointer type cast
-    https://git.kernel.org/netdev/net-next/c/a0c8c3372b41
+Indeed, there are different ways to extend the API for drivers,
+I think it comes down to personal taste. I find the "inheritance" 
+models in C (kstruct usually contains the old struct as some "base")
+awkward.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+I don't think we have agreed-on best practice in the area.
