@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E60B443A67E
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 00:25:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AFE143A67F
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 00:25:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233802AbhJYW1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 18:27:33 -0400
-Received: from mail-eopbgr70047.outbound.protection.outlook.com ([40.107.7.47]:7454
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        id S233654AbhJYW1f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 18:27:35 -0400
+Received: from mail-eopbgr50061.outbound.protection.outlook.com ([40.107.5.61]:57392
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233709AbhJYW1X (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Oct 2021 18:27:23 -0400
+        id S233822AbhJYW12 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Oct 2021 18:27:28 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PdJ11uDd/2pKk8zIIEp1bE+l0/Qn0ExX3xVuc12W7J+YgwNO7Unab0o2fVtP4YqXRvWeVA7HSbx59yK6l61JmzCioWuzGGL5WnrTmlW8xcneCwBfQGt0gkPqSK77gFg9naV0ouKFhlyiw5nCoS2wcUtlbvwjoZblrUtFxxacVVIMW9XLSyEHUlU1is+ErelZ/CKNX8ZqMBDMU0cj/nGbxx8JsedeA2GbDbv7qFs43LHR0lqT0m5qE4F6IpUlGmZRrpkAno1W+DZohChrKROOC5ahKMfN0v9WMEH3+vVlOifZqcOWzajGHt9NjwmNcVWXl0tagLY3ocSmVjvrFoG7HA==
+ b=N5efSBIYJ+MOHolLVYFqkP41p1IqkmoBuxKNltg75MTCt6JVKM5IpaAW74IOTVjL78k0AsymAkb8bOVAONvHWAR1gfQ3JemZqCP5Q6TtRIkdHIRcFKwQ8bTDI3krMB8oaddtUvl8Lg+/AAZKiAFm6bOsg2cFvUeJuMznGV0lo7vCSbJ16KLTh2ulWnQbFF35aVdFC+rL/O4if/rIpBKWef3bG+DI/VLBfIQcxnVrT2Cvwb42yIy9g9NKoToAggXT0rB9LOWxZDsmQJZKYjcn4dqS807gwLNQynicurKIA2KOG7YAwWOAsBQJ6AmLnSTRJNcFaldAkRLFkUTNAEKIPw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IXDfqdX9ZBWmMcbpaaX/4+I4de2hUXgm3pAvEAN2bvI=;
- b=UKcVdol4Xvd/VdSonzODKiya7lztfcUbjFgD9XTzPZvv4dSa/6SpTyf0VWi0yQ46lPPM1nqyu93Jyt77g9XynhY4gd3XuVgUsa+mTlczvslbJI23pcGHDX+aa2qcZFufqMimZkB8AfPi7nQS6DbGHw8swgDcpOxs6mqT7G7qW7YtQ3eHBSVE9mKiAeatMmztmfzaq4hB0P9Nk/hWTGo6atNAa5Jmz6f0l45vPXbMSBnQ0UsAr9R1ZsZj1KjjS9g+qY9iecIQpKUVw+KQLDmM3lr5HPafEkSJ1+Y2pOii86McjM/C2LGHfEEBCo0G3XJ9ieSY+BXk4gWwHfEEPmfzVQ==
+ bh=wIhTTPquZn2n1jMvyyVz08Yb1lL2fxKbdDNO14aCC1g=;
+ b=ILZW50sisdU6M6erjKYSTBxTfSv8ATpJbFnd6qSglYA4Kjz5ErncccA2ludoEqZ4F0o2TZCoga6v4VKZIjuGXPnisbSM2mqdpZ9SWrGq972NAuVyfvTmNO84s982J0ekMK9sAsTTleZtCq/3wTGhONICJ+CtCTydBkvMcpK8Os2lE7sJH55WXvzJPNk95wnan9ICWj5GKKVRfAL2HLgCXFsttvIFOt7bxaCCaWxAbviORvFBLHuJv6SB4S4/5z/NKL67I4Bfg5g7+R9lY8RjZS04KmA/1yFnrNWUBfJ/kOjIms3GPKzznSVLFRNWWIp3OFvcMZR/q/NZi92pLhFAjw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IXDfqdX9ZBWmMcbpaaX/4+I4de2hUXgm3pAvEAN2bvI=;
- b=nlEQvn6hyKAxS8Bu/cQyF0vIamLxEQiTnx1ytRLrGFTUBbORdrsJ3C/Qs8d3BSdBOhDeTHGG+1GwQUjfs8+CVWizUjLcu28k+ZNDk8cgYn8H5/oTDEkLl48DkgsvveXX+YIk6KDSCDlLQnAhJxQSB2JEgJBEO9cTgGnvo4uEjpc=
+ bh=wIhTTPquZn2n1jMvyyVz08Yb1lL2fxKbdDNO14aCC1g=;
+ b=cfyeN/5Y2FfvBHBzMIGzqKM741JTd0Fp1XprvYK96CQlhWD4waPM/dAbZvF99IjndJv9JMQKvLr6Qe55PkaXjvPzBIa8c0ApxmotOLPQ+pdeAK1DuYkA1bKzoRHvdyn1HUwfnm6qMy7WNqwqDJFA67ds6d3AWjQlDC+/qsOGX7g=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR0401MB2304.eurprd04.prod.outlook.com (2603:10a6:800:29::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.20; Mon, 25 Oct
- 2021 22:24:44 +0000
+ 2021 22:24:45 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4628.020; Mon, 25 Oct 2021
- 22:24:44 +0000
+ 22:24:45 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, Roopa Prabhu <roopa@nvidia.com>,
         Nikolay Aleksandrov <nikolay@nvidia.com>,
@@ -48,9 +48,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         Jiri Pirko <jiri@nvidia.com>
-Subject: [RFC PATCH net-next 12/15] net: rtnetlink: pass extack to .ndo_fdb_del
-Date:   Tue, 26 Oct 2021 01:24:12 +0300
-Message-Id: <20211025222415.983883-13-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 13/15] net: bridge: wait for errors from switchdev when deleting FDB entries
+Date:   Tue, 26 Oct 2021 01:24:13 +0300
+Message-Id: <20211025222415.983883-14-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211025222415.983883-1-vladimir.oltean@nxp.com>
 References: <20211025222415.983883-1-vladimir.oltean@nxp.com>
@@ -60,227 +60,276 @@ X-ClientProxiedBy: AM3PR07CA0137.eurprd07.prod.outlook.com
  (2603:10a6:207:8::23) To VI1PR04MB5136.eurprd04.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Received: from localhost.localdomain (188.25.174.251) by AM3PR07CA0137.eurprd07.prod.outlook.com (2603:10a6:207:8::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.12 via Frontend Transport; Mon, 25 Oct 2021 22:24:43 +0000
+Received: from localhost.localdomain (188.25.174.251) by AM3PR07CA0137.eurprd07.prod.outlook.com (2603:10a6:207:8::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.12 via Frontend Transport; Mon, 25 Oct 2021 22:24:44 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a46cfa2c-f417-4a7e-140c-08d998063ec0
+X-MS-Office365-Filtering-Correlation-Id: b10ba654-5497-460b-2190-08d998063f71
 X-MS-TrafficTypeDiagnostic: VI1PR0401MB2304:
-X-Microsoft-Antispam-PRVS: <VI1PR0401MB23048DEBE4282E461A63E5B4E0839@VI1PR0401MB2304.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-Microsoft-Antispam-PRVS: <VI1PR0401MB23044F6C959EC42D0B1C484BE0839@VI1PR0401MB2304.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kvK+zc64x0tQFnR+owOlQvx052E7+7/K6VIRl3yXIxUBZgKJNySwOwPrN85frS020P2K3CuvHL/x9E8ybmAZcaBVMzp1Ef4YevbIRqxGJpAxbVoAgiWMs+AY8uI6T5HnOZ/EwEB98OSFpaHu9vnNEJKQZDwhWlRWf1ZcKsyukBd3ZhWJfOgo7f1xgQY+A/SJMOrLYTbIPjoN/wR6FwBoRJ57U4DLU6xahDDKSqCVOgzZoiYSZ2q9CJEhkrxrrWMJ+4fRcVeBWtQg4lYC/XqpDNW4HRe1mDDOrMr9sGXkkfYFDELoUrWkVc4nrWmKVZJqldAz0ISy9ufeesp482xVGD7JCGzQH83PbhEraEuYj+2uubJpoPP1rJ55AuyeZ0GSHRlrzzghsyMdKDA6HrbNav2AyVSxOvUw2tiPEy2v3gqI2jvXkxakrI6caCDISTZLYrV0+mNPR0G/YKi9BzEy9V/QphfEBNG1FeBUg4lxNRrxidMmSKTtpKErgZlq2qVgy45tcbnBqWlTk3qjHgNvidByehLUPxJTCKY/xGSMVA5OvFvRm0/zTptPRibszYoKx+x1tq0Gqrh8sVO8dWdGDLAn7TnkYrFWMxdOGodpi20Al1RLl+vvmn4YNhqM0loQijLk3K4CXn+/hUa4cNUTNs/ICwJYH5I9fm8HTDDBRvIJ6+LrD26g9faot5cDC10MkB150dGPcKuHDxtrS/biHLM6eEaj80hVTDz3tZL/Ie8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(2906002)(38100700002)(26005)(38350700002)(6486002)(186003)(8936002)(7416002)(956004)(2616005)(66476007)(36756003)(8676002)(44832011)(5660300002)(6512007)(6506007)(508600001)(83380400001)(52116002)(54906003)(316002)(6666004)(4326008)(110136005)(66946007)(1076003)(66556008)(86362001)(142923001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: drnsxU7k75ldXiy7B8D38kE3j+EAKVkfBgjolS7mW6oGWs5027t91jbuqK7qsREDn8gJqtmTr3j4nN/LN8rbczoZTAuB1lQ/nIIN/m8dwVtvJfmxM0Zn867Uxqo1cFSC9WKhEqOEuNDXfsA9wpx848VVjzvLu/yCdcWTKwZJo28A6tLzW0eiovvrNPR1Rb+r3vxaLb5DrMk1fcCt/nooxq0IqqoOJN74lDp6S2Hc2bsKL8OoBfkXVpT6+uZW0+SLddt7VzbxWqz+1x8stRwyxOtvPX8qrlbQasV96pqHRA/yG3cIfo9feH0F8lNsNoUZt8rE4OPMLp5LN23M1qB7Pu4E13VBoqVxDMOHH4LR+BXQXAbzbED8M4ndKyDyIjOWYDGE5iCj99Flugvr+YSnELKGI+cZ/cn7Tbl0Utfen6gB5Uxt0yUR8e5hVLODSgBeXNgtYqNycMhRD2YJl88w710SanrG6cM2TkPURcD7Uz+Yw8XBf6BW8D8RCKotljjQnI9kxDw3YuAkbVt+PnneM7BI+JhzDBccLMYPsE5iDZ+tIa4mbkux+EO52lZuSX47/HilIuuATgXUpJDMSaz1v/vXOBXcecmvR3LD87flnCrFhqr2Ls3kH0ijU2rg+d9JmuyINgOMWZrZLr/RT48tZqZEb324oWl0aeviKnKv8IJTfuLlCKrd/JnhgvEeRPU5JcJnHfKNF8ACn8yIn4Efjg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(2906002)(38100700002)(26005)(38350700002)(6486002)(186003)(8936002)(7416002)(956004)(2616005)(66476007)(36756003)(8676002)(44832011)(5660300002)(6512007)(6506007)(508600001)(83380400001)(52116002)(54906003)(316002)(6666004)(4326008)(110136005)(66946007)(1076003)(66556008)(86362001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PpQrwobALZ1R0+QhgYtepXAIAO/5WrrgI/DlaZT44yk29oPIC5WsQuNoT5cu?=
- =?us-ascii?Q?uZuFJWoPMxDtpUb8OMYPnFRuYy5TrEZyw54X4BNrv/+sRrKX/uLQWmSJV2uz?=
- =?us-ascii?Q?eufONf/LvdD9hWiu2bUzhxGkDNDpaT3rEaYVqV3bdcUrhh45/tsgQBYHCEQF?=
- =?us-ascii?Q?hq2dO/QlyI9M0kXi2dtMjnKy5lsiHZJYevF0Ms/IMrB3+vaWycbH15V4O4W8?=
- =?us-ascii?Q?tEZCJc6VhObTYiHEl54kCrvR6GHNAPEzCFQbLrbKHNapD4QZ3aHXrZFRskMU?=
- =?us-ascii?Q?f8KZCWL5LBXDmv9d+luE/Lc32dL6+APMzHVOX/Bx8dbzAO4gMWY81gpUHfDK?=
- =?us-ascii?Q?xeLf9d0/PxRN9fN++uz7HMGDie6wSsvyi/zQQVMOx6cPUl4IEFJzX+3uPkyu?=
- =?us-ascii?Q?RFH2B3oy5G/KvG5bjDcIgUDAsxBqfXqON/rUdAlY/z4Ovzm+eGizSWWDgcTG?=
- =?us-ascii?Q?XeCArQToQVylps8a9pMPO1C6deW+kpv+Y/lby+Q6Wsjv+2xGwKt6feZTgUZi?=
- =?us-ascii?Q?YIJgTVG82RzYuFithUq92966cLIj/5MAMdSU2Bpe7d6uWmbx1UqltPfWAt5L?=
- =?us-ascii?Q?XM0WISlL9AAYZPNwPEcBmLI+dj+y+nHaHnBA3ivyzrCYg9qALVcK3cceAYbp?=
- =?us-ascii?Q?pF59i3KmneKZb7B0ghFhGCQzWxLcq/yiwASoNpzi/VaWCJPioeHpEAMpQtny?=
- =?us-ascii?Q?8NRAljBMusWHGVxUcMEIJiXmTetngtbrpOpsWw7cslAEz4IhA1+RbnlEfcnn?=
- =?us-ascii?Q?zfDmr9g6wKmLrzxnEzP2XArOGYovRiQuCiNfuPmIRs/skwPIX4BfkyrjKUpX?=
- =?us-ascii?Q?Ti3Ocfhbl3/iZaZMR0o8V/oUZkDNercLbmz0NBaYp4vvF0M+Pg+Ro85nGW6p?=
- =?us-ascii?Q?N9W0BPGMLyYPI8UL6F6qEK6DGTvtn/qyte2eFDIDEnRzekqIz0p22+TpXeUp?=
- =?us-ascii?Q?dLi+knzBv/qu1uWx0vZ67/XtIJvY9VHv8AqUVWeGwLIzNHIR9jy4/h7cq7Hn?=
- =?us-ascii?Q?Ol/Ce+m+9pGqe/kfgEawetE4Kun0maecU/MLpuEAzrhmn7eSqYvHJIu8Ka14?=
- =?us-ascii?Q?kaR9bp81UakYaS8kGgqCKh+LFurntic9ph4NsEC+h14qWMoxVs5isRLkka41?=
- =?us-ascii?Q?HKpnPXO0WpO7wlsNEbtn/NzzL1+s4PdhjVAgwakloDmByqUVd868xke7LRJk?=
- =?us-ascii?Q?nIeqLatd8rEomP9qFwGFftEQNVFkdvy2VP4KYOZInklN3zBcXVX4SLdP56Wm?=
- =?us-ascii?Q?UpQx/RO97i/0w8WHaG+xW6byxPGEtllBBGFkAm4gvKRLHsZgp+nsHJiYmSbx?=
- =?us-ascii?Q?j1hj5aipTEi/7Haa+gEzzxCxW1TEPPHnu0f3GP/1iaO0LXNfzek4pUtXx7II?=
- =?us-ascii?Q?oDsqsPNY1g8wwW8TT1SLky+HqnNUA2PCJACoNPzmQtRmGd+qu9uHoCEow7Ie?=
- =?us-ascii?Q?fJH6KAeNrhYoNidA/5Rk1tO2dvVqOLz+k3MzWrdxGeR+nkJeg+6lQkwsz/e9?=
- =?us-ascii?Q?vORpllCqJfHl59aSJnup9h2VfZe+JbA4HuWb+NkfVf/+WRborfFSw6haIJOv?=
- =?us-ascii?Q?DkzP89e0rSD2vKcpKGdqWEqO/4bc+3cWXb/jU+GTxJJd5DnWyxex4xPQopcK?=
- =?us-ascii?Q?7jWarCKpK3VSeSeuQdqSqVQ=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YqQD9uaIvJ2CLkffqiXnpUH5g77mlij+G/9xjX6e8fjijT7QoX82kJvb6K4t?=
+ =?us-ascii?Q?et7ZmVNwYDxV3wr5Ku+e41gEcTjfXkk4LGuHfqciSpvAWqZI8ZqS/kd0oZ+6?=
+ =?us-ascii?Q?kl6kQc1v4aqjcYU/ftfouJmFryA7atnvYsYdphThQBaTsXk7OUQFZET3r4UV?=
+ =?us-ascii?Q?UAkCUIpYLQd5WHAX6i4diw5mS1oLPTYXKsMVplieZnk7Pq29OcB/LP4K8Huy?=
+ =?us-ascii?Q?bEoRc4dfhSeOTLpQ2WvBdf9p4gvLzLRnrXEwCjGChi+Gs2g+uFLgY6pDfAwq?=
+ =?us-ascii?Q?JjG/9HFHnbyh8cHcb43/X3mYa62anOsYweY6TFcKYjVGemRXHokrkVZdNZ/g?=
+ =?us-ascii?Q?FKHOa2bW1Naa57IPPXBrKVuGjnk7MOcjouvIb3MP6uWfP14Zh/X51IQ9v8dJ?=
+ =?us-ascii?Q?7bs6L25xsVbSRxkBRjHYKb6CNMxXjAz9qmlGPjf4R4uG7uVMvdx5Y/5qzpzG?=
+ =?us-ascii?Q?DbV0Wuemob9RYbnH3KAaDm1OvFVzxjiuOqNAuEieEgUz+9V0TuL0yvzSA0W2?=
+ =?us-ascii?Q?Gx66DtP9PafNsEwbaEt49TvTL+StMTjusMyOhbYZbBoqxNhZfDzk7ZO86H/F?=
+ =?us-ascii?Q?f7vFypQ3fOzcYi47HxmoJIbXtECTm4R5ecIMu7vsFVNykAp1vFtctrTohwtP?=
+ =?us-ascii?Q?dFar0JG8FN9Sr8nQFOnt+hI/GIfi/yozvcsohUhiTc5x2y/ItMwoshJDaenV?=
+ =?us-ascii?Q?ARLeKuH4rAQuFhdOfXWAJv2UgmqCaG/CX39NjAjmVszepGzJNzyHa8VufG5/?=
+ =?us-ascii?Q?eUiCBPk+Nvs0uvE1oOOuZMNjZWdZlLkO7kPWhsG5kH6fKFKIyRdlsKZDUV4d?=
+ =?us-ascii?Q?+8zCHMGNBdQ9+LKqpt6VsS6vbxigofDnJGdC2+c8X5XxlGupbmOCuucIHSO/?=
+ =?us-ascii?Q?WW72zRNAp/0UQRW6XV+gRn2EB7egFsX9vNIzKbsDow4R4JgO/wG0umyjUfSL?=
+ =?us-ascii?Q?wQU8Y3INeQ2B51CjPOiP+nUPkDyDwG6Cv4x4z9DadgzxtVGODAJwP1d7Nv2s?=
+ =?us-ascii?Q?ksoIz00eSCnKcYRTRn5GBkjPR99yC2TrO5McWM4GiUkKNpBHODp/G7/TmLKs?=
+ =?us-ascii?Q?Jyvg1Sg5cNCbC+QQkCDx4ZeeTxhAE0bPrWzElm7oYfulVrYI0L2sSa4uAdsg?=
+ =?us-ascii?Q?tKTlKIBOQUNgnshKR2PKd5HV3vIa+gNUVRLSOwak6NseleUUIt71LLpahNiF?=
+ =?us-ascii?Q?K/nNMmoInKinzlAJ2xm7iHORKx0DPsM4v0YveO2OTjUnLhyksobXA/rJn72G?=
+ =?us-ascii?Q?2seYNlKNuHdor/R4nqJoE/xVpgsorwBZwrq3qzcSGHmkDSEBhnqtZ42hRNO3?=
+ =?us-ascii?Q?IzsmwI2JYjlmrPU7QqAX894TxbPPU3VrX5ygkaiw6/XqrftsXMwP1D4bQiFV?=
+ =?us-ascii?Q?vbT+iu2ZkU1zBN0TE/pPGu04ykJgoLhXslIpmEFW48l0IdCSCpjYmql+kU/O?=
+ =?us-ascii?Q?8V/Ia0O3f07C+ZYpP5ax2ASUtWaACbkYWfXpNBnNH08zTRTWulVUfN3lLcY+?=
+ =?us-ascii?Q?SmOjSLaxyzHXXSWGCx2cnSdIKjBleYbqMhbIT+ST5vNFVmvH+T4VsfA0Nac+?=
+ =?us-ascii?Q?8oY5d9WGq98p/Moh5vH5CPxOvLZ/JrJG3TkQGYVRXi0jAyRS6Zokfs9tKeFI?=
+ =?us-ascii?Q?jZqpkngFNyT6F/1ZFS5bzN4=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a46cfa2c-f417-4a7e-140c-08d998063ec0
+X-MS-Exchange-CrossTenant-Network-Message-Id: b10ba654-5497-460b-2190-08d998063f71
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2021 22:24:44.0786
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2021 22:24:45.2469
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: k1BBHrBCtxcgWpw7Ss6jv81sYTg7oyJmVt4C4uK9QPo7s2fx06W3H8dcTTkijeOWfvyfgfXHUFvWHVir34VwBQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9ivXhStrGd+56mo8mvzOba1XjBSXYnCBEFR38WsVI3SY/e+KdADdK4nWWPY6mVzpP2VtioPzgGJ8PdYs8c2SkA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2304
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The .ndo_fdb_del method can already return an int error code, let's also
-propagate the netlink extack for detailed error messages to user space.
+Similar to the logic added for RTM_NEWNEIGH, we can make the bridge
+RTM_DELNEIGH handler let switchdev veto an FDB entry deletion.
+
+The strategy is:
+
+- get hold of the FDB entry under &br->hash_lock
+- notify switchdev of its deletion via the atomic notifier chain
+- release the &br->hash_lock, wait for the response
+- switchdev vetoes => error out
+- switchdev agrees => attempt to get hold again of the FDB entry under
+  &br->hash_lock, this time delete it without notifying switchdev _or_
+  rtnetlink (we've notified both already).
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c        | 4 ++--
- drivers/net/ethernet/mscc/ocelot_net.c           | 3 ++-
- drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c | 5 +++--
- drivers/net/macvlan.c                            | 3 ++-
- drivers/net/vxlan.c                              | 3 ++-
- include/linux/netdevice.h                        | 6 ++++--
- net/bridge/br_fdb.c                              | 3 ++-
- net/bridge/br_private.h                          | 3 ++-
- net/core/rtnetlink.c                             | 4 ++--
- 9 files changed, 21 insertions(+), 13 deletions(-)
+ net/bridge/br_fdb.c | 82 ++++++++++++++++++++++++---------------------
+ 1 file changed, 44 insertions(+), 38 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 9ba22778011d..7e0741d62aae 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -5434,12 +5434,12 @@ ice_fdb_add(struct ndmsg *ndm, struct nlattr __always_unused *tb[],
- static int
- ice_fdb_del(struct ndmsg *ndm, __always_unused struct nlattr *tb[],
- 	    struct net_device *dev, const unsigned char *addr,
--	    __always_unused u16 vid)
-+	    __always_unused u16 vid, struct netlink_ext_ack *extack)
- {
- 	int err;
- 
- 	if (ndm->ndm_state & NUD_PERMANENT) {
--		netdev_err(dev, "FDB only supports static addresses\n");
-+		NL_SET_ERR_MSG_MOD(extack, "FDB only supports static addresses");
- 		return -EINVAL;
- 	}
- 
-diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-index eaeba60b1bba..8f53c9858cc1 100644
---- a/drivers/net/ethernet/mscc/ocelot_net.c
-+++ b/drivers/net/ethernet/mscc/ocelot_net.c
-@@ -664,7 +664,8 @@ static int ocelot_port_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
- 
- static int ocelot_port_fdb_del(struct ndmsg *ndm, struct nlattr *tb[],
- 			       struct net_device *dev,
--			       const unsigned char *addr, u16 vid)
-+			       const unsigned char *addr, u16 vid,
-+			       struct netlink_ext_ack *extack)
- {
- 	struct ocelot_port_private *priv = netdev_priv(dev);
- 	struct ocelot *ocelot = priv->port.ocelot;
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
-index ed84f0f97623..f276cc2c4351 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
-@@ -367,8 +367,9 @@ static int qlcnic_set_mac(struct net_device *netdev, void *p)
- }
- 
- static int qlcnic_fdb_del(struct ndmsg *ndm, struct nlattr *tb[],
--			struct net_device *netdev,
--			const unsigned char *addr, u16 vid)
-+			  struct net_device *netdev,
-+			  const unsigned char *addr, u16 vid,
-+			  struct netlink_ext_ack *extack)
- {
- 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
- 	int err = -EOPNOTSUPP;
-diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
-index d2f830ec2969..49377ef174c0 100644
---- a/drivers/net/macvlan.c
-+++ b/drivers/net/macvlan.c
-@@ -1014,7 +1014,8 @@ static int macvlan_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
- 
- static int macvlan_fdb_del(struct ndmsg *ndm, struct nlattr *tb[],
- 			   struct net_device *dev,
--			   const unsigned char *addr, u16 vid)
-+			   const unsigned char *addr, u16 vid,
-+			   struct netlink_ext_ack *extack)
- {
- 	struct macvlan_dev *vlan = netdev_priv(dev);
- 	int err = -EINVAL;
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index 141635a35c28..45e872d4e052 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -1342,7 +1342,8 @@ static int __vxlan_fdb_delete(struct vxlan_dev *vxlan,
- /* Delete entry (via netlink) */
- static int vxlan_fdb_delete(struct ndmsg *ndm, struct nlattr *tb[],
- 			    struct net_device *dev,
--			    const unsigned char *addr, u16 vid)
-+			    const unsigned char *addr, u16 vid,
-+			    struct netlink_ext_ack *extack)
- {
- 	struct vxlan_dev *vxlan = netdev_priv(dev);
- 	union vxlan_addr ip;
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 3ec42495a43a..79284bdd4b6f 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -1245,7 +1245,8 @@ struct netdev_net_notifier {
-  *	Adds an FDB entry to dev for addr.
-  * int (*ndo_fdb_del)(struct ndmsg *ndm, struct nlattr *tb[],
-  *		      struct net_device *dev,
-- *		      const unsigned char *addr, u16 vid)
-+ *		      const unsigned char *addr, u16 vid,
-+ *		      struct netlink_ext_ack *extack);
-  *	Deletes the FDB entry from dev coresponding to addr.
-  * int (*ndo_fdb_dump)(struct sk_buff *skb, struct netlink_callback *cb,
-  *		       struct net_device *dev, struct net_device *filter_dev,
-@@ -1501,7 +1502,8 @@ struct net_device_ops {
- 					       struct nlattr *tb[],
- 					       struct net_device *dev,
- 					       const unsigned char *addr,
--					       u16 vid);
-+					       u16 vid,
-+					       struct netlink_ext_ack *extack);
- 	int			(*ndo_fdb_dump)(struct sk_buff *skb,
- 						struct netlink_callback *cb,
- 						struct net_device *dev,
 diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-index e8afe64dadcc..ce49e5f914b1 100644
+index ce49e5f914b1..5f9bef6e4472 100644
 --- a/net/bridge/br_fdb.c
 +++ b/net/bridge/br_fdb.c
-@@ -1243,7 +1243,8 @@ static int __br_fdb_delete(struct net_bridge *br,
- /* Remove neighbor entry with RTM_DELNEIGH */
- int br_fdb_delete(struct ndmsg *ndm, struct nlattr *tb[],
- 		  struct net_device *dev,
--		  const unsigned char *addr, u16 vid)
-+		  const unsigned char *addr, u16 vid,
-+		  struct netlink_ext_ack *extack)
+@@ -407,7 +407,7 @@ static void fdb_del_hw_addr(struct net_bridge *br, const unsigned char *addr)
+ }
+ 
+ static void fdb_delete(struct net_bridge *br, struct net_bridge_fdb_entry *f,
+-		       bool swdev_notify)
++		       bool notify_rtnl, bool swdev_notify)
  {
- 	struct net_bridge_vlan_group *vg;
- 	struct net_bridge_port *p = NULL;
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index f5f7501dad7d..6c663ccc346c 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -773,7 +773,8 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
- 		   const unsigned char *addr, u16 vid, unsigned long flags);
+ 	trace_fdb_delete(br, f);
  
- int br_fdb_delete(struct ndmsg *ndm, struct nlattr *tb[],
--		  struct net_device *dev, const unsigned char *addr, u16 vid);
-+		  struct net_device *dev, const unsigned char *addr, u16 vid,
-+		  struct netlink_ext_ack *extack);
- int br_fdb_add(struct ndmsg *nlh, struct nlattr *tb[], struct net_device *dev,
- 	       const unsigned char *addr, u16 vid, u16 nlh_flags,
- 	       struct netlink_ext_ack *extack);
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 2af8aeeadadf..eed5eefe2bcd 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -4152,7 +4152,7 @@ static int rtnl_fdb_del(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		const struct net_device_ops *ops = br_dev->netdev_ops;
+@@ -417,7 +417,8 @@ static void fdb_delete(struct net_bridge *br, struct net_bridge_fdb_entry *f,
+ 	hlist_del_init_rcu(&f->fdb_node);
+ 	rhashtable_remove_fast(&br->fdb_hash_tbl, &f->rhnode,
+ 			       br_fdb_rht_params);
+-	br_fdb_notify(br, f, RTM_DELNEIGH, swdev_notify);
++	if (notify_rtnl)
++		br_fdb_notify(br, f, RTM_DELNEIGH, swdev_notify);
+ 	call_rcu(&f->rcu, fdb_rcu_free);
+ }
  
- 		if (ops->ndo_fdb_del)
--			err = ops->ndo_fdb_del(ndm, tb, dev, addr, vid);
-+			err = ops->ndo_fdb_del(ndm, tb, dev, addr, vid, extack);
+@@ -453,7 +454,7 @@ static void fdb_delete_local(struct net_bridge *br,
+ 		return;
+ 	}
  
- 		if (err)
- 			goto out;
-@@ -4164,7 +4164,7 @@ static int rtnl_fdb_del(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	if (ndm->ndm_flags & NTF_SELF) {
- 		if (dev->netdev_ops->ndo_fdb_del)
- 			err = dev->netdev_ops->ndo_fdb_del(ndm, tb, dev, addr,
--							   vid);
-+							   vid, extack);
+-	fdb_delete(br, f, true);
++	fdb_delete(br, f, true, true);
+ }
+ 
+ void br_fdb_find_delete_local(struct net_bridge *br,
+@@ -514,7 +515,7 @@ static int fdb_add_local(struct net_bridge *br, struct net_bridge_port *source,
+ 			return 0;
+ 		br_warn(br, "adding interface %s with same address as a received packet (addr:%pM, vlan:%u)\n",
+ 		       source ? source->dev->name : br->dev->name, addr, vid);
+-		fdb_delete(br, fdb, true);
++		fdb_delete(br, fdb, true, true);
+ 	}
+ 
+ 	fdb = fdb_create(br, source, addr, vid,
+@@ -639,7 +640,7 @@ void br_fdb_cleanup(struct work_struct *work)
+ 		} else {
+ 			spin_lock_bh(&br->hash_lock);
+ 			if (!hlist_unhashed(&f->fdb_node))
+-				fdb_delete(br, f, true);
++				fdb_delete(br, f, true, true);
+ 			spin_unlock_bh(&br->hash_lock);
+ 		}
+ 	}
+@@ -659,7 +660,7 @@ void br_fdb_flush(struct net_bridge *br)
+ 	spin_lock_bh(&br->hash_lock);
+ 	hlist_for_each_entry_safe(f, tmp, &br->fdb_list, fdb_node) {
+ 		if (!test_bit(BR_FDB_STATIC, &f->flags))
+-			fdb_delete(br, f, true);
++			fdb_delete(br, f, true, true);
+ 	}
+ 	spin_unlock_bh(&br->hash_lock);
+ }
+@@ -691,7 +692,7 @@ void br_fdb_delete_by_port(struct net_bridge *br,
+ 		if (test_bit(BR_FDB_LOCAL, &f->flags))
+ 			fdb_delete_local(br, p, f);
  		else
- 			err = ndo_dflt_fdb_del(ndm, tb, dev, addr, vid);
+-			fdb_delete(br, f, true);
++			fdb_delete(br, f, true, true);
+ 	}
+ 	spin_unlock_bh(&br->hash_lock);
+ }
+@@ -931,9 +932,10 @@ int br_fdb_get(struct sk_buff *skb,
+ }
+ 
+ /* Delete an FDB entry and don't notify switchdev */
+-static void fdb_delete_by_addr_and_port(struct net_bridge *br,
+-					const struct net_bridge_port *p,
+-					const u8 *addr, u16 vlan)
++static int fdb_delete_by_addr_and_port(struct net_bridge *br,
++				       const struct net_bridge_port *p,
++				       const u8 *addr, u16 vlan,
++				       bool notify_rtnl)
+ {
+ 	struct net_bridge_fdb_entry *fdb;
+ 
+@@ -942,12 +944,14 @@ static void fdb_delete_by_addr_and_port(struct net_bridge *br,
+ 	fdb = br_fdb_find(br, addr, vlan);
+ 	if (!fdb || READ_ONCE(fdb->dst) != p) {
+ 		spin_unlock_bh(&br->hash_lock);
+-		return;
++		return -ENOENT;
+ 	}
+ 
+-	fdb_delete(br, fdb, false);
++	fdb_delete(br, fdb, notify_rtnl, false);
+ 
+ 	spin_unlock_bh(&br->hash_lock);
++
++	return 0;
+ }
+ 
+ /* returns true if the fdb is modified */
+@@ -1079,7 +1083,7 @@ static int fdb_add_entry(struct net_bridge *br, struct net_bridge_port *source,
+ 
+ 	err = br_switchdev_fdb_wait(&wait_ctx);
+ 	if (err)
+-		fdb_delete_by_addr_and_port(br, source, addr, vid);
++		fdb_delete_by_addr_and_port(br, source, addr, vid, true);
+ 
+ 	return err;
+ }
+@@ -1208,36 +1212,38 @@ int br_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
+ 	return err;
+ }
+ 
+-/* Delete an FDB entry and notify switchdev.
+- * Caller must hold &br->hash_lock.
+- */
+-static int
+-fdb_delete_by_addr_and_port_switchdev(struct net_bridge *br,
+-				      const struct net_bridge_port *p,
+-				      const u8 *addr, u16 vlan)
++/* Delete an FDB entry and notify switchdev. */
++static int __br_fdb_delete(struct net_bridge *br,
++			   const struct net_bridge_port *p,
++			   const u8 *addr, u16 vlan,
++			   struct netlink_ext_ack *extack)
+ {
++	struct br_switchdev_fdb_wait_ctx wait_ctx;
+ 	struct net_bridge_fdb_entry *fdb;
++	int err;
+ 
+-	fdb = br_fdb_find(br, addr, vlan);
+-	if (!fdb || READ_ONCE(fdb->dst) != p)
+-		return -ENOENT;
++	br_switchdev_fdb_wait_ctx_init(&wait_ctx);
+ 
+-	fdb_delete(br, fdb, true);
++	spin_lock_bh(&br->hash_lock);
+ 
+-	return 0;
+-}
++	fdb = br_fdb_find(br, addr, vlan);
++	if (!fdb || READ_ONCE(fdb->dst) != p) {
++		spin_unlock_bh(&br->hash_lock);
++		return -ENOENT;
++	}
+ 
+-static int __br_fdb_delete(struct net_bridge *br,
+-			   const struct net_bridge_port *p,
+-			   const unsigned char *addr, u16 vid)
+-{
+-	int err;
++	br_fdb_notify_async(br, fdb, RTM_DELNEIGH, extack, &wait_ctx);
+ 
+-	spin_lock_bh(&br->hash_lock);
+-	err = fdb_delete_by_addr_and_port_switchdev(br, p, addr, vid);
+ 	spin_unlock_bh(&br->hash_lock);
+ 
+-	return err;
++	err = br_switchdev_fdb_wait(&wait_ctx);
++	if (err)
++		return err;
++
++	/* We've notified rtnl and switchdev once, don't do it again,
++	 * just delete.
++	 */
++	return fdb_delete_by_addr_and_port(br, p, addr, vlan, false);
+ }
+ 
+ /* Remove neighbor entry with RTM_DELNEIGH */
+@@ -1273,17 +1279,17 @@ int br_fdb_delete(struct ndmsg *ndm, struct nlattr *tb[],
+ 			return -EINVAL;
+ 		}
+ 
+-		err = __br_fdb_delete(br, p, addr, vid);
++		err = __br_fdb_delete(br, p, addr, vid, extack);
+ 	} else {
+ 		err = -ENOENT;
+-		err &= __br_fdb_delete(br, p, addr, 0);
++		err &= __br_fdb_delete(br, p, addr, 0, extack);
+ 		if (!vg || !vg->num_vlans)
+ 			return err;
+ 
+ 		list_for_each_entry(v, &vg->vlan_list, vlist) {
+ 			if (!br_vlan_should_use(v))
+ 				continue;
+-			err &= __br_fdb_delete(br, p, addr, v->vid);
++			err &= __br_fdb_delete(br, p, addr, v->vid, extack);
+ 		}
+ 	}
+ 
+@@ -1414,7 +1420,7 @@ int br_fdb_external_learn_del(struct net_bridge *br, struct net_bridge_port *p,
+ 
+ 	fdb = br_fdb_find(br, addr, vid);
+ 	if (fdb && test_bit(BR_FDB_ADDED_BY_EXT_LEARN, &fdb->flags))
+-		fdb_delete(br, fdb, swdev_notify);
++		fdb_delete(br, fdb, true, swdev_notify);
+ 	else
+ 		err = -ENOENT;
  
 -- 
 2.25.1
