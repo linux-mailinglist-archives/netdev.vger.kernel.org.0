@@ -2,138 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84B4A439A90
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 17:31:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B977439A93
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 17:34:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232583AbhJYPeS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 11:34:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56888 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230348AbhJYPeS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Oct 2021 11:34:18 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 628A360295;
-        Mon, 25 Oct 2021 15:31:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1635175915;
-        bh=aO+p16sWYpfdYtZYGMflFOezVT89Z6b7ixa45AGyx3Y=;
-        h=Date:From:To:Cc:Subject:From;
-        b=ltzR+KffawqNSry1xhl57OY0JNqI8w7W3IbsQp/+8HC/t2ddU24zeFvlmgm2qv9He
-         9l10Cml2Bi8jbRZjje9xGGqf2FGNUbXR2V6Jjh4wu+tx9F2JT9lWptCEQqfJ7H54Im
-         YXeH1CdWMs7SSQCfSdDxGOIoWJ6uUS4NiXS5cSXY=
-Date:   Mon, 25 Oct 2021 17:31:53 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     netdev@vger.kernel.org
-Cc:     Jon Maloy <jmaloy@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Tuong Lien <tuong.t.lien@dektech.com.au>,
-        Max VA <maxv@sentinelone.com>,
-        Ying Xue <ying.xue@windriver.com>
-Subject: [PATCH] tipc: fix size validations for the MSG_CRYPTO type
-Message-ID: <YXbN6S9KPq8S5N0v@kroah.com>
+        id S233592AbhJYPgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 11:36:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:56504 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230348AbhJYPgu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 11:36:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1635176067;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YwfmUEaIE65kckhigKIeO5UdqtC2rRmoFNbtu9Az7TY=;
+        b=PrCagFbqe2SftCWQtqF1pSbrGBo1zy5/PaSWX/pW80axNUXqwhw70ZoOvI33D6gAfSP0yz
+        iPiwe8+fTO25AoS114l2ngLgvH00Po8eTbI7mb9N75u8XAOdX+NGMlhfjKbZ7Cbp1+6wvU
+        b+b60vY7BXhmsHDAl7F1c+fKt86ANOU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-18-N-kBO1zsOkaw3lre8tgruQ-1; Mon, 25 Oct 2021 11:34:24 -0400
+X-MC-Unique: N-kBO1zsOkaw3lre8tgruQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5113091273;
+        Mon, 25 Oct 2021 15:34:23 +0000 (UTC)
+Received: from asgard.redhat.com (unknown [10.36.110.5])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5863A69119;
+        Mon, 25 Oct 2021 15:34:21 +0000 (UTC)
+Date:   Mon, 25 Oct 2021 17:34:18 +0200
+From:   Eugene Syromiatnikov <esyr@redhat.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     jk@codeconstruct.com.au, netdev@vger.kernel.org, kuba@kernel.org,
+        matt@codeconstruct.com.au
+Subject: Re: [PATCH net-next v5] mctp: Implement extended addressing
+Message-ID: <20211025153418.GA6853@asgard.redhat.com>
+References: <20211025032757.2317020-1-jk@codeconstruct.com.au>
+ <20211025.161549.899716517054473254.davem@davemloft.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2710;
- i=gregkh@linuxfoundation.org; h=from:subject;
- bh=EIqXsI2RuxANBiB6WwsvXe3b/T4ofXGdCmz/CyT7O2g=;
- b=owGbwMvMwCRo6H6F97bub03G02pJDIllZ0Vn5b3kqZA/1mR8+i2bau/f2MmZztfWC3P2LNiSasxS
- FiPVEcvCIMjEICumyPJlG8/R/RWHFL0MbU/DzGFlAhnCwMUpABMxkGCYnxz+cPPKiFyduyZ+77yWn+
- ONl5U8zTC//OKFG+8uz3yRe8z/tPG3V78PK84VAwA=
-X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp;
- fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
+In-Reply-To: <20211025.161549.899716517054473254.davem@davemloft.net>
+User-Agent: Mutt/1.5.23 (2014-03-12)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Max VA <maxv@sentinelone.com>
+On Mon, Oct 25, 2021 at 04:15:49PM +0100, David Miller wrote:
+> From: Jeremy Kerr <jk@codeconstruct.com.au>
+> Date: Mon, 25 Oct 2021 11:27:57 +0800
+> 
+> > @@ -152,10 +155,16 @@ struct mctp_sk_key {
+> >  
+> >  struct mctp_skb_cb {
+> >  	unsigned int	magic;
+> > -	unsigned int	net;
+> > +	int		net;
+> > +	int		ifindex; /* extended/direct addressing if set */
+> > +	unsigned char	halen;
+> >  	mctp_eid_t	src;
+> > +	unsigned char	haddr[];
+> >  };
+> >  
+> putting a variably sized type in the skb control blocxk is not a good idea.
+> Overruns will be silent, nothing in the typing protects you from udsing more space
+> han exists in skb->cb.
+> 
+> Plrease find another way, thank you.
 
-The function tipc_crypto_key_rcv is used to parse MSG_CRYPTO messages
-to receive keys from other nodes in the cluster in order to decrypt any
-further messages from them.
-This patch verifies that any supplied sizes in the message body are
-valid for the received message.
-
-Fixes: 1ef6f7c9390f ("tipc: add automatic session key exchange")
-Signed-off-by: Max VA <maxv@sentinelone.com>
-Acked-by: Ying Xue <ying.xue@windriver.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/tipc/crypto.c | 32 +++++++++++++++++++++-----------
- 1 file changed, 21 insertions(+), 11 deletions(-)
-
-Max's email system doesn't seem to be able to send non-attachment
-patches out, so I'm forwarding this on for him.  It's already acked by
-one of the tipc maintainers.
-
-diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
-index c9391d38de85..dc60c32bb70d 100644
---- a/net/tipc/crypto.c
-+++ b/net/tipc/crypto.c
-@@ -2285,43 +2285,53 @@ static bool tipc_crypto_key_rcv(struct tipc_crypto *rx, struct tipc_msg *hdr)
- 	u16 key_gen = msg_key_gen(hdr);
- 	u16 size = msg_data_sz(hdr);
- 	u8 *data = msg_data(hdr);
-+	unsigned int keylen;
-+
-+	/* Verify whether the size can exist in the packet */
-+	if (unlikely(size < sizeof(struct tipc_aead_key) + TIPC_AEAD_KEYLEN_MIN)) {
-+		pr_debug("%s: message data size is too small\n", rx->name);
-+		goto exit;
-+	}
-+
-+	keylen = ntohl(*((__be32 *)(data + TIPC_AEAD_ALG_NAME)));
-+
-+	/* Verify the supplied size values */
-+	if (unlikely(size != keylen + sizeof(struct tipc_aead_key) ||
-+		     keylen > TIPC_AEAD_KEY_SIZE_MAX)) {
-+		pr_debug("%s: invalid MSG_CRYPTO key size\n", rx->name);
-+		goto exit;
-+	}
- 
- 	spin_lock(&rx->lock);
- 	if (unlikely(rx->skey || (key_gen == rx->key_gen && rx->key.keys))) {
- 		pr_err("%s: key existed <%p>, gen %d vs %d\n", rx->name,
- 		       rx->skey, key_gen, rx->key_gen);
--		goto exit;
-+		goto exit_unlock;
- 	}
- 
- 	/* Allocate memory for the key */
- 	skey = kmalloc(size, GFP_ATOMIC);
- 	if (unlikely(!skey)) {
- 		pr_err("%s: unable to allocate memory for skey\n", rx->name);
--		goto exit;
-+		goto exit_unlock;
- 	}
- 
- 	/* Copy key from msg data */
--	skey->keylen = ntohl(*((__be32 *)(data + TIPC_AEAD_ALG_NAME)));
-+	skey->keylen = keylen;
- 	memcpy(skey->alg_name, data, TIPC_AEAD_ALG_NAME);
- 	memcpy(skey->key, data + TIPC_AEAD_ALG_NAME + sizeof(__be32),
- 	       skey->keylen);
- 
--	/* Sanity check */
--	if (unlikely(size != tipc_aead_key_size(skey))) {
--		kfree(skey);
--		skey = NULL;
--		goto exit;
--	}
--
- 	rx->key_gen = key_gen;
- 	rx->skey_mode = msg_key_mode(hdr);
- 	rx->skey = skey;
- 	rx->nokey = 0;
- 	mb(); /* for nokey flag */
- 
--exit:
-+exit_unlock:
- 	spin_unlock(&rx->lock);
- 
-+exit:
- 	/* Schedule the key attaching on this crypto */
- 	if (likely(skey && queue_delayed_work(tx->wq, &rx->work, 0)))
- 		return true;
--- 
-2.33.1
+haddr[MAX_ADDR_LEN]?  It is defined to 32 bytes.
 
