@@ -2,175 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D11DF43A80E
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 01:16:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA3A043A813
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 01:19:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234077AbhJYXTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 19:19:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:28264 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232664AbhJYXTP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 19:19:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635203812;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QMXbK4ePzk3n+ceTQNajazYCa4xaMoaeqduI1Kwqi4A=;
-        b=CvBfrkCBhs+OyeRuWQQXoPUx02PtBxgCTRWrncuVCFVh3YAILf/Qh+7GY1Jyq7+C2EMF1h
-        D9dS9rALa2uhQRKOGg9X2FpjqwKJMKhmQBNIhxbKpTnCzL6x1NdDbmZy64z3WnnjAZgT1C
-        KBZhltSDoVJnA9n3tQlA76jn81ACHAU=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-167-81zPqRDgOfydnqRbqPaEYw-1; Mon, 25 Oct 2021 19:16:50 -0400
-X-MC-Unique: 81zPqRDgOfydnqRbqPaEYw-1
-Received: by mail-ed1-f71.google.com with SMTP id q6-20020a056402518600b003dd81fc405eso466168edd.1
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 16:16:50 -0700 (PDT)
+        id S234467AbhJYXWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 19:22:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49008 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230169AbhJYXWH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 19:22:07 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D2EC061767
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 16:19:44 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id v200so29980942ybe.11
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 16:19:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=h/m+rGDyPgmkHNSDFPzk2eBpp1e1IMILcUX8qA35d4c=;
+        b=ZQ2OHZJWoDMsFYhDGZXV/ORisGPqxd+Bine/TFp7oPJtkJQ7DtE0bbuZ0BO8fNc/sF
+         fdXcgyvqS23e/mOtOMb+VNFBwU9qEgoLlqID5zfZgidGUhTYQIQk0Mf1RZzTiTQO+HqU
+         Ye6ZJ4j4Vwg/WsyREgDOqShiYwfifOfxhhb+Y=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=QMXbK4ePzk3n+ceTQNajazYCa4xaMoaeqduI1Kwqi4A=;
-        b=xfNmHRWYSKE6bv/VKHIn2LMz7KATBI8SUDj7udvzAxAQcUiZiJbFCvvvDOtI8LWL0y
-         hRTGJ0JIxKLBZPXlIP3LiHJHofAJUK+mV5/7UcjSPTfJsbYsKFh4TULi/8Llwx9GZBh7
-         jJpsbM8dkr1DesHWGjuEzWCvTutQTa5J8JyN2qVwyJbGYsuc+Ic+5KzVMTdiFhyDArmE
-         etX+uTKsCauPyFhSJH9pCZXczQkcWZrJkCUGH6275Pid9jb52CRWpqCDEOUggI4o8aNm
-         t/W9DecKwio+rurQrrAh8fULJoMiOPwKK9a3tUB4NhW30jJVNsCwn9KlZRjg9AuTPiOz
-         wZQA==
-X-Gm-Message-State: AOAM530+EdvxbHKM5hjQzFsfEINVtH87vB/P3jMDcJGSXQ/2Iy8mAbcC
-        A/4B5bOopdb6zFfrb2uWv5uP7Sz/scJz5tQ+9BHanP5TWjJPvyY3jzgADMXMet3sB/1AnCqfejD
-        05aJ/n1NJjQpjQfVk
-X-Received: by 2002:a50:cd87:: with SMTP id p7mr30310508edi.205.1635203808117;
-        Mon, 25 Oct 2021 16:16:48 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzrKHHm8lIXLTrCOnw7KkbsrL+gOfuT7m5ziKQ/AyQBnD+BmD2waJkj9SGGtlDGGwMG4Dt7dg==
-X-Received: by 2002:a50:cd87:: with SMTP id p7mr30310428edi.205.1635203807122;
-        Mon, 25 Oct 2021 16:16:47 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id qa16sm2908667ejc.120.2021.10.25.16.16.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Oct 2021 16:16:46 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 13B08180262; Tue, 26 Oct 2021 01:16:45 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH bpf v2] bpf: fix potential race in tail call
- compatibility check
-In-Reply-To: <c1244c73-bc61-89b8-dca3-f06dca85f64e@iogearbox.net>
-References: <20211025130809.314707-1-toke@redhat.com>
- <YXa/A4eQhlPPsn+n@lore-desk>
- <c1244c73-bc61-89b8-dca3-f06dca85f64e@iogearbox.net>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 26 Oct 2021 01:16:45 +0200
-Message-ID: <878rygbspu.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=h/m+rGDyPgmkHNSDFPzk2eBpp1e1IMILcUX8qA35d4c=;
+        b=jyh5pMMnm7FOanH8lXWUVNkcN85jxC2CGyEGfOvUB/9ZD8k/775SLdA/LwWAu+baHi
+         ORXIH5R6BAKq3p1l1D58IptqZbO80EQ48Yy00EBlpjbgBItKFH5hYs0Xh5o5++S4eCLS
+         8rjCI+1Zo3AGREPCDltiEBlAEDN/AKtgQRUL2Ne5tPAld9UePSK2MoZGUro8nbEWpnrr
+         +z4islPxWl91EZL++XbJwP9+wMx2pJ0GFSTAX7uhesb0ZYVZu4g29slfht1yVQI+my6j
+         WkpGCDEPuP9PmrJdVJwKIBRTQJVZsskOs77JEdH2BHGfnqkWFMXgyMPcqw9WGeFUNnd4
+         XHdQ==
+X-Gm-Message-State: AOAM532ku0t2nFJvMY2CtV98xbuAYTmYx6R0V7jG/M+xiW757rX0QK9e
+        mXV1lx2obXwMluncLW53gLT1HsLMBm5ORSRvUNVB0Q==
+X-Google-Smtp-Source: ABdhPJwQSDBIopxs6IO5I0vryH6ivhJw6gNvrARjSQOfppAImQtW0pAnwoQptiqF2lvTM5ezwXXHIG/POjMYu8hRwpw=
+X-Received: by 2002:a25:4054:: with SMTP id n81mr21034759yba.85.1635203983180;
+ Mon, 25 Oct 2021 16:19:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <725e121f05362da4328dda08d5814211a0725dac.1635064599.git.leonro@nvidia.com>
+ <YXUhyLXsc2egWNKx@shredder>
+In-Reply-To: <YXUhyLXsc2egWNKx@shredder>
+From:   Edwin Peer <edwin.peer@broadcom.com>
+Date:   Mon, 25 Oct 2021 16:19:07 -0700
+Message-ID: <CAKOOJTzc9pJ1KKDHuGTFDeHb77B2GynA9HEVWKys=zvh_kY+Hw@mail.gmail.com>
+Subject: Re: [PATCH net-next] netdevsim: Register and unregister devlink traps
+ on probe/remove device
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzbot+93d5accfaefceedf43c1@syzkaller.appspotmail.com,
+        Michael Chan <michael.chan@broadcom.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Borkmann <daniel@iogearbox.net> writes:
+On Sun, Oct 24, 2021 at 3:35 PM Ido Schimmel <idosch@idosch.org> wrote:
 
-> On 10/25/21 4:28 PM, Lorenzo Bianconi wrote:
->>> Lorenzo noticed that the code testing for program type compatibility of
->>> tail call maps is potentially racy in that two threads could encounter a
->>> map with an unset type simultaneously and both return true even though =
-they
->>> are inserting incompatible programs.
->>>
->>> The race window is quite small, but artificially enlarging it by adding=
- a
->>> usleep_range() inside the check in bpf_prog_array_compatible() makes it
->>> trivial to trigger from userspace with a program that does, essentially:
->>>
->>>          map_fd =3D bpf_create_map(BPF_MAP_TYPE_PROG_ARRAY, 4, 4, 2, 0);
->>>          pid =3D fork();
->>>          if (pid) {
->>>                  key =3D 0;
->>>                  value =3D xdp_fd;
->>>          } else {
->>>                  key =3D 1;
->>>                  value =3D tc_fd;
->>>          }
->>>          err =3D bpf_map_update_elem(map_fd, &key, &value, 0);
->>>
->>> While the race window is small, it has potentially serious ramification=
-s in
->>> that triggering it would allow a BPF program to tail call to a program =
-of a
->>> different type. So let's get rid of it by protecting the update with a
->>> spinlock. The commit in the Fixes tag is the last commit that touches t=
-he
->>> code in question.
->>>
->>> v2:
->>> - Use a spinlock instead of an atomic variable and cmpxchg() (Alexei)
->>>
->>> Fixes: 3324b584b6f6 ("ebpf: misc core cleanup")
->>> Reported-by: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
->>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->>> ---
->>>   include/linux/bpf.h   |  1 +
->>>   kernel/bpf/arraymap.c |  1 +
->>>   kernel/bpf/core.c     | 14 ++++++++++----
->>>   kernel/bpf/syscall.c  |  2 ++
->>>   4 files changed, 14 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
->>> index 020a7d5bf470..98d906176d89 100644
->>> --- a/include/linux/bpf.h
->>> +++ b/include/linux/bpf.h
->>> @@ -929,6 +929,7 @@ struct bpf_array_aux {
->>>   	 * stored in the map to make sure that all callers and callees have
->>>   	 * the same prog type and JITed flag.
->>>   	 */
->>> +	spinlock_t type_check_lock;
->>=20
->> I was wondering if we can use a mutex instead of a spinlock here since i=
-t is
->> run from a syscall AFAIU. The only downside is mutex_lock is run inside
->> aux->used_maps_mutex critical section. Am I missing something?
+> On Sun, Oct 24, 2021 at 11:42:11AM +0300, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> >
+> > Align netdevsim to be like all other physical devices that register and
+> > unregister devlink traps during their probe and removal respectively.
 >
-> Hm, potentially it could work, but then it's also 32 vs 4 extra bytes. Th=
-ere's
-> also poke_mutex or freeze_mutex, but feels to hacky to 'generalize for re=
-use',
-> so I think the spinlock in bpf_array_aux is fine.
+> No, this is incorrect. Out of the three drivers that support both reload
+> and traps, both netdevsim and mlxsw unregister the traps during reload.
+> Here is another report from syzkaller about mlxsw [1].
 >
->>>   	enum bpf_prog_type type;
->>>   	bool jited;
->>>   	/* Programs with direct jumps into programs part of this array. */
->>> diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
->>> index cebd4fb06d19..da9b1e96cadc 100644
->>> --- a/kernel/bpf/arraymap.c
->>> +++ b/kernel/bpf/arraymap.c
->>> @@ -1072,6 +1072,7 @@ static struct bpf_map *prog_array_map_alloc(union=
- bpf_attr *attr)
->>>   	INIT_WORK(&aux->work, prog_array_map_clear_deferred);
->>>   	INIT_LIST_HEAD(&aux->poke_progs);
->>>   	mutex_init(&aux->poke_mutex);
->>> +	spin_lock_init(&aux->type_check_lock);
->
-> Just as a tiny nit, I would probably name it slightly different, since ty=
-pe_check_lock
-> mainly refers to the type property but there's also jit vs non-jit and as=
- pointed out
-> there could be other extensions that need checking in future as well. May=
-be 'compat_lock'
-> would be a more generic one or just:
->
->          struct {
->                  enum bpf_prog_type type;
->                  bool jited;
->                  spinlock_t lock;
->          } owner;
+> Please revert both 22849b5ea595 ("devlink: Remove not-executed trap
+> policer notifications") and 8bbeed485823 ("devlink: Remove not-executed
+> trap group notifications").
 
-Uh, I like that! Makes it easier to move as well (which we're doing as
-part of the xdp_mb series). Will send a v3 with this :)
+Could we also revert 82465bec3e97 ("devlink: Delete reload
+enable/disable interface")? This interface is needed because bnxt_en
+cannot reorder devlink last. If Leon had fully carried out the
+re-ordering in our driver he would have introduced a udev
+phys_port_name regression because of:
 
--Toke
+cda2cab0771 ("bnxt_en: Move devlink_register before registering netdev")
 
+and:
+
+ab178b058c4 ("bnxt: remove ndo_get_phys_port_name implementation")
+
+I think this went unnoticed for bnxt_en, because Michael had not yet
+posted our devlink reload patches, which presently rely on the reload
+enable/disable API. Absent horrible kludges in reload down/up which
+currently depends on the netdev, there doesn't appear to be a clean
+way to resolve the circular dependency without the interlocks this API
+provides.
+
+I imagine other subtle regressions are lying in wait.
+
+Regards,
+Edwin Peer
