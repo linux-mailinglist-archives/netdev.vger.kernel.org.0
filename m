@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30C4C43A513
-	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 22:54:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81A5D43A514
+	for <lists+netdev@lfdr.de>; Mon, 25 Oct 2021 22:54:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234145AbhJYU5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S234155AbhJYU5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 25 Oct 2021 16:57:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34246 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:34254 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233451AbhJYU5A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233499AbhJYU5A (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 25 Oct 2021 16:57:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 51A126105A;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C690760FE8;
         Mon, 25 Oct 2021 20:54:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635195277;
-        bh=CzWOctWdvIInWj02Uj6XKx0HLTOll9lOo+n7QXX6NUY=;
+        s=k20201202; t=1635195278;
+        bh=/HWnWKryxRyJs45q0lIDgV18X988G7MMWcTv+Pr/sFg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lv9Lp8o+lGc5GaAx2LJS6AAjWF0SrESpQ0YF2kX0UcQ3NQ2HFZ2T+e2hGntG+Gw/d
-         ttdW9lZKyQWfYN9fJDpCssHaZfDj8qdrWj5Sm4qCFo5ZbYzjsKRNNtZ7dc40YUndnt
-         9bZncYuK/ZtJSvI3JzI8o0wQJDS6souEDKNZcGOEf7SafMo9t+7d4mgOUon464+J7m
-         1taDvSduvJ1ypX0Vt+joRROF60b516TTdjSPXDDh8xsgtDiuPNaCfDdohFTGI+IW0L
-         qLUAM6XHb1VDBFPTRahOkLfBT3MYlNqew0dGKUgVLdTFlIYjyKMc+FqFRou1weWVgL
-         yQuK1t9SQaFgQ==
+        b=FDBqmkvNQX01eymEMBn/55YJ7sALESqH5zjdsR3Xgd15ABpBzzig4r91VHerohquI
+         lEQbgNy1JtJzWTlCAnhD6SvbxOmUIBIlKNqssl9ATPC2sVCWH+v6LETdzUN972OGNM
+         qRjAPl5xw74HyBDmLCPDLE+khD1i1ppNz5acMUagqmbiGNT7spa6rYhHe9e63j1zUC
+         QMfbLqe0onwQUQpl5CQmHg24rePo123vA33lrqwhREXrnt2aDcLGG1ChGs0W0BLj1d
+         7Ch1h1pgyQuDxK98QNR4fNKIM8wzDQEP73xD8RCOxQyvUpgEjOXHzNev+em38gfIpA
+         ETSnp04RPoN9g==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Vlad Buslov <vladbu@nvidia.com>,
-        Paul Blakey <paulb@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Shay Drory <shayd@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Parav Pandit <parav@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 09/14] net/mlx5: Bridge, support replacing existing FDB entry
-Date:   Mon, 25 Oct 2021 13:54:26 -0700
-Message-Id: <20211025205431.365080-10-saeed@kernel.org>
+Subject: [net-next 10/14] net/mlx5: Let user configure io_eq_size param
+Date:   Mon, 25 Oct 2021 13:54:27 -0700
+Message-Id: <20211025205431.365080-11-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211025205431.365080-1-saeed@kernel.org>
 References: <20211025205431.365080-1-saeed@kernel.org>
@@ -41,35 +42,215 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vlad Buslov <vladbu@nvidia.com>
+From: Shay Drory <shayd@nvidia.com>
 
-The SWITCHDEV_FDB_ADD_TO_DEVICE is used for both adding new and replacing
-existing entry. Implement support for replacing existing FDB entries in
-mlx5 offload code.
+Currently, each I/O EQ is taking 128KB of memory. This size
+is not needed in all use cases, and is critical with large scale.
+Hence, allow user to configure the size of I/O EQs.
 
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
-Reviewed-by: Paul Blakey <paulb@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
+For example, to reduce I/O EQ size to 64, execute:
+$ devlink resource set pci/0000:00:0b.0 path /io_eq_size/ size 64
+$ devlink dev reload pci/0000:00:0b.0
+
+Signed-off-by: Shay Drory <shayd@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Reviewed-by: Parav Pandit <parav@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ Documentation/networking/devlink/mlx5.rst     | 12 ++++
+ .../net/ethernet/mellanox/mlx5/core/Makefile  |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/devlink.h | 11 ++++
+ .../ethernet/mellanox/mlx5/core/devlink_res.c | 56 +++++++++++++++++++
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c  |  3 +-
+ .../net/ethernet/mellanox/mlx5/core/main.c    |  3 +
+ include/linux/mlx5/driver.h                   |  4 --
+ 7 files changed, 85 insertions(+), 6 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/devlink_res.c
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
-index 33d1d2ed4cd6..f690f430f40f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
-@@ -1160,6 +1160,10 @@ mlx5_esw_bridge_fdb_entry_init(struct net_device *dev, u16 vport_num, u16 esw_ow
- 			return ERR_CAST(vlan);
- 	}
+diff --git a/Documentation/networking/devlink/mlx5.rst b/Documentation/networking/devlink/mlx5.rst
+index 4e4b97f7971a..4e6020570292 100644
+--- a/Documentation/networking/devlink/mlx5.rst
++++ b/Documentation/networking/devlink/mlx5.rst
+@@ -46,6 +46,18 @@ parameters.
  
-+	entry = mlx5_esw_bridge_fdb_lookup(bridge, addr, vid);
-+	if (entry)
-+		mlx5_esw_bridge_fdb_entry_notify_and_cleanup(entry, bridge);
+ The ``mlx5`` driver supports reloading via ``DEVLINK_CMD_RELOAD``
+ 
++Resources
++=========
 +
- 	entry = kvzalloc(sizeof(*entry), GFP_KERNEL);
- 	if (!entry)
- 		return ERR_PTR(-ENOMEM);
++.. list-table:: Driver-specific resources implemented
++   :widths: 5 5 5 85
++
++   * - Name
++     - Description
++   * - ``comp_eq_size``
++     - Control the size of I/O completion EQs.
++       * The default value is 1024, and the range is between 64 and 4096.
++
+ Info versions
+ =============
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
+index bdb271b604d9..79c15ee62cde 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
++++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
+@@ -16,7 +16,7 @@ mlx5_core-y :=	main.o cmd.o debugfs.o fw.o eq.o uar.o pagealloc.o \
+ 		transobj.o vport.o sriov.o fs_cmd.o fs_core.o pci_irq.o \
+ 		fs_counters.o fs_ft_pool.o rl.o lag/lag.o dev.o events.o wq.o lib/gid.o \
+ 		lib/devcom.o lib/pci_vsc.o lib/dm.o lib/fs_ttc.o diag/fs_tracepoint.o \
+-		diag/fw_tracer.o diag/crdump.o devlink.o diag/rsc_dump.o \
++		diag/fw_tracer.o diag/crdump.o devlink.o devlink_res.o diag/rsc_dump.o \
+ 		fw_reset.o qos.o lib/tout.o
+ 
+ #
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.h b/drivers/net/ethernet/mellanox/mlx5/core/devlink.h
+index 30bf4882779b..4192f23b1446 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.h
+@@ -6,6 +6,13 @@
+ 
+ #include <net/devlink.h>
+ 
++enum mlx5_devlink_resource_id {
++	MLX5_DL_RES_COMP_EQ = 1,
++
++	__MLX5_ID_RES_MAX,
++	MLX5_ID_RES_MAX = __MLX5_ID_RES_MAX - 1,
++};
++
+ enum mlx5_devlink_param_id {
+ 	MLX5_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
+ 	MLX5_DEVLINK_PARAM_ID_FLOW_STEERING_MODE,
+@@ -31,6 +38,10 @@ int mlx5_devlink_trap_get_num_active(struct mlx5_core_dev *dev);
+ int mlx5_devlink_traps_get_action(struct mlx5_core_dev *dev, int trap_id,
+ 				  enum devlink_trap_action *action);
+ 
++void mlx5_devlink_res_register(struct mlx5_core_dev *dev);
++void mlx5_devlink_res_unregister(struct mlx5_core_dev *dev);
++size_t mlx5_devlink_res_size(struct mlx5_core_dev *dev, enum mlx5_devlink_resource_id id);
++
+ struct devlink *mlx5_devlink_alloc(struct device *dev);
+ void mlx5_devlink_free(struct devlink *devlink);
+ int mlx5_devlink_register(struct devlink *devlink);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink_res.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink_res.c
+new file mode 100644
+index 000000000000..3beedfb8534a
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink_res.c
+@@ -0,0 +1,56 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. */
++
++#include "devlink.h"
++#include "mlx5_core.h"
++
++enum {
++	MLX5_EQ_MIN_SIZE = 64,
++	MLX5_EQ_MAX_SIZE = 4096,
++	MLX5_COMP_EQ_SIZE = 1024,
++};
++
++static int comp_eq_res_register(struct mlx5_core_dev *dev)
++{
++	struct devlink_resource_size_params comp_eq_size;
++	struct devlink *devlink = priv_to_devlink(dev);
++
++	devlink_resource_size_params_init(&comp_eq_size, MLX5_EQ_MIN_SIZE,
++					  MLX5_EQ_MAX_SIZE, 1, DEVLINK_RESOURCE_UNIT_ENTRY);
++	return devlink_resource_register(devlink, "io_eq_size", MLX5_COMP_EQ_SIZE,
++					 MLX5_DL_RES_COMP_EQ,
++					 DEVLINK_RESOURCE_ID_PARENT_TOP,
++					 &comp_eq_size);
++}
++
++void mlx5_devlink_res_register(struct mlx5_core_dev *dev)
++{
++	int err;
++
++	err = comp_eq_res_register(dev);
++	if (err)
++		mlx5_core_err(dev, "Failed to register resources, err = %d\n", err);
++}
++
++void mlx5_devlink_res_unregister(struct mlx5_core_dev *dev)
++{
++	devlink_resources_unregister(priv_to_devlink(dev), NULL);
++}
++
++static const size_t default_vals[MLX5_ID_RES_MAX + 1] = {
++	[MLX5_DL_RES_COMP_EQ] = MLX5_COMP_EQ_SIZE,
++};
++
++size_t mlx5_devlink_res_size(struct mlx5_core_dev *dev, enum mlx5_devlink_resource_id id)
++{
++	struct devlink *devlink = priv_to_devlink(dev);
++	u64 size;
++	int err;
++
++	err = devlink_resource_size_get(devlink, id, &size);
++	if (!err)
++		return size;
++	mlx5_core_err(dev, "Failed to get param. using default. err = %d, id = %u\n",
++		      err, id);
++	return default_vals[id];
++}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+index 792e0d6aa861..4dda6e2a4cbc 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+@@ -19,6 +19,7 @@
+ #include "lib/clock.h"
+ #include "diag/fw_tracer.h"
+ #include "mlx5_irq.h"
++#include "devlink.h"
+ 
+ enum {
+ 	MLX5_EQE_OWNER_INIT_VAL	= 0x1,
+@@ -807,7 +808,7 @@ static int create_comp_eqs(struct mlx5_core_dev *dev)
+ 
+ 	INIT_LIST_HEAD(&table->comp_eqs_list);
+ 	ncomp_eqs = table->num_comp_eqs;
+-	nent = MLX5_COMP_EQ_SIZE;
++	nent = mlx5_devlink_res_size(dev, MLX5_DL_RES_COMP_EQ);
+ 	for (i = 0; i < ncomp_eqs; i++) {
+ 		struct mlx5_eq_param param = {};
+ 		int vecidx = i;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index f8446395163a..96fdbc0c87bf 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -922,6 +922,8 @@ static int mlx5_init_once(struct mlx5_core_dev *dev)
+ 	dev->hv_vhca = mlx5_hv_vhca_create(dev);
+ 	dev->rsc_dump = mlx5_rsc_dump_create(dev);
+ 
++	mlx5_devlink_res_register(dev);
++
+ 	return 0;
+ 
+ err_sf_table_cleanup:
+@@ -957,6 +959,7 @@ static int mlx5_init_once(struct mlx5_core_dev *dev)
+ 
+ static void mlx5_cleanup_once(struct mlx5_core_dev *dev)
+ {
++	mlx5_devlink_res_unregister(dev);
+ 	mlx5_rsc_dump_destroy(dev);
+ 	mlx5_hv_vhca_destroy(dev->hv_vhca);
+ 	mlx5_fw_tracer_destroy(dev->tracer);
+diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
+index f617dfbcd9fd..47c07f95bbe1 100644
+--- a/include/linux/mlx5/driver.h
++++ b/include/linux/mlx5/driver.h
+@@ -797,10 +797,6 @@ struct mlx5_db {
+ 	int			index;
+ };
+ 
+-enum {
+-	MLX5_COMP_EQ_SIZE = 1024,
+-};
+-
+ enum {
+ 	MLX5_PTYS_IB = 1 << 0,
+ 	MLX5_PTYS_EN = 1 << 2,
 -- 
 2.31.1
 
