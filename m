@@ -2,118 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5527943BC46
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 23:21:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6A8143BC56
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 23:24:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239557AbhJZVXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 17:23:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37728 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239532AbhJZVWz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 17:22:55 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288E2C061745
-        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 14:20:31 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id np13so446943pjb.4
-        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 14:20:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=BIU4JvvXz685bAYqAG5EB9to9ul2Sb5cbPDpcAshKso=;
-        b=j/9NP/yX7PNEwbFDyuvcev9c8YU36v8ZvJIUNa0ydsPu0Y7DRTh6lcnlQzQ6VtNBSz
-         DNDF4J727tTzXNkrg6o4ly08402riV8kCWchdbAkiOsi9jC/SlFsEPBCAeqhN6fE8HgQ
-         DnXrknBucBZBSTnrg5shQOu+U3gRWRl63+SIQbE/Sq3jQmeul5MUfDIoUQjG3GsX0s40
-         vlAWZP7XoW85PJivaIgzdPII/cItL3fOKe+I2XBx5QGIkEnvLa4ktONelIAQxtTn4FQL
-         SsiObQW7gkzmJbJ85E7ebu5AHj6FArICGLnjVJekSAYcsq+SP4ZlHpyIG9pj96a2ccKu
-         9yow==
+        id S239579AbhJZV0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 17:26:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:60982 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239576AbhJZV0s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 17:26:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1635283463;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=c0f2U91ZYdHciaCbl1twiqOJ6L+v0KBNSmK6aUUIrtE=;
+        b=XevrFokYlbtEF9Bgtj+Dm5oCV6H//zkc7Btb3yLbxyBvE+t1E080HX92hC+RRRaCHgrJKD
+        P6MdvpGbBKZzBO2nV1Gp3pMCCUXuoz0EEz5bHspkY2d6WlMpGdul86I5jIJpDF5saKNcmz
+        q9w52mLYKUowp1K1fofYfv652+165LQ=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-26-hZhEELafPlO4HGQ-I67J1g-1; Tue, 26 Oct 2021 17:24:22 -0400
+X-MC-Unique: hZhEELafPlO4HGQ-I67J1g-1
+Received: by mail-wm1-f70.google.com with SMTP id b81-20020a1c8054000000b0032c9d428b7fso331169wmd.3
+        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 14:24:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=BIU4JvvXz685bAYqAG5EB9to9ul2Sb5cbPDpcAshKso=;
-        b=R5a3y5l5WdpGGw5ImfFzyaRi6w8SRzzaPyEjpTzrEGSp6KraHR4tF492XYW4ZrMeBZ
-         A5iE6dUsYOHx1PAsHuJDcZu/1ieoVMPiUY4j+uXxxr6HU7+7GH79eSRA2Gw4PJk68T4D
-         Is5R0kE8FqmYXoCgfelqV8rMF9jsHtcjM7HELeDPJyZLGKHM2PlSvxXDerSCr7Ggx+es
-         5YVBW5ODNTDSdlqMW0yJ6NOxkynti/mvFb7Q8ki/63uowUJvqMvynuXqaoJ3RfwZ4QWZ
-         QfhxFqjpNs4+viBz8vYPmtQ4tR29oy3xI6kf7aQP17pU7V5mJEoOvAhAL0GUHKx0gCke
-         lDoA==
-X-Gm-Message-State: AOAM530+6rBPiB1glytSyt8vLEwa1/VSXwnpniIO8w3UyUqnSyZ4CtDH
-        CoZ+eDb1Gx91y77p1dtxx5zCu2XZ4AA=
-X-Google-Smtp-Source: ABdhPJyNgCFgDT+EA5LIqZNMp/xhbAp0MR0SpOiCq1poOr83IQXRu/5bnL7y+2ABzBG9bv8gvIs9Ag==
-X-Received: by 2002:a17:90b:390b:: with SMTP id ob11mr1296616pjb.217.1635283230205;
-        Tue, 26 Oct 2021 14:20:30 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id f21sm25862623pfc.203.2021.10.26.14.20.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Oct 2021 14:20:29 -0700 (PDT)
-Subject: Re: [PATCH net-next] inet: remove races in inet{6}_getname()
-To:     kernel test robot <lkp@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     kbuild-all@lists.01.org, netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>
-References: <20211026173800.2232409-1-eric.dumazet@gmail.com>
- <202110270409.2AuD9qTa-lkp@intel.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <6962a637-0772-4069-c17b-d401c7ef93d6@gmail.com>
-Date:   Tue, 26 Oct 2021 14:20:28 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        bh=c0f2U91ZYdHciaCbl1twiqOJ6L+v0KBNSmK6aUUIrtE=;
+        b=lCtBUHrhdhKQB9g8oZsd/nBJdPIW4qDsHcIWDcOE2q0LfLofM5SnhuhVox+ANzSRGZ
+         Zzueo9fMJ7Fb9ydgCJBNi7yg8cbgMuuNOB60p3sN2qMrOVAhMOaYYJsfvwUCmXADjpQL
+         LEHE2ITpQnhDfP/RXfyIJDoXU72Lr52FZCNb5aLqt4MUicNQJEmyY7/kXAUuOiqlohgV
+         nfwDlIcT0Ri9lGEEtwzHqOVDAa0irFlGr/9MMBNQ0Vqv+oCUgUFQkdlt7mIrjaNU2WGt
+         pyBo7tSiRE6CPgXsirO5MohcSTflTPozY9brrG6VMuDFDFqncm0vNhzzEdYBQKWAy5yx
+         algA==
+X-Gm-Message-State: AOAM532IiE4iz3buTEzBum+GM4QTSGlul5XTa74bRpF1h2SnwbRNICwo
+        WQCc6UyKI7TqRG8aYMQzen8NGOuO6P5FKKyeewUtBMOEKPbJJC2JUV9c8qB6WjKu+u9jOjkG2S5
+        Z4FIMFVL3C9dZIJWM
+X-Received: by 2002:a5d:5402:: with SMTP id g2mr31143138wrv.290.1635283461149;
+        Tue, 26 Oct 2021 14:24:21 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwApQ6dlu1w5joksZslbDv4X+LkjmHfIX/w2wmCQK02a+UzvJ/pIx/wfXYYP4tdhcXj30e93w==
+X-Received: by 2002:a5d:5402:: with SMTP id g2mr31143091wrv.290.1635283460869;
+        Tue, 26 Oct 2021 14:24:20 -0700 (PDT)
+Received: from krava.cust.in.nbox.cz ([83.240.63.48])
+        by smtp.gmail.com with ESMTPSA id h22sm1828123wmq.42.2021.10.26.14.24.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Oct 2021 14:24:20 -0700 (PDT)
+From:   Jiri Olsa <jolsa@redhat.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: [PATCHv2 bpf-next] kbuild: Unify options for BTF generation for vmlinux and modules
+Date:   Tue, 26 Oct 2021 23:24:19 +0200
+Message-Id: <20211026212419.144077-1-jolsa@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <202110270409.2AuD9qTa-lkp@intel.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Using new PAHOLE_FLAGS variable to pass extra arguments to
+pahole for both vmlinux and modules BTF data generation.
 
+Adding new scripts/pahole-flags.sh script that detect and
+prints pahole options.
 
-On 10/26/21 1:53 PM, kernel test robot wrote:
-> Hi Eric,
-> 
-> I love your patch! Yet something to improve:
-> 
-> [auto build test ERROR on net-next/master]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Eric-Dumazet/inet-remove-races-in-inet-6-_getname/20211027-013901
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 6b3671746a8a3aa05316b829e1357060f35009c1
-> config: csky-defconfig (attached as .config)
-> compiler: csky-linux-gcc (GCC) 11.2.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/0day-ci/linux/commit/337791bc53db80fb5982e0f66be795a2d37c3d8d
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review Eric-Dumazet/inet-remove-races-in-inet-6-_getname/20211027-013901
->         git checkout 337791bc53db80fb5982e0f66be795a2d37c3d8d
->         # save the attached .config to linux build tree
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross ARCH=csky 
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-> 
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+---
+v2 changes:
+  - posting separately from original patchset
+  - added Andrii's ack
 
-Apparently there is a missing declaration in the include file.
+ Makefile                  |  3 +++
+ scripts/Makefile.modfinal |  2 +-
+ scripts/link-vmlinux.sh   | 11 +----------
+ scripts/pahole-flags.sh   | 20 ++++++++++++++++++++
+ 4 files changed, 25 insertions(+), 11 deletions(-)
+ create mode 100755 scripts/pahole-flags.sh
 
-I will include this bit in V2
-
-diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
-index 2746fd8042162c68d869bcbe210cee13bf89cf34..3536ab432b30cbeac6273d0ad8affaf9f23e3789 100644
---- a/include/linux/bpf-cgroup.h
-+++ b/include/linux/bpf-cgroup.h
-@@ -517,6 +517,7 @@ static inline int bpf_percpu_cgroup_storage_update(struct bpf_map *map,
+diff --git a/Makefile b/Makefile
+index 437ccc66a1c2..ee514b80c62e 100644
+--- a/Makefile
++++ b/Makefile
+@@ -480,6 +480,8 @@ LZ4		= lz4c
+ XZ		= xz
+ ZSTD		= zstd
  
- #define cgroup_bpf_enabled(atype) (0)
- #define BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, atype, t_ctx) ({ 0; })
-+#define BPF_CGROUP_RUN_SA_PROG(sk, uaddr, atype) ({ 0; })
- #define BPF_CGROUP_PRE_CONNECT_ENABLED(sk) (0)
- #define BPF_CGROUP_RUN_PROG_INET_INGRESS(sk,skb) ({ 0; })
- #define BPF_CGROUP_RUN_PROG_INET_EGRESS(sk,skb) ({ 0; })
++PAHOLE_FLAGS	= $(shell PAHOLE=$(PAHOLE) scripts/pahole-flags.sh)
++
+ CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
+ 		  -Wbitwise -Wno-return-void -Wno-unknown-attribute $(CF)
+ NOSTDINC_FLAGS :=
+@@ -534,6 +536,7 @@ export KBUILD_CFLAGS CFLAGS_KERNEL CFLAGS_MODULE
+ export KBUILD_AFLAGS AFLAGS_KERNEL AFLAGS_MODULE
+ export KBUILD_AFLAGS_MODULE KBUILD_CFLAGS_MODULE KBUILD_LDFLAGS_MODULE
+ export KBUILD_AFLAGS_KERNEL KBUILD_CFLAGS_KERNEL
++export PAHOLE_FLAGS
+ 
+ # Files to ignore in find ... statements
+ 
+diff --git a/scripts/Makefile.modfinal b/scripts/Makefile.modfinal
+index 1fb45b011e4b..7f39599e9fae 100644
+--- a/scripts/Makefile.modfinal
++++ b/scripts/Makefile.modfinal
+@@ -40,7 +40,7 @@ quiet_cmd_ld_ko_o = LD [M]  $@
+ quiet_cmd_btf_ko = BTF [M] $@
+       cmd_btf_ko = 							\
+ 	if [ -f vmlinux ]; then						\
+-		LLVM_OBJCOPY="$(OBJCOPY)" $(PAHOLE) -J --btf_base vmlinux $@; \
++		LLVM_OBJCOPY="$(OBJCOPY)" $(PAHOLE) -J $(PAHOLE_FLAGS) --btf_base vmlinux $@; \
+ 		$(RESOLVE_BTFIDS) -b vmlinux $@; 			\
+ 	else								\
+ 		printf "Skipping BTF generation for %s due to unavailability of vmlinux\n" $@ 1>&2; \
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index d74cee5c4326..3ea7cece7c97 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -205,7 +205,6 @@ vmlinux_link()
+ gen_btf()
+ {
+ 	local pahole_ver
+-	local extra_paholeopt=
+ 
+ 	if ! [ -x "$(command -v ${PAHOLE})" ]; then
+ 		echo >&2 "BTF: ${1}: pahole (${PAHOLE}) is not available"
+@@ -220,16 +219,8 @@ gen_btf()
+ 
+ 	vmlinux_link ${1}
+ 
+-	if [ "${pahole_ver}" -ge "118" ] && [ "${pahole_ver}" -le "121" ]; then
+-		# pahole 1.18 through 1.21 can't handle zero-sized per-CPU vars
+-		extra_paholeopt="${extra_paholeopt} --skip_encoding_btf_vars"
+-	fi
+-	if [ "${pahole_ver}" -ge "121" ]; then
+-		extra_paholeopt="${extra_paholeopt} --btf_gen_floats"
+-	fi
+-
+ 	info "BTF" ${2}
+-	LLVM_OBJCOPY="${OBJCOPY}" ${PAHOLE} -J ${extra_paholeopt} ${1}
++	LLVM_OBJCOPY="${OBJCOPY}" ${PAHOLE} -J ${PAHOLE_FLAGS} ${1}
+ 
+ 	# Create ${2} which contains just .BTF section but no symbols. Add
+ 	# SHF_ALLOC because .BTF will be part of the vmlinux image. --strip-all
+diff --git a/scripts/pahole-flags.sh b/scripts/pahole-flags.sh
+new file mode 100755
+index 000000000000..2b99fc77019c
+--- /dev/null
++++ b/scripts/pahole-flags.sh
+@@ -0,0 +1,20 @@
++#!/bin/sh
++# SPDX-License-Identifier: GPL-2.0
++
++extra_paholeopt=
++
++if ! [ -x "$(command -v ${PAHOLE})" ]; then
++	return
++fi
++
++pahole_ver=$(${PAHOLE} --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/')
++
++if [ "${pahole_ver}" -ge "118" ] && [ "${pahole_ver}" -le "121" ]; then
++	# pahole 1.18 through 1.21 can't handle zero-sized per-CPU vars
++	extra_paholeopt="${extra_paholeopt} --skip_encoding_btf_vars"
++fi
++if [ "${pahole_ver}" -ge "121" ]; then
++	extra_paholeopt="${extra_paholeopt} --btf_gen_floats"
++fi
++
++echo ${extra_paholeopt}
+-- 
+2.31.1
 
