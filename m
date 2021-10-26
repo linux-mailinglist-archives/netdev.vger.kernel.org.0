@@ -2,95 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4400843B316
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 15:19:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16CA643B320
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 15:23:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236058AbhJZNWH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 09:22:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39416 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231178AbhJZNWG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 09:22:06 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7188C061745;
-        Tue, 26 Oct 2021 06:19:42 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id n12so5640875plc.2;
-        Tue, 26 Oct 2021 06:19:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VzCWxXxK9TdDs8vtpTG3m2qg1k4LCb22yH40yBeN194=;
-        b=iAIwAL+itZzmAG/PxuRn0efFaRUSfd9e5rOMTCoNN+4qLc3H0Q8iuLh9nKBHDgU+G+
-         qmBMdI2B3hQPMWAHa31SY4Az56+T/RGNR4ppy2ui6VjIf50HqnrAECVvqWLlQSV5X9nP
-         Gtw347BTcEdbDJjo0n+oma0GF/rohUVqQLQx3O2ppEM1/5rT4oUfyLyxYZr12yj6E3dS
-         MIxRGgU3IHdaSBtD3tQONEy1sRT259J1bTHlzLjw+9GqL3v0dmGb+Y+40GsTdF/r6XQK
-         P/H1sAzssiePrQc4PZY39vmdgVj8aIDoYhI7a38mG5POc1aWPhCySI1FiHNba5/XDq+P
-         nHWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VzCWxXxK9TdDs8vtpTG3m2qg1k4LCb22yH40yBeN194=;
-        b=Wj+GMCdKO4yVjdJP+0+5HAHA0ErmS72Q5D6bZzZ21FD7ThUfmgK0c06I4ZEXYgXQe7
-         xGBKfa+dqHELDAtR61pSDcfk4N+/rJhxobMd0Xk4wWGd7UKEHAm6dVRxpeB2p2wfurkn
-         nL7oV1Gko+0ahtBpCh6KIGochqvxcXUA51+7TfirOyXN6vmHAzKrN0yNR9AoXo2ubn92
-         6MXig6NjOT+loi1rHeq7601EX874HUzhD7kCU6wT7ZpMX/bBkmdG0dJGdoVWCY46XUcZ
-         /7h/F0NrPF/HoPATbiXJ6X0Q50pDTQiNpmqpOH4s7J4pwl9D3rKCE+aFQPpcfcfXzCu0
-         Sb+g==
-X-Gm-Message-State: AOAM531MYxpX/wojk+uxJU3cO/W7c9jzdTWOwY1+71bnYMuoCkXpbedr
-        UX9Fp023/dOhGCLvvElPRyQ=
-X-Google-Smtp-Source: ABdhPJxUNeYPuoYMIofoYzM3+5yUuwUhxMCQsVBUyKHvPYld780i9L/QH4Wj30RO0PsH0iTP2G+8+g==
-X-Received: by 2002:a17:902:b40a:b0:13d:cbcd:2e64 with SMTP id x10-20020a170902b40a00b0013dcbcd2e64mr22527791plr.18.1635254382283;
-        Tue, 26 Oct 2021 06:19:42 -0700 (PDT)
-Received: from localhost.localdomain ([103.112.79.202])
-        by smtp.gmail.com with ESMTPSA id d17sm9501560pfv.204.2021.10.26.06.19.38
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 26 Oct 2021 06:19:41 -0700 (PDT)
-From:   kerneljasonxing@gmail.com
-To:     davem@davemloft.net, kuba@kernel.org, alobakin@pm.me,
-        jonathan.lemon@gmail.com, willemb@google.com, pabeni@redhat.com,
-        vvs@virtuozzo.com, cong.wang@bytedance.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kerneljasonxing@gmail.com, Jason Xing <xingwanli@kuaishou.com>
-Subject: [PATCH net] net: gro: set the last skb->next to NULL when it get merged
-Date:   Tue, 26 Oct 2021 21:18:59 +0800
-Message-Id: <20211026131859.59114-1-kerneljasonxing@gmail.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+        id S235339AbhJZNZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 09:25:31 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:14865 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231178AbhJZNZa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 09:25:30 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HdsvQ5xF7z90RM;
+        Tue, 26 Oct 2021 21:22:58 +0800 (CST)
+Received: from dggpeml500025.china.huawei.com (7.185.36.35) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Tue, 26 Oct 2021 21:23:01 +0800
+Received: from huawei.com (10.175.124.27) by dggpeml500025.china.huawei.com
+ (7.185.36.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.15; Tue, 26 Oct
+ 2021 21:23:00 +0800
+From:   Hou Tao <houtao1@huawei.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+CC:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <houtao1@huawei.com>
+Subject: [PATCH bpf-next] bpf: bpf_log() clean-up for kernel log output
+Date:   Tue, 26 Oct 2021 21:38:19 +0800
+Message-ID: <20211026133819.4138245-1-houtao1@huawei.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500025.china.huawei.com (7.185.36.35)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jason Xing <xingwanli@kuaishou.com>
+An extra newline will output for bpf_log() with BPF_LOG_KERNEL level
+as shown below:
 
-Setting the @next of the last skb to NULL to prevent the panic in future
-when someone does something to the last of the gro list but its @next is
-invalid.
+[   52.095704] BPF:The function test_3 has 12 arguments. Too many.
+[   52.095704]
+[   52.096896] Error in parsing func ptr test_3 in struct bpf_dummy_ops
 
-For example, without the fix (commit: ece23711dd95), a panic could happen
-with the clsact loaded when skb is redirected and then validated in
-validate_xmit_skb_list() which could access the error addr of the @next
-of the last skb. Thus, "general protection fault" would appear after that.
+Now all bpf_log() are ended by newline, so just remove the extra newline.
 
-Signed-off-by: Jason Xing <xingwanli@kuaishou.com>
+Also there is no need to calculate the left userspace buffer size
+for kernel log output and to truncate the output by '\0' which
+has already been done by vscnprintf(), so only do these for
+userspace log output.
+
+Signed-off-by: Hou Tao <houtao1@huawei.com>
 ---
- net/core/skbuff.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/bpf/verifier.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 2170bea..7b248f1 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -4396,6 +4396,7 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
- 		skb_shinfo(p)->frag_list = skb;
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index c6616e325803..7d4a313da86e 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -299,13 +299,13 @@ void bpf_verifier_vlog(struct bpf_verifier_log *log, const char *fmt,
+ 	WARN_ONCE(n >= BPF_VERIFIER_TMP_LOG_SIZE - 1,
+ 		  "verifier log line truncated - local buffer too short\n");
+ 
+-	n = min(log->len_total - log->len_used - 1, n);
+-	log->kbuf[n] = '\0';
+-
+ 	if (log->level == BPF_LOG_KERNEL) {
+-		pr_err("BPF:%s\n", log->kbuf);
++		pr_err("BPF:%s", log->kbuf);
+ 		return;
+ 	}
++
++	n = min(log->len_total - log->len_used - 1, n);
++	log->kbuf[n] = '\0';
+ 	if (!copy_to_user(log->ubuf + log->len_used, log->kbuf, n + 1))
+ 		log->len_used += n;
  	else
- 		NAPI_GRO_CB(p)->last->next = skb;
-+	skb->next = NULL;
- 	NAPI_GRO_CB(p)->last = skb;
- 	__skb_header_release(skb);
- 	lp = p;
 -- 
-1.8.3.1
+2.29.2
 
