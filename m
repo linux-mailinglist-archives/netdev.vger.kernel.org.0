@@ -2,107 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C800F43BBB3
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 22:38:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C326F43BBB6
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 22:39:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239242AbhJZUlC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 16:41:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56380 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239227AbhJZUlA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 16:41:00 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7DD8C061570;
-        Tue, 26 Oct 2021 13:38:35 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id m26so601796pff.3;
-        Tue, 26 Oct 2021 13:38:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=MRtccMdi1NGrZmESKfdGKtX5OHduZDH2rm/cokwWIs8=;
-        b=MpezclMoLmUG/nEvApQ8jtm+U1hWVxqrP0cluiQreVvjRIAk6Gc1Lvq3ztZg4/iAcj
-         dOB2iOeYUXHpqEZ7MP3aSTLgK/J9CTajf9P+RkgVIl+gucVNKl2a6eWYauMxj5ZI6gkx
-         Qpu80r8uznzAZvGuN1hb8mzEDOZCwE9eFwbWHL28bnA+wuBUpNISB4vtxFLB23Ue7G/n
-         1fUzQUXRZjTG3ILLL4o7KmIP4LvyPw/70/X/Gh3PxkiEO50GP4KFzGvHECV5oB8ZrjT4
-         xz2uzB//OMhkuwTumk1dRDs+ABOksF+au6pTAg29kb585CdtuiolvGziOB00BbZNBX4n
-         glJw==
+        id S239230AbhJZUlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 16:41:37 -0400
+Received: from mail-oi1-f175.google.com ([209.85.167.175]:43813 "EHLO
+        mail-oi1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239231AbhJZUlb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 16:41:31 -0400
+Received: by mail-oi1-f175.google.com with SMTP id o4so343631oia.10;
+        Tue, 26 Oct 2021 13:39:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=MRtccMdi1NGrZmESKfdGKtX5OHduZDH2rm/cokwWIs8=;
-        b=e3aAuzR8vWzSOjmMPH4dXywV35KIty33PTH8OkdbGsuBAe+N5aqFDUVcUWyZNPhNLa
-         12AFJ3kekB17E6kTSiM6dUp1T1QP7J4hp/mUWvWFbC/bRbrv8PSr80wUFfAWCPyUwApE
-         Ed30dBwEk29QYLjB/OwiMLhJrjbtwEqNy2q0YDCXBidxZn3CISSKqB65UxebcAzRGmGS
-         U3ylab21JrRaimRdGXCVDR3TOEoR0E2t4UJN8E07tZDE+0M1MLMMi0niGgRVrnS2vmkp
-         SjcgTTjMvEgJBJa/9fSy6WqiAX1sOfJzmZrtX9upIzot0NtV/bWwDyRXKKykFSVnYpKG
-         5b6w==
-X-Gm-Message-State: AOAM531Yj4FagyxKPoITZLmXYADOKCitK7lEl5ucySqQyb97ch1sisjA
-        CvHyGckmmvv30R7yquMvTv4=
-X-Google-Smtp-Source: ABdhPJyRH0xqeonwoTBxjQCxhaQsoJAk/LlNymjEePUY/ElRHFa58JczzEDGGYaxeVcRjU1ToUyGfg==
-X-Received: by 2002:a05:6a00:1897:b0:47b:ff8c:3b05 with SMTP id x23-20020a056a00189700b0047bff8c3b05mr11924157pfh.37.1635280715469;
-        Tue, 26 Oct 2021 13:38:35 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:207c:7102:7bd7:80eb])
-        by smtp.gmail.com with ESMTPSA id ip8sm1944477pjb.9.2021.10.26.13.38.34
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=nlTgUp5qItfNiEj5SUL7gvzHOZ7DO4OwjbwHdix/bLs=;
+        b=in29vQQIFRR+BtESS8faUPzm05Wq10FvUDjhcAgSKczrVmFsN69Lizkjr8lsPsA+lm
+         qFRiJrssAuQHCuD63b+0oFUxbwaDUMEa5V4a2UO8N+0ASZ0e0yD05yVVq6cK+dIlvnmH
+         p5WwvwNXLCXwgSRGmF2JRmlYRMJM1ys2oRm2Et3xiQcNPYkzt/FpPPa/rS+1Kic3AC6h
+         paRhKEitbGlkooDxZcdhGbBH0wgw3EKrHtQroc4aKzqlTiPUUO+9jx0GjUftQBSVz2Zv
+         zSpaupkShlgHNhudlKe7z0w6VRqtYh3ePo2f6TWdrTP/cJpxesHnfF/U1DAbsCYXtpfX
+         U+ag==
+X-Gm-Message-State: AOAM530RxFkjKq8IU9mxyUy7ccXc8B4BbjBxr3jZzPeAHWb5rqxrTvUL
+        b6EZNaGvUat2qq2db94nC8SriDEObQ==
+X-Google-Smtp-Source: ABdhPJwulVD4Ce+LCyYWNUj7ujCjfERRm8f5MOIE9nIJV7cBxZ8EIdSw358FwPXw2GI2S2Jdn4rzJA==
+X-Received: by 2002:a05:6808:8f6:: with SMTP id d22mr806869oic.88.1635280746721;
+        Tue, 26 Oct 2021 13:39:06 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id d10sm4170935ooj.24.2021.10.26.13.39.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Oct 2021 13:38:35 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        bpf <bpf@vger.kernel.org>
-Subject: [PATCH bpf 2/2] bpf: fixes possible race in update_prog_stats() for 32bit arches
-Date:   Tue, 26 Oct 2021 13:38:25 -0700
-Message-Id: <20211026203825.2720459-3-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.33.0.1079.g6e70778dc9-goog
-In-Reply-To: <20211026203825.2720459-1-eric.dumazet@gmail.com>
-References: <20211026203825.2720459-1-eric.dumazet@gmail.com>
+        Tue, 26 Oct 2021 13:39:06 -0700 (PDT)
+Received: (nullmailer pid 3204673 invoked by uid 1000);
+        Tue, 26 Oct 2021 20:39:05 -0000
+Date:   Tue, 26 Oct 2021 15:39:05 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     Jacek Anaszewski <jacek.anaszewski@gmail.com>, pavel@ucw.cz,
+        netdev@vger.kernel.org, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>, robh+dt@kernel.org
+Subject: Re: [PATCH 1/3] dt-bindings: leds: Deprecate `linux,default-trigger`
+ property
+Message-ID: <YXhnaUOrNm7jcp9l@robh.at.kernel.org>
+References: <20211013204424.10961-1-kabel@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211013204424.10961-1-kabel@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Wed, 13 Oct 2021 22:44:22 +0200, Marek Behún wrote:
+> This property is deprecated in favor of the `function` property.
+> 
+> Signed-off-by: Marek Behún <kabel@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/leds/common.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-It seems update_prog_stats() suffers from same issue fixed
-in the prior patch:
-
-As it can run while interrupts are enabled, it could
-be re-entered and the u64_stats syncp could be mangled.
-
-Fixes: fec56f5890d9 ("bpf: Introduce BPF trampoline")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
----
- kernel/bpf/trampoline.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-index fe1e857324e6683cecf5f88d24e0790f7ec72253..d3a307a8c42b95692f082f23f01e1ed470e63dec 100644
---- a/kernel/bpf/trampoline.c
-+++ b/kernel/bpf/trampoline.c
-@@ -585,11 +585,13 @@ static void notrace update_prog_stats(struct bpf_prog *prog,
- 	     * Hence check that 'start' is valid.
- 	     */
- 	    start > NO_START_TIME) {
-+		unsigned long flags;
-+
- 		stats = this_cpu_ptr(prog->stats);
--		u64_stats_update_begin(&stats->syncp);
-+		flags = u64_stats_update_begin_irqsave(&stats->syncp);
- 		stats->cnt++;
- 		stats->nsecs += sched_clock() - start;
--		u64_stats_update_end(&stats->syncp);
-+		u64_stats_update_end_irqrestore(&stats->syncp, flags);
- 	}
- }
- 
--- 
-2.33.0.1079.g6e70778dc9-goog
-
+Acked-by: Rob Herring <robh@kernel.org>
