@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59B6B43BBAF
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 22:38:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB6EC43BBB0
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 22:38:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239233AbhJZUk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 16:40:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56362 "EHLO
+        id S239226AbhJZUk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 16:40:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239230AbhJZUkz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 16:40:55 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB042C061570;
-        Tue, 26 Oct 2021 13:38:31 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id y1-20020a17090a134100b001a27a7e9c8dso2918835pjf.3;
-        Tue, 26 Oct 2021 13:38:31 -0700 (PDT)
+        with ESMTP id S239234AbhJZUk6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 16:40:58 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62ABFC061570;
+        Tue, 26 Oct 2021 13:38:34 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id w16so406681plg.3;
+        Tue, 26 Oct 2021 13:38:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fknUh9gFZDY7Qs8RRkbBMbjy5NGCHFipP/1lmyKoBoA=;
-        b=cCQOBVPFiAYJOP0XntWfTgJ0nzj695/Uuw90z9fJLywUvIAFYdDYd0sidx0zdEyrEB
-         lUrqvA1slYJ8FtWR7R/9MF4Elv/HmEHkRUQWApXmLgrDUCtJIrXu42W9SM/ukIPo5jIi
-         4hcEY1mMG0ewG8aHYNJ+zzaYCVnvn4a3DLC5XYkModhVRPBvVNtyKOlEjFsgl5mMOTbU
-         V1SuiDj3n1kU3WdNjSluD81rPYcotlu+tuf18GMZZVJgYyn5ptRZgjcmEuSRddx+nZ2+
-         fJlwkTwyVTfOw+5sIQ02RgqUMuSBlnMxUCuz1UwGsks1xhwPM+UV0MW1c4FtKV2RQVz0
-         xNMQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=jomK3sYzuRWwDOlghfcUj4FAahygsI3XSeNehz8nfqc=;
+        b=mk3/YNF0u/F2k5KG3KsTBM+49YyvNfMOo6B27gz+FtcMV6w4YvRHxvvAvnjx2ZTgno
+         7D/0uwrK91eNXxtNsBXQimxD5wGruuKHO40moFz/emVqg1b7UZNatRiFlMZ4hDWSyAi8
+         hpE+ZfUfqlKQHmABEx5G9TkuQ48zBka6NQ2FkyzHwcliGYPBtnxwFoNgVFZ4rC3rGzsC
+         flrfrNtMnlmMyyAhWIKPqPc+b4kbh8ccAhLWDES+sKAKnP7BhpgSzqlWcsuNqaOUgMqg
+         uHihfefxdoKhBHDSYECYGweKMpVCP20w3VELHhML60FTTl4EP3g2XapQ35Er0s86qQ+p
+         DbWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fknUh9gFZDY7Qs8RRkbBMbjy5NGCHFipP/1lmyKoBoA=;
-        b=sYqt0qP8vhQoiDDcwBm17CxjvgigaqGMGzLDZBh2Q5kpzq2qq+yOaxkjGbtM/J9XDN
-         y3r3jGZoT0cQRO7OH8sPtIMdbv4RD4V22BYO85OaPE5qrmD/fA8HrOjHAVveSMFCKDuP
-         v9fhCQHxb6x+j2OZCUpApRbjqaIMo1rUpntzqcIq6zkbEZjdFFDlv93BGCCNnxxnZCX4
-         x5mwySkBa6514pju9txtDRl5KjJBeDw77YuCY3ju6y0GAzrS7JNleWuohcL2AfqfTwcD
-         gZNDqrPNm94R/SwbZ6uuaAVs1M2wgFhQevhHrtqfliIf0QLYnpf/uExD4U6Sf3TDMPIf
-         0haA==
-X-Gm-Message-State: AOAM533iQsjKtEBXj7YA/RtuO4BYp5XEWxnyTM/7YQWjJmd2ojW//Ckk
-        4PBFs2vPOSoeuB/LISmzoo0=
-X-Google-Smtp-Source: ABdhPJyFuRO1ZcrmP4n1Rhx2IOy7PXoLHK5pShAXIaGKccOPDydAvBWKFpEkW27v47RGBdVy4VYaQQ==
-X-Received: by 2002:a17:90a:7d11:: with SMTP id g17mr1108730pjl.19.1635280711463;
-        Tue, 26 Oct 2021 13:38:31 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=jomK3sYzuRWwDOlghfcUj4FAahygsI3XSeNehz8nfqc=;
+        b=pjrd23dFBEnhoqZldJ2bmlNkg4uXS/ZdNhvvVt48xy0CvfCNraEXhLhwaF5BVxJ7wO
+         DZKZwb0mdN5O+Di1qgIMedTL/DBwXmtdzYAQeRew8SHzQPMLH2+SuizWGhWGKATvHTJQ
+         jA6zyL1RBk1/ojV1qOybU8FY8sU4Pzp/3MNOVMmIA2oSfKjFtmBd2fP0rMJ1//6baNxC
+         aiosiqyqINQTpCKetgRwu71PQO4wjgGBC3rtuAziqnbclSVwuFxQT8TAdbIIkppra8Zr
+         6Dp+iJIcnsmIkA7ApU2QsUhMEnif80Q8Q7Ots6bwsKFHkyMUAIa7Pww9fS/zNF66qK6T
+         pbdA==
+X-Gm-Message-State: AOAM532FveNiEA5Oc4nYpInOR41xJV4x3rDYMVbgzaCG4HmNjYuSUkhQ
+        b34zYWkbBh3vXJoOyiekzmc=
+X-Google-Smtp-Source: ABdhPJyZQtp/0zdHZx/aIPKe6ZlRvopRSEslrbhPjictJtlE+SzajTGWGtQhsW46xIlThqjsMDFFaA==
+X-Received: by 2002:a17:90a:5986:: with SMTP id l6mr1110853pji.215.1635280713910;
+        Tue, 26 Oct 2021 13:38:33 -0700 (PDT)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:207c:7102:7bd7:80eb])
-        by smtp.gmail.com with ESMTPSA id ip8sm1944477pjb.9.2021.10.26.13.38.30
+        by smtp.gmail.com with ESMTPSA id ip8sm1944477pjb.9.2021.10.26.13.38.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Oct 2021 13:38:30 -0700 (PDT)
+        Tue, 26 Oct 2021 13:38:33 -0700 (PDT)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
@@ -54,11 +54,14 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>,
-        bpf <bpf@vger.kernel.org>
-Subject: [PATCH bpf 0/2] bpf: use 32bit safe version of u64_stats
-Date:   Tue, 26 Oct 2021 13:38:23 -0700
-Message-Id: <20211026203825.2720459-1-eric.dumazet@gmail.com>
+        bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andrii@kernel.org>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH bpf 1/2] bpf: avoid races in __bpf_prog_run() for 32bit arches
+Date:   Tue, 26 Oct 2021 13:38:24 -0700
+Message-Id: <20211026203825.2720459-2-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.33.0.1079.g6e70778dc9-goog
+In-Reply-To: <20211026203825.2720459-1-eric.dumazet@gmail.com>
+References: <20211026203825.2720459-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -67,20 +70,213 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-Two patches, fixing bugs added in 5.1 and 5.5
+__bpf_prog_run() can run from non IRQ contexts, meaning
+it could be re entered if interrupted.
 
-I have a followup patch for bpf-next, replacing the u64 fields
-in struct bpf_prog_stats with u64_stats_t ones to avoid
-possible sampling errors.
+This calls for the irq safe variant of u64_stats_update_{begin|end},
+or risk a deadlock.
 
-Eric Dumazet (2):
-  bpf: avoid races in __bpf_prog_run() for 32bit arches
-  bpf: fixes possible race in update_prog_stats() for 32bit arches
+This patch is a nop on 64bit arches, fortunately.
 
- include/linux/filter.h  | 5 +++--
- kernel/bpf/trampoline.c | 6 ++++--
- 2 files changed, 7 insertions(+), 4 deletions(-)
+syzbot report:
 
+WARNING: inconsistent lock state
+5.12.0-rc3-syzkaller #0 Not tainted
+--------------------------------
+inconsistent {IN-SOFTIRQ-W} -> {SOFTIRQ-ON-W} usage.
+udevd/4013 [HC0[0]:SC0[0]:HE1:SE1] takes:
+ff7c9dec (&(&pstats->syncp)->seq){+.?.}-{0:0}, at: sk_filter include/linux/filter.h:867 [inline]
+ff7c9dec (&(&pstats->syncp)->seq){+.?.}-{0:0}, at: do_one_broadcast net/netlink/af_netlink.c:1468 [inline]
+ff7c9dec (&(&pstats->syncp)->seq){+.?.}-{0:0}, at: netlink_broadcast_filtered+0x27c/0x4fc net/netlink/af_netlink.c:1520
+{IN-SOFTIRQ-W} state was registered at:
+  lock_acquire.part.0+0xf0/0x41c kernel/locking/lockdep.c:5510
+  lock_acquire+0x6c/0x74 kernel/locking/lockdep.c:5483
+  do_write_seqcount_begin_nested include/linux/seqlock.h:520 [inline]
+  do_write_seqcount_begin include/linux/seqlock.h:545 [inline]
+  u64_stats_update_begin include/linux/u64_stats_sync.h:129 [inline]
+  bpf_prog_run_pin_on_cpu include/linux/filter.h:624 [inline]
+  bpf_prog_run_clear_cb+0x1bc/0x270 include/linux/filter.h:755
+  run_filter+0xa0/0x17c net/packet/af_packet.c:2031
+  packet_rcv+0xc0/0x3e0 net/packet/af_packet.c:2104
+  dev_queue_xmit_nit+0x2bc/0x39c net/core/dev.c:2387
+  xmit_one net/core/dev.c:3588 [inline]
+  dev_hard_start_xmit+0x94/0x518 net/core/dev.c:3609
+  sch_direct_xmit+0x11c/0x1f0 net/sched/sch_generic.c:313
+  qdisc_restart net/sched/sch_generic.c:376 [inline]
+  __qdisc_run+0x194/0x7f8 net/sched/sch_generic.c:384
+  qdisc_run include/net/pkt_sched.h:136 [inline]
+  qdisc_run include/net/pkt_sched.h:128 [inline]
+  __dev_xmit_skb net/core/dev.c:3795 [inline]
+  __dev_queue_xmit+0x65c/0xf84 net/core/dev.c:4150
+  dev_queue_xmit+0x14/0x18 net/core/dev.c:4215
+  neigh_resolve_output net/core/neighbour.c:1491 [inline]
+  neigh_resolve_output+0x170/0x228 net/core/neighbour.c:1471
+  neigh_output include/net/neighbour.h:510 [inline]
+  ip6_finish_output2+0x2e4/0x9fc net/ipv6/ip6_output.c:117
+  __ip6_finish_output net/ipv6/ip6_output.c:182 [inline]
+  __ip6_finish_output+0x164/0x3f8 net/ipv6/ip6_output.c:161
+  ip6_finish_output+0x2c/0xb0 net/ipv6/ip6_output.c:192
+  NF_HOOK_COND include/linux/netfilter.h:290 [inline]
+  ip6_output+0x74/0x294 net/ipv6/ip6_output.c:215
+  dst_output include/net/dst.h:448 [inline]
+  NF_HOOK include/linux/netfilter.h:301 [inline]
+  NF_HOOK include/linux/netfilter.h:295 [inline]
+  mld_sendpack+0x2a8/0x7e4 net/ipv6/mcast.c:1679
+  mld_send_cr net/ipv6/mcast.c:1975 [inline]
+  mld_ifc_timer_expire+0x1e8/0x494 net/ipv6/mcast.c:2474
+  call_timer_fn+0xd0/0x570 kernel/time/timer.c:1431
+  expire_timers kernel/time/timer.c:1476 [inline]
+  __run_timers kernel/time/timer.c:1745 [inline]
+  run_timer_softirq+0x2e4/0x384 kernel/time/timer.c:1758
+  __do_softirq+0x204/0x7ac kernel/softirq.c:345
+  do_softirq_own_stack include/asm-generic/softirq_stack.h:10 [inline]
+  invoke_softirq kernel/softirq.c:228 [inline]
+  __irq_exit_rcu+0x1d8/0x200 kernel/softirq.c:422
+  irq_exit+0x10/0x3c kernel/softirq.c:446
+  __handle_domain_irq+0xb4/0x120 kernel/irq/irqdesc.c:692
+  handle_domain_irq include/linux/irqdesc.h:176 [inline]
+  gic_handle_irq+0x84/0xac drivers/irqchip/irq-gic.c:370
+  __irq_svc+0x5c/0x94 arch/arm/kernel/entry-armv.S:205
+  debug_smp_processor_id+0x0/0x24 lib/smp_processor_id.c:53
+  rcu_read_lock_held_common kernel/rcu/update.c:108 [inline]
+  rcu_read_lock_sched_held+0x24/0x7c kernel/rcu/update.c:123
+  trace_lock_acquire+0x24c/0x278 include/trace/events/lock.h:13
+  lock_acquire+0x3c/0x74 kernel/locking/lockdep.c:5481
+  rcu_lock_acquire include/linux/rcupdate.h:267 [inline]
+  rcu_read_lock include/linux/rcupdate.h:656 [inline]
+  avc_has_perm_noaudit+0x6c/0x260 security/selinux/avc.c:1150
+  selinux_inode_permission+0x140/0x220 security/selinux/hooks.c:3141
+  security_inode_permission+0x44/0x60 security/security.c:1268
+  inode_permission.part.0+0x5c/0x13c fs/namei.c:521
+  inode_permission fs/namei.c:494 [inline]
+  may_lookup fs/namei.c:1652 [inline]
+  link_path_walk.part.0+0xd4/0x38c fs/namei.c:2208
+  link_path_walk fs/namei.c:2189 [inline]
+  path_lookupat+0x3c/0x1b8 fs/namei.c:2419
+  filename_lookup+0xa8/0x1a4 fs/namei.c:2453
+  user_path_at_empty+0x74/0x90 fs/namei.c:2733
+  do_readlinkat+0x5c/0x12c fs/stat.c:417
+  __do_sys_readlink fs/stat.c:450 [inline]
+  sys_readlink+0x24/0x28 fs/stat.c:447
+  ret_fast_syscall+0x0/0x2c arch/arm/mm/proc-v7.S:64
+  0x7eaa4974
+irq event stamp: 298277
+hardirqs last  enabled at (298277): [<802000d0>] no_work_pending+0x4/0x34
+hardirqs last disabled at (298276): [<8020c9b8>] do_work_pending+0x9c/0x648 arch/arm/kernel/signal.c:676
+softirqs last  enabled at (298216): [<8020167c>] __do_softirq+0x584/0x7ac kernel/softirq.c:372
+softirqs last disabled at (298201): [<8024dff4>] do_softirq_own_stack include/asm-generic/softirq_stack.h:10 [inline]
+softirqs last disabled at (298201): [<8024dff4>] invoke_softirq kernel/softirq.c:228 [inline]
+softirqs last disabled at (298201): [<8024dff4>] __irq_exit_rcu+0x1d8/0x200 kernel/softirq.c:422
+
+other info that might help us debug this:
+ Possible unsafe locking scenario:
+
+       CPU0
+       ----
+  lock(&(&pstats->syncp)->seq);
+  <Interrupt>
+    lock(&(&pstats->syncp)->seq);
+
+ *** DEADLOCK ***
+
+1 lock held by udevd/4013:
+ #0: 82b09c5c (rcu_read_lock){....}-{1:2}, at: sk_filter_trim_cap+0x54/0x434 net/core/filter.c:139
+
+stack backtrace:
+CPU: 1 PID: 4013 Comm: udevd Not tainted 5.12.0-rc3-syzkaller #0
+Hardware name: ARM-Versatile Express
+Backtrace:
+[<81802550>] (dump_backtrace) from [<818027c4>] (show_stack+0x18/0x1c arch/arm/kernel/traps.c:252)
+ r7:00000080 r6:600d0093 r5:00000000 r4:82b58344
+[<818027ac>] (show_stack) from [<81809e98>] (__dump_stack lib/dump_stack.c:79 [inline])
+[<818027ac>] (show_stack) from [<81809e98>] (dump_stack+0xb8/0xe8 lib/dump_stack.c:120)
+[<81809de0>] (dump_stack) from [<81804a00>] (print_usage_bug.part.0+0x228/0x230 kernel/locking/lockdep.c:3806)
+ r7:86bcb768 r6:81a0326c r5:830f96a8 r4:86bcb0c0
+[<818047d8>] (print_usage_bug.part.0) from [<802bb1b8>] (print_usage_bug kernel/locking/lockdep.c:3776 [inline])
+[<818047d8>] (print_usage_bug.part.0) from [<802bb1b8>] (valid_state kernel/locking/lockdep.c:3818 [inline])
+[<818047d8>] (print_usage_bug.part.0) from [<802bb1b8>] (mark_lock_irq kernel/locking/lockdep.c:4021 [inline])
+[<818047d8>] (print_usage_bug.part.0) from [<802bb1b8>] (mark_lock.part.0+0xc34/0x136c kernel/locking/lockdep.c:4478)
+ r10:83278fe8 r9:82c6d748 r8:00000000 r7:82c6d2d4 r6:00000004 r5:86bcb768
+ r4:00000006
+[<802ba584>] (mark_lock.part.0) from [<802bc644>] (mark_lock kernel/locking/lockdep.c:4442 [inline])
+[<802ba584>] (mark_lock.part.0) from [<802bc644>] (mark_usage kernel/locking/lockdep.c:4391 [inline])
+[<802ba584>] (mark_lock.part.0) from [<802bc644>] (__lock_acquire+0x9bc/0x3318 kernel/locking/lockdep.c:4854)
+ r10:86bcb768 r9:86bcb0c0 r8:00000001 r7:00040000 r6:0000075a r5:830f96a8
+ r4:00000000
+[<802bbc88>] (__lock_acquire) from [<802bfb90>] (lock_acquire.part.0+0xf0/0x41c kernel/locking/lockdep.c:5510)
+ r10:00000000 r9:600d0013 r8:00000000 r7:00000000 r6:828a2680 r5:828a2680
+ r4:861e5bc8
+[<802bfaa0>] (lock_acquire.part.0) from [<802bff28>] (lock_acquire+0x6c/0x74 kernel/locking/lockdep.c:5483)
+ r10:8146137c r9:00000000 r8:00000001 r7:00000000 r6:00000000 r5:00000000
+ r4:ff7c9dec
+[<802bfebc>] (lock_acquire) from [<81381eb4>] (do_write_seqcount_begin_nested include/linux/seqlock.h:520 [inline])
+[<802bfebc>] (lock_acquire) from [<81381eb4>] (do_write_seqcount_begin include/linux/seqlock.h:545 [inline])
+[<802bfebc>] (lock_acquire) from [<81381eb4>] (u64_stats_update_begin include/linux/u64_stats_sync.h:129 [inline])
+[<802bfebc>] (lock_acquire) from [<81381eb4>] (__bpf_prog_run_save_cb include/linux/filter.h:727 [inline])
+[<802bfebc>] (lock_acquire) from [<81381eb4>] (bpf_prog_run_save_cb include/linux/filter.h:741 [inline])
+[<802bfebc>] (lock_acquire) from [<81381eb4>] (sk_filter_trim_cap+0x26c/0x434 net/core/filter.c:149)
+ r10:a4095dd0 r9:ff7c9dd0 r8:e44be000 r7:8146137c r6:00000001 r5:8611ba80
+ r4:00000000
+[<81381c48>] (sk_filter_trim_cap) from [<8146137c>] (sk_filter include/linux/filter.h:867 [inline])
+[<81381c48>] (sk_filter_trim_cap) from [<8146137c>] (do_one_broadcast net/netlink/af_netlink.c:1468 [inline])
+[<81381c48>] (sk_filter_trim_cap) from [<8146137c>] (netlink_broadcast_filtered+0x27c/0x4fc net/netlink/af_netlink.c:1520)
+ r10:00000001 r9:833d6b1c r8:00000000 r7:8572f864 r6:8611ba80 r5:8698d800
+ r4:8572f800
+[<81461100>] (netlink_broadcast_filtered) from [<81463e60>] (netlink_broadcast net/netlink/af_netlink.c:1544 [inline])
+[<81461100>] (netlink_broadcast_filtered) from [<81463e60>] (netlink_sendmsg+0x3d0/0x478 net/netlink/af_netlink.c:1925)
+ r10:00000000 r9:00000002 r8:8698d800 r7:000000b7 r6:8611b900 r5:861e5f50
+ r4:86aa3000
+[<81463a90>] (netlink_sendmsg) from [<81321f54>] (sock_sendmsg_nosec net/socket.c:654 [inline])
+[<81463a90>] (netlink_sendmsg) from [<81321f54>] (sock_sendmsg+0x3c/0x4c net/socket.c:674)
+ r10:00000000 r9:861e5dd4 r8:00000000 r7:86570000 r6:00000000 r5:86570000
+ r4:861e5f50
+[<81321f18>] (sock_sendmsg) from [<813234d0>] (____sys_sendmsg+0x230/0x29c net/socket.c:2350)
+ r5:00000040 r4:861e5f50
+[<813232a0>] (____sys_sendmsg) from [<8132549c>] (___sys_sendmsg+0xac/0xe4 net/socket.c:2404)
+ r10:00000128 r9:861e4000 r8:00000000 r7:00000000 r6:86570000 r5:861e5f50
+ r4:00000000
+[<813253f0>] (___sys_sendmsg) from [<81325684>] (__sys_sendmsg net/socket.c:2433 [inline])
+[<813253f0>] (___sys_sendmsg) from [<81325684>] (__do_sys_sendmsg net/socket.c:2442 [inline])
+[<813253f0>] (___sys_sendmsg) from [<81325684>] (sys_sendmsg+0x58/0xa0 net/socket.c:2440)
+ r8:80200224 r7:00000128 r6:00000000 r5:7eaa541c r4:86570000
+[<8132562c>] (sys_sendmsg) from [<80200060>] (ret_fast_syscall+0x0/0x2c arch/arm/mm/proc-v7.S:64)
+Exception stack(0x861e5fa8 to 0x861e5ff0)
+5fa0:                   00000000 00000000 0000000c 7eaa541c 00000000 00000000
+5fc0: 00000000 00000000 76fbf840 00000128 00000000 0000008f 7eaa541c 000563f8
+5fe0: 00056110 7eaa53e0 00036cec 76c9bf44
+ r6:76fbf840 r5:00000000 r4:00000000
+
+Fixes: 492ecee892c2 ("bpf: enable program stats")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Andrii Nakryiko <andrii@kernel.org>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ include/linux/filter.h | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index 4a93c12543ee282fce511d4bffe105ae2dd3e234..30b30ee1a9deaddb25f8498cbe2214f8174675e9 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -613,13 +613,14 @@ static __always_inline u32 __bpf_prog_run(const struct bpf_prog *prog,
+ 	if (static_branch_unlikely(&bpf_stats_enabled_key)) {
+ 		struct bpf_prog_stats *stats;
+ 		u64 start = sched_clock();
++		unsigned long flags;
+ 
+ 		ret = dfunc(ctx, prog->insnsi, prog->bpf_func);
+ 		stats = this_cpu_ptr(prog->stats);
+-		u64_stats_update_begin(&stats->syncp);
++		flags = u64_stats_update_begin_irqsave(&stats->syncp);
+ 		stats->cnt++;
+ 		stats->nsecs += sched_clock() - start;
+-		u64_stats_update_end(&stats->syncp);
++		u64_stats_update_end_irqrestore(&stats->syncp, flags);
+ 	} else {
+ 		ret = dfunc(ctx, prog->insnsi, prog->bpf_func);
+ 	}
 -- 
 2.33.0.1079.g6e70778dc9-goog
 
