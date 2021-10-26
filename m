@@ -2,105 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDCE143B3FA
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 16:26:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8520843B3FF
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 16:28:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234787AbhJZO27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 10:28:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54648 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233064AbhJZO26 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 10:28:58 -0400
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3746EC061745;
-        Tue, 26 Oct 2021 07:26:35 -0700 (PDT)
-Received: by mail-io1-xd2b.google.com with SMTP id r194so392012iod.7;
-        Tue, 26 Oct 2021 07:26:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=L5D0+j7FaSezg76oVeVVLGGUXUUlkCip1HOizeqS3F0=;
-        b=BYEtfYnADJR1nva03YwbtWDmJqc0JekTqrBc/UkvtxMbR20tM3+tjsd40tPOCuQ0FY
-         mu5qiIcDEjGZwnM2+m+zFZ6iW8t2OYkc6xvvzj5BGz5sZoI9XLsvY5vCHrMGEJ8E9Ptw
-         4eplondyATTctuNYB8NWANcRWHH3X5b0+0mRmUoKHrnmmZ7NXZ8hCag8++ViQxdZ1Dyd
-         ebk/vOqZYAmaXGj4DmMmWsHrAN0L7gKeQkAW7PxHQt/fFABfRJrPpCA/HVuMIGNnbHcY
-         XyQ59m0y31feprCF+/0BwMHpZJIrM1/97wECpeLFXWF7ZbVcoAZcjg1QrGnpcEHIwOe6
-         pA6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=L5D0+j7FaSezg76oVeVVLGGUXUUlkCip1HOizeqS3F0=;
-        b=CrZUSQ/BCOrtXmcsjYlkZPXzyBDb0rfI4d4dwbNqPQ0q0MUuSGIhQk89r0vFGvDtX0
-         UufyEm1tB5fkJA38wnPqQBQe7r3MPvhsMrvyuJLkC71hrDzccXSpWlOqPTSZKk77Lc7Y
-         JFGxrW0GFJZ3R1K+O8JSNAi3L+uIviszbKapSLLzzFAjggl15zThNonk8NlZ/pJzcYsl
-         sTF7g2UQbBcaEme9uc53T4TDsWk+aq2NJBr/JpFNJ6vXneZ5tWP+KPWjkF8CUgAs2zdr
-         ERHcoE2AGCZ/MoM2SeYNr9WAgie81XKrDPUyVCuAI/fftRky/0nUpWEbe5Uo3+08qGKK
-         BOBw==
-X-Gm-Message-State: AOAM532j3G/26+7aJEf5Bidfz09gNsOyW82pSYIuCEFV80qbLqpW/wNL
-        1YTr8WbwjHd7B5xzpuIp3aM=
-X-Google-Smtp-Source: ABdhPJzxea8hMZMheKY2Qt87166kL9BeX6gTsSp6/EmMzyCyZ2m/IhY3w2E/abL5pJIiDFxFPGzQjQ==
-X-Received: by 2002:a5d:954b:: with SMTP id a11mr5045902ios.99.1635258394676;
-        Tue, 26 Oct 2021 07:26:34 -0700 (PDT)
-Received: from localhost ([172.243.151.11])
-        by smtp.gmail.com with ESMTPSA id m11sm1352031ilh.0.2021.10.26.07.26.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Oct 2021 07:26:34 -0700 (PDT)
-Date:   Tue, 26 Oct 2021 07:26:24 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Liu Jian <liujian56@huawei.com>, john.fastabend@gmail.com,
-        daniel@iogearbox.net, jakub@cloudflare.com, lmb@cloudflare.com,
-        edumazet@google.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, ast@kernel.org,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     liujian56@huawei.com
-Message-ID: <61781010b20b3_108a220859@john-XPS-13-9370.notmuch>
-In-Reply-To: <20211012052019.184398-1-liujian56@huawei.com>
-References: <20211012052019.184398-1-liujian56@huawei.com>
-Subject: RE: [PATHC bpf v2] tcp_bpf: Fix one concurrency problem in the
- tcp_bpf_send_verdict function
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S235526AbhJZOab (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 10:30:31 -0400
+Received: from mail-eopbgr50050.outbound.protection.outlook.com ([40.107.5.50]:8192
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233064AbhJZOaa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Oct 2021 10:30:30 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=c3taoqSwo3sVaL2C3l7ofhGfboZc7tWGb/VuPOtAcyEh5j+ge3G1Ph4I8vsvabpP8obcRXxlfY9BS3vB6+8/sR+/Xxf2DYZi59MruCcvaGwig2GRNl6YOBoSfs2OO9NVrq8fPlAYeCI7csMbmQFDS07nrYWN7+ddYCVA1lTkDSG74W9uBoWWfxAmmtiWLVX0Jso61N1X3E43JYK7/7bv3HIaqmEnQ6LGx33BO4p0jmIeq6altC6p33ZJ/ws1T/SKP6pYiZsJ9VWbpkJl/qXl/K3wYesS0OYEb8uvXMLNsT8zOJNme/U7JMKZZyA25HuuB4gRai/v0v1DFCaeyREiLA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=X7KADJJp9OBSOAshWplBQBiSp6g9ormk6+zpOUMvICM=;
+ b=MkjqJTQruAfcwVAb7SPlENIbsrl0kAKsCQGyWQ0ChkaQLK7lsgvNuHQzwWpVDpVllkVbTmbEK8JuJUGaGtaf6gOIM+2kRhWiJGYzWsZB+HGPC3ECD/zDP9i7A8///miU4cCgMxZRXQdyRn4wjI6C2ORVH4GF6lsEp5NTXndBlYDyKgZzIPDlnrTnXkEYRWfv2ggdT2bKRrYoM7obyQ2vEaFGaA8uFnJkC+EGp5nM6ehBKEg0Am3H7vvm9u2+vkoEmcWgxjUCcH3s9EmsWqgNUO95AT3FJlErqAfGUg7xCJ5J87CXtPGCDuKfhW/1p1Popy6lbOid4TMkRKcjkgUIxA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=X7KADJJp9OBSOAshWplBQBiSp6g9ormk6+zpOUMvICM=;
+ b=p2Aro5I8911U02099LLP8F4xw8TKJwAsraThgPJf7z5lkxnlsmKBcwZOItRh0+DJ15mLRBcuaxpI3FB4FmGSZLN70rRDsNw6AE08LTd2t0ae2ss3oR8A2yF/Op98R7CoTfmr7nrtaWwM6GBTqOLNbkQNS7gu5DHJ5N41FTCvtE8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB6016.eurprd04.prod.outlook.com (2603:10a6:803:d3::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18; Tue, 26 Oct
+ 2021 14:28:04 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4628.020; Tue, 26 Oct 2021
+ 14:28:03 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@nvidia.com>
+Subject: [PATCH net-next 0/8] Bridge FDB refactoring
+Date:   Tue, 26 Oct 2021 17:27:35 +0300
+Message-Id: <20211026142743.1298877-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM3PR07CA0113.eurprd07.prod.outlook.com
+ (2603:10a6:207:7::23) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
+Received: from localhost.localdomain (188.25.174.251) by AM3PR07CA0113.eurprd07.prod.outlook.com (2603:10a6:207:7::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.10 via Frontend Transport; Tue, 26 Oct 2021 14:28:02 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 418a8785-afd2-4b7a-2d28-08d9988cd1f5
+X-MS-TrafficTypeDiagnostic: VI1PR04MB6016:
+X-Microsoft-Antispam-PRVS: <VI1PR04MB601625CA805C6D4F48660824E0849@VI1PR04MB6016.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: bqknXsFVuaEKrxAE+fk4SF7DwFJNmjRodxUE7K+m359RwrSIw7hZXo3Nj7kJxy7oMcNJQ2QcXy1RfSIbkw4DUmjCrb4Ry5sctD0BbYtAJjJJljdnOdq35+Cz4IUTc2qygkhF33R9e4RkNd80IhyQtC5q5F1kM6VZZXlUtNitc73yeZekZJ50Wio6tapsLiqWDKUkEOZGlYFjS1u6q/GCSkhgu//Of1WEtJERdK4xNGLkM9yFsfScR7bNh+ykNmsItee+7H7T+EkRYglZqxLKT+xoNbnBe5hFwuJw6BfETmW2K/N0l1isf96f4jXWQtb6+q7LgOgnCBRv/4bduqVj2j44+3Qp+IQVNr2MRYMFtNb2YN+PVJ4cv+ZHSh300uQMaRFiPJesd0x18NzE3VcAA98ggv1uNzQtlwGTtHzlrBZmZaqa21PH2V+n6Zzgfxdhr3xC6p9mU9IO1FUc5TQLeboNM9/+sgpKyaM6t1CjMvx+5kiP0fojD6Z7CnbMi2gBLuc97HTK4/Z5HckZ0Hy2Qz6Q9QMu3UgL504ELHOpH+CxplRNV+dOyjaT+MV/ptuyfRTJZaa+UcbSlZsG4Aw3ESvRptKWSgivGhPuutdl0Sp2960uhY9vbVjtDCRxIeNylBA6ORv4lvMs9bSoIDDu4v4Wc/NYXb/NJDm4xZmQhntvZ+0UaJg83d2UdcaY1TWG1NAAt6oLujxO0kZ0dMPEhA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(4326008)(52116002)(44832011)(66476007)(26005)(38100700002)(54906003)(8676002)(86362001)(5660300002)(2616005)(38350700002)(7416002)(6486002)(6506007)(6666004)(66556008)(316002)(6512007)(956004)(6916009)(36756003)(83380400001)(66946007)(2906002)(186003)(8936002)(508600001)(1076003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pwEshRfbd3FUR9o4BB3QMO2OzHxjfbMJbHfhpUcTTH3gNiTCdDtyw0rBwQbE?=
+ =?us-ascii?Q?L6342S8sGtcPxD9UtUvfeHt7JH6N+yX1MnAL4Hwp6A4KCmHAbeGEqt/gAQmx?=
+ =?us-ascii?Q?/hZagd7eDVR/VX/JWKUxUSCSIjACz8wDrTzcuq3tjjJ91mcNxfAD0J0ShxCF?=
+ =?us-ascii?Q?vrt7VSSi0J/4F/3ZsXFQtcpmTpZ+50rDShHhz0U8sPfyfUFH4CuINKWBDM9m?=
+ =?us-ascii?Q?EBoo1ro3BS7teEN3iu1kieQwSmxGubIlDEOpk+rAGdesCcP27l4E38uczjWP?=
+ =?us-ascii?Q?rbqDi6qkPhIysNO9ggc3kAeylkS25CEFS+oEtuU03LS70uC/qX3HRUfivD/d?=
+ =?us-ascii?Q?At39g4uBqoOkJsjPRZ6x2FQmMUsgAzgsZhhq9bRSTJsSFuIR7PiT8JeFjf30?=
+ =?us-ascii?Q?HBDQHVXtrOPt2OLmXLf0VnGp6H2xy30HIW5xg8nAoW83+uC/SU4r+yXLlLNM?=
+ =?us-ascii?Q?GITYi0cu72AbmiJ3HxsmjjJSodRtDfGl6HI470WStj8NtKbta9chCILtXH3z?=
+ =?us-ascii?Q?CR4sxquT6baFPGVIIw22UZ1r+QT2rNeFWyj2mIaJIji6xT5kMWD7YLpwN6a9?=
+ =?us-ascii?Q?TKW63eivZXnK3bSXNCVPpwdY39Lo5eHB4IBz/w0Nb37U1AXnWshHCl32wXoY?=
+ =?us-ascii?Q?9zAh1dXJ9mPeMN8ZI/U+3C6m02OOl0ERBBjsir7Wa4GWVSw+RHeh98BT+h52?=
+ =?us-ascii?Q?j2kHPx8ZcGrEcai3QP7c2Zc1nQAARHBF5BqA6pQYQiY230R4t2hnW6ADqkfR?=
+ =?us-ascii?Q?6MNzvfSs7zSJbdV6q826FLma0Px8MQ5JrgNSijDg5FdWnJHY3u4PPU4zqEO/?=
+ =?us-ascii?Q?KOkdDpEYX02FO/goxozLRh0LW6nL0BeDwfMqt+BC2PhF0KTjs8dqMlewLudR?=
+ =?us-ascii?Q?w0Ph6wkKADilOUb0ZEcMmxdS6KiQxI65zxx2jKVphpjgCxwX0rOXbTAbn3U3?=
+ =?us-ascii?Q?4M4u+IK3AEpRUr/RIoDgR1O48s6KnIAakrbBGY9Zz9ZjcxDjwmYXNrSI/3EG?=
+ =?us-ascii?Q?TxehdhiTXMaR5Det49ZIw1P9NpFcmVg+L2461NHHjs7l60fJLEkuFPglSP/I?=
+ =?us-ascii?Q?1NTUzDLET3IaoFBZ+UdsCC3e4b/NQ+KRa1blIABNhp7fUMTk/glnd4aY1wMc?=
+ =?us-ascii?Q?AvqYmj/7OBu5DFkD0s0moG+pFPZRKJTNFS04e1iQHI415j6TT/84EPJ8TvhG?=
+ =?us-ascii?Q?x0WHTlkKzwVQe/3Hi7o0fmYGff2bppk5lVG8iIT+h25UHNNEYfraThKrJhyr?=
+ =?us-ascii?Q?WmGWds7FDcTLTpkBQhWE07eNwddW+200BrxNeak5X/VWxAAQt7J03yRPHCej?=
+ =?us-ascii?Q?QhmTHnk0rpujluuHI22QPeejT6mRe0SaIYO5zG5hms+3cGnr+J1oKPScqRXR?=
+ =?us-ascii?Q?WYzIjohNV7ZsHJDWTlNe3tMFAGVyccb7DFcy1VHkebS3A6Q55wGwIGpkbGMm?=
+ =?us-ascii?Q?3tWpOE8HYQPRKLQ5FvqvpwixIy8ljt3/IC3eYWqAUBM2alPnoE6v8QtmUBa2?=
+ =?us-ascii?Q?DJ11DQSOAxakDoR73lprOgDIZqOcC2538mOsjQupsF9ksoE2rvQPBVwVFklx?=
+ =?us-ascii?Q?wSpcdx78D9PcVPszpiXRimvzb53DPou6R88wHG5ib3OtyMCPBWgqmXjs66Tt?=
+ =?us-ascii?Q?Js1ryxvBQTWbnY+7qn7jijk=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 418a8785-afd2-4b7a-2d28-08d9988cd1f5
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2021 14:28:03.6994
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: cImdvj17hH/lXwgL9HEs2xtJCenYc2oAtDpIMPgSnzuYiJ7LwNrUyIUZfILyO3osxPEM7HLrWXN2QXlDECqRHg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6016
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Liu Jian wrote:
-> With two Msgs, msgA and msgB and a user doing nonblocking sendmsg calls (or
-> multiple cores) on a single socket 'sk' we could get the following flow.
-> 
->  msgA, sk                               msgB, sk
->  -----------                            ---------------
->  tcp_bpf_sendmsg()
->  lock(sk)
->  psock = sk->psock
->                                         tcp_bpf_sendmsg()
->                                         lock(sk) ... blocking
-> tcp_bpf_send_verdict
-> if (psock->eval == NONE)
->    psock->eval = sk_psock_msg_verdict
->  ..
->  < handle SK_REDIRECT case >
->    release_sock(sk)                     < lock dropped so grab here >
->    ret = tcp_bpf_sendmsg_redir
->                                         psock = sk->psock
->                                         tcp_bpf_send_verdict
->  lock_sock(sk) ... blocking on B
->                                         if (psock->eval == NONE) <- boom.
->                                          psock->eval will have msgA state
-> 
-> The problem here is we dropped the lock on msgA and grabbed it with msgB.
-> Now we have old state in psock and importantly psock->eval has not been
-> cleared. So msgB will run whatever action was done on A and the verdict
-> program may never see it.
-> 
-> Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
-> Signed-off-by: Liu Jian <liujian56@huawei.com>
+This series refactors the br_fdb.c, br_switchdev.c and switchdev.c files
+to offer the same level of functionality with a bit less code, and to
+clarify the purpose of some functions.
 
-Yep thanks for digging into this. Nice catch. And commit looks good now.
+No functional change intended.
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+Vladimir Oltean (8):
+  net: bridge: remove fdb_notify forward declaration
+  net: bridge: remove fdb_insert forward declaration
+  net: bridge: rename fdb_insert to fdb_add_local
+  net: bridge: rename br_fdb_insert to br_fdb_add_local
+  net: bridge: reduce indentation level in fdb_create
+  net: bridge: move br_fdb_replay inside br_switchdev.c
+  net: bridge: create a common function for populating switchdev FDB
+    entries
+  net: switchdev: merge switchdev_handle_fdb_{add,del}_to_device
+
+ include/net/switchdev.h   |  48 +----
+ net/bridge/br_fdb.c       | 433 +++++++++++++++++---------------------
+ net/bridge/br_if.c        |   2 +-
+ net/bridge/br_private.h   |   6 +-
+ net/bridge/br_switchdev.c |  79 ++++++-
+ net/bridge/br_vlan.c      |   5 +-
+ net/dsa/slave.c           |  41 +---
+ net/switchdev/switchdev.c | 156 +++-----------
+ 8 files changed, 305 insertions(+), 465 deletions(-)
+
+-- 
+2.25.1
+
