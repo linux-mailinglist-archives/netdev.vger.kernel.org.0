@@ -2,166 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C89743BD6D
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 00:50:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA54543BDB3
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 01:16:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240143AbhJZWwp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 18:52:45 -0400
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:41196
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230233AbhJZWwo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 18:52:44 -0400
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id B9E253F19E
-        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 22:50:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1635288618;
-        bh=sOzNLS53TAFKLgxzOh/gf4V4t3blNgwULiltnWEPGMo=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=ggYBtcYQubCCqPso9IwLxp2u6DUMw3jZDhBURG9IzkywMa73N5p+6xoGi9hzDcrsE
-         wiKinxLtTCTank1mmCkE23GHHYstEHjG+MMQm1JYaHzV4XKc0GYkp4GQzsCZ8e3OCX
-         uY5ywqD1hi5AA+jQzSweCPgSUNYUysZ7EcStyRBG2+XL6hT8MYuFZZ61tMUPVRysmF
-         qj6K1rM1IxvUmUc34OmoWOqULAMppNAMr2XPEb78Gu7JFG8c/FrimNtvIkLvD+3l2q
-         A24GwvN7n/9iAKymuMJ61o5m68kd82a41dT43EpiOf4Ksx1z1ppy0/X5EwjILM39gx
-         aaaWnSlaf/CNA==
-Received: by mail-oo1-f69.google.com with SMTP id f21-20020a4abb15000000b002b766ff48feso348677oop.20
-        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 15:50:18 -0700 (PDT)
+        id S231948AbhJZXTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 19:19:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:39566 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240216AbhJZXTM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 19:19:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1635290208;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sHa+eLMZtXxhRGGVtp2qH+0qlLckFjrLAPT8DfDOLD8=;
+        b=OI6TnWLw6Jps4OsxH4I0jIRRqKxz7APin3BJrHqdAODpFIhx6ozIIOu0WNqA0iunyzbsVi
+        G0JWKgsJw5L+eE7qzRnqaOuciCQuNxvG57Me4e5qF5XRMM9MgaMPL3TWaKRfm5HVmRy6SH
+        YO82dM5v91v+zboqpwyQQ7TCgMmZLho=
+Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com
+ [209.85.161.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-549-zNVlAQtKNJeOcNQHEoXcDw-1; Tue, 26 Oct 2021 19:16:46 -0400
+X-MC-Unique: zNVlAQtKNJeOcNQHEoXcDw-1
+Received: by mail-oo1-f69.google.com with SMTP id i25-20020a4ad399000000b002b85e3dd7d5so415493oos.2
+        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 16:16:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sOzNLS53TAFKLgxzOh/gf4V4t3blNgwULiltnWEPGMo=;
-        b=50shYtmRs2tzjyxTD2kSZ03O4gFyzVW5abwO5OUrmEjE1ogh8vE93dZ85m8O9Hpa37
-         KYAz3w9Vk6fBvFSjVjUEIilaWBi5af/Lsvk/g0icZzwjOTja4As0kWGNC9afwRuIJZ3b
-         qdy0LCkUIw6HJeRXJIBE2aI6JT5Uao835VNjVZvItGzYUhuAWFJR6qX+tmQUqtUGWsXb
-         RNWY89KnsoFUzYdI1gS/SwK+Ej1VC5F7pvhi9jiZ3cEvZZXn+9LJVpLme3RqbpnnGIPD
-         hq0kM1mPo84TGdBHCmqQ4jnsCxdqeKej2iIzV6sQPvK/NmcNVZhwAg/oBcWmN16oN4VH
-         X4ng==
-X-Gm-Message-State: AOAM530jMfaQfIqnGGUdHLNJEB4a+DlnJzM0ft88yauP+j021iKSOhOU
-        9VsmNE7joqzpM96ybYV7zyABYu5m9JvH3E5UA1143DzAKpYTS0xruYMGi9gXNT6wbE26XMuJonu
-        WDRI6I4lzSC5Zr4fl1iXy71FCafV04v5DvXOvnzGTwXZntlzV2A==
-X-Received: by 2002:a9d:7b49:: with SMTP id f9mr22036760oto.11.1635288617530;
-        Tue, 26 Oct 2021 15:50:17 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwV2yNIRx9YHLCbw6IWJF7ib5jZpqmK1ebG462GAQN5fW/dna9VhsgWtWnSzFGmM1pgg+IIrfpuqUQizSC0wCc=
-X-Received: by 2002:a9d:7b49:: with SMTP id f9mr22036739oto.11.1635288617200;
- Tue, 26 Oct 2021 15:50:17 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=sHa+eLMZtXxhRGGVtp2qH+0qlLckFjrLAPT8DfDOLD8=;
+        b=7F3xTP2jIucBTqOvHGUI/3DbZ4Ttnl4oqP5/8AyAzo6ZTRte3jj1IY9rCxY97vDK1i
+         jpMXv80BBYYZ8nyKOIFcoJYPdGqiYAI9VnPaXCd+HXcOebZPP0hG9yLRtLOVOro5km7z
+         0eFDiW6/s42zGtEjh2olObhOOIqFpo52uSnx6hINWykcKEWZG45zxo74PBs0VrncO1+5
+         OI24OX533U+s/fqaMyZ6LaiyiKC3N/WO2hJXyYLd9mxxPZjNkFK9q5anLj+vOOlNod6G
+         ULVz5zDxTH0CQijAqgXnsIL2ewy0YYDMQHQBnzL4VU0fj3PaQVhfcsMA/GDjUnN4HPMs
+         6WkQ==
+X-Gm-Message-State: AOAM531B8/BN4BejMlZCfUtwbkuCbBCFh0scjgED2ycc11xFpiwi+KHI
+        PuKxrbkIpN2VOy9cWPMRUjNdEafBSYVDoUsn1y3JfgTBFZEHGM+oM9cYaynZDyEBa9yyZhHLuz8
+        rGUmbCLxjtqANkMH9
+X-Received: by 2002:a05:6808:2217:: with SMTP id bd23mr1278893oib.175.1635290205970;
+        Tue, 26 Oct 2021 16:16:45 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyqvmHfiT4YSTufLF8iMK4o6Ez+q3fllqQ6Qjs8MU+3DMnMVBnFgYwtO9abT6zQuW9ndIGwsw==
+X-Received: by 2002:a05:6808:2217:: with SMTP id bd23mr1278871oib.175.1635290205669;
+        Tue, 26 Oct 2021 16:16:45 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id n187sm4987049oif.52.2021.10.26.16.16.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Oct 2021 16:16:45 -0700 (PDT)
+Date:   Tue, 26 Oct 2021 17:16:44 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Yishai Hadas <yishaih@nvidia.com>
+Cc:     <bhelgaas@google.com>, <jgg@nvidia.com>, <saeedm@nvidia.com>,
+        <linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <kuba@kernel.org>, <leonro@nvidia.com>,
+        <kwankhede@nvidia.com>, <mgurtovoy@nvidia.com>, <maorg@nvidia.com>
+Subject: Re: [PATCH V4 mlx5-next 13/13] vfio/mlx5: Use its own PCI
+ reset_done error handler
+Message-ID: <20211026171644.41019161.alex.williamson@redhat.com>
+In-Reply-To: <20211026090605.91646-14-yishaih@nvidia.com>
+References: <20211026090605.91646-1-yishaih@nvidia.com>
+        <20211026090605.91646-14-yishaih@nvidia.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-References: <20211026065112.1366205-1-kai.heng.feng@canonical.com> <04ed8307-ab1f-59d6-4454-c759ce4a453b@intel.com>
-In-Reply-To: <04ed8307-ab1f-59d6-4454-c759ce4a453b@intel.com>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Wed, 27 Oct 2021 06:50:05 +0800
-Message-ID: <CAAd53p69k-2PVw5RpJOAbe=oBh11U_UqzsyMjxHFbo7xqNBDsQ@mail.gmail.com>
-Subject: Re: [PATCH v2] e1000e: Add a delay to let ME unconfigure s0ix when
- DPG_EXIT_DONE is already flagged
-To:     Sasha Neftin <sasha.neftin@intel.com>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        AceLan Kao <acelan.kao@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dima Ruinskiy <dima.ruinskiy@intel.com>,
-        "moderated list:INTEL ETHERNET DRIVERS" 
-        <intel-wired-lan@lists.osuosl.org>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Kraus, NechamaX" <nechamax.kraus@linux.intel.com>,
-        "Fuxbrumer, Devora" <devora.fuxbrumer@intel.com>,
-        "Avivi, Amir" <amir.avivi@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 26, 2021 at 4:48 PM Sasha Neftin <sasha.neftin@intel.com> wrote:
->
-> On 10/26/2021 09:51, Kai-Heng Feng wrote:
-> > On some ADL platforms, DPG_EXIT_DONE is always flagged so e1000e resume
-> > polling logic doesn't wait until ME really unconfigures s0ix.
-> >
-> > So check DPG_EXIT_DONE before issuing EXIT_DPG, and if it's already
-> > flagged, wait for 1 second to let ME unconfigure s0ix.
-> >
-> > Fixes: 3e55d231716e ("e1000e: Add handshake with the CSME to support S0ix")
-> > Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=214821
-> > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> > ---
-> > v2:
-> >   Add missing "Fixes:" tag
-> >
-> >   drivers/net/ethernet/intel/e1000e/netdev.c | 7 +++++++
-> >   1 file changed, 7 insertions(+)
-> >
-> > diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-> > index 44e2dc8328a22..cd81ba00a6bc9 100644
-> > --- a/drivers/net/ethernet/intel/e1000e/netdev.c
-> > +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-> > @@ -6493,14 +6493,21 @@ static void e1000e_s0ix_exit_flow(struct e1000_adapter *adapter)
-> >       u32 mac_data;
-> >       u16 phy_data;
-> >       u32 i = 0;
-> > +     bool dpg_exit_done;
-> >
-> >       if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID) {
-> > +             dpg_exit_done = er32(EXFWSM) & E1000_EXFWSM_DPG_EXIT_DONE;
-> >               /* Request ME unconfigure the device from S0ix */
-> >               mac_data = er32(H2ME);
-> >               mac_data &= ~E1000_H2ME_START_DPG;
-> >               mac_data |= E1000_H2ME_EXIT_DPG;
-> >               ew32(H2ME, mac_data);
-> >
-> > +             if (dpg_exit_done) {
-> > +                     e_warn("DPG_EXIT_DONE is already flagged. This is a firmware bug\n");
-> > +                     msleep(1000);
-> > +             }
-> Thanks for working on the enablement.
-> The delay approach is fragile. We need to work with CSME folks to
-> understand why _DPG_EXIT_DONE indication is wrong on some ADL platforms.
-> Could you provide CSME/BIOS version? dmidecode -t 0 and cat
-> /sys/class/mei/mei0/fw_ver
+On Tue, 26 Oct 2021 12:06:05 +0300
+Yishai Hadas <yishaih@nvidia.com> wrote:
 
-$ sudo dmidecode -t 0
-# dmidecode 3.2
-Getting SMBIOS data from sysfs.
-SMBIOS 3.4 present.
-# SMBIOS implementations newer than version 3.2.0 are not
-# fully supported by this version of dmidecode.
+> Register its own handler for pci_error_handlers.reset_done and update
+> state accordingly.
+> 
+> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  drivers/vfio/pci/mlx5/main.c | 54 ++++++++++++++++++++++++++++++++++--
+>  1 file changed, 52 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/vfio/pci/mlx5/main.c b/drivers/vfio/pci/mlx5/main.c
+> index 4b21b388dcc5..c157f540d384 100644
+> --- a/drivers/vfio/pci/mlx5/main.c
+> +++ b/drivers/vfio/pci/mlx5/main.c
+> @@ -55,8 +55,11 @@ struct mlx5vf_pci_migration_info {
+>  struct mlx5vf_pci_core_device {
+>  	struct vfio_pci_core_device core_device;
+>  	u8 migrate_cap:1;
+> +	u8 defered_reset:1;
 
-Handle 0x0001, DMI type 0, 26 bytes
-BIOS Information
-        Vendor: Dell Inc.
-        Version: 0.12.68
-        Release Date: 10/01/2021
-        ROM Size: 48 MB
-        Characteristics:
-                PCI is supported
-                PNP is supported
-                BIOS is upgradeable
-                BIOS shadowing is allowed
-                Boot from CD is supported
-                Selectable boot is supported
-                EDD is supported
-                Print screen service is supported (int 5h)
-                8042 keyboard services are supported (int 9h)
-                Serial services are supported (int 14h)
-                Printer services are supported (int 17h)
-                ACPI is supported
-                USB legacy is supported
-                BIOS boot specification is supported
-                Function key-initiated network boot is supported
-                Targeted content distribution is supported
-                UEFI is supported
-        BIOS Revision: 0.12
+s/defered/deferred/ throughout
 
-$ cat /sys/class/mei/mei0/fw_ver
-0:16.0.15.1518
-0:16.0.15.1518
-0:16.0.15.1518
+>  	/* protect migration state */
+>  	struct mutex state_mutex;
+> +	/* protect the reset_done flow */
+> +	spinlock_t reset_lock;
+>  	struct mlx5vf_pci_migration_info vmig;
+>  };
+>  
+> @@ -471,6 +474,47 @@ mlx5vf_pci_migration_data_rw(struct mlx5vf_pci_core_device *mvdev,
+>  	return count;
+>  }
+>  
+> +/* This function is called in all state_mutex unlock cases to
+> + * handle a 'defered_reset' if exists.
+> + */
 
-> >               /* Poll up to 2.5 seconds for ME to unconfigure DPG.
-> >                * If this takes more than 1 second, show a warning indicating a
-> >                * firmware bug
-> >
+I refrained from noting it elsewhere, but we're not in net/ or
+drivers/net/ here, but we're using their multi-line comment style.  Are
+we using the strong relation to a driver that does belong there as
+justification for the style here?
+
+> +static void mlx5vf_state_mutex_unlock(struct mlx5vf_pci_core_device *mvdev)
+> +{
+> +again:
+> +	spin_lock(&mvdev->reset_lock);
+> +	if (mvdev->defered_reset) {
+> +		mvdev->defered_reset = false;
+> +		spin_unlock(&mvdev->reset_lock);
+> +		mlx5vf_reset_mig_state(mvdev);
+> +		mvdev->vmig.vfio_dev_state = VFIO_DEVICE_STATE_RUNNING;
+> +		goto again;
+> +	}
+> +	mutex_unlock(&mvdev->state_mutex);
+> +	spin_unlock(&mvdev->reset_lock);
+> +}
+> +
+> +static void mlx5vf_pci_aer_reset_done(struct pci_dev *pdev)
+> +{
+> +	struct mlx5vf_pci_core_device *mvdev = dev_get_drvdata(&pdev->dev);
+> +
+> +	if (!mvdev->migrate_cap)
+> +		return;
+> +
+> +	/* As the higher VFIO layers are holding locks across reset and using
+> +	 * those same locks with the mm_lock we need to prevent ABBA deadlock
+> +	 * with the state_mutex and mm_lock.
+> +	 * In case the state_mutex was taken alreday we differ the cleanup work
+
+s/alreday/already/  s/differ/defer/ 
+
+> +	 * to the unlock flow of the other running context.
+> +	 */
+> +	spin_lock(&mvdev->reset_lock);
+> +	mvdev->defered_reset = true;
+> +	if (!mutex_trylock(&mvdev->state_mutex)) {
+> +		spin_unlock(&mvdev->reset_lock);
+> +		return;
+> +	}
+> +	spin_unlock(&mvdev->reset_lock);
+> +	mlx5vf_state_mutex_unlock(mvdev);
+> +}
+> +
+>  static ssize_t mlx5vf_pci_mig_rw(struct vfio_pci_core_device *vdev,
+>  				 char __user *buf, size_t count, loff_t *ppos,
+>  				 bool iswrite)
+> @@ -539,7 +583,7 @@ static ssize_t mlx5vf_pci_mig_rw(struct vfio_pci_core_device *vdev,
+>  	}
+>  
+>  end:
+> -	mutex_unlock(&mvdev->state_mutex);
+> +	mlx5vf_state_mutex_unlock(mvdev);
+
+I'm a little lost here, if the operation was to read the device_state
+and mvdev->vmig.vfio_dev_state was error, that's already been copied to
+the user buffer, so the user continues to see the error state for the
+first read of device_state after reset if they encounter this race?
+Thanks,
+
+Alex
+
+>  	return ret;
+>  }
+>  
+> @@ -634,6 +678,7 @@ static int mlx5vf_pci_probe(struct pci_dev *pdev,
+>  			if (MLX5_CAP_GEN(mdev, migration)) {
+>  				mvdev->migrate_cap = 1;
+>  				mutex_init(&mvdev->state_mutex);
+> +				spin_lock_init(&mvdev->reset_lock);
+>  			}
+>  			mlx5_vf_put_core_dev(mdev);
+>  		}
+> @@ -668,12 +713,17 @@ static const struct pci_device_id mlx5vf_pci_table[] = {
+>  
+>  MODULE_DEVICE_TABLE(pci, mlx5vf_pci_table);
+>  
+> +const struct pci_error_handlers mlx5vf_err_handlers = {
+> +	.reset_done = mlx5vf_pci_aer_reset_done,
+> +	.error_detected = vfio_pci_aer_err_detected,
+> +};
+> +
+>  static struct pci_driver mlx5vf_pci_driver = {
+>  	.name = KBUILD_MODNAME,
+>  	.id_table = mlx5vf_pci_table,
+>  	.probe = mlx5vf_pci_probe,
+>  	.remove = mlx5vf_pci_remove,
+> -	.err_handler = &vfio_pci_core_err_handlers,
+> +	.err_handler = &mlx5vf_err_handlers,
+>  };
+>  
+>  static void __exit mlx5vf_pci_cleanup(void)
+
