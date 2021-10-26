@@ -2,499 +2,303 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3ABD43B406
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 16:28:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3B9F43B425
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 16:30:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236546AbhJZOaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 10:30:52 -0400
-Received: from mail-eopbgr70057.outbound.protection.outlook.com ([40.107.7.57]:7181
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236543AbhJZOal (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Oct 2021 10:30:41 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oT33cRSsc94KMh/J22r9rlwX7T9GC4+dEpFmJ9rIacr8rNvZSRuTn4VFDc+fUevUQLBLHVRTp1ZH7kxuGEX6fKJ8ubr+ZTDVDTycWXxuSui31JEsbQJfJ6bf/F6tUqJo3c7ZDX76FpLlyGcJ87fbXlD/6nelNXvKmBRtHtPVcbrr5dbbRg1dNxDZO0+3DQhMZR1amNxkfz1qdNFjpAlwo2pggUgD0QXzdx5fJ/2EvQUPRqX+Sf8LoJW7BZ7W29ZkN08BisRIb5C3Jn42Hdxhsw6s4/Omq3s0wBgyAENhkWkvOoLy7/JONjkqLJ+6orK01wOnHVEE8CUx9FyJ7J76Fg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kHBvT8BxeXWGQ0empmTbvOfC3toGi8TqJViyJrKNAsk=;
- b=b2UBYlXxjtwHF23z3HHxeB/00u2aP3qgwKEKwC9JECLY/p94blLSqGX47qWapK8aYuW2+VPo1rGRrzwSzT1TALVDVPEs0zAf9ois6E+/VQdbyzFlH06AybmB1YWL3jg82NDfNzxNNwDyJSJuxeOUWN5hUvxCNGKOFgbdqqHS8vwDgTxK/aUSsaCUavr/n2nOItGN8T7BCGkiHowoS0u2hy+akeK5X9lMSrc5AU1tI5rXUTKuuVucL+MDS67SXhQuFLXirmnaL8SI4HuQmSgIpFaA/dduayhxwygGETIIcLL68DTN3ZEQhP/M/j9dwcHe9rjZvFYly5uM+FjUBlwv6A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kHBvT8BxeXWGQ0empmTbvOfC3toGi8TqJViyJrKNAsk=;
- b=S4dVo405mvpVzq9umIpsKroSNVUdilmLWP7ghoClHj82qeIbtBvQ0/0jX7qb2OM0Huyy/FbZCH5UtNHDLOhe8bkAh6TK7dYtk1U4tcvS6C3QakWM3FAM6xzJmTXAlLDxH0wDXb+IQsrzWVwvrXnHoqeyjzasbg4Hjv0oRpCPz6E=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB3965.eurprd04.prod.outlook.com (2603:10a6:803:3e::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.16; Tue, 26 Oct
- 2021 14:28:14 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4628.020; Tue, 26 Oct 2021
- 14:28:14 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jiri Pirko <jiri@nvidia.com>
-Subject: [PATCH net-next 8/8] net: switchdev: merge switchdev_handle_fdb_{add,del}_to_device
-Date:   Tue, 26 Oct 2021 17:27:43 +0300
-Message-Id: <20211026142743.1298877-9-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211026142743.1298877-1-vladimir.oltean@nxp.com>
-References: <20211026142743.1298877-1-vladimir.oltean@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM3PR07CA0113.eurprd07.prod.outlook.com
- (2603:10a6:207:7::23) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        id S236652AbhJZOcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 10:32:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55833 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236622AbhJZOcA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 10:32:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1635258571;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2kYAPX2VGBsH1X6cP0RtYj20ucdCaNWXLNB7+ktwG10=;
+        b=ILorWgMfQoZfwMguHfh4enTI52Gd9n9yJmX+xBbgqjmAAz+r4fPrsnD/b2rk25TvyuwV4X
+        fE3skZIlZwj1zAsMPYycNBZc5R27ZT2fuF8FFTrSumsncHhv2yGFZYQI2aawKRw4/RKKxj
+        uEZlB6Dg+yOqYDl0yTchOdHlnuIbcvQ=
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com
+ [209.85.210.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-420-7j03rpOEMeGwm6l-XE37Vg-1; Tue, 26 Oct 2021 10:29:25 -0400
+X-MC-Unique: 7j03rpOEMeGwm6l-XE37Vg-1
+Received: by mail-ot1-f70.google.com with SMTP id z29-20020a9d469d000000b00552d85e0e0fso9167188ote.5
+        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 07:29:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=2kYAPX2VGBsH1X6cP0RtYj20ucdCaNWXLNB7+ktwG10=;
+        b=m+yblCPAAl/janEkV36A0IRBjoefTcBKpdySP4ZJMAz1FLXjpXdl5rk1t3yTs0vfVx
+         fvVqHQODB5DpX7SdpnycnutDC7L0gBSBSXMuXoIo1L2OHZfIVsee6uuhDO4MzRRZs5yI
+         3iN+dfVzo4UyZAGqAyIUIn3y9Y40wMhNGdPTh8fRVrlxgTaJ5WfV428CCVePgE1NV2BH
+         EK3MAo6DBH/aKGb3XrU3PQCsGw1BWxopbR3KU1KQupcbUfYsEsSTH9scWwa3HVJD72VP
+         bA+O1ZD6QwldLYschxUK8phw0ssYgEtSkBFsmFR/WrwFq8M7I2e0m16W4itkgt6DPs1f
+         poeQ==
+X-Gm-Message-State: AOAM530MuEa5vf4erAKHXgRDKzH3d1kfRoiAPnv68pVqyyA2kadCfx+b
+        2PXTWWHsphLOMSNBKrRFE91+9SskO+cOI+Yi4VDr/ulMOYWimW80vb+K/UM+m7tEXt/R7un8Cxh
+        aNvLQYi2mNYpOaKFF
+X-Received: by 2002:a05:6830:142:: with SMTP id j2mr19958161otp.252.1635258563320;
+        Tue, 26 Oct 2021 07:29:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxG4KUMnqa1iY9x1BOCXowMXBHg3LGdshyNNXldXqNcmbfhcg/JpKs4aVIrfaxlvz4ZhAYNFg==
+X-Received: by 2002:a05:6830:142:: with SMTP id j2mr19958135otp.252.1635258562996;
+        Tue, 26 Oct 2021 07:29:22 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id v24sm3822218oou.45.2021.10.26.07.29.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Oct 2021 07:29:22 -0700 (PDT)
+Date:   Tue, 26 Oct 2021 08:29:20 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Cc:     Yishai Hadas <yishaih@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
+        Cornelia Huck <cohuck@redhat.com>
+Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
+ for mlx5 devices
+Message-ID: <20211026082920.1f302a45.alex.williamson@redhat.com>
+In-Reply-To: <YXb7wejD1qckNrhC@work-vm>
+References: <20211019105838.227569-1-yishaih@nvidia.com>
+        <20211019105838.227569-13-yishaih@nvidia.com>
+        <20211019124352.74c3b6ba.alex.williamson@redhat.com>
+        <20211019192328.GZ2744544@nvidia.com>
+        <20211019145856.2fa7f7c8.alex.williamson@redhat.com>
+        <20211019230431.GA2744544@nvidia.com>
+        <5a496713-ae1d-11f2-1260-e4c1956e1eda@nvidia.com>
+        <20211020105230.524e2149.alex.williamson@redhat.com>
+        <YXbceaVo0q6hOesg@work-vm>
+        <20211025115535.49978053.alex.williamson@redhat.com>
+        <YXb7wejD1qckNrhC@work-vm>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Received: from localhost.localdomain (188.25.174.251) by AM3PR07CA0113.eurprd07.prod.outlook.com (2603:10a6:207:7::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.10 via Frontend Transport; Tue, 26 Oct 2021 14:28:12 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 71acd12b-2e2a-4aaf-db44-08d9988cd7ae
-X-MS-TrafficTypeDiagnostic: VI1PR04MB3965:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB39659D1A390D1CA0A87AF525E0849@VI1PR04MB3965.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gND1A0sKCnB3TX7Nn1M9I8gpvAYjI2VEHaNytharnMJOYNNufsQJS/ukP0UJrn2i+H1A9X16l1b1bumMv4UBtSaVWm9jiielewZak+7qULLsD291DL8FkGEYLtFAyJI5AAtpzIVdemihyGZbLcAPgDeXqJLYjg+/4sdvehvvVfjLbHsa7pYn17/MgZeDk0wAw2kKTsiVcEjpOG0R3tzg5bIKcGUK/NQtr5j89ozNNrEDkQyHW88HWpURFUlP4sSFsvxzpbKgORUR8Lny146TyVTgiS2rfNL3roWXFykBDgys9Ckac8N3GmTm++OU4KsVWEiI7AzdO0rFGswmaScgVCZM8N45leubGlYIsZgmZpFFf2rxyiODHq57ML2mhmfH5kXjUXNSk688ZrG6mVcmnf2ZI0kyZMxyqKxe4UaZVXoyn6b6EyboWaF0guq+pKVH4FuF5Ihx69+y5pxgYs+ETrA4VVJVxSr6Vznb+FglWSAJ/3OLOGwkG3HAQZB2TKb+vP9zmgSzeFfhqKxKWosmb1QEQQ+SSJ0EJGqq9AxxGNNERv6G+XF61p8iva0C5HHoPeTaYdKcvVKE2wIqdkr0gWmDhs0YOqA9TJySLEoeweWMW5ErkXWAXJdYYu+vfYngAJ9Mkd/IyLVONtbE2bt4q6awJLrx180dFjELZReobVts6PyvP75p0ydLISsbv0OueH43us3h8dPIggtvuEXU/g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(2906002)(6666004)(7416002)(1076003)(6506007)(83380400001)(316002)(52116002)(2616005)(8676002)(30864003)(4326008)(6512007)(38100700002)(66946007)(6916009)(508600001)(26005)(6486002)(36756003)(44832011)(956004)(54906003)(186003)(66476007)(66556008)(86362001)(5660300002)(8936002)(38350700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+tyiHobURhAU/0fmBV1iK7KzoV7Ax4fmsJwTHcbbIkyLsmBqF7E/vQvR9Viw?=
- =?us-ascii?Q?9fSC8/vuwtWWQUHtkasgv+Dptgk2aBx6I3rUbPmY5+uI8h6hZM/IDX7Ywor1?=
- =?us-ascii?Q?3HhmJgVKizNmuBr16SbtPYWiYpKKh15xUrzR0hHpxGNyb4LbFU7FiXKxNTB3?=
- =?us-ascii?Q?QPaE3JBWfnTLv26T/qzfHm0c3Kp4OtB2NqkKIvgQZH57UlYGs7gAwlylBgsi?=
- =?us-ascii?Q?0huWXscOGDHJP4GycDYIIvEp097iHqlMBPR4r6W0Qj96eBnSffKde938GKNE?=
- =?us-ascii?Q?IsVFrxXn7NtZHasdhDDnLquEBlRljJoBhtlbZHrqIANIa4z5H5y4pku7qRnk?=
- =?us-ascii?Q?LHCR0xMr4gEid9eFBIWgzONjkZqQS/txwz6gjKNIBY+XLjl9dVwCCXqeh5Se?=
- =?us-ascii?Q?0WwGRgUVIGFVUKueWaHw4bww/nHqrKQBsofxgdHpk/qKf0S+Qni3wQycBJie?=
- =?us-ascii?Q?dl33kuQFXEvM6plxpxZtGPbD3NYoor4oI49yBP5tPXgcmstwAUYKTUHUyPOX?=
- =?us-ascii?Q?NykgJbmGnSGEy4XnB2o4kyZeaqCoHX5UuxpVkeWuCdHW94Pynh0WZ0aZlnPt?=
- =?us-ascii?Q?yDust/QmfvC07Jmx9yE3BFAq+Xii24iqNXutEnx3pE/bN3c1QtIPmbFGAXzF?=
- =?us-ascii?Q?dMQu+7B8vbmrbMlgDVszWdqFbS9ex8EvxHSfAyn8NiBFmyEUVU2iUY4RNmay?=
- =?us-ascii?Q?pgJBJJ8hhhyTNa8ZUHKHnmGV/+xPo+/j58s1k29xaiYEG/l6VEoCsrO8KaQp?=
- =?us-ascii?Q?YzRpnUm8pYrUWoJFj39gNUgSxdhU/bg4JHWuZWt6kJpRnV++kep2UVLoN4IS?=
- =?us-ascii?Q?FafZCF/bmbtZ4nmAI2w3897Uo5gOlT3yJFmwHaiA43AL9ekpRM3jF3JLlw4J?=
- =?us-ascii?Q?kzo+2i7R4iffYANSzPS7QEFGQDjufm2h/Mtx0fjJUlGrujw9lf7VnGMA8iRb?=
- =?us-ascii?Q?Qw+Yn8ZnC0UVSzdHi8bMp/GSL67d+UWtJyFOOzmvOlWurzbE/5W/v0DH7gLA?=
- =?us-ascii?Q?F4Yi+JcK5+xG036FzzJh7EDQhDzDsl6Fetqh6J+5gZtAhmkGF4fCJgp2EpAj?=
- =?us-ascii?Q?Oz4EnVb8EVuLcjeYw6entXHpm6HRnR9tU/zjec2PGt7jqxcBiV+M2bk/Pkuw?=
- =?us-ascii?Q?tryeKLwQ+nAL9r0nB2fg8mhJvrRFHQSgyOykhTjzp67L2cHahnWy/vAfgrjn?=
- =?us-ascii?Q?xdfAwMwSEMlUzDGS57VKeV2n+91+HVjCNt2oycNI/RIW9mDVAU0sJacbRIS4?=
- =?us-ascii?Q?BVJLR47YUeky7zvHjQJgNEVrxYAqjdS3VAfr3NYlt7Bk2ssn7W/jCkOswIKK?=
- =?us-ascii?Q?zcWs5apLQNs3il7hj3Rco2yujZeUzsYm2mzBF/ZfMVzoehtEyC7J2MmfO3jC?=
- =?us-ascii?Q?LxlcK2VGmUVegG2Mc17O3WEceKjXflk1rF06XcQNDc9frOZNmfyZ12y98aM6?=
- =?us-ascii?Q?Yw4RpIKCWcwFJaUNg8BX7TGwbkSXGtSA9HBgbGkXkZeKnPNHgwfHsESabxPu?=
- =?us-ascii?Q?fXES72ylYhljultVZ9B4ZLs8Ek+rhuw+OdlXJ3c9SlkGOSBM1UtLcZruYzDd?=
- =?us-ascii?Q?ZArPyp5vQNjx+Sn/fSMbLHFvbjHnLgSxSSzWtYEqL2pLfPn24r2dTDNT3OmI?=
- =?us-ascii?Q?6n/v0jCSNPMqtke/O20uBVg=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 71acd12b-2e2a-4aaf-db44-08d9988cd7ae
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2021 14:28:14.0674
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AuR8970PSHuqx+eurDHdeoBahoMFFfRXmtkqQ4N6x+n3KL7mPDT+BjbFtqqHCIr0cxQ9bIz0c2UEBrqzq23NkA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB3965
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To reduce code churn, the same patch makes multiple changes, since they
-all touch the same lines:
+On Mon, 25 Oct 2021 19:47:29 +0100
+"Dr. David Alan Gilbert" <dgilbert@redhat.com> wrote:
 
-1. The implementations for these two are identical, just with different
-   function pointers. Reduce duplications and name the function pointers
-   "mod_cb" instead of "add_cb" and "del_cb". Pass the event as argument.
+> * Alex Williamson (alex.williamson@redhat.com) wrote:
+> > On Mon, 25 Oct 2021 17:34:01 +0100
+> > "Dr. David Alan Gilbert" <dgilbert@redhat.com> wrote:
+> >  =20
+> > > * Alex Williamson (alex.williamson@redhat.com) wrote: =20
+> > > > [Cc +dgilbert, +cohuck]
+> > > >=20
+> > > > On Wed, 20 Oct 2021 11:28:04 +0300
+> > > > Yishai Hadas <yishaih@nvidia.com> wrote:
+> > > >    =20
+> > > > > On 10/20/2021 2:04 AM, Jason Gunthorpe wrote:   =20
+> > > > > > On Tue, Oct 19, 2021 at 02:58:56PM -0600, Alex Williamson wrote=
+:     =20
+> > > > > >> I think that gives us this table:
+> > > > > >>
+> > > > > >> |   NDMA   | RESUMING |  SAVING  |  RUNNING |
+> > > > > >> +----------+----------+----------+----------+ ---
+> > > > > >> |     X    |     0    |     0    |     0    |  ^
+> > > > > >> +----------+----------+----------+----------+  |
+> > > > > >> |     0    |     0    |     0    |     1    |  |
+> > > > > >> +----------+----------+----------+----------+  |
+> > > > > >> |     X    |     0    |     1    |     0    |
+> > > > > >> +----------+----------+----------+----------+  NDMA value is e=
+ither compatible
+> > > > > >> |     0    |     0    |     1    |     1    |  to existing beh=
+avior or don't
+> > > > > >> +----------+----------+----------+----------+  care due to red=
+undancy vs
+> > > > > >> |     X    |     1    |     0    |     0    |  !_RUNNING/INVAL=
+ID/ERROR
+> > > > > >> +----------+----------+----------+----------+
+> > > > > >> |     X    |     1    |     0    |     1    |  |
+> > > > > >> +----------+----------+----------+----------+  |
+> > > > > >> |     X    |     1    |     1    |     0    |  |
+> > > > > >> +----------+----------+----------+----------+  |
+> > > > > >> |     X    |     1    |     1    |     1    |  v
+> > > > > >> +----------+----------+----------+----------+ ---
+> > > > > >> |     1    |     0    |     0    |     1    |  ^
+> > > > > >> +----------+----------+----------+----------+  Desired new use=
+ful cases
+> > > > > >> |     1    |     0    |     1    |     1    |  v
+> > > > > >> +----------+----------+----------+----------+ ---
+> > > > > >>
+> > > > > >> Specifically, rows 1, 3, 5 with NDMA =3D 1 are valid states a =
+user can
+> > > > > >> set which are simply redundant to the NDMA =3D 0 cases.     =20
+> > > > > > It seems right
+> > > > > >     =20
+> > > > > >> Row 6 remains invalid due to lack of support for pre-copy (_RE=
+SUMING
+> > > > > >> | _RUNNING) and therefore cannot be set by userspace.  Rows 7 =
+& 8
+> > > > > >> are error states and cannot be set by userspace.     =20
+> > > > > > I wonder, did Yishai's series capture this row 6 restriction? Y=
+ishai?     =20
+> > > > >=20
+> > > > >=20
+> > > > > It seems so,=C2=A0 by using the below check which includes the=20
+> > > > > !VFIO_DEVICE_STATE_VALID clause.
+> > > > >=20
+> > > > > if (old_state =3D=3D VFIO_DEVICE_STATE_ERROR ||
+> > > > >  =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 !VFIO_DEVICE_STATE_VALID(s=
+tate) ||
+> > > > >  =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 (state & ~MLX5VF_SUPPORTED=
+_DEVICE_STATES))
+> > > > >  =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 return -EINVAL;
+> > > > >=20
+> > > > > Which is:
+> > > > >=20
+> > > > > #define VFIO_DEVICE_STATE_VALID(state) \
+> > > > >  =C2=A0=C2=A0=C2=A0 (state & VFIO_DEVICE_STATE_RESUMING ? \
+> > > > >  =C2=A0=C2=A0=C2=A0 (state & VFIO_DEVICE_STATE_MASK) =3D=3D VFIO_=
+DEVICE_STATE_RESUMING : 1)
+> > > > >    =20
+> > > > > >     =20
+> > > > > >> Like other bits, setting the bit should be effective at the co=
+mpletion
+> > > > > >> of writing device state.  Therefore the device would need to f=
+lush any
+> > > > > >> outbound DMA queues before returning.     =20
+> > > > > > Yes, the device commands are expected to achieve this.
+> > > > > >     =20
+> > > > > >> The question I was really trying to get to though is whether w=
+e have a
+> > > > > >> supportable interface without such an extension.  There's curr=
+ently
+> > > > > >> only an experimental version of vfio migration support for PCI=
+ devices
+> > > > > >> in QEMU (afaik),     =20
+> > > > > > If I recall this only matters if you have a VM that is causing
+> > > > > > migratable devices to interact with each other. So long as the =
+devices
+> > > > > > are only interacting with the CPU this extra step is not strict=
+ly
+> > > > > > needed.
+> > > > > >
+> > > > > > So, single device cases can be fine as-is
+> > > > > >
+> > > > > > IMHO the multi-device case the VMM should probably demand this =
+support
+> > > > > > from the migration drivers, otherwise it cannot know if it is s=
+afe for
+> > > > > > sure.
+> > > > > >
+> > > > > > A config option to override the block if the admin knows there =
+is no
+> > > > > > use case to cause devices to interact - eg two NVMe devices wit=
+hout
+> > > > > > CMB do not have a useful interaction.
+> > > > > >     =20
+> > > > > >> so it seems like we could make use of the bus-master bit to fi=
+ll
+> > > > > >> this gap in QEMU currently, before we claim non-experimental
+> > > > > >> support, but this new device agnostic extension would be requi=
+red
+> > > > > >> for non-PCI device support (and PCI support should adopt it as
+> > > > > >> available).  Does that sound right?  Thanks,     =20
+> > > > > > I don't think the bus master support is really a substitute, tr=
+ipping
+> > > > > > bus master will stop DMA but it will not do so in a clean way a=
+nd is
+> > > > > > likely to be non-transparent to the VM's driver.
+> > > > > >
+> > > > > > The single-device-assigned case is a cleaner restriction, IMHO.
+> > > > > >
+> > > > > > Alternatively we can add the 4th bit and insist that migration =
+drivers
+> > > > > > support all the states. I'm just unsure what other HW can do, I=
+ get
+> > > > > > the feeling people have been designing to the migration descrip=
+tion in
+> > > > > > the header file for a while and this is a new idea.   =20
+> > > >=20
+> > > > I'm wondering if we're imposing extra requirements on the !_RUNNING
+> > > > state that don't need to be there.  For example, if we can assume t=
+hat
+> > > > all devices within a userspace context are !_RUNNING before any of =
+the
+> > > > devices begin to retrieve final state, then clearing of the _RUNNING
+> > > > bit becomes the device quiesce point and the beginning of reading
+> > > > device data is the point at which the device state is frozen and
+> > > > serialized.  No new states required and essentially works with a sl=
+ight
+> > > > rearrangement of the callbacks in this series.  Why can't we do tha=
+t?   =20
+> > >=20
+> > > So without me actually understanding your bit encodings that closely,=
+ I
+> > > think the problem is we have to asusme that any transition takes time.
+> > > From the QEMU point of view I think the requirement is when we stop t=
+he
+> > > machine (vm_stop_force_state(RUN_STATE_FINISH_MIGRATE) in
+> > > migration_completion) that at the point that call returns (with no
+> > > error) all devices are idle.  That means you need a way to command the
+> > > device to go into the stopped state, and probably another to make sure
+> > > it's got there. =20
+> >=20
+> > In a way.  We're essentially recognizing that we cannot stop a single
+> > device in isolation of others that might participate in peer-to-peer
+> > DMA with that device, so we need to make a pass to quiesce each device
+> > before we can ask the device to fully stop.  This new device state bit
+> > is meant to be that quiescent point, devices can accept incoming DMA
+> > but should cease to generate any.  Once all device are quiesced then we
+> > can safely stop them. =20
+>=20
+> It may need some further refinement; for example in that quiesed state
+> do counters still tick? will a NIC still respond to packets that don't
+> get forwarded to the host?
 
-2. Drop the "const" attribute from "orig_dev". If the driver needs to
-   check whether orig_dev belongs to itself and then
-   call_switchdev_notifiers(orig_dev, SWITCHDEV_FDB_OFFLOADED), it
-   can't, because call_switchdev_notifiers takes a non-const struct
-   net_device *.
+I'd think no, but I imagine it's largely device specific to what extent
+a device can be fully halted yet minimally handle incoming DMA.
+=20
+> Note I still think you need a way to know when you have actually reached
+> these states; setting a bit in a register is asking nicely for a device
+> to go into a state - has it got there?
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- include/net/switchdev.h   |  48 +++---------
- net/dsa/slave.c           |  41 ++--------
- net/switchdev/switchdev.c | 156 ++++++--------------------------------
- 3 files changed, 43 insertions(+), 202 deletions(-)
+It's more than asking nicely, we define the device_state bits as
+synchronous, the device needs to enter the state before returning from
+the write operation or return an errno.
 
-diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-index 60d806b6a5ae..d353793dfeb5 100644
---- a/include/net/switchdev.h
-+++ b/include/net/switchdev.h
-@@ -299,28 +299,16 @@ void switchdev_port_fwd_mark_set(struct net_device *dev,
- 				 struct net_device *group_dev,
- 				 bool joining);
- 
--int switchdev_handle_fdb_add_to_device(struct net_device *dev,
-+int switchdev_handle_fdb_event_to_device(struct net_device *dev, unsigned long event,
- 		const struct switchdev_notifier_fdb_info *fdb_info,
- 		bool (*check_cb)(const struct net_device *dev),
- 		bool (*foreign_dev_check_cb)(const struct net_device *dev,
- 					     const struct net_device *foreign_dev),
--		int (*add_cb)(struct net_device *dev,
--			      const struct net_device *orig_dev, const void *ctx,
-+		int (*mod_cb)(struct net_device *dev, struct net_device *orig_dev,
-+			      unsigned long event, const void *ctx,
- 			      const struct switchdev_notifier_fdb_info *fdb_info),
--		int (*lag_add_cb)(struct net_device *dev,
--				  const struct net_device *orig_dev, const void *ctx,
--				  const struct switchdev_notifier_fdb_info *fdb_info));
--
--int switchdev_handle_fdb_del_to_device(struct net_device *dev,
--		const struct switchdev_notifier_fdb_info *fdb_info,
--		bool (*check_cb)(const struct net_device *dev),
--		bool (*foreign_dev_check_cb)(const struct net_device *dev,
--					     const struct net_device *foreign_dev),
--		int (*del_cb)(struct net_device *dev,
--			      const struct net_device *orig_dev, const void *ctx,
--			      const struct switchdev_notifier_fdb_info *fdb_info),
--		int (*lag_del_cb)(struct net_device *dev,
--				  const struct net_device *orig_dev, const void *ctx,
-+		int (*lag_mod_cb)(struct net_device *dev, struct net_device *orig_dev,
-+				  unsigned long event, const void *ctx,
- 				  const struct switchdev_notifier_fdb_info *fdb_info));
- 
- int switchdev_handle_port_obj_add(struct net_device *dev,
-@@ -426,32 +414,16 @@ call_switchdev_blocking_notifiers(unsigned long val,
- }
- 
- static inline int
--switchdev_handle_fdb_add_to_device(struct net_device *dev,
--		const struct switchdev_notifier_fdb_info *fdb_info,
--		bool (*check_cb)(const struct net_device *dev),
--		bool (*foreign_dev_check_cb)(const struct net_device *dev,
--					     const struct net_device *foreign_dev),
--		int (*add_cb)(struct net_device *dev,
--			      const struct net_device *orig_dev, const void *ctx,
--			      const struct switchdev_notifier_fdb_info *fdb_info),
--		int (*lag_add_cb)(struct net_device *dev,
--				  const struct net_device *orig_dev, const void *ctx,
--				  const struct switchdev_notifier_fdb_info *fdb_info))
--{
--	return 0;
--}
--
--static inline int
--switchdev_handle_fdb_del_to_device(struct net_device *dev,
-+switchdev_handle_fdb_event_to_device(struct net_device *dev, unsigned long event,
- 		const struct switchdev_notifier_fdb_info *fdb_info,
- 		bool (*check_cb)(const struct net_device *dev),
- 		bool (*foreign_dev_check_cb)(const struct net_device *dev,
- 					     const struct net_device *foreign_dev),
--		int (*del_cb)(struct net_device *dev,
--			      const struct net_device *orig_dev, const void *ctx,
-+		int (*mod_cb)(struct net_device *dev, struct net_device *orig_dev,
-+			      unsigned long event, const void *ctx,
- 			      const struct switchdev_notifier_fdb_info *fdb_info),
--		int (*lag_del_cb)(struct net_device *dev,
--				  const struct net_device *orig_dev, const void *ctx,
-+		int (*lag_mod_cb)(struct net_device *dev, struct net_device *orig_dev,
-+				  unsigned long event, const void *ctx,
- 				  const struct switchdev_notifier_fdb_info *fdb_info))
- {
- 	return 0;
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index adcfb2cb4e61..f7675db09d2a 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -2469,10 +2469,9 @@ static bool dsa_foreign_dev_check(const struct net_device *dev,
- }
- 
- static int dsa_slave_fdb_event(struct net_device *dev,
--			       const struct net_device *orig_dev,
--			       const void *ctx,
--			       const struct switchdev_notifier_fdb_info *fdb_info,
--			       unsigned long event)
-+			       struct net_device *orig_dev,
-+			       unsigned long event, const void *ctx,
-+			       const struct switchdev_notifier_fdb_info *fdb_info)
- {
- 	struct dsa_switchdev_event_work *switchdev_work;
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
-@@ -2528,24 +2527,6 @@ static int dsa_slave_fdb_event(struct net_device *dev,
- 	return 0;
- }
- 
--static int
--dsa_slave_fdb_add_to_device(struct net_device *dev,
--			    const struct net_device *orig_dev, const void *ctx,
--			    const struct switchdev_notifier_fdb_info *fdb_info)
--{
--	return dsa_slave_fdb_event(dev, orig_dev, ctx, fdb_info,
--				   SWITCHDEV_FDB_ADD_TO_DEVICE);
--}
--
--static int
--dsa_slave_fdb_del_to_device(struct net_device *dev,
--			    const struct net_device *orig_dev, const void *ctx,
--			    const struct switchdev_notifier_fdb_info *fdb_info)
--{
--	return dsa_slave_fdb_event(dev, orig_dev, ctx, fdb_info,
--				   SWITCHDEV_FDB_DEL_TO_DEVICE);
--}
--
- /* Called under rcu_read_lock() */
- static int dsa_slave_switchdev_event(struct notifier_block *unused,
- 				     unsigned long event, void *ptr)
-@@ -2560,18 +2541,12 @@ static int dsa_slave_switchdev_event(struct notifier_block *unused,
- 						     dsa_slave_port_attr_set);
- 		return notifier_from_errno(err);
- 	case SWITCHDEV_FDB_ADD_TO_DEVICE:
--		err = switchdev_handle_fdb_add_to_device(dev, ptr,
--							 dsa_slave_dev_check,
--							 dsa_foreign_dev_check,
--							 dsa_slave_fdb_add_to_device,
--							 NULL);
--		return notifier_from_errno(err);
- 	case SWITCHDEV_FDB_DEL_TO_DEVICE:
--		err = switchdev_handle_fdb_del_to_device(dev, ptr,
--							 dsa_slave_dev_check,
--							 dsa_foreign_dev_check,
--							 dsa_slave_fdb_del_to_device,
--							 NULL);
-+		err = switchdev_handle_fdb_event_to_device(dev, event, ptr,
-+							   dsa_slave_dev_check,
-+							   dsa_foreign_dev_check,
-+							   dsa_slave_fdb_event,
-+							   NULL);
- 		return notifier_from_errno(err);
- 	default:
- 		return NOTIFY_DONE;
-diff --git a/net/switchdev/switchdev.c b/net/switchdev/switchdev.c
-index 0b2c18efc079..83460470e883 100644
---- a/net/switchdev/switchdev.c
-+++ b/net/switchdev/switchdev.c
-@@ -428,17 +428,17 @@ switchdev_lower_dev_find(struct net_device *dev,
- 	return switchdev_priv.lower_dev;
- }
- 
--static int __switchdev_handle_fdb_add_to_device(struct net_device *dev,
--		const struct net_device *orig_dev,
-+static int __switchdev_handle_fdb_event_to_device(struct net_device *dev,
-+		struct net_device *orig_dev, unsigned long event,
- 		const struct switchdev_notifier_fdb_info *fdb_info,
- 		bool (*check_cb)(const struct net_device *dev),
- 		bool (*foreign_dev_check_cb)(const struct net_device *dev,
- 					     const struct net_device *foreign_dev),
--		int (*add_cb)(struct net_device *dev,
--			      const struct net_device *orig_dev, const void *ctx,
-+		int (*mod_cb)(struct net_device *dev, struct net_device *orig_dev,
-+			      unsigned long event, const void *ctx,
- 			      const struct switchdev_notifier_fdb_info *fdb_info),
--		int (*lag_add_cb)(struct net_device *dev,
--				  const struct net_device *orig_dev, const void *ctx,
-+		int (*lag_mod_cb)(struct net_device *dev, struct net_device *orig_dev,
-+				  unsigned long event, const void *ctx,
- 				  const struct switchdev_notifier_fdb_info *fdb_info))
- {
- 	const struct switchdev_notifier_info *info = &fdb_info->info;
-@@ -447,17 +447,17 @@ static int __switchdev_handle_fdb_add_to_device(struct net_device *dev,
- 	int err = -EOPNOTSUPP;
- 
- 	if (check_cb(dev))
--		return add_cb(dev, orig_dev, info->ctx, fdb_info);
-+		return mod_cb(dev, orig_dev, event, info->ctx, fdb_info);
- 
- 	if (netif_is_lag_master(dev)) {
- 		if (!switchdev_lower_dev_find(dev, check_cb, foreign_dev_check_cb))
- 			goto maybe_bridged_with_us;
- 
- 		/* This is a LAG interface that we offload */
--		if (!lag_add_cb)
-+		if (!lag_mod_cb)
- 			return -EOPNOTSUPP;
- 
--		return lag_add_cb(dev, orig_dev, info->ctx, fdb_info);
-+		return lag_mod_cb(dev, orig_dev, event, info->ctx, fdb_info);
- 	}
- 
- 	/* Recurse through lower interfaces in case the FDB entry is pointing
-@@ -481,10 +481,10 @@ static int __switchdev_handle_fdb_add_to_device(struct net_device *dev,
- 						      foreign_dev_check_cb))
- 				continue;
- 
--			err = __switchdev_handle_fdb_add_to_device(lower_dev, orig_dev,
--								   fdb_info, check_cb,
--								   foreign_dev_check_cb,
--								   add_cb, lag_add_cb);
-+			err = __switchdev_handle_fdb_event_to_device(lower_dev, orig_dev,
-+								     event, fdb_info, check_cb,
-+								     foreign_dev_check_cb,
-+								     mod_cb, lag_mod_cb);
- 			if (err && err != -EOPNOTSUPP)
- 				return err;
- 		}
-@@ -503,140 +503,34 @@ static int __switchdev_handle_fdb_add_to_device(struct net_device *dev,
- 	if (!switchdev_lower_dev_find(br, check_cb, foreign_dev_check_cb))
- 		return 0;
- 
--	return __switchdev_handle_fdb_add_to_device(br, orig_dev, fdb_info,
--						    check_cb, foreign_dev_check_cb,
--						    add_cb, lag_add_cb);
-+	return __switchdev_handle_fdb_event_to_device(br, orig_dev, event, fdb_info,
-+						      check_cb, foreign_dev_check_cb,
-+						      mod_cb, lag_mod_cb);
- }
- 
--int switchdev_handle_fdb_add_to_device(struct net_device *dev,
-+int switchdev_handle_fdb_event_to_device(struct net_device *dev, unsigned long event,
- 		const struct switchdev_notifier_fdb_info *fdb_info,
- 		bool (*check_cb)(const struct net_device *dev),
- 		bool (*foreign_dev_check_cb)(const struct net_device *dev,
- 					     const struct net_device *foreign_dev),
--		int (*add_cb)(struct net_device *dev,
--			      const struct net_device *orig_dev, const void *ctx,
-+		int (*mod_cb)(struct net_device *dev, struct net_device *orig_dev,
-+			      unsigned long event, const void *ctx,
- 			      const struct switchdev_notifier_fdb_info *fdb_info),
--		int (*lag_add_cb)(struct net_device *dev,
--				  const struct net_device *orig_dev, const void *ctx,
-+		int (*lag_mod_cb)(struct net_device *dev, struct net_device *orig_dev,
-+				  unsigned long event, const void *ctx,
- 				  const struct switchdev_notifier_fdb_info *fdb_info))
- {
- 	int err;
- 
--	err = __switchdev_handle_fdb_add_to_device(dev, dev, fdb_info,
--						   check_cb,
--						   foreign_dev_check_cb,
--						   add_cb, lag_add_cb);
-+	err = __switchdev_handle_fdb_event_to_device(dev, dev, event, fdb_info,
-+						     check_cb, foreign_dev_check_cb,
-+						     mod_cb, lag_mod_cb);
- 	if (err == -EOPNOTSUPP)
- 		err = 0;
- 
- 	return err;
- }
--EXPORT_SYMBOL_GPL(switchdev_handle_fdb_add_to_device);
--
--static int __switchdev_handle_fdb_del_to_device(struct net_device *dev,
--		const struct net_device *orig_dev,
--		const struct switchdev_notifier_fdb_info *fdb_info,
--		bool (*check_cb)(const struct net_device *dev),
--		bool (*foreign_dev_check_cb)(const struct net_device *dev,
--					     const struct net_device *foreign_dev),
--		int (*del_cb)(struct net_device *dev,
--			      const struct net_device *orig_dev, const void *ctx,
--			      const struct switchdev_notifier_fdb_info *fdb_info),
--		int (*lag_del_cb)(struct net_device *dev,
--				  const struct net_device *orig_dev, const void *ctx,
--				  const struct switchdev_notifier_fdb_info *fdb_info))
--{
--	const struct switchdev_notifier_info *info = &fdb_info->info;
--	struct net_device *br, *lower_dev;
--	struct list_head *iter;
--	int err = -EOPNOTSUPP;
--
--	if (check_cb(dev))
--		return del_cb(dev, orig_dev, info->ctx, fdb_info);
--
--	if (netif_is_lag_master(dev)) {
--		if (!switchdev_lower_dev_find(dev, check_cb, foreign_dev_check_cb))
--			goto maybe_bridged_with_us;
--
--		/* This is a LAG interface that we offload */
--		if (!lag_del_cb)
--			return -EOPNOTSUPP;
--
--		return lag_del_cb(dev, orig_dev, info->ctx, fdb_info);
--	}
--
--	/* Recurse through lower interfaces in case the FDB entry is pointing
--	 * towards a bridge device.
--	 */
--	if (netif_is_bridge_master(dev)) {
--		if (!switchdev_lower_dev_find(dev, check_cb, foreign_dev_check_cb))
--			return 0;
--
--		/* This is a bridge interface that we offload */
--		netdev_for_each_lower_dev(dev, lower_dev, iter) {
--			/* Do not propagate FDB entries across bridges */
--			if (netif_is_bridge_master(lower_dev))
--				continue;
--
--			/* Bridge ports might be either us, or LAG interfaces
--			 * that we offload.
--			 */
--			if (!check_cb(lower_dev) &&
--			    !switchdev_lower_dev_find(lower_dev, check_cb,
--						      foreign_dev_check_cb))
--				continue;
--
--			err = __switchdev_handle_fdb_del_to_device(lower_dev, orig_dev,
--								   fdb_info, check_cb,
--								   foreign_dev_check_cb,
--								   del_cb, lag_del_cb);
--			if (err && err != -EOPNOTSUPP)
--				return err;
--		}
--
--		return 0;
--	}
--
--maybe_bridged_with_us:
--	/* Event is neither on a bridge nor a LAG. Check whether it is on an
--	 * interface that is in a bridge with us.
--	 */
--	br = netdev_master_upper_dev_get_rcu(dev);
--	if (!br || !netif_is_bridge_master(br))
--		return 0;
--
--	if (!switchdev_lower_dev_find(br, check_cb, foreign_dev_check_cb))
--		return 0;
--
--	return __switchdev_handle_fdb_del_to_device(br, orig_dev, fdb_info,
--						    check_cb, foreign_dev_check_cb,
--						    del_cb, lag_del_cb);
--}
--
--int switchdev_handle_fdb_del_to_device(struct net_device *dev,
--		const struct switchdev_notifier_fdb_info *fdb_info,
--		bool (*check_cb)(const struct net_device *dev),
--		bool (*foreign_dev_check_cb)(const struct net_device *dev,
--					     const struct net_device *foreign_dev),
--		int (*del_cb)(struct net_device *dev,
--			      const struct net_device *orig_dev, const void *ctx,
--			      const struct switchdev_notifier_fdb_info *fdb_info),
--		int (*lag_del_cb)(struct net_device *dev,
--				  const struct net_device *orig_dev, const void *ctx,
--				  const struct switchdev_notifier_fdb_info *fdb_info))
--{
--	int err;
--
--	err = __switchdev_handle_fdb_del_to_device(dev, dev, fdb_info,
--						   check_cb,
--						   foreign_dev_check_cb,
--						   del_cb, lag_del_cb);
--	if (err == -EOPNOTSUPP)
--		err = 0;
--
--	return err;
--}
--EXPORT_SYMBOL_GPL(switchdev_handle_fdb_del_to_device);
-+EXPORT_SYMBOL_GPL(switchdev_handle_fdb_event_to_device);
- 
- static int __switchdev_handle_port_obj_add(struct net_device *dev,
- 			struct switchdev_notifier_port_obj_info *port_obj_info,
--- 
-2.25.1
+> > > Now, you could be a *little* more sloppy; you could allow a device ca=
+rry
+> > > on doing stuff purely with it's own internal state up until the point
+> > > it needs to serialise; but that would have to be strictly internal st=
+ate
+> > > only - if it can change any other devices state (or issue an interrup=
+t,
+> > > change RAM etc) then you get into ordering issues on the serialisation
+> > > of multiple devices. =20
+> >=20
+> > Yep, that's the proposal that doesn't require a uAPI change, we loosen
+> > the definition of stopped to mean the device can no longer generate DMA
+> > or interrupts and all internal processing outside or responding to
+> > incoming DMA should halt (essentially the same as the new quiescent
+> > state above).  Once all devices are in this state, there should be no
+> > incoming DMA and we can safely collect per device migration data.  If
+> > state changes occur beyond the point in time where userspace has
+> > initiated the collection of migration data, drivers have options for
+> > generating errors when userspace consumes that data. =20
+>=20
+> How do you know that last device has actually gone into that state?
+
+Each device cannot, the burden is on the user to make sure all devices
+are stopped before proceeding to read migration data.
+
+> Also be careful; it feels much more delicate where something might
+> accidentally start a transaction.
+
+This sounds like a discussion of theoretically broken drivers.  Like
+the above device_state, drivers still have a synchronization point when
+the user reads the pending_bytes field to initiate retrieving the
+device state.  If the implementation requires the device to be fully
+stopped to snapshot the device state to provide to the user, this is
+where that would happen.  Thanks,
+
+Alex
 
