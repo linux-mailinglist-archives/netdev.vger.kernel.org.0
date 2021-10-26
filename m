@@ -2,467 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61B1043B599
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 17:29:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36E4B43B59D
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 17:30:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233551AbhJZPcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 11:32:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43186 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230342AbhJZPcF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Oct 2021 11:32:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E087D60E0B;
-        Tue, 26 Oct 2021 15:29:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635262181;
-        bh=HkQyX8FvVTNl7PIv+hCQ05Kz051TdB6+LUtvxa6KN3A=;
-        h=From:To:Cc:Subject:Date:From;
-        b=YkW4cQ4cYktvPO4lX6HrOl7ncYkrUoPQ/WuKX8QfoizRpzU0vxY6hUQuKozVFv3Fc
-         i9TJpS1pEW1Sq0JzmEZzsog/iwvBHRmHbzaJklglXr01kMXDWS10nbIiZ32keZrVv1
-         WlR5e6RprokhycBPyg1n3O9lYQqOK/bLoOH5RLarUZ/djOnup2nsaAprLbLhe8KStX
-         cEJ5x8kSBO3/NnItbDTr3u96KwMTNTCpjcskp2yBGOPTuOWf/NYbHqyRx1zOPY/B/W
-         7quoVkfstTswLVMlgnZvPymoja/uCXdZB1oWAv/drLegK6o6pnEHe4AmwU10hTOxlZ
-         TAT4LM2jtFY2g==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     saeedm@nvidia.com, netdev@vger.kernel.org, leonro@nvidia.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] net/mlx5: remove the recent devlink params
-Date:   Tue, 26 Oct 2021 08:29:39 -0700
-Message-Id: <20211026152939.3125950-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
+        id S235613AbhJZPco (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 11:32:44 -0400
+Received: from mail-vi1eur05on2040.outbound.protection.outlook.com ([40.107.21.40]:26226
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S236831AbhJZPcl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Oct 2021 11:32:41 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MUBGNonmFLUA8r7MG0ljgA7VmE2gn5CZZDJqHg3eSS26dBuVh1b0JBJOq4sx74d/OJzzCpLfMpGK2rANv5IZDCKHNxWCvyDU16ZfCvKnq1Ly827tQCP00ezOFIjyddPcgUcRNRGkoD5Waufvc1YZagg/WJpsoEPozTxkLQwProXmbV1OzNUaBYmFCMh5XAHfGkC5lpkYI64DwQjCLOeemvq1T0GIdQfHe5oCaBt0ZLr3qZeQV4BpqvFjCnLaoqTGG2dlN407jq+eKn3YluIQVT2dAt5clPtelFHBbE3BXQSBSg5qbmrqBhb37K6aTj1V4qfSoIWkput1KGNnjOLnwA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SpwaJP7IeMXAVTZKCaBu0aKU8pTxDdZp+1wulUs0Pe0=;
+ b=kMrTaDQ/k3n5/3zdYj/5PiEkukeyXgWbgf9Q90hGdIMpQtA/pHmf3S5CdYhqlo7eot9HUBXwtHkQWy/3dmHOgdZjEp/encB+X6Y2zlIFHH6ugYc3cs+iFIEBjKA/HsorBVbvCIb0SyeWrEJSdR286BD9vNm05dqm7S1nwT+QRraKeCkHGRv29KsqHv0sN1mciSEpKBSP7gJxNfN/NkhsYIuewYupTMy13dhrQKo+G+tBdsXSPMfn00gDTehnxE7jLFbrcGxnRrTI6bx6zOedpG17VfPt0i6lFTUlrvqZ0HnXJZulZfoWG/RQlS3tB9G98m1KLyDiY6Tn3CHn+Hno1g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=secospa.onmicrosoft.com; s=selector2-secospa-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SpwaJP7IeMXAVTZKCaBu0aKU8pTxDdZp+1wulUs0Pe0=;
+ b=mLjqb0WEaT177mECyN+dRVSP2j41fvbccIamm3SevGe9/Ub5Wi00EPzO3M3tA+oA09wc2ht3VZ/cezditOdrT4/0mdBf+CQPfIcALaUKuATeR/He9IccqgMpavFWsfZEDEWpGgAurUBrWO8VjKJ8O4lgJgvix0cigwEU/K//kxI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
+ by DBBPR03MB6700.eurprd03.prod.outlook.com (2603:10a6:10:20c::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18; Tue, 26 Oct
+ 2021 15:30:13 +0000
+Received: from DB7PR03MB4523.eurprd03.prod.outlook.com
+ ([fe80::a9aa:f363:66e:fadf]) by DB7PR03MB4523.eurprd03.prod.outlook.com
+ ([fe80::a9aa:f363:66e:fadf%6]) with mapi id 15.20.4628.020; Tue, 26 Oct 2021
+ 15:30:13 +0000
+From:   Sean Anderson <sean.anderson@seco.com>
+Subject: Re: [PATCH v4] net: macb: Fix several edge cases in validate
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Russell King <linux@armlinux.org.uk>
+References: <20211025172405.211164-1-sean.anderson@seco.com>
+ <20211025174401.1de5e95d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Message-ID: <4e430fbb-0908-fd3b-bb6e-ec316ea8d66a@seco.com>
+Date:   Tue, 26 Oct 2021 11:30:08 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <20211025174401.1de5e95d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BL0PR02CA0043.namprd02.prod.outlook.com
+ (2603:10b6:207:3d::20) To DB7PR03MB4523.eurprd03.prod.outlook.com
+ (2603:10a6:10:19::27)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: from [172.27.1.65] (50.195.82.171) by BL0PR02CA0043.namprd02.prod.outlook.com (2603:10b6:207:3d::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.14 via Frontend Transport; Tue, 26 Oct 2021 15:30:12 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 68d2ead9-c6d6-458b-0c47-08d998958163
+X-MS-TrafficTypeDiagnostic: DBBPR03MB6700:
+X-Microsoft-Antispam-PRVS: <DBBPR03MB670020D7D54DE3498EEA969D96849@DBBPR03MB6700.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: K8LrvlvX5BbxYAaz1oUAmE54+PiNkiJckZDS3Myr5hiEYrGGWQLWOKf6Pk05aK8IMGQhfxtdEtu9QUpSQwrDmTNMjWB6/SpwT3xAG3bbayDg6YtST4zl6cudB/3ossis2ubg3idvK+RsOCeNXmA/5rOlLCN+QhkXsTU8Nicyjh+WFdMgkI56/9Ed+n/Qp3v5F1bzqD50rMNxXQ6qSD+Xvor+EqNqkMhlA7G2KMRAoXv4cb1/5078r37LEYE4pUaExkWMPZs3bsTAB8c+CQQINN/rkVG/kl2HucAEUhHBezbPyML5cC51mVN9He4A1sqOMfLV62wpjAHobEx6gU6ayyjx2+n+evLUXDl1CHAgM5lU0GLX0JklkDBfg1wZr/jDp/zb3tRZ72ky7WdEXOwF85RYchgtU77zseM+uecOgNWiUnHBGyvyOPCZYimlr1TBiR6lugnEctv8BVHxQOpexUu1ZkLt+O/NtnPWwJ5JW/09GfZ811qzoAQGdmSHpb4sG3RuNOUTK7KhOF3lE+QyeZSEqkcwdlcShXVim/CSwSyEsq1zKpibJYsR4j7VRhOwfAn1PAz6ku4zXAMM9rQ2xWm4Wge4E7s2qqpGWxNuYzycdzGShb8hj3Aw1gFATJyBJW2heuumLRWOmiEse6AReEdTZmpcZp6Niw4m04dLzlFn9J/er9aXxQEl6RrPBNe9sE/52ROn28UKCG8tnUeNouJDFz3QBB2bv7Zdkxkho3ENK5Cf+MWIXWp8COyg87FCJATTgn895E6cteJ5WNfIgXjiyMLBeHcpWQg12nksEckfati5ibpYqX2gp+L0kuKgqnGfwLv1zxehe6a4Yq6r90lBz991lADlIGx9peJqCvY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(31696002)(956004)(15650500001)(966005)(8676002)(6486002)(6916009)(52116002)(66556008)(186003)(86362001)(8936002)(66946007)(38350700002)(36756003)(4326008)(6666004)(2616005)(31686004)(38100700002)(44832011)(5660300002)(54906003)(16576012)(508600001)(66476007)(26005)(2906002)(316002)(83380400001)(53546011)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?V0VLUWROVlIvUEFQVjFZUDBRMU8wd2k4ZFF4dld5V29STTJiNEVqWjh4a203?=
+ =?utf-8?B?YlVGVVU1eE9QbUpobkhVcHNUaCtEZVlFZk9Uc1psZ0xqYSs5V0szbTNCbjlx?=
+ =?utf-8?B?dWIxeDdaRmFQZXRwaUhPVkdPc0duZUUzekQrd3lQT2JjWGpWVnRxWnR3QWNC?=
+ =?utf-8?B?OWd0VTZia0ljTlBxenhtSWNGYUNCc3o2YXNRRGpXbU5waUxJNWdIdUJNZ2ZO?=
+ =?utf-8?B?U3Y5TWNIYlBKWEN6ZEdTdGNMdFhiYXY5Y1c5MC9icnQvaTZhRU53UC8rV2tN?=
+ =?utf-8?B?RGNiWlArZkxoWlhwSWhmcTFLSTIyY3dWMUJsV0Z0Tk9MMVUzc2cvWEpqMzFN?=
+ =?utf-8?B?b0VzMTgzVjdHWVVQUU1tQ25tVE1zb0JucHo1c0tqRGdpQytIbU9rM25MTC8r?=
+ =?utf-8?B?eUpOcUNTNXVzODBKeFgxaGFBNkJGNVg2WFVISFZCNXFHQ0VsSGFsRkc3bFJF?=
+ =?utf-8?B?TU1PaEZwUHZzSGp1Q09SSXNDZFJGdTZRWEVCMmlybldwRHpkdG5JRDh4Z3BW?=
+ =?utf-8?B?S2pLNm5ES0FrVGNBdG1WbzZ0NldFbDFWT2hKaklwUGdrejREc0xzN2U5UWdE?=
+ =?utf-8?B?K0ltQWZ1TTRadW53aEFEbzh6OGxXU01wTVVPU1B0N1duNTVaaHJ2NWdYSVJU?=
+ =?utf-8?B?MGRZUW0yWlB6ZnJJamRwMHp4T0R6V3ROWnlzcldPMkJMczBiRzVlS1RYcVpm?=
+ =?utf-8?B?MU03V3lRc3lWS1gwQUNmLy83MFFCSE5NU2lQL0lGZmFnRndZZnRvWHNSVkVS?=
+ =?utf-8?B?UEtSVm1naEJLWDJlOWgxRHc1TEVhRnRqNEFVR2dEcWJXTDZsZEtpL3BoenZC?=
+ =?utf-8?B?VE5aa1hkUzFSNzJ5emUrSkpQdGZBVkliZ2hwVjNBTmNrd202VmtwTmtCdDQw?=
+ =?utf-8?B?TEwxOXVkMmVmbkx5NFpGaFozNFF2Z08weEE0a09GaDJEc3NHcmovbkVKd0U0?=
+ =?utf-8?B?MXM1c3VQdmxDd3R2UEY3SVQzSEVzU2RhRkVKbHpnaGh2YXdGUURHampCdEtM?=
+ =?utf-8?B?aDdITTNnN3VUZ3ExS0p0QysweUpPZk03NTIxZlFEV3dITnQzcjZhaHRtRmxO?=
+ =?utf-8?B?M1l0SlV0RDVFYVlPRTd2Z3MxVGlTUkFYYWNXMExzekFVYUVqTlNyYThQUy9K?=
+ =?utf-8?B?RERJWkJWdTRUc0Q0cUtCN3d1NGRLdHBNVUFqa0NOcWtkSTV2ZmM5cGhxUmxG?=
+ =?utf-8?B?ZVVETjNsTHpxZmRRUFpDay9FSmMxRXFEd3lBdnd5OUlhV2FDb0xJU0FTQmt4?=
+ =?utf-8?B?R2FpQ0FlZVJERDlSTlJ2V1VJbDN6bURIVExlMGNaQ0J0M0p5Nnp1NmxjTFl4?=
+ =?utf-8?B?K0FaQjcxZTljekFic3RwNnVtaEUzZE9zcFlyNHdZU3hZcEs3VStvQXZIcTkv?=
+ =?utf-8?B?cHdZaVYrZ1BPQzh1RnhwV1Q3RzhjRnpycmJHQmw0ZWpQNTl2ZGl3VFJibUR3?=
+ =?utf-8?B?d0hVUGtiZ3diWVE0Tmw1Yk1WY00rQWJZbDN1bkVreUZaN1UvakZ3VjNYVmov?=
+ =?utf-8?B?NEh2UGM2VjdGTlpwU0R0a1lPY0hRbHJYTG5sYnd4U1dnbnpMSXduZHRQTS93?=
+ =?utf-8?B?dmpEbm9NcXFza2FzWndDRXQybE96dWJ1S016bUVsU0pnbkhvUDRLcDNSNW5m?=
+ =?utf-8?B?QUU2aXhOdWxNY0NmdWxTNFl2NVBTQlprTm1WcTZLMHMrMlBWOTR6eENXelY0?=
+ =?utf-8?B?Z2pSQWo0cE9NQVlyakpScjc0cTN4VzlkV005cTB0bFc2YVB2dmFJMHYxa2tk?=
+ =?utf-8?B?TTNqamQ3anVmTzZ3M1hHZ0hNaUhuUDFFd21IQ3pzamIzZEh6M082MXZtem04?=
+ =?utf-8?B?NzZFVlptMTAyRS9ESXEwZG5FTEpQVWljUUdSbVNFUE1EZnJueFFsQWJ5bzZj?=
+ =?utf-8?B?aE8wNit5N0dhWklOM3A5aVhWRmNrODV4dFp5U2NldFpSQ1VGZnNCZnllR2hF?=
+ =?utf-8?B?c1Z6bzRXUDFNYVRXUFVEN2Zydm1pQURxbms5VUUyTXFpU1BxQ294cjI5aGpk?=
+ =?utf-8?B?RDZETyswdDhQNURBRXo5RFNKM1dLOU82WkZRMURZUUpBTkVFWHhTcTdhTmdm?=
+ =?utf-8?B?aUEwL1ZISFYzZlNOU3UwZGVLVFRwSVBWKzJBOEVQSHNSQUgzZmpwMjJOYnl2?=
+ =?utf-8?B?b3F4VWZ0eGNEV1VBRHVSK1c3V1F1bGw5bjBEY1FhRUxCL0xBRlpldWVFb1Rp?=
+ =?utf-8?Q?5TVOvbnT3TUCO2GB+s1v5aU=3D?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 68d2ead9-c6d6-458b-0c47-08d998958163
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4523.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2021 15:30:13.9166
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /8smjqiV9zeasU9J/lWGP1/28PXlHlukB4NaXknxVGw1WFqgcAnNI6WVJp5Om3WGQStpMbJKUpTAIltb8sPn5w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR03MB6700
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-revert commit 46ae40b94d88 ("net/mlx5: Let user configure io_eq_size param")
-revert commit a6cb08daa3b4 ("net/mlx5: Let user configure event_eq_size param")
-revert commit 554604061979 ("net/mlx5: Let user configure max_macs param")
+Hi Jakub,
 
-The EQE parameters are applicable to more drivers, they should
-be configured via standard API, probably ethtool. Example of
-another driver needing something similar:
+On 10/25/21 8:44 PM, Jakub Kicinski wrote:
+> On Mon, 25 Oct 2021 13:24:05 -0400 Sean Anderson wrote:
+>> There were several cases where validate() would return bogus supported
+>> modes with unusual combinations of interfaces and capabilities. For
+>> example, if state->interface was 10GBASER and the macb had HIGH_SPEED
+>> and PCS but not GIGABIT MODE, then 10/100 modes would be set anyway. In
+>> another case, SGMII could be enabled even if the mac was not a GEM
+>> (despite this being checked for later on in mac_config()). These
+>> inconsistencies make it difficult to refactor this function cleanly.
+>
+> Since you're respinning anyway (AFAIU) would you mind clarifying
+> the fix vs refactoring question? Sounds like it could be a fix for
+> the right (wrong?) PHY/MAC combination, but I don't think you're
+> intending it to be treated as a fix.
+>
+> If it's a fix it needs [PATCH net] in the subject and a Fixes tag,
+> if it's not a fix it needs [PATCH net-next] in the subject.
+>
+> This will make the lifes of maintainers and backporters easier,
+> thanks :)
 
-https://lore.kernel.org/all/1633454136-14679-3-git-send-email-sbhatta@marvell.com/
+I don't know if it's a "fix" per se. The current logic isn't wrong,
+since I believe that the configurations where the above patch would make
+a difference do not exist. However, as noted in the commit message, this
+makes refactoring difficult. For example, one might want to implement
+supported_interfaces like
 
-The last param for "max_macs" is probably fine but the documentation
-is severely lacking. The meaning and implications for changing the
-param need to be stated.
+        if (bp->caps & MACB_CAPS_HIGH_SPEED &&
+            bp->caps & MACB_CAPS_PCS)
+                __set_bit(PHY_INTERFACE_MODE_10GBASER, supported);
+        if (macb_is_gem(bp) && bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE) {
+                __set_bit(PHY_INTERFACE_MODE_GMII, supported);
+		phy_interface_set_rgmii(supported);
+                if (bp->caps & MACB_CAPS_PCS)
+                        __set_bit(PHY_INTERFACE_MODE_SGMII, supported);
+        }
+        __set_bit(PHY_INTERFACE_MODE_MII, supported);
+        __set_bit(PHY_INTERFACE_MODE_RMII, supported);
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+but then you still need to check for GIGABIT_MODE in validate to
+determine whether 10GBASER should "support" 10/100. See [1] for more
+discussion.
 
-LocalWords:  EQE param
----
- Documentation/networking/devlink/mlx5.rst     | 20 -----
- .../net/ethernet/mellanox/mlx5/core/Makefile  |  2 +-
- .../net/ethernet/mellanox/mlx5/core/devlink.c | 69 ----------------
- .../net/ethernet/mellanox/mlx5/core/devlink.h | 12 ---
- .../ethernet/mellanox/mlx5/core/devlink_res.c | 80 -------------------
- drivers/net/ethernet/mellanox/mlx5/core/eq.c  |  5 +-
- .../net/ethernet/mellanox/mlx5/core/main.c    | 21 -----
- include/linux/mlx5/driver.h                   |  4 +
- include/linux/mlx5/eq.h                       |  1 +
- include/linux/mlx5/mlx5_ifc.h                 |  2 +-
- 10 files changed, 9 insertions(+), 207 deletions(-)
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/devlink_res.c
+If you think this fixes a bug, then the appropriate tag is
 
-diff --git a/Documentation/networking/devlink/mlx5.rst b/Documentation/networking/devlink/mlx5.rst
-index d467e770906e..4e4b97f7971a 100644
---- a/Documentation/networking/devlink/mlx5.rst
-+++ b/Documentation/networking/devlink/mlx5.rst
-@@ -14,12 +14,8 @@ Parameters
- 
-    * - Name
-      - Mode
--     - Validation
-    * - ``enable_roce``
-      - driverinit
--   * - ``max_macs``
--     - driverinit
--     - The range is between 1 and 2^31. Only power of 2 values are supported.
- 
- The ``mlx5`` driver also implements the following driver-specific
- parameters.
-@@ -50,22 +46,6 @@ parameters.
- 
- The ``mlx5`` driver supports reloading via ``DEVLINK_CMD_RELOAD``
- 
--Resources
--=========
--
--.. list-table:: Driver-specific resources implemented
--   :widths: 5 5 5 85
--
--   * - Name
--     - Description
--   * - ``comp_eq_size``
--     - Control the size of I/O completion EQs.
--       * The default value is 1024, and the range is between 64 and 4096.
--   * - ``event_eq_size``
--     - Control the size of the asynchronous control events EQ.
--       * The default value is 4096, and the range is between 64 and 4096.
--
--
- Info versions
- =============
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-index 79c15ee62cde..bdb271b604d9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-@@ -16,7 +16,7 @@ mlx5_core-y :=	main.o cmd.o debugfs.o fw.o eq.o uar.o pagealloc.o \
- 		transobj.o vport.o sriov.o fs_cmd.o fs_core.o pci_irq.o \
- 		fs_counters.o fs_ft_pool.o rl.o lag/lag.o dev.o events.o wq.o lib/gid.o \
- 		lib/devcom.o lib/pci_vsc.o lib/dm.o lib/fs_ttc.o diag/fs_tracepoint.o \
--		diag/fw_tracer.o diag/crdump.o devlink.o devlink_res.o diag/rsc_dump.o \
-+		diag/fw_tracer.o diag/crdump.o devlink.o diag/rsc_dump.o \
- 		fw_reset.o qos.o lib/tout.o
- 
- #
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-index fc78c745ead1..1c98652b244a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -752,68 +752,6 @@ static void mlx5_devlink_auxdev_params_unregister(struct devlink *devlink)
- 	mlx5_devlink_eth_param_unregister(devlink);
- }
- 
--static int mlx5_devlink_max_uc_list_validate(struct devlink *devlink, u32 id,
--					     union devlink_param_value val,
--					     struct netlink_ext_ack *extack)
--{
--	struct mlx5_core_dev *dev = devlink_priv(devlink);
--
--	/* At least one unicast mac is needed */
--	if (val.vu32 == 0) {
--		NL_SET_ERR_MSG_MOD(extack, "max_macs value must be greater than 0");
--		return -EINVAL;
--	}
--	/* Check if its power of 2 or not */
--	if (!is_power_of_2(val.vu32)) {
--		NL_SET_ERR_MSG_MOD(extack,
--				   "Only power of 2 values are supported for max_macs");
--		return -EOPNOTSUPP;
--	}
--
--	if (ilog2(val.vu32) >
--	    MLX5_CAP_GEN_MAX(dev, log_max_current_uc_list)) {
--		NL_SET_ERR_MSG_MOD(extack, "max_macs value is out of the supported range");
--		return -EOPNOTSUPP;
--	}
--
--	return 0;
--}
--
--static const struct devlink_param max_uc_list_param =
--	DEVLINK_PARAM_GENERIC(MAX_MACS, BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
--			      NULL, NULL, mlx5_devlink_max_uc_list_validate);
--
--static int mlx5_devlink_max_uc_list_param_register(struct devlink *devlink)
--{
--	struct mlx5_core_dev *dev = devlink_priv(devlink);
--	union devlink_param_value value;
--	int err;
--
--	if (!MLX5_CAP_GEN(dev, log_max_current_uc_list_wr_supported))
--		return 0;
--
--	err = devlink_param_register(devlink, &max_uc_list_param);
--	if (err)
--		return err;
--
--	value.vu32 = 1 << MLX5_CAP_GEN(dev, log_max_current_uc_list);
--	devlink_param_driverinit_value_set(devlink,
--					   DEVLINK_PARAM_GENERIC_ID_MAX_MACS,
--					   value);
--	return 0;
--}
--
--static void
--mlx5_devlink_max_uc_list_param_unregister(struct devlink *devlink)
--{
--	struct mlx5_core_dev *dev = devlink_priv(devlink);
--
--	if (!MLX5_CAP_GEN(dev, log_max_current_uc_list_wr_supported))
--		return;
--
--	devlink_param_unregister(devlink, &max_uc_list_param);
--}
--
- #define MLX5_TRAP_DROP(_id, _group_id)					\
- 	DEVLINK_TRAP_GENERIC(DROP, DROP, _id,				\
- 			     DEVLINK_TRAP_GROUP_GENERIC_ID_##_group_id, \
-@@ -877,17 +815,11 @@ int mlx5_devlink_register(struct devlink *devlink)
- 	if (err)
- 		goto traps_reg_err;
- 
--	err = mlx5_devlink_max_uc_list_param_register(devlink);
--	if (err)
--		goto uc_list_reg_err;
--
- 	if (!mlx5_core_is_mp_slave(dev))
- 		devlink_set_features(devlink, DEVLINK_F_RELOAD);
- 
- 	return 0;
- 
--uc_list_reg_err:
--	mlx5_devlink_traps_unregister(devlink);
- traps_reg_err:
- 	mlx5_devlink_auxdev_params_unregister(devlink);
- auxdev_reg_err:
-@@ -898,7 +830,6 @@ int mlx5_devlink_register(struct devlink *devlink)
- 
- void mlx5_devlink_unregister(struct devlink *devlink)
- {
--	mlx5_devlink_max_uc_list_param_unregister(devlink);
- 	mlx5_devlink_traps_unregister(devlink);
- 	mlx5_devlink_auxdev_params_unregister(devlink);
- 	devlink_params_unregister(devlink, mlx5_devlink_params,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.h b/drivers/net/ethernet/mellanox/mlx5/core/devlink.h
-index 674415fd0b3a..30bf4882779b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.h
-@@ -6,14 +6,6 @@
- 
- #include <net/devlink.h>
- 
--enum mlx5_devlink_resource_id {
--	MLX5_DL_RES_COMP_EQ = 1,
--	MLX5_DL_RES_ASYNC_EQ,
--
--	__MLX5_ID_RES_MAX,
--	MLX5_ID_RES_MAX = __MLX5_ID_RES_MAX - 1,
--};
--
- enum mlx5_devlink_param_id {
- 	MLX5_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
- 	MLX5_DEVLINK_PARAM_ID_FLOW_STEERING_MODE,
-@@ -39,10 +31,6 @@ int mlx5_devlink_trap_get_num_active(struct mlx5_core_dev *dev);
- int mlx5_devlink_traps_get_action(struct mlx5_core_dev *dev, int trap_id,
- 				  enum devlink_trap_action *action);
- 
--void mlx5_devlink_res_register(struct mlx5_core_dev *dev);
--void mlx5_devlink_res_unregister(struct mlx5_core_dev *dev);
--size_t mlx5_devlink_res_size(struct mlx5_core_dev *dev, enum mlx5_devlink_resource_id id);
--
- struct devlink *mlx5_devlink_alloc(struct device *dev);
- void mlx5_devlink_free(struct devlink *devlink);
- int mlx5_devlink_register(struct devlink *devlink);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink_res.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink_res.c
-deleted file mode 100644
-index 549d23745942..000000000000
---- a/drivers/net/ethernet/mellanox/mlx5/core/devlink_res.c
-+++ /dev/null
-@@ -1,80 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
--/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. */
--
--#include "devlink.h"
--#include "mlx5_core.h"
--
--enum {
--	MLX5_EQ_MIN_SIZE = 64,
--	MLX5_EQ_MAX_SIZE = 4096,
--	MLX5_NUM_ASYNC_EQE = 4096,
--	MLX5_COMP_EQ_SIZE = 1024,
--};
--
--static int comp_eq_res_register(struct mlx5_core_dev *dev)
--{
--	struct devlink_resource_size_params comp_eq_size;
--	struct devlink *devlink = priv_to_devlink(dev);
--
--	devlink_resource_size_params_init(&comp_eq_size, MLX5_EQ_MIN_SIZE,
--					  MLX5_EQ_MAX_SIZE, 1, DEVLINK_RESOURCE_UNIT_ENTRY);
--	return devlink_resource_register(devlink, "io_eq_size", MLX5_COMP_EQ_SIZE,
--					 MLX5_DL_RES_COMP_EQ,
--					 DEVLINK_RESOURCE_ID_PARENT_TOP,
--					 &comp_eq_size);
--}
--
--static int async_eq_resource_register(struct mlx5_core_dev *dev)
--{
--	struct devlink_resource_size_params async_eq_size;
--	struct devlink *devlink = priv_to_devlink(dev);
--
--	devlink_resource_size_params_init(&async_eq_size, MLX5_EQ_MIN_SIZE,
--					  MLX5_EQ_MAX_SIZE, 1, DEVLINK_RESOURCE_UNIT_ENTRY);
--	return devlink_resource_register(devlink, "event_eq_size",
--					 MLX5_NUM_ASYNC_EQE, MLX5_DL_RES_ASYNC_EQ,
--					 DEVLINK_RESOURCE_ID_PARENT_TOP,
--					 &async_eq_size);
--}
--
--void mlx5_devlink_res_register(struct mlx5_core_dev *dev)
--{
--	int err;
--
--	err = comp_eq_res_register(dev);
--	if (err)
--		goto err_msg;
--
--	err = async_eq_resource_register(dev);
--	if (err)
--		goto err;
--	return;
--err:
--	devlink_resources_unregister(priv_to_devlink(dev), NULL);
--err_msg:
--	mlx5_core_err(dev, "Failed to register resources, err = %d\n", err);
--}
--
--void mlx5_devlink_res_unregister(struct mlx5_core_dev *dev)
--{
--	devlink_resources_unregister(priv_to_devlink(dev), NULL);
--}
--
--static const size_t default_vals[MLX5_ID_RES_MAX + 1] = {
--	[MLX5_DL_RES_COMP_EQ] = MLX5_COMP_EQ_SIZE,
--	[MLX5_DL_RES_ASYNC_EQ] = MLX5_NUM_ASYNC_EQE,
--};
--
--size_t mlx5_devlink_res_size(struct mlx5_core_dev *dev, enum mlx5_devlink_resource_id id)
--{
--	struct devlink *devlink = priv_to_devlink(dev);
--	u64 size;
--	int err;
--
--	err = devlink_resource_size_get(devlink, id, &size);
--	if (!err)
--		return size;
--	mlx5_core_err(dev, "Failed to get param. using default. err = %d, id = %u\n",
--		      err, id);
--	return default_vals[id];
--}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-index 31e69067284b..792e0d6aa861 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-@@ -19,7 +19,6 @@
- #include "lib/clock.h"
- #include "diag/fw_tracer.h"
- #include "mlx5_irq.h"
--#include "devlink.h"
- 
- enum {
- 	MLX5_EQE_OWNER_INIT_VAL	= 0x1,
-@@ -647,7 +646,7 @@ static int create_async_eqs(struct mlx5_core_dev *dev)
- 
- 	param = (struct mlx5_eq_param) {
- 		.irq_index = MLX5_IRQ_EQ_CTRL,
--		.nent = mlx5_devlink_res_size(dev, MLX5_DL_RES_ASYNC_EQ),
-+		.nent = MLX5_NUM_ASYNC_EQE,
- 	};
- 
- 	gather_async_events_mask(dev, param.mask);
-@@ -808,7 +807,7 @@ static int create_comp_eqs(struct mlx5_core_dev *dev)
- 
- 	INIT_LIST_HEAD(&table->comp_eqs_list);
- 	ncomp_eqs = table->num_comp_eqs;
--	nent = mlx5_devlink_res_size(dev, MLX5_DL_RES_COMP_EQ);
-+	nent = MLX5_COMP_EQ_SIZE;
- 	for (i = 0; i < ncomp_eqs; i++) {
- 		struct mlx5_eq_param param = {};
- 		int vecidx = i;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index 079ee9e8da10..f8446395163a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -484,23 +484,10 @@ static int handle_hca_cap_odp(struct mlx5_core_dev *dev, void *set_ctx)
- 	return set_caps(dev, set_ctx, MLX5_SET_HCA_CAP_OP_MOD_ODP);
- }
- 
--static int max_uc_list_get_devlink_param(struct mlx5_core_dev *dev)
--{
--	struct devlink *devlink = priv_to_devlink(dev);
--	union devlink_param_value val;
--	int err;
--
--	err = devlink_param_driverinit_value_get(devlink,
--						 DEVLINK_PARAM_GENERIC_ID_MAX_MACS,
--						 &val);
--	return err ? 0 : val.vu32;
--}
--
- static int handle_hca_cap(struct mlx5_core_dev *dev, void *set_ctx)
- {
- 	struct mlx5_profile *prof = &dev->profile;
- 	void *set_hca_cap;
--	u32 max_uc_list;
- 	int err;
- 
- 	err = mlx5_core_get_caps(dev, MLX5_CAP_GENERAL);
-@@ -574,11 +561,6 @@ static int handle_hca_cap(struct mlx5_core_dev *dev, void *set_ctx)
- 	if (MLX5_CAP_GEN(dev, roce_rw_supported))
- 		MLX5_SET(cmd_hca_cap, set_hca_cap, roce, mlx5_is_roce_init_enabled(dev));
- 
--	max_uc_list = max_uc_list_get_devlink_param(dev);
--	if (max_uc_list)
--		MLX5_SET(cmd_hca_cap, set_hca_cap, log_max_current_uc_list,
--			 ilog2(max_uc_list));
--
- 	return set_caps(dev, set_ctx, MLX5_SET_HCA_CAP_OP_MOD_GENERAL_DEVICE);
- }
- 
-@@ -940,8 +922,6 @@ static int mlx5_init_once(struct mlx5_core_dev *dev)
- 	dev->hv_vhca = mlx5_hv_vhca_create(dev);
- 	dev->rsc_dump = mlx5_rsc_dump_create(dev);
- 
--	mlx5_devlink_res_register(dev);
--
- 	return 0;
- 
- err_sf_table_cleanup:
-@@ -977,7 +957,6 @@ static int mlx5_init_once(struct mlx5_core_dev *dev)
- 
- static void mlx5_cleanup_once(struct mlx5_core_dev *dev)
- {
--	mlx5_devlink_res_unregister(dev);
- 	mlx5_rsc_dump_destroy(dev);
- 	mlx5_hv_vhca_destroy(dev->hv_vhca);
- 	mlx5_fw_tracer_destroy(dev->tracer);
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index 47c07f95bbe1..f617dfbcd9fd 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -797,6 +797,10 @@ struct mlx5_db {
- 	int			index;
- };
- 
-+enum {
-+	MLX5_COMP_EQ_SIZE = 1024,
-+};
-+
- enum {
- 	MLX5_PTYS_IB = 1 << 0,
- 	MLX5_PTYS_EN = 1 << 2,
-diff --git a/include/linux/mlx5/eq.h b/include/linux/mlx5/eq.h
-index 11161e427608..ea3ff5a8ced3 100644
---- a/include/linux/mlx5/eq.h
-+++ b/include/linux/mlx5/eq.h
-@@ -5,6 +5,7 @@
- #define MLX5_CORE_EQ_H
- 
- #define MLX5_NUM_CMD_EQE   (32)
-+#define MLX5_NUM_ASYNC_EQE (0x1000)
- #define MLX5_NUM_SPARE_EQE (0x80)
- 
- struct mlx5_eq;
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 97465d00de9d..746381eccccf 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -1603,7 +1603,7 @@ struct mlx5_ifc_cmd_hca_cap_bits {
- 
- 	u8         ext_stride_num_range[0x1];
- 	u8         roce_rw_supported[0x1];
--	u8         log_max_current_uc_list_wr_supported[0x1];
-+	u8         reserved_at_3a2[0x1];
- 	u8         log_max_stride_sz_rq[0x5];
- 	u8         reserved_at_3a8[0x3];
- 	u8         log_min_stride_sz_rq[0x5];
--- 
-2.31.1
+Fixes: 7897b071ac3b ("net: macb: convert to phylink")
 
+--Sean
+
+[1] https://lore.kernel.org/netdev/YXaIWFB8Kx9rm%2Fj9@shell.armlinux.org.uk/
