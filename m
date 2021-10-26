@@ -2,67 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEF7143B0C4
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 13:07:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98F4943B14A
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 13:34:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235366AbhJZLJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 07:09:55 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:29938 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232091AbhJZLJy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 07:09:54 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Hdpnk2nmFzbnPy;
-        Tue, 26 Oct 2021 19:02:50 +0800 (CST)
-Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Tue, 26 Oct 2021 19:07:27 +0800
-Received: from huawei.com (10.175.104.82) by kwepemm600001.china.huawei.com
- (7.193.23.3) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.15; Tue, 26 Oct
- 2021 19:07:27 +0800
-From:   Wang Hai <wanghai38@huawei.com>
-To:     <oneukum@suse.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <johan@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net] usbnet: fix error return code in usbnet_probe()
-Date:   Tue, 26 Oct 2021 19:25:26 +0800
-Message-ID: <20211026112526.2878177-1-wanghai38@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S235490AbhJZLgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 07:36:52 -0400
+Received: from pi.codeconstruct.com.au ([203.29.241.158]:42250 "EHLO
+        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230442AbhJZLgp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 07:36:45 -0400
+Received: from pecola.lan (unknown [159.196.93.152])
+        by mail.codeconstruct.com.au (Postfix) with ESMTPSA id 3433B20222;
+        Tue, 26 Oct 2021 19:34:17 +0800 (AWST)
+Message-ID: <cbf0fd9611c76e557b759ecbecf6bcf712b44f55.camel@codeconstruct.com.au>
+Subject: Re: [PATCH net-next v6] mctp: Implement extended addressing
+From:   Jeremy Kerr <jk@codeconstruct.com.au>
+To:     David Laight <David.Laight@ACULAB.COM>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Eugene Syromiatnikov <esyr@redhat.com>
+Date:   Tue, 26 Oct 2021 19:34:16 +0800
+In-Reply-To: <f5b11b52cf0644088a919fb2a1a07c18@AcuMS.aculab.com>
+References: <20211026015728.3006286-1-jk@codeconstruct.com.au>
+         <f5b11b52cf0644088a919fb2a1a07c18@AcuMS.aculab.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600001.china.huawei.com (7.193.23.3)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Return error code if usb_maxpacket() returns 0 in usbnet_probe().
+Hi David,
 
-Fixes: 397430b50a36 ("usbnet: sanity check for maxpacket")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
----
- drivers/net/usb/usbnet.c | 1 +
- 1 file changed, 1 insertion(+)
+> > +struct sockaddr_mctp_ext {
+> > +       struct sockaddr_mctp    smctp_base;
+> > +       int                     smctp_ifindex;
+> > +       __u8                    smctp_halen;
+> > +       __u8                    __smctp_pad0[3];
+> > +       __u8                    smctp_haddr[MAX_ADDR_LEN];
+> > +};
+> 
+> You'd be better off 8-byte aligning smctp_haddr.
+> I also suspect that always copying the 32 bytes will be faster
+> and generate less code than the memset() + memcpy().
 
-diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-index 80432ee0ce69..fb5bf7d36d50 100644
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -1790,6 +1790,7 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
- 	dev->maxpacket = usb_maxpacket (dev->udev, dev->out, 1);
- 	if (dev->maxpacket == 0) {
- 		/* that is a broken device */
-+		status = -EINVAL;
- 		goto out4;
- 	}
- 
--- 
-2.25.1
+The padding here is more to avoid layout variations between ABIs
+rather than performance.
+
+The largest current hardware address size that we need (for the i2c
+transport) is... 1 byte. If we were to implement the PCIe VDM binding
+for MCTP that'd then be the largest, now at 2 bytes. If anyone's crazy
+enough to do MCTP over ethernet, we're still only at 6.
+
+So, we'll be a long way off needing to optimise for 8-byte aligned
+accesses here; I don't think the extra padding would be worth it.
+
+Cheers,
+
+
+Jeremy
 
