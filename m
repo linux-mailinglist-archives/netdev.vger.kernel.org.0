@@ -2,80 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC04743BBC5
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 22:43:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 238D543BBCA
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 22:44:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239266AbhJZUqB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 16:46:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57460 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233075AbhJZUpy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 16:45:54 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39CBBC061570;
-        Tue, 26 Oct 2021 13:43:30 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id f5so654323pgc.12;
-        Tue, 26 Oct 2021 13:43:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gwwDVGZF81Mhz8j8IQvQEBwY8y1hsM9S1VyeSDH2pHo=;
-        b=LrfBNtRuWYKT2MOaI4TlljRmB4l0tEOD7mjqXymnqcgMVPrCuzfwtHvwu6rgjkUWsV
-         t2cbyzo2nnN6leygKq1742yvjWcnmhB4LXKpzNpxThKh/TMooexnyZMYMjCbrlzTcO7Q
-         7HjClDSZj1I6kg2qJ7t3oapYaGASsHijO5/ROk+c6FGPBYMPshmB8lnCEwYRnIttVOZ9
-         ZMnygXNvNEREtysEbel+Z+l1UTy/2QOMxOihyxHO0iO23bBcFqtnU+frP+hfb/wnyjVl
-         DBqLyR0El5s0NjCaS2tsDABcfDUhGJZrFGrFCjNPNo3gzcnI9fs9CVo2pY9nXq+FBqft
-         zWvQ==
+        id S239274AbhJZUqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 16:46:39 -0400
+Received: from mail-oo1-f52.google.com ([209.85.161.52]:35743 "EHLO
+        mail-oo1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235782AbhJZUqi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 16:46:38 -0400
+Received: by mail-oo1-f52.google.com with SMTP id 64-20020a4a0d43000000b002b866fa13eeso168393oob.2;
+        Tue, 26 Oct 2021 13:44:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gwwDVGZF81Mhz8j8IQvQEBwY8y1hsM9S1VyeSDH2pHo=;
-        b=fzfJlBYVoMAJj6hQvSUz3gUUEdq+eJsMB76e89JG2IHAw/z/YLtG3bDtvWPfI1YUEg
-         Wq2sNuW/VRSYx29uH9u//P53CYtHeGisTIlhhOya8EZDKHq4hLxn3pWhIDuqLxP/t6//
-         EoqICKNg7uiQgtRYOQ/S3wZvtWPkqUEINZQaRH0/hQJ9390xA5AmKtrlr4EawQ8YHV0P
-         XkOnY7lX29qqYSJ9JJKWxt+v7w5UU0ISIwPP+h+CrK0ULX+Hv3AM6xy09wERgrwDNAfH
-         PGgO5c1bLD4VFeihqofrwVjpIx72WOSdScGOMkNVi+3CMh9qROYanGL0Hnjack0namuQ
-         M8vQ==
-X-Gm-Message-State: AOAM530mM8Gw8wAcmIta1PN3wo7h0sN0/b0o/9rPBtB3apohKtrKCFfp
-        4lCmmOu8ASW1L3sTxHTL/acwuqvBHJ0wPXU2XO0=
-X-Google-Smtp-Source: ABdhPJyxo4s1BgwU5Y+216l5EIsoOFP7sN62+j7NJnhyqaSpXlY0xsr65vgHGI+DFEsqj/JLnTznSp69I6YZC3ABccE=
-X-Received: by 2002:a05:6a00:179c:b0:47c:2092:c28c with SMTP id
- s28-20020a056a00179c00b0047c2092c28cmr2015958pfg.59.1635281009525; Tue, 26
- Oct 2021 13:43:29 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=sKAvIqLDA6il9jGsvQNTReGzOWFc+5qNFeKsTSA5leA=;
+        b=GQRQ1Z86SqpGe/w6rX/71Ci9Hj6/cD+XPC+x59249lHp356pzfhpK4sqwyGEEb/q2v
+         ilmlWJ9yP/Vjonwapx80rv1MADhMoGkj2Dav9LuaspQE/1tz/96tqkAg5fmGDP3rpsso
+         6nRWTCGtTVXcg1DS+TK7Lb3l/uYU9weWOtGxQUXbjY8jKZBRxK5p+Fuc3kfKCDKnXgF6
+         fo7eHJAimkJk++fEIoW36agI4CbseDYptPqnDBvWGRnya3hNGLMj2wAkk5OC6wbEqOua
+         KuRKaztjcCXanEV8MRLKrOE0DAyl0MIk7syDZ2/fK27nz045nSJD9DJW+jN5lYpA7J5B
+         hQZg==
+X-Gm-Message-State: AOAM530O6j2jdoLP1mzgSuJm5URqTHuigFLzYHGVDqD4CtVL6I7QKChG
+        Ux8DoZo45IAtwZAE0Yb26w==
+X-Google-Smtp-Source: ABdhPJyqhjrUOx09PvsZZkHfudBVMrkwGkrvFdqS74oVOYbUPmfOJwhdi6WySqpj1sJwJWzNZjIiOw==
+X-Received: by 2002:a4a:e4d1:: with SMTP id w17mr15503167oov.39.1635281053626;
+        Tue, 26 Oct 2021 13:44:13 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id l3sm2746051otu.6.2021.10.26.13.44.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Oct 2021 13:44:12 -0700 (PDT)
+Received: (nullmailer pid 3213230 invoked by uid 1000);
+        Tue, 26 Oct 2021 20:44:12 -0000
+Date:   Tue, 26 Oct 2021 15:44:12 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-leds@vger.kernel.org,
+        pavel@ucw.cz, Andrew Lunn <andrew@lunn.ch>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] dt-bindings: leds: Allow for multiple colors in the
+ `color` property
+Message-ID: <YXhonNXqAy8krqJE@robh.at.kernel.org>
+References: <20211013204424.10961-1-kabel@kernel.org>
+ <20211013204424.10961-3-kabel@kernel.org>
 MIME-Version: 1.0
-References: <20211026203825.2720459-1-eric.dumazet@gmail.com> <20211026203825.2720459-2-eric.dumazet@gmail.com>
-In-Reply-To: <20211026203825.2720459-2-eric.dumazet@gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 26 Oct 2021 13:43:18 -0700
-Message-ID: <CAADnVQKOXXf4vSKYF2+One8PLfva06d4USdTjQj72S7+czhd_Q@mail.gmail.com>
-Subject: Re: [PATCH bpf 1/2] bpf: avoid races in __bpf_prog_run() for 32bit arches
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211013204424.10961-3-kabel@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 26, 2021 at 1:38 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
-> From: Eric Dumazet <edumazet@google.com>
->
-> __bpf_prog_run() can run from non IRQ contexts, meaning
-> it could be re entered if interrupted.
->
-> This calls for the irq safe variant of u64_stats_update_{begin|end},
-> or risk a deadlock.
->
-> This patch is a nop on 64bit arches, fortunately.
+On Wed, Oct 13, 2021 at 10:44:24PM +0200, Marek Behún wrote:
+> Some RJ-45 connectors have one green/yellow LED wired in the following
+> way:
+> 
+>         green
+>       +--|>|--+
+>       |       |
+>   A---+--|<|--+---B
+>         yellow
+> 
+> But semantically this is still just one (multi-color) LED (for example
+> it can be controlled by HW as one dual-LED).
+> 
+> This is a case that we do not support in device tree bindings; setting
+>   color = <LED_COLOR_ID_MULTI>;
+> or
+>   color = <LED_COLOR_ID_RGB>;
+> is wrong, because those are meant for when the controller can mix the
+> "channels", while for our case only one "channel" can be active at a
+> time.
+> 
+> Change the `color` property to accept an (non-empty) array of colors to
+> indicate this case.
+> 
+> Example:
+>   ethernet-phy {
+>     led@0 {
+>       reg = <0>;
+>       color = <LED_COLOR_ID_GREEN LED_COLOR_ID_YELLOW>;
+>       function = LED_FUNCTION_ID_LAN;
+>       trigger-sources = <&eth0>;
+>     };
+>   };
+> 
+> Signed-off-by: Marek Behún <kabel@kernel.org>
+> ---
+>  .../devicetree/bindings/leds/common.yaml         | 16 ++++++++++++----
+>  1 file changed, 12 insertions(+), 4 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/leds/common.yaml b/Documentation/devicetree/bindings/leds/common.yaml
+> index 03759d2e125a..492dd3e7f9ac 100644
+> --- a/Documentation/devicetree/bindings/leds/common.yaml
+> +++ b/Documentation/devicetree/bindings/leds/common.yaml
+> @@ -37,13 +37,21 @@ properties:
+>      $ref: /schemas/types.yaml#/definitions/string
+>  
+>    color:
+> -    description:
+> +    description: |
+>        Color of the LED. Use one of the LED_COLOR_ID_* prefixed definitions from
+>        the header include/dt-bindings/leds/common.h. If there is no matching
+>        LED_COLOR_ID available, add a new one.
+> -    $ref: /schemas/types.yaml#/definitions/uint32
+> -    minimum: 0
+> -    maximum: 9
+> +
+> +      For multi color LEDs there are two cases:
+> +        - the LED can mix the channels (i.e. RGB LED); in this case use
+> +          LED_COLOR_ID_MULTI or LED_COLOR_ID_RGB
+> +        - the LED cannot mix the channels, only one can be active; in this case
+> +          enumerate all the possible colors
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> +    minItems: 1
 
-u64_stats_update_begin_irqsave is a nop. Good!
-We just sent the last bpf tree PR for this cycle.
-We'll probably take it into bpf-next after CI has a chance to run it.
+And:
+
+maxItems: 2
+
+2 colors is a neat trick, but I don't see how you'd do more 
+electrically.
+
+> +    items:
+> +      minimum: 0
+> +      maximum: 9
+>  
+>    function-enumerator:
+>      description:
+> -- 
+> 2.32.0
+> 
+> 
