@@ -2,81 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 264A343B784
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 18:47:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C3E443B787
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 18:47:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237416AbhJZQuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 12:50:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50180 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234507AbhJZQuJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Oct 2021 12:50:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D737560E8B;
-        Tue, 26 Oct 2021 16:47:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635266865;
-        bh=4tRn582kmyrkqO2AEaLstI7ko1JH586VTMxozleB/+A=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fo52WyjBoac5Pz1EDlL+1YeY1IJu+sszfv2irzYF34KNuI4dovfHjo3eZwvv0nOn+
-         Z7ohpg8LJJGWBY1yqrIgwIFBYrU7bsjLKVxjetJ95u5mZDBksyQYjZ+4CAj/Q+CGI6
-         2E62HWfSiRmAJaj/4pP75m7Pnw701i7t3R1a2rgOysIp3Hd/wSMbkPS2g/N0mEdPhL
-         +a2v7kjcsRwkKixvdaLHr1PB/Pq3DbMyHEbYgkyRZGPBY6cQwnQ08z7/3b+8hTxrIm
-         2jYAlvy6NvRuKBze5ts5ytzoG4RoweFbXaMtkbvni4/qClOb2xE3MtgUYbzbJK1fpt
-         NZVqTU4OjnbrA==
-Date:   Tue, 26 Oct 2021 09:47:43 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>
-Subject: Re: [PATCH net-next] net/mlx5: remove the recent devlink params
-Message-ID: <20211026094743.390224ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <PH0PR12MB5481970AFEFD9C969B42BE20DC849@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20211026152939.3125950-1-kuba@kernel.org>
-        <PH0PR12MB5481970AFEFD9C969B42BE20DC849@PH0PR12MB5481.namprd12.prod.outlook.com>
+        id S237519AbhJZQuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 12:50:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59924 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237503AbhJZQuM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 12:50:12 -0400
+Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79559C061767
+        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 09:47:48 -0700 (PDT)
+Received: by mail-il1-x12a.google.com with SMTP id 3so15557832ilq.7
+        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 09:47:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ieee.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=YKwRxPBjph63txYkU/60zXWK4/WhUFpeAqg9AkQ4hnM=;
+        b=Z9ToptDFzfh/mwbDivSN0t3grjkZ/mCL4ttDd6BrGK6Gt665J8VtTIu2PSSprYwIBc
+         zxg7iBNLk+3xYL/OwS3wZpZ6CnUC4lS1sqSArz9R/Soal4ljp93MM317irp1totwKITO
+         P+kwFix4j2veuUINrqKRyKDr5GDf/jKtrDqkg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=YKwRxPBjph63txYkU/60zXWK4/WhUFpeAqg9AkQ4hnM=;
+        b=X+aQu36tgqHg0rMFv35zgkJOiz+P38tLQTbGFObITLj7/sagD+F2r8fQ5G22RWXi+M
+         C6drgT+7MEVVWq63DXQ17bNP49CWuTcxoO2WVpNEbTkeyUDPc3IfknAKeKWV9M0DcHA1
+         erbzYWLPGh1gk9Evy7wp8Eh/BkeIA3Heyt7nWCqFIR0A2yROEXdrKz8oHvk44pGX+Tup
+         tXQS9j4aA0lXwF1lrS1Zq/sR2keMW89mJUr99Aka7Vhc3wqa1qsIsE4TwYtfZLR5RyeO
+         kaIgSfoiiTSqN63A+OFepP/h8VnK6MGpyUTSpdsC9fO6NIiXcGsz1IBbdt60yuAIlBjH
+         wJ7w==
+X-Gm-Message-State: AOAM532YtH0Ydw5nJT+6Ogw+HMGfB/frs3dfkJSxxLVFRzL8dM1/p/Bh
+        1boZNm0FSl5MJyCk7eHirMZ02Q==
+X-Google-Smtp-Source: ABdhPJz4MwNT6x0eqE/fwWtC2vUza4je3EDZG0CcQCInRJtS+XYPOqPxaxjQXvslMpA88wGXPHKtbQ==
+X-Received: by 2002:a05:6e02:1a23:: with SMTP id g3mr4664396ile.103.1635266867924;
+        Tue, 26 Oct 2021 09:47:47 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id s7sm11616003iow.31.2021.10.26.09.47.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Oct 2021 09:47:47 -0700 (PDT)
+Subject: Re: [PATCH v2] dt-bindings: net: qcom,ipa: IPA does support up to two
+ iommus
+To:     David Heidelberg <david@ixit.cz>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, Alex Elder <elder@kernel.org>
+Cc:     ~okias/devicetree@lists.sr.ht, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20211026163240.131052-1-david@ixit.cz>
+From:   Alex Elder <elder@ieee.org>
+Message-ID: <2de53575-af6e-5bb9-e7ad-5d924656867d@ieee.org>
+Date:   Tue, 26 Oct 2021 11:47:46 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20211026163240.131052-1-david@ixit.cz>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 26 Oct 2021 15:53:17 +0000 Parav Pandit wrote:
-> Hi Jakub,
+On 10/26/21 11:32 AM, David Heidelberg wrote:
+> Fix warnings as:
+> arch/arm/boot/dts/qcom-sdx55-mtp.dt.yaml: ipa@1e40000: iommus: [[21, 1504, 0], [21, 1506, 0]] is too long
+> 	From schema: Documentation/devicetree/bindings/net/qcom,ipa.yaml
 > 
-> > From: Jakub Kicinski <kuba@kernel.org>
-> > Sent: Tuesday, October 26, 2021 9:00 PM
-> > To: davem@davemloft.net
-> > Cc: Saeed Mahameed <saeedm@nvidia.com>; netdev@vger.kernel.org; Leon
-> > Romanovsky <leonro@nvidia.com>; Jakub Kicinski <kuba@kernel.org>
-> > Subject: [PATCH net-next] net/mlx5: remove the recent devlink params
-> > 
-> > revert commit 46ae40b94d88 ("net/mlx5: Let user configure io_eq_size
-> > param") revert commit a6cb08daa3b4 ("net/mlx5: Let user configure
-> > event_eq_size param") revert commit 554604061979 ("net/mlx5: Let user
-> > configure max_macs param")
-> > 
-> > The EQE parameters are applicable to more drivers, they should be configured
-> > via standard API, probably ethtool. Example of another driver needing
-> > something similar:  
+> Signed-off-by: David Heidelberg <david@ixit.cz>
+
+Looks good to me.  I'm not sure why the minItems is required,
+unless it's to indicate that it must be at least 1 and can't
+be missing.  But iommus is also stated to be required elsewhere
+in the binding.
+
+In the future, it's helpful to indicate the command you
+used to produce the warning in your commit message.  And
+furthermore, describing the problem (and not just including
+the error message) is even more helpful.
+
+Reviewed-by: Alex Elder <elder@linaro.org>
+
+> ---
+>   Documentation/devicetree/bindings/net/qcom,ipa.yaml | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> ethool is not a good choice for following reasons.
+> diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+> index b8a0b392b24e..b86edf67ce62 100644
+> --- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+> +++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+> @@ -64,7 +64,8 @@ properties:
+>         - const: gsi
+>   
+>     iommus:
+> -    maxItems: 1
+> +    minItems: 1
+> +    maxItems: 2
+>   
+>     clocks:
+>       maxItems: 1
 > 
-> 1. EQs of the mlx5 core devlink instance is used by multiple auxiliary devices, namely net, rdma, vdpa.
-> 2. And sometime netdevice doesn't even exists to operate via ethtool (but devlink instance exist to serve other devices).
-> 3. ethtool doesn't have notion set the config and apply (like devlink reload)
-> Such reload operation is useful when user wants to configure more than one parameter and initialize the device only once.
-> Otherwise dynamically changing parameter results in multiple device re-init sequence that increases device setup time.
 
-Sure these are good points. OTOH devlink doesn't have any notion of
-queues, IRQ vectors etc today so it doesn't really fit there, either.
-
-> Should we define the devlink resources in the devlink layer, instead of driver?
-
-I'm not sure how the EQE fits into the existing devlink objects.
-params are not much of an API, it's a garbage bag.
-
-> So that multiple drivers can make use of them without redefinition?
-
-Yes, please.
