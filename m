@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB30C43AB7D
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 06:56:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3515B43AB82
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 06:59:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234802AbhJZE7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 00:59:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38658 "EHLO
+        id S234816AbhJZFBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 01:01:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231801AbhJZE7M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 00:59:12 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E08DC061745;
-        Mon, 25 Oct 2021 21:56:49 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id y80so13716915ybe.12;
-        Mon, 25 Oct 2021 21:56:49 -0700 (PDT)
+        with ESMTP id S231801AbhJZFBy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 01:01:54 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1233EC061745;
+        Mon, 25 Oct 2021 21:59:31 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id a6so20744659ybq.9;
+        Mon, 25 Oct 2021 21:59:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=griTNHXzQjHdArBVLlsF9I9olxrqMfs3Xv8jkO2EzNg=;
-        b=FW+QFBbmVcrBu5dA5pByCcXBAwmn6Z2FZredL+fc+NqvSO8RAynG7WwmZjdGAa1UVN
-         YpqrhsAjPLAN5887/YlsoH0eTrMYKqf7oFmf6OxZo37/o/oTXymU5PTWV5XpxpoogeAL
-         FFG0VyUUQvWGNxQpRtHYzuuayk2JFRNHiIr/xKkC7DPv79ty0o8LsVVHj66RwfkT9elP
-         Mokek/CgQd85UG5ZvBQSk/VokrunDqEYK8+ELUGj31H9PJRQd8Omru6nY+2OcAJ00HMQ
-         Zp4n3cz2RTj0PFUUIasTJjdAI01jc6KuiNn2Q+FEiaDNkpeZFWL2DREbvNLbr5loineP
-         knkw==
+        bh=W2eo2WOjW2D0GJkhtMCC8VoRAOYDsHWkgjk0JHaSu64=;
+        b=GKP2pCbiitzJEBCjJhqMVjO3n4gwAIKGBlMGfVifxNBx91Pt6V7ECERBjL9HWbWLTp
+         UsegDt7V3lx0mB0+uj1oZHYDzSbnTbrUVqq6nBSQl6IOWD1TGA7sebGDy90rWLq9LZQH
+         vBllxeMjztA3iHsfpCU3+W8Itt4fnfO0Jn0+pEGb4cNVaGnGcF1NP83Zgpk6sTQRCSv8
+         E5E8feM6Sfymmml03Y+3OYD1sIK1g5zltcj045nTERuqiXFzn/dNKQqP/TInM7fmF5T7
+         dAMyYo5KekjWhiUApOklBmFFOoeC9nYya6g6/NFA0F5WWdQ190x/fB2Vp5Wdb4EIQ2ab
+         iTVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=griTNHXzQjHdArBVLlsF9I9olxrqMfs3Xv8jkO2EzNg=;
-        b=jeB49GBpIc/Z30dKAxdMPMwhIWNAy0oQwkNSF6ABTX3ruO9VOzRGh3FrEBYDBK8Kec
-         YOruAyZgG4mGBQ4D9H3pDMygrwyc4ampXJVtFAzx+Oj8o2WIoW4MzfSaxBpjRgx8+ffE
-         tcft430zI1QHRzjYBUsXvjYlQGbJNVPJgHckYQi+rmu7BNQTxb3oPGb/FFH0ZYTD4wUM
-         vOUwmGDVjFGlYWnUYksHgKjgAHp+yes8JgC4Na3KYyY8iK5aVzsH+t05sZFhZEsb3OYg
-         HJ8dxKPyfkrJtGuQmbeRgNwZzl+yd7O5v00o882a3GHy26LIocu3wmJYSqSMsxh4Iwiq
-         xjDw==
-X-Gm-Message-State: AOAM533elQeE4ijPIrjxiAbxn834+4LW/uoS9N/a5qJssqYnjdVeFxAq
-        bADVeJtx26y6fk5T2np8g5KqE/vUyxt3/WoHFh0=
-X-Google-Smtp-Source: ABdhPJz2Gdg7iH6g40zq/N1HlAI+LQvObkDwVK+mBhr79yWZ8v+eK9a08+EQe6oTJCcx7Q7FjfTs7IjZ3zf3TIN3bnw=
-X-Received: by 2002:a25:aa0f:: with SMTP id s15mr15397289ybi.51.1635224208584;
- Mon, 25 Oct 2021 21:56:48 -0700 (PDT)
+        bh=W2eo2WOjW2D0GJkhtMCC8VoRAOYDsHWkgjk0JHaSu64=;
+        b=0ch7ThHEAZlS1XAevcIPEtcBx3jaS0KvOV/GsJNiaAMR4dUh9ef2enYxt+KpgvajdP
+         D0BXRp55VBDz2zbvTEw6WbtJEVCWV7vAzTtM4AGEoUEdn92YR6UF+T00qWGWk+S++dp1
+         5tS/eE0pZQx/S7nHPhH7nlphuzLnVxUxNt1CWku/sV9TCym/r1JqBXA1RZ5PkgJS9vM9
+         PXbz16TmKg9t+Ggm/6wExobLAjIdvZFhq7r9/Q4JtkkvNiBgbg7IcPvSHtokjGNR06dU
+         6O+reVxU/5tZV85xckEVV6r+a1Le7uAVRPaeQncgC4Z189c9JfAYXIr/m+sbknjta5U4
+         5YJQ==
+X-Gm-Message-State: AOAM530fgFNuN76SfX0eJpeHEa636r1Ox4KWK+av66KujzXDjUVCC0nn
+        ooyiYFaqX2vn0Y+7+JlOwMOO8Kk4W6lWJrqOnWE=
+X-Google-Smtp-Source: ABdhPJz7wama3mBE8Jei4cff7RjgiCogWiggtFyU8m/VMHGVhBFINFTqVqWy4gT31OtpIVTvgaeS8IR7yvgbX358gvk=
+X-Received: by 2002:a25:cf50:: with SMTP id f77mr8457113ybg.114.1635224370369;
+ Mon, 25 Oct 2021 21:59:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211023120452.212885-1-jolsa@kernel.org> <20211023120452.212885-2-jolsa@kernel.org>
-In-Reply-To: <20211023120452.212885-2-jolsa@kernel.org>
+References: <20211023120452.212885-1-jolsa@kernel.org> <20211023120452.212885-3-jolsa@kernel.org>
+In-Reply-To: <20211023120452.212885-3-jolsa@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 25 Oct 2021 21:56:37 -0700
-Message-ID: <CAEf4BzZimh+OotN3gWR=E-eCGzxFYm7rM8jbgAMy7HRCYpKnNw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/2] kbuild: Unify options for BTF generation for
- vmlinux and modules
+Date:   Mon, 25 Oct 2021 21:59:19 -0700
+Message-ID: <CAEf4BzY70kx8VhK5R-ianrQMZJPPynGV_3+Xc2-9Q5JRE3QKUw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/2] bpf: Add support to detect and dedup
+ instances of same structs
 To:     Jiri Olsa <jolsa@redhat.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -67,25 +67,48 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Sat, Oct 23, 2021 at 5:05 AM Jiri Olsa <jolsa@redhat.com> wrote:
 >
-> Using new PAHOLE_FLAGS variable to pass extra arguments to
-> pahole for both vmlinux and modules BTF data generation.
+> The s390x compiler generates multiple definitions of the same struct
+> and dedup algorithm does not seem to handle this at the moment.
 >
-> Adding new scripts/pahole-flags.sh script that detect and
-> prints pahole options.
+> I found code in dedup that seems to handle such situation for arrays,
+> and added btf_dedup_is_equiv call for structs.
 >
+> With this change I can no longer see vmlinux's structs in kernel
+> module BTF data, but I have no idea if that breaks anything else.
+>
+
+I'm pretty sure this is not the right way to handle this. Let's figure
+out what is causing a difference in types (i.e., why they are not
+equivalent), before attempting to patch up BTF dedup algorithm.
+
 > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
-
-LGTM. I suggest posting it separately from the BTF dedup hack.
-
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
-
->  Makefile                  |  3 +++
->  scripts/Makefile.modfinal |  2 +-
->  scripts/link-vmlinux.sh   | 11 +----------
->  scripts/pahole-flags.sh   | 20 ++++++++++++++++++++
->  4 files changed, 25 insertions(+), 11 deletions(-)
->  create mode 100755 scripts/pahole-flags.sh
+>  tools/lib/bpf/btf.c | 12 ++++++++++--
+>  1 file changed, 10 insertions(+), 2 deletions(-)
 >
-
-[...]
+> diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
+> index 3a01c4b7f36a..ec164d0cee30 100644
+> --- a/tools/lib/bpf/btf.c
+> +++ b/tools/lib/bpf/btf.c
+> @@ -3920,8 +3920,16 @@ static int btf_dedup_is_equiv(struct btf_dedup *d, __u32 cand_id,
+>                  * types within a single CU. So work around that by explicitly
+>                  * allowing identical array types here.
+>                  */
+> -               return hypot_type_id == cand_id ||
+> -                      btf_dedup_identical_arrays(d, hypot_type_id, cand_id);
+> +               struct btf_type *t;
+> +
+> +               if (hypot_type_id == cand_id)
+> +                       return 1;
+> +               t = btf_type_by_id(d->btf, hypot_type_id);
+> +               if (btf_is_array(t))
+> +                       return btf_dedup_identical_arrays(d, hypot_type_id, cand_id);
+> +               if (btf_is_struct(t))
+> +                       return btf_dedup_is_equiv(d, hypot_type_id, cand_id);
+> +               return 0;
+>         }
+>
+>         if (btf_dedup_hypot_map_add(d, canon_id, cand_id))
+> --
+> 2.31.1
+>
