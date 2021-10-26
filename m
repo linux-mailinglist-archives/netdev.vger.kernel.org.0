@@ -2,84 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2BF743AEEC
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 11:20:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E619343AEF0
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 11:22:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234710AbhJZJXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 05:23:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41428 "EHLO
+        id S231224AbhJZJZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 05:25:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231134AbhJZJXI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 05:23:08 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 230A3C061745;
-        Tue, 26 Oct 2021 02:20:45 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4HdmWr1XHDz4xZ0;
-        Tue, 26 Oct 2021 20:20:39 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1635240042;
-        bh=m1Rb45uoxjErkJwXWtmqdgMe+iimlHg0wtGe3WiYk1c=;
-        h=Date:From:To:Cc:Subject:From;
-        b=fGPE/Y6o4s79/77fvkOlUfY25WgD2qGeN14ZriZcJpVTEuP/2cZQ/9osx+NUXfSMA
-         YvrzTeccjk2vdjMIAvzgbOqfvo7S7YA+52TsygUzpTum94lKLZdtqSQZp5mIA/8Nzf
-         dG3o8yiEczt5rG6HtGX4rl5sQDDAfO4ASVV5i0xopFTzurbiEJENnR9kSmk/pVT16p
-         13iU4pBpjSnp/ULgnC0IFSFnbdKhuzI+W1spemez78pm9BOCkcZmtZ049lvhbv5maD
-         RnW4fxb5oXbXGEH6ViV7tV0NsKlIu/b64ajCtzzKMxJrrTI/TwGxCKqqTdT/BgTgxB
-         aFYM7L/vyGu8A==
-Date:   Tue, 26 Oct 2021 20:20:36 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Luo Jie <luoj@codeaurora.org>, Andrew Lunn <andrew@lunn.ch>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build warning after merge of the net-next tree
-Message-ID: <20211026202036.1b8f5c31@canb.auug.org.au>
+        with ESMTP id S230219AbhJZJZF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 05:25:05 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D0D0C061745;
+        Tue, 26 Oct 2021 02:22:42 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id e12so17953571wra.4;
+        Tue, 26 Oct 2021 02:22:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EDuUSwzJ43UKHobbjW2e1EDI83gOPv1zGmwvqM5iqZo=;
+        b=XMP3SkwwqCk3Wdc2iz3dpUODylA8YKfxe056Z1k6BxwOgBYshXC/TjQgU1M11XK0fN
+         kAJZEUPFBUamqxKSubOIVzRJAU7lGUbZZInvHnFvh88plKODE6mbPoQMj3R5lKfjauJS
+         v5tRyaHLISYKlkZQ+Gj8V3g8ewSoCU5BSurPJTSHsRmYqU02s/UThCz0qRGzobMMHXxE
+         xAHzwnef3CCavecMIbcBXYYxsfRLYtt21hBV9J9yI0kMdgHlwVzDWOxMtx46qcUMOqzG
+         QT18oWi5XCxrIa1ECQ/64eFy+m4zpMARQf0u7m6uSLXVpCS6NNGYViv6QfdyMMsgWwPd
+         79qQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EDuUSwzJ43UKHobbjW2e1EDI83gOPv1zGmwvqM5iqZo=;
+        b=0xYmqJTsTC6qF5IJ5EsXVumhJkqPzvopaKFJSfFWJQbGXwnt6PubRdAL8DsRgHqn33
+         PvF8fM8R+jedzO3tKCQWV12yRU9axrFbA2NjMslgcRSW/JXrI8m6MMovx5eg9FaSjHRT
+         daiVyyvnoEa80gNsE+Pe6GIua+1+3fxGFruL77C3CdphbqgONPEEjBLKiLjD5DInTlOW
+         8dVEfBI0jJP1OnwjdYWtD2hpajN7SFvaTdxo4VyAYLYWAwEtyqFIAXbp79BEdXPC5Gd+
+         bCeB47ANpLQKF9eq8m0MV80jH3JAnvh0WEBG4IsIB5U3fOAuz9aKxoMOpCscjVdCySUi
+         aEUw==
+X-Gm-Message-State: AOAM531xwy7r9pFTn6gQCB3g16x5HcwJnZNl+TXENgxu4G37y0mDhAhh
+        N1XnxDN6AJ+5bg==
+X-Google-Smtp-Source: ABdhPJzaxcgFF6fkdadGZqZER0gzqd0KgT/ysOo6V93J1cwz3ul3KQegAtq7JxXRChqqCZ8SoGc3nw==
+X-Received: by 2002:a5d:5747:: with SMTP id q7mr21204074wrw.103.1635240160467;
+        Tue, 26 Oct 2021 02:22:40 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id o26sm45809wmc.17.2021.10.26.02.22.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Oct 2021 02:22:40 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@googlemail.com>
+X-Google-Original-From: Colin Ian King <colin.i.king@gmail.com>
+To:     Jeroen de Borst <jeroendb@google.com>,
+        Catherine Sullivan <csully@google.com>,
+        David Awogbemila <awogbemila@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] gve: Fix spelling mistake "droping" -> "dropping"
+Date:   Tue, 26 Oct 2021 10:22:39 +0100
+Message-Id: <20211026092239.208781-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/QUqSzUnd/dg5WRO02XIRbtF";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/QUqSzUnd/dg5WRO02XIRbtF
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+There is a spelling mistake in a netdev_warn message. Fix it.
 
-Hi all,
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/net/ethernet/google/gve/gve_rx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-After merging the net-next tree, today's linux-next build (htmldocs)
-produced this warning:
+diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
+index c8500babbd1d..ef4aa6487c55 100644
+--- a/drivers/net/ethernet/google/gve/gve_rx.c
++++ b/drivers/net/ethernet/google/gve/gve_rx.c
+@@ -438,7 +438,7 @@ static bool gve_rx_ctx_init(struct gve_rx_ctx *ctx, struct gve_rx_ring *rx)
+ 		if (frag_size > rx->packet_buffer_size) {
+ 			packet_size_error = true;
+ 			netdev_warn(priv->dev,
+-				    "RX fragment error: packet_buffer_size=%d, frag_size=%d, droping packet.",
++				    "RX fragment error: packet_buffer_size=%d, frag_size=%d, dropping packet.",
+ 				    rx->packet_buffer_size, be16_to_cpu(desc->len));
+ 		}
+ 		page_info = &rx->data.page_info[idx];
+-- 
+2.32.0
 
-drivers/net/phy/phy-c45.c:624: warning: Function parameter or member 'enabl=
-e' not described in 'genphy_c45_fast_retrain'
-
-Introduced by commit
-
-  63c67f526db8 ("net: phy: add genphy_c45_fast_retrain")
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/QUqSzUnd/dg5WRO02XIRbtF
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmF3yGQACgkQAVBC80lX
-0GyAFwgAjhZGGVMQs7w88t3HNqeHLtHNZOx3PSZg3eRF8GJu5Y4SjGuPex4UBPx4
-/OjVg2bf0IG8mGS5iqbC0yQ5gPNL36Fe3WXHVrmbDtF5j6L3fxeshbskl2P/NzDC
-qtrHaNJzRzLcD8a4vcvPHhzrzzMowaRAGUPUS7SjiUIAmxmt51TSerjG8x8NVzPt
-POcjgLew8cVaxhexR3En8ZA1PtxLB1UpBj277UK7tqFiQ1zgWs5EjdRPf7f7/HZo
-1szss/d74yh4yGF6VYoq9nN28qyW5e1Lp6lJTMXr0DguFUmHmk1T2P9CWyw3XZiP
-yX79pTE9f7RgoaY2q7mQ9PflYkhZmA==
-=vs3I
------END PGP SIGNATURE-----
-
---Sig_/QUqSzUnd/dg5WRO02XIRbtF--
