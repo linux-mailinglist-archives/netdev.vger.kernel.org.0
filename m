@@ -2,151 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C243443AAC0
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 05:30:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE8E743AAD3
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 05:45:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234505AbhJZDcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 23:32:31 -0400
-Received: from mail-yb1-f170.google.com ([209.85.219.170]:35371 "EHLO
-        mail-yb1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233728AbhJZDca (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 23:32:30 -0400
-Received: by mail-yb1-f170.google.com with SMTP id i65so30500817ybb.2;
-        Mon, 25 Oct 2021 20:30:07 -0700 (PDT)
+        id S233752AbhJZDsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 23:48:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51494 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232597AbhJZDsL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 23:48:11 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7151CC061745;
+        Mon, 25 Oct 2021 20:45:48 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id y80so13366035ybe.12;
+        Mon, 25 Oct 2021 20:45:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8lNFW1Dtnj58pOz/PALMC73Rmhfh02j9dS73pS4W2Ok=;
+        b=LsIF4Zk/hjnnPascKICyEGVPmPsudu1Y1XJF4BDSUtlUiT83APO1T+OAAFL+FkpT9H
+         s1pCpN8Hfr9eMbcbLTkTUCeM5XjbZTf7T4KKwegfH+bpWELJpD351B44+hcMj2T82d0W
+         rtN/XBQO3N7Xj6mx21kymeze/tjl8QGaLtWEsh9wMzCQmJPMjyEDr2eRhMv5OA84iE2i
+         qlNTUvDDQzKN/2z+x4+XJ2ep5f3uXexXxp2WIXTfOPJVaXqnEuSP0IWmTxklNbBlHZGU
+         7yafvpijBcv4obLn9b62G1Thz5DEZvL5ak784LQU7zpuUwn1W1CK1GSbGxeptOZUFHgE
+         V8XA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=dSkuvBNlsR/Tr6v+p8qnht5azmInH+MBDWCZ0LaoZvg=;
-        b=XlPbAYoSU27GFio8AUvCUknPEywEfdGtqj7yAPAj7spoMI3kcZqQAdFntN39XFMJbf
-         Lx9Z10Ii5BQFoozGuchOLWPsDNUtjb7NqvRIBQPomOZnyDyd7ulw9VsZxKUfNBE/9YEG
-         c06+a0/Dd8Hs681wn2/GlZ7WvdUawzbkt9LdIJp5xaY/cS6iES962+kFo8ld1gMsvJOy
-         jblXzC5thDec8MC0eLZLDTHiuwvG9PTnr3U4u1B6aV3NLVVE9gKgQsqCsDlrFlt5+Lsa
-         X+EWGikjSAvyeKv1FReX5FcODZrioGqreKdgWTxTfSRM9X1Tt+jpB3FrnNjDR/VLEqfi
-         6pyg==
-X-Gm-Message-State: AOAM5322xmiRox8e4RgH8KYwUVx7QGgm09JNbSIuyzcxi7ow2cmV80dW
-        WL9c+Nwb2VyrJP6LJnSFh0TQqW/UvcwNwgkh67p5NeEPEzw=
-X-Google-Smtp-Source: ABdhPJwc6I/ZzDqdwL2yBzXdBFnFpYhRFfdO9Ngrf2wsE4M/SEfiW4tHBSuywZqEtsSscbYryS0F13yNA09wmWjIixM=
-X-Received: by 2002:a05:6902:1363:: with SMTP id bt3mr22584297ybb.152.1635219006891;
- Mon, 25 Oct 2021 20:30:06 -0700 (PDT)
+        bh=8lNFW1Dtnj58pOz/PALMC73Rmhfh02j9dS73pS4W2Ok=;
+        b=vhL/nOwjhRETzsrJi1JAGVrW6ub8bfc5nxgatDNO2WCN6YZe/Q2c0SmoHhpTlr9j63
+         Qq2E+p14wEldZWHDDkF3NMsbbcbaD302sy7ag7zUgNMHRovEcHr7PIFopXIYX4DskxeD
+         r9B7fuYnOEkpUumnrOMF18nFdtRk5yrGVPyQLEubZh2Hh9yVgLWm4hPdJwB1LQyMO9ts
+         bWbugyLZd7y7OGaXzYpeFiogPgSACmndmlCHIlSLZc2XD2JXmUIwluafZ198umOQNJIx
+         U4zl7Tq0F9vl5hE1xzy+2r4oBz/ho9106DNGvA2QawFTf22YBWaUCbE+SsCasuHwaopq
+         36rA==
+X-Gm-Message-State: AOAM531HMyPSq+Eb2rC5jpiyjJstUe6ayFI2kiY0hwtIYxSERv4tsKvm
+        vb/VGZYQU0guyXF7tn7t+MEjNQEfWndWX/5pt7Y=
+X-Google-Smtp-Source: ABdhPJx35I6nxnl6Rt7p7j90z4i+6t2vZOV6y7h374myi+Ax/9Sdj8ipifjqqxJXQ2G5mcuFfhMkDPeHRXUJIbX+ZUs=
+X-Received: by 2002:a25:8749:: with SMTP id e9mr20843792ybn.2.1635219947699;
+ Mon, 25 Oct 2021 20:45:47 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211025172247.1774451-1-mailhol.vincent@wanadoo.fr> <20211025172247.1774451-5-mailhol.vincent@wanadoo.fr>
-In-Reply-To: <20211025172247.1774451-5-mailhol.vincent@wanadoo.fr>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Tue, 26 Oct 2021 12:29:55 +0900
-Message-ID: <CAMZ6RqJgzELj7BCD-st8NiXDjSFDOmqAouFaERgt1UVuoKK58Q@mail.gmail.com>
-Subject: Re: [PATCH v3 4/4] can: netlink: report the CAN controller mode
- supported flags
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can <linux-can@vger.kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+References: <20211026000733.477714-1-songliubraving@fb.com>
+In-Reply-To: <20211026000733.477714-1-songliubraving@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 25 Oct 2021 20:45:36 -0700
+Message-ID: <CAEf4BzajKH1gSo_MNoYb5GfnAy-o_P2viNuQSMUywrU4MPFbjg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: Skip all serial_test_get_branch_snapshot
+ in vm
+To:     Song Liu <songliubraving@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue. 26 Oct 2021 at 02:22, Vincent Mailhol
-<mailhol.vincent@wanadoo.fr> wrote:
-> This patch introduces a method for the user to check both the
-> supported and the static capabilities. The proposed method reuses the
-> existing struct can_ctrlmode and thus do not need a new IFLA_CAN_*
-> entry.
+On Mon, Oct 25, 2021 at 5:07 PM Song Liu <songliubraving@fb.com> wrote:
 >
-> Currently, the CAN netlink interface provides no easy ways to check
-> the capabilities of a given controller. The only method from the
-> command line is to try each CAN_CTRLMODE_* individually to check
-> whether the netlink interface returns an -EOPNOTSUPP error or not
-> (alternatively, one may find it easier to directly check the source
-> code of the driver instead...)
+> Skipping the second half of the test is not enough to silent the warning
+> in dmesg. Skip the whole test before we can either properly silent the
+> warning in kernel, or fix LBR snapshot for VM.
 >
-> It appears that can_ctrlmode::mask is only used in one direction: from
-> the userland to the kernel. So we can just reuse this field in the
-> other direction (from the kernel to userland). But, because the
-> semantic is different, we use a union to give this field a proper
-> name: "supported".
->
-> Below table explains how the two fields can_ctrlmode::supported and
-> can_ctrlmode::flags, when masked with any of the CAN_CTRLMODE_* bit
-> flags, allow us to identify both the supported and the static
-> capabilities:
->
->  supported &    flags &         Controller capabilities
->  CAN_CTRLMODE_* CAN_CTRLMODE_*
->  -----------------------------------------------------------------------
->  false          false           Feature not supported (always disabled)
->  false          true            Static feature (always enabled)
->  true           false           Feature supported but disabled
->  true           true            Feature supported and enabled
->
-> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+> Fixes: 025bd7c753aa ("selftests/bpf: Add test for bpf_get_branch_snapshot")
+> Fixes: aa67fdb46436 ("selftests/bpf: Skip the second half of get_branch_snapshot in vm")
+> Signed-off-by: Song Liu <songliubraving@fb.com>
 > ---
-> Please refer to below link for the iproute2-next counterpart of this
-> patch:
+
+Applied to bpf-next, thanks for the fix!
+
+>  .../bpf/prog_tests/get_branch_snapshot.c         | 16 ++++++----------
+>  1 file changed, 6 insertions(+), 10 deletions(-)
 >
-> https://lore.kernel.org/linux-can/20211003050147.569044-1-mailhol.vincent@wanadoo.fr/T/#t
-> ---
->  drivers/net/can/dev/netlink.c    | 5 ++++-
->  include/uapi/linux/can/netlink.h | 5 ++++-
->  2 files changed, 8 insertions(+), 2 deletions(-)
+> diff --git a/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c b/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
+> index d6d70a359aeb5..81402e4439844 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
+> @@ -78,6 +78,12 @@ void serial_test_get_branch_snapshot(void)
+>         struct get_branch_snapshot *skel = NULL;
+>         int err;
 >
-> diff --git a/drivers/net/can/dev/netlink.c b/drivers/net/can/dev/netlink.c
-> index 26c336808be5..32e1eb63ee7d 100644
-> --- a/drivers/net/can/dev/netlink.c
-> +++ b/drivers/net/can/dev/netlink.c
-> @@ -475,7 +475,10 @@ static int can_tdc_fill_info(struct sk_buff *skb, const struct net_device *dev)
->  static int can_fill_info(struct sk_buff *skb, const struct net_device *dev)
->  {
->         struct can_priv *priv = netdev_priv(dev);
-> -       struct can_ctrlmode cm = {.flags = priv->ctrlmode};
-> +       struct can_ctrlmode cm = {
-> +               .supported = priv->ctrlmode_supported,
-> +               .flags = priv->ctrlmode
-> +       };
->         struct can_berr_counter bec = { };
->         enum can_state state = priv->state;
+> +       /* Skip the test before we fix LBR snapshot for hypervisor. */
+> +       if (is_hypervisor()) {
+> +               test__skip();
+> +               return;
+> +       }
+> +
+>         if (create_perf_events()) {
+>                 test__skip();  /* system doesn't support LBR */
+>                 goto cleanup;
+> @@ -107,16 +113,6 @@ void serial_test_get_branch_snapshot(void)
+>                 goto cleanup;
+>         }
 >
-> diff --git a/include/uapi/linux/can/netlink.h b/include/uapi/linux/can/netlink.h
-> index 75b85c60efb2..b846922ac18f 100644
-> --- a/include/uapi/linux/can/netlink.h
-> +++ b/include/uapi/linux/can/netlink.h
-> @@ -88,7 +88,10 @@ struct can_berr_counter {
->   * CAN controller mode
->   */
->  struct can_ctrlmode {
-> -       __u32 mask;
-> +       union {
-> +               __u32 mask;             /* Userland to kernel */
-> +               __u32 supported;        /* Kernel to userland */
-> +       };
-
-While daydreaming during my lunch break, I suddenly remembered
-this thread [1] and was concerned that introducing the union
-might break the UAPI.
-
-As a matter of fact, the C standard allows the compiler to add
-padding at the end of an union. c.f. ISO/IEC 9899-1999, section
-6.7.2.1 "Structure and union specifiers", clause 15: "There may
-be unnamed padding at the end of a structure or union."
-
-For example, if the kernel were to be compiled with the
--mstructure-size-boundary=64 ARM option in GCC [2], 32 bits of
-padding would be introduced after the union, thus breaking the
-alignment of the next field: can_ctrlmode::flags.
-
-As far as my knowledge goes, I am not sure whether or not
--mstructure-size-boundary=64 (or similar options on other
-architectures) is actually used. Nonetheless, I think it is safer
-to declare the union as __attribute__((packed)) to prevent such
-padding from occuring.
-
-I will send a v4 later today to address this.
-
-[1] https://lore.kernel.org/linux-can/212c8bc3-89f9-9c33-ed1b-b50ac04e7532@hartkopp.net/T/#u
-[2] https://gcc.gnu.org/onlinedocs/gcc/ARM-Options.html
-
->         __u32 flags;
->  };
-
-Yours sincerely,
-Vincent Mailhol
+> -       if (is_hypervisor()) {
+> -               /* As of today, LBR in hypervisor cannot be stopped before
+> -                * too many entries are flushed. Skip the hit/waste test
+> -                * for now in hypervisor until we optimize the LBR in
+> -                * hypervisor.
+> -                */
+> -               test__skip();
+> -               goto cleanup;
+> -       }
+> -
+>         ASSERT_GT(skel->bss->test1_hits, 6, "find_looptest_in_lbr");
+>
+>         /* Given we stop LBR in software, we will waste a few entries.
+> --
+> 2.30.2
+>
