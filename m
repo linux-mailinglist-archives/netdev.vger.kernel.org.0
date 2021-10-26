@@ -2,110 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5689B43A87D
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 01:56:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4404F43A91C
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 02:07:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235452AbhJYX6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 19:58:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36322 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233035AbhJYX6m (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Oct 2021 19:58:42 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9E95B6023D;
-        Mon, 25 Oct 2021 23:56:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635206179;
-        bh=5sVIz5a+Xzu2l3KgJ0cgbWRxOKsx1Dxq1pkbOqzWM+A=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=ph2pOhD1D2bUUkTqoquiYKT2Bx3mmTfcXcm1toDQ4/OwSPXoAApSg9Jlz+U0mf2+f
-         Kv0LNn/8HpfyV9hVA3LOF4KXVKJoLinamMTJyNDPHt87GplvbREUoK/fEQofq2F5Ka
-         zSDKCF0CGI7wobpbA8Br8N7VhRLfvfbpuVhUNKipIbM3mbp5RwecbvU0cD9Dxj4rVR
-         yEdCseGDkUbSl0nfyvdaMlQi2l6gtGm6weyOviNPa7WS9DJZ/9VslihEm7ilXmd7iV
-         HJ3WESDp4Et57N5wF59iOyJZ9zHV0Oz2p8z75cc30hOD93wNoJO5HAz38rzgwh+OQ0
-         NlgiWFrLrP7yA==
-Date:   Mon, 25 Oct 2021 18:56:18 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Jonas =?iso-8859-1?Q?Dre=DFler?= <verdre@v0yd.nl>
-Cc:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Brian Norris <briannorris@chromium.org>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Vidya Sagar <vidyas@nvidia.com>,
-        Victor Ding <victording@google.com>
-Subject: Re: [PATCH] mwifiex: Add quirk resetting the PCI bridge on MS
- Surface devices
-Message-ID: <20211025235618.GA52139@bhelgaas>
+        id S234969AbhJZAKE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 20:10:04 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:4578 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S235472AbhJZAKD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 20:10:03 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.1.2/8.16.1.2) with SMTP id 19PMiU7Y027675
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 17:07:40 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=Boibk+L3fz3EqHA4e82wKA53nXYv+eNyHk8OhI+7NIk=;
+ b=UnZ8pOW0r1gWApKHySsZq4zAKX4TG3Y1AYsD3yCpXiuAFz+i2lSxhdiVWFIhKbudPjQq
+ TlAjSRVaA23UY2P5cdkPtveb+3n6Mg/EXkoV9VRWn5oUkmskNQ4kGDWwUZ2YY7BF0HUe
+ YaArbDAEA0FwrvAqWT4W1TFOmrRS2U9s66E= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0001303.ppops.net with ESMTP id 3bx4fcgxrv-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 17:07:40 -0700
+Received: from intmgw001.05.ash7.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.14; Mon, 25 Oct 2021 17:07:38 -0700
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id A92631ADA6825; Mon, 25 Oct 2021 17:07:36 -0700 (PDT)
+From:   Song Liu <songliubraving@fb.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, Song Liu <songliubraving@fb.com>
+Subject: [PATCH bpf-next] selftests/bpf: Skip all serial_test_get_branch_snapshot in vm
+Date:   Mon, 25 Oct 2021 17:07:33 -0700
+Message-ID: <20211026000733.477714-1-songliubraving@fb.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2157749e-4e88-76c1-bdc9-f01656f5a292@v0yd.nl>
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-FB-Source: Intern
+X-Proofpoint-ORIG-GUID: tMAr9bCXe2spRqPBwhd_MpDMMeqTOC5u
+X-Proofpoint-GUID: tMAr9bCXe2spRqPBwhd_MpDMMeqTOC5u
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-10-25_07,2021-10-25_02,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
+ priorityscore=1501 suspectscore=0 impostorscore=0 spamscore=0 bulkscore=0
+ adultscore=0 mlxscore=0 phishscore=0 mlxlogscore=985 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2110250138
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 25, 2021 at 06:45:29PM +0200, Jonas Dreßler wrote:
-> On 10/18/21 17:35, Bjorn Helgaas wrote:
-> > On Thu, Oct 14, 2021 at 12:08:31AM +0200, Jonas Dreßler wrote:
-> > > On 10/12/21 17:39, Bjorn Helgaas wrote:
-> > > > [+cc Vidya, Victor, ASPM L1.2 config issue; beginning of thread:
-> > > > https://lore.kernel.org/all/20211011134238.16551-1-verdre@v0yd.nl/]
-> > 
-> > > > I wonder if this reset quirk works because pci_reset_function() saves
-> > > > and restores much of config space, but it currently does *not* restore
-> > > > the L1 PM Substates capability, so those T_POWER_ON,
-> > > > Common_Mode_Restore_Time, and LTR_L1.2_THRESHOLD values probably get
-> > > > cleared out by the reset.  We did briefly save/restore it [1], but we
-> > > > had to revert that because of a regression that AFAIK was never
-> > > > resolved [2].  I expect we will eventually save/restore this, so if
-> > > > the quirk depends on it *not* being restored, that would be a problem.
-> > > > 
-> > > > You should be able to test whether this is the critical thing by
-> > > > clearing those registers with setpci instead of doing the reset.  Per
-> > > > spec, they can only be modified when L1.2 is disabled, so you would
-> > > > have to disable it via sysfs (for the endpoint, I think)
-> > > > /sys/.../l1_2_aspm and /sys/.../l1_2_pcipm, do the setpci on the root
-> > > > port, then re-enable L1.2.
-> > > > 
-> > > > [1] https://git.kernel.org/linus/4257f7e008ea
-> > > > [2] https://lore.kernel.org/all/20210127160449.2990506-1-helgaas@kernel.org/
-> > > 
-> > > Hmm, interesting, thanks for those links.
-> > > 
-> > > Are you sure the config values will get lost on the reset? If we
-> > > only reset the port by going into D3hot and back into D0, the
-> > > device will remain powered and won't lose the config space, will
-> > > it?
-> > 
-> > I think you're doing a PM reset (transition to D3hot and back to
-> > D0).  Linux only does this when PCI_PM_CTRL_NO_SOFT_RESET == 0.
-> > The spec doesn't actually *require* the device to be reset; it
-> > only says the internal state of the device is undefined after
-> > these transitions.
-> 
-> Not requiring the device to be reset sounds sensible to me given
-> that D3hot is what devices are transitioned into during suspend.
-> 
-> But anyway, that doesn't really get us any further except it
-> somewhat gives an explanation why the LTR is suddenly 0 after the
-> reset. Or are you making the point that we shouldn't rely on
-> "undefined state" for this hack because not all PCI bridges/ports
-> will necessarily behave the same?
+Skipping the second half of the test is not enough to silent the warning
+in dmesg. Skip the whole test before we can either properly silent the
+warning in kernel, or fix LBR snapshot for VM.
 
-I guess I'm just making the point that I don't understand why the
-bridge reset fixes something, and I'm not confident that the fix will
-work on every system and continue working even if/when the PCI core
-starts saving and restoring the L1 PM Substates capability.
+Fixes: 025bd7c753aa ("selftests/bpf: Add test for bpf_get_branch_snapshot=
+")
+Fixes: aa67fdb46436 ("selftests/bpf: Skip the second half of get_branch_s=
+napshot in vm")
+Signed-off-by: Song Liu <songliubraving@fb.com>
+---
+ .../bpf/prog_tests/get_branch_snapshot.c         | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
+
+diff --git a/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c=
+ b/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
+index d6d70a359aeb5..81402e4439844 100644
+--- a/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
++++ b/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
+@@ -78,6 +78,12 @@ void serial_test_get_branch_snapshot(void)
+ 	struct get_branch_snapshot *skel =3D NULL;
+ 	int err;
+=20
++	/* Skip the test before we fix LBR snapshot for hypervisor. */
++	if (is_hypervisor()) {
++		test__skip();
++		return;
++	}
++
+ 	if (create_perf_events()) {
+ 		test__skip();  /* system doesn't support LBR */
+ 		goto cleanup;
+@@ -107,16 +113,6 @@ void serial_test_get_branch_snapshot(void)
+ 		goto cleanup;
+ 	}
+=20
+-	if (is_hypervisor()) {
+-		/* As of today, LBR in hypervisor cannot be stopped before
+-		 * too many entries are flushed. Skip the hit/waste test
+-		 * for now in hypervisor until we optimize the LBR in
+-		 * hypervisor.
+-		 */
+-		test__skip();
+-		goto cleanup;
+-	}
+-
+ 	ASSERT_GT(skel->bss->test1_hits, 6, "find_looptest_in_lbr");
+=20
+ 	/* Given we stop LBR in software, we will waste a few entries.
+--=20
+2.30.2
+
