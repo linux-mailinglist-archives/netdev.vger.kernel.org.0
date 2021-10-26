@@ -2,187 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0F7743AC6E
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 08:51:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE06C43AC74
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 08:51:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234203AbhJZGxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 02:53:47 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:46115 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231445AbhJZGxq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 02:53:46 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3824F5C0240;
-        Tue, 26 Oct 2021 02:51:18 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Tue, 26 Oct 2021 02:51:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=jku4Xr
-        LbEEhMjSTps/O6u2BzkibMZPGXPyKkKMINKds=; b=A0+oXMbYEy0rmrQrQNmyWz
-        vBqHcKilmMB03El4KBY2s+idtp8S8TGXvpWs6mLZ3+YF85UQcY79tWW58I6gPM6M
-        pkyRz6hP129IVAKzdUd7HE9I/pyjPIoR36aFvpbtuFuHD+CUfIuwWT6QrzQc7BJK
-        b0zZs7xs5/hjQmVbZcLmfG11sfJsnTorUAWZmZA7+PWH0BIiTWnQT6ZoBIl5UFZh
-        d0XYj189ozQDuV76s5yLrC+8weo/puB66/2D0gpy4hSFP0T30nIZXFui6Au5GYuK
-        YydlR8R/dGQp4pGrJ7hy2VtZblQTUjjh+JWBkAvyxKtLgvcLtQlYvKF19lOjDPTA
-        ==
-X-ME-Sender: <xms:ZaV3YdnGWRfwzQ8O4CSoNAS8wrvgLowq3jvVIQvg2PJM0uqEdM-_Tw>
-    <xme:ZaV3YY284l-mq1I45QgCVCc-ZwNTaUUwdFSg1mhslhrHVHuFgSH1nrPyP0HKfZiQ-
-    2puNqCLTC2tlio>
-X-ME-Received: <xmr:ZaV3YTpOTZiLaE1qeMpShwI_km1Lef4Brtn-U-09zaIrlX-L590OXRep1pK7mewCWAR3ZA7bFPVX3CNPNejmpV_G_no>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvdefiedguddtvdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnhepjedtteffheeihefhveffvddvieduhfegheefveffledvgffhleekuddtffel
-    heefnecuffhomhgrihhnpehshiiikhgrlhhlvghrrdgrphhpshhpohhtrdgtohhmnecuve
-    hluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
-    sehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:ZaV3YdnWjfvMkPBP1_y4su9B3WXwznRE7DbDfvMiJzSMkTFeQzff0A>
-    <xmx:ZaV3Yb00uwS1GWx2MVdtcjaNGKtjWPn8naPOg81tyCTdIDxtSywewQ>
-    <xmx:ZaV3YcveOTrlQATnQplLzXRmaqfyPeUp4XTvUBchqQqOZQp31uIgSg>
-    <xmx:ZqV3Yb_gxdWHjNWsE22rBvpzHo6FcS1_qrfVAwcprh2jayB7F1ZNnQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 26 Oct 2021 02:51:16 -0400 (EDT)
-Date:   Tue, 26 Oct 2021 09:51:13 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org,
-        syzbot+93d5accfaefceedf43c1@syzkaller.appspotmail.com
-Subject: Re: [PATCH net-next] netdevsim: Register and unregister devlink
- traps on probe/remove device
-Message-ID: <YXelYVqeqyVJ5HLc@shredder>
-References: <725e121f05362da4328dda08d5814211a0725dac.1635064599.git.leonro@nvidia.com>
- <YXUhyLXsc2egWNKx@shredder>
- <YXUtbOpjmmWr71dU@unreal>
- <YXU5+XLhQ9zkBGNY@shredder>
- <YXZB/3+IR6I0b2xE@unreal>
- <YXZl4Gmq6DYSdDM3@shredder>
- <YXaNUQv8RwDc0lif@unreal>
+        id S234435AbhJZGx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 02:53:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35758 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234370AbhJZGxy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 02:53:54 -0400
+Received: from dvalin.narfation.org (dvalin.narfation.org [IPv6:2a00:17d8:100::8b1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1303C061767
+        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 23:51:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
+        s=20121; t=1635231087;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sXZPCO+K9iz6r8Jr0Y1Mf/siG+PaXpPzZyiBwgb6O9w=;
+        b=yxR4432YXVP55R6tvO9S7z0V7PS37LdEYb0R6SB3NftKxzUdLTprlerIIvTqdsvF63HsUJ
+        GFpZKCGbof7ydV/7Mf/6vLVbrhBjye+5wgonKlzuVZALn5Y2qFYLM5VbKY0anjb6DuqEly
+        RslbsRh6W9Q2JrouFJumUJumaDivKI4=
+From:   Sven Eckelmann <sven@narfation.org>
+To:     mareklindner@neomailbox.ch, Jakub Kicinski <kuba@kernel.org>
+Cc:     sw@simonwunderlich.de, a@unstable.cc, davem@davemloft.net,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+28b0702ada0bf7381f58@syzkaller.appspotmail.com
+Subject: Re: [PATCH] net: batman-adv: fix error handling
+Date:   Tue, 26 Oct 2021 08:51:20 +0200
+Message-ID: <2283323.BJRDQVktmA@ripper>
+In-Reply-To: <20211025174950.1bec22fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <2056331.oJahCzYEoq@sven-desktop> <2526100.mKikVBQdmv@sven-l14> <20211025174950.1bec22fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YXaNUQv8RwDc0lif@unreal>
+Content-Type: multipart/signed; boundary="nextPart1884404.dNYcoPC7rg"; micalg="pgp-sha512"; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 25, 2021 at 01:56:17PM +0300, Leon Romanovsky wrote:
-> On Mon, Oct 25, 2021 at 11:08:00AM +0300, Ido Schimmel wrote:
-> > On Mon, Oct 25, 2021 at 08:34:55AM +0300, Leon Romanovsky wrote:
-> > > On Sun, Oct 24, 2021 at 01:48:25PM +0300, Ido Schimmel wrote:
-> > > > On Sun, Oct 24, 2021 at 12:54:52PM +0300, Leon Romanovsky wrote:
-> > > > > On Sun, Oct 24, 2021 at 12:05:12PM +0300, Ido Schimmel wrote:
-> > > > > > On Sun, Oct 24, 2021 at 11:42:11AM +0300, Leon Romanovsky wrote:
-> > > > > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > > > > > 
-> > > > > > > Align netdevsim to be like all other physical devices that register and
-> > > > > > > unregister devlink traps during their probe and removal respectively.
-> > > > > > 
-> > > > > > No, this is incorrect. Out of the three drivers that support both reload
-> > > > > > and traps, both netdevsim and mlxsw unregister the traps during reload.
-> > > > > > Here is another report from syzkaller about mlxsw [1].
-> > > > > 
-> > > > > Sorry, I overlooked it.
-> > > > > 
-> > > > > > 
-> > > > > > Please revert both 22849b5ea595 ("devlink: Remove not-executed trap
-> > > > > > policer notifications") and 8bbeed485823 ("devlink: Remove not-executed
-> > > > > > trap group notifications").
-> > > > > 
-> > > > > However, before we rush and revert commit, can you please explain why
-> > > > > current behavior to reregister traps on reload is correct?
-> > > > > 
-> > > > > I think that you are not changing traps during reload, so traps before
-> > > > > reload will be the same as after reload, am I right?
-> > > > 
-> > > > During reload we tear down the entire driver and load it again. As part
-> > > > of the reload_down() operation we tear down the various objects from
-> > > > both devlink and the device (e.g., shared buffer, ports, traps, etc.).
-> > > > As part of the reload_up() operation we issue a device reset and
-> > > > register everything back.
-> > > 
-> > > This is an implementation which is arguably questionable and pinpoints
-> > > problem with devlink reload. It mixes different SW layers into one big
-> > > mess which I tried to untangle.
-> > > 
-> > > The devlink "feature" that driver reregisters itself again during execution
-> > > of other user-visible devlink command can't be right design.
-> > > 
-> > > > 
-> > > > While the list of objects doesn't change, their properties (e.g., shared
-> > > > buffer size, trap action, policer rate) do change back to the default
-> > > > after reload and we cannot go back on that as it's a user-visible
-> > > > change.
-> > > 
-> > > I don't propose to go back, just prefer to see fixed mlxsw that
-> > > shouldn't touch already created and registered objects from net/core/devlink.c.
-> > > 
-> > > All reset-to-default should be performed internally to the driver
-> > > without any need to devlink_*_register() again, so we will be able to
-> > > clean rest devlink notifications.
-> > > 
-> > > So at least for the netdevsim, this change looks like the correct one,
-> > > while mlxsw should be fixed next.
-> > 
-> > No, it's not correct. After your patch, trap properties like action are
-> > not set back to the default. Regardless of what you think is the "right
-> > design", you cannot introduce such regressions.
+--nextPart1884404.dNYcoPC7rg
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
+From: Sven Eckelmann <sven@narfation.org>
+To: mareklindner@neomailbox.ch, Jakub Kicinski <kuba@kernel.org>
+Cc: sw@simonwunderlich.de, a@unstable.cc, davem@davemloft.net, Pavel Skripkin <paskripkin@gmail.com>, b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, syzbot+28b0702ada0bf7381f58@syzkaller.appspotmail.com
+Subject: Re: [PATCH] net: batman-adv: fix error handling
+Date: Tue, 26 Oct 2021 08:51:20 +0200
+Message-ID: <2283323.BJRDQVktmA@ripper>
+In-Reply-To: <20211025174950.1bec22fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <2056331.oJahCzYEoq@sven-desktop> <2526100.mKikVBQdmv@sven-l14> <20211025174950.1bec22fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+
+On Tuesday, 26 October 2021 02:49:50 CEST Jakub Kicinski wrote:
+[...]
+> > Acked-by: Sven Eckelmann <sven@narfation.org>
 > 
-> Again, I'm not against fixing the regression, I'm trying to understand
-> why it is impossible to fix mlxsw and netdevsim to honor SW layering
-> properly.
+> FWIW I'm marking this as "Awaiting upstream" in netdev patchwork,
+> please LMK if you prefer for it to be applied directly.
 
-devlink reload was implemented in 4.16 along with mlxsw support and from
-day one it meant that devlink objects such as ports and shared buffer
-were dynamically destroyed / created during reload. You cannot come
-almost 4 years later, sprinkle assertions according to how you
-implemented reload support and claim that the rest are wrong and need to
-be fixed so that the assertions don't trigger.
+Please apply this directly. Thanks
 
-Note that devlink reload is not the only command that can trigger the
-destruction / creation of objects. devlink ports can also come and go
-following split / unsplit commands.
+Kind regards,
+	Sven
+--nextPart1884404.dNYcoPC7rg
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
 
-> 
-> > 
-> > Calling devlink_*_unregister() in reload_down() and devlink_*_register()
-> > in reload_up() is not new. It is done for multiple objects (e.g., ports,
-> > regions, shared buffer, etc). After your patch, netdevsim is still doing
-> > it.
-> 
-> Yeah, it was introduced by same developers who did it in mlxsw, so no
-> wonders that same patterns exist in both drivers.
+-----BEGIN PGP SIGNATURE-----
 
-The point of netdevsim is to both provide a reference and allow
-developers to test the code. If you bothered to run the tests under
-tools/testing/selftests/drivers/net/netdevsim/ (or just instantiate /
-reload netdevsim, really), these regressions [1][2] would have been
-avoided. Instead, I need to ask you for the third time to revert the
-changes.
+iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAmF3pWgACgkQXYcKB8Em
+e0ZXrRAAz8YPPokOa159qdcM2v2sLSPMwVaTHKdKXPXvXPJa5pZuzHLvHw/JB/+M
+TjW4etUJiDDzrwG9Aqhc7jzAYSZYqLVJWU01NKtE7ZO5LcC/nutOFy6jjP/AhzAX
+O+NTKuCK6hIsLhwqdmXWsH/1erL4VB0yPhOeVS97ue0cK4gnF8dwABguDCZQwMhc
+cEYyDB3D9UO132lIHXagjTnVe5BSjFhDMragJOyhAScxRF+ky5F9P7Z0NuoKD7l8
+ExOb2hhWtSzPengt+Y5cGh3DygrhDLxisWFD+k05xj2KvhGWH6+oD8xsI8GppL9u
+H1AJrzKGNRt9w7qEAAU2hH957NzkMnTplGCPtjnaSGDb4UtqVDthYPcIsXF7qW/N
++QASHuogp8zoavb+5eRgRI0dEfPr0epwAwT8VeBpMD4Ia8+RZeoKv89koXM85O3m
+MxvQ2uhCUAASNvhkcSVK5dK51kg3WJ7YBCofIU+882wOeb8Ooz0qR0cyOLACV1MV
+zZx4DFRsBOSSrL2TL2f3ljG30hyH4m0jIZ+TWewfQYl5E4kXnT15rrDFL/yL7MXD
+j1BJuZ0mR3276a1MOh2rAJ0w//xOVLjIRe5ogTXPoB8K49tTjwxYasfZQPu7v6R5
+vQzWC6AHBvxMXu3S/+mX0YosasEQItbsGZq4TDGBqegGFaw5hr4=
+=o3a0
+-----END PGP SIGNATURE-----
 
-[1] https://syzkaller.appspot.com/bug?id=c58973ab3345057753c9f629a88275e30ed2a370
-[2] https://syzkaller.appspot.com/bug?extid=93d5accfaefceedf43c1
+--nextPart1884404.dNYcoPC7rg--
 
-> 
-> > 
-> > Again, please revert the two commits I mentioned. If you think they are
-> > necessary, you can re-submit them in the future, after proper review and
-> > testing of the affected code paths.
-> 
-> It was posted for review in the ML, no one objected.
 
-So what?
 
-> 
-> Can you please explain why is it so important to touch devlink SW
-> objects, reallocate them again and again on every reload in mlxsw?
-
-Because that's how reload was defined and implemented. A complete
-reload. We are not changing the semantics 4 years later.
