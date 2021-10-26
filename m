@@ -2,34 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0679A43B8A0
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 19:52:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B654943B8A3
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 19:53:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237959AbhJZRzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 13:55:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46898 "EHLO mail.kernel.org"
+        id S237974AbhJZR4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 13:56:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47478 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235511AbhJZRzQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Oct 2021 13:55:16 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5424F60F24;
-        Tue, 26 Oct 2021 17:52:52 +0000 (UTC)
+        id S237975AbhJZR4S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Oct 2021 13:56:18 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1B73F6103C;
+        Tue, 26 Oct 2021 17:53:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635270772;
-        bh=q1s9j7XyxvrIzFpRwu72zOAIJs53uU4IGpbqEBBiijg=;
+        s=k20201202; t=1635270834;
+        bh=whf4C39z/xu0gPPev4QsXNzrCAZV/tyBkKPQGGkpOIY=;
         h=From:To:Cc:Subject:Date:From;
-        b=mKz1KUhIX1W3dC3QskpoPtaD+dZktn7Olu59sybFoZ2s6xmIGpOTUNL3COCDjF0LN
-         n/rI+U7Lv29vRUrXOOiGI7F7YTYEbASDtGWnmhEVnJkNeyLU6C+zdrH8dQYi+bhOx4
-         X461bJj9YLLlma6PweADAUAg138I3NZZy4Joz3wWYQYWt9NUNaiyNYvyZvg9ZQl4fA
-         vusum/B/Fz7/T3A/eU6eVxqsZXe2qbhx2buDvU93N40j9HTKJ7QWbHY8t0pqAXoYAJ
-         VScS295XauXXkKwDUq6F+37Id5OeKFf84Mk1jCyyLdxvKQYl19UqDzZsDt2ItlhY5d
-         oA1RGIfxchEWw==
+        b=cTTPpv/H3LCY2pcS71KGdGZ6XNS+AQPCWSivUY3woXpvVYNglU5l7LRadhHF0SDUS
+         vOWXSUHWm40JN8KQ3xtoL0wb+kcXVJIY50DrqCo8IS6HZs7Y9p4qapK4gE+2KBUJfR
+         w10ewtewUvo7rDv7/H7LSGp3YwllWK4W2s5Fowlk2nJCy4pgP1cP5HxAeCKxr6xVsN
+         2lT1veXkGfnX/SsVDNy5DfByGsC0yEwTSgtwCxA/U0sadXlBo8GdJJxJUzQx1XHBeQ
+         hL/SsQ0Qd7VthQL6WIVS5ykecJuCq1A5cUu6YVhrqXgsTD1Mxbs/2P46Tffk08soe7
+         RrKQBivraDAwQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, mchehab@kernel.org,
-        linux-media@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] media: use eth_hw_addr_set()
-Date:   Tue, 26 Oct 2021 10:52:50 -0700
-Message-Id: <20211026175250.3197558-1-kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, stefanr@s5r6.in-berlin.de,
+        linux1394-devel@lists.sourceforge.net,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next] firewire: don't write directly to netdev->dev_addr
+Date:   Tue, 26 Oct 2021 10:53:52 -0700
+Message-Id: <20211026175352.3197750-1-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -42,64 +43,48 @@ of VLANs...") introduced a rbtree for faster Ethernet address look
 up. To maintain netdev->dev_addr in this tree we need to make all
 the writes to it go through appropriate helpers.
 
-Convert media from memcpy(... 6) and memcpy(... addr_len) to
-eth_hw_addr_set():
-
-  @@
-  expression dev, np;
-  @@
-  - memcpy(dev->dev_addr, np, 6)
-  + eth_hw_addr_set(dev, np)
-  @@
-  - memcpy(dev->dev_addr, np, dev->addr_len)
-  + eth_hw_addr_set(dev, np)
-
-Make sure we don't cast off const qualifier from dev->dev_addr.
+Prepare fwnet_hwaddr on the stack and use dev_addr_set() to copy
+it to netdev->dev_addr. We no longer need to worry about alignment.
+union fwnet_hwaddr does not have any padding and we set all fields
+so we don't need to zero it upfront.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/media/dvb-core/dvb_net.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/firewire/net.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/media/dvb-core/dvb_net.c b/drivers/media/dvb-core/dvb_net.c
-index dddebea644bb..8a2febf33ce2 100644
---- a/drivers/media/dvb-core/dvb_net.c
-+++ b/drivers/media/dvb-core/dvb_net.c
-@@ -1008,7 +1008,7 @@ static u8 mask_promisc[6]={0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
- 
- static int dvb_net_filter_sec_set(struct net_device *dev,
- 		   struct dmx_section_filter **secfilter,
--		   u8 *mac, u8 *mac_mask)
-+		   const u8 *mac, u8 *mac_mask)
- {
- 	struct dvb_net_priv *priv = netdev_priv(dev);
+diff --git a/drivers/firewire/net.c b/drivers/firewire/net.c
+index 4c3fd2eed1da..dcc141068128 100644
+--- a/drivers/firewire/net.c
++++ b/drivers/firewire/net.c
+@@ -1443,8 +1443,8 @@ static int fwnet_probe(struct fw_unit *unit,
+ 	struct net_device *net;
+ 	bool allocated_netdev = false;
+ 	struct fwnet_device *dev;
++	union fwnet_hwaddr ha;
  	int ret;
-@@ -1052,7 +1052,7 @@ static int dvb_net_feed_start(struct net_device *dev)
- 	int ret = 0, i;
- 	struct dvb_net_priv *priv = netdev_priv(dev);
- 	struct dmx_demux *demux = priv->demux;
--	unsigned char *mac = (unsigned char *) dev->dev_addr;
-+	const unsigned char *mac = (const unsigned char *) dev->dev_addr;
+-	union fwnet_hwaddr *ha;
  
- 	netdev_dbg(dev, "rx_mode %i\n", priv->rx_mode);
- 	mutex_lock(&priv->mutex);
-@@ -1272,7 +1272,7 @@ static int dvb_net_set_mac (struct net_device *dev, void *p)
- 	struct dvb_net_priv *priv = netdev_priv(dev);
- 	struct sockaddr *addr=p;
+ 	mutex_lock(&fwnet_device_mutex);
  
--	memcpy(dev->dev_addr, addr->sa_data, dev->addr_len);
-+	eth_hw_addr_set(dev, addr->sa_data);
+@@ -1491,12 +1491,12 @@ static int fwnet_probe(struct fw_unit *unit,
+ 	net->max_mtu = 4096U;
  
- 	if (netif_running(dev))
- 		schedule_work(&priv->restart_net_feed_wq);
-@@ -1367,7 +1367,7 @@ static int dvb_net_add_if(struct dvb_net *dvbnet, u16 pid, u8 feedtype)
- 			 dvbnet->dvbdev->adapter->num, if_num);
+ 	/* Set our hardware address while we're at it */
+-	ha = (union fwnet_hwaddr *)net->dev_addr;
+-	put_unaligned_be64(card->guid, &ha->uc.uniq_id);
+-	ha->uc.max_rec = dev->card->max_receive;
+-	ha->uc.sspd = dev->card->link_speed;
+-	put_unaligned_be16(dev->local_fifo >> 32, &ha->uc.fifo_hi);
+-	put_unaligned_be32(dev->local_fifo & 0xffffffff, &ha->uc.fifo_lo);
++	ha.uc.uniq_id = cpu_to_be64(card->guid);
++	ha.uc.max_rec = dev->card->max_receive;
++	ha.uc.sspd = dev->card->link_speed;
++	ha.uc.fifo_hi = cpu_to_be16(dev->local_fifo >> 32);
++	ha.uc.fifo_lo = cpu_to_be32(dev->local_fifo & 0xffffffff);
++	dev_addr_set(net, ha.u);
  
- 	net->addr_len = 6;
--	memcpy(net->dev_addr, dvbnet->dvbdev->adapter->proposed_mac, 6);
-+	eth_hw_addr_set(net, dvbnet->dvbdev->adapter->proposed_mac);
- 
- 	dvbnet->device[if_num] = net;
+ 	memset(net->broadcast, -1, net->addr_len);
  
 -- 
 2.31.1
