@@ -2,67 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C326F43BBB6
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 22:39:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66B3243BBC1
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 22:41:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239230AbhJZUlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 16:41:37 -0400
-Received: from mail-oi1-f175.google.com ([209.85.167.175]:43813 "EHLO
-        mail-oi1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239231AbhJZUlb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 16:41:31 -0400
-Received: by mail-oi1-f175.google.com with SMTP id o4so343631oia.10;
-        Tue, 26 Oct 2021 13:39:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=nlTgUp5qItfNiEj5SUL7gvzHOZ7DO4OwjbwHdix/bLs=;
-        b=in29vQQIFRR+BtESS8faUPzm05Wq10FvUDjhcAgSKczrVmFsN69Lizkjr8lsPsA+lm
-         qFRiJrssAuQHCuD63b+0oFUxbwaDUMEa5V4a2UO8N+0ASZ0e0yD05yVVq6cK+dIlvnmH
-         p5WwvwNXLCXwgSRGmF2JRmlYRMJM1ys2oRm2Et3xiQcNPYkzt/FpPPa/rS+1Kic3AC6h
-         paRhKEitbGlkooDxZcdhGbBH0wgw3EKrHtQroc4aKzqlTiPUUO+9jx0GjUftQBSVz2Zv
-         zSpaupkShlgHNhudlKe7z0w6VRqtYh3ePo2f6TWdrTP/cJpxesHnfF/U1DAbsCYXtpfX
-         U+ag==
-X-Gm-Message-State: AOAM530RxFkjKq8IU9mxyUy7ccXc8B4BbjBxr3jZzPeAHWb5rqxrTvUL
-        b6EZNaGvUat2qq2db94nC8SriDEObQ==
-X-Google-Smtp-Source: ABdhPJwulVD4Ce+LCyYWNUj7ujCjfERRm8f5MOIE9nIJV7cBxZ8EIdSw358FwPXw2GI2S2Jdn4rzJA==
-X-Received: by 2002:a05:6808:8f6:: with SMTP id d22mr806869oic.88.1635280746721;
-        Tue, 26 Oct 2021 13:39:06 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id d10sm4170935ooj.24.2021.10.26.13.39.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Oct 2021 13:39:06 -0700 (PDT)
-Received: (nullmailer pid 3204673 invoked by uid 1000);
-        Tue, 26 Oct 2021 20:39:05 -0000
-Date:   Tue, 26 Oct 2021 15:39:05 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     Jacek Anaszewski <jacek.anaszewski@gmail.com>, pavel@ucw.cz,
-        netdev@vger.kernel.org, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>, robh+dt@kernel.org
-Subject: Re: [PATCH 1/3] dt-bindings: leds: Deprecate `linux,default-trigger`
- property
-Message-ID: <YXhnaUOrNm7jcp9l@robh.at.kernel.org>
-References: <20211013204424.10961-1-kabel@kernel.org>
+        id S239255AbhJZUoU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 16:44:20 -0400
+Received: from mout.gmx.net ([212.227.17.22]:58335 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235537AbhJZUoU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Oct 2021 16:44:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1635280906;
+        bh=v+XY08vZpQVeYCTLMobBSviFEDs9CwqOP/SAnjIBBL8=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=QEv6Dto0WCSib72OloIbko36ITuSrvUjOXLZrsURjstxi3b+/bk4cZGwEFcdS5bsP
+         KBMWA4dlcyngM80OkyXTfazyZPStjRB1k/YwIkOJ8qQ12iIU2dbpR1wd+skvFNWSlA
+         pHZJJN0JBnspvL21ZT4zwx6QR5gdGCf9wmupH45E=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from localhost.fritz.box ([62.216.209.136]) by mail.gmx.net
+ (mrgmx104 [212.227.17.168]) with ESMTPSA (Nemesis) id
+ 1MG9g4-1mR9Ow0tgq-00GZK6; Tue, 26 Oct 2021 22:41:46 +0200
+From:   Peter Seiderer <ps.report@gmx.net>
+To:     linux-wireless@vger.kernel.org
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Felix Fietkau <nbd@nbd.name>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [RFC v1] mac80211: minstrel_ht: respect RTS threshold setting
+Date:   Tue, 26 Oct 2021 22:41:44 +0200
+Message-Id: <20211026204144.29250-1-ps.report@gmx.net>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211013204424.10961-1-kabel@kernel.org>
+Content-Transfer-Encoding: base64
+X-Provags-ID: V03:K1:pR+qU758i91AxY7933p+jceGVA+yXismQySMPccxp7XPI/i2JVy
+ CpQNLcy8mBk+1xdHrXS+ZQT2/fhzWNQNPts81tvZTvWBLmh5ZfUEvM9CFQk8TPUd5rH+LO+
+ xffPoHK09y9irptrajUuIeai9/XHPz03J0RJjg3HaaTQ4AdLwmchCVYUcTpPLV0rUby8MsM
+ trLV3PrIP03Hflgvd/FiQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:IYD0AfuUPHQ=:WWOuUupcMAInMVdcYeCvWi
+ PAYfa271PiPntCblNjnQywoqEZBotHhRCEFzcTX8JCAleMjp/oonaZAiRfe7HsMIzORHty0E6
+ NhxqtWaTT79VbUgH48dZotd0q2QOP/qPoMT3m8M+vS6yNyt9VFJ2BOlQu4AdUpSZN9zH3TOwx
+ XjD4XKBTDo84DuaS24r/36I/vcnz4pwy2JcENAN17FCS1sy0bgaEXzvZuAs12UNG/q5hN/tfN
+ RR9OREmEAbxqCeIKGdzV9skERIgnhhPC8G4ic/EmPyfW/xW1Bhjylc7YDXQQ4umQoL4xkmBNC
+ fNRMzeFMr8KNjsNUAeY0xTOes8x6saQkAaBenJZU2uZSfMtoWqXevrJ/9wXVHmAuw7RtzzAR7
+ OXpqT4RchBkzVCUeJeLjp95PKQk3+FzlDzWBF/Lnw2LjeJy9aatqPTnWP1zQbngaMiFlFeyHO
+ YDMaY3Y8XDl6nHaiLKtOFh41C+0SLyDDCbxH4bgORCHk1EHwMnmbO4F30kGlj9KqwdAY1M9T3
+ LjBI8e/igD/Zj2BrYjlsiunv8tcM+qdKE2aadBBAnzcGvUmhmDLjT+AHuXEycwyrAYYbeqBOI
+ oJ4Y49FoYf2pALKD2lZqBfWYIB0/pC9KuOtY5RPZYI7kF4aPkXyFmBoaWAWAYOcc78hBxAsUc
+ awDusDfoeUhHANUu/eBNm6PAwozx1lQOrHue+LJMZxgfEkH6mlN3gZktsQgDqUyD8oECzx/+I
+ PFkFRWeVaGOPrVkN5M3NEvnje/hpQIznQH9otJE8YHeiVQ/4znZ1HWlyYl/5heVagItdub8QQ
+ z4aNTUrxqoiYMo+HbEzHQhTDf2N3o4ldzXF+4E3yOZ3n92UW2YEU3qk7/zWiqbJL3fcy2eq3G
+ AxoxS5ipm5t6rVdJR26tj+aaF4db/gBizUfSAHWf/7xMKvLBNCh79aI8cscZjTnO4DZnQYrK7
+ CvkNVXJovEFYGlG+3C0z2cUShZ95zitVR6j8Ma8Vj5TV5aTiUbM3967lZ9IHcA8vdWGEDJP1M
+ kRpV8sOKIx99jfwOqCxfc+WJetqSqk+IE6XZn+TQT69GqUOpibJDGgfa41uT0SI7gCAOznS5U
+ 4pLnseQ6RkQK4E=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 13 Oct 2021 22:44:22 +0200, Marek Behún wrote:
-> This property is deprecated in favor of the `function` property.
-> 
-> Signed-off-by: Marek Behún <kabel@kernel.org>
-> ---
->  Documentation/devicetree/bindings/leds/common.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-
-Acked-by: Rob Herring <robh@kernel.org>
+RGVzcGl0ZSB0aGUgJ1JUUyB0aHI6b2ZmJyBzZXR0aW5nIGEgd2lyZXNoYXJrIHRyYWNlIG9mIElC
+U1MKdHJhZmZpYyB3aXRoIEhUNDAgbW9kZSBlbmFibGVkIGJldHdlZW4gdHdvIGF0aDlrIGNhcmRz
+IHJldmVhbGVkCnNvbWUgUlRTL0NUUyB0cmFmZmljLgoKRGVidWcgYW5kIGNvZGUgYW5hbHlzaXMg
+c2hvd2VkIHRoYXQgbW9zdCBwbGFjZXMgc2V0dGluZwpJRUVFODAyMTFfVFhfUkNfVVNFX1JUU19D
+VFMgcmVzcGVjdCB0aGUgUlRTIHN0cmF0ZWd5IGJ5CmV2YWx1YXRpbmcgcnRzX3RocmVzaG9sZCwg
+ZS5nLiBuZXQvbWFjODAyMTEvdHguYzoKCiA2OTggICAgICAgICAvKiBzZXQgdXAgUlRTIHByb3Rl
+Y3Rpb24gaWYgZGVzaXJlZCAqLwogNjk5ICAgICAgICAgaWYgKGxlbiA+IHR4LT5sb2NhbC0+aHcu
+d2lwaHktPnJ0c190aHJlc2hvbGQpIHsKIDcwMCAgICAgICAgICAgICAgICAgdHhyYy5ydHMgPSB0
+cnVlOwogNzAxICAgICAgICAgfQogNzAyCiA3MDMgICAgICAgICBpbmZvLT5jb250cm9sLnVzZV9y
+dHMgPSB0eHJjLnJ0czsKCm9yIGRyaXZlcnMvbmV0L3dpcmVsZXNzL2F0aC9hdGg5ay94bWl0LmMK
+CjEyMzggICAgICAgICAgICAgICAgIC8qCjEyMzkgICAgICAgICAgICAgICAgICAqIEhhbmRsZSBS
+VFMgdGhyZXNob2xkIGZvciB1bmFnZ3JlZ2F0ZWQgSFQgZnJhbWVzLgoxMjQwICAgICAgICAgICAg
+ICAgICAgKi8KMTI0MSAgICAgICAgICAgICAgICAgaWYgKGJmX2lzYW1wZHUoYmYpICYmICFiZl9p
+c2FnZ3IoYmYpICYmCjEyNDIgICAgICAgICAgICAgICAgICAgICAocmF0ZXNbaV0uZmxhZ3MgJiBJ
+RUVFODAyMTFfVFhfUkNfTUNTKSAmJgoxMjQzICAgICAgICAgICAgICAgICAgICAgdW5saWtlbHko
+cnRzX3RocmVzaCAhPSAodTMyKSAtMSkpIHsKMTI0NCAgICAgICAgICAgICAgICAgICAgICAgICBp
+ZiAoIXJ0c190aHJlc2ggfHwgKGxlbiA+IHJ0c190aHJlc2gpKQoxMjQ1ICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgcnRzID0gdHJ1ZTsKMTI0NiAgICAgICAgICAgICAgICAgfQoKVGhl
+IG9ubHkgcGxhY2Ugc2V0dGluZyBJRUVFODAyMTFfVFhfUkNfVVNFX1JUU19DVFMgdW5jb25kaXRp
+b25hbGx5CndhcyBmb3VuZCBpbiBuZXQvbWFjODAyMTEvcmM4MDIxMV9taW5zdHJlbF9odC5jLgoK
+Rml4IHRoaXMgYnkgcHJvcGFnYXRpbmcgdGhlIGNhbGN1bGF0ZWQgdXNlX3J0cyB2YWx1ZSB0byB0
+aGUKbWluc3RyZWxfaHRfc2V0X3JhdGUoKSBmdW5jdGlvbiBhbmQgZXZhbHVhdGUgaXQgYWNjb3Jk
+aW5nbHkKYmVmb3JlIHNldHRpbmcgSUVFRTgwMjExX1RYX1JDX1VTRV9SVFNfQ1RTLgoKU2lnbmVk
+LW9mZi1ieTogUGV0ZXIgU2VpZGVyZXIgPHBzLnJlcG9ydEBnbXgubmV0PgotLS0KIG5ldC9tYWM4
+MDIxMS9yYzgwMjExX21pbnN0cmVsX2h0LmMgfCAyMSArKysrKysrKysrKystLS0tLS0tLS0KIDEg
+ZmlsZSBjaGFuZ2VkLCAxMiBpbnNlcnRpb25zKCspLCA5IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdp
+dCBhL25ldC9tYWM4MDIxMS9yYzgwMjExX21pbnN0cmVsX2h0LmMgYi9uZXQvbWFjODAyMTEvcmM4
+MDIxMV9taW5zdHJlbF9odC5jCmluZGV4IDcyYjQ0ZDRjNDJkMC4uZjUyZWRlZjQ0M2ZhIDEwMDY0
+NAotLS0gYS9uZXQvbWFjODAyMTEvcmM4MDIxMV9taW5zdHJlbF9odC5jCisrKyBiL25ldC9tYWM4
+MDIxMS9yYzgwMjExX21pbnN0cmVsX2h0LmMKQEAgLTI3Niw3ICsyNzYsOCBAQCBzdGF0aWMgY29u
+c3QgdTggbWluc3RyZWxfc2FtcGxlX3NlcVtdID0gewogfTsKIAogc3RhdGljIHZvaWQKLW1pbnN0
+cmVsX2h0X3VwZGF0ZV9yYXRlcyhzdHJ1Y3QgbWluc3RyZWxfcHJpdiAqbXAsIHN0cnVjdCBtaW5z
+dHJlbF9odF9zdGEgKm1pKTsKK21pbnN0cmVsX2h0X3VwZGF0ZV9yYXRlcyhzdHJ1Y3QgbWluc3Ry
+ZWxfcHJpdiAqbXAsIHN0cnVjdCBtaW5zdHJlbF9odF9zdGEgKm1pLAorCQkJIGJvb2wgdXNlX3J0
+cyk7CiAKIC8qCiAgKiBTb21lIFZIVCBNQ1NlcyBhcmUgaW52YWxpZCAod2hlbiBOZGJwcyAvIE5l
+cyBpcyBub3QgYW4gaW50ZWdlcikKQEAgLTEyNTQsNyArMTI1NSw3IEBAIG1pbnN0cmVsX2h0X3R4
+X3N0YXR1cyh2b2lkICpwcml2LCBzdHJ1Y3QgaWVlZTgwMjExX3N1cHBvcnRlZF9iYW5kICpzYmFu
+ZCwKIAl9CiAKIAlpZiAodXBkYXRlKQotCQltaW5zdHJlbF9odF91cGRhdGVfcmF0ZXMobXAsIG1p
+KTsKKwkJbWluc3RyZWxfaHRfdXBkYXRlX3JhdGVzKG1wLCBtaSwgaW5mby0+Y29udHJvbC51c2Vf
+cnRzKTsKIH0KIAogc3RhdGljIHZvaWQKQEAgLTEzMTksNyArMTMyMCw4IEBAIG1pbnN0cmVsX2Nh
+bGNfcmV0cmFuc21pdChzdHJ1Y3QgbWluc3RyZWxfcHJpdiAqbXAsIHN0cnVjdCBtaW5zdHJlbF9o
+dF9zdGEgKm1pLAogCiBzdGF0aWMgdm9pZAogbWluc3RyZWxfaHRfc2V0X3JhdGUoc3RydWN0IG1p
+bnN0cmVsX3ByaXYgKm1wLCBzdHJ1Y3QgbWluc3RyZWxfaHRfc3RhICptaSwKLSAgICAgICAgICAg
+ICAgICAgICAgIHN0cnVjdCBpZWVlODAyMTFfc3RhX3JhdGVzICpyYXRldGJsLCBpbnQgb2Zmc2V0
+LCBpbnQgaW5kZXgpCisJCSAgICAgc3RydWN0IGllZWU4MDIxMV9zdGFfcmF0ZXMgKnJhdGV0Ymws
+IGludCBvZmZzZXQsIGludCBpbmRleCwKKwkJICAgICBib29sIHVzZV9ydHMpCiB7CiAJaW50IGdy
+b3VwX2lkeCA9IE1JX1JBVEVfR1JPVVAoaW5kZXgpOwogCWNvbnN0IHN0cnVjdCBtY3NfZ3JvdXAg
+Kmdyb3VwID0gJm1pbnN0cmVsX21jc19ncm91cHNbZ3JvdXBfaWR4XTsKQEAgLTEzNTcsNyArMTM1
+OSw3IEBAIG1pbnN0cmVsX2h0X3NldF9yYXRlKHN0cnVjdCBtaW5zdHJlbF9wcml2ICptcCwgc3Ry
+dWN0IG1pbnN0cmVsX2h0X3N0YSAqbWksCiAJICogIC0gaWYgc3RhdGlvbiBpcyBpbiBkeW5hbWlj
+IFNNUFMgKGFuZCBzdHJlYW1zID4gMSkKIAkgKiAgLSBmb3IgZmFsbGJhY2sgcmF0ZXMsIHRvIGlu
+Y3JlYXNlIGNoYW5jZXMgb2YgZ2V0dGluZyB0aHJvdWdoCiAJICovCi0JaWYgKG9mZnNldCA+IDAg
+fHwKKwlpZiAoKG9mZnNldCA+IDAgJiYgdXNlX3J0cykgfHwKIAkgICAgKG1pLT5zdGEtPnNtcHNf
+bW9kZSA9PSBJRUVFODAyMTFfU01QU19EWU5BTUlDICYmCiAJICAgICBncm91cC0+c3RyZWFtcyA+
+IDEpKSB7CiAJCXJhdGV0YmwtPnJhdGVbb2Zmc2V0XS5jb3VudCA9IHJhdGV0YmwtPnJhdGVbb2Zm
+c2V0XS5jb3VudF9ydHM7CkBAIC0xNDI2LDcgKzE0MjgsOCBAQCBtaW5zdHJlbF9odF9nZXRfbWF4
+X2Ftc2R1X2xlbihzdHJ1Y3QgbWluc3RyZWxfaHRfc3RhICptaSkKIH0KIAogc3RhdGljIHZvaWQK
+LW1pbnN0cmVsX2h0X3VwZGF0ZV9yYXRlcyhzdHJ1Y3QgbWluc3RyZWxfcHJpdiAqbXAsIHN0cnVj
+dCBtaW5zdHJlbF9odF9zdGEgKm1pKQorbWluc3RyZWxfaHRfdXBkYXRlX3JhdGVzKHN0cnVjdCBt
+aW5zdHJlbF9wcml2ICptcCwgc3RydWN0IG1pbnN0cmVsX2h0X3N0YSAqbWksCisJCQkgYm9vbCB1
+c2VfcnRzKQogewogCXN0cnVjdCBpZWVlODAyMTFfc3RhX3JhdGVzICpyYXRlczsKIAlpbnQgaSA9
+IDA7CkBAIC0xNDM2LDE1ICsxNDM5LDE1IEBAIG1pbnN0cmVsX2h0X3VwZGF0ZV9yYXRlcyhzdHJ1
+Y3QgbWluc3RyZWxfcHJpdiAqbXAsIHN0cnVjdCBtaW5zdHJlbF9odF9zdGEgKm1pKQogCQlyZXR1
+cm47CiAKIAkvKiBTdGFydCB3aXRoIG1heF90cF9yYXRlWzBdICovCi0JbWluc3RyZWxfaHRfc2V0
+X3JhdGUobXAsIG1pLCByYXRlcywgaSsrLCBtaS0+bWF4X3RwX3JhdGVbMF0pOworCW1pbnN0cmVs
+X2h0X3NldF9yYXRlKG1wLCBtaSwgcmF0ZXMsIGkrKywgbWktPm1heF90cF9yYXRlWzBdLCB1c2Vf
+cnRzKTsKIAogCWlmIChtcC0+aHctPm1heF9yYXRlcyA+PSAzKSB7CiAJCS8qIEF0IGxlYXN0IDMg
+dHggcmF0ZXMgc3VwcG9ydGVkLCB1c2UgbWF4X3RwX3JhdGVbMV0gbmV4dCAqLwotCQltaW5zdHJl
+bF9odF9zZXRfcmF0ZShtcCwgbWksIHJhdGVzLCBpKyssIG1pLT5tYXhfdHBfcmF0ZVsxXSk7CisJ
+CW1pbnN0cmVsX2h0X3NldF9yYXRlKG1wLCBtaSwgcmF0ZXMsIGkrKywgbWktPm1heF90cF9yYXRl
+WzFdLCB1c2VfcnRzKTsKIAl9CiAKIAlpZiAobXAtPmh3LT5tYXhfcmF0ZXMgPj0gMikgewotCQlt
+aW5zdHJlbF9odF9zZXRfcmF0ZShtcCwgbWksIHJhdGVzLCBpKyssIG1pLT5tYXhfcHJvYl9yYXRl
+KTsKKwkJbWluc3RyZWxfaHRfc2V0X3JhdGUobXAsIG1pLCByYXRlcywgaSsrLCBtaS0+bWF4X3By
+b2JfcmF0ZSwgdXNlX3J0cyk7CiAJfQogCiAJbWktPnN0YS0+bWF4X3JjX2Ftc2R1X2xlbiA9IG1p
+bnN0cmVsX2h0X2dldF9tYXhfYW1zZHVfbGVuKG1pKTsKQEAgLTE3MDUsNyArMTcwOCw3IEBAIG1p
+bnN0cmVsX2h0X3VwZGF0ZV9jYXBzKHZvaWQgKnByaXYsIHN0cnVjdCBpZWVlODAyMTFfc3VwcG9y
+dGVkX2JhbmQgKnNiYW5kLAogCiAJLyogY3JlYXRlIGFuIGluaXRpYWwgcmF0ZSB0YWJsZSB3aXRo
+IHRoZSBsb3dlc3Qgc3VwcG9ydGVkIHJhdGVzICovCiAJbWluc3RyZWxfaHRfdXBkYXRlX3N0YXRz
+KG1wLCBtaSk7Ci0JbWluc3RyZWxfaHRfdXBkYXRlX3JhdGVzKG1wLCBtaSk7CisJbWluc3RyZWxf
+aHRfdXBkYXRlX3JhdGVzKG1wLCBtaSwgZmFsc2UpOwogfQogCiBzdGF0aWMgdm9pZAotLSAKMi4z
+My4xCgo=
