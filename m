@@ -2,160 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E88043B38B
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 16:03:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2FF743B3A4
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 16:09:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236311AbhJZOFk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 10:05:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49176 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230119AbhJZOFg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 10:05:36 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE0E2C061745;
-        Tue, 26 Oct 2021 07:03:12 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id y67so20530792iof.10;
-        Tue, 26 Oct 2021 07:03:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jiKBRIJ90WYjcORFiV3ORltYZSK2q2sAgdSrdSfFfbc=;
-        b=B5oi/7UCVk36Kltqk5jv0UWKsgnlcJbT+p8jfJZ/39b+wWQ3ihMQCSae2vo2AfNYOV
-         rGFEUlC++DoWLCCqPMJWHJOt1HSJyZFJtvVv49eAiawK7btNdoGSa1NDCwrmtXk1QKNU
-         vSBGb2llMudk+OZOc4MAqtj9ZyDt/GRG5Xmh0lZMLJUQfXLqcWmfnbKyPUvZsUevSp7r
-         Uav5pLsgxuo7NBSBiLlXImmOZ8jx2FcsOPxBS44VwbmHXKYUQ4BPjNlZX9zlsc+Tru3f
-         yRRWGvhcXHKmK3hoxpjQGpduRdkJH6Mb3jiEyDSm0HHk/BZg1ycg8Ak+iPaRmnDBUB5W
-         DujA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jiKBRIJ90WYjcORFiV3ORltYZSK2q2sAgdSrdSfFfbc=;
-        b=JKmwxkkuMTKXFa90Thvjdh0ADxxPITJbFnr9TxxQpGIOeClQzQjWpmyC4sAWRawLGJ
-         UzNthgk5zd74rGJTOH4bwhuOUsDDsU9rLlXtFXsONRNuIj7CDlSnkPYa8b7+1aQ9fMtB
-         OrZFOKemdfjfg5j6h9d3S9/2stCoILE7UY9qmrNlefSP8xOQW+7eN+34/rAYuFK0Xg7N
-         wtDu695kVwfiwmpjHz5x5PzL14+HUbZm7YXbtxD7+0ZqIW6+UnH5QIOqCgToqHfTBs/N
-         JKu0W7Rv1zVFpMJr6+a5pqcfKQrrq8mAMv7Ix4Q2u85hVOPFyYHwXpRox4Z9AvacDDiG
-         i3QQ==
-X-Gm-Message-State: AOAM531ZEV9xo19PMmyMOejzjjpz5FduXyXAymyzOSyTQctKxHvf3xsQ
-        4Sh6s3VSDgjC5PogcEDBQm8eDakQ8rVMUrAAtog=
-X-Google-Smtp-Source: ABdhPJxnJMo1zj33+9fiUewOfzyLCzx56/LSGr86u1/7PYep88hWbWvGY1Pv8LiKwv9ITmco8NPZCwRW9GVoSd8560c=
-X-Received: by 2002:a05:6638:2257:: with SMTP id m23mr249515jas.139.1635256992171;
- Tue, 26 Oct 2021 07:03:12 -0700 (PDT)
-MIME-Version: 1.0
-References: <20211025083315.4752-1-laoar.shao@gmail.com> <20211025083315.4752-9-laoar.shao@gmail.com>
- <202110251421.7056ACF84@keescook> <CALOAHbDPs-pbr5CnmuRv+b+CgMdEkzi4Yr2fSO9pKCE-chr3Yg@mail.gmail.com>
- <20211026091211.569a7ba2@gandalf.local.home> <CALOAHbBAKqbZEMvk5PVMrqFR_kjbi_kotGTNTGEW+=JWnC+_uA@mail.gmail.com>
-In-Reply-To: <CALOAHbBAKqbZEMvk5PVMrqFR_kjbi_kotGTNTGEW+=JWnC+_uA@mail.gmail.com>
-From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Tue, 26 Oct 2021 22:02:36 +0800
-Message-ID: <CALOAHbAa-iMD4k2DEOun+RivUXiSMKR6ndCsqGZMseUbX_9+ww@mail.gmail.com>
-Subject: Re: [PATCH v6 08/12] tools/bpf/bpftool/skeleton: make it adopt to
- task comm size change
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Qiang Zhang <qiang.zhang@windriver.com>,
-        robdclark <robdclark@chromium.org>,
-        christian <christian@brauner.io>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        David Miller <davem@davemloft.net>,
+        id S235453AbhJZOMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 10:12:20 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:36031 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234708AbhJZOMT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 10:12:19 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 302545C02BD;
+        Tue, 26 Oct 2021 10:09:55 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Tue, 26 Oct 2021 10:09:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=1pi7Dn
+        yCJxHjq8VFuSFfU9Tcfpd1EhkRMUL4XIaIqYk=; b=QrlahmCTIPku+TP0CjDAAC
+        cVGIUYQvrGptvPkk7O/1KKAaIJIDTaY8GRVDKnYMDTQ3qnSvgNl7sFhAdggwUi+F
+        NYM4BE1nFppQxVtILS7bIM/ne67+av4iT6Ess6Io2igVN9+TfpqavbokfvhyOZYt
+        f/xWZE72+UB632sWSs8FM14YpLOzQSHYT1JHaMv96d5WR43AC9R/PY7ChgS+GWjg
+        ToQW2DJXzxOomQ5G6SQTTDfM+oW5rpoWQrPOgvmK1Zb16cv5I4A3SVlC98qawDDP
+        jROwpB85dJe/nFs8hdx3UScUWg5cWKiUIiYTds+pOnqr7L5fazhAl73VbGs1wJ1A
+        ==
+X-ME-Sender: <xms:Mgx4YUXqdnjA4d40DuLCAFi0eJVmY8pKuvAEkn7MjPXeE8OX0SqwFw>
+    <xme:Mgx4YYnZrTY6CshOQ8YLWM5NsM03FgiBVM0l32FEl-_6sDNglMYGW56hojby6OyJu
+    SOFLXqZSV75grk>
+X-ME-Received: <xmr:Mgx4YYYNI8looNiqBB5ewVOvB7-QAwHKHmpyIQAwBU5ALUq7OJKDsXadFnJ0Ok6DeQDZhjVASn3rPk_a5bGfqQflWAPVMw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvdefkedggeehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpeehhfdthfduueehgfekkefhhedutddvveefteehteekleevgfegteevueelheek
+    ueenucffohhmrghinhepghhithhhuhgsrdgtohhmnecuvehluhhsthgvrhfuihiivgeptd
+    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:Mgx4YTWSfhIpGkJ_2CmQzudvWEF9mCdNOS25hRR3jfnFWpp2UImS4Q>
+    <xmx:Mgx4YemiX5K6-qdX0VNQYtmnXgxnqdpEYeFd8EwX2Rj29arhfgH4vQ>
+    <xmx:Mgx4YYdPyPyDBlLWjuYUVqN11FRm01eXf9BIHFyxONF8OeeWaD5q0A>
+    <xmx:Mwx4YVt9NO7G7av2i2tEkFfg2ANjrjWACGktSFHCAOdtJz5LPF5YNA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 26 Oct 2021 10:09:53 -0400 (EDT)
+Date:   Tue, 26 Oct 2021 17:09:47 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        dennis.dalessandro@cornelisnetworks.com,
-        mike.marciniszyn@cornelisnetworks.com, dledford@redhat.com,
-        jgg@ziepe.ca, linux-rdma@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel test robot <oliver.sang@intel.com>,
-        kbuild test robot <lkp@intel.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Ido Schimmel <idosch@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org,
+        syzbot+93d5accfaefceedf43c1@syzkaller.appspotmail.com
+Subject: Re: [PATCH net-next] netdevsim: Register and unregister devlink
+ traps on probe/remove device
+Message-ID: <YXgMK2NKiiVYJhLl@shredder>
+References: <725e121f05362da4328dda08d5814211a0725dac.1635064599.git.leonro@nvidia.com>
+ <YXUhyLXsc2egWNKx@shredder>
+ <YXUtbOpjmmWr71dU@unreal>
+ <YXU5+XLhQ9zkBGNY@shredder>
+ <YXZB/3+IR6I0b2xE@unreal>
+ <YXZl4Gmq6DYSdDM3@shredder>
+ <YXaNUQv8RwDc0lif@unreal>
+ <YXelYVqeqyVJ5HLc@shredder>
+ <YXertDP8ouVbdnUt@unreal>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YXertDP8ouVbdnUt@unreal>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 26, 2021 at 9:55 PM Yafang Shao <laoar.shao@gmail.com> wrote:
->
-> On Tue, Oct 26, 2021 at 9:12 PM Steven Rostedt <rostedt@goodmis.org> wrote:
-> >
-> > On Tue, 26 Oct 2021 10:18:51 +0800
-> > Yafang Shao <laoar.shao@gmail.com> wrote:
-> >
-> > > > So, if we're ever going to copying these buffers out of the kernel (I
-> > > > don't know what the object lifetime here in bpf is for "e", etc), we
-> > > > should be zero-padding (as get_task_comm() does).
-> > > >
-> > > > Should this, instead, be using a bounce buffer?
-> > >
-> > > The comment in bpf_probe_read_kernel_str_common() says
-> > >
-> > >   :      /*
-> > >   :       * The strncpy_from_kernel_nofault() call will likely not fill the
-> > >   :       * entire buffer, but that's okay in this circumstance as we're probing
-> > >   :       * arbitrary memory anyway similar to bpf_probe_read_*() and might
-> > >   :       * as well probe the stack. Thus, memory is explicitly cleared
-> > >   :       * only in error case, so that improper users ignoring return
-> > >   :       * code altogether don't copy garbage; otherwise length of string
-> > >   :       * is returned that can be used for bpf_perf_event_output() et al.
-> > >   :       */
-> > >
-> > > It seems that it doesn't matter if the buffer is filled as that is
-> > > probing arbitrary memory.
-> > >
-> > > >
-> > > > get_task_comm(comm, task->group_leader);
-> > >
-> > > This helper can't be used by the BPF programs, as it is not exported to BPF.
-> > >
-> > > > bpf_probe_read_kernel_str(&e.comm, sizeof(e.comm), comm);
-> >
-> > I guess Kees is worried that e.comm will have something exported to user
-> > space that it shouldn't. But since e is part of the BPF program, does the
-> > BPF JIT take care to make sure everything on its stack is zero'd out, such
-> > that a user BPF couldn't just read various items off its stack and by doing
-> > so, see kernel memory it shouldn't be seeing?
-> >
->
+On Tue, Oct 26, 2021 at 10:18:12AM +0300, Leon Romanovsky wrote:
+> On Tue, Oct 26, 2021 at 09:51:13AM +0300, Ido Schimmel wrote:
+> 
+> <...>
+> 
+> > > 
+> > > Can you please explain why is it so important to touch devlink SW
+> > > objects, reallocate them again and again on every reload in mlxsw?
+> > 
+> > Because that's how reload was defined and implemented. A complete
+> > reload. We are not changing the semantics 4 years later.
+> 
+> Please put your emotions aside and explain me technically why are you
+> must to do it?
 
-Ah, you mean the BPF JIT has already avoided leaking information to user.
-I will check the BPF JIT code first.
+Already did. The current semantics are "devlink-reload provides
+mechanism to reinit driver entities, applying devlink-params and
+devlink-resources new values. It also provides mechanism to activate
+firmware."
 
-> Understood.
-> It can leak information to the user if the user buffer is large enough.
->
->
-> > I'm guessing it does, otherwise this would be a bigger issue than this
-> > patch series.
-> >
->
-> I will think about how to fix it.
-> At first glance, it seems we'd better introduce a new BPF helper like
-> bpf_probe_read_kernel_str_pad().
->
-> --
-> Thanks
-> Yafang
+And this is exactly what netdevsim and mlxsw are doing. Driver entities
+are re-initialized. Your patch breaks that as entities are not
+re-initialized, which results in user space breakage. You simply cannot
+introduce such regressions.
 
+> 
+> The proposed semantics was broken for last 4 years, it can even seen as
+> dead on arrival,
 
+Again with the bombastic statements. It was "dead on arrival" like the
+notifications were "impossible"?
 
--- 
-Thanks
-Yafang
+> because it never worked for us in real production.
+
+Who is "us"? mlx5 that apparently decided to do its own thing?
+
+We are using reload in mlxsw on a daily basis and users are using it to
+re-partition ASIC resources and activate firmware. There are tests over
+netdevsim implementation that anyone can run for testing purposes. We
+also made sure to integrate it into syzkaller:
+
+https://github.com/google/syzkaller/commit/5b49e1f605a770e8f8fcdcbd1a8ff85591fc0c8e
+https://github.com/google/syzkaller/commit/04ca72cd45348daab9d896bbec8ea4c2d13455ac
+https://github.com/google/syzkaller/commit/6930bbef3b671ae21f74007f9e59efb9b236b93f
+https://github.com/google/syzkaller/commit/d45a4d69d83f40579e74fb561e1583db1be0e294
+https://github.com/google/syzkaller/commit/510951950dc0ee69cfdaf746061d3dbe31b49fd8
+
+Which is why the regressions you introduced were discovered so quickly.
+
+> 
+> So I'm fixing bugs without relation to when they were introduced.
+
+We all do
+
+> 
+> For example, this fix from Jiri [1] for basic design flow was merged almost
+> two years later after devlink reload was introduced [2], or this patch from
+> Parav [3] that fixed an issue introduced year before [4].
+
+What is your point? That code has bugs?
+
+By now I have spent more time arguing with you than you spent testing
+your patches and it's clear this discussion is not going anywhere.
+
+Are you going to send a revert or I will? This is the fourth time I'm
+asking you.
