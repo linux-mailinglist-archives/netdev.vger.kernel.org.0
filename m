@@ -2,69 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1842A43B203
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 14:10:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E64543B20B
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 14:12:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235703AbhJZMMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 08:12:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38418 "EHLO mail.kernel.org"
+        id S235414AbhJZMOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 08:14:45 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:59456 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234648AbhJZMMa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Oct 2021 08:12:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2264A61163;
-        Tue, 26 Oct 2021 12:10:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635250207;
-        bh=LNwyzFXC6KOwxi6Szct7cZjnBOcrhTl7SNDYH9/Sg4k=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ddyD/MvHaoTj0gJj442Q8KXony5MnMyauxncFO1JGoTsKXM9PJX5vnlotKE8YUk2U
-         eU1emTV2kiuajbE7P5+NT/qnq2ygu69LXTQN5QEmh9Ly7XW+Eu/alsYlnrn134GGMg
-         ChDtmcp4r1C0i845L69qRTFgXlFXAR2WstRpYr7cLGcABtOPKYkyqELTbYvVdZdn5C
-         UjIZ/VaMaSlKa7TMJWtOFyTJZL1/OmIsyIYW2EN1IdIYIbCGHw52uhhYd3FfFAPYMa
-         L2dsz42DyhTf1Kuhh1n0W/2eMoAlqgLY18fDTAPCvtXEHHho7PBZpWstg0li4HZzJy
-         AiJj03XKT5H4g==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1539C6096F;
-        Tue, 26 Oct 2021 12:10:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232378AbhJZMOp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Oct 2021 08:14:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=XbtrM0kCz28GkdYHz/LczKiylEviSIxhi48F/wTyC5k=; b=BI1gDaSv9ZP8qybbGwGB4h3qF2
+        qtm1KIrQUUWh0sYld++1sPP2BTDmzO9qzY5L/5vRiZXms3RMp3l6WBX27Yg2vfU7Fodd98UorFuXN
+        oOPgPrgxBJt+iNHMknHviIOH98ijVgS6xUVPJ8nWfSRdQzWXDX1V3fMZJwgfg+afIGO0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mfLJM-00Bm9n-Lu; Tue, 26 Oct 2021 14:12:12 +0200
+Date:   Tue, 26 Oct 2021 14:12:12 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Luo Jie <luoj@codeaurora.org>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: fixed warning: Function parameter not described
+Message-ID: <YXfwnHKeY58AVgU9@lunn.ch>
+References: <20211026102957.17100-1-luoj@codeaurora.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] net: multicast: calculate csum of looped-back and
- forwarded packets
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163525020708.21520.9618157400402322785.git-patchwork-notify@kernel.org>
-Date:   Tue, 26 Oct 2021 12:10:07 +0000
-References: <20211024201423.1367844-1-cyril.strejc@skoda.cz>
-In-Reply-To: <20211024201423.1367844-1-cyril.strejc@skoda.cz>
-To:     Cyril Strejc <cyril.strejc@skoda.cz>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        willemdebruijn.kernel@gmail.com, netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211026102957.17100-1-luoj@codeaurora.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Sun, 24 Oct 2021 22:14:25 +0200 you wrote:
-> During a testing of an user-space application which transmits UDP
-> multicast datagrams and utilizes multicast routing to send the UDP
-> datagrams out of defined network interfaces, I've found a multicast
-> router does not fill-in UDP checksum into locally produced, looped-back
-> and forwarded UDP datagrams, if an original output NIC the datagrams
-> are sent to has UDP TX checksum offload enabled.
+On Tue, Oct 26, 2021 at 06:29:57PM +0800, Luo Jie wrote:
+> Fixed warning: Function parameter or member 'enable' not
+> described in 'genphy_c45_fast_retrain'
 > 
-> [...]
+> Signed-off-by: Luo Jie <luoj@codeaurora.org>
 
-Here is the summary with links:
-  - [v2] net: multicast: calculate csum of looped-back and forwarded packets
-    https://git.kernel.org/netdev/net/c/9122a70a6333
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+    Andrew
