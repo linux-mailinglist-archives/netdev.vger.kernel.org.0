@@ -2,110 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C3E443B787
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 18:47:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0007543B789
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 18:48:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237519AbhJZQuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 12:50:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59924 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237503AbhJZQuM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 12:50:12 -0400
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79559C061767
-        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 09:47:48 -0700 (PDT)
-Received: by mail-il1-x12a.google.com with SMTP id 3so15557832ilq.7
-        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 09:47:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=YKwRxPBjph63txYkU/60zXWK4/WhUFpeAqg9AkQ4hnM=;
-        b=Z9ToptDFzfh/mwbDivSN0t3grjkZ/mCL4ttDd6BrGK6Gt665J8VtTIu2PSSprYwIBc
-         zxg7iBNLk+3xYL/OwS3wZpZ6CnUC4lS1sqSArz9R/Soal4ljp93MM317irp1totwKITO
-         P+kwFix4j2veuUINrqKRyKDr5GDf/jKtrDqkg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=YKwRxPBjph63txYkU/60zXWK4/WhUFpeAqg9AkQ4hnM=;
-        b=X+aQu36tgqHg0rMFv35zgkJOiz+P38tLQTbGFObITLj7/sagD+F2r8fQ5G22RWXi+M
-         C6drgT+7MEVVWq63DXQ17bNP49CWuTcxoO2WVpNEbTkeyUDPc3IfknAKeKWV9M0DcHA1
-         erbzYWLPGh1gk9Evy7wp8Eh/BkeIA3Heyt7nWCqFIR0A2yROEXdrKz8oHvk44pGX+Tup
-         tXQS9j4aA0lXwF1lrS1Zq/sR2keMW89mJUr99Aka7Vhc3wqa1qsIsE4TwYtfZLR5RyeO
-         kaIgSfoiiTSqN63A+OFepP/h8VnK6MGpyUTSpdsC9fO6NIiXcGsz1IBbdt60yuAIlBjH
-         wJ7w==
-X-Gm-Message-State: AOAM532YtH0Ydw5nJT+6Ogw+HMGfB/frs3dfkJSxxLVFRzL8dM1/p/Bh
-        1boZNm0FSl5MJyCk7eHirMZ02Q==
-X-Google-Smtp-Source: ABdhPJz4MwNT6x0eqE/fwWtC2vUza4je3EDZG0CcQCInRJtS+XYPOqPxaxjQXvslMpA88wGXPHKtbQ==
-X-Received: by 2002:a05:6e02:1a23:: with SMTP id g3mr4664396ile.103.1635266867924;
-        Tue, 26 Oct 2021 09:47:47 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id s7sm11616003iow.31.2021.10.26.09.47.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Oct 2021 09:47:47 -0700 (PDT)
-Subject: Re: [PATCH v2] dt-bindings: net: qcom,ipa: IPA does support up to two
- iommus
-To:     David Heidelberg <david@ixit.cz>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, Alex Elder <elder@kernel.org>
-Cc:     ~okias/devicetree@lists.sr.ht, linux-arm-msm@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20211026163240.131052-1-david@ixit.cz>
-From:   Alex Elder <elder@ieee.org>
-Message-ID: <2de53575-af6e-5bb9-e7ad-5d924656867d@ieee.org>
-Date:   Tue, 26 Oct 2021 11:47:46 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S237540AbhJZQuZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 12:50:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50394 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237530AbhJZQuY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Oct 2021 12:50:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5C95060F56;
+        Tue, 26 Oct 2021 16:48:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635266880;
+        bh=xRaWeA3yziiQOEpBqiJyRp/na5u/5z3Y+66B0zkiT3E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WzOJ/Iqgm/lLPUoPy2wU3RCyNvV9OvAgN3jD0XNE3Jo/HiAbL0MLENf1L1XjsGtMw
+         9nTQOq+v2D2L9/of18KKfF0BVfU4Ux1GnsBQG+YRRo06Nq0U6O2+8P/4iL77UwPwVY
+         602Tz/6dsCIBreMUn5dtOR2p0W9GA8mHBuyNW92jWX9zt5+NwPPcmMxNN2jFxyhyWC
+         jc5vECRy466B4IBURqWHrREDiXHSPhjg3Rb9n4lWjds8MgfasDemO8YB62K8aTpTVP
+         m2wjaT+oibdopcb4Z4Rtcje/tLeKIsJwjQs+D6S/RB+qWsWrEgjMWpLy0WUiK21HuM
+         Q6knKY724ldxg==
+Date:   Tue, 26 Oct 2021 09:47:59 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leon Romanovsky <leonro@nvidia.com>
+Cc:     <davem@davemloft.net>, <saeedm@nvidia.com>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next] net/mlx5: remove the recent devlink params
+Message-ID: <20211026094759.1282b7cb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YXgwlsyGtK8qZfHj@unreal>
+References: <20211026152939.3125950-1-kuba@kernel.org>
+        <YXgwlsyGtK8qZfHj@unreal>
 MIME-Version: 1.0
-In-Reply-To: <20211026163240.131052-1-david@ixit.cz>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/26/21 11:32 AM, David Heidelberg wrote:
-> Fix warnings as:
-> arch/arm/boot/dts/qcom-sdx55-mtp.dt.yaml: ipa@1e40000: iommus: [[21, 1504, 0], [21, 1506, 0]] is too long
-> 	From schema: Documentation/devicetree/bindings/net/qcom,ipa.yaml
+On Tue, 26 Oct 2021 19:45:10 +0300 Leon Romanovsky wrote:
+> On Tue, Oct 26, 2021 at 08:29:39AM -0700, Jakub Kicinski wrote:
+> > revert commit 46ae40b94d88 ("net/mlx5: Let user configure io_eq_size param")
+> > revert commit a6cb08daa3b4 ("net/mlx5: Let user configure event_eq_size param")
+> > revert commit 554604061979 ("net/mlx5: Let user configure max_macs param")
+> > 
+> > The EQE parameters are applicable to more drivers, they should
+> > be configured via standard API, probably ethtool. Example of
+> > another driver needing something similar:
+> > 
+> > https://lore.kernel.org/all/1633454136-14679-3-git-send-email-sbhatta@marvell.com/
+> > 
+> > The last param for "max_macs" is probably fine but the documentation
+> > is severely lacking. The meaning and implications for changing the
+> > param need to be stated.
+> > 
+> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> > 
+> > LocalWords:  EQE param  
 > 
-> Signed-off-by: David Heidelberg <david@ixit.cz>
+> Your emacs config sneaked out.
 
-Looks good to me.  I'm not sure why the minItems is required,
-unless it's to indicate that it must be at least 1 and can't
-be missing.  But iommus is also stated to be required elsewhere
-in the binding.
-
-In the future, it's helpful to indicate the command you
-used to produce the warning in your commit message.  And
-furthermore, describing the problem (and not just including
-the error message) is even more helpful.
-
-Reviewed-by: Alex Elder <elder@linaro.org>
-
-> ---
->   Documentation/devicetree/bindings/net/qcom,ipa.yaml | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-> index b8a0b392b24e..b86edf67ce62 100644
-> --- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-> +++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-> @@ -64,7 +64,8 @@ properties:
->         - const: gsi
->   
->     iommus:
-> -    maxItems: 1
-> +    minItems: 1
-> +    maxItems: 2
->   
->     clocks:
->       maxItems: 1
-> 
-
+I know, sorry, removed when applying.
