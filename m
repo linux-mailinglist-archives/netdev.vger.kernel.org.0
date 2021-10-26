@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FF6143A9E1
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 03:50:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8945443A9E8
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 03:51:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233004AbhJZBw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 21:52:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54304 "EHLO
+        id S233641AbhJZBxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 21:53:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232987AbhJZBw2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 21:52:28 -0400
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 569F4C061745;
-        Mon, 25 Oct 2021 18:50:05 -0700 (PDT)
-Received: by mail-io1-xd32.google.com with SMTP id b188so18085760iof.8;
-        Mon, 25 Oct 2021 18:50:05 -0700 (PDT)
+        with ESMTP id S231971AbhJZBxm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 21:53:42 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1E94C061745;
+        Mon, 25 Oct 2021 18:51:19 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id o184so18129230iof.6;
+        Mon, 25 Oct 2021 18:51:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ScHBEadlhvXJ5Ux51PKGxkHvsss0u6ctZT9nDJJQkzo=;
-        b=Fx3ncUFZI8yO/PIUnaTNHz3IQgwVf1ec+igHEUtG3eIgKmfEYkRxJ6PWm0JQb9GuQJ
-         aqs6xn44Rv1O5XW7VtN12VrTzhCaxBKC/PfNYDPfSoQub3BKKrGzdA+xia0FajoLpQUK
-         gzWEKPB8cTjG/Y3XWkseihPfESzdoqy8tamnEgt/HF3kyWah44FujLVdRiQxa/nGOPqv
-         V5X/RrU4l8zTncHMniSEs0frs++vuQNQDCHyvaBvwk6dtm8J5u9o73bEldNgR2ahmq5d
-         vlDlYx7m4s4bXuNDVRCAFpjVAV9R7u69MCBK/1f4NJfFQ+r+FWxEU1+h/LLaXSTQpq6c
-         k+oQ==
+        bh=M+TEaQB1KaSOudASCPt2E3PS4ymJyoJAqUYafZ8gI7E=;
+        b=oL8HHOwwrFG5e/LmuN4agIcEJfacHoUr4ai/CCnAQSW/UKvac/ju9Spl9S9IctkdMV
+         u0xR2bACpUqrjpo/d3B+q1N6PyNK5ARQbG4fte2a2ZeidUraP8oLilSHNXEM9gU0CM+I
+         SbO2q5cPvNWPOqMrm+ujryeD7OZDrL2sot8WITIksRGltQ4ED6m5RR4JvhnniPEr0cIJ
+         1JuVaVB6Rv7gWKPXWYUWuUxracYP9X5Yyy77zUMhI1TK6oK1YwDlTQ+j3ASsLa/eokld
+         MkDGJwXZSGj2b87w6vxWYa8EEp7aHhVpWjIf4Q3+7yIsWlT4MlYFozO9j7Xg4hpf4VFu
+         u+jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ScHBEadlhvXJ5Ux51PKGxkHvsss0u6ctZT9nDJJQkzo=;
-        b=GzjhHSD3Mo9mJvhSyUmQOctOHEnlKq3VLl2b9kfpXoTUHrMvvYQsFn3QMso+6cpuZ0
-         Wv6haSwgtTbps6gykSYlaaVlwBXB32qu60ddhp7+Xe8zyT1LpYcvvKPEsUvWm4ebs3Pc
-         5uw/pWx1fiS8cEWxeoawddGG1KRZBkpuef6SMy5zL5X/BlCvorLoWjAIQUotY87qvbRI
-         q6IU27sjFuheFjhtSuK+k+TeCZeqdypzjZk3HZFJ9tDiAhDo52ARjdA2Ktd452kvv+KH
-         CQ2MIHfBWI9OIXMJXPbghcjcxVT41MxVyo5weQYr55Do4WWQAHmUoC50uY09hnYx/Dzl
-         YzWg==
-X-Gm-Message-State: AOAM532kFIog0LmLXhKCro9EcBy9CcLC85csM9djXgF7yzka9Zv7vB6S
-        XZdFWz3BhQvgH9z4AMOICYNhHT/uHbDOyts+JYs=
-X-Google-Smtp-Source: ABdhPJweqQlORvX/kcER+dfOkqBBAlDqGVNYLVFUw0Z1O7FC8HmC4bC+PzzQe5iYslImeJRoEVpzyLvNvGA91aU5hCs=
-X-Received: by 2002:a05:6602:2e05:: with SMTP id o5mr12805350iow.204.1635213004755;
- Mon, 25 Oct 2021 18:50:04 -0700 (PDT)
+        bh=M+TEaQB1KaSOudASCPt2E3PS4ymJyoJAqUYafZ8gI7E=;
+        b=qfJnDPw8lTYjHE8ocNM48qavwlU/an4GeU2JrC8jppYMH0eSV9jsJ5tOy5puLTrhBc
+         StaW2nJoDs2GVMEeFbQfz8B+7gUNQXd44FcA4gq6DUh7zQHA/bd2pAu7zjOpyITPeAzQ
+         YGPMdxNfxlw66Q100l8glUhizE+I0zGbazaLkFgwsVUGMhMSY21TxZrG+Wj8LndkDdmY
+         SaVmIcVhI3pxe8IYciO9FO2ixEK3xultBy6w+BDsK4y5hkCDOAhA1kbFSXZMBe+rVP+X
+         mfAljVJGJ6NGcgJjNC6L7ckBI/gu1/OXeBIsrWQaRu5/vBKvK7LbLp870yzbrTqxtO4s
+         6FEg==
+X-Gm-Message-State: AOAM530a+IWBGYvHyKT5d5FPDnn5LIOXt6EwDwWzait7qB1l0ui4xsJx
+        5z0Vsh2Qs/Hkq7i90P9askt6bevqr/v3Jd7spwo=
+X-Google-Smtp-Source: ABdhPJzo8Pl2UbPecXV9ZclgT3FzrihDFm7Isxsh4OePzHurnJ+maCBZCvaVaerHAt6wvuSmpFvZzPlkXSA+3EMqRwA=
+X-Received: by 2002:a5d:9493:: with SMTP id v19mr13031702ioj.34.1635213079114;
+ Mon, 25 Oct 2021 18:51:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211025083315.4752-1-laoar.shao@gmail.com> <20211025083315.4752-3-laoar.shao@gmail.com>
- <202110251408.2E661E70BC@keescook>
-In-Reply-To: <202110251408.2E661E70BC@keescook>
+References: <20211025083315.4752-1-laoar.shao@gmail.com> <20211025083315.4752-4-laoar.shao@gmail.com>
+ <202110251411.93B477676B@keescook>
+In-Reply-To: <202110251411.93B477676B@keescook>
 From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Tue, 26 Oct 2021 09:49:28 +0800
-Message-ID: <CALOAHbAf2LrHMWfHwRvSkgw2BLYcKUr6y8sxpSGvrQ2ORCD2Dw@mail.gmail.com>
-Subject: Re: [PATCH v6 02/12] fs/exec: make __get_task_comm always get a nul
- terminated string
+Date:   Tue, 26 Oct 2021 09:50:43 +0800
+Message-ID: <CALOAHbBwRcZoRteU7qL7rdip=cbTHc3n6-eJrd6xUoeJ+Win6Q@mail.gmail.com>
+Subject: Re: [PATCH v6 03/12] drivers/connector: make connector comm always
+ nul ternimated
 To:     Kees Cook <keescook@chromium.org>
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Steven Rostedt <rostedt@goodmis.org>,
@@ -85,71 +85,42 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         LKML <linux-kernel@vger.kernel.org>,
         kernel test robot <oliver.sang@intel.com>,
         kbuild test robot <lkp@intel.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Vladimir Zapolskiy <vzapolskiy@gmail.com>,
+        David Howells <dhowells@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 26, 2021 at 5:08 AM Kees Cook <keescook@chromium.org> wrote:
+On Tue, Oct 26, 2021 at 5:14 AM Kees Cook <keescook@chromium.org> wrote:
 >
-> On Mon, Oct 25, 2021 at 08:33:05AM +0000, Yafang Shao wrote:
-> > If the dest buffer size is smaller than sizeof(tsk->comm), the buffer
-> > will be without null ternimator, that may cause problem. We can make sure
-> > the buffer size not smaller than comm at the callsite to avoid that
-> > problem, but there may be callsite that we can't easily change.
+> On Mon, Oct 25, 2021 at 08:33:06AM +0000, Yafang Shao wrote:
+> > connector comm was introduced in commit
+> > f786ecba4158 ("connector: add comm change event report to proc connector").
+> > struct comm_proc_event was defined in include/linux/cn_proc.h first and
+> > then been moved into file include/uapi/linux/cn_proc.h in commit
+> > 607ca46e97a1 ("UAPI: (Scripted) Disintegrate include/linux").
 > >
-> > Using strscpy_pad() instead of strncpy() in __get_task_comm() can make
-> > the string always nul ternimated.
-> >
-> > Suggested-by: Kees Cook <keescook@chromium.org>
-> > Suggested-by: Steven Rostedt <rostedt@goodmis.org>
-> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> > Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> > Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-> > Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> > Cc: Peter Zijlstra <peterz@infradead.org>
-> > Cc: Steven Rostedt <rostedt@goodmis.org>
-> > Cc: Al Viro <viro@zeniv.linux.org.uk>
-> > Cc: Kees Cook <keescook@chromium.org>
-> > Cc: Petr Mladek <pmladek@suse.com>
-> > ---
-> >  fs/exec.c | 3 ++-
-> >  1 file changed, 2 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/fs/exec.c b/fs/exec.c
-> > index 404156b5b314..bf2a7a91eeea 100644
-> > --- a/fs/exec.c
-> > +++ b/fs/exec.c
-> > @@ -1209,7 +1209,8 @@ static int unshare_sighand(struct task_struct *me)
-> >  char *__get_task_comm(char *buf, size_t buf_size, struct task_struct *tsk)
-> >  {
-> >       task_lock(tsk);
-> > -     strncpy(buf, tsk->comm, buf_size);
-> > +     /* The copied value is always null terminated */
+> > As this is the UAPI code, we can't change it without potentially breaking
+> > things (i.e. userspace binaries have this size built in, so we can't just
+> > change the size). To prepare for the followup change - extending task
+> > comm, we have to use __get_task_comm() to avoid the BUILD_BUG_ON() in
+> > proc_comm_connector().
 >
-> This may could say "always NUL terminated and zero-padded"
+> I wonder, looking at this again, if it might make more sense to avoid
+> this cn_proc.c change, and instead, adjust get_task_comm() like so:
+>
+> #define get_task_comm(buf, tsk)
+>         __get_task_comm(buf, __must_be_array(buf) + sizeof(buf), tsk)
+>
+> This would still enforce the original goal of making sure
+> get_task_comm() is being used on a char array, and now that
+> __get_task_comm() will truncate & pad, it's safe to use on both
+> too-small and too-big arrays.
 >
 
-Sure. I will change it.
-
-> > +     strscpy_pad(buf, tsk->comm, buf_size);
-> >       task_unlock(tsk);
-> >       return buf;
-> >  }
-> > --
-> > 2.17.1
-> >
->
-> But for the replacement with strscpy_pad(), yes please:
->
-> Reviewed-by: Kees Cook <keescook@chromium.org>
->
->
-> --
-> Kees Cook
-
-
+It Makes sense to me.  I will do it as you suggested.
 
 -- 
 Thanks
