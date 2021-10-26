@@ -2,187 +2,444 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE48A43B2E6
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 15:07:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA8E943B2F6
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 15:10:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236134AbhJZNJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 09:09:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36592 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235127AbhJZNJ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 09:09:26 -0400
-Received: from mail-oo1-xc2f.google.com (mail-oo1-xc2f.google.com [IPv6:2607:f8b0:4864:20::c2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87DC9C061767
-        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 06:07:02 -0700 (PDT)
-Received: by mail-oo1-xc2f.google.com with SMTP id m37-20020a4a9528000000b002b83955f771so4262399ooi.7
-        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 06:07:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=forshee.me; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bMO9aIZEjMzj+cHlABoe9RIyr+B9KaScU7qbVDmoSBU=;
-        b=gs+ZGXEQlgMQw8l++1hUpXPBydjgeiTLOcEr0x4UZ0P2YBtOQW9Pb5DYjoj927k+1Y
-         UXJRhbTriWliVVTFJvK74OWPMlbtHkV2JNvTzb2hrL6lMlsXU5zPqhh4nWb8JVqP1WBk
-         s7XUR1HjdezHpAHa/CMU9f4ie2pcjajdxfM1X/HrRdmubWp7a1TXILI0+rIhkPtU/Ibi
-         fVosNqtj1En3V0Ay3W6wlulz9tCiHPzjafhEyLM5o/rcko1cIQURuOfgPmZKmwFwgKcK
-         zazGD0jmRxOX29lLM3blPnUgaAAWNeopcqSyMbmTqF6nTkhsFHIBX++x1/mxdn/6Dqn1
-         rBcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bMO9aIZEjMzj+cHlABoe9RIyr+B9KaScU7qbVDmoSBU=;
-        b=sgRLb9XNnPFP4Jc7JWn6lrZ5+jJl4O63ikdM28wZBc03QqKDPOwBC/dU7bMbMUz/RW
-         4E7PUsEHiH1tbDTM1pt9W6O12WAApeeXnY4u5e6wqCMQt3zzfDFlZOxsBabzB0W14EtO
-         S9XDe1cCCE4BBUVcrF47PFKybYvvFgPXxQ1GhFx6Ghf+BsSTAuq6uLQ5JCSkfEONR9mO
-         M5Rjuo/ixe1/Iqk/PElE7A8r1Sb1CifD8TjL/6QFZZD1gaF9NdL0AOdeF5BC8aaBndGH
-         FFr9jwZsoLjFiC/fNtssvkd+JplBjwvzLDoXJ7k6auxfM8vDH8DZu0jEjNXVsmtrMBgO
-         ftfA==
-X-Gm-Message-State: AOAM530GVccfIyFBNaJ6K45t8lQ80csAKuOdfESOHq4LidUcEYauQThw
-        L9pPC5DZ+RCDqTUQ189Pafmw0w==
-X-Google-Smtp-Source: ABdhPJy2sHrfFA8jSlyLkeDUjCM5YfHBMuAAeutWAaVoHL1TBQCxYc1Q2cMU7HbI3XKbr/GzEzi76Q==
-X-Received: by 2002:a05:6820:35a:: with SMTP id m26mr17338095ooe.45.1635253621041;
-        Tue, 26 Oct 2021 06:07:01 -0700 (PDT)
-Received: from localhost ([2605:a601:ac0f:820:fca3:95d3:b064:21ae])
-        by smtp.gmail.com with ESMTPSA id bq10sm3090209oib.25.2021.10.26.06.07.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Oct 2021 06:07:00 -0700 (PDT)
-From:   Seth Forshee <seth@forshee.me>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     "Paul E. McKenney" <paulmck@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] net: sch: eliminate unnecessary RCU waits in mini_qdisc_pair_swap()
-Date:   Tue, 26 Oct 2021 08:06:59 -0500
-Message-Id: <20211026130700.121189-1-seth@forshee.me>
-X-Mailer: git-send-email 2.32.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S236158AbhJZNMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 09:12:41 -0400
+Received: from mail.loongson.cn ([114.242.206.163]:54084 "EHLO loongson.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S236128AbhJZNMk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Oct 2021 09:12:40 -0400
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxD2sp_ndh21EgAA--.34661S2;
+        Tue, 26 Oct 2021 21:10:01 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
+Subject: [PATCH bpf-next v7] test_bpf: Add module parameter test_suite
+Date:   Tue, 26 Oct 2021 21:10:00 +0800
+Message-Id: <1635253800-4459-1-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+X-CM-TRANSID: AQAAf9DxD2sp_ndh21EgAA--.34661S2
+X-Coremail-Antispam: 1UD129KBjvJXoW3Cr4rWw1fGFyDXw1fWr1Dtrb_yoWDtw18pF
+        Wjqrn0yF18JF97XF18XF17Aa4FyF40y3y8KrWfJryqyrs5AryUtF48K34Iqrn3Jr40v345
+        Za10vFs8G3W2yaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvK14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUAVWUtwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
+        n2kIc2xKxwCY02Avz4vE14v_Xr4l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr
+        0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY
+        17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcV
+        C0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF
+        0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxh
+        VjvjDU0xZFpf9x0JU24E_UUUUU=
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Seth Forshee <sforshee@digitalocean.com>
+After commit 9298e63eafea ("bpf/tests: Add exhaustive tests of ALU
+operand magnitudes"), when modprobe test_bpf.ko with jit on mips64,
+there exists segment fault due to the following reason:
 
-Currently rcu_barrier() is used to ensure that no readers of the
-inactive mini_Qdisc buffer remain before it is reused. This waits for
-any pending RCU callbacks to complete, when all that is actually
-required is to wait for one RCU grace period to elapse after the buffer
-was made inactive. This means that using rcu_barrier() may result in
-unnecessary waits.
+ALU64_MOV_X: all register value magnitudes jited:1
+Break instruction in kernel code[#1]
 
-To improve this, store the current RCU state when a buffer is made
-inactive and use poll_state_synchronize_rcu() to check whether a full
-grace period has elapsed before reusing it. If a full grace period has
-not elapsed, wait for a grace period to elapse, and in the non-RT case
-use synchronize_rcu_expedited() to hasten it.
+It seems that the related jit implementations of some test cases
+in test_bpf() have problems. At this moment, I do not care about
+the segment fault while I just want to verify the test cases of
+tail calls.
 
-Since this approach eliminates the RCU callback it is no longer
-necessary to synchronize_rcu() in the tp_head==NULL case. However, the
-RCU state should still be saved for the previously active buffer.
+Based on the above background and motivation, add the following
+module parameter test_suite to the test_bpf.ko:
+test_suite=<string>: only the specified test suite will be run, the
+string can be "test_bpf", "test_tail_calls" or "test_skb_segment".
 
-Before this change I would typically see mini_qdisc_pair_swap() take
-tens of milliseconds to complete. After this change it typcially
-finishes in less than 1 ms, and often it takes just a few microseconds.
+If test_suite is not specified, but test_id, test_name or test_range
+is specified, set 'test_bpf' as the default test suite.
 
-Thanks to Paul for walking me through the options for improving this.
+This is useful to only test the corresponding test suite when specify
+the valid test_suite string.
 
-Cc: "Paul E. McKenney" <paulmck@kernel.org>
-Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
+Any invalid test suite will result in -EINVAL being returned and no
+tests being run. If the test_suite is not specified or specified as
+empty string, it does not change the current logic, all of the test
+cases will be run.
+
+Here are some test results:
+ # dmesg -c
+ # modprobe test_bpf
+ # dmesg | grep Summary
+ test_bpf: Summary: 1009 PASSED, 0 FAILED, [0/997 JIT'ed]
+ test_bpf: test_tail_calls: Summary: 8 PASSED, 0 FAILED, [0/8 JIT'ed]
+ test_bpf: test_skb_segment: Summary: 2 PASSED, 0 FAILED
+
+ # rmmod test_bpf
+ # dmesg -c
+ # modprobe test_bpf test_suite=test_bpf
+ # dmesg | tail -1
+ test_bpf: Summary: 1009 PASSED, 0 FAILED, [0/997 JIT'ed]
+
+ # rmmod test_bpf
+ # dmesg -c
+ # modprobe test_bpf test_suite=test_tail_calls
+ # dmesg
+ test_bpf: #0 Tail call leaf jited:0 21 PASS
+ [...]
+ test_bpf: #7 Tail call error path, index out of range jited:0 32 PASS
+ test_bpf: test_tail_calls: Summary: 8 PASSED, 0 FAILED, [0/8 JIT'ed]
+
+ # rmmod test_bpf
+ # dmesg -c
+ # modprobe test_bpf test_suite=test_skb_segment
+ # dmesg
+ test_bpf: #0 gso_with_rx_frags PASS
+ test_bpf: #1 gso_linear_no_head_frag PASS
+ test_bpf: test_skb_segment: Summary: 2 PASSED, 0 FAILED
+
+ # rmmod test_bpf
+ # dmesg -c
+ # modprobe test_bpf test_id=1
+ # dmesg
+ test_bpf: test_bpf: set 'test_bpf' as the default test_suite.
+ test_bpf: #1 TXA jited:0 54 51 50 PASS
+ test_bpf: Summary: 1 PASSED, 0 FAILED, [0/1 JIT'ed]
+
+ # rmmod test_bpf
+ # dmesg -c
+ # modprobe test_bpf test_suite=test_bpf test_name=TXA
+ # dmesg
+ test_bpf: #1 TXA jited:0 54 50 51 PASS
+ test_bpf: Summary: 1 PASSED, 0 FAILED, [0/1 JIT'ed]
+
+ # rmmod test_bpf
+ # dmesg -c
+ # modprobe test_bpf test_suite=test_tail_calls test_range=6,7
+ # dmesg
+ test_bpf: #6 Tail call error path, NULL target jited:0 41 PASS
+ test_bpf: #7 Tail call error path, index out of range jited:0 32 PASS
+ test_bpf: test_tail_calls: Summary: 2 PASSED, 0 FAILED, [0/2 JIT'ed]
+
+ # rmmod test_bpf
+ # dmesg -c
+ # modprobe test_bpf test_suite=test_skb_segment test_id=1
+ # dmesg
+ test_bpf: #1 gso_linear_no_head_frag PASS
+ test_bpf: test_skb_segment: Summary: 1 PASSED, 0 FAILED
+
+By the way, the above segment fault has been fixed in the latest bpf-next
+tree.
+
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
 ---
+
+v7:
+  -- Rename prepare_bpf_tests() to prepare_test_range(), remove
+     some unnecessary code, suggested by Johan Almbladh, thank you.
+
+v6:
+  -- Compute the valid range once in the beginning of prepare_bpf_tests(),
+     suggested by Johan Almbladh, thank you.
+
+v5:
+  -- Remove some duplicated code, suggested by Johan Almbladh,
+     thank you.
+  -- Initialize test_range[2] to {0, INT_MAX}.
+  -- If test_suite is specified, but test_range is not specified,
+     set the upper limit of each test_suite to overwrite INT_MAX.
+
+v4:
+  -- Fix the following checkpatch issues:
+     CHECK: Alignment should match open parenthesis
+     CHECK: Please don't use multiple blank lines
+
+     ./scripts/checkpatch.pl --strict *.patch
+     total: 0 errors, 0 warnings, 0 checks, 299 lines checked
+
+     the default max-line-length is 100 in ./scripts/checkpatch.pl,
+     but it seems that the netdev/checkpatch is 80:
+     https://patchwork.hopto.org/static/nipa/559961/12545157/checkpatch/stdout
+
+v3:
+  -- Use test_suite instead of test_type as module parameter
+  -- Make test_id, test_name and test_range selection applied to each test suite
+
 v2:
- - Rebase to net-next
+  -- Fix typo in the commit message
+  -- Use my private email to send
 
- include/net/sch_generic.h |  2 +-
- net/sched/sch_generic.c   | 38 +++++++++++++++++++-------------------
- 2 files changed, 20 insertions(+), 20 deletions(-)
+ lib/test_bpf.c | 212 ++++++++++++++++++++++++++++++++++++---------------------
+ 1 file changed, 135 insertions(+), 77 deletions(-)
 
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index ada02c4a4f51..22179b2fda72 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -1302,7 +1302,7 @@ struct mini_Qdisc {
- 	struct tcf_block *block;
- 	struct gnet_stats_basic_sync __percpu *cpu_bstats;
- 	struct gnet_stats_queue	__percpu *cpu_qstats;
--	struct rcu_head rcu;
-+	unsigned long rcu_state;
- };
+diff --git a/lib/test_bpf.c b/lib/test_bpf.c
+index e5b10fd..749d8c5 100644
+--- a/lib/test_bpf.c
++++ b/lib/test_bpf.c
+@@ -14316,72 +14316,9 @@ module_param_string(test_name, test_name, sizeof(test_name), 0);
+ static int test_id = -1;
+ module_param(test_id, int, 0);
  
- static inline void mini_qdisc_bstats_cpu_update(struct mini_Qdisc *miniq,
-diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index b0ff0dff2773..24899efc51be 100644
---- a/net/sched/sch_generic.c
-+++ b/net/sched/sch_generic.c
-@@ -1487,10 +1487,6 @@ void psched_ppscfg_precompute(struct psched_pktrate *r, u64 pktrate64)
- }
- EXPORT_SYMBOL(psched_ppscfg_precompute);
+-static int test_range[2] = { 0, ARRAY_SIZE(tests) - 1 };
++static int test_range[2] = { 0, INT_MAX };
+ module_param_array(test_range, int, NULL, 0);
  
--static void mini_qdisc_rcu_func(struct rcu_head *head)
+-static __init int find_test_index(const char *test_name)
+-{
+-	int i;
+-
+-	for (i = 0; i < ARRAY_SIZE(tests); i++) {
+-		if (!strcmp(tests[i].descr, test_name))
+-			return i;
+-	}
+-	return -1;
+-}
+-
+-static __init int prepare_bpf_tests(void)
+-{
+-	if (test_id >= 0) {
+-		/*
+-		 * if a test_id was specified, use test_range to
+-		 * cover only that test.
+-		 */
+-		if (test_id >= ARRAY_SIZE(tests)) {
+-			pr_err("test_bpf: invalid test_id specified.\n");
+-			return -EINVAL;
+-		}
+-
+-		test_range[0] = test_id;
+-		test_range[1] = test_id;
+-	} else if (*test_name) {
+-		/*
+-		 * if a test_name was specified, find it and setup
+-		 * test_range to cover only that test.
+-		 */
+-		int idx = find_test_index(test_name);
+-
+-		if (idx < 0) {
+-			pr_err("test_bpf: no test named '%s' found.\n",
+-			       test_name);
+-			return -EINVAL;
+-		}
+-		test_range[0] = idx;
+-		test_range[1] = idx;
+-	} else {
+-		/*
+-		 * check that the supplied test_range is valid.
+-		 */
+-		if (test_range[0] >= ARRAY_SIZE(tests) ||
+-		    test_range[1] >= ARRAY_SIZE(tests) ||
+-		    test_range[0] < 0 || test_range[1] < 0) {
+-			pr_err("test_bpf: test_range is out of bound.\n");
+-			return -EINVAL;
+-		}
+-
+-		if (test_range[1] < test_range[0]) {
+-			pr_err("test_bpf: test_range is ending before it starts.\n");
+-			return -EINVAL;
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+-static __init void destroy_bpf_tests(void)
 -{
 -}
 -
- void mini_qdisc_pair_swap(struct mini_Qdisc_pair *miniqp,
- 			  struct tcf_proto *tp_head)
+ static bool exclude_test(int test_id)
  {
-@@ -1503,28 +1499,30 @@ void mini_qdisc_pair_swap(struct mini_Qdisc_pair *miniqp,
+ 	return test_id < test_range[0] || test_id > test_range[1];
+@@ -14553,6 +14490,10 @@ static __init int test_skb_segment(void)
+ 	for (i = 0; i < ARRAY_SIZE(skb_segment_tests); i++) {
+ 		const struct skb_segment_test *test = &skb_segment_tests[i];
  
- 	if (!tp_head) {
- 		RCU_INIT_POINTER(*miniqp->p_miniq, NULL);
--		/* Wait for flying RCU callback before it is freed. */
--		rcu_barrier();
--		return;
--	}
-+	} else {
-+		miniq = !miniq_old || miniq_old == &miniqp->miniq2 ?
-+			&miniqp->miniq1 : &miniqp->miniq2;
++		cond_resched();
++		if (exclude_test(i))
++			continue;
++
+ 		pr_info("#%d %s ", i, test->descr);
  
--	miniq = !miniq_old || miniq_old == &miniqp->miniq2 ?
--		&miniqp->miniq1 : &miniqp->miniq2;
-+		/* We need to make sure that readers won't see the miniq
-+		 * we are about to modify. So ensure that at least one RCU
-+		 * grace period has elapsed since the miniq was made
-+		 * inactive.
+ 		if (test_skb_segment_single(test)) {
+@@ -14934,6 +14875,8 @@ static __init int test_tail_calls(struct bpf_array *progs)
+ 		int ret;
+ 
+ 		cond_resched();
++		if (exclude_test(i))
++			continue;
+ 
+ 		pr_info("#%d %s ", i, test->descr);
+ 		if (!fp) {
+@@ -14966,29 +14909,144 @@ static __init int test_tail_calls(struct bpf_array *progs)
+ 	return err_cnt ? -EINVAL : 0;
+ }
+ 
++static char test_suite[32];
++module_param_string(test_suite, test_suite, sizeof(test_suite), 0);
++
++static __init int find_test_index(const char *test_name)
++{
++	int i;
++
++	if (!strcmp(test_suite, "test_bpf")) {
++		for (i = 0; i < ARRAY_SIZE(tests); i++) {
++			if (!strcmp(tests[i].descr, test_name))
++				return i;
++		}
++	}
++
++	if (!strcmp(test_suite, "test_tail_calls")) {
++		for (i = 0; i < ARRAY_SIZE(tail_call_tests); i++) {
++			if (!strcmp(tail_call_tests[i].descr, test_name))
++				return i;
++		}
++	}
++
++	if (!strcmp(test_suite, "test_skb_segment")) {
++		for (i = 0; i < ARRAY_SIZE(skb_segment_tests); i++) {
++			if (!strcmp(skb_segment_tests[i].descr, test_name))
++				return i;
++		}
++	}
++
++	return -1;
++}
++
++static __init int prepare_test_range(void)
++{
++	int valid_range;
++
++	if (!strcmp(test_suite, "test_bpf"))
++		valid_range = ARRAY_SIZE(tests);
++	else if (!strcmp(test_suite, "test_tail_calls"))
++		valid_range = ARRAY_SIZE(tail_call_tests);
++	else if (!strcmp(test_suite, "test_skb_segment"))
++		valid_range = ARRAY_SIZE(skb_segment_tests);
++	else
++		return 0;
++
++	if (test_id >= 0) {
++		/*
++		 * if a test_id was specified, use test_range to
++		 * cover only that test.
 +		 */
-+		if (IS_ENABLED(CONFIG_PREEMPT_RT))
-+			cond_synchronize_rcu(miniq->rcu_state);
-+		else if (!poll_state_synchronize_rcu(miniq->rcu_state))
-+			synchronize_rcu_expedited();
++		if (test_id >= valid_range) {
++			pr_err("test_bpf: invalid test_id specified for '%s' suite.\n",
++			       test_suite);
++			return -EINVAL;
++		}
++
++		test_range[0] = test_id;
++		test_range[1] = test_id;
++	} else if (*test_name) {
++		/*
++		 * if a test_name was specified, find it and setup
++		 * test_range to cover only that test.
++		 */
++		int idx = find_test_index(test_name);
++
++		if (idx < 0) {
++			pr_err("test_bpf: no test named '%s' found for '%s' suite.\n",
++			       test_name, test_suite);
++			return -EINVAL;
++		}
++		test_range[0] = idx;
++		test_range[1] = idx;
++	} else if (test_range[0] != 0 || test_range[1] != INT_MAX) {
++		/*
++		 * check that the supplied test_range is valid.
++		 */
++		if (test_range[0] < 0 || test_range[1] >= valid_range) {
++			pr_err("test_bpf: test_range is out of bound for '%s' suite.\n",
++			       test_suite);
++			return -EINVAL;
++		}
++
++		if (test_range[1] < test_range[0]) {
++			pr_err("test_bpf: test_range is ending before it starts.\n");
++			return -EINVAL;
++		}
++	}
++
++	return 0;
++}
++
+ static int __init test_bpf_init(void)
+ {
+ 	struct bpf_array *progs = NULL;
+ 	int ret;
  
--	/* We need to make sure that readers won't see the miniq
--	 * we are about to modify. So wait until previous call_rcu callback
--	 * is done.
--	 */
--	rcu_barrier();
--	miniq->filter_list = tp_head;
--	rcu_assign_pointer(*miniqp->p_miniq, miniq);
-+		miniq->filter_list = tp_head;
-+		rcu_assign_pointer(*miniqp->p_miniq, miniq);
+-	ret = prepare_bpf_tests();
++	if (strlen(test_suite) &&
++	    strcmp(test_suite, "test_bpf") &&
++	    strcmp(test_suite, "test_tail_calls") &&
++	    strcmp(test_suite, "test_skb_segment")) {
++		pr_err("test_bpf: invalid test_suite '%s' specified.\n", test_suite);
++		return -EINVAL;
++	}
++
++	/*
++	 * if test_suite is not specified, but test_id, test_name or test_range
++	 * is specified, set 'test_bpf' as the default test suite.
++	 */
++	if (!strlen(test_suite) &&
++	    (test_id != -1 || strlen(test_name) ||
++	    (test_range[0] != 0 || test_range[1] != INT_MAX))) {
++		pr_info("test_bpf: set 'test_bpf' as the default test_suite.\n");
++		strcpy(test_suite, "test_bpf");
++	}
++
++	ret = prepare_test_range();
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = test_bpf();
+-	destroy_bpf_tests();
+-	if (ret)
+-		return ret;
++	if (!strlen(test_suite) || !strcmp(test_suite, "test_bpf")) {
++		ret = test_bpf();
++		if (ret)
++			return ret;
 +	}
  
- 	if (miniq_old)
--		/* This is counterpart of the rcu barriers above. We need to
-+		/* This is counterpart of the rcu sync above. We need to
- 		 * block potential new user of miniq_old until all readers
- 		 * are not seeing it.
- 		 */
--		call_rcu(&miniq_old->rcu, mini_qdisc_rcu_func);
-+		miniq_old->rcu_state = start_poll_synchronize_rcu();
- }
- EXPORT_SYMBOL(mini_qdisc_pair_swap);
+-	ret = prepare_tail_call_tests(&progs);
+-	if (ret)
+-		return ret;
+-	ret = test_tail_calls(progs);
+-	destroy_tail_call_tests(progs);
+-	if (ret)
+-		return ret;
++	if (!strlen(test_suite) || !strcmp(test_suite, "test_tail_calls")) {
++		ret = prepare_tail_call_tests(&progs);
++		if (ret)
++			return ret;
++		ret = test_tail_calls(progs);
++		destroy_tail_call_tests(progs);
++		if (ret)
++			return ret;
++	}
  
-@@ -1543,6 +1541,8 @@ void mini_qdisc_pair_init(struct mini_Qdisc_pair *miniqp, struct Qdisc *qdisc,
- 	miniqp->miniq1.cpu_qstats = qdisc->cpu_qstats;
- 	miniqp->miniq2.cpu_bstats = qdisc->cpu_bstats;
- 	miniqp->miniq2.cpu_qstats = qdisc->cpu_qstats;
-+	miniqp->miniq1.rcu_state = get_state_synchronize_rcu();
-+	miniqp->miniq2.rcu_state = miniqp->miniq1.rcu_state;
- 	miniqp->p_miniq = p_miniq;
+-	return test_skb_segment();
++	if (!strlen(test_suite) || !strcmp(test_suite, "test_skb_segment"))
++		return test_skb_segment();
++
++	return 0;
  }
- EXPORT_SYMBOL(mini_qdisc_pair_init);
+ 
+ static void __exit test_bpf_exit(void)
 -- 
-2.30.2
+2.1.0
 
