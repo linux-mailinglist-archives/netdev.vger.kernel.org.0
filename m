@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8945443A9E8
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 03:51:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B64B443A9F8
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 03:53:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233641AbhJZBxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 21:53:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54596 "EHLO
+        id S232818AbhJZBze (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 21:55:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231971AbhJZBxm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 21:53:42 -0400
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1E94C061745;
-        Mon, 25 Oct 2021 18:51:19 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id o184so18129230iof.6;
-        Mon, 25 Oct 2021 18:51:19 -0700 (PDT)
+        with ESMTP id S230344AbhJZBzd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 21:55:33 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E7DFC061745;
+        Mon, 25 Oct 2021 18:53:10 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id e144so18110182iof.3;
+        Mon, 25 Oct 2021 18:53:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=M+TEaQB1KaSOudASCPt2E3PS4ymJyoJAqUYafZ8gI7E=;
-        b=oL8HHOwwrFG5e/LmuN4agIcEJfacHoUr4ai/CCnAQSW/UKvac/ju9Spl9S9IctkdMV
-         u0xR2bACpUqrjpo/d3B+q1N6PyNK5ARQbG4fte2a2ZeidUraP8oLilSHNXEM9gU0CM+I
-         SbO2q5cPvNWPOqMrm+ujryeD7OZDrL2sot8WITIksRGltQ4ED6m5RR4JvhnniPEr0cIJ
-         1JuVaVB6Rv7gWKPXWYUWuUxracYP9X5Yyy77zUMhI1TK6oK1YwDlTQ+j3ASsLa/eokld
-         MkDGJwXZSGj2b87w6vxWYa8EEp7aHhVpWjIf4Q3+7yIsWlT4MlYFozO9j7Xg4hpf4VFu
-         u+jw==
+        bh=pTf4FChHrUD4zN63gzg0O6ODWycwCgp30B2Xd0Glbns=;
+        b=EWg2KyQmct77jHNB7+PnJsR5QYD0vdGQG84gJNTqxm35zMsLVcN4d4NUAshVPeb0Xu
+         a5c7tarSqasBeJQYH9r5mY8NKwzU3zla+91ow63jEb7FV8hb6VOXvwDWX7rIjm196ic5
+         tj+uiO6RPpHmP1SfiDg4xSd0u+ECMvc6XqgFWIX7Q1gzlzGSjaTLGpQ0jICGmVt3ej+/
+         eE+3QE61HjbTv2yTVo3bsR+st1KnKvUsWNfq91bUp5D4eS9PqSJ/LeG0aU3efIlUaydl
+         y3qpBqrRK0evrLS49KyFPfMRUl/cnyWe8uaO9815cS3NRcLREF+xmXXDlOfrOws/VHWq
+         rqaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=M+TEaQB1KaSOudASCPt2E3PS4ymJyoJAqUYafZ8gI7E=;
-        b=qfJnDPw8lTYjHE8ocNM48qavwlU/an4GeU2JrC8jppYMH0eSV9jsJ5tOy5puLTrhBc
-         StaW2nJoDs2GVMEeFbQfz8B+7gUNQXd44FcA4gq6DUh7zQHA/bd2pAu7zjOpyITPeAzQ
-         YGPMdxNfxlw66Q100l8glUhizE+I0zGbazaLkFgwsVUGMhMSY21TxZrG+Wj8LndkDdmY
-         SaVmIcVhI3pxe8IYciO9FO2ixEK3xultBy6w+BDsK4y5hkCDOAhA1kbFSXZMBe+rVP+X
-         mfAljVJGJ6NGcgJjNC6L7ckBI/gu1/OXeBIsrWQaRu5/vBKvK7LbLp870yzbrTqxtO4s
-         6FEg==
-X-Gm-Message-State: AOAM530a+IWBGYvHyKT5d5FPDnn5LIOXt6EwDwWzait7qB1l0ui4xsJx
-        5z0Vsh2Qs/Hkq7i90P9askt6bevqr/v3Jd7spwo=
-X-Google-Smtp-Source: ABdhPJzo8Pl2UbPecXV9ZclgT3FzrihDFm7Isxsh4OePzHurnJ+maCBZCvaVaerHAt6wvuSmpFvZzPlkXSA+3EMqRwA=
-X-Received: by 2002:a5d:9493:: with SMTP id v19mr13031702ioj.34.1635213079114;
- Mon, 25 Oct 2021 18:51:19 -0700 (PDT)
+        bh=pTf4FChHrUD4zN63gzg0O6ODWycwCgp30B2Xd0Glbns=;
+        b=xsmhhFASi9czsUNHaWocg8NunUgNyoQzX6vjDQQaGAdI3AqMfqKFVL180ocXZJq4V9
+         8W6dnQBagWKv++JzR4lG9xWa7N0aJoNsVV8mAOm9z/XS+6NzYyH7xr0ycHfSYfEmoxud
+         Mdfhp5fJnFgFV7ike+u0PZCTJEGZagSrnHZykr25IIfDR7cy2FSlTKxH7KiDL4ujSmCD
+         +02VBfieWl7pB2iieUkuCcLMif1LtwEwfQ3n/7DbqRnhMURycQUx45TMFB4D+OVmled+
+         mDJvmT+z1HDIcxJvMZgzojBWQuca6GZZr97b7piE9tnkFsp+7iGqf24ovd3kH1vbBwow
+         lmEA==
+X-Gm-Message-State: AOAM533XIB9zFCHsNTW+Ic3uD1jyXRLIX18DOtkUALS3u9nYS2brtaDW
+        uTmWyZmKTMoLgqrMJL1fJjFe92fPaMNPhG9EdXw=
+X-Google-Smtp-Source: ABdhPJyIryqDVwlMvG5xY1qfmY9kjdTWxMdRzXGeuyZ0FRySrojjoK8/YOgWLBMhL8M3gQrLG+9seph0tIe9uWJHhj0=
+X-Received: by 2002:a02:a483:: with SMTP id d3mr3861810jam.23.1635213189854;
+ Mon, 25 Oct 2021 18:53:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211025083315.4752-1-laoar.shao@gmail.com> <20211025083315.4752-4-laoar.shao@gmail.com>
- <202110251411.93B477676B@keescook>
-In-Reply-To: <202110251411.93B477676B@keescook>
+References: <20211025083315.4752-1-laoar.shao@gmail.com> <20211025083315.4752-5-laoar.shao@gmail.com>
+ <202110251415.9AD37837@keescook>
+In-Reply-To: <202110251415.9AD37837@keescook>
 From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Tue, 26 Oct 2021 09:50:43 +0800
-Message-ID: <CALOAHbBwRcZoRteU7qL7rdip=cbTHc3n6-eJrd6xUoeJ+Win6Q@mail.gmail.com>
-Subject: Re: [PATCH v6 03/12] drivers/connector: make connector comm always
- nul ternimated
+Date:   Tue, 26 Oct 2021 09:52:34 +0800
+Message-ID: <CALOAHbDyo1H7hg__h+aCHCa-BZX5z=wtfM+cc+gNSj+4U9nRUQ@mail.gmail.com>
+Subject: Re: [PATCH v6 04/12] drivers/infiniband: make setup_ctxt always get a
+ nul terminated task comm
 To:     Kees Cook <keescook@chromium.org>
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Steven Rostedt <rostedt@goodmis.org>,
@@ -85,42 +85,74 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         LKML <linux-kernel@vger.kernel.org>,
         kernel test robot <oliver.sang@intel.com>,
         kbuild test robot <lkp@intel.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Vladimir Zapolskiy <vzapolskiy@gmail.com>,
-        David Howells <dhowells@redhat.com>
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 26, 2021 at 5:14 AM Kees Cook <keescook@chromium.org> wrote:
+On Tue, Oct 26, 2021 at 5:16 AM Kees Cook <keescook@chromium.org> wrote:
 >
-> On Mon, Oct 25, 2021 at 08:33:06AM +0000, Yafang Shao wrote:
-> > connector comm was introduced in commit
-> > f786ecba4158 ("connector: add comm change event report to proc connector").
-> > struct comm_proc_event was defined in include/linux/cn_proc.h first and
-> > then been moved into file include/uapi/linux/cn_proc.h in commit
-> > 607ca46e97a1 ("UAPI: (Scripted) Disintegrate include/linux").
+> On Mon, Oct 25, 2021 at 08:33:07AM +0000, Yafang Shao wrote:
+> > Use strscpy_pad() instead of strlcpy() to make the comm always nul
+> > terminated. As the comment above the hard-coded 16, we can replace it
+> > with TASK_COMM_LEN, then it will adopt to the comm size change.
 > >
-> > As this is the UAPI code, we can't change it without potentially breaking
-> > things (i.e. userspace binaries have this size built in, so we can't just
-> > change the size). To prepare for the followup change - extending task
-> > comm, we have to use __get_task_comm() to avoid the BUILD_BUG_ON() in
-> > proc_comm_connector().
+> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> > Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+> > Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+> > Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> > Cc: Peter Zijlstra <peterz@infradead.org>
+> > Cc: Steven Rostedt <rostedt@goodmis.org>
+> > Cc: Al Viro <viro@zeniv.linux.org.uk>
+> > Cc: Kees Cook <keescook@chromium.org>
+> > Cc: Petr Mladek <pmladek@suse.com>
+> > ---
+> >  drivers/infiniband/hw/qib/qib.h          | 2 +-
+> >  drivers/infiniband/hw/qib/qib_file_ops.c | 2 +-
+> >  2 files changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/infiniband/hw/qib/qib.h b/drivers/infiniband/hw/qib/qib.h
+> > index 9363bccfc6e7..a8e1c30c370f 100644
+> > --- a/drivers/infiniband/hw/qib/qib.h
+> > +++ b/drivers/infiniband/hw/qib/qib.h
+> > @@ -196,7 +196,7 @@ struct qib_ctxtdata {
+> >       pid_t pid;
+> >       pid_t subpid[QLOGIC_IB_MAX_SUBCTXT];
+> >       /* same size as task_struct .comm[], command that opened context */
+> > -     char comm[16];
+> > +     char comm[TASK_COMM_LEN];
+> >       /* pkeys set by this use of this ctxt */
+> >       u16 pkeys[4];
+> >       /* so file ops can get at unit */
+> > diff --git a/drivers/infiniband/hw/qib/qib_file_ops.c b/drivers/infiniband/hw/qib/qib_file_ops.c
+> > index 63854f4b6524..7ab2b448c183 100644
+> > --- a/drivers/infiniband/hw/qib/qib_file_ops.c
+> > +++ b/drivers/infiniband/hw/qib/qib_file_ops.c
+> > @@ -1321,7 +1321,7 @@ static int setup_ctxt(struct qib_pportdata *ppd, int ctxt,
+> >       rcd->tid_pg_list = ptmp;
+> >       rcd->pid = current->pid;
+> >       init_waitqueue_head(&dd->rcd[ctxt]->wait);
+> > -     strlcpy(rcd->comm, current->comm, sizeof(rcd->comm));
+> > +     strscpy_pad(rcd->comm, current->comm, sizeof(rcd->comm));
 >
-> I wonder, looking at this again, if it might make more sense to avoid
-> this cn_proc.c change, and instead, adjust get_task_comm() like so:
->
-> #define get_task_comm(buf, tsk)
->         __get_task_comm(buf, __must_be_array(buf) + sizeof(buf), tsk)
->
-> This would still enforce the original goal of making sure
-> get_task_comm() is being used on a char array, and now that
-> __get_task_comm() will truncate & pad, it's safe to use on both
-> too-small and too-big arrays.
+> This should use (the adjusted) get_task_comm() instead of leaving this
+> open-coded.
 >
 
-It Makes sense to me.  I will do it as you suggested.
+Sure, that is better.
+
+> >       ctxt_fp(fp) = rcd;
+> >       qib_stats.sps_ctxts++;
+> >       dd->freectxts--;
+> > --
+> > 2.17.1
+> >
+>
+> --
+> Kees Cook
+
+
 
 -- 
 Thanks
