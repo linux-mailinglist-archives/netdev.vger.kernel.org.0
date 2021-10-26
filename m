@@ -2,114 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61B1643B619
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 17:51:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C5A243B61A
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 17:51:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237164AbhJZPyJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 11:54:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29989 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237152AbhJZPxZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 11:53:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635263460;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7tz1ztkDJ8/mfxOMQDKDmzGKJgDrZn1JGVp6nZRCrRs=;
-        b=BqMHxZbduQ8KSNVo+eNZb2DIgYv8XZF4lXY/AnCTbV/OIIi0JHxVJ9nvmpK+Cnxk1DxfOq
-        u8YBXZle67hM5+O5+U+zDoC7cFtTIghm4KX6HO3o07zVGe/ceDY3mSXGJwOosOjYaHmNMX
-        cddDf6yp2mwgltdp5AnGxq9TcJbW4Ew=
-Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com
- [209.85.210.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-200-s4-lTqtEPCeuXJMQrxzRig-1; Tue, 26 Oct 2021 11:50:59 -0400
-X-MC-Unique: s4-lTqtEPCeuXJMQrxzRig-1
-Received: by mail-ot1-f70.google.com with SMTP id l17-20020a9d7351000000b0054e7cd8a64dso9334362otk.4
-        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 08:50:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7tz1ztkDJ8/mfxOMQDKDmzGKJgDrZn1JGVp6nZRCrRs=;
-        b=mhf8nYaAbhMvYQuFOgkq40V6jjdWEa900p14m3/9QWysWNojQcpPmtMnKMgOE2y7LF
-         +V2hUKn+YT+M37Zw5P+FsaE8cDzvLtrc4gkTOgmFYuurKGTLdzWvSkrDt3leJJ/yiNOI
-         SBb9sqYFWjH2DK4r9eH77MPUzysYg5WfdhPIxDFYtvabv8HEYE3+f4RCAc2X/FYnUsEJ
-         Jb3qEA/4gbRnMmmaCUTIzFqZg3qfvFA0a2uEJBWSwxcpEDedAt/zej2T0EsL6/FBo95l
-         PV3WjaUMt1MXpWyNYE3We1zrEzmsOUr6MV/zytBMVFKnpXrheav2t0DaDRwNZ4estmIe
-         DC1w==
-X-Gm-Message-State: AOAM532xW3WbVqM1zJwtSLAY5u4nnkbhfnx3j3mfRoDUIKtQYP2qYqsr
-        0+EDV9P4plaIbWRd3FQ67x4LOH2Qgitls92z7SMgseT33JlbfCCPygIcgBa1Y9Tb5n3F1mT6vHA
-        spej+NdKfhV98Ffbj
-X-Received: by 2002:a05:6808:1302:: with SMTP id y2mr28467710oiv.24.1635263458706;
-        Tue, 26 Oct 2021 08:50:58 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxwKwVU0S0IFXJyByTOQvRXw6ryzeoMp+YocfGDa8qsGEiNUdjdaki5Abf+Y8mGKt7upXgiSw==
-X-Received: by 2002:a05:6808:1302:: with SMTP id y2mr28467689oiv.24.1635263458562;
-        Tue, 26 Oct 2021 08:50:58 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id l9sm4675881oie.15.2021.10.26.08.50.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Oct 2021 08:50:58 -0700 (PDT)
-Date:   Tue, 26 Oct 2021 09:50:57 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Cornelia Huck <cohuck@redhat.com>
-Cc:     Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
-        jgg@nvidia.com, saeedm@nvidia.com, linux-pci@vger.kernel.org,
-        kvm@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
-        leonro@nvidia.com, kwankhede@nvidia.com, mgurtovoy@nvidia.com,
-        maorg@nvidia.com
-Subject: Re: [PATCH V4 mlx5-next 06/13] vfio: Fix
- VFIO_DEVICE_STATE_SET_ERROR macro
-Message-ID: <20211026095057.1024c132.alex.williamson@redhat.com>
-In-Reply-To: <87pmrrdcos.fsf@redhat.com>
-References: <20211026090605.91646-1-yishaih@nvidia.com>
-        <20211026090605.91646-7-yishaih@nvidia.com>
-        <87pmrrdcos.fsf@redhat.com>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        id S237152AbhJZPyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 11:54:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46528 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237175AbhJZPxg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 11:53:36 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE67C061745
+        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 08:51:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=V4xbVJYNqMfIcTfMHJZ1Rljb+VCAOQxbhBrd8cp2O6w=; b=eZ77nWW19/1xYym6ATOPoYY05V
+        9ubeAhHaWJ2AzJIpaICB810h9viFcRCaW2KwdVop2AJ2NRHA0/t5wtUx7tKpdPaqmgwlfNh1wR4rb
+        kOAEJ97FdJbXtyn4zXkVv/AVyW8Jd2supHs5qySTumjbTXyE87DMq8JC3w3vWj0R1kSK1tXQRLw1G
+        XP4x5hon/RDxUO0GkkZS2jgF0fMOYEKAvoi1XaNCbnDnzPdGQElTAXkRfEKKFruVQfn5UT7MzMv6P
+        xUTjOIpTXJZrJnZNuaa4XIwD0kf9xmgVd4QNPXt47jQNW0fvxIv3hu1H2MDoGnKEz8cm3BstBhUmb
+        NhMo4UIA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55318)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mfOjF-0005Uw-Lp; Tue, 26 Oct 2021 16:51:09 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mfOjE-0006sD-4w; Tue, 26 Oct 2021 16:51:08 +0100
+Date:   Tue, 26 Oct 2021 16:51:08 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Antoine Tenart <atenart@kernel.org>
+Subject: Re: [PATCH v4] net: macb: Fix several edge cases in validate
+Message-ID: <YXgj7HUkcRLdq+eB@shell.armlinux.org.uk>
+References: <20211025172405.211164-1-sean.anderson@seco.com>
+ <20211025174401.1de5e95d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <4e430fbb-0908-fd3b-bb6e-ec316ea8d66a@seco.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4e430fbb-0908-fd3b-bb6e-ec316ea8d66a@seco.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 26 Oct 2021 17:32:19 +0200
-Cornelia Huck <cohuck@redhat.com> wrote:
-
-> On Tue, Oct 26 2021, Yishai Hadas <yishaih@nvidia.com> wrote:
+On Tue, Oct 26, 2021 at 11:30:08AM -0400, Sean Anderson wrote:
+> I don't know if it's a "fix" per se. The current logic isn't wrong,
+> since I believe that the configurations where the above patch would make
+> a difference do not exist. However, as noted in the commit message, this
+> makes refactoring difficult. For example, one might want to implement
+> supported_interfaces like
 > 
-> > Fixed the non-compiled macro VFIO_DEVICE_STATE_SET_ERROR (i.e. SATE
-> > instead of STATE).
-> >
-> > Fixes: a8a24f3f6e38 ("vfio: UAPI for migration interface for device state")
-> > Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>  
+>        if (bp->caps & MACB_CAPS_HIGH_SPEED &&
+>            bp->caps & MACB_CAPS_PCS)
+>                __set_bit(PHY_INTERFACE_MODE_10GBASER, supported);
+>        if (macb_is_gem(bp) && bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE) {
+>                __set_bit(PHY_INTERFACE_MODE_GMII, supported);
+> 		phy_interface_set_rgmii(supported);
+>                if (bp->caps & MACB_CAPS_PCS)
+>                        __set_bit(PHY_INTERFACE_MODE_SGMII, supported);
+>        }
+>        __set_bit(PHY_INTERFACE_MODE_MII, supported);
+>        __set_bit(PHY_INTERFACE_MODE_RMII, supported);
 > 
-> This s-o-b chain looks weird; your s-o-b always needs to be last.
-> 
-> > ---
-> >  include/uapi/linux/vfio.h | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> > index ef33ea002b0b..114ffcefe437 100644
-> > --- a/include/uapi/linux/vfio.h
-> > +++ b/include/uapi/linux/vfio.h
-> > @@ -622,7 +622,7 @@ struct vfio_device_migration_info {
-> >  					      VFIO_DEVICE_STATE_RESUMING))
-> >  
-> >  #define VFIO_DEVICE_STATE_SET_ERROR(state) \
-> > -	((state & ~VFIO_DEVICE_STATE_MASK) | VFIO_DEVICE_SATE_SAVING | \
-> > +	((state & ~VFIO_DEVICE_STATE_MASK) | VFIO_DEVICE_STATE_SAVING | \
-> >  					     VFIO_DEVICE_STATE_RESUMING)
-> >  
-> >  	__u32 reserved;  
-> 
-> Change looks fine, although we might consider merging it with the next
-> patch? Anyway,
+> but then you still need to check for GIGABIT_MODE in validate to
+> determine whether 10GBASER should "support" 10/100. See [1] for more
+> discussion.
 
-I had requested it separate a couple revisions ago since it's a fix.
-Thanks,
+However, 10GBASE-R doesn't support anything except 10G speeds, except
+if the PHY itself does rate matching to achieve the slower speeds.
+Then you need pause frames between the MAC and PHY to control the MAC
+sending rate - which isn't something that the phylib model supports
+particularly well.
 
-Alex
+The current code and your patched code conforms to this when
+state->interface is 10GBASE-R _and_ MACB_CAPS_GIGABIT_MODE_AVAILABLE
+is set, then we only end up with 10G linkmodes being allowed.
 
+The problem case occurs in current code when
+MACB_CAPS_GIGABIT_MODE_AVAILABLE is _not_ set, but state->interface
+is 10GBASE-R. Current code ends up saying that 10GBASE-R supports
+10/100 link modes, which is wrong.
+
+The existing code:
+
+        if (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE &&
+            (state->interface == PHY_INTERFACE_MODE_NA ||
+             state->interface == PHY_INTERFACE_MODE_10GBASER)) {
+                phylink_set(mask, 10000baseCR_Full);
+                phylink_set(mask, 10000baseER_Full);
+                phylink_set(mask, 10000baseKR_Full);
+                phylink_set(mask, 10000baseLR_Full);
+                phylink_set(mask, 10000baseLRM_Full);
+                phylink_set(mask, 10000baseSR_Full);
+                phylink_set(mask, 10000baseT_Full);
+                if (state->interface != PHY_INTERFACE_MODE_NA)
+                        goto out;
+        }
+
+        phylink_set(mask, 10baseT_Half);
+        phylink_set(mask, 10baseT_Full);
+        phylink_set(mask, 100baseT_Half);
+        phylink_set(mask, 100baseT_Full);
+
+Would have been better written as:
+
+	if (state->interface == PHY_INTERFACE_MODE_NA ||
+	    state->interface == PHY_INTERFACE_MODE_10GBASER) {
+		if (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE) {
+	                phylink_set(mask, 10000baseCR_Full);
+	                phylink_set(mask, 10000baseER_Full);
+	                phylink_set(mask, 10000baseKR_Full);
+	                phylink_set(mask, 10000baseLR_Full);
+	                phylink_set(mask, 10000baseLRM_Full);
+	                phylink_set(mask, 10000baseSR_Full);
+	                phylink_set(mask, 10000baseT_Full);
+		}
+                if (state->interface != PHY_INTERFACE_MODE_NA)
+                        goto out;
+        }
+
+        phylink_set(mask, 10baseT_Half);
+        phylink_set(mask, 10baseT_Full);
+        phylink_set(mask, 100baseT_Half);
+        phylink_set(mask, 100baseT_Full);
+
+which would have avoided getting to the code that sets 10/100 link
+modes when state->interface is 10GBASE-R.
+
+The same transformation is probably applicable to the next if ()
+block as well.
+
+If I truely understood exactly what MACB_CAPS_GIGABIT_MODE_AVAILABLE,
+MACB_CAPS_HIGH_SPEED, and MACB_CAPS_PCS were indicating and how they
+relate to what is supported, I might be tempted to come up with a
+better implementation myself. However, every time I look at the
+existing code, it just confuses me - it seems to me that the use of
+those capability bits is entirely inconsistent in the current
+macb_validate() implementation.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
