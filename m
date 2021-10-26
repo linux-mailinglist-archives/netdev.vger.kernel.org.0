@@ -2,104 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8623F43A9C5
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 03:36:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF6AD43A9DD
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 03:49:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235156AbhJZBiu convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 25 Oct 2021 21:38:50 -0400
-Received: from mail-yb1-f176.google.com ([209.85.219.176]:33735 "EHLO
-        mail-yb1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235045AbhJZBip (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 21:38:45 -0400
-Received: by mail-yb1-f176.google.com with SMTP id v7so30881380ybq.0;
-        Mon, 25 Oct 2021 18:36:22 -0700 (PDT)
+        id S232776AbhJZBvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 21:51:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54110 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230183AbhJZBvq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 21:51:46 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12B1EC061745;
+        Mon, 25 Oct 2021 18:49:24 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id s20so4420358ioa.4;
+        Mon, 25 Oct 2021 18:49:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Q9ixNJMryetrNkf64Gif/9S4GmDdPd1m0A8YYlrDxDA=;
+        b=TBnfJZ2THlgi6EJWoe2MO5u+LFFM0EWaiS+gotcqJjfIh8zd+i2c6molpxOgo/9s4D
+         dFOGYLm+q0OhSm73HgMzBOqjy2LkiZ+kuDPMyr4SFVGL5gxwrAXFIhbwonRW2eC7qEAi
+         2K8GtjicsqXI4vzFSsCcedGOgub8jloVy1yjHvaPn9352ZIndl5Ea4DrrTu7ZAAqMD6J
+         QogrxjLepRtyf4KjhS9R4PcbYPfrlWzBubvr+fLQWsihUtby/5E+e0AX6/dw9h9USG1r
+         A5SxerUB1p4uMYV8rL9Pf7naaoIsGCSa6jAI2ewjP+7NXDjJEMyjy+fqlQ0t6wtZiIpc
+         /BXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=BBHYpRYDcXzID9sqdCZj+7QsUaSOUi23oDk/EOybqZg=;
-        b=nXpZ1OXWH0k1QF4g7HdNRweV1/lv3dfnmEbLkpXh3Lhlg6tpxvymz3AOk29TmMvRIG
-         U19EK366X4XMNOSqdrc7hlMOt5JzHaDFhPjFtG/tEdKsLr7gZ9uaeDnuCQQUkjDBl+eu
-         AKUufo6oNsDFfssUiVBA2Tzeb/Jx74iWXZ/ZHDVpSLc7jfw2q9JJxAiJGACabp8qdM9d
-         sKdLSoKc+vG+FCSRnYsRD1Wra53jhwbNCnkzKM9bfD8i0xwp115mQhw0uK4sqBFoZgBr
-         xwi2Gmbm3ZJXd/IQduS9bbcZJ6mTI9lhRSIBv8kdWLsKwxptVek3fA7L41cjrvm5p9eO
-         Ew1Q==
-X-Gm-Message-State: AOAM531VByFWgwz+UUVNMiuDVlND65Q28Y/HMTOeGT/+sZVF3cOayrHZ
-        wJ6CCxGuxJIjSMQSBI473EktaWdSzmvULLWsp+gxZtzlkkA=
-X-Google-Smtp-Source: ABdhPJxQpQAPe3qJ6FgG3PVVRMLZeCgtO/zr3KsBmlZOwlIjNj/t+hTHd8fmLChxc4y7tmLfuMOMW60ru5o4S30wMlM=
-X-Received: by 2002:a05:6902:72d:: with SMTP id l13mr13302212ybt.499.1635212181572;
- Mon, 25 Oct 2021 18:36:21 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=Q9ixNJMryetrNkf64Gif/9S4GmDdPd1m0A8YYlrDxDA=;
+        b=x+VBGtmcVhXarrTfCv5jki00LJBVb7N8Q7oyZyh3qRML7v8Hnf+qnUGEBpCjQvQnqc
+         UWYr5CWD3DDF9M88dWN18IrPc7sLFGNdFPBkI1iHbvGUttIPUMJYE5gH236dsLrAfLOR
+         V3zFv2hSz4q70p2VL3/sfrw3hjhmxy4gRhM1otQ26UqxIHPLBCKFdSjkWm01+ljZac4r
+         BIlwEQzg3Gxr5WjkKIfvRC68Zjiji9Jni68Tnqt2N1/Fn88w5qPNX5RgClHUYw9pRZv6
+         I/i/yBmoWvtJHLMpgCHu7e+izNGBub+b9GUu0d2mwgUFftqr6pw6ac/lxoVoTdVHZ3PW
+         3BEw==
+X-Gm-Message-State: AOAM531rkXc9CofYeWFBiNZ16HoVVoHyLBW12usTaIo4YBrJZgDTlQkD
+        V5PoE/YSFvtxp5Kv6TysJpa4KP/bj7JO60p5D4M=
+X-Google-Smtp-Source: ABdhPJxyqz6JE4o8mcyL8jtdYd9fyB0EJ9+xMphQ3cQq2Z6znTX7NDxCDSShbtRLSLDUkJdu8VHSeeQUDN0xgh39/eo=
+X-Received: by 2002:a05:6602:1514:: with SMTP id g20mr13536302iow.9.1635212963546;
+ Mon, 25 Oct 2021 18:49:23 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211009131304.19729-1-mailhol.vincent@wanadoo.fr>
- <20211009131304.19729-2-mailhol.vincent@wanadoo.fr> <20211024183007.u5pvfnlawhf36lfn@pengutronix.de>
- <CAMZ6RqLw+B8ZioOyMFzha67Om3c8eKEK4P53U9xHiVxB4NBhkA@mail.gmail.com> <20211025190651.p4ivcrqinknmwuu5@pengutronix.de>
-In-Reply-To: <20211025190651.p4ivcrqinknmwuu5@pengutronix.de>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Tue, 26 Oct 2021 10:36:10 +0900
-Message-ID: <CAMZ6RqJ4b6JM5rNeXhECkLWa6Af2pBXvGqsfZm673vO02dUuZA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/3] can: dev: replace can_priv::ctrlmode_static by can_get_static_ctrlmode()
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can <linux-can@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+References: <20211025083315.4752-1-laoar.shao@gmail.com> <20211025083315.4752-2-laoar.shao@gmail.com>
+ <202110251407.6FD1411ECB@keescook>
+In-Reply-To: <202110251407.6FD1411ECB@keescook>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Tue, 26 Oct 2021 09:48:47 +0800
+Message-ID: <CALOAHbB43jP=TKfCNqNRaEhFj-JyYhSO-3udYYQvjDST=jUoDw@mail.gmail.com>
+Subject: Re: [PATCH v6 01/12] fs/exec: make __set_task_comm always set a nul
+ ternimated string
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Qiang Zhang <qiang.zhang@windriver.com>,
+        robdclark <robdclark@chromium.org>,
+        christian <christian@brauner.io>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        dennis.dalessandro@cornelisnetworks.com,
+        mike.marciniszyn@cornelisnetworks.com, dledford@redhat.com,
+        jgg@ziepe.ca, linux-rdma@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        kbuild test robot <lkp@intel.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue. 26 Oct 2021 at 04:06, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> On 26.10.2021 02:22:36, Vincent MAILHOL wrote:
-> > Welcome back on the mailing list, hope you had some nice
-> > holidays!
+On Tue, Oct 26, 2021 at 5:07 AM Kees Cook <keescook@chromium.org> wrote:
 >
-> Thanks was really nice, good weather, 1000km of cycling and hanging
-> around in Vienna. :D
+> On Mon, Oct 25, 2021 at 08:33:04AM +0000, Yafang Shao wrote:
+> > Make sure the string set to task comm is always nul ternimated.
 >
-> > And also thanks a lot for your support over the last
-> > few months on my other series to introduce the TDC netlink
-> > interface :)
+> typo nit: "terminated"
 >
-> The pleasure is on my side, working with you!
->
-> > Le lun. 25 oct. 2021 à 03:30, Marc Kleine-Budde <mkl@pengutronix.de> a écrit :
-> > >
-> > > On 09.10.2021 22:13:02, Vincent Mailhol wrote:
-> > > > The statically enabled features of a CAN controller can be retrieved
-> > > > using below formula:
-> > > >
-> > > > | u32 ctrlmode_static = priv->ctrlmode & ~priv->ctrlmode_supported;
-> > > >
-> > > > As such, there is no need to store this information. This patch remove
-> > > > the field ctrlmode_static of struct can_priv and provides, in
-> > > > replacement, the inline function can_get_static_ctrlmode() which
-> > > > returns the same value.
-> > > >
-> > > > A condition sine qua non for this to work is that the controller
-> > > > static modes should never be set in can_priv::ctrlmode_supported. This
-> > > > is already the case for existing drivers, however, we added a warning
-> > > > message in can_set_static_ctrlmode() to check that.
-> > >
-> > > Please make the can_set_static_ctrlmode to return an error in case of a
-> > > problem. Adjust the drivers using the function is this patch, too.
+
+Thanks for pointing this out. I will correct lt.
+
 > >
-> > I didn't do so initially because this is more a static
-> > configuration issue that should only occur during
-> > development. Nonetheless, what you suggest is really simple.
-> >
-> > I will just split the patch in two: one of the setter and one for
-> > the getter and address your comments.
+> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
 >
-> Fine with me. Most important thing is, that the kernel compiles after
-> each patch.
+> Reviewed-by: Kees Cook <keescook@chromium.org>
+>
 
-Yep, the v3 [1] compiles fine after each patch. The only limitation is
-that I could not do a runtime test for rcar_fd and m_can (second
-patch of the v3 [2]) because I do not own the hardware.
+Thanks for the review.
 
-[1] https://lore.kernel.org/linux-can/20211025172247.1774451-1-mailhol.vincent@wanadoo.fr/T/#t
-[2] https://lore.kernel.org/linux-can/20211025172247.1774451-3-mailhol.vincent@wanadoo.fr/
-
-
-Yours sincerely,
-Vincent Mailhol
+-- 
+Thanks
+Yafang
