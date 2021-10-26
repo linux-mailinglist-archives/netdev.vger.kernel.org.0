@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EF9043B71F
+	by mail.lfdr.de (Postfix) with ESMTP id EBB1743B720
 	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 18:27:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236209AbhJZQ3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 12:29:19 -0400
-Received: from mail-db8eur05on2079.outbound.protection.outlook.com ([40.107.20.79]:5664
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        id S236233AbhJZQ3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 12:29:20 -0400
+Received: from mail-vi1eur05on2046.outbound.protection.outlook.com ([40.107.21.46]:18188
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234743AbhJZQ3R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Oct 2021 12:29:17 -0400
+        id S231880AbhJZQ3S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Oct 2021 12:29:18 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aeGopP0FfvH3XSFRr2d5RG5kdbOcvMp7IWmblYunK2cKh7TAubM1c3rHrOCYYSsTxkIdn0v05ML/JBZZ8gLJTZygCuKD37XxcKOGWBjh/p5hjGgfJXP3zsSfCtgDBZt1ZyrbJZEhBCDBuNwhZk2lInxwSAgYIexfW5u/yRaTixNGTeAF5MW6qMxjSY/4B9jIpm+69dq/Sv+Z98eT3iDo/KYQd59MD6qXf0VuuA1Y4Z1we5mOfyvNLu0Mvi1bBulyDwqUk5bwVUnLmWT0vtHakrAjCvf6VFJkZGDgRaPsguBvv8IKH6+umFAYI9rZD8IfomCxj2JKS+8pa9TDYU4r4w==
+ b=oYSV763fFg1+kSiIVmV8Z18SHTjHik6gfumSI1bUxYurCotJqsJseL/B72zwY08Nt7+Ku7xPLHCIkaMbMLimvULTA1LgFyqC5Fv2qt7uWSzqzDkCmdgOFVCAAdUMDEIdpaS++v3XEkAUuPiI8crAFG2OPJViEas1AScBI2Coz7n05qyGIrQ0dMem+9hLksf81X9OyXqgAdxSbJU5ZBR+dtNIx0nJcBGhziL5kjh7spVI5jLsQHXKAqBYUlBzZVNGKyIHX92RMmHfQZyebkeJUId0+wLpWsIUQP4bgFHwEIoqERNyvUHu7c/rPErZAVRf9RBT+nZiJYtOFeRQAGhlMw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Lx1ahPQMjYIMarWJjOS/bQydSyG+NRrB9xZu5kZjFA0=;
- b=KAE26hxo247RR3e/mRjubRxK+msKOeAKx4ZgL7ftOHCCbJVrZVdtbtMPIP1lv7HoC3e4JqH1ro7OcIoa7D+Qy/lll45JXMXlcvSHWoR8ARbc+JbpC/4X4BGXuHiG9rNGL1Gkj+EnGgqPmQMEltYeuPOVXt13dsYEegTdiBbyc2wEf3JiD36SuA/8yhnCxfXe45/mGrQXEzEDfZXmy0Qfw4dJ6CtKV19PT7eQH9Ut4MDUj2ATYYCBWgmrraeS28xdpPUDcg5Pl52L5PTUKSgZpLWTMzrKSrhB6Yf54HXe58/9ktn3vjCR7I1urHYtYz3O6g179j7N8khUxIHUSXbP9w==
+ bh=WtIUonAX3PY2QmnNbmone/7T70Npy5w8S0NfhLUkYTI=;
+ b=l4TqPt5gZuzsxfiuyG3ofWGBjF0fOxk3ZhKTiah73iF0dyzFUpEQK5kP8yf4FXnkzIXL9JH3ghHg7EVENpyOup5pNV8U/p+25Jcr3HaHAPj4+J3ewc/I7lJuWBp7znVgRH/jpIG3df9b/3bSroZyT3GY4/xP6zmz58JVRt0S8CC3WxmdNCT2xK+usT+BQV4PgdbUCrR8hX+NiYJ58EVFPP99VFKJkLEsMjvfaXyXPXv0ilhOg1gFV+M0SCcXhQfTuTYRRvYWo7Fk7fXqsaWjjxOG76MvVmUGq57cewc0Hq7uwQhhoABPHVuJSk7gIogvMcf+HRlPUXoDkEG+4LOdYg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Lx1ahPQMjYIMarWJjOS/bQydSyG+NRrB9xZu5kZjFA0=;
- b=Uun750ViaxcSBteQ/keugdoEtFsTuQGm09N0hogIhZRM5i3CYayMzFVBZcSAWhLT7f0JQSM9DZoeVh1rWPq7TyDQOlKk2u74ACuu0oWDwCSaDiIGeb2ExdRzQz/MOUK6Yes0HanorUNuAC3pkbqMx8VaKx7DNYj+gAKWob13++Y=
+ bh=WtIUonAX3PY2QmnNbmone/7T70Npy5w8S0NfhLUkYTI=;
+ b=sgJVFAQPDfzfni10F37Nai90b+ee0oyI4N8WG44jKmP+/etBCIfbV1o1Qor8ViYZNvGmAjZi5zQ20O6jz9Jks+o+huszvlhafL1kXOySddAW7QzPn0cVrt5bUOxWVIiHLb9RnADD1P12vNTaL7xyQpXRkQEDGspmxFD3EUyqskM=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VE1PR04MB6637.eurprd04.prod.outlook.com (2603:10a6:803:126::16) with
+ by VI1PR04MB4686.eurprd04.prod.outlook.com (2603:10a6:803:71::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18; Tue, 26 Oct
  2021 16:26:50 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4628.020; Tue, 26 Oct 2021
- 16:26:49 +0000
+ 16:26:50 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -45,9 +45,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Tobias Waldekranz <tobias@waldekranz.com>,
         DENG Qingfang <dqfext@gmail.com>,
         =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>
-Subject: [RFC PATCH net-next 1/6] net: dsa: make dp->bridge_num one-based
-Date:   Tue, 26 Oct 2021 19:26:20 +0300
-Message-Id: <20211026162625.1385035-2-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 2/6] net: dsa: assign a bridge number even without TX forwarding offload
+Date:   Tue, 26 Oct 2021 19:26:21 +0300
+Message-Id: <20211026162625.1385035-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211026162625.1385035-1-vladimir.oltean@nxp.com>
 References: <20211026162625.1385035-1-vladimir.oltean@nxp.com>
@@ -57,344 +57,278 @@ X-ClientProxiedBy: AM3PR05CA0121.eurprd05.prod.outlook.com
  (2603:10a6:207:2::23) To VI1PR04MB5136.eurprd04.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Received: from localhost.localdomain (188.25.174.251) by AM3PR05CA0121.eurprd05.prod.outlook.com (2603:10a6:207:2::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18 via Frontend Transport; Tue, 26 Oct 2021 16:26:49 +0000
+Received: from localhost.localdomain (188.25.174.251) by AM3PR05CA0121.eurprd05.prod.outlook.com (2603:10a6:207:2::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18 via Frontend Transport; Tue, 26 Oct 2021 16:26:50 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8ab512f0-26a0-457d-70da-08d9989d698c
-X-MS-TrafficTypeDiagnostic: VE1PR04MB6637:
-X-Microsoft-Antispam-PRVS: <VE1PR04MB663759E64B2D21F99CED36EEE0849@VE1PR04MB6637.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
+X-MS-Office365-Filtering-Correlation-Id: 7771a1b7-fda5-451d-3b1f-08d9989d6a1e
+X-MS-TrafficTypeDiagnostic: VI1PR04MB4686:
+X-Microsoft-Antispam-PRVS: <VI1PR04MB4686218C2498947234FF74B7E0849@VI1PR04MB4686.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9zAIjJur7GcCWmrrZaGdDMxbEoJ44hMMYNQAQovz1jroJf7iZAbIJYhza5cxrI1128s7m33wqdyUUyqUxER10qEtLU2nxNxkuiwKWDBhnIrqM7OOC2ywUQuuSNN6nfk4Rk8hei+oiAhkM1W8TUe1K/45fyFb7D3Vgf9L7BdUCjHdl/uYPs+t6WkXU8eWpONIPmriPgaZBvMak72WxmNlimPcYVCHLxqq9vaQ6r4H97BOkUGzRnnwhzGF8FxdVoqAwo9va202R8n7YJX3+G1aTphPfEiYzriOABQZCnRn2G6120UNSG+TYHWHvn4pGkDY2oUneTpSDMwzVnRudwD192zC5txauzOuoWuBJWwAoCoO5CfFlrvDwlbtFOC4iIpJDgw/uj/Pcf/weNU4BLSNHokvnh2Za4dh+Q52BP1Fqfbkxnjfmz4uGQV6BHLNRUKPGckXn24wNmQZU5vn0ZmRoXA1RPzZVjFLetCvE3I8oB8kWP5GtRAEhCElYxSru4rnh+2Q/lvg/est0YtaF/TDjs6PVYSoXbcVgDI1ghuzhYoQi1GYr0sM3Qc5DFmumPbFvbNyZaI8uXM+w+gqffJYH+4h0qaqjmEUqlEsjA7NHKxeWiqkcs/HFLS1TA8fLOWevbuItjF0BDpHET/gpvo9je6bV6QyaOrbfSnYWhnpj1E/j/i2k5ji1eftTmTayRi244YkwVAqGVOrs+iwm2OxWw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(52116002)(2616005)(1076003)(5660300002)(8676002)(86362001)(66556008)(54906003)(2906002)(38100700002)(316002)(8936002)(83380400001)(6666004)(66946007)(26005)(186003)(508600001)(36756003)(6486002)(6916009)(4326008)(6512007)(66476007)(44832011)(6506007)(956004)(38350700002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: vBjaT2RYAO2crBSYWTh9X2nerWMOpuVatxr7wHcI/SNNmfu5IAlnU1LcO5MafZpCfW5QJ0vYTsrgJucXgqx6XXxtYDCq9Ybn7ZMmR+a/PP+zPlYCoq5p69uulBh2FaDyWlv3rYVagbV+jz9XHst4IO8fl/aMlboFgEyZA7p6zSnR0SbONsElWdclUSyGrTOutvgA73G5MCyAJg5mQH7PTKYWgQxhGEIHm/abAQlacBS3n3MZIbug2nVg2TwC1CskmkAXYsvQXg2Q1cP4aL5srrSm6fmOqKiV0xVdY4fahCJPFnVyjXdkQ4M8CHdrB8MRprsa90HZlbD5z54IVn5LxXQTOEno3vdEzgAtHC3HM8IFh7XJ0pE8H3WrTDvW4htlAwtCd9du5gBY7N8Fzoo9ENqm0xrsytU29Ci1Dd9A1eiauZAwLhusCLu5Ba24cBgBJymBrINaB0EkXmVNayPcy1PxV9D7iGwUQ2BkjLXNMbjfo9ARiSDieWW2mtZXBAB5mpF/HCtKlWqkQPnV5HW8Y9H21oNaR4+P5kEfyfks/0u0Mhe7PyW861rRV+dt6qh7xQJ5Z4rN8CKLiLr+7ZkXdHg7LekF6eAhnX9s0TL/3F4OZvJO7FJ7kJpSs3MJ4tf5AhrKikq6LTnYSemWqU6Jsqkr6Ew3CEalDbk3hOaHQnt+puYqBZOQmjSZ8OwL0p2kVpBWWrKadzuUHYg6o9Bymw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(8936002)(6916009)(956004)(8676002)(66556008)(6506007)(1076003)(2616005)(508600001)(186003)(6512007)(38100700002)(26005)(5660300002)(6666004)(66946007)(86362001)(44832011)(6486002)(54906003)(52116002)(38350700002)(2906002)(66476007)(83380400001)(316002)(4326008)(36756003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?5NiAEbOLD80CF95uweFZ0gy8J6dI5nWJVc3Z0WGzyE+QZQm5d1yOy/Wn9NEW?=
- =?us-ascii?Q?fBZV4LsSV5Eq0CdwFhr+Wjd/PcQYksvNoxgXRF2+pSWh5AraKetXcgz3CJVG?=
- =?us-ascii?Q?ZM8F45BNluGOEX0I+minqBmlSXPwsif9pXmc0ex4Vc2/U0pcoN13rSkwifzz?=
- =?us-ascii?Q?+6GiRYn24KNict4nM6A16MnV8ArL5jv4TMY8fVKWiHqLZmE31VBgbmeJ5HrR?=
- =?us-ascii?Q?Zmvi324GRs8OnpOban15tm2H1AUXB9cwnKLVoX3744EC/WjXFnxtnlP8pyvs?=
- =?us-ascii?Q?XDqP70v0Q50FJ25dsozGGhVQ0GEM6DaeyLULUwqMFnlYqrWszCSLTUlOBUZu?=
- =?us-ascii?Q?wXePdOoJEp15OlL0cxlLOADW04RKLYH+3L5hd6KGkFmrlVg8uAfYc717pxUh?=
- =?us-ascii?Q?wpykBhWAgWogmdFK+UmBCjPRoo+eUTrnm/mvSc28BnhxauzdDf0D0vWSESjx?=
- =?us-ascii?Q?tTGoQuLxRB52RwNKfbXr/V/aZw2NBH+QHONndAtdRCpLqcpGfvmmH7jZsgMW?=
- =?us-ascii?Q?UDXot+NcPJgEZbeQm1+sYlbRuKvA8+5x+pVJdXv0MDDw0TJ4SXpr2yUNEkAN?=
- =?us-ascii?Q?NwLvEn2kIUdgnvLRvHyU8gZ61a8McVyyW0je4OKM0lo3yF+y7/qZIA42vBzA?=
- =?us-ascii?Q?ATyS8aF0iQmB6CYiRWsu7wLSwhduR9f6NujrLlPVAz5pOnvCIAk+3AXuZkjO?=
- =?us-ascii?Q?RbulIAS2SebUHbjKJtPC8/ptjozAZsxCKccvR5iC1WuHySQeTZc+lMwi3jSg?=
- =?us-ascii?Q?+3ix56EI5ITwr+qO1X2pPELVAx/MenvFy0RZ6TGR84oDgQV+VFKAX5WeyACT?=
- =?us-ascii?Q?hyvTn/JbsZRtgUFzVMR8rotEiQdPspQQP+rJY/y/pvTD88vDNSrWihOQpUJq?=
- =?us-ascii?Q?jXpr5wBsyBc2Ix2jLkpfeuMv+tDuDNHJxXJKOIChyL0r2Avdi5h9hwPYz0yR?=
- =?us-ascii?Q?KTWIjvTgoXnjcAFOcRHRlHPzM1QPhbqDoQSyW8cymMGSh/Ocy1ghGjwyEMSC?=
- =?us-ascii?Q?QVDa9TFaiOZHdZaCveIDziv8ARVpeYx6LQkmKIjYnV75cuX0p7+qS+mIP6+5?=
- =?us-ascii?Q?p7zIyRybDfD8ZlQ2E7Fc+h1KWQBsRiwhLD6yK0kufLF2hJjcJgAbII4A/aCe?=
- =?us-ascii?Q?5sMpXkr3Cw/eOio4fUet94s0sSNiZnj8Q4Mha2Z/fbsb2FZQ0FB+zLw+ZvNB?=
- =?us-ascii?Q?LeXsMWj557onr3nzhiuFzmWIFCBrEDh+sBOt3lTsYOm3U3gmSjtB5xwY2g2Q?=
- =?us-ascii?Q?RU45t8+wK+cBFS6X1BdZED/zeJpM23MjBfStpXGPCVcgHKIf0q9SXc0lgspX?=
- =?us-ascii?Q?6eBLsp/qmUTqFjLHSCxUdnRr8vzZruXdOjaBqzTom+hKqtR/Avy4yPTzTw6u?=
- =?us-ascii?Q?nbcD0f/eYoY7ODF/YrZRlrkIeRHekzJhFcCAaL9pp2/IwHRabmedeWKT4MN+?=
- =?us-ascii?Q?ok1ZqJZAYNQl22W6oJvaGWH+FGGfuHlg9stWXfgSqDn04WrNNnlqDgy444zg?=
- =?us-ascii?Q?A+qeikyBAECEfVY7m7vR+mus+m3uOX8TjQoi2jKZGg1tsaojrI6cWvgSsZib?=
- =?us-ascii?Q?uc7VgkuTDs/AOwTNOmCbR+zfLn6ex0ur3yjzmiA+r+wfI2mAp2M52dxq371G?=
- =?us-ascii?Q?lPFDUs9pTGGiwQRh3wH1ieM=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?5T2s3+95gPb7VXgzE2ccZGR4xYnK6mipApkEBUWKs39JKcPshoWX3Vi5mdes?=
+ =?us-ascii?Q?RwsSdOv7BjMhb/w/od7eCFmH7vBfSioUH/X0dV5jvG2L3HGKwQXtjOh12EHD?=
+ =?us-ascii?Q?2gV+qM6ju0G4nW9phX2gvyfaMzI2yGNtK4NGG2bZgXVVEM+uwiM1RCpk1foh?=
+ =?us-ascii?Q?h8fW4boHNdF3ARBcuTLF1q23MRqSZTX4PMMeIqDkGSaAi04V4PVmOXjuSZlX?=
+ =?us-ascii?Q?XaZJwrbwwjbU5p8OeWaInvoTTJVsqVsqTVfVlT9AG4RxsHzUU7eC11pbHi3L?=
+ =?us-ascii?Q?2zJ9DY06XChaMgK57uMy/pM6GRnMTnuEBn8Oav85ps5T1GSfxgAwvnOw8sPW?=
+ =?us-ascii?Q?nTf52dF0nn6alcgGNRlhjTtkmFEOARJZVHKuGShnyQ0v8GMySebJM+oH3MQq?=
+ =?us-ascii?Q?DKzRUFRsEb91VAgsaKqOmfSMLhYAYphuCHvMdjN0IMvfzQc7ycKLkyGff70F?=
+ =?us-ascii?Q?Ru1WzPZTEXuN6Addbhb/hxxfqE3IAGsE14rw6UrTD76Tyu2BmsrKhyGNHtKC?=
+ =?us-ascii?Q?rJ9DYIGdmg1uaaffUyNIyFkRZp94/TmD1Ws8z99eY9AyEKjxd6DSTv00HpaU?=
+ =?us-ascii?Q?KlKUCbvz365DrIS0wLW2as6Y3/luVMHjbTEz82vfjW7KQBs+QSFu3v5xiLbH?=
+ =?us-ascii?Q?wgdkYiRFXkAvaPfwhvCG1ty1wONuERfiL3DZjD55X5kyZuCxmHBL4gdQRSza?=
+ =?us-ascii?Q?Jt6CfIHowjZSLRNiPueq7hHlnXo/Ptodxvv1iQ21RksuQsm8QE1GS09A2ka5?=
+ =?us-ascii?Q?TJ81AL9RRFBbTsFwLiIItLSQm5blu6TlXBqvYGmoS3BEAkRjnxmcbOFxWb8t?=
+ =?us-ascii?Q?GQiotbcJF28ML3GLH4q5r+lsOj/FWDv9ZGIlWrFYofYueNZfTe3oyetf15sF?=
+ =?us-ascii?Q?0UkYHvgEYWSVUbWcY/IAPSN7KIgi+2oN+4ynZUFtru4Tx/B7pdexzjmuaXSV?=
+ =?us-ascii?Q?eOOkzUluth0eAQvSbit79wGKzcQHUOV7JB+ma42MQHHE5hVDFfq0bpaVBX4R?=
+ =?us-ascii?Q?o+atx4uOlS2YoIF+lrd9zuxlF2zeLMe6mlShMM0su6HRTG+iaQWMbvZHaFyD?=
+ =?us-ascii?Q?gSJlNt2jYYjrQnL1h+TctK2NCod9/cswv+moZXgm0tavyjKwF8i4O0Mjeqqx?=
+ =?us-ascii?Q?/oKIp/YOifeHkR+5hqol0rYU0HE1fjE3gZBob0orhJcrBNNt2TdSiaQ3a915?=
+ =?us-ascii?Q?9SNe9FWP+VZiuQm0B5rJpJsv2ef0LrhWGgJ/MDNy6CClja/ok2i6mgNpwxFz?=
+ =?us-ascii?Q?ySNQjZ8pEMZsQUqNqaUGNpB1fq3zZeA49M+bDsCGWbfQ/GGadz2Al2bj7BCt?=
+ =?us-ascii?Q?adtZi84GsDsDTdQi1WhdP5m38JChC35bjyIA1n24n2422KxlYtdvkDfjJCQR?=
+ =?us-ascii?Q?EQkHFyTaG4LajIkp7YG8THjclPjU9GBUjiMCrz3RLq84qb2K8U4kefhYQVy3?=
+ =?us-ascii?Q?wVkMd7Giy9Bd9gS98dJo+DvVEuouBOylH0EaBSH29yX0/Xpbo57inwXtpuk8?=
+ =?us-ascii?Q?EcRlQNYMHU2ZNZ3O+wKYkMZLOifMc/wBd07/QtyhYViqkSD9bvuT8cDVVmu4?=
+ =?us-ascii?Q?zR3BUuVijkBi4eQDuU8XOBACDrernSk2Tu7EHf51vu9oRfZNz6dtJA/h/lxp?=
+ =?us-ascii?Q?3bzltHuXdqPIumSijkfRIi8=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8ab512f0-26a0-457d-70da-08d9989d698c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7771a1b7-fda5-451d-3b1f-08d9989d6a1e
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2021 16:26:49.9194
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2021 16:26:50.8398
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZCXxyJUl7pRMU1dpj4RK+fP2tAjGw0gUlKO7fY0yHKnMtOK337IAtqzx/8HOYDiFGAwifhtGFHz10Lr2zPVS7Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6637
+X-MS-Exchange-CrossTenant-UserPrincipalName: ariU4KiGzLlRwVWXobf8HLkutti8Z7eIMTMq14fq4XGLymp+yAysD5PUQrdpacJ+leys+LWvE638W078jrj6/g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4686
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I have seen too many bugs already due to the fact that we must encode an
-invalid dp->bridge_num as a negative value, because the natural tendency
-is to check that invalid value using (!dp->bridge_num). Latest example
-can be seen in commit 1bec0f05062c ("net: dsa: fix bridge_num not
-getting cleared after ports leaving the bridge").
+The service where DSA assigns a unique bridge number for each forwarding
+domain is useful even for drivers which do not implement the TX
+forwarding offload feature.
 
-Convert the existing users to assume that dp->bridge_num == 0 is the
-encoding for invalid, and valid bridge numbers start from 1.
+For example, drivers might use the dp->bridge_num for FDB isolation.
+
+So rename ds->num_fwd_offloading_bridges to ds->max_num_bridges, and
+calculate a unique bridge_num for all drivers that set this value.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 12 ++++++------
- include/linux/dsa/8021q.h        |  6 +++---
- include/net/dsa.h                |  6 +++---
- net/dsa/dsa2.c                   | 24 ++++++++++++------------
- net/dsa/dsa_priv.h               |  5 +++--
- net/dsa/port.c                   | 11 ++++++-----
- net/dsa/tag_8021q.c              | 12 +++++++-----
- net/dsa/tag_dsa.c                |  2 +-
- 8 files changed, 41 insertions(+), 37 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c       |  4 +-
+ drivers/net/dsa/sja1105/sja1105_main.c |  2 +-
+ include/net/dsa.h                      | 10 ++--
+ net/dsa/port.c                         | 81 +++++++++++++++++---------
+ 4 files changed, 63 insertions(+), 34 deletions(-)
 
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 14c678a9e41b..0d0ccb7f8ccd 100644
+index 0d0ccb7f8ccd..ae09cbc2f42f 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.c
 +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1247,10 +1247,10 @@ static u16 mv88e6xxx_port_vlan(struct mv88e6xxx_chip *chip, int dev, int port)
- 	/* dev is a virtual bridge */
- 	} else {
- 		list_for_each_entry(dp, &dst->ports, list) {
--			if (dp->bridge_num < 0)
-+			if (!dp->bridge_num)
- 				continue;
+@@ -3183,8 +3183,8 @@ static int mv88e6xxx_setup(struct dsa_switch *ds)
+ 	 * time.
+ 	 */
+ 	if (mv88e6xxx_has_pvt(chip))
+-		ds->num_fwd_offloading_bridges = MV88E6XXX_MAX_PVT_SWITCHES -
+-						 ds->dst->last_switch - 1;
++		ds->max_num_bridges = MV88E6XXX_MAX_PVT_SWITCHES -
++				      ds->dst->last_switch - 1;
  
--			if (dp->bridge_num + 1 + dst->last_switch != dev)
-+			if (dp->bridge_num + dst->last_switch != dev)
- 				continue;
+ 	mv88e6xxx_reg_lock(chip);
  
- 			br = dp->bridge_dev;
-@@ -2524,9 +2524,9 @@ static void mv88e6xxx_crosschip_bridge_leave(struct dsa_switch *ds,
-  * physical switches, so start from beyond that range.
-  */
- static int mv88e6xxx_map_virtual_bridge_to_pvt(struct dsa_switch *ds,
--					       int bridge_num)
-+					       unsigned int bridge_num)
- {
--	u8 dev = bridge_num + ds->dst->last_switch + 1;
-+	u8 dev = bridge_num + ds->dst->last_switch;
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 	int err;
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index c343effe2e96..355b56cf94d8 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -3139,7 +3139,7 @@ static int sja1105_setup(struct dsa_switch *ds)
+ 	ds->vlan_filtering_is_global = true;
+ 	ds->untag_bridge_pvid = true;
+ 	/* tag_8021q has 3 bits for the VBID, and the value 0 is reserved */
+-	ds->num_fwd_offloading_bridges = 7;
++	ds->max_num_bridges = 7;
  
-@@ -2539,14 +2539,14 @@ static int mv88e6xxx_map_virtual_bridge_to_pvt(struct dsa_switch *ds,
- 
- static int mv88e6xxx_bridge_tx_fwd_offload(struct dsa_switch *ds, int port,
- 					   struct net_device *br,
--					   int bridge_num)
-+					   unsigned int bridge_num)
- {
- 	return mv88e6xxx_map_virtual_bridge_to_pvt(ds, bridge_num);
- }
- 
- static void mv88e6xxx_bridge_tx_fwd_unoffload(struct dsa_switch *ds, int port,
- 					      struct net_device *br,
--					      int bridge_num)
-+					      unsigned int bridge_num)
- {
- 	int err;
- 
-diff --git a/include/linux/dsa/8021q.h b/include/linux/dsa/8021q.h
-index 254b165f2b44..0af4371fbebb 100644
---- a/include/linux/dsa/8021q.h
-+++ b/include/linux/dsa/8021q.h
-@@ -38,13 +38,13 @@ void dsa_8021q_rcv(struct sk_buff *skb, int *source_port, int *switch_id);
- 
- int dsa_tag_8021q_bridge_tx_fwd_offload(struct dsa_switch *ds, int port,
- 					struct net_device *br,
--					int bridge_num);
-+					unsigned int bridge_num);
- 
- void dsa_tag_8021q_bridge_tx_fwd_unoffload(struct dsa_switch *ds, int port,
- 					   struct net_device *br,
--					   int bridge_num);
-+					   unsigned int bridge_num);
- 
--u16 dsa_8021q_bridge_tx_fwd_offload_vid(int bridge_num);
-+u16 dsa_8021q_bridge_tx_fwd_offload_vid(unsigned int bridge_num);
- 
- u16 dsa_tag_8021q_tx_vid(const struct dsa_port *dp);
- 
+ 	/* Advertise the 8 egress queues */
+ 	ds->num_tx_queues = SJA1105_NUM_TC;
 diff --git a/include/net/dsa.h b/include/net/dsa.h
-index badd214f7470..56a90f05df49 100644
+index 56a90f05df49..970bc89a0062 100644
 --- a/include/net/dsa.h
 +++ b/include/net/dsa.h
-@@ -257,7 +257,7 @@ struct dsa_port {
- 	bool			learning;
- 	u8			stp_state;
- 	struct net_device	*bridge_dev;
--	int			bridge_num;
-+	unsigned int		bridge_num;
- 	struct devlink_port	devlink_port;
- 	bool			devlink_port_setup;
- 	struct phylink		*pl;
-@@ -752,11 +752,11 @@ struct dsa_switch_ops {
- 	/* Called right after .port_bridge_join() */
- 	int	(*port_bridge_tx_fwd_offload)(struct dsa_switch *ds, int port,
- 					      struct net_device *bridge,
--					      int bridge_num);
-+					      unsigned int bridge_num);
- 	/* Called right before .port_bridge_leave() */
- 	void	(*port_bridge_tx_fwd_unoffload)(struct dsa_switch *ds, int port,
- 						struct net_device *bridge,
--						int bridge_num);
-+						unsigned int bridge_num);
- 	void	(*port_stp_state_set)(struct dsa_switch *ds, int port,
- 				      u8 state);
- 	void	(*port_fast_age)(struct dsa_switch *ds, int port);
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 826957b6442b..9606e56710a5 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -141,23 +141,23 @@ static int dsa_bridge_num_find(const struct net_device *bridge_dev)
+@@ -413,12 +413,12 @@ struct dsa_switch {
  	 */
- 	list_for_each_entry(dst, &dsa_tree_list, list)
- 		list_for_each_entry(dp, &dst->ports, list)
--			if (dp->bridge_dev == bridge_dev &&
--			    dp->bridge_num != -1)
-+			if (dp->bridge_dev == bridge_dev && dp->bridge_num)
- 				return dp->bridge_num;
+ 	unsigned int		num_lag_ids;
  
--	return -1;
-+	return 0;
- }
- 
--int dsa_bridge_num_get(const struct net_device *bridge_dev, int max)
-+unsigned int dsa_bridge_num_get(const struct net_device *bridge_dev, int max)
- {
--	int bridge_num = dsa_bridge_num_find(bridge_dev);
-+	unsigned int bridge_num = dsa_bridge_num_find(bridge_dev);
- 
--	if (bridge_num < 0) {
-+	if (!bridge_num) {
- 		/* First port that offloads TX forwarding for this bridge */
--		bridge_num = find_first_zero_bit(&dsa_fwd_offloading_bridges,
--						 DSA_MAX_NUM_OFFLOADING_BRIDGES);
-+		bridge_num = find_next_zero_bit(&dsa_fwd_offloading_bridges,
-+						DSA_MAX_NUM_OFFLOADING_BRIDGES,
-+						1);
- 		if (bridge_num >= max)
--			return -1;
-+			return 0;
- 
- 		set_bit(bridge_num, &dsa_fwd_offloading_bridges);
- 	}
-@@ -165,12 +165,13 @@ int dsa_bridge_num_get(const struct net_device *bridge_dev, int max)
- 	return bridge_num;
- }
- 
--void dsa_bridge_num_put(const struct net_device *bridge_dev, int bridge_num)
-+void dsa_bridge_num_put(const struct net_device *bridge_dev,
-+			unsigned int bridge_num)
- {
- 	/* Check if the bridge is still in use, otherwise it is time
- 	 * to clean it up so we can reuse this bridge_num later.
+-	/* Drivers that support bridge forwarding offload should set this to
+-	 * the maximum number of bridges spanning the same switch tree (or all
+-	 * trees, in the case of cross-tree bridging support) that can be
+-	 * offloaded.
++	/* Drivers that support bridge forwarding offload or FDB isolation
++	 * should set this to the maximum number of bridges spanning the same
++	 * switch tree (or all trees, in the case of cross-tree bridging
++	 * support) that can be offloaded.
  	 */
--	if (dsa_bridge_num_find(bridge_dev) < 0)
-+	if (!dsa_bridge_num_find(bridge_dev))
- 		clear_bit(bridge_num, &dsa_fwd_offloading_bridges);
- }
+-	unsigned int		num_fwd_offloading_bridges;
++	unsigned int		max_num_bridges;
  
-@@ -1184,7 +1185,6 @@ static struct dsa_port *dsa_port_touch(struct dsa_switch *ds, int index)
- 
- 	dp->ds = ds;
- 	dp->index = index;
--	dp->bridge_num = -1;
- 
- 	INIT_LIST_HEAD(&dp->list);
- 	list_add_tail(&dp->list, &dst->ports);
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index a5c9bc7b66c6..2a64c41813bf 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -546,8 +546,9 @@ int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
- 			      struct net_device *master,
- 			      const struct dsa_device_ops *tag_ops,
- 			      const struct dsa_device_ops *old_tag_ops);
--int dsa_bridge_num_get(const struct net_device *bridge_dev, int max);
--void dsa_bridge_num_put(const struct net_device *bridge_dev, int bridge_num);
-+unsigned int dsa_bridge_num_get(const struct net_device *bridge_dev, int max);
-+void dsa_bridge_num_put(const struct net_device *bridge_dev,
-+			unsigned int bridge_num);
- 
- /* tag_8021q.c */
- int dsa_tag_8021q_bridge_join(struct dsa_switch *ds,
+ 	size_t num_ports;
+ };
 diff --git a/net/dsa/port.c b/net/dsa/port.c
-index c0e630f7f0bd..1772817a1214 100644
+index 1772817a1214..b7867746af15 100644
 --- a/net/dsa/port.c
 +++ b/net/dsa/port.c
-@@ -273,14 +273,14 @@ static void dsa_port_switchdev_unsync_attrs(struct dsa_port *dp)
+@@ -271,19 +271,15 @@ static void dsa_port_switchdev_unsync_attrs(struct dsa_port *dp)
+ }
+ 
  static void dsa_port_bridge_tx_fwd_unoffload(struct dsa_port *dp,
- 					     struct net_device *bridge_dev)
+-					     struct net_device *bridge_dev)
++					     struct net_device *bridge_dev,
++					     unsigned int bridge_num)
  {
--	int bridge_num = dp->bridge_num;
-+	unsigned int bridge_num = dp->bridge_num;
+-	unsigned int bridge_num = dp->bridge_num;
  	struct dsa_switch *ds = dp->ds;
  
  	/* No bridge TX forwarding offload => do nothing */
--	if (!ds->ops->port_bridge_tx_fwd_unoffload || dp->bridge_num == -1)
-+	if (!ds->ops->port_bridge_tx_fwd_unoffload || !dp->bridge_num)
+-	if (!ds->ops->port_bridge_tx_fwd_unoffload || !dp->bridge_num)
++	if (!ds->ops->port_bridge_tx_fwd_unoffload || !bridge_num)
  		return;
  
--	dp->bridge_num = -1;
-+	dp->bridge_num = 0;
- 
- 	dsa_bridge_num_put(bridge_dev, bridge_num);
- 
-@@ -295,14 +295,15 @@ static bool dsa_port_bridge_tx_fwd_offload(struct dsa_port *dp,
- 					   struct net_device *bridge_dev)
- {
- 	struct dsa_switch *ds = dp->ds;
--	int bridge_num, err;
-+	unsigned int bridge_num;
-+	int err;
- 
- 	if (!ds->ops->port_bridge_tx_fwd_offload)
- 		return false;
- 
- 	bridge_num = dsa_bridge_num_get(bridge_dev,
- 					ds->num_fwd_offloading_bridges);
--	if (bridge_num < 0)
-+	if (!bridge_num)
- 		return false;
- 
- 	dp->bridge_num = bridge_num;
-diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
-index 72cac2c0af7b..df59f16436a5 100644
---- a/net/dsa/tag_8021q.c
-+++ b/net/dsa/tag_8021q.c
-@@ -67,10 +67,12 @@
- #define DSA_8021Q_PORT(x)		(((x) << DSA_8021Q_PORT_SHIFT) & \
- 						 DSA_8021Q_PORT_MASK)
- 
--u16 dsa_8021q_bridge_tx_fwd_offload_vid(int bridge_num)
-+u16 dsa_8021q_bridge_tx_fwd_offload_vid(unsigned int bridge_num)
- {
--	/* The VBID value of 0 is reserved for precise TX */
--	return DSA_8021Q_DIR_TX | DSA_8021Q_VBID(bridge_num + 1);
-+	/* The VBID value of 0 is reserved for precise TX, but it is also
-+	 * reserved/invalid for the bridge_num, so all is well.
-+	 */
-+	return DSA_8021Q_DIR_TX | DSA_8021Q_VBID(bridge_num);
+-	dp->bridge_num = 0;
+-
+-	dsa_bridge_num_put(bridge_dev, bridge_num);
+-
+ 	/* Notify the chips only once the offload has been deactivated, so
+ 	 * that they can update their configuration accordingly.
+ 	 */
+@@ -292,31 +288,60 @@ static void dsa_port_bridge_tx_fwd_unoffload(struct dsa_port *dp,
  }
- EXPORT_SYMBOL_GPL(dsa_8021q_bridge_tx_fwd_offload_vid);
  
-@@ -409,7 +411,7 @@ int dsa_tag_8021q_bridge_leave(struct dsa_switch *ds,
- 
- int dsa_tag_8021q_bridge_tx_fwd_offload(struct dsa_switch *ds, int port,
- 					struct net_device *br,
--					int bridge_num)
-+					unsigned int bridge_num)
- {
- 	u16 tx_vid = dsa_8021q_bridge_tx_fwd_offload_vid(bridge_num);
- 
-@@ -420,7 +422,7 @@ EXPORT_SYMBOL_GPL(dsa_tag_8021q_bridge_tx_fwd_offload);
- 
- void dsa_tag_8021q_bridge_tx_fwd_unoffload(struct dsa_switch *ds, int port,
- 					   struct net_device *br,
--					   int bridge_num)
+ static bool dsa_port_bridge_tx_fwd_offload(struct dsa_port *dp,
+-					   struct net_device *bridge_dev)
++					   struct net_device *bridge_dev,
 +					   unsigned int bridge_num)
  {
- 	u16 tx_vid = dsa_8021q_bridge_tx_fwd_offload_vid(bridge_num);
+ 	struct dsa_switch *ds = dp->ds;
+-	unsigned int bridge_num;
+ 	int err;
  
-diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
-index b3da4b2ea11c..a7d70ae7cc97 100644
---- a/net/dsa/tag_dsa.c
-+++ b/net/dsa/tag_dsa.c
-@@ -140,7 +140,7 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
- 		 * packets on behalf of a virtual switch device with an index
- 		 * past the physical switches.
- 		 */
--		tag_dev = dst->last_switch + 1 + dp->bridge_num;
-+		tag_dev = dst->last_switch + dp->bridge_num;
- 		tag_port = 0;
- 	} else {
- 		cmd = DSA_CMD_FROM_CPU;
+-	if (!ds->ops->port_bridge_tx_fwd_offload)
+-		return false;
+-
+-	bridge_num = dsa_bridge_num_get(bridge_dev,
+-					ds->num_fwd_offloading_bridges);
+-	if (!bridge_num)
++	/* FDB isolation is required for TX forwarding offload */
++	if (!ds->ops->port_bridge_tx_fwd_offload || !bridge_num)
+ 		return false;
+ 
+-	dp->bridge_num = bridge_num;
+-
+ 	/* Notify the driver */
+ 	err = ds->ops->port_bridge_tx_fwd_offload(ds, dp->index, bridge_dev,
+ 						  bridge_num);
+-	if (err) {
+-		dsa_port_bridge_tx_fwd_unoffload(dp, bridge_dev);
+-		return false;
++
++	return err ? false : true;
++}
++
++static int dsa_port_bridge_create(struct dsa_port *dp,
++				  struct net_device *br,
++				  struct netlink_ext_ack *extack)
++{
++	struct dsa_switch *ds = dp->ds;
++	unsigned int bridge_num;
++
++	dp->bridge_dev = br;
++
++	if (!ds->max_num_bridges)
++		return 0;
++
++	bridge_num = dsa_bridge_num_get(br, ds->max_num_bridges);
++	if (!bridge_num) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Range of offloadable bridges exceeded");
++		return -EOPNOTSUPP;
+ 	}
+ 
+-	return true;
++	dp->bridge_num = bridge_num;
++
++	return 0;
++}
++
++static void dsa_port_bridge_destroy(struct dsa_port *dp,
++				    const struct net_device *br)
++{
++	struct dsa_switch *ds = dp->ds;
++
++	dp->bridge_dev = NULL;
++
++	if (ds->max_num_bridges) {
++		int bridge_num = dp->bridge_num;
++
++		dp->bridge_num = 0;
++		dsa_bridge_num_put(br, bridge_num);
++	}
+ }
+ 
+ int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
+@@ -336,7 +361,9 @@ int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
+ 	/* Here the interface is already bridged. Reflect the current
+ 	 * configuration so that drivers can program their chips accordingly.
+ 	 */
+-	dp->bridge_dev = br;
++	err = dsa_port_bridge_create(dp, br, extack);
++	if (err)
++		return err;
+ 
+ 	brport_dev = dsa_port_to_bridge_port(dp);
+ 
+@@ -344,7 +371,8 @@ int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
+ 	if (err)
+ 		goto out_rollback;
+ 
+-	tx_fwd_offload = dsa_port_bridge_tx_fwd_offload(dp, br);
++	tx_fwd_offload = dsa_port_bridge_tx_fwd_offload(dp, br,
++							dp->bridge_num);
+ 
+ 	err = switchdev_bridge_port_offload(brport_dev, dev, dp,
+ 					    &dsa_slave_switchdev_notifier,
+@@ -366,7 +394,7 @@ int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
+ out_rollback_unbridge:
+ 	dsa_broadcast(DSA_NOTIFIER_BRIDGE_LEAVE, &info);
+ out_rollback:
+-	dp->bridge_dev = NULL;
++	dsa_port_bridge_destroy(dp, br);
+ 	return err;
+ }
+ 
+@@ -393,14 +421,15 @@ void dsa_port_bridge_leave(struct dsa_port *dp, struct net_device *br)
+ 		.port = dp->index,
+ 		.br = br,
+ 	};
++	int bridge_num = dp->bridge_num;
+ 	int err;
+ 
+ 	/* Here the port is already unbridged. Reflect the current configuration
+ 	 * so that drivers can program their chips accordingly.
+ 	 */
+-	dp->bridge_dev = NULL;
++	dsa_port_bridge_destroy(dp, br);
+ 
+-	dsa_port_bridge_tx_fwd_unoffload(dp, br);
++	dsa_port_bridge_tx_fwd_unoffload(dp, br, bridge_num);
+ 
+ 	err = dsa_broadcast(DSA_NOTIFIER_BRIDGE_LEAVE, &info);
+ 	if (err)
 -- 
 2.25.1
 
