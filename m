@@ -2,67 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C47D43BB61
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 22:05:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C87F443BB75
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 22:17:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239092AbhJZUHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 16:07:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58832 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239090AbhJZUHy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Oct 2021 16:07:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 49F7360F70;
-        Tue, 26 Oct 2021 20:05:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1635278730;
-        bh=iEySxOppGo6+UznibHjveg231KMNTh2WuakeVeVhIkk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cHL2PzXwrT4gnFkcs363P8beXzTxJlX6YQcEyyZl/D6DxOU8sFq3BLKV7Ax3fR2ie
-         7tXpU8YuWPtl1YGYzWiJ2lO/kdtXWJacpn/HXxB46Syml0JJfJf7MQqSzqtY5x8K85
-         1Uj4ZlfogAhR6lvTcZN3YhdBqTdLlWATG81TDIMM=
-Date:   Tue, 26 Oct 2021 22:05:26 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Manish Chopra <manishc@marvell.com>
-Cc:     kuba@kernel.org, netdev@vger.kernel.org, stable@vger.kernel.org,
-        aelior@marvell.com, skalluru@marvell.com, malin1024@gmail.com,
-        smalin@marvell.com, okulkarni@marvell.com, njavali@marvell.com,
-        GR-everest-linux-l2@marvell.com
-Subject: Re: [PATCH net-next 2/2] bnx2x: Invalidate fastpath HSI version for
- VFs
-Message-ID: <YXhfhll786/fGuur@kroah.com>
-References: <20211026193717.2657-1-manishc@marvell.com>
- <20211026193717.2657-2-manishc@marvell.com>
+        id S239128AbhJZUUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 16:20:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51778 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236912AbhJZUUL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 16:20:11 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F93C061570
+        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 13:17:46 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id h11so894902ljk.1
+        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 13:17:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3yQ6Z3Z0g61pqCis/uuv07HaN60SDD6t3x64tUVmCrc=;
+        b=zVCrpwgUCuyf/C/hkbrads+BfQnT2aOkSDLVcafimfed1MwT5sWMYIL1fDHi327fmc
+         yZr5S10TVZ9lSekV/f5fd024O7WjINB4gAbL97xJQfepU3sIKJY2k58acEJh4pnEXHyc
+         aubeuVwppfadgHeFDktIU0WsaAwHAUdHyrNmXFxNyJxcadiHha4aHaJjHe9vxz1S4nY7
+         tYgHulsz5D/GAThBdbColkQ7I3IopOLLOnyrJzKFFALA6vVR2G2ykslyEotN2igARpDl
+         B9YaBJH9y2CIPgpZdlvrq7NAHoIMkPcTJaa6Avddt33o74PLKpQmKWHYHaMhbqnxcEFc
+         nN2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3yQ6Z3Z0g61pqCis/uuv07HaN60SDD6t3x64tUVmCrc=;
+        b=XOjh+QMaXJtVTsKIAF1cBVBFIRg+NBjY7Mn1rhSPs9RWtABVdvNyd4kxN38/FGSRx3
+         FLy8xJ3SMpapKXTTZEKBcD3VTvdSYpS/22QNwuzOyKYbuVDxL4wARIZHBhoxXJC/yjAK
+         vdSm45BrPvpVBYTlD7lLf5Oau6Ol6ubpiwqa7bg0UWWPX59ArxpoBNAuCaKIOii/p3Fb
+         czehLdKvDJQWyQcYc7bfzokajci31BdnwyjbM5+V/wFB0D+O2qN7gqKHPD+qeUJ1F/nn
+         S1uRPaRIlbutZRQ4b4OWuknkeGx72iB2uEU5spo651I5ZiqT0N3wV/gBgyUj+r9pZ3VA
+         KZgA==
+X-Gm-Message-State: AOAM530LtoHbQOv+ARsaoxdKKUIyC2EXFslFchKx5557jfC8uGWTC9Vm
+        tZJGL3E6a7fD7G9XtrjnrmVPLQuUatmwp29nJWj8Sg==
+X-Google-Smtp-Source: ABdhPJzTLrslTFjnjrXfDz6oWJkFGCqP8GQsr4oBSanlHxtW3tmVL4ftXeaKjFPGzpseH8QTkdSkw0bhgm48Elqp/o8=
+X-Received: by 2002:a2e:9c0b:: with SMTP id s11mr28696128lji.259.1635279465127;
+ Tue, 26 Oct 2021 13:17:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211026193717.2657-2-manishc@marvell.com>
+References: <20211026191703.1174086-1-clabbe@baylibre.com>
+In-Reply-To: <20211026191703.1174086-1-clabbe@baylibre.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 26 Oct 2021 22:17:33 +0200
+Message-ID: <CACRpkda-hh98yx7TQ9cmgXrQ+6uPf01gBzRddir0PYYcc5+uaw@mail.gmail.com>
+Subject: Re: [PATCH] net: ethernet: cortina: permit to set mac address in DT
+To:     Corentin Labbe <clabbe@baylibre.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 26, 2021 at 12:37:17PM -0700, Manish Chopra wrote:
-> Commit 0a6890b9b4df ("bnx2x: Utilize FW 7.13.15.0.")
-> added validation for fastpath HSI versions for different
-> client init which was not meant for SR-IOV VF clients, which
-> resulted in firmware asserts when running VF clients with
-> different fastpath HSI version.
-> 
-> This patch along with the new firmware support in patch #1
-> fixes this behavior in order to not validate fastpath HSI
-> version for the VFs.
-> 
-> Fixes: 0a6890b9b4df ("bnx2x: Utilize FW 7.13.15.0.")
-> Signed-off-by: Manish Chopra <manishc@marvell.com>
-> Signed-off-by: Ariel Elior <aelior@marvell.com>
-> Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
-> Signed-off-by: Shai Malin <smalin@marvell.com>
+On Tue, Oct 26, 2021 at 9:17 PM Corentin Labbe <clabbe@baylibre.com> wrote:
 
+> Add ability of setting mac address in DT for cortina ethernet driver.
+>
+> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
 
-<formletter>
+That looks useful!
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-This is not the correct way to submit patches for inclusion in the
-stable kernel tree.  Please read:
-    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
-for how to do this properly.
-
-</formletter>
+Yours,
+Linus Walleij
