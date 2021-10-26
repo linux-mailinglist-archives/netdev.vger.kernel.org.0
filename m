@@ -2,106 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0E9443BB25
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 21:41:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC72943BB3B
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 21:51:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236963AbhJZTnd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 15:43:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54422 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239054AbhJZTnT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Oct 2021 15:43:19 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E6B0D60F6F;
-        Tue, 26 Oct 2021 19:40:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635277255;
-        bh=6kptRF7T18sW7ZNzM84KDRvLY2wHILPGV96SE3YEtIo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rdKklo7wRg6PaasIzZVb3gQlH3Zoyi6qoGsOvKca0q40/CNFg/zEM/lCZ8nNkiL6e
-         rS424suQGR6oIG5SZq+2DT72ak+8aSOrbxjMxXGSfNZZhZLkYuzBkhGjM3t8qM8MhL
-         blIz9jFiZO7MQVAaKC0CYprtym3m/M+LOONgSlN7F5SOmJk2ffSoEos06yoqdamdWF
-         AXqOoFyY+arxOqxtX48xGHlUQGOL64SiePzZ77SwU3P4qrpeeodwrKWaJNeXHys8YV
-         2PJRCWlw1wzGLgeeECgNemsUBsb/Gslwjn5X+iaCAGCn3sfrotOB7CPbBvXp48dEu2
-         XWLyJmKfvIqMQ==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 2/2] Revert "devlink: Remove not-executed trap policer notifications"
-Date:   Tue, 26 Oct 2021 22:40:42 +0300
-Message-Id: <21da54798e7eebdb43fa8db5ca1910f83f11a007.1635276828.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1635276828.git.leonro@nvidia.com>
-References: <cover.1635276828.git.leonro@nvidia.com>
+        id S233642AbhJZTxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 15:53:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:48588 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239029AbhJZTxP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 15:53:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1635277850;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=v6YsqIJF4cmqUM5VoIFLtZ3R3oEYuHT98TJT5vDKLv0=;
+        b=Spy7RLi+VXv1OVISDPx9VyIhQl2ur0hTZdzy9sGKfnhYNEwigumgx5kDY5EDKFDUDOndeQ
+        W0646tvr0fKHLoDCqHQWhndfyAJVOi88PgDC+NWa+p0sCehVD7kgaMnnN0fHhlmxoBQuli
+        SuLzs3CkPxd1FU6FmkfjTt/v0s646Uo=
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
+ [209.85.161.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-8-oJIDPeUrN5GN8hDIthamBA-1; Tue, 26 Oct 2021 15:50:49 -0400
+X-MC-Unique: oJIDPeUrN5GN8hDIthamBA-1
+Received: by mail-oo1-f70.google.com with SMTP id p2-20020a4a3c42000000b002b7138531a2so160903oof.10
+        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 12:50:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=v6YsqIJF4cmqUM5VoIFLtZ3R3oEYuHT98TJT5vDKLv0=;
+        b=h7X9Lhh4sf5GLTi9+m0itkDIYmmOFP3ULJXSHrECgQcSODFxFq9NZjmG+S4rhq2yn3
+         XMgLEHj9nhx7LCyx5RCYnwvkXktpAxizs0oaZT62E0runf9CovB7pWmBNMR9TvKf0ylf
+         2FF2XGuHswJIBNiPDpGSPBZNbT1Xhz9Roer1Jn6grYolGtsD6aw/feorLHV+j6Sz5I4Y
+         qGWyxk+ljILcPT91pEO9cXIMy7Sp1XO9GqFZMDj+7hm44KdlS4WGTzqv4UGZn5vn3330
+         vM4HDMRHcGtY987TFQY5LsUs9xK+0et5B1QWuQxMKXwmx3y8weAXS24nMigADoN/0TeC
+         auNw==
+X-Gm-Message-State: AOAM531ytM7Ilky0ad77Y5E21msHCTlI1JzH/qvTJ8Dsy9tHYn0pLsyu
+        eZdCenXKyku2olyuW+sgFyklwhDfoLJbGEewVaraLh8z2LFBoVxaSKviXCx/8u2KkohJHkng5gN
+        er1NGvQ/whe2N8g9i
+X-Received: by 2002:a05:6830:2b11:: with SMTP id l17mr21915530otv.298.1635277848324;
+        Tue, 26 Oct 2021 12:50:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyP54OPC5IwSQShzWiwXn/t8EIhJAPy/ttWlrC47tIMalPERR7bNfkUdrFXsvQn1ejkueIxKw==
+X-Received: by 2002:a05:6830:2b11:: with SMTP id l17mr21915507otv.298.1635277848077;
+        Tue, 26 Oct 2021 12:50:48 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id m7sm5109762oiw.49.2021.10.26.12.50.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Oct 2021 12:50:47 -0700 (PDT)
+Date:   Tue, 26 Oct 2021 13:50:46 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Cornelia Huck <cohuck@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
+ for mlx5 devices
+Message-ID: <20211026135046.5190e103.alex.williamson@redhat.com>
+In-Reply-To: <20211026151851.GW2744544@nvidia.com>
+References: <5a496713-ae1d-11f2-1260-e4c1956e1eda@nvidia.com>
+        <20211020105230.524e2149.alex.williamson@redhat.com>
+        <20211020185919.GH2744544@nvidia.com>
+        <20211020150709.7cff2066.alex.williamson@redhat.com>
+        <87o87isovr.fsf@redhat.com>
+        <20211021154729.0e166e67.alex.williamson@redhat.com>
+        <20211025122938.GR2744544@nvidia.com>
+        <20211025082857.4baa4794.alex.williamson@redhat.com>
+        <20211025145646.GX2744544@nvidia.com>
+        <20211026084212.36b0142c.alex.williamson@redhat.com>
+        <20211026151851.GW2744544@nvidia.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+On Tue, 26 Oct 2021 12:18:51 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-This reverts commit 22849b5ea5952d853547cc5e0651f34a246b2a4f as it
-revealed that mlxsw and netdevsim (copy/paste from mlxsw) reregisters
-devlink objects during another devlink user triggered command.
+> On Tue, Oct 26, 2021 at 08:42:12AM -0600, Alex Williamson wrote:
+> 
+> > > This is also why I don't like it being so transparent as it is
+> > > something userspace needs to care about - especially if the HW cannot
+> > > support such a thing, if we intend to allow that.  
+> > 
+> > Userspace does need to care, but userspace's concern over this should
+> > not be able to compromise the platform and therefore making VF
+> > assignment more susceptible to fatal error conditions to comply with a
+> > migration uAPI is troublesome for me.  
+> 
+> It is an interesting scenario.
+> 
+> I think it points that we are not implementing this fully properly.
+> 
+> The !RUNNING state should be like your reset efforts.
+> 
+> All access to the MMIO memories from userspace should be revoked
+> during !RUNNING
+> 
+> All VMAs zap'd.
+> 
+> All IOMMU peer mappings invalidated.
+> 
+> The kernel should directly block userspace from causing a MMIO TLP
+> before the device driver goes to !RUNNING.
+> 
+> Then the question of what the device does at this edge is not
+> relevant as hostile userspace cannot trigger it.
+> 
+> The logical way to implement this is to key off running and
+> block/unblock MMIO access when !RUNNING.
+> 
+> To me this strongly suggests that the extra bit is the correct way
+> forward as the driver is much simpler to implement and understand if
+> RUNNING directly controls the availability of MMIO instead of having
+> an irregular case where !RUNNING still allows MMIO but only until a
+> pending_bytes read.
+> 
+> Given the complexity of this can we move ahead with the current
+> mlx5_vfio and Yishai&co can come with some followup proposal to split
+> the freeze/queice and block MMIO?
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- net/core/devlink.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+I know how much we want this driver in, but I'm surprised that you're
+advocating to cut-and-run with an implementation where we've identified
+a potentially significant gap with some hand waving that we'll resolve
+it later.
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 4dac53c77842..0de679c4313c 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -11180,7 +11180,8 @@ devlink_trap_policer_notify(struct devlink *devlink,
- 
- 	WARN_ON_ONCE(cmd != DEVLINK_CMD_TRAP_POLICER_NEW &&
- 		     cmd != DEVLINK_CMD_TRAP_POLICER_DEL);
--	ASSERT_DEVLINK_REGISTERED(devlink);
-+	if (!xa_get_mark(&devlinks, devlink->index, DEVLINK_REGISTERED))
-+		return;
- 
- 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
- 	if (!msg)
-@@ -11222,6 +11223,9 @@ devlink_trap_policer_register(struct devlink *devlink,
- 	}
- 
- 	list_add_tail(&policer_item->list, &devlink->trap_policer_list);
-+	devlink_trap_policer_notify(devlink, policer_item,
-+				    DEVLINK_CMD_TRAP_POLICER_NEW);
-+
- 	return 0;
- 
- err_policer_init:
-@@ -11239,6 +11243,8 @@ devlink_trap_policer_unregister(struct devlink *devlink,
- 	if (WARN_ON_ONCE(!policer_item))
- 		return;
- 
-+	devlink_trap_policer_notify(devlink, policer_item,
-+				    DEVLINK_CMD_TRAP_POLICER_DEL);
- 	list_del(&policer_item->list);
- 	if (devlink->ops->trap_policer_fini)
- 		devlink->ops->trap_policer_fini(devlink, policer);
-@@ -11260,8 +11266,6 @@ devlink_trap_policers_register(struct devlink *devlink,
- {
- 	int i, err;
- 
--	ASSERT_DEVLINK_NOT_REGISTERED(devlink);
--
- 	mutex_lock(&devlink->lock);
- 	for (i = 0; i < policers_count; i++) {
- 		const struct devlink_trap_policer *policer = &policers[i];
-@@ -11303,8 +11307,6 @@ devlink_trap_policers_unregister(struct devlink *devlink,
- {
- 	int i;
- 
--	ASSERT_DEVLINK_NOT_REGISTERED(devlink);
--
- 	mutex_lock(&devlink->lock);
- 	for (i = policers_count - 1; i >= 0; i--)
- 		devlink_trap_policer_unregister(devlink, &policers[i]);
--- 
-2.31.1
+Deciding at some point in the future to forcefully block device MMIO
+access from userspace when the device stops running is clearly a user
+visible change and therefore subject to the don't-break-userspace
+clause.  It also seems to presume that the device relies on the
+vfio-core to block device access, whereas device implementations may
+not require such if they're able to snapshot device state.  That might
+also indicate that "freeze" is only an implementation specific
+requirement.  Thanks,
+
+Alex
 
