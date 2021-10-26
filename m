@@ -2,140 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B7D943BB78
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 22:19:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7008F43BB90
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 22:30:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236113AbhJZUVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 16:21:47 -0400
-Received: from www62.your-server.de ([213.133.104.62]:55858 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231211AbhJZUVr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 16:21:47 -0400
-Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mfSum-0000pV-Sw; Tue, 26 Oct 2021 22:19:20 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        andrii.nakryiko@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: pull-request: bpf 2021-10-26
-Date:   Tue, 26 Oct 2021 22:19:20 +0200
-Message-Id: <20211026201920.11296-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S239188AbhJZUcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 16:32:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54584 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231545AbhJZUcv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 16:32:51 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB59C061570
+        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 13:30:27 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id s1so1455282edd.3
+        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 13:30:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QxDBfmjXP4YqwxsO+6iS7FY8iQGJLFVCJVXK+8EOsBg=;
+        b=RKFwvRvwD0sHEgLp5/JP2Pn/bmgSvqpkFt0UOxL7CSXOeehWPX/6PBaZ5st+hyD8CQ
+         YuJX4wga4jqjTh0ckLFk1zznRzP3zcIk55trAAWCIHVo5vrzNnXjsubCvSNd1scpo3jJ
+         klim90/2yWHehcKvdCTKyVNSbxyc2DzCmDWE8aPlX0YTZXO/vHDWHblkU/0gkKJgiRqf
+         lZ/Jip+7SB+ny/F4NL57MfbAl+lZvKtKnb66J5bpR+me02K2gS9G0/+J49YxAS0Ftmsj
+         CLlkxwKPV/PA5Qn2JIkrGvLI6WUYhIHWlLLzTSvUmcoawnSBy2mOpKIlNAaboGSHdrk+
+         YFxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QxDBfmjXP4YqwxsO+6iS7FY8iQGJLFVCJVXK+8EOsBg=;
+        b=1Lcj+sWCLmUj/hcS9jvSmMRPwp/pN8nZA5FTBf/6Z3r62LchA6y0Ec+4ou+ckmGCIE
+         fyviYI4jQWLWRG9FSSAcwB3k3dDo899Ln/7p/qaUBZQ/omGsn8P+A1iMVTmj3XPOGG7O
+         Kj+gd/tiK/6XeVtzrNTfaiPvw82WuCC8sWgegrkVqRm0nGOWccEzHFKBHhObY6lXl03r
+         a5qpWKEBPpIAp45aCKkhQpjmYh6RR7g4Gq5Z/VkuKJVah7FAbQnjzt/n5oDKgKEvOnuM
+         29gW4l/evdQKxUyJ2hRtVQazk04E6umRBvW9QWlLTEFoCzbBprzxDlzMlEAxMKF45/6H
+         xR6A==
+X-Gm-Message-State: AOAM532BKIxUnUfaANc3TOngwiGjFlDmnF/BYh01Uzdu7b1PQRIV3YeS
+        94psswFbuCl5E+6TuKr4XzVucdfRMd+Mkmq/Fv+m
+X-Google-Smtp-Source: ABdhPJyprHJsbis7NLS+TOyUm7gG4e8ssfPeoqPQw6DPFNzjiQmJ8qsFB3iOWeedSscDOBDWRoDKcJtiBcZ6xI93uR0=
+X-Received: by 2002:a05:6402:5112:: with SMTP id m18mr38150360edd.101.1635280225664;
+ Tue, 26 Oct 2021 13:30:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26334/Tue Oct 26 10:22:12 2021)
+References: <cover.1634884487.git.lucien.xin@gmail.com> <53026dedd66beeaf18a4570437c4e6c9e760bb90.1634884487.git.lucien.xin@gmail.com>
+ <CAFqZXNs89yGcoXumNwavLRQpYutfnLY-SM2qrHbvpjJxVtiniw@mail.gmail.com>
+ <CADvbK_djVKxjfRaLS0EZRY2mkzWXTMnwvbe-b7cK-T3BR8jzKQ@mail.gmail.com>
+ <CAFqZXNsnEwPcEXB-4O983bxGj5BfZVMB6sor7nZVkT-=uiZ2mw@mail.gmail.com>
+ <CADvbK_eE9VhB2cWzHSk_LNm_VemEt9vm=FMMVYzo5eVH=zEhKw@mail.gmail.com>
+ <CAHC9VhTfVmcLOG3NfgQ3Tjpe769XzPntG24fejzSCvnZt_XZ9A@mail.gmail.com> <CADvbK_dwLCOvS8YzFXcXoDF6F69_sc7voPbxn5Ov4ygBR_5FXw@mail.gmail.com>
+In-Reply-To: <CADvbK_dwLCOvS8YzFXcXoDF6F69_sc7voPbxn5Ov4ygBR_5FXw@mail.gmail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Tue, 26 Oct 2021 16:30:14 -0400
+Message-ID: <CAHC9VhREfztHQ8mqA_WM6NF=jKf0fTFTSRp_D5XhOVxckckwzw@mail.gmail.com>
+Subject: Re: [PATCH net 4/4] security: implement sctp_assoc_established hook
+ in selinux
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     Ondrej Mosnacek <omosnace@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        James Morris <jmorris@namei.org>,
+        Linux Security Module list 
+        <linux-security-module@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Richard Haines <richard_c_haines@btinternet.com>,
+        SElinux list <selinux@vger.kernel.org>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub,
+On Tue, Oct 26, 2021 at 12:47 AM Xin Long <lucien.xin@gmail.com> wrote:
+> On Tue, Oct 26, 2021 at 5:51 AM Paul Moore <paul@paul-moore.com> wrote:
+> > On Mon, Oct 25, 2021 at 10:11 AM Xin Long <lucien.xin@gmail.com> wrote:
+> > > On Mon, Oct 25, 2021 at 8:08 PM Ondrej Mosnacek <omosnace@redhat.com> wrote:
+> > >> On Mon, Oct 25, 2021 at 12:51 PM Xin Long <lucien.xin@gmail.com> wrote:
+> > >> > On Mon, Oct 25, 2021 at 4:17 PM Ondrej Mosnacek <omosnace@redhat.com> wrote:
+> > >> > > On Fri, Oct 22, 2021 at 8:36 AM Xin Long <lucien.xin@gmail.com> wrote:
+> > >> > > > Different from selinux_inet_conn_established(), it also gives the
+> > >> > > > secid to asoc->peer_secid in selinux_sctp_assoc_established(),
+> > >> > > > as one UDP-type socket may have more than one asocs.
+> > >> > > >
+> > >> > > > Note that peer_secid in asoc will save the peer secid for this
+> > >> > > > asoc connection, and peer_sid in sksec will just keep the peer
+> > >> > > > secid for the latest connection. So the right use should be do
+> > >> > > > peeloff for UDP-type socket if there will be multiple asocs in
+> > >> > > > one socket, so that the peeloff socket has the right label for
+> > >> > > > its asoc.
+> > >> > >
+> > >> > > Hm... this sounds like something we should also try to fix (if
+> > >> > > possible). In access control we can't trust userspace to do the right
+> > >> > > thing - receiving from multiple peers on one SOCK_SEQPACKET socket
+> > >> > > shouldn't cause checking against the wrong peer_sid. But that can be
+> > >> > > addressed separately. (And maybe it's even already accounted for
+> > >> > > somehow - I didn't yet look at the code closely.)
+> >
+> > There are a couple of things we need to worry about here: the
+> > per-packet access controls (e.g. can this packet be received by this
+> > socket?) and the userspace peer label queries (e.g. SO_GETPEERSEC and
+> > IP_CMSG_PASSSEC).
+> >
+> > The per-packet access controls work by checking the individual
+> > packet's security label against the corresponding sock label on the
+> > system (sk->sk_security->sid).  Because of this it is important that
+> > the sock's label is correct.  For unconnected sockets this is fairly
+> > straightforward as it follows the usual inherit-from-parent[1]
+> > behavior we see in other areas of SELinux.  For connected stream
+> > sockets this can be a bit more complicated.  However, since we are
+> > only discussing the client side things aren't too bad with the
+> > behavior essentially the same, inherit-from-parent, with the only
+> > interesting piece worth noting being the sksec->peer_sid
+> > (sk->sk_security->peer_sid) that we record from the packet passed to
+> > the LSM/SELinux hook (using selinux_skb_peerlbl_sid()).  The
+> > sksec->peer_sid is recorded primarily so that the kernel can correctly
+> > respond to SO_GETPEERSEC requests from userspace; it shouldn't be used
+> > in any access control decisions.
+>
+> Hi, Paul
+>
+> Understand now, the issue reported seems caused by when
+> doing peel-off the peel-off socket gets the uninitialised sid
+> from 'ep' on the client, though it should be "asoc".
 
-The following pull-request contains BPF updates for your *net* tree.
+Hi Xin Long,
 
-We've added 12 non-merge commits during the last 7 day(s) which contain
-a total of 23 files changed, 118 insertions(+), 98 deletions(-).
+Yes, that is my understanding.  I got the impression from the thread
+that there was some confusion about the different labels and what they
+were used for in SELinux, I was trying to provide some background in
+the text above.  If you are already familiar with how things should
+work you can disregard it :)
 
-The main changes are:
+> > In the case of SCTP, I would expect things to behave similarly: the
+> > sksec->peer_sid should match the packet label of the traffic which
+> > acknowledged/accepted the new connection, e.g. the other end of the
+> > connected socket.  You will have to forgive me some of the details,
+> > it's been a while since I last looked at the SCTP bits, but I would
+> > expect that if a client created a new connection and/or spun-off a new
+> > socket the new socket's sksec->peer_sid would have the same property,
+> > it would represent the security label of the other end of the
+> > connection/association.
+>
+> In SCTP, a socket doesn't represent a peer connection, it's more an
+> object binding some addresses and receiving incoming connecting
+> request, then creates 'asoc' to represent the connection, so asoc->
+> peer_secid represents the security label of the other end of the
+> connection/association.
 
-1) Fix potential race window in BPF tail call compatibility check, from Toke Høiland-Jørgensen.
+As mentioned previously the asoc->peer_secid *should* be the security
+label of the remote end, so I think we are okay here.  My concern
+remains the asoc->secid label as I don't believe it is being set to
+the correct value (more on that below).
 
-2) Fix memory leak in cgroup fs due to missing cgroup_bpf_offline(), from Quanyang Wang.
+> After doing peel-off, it makes one asoc 'bind' to one new socket,
+> and this socket is used for userspace to control this asoc (conection),
+> so naturally we set sksec->peer_sid to asoc->secid for access control
+> in socket.
 
-3) Fix file descriptor reference counting in generic_map_update_batch(), from Xu Kuohai.
+The sksec->peer_sid represents the security label of the remote end so
+it should be set to the asoc->peer_secid and *not* the asoc->secid
+value.  Yes, they are presently the same value in your patches, but I
+believe that is a mistake; I believe the asoc->secid value should be
+set to that of the parent (see the prior inherit-from-parent
+discussion) which in this case would likely be either the parent
+association or the client process, I'm not entirely clear on which is
+correct in the SCTP case.  The initial SCTP client association would
+need to take it's label from the parent process so perhaps that is the
+right answer for all SCTP client associations[2].
 
-4) Fix bpf_jit_limit knob to the max supported limit by the arch's JIT, from Lorenz Bauer.
+[1] I would expect server side associations to follow the more
+complicated selinux_conn_sid() labeling, just as we do for TCP/stream
+connections today.
 
-5) Fix BPF sockmap ->poll callbacks for UDP and AF_UNIX sockets, from Cong Wang and Yucong Sun.
+[2] I'm guessing the client associations might also want to follow the
+setsockcreatecon(3) behavior, see selinux_sockcreate_sid() for more
+info.
 
-6) Fix BPF sockmap concurrency issue in TCP on non-blocking sendmsg calls, from Liu Jian.
-
-7) Fix build failure of INODE_STORAGE and TASK_STORAGE maps on !CONFIG_NET, from Tejun Heo.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Björn Töpel, John Fastabend, kernel test robot, Lorenzo Bianconi, Luke 
-Nelson, Martin KaFai Lau, Roman Gushchin, Yucong Sun
-
-----------------------------------------------------------------
-
-The following changes since commit 4225fea1cb28370086e17e82c0f69bec2779dca0:
-
-  ptp: Fix possible memory leak in ptp_clock_register() (2021-10-20 14:44:33 +0100)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to 54713c85f536048e685258f880bf298a74c3620d:
-
-  bpf: Fix potential race in tail call compatibility check (2021-10-26 12:37:28 -0700)
-
-----------------------------------------------------------------
-Alexei Starovoitov (2):
-      Merge branch 'Fix up bpf_jit_limit some more'
-      Merge branch 'sock_map: fix ->poll() and update selftests'
-
-Cong Wang (3):
-      net: Rename ->stream_memory_read to ->sock_is_readable
-      skmsg: Extract and reuse sk_msg_is_readable()
-      net: Implement ->sock_is_readable() for UDP and AF_UNIX
-
-Liu Jian (1):
-      tcp_bpf: Fix one concurrency problem in the tcp_bpf_send_verdict function
-
-Lorenz Bauer (3):
-      bpf: Define bpf_jit_alloc_exec_limit for riscv JIT
-      bpf: Define bpf_jit_alloc_exec_limit for arm64 JIT
-      bpf: Prevent increasing bpf_jit_limit above max
-
-Quanyang Wang (1):
-      cgroup: Fix memory leak caused by missing cgroup_bpf_offline
-
-Tejun Heo (1):
-      bpf: Move BPF_MAP_TYPE for INODE_STORAGE and TASK_STORAGE outside of CONFIG_NET
-
-Toke Høiland-Jørgensen (1):
-      bpf: Fix potential race in tail call compatibility check
-
-Xu Kuohai (1):
-      bpf: Fix error usage of map_fd and fdget() in generic_map_update_batch()
-
-Yucong Sun (1):
-      selftests/bpf: Use recv_timeout() instead of retries
-
- arch/arm64/net/bpf_jit_comp.c                      |  5 ++
- arch/riscv/net/bpf_jit_core.c                      |  5 ++
- include/linux/bpf.h                                |  7 +-
- include/linux/bpf_types.h                          |  8 +--
- include/linux/filter.h                             |  1 +
- include/linux/skmsg.h                              |  1 +
- include/net/sock.h                                 |  8 ++-
- include/net/tls.h                                  |  2 +-
- kernel/bpf/arraymap.c                              |  1 +
- kernel/bpf/core.c                                  | 24 ++++---
- kernel/bpf/syscall.c                               | 11 ++--
- kernel/cgroup/cgroup.c                             |  4 +-
- net/core/skmsg.c                                   | 14 ++++
- net/core/sysctl_net_core.c                         |  2 +-
- net/ipv4/tcp.c                                     |  5 +-
- net/ipv4/tcp_bpf.c                                 | 27 ++++----
- net/ipv4/udp.c                                     |  3 +
- net/ipv4/udp_bpf.c                                 |  1 +
- net/tls/tls_main.c                                 |  4 +-
- net/tls/tls_sw.c                                   |  2 +-
- net/unix/af_unix.c                                 |  4 ++
- net/unix/unix_bpf.c                                |  2 +
- .../selftests/bpf/prog_tests/sockmap_listen.c      | 75 ++++++----------------
- 23 files changed, 118 insertions(+), 98 deletions(-)
+-- 
+paul moore
+www.paul-moore.com
