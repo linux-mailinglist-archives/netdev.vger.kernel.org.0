@@ -2,95 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB3DA43AC67
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 08:47:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1769943AC6F
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 08:51:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234077AbhJZGuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 02:50:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34930 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234146AbhJZGuG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 02:50:06 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B46C061767
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 23:47:42 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id t7so13179672pgl.9
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 23:47:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:from:to:cc:subject:date:in-reply-to:references
-         :content-transfer-encoding:mime-version;
-        bh=N7foNZMWCuMt/RHjVPWBs+8YsDXAMxeDDYI8SswUvrE=;
-        b=JB4Dk2d58N0NhD56t6G1EKifcd3Cnj05F5jI25jEvPXzc8IgAwYyqKwboKIVzaB4sn
-         6uuKYfH5MDBSgPMGfl52MuPJvuueyiXWvUMEZGxsqkltUzmhlMSo1ovHquCC8tHu2l8I
-         /Oq0c4jCUvJ3CzuSY0u9eOFDO+A5Im+rLBcfQiV1UdKf54DFkk+8RINkE+C6cwResalK
-         AY3LbdHNVlWSJk+Gbz2TCH7/pp35R7dhymnXUqpSL9SJGl3ykEnj9b5ma89VovWRMNxT
-         0OtbFR5KYypQZLDc/oRPTXMx0l1EgHdkXUfPFHsYafnEqkma+NskGjrPegn9PXZLrwwK
-         kLvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:from:to:cc:subject:date:in-reply-to
-         :references:content-transfer-encoding:mime-version;
-        bh=N7foNZMWCuMt/RHjVPWBs+8YsDXAMxeDDYI8SswUvrE=;
-        b=x96qQFCMGgODkDCXuTrxsfyuJCZ2vcN6f3dmKmsUqJuYnNqXmnmGIEXJ6WOhgwCTlw
-         Mv8W39zfNCnMplqa1oOG0Et3DCILs8msMCxd2dIkFU+8E4dRs7Kmkjz1Wn2Xd+ATm97J
-         wonhLVOThf61sFuh5ey4asXwjyb74Bi94eCFqzQpP9BH4gMTl8EPChziWZ99BYPpOh21
-         fkFdl5zuDvMx1O10lQqwsiqjjNugVyPq0NU80KH8enuVkAUj37Q+IVeht4tPmhZ9JwUy
-         6CFV+At2FfCYHCqeJwHVPOxOOI/uOBVw06zCC9RidUJRCmXpLsQd25PPRDoG1kgMItBf
-         x45g==
-X-Gm-Message-State: AOAM530l5WHxXGEymzhq107DeK2PgOzBSgtmwoV1PDh+tUCPvgfOdhW/
-        rIODpIdnbCbDmXuNkJSSfMcBBion17Xx
-X-Google-Smtp-Source: ABdhPJytqzrg4Qq8ugiNz+0HGbknnb3BQqcgXD7t9I7zpPpGh0WFViM6EiZyTsk+8tefLXPZL1T/Bw==
-X-Received: by 2002:aa7:8209:0:b0:47b:df8c:7ec5 with SMTP id k9-20020aa78209000000b0047bdf8c7ec5mr18341146pfi.7.1635230862183;
-        Mon, 25 Oct 2021 23:47:42 -0700 (PDT)
-Received: from localhost ([114.201.226.241])
-        by smtp.gmail.com with ESMTPSA id h13sm1281185pfc.140.2021.10.25.23.47.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Oct 2021 23:47:41 -0700 (PDT)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Message-Id: <1635230304726.3600358701.2992435442@gmail.com>
-From:   Janghyub Seo <jhyub06@gmail.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>, nic_swsd@realtek.com
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH] r8169: Add device 10ec:8162 to driver r8169
-Date:   Tue, 26 Oct 2021 06:47:26 +0000
-In-Reply-To: <ab517ec9-4930-474f-eb7e-34548afd5aaa@gmail.com>
-References: <ab517ec9-4930-474f-eb7e-34548afd5aaa@gmail.com>
-Content-Transfer-Encoding: 7bit
+        id S234254AbhJZGxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 02:53:47 -0400
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:48288
+        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232362AbhJZGxq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 02:53:46 -0400
+Received: from HP-EliteBook-840-G7.. (1-171-100-18.dynamic-ip.hinet.net [1.171.100.18])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id CA4063F194;
+        Tue, 26 Oct 2021 06:51:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1635231081;
+        bh=vGic+H/NifUc+D6vVvdBrQarGqiIlpJuvbTZC/BzH2Q=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=SdQgsmA7Zy5Sd5A13HUOVfKbW5XmlSj0f1RWHE6XnwFbmpCoTe18+L/J98ThiU371
+         qnfOBWPKoi/5QSnCREi1/2nZ8rfCxW5ExIGeiX1TT/b+bXj/TCMjyY46eU/gRmbeED
+         5ZIRXRH6mNTU9UJmRi8JpgPro7b9unHRbNIPsWO5hnqdYnJyjZ8lXJiD87uTwet75R
+         FXVmCuV1AUYcNScGk6L8nEhzezsLPp6NLhwFdiwseosBapzXj0mgE9kv1e8lZw25VE
+         GTM0yFAvBRwtP3+5bZtjycQKHRP4c0Q5h7SJCabFA6BodGyjVNdINT9lkZjFo4iMmY
+         gj7CvAJDefOfw==
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com
+Cc:     sasha.neftin@intel.com, acelan.kao@canonical.com,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dima Ruinskiy <dima.ruinskiy@intel.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] e1000e: Add a delay to let ME unconfigure s0ix when DPG_EXIT_DONE is already flagged
+Date:   Tue, 26 Oct 2021 14:51:12 +0800
+Message-Id: <20211026065112.1366205-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On some ADL platforms, DPG_EXIT_DONE is always flagged so e1000e resume
+polling logic doesn't wait until ME really unconfigures s0ix.
 
+So check DPG_EXIT_DONE before issuing EXIT_DPG, and if it's already
+flagged, wait for 1 second to let ME unconfigure s0ix.
 
-On Tuesday 26 October 2021 05:27:55 AM (+09:00), Heiner Kallweit wrote:
+Fixes: 3e55d231716e ("e1000e: Add handshake with the CSME to support S0ix")
+Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=214821
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+---
+v2:
+ Add missing "Fixes:" tag
 
- > On 25.10.2021 16:55, Janghyub Seo wrote:
- > >
- > > This patch makes the driver r8169 pick up device Realtek Semiconductor 
-Co.
- > > , Ltd. Device [10ec:8162].
- > >
- >
- > Interesting that still new PCI ID's are assigned. Can you post the 
-output
- > of dmesg | grep r8169 ? I'd be interested to know which chip version 
-this is.
-Yes, this is my output:
-[    9.367868] libphy: r8169: probed
-[    9.368507] r8169 0000:03:00.0 eth0: RTL8125B, 04:42:1a:85:c8:87, XID 
-641, IRQ 71
-[    9.368515] r8169 0000:03:00.0 eth0: jumbo features [frames: 9194 bytes, 
-tx checksumming: ko]
-[    9.802815] r8169 0000:03:00.0 enp3s0: renamed from eth0
-[    9.867245] RTL8226B_RTL8221B 2.5Gbps PHY r8169-0-300:00: attached PHY 
-driver (mii_bus:phy_addr=r8169-0-300:00, irq=MAC)
-[   10.060719] r8169 0000:03:00.0 enp3s0: Link is Down
-[   12.747165] r8169 0000:03:00.0 enp3s0: Link is Up - 1Gbps/Full - flow 
-control rx
+ drivers/net/ethernet/intel/e1000e/netdev.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
- > What kind of system is this?
-
-It's a laptop computer, specifically `ASUS ROG Zephyrus G15 GA503QE`.
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index 44e2dc8328a22..cd81ba00a6bc9 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -6493,14 +6493,21 @@ static void e1000e_s0ix_exit_flow(struct e1000_adapter *adapter)
+ 	u32 mac_data;
+ 	u16 phy_data;
+ 	u32 i = 0;
++	bool dpg_exit_done;
+ 
+ 	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID) {
++		dpg_exit_done = er32(EXFWSM) & E1000_EXFWSM_DPG_EXIT_DONE;
+ 		/* Request ME unconfigure the device from S0ix */
+ 		mac_data = er32(H2ME);
+ 		mac_data &= ~E1000_H2ME_START_DPG;
+ 		mac_data |= E1000_H2ME_EXIT_DPG;
+ 		ew32(H2ME, mac_data);
+ 
++		if (dpg_exit_done) {
++			e_warn("DPG_EXIT_DONE is already flagged. This is a firmware bug\n");
++			msleep(1000);
++		}
++
+ 		/* Poll up to 2.5 seconds for ME to unconfigure DPG.
+ 		 * If this takes more than 1 second, show a warning indicating a
+ 		 * firmware bug
+-- 
+2.32.0
 
