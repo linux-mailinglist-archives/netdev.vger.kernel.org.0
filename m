@@ -2,56 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C7AB43AA3E
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 04:22:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1A4843AA44
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 04:23:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233975AbhJZCYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 22:24:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33264 "EHLO
+        id S234021AbhJZCZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 22:25:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233824AbhJZCYn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 22:24:43 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C638C061745;
-        Mon, 25 Oct 2021 19:22:20 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id s3so15342178ild.0;
-        Mon, 25 Oct 2021 19:22:20 -0700 (PDT)
+        with ESMTP id S233802AbhJZCZz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 22:25:55 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9F0C061745;
+        Mon, 25 Oct 2021 19:23:31 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id o184so18205870iof.6;
+        Mon, 25 Oct 2021 19:23:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=aYNLxVJxhJtkV7LDbxh0/fDHQmD9y+lnwZgdD2VF1nY=;
-        b=XgapHKCXLmK3d4ipnGkwLkAGLSdvG7pnijM97IFpuTwDyGAfqY59hcKHAkFeWeODpR
-         Jjw6Crqe3bj2KeTn18MQNqhF6xyIO9m5VCAZSOvjPyxkaMHgxDDOrmQk/awyWCYQDRSk
-         6bymVQKy2ViFsapdJMYcsCQJtEi8NA++UKtPQznjRMqBWX7HwEOEhQgpCIQYIW4SZyH6
-         2igGPL3JgSaKMp6J2XuE+q8hBa0Bb5FDYHh3+eJ/bVlPWF67rMGCtmNjs684L/5vq1J0
-         gMM5AX63+DqOco6YtYfXmMbgeSeiXxzR2KzEe/Lxfp/IWkwi73Le44LxB0368IuSuxbd
-         0K2Q==
+        bh=SJJNCBGzUmtsuEprx1i5HjE5RgD2pCrRE+ugyLzOEzM=;
+        b=WTtEtNem1M+VdHMG4o22y5QD2FKJ3obNc6U2+A0rrMtL9MD2s38WsezagZpp6oAGpO
+         /b8zFtMpA/933tK1lk4kBsOiTmex+FwlyI7quRSoBfiCMZxAXeTVrC+1UBBVwjxFkDRH
+         2EXU6vbJEX3kEK1TzXbQsL8v8+OLxVvxSQ9J6NjDYXHC3kfXZ94sYk0eFBj0uYzBvVn7
+         8MJbeiuDRxblIlZWd4Kqx1ZgeqOqNGCu4ly68IxmQypZp8j0z+foo1i8rEqxCKebDTVe
+         7X33rwCd6TvP5E1Nf/jgGRz4IpMCReFaoZSf3ueCu0jbTuF2iy8LzQW3GYjkCNiSlLOg
+         E85Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=aYNLxVJxhJtkV7LDbxh0/fDHQmD9y+lnwZgdD2VF1nY=;
-        b=uUXY6+F62X6W1NRZWWl2VX/Uwf8TnONomSGWW8HG0Zh4WG4xsCAhMMUDYEbRi/pilv
-         UqM/Es+ZiEan10kr41pOcODI7SoIllkjnvcWU12PJvQxC0enABivzNKCFVpjbH8mqVfS
-         MAJeG8DGjldM00fGLjhlI4t17B3Bo1wj573MtDGYcyXHuXiswD83ZO0gAGPNr5WskaI8
-         uCgP2BDEM2do+iz9+/UW6uSmfbv+snIlmqXXCFhikL4LvsERJHISIOJ2US4165j2b7cX
-         vMJyDbypn8CQGhEmqzsW+Rbh86h0DMYhOC9CIe88T7/4cYuycgjUOwtP78X9c8yApxKf
-         n5+A==
-X-Gm-Message-State: AOAM533FZpaURRqgDyhiDB3POUN+NQV3uJA00PRUg0NqZ6Sh0lMg42B9
-        4A4KwGlllcXktRrGNUjsSb0CJptf9d+cqDUQls8=
-X-Google-Smtp-Source: ABdhPJy1/BIRcRVvc7L15TX90MIkD80tatO8voO6JJbloERLJG1VNNMnwLh8i+0LovAq3pIM8zOUowRpitmZp3NbmsQ=
-X-Received: by 2002:a05:6e02:218f:: with SMTP id j15mr12615063ila.23.1635214939600;
- Mon, 25 Oct 2021 19:22:19 -0700 (PDT)
+        bh=SJJNCBGzUmtsuEprx1i5HjE5RgD2pCrRE+ugyLzOEzM=;
+        b=HHywz2Bd4oIaZmSD6wfS/E9rmf0cr2QKfUmyetrW9DtH4ocld9mF+Mn5wU9tVo8iXs
+         Ac+f9SMZ1Rwj9EUKCeRFdgKU+GXcykcw2T0dMVokUTCUF6uhD0COJ+2m4uEGtQJbQTz9
+         Yhfd2lItC45Z1Z5MMOjJhSNORvwkNbOxy3vNvRphiSWS1/QhVtIbLM+YWAYMrv7xb+dY
+         57D7sQtAQTsuBtJeD5GloezJv59318DB25qjJvMXKhTaGWHt8n+Ul/uPs/B5G+OmWYCc
+         YL2OA34WYuKTVd0X/DhQhWThA+p2eL7fbkJh/bdwknCq7oDpNmrO0IKjcWnKkrWcaRMz
+         aUSQ==
+X-Gm-Message-State: AOAM532xBX5fkEcZoFluqV/Qtk5kkQFmt34mWCv6hvrMaCR8RnkW1vde
+        Grb5Q7Uo3ahD2/wPYylCubxzQRyjv5wx/dTvtj8=
+X-Google-Smtp-Source: ABdhPJxLmBzK5FZBxQZCZz83VD8ExfjyjVQb3LuiMJweAWynal5QYJEn08HmmwVm7kPgVnRJmrxLHo7yOYshF0+BFzQ=
+X-Received: by 2002:a05:6602:2e05:: with SMTP id o5mr12896890iow.204.1635215010620;
+ Mon, 25 Oct 2021 19:23:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211025083315.4752-1-laoar.shao@gmail.com> <20211025083315.4752-11-laoar.shao@gmail.com>
- <202110251428.B891AD6ACB@keescook>
-In-Reply-To: <202110251428.B891AD6ACB@keescook>
+References: <20211025083315.4752-1-laoar.shao@gmail.com> <20211025083315.4752-12-laoar.shao@gmail.com>
+ <202110251429.DD44ED7B76@keescook>
+In-Reply-To: <202110251429.DD44ED7B76@keescook>
 From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Tue, 26 Oct 2021 10:21:43 +0800
-Message-ID: <CALOAHbCNq3sFpd44M0C1ZnKt_KJYOrERqr0m9foxSFHjR4Chyg@mail.gmail.com>
-Subject: Re: [PATCH v6 10/12] tools/testing/selftests/bpf: make it adopt to
- task comm size change
+Date:   Tue, 26 Oct 2021 10:22:54 +0800
+Message-ID: <CALOAHbDp9zW+mr+_ZrWLNWP4aeqa+z_JBhJjQe=c+WT0qXGbhQ@mail.gmail.com>
+Subject: Re: [PATCH v6 11/12] sched.h: extend task comm from 16 to 24
 To:     Kees Cook <keescook@chromium.org>
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Steven Rostedt <rostedt@goodmis.org>,
@@ -91,19 +90,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 26, 2021 at 5:29 AM Kees Cook <keescook@chromium.org> wrote:
+On Tue, Oct 26, 2021 at 5:30 AM Kees Cook <keescook@chromium.org> wrote:
 >
-> On Mon, Oct 25, 2021 at 08:33:13AM +0000, Yafang Shao wrote:
-> > The hard-coded 16 is used in various bpf progs. These progs get task
-> > comm either via bpf_get_current_comm() or prctl() or
-> > bpf_core_read_str(), all of which can work well even if the task comm size
-> > is changed.
+> On Mon, Oct 25, 2021 at 08:33:14AM +0000, Yafang Shao wrote:
+> > When I was implementing a new per-cpu kthread cfs_migration, I found the
+> > comm of it "cfs_migration/%u" is truncated due to the limitation of
+> > TASK_COMM_LEN. For example, the comm of the percpu thread on CPU10~19 are
+> > all with the same name "cfs_migration/1", which will confuse the user. This
+> > issue is not critical, because we can get the corresponding CPU from the
+> > task's Cpus_allowed. But for kthreads correspoinding to other hardware
+> > devices, it is not easy to get the detailed device info from task comm,
+> > for example,
 > >
-> > In these BPF programs, one thing to be improved is the
-> > sched:sched_switch tracepoint args. As the tracepoint args are derived
-> > from the kernel, we'd better make it same with the kernel. So the macro
-> > TASK_COMM_LEN is converted to type enum, then all the BPF programs can
-> > get it through BTF.
+> >     jbd2/nvme0n1p2-
+> >     xfs-reclaim/sdf
+> >
+> > We can also shorten the name to work around this problem, but I find
+> > there are so many truncated kthreads:
+> >
+> >     rcu_tasks_kthre
+> >     rcu_tasks_rude_
+> >     rcu_tasks_trace
+> >     poll_mpt3sas0_s
+> >     ext4-rsv-conver
+> >     xfs-reclaim/sd{a, b, c, ...}
+> >     xfs-blockgc/sd{a, b, c, ...}
+> >     xfs-inodegc/sd{a, b, c, ...}
+> >     audit_send_repl
+> >     ecryptfs-kthrea
+> >     vfio-irqfd-clea
+> >     jbd2/nvme0n1p2-
+> >     ...
+> >
+> > We should improve this problem fundamentally by extending comm size to
+> > 24 bytes. task_struct is growing rather regularly by 8 bytes.
+> >
+> > After this change, the truncated kthreads listed above will be
+> > displayed as:
+> >
+> >     rcu_tasks_kthread
+> >     rcu_tasks_rude_kthread
+> >     rcu_tasks_trace_kthread
+> >     poll_mpt3sas0_statu
+> >     ext4-rsv-conversion
+> >     xfs-reclaim/sdf1
+> >     xfs-blockgc/sdf1
+> >     xfs-inodegc/sdf1
+> >     audit_send_reply
+> >     ecryptfs-kthread
+> >     vfio-irqfd-cleanup
+> >     jbd2/nvme0n1p2-8
+> >
+> > As we have converted all the unsafe copy of task comm to the safe one,
+> > this change won't make any trouble to the kernel or the in-tree tools.
+> > The safe one and unsafe one of comm copy as follows,
+> >
+> >   Unsafe                 Safe
+> >   strlcpy                strscpy_pad
+> >   strncpy                strscpy_pad
+> >   bpf_probe_read_kernel  bpf_probe_read_kernel_str
+> >                          bpf_core_read_str
+> >                          bpf_get_current_comm
+> >                          perf_event__prepare_comm
+> >                          prctl(2)
+> >
+> > Regarding the possible risk it may take to the out-of-tree user tools, if
+> > the user tools get the task comm through kernel API like prctl(2),
+> > bpf_get_current_comm() and etc, the tools still work well after this
+> > change. While If the user tools get the task comm through direct string
+> > copy, it must make sure the copied string should be with a nul terminator.
 > >
 > > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
 > > Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
@@ -115,91 +170,30 @@ On Tue, Oct 26, 2021 at 5:29 AM Kees Cook <keescook@chromium.org> wrote:
 > > Cc: Kees Cook <keescook@chromium.org>
 > > Cc: Petr Mladek <pmladek@suse.com>
 > > ---
-> >  include/linux/sched.h                                   | 9 +++++++--
-> >  tools/testing/selftests/bpf/progs/test_stacktrace_map.c | 6 +++---
-> >  tools/testing/selftests/bpf/progs/test_tracepoint.c     | 6 +++---
-> >  3 files changed, 13 insertions(+), 8 deletions(-)
+> >  include/linux/sched.h | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
 > >
 > > diff --git a/include/linux/sched.h b/include/linux/sched.h
-> > index c1a927ddec64..124538db792c 100644
+> > index 124538db792c..490d12eabe44 100644
 > > --- a/include/linux/sched.h
 > > +++ b/include/linux/sched.h
-> > @@ -274,8 +274,13 @@ struct task_group;
-> >
-> >  #define get_current_state()  READ_ONCE(current->__state)
-> >
-> > -/* Task command name length: */
-> > -#define TASK_COMM_LEN                        16
-> > +/*
-> > + * Define the task command name length as enum, then it can be visible to
-> > + * BPF programs.
-> > + */
-> > +enum {
-> > +     TASK_COMM_LEN = 16,
-> > +};
+> > @@ -279,7 +279,7 @@ struct task_group;
+> >   * BPF programs.
+> >   */
+> >  enum {
+> > -     TASK_COMM_LEN = 16,
+> > +     TASK_COMM_LEN = 24,
+> >  };
+>
+> I suspect this should be kept in sync with the tools/ copy of sched.h
+> (i.e. we may need to keep the TASK_COMM_LEN_16 around in the kernel tree
+> too.)
+>
+
+Sure. I will change it.
+
 > >
 > >  extern void scheduler_tick(void);
-> >
-> > diff --git a/tools/testing/selftests/bpf/progs/test_stacktrace_map.c b/tools/testing/selftests/bpf/progs/test_stacktrace_map.c
-> > index 00ed48672620..e9b602a6dc1b 100644
-> > --- a/tools/testing/selftests/bpf/progs/test_stacktrace_map.c
-> > +++ b/tools/testing/selftests/bpf/progs/test_stacktrace_map.c
-> > @@ -1,7 +1,7 @@
-> >  // SPDX-License-Identifier: GPL-2.0
-> >  // Copyright (c) 2018 Facebook
-> >
-> > -#include <linux/bpf.h>
-> > +#include <vmlinux.h>
->
-> Why is this change needed here and below?
->
-
-If the BPF programs want to use the type defined in the kernel, for
-example the enum we used here, we must include the vmlinux.h generated
-by BTF.
-
-> >  #include <bpf/bpf_helpers.h>
-> >
-> >  #ifndef PERF_MAX_STACK_DEPTH
-> > @@ -41,11 +41,11 @@ struct {
-> >  /* taken from /sys/kernel/debug/tracing/events/sched/sched_switch/format */
-> >  struct sched_switch_args {
-> >       unsigned long long pad;
-> > -     char prev_comm[16];
-> > +     char prev_comm[TASK_COMM_LEN];
-> >       int prev_pid;
-> >       int prev_prio;
-> >       long long prev_state;
-> > -     char next_comm[16];
-> > +     char next_comm[TASK_COMM_LEN];
-> >       int next_pid;
-> >       int next_prio;
-> >  };
-> > diff --git a/tools/testing/selftests/bpf/progs/test_tracepoint.c b/tools/testing/selftests/bpf/progs/test_tracepoint.c
-> > index 4b825ee122cf..f21982681e28 100644
-> > --- a/tools/testing/selftests/bpf/progs/test_tracepoint.c
-> > +++ b/tools/testing/selftests/bpf/progs/test_tracepoint.c
-> > @@ -1,17 +1,17 @@
-> >  // SPDX-License-Identifier: GPL-2.0
-> >  // Copyright (c) 2017 Facebook
-> >
-> > -#include <linux/bpf.h>
-> > +#include <vmlinux.h>
-> >  #include <bpf/bpf_helpers.h>
-> >
-> >  /* taken from /sys/kernel/debug/tracing/events/sched/sched_switch/format */
-> >  struct sched_switch_args {
-> >       unsigned long long pad;
-> > -     char prev_comm[16];
-> > +     char prev_comm[TASK_COMM_LEN];
-> >       int prev_pid;
-> >       int prev_prio;
-> >       long long prev_state;
-> > -     char next_comm[16];
-> > +     char next_comm[TASK_COMM_LEN];
-> >       int next_pid;
-> >       int next_prio;
-> >  };
 > > --
 > > 2.17.1
 > >
