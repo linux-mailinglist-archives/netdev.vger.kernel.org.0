@@ -2,137 +2,467 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E213543B57F
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 17:25:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61B1043B599
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 17:29:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236651AbhJZP1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 11:27:53 -0400
-Received: from mail-bn7nam10on2059.outbound.protection.outlook.com ([40.107.92.59]:30785
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236579AbhJZP1w (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Oct 2021 11:27:52 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UHq9K4K9hiTUmG7n6Q5dJLDJ/T2JFJL82VOUTrtQ8bsI2R5+45gQYsoiuWiifv7+5TSLzC+8ZH8GdfGYkthB2ucpXdvmJ9YfjaE7unH8tRkay6jjHsQTkR05W0iLOdKSgRl0XtUZA7Ds+5rICrXCGPVpMedDFv6AS+YAEksQFhdt8rH5CK79OrDcQpnZXZWXn2jU6wRX67Ihjit0Y6MduLh7soXM8nZOiy5+JyKkw2Ey3JTt+HTMC5MBQFaiPZAdMImErBDo3lxZNr9xJWrDsq0ziDxycDfg5ARC3KFcNtpXp0chuqA1ryAixLjn80fJygnUZEYz5iENazfmiB4OQg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qL8RNolejkny0gTQ//dyU1eBrTqCX4ZIm51atYjBR68=;
- b=LvRxlXNFbolcNZiFdQbu1Se9jlcYy/PoOgEHwafdUBWLfSTLokKCQO9wWv8HxpfT/15XpBK6AfEoFPkdUjGg2ymkomP6r9NbUL47ThN1zMLwbzUOeKGlZ+iQ9bPHuHKtH5q1OWabiTTFZAKonnIKas4KArbGknrNnS1MA5m+I+19+o3P9R0+50Mr/f5viSPqFkycyHw56KV9swPsq4mumQ7TLQqfDbIT0k4P7EU9rlbJMeDYWfwa7jkWsGMPEOJstsmQ4i2SF6srSNzw+XXAU1mKaJNzCAkTqiEcCo/V/sn83gXCxRzRWORcKzCOu6gfwNVRvBnycYU9zfe0RfOSpg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qL8RNolejkny0gTQ//dyU1eBrTqCX4ZIm51atYjBR68=;
- b=NxpxNpBpPI8BssA2dTtTFGe+0TJeiNL5KsI+3mDr9unkjuBBnClT9nbgeD3dnpVJ+zVIaheyXBGNxr0GquqVdblfDbWr9osAIKBPNKerdDIFklxMVZ9WmfqertxpifLCi765mNVf6mOnZCxs8/Cg36c84PjfjMaQPVFNF6A/rfVBBDxbxkys5f9101bGgWc/mMfkAyf0Si1FhRSell/NP+46YStUUEn84aFkgo1tU/FJOQ7o59oaNbZ3s15YQ+g0FANS0I8xwvV+Ibvx8VyurD1LyIWLhhXbredf3Nl/B/Llk99kvkxVnM1RV67Bl+WxdaBVfjQKWqTojjgVoH+S+w==
-Authentication-Results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5285.namprd12.prod.outlook.com (2603:10b6:208:31f::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.14; Tue, 26 Oct
- 2021 15:25:27 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::e8af:232:915e:2f95%8]) with mapi id 15.20.4649.014; Tue, 26 Oct 2021
- 15:25:27 +0000
-Date:   Tue, 26 Oct 2021 12:25:24 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Cc:     Alex Williamson <alex.williamson@redhat.com>,
-        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
-        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
-        Cornelia Huck <cohuck@redhat.com>
-Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
- for mlx5 devices
-Message-ID: <20211026152524.GX2744544@nvidia.com>
-References: <20211019192328.GZ2744544@nvidia.com>
- <20211019145856.2fa7f7c8.alex.williamson@redhat.com>
- <20211019230431.GA2744544@nvidia.com>
- <5a496713-ae1d-11f2-1260-e4c1956e1eda@nvidia.com>
- <20211020105230.524e2149.alex.williamson@redhat.com>
- <YXbceaVo0q6hOesg@work-vm>
- <20211025115535.49978053.alex.williamson@redhat.com>
- <YXb7wejD1qckNrhC@work-vm>
- <20211026082920.1f302a45.alex.williamson@redhat.com>
- <YXgV6ehhsSlydiEl@work-vm>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YXgV6ehhsSlydiEl@work-vm>
-X-ClientProxiedBy: YT1PR01CA0047.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:2e::16) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+        id S233551AbhJZPcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 11:32:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43186 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230342AbhJZPcF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Oct 2021 11:32:05 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E087D60E0B;
+        Tue, 26 Oct 2021 15:29:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635262181;
+        bh=HkQyX8FvVTNl7PIv+hCQ05Kz051TdB6+LUtvxa6KN3A=;
+        h=From:To:Cc:Subject:Date:From;
+        b=YkW4cQ4cYktvPO4lX6HrOl7ncYkrUoPQ/WuKX8QfoizRpzU0vxY6hUQuKozVFv3Fc
+         i9TJpS1pEW1Sq0JzmEZzsog/iwvBHRmHbzaJklglXr01kMXDWS10nbIiZ32keZrVv1
+         WlR5e6RprokhycBPyg1n3O9lYQqOK/bLoOH5RLarUZ/djOnup2nsaAprLbLhe8KStX
+         cEJ5x8kSBO3/NnItbDTr3u96KwMTNTCpjcskp2yBGOPTuOWf/NYbHqyRx1zOPY/B/W
+         7quoVkfstTswLVMlgnZvPymoja/uCXdZB1oWAv/drLegK6o6pnEHe4AmwU10hTOxlZ
+         TAT4LM2jtFY2g==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     saeedm@nvidia.com, netdev@vger.kernel.org, leonro@nvidia.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next] net/mlx5: remove the recent devlink params
+Date:   Tue, 26 Oct 2021 08:29:39 -0700
+Message-Id: <20211026152939.3125950-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Received: from mlx.ziepe.ca (206.223.160.26) by YT1PR01CA0047.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:2e::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.22 via Frontend Transport; Tue, 26 Oct 2021 15:25:26 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1mfOKK-0027Vh-Nw; Tue, 26 Oct 2021 12:25:24 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c0959944-586b-4fe3-2880-08d99894d66d
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5285:
-X-Microsoft-Antispam-PRVS: <BL1PR12MB528592979080D5E67A184BB5C2849@BL1PR12MB5285.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xDKj8+yiLLGCxqEg73XzhLkeXpYAhaOBeaH4ZEB1+sFCAAT7j3ps+6YflR7AhfIy/F+HqIiaXzEImncK2mh29bD3fEEkJUjPseZFDjySbcX9qmcPtQmTOoHKof980WdGqNuST/TYx9TpdzWY147/r2/MjzKAO3oVZEV6SkLIuDfdRX/ZPtd2D2giqexqhFIxXu4oP4xQK8r3pGhRKrWqDehGSH0wfGU3S2LvJd2H3FjUg90VEEb9X/fdYQKbjHggzE4o4KAMhLoTXN7czfORyLvZLp+D1sEbWJ8AYP++xYnqLztXo/9iou+tBYrgn9EEnnoRFNQPq56iZljTXflRvzzStKW/tDSqJ+8nccQT3CygxcYDnBjJlhzyFGiVqwhCcinLitAawxw6Q127JpmVa28lbCIISFXSNOnAim+CSzyNmzXsBE1kZpoSLqV5wPGD2svNesuPcTif3BX+LiaQf6dyB7RLfeEWTvbEbYAt6mP+JngjfHP0uqFXyvPmvsA/zFPdltp/eJPSlpKCIW83a73/CXoFyL9Bl3U166mezkzM7RMm0f1JpXj2WAT66PuQPUNRmulAGC1yV53/x7Ia30+H1VuKn6aTzT0oxJ2YZB6ebVh4aZToYjtPLU0XwEiZgOkSmgsoRAAsXhT0dRN9Bw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(66946007)(66476007)(66556008)(316002)(6916009)(186003)(5660300002)(8676002)(54906003)(508600001)(9786002)(9746002)(38100700002)(4326008)(8936002)(33656002)(36756003)(2906002)(426003)(86362001)(4744005)(26005)(1076003)(2616005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0ifgDtwaOTUO1c9S4MSfLE0WhUnVpoOUekfihStgsFRmkrszKjQbrC2O89Ld?=
- =?us-ascii?Q?lEyu2xlaN9NoF0iMqlyOeMKWdmWJOFcaarZ9VrBvLjQIQHpg6xpv48TpiAcn?=
- =?us-ascii?Q?8Zw+/D2wTzMbfHaN+TLw8ZryP96ZxVt4o9rd9bFU/AQfLKx/9M8g6Hv4eieh?=
- =?us-ascii?Q?N76DG4RwjRiKZtYEJ5x/BnX/7s2JakhCOn1SUz+aq6ZIAw379cN57gDfu2Wx?=
- =?us-ascii?Q?q6W+GmRywfBZb7wKeGSudH7O1+NLapPfK3gulQsEcmuWp4P9QD0HEc7IpQ51?=
- =?us-ascii?Q?k9y7YIOmssKY0fW3y+YMTOEft+0iyyqLyPaIa3K8+ERESqf72XkMrKMM6o3D?=
- =?us-ascii?Q?ZI0Uy5Ux910eaIkQ/LDZH29sA+6X0kp12Oo9nU09KTZOc9dVZ363o9bGI7vA?=
- =?us-ascii?Q?FkBzTHWNPvoAtBxpa1J/NBr/+Z0CaVklCoJFAPPPDQ9hpITTZkN5uhx19ZBd?=
- =?us-ascii?Q?rkQLWwtHDFxVdCIqZYnt2qrLfNHv8NaYCeXEMBjA4RAoMesTTOAFp1LpyBxt?=
- =?us-ascii?Q?U9MmkxWY2ys6HX2ijcDaVt+nYT343tRtHkP3sgi/TqJ5ShYf8XXw5mDSCAvV?=
- =?us-ascii?Q?B5gXbb34IuZofKs32sihsi5zwXYdP2Q/OLRdH/7iyrEPsfZ+Ehtlrw86kVLf?=
- =?us-ascii?Q?R2Lx4fA5o9SeAvIU4v0lQO+mx62SEk0BBdx+tVeZ58F327e0DJGsZBPxbOHL?=
- =?us-ascii?Q?cAtqUkMNY5rGmxDsuPjNOo0mPg0TRn+qjrml36ulWI0Avxo1OLMVVEOqNwSI?=
- =?us-ascii?Q?y3ILqH8o0Eg6Hy306rb2R18Jdqt1bMgnAstvr3jOoZ6waznLDwU8PB4s46kj?=
- =?us-ascii?Q?xBob7ZGf5x0aDc3CAKC54b1ePVuLQFASy+PPv0JLvtz1e1f+4xn2WT2+9ujN?=
- =?us-ascii?Q?CmBfHFJyJ9HUaqcL/8obsQeInyo8iDATBiDnuH9itkQ+iSJO5SvmSfJYzEkk?=
- =?us-ascii?Q?b5YNbb4pTlalu7aa/KLu8LcuBdHAjDdIxAemzSg9t+zo8F8mUA7ip4c5v+wH?=
- =?us-ascii?Q?SI26gr5QrWt/AUp5EhPZgARWNmgqPSPZrZBDquJ9pEB0ffx+5A44j22VPZCJ?=
- =?us-ascii?Q?jAzQ8DYjGzldyYwTQB3/pa3Q11/rTbeQuToeS/6SbEOBKz/g5Eu6IvJzxOCd?=
- =?us-ascii?Q?wkv8AO+lDCaoV+XXc/DxRSrO0AYxa4Wx0rmmCt2EKsJIdA4U2IItRbTHv6Fn?=
- =?us-ascii?Q?LStsHHiIQgXiEko6ODgzUzyFJxdcRvAbNRMMN0ORdPijRxg7lAW1M8MrTXs8?=
- =?us-ascii?Q?IWwA6oRccytYRCuppous3RG/AB6dERzJ1/B6yQ8Ksl9h1WVGQrLtb0FjeboK?=
- =?us-ascii?Q?rLkEvEQX3qHA58YjCqNvjVs7sitLMp8o7qJG0ovAioB1p9kDEp5xSV80J784?=
- =?us-ascii?Q?6v28kw1b0Ah7kjNUS5+qC3x0mF5ORuWps86aunnHyLSKEy0YahRZZlOKKEpN?=
- =?us-ascii?Q?VzKsBgkTXDbM6npwNQFwFpZbxQMOmN2hofu8hKGg+E0R7hHpNMR0JZM/yxy4?=
- =?us-ascii?Q?gMr9NH3BJjorXJki38TqJYDfgvliUcfiE2pkNXyMdwgTKobwrUF1/OHjX3DL?=
- =?us-ascii?Q?Fhf6xyUbCI5ppHyBsC0=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c0959944-586b-4fe3-2880-08d99894d66d
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2021 15:25:27.2373
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0JAgP7xj1rCv++VKCkgSYeceAgq50ThiJx6yykCCyq0BI2B84ja8ewAIN2DTjBQj
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5285
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 26, 2021 at 03:51:21PM +0100, Dr. David Alan Gilbert wrote:
+revert commit 46ae40b94d88 ("net/mlx5: Let user configure io_eq_size param")
+revert commit a6cb08daa3b4 ("net/mlx5: Let user configure event_eq_size param")
+revert commit 554604061979 ("net/mlx5: Let user configure max_macs param")
 
-> > It's more than asking nicely, we define the device_state bits as
-> > synchronous, the device needs to enter the state before returning from
-> > the write operation or return an errno.
-> 
-> I don't see how it can be synchronous in practice; can it really wait to
-> complete if it has to take many cycles to finish off an inflight DMA
-> before it transitions?
+The EQE parameters are applicable to more drivers, they should
+be configured via standard API, probably ethtool. Example of
+another driver needing something similar:
 
-The fencing of outbound DMAs in the device must be synchronous, how
-could anything work if it isn't?
+https://lore.kernel.org/all/1633454136-14679-3-git-send-email-sbhatta@marvell.com/
 
-Jason
+The last param for "max_macs" is probably fine but the documentation
+is severely lacking. The meaning and implications for changing the
+param need to be stated.
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+LocalWords:  EQE param
+---
+ Documentation/networking/devlink/mlx5.rst     | 20 -----
+ .../net/ethernet/mellanox/mlx5/core/Makefile  |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/devlink.c | 69 ----------------
+ .../net/ethernet/mellanox/mlx5/core/devlink.h | 12 ---
+ .../ethernet/mellanox/mlx5/core/devlink_res.c | 80 -------------------
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c  |  5 +-
+ .../net/ethernet/mellanox/mlx5/core/main.c    | 21 -----
+ include/linux/mlx5/driver.h                   |  4 +
+ include/linux/mlx5/eq.h                       |  1 +
+ include/linux/mlx5/mlx5_ifc.h                 |  2 +-
+ 10 files changed, 9 insertions(+), 207 deletions(-)
+ delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/devlink_res.c
+
+diff --git a/Documentation/networking/devlink/mlx5.rst b/Documentation/networking/devlink/mlx5.rst
+index d467e770906e..4e4b97f7971a 100644
+--- a/Documentation/networking/devlink/mlx5.rst
++++ b/Documentation/networking/devlink/mlx5.rst
+@@ -14,12 +14,8 @@ Parameters
+ 
+    * - Name
+      - Mode
+-     - Validation
+    * - ``enable_roce``
+      - driverinit
+-   * - ``max_macs``
+-     - driverinit
+-     - The range is between 1 and 2^31. Only power of 2 values are supported.
+ 
+ The ``mlx5`` driver also implements the following driver-specific
+ parameters.
+@@ -50,22 +46,6 @@ parameters.
+ 
+ The ``mlx5`` driver supports reloading via ``DEVLINK_CMD_RELOAD``
+ 
+-Resources
+-=========
+-
+-.. list-table:: Driver-specific resources implemented
+-   :widths: 5 5 5 85
+-
+-   * - Name
+-     - Description
+-   * - ``comp_eq_size``
+-     - Control the size of I/O completion EQs.
+-       * The default value is 1024, and the range is between 64 and 4096.
+-   * - ``event_eq_size``
+-     - Control the size of the asynchronous control events EQ.
+-       * The default value is 4096, and the range is between 64 and 4096.
+-
+-
+ Info versions
+ =============
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
+index 79c15ee62cde..bdb271b604d9 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
++++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
+@@ -16,7 +16,7 @@ mlx5_core-y :=	main.o cmd.o debugfs.o fw.o eq.o uar.o pagealloc.o \
+ 		transobj.o vport.o sriov.o fs_cmd.o fs_core.o pci_irq.o \
+ 		fs_counters.o fs_ft_pool.o rl.o lag/lag.o dev.o events.o wq.o lib/gid.o \
+ 		lib/devcom.o lib/pci_vsc.o lib/dm.o lib/fs_ttc.o diag/fs_tracepoint.o \
+-		diag/fw_tracer.o diag/crdump.o devlink.o devlink_res.o diag/rsc_dump.o \
++		diag/fw_tracer.o diag/crdump.o devlink.o diag/rsc_dump.o \
+ 		fw_reset.o qos.o lib/tout.o
+ 
+ #
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+index fc78c745ead1..1c98652b244a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+@@ -752,68 +752,6 @@ static void mlx5_devlink_auxdev_params_unregister(struct devlink *devlink)
+ 	mlx5_devlink_eth_param_unregister(devlink);
+ }
+ 
+-static int mlx5_devlink_max_uc_list_validate(struct devlink *devlink, u32 id,
+-					     union devlink_param_value val,
+-					     struct netlink_ext_ack *extack)
+-{
+-	struct mlx5_core_dev *dev = devlink_priv(devlink);
+-
+-	/* At least one unicast mac is needed */
+-	if (val.vu32 == 0) {
+-		NL_SET_ERR_MSG_MOD(extack, "max_macs value must be greater than 0");
+-		return -EINVAL;
+-	}
+-	/* Check if its power of 2 or not */
+-	if (!is_power_of_2(val.vu32)) {
+-		NL_SET_ERR_MSG_MOD(extack,
+-				   "Only power of 2 values are supported for max_macs");
+-		return -EOPNOTSUPP;
+-	}
+-
+-	if (ilog2(val.vu32) >
+-	    MLX5_CAP_GEN_MAX(dev, log_max_current_uc_list)) {
+-		NL_SET_ERR_MSG_MOD(extack, "max_macs value is out of the supported range");
+-		return -EOPNOTSUPP;
+-	}
+-
+-	return 0;
+-}
+-
+-static const struct devlink_param max_uc_list_param =
+-	DEVLINK_PARAM_GENERIC(MAX_MACS, BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
+-			      NULL, NULL, mlx5_devlink_max_uc_list_validate);
+-
+-static int mlx5_devlink_max_uc_list_param_register(struct devlink *devlink)
+-{
+-	struct mlx5_core_dev *dev = devlink_priv(devlink);
+-	union devlink_param_value value;
+-	int err;
+-
+-	if (!MLX5_CAP_GEN(dev, log_max_current_uc_list_wr_supported))
+-		return 0;
+-
+-	err = devlink_param_register(devlink, &max_uc_list_param);
+-	if (err)
+-		return err;
+-
+-	value.vu32 = 1 << MLX5_CAP_GEN(dev, log_max_current_uc_list);
+-	devlink_param_driverinit_value_set(devlink,
+-					   DEVLINK_PARAM_GENERIC_ID_MAX_MACS,
+-					   value);
+-	return 0;
+-}
+-
+-static void
+-mlx5_devlink_max_uc_list_param_unregister(struct devlink *devlink)
+-{
+-	struct mlx5_core_dev *dev = devlink_priv(devlink);
+-
+-	if (!MLX5_CAP_GEN(dev, log_max_current_uc_list_wr_supported))
+-		return;
+-
+-	devlink_param_unregister(devlink, &max_uc_list_param);
+-}
+-
+ #define MLX5_TRAP_DROP(_id, _group_id)					\
+ 	DEVLINK_TRAP_GENERIC(DROP, DROP, _id,				\
+ 			     DEVLINK_TRAP_GROUP_GENERIC_ID_##_group_id, \
+@@ -877,17 +815,11 @@ int mlx5_devlink_register(struct devlink *devlink)
+ 	if (err)
+ 		goto traps_reg_err;
+ 
+-	err = mlx5_devlink_max_uc_list_param_register(devlink);
+-	if (err)
+-		goto uc_list_reg_err;
+-
+ 	if (!mlx5_core_is_mp_slave(dev))
+ 		devlink_set_features(devlink, DEVLINK_F_RELOAD);
+ 
+ 	return 0;
+ 
+-uc_list_reg_err:
+-	mlx5_devlink_traps_unregister(devlink);
+ traps_reg_err:
+ 	mlx5_devlink_auxdev_params_unregister(devlink);
+ auxdev_reg_err:
+@@ -898,7 +830,6 @@ int mlx5_devlink_register(struct devlink *devlink)
+ 
+ void mlx5_devlink_unregister(struct devlink *devlink)
+ {
+-	mlx5_devlink_max_uc_list_param_unregister(devlink);
+ 	mlx5_devlink_traps_unregister(devlink);
+ 	mlx5_devlink_auxdev_params_unregister(devlink);
+ 	devlink_params_unregister(devlink, mlx5_devlink_params,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.h b/drivers/net/ethernet/mellanox/mlx5/core/devlink.h
+index 674415fd0b3a..30bf4882779b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.h
+@@ -6,14 +6,6 @@
+ 
+ #include <net/devlink.h>
+ 
+-enum mlx5_devlink_resource_id {
+-	MLX5_DL_RES_COMP_EQ = 1,
+-	MLX5_DL_RES_ASYNC_EQ,
+-
+-	__MLX5_ID_RES_MAX,
+-	MLX5_ID_RES_MAX = __MLX5_ID_RES_MAX - 1,
+-};
+-
+ enum mlx5_devlink_param_id {
+ 	MLX5_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
+ 	MLX5_DEVLINK_PARAM_ID_FLOW_STEERING_MODE,
+@@ -39,10 +31,6 @@ int mlx5_devlink_trap_get_num_active(struct mlx5_core_dev *dev);
+ int mlx5_devlink_traps_get_action(struct mlx5_core_dev *dev, int trap_id,
+ 				  enum devlink_trap_action *action);
+ 
+-void mlx5_devlink_res_register(struct mlx5_core_dev *dev);
+-void mlx5_devlink_res_unregister(struct mlx5_core_dev *dev);
+-size_t mlx5_devlink_res_size(struct mlx5_core_dev *dev, enum mlx5_devlink_resource_id id);
+-
+ struct devlink *mlx5_devlink_alloc(struct device *dev);
+ void mlx5_devlink_free(struct devlink *devlink);
+ int mlx5_devlink_register(struct devlink *devlink);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink_res.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink_res.c
+deleted file mode 100644
+index 549d23745942..000000000000
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink_res.c
++++ /dev/null
+@@ -1,80 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
+-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. */
+-
+-#include "devlink.h"
+-#include "mlx5_core.h"
+-
+-enum {
+-	MLX5_EQ_MIN_SIZE = 64,
+-	MLX5_EQ_MAX_SIZE = 4096,
+-	MLX5_NUM_ASYNC_EQE = 4096,
+-	MLX5_COMP_EQ_SIZE = 1024,
+-};
+-
+-static int comp_eq_res_register(struct mlx5_core_dev *dev)
+-{
+-	struct devlink_resource_size_params comp_eq_size;
+-	struct devlink *devlink = priv_to_devlink(dev);
+-
+-	devlink_resource_size_params_init(&comp_eq_size, MLX5_EQ_MIN_SIZE,
+-					  MLX5_EQ_MAX_SIZE, 1, DEVLINK_RESOURCE_UNIT_ENTRY);
+-	return devlink_resource_register(devlink, "io_eq_size", MLX5_COMP_EQ_SIZE,
+-					 MLX5_DL_RES_COMP_EQ,
+-					 DEVLINK_RESOURCE_ID_PARENT_TOP,
+-					 &comp_eq_size);
+-}
+-
+-static int async_eq_resource_register(struct mlx5_core_dev *dev)
+-{
+-	struct devlink_resource_size_params async_eq_size;
+-	struct devlink *devlink = priv_to_devlink(dev);
+-
+-	devlink_resource_size_params_init(&async_eq_size, MLX5_EQ_MIN_SIZE,
+-					  MLX5_EQ_MAX_SIZE, 1, DEVLINK_RESOURCE_UNIT_ENTRY);
+-	return devlink_resource_register(devlink, "event_eq_size",
+-					 MLX5_NUM_ASYNC_EQE, MLX5_DL_RES_ASYNC_EQ,
+-					 DEVLINK_RESOURCE_ID_PARENT_TOP,
+-					 &async_eq_size);
+-}
+-
+-void mlx5_devlink_res_register(struct mlx5_core_dev *dev)
+-{
+-	int err;
+-
+-	err = comp_eq_res_register(dev);
+-	if (err)
+-		goto err_msg;
+-
+-	err = async_eq_resource_register(dev);
+-	if (err)
+-		goto err;
+-	return;
+-err:
+-	devlink_resources_unregister(priv_to_devlink(dev), NULL);
+-err_msg:
+-	mlx5_core_err(dev, "Failed to register resources, err = %d\n", err);
+-}
+-
+-void mlx5_devlink_res_unregister(struct mlx5_core_dev *dev)
+-{
+-	devlink_resources_unregister(priv_to_devlink(dev), NULL);
+-}
+-
+-static const size_t default_vals[MLX5_ID_RES_MAX + 1] = {
+-	[MLX5_DL_RES_COMP_EQ] = MLX5_COMP_EQ_SIZE,
+-	[MLX5_DL_RES_ASYNC_EQ] = MLX5_NUM_ASYNC_EQE,
+-};
+-
+-size_t mlx5_devlink_res_size(struct mlx5_core_dev *dev, enum mlx5_devlink_resource_id id)
+-{
+-	struct devlink *devlink = priv_to_devlink(dev);
+-	u64 size;
+-	int err;
+-
+-	err = devlink_resource_size_get(devlink, id, &size);
+-	if (!err)
+-		return size;
+-	mlx5_core_err(dev, "Failed to get param. using default. err = %d, id = %u\n",
+-		      err, id);
+-	return default_vals[id];
+-}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+index 31e69067284b..792e0d6aa861 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+@@ -19,7 +19,6 @@
+ #include "lib/clock.h"
+ #include "diag/fw_tracer.h"
+ #include "mlx5_irq.h"
+-#include "devlink.h"
+ 
+ enum {
+ 	MLX5_EQE_OWNER_INIT_VAL	= 0x1,
+@@ -647,7 +646,7 @@ static int create_async_eqs(struct mlx5_core_dev *dev)
+ 
+ 	param = (struct mlx5_eq_param) {
+ 		.irq_index = MLX5_IRQ_EQ_CTRL,
+-		.nent = mlx5_devlink_res_size(dev, MLX5_DL_RES_ASYNC_EQ),
++		.nent = MLX5_NUM_ASYNC_EQE,
+ 	};
+ 
+ 	gather_async_events_mask(dev, param.mask);
+@@ -808,7 +807,7 @@ static int create_comp_eqs(struct mlx5_core_dev *dev)
+ 
+ 	INIT_LIST_HEAD(&table->comp_eqs_list);
+ 	ncomp_eqs = table->num_comp_eqs;
+-	nent = mlx5_devlink_res_size(dev, MLX5_DL_RES_COMP_EQ);
++	nent = MLX5_COMP_EQ_SIZE;
+ 	for (i = 0; i < ncomp_eqs; i++) {
+ 		struct mlx5_eq_param param = {};
+ 		int vecidx = i;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index 079ee9e8da10..f8446395163a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -484,23 +484,10 @@ static int handle_hca_cap_odp(struct mlx5_core_dev *dev, void *set_ctx)
+ 	return set_caps(dev, set_ctx, MLX5_SET_HCA_CAP_OP_MOD_ODP);
+ }
+ 
+-static int max_uc_list_get_devlink_param(struct mlx5_core_dev *dev)
+-{
+-	struct devlink *devlink = priv_to_devlink(dev);
+-	union devlink_param_value val;
+-	int err;
+-
+-	err = devlink_param_driverinit_value_get(devlink,
+-						 DEVLINK_PARAM_GENERIC_ID_MAX_MACS,
+-						 &val);
+-	return err ? 0 : val.vu32;
+-}
+-
+ static int handle_hca_cap(struct mlx5_core_dev *dev, void *set_ctx)
+ {
+ 	struct mlx5_profile *prof = &dev->profile;
+ 	void *set_hca_cap;
+-	u32 max_uc_list;
+ 	int err;
+ 
+ 	err = mlx5_core_get_caps(dev, MLX5_CAP_GENERAL);
+@@ -574,11 +561,6 @@ static int handle_hca_cap(struct mlx5_core_dev *dev, void *set_ctx)
+ 	if (MLX5_CAP_GEN(dev, roce_rw_supported))
+ 		MLX5_SET(cmd_hca_cap, set_hca_cap, roce, mlx5_is_roce_init_enabled(dev));
+ 
+-	max_uc_list = max_uc_list_get_devlink_param(dev);
+-	if (max_uc_list)
+-		MLX5_SET(cmd_hca_cap, set_hca_cap, log_max_current_uc_list,
+-			 ilog2(max_uc_list));
+-
+ 	return set_caps(dev, set_ctx, MLX5_SET_HCA_CAP_OP_MOD_GENERAL_DEVICE);
+ }
+ 
+@@ -940,8 +922,6 @@ static int mlx5_init_once(struct mlx5_core_dev *dev)
+ 	dev->hv_vhca = mlx5_hv_vhca_create(dev);
+ 	dev->rsc_dump = mlx5_rsc_dump_create(dev);
+ 
+-	mlx5_devlink_res_register(dev);
+-
+ 	return 0;
+ 
+ err_sf_table_cleanup:
+@@ -977,7 +957,6 @@ static int mlx5_init_once(struct mlx5_core_dev *dev)
+ 
+ static void mlx5_cleanup_once(struct mlx5_core_dev *dev)
+ {
+-	mlx5_devlink_res_unregister(dev);
+ 	mlx5_rsc_dump_destroy(dev);
+ 	mlx5_hv_vhca_destroy(dev->hv_vhca);
+ 	mlx5_fw_tracer_destroy(dev->tracer);
+diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
+index 47c07f95bbe1..f617dfbcd9fd 100644
+--- a/include/linux/mlx5/driver.h
++++ b/include/linux/mlx5/driver.h
+@@ -797,6 +797,10 @@ struct mlx5_db {
+ 	int			index;
+ };
+ 
++enum {
++	MLX5_COMP_EQ_SIZE = 1024,
++};
++
+ enum {
+ 	MLX5_PTYS_IB = 1 << 0,
+ 	MLX5_PTYS_EN = 1 << 2,
+diff --git a/include/linux/mlx5/eq.h b/include/linux/mlx5/eq.h
+index 11161e427608..ea3ff5a8ced3 100644
+--- a/include/linux/mlx5/eq.h
++++ b/include/linux/mlx5/eq.h
+@@ -5,6 +5,7 @@
+ #define MLX5_CORE_EQ_H
+ 
+ #define MLX5_NUM_CMD_EQE   (32)
++#define MLX5_NUM_ASYNC_EQE (0x1000)
+ #define MLX5_NUM_SPARE_EQE (0x80)
+ 
+ struct mlx5_eq;
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index 97465d00de9d..746381eccccf 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -1603,7 +1603,7 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+ 
+ 	u8         ext_stride_num_range[0x1];
+ 	u8         roce_rw_supported[0x1];
+-	u8         log_max_current_uc_list_wr_supported[0x1];
++	u8         reserved_at_3a2[0x1];
+ 	u8         log_max_stride_sz_rq[0x5];
+ 	u8         reserved_at_3a8[0x3];
+ 	u8         log_min_stride_sz_rq[0x5];
+-- 
+2.31.1
+
