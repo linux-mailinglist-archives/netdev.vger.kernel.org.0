@@ -2,122 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D977443B4D1
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 16:52:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD4FB43B4D9
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 16:52:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236054AbhJZOyj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 10:54:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:30031 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230324AbhJZOyi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 10:54:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635259934;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=T3DVTWtNGq2QrB5FfajrN5UrC6srYwyWJ01LjyrOPSs=;
-        b=FCDbAvGJozllRWGKc/zl+ppC526nStz7/DXzJf4Pzln9Koiz/jXshDMUggGH6A4O8D0KYL
-        TcfZxT3RtR6k7/R0Vq/at568vNwiXivx1XrpRFaMMLdC8DHFy2CmOsadNemRHxxMN94aC+
-        jp9QrBT9W/xl+2p4N367o3o8c2xp/VE=
-Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com
- [209.85.210.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-317-T6QQk7SqNCG6QlSyeoZhqA-1; Tue, 26 Oct 2021 10:52:13 -0400
-X-MC-Unique: T6QQk7SqNCG6QlSyeoZhqA-1
-Received: by mail-ot1-f70.google.com with SMTP id b22-20020a056830311600b00552b48856bdso2721438ots.6
-        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 07:52:13 -0700 (PDT)
+        id S236194AbhJZOzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 10:55:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33076 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236058AbhJZOzM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 10:55:12 -0400
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D94C061745
+        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 07:52:49 -0700 (PDT)
+Received: by mail-ot1-x334.google.com with SMTP id v2-20020a05683018c200b0054e3acddd91so17621808ote.8
+        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 07:52:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ggIEajTIJZ9pjb6h9Yfl1Q1AiXRfxaF8TetiL4XvNK8=;
+        b=IzMkdpnUjiU/ewuxiOmXDbUad1TDMFqKLqrr6FjGAMb5eC6YGkgZHg2XaNgF5QD/ko
+         ettt9HZOrd9VYtf23Nrsq4cvdQUIHhbPUHlqOLaM79BvbVdNFGIW5LEf5d0gTyC00YLp
+         0qrlfk6s+aOGD/SBUmzaajkayAxzWJgjpucN3V/BJpDYwxa6UgX0/c26q+pf9nFO1qbM
+         pkPPutpktak5YpM1sPcsjnVATWlmIpx2zDDSJBCbrpj8s55UdxIoLWJzeq285eKOj/Y7
+         XmooQRBWmCApFkJjuelQEOLtZ01O2FoY6gG0iJezdNob2GcpfLmOGBP2JzMX98+8S0pj
+         28yQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=T3DVTWtNGq2QrB5FfajrN5UrC6srYwyWJ01LjyrOPSs=;
-        b=A32KRTwL55wqFLSsYbE9uUokOhKWY6htKCnvPtK5DN9qHxt0FECB8FnLpd1pvLf1Ca
-         5BwmQmppfe/rlqdPOrctcNlb/vZRIW9CPNDUv/98GuvPKNTc5HchSF21nnxw7czLIdx8
-         NI0tBzfqxya5Nw+Q9hHXd++75LFzMnQfFOFKO6WUpnB3Qlt4W0bBRYIM19tfGoHkk5ZX
-         +1iO7abibumVepvQGdC7bWj+HQtLnZRZiOBWQNMdjnV/C7mcF46VF9+caIW7fHpa94DW
-         cLipJ24hUjYsSruaMYZiXpXpoF0vIlXi5pxinHEnksHYxjQTaZR/Im1cFcjRvhG4fEkz
-         WwzQ==
-X-Gm-Message-State: AOAM53027a3cZvee8GCRqBuBUvbIt0vHzuS4A8YL8ltMcqr70sK7bmYe
-        tHR7cpgV9U/2FjgqHLGLbcL7IV46PjAMx9loLzKEqWuhmt15Vr0vlwXcXVnBbKPBru3dgG0Tjl3
-        9jRVEOlqtusj7AmHF
-X-Received: by 2002:a05:6830:1af0:: with SMTP id c16mr19471588otd.16.1635259932617;
-        Tue, 26 Oct 2021 07:52:12 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyThT8eyPPQ8unPM1ZyhVDxxqj6w0ptUlI7/UnRnEG1ZGmmkygz7HHXWNIWKyWD09IVK3ntmQ==
-X-Received: by 2002:a05:6830:1af0:: with SMTP id c16mr19471566otd.16.1635259932424;
-        Tue, 26 Oct 2021 07:52:12 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id e23sm4572613oih.40.2021.10.26.07.52.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Oct 2021 07:52:12 -0700 (PDT)
-Date:   Tue, 26 Oct 2021 08:52:10 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     "Dr. David Alan Gilbert" <dgilbert@redhat.com>,
-        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
-        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
-        Cornelia Huck <cohuck@redhat.com>
-Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
- for mlx5 devices
-Message-ID: <20211026085210.000dc19b.alex.williamson@redhat.com>
-In-Reply-To: <20211026121353.GP2744544@nvidia.com>
-References: <20211019192328.GZ2744544@nvidia.com>
-        <20211019145856.2fa7f7c8.alex.williamson@redhat.com>
-        <20211019230431.GA2744544@nvidia.com>
-        <5a496713-ae1d-11f2-1260-e4c1956e1eda@nvidia.com>
-        <20211020105230.524e2149.alex.williamson@redhat.com>
-        <YXbceaVo0q6hOesg@work-vm>
-        <20211025115535.49978053.alex.williamson@redhat.com>
-        <YXb7wejD1qckNrhC@work-vm>
-        <20211025191509.GB2744544@nvidia.com>
-        <YXe/AvwQcAxJ/hXQ@work-vm>
-        <20211026121353.GP2744544@nvidia.com>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ggIEajTIJZ9pjb6h9Yfl1Q1AiXRfxaF8TetiL4XvNK8=;
+        b=4gEzgL55sYJKOUiNcxIaKaDiEH2KxQMWVCTl7JME5D+LCIoHVM5nM8LCEdmGCty03C
+         ugVvtdxCm/lBFqC0f9tRyPXJEiy/LwarraLUHC97yDHjpEXrrOyoQdTekDVuOsuw/rjR
+         U8ZYDltPYNJuUoCatYhbOnoNvBOypIhUjPJvvHIp2ua3+nR0amW/9qCa7awLdmP04m1f
+         L1aoN/jt2+Xr+zdtijWKQzZeUW38NyQar8YRJNYQJH9v/SKBwox9foFX1Wf5Lb4Z9QXc
+         nzY9CY405uGs8tpVBqsl45/BQnwCMwxLCES1ROQJQ78HVngHwCZ42J95+An9hlHVegDG
+         cSyg==
+X-Gm-Message-State: AOAM532An+iwPkYr2fS8ghnQjoxRfJI5zyA/VKFsaL+BaTynWb/+IZwB
+        8L+7cYkufhuJPUeinCATwdg=
+X-Google-Smtp-Source: ABdhPJxDNdhFkLexor9deO91MCnn0B7gcgw8pTuv4L7OoErJOro9E/u4RaLLaCK70p+ozq3EYSPFvg==
+X-Received: by 2002:a9d:7153:: with SMTP id y19mr19903333otj.41.1635259968389;
+        Tue, 26 Oct 2021 07:52:48 -0700 (PDT)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id bc41sm4199681oob.2.2021.10.26.07.52.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Oct 2021 07:52:47 -0700 (PDT)
+Message-ID: <4dd34a92-bfcf-27ad-2d32-c93f7a9082a9@gmail.com>
+Date:   Tue, 26 Oct 2021 08:52:45 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.2.1
+Subject: Re: [RESEND PATCH v7 2/3] net: ndisc: introduce ndisc_evict_nocarrier
+ sysctl parameter
+Content-Language: en-US
+To:     James Prestwood <prestwoj@gmail.com>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, roopa@nvidia.com,
+        daniel@iogearbox.net, vladimir.oltean@nxp.com, idosch@nvidia.com,
+        nikolay@nvidia.com, yajun.deng@linux.dev, zhutong@amazon.com,
+        johannes@sipsolutions.net, jouni@codeaurora.org
+References: <20211025164547.1097091-1-prestwoj@gmail.com>
+ <20211025164547.1097091-3-prestwoj@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20211025164547.1097091-3-prestwoj@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 26 Oct 2021 09:13:53 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> On Tue, Oct 26, 2021 at 09:40:34AM +0100, Dr. David Alan Gilbert wrote:
-> > * Jason Gunthorpe (jgg@nvidia.com) wrote:  
-> > > On Mon, Oct 25, 2021 at 07:47:29PM +0100, Dr. David Alan Gilbert wrote:
-> > >   
-> > > > It may need some further refinement; for example in that quiesed state
-> > > > do counters still tick? will a NIC still respond to packets that don't
-> > > > get forwarded to the host?  
-> > > 
-> > > At least for the mlx5 NIC the two states are 'able to issue outbound
-> > > DMA' and 'all internal memories and state are frozen and unchanging'.  
-> > 
-> > Yeh, so my point was just that if you're adding a new state to this
-> > process, you need to define the details like that.  
+On 10/25/21 10:45 AM, James Prestwood wrote:
+> In most situations the neighbor discovery cache should be cleared on a
+> NOCARRIER event which is currently done unconditionally. But for wireless
+> roams the neighbor discovery cache can and should remain intact since
+> the underlying network has not changed.
 > 
-> We are not planning to propose any patches/uAPI specification for this
-> problem until after the mlx5 vfio driver is merged..
+> This patch introduces a sysctl option ndisc_evict_nocarrier which can
+> be disabled by a wireless supplicant during a roam. This allows packets
+> to be sent after a roam immediately without having to wait for
+> neighbor discovery.
+> 
+> A user reported roughly a 1 second delay after a roam before packets
+> could be sent out (note, on IPv4). This delay was due to the ARP
+> cache being cleared. During testing of this same scenario using IPv6
+> no delay was noticed, but regardless there is no reason to clear
+> the ndisc cache for wireless roams.
+> 
+> Signed-off-by: James Prestwood <prestwoj@gmail.com>
+> ---
+>  Documentation/networking/ip-sysctl.rst |  9 +++++++++
+>  include/linux/ipv6.h                   |  1 +
+>  include/uapi/linux/ipv6.h              |  1 +
+>  net/ipv6/addrconf.c                    | 12 ++++++++++++
+>  net/ipv6/ndisc.c                       | 12 +++++++++++-
+>  5 files changed, 34 insertions(+), 1 deletion(-)
+> 
 
-I'm not super comfortable with that.  If we're expecting to add a new
-bit to define a quiescent state prior to clearing the running flag and
-this is an optional device feature that userspace migration needs to be
-aware of and it's really not clear from a hypervisor when p2p DMA might
-be in use, I think that leaves userspace in a pickle how and when
-they'd impose restrictions on assignment with multiple assigned
-devices.  It's likely that the majority of initial use cases wouldn't
-need this feature, which would make it difficult to arbitrarily impose
-later.
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-OTOH, if we define !_RUNNING as quiescent and userspace reading
-pending_bytes as the point by which the user is responsible for
-quiescing all devices and the device state becomes stable (or drivers
-can generate errors during collection of device state if that proves
-otherwise), then I think existing userspace doesn't care about this
-issue.  Thanks,
-
-Alex
 
