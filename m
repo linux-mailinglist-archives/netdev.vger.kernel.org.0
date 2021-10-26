@@ -2,82 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 592D743B223
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 14:17:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62B7C43B229
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 14:18:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235639AbhJZMUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 08:20:05 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:29939 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230409AbhJZMUF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 08:20:05 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HdrLh3x9dzbnFt;
-        Tue, 26 Oct 2021 20:13:00 +0800 (CST)
-Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Tue, 26 Oct 2021 20:17:38 +0800
-Received: from [10.174.176.245] (10.174.176.245) by
- kwepemm600001.china.huawei.com (7.193.23.3) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Tue, 26 Oct 2021 20:17:37 +0800
-Subject: Re: [PATCH net] usbnet: fix error return code in usbnet_probe()
-To:     Johan Hovold <johan@kernel.org>
-CC:     <oneukum@suse.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <netdev@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        id S234359AbhJZMU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 08:20:59 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:12122 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230409AbhJZMU6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 08:20:58 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19Q5oMbg012626;
+        Tue, 26 Oct 2021 05:18:31 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=BLVkkPZnWnYH6M5kkSOIKuxI4SIsnFSU2qUzofv1grE=;
+ b=XYQGGFO57OVcYbKJg2CQ6Ilj3doW1/UORkrgQr999PuS7T3CSLXl6M/5FJ7R1sPS+ig6
+ KMvyu1BcbrOC9sGNlS7+TzxkmXocbUFhQTBUTO8X2wUFmFiJ+pa7D7aZQvtqlx3lQOd1
+ /meMcy4Gq1m2//++03oo9yDZHpXbrnv0TXlwT1N/ok79knwhIiWGHbGSaQDWaFI8Qj1B
+ YyaMTEVNgSiZq8qUulrxqKgSY1XWiGvpQC7oZFbPEwRZjaYFL2dSm1u+fnb+2f5AI9+W
+ Og9OOP0Mhwf6+1AGkuHhcKHL5MiZYPxuK0cLUj2nhVOtkqq/rpMxmV2vqNCuIgjBCC8R Qw== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 3bx4dx2yf8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 26 Oct 2021 05:18:31 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 26 Oct
+ 2021 05:18:29 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Tue, 26 Oct 2021 05:18:29 -0700
+Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
+        by maili.marvell.com (Postfix) with ESMTP id 14F993F7065;
+        Tue, 26 Oct 2021 05:18:26 -0700 (PDT)
+From:   Rakesh Babu <rsaladi2@marvell.com>
+To:     <sgoutham@marvell.com>, <gakula@marvell.com>,
+        <sbhatta@marvell.com>, <hkelam@marvell.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-References: <20211026112526.2878177-1-wanghai38@huawei.com>
- <YXfsclAOm8Zhbac1@hovoldconsulting.com>
-From:   "wanghai (M)" <wanghai38@huawei.com>
-Message-ID: <f7eec28b-1e4a-c03b-3503-39efff9d45ff@huawei.com>
-Date:   Tue, 26 Oct 2021 20:17:24 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+CC:     Rakesh Babu <rsaladi2@marvell.com>
+Subject: [net-next PATCH v2 0/3] RVU Debugfs updates.
+Date:   Tue, 26 Oct 2021 17:48:11 +0530
+Message-ID: <20211026121814.27036-1-rsaladi2@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <YXfsclAOm8Zhbac1@hovoldconsulting.com>
-Content-Type: text/plain; charset="gbk"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.245]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600001.china.huawei.com (7.193.23.3)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-Proofpoint-GUID: eh2snDw4d3Zp4d281tG5KLuJ07lyTZZU
+X-Proofpoint-ORIG-GUID: eh2snDw4d3Zp4d281tG5KLuJ07lyTZZU
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-10-26_02,2021-10-26_01,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The following patch series consists of the changes/modifications that are
+newly added/done to rvu_debugfs.c file.
 
-ÔÚ 2021/10/26 19:54, Johan Hovold Ð´µÀ:
-> On Tue, Oct 26, 2021 at 07:25:26PM +0800, Wang Hai wrote:
->> Return error code if usb_maxpacket() returns 0 in usbnet_probe().
->>
->> Fixes: 397430b50a36 ("usbnet: sanity check for maxpacket")
->> Reported-by: Hulk Robot <hulkci@huawei.com>
->> Signed-off-by: Wang Hai <wanghai38@huawei.com>
->> ---
-> Good catch. This is embarrassing. I double checked the error path but
-> failed to notice the missing return value.
->
->>   drivers/net/usb/usbnet.c | 1 +
->>   1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
->> index 80432ee0ce69..fb5bf7d36d50 100644
->> --- a/drivers/net/usb/usbnet.c
->> +++ b/drivers/net/usb/usbnet.c
->> @@ -1790,6 +1790,7 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
->>   	dev->maxpacket = usb_maxpacket (dev->udev, dev->out, 1);
->>   	if (dev->maxpacket == 0) {
->>   		/* that is a broken device */
->> +		status = -EINVAL;
-> But please use -ENODEV here. -EINVAL is typically reserved for bad user
-> input.
-Ok, I will send v2
->>   		goto out4;
->>   	}
-> Johan
-> .
->
--- 
-Wang Hai
+Patch 1: Few minor changes such as spelling mistakes, deleting unwanted
+characters, etc.
+Patch 2: Add debugfs dump for lmtst map table
+Patch 3: Add channel and channel mask in debugfs.
 
+Changes made from v1 to v2
+1. In patch 1 removed unnecessary change, updated commit message.
+2. In patch 2 updated commit message explaining about what is LMTST map
+table.
+3. Patch 3 is left unchanged.
+
+Harman Kalra (1):
+  octeontx2-af: cn10k: debugfs for dumping LMTST map table
+
+Rakesh Babu (2):
+  octeontx2-af: debugfs: Minor changes.
+  octeontx2-af: debugfs: Add channel and channel mask.
+
+ .../net/ethernet/marvell/octeontx2/af/npc.h   |   4 +
+ .../marvell/octeontx2/af/rvu_debugfs.c        | 120 ++++++++++++++++--
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   |   3 +
+ .../marvell/octeontx2/af/rvu_npc_fs.c         |   3 +
+ 4 files changed, 118 insertions(+), 12 deletions(-)
+
+--
+2.17.1
