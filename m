@@ -2,169 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4643D43B4C7
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 16:50:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF11D43B4CC
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 16:51:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234709AbhJZOwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 10:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60742 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236110AbhJZOwv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 10:52:51 -0400
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A3BC061745
-        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 07:50:27 -0700 (PDT)
-Received: by mail-oi1-x22f.google.com with SMTP id r6so20951265oiw.2
-        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 07:50:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ToIszPTV0gVTDf9mb37fABQMMVVUKLxA3wv8zltwXUk=;
-        b=VhgHu5Iyv0IxoUbjGNiWbTaYVjy+tEpgueF8dFbgt+7WUfBUALWYgKQU2CwPfeJh0+
-         C5vhDvxmWJpj34QN1WWtsx6UuRjjIiLGvVIFAGx0fat1htL0Hoxyfl0kV4J+d+a5FLlb
-         R3wc0eB8jXR7EEYn33HsQZRuFCG05+IjGURh769LgHgMnXqoHXtO39Mc3Iy3JR1pEqJm
-         mfHLqD+2OhMTfprP52cBRUxwP73la4AWzHL9YVX4/M92V6bnN3icRPZfvmoY3dnKwdfr
-         a2+RcGeqGAH7pHXlyOpSKf7oydjPUl0mpg9V1kW0bJGtC5bWHUb4LQrqShZxXf7+FGci
-         V9kA==
+        id S236135AbhJZOxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 10:53:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:21052 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231211AbhJZOxv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 10:53:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1635259887;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=QiyqNdatw3NhazMeX0fRhEhJxRWOX6NB4RyRlxaJtOo=;
+        b=CJTNyxjEjxajVy+bxeJtcR7deSuasp7rw9ea3QnRKTFFXt/7n3ypr7LLifWLxf7VQ/FMnu
+        X9hVwkJXyLO6ihNIzsj94M+WSOZpwS2e9bpBPq2Zsvcqrxqk5QI22sabjDIPwn/0JnpWNH
+        XVGpB6xXaoDqLHa41+K1m9YoJ+RV/ko=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-252-IBgTCTkKN0ucr5i-bsFY8A-1; Tue, 26 Oct 2021 10:51:26 -0400
+X-MC-Unique: IBgTCTkKN0ucr5i-bsFY8A-1
+Received: by mail-wm1-f70.google.com with SMTP id d73-20020a1c1d4c000000b0032ca7ec21a4so1096723wmd.1
+        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 07:51:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ToIszPTV0gVTDf9mb37fABQMMVVUKLxA3wv8zltwXUk=;
-        b=Si/nq1Ze5GyAc6BXoRssFWWyXUfJBQVf3DWBO1TEqciUX4aULBSzQRIelvOFAl5EJ5
-         i4eUIon24EoZwzEmeRyoOOxoZl3OM5jeuC0PPA6yYIYzQug++U0gDE8UpW5h0o79JcC5
-         KHCUJ1di4Uyy3Svjok01J4DNeCOJ1Sr7vLGJd1ZXmMiD9cx7o3DHG7eJcha4GoFe0TpL
-         LdaXpEhL7qSQGbW5icUTr+cCcl9x13Nu+Aft9bvgQvXkIHNGfiG8gpOmLY7aFKrEH/Gh
-         zhhGXqI878q9Ohbuf7ygveTmfbKJ8tbMxkyo0z00QrDqXyYMdrKF1nRXzRkoWmY7AKvA
-         nlJg==
-X-Gm-Message-State: AOAM531h9BMuF9RrDnh+aoALcYiC/4g0wdPJklhLX3gBCW9dlC+1H9yF
-        guOCajy53T1ws5tTADkuao0=
-X-Google-Smtp-Source: ABdhPJy8wRilnL1SsEIRV5naqUiVaORTjja+Ytmq7o0U6w2UrUB/mF5VqY2i1DqSP05bwcQE0USVgA==
-X-Received: by 2002:a05:6808:1444:: with SMTP id x4mr17794971oiv.157.1635259826692;
-        Tue, 26 Oct 2021 07:50:26 -0700 (PDT)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id l16sm3805126oou.7.2021.10.26.07.50.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Oct 2021 07:50:26 -0700 (PDT)
-Message-ID: <d080507b-a5a8-aa8f-182f-1182a5405ec0@gmail.com>
-Date:   Tue, 26 Oct 2021 08:50:24 -0600
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=QiyqNdatw3NhazMeX0fRhEhJxRWOX6NB4RyRlxaJtOo=;
+        b=OCfOg5MvzaczeQkH3L1jNwyUZEbh+ylLLHlHXNbJzCepuRHosduvwNJoeHc8R9agq7
+         z1k2zQhB3J7tF6x6rYGLBbccEdcHGYYNh+HoR1bv71wwmqGnHX+r6TO7e1fUjL4bmkhC
+         jail5YhyHYugt1W/6iRFPKD1lTwVvgNrxkzoi6/r4vNL7tvP4WCxxdplLzp5DbL3ImlK
+         CPRKVYNVFiPdpar0yFqK0zeji5/3gttLkSbNCiKNtjo/yaPGd+yPcE0oEDjMz2TAN378
+         2MG5kdHIPRDH+8yg54HZWC2iPIoSLMvvoTSo0+uEHXoAiTJAwR+x/o27rQiFSyxK6M4q
+         qZoA==
+X-Gm-Message-State: AOAM531FHVAlUQ8oOJ7a9FyNDIr6q9CuP0dVuVoobIcS0JPMBjf9k++3
+        3h3QJGYhiqVAGY+0Zxv348dYgXM7PwzFxewmsBjxnSh5q290TVC8jHm94ZpTwj7LvNLr3esVw9+
+        wJQ1i3IUwNVwaY0q5
+X-Received: by 2002:a7b:cb56:: with SMTP id v22mr33926998wmj.77.1635259884719;
+        Tue, 26 Oct 2021 07:51:24 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzmzKviO2aTymPZ9XHNdwt+tg8/6pDTBfRAG1Cu7P2+mHxfgMMP94xGln5DErv9xT3PJAICxw==
+X-Received: by 2002:a7b:cb56:: with SMTP id v22mr33926975wmj.77.1635259884518;
+        Tue, 26 Oct 2021 07:51:24 -0700 (PDT)
+Received: from work-vm (cpc109025-salf6-2-0-cust480.10-2.cable.virginm.net. [82.30.61.225])
+        by smtp.gmail.com with ESMTPSA id n15sm2162091wmq.3.2021.10.26.07.51.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Oct 2021 07:51:23 -0700 (PDT)
+Date:   Tue, 26 Oct 2021 15:51:21 +0100
+From:   "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     Yishai Hadas <yishaih@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
+        Cornelia Huck <cohuck@redhat.com>
+Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
+ for mlx5 devices
+Message-ID: <YXgV6ehhsSlydiEl@work-vm>
+References: <20211019124352.74c3b6ba.alex.williamson@redhat.com>
+ <20211019192328.GZ2744544@nvidia.com>
+ <20211019145856.2fa7f7c8.alex.williamson@redhat.com>
+ <20211019230431.GA2744544@nvidia.com>
+ <5a496713-ae1d-11f2-1260-e4c1956e1eda@nvidia.com>
+ <20211020105230.524e2149.alex.williamson@redhat.com>
+ <YXbceaVo0q6hOesg@work-vm>
+ <20211025115535.49978053.alex.williamson@redhat.com>
+ <YXb7wejD1qckNrhC@work-vm>
+ <20211026082920.1f302a45.alex.williamson@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.2.1
-Subject: Re: [RESEND PATCH v7 1/3] net: arp: introduce arp_evict_nocarrier
- sysctl parameter
-Content-Language: en-US
-To:     James Prestwood <prestwoj@gmail.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, roopa@nvidia.com,
-        daniel@iogearbox.net, vladimir.oltean@nxp.com, idosch@nvidia.com,
-        nikolay@nvidia.com, yajun.deng@linux.dev, zhutong@amazon.com,
-        johannes@sipsolutions.net, jouni@codeaurora.org
-References: <20211025164547.1097091-1-prestwoj@gmail.com>
- <20211025164547.1097091-2-prestwoj@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20211025164547.1097091-2-prestwoj@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211026082920.1f302a45.alex.williamson@redhat.com>
+User-Agent: Mutt/2.0.7 (2021-05-04)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/25/21 10:45 AM, James Prestwood wrote:
-> This change introduces a new sysctl parameter, arp_evict_nocarrier.
-> When set (default) the ARP cache will be cleared on a NOCARRIER event.
-> This new option has been defaulted to '1' which maintains existing
-> behavior.
+* Alex Williamson (alex.williamson@redhat.com) wrote:
+> On Mon, 25 Oct 2021 19:47:29 +0100
+> "Dr. David Alan Gilbert" <dgilbert@redhat.com> wrote:
 > 
-> Clearing the ARP cache on NOCARRIER is relatively new, introduced by:
-> 
-> commit 859bd2ef1fc1110a8031b967ee656c53a6260a76
-> Author: David Ahern <dsahern@gmail.com>
-> Date:   Thu Oct 11 20:33:49 2018 -0700
-> 
->     net: Evict neighbor entries on carrier down
-> 
-> The reason for this changes is to prevent the ARP cache from being
-> cleared when a wireless device roams. Specifically for wireless roams
-> the ARP cache should not be cleared because the underlying network has not
-> changed. Clearing the ARP cache in this case can introduce significant
-> delays sending out packets after a roam.
-> 
-> A user reported such a situation here:
-> 
-> https://lore.kernel.org/linux-wireless/CACsRnHWa47zpx3D1oDq9JYnZWniS8yBwW1h0WAVZ6vrbwL_S0w@mail.gmail.com/
-> 
-> After some investigation it was found that the kernel was holding onto
-> packets until ARP finished which resulted in this 1 second delay. It
-> was also found that the first ARP who-has was never responded to,
-> which is actually what caues the delay. This change is more or less
-> working around this behavior, but again, there is no reason to clear
-> the cache on a roam anyways.
-> 
-> As for the unanswered who-has, we know the packet made it OTA since
-> it was seen while monitoring. Why it never received a response is
-> unknown. In any case, since this is a problem on the AP side of things
-> all that can be done is to work around it until it is solved.
-> 
-> Some background on testing/reproducing the packet delay:
-> 
-> Hardware:
->  - 2 access points configured for Fast BSS Transition (Though I don't
->    see why regular reassociation wouldn't have the same behavior)
->  - Wireless station running IWD as supplicant
->  - A device on network able to respond to pings (I used one of the APs)
-> 
-> Procedure:
->  - Connect to first AP
->  - Ping once to establish an ARP entry
->  - Start a tcpdump
->  - Roam to second AP
->  - Wait for operstate UP event, and note the timestamp
->  - Start pinging
-> 
-> Results:
-> 
-> Below is the tcpdump after UP. It was recorded the interface went UP at
-> 10:42:01.432875.
-> 
-> 10:42:01.461871 ARP, Request who-has 192.168.254.1 tell 192.168.254.71, length 28
-> 10:42:02.497976 ARP, Request who-has 192.168.254.1 tell 192.168.254.71, length 28
-> 10:42:02.507162 ARP, Reply 192.168.254.1 is-at ac:86:74:55:b0:20, length 46
-> 10:42:02.507185 IP 192.168.254.71 > 192.168.254.1: ICMP echo request, id 52792, seq 1, length 64
-> 10:42:02.507205 IP 192.168.254.71 > 192.168.254.1: ICMP echo request, id 52792, seq 2, length 64
-> 10:42:02.507212 IP 192.168.254.71 > 192.168.254.1: ICMP echo request, id 52792, seq 3, length 64
-> 10:42:02.507219 IP 192.168.254.71 > 192.168.254.1: ICMP echo request, id 52792, seq 4, length 64
-> 10:42:02.507225 IP 192.168.254.71 > 192.168.254.1: ICMP echo request, id 52792, seq 5, length 64
-> 10:42:02.507232 IP 192.168.254.71 > 192.168.254.1: ICMP echo request, id 52792, seq 6, length 64
-> 10:42:02.515373 IP 192.168.254.1 > 192.168.254.71: ICMP echo reply, id 52792, seq 1, length 64
-> 10:42:02.521399 IP 192.168.254.1 > 192.168.254.71: ICMP echo reply, id 52792, seq 2, length 64
-> 10:42:02.521612 IP 192.168.254.1 > 192.168.254.71: ICMP echo reply, id 52792, seq 3, length 64
-> 10:42:02.521941 IP 192.168.254.1 > 192.168.254.71: ICMP echo reply, id 52792, seq 4, length 64
-> 10:42:02.522419 IP 192.168.254.1 > 192.168.254.71: ICMP echo reply, id 52792, seq 5, length 64
-> 10:42:02.523085 IP 192.168.254.1 > 192.168.254.71: ICMP echo reply, id 52792, seq 6, length 64
-> 
-> You can see the first ARP who-has went out very quickly after UP, but
-> was never responded to. Nearly a second later the kernel retries and
-> gets a response. Only then do the ping packets go out. If an ARP entry
-> is manually added prior to UP (after the cache is cleared) it is seen
-> that the first ping is never responded to, so its not only an issue with
-> ARP but with data packets in general.
-> 
-> As mentioned prior, the wireless interface was also monitored to verify
-> the ping/ARP packet made it OTA which was observed to be true.
-> 
-> Signed-off-by: James Prestwood <prestwoj@gmail.com>
-> ---
->  Documentation/networking/ip-sysctl.rst |  9 +++++++++
->  include/linux/inetdevice.h             |  2 ++
->  include/uapi/linux/ip.h                |  1 +
->  include/uapi/linux/sysctl.h            |  1 +
->  net/ipv4/arp.c                         | 11 ++++++++++-
->  net/ipv4/devinet.c                     |  4 ++++
->  6 files changed, 27 insertions(+), 1 deletion(-)
-> 
+> > * Alex Williamson (alex.williamson@redhat.com) wrote:
+> > > On Mon, 25 Oct 2021 17:34:01 +0100
+> > > "Dr. David Alan Gilbert" <dgilbert@redhat.com> wrote:
+> > >   
+> > > > * Alex Williamson (alex.williamson@redhat.com) wrote:  
+> > > > > [Cc +dgilbert, +cohuck]
+> > > > > 
+> > > > > On Wed, 20 Oct 2021 11:28:04 +0300
+> > > > > Yishai Hadas <yishaih@nvidia.com> wrote:
+> > > > >     
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+<snip>
+
+> > > In a way.  We're essentially recognizing that we cannot stop a single
+> > > device in isolation of others that might participate in peer-to-peer
+> > > DMA with that device, so we need to make a pass to quiesce each device
+> > > before we can ask the device to fully stop.  This new device state bit
+> > > is meant to be that quiescent point, devices can accept incoming DMA
+> > > but should cease to generate any.  Once all device are quiesced then we
+> > > can safely stop them.  
+> > 
+> > It may need some further refinement; for example in that quiesed state
+> > do counters still tick? will a NIC still respond to packets that don't
+> > get forwarded to the host?
+> 
+> I'd think no, but I imagine it's largely device specific to what extent
+> a device can be fully halted yet minimally handle incoming DMA.
+
+That's what worries me; we're adding a new state here as we understand
+more about trying to implement a device; but it seems that we need to
+nail something down as to what the state means.
+
+> > Note I still think you need a way to know when you have actually reached
+> > these states; setting a bit in a register is asking nicely for a device
+> > to go into a state - has it got there?
+> 
+> It's more than asking nicely, we define the device_state bits as
+> synchronous, the device needs to enter the state before returning from
+> the write operation or return an errno.
+
+I don't see how it can be synchronous in practice; can it really wait to
+complete if it has to take many cycles to finish off an inflight DMA
+before it transitions?
+
+> > > > Now, you could be a *little* more sloppy; you could allow a device carry
+> > > > on doing stuff purely with it's own internal state up until the point
+> > > > it needs to serialise; but that would have to be strictly internal state
+> > > > only - if it can change any other devices state (or issue an interrupt,
+> > > > change RAM etc) then you get into ordering issues on the serialisation
+> > > > of multiple devices.  
+> > > 
+> > > Yep, that's the proposal that doesn't require a uAPI change, we loosen
+> > > the definition of stopped to mean the device can no longer generate DMA
+> > > or interrupts and all internal processing outside or responding to
+> > > incoming DMA should halt (essentially the same as the new quiescent
+> > > state above).  Once all devices are in this state, there should be no
+> > > incoming DMA and we can safely collect per device migration data.  If
+> > > state changes occur beyond the point in time where userspace has
+> > > initiated the collection of migration data, drivers have options for
+> > > generating errors when userspace consumes that data.  
+> > 
+> > How do you know that last device has actually gone into that state?
+> 
+> Each device cannot, the burden is on the user to make sure all devices
+> are stopped before proceeding to read migration data.
+
+Yeh this really ties to the previous question; if it's synchronous
+you're OK.
+
+> > Also be careful; it feels much more delicate where something might
+> > accidentally start a transaction.
+> 
+> This sounds like a discussion of theoretically broken drivers.  Like
+> the above device_state, drivers still have a synchronization point when
+> the user reads the pending_bytes field to initiate retrieving the
+> device state.  If the implementation requires the device to be fully
+> stopped to snapshot the device state to provide to the user, this is
+> where that would happen.  Thanks,
+
+Yes, but I worry that some ways of definining it are harder to get right
+in drivers, so less likely to be theoretical.
+
+Dave
+
+> Alex
+> 
+-- 
+Dr. David Alan Gilbert / dgilbert@redhat.com / Manchester, UK
 
