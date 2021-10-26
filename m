@@ -2,97 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7C5143B7B3
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 18:58:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F380E43B7CC
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 19:02:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237620AbhJZRAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 13:00:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:36190 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236241AbhJZRAw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 13:00:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635267506;
+        id S237670AbhJZREm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 13:04:42 -0400
+Received: from ixit.cz ([94.230.151.217]:43048 "EHLO ixit.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237663AbhJZREl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Oct 2021 13:04:41 -0400
+Received: from [192.168.1.138] (ip-89-176-96-70.net.upcbroadband.cz [89.176.96.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by ixit.cz (Postfix) with ESMTPSA id 7153320064;
+        Tue, 26 Oct 2021 19:02:13 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
+        t=1635267734;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=RT0f5R5Twi94kzA8iIwbfKM5SjvkjYQA1GvTSxCPDNE=;
-        b=f54oZGtek7UbhfbXwb/L9U9IOE4KpLCVGyFXhaj1E5S90MptmZvh3wb/ahckIJOUaLm6F6
-        reuoTcGJjioBC0BvUM/binMvFhZtg6HWFV9Wr1O2z0bcmXzDa7VB43bEODHpYn8cF+F0Ht
-        XtNjP8EXz3JCAAqPp4V8WQ9vueAlimM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-67-vCyWaVC1NYeMftwcco5klg-1; Tue, 26 Oct 2021 12:58:21 -0400
-X-MC-Unique: vCyWaVC1NYeMftwcco5klg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 74BFE10A8E13;
-        Tue, 26 Oct 2021 16:58:19 +0000 (UTC)
-Received: from localhost (unknown [10.39.193.201])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6008160862;
-        Tue, 26 Oct 2021 16:58:01 +0000 (UTC)
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Leon Romanovsky <leonro@nvidia.com>
-Cc:     Yishai Hadas <yishaih@nvidia.com>, alex.williamson@redhat.com,
-        bhelgaas@google.com, jgg@nvidia.com, saeedm@nvidia.com,
-        linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, kwankhede@nvidia.com,
-        mgurtovoy@nvidia.com, maorg@nvidia.com
-Subject: Re: [PATCH V4 mlx5-next 06/13] vfio: Fix
- VFIO_DEVICE_STATE_SET_ERROR macro
-In-Reply-To: <YXgv29Og1Ds2mMSS@unreal>
-Organization: Red Hat GmbH
-References: <20211026090605.91646-1-yishaih@nvidia.com>
- <20211026090605.91646-7-yishaih@nvidia.com> <87pmrrdcos.fsf@redhat.com>
- <YXgqO0/jUFvDWVHv@unreal> <87h7d3d9x3.fsf@redhat.com>
- <YXgv29Og1Ds2mMSS@unreal>
-User-Agent: Notmuch/0.32.1 (https://notmuchmail.org)
-Date:   Tue, 26 Oct 2021 18:57:59 +0200
-Message-ID: <87bl3bd8q0.fsf@redhat.com>
+        bh=Yr9uhClX24/LPzr3j28xMSkldVyzrS/jPB9TXwItW/Q=;
+        b=Yh5h1/PdyDWYWMmGnNH2FK2FhyIlEnkwGw/C5a4HremTpgkN5mF+shIUq80pTLKyljAKVi
+        0rbvXGc7e4SnG0rbRzaZlDW1ksWR91fy6mltEPxmWSeL0mi77v4wuRJgqzz9y47YhsqY74
+        FYU1fCsxFsOBNdo6eg+N3BR5FASsJJs=
+Date:   Tue, 26 Oct 2021 19:02:07 +0200
+From:   David Heidelberg <david@ixit.cz>
+Subject: Re: [PATCH v2] dt-bindings: net: qcom,ipa: IPA does support up to two
+ iommus
+To:     Alex Elder <elder@ieee.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Alex Elder <elder@kernel.org>, ~okias/devicetree@lists.sr.ht,
+        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <JNGL1R.U8OWUCOV58262@ixit.cz>
+In-Reply-To: <2de53575-af6e-5bb9-e7ad-5d924656867d@ieee.org>
+References: <20211026163240.131052-1-david@ixit.cz>
+        <2de53575-af6e-5bb9-e7ad-5d924656867d@ieee.org>
+X-Mailer: geary/40.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 26 2021, Leon Romanovsky <leonro@nvidia.com> wrote:
+thanks, I'll try to work on my commit messages :)
 
-> On Tue, Oct 26, 2021 at 06:32:08PM +0200, Cornelia Huck wrote:
->> On Tue, Oct 26 2021, Leon Romanovsky <leonro@nvidia.com> wrote:
+David
+
+
+On Tue, Oct 26 2021 at 11:47:46 -0500, Alex Elder <elder@ieee.org> 
+wrote:
+> On 10/26/21 11:32 AM, David Heidelberg wrote:
+>> Fix warnings as:
+>> arch/arm/boot/dts/qcom-sdx55-mtp.dt.yaml: ipa@1e40000: iommus: [[21, 
+>> 1504, 0], [21, 1506, 0]] is too long
+>> 	From schema: Documentation/devicetree/bindings/net/qcom,ipa.yaml
 >> 
->> > On Tue, Oct 26, 2021 at 05:32:19PM +0200, Cornelia Huck wrote:
->> >> On Tue, Oct 26 2021, Yishai Hadas <yishaih@nvidia.com> wrote:
->> >> 
->> >> > Fixed the non-compiled macro VFIO_DEVICE_STATE_SET_ERROR (i.e. SATE
->> >> > instead of STATE).
->> >> >
->> >> > Fixes: a8a24f3f6e38 ("vfio: UAPI for migration interface for device state")
->> >> > Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
->> >> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
->> >> 
->> >> This s-o-b chain looks weird; your s-o-b always needs to be last.
->> >
->> > It is not such clear as it sounds.
->> >
->> > Yishai is author of this patch and at some point of time, this patch passed
->> > through my tree and it will pass again, when we will merge it. This is why
->> > my SOB is last and not Yishai's.
+>> Signed-off-by: David Heidelberg <david@ixit.cz>
+> 
+> Looks good to me.  I'm not sure why the minItems is required,
+> unless it's to indicate that it must be at least 1 and can't
+> be missing.  But iommus is also stated to be required elsewhere
+> in the binding.
+> 
+> In the future, it's helpful to indicate the command you
+> used to produce the warning in your commit message.  And
+> furthermore, describing the problem (and not just including
+> the error message) is even more helpful.
+> 
+> Reviewed-by: Alex Elder <elder@linaro.org>
+> 
+>> ---
+>>   Documentation/devicetree/bindings/net/qcom,ipa.yaml | 3 ++-
+>>   1 file changed, 2 insertions(+), 1 deletion(-)
 >> 
->> Strictly speaking, the chain should be Yishai->you->Yishai and you'd add
->> your s-o-b again when you pick it. Yeah, that looks like overkill; the
->> current state just looks weird to me, but I'll shut up now.
->
-> We will get checkpatch warning about duplicated signature.
->
-> WARNING: Duplicate signature
-> #11:
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> total: 0 errors, 1 warnings, 86 lines checked
+>> diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml 
+>> b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+>> index b8a0b392b24e..b86edf67ce62 100644
+>> --- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+>> +++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+>> @@ -64,7 +64,8 @@ properties:
+>>         - const: gsi
+>>       iommus:
+>> -    maxItems: 1
+>> +    minItems: 1
+>> +    maxItems: 2
+>>       clocks:
+>>       maxItems: 1
+>> 
+> 
 
-...this looks more like a bug in checkpatch to me, as it is possible for
-a patch to go through the same person twice.
-
-But I'll really shut up now.
 
