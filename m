@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EB6243AF49
+	by mail.lfdr.de (Postfix) with ESMTP id E6D6743AF4A
 	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 11:43:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234904AbhJZJpg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 05:45:36 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:49143 "EHLO
+        id S234939AbhJZJpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 05:45:38 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:46461 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234508AbhJZJpe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 05:45:34 -0400
+        by vger.kernel.org with ESMTP id S234933AbhJZJph (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 05:45:37 -0400
 Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 4FA035C00FF;
-        Tue, 26 Oct 2021 05:43:10 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 9402C5C00FF;
+        Tue, 26 Oct 2021 05:43:13 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute6.internal (MEProxy); Tue, 26 Oct 2021 05:43:10 -0400
+  by compute6.internal (MEProxy); Tue, 26 Oct 2021 05:43:13 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=ynz0MAhhourEb8BLKmaQoz7Y6QEMgaU30TLOGqwz8k4=; b=cRUa5rfy
-        HMqM1MgmmBuUbP3BXBtz4WTfZjk4qL0esM0VkaTqoe1ZJHXgrgPMJ5CKwZUl6vOs
-        +2cLt2QlKgbnzNN2kw4+Twny8KRFUhQcSd6DIuiU/RHF6BUBooYu5rjKXj1wfGvY
-        aHjpMsp1l5qFRC936NialQwkOyR2tFHDzOGSdOCbBXcfIz7kRfC272bz5yytV7vW
-        QImiEXRoPVLhXUe3nAKWATmIk3693URX9khT0FoQukwyVSejqoZiMhSy+OYyDw/Q
-        Q47nyj9Q0QCcBmVS+jgfT4Z+YGfY4hNzbfD8cTvk9CMb2Cl0wXfqmhDBdktFT3yx
-        dzjDO6LR2SbbyA==
-X-ME-Sender: <xms:rs13YXttsU1HlveAdAWHcpZqpbR5ImxaXuZjoB94j_kfAsYDS8cr-g>
-    <xme:rs13YYc7QlyKoT42LRnvWYWcI2dC9bIKULVO-WgC6yAxTP0l4rwUaeMQKYpTPBCGw
-    QHS4OZzi5DHvjg>
-X-ME-Received: <xmr:rs13Yaz6grP8KpHZ9Yq2MYcMWdiC4zAOopGLAw3HSp8zcsxFIeMUCUd9ZMk3xKj0iG5_M9a4ywjUm-UzV0FVB9xLgryfQeRtcKSbJpKbP94>
+        fm1; bh=vFQRf11yfuW1Y1D5KRLiDP+mQP43zJZPgLfTP+46VHk=; b=XsVilF2s
+        RaAy9hcawP30p+oIXHeDOlgPGH6bFYgXfxJxO5jljbxr9PZSTOwv84+Xd1Mx344+
+        HGt0wI0ufmu8nzgKXdxShcnveFwHjKWY7T+JiGuT7yhY+jotGOgx8vDIFV0kTCgr
+        i8mOyp4/T92KZgQi/M2dprw6bQBxKOm5vy/fVknQ+5No5EOF24WWEIEaohzy8MRK
+        eeRb1DM6SyRY6OTOwl/17fv22sFuWruRIef/TJIFdc3bZ6xW+RmRIsF6nCLnI2eI
+        89S3csACzMsRt/uUgK6kWmNvraWdMzJ6hjqAloadSfdSDTyEZeYXZsfLOn+6/GUI
+        ADPboY/iXskcQA==
+X-ME-Sender: <xms:sM13Yc38s3EFYYGh7tzSS3kTbsPSeBDissxP-0S6hdK7VlyAyzBN1g>
+    <xme:sM13YXHttDlU-lRm9viiwy_E29WfQpag_mC3Fx0KHMeW1XZDtQxBzNI4uCPla3D88
+    UTD32CQPWWxs3w>
+X-ME-Received: <xmr:sM13YU736Pi5fWeP6RWNNqRxvWTt31cT5TtcLL5ldvxHv-JvcEwNjUAJdlPUGABiH04Gqy-rxL0vH6DHSqSI1xaz7zeqIt0uHUSiWP8-1WE>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvdefjedgudejucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgepudenucfr
+    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgepvdenucfr
     rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:rs13YWOvbp9ffmFmicmtYCFWp3LA-wVUDC5pGaMOh1K0ZX_Ed4GKdw>
-    <xmx:rs13YX9jOxm0MRS5E_Wgw9KIJvpTj924tnpj7SBLQr3OLnr41g_pKw>
-    <xmx:rs13YWUTqHW0nnTCtDzq3w4d303uAMroWVPR5YciIvjN_FWH-dlPuw>
-    <xmx:rs13YSlz73GyZl0R7bCp7qOrZWzhXuIt3tLhekIxaZwnYtNycNMhmw>
+X-ME-Proxy: <xmx:sM13YV3MLC5E56uw3XidW2j4FUDJzpWQaTgsHJc7oTX_voDt2l35rA>
+    <xmx:sM13YfFVrjCmp-dcwfiuPZub51ckmvqPAsQaUUedqlhvyXibkKngVA>
+    <xmx:sM13Ye-5gxSjU9unM2fzE2hd11pMnV1qzmEdPnaZSNisD-MNaHzQrg>
+    <xmx:sc13YQMfjkKUaVcWykeoPjSX_odZlIruhi6--6vRscup-vEbxPnISQ>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 26 Oct 2021 05:43:08 -0400 (EDT)
+ 26 Oct 2021 05:43:10 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         petrm@nvidia.com, danieller@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 6/9] selftests: mlxsw: Add a scale test for RIF MAC profiles
-Date:   Tue, 26 Oct 2021 12:42:22 +0300
-Message-Id: <20211026094225.1265320-7-idosch@idosch.org>
+Subject: [PATCH net-next 7/9] selftests: mlxsw: Add forwarding test for RIF MAC profiles
+Date:   Tue, 26 Oct 2021 12:42:23 +0300
+Message-Id: <20211026094225.1265320-8-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211026094225.1265320-1-idosch@idosch.org>
 References: <20211026094225.1265320-1-idosch@idosch.org>
@@ -63,177 +63,243 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Danielle Ratson <danieller@nvidia.com>
 
-Query the maximum number of supported RIF MAC profiles using
-devlink-resource and verify that all available MAC profiles can be utilized
-and that an error is generated when user space tries to exceed this number.
+Verify that MAC profile changes are indeed applied and that packets are
+forwarded with the correct source MAC.
 
-Output example in Spectrum-2:
+Output example:
 
-$ TESTS='rif_mac_profile' ./resource_scale.sh
-TEST: 'rif_mac_profile' 4                                           [ OK ]
-TEST: 'rif_mac_profile' overflow 5                                  [ OK ]
+$ ./rif_mac_profiles.sh
+TEST: h1->h2: new mac profile                                       [ OK ]
+TEST: h2->h1: new mac profile                                       [ OK ]
+TEST: h1->h2: edit mac profile                                      [ OK ]
+TEST: h2->h1: edit mac profile                                      [ OK ]
 
 Signed-off-by: Danielle Ratson <danieller@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- .../net/mlxsw/rif_mac_profile_scale.sh        | 72 +++++++++++++++++++
- .../net/mlxsw/spectrum-2/resource_scale.sh    |  2 +-
- .../mlxsw/spectrum-2/rif_mac_profile_scale.sh | 16 +++++
- .../net/mlxsw/spectrum/resource_scale.sh      |  2 +-
- .../mlxsw/spectrum/rif_mac_profile_scale.sh   | 16 +++++
- 5 files changed, 106 insertions(+), 2 deletions(-)
- create mode 100644 tools/testing/selftests/drivers/net/mlxsw/rif_mac_profile_scale.sh
- create mode 100644 tools/testing/selftests/drivers/net/mlxsw/spectrum-2/rif_mac_profile_scale.sh
- create mode 100644 tools/testing/selftests/drivers/net/mlxsw/spectrum/rif_mac_profile_scale.sh
+ .../drivers/net/mlxsw/rif_mac_profiles.sh     | 213 ++++++++++++++++++
+ 1 file changed, 213 insertions(+)
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/rif_mac_profiles.sh
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/rif_mac_profile_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/rif_mac_profile_scale.sh
-new file mode 100644
-index 000000000000..71e7681f15f6
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/rif_mac_profiles.sh b/tools/testing/selftests/drivers/net/mlxsw/rif_mac_profiles.sh
+new file mode 100755
+index 000000000000..c18340cee55d
 --- /dev/null
-+++ b/tools/testing/selftests/drivers/net/mlxsw/rif_mac_profile_scale.sh
-@@ -0,0 +1,72 @@
++++ b/tools/testing/selftests/drivers/net/mlxsw/rif_mac_profiles.sh
+@@ -0,0 +1,213 @@
 +#!/bin/bash
 +# SPDX-License-Identifier: GPL-2.0
 +
-+# Test for RIF MAC profiles resource. The test adds VLAN netdevices according to
-+# the maximum number of RIF MAC profiles, sets each of them with a random
-+# MAC address, and checks that eventually the number of occupied RIF MAC
-+# profiles equals the maximum number of RIF MAC profiles.
++lib_dir=$(dirname $0)/../../../net/forwarding
 +
++ALL_TESTS="
++	mac_profile_test
++"
++NUM_NETIFS=4
++source $lib_dir/lib.sh
++source $lib_dir/tc_common.sh
++source $lib_dir/devlink_lib.sh
 +
-+RIF_MAC_PROFILE_NUM_NETIFS=2
-+
-+rif_mac_profiles_create()
++h1_create()
 +{
-+	local count=$1; shift
-+	local should_fail=$1; shift
-+	local batch_file="$(mktemp)"
++	simple_if_init $h1 192.0.2.1/24
++	ip route add 198.51.100.0/24 vrf v$h1 nexthop via 192.0.2.2
 +
-+	for ((i = 1; i <= count; i++)); do
-+		vlan=$(( i*10 ))
-+		m=$(( i*11 ))
-+
-+		cat >> $batch_file <<-EOF
-+			link add link $h1 name $h1.$vlan \
-+				address 00:$m:$m:$m:$m:$m type vlan id $vlan
-+			address add 192.0.$m.1/24 dev $h1.$vlan
-+		EOF
-+	done
-+
-+	ip -b $batch_file &> /dev/null
-+	check_err_fail $should_fail $? "RIF creation"
-+
-+	rm -f $batch_file
++	tc qdisc add dev $h1 ingress
 +}
 +
-+rif_mac_profile_test()
++h1_destroy()
 +{
-+	local count=$1; shift
-+	local should_fail=$1; shift
++	tc qdisc del dev $h1 ingress
 +
-+	rif_mac_profiles_create $count $should_fail
-+
-+	occ=$(devlink -j resource show $DEVLINK_DEV \
-+	      | jq '.[][][] | select(.name=="rif_mac_profiles") |.["occ"]')
-+
-+	[[ $occ -eq $count ]]
-+	check_err_fail $should_fail $? "Attempt to use $count profiles (actual result $occ)"
++	ip route del 198.51.100.0/24 vrf v$h1
++	simple_if_fini $h1 192.0.2.1/24
 +}
 +
-+rif_mac_profile_setup_prepare()
++h2_create()
++{
++	simple_if_init $h2 198.51.100.1/24
++	ip route add 192.0.2.0/24 vrf v$h2 nexthop via 198.51.100.2
++
++	tc qdisc add dev $h2 ingress
++}
++
++h2_destroy()
++{
++	tc qdisc del dev $h2 ingress
++
++	ip route del 192.0.2.0/24 vrf v$h2
++	simple_if_fini $h2 198.51.100.1/24
++}
++
++router_create()
++{
++	ip link set dev $rp1 up
++	ip link set dev $rp2 up
++
++	tc qdisc add dev $rp1 clsact
++	tc qdisc add dev $rp2 clsact
++	ip address add 192.0.2.2/24 dev $rp1
++	ip address add 198.51.100.2/24 dev $rp2
++}
++
++router_destroy()
++{
++	ip address del 198.51.100.2/24 dev $rp2
++	ip address del 192.0.2.2/24 dev $rp1
++	tc qdisc del dev $rp2 clsact
++	tc qdisc del dev $rp1 clsact
++
++	ip link set dev $rp2 down
++	ip link set dev $rp1 down
++}
++
++setup_prepare()
 +{
 +	h1=${NETIFS[p1]}
-+	h2=${NETIFS[p2]}
++	rp1=${NETIFS[p2]}
 +
-+	# Disable IPv6 on the two interfaces to avoid IPv6 link-local addresses
-+	# being generated and RIFs being created.
-+	sysctl_set net.ipv6.conf.$h1.disable_ipv6 1
-+	sysctl_set net.ipv6.conf.$h2.disable_ipv6 1
++	rp2=${NETIFS[p3]}
++	h2=${NETIFS[p4]}
 +
-+	ip link set $h1 up
-+	ip link set $h2 up
++	vrf_prepare
++
++	h1_create
++	h2_create
++
++	router_create
++
++	forwarding_enable
 +}
 +
-+rif_mac_profile_cleanup()
++cleanup()
 +{
 +	pre_cleanup
 +
-+	ip link set $h2 down
-+	ip link set $h1 down
++	forwarding_restore
 +
-+	sysctl_restore net.ipv6.conf.$h2.disable_ipv6
-+	sysctl_restore net.ipv6.conf.$h1.disable_ipv6
++	router_destroy
++
++	h2_destroy
++	h1_destroy
++
++	vrf_cleanup
 +}
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
-index 02b7eea19743..e9f65bd2e299 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
-@@ -25,7 +25,7 @@ cleanup()
- 
- trap cleanup EXIT
- 
--ALL_TESTS="router tc_flower mirror_gre tc_police port"
-+ALL_TESTS="router tc_flower mirror_gre tc_police port rif_mac_profile"
- for current_test in ${TESTS:-$ALL_TESTS}; do
- 	RET_FIN=0
- 	source ${current_test}_scale.sh
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/rif_mac_profile_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/rif_mac_profile_scale.sh
-new file mode 100644
-index 000000000000..303d7cbe3c45
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/rif_mac_profile_scale.sh
-@@ -0,0 +1,16 @@
-+# SPDX-License-Identifier: GPL-2.0
-+source ../rif_mac_profile_scale.sh
 +
-+rif_mac_profile_get_target()
++h1_to_h2()
 +{
-+	local should_fail=$1
-+	local target
++	local test_name=$@; shift
++	local smac=$(mac_get $rp2)
 +
-+	target=$(devlink_resource_size_get rif_mac_profiles)
++	RET=0
 +
-+	if ((! should_fail)); then
-+		echo $target
-+	else
-+		echo $((target + 1))
-+	fi
++	# Replace neighbour to avoid first packet being forwarded in software
++	ip neigh replace dev $rp2 198.51.100.1 lladdr $(mac_get $h2)
++
++	# Add a filter to ensure that packets are forwarded in hardware. Cannot
++	# match on source MAC because it is not set in eACL after routing
++	tc filter add dev $rp2 egress proto ip pref 1 handle 101 \
++		flower skip_sw ip_proto udp src_port 12345 dst_port 54321 \
++		action pass
++
++	# Add a filter to ensure that packets are received with the correct
++	# source MAC
++	tc filter add dev $h2 ingress proto ip pref 1 handle 101 \
++		flower skip_sw src_mac $smac ip_proto udp src_port 12345 \
++		dst_port 54321 action pass
++
++	$MZ $h1 -a own -b $(mac_get $rp1) -t udp "sp=12345,dp=54321" \
++		-A 192.0.2.1 -B 198.51.100.1 -c 10 -p 100 -d 1msec -q
++
++	tc_check_packets "dev $rp2 egress" 101 10
++	check_err $? "packets not forwarded in hardware"
++
++	tc_check_packets "dev $h2 ingress" 101 10
++	check_err $? "packets not forwarded with correct source mac"
++
++	log_test "h1->h2: $test_name"
++
++	tc filter del dev $h2 ingress protocol ip pref 1 handle 101 flower
++	tc filter del dev $rp2 egress protocol ip pref 1 handle 101 flower
++	ip neigh del dev $rp2 198.51.100.1 lladdr $(mac_get $h2)
 +}
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/spectrum/resource_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/spectrum/resource_scale.sh
-index 685dfb3478b3..bcb110e830ce 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/spectrum/resource_scale.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/spectrum/resource_scale.sh
-@@ -22,7 +22,7 @@ cleanup()
- devlink_sp_read_kvd_defaults
- trap cleanup EXIT
- 
--ALL_TESTS="router tc_flower mirror_gre tc_police port"
-+ALL_TESTS="router tc_flower mirror_gre tc_police port rif_mac_profile"
- for current_test in ${TESTS:-$ALL_TESTS}; do
- 	RET_FIN=0
- 	source ${current_test}_scale.sh
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/spectrum/rif_mac_profile_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/spectrum/rif_mac_profile_scale.sh
-new file mode 100644
-index 000000000000..303d7cbe3c45
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/mlxsw/spectrum/rif_mac_profile_scale.sh
-@@ -0,0 +1,16 @@
-+# SPDX-License-Identifier: GPL-2.0
-+source ../rif_mac_profile_scale.sh
 +
-+rif_mac_profile_get_target()
++h2_to_h1()
 +{
-+	local should_fail=$1
-+	local target
++	local test_name=$@; shift
++	local rp1_mac=$(mac_get $rp1)
 +
-+	target=$(devlink_resource_size_get rif_mac_profiles)
++	RET=0
 +
-+	if ((! should_fail)); then
-+		echo $target
-+	else
-+		echo $((target + 1))
-+	fi
++	ip neigh replace dev $rp1 192.0.2.1 lladdr $(mac_get $h1)
++
++	tc filter add dev $rp1 egress proto ip pref 1 handle 101 \
++		flower skip_sw ip_proto udp src_port 54321 dst_port 12345 \
++		action pass
++
++	tc filter add dev $h1 ingress proto ip pref 1 handle 101 \
++		flower skip_sw src_mac $rp1_mac ip_proto udp src_port 54321 \
++		dst_port 12345 action pass
++
++	$MZ $h2 -a own -b $(mac_get $rp2) -t udp "sp=54321,dp=12345" \
++		-A 198.51.100.1 -B 192.0.2.1 -c 10 -p 100 -d 1msec -q
++
++	tc_check_packets "dev $rp1 egress" 101 10
++	check_err $? "packets not forwarded in hardware"
++
++	tc_check_packets "dev $h1 ingress" 101 10
++	check_err $? "packets not forwarded with correct source mac"
++
++	log_test "h2->h1: $test_name"
++
++	tc filter del dev $h1 ingress protocol ip pref 1 handle 101 flower
++	tc filter del dev $rp1 egress protocol ip pref 1 handle 101 flower
++	ip neigh del dev $rp1 192.0.2.1 lladdr $(mac_get $h1)
 +}
++
++smac_test()
++{
++	local test_name=$@; shift
++
++	# Test that packets forwarded to $h2 via $rp2 are forwarded with the
++	# current source MAC of $rp2
++	h1_to_h2 $test_name
++
++	# Test that packets forwarded to $h1 via $rp1 are forwarded with the
++	# current source MAC of $rp1. This MAC is never changed during the test,
++	# but given the shared nature of MAC profile, the point is to see that
++	# changes to the MAC of $rp2 do not affect that of $rp1
++	h2_to_h1 $test_name
++}
++
++mac_profile_test()
++{
++	local rp2_mac=$(mac_get $rp2)
++
++	# Test behavior when the RIF backing $rp2 is transitioned to use
++	# a new MAC profile
++	ip link set dev $rp2 addr 00:11:22:33:44:55
++	smac_test "new mac profile"
++
++	# Test behavior when the MAC profile used by the RIF is edited
++	ip link set dev $rp2 address 00:22:22:22:22:22
++	smac_test "edit mac profile"
++
++	# Restore original MAC
++	ip link set dev $rp2 addr $rp2_mac
++}
++
++trap cleanup EXIT
++
++setup_prepare
++setup_wait
++
++mac_profiles=$(devlink_resource_size_get rif_mac_profiles)
++if [[ $mac_profiles -ne 1 ]]; then
++	tests_run
++fi
++
++exit $EXIT_STATUS
 -- 
 2.31.1
 
