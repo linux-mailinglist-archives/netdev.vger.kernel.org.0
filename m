@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4D8243B525
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 17:10:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B163543B526
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 17:10:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234257AbhJZPNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S234348AbhJZPNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 26 Oct 2021 11:13:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37030 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234008AbhJZPND (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 11:13:03 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411FAC061745
-        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 08:10:39 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id s136so14445759pgs.4
-        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 08:10:39 -0700 (PDT)
+        with ESMTP id S229887AbhJZPNG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 11:13:06 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4027FC061767
+        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 08:10:42 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id h193so14447993pgc.1
+        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 08:10:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=t406cWyP6pwicPn9Xd4qm/MR3exCzqPOl38cxu/4LF4=;
-        b=WFm5kYaSChO3DALKQYaFDqY7bOEx1AuR8b4G1B41tAJRw4bThqxRPhJgfbA7d2QhQb
-         nxIrlAvBfu8nb1XukLxqqFeaQNPtkH1EbraG3WsjdXaamVlY4Ggsg3PNBNhpXhYTYT1w
-         3bE45mMmK2euTy3eR0D5W1TNZ71pVV/Xnj6bGn3ZBBfjWIwjgP44ilmKhZ/HY6wrocn9
-         tti6ikCWSlhm0WvpbFK+4DhKFNONn2hO3x9jQ2bolZNuaTfmolm0eyB+F9oyRY8PsjE7
-         Tc6qBDsRrZoQDIgb/jqNT+RIHmxHEZm6S3UegoaTl0GJURFNDjjxI3k78YIGEycHSxQv
-         bHXA==
+        bh=kTO/whCMANVpCMxt1nV4HtJDolGkv8V9YyRr/LsZOEs=;
+        b=Xv7UzWlj8JoQknwGtRkrW2aPMOgK8V7iRm+V3ySVuqQuT4jKnYsChuqv3PzjsxE35Y
+         rVdpj1PRG3TtQlGdWMNVqwk4aF0nyeTjQOPoLgffmAgUaEvdMbpJdxsw37dsLS5uzvPN
+         WWjtxrFbRi+0izGIg5FIIGSHx/l0H5IR1xDNJXgwsNWRYLdtxtWSmJTCBuPzJu38Fati
+         b8wxIacmLXF43iNiM7y0pY8pJ3zuv/oxfkl4tWLyiNaYswDISXzdpap/CTh3OiEF1HNk
+         1v+bH5G+ClG7iWXnwklv+VacIUdxlwDlDWp81JAXydw2VKIdbC7nj6lsobTGIInqiAjk
+         QbFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=t406cWyP6pwicPn9Xd4qm/MR3exCzqPOl38cxu/4LF4=;
-        b=CANriUnrsuo62IJ6eCXNP6uuXK6fp5kLj7K3Yoqei7ZZI/xP7FQLMKEkobbperoFK0
-         OxFDlYA+Denq4goN1TPkCum3vqYA3gamxdUGR/kb6ni+rHc6OIc1WCuUrzfrArMW0xXo
-         H8X0E3q/wkt8AfZQX8CP+dL3n+lzhK2qyaw/hiiJIgvMZTxv/Ed+iXYoUsNyb6TrWUv6
-         34uuvZTYJFM9TwHSjW3pMw8JKwAvhYfjPENIV282ngD9MOY+TWS9MSkkUaxG2b2WhZdh
-         VmLWovdO608PmM6sqa4Ha//fdl5PrYTVIxpiY12fV8Uhva3cDMiuzFffy9TFCrzdtc8j
-         kY6w==
-X-Gm-Message-State: AOAM531c5k7vXmP3NOSufnUPP+AHurHcSOnh1cuR20rH8b/sVH2uICxh
-        vZpZeW37o11YVS8bhbW1HUPwMvm5Z7TtPg==
-X-Google-Smtp-Source: ABdhPJzJULcSEPMMZ5Br50X2TdazSo/xEP+x1wi/jgmIjObu0e3d1YnPoGdPes2ao8N9MFz9Zm57Wg==
-X-Received: by 2002:a63:7e19:: with SMTP id z25mr14099288pgc.295.1635261038583;
-        Tue, 26 Oct 2021 08:10:38 -0700 (PDT)
+        bh=kTO/whCMANVpCMxt1nV4HtJDolGkv8V9YyRr/LsZOEs=;
+        b=Ru7jwAvN5LaVkWCnWSXFdTFFfHWXvG4AhQaAOL0Ol2h44KZk3Fk9gSlYh55WAQBsKB
+         HviF96TKx48sUaV8JWd2QeBzGlpN4s4lGjDtk/e3UlZQYk3MuSq5SYIuC95E9lbr2QTs
+         2ckZ7+I/S/PRoyz8gue51TBS8NebZI6sl0Zj4CQyLyhJHTtf2Zd5d7AnXUAeQT3G8khu
+         6hOlbWu6jUh2zRDqL4Yb9StuaLZdtt+jm110UIvaySmmXbxB0rtJmBi18Z/6z7y9uDVT
+         2qtaDnYZyWlhZOM4iOrrZDXYjPahtLCts8q97vKlgmXY17SJJFX2Vlo0wf3pvm7cioDv
+         TCGw==
+X-Gm-Message-State: AOAM533XKI6SgrSeAjdXeBJGIlxeK3x0Hg2h63JBUcxyUKk2FRHefKOs
+        hBWV6AZvpmmWudSXHTIuiZE=
+X-Google-Smtp-Source: ABdhPJxTcc4zv0l3Z0ZutsWfHq/2nkeRGcG2tHFieJX1NnTia81htyp0Oh3a8kjwa/BjiGAOUFiaUQ==
+X-Received: by 2002:a63:7047:: with SMTP id a7mr18910979pgn.458.1635261041249;
+        Tue, 26 Oct 2021 08:10:41 -0700 (PDT)
 Received: from localhost.localdomain ([49.173.165.50])
-        by smtp.gmail.com with ESMTPSA id p1sm10911009pfo.143.2021.10.26.08.10.36
+        by smtp.gmail.com with ESMTPSA id p1sm10911009pfo.143.2021.10.26.08.10.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Oct 2021 08:10:37 -0700 (PDT)
+        Tue, 26 Oct 2021 08:10:40 -0700 (PDT)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, dsahern@kernel.org,
         netdev@vger.kernel.org
 Cc:     dkirjanov@suse.de, ap420073@gmail.com
-Subject: [PATCH net-next 1/4 v4] amt: add control plane of amt interface
-Date:   Tue, 26 Oct 2021 15:10:13 +0000
-Message-Id: <20211026151016.25997-2-ap420073@gmail.com>
+Subject: [PATCH net-next 2/4 v4] amt: add data plane of amt interface
+Date:   Tue, 26 Oct 2021 15:10:14 +0000
+Message-Id: <20211026151016.25997-3-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211026151016.25997-1-ap420073@gmail.com>
 References: <20211026151016.25997-1-ap420073@gmail.com>
@@ -60,9 +60,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It adds definitions and control plane code for AMT.
-this is very similar to udp tunneling interfaces such as gtp, vxlan, etc.
-In the next patch, data plane code will be added.
+Before forwarding multicast traffic, the amt interface establishes between
+gateway and relay. In order to establish, amt defined some message type
+and those message flow looks like the below.
+
+                      Gateway                  Relay
+                      -------                  -----
+                         :        Request        :
+                     [1] |           N           |
+                         |---------------------->|
+                         |    Membership Query   | [2]
+                         |    N,MAC,gADDR,gPORT  |
+                         |<======================|
+                     [3] |   Membership Update   |
+                         |   ({G:INCLUDE({S})})  |
+                         |======================>|
+                         |                       |
+    ---------------------:-----------------------:---------------------
+   |                     |                       |                     |
+   |                     |    *Multicast Data    |  *IP Packet(S,G)    |
+   |                     |      gADDR,gPORT      |<-----------------() |
+   |    *IP Packet(S,G)  |<======================|                     |
+   | ()<-----------------|                       |                     |
+   |                     |                       |                     |
+    ---------------------:-----------------------:---------------------
+                         ~                       ~
+                         ~        Request        ~
+                     [4] |           N'          |
+                         |---------------------->|
+                         |   Membership Query    | [5]
+                         | N',MAC',gADDR',gPORT' |
+                         |<======================|
+                     [6] |                       |
+                         |       Teardown        |
+                         |   N,MAC,gADDR,gPORT   |
+                         |---------------------->|
+                         |                       | [7]
+                         |   Membership Update   |
+                         |  ({G:INCLUDE({S})})   |
+                         |======================>|
+                         |                       |
+    ---------------------:-----------------------:---------------------
+   |                     |                       |                     |
+   |                     |    *Multicast Data    |  *IP Packet(S,G)    |
+   |                     |     gADDR',gPORT'     |<-----------------() |
+   |    *IP Packet (S,G) |<======================|                     |
+   | ()<-----------------|                       |                     |
+   |                     |                       |                     |
+    ---------------------:-----------------------:---------------------
+                         |                       |
+                         :                       :
+
+1. Discovery
+ - Sent by Gateway to Relay
+ - To find Relay unique ip address
+2. Advertisement
+ - Sent by Relay to Gateway
+ - Contains the unique IP address
+3. Request
+ - Sent by Gateway to Relay
+ - Solicit to receive 'Query' message.
+4. Query
+ - Sent by Relay to Gateway
+ - Contains General Query message.
+5. Update
+ - Sent by  Gateway to Relay
+ - Contains report message.
+6. Multicast Data
+ - Sent by Relay to Gateway
+ - encapsulated multicast traffic.
+7. Teardown
+ - Not supported at this time.
+
+Except for the Teardown message, it supports all messages.
+
+In the next patch, IGMP/MLD logic will be added.
 
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
@@ -77,849 +149,1383 @@ v2 -> v3:
 
 v3 -> v4:
  - Split patch.
- - Fix compile error
+ - Use CHECKSUM_NONE instead of CHECKSUM_UNNECESSARY
 
- MAINTAINERS              |   8 +
- drivers/net/Kconfig      |  16 ++
- drivers/net/Makefile     |   1 +
- drivers/net/amt.c        | 487 +++++++++++++++++++++++++++++++++++++++
- include/net/amt.h        | 236 +++++++++++++++++++
- include/uapi/linux/amt.h |  31 +++
- 6 files changed, 779 insertions(+)
- create mode 100644 drivers/net/amt.c
- create mode 100644 include/net/amt.h
- create mode 100644 include/uapi/linux/amt.h
+ drivers/net/amt.c | 1241 +++++++++++++++++++++++++++++++++++++++++++++
+ include/net/amt.h |   45 ++
+ 2 files changed, 1286 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 975086c5345d..7fc24375e0c8 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1020,6 +1020,14 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/iio/light/ams,as73211.yaml
- F:	drivers/iio/light/as73211.c
- 
-+AMT (Automatic Multicast Tunneling)
-+M:	Taehee Yoo <ap420073@gmail.com>
-+L:	netdev@vger.kernel.org
-+S:	Maintained
-+T:	git git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
-+T:	git git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git
-+F:	drivers/net/amt.c
-+
- ANALOG DEVICES INC AD7192 DRIVER
- M:	Alexandru Tachici <alexandru.tachici@analog.com>
- L:	linux-iio@vger.kernel.org
-diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index f37b1c56f7c4..dae126b31cd5 100644
---- a/drivers/net/Kconfig
-+++ b/drivers/net/Kconfig
-@@ -291,6 +291,22 @@ config GTP
- 	  To compile this drivers as a module, choose M here: the module
- 	  will be called gtp.
- 
-+config AMT
-+	tristate "Automatic Multicast Tunneling (AMT)"
-+	depends on INET && IP_MULTICAST
-+	select NET_UDP_TUNNEL
-+	help
-+	  This allows one to create AMT(Automatic Multicast Tunneling)
-+	  virtual interfaces that provide multicast tunneling.
-+	  There are two roles, Gateway, and Relay.
-+	  Gateway Encapsulates IGMP/MLD traffic from listeners to the Relay.
-+	  Gateway Decapsulates multicast traffic from the Relay to Listeners.
-+	  Relay Encapsulates multicast traffic from Sources to Gateway.
-+	  Relay Decapsulates IGMP/MLD traffic from Gateway.
-+
-+	  To compile this drivers as a module, choose M here: the module
-+	  will be called amt.
-+
- config MACSEC
- 	tristate "IEEE 802.1AE MAC-level encryption (MACsec)"
- 	select CRYPTO
-diff --git a/drivers/net/Makefile b/drivers/net/Makefile
-index 739838623cf6..50b23e71065f 100644
---- a/drivers/net/Makefile
-+++ b/drivers/net/Makefile
-@@ -14,6 +14,7 @@ obj-$(CONFIG_WIREGUARD) += wireguard/
- obj-$(CONFIG_EQUALIZER) += eql.o
- obj-$(CONFIG_IFB) += ifb.o
- obj-$(CONFIG_MACSEC) += macsec.o
-+obj-$(CONFIG_AMT) += amt.o
- obj-$(CONFIG_MACVLAN) += macvlan.o
- obj-$(CONFIG_MACVTAP) += macvtap.o
- obj-$(CONFIG_MII) += mii.o
 diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-new file mode 100644
-index 000000000000..8d4782c66cde
---- /dev/null
+index 8d4782c66cde..c3ac94b6d3e8 100644
+--- a/drivers/net/amt.c
 +++ b/drivers/net/amt.c
-@@ -0,0 +1,487 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/* Copyright (c) 2021 Taehee Yoo <ap420073@gmail.com> */
+@@ -31,6 +31,1220 @@
+ 
+ static struct workqueue_struct *amt_wq;
+ 
++static char *status_str[] = {
++	"AMT_STATUS_INIT",
++	"AMT_STATUS_SENT_DISCOVERY",
++	"AMT_STATUS_RECEIVED_DISCOVERY",
++	"AMT_STATUS_SENT_ADVERTISEMENT",
++	"AMT_STATUS_RECEIVED_ADVERTISEMENT",
++	"AMT_STATUS_SENT_REQUEST",
++	"AMT_STATUS_RECEIVED_REQUEST",
++	"AMT_STATUS_SENT_QUERY",
++	"AMT_STATUS_RECEIVED_QUERY",
++	"AMT_STATUS_SENT_UPDATE",
++	"AMT_STATUS_RECEIVED_UPDATE",
++};
 +
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++static char *type_str[] = {
++	"AMT_MSG_DISCOVERY",
++	"AMT_MSG_ADVERTISEMENT",
++	"AMT_MSG_REQUEST",
++	"AMT_MSG_MEMBERSHIP_QUERY",
++	"AMT_MSG_MEMBERSHIP_UPDATE",
++	"AMT_MSG_MULTICAST_DATA",
++	"AMT_MSG_TEATDOWM",
++};
 +
-+#include <linux/module.h>
-+#include <linux/skbuff.h>
-+#include <linux/udp.h>
-+#include <linux/jhash.h>
-+#include <linux/if_tunnel.h>
-+#include <linux/net.h>
-+#include <linux/igmp.h>
-+#include <net/net_namespace.h>
-+#include <net/protocol.h>
-+#include <net/ip.h>
-+#include <net/udp.h>
-+#include <net/udp_tunnel.h>
-+#include <net/icmp.h>
-+#include <net/mld.h>
-+#include <net/amt.h>
-+#include <uapi/linux/amt.h>
-+#include <linux/security.h>
-+#include <net/gro_cells.h>
-+#include <net/ipv6.h>
-+#include <net/protocol.h>
-+#include <net/if_inet6.h>
-+#include <net/ndisc.h>
-+#include <net/addrconf.h>
-+#include <net/ip6_route.h>
-+#include <net/inet_common.h>
-+
-+static struct workqueue_struct *amt_wq;
-+
-+static struct socket *amt_create_sock(struct net *net, __be16 port)
++static struct amt_skb_cb *amt_skb_cb(struct sk_buff *skb)
 +{
-+	struct udp_port_cfg udp_conf;
-+	struct socket *sock;
-+	int err;
-+
-+	memset(&udp_conf, 0, sizeof(udp_conf));
-+	udp_conf.family = AF_INET;
-+	udp_conf.local_ip.s_addr = htonl(INADDR_ANY);
-+
-+	udp_conf.local_udp_port = port;
-+
-+	err = udp_sock_create(net, &udp_conf, &sock);
-+	if (err < 0)
-+		return ERR_PTR(err);
-+
-+	return sock;
++	return (struct amt_skb_cb *)((void *)skb->cb +
++		sizeof(struct qdisc_skb_cb));
 +}
 +
-+static int amt_socket_create(struct amt_dev *amt)
++static struct sk_buff *amt_build_igmp_gq(struct amt_dev *amt)
 +{
-+	struct udp_tunnel_sock_cfg tunnel_cfg;
-+	struct socket *sock;
++	int hlen = LL_RESERVED_SPACE(amt->dev);
++	int tlen = amt->dev->needed_tailroom;
++	struct igmpv3_query *ihv3;
++	void *csum_start = NULL;
++	__sum16 *csum = NULL;
++	struct sk_buff *skb;
++	struct ethhdr *eth;
++	struct iphdr *iph;
++	unsigned int len;
++	int offset;
 +
-+	sock = amt_create_sock(amt->net, amt->relay_port);
-+	if (IS_ERR(sock))
-+		return PTR_ERR(sock);
++	len = hlen + tlen + sizeof(*iph) + 4 + sizeof(*ihv3);
++	skb = netdev_alloc_skb_ip_align(amt->dev, len);
++	if (!skb)
++		return NULL;
 +
-+	/* Mark socket as an encapsulation socket */
-+	memset(&tunnel_cfg, 0, sizeof(tunnel_cfg));
-+	tunnel_cfg.sk_user_data = amt;
-+	tunnel_cfg.encap_type = 1;
-+	tunnel_cfg.encap_destroy = NULL;
-+	setup_udp_tunnel_sock(amt->net, sock, &tunnel_cfg);
++	skb_reserve(skb, hlen);
++	skb_push(skb, sizeof(*eth));
++	skb->protocol = htons(ETH_P_IP);
++	skb_reset_mac_header(skb);
++	skb->priority = TC_PRIO_CONTROL;
++	skb_put(skb, sizeof(*iph) + 4 + sizeof(*ihv3));
++	skb_pull(skb, sizeof(*eth));
++	skb_reset_network_header(skb);
 +
-+	rcu_assign_pointer(amt->sock, sock);
-+	return 0;
++	iph		= ip_hdr(skb);
++	iph->version	= 4;
++	iph->ihl	= (sizeof(struct iphdr) + 4) >> 2;
++	iph->tos	= 0xc0;
++	iph->tot_len	= htons(sizeof(*iph) + 4 + sizeof(*ihv3));
++	iph->frag_off	= htons(IP_DF);
++	iph->ttl	= 1;
++	iph->id		= 0;
++	iph->protocol	= IPPROTO_IGMP;
++	iph->daddr	= htonl(INADDR_ALLHOSTS_GROUP);
++	iph->saddr	= htonl(INADDR_ANY);
++	((u8 *)&iph[1])[0] = IPOPT_RA;
++	((u8 *)&iph[1])[1] = 4;
++	((u8 *)&iph[1])[2] = 0;
++	((u8 *)&iph[1])[3] = 0;
++	ip_send_check(iph);
++
++	eth = eth_hdr(skb);
++	ether_addr_copy(eth->h_source, amt->dev->dev_addr);
++	ip_eth_mc_map(htonl(INADDR_ALLHOSTS_GROUP), eth->h_dest);
++	eth->h_proto = htons(ETH_P_IP);
++
++	ihv3		= skb_pull(skb, sizeof(*iph) + 4);
++	skb_reset_transport_header(skb);
++	ihv3->type	= IGMP_HOST_MEMBERSHIP_QUERY;
++	ihv3->code	= 1;
++	ihv3->group	= 0;
++	ihv3->qqic	= amt->qi;
++	ihv3->nsrcs	= 0;
++	ihv3->resv	= 0;
++	ihv3->suppress	= false;
++	ihv3->qrv	= amt->net->ipv4.sysctl_igmp_qrv;
++	ihv3->csum	= 0;
++	csum		= &ihv3->csum;
++	csum_start	= (void *)ihv3;
++	*csum		= ip_compute_csum(csum_start, sizeof(*ihv3));
++	offset		= skb_transport_offset(skb);
++	skb->csum	= skb_checksum(skb, offset, skb->len - offset, 0);
++	skb->ip_summed	= CHECKSUM_NONE;
++
++	skb_push(skb, sizeof(*eth) + sizeof(*iph) + 4);
++
++	return skb;
 +}
 +
-+static int amt_dev_open(struct net_device *dev)
++static void __amt_update_gw_status(struct amt_dev *amt, enum amt_status status,
++				   bool validate)
 +{
-+	struct amt_dev *amt = netdev_priv(dev);
++	if (validate && amt->status >= status)
++		return;
++	netdev_dbg(amt->dev, "Update GW status %s -> %s",
++		   status_str[amt->status], status_str[status]);
++	amt->status = status;
++}
++
++static void __amt_update_relay_status(struct amt_tunnel_list *tunnel,
++				      enum amt_status status,
++				      bool validate)
++{
++	if (validate && tunnel->status >= status)
++		return;
++	netdev_dbg(tunnel->amt->dev,
++		   "Update Tunnel(IP = %pI4, PORT = %u) status %s -> %s",
++		   &tunnel->ip4, ntohs(tunnel->source_port),
++		   status_str[tunnel->status], status_str[status]);
++	tunnel->status = status;
++}
++
++static void amt_update_gw_status(struct amt_dev *amt, enum amt_status status,
++				 bool validate)
++{
++	spin_lock_bh(&amt->lock);
++	__amt_update_gw_status(amt, status, validate);
++	spin_unlock_bh(&amt->lock);
++}
++
++static void amt_update_relay_status(struct amt_tunnel_list *tunnel,
++				    enum amt_status status, bool validate)
++{
++	spin_lock_bh(&tunnel->lock);
++	__amt_update_relay_status(tunnel, status, validate);
++	spin_unlock_bh(&tunnel->lock);
++}
++
++static void amt_send_discovery(struct amt_dev *amt)
++{
++	struct amt_header_discovery *amtd;
++	int hlen, tlen, offset;
++	struct socket *sock;
++	struct udphdr *udph;
++	struct sk_buff *skb;
++	struct iphdr *iph;
++	struct rtable *rt;
++	struct flowi4 fl4;
++	u32 len;
 +	int err;
 +
-+	amt->ready4 = false;
-+	amt->ready6 = false;
++	rcu_read_lock();
++	sock = rcu_dereference(amt->sock);
++	if (!sock)
++		goto out;
 +
-+	err = amt_socket_create(amt);
-+	if (err)
-+		return err;
++	if (!netif_running(amt->stream_dev) || !netif_running(amt->dev))
++		goto out;
++
++	rt = ip_route_output_ports(amt->net, &fl4, sock->sk,
++				   amt->discovery_ip, amt->local_ip,
++				   amt->gw_port, amt->relay_port,
++				   IPPROTO_UDP, 0,
++				   amt->stream_dev->ifindex);
++	if (IS_ERR(rt)) {
++		amt->dev->stats.tx_errors++;
++		goto out;
++	}
++
++	hlen = LL_RESERVED_SPACE(amt->dev);
++	tlen = amt->dev->needed_tailroom;
++	len = hlen + tlen + sizeof(*iph) + sizeof(*udph) + sizeof(*amtd);
++	skb = netdev_alloc_skb_ip_align(amt->dev, len);
++	if (!skb) {
++		ip_rt_put(rt);
++		amt->dev->stats.tx_errors++;
++		goto out;
++	}
++
++	skb->priority = TC_PRIO_CONTROL;
++	skb_dst_set(skb, &rt->dst);
++
++	len = sizeof(*iph) + sizeof(*udph) + sizeof(*amtd);
++	skb_reset_network_header(skb);
++	skb_put(skb, len);
++	amtd = skb_pull(skb, sizeof(*iph) + sizeof(*udph));
++	amtd->version	= 0;
++	amtd->type	= AMT_MSG_DISCOVERY;
++	amtd->reserved	= 0;
++	amtd->nonce	= amt->nonce;
++	skb_push(skb, sizeof(*udph));
++	skb_reset_transport_header(skb);
++	udph		= udp_hdr(skb);
++	udph->source	= amt->gw_port;
++	udph->dest	= amt->relay_port;
++	udph->len	= htons(sizeof(*udph) + sizeof(*amtd));
++	udph->check	= 0;
++	offset = skb_transport_offset(skb);
++	skb->csum = skb_checksum(skb, offset, skb->len - offset, 0);
++	udph->check = csum_tcpudp_magic(amt->local_ip, amt->discovery_ip,
++					sizeof(*udph) + sizeof(*amtd),
++					IPPROTO_UDP, skb->csum);
++
++	skb_push(skb, sizeof(*iph));
++	iph		= ip_hdr(skb);
++	iph->version	= 4;
++	iph->ihl	= (sizeof(struct iphdr)) >> 2;
++	iph->tos	= 0xc0;
++	iph->frag_off	= 0;
++	iph->ttl	= ip4_dst_hoplimit(&rt->dst);
++	iph->daddr	= amt->discovery_ip;
++	iph->saddr	= amt->local_ip;
++	iph->protocol	= IPPROTO_UDP;
++	iph->tot_len	= htons(len);
++
++	skb->ip_summed = CHECKSUM_NONE;
++	ip_select_ident(amt->net, skb, NULL);
++	ip_send_check(iph);
++	err = ip_local_out(amt->net, sock->sk, skb);
++	if (unlikely(net_xmit_eval(err)))
++		amt->dev->stats.tx_errors++;
 +
 +	spin_lock_bh(&amt->lock);
-+	amt->req_cnt = 0;
++	__amt_update_gw_status(amt, AMT_STATUS_SENT_DISCOVERY, true);
++	spin_unlock_bh(&amt->lock);
++out:
++	rcu_read_unlock();
++}
++
++static void amt_send_request(struct amt_dev *amt, bool v6)
++{
++	struct amt_header_request *amtrh;
++	int hlen, tlen, offset;
++	struct socket *sock;
++	struct udphdr *udph;
++	struct sk_buff *skb;
++	struct iphdr *iph;
++	struct rtable *rt;
++	struct flowi4 fl4;
++	u32 len;
++	int err;
++
++	rcu_read_lock();
++	sock = rcu_dereference(amt->sock);
++	if (!sock)
++		goto out;
++
++	if (!netif_running(amt->stream_dev) || !netif_running(amt->dev))
++		goto out;
++
++	rt = ip_route_output_ports(amt->net, &fl4, sock->sk,
++				   amt->remote_ip, amt->local_ip,
++				   amt->gw_port, amt->relay_port,
++				   IPPROTO_UDP, 0,
++				   amt->stream_dev->ifindex);
++	if (IS_ERR(rt)) {
++		amt->dev->stats.tx_errors++;
++		goto out;
++	}
++
++	hlen = LL_RESERVED_SPACE(amt->dev);
++	tlen = amt->dev->needed_tailroom;
++	len = hlen + tlen + sizeof(*iph) + sizeof(*udph) + sizeof(*amtrh);
++	skb = netdev_alloc_skb_ip_align(amt->dev, len);
++	if (!skb) {
++		ip_rt_put(rt);
++		amt->dev->stats.tx_errors++;
++		goto out;
++	}
++
++	skb->priority = TC_PRIO_CONTROL;
++	skb_dst_set(skb, &rt->dst);
++
++	len = sizeof(*iph) + sizeof(*udph) + sizeof(*amtrh);
++	skb_reset_network_header(skb);
++	skb_put(skb, len);
++	amtrh = skb_pull(skb, sizeof(*iph) + sizeof(*udph));
++	amtrh->version	 = 0;
++	amtrh->type	 = AMT_MSG_REQUEST;
++	amtrh->reserved1 = 0;
++	amtrh->p	 = v6;
++	amtrh->reserved2 = 0;
++	amtrh->nonce	 = amt->nonce;
++	skb_push(skb, sizeof(*udph));
++	skb_reset_transport_header(skb);
++	udph		= udp_hdr(skb);
++	udph->source	= amt->gw_port;
++	udph->dest	= amt->relay_port;
++	udph->len	= htons(sizeof(*amtrh) + sizeof(*udph));
++	udph->check	= 0;
++	offset = skb_transport_offset(skb);
++	skb->csum = skb_checksum(skb, offset, skb->len - offset, 0);
++	udph->check = csum_tcpudp_magic(amt->local_ip, amt->remote_ip,
++					sizeof(*udph) + sizeof(*amtrh),
++					IPPROTO_UDP, skb->csum);
++
++	skb_push(skb, sizeof(*iph));
++	iph		= ip_hdr(skb);
++	iph->version	= 4;
++	iph->ihl	= (sizeof(struct iphdr)) >> 2;
++	iph->tos	= 0xc0;
++	iph->frag_off	= 0;
++	iph->ttl	= ip4_dst_hoplimit(&rt->dst);
++	iph->daddr	= amt->remote_ip;
++	iph->saddr	= amt->local_ip;
++	iph->protocol	= IPPROTO_UDP;
++	iph->tot_len	= htons(len);
++
++	skb->ip_summed = CHECKSUM_NONE;
++	ip_select_ident(amt->net, skb, NULL);
++	ip_send_check(iph);
++	err = ip_local_out(amt->net, sock->sk, skb);
++	if (unlikely(net_xmit_eval(err)))
++		amt->dev->stats.tx_errors++;
++
++out:
++	rcu_read_unlock();
++}
++
++static void amt_send_igmp_gq(struct amt_dev *amt,
++			     struct amt_tunnel_list *tunnel)
++{
++	struct sk_buff *skb;
++
++	skb = amt_build_igmp_gq(amt);
++	if (!skb)
++		return;
++
++	amt_skb_cb(skb)->tunnel = tunnel;
++	dev_queue_xmit(skb);
++}
++
++static void amt_secret_work(struct work_struct *work)
++{
++	struct amt_dev *amt = container_of(to_delayed_work(work),
++					   struct amt_dev,
++					   secret_wq);
++
++	spin_lock_bh(&amt->lock);
 +	get_random_bytes(&amt->key, sizeof(siphash_key_t));
 +	spin_unlock_bh(&amt->lock);
-+
-+	amt->status = AMT_STATUS_INIT;
-+	return err;
++	mod_delayed_work(amt_wq, &amt->secret_wq,
++			 msecs_to_jiffies(AMT_SECRET_TIMEOUT));
 +}
 +
-+static int amt_dev_stop(struct net_device *dev)
++static void amt_discovery_work(struct work_struct *work)
 +{
-+	struct amt_dev *amt = netdev_priv(dev);
-+	struct socket *sock;
++	struct amt_dev *amt = container_of(to_delayed_work(work),
++					   struct amt_dev,
++					   discovery_wq);
 +
-+	/* shutdown */
-+	sock = rtnl_dereference(amt->sock);
-+	RCU_INIT_POINTER(amt->sock, NULL);
-+	synchronize_net();
-+	if (sock)
-+		udp_tunnel_sock_release(sock);
++	spin_lock_bh(&amt->lock);
++	if (amt->status > AMT_STATUS_SENT_DISCOVERY)
++		goto out;
++	get_random_bytes(&amt->nonce, sizeof(__be32));
++	spin_unlock_bh(&amt->lock);
 +
-+	amt->ready4 = false;
-+	amt->ready6 = false;
-+
-+	return 0;
++	amt_send_discovery(amt);
++	spin_lock_bh(&amt->lock);
++out:
++	mod_delayed_work(amt_wq, &amt->discovery_wq,
++			 msecs_to_jiffies(AMT_DISCOVERY_TIMEOUT));
++	spin_unlock_bh(&amt->lock);
 +}
 +
-+static const struct device_type amt_type = {
-+	.name = "amt",
-+};
-+
-+static int amt_dev_init(struct net_device *dev)
++static void amt_req_work(struct work_struct *work)
 +{
-+	struct amt_dev *amt = netdev_priv(dev);
-+	int err;
++	struct amt_dev *amt = container_of(to_delayed_work(work),
++					   struct amt_dev,
++					   req_wq);
++	u32 exp;
 +
-+	amt->dev = dev;
-+	dev->tstats = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
-+	if (!dev->tstats)
-+		return -ENOMEM;
++	spin_lock_bh(&amt->lock);
++	if (amt->status < AMT_STATUS_RECEIVED_ADVERTISEMENT)
++		goto out;
 +
-+	err = gro_cells_init(&amt->gro_cells, dev);
-+	if (err) {
-+		free_percpu(dev->tstats);
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+
-+static void amt_dev_uninit(struct net_device *dev)
-+{
-+	struct amt_dev *amt = netdev_priv(dev);
-+
-+	gro_cells_destroy(&amt->gro_cells);
-+	free_percpu(dev->tstats);
-+}
-+
-+static int amt_change_mtu(struct net_device *dev, int new_mtu)
-+{
-+	if (new_mtu > dev->max_mtu)
-+		new_mtu = dev->max_mtu;
-+	else if (new_mtu < dev->min_mtu)
-+		new_mtu = dev->min_mtu;
-+
-+	dev->mtu = new_mtu;
-+	return 0;
-+}
-+
-+static const struct net_device_ops amt_netdev_ops = {
-+	.ndo_init               = amt_dev_init,
-+	.ndo_uninit             = amt_dev_uninit,
-+	.ndo_open		= amt_dev_open,
-+	.ndo_stop		= amt_dev_stop,
-+	.ndo_get_stats64        = dev_get_tstats64,
-+	.ndo_change_mtu         = amt_change_mtu,
-+};
-+
-+static void amt_link_setup(struct net_device *dev)
-+{
-+	dev->netdev_ops         = &amt_netdev_ops;
-+	dev->needs_free_netdev  = true;
-+	SET_NETDEV_DEVTYPE(dev, &amt_type);
-+	dev->min_mtu		= ETH_MIN_MTU;
-+	dev->max_mtu		= ETH_MAX_MTU;
-+	dev->type		= ARPHRD_NONE;
-+	dev->flags		= IFF_POINTOPOINT | IFF_NOARP | IFF_MULTICAST;
-+	dev->hard_header_len	= 0;
-+	dev->addr_len		= 0;
-+	dev->priv_flags		|= IFF_NO_QUEUE;
-+	dev->features		|= NETIF_F_LLTX;
-+	dev->features		|= NETIF_F_GSO_SOFTWARE;
-+	dev->features		|= NETIF_F_NETNS_LOCAL;
-+	dev->hw_features	|= NETIF_F_SG | NETIF_F_HW_CSUM;
-+	dev->hw_features	|= NETIF_F_FRAGLIST | NETIF_F_RXCSUM;
-+	dev->hw_features	|= NETIF_F_GSO_SOFTWARE;
-+	eth_hw_addr_random(dev);
-+	eth_zero_addr(dev->broadcast);
-+	ether_setup(dev);
-+}
-+
-+static const struct nla_policy amt_policy[IFLA_AMT_MAX + 1] = {
-+	[IFLA_AMT_MODE]		= { .type = NLA_U32 },
-+	[IFLA_AMT_RELAY_PORT]	= { .type = NLA_U16 },
-+	[IFLA_AMT_GATEWAY_PORT]	= { .type = NLA_U16 },
-+	[IFLA_AMT_LINK]		= { .type = NLA_U32 },
-+	[IFLA_AMT_LOCAL_IP]	= { .len = sizeof_field(struct iphdr, daddr) },
-+	[IFLA_AMT_REMOTE_IP]	= { .len = sizeof_field(struct iphdr, daddr) },
-+	[IFLA_AMT_DISCOVERY_IP]	= { .len = sizeof_field(struct iphdr, daddr) },
-+	[IFLA_AMT_MAX_TUNNELS]	= { .type = NLA_U32 },
-+};
-+
-+static int amt_validate(struct nlattr *tb[], struct nlattr *data[],
-+			struct netlink_ext_ack *extack)
-+{
-+	if (!data)
-+		return -EINVAL;
-+
-+	if (!data[IFLA_AMT_LINK]) {
-+		NL_SET_ERR_MSG_ATTR(extack, data[IFLA_AMT_LINK],
-+				    "link interface should not be empty");
-+		return -EINVAL;
-+	}
-+
-+	if (!data[IFLA_AMT_MODE] ||
-+	    nla_get_u32(data[IFLA_AMT_MODE]) > AMT_MODE_MAX) {
-+		NL_SET_ERR_MSG_ATTR(extack, data[IFLA_AMT_MODE],
-+				    "mode should not be empty");
-+		return -EINVAL;
-+	}
-+
-+	if (!data[IFLA_AMT_LOCAL_IP]) {
-+		NL_SET_ERR_MSG_ATTR(extack, data[IFLA_AMT_DISCOVERY_IP],
-+				    "local should not be empty");
-+		return -EINVAL;
-+	}
-+
-+	if (!data[IFLA_AMT_DISCOVERY_IP] &&
-+	    nla_get_u32(data[IFLA_AMT_MODE]) == AMT_MODE_GATEWAY) {
-+		NL_SET_ERR_MSG_ATTR(extack, data[IFLA_AMT_LOCAL_IP],
-+				    "discovery should not be empty");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int amt_newlink(struct net *net, struct net_device *dev,
-+		       struct nlattr *tb[], struct nlattr *data[],
-+		       struct netlink_ext_ack *extack)
-+{
-+	struct amt_dev *amt = netdev_priv(dev);
-+	int err;
-+
-+	amt->net = net;
-+	amt->mode = nla_get_u32(data[IFLA_AMT_MODE]);
-+
-+	if (data[IFLA_AMT_MAX_TUNNELS])
-+		amt->max_tunnels = nla_get_u32(data[IFLA_AMT_MAX_TUNNELS]);
-+	else
-+		amt->max_tunnels = AMT_MAX_TUNNELS;
-+
-+	spin_lock_init(&amt->lock);
-+	amt->max_groups = AMT_MAX_GROUP;
-+	amt->max_sources = AMT_MAX_SOURCE;
-+	amt->hash_buckets = AMT_HSIZE;
-+	amt->nr_tunnels = 0;
-+	get_random_bytes(&amt->hash_seed, sizeof(amt->hash_seed));
-+	amt->stream_dev = dev_get_by_index(net,
-+					   nla_get_u32(data[IFLA_AMT_LINK]));
-+	if (!amt->stream_dev) {
-+		NL_SET_ERR_MSG_ATTR(extack, tb[IFLA_AMT_LINK],
-+				    "Can't find stream device");
-+		return -ENODEV;
-+	}
-+
-+	if (amt->stream_dev->type != ARPHRD_ETHER) {
-+		NL_SET_ERR_MSG_ATTR(extack, tb[IFLA_AMT_LINK],
-+				    "Invalid stream device type");
-+		dev_put(amt->stream_dev);
-+		return -EINVAL;
-+	}
-+
-+	amt->local_ip = nla_get_in_addr(data[IFLA_AMT_LOCAL_IP]);
-+	if (data[IFLA_AMT_RELAY_PORT])
-+		amt->relay_port = nla_get_be16(data[IFLA_AMT_RELAY_PORT]);
-+	else
-+		amt->relay_port = htons(IANA_AMT_UDP_PORT);
-+
-+	if (data[IFLA_AMT_GATEWAY_PORT])
-+		amt->gw_port = nla_get_be16(data[IFLA_AMT_GATEWAY_PORT]);
-+	else
-+		amt->gw_port = htons(IANA_AMT_UDP_PORT);
-+
-+	if (!amt->relay_port) {
-+		NL_SET_ERR_MSG_ATTR(extack, tb[IFLA_AMT_DISCOVERY_IP],
-+				    "relay port must not be 0");
-+		return -EINVAL;
-+	}
-+	if (amt->mode == AMT_MODE_RELAY) {
-+		amt->qrv = amt->net->ipv4.sysctl_igmp_qrv;
-+		amt->qri = 10;
-+		dev->needed_headroom = amt->stream_dev->needed_headroom +
-+				       AMT_RELAY_HLEN;
-+		dev->mtu = amt->stream_dev->mtu - AMT_RELAY_HLEN;
-+		dev->max_mtu = dev->mtu;
-+		dev->min_mtu = ETH_MIN_MTU + AMT_RELAY_HLEN;
-+	} else {
-+		if (!data[IFLA_AMT_DISCOVERY_IP]) {
-+			NL_SET_ERR_MSG_ATTR(extack, tb[IFLA_AMT_DISCOVERY_IP],
-+					    "discovery must be set in gateway mode");
-+			return -EINVAL;
-+		}
-+		if (!amt->gw_port) {
-+			NL_SET_ERR_MSG_ATTR(extack, tb[IFLA_AMT_DISCOVERY_IP],
-+					    "gateway port must not be 0");
-+			return -EINVAL;
-+		}
++	if (amt->req_cnt++ > AMT_MAX_REQ_COUNT) {
++		netdev_dbg(amt->dev, "Gateway is not ready");
++		amt->qi = AMT_INIT_REQ_TIMEOUT;
++		amt->ready4 = false;
++		amt->ready6 = false;
 +		amt->remote_ip = 0;
-+		amt->discovery_ip = nla_get_in_addr(data[IFLA_AMT_DISCOVERY_IP]);
-+		if (ipv4_is_loopback(amt->discovery_ip) ||
-+		    ipv4_is_multicast(amt->discovery_ip)) {
-+			NL_SET_ERR_MSG_ATTR(extack, tb[IFLA_AMT_DISCOVERY_IP],
-+					    "discovery must be unicast");
-+			return -EINVAL;
-+		}
-+
-+		dev->needed_headroom = amt->stream_dev->needed_headroom +
-+				       AMT_GW_HLEN;
-+		dev->mtu = amt->stream_dev->mtu - AMT_GW_HLEN;
-+		dev->max_mtu = dev->mtu;
-+		dev->min_mtu = ETH_MIN_MTU + AMT_GW_HLEN;
++		__amt_update_gw_status(amt, AMT_STATUS_INIT, false);
++		amt->req_cnt = 0;
 +	}
-+	amt->qi = AMT_INIT_QUERY_INTERVAL;
++	spin_unlock_bh(&amt->lock);
 +
-+	err = register_netdevice(dev);
-+	if (err < 0) {
-+		netdev_dbg(dev, "failed to register new netdev %d\n", err);
-+		dev_put(amt->stream_dev);
-+		return err;
-+	}
-+
-+	err = netdev_upper_dev_link(amt->stream_dev, dev, extack);
-+	if (err < 0) {
-+		dev_put(amt->stream_dev);
-+		unregister_netdevice(dev);
-+		return err;
-+	}
-+
-+	return 0;
++	amt_send_request(amt, false);
++	amt_send_request(amt, true);
++	amt_update_gw_status(amt, AMT_STATUS_SENT_REQUEST, true);
++	spin_lock_bh(&amt->lock);
++out:
++	exp = min_t(u32, (1 * (1 << amt->req_cnt)), AMT_MAX_REQ_TIMEOUT);
++	mod_delayed_work(amt_wq, &amt->req_wq, msecs_to_jiffies(exp * 1000));
++	spin_unlock_bh(&amt->lock);
 +}
 +
-+static void amt_dellink(struct net_device *dev, struct list_head *head)
++static bool amt_send_membership_update(struct amt_dev *amt,
++				       struct sk_buff *skb,
++				       bool v6)
 +{
-+	struct amt_dev *amt = netdev_priv(dev);
-+
-+	unregister_netdevice_queue(dev, head);
-+	netdev_upper_dev_unlink(amt->stream_dev, dev);
-+	dev_put(amt->stream_dev);
-+}
-+
-+static size_t amt_get_size(const struct net_device *dev)
-+{
-+	return nla_total_size(sizeof(__u32)) + /* IFLA_AMT_MODE */
-+	       nla_total_size(sizeof(__u16)) + /* IFLA_AMT_RELAY_PORT */
-+	       nla_total_size(sizeof(__u16)) + /* IFLA_AMT_GATEWAY_PORT */
-+	       nla_total_size(sizeof(__u32)) + /* IFLA_AMT_LINK */
-+	       nla_total_size(sizeof(__u32)) + /* IFLA_MAX_TUNNELS */
-+	       nla_total_size(sizeof(struct iphdr)) + /* IFLA_AMT_DISCOVERY_IP */
-+	       nla_total_size(sizeof(struct iphdr)) + /* IFLA_AMT_REMOTE_IP */
-+	       nla_total_size(sizeof(struct iphdr)); /* IFLA_AMT_LOCAL_IP */
-+}
-+
-+static int amt_fill_info(struct sk_buff *skb, const struct net_device *dev)
-+{
-+	struct amt_dev *amt = netdev_priv(dev);
-+
-+	if (nla_put_u32(skb, IFLA_AMT_MODE, amt->mode))
-+		goto nla_put_failure;
-+	if (nla_put_be16(skb, IFLA_AMT_RELAY_PORT, amt->relay_port))
-+		goto nla_put_failure;
-+	if (nla_put_be16(skb, IFLA_AMT_GATEWAY_PORT, amt->gw_port))
-+		goto nla_put_failure;
-+	if (amt->stream_dev)
-+		if (nla_put_u32(skb, IFLA_AMT_LINK, amt->stream_dev->ifindex))
-+			goto nla_put_failure;
-+	if (nla_put_in_addr(skb, IFLA_AMT_LOCAL_IP, amt->local_ip))
-+		goto nla_put_failure;
-+	if (nla_put_in_addr(skb, IFLA_AMT_DISCOVERY_IP, amt->discovery_ip))
-+		goto nla_put_failure;
-+	if (amt->remote_ip)
-+		if (nla_put_in_addr(skb, IFLA_AMT_REMOTE_IP, amt->remote_ip))
-+			goto nla_put_failure;
-+
-+	return 0;
-+
-+nla_put_failure:
-+	return -EMSGSIZE;
-+}
-+
-+static struct rtnl_link_ops amt_link_ops __read_mostly = {
-+	.kind		= "amt",
-+	.maxtype	= IFLA_AMT_MAX,
-+	.policy		= amt_policy,
-+	.priv_size	= sizeof(struct amt_dev),
-+	.setup		= amt_link_setup,
-+	.validate	= amt_validate,
-+	.newlink	= amt_newlink,
-+	.dellink	= amt_dellink,
-+	.get_size       = amt_get_size,
-+	.fill_info      = amt_fill_info,
-+};
-+
-+static struct net_device *amt_lookup_upper_dev(struct net_device *dev)
-+{
-+	struct net_device *upper_dev;
-+	struct amt_dev *amt;
-+
-+	for_each_netdev(dev_net(dev), upper_dev) {
-+		if (netif_is_amt(upper_dev)) {
-+			amt = netdev_priv(upper_dev);
-+			if (amt->stream_dev == dev)
-+				return upper_dev;
-+		}
-+	}
-+
-+	return NULL;
-+}
-+
-+static int amt_device_event(struct notifier_block *unused,
-+			    unsigned long event, void *ptr)
-+{
-+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
-+	struct net_device *upper_dev;
-+	struct amt_dev *amt;
-+	LIST_HEAD(list);
-+	int new_mtu;
-+
-+	upper_dev = amt_lookup_upper_dev(dev);
-+	if (!upper_dev)
-+		return NOTIFY_DONE;
-+	amt = netdev_priv(upper_dev);
-+
-+	switch (event) {
-+	case NETDEV_UNREGISTER:
-+		amt_dellink(amt->dev, &list);
-+		unregister_netdevice_many(&list);
-+		break;
-+	case NETDEV_CHANGEMTU:
-+		if (amt->mode == AMT_MODE_RELAY)
-+			new_mtu = dev->mtu - AMT_RELAY_HLEN;
-+		else
-+			new_mtu = dev->mtu - AMT_GW_HLEN;
-+		amt_change_mtu(amt->dev, new_mtu);
-+		break;
-+	}
-+
-+	return NOTIFY_DONE;
-+}
-+
-+static struct notifier_block amt_notifier_block __read_mostly = {
-+	.notifier_call = amt_device_event,
-+};
-+
-+static int __init amt_init(void)
-+{
++	struct amt_header_membership_update *amtmu;
++	struct socket *sock;
++	struct iphdr *iph;
++	struct flowi4 fl4;
++	struct rtable *rt;
 +	int err;
 +
-+	err = register_netdevice_notifier(&amt_notifier_block);
-+	if (err < 0)
-+		goto err;
++	sock = rcu_dereference(amt->sock);
++	if (!sock)
++		return true;
 +
-+	err = rtnl_link_register(&amt_link_ops);
-+	if (err < 0)
-+		goto unregister_notifier;
++	err = skb_cow_head(skb, LL_RESERVED_SPACE(amt->dev) + sizeof(*amtmu) +
++			   sizeof(*iph) + sizeof(struct udphdr));
++	if (err)
++		return true;
 +
-+	amt_wq = alloc_workqueue("amt", WQ_UNBOUND, 1);
-+	if (!amt_wq)
-+		goto rtnl_unregister;
++	skb_reset_inner_headers(skb);
++	memset(&fl4, 0, sizeof(struct flowi4));
++	fl4.flowi4_oif         = amt->stream_dev->ifindex;
++	fl4.daddr              = amt->remote_ip;
++	fl4.saddr              = amt->local_ip;
++	fl4.flowi4_tos         = 0xc0;
++	fl4.flowi4_proto       = IPPROTO_UDP;
++	rt = ip_route_output_key(amt->net, &fl4);
++	if (IS_ERR(rt)) {
++		netdev_dbg(amt->dev, "no route to %pI4\n", &amt->remote_ip);
++		return true;
++	}
 +
-+	return 0;
++	amtmu			= skb_push(skb, sizeof(*amtmu));
++	amtmu->version		= 0;
++	amtmu->type		= AMT_MSG_MEMBERSHIP_UPDATE;
++	amtmu->reserved		= 0;
++	amtmu->nonce		= amt->nonce;
++	amtmu->response_mac	= amt->mac;
 +
-+rtnl_unregister:
-+	rtnl_link_unregister(&amt_link_ops);
-+unregister_notifier:
-+	unregister_netdevice_notifier(&amt_notifier_block);
-+err:
-+	pr_err("error loading AMT module loaded\n");
-+	return err;
++	if (!v6)
++		skb_set_inner_protocol(skb, htons(ETH_P_IP));
++	else
++		skb_set_inner_protocol(skb, htons(ETH_P_IPV6));
++	udp_tunnel_xmit_skb(rt, sock->sk, skb,
++			    fl4.saddr,
++			    fl4.daddr,
++			    0xc0,
++			    ip4_dst_hoplimit(&rt->dst),
++			    0,
++			    amt->gw_port,
++			    amt->relay_port,
++			    false,
++			    false);
++	amt_update_gw_status(amt, AMT_STATUS_SENT_UPDATE, true);
++	return false;
 +}
-+late_initcall(amt_init);
 +
-+static void __exit amt_fini(void)
++static void amt_send_multicast_data(struct amt_dev *amt,
++				    const struct sk_buff *oskb,
++				    struct amt_tunnel_list *tunnel,
++				    bool v6)
 +{
-+	rtnl_link_unregister(&amt_link_ops);
-+	unregister_netdevice_notifier(&amt_notifier_block);
-+	destroy_workqueue(amt_wq);
++	struct amt_header_mcast_data *amtmd;
++	struct socket *sock;
++	struct sk_buff *skb;
++	struct iphdr *iph;
++	struct flowi4 fl4;
++	struct rtable *rt;
++
++	sock = rcu_dereference(amt->sock);
++	if (!sock)
++		return;
++
++	skb = skb_copy_expand(oskb, sizeof(*amtmd) + sizeof(*iph) +
++			      sizeof(struct udphdr), 0, GFP_ATOMIC);
++	if (!skb)
++		return;
++
++	skb_reset_inner_headers(skb);
++	memset(&fl4, 0, sizeof(struct flowi4));
++	fl4.flowi4_oif         = amt->stream_dev->ifindex;
++	fl4.daddr              = tunnel->ip4;
++	fl4.saddr              = amt->local_ip;
++	fl4.flowi4_proto       = IPPROTO_UDP;
++	rt = ip_route_output_key(amt->net, &fl4);
++	if (IS_ERR(rt)) {
++		netdev_dbg(amt->dev, "no route to %pI4\n", &tunnel->ip4);
++		kfree_skb(skb);
++		return;
++	}
++
++	amtmd = skb_push(skb, sizeof(*amtmd));
++	amtmd->version = 0;
++	amtmd->reserved = 0;
++	amtmd->type = AMT_MSG_MULTICAST_DATA;
++
++	if (!v6)
++		skb_set_inner_protocol(skb, htons(ETH_P_IP));
++	else
++		skb_set_inner_protocol(skb, htons(ETH_P_IPV6));
++	udp_tunnel_xmit_skb(rt, sock->sk, skb,
++			    fl4.saddr,
++			    fl4.daddr,
++			    0xc0,
++			    ip4_dst_hoplimit(&rt->dst),
++			    0,
++			    amt->relay_port,
++			    tunnel->source_port,
++			    false,
++			    false);
 +}
-+module_exit(amt_fini);
 +
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Taehee Yoo <ap420073@gmail.com>");
-+MODULE_ALIAS_RTNL_LINK("amt");
++static bool amt_send_membership_query(struct amt_dev *amt,
++				      struct sk_buff *skb,
++				      struct amt_tunnel_list *tunnel,
++				      bool v6)
++{
++	struct amt_header_membership_query *amtmq;
++	struct socket *sock;
++	struct rtable *rt;
++	struct flowi4 fl4;
++	int err;
++
++	sock = rcu_dereference(amt->sock);
++	if (!sock)
++		return true;
++
++	err = skb_cow_head(skb, LL_RESERVED_SPACE(amt->dev) + sizeof(*amtmq) +
++			   sizeof(struct iphdr) + sizeof(struct udphdr));
++	if (err)
++		return true;
++
++	skb_reset_inner_headers(skb);
++	memset(&fl4, 0, sizeof(struct flowi4));
++	fl4.flowi4_oif         = amt->stream_dev->ifindex;
++	fl4.daddr              = tunnel->ip4;
++	fl4.saddr              = amt->local_ip;
++	fl4.flowi4_tos         = 0xc0;
++	fl4.flowi4_proto       = IPPROTO_UDP;
++	rt = ip_route_output_key(amt->net, &fl4);
++	if (IS_ERR(rt)) {
++		netdev_dbg(amt->dev, "no route to %pI4\n", &tunnel->ip4);
++		return -1;
++	}
++
++	amtmq		= skb_push(skb, sizeof(*amtmq));
++	amtmq->version	= 0;
++	amtmq->type	= AMT_MSG_MEMBERSHIP_QUERY;
++	amtmq->reserved = 0;
++	amtmq->l	= 0;
++	amtmq->g	= 0;
++	amtmq->nonce	= tunnel->nonce;
++	amtmq->response_mac = tunnel->mac;
++
++	if (!v6)
++		skb_set_inner_protocol(skb, htons(ETH_P_IP));
++	else
++		skb_set_inner_protocol(skb, htons(ETH_P_IPV6));
++	udp_tunnel_xmit_skb(rt, sock->sk, skb,
++			    fl4.saddr,
++			    fl4.daddr,
++			    0xc0,
++			    ip4_dst_hoplimit(&rt->dst),
++			    0,
++			    amt->relay_port,
++			    tunnel->source_port,
++			    false,
++			    false);
++	amt_update_relay_status(tunnel, AMT_STATUS_SENT_QUERY, true);
++	return false;
++}
++
++static netdev_tx_t amt_dev_xmit(struct sk_buff *skb, struct net_device *dev)
++{
++	struct amt_dev *amt = netdev_priv(dev);
++	struct amt_tunnel_list *tunnel;
++	bool report = false;
++	struct igmphdr *ih;
++	bool query = false;
++	struct iphdr *iph;
++	bool data = false;
++	bool v6 = false;
++
++	rcu_read_lock();
++	iph = ip_hdr(skb);
++	if (iph->version == 4) {
++		if (!ipv4_is_multicast(iph->daddr))
++			goto free;
++
++		if (!ip_mc_check_igmp(skb)) {
++			ih = igmp_hdr(skb);
++			switch (ih->type) {
++			case IGMPV3_HOST_MEMBERSHIP_REPORT:
++			case IGMP_HOST_MEMBERSHIP_REPORT:
++				report = true;
++				break;
++			case IGMP_HOST_MEMBERSHIP_QUERY:
++				query = true;
++				break;
++			default:
++				goto free;
++			}
++		} else {
++			data = true;
++		}
++		v6 = false;
++	} else {
++		dev->stats.tx_errors++;
++		goto free;
++	}
++
++	if (!pskb_may_pull(skb, sizeof(struct ethhdr)))
++		goto free;
++
++	skb_pull(skb, sizeof(struct ethhdr));
++
++	if (amt->mode == AMT_MODE_GATEWAY) {
++		/* Gateway only passes IGMP/MLD packets */
++		if (!report)
++			goto free;
++		if ((!v6 && !amt->ready4) || (v6 && !amt->ready6))
++			goto free;
++		if (amt_send_membership_update(amt, skb,  v6))
++			goto free;
++		goto unlock;
++	} else if (amt->mode == AMT_MODE_RELAY) {
++		if (query) {
++			tunnel = amt_skb_cb(skb)->tunnel;
++			if (!tunnel) {
++				WARN_ON(1);
++				goto free;
++			}
++
++			/* Do not forward unexpected query */
++			if (amt_send_membership_query(amt, skb, tunnel, v6))
++				goto free;
++			goto unlock;
++		}
++
++		if (!data)
++			goto free;
++		list_for_each_entry_rcu(tunnel, &amt->tunnel_list, list)
++			amt_send_multicast_data(amt, skb, tunnel, v6);
++	}
++
++	dev_kfree_skb(skb);
++	rcu_read_unlock();
++	return NETDEV_TX_OK;
++free:
++	dev_kfree_skb(skb);
++unlock:
++	rcu_read_unlock();
++	dev->stats.tx_dropped++;
++	return NETDEV_TX_OK;
++}
++
++static int amt_parse_type(struct sk_buff *skb)
++{
++	struct amt_header *amth;
++
++	if (!pskb_may_pull(skb, sizeof(struct udphdr) +
++			   sizeof(struct amt_header)))
++		return -1;
++
++	amth = (struct amt_header *)(udp_hdr(skb) + 1);
++
++	if (amth->version != 0)
++		return -1;
++
++	if (amth->type >= __AMT_MSG_MAX || !amth->type)
++		return -1;
++	return amth->type;
++}
++
++static void amt_tunnel_expire(struct work_struct *work)
++{
++	struct amt_tunnel_list *tunnel = container_of(to_delayed_work(work),
++						      struct amt_tunnel_list,
++						      gc_wq);
++	struct amt_dev *amt = tunnel->amt;
++
++	spin_lock_bh(&amt->lock);
++	rcu_read_lock();
++	list_del_rcu(&tunnel->list);
++	amt->nr_tunnels--;
++	rcu_read_unlock();
++	spin_unlock_bh(&amt->lock);
++	kfree_rcu(tunnel, rcu);
++}
++
++static bool amt_advertisement_handler(struct amt_dev *amt, struct sk_buff *skb)
++{
++	struct amt_header_advertisement *amta;
++	int hdr_size;
++
++	hdr_size = sizeof(*amta) - sizeof(struct amt_header);
++
++	if (!pskb_may_pull(skb, hdr_size))
++		return true;
++
++	amta = (struct amt_header_advertisement *)(udp_hdr(skb) + 1);
++	if (!amta->ip4)
++		return true;
++
++	if (amta->reserved || amta->version)
++		return true;
++
++	if (ipv4_is_loopback(amta->ip4) || ipv4_is_multicast(amta->ip4))
++		return true;
++
++	amt->remote_ip = amta->ip4;
++	netdev_dbg(amt->dev, "advertised remote ip = %pI4\n", &amt->remote_ip);
++	mod_delayed_work(amt_wq, &amt->req_wq, 0);
++
++	amt_update_gw_status(amt, AMT_STATUS_RECEIVED_ADVERTISEMENT, true);
++	return false;
++}
++
++static bool amt_multicast_data_handler(struct amt_dev *amt, struct sk_buff *skb)
++{
++	struct amt_header_mcast_data *amtmd;
++	int hdr_size, len, err;
++	struct ethhdr *eth;
++	struct iphdr *iph;
++
++	amtmd = (struct amt_header_mcast_data *)(udp_hdr(skb) + 1);
++	if (amtmd->reserved || amtmd->version)
++		return true;
++
++	hdr_size = sizeof(*amtmd) + sizeof(struct udphdr);
++	if (iptunnel_pull_header(skb, hdr_size, htons(ETH_P_IP), false))
++		return true;
++	skb_reset_network_header(skb);
++	skb_push(skb, sizeof(*eth));
++	skb_reset_mac_header(skb);
++	skb_pull(skb, sizeof(*eth));
++	eth = eth_hdr(skb);
++	iph = ip_hdr(skb);
++	if (iph->version == 4) {
++		if (!ipv4_is_multicast(iph->daddr))
++			return true;
++		skb->protocol = htons(ETH_P_IP);
++		eth->h_proto = htons(ETH_P_IP);
++		ip_eth_mc_map(iph->daddr, eth->h_dest);
++	} else {
++		return true;
++	}
++
++	skb->pkt_type = PACKET_MULTICAST;
++	skb->ip_summed = CHECKSUM_NONE;
++	len = skb->len;
++	err = gro_cells_receive(&amt->gro_cells, skb);
++	if (likely(err == NET_RX_SUCCESS))
++		dev_sw_netstats_rx_add(amt->dev, len);
++	else
++		amt->dev->stats.rx_dropped++;
++
++	return false;
++}
++
++static bool amt_membership_query_handler(struct amt_dev *amt,
++					 struct sk_buff *skb)
++{
++	struct amt_header_membership_query *amtmq;
++	struct igmpv3_query *ihv3;
++	struct ethhdr *eth, *oeth;
++	struct iphdr *iph;
++	int hdr_size, len;
++
++	hdr_size = sizeof(*amtmq) - sizeof(struct amt_header);
++
++	if (!pskb_may_pull(skb, hdr_size))
++		return true;
++
++	amtmq = (struct amt_header_membership_query *)(udp_hdr(skb) + 1);
++	if (amtmq->reserved || amtmq->version)
++		return true;
++
++	hdr_size = sizeof(*amtmq) + sizeof(struct udphdr) - sizeof(*eth);
++	if (iptunnel_pull_header(skb, hdr_size, htons(ETH_P_TEB), false))
++		return true;
++	oeth = eth_hdr(skb);
++	skb_reset_mac_header(skb);
++	skb_pull(skb, sizeof(*eth));
++	skb_reset_network_header(skb);
++	eth = eth_hdr(skb);
++	iph = ip_hdr(skb);
++	if (iph->version == 4) {
++		if (!ipv4_is_multicast(iph->daddr))
++			return true;
++		if (!pskb_may_pull(skb, sizeof(*iph) +  4 + sizeof(*ihv3)))
++			return true;
++
++		ihv3 = skb_pull(skb, sizeof(*iph) + 4);
++		skb_reset_transport_header(skb);
++		skb_push(skb, sizeof(*iph) + 4);
++		spin_lock_bh(&amt->lock);
++		amt->ready4 = true;
++		amt->mac = amtmq->response_mac;
++		amt->req_cnt = 0;
++		amt->qi = ihv3->qqic;
++		spin_unlock_bh(&amt->lock);
++		skb->protocol = htons(ETH_P_IP);
++		eth->h_proto = htons(ETH_P_IP);
++		ip_eth_mc_map(iph->daddr, eth->h_dest);
++	} else {
++		return true;
++	}
++
++	ether_addr_copy(eth->h_source, oeth->h_source);
++	skb->pkt_type = PACKET_MULTICAST;
++	skb->ip_summed = CHECKSUM_NONE;
++	len = skb->len;
++	if (netif_rx(skb) == NET_RX_SUCCESS) {
++		amt_update_gw_status(amt, AMT_STATUS_RECEIVED_QUERY, true);
++		dev_sw_netstats_rx_add(amt->dev, len);
++	} else {
++		amt->dev->stats.rx_dropped++;
++	}
++
++	return false;
++}
++
++static bool amt_update_handler(struct amt_dev *amt, struct sk_buff *skb)
++{
++	struct amt_header_membership_update *amtmu;
++	struct amt_tunnel_list *tunnel;
++	struct udphdr *udph;
++	struct ethhdr *eth;
++	struct iphdr *iph;
++	int len;
++
++	iph = ip_hdr(skb);
++	udph = udp_hdr(skb);
++
++	if (__iptunnel_pull_header(skb, sizeof(*udph), skb->protocol,
++				   false, false))
++		return true;
++
++	amtmu = (struct amt_header_membership_update *)skb->data;
++	if (amtmu->reserved || amtmu->version)
++		return true;
++
++	skb_pull(skb, sizeof(*amtmu));
++	skb_reset_network_header(skb);
++
++	list_for_each_entry_rcu(tunnel, &amt->tunnel_list, list) {
++		if (tunnel->ip4 == iph->saddr) {
++			if ((amtmu->nonce == tunnel->nonce &&
++			     amtmu->response_mac == tunnel->mac)) {
++				mod_delayed_work(amt_wq, &tunnel->gc_wq,
++						 msecs_to_jiffies(amt_gmi(amt))
++								  * 3);
++				goto report;
++			} else {
++				netdev_dbg(amt->dev, "Invalid MAC\n");
++				return true;
++			}
++		}
++	}
++
++	return false;
++
++report:
++	iph = ip_hdr(skb);
++	if (iph->version == 4) {
++		if (ip_mc_check_igmp(skb)) {
++			netdev_dbg(amt->dev, "Invalid IGMP\n");
++			return true;
++		}
++
++		skb_push(skb, sizeof(struct ethhdr));
++		skb_reset_mac_header(skb);
++		eth = eth_hdr(skb);
++		skb->protocol = htons(ETH_P_IP);
++		eth->h_proto = htons(ETH_P_IP);
++		ip_eth_mc_map(iph->daddr, eth->h_dest);
++	} else {
++		netdev_dbg(amt->dev, "Unsupported Protocol\n");
++		return true;
++	}
++
++	skb_pull(skb, sizeof(struct ethhdr));
++	skb->pkt_type = PACKET_MULTICAST;
++	skb->ip_summed = CHECKSUM_NONE;
++	len = skb->len;
++	if (netif_rx(skb) == NET_RX_SUCCESS) {
++		amt_update_relay_status(tunnel, AMT_STATUS_RECEIVED_UPDATE,
++					true);
++		dev_sw_netstats_rx_add(amt->dev, len);
++	} else {
++		amt->dev->stats.rx_dropped++;
++	}
++
++	return false;
++}
++
++static void amt_send_advertisement(struct amt_dev *amt, __be32 nonce,
++				   __be32 daddr, __be16 dport)
++{
++	struct amt_header_advertisement *amta;
++	int hlen, tlen, offset;
++	struct socket *sock;
++	struct udphdr *udph;
++	struct sk_buff *skb;
++	struct iphdr *iph;
++	struct rtable *rt;
++	struct flowi4 fl4;
++	u32 len;
++	int err;
++
++	rcu_read_lock();
++	sock = rcu_dereference(amt->sock);
++	if (!sock)
++		goto out;
++
++	if (!netif_running(amt->stream_dev) || !netif_running(amt->dev))
++		goto out;
++
++	rt = ip_route_output_ports(amt->net, &fl4, sock->sk,
++				   daddr, amt->local_ip,
++				   dport, amt->relay_port,
++				   IPPROTO_UDP, 0,
++				   amt->stream_dev->ifindex);
++	if (IS_ERR(rt)) {
++		amt->dev->stats.tx_errors++;
++		goto out;
++	}
++
++	hlen = LL_RESERVED_SPACE(amt->dev);
++	tlen = amt->dev->needed_tailroom;
++	len = hlen + tlen + sizeof(*iph) + sizeof(*udph) + sizeof(*amta);
++	skb = netdev_alloc_skb_ip_align(amt->dev, len);
++	if (!skb) {
++		ip_rt_put(rt);
++		amt->dev->stats.tx_errors++;
++		goto out;
++	}
++
++	skb->priority = TC_PRIO_CONTROL;
++	skb_dst_set(skb, &rt->dst);
++
++	len = sizeof(*iph) + sizeof(*udph) + sizeof(*amta);
++	skb_reset_network_header(skb);
++	skb_put(skb, len);
++	amta = skb_pull(skb, sizeof(*iph) + sizeof(*udph));
++	amta->version	= 0;
++	amta->type	= AMT_MSG_ADVERTISEMENT;
++	amta->reserved	= 0;
++	amta->nonce	= nonce;
++	amta->ip4	= amt->local_ip;
++	skb_push(skb, sizeof(*udph));
++	skb_reset_transport_header(skb);
++	udph		= udp_hdr(skb);
++	udph->source	= amt->relay_port;
++	udph->dest	= dport;
++	udph->len	= htons(sizeof(*amta) + sizeof(*udph));
++	udph->check	= 0;
++	offset = skb_transport_offset(skb);
++	skb->csum = skb_checksum(skb, offset, skb->len - offset, 0);
++	udph->check = csum_tcpudp_magic(amt->local_ip, daddr,
++					sizeof(*udph) + sizeof(*amta),
++					IPPROTO_UDP, skb->csum);
++
++	skb_push(skb, sizeof(*iph));
++	iph		= ip_hdr(skb);
++	iph->version	= 4;
++	iph->ihl	= (sizeof(struct iphdr)) >> 2;
++	iph->tos	= 0xc0;
++	iph->frag_off	= 0;
++	iph->ttl	= ip4_dst_hoplimit(&rt->dst);
++	iph->daddr	= daddr;
++	iph->saddr	= amt->local_ip;
++	iph->protocol	= IPPROTO_UDP;
++	iph->tot_len	= htons(len);
++
++	skb->ip_summed = CHECKSUM_NONE;
++	ip_select_ident(amt->net, skb, NULL);
++	ip_send_check(iph);
++	err = ip_local_out(amt->net, sock->sk, skb);
++	if (unlikely(net_xmit_eval(err)))
++		amt->dev->stats.tx_errors++;
++
++out:
++	rcu_read_unlock();
++}
++
++static bool amt_discovery_handler(struct amt_dev *amt, struct sk_buff *skb)
++{
++	struct amt_header_discovery *amtd;
++	struct udphdr *udph;
++	struct iphdr *iph;
++
++	if (!pskb_may_pull(skb, sizeof(*udph) + sizeof(*amtd)))
++		return true;
++
++	iph = ip_hdr(skb);
++	udph = udp_hdr(skb);
++	amtd = (struct amt_header_discovery *)(udp_hdr(skb) + 1);
++
++	if (amtd->reserved || amtd->version)
++		return true;
++
++	amt_send_advertisement(amt, amtd->nonce, iph->saddr, udph->source);
++
++	return false;
++}
++
++static bool amt_request_handler(struct amt_dev *amt, struct sk_buff *skb)
++{
++	struct amt_header_request *amtrh;
++	struct amt_tunnel_list *tunnel;
++	unsigned long long key;
++	struct udphdr *udph;
++	struct iphdr *iph;
++	u64 mac;
++	int i;
++
++	if (!pskb_may_pull(skb, sizeof(*udph) + sizeof(*amtrh)))
++		return true;
++
++	iph = ip_hdr(skb);
++	udph = udp_hdr(skb);
++	amtrh = (struct amt_header_request *)(udp_hdr(skb) + 1);
++
++	if (amtrh->reserved1 || amtrh->reserved2 || amtrh->version)
++		return true;
++
++	list_for_each_entry_rcu(tunnel, &amt->tunnel_list, list)
++		if (tunnel->ip4 == iph->saddr)
++			goto send;
++
++	if (amt->nr_tunnels >= amt->max_tunnels) {
++		icmp_ndo_send(skb, ICMP_DEST_UNREACH, ICMP_HOST_UNREACH, 0);
++		return true;
++	}
++
++	tunnel = kmalloc(sizeof(*tunnel) +
++			 (sizeof(struct hlist_head) * amt->hash_buckets),
++			 GFP_ATOMIC);
++	if (!tunnel)
++		return true;
++
++	tunnel->source_port = udph->source;
++	tunnel->ip4 = iph->saddr;
++	tunnel->nr_groups = 0;
++	tunnel->nr_sources = 0;
++
++	memcpy(&key, &tunnel->key, sizeof(unsigned long long));
++	tunnel->reserved = 0;
++	tunnel->amt = amt;
++	spin_lock_init(&tunnel->lock);
++	for (i = 0; i < amt->hash_buckets; i++)
++		INIT_HLIST_HEAD(&tunnel->groups[i]);
++
++	INIT_DELAYED_WORK(&tunnel->gc_wq, amt_tunnel_expire);
++
++	spin_lock_bh(&amt->lock);
++	list_add_tail_rcu(&tunnel->list, &amt->tunnel_list);
++	tunnel->key = amt->key;
++	amt_update_relay_status(tunnel, AMT_STATUS_RECEIVED_REQUEST, true);
++	amt->nr_tunnels++;
++	mod_delayed_work(amt_wq, &tunnel->gc_wq,
++			 msecs_to_jiffies(amt_gmi(amt)));
++	spin_unlock_bh(&amt->lock);
++
++send:
++	tunnel->nonce = amtrh->nonce;
++	mac = siphash_3u32((__force u32)tunnel->ip4,
++			   (__force u32)tunnel->source_port,
++			   (__force u32)tunnel->nonce,
++			   &tunnel->key);
++	tunnel->mac = mac >> 16;
++
++	if (!netif_running(amt->dev) || !netif_running(amt->stream_dev))
++		return true;
++
++	if (!amtrh->p)
++		amt_send_igmp_gq(amt, tunnel);
++
++	return false;
++}
++
++static int amt_rcv(struct sock *sk, struct sk_buff *skb)
++{
++	struct amt_dev *amt;
++	struct iphdr *iph;
++	int type;
++	bool err;
++
++	rcu_read_lock_bh();
++	amt = rcu_dereference_sk_user_data(sk);
++	if (!amt) {
++		err = true;
++		goto out;
++	}
++
++	skb->dev = amt->dev;
++	iph = ip_hdr(skb);
++	type = amt_parse_type(skb);
++	if (type == -1) {
++		err = true;
++		goto drop;
++	}
++
++	if (amt->mode == AMT_MODE_GATEWAY) {
++		switch (type) {
++		case AMT_MSG_ADVERTISEMENT:
++			if (iph->saddr != amt->discovery_ip) {
++				netdev_dbg(amt->dev, "Invalid Relay IP\n");
++				err = true;
++				goto drop;
++			}
++			if (amt_advertisement_handler(amt, skb))
++				amt->dev->stats.rx_dropped++;
++			goto out;
++		case AMT_MSG_MULTICAST_DATA:
++			if (iph->saddr != amt->remote_ip) {
++				netdev_dbg(amt->dev, "Invalid Relay IP\n");
++				err = true;
++				goto drop;
++			}
++			err = amt_multicast_data_handler(amt, skb);
++			if (err)
++				goto drop;
++			else
++				goto out;
++		case AMT_MSG_MEMBERSHIP_QUERY:
++			if (iph->saddr != amt->remote_ip) {
++				netdev_dbg(amt->dev, "Invalid Relay IP\n");
++				err = true;
++				goto drop;
++			}
++			err = amt_membership_query_handler(amt, skb);
++			if (err)
++				goto drop;
++			else
++				goto out;
++		default:
++			err = true;
++			netdev_dbg(amt->dev, "Invalid type of Gateway\n");
++			break;
++		}
++	} else {
++		switch (type) {
++		case AMT_MSG_DISCOVERY:
++			err = amt_discovery_handler(amt, skb);
++			break;
++		case AMT_MSG_REQUEST:
++			err = amt_request_handler(amt, skb);
++			break;
++		case AMT_MSG_MEMBERSHIP_UPDATE:
++			err = amt_update_handler(amt, skb);
++			if (err)
++				goto drop;
++			else
++				goto out;
++		default:
++			err = true;
++			netdev_dbg(amt->dev, "Invalid type of relay\n");
++			break;
++		}
++	}
++drop:
++	if (err) {
++		amt->dev->stats.rx_dropped++;
++		kfree_skb(skb);
++	} else {
++		consume_skb(skb);
++	}
++out:
++	rcu_read_unlock_bh();
++	return 0;
++}
++
++static int amt_err_lookup(struct sock *sk, struct sk_buff *skb)
++{
++	struct amt_dev *amt;
++	int type;
++
++	rcu_read_lock_bh();
++	amt = rcu_dereference_sk_user_data(sk);
++	if (!amt)
++		goto drop;
++
++	if (amt->mode != AMT_MODE_GATEWAY)
++		goto drop;
++
++	type = amt_parse_type(skb);
++	if (type == -1)
++		goto drop;
++
++	netdev_dbg(amt->dev, "Received IGMP Unreachable of %s\n",
++		   type_str[type]);
++	switch (type) {
++	case AMT_MSG_DISCOVERY:
++		break;
++	case AMT_MSG_REQUEST:
++	case AMT_MSG_MEMBERSHIP_UPDATE:
++		if (amt->status >= AMT_STATUS_RECEIVED_ADVERTISEMENT)
++			mod_delayed_work(amt_wq, &amt->req_wq, 0);
++		break;
++	default:
++		goto drop;
++	}
++	rcu_read_unlock_bh();
++	return 0;
++drop:
++	rcu_read_unlock_bh();
++	amt->dev->stats.rx_dropped++;
++	return 0;
++}
++
+ static struct socket *amt_create_sock(struct net *net, __be16 port)
+ {
+ 	struct udp_port_cfg udp_conf;
+@@ -63,6 +1277,8 @@ static int amt_socket_create(struct amt_dev *amt)
+ 	memset(&tunnel_cfg, 0, sizeof(tunnel_cfg));
+ 	tunnel_cfg.sk_user_data = amt;
+ 	tunnel_cfg.encap_type = 1;
++	tunnel_cfg.encap_rcv = amt_rcv;
++	tunnel_cfg.encap_err_lookup = amt_err_lookup;
+ 	tunnel_cfg.encap_destroy = NULL;
+ 	setup_udp_tunnel_sock(amt->net, sock, &tunnel_cfg);
+ 
+@@ -88,14 +1304,26 @@ static int amt_dev_open(struct net_device *dev)
+ 	spin_unlock_bh(&amt->lock);
+ 
+ 	amt->status = AMT_STATUS_INIT;
++	if (amt->mode == AMT_MODE_GATEWAY) {
++		mod_delayed_work(amt_wq, &amt->discovery_wq, 0);
++		mod_delayed_work(amt_wq, &amt->req_wq, 0);
++	} else if (amt->mode == AMT_MODE_RELAY) {
++		mod_delayed_work(amt_wq, &amt->secret_wq,
++				 msecs_to_jiffies(AMT_SECRET_TIMEOUT));
++	}
+ 	return err;
+ }
+ 
+ static int amt_dev_stop(struct net_device *dev)
+ {
+ 	struct amt_dev *amt = netdev_priv(dev);
++	struct amt_tunnel_list *tunnel, *tmp;
+ 	struct socket *sock;
+ 
++	cancel_delayed_work_sync(&amt->req_wq);
++	cancel_delayed_work_sync(&amt->discovery_wq);
++	cancel_delayed_work_sync(&amt->secret_wq);
++
+ 	/* shutdown */
+ 	sock = rtnl_dereference(amt->sock);
+ 	RCU_INIT_POINTER(amt->sock, NULL);
+@@ -106,6 +1334,13 @@ static int amt_dev_stop(struct net_device *dev)
+ 	amt->ready4 = false;
+ 	amt->ready6 = false;
+ 
++	list_for_each_entry_safe(tunnel, tmp, &amt->tunnel_list, list) {
++		list_del_rcu(&tunnel->list);
++		amt->nr_tunnels--;
++		cancel_delayed_work_sync(&tunnel->gc_wq);
++		kfree_rcu(tunnel, rcu);
++	}
++
+ 	return 0;
+ }
+ 
+@@ -156,6 +1391,7 @@ static const struct net_device_ops amt_netdev_ops = {
+ 	.ndo_uninit             = amt_dev_uninit,
+ 	.ndo_open		= amt_dev_open,
+ 	.ndo_stop		= amt_dev_stop,
++	.ndo_start_xmit         = amt_dev_xmit,
+ 	.ndo_get_stats64        = dev_get_tstats64,
+ 	.ndo_change_mtu         = amt_change_mtu,
+ };
+@@ -331,6 +1567,11 @@ static int amt_newlink(struct net *net, struct net_device *dev,
+ 		return err;
+ 	}
+ 
++	INIT_DELAYED_WORK(&amt->discovery_wq, amt_discovery_work);
++	INIT_DELAYED_WORK(&amt->req_wq, amt_req_work);
++	INIT_DELAYED_WORK(&amt->secret_wq, amt_secret_work);
++	INIT_LIST_HEAD(&amt->tunnel_list);
++
+ 	return 0;
+ }
+ 
 diff --git a/include/net/amt.h b/include/net/amt.h
-new file mode 100644
-index 000000000000..e1520d71d782
---- /dev/null
+index e1520d71d782..b9bc9374d6a1 100644
+--- a/include/net/amt.h
 +++ b/include/net/amt.h
-@@ -0,0 +1,236 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
-+/*
-+ * Copyright (c) 2021 Taehee Yoo <ap420073@gmail.com>
-+ */
-+#ifndef _NET_AMT_H_
-+#define _NET_AMT_H_
+@@ -39,6 +39,18 @@ enum amt_status {
+ 
+ #define AMT_STATUS_MAX (__AMT_STATUS_MAX - 1)
+ 
++struct amt_header {
++#if defined(__LITTLE_ENDIAN_BITFIELD)
++	u8 type:4,
++	   version:4;
++#elif defined(__BIG_ENDIAN_BITFIELD)
++	u8 version:4,
++	   type:4;
++#else
++#error  "Please fix <asm/byteorder.h>"
++#endif
++} __packed;
 +
-+#include <linux/siphash.h>
-+#include <linux/workqueue.h>
-+#include <linux/jhash.h>
-+
-+enum amt_msg_type {
-+	AMT_MSG_DISCOVERY = 1,
-+	AMT_MSG_ADVERTISEMENT,
-+	AMT_MSG_REQUEST,
-+	AMT_MSG_MEMBERSHIP_QUERY,
-+	AMT_MSG_MEMBERSHIP_UPDATE,
-+	AMT_MSG_MULTICAST_DATA,
-+	AMT_MSG_TEATDOWM,
-+	__AMT_MSG_MAX,
+ struct amt_header_discovery {
+ #if defined(__LITTLE_ENDIAN_BITFIELD)
+ 	u32	type:4,
+@@ -157,6 +169,29 @@ struct amt_relay_headers {
+ 	};
+ } __packed;
+ 
++struct amt_skb_cb {
++	struct amt_tunnel_list *tunnel;
 +};
 +
-+#define AMT_MSG_MAX (__AMT_MSG_MAX - 1)
-+
-+enum amt_status {
-+	AMT_STATUS_INIT,
-+	AMT_STATUS_SENT_DISCOVERY,
-+	AMT_STATUS_RECEIVED_DISCOVERY,
-+	AMT_STATUS_SENT_ADVERTISEMENT,
-+	AMT_STATUS_RECEIVED_ADVERTISEMENT,
-+	AMT_STATUS_SENT_REQUEST,
-+	AMT_STATUS_RECEIVED_REQUEST,
-+	AMT_STATUS_SENT_QUERY,
-+	AMT_STATUS_RECEIVED_QUERY,
-+	AMT_STATUS_SENT_UPDATE,
-+	AMT_STATUS_RECEIVED_UPDATE,
-+	__AMT_STATUS_MAX,
-+};
-+
-+#define AMT_STATUS_MAX (__AMT_STATUS_MAX - 1)
-+
-+struct amt_header_discovery {
-+#if defined(__LITTLE_ENDIAN_BITFIELD)
-+	u32	type:4,
-+		version:4,
-+		reserved:24;
-+#elif defined(__BIG_ENDIAN_BITFIELD)
-+	u32	version:4,
-+		type:4,
-+		reserved:24;
-+#else
-+#error  "Please fix <asm/byteorder.h>"
-+#endif
-+	__be32	nonce;
-+} __packed;
-+
-+struct amt_header_advertisement {
-+#if defined(__LITTLE_ENDIAN_BITFIELD)
-+	u32	type:4,
-+		version:4,
-+		reserved:24;
-+#elif defined(__BIG_ENDIAN_BITFIELD)
-+	u32	version:4,
-+		type:4,
-+		reserved:24;
-+#else
-+#error  "Please fix <asm/byteorder.h>"
-+#endif
-+	__be32	nonce;
-+	__be32	ip4;
-+} __packed;
-+
-+struct amt_header_request {
-+#if defined(__LITTLE_ENDIAN_BITFIELD)
-+	u32	type:4,
-+		version:4,
-+		reserved1:7,
-+		p:1,
-+		reserved2:16;
-+#elif defined(__BIG_ENDIAN_BITFIELD)
-+	u32	version:4,
-+		type:4,
-+		p:1,
-+		reserved1:7,
-+		reserved2:16;
-+#else
-+#error  "Please fix <asm/byteorder.h>"
-+#endif
-+	__be32	nonce;
-+} __packed;
-+
-+struct amt_header_membership_query {
-+#if defined(__LITTLE_ENDIAN_BITFIELD)
-+	u64	type:4,
-+		version:4,
-+		reserved:6,
-+		l:1,
-+		g:1,
-+		response_mac:48;
-+#elif defined(__BIG_ENDIAN_BITFIELD)
-+	u64	version:4,
-+		type:4,
-+		g:1,
-+		l:1,
-+		reserved:6,
-+		response_mac:48;
-+#else
-+#error  "Please fix <asm/byteorder.h>"
-+#endif
-+	__be32	nonce;
-+} __packed;
-+
-+struct amt_header_membership_update {
-+#if defined(__LITTLE_ENDIAN_BITFIELD)
-+	u64	type:4,
-+		version:4,
-+		reserved:8,
-+		response_mac:48;
-+#elif defined(__BIG_ENDIAN_BITFIELD)
-+	u64	version:4,
-+		type:4,
-+		reserved:8,
-+		response_mac:48;
-+#else
-+#error  "Please fix <asm/byteorder.h>"
-+#endif
-+	__be32	nonce;
-+} __packed;
-+
-+struct amt_header_mcast_data {
-+#if defined(__LITTLE_ENDIAN_BITFIELD)
-+	u16	type:4,
-+		version:4,
-+		reserved:8;
-+#elif defined(__BIG_ENDIAN_BITFIELD)
-+	u16	version:4,
-+		type:4,
-+		reserved:8;
-+#else
-+#error  "Please fix <asm/byteorder.h>"
-+#endif
-+} __packed;
-+
-+struct amt_gw_headers {
-+	union {
-+		struct amt_header_discovery discovery;
-+		struct amt_header_request request;
-+		struct amt_header_membership_update update;
-+	};
-+} __packed;
-+
-+struct amt_relay_headers {
-+	union {
-+		struct amt_header_advertisement advertisement;
-+		struct amt_header_membership_query query;
-+		struct amt_header_mcast_data data;
-+	};
-+} __packed;
-+
-+struct amt_dev {
-+	struct net_device       *dev;
-+	struct net_device       *stream_dev;
-+	struct net		*net;
-+	/* Global lock for amt device */
++struct amt_tunnel_list {
++	struct list_head	list;
++	/* Protect All resources under an amt_tunne_list */
 +	spinlock_t		lock;
-+	/* Used only in relay mode */
-+	struct list_head        tunnel_list;
-+	struct gro_cells	gro_cells;
-+
-+	/* Protected by RTNL */
-+	struct delayed_work     discovery_wq;
-+	/* Protected by RTNL */
-+	struct delayed_work     req_wq;
-+	/* Protected by RTNL */
-+	struct delayed_work     secret_wq;
-+	/* AMT status */
++	struct amt_dev		*amt;
++	u32			nr_groups;
++	u32			nr_sources;
 +	enum amt_status		status;
-+	/* Generated key */
-+	siphash_key_t		key;
-+	struct socket	  __rcu *sock;
-+	u32			max_groups;
-+	u32			max_sources;
-+	u32			hash_buckets;
-+	u32			hash_seed;
-+	/* Default 128 */
-+	u32                     max_tunnels;
-+	/* Default 128 */
-+	u32                     nr_tunnels;
-+	/* Gateway or Relay mode */
-+	u32                     mode;
-+	/* Default 2268 */
-+	__be16			relay_port;
-+	/* Default 2268 */
-+	__be16			gw_port;
-+	/* Outer local ip */
-+	__be32			local_ip;
-+	/* Outer remote ip */
-+	__be32			remote_ip;
-+	/* Outer discovery ip */
-+	__be32			discovery_ip;
-+	/* Only used in gateway mode */
++	struct delayed_work	gc_wq;
++	__be16			source_port;
++	__be32			ip4;
 +	__be32			nonce;
-+	/* Gateway sent request and received query */
-+	bool			ready4;
-+	bool			ready6;
-+	u8			req_cnt;
-+	u8			qi;
-+	u64			qrv;
-+	u64			qri;
-+	/* Used only in gateway mode */
++	siphash_key_t		key;
 +	u64			mac:48,
 +				reserved:16;
++	struct rcu_head		rcu;
++	struct hlist_head	groups[];
 +};
 +
-+#define AMT_MAX_GROUP		32
-+#define AMT_MAX_SOURCE		128
-+#define AMT_HSIZE_SHIFT		8
-+#define AMT_HSIZE		(1 << AMT_HSIZE_SHIFT)
-+
-+#define AMT_INIT_QUERY_INTERVAL	125
-+#define IANA_AMT_UDP_PORT	2268
-+#define AMT_MAX_TUNNELS         128
-+#define AMT_MAX_REQS		128
-+#define AMT_GW_HLEN (sizeof(struct iphdr) + \
-+		     sizeof(struct udphdr) + \
-+		     sizeof(struct amt_gw_headers))
-+#define AMT_RELAY_HLEN (sizeof(struct iphdr) + \
-+		     sizeof(struct udphdr) + \
-+		     sizeof(struct amt_relay_headers))
-+
-+static inline bool netif_is_amt(const struct net_device *dev)
+ struct amt_dev {
+ 	struct net_device       *dev;
+ 	struct net_device       *stream_dev;
+@@ -217,7 +252,12 @@ struct amt_dev {
+ #define AMT_HSIZE_SHIFT		8
+ #define AMT_HSIZE		(1 << AMT_HSIZE_SHIFT)
+ 
++#define AMT_DISCOVERY_TIMEOUT	5000
++#define AMT_INIT_REQ_TIMEOUT	1
+ #define AMT_INIT_QUERY_INTERVAL	125
++#define AMT_MAX_REQ_TIMEOUT	120
++#define AMT_MAX_REQ_COUNT	3
++#define AMT_SECRET_TIMEOUT	60000
+ #define IANA_AMT_UDP_PORT	2268
+ #define AMT_MAX_TUNNELS         128
+ #define AMT_MAX_REQS		128
+@@ -233,4 +273,9 @@ static inline bool netif_is_amt(const struct net_device *dev)
+ 	return dev->rtnl_link_ops && !strcmp(dev->rtnl_link_ops->kind, "amt");
+ }
+ 
++static inline u64 amt_gmi(const struct amt_dev *amt)
 +{
-+	return dev->rtnl_link_ops && !strcmp(dev->rtnl_link_ops->kind, "amt");
++	return ((amt->qrv * amt->qi) + amt->qri) * 1000;
 +}
 +
-+#endif /* _NET_AMT_H_ */
-diff --git a/include/uapi/linux/amt.h b/include/uapi/linux/amt.h
-new file mode 100644
-index 000000000000..641ef7f51253
---- /dev/null
-+++ b/include/uapi/linux/amt.h
-@@ -0,0 +1,31 @@
-+/* SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note */
-+/*
-+ * Copyright (c) 2021 Taehee Yoo <ap420073@gmail.com>
-+ */
-+#ifndef _UAPI_AMT_H_
-+#define _UAPI_AMT_H_
-+
-+enum ifla_amt_mode {
-+	AMT_MODE_GATEWAY = 0,
-+	AMT_MODE_RELAY,
-+	__AMT_MODE_MAX,
-+};
-+
-+#define AMT_MODE_MAX (__AMT_MODE_MAX - 1)
-+
-+enum {
-+	IFLA_AMT_UNSPEC,
-+	IFLA_AMT_MODE,
-+	IFLA_AMT_RELAY_PORT,
-+	IFLA_AMT_GATEWAY_PORT,
-+	IFLA_AMT_LINK,
-+	IFLA_AMT_LOCAL_IP,
-+	IFLA_AMT_REMOTE_IP,
-+	IFLA_AMT_DISCOVERY_IP,
-+	IFLA_AMT_MAX_TUNNELS,
-+	__IFLA_AMT_MAX,
-+};
-+
-+#define IFLA_AMT_MAX (__IFLA_AMT_MAX - 1)
-+
-+#endif /* _UAPI_AMT_H_ */
+ #endif /* _NET_AMT_H_ */
 -- 
 2.17.1
 
