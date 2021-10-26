@@ -2,58 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C237C43B59E
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 17:30:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 720AB43B5A9
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 17:32:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236832AbhJZPcy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 11:32:54 -0400
-Received: from mx3.molgen.mpg.de ([141.14.17.11]:53053 "EHLO mx1.molgen.mpg.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236779AbhJZPcx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Oct 2021 11:32:53 -0400
-Received: from [192.168.0.2] (ip5f5aef5c.dynamic.kabel-deutschland.de [95.90.239.92])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        id S236950AbhJZPfA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 11:35:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:49367 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231789AbhJZPe7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 11:34:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1635262355;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gbVc7HOWJ2PFCnEywyz6wgN+/dC0LKc2fgos1ZmjSsE=;
+        b=anumQXEnQAAygIZODRCG76ITpD5U3XqFgKA2riBjChX8Vjp3GnhrqvPhI667WUiKk/ZBvO
+        IFHoxccIqNOOM/R6S7j6HatkESKOwvxEdgbVQ8jsva148MJubVOrsPlCEewVCZUt7on+2L
+        YTFSOv7AyXxgsa3mInvQDRgs51jcK50=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-542-KfQH3nG9O-CMB1esLnYaRQ-1; Tue, 26 Oct 2021 11:32:30 -0400
+X-MC-Unique: KfQH3nG9O-CMB1esLnYaRQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 1ACA761E5FE33;
-        Tue, 26 Oct 2021 17:30:27 +0200 (CEST)
-Message-ID: <745fff43-4649-ac63-5c6e-6fb3877953c0@molgen.mpg.de>
-Date:   Tue, 26 Oct 2021 17:30:26 +0200
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7F612100C609;
+        Tue, 26 Oct 2021 15:32:28 +0000 (UTC)
+Received: from localhost (unknown [10.39.193.201])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0CA281981F;
+        Tue, 26 Oct 2021 15:32:23 +0000 (UTC)
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Yishai Hadas <yishaih@nvidia.com>, alex.williamson@redhat.com,
+        bhelgaas@google.com, jgg@nvidia.com, saeedm@nvidia.com
+Cc:     linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, yishaih@nvidia.com,
+        maorg@nvidia.com
+Subject: Re: [PATCH V4 mlx5-next 06/13] vfio: Fix
+ VFIO_DEVICE_STATE_SET_ERROR macro
+In-Reply-To: <20211026090605.91646-7-yishaih@nvidia.com>
+Organization: Red Hat GmbH
+References: <20211026090605.91646-1-yishaih@nvidia.com>
+ <20211026090605.91646-7-yishaih@nvidia.com>
+User-Agent: Notmuch/0.32.1 (https://notmuchmail.org)
+Date:   Tue, 26 Oct 2021 17:32:19 +0200
+Message-ID: <87pmrrdcos.fsf@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.1
-Subject: Wrong date/time of messages (was: [Intel-wired-lan] [PATCH intel-next
- 0/2] ice: ethtool -L fixes)
-Content-Language: en-US
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     alexandr.lobakin@intel.com, netdev@vger.kernel.org,
-        marta.a.plantykow@intel.com, kuba@kernel.org, bpf@vger.kernel.org,
-        davem@davemloft.net, magnus.karlsson@intel.com,
-        intel-wired-lan@lists.osuosl.org
-References: <20211026164719.1766911-1-maciej.fijalkowski@intel.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20211026164719.1766911-1-maciej.fijalkowski@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Intel folks,
+On Tue, Oct 26 2021, Yishai Hadas <yishaih@nvidia.com> wrote:
 
+> Fixed the non-compiled macro VFIO_DEVICE_STATE_SET_ERROR (i.e. SATE
+> instead of STATE).
+>
+> Fixes: a8a24f3f6e38 ("vfio: UAPI for migration interface for device state")
+> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 
-On 26.10.21 18:47, Maciej Fijalkowski wrote:
+This s-o-b chain looks weird; your s-o-b always needs to be last.
 
-[…]
+> ---
+>  include/uapi/linux/vfio.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> index ef33ea002b0b..114ffcefe437 100644
+> --- a/include/uapi/linux/vfio.h
+> +++ b/include/uapi/linux/vfio.h
+> @@ -622,7 +622,7 @@ struct vfio_device_migration_info {
+>  					      VFIO_DEVICE_STATE_RESUMING))
+>  
+>  #define VFIO_DEVICE_STATE_SET_ERROR(state) \
+> -	((state & ~VFIO_DEVICE_STATE_MASK) | VFIO_DEVICE_SATE_SAVING | \
+> +	((state & ~VFIO_DEVICE_STATE_MASK) | VFIO_DEVICE_STATE_SAVING | \
+>  					     VFIO_DEVICE_STATE_RESUMING)
+>  
+>  	__u32 reserved;
 
-Once again messages were sent to the list with a Date from the future. 
-Why can’t Intel employees work on systems with a correct clock?
+Change looks fine, although we might consider merging it with the next
+patch? Anyway,
 
-It’d would be great if somebody from Intel would at least have the 
-courtesy to analyze and fix the root cause.
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
 
-
-Kind regards,
-
-Paul
