@@ -2,107 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74CA943B176
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 13:43:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31B4743B1AA
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 13:54:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235545AbhJZLqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 07:46:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45852 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233543AbhJZLqT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 07:46:19 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A8D1C061745;
-        Tue, 26 Oct 2021 04:43:55 -0700 (PDT)
-Date:   Tue, 26 Oct 2021 13:43:51 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1635248632;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eZ4neUNOghjf5S1JjI+gn7geqrIVxjnymAdwbN+Ka6Q=;
-        b=Vv3MANl93vmVT+PzjlUy9IAiN9eKvoX68WnqLW71WE8b0BJ3XZJfgPJwb0BGI8l2gDk6TZ
-        nENdV+Lg0/GOd5s6xk6Rw4OdU2ONT0B1zLtcqycvmbUo7lkLbiQO3BIxMVfNxjXxNMevAi
-        +ufx6mjfKntjwHy+ACeTYNI4OFLX4i73WT9KXjW6G70iXuNpBcnrDca5aLJQXAnPTDYloo
-        VRV3sVXvJGh6zii+0MYL+iZhQUdrsKlWlI2TdwtxFR4vMahAl6nw1sEAqu2Md0X5w6/WKQ
-        Fri219z+Vo4cs5zeUY6DyO7DlfEqVzsQccMb+mMSsUZrrei9oaF8cFRe6uPS7A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1635248632;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eZ4neUNOghjf5S1JjI+gn7geqrIVxjnymAdwbN+Ka6Q=;
-        b=FgUEv64Zmy/r7unL5ZMoMgqlnWZ4zbAa/Wg3P+hi61SIGHjQ0KezBbUujwbpNsUwnPEk2o
-        GHXm6gPoHKb7CaDA==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Denis Kirjanov <dkirjanov@suse.de>
-Cc:     Arnd Bergmann <arnd@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Ahmed S. Darwish" <a.darwish@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH net-next v3] net: sched: gred: dynamically allocate
- tc_gred_qopt_offload
-Message-ID: <20211026114351.sq2qlpbfptd7hyxm@linutronix.de>
-References: <20211026100711.nalhttf6mbe6sudx@linutronix.de>
- <3bf1e148-14fc-98f6-5319-78046a7b9565@suse.de>
- <20211026105104.vhfxrwisqcbvsxiq@linutronix.de>
- <d3a32766-550c-11a1-4364-98f876e7ce12@suse.de>
+        id S235694AbhJZL5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 07:57:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60316 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235562AbhJZL5H (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Oct 2021 07:57:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9791C60F90;
+        Tue, 26 Oct 2021 11:54:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635249283;
+        bh=oNSlDUAVFsAGdDzC+G3y987AE6R4DUYBIDH8CkjX7u8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tEkfaVF8DXq9/rDNDqEmbZycNVNPvS3OcVsETd0T+dlU9wAKVXuY9bL6FgznS+qzU
+         R6jo72dh72H8p5xEr6yGXeKoyg/sX13NW67k4sLuHwvPl4puwR18Ir7V7spzUENDsQ
+         XoHdoWQwyUr60wgyBJpTSdVIDppgtz3iv+IsftdU9P6wHUNS05oOsytnZdrWumT0DI
+         Alpc54Gju4Ux8MDOygNfE/UZSLfRJeSRRxjbDqizv5+v/uarYXGguUmk9xXoPTlmCB
+         uyFOQkI9VPgMBbohhHquRSKzop5zOVnw9z1Rg5JwPN0F4nhgj327iIUoF8SebcYPVy
+         ngnMS8n2rSx+A==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1mfL2A-0001dQ-S9; Tue, 26 Oct 2021 13:54:27 +0200
+Date:   Tue, 26 Oct 2021 13:54:26 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Wang Hai <wanghai38@huawei.com>
+Cc:     oneukum@suse.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] usbnet: fix error return code in usbnet_probe()
+Message-ID: <YXfsclAOm8Zhbac1@hovoldconsulting.com>
+References: <20211026112526.2878177-1-wanghai38@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <d3a32766-550c-11a1-4364-98f876e7ce12@suse.de>
+In-Reply-To: <20211026112526.2878177-1-wanghai38@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-10-26 14:16:16 [+0300], Denis Kirjanov wrote:
-> 10/26/21 1:51 PM, Sebastian Andrzej Siewior =D0=BF=D0=B8=D1=88=D0=B5=D1=
-=82:
-> > On 2021-10-26 13:42:24 [+0300], Denis Kirjanov wrote:
-> > > > diff --git a/net/sched/sch_gred.c b/net/sched/sch_gred.c
-> > > > index 72de08ef8335e..1073c76d05c45 100644
-> > > > --- a/net/sched/sch_gred.c
-> > > > +++ b/net/sched/sch_gred.c
-> > > > @@ -311,42 +312,43 @@ static void gred_offload(struct Qdisc *sch, e=
-num tc_gred_command command)
-> > > >    {
-> > > >    	struct gred_sched *table =3D qdisc_priv(sch);
-> > > >    	struct net_device *dev =3D qdisc_dev(sch);
-> > > > -	struct tc_gred_qopt_offload opt =3D {
-> > > > -		.command	=3D command,
-> > > > -		.handle		=3D sch->handle,
-> > > > -		.parent		=3D sch->parent,
-> > > > -	};
-> > > > +	struct tc_gred_qopt_offload *opt =3D table->opt;
-> > > >    	if (!tc_can_offload(dev) || !dev->netdev_ops->ndo_setup_tc)
-> > > >    		return;
-> > > > +	memset(opt, 0, sizeof(*opt));
-> > >=20
-> > > It's zeroed in kzalloc()
-> >=20
-> > but it is not limited to a single invocation?
->=20
-> I meant that all fields are set in the function as it was with the stack
-> storage.
+On Tue, Oct 26, 2021 at 07:25:26PM +0800, Wang Hai wrote:
+> Return error code if usb_maxpacket() returns 0 in usbnet_probe().
+> 
+> Fixes: 397430b50a36 ("usbnet: sanity check for maxpacket")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wang Hai <wanghai38@huawei.com>
+> ---
 
-What about?
-|                for (i =3D 0; i < table->DPs; i++) {
-|                        struct gred_sched_data *q =3D table->tab[i];
-|=20
-|                        if (!q)
-|                                continue;
+Good catch. This is embarrassing. I double checked the error path but
+failed to notice the missing return value.
 
-The stack storage version has an implicit memset().
+>  drivers/net/usb/usbnet.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+> index 80432ee0ce69..fb5bf7d36d50 100644
+> --- a/drivers/net/usb/usbnet.c
+> +++ b/drivers/net/usb/usbnet.c
+> @@ -1790,6 +1790,7 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
+>  	dev->maxpacket = usb_maxpacket (dev->udev, dev->out, 1);
+>  	if (dev->maxpacket == 0) {
+>  		/* that is a broken device */
+> +		status = -EINVAL;
 
-Sebastian
+But please use -ENODEV here. -EINVAL is typically reserved for bad user
+input.
+
+>  		goto out4;
+>  	}
+
+Johan
