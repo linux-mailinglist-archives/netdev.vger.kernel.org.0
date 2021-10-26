@@ -2,95 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E624B43B465
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 16:37:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDCAA43B47B
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 16:41:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231546AbhJZOkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 10:40:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48446 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234906AbhJZOkA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Oct 2021 10:40:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 365EF60F9B;
-        Tue, 26 Oct 2021 14:37:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635259056;
-        bh=mZyyCsuNBLDFQ7EOhT0gjKS24zRD93DOBaYqv6Y9vTE=;
-        h=In-Reply-To:References:From:To:Subject:Cc:Date:From;
-        b=sJNidINuQcVKRhXQA6zwcNxR3q1jb/4U8c3cmCQZzmpX7xxdFxwopXZm+FhLBIvyl
-         hU0Zb3Rj6XPoc2DL8OsXqdAzdGHd7Cy+EKLfzk87uIRrh3fXDX1iI3FjsXPS0xFjsd
-         qVThpDxMx12GB28cU6Lx6Y1faiO0MnbfAtoDXuUeXOC8mtjU/QUBMPP1n7+0QeQRZw
-         DtQRG87mrItNwJG4KMxTikZb8GccQkgOc6gWahCQ/yBe6VjmrVtAuEoI21EjrUN5+e
-         dMNE4dsnJh7kQNGS4rYEB2tMT68ImUZz1YiO82ECMbYw6YDPLEB5C/2ZJ6xkxOw9nJ
-         AHt2Nmk/EH5Pg==
-Content-Type: text/plain; charset="utf-8"
+        id S231592AbhJZOny (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 10:43:54 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:29941 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235433AbhJZOnv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 10:43:51 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HdvXW63DbzbnPZ;
+        Tue, 26 Oct 2021 22:36:43 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Tue, 26 Oct 2021 22:41:22 +0800
+Received: from [10.67.102.67] (10.67.102.67) by kwepemm600016.china.huawei.com
+ (7.193.23.20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.15; Tue, 26 Oct
+ 2021 22:41:20 +0800
+Subject: Re: [PATCH V4 net-next 4/6] ethtool: extend ringparam setting uAPI
+ with rx_buf_len
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <mkubecek@suse.cz>, <andrew@lunn.ch>,
+        <amitc@mellanox.com>, <idosch@idosch.org>, <danieller@nvidia.com>,
+        <jesse.brandeburg@intel.com>, <anthony.l.nguyen@intel.com>,
+        <jdike@addtoit.com>, <richard@nod.at>,
+        <anton.ivanov@cambridgegreys.com>, <netanel@amazon.com>,
+        <akiyano@amazon.com>, <saeedb@amazon.com>, <chris.snook@gmail.com>,
+        <ulli.kroll@googlemail.com>, <linus.walleij@linaro.org>,
+        <jeroendb@google.com>, <csully@google.com>,
+        <awogbemila@google.com>, <jdmason@kudzu.us>,
+        <rain.1986.08.12@gmail.com>, <zyjzyj2000@gmail.com>,
+        <kys@microsoft.com>, <haiyangz@microsoft.com>, <mst@redhat.com>,
+        <jasowang@redhat.com>, <doshir@vmware.com>,
+        <pv-drivers@vmware.com>, <jwi@linux.ibm.com>,
+        <kgraul@linux.ibm.com>, <hca@linux.ibm.com>, <gor@linux.ibm.com>,
+        <johannes@sipsolutions.net>, <netdev@vger.kernel.org>,
+        <lipeng321@huawei.com>, <chenhao288@hisilicon.com>,
+        <linux-s390@vger.kernel.org>
+References: <20211014113943.16231-1-huangguangbin2@huawei.com>
+ <20211014113943.16231-5-huangguangbin2@huawei.com>
+ <20211025131149.ya42sw64vkh7zrcr@pengutronix.de>
+ <20211025132718.5wtos3oxjhzjhymr@pengutronix.de>
+ <20211025104505.43461b53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20211025190114.zbqgzsfiv7zav7aq@pengutronix.de>
+From:   "huangguangbin (A)" <huangguangbin2@huawei.com>
+Message-ID: <8ce654b8-4a31-2d43-df7e-607528ba44d5@huawei.com>
+Date:   Tue, 26 Oct 2021 22:41:19 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20211026.153057.208749798584527471.davem@davemloft.net>
-References: <20211026133822.949135-1-atenart@kernel.org> <20211026.153057.208749798584527471.davem@davemloft.net>
-From:   Antoine Tenart <atenart@kernel.org>
-To:     David Miller <davem@davemloft.net>
-Subject: Re: [net] net-sysfs: avoid registering new queue objects after device unregistration
-Cc:     kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Message-ID: <163525905360.935735.15638391921416634794@kwain>
-Date:   Tue, 26 Oct 2021 16:37:33 +0200
+In-Reply-To: <20211025190114.zbqgzsfiv7zav7aq@pengutronix.de>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.67]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting David Miller (2021-10-26 16:30:57)
-> From: Antoine Tenart <atenart@kernel.org>
-> Date: Tue, 26 Oct 2021 15:38:22 +0200
->=20
-> > netdev_queue_update_kobjects can be called after device unregistration
-> > started (and device_del was called) resulting in two issues: possible
-> > registration of new queue kobjects (leading to the following trace) and
-> > providing a wrong 'old_num' number (because real_num_tx_queues is not
-> > updated in the unregistration path).
-> >=20
-> >   BUG: KASAN: use-after-free in kobject_get+0x14/0x90
-> >   Read of size 1 at addr ffff88801961248c by task ethtool/755
-> >=20
-> >   CPU: 0 PID: 755 Comm: ethtool Not tainted 5.15.0-rc6+ #778
-> >   Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-4.=
-fc34 04/014
-> >   Call Trace:
-> >    dump_stack_lvl+0x57/0x72
-> >    print_address_description.constprop.0+0x1f/0x140
-> >    kasan_report.cold+0x7f/0x11b
-> >    kobject_get+0x14/0x90
-> >    kobject_add_internal+0x3d1/0x450
-> >    kobject_init_and_add+0xba/0xf0
-> >    netdev_queue_update_kobjects+0xcf/0x200
-> >    netif_set_real_num_tx_queues+0xb4/0x310
-> >    veth_set_channels+0x1c3/0x550
-> >    ethnl_set_channels+0x524/0x610
-> >=20
-> > The fix for both is to only allow unregistering queue kobjects after a
-> > net device started its unregistration and to ensure we know the current
-> > Tx queue number (we update dev->real_num_tx_queues before returning).
-> > This relies on the fact that dev->real_num_tx_queues is used for
-> > 'old_num' expect when firstly allocating queues.
-> >=20
-> > (Rx queues are not affected as net_rx_queue_update_kobjects can't be
-> > called after a net device started its unregistration).
-> >=20
-> > Fixes: 5c56580b74e5 ("net: Adjust TX queue kobjects if number of queues=
- changes during unregister")
-> > Signed-off-by: Antoine Tenart <atenart@kernel.org>
->=20
-> netdev_queue_update_kobjects is a confusing function name, it sounds
-> like it handles both rx and tx.  It only handles tx so
-> net_tx_queue_update_kobjects is more appropriate.
 
-Agreed.
 
-> Could you rename the function in this patch please?
+On 2021/10/26 3:01, Marc Kleine-Budde wrote:
+> On 25.10.2021 10:45:05, Jakub Kicinski wrote:
+>>> The approach Andrew suggested is two-fold. First introduce a "struct
+>>> ethtool_kringparam" that's only used inside the kernel, as "struct
+>>> ethtool_ringparam" is ABI. Then extend "struct ethtool_kringparam" as
+>>> needed.
+>>
+>> Indeed, there are different ways to extend the API for drivers,
+>> I think it comes down to personal taste. I find the "inheritance"
+>> models in C (kstruct usually contains the old struct as some "base")
+>> awkward.
+>>
+>> I don't think we have agreed-on best practice in the area.
+> 
+>  From my point of view, if there already is an extension mainline:
+> 
+> | https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=f3ccfda19319
+> 
+> I'm more in the flavor for modeling other extensions the same way. Would
+> be more consistent to name the new struct "kernel_"ethtool_ringparam,
+> following the coalescing example:
+> 
+> | struct kernel_ethtool_ringparam {
+> |        __u32   rx_buf_len;
+> | };
+> 
+> regards,
+> Marc
+> 
+We think ethtool_ringparam_ext is more easy to understand it is extension of
+struct ethtool_ringparam. However, we don't mind to keep the same way and modify
+to the name kernel_ethtool_ringparam if everyone agrees.
 
-As this is targeting stable kernels, shouldn't the rename be a separate
-patch sent to net-next instead? (And it's not the only function that
-should be renamed if we take this path, such as netdev_queue_add_kobject
-and the functions in struct kobj_type netdev_queue_ktype).
-
-Thanks!
-Antoine
+Does anyone have other opinions?
