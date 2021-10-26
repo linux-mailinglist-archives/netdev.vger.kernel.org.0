@@ -2,104 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F086D43B2D1
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 15:01:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE48A43B2E6
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 15:07:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236100AbhJZNDX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 09:03:23 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:54331 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236114AbhJZNDW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Oct 2021 09:03:22 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1635253258; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=1k3zGJ4rl06XKaEt7rtFd3UZK/aFUbT8lcdHtHYHL0c=; b=F0eL2IAln6m1iQiHWFECXfqygUyqRVoUbgnbeY7Pq7V5pFH+MUI+w+kuSkfif0AO8LmFM0sb
- ecfHXCYLjy0cfP+EfF8jh2BCmNEujWt5/0LVZjhVkUqo39rUHrVxOunJ2fuSEo0I1USVTbJZ
- KRRKCg0B5J0wOliNMHbCW8uS37A=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
- 6177fbe7b03398c06ce69e26 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 26 Oct 2021 13:00:23
- GMT
-Sender: quic_luoj=quicinc.com@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 51B74C43619; Tue, 26 Oct 2021 13:00:22 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-3.1 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from [10.92.1.38] (unknown [180.166.53.36])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: luoj)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 52593C4338F;
-        Tue, 26 Oct 2021 13:00:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 52593C4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=fail (p=none dis=none) header.from=quicinc.com
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=quicinc.com
-Subject: Re: [PATCH] net: phy: fixed warning: Function parameter not described
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Luo Jie <luoj@codeaurora.org>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
+        id S236134AbhJZNJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 09:09:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36592 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235127AbhJZNJ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 09:09:26 -0400
+Received: from mail-oo1-xc2f.google.com (mail-oo1-xc2f.google.com [IPv6:2607:f8b0:4864:20::c2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87DC9C061767
+        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 06:07:02 -0700 (PDT)
+Received: by mail-oo1-xc2f.google.com with SMTP id m37-20020a4a9528000000b002b83955f771so4262399ooi.7
+        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 06:07:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=forshee.me; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bMO9aIZEjMzj+cHlABoe9RIyr+B9KaScU7qbVDmoSBU=;
+        b=gs+ZGXEQlgMQw8l++1hUpXPBydjgeiTLOcEr0x4UZ0P2YBtOQW9Pb5DYjoj927k+1Y
+         UXJRhbTriWliVVTFJvK74OWPMlbtHkV2JNvTzb2hrL6lMlsXU5zPqhh4nWb8JVqP1WBk
+         s7XUR1HjdezHpAHa/CMU9f4ie2pcjajdxfM1X/HrRdmubWp7a1TXILI0+rIhkPtU/Ibi
+         fVosNqtj1En3V0Ay3W6wlulz9tCiHPzjafhEyLM5o/rcko1cIQURuOfgPmZKmwFwgKcK
+         zazGD0jmRxOX29lLM3blPnUgaAAWNeopcqSyMbmTqF6nTkhsFHIBX++x1/mxdn/6Dqn1
+         rBcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bMO9aIZEjMzj+cHlABoe9RIyr+B9KaScU7qbVDmoSBU=;
+        b=sgRLb9XNnPFP4Jc7JWn6lrZ5+jJl4O63ikdM28wZBc03QqKDPOwBC/dU7bMbMUz/RW
+         4E7PUsEHiH1tbDTM1pt9W6O12WAApeeXnY4u5e6wqCMQt3zzfDFlZOxsBabzB0W14EtO
+         S9XDe1cCCE4BBUVcrF47PFKybYvvFgPXxQ1GhFx6Ghf+BsSTAuq6uLQ5JCSkfEONR9mO
+         M5Rjuo/ixe1/Iqk/PElE7A8r1Sb1CifD8TjL/6QFZZD1gaF9NdL0AOdeF5BC8aaBndGH
+         FFr9jwZsoLjFiC/fNtssvkd+JplBjwvzLDoXJ7k6auxfM8vDH8DZu0jEjNXVsmtrMBgO
+         ftfA==
+X-Gm-Message-State: AOAM530GVccfIyFBNaJ6K45t8lQ80csAKuOdfESOHq4LidUcEYauQThw
+        L9pPC5DZ+RCDqTUQ189Pafmw0w==
+X-Google-Smtp-Source: ABdhPJy2sHrfFA8jSlyLkeDUjCM5YfHBMuAAeutWAaVoHL1TBQCxYc1Q2cMU7HbI3XKbr/GzEzi76Q==
+X-Received: by 2002:a05:6820:35a:: with SMTP id m26mr17338095ooe.45.1635253621041;
+        Tue, 26 Oct 2021 06:07:01 -0700 (PDT)
+Received: from localhost ([2605:a601:ac0f:820:fca3:95d3:b064:21ae])
+        by smtp.gmail.com with ESMTPSA id bq10sm3090209oib.25.2021.10.26.06.07.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Oct 2021 06:07:00 -0700 (PDT)
+From:   Seth Forshee <seth@forshee.me>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20211026102957.17100-1-luoj@codeaurora.org>
- <YXfaAfSfPTaTTpVf@shell.armlinux.org.uk>
-From:   Jie Luo <quic_luoj@quicinc.com>
-Message-ID: <1e2c14d5-0d9c-e288-f2c6-0b29c5ce93e0@quicinc.com>
-Date:   Tue, 26 Oct 2021 21:00:17 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+Subject: [PATCH v2] net: sch: eliminate unnecessary RCU waits in mini_qdisc_pair_swap()
+Date:   Tue, 26 Oct 2021 08:06:59 -0500
+Message-Id: <20211026130700.121189-1-seth@forshee.me>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-In-Reply-To: <YXfaAfSfPTaTTpVf@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Seth Forshee <sforshee@digitalocean.com>
 
-On 10/26/2021 6:35 PM, Russell King (Oracle) wrote:
-> On Tue, Oct 26, 2021 at 06:29:57PM +0800, Luo Jie wrote:
->> Fixed warning: Function parameter or member 'enable' not
->> described in 'genphy_c45_fast_retrain'
->>
->> Signed-off-by: Luo Jie <luoj@codeaurora.org>
->> ---
->>   drivers/net/phy/phy-c45.c | 1 +
->>   1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
->> index b01180e1f578..db709d30bf84 100644
->> --- a/drivers/net/phy/phy-c45.c
->> +++ b/drivers/net/phy/phy-c45.c
->> @@ -614,6 +614,7 @@ EXPORT_SYMBOL_GPL(genphy_c45_loopback);
->>   /**
->>    * genphy_c45_fast_retrain - configure fast retrain registers
->>    * @phydev: target phy_device struct
->> + * @enable: enable fast retrain or not
->>    *
->>    * Description: If fast-retrain is enabled, we configure PHY as
->>    *   advertising fast retrain capable and THP Bypass Request, then
-> Patch itself is fine, but I wonder why we've started getting
-> Description: prefixes on new functions in this file whereas the
-> bulk of the descriptions in the file do not use that prefix.
+Currently rcu_barrier() is used to ensure that no readers of the
+inactive mini_Qdisc buffer remain before it is reused. This waits for
+any pending RCU callbacks to complete, when all that is actually
+required is to wait for one RCU grace period to elapse after the buffer
+was made inactive. This means that using rcu_barrier() may result in
+unnecessary waits.
 
-Thanks Russell for the review. i see the prefix "Description" is also 
-used in the
+To improve this, store the current RCU state when a buffer is made
+inactive and use poll_state_synchronize_rcu() to check whether a full
+grace period has elapsed before reusing it. If a full grace period has
+not elapsed, wait for a grace period to elapse, and in the non-RT case
+use synchronize_rcu_expedited() to hasten it.
 
-file phy.c.
+Since this approach eliminates the RCU callback it is no longer
+necessary to synchronize_rcu() in the tp_head==NULL case. However, the
+RCU state should still be saved for the previously active buffer.
 
-> In any case, for this patch:
->
-> Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
->
-> Thanks.
->
+Before this change I would typically see mini_qdisc_pair_swap() take
+tens of milliseconds to complete. After this change it typcially
+finishes in less than 1 ms, and often it takes just a few microseconds.
+
+Thanks to Paul for walking me through the options for improving this.
+
+Cc: "Paul E. McKenney" <paulmck@kernel.org>
+Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
+---
+v2:
+ - Rebase to net-next
+
+ include/net/sch_generic.h |  2 +-
+ net/sched/sch_generic.c   | 38 +++++++++++++++++++-------------------
+ 2 files changed, 20 insertions(+), 20 deletions(-)
+
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index ada02c4a4f51..22179b2fda72 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -1302,7 +1302,7 @@ struct mini_Qdisc {
+ 	struct tcf_block *block;
+ 	struct gnet_stats_basic_sync __percpu *cpu_bstats;
+ 	struct gnet_stats_queue	__percpu *cpu_qstats;
+-	struct rcu_head rcu;
++	unsigned long rcu_state;
+ };
+ 
+ static inline void mini_qdisc_bstats_cpu_update(struct mini_Qdisc *miniq,
+diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+index b0ff0dff2773..24899efc51be 100644
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -1487,10 +1487,6 @@ void psched_ppscfg_precompute(struct psched_pktrate *r, u64 pktrate64)
+ }
+ EXPORT_SYMBOL(psched_ppscfg_precompute);
+ 
+-static void mini_qdisc_rcu_func(struct rcu_head *head)
+-{
+-}
+-
+ void mini_qdisc_pair_swap(struct mini_Qdisc_pair *miniqp,
+ 			  struct tcf_proto *tp_head)
+ {
+@@ -1503,28 +1499,30 @@ void mini_qdisc_pair_swap(struct mini_Qdisc_pair *miniqp,
+ 
+ 	if (!tp_head) {
+ 		RCU_INIT_POINTER(*miniqp->p_miniq, NULL);
+-		/* Wait for flying RCU callback before it is freed. */
+-		rcu_barrier();
+-		return;
+-	}
++	} else {
++		miniq = !miniq_old || miniq_old == &miniqp->miniq2 ?
++			&miniqp->miniq1 : &miniqp->miniq2;
+ 
+-	miniq = !miniq_old || miniq_old == &miniqp->miniq2 ?
+-		&miniqp->miniq1 : &miniqp->miniq2;
++		/* We need to make sure that readers won't see the miniq
++		 * we are about to modify. So ensure that at least one RCU
++		 * grace period has elapsed since the miniq was made
++		 * inactive.
++		 */
++		if (IS_ENABLED(CONFIG_PREEMPT_RT))
++			cond_synchronize_rcu(miniq->rcu_state);
++		else if (!poll_state_synchronize_rcu(miniq->rcu_state))
++			synchronize_rcu_expedited();
+ 
+-	/* We need to make sure that readers won't see the miniq
+-	 * we are about to modify. So wait until previous call_rcu callback
+-	 * is done.
+-	 */
+-	rcu_barrier();
+-	miniq->filter_list = tp_head;
+-	rcu_assign_pointer(*miniqp->p_miniq, miniq);
++		miniq->filter_list = tp_head;
++		rcu_assign_pointer(*miniqp->p_miniq, miniq);
++	}
+ 
+ 	if (miniq_old)
+-		/* This is counterpart of the rcu barriers above. We need to
++		/* This is counterpart of the rcu sync above. We need to
+ 		 * block potential new user of miniq_old until all readers
+ 		 * are not seeing it.
+ 		 */
+-		call_rcu(&miniq_old->rcu, mini_qdisc_rcu_func);
++		miniq_old->rcu_state = start_poll_synchronize_rcu();
+ }
+ EXPORT_SYMBOL(mini_qdisc_pair_swap);
+ 
+@@ -1543,6 +1541,8 @@ void mini_qdisc_pair_init(struct mini_Qdisc_pair *miniqp, struct Qdisc *qdisc,
+ 	miniqp->miniq1.cpu_qstats = qdisc->cpu_qstats;
+ 	miniqp->miniq2.cpu_bstats = qdisc->cpu_bstats;
+ 	miniqp->miniq2.cpu_qstats = qdisc->cpu_qstats;
++	miniqp->miniq1.rcu_state = get_state_synchronize_rcu();
++	miniqp->miniq2.rcu_state = miniqp->miniq1.rcu_state;
+ 	miniqp->p_miniq = p_miniq;
+ }
+ EXPORT_SYMBOL(mini_qdisc_pair_init);
+-- 
+2.30.2
+
