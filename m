@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D4A143B22A
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 14:18:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7E0F43B22C
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 14:19:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235809AbhJZMVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 08:21:06 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:54156 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S235781AbhJZMVF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 08:21:05 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19QAMpaR014837;
-        Tue, 26 Oct 2021 05:18:40 -0700
+        id S235793AbhJZMVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 08:21:18 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:53878 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235817AbhJZMVR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 08:21:17 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19Q5mPJu012747;
+        Tue, 26 Oct 2021 05:18:48 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pfpt0220;
- bh=5+ySS+Clrj1nkMRZPRnyAWEF7GvXJiAIyvpNJh/DaYQ=;
- b=cU3Mi5CfxVtLjq99OKMXMFzB+iFrgEQ+Ga9M0ZgFyspLYHpZmN+I9GvboOjLIREBNLlH
- /e9aqKr592PnYVVFRB8ALNVU3dpYf7X/Fr4hlvl7f+lnynTgYGIkORNGf85H5OGwZ6ko
- dHGkVpTk7BEizXVpAKXU9EJ9ghDEj8Ybb1XRWqb1dvG9UdLslEnm5cnFO0PHM98e0iiT
- Z1NQANiA/GTs8sWyDZk7u1XpLDqAfKmBbSY+YqbXFbcy2Il6wKxlEsvZvSlpjqiSM/A+
- +nQI9yAjygNo7YuLYldsTTfnkSr3NGiZG3ErVvTVeC6i78FWsuQ4C4WLDHFRyu8fVZVr Zg== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 3bxfv8gf6d-1
+ content-type; s=pfpt0220; bh=154js5CslHGw3fFYjNwVipHBWXKRTWr7Ng7T7+vPnMU=;
+ b=Y/o3THgXBFcVGMn/DEGLu3FZiLyWiaQaomgGBYzJ7BuNv5qS1ezYVdYx+OlpJVvdMo9g
+ e7JHolB9FJMf6gY8Vn02EicGGEBixQwEm4MUp+SGyuYyg2/kH/e30cX+AVPq49q+Roef
+ ssNNaw5/oy/Oti+wpjGGMZTnVgiytaaKOTkNxjv1uOvJMN9i7N4AIn2Yf403Dp1zKYGA
+ YCjGx9tSvmE9m4Xd9dQxEwHd88jbkW5/8Zk+O6SBNa+e4m7yKbfW1L5hO1nCnT7rXZSH
+ /5MymcBm3jcmpBSjtyiekbkSCteFZ1ci0Xz97AD2yZJm8xNvaejYUFTGrZMN3DHFhW6K 5w== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 3bx4dx2yg9-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 26 Oct 2021 05:18:40 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 26 Oct
- 2021 05:18:39 -0700
+        Tue, 26 Oct 2021 05:18:47 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 26 Oct
+ 2021 05:18:45 -0700
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Tue, 26 Oct 2021 05:18:39 -0700
+ Transport; Tue, 26 Oct 2021 05:18:45 -0700
 Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id C878C3F7065;
-        Tue, 26 Oct 2021 05:18:34 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 322943F7065;
+        Tue, 26 Oct 2021 05:18:41 -0700 (PDT)
 From:   Rakesh Babu <rsaladi2@marvell.com>
 To:     <sgoutham@marvell.com>, <gakula@marvell.com>,
         <sbhatta@marvell.com>, <hkelam@marvell.com>, <davem@davemloft.net>,
         <kuba@kernel.org>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-CC:     Rakesh Babu <rsaladi2@marvell.com>
-Subject: [net-next PATCH v2 1/3] octeontx2-af: debugfs: Minor changes.
-Date:   Tue, 26 Oct 2021 17:48:12 +0530
-Message-ID: <20211026121814.27036-2-rsaladi2@marvell.com>
+CC:     Harman Kalra <hkalra@marvell.com>,
+        Bhaskara Budiredla <bbudiredla@marvell.com>,
+        Rakesh Babu <rsaladi2@marvell.com>
+Subject: [net-next PATCH v2 2/3] octeontx2-af: cn10k: debugfs for dumping LMTST map table
+Date:   Tue, 26 Oct 2021 17:48:13 +0530
+Message-ID: <20211026121814.27036-3-rsaladi2@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211026121814.27036-1-rsaladi2@marvell.com>
 References: <20211026121814.27036-1-rsaladi2@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: KQsd2NUOQZvs3cJcky1naJIR1Or3Fosf
-X-Proofpoint-ORIG-GUID: KQsd2NUOQZvs3cJcky1naJIR1Or3Fosf
+Content-Type: text/plain
+X-Proofpoint-GUID: ndS39GM6e5xZl_rXmnHklCzWjkkWqi4A
+X-Proofpoint-ORIG-GUID: ndS39GM6e5xZl_rXmnHklCzWjkkWqi4A
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
  definitions=2021-10-26_02,2021-10-26_01,2020-04-07_01
@@ -60,100 +60,138 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Few changes in rvu_debugfs.c file to remove unwanted characters,
-indenting the code, code enhancement, added a new comment line etc.
-This patch also has the null pointer check in rvu_nix.c file.
+From: Harman Kalra <hkalra@marvell.com>
 
+CN10k SoCs use atomic stores of up to 128 bytes to submit
+packets/instructions into co-processor cores. The enqueueing is performed
+using Large Memory Transaction Store (LMTST) operations. They allow for
+lockless enqueue operations - i.e., two different CPU cores can submit
+instructions to the same queue without needing to lock the queue or
+synchronize their accesses.
+
+This patch implements a new debugfs entry for dumping LMTST map
+table present on CN10K, as this might be very useful to debug any issue
+in case of shared LMTST region among multiple pci functions.
+
+Signed-off-by: Harman Kalra <hkalra@marvell.com>
+Signed-off-by: Bhaskara Budiredla <bbudiredla@marvell.com>
 Signed-off-by: Rakesh Babu <rsaladi2@marvell.com>
 Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
 ---
- .../marvell/octeontx2/af/rvu_debugfs.c        | 24 +++++++++----------
- .../ethernet/marvell/octeontx2/af/rvu_nix.c   |  3 +++
- 2 files changed, 15 insertions(+), 12 deletions(-)
+ .../marvell/octeontx2/af/rvu_debugfs.c        | 94 +++++++++++++++++++
+ 1 file changed, 94 insertions(+)
 
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-index 9338765da048..1679d83cf779 100644
+index 1679d83cf779..205e5d203189 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-@@ -95,7 +95,7 @@ static char *cgx_tx_stats_fields[] = {
- 	[CGX_STAT5]	= "Total frames sent on the interface",
- 	[CGX_STAT6]	= "Packets sent with an octet count < 64",
- 	[CGX_STAT7]	= "Packets sent with an octet count == 64",
--	[CGX_STAT8]	= "Packets sent with an octet count of 65–127",
-+	[CGX_STAT8]	= "Packets sent with an octet count of 65-127",
- 	[CGX_STAT9]	= "Packets sent with an octet count of 128-255",
- 	[CGX_STAT10]	= "Packets sent with an octet count of 256-511",
- 	[CGX_STAT11]	= "Packets sent with an octet count of 512-1023",
-@@ -125,7 +125,7 @@ static char *rpm_rx_stats_fields[] = {
- 	"Total frames received on interface",
- 	"Packets received with an octet count < 64",
- 	"Packets received with an octet count == 64",
--	"Packets received with an octet count of 65â127",
-+	"Packets received with an octet count of 65-127",
- 	"Packets received with an octet count of 128-255",
- 	"Packets received with an octet count of 256-511",
- 	"Packets received with an octet count of 512-1023",
-@@ -164,7 +164,7 @@ static char *rpm_tx_stats_fields[] = {
- 	"Packets sent to the multicast DMAC",
- 	"Packets sent to a broadcast DMAC",
- 	"Packets sent with an octet count == 64",
--	"Packets sent with an octet count of 65â127",
-+	"Packets sent with an octet count of 65-127",
- 	"Packets sent with an octet count of 128-255",
- 	"Packets sent with an octet count of 256-511",
- 	"Packets sent with an octet count of 512-1023",
-@@ -504,7 +504,7 @@ static ssize_t rvu_dbg_qsize_write(struct file *filp,
- 	if (cmd_buf)
- 		ret = -EINVAL;
+@@ -226,6 +226,96 @@ static const struct file_operations rvu_dbg_##name##_fops = { \
 
--	if (!strncmp(subtoken, "help", 4) || ret < 0) {
-+	if (ret < 0 || !strncmp(subtoken, "help", 4)) {
- 		dev_info(rvu->dev, "Use echo <%s-lf > qsize\n", blk_string);
- 		goto qsize_write_done;
- 	}
-@@ -1878,7 +1878,7 @@ static int cgx_print_stats(struct seq_file *s, int lmac_id)
- 		return -ENODEV;
+ static void print_nix_qsize(struct seq_file *filp, struct rvu_pfvf *pfvf);
 
- 	mac_ops = get_mac_ops(cgxd);
--
-+	/* There can be no CGX devices at all */
- 	if (!mac_ops)
- 		return 0;
-
-@@ -1956,13 +1956,13 @@ static int cgx_print_stats(struct seq_file *s, int lmac_id)
- 		if (err)
- 			return err;
-
--	if (is_rvu_otx2(rvu))
--		seq_printf(s, "%s: %llu\n", cgx_tx_stats_fields[stat],
--			   tx_stat);
--	else
--		seq_printf(s, "%s: %llu\n", rpm_tx_stats_fields[stat],
--			   tx_stat);
--	stat++;
-+		if (is_rvu_otx2(rvu))
-+			seq_printf(s, "%s: %llu\n", cgx_tx_stats_fields[stat],
-+				   tx_stat);
-+		else
-+			seq_printf(s, "%s: %llu\n", rpm_tx_stats_fields[stat],
-+				   tx_stat);
-+		stat++;
- 	}
-
- 	return err;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-index 7761dcf17b91..d8b1948aaa0a 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-@@ -2583,6 +2583,9 @@ static void nix_free_tx_vtag_entries(struct rvu *rvu, u16 pcifunc)
- 		return;
-
- 	nix_hw = get_nix_hw(rvu->hw, blkaddr);
-+	if (!nix_hw)
-+		return;
++#define LMT_MAPTBL_ENTRY_SIZE 16
++/* Dump LMTST map table */
++static ssize_t rvu_dbg_lmtst_map_table_display(struct file *filp,
++					       char __user *buffer,
++					       size_t count, loff_t *ppos)
++{
++	struct rvu *rvu = filp->private_data;
++	u64 lmt_addr, val, tbl_base;
++	int pf, vf, num_vfs, hw_vfs;
++	void __iomem *lmt_map_base;
++	int index = 0, off = 0;
++	int bytes_not_copied;
++	int buf_size = 10240;
++	char *buf;
 +
- 	vlan = &nix_hw->txvlan;
++	/* don't allow partial reads */
++	if (*ppos != 0)
++		return 0;
++
++	buf = kzalloc(buf_size, GFP_KERNEL);
++	if (!buf)
++		return -ENOSPC;
++
++	tbl_base = rvu_read64(rvu, BLKADDR_APR, APR_AF_LMT_MAP_BASE);
++
++	lmt_map_base = ioremap_wc(tbl_base, 128 * 1024);
++	if (!lmt_map_base) {
++		dev_err(rvu->dev, "Failed to setup lmt map table mapping!!\n");
++		kfree(buf);
++		return false;
++	}
++
++	off +=	scnprintf(&buf[off], buf_size - 1 - off,
++			  "\n\t\t\t\t\tLmtst Map Table Entries");
++	off +=	scnprintf(&buf[off], buf_size - 1 - off,
++			  "\n\t\t\t\t\t=======================");
++	off +=	scnprintf(&buf[off], buf_size - 1 - off, "\nPcifunc\t\t\t");
++	off +=	scnprintf(&buf[off], buf_size - 1 - off, "Table Index\t\t");
++	off +=	scnprintf(&buf[off], buf_size - 1 - off,
++			  "Lmtline Base (word 0)\t\t");
++	off +=	scnprintf(&buf[off], buf_size - 1 - off,
++			  "Lmt Map Entry (word 1)");
++	off += scnprintf(&buf[off], buf_size - 1 - off, "\n");
++	for (pf = 0; pf < rvu->hw->total_pfs; pf++) {
++		off += scnprintf(&buf[off], buf_size - 1 - off, "PF%d  \t\t\t",
++				    pf);
++
++		index = pf * rvu->hw->total_vfs * LMT_MAPTBL_ENTRY_SIZE;
++		off += scnprintf(&buf[off], buf_size - 1 - off, " 0x%llx\t\t",
++				 (tbl_base + index));
++		lmt_addr = readq(lmt_map_base + index);
++		off += scnprintf(&buf[off], buf_size - 1 - off,
++				 " 0x%016llx\t\t", lmt_addr);
++		index += 8;
++		val = readq(lmt_map_base + index);
++		off += scnprintf(&buf[off], buf_size - 1 - off, " 0x%016llx\n",
++				 val);
++		/* Reading num of VFs per PF */
++		rvu_get_pf_numvfs(rvu, pf, &num_vfs, &hw_vfs);
++		for (vf = 0; vf < num_vfs; vf++) {
++			index = (pf * rvu->hw->total_vfs * 16) +
++				((vf + 1)  * LMT_MAPTBL_ENTRY_SIZE);
++			off += scnprintf(&buf[off], buf_size - 1 - off,
++					    "PF%d:VF%d  \t\t", pf, vf);
++			off += scnprintf(&buf[off], buf_size - 1 - off,
++					 " 0x%llx\t\t", (tbl_base + index));
++			lmt_addr = readq(lmt_map_base + index);
++			off += scnprintf(&buf[off], buf_size - 1 - off,
++					 " 0x%016llx\t\t", lmt_addr);
++			index += 8;
++			val = readq(lmt_map_base + index);
++			off += scnprintf(&buf[off], buf_size - 1 - off,
++					 " 0x%016llx\n", val);
++		}
++	}
++	off +=	scnprintf(&buf[off], buf_size - 1 - off, "\n");
++
++	bytes_not_copied = copy_to_user(buffer, buf, off);
++	kfree(buf);
++
++	iounmap(lmt_map_base);
++	if (bytes_not_copied)
++		return -EFAULT;
++
++	*ppos = off;
++	return off;
++}
++
++RVU_DEBUG_FOPS(lmtst_map_table, lmtst_map_table_display, NULL);
++
+ /* Dumps current provisioning status of all RVU block LFs */
+ static ssize_t rvu_dbg_rsrc_attach_status(struct file *filp,
+ 					  char __user *buffer,
+@@ -2672,6 +2762,10 @@ void rvu_dbg_init(struct rvu *rvu)
+ 	debugfs_create_file("rsrc_alloc", 0444, rvu->rvu_dbg.root, rvu,
+ 			    &rvu_dbg_rsrc_status_fops);
 
- 	mutex_lock(&vlan->rsrc_lock);
++	if (!is_rvu_otx2(rvu))
++		debugfs_create_file("lmtst_map_table", 0444, rvu->rvu_dbg.root,
++				    rvu, &rvu_dbg_lmtst_map_table_fops);
++
+ 	if (!cgx_get_cgxcnt_max())
+ 		goto create;
+
 --
 2.17.1
