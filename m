@@ -2,66 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 084DB43B42B
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 16:30:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8004243B434
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 16:31:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234864AbhJZOcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 10:32:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45894 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232502AbhJZOca (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Oct 2021 10:32:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id D53DB6112D;
-        Tue, 26 Oct 2021 14:30:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635258606;
-        bh=PYXaPW41wVoZ0r4p0t1qDJhNc8Dj2xJBk3m5yGPN8A0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=X/XrnWz5lbRfRTrMzleKoX/PP1KKefKCavuvBgP3FH+Zld/sSunzjIxX+Of9XruS3
-         lmym3OafBv7T8saYRoTNv2Aj1WharbCrOwJ7wiEtfqraLCMvrNc/JFmzn+ywyZopsm
-         qTlGXtWkZCkGWdA2I4vMR7C1r5hZZzGAw5FAzeR062bZ11lt6uWuBz1yv1PQ2hN4ZS
-         7bzMG2w+TIfmWCju4odaoFzQTdR/QuQeQZO+AZM6VVkFGcFk39pTj+IgtUQZjGL3CF
-         qriRsWNL+gwc1I6KtJpjBltQPus9N1QEZeH+lqI1MU1Ob+NTEr0qY0BaTcelJhDSko
-         ndC9XBVWBLurQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id CAD96608FE;
-        Tue, 26 Oct 2021 14:30:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] MAINTAINERS: please remove myself from the Prestera driver
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163525860682.23091.11533291061879015554.git-patchwork-notify@kernel.org>
-Date:   Tue, 26 Oct 2021 14:30:06 +0000
-References: <20211026121907.6066-1-vadym.kochan@plvision.eu>
-In-Reply-To: <20211026121907.6066-1-vadym.kochan@plvision.eu>
-To:     Vadym Kochan <vadym.kochan@plvision.eu>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        tchornyi@marvell.com, vkochan@marvell.com
+        id S235652AbhJZOdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 10:33:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55812 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236808AbhJZOd3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 10:33:29 -0400
+Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7980FC061745
+        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 07:31:05 -0700 (PDT)
+Received: from localhost (unknown [149.11.102.75])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id 1A9F04F61D52B;
+        Tue, 26 Oct 2021 07:31:01 -0700 (PDT)
+Date:   Tue, 26 Oct 2021 15:30:57 +0100 (BST)
+Message-Id: <20211026.153057.208749798584527471.davem@davemloft.net>
+To:     atenart@kernel.org
+Cc:     kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: Re: [net] net-sysfs: avoid registering new queue objects after
+ device unregistration
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20211026133822.949135-1-atenart@kernel.org>
+References: <20211026133822.949135-1-atenart@kernel.org>
+X-Mailer: Mew version 6.8 on Emacs 27.2
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Tue, 26 Oct 2021 07:31:02 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Antoine Tenart <atenart@kernel.org>
+Date: Tue, 26 Oct 2021 15:38:22 +0200
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Tue, 26 Oct 2021 15:19:07 +0300 you wrote:
-> From: Vadym Kochan <vkochan@marvell.com>
+> netdev_queue_update_kobjects can be called after device unregistration
+> started (and device_del was called) resulting in two issues: possible
+> registration of new queue kobjects (leading to the following trace) and
+> providing a wrong 'old_num' number (because real_num_tx_queues is not
+> updated in the unregistration path).
 > 
-> Signed-off-by: Vadym Kochan <vkochan@marvell.com>
-> ---
->  MAINTAINERS | 1 -
->  1 file changed, 1 deletion(-)
+>   BUG: KASAN: use-after-free in kobject_get+0x14/0x90
+>   Read of size 1 at addr ffff88801961248c by task ethtool/755
+> 
+>   CPU: 0 PID: 755 Comm: ethtool Not tainted 5.15.0-rc6+ #778
+>   Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-4.fc34 04/014
+>   Call Trace:
+>    dump_stack_lvl+0x57/0x72
+>    print_address_description.constprop.0+0x1f/0x140
+>    kasan_report.cold+0x7f/0x11b
+>    kobject_get+0x14/0x90
+>    kobject_add_internal+0x3d1/0x450
+>    kobject_init_and_add+0xba/0xf0
+>    netdev_queue_update_kobjects+0xcf/0x200
+>    netif_set_real_num_tx_queues+0xb4/0x310
+>    veth_set_channels+0x1c3/0x550
+>    ethnl_set_channels+0x524/0x610
+> 
+> The fix for both is to only allow unregistering queue kobjects after a
+> net device started its unregistration and to ensure we know the current
+> Tx queue number (we update dev->real_num_tx_queues before returning).
+> This relies on the fact that dev->real_num_tx_queues is used for
+> 'old_num' expect when firstly allocating queues.
+> 
+> (Rx queues are not affected as net_rx_queue_update_kobjects can't be
+> called after a net device started its unregistration).
+> 
+> Fixes: 5c56580b74e5 ("net: Adjust TX queue kobjects if number of queues changes during unregister")
+> Signed-off-by: Antoine Tenart <atenart@kernel.org>
 
-Here is the summary with links:
-  - MAINTAINERS: please remove myself from the Prestera driver
-    https://git.kernel.org/netdev/net/c/19fa0887c57d
+netdev_queue_update_kobjects is a confusing function name, it sounds like it handles both rx and tx.
+It only handles tx so net_tx_queue_update_kobjects is more appropriate.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Could you rename the function in this patch please?
 
-
+Thank you.
