@@ -2,167 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A69F943AA8A
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 04:54:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C243443AAC0
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 05:30:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234490AbhJZC5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 22:57:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40418 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232402AbhJZC5P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 22:57:15 -0400
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB81C061745;
-        Mon, 25 Oct 2021 19:54:52 -0700 (PDT)
-Received: by mail-qt1-x82e.google.com with SMTP id r17so12191159qtx.10;
-        Mon, 25 Oct 2021 19:54:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tkzNHgBhfoN1mN/bXgW3MkB27AZfqmaYrRvjImCn3wA=;
-        b=fjCVH2KPY/mOAid4lHIsGk80qGZe30oFxUXZMY6H8BI1NPpfz1H7r97F4+u6+k31yg
-         XryUZ5iJTS0menFBaz8G/X0/x71oUEWhb2XKfy4L63t5PRcBboHIJSYDpcsU/calqj7w
-         /xamMaezkiK9JyR9DavPcNl1V/T6S0i3uPsr07Vc/6M1q04LocQutxVNe10VkkPJc0fU
-         +cLN6Y30I76ymGcpkbmxFXY+PlLj9sjm7aMHlmdQHDviQT+0dSomZY80Q+qXs4yq1rWN
-         wA2A2SqcD8V3Hwhdk++g7kX8XRcecg2LszFyi5wdkY7YecZYkA07iJ95uGxBh3t3RK8H
-         ul2w==
+        id S234505AbhJZDcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 23:32:31 -0400
+Received: from mail-yb1-f170.google.com ([209.85.219.170]:35371 "EHLO
+        mail-yb1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233728AbhJZDca (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 23:32:30 -0400
+Received: by mail-yb1-f170.google.com with SMTP id i65so30500817ybb.2;
+        Mon, 25 Oct 2021 20:30:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=tkzNHgBhfoN1mN/bXgW3MkB27AZfqmaYrRvjImCn3wA=;
-        b=lQJxcN5ckFoqLNhCwsqrWzdnH3dsYvDVsSEjFyp00tCoFLkFJ1OnzzfEBBe6Ann7CI
-         VsRa2Xln8oDQrLLhqbGVzW+DVYq0czor7sR0yw/1e9jUlgBpR7+jPOynWMd1pE5NUb4h
-         RrUM+a7Y/ront96r57imSiQjopEq+XmvQ9VWydOGh0T99eAdyzbqcznjT7aDIOGH9JTp
-         uuKKhqfs9o1erwMGCr6cNVCnUd0FQf4r9CFzkQlFa3ZUdNDWUMkHk5572Dcbswk25zip
-         66xrRVsguiM4EsHvIB6jpMMiALqwdYNdIjcIxyQTQoixeBSb98m5PctIbmVFLdPRs7gU
-         9blw==
-X-Gm-Message-State: AOAM531ZsbyeYKhTBKJ5KYd0BNuj5tD4l/ZUIsLsrXZJIZSUxuYs1ay5
-        Nnves9Qjxk3VXiKGEQgKv71l3Nx8/aLH19Q8b1jmFse7iTziqw==
-X-Google-Smtp-Source: ABdhPJw3JwJbWZw56oelucSpMM5M8gmCdguOUx+CVabxorwtsOFgtyp4lRdNV3fGm7s/OcBmgax57e8YWA+HUsA5OIs=
-X-Received: by 2002:ac8:7d47:: with SMTP id h7mr21574977qtb.92.1635216891902;
- Mon, 25 Oct 2021 19:54:51 -0700 (PDT)
+        bh=dSkuvBNlsR/Tr6v+p8qnht5azmInH+MBDWCZ0LaoZvg=;
+        b=XlPbAYoSU27GFio8AUvCUknPEywEfdGtqj7yAPAj7spoMI3kcZqQAdFntN39XFMJbf
+         Lx9Z10Ii5BQFoozGuchOLWPsDNUtjb7NqvRIBQPomOZnyDyd7ulw9VsZxKUfNBE/9YEG
+         c06+a0/Dd8Hs681wn2/GlZ7WvdUawzbkt9LdIJp5xaY/cS6iES962+kFo8ld1gMsvJOy
+         jblXzC5thDec8MC0eLZLDTHiuwvG9PTnr3U4u1B6aV3NLVVE9gKgQsqCsDlrFlt5+Lsa
+         X+EWGikjSAvyeKv1FReX5FcODZrioGqreKdgWTxTfSRM9X1Tt+jpB3FrnNjDR/VLEqfi
+         6pyg==
+X-Gm-Message-State: AOAM5322xmiRox8e4RgH8KYwUVx7QGgm09JNbSIuyzcxi7ow2cmV80dW
+        WL9c+Nwb2VyrJP6LJnSFh0TQqW/UvcwNwgkh67p5NeEPEzw=
+X-Google-Smtp-Source: ABdhPJwc6I/ZzDqdwL2yBzXdBFnFpYhRFfdO9Ngrf2wsE4M/SEfiW4tHBSuywZqEtsSscbYryS0F13yNA09wmWjIixM=
+X-Received: by 2002:a05:6902:1363:: with SMTP id bt3mr22584297ybb.152.1635219006891;
+ Mon, 25 Oct 2021 20:30:06 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211025115910.2595-1-xingwu.yang@gmail.com> <707b5fb3-6b61-c53-e983-bc1373aa2bf@ssi.bg>
-In-Reply-To: <707b5fb3-6b61-c53-e983-bc1373aa2bf@ssi.bg>
-From:   yangxingwu <xingwu.yang@gmail.com>
-Date:   Tue, 26 Oct 2021 10:54:40 +0800
-Message-ID: <CA+7U5JsSuwqP7eHj1tMHfsb+EemwrhZEJ2b944LFWTroxAnQRQ@mail.gmail.com>
-Subject: Re: [PATCH] ipvs: Fix reuse connection if RS weight is 0
-To:     Julian Anastasov <ja@ssi.bg>
-Cc:     Simon Horman <horms@verge.net.au>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        kadlec@netfilter.org, fw@strlen.de,
-        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
-        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-doc@vger.kernel.org, corbet@lwn.net
+References: <20211025172247.1774451-1-mailhol.vincent@wanadoo.fr> <20211025172247.1774451-5-mailhol.vincent@wanadoo.fr>
+In-Reply-To: <20211025172247.1774451-5-mailhol.vincent@wanadoo.fr>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Tue, 26 Oct 2021 12:29:55 +0900
+Message-ID: <CAMZ6RqJgzELj7BCD-st8NiXDjSFDOmqAouFaERgt1UVuoKK58Q@mail.gmail.com>
+Subject: Re: [PATCH v3 4/4] can: netlink: report the CAN controller mode
+ supported flags
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can <linux-can@vger.kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-thanks julian
+On Tue. 26 Oct 2021 at 02:22, Vincent Mailhol
+<mailhol.vincent@wanadoo.fr> wrote:
+> This patch introduces a method for the user to check both the
+> supported and the static capabilities. The proposed method reuses the
+> existing struct can_ctrlmode and thus do not need a new IFLA_CAN_*
+> entry.
+>
+> Currently, the CAN netlink interface provides no easy ways to check
+> the capabilities of a given controller. The only method from the
+> command line is to try each CAN_CTRLMODE_* individually to check
+> whether the netlink interface returns an -EOPNOTSUPP error or not
+> (alternatively, one may find it easier to directly check the source
+> code of the driver instead...)
+>
+> It appears that can_ctrlmode::mask is only used in one direction: from
+> the userland to the kernel. So we can just reuse this field in the
+> other direction (from the kernel to userland). But, because the
+> semantic is different, we use a union to give this field a proper
+> name: "supported".
+>
+> Below table explains how the two fields can_ctrlmode::supported and
+> can_ctrlmode::flags, when masked with any of the CAN_CTRLMODE_* bit
+> flags, allow us to identify both the supported and the static
+> capabilities:
+>
+>  supported &    flags &         Controller capabilities
+>  CAN_CTRLMODE_* CAN_CTRLMODE_*
+>  -----------------------------------------------------------------------
+>  false          false           Feature not supported (always disabled)
+>  false          true            Static feature (always enabled)
+>  true           false           Feature supported but disabled
+>  true           true            Feature supported and enabled
+>
+> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+> ---
+> Please refer to below link for the iproute2-next counterpart of this
+> patch:
+>
+> https://lore.kernel.org/linux-can/20211003050147.569044-1-mailhol.vincent@wanadoo.fr/T/#t
+> ---
+>  drivers/net/can/dev/netlink.c    | 5 ++++-
+>  include/uapi/linux/can/netlink.h | 5 ++++-
+>  2 files changed, 8 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/can/dev/netlink.c b/drivers/net/can/dev/netlink.c
+> index 26c336808be5..32e1eb63ee7d 100644
+> --- a/drivers/net/can/dev/netlink.c
+> +++ b/drivers/net/can/dev/netlink.c
+> @@ -475,7 +475,10 @@ static int can_tdc_fill_info(struct sk_buff *skb, const struct net_device *dev)
+>  static int can_fill_info(struct sk_buff *skb, const struct net_device *dev)
+>  {
+>         struct can_priv *priv = netdev_priv(dev);
+> -       struct can_ctrlmode cm = {.flags = priv->ctrlmode};
+> +       struct can_ctrlmode cm = {
+> +               .supported = priv->ctrlmode_supported,
+> +               .flags = priv->ctrlmode
+> +       };
+>         struct can_berr_counter bec = { };
+>         enum can_state state = priv->state;
+>
+> diff --git a/include/uapi/linux/can/netlink.h b/include/uapi/linux/can/netlink.h
+> index 75b85c60efb2..b846922ac18f 100644
+> --- a/include/uapi/linux/can/netlink.h
+> +++ b/include/uapi/linux/can/netlink.h
+> @@ -88,7 +88,10 @@ struct can_berr_counter {
+>   * CAN controller mode
+>   */
+>  struct can_ctrlmode {
+> -       __u32 mask;
+> +       union {
+> +               __u32 mask;             /* Userland to kernel */
+> +               __u32 supported;        /* Kernel to userland */
+> +       };
 
-What happens in this situation is that if we set the wait of the
-realserver to 0 and do NOT remove the weight zero realserver with
-sysctl settings (conn_reuse_mode == 0 && expire_nodest_conn == 1), and
-the client reuses its source ports, the kernel will constantly
-reuse connections and send the traffic to the weight 0 realserver.
+While daydreaming during my lunch break, I suddenly remembered
+this thread [1] and was concerned that introducing the union
+might break the UAPI.
 
-you may check the details from
-https://github.com/kubernetes/kubernetes/issues/81775
+As a matter of fact, the C standard allows the compiler to add
+padding at the end of an union. c.f. ISO/IEC 9899-1999, section
+6.7.2.1 "Structure and union specifiers", clause 15: "There may
+be unnamed padding at the end of a structure or union."
 
-On Tue, Oct 26, 2021 at 2:12 AM Julian Anastasov <ja@ssi.bg> wrote:
->
->
->         Hello,
->
-> On Mon, 25 Oct 2021, yangxingwu wrote:
->
-> > Since commit dc7b3eb900aa ("ipvs: Fix reuse connection if real server is
-> > dead"), new connections to dead servers are redistributed immediately to
-> > new servers.
-> >
-> > Then commit d752c3645717 ("ipvs: allow rescheduling of new connections when
-> > port reuse is detected") disable expire_nodest_conn if conn_reuse_mode is
-> > 0. And new connection may be distributed to a real server with weight 0.
->
->         Your change does not look correct to me. At the time
-> expire_nodest_conn was created, it was not checked when
-> weight is 0. At different places different terms are used
-> but in short, we have two independent states for real server:
->
-> - inhibited: weight=0 and no new connections should be served,
->         packets for existing connections can be routed to server
->         if it is still available and packets are not dropped
->         by expire_nodest_conn.
->         The new feature is that port reuse detection can
->         redirect the new TCP connection into a new IPVS conn and
->         to expire the existing cp/ct.
->
-> - unavailable (!IP_VS_DEST_F_AVAILABLE): server is removed,
->         can be temporary, drop traffic for existing connections
->         but on expire_nodest_conn we can select different server
->
->         The new conn_reuse_mode flag allows port reuse to
-> be detected. Only then expire_nodest_conn has the
-> opportunity with commit dc7b3eb900aa to check weight=0
-> and to consider the old traffic as finished. If a new
-> server is selected, any retrans from previous connection
-> would be considered as part from the new connection. It
-> is a rapid way to switch server without checking with
-> is_new_conn_expected() because we can not have many
-> conns/conntracks to different servers.
->
-> > Signed-off-by: yangxingwu <xingwu.yang@gmail.com>
-> > ---
-> >  Documentation/networking/ipvs-sysctl.rst | 3 +--
-> >  net/netfilter/ipvs/ip_vs_core.c          | 5 +++--
-> >  2 files changed, 4 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/Documentation/networking/ipvs-sysctl.rst b/Documentation/networking/ipvs-sysctl.rst
-> > index 2afccc63856e..1cfbf1add2fc 100644
-> > --- a/Documentation/networking/ipvs-sysctl.rst
-> > +++ b/Documentation/networking/ipvs-sysctl.rst
-> > @@ -37,8 +37,7 @@ conn_reuse_mode - INTEGER
-> >
-> >       0: disable any special handling on port reuse. The new
-> >       connection will be delivered to the same real server that was
-> > -     servicing the previous connection. This will effectively
-> > -     disable expire_nodest_conn.
-> > +     servicing the previous connection.
-> >
-> >       bit 1: enable rescheduling of new connections when it is safe.
-> >       That is, whenever expire_nodest_conn and for TCP sockets, when
-> > diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
-> > index 128690c512df..9279aed69e23 100644
-> > --- a/net/netfilter/ipvs/ip_vs_core.c
-> > +++ b/net/netfilter/ipvs/ip_vs_core.c
-> > @@ -2042,14 +2042,15 @@ ip_vs_in(struct netns_ipvs *ipvs, unsigned int hooknum, struct sk_buff *skb, int
-> >                            ipvs, af, skb, &iph);
-> >
-> >       conn_reuse_mode = sysctl_conn_reuse_mode(ipvs);
-> > -     if (conn_reuse_mode && !iph.fragoffs && is_new_conn(skb, &iph) && cp) {
-> > +     if (!iph.fragoffs && is_new_conn(skb, &iph) && cp) {
-> >               bool old_ct = false, resched = false;
-> >
-> >               if (unlikely(sysctl_expire_nodest_conn(ipvs)) && cp->dest &&
-> >                   unlikely(!atomic_read(&cp->dest->weight))) {
-> >                       resched = true;
-> >                       old_ct = ip_vs_conn_uses_old_conntrack(cp, skb);
-> > -             } else if (is_new_conn_expected(cp, conn_reuse_mode)) {
-> > +             } else if (conn_reuse_mode &&
-> > +                        is_new_conn_expected(cp, conn_reuse_mode)) {
-> >                       old_ct = ip_vs_conn_uses_old_conntrack(cp, skb);
-> >                       if (!atomic_read(&cp->n_control)) {
-> >                               resched = true;
-> > --
-> > 2.30.2
->
-> Regards
->
-> --
-> Julian Anastasov <ja@ssi.bg>
+For example, if the kernel were to be compiled with the
+-mstructure-size-boundary=64 ARM option in GCC [2], 32 bits of
+padding would be introduced after the union, thus breaking the
+alignment of the next field: can_ctrlmode::flags.
+
+As far as my knowledge goes, I am not sure whether or not
+-mstructure-size-boundary=64 (or similar options on other
+architectures) is actually used. Nonetheless, I think it is safer
+to declare the union as __attribute__((packed)) to prevent such
+padding from occuring.
+
+I will send a v4 later today to address this.
+
+[1] https://lore.kernel.org/linux-can/212c8bc3-89f9-9c33-ed1b-b50ac04e7532@hartkopp.net/T/#u
+[2] https://gcc.gnu.org/onlinedocs/gcc/ARM-Options.html
+
+>         __u32 flags;
+>  };
+
+Yours sincerely,
+Vincent Mailhol
