@@ -2,67 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A86343B2AC
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 14:50:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5A4943B2AF
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 14:50:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235988AbhJZMwb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 08:52:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51130 "EHLO mail.kernel.org"
+        id S232718AbhJZMwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 08:52:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51168 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232718AbhJZMwa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Oct 2021 08:52:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 21DF460ED4;
+        id S235896AbhJZMwb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Oct 2021 08:52:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6937861040;
         Tue, 26 Oct 2021 12:50:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1635252607;
-        bh=9RzMEm7MGaozxVLG5vp+DYNmZ6H8u5oCItjBoJvFX60=;
+        bh=f4Tn906leEyLU5WbFC8sITQhhMZ2LEhJMLqs3VF1jXE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=uCH+4KWlIpIKsP8NT/vTY6sWm5iGKbOWMtoxihRl1Ub/2iwZgX0gyypE7TiauTzpM
-         YAso0yYbsDl5VgXDN9RfxgPO0j56brquIQEmPl/YhoOUuqqnx6N1gwDGgyqgte+e/f
-         CvKUVbD7gbWly9BOr/PHDCyNjhGwsLhtbGcb9YutwQHrBeRK4SC9lowQPAwUMGqiEQ
-         hRgYoxMi8uaLSbT+isu9zo9gv95Vxp/pC3FMSMAdbkBdfWraXWrkHGVKKRSwlackjK
-         asxlO5OKj3N6MeArh64L1OcmrxqbwuuWQC27qW63LIeWBPIq2T7LO6A9/6LBJbGF1t
-         vCo/jQ9U2gIdA==
+        b=dI5/9L1M+75SIHYdjbXwDYS0V5j/03+Rs7ecUKy/iZx4V8tKrWrNAEZURvtnqqxI8
+         a05GIvAios43WbL/gKtqRWMZ3menAKItAVQjO+wbMjeSa2Zj4QlE86M3NH64tql2Jy
+         sk2nbL/9li8oxwEvzhlFWbHW+ECx3Q17feOvZS+qaIzS/9D4cWjY7l4XpLR4jyvhS1
+         jP+lUT4fCL78eODZ0w2hylZwsma3PZ2OUcoYUjKJOBGVonhtZ56Lpjd9DNahzHBKvb
+         ohOzZZUlVDcy46eqqYWTyW1hOpsPdQc6UxcMDBZ7u8Qye/Nc7Q5slWS8BHxDXm4JDW
+         3fIAFlBk9ah4Q==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0D6D1609CC;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 63696609CC;
         Tue, 26 Oct 2021 12:50:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] nfc: port100: fix using -ERRNO as command type mask
+Subject: Re: [PATCH net-next] net: annotate data-race in neigh_output()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163525260704.9181.10376941005733048899.git-patchwork-notify@kernel.org>
+Message-Id: <163525260740.9181.15970509864261843327.git-patchwork-notify@kernel.org>
 Date:   Tue, 26 Oct 2021 12:50:07 +0000
-References: <20211025144936.556495-1-krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20211025144936.556495-1-krzysztof.kozlowski@canonical.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     thierry.escande@linux.intel.com, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
+References: <20211025181555.673034-1-eric.dumazet@gmail.com>
+In-Reply-To: <20211025181555.673034-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        edumazet@google.com, syzkaller@googlegroups.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Mon, 25 Oct 2021 16:49:36 +0200 you wrote:
-> During probing, the driver tries to get a list (mask) of supported
-> command types in port100_get_command_type_mask() function.  The value
-> is u64 and 0 is treated as invalid mask (no commands supported).  The
-> function however returns also -ERRNO as u64 which will be interpret as
-> valid command mask.
+On Mon, 25 Oct 2021 11:15:55 -0700 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
 > 
-> Return 0 on every error case of port100_get_command_type_mask(), so the
-> probing will stop.
+> neigh_output() reads n->nud_state and hh->hh_len locklessly.
+> 
+> This is fine, but we need to add annotations and document this.
+> 
+> We evaluate skip_cache first to avoid reading these fields
+> if the cache has to by bypassed.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2] nfc: port100: fix using -ERRNO as command type mask
-    https://git.kernel.org/netdev/net/c/2195f2062e4c
+  - [net-next] net: annotate data-race in neigh_output()
+    https://git.kernel.org/netdev/net-next/c/d18785e21386
 
 You are awesome, thank you!
 -- 
