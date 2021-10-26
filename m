@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1A4843AA44
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 04:23:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A53BB43AA4C
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 04:24:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234021AbhJZCZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 22:25:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33544 "EHLO
+        id S234138AbhJZC05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 22:26:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233802AbhJZCZz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 22:25:55 -0400
+        with ESMTP id S229998AbhJZC0y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 22:26:54 -0400
 Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9F0C061745;
-        Mon, 25 Oct 2021 19:23:31 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id o184so18205870iof.6;
-        Mon, 25 Oct 2021 19:23:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12123C061745;
+        Mon, 25 Oct 2021 19:24:31 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id n10so8740705iod.13;
+        Mon, 25 Oct 2021 19:24:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=SJJNCBGzUmtsuEprx1i5HjE5RgD2pCrRE+ugyLzOEzM=;
-        b=WTtEtNem1M+VdHMG4o22y5QD2FKJ3obNc6U2+A0rrMtL9MD2s38WsezagZpp6oAGpO
-         /b8zFtMpA/933tK1lk4kBsOiTmex+FwlyI7quRSoBfiCMZxAXeTVrC+1UBBVwjxFkDRH
-         2EXU6vbJEX3kEK1TzXbQsL8v8+OLxVvxSQ9J6NjDYXHC3kfXZ94sYk0eFBj0uYzBvVn7
-         8MJbeiuDRxblIlZWd4Kqx1ZgeqOqNGCu4ly68IxmQypZp8j0z+foo1i8rEqxCKebDTVe
-         7X33rwCd6TvP5E1Nf/jgGRz4IpMCReFaoZSf3ueCu0jbTuF2iy8LzQW3GYjkCNiSlLOg
-         E85Q==
+        bh=/GAImBcqzGF4ZlKPfVyKeIteXxvhu81c3zR5LkKqlwY=;
+        b=HckTWrHAKpA9NZaDoBD2BNIf8fBKYacL3yGZ+CmJTO2viT8TEvn6v4CXE5/MtmD3wy
+         eAoYl2oIe7HeG5FcGIaPzaE6CEuiH6ZkKKQ9dLnt7VuKtJeea3Mjpw21tZOjWjlS+8vO
+         zLbZeiwh3xYW6HpdYXoz4CkXS+cf/UMI8DG0JVazxbno27ArXIfeY4GaTnsP1sydjXFr
+         ayX5Ge09SgMHgIoClCs/l+KSLWg0OURLJGKdRC62NTmdIC7Cb+NOI3rNPLrEQsuxg8J5
+         zCJvRfrF17lPOWTDUF0EgqHPKuoreW6wCp/PfyWozgwykrOfyHraYfRztxnTZEshUVoN
+         HydQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=SJJNCBGzUmtsuEprx1i5HjE5RgD2pCrRE+ugyLzOEzM=;
-        b=HHywz2Bd4oIaZmSD6wfS/E9rmf0cr2QKfUmyetrW9DtH4ocld9mF+Mn5wU9tVo8iXs
-         Ac+f9SMZ1Rwj9EUKCeRFdgKU+GXcykcw2T0dMVokUTCUF6uhD0COJ+2m4uEGtQJbQTz9
-         Yhfd2lItC45Z1Z5MMOjJhSNORvwkNbOxy3vNvRphiSWS1/QhVtIbLM+YWAYMrv7xb+dY
-         57D7sQtAQTsuBtJeD5GloezJv59318DB25qjJvMXKhTaGWHt8n+Ul/uPs/B5G+OmWYCc
-         YL2OA34WYuKTVd0X/DhQhWThA+p2eL7fbkJh/bdwknCq7oDpNmrO0IKjcWnKkrWcaRMz
-         aUSQ==
-X-Gm-Message-State: AOAM532xBX5fkEcZoFluqV/Qtk5kkQFmt34mWCv6hvrMaCR8RnkW1vde
-        Grb5Q7Uo3ahD2/wPYylCubxzQRyjv5wx/dTvtj8=
-X-Google-Smtp-Source: ABdhPJxLmBzK5FZBxQZCZz83VD8ExfjyjVQb3LuiMJweAWynal5QYJEn08HmmwVm7kPgVnRJmrxLHo7yOYshF0+BFzQ=
-X-Received: by 2002:a05:6602:2e05:: with SMTP id o5mr12896890iow.204.1635215010620;
- Mon, 25 Oct 2021 19:23:30 -0700 (PDT)
+        bh=/GAImBcqzGF4ZlKPfVyKeIteXxvhu81c3zR5LkKqlwY=;
+        b=50ufQ+j4y1mtTzGM01tTtAOmWbjQk2AeRcBgelhcRDjrU6jWYmmfsDA/svyg1xNidQ
+         EqEgYQPkAyCtwaGvMv6uH4BIVlX/PiiLx6OB/ujUNb58JbOvwnAdNwboi0jaLfEoq1JX
+         DRplhUeJTDocL5M6nhle4dci0+XgsILVFtC3cbcxXOR4Bm0mw5mr7as6sjwD7Fr8hEaI
+         Ymv2ilJmzwfTWAkGz5jNdQvbgOP0Mu/Vu8SXhGFutFh2JxmXQbjqLE+jmdN17YrvO7H3
+         4yGEn4p1Oc92oRKMOTW6pq6dh9/tnE84HO2VrNLKvpP6ZjLv2+Iqxuvf59VIvvvveKQl
+         AmYA==
+X-Gm-Message-State: AOAM532B5GTYo0JhW/4eSULTgG5Q0xl87MLGBSUhQG90IcjlgZI/9p3j
+        kj5qFUP+w2Vnq8/JCcAXIglZA2nsAk4h1f1vCjs=
+X-Google-Smtp-Source: ABdhPJxvXEqIO8vqTWxsYX6HC3Vxi6T3FWqsGQ75A1upKsImFHiyikOsYrF3Livq3yt5hVdH592yN3ANmyCD09/8e8c=
+X-Received: by 2002:a02:a483:: with SMTP id d3mr3945986jam.23.1635215070448;
+ Mon, 25 Oct 2021 19:24:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211025083315.4752-1-laoar.shao@gmail.com> <20211025083315.4752-12-laoar.shao@gmail.com>
- <202110251429.DD44ED7B76@keescook>
-In-Reply-To: <202110251429.DD44ED7B76@keescook>
+References: <20211025083315.4752-1-laoar.shao@gmail.com> <20211025083315.4752-13-laoar.shao@gmail.com>
+ <202110251431.F594652F@keescook>
+In-Reply-To: <202110251431.F594652F@keescook>
 From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Tue, 26 Oct 2021 10:22:54 +0800
-Message-ID: <CALOAHbDp9zW+mr+_ZrWLNWP4aeqa+z_JBhJjQe=c+WT0qXGbhQ@mail.gmail.com>
-Subject: Re: [PATCH v6 11/12] sched.h: extend task comm from 16 to 24
+Date:   Tue, 26 Oct 2021 10:23:54 +0800
+Message-ID: <CALOAHbA40qJZjdiM6+_e+t-qrE3kdHROPSTE4ttv4JT-HKCG-g@mail.gmail.com>
+Subject: Re: [PATCH v6 12/12] kernel/kthread: show a warning if kthread's comm
+ is truncated
 To:     Kees Cook <keescook@chromium.org>
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Steven Rostedt <rostedt@goodmis.org>,
@@ -90,77 +91,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 26, 2021 at 5:30 AM Kees Cook <keescook@chromium.org> wrote:
+On Tue, Oct 26, 2021 at 5:35 AM Kees Cook <keescook@chromium.org> wrote:
 >
-> On Mon, Oct 25, 2021 at 08:33:14AM +0000, Yafang Shao wrote:
-> > When I was implementing a new per-cpu kthread cfs_migration, I found the
-> > comm of it "cfs_migration/%u" is truncated due to the limitation of
-> > TASK_COMM_LEN. For example, the comm of the percpu thread on CPU10~19 are
-> > all with the same name "cfs_migration/1", which will confuse the user. This
-> > issue is not critical, because we can get the corresponding CPU from the
-> > task's Cpus_allowed. But for kthreads correspoinding to other hardware
-> > devices, it is not easy to get the detailed device info from task comm,
-> > for example,
+> On Mon, Oct 25, 2021 at 08:33:15AM +0000, Yafang Shao wrote:
+> > Show a warning if task comm is truncated. Below is the result
+> > of my test case:
 > >
-> >     jbd2/nvme0n1p2-
-> >     xfs-reclaim/sdf
+> > truncated kthread comm:I-am-a-kthread-with-lon, pid:14 by 6 characters
 > >
-> > We can also shorten the name to work around this problem, but I find
-> > there are so many truncated kthreads:
-> >
-> >     rcu_tasks_kthre
-> >     rcu_tasks_rude_
-> >     rcu_tasks_trace
-> >     poll_mpt3sas0_s
-> >     ext4-rsv-conver
-> >     xfs-reclaim/sd{a, b, c, ...}
-> >     xfs-blockgc/sd{a, b, c, ...}
-> >     xfs-inodegc/sd{a, b, c, ...}
-> >     audit_send_repl
-> >     ecryptfs-kthrea
-> >     vfio-irqfd-clea
-> >     jbd2/nvme0n1p2-
-> >     ...
-> >
-> > We should improve this problem fundamentally by extending comm size to
-> > 24 bytes. task_struct is growing rather regularly by 8 bytes.
-> >
-> > After this change, the truncated kthreads listed above will be
-> > displayed as:
-> >
-> >     rcu_tasks_kthread
-> >     rcu_tasks_rude_kthread
-> >     rcu_tasks_trace_kthread
-> >     poll_mpt3sas0_statu
-> >     ext4-rsv-conversion
-> >     xfs-reclaim/sdf1
-> >     xfs-blockgc/sdf1
-> >     xfs-inodegc/sdf1
-> >     audit_send_reply
-> >     ecryptfs-kthread
-> >     vfio-irqfd-cleanup
-> >     jbd2/nvme0n1p2-8
-> >
-> > As we have converted all the unsafe copy of task comm to the safe one,
-> > this change won't make any trouble to the kernel or the in-tree tools.
-> > The safe one and unsafe one of comm copy as follows,
-> >
-> >   Unsafe                 Safe
-> >   strlcpy                strscpy_pad
-> >   strncpy                strscpy_pad
-> >   bpf_probe_read_kernel  bpf_probe_read_kernel_str
-> >                          bpf_core_read_str
-> >                          bpf_get_current_comm
-> >                          perf_event__prepare_comm
-> >                          prctl(2)
-> >
-> > Regarding the possible risk it may take to the out-of-tree user tools, if
-> > the user tools get the task comm through kernel API like prctl(2),
-> > bpf_get_current_comm() and etc, the tools still work well after this
-> > change. While If the user tools get the task comm through direct string
-> > copy, it must make sure the copied string should be with a nul terminator.
-> >
+> > Suggested-by: Petr Mladek <pmladek@suse.com>
 > > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> > Reviewed-by: Kees Cook <keescook@chromium.org>
 > > Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 > > Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
 > > Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
@@ -170,30 +111,44 @@ On Tue, Oct 26, 2021 at 5:30 AM Kees Cook <keescook@chromium.org> wrote:
 > > Cc: Kees Cook <keescook@chromium.org>
 > > Cc: Petr Mladek <pmladek@suse.com>
 > > ---
-> >  include/linux/sched.h | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >  kernel/kthread.c | 7 ++++++-
+> >  1 file changed, 6 insertions(+), 1 deletion(-)
 > >
-> > diff --git a/include/linux/sched.h b/include/linux/sched.h
-> > index 124538db792c..490d12eabe44 100644
-> > --- a/include/linux/sched.h
-> > +++ b/include/linux/sched.h
-> > @@ -279,7 +279,7 @@ struct task_group;
-> >   * BPF programs.
-> >   */
-> >  enum {
-> > -     TASK_COMM_LEN = 16,
-> > +     TASK_COMM_LEN = 24,
-> >  };
+> > diff --git a/kernel/kthread.c b/kernel/kthread.c
+> > index 5b37a8567168..46b924c92078 100644
+> > --- a/kernel/kthread.c
+> > +++ b/kernel/kthread.c
+> > @@ -399,12 +399,17 @@ struct task_struct *__kthread_create_on_node(int (*threadfn)(void *data),
+> >       if (!IS_ERR(task)) {
+> >               static const struct sched_param param = { .sched_priority = 0 };
+> >               char name[TASK_COMM_LEN];
+> > +             int len;
+> >
+> >               /*
+> >                * task is already visible to other tasks, so updating
+> >                * COMM must be protected.
+> >                */
+> > -             vsnprintf(name, sizeof(name), namefmt, args);
+> > +             len = vsnprintf(name, sizeof(name), namefmt, args);
+> > +             if (len >= TASK_COMM_LEN) {
 >
-> I suspect this should be kept in sync with the tools/ copy of sched.h
-> (i.e. we may need to keep the TASK_COMM_LEN_16 around in the kernel tree
-> too.)
+> And since this failure case is slow-path, we could improve the warning
+> as other had kind of suggested earlier with something like this instead:
 >
 
-Sure. I will change it.
+It Makes sense to me.  I will do it as you suggested.
 
-> >
-> >  extern void scheduler_tick(void);
+>                         char *full_comm;
+>
+>                         full_comm = kvasprintf(GFP_KERNEL, namefmt, args);
+>                         pr_warn("truncated kthread comm '%s' to '%s' (pid:%d)\n",
+>                                 full_comm, name);
+>
+>                         kfree(full_comm);
+>                 }
+> >               set_task_comm(task, name);
+> >               /*
+> >                * root may have changed our (kthreadd's) priority or CPU mask.
 > > --
 > > 2.17.1
 > >
