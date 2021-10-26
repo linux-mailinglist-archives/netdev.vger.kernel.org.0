@@ -2,70 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5A4943B2AF
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 14:50:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADF4443B2BA
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 14:53:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232718AbhJZMwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 08:52:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51168 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235896AbhJZMwb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Oct 2021 08:52:31 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 6937861040;
-        Tue, 26 Oct 2021 12:50:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635252607;
-        bh=f4Tn906leEyLU5WbFC8sITQhhMZ2LEhJMLqs3VF1jXE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dI5/9L1M+75SIHYdjbXwDYS0V5j/03+Rs7ecUKy/iZx4V8tKrWrNAEZURvtnqqxI8
-         a05GIvAios43WbL/gKtqRWMZ3menAKItAVQjO+wbMjeSa2Zj4QlE86M3NH64tql2Jy
-         sk2nbL/9li8oxwEvzhlFWbHW+ECx3Q17feOvZS+qaIzS/9D4cWjY7l4XpLR4jyvhS1
-         jP+lUT4fCL78eODZ0w2hylZwsma3PZ2OUcoYUjKJOBGVonhtZ56Lpjd9DNahzHBKvb
-         ohOzZZUlVDcy46eqqYWTyW1hOpsPdQc6UxcMDBZ7u8Qye/Nc7Q5slWS8BHxDXm4JDW
-         3fIAFlBk9ah4Q==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 63696609CC;
-        Tue, 26 Oct 2021 12:50:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S236076AbhJZM4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 08:56:02 -0400
+Received: from mail-oi1-f178.google.com ([209.85.167.178]:35449 "EHLO
+        mail-oi1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233805AbhJZMz7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 08:55:59 -0400
+Received: by mail-oi1-f178.google.com with SMTP id r6so20419687oiw.2;
+        Tue, 26 Oct 2021 05:53:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=o0sKLuOigkZzRb9mIiQk8+FcI77ASATTLv5/Ga7FhFA=;
+        b=LiN5b/hUlWdKTy22hfFNhcVPgP2d9oZTpnTBCB4F+ceWJ7c0gDrb88A18gFTBSItm+
+         ciwbn06AoG+RBwZ0QvaH7xW+TvWFIZJQMhatFiXk6Oye8CM7d3bAzLoe41hR4vyfYq2U
+         Q4ysH9xFsXdUZvVwM9ANoZYj0sNxG/BNciH8Na13e9xtiGUpTmv0HxCY9xH7HJk9r3h4
+         4UkXOT7YcXDuzW1zLyT4G+aqmufgi5UFL3Kd8NZZpZ6d/u2++EN6rcs2Bh9aI7hRw9hC
+         6ZUh5iPpekGPMqhCOYxs47WR6Q5nysQ8qzoe5x00qvRqlKXrcgwljnukCV0gT0ZNkM2O
+         4Z/Q==
+X-Gm-Message-State: AOAM533lbAtFgm9jDD7jbjpLAl/m87n4NQd3HTBAKzwYa2dydELKxDy/
+        4PZLZ8yGLGe0q7vNnmHVag==
+X-Google-Smtp-Source: ABdhPJwP8phGmuV03HOFOfdE+cAf7lJnT51ZIqVF78khc0VQIqXv3RKQK4+vTgDjB/WIq+QnAMnzvA==
+X-Received: by 2002:a05:6808:144d:: with SMTP id x13mr17653853oiv.132.1635252815289;
+        Tue, 26 Oct 2021 05:53:35 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id j6sm3760099oot.18.2021.10.26.05.53.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Oct 2021 05:53:34 -0700 (PDT)
+Received: (nullmailer pid 2444200 invoked by uid 1000);
+        Tue, 26 Oct 2021 12:53:33 -0000
+Date:   Tue, 26 Oct 2021 07:53:33 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        linux-arm-msm@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v1 01/15] dt-bindings: add pwrseq device tree bindings
+Message-ID: <YXf6TbV2IpPbB/0Y@robh.at.kernel.org>
+References: <20211006035407.1147909-1-dmitry.baryshkov@linaro.org>
+ <20211006035407.1147909-2-dmitry.baryshkov@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: annotate data-race in neigh_output()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163525260740.9181.15970509864261843327.git-patchwork-notify@kernel.org>
-Date:   Tue, 26 Oct 2021 12:50:07 +0000
-References: <20211025181555.673034-1-eric.dumazet@gmail.com>
-In-Reply-To: <20211025181555.673034-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, syzkaller@googlegroups.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211006035407.1147909-2-dmitry.baryshkov@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, Oct 06, 2021 at 06:53:53AM +0300, Dmitry Baryshkov wrote:
+> Add device tree bindings for the new power sequencer subsystem.
+> Consumers would reference pwrseq nodes using "foo-pwrseq" properties.
+> Providers would use '#pwrseq-cells' property to declare the amount of
+> cells in the pwrseq specifier.
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Please use get_maintainers.pl.
 
-On Mon, 25 Oct 2021 11:15:55 -0700 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+This is not a pattern I want to encourage, so NAK on a common binding.
+
 > 
-> neigh_output() reads n->nud_state and hh->hh_len locklessly.
+> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> ---
+>  .../bindings/power/pwrseq/pwrseq.yaml         | 32 +++++++++++++++++++
+>  1 file changed, 32 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/power/pwrseq/pwrseq.yaml
 > 
-> This is fine, but we need to add annotations and document this.
+> diff --git a/Documentation/devicetree/bindings/power/pwrseq/pwrseq.yaml b/Documentation/devicetree/bindings/power/pwrseq/pwrseq.yaml
+> new file mode 100644
+> index 000000000000..4a8f6c0218bf
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/power/pwrseq/pwrseq.yaml
+> @@ -0,0 +1,32 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/power/pwrseq/pwrseq.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Power Sequencer devices
+> +
+> +maintainers:
+> +  - Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> +
+> +properties:
+> +  "#powerseq-cells":
+> +    description:
+> +      Number of cells in a pwrseq specifier.
+> +
+> +patternProperties:
+> +  ".*-pwrseq$":
+> +    description: Power sequencer supply phandle(s) for this node
+> +
+> +additionalProperties: true
+> +
+> +examples:
+> +  - |
+> +    qca_pwrseq: qca-pwrseq {
+> +      #pwrseq-cells = <1>;
+> +    };
+> +
+> +    bluetooth {
+> +      bt-pwrseq = <&qca_pwrseq 1>;
+> +    };
+> +...
+> -- 
+> 2.33.0
 > 
-> We evaluate skip_cache first to avoid reading these fields
-> if the cache has to by bypassed.
 > 
-> [...]
-
-Here is the summary with links:
-  - [net-next] net: annotate data-race in neigh_output()
-    https://git.kernel.org/netdev/net-next/c/d18785e21386
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
