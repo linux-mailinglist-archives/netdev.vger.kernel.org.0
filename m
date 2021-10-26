@@ -2,85 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D7FB43B28D
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 14:40:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E890C43B24F
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 14:22:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234460AbhJZMmc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 08:42:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47982 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231224AbhJZMmc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Oct 2021 08:42:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 459B360EDF;
-        Tue, 26 Oct 2021 12:40:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635252008;
-        bh=xkTQOylYcj9nvPY/ZTa1b/hUaYAnDHPi91wpXaEr3+E=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=aKirPYrybtX6tnYRszdJvSqizMg0NsZqF26TtMgmJuv75GMz5KsSk1S57BI4qx4TR
-         jei8fmoulpxzEWMyP/AiSQ6jmzlyQwHrJRjKdFv1aunY2oW2W1Yn264UJt10ZOTetl
-         v7dGRqVA8TQT27uycWiovI8K9WbPviFhFZr8pR99IWV5YE/qe0iSHhqvs9vnBBFQNA
-         P1yKSR+GATp+qwr8JocKHtz919ZAxqg9j9wYSMYFSGGWlZ0fdInVO6steLEQbbaMRb
-         aOYhu2ZMVneKv9aPbSOydjuER3/8Ie2wePgqLLaOyttnYmR+Him2PUT0uyqKnk0H8c
-         kkJo1oe9inTAw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 36BF7600DF;
-        Tue, 26 Oct 2021 12:40:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S235920AbhJZMYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 08:24:53 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:26123 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230213AbhJZMYn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 08:24:43 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4HdrWB1dWvz1DHs2;
+        Tue, 26 Oct 2021 20:20:22 +0800 (CST)
+Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Tue, 26 Oct 2021 20:22:16 +0800
+Received: from huawei.com (10.175.104.82) by kwepemm600001.china.huawei.com
+ (7.193.23.3) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.15; Tue, 26 Oct
+ 2021 20:22:15 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <oneukum@suse.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <johan@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net v2] usbnet: fix error return code in usbnet_probe()
+Date:   Tue, 26 Oct 2021 20:40:15 +0800
+Message-ID: <20211026124015.3025136-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/9] mlxsw: Support multiple RIF MAC prefixes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163525200821.3464.6443306435613313634.git-patchwork-notify@kernel.org>
-Date:   Tue, 26 Oct 2021 12:40:08 +0000
-References: <20211026094225.1265320-1-idosch@idosch.org>
-In-Reply-To: <20211026094225.1265320-1-idosch@idosch.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jiri@nvidia.com, petrm@nvidia.com, danieller@nvidia.com,
-        mlxsw@nvidia.com, idosch@nvidia.com
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600001.china.huawei.com (7.193.23.3)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Return error code if usb_maxpacket() returns 0 in usbnet_probe()
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Fixes: 397430b50a36 ("usbnet: sanity check for maxpacket")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+---
+v1->v2: change '-EINVAL' to '-ENODEV'
+ drivers/net/usb/usbnet.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-On Tue, 26 Oct 2021 12:42:16 +0300 you wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
-> 
-> Currently, mlxsw enforces that all the netdevs used as router interfaces
-> (RIFs) have the same MAC prefix (e.g., same 38 MSBs in Spectrum-1).
-> Otherwise, an error is returned to user space with extack. This patchset
-> relaxes the limitation through the use of RIF MAC profiles.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,1/9] mlxsw: reg: Add MAC profile ID field to RITR register
-    https://git.kernel.org/netdev/net-next/c/d25d7fc31ed2
-  - [net-next,2/9] mlxsw: resources: Add resource identifier for RIF MAC profiles
-    https://git.kernel.org/netdev/net-next/c/a8428e5045d7
-  - [net-next,3/9] mlxsw: spectrum_router: Propagate extack further
-    https://git.kernel.org/netdev/net-next/c/26029225d992
-  - [net-next,4/9] mlxsw: spectrum_router: Add RIF MAC profiles support
-    https://git.kernel.org/netdev/net-next/c/605d25cd782a
-  - [net-next,5/9] mlxsw: spectrum_router: Expose RIF MAC profiles to devlink resource
-    https://git.kernel.org/netdev/net-next/c/1c375ffb2efa
-  - [net-next,6/9] selftests: mlxsw: Add a scale test for RIF MAC profiles
-    https://git.kernel.org/netdev/net-next/c/152f98e7c5cb
-  - [net-next,7/9] selftests: mlxsw: Add forwarding test for RIF MAC profiles
-    https://git.kernel.org/netdev/net-next/c/a10b7bacde60
-  - [net-next,8/9] selftests: Add an occupancy test for RIF MAC profiles
-    https://git.kernel.org/netdev/net-next/c/20d446db6144
-  - [net-next,9/9] selftests: mlxsw: Remove deprecated test cases
-    https://git.kernel.org/netdev/net-next/c/c24dbf3d4f88
-
-You are awesome, thank you!
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+index 80432ee0ce69..a33d7fb82a00 100644
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -1790,6 +1790,7 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
+ 	dev->maxpacket = usb_maxpacket (dev->udev, dev->out, 1);
+ 	if (dev->maxpacket == 0) {
+ 		/* that is a broken device */
++		status = -ENODEV;
+ 		goto out4;
+ 	}
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.25.1
 
