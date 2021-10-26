@@ -2,110 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4404F43A91C
-	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 02:07:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 812D943A946
+	for <lists+netdev@lfdr.de>; Tue, 26 Oct 2021 02:32:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234969AbhJZAKE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Oct 2021 20:10:04 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:4578 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S235472AbhJZAKD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Oct 2021 20:10:03 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.1.2/8.16.1.2) with SMTP id 19PMiU7Y027675
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 17:07:40 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=Boibk+L3fz3EqHA4e82wKA53nXYv+eNyHk8OhI+7NIk=;
- b=UnZ8pOW0r1gWApKHySsZq4zAKX4TG3Y1AYsD3yCpXiuAFz+i2lSxhdiVWFIhKbudPjQq
- TlAjSRVaA23UY2P5cdkPtveb+3n6Mg/EXkoV9VRWn5oUkmskNQ4kGDWwUZ2YY7BF0HUe
- YaArbDAEA0FwrvAqWT4W1TFOmrRS2U9s66E= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net with ESMTP id 3bx4fcgxrv-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 25 Oct 2021 17:07:40 -0700
-Received: from intmgw001.05.ash7.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.14; Mon, 25 Oct 2021 17:07:38 -0700
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id A92631ADA6825; Mon, 25 Oct 2021 17:07:36 -0700 (PDT)
-From:   Song Liu <songliubraving@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kernel-team@fb.com>, Song Liu <songliubraving@fb.com>
-Subject: [PATCH bpf-next] selftests/bpf: Skip all serial_test_get_branch_snapshot in vm
-Date:   Mon, 25 Oct 2021 17:07:33 -0700
-Message-ID: <20211026000733.477714-1-songliubraving@fb.com>
-X-Mailer: git-send-email 2.30.2
+        id S235269AbhJZAfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Oct 2021 20:35:10 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:58512 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233957AbhJZAfJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Oct 2021 20:35:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=CH67qVBNSPsgCq2cZ+MyMsRC/HhwlUMoFtGRSFOT6/I=; b=1u0SN7M70TqRWJBNz5u5l51BJu
+        bIY9XZE3h9gfBSQGdFwGW6Xk1FCl+Qy8fdqiJr+NP+45kBXIxdx3yzD1YLLEVh43g+wite2hYU52r
+        3P11iuiv4SAdOmJR+3Ue161NgiSQLL+tsrhm+PDy+lUHHiVZwZ8iZDrOVwOB8DPw2DEc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mfAOS-00BiAb-Oe; Tue, 26 Oct 2021 02:32:44 +0200
+Date:   Tue, 26 Oct 2021 02:32:44 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Robert Schlabbach <Robert.Schlabbach@gmx.net>
+Cc:     netdev@vger.kernel.org
+Subject: Re: ixgbe: How to do this without a module parameter?
+Message-ID: <YXdMrL2ZEW5c+adB@lunn.ch>
+References: <trinity-50d23c05-6cfa-484b-be21-5177fcb07b75-1635193435489@3c-app-gmx-bap58>
+ <87k0i0bz2a.fsf@toke.dk>
+ <YXcdmyONutFH8E6l@lunn.ch>
+ <trinity-b6836216-b49e-4e59-80af-7b9c48918b19-1635205677415@3c-app-gmx-bap12>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-FB-Source: Intern
-X-Proofpoint-ORIG-GUID: tMAr9bCXe2spRqPBwhd_MpDMMeqTOC5u
-X-Proofpoint-GUID: tMAr9bCXe2spRqPBwhd_MpDMMeqTOC5u
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-10-25_07,2021-10-25_02,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
- priorityscore=1501 suspectscore=0 impostorscore=0 spamscore=0 bulkscore=0
- adultscore=0 mlxscore=0 phishscore=0 mlxlogscore=985 malwarescore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2110250138
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <trinity-b6836216-b49e-4e59-80af-7b9c48918b19-1635205677415@3c-app-gmx-bap12>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Skipping the second half of the test is not enough to silent the warning
-in dmesg. Skip the whole test before we can either properly silent the
-warning in kernel, or fix LBR snapshot for VM.
+> So I realize using ethtool is a viable solution after all and the module
+> parameter is not needed. I'd still wish the ixgbe driver would default to full
+> functionality and require the users with the "bad" switches in their networks
+> to employ ethtool to cripple its function, but I suppose that'd be tough to
+> sell to Intel...
 
-Fixes: 025bd7c753aa ("selftests/bpf: Add test for bpf_get_branch_snapshot=
-")
-Fixes: aa67fdb46436 ("selftests/bpf: Skip the second half of get_branch_s=
-napshot in vm")
-Signed-off-by: Song Liu <songliubraving@fb.com>
----
- .../bpf/prog_tests/get_branch_snapshot.c         | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+Maybe, maybe not. Quoting the above message:
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c=
- b/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
-index d6d70a359aeb5..81402e4439844 100644
---- a/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
-+++ b/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
-@@ -78,6 +78,12 @@ void serial_test_get_branch_snapshot(void)
- 	struct get_branch_snapshot *skel =3D NULL;
- 	int err;
-=20
-+	/* Skip the test before we fix LBR snapshot for hypervisor. */
-+	if (is_hypervisor()) {
-+		test__skip();
-+		return;
-+	}
-+
- 	if (create_perf_events()) {
- 		test__skip();  /* system doesn't support LBR */
- 		goto cleanup;
-@@ -107,16 +113,6 @@ void serial_test_get_branch_snapshot(void)
- 		goto cleanup;
- 	}
-=20
--	if (is_hypervisor()) {
--		/* As of today, LBR in hypervisor cannot be stopped before
--		 * too many entries are flushed. Skip the hit/waste test
--		 * for now in hypervisor until we optimize the LBR in
--		 * hypervisor.
--		 */
--		test__skip();
--		goto cleanup;
--	}
--
- 	ASSERT_GT(skel->bss->test1_hits, 6, "find_looptest_in_lbr");
-=20
- 	/* Given we stop LBR in software, we will waste a few entries.
---=20
-2.30.2
+> This is the first time I've heard of anyone asking for 2.5G or 5G
+> outside of the telecom space, so we went with the option of changing
+> the default.
 
+NBASE-T is no longer just telecom space. It is slowly becoming more
+and more popular in general deployment.
+
+At some point, there will be more standard conforming switches than
+broken switches, and then it would make sense to enable the higher
+speeds by default. Especially when everybody else is doing
+NBASE-T. You see a lot of ARM SoCs with such ports, etc.
+
+	 Andrew
