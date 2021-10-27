@@ -2,96 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4485643C440
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 09:44:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A3B143C446
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 09:45:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240605AbhJ0HrA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 03:47:00 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:59532 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240582AbhJ0Hq7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Oct 2021 03:46:59 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1635320675; h=Date: Message-ID: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=mz8nJIGGpohR0wU+Oe8hK35Xu2THKa0asqPSQzly+Qw=;
- b=mJe9irhQI3CrEPlLIYygTH3qkKDM3avvkh12hKtvBZiF1grX323aXmc6IqPrCK5ipOj6ppuU
- OWElueXigbrF2cFvfZiAOblMrfm824YQHTSdHLmvilbMbqf6x9z8NvkWGxY+DmOVh4nuQF9+
- P6wF24t1JjvUPch+6n+3GfBFE0M=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
- 6179035a321f2400517d1dfd (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 27 Oct 2021 07:44:26
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id D404FC43617; Wed, 27 Oct 2021 07:44:26 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.5 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,SPF_FAIL autolearn=no autolearn_force=no version=3.4.0
-Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 71612C4338F;
-        Wed, 27 Oct 2021 07:44:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 71612C4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] wcn36xx: add proper DMA memory barriers in rx path
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20211023001528.3077822-1-benl@squareup.com>
-References: <20211023001528.3077822-1-benl@squareup.com>
-To:     Benjamin Li <benl@squareup.com>
-Cc:     Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        linux-arm-msm@vger.kernel.org, Benjamin Li <benl@squareup.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S240613AbhJ0HsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 03:48:11 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:39675 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240609AbhJ0HsK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 03:48:10 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 32ACF580464;
+        Wed, 27 Oct 2021 03:45:45 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Wed, 27 Oct 2021 03:45:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=DkDJ3l
+        cmtZdA72BLSb8N8otaG02Ed1Gxqos8Wk9KsPg=; b=ijRR+n1s4F6t5e95Ax6RJJ
+        Jv6p4CsvNjBHu2bIftVSjv91XHdnAFCieh3IqPbRzqj5ASYW3kYO5EdwTnWafkCC
+        PF+8lrGQHLClbUqRfgO+DEQtPJiVGsBcLifPSQnHGD0jHH+C1idFFMiCctWJtElf
+        VaaWvwCzyOfErzRd1sXYzoPuvsjwchHApemfw+/NtBmXYNYiNyzTbL2wN2S1I8M0
+        f079vSrx/bt8faCkJV0T50I5j16Ugwe6NMK1FuYDqXjKcX6XN9wc1U5ThUarkYms
+        6cegerJSOONvBdI4MslIL8Mmzb3r/O9PzkU2/lIjthur3XFvq4OKhodAID8IVmBQ
+        ==
+X-ME-Sender: <xms:qAN5YfIDNPj3fP_Vyaeoe38Cv8EX5L60zAsT0CTPy3QpbF_QNrre8g>
+    <xme:qAN5YTI2vzCpUNYhcp_LFGJiv3kadzP3DWTr9Qohicrsf_DEjYVYN3f5PR84mZV51
+    pMJ9U2CzAepL14>
+X-ME-Received: <xmr:qAN5YXtXk9Vn4aHe07UG-BxD8FCBOaS1Z0UEzwiPqWGXcp46dDl4PcFJVzEuHXnmhieom9iJzwQH430jy5kGOlqO4tQ8jA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvdefledguddujecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
+    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
+    guohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:qAN5YYYtnORZraZA4scfF2AYFsWS_F-eBa4zyIxxqUlQQCwthr5Z1Q>
+    <xmx:qAN5YWaKMQ_ZNMDIRc1SV4Vm3MELRSwFlMIHEYxIk6-iQw2-i_3aHg>
+    <xmx:qAN5YcAtXoWAA-JwyNC8OBZL7ay-XJ0PZZk9XqbERMx_wZUOyNlN0w>
+    <xmx:qQN5Ycm7z0ELZ6HFoL52iGCBZrFKQWRmAa3SR1ZynhkqlaRuulpdNw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 27 Oct 2021 03:45:44 -0400 (EDT)
+Date:   Wed, 27 Oct 2021 10:45:42 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        Eugene Krasnikov <k.eugene.e@gmail.com>,
-        wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <163532066175.19793.9331674894554153079.kvalo@codeaurora.org>
-Date:   Wed, 27 Oct 2021 07:44:26 +0000 (UTC)
+        "David S. Miller" <davem@davemloft.net>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@nvidia.com>
+Subject: Re: [PATCH net-next 1/8] net: bridge: remove fdb_notify forward
+ declaration
+Message-ID: <YXkDpsNdvHn4ujTl@shredder>
+References: <20211026142743.1298877-1-vladimir.oltean@nxp.com>
+ <20211026142743.1298877-2-vladimir.oltean@nxp.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211026142743.1298877-2-vladimir.oltean@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Benjamin Li <benl@squareup.com> wrote:
-
-> This is essentially exactly following the dma_wmb()/dma_rmb() usage
-> instructions in Documentation/memory-barriers.txt.
+On Tue, Oct 26, 2021 at 05:27:36PM +0300, Vladimir Oltean wrote:
+> fdb_notify() has a forward declaration because its first caller,
+> fdb_delete(), is declared before 3 functions that fdb_notify() needs:
+> fdb_to_nud(), fdb_fill_info() and fdb_nlmsg_size().
 > 
-> The theoretical races here are:
+> This patch moves the aforementioned 4 functions above fdb_delete() and
+> deletes the forward declaration.
 > 
-> 1. DXE (the DMA Transfer Engine in the Wi-Fi subsystem) seeing the
-> dxe->ctrl & WCN36xx_DXE_CTRL_VLD write before the dxe->dst_addr_l
-> write, thus performing DMA into the wrong address.
-> 
-> 2. CPU reading dxe->dst_addr_l before DXE unsets dxe->ctrl &
-> WCN36xx_DXE_CTRL_VLD. This should generally be harmless since DXE
-> doesn't write dxe->dst_addr_l (no risk of freeing the wrong skb).
-> 
-> Fixes: 8e84c2582169 ("wcn36xx: mac80211 driver for Qualcomm WCN3660/WCN3680 hardware")
-> Signed-off-by: Benjamin Li <benl@squareup.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Patch applied to ath-next branch of ath.git, thanks.
-
-9bfe38e064af wcn36xx: add proper DMA memory barriers in rx path
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20211023001528.3077822-1-benl@squareup.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
