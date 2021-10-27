@@ -2,80 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F18F043D735
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 01:08:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03E7143D74A
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 01:10:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230192AbhJ0XKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 19:10:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50246 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229987AbhJ0XKY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 19:10:24 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D954DC061570;
-        Wed, 27 Oct 2021 16:07:58 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id b12so2315866wrh.4;
-        Wed, 27 Oct 2021 16:07:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=shjT1Lwvq5Pacm8Ep0rHg4FBAZ03jqRawXUWiHiX5AA=;
-        b=fX3TS9RxmgUQ4rb9iXoV7Ug8bv7uI+xiX/56cAZSrLThLbRor07/5DAXKpBcxd5eW5
-         sKleuKmzJfPck/YSQhn3UxocZE9XeIaOn7pItp6FiR7flTZrwpES+9EkTdgwlc1vOwD6
-         Fxg9dcBNdp0VFSqNej8GcfaGUdshcEtoxDMGoXr04rLSpb+DoO0fTx909qgPBoA3jRJn
-         2bctUo4wD1iNHhkcW2pStwm7fZ9xrO1oDRj3zitoK2u1hgF2LGL4MKrOMJ1XevG4xzRA
-         1LvW1d3Mc3nE3rMt6c2B4EajnGhR14A1P4KV1gY+o1S1ELc8z8u6N5nPI2FW+BRDMk8N
-         8o/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=shjT1Lwvq5Pacm8Ep0rHg4FBAZ03jqRawXUWiHiX5AA=;
-        b=jSTxhgOhOUmNZbk4tF6eWagRiJ9TjdFGZe+SBJPx0JSSsD9hguoVWeT0IQsdLJvAOH
-         4Q5V7ZWdJzbteGMCGyW7rJ3hb2OUmb6D/vQcnBfn0u2maNXCUPDeW7DZeW8IdKj9c5pP
-         V8mI8lMcMtKQBeqHIsmHWGxMuAcPWS8CfMIj8TpGY1QusxtXPlkgAilGyFRSISG/Omxi
-         2rsewo/QRHaN4fOQwhKcQKHXE8UAVIoblUD/G4pDWCcnTojNhsjQgvgIGM5nvWQ7sXub
-         vDQnXBLOmHAyEmUdJ7WAS4KBi8bj9PKg84PpNSufdkWTdG7OkA+CywZWBkiYghA41QJd
-         1wQw==
-X-Gm-Message-State: AOAM533dEK6LuBPHXJHn7zyqn4IBEsAKzVIrICngoHU+Eg5nkPfIlEQR
-        QSsbiOghmOY8by50/wTCK7yStkLzyNU=
-X-Google-Smtp-Source: ABdhPJyFdw6CQgcYWV0qqu0K2OrcdZSfy6/iB5er1Di/rP0WkDDwVDItvJTzE2WVQJojzq6z7SG9wQ==
-X-Received: by 2002:a5d:4845:: with SMTP id n5mr736144wrs.251.1635376077451;
-        Wed, 27 Oct 2021 16:07:57 -0700 (PDT)
-Received: from localhost (195-70-108-137.stat.salzburg-online.at. [195.70.108.137])
-        by smtp.gmail.com with ESMTPSA id a2sm1208727wru.82.2021.10.27.16.07.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Oct 2021 16:07:56 -0700 (PDT)
-Date:   Thu, 28 Oct 2021 01:07:56 +0200
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Slade Watkins <slade@sladewatkins.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Lijun Pan <lijunp213@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: Unsubscription Incident
-Message-ID: <YXnbzE9bjVS73g7H@localhost>
-References: <CAOhMmr7bWv_UgdkFZz89O4=WRfUFhXHH5hHEOBBfBaAR8f4Ygw@mail.gmail.com>
- <YXcGPLau1zvfTIot@unknown>
- <CA+pv=HPK+7JVM2d=C2B6iBY+joW7T9RWrPGDd-VXm09yaWsQYg@mail.gmail.com>
- <1d5ccba0-d607-aabc-6bd1-0e7c754c8379@infradead.org>
+        id S230267AbhJ0XMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 19:12:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33362 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230196AbhJ0XMe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Oct 2021 19:12:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id E4AE961040;
+        Wed, 27 Oct 2021 23:10:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635376208;
+        bh=TMOjPuBi30omm3OUP+u3FY5YEYx/Fers7Q3speDYL70=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ewjnVUVSADGqvovFoOISngvEzer+/1cRAF+JPrAc2UBw+XlZQ6k5ewnNE+OJEorrZ
+         RXEPFxuWzxGKGmam8ryq8cDviPzqa52XbanzGmAocOXKT7wHF8WDu36mJQa7RhCTWR
+         WaqS2L18p/ZkmiM7OuAWdtrNCAPoQeyudbIIUnH/Y7BlwtxMsFP7NkZUOOM3mPZ0bv
+         pW4Ao8tElfgL4SAXIcKU4/PGgsD35EdxX0Iol5yLOQEKhr5TM6VifXE62DaVFUiSqj
+         JI11+q1V3r9VKT7TQXMIrKmU7qbmG1+Ly2Sth9Ruq4CXfnh78Myyp5WXgxN8fLzmRl
+         tPYednYtvvymA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D3F7F60A17;
+        Wed, 27 Oct 2021 23:10:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1d5ccba0-d607-aabc-6bd1-0e7c754c8379@infradead.org>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next,v3] riscv, bpf: Add BPF exception tables
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163537620786.14362.5033693418821355895.git-patchwork-notify@kernel.org>
+Date:   Wed, 27 Oct 2021 23:10:07 +0000
+References: <20211027111822.3801679-1-tongtiangen@huawei.com>
+In-Reply-To: <20211027111822.3801679-1-tongtiangen@huawei.com>
+To:     tongtiangen <tongtiangen@huawei.com>
+Cc:     paul.walmsley@sifive.com, palmer@dabbelt.com,
+        palmerdabbelt@google.com, aou@eecs.berkeley.edu, bjorn@kernel.org,
+        luke.r.nels@gmail.com, xi.wang@gmail.com, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 27, 2021 at 12:29:34PM -0700, Randy Dunlap wrote:
-> Then you should try <postmaster@vger.kernel.org> for assistance.
+Hello:
 
-Hm, are you that isn't connected to /dev/null?
+This patch was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
-Last time I wrote to the postmaster (not about present issue), I
-didn't get any response at all.
+On Wed, 27 Oct 2021 11:18:22 +0000 you wrote:
+> When a tracing BPF program attempts to read memory without using the
+> bpf_probe_read() helper, the verifier marks the load instruction with
+> the BPF_PROBE_MEM flag. Since the riscv JIT does not currently recognize
+> this flag it falls back to the interpreter.
+> 
+> Add support for BPF_PROBE_MEM, by appending an exception table to the
+> BPF program. If the load instruction causes a data abort, the fixup
+> infrastructure finds the exception table and fixes up the fault, by
+> clearing the destination register and jumping over the faulting
+> instruction.
+> 
+> [...]
 
-Thanks,
-Richard
+Here is the summary with links:
+  - [bpf-next,v3] riscv, bpf: Add BPF exception tables
+    https://git.kernel.org/bpf/bpf-next/c/252c765bd764
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
