@@ -2,262 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F6ED43D62B
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 00:00:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 613DD43D630
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 00:01:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229946AbhJ0WDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 18:03:18 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:13434 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229925AbhJ0WDS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 18:03:18 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19RLfRuQ031166
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 15:00:52 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=oYyKoBU/ysy/RT9UZVgiFUATRbAvLEUIdecO1J+uyZQ=;
- b=gSLfinbFX8z0aWQG1R3xnpvyx3JfC/MQaM/nC/1D0IgXV+e4Gw+QA3QHcvCcbVX462N1
- idFFb/UPeI8jvHVMWIgE0mSOyVhDCAPXvKHZ07ztdRIPZs4nfKFnBPFQ+UArC6+AqydA
- 5RtQSm/QI2FuLtMoMoHvsfdgM+jfINcmLpI= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3by6x1p0ev-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 15:00:52 -0700
-Received: from intmgw002.06.ash9.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.14; Wed, 27 Oct 2021 15:00:51 -0700
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 6BC7B1B7DA3EF; Wed, 27 Oct 2021 15:00:50 -0700 (PDT)
-From:   Song Liu <songliubraving@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kernel-team@fb.com>, <kpsingh@kernel.org>,
-        Song Liu <songliubraving@fb.com>
-Subject: [PATCH bpf-next 2/2] selftests/bpf: add tests for bpf_find_vma
-Date:   Wed, 27 Oct 2021 15:00:43 -0700
-Message-ID: <20211027220043.1937648-3-songliubraving@fb.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211027220043.1937648-1-songliubraving@fb.com>
-References: <20211027220043.1937648-1-songliubraving@fb.com>
+        id S229921AbhJ0WDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 18:03:33 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:56607 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229915AbhJ0WDb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 18:03:31 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 20C005C01EB;
+        Wed, 27 Oct 2021 18:01:05 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Wed, 27 Oct 2021 18:01:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=hIQiAt
+        6HwJSkBFPrZaazJIIeuuWWJ9hj7zkiVYITl5Y=; b=k3YKySGziO+UR6UNlRhBCJ
+        La+xKZAwbU5wLx80stFWGnntTanJBQbrA/V8NW1yswm8miK8OxlHdUXYoF2BGPXd
+        paTZWGRhq1Oo3baF1/wbe46JZEwqLVfOzs+33snpfQu34Kn2/6dcUhBrKGL/Cyex
+        HuGucbgqq9sUNX9xJE2HK8qLi2tQBZBUQ+j9aka/jgarfzwicTiUfLO86mSkhrUx
+        vvLfQu94SzxrEtu5Y4o4A9JYTOLEY/LvhHUH8Rq8GG9krbGDN5vAgan8l5hwksMo
+        Pcbv7joPi2hF53BSyI5rWhLQiVZvGFu65JjXd8ESdUkJTZ4fKsrWNZ3THLSyIR+Q
+        ==
+X-ME-Sender: <xms:IMx5YbFIznkaX_vxJwqBGRnNS0FPMC3nIgEI0_ivannaWkkuQEfAIQ>
+    <xme:IMx5YYUVRvsD5lijt8MqxIUCElG6fiJdbED6RJJOv2-IVBa7_3FwirZ24qwgcV0BJ
+    gbog4iVXQWwdQ4>
+X-ME-Received: <xmr:IMx5YdL_KBghx8p5hoJAKC-joix9biHjUdFOcba7n2iL8gbkhgMu6zk-B6g8wosmvbQLCYsa1iYf3kmk6eqpgRr5T5Epgw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvdegtddguddutdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
+    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
+    guohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:IMx5YZEEx1Uv7EInsPmctStedo8TEGdyT6PWTdboTWQuhkJDdagMAg>
+    <xmx:IMx5YRX8xoN_5w7miBJuuDn-Bw4pEad_4rfJyBMNVEuosuwb1KZI5A>
+    <xmx:IMx5YUPPdvyTB21WZnKgg4OlfFUAnZLjkHLCb2gt4UvamSKTulCzmg>
+    <xmx:Icx5YXwGpq2bMshpaSXubCZedN8t_Dd_1UIynyRHiGFq9XD1AoJnWA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 27 Oct 2021 18:01:03 -0400 (EDT)
+Date:   Thu, 28 Oct 2021 01:00:59 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, popadrian1996@gmail.com, andrew@lunn.ch,
+        mlxsw@nvidia.com, moshe@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH ethtool-next 00/14] ethtool: Use memory maps for EEPROM
+ parsing
+Message-ID: <YXnMG6e7mglldHIZ@shredder>
+References: <20211012132525.457323-1-idosch@idosch.org>
+ <20211027203045.sfauzpf3rarx5iro@lion.mk-sys.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-FB-Source: Intern
-X-Proofpoint-ORIG-GUID: 1Q7A7sa9DIlURqofvejm1hUI-5mZqX_-
-X-Proofpoint-GUID: 1Q7A7sa9DIlURqofvejm1hUI-5mZqX_-
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-10-27_06,2021-10-26_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- suspectscore=0 lowpriorityscore=0 clxscore=1015 bulkscore=0 malwarescore=0
- mlxlogscore=999 spamscore=0 impostorscore=0 mlxscore=0 adultscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2110270121
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211027203045.sfauzpf3rarx5iro@lion.mk-sys.cz>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add tests for bpf_find_vma in perf_event program and kprobe program. The
-perf_event program is triggered from NMI context, so the second call of
-bpf_find_vma() will return -EBUSY (irq_work busy). The kprobe program,
-on the other hand, does not have this constraint.
+On Wed, Oct 27, 2021 at 10:30:45PM +0200, Michal Kubecek wrote:
+> On Tue, Oct 12, 2021 at 04:25:11PM +0300, Ido Schimmel wrote:
+> > From: Ido Schimmel <idosch@nvidia.com>
+> > 
+> > This patchset prepares ethtool(8) for retrieval and parsing of optional
+> > and banked module EEPROM pages, such as the ones present in CMIS. This
+> > is done by better integration of the recent 'MODULE_EEPROM_GET' netlink
+> > interface into ethtool(8).
+> 
+> I still need to take a closer look at some of the patches but just to be
+> sure: the only reason to leave this series for 5.16 cycle is that it's
+> rather big and intrusive change (i.e. it does not depend on any kernel
+> functionality not present in 5.15), right?
 
-Signed-off-by: Song Liu <songliubraving@fb.com>
----
- .../selftests/bpf/prog_tests/find_vma.c       | 95 +++++++++++++++++++
- tools/testing/selftests/bpf/progs/find_vma.c  | 70 ++++++++++++++
- 2 files changed, 165 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/find_vma.c
- create mode 100644 tools/testing/selftests/bpf/progs/find_vma.c
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/find_vma.c b/tools/te=
-sting/selftests/bpf/prog_tests/find_vma.c
-new file mode 100644
-index 0000000000000..34d4d02c60153
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/find_vma.c
-@@ -0,0 +1,95 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+#include <test_progs.h>
-+#include <sys/types.h>
-+#include <unistd.h>
-+#include "find_vma.skel.h"
-+
-+static void test_and_reset_skel(struct find_vma *skel, int expected_find=
-_zero_ret)
-+{
-+	ASSERT_EQ(skel->bss->found_vm_exec, 1, "found_vm_exec");
-+	ASSERT_EQ(skel->data->find_addr_ret, 0, "find_addr_ret");
-+	ASSERT_EQ(skel->data->find_zero_ret, expected_find_zero_ret, "find_zero=
-_ret");
-+	ASSERT_OK_PTR(strstr(skel->bss->d_iname, "test_progs"), "find_test_prog=
-s");
-+
-+	skel->bss->found_vm_exec =3D 0;
-+	skel->data->find_addr_ret =3D -1;
-+	skel->data->find_zero_ret =3D -1;
-+	skel->bss->d_iname[0] =3D 0;
-+}
-+
-+static int open_pe(void)
-+{
-+	struct perf_event_attr attr =3D {0};
-+	int pfd;
-+
-+	/* create perf event */
-+	attr.size =3D sizeof(attr);
-+	attr.type =3D PERF_TYPE_HARDWARE;
-+	attr.config =3D PERF_COUNT_HW_CPU_CYCLES;
-+	attr.freq =3D 1;
-+	attr.sample_freq =3D 4000;
-+	pfd =3D syscall(__NR_perf_event_open, &attr, 0, -1, -1, PERF_FLAG_FD_CL=
-OEXEC);
-+
-+	return pfd >=3D 0 ? pfd : -errno;
-+}
-+
-+static void test_find_vma_pe(struct find_vma *skel)
-+{
-+	struct bpf_link *link =3D NULL;
-+	volatile int j =3D 0;
-+	int pfd =3D -1, i;
-+
-+	pfd =3D open_pe();
-+	if (pfd < 0) {
-+		if (pfd =3D=3D -ENOENT || pfd =3D=3D -EOPNOTSUPP) {
-+			printf("%s:SKIP:no PERF_COUNT_HW_CPU_CYCLES\n", __func__);
-+			test__skip();
-+		}
-+		if (!ASSERT_GE(pfd, 0, "perf_event_open"))
-+			goto cleanup;
-+	}
-+
-+	link =3D bpf_program__attach_perf_event(skel->progs.handle_pe, pfd);
-+	if (!ASSERT_OK_PTR(link, "attach_perf_event"))
-+		goto cleanup;
-+
-+	for (i =3D 0; i < 1000000; ++i)
-+		++j;
-+
-+	test_and_reset_skel(skel, -EBUSY /* in nmi, irq_work is busy */);
-+cleanup:
-+	bpf_link__destroy(link);
-+	close(pfd);
-+	/* caller will clean up skel */
-+}
-+
-+static void test_find_vma_kprobe(struct find_vma *skel)
-+{
-+	int err;
-+
-+	err =3D find_vma__attach(skel);
-+	if (!ASSERT_OK(err, "get_branch_snapshot__attach"))
-+		return;  /* caller will cleanup skel */
-+
-+	getpgid(skel->bss->target_pid);
-+	test_and_reset_skel(skel, -ENOENT /* could not find vma for ptr 0 */);
-+}
-+
-+void serial_test_find_vma(void)
-+{
-+	struct find_vma *skel;
-+
-+	skel =3D find_vma__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "find_vma__open_and_load"))
-+		return;
-+
-+	skel->bss->target_pid =3D getpid();
-+	skel->bss->addr =3D (__u64)test_find_vma_pe;
-+
-+	test_find_vma_pe(skel);
-+	usleep(100000); /* allow the irq_work to finish */
-+	test_find_vma_kprobe(skel);
-+
-+	find_vma__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/find_vma.c b/tools/testing=
-/selftests/bpf/progs/find_vma.c
-new file mode 100644
-index 0000000000000..2776718a54e29
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/find_vma.c
-@@ -0,0 +1,70 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+char _license[] SEC("license") =3D "GPL";
-+
-+struct callback_ctx {
-+	int dummy;
-+};
-+
-+#define VM_EXEC		0x00000004
-+#define DNAME_INLINE_LEN 32
-+
-+pid_t target_pid =3D 0;
-+char d_iname[DNAME_INLINE_LEN] =3D {0};
-+__u32 found_vm_exec =3D 0;
-+__u64 addr =3D 0;
-+int find_zero_ret =3D -1;
-+int find_addr_ret =3D -1;
-+
-+static __u64
-+check_vma(struct task_struct *task, struct vm_area_struct *vma,
-+	  struct callback_ctx *data)
-+{
-+	if (vma->vm_file)
-+		bpf_probe_read_kernel_str(d_iname, DNAME_INLINE_LEN - 1,
-+					  vma->vm_file->f_path.dentry->d_iname);
-+
-+	/* check for VM_EXEC */
-+	if (vma->vm_flags & VM_EXEC)
-+		found_vm_exec =3D 1;
-+
-+	return 0;
-+}
-+
-+SEC("kprobe/__x64_sys_getpgid")
-+int handle_getpid(void)
-+{
-+	struct task_struct *task =3D bpf_get_current_task_btf();
-+	struct callback_ctx data =3D {0};
-+
-+	if (task->pid !=3D target_pid)
-+		return 0;
-+
-+	find_addr_ret =3D bpf_find_vma(task, addr, check_vma, &data, 0);
-+
-+	/* this should return -ENOENT */
-+	find_zero_ret =3D bpf_find_vma(task, 0, check_vma, &data, 0);
-+	return 0;
-+}
-+
-+SEC("perf_event")
-+int handle_pe(void)
-+{
-+	struct task_struct *task =3D bpf_get_current_task_btf();
-+	struct callback_ctx data =3D {0};
-+
-+	if (task->pid !=3D target_pid)
-+		return 0;
-+
-+	find_addr_ret =3D bpf_find_vma(task, addr, check_vma, &data, 0);
-+
-+	/* In NMI, this should return -EBUSY, as the previous call is using
-+	 * the irq_work.
-+	 */
-+	find_zero_ret =3D bpf_find_vma(task, 0, check_vma, &data, 0);
-+	return 0;
-+}
---=20
-2.30.2
-
+Right, it does not depend on any kernel functionality not present in
+5.15
