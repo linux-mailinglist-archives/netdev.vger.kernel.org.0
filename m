@@ -2,95 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFA1F43BE4D
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 02:02:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB6F843BE59
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 02:08:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237333AbhJ0AFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 20:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45654 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236379AbhJ0AFD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 20:05:03 -0400
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57D77C061570
-        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 17:02:39 -0700 (PDT)
-Received: by mail-io1-xd2a.google.com with SMTP id g8so163080iob.10
-        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 17:02:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sladewatkins.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4twnWZaz/uCnsUp6yfoaHYStTI/UK/5pB+90myxvwMY=;
-        b=McGYTg8EWlwdYu4NP87nhhrmGSR61hXJ5OYQ8OkGOrk7OMTerkySezVKbw6NB6lXX9
-         V9mGDV/jQFXRdWhP5n5ukJxhXardWMokHErGiZTwKRsYbk6hqy4y2thQbIqYxm9qkXns
-         9EAMr3DAHJ6gPE2b+FtDf9v4hcAWJLQ4I0yJrEs2WI24f6yNF3z47oXlLwA4QIAy6i5A
-         tbX6YFJ4uIPec3Qz275WTkL0LqoyUtQ3Fr4YXN8Ry7nSRLwoqaA1pZkEnivZNxjkAqit
-         yig8OsE9uFG5h6KAbgpIUslEugJWp70UJIep+y3iqMt0briWYHsVMCu5Mk2pJodydhpX
-         Vz7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4twnWZaz/uCnsUp6yfoaHYStTI/UK/5pB+90myxvwMY=;
-        b=Gub6dVTLLiECkjhBhmCunvDxxsINk70KwAI0Eoea7Aj4SK9kBzBuDfJT7WX/4W0+3r
-         Mx2DYEfKQ7ukRML/U8AJbT6i8CkIHywOyinfHlyl17SnIr9Ptqvnn6a2mym0nFJlRf8+
-         wD+MtpWF6dxC+ROD7PKaeWFDyqF9Qu4DK9iheL5wZ7esSNkGf2wnsEyd1jalHBMgU/sv
-         3ZBSiltvxiNlVWhBp40Ztq+eIwUH8Bq0SpgPKOVsIjDUhQ51f6ZoiF4ot18E5LpuRiV/
-         0UFzdZ1vmhQNeQmNzdC0dU0XYrId8SrDqx8AaSsSpd1XzYuGomXjHYEkjSIas9vS0blu
-         dcqw==
-X-Gm-Message-State: AOAM532okLcokxAWSzFEEsTq3ASI7YFfD4zmHFtcK0Q05o0i5wYb0RAi
-        UKxoR5EkUkw0MS7AQQYz753VYhXgykXjY5MmRpZcAA==
-X-Google-Smtp-Source: ABdhPJxP6jHFGZWuyB1s4DXm7xha6KVLCdtpM5c9ip48DGNXWfx/P0lsyJ2IyXXN/PUzPJwYsp0zTllz2xTKRMpx/So=
-X-Received: by 2002:a05:6602:148b:: with SMTP id a11mr17937967iow.85.1635292958699;
- Tue, 26 Oct 2021 17:02:38 -0700 (PDT)
+        id S240359AbhJ0AKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 20:10:40 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:60680 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230500AbhJ0AKj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Oct 2021 20:10:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=l3HKwrI4aii/N0e3D8E0FITj+tQPQCyffkihHJ5j0nc=; b=n3q9Nv1+OxmGCua+s3bMYSsIw0
+        v4zsQ7/sayqijhOCuHnryTEhDexB3O5CNiNM3TkuySjXvXqEmMJJFp3kKOCu4Pdq/B39BombxpMJR
+        Cds3ckIsl9FUw4fj9iKtev+oMdO0m9Xdtx+M3GjF1Myt+5TChIIILEEY8RXs7d9pmkaM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mfWU8-00Bpoe-Nx; Wed, 27 Oct 2021 02:08:04 +0200
+Date:   Wed, 27 Oct 2021 02:08:04 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Corentin Labbe <clabbe@baylibre.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linus.walleij@linaro.org,
+        ulli.kroll@googlemail.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: ethernet: cortina: permit to set mac address in DT
+Message-ID: <YXiYZGEiVMLdN1zt@lunn.ch>
+References: <20211026191703.1174086-1-clabbe@baylibre.com>
 MIME-Version: 1.0
-References: <CAOhMmr7bWv_UgdkFZz89O4=WRfUFhXHH5hHEOBBfBaAR8f4Ygw@mail.gmail.com>
- <YXcGPLau1zvfTIot@unknown>
-In-Reply-To: <YXcGPLau1zvfTIot@unknown>
-From:   Slade Watkins <slade@sladewatkins.com>
-Date:   Tue, 26 Oct 2021 20:02:27 -0400
-Message-ID: <CA+pv=HPK+7JVM2d=C2B6iBY+joW7T9RWrPGDd-VXm09yaWsQYg@mail.gmail.com>
-Subject: Re: Unsubscription Incident
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Lijun Pan <lijunp213@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211026191703.1174086-1-clabbe@baylibre.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-On Mon, Oct 25, 2021 at 4:10 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> On Fri, Oct 22, 2021 at 10:53:28AM -0500, Lijun Pan wrote:
-> > Hi,
-> >
-> > From Oct 11, I did not receive any emails from both linux-kernel and
-> > netdev mailing list. Did anyone encounter the same issue? I subscribed
-> > again and I can receive incoming emails now. However, I figured out
-> > that anyone can unsubscribe your email without authentication. Maybe
-> > it is just a one-time issue that someone accidentally unsubscribed my
-> > email. But I would recommend that our admin can add one more
-> > authentication step before unsubscription to make the process more
-> > secure.
-> >
->
-> Same here.
->
-> Fortunately I just switched to lei:
-> https://josefbacik.github.io/kernel/2021/10/18/lei-and-b4.html
-> so I can unsubscribe all kernel mailing lists now.
+On Tue, Oct 26, 2021 at 07:17:03PM +0000, Corentin Labbe wrote:
+> Add ability of setting mac address in DT for cortina ethernet driver.
+> 
+> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> ---
+>  drivers/net/ethernet/cortina/gemini.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/cortina/gemini.c b/drivers/net/ethernet/cortina/gemini.c
+> index 941f175fb911..f6aa2387a1af 100644
+> --- a/drivers/net/ethernet/cortina/gemini.c
+> +++ b/drivers/net/ethernet/cortina/gemini.c
+> @@ -2356,12 +2356,14 @@ static void gemini_port_save_mac_addr(struct gemini_ethernet_port *port)
+>  static int gemini_ethernet_port_probe(struct platform_device *pdev)
+>  {
+>  	char *port_names[2] = { "ethernet0", "ethernet1" };
+> +	struct device_node *np = pdev->dev.of_node;
+>  	struct gemini_ethernet_port *port;
+>  	struct device *dev = &pdev->dev;
+>  	struct gemini_ethernet *geth;
+>  	struct net_device *netdev;
+>  	struct device *parent;
+>  	unsigned int id;
+> +	u8 mac[ETH_ALEN];
 
-Not a bad workaround! I may consider trying this out. Thanks for
-sending this along.
+Off by one in terms of reverse Christmas tree.
 
-I'd still love to figure out why the whole "randomly unsubscribing
-people who want to be subscribed" thing is happening in the first
-place, though.
-
->
-> Thanks.
-
-Cheers,
-             -slade
+    Andrew
