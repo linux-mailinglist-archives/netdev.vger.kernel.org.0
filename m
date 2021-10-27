@@ -2,92 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D231A43D638
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 00:03:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4326243D649
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 00:09:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229985AbhJ0WGN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 18:06:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39396 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229925AbhJ0WGK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 18:06:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635372223;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ivJoc+D4kdpuDzvrSqI7vix80j2b31Z3Ev5flf6hx9I=;
-        b=iUqS63JMPV401oss8N/wyvbCsBiRHYjnWL8kl0rycg3CnqP+T3XUO/niHDJnaWsCmlGXj9
-        emSRn0jjZrDxhNwaf+mDie3gvgmiuC9Io10LkAe8HdTOSxYd+KWkzwyZ5bGOtmAtqzLMzd
-        HQLD8Rm480vzz6r2gnl3BZnObzhSeZA=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-560-8_k59565O6q_whxcasAyRg-1; Wed, 27 Oct 2021 18:03:42 -0400
-X-MC-Unique: 8_k59565O6q_whxcasAyRg-1
-Received: by mail-ed1-f71.google.com with SMTP id c25-20020a056402143900b003dc19782ea8so3686961edx.3
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 15:03:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=ivJoc+D4kdpuDzvrSqI7vix80j2b31Z3Ev5flf6hx9I=;
-        b=lU2ZMqYABGuBzXZJ7G34EXEn5gmBbnPMotslZj287z+DZ2ScxnNsZBlKV1lO7NC9MC
-         5kDwVQlKhZiwo2yFhKyQsj45BUT2twl7oC5aGxIIdPgEpaDEVNxcg8hNGs4e4E8IMWto
-         mOlxRwruF0OV9hnPXBA6YWzhe+OiRqrb2Ch5LJdi1KvWvyDEvlLsQusQouggQtjWoGDB
-         t2pmyl1nN1CP4TPb9vKWGYvy0ukDrnLFIGvvzNEi2pjERIHqH8f359RhB0BqaaOTjoup
-         VEh6pkN7Tq+LX3i00oE+bU3rcwtnk0jE9xV0wZG6ybW2eHXotjAE3xgZb9L477ONV6tO
-         OL6w==
-X-Gm-Message-State: AOAM533TenvSHHj3HTs5sc41aaSy4wUWerlXLhz8ezCZSzXejkLiim3m
-        3jCoDdTgB8NsvH43JdverKFZigmZeb75DJQJwonHVAYBEIN/GgPzev0/AsSU2zqbzs+KDSIuBcA
-        1h+qIOhj+Kj4CL46H
-X-Received: by 2002:a17:906:2505:: with SMTP id i5mr300657ejb.450.1635372220214;
-        Wed, 27 Oct 2021 15:03:40 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxOFadTn1wI9p1W0PpE5i2kpyqQPmBKw7giZKvXodqFBvoZqJBFDxufHf6J0BnECfffgS0UMg==
-X-Received: by 2002:a17:906:2505:: with SMTP id i5mr300564ejb.450.1635372219262;
-        Wed, 27 Oct 2021 15:03:39 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id i5sm454997ejw.24.2021.10.27.15.03.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Oct 2021 15:03:38 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 29A8B180262; Thu, 28 Oct 2021 00:03:38 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>, davem@davemloft.net
-Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        andrii.nakryiko@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Subject: Re: pull-request: bpf 2021-10-26
-In-Reply-To: <20211026201920.11296-1-daniel@iogearbox.net>
-References: <20211026201920.11296-1-daniel@iogearbox.net>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 28 Oct 2021 00:03:38 +0200
-Message-ID: <87bl3a9lc5.fsf@toke.dk>
+        id S229518AbhJ0WLc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 18:11:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37024 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229441AbhJ0WLc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 18:11:32 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AE49C061570;
+        Wed, 27 Oct 2021 15:09:02 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4HfjWw4rzpz4xbP;
+        Thu, 28 Oct 2021 09:09:00 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1635372541;
+        bh=E9vVZjugBxglNf6mi6b6L+lVqqoYk5z7JFagTw04whQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=scASQ9Ug6DFtYELD9ZZ2S49iOPriP9YMcrQAt3L2xBRaCOo5Mt+8V535+hXdHZYd0
+         /Qut292kAVwJd5BHAtIfYs8RT7RoTp5wvxmjm2XgZx9zoTCE4m0X+rT/7rXydgmiC1
+         CLPu0zYuK5xAHYq6kRl7Pq4HUNQ2+EKAEqzE8vsn6yhBo+HW6n2D4iIYgQUrAjo/A2
+         iaPzjcZ4kAGUZnewakyhkCo32imuys97NBnj8aCKN5/OyWhK5bklQEr1L8hjCwl6I0
+         Cfz6wGDmEdP3zeOoEniD37zxpywAoeNhhte26AzX5thUWL2ouW9Tig0cWIb7WfG4m3
+         Ww+PDf+KCNmGw==
+Date:   Thu, 28 Oct 2021 09:08:58 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Signed-off-by missing for commit in the net-next tree
+Message-ID: <20211028090858.138ece92@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; boundary="Sig_/hG=c7RxsV1BQlc5BrNzc+qA";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Borkmann <daniel@iogearbox.net> writes:
+--Sig_/hG=c7RxsV1BQlc5BrNzc+qA
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-> The following pull-request contains BPF updates for your *net* tree.
->
-> We've added 12 non-merge commits during the last 7 day(s) which contain
-> a total of 23 files changed, 118 insertions(+), 98 deletions(-).
+Hi all,
 
-Hi Daniel
+Commit
 
-Any chance we could also get bpf merged into bpf-next? We'd like to use
-this fix:
+  8ca9caee851c ("net/mlx5: Lag, Make mlx5_lag_is_multipath() be static inli=
+ne")
 
-> 1) Fix potential race window in BPF tail call compatibility check,
-> from Toke H=C3=B8iland-J=C3=B8rgensen.
+is missing a Signed-off-by from its committer.
 
-in the next version of the XDP multi-buf submission without creating
-merge conflicts. Or is there some other way we can achieve this without
-creating more work for you? :)
+--=20
+Cheers,
+Stephen Rothwell
 
--Toke
+--Sig_/hG=c7RxsV1BQlc5BrNzc+qA
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmF5zfoACgkQAVBC80lX
+0Gz0dggAh0vYgmI8g3kbbr6S1C39+SeVfTpwP2iuvEh9wzLSYtXVce3ukR59kqPf
+hMQ0YNAaaVTfDKHj0pEjS4Ie39XBrasZquwsrhjzX3ZW51cziU84Eq2XCLb+Lcw8
+YfAX6Cx6DzF74sllppO9BtHstppzvfyTVaLt6AaHJo3+dek17B6g7eud/O4mFVZO
+J23Vl3NydBa9/8Ybwn93KxPAqKr4wuMu96ef9Gi/5bofYMJkm4ePBHz6Tf8b/9QE
+29gjkAXpTFMLRKC5w0wyeRxQRAaXy3Ha83zc956XIe8mgrPAPpuPwp8qkOI07XLw
+fXPnYB6WonmcOM0neh7kJmxL/DoQtw==
+=HDX9
+-----END PGP SIGNATURE-----
+
+--Sig_/hG=c7RxsV1BQlc5BrNzc+qA--
