@@ -2,96 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9610043C2DB
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 08:20:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DAEF43C2E0
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 08:21:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238516AbhJ0GWk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 02:22:40 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:42508 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238500AbhJ0GWj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Oct 2021 02:22:39 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1635315615; h=Content-Type: MIME-Version: Message-ID: Date:
- References: In-Reply-To: Subject: Cc: To: From: Sender;
- bh=ps8/xgtg5gAKrPPoVBISwY+vty6tFr8afONeYrw77Eg=; b=UcBxF9svUb0n236P3VfJBYe1IALtKuiqFwIckadXpeNh6UDYwO3VGG35rhtk/Dj56AzanNaj
- cikDfLXcyUmyhHs0GO+BqBwgfy+VrfAv2YhNF7+z6dlqi1wLlB9CZVmkJZpTR6dqx6dz48H2
- VGOKDI5a/47KvYfEDUC7wma9NGk=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
- 6178ef9a321f2400513e92fd (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 27 Oct 2021 06:20:10
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id C7AB5C43617; Wed, 27 Oct 2021 06:20:10 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from tykki (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 253AFC4338F;
-        Wed, 27 Oct 2021 06:20:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 253AFC4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Shayne Chen <shayne.chen@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        YN Chen <YN.Chen@mediatek.com>,
-        Deren Wu <deren.wu@mediatek.com>,
-        Leon Yen <Leon.Yen@mediatek.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mt76: mt7663s: fix link error with CONFIG_PM=n
-In-Reply-To: <20211026083326.3421663-1-arnd@kernel.org> (Arnd Bergmann's
-        message of "Tue, 26 Oct 2021 10:33:09 +0200")
-References: <20211026083326.3421663-1-arnd@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-Date:   Wed, 27 Oct 2021 09:20:03 +0300
-Message-ID: <874k939egc.fsf@codeaurora.org>
+        id S238532AbhJ0GXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 02:23:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:39563 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239968AbhJ0GXW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 02:23:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1635315657;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=y5IbjGZT6ncLji1412wTNCgblKToa0KMNUhBknTBoOE=;
+        b=fyIhbyY+5do4asd2R+68O/0Xo+ekWMOaRhZ7rS9HwinyTKHQ8vH0BCeutNzw90AyeNMo13
+        nq/pOFd9CBY/BlWQ+e36tnBGQUfkod/8Rbu8erQRzHDa14uD6svRLPaQrD61me3jbZ05ig
+        cOk7wpqBJ/bz5ZANnSqHcbNk75Y+AXQ=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-351-5nNVSTD_NNyQkSKksikYpg-1; Wed, 27 Oct 2021 02:20:55 -0400
+X-MC-Unique: 5nNVSTD_NNyQkSKksikYpg-1
+Received: by mail-ed1-f69.google.com with SMTP id g6-20020a056402424600b003dd2b85563bso1338168edb.7
+        for <netdev@vger.kernel.org>; Tue, 26 Oct 2021 23:20:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:cc:subject:to:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=y5IbjGZT6ncLji1412wTNCgblKToa0KMNUhBknTBoOE=;
+        b=62Rv7Zj5nXqYkU9HYrPJSc+IwPQn5XkGcQQvFfnQWKmkVXZAJwwcZzbwZIqbL807sV
+         Hff25dhuwSJcMcKd+oSgVCpy0zvOltGAOBEvu5vWwihv+L62DwtBc6KPP0lJdtVOXjHk
+         cCvnMGCs8pjKcgMSaFL94QbjxNycUe6mjvOO5lozQeyDk+ab866i2E7U2/wPFMgjYQnh
+         3gOw4hTJjzEnWu5EekGBfrX9TFrYz7Z4pvj24vAE5xkO5LFi3SwueIbI3htVLbOlOzRw
+         zgJG+MXh0PKaY54WV61Z9cpO2D/3eRr4ZPHzvlYA10GBJ1Wvmfi1+p+ov0gLd/UChqcG
+         pvMw==
+X-Gm-Message-State: AOAM533O8WlSfrM8VkTMlv/tTmTnNSD01VoRMVvw+X/eiIpZuxBVYNcT
+        qyeb+13P76gBu/brRqY9dMi2amSLBgH2yldOPHKUiBex5bu4svH+vj+9hKkFKPsR31uEyIix57Y
+        ff/8m2l/aEf1n4+fY
+X-Received: by 2002:aa7:d34f:: with SMTP id m15mr42149449edr.40.1635315654697;
+        Tue, 26 Oct 2021 23:20:54 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxL1weoF88I/0V+Lz+k0kuNgr3cDwX0UE1tb2DCxFcXqabkq8zk5Ay5zmfolyIHuRIgkMJmNQ==
+X-Received: by 2002:aa7:d34f:: with SMTP id m15mr42149436edr.40.1635315654540;
+        Tue, 26 Oct 2021 23:20:54 -0700 (PDT)
+Received: from [192.168.42.238] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
+        by smtp.gmail.com with ESMTPSA id s12sm343243edc.48.2021.10.26.23.20.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Oct 2021 23:20:53 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     brouer@redhat.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
+Subject: Re: [PATCH net-next] xdp: Remove redundant warning
+To:     Yajun Deng <yajun.deng@linux.dev>, ast@kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, kuba@kernel.org,
+        hawk@kernel.org, john.fastabend@gmail.com
+References: <20211027013856.1866-1-yajun.deng@linux.dev>
+Message-ID: <095fa222-824a-b38c-3432-35bdb61bab88@redhat.com>
+Date:   Wed, 27 Oct 2021 08:20:52 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20211027013856.1866-1-yajun.deng@linux.dev>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Arnd Bergmann <arnd@kernel.org> writes:
 
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> The generic register access functions are compiled conditionally,
-> causing a link failure in some randconfig builds:
->
-> ERROR: modpost: "mt76_connac_mcu_reg_wr" [drivers/net/wireless/mediatek/mt76/mt7615/mt7663s.ko] undefined!
-> ERROR: modpost: "mt76_connac_mcu_reg_rr" [drivers/net/wireless/mediatek/mt76/mt7615/mt7663s.ko] undefined!
->
-> Move them out of the #ifdef block.
->
-> Fixes: 02fbf8199f6e ("mt76: mt7663s: rely on mcu reg access utility")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+On 27/10/2021 03.38, Yajun Deng wrote:
+> There is a warning in xdp_rxq_info_unreg_mem_model() when reg_state isn't
+> equal to REG_STATE_REGISTERED, so the warning in xdp_rxq_info_unreg() is
+> redundant.
+ >
+> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
 
-Felix already submitted an identical patch:
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-https://patchwork.kernel.org/project/linux-wireless/patch/20211023112407.26448-1-nbd@nbd.name/
+I guess/wonder if we should mark this as a fix for:
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+Fixes: dce5bd6140a4 ("xdp: export xdp_rxq_info_unreg_mem_model")
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+> ---
+>   net/core/xdp.c | 2 --
+>   1 file changed, 2 deletions(-)
+> 
+> diff --git a/net/core/xdp.c b/net/core/xdp.c
+> index cc92ccb38432..5ddc29f29bad 100644
+> --- a/net/core/xdp.c
+> +++ b/net/core/xdp.c
+> @@ -143,8 +143,6 @@ void xdp_rxq_info_unreg(struct xdp_rxq_info *xdp_rxq)
+>   	if (xdp_rxq->reg_state == REG_STATE_UNUSED)
+>   		return;
+>   
+> -	WARN(!(xdp_rxq->reg_state == REG_STATE_REGISTERED), "Driver BUG");
+> -
+>   	xdp_rxq_info_unreg_mem_model(xdp_rxq);
+>   
+>   	xdp_rxq->reg_state = REG_STATE_UNREGISTERED;
+> 
+
