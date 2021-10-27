@@ -2,125 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9064043CD7B
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 17:29:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E75443CD83
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 17:29:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237712AbhJ0PbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 11:31:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:60340 "EHLO
+        id S242757AbhJ0PcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 11:32:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:51090 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236313AbhJ0PbX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 11:31:23 -0400
+        by vger.kernel.org with ESMTP id S242747AbhJ0PcO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 11:32:14 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635348537;
+        s=mimecast20190719; t=1635348588;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+eOillqFEGpQrQ9kkKK0BfuXxzIsa8E5TGrBm3ktydM=;
-        b=LkDE2JqaHSuSSyHNl+0zw+FpXozocE3bBc6VfZ7aEfapIbTVtc5HBnMCq6yQZk15M14wWS
-        pj5E8q0DAN+pmvs5Uc1eAuOpTYoTezCKkRciAm0Hw8QkSGqwELRlJDAKJ+wI/SHfKyXmCe
-        5XnLZu+68vHxi4CNfM6Q2e1X7Z82Y4g=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-309-uGSWm2vpPR6xyxjMKqBMsA-1; Wed, 27 Oct 2021 11:28:56 -0400
-X-MC-Unique: uGSWm2vpPR6xyxjMKqBMsA-1
-Received: by mail-wm1-f70.google.com with SMTP id v18-20020a7bcb52000000b00322fea1d5b7so1311021wmj.9
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 08:28:55 -0700 (PDT)
+        bh=OyWc/N/hzZAc5JmBicW4mZo6NhyOujGkSJMtDUnE6+Q=;
+        b=RQUpaKvXjb2ZBR/k3/DHn+tJ9ypRSapO0w5b+jH2yjU2a/RlvPnsGK0UhMNP36ehKWW5sM
+        N5/zKbP/coMlIu2KW+4njWqxeV8kkrADamMrLmA/tMqUF8v5NqhoKsqzmFYIva7rgkPRuq
+        UfuDVxNo/aWgbu1zSi1jSDM2nohWFlA=
+Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com
+ [209.85.161.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-156-H57kN9FIOdCu6xGEKlvRBA-1; Wed, 27 Oct 2021 11:29:47 -0400
+X-MC-Unique: H57kN9FIOdCu6xGEKlvRBA-1
+Received: by mail-oo1-f69.google.com with SMTP id b3-20020a4aba03000000b002b8df79e81eso1311559oop.12
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 08:29:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+eOillqFEGpQrQ9kkKK0BfuXxzIsa8E5TGrBm3ktydM=;
-        b=WkfmrTRWadk4q1G3auLVzk5m7N6HmJBu6klYtzbFkRdICDjyDQwSmmWlByEU8zFffb
-         SD7AEIsBM/0usaidUoMYLNPk+HDxXEnYZcQT4DzlMPGKilhDnQMMjGPK13xhJ/T3GIPW
-         eQSw9c9bx0IZuNlB/84lfAJvD/Bmvs8Fmve6iSwhosq2WU+Mzj74VpsLiC8ALCUF9vHQ
-         CNuWQkiTVgt1ioyZVetdtNXoo28VgieVadPc2MYFBpd7aeAJ2IcVIeqyn3/+EuGRto1E
-         +NxPGWvSyoo1t0Meiv9/uhXMJ3r39NvN1Jpo8fZbQWWnGwlh2C/1o0Luw41OQrIPPRqe
-         cCuw==
-X-Gm-Message-State: AOAM53393dFJqt4zvZu8WkIxPgiMLul0jeHmn/ce4N7ppQgc/UASF/Zo
-        vdPc4ntn2m1r7KVve8qUI1idEt+H/Jt35uRwWAH0Ry0W4lq59Z/ogIXlZ50wkwHFjk0GTwwqLm8
-        iqhvGiIm57AwrLbPJ
-X-Received: by 2002:a1c:f614:: with SMTP id w20mr6399593wmc.71.1635348534961;
-        Wed, 27 Oct 2021 08:28:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx48Ekpj4clqe1b4A9LimmYmVc0qkpR7dH4dZiC/yCaw0YSOKIQftxe1BzKC6UMOGCBceazlw==
-X-Received: by 2002:a1c:f614:: with SMTP id w20mr6399567wmc.71.1635348534771;
-        Wed, 27 Oct 2021 08:28:54 -0700 (PDT)
-Received: from redhat.com ([2a03:c5c0:207e:a543:72f:c4d1:8911:6346])
-        by smtp.gmail.com with ESMTPSA id o10sm173398wrx.64.2021.10.27.08.28.50
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=OyWc/N/hzZAc5JmBicW4mZo6NhyOujGkSJMtDUnE6+Q=;
+        b=lTZ2NhVl8GHcOt5ktcRkDXdUJpLAWhxPXtV2plw18kxeuKhzdVRxtG3jmJ3tSuKrDg
+         2aBuVbUI7WXKykAmZbI+F1gQs5dJCuJAgLriZO+0VOrOpGjqulF0kIpxdya55bfF6bXx
+         nhvElHwpJeJRly7OB2gFb3lRxYrMX08ysUIUeQVuSigLEl7l7FwwPmHL/el7omkhco/r
+         cRTl/uZhLXEwR63bK85erlUh7OClVzQe54f/gtKJ5U9VaEGlDpp59OZ6vhnFYPuwCXxr
+         Le4OUCNUImYudfYk0s1wWiUQGtkK/bxwTTID4uNQ5sBxNDVacCAOLVLc7s1GVFcQUHP6
+         PHWQ==
+X-Gm-Message-State: AOAM532tTWDGeP+OFD6rpWtWqXzCci5yvekKKWKa4IZwkcOPo1xm398v
+        zy+Yn/KSO6FD9/tixo8RzDNSWFPYAD+IFmzYKBt7kDG1ALSIT0BDzz4l6g0G2xQOaSJC1oB2Ga0
+        BH6XRZJkRsqTJulXr
+X-Received: by 2002:aca:300e:: with SMTP id w14mr4210039oiw.178.1635348586499;
+        Wed, 27 Oct 2021 08:29:46 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyTxFcAgeuq1Diai3BB4irLIENGYdyXntO6d+LQ7ij4Nc5NGrTPvQBz87bd/efni4z/y288kg==
+X-Received: by 2002:aca:300e:: with SMTP id w14mr4210018oiw.178.1635348586264;
+        Wed, 27 Oct 2021 08:29:46 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id r14sm96409oiw.44.2021.10.27.08.29.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Oct 2021 08:28:54 -0700 (PDT)
-Date:   Wed, 27 Oct 2021 11:28:48 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     Laurent Vivier <lvivier@redhat.com>,
-        syzbot <syzbot+b86736b5935e0d25b446@syzkaller.appspotmail.com>,
-        davem@davemloft.net, herbert@gondor.apana.org.au, jiri@nvidia.com,
-        kuba@kernel.org, leonro@nvidia.com, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mpm@selenic.com,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] KASAN: slab-out-of-bounds Read in copy_data
-Message-ID: <20211027111300-mutt-send-email-mst@kernel.org>
-References: <000000000000a4cd2105cf441e76@google.com>
- <eab57f0e-d3c6-7619-97cc-9bc3a7a07219@redhat.com>
- <CACT4Y+amyT9dk-6iVqru-wQnotmwW=bt4VwaysgzjH9=PkxGww@mail.gmail.com>
+        Wed, 27 Oct 2021 08:29:45 -0700 (PDT)
+Date:   Wed, 27 Oct 2021 09:29:43 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com
+Subject: Re: [PATCH V4 mlx5-next 13/13] vfio/mlx5: Use its own PCI
+ reset_done error handler
+Message-ID: <20211027092943.4f95f220.alex.williamson@redhat.com>
+In-Reply-To: <20211026235002.GC2744544@nvidia.com>
+References: <20211026090605.91646-1-yishaih@nvidia.com>
+        <20211026090605.91646-14-yishaih@nvidia.com>
+        <20211026171644.41019161.alex.williamson@redhat.com>
+        <20211026235002.GC2744544@nvidia.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACT4Y+amyT9dk-6iVqru-wQnotmwW=bt4VwaysgzjH9=PkxGww@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 27, 2021 at 03:36:19PM +0200, Dmitry Vyukov wrote:
-> On Wed, 27 Oct 2021 at 15:11, Laurent Vivier <lvivier@redhat.com> wrote:
-> >
-> > On 26/10/2021 18:39, syzbot wrote:
-> > > Hello,
-> > >
-> > > syzbot found the following issue on:
-> > >
-> > > HEAD commit:    9ae1fbdeabd3 Add linux-next specific files for 20211025
-> > > git tree:       linux-next
-> > > console output: https://syzkaller.appspot.com/x/log.txt?x=1331363cb00000
-> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=aeb17e42bc109064
-> > > dashboard link: https://syzkaller.appspot.com/bug?extid=b86736b5935e0d25b446
-> > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=116ce954b00000
-> > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=132fcf62b00000
-> > >
-> > > The issue was bisected to:
-> > >
-> > > commit 22849b5ea5952d853547cc5e0651f34a246b2a4f
-> > > Author: Leon Romanovsky <leonro@nvidia.com>
-> > > Date:   Thu Oct 21 14:16:14 2021 +0000
-> > >
-> > >      devlink: Remove not-executed trap policer notifications
-> > >
-> > > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=137d8bfcb00000
-> > > final oops:     https://syzkaller.appspot.com/x/report.txt?x=10fd8bfcb00000
-> > > console output: https://syzkaller.appspot.com/x/log.txt?x=177d8bfcb00000
-> > >
-> > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > > Reported-by: syzbot+b86736b5935e0d25b446@syzkaller.appspotmail.com
-> > > Fixes: 22849b5ea595 ("devlink: Remove not-executed trap policer notifications")
-> > >
-> > > ==================================================================
-> > > BUG: KASAN: slab-out-of-bounds in memcpy include/linux/fortify-string.h:225 [inline]
-> > > BUG: KASAN: slab-out-of-bounds in copy_data+0xf3/0x2e0 drivers/char/hw_random/virtio-rng.c:68
-> > > Read of size 64 at addr ffff88801a7a1580 by task syz-executor989/6542
-> > >
-> >
-> > I'm not able to reproduce the problem with next-20211026 and the C reproducer.
-> >
-> > And reviewing the code in copy_data() I don't see any issue.
-> >
-> > Is it possible to know what it the VM configuration used to test it?
-> 
-> Hi Laurent,
-> 
-> syzbot used e2-standard-2 GCE VM when that happened.
-> You can see some info about these VMs under the "VM info" link on the dashboard.
+On Tue, 26 Oct 2021 20:50:02 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-Could you pls confirm whether reverting
-caaf2874ba27b92bca6f0298bf88bad94067ec37 addresses this?
+> On Tue, Oct 26, 2021 at 05:16:44PM -0600, Alex Williamson wrote:
+> > > @@ -471,6 +474,47 @@ mlx5vf_pci_migration_data_rw(struct mlx5vf_pci_core_device *mvdev,
+> > >  	return count;
+> > >  }
+> > >  
+> > > +/* This function is called in all state_mutex unlock cases to
+> > > + * handle a 'defered_reset' if exists.
+> > > + */  
+> > 
+> > I refrained from noting it elsewhere, but we're not in net/ or
+> > drivers/net/ here, but we're using their multi-line comment style.  Are
+> > we using the strong relation to a driver that does belong there as
+> > justification for the style here?  
+> 
+> I think it is an oversight, tell Yishai you prefer the other format in
+> drivers/vfio and it can be fixed
+
+Seems fixed in the new version.
+
+> > > @@ -539,7 +583,7 @@ static ssize_t mlx5vf_pci_mig_rw(struct vfio_pci_core_device *vdev,
+> > >  	}
+> > >  
+> > >  end:
+> > > -	mutex_unlock(&mvdev->state_mutex);
+> > > +	mlx5vf_state_mutex_unlock(mvdev);  
+> > 
+> > I'm a little lost here, if the operation was to read the device_state
+> > and mvdev->vmig.vfio_dev_state was error, that's already been copied to
+> > the user buffer, so the user continues to see the error state for the
+> > first read of device_state after reset if they encounter this race?  
+> 
+> Yes. If the userspace races ioctls they get a deserved mess.
+> 
+> This race exists no matter what we do, as soon as the unlock happens a
+> racing reset ioctl could run in during the system call exit path.
+> 
+> The purpose of the locking is to protect the kernel from hostile
+> userspace, not to allow userspace to execute concurrent ioctl's in a
+> sensible way.
+
+The reset_done handler sets deferred_reset = true and if it's possible
+to get the state_mutex, will reset migration data and device_state as
+part of releasing that mutex.  If there's contention on state_mutex,
+the deferred_reset field flags that this migration state is still stale.
+
+So, I assume that it's possible that a user resets the device via ioctl
+or config space, there was contention and the migration state is still
+stale, right?
+
+The user then goes to read device_state, but the staleness of the
+migration state is not resolved until *after* the stale device state is
+copied to the user buffer.
+
+What did the user do wrong to see stale data?  Thanks,
+
+Alex
 
