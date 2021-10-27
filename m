@@ -2,77 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD69143C964
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 14:16:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5F5943C96F
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 14:18:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241855AbhJ0MSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 08:18:50 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:13982 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241859AbhJ0MSs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 08:18:48 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HfSKh3wW8zZcNK;
-        Wed, 27 Oct 2021 20:14:16 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Wed, 27 Oct 2021 20:16:12 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Wed, 27 Oct 2021 20:16:11 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <wangjie125@huawei.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
-        <chenhao288@hisilicon.com>
-Subject: [PATCH net 7/7] net: hns3: adjust string spaces of some parameters of tx bd info in debugfs
-Date:   Wed, 27 Oct 2021 20:11:49 +0800
-Message-ID: <20211027121149.45897-8-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211027121149.45897-1-huangguangbin2@huawei.com>
-References: <20211027121149.45897-1-huangguangbin2@huawei.com>
+        id S239981AbhJ0MVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 08:21:09 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33448 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230420AbhJ0MVJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Oct 2021 08:21:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=udb9s9/cYXbcm69eAqcs913SY67o0SZViIAg9zwP/zg=; b=uWfDEfJ0HNrPazm9xfaSJLH8C5
+        50GrenS10dQHmzvNw3AjeeC6WYFcA3dV0beuRKtflgwfgxY/EDq/KugUcsToGNkbgqFpojmFpe98f
+        ZKAPwvN8vNHi3ACE6JPZwWWde3eH4UQ3o0abvFAdWow5BQJbXaRbjDzeqW0pW9RrGFfk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mfht6-00BtZR-8y; Wed, 27 Oct 2021 14:18:36 +0200
+Date:   Wed, 27 Oct 2021 14:18:36 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ariel Elior <aelior@marvell.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Manish Chopra <manishc@marvell.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        Sudarsana Reddy Kalluru <skalluru@marvell.com>,
+        "malin1024@gmail.com" <malin1024@gmail.com>,
+        Shai Malin <smalin@marvell.com>,
+        Omkar Kulkarni <okulkarni@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>
+Subject: Re: [EXT] Re: [PATCH net-next 1/2] bnx2x: Utilize firmware 7.13.20.0
+Message-ID: <YXlDnCZIlVl1Etgs@lunn.ch>
+References: <20211026193717.2657-1-manishc@marvell.com>
+ <20211026140759.77dd8818@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <PH0PR18MB465598CDD29377C300C3184CC4859@PH0PR18MB4655.namprd18.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PH0PR18MB465598CDD29377C300C3184CC4859@PH0PR18MB4655.namprd18.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adjusts the string spaces of some parameters of tx bd info in
-debugfs according to their maximum needs.
+> > ----------------------------------------------------------------------
+> > On Tue, 26 Oct 2021 12:37:16 -0700 Manish Chopra wrote:
+> > > Commit 0050dcf3e848 ("bnx2x: Add FW 7.13.20.0") added a new .bin
+> > > firmware file to linux-firmware.git tree. This new firmware addresses
+> > > few important issues and enhancements as mentioned below -
+> > >
+> > > - Support direct invalidation of FP HSI Ver per function ID, required for
+> > >   invalidating FP HSI Ver prior to each VF start, as there is no VF
+> > > start
+> > > - BRB hardware block parity error detection support for the driver
+> > > - Fix the FCOE underrun flow
+> > > - Fix PSOD during FCoE BFS over the NIC ports after preboot driver
+> > >
+> > > This patch incorporates this new firmware 7.13.20.0 in bnx2x driver.
+> > 
+> > How is this expected to work? Your drivers seems to select a very specific FW
+> > version:
+> > 
+> > 	/* Check FW version */
+> > 	offset = be32_to_cpu(fw_hdr->fw_version.offset);
+> > 	fw_ver = firmware->data + offset;
+> > 	if ((fw_ver[0] != BCM_5710_FW_MAJOR_VERSION) ||
+> > 	    (fw_ver[1] != BCM_5710_FW_MINOR_VERSION) ||
+> > 	    (fw_ver[2] != BCM_5710_FW_REVISION_VERSION) ||
+> > 	    (fw_ver[3] != BCM_5710_FW_ENGINEERING_VERSION)) {
+> > 		BNX2X_ERR("Bad FW version:%d.%d.%d.%d. Should be
+> > %d.%d.%d.%d\n",
+> > 		       fw_ver[0], fw_ver[1], fw_ver[2], fw_ver[3],
+> > 		       BCM_5710_FW_MAJOR_VERSION,
+> > 		       BCM_5710_FW_MINOR_VERSION,
+> > 		       BCM_5710_FW_REVISION_VERSION,
+> > 		       BCM_5710_FW_ENGINEERING_VERSION);
+> > 		return -EINVAL;
+> > 	}
+> > 
+> > so this change has a dependency on user updating their /lib/firmware.
+> > 
+> > Is it really okay to break the systems for people who do not have that FW
+> > version with a stable backport?
+> > 
+> > Greg, do you have general guidance for this or is it subsystem by subsystem?
 
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+I have been pushing back on a similar change for the Marvell Prestera
+driver, which also loads the firmware from /lib/firmware and they are
+proposing to break the ABI to the firmware, and not support older
+version.
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-index f2ade0446208..e54f96251fea 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-@@ -790,13 +790,13 @@ static int hns3_dbg_rx_bd_info(struct hns3_dbg_data *d, char *buf, int len)
- }
- 
- static const struct hns3_dbg_item tx_bd_info_items[] = {
--	{ "BD_IDX", 5 },
--	{ "ADDRESS", 2 },
-+	{ "BD_IDX", 2 },
-+	{ "ADDRESS", 13 },
- 	{ "VLAN_TAG", 2 },
- 	{ "SIZE", 2 },
- 	{ "T_CS_VLAN_TSO", 2 },
- 	{ "OT_VLAN_TAG", 3 },
--	{ "TV", 2 },
-+	{ "TV", 5 },
- 	{ "OLT_VLAN_LEN", 2 },
- 	{ "PAYLEN_OL4CS", 2 },
- 	{ "BD_FE_SC_VLD", 2 },
--- 
-2.33.0
+I don't like this. As Jakub points out, you are going to break systems
+which don't update the firmware and the kernel at the same time. I
+really would prefer you support two versions of the firmware, and
+detect what features it supports to runtime.
 
+	Andrew
