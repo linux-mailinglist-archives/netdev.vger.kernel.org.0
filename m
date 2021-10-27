@@ -2,70 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F258C43CD18
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 17:08:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F12C143CD19
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 17:08:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237762AbhJ0PKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 11:10:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60280 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234640AbhJ0PKk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Oct 2021 11:10:40 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 96DEB60F5A;
-        Wed, 27 Oct 2021 15:08:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635347294;
-        bh=7r3u1uaz8DQg8Ts4xPCGL1lYvyrZyANmuMHQEBtft0M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Y4qAPrzl5n/Ffy+zOSUr0lxtxdj/W5tka65XNN0yriIlWFE9AuYGMEOCE9hncX9M+
-         6k1MLNO6km00X0FlYN4U02X8e1HSieWZKzyxZYDDBMePikWT8ARoAkrJItCYSgyaZf
-         bQV51RYEXOwGpC+OUA8tya+r0dxSmK5XfQHqeqWMTgfm5YIXDUX1AC8vIrdHIfWUqZ
-         tIh/ubab47629IA+Zt1p6dbhbSUg1cMSdNK5uBSgxV10c3kjLVc0zKsuv0RQRJkBdY
-         dncalRGplTQe4SkzsKvv0xX9+r2F5NIB+lVNgUcjuFp1hT9h/zLVuen7SQE7YgsVEx
-         F6+p5xJDZY26w==
-Date:   Wed, 27 Oct 2021 08:08:13 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Karsten Graul <kgraul@linux.ibm.com>
-Cc:     Tony Lu <tonylu@linux.alibaba.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-rdma@vger.kernel.org, jacob.qi@linux.alibaba.com,
-        xuanzhuo@linux.alibaba.com, guwen@linux.alibaba.com,
-        dust.li@linux.alibaba.com
-Subject: Re: [PATCH net 1/4] Revert "net/smc: don't wait for send buffer
- space when data was already sent"
-Message-ID: <20211027080813.238b82ce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <9bbd05ac-5fa5-7d7a-fe69-e7e072ccd1ab@linux.ibm.com>
-References: <20211027085208.16048-1-tonylu@linux.alibaba.com>
-        <20211027085208.16048-2-tonylu@linux.alibaba.com>
-        <9bbd05ac-5fa5-7d7a-fe69-e7e072ccd1ab@linux.ibm.com>
+        id S234640AbhJ0PKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 11:10:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53256 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236431AbhJ0PKz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 11:10:55 -0400
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8E52C061570
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 08:08:29 -0700 (PDT)
+Received: by mail-oi1-x22f.google.com with SMTP id r6so3866704oiw.2
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 08:08:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=1D/IWeLjOYONtbXts4yy8JSU/zm/hOaOqp5yldl8Kh4=;
+        b=K8vU1zoum9As+xhsIyjjwW9ThdWKZg9dm0oZwc7fFo2dtpfxS8QE1HUlGJfC5ZO6bV
+         5cPLC5+B4+qHmxOlwpoHhxYgDy0ujav4oNojvtJendQBSmph4PuWD5uQZsmC1D3XEe0D
+         XRd6xD6HwNFYQp4ztiXwJVpIXEC9MNbQnBYR9w9hfGccDwlCUIXHyFDfS2tuPXyQFE9G
+         Veam1tjvDgDT7rZkW8vjMjIyqh6U9/8F6kzpKympkQy81iiTLIfG7ydrIZLS8Cyt7MZ+
+         pJlm9pseY+EMb/bGOs+JewIzLUKeoSb0k16Dy7tGS4fTW+LCpEPcwPkwdjaWEhqQ34MF
+         qE0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=1D/IWeLjOYONtbXts4yy8JSU/zm/hOaOqp5yldl8Kh4=;
+        b=okZDLQ1uMgTgORXIMFlzrQ5H2wGsXFf3qpQussFToEemTivbV1ug3vWXttiJZl5yEm
+         MxTds2qBdrUaT6mbI1P7SnCAjU3jQsDREAePorqEvM3WqSd63lLg9DiszH3fUKDMSauf
+         s8/GSJNxvTdmyaM/fncZH4wsk9cDlPy7o9eazgsWACXU3ETKoEVbmPAhlV0Y5njYfvB9
+         hp1xn6aaHZec1VqmRKBpjGqi3NTSuA9kLyRRUz17D9e6tuu6xUoDnJ9w8sgn7Kzv0h7l
+         KC2xg+FNS6ERdSsqpX75+2HKD6XFME72f5WlJiVsm/c0KmAPuQue9jU1v40tl1ivn1d7
+         0eYA==
+X-Gm-Message-State: AOAM533xwgYoeDB8HU12DopCuK/tr20t0zy+GT4JpNc2NA75kapOXhrH
+        MpRVb12UuJr++6PYadhrqXGntZY798Y=
+X-Google-Smtp-Source: ABdhPJyPWUsJQnLJ9IB1clqTOPCIPkmjxYTBl31rkmS1YAk+YxhAVtAlYH372AuV/RvCA3qQEdAWfg==
+X-Received: by 2002:a54:4688:: with SMTP id k8mr4069403oic.70.1635347309290;
+        Wed, 27 Oct 2021 08:08:29 -0700 (PDT)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id bb13sm110790oob.21.2021.10.27.08.08.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Oct 2021 08:08:28 -0700 (PDT)
+Message-ID: <f9f4dbfa-81aa-f88f-3e06-bd29acc25b19@gmail.com>
+Date:   Wed, 27 Oct 2021 09:08:27 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.2.1
+Subject: Re: [PATCH net-next 3/4 v4] amt: add multicast(IGMP) report message
+ handler
+Content-Language: en-US
+To:     Taehee Yoo <ap420073@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, dsahern@kernel.org, netdev@vger.kernel.org
+Cc:     dkirjanov@suse.de
+References: <20211026151016.25997-1-ap420073@gmail.com>
+ <20211026151016.25997-4-ap420073@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20211026151016.25997-4-ap420073@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 Oct 2021 12:21:32 +0200 Karsten Graul wrote:
-> On 27/10/2021 10:52, Tony Lu wrote:
-> > From: Tony Lu <tony.ly@linux.alibaba.com>
-> > 
-> > This reverts commit 6889b36da78a21a312d8b462c1fa25a03c2ff192.
-> > 
-> > When using SMC to replace TCP, some userspace applications like netperf
-> > don't check the return code of send syscall correctly, which means how
-> > many bytes are sent. If rc of send() is smaller than expected, it should
-> > try to send again, instead of exit directly. It is difficult to change
-> > the uncorrect behaviors of userspace applications, so choose to revert it.  
-> 
-> Your change would restore the old behavior to handle all sockets like they 
-> are blocking sockets, trying forever to send the provided data bytes.
-> This is not how it should work.
+On 10/26/21 9:10 AM, Taehee Yoo wrote:
+> +static bool amt_status_filter(struct amt_source_node *snode,
+> +			      enum amt_filter filter)
+> +{
 
-Isn't the application supposed to make the socket non-blocking or
-pass MSG_DONTWAIT if it doesn't want to sleep? It's unclear why 
-the fix was needed in the first place.
- 
-> We encountered the same issue with netperf, but this is the only 'broken'
-> application that we know of so far which does not implement the socket API
-> correctly.
+How about:
+	bool rc = false;
+
+and then
+
+> +	switch (filter) {
+> +	case AMT_FILTER_FWD:
+> +		if (snode->status == AMT_SOURCE_STATUS_FWD &&
+> +		    snode->flags == AMT_SOURCE_OLD)
+> +			rc = true;
+> +		break;
+similar change for the rest of the cases.
+
+> +	case AMT_FILTER_D_FWD:
+> +		if (snode->status == AMT_SOURCE_STATUS_D_FWD &&
+> +		    snode->flags == AMT_SOURCE_OLD)
+> +			return true;
+> +		else
+> +			return false;
+> +	case AMT_FILTER_FWD_NEW:
+> +		if (snode->status == AMT_SOURCE_STATUS_FWD &&
+> +		    snode->flags == AMT_SOURCE_NEW)
+> +			return true;
+> +		else
+> +			return false;
+> +	case AMT_FILTER_D_FWD_NEW:
+> +		if (snode->status == AMT_SOURCE_STATUS_D_FWD &&
+> +		    snode->flags == AMT_SOURCE_NEW)
+> +			return true;
+> +		else
+> +			return false;
+> +	case AMT_FILTER_ALL:
+> +		return true;
+> +	case AMT_FILTER_NONE_NEW:
+> +		if (snode->status == AMT_SOURCE_STATUS_NONE &&
+> +		    snode->flags == AMT_SOURCE_NEW)
+> +			return true;
+> +		else
+> +			return false;
+> +	case AMT_FILTER_BOTH:
+> +		if ((snode->status == AMT_SOURCE_STATUS_D_FWD ||
+> +		     snode->status == AMT_SOURCE_STATUS_FWD) &&
+> +		    snode->flags == AMT_SOURCE_OLD)
+> +			return true;
+> +		else
+> +			return false;
+> +	case AMT_FILTER_BOTH_NEW:
+> +		if ((snode->status == AMT_SOURCE_STATUS_D_FWD ||
+> +		     snode->status == AMT_SOURCE_STATUS_FWD) &&
+> +		    snode->flags == AMT_SOURCE_NEW)
+> +			return true;
+> +		else
+> +			return false;
+> +	default:
+> +		return false;
+> +	}
+> +
+> +	return false;
+> +}
+> +
+
+
+> +
+> +/* If a source timer expires with a router filter-mode for the group of
+> + * INCLUDE, the router concludes that traffic from this particular
+> + * source is no longer desired on the attached network, and deletes the
+> + * associated source record.
+> + */
+> +static void amt_source_work(struct work_struct *work)
+> +{
+> +	struct amt_source_node *snode = container_of(to_delayed_work(work),
+> +						     struct amt_source_node,
+> +						     source_timer);
+> +	struct amt_group_node *gnode = snode->gnode;
+> +	struct amt_dev *amt = gnode->amt;
+> +	struct amt_tunnel_list *tunnel;
+> +
+> +	tunnel = gnode->tunnel_list;
+> +	spin_lock_bh(&tunnel->lock);
+> +	rcu_read_lock();
+> +	if (gnode->filter_mode == MCAST_INCLUDE) {
+> +		amt_destroy_source(snode);
+> +		if (!gnode->nr_sources)
+> +			amt_del_group(amt, gnode);
+> +	} else {
+> +/* When a router filter-mode for a group is EXCLUDE, source records are
+> + * only deleted when the group timer expires
+> + */
+
+comment needs to be indented.
+
+> +		snode->status = AMT_SOURCE_STATUS_D_FWD;
+> +	}
+> +	rcu_read_unlock();
+> +	spin_unlock_bh(&tunnel->lock);
+> +}
+> +
+
 
