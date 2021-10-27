@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2D0B43D629
+	by mail.lfdr.de (Postfix) with ESMTP id 8F18A43D628
 	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 00:00:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229891AbhJ0WC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S229888AbhJ0WC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 27 Oct 2021 18:02:27 -0400
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:37792 "EHLO
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:39178 "EHLO
         mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229830AbhJ0WC0 (ORCPT
+        by vger.kernel.org with ESMTP id S229879AbhJ0WC0 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 18:02:26 -0400
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19RKWVBr028933;
-        Wed, 27 Oct 2021 21:59:39 GMT
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19RKcYu5004983;
+        Wed, 27 Oct 2021 21:59:40 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : content-transfer-encoding : content-type :
- mime-version; s=corp-2021-07-09;
- bh=cLH/fEZDRGa1Ssej5YhuVGwi//eD5IH6a6cU91dxRqc=;
- b=j2dUYE1a1uRt4ubUTtE1Ru/cBOVqGX7xEDopOvmoIPCYpx27q5gEjwazGm78J981o50I
- CdXY01pJa4fmnjZcmOtxoQ/orQMIYgvKfWYvlZGT9N3RVPoxg+NRk+7Y1KVbeZ0Tfu5I
- H0rbEpuwX+GOgNKRd4sS+ZYc8H4rTto9ShIu4ldLf0y9tXLOsctjZy98i7J0gj7ldw33
- LKeh6L8BwjN+b/ij/0ztjQrZ4rr3FYHxZQOE/+/vPzEBSgzKVkMmDScMirn28cc/Aay9
- Ya4pBtX8L8ryf2u2go1rEr3oATu7kPBbPHzwZTw2xWYalked9tVG1I8CoNw3GSPTpbcJ Sg== 
+ subject : date : message-id : in-reply-to : references :
+ content-transfer-encoding : content-type : mime-version;
+ s=corp-2021-07-09; bh=a9tt8manzyL+GgYKLD3HxypH0YHYkEsUdFSUa/VZLyQ=;
+ b=qJfN1/+QPjIjyqBj8NV8zgCqRbL9O2WFyLOGRfGmWe24cXDuCbleZkJl3k6uzwLVErRk
+ NiQST9BbfE7TtJkF/iofrN7mnoTkm/sYxNYS9pG07jv/2oEmPNGFpYz5wfYu1Wc57iaY
+ QXgcQsE/b21u1zHhTMDUHkV+F0Cb/HeKiJSTvUBAoRH+St3myRpa2z4Z5sfhjXPmvpg2
+ E0wA9lX5kI5Wedj0qI0Puozi92gFTW+5WRjHAQl5Tve6RV0g/iI5n58yVCkvlzwMCUjO
+ /HgoEvkDsbVCig5oUilp2kZpx8LTQinui1iFwgbtKmM/fscwErDmsE95W2yKm8zET22W 4A== 
 Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3bx4fjnxgb-1
+        by mx0b-00069f02.pphosted.com with ESMTP id 3bx4fj5vfd-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
         Wed, 27 Oct 2021 21:59:39 +0000
 Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 19RLtJdM084040;
-        Wed, 27 Oct 2021 21:59:38 GMT
+        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 19RLtJdN084040;
+        Wed, 27 Oct 2021 21:59:39 GMT
 Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam08lp2173.outbound.protection.outlook.com [104.47.73.173])
-        by aserp3030.oracle.com with ESMTP id 3bx4gaktjs-1
+        by aserp3030.oracle.com with ESMTP id 3bx4gaktjs-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
         Wed, 27 Oct 2021 21:59:38 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F/aLsOoVOYJ4RxeqIcXRv2ODis1WZYCRC60WMfJaY27/XAotxfv0hNcc3raHyK+ruqC1bacBWybmajhO6cAYixixMcINmv4epPimgy/rJ8XCmgCPIXBjgNbloUucm4pkX1BcvBlE5AA+ITu862LM95zHMPnAwufnrVxfoZ2UNAfg3SiEtKBMejnZ8MQb+tKhuMbYhTevYAITCZFw/Y3Jng3OMczXoA/id3dlfcI3AzurZieDrWBT34L4GFxmvYl5bsk8wwZOl3Daz/f0alFOyUPmQ8ZephIuCn+C/drUf7FCDe+Bm4V4AcWYDCFeWSGy7tiiXprT7eT7kIuiCjthWQ==
+ b=kthla5eW22AXUwtTeuYfMDVoTw7Eu52LFRsGCxvk2cpduBqQj+a8iSnbTCA99YZ35eMZvcGqoBAfIecIRVFIQ5DPVhpL9MSBttuLuwZAMPtvXtRfmNxTD64l7btiUl/vxk6R4dsyj6VFEJUWnayyzGPWADKEuM4IgHKtHiTodTmWuupHZCUavvkvDyDWzwY4SJDq8spsAnlk9jUraVsS0IBJqLvnOxOYLpP8vxA8SXEONEC8ioTfU0WSYBzJrcXeHbHxfaLL14CUHxs1iiMy3Ufnxs6EmGsSqxUlgpLJZEDm+fqaXHvbSE+oBion6mBscCW9EB1wWj4RQq3FBk3Rig==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cLH/fEZDRGa1Ssej5YhuVGwi//eD5IH6a6cU91dxRqc=;
- b=im5iZDdnRq93vCeOBZZpEM7edpraHZG9UrJ5d9jhKzyVrG3AXLnFYtgvHUBhr3YoKC3cKyx4r9ZIfpzSa6J0OHFGtakJ2sT7fgB9e+e/2uyLY6+MAQm6Wfvy826ldxvmBVYc6mkbWPutdpfiXLjTB9+z8wD8/p7KdGJnn7yJsxNeoU+ArDSWtcapOEmGRqr5xyY8BaIoMPf7RmiiYjnHFUycdtIt4bWHCjm0EZkHME2E9OUtV8aj7ySU8ZQsd8bxr/aEHHXPlQ61nU2AcP+IFUln/NVWhpQg3PAoJUjKU+iZoNCeTKCt+52bgjZDpdbhTPkGw7tShB3KBJQEpZ8RUw==
+ bh=a9tt8manzyL+GgYKLD3HxypH0YHYkEsUdFSUa/VZLyQ=;
+ b=PxAw1YBShxHZUXDd5SrbcxTL3U4oAoJyI9tBPOOxlZM9mVeLhrSWw8myzjmKJgz65OobcvAgQZyH2vcyP3LVlNBWSLVhiS0SIGAr1R+Oqy5o6EpSFXuh8q1WgI6pu0VvP3lMO9t0pv7lHqmDE51bpdsW/iqGxaQYLJzr6GZ3PSys+JEqR9CGv9Kz/qEV50u1QzrhCw0ASuP9PN90BJvnQFZYOlJ48LUA/LffVMHsn+88vD3ybcL526Ka10ayQj4CvJhF/zNYQiAC7Jrw2VPb66s26uRuUF7KO2RxbZxBMCliivasWAOJ7E+3re/TFxN8ZR8LXzpWfKsGOLsNOk9ozw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cLH/fEZDRGa1Ssej5YhuVGwi//eD5IH6a6cU91dxRqc=;
- b=s+YV23zECLI/U+aWPpzGEnr5dTAeY52OkDOkhwaA7JZ5t8ucbzAswosrfm3nvii33LAMimlJ59OiLxhcL736pGw8p4ywYqLXsPx9bjouXpmmVcTdJOZvhMoGuOuDY5nMNP9rdc4tok+AXQ8h/8HCaz4V8xdATw1Y000u5dnNWG4=
+ bh=a9tt8manzyL+GgYKLD3HxypH0YHYkEsUdFSUa/VZLyQ=;
+ b=yD5aglFOotfaA9U41uz4Y4s7fJBUuerrWpDuenG4RL2vuTxJJSeFhW8CqMq0gf6GE1tLhsocBA1YjDyOgGciqdT4zzpeBGX7rU9VwJTP2W3ePr/hSoh6rYXW5ZvlQyzGOAayOfqz0fnVTOSfhSp0Mjvv7pA5gYYf1OQumYnF1Ug=
 Authentication-Results: nvidia.com; dkim=none (message not signed)
  header.d=none;nvidia.com; dmarc=none action=none header.from=oracle.com;
 Received: from BYAPR10MB2966.namprd10.prod.outlook.com (2603:10b6:a03:8c::27)
  by SJ0PR10MB4558.namprd10.prod.outlook.com (2603:10b6:a03:2d8::6) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18; Wed, 27 Oct
- 2021 21:59:36 +0000
+ 2021 21:59:37 +0000
 Received: from BYAPR10MB2966.namprd10.prod.outlook.com
  ([fe80::938:e546:a29a:7f03]) by BYAPR10MB2966.namprd10.prod.outlook.com
  ([fe80::938:e546:a29a:7f03%6]) with mapi id 15.20.4628.020; Wed, 27 Oct 2021
- 21:59:36 +0000
+ 21:59:37 +0000
 From:   Daniel Jordan <daniel.m.jordan@oracle.com>
 To:     Boris Pismenny <borisp@nvidia.com>,
         John Fastabend <john.fastabend@gmail.com>,
@@ -69,214 +69,104 @@ To:     Boris Pismenny <borisp@nvidia.com>,
         Dave Watson <davejwatson@fb.com>,
         Vakul Garg <vakul.garg@nxp.com>
 Cc:     netdev@vger.kernel.org, Daniel Jordan <daniel.m.jordan@oracle.com>
-Subject: [PATCH net v2 1/2] net/tls: Fix flipped sign in tls_err_abort() calls
-Date:   Wed, 27 Oct 2021 17:59:20 -0400
-Message-Id: <20211027215921.1187090-1-daniel.m.jordan@oracle.com>
+Subject: [PATCH net v2 2/2] net/tls: Fix flipped sign in async_wait.err assignment
+Date:   Wed, 27 Oct 2021 17:59:21 -0400
+Message-Id: <20211027215921.1187090-2-daniel.m.jordan@oracle.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20211027215921.1187090-1-daniel.m.jordan@oracle.com>
+References: <20211027215921.1187090-1-daniel.m.jordan@oracle.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: BL1PR13CA0386.namprd13.prod.outlook.com
  (2603:10b6:208:2c0::31) To BYAPR10MB2966.namprd10.prod.outlook.com
  (2603:10b6:a03:8c::27)
 MIME-Version: 1.0
-Received: from localhost.localdomain (98.229.125.203) by BL1PR13CA0386.namprd13.prod.outlook.com (2603:10b6:208:2c0::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.11 via Frontend Transport; Wed, 27 Oct 2021 21:59:34 +0000
+Received: from localhost.localdomain (98.229.125.203) by BL1PR13CA0386.namprd13.prod.outlook.com (2603:10b6:208:2c0::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.11 via Frontend Transport; Wed, 27 Oct 2021 21:59:36 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7565acfb-5ec6-4db0-e2d1-08d999951095
+X-MS-Office365-Filtering-Correlation-Id: 531d770a-bc6b-4684-e902-08d9999511b2
 X-MS-TrafficTypeDiagnostic: SJ0PR10MB4558:
-X-Microsoft-Antispam-PRVS: <SJ0PR10MB45584E71C72B7BB0049BB810D9859@SJ0PR10MB4558.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:820;
+X-Microsoft-Antispam-PRVS: <SJ0PR10MB4558F5FBB512E75FEABF253ED9859@SJ0PR10MB4558.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: IUSb1VP+yVwt+0SwG9PCdZrDkLpgfgz4unYWkVE2/qog06kag5duOcD1aIzCUX+mYZrU3lervksUSONVWwa15v7oMY7WEqzaWOGdiL5BxmUAg6j3Jo2JzWfCUR2tuQZwOCCO9hFI8CyWeJxLQT+CIn45ygxAYcK0VSkcYaNEAsxvsVkVKIGcUUHYMsh12AGskPdaUJUU3LBnz/3lfPUt9fVeDub2zYWxFbty7RdF7tOjJPaxzAv6v+mQjOrfkYu2RRA6e5ftIUbESU6JxoSZHUVhO1aA8m81ffkhE2GCjPz6CgyYkIdQ7RTNjGJt95Bjr7QHahXuQEImYlheXLTTBej/DrqF1v8YjPivR7d7T/e1qUfYf/z1cFCNVf2Q7Juv9eBvNdj/M/Hc3FhFAOj5peNIXqxezDMhyYYRPtuJZLcqnf/cii5Ld2c6S3vyE07CuSgN9qgBBavaTrtZpGliFG8mv0J74+qMoaPBM7VjMKG/RRaqSZxQx1J8YWeABRXNaVErQil+zl5mmcmU9a8VVUdEAn0iJ/gNL5y7xz6vWhQ8UDasa59X/DCVDIwT+acGCv7yLVvln5Owrc/82tPr3fmpPa4jHHIXXWmsbWcq1eUZ9F7o0uajqQjfXQWQHZv/ShNoYbY5weSQ+ursdian05+zSKuIf4ZLVPzcdvYLPCrWjIWq8jjuW/dAQatU6POENhyFkfKZU24whAsUbwHClA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB2966.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(186003)(956004)(4326008)(6512007)(26005)(66476007)(83380400001)(6486002)(52116002)(5660300002)(6506007)(36756003)(2616005)(1076003)(107886003)(38100700002)(66556008)(66946007)(2906002)(316002)(8676002)(110136005)(6666004)(38350700002)(103116003)(86362001)(8936002)(508600001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: CnBOKqvbQqTPpD8AaldAl56FyxwoMw5AOpAJ0M3WxNClkh+cocGKw/4K1488sRryJgsE7ar7QI1VIzd/j2JNDZg1zbD3cjpk5dA8AR/R0mf8Zm5YsnIKptbMkpkZS/5l2koy+O+5qUZO+VCj/ONms7dGPBUVIu1QXLbG5WvEc4bAUWI9Ovv2oQUYw0NHZu2OxdGN3rERDG4muduBAKTlaOhbBWALx3lfbDtQ8VQCuH0mofH4YdKnUo8LreCq2afEovMZJQhoXobpeN9mbKvmMykTz6sVwgHRkAHHYsnS+KLff3e5xFP262jAMSqsHIqdze5sQ5gAobq/7hilZ1LL9GXD2i4iAUfvRANkmqg2n6+2aUJ+tQTkU9vFzejQfShW3birwRhhFyHDy9es3zaeU+njetQ87gA7bKdzeeFCZf6fXIa0BjqOWvxY6d4k2vSXuT3km4yxYdEw6Z2rftB9o5KKHdq64sVNZy0MA6ivD8oo+PSUXgVrzS1JTyylSrOJUuMWsPNiADx2HhZXM7X9B8vRrWW/Gg5NIRk9btVToKt0fQL9GoGHFIR6gde21cJ3ZNSspKPOJm1yakOMe6CmZX8O//ktVC0Wxf+gzSAmrU+DjUQuZ2PxHpSY5IygST7GVBDn0+z6VsG7Xlm1604JTivGOyo6n0tvq9WNCatLUPJctHeWp3cpDiPq+/RMMFq9uahqjN2QRfZqbzKayr/HNg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB2966.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(186003)(956004)(4744005)(4326008)(6512007)(26005)(66476007)(83380400001)(6486002)(52116002)(5660300002)(6506007)(36756003)(2616005)(1076003)(107886003)(38100700002)(66556008)(66946007)(2906002)(316002)(8676002)(110136005)(6666004)(38350700002)(103116003)(86362001)(8936002)(508600001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?21Avb6JW/FXL7ikUNvzLQzXxO1rsAhjgTJBcOeUjz86Ifhka1X5NdcULKD4R?=
- =?us-ascii?Q?m6jqWeI7xMwmANSR0yyUxOPjTgplwS7fKaS4GGol7eSdTLj2Hsqpo96EFGnv?=
- =?us-ascii?Q?BaI7weq6ezP5sT5vCsTJizUKPdWMiU/LNv8IbInynVLklprE7erRbVps2qyt?=
- =?us-ascii?Q?JBh4RncyhgWxlv85UqiGFJF13clz4qvJHWsvcvX376n+geMdowywIU8Elh4/?=
- =?us-ascii?Q?WiS+6K5d3nrYNjcBPEePXxz4G7ye9NkLjENymv8cji/3B+OpN5tiPfM3F7Of?=
- =?us-ascii?Q?w3BMbKT6zWGw4iEeZI+iqaoRjpTEo8fzRBvbEBb8ygsQjGw3uLbcgfIoKW+F?=
- =?us-ascii?Q?a+vEuVuXLxlkSJdfOvhLpO42m+pTymC+RU3SRRXYFabqbkpI0J9dk0hoLWaS?=
- =?us-ascii?Q?6TozMeJbGvavw2Q/Xh4WIFYABHKnK92ovpPdbsVhtfTrgE1rKZdfIcmFAAoX?=
- =?us-ascii?Q?ZE4H1DQNzepZ5OauZ7GZ3zDvsJRCd6CNGzmg405sb9i2YfbBul4PnwwDkAqg?=
- =?us-ascii?Q?WwqLxiLNphE0CGGLHmUDwamYmdDN8iefz51QtdnYDzRtLPsFLfLqQluBA9Uq?=
- =?us-ascii?Q?2/gC4a3Rx/BBDV+D3yiYxTcpPe/lRHj2mV14+1KIj/R7ICfpISVYB5iIdTbw?=
- =?us-ascii?Q?fVJas2tJF15Mx4OG77oczCq81i9iabnsOQjlDmhE5zXLCXTRTkeOG0ZI8XRu?=
- =?us-ascii?Q?MGh3Dkua+P3RXn3Bwj+TuznCsRK8C4ynk2PfVs8JKDPZhqat/UjNuaGxnPea?=
- =?us-ascii?Q?IdI/WzbJa7RBNH0vaRmeirsTEgrG7wISfNJhGr2TC9axPQcVeH8LJtaymDRE?=
- =?us-ascii?Q?XaVlfAw+iiGHOidoGkUmIjARA2K1Q0yjzaJDPOPKFXP33oVNPFR+5fJiIbI0?=
- =?us-ascii?Q?ijEA9cwJdzS23iiHcmGeibQiIwdxG89ahE9/V6HD21Ep68/NSILeasCddKtl?=
- =?us-ascii?Q?/PVgsWFb5RINzBadoyY8ooSiHb1TvSe0XvcVl6VyCD0tIKbHc3J9TNhKANLW?=
- =?us-ascii?Q?6hYg+Nltq2qUEm0qnZuhY0Ff+Vm7ikNGk4Q7G2EPTZumfLgiKUcqannOl5gG?=
- =?us-ascii?Q?HHgM2BcriW3d6zOk9V4ySm24KZJbDA7+BxHf5C6H+xIaScqJ3SAPBOTgQZBJ?=
- =?us-ascii?Q?0d3bMsA6zXzjFdzWf4nC1uldkc3c+jsMJKBzzjuOaHpcRbPbVEfc6NV1+d41?=
- =?us-ascii?Q?ku6r+j4jgprY3nIdl8CyUGFUpQ7cUAFlPOOxMGa4pWR689mvdKqkJGAuGf0u?=
- =?us-ascii?Q?h0ERI6ely29ORxLrwNlEtaWXR0jSetU95+g65v6w8laMoZRoBJdfvMRaAT0s?=
- =?us-ascii?Q?Qe/9NGx5TtoNXqye9AoI6HcDqWc2iG60CLJPknDMSmh1FKojDeLhm1+R6eq9?=
- =?us-ascii?Q?4wzTcilSIFVp7Io2lV5hY2qkaW3feYAsMdce013JuGgwdK75iW8U2g89STCi?=
- =?us-ascii?Q?hiFi0WagmIYInH9MwVrS6cWxaXE7uK5AckWQRma0ijOu/qCvPFOC1s9sblUu?=
- =?us-ascii?Q?9Mmfg+0glTOi7YEbox9OkvDrV0UvJs4htCeBts4JgbboaZUqD9KVS/uGIKGN?=
- =?us-ascii?Q?w0+3P3aV59nMVqLiOLP/nBRqUta8DiYOo+uHEi3uSgTDPHU995Xcmg4a0qsh?=
- =?us-ascii?Q?Z2yitDB2HQuhY+L18+tsSGWmQRqqaRsMeUi4xoXBRtEBZVkDyjoBT4lTglDF?=
- =?us-ascii?Q?axacUQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YRXqv18SCRNwUKsoZycT+3QyRL2k+oa3tDze5Cm4Ha7j9NEowAoW4mrvKupv?=
+ =?us-ascii?Q?8he1iwEZjjq+z/Nl3b5kzn9ina3THJHquUIitxRd0Xmt1rUUeNmAyVwiIEI8?=
+ =?us-ascii?Q?oZ4Eht1Aumxnbc8UHI1tpWZSJRkKSw99xdI1khhvhnXxaI9tkDuKeM8ZYY+L?=
+ =?us-ascii?Q?a880xeDRnZ5BIKDdQokYRBZ4s0oNINdYjqSVOIAMVZKwZil6rLKWbNTMpapG?=
+ =?us-ascii?Q?PPovpd1pvhZPkKy3eT/lf91t2ikbwi+guei7H4n5gOm5nVjININ2HVGzYqnT?=
+ =?us-ascii?Q?1dY9WBbUJdiFghPPohzHRix/FmCguSRKTt2F/JhlWZZqRB870tmii8PpA5c1?=
+ =?us-ascii?Q?rZTQoUvsMQQbC8nb5taU2s3L85NOpenwbp0fOvQ+lc5DAJEGHKfGO4ss6StZ?=
+ =?us-ascii?Q?NNubGDP9D1qUELIh/b+tptDjw4/Xi8BClGNi0NGtnie4hGfp4GCSMfqrof53?=
+ =?us-ascii?Q?2GuqBYgM9judoTkgJTUPfzyk4AQ+MZyTb9pSdEm/ShgcSXl1ZERjr43AYQ27?=
+ =?us-ascii?Q?F6eL4s8Jmx3icofAnJX1n1rB8pdq/3cZpAFHLJBfxgXcA5CBK5LyGFhiaiWI?=
+ =?us-ascii?Q?QMbiPDCgIidPSi9z0GNdA2Wslfg+YjXNuZuR0oxLmE2lElVTV/cbccnAWh3A?=
+ =?us-ascii?Q?9zx9clu55oUatYuL0fd3emD4cdbx+bfhBYQW2rQ9+yAsPPE2w5bUTLU7VPZx?=
+ =?us-ascii?Q?eiTkdNSi9YRiIa9grj1hCX9unCK+kabOLje24Shxu5Z7ofx47IlmKrnMh6ti?=
+ =?us-ascii?Q?Ox9aXSWRl/NzK7o5U8mjjYQjrP3sRBo6xlJRDd31E5R69bxMhrt3fWJVip00?=
+ =?us-ascii?Q?UNxl7Q1kfzGQwBqmyeILznwptMPYeXJcjmwh+Gkggqx04zEfwWfPl9Zg5Bfs?=
+ =?us-ascii?Q?v6qa67igGjDdOFrpq2AFJ25+s1W7g5Q5hsEIpdcBcL1OnNVTBx5KM43M0sD2?=
+ =?us-ascii?Q?qDLy3gaYesqzDVyARuIj2viIb9gWiPBQ0Y4R6UiNpPxlqFl0gO4Z0fYDbRym?=
+ =?us-ascii?Q?87kV8KIS7TBLMN1jW3iYpA+k3DoSpNk1pTpRPaOSydm+dZMwtvbQleee6IWk?=
+ =?us-ascii?Q?dhPiPOZpztlQcyDSIiaYmVSupY2MxAaSKTFfTdHHARQ/RdhqxGW196iBmt2P?=
+ =?us-ascii?Q?WQTzwVxtY3vEzGfWbcr+7C16nppKt2ljbG1NY6jYEV0siwT1xaZb51lXYvvJ?=
+ =?us-ascii?Q?LhiiyBoQkoHfuJatnCKJ+oaCAAMA2uFlVOxXSI0+QWmJMyPULgtwNOZpQR7s?=
+ =?us-ascii?Q?LuLne4fcwbin0dMbPa282QSYag5UZwHLEsmHYwOH05ptLe+7HaJbHKkOsv9z?=
+ =?us-ascii?Q?z6RECSRF7ApQ3y9p7HncxSCjiP047NK0uxbNiZuIE6KWEhFwnkopFg/j0MZR?=
+ =?us-ascii?Q?FlMu2a12iNLEYA3sbGubfUoO3wD9mWMUvdLfFTAlsYu6iUzwkCOV2obJk6Es?=
+ =?us-ascii?Q?8NbULq//vmPLLokCeB4+M9DVMdrJ5m62R168OxbHeNkuTKN4/QmS0vkd2rKg?=
+ =?us-ascii?Q?Lit37I3gZquAXUDFBHqwihyoevV4yPhX68a9cJenJQ35Ei2VpO1FHsll3TAk?=
+ =?us-ascii?Q?UwAK6gsO+ZKHptmW1JlCnEZVIVrnSWgc2sVqE6HAw4/9OrSgaMkhBGHEd+B6?=
+ =?us-ascii?Q?c5lEuh7Z4oy4TxKlM5utjYZTdA6A/hIPpr98kSNeMe4WsBjJDCjXxiqIWkcs?=
+ =?us-ascii?Q?4BLaRPcjWWkoTBSYMkeRWvzUE3M=3D?=
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7565acfb-5ec6-4db0-e2d1-08d999951095
+X-MS-Exchange-CrossTenant-Network-Message-Id: 531d770a-bc6b-4684-e902-08d9999511b2
 X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB2966.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Oct 2021 21:59:36.2048
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Oct 2021 21:59:37.7629
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1IbIUOayYbBrR7DTuAUHPvc/FFuNhUKap3GYqexT70h25HZLahBZNb1SZbqFsadNrIGZYs2OEWAiGCJ9to6gucT3m6RJeXPKecb8A/pAt3U=
+X-MS-Exchange-CrossTenant-UserPrincipalName: uXrPgy9ktHGsQU4bhrqC5uhlz5SAMEsdwFqCH7/nsVAke9BQ+6pUNyXF5dpWFV+md6jLzB6wPQjPS8lAYGoFdAc2kMCOFcbGG1tmSKu6z6s=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB4558
 X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10150 signatures=668683
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0 phishscore=0
  suspectscore=0 mlxlogscore=999 adultscore=0 bulkscore=0 spamscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
  definitions=main-2110270121
-X-Proofpoint-GUID: ISlozAHXu4Vid5anRfLD_hhna5V1mdO3
-X-Proofpoint-ORIG-GUID: ISlozAHXu4Vid5anRfLD_hhna5V1mdO3
+X-Proofpoint-GUID: RuYy1NWguHWujikRXzP90NyApMgGmgvP
+X-Proofpoint-ORIG-GUID: RuYy1NWguHWujikRXzP90NyApMgGmgvP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sk->sk_err appears to expect a positive value, a convention that ktls
-doesn't always follow and that leads to memory corruption in other code.
-For instance,
+sk->sk_err contains a positive number, yet async_wait.err wants the
+opposite.  Fix the missed sign flip, which Jakub caught by inspection.
 
-    [kworker]
-    tls_encrypt_done(..., err=<negative error from crypto request>)
-      tls_err_abort(.., err)
-        sk->sk_err = err;
-
-    [task]
-    splice_from_pipe_feed
-      ...
-        tls_sw_do_sendpage
-          if (sk->sk_err) {
-            ret = -sk->sk_err;  // ret is positive
-
-    splice_from_pipe_feed (continued)
-      ret = actor(...)  // ret is still positive and interpreted as bytes
-                        // written, resulting in underflow of buf->len and
-                        // sd->len, leading to huge buf->offset and bogus
-                        // addresses computed in later calls to actor()
-
-Fix all tls_err_abort() callers to pass a negative error code
-consistently and centralize the error-prone sign flip there, throwing in
-a warning to catch future misuse and uninlining the function so it
-really does only warn once.
-
-Cc: stable@vger.kernel.org
-Fixes: c46234ebb4d1e ("tls: RX path for ktls")
-Reported-by: syzbot+b187b77c8474f9648fae@syzkaller.appspotmail.com
+Fixes: a42055e8d2c3 ("net/tls: Add support for async encryption of records for performance")
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Daniel Jordan <daniel.m.jordan@oracle.com>
 ---
- include/net/tls.h |  9 ++-------
- net/tls/tls_sw.c  | 17 +++++++++++++----
- 2 files changed, 15 insertions(+), 11 deletions(-)
+ net/tls/tls_sw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/tls.h b/include/net/tls.h
-index 01d2e3744393..1fffb206f09f 100644
---- a/include/net/tls.h
-+++ b/include/net/tls.h
-@@ -358,6 +358,7 @@ int tls_sk_query(struct sock *sk, int optname, char __user *optval,
- 		int __user *optlen);
- int tls_sk_attach(struct sock *sk, int optname, char __user *optval,
- 		  unsigned int optlen);
-+void tls_err_abort(struct sock *sk, int err);
- 
- int tls_set_sw_offload(struct sock *sk, struct tls_context *ctx, int tx);
- void tls_sw_strparser_arm(struct sock *sk, struct tls_context *ctx);
-@@ -466,12 +467,6 @@ static inline bool tls_is_sk_tx_device_offloaded(struct sock *sk)
- #endif
- }
- 
--static inline void tls_err_abort(struct sock *sk, int err)
--{
--	sk->sk_err = err;
--	sk_error_report(sk);
--}
--
- static inline bool tls_bigint_increment(unsigned char *seq, int len)
- {
- 	int i;
-@@ -512,7 +507,7 @@ static inline void tls_advance_record_sn(struct sock *sk,
- 					 struct cipher_context *ctx)
- {
- 	if (tls_bigint_increment(ctx->rec_seq, prot->rec_seq_size))
--		tls_err_abort(sk, EBADMSG);
-+		tls_err_abort(sk, -EBADMSG);
- 
- 	if (prot->version != TLS_1_3_VERSION &&
- 	    prot->cipher_type != TLS_CIPHER_CHACHA20_POLY1305)
 diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index d5d09bd817b7..1644f8baea19 100644
+index 1644f8baea19..1b08b877a890 100644
 --- a/net/tls/tls_sw.c
 +++ b/net/tls/tls_sw.c
-@@ -35,6 +35,7 @@
-  * SOFTWARE.
-  */
+@@ -459,7 +459,7 @@ static void tls_encrypt_done(struct crypto_async_request *req, int err)
  
-+#include <linux/bug.h>
- #include <linux/sched/signal.h>
- #include <linux/module.h>
- #include <linux/splice.h>
-@@ -43,6 +44,14 @@
- #include <net/strparser.h>
- #include <net/tls.h>
- 
-+noinline void tls_err_abort(struct sock *sk, int err)
-+{
-+	WARN_ON_ONCE(err >= 0);
-+	/* sk->sk_err should contain a positive error code. */
-+	sk->sk_err = -err;
-+	sk_error_report(sk);
-+}
-+
- static int __skb_nsg(struct sk_buff *skb, int offset, int len,
-                      unsigned int recursion_level)
- {
-@@ -419,7 +428,7 @@ int tls_tx_records(struct sock *sk, int flags)
- 
- tx_err:
- 	if (rc < 0 && rc != -EAGAIN)
--		tls_err_abort(sk, EBADMSG);
-+		tls_err_abort(sk, -EBADMSG);
- 
- 	return rc;
- }
-@@ -763,7 +772,7 @@ static int tls_push_record(struct sock *sk, int flags,
- 			       msg_pl->sg.size + prot->tail_size, i);
- 	if (rc < 0) {
- 		if (rc != -EINPROGRESS) {
--			tls_err_abort(sk, EBADMSG);
-+			tls_err_abort(sk, -EBADMSG);
- 			if (split) {
- 				tls_ctx->pending_open_record_frags = true;
- 				tls_merge_open_record(sk, rec, tmp, orig_end);
-@@ -1827,7 +1836,7 @@ int tls_sw_recvmsg(struct sock *sk,
- 		err = decrypt_skb_update(sk, skb, &msg->msg_iter,
- 					 &chunk, &zc, async_capable);
- 		if (err < 0 && err != -EINPROGRESS) {
--			tls_err_abort(sk, EBADMSG);
-+			tls_err_abort(sk, -EBADMSG);
- 			goto recv_end;
- 		}
- 
-@@ -2007,7 +2016,7 @@ ssize_t tls_sw_splice_read(struct socket *sock,  loff_t *ppos,
- 		}
- 
- 		if (err < 0) {
--			tls_err_abort(sk, EBADMSG);
-+			tls_err_abort(sk, -EBADMSG);
- 			goto splice_read_end;
- 		}
- 		ctx->decrypted = 1;
-
-base-commit: 6f7c88691191e6c52ef2543d6f1da8d360b27a24
+ 		/* If err is already set on socket, return the same code */
+ 		if (sk->sk_err) {
+-			ctx->async_wait.err = sk->sk_err;
++			ctx->async_wait.err = -sk->sk_err;
+ 		} else {
+ 			ctx->async_wait.err = err;
+ 			tls_err_abort(sk, err);
 -- 
 2.33.0
 
