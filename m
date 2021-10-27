@@ -2,107 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48B6543C3D2
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 09:24:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBF6343C3D4
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 09:24:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236984AbhJ0H0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 03:26:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58862 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231518AbhJ0H0c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 03:26:32 -0400
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087FEC061570;
-        Wed, 27 Oct 2021 00:24:08 -0700 (PDT)
-Received: by mail-ot1-x32e.google.com with SMTP id d21-20020a9d4f15000000b0054e677e0ac5so2309125otl.11;
-        Wed, 27 Oct 2021 00:24:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xKkULtnAHN3BBD5eD7FP0nepKRFCwYme0ivxKFWmaaU=;
-        b=XNaKnmQagjRfG5cgMridzeZ4v5R5AxQrpQ8i5/VMhJTrrAXrbHMbhaONcS0e20OgXs
-         h5PrGxm4Az6DNf/a08+abbFqrakpSf8MQqxzmTqAGNtdM45WuUrQJlrqzdkv/OWrH5rO
-         avoDU1Pri4enX0EuEOwQBO7ulKqHHKI9vpKLSpWNrOMNF3aDoJzsJ7uGjKtsjGkhGyua
-         s7IqrerU6nkRtdVo35laiFXsyYaNjTBLwIwUUJu62U/kr4tE4O0t6jOH5UgDREyOLFHo
-         iIcy7J8VxmqnkDOG9uhkRdInf9dYGsQX13z3r5noirKfgj0kWUSAFTqUT9gzr+zSu7OB
-         cWdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xKkULtnAHN3BBD5eD7FP0nepKRFCwYme0ivxKFWmaaU=;
-        b=j/O0PHNAh6sGvMfEhr61psE4eVC0qUnyqEPulubnnwu0splsWGCTsBk7NbsB82EPpU
-         Zpe1HDXNBKAMHULHmnOl+YEcq9GYkH0SIy+3nnu2muN1loy1A06U3bawkeVxNvELFypM
-         ImlAvSkQZaapqN9Ep8p9XpCs7V6XBM/sTL8F4Rw72vuVIgaqZ8k3cc/+NSeTwP1cdA7x
-         s+h/acugBCe4yTLLipqXj4px54m8vigxX6WKXVkbKyxJX6W0WNsX6qy7Jc0AKOEIOvbE
-         KH0DDgl/zSKdj4idyMkfEkJNAjja/KWczLbnc7UKpp4sQLu5wZCKdp00AMb8XhzmYNLw
-         9L3w==
-X-Gm-Message-State: AOAM533WcWObO2YZrpyUKEB6R6vAaxkej+s7qcE2FassFAlPli/cOhSI
-        FnD6K9BVAw6CJ42U9HxoDMQejeyemqqrPmUE/0o=
-X-Google-Smtp-Source: ABdhPJyrVh1dzaEk6XgDI0KK5bnNhVijDoVP6tfQFZuI0HnKcrKVdWMYuuM17vNogv/nmH6yYylPCZpYzi+wSh+S+tE=
-X-Received: by 2002:a05:6830:2647:: with SMTP id f7mr23211066otu.124.1635319447341;
- Wed, 27 Oct 2021 00:24:07 -0700 (PDT)
+        id S238603AbhJ0H1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 03:27:10 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:49113 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231518AbhJ0H1J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 03:27:09 -0400
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 9082E580473;
+        Wed, 27 Oct 2021 03:24:44 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Wed, 27 Oct 2021 03:24:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=zYtwBG
+        9RMG2qt6py3aM+lZvt0pX1FIUveB5vk7JEXjk=; b=Q64bMEbgp5lyU6Sc6KuPdn
+        Z7l8vPfcBn3z1Zne+eJ1LbVNxAQL8Xo4C9agmINsXFcPlYvOnnaimf0grs06KzdQ
+        AgGnxl22YIL5nCwp1DnZqQps6E45VcM+sUdH2+4dh50qVXz1BSciBgflNtkXRyDJ
+        9zrAY0+n+gaDgkx2K5agE2HtFHHywaoYbv1NdGCf0b4iQI0zKVvhx0YVWMWaW2iB
+        9SZWIdAx05hpF1WLPEOvtkHbN27t46eZb+c2Q5EzRoMY6SNMXkGJkALZOlPsaE8m
+        0cvCExiycQncxz58N5/FgkAb1RcEH5jwxli8tVT+NXKxTfWec6auXQPJ44BKexKQ
+        ==
+X-ME-Sender: <xms:u_54YUMxr6Y4wx7175fn7-duHQLWn47z735OYqPwdAAXXXqEf7aLMw>
+    <xme:u_54Ya9HlCrbXz-e6EnafOn18O23_nCiX1in7JcMoL9eTK2YizyBvuO5GOCozUiJt
+    8xNH2kUrYKGiD4>
+X-ME-Received: <xmr:u_54YbQXPiihOLn3buSYoh5BF1HkHZ_9r77JjG67HUCxhsJ8upijgspCTcn8hzB2PhA3VtW9TJSSb-lHqtNb83SplAnJ7Q>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvdefledguddufecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
+    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
+    guohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:u_54Ycs7jyIe5PkK32K3Xxf33sJy05CfSjF-9Y_kVV0WpWRZnookRA>
+    <xmx:u_54YcebHMwID3-xPmDgghtHwDXew3-8JWRe_QSdDFjJ78UFdkcEkw>
+    <xmx:u_54YQ26fUqf1PYaVZlrW8kjElCICt4tzKj5RxErO5fOiP-G7soa4A>
+    <xmx:vP54YU7l5jmpkhsqqyCvLQ4iNzAeOWSWzqRIoOOLBQAQ3QjdwuOt6g>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 27 Oct 2021 03:24:42 -0400 (EDT)
+Date:   Wed, 27 Oct 2021 10:24:39 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Nikolay Aleksandrov <nikolay@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@nvidia.com>
+Subject: Re: [RFC PATCH net-next 00/15] Synchronous feedback on FDB add/del
+ from switchdev to the bridge
+Message-ID: <YXj+txwYHJVsI1sv@shredder>
+References: <20211025222415.983883-1-vladimir.oltean@nxp.com>
+ <531e75e8-d5d1-407b-d665-aec2a66bf432@nvidia.com>
+ <20211026112525.glv7n2fk27sjqubj@skbuf>
+ <1d9c3666-4b29-17e6-1b65-8c64c5eed726@nvidia.com>
+ <20211026165424.djjy5xludtcqyqj2@skbuf>
+ <a703cf3c-50f5-1183-66a8-8af183737e26@nvidia.com>
+ <20211026190136.jkxyqi6b7f4i2bfe@skbuf>
+ <dcff6140-9554-5a08-6c23-eeef47dd38d0@nvidia.com>
+ <20211026215153.lpdk66rjvsodmxto@skbuf>
 MIME-Version: 1.0
-References: <20211026131859.59114-1-kerneljasonxing@gmail.com>
-In-Reply-To: <20211026131859.59114-1-kerneljasonxing@gmail.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Wed, 27 Oct 2021 15:23:31 +0800
-Message-ID: <CAL+tcoC487AF=HAiNVhKO6kA0yhjT+hmp5DQSdaGBnJEtGgqPA@mail.gmail.com>
-Subject: Re: [PATCH net] net: gro: set the last skb->next to NULL when it get merged
-To:     David Miller <davem@davemloft.net>, kuba@kernel.org,
-        alobakin@pm.me, jonathan.lemon@gmail.com,
-        Willem de Bruijn <willemb@google.com>, pabeni@redhat.com,
-        vvs@virtuozzo.com, cong.wang@bytedance.com
-Cc:     netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jason Xing <xingwanli@kuaishou.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211026215153.lpdk66rjvsodmxto@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 26, 2021 at 9:19 PM <kerneljasonxing@gmail.com> wrote:
->
-> From: Jason Xing <xingwanli@kuaishou.com>
->
-> Setting the @next of the last skb to NULL to prevent the panic in future
-> when someone does something to the last of the gro list but its @next is
-> invalid.
->
-> For example, without the fix (commit: ece23711dd95), a panic could happen
-> with the clsact loaded when skb is redirected and then validated in
-> validate_xmit_skb_list() which could access the error addr of the @next
-> of the last skb. Thus, "general protection fault" would appear after that.
->
-> Signed-off-by: Jason Xing <xingwanli@kuaishou.com>
-> ---
->  net/core/skbuff.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index 2170bea..7b248f1 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -4396,6 +4396,7 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
->                 skb_shinfo(p)->frag_list = skb;
->         else
->                 NAPI_GRO_CB(p)->last->next = skb;
-> +       skb->next = NULL;
->         NAPI_GRO_CB(p)->last = skb;
+On Tue, Oct 26, 2021 at 09:51:54PM +0000, Vladimir Oltean wrote:
+> I'll let Ido answer here. As I said, the model I'm working with is that
+> of autonomous learning, so for me, no. Whereas the Spectrum model is
+> that of secure learning. I expect that it'd be pretty useless to set up
+> software assisted secure learning if you're just going to say yes and
+> learn all addresses anyway. I've never seen Spectrum documentation, but
+> I would be shocked if it wouldn't be able to be configured to operate in
+> the bare-bones autonomous learning mode too.
 
-Besides, I'm a little bit confused that this operation inserts the
-newest skb into the tail of the flow, so the tail of flow is the
-newest, head oldest. The patch (commit: 600adc18) introduces the flush
-of the oldest when the flow is full to lower the latency, but actually
-it fetches the tail of the flow. Do I get something wrong here? I feel
-it is really odd.
+Hi,
 
-Thanks,
-Jason
-
->         __skb_header_release(skb);
->         lp = p;
-> --
-> 1.8.3.1
->
+Yes, you are correct. It can support automatic learning, but it was
+never enabled. We update the software bridge about learned FDB entries
+(unlike DSA I think?), so secure learning makes sense in our case.
