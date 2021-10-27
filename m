@@ -2,79 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7868843CB2A
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 15:50:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 018FE43CB2C
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 15:50:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237660AbhJ0Nwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 09:52:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34300 "EHLO mail.kernel.org"
+        id S242296AbhJ0Nwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 09:52:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34356 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231458AbhJ0Nwf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Oct 2021 09:52:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 972CF60F92;
-        Wed, 27 Oct 2021 13:50:09 +0000 (UTC)
+        id S231458AbhJ0Nwh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Oct 2021 09:52:37 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 125BA60E74;
+        Wed, 27 Oct 2021 13:50:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635342609;
-        bh=ynKsqX4KC6p9Dy4EoCgcGjH3Zd+CVxHkC0lBcohHyR8=;
+        s=k20201202; t=1635342612;
+        bh=o9oJpYmx7OVTXN8gpSvifBXe/VTXOm1jMDqZSR1Z5Mw=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qVxgogj/jV9H9c6ceM3X+BZ8QFpmVYe/3KQ2jvK5L7KmexkJ+Yf4UvqB2IBGCcZiE
-         AfmbPJSYr0NC34R+SMwopKXs71bqm5BcoN69xnrdsRL4Fd6CKrygD5e0dh6GLR31T1
-         4uI1+TfL0lAuk/R9LI1J0s5yz2vNdV7IxMOT/5dTnsvMA/a+DQFznUV3i8MZlftlwe
-         xPz34dZRip/VlHr38esXvnUrZpX3FXn9zf6/a8nCet4ccokyQvjioc+V9O4Z1bUpXf
-         ajppAUmpfV5hz0+cHwgkEMK/EXUFl2DEKFsJVfk6jOTix+qbiI5YRlZStqNFxwooNS
-         ZRJrsTQ4Nu9Aw==
+        b=kLmTIMW+3R5nx0AKdTpSwqFG2iYDu8bkzvMcNv/6OL4igxtOUin1DaZBn7Xxo8vSb
+         pO/efAmpA/y6tfMV3u2TQEtCXYOo9HzaJN5L8QHLGQvlATrqeT3iMatDDbgDSMqAaO
+         DXiF6c7MklQsqWOOLAkr8H+9ufRLp5OyqLVl9vW4CvEFyRemhrG8Dk3hLy8tb+uNqh
+         S8CP7xdZ2yrzdsZ5x8d6Il4qcFF7DHXGdxXpxQ/83xRcSsckWRQuzBmPlQp92CrLMm
+         4XdPNeU87f0hZ88tGK63VjNblZo/xk8MZVtAT+HZYUszVp71BiYfe/AbPb3BzwaJVQ
+         CKulkm2xM0B1A==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 903D460A25;
-        Wed, 27 Oct 2021 13:50:09 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0C25960986;
+        Wed, 27 Oct 2021 13:50:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/7] net: hns3: add some fixes for -net
+Subject: Re: [net-next 01/14] lib: bitmap: Introduce node-aware alloc API
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163534260958.9048.4634038154065865089.git-patchwork-notify@kernel.org>
-Date:   Wed, 27 Oct 2021 13:50:09 +0000
-References: <20211027121149.45897-1-huangguangbin2@huawei.com>
-In-Reply-To: <20211027121149.45897-1-huangguangbin2@huawei.com>
-To:     Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, wangjie125@huawei.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lipeng321@huawei.com, chenhao288@hisilicon.com
+Message-Id: <163534261204.9048.9555385409919109785.git-patchwork-notify@kernel.org>
+Date:   Wed, 27 Oct 2021 13:50:12 +0000
+References: <20211027023347.699076-2-saeed@kernel.org>
+In-Reply-To: <20211027023347.699076-2-saeed@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        tariqt@nvidia.com, moshe@nvidia.com, saeedm@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+This series was applied to netdev/net-next.git (master)
+by Saeed Mahameed <saeedm@nvidia.com>:
 
-On Wed, 27 Oct 2021 20:11:42 +0800 you wrote:
-> This series adds some fixes for the HNS3 ethernet driver.
+On Tue, 26 Oct 2021 19:33:34 -0700 you wrote:
+> From: Tariq Toukan <tariqt@nvidia.com>
 > 
-> Guangbin Huang (4):
->   net: hns3: fix pause config problem after autoneg disabled
->   net: hns3: ignore reset event before initialization process is done
->   net: hns3: expand buffer len for some debugfs command
->   net: hns3: adjust string spaces of some parameters of tx bd info in
->     debugfs
+> Expose new node-aware API for bitmap allocation:
+> bitmap_alloc_node() / bitmap_zalloc_node().
+> 
+> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+> Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/7] net: hns3: fix pause config problem after autoneg disabled
-    https://git.kernel.org/netdev/net/c/3bda2e5df476
-  - [net,2/7] net: hns3: change hclge/hclgevf workqueue to WQ_UNBOUND mode
-    https://git.kernel.org/netdev/net/c/f29da4088fb4
-  - [net,3/7] net: hns3: ignore reset event before initialization process is done
-    https://git.kernel.org/netdev/net/c/0251d196b0e1
-  - [net,4/7] net: hns3: fix data endian problem of some functions of debugfs
-    https://git.kernel.org/netdev/net/c/2a21dab594a9
-  - [net,5/7] net: hns3: add more string spaces for dumping packets number of queue info in debugfs
-    https://git.kernel.org/netdev/net/c/6754614a787c
-  - [net,6/7] net: hns3: expand buffer len for some debugfs command
-    https://git.kernel.org/netdev/net/c/c7a6e3978ea9
-  - [net,7/7] net: hns3: adjust string spaces of some parameters of tx bd info in debugfs
-    https://git.kernel.org/netdev/net/c/630a6738da82
+  - [net-next,01/14] lib: bitmap: Introduce node-aware alloc API
+    https://git.kernel.org/netdev/net-next/c/7529cc7fbd9c
+  - [net-next,02/14] net: Prevent HW-GRO and LRO features operate together
+    https://git.kernel.org/netdev/net-next/c/54b2b3eccab6
+  - [net-next,03/14] net/mlx5e: Rename lro_timeout to packet_merge_timeout
+    https://git.kernel.org/netdev/net-next/c/50f477fe9933
+  - [net-next,04/14] net/mlx5: Add SHAMPO caps, HW bits and enumerations
+    https://git.kernel.org/netdev/net-next/c/7025329d208c
+  - [net-next,05/14] net/mlx5e: Rename TIR lro functions to TIR packet merge functions
+    https://git.kernel.org/netdev/net-next/c/eaee12f04692
+  - [net-next,06/14] net/mlx5e: Add support to klm_umr_wqe
+    https://git.kernel.org/netdev/net-next/c/d7b896acbdcb
+  - [net-next,07/14] net/mlx5e: Add control path for SHAMPO feature
+    https://git.kernel.org/netdev/net-next/c/e5ca8fb08ab2
+  - [net-next,08/14] net/mlx5e: Add handle SHAMPO cqe support
+    https://git.kernel.org/netdev/net-next/c/f97d5c2a453e
+  - [net-next,09/14] net/mlx5e: Add data path for SHAMPO feature
+    https://git.kernel.org/netdev/net-next/c/64509b052525
+  - [net-next,10/14] net/mlx5e: HW_GRO cqe handler implementation
+    https://git.kernel.org/netdev/net-next/c/92552d3abd32
+  - [net-next,11/14] net/mlx5e: Add HW_GRO statistics
+    https://git.kernel.org/netdev/net-next/c/def09e7bbc3d
+  - [net-next,12/14] net/mlx5e: Add HW-GRO offload
+    https://git.kernel.org/netdev/net-next/c/83439f3c37aa
+  - [net-next,13/14] net/mlx5e: Prevent HW-GRO and CQE-COMPRESS features operate together
+    https://git.kernel.org/netdev/net-next/c/ae3452995bd4
+  - [net-next,14/14] net/mlx5: Lag, Make mlx5_lag_is_multipath() be static inline
+    https://git.kernel.org/netdev/net-next/c/8ca9caee851c
 
 You are awesome, thank you!
 -- 
