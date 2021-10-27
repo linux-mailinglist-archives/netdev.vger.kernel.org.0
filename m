@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F27B143C58D
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 10:52:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CE5F43C591
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 10:52:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241046AbhJ0IzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 04:55:00 -0400
-Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:60377 "EHLO
-        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235961AbhJ0Iy5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 04:54:57 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R291e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0Uts5tlX_1635324749;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0Uts5tlX_1635324749)
+        id S241050AbhJ0IzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 04:55:06 -0400
+Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:59276 "EHLO
+        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235961AbhJ0IzF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 04:55:05 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R501e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0UtsJwZd_1635324758;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0UtsJwZd_1635324758)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 27 Oct 2021 16:52:30 +0800
+          Wed, 27 Oct 2021 16:52:38 +0800
 From:   Tony Lu <tonylu@linux.alibaba.com>
 To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
         ubraun@linux.ibm.com
@@ -22,10 +22,12 @@ Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
         linux-rdma@vger.kernel.org, jacob.qi@linux.alibaba.com,
         xuanzhuo@linux.alibaba.com, guwen@linux.alibaba.com,
         dust.li@linux.alibaba.com
-Subject: [PATCH net 0/4] Fixes for SMC
-Date:   Wed, 27 Oct 2021 16:52:05 +0800
-Message-Id: <20211027085208.16048-1-tonylu@linux.alibaba.com>
+Subject: [PATCH net 1/4] Revert "net/smc: don't wait for send buffer space when data was already sent"
+Date:   Wed, 27 Oct 2021 16:52:07 +0800
+Message-Id: <20211027085208.16048-2-tonylu@linux.alibaba.com>
 X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20211027085208.16048-1-tonylu@linux.alibaba.com>
+References: <20211027085208.16048-1-tonylu@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -34,23 +36,45 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tony Lu <tony.ly@linux.alibaba.com>
 
-We are using SMC to replace TCP, and find some issues when running TCP's
-test cases.
+This reverts commit 6889b36da78a21a312d8b462c1fa25a03c2ff192.
 
-Tony Lu (2):
-  Revert "net/smc: don't wait for send buffer space when data was
-    already sent"
-  net/smc: Fix smc_link->llc_testlink_time overflow
+When using SMC to replace TCP, some userspace applications like netperf
+don't check the return code of send syscall correctly, which means how
+many bytes are sent. If rc of send() is smaller than expected, it should
+try to send again, instead of exit directly. It is difficult to change
+the uncorrect behaviors of userspace applications, so choose to revert it.
 
-Wen Gu (2):
-  net/smc: Correct spelling mistake to TCPF_SYN_RECV
-  net/smc: Fix wq mismatch issue caused by smc fallback
+Cc: Karsten Graul <kgraul@linux.ibm.com>
+Cc: Ursula Braun <ubraun@linux.ibm.com>
+Cc: David S. Miller <davem@davemloft.net>
+Reported-by: Jacob Qi <jacob.qi@linux.alibaba.com>
+Signed-off-by: Tony Lu <tony.ly@linux.alibaba.com>
+Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Reviewed-by: Wen Gu <guwen@linux.alibaba.com>
+---
+ net/smc/smc_tx.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
- net/smc/af_smc.c  | 17 ++++++++++++++++-
- net/smc/smc_llc.c |  2 +-
- net/smc/smc_tx.c  |  7 ++++---
- 3 files changed, 21 insertions(+), 5 deletions(-)
-
+diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
+index 738a4a99c827..d401286e9058 100644
+--- a/net/smc/smc_tx.c
++++ b/net/smc/smc_tx.c
+@@ -178,11 +178,12 @@ int smc_tx_sendmsg(struct smc_sock *smc, struct msghdr *msg, size_t len)
+ 			conn->local_tx_ctrl.prod_flags.urg_data_pending = 1;
+ 
+ 		if (!atomic_read(&conn->sndbuf_space) || conn->urg_tx_pend) {
+-			if (send_done)
+-				return send_done;
+ 			rc = smc_tx_wait(smc, msg->msg_flags);
+-			if (rc)
++			if (rc) {
++				if (send_done)
++					return send_done;
+ 				goto out_err;
++			}
+ 			continue;
+ 		}
+ 
 -- 
 2.19.1.6.gb485710b
 
