@@ -2,84 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B34BD43CB27
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 15:49:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7868843CB2A
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 15:50:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242260AbhJ0NwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 09:52:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:28341 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237546AbhJ0NwA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 09:52:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635342575;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ZD6LAq6atB4BsCmnlxgTYHzC6191yWWoUcGigwC22tc=;
-        b=KjzIx8za4yy9NDex919H9ZF2RIgWs6tQiRoBcNEWe2hTAKjvRw7GeNOT0hHgEIMlZE+N/e
-        +KZ8Bv64RyvlKm8JN7/0VYa8z1uLtUihuLWAuXLsYwFlN7Co2AqEZuNs02jS4vBkDllPfq
-        Uacxoy30jH89OvVuJL8DQzvRBGWq5+U=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-185-uY69igsLMRWxG2prJR3BXw-1; Wed, 27 Oct 2021 09:49:31 -0400
-X-MC-Unique: uY69igsLMRWxG2prJR3BXw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1FF8C19253C2;
-        Wed, 27 Oct 2021 13:49:30 +0000 (UTC)
-Received: from ceranb.redhat.com (unknown [10.40.193.230])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B708260CA0;
-        Wed, 27 Oct 2021 13:49:27 +0000 (UTC)
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Henrik Bjoernlund <henrik.bjoernlund@microchip.com>,
-        bridge@lists.linux-foundation.org (moderated list:ETHERNET BRIDGE),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net] net: bridge: fix uninitialized variables when BRIDGE_CFM is disabled
-Date:   Wed, 27 Oct 2021 15:49:26 +0200
-Message-Id: <20211027134926.1412459-1-ivecera@redhat.com>
+        id S237660AbhJ0Nwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 09:52:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34300 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231458AbhJ0Nwf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Oct 2021 09:52:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 972CF60F92;
+        Wed, 27 Oct 2021 13:50:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635342609;
+        bh=ynKsqX4KC6p9Dy4EoCgcGjH3Zd+CVxHkC0lBcohHyR8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=qVxgogj/jV9H9c6ceM3X+BZ8QFpmVYe/3KQ2jvK5L7KmexkJ+Yf4UvqB2IBGCcZiE
+         AfmbPJSYr0NC34R+SMwopKXs71bqm5BcoN69xnrdsRL4Fd6CKrygD5e0dh6GLR31T1
+         4uI1+TfL0lAuk/R9LI1J0s5yz2vNdV7IxMOT/5dTnsvMA/a+DQFznUV3i8MZlftlwe
+         xPz34dZRip/VlHr38esXvnUrZpX3FXn9zf6/a8nCet4ccokyQvjioc+V9O4Z1bUpXf
+         ajppAUmpfV5hz0+cHwgkEMK/EXUFl2DEKFsJVfk6jOTix+qbiI5YRlZStqNFxwooNS
+         ZRJrsTQ4Nu9Aw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 903D460A25;
+        Wed, 27 Oct 2021 13:50:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Subject: Re: [PATCH net 0/7] net: hns3: add some fixes for -net
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163534260958.9048.4634038154065865089.git-patchwork-notify@kernel.org>
+Date:   Wed, 27 Oct 2021 13:50:09 +0000
+References: <20211027121149.45897-1-huangguangbin2@huawei.com>
+In-Reply-To: <20211027121149.45897-1-huangguangbin2@huawei.com>
+To:     Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, wangjie125@huawei.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lipeng321@huawei.com, chenhao288@hisilicon.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Function br_get_link_af_size_filtered() calls br_cfm_{,peer}_mep_count()
-but does not check their return value. When BRIDGE_CFM is not enabled
-these functions return -EOPNOTSUPP but do not modify count parameter.
-Calling function then works with uninitialized variables.
+Hello:
 
-Fixes: b6d0425b816e ("bridge: cfm: Netlink Notifications.")
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
----
- net/bridge/br_netlink.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+This series was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index 5c6c4305ed23..12d602495ea0 100644
---- a/net/bridge/br_netlink.c
-+++ b/net/bridge/br_netlink.c
-@@ -126,8 +126,10 @@ static size_t br_get_link_af_size_filtered(const struct net_device *dev,
- 		return vinfo_sz;
- 
- 	/* CFM status info must be added */
--	br_cfm_mep_count(br, &num_cfm_mep_infos);
--	br_cfm_peer_mep_count(br, &num_cfm_peer_mep_infos);
-+	if (br_cfm_mep_count(br, &num_cfm_mep_infos) < 0)
-+		num_cfm_mep_infos = 0;
-+	if (br_cfm_peer_mep_count(br, &num_cfm_peer_mep_infos) < 0)
-+		num_cfm_peer_mep_infos = 0;
- 
- 	vinfo_sz += nla_total_size(0);	/* IFLA_BRIDGE_CFM */
- 	/* For each status struct the MEP instance (u32) is added */
+On Wed, 27 Oct 2021 20:11:42 +0800 you wrote:
+> This series adds some fixes for the HNS3 ethernet driver.
+> 
+> Guangbin Huang (4):
+>   net: hns3: fix pause config problem after autoneg disabled
+>   net: hns3: ignore reset event before initialization process is done
+>   net: hns3: expand buffer len for some debugfs command
+>   net: hns3: adjust string spaces of some parameters of tx bd info in
+>     debugfs
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,1/7] net: hns3: fix pause config problem after autoneg disabled
+    https://git.kernel.org/netdev/net/c/3bda2e5df476
+  - [net,2/7] net: hns3: change hclge/hclgevf workqueue to WQ_UNBOUND mode
+    https://git.kernel.org/netdev/net/c/f29da4088fb4
+  - [net,3/7] net: hns3: ignore reset event before initialization process is done
+    https://git.kernel.org/netdev/net/c/0251d196b0e1
+  - [net,4/7] net: hns3: fix data endian problem of some functions of debugfs
+    https://git.kernel.org/netdev/net/c/2a21dab594a9
+  - [net,5/7] net: hns3: add more string spaces for dumping packets number of queue info in debugfs
+    https://git.kernel.org/netdev/net/c/6754614a787c
+  - [net,6/7] net: hns3: expand buffer len for some debugfs command
+    https://git.kernel.org/netdev/net/c/c7a6e3978ea9
+  - [net,7/7] net: hns3: adjust string spaces of some parameters of tx bd info in debugfs
+    https://git.kernel.org/netdev/net/c/630a6738da82
+
+You are awesome, thank you!
 -- 
-2.32.0
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
