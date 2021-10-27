@@ -2,89 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0A1643C8DD
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 13:51:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86A3D43C900
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 13:57:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239869AbhJ0Lx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 07:53:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35432 "EHLO
+        id S232956AbhJ0L7v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 07:59:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234994AbhJ0Lxw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 07:53:52 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A217FC061570
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 04:51:26 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id u84so2001614yba.3
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 04:51:26 -0700 (PDT)
+        with ESMTP id S232793AbhJ0L7t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 07:59:49 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50BC3C061570;
+        Wed, 27 Oct 2021 04:57:24 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id bp15so5642837lfb.4;
+        Wed, 27 Oct 2021 04:57:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=dy4Q63vwnui/mY3PyZTbcUeIPLCxMn026uu+8ErF5Jc=;
-        b=iF+VFQKEUHf2Wmg+9AGW7v4+6YQetkOvHueaQLLRFQtgrP0XlhQ9i8Rqx+J9NcLeir
-         1kBdnZpH3vyVIZrEM/lvv/zujJirMBKE+IoJ+8xgtp1YThadsvx6kYjFgWzuxVjjQpwz
-         7u4W9jobx2CYTbfX5+6Kkm/F33EpmDJdTPMuQFjPadVtuhH6BUIgZ3k6KQtnAVIGvMO5
-         en3Pk2bbA2DOTMXEtxnnplZ5Darb57ip9wRkUwr9etYf42RkN1nRAraDuQRm/IVr5suF
-         w6Gl1TKWe8332c+QPnoul7i6JfOycbN0Tcfu1ZfwXUhqJ/td6N94F8TifKWD3Ud8c9Gb
-         ZJEg==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=YXg0m4/fJ//WGjGcJyxQ/if/yQiYorndqx8ywLLIUxc=;
+        b=jThNapv4PN8aFz+XjA3tDVZi4wprRuBhHugJZuBZP/DlIxvP+7fAyNaCpZfMarEbNr
+         32z6q58YY8ApfMWn6WvDE/kcNYwITYRTkN9HyeXEsDEsQTUe74ZXWQHzvkqtfGGj17Qo
+         ynN7dn4s3aT1IyjCygoNmPf4h3n+nJe+wc6ms7nrmnKXEULCUyFAj1iT+7tuuCqedvOG
+         YOG9Fxav3t2/PAu9/eNGwnbEsLMY0Y+hMxJlEUS/winNQX8Y5womyGufSRlz72jTdk4S
+         lRYJkL0mrCi584gmxe06pmVG97mROw8QBmN04nFVOppFqz5rwzzCy/6IidXzwYpfVPtV
+         9ibQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=dy4Q63vwnui/mY3PyZTbcUeIPLCxMn026uu+8ErF5Jc=;
-        b=YtaEPlF56udqhMhFXs3eJi/lnMW0ukYdekMpCrmcGIymlJ1ABi9+XnBzU+njHOB9hs
-         U/s/KBMAeaGrSdlX1jIjt1zGqk9B/8VXnwjshsGe0TM9DdEcLdQl1HXwbpK+Z1u8DsQT
-         KRqIhwRzaEBXgBGbjSUw+QJoCsgbWH21Oq7euHzFXI+5iqB4jLcMeu6vR+i83GugN2nS
-         x58L+ldtuuDV4ROBSd7RxYC6s7uI47DuX7o86sS5dcmIyytfPVw8meWZuPq+OFi/0MoY
-         IpJSzicOp3GHybyuvw0+UBfFuc3XP/FhEkLWfAWDwDaUlY5UnSZgrQFKRe4len7vibHM
-         /ETQ==
-X-Gm-Message-State: AOAM530ttXFcI0m6bVFD7qs/lCckqDQW3GzAO3p/euSPflPMjsBNMcLK
-        54h4Hn2G8p6NJWaXohiex5Bawn8lLjL69RBcxyY=
-X-Google-Smtp-Source: ABdhPJyAHy/nvQ3zaxQ1ChvjMTUzaLLUWyeQLEeFiM3mOnVvoLHOfBIjwRJ9oeF6qYYtWB3vyPcHK7k5R9YkKPmhevQ=
-X-Received: by 2002:a25:d258:: with SMTP id j85mr34246860ybg.398.1635335485877;
- Wed, 27 Oct 2021 04:51:25 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=YXg0m4/fJ//WGjGcJyxQ/if/yQiYorndqx8ywLLIUxc=;
+        b=a7M1yZ/bymPVoeu4/tZzMsCnz7PD521oSI0LYp2SYccmdVjuhKATV5OK+/c1pnKtlB
+         RZJnot2xP+LDnqbJADvtNYl3rcmSzL4FAbEm+U9fLNFjRUJHP3HZu2nJQo2hxTcVdeUI
+         EmIamg//Bajr9XVL6Li/nX4Jqv+zP53L60HtX0o2nNG+jx2vhTSZg4OZBqi4f0uK8rKi
+         myazQ8p6T9AIUSf9/MWOU7/BeimezovIwhnAHOVB2LxFZEO6A9q0AD2ppW0nJdNbVra4
+         DJkzdvWSoh1s+QNANR7xjFtGqWHWVHj/dFdoOaOIaTlTXjrb2OQ6MFB/4sx+RaVqzZwD
+         pIPg==
+X-Gm-Message-State: AOAM530JU7H5srF2MevS5DIw+YXvy6RXbi1IufID2WfKlvWBn/9jH0LT
+        nc1YaRTehRq5+25k4S+bSd0=
+X-Google-Smtp-Source: ABdhPJzG06ZKCx25ZsvM2ShhEKwT6MB3ORkQuYBX2CgoUoilCJl3p64N9h9V/iWAX2ORJiz4HBy9oA==
+X-Received: by 2002:a05:6512:1284:: with SMTP id u4mr2381577lfs.226.1635335842638;
+        Wed, 27 Oct 2021 04:57:22 -0700 (PDT)
+Received: from [192.168.1.11] ([94.103.235.8])
+        by smtp.gmail.com with ESMTPSA id p9sm1118651lfu.121.2021.10.27.04.57.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Oct 2021 04:57:22 -0700 (PDT)
+Message-ID: <e4922538-1a57-1d21-9079-e954d742d844@gmail.com>
+Date:   Wed, 27 Oct 2021 14:57:20 +0300
 MIME-Version: 1.0
-Sender: hookersgroove@gmail.com
-Received: by 2002:a05:7010:5904:b0:198:b5b0:e155 with HTTP; Wed, 27 Oct 2021
- 04:51:25 -0700 (PDT)
-From:   Ibrahim idewu <ibrahimidewu4@gmail.com>
-Date:   Wed, 27 Oct 2021 12:51:25 +0100
-X-Google-Sender-Auth: CXN4cgkLR3oCm6QqhwWgwneXWIk
-Message-ID: <CAEF8BQSzgtUUoo949ghW5Gt7zb=3KQebsbhvS=krF_qtPbYhYg@mail.gmail.com>
-Subject: I NEED YOUR RESPOND PLEASE
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Subject: Re: [syzbot] WARNING in batadv_v_ogm_free
+Content-Language: en-US
+To:     syzbot <syzbot+b6a62d5cb9fe05a0e3a3@syzkaller.appspotmail.com>,
+        a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
+        sven@narfation.org, sw@simonwunderlich.de,
+        syzkaller-bugs@googlegroups.com
+References: <00000000000010317a05cee52016@google.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <00000000000010317a05cee52016@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+On 10/22/21 02:19, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    2f111a6fd5b5 Merge tag 'ceph-for-5.15-rc7' of git://github..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=121d909f300000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=d95853dad8472c91
+> dashboard link: https://syzkaller.appspot.com/bug?extid=b6a62d5cb9fe05a0e3a3
+> compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.2
+> 
+> Unfortunately, I don't have any reproducer for this issue yet.
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+b6a62d5cb9fe05a0e3a3@syzkaller.appspotmail.com
+> 
 
-My name is Mr.Ibrahim Idewu.I have decided to seek a confidential
-co-operation  with you in the execution of the deal described
-here-under for our both  mutual benefit and I hope you will keep it a
-top secret because of the nature  of the transaction, During the
-course of our bank year auditing, I discovered  an unclaimed/abandoned
-fund, sum total of {US$19.3 Million United State  Dollars} in the bank
-account that belongs to a Saudi Arabia businessman Who unfortunately
-lost his life and entire family in a Motor Accident.
-I want to present you to the bank as the next of kin to the dead
-business man after the money will be sent to you we then share
-60percent to me and 40percent to you.
-All necessary arrangements to secure the fund have been made by
-me,upon consideration of this offer.
+Looks like bug on error handling path in batadv_mesh_init(). Must be 
+fixed by my batman-adv patch.
 
-send me the below information
-
-
--Your Full Name:
--Your Contact Address:
--Your direct Mobile telephone Number:
--Your Date of Birth:
--Your occupation:
+#syz fix: net: batman-adv: fix error handling
 
 
-I await your swift response and re-assurance.
 
 
-Best regards,
-Mr.Ibrahim Idewu.
+With regards,
+Pavel Skripkin
