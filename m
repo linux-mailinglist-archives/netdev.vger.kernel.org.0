@@ -2,110 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 810E843D74F
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 01:11:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 885D043D753
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 01:11:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230210AbhJ0XNn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 19:13:43 -0400
-Received: from www62.your-server.de ([213.133.104.62]:40952 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229836AbhJ0XNm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 19:13:42 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mfs4W-000F2p-5m; Thu, 28 Oct 2021 01:11:04 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mfs4V-000GPT-Q9; Thu, 28 Oct 2021 01:11:03 +0200
-Subject: Re: [PATCH bpf-next,v3] riscv, bpf: Add BPF exception tables
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Tong Tiangen <tongtiangen@huawei.com>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Palmer Dabbelt <palmerdabbelt@google.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-References: <20211027111822.3801679-1-tongtiangen@huawei.com>
- <CAJ+HfNhC=hfFnjVvCf=bw+n1msRjR3gGUyapAmsRDupZ5CusrQ@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <15487721-b3de-73c7-5ef3-614c6da2f8cd@iogearbox.net>
-Date:   Thu, 28 Oct 2021 01:11:03 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S230316AbhJ0XOD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 19:14:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33964 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230248AbhJ0XOC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Oct 2021 19:14:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 39EE261039;
+        Wed, 27 Oct 2021 23:11:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635376296;
+        bh=KupXla6YPxmj/KDqeXF6aCfkYzKjNPRj7wkgKckspAw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=JP/IXa/AtHXZjOK8OOVkusbwcJ0+wmuhjsoZdzhuQzYvfbNTLj9cMuc5hbT+99OaQ
+         CU4Tjg87Pe2GxOvGEqyS9v+df74g04Ls1UC1r+IXcaYKmn/nyqns4h0k0LUNmdSXZD
+         YZRpC2Q36KRXevnEbf1U63vhL2iPilwZNkptidUX7vh4NlKdKY4zItXRhbXtH9evhH
+         VPwzD9cTou0f5J6WhiM6ZAanZITObAc5kdTkJI/rfRPMcxO43q+tVmqvsARYU2tdbY
+         A0zTWL0WNMrMYpfDFemz8SreLax956zfOHlyWQR9NkuT6BpXhejuxXifLa+5jXoHqv
+         CTy8FoOa31rsw==
+Date:   Wed, 27 Oct 2021 18:11:34 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Dongdong Liu <liudongdong3@huawei.com>
+Cc:     hch@infradead.org, kw@linux.com, logang@deltatee.com,
+        leon@kernel.org, linux-pci@vger.kernel.org, rajur@chelsio.com,
+        hverkuil-cisco@xs4all.nl, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH V10 6/8] PCI/P2PDMA: Add a 10-Bit Tag check in P2PDMA
+Message-ID: <20211027231134.GA258571@bhelgaas>
 MIME-Version: 1.0
-In-Reply-To: <CAJ+HfNhC=hfFnjVvCf=bw+n1msRjR3gGUyapAmsRDupZ5CusrQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26335/Wed Oct 27 10:28:55 2021)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211009104938.48225-7-liudongdong3@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/27/21 6:55 PM, Björn Töpel wrote:
-> On Wed, 27 Oct 2021 at 13:03, Tong Tiangen <tongtiangen@huawei.com> wrote:
->>
->> When a tracing BPF program attempts to read memory without using the
->> bpf_probe_read() helper, the verifier marks the load instruction with
->> the BPF_PROBE_MEM flag. Since the riscv JIT does not currently recognize
->> this flag it falls back to the interpreter.
->>
->> Add support for BPF_PROBE_MEM, by appending an exception table to the
->> BPF program. If the load instruction causes a data abort, the fixup
->> infrastructure finds the exception table and fixes up the fault, by
->> clearing the destination register and jumping over the faulting
->> instruction.
->>
->> A more generic solution would add a "handler" field to the table entry,
->> like on x86 and s390.
->>
->> The same issue in ARM64 is fixed in:
->> commit 800834285361 ("bpf, arm64: Add BPF exception tables")
->>
->> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
->> Tested-by: Pu Lehui <pulehui@huawei.com>
->> ---
->> v3:
->> Modify according to Björn's comments, mainly code optimization.
+On Sat, Oct 09, 2021 at 06:49:36PM +0800, Dongdong Liu wrote:
+> Add a 10-Bit Tag check in the P2PDMA code to ensure that a device with
+> 10-Bit Tag Requester doesn't interact with a device that does not
+> support 10-Bit Tag Completer. Before that happens, the kernel should
+> emit a warning.
+
+> Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
+> Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
+
+> @@ -532,6 +577,9 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
+>  		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
+>  	}
+>  done:
+> +	if (pci_10bit_tags_unsupported(client, provider, verbose))
+> +		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
+
+I need to be convinced that this check is in the right spot to catch
+all potential P2PDMA situations.  The pci_p2pmem_find() and
+pci_p2pdma_distance() interfaces eventually call
+calc_map_type_and_dist().  But those interfaces don't actually produce
+DMA bus addresses, and I'm not convinced that all P2PDMA users use
+them.
+
+nvme *does* use them, but infiniband (rdma_rw_map_sg()) does not, and
+it calls pci_p2pdma_map_sg().
+
+amdgpu_dma_buf_attach() calls pci_p2pdma_distance_many() but I don't
+know where it sets up P2PDMA transactions.
+
+cxgb4 and qed mention "peer2peer", but I don't know whether they are
+related; they don't seem to use any pci_p2p.* interfaces.
+
+>  	rcu_read_lock();
+>  	p2pdma = rcu_dereference(provider->p2pdma);
+>  	if (p2pdma)
+> -- 
+> 2.22.0
 > 
-> Thank you!
-> 
-> I ran this patch against the test_bpf.ko, and selftests/bpf -- no
-> regressions, and after the patch is applied more tests passes. Yay!
-> 
-> On a related note. The RISC-V selftests/bpf is in a pretty lousy
-> state. I'll send a cleanup patch for them soonish. E.g.:
-
-Thanks for testing!
-
-> * RISC-V is missing in bpf_tracing.h (libbpf)
-> * Some programs don't converge in 16 steps, I had to increase it to ~32
-> * The selftest/bpf Makefile needed some RV specific changes
-> * ...a lot of tests still don't pass, and needs to be looked in to
-
-Sounds good, please ship them. ;)
-
-> Feel free to add:
-> 
-> Acked-by: Björn Töpel <bjorn@kernel.org>
-
-Applied, thanks! Tong, if you have a chance, please follow up with Mark's
-suggestion to align the extable infra to arm64/x86.
-
-Thanks,
-Daniel
