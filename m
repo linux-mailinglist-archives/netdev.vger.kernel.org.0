@@ -2,143 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8871F43D4CE
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 23:21:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00BD043D540
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 23:23:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236867AbhJ0VYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 17:24:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35664 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232208AbhJ0VXP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Oct 2021 17:23:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4D111610CA;
-        Wed, 27 Oct 2021 21:20:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635369649;
-        bh=XAKQElgr6BBu1UxLggaDKytR7eU4feqnPzmw0g25Rh0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=p0b4YLUwvJPjelhXK6tuNGSLxPc8W57wzTHLdwcnMUmPB94v3hsvXslXLq1TZ7GY3
-         sL93c85du1ZkOYvv6Pe8m//9lhA+RCJvKPQ3Uxy4IpiUrRzmmHS2TjXc+bDuZhbHC1
-         l+E73WotWsbVG9NLfon08np6Kd/XgVf0Jxca7lyT4yX6vB73LFYEef0IfwG2arUu8/
-         99lPcmeJ/rIFzzRSmhPjxtiZo5dpdJB8a4yC6OHadP/Fj4Qj6F80bnWXW+gPhJdbdy
-         kbLLEj07eEaOlMSzDYq1FQHtoTNtzXOYOJc/bLD1mWl8TMf9oIuR/1QaiRsDmFW7pE
-         HwI4EGZ6WMvrg==
-Date:   Wed, 27 Oct 2021 16:20:48 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Dongdong Liu <liudongdong3@huawei.com>
-Cc:     hch@infradead.org, kw@linux.com, logang@deltatee.com,
-        leon@kernel.org, linux-pci@vger.kernel.org, rajur@chelsio.com,
-        hverkuil-cisco@xs4all.nl, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH V10 6/8] PCI/P2PDMA: Add a 10-Bit Tag check in P2PDMA
-Message-ID: <20211027212048.GA252528@bhelgaas>
+        id S239302AbhJ0VZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 17:25:52 -0400
+Received: from www62.your-server.de ([213.133.104.62]:57098 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244524AbhJ0VYe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 17:24:34 -0400
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mfqMv-0001Do-AK; Wed, 27 Oct 2021 23:21:57 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mfqMu-0008yD-V2; Wed, 27 Oct 2021 23:21:56 +0200
+Subject: Re: [PATCH ebpf] bpf: Disallow unprivileged bpf by default
+To:     Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        antonio.gomez.iglesias@intel.com, tony.luck@intel.com,
+        dave.hansen@linux.intel.com, gregkh@linuxfoundation.org
+References: <d37b01e70e65dced2659561ed5bc4b2ed1a50711.1635367330.git.pawan.kumar.gupta@linux.intel.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <bd4db8da-0d44-1785-5767-1731bdaebef8@iogearbox.net>
+Date:   Wed, 27 Oct 2021 23:21:56 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211009104938.48225-7-liudongdong3@huawei.com>
+In-Reply-To: <d37b01e70e65dced2659561ed5bc4b2ed1a50711.1635367330.git.pawan.kumar.gupta@linux.intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26335/Wed Oct 27 10:28:55 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 09, 2021 at 06:49:36PM +0800, Dongdong Liu wrote:
-> Add a 10-Bit Tag check in the P2PDMA code to ensure that a device with
-> 10-Bit Tag Requester doesn't interact with a device that does not
-> support 10-Bit Tag Completer. 
+Hello Pawan,
 
-Shouldn't this also take into account Extended Tags (8 bits)?  I think
-the only tag size guaranteed to be supported is 5 bits.
-
-> Before that happens, the kernel should emit a warning.
-
-The warning is nice, but the critical thing is that the P2PDMA mapping
-should fail so we don't attempt DMA in this situation.  I guess that's
-sort of what you're saying with "ensure that a device ... doesn't
-interact with a device ..."
-
-> "echo 0 > /sys/bus/pci/devices/.../10bit_tag" to disable 10-Bit Tag
-> Requester for PF device.
+On 10/27/21 10:51 PM, Pawan Gupta wrote:
+> Disabling unprivileged BPF by default would help prevent unprivileged
+> users from creating the conditions required for potential speculative
+> execution side-channel attacks on affected hardware as demonstrated by
+> [1][2][3].
 > 
-> "echo 0 > /sys/bus/pci/devices/.../sriov_vf_10bit_tag_ctl" to disable
-> 10-Bit Tag Requester for VF device.
+> This will sync mainline with what most distros are currently applying.
+> An admin can enable this at runtime if necessary.
 > 
-> Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
-> Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
+> Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+> 
+> [1] https://access.redhat.com/security/cve/cve-2019-7308
+> [2] https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-3490
+> [3] https://bugzilla.redhat.com/show_bug.cgi?id=1672355#c5
+
+Some of your above quoted links are just random ?! For example, [2] has really _zero_ to
+do with what you wrote with regards to speculative execution side-channel attacks ...
+
+We recently did a deep dive on our mitigation work we did in BPF here [0]. This also includes
+an appendix with an extract of the main commits related to the different Spectre variants.
+
+I'd suggest to link to that one instead to avoid confusion on what is related and what not.
+
+   [0] https://ebpf.io/summit-2021-slides/eBPF_Summit_2021-Keynote-Daniel_Borkmann-BPF_and_Spectre.pdf
+
 > ---
->  drivers/pci/p2pdma.c | 48 ++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 48 insertions(+)
+>   kernel/bpf/Kconfig | 5 +++++
+>   1 file changed, 5 insertions(+)
 > 
-> diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
-> index 50cdde3e9a8b..804e390f4c22 100644
-> --- a/drivers/pci/p2pdma.c
-> +++ b/drivers/pci/p2pdma.c
-> @@ -19,6 +19,7 @@
->  #include <linux/random.h>
->  #include <linux/seq_buf.h>
->  #include <linux/xarray.h>
-> +#include "pci.h"
->  
->  enum pci_p2pdma_map_type {
->  	PCI_P2PDMA_MAP_UNKNOWN = 0,
-> @@ -410,6 +411,50 @@ static unsigned long map_types_idx(struct pci_dev *client)
->  		(client->bus->number << 8) | client->devfn;
->  }
->  
-> +static bool pci_10bit_tags_unsupported(struct pci_dev *a,
-> +				       struct pci_dev *b,
-> +				       bool verbose)
-> +{
-> +	bool req;
-> +	bool comp;
-> +	u16 ctl;
-> +	const char *str = "10bit_tag";
+> diff --git a/kernel/bpf/Kconfig b/kernel/bpf/Kconfig
+> index a82d6de86522..73d446294455 100644
+> --- a/kernel/bpf/Kconfig
+> +++ b/kernel/bpf/Kconfig
+> @@ -64,6 +64,7 @@ config BPF_JIT_DEFAULT_ON
+>   
+>   config BPF_UNPRIV_DEFAULT_OFF
+>   	bool "Disable unprivileged BPF by default"
+> +	default y
+
+Hm, arm arch has a CPU_SPECTRE Kconfig symbol, see commit c58d237d0852 ("ARM: spectre:
+add Kconfig symbol for CPUs vulnerable to Spectre") that can be selected.
+
+Would be good to generalize it for reuse so archs can select it, and make the above as
+'default y if CPU_SPECTRE'.
+
+>   	depends on BPF_SYSCALL
+>   	help
+>   	  Disables unprivileged BPF by default by setting the corresponding
+> @@ -72,6 +73,10 @@ config BPF_UNPRIV_DEFAULT_OFF
+>   	  disable it by setting it to 1 (from which no other transition to
+>   	  0 is possible anymore).
+>   
+> +	  Unprivileged BPF can be used to exploit potential speculative
+> +	  execution side-channel vulnerabilities on affected hardware. If you
+> +	  are concerned about it, answer Y.
 > +
-> +	if (a->is_virtfn) {
-> +#ifdef CONFIG_PCI_IOV
-> +		req = !!(a->physfn->sriov->ctrl &
-> +			 PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN);
-> +#endif
-> +	} else {
-> +		pcie_capability_read_word(a, PCI_EXP_DEVCTL2, &ctl);
-> +		req = !!(ctl & PCI_EXP_DEVCTL2_10BIT_TAG_REQ_EN);
-> +	}
-> +
-> +	comp = !!(b->devcap2 & PCI_EXP_DEVCAP2_10BIT_TAG_COMP);
-> +	/* 10-bit tags not enabled on requester */
-> +	if (!req)
-> +		return false;
-> +
-> +	 /* Completer can handle anything */
-> +	if (comp)
-> +		return false;
-> +
-> +	if (!verbose)
-> +		return true;
-> +
-> +	pci_warn(a, "cannot be used for peer-to-peer DMA as 10-Bit Tag Requester enable is set for this device, but peer device (%s) does not support the 10-Bit Tag Completer\n",
-> +		 pci_name(b));
-> +
-> +	if (a->is_virtfn)
-> +		str = "sriov_vf_10bit_tag_ctl";
-> +
-> +	pci_warn(a, "to disable 10-Bit Tag Requester for this device, echo 0 > /sys/bus/pci/devices/%s/%s\n",
-> +		 pci_name(a), str);
-> +
-> +	return true;
-> +}
-> +
->  /*
->   * Calculate the P2PDMA mapping type and distance between two PCI devices.
->   *
-> @@ -532,6 +577,9 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
->  		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
->  	}
->  done:
-> +	if (pci_10bit_tags_unsupported(client, provider, verbose))
-> +		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
-> +
->  	rcu_read_lock();
->  	p2pdma = rcu_dereference(provider->p2pdma);
->  	if (p2pdma)
-> -- 
-> 2.22.0
+>   source "kernel/bpf/preload/Kconfig"
+>   
+>   config BPF_LSM
 > 
+
+Thanks,
+Daniel
