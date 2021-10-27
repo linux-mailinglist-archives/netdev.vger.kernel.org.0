@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C5A943C4E6
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 10:16:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 151B443C509
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 10:26:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238798AbhJ0ITH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 04:19:07 -0400
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:51529 "EHLO
-        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231715AbhJ0ITH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 04:19:07 -0400
+        id S239011AbhJ0I2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 04:28:53 -0400
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:57641 "EHLO
+        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237179AbhJ0I2w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 04:28:52 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 1B7C258041D;
-        Wed, 27 Oct 2021 04:16:42 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Wed, 27 Oct 2021 04:16:42 -0400
+        by mailnew.nyi.internal (Postfix) with ESMTP id 6E9AB580462;
+        Wed, 27 Oct 2021 04:26:27 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Wed, 27 Oct 2021 04:26:27 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-type:date:from:in-reply-to
         :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=JtuJqq
-        Y23rcol/towiKKl+J/LdEhOnMpOw6UCqLwaj4=; b=SGhwE/k9dl8BsjwvnX/R5d
-        6tXEKx/2RzS0D092QpXgxY1WfahSxNs/LPD8oPLz6KIR5/yyJ7+9ZPROxS9EJcAG
-        FtmH5ajiufMjoJdJdk00ZbQ+rjeH5EXmi0rLhsPR35sUYvWYnm6ABCiauYQv33JW
-        bo85Jw8erhGA+K0e0g/Kpmve6fc2xbLI3QNf6uVPnlLEUM++HiC8sZ7GDhkT4e8a
-        eE5HtbAVYGEiejWWhIKjTd2zXxHdtvmerezxa2/dcFBmS2FhHOuOsUvMjRLN8TwN
-        X0XgkQ9VL6S3fkKIPoVinGYKALWrEHVXpEkQYF8zmoCd5DwG5HrVdAjo5xmA+zxw
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=NmruXQ
+        RRLc+2MIbIwpuGjGuoiT09FBpgQByDBiKEc6s=; b=mfF2/b/ydMN27MYAZfL8gv
+        F5vy0F96zZOekqfgli6xA2nXwl8g6P9i4gib+CgbBQvHR8dvszXeeoKgR6BSvYWf
+        hywkg8UrrDm3YcvlJgcNb2Ndjdnly2mBpfXYkUkfVH/plrUKsHzpSb/XlgrI+Yzg
+        JI+g37517kiGETNwQW9mm1OM7rG8k1VF3JpEdbefPYgOgVQIT7XEbnKVsrf2Vlj2
+        kFJ89iSfZ9AfaUQ06zKJVatj4zdgtfyo51bw3TCsGOCxe52HgUCYrkTn0WyFDQDa
+        G6HUNF9YEqG8sAQMwuIgiqLeZSEKn/ov3eI3iy+a6Fn+g8rCKVXUCBOO1XlAkeAw
         ==
-X-ME-Sender: <xms:6Qp5YfuBZa6bvjSLVDebGFgC-LDy3DoKeL609ec-Dec4UsiuDiPlpA>
-    <xme:6Qp5YQf2WTmBaXk78XrMhX-JZEs60Zx1AyGmAfxHy8_1WtZe910Ntwln9C4vAM8u5
-    jH4oZEyFzyepjY>
-X-ME-Received: <xmr:6Qp5YSxjLBZsOzDPpga0yNXJMH_gl691i1wYDeurnou-oKGDvMUsnzt8sBj8JLRhfzDumXjiJmpBWYWwZLYH762_3WrNmg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvdegtdcutefuodetggdotefrodftvfcurf
-    hrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecuuegr
-    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
-    hrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgthhhi
-    mhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvghrnh
-    eptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleetnecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
-    hhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:6Qp5YeMtcysikLGmvT7bnGu-taBtxriQoTmwsnxyL_0xJSQ3nadgMw>
-    <xmx:6Qp5Yf8_zF6YWK-_kOwkUIN6bT9qOPYruedbVVV0ZsXTgb89pEsA9Q>
-    <xmx:6Qp5YeX1cIB9qRy69eVUeEQl_Q235H2zQqgubTqZ6Mfe1lZkRbt9Gw>
-    <xmx:6gp5YQ3QTtpgheJzvnKwpS1BBNTCYLBh1NYVy6iVXsJ-MICF1SW2RQ>
+X-ME-Sender: <xms:Mg15YQ5KOwod8V0e7aRKezamL8esca6UmiYquXQtAhn8heUgKDwp5A>
+    <xme:Mg15YR44pVDApmb-4WOkF5LtjkXYdjRSxAdOg2z4uF8t00Gs2SDteOomgJldC00Fw
+    XHVO4tyZZqIyiA>
+X-ME-Received: <xmr:Mg15YfcwzH0uTrWQWAMbxsVJrUKxuKSsuA40xqA67aVJUFeVwFpvPjFBTTqq-Y8eaBHSOSDdTIfU65repGLJm8WysX2E4g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvdegtddgtdduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:Mg15YVIvhp7S7EHv0OPz1tkvqob2yeiFABsCLGdbPm9EuBzdBknVGQ>
+    <xmx:Mg15YUKWgQWhRAewty_yrMBbdWNUfwMOD32YPfUBA9wV1GRtk7nzoQ>
+    <xmx:Mg15YWzi6gYw2KVik7URqvJdGBF7avHrQacoNfsShRpl9Zgn0JKqRg>
+    <xmx:Mw15YZXIrZoMkz93qrA0tp5z9JyHJOZB-8Gtf8faKXgrJ6CjnTDl4g>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 27 Oct 2021 04:16:40 -0400 (EDT)
-Date:   Wed, 27 Oct 2021 11:16:38 +0300
+ 27 Oct 2021 04:26:26 -0400 (EDT)
+Date:   Wed, 27 Oct 2021 11:26:23 +0300
 From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, nikolay@nvidia.com
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
 Cc:     netdev@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
         Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -58,38 +58,35 @@ Cc:     netdev@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         Jiri Pirko <jiri@nvidia.com>
-Subject: Re: [PATCH net-next 6/8] net: bridge: move br_fdb_replay inside
- br_switchdev.c
-Message-ID: <YXkK5jp7FHwJEeuw@shredder>
+Subject: Re: [PATCH net-next 7/8] net: bridge: create a common function for
+ populating switchdev FDB entries
+Message-ID: <YXkNL8TXkGFpZsjB@shredder>
 References: <20211026142743.1298877-1-vladimir.oltean@nxp.com>
- <20211026142743.1298877-7-vladimir.oltean@nxp.com>
+ <20211026142743.1298877-8-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211026142743.1298877-7-vladimir.oltean@nxp.com>
+In-Reply-To: <20211026142743.1298877-8-vladimir.oltean@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 26, 2021 at 05:27:41PM +0300, Vladimir Oltean wrote:
-> br_fdb_replay is only called from switchdev code paths, so it makes
-> sense to be disabled if switchdev is not enabled in the first place.
+On Tue, Oct 26, 2021 at 05:27:42PM +0300, Vladimir Oltean wrote:
+> There are two places where a switchdev FDB entry is constructed, one is
+> br_switchdev_fdb_notify() and the other is br_fdb_replay(). One uses a
+> struct initializer, and the other declares the structure as
+> uninitialized and populates the elements one by one.
 > 
-> As opposed to br_mdb_replay and br_vlan_replay which might be turned off
-> depending on bridge support for multicast and VLANs, FDB support is
-> always on. So moving br_mdb_replay and br_vlan_replay inside
-> br_switchdev.c would mean adding some #ifdef's in br_switchdev.c, so we
-> keep those where they are.
-
-TBH, for consistency with br_mdb_replay() and br_vlan_replay(), it would
-have been good to keep it where it is, but ...
-
+> One problem when introducing new members of struct
+> switchdev_notifier_fdb_info is that there is a risk for one of these
+> functions to run with an uninitialized value.
 > 
-> The reason for the movement is that in future changes there will be some
-> code reuse between br_switchdev_fdb_notify and br_fdb_replay.
-
-this seems like a good reason, so:
+> So centralize the logic of populating such structure into a dedicated
+> function. Being the primary location where these structures are created,
+> using an uninitialized variable and populating the members one by one
+> should be fine, since this one function is supposed to assign values to
+> all its members.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
 Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-
-Nik, WDYT?
