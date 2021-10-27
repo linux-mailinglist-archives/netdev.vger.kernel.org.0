@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82BCA43BFFC
+	by mail.lfdr.de (Postfix) with ESMTP id CDE5843BFFD
 	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 04:35:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238524AbhJ0ChO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 22:37:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58344 "EHLO mail.kernel.org"
+        id S238541AbhJ0ChQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 22:37:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58398 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238424AbhJ0ChI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Oct 2021 22:37:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E060C60F92;
-        Wed, 27 Oct 2021 02:34:43 +0000 (UTC)
+        id S238438AbhJ0ChL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Oct 2021 22:37:11 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 58F4A610CA;
+        Wed, 27 Oct 2021 02:34:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1635302084;
-        bh=n57fnboODMeUHzwxrj21X2HxDWi6IcA5VcnepuhmxY4=;
+        bh=JNo3BBLfFfPWJWEauKRL7FVcy0Bwdmin2OGSnbrtxps=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vQ4oXljWnBUSem6KMuUthKO7trzoCvA0xF7qT9Edws4n6pbGAjIkrBqdi0Gq4Mp1K
-         66Z0k3RQToB5K5WrC/v+8uingRC6TxJlY4heCxRdol7VpohL7DGAKffLo+pZAsZt/7
-         g76V82HiU5+H8crvrIYYXPtCm4Tz7HvjpzH8/YqSh7aNEeDc3gtknyd5TaFtodSlVe
-         GF43begxlY2c8TpiPwnN85sN46QhoNtGFuZwmHhi237eDMdJxWVJgoZcyfsxi7pHzE
-         42H2xlBjqMHnLb+gVa2vjkpwyRiNW6ghBnyvZDmRvj7njiRBbJ//AYZa3acJ/R64mi
-         aXqmQ20qJMD7A==
+        b=VEEtUbDeWFe5I6iXQR3zakPLSVzBJqYNfG4Ztozgdgp6QnkjwSad216HS7sxNQye1
+         8wJckH9dstBUfaPcLYpiiSXlrtbWS3bijAWhz/5rgV+YaseFsutD69JzVn8Y1Crslg
+         51ZwFkK55rPS7cp22WoYOvT5smwoi+Pdsi1dHYGh3GO20/ohH/u+zZzVU8Oepr5fmh
+         77JpxA7m8tIJDZ5eHIyVq5aFmnSK1NDQ6sfCYKh5r43WqX4mb2lSfFoB+RWLtCOBjI
+         drPZwjKh8WZ/phAFPonghKSGoLT/szi52HZBbltcaR5Re8EAemsSQ0fCiz2Dk6H/VL
+         bvup/kggY3oSg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Ben Ben-Ishay <benishay@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 06/14] net/mlx5e: Add support to klm_umr_wqe
-Date:   Tue, 26 Oct 2021 19:33:39 -0700
-Message-Id: <20211027023347.699076-7-saeed@kernel.org>
+Subject: [net-next 07/14] net/mlx5e: Add control path for SHAMPO feature
+Date:   Tue, 26 Oct 2021 19:33:40 -0700
+Message-Id: <20211027023347.699076-8-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211027023347.699076-1-saeed@kernel.org>
 References: <20211027023347.699076-1-saeed@kernel.org>
@@ -43,79 +43,709 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ben Ben-Ishay <benishay@nvidia.com>
 
-This commit adds the needed definitions for using the klm_umr_wqe.
-UMR stands for user-mode memory registration, is a mechanism to alter
-address translation properties of MKEY by posting WorkQueueElement
-aka WQE on send queue.
-MKEY stands for memory key, MKEY are used to describe a region in memory that
-can be later used by HW.
-KLM stands for {Key, Length, MemVa}, KLM_MKEY is indirect MKEY that enables
-to map multiple memory spaces with different sizes in unified MKEY.
-klm_umr_wqe is a UMR that use to update a KLM_MKEY.
-SHAMPO feature uses KLM_MKEY for memory registration of his header buffer.
+This commit introduces the control path infrastructure for SHAMPO feature.
+
+SHAMPO feature enables packet stitching by splitting packets to
+header and payload, the header is placed on a dedicated buffer
+and the payload on the RX ring, this allows stitching the data part
+of a flow together continuously in the receive buffer.
+
+SHAMPO feature is implemented as linked list striding RQ feature.
+To support packets splitting and payload stitching:
+- Enlarge the ICOSQ and the correspond CQ to support the header buffer
+  memory regions.
+- Add support to create linked list striding RQ with SHAMPO feature set
+  in the open_rq function.
+- Add deallocation function and corresponded calls for SHAMPO header
+  buffer.
+- Add mlx5e_create_umr_klm_mkey to support KLM mkey for the header
+  buffer.
+- Rename mlx5e_create_umr_mkey to mlx5e_create_umr_mtt_mkey.
 
 Signed-off-by: Ben Ben-Ishay <benishay@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h | 24 +++++++++++++++++++-
- include/linux/mlx5/device.h                  |  1 +
- 2 files changed, 24 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |  28 ++-
+ .../ethernet/mellanox/mlx5/core/en/params.c   | 142 +++++++++++--
+ .../ethernet/mellanox/mlx5/core/en/params.h   |  12 ++
+ .../net/ethernet/mellanox/mlx5/core/en/tir.c  |  24 ++-
+ .../net/ethernet/mellanox/mlx5/core/en_main.c | 186 +++++++++++++++++-
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   |  38 ++++
+ 6 files changed, 400 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index 8c3e7464b30f..98b56d8bddb8 100644
+index 98b56d8bddb8..8431cdd8006c 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -152,6 +152,25 @@ struct page_pool;
- #define MLX5E_UMR_WQEBBS \
- 	(DIV_ROUND_UP(MLX5E_UMR_WQE_INLINE_SZ, MLX5_SEND_WQE_BB))
+@@ -79,6 +79,11 @@ struct page_pool;
+ 				 SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
  
-+#define MLX5E_KLM_UMR_WQE_SZ(sgl_len)\
-+	(sizeof(struct mlx5e_umr_wqe) +\
-+	(sizeof(struct mlx5_klm) * (sgl_len)))
-+
-+#define MLX5E_KLM_UMR_WQEBBS(klm_entries) \
-+	(DIV_ROUND_UP(MLX5E_KLM_UMR_WQE_SZ(klm_entries), MLX5_SEND_WQE_BB))
-+
-+#define MLX5E_KLM_UMR_DS_CNT(klm_entries)\
-+	(DIV_ROUND_UP(MLX5E_KLM_UMR_WQE_SZ(klm_entries), MLX5_SEND_WQE_DS))
-+
-+#define MLX5E_KLM_MAX_ENTRIES_PER_WQE(wqe_size)\
-+	(((wqe_size) - sizeof(struct mlx5e_umr_wqe)) / sizeof(struct mlx5_klm))
-+
-+#define MLX5E_KLM_ENTRIES_PER_WQE(wqe_size)\
-+	ALIGN_DOWN(MLX5E_KLM_MAX_ENTRIES_PER_WQE(wqe_size), MLX5_UMR_KLM_ALIGNMENT)
-+
-+#define MLX5E_MAX_KLM_PER_WQE(mdev) \
-+	MLX5E_KLM_ENTRIES_PER_WQE(MLX5E_TX_MPW_MAX_NUM_DS << MLX5_MKEY_BSF_OCTO_SIZE)
-+
- #define MLX5E_MSG_LEVEL			NETIF_MSG_LINK
+ #define MLX5E_RX_MAX_HEAD (256)
++#define MLX5E_SHAMPO_LOG_MAX_HEADER_ENTRY_SIZE (9)
++#define MLX5E_SHAMPO_WQ_HEADER_PER_PAGE (PAGE_SIZE >> MLX5E_SHAMPO_LOG_MAX_HEADER_ENTRY_SIZE)
++#define MLX5E_SHAMPO_WQ_BASE_HEAD_ENTRY_SIZE (64)
++#define MLX5E_SHAMPO_WQ_RESRV_SIZE (64 * 1024)
++#define MLX5E_SHAMPO_WQ_BASE_RESRV_SIZE (4096)
  
- #define mlx5e_dbg(mlevel, priv, format, ...)                    \
-@@ -217,7 +236,10 @@ struct mlx5e_umr_wqe {
- 	struct mlx5_wqe_ctrl_seg       ctrl;
- 	struct mlx5_wqe_umr_ctrl_seg   uctrl;
- 	struct mlx5_mkey_seg           mkc;
--	struct mlx5_mtt                inline_mtts[0];
-+	union {
-+		struct mlx5_mtt inline_mtts[0];
-+		struct mlx5_klm inline_klms[0];
-+	};
+ #define MLX5_MPWRQ_MIN_LOG_STRIDE_SZ(mdev) \
+ 	(6 + MLX5_CAP_GEN(mdev, cache_line_128byte)) /* HW restriction */
+@@ -273,6 +278,10 @@ enum packet_merge {
+ struct mlx5e_packet_merge_param {
+ 	enum packet_merge type;
+ 	u32 timeout;
++	struct {
++		u8 match_criteria_type;
++		u8 alignment_granularity;
++	} shampo;
  };
  
- enum mlx5e_priv_flag {
-diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
-index 0d30a6184e1d..c920e5932368 100644
---- a/include/linux/mlx5/device.h
-+++ b/include/linux/mlx5/device.h
-@@ -290,6 +290,7 @@ enum {
- 	MLX5_UMR_INLINE			= (1 << 7),
+ struct mlx5e_params {
+@@ -319,7 +328,8 @@ enum {
+ 	MLX5E_RQ_STATE_NO_CSUM_COMPLETE,
+ 	MLX5E_RQ_STATE_CSUM_FULL, /* cqe_csum_full hw bit is set */
+ 	MLX5E_RQ_STATE_FPGA_TLS, /* FPGA TLS enabled */
+-	MLX5E_RQ_STATE_MINI_CQE_HW_STRIDX /* set when mini_cqe_resp_stride_index cap is used */
++	MLX5E_RQ_STATE_MINI_CQE_HW_STRIDX, /* set when mini_cqe_resp_stride_index cap is used */
++	MLX5E_RQ_STATE_SHAMPO, /* set when SHAMPO cap is used */
  };
  
-+#define MLX5_UMR_KLM_ALIGNMENT 4
- #define MLX5_UMR_MTT_ALIGNMENT 0x40
- #define MLX5_UMR_MTT_MASK      (MLX5_UMR_MTT_ALIGNMENT - 1)
- #define MLX5_UMR_MTT_MIN_CHUNK_SIZE MLX5_UMR_MTT_ALIGNMENT
+ struct mlx5e_cq {
+@@ -610,6 +620,7 @@ typedef struct sk_buff *
+ 			 struct mlx5e_wqe_frag_info *wi, u32 cqe_bcnt);
+ typedef bool (*mlx5e_fp_post_rx_wqes)(struct mlx5e_rq *rq);
+ typedef void (*mlx5e_fp_dealloc_wqe)(struct mlx5e_rq*, u16);
++typedef void (*mlx5e_fp_shampo_dealloc_hd)(struct mlx5e_rq*, u16, u16, bool);
+ 
+ int mlx5e_rq_set_handlers(struct mlx5e_rq *rq, struct mlx5e_params *params, bool xsk);
+ void mlx5e_rq_set_trap_handlers(struct mlx5e_rq *rq, struct mlx5e_params *params);
+@@ -631,6 +642,19 @@ struct mlx5e_rq_frags_info {
+ 	u8 wqe_bulk;
+ };
+ 
++struct mlx5e_shampo_hd {
++	struct mlx5_core_mkey mkey;
++	struct mlx5e_dma_info *info;
++	struct page *last_page;
++	u16 hd_per_wq;
++	u16 hd_per_wqe;
++	unsigned long *bitmap;
++	u16 pi;
++	u16 ci;
++	__be32 key;
++	u64 last_addr;
++};
++
+ struct mlx5e_rq {
+ 	/* data path */
+ 	union {
+@@ -652,6 +676,7 @@ struct mlx5e_rq {
+ 			u8                     umr_in_progress;
+ 			u8                     umr_last_bulk;
+ 			u8                     umr_completed;
++			struct mlx5e_shampo_hd *shampo;
+ 		} mpwqe;
+ 	};
+ 	struct {
+@@ -947,6 +972,7 @@ void mlx5e_build_ptys2ethtool_map(void);
+ 
+ bool mlx5e_check_fragmented_striding_rq_cap(struct mlx5_core_dev *mdev);
+ 
++void mlx5e_shampo_dealloc_hd(struct mlx5e_rq *rq, u16 len, u16 start, bool close);
+ void mlx5e_get_stats(struct net_device *dev, struct rtnl_link_stats64 *stats);
+ void mlx5e_fold_sw_stats64(struct mlx5e_priv *priv, struct rtnl_link_stats64 *s);
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+index 15f441a1b80c..f8c29022dbb2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+@@ -139,6 +139,27 @@ u8 mlx5e_mpwqe_get_log_rq_size(struct mlx5e_params *params,
+ 	return params->log_rq_mtu_frames - log_pkts_per_wqe;
+ }
+ 
++u8 mlx5e_shampo_get_log_hd_entry_size(struct mlx5_core_dev *mdev,
++				      struct mlx5e_params *params)
++{
++	return order_base_2(DIV_ROUND_UP(MLX5E_RX_MAX_HEAD, MLX5E_SHAMPO_WQ_BASE_HEAD_ENTRY_SIZE));
++}
++
++u8 mlx5e_shampo_get_log_rsrv_size(struct mlx5_core_dev *mdev,
++				  struct mlx5e_params *params)
++{
++	return order_base_2(MLX5E_SHAMPO_WQ_RESRV_SIZE / MLX5E_SHAMPO_WQ_BASE_RESRV_SIZE);
++}
++
++u8 mlx5e_shampo_get_log_pkt_per_rsrv(struct mlx5_core_dev *mdev,
++				     struct mlx5e_params *params)
++{
++	u32 resrv_size = BIT(mlx5e_shampo_get_log_rsrv_size(mdev, params)) *
++			 PAGE_SIZE;
++
++	return order_base_2(DIV_ROUND_UP(resrv_size, params->sw_mtu));
++}
++
+ u8 mlx5e_mpwqe_get_log_stride_size(struct mlx5_core_dev *mdev,
+ 				   struct mlx5e_params *params,
+ 				   struct mlx5e_xsk_param *xsk)
+@@ -443,6 +464,23 @@ static void mlx5e_build_common_cq_param(struct mlx5_core_dev *mdev,
+ 		MLX5_SET(cqc, cqc, cqe_sz, CQE_STRIDE_128_PAD);
+ }
+ 
++static u32 mlx5e_shampo_get_log_cq_size(struct mlx5_core_dev *mdev,
++					struct mlx5e_params *params,
++					struct mlx5e_xsk_param *xsk)
++{
++	int rsrv_size = BIT(mlx5e_shampo_get_log_rsrv_size(mdev, params)) * PAGE_SIZE;
++	u16 num_strides = BIT(mlx5e_mpwqe_get_log_num_strides(mdev, params, xsk));
++	int pkt_per_rsrv = BIT(mlx5e_shampo_get_log_pkt_per_rsrv(mdev, params));
++	u8 log_stride_sz = mlx5e_mpwqe_get_log_stride_size(mdev, params, xsk);
++	int wq_size = BIT(mlx5e_mpwqe_get_log_rq_size(params, xsk));
++	int wqe_size = BIT(log_stride_sz) * num_strides;
++
++	/* +1 is for the case that the pkt_per_rsrv dont consume the reservation
++	 * so we get a filler cqe for the rest of the reservation.
++	 */
++	return order_base_2((wqe_size / rsrv_size) * wq_size * (pkt_per_rsrv + 1));
++}
++
+ static void mlx5e_build_rx_cq_param(struct mlx5_core_dev *mdev,
+ 				    struct mlx5e_params *params,
+ 				    struct mlx5e_xsk_param *xsk,
+@@ -454,9 +492,12 @@ static void mlx5e_build_rx_cq_param(struct mlx5_core_dev *mdev,
+ 
+ 	switch (params->rq_wq_type) {
+ 	case MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ:
+-		log_cq_size = mlx5e_mpwqe_get_log_rq_size(params, xsk) +
+-			mlx5e_mpwqe_get_log_num_strides(mdev, params, xsk);
+ 		hw_stridx = MLX5_CAP_GEN(mdev, mini_cqe_resp_stride_index);
++		if (params->packet_merge.type == MLX5E_PACKET_MERGE_SHAMPO)
++			log_cq_size = mlx5e_shampo_get_log_cq_size(mdev, params, xsk);
++		else
++			log_cq_size = mlx5e_mpwqe_get_log_rq_size(params, xsk) +
++				mlx5e_mpwqe_get_log_num_strides(mdev, params, xsk);
+ 		break;
+ 	default: /* MLX5_WQ_TYPE_CYCLIC */
+ 		log_cq_size = params->log_rq_mtu_frames;
+@@ -511,6 +552,22 @@ int mlx5e_build_rq_param(struct mlx5_core_dev *mdev,
+ 		MLX5_SET(wq, wq, log_wqe_stride_size,
+ 			 log_wqe_stride_size - MLX5_MPWQE_LOG_STRIDE_SZ_BASE);
+ 		MLX5_SET(wq, wq, log_wq_sz, mlx5e_mpwqe_get_log_rq_size(params, xsk));
++		if (params->packet_merge.type == MLX5E_PACKET_MERGE_SHAMPO) {
++			MLX5_SET(wq, wq, shampo_enable, true);
++			MLX5_SET(wq, wq, log_reservation_size,
++				 mlx5e_shampo_get_log_rsrv_size(mdev, params));
++			MLX5_SET(wq, wq,
++				 log_max_num_of_packets_per_reservation,
++				 mlx5e_shampo_get_log_pkt_per_rsrv(mdev, params));
++			MLX5_SET(wq, wq, log_headers_entry_size,
++				 mlx5e_shampo_get_log_hd_entry_size(mdev, params));
++			MLX5_SET(rqc, rqc, reservation_timeout,
++				 params->packet_merge.timeout);
++			MLX5_SET(rqc, rqc, shampo_match_criteria_type,
++				 params->packet_merge.shampo.match_criteria_type);
++			MLX5_SET(rqc, rqc, shampo_no_match_alignment_granularity,
++				 params->packet_merge.shampo.alignment_granularity);
++		}
+ 		break;
+ 	}
+ 	default: /* MLX5_WQ_TYPE_CYCLIC */
+@@ -611,17 +668,80 @@ static u8 mlx5e_get_rq_log_wq_sz(void *rqc)
+ 	return MLX5_GET(wq, wq, log_wq_sz);
+ }
+ 
+-static u8 mlx5e_build_icosq_log_wq_sz(struct mlx5e_params *params,
++/* This function calculates the maximum number of headers entries that are needed
++ * per WQE, the formula is based on the size of the reservations and the
++ * restriction we have about max packets for reservation that is equal to max
++ * headers per reservation.
++ */
++u32 mlx5e_shampo_hd_per_wqe(struct mlx5_core_dev *mdev,
++			    struct mlx5e_params *params,
++			    struct mlx5e_rq_param *rq_param)
++{
++	int resv_size = BIT(mlx5e_shampo_get_log_rsrv_size(mdev, params)) * PAGE_SIZE;
++	u16 num_strides = BIT(mlx5e_mpwqe_get_log_num_strides(mdev, params, NULL));
++	int pkt_per_resv = BIT(mlx5e_shampo_get_log_pkt_per_rsrv(mdev, params));
++	u8 log_stride_sz = mlx5e_mpwqe_get_log_stride_size(mdev, params, NULL);
++	int wqe_size = BIT(log_stride_sz) * num_strides;
++	u32 hd_per_wqe;
++
++	/* Assumption: hd_per_wqe % 8 == 0. */
++	hd_per_wqe = (wqe_size / resv_size) * pkt_per_resv;
++	mlx5_core_dbg(mdev, "%s hd_per_wqe = %d rsrv_size = %d wqe_size = %d pkt_per_resv = %d\n",
++		      __func__, hd_per_wqe, resv_size, wqe_size, pkt_per_resv);
++	return hd_per_wqe;
++}
++
++/* This function calculates the maximum number of headers entries that are needed
++ * for the WQ, this value is uesed to allocate the header buffer in HW, thus
++ * must be a pow of 2.
++ */
++u32 mlx5e_shampo_hd_per_wq(struct mlx5_core_dev *mdev,
++			   struct mlx5e_params *params,
++			   struct mlx5e_rq_param *rq_param)
++{
++	void *wqc = MLX5_ADDR_OF(rqc, rq_param->rqc, wq);
++	int wq_size = BIT(MLX5_GET(wq, wqc, log_wq_sz));
++	u32 hd_per_wqe, hd_per_wq;
++
++	hd_per_wqe = mlx5e_shampo_hd_per_wqe(mdev, params, rq_param);
++	hd_per_wq = roundup_pow_of_two(hd_per_wqe * wq_size);
++	return hd_per_wq;
++}
++
++static u32 mlx5e_shampo_icosq_sz(struct mlx5_core_dev *mdev,
++				 struct mlx5e_params *params,
++				 struct mlx5e_rq_param *rq_param)
++{
++	int max_num_of_umr_per_wqe, max_hd_per_wqe, max_klm_per_umr, rest;
++	void *wqc = MLX5_ADDR_OF(rqc, rq_param->rqc, wq);
++	int wq_size = BIT(MLX5_GET(wq, wqc, log_wq_sz));
++	u32 wqebbs;
++
++	max_klm_per_umr = MLX5E_MAX_KLM_PER_WQE(mdev);
++	max_hd_per_wqe = mlx5e_shampo_hd_per_wqe(mdev, params, rq_param);
++	max_num_of_umr_per_wqe = max_hd_per_wqe / max_klm_per_umr;
++	rest = max_hd_per_wqe % max_klm_per_umr;
++	wqebbs = MLX5E_KLM_UMR_WQEBBS(max_klm_per_umr) * max_num_of_umr_per_wqe;
++	if (rest)
++		wqebbs += MLX5E_KLM_UMR_WQEBBS(rest);
++	wqebbs *= wq_size;
++	return wqebbs;
++}
++
++static u8 mlx5e_build_icosq_log_wq_sz(struct mlx5_core_dev *mdev,
++				      struct mlx5e_params *params,
+ 				      struct mlx5e_rq_param *rqp)
+ {
+-	switch (params->rq_wq_type) {
+-	case MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ:
+-		return max_t(u8, MLX5E_PARAMS_MINIMUM_LOG_SQ_SIZE,
+-			     order_base_2(MLX5E_UMR_WQEBBS) +
+-			     mlx5e_get_rq_log_wq_sz(rqp->rqc));
+-	default: /* MLX5_WQ_TYPE_CYCLIC */
++	u32 wqebbs;
++
++	/* MLX5_WQ_TYPE_CYCLIC */
++	if (params->rq_wq_type != MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ)
+ 		return MLX5E_PARAMS_MINIMUM_LOG_SQ_SIZE;
+-	}
++
++	wqebbs = MLX5E_UMR_WQEBBS * BIT(mlx5e_get_rq_log_wq_sz(rqp->rqc));
++	if (params->packet_merge.type == MLX5E_PACKET_MERGE_SHAMPO)
++		wqebbs += mlx5e_shampo_icosq_sz(mdev, params, rqp);
++	return max_t(u8, MLX5E_PARAMS_MINIMUM_LOG_SQ_SIZE, order_base_2(wqebbs));
+ }
+ 
+ static u8 mlx5e_build_async_icosq_log_wq_sz(struct mlx5_core_dev *mdev)
+@@ -688,7 +808,7 @@ int mlx5e_build_channel_param(struct mlx5_core_dev *mdev,
+ 	if (err)
+ 		return err;
+ 
+-	icosq_log_wq_sz = mlx5e_build_icosq_log_wq_sz(params, &cparam->rq);
++	icosq_log_wq_sz = mlx5e_build_icosq_log_wq_sz(mdev, params, &cparam->rq);
+ 	async_icosq_log_wq_sz = mlx5e_build_async_icosq_log_wq_sz(mdev);
+ 
+ 	mlx5e_build_sq_param(mdev, params, &cparam->txq_sq);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
+index e9593f5f0661..433e6967692d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
+@@ -111,6 +111,18 @@ bool mlx5e_rx_mpwqe_is_linear_skb(struct mlx5_core_dev *mdev,
+ 				  struct mlx5e_xsk_param *xsk);
+ u8 mlx5e_mpwqe_get_log_rq_size(struct mlx5e_params *params,
+ 			       struct mlx5e_xsk_param *xsk);
++u8 mlx5e_shampo_get_log_hd_entry_size(struct mlx5_core_dev *mdev,
++				      struct mlx5e_params *params);
++u8 mlx5e_shampo_get_log_rsrv_size(struct mlx5_core_dev *mdev,
++				  struct mlx5e_params *params);
++u8 mlx5e_shampo_get_log_pkt_per_rsrv(struct mlx5_core_dev *mdev,
++				     struct mlx5e_params *params);
++u32 mlx5e_shampo_hd_per_wqe(struct mlx5_core_dev *mdev,
++			    struct mlx5e_params *params,
++			    struct mlx5e_rq_param *rq_param);
++u32 mlx5e_shampo_hd_per_wq(struct mlx5_core_dev *mdev,
++			   struct mlx5e_params *params,
++			   struct mlx5e_rq_param *rq_param);
+ u8 mlx5e_mpwqe_get_log_stride_size(struct mlx5_core_dev *mdev,
+ 				   struct mlx5e_params *params,
+ 				   struct mlx5e_xsk_param *xsk);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tir.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tir.c
+index a1afb8585e37..da169b816665 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tir.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tir.c
+@@ -79,15 +79,21 @@ void mlx5e_tir_builder_build_packet_merge(struct mlx5e_tir_builder *builder,
+ 	if (builder->modify)
+ 		MLX5_SET(modify_tir_in, builder->in, bitmask.packet_merge, 1);
+ 
+-	if (pkt_merge_param->type == MLX5E_PACKET_MERGE_NONE)
+-		return;
+-
+-	MLX5_SET(tirc, tirc, packet_merge_mask,
+-		 MLX5_TIRC_PACKET_MERGE_MASK_IPV4_LRO |
+-		 MLX5_TIRC_PACKET_MERGE_MASK_IPV6_LRO);
+-	MLX5_SET(tirc, tirc, lro_max_ip_payload_size,
+-		 (MLX5E_PARAMS_DEFAULT_LRO_WQE_SZ - rough_max_l2_l3_hdr_sz) >> 8);
+-	MLX5_SET(tirc, tirc, lro_timeout_period_usecs, pkt_merge_param->timeout);
++	switch (pkt_merge_param->type) {
++	case MLX5E_PACKET_MERGE_LRO:
++		MLX5_SET(tirc, tirc, packet_merge_mask,
++			 MLX5_TIRC_PACKET_MERGE_MASK_IPV4_LRO |
++			 MLX5_TIRC_PACKET_MERGE_MASK_IPV6_LRO);
++		MLX5_SET(tirc, tirc, lro_max_ip_payload_size,
++			 (MLX5E_PARAMS_DEFAULT_LRO_WQE_SZ - rough_max_l2_l3_hdr_sz) >> 8);
++		MLX5_SET(tirc, tirc, lro_timeout_period_usecs, pkt_merge_param->timeout);
++		break;
++	case MLX5E_PACKET_MERGE_SHAMPO:
++		MLX5_SET(tirc, tirc, packet_merge_mask, MLX5_TIRC_PACKET_MERGE_MASK_SHAMPO);
++		break;
++	default:
++		break;
++	}
+ }
+ 
+ static int mlx5e_hfunc_to_hw(u8 hfunc)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 0c039906a1fd..a7f1915c9a84 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -218,6 +218,45 @@ static inline void mlx5e_build_umr_wqe(struct mlx5e_rq *rq,
+ 	ucseg->mkey_mask     = cpu_to_be64(MLX5_MKEY_MASK_FREE);
+ }
+ 
++static int mlx5e_rq_shampo_hd_alloc(struct mlx5e_rq *rq, int node)
++{
++	rq->mpwqe.shampo = kvzalloc_node(sizeof(*rq->mpwqe.shampo),
++					 GFP_KERNEL, node);
++	if (!rq->mpwqe.shampo)
++		return -ENOMEM;
++	return 0;
++}
++
++static void mlx5e_rq_shampo_hd_free(struct mlx5e_rq *rq)
++{
++	kvfree(rq->mpwqe.shampo);
++}
++
++static int mlx5e_rq_shampo_hd_info_alloc(struct mlx5e_rq *rq, int node)
++{
++	struct mlx5e_shampo_hd *shampo = rq->mpwqe.shampo;
++
++	shampo->bitmap = bitmap_zalloc_node(shampo->hd_per_wq, GFP_KERNEL,
++					    node);
++	if (!shampo->bitmap)
++		return -ENOMEM;
++
++	shampo->info = kvzalloc_node(array_size(shampo->hd_per_wq,
++						sizeof(*shampo->info)),
++				     GFP_KERNEL, node);
++	if (!shampo->info) {
++		kvfree(shampo->bitmap);
++		return -ENOMEM;
++	}
++	return 0;
++}
++
++static void mlx5e_rq_shampo_hd_info_free(struct mlx5e_rq *rq)
++{
++	kvfree(rq->mpwqe.shampo->bitmap);
++	kvfree(rq->mpwqe.shampo->info);
++}
++
+ static int mlx5e_rq_alloc_mpwqe_info(struct mlx5e_rq *rq, int node)
+ {
+ 	int wq_sz = mlx5_wq_ll_get_size(&rq->mpwqe.wq);
+@@ -233,10 +272,10 @@ static int mlx5e_rq_alloc_mpwqe_info(struct mlx5e_rq *rq, int node)
+ 	return 0;
+ }
+ 
+-static int mlx5e_create_umr_mkey(struct mlx5_core_dev *mdev,
+-				 u64 npages, u8 page_shift,
+-				 struct mlx5_core_mkey *umr_mkey,
+-				 dma_addr_t filler_addr)
++static int mlx5e_create_umr_mtt_mkey(struct mlx5_core_dev *mdev,
++				     u64 npages, u8 page_shift,
++				     struct mlx5_core_mkey *umr_mkey,
++				     dma_addr_t filler_addr)
+ {
+ 	struct mlx5_mtt *mtt;
+ 	int inlen;
+@@ -284,12 +323,59 @@ static int mlx5e_create_umr_mkey(struct mlx5_core_dev *mdev,
+ 	return err;
+ }
+ 
++static int mlx5e_create_umr_klm_mkey(struct mlx5_core_dev *mdev,
++				     u64 nentries,
++				     struct mlx5_core_mkey *umr_mkey)
++{
++	int inlen;
++	void *mkc;
++	u32 *in;
++	int err;
++
++	inlen = MLX5_ST_SZ_BYTES(create_mkey_in);
++
++	in = kvzalloc(inlen, GFP_KERNEL);
++	if (!in)
++		return -ENOMEM;
++
++	mkc = MLX5_ADDR_OF(create_mkey_in, in, memory_key_mkey_entry);
++
++	MLX5_SET(mkc, mkc, free, 1);
++	MLX5_SET(mkc, mkc, umr_en, 1);
++	MLX5_SET(mkc, mkc, lw, 1);
++	MLX5_SET(mkc, mkc, lr, 1);
++	MLX5_SET(mkc, mkc, access_mode_1_0, MLX5_MKC_ACCESS_MODE_KLMS);
++	mlx5e_mkey_set_relaxed_ordering(mdev, mkc);
++	MLX5_SET(mkc, mkc, qpn, 0xffffff);
++	MLX5_SET(mkc, mkc, pd, mdev->mlx5e_res.hw_objs.pdn);
++	MLX5_SET(mkc, mkc, translations_octword_size, nentries);
++	MLX5_SET(mkc, mkc, length64, 1);
++	err = mlx5_core_create_mkey(mdev, umr_mkey, in, inlen);
++
++	kvfree(in);
++	return err;
++}
++
+ static int mlx5e_create_rq_umr_mkey(struct mlx5_core_dev *mdev, struct mlx5e_rq *rq)
+ {
+ 	u64 num_mtts = MLX5E_REQUIRED_MTTS(mlx5_wq_ll_get_size(&rq->mpwqe.wq));
+ 
+-	return mlx5e_create_umr_mkey(mdev, num_mtts, PAGE_SHIFT, &rq->umr_mkey,
+-				     rq->wqe_overflow.addr);
++	return mlx5e_create_umr_mtt_mkey(mdev, num_mtts, PAGE_SHIFT,
++					 &rq->umr_mkey, rq->wqe_overflow.addr);
++}
++
++static int mlx5e_create_rq_hd_umr_mkey(struct mlx5_core_dev *mdev,
++				       struct mlx5e_rq *rq)
++{
++	u32 max_klm_size = BIT(MLX5_CAP_GEN(mdev, log_max_klm_list_size));
++
++	if (max_klm_size < rq->mpwqe.shampo->hd_per_wq) {
++		mlx5_core_err(mdev, "max klm list size 0x%x is smaller than shampo header buffer list size 0x%x\n",
++			      max_klm_size, rq->mpwqe.shampo->hd_per_wq);
++		return -EINVAL;
++	}
++	return mlx5e_create_umr_klm_mkey(mdev, rq->mpwqe.shampo->hd_per_wq,
++					 &rq->mpwqe.shampo->mkey);
+ }
+ 
+ static u64 mlx5e_get_mpwqe_offset(u16 wqe_ix)
+@@ -403,6 +489,56 @@ static int mlx5e_init_rxq_rq(struct mlx5e_channel *c, struct mlx5e_params *param
+ 	return xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq->ix, 0);
+ }
+ 
++static int mlx5_rq_shampo_alloc(struct mlx5_core_dev *mdev,
++				struct mlx5e_params *params,
++				struct mlx5e_rq_param *rqp,
++				struct mlx5e_rq *rq,
++				u32 *pool_size,
++				int node)
++{
++	void *wqc = MLX5_ADDR_OF(rqc, rqp->rqc, wq);
++	int wq_size;
++	int err;
++
++	if (!test_bit(MLX5E_RQ_STATE_SHAMPO, &rq->state))
++		return 0;
++	err = mlx5e_rq_shampo_hd_alloc(rq, node);
++	if (err)
++		goto out;
++	rq->mpwqe.shampo->hd_per_wq =
++		mlx5e_shampo_hd_per_wq(mdev, params, rqp);
++	err = mlx5e_create_rq_hd_umr_mkey(mdev, rq);
++	if (err)
++		goto err_shampo_hd;
++	err = mlx5e_rq_shampo_hd_info_alloc(rq, node);
++	if (err)
++		goto err_shampo_info;
++	rq->mpwqe.shampo->key =
++		cpu_to_be32(rq->mpwqe.shampo->mkey.key);
++	rq->mpwqe.shampo->hd_per_wqe =
++		mlx5e_shampo_hd_per_wqe(mdev, params, rqp);
++	wq_size = BIT(MLX5_GET(wq, wqc, log_wq_sz));
++	*pool_size += (rq->mpwqe.shampo->hd_per_wqe * wq_size) /
++		     MLX5E_SHAMPO_WQ_HEADER_PER_PAGE;
++	return 0;
++
++err_shampo_info:
++	mlx5_core_destroy_mkey(mdev, &rq->mpwqe.shampo->mkey);
++err_shampo_hd:
++	mlx5e_rq_shampo_hd_free(rq);
++out:
++	return err;
++}
++
++static void mlx5e_rq_free_shampo(struct mlx5e_rq *rq)
++{
++	if (!test_bit(MLX5E_RQ_STATE_SHAMPO, &rq->state))
++		return;
++	mlx5e_rq_shampo_hd_info_free(rq);
++	mlx5_core_destroy_mkey(rq->mdev, &rq->mpwqe.shampo->mkey);
++	mlx5e_rq_shampo_hd_free(rq);
++}
++
+ static int mlx5e_alloc_rq(struct mlx5e_params *params,
+ 			  struct mlx5e_xsk_param *xsk,
+ 			  struct mlx5e_rq_param *rqp,
+@@ -460,6 +596,11 @@ static int mlx5e_alloc_rq(struct mlx5e_params *params,
+ 		err = mlx5e_rq_alloc_mpwqe_info(rq, node);
+ 		if (err)
+ 			goto err_rq_mkey;
++
++		err = mlx5_rq_shampo_alloc(mdev, params, rqp, rq, &pool_size, node);
++		if (err)
++			goto err_free_by_rq_type;
++
+ 		break;
+ 	default: /* MLX5_WQ_TYPE_CYCLIC */
+ 		err = mlx5_wq_cyc_create(mdev, &rqp->wq, rqc_wq, &rq->wqe.wq,
+@@ -512,14 +653,14 @@ static int mlx5e_alloc_rq(struct mlx5e_params *params,
+ 		if (IS_ERR(rq->page_pool)) {
+ 			err = PTR_ERR(rq->page_pool);
+ 			rq->page_pool = NULL;
+-			goto err_free_by_rq_type;
++			goto err_free_shampo;
+ 		}
+ 		if (xdp_rxq_info_is_reg(&rq->xdp_rxq))
+ 			err = xdp_rxq_info_reg_mem_model(&rq->xdp_rxq,
+ 							 MEM_TYPE_PAGE_POOL, rq->page_pool);
+ 	}
+ 	if (err)
+-		goto err_free_by_rq_type;
++		goto err_free_shampo;
+ 
+ 	for (i = 0; i < wq_sz; i++) {
+ 		if (rq->wq_type == MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ) {
+@@ -528,8 +669,10 @@ static int mlx5e_alloc_rq(struct mlx5e_params *params,
+ 			u32 byte_count =
+ 				rq->mpwqe.num_strides << rq->mpwqe.log_stride_sz;
+ 			u64 dma_offset = mlx5e_get_mpwqe_offset(i);
++			u16 headroom = test_bit(MLX5E_RQ_STATE_SHAMPO, &rq->state) ?
++				       0 : rq->buff.headroom;
+ 
+-			wqe->data[0].addr = cpu_to_be64(dma_offset + rq->buff.headroom);
++			wqe->data[0].addr = cpu_to_be64(dma_offset + headroom);
+ 			wqe->data[0].byte_count = cpu_to_be32(byte_count);
+ 			wqe->data[0].lkey = rq->mkey_be;
+ 		} else {
+@@ -569,6 +712,8 @@ static int mlx5e_alloc_rq(struct mlx5e_params *params,
+ 
+ 	return 0;
+ 
++err_free_shampo:
++	mlx5e_rq_free_shampo(rq);
+ err_free_by_rq_type:
+ 	switch (rq->wq_type) {
+ 	case MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ:
+@@ -609,6 +754,7 @@ static void mlx5e_free_rq(struct mlx5e_rq *rq)
+ 		kvfree(rq->mpwqe.info);
+ 		mlx5_core_destroy_mkey(rq->mdev, &rq->umr_mkey);
+ 		mlx5e_free_mpwqe_rq_drop_page(rq);
++		mlx5e_rq_free_shampo(rq);
+ 		break;
+ 	default: /* MLX5_WQ_TYPE_CYCLIC */
+ 		kvfree(rq->wqe.frags);
+@@ -662,6 +808,12 @@ int mlx5e_create_rq(struct mlx5e_rq *rq, struct mlx5e_rq_param *param)
+ 						MLX5_ADAPTER_PAGE_SHIFT);
+ 	MLX5_SET64(wq, wq,  dbr_addr,		rq->wq_ctrl.db.dma);
+ 
++	if (test_bit(MLX5E_RQ_STATE_SHAMPO, &rq->state)) {
++		MLX5_SET(wq, wq, log_headers_buffer_entry_num,
++			 order_base_2(rq->mpwqe.shampo->hd_per_wq));
++		MLX5_SET(wq, wq, headers_mkey, rq->mpwqe.shampo->mkey.key);
++	}
++
+ 	mlx5_fill_page_frag_array(&rq->wq_ctrl.buf,
+ 				  (__be64 *)MLX5_ADDR_OF(wq, wq, pas));
+ 
+@@ -801,6 +953,15 @@ void mlx5e_free_rx_in_progress_descs(struct mlx5e_rq *rq)
+ 		head = mlx5_wq_ll_get_wqe_next_ix(wq, head);
+ 	}
+ 
++	if (test_bit(MLX5E_RQ_STATE_SHAMPO, &rq->state)) {
++		u16 len;
++
++		len = (rq->mpwqe.shampo->pi - rq->mpwqe.shampo->ci) &
++		      (rq->mpwqe.shampo->hd_per_wq - 1);
++		mlx5e_shampo_dealloc_hd(rq, len, rq->mpwqe.shampo->ci, false);
++		rq->mpwqe.shampo->pi = rq->mpwqe.shampo->ci;
++	}
++
+ 	rq->mpwqe.actual_wq_head = wq->head;
+ 	rq->mpwqe.umr_in_progress = 0;
+ 	rq->mpwqe.umr_completed = 0;
+@@ -826,6 +987,10 @@ void mlx5e_free_rx_descs(struct mlx5e_rq *rq)
+ 			mlx5_wq_ll_pop(wq, wqe_ix_be,
+ 				       &wqe->next.next_wqe_index);
+ 		}
++
++		if (test_bit(MLX5E_RQ_STATE_SHAMPO, &rq->state))
++			mlx5e_shampo_dealloc_hd(rq, rq->mpwqe.shampo->hd_per_wq,
++						0, true);
+ 	} else {
+ 		struct mlx5_wq_cyc *wq = &rq->wqe.wq;
+ 
+@@ -845,6 +1010,9 @@ int mlx5e_open_rq(struct mlx5e_params *params, struct mlx5e_rq_param *param,
+ 	struct mlx5_core_dev *mdev = rq->mdev;
+ 	int err;
+ 
++	if (params->packet_merge.type == MLX5E_PACKET_MERGE_SHAMPO)
++		__set_bit(MLX5E_RQ_STATE_SHAMPO, &rq->state);
++
+ 	err = mlx5e_alloc_rq(params, xsk, param, node, rq);
+ 	if (err)
+ 		return err;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+index 29a6586ef28d..397a4e769076 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -558,6 +558,44 @@ static int mlx5e_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
+ 	return err;
+ }
+ 
++/* This function is responsible to dealloc SHAMPO header buffer.
++ * close == true specifies that we are in the middle of closing RQ operation so
++ * we go over all the entries and if they are not in use we free them,
++ * otherwise we only go over a specific range inside the header buffer that are
++ * not in use.
++ */
++void mlx5e_shampo_dealloc_hd(struct mlx5e_rq *rq, u16 len, u16 start, bool close)
++{
++	struct mlx5e_shampo_hd *shampo = rq->mpwqe.shampo;
++	int hd_per_wq = shampo->hd_per_wq;
++	struct page *deleted_page = NULL;
++	struct mlx5e_dma_info *hd_info;
++	int i, index = start;
++
++	for (i = 0; i < len; i++, index++) {
++		if (index == hd_per_wq)
++			index = 0;
++
++		if (close && !test_bit(index, shampo->bitmap))
++			continue;
++
++		hd_info = &shampo->info[index];
++		hd_info->addr = ALIGN_DOWN(hd_info->addr, PAGE_SIZE);
++		if (hd_info->page != deleted_page) {
++			deleted_page = hd_info->page;
++			mlx5e_page_release(rq, hd_info, false);
++		}
++	}
++
++	if (start + len > hd_per_wq) {
++		len -= hd_per_wq - start;
++		bitmap_clear(shampo->bitmap, start, hd_per_wq - start);
++		start = 0;
++	}
++
++	bitmap_clear(shampo->bitmap, start, len);
++}
++
+ static void mlx5e_dealloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
+ {
+ 	struct mlx5e_mpw_info *wi = &rq->mpwqe.info[ix];
 -- 
 2.31.1
 
