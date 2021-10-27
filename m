@@ -2,168 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A84E43CEE2
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 18:43:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47A1A43CEF6
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 18:49:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239801AbhJ0QqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 12:46:19 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:45382 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237657AbhJ0QqT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 12:46:19 -0400
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id CE96021637;
-        Wed, 27 Oct 2021 16:43:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1635353032; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type;
-        bh=wjWcOQpKPYrltrU/q2bbFwJqLCaUyfo2FJLEzHDbz/w=;
-        b=tTIWbW8zAG6209NeQd65H9NJ5BwCpZxv6KJCCn03h59DCXODghQw9jxrg4Tq8HkuUpM63C
-        eqRIzeR1pX/uLYWXIvJbpSXiU7zQYfBuOUSABRFLSXMV6nsMe5P03WEiT5C0GoWAIRHadu
-        6yy8HIecI/FdUI5xeR92KWYRSuXBEI4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1635353032;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type;
-        bh=wjWcOQpKPYrltrU/q2bbFwJqLCaUyfo2FJLEzHDbz/w=;
-        b=Fpfa3dUZANNLpfkRsRvWCsx6DfTzL6SYJ7o5LTHy0dCLxfmMwySdkVcDE/qPbxwrwtd4yd
-        wpZK2zY7wMsrjnCw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id BBA5E14068;
-        Wed, 27 Oct 2021 16:43:52 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id xgvFLciBeWGDCQAAMHmgww
-        (envelope-from <jwiesner@suse.de>); Wed, 27 Oct 2021 16:43:52 +0000
-Received: by incl.suse.cz (Postfix, from userid 1000)
-        id 17066588CC; Wed, 27 Oct 2021 18:43:52 +0200 (CEST)
-Date:   Wed, 27 Oct 2021 18:43:52 +0200
-From:   Jiri Wiesner <jwiesner@suse.de>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>, Mel Gorman <mgorman@suse.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>
-Subject: [RFC PATCH] clocksource: increase watchdog retries
-Message-ID: <20211027164352.GA23273@incl>
+        id S237969AbhJ0Qv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 12:51:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:30608 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242964AbhJ0QvZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 12:51:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1635353339;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=myjd4yI+pQW3BM05TdHc3lwGLGFjbII7js9KwnlTHdM=;
+        b=LDjLHRITWikHfk4PRyEMG+vCQ0erpbGSmRxccjkyEcTtjTbRlu+4G95UE+2RdQGHXnmIMK
+        6a2/kW/qOBMyZTRcQlY9Llna1Eu3tLGHCCvTyFp9qWMNmIOlUVYzWeo4+ixX5vwzBkBTiI
+        0Ynbzz9/zyzTe4jO8JlBBzZ9uhpLNkA=
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com
+ [209.85.210.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-133-UkqUXy4GOTy8oe5TjTDonw-1; Wed, 27 Oct 2021 12:48:58 -0400
+X-MC-Unique: UkqUXy4GOTy8oe5TjTDonw-1
+Received: by mail-ot1-f70.google.com with SMTP id l17-20020a9d7351000000b0054e7cd8a64dso1775403otk.4
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 09:48:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=myjd4yI+pQW3BM05TdHc3lwGLGFjbII7js9KwnlTHdM=;
+        b=ab/bWFtjlJ83Li69xJKvfuAlDxijb3EDEAb+9Pu41zsYqNIfphqnu722qoGzNu4Jkf
+         IJWE/Pe6t/1CnGcbG1oA6LCXrTjBwx0/m57STjAPXjpSSL8uQZPzEZT+BnwndljqmKCB
+         jcoseSMwyyw0+yeH4DWu9xMl9JPKnCJSbpbGq6/vesjF9MAhPofkEOwHip4Mnk3WZ4ry
+         SS64RUrNo0No8iGmuPww3kGkuTeFV95le0n11K469YwBA4rF+PHKg0jVxKVcGi85V+D8
+         GnxIJB1sqwyMEHMwykfYWYlWsd89kfoIxsetYsMIMwkVMnocO1JGgEz9Hn0paQLoFpMb
+         lzog==
+X-Gm-Message-State: AOAM533+MyPcQafHcKBOokZYzASJV8cHtatOF7gCxK4HOWFWXDEeGt9P
+        VPH0lPpsUMeO3BtHANkq/u6yeyag0tjVOXvwERIagMlaeX1LE7wmhgsHYXYSUvpiQ5yg55xe2KO
+        4rphKcnxpqRfPkXUP
+X-Received: by 2002:a4a:e597:: with SMTP id o23mr22933854oov.96.1635353336945;
+        Wed, 27 Oct 2021 09:48:56 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyvSN3j91f9/c+UdOhpzYFjIhX3dw1hCLu+GCaj1YcJ706DUx9FcLfTO9FoGf+SqbDtSgQ25g==
+X-Received: by 2002:a4a:e597:: with SMTP id o23mr22933827oov.96.1635353336683;
+        Wed, 27 Oct 2021 09:48:56 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id e1sm189205oiw.16.2021.10.27.09.48.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Oct 2021 09:48:56 -0700 (PDT)
+Date:   Wed, 27 Oct 2021 10:48:55 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com
+Subject: Re: [PATCH V4 mlx5-next 13/13] vfio/mlx5: Use its own PCI
+ reset_done error handler
+Message-ID: <20211027104855.7d35be05.alex.williamson@redhat.com>
+In-Reply-To: <20211027155339.GE2744544@nvidia.com>
+References: <20211026090605.91646-1-yishaih@nvidia.com>
+        <20211026090605.91646-14-yishaih@nvidia.com>
+        <20211026171644.41019161.alex.williamson@redhat.com>
+        <20211026235002.GC2744544@nvidia.com>
+        <20211027092943.4f95f220.alex.williamson@redhat.com>
+        <20211027155339.GE2744544@nvidia.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A recent change to the clocksource watchdog in commit db3a34e17433
-("clocksource: Retry clock read if long delays detected") has caused a
-severe performance regression in TCP throughput tests. Netperf executed on
-localhost was used for testing. The regression was more than 80%. On the
-testing machine, the HPET clocksource was used to detect delays in reading
-the TSC clocksource, which was the selected clocksource. In 10% of the
-boots of the machine, TSC was marked unstable and the HPET clocksource was
-selected as the best clocksource:
+On Wed, 27 Oct 2021 12:53:39 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-[   13.669682] clocksource: timekeeping watchdog on CPU6: hpet read-back delay of 60666ns, attempt 4, marking unstable
-[   13.669827] tsc: Marking TSC unstable due to clocksource watchdog
-[   13.669917] TSC found unstable after boot, most likely due to broken BIOS. Use 'tsc=unstable'.
-[   13.670048] sched_clock: Marking unstable (11633513890, 2036384489)<-(13965149377, -295250974)
-[   13.672268] clocksource: Checking clocksource tsc synchronization from CPU 0 to CPUs 1-3,6-7.
-[   13.673148] clocksource: Switched to clocksource hpet
+> On Wed, Oct 27, 2021 at 09:29:43AM -0600, Alex Williamson wrote:
+> 
+> > The reset_done handler sets deferred_reset = true and if it's possible
+> > to get the state_mutex, will reset migration data and device_state as
+> > part of releasing that mutex.  If there's contention on state_mutex,
+> > the deferred_reset field flags that this migration state is still stale.
+> > 
+> > So, I assume that it's possible that a user resets the device via ioctl
+> > or config space, there was contention and the migration state is still
+> > stale, right?  
+> 
+> If this occurs it is a userspace bug and the goal here is to maintain
+> kernel integrity.
+> 
+> > The user then goes to read device_state, but the staleness of the
+> > migration state is not resolved until *after* the stale device state is
+> > copied to the user buffer.  
+> 
+> This is not preventable in the general case. Assume we have sane
+> locking and it looks like this:
+> 
+>    CPU0                            CPU1
+>   ioctl state change
+>     mutex_lock
+>     copy_to_user(state == !RUNNING)
+>     mutex_unlock
+>                                ioctl reset
+>                                  mutex_lock
+>                                  state = RUNNING
+>                                  mutex_unlock
+>                                return to userspace
+>   return to userspace
+>   Userspace sees state != RUNNING
+> 
+> Same issue. Userspace cannot race state manipulating ioctls and expect
+> things to make any sense.
+> 
+> In all cases contention on the mutex during reset causes the reset to
+> order after the mutex is released. This is true with this approach and
+> it is true with a simple direct use of mutex.
+> 
+> In either case userspace will see incoherent results, and it is
+> userspace error to try and run the kernel ioctls this way.
+> 
+> > What did the user do wrong to see stale data?  Thanks,  
+> 
+> Userspace allowed two state effecting IOCTLs to run concurrently.
+> 
+> Userspace must block reset while it is manipulating migration states.
 
-The earliest occurrence was this:
+Ok, I see.  I didn't digest that contention on state_mutex can only
+occur from a concurrent migration region access and the stale state is
+resolved at the end of that concurrent access, not some subsequent
+access.  I agree we have no obligation to resolve anything about the
+state that concurrent access would see.  Thanks,
 
-[    3.423636] clocksource: timekeeping watchdog on CPU2: hpet read-back delay of 61833ns, attempt 4, marking unstable
-[    3.435182] tsc: Marking TSC unstable due to clocksource watchdog
-[    3.455228] hpet0: at MMIO 0xfed00000, IRQs 2, 8, 0, 0, 0, 0, 0, 0
-[    3.459182] hpet0: 8 comparators, 64-bit 24.000000 MHz counter
-[    3.471195] clocksource: Switched to clocksource hpet
-
-The HPET clocksource suffers from lock contention when its read() function
-is executed on multiple CPUs concurrently. A perf profile from the netperf
-test (netperf ran on CPU 1, netserver ran on CPU 0):
-
-Samples: 14K of event 'bus-cycles'
-Overhead  Command    Shared Object     Symbol                         CPU
-  43.83%  netperf    [kernel.vmlinux]  [k] read_hpet                  001
-  40.86%  netserver  [kernel.vmlinux]  [k] read_hpet                  000
-   2.27%  netperf    [kernel.vmlinux]  [k] syscall_exit_to_user_mode  001
-   2.19%  netserver  [kernel.vmlinux]  [k] syscall_exit_to_user_mode  000
-   0.96%  netserver  [kernel.vmlinux]  [k] entry_SYSCALL_64           000
-   0.92%  swapper    [kernel.vmlinux]  [k] read_hpet                  000
-
-For timestamping, TCP needs to execute ktime_get() in both the transmit
-and receive path. Lock contention caused by HPET on 2 CPUs was enough to
-lose 88% of the throughput measured with TSC (1.6 Gbit/s with HPET, 13
-Gbit/s with TSC). The lock contention can also be reproduced by switching
-to HPET via sysfs.
-
-Tests were carried out to tweak the value of the
-clocksource.max_cswd_read_retries parameter. The results indicate that
-setting the number of retries to 50 mitigates the issue on the testing
-machine, but it does not make it go away entirely:
-
-clocksource.max_cswd_read_retries=3
-Reboots: 100  TSC unstable: 10
-Reboots: 300  TSC unstable: 32
-clocksource.max_cswd_read_retries=5
-Reboots: 100  TSC unstable: 5
-clocksource.max_cswd_read_retries=10
-Reboots: 100  TSC unstable: 6
-clocksource.max_cswd_read_retries=50
-Reboots: 100  TSC unstable: 0
-Reboots: 300  TSC unstable: 1
-
-The testing machine has a Skylake CPU (Intel(R) Xeon(R) CPU E3-1240 v5 @
-3.50GHz) with 4 cores (8 CPUs when SMT is on). Perhaps, the number of
-retries to mitigate the issue could depend on the number of online CPUs on
-the system. Tweaking clocksource.verify_n_cpus had no effect:
-
-clocksource.max_cswd_read_retries=3 clocksource.verify_n_cpus=1
-Reboots: 100  TSC unstable: 11
-
-The issue has been observed on both Intel and AMD machines, and it is not
-specific to Skylake CPUs. The observed regression varies but, so far, tens
-of per cent have been observed.
-
-Signed-off-by: Jiri Wiesner <jwiesner@suse.de>
----
- Documentation/admin-guide/kernel-parameters.txt | 4 ++--
- kernel/time/clocksource.c                       | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 43dc35fe5bc0..b8bebca0f520 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -603,8 +603,8 @@
- 	clocksource.max_cswd_read_retries= [KNL]
- 			Number of clocksource_watchdog() retries due to
- 			external delays before the clock will be marked
--			unstable.  Defaults to three retries, that is,
--			four attempts to read the clock under test.
-+			unstable.  Defaults to fifty retries, that is,
-+			fiftyone attempts to read the clock under test.
- 
- 	clocksource.verify_n_cpus= [KNL]
- 			Limit the number of CPUs checked for clocksources
-diff --git a/kernel/time/clocksource.c b/kernel/time/clocksource.c
-index b8a14d2fb5ba..c15de711617a 100644
---- a/kernel/time/clocksource.c
-+++ b/kernel/time/clocksource.c
-@@ -199,7 +199,7 @@ void clocksource_mark_unstable(struct clocksource *cs)
- 	spin_unlock_irqrestore(&watchdog_lock, flags);
- }
- 
--ulong max_cswd_read_retries = 3;
-+ulong max_cswd_read_retries = 50;
- module_param(max_cswd_read_retries, ulong, 0644);
- EXPORT_SYMBOL_GPL(max_cswd_read_retries);
- static int verify_n_cpus = 8;
--- 
-2.26.2
+Alex
 
