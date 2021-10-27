@@ -2,140 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6912E43C6B1
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 11:43:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5C2D43C6B8
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 11:44:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238746AbhJ0JqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 05:46:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43740 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236282AbhJ0JqU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Oct 2021 05:46:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3748B60EDF;
-        Wed, 27 Oct 2021 09:43:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635327834;
-        bh=VamiCDRY2Jm6wCsoF7Ul2LuA4UNUxvU1NzDgcC1N/XA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SijhGI3zQ4BfXjr5omvlexqH9vB+MKLh3V80St9yLNZDaEJAxOCtd6qtOzHuXieHo
-         seJIDXIikcfIcwRY9lqPocqV4K/Jvwjc7YuQPu8C+artADBP7yAyzkgMSNdMpc7nNs
-         jKG6Vl4TIm5TdButDhTHostAI1ZxCiZiMjJ/WSs7YYidMLYiYfhUxEKnxeHy6uEKqJ
-         28ViZ0IVHiRtKqxGvJmwZRawU3dWq2py8O3g9iJYprZxhdsR8tgScH1lSmlL1aJghH
-         hGna+APpSbGfWCfZxL5jwpp3od9EZsSS9SqDrZFwzzrWlI9rtv+5mOwpAEo/lf5hbB
-         bWv1CUmAFQbEw==
-Date:   Wed, 27 Oct 2021 12:43:50 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Edwin Peer <edwin.peer@broadcom.com>
-Cc:     Ido Schimmel <idosch@idosch.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzbot+93d5accfaefceedf43c1@syzkaller.appspotmail.com,
-        Michael Chan <michael.chan@broadcom.com>
-Subject: Re: [PATCH net-next] netdevsim: Register and unregister devlink
- traps on probe/remove device
-Message-ID: <YXkfVuthd6G75L/S@unreal>
-References: <725e121f05362da4328dda08d5814211a0725dac.1635064599.git.leonro@nvidia.com>
- <YXUhyLXsc2egWNKx@shredder>
- <CAKOOJTzc9pJ1KKDHuGTFDeHb77B2GynA9HEVWKys=zvh_kY+Hw@mail.gmail.com>
- <YXeYjXx92wKdPe02@unreal>
- <CAKOOJTyrzosizeKpfYcu4jMn6SRYrqxU0BzMf8qudAk5e74R9g@mail.gmail.com>
- <YXhVd16heaHCegL1@unreal>
- <CAKOOJTzrQYz4FTDU_d_R0RLA4u6pfK9=+=E_uKMr4VCNbmF_kA@mail.gmail.com>
- <YXj1J/Z8HYvBWC6Y@unreal>
- <CAKOOJTyrUUydu9aNJSB4S_5dfqjkc6Y-14up4-V+aNcQ7TWVdQ@mail.gmail.com>
+        id S241267AbhJ0JrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 05:47:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34778 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236282AbhJ0JrC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 05:47:02 -0400
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0375C061570
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 02:44:36 -0700 (PDT)
+Received: by mail-ot1-x342.google.com with SMTP id d21-20020a9d4f15000000b0054e677e0ac5so2723090otl.11
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 02:44:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=/jfyDf2uGQ0G4PkhWSUViq4lngXtqzf19oHYgswwn6Y=;
+        b=dNx9ZnSHQfuTZOBoLm60Dr/dWw/S1n2ukXzP2zZ+DQfhaWYxhgV9NauZueTL5DIuK5
+         V91Zd2sPAb57BpfusG5HPZz/SPDiDzi5RC4u9X+aM7dpolihjPcWGDZFtaA3Z6m75X4w
+         z9DAuCMjv3KlghQA6puhzC7U+YUZugXY4i40N2IkSNujcEO9AwPM2o2tAq8d7mp2JYUD
+         6t2BNkZA57pMh/6HXq+p6MOeZP1Em3EAHDpG0mR0ujVRANVQ4B2TEDMZL9v4L9usy1K3
+         N1lN0oLTYwiy40tARbOj8yJ6HqiNUO72ZvOaX3Gki/A6OFEMvkZXx4MaxFLEJ3R0FzHh
+         XyzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=/jfyDf2uGQ0G4PkhWSUViq4lngXtqzf19oHYgswwn6Y=;
+        b=5s5Nq4AKuM3H0xmZ/Wy4YLdaxRZAARPmYiOpivwki3UPO3iJw89SYlhULzJWgTZY5B
+         Po9RHuJIiUOyC2vIWQPM2ggzfakbJIRhpiAZxEsx+ek6WPm2fKsdX0xXGvAuPE18/Nth
+         Nsrn/plcRz3g15Bd3KeGAYspT65LUixEPoQteCEM3HO9dClpwHpFPzY/M7WR6G1+PcUE
+         Ij7I6gIrHFbztG3PCnSeRkwZ/KXUcEKWtxBR40c8c8J1Cvt0tyh0MDJhiyeZHOBTicP5
+         Ecrpz9JBgVK+nA8cgsrcGStkF14EBYQWHmAJHjM0e0rM3KWKMJ+pC/6fhJR/z2XN86mP
+         7+Gw==
+X-Gm-Message-State: AOAM5315zVKQK1VAvHwL8oCevfeS7qD7y6p7nMqX0LWMv7pr2fCzGMpR
+        LuhIWNck0gGp33oLhyVzzIPxa+gSNkJMPpgyLPw=
+X-Google-Smtp-Source: ABdhPJwCteXpO2zmTt4LHvuo6mKVuUcTartuODafP80LcnVxyPgdJGgHnT4Q40VurvJO95MTEoBHzo63AIlm/9H3UiM=
+X-Received: by 2002:a9d:6a06:: with SMTP id g6mr24258741otn.347.1635327876144;
+ Wed, 27 Oct 2021 02:44:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKOOJTyrUUydu9aNJSB4S_5dfqjkc6Y-14up4-V+aNcQ7TWVdQ@mail.gmail.com>
+Received: by 2002:a05:6838:bcc2:0:0:0:0 with HTTP; Wed, 27 Oct 2021 02:44:35
+ -0700 (PDT)
+Reply-To: ahmadmustafa.7800@gmail.com
+From:   Ahmad Mustafa <delgadoangelo650@gmail.com>
+Date:   Wed, 27 Oct 2021 10:44:35 +0100
+Message-ID: <CAKOM8vohUA80VMKHX7S4D2hLK50krUG5yh7zwXe05+n_MinPLQ@mail.gmail.com>
+Subject: LOANS AND INVESTMENT
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 27, 2021 at 01:46:44AM -0700, Edwin Peer wrote:
-> On Tue, Oct 26, 2021 at 11:43 PM Leon Romanovsky <leon@kernel.org> wrote:
-> 
-> > In our case, the eth driver is part of mlx5_core module, so at the
-> > device creation phase that module is already loaded and driver/core
-> > will try to autoprobe it.
-> 
-> > However, the last step is not always performed and controlled by the
-> > userspace. Users can disable driver autoprobe and bind manually. This
-> > is pretty standard practice in the SR-IOV or VFIO modes.
-> 
-> While you say the netdev will not necessarily be bound, that still
-> sounds like the netdev will indeed be presented to user space before
-> devlink_register() when it is auto-probed?
+Dear Sir,
 
-And it is ok, there is no binding between netdev and devlink. They are
-independent. For example, IB cards have devlink through mlx5_core, but
-without netdev at all.
+Aseel Islamic finance PJSC is private joint stock company that was
+established in 2006 and has built a leading market position for itself
+in the UAE's Islamic finance market which specializes in loan finance
+and investment activities in real estate, hospitality, industrial &
+sustainable technologies, strategic financial investments, specialized
+education, healthcare services, agriculture, manufacturing,
+mining,energy and additional environmentally sustainable projects.
 
-> 
-> > This is why devlink has monitor mode where you can see devlink device
-> > addition and removal. It is user space job to check that device is
-> > ready.
-> 
-> Isn't it more a question of what existing user space _does_ rather
-> than what user space _should_ do?
+My name is Mr. Ibn Ahmad Mustafa . Do you have projects that require
+funding? We have finance available for your projects with over 2
+trillion private and corporate investment portfolios.  Aseel Islamic
+finance PJSC is looking for equity partners, entrepreneur, fund
+raisers and portfolio managers who will pay up to 4.5% interest and/or
+part equity position with a 5 to 10 year hold. In 2030, we plan on
+acquiring up to 2 trillion in high-quality, low risk assets and
+investments to capitalize on the current market cycle.
 
-No, because races of kernel vs. user space always existed and every time,
-the answer was the same - it is user space job to avoid race. Kernel
-needs to protect itself and we successfully did it here.
+Aseel Islamic finance PJSC is acting as a lender and the fund will be
+disbursed on a clear interest rate of 3.5% annually to the equity
+partners and entrepreneurs for their investment projects. We also give
+a 2% commission to brokers, who bring project owners for finance or
+other opportunities.
 
-Latest example of such programming model can be seen in VFIO too:
-https://lore.kernel.org/kvm/20211026090605.91646-1-yishaih@nvidia.com/T/#m89ef326da9405dcefe482bd5a6a54aff7e0b90bc
-"Yes. If the userspace races ioctls they get a deserved mess.
+For further details, kindly send us your business plans or project summary.
 
-This race exists no matter what we do, as soon as the unlock happens a
-racing reset ioctl could run in during the system call exit path.
+Regards,
 
-The purpose of the locking is to protect the kernel from hostile
-userspace, not to allow userspace to execute concurrent ioctl's in a
-sensible way."
 
-> 
-> > > This isn't about kernel API. This is precisely about existing user
-> > > space that expects devlink to work immediately after the netdev
-> > > appears.
-> >
-> > Can you please share open source project that has such assumption?
-> 
-> I'm no python expert, but it looks like
-> https://github.com/openstack-charmers/mlnx-switchdev-mode/ might.
-
-No, it is not.
-
-> We've certainly had implicit user space assumptions trip over
-> registration order before, hence the change we made in January last
-> year to move devlink registration earlier. Granted, upon deeper
-> analysis, that specific case pertained to phys port name via sysfs,
-> which technically only needs port attrs via ndo_get_devlink_port, not
-> devlink_register(). That said, I'm certainly not confident that there
-> are no other existing users that might expect to be able to invoke
-> devlink in ifup scripts.
-
-It is not what your change did, you moved devlink ops registration logic
-to be before register_netdev(), this is continue to be in upstream code.
-We are registering ops in devlink_alloc() and that function stays to be
-at the same place.
-
-> 
-> > > What do you suggest instead?
-> >
-> > Fix your test respect devlink notifications and don't ignore them.
-> 
-> That's not very helpful. The test case does what the user in the field
-> did to break it. We can't assume users have always been using our APIs
-> the way we intended.
-
-There is no API here.
-
-Thanks
-
-> 
-> Regards,
-> Edwin Peer
+Mr. Ibn Ahmad Mustafa
+International Business Coordinator
+Aseel Islamic Finance PJSC
+Al Mankhool, Dubai C2 Tower,
+Ground floor,P.O 94669 Dubai, UAE
+Abu Dhabi - United Arab Emirates
+Email : ahmadmustafa.7800@gmail.com
