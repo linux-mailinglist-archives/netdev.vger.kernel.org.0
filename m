@@ -2,89 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 241A443C392
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 09:10:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22FBE43C3B9
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 09:20:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240359AbhJ0HMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 03:12:48 -0400
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:49521 "EHLO
-        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240339AbhJ0HMr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 03:12:47 -0400
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 9D92A58048F;
-        Wed, 27 Oct 2021 03:10:22 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute6.internal (MEProxy); Wed, 27 Oct 2021 03:10:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=UtrQ+Y
-        qYfceMRQX4JEoo3nTqoGmlLfcy9dcq+X2CORs=; b=Y0uSgWZnRHybBDtftnIbXu
-        SnH0HYdj2Mfp1foEa7BUGaqcE46OcCGmDwoe+Vkr7eScc7WNDjh4JDMn6QtoD6Uk
-        k49tEhIkP+cID8Sm0lKd3jLCHF7TIq3SiiKmz/kgNMwFH8TinDjbk/3QizQ+djzA
-        C9NU/TT0cOV6wy4Qsgdo3q4ItfgIobt+7Da+kULJaxR1nFmIRsUBCkqekfyJ8W6I
-        Eta1MoVmYFo7OZ989S84a0+NKac9RbM9NGOyDVmxk6a5cyfSKifkpUYagUfNT/TH
-        I8rSm6P1RwZdd5QnthlPspr6VKND72fN/psFtV+CkXx8divSDkoBF672ze8e93Qg
-        ==
-X-ME-Sender: <xms:Xft4YYZo5iTxojNPjiWsQ07U0EpPC8yQ1PQRmW-AsiOJoephoSF7CA>
-    <xme:Xft4YTYBgY9ExehpHjnMMBWGpi3ZlwmabvXzeDFjOwMv_-LWqU6iRyiiEsY-Y3VsB
-    ZUfRi5adqHwxIE>
-X-ME-Received: <xmr:Xft4YS9gLOqo5JTJLOgONxNl9_K3zfmqZJ1LyiAGsgshFtKxG4ZrOE42BYx04m8jFpOo4AwyIppRPXbvcSpNpRQ6jot-bQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvdefledguddutdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
-    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:Xft4YSqahkXu9pQGa64jgqUK0dPlLaAjnEsRP577gPN_xyeyR3Arlw>
-    <xmx:Xft4YTokzU87Pvn8UohVePn7ao_2qQHT7uTu8ddKKbj0oGeg49VBDA>
-    <xmx:Xft4YQQlQ3uJeT3mQU5BjoDMWuf4H0wnE7Sq12gEEKZ0F1J7swmCcg>
-    <xmx:Xvt4YW2ZfmyGyYATFNv4IxHlYGzysVDekTRuX8aWxiGghEkAn69YcQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 27 Oct 2021 03:10:21 -0400 (EDT)
-Date:   Wed, 27 Oct 2021 10:10:18 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Maciej Machnikowski <maciej.machnikowski@intel.com>
-Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        richardcochran@gmail.com, abyagowi@fb.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kselftest@vger.kernel.org, mkubecek@suse.cz,
-        saeed@kernel.org, michael.chan@broadcom.com
-Subject: Re: [RFC v5 net-next 2/5] rtnetlink: Add new RTM_GETEECSTATE message
- to get SyncE status
-Message-ID: <YXj7WkEb0PagWfSw@shredder>
-References: <20211026173146.1031412-1-maciej.machnikowski@intel.com>
- <20211026173146.1031412-3-maciej.machnikowski@intel.com>
+        id S240440AbhJ0HWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 03:22:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:43792 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240420AbhJ0HWh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 03:22:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1635319211;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+DbhW314EmWGlap+YeCS5cDQceQCNE6F+RMcBvYpSBk=;
+        b=gL/f8+I3t/GzJiN3Xfc8hz/F/D7/KGmIJ2bT+Ql5lkH7ddz4us/mHS5G3wrpHsEnLnr8iw
+        GJGeD8RLIfTt/63lbzcqu5huHC+s3wrCAuf1vFDLb1W/Rd3MtAzdQt8BzbiuBKHte4Vb+U
+        xP9jN9b9H2RLeisBVid0ibzPYziiOgo=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-580-zGzf7hZHNb-GhurwHQk32Q-1; Wed, 27 Oct 2021 03:20:09 -0400
+X-MC-Unique: zGzf7hZHNb-GhurwHQk32Q-1
+Received: by mail-ed1-f70.google.com with SMTP id k28-20020a508adc000000b003dd5e21da4bso1448332edk.11
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 00:20:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+DbhW314EmWGlap+YeCS5cDQceQCNE6F+RMcBvYpSBk=;
+        b=TTw8tD+1Ppwb4EbP8k074ioyU9O9tRW4oIKZSsQM59ANLnGCVZFtnMPtcF+Ygig3Ma
+         2CCumV6qHY3Yt+xoGp+SGv/OBgyognAbHDA1JiYR8Naw6AXhyvCVLe90MZgzFTxAXiDe
+         3wbCJkeGzx0V8UsHypZdMv+ejiLkle+icH/ffpEj164kFsQ9v9chZUXaCMy87tlDQ4D4
+         0D3Ep8H2SR7m2YZRrD02kCViGkUx0AQDoFkdWWW5CdixzxBGpDk2tGjELwQ6eEvvKdBA
+         wm0Yz7b6fQCu6Dlf/CpWS8q4rcGNlOwRfiC+q1I8DSDAGz07zEaOtdVZcvBFPo6OjovF
+         9NOA==
+X-Gm-Message-State: AOAM533KG4iyeR8DEY5C35Yx3+Dml1E2WxObt5IzsjJFCsZas0STqzg5
+        oReYgUUwi9FKggLIhN3oDXE1xNZ0GEJpRzwGA0Jv58LCqqBVXv4bk3csHdC2SsyCvguAf+1Xdag
+        ZDocaxjq/o3KM8YWJ
+X-Received: by 2002:a17:906:4f8c:: with SMTP id o12mr36638841eju.115.1635319208800;
+        Wed, 27 Oct 2021 00:20:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyCIQAlR+x1uvtXUAqxKjm8vS6/c+bMTwwJhi3bbhlIT3AboUf6m65iBGZdjxqc9u2af1k2tw==
+X-Received: by 2002:a17:906:4f8c:: with SMTP id o12mr36638822eju.115.1635319208614;
+        Wed, 27 Oct 2021 00:20:08 -0700 (PDT)
+Received: from redhat.com ([2a03:c5c0:207e:a543:72f:c4d1:8911:6346])
+        by smtp.gmail.com with ESMTPSA id e13sm10143344eje.95.2021.10.27.00.20.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Oct 2021 00:20:08 -0700 (PDT)
+Date:   Wed, 27 Oct 2021 03:20:02 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Laurent Vivier <lvivier@redhat.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzbot+b86736b5935e0d25b446@syzkaller.appspotmail.com>,
+        davem@davemloft.net, herbert@gondor.apana.org.au, jiri@nvidia.com,
+        kuba@kernel.org, leonro@nvidia.com, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mpm@selenic.com,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] KASAN: slab-out-of-bounds Read in copy_data
+Message-ID: <20211027031847-mutt-send-email-mst@kernel.org>
+References: <000000000000a4cd2105cf441e76@google.com>
+ <b6d96f08-78df-cf34-5e58-572b3fd4b566@gmail.com>
+ <6c7e48b9-5204-352f-18e7-26b13d70f966@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211026173146.1031412-3-maciej.machnikowski@intel.com>
+In-Reply-To: <6c7e48b9-5204-352f-18e7-26b13d70f966@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 26, 2021 at 07:31:43PM +0200, Maciej Machnikowski wrote:
-> +/* SyncE section */
-> +
-> +enum if_eec_state {
-> +	IF_EEC_STATE_INVALID = 0,
-> +	IF_EEC_STATE_FREERUN,
-> +	IF_EEC_STATE_LOCKED,
-> +	IF_EEC_STATE_LOCKED_HO_ACQ,
+On Wed, Oct 27, 2021 at 09:08:04AM +0200, Laurent Vivier wrote:
+> On 27/10/2021 00:34, Eric Dumazet wrote:
+> > 
+> > 
+> > On 10/26/21 9:39 AM, syzbot wrote:
+> > > Hello,
+> > > 
+> > > syzbot found the following issue on:
+> > > 
+> > > HEAD commit:    9ae1fbdeabd3 Add linux-next specific files for 20211025
+> > > git tree:       linux-next
+> > > console output: https://syzkaller.appspot.com/x/log.txt?x=1331363cb00000
+> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=aeb17e42bc109064
+> > > dashboard link: https://syzkaller.appspot.com/bug?extid=b86736b5935e0d25b446
+> > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=116ce954b00000
+> > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=132fcf62b00000
+> > > 
+> > > The issue was bisected to:
+> > > 
+> > > commit 22849b5ea5952d853547cc5e0651f34a246b2a4f
+> > > Author: Leon Romanovsky <leonro@nvidia.com>
+> > > Date:   Thu Oct 21 14:16:14 2021 +0000
+> > > 
+> > >      devlink: Remove not-executed trap policer notifications
+> > 
+> > More likely this came with
+> > 
+> > caaf2874ba27b92bca6f0298bf88bad94067ec37 hwrng: virtio - don't waste entropy
+> > 
+> 
+> I'm going to have a look.
+> 
+> Thanks,
+> Laurent
 
-Is this referring to "Locked mode, acquiring holdover: This is a
-temporary mode, when coming from free-run, to acquire holdover memory."
-?
+How bad is it if we just drop this and waste some bytes of entropy?
 
-It seems ice isn't using it, so maybe drop it? Can be added later in
-case we have a driver that can report it
+-- 
+MST
 
-There is also "Locked mode, holdover acquired: This is a steady state
-mode, entered when holdover memory is acquired." But I assume that's
-"IF_EEC_STATE_LOCKED"
-
-> +	IF_EEC_STATE_HOLDOVER,
-> +};
