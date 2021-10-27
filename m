@@ -2,52 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 020EC43CE14
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 17:55:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C48EA43CE26
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 17:59:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242863AbhJ0P5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 11:57:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45284 "EHLO mail.kernel.org"
+        id S237245AbhJ0QBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 12:01:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45824 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242859AbhJ0P5y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Oct 2021 11:57:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 28F34610A3;
-        Wed, 27 Oct 2021 15:55:29 +0000 (UTC)
+        id S238076AbhJ0QBe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Oct 2021 12:01:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CDEFC610A0;
+        Wed, 27 Oct 2021 15:59:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635350129;
-        bh=mXFBOgkp6zrMVhxpacqPdiJRh/NH/mFYzuUwo4gK7D8=;
+        s=k20201202; t=1635350348;
+        bh=ysMNeky2jKYUgk939BZrgQAHwMOSjMPHxnF8pM2q1UU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HWhCWVfmES7cvHsXB5s/k/LyyWI1942reYECwdyAdhPR1kKaekLsxc+kmzLbJiCOP
-         pUMZKCqtqC9Ta/IuWYRtXpb31E2tcZ7veC7rzqroFsDqeKXVjyWpMient8InF4B7Ix
-         Y2VNqzgDF1ICTa+TmIAg56hP2ZLzQAVlBCxEsHQ7gSNBQMoePgzS1N2nVkUbwm+8bn
-         dTxsaF7UbMJu8zk+YyRtaqaHuTkGWWVP52yQJn1qcFxfsAPIib9vqYtDa8JgdU5f1b
-         5GV0Hprhv56Q3V4pLWeb88XJ6VFlWKSH/Eli2o3jsiZ1w/Ybaaix+/GDDI5DZxIow6
-         L8IgzGBVs+dCA==
-Date:   Wed, 27 Oct 2021 08:55:28 -0700
+        b=GoWkFmMLYklXDmePbmPQ5B0X11MSB4aG+ObNmrLbSYOhMWbRRsiC4ygHafsq7OMBU
+         lVUzAIqm9iOBob+eg+ys6+v1E0p3TbDbkC8Ew9qPMV8ptPyiPB0kxZ+4/pVwKWCkTN
+         dV4wdrtqaEl3IPAO9o43NYuR5GvycFedr2XMx6yid9iWcJf0WjTD3lxdRmANh6ms7I
+         ygTX4X9G+t22s4wSiaHSOi05S2XQ49LVbLv6uG+sbUfjLFmYS5VCaAq+n5grBSuaFT
+         7twZRfTXeC/f0Yiz/xMGzW4gel4FX8xmOsgrV3S7uUiU/R2KhsVUOnUW9d0iofCz8V
+         G3aoJMGOZH5Wg==
+Date:   Wed, 27 Oct 2021 08:59:06 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 3/3] virtio-net: enable virtio indirect cache
-Message-ID: <20211027085528.01c4b313@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211027061913.76276-4-xuanzhuo@linux.alibaba.com>
-References: <20211027061913.76276-1-xuanzhuo@linux.alibaba.com>
-        <20211027061913.76276-4-xuanzhuo@linux.alibaba.com>
+To:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 0/4][pull request] 40GbE Intel Wired LAN Driver
+ Updates 2021-10-25
+Message-ID: <20211027085906.54fdda26@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <30be4834a75836d450995199b7675054561b1996.camel@intel.com>
+References: <20211025175508.1461435-1-anthony.l.nguyen@intel.com>
+        <30be4834a75836d450995199b7675054561b1996.camel@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 Oct 2021 14:19:13 +0800 Xuan Zhuo wrote:
-> +static bool virtio_desc_cache = true;
->  module_param(csum, bool, 0444);
->  module_param(gso, bool, 0444);
->  module_param(napi_tx, bool, 0644);
-> +module_param(virtio_desc_cache, bool, 0644);
+On Wed, 27 Oct 2021 15:51:58 +0000 Nguyen, Anthony L wrote:
+> On Mon, 2021-10-25 at 10:55 -0700, Tony Nguyen wrote:
+> > This series contains updates to i40e, ice, igb, and ixgbevf drivers.
+> >=20
+> > Caleb Sander adds cond_resched() call to yield CPU, if needed, for
+> > long
+> > delayed admin queue calls for i40e.
+> >=20
+> > Yang Li simplifies return statements of bool values for i40e and ice.
+> >=20
+> > Jan Kundr=C3=A1t corrects problems with I2C bit-banging for igb.
+> >=20
+> > Colin Ian King removes unneeded variable initialization for ixgbevf. =20
+>=20
+> I'm seeing this in Patchworks as accepted [1], but I'm not seeing the
+> patches on the tree. Should I resend this pull request?
 
-Can this be an ethtool priv flag? module params are discouraged because
-they can't be controlled per-netdev.
+Sorry about that, let me take a look.
