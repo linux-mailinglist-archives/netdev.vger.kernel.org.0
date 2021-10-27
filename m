@@ -2,256 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3E8943CF62
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 19:03:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDAB043CF6D
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 19:04:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243168AbhJ0RGA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 13:06:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51646 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243172AbhJ0RF4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 13:05:56 -0400
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BCD3C061348
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 10:03:30 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id g8so3234518iob.10
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 10:03:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=squareup.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=KS5UdkZMEdsSS7sRvW29mKpAHVC0RJgUbKs3rC8KkRA=;
-        b=QCIATHeZUD0+8iQC0Uryon9qMumrpm3wA9rcxLO6jJcNr8EwP8SFcKLQvQWRrKAnp5
-         Ep2FT096SOaoZjHehOaYauW0Fo9oJ9Hm4FFVu6fErFA+lCV/uVKbcjbkOZippz3jslC3
-         09Bd38rzX/Od15pNHrdAcjfgL8taebm9/zQcI=
+        id S239827AbhJ0RGa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 13:06:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29760 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239593AbhJ0RGa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 13:06:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1635354243;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rTAZF8r+TFqRNwTv8HewNHfpavSVFjmpiDqPZBBTd9c=;
+        b=N/t48+pSFIpyYBHx0wl4Hw55UdV8Z8y54Dboo++Vszb3ge1B0gj2EuCNCG0WeadsBP8G1D
+        /k+4aPZuxrF8zIRGio3DmvYboXrsMSCpaidF8lRDdQX389P6hk+qQJ4BLwY8VmAz7dIySR
+        YXoekI5TYBgibJKnWPm/7PrRLZC7XJk=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-368-0C9JJxmxPVCbHRrWuos1_g-1; Wed, 27 Oct 2021 13:04:02 -0400
+X-MC-Unique: 0C9JJxmxPVCbHRrWuos1_g-1
+Received: by mail-wr1-f70.google.com with SMTP id e7-20020adffc47000000b001688df0b917so903932wrs.22
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 10:04:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KS5UdkZMEdsSS7sRvW29mKpAHVC0RJgUbKs3rC8KkRA=;
-        b=bDKZQ57t5OBsiXy49tmG9J6D/fNCfvamtcvh5XgUxgffoe/8tW04XVG18Yym94xvYW
-         Ji9HCGjFxZK80Hsbb3WPyktpxC15363ga021AXp+0dOXcnG8E4wNjMSnPLanpn99tUkU
-         t8N4vh3QXOG3aNcdpkqJ0xv3SRI0cl3JaMDvYiR2QPS7tO2tqtuIyRpVwFcUgLU1bASr
-         wd/U5OIJFMPX2EEVeQBk6pnO0k+Ti7UeRKTk6wbAMFS3uQ17J/se5zRVRaNHF8psLHob
-         hrHS7hbiViyA1A32onFE+/Xly9Uj1fPQAVmKmZbSiEvMqMwIHTRBHrM/9pbGvhM7zvxh
-         lx8g==
-X-Gm-Message-State: AOAM533nZ8Mkp22+dhQzUJ1iXZgN1KqFAmIkV0lRicFPOFP12bTLFHJm
-        axra4QL0rmORptdzvZF3Kaj1hg==
-X-Google-Smtp-Source: ABdhPJwUsvq5sj/2Z+oqiMVE9ZasBnCzDky5j3uv7ukHPYOUHH+q0n7S3L0aoJqvP6zlbvAhOdhn0Q==
-X-Received: by 2002:a6b:b5c2:: with SMTP id e185mr7524258iof.127.1635354209659;
-        Wed, 27 Oct 2021 10:03:29 -0700 (PDT)
-Received: from localhost ([2600:6c50:4d00:cd01::382])
-        by smtp.gmail.com with ESMTPSA id j22sm280170ila.6.2021.10.27.10.03.27
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=rTAZF8r+TFqRNwTv8HewNHfpavSVFjmpiDqPZBBTd9c=;
+        b=vedaUQSZNU0bWGyTJAxW8sQw3Krkg+pAnnGkstqkOQnPnU6PHLz27W9Qp7XdknIqTH
+         A1wpXhrzTptuG45zANRCp4T+AHFnuGrco+/iXPYqIcKvYZORXrl/6Y2EIyBvZnAHFL0k
+         M9japB8tx0+03wqrKFuifP8/sSCWulTy8uk1334KPdoYfwJHhMo33lpkMtu18gyXvSE5
+         PSSwON97gWr0DmwBw7lvUFZ+NWTLxnchxO7dtzOv5FexODtp/QcblDqpd6FhlLGIPqZO
+         hhMDjclO6uy77s/NhE8CFVKNA3SvKoSZDSyYh+hBH402MmKh/6X7Ojk59LZdI/XEVSib
+         AvrA==
+X-Gm-Message-State: AOAM533DbTc6m8jDn9Y8q130mAwmWUbpxcub8qVZWulFggj6DC1xHvNF
+        oGo0BsfNmN6M/a8Gq13R/k1cUMWtaHmiGWazq8i5zRTuZVUyRS3LnjdtPVmnh6ZmbwPawXOQiAw
+        joZfQtYUEJFG4b7Mg
+X-Received: by 2002:a05:600c:1548:: with SMTP id f8mr6931388wmg.35.1635354241250;
+        Wed, 27 Oct 2021 10:04:01 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy/UPN0VVE4tAb3UN0yDI+71apndaQMXqM5UDEuJD4h6Pvaa/WHZ+M444Zi2IZzGUjPpILneA==
+X-Received: by 2002:a05:600c:1548:: with SMTP id f8mr6931361wmg.35.1635354241008;
+        Wed, 27 Oct 2021 10:04:01 -0700 (PDT)
+Received: from [192.168.100.42] ([82.142.14.190])
+        by smtp.gmail.com with ESMTPSA id j9sm384612wrt.96.2021.10.27.10.03.59
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Oct 2021 10:03:29 -0700 (PDT)
-From:   Benjamin Li <benl@squareup.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Joseph Gates <jgates@squareup.com>,
-        Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        linux-arm-msm@vger.kernel.org, Benjamin Li <benl@squareup.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eugene Krasnikov <k.eugene.e@gmail.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/3] wcn36xx: ensure pairing of init_scan/finish_scan and start_scan/end_scan
-Date:   Wed, 27 Oct 2021 10:03:05 -0700
-Message-Id: <20211027170306.555535-4-benl@squareup.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211027170306.555535-1-benl@squareup.com>
-References: <20211027170306.555535-1-benl@squareup.com>
+        Wed, 27 Oct 2021 10:04:00 -0700 (PDT)
+Message-ID: <8b5fb6ae-ab66-607f-b7c8-993c483846ca@redhat.com>
+Date:   Wed, 27 Oct 2021 19:03:58 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Subject: Re: [syzbot] KASAN: slab-out-of-bounds Read in copy_data
+Content-Language: en-US
+From:   Laurent Vivier <lvivier@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Dmitry Vyukov <dvyukov@google.com>
+Cc:     syzbot <syzbot+b86736b5935e0d25b446@syzkaller.appspotmail.com>,
+        davem@davemloft.net, herbert@gondor.apana.org.au, jiri@nvidia.com,
+        kuba@kernel.org, leonro@nvidia.com, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mpm@selenic.com,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <000000000000a4cd2105cf441e76@google.com>
+ <eab57f0e-d3c6-7619-97cc-9bc3a7a07219@redhat.com>
+ <CACT4Y+amyT9dk-6iVqru-wQnotmwW=bt4VwaysgzjH9=PkxGww@mail.gmail.com>
+ <20211027111300-mutt-send-email-mst@kernel.org>
+ <589f86e0-af0e-c172-7ec6-72148ba7b3b0@redhat.com>
+In-Reply-To: <589f86e0-af0e-c172-7ec6-72148ba7b3b0@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-An SMD capture from the downstream prima driver on WCN3680B shows the
-following command sequence for connected scans:
+On 27/10/2021 18:25, Laurent Vivier wrote:
+> On 27/10/2021 17:28, Michael S. Tsirkin wrote:
+>> On Wed, Oct 27, 2021 at 03:36:19PM +0200, Dmitry Vyukov wrote:
+>>> On Wed, 27 Oct 2021 at 15:11, Laurent Vivier <lvivier@redhat.com> wrote:
+>>>>
+>>>> On 26/10/2021 18:39, syzbot wrote:
+>>>>> Hello,
+>>>>>
+>>>>> syzbot found the following issue on:
+>>>>>
+>>>>> HEAD commit:    9ae1fbdeabd3 Add linux-next specific files for 20211025
+>>>>> git tree:       linux-next
+>>>>> console output: https://syzkaller.appspot.com/x/log.txt?x=1331363cb00000
+>>>>> kernel config:  https://syzkaller.appspot.com/x/.config?x=aeb17e42bc109064
+>>>>> dashboard link: https://syzkaller.appspot.com/bug?extid=b86736b5935e0d25b446
+>>>>> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for 
+>>>>> Debian) 2.35.2
+>>>>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=116ce954b00000
+>>>>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=132fcf62b00000
+>>>>>
+>>>>> The issue was bisected to:
+>>>>>
+>>>>> commit 22849b5ea5952d853547cc5e0651f34a246b2a4f
+>>>>> Author: Leon Romanovsky <leonro@nvidia.com>
+>>>>> Date:   Thu Oct 21 14:16:14 2021 +0000
+>>>>>
+>>>>>       devlink: Remove not-executed trap policer notifications
+>>>>>
+>>>>> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=137d8bfcb00000
+>>>>> final oops:     https://syzkaller.appspot.com/x/report.txt?x=10fd8bfcb00000
+>>>>> console output: https://syzkaller.appspot.com/x/log.txt?x=177d8bfcb00000
+>>>>>
+>>>>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+>>>>> Reported-by: syzbot+b86736b5935e0d25b446@syzkaller.appspotmail.com
+>>>>> Fixes: 22849b5ea595 ("devlink: Remove not-executed trap policer notifications")
+>>>>>
+>>>>> ==================================================================
+>>>>> BUG: KASAN: slab-out-of-bounds in memcpy include/linux/fortify-string.h:225 [inline]
+>>>>> BUG: KASAN: slab-out-of-bounds in copy_data+0xf3/0x2e0 
+>>>>> drivers/char/hw_random/virtio-rng.c:68
+>>>>> Read of size 64 at addr ffff88801a7a1580 by task syz-executor989/6542
+>>>>>
+>>>>
+>>>> I'm not able to reproduce the problem with next-20211026 and the C reproducer.
+>>>>
+>>>> And reviewing the code in copy_data() I don't see any issue.
+>>>>
+>>>> Is it possible to know what it the VM configuration used to test it?
+>>>
+>>> Hi Laurent,
+>>>
+>>> syzbot used e2-standard-2 GCE VM when that happened.
+>>> You can see some info about these VMs under the "VM info" link on the dashboard.
+>>
+>> Could you pls confirm whether reverting
+>> caaf2874ba27b92bca6f0298bf88bad94067ec37 addresses this?
+>>
+> 
+> I've restarted the syzbot on top of "hwrng: virtio - don't wait on cleanup" [1] and the 
+> problem has not been triggered.
+> 
+> See https://syzkaller.appspot.com/bug?extid=b86736b5935e0d25b446
 
-- init_scan_req
-    - start_scan_req, channel 1
-    - end_scan_req, channel 1
-    - start_scan_req, channel 2
-    - ...
-    - end_scan_req, channel 3
-- finish_scan_req
-- init_scan_req
-    - start_scan_req, channel 4
-    - ...
-    - end_scan_req, channel 6
-- finish_scan_req
-- ...
-    - end_scan_req, channel 165
-- finish_scan_req
+The problem seems to be introduced by the last patch:
 
-Upstream currently never calls wcn36xx_smd_end_scan, and in some cases[1]
-still sends finish_scan_req twice in a row or before init_scan_req. A
-typical connected scan looks like this:
+"hwrng: virtio - always add a pending request"
 
-- init_scan_req
-    - start_scan_req, channel 1
-- finish_scan_req
-- init_scan_req
-    - start_scan_req, channel 2
-- ...
-    - start_scan_req, channel 165
-- finish_scan_req
-- finish_scan_req
+not
 
-This patch cleans up scanning so that init/finish and start/end are always
-paired together and correctly nested.
+"hwrng: virtio - don't waste entropy"
 
-- init_scan_req
-    - start_scan_req, channel 1
-    - end_scan_req, channel 1
-- finish_scan_req
-- init_scan_req
-    - start_scan_req, channel 2
-    - end_scan_req, channel 2
-- ...
-    - start_scan_req, channel 165
-    - end_scan_req, channel 165
-- finish_scan_req
+Thanks,
+Laurent
 
-Note that upstream will not do batching of 3 active-probe scans before
-returning to the operating channel, and this patch does not change that.
-To match downstream in this aspect, adjust IEEE80211_PROBE_DELAY and/or
-the 125ms max off-channel time in ieee80211_scan_state_decision.
-
-[1]: commit d195d7aac09b ("wcn36xx: Ensure finish scan is not requested
-before start scan") addressed one case of finish_scan_req being sent
-without a preceding init_scan_req (the case of the operating channel
-coinciding with the first scan channel); two other cases are:
-1) if SW scan is started and aborted immediately, without scanning any
-   channels, we send a finish_scan_req without ever sending init_scan_req,
-   and
-2) as SW scan logic always returns us to the operating channel before
-   calling wcn36xx_sw_scan_complete, finish_scan_req is always sent twice
-   at the end of a SW scan
-
-Fixes: 8e84c2582169 ("wcn36xx: mac80211 driver for Qualcomm WCN3660/WCN3680 hardware")
-Signed-off-by: Benjamin Li <benl@squareup.com>
----
- drivers/net/wireless/ath/wcn36xx/main.c    | 34 +++++++++++++++++-----
- drivers/net/wireless/ath/wcn36xx/smd.c     |  4 +++
- drivers/net/wireless/ath/wcn36xx/wcn36xx.h |  1 +
- 3 files changed, 32 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/wcn36xx/main.c b/drivers/net/wireless/ath/wcn36xx/main.c
-index 18383d0fc0933..37b4016f020c9 100644
---- a/drivers/net/wireless/ath/wcn36xx/main.c
-+++ b/drivers/net/wireless/ath/wcn36xx/main.c
-@@ -400,6 +400,7 @@ static void wcn36xx_change_opchannel(struct wcn36xx *wcn, int ch)
- static int wcn36xx_config(struct ieee80211_hw *hw, u32 changed)
- {
- 	struct wcn36xx *wcn = hw->priv;
-+	int ret;
- 
- 	wcn36xx_dbg(WCN36XX_DBG_MAC, "mac config changed 0x%08x\n", changed);
- 
-@@ -415,17 +416,31 @@ static int wcn36xx_config(struct ieee80211_hw *hw, u32 changed)
- 			 * want to receive/transmit regular data packets, then
- 			 * simply stop the scan session and exit PS mode.
- 			 */
--			wcn36xx_smd_finish_scan(wcn, HAL_SYS_MODE_SCAN,
--						wcn->sw_scan_vif);
--			wcn->sw_scan_channel = 0;
-+			if (wcn->sw_scan_channel)
-+				wcn36xx_smd_end_scan(wcn, wcn->sw_scan_channel);
-+			if (wcn->sw_scan_init) {
-+				wcn36xx_smd_finish_scan(wcn, HAL_SYS_MODE_SCAN,
-+							wcn->sw_scan_vif);
-+			}
- 		} else if (wcn->sw_scan) {
- 			/* A scan is ongoing, do not change the operating
- 			 * channel, but start a scan session on the channel.
- 			 */
--			wcn36xx_smd_init_scan(wcn, HAL_SYS_MODE_SCAN,
--					      wcn->sw_scan_vif);
-+			if (wcn->sw_scan_channel)
-+				wcn36xx_smd_end_scan(wcn, wcn->sw_scan_channel);
-+			if (!wcn->sw_scan_init) {
-+				/* This can fail if we are unable to notify the
-+				 * operating channel.
-+				 */
-+				ret = wcn36xx_smd_init_scan(wcn,
-+							    HAL_SYS_MODE_SCAN,
-+							    wcn->sw_scan_vif);
-+				if (ret) {
-+					mutex_unlock(&wcn->conf_mutex);
-+					return -EIO;
-+				}
-+			}
- 			wcn36xx_smd_start_scan(wcn, ch);
--			wcn->sw_scan_channel = ch;
- 		} else {
- 			wcn36xx_change_opchannel(wcn, ch);
- 		}
-@@ -723,7 +738,12 @@ static void wcn36xx_sw_scan_complete(struct ieee80211_hw *hw,
- 	wcn36xx_dbg(WCN36XX_DBG_MAC, "sw_scan_complete");
- 
- 	/* ensure that any scan session is finished */
--	wcn36xx_smd_finish_scan(wcn, HAL_SYS_MODE_SCAN, wcn->sw_scan_vif);
-+	if (wcn->sw_scan_channel)
-+		wcn36xx_smd_end_scan(wcn, wcn->sw_scan_channel);
-+	if (wcn->sw_scan_init) {
-+		wcn36xx_smd_finish_scan(wcn, HAL_SYS_MODE_SCAN,
-+					wcn->sw_scan_vif);
-+	}
- 	wcn->sw_scan = false;
- 	wcn->sw_scan_opchannel = 0;
- }
-diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
-index 3cecc8f9c9647..830341be72673 100644
---- a/drivers/net/wireless/ath/wcn36xx/smd.c
-+++ b/drivers/net/wireless/ath/wcn36xx/smd.c
-@@ -721,6 +721,7 @@ int wcn36xx_smd_init_scan(struct wcn36xx *wcn, enum wcn36xx_hal_sys_mode mode,
- 		wcn36xx_err("hal_init_scan response failed err=%d\n", ret);
- 		goto out;
- 	}
-+	wcn->sw_scan_init = true;
- out:
- 	mutex_unlock(&wcn->hal_mutex);
- 	return ret;
-@@ -751,6 +752,7 @@ int wcn36xx_smd_start_scan(struct wcn36xx *wcn, u8 scan_channel)
- 		wcn36xx_err("hal_start_scan response failed err=%d\n", ret);
- 		goto out;
- 	}
-+	wcn->sw_scan_channel = scan_channel;
- out:
- 	mutex_unlock(&wcn->hal_mutex);
- 	return ret;
-@@ -781,6 +783,7 @@ int wcn36xx_smd_end_scan(struct wcn36xx *wcn, u8 scan_channel)
- 		wcn36xx_err("hal_end_scan response failed err=%d\n", ret);
- 		goto out;
- 	}
-+	wcn->sw_scan_channel = 0;
- out:
- 	mutex_unlock(&wcn->hal_mutex);
- 	return ret;
-@@ -822,6 +825,7 @@ int wcn36xx_smd_finish_scan(struct wcn36xx *wcn,
- 		wcn36xx_err("hal_finish_scan response failed err=%d\n", ret);
- 		goto out;
- 	}
-+	wcn->sw_scan_init = false;
- out:
- 	mutex_unlock(&wcn->hal_mutex);
- 	return ret;
-diff --git a/drivers/net/wireless/ath/wcn36xx/wcn36xx.h b/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
-index 1c8d918137da2..fbd0558c2c196 100644
---- a/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
-+++ b/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
-@@ -248,6 +248,7 @@ struct wcn36xx {
- 	struct cfg80211_scan_request *scan_req;
- 	bool			sw_scan;
- 	u8			sw_scan_opchannel;
-+	bool			sw_scan_init;
- 	u8			sw_scan_channel;
- 	struct ieee80211_vif	*sw_scan_vif;
- 	struct mutex		scan_lock;
--- 
-2.25.1
+> 
+> Thanks,
+> Laurent
+> 
+> [1]
+> d721abbeb145 hwrng: virtio - don't wait on cleanup
+> bb768beb0a5f hwrng: virtio - add an internal buffer
+> d25f27432f80 (origin/master, origin/HEAD, master) Merge tag 'arm-soc-fixes-5.15-3' of 
+> git://git.kernel.org/pub/scm/linux/kernel/git/soc/soc
+> 
 
