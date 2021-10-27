@@ -2,98 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADD0D43C79D
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 12:24:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC5F143C7AD
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 12:31:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241423AbhJ0K0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 06:26:42 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:11284 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239361AbhJ0K0j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 06:26:39 -0400
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19RALg5j020914;
-        Wed, 27 Oct 2021 10:24:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=TFwPPLUITtY8fa2kbtoi1NI6hKGKe/D/krYKWxZzwbw=;
- b=iLfYTU5tDQEEyZh4TkHobZgeOJX/dyZWPJAzY73Kkspv+kuQwk+ZJ3s90z5J8jVi1Yx1
- jFn0KvW+RpHJaKzyYvLobStWqE34lKsNadXk/p9R6y5SlU2OsI506MXhBO5UCRRAc+fp
- oKLq8c7lVFX3pW463UptHzSmIRt3rRkQcZZZL+yhbKhSa0nEY7tdp9MOEsBU8Nrird6A
- 8olXy8KpdhuGRkLZhOSg93K4B0xUMut9tyMxCbDNMG+01OLniHnMDy2ByVdYq9s2oc48
- whEZQ1uB33VGAw5PV+PauqHZ73vdklauacBUjtLnW2t77asJo3o7qsJJ14eASBenpNpY yg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3by4xsr1rx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Oct 2021 10:24:13 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 19RALear020812;
-        Wed, 27 Oct 2021 10:24:12 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3by4xsr1rb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Oct 2021 10:24:12 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 19RACw7Z013485;
-        Wed, 27 Oct 2021 10:24:10 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma06ams.nl.ibm.com with ESMTP id 3bx4f1dxv4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Oct 2021 10:24:09 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 19RAO7cm3932922
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 27 Oct 2021 10:24:07 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4BFAE5204F;
-        Wed, 27 Oct 2021 10:24:07 +0000 (GMT)
-Received: from [9.145.41.29] (unknown [9.145.41.29])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id BE4E852050;
-        Wed, 27 Oct 2021 10:24:06 +0000 (GMT)
-Message-ID: <c1d3d584-4a96-a34b-ed25-a376b17b36c7@linux.ibm.com>
-Date:   Wed, 27 Oct 2021 12:24:18 +0200
+        id S239360AbhJ0Kdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 06:33:51 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:11732 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231643AbhJ0Kdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 06:33:50 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19R6I3r9032296;
+        Wed, 27 Oct 2021 03:31:21 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=aLyWbOR+kLA5ZiYjECxHdHnKIsucTeuLNqngKF+cCDo=;
+ b=Y2tvIttEa7osk4AxtNBYfgfsKE+Wm+4zpDYwsi9vY1hrq5dGGoJUjPvu+R+/KwskSkS4
+ Cp6ruciuBpbtFPghwhnh74zxdi3azsUp/oiO0MuBY8Ur7qxiEAX8qWZm4rFlkaz3OqSC
+ 9JCMHgn7/PJZORGr9WZgJVMwsIN3N2Ty0AT/das61QZ5/3sI3eALGX7UEgsyDb/N4jJ3
+ dGyNN4uNgzmv0NzrFyD6VKIcCQH4/ooTqD1N6ITa4ldRr31UCk1URif/gsLd4m77zrwf
+ 45jaWW3G3gpGmMfOnIXkvaFedOyj4DrJfZwakdEo/lWSTLB18D1Y5uePygNe1dcM7c4K VA== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 3by1ca8xnx-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 27 Oct 2021 03:31:21 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 27 Oct
+ 2021 03:31:20 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Wed, 27 Oct 2021 03:31:19 -0700
+Received: from hyd1358.marvell.com (unknown [10.29.37.11])
+        by maili.marvell.com (Postfix) with ESMTP id B630D3F7070;
+        Wed, 27 Oct 2021 03:31:17 -0700 (PDT)
+From:   Subbaraya Sundeep <sbhatta@marvell.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
+CC:     <hkelam@marvell.com>, <gakula@marvell.com>, <sgoutham@marvell.com>,
+        <rsaladi2@marvell.com>, Subbaraya Sundeep <sbhatta@marvell.com>
+Subject: [net-next PATCH 0/2] Add a devlink param and documentation
+Date:   Wed, 27 Oct 2021 16:01:13 +0530
+Message-ID: <1635330675-25592-1-git-send-email-sbhatta@marvell.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Subject: Re: [PATCH net 2/4] net/smc: Fix smc_link->llc_testlink_time overflow
-Content-Language: en-US
-To:     Tony Lu <tonylu@linux.alibaba.com>, davem@davemloft.net,
-        kuba@kernel.org, ubraun@linux.ibm.com
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-rdma@vger.kernel.org, jacob.qi@linux.alibaba.com,
-        xuanzhuo@linux.alibaba.com, guwen@linux.alibaba.com,
-        dust.li@linux.alibaba.com
-References: <20211027085208.16048-1-tonylu@linux.alibaba.com>
- <20211027085208.16048-3-tonylu@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <20211027085208.16048-3-tonylu@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: KleOzwbSit34Wr11CIof2m3lA3XnGZsw
-X-Proofpoint-ORIG-GUID: hTqYOENxP2bIjyNRmsInwzbi96PB7cwY
+Content-Type: text/plain
+X-Proofpoint-GUID: UCHe8Bm917-64MJ9gFh15uygs36wFS2c
+X-Proofpoint-ORIG-GUID: UCHe8Bm917-64MJ9gFh15uygs36wFS2c
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
  definitions=2021-10-27_03,2021-10-26_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
- priorityscore=1501 suspectscore=0 malwarescore=0 bulkscore=0 phishscore=0
- clxscore=1015 impostorscore=0 mlxscore=0 spamscore=0 lowpriorityscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2110270062
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27/10/2021 10:52, Tony Lu wrote:
-> From: Tony Lu <tony.ly@linux.alibaba.com>
-> 
-> The value of llc_testlink_time is set to the value stored in
-> net->ipv4.sysctl_tcp_keepalive_time when linkgroup init. The value of
-> sysctl_tcp_keepalive_time is already jiffies, so we don't need to
-> multiply by HZ, which would cause smc_link->llc_testlink_time overflow,
-> and test_link send flood.
+This patchset adds a new devlink parameter serdes_link
+which is used in cases where physical link/SerDes needs to
+be re-initialized. The existing interface up and down
+sequence do not toggle SerDes configuration since PF and
+all its VF share same physical link. Also documentation for
+octeontx2 devlink parameters is missing hence documentation for
+the implemented params is also added.
 
-Thanks for fixing this, we will include your patch in our next submission
-to the netdev tree.
+Patch 1 - Adds new serdes_link devlink parameter
+Patch 2 - Adds documentation for all implemented devlink params
+
+
+Thanks,
+Sundeep
+
+Rakesh Babu (1):
+  octeontx2-pf: Add devlink param to init and de-init serdes
+
+Subbaraya Sundeep (1):
+  devlink: add documentation for octeontx2 driver
+
+ Documentation/networking/devlink/index.rst         |  1 +
+ Documentation/networking/devlink/octeontx2.rst     | 47 ++++++++++++++++++++++
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.c    | 11 +++++
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.h    |  1 +
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  7 ++++
+ .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    | 24 +++++++++++
+ .../ethernet/marvell/octeontx2/nic/otx2_common.c   | 20 +++++++++
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  1 +
+ .../ethernet/marvell/octeontx2/nic/otx2_devlink.c  | 29 +++++++++++++
+ 9 files changed, 141 insertions(+)
+ create mode 100644 Documentation/networking/devlink/octeontx2.rst
+
+-- 
+2.7.4
+
