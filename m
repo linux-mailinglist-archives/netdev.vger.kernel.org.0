@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AC5343BFFF
+	by mail.lfdr.de (Postfix) with ESMTP id 2232B43BFFE
 	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 04:35:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238479AbhJ0ChS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 22:37:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58406 "EHLO mail.kernel.org"
+        id S238438AbhJ0ChR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Oct 2021 22:37:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58410 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238447AbhJ0ChM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S238053AbhJ0ChM (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 26 Oct 2021 22:37:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 09E3D61107;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 80B4161100;
         Wed, 27 Oct 2021 02:34:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1635302086;
-        bh=f9e0jY4KqKexLKmDPkCKQPQhYfvdIn2Q+i1EUgTd7KQ=;
+        bh=5l4b+x46CtMxwV4Ke2PrmQ7at9JLSeFBBuYyunjgD9Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EknAZv5RJhNFQ5sAksW20hqKpktCf4zXTngmpA8AnpHLJ1n9aooPPp6lnqOTVnKeT
-         jPnE5bFHszQdghWzltyEJhNOlDxFyE1XUAQ3mPGR0GTbOIweroqo9IqeIe87qgcUbg
-         gyLRhek4X2VARI3wBpkFrJ9W+nkyetv0oztsLxVDcmemFpU/ymUKee85sIEsHJPWSO
-         9N5UlUIWaqdOBhOdsBOVGuxPIrKtXhzwIICJorUWn8CmH3lA1xglkvrvHfOwFh42Eg
-         0ANrDElYWfSS5xgJQEmoiYSBs3c7OoyuST9Wwnx32ro/JFdQaQhkbwRGn6uaW9z9jN
-         ZTNwWErhGnK5Q==
+        b=rCth1jamUsC7QpJxIWmr5z8QNcW19KDiWWA8jA/SufUFhKRF8byyivWLRaLzK08Kc
+         cIioFjIJw/9Lblj4hMFPrjEJIMuU2FFQR58iIJgjYhDTnA1HuPUjuQ7DRaK2TZTpUr
+         xnJBTQZP5ARQl/amy8/p+RCt0+lMAR5oWl62+IenFb1XxynlR1ggeZO72szvZwmsiy
+         5NND8kdzqpDowz/7OCK8OpCuofH2k473rDrVIR12ILAa2mxM0EvQwACu2aE1Pn8+Q8
+         1UfoMGj5aCnWqNJFtNwyFqtaeVGfAmIV2ejis50DwlbBaMvBAz3kPlvkGPBblIPRQf
+         KSeebDN+s10qA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Khalid Manaa <khalidm@nvidia.com>,
-        Ben Ben-Ishay <benishay@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 10/14] net/mlx5e: HW_GRO cqe handler implementation
-Date:   Tue, 26 Oct 2021 19:33:43 -0700
-Message-Id: <20211027023347.699076-11-saeed@kernel.org>
+Subject: [net-next 11/14] net/mlx5e: Add HW_GRO statistics
+Date:   Tue, 26 Oct 2021 19:33:44 -0700
+Message-Id: <20211027023347.699076-12-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211027023347.699076-1-saeed@kernel.org>
 References: <20211027023347.699076-1-saeed@kernel.org>
@@ -44,400 +43,164 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Khalid Manaa <khalidm@nvidia.com>
 
-this patch updates the SHAMPO CQE handler to support HW_GRO,
+This patch adds HW_GRO counters to RX packets statistics:
+ - gro_match_packets: counter of received packets with set match flag.
 
-changes in the SHAMPO CQE handler:
-- CQE match and flush fields are used to determine if to build new skb
-  using the new received packet,
-  or to add the received packet data to the existing RQ.hw_gro_skb,
-  also this fields are used to determine when to flush the skb.
-- in the end of the function mlx5e_poll_rx_cq the RQ.hw_gro_skb is flushed.
+ - gro_packets: counter of received packets over the HW_GRO feature,
+                this counter is increased by one for every received
+                HW_GRO cqe.
+
+ - gro_bytes: counter of received bytes over the HW_GRO feature,
+              this counter is increased by the received bytes for every
+              received HW_GRO cqe.
+
+ - gro_skbs: counter of built HW_GRO skbs,
+             increased by one when we flush HW_GRO skb
+             (when we call a napi_gro_receive with hw_gro skb).
+
+ - gro_large_hds: counter of received packets with large headers size,
+                  in case the packet needs new SKB, the driver will allocate
+                  new one and will not use the headers entry to build it.
 
 Signed-off-by: Khalid Manaa <khalidm@nvidia.com>
-Signed-off-by: Ben Ben-Ishay <benishay@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |   8 +
- .../net/ethernet/mellanox/mlx5/core/en_main.c |   9 +
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 236 +++++++++++++++++-
- 3 files changed, 242 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c   | 12 +++++++++---
+ .../net/ethernet/mellanox/mlx5/core/en_stats.c    | 15 +++++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/en_stats.h    | 10 ++++++++++
+ 3 files changed, 34 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index c95b6b65c4de..67453dd75b93 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -655,6 +655,12 @@ struct mlx5e_shampo_hd {
- 	u64 last_addr;
- };
- 
-+struct mlx5e_hw_gro_data {
-+	struct sk_buff *skb;
-+	struct flow_keys fk;
-+	int second_ip_id;
-+};
-+
- struct mlx5e_rq {
- 	/* data path */
- 	union {
-@@ -696,6 +702,8 @@ struct mlx5e_rq {
- 	struct mlx5e_icosq    *icosq;
- 	struct mlx5e_priv     *priv;
- 
-+	struct mlx5e_hw_gro_data *hw_gro_data;
-+
- 	mlx5e_fp_handle_rx_cqe handle_rx_cqe;
- 	mlx5e_fp_post_rx_wqes  post_wqes;
- 	mlx5e_fp_dealloc_wqe   dealloc_wqe;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index a7f1915c9a84..e922584f2702 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -513,6 +513,11 @@ static int mlx5_rq_shampo_alloc(struct mlx5_core_dev *mdev,
- 	err = mlx5e_rq_shampo_hd_info_alloc(rq, node);
- 	if (err)
- 		goto err_shampo_info;
-+	rq->hw_gro_data = kvzalloc_node(sizeof(*rq->hw_gro_data), GFP_KERNEL, node);
-+	if (!rq->hw_gro_data) {
-+		err = -ENOMEM;
-+		goto err_hw_gro_data;
-+	}
- 	rq->mpwqe.shampo->key =
- 		cpu_to_be32(rq->mpwqe.shampo->mkey.key);
- 	rq->mpwqe.shampo->hd_per_wqe =
-@@ -522,6 +527,8 @@ static int mlx5_rq_shampo_alloc(struct mlx5_core_dev *mdev,
- 		     MLX5E_SHAMPO_WQ_HEADER_PER_PAGE;
- 	return 0;
- 
-+err_hw_gro_data:
-+	mlx5e_rq_shampo_hd_info_free(rq);
- err_shampo_info:
- 	mlx5_core_destroy_mkey(mdev, &rq->mpwqe.shampo->mkey);
- err_shampo_hd:
-@@ -534,6 +541,8 @@ static void mlx5e_rq_free_shampo(struct mlx5e_rq *rq)
- {
- 	if (!test_bit(MLX5E_RQ_STATE_SHAMPO, &rq->state))
- 		return;
-+
-+	kvfree(rq->hw_gro_data);
- 	mlx5e_rq_shampo_hd_info_free(rq);
- 	mlx5_core_destroy_mkey(rq->mdev, &rq->mpwqe.shampo->mkey);
- 	mlx5e_rq_shampo_hd_free(rq);
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index f52fb184ef7c..089bd484290e 100644
+index 089bd484290e..fe979edd96dc 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -37,6 +37,8 @@
- #include <net/ip6_checksum.h>
- #include <net/page_pool.h>
- #include <net/inet_ecn.h>
-+#include <net/udp.h>
-+#include <net/tcp.h>
- #include "en.h"
- #include "en/txrx.h"
- #include "en_tc.h"
-@@ -1066,6 +1068,142 @@ static void mlx5e_lro_update_hdr(struct sk_buff *skb, struct mlx5_cqe64 *cqe,
- 	}
- }
+@@ -1461,7 +1461,9 @@ static void mlx5e_shampo_complete_rx_cqe(struct mlx5e_rq *rq,
+ 	struct mlx5e_rq_stats *stats = rq->stats;
  
-+static void *mlx5e_shampo_get_packet_hd(struct mlx5e_rq *rq, u16 header_index)
-+{
-+	struct mlx5e_dma_info *last_head = &rq->mpwqe.shampo->info[header_index];
-+	u16 head_offset = (last_head->addr & (PAGE_SIZE - 1)) + rq->buff.headroom;
-+
-+	return page_address(last_head->page) + head_offset;
-+}
-+
-+static void mlx5e_shampo_update_ipv4_udp_hdr(struct mlx5e_rq *rq, struct iphdr *ipv4)
-+{
-+	int udp_off = rq->hw_gro_data->fk.control.thoff;
-+	struct sk_buff *skb = rq->hw_gro_data->skb;
-+	struct udphdr *uh;
-+
-+	uh = (struct udphdr *)(skb->data + udp_off);
-+	uh->len = htons(skb->len - udp_off);
-+
-+	if (uh->check)
-+		uh->check = ~udp_v4_check(skb->len - udp_off, ipv4->saddr,
-+					  ipv4->daddr, 0);
-+
-+	skb->csum_start = (unsigned char *)uh - skb->head;
-+	skb->csum_offset = offsetof(struct udphdr, check);
-+
-+	skb_shinfo(skb)->gso_type |= SKB_GSO_UDP_L4;
-+}
-+
-+static void mlx5e_shampo_update_ipv6_udp_hdr(struct mlx5e_rq *rq, struct ipv6hdr *ipv6)
-+{
-+	int udp_off = rq->hw_gro_data->fk.control.thoff;
-+	struct sk_buff *skb = rq->hw_gro_data->skb;
-+	struct udphdr *uh;
-+
-+	uh = (struct udphdr *)(skb->data + udp_off);
-+	uh->len = htons(skb->len - udp_off);
-+
-+	if (uh->check)
-+		uh->check = ~udp_v6_check(skb->len - udp_off, &ipv6->saddr,
-+					  &ipv6->daddr, 0);
-+
-+	skb->csum_start = (unsigned char *)uh - skb->head;
-+	skb->csum_offset = offsetof(struct udphdr, check);
-+
-+	skb_shinfo(skb)->gso_type |= SKB_GSO_UDP_L4;
-+}
-+
-+static void mlx5e_shampo_update_fin_psh_flags(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe,
-+					      struct tcphdr *skb_tcp_hd)
-+{
-+	u16 header_index = be16_to_cpu(cqe->shampo.header_entry_index);
-+	struct tcphdr *last_tcp_hd;
-+	void *last_hd_addr;
-+
-+	last_hd_addr = mlx5e_shampo_get_packet_hd(rq, header_index);
-+	last_tcp_hd =  last_hd_addr + ETH_HLEN + rq->hw_gro_data->fk.control.thoff;
-+	tcp_flag_word(skb_tcp_hd) |= tcp_flag_word(last_tcp_hd) & (TCP_FLAG_FIN | TCP_FLAG_PSH);
-+}
-+
-+static void mlx5e_shampo_update_ipv4_tcp_hdr(struct mlx5e_rq *rq, struct iphdr *ipv4,
-+					     struct mlx5_cqe64 *cqe, bool match)
-+{
-+	int tcp_off = rq->hw_gro_data->fk.control.thoff;
-+	struct sk_buff *skb = rq->hw_gro_data->skb;
-+	struct tcphdr *tcp;
-+
-+	tcp = (struct tcphdr *)(skb->data + tcp_off);
-+	if (match)
-+		mlx5e_shampo_update_fin_psh_flags(rq, cqe, tcp);
-+
-+	tcp->check = ~tcp_v4_check(skb->len - tcp_off, ipv4->saddr,
-+				   ipv4->daddr, 0);
-+	skb_shinfo(skb)->gso_type |= SKB_GSO_TCPV4;
-+	if (ntohs(ipv4->id) == rq->hw_gro_data->second_ip_id)
-+		skb_shinfo(skb)->gso_type |= SKB_GSO_TCP_FIXEDID;
-+
-+	skb->csum_start = (unsigned char *)tcp - skb->head;
-+	skb->csum_offset = offsetof(struct tcphdr, check);
-+
-+	if (tcp->cwr)
-+		skb_shinfo(skb)->gso_type |= SKB_GSO_TCP_ECN;
-+}
-+
-+static void mlx5e_shampo_update_ipv6_tcp_hdr(struct mlx5e_rq *rq, struct ipv6hdr *ipv6,
-+					     struct mlx5_cqe64 *cqe, bool match)
-+{
-+	int tcp_off = rq->hw_gro_data->fk.control.thoff;
-+	struct sk_buff *skb = rq->hw_gro_data->skb;
-+	struct tcphdr *tcp;
-+
-+	tcp = (struct tcphdr *)(skb->data + tcp_off);
-+	if (match)
-+		mlx5e_shampo_update_fin_psh_flags(rq, cqe, tcp);
-+
-+	tcp->check = ~tcp_v6_check(skb->len - tcp_off, &ipv6->saddr,
-+				   &ipv6->daddr, 0);
-+	skb_shinfo(skb)->gso_type |= SKB_GSO_TCPV6;
-+	skb->csum_start = (unsigned char *)tcp - skb->head;
-+	skb->csum_offset = offsetof(struct tcphdr, check);
-+
-+	if (tcp->cwr)
-+		skb_shinfo(skb)->gso_type |= SKB_GSO_TCP_ECN;
-+}
-+
-+static void mlx5e_shampo_update_hdr(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe, bool match)
-+{
-+	bool is_ipv4 = (rq->hw_gro_data->fk.basic.n_proto == htons(ETH_P_IP));
-+	struct sk_buff *skb = rq->hw_gro_data->skb;
-+
-+	skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
-+	skb->ip_summed = CHECKSUM_PARTIAL;
-+
-+	if (is_ipv4) {
-+		int nhoff = rq->hw_gro_data->fk.control.thoff - sizeof(struct iphdr);
-+		struct iphdr *ipv4 = (struct iphdr *)(skb->data + nhoff);
-+		__be16 newlen = htons(skb->len - nhoff);
-+
-+		csum_replace2(&ipv4->check, ipv4->tot_len, newlen);
-+		ipv4->tot_len = newlen;
-+
-+		if (ipv4->protocol == IPPROTO_TCP)
-+			mlx5e_shampo_update_ipv4_tcp_hdr(rq, ipv4, cqe, match);
-+		else
-+			mlx5e_shampo_update_ipv4_udp_hdr(rq, ipv4);
-+	} else {
-+		int nhoff = rq->hw_gro_data->fk.control.thoff - sizeof(struct ipv6hdr);
-+		struct ipv6hdr *ipv6 = (struct ipv6hdr *)(skb->data + nhoff);
-+
-+		ipv6->payload_len = htons(skb->len - nhoff - sizeof(*ipv6));
-+
-+		if (ipv6->nexthdr == IPPROTO_TCP)
-+			mlx5e_shampo_update_ipv6_tcp_hdr(rq, ipv6, cqe, match);
-+		else
-+			mlx5e_shampo_update_ipv6_udp_hdr(rq, ipv6);
-+	}
-+}
-+
- static inline void mlx5e_skb_set_hash(struct mlx5_cqe64 *cqe,
- 				      struct sk_buff *skb)
- {
-@@ -1315,6 +1453,25 @@ static inline void mlx5e_build_rx_skb(struct mlx5_cqe64 *cqe,
- 		stats->mcast_packets++;
- }
+ 	stats->packets++;
++	stats->gro_packets++;
+ 	stats->bytes += cqe_bcnt;
++	stats->gro_bytes += cqe_bcnt;
+ 	if (NAPI_GRO_CB(skb)->count != 1)
+ 		return;
+ 	mlx5e_build_rx_skb(cqe, cqe_bcnt, rq, skb);
+@@ -1914,6 +1916,7 @@ mlx5e_skb_from_cqe_shampo(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
  
-+static void mlx5e_shampo_complete_rx_cqe(struct mlx5e_rq *rq,
-+					 struct mlx5_cqe64 *cqe,
-+					 u32 cqe_bcnt,
-+					 struct sk_buff *skb)
-+{
-+	struct mlx5e_rq_stats *stats = rq->stats;
-+
-+	stats->packets++;
-+	stats->bytes += cqe_bcnt;
-+	if (NAPI_GRO_CB(skb)->count != 1)
-+		return;
-+	mlx5e_build_rx_skb(cqe, cqe_bcnt, rq, skb);
-+	skb_reset_network_header(skb);
-+	if (!skb_flow_dissect_flow_keys(skb, &rq->hw_gro_data->fk, 0)) {
-+		napi_gro_receive(rq->cq.napi, skb);
-+		rq->hw_gro_data->skb = NULL;
-+	}
-+}
-+
- static inline void mlx5e_complete_rx_cqe(struct mlx5e_rq *rq,
- 					 struct mlx5_cqe64 *cqe,
- 					 u32 cqe_bcnt,
-@@ -1726,7 +1883,7 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
- 	return skb;
- }
- 
--static struct sk_buff *
-+static void
- mlx5e_skb_from_cqe_shampo(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
- 			  struct mlx5_cqe64 *cqe, u16 header_index)
- {
-@@ -1750,7 +1907,7 @@ mlx5e_skb_from_cqe_shampo(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
- 		skb = mlx5e_build_linear_skb(rq, hdr, frag_size, rx_headroom, head_size);
- 
- 		if (unlikely(!skb))
--			return NULL;
-+			return;
- 
- 		/* queue up for recycling/reuse */
- 		page_ref_inc(head->page);
-@@ -1761,7 +1918,7 @@ mlx5e_skb_from_cqe_shampo(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+ 	} else {
+ 		/* allocate SKB and copy header for large header */
++		rq->stats->gro_large_hds++;
+ 		skb = napi_alloc_skb(rq->cq.napi,
  				     ALIGN(head_size, sizeof(long)));
  		if (unlikely(!skb)) {
- 			rq->stats->buff_alloc_err++;
--			return NULL;
-+			return;
- 		}
+@@ -1949,7 +1952,9 @@ static void
+ mlx5e_shampo_flush_skb(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe, bool match)
+ {
+ 	struct sk_buff *skb = rq->hw_gro_data->skb;
++	struct mlx5e_rq_stats *stats = rq->stats;
  
- 		prefetchw(skb->data);
-@@ -1772,7 +1929,41 @@ mlx5e_skb_from_cqe_shampo(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
- 		skb->tail += head_size;
- 		skb->len  += head_size;
- 	}
--	return skb;
-+	rq->hw_gro_data->skb = skb;
-+	NAPI_GRO_CB(skb)->count = 1;
-+	skb_shinfo(skb)->gso_size = mpwrq_get_cqe_byte_cnt(cqe) - head_size;
-+}
-+
-+static void
-+mlx5e_shampo_align_fragment(struct sk_buff *skb, u8 log_stride_sz)
-+{
-+	skb_frag_t *last_frag = &skb_shinfo(skb)->frags[skb_shinfo(skb)->nr_frags - 1];
-+	unsigned int frag_size = skb_frag_size(last_frag);
-+	unsigned int frag_truesize;
-+
-+	frag_truesize = ALIGN(frag_size, BIT(log_stride_sz));
-+	skb->truesize += frag_truesize - frag_size;
-+}
-+
-+static void
-+mlx5e_shampo_flush_skb(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe, bool match)
-+{
-+	struct sk_buff *skb = rq->hw_gro_data->skb;
-+
-+	if (likely(skb_shinfo(skb)->nr_frags))
-+		mlx5e_shampo_align_fragment(skb, rq->mpwqe.log_stride_sz);
-+	if (NAPI_GRO_CB(skb)->count > 1)
-+		mlx5e_shampo_update_hdr(rq, cqe, match);
-+	napi_gro_receive(rq->cq.napi, skb);
-+	rq->hw_gro_data->skb = NULL;
-+}
-+
-+static bool
-+mlx5e_hw_gro_skb_has_enough_space(struct sk_buff *skb, u16 data_bcnt)
-+{
-+	int nr_frags = skb_shinfo(skb)->nr_frags;
-+
-+	return PAGE_SIZE * nr_frags + data_bcnt <= GSO_MAX_SIZE;
- }
- 
- static void
-@@ -1798,8 +1989,10 @@ static void mlx5e_handle_rx_cqe_mpwrq_shampo(struct mlx5e_rq *rq, struct mlx5_cq
- 	u32 cqe_bcnt		= mpwrq_get_cqe_byte_cnt(cqe);
- 	u16 wqe_id		= be16_to_cpu(cqe->wqe_id);
- 	u32 page_idx		= wqe_offset >> PAGE_SHIFT;
-+	struct sk_buff **skb	= &rq->hw_gro_data->skb;
-+	bool flush		= cqe->shampo.flush;
-+	bool match		= cqe->shampo.match;
++	stats->gro_skbs++;
+ 	if (likely(skb_shinfo(skb)->nr_frags))
+ 		mlx5e_shampo_align_fragment(skb, rq->mpwqe.log_stride_sz);
+ 	if (NAPI_GRO_CB(skb)->count > 1)
+@@ -1992,6 +1997,7 @@ static void mlx5e_handle_rx_cqe_mpwrq_shampo(struct mlx5e_rq *rq, struct mlx5_cq
+ 	struct sk_buff **skb	= &rq->hw_gro_data->skb;
+ 	bool flush		= cqe->shampo.flush;
+ 	bool match		= cqe->shampo.match;
++	struct mlx5e_rq_stats *stats = rq->stats;
  	struct mlx5e_rx_wqe_ll *wqe;
--	struct sk_buff *skb = NULL;
  	struct mlx5e_dma_info *di;
  	struct mlx5e_mpw_info *wi;
- 	struct mlx5_wq_ll *wq;
-@@ -1821,16 +2014,34 @@ static void mlx5e_handle_rx_cqe_mpwrq_shampo(struct mlx5e_rq *rq, struct mlx5_cq
+@@ -2002,18 +2008,18 @@ static void mlx5e_handle_rx_cqe_mpwrq_shampo(struct mlx5e_rq *rq, struct mlx5_cq
+ 
+ 	if (unlikely(MLX5E_RX_ERR_CQE(cqe))) {
+ 		trigger_report(rq, cqe);
+-		rq->stats->wqe_err++;
++		stats->wqe_err++;
  		goto mpwrq_cqe_out;
  	}
  
--	skb = mlx5e_skb_from_cqe_shampo(rq, wi, cqe, header_index);
-+	if (*skb && (!match || !(mlx5e_hw_gro_skb_has_enough_space(*skb, data_bcnt)))) {
-+		match = false;
-+		mlx5e_shampo_flush_skb(rq, cqe, match);
-+	}
+ 	if (unlikely(mpwrq_is_filler_cqe(cqe))) {
+-		struct mlx5e_rq_stats *stats = rq->stats;
+-
+ 		stats->mpwqe_filler_cqes++;
+ 		stats->mpwqe_filler_strides += cstrides;
+ 		goto mpwrq_cqe_out;
+ 	}
  
--	if (unlikely(!skb))
--		goto free_hd_entry;
-+	if (!*skb) {
-+		mlx5e_skb_from_cqe_shampo(rq, wi, cqe, header_index);
-+		if (unlikely(!*skb))
-+			goto free_hd_entry;
-+	} else {
-+		NAPI_GRO_CB(*skb)->count++;
-+		if (NAPI_GRO_CB(*skb)->count == 2 &&
-+		    rq->hw_gro_data->fk.basic.n_proto == htons(ETH_P_IP)) {
-+			void *hd_addr = mlx5e_shampo_get_packet_hd(rq, header_index);
-+			int nhoff = ETH_HLEN + rq->hw_gro_data->fk.control.thoff -
-+				    sizeof(struct iphdr);
-+			struct iphdr *iph = (struct iphdr *)(hd_addr + nhoff);
++	stats->gro_match_packets += match;
 +
-+			rq->hw_gro_data->second_ip_id = ntohs(iph->id);
-+		}
-+	}
+ 	if (*skb && (!match || !(mlx5e_hw_gro_skb_has_enough_space(*skb, data_bcnt)))) {
+ 		match = false;
+ 		mlx5e_shampo_flush_skb(rq, cqe, match);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+index e1dd17019030..2a9bfc3ffa2e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+@@ -128,6 +128,11 @@ static const struct counter_desc sw_stats_desc[] = {
  
- 	di = &wi->umr.dma_info[page_idx];
--	mlx5e_fill_skb_data(skb, rq, di, data_bcnt, data_offset);
-+	mlx5e_fill_skb_data(*skb, rq, di, data_bcnt, data_offset);
- 
--	mlx5e_complete_rx_cqe(rq, cqe, cqe_bcnt, skb);
--	napi_gro_receive(rq->cq.napi, skb);
-+	mlx5e_shampo_complete_rx_cqe(rq, cqe, cqe_bcnt, *skb);
-+	if (flush)
-+		mlx5e_shampo_flush_skb(rq, cqe, match);
- free_hd_entry:
- 	mlx5e_free_rx_shampo_hd_entry(rq, header_index);
- mpwrq_cqe_out:
-@@ -1941,6 +2152,9 @@ int mlx5e_poll_rx_cq(struct mlx5e_cq *cq, int budget)
- 	} while ((++work_done < budget) && (cqe = mlx5_cqwq_get_cqe(cqwq)));
- 
- out:
-+	if (test_bit(MLX5E_RQ_STATE_SHAMPO, &rq->state) && rq->hw_gro_data->skb)
-+		mlx5e_shampo_flush_skb(rq, NULL, false);
-+
- 	if (rcu_access_pointer(rq->xdp_prog))
- 		mlx5e_xdp_rx_poll_complete(rq);
- 
+ 	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_lro_packets) },
+ 	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_lro_bytes) },
++	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_gro_packets) },
++	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_gro_bytes) },
++	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_gro_skbs) },
++	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_gro_match_packets) },
++	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_gro_large_hds) },
+ 	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_ecn_mark) },
+ 	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_removed_vlan_packets) },
+ 	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_csum_unnecessary) },
+@@ -313,6 +318,11 @@ static void mlx5e_stats_grp_sw_update_stats_rq_stats(struct mlx5e_sw_stats *s,
+ 	s->rx_bytes                   += rq_stats->bytes;
+ 	s->rx_lro_packets             += rq_stats->lro_packets;
+ 	s->rx_lro_bytes               += rq_stats->lro_bytes;
++	s->rx_gro_packets             += rq_stats->gro_packets;
++	s->rx_gro_bytes               += rq_stats->gro_bytes;
++	s->rx_gro_skbs                += rq_stats->gro_skbs;
++	s->rx_gro_match_packets       += rq_stats->gro_match_packets;
++	s->rx_gro_large_hds           += rq_stats->gro_large_hds;
+ 	s->rx_ecn_mark                += rq_stats->ecn_mark;
+ 	s->rx_removed_vlan_packets    += rq_stats->removed_vlan_packets;
+ 	s->rx_csum_none               += rq_stats->csum_none;
+@@ -1760,6 +1770,11 @@ static const struct counter_desc rq_stats_desc[] = {
+ 	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, xdp_redirect) },
+ 	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, lro_packets) },
+ 	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, lro_bytes) },
++	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, gro_packets) },
++	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, gro_bytes) },
++	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, gro_skbs) },
++	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, gro_match_packets) },
++	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, gro_large_hds) },
+ 	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, ecn_mark) },
+ 	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, removed_vlan_packets) },
+ 	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, wqe_err) },
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
+index 139e59f30db0..2c1ed5b81be6 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
+@@ -144,6 +144,11 @@ struct mlx5e_sw_stats {
+ 	u64 tx_mpwqe_pkts;
+ 	u64 rx_lro_packets;
+ 	u64 rx_lro_bytes;
++	u64 rx_gro_packets;
++	u64 rx_gro_bytes;
++	u64 rx_gro_skbs;
++	u64 rx_gro_match_packets;
++	u64 rx_gro_large_hds;
+ 	u64 rx_mcast_packets;
+ 	u64 rx_ecn_mark;
+ 	u64 rx_removed_vlan_packets;
+@@ -322,6 +327,11 @@ struct mlx5e_rq_stats {
+ 	u64 csum_none;
+ 	u64 lro_packets;
+ 	u64 lro_bytes;
++	u64 gro_packets;
++	u64 gro_bytes;
++	u64 gro_skbs;
++	u64 gro_match_packets;
++	u64 gro_large_hds;
+ 	u64 mcast_packets;
+ 	u64 ecn_mark;
+ 	u64 removed_vlan_packets;
 -- 
 2.31.1
 
