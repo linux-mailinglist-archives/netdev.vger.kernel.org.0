@@ -2,73 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8400F43CF7A
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 19:09:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 730A243CF90
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 19:17:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239755AbhJ0RLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 13:11:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35752 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239323AbhJ0RLZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Oct 2021 13:11:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id F198860230;
-        Wed, 27 Oct 2021 17:08:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635354539;
-        bh=u63jCG7PKoPnj5a6mybY0lrZ4Jl2BniZJ7hpbW4xXO4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ExF7H//8pMJigLax08dw2fMG0q4nxEUHGellfj5okQ/540hY13iXyxpXuW9EeAbJ9
-         pfS46kN50M0RmZPmZ5DFPxUuOrY5VwN0VI+DvqGuzx5AMkhQ12aESsyFFtlmDBNWdW
-         PzBZYC6w0jS8I0QEGEWX6Jvqqe+YgjsG3Hy+pb20dk/hRWSDV0IS8/E6yH+yo3r4mp
-         k1ZZowWzcp/v0p6UhkDR1N86muZZLKydnw3lvqa3Vg4Bapt2EQ3hGNjGAqVB/3+oSS
-         /hE6SZo1G/P9Dgd4mzaXP8N2h6Xwoh3zT6GesKfvbbx9k26+zPKBKLxMoNkC0OYRV0
-         bpI9fByaoP3qQ==
-Date:   Wed, 27 Oct 2021 10:08:57 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     sundeep subbaraya <sundeep.lkml@gmail.com>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        hariprasad <hkelam@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Rakesh Babu <rsaladi2@marvell.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Ido Schimmel <idosch@idosch.org>, Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [EXT] Re: [net-next PATCH 1/2] octeontx2-pf: Add devlink param
- to init and de-init serdes
-Message-ID: <20211027100857.4d25544c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CALHRZurNzkkma7HGg2xNLz3ECbwT2Hv=QXMeWr7AXCEegHOciw@mail.gmail.com>
-References: <1635330675-25592-1-git-send-email-sbhatta@marvell.com>
-        <1635330675-25592-2-git-send-email-sbhatta@marvell.com>
-        <20211027083808.27f39cb0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <PH0PR18MB4671C22DB7C8E5C46647860FA1859@PH0PR18MB4671.namprd18.prod.outlook.com>
-        <CALHRZurNzkkma7HGg2xNLz3ECbwT2Hv=QXMeWr7AXCEegHOciw@mail.gmail.com>
+        id S243249AbhJ0RUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 13:20:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54892 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243236AbhJ0RUN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 13:20:13 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83954C061570
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 10:17:48 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id g184so3573287pgc.6
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 10:17:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=32JTrVlDCDcbyAzfMSsn1ULoFBKFb5a2mOeY7+hxAsg=;
+        b=ZbBy0Ng/ibkFrKOgfIFkMqhCnDSKAbph7SOQMAA2YExJ9fczLGbn1XK+iJXOjaLK+u
+         Wb4yBAwLN6ulOnfotBFVEsIstA0pHHI/W3NctIp9HlarADMfoDldBiqdFybhmOUTp2Mx
+         Gh++BQo2xdkKayHRfqlBybQHQdl5sna3RE8CyiXYXfKvl4c1QhhpnYm8KpPkax3JwGGz
+         C4caiiOaiBsLMzOYTKXcyGAOSpSh+2wTOIlNz5oUuKpv8CRcmSirzp08B79nb76odNid
+         jdJO/6UTLascpqBnIUXh7+ZEwfSI1N3M/itImlxzjzEeHXqT6FvgZ4q6zrW8J8mHgLVI
+         Xr2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=32JTrVlDCDcbyAzfMSsn1ULoFBKFb5a2mOeY7+hxAsg=;
+        b=DgLPY/cLKB/7+1vvaSo4VQNYy+HwNMnMjXbd7LYyc+Cq9A5CT8gEDGvAVTIIBOB7WW
+         2LZZGI8HV/NJbiJRajoAQVJr9nje0POQnGEk3hzncxpKcoH4jTk1w90ESEFpQgGUcdBJ
+         0idhenGH+ZlT0i4H6rLHt17BVSptj2kUs3ye1CzGcIIWI31fHHIJCbjXNWOvm8Ee3OC8
+         Z/WEHRDfxmMwrr1TG+h5e0d1F7BVb0RiWk/Nmfx6/Oh20tB4pVEMpO2t1OovO/uvhXUB
+         z6Ok8fNtpdtVg25ZJgbn8IA7r8PAl5QF7kAsMyugHQMfOeC8+IiyxaxkBVpe0P+gMDrx
+         LbHA==
+X-Gm-Message-State: AOAM533PSTkUIKxl9Ady9+KBi4dvxseEh28BKIsWpRj9Dx+WTTxA2Y2z
+        zIRKBq5A5BpLw77A2M7m+Ss=
+X-Google-Smtp-Source: ABdhPJz0okbdpLXNHCO7fQiFYF1XmPqYwEUcDnuamzhH6cz3RWb293+uJJJDblUaZzQWwyPAjAztWA==
+X-Received: by 2002:a63:9042:: with SMTP id a63mr20992746pge.230.1635355067789;
+        Wed, 27 Oct 2021 10:17:47 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id d19sm352171pgk.81.2021.10.27.10.17.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Oct 2021 10:17:47 -0700 (PDT)
+Subject: Re: mdio: separate gpio-reset property per child phy usecase
+To:     Radhey Shyam Pandey <radheys@xilinx.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Michal Simek <michals@xilinx.com>,
+        Harini Katakam <harinik@xilinx.com>
+References: <SA1PR02MB85605C26380A9D8F4D1FB2AAC7859@SA1PR02MB8560.namprd02.prod.outlook.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <64248ee1-55dd-b1bd-6c4e-0a272d230e8e@gmail.com>
+Date:   Wed, 27 Oct 2021 10:17:46 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <SA1PR02MB85605C26380A9D8F4D1FB2AAC7859@SA1PR02MB8560.namprd02.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 Oct 2021 22:13:32 +0530 sundeep subbaraya wrote:
-> > On Wed, 27 Oct 2021 16:01:14 +0530 Subbaraya Sundeep wrote:  
-> > > From: Rakesh Babu <rsaladi2@marvell.com>
-> > >
-> > > The physical/SerDes link of an netdev interface is not
-> > > toggled on interface bring up and bring down. This is
-> > > because the same link is shared between PFs and its VFs.
-> > > This patch adds devlink param to toggle physical link so
-> > > that it is useful in cases where a physical link needs to
-> > > be re-initialized.  
-> >
-> > So it's a reset? Or are there cases where user wants the link
-> > to stay down?  
-> 
-> There are cases where the user wants the link to stay down and debug.
-> We are adding this to help customers to debug issues wrt physical links.
++PHY library maintainers,
 
-Intel has a similar thing, they keep adding a ethtool priv flag called 
-"link-down-on-close" to all their drivers. Maybe others do this, too. 
-It's time we added a standard API for this.
+On 10/27/21 5:58 AM, Radhey Shyam Pandey wrote:
+> Hi all,
+> 
+> In a xilinx internal board we have shared GEM MDIO configuration with
+> TI DP83867 phy and for proper phy detection both PHYs need prior separate
+> GPIO-reset.
+> 
+> Description:
+> There are two GEM ethernet IPs instances GEM0 and GEM1. GEM0 and GEM1 used
+> shared MDIO driven by GEM1.
+> 
+> TI PHYs need prior reset (RESET_B) for PHY detection at defined address. 
+> However with current framework limitation " one reset line per PHY present 
+> on the MDIO bus" the other PHY get detected at incorrect address and later
+> having child PHY node reset property will also not help.
+> 
+> In order to fix this one possible solution is to allow reset-gpios 
+> property to have PHY reset GPIO tuple for each phy. If this
+> approach looks fine we can make changes and send out a RFC.
+
+I don't think your proposed solution would work because there is no way
+to disambiguate which 'reset-gpios' property applies to which PHY,
+unless you use a 'reset-gpio-names' property which encodes the phy
+address in there. But even doing so, if the 'reset-gpios' property is
+placed within the MDIO controller node then it applies within its scope
+which is the MDIO controller. The other reason why it is wrong is
+because the MDIO bus itself may need multiple resets to be toggled to be
+put in a functional state. This is probably uncommon for MDIO, but it is
+not for other types of peripherals with complex asynchronous reset
+circuits (the things you love to hate).
+
+The MDIO bus layer supports something like this which is much more
+accurate in describing the reset GPIOs pertaining to each PHY device:
+
+	mdio {
+		..
+		phy0: ethernet-phy@0 {
+			reg = <0>;
+			reset-gpios = <&slg7xl45106 5 GPIO_ACTIVE_HIGH>;
+		};
+		phy1: ethernet-phy@8 {
+			reg = <8>;
+			reset-gpios = <&slg7xl45106 6 GPIO_ACTIVE_HIGH>;
+		};
+	};
+
+The code that will parse that property is in drivers/net/phy/mdio_bus.c
+under mdiobus_register_gpiod()/mdiobus_register_reset() and then
+mdio_device_reset() called by phy_device_reset() will pulse the per-PHY
+device reset line/GPIO.
+
+Are you saying that you tried that and this did not work somehow? Can
+you describe in more details how the timing of the reset pulsing affects
+the way each TI PHY is going to gets its MDIO address assigned?
+
+Thanks
+-- 
+Florian
