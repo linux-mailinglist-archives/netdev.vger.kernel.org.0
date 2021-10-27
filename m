@@ -2,224 +2,431 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B16F43CC45
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 16:31:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D787843CC5C
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 16:37:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238657AbhJ0Odq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 10:33:46 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:47963 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242590AbhJ0OdV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 10:33:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1635345056; x=1666881056;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=+MX7dAP2eTHBxzWa+/zkM0OevJs+c2yhssikeRxNVgs=;
-  b=q+nwzhu7La6VIep5F0DkMa/+k4sJ5nKo1dugO9ZMHNaXMI2cPwVPEY77
-   NotuuK+wtOjPvw8ELfaYDFXNe69GlT+ghQo7uKKzeeWuwp/T/Wh6TE1rz
-   jXq9aqmVoDlIqPlIP6etpUnW/jQcXu4CCvAcv9TpGsSes+t/E+nyrpU2s
-   E/HuTqgZxwE8ClaujZ1d3a1pqAkanBwHFb75Kp747vdr344I3vIX/RqXd
-   v35p9jPyzVVL4a8y2RJhzSFy1AbFWz0CXoQSoEsUoQX3Q51a5S3PlgUGh
-   7yW+CiIM0+zoBcaAC7T0aLA7l8khlOsotZs30QBQkEGXDmLOTYeDv5paw
-   g==;
-IronPort-SDR: 7EXmspKScC1RZmQMXEz1ZDjlXYetERBm1vCJ7ZbHFE5QQP++ge97cKDMtg+SUVgdfA4kONU0BX
- vbIQlVmXu0v2vgZ9edPK5UrNqc1mmIfD26CLANN9tLrIhP+KJJWBESEmuIVB+YkyUeJC87LWTf
- KFmq3zpH3r+8zKD2UGSOlgd1+QxLYWmvo17qZy/Vr+4sXCWMHpVqymoMbZe5ZnFlDI1tWB0ply
- TUtbZ7BbK2YbNNh31jH8K3HGsQeKuoSNaVrOzWCZF+K9Bcn+YpU+ZJXzFbdHULKgYFIpZ6kxZG
- HLyHbVrdSvpBFiIlJNvIvLlk
-X-IronPort-AV: E=Sophos;i="5.87,186,1631602800"; 
-   d="scan'208";a="141269268"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Oct 2021 07:30:50 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Wed, 27 Oct 2021 07:30:49 -0700
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14 via Frontend
- Transport; Wed, 27 Oct 2021 07:30:48 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GgbS6xY0sxv7+0dV104nwQz8I0d2vG0mjY2WW16/Hso0M2VHpPxcfOEVkXo8n5LQExkA9Ni7l0nZKquNWl15v2Y8h7Xv97sFcLu5djyY73YwWBoO3zdyUBPNJAmPN6S0nHDZBc4G+MIhyUdCmRMrel0yYgPENfjQk20xOhiWUZ6Q+I87XHYcFs2zhGsihgRPdN46YuOIlQksDHzkDuxBYsc2K84brEtgpIT/MZaEOWjg6af6DkmpJ0S+dHuui1d2xWaunaA/bRTEDJfJdD8KRV1xrXR00fW3wC3aaZq2fsrpGiVp4BPk0yQNyXWIbTGZe+AbDBsyTy92nV8Y4Kcl2g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oRzwa/ndlvgW7T2BOZDfs5tcGCRUfggE+0AqZCqRxFg=;
- b=UMeZ+IJqD8gLpP9+LxxdzLlgO14L0e8zmXfGUgcWjJ3ESQl8l9CnWT0RX9yyEi9zfy21JqsNebtNi8ivz97+UIUUSi5Ht6CSGjNuPr0KESSUWf1mku/SSk55dZlWedgX/HkZPBHOvHQrQDh4YQQDNeVkLuYT2VMfPHW5PrBTJC/9dsM+JMeKPBoItZz1XeGPWaTHBlADv1gqiKfEssKKKSf66LhPBjkKpCMuuz948om5D7HjDXYOvMMgE5CNCoiwzg5cEtRplhzYlURfNq8v7WHQ2byHxNPzHoYty4nVgxkvBI1KFSmazajVEnsqhPlEPm+bUy79YIWUiKgFg5a5Tw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+        id S242600AbhJ0Ojx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 10:39:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45896 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242596AbhJ0Ojr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 10:39:47 -0400
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF478C061745
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 07:37:21 -0700 (PDT)
+Received: by mail-ot1-x334.google.com with SMTP id s18-20020a0568301e1200b0054e77a16651so3860668otr.7
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 07:37:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oRzwa/ndlvgW7T2BOZDfs5tcGCRUfggE+0AqZCqRxFg=;
- b=QYKTpmUteZnhYl5zwvhIORr2TdDXJ/66h/qrXj1Iv0hBGEodNN2/CbnoYkNOLtiTqnN1co2XCFb6OT8zU0YoYnJTRyPTkkkVIsh+LGbG6RWz1pj9fbGROPnxcJ0Xng4qIJKtZjkot0FnbJv0g2wP2uq0VApn+j3rrefyDMNEQUg=
-Received: from CH0PR11MB5561.namprd11.prod.outlook.com (2603:10b6:610:d4::8)
- by CH0PR11MB5563.namprd11.prod.outlook.com (2603:10b6:610:d6::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18; Wed, 27 Oct
- 2021 14:30:39 +0000
-Received: from CH0PR11MB5561.namprd11.prod.outlook.com
- ([fe80::4907:3693:d51c:af7e]) by CH0PR11MB5561.namprd11.prod.outlook.com
- ([fe80::4907:3693:d51c:af7e%9]) with mapi id 15.20.4628.020; Wed, 27 Oct 2021
- 14:30:39 +0000
-From:   <Yuiko.Oshino@microchip.com>
-To:     <andrew@lunn.ch>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <Nisar.Sayed@microchip.com>, <UNGLinuxDriver@microchip.com>
-Subject: RE: [PATCH net-next] net: phy: microchip_t1: add cable test support
- for lan87xx phy
-Thread-Topic: [PATCH net-next] net: phy: microchip_t1: add cable test support
- for lan87xx phy
-Thread-Index: AQHXx3OiBAiK8WCZ6kqAisnfUJKPX6vfbvYAgAd+HxA=
-Date:   Wed, 27 Oct 2021 14:30:38 +0000
-Message-ID: <CH0PR11MB55619DF408C4EC0D729BC87F8E859@CH0PR11MB5561.namprd11.prod.outlook.com>
-References: <20211022183632.8415-1-yuiko.oshino@microchip.com>
- <YXMXeuMUVvmR5Zrc@lunn.ch>
-In-Reply-To: <YXMXeuMUVvmR5Zrc@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f9d288a8-18cd-4c72-53d7-08d99956592e
-x-ms-traffictypediagnostic: CH0PR11MB5563:
-x-microsoft-antispam-prvs: <CH0PR11MB55638F31F873234C3E08C8798E859@CH0PR11MB5563.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 6nl6fBhzngDHvbosbIYqp1ZQIMyNaC4v3mZjPz8tyEAtGk1Sv6JU6CdA60aF+AWUzHl1Rt5rBtHEsC04J8fEqRCB3noJ8otV3TzdPDs13jYfRlLD15n2bRDM0GW30cfs90DYlkSmHc6TG6SGCc2r9DBJ+Z/OrnEOzwJYLOiRrXqLCgD1SGJpddMU2D4gyIoeVt92rylFCB3dLMdQ0v2KQ1GwyJcD1oBKjFGP0RHqxsP+odqPEqnw6uWWWy8OnbvVKJRfnjG62TWtqVId3MzdRCjuxDBEvC2HR31yRg/ORdWZ8udHES8gD6IrZca6hogIImt+s5pqz+kPurBPGaOB/Bo/9aHfPUl4Vp4qsKNBr345f+6tzAnRjxriv1BH7Pc0nGXiGMXMmoQl+HU4tqgqxojgYJGhbEbDZyEN5sXgs2Ij8mr5UfkuNC9QJc+MLKVGTkeVcyLlMYhOZRE6VjqV+F7VyLYVK2i5RfcyPvdYyubVP0nXZjkAIA45dQR1fVqEULS6nWMuWirF+Nk557Z3Lxg+Wr+33vKOOH6Z6zhst/bVcl+uz6EP90XewYlis1w5PHvrvWeCbvvJY8Cp8ujbNfGhYFCXwH6ATwoFsi0pN1UgGPI3D+nrvUi3AAsa9hIqqxG1VU91Mtc9lusBzQhNgIQkZw6n9d6j/FW3L6msRcI6qTm/CBZQvKZMnQ391sKUP7AvWeGJCRVedFJgqmiA3w==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR11MB5561.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(5660300002)(52536014)(8676002)(107886003)(122000001)(2906002)(54906003)(316002)(508600001)(186003)(86362001)(6916009)(38070700005)(8936002)(83380400001)(38100700002)(71200400001)(55016002)(9686003)(7696005)(66446008)(76116006)(66556008)(66476007)(64756008)(4326008)(66946007)(6506007)(26005)(33656002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?sLsj16tvnAgP5tquvIqeDlC7ZsIY13HRJZQrA0mpPJIqwk82NU0kZCEMi45+?=
- =?us-ascii?Q?9ACeNx6bZkYaJPjTNq4/yEHy14p1aMVO2R2aRfo8ZCNFH4N6K4qaSukPO4wp?=
- =?us-ascii?Q?iBcmWzf+nZzLhrBOjYFKF8T6HcgymrtZ1UxvOIvRD/26bNI/V2cn02hQX7SU?=
- =?us-ascii?Q?71LeW1amu5u08PWQHc+Lz+q/6WACk5NYlxkIISI5SDqx21gucFw9WUdG+nXm?=
- =?us-ascii?Q?ItdQ3i/TYIR5I2foaOTr5L/0/0j/IvyVazVzywtV6CBTJa5cqJG2lzEbngaG?=
- =?us-ascii?Q?9ONPDOf0Y9jDyYv2pdZg1DYXeBkB6PuiYdx9BmWhTjf5pW8O7/7bJPZQGWuT?=
- =?us-ascii?Q?e3/urmwYZ8T1KSTlvwom3VP3qopX80nVjZiwScXrC7tPyGB451MgBBj/HYNU?=
- =?us-ascii?Q?3xIgozk3FgSp2lbp3Tsxpvi5Z6FN0ty0ktGHrwgJefqcCrn7XgN5bLQRYQK/?=
- =?us-ascii?Q?tE0hKkOYsoSAlWwY1NfM2QIYvGqjnRhxo8bSf21n+i8f19MVGD50fSESFaX/?=
- =?us-ascii?Q?L5ICMmFzqMTSvC5z5I1BLmqMhXVcH4qbx7GkCpFH86vB+JNSAU7zwQOgeHkz?=
- =?us-ascii?Q?6Q51E8XEk5y5y9AHEUltlZ6QoixVgxdduoFzB6WT7ZNBF4EMc83ZuFUMHIL1?=
- =?us-ascii?Q?tt83GSA8kCWcGYH8LxtO/GuBEwstpFiL5R9V5riNeyN8X1ruIesA1f5LAWu0?=
- =?us-ascii?Q?tVd8Xo96+0y4fE4ECswWdy+c22qssu2QOF1vjOACHBssv8djqWOtMGGL10xP?=
- =?us-ascii?Q?Tov2tFHYUyTLUxW/e77dBFVAV3GdRyMiS6HYwuoCs8HmwmLTAhVa8/dOcGji?=
- =?us-ascii?Q?TM9dnumvQ1G5TFmUFDALgb3KxtTVlkgFoYDj1uF4/BEo8b+fhI9iZJmp5Rzk?=
- =?us-ascii?Q?rSfA9P/W+UfSu0Kq3GxfGcqD+hZtMJZuRBn9UT2BifQlCR68AoIavl/cNm9j?=
- =?us-ascii?Q?f5mEuNemXB8yE8TstoycKPPO9kZxHYlBXfT0JZyYpwLgi9gAuhmaqsK8z1UE?=
- =?us-ascii?Q?ZeuhqjR41mGvmJiimxyRYAHQ6mYp2TZ5Ear3B9YgsCg5ZW8POZtT3rK9dvMa?=
- =?us-ascii?Q?3UOMX6LWzA1DzMQAZacdtjI704Hy+B3BCJuUfi/84pmuo5/1M+yqa9O5DrGh?=
- =?us-ascii?Q?b9ftGSfeVtyp6EkFCg9HhMyCVOedXMy7grZH6jXmGVSNlbJKDIEcmLhnk5Bq?=
- =?us-ascii?Q?N5SIaHvHKb8AgYJQQz720hEkHTU6JHAdXd4O+6kwQsx0FxXsUu00EcLs2NTA?=
- =?us-ascii?Q?zshLOE94T+TuH+QHY1NIUJxaG0nZr6k9ID/Bi/esa5aDptBwl++CUnSPww36?=
- =?us-ascii?Q?nQ9YjoGxN0QW4buZKEjKK8QMESUJhxzJcpIuRGFYshEVFvax6eOM0S5Y10Of?=
- =?us-ascii?Q?t70tU9x4joK4RB6U71dnRHVstyuQ+nfauA7Ynd5WesxZU7wXFWB7LGipe6hm?=
- =?us-ascii?Q?VX8EP4k1iK8W0cI7cXCHyqarXGIJ5YZrxM4KYvUvo7uIUAclxP7QCPjsbcuA?=
- =?us-ascii?Q?hu12wJ3VSxRFoV11eWCx76eGKs/od+Y1xNOwyZIlS6phTTRlUXgI2dqwXA+L?=
- =?us-ascii?Q?X+JbDAJSgHVpC/UJJaRJMdovoE/OGC0LnRxOVjtNnUZ1WWzH56V7Lk1fI2LU?=
- =?us-ascii?Q?lJAM5IOveNWqlo5pgeZqLLums4QYUoHWGTOinDlaevel4C6WO7A91gX6apNM?=
- =?us-ascii?Q?6HkzhQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=swXn+DPRwGRcVktAS1XmiXNfEQt/ab519th3eyUhdEI=;
+        b=a/MgtmEKPog3wQlr9CihqBzgUd3p5QRUO2F0YZ8ousw/jLx3wJmYOZekeu8CuUpy6o
+         wpad6GjZy/GsIHpK53Aal44FVBX5UzkiZKcuzhiQuo/Q8o5EMy1Qc6waAW4M9Zgll9zE
+         QZvbbFxcQw1XoZuHRTSOgJhAlArpRwB98iAh1rdziQK+2kq5Pyz2QqxrkcBVWx2p6O3O
+         0PfHygKUmGRNAcM6h/e2HgoCFg5zwWgCewVOBRrfdT9A9sIF1LRJMzPsKNjLkG4wSWEg
+         YAFZsM127tceCdVF+41P3VezvGqSTtrs32YLmO7Yk3TJsvaiPfqV5Ctxa0BsvsKvEfUK
+         5YoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=swXn+DPRwGRcVktAS1XmiXNfEQt/ab519th3eyUhdEI=;
+        b=BG83Zjf8uZx/fLSRfk4xmPgfa0tg7G8MN95Fvn4ybJ6gyve36Byd5hUNUxFgtUCt6o
+         ntNMWpx5/uhmXM6kdd//j9EL/QoE5G1+0i5blWSkXyaN7mu7zXpPeJPeXHmAsRlJC/po
+         P3C08FObx2tzruJLnUkev1aQ+Ljy+T6oyiFztbmxVJfgfFgozAcU2BDn25vVl7go8nz8
+         Vr2IkZO/dEqz9OSlO86lnUdmCwax70sYQtV11J8O/uZpD+R7+l0yB/a8JW2L2BKpgxEW
+         6+v1+Xt+hx5VZa91P+IXuByVuqjlI0M4eMdlfRedFFdIzWHLrEf8xBhX1nL9GnjBwfZd
+         fJxA==
+X-Gm-Message-State: AOAM533GYTvxY0Ks4eJl326uUHZPVdC2muvDXOWz/wPYn46WNptYgIyJ
+        Y+cEZwrO0DacZece0t4bGoV859k998U=
+X-Google-Smtp-Source: ABdhPJxLo7FlzlzcaBOPuYUH18LI8Rt6PMOP4kA/ZQ07ud5yCye7h+VFME9wSpCUa6K1aVcFudSYFw==
+X-Received: by 2002:a9d:17c4:: with SMTP id j62mr23955580otj.225.1635345441132;
+        Wed, 27 Oct 2021 07:37:21 -0700 (PDT)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id w22sm26764oie.26.2021.10.27.07.37.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Oct 2021 07:37:20 -0700 (PDT)
+Message-ID: <ee2ef934-0387-6711-6f04-027db65d256d@gmail.com>
+Date:   Wed, 27 Oct 2021 08:37:18 -0600
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CH0PR11MB5561.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f9d288a8-18cd-4c72-53d7-08d99956592e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Oct 2021 14:30:39.0269
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9bphLgDAjpw18QVsm5e9fAMxTg4JfqWYYdJx7uRkiQ94y+BMxyPyEgM1Imb3AOn5v62qcRj3pvYUApQdi2+FYTLCIaa1zadpeYiIIqu2dX0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB5563
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.2.1
+Subject: Re: [PATCH net-next 1/4 v4] amt: add control plane of amt interface
+Content-Language: en-US
+To:     Taehee Yoo <ap420073@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, dsahern@kernel.org, netdev@vger.kernel.org
+Cc:     dkirjanov@suse.de
+References: <20211026151016.25997-1-ap420073@gmail.com>
+ <20211026151016.25997-2-ap420073@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20211026151016.25997-2-ap420073@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->-----Original Message-----
->From: Andrew Lunn <andrew@lunn.ch>
->Sent: Friday, October 22, 2021 3:57 PM
->To: Yuiko Oshino - C18177 <Yuiko.Oshino@microchip.com>
->Cc: davem@davemloft.net; netdev@vger.kernel.org; Nisar Sayed - I17970
-><Nisar.Sayed@microchip.com>; UNGLinuxDriver
-><UNGLinuxDriver@microchip.com>
->Subject: Re: [PATCH net-next] net: phy: microchip_t1: add cable test suppo=
-rt for
->lan87xx phy
->
->EXTERNAL EMAIL: Do not click links or open attachments unless you know the
->content is safe
->
->> +static int lan87xx_cable_test_start(struct phy_device *phydev) {
->> +     static const struct access_ereg_val cable_test[] =3D {
->> +             /* min wait */
->> +             {PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP, 93,
->> +              0, 0},
->> +             /* max wait */
->> +             {PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP, 94,
->> +              10, 0},
->> +             /* pulse cycle */
->> +             {PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP, 95,
->> +              90, 0},
->> +             /* cable diag thresh */
->> +             {PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP, 92,
->> +              60, 0},
->> +             /* max gain */
->> +             {PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP, 79,
->> +              31, 0},
->> +             /* clock align for each iteration */
->> +             {PHYACC_ATTR_MODE_MODIFY, PHYACC_ATTR_BANK_DSP, 55,
->> +              0, 0x0038},
->> +             /* max cycle wait config */
->> +             {PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP, 94,
->> +              70, 0},
->> +             /* start cable diag*/
->> +             {PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP, 90,
->> +              1, 0},
->> +     };
->> +     int rc, i;
->> +
->> +     rc =3D microchip_cable_test_start_common(phydev);
->> +     if (rc < 0)
->> +             return rc;
->> +
->> +     /* start cable diag */
->> +     /* check if part is alive - if not, return diagnostic error */
->> +     rc =3D access_ereg(phydev, PHYACC_ATTR_MODE_READ,
->PHYACC_ATTR_BANK_SMI,
->> +                      0x00, 0);
->> +     if (rc < 0)
->> +             return rc;
->> +
->> +     if (rc !=3D 0x2100)
->> +             return -ENODEV;
->
->What does this actually mean? Would -EOPNOTSUPP be better?
+On 10/26/21 9:10 AM, Taehee Yoo wrote:
+> diff --git a/drivers/net/amt.c b/drivers/net/amt.c
+> new file mode 100644
+> index 000000000000..8d4782c66cde
+> --- /dev/null
+> +++ b/drivers/net/amt.c
+> @@ -0,0 +1,487 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/* Copyright (c) 2021 Taehee Yoo <ap420073@gmail.com> */
+> +
+> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+> +
+> +#include <linux/module.h>
+> +#include <linux/skbuff.h>
+> +#include <linux/udp.h>
+> +#include <linux/jhash.h>
+> +#include <linux/if_tunnel.h>
+> +#include <linux/net.h>
+> +#include <linux/igmp.h>
+> +#include <net/net_namespace.h>
+> +#include <net/protocol.h>
+> +#include <net/ip.h>
+> +#include <net/udp.h>
+> +#include <net/udp_tunnel.h>
+> +#include <net/icmp.h>
+> +#include <net/mld.h>
+> +#include <net/amt.h>
+> +#include <uapi/linux/amt.h>
+> +#include <linux/security.h>
+> +#include <net/gro_cells.h>
+> +#include <net/ipv6.h>
+> +#include <net/protocol.h>
+> +#include <net/if_inet6.h>
+> +#include <net/ndisc.h>
+> +#include <net/addrconf.h>
+> +#include <net/ip6_route.h>
+> +#include <net/inet_common.h>
+> +
+> +static struct workqueue_struct *amt_wq;
+> +
+> +static struct socket *amt_create_sock(struct net *net, __be16 port)
+> +{
+> +	struct udp_port_cfg udp_conf;
+> +	struct socket *sock;
+> +	int err;
+> +
+> +	memset(&udp_conf, 0, sizeof(udp_conf));
+> +	udp_conf.family = AF_INET;
+> +	udp_conf.local_ip.s_addr = htonl(INADDR_ANY);
+> +
+> +	udp_conf.local_udp_port = port;
+> +
+> +	err = udp_sock_create(net, &udp_conf, &sock);
+> +	if (err < 0)
+> +		return ERR_PTR(err);
+> +
+> +	return sock;
+> +}
+> +
+> +static int amt_socket_create(struct amt_dev *amt)
+> +{
+> +	struct udp_tunnel_sock_cfg tunnel_cfg;
+> +	struct socket *sock;
+> +
+> +	sock = amt_create_sock(amt->net, amt->relay_port);
+> +	if (IS_ERR(sock))
+> +		return PTR_ERR(sock);
+> +
+> +	/* Mark socket as an encapsulation socket */
+> +	memset(&tunnel_cfg, 0, sizeof(tunnel_cfg));
+> +	tunnel_cfg.sk_user_data = amt;
+> +	tunnel_cfg.encap_type = 1;
+> +	tunnel_cfg.encap_destroy = NULL;
+> +	setup_udp_tunnel_sock(amt->net, sock, &tunnel_cfg);
+> +
+> +	rcu_assign_pointer(amt->sock, sock);
+> +	return 0;
+> +}
+> +
+> +static int amt_dev_open(struct net_device *dev)
+> +{
+> +	struct amt_dev *amt = netdev_priv(dev);
+> +	int err;
+> +
+> +	amt->ready4 = false;
+> +	amt->ready6 = false;
+> +
+> +	err = amt_socket_create(amt);
+> +	if (err)
+> +		return err;
+> +
+> +	spin_lock_bh(&amt->lock);
+> +	amt->req_cnt = 0;
+> +	get_random_bytes(&amt->key, sizeof(siphash_key_t));
+> +	spin_unlock_bh(&amt->lock);
 
-This register should return the value of 0x2100. So if the return value is =
-different, then I assume there is no device.
->
->> +static int lan87xx_cable_test_report_trans(u32 result) {
->> +     switch (result) {
->> +     case 0:
->> +             return ETHTOOL_A_CABLE_RESULT_CODE_OK;
->> +     case 1:
->> +             return ETHTOOL_A_CABLE_RESULT_CODE_OPEN;
->> +     case 2:
->> +             return ETHTOOL_A_CABLE_RESULT_CODE_SAME_SHORT;
->
->Please add some #defines for 0, 1, 2.
+why the amt dev lock here? dev_open is called with rtnl lock held and
+the device will not be receiving packets yet (the _bh).
 
-Sure, will do.
->
->       Andrew
+> +
+> +	amt->status = AMT_STATUS_INIT;
+> +	return err;
+> +}
+> +
 
-Thank you.
-Yuiko
+> +
+> +static int amt_change_mtu(struct net_device *dev, int new_mtu)
+> +{
+> +	if (new_mtu > dev->max_mtu)
+> +		new_mtu = dev->max_mtu;
+> +	else if (new_mtu < dev->min_mtu)
+> +		new_mtu = dev->min_mtu;
+
+that is handled by dev_validate_mtu.
+
+Since you are not doing anything special here, I believe you do not need
+the ndo_change_mtu at all.
+
+> +
+> +	dev->mtu = new_mtu;
+> +	return 0;
+> +}
+> +
+> +static const struct net_device_ops amt_netdev_ops = {
+> +	.ndo_init               = amt_dev_init,
+> +	.ndo_uninit             = amt_dev_uninit,
+> +	.ndo_open		= amt_dev_open,
+> +	.ndo_stop		= amt_dev_stop,
+> +	.ndo_get_stats64        = dev_get_tstats64,
+> +	.ndo_change_mtu         = amt_change_mtu,
+> +};
+> +
+> +static void amt_link_setup(struct net_device *dev)
+> +{
+> +	dev->netdev_ops         = &amt_netdev_ops;
+> +	dev->needs_free_netdev  = true;
+> +	SET_NETDEV_DEVTYPE(dev, &amt_type);
+> +	dev->min_mtu		= ETH_MIN_MTU;
+> +	dev->max_mtu		= ETH_MAX_MTU;
+> +	dev->type		= ARPHRD_NONE;
+> +	dev->flags		= IFF_POINTOPOINT | IFF_NOARP | IFF_MULTICAST;
+> +	dev->hard_header_len	= 0;
+> +	dev->addr_len		= 0;
+> +	dev->priv_flags		|= IFF_NO_QUEUE;
+> +	dev->features		|= NETIF_F_LLTX;
+> +	dev->features		|= NETIF_F_GSO_SOFTWARE;
+> +	dev->features		|= NETIF_F_NETNS_LOCAL;
+> +	dev->hw_features	|= NETIF_F_SG | NETIF_F_HW_CSUM;
+> +	dev->hw_features	|= NETIF_F_FRAGLIST | NETIF_F_RXCSUM;
+> +	dev->hw_features	|= NETIF_F_GSO_SOFTWARE;
+> +	eth_hw_addr_random(dev);
+> +	eth_zero_addr(dev->broadcast);
+> +	ether_setup(dev);
+> +}
+> +
+> +static const struct nla_policy amt_policy[IFLA_AMT_MAX + 1] = {
+> +	[IFLA_AMT_MODE]		= { .type = NLA_U32 },
+> +	[IFLA_AMT_RELAY_PORT]	= { .type = NLA_U16 },
+> +	[IFLA_AMT_GATEWAY_PORT]	= { .type = NLA_U16 },
+> +	[IFLA_AMT_LINK]		= { .type = NLA_U32 },
+> +	[IFLA_AMT_LOCAL_IP]	= { .len = sizeof_field(struct iphdr, daddr) },
+> +	[IFLA_AMT_REMOTE_IP]	= { .len = sizeof_field(struct iphdr, daddr) },
+> +	[IFLA_AMT_DISCOVERY_IP]	= { .len = sizeof_field(struct iphdr, daddr) },
+> +	[IFLA_AMT_MAX_TUNNELS]	= { .type = NLA_U32 },
+> +};
+> +
+> +static int amt_validate(struct nlattr *tb[], struct nlattr *data[],
+> +			struct netlink_ext_ack *extack)
+> +{
+> +	if (!data)
+> +		return -EINVAL;
+> +
+> +	if (!data[IFLA_AMT_LINK]) {
+> +		NL_SET_ERR_MSG_ATTR(extack, data[IFLA_AMT_LINK],
+> +				    "link interface should not be empty");
+
+How about: "Link attribute is required".
+
+Similar for the checks below.
+
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (!data[IFLA_AMT_MODE] ||
+> +	    nla_get_u32(data[IFLA_AMT_MODE]) > AMT_MODE_MAX) {
+> +		NL_SET_ERR_MSG_ATTR(extack, data[IFLA_AMT_MODE],
+> +				    "mode should not be empty");
+
+For the extack message to make sense, you need separate checks here: one
+that the attribute is set and one that its value is valid. I believe the
+latter can be managed through the policy and netlink_range_validation.
+
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (!data[IFLA_AMT_LOCAL_IP]) {
+> +		NL_SET_ERR_MSG_ATTR(extack, data[IFLA_AMT_DISCOVERY_IP],
+> +				    "local should not be empty");
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (!data[IFLA_AMT_DISCOVERY_IP] &&
+> +	    nla_get_u32(data[IFLA_AMT_MODE]) == AMT_MODE_GATEWAY) {
+> +		NL_SET_ERR_MSG_ATTR(extack, data[IFLA_AMT_LOCAL_IP],
+> +				    "discovery should not be empty");
+> +		return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int amt_newlink(struct net *net, struct net_device *dev,
+> +		       struct nlattr *tb[], struct nlattr *data[],
+> +		       struct netlink_ext_ack *extack)
+> +{
+> +	struct amt_dev *amt = netdev_priv(dev);
+> +	int err;
+> +
+> +	amt->net = net;
+> +	amt->mode = nla_get_u32(data[IFLA_AMT_MODE]);
+> +
+> +	if (data[IFLA_AMT_MAX_TUNNELS])
+> +		amt->max_tunnels = nla_get_u32(data[IFLA_AMT_MAX_TUNNELS]);
+> +	else
+> +		amt->max_tunnels = AMT_MAX_TUNNELS;
+> +
+> +	spin_lock_init(&amt->lock);
+> +	amt->max_groups = AMT_MAX_GROUP;
+> +	amt->max_sources = AMT_MAX_SOURCE;
+> +	amt->hash_buckets = AMT_HSIZE;
+> +	amt->nr_tunnels = 0;
+> +	get_random_bytes(&amt->hash_seed, sizeof(amt->hash_seed));
+> +	amt->stream_dev = dev_get_by_index(net,
+> +					   nla_get_u32(data[IFLA_AMT_LINK]));
+> +	if (!amt->stream_dev) {
+> +		NL_SET_ERR_MSG_ATTR(extack, tb[IFLA_AMT_LINK],
+> +				    "Can't find stream device");
+> +		return -ENODEV;
+> +	}
+> +
+> +	if (amt->stream_dev->type != ARPHRD_ETHER) {
+> +		NL_SET_ERR_MSG_ATTR(extack, tb[IFLA_AMT_LINK],
+> +				    "Invalid stream device type");
+> +		dev_put(amt->stream_dev);
+> +		return -EINVAL;
+> +	}
+> +
+> +	amt->local_ip = nla_get_in_addr(data[IFLA_AMT_LOCAL_IP]);
+
+Any sanity checks needed for the local_ip? broadcast, multicast, local
+ip is assigned locally.
+
+> +	if (data[IFLA_AMT_RELAY_PORT])
+> +		amt->relay_port = nla_get_be16(data[IFLA_AMT_RELAY_PORT]);
+> +	else
+> +		amt->relay_port = htons(IANA_AMT_UDP_PORT);
+> +
+> +	if (data[IFLA_AMT_GATEWAY_PORT])
+> +		amt->gw_port = nla_get_be16(data[IFLA_AMT_GATEWAY_PORT]);
+> +	else
+> +		amt->gw_port = htons(IANA_AMT_UDP_PORT);
+> +
+> +	if (!amt->relay_port) {
+> +		NL_SET_ERR_MSG_ATTR(extack, tb[IFLA_AMT_DISCOVERY_IP],
+> +				    "relay port must not be 0");
+> +		return -EINVAL;
+> +	}
+> +	if (amt->mode == AMT_MODE_RELAY) {
+> +		amt->qrv = amt->net->ipv4.sysctl_igmp_qrv;
+> +		amt->qri = 10;
+> +		dev->needed_headroom = amt->stream_dev->needed_headroom +
+> +				       AMT_RELAY_HLEN;
+> +		dev->mtu = amt->stream_dev->mtu - AMT_RELAY_HLEN;
+> +		dev->max_mtu = dev->mtu;
+> +		dev->min_mtu = ETH_MIN_MTU + AMT_RELAY_HLEN;
+> +	} else {
+> +		if (!data[IFLA_AMT_DISCOVERY_IP]) {
+> +			NL_SET_ERR_MSG_ATTR(extack, tb[IFLA_AMT_DISCOVERY_IP],
+> +					    "discovery must be set in gateway mode");
+> +			return -EINVAL;
+> +		}
+> +		if (!amt->gw_port) {
+> +			NL_SET_ERR_MSG_ATTR(extack, tb[IFLA_AMT_DISCOVERY_IP],
+> +					    "gateway port must not be 0");
+> +			return -EINVAL;
+> +		}
+> +		amt->remote_ip = 0;
+> +		amt->discovery_ip = nla_get_in_addr(data[IFLA_AMT_DISCOVERY_IP]);
+> +		if (ipv4_is_loopback(amt->discovery_ip) ||
+> +		    ipv4_is_multicast(amt->discovery_ip)) {
+> +			NL_SET_ERR_MSG_ATTR(extack, tb[IFLA_AMT_DISCOVERY_IP],
+> +					    "discovery must be unicast");
+> +			return -EINVAL;
+> +		}
+> +
+> +		dev->needed_headroom = amt->stream_dev->needed_headroom +
+> +				       AMT_GW_HLEN;
+> +		dev->mtu = amt->stream_dev->mtu - AMT_GW_HLEN;
+> +		dev->max_mtu = dev->mtu;
+> +		dev->min_mtu = ETH_MIN_MTU + AMT_GW_HLEN;
+> +	}
+> +	amt->qi = AMT_INIT_QUERY_INTERVAL;
+> +
+> +	err = register_netdevice(dev);
+> +	if (err < 0) {
+> +		netdev_dbg(dev, "failed to register new netdev %d\n", err);
+> +		dev_put(amt->stream_dev);
+> +		return err;
+> +	}
+> +
+> +	err = netdev_upper_dev_link(amt->stream_dev, dev, extack);
+> +	if (err < 0) {
+> +		dev_put(amt->stream_dev);
+> +		unregister_netdevice(dev);
+> +		return err;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+
+> diff --git a/include/uapi/linux/amt.h b/include/uapi/linux/amt.h
+> new file mode 100644
+> index 000000000000..641ef7f51253
+> --- /dev/null
+> +++ b/include/uapi/linux/amt.h
+> @@ -0,0 +1,31 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note */
+> +/*
+> + * Copyright (c) 2021 Taehee Yoo <ap420073@gmail.com>
+> + */
+> +#ifndef _UAPI_AMT_H_
+> +#define _UAPI_AMT_H_
+> +
+> +enum ifla_amt_mode {
+> +	AMT_MODE_GATEWAY = 0,
+> +	AMT_MODE_RELAY,
+> +	__AMT_MODE_MAX,
+> +};
+> +
+> +#define AMT_MODE_MAX (__AMT_MODE_MAX - 1)
+> +
+> +enum {
+> +	IFLA_AMT_UNSPEC,
+> +	IFLA_AMT_MODE,
+> +	IFLA_AMT_RELAY_PORT,
+> +	IFLA_AMT_GATEWAY_PORT,
+> +	IFLA_AMT_LINK,
+> +	IFLA_AMT_LOCAL_IP,
+> +	IFLA_AMT_REMOTE_IP,
+> +	IFLA_AMT_DISCOVERY_IP,
+> +	IFLA_AMT_MAX_TUNNELS,
+> +	__IFLA_AMT_MAX,
+> +};
+> +
+> +#define IFLA_AMT_MAX (__IFLA_AMT_MAX - 1)
+> +
+> +#endif /* _UAPI_AMT_H_ */
+> 
+
+Document each attribute type. Application developer should be able to
+read this file and properly use the API.
