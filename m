@@ -2,77 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADD2843D392
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 23:09:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8871F43D4CE
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 23:21:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244200AbhJ0VLn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 17:11:43 -0400
-Received: from ink.ssi.bg ([178.16.128.7]:36507 "EHLO ink.ssi.bg"
+        id S236867AbhJ0VYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 17:24:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35664 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244195AbhJ0VLn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Oct 2021 17:11:43 -0400
-Received: from ja.ssi.bg (unknown [178.16.129.10])
-        by ink.ssi.bg (Postfix) with ESMTPS id E1AE43C0332;
-        Thu, 28 Oct 2021 00:09:12 +0300 (EEST)
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.16.1/8.16.1) with ESMTP id 19RL999a042887;
-        Thu, 28 Oct 2021 00:09:10 +0300
-Date:   Thu, 28 Oct 2021 00:09:09 +0300 (EEST)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     yangxingwu <xingwu.yang@gmail.com>
-cc:     Simon Horman <horms@verge.net.au>, netdev@vger.kernel.org,
-        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-doc@vger.kernel.org
-Subject: Re: [PATCH] ipvs: Fix reuse connection if RS weight is 0
-In-Reply-To: <CA+7U5Jta_g2vCXiwScVVwLZppWp51TDOB7LxUxeundkPxNZYnA@mail.gmail.com>
-Message-ID: <35e6215-4fb3-5149-a888-67aa6fae958f@ssi.bg>
-References: <20211025115910.2595-1-xingwu.yang@gmail.com> <707b5fb3-6b61-c53-e983-bc1373aa2bf@ssi.bg> <CA+7U5JsSuwqP7eHj1tMHfsb+EemwrhZEJ2b944LFWTroxAnQRQ@mail.gmail.com> <1190ef60-3ad9-119e-5336-1c62522aec81@ssi.bg> <CA+7U5JvvsNejgOifAwDdjddkLHUL30JPXSaDBTwysSL7dhphuA@mail.gmail.com>
- <CA+7U5Jta_g2vCXiwScVVwLZppWp51TDOB7LxUxeundkPxNZYnA@mail.gmail.com>
+        id S232208AbhJ0VXP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Oct 2021 17:23:15 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4D111610CA;
+        Wed, 27 Oct 2021 21:20:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635369649;
+        bh=XAKQElgr6BBu1UxLggaDKytR7eU4feqnPzmw0g25Rh0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=p0b4YLUwvJPjelhXK6tuNGSLxPc8W57wzTHLdwcnMUmPB94v3hsvXslXLq1TZ7GY3
+         sL93c85du1ZkOYvv6Pe8m//9lhA+RCJvKPQ3Uxy4IpiUrRzmmHS2TjXc+bDuZhbHC1
+         l+E73WotWsbVG9NLfon08np6Kd/XgVf0Jxca7lyT4yX6vB73LFYEef0IfwG2arUu8/
+         99lPcmeJ/rIFzzRSmhPjxtiZo5dpdJB8a4yC6OHadP/Fj4Qj6F80bnWXW+gPhJdbdy
+         kbLLEj07eEaOlMSzDYq1FQHtoTNtzXOYOJc/bLD1mWl8TMf9oIuR/1QaiRsDmFW7pE
+         HwI4EGZ6WMvrg==
+Date:   Wed, 27 Oct 2021 16:20:48 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Dongdong Liu <liudongdong3@huawei.com>
+Cc:     hch@infradead.org, kw@linux.com, logang@deltatee.com,
+        leon@kernel.org, linux-pci@vger.kernel.org, rajur@chelsio.com,
+        hverkuil-cisco@xs4all.nl, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH V10 6/8] PCI/P2PDMA: Add a 10-Bit Tag check in P2PDMA
+Message-ID: <20211027212048.GA252528@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211009104938.48225-7-liudongdong3@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Oct 09, 2021 at 06:49:36PM +0800, Dongdong Liu wrote:
+> Add a 10-Bit Tag check in the P2PDMA code to ensure that a device with
+> 10-Bit Tag Requester doesn't interact with a device that does not
+> support 10-Bit Tag Completer. 
 
-	Hello,
+Shouldn't this also take into account Extended Tags (8 bits)?  I think
+the only tag size guaranteed to be supported is 5 bits.
 
-On Wed, 27 Oct 2021, yangxingwu wrote:
+> Before that happens, the kernel should emit a warning.
 
-> what we want is if RS weight is 0, then no new connections should be
-> served even if conn_reuse_mode is 0, just as commit dc7b3eb900aa
-> ("ipvs: Fix reuse connection if real server is
-> dead") trying to do
+The warning is nice, but the critical thing is that the P2PDMA mapping
+should fail so we don't attempt DMA in this situation.  I guess that's
+sort of what you're saying with "ensure that a device ... doesn't
+interact with a device ..."
+
+> "echo 0 > /sys/bus/pci/devices/.../10bit_tag" to disable 10-Bit Tag
+> Requester for PF device.
 > 
-> Pls let me know if there are any other issues of concern
-
-	My concern is with the behaviour people expect
-from each sysctl var: conn_reuse_mode decides if port reuse
-is considered for rescheduling and expire_nodest_conn
-should have priority only for unavailable servers (nodest means
-No Destination), not in this case.
-
-	We don't know how people use the conn_reuse_mode=0
-mode, one may bind to a local port and try to send multiple
-connections in a row with the hope they will go to same real
-server, i.e. as part from same "session", even while weight=0.
-If they do not want such behaviour (99% of the cases), they
-will use the default conn_reuse_mode=1. OTOH, you have different
-expectations for mode 0, not sure why but you do not want to use
-the default mode=1 which is safer to use. May be the setups
-forget to stay with conn_reuse_mode=1 on kernels 5.9+ and
-set the var to 0 ?
-
-	The problem with mentioned commit dc7b3eb900aa is that
-it breaks FTP and persistent connections while the goal of
-weight=0 is graceful inhibition of the server. We made
-the mistake to add priority for expire_nodest_conn when weight=0.
-This can be fixed with a !cp->control check. We do not want
-expire_nodest_conn to kill every connection during the
-graceful period.
-
-Regards
-
---
-Julian Anastasov <ja@ssi.bg>
+> "echo 0 > /sys/bus/pci/devices/.../sriov_vf_10bit_tag_ctl" to disable
+> 10-Bit Tag Requester for VF device.
+> 
+> Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
+> Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
+> ---
+>  drivers/pci/p2pdma.c | 48 ++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 48 insertions(+)
+> 
+> diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
+> index 50cdde3e9a8b..804e390f4c22 100644
+> --- a/drivers/pci/p2pdma.c
+> +++ b/drivers/pci/p2pdma.c
+> @@ -19,6 +19,7 @@
+>  #include <linux/random.h>
+>  #include <linux/seq_buf.h>
+>  #include <linux/xarray.h>
+> +#include "pci.h"
+>  
+>  enum pci_p2pdma_map_type {
+>  	PCI_P2PDMA_MAP_UNKNOWN = 0,
+> @@ -410,6 +411,50 @@ static unsigned long map_types_idx(struct pci_dev *client)
+>  		(client->bus->number << 8) | client->devfn;
+>  }
+>  
+> +static bool pci_10bit_tags_unsupported(struct pci_dev *a,
+> +				       struct pci_dev *b,
+> +				       bool verbose)
+> +{
+> +	bool req;
+> +	bool comp;
+> +	u16 ctl;
+> +	const char *str = "10bit_tag";
+> +
+> +	if (a->is_virtfn) {
+> +#ifdef CONFIG_PCI_IOV
+> +		req = !!(a->physfn->sriov->ctrl &
+> +			 PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN);
+> +#endif
+> +	} else {
+> +		pcie_capability_read_word(a, PCI_EXP_DEVCTL2, &ctl);
+> +		req = !!(ctl & PCI_EXP_DEVCTL2_10BIT_TAG_REQ_EN);
+> +	}
+> +
+> +	comp = !!(b->devcap2 & PCI_EXP_DEVCAP2_10BIT_TAG_COMP);
+> +	/* 10-bit tags not enabled on requester */
+> +	if (!req)
+> +		return false;
+> +
+> +	 /* Completer can handle anything */
+> +	if (comp)
+> +		return false;
+> +
+> +	if (!verbose)
+> +		return true;
+> +
+> +	pci_warn(a, "cannot be used for peer-to-peer DMA as 10-Bit Tag Requester enable is set for this device, but peer device (%s) does not support the 10-Bit Tag Completer\n",
+> +		 pci_name(b));
+> +
+> +	if (a->is_virtfn)
+> +		str = "sriov_vf_10bit_tag_ctl";
+> +
+> +	pci_warn(a, "to disable 10-Bit Tag Requester for this device, echo 0 > /sys/bus/pci/devices/%s/%s\n",
+> +		 pci_name(a), str);
+> +
+> +	return true;
+> +}
+> +
+>  /*
+>   * Calculate the P2PDMA mapping type and distance between two PCI devices.
+>   *
+> @@ -532,6 +577,9 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
+>  		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
+>  	}
+>  done:
+> +	if (pci_10bit_tags_unsupported(client, provider, verbose))
+> +		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
+> +
+>  	rcu_read_lock();
+>  	p2pdma = rcu_dereference(provider->p2pdma);
+>  	if (p2pdma)
+> -- 
+> 2.22.0
+> 
