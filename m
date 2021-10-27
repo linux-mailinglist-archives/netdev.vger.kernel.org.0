@@ -2,90 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE99943D03E
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 20:02:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 373AB43D048
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 20:07:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239928AbhJ0SE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 14:04:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36948 "EHLO
+        id S238518AbhJ0SJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 14:09:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238448AbhJ0SE1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 14:04:27 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E71C061570;
-        Wed, 27 Oct 2021 11:02:01 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id 67so8426718yba.6;
-        Wed, 27 Oct 2021 11:02:01 -0700 (PDT)
+        with ESMTP id S230495AbhJ0SJ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 14:09:56 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5472AC061570
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 11:07:30 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id 71so1137716wma.4
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 11:07:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Y4Ep56fOfPjwhoMraFFxW5wtkRrwAnAh+988/M+IXBc=;
-        b=MPxf5hLKbtPKOnPYmQX3pQjMalBbUHIPoY+DVdJukH85kdrla+XRmMDmLvR+Fi6P95
-         IlBIZO0GdSK9BtsTcbfex64fTiEdv4r5uHiYRJBd94iqSuHTBBJviq7Q8ISDbnBPDreI
-         FnIZuHfvZOzFv4n69aT97nZNtMQTqU7IkYzo4p9DP/TGf+VoaAtCgDkNJ1sS9qb3OHg0
-         CAxXmqIzdBtQHah0cpMGJ7MVRdS2msU8ozI3SbontNQgTc4djocIhQhDA46B6ChChAMF
-         Lj5t1xO80nfAfEW8xZTZBkYFXUI9eNmeGMsdJpYslSlrqVSqXDKduJBllxybXxvrlUSB
-         3lfw==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=2Y8NayuLnfX3GwLkDMn7ZTyD7RtMsOyjIifS8+INynY=;
+        b=jGmnxUsdbxBcPGTPdTPVo/tpFl/s9CD2zFX6ddOJsXP6BCq+TZbkkABZvl/YkyJthq
+         SQC9MiEcYt7H8/BtVzwHJvjX1AsspfmNXHPRYrjLtviWHStfpuZu4qdyftOYAaTEuAds
+         WSrgubaeK3Mgj0WjUoEF7CmSNnZazHDa1g9lIDTBkLySgn2R8WmQpSSHQUrNuVIGzS98
+         26vlMVb6MFzyHAKXrLeW3sQQz7gkJK2y9Jjhg08l7uM0ZWEqjDOWZi5bmTBAoWhoZ1Ls
+         kA8Tm8yxFmh8qiTb2XeQAHmUODdgvDWwM4z7KdtMNUnlh4aZHtC18QVPVUKDuYSE2N7M
+         HBZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Y4Ep56fOfPjwhoMraFFxW5wtkRrwAnAh+988/M+IXBc=;
-        b=A+vRdKDk92uBYp2hFTGl37dQF6eWLL6fw4cVA6VR8rHlSPAg+kRPnxB/Ww7s+4isvC
-         YqXNkyeRy8YwoAKTOTy17ZvluXBSTdBOPgyb5JACS91nFSdTRxWzLwaeGOT5vBg+1Gej
-         yt1ycAKcYnVd8mI8BKEZ5x3kSG/kW2m50aetFYSTdE6WstMiXDzSPIZ11nsOjRO5OB34
-         LcIW7xKB0c2d8Y3gkbt6BHH5EyGV4IMYL0wC8Bx3Cw9tDoJstGlfnidAoChZaCbBf2iB
-         b8yiQpU1ffmfl4uCJqATjGd++Td6UiH6YUgcXKHq00e/VOMbUVMOrtykpT36wPfyrIvr
-         oWHQ==
-X-Gm-Message-State: AOAM533a7jSHZyX9hHj1NOxJbm/9tNC+1EhzjF/JCtSlKpoBSMEjwIsl
-        HDzweLppE2y7bmUF6UOyxipUTCaxzKFz33V8fuA=
-X-Google-Smtp-Source: ABdhPJyW+6P7367fMDFPMV3f5MHc+9YUvSUaztDH9a3u/TlmPD4C7QwMCt24dl6V9SU3pNsVL4xkQ9lLMqr23IavPuk=
-X-Received: by 2002:a25:aa0f:: with SMTP id s15mr26612332ybi.51.1635357720816;
- Wed, 27 Oct 2021 11:02:00 -0700 (PDT)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=2Y8NayuLnfX3GwLkDMn7ZTyD7RtMsOyjIifS8+INynY=;
+        b=sPKnH230i/DrpYYOlHVKJhMufNrkbI1i4vXJL91O9lPpdUVHMmn74k4OtS1q03WsD3
+         QCn+n65vBjijVG4JZLuuWwqkf2OsDKhE20tr6nckSmr8maD3v+9cBNbbpnbCAP43wCmF
+         9qdgtyGGNz9BdzTcbgB+Y4mcMEd9CauvA8H5OX09O3Bs8bQsh0bsDUnDt3w8u39SqJRp
+         7GwcQoRwJtiriyxTn1eaWoTHFj46GI6gpK1qMWKzZ9wnp6BPed7CmNwGQRqJEZMJ6GE2
+         HPlTN4yA1XG0VwVdF6kka1pq2JFuVkS/iKBRrSWSC0vz561Tr5RgfYdvLCzWrxIZe0cr
+         2Igw==
+X-Gm-Message-State: AOAM532a+tuf+hQtHGgIt07ZAd/KElmEmrJl/JGVF6zsLWSmfHsxqG9v
+        2Oq/rdYtp+8QV+HN5xQPcQqiJCaKJ50fq+eefIg=
+X-Google-Smtp-Source: ABdhPJyOBhgfeq0Npmn4UVl9d/im3nHl3/6W4CG0r1zRjhllS39QhOW2sfIhalIF9sXw0l+f1zmQjzDhXflB22NDDKQ=
+X-Received: by 2002:a05:600c:19cd:: with SMTP id u13mr7145647wmq.148.1635358048701;
+ Wed, 27 Oct 2021 11:07:28 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211026223528.413950-1-jevburton.kernel@gmail.com>
-In-Reply-To: <20211026223528.413950-1-jevburton.kernel@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 27 Oct 2021 11:01:49 -0700
-Message-ID: <CAEf4BzYoNBZEqdNWYSTrviOs5_4d08ODxL6XSNNHOmqxDRu8Mw@mail.gmail.com>
-Subject: Re: [PATCH v2] libbpf: Deprecate bpf_objects_list
-To:     Joe Burton <jevburton.kernel@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Joe Burton <jevburton@google.com>
+Received: by 2002:adf:fa04:0:0:0:0:0 with HTTP; Wed, 27 Oct 2021 11:07:28
+ -0700 (PDT)
+Reply-To: mrsaishag45@gmail.com
+From:   Mrs Aisha Al-Qaddafi <mrsaishag31@gmail.com>
+Date:   Wed, 27 Oct 2021 11:07:28 -0700
+Message-ID: <CANoeRo7hTePa+J5s5Mq8wpQOf_dWaWDXv_Qr12Mk0Ehyp6hN+Q@mail.gmail.com>
+Subject: Dear Friend,
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 26, 2021 at 3:35 PM Joe Burton <jevburton.kernel@gmail.com> wrote:
->
-> From: Joe Burton <jevburton@google.com>
->
-> Add a flag to `enum libbpf_strict_mode' to disable the global
-> `bpf_objects_list', preventing race conditions when concurrent threads
-> call bpf_object__open() or bpf_object__close().
->
-> bpf_object__next() will return NULL if this option is set.
->
-> Callers may achieve the same workflow by tracking bpf_objects in
-> application code.
->
->   [0] Closes: https://github.com/libbpf/libbpf/issues/293
->
-> Signed-off-by: Joe Burton <jevburton@google.com>
-> ---
+Dear Friend,
 
-Applied to bpf-next, thanks. Please specify kernel tree next time
-(i.e., [PATCH bpf-next] subject prefix)
+I came across your e-mail contact prior to a private search while in
+need of your assistance. I am Aisha Al-Qaddafi, the only biological
+Daughter of Former President of Libya Col. Muammar Al-Qaddafi. Am a
+single Mother and a Widow with three Children.
 
+I have investment funds worth Twenty Seven Million Five Hundred
+Thousand United State Dollar ($27.500.000.00 ) and i need a trusted
+investment Manager/Partner because of my current refugee status,
+however, I am interested in you for investment project assistance in
+your country, may be from there, we can build business relationship in
+the nearest future.
 
->  tools/lib/bpf/libbpf.c        | 8 +++++++-
->  tools/lib/bpf/libbpf.h        | 3 ++-
->  tools/lib/bpf/libbpf_legacy.h | 6 ++++++
->  3 files changed, 15 insertions(+), 2 deletions(-)
->
+I am willing to negotiate an investment/business profit sharing ratio
+with you based on the future investment earning profits.
 
-[...]
+If you are willing to handle this project on my behalf kindly reply
+urgently to enable me to provide you more information about the
+investment funds.
+Best Regards
+Mrs Aisha Al-Qaddafi
