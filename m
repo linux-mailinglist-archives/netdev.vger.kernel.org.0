@@ -2,60 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36C3C43C714
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 11:59:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 116A743C719
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 11:59:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241296AbhJ0KBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 06:01:13 -0400
-Received: from mail-dm6nam12on2043.outbound.protection.outlook.com ([40.107.243.43]:53280
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        id S241369AbhJ0KBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 06:01:30 -0400
+Received: from mail-dm3nam07on2089.outbound.protection.outlook.com ([40.107.95.89]:62944
+        "EHLO NAM02-DM3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S241317AbhJ0KAs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Oct 2021 06:00:48 -0400
+        id S241366AbhJ0KAy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Oct 2021 06:00:54 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MqXiRh7tSxf/5C9vGex8KwhoDQvwG79xJI9vUE01EO8G3y10wSLKPFU66bjcuvwYKPEtbF0fez6Pk9WguKVSKJ9ovcDEkEmtUwXbjhTb1QZPeT/osWV+nasL7D2aofZ1QECN3ct6aWPzS4d/RUiR+uFATdv3zD9jYUG513UOTMRW6m1OP8pqUbUpJzBzdYQdu6EuSlglC85cJRDtgaDYqkI8Goh/NfB1AQ5BodApprhOH7FxkdZTipVh3rV2o6g+9GQUQYrWuVa9LOPBeohPNaI/xc/bswVjcLxglNI9m+GhMwAFjYXN3dlrEwGZmlJ0A7H84osdddrvL9pPeoEDgQ==
+ b=XcI0tkMwxYMm3FHmfH4qJSTM/XbSlbUJkj4qxoOLEndZSYRYgHexNx5oq+ShdhOFzrVOtzMTndnL4tIh7h7t2MWhGVonxiW7/0x9JiWjSdSTVAYAvcqck3Aofj8S0jTefTDfcORepCKQaGwc5iWbeOmgcwN/puZgIaivrxKSUfzL0e4xECZme38G1tN1sSU+7+pE86u4J8fGDaC+xNIgG9X+HWpE6cHZ+NW1E3aitc5iS2ySpW62FSSReuSP/T6gHed/5ioKEYM8GL/FxDk4WVMNVc9T0dPsUQseKyyOAjH2ZpNqV8+cq094nfKoL84hh9SZzdC2PKk3ypKl6w3mhA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8EiLFCfX1BIiCoBhJcg49k8D+4oAajiiGkB0J2YJXL4=;
- b=CCF8saknzAjzUbIjNmxwUNdOSfrlMiJCcLC/ZYvCiqc4do1Ye+R70y1vzi7WXOPMdpX6oxbTE7L7tZY8jaPtiPpkbaJlqMTbpJ/N4qyC1qzOkMqv8/6GjyReAFHDQjEFfZjwvgV1xrU64GoCdnaJt5APzyAX1LMYQlIPpiygcXWscRxYNPfp18jwwusej2hrFKUfPRlRiduNvRpDfMKsIJQ5ow+TNgRl1CXkGixuZv0TOp/IkkqV+SRgB+5VPzRMgnGgDkfhENFL7Q/gNIgSXUnYKACBD0zUiXcPVpmeMkWQ8k8yET1tlUsSLWI6oJxFUnfR8EHymIK+XI5ec6g21Q==
+ bh=0qBhMUAfwt8E6ywWDy8Owv/T01/cBk016HI+ZBtUhJk=;
+ b=AV/idjxJc41nRn6JDe9RnMDfvuhKbPaoMVGcqH+gWeQMQf5DXTwq/CTliJJ+VfXMZeyAEk8yS0xPZ36In/pYApXJS3+Xa7QMrSTRg9SrRlZqGFh6yyLDFA02NeihmRxwt1gx95EUd5h0OHa7wkZ/sn9pBPwNH0dg8G8QL8ICqp0+WQWldlE2wH+Y1GyUzKAlxQzNvKUePjjykwWNFcksB2STD45o5SnO3MVLH6S5xEjPfp0MyTUstX6FRCcJ5SUdtpTA1/WDQLuTaLV/S8hct5V/+CAJXaPIbS0lJRMI08KFUcBScSs0kSUUV5UwaUMpPjgNgP7ZC7VZBnpO/UTaVw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.32) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ 216.228.112.32) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=nvidia.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8EiLFCfX1BIiCoBhJcg49k8D+4oAajiiGkB0J2YJXL4=;
- b=TKMp+hLl82C4irFBTNSdVArEo7RTx34AthtR3KdCPYaxT5YjSe//69W7/WbGYSH6N6IsDle6xrJeup+JXxbrkEIC1ckNeaUI7uKTN5Q/ZLJ+Emi/5JHP4zeTGcZ5EsH4kDq9Z+m6Es3eRuJqqz+ki3utWvhusNJeLAi6/XTaJGc5xnyjJCXYYIpzMlSeQy7TM4BZxQESKAE9/lPbBwhbOedygKNnhVvCY1l05KO8xpO1jm+msC1dObfcaje7XX1Bhb0sokgckx9wXz7qP6ClvHIzzRNQ2pDJnHdsnt+fkSAD3nliAphgAx2+OU77d6QcPCLvDQWToiTU5+ZkQjOPAQ==
-Received: from DS7PR07CA0002.namprd07.prod.outlook.com (2603:10b6:5:3af::8) by
- CH0PR12MB5385.namprd12.prod.outlook.com (2603:10b6:610:d4::14) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4649.13; Wed, 27 Oct 2021 09:58:22 +0000
-Received: from DM6NAM11FT031.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3af:cafe::d4) by DS7PR07CA0002.outlook.office365.com
- (2603:10b6:5:3af::8) with Microsoft SMTP Server (version=TLS1_2,
+ bh=0qBhMUAfwt8E6ywWDy8Owv/T01/cBk016HI+ZBtUhJk=;
+ b=J93cP/cX5tb2e7eNKnj6bDz5FFDaBvNGaqKlR0wXqH3H2nAqBmUvh4W11q+mI3JnD5IGB2oXHAXXawxsC/h0Sc6f8+OiA5z/Szf1rwPUWWTfDbDHzcs8R4RLMv+iqUUdp2wfBDOIcuYrXWz1qDDQLvM8cWckmKlwak8IJSwhl/6TFElGcH5N/OA7wocaMtg/akRmnMxott/bOL123i3VJV6sogz+F8i3DOL7ndL6vKCNAUmETK8cE91OnXhHKYadMYl8VhO7/9ST5Zvj8D4MaPuGG6c4KmDoJcuNaEuk5/6Ns+wGjJnzAce04cCxCFiTN9byb2QrlFIROMhVfNZLgQ==
+Received: from DS7PR07CA0001.namprd07.prod.outlook.com (2603:10b6:5:3af::10)
+ by BYAPR12MB2998.namprd12.prod.outlook.com (2603:10b6:a03:dd::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.14; Wed, 27 Oct
+ 2021 09:58:25 +0000
+Received: from DM6NAM11FT010.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3af:cafe::84) by DS7PR07CA0001.outlook.office365.com
+ (2603:10b6:5:3af::10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.14 via Frontend
- Transport; Wed, 27 Oct 2021 09:58:22 +0000
+ Transport; Wed, 27 Oct 2021 09:58:25 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.32)
- smtp.mailfrom=nvidia.com; redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=pass action=none header.from=nvidia.com;
+ smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.112.32 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.112.32; helo=mail.nvidia.com;
 Received: from mail.nvidia.com (216.228.112.32) by
- DM6NAM11FT031.mail.protection.outlook.com (10.13.172.203) with Microsoft SMTP
+ DM6NAM11FT010.mail.protection.outlook.com (10.13.172.222) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4649.14 via Frontend Transport; Wed, 27 Oct 2021 09:58:22 +0000
-Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL109.nvidia.com
+ 15.20.4649.14 via Frontend Transport; Wed, 27 Oct 2021 09:58:25 +0000
+Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL109.nvidia.com
  (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 27 Oct
- 2021 02:58:21 -0700
-Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 27 Oct
- 2021 09:58:21 +0000
+ 2021 02:58:24 -0700
 Received: from vdi.nvidia.com (172.20.187.5) by mail.nvidia.com
  (172.20.187.18) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Wed, 27 Oct 2021 09:58:18 +0000
+ Transport; Wed, 27 Oct 2021 09:58:22 +0000
 From:   Yishai Hadas <yishaih@nvidia.com>
 To:     <alex.williamson@redhat.com>, <bhelgaas@google.com>,
         <jgg@nvidia.com>, <saeedm@nvidia.com>
@@ -63,9 +61,9 @@ CC:     <linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
         <netdev@vger.kernel.org>, <kuba@kernel.org>, <leonro@nvidia.com>,
         <kwankhede@nvidia.com>, <mgurtovoy@nvidia.com>,
         <yishaih@nvidia.com>, <maorg@nvidia.com>
-Subject: [PATCH V5 mlx5-next 09/13] net/mlx5: Introduce migration bits and structures
-Date:   Wed, 27 Oct 2021 12:56:54 +0300
-Message-ID: <20211027095658.144468-10-yishaih@nvidia.com>
+Subject: [PATCH V5 mlx5-next 10/13] vfio/mlx5: Expose migration commands over mlx5 device
+Date:   Wed, 27 Oct 2021 12:56:55 +0300
+Message-ID: <20211027095658.144468-11-yishaih@nvidia.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20211027095658.144468-1-yishaih@nvidia.com>
 References: <20211027095658.144468-1-yishaih@nvidia.com>
@@ -74,207 +72,455 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 34abdd40-a6bb-49b0-4e85-08d999304fb8
-X-MS-TrafficTypeDiagnostic: CH0PR12MB5385:
-X-Microsoft-Antispam-PRVS: <CH0PR12MB5385AA09D92247B1A5369940C3859@CH0PR12MB5385.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
+X-MS-Office365-Filtering-Correlation-Id: 006fbf1c-acf2-4dd0-0b4e-08d9993051ae
+X-MS-TrafficTypeDiagnostic: BYAPR12MB2998:
+X-Microsoft-Antispam-PRVS: <BYAPR12MB2998D95FBCA2C760079762B8C3859@BYAPR12MB2998.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QFl6UgRsEqHPy5kCqkXw7eKB/kRb8743gOivm8MbIRnFusACBwjaF+iqQWUn182/KLLT4Anz+D58/RZLrocTkZz8DAOkuZHmU7r7FS51Ox0UVKpzwbbYTBVheu4z7ybKkBcQ23ZIRaXsrjb35BJ/8FTDBBUKtSaGi2EaDsUqjuLA4wMYEWBd6oMG+BdMtuxHTFpH5Jg+q4GPPqrNQObYKwvYWnSmHF2yG4Hxu/dhSmQooPGF4K3zXESsnfHzBDCYjs807Q9KKUfORurXdaDZEZQXUASGlPxkDZ/9D9z91/lhDZQ9JRLOxmHuUxsCq+Fyb+taCkjhQMDDf9v5knlmiwT18RzyWpS7zMcdLbJozctndEmFrJETbudbjBY3ehNnfiaQRvqUdNxyDrlTK1GslGBlMavGu4mTuswOE3kITRglEFyvFSF49HmOhQhuKvmbu7oPSSh0s+kuFAi2uSws6hGpGVWbpwWCChxDHANU4+z53LnMsEphxwMjxaWvwWBcTLVsBlUyZ4mdIyTeflL9xykUX000eAzuvWiQbL94V3aGk27FvxKIxqcZlA1+EEm1ramsmA/0JW+1fuipmYmj3hQWAkOH8vvef9lLJD2guu0jLc6BemmyqArqCmg2CXsTkNwLPPOX2Xtsh1GsbpMYYDN62K++uq8wnChFljfI1G+vgRtCgH2fepD9FT1EWsTKBaaA+A7SJ/b9HiwTx9GezA==
-X-Forefront-Antispam-Report: CIP:216.228.112.32;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid01.nvidia.com;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(83380400001)(107886003)(54906003)(7696005)(70206006)(47076005)(8676002)(2616005)(86362001)(426003)(70586007)(36860700001)(6636002)(2906002)(110136005)(508600001)(336012)(8936002)(36756003)(356005)(1076003)(7636003)(82310400003)(5660300002)(186003)(316002)(6666004)(26005)(4326008);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 4+JvIvTwnzHHp/4LuqM4bvqF1ZxgaaHyfeEZReH6Hcr9TC0wS/nBAXbGgS1jH41HiZ9qmHgQva7NkchwN638mMRMMeE3Zo8wb+TzYqnNjYng793k7+l1XCvsC4jiQMHWwaC0h7MfRJMNPm8B/nCE6kSbRlUZ2qgClXn7wJfwf/GjGJGrV+XNClIIhU0vlvhqIY2NMoyLEyzBaAPFlw8dHFS7gelOSni9THCQZv8JbKGvXFMLyqOOSuZW6AzkSVR5utBr/AHWfuNMHj2jsHIH19846AGUdzXPwTp5hPPeXrTUolc6lSEYYhQ/RXbP4+ycukr3ZMyZqP2Grpa7VhAXI1IVpAHQT2YWrDF0ND8Od90kvPZfKI2nmxcTO3WI10FccjcGwvJFaYE2yyOJoY8qwvBx0/FNbLJWkxbihmKPS565di8bH370MOA3GHhWBWDSbMQFk4TWJclcudgSyC0XLyscAZAOaKCCINkLnAwVDIr/MAQKuWV7Z/bNMMyV+gRYjmLV3TyVmWxTX2a3aBqqxlvLeBSo5qAkynYb/PaiWxNoAb40++l9T6Zkz1Edqo4nAGfSU4tZSrFhNobcTF1NYIqOpOHGwEBE8ZITGbzDSyKsJAFPpgtMGdpVckxhifv+5TJieWNRCKf6dwR0moT5xPZr2x5jFEGDrJ7JpKMVnGTRZFiVkETHWWS5nBw/BV/EFpwpm+SrhgKQUmTlpkG4TQ==
+X-Forefront-Antispam-Report: CIP:216.228.112.32;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid01.nvidia.com;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(36860700001)(2616005)(110136005)(186003)(508600001)(70206006)(54906003)(356005)(8936002)(36756003)(86362001)(4326008)(426003)(5660300002)(7636003)(316002)(7696005)(336012)(2906002)(26005)(83380400001)(107886003)(6666004)(6636002)(8676002)(30864003)(47076005)(70586007)(1076003)(82310400003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Oct 2021 09:58:22.3495
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Oct 2021 09:58:25.5587
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 34abdd40-a6bb-49b0-4e85-08d999304fb8
+X-MS-Exchange-CrossTenant-Network-Message-Id: 006fbf1c-acf2-4dd0-0b4e-08d9993051ae
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.32];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT031.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT010.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5385
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2998
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce migration IFC related stuff to enable migration commands.
+Expose migration commands over the device, it includes: suspend, resume,
+get vhca id, query/save/load state.
+
+As part of this adds the APIs and data structure that are needed to
+manage the migration data.
 
 Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- include/linux/mlx5/mlx5_ifc.h | 147 +++++++++++++++++++++++++++++++++-
- 1 file changed, 146 insertions(+), 1 deletion(-)
+ drivers/vfio/pci/mlx5/cmd.c | 356 ++++++++++++++++++++++++++++++++++++
+ drivers/vfio/pci/mlx5/cmd.h |  43 +++++
+ 2 files changed, 399 insertions(+)
+ create mode 100644 drivers/vfio/pci/mlx5/cmd.c
+ create mode 100644 drivers/vfio/pci/mlx5/cmd.h
 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 864fc6b99b44..fe5566bb00b1 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -126,6 +126,11 @@ enum {
- 	MLX5_CMD_OP_QUERY_SF_PARTITION            = 0x111,
- 	MLX5_CMD_OP_ALLOC_SF                      = 0x113,
- 	MLX5_CMD_OP_DEALLOC_SF                    = 0x114,
-+	MLX5_CMD_OP_SUSPEND_VHCA                  = 0x115,
-+	MLX5_CMD_OP_RESUME_VHCA                   = 0x116,
-+	MLX5_CMD_OP_QUERY_VHCA_MIGRATION_STATE    = 0x117,
-+	MLX5_CMD_OP_SAVE_VHCA_STATE               = 0x118,
-+	MLX5_CMD_OP_LOAD_VHCA_STATE               = 0x119,
- 	MLX5_CMD_OP_CREATE_MKEY                   = 0x200,
- 	MLX5_CMD_OP_QUERY_MKEY                    = 0x201,
- 	MLX5_CMD_OP_DESTROY_MKEY                  = 0x202,
-@@ -1719,7 +1724,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
- 	u8         reserved_at_682[0x1];
- 	u8         log_max_sf[0x5];
- 	u8         apu[0x1];
--	u8         reserved_at_689[0x7];
-+	u8         reserved_at_689[0x4];
-+	u8         migration[0x1];
-+	u8         reserved_at_68e[0x2];
- 	u8         log_min_sf_size[0x8];
- 	u8         max_num_sf_partitions[0x8];
- 
-@@ -11152,4 +11159,142 @@ enum {
- 	MLX5_MTT_PERM_RW	= MLX5_MTT_PERM_READ | MLX5_MTT_PERM_WRITE,
- };
- 
-+enum {
-+	MLX5_SUSPEND_VHCA_IN_OP_MOD_SUSPEND_MASTER  = 0x0,
-+	MLX5_SUSPEND_VHCA_IN_OP_MOD_SUSPEND_SLAVE   = 0x1,
+diff --git a/drivers/vfio/pci/mlx5/cmd.c b/drivers/vfio/pci/mlx5/cmd.c
+new file mode 100644
+index 000000000000..add791398d08
+--- /dev/null
++++ b/drivers/vfio/pci/mlx5/cmd.c
+@@ -0,0 +1,356 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/*
++ * Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved
++ */
++
++#include "cmd.h"
++
++int mlx5vf_cmd_suspend_vhca(struct pci_dev *pdev, u16 vhca_id, u16 op_mod)
++{
++	struct mlx5_core_dev *mdev = mlx5_vf_get_core_dev(pdev);
++	u32 out[MLX5_ST_SZ_DW(suspend_vhca_out)] = {};
++	u32 in[MLX5_ST_SZ_DW(suspend_vhca_in)] = {};
++	int ret;
++
++	if (!mdev)
++		return -ENOTCONN;
++
++	MLX5_SET(suspend_vhca_in, in, opcode, MLX5_CMD_OP_SUSPEND_VHCA);
++	MLX5_SET(suspend_vhca_in, in, vhca_id, vhca_id);
++	MLX5_SET(suspend_vhca_in, in, op_mod, op_mod);
++
++	ret = mlx5_cmd_exec_inout(mdev, suspend_vhca, in, out);
++	mlx5_vf_put_core_dev(mdev);
++	return ret;
++}
++
++int mlx5vf_cmd_resume_vhca(struct pci_dev *pdev, u16 vhca_id, u16 op_mod)
++{
++	struct mlx5_core_dev *mdev = mlx5_vf_get_core_dev(pdev);
++	u32 out[MLX5_ST_SZ_DW(resume_vhca_out)] = {};
++	u32 in[MLX5_ST_SZ_DW(resume_vhca_in)] = {};
++	int ret;
++
++	if (!mdev)
++		return -ENOTCONN;
++
++	MLX5_SET(resume_vhca_in, in, opcode, MLX5_CMD_OP_RESUME_VHCA);
++	MLX5_SET(resume_vhca_in, in, vhca_id, vhca_id);
++	MLX5_SET(resume_vhca_in, in, op_mod, op_mod);
++
++	ret = mlx5_cmd_exec_inout(mdev, resume_vhca, in, out);
++	mlx5_vf_put_core_dev(mdev);
++	return ret;
++}
++
++int mlx5vf_cmd_query_vhca_migration_state(struct pci_dev *pdev, u16 vhca_id,
++					  u32 *state_size)
++{
++	struct mlx5_core_dev *mdev = mlx5_vf_get_core_dev(pdev);
++	u32 out[MLX5_ST_SZ_DW(query_vhca_migration_state_out)] = {};
++	u32 in[MLX5_ST_SZ_DW(query_vhca_migration_state_in)] = {};
++	int ret;
++
++	if (!mdev)
++		return -ENOTCONN;
++
++	MLX5_SET(query_vhca_migration_state_in, in, opcode,
++		 MLX5_CMD_OP_QUERY_VHCA_MIGRATION_STATE);
++	MLX5_SET(query_vhca_migration_state_in, in, vhca_id, vhca_id);
++	MLX5_SET(query_vhca_migration_state_in, in, op_mod, 0);
++
++	ret = mlx5_cmd_exec_inout(mdev, query_vhca_migration_state, in, out);
++	if (ret)
++		goto end;
++
++	*state_size = MLX5_GET(query_vhca_migration_state_out, out,
++			       required_umem_size);
++
++end:
++	mlx5_vf_put_core_dev(mdev);
++	return ret;
++}
++
++int mlx5vf_cmd_get_vhca_id(struct pci_dev *pdev, u16 function_id, u16 *vhca_id)
++{
++	struct mlx5_core_dev *mdev = mlx5_vf_get_core_dev(pdev);
++	u32 in[MLX5_ST_SZ_DW(query_hca_cap_in)] = {};
++	int out_size;
++	void *out;
++	int ret;
++
++	if (!mdev)
++		return -ENOTCONN;
++
++	out_size = MLX5_ST_SZ_BYTES(query_hca_cap_out);
++	out = kzalloc(out_size, GFP_KERNEL);
++	if (!out) {
++		ret = -ENOMEM;
++		goto end;
++	}
++
++	MLX5_SET(query_hca_cap_in, in, opcode, MLX5_CMD_OP_QUERY_HCA_CAP);
++	MLX5_SET(query_hca_cap_in, in, other_function, 1);
++	MLX5_SET(query_hca_cap_in, in, function_id, function_id);
++	MLX5_SET(query_hca_cap_in, in, op_mod,
++		 MLX5_SET_HCA_CAP_OP_MOD_GENERAL_DEVICE << 1 |
++		 HCA_CAP_OPMOD_GET_CUR);
++
++	ret = mlx5_cmd_exec_inout(mdev, query_hca_cap, in, out);
++	if (ret)
++		goto err_exec;
++
++	*vhca_id = MLX5_GET(query_hca_cap_out, out,
++			    capability.cmd_hca_cap.vhca_id);
++
++err_exec:
++	kfree(out);
++end:
++	mlx5_vf_put_core_dev(mdev);
++	return ret;
++}
++
++static int _create_state_mkey(struct mlx5_core_dev *mdev, u32 pdn,
++			      struct mlx5_vhca_state_data *state, u32 *mkey)
++{
++	struct sg_dma_page_iter dma_iter;
++	int err = 0, inlen;
++	__be64 *mtt;
++	void *mkc;
++	u32 *in;
++
++	inlen = MLX5_ST_SZ_BYTES(create_mkey_in) +
++			sizeof(*mtt) * round_up(state->num_pages, 2);
++
++	in = kvzalloc(inlen, GFP_KERNEL);
++	if (!in)
++		return -ENOMEM;
++
++	MLX5_SET(create_mkey_in, in, translations_octword_actual_size,
++		 DIV_ROUND_UP(state->num_pages, 2));
++	mtt = (__be64 *)MLX5_ADDR_OF(create_mkey_in, in, klm_pas_mtt);
++
++	for_each_sgtable_dma_page(&state->mig_data.table.sgt, &dma_iter, 0)
++		*mtt++ = cpu_to_be64(sg_page_iter_dma_address(&dma_iter));
++
++	mkc = MLX5_ADDR_OF(create_mkey_in, in, memory_key_mkey_entry);
++	MLX5_SET(mkc, mkc, access_mode_1_0, MLX5_MKC_ACCESS_MODE_MTT);
++	MLX5_SET(mkc, mkc, lr, 1);
++	MLX5_SET(mkc, mkc, lw, 1);
++	MLX5_SET(mkc, mkc, rr, 1);
++	MLX5_SET(mkc, mkc, rw, 1);
++	MLX5_SET(mkc, mkc, pd, pdn);
++	MLX5_SET(mkc, mkc, bsf_octword_size, 0);
++	MLX5_SET(mkc, mkc, qpn, 0xffffff);
++	MLX5_SET(mkc, mkc, log_page_size, PAGE_SHIFT);
++	MLX5_SET(mkc, mkc, translations_octword_size,
++		 DIV_ROUND_UP(state->num_pages, 2));
++	MLX5_SET64(mkc, mkc, len, state->num_pages * PAGE_SIZE);
++	err = mlx5_core_create_mkey(mdev, mkey, in, inlen);
++
++	kvfree(in);
++
++	return err;
++}
++
++struct page *mlx5vf_get_migration_page(struct migration_data *data,
++				       unsigned long offset)
++{
++	unsigned long cur_offset = 0;
++	struct scatterlist *sg;
++	unsigned int i;
++
++	if (offset < data->last_offset || !data->last_offset_sg) {
++		data->last_offset = 0;
++		data->last_offset_sg = data->table.sgt.sgl;
++		data->sg_last_entry = 0;
++	}
++
++	cur_offset = data->last_offset;
++
++	for_each_sg(data->last_offset_sg, sg,
++			data->table.sgt.orig_nents - data->sg_last_entry, i) {
++		if (offset < sg->length + cur_offset) {
++			data->last_offset_sg = sg;
++			data->sg_last_entry += i;
++			data->last_offset = cur_offset;
++			return nth_page(sg_page(sg),
++					(offset - cur_offset) / PAGE_SIZE);
++		}
++		cur_offset += sg->length;
++	}
++	return NULL;
++}
++
++void mlx5vf_reset_vhca_state(struct mlx5_vhca_state_data *state)
++{
++	struct migration_data *data = &state->mig_data;
++	struct sg_page_iter sg_iter;
++
++	if (!data->table.prv)
++		goto end;
++
++	/* Undo alloc_pages_bulk_array() */
++	for_each_sgtable_page(&data->table.sgt, &sg_iter, 0)
++		__free_page(sg_page_iter_page(&sg_iter));
++	sg_free_append_table(&data->table);
++end:
++	memset(state, 0, sizeof(*state));
++}
++
++int mlx5vf_add_migration_pages(struct mlx5_vhca_state_data *state,
++			       unsigned int npages)
++{
++	unsigned int to_alloc = npages;
++	struct page **page_list;
++	unsigned long filled;
++	unsigned int to_fill;
++	int ret = 0;
++
++	to_fill = min_t(unsigned int, npages, PAGE_SIZE / sizeof(*page_list));
++	page_list = kvzalloc(to_fill * sizeof(*page_list), GFP_KERNEL);
++	if (!page_list)
++		return -ENOMEM;
++
++	do {
++		filled = alloc_pages_bulk_array(GFP_KERNEL, to_fill,
++						page_list);
++		if (!filled) {
++			ret = -ENOMEM;
++			goto err;
++		}
++		to_alloc -= filled;
++		ret = sg_alloc_append_table_from_pages(
++			&state->mig_data.table, page_list, filled, 0,
++			filled << PAGE_SHIFT, UINT_MAX, SG_MAX_SINGLE_ALLOC,
++			GFP_KERNEL);
++
++		if (ret)
++			goto err;
++		/* clean input for another bulk allocation */
++		memset(page_list, 0, filled * sizeof(*page_list));
++		to_fill = min_t(unsigned int, to_alloc,
++				PAGE_SIZE / sizeof(*page_list));
++	} while (to_alloc > 0);
++
++	kvfree(page_list);
++	state->num_pages += npages;
++
++	return 0;
++
++err:
++	kvfree(page_list);
++	return ret;
++}
++
++int mlx5vf_cmd_save_vhca_state(struct pci_dev *pdev, u16 vhca_id,
++			       u64 state_size,
++			       struct mlx5_vhca_state_data *state)
++{
++	struct mlx5_core_dev *mdev = mlx5_vf_get_core_dev(pdev);
++	u32 out[MLX5_ST_SZ_DW(save_vhca_state_out)] = {};
++	u32 in[MLX5_ST_SZ_DW(save_vhca_state_in)] = {};
++	u32 pdn, mkey;
++	int err;
++
++	if (!mdev)
++		return -ENOTCONN;
++
++	err = mlx5_core_alloc_pd(mdev, &pdn);
++	if (err)
++		goto end;
++
++	err = mlx5vf_add_migration_pages(state,
++				DIV_ROUND_UP_ULL(state_size, PAGE_SIZE));
++	if (err < 0)
++		goto err_alloc_pages;
++
++	err = dma_map_sgtable(mdev->device, &state->mig_data.table.sgt,
++			      DMA_FROM_DEVICE, 0);
++	if (err)
++		goto err_reg_dma;
++
++	err = _create_state_mkey(mdev, pdn, state, &mkey);
++	if (err)
++		goto err_create_mkey;
++
++	MLX5_SET(save_vhca_state_in, in, opcode,
++		 MLX5_CMD_OP_SAVE_VHCA_STATE);
++	MLX5_SET(save_vhca_state_in, in, op_mod, 0);
++	MLX5_SET(save_vhca_state_in, in, vhca_id, vhca_id);
++	MLX5_SET(save_vhca_state_in, in, mkey, mkey);
++	MLX5_SET(save_vhca_state_in, in, size, state_size);
++
++	err = mlx5_cmd_exec_inout(mdev, save_vhca_state, in, out);
++	if (err)
++		goto err_exec;
++
++	state->state_size = MLX5_GET(save_vhca_state_out, out,
++				     actual_image_size);
++
++	mlx5_core_destroy_mkey(mdev, mkey);
++	mlx5_core_dealloc_pd(mdev, pdn);
++	dma_unmap_sgtable(mdev->device, &state->mig_data.table.sgt,
++			  DMA_FROM_DEVICE, 0);
++	mlx5_vf_put_core_dev(mdev);
++
++	return 0;
++
++err_exec:
++	mlx5_core_destroy_mkey(mdev, mkey);
++err_create_mkey:
++	dma_unmap_sgtable(mdev->device, &state->mig_data.table.sgt,
++			  DMA_FROM_DEVICE, 0);
++err_reg_dma:
++	mlx5vf_reset_vhca_state(state);
++err_alloc_pages:
++	mlx5_core_dealloc_pd(mdev, pdn);
++end:
++	mlx5_vf_put_core_dev(mdev);
++	return err;
++}
++
++int mlx5vf_cmd_load_vhca_state(struct pci_dev *pdev, u16 vhca_id,
++			       struct mlx5_vhca_state_data *state)
++{
++	struct mlx5_core_dev *mdev = mlx5_vf_get_core_dev(pdev);
++	u32 out[MLX5_ST_SZ_DW(save_vhca_state_out)] = {};
++	u32 in[MLX5_ST_SZ_DW(save_vhca_state_in)] = {};
++	u32 pdn, mkey;
++	int err;
++
++	if (!mdev)
++		return -ENOTCONN;
++
++	err = mlx5_core_alloc_pd(mdev, &pdn);
++	if (err)
++		goto end;
++
++	err = dma_map_sgtable(mdev->device, &state->mig_data.table.sgt,
++			      DMA_TO_DEVICE, 0);
++	if (err)
++		goto err_reg;
++
++	err = _create_state_mkey(mdev, pdn, state, &mkey);
++	if (err)
++		goto err_mkey;
++
++	MLX5_SET(load_vhca_state_in, in, opcode,
++		 MLX5_CMD_OP_LOAD_VHCA_STATE);
++	MLX5_SET(load_vhca_state_in, in, op_mod, 0);
++	MLX5_SET(load_vhca_state_in, in, vhca_id, vhca_id);
++	MLX5_SET(load_vhca_state_in, in, mkey, mkey);
++	MLX5_SET(load_vhca_state_in, in, size, state->state_size);
++
++	err = mlx5_cmd_exec_inout(mdev, load_vhca_state, in, out);
++
++	mlx5_core_destroy_mkey(mdev, mkey);
++err_mkey:
++	dma_unmap_sgtable(mdev->device, &state->mig_data.table.sgt,
++			  DMA_TO_DEVICE, 0);
++err_reg:
++	mlx5_core_dealloc_pd(mdev, pdn);
++end:
++	mlx5_vf_put_core_dev(mdev);
++	return err;
++}
+diff --git a/drivers/vfio/pci/mlx5/cmd.h b/drivers/vfio/pci/mlx5/cmd.h
+new file mode 100644
+index 000000000000..66221df24b19
+--- /dev/null
++++ b/drivers/vfio/pci/mlx5/cmd.h
+@@ -0,0 +1,43 @@
++/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
++/*
++ * Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
++ */
++
++#ifndef MLX5_VFIO_CMD_H
++#define MLX5_VFIO_CMD_H
++
++#include <linux/kernel.h>
++#include <linux/mlx5/driver.h>
++
++struct migration_data {
++	struct sg_append_table table;
++
++	struct scatterlist *last_offset_sg;
++	unsigned int sg_last_entry;
++	unsigned long last_offset;
 +};
 +
-+struct mlx5_ifc_suspend_vhca_in_bits {
-+	u8         opcode[0x10];
-+	u8         uid[0x10];
-+
-+	u8         reserved_at_20[0x10];
-+	u8         op_mod[0x10];
-+
-+	u8         reserved_at_40[0x10];
-+	u8         vhca_id[0x10];
-+
-+	u8         reserved_at_60[0x20];
++/* state data of vhca to be used as part of migration flow */
++struct mlx5_vhca_state_data {
++	u64 state_size;
++	u64 num_pages;
++	u32 win_start_offset;
++	struct migration_data mig_data;
 +};
 +
-+struct mlx5_ifc_suspend_vhca_out_bits {
-+	u8         status[0x8];
-+	u8         reserved_at_8[0x18];
-+
-+	u8         syndrome[0x20];
-+
-+	u8         reserved_at_40[0x40];
-+};
-+
-+enum {
-+	MLX5_RESUME_VHCA_IN_OP_MOD_RESUME_SLAVE   = 0x0,
-+	MLX5_RESUME_VHCA_IN_OP_MOD_RESUME_MASTER  = 0x1,
-+};
-+
-+struct mlx5_ifc_resume_vhca_in_bits {
-+	u8         opcode[0x10];
-+	u8         uid[0x10];
-+
-+	u8         reserved_at_20[0x10];
-+	u8         op_mod[0x10];
-+
-+	u8         reserved_at_40[0x10];
-+	u8         vhca_id[0x10];
-+
-+	u8         reserved_at_60[0x20];
-+};
-+
-+struct mlx5_ifc_resume_vhca_out_bits {
-+	u8         status[0x8];
-+	u8         reserved_at_8[0x18];
-+
-+	u8         syndrome[0x20];
-+
-+	u8         reserved_at_40[0x40];
-+};
-+
-+struct mlx5_ifc_query_vhca_migration_state_in_bits {
-+	u8         opcode[0x10];
-+	u8         uid[0x10];
-+
-+	u8         reserved_at_20[0x10];
-+	u8         op_mod[0x10];
-+
-+	u8         reserved_at_40[0x10];
-+	u8         vhca_id[0x10];
-+
-+	u8         reserved_at_60[0x20];
-+};
-+
-+struct mlx5_ifc_query_vhca_migration_state_out_bits {
-+	u8         status[0x8];
-+	u8         reserved_at_8[0x18];
-+
-+	u8         syndrome[0x20];
-+
-+	u8         reserved_at_40[0x40];
-+
-+	u8         required_umem_size[0x20];
-+
-+	u8         reserved_at_a0[0x160];
-+};
-+
-+struct mlx5_ifc_save_vhca_state_in_bits {
-+	u8         opcode[0x10];
-+	u8         uid[0x10];
-+
-+	u8         reserved_at_20[0x10];
-+	u8         op_mod[0x10];
-+
-+	u8         reserved_at_40[0x10];
-+	u8         vhca_id[0x10];
-+
-+	u8         reserved_at_60[0x20];
-+
-+	u8         va[0x40];
-+
-+	u8         mkey[0x20];
-+
-+	u8         size[0x20];
-+};
-+
-+struct mlx5_ifc_save_vhca_state_out_bits {
-+	u8         status[0x8];
-+	u8         reserved_at_8[0x18];
-+
-+	u8         syndrome[0x20];
-+
-+	u8         actual_image_size[0x20];
-+
-+	u8         reserved_at_60[0x20];
-+};
-+
-+struct mlx5_ifc_load_vhca_state_in_bits {
-+	u8         opcode[0x10];
-+	u8         uid[0x10];
-+
-+	u8         reserved_at_20[0x10];
-+	u8         op_mod[0x10];
-+
-+	u8         reserved_at_40[0x10];
-+	u8         vhca_id[0x10];
-+
-+	u8         reserved_at_60[0x20];
-+
-+	u8         va[0x40];
-+
-+	u8         mkey[0x20];
-+
-+	u8         size[0x20];
-+};
-+
-+struct mlx5_ifc_load_vhca_state_out_bits {
-+	u8         status[0x8];
-+	u8         reserved_at_8[0x18];
-+
-+	u8         syndrome[0x20];
-+
-+	u8         reserved_at_40[0x40];
-+};
-+
- #endif /* MLX5_IFC_H */
++int mlx5vf_cmd_suspend_vhca(struct pci_dev *pdev, u16 vhca_id, u16 op_mod);
++int mlx5vf_cmd_resume_vhca(struct pci_dev *pdev, u16 vhca_id, u16 op_mod);
++int mlx5vf_cmd_query_vhca_migration_state(struct pci_dev *pdev, u16 vhca_id,
++					  uint32_t *state_size);
++int mlx5vf_cmd_get_vhca_id(struct pci_dev *pdev, u16 function_id, u16 *vhca_id);
++int mlx5vf_cmd_save_vhca_state(struct pci_dev *pdev, u16 vhca_id,
++			       u64 state_size,
++			       struct mlx5_vhca_state_data *state);
++void mlx5vf_reset_vhca_state(struct mlx5_vhca_state_data *state);
++int mlx5vf_cmd_load_vhca_state(struct pci_dev *pdev, u16 vhca_id,
++			       struct mlx5_vhca_state_data *state);
++int mlx5vf_add_migration_pages(struct mlx5_vhca_state_data *state,
++			       unsigned int npages);
++struct page *mlx5vf_get_migration_page(struct migration_data *data,
++				       unsigned long offset);
++#endif /* MLX5_VFIO_CMD_H */
 -- 
 2.18.1
 
