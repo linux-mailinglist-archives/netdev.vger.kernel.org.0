@@ -2,107 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE09843C8DB
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 13:51:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0A1643C8DD
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 13:51:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241727AbhJ0LxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 07:53:22 -0400
-Received: from foss.arm.com ([217.140.110.172]:42440 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240073AbhJ0LxR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Oct 2021 07:53:17 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B9AD31FB;
-        Wed, 27 Oct 2021 04:50:51 -0700 (PDT)
-Received: from C02TD0UTHF1T.local (unknown [10.57.72.240])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 51AF43F73D;
-        Wed, 27 Oct 2021 04:50:47 -0700 (PDT)
-Date:   Wed, 27 Oct 2021 12:50:43 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Tong Tiangen <tongtiangen@huawei.com>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Palmer Dabbelt <palmerdabbelt@google.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next,v3] riscv, bpf: Add BPF exception tables
-Message-ID: <20211027115043.GB54628@C02TD0UTHF1T.local>
-References: <20211027111822.3801679-1-tongtiangen@huawei.com>
+        id S239869AbhJ0Lx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 07:53:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35432 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234994AbhJ0Lxw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 07:53:52 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A217FC061570
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 04:51:26 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id u84so2001614yba.3
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 04:51:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=dy4Q63vwnui/mY3PyZTbcUeIPLCxMn026uu+8ErF5Jc=;
+        b=iF+VFQKEUHf2Wmg+9AGW7v4+6YQetkOvHueaQLLRFQtgrP0XlhQ9i8Rqx+J9NcLeir
+         1kBdnZpH3vyVIZrEM/lvv/zujJirMBKE+IoJ+8xgtp1YThadsvx6kYjFgWzuxVjjQpwz
+         7u4W9jobx2CYTbfX5+6Kkm/F33EpmDJdTPMuQFjPadVtuhH6BUIgZ3k6KQtnAVIGvMO5
+         en3Pk2bbA2DOTMXEtxnnplZ5Darb57ip9wRkUwr9etYf42RkN1nRAraDuQRm/IVr5suF
+         w6Gl1TKWe8332c+QPnoul7i6JfOycbN0Tcfu1ZfwXUhqJ/td6N94F8TifKWD3Ud8c9Gb
+         ZJEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=dy4Q63vwnui/mY3PyZTbcUeIPLCxMn026uu+8ErF5Jc=;
+        b=YtaEPlF56udqhMhFXs3eJi/lnMW0ukYdekMpCrmcGIymlJ1ABi9+XnBzU+njHOB9hs
+         U/s/KBMAeaGrSdlX1jIjt1zGqk9B/8VXnwjshsGe0TM9DdEcLdQl1HXwbpK+Z1u8DsQT
+         KRqIhwRzaEBXgBGbjSUw+QJoCsgbWH21Oq7euHzFXI+5iqB4jLcMeu6vR+i83GugN2nS
+         x58L+ldtuuDV4ROBSd7RxYC6s7uI47DuX7o86sS5dcmIyytfPVw8meWZuPq+OFi/0MoY
+         IpJSzicOp3GHybyuvw0+UBfFuc3XP/FhEkLWfAWDwDaUlY5UnSZgrQFKRe4len7vibHM
+         /ETQ==
+X-Gm-Message-State: AOAM530ttXFcI0m6bVFD7qs/lCckqDQW3GzAO3p/euSPflPMjsBNMcLK
+        54h4Hn2G8p6NJWaXohiex5Bawn8lLjL69RBcxyY=
+X-Google-Smtp-Source: ABdhPJyAHy/nvQ3zaxQ1ChvjMTUzaLLUWyeQLEeFiM3mOnVvoLHOfBIjwRJ9oeF6qYYtWB3vyPcHK7k5R9YkKPmhevQ=
+X-Received: by 2002:a25:d258:: with SMTP id j85mr34246860ybg.398.1635335485877;
+ Wed, 27 Oct 2021 04:51:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211027111822.3801679-1-tongtiangen@huawei.com>
+Sender: hookersgroove@gmail.com
+Received: by 2002:a05:7010:5904:b0:198:b5b0:e155 with HTTP; Wed, 27 Oct 2021
+ 04:51:25 -0700 (PDT)
+From:   Ibrahim idewu <ibrahimidewu4@gmail.com>
+Date:   Wed, 27 Oct 2021 12:51:25 +0100
+X-Google-Sender-Auth: CXN4cgkLR3oCm6QqhwWgwneXWIk
+Message-ID: <CAEF8BQSzgtUUoo949ghW5Gt7zb=3KQebsbhvS=krF_qtPbYhYg@mail.gmail.com>
+Subject: I NEED YOUR RESPOND PLEASE
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 27, 2021 at 11:18:22AM +0000, Tong Tiangen wrote:
-> When a tracing BPF program attempts to read memory without using the
-> bpf_probe_read() helper, the verifier marks the load instruction with
-> the BPF_PROBE_MEM flag. Since the riscv JIT does not currently recognize
-> this flag it falls back to the interpreter.
-> 
-> Add support for BPF_PROBE_MEM, by appending an exception table to the
-> BPF program. If the load instruction causes a data abort, the fixup
-> infrastructure finds the exception table and fixes up the fault, by
-> clearing the destination register and jumping over the faulting
-> instruction.
-> 
-> A more generic solution would add a "handler" field to the table entry,
-> like on x86 and s390.
-> 
-> The same issue in ARM64 is fixed in:
-> commit 800834285361 ("bpf, arm64: Add BPF exception tables")
+Dear Friend,
 
-> +#ifdef CONFIG_BPF_JIT
-> +int rv_bpf_fixup_exception(const struct exception_table_entry *ex, struct pt_regs *regs);
-> +#endif
-> +
->  int fixup_exception(struct pt_regs *regs)
->  {
->  	const struct exception_table_entry *fixup;
->  
->  	fixup = search_exception_tables(regs->epc);
-> -	if (fixup) {
-> -		regs->epc = fixup->fixup;
-> -		return 1;
-> -	}
-> -	return 0;
-> +	if (!fixup)
-> +		return 0;
-> +
-> +#ifdef CONFIG_BPF_JIT
-> +	if (regs->epc >= BPF_JIT_REGION_START && regs->epc < BPF_JIT_REGION_END)
-> +		return rv_bpf_fixup_exception(fixup, regs);
-> +#endif
-> +
-> +	regs->epc = fixup->fixup;
-> +	return 1;
->  }
+My name is Mr.Ibrahim Idewu.I have decided to seek a confidential
+co-operation  with you in the execution of the deal described
+here-under for our both  mutual benefit and I hope you will keep it a
+top secret because of the nature  of the transaction, During the
+course of our bank year auditing, I discovered  an unclaimed/abandoned
+fund, sum total of {US$19.3 Million United State  Dollars} in the bank
+account that belongs to a Saudi Arabia businessman Who unfortunately
+lost his life and entire family in a Motor Accident.
+I want to present you to the bank as the next of kin to the dead
+business man after the money will be sent to you we then share
+60percent to me and 40percent to you.
+All necessary arrangements to secure the fund have been made by
+me,upon consideration of this offer.
 
-As a heads-up, on the extable front, both arm64 and x86 are moving to
-having an enumerated "type" field to select the handler:
+send me the below information
 
-x86:
 
-  https://lore.kernel.org/lkml/20210908132525.211958725@linutronix.de/
+-Your Full Name:
+-Your Contact Address:
+-Your direct Mobile telephone Number:
+-Your Date of Birth:
+-Your occupation:
 
-arm64:
 
-  https://lore.kernel.org/linux-arm-kernel/20211019160219.5202-11-mark.rutland@arm.com/
+I await your swift response and re-assurance.
 
-... and going forwards, riscv might want to do likewise.
 
-Thanks,
-Mark.
+Best regards,
+Mr.Ibrahim Idewu.
