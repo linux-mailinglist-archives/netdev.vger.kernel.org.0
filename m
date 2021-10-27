@@ -2,168 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FAB443D089
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 20:18:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6937C43D08E
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 20:20:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238525AbhJ0SUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 14:20:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29813 "EHLO
+        id S240004AbhJ0SWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 14:22:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:60649 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231232AbhJ0SUm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 14:20:42 -0400
+        by vger.kernel.org with ESMTP id S231530AbhJ0SWi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 14:22:38 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635358696;
+        s=mimecast20190719; t=1635358812;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=oeVb0xwU3RVC2ffCwrZ+tSJ1H6eF2Vx0w179pJgMmVw=;
-        b=f+a2pQMbhXDKj0ZacaDKqR2i1QNPIp8RmKKQJ4X9jWrXm1Qac/+oTrRGZXy18EClLK4jN3
-        E9PG2ML7PYL+0ZPlBXIH5n1ow1xM0TXQEUsoppE6EHTfKunbcKujoU+TE/3hMsKfNRrV7J
-        /FJ6/LSfr0BBHaWh9ZyaJzqKSTN2z9Y=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-36-sZHmtJVKO8mMEbG7hab2RA-1; Wed, 27 Oct 2021 14:18:15 -0400
-X-MC-Unique: sZHmtJVKO8mMEbG7hab2RA-1
-Received: by mail-ed1-f72.google.com with SMTP id h16-20020a05640250d000b003dd8167857aso3183470edb.0
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 11:18:14 -0700 (PDT)
+        bh=fHL8U/ZQJJWFEflWR8JykfHUlV09wWEBVk/S1a/68vE=;
+        b=ECo87Bvfrh9eq67uUcWa5iSTgtF6uxrbc9hDC2Ey7JMLUcyaXJp23w40gwuM51i4QvshPL
+        XhDm5KWsaq3BoJBZAA8gkPHqqW6z3HPK2vvu/YMsDDt/S0p+HK3JUkHbsdIQE+KfA+jfsg
+        uSZ28N38ZgA9li7BzIBj9nqpR/3pk6k=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-231-v3yYHlvPOcSapPHg8swZcA-1; Wed, 27 Oct 2021 14:20:11 -0400
+X-MC-Unique: v3yYHlvPOcSapPHg8swZcA-1
+Received: by mail-wr1-f70.google.com with SMTP id m5-20020a5d56c5000000b00168861c65f9so1000533wrw.0
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 11:20:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=oeVb0xwU3RVC2ffCwrZ+tSJ1H6eF2Vx0w179pJgMmVw=;
-        b=rOfm3JMy3+FRKJpOEs9FbbMaoED8NcK5VHYhYGgRK7X57NJoNThAQaq+zzLE/zVESa
-         vxsqIBifbhNLKLFVjp57C7PYcuhHTRKOEmKzFnuICT9htfJPrjYEYEzLlmpxQCAs9eSd
-         zX/8lDdMom9QV1maU7+XmZYJf+2XUihi6hZ36sGM2LXbLKPQUNtS5W1XyVBhP21zxSHG
-         Qn6I1z6ZlbiPL6gOhcZ9ifdZUecsS1NHzlxLAmOWDn64WvgzWnsh4jngzMBjgIA3iXFP
-         UdXmQmcfGx+d4Fw+M+2LGbzLWRiARrzpgmE03CWZQsc9mdQwsH3nXMgd5ffg8b6sn3oW
-         bRJg==
-X-Gm-Message-State: AOAM531tR0ICq+zfngZ7BuaoVkmkcjVYzj1gUjgI53zaT6rWW0wwhJHA
-        VM/K3i4+WYQdYxbFI6+KvGxKvn+MQllGyTg0gOKGmtgO5G52MXHw9SpX4LBwAkRsjaF/dsTbAey
-        vMs4XoPhiVWBkh09P
-X-Received: by 2002:a17:907:7b8c:: with SMTP id ne12mr3847598ejc.53.1635358693731;
-        Wed, 27 Oct 2021 11:18:13 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz7HLhT8fA2OZWkOdlrdfjdjwZ72FLBAdd0wsJSEP/sO5KD8178JLePGdGWCjpkEL+qyCdArA==
-X-Received: by 2002:a17:907:7b8c:: with SMTP id ne12mr3847566ejc.53.1635358693518;
-        Wed, 27 Oct 2021 11:18:13 -0700 (PDT)
-Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id e9sm312678ejs.76.2021.10.27.11.18.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Oct 2021 11:18:13 -0700 (PDT)
-Date:   Wed, 27 Oct 2021 20:18:11 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [RFC bpf-next 0/2] bpf: Fix BTF data for modules
-Message-ID: <YXmX4+HDw9rghl0T@krava>
-References: <20211023120452.212885-1-jolsa@kernel.org>
- <CAEf4BzbaD60KFsUB4VkTAH2v3+GFkRvRbY_O-bNSpNG0=8pJ0Q@mail.gmail.com>
- <YXfulitQY1+Gd35h@krava>
- <CAEf4BzabyAdsrUoRx58MZKbwVBGa93247sw8pwU62N_wNhSZSQ@mail.gmail.com>
- <YXkTihiRKKJIc9M6@krava>
- <CAEf4BzYP8eK0qxF+1UK7=TZ+vFRVMfmnm9AN=B2JHROoDwaHeg@mail.gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=fHL8U/ZQJJWFEflWR8JykfHUlV09wWEBVk/S1a/68vE=;
+        b=MTcOGrfhmov0w8lcnKxof+QcGG0LoLuzA3dSt3v4QF9AyyFoU51n0iL6QaTPBRpq7d
+         M9XLNVKe2xPnRJ8LtxOyqXCgWnXFY69yN7Hi11CAZJLEbbHwfJTICXUcxINCW7v6YcJW
+         S9376aBhu2nYlLCFAiB4Y0NyP8u1w5t0zuG/Yiw8BCD347Je81OD5X9knSOY9aaMz4Sp
+         hrFnFdiL3wsmdr3PdOmvH2GMdx83ZRygtc0XzZ8SEWsZJzQbKXMkLRNy5Mu1CoEJhr5q
+         kyNzRVkHKkOVQAIUPCgc9f/UReRtBh3ddboWiJOQqzV3dz0gotlK4jl3NjNWcSXJRFnx
+         BZRQ==
+X-Gm-Message-State: AOAM533Ti1G8ZGHT6hIeri2i8w0RfarrP6BZdTVh8T90G/kM3OjX9qfw
+        Potg/kj1RlmuaRLbJlcyBes10oL5PnFod9zV5bNiDeSzfJFln/vj32c5vAE6MER+eDVcd8tDG9V
+        iuxIOzzusXt1FxTDZ
+X-Received: by 2002:a5d:614d:: with SMTP id y13mr43766546wrt.199.1635358810390;
+        Wed, 27 Oct 2021 11:20:10 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJywlSOhKpI8SvbmuEboOoMaeDgerhBBvtAQkWnNqvPZZpw6tCGPccHyjl4kAG23JmGd3fU5BA==
+X-Received: by 2002:a5d:614d:: with SMTP id y13mr43766508wrt.199.1635358810124;
+        Wed, 27 Oct 2021 11:20:10 -0700 (PDT)
+Received: from [192.168.100.42] ([82.142.14.190])
+        by smtp.gmail.com with ESMTPSA id p18sm535005wmq.4.2021.10.27.11.20.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Oct 2021 11:20:09 -0700 (PDT)
+Message-ID: <1c0652f7-bb1b-99e1-7e8b-0613cc764ddd@redhat.com>
+Date:   Wed, 27 Oct 2021 20:20:08 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzYP8eK0qxF+1UK7=TZ+vFRVMfmnm9AN=B2JHROoDwaHeg@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Subject: Re: [syzbot] KASAN: slab-out-of-bounds Read in copy_data
+Content-Language: en-US
+From:   Laurent Vivier <lvivier@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Dmitry Vyukov <dvyukov@google.com>
+Cc:     syzbot <syzbot+b86736b5935e0d25b446@syzkaller.appspotmail.com>,
+        davem@davemloft.net, herbert@gondor.apana.org.au, jiri@nvidia.com,
+        kuba@kernel.org, leonro@nvidia.com, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mpm@selenic.com,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <000000000000a4cd2105cf441e76@google.com>
+ <eab57f0e-d3c6-7619-97cc-9bc3a7a07219@redhat.com>
+ <CACT4Y+amyT9dk-6iVqru-wQnotmwW=bt4VwaysgzjH9=PkxGww@mail.gmail.com>
+ <20211027111300-mutt-send-email-mst@kernel.org>
+ <589f86e0-af0e-c172-7ec6-72148ba7b3b0@redhat.com>
+ <8b5fb6ae-ab66-607f-b7c8-993c483846ca@redhat.com>
+In-Reply-To: <8b5fb6ae-ab66-607f-b7c8-993c483846ca@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 27, 2021 at 10:53:55AM -0700, Andrii Nakryiko wrote:
-> On Wed, Oct 27, 2021 at 1:53 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> >
-> > On Tue, Oct 26, 2021 at 09:12:31PM -0700, Andrii Nakryiko wrote:
-> > > On Tue, Oct 26, 2021 at 5:03 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> > > >
-> > > > On Mon, Oct 25, 2021 at 09:54:48PM -0700, Andrii Nakryiko wrote:
-> > > > > On Sat, Oct 23, 2021 at 5:05 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> > > > > >
-> > > > > > hi,
-> > > > > > I'm trying to enable BTF for kernel module in fedora,
-> > > > > > and I'm getting big increase on modules sizes on s390x arch.
-> > > > > >
-> > > > > > Size of modules in total - kernel dir under /lib/modules/VER/
-> > > > > > from kernel-core and kernel-module packages:
-> > > > > >
-> > > > > >                current   new
-> > > > > >       aarch64      60M   76M
-> > > > > >       ppc64le      53M   66M
-> > > > > >       s390x        21M   41M
-> > > > > >       x86_64       64M   79M
-> > > > > >
-> > > > > > The reason for higher increase on s390x was that dedup algorithm
-> > > > > > did not detect some of the big kernel structs like 'struct module',
-> > > > > > so they are duplicated in the kernel module BTF data. The s390x
-> > > > > > has many small modules that increased significantly in size because
-> > > > > > of that even after compression.
-> > > > > >
-> > > > > > First issues was that the '--btf_gen_floats' option is not passed
-> > > > > > to pahole for kernel module BTF generation.
-> > > > > >
-> > > > > > The other problem is more tricky and is the reason why this patchset
-> > > > > > is RFC ;-)
-> > > > > >
-> > > > > > The s390x compiler generates multiple definitions of the same struct
-> > > > > > and dedup algorithm does not seem to handle this at the moment.
-> > > > > >
-> > > > > > I put the debuginfo and btf dump of the s390x pnet.ko module in here:
-> > > > > >   http://people.redhat.com/~jolsa/kmodbtf/
-> > > > > >
-> > > > > > Please let me know if you'd like to see other info/files.
-> > > > > >
-> > > > >
-> > > > > Hard to tell what's going on without vmlinux itself. Can you upload a
-> > > > > corresponding kernel image with BTF in it?
-> > > >
-> > > > sure, uploaded
-> > > >
-> > >
-> > > vmlinux.btfdump:
-> > >
-> > > [174] FLOAT 'float' size=4
-> > > [175] FLOAT 'double' size=8
-> > >
-> > > VS
-> > >
-> > > pnet.btfdump:
-> > >
-> > > [89318] INT 'float' size=4 bits_offset=0 nr_bits=32 encoding=(none)
-> > > [89319] INT 'double' size=8 bits_offset=0 nr_bits=64 encoding=(none)
-> >
-> > ugh, that's with no fix applied, sry
-> >
-> > I applied the first patch and uploaded new files
-> >
-> > now when I compare the 'module' struct from vmlinux:
-> >
-> >         [885] STRUCT 'module' size=1280 vlen=70
-> >
-> > and same one from pnet.ko:
-> >
-> >         [89323] STRUCT 'module' size=1280 vlen=70
-> >
-> > they seem to completely match, all the fields
-> > and yet it still appears in the kmod's BTF
-> >
+On 27/10/2021 19:03, Laurent Vivier wrote:
+> On 27/10/2021 18:25, Laurent Vivier wrote:
+>> On 27/10/2021 17:28, Michael S. Tsirkin wrote:
+>>> On Wed, Oct 27, 2021 at 03:36:19PM +0200, Dmitry Vyukov wrote:
+>>>> On Wed, 27 Oct 2021 at 15:11, Laurent Vivier <lvivier@redhat.com> wrote:
+>>>>>
+>>>>> On 26/10/2021 18:39, syzbot wrote:
+>>>>>> Hello,
+>>>>>>
+>>>>>> syzbot found the following issue on:
+>>>>>>
+>>>>>> HEAD commit:    9ae1fbdeabd3 Add linux-next specific files for 20211025
+>>>>>> git tree:       linux-next
+>>>>>> console output: https://syzkaller.appspot.com/x/log.txt?x=1331363cb00000
+>>>>>> kernel config:  https://syzkaller.appspot.com/x/.config?x=aeb17e42bc109064
+>>>>>> dashboard link: https://syzkaller.appspot.com/bug?extid=b86736b5935e0d25b446
+>>>>>> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for 
+>>>>>> Debian) 2.35.2
+>>>>>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=116ce954b00000
+>>>>>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=132fcf62b00000
+>>>>>>
+>>>>>> The issue was bisected to:
+>>>>>>
+>>>>>> commit 22849b5ea5952d853547cc5e0651f34a246b2a4f
+>>>>>> Author: Leon Romanovsky <leonro@nvidia.com>
+>>>>>> Date:   Thu Oct 21 14:16:14 2021 +0000
+>>>>>>
+>>>>>>       devlink: Remove not-executed trap policer notifications
+>>>>>>
+>>>>>> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=137d8bfcb00000
+>>>>>> final oops:     https://syzkaller.appspot.com/x/report.txt?x=10fd8bfcb00000
+>>>>>> console output: https://syzkaller.appspot.com/x/log.txt?x=177d8bfcb00000
+>>>>>>
+>>>>>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+>>>>>> Reported-by: syzbot+b86736b5935e0d25b446@syzkaller.appspotmail.com
+>>>>>> Fixes: 22849b5ea595 ("devlink: Remove not-executed trap policer notifications")
+>>>>>>
+>>>>>> ==================================================================
+>>>>>> BUG: KASAN: slab-out-of-bounds in memcpy include/linux/fortify-string.h:225 [inline]
+>>>>>> BUG: KASAN: slab-out-of-bounds in copy_data+0xf3/0x2e0 
+>>>>>> drivers/char/hw_random/virtio-rng.c:68
+>>>>>> Read of size 64 at addr ffff88801a7a1580 by task syz-executor989/6542
+>>>>>>
+>>>>>
+>>>>> I'm not able to reproduce the problem with next-20211026 and the C reproducer.
+>>>>>
+>>>>> And reviewing the code in copy_data() I don't see any issue.
+>>>>>
+>>>>> Is it possible to know what it the VM configuration used to test it?
+>>>>
+>>>> Hi Laurent,
+>>>>
+>>>> syzbot used e2-standard-2 GCE VM when that happened.
+>>>> You can see some info about these VMs under the "VM info" link on the dashboard.
+>>>
+>>> Could you pls confirm whether reverting
+>>> caaf2874ba27b92bca6f0298bf88bad94067ec37 addresses this?
+>>>
+>>
+>> I've restarted the syzbot on top of "hwrng: virtio - don't wait on cleanup" [1] and the 
+>> problem has not been triggered.
+>>
+>> See https://syzkaller.appspot.com/bug?extid=b86736b5935e0d25b446
 > 
-> Ok, now struct module is identical down to the types referenced from
-> the fields, which means it should have been deduplicated completely.
-> This will require a more time-consuming debugging, though, so I'll put
-> it on my TODO list for now. If you get to this earlier, see where the
-> equivalence check fails in btf_dedup (sprinkle debug outputs around to
-> see what's going on).
+> The problem seems to be introduced by the last patch:
+> 
+> "hwrng: virtio - always add a pending request"
 
-it failed for me on that hypot_type_id check where I did fix,
-I thought it's the issue of multiple same struct in the kmod,
-but now I see I might have confused cannon_id with cand_id ;-)
-I'll check more on this
+I think I understand the problem.
 
-jirka
+As we check data_avail != 0 before waiting on the completion, we can have a data_idx != 0.
+
+The following change fixes the problem for me:
+
+--- a/drivers/char/hw_random/virtio-rng.c
++++ b/drivers/char/hw_random/virtio-rng.c
+@@ -52,6 +52,8 @@ static void request_entropy(struct virtrng_info *vi)
+         struct scatterlist sg;
+
+         reinit_completion(&vi->have_data);
++       vi->data_avail = 0;
++       vi->data_idx = 0;
+
+         sg_init_one(&sg, vi->data, sizeof(vi->data));
+
+
+MST, do you update the patch or do you want I send a new version?
+
+Thanks,
+Laurent
 
