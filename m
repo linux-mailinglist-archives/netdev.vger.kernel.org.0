@@ -2,61 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79DC443CC7B
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 16:40:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0605543CC8B
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 16:41:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237616AbhJ0Omv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 10:42:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50598 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236488AbhJ0Omu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Oct 2021 10:42:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EFE9760720;
-        Wed, 27 Oct 2021 14:40:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635345625;
-        bh=NOqWKfn6Yz4kBIFHpmZu4vO/wZyXegOGpxv8kVU+EH0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FvWE+yz4d/I5eCSy9m0flmjwqqt7FYfH9yzkx/7HqfQSHToiyg6H0v6c+VVccUCoP
-         wd+qEL3kIj86bDjasBojn+b2Jvnvsqtzy3fwUY/AsdaI07CCGD6lz22Tf4HoO3Y6jO
-         cw8RYwZmN7ZKVfcvX0iq1nOz6/Q3ZsI4piFRkonPalJ5pC55E8E4vsA3zR9VZztaIL
-         kR72HlZhQxgbrWPbksxbp1ztRLOCh2qvrs8WHgEhJ3bPuQKEfgt+UteFBfxmF7W+2J
-         diQpFr48CCXuFmx6jrq1lIzwqeH1MUF0IEWZk2Nt9FVAFHdiSn1UQgYiLq/o+yTxXN
-         UY+utz71Fh83A==
-Date:   Wed, 27 Oct 2021 07:40:23 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "abyagowi@fb.com" <abyagowi@fb.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "idosch@idosch.org" <idosch@idosch.org>,
-        "mkubecek@suse.cz" <mkubecek@suse.cz>,
-        "saeed@kernel.org" <saeed@kernel.org>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>
-Subject: Re: [RFC v5 net-next 4/5] rtnetlink: Add support for SyncE
- recovered clock configuration
-Message-ID: <20211027074023.2589af7a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <PH0PR11MB495117F04EED3A5D56AFB527EA859@PH0PR11MB4951.namprd11.prod.outlook.com>
-References: <20211026173146.1031412-1-maciej.machnikowski@intel.com>
-        <20211026173146.1031412-5-maciej.machnikowski@intel.com>
-        <20211026143236.050af4e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <PH0PR11MB495117F04EED3A5D56AFB527EA859@PH0PR11MB4951.namprd11.prod.outlook.com>
+        id S239087AbhJ0OoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 10:44:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47010 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239045AbhJ0OoF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 10:44:05 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24314C061570
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 07:41:40 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id b63so136114edf.10
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 07:41:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gaiy8iI3KoAyhwe4AaJugOjEos/PZdxnCB8V0KH1Dno=;
+        b=CBeBZwBdiZIUZVnM5Khw1ZEjGcdJVEay33Tiq5yOsocJpeWvvFEIKqxKdPJ9KE7dzF
+         pShXKIjs5jM0jO1kukrMSxHwPSkmN18a1+FZPMkqZrDgXruCgpnOQ1uXSQ/vzTQ8kLP9
+         OqkjFlT64D5zj44wOS1FzCSevHTBuT5V5kTmoDI0HQQQBao8DTa6CcgJBvxIieYDHVUZ
+         XX3JPmm+v89PawnpKqt84iEctdnp5mTneda198Y4CIerLDOntkfiq7N4TRk0sK60bTnE
+         hJStBgr73WTxL9sNHNg66vKLPDML0GOXTg4QWefV5bJevjkANoWgHqHflMZYNyGNkTFf
+         XEqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gaiy8iI3KoAyhwe4AaJugOjEos/PZdxnCB8V0KH1Dno=;
+        b=5A9uHPZbZY6Q8IsPeHTsQlJrnj6RQK2tYiuPm+3WYtzEijWw9TO/uj51hbjK6muvYh
+         iH+sp/18T+Knj7a6O106QtgTAwOMv1BzUlX5hQzs9P047583+TrFT76meNx6Awa7YkYc
+         uJNm4Bsc5QD0TDlcq1XGUviGEy/T5kODm8Xn4wlk/tc+B7bm5EKxi7RGOMFopDys9epQ
+         Iskb7BVfebnG5NBzwL6BuZ9NWS3hv9dZ1QINeVwdI/6t519/734hekfVaDDopucA9pA4
+         frZzUB4CnN9WgNDhH0GpaBAlDBXIAbfjPy29Jua7JoXP8XPDO1OSt9mCqcvdxCfql8aa
+         KN2Q==
+X-Gm-Message-State: AOAM530brMJuP3gUpFIDE1ZIFSEfX4vGUEE09x6lueUkBiDHtWd0GMkj
+        kP4Tp+mQchLQ404QVxtRT7fZ3y+0Z1eiMxnbk9aLOYnfrA==
+X-Google-Smtp-Source: ABdhPJwvDV51df1jsbukGYi/QiG9zzLsCbuK6XTvcBu2DkK2prsxWu/++ORqQzcu3+tmw/SVuP3YMDt5c0Vmg4CFG5Q=
+X-Received: by 2002:a05:6402:22d6:: with SMTP id dm22mr45319307edb.209.1635345692764;
+ Wed, 27 Oct 2021 07:41:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <cover.1634884487.git.lucien.xin@gmail.com> <53026dedd66beeaf18a4570437c4e6c9e760bb90.1634884487.git.lucien.xin@gmail.com>
+ <CAFqZXNs89yGcoXumNwavLRQpYutfnLY-SM2qrHbvpjJxVtiniw@mail.gmail.com>
+ <CADvbK_djVKxjfRaLS0EZRY2mkzWXTMnwvbe-b7cK-T3BR8jzKQ@mail.gmail.com>
+ <CAFqZXNsnEwPcEXB-4O983bxGj5BfZVMB6sor7nZVkT-=uiZ2mw@mail.gmail.com>
+ <CADvbK_eE9VhB2cWzHSk_LNm_VemEt9vm=FMMVYzo5eVH=zEhKw@mail.gmail.com>
+ <CAHC9VhTfVmcLOG3NfgQ3Tjpe769XzPntG24fejzSCvnZt_XZ9A@mail.gmail.com>
+ <CADvbK_dwLCOvS8YzFXcXoDF6F69_sc7voPbxn5Ov4ygBR_5FXw@mail.gmail.com>
+ <CAHC9VhREfztHQ8mqA_WM6NF=jKf0fTFTSRp_D5XhOVxckckwzw@mail.gmail.com> <CADvbK_c0CosUo4mMrSYQs_AA2KbB4MdnX5aS0zS0pJBOJV2vUA@mail.gmail.com>
+In-Reply-To: <CADvbK_c0CosUo4mMrSYQs_AA2KbB4MdnX5aS0zS0pJBOJV2vUA@mail.gmail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Wed, 27 Oct 2021 10:41:21 -0400
+Message-ID: <CAHC9VhTYNkvqLWA+FXVz=1dL8QvF9AmV7UMgAzNOcj238yjVvw@mail.gmail.com>
+Subject: Re: [PATCH net 4/4] security: implement sctp_assoc_established hook
+ in selinux
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     Ondrej Mosnacek <omosnace@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        James Morris <jmorris@namei.org>,
+        Linux Security Module list 
+        <linux-security-module@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Richard Haines <richard_c_haines@btinternet.com>,
+        SElinux list <selinux@vger.kernel.org>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 Oct 2021 13:29:40 +0000 Machnikowski, Maciej wrote:
-> > Please add a write up of how things fit together in Documentation/.
-> > I'm sure reviewers and future users will appreciate that.  
->  
-> Sure! Documentation/networking/synce.rst would be the right place to add it?
-> Or is there any better place?
+On Wed, Oct 27, 2021 at 12:00 AM Xin Long <lucien.xin@gmail.com> wrote:
+> OK, I think we are on the same page now, I will post v2.
 
-SGTM
+I'm not quite as confident we are on the same page just yet, but I
+agree that having a new revision is a good idea; if nothing else it
+will help reset the discussion to focus on updated patches - thanks!
+
+-- 
+paul moore
+www.paul-moore.com
