@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEE7043C450
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 09:47:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9691443C464
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 09:52:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240629AbhJ0HuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 03:50:06 -0400
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:48295 "EHLO
+        id S237155AbhJ0Hy2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 03:54:28 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:39671 "EHLO
         new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240582AbhJ0HuF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 03:50:05 -0400
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailnew.nyi.internal (Postfix) with ESMTP id BA32358046F;
-        Wed, 27 Oct 2021 03:47:40 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S231572AbhJ0Hy1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 03:54:27 -0400
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 3DE37580472;
+        Wed, 27 Oct 2021 03:52:02 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Wed, 27 Oct 2021 03:47:40 -0400
+  by compute6.internal (MEProxy); Wed, 27 Oct 2021 03:52:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-type:date:from:in-reply-to
         :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=ZxRByc
-        WaWD3hbjH+p1Y2c9g7a/AyrKNG1K5GSvbe9oI=; b=dHf8DgOYM8iFLx5FsWW9nO
-        aCnq6ZrOR1jbOaQCxZjcvW7QM6kWx6je2UksEC67KQce2nl8o/OZaGSMKT6K3XD0
-        y2QqSzNMgt+15sDxenW9NGnTxesGUVLts1pUvNsG7aYRZnDv7GTAfzUmvrZiyFYI
-        PpOJeb55Ji9VVKMEQm2YBwiW2XyPhdwbVkGt3eq6qshfrQF3gGuCEZ11PkYYFmKV
-        SRcninMJRCSb12EDOc4g9nkAaHxwIBd68kBYMvRjFECxTCA17Dx+gZdAfdGlCzDs
-        84KomGJhPsqw5hKrzOGfsaW9lCNOvS2pZqEcrdLTVnwgbaZ3DqF6pHnT7jOCGCSQ
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=46SfnC
+        WYpTdqhhFXKhK3em5Y/cBOBdl3mYB57Y+Ia78=; b=SnmBRNNneTw8AAmWUFLZCT
+        0jlJgJZ/kHqZ+oyj9qLkhBf7MUEw0AQr9CWS2OLOMAlMFjJYpQ/cTxgpn0ZUy5sj
+        AsBkTEz4C7G/676dck1eBt0KQnOVC7on10iCkCEToSFBcxlyS9EFP3YKYmPzmmiw
+        ha0PTrQW92V9KmFeHzIPoDVjKgtqjQ3htKsu1gxhdHP2S7eNvER1wsvMJrg7PaTt
+        P86IYeZ1cMIZ8t2/8qU2lPPbDakQU838cej8UyLvVOqPD02Up8xG4CtZtPLOFaMm
+        n8TjVjZ3QpGD/MsH1hEpgd0nTVmu67U7m8tqifJHjUdRFRmCvtGdMzikldabkQhw
         ==
-X-ME-Sender: <xms:GwR5YWrhSlEdRLNy4dxuBQqpjKN3mqNk72eacfNuCmUS1DbCxuimvw>
-    <xme:GwR5YUpSFeXIM76FoyCSehSP74KGUWLrb4rrrhu-oOn_zIm2NeskmqCwxR3vJwHzM
-    lhm-PBRDQ5PTqc>
-X-ME-Received: <xmr:GwR5YbPdmrE7w5TJ9nozelrvQhRVjBuQhaVe6sTh_wqomrjdkp0TzEbB9qNViKQo8gVE42ZXvspb_a7bDFSkvRVPi3aFoA>
+X-ME-Sender: <xms:IQV5YZarB_TdzK4Ni6NpeGyokhkO5nciHdNVRD7bPQq43cAn7SFTJg>
+    <xme:IQV5YQbvqlU_PxhMNIqy67kwY4HFsioFbWNRzqAfpmak1S0H98_OKtbLtwjMtW9QW
+    TUdTuI2YQPb4Lk>
+X-ME-Received: <xmr:IQV5Yb-Bb5G0GZBrEa5WtOGxuWscHLVHwJePjbat3QSuMOcUQ0RvFLd9QkkeRYCIfuhrgjoSQ9-I3i8ikC2esUNmZ8AoBA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvdefledguddukecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
@@ -39,13 +39,13 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvdefledguddukecutefuodetgg
     htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
     leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
     guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:GwR5YV6jBqK2McikaGS-4WL5fhhHj0rVh2z3G35KGB0qCYWAidLHoA>
-    <xmx:GwR5YV7HhU76gISsSTBI-RT1ENxSBwz4L0EYcwY3ZL-FxrF5KnaItQ>
-    <xmx:GwR5YVjzom_yNKi_0OAt7QpAMI2BPdVRfyg3RgMu_sPicBY1y1w-RA>
-    <xmx:HAR5YaFXo5QLzmgV0IPgTF-isUgCw3Dvaxou_G2EtO2bV_9MClailw>
+X-ME-Proxy: <xmx:IQV5YXpEA56Uqis5FNDsqeQtYNzGV2GJdAcDVFQM-nug6-j4quUPaA>
+    <xmx:IQV5YUqIpV-v0V4-Z873Un2YVAV_1ONTEOc--yV9LoomDevr8HmWdA>
+    <xmx:IQV5YdQfDMP-AOH5Z-noHuAJAJefniYbs6QtUoLQc6k2q-ZXqmgwlg>
+    <xmx:IgV5Yb13ugk-0ha6tI9KQmlZwIx9nIC2aqCkdwv_f-Vbjxw4kYQ90w>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 27 Oct 2021 03:47:38 -0400 (EDT)
-Date:   Wed, 27 Oct 2021 10:47:35 +0300
+ 27 Oct 2021 03:52:01 -0400 (EDT)
+Date:   Wed, 27 Oct 2021 10:51:57 +0300
 From:   Ido Schimmel <idosch@idosch.org>
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>
 Cc:     netdev@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
@@ -58,26 +58,37 @@ Cc:     netdev@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         Jiri Pirko <jiri@nvidia.com>
-Subject: Re: [PATCH net-next 2/8] net: bridge: remove fdb_insert forward
- declaration
-Message-ID: <YXkEF9ecC0y/zr5F@shredder>
+Subject: Re: [PATCH net-next 3/8] net: bridge: rename fdb_insert to
+ fdb_add_local
+Message-ID: <YXkFHRhzTYt+915r@shredder>
 References: <20211026142743.1298877-1-vladimir.oltean@nxp.com>
- <20211026142743.1298877-3-vladimir.oltean@nxp.com>
+ <20211026142743.1298877-4-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211026142743.1298877-3-vladimir.oltean@nxp.com>
+In-Reply-To: <20211026142743.1298877-4-vladimir.oltean@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 26, 2021 at 05:27:37PM +0300, Vladimir Oltean wrote:
-> fdb_insert() has a forward declaration because its first caller,
-> br_fdb_changeaddr(), is declared before fdb_create(), a function which
-> fdb_insert() needs.
+On Tue, Oct 26, 2021 at 05:27:38PM +0300, Vladimir Oltean wrote:
+> fdb_insert() is not a descriptive name for this function, and also easy
+> to confuse with __br_fdb_add(), fdb_add_entry(), br_fdb_update().
+> Even more confusingly, it is not even related in any way with those
+> functions, neither one calls the other.
 > 
-> This patch moves the 2 functions above br_fdb_changeaddr() and deletes
-> the forward declaration for fdb_insert().
+> Since fdb_insert() basically deals with the creation of a BR_FDB_LOCAL
+> entry and is called only from functions where that is the intention:
+> 
+> - br_fdb_changeaddr
+> - br_fdb_change_mac_address
+> - br_fdb_insert
+> 
+> then rename it to fdb_add_local(), because its removal counterpart is
+> called fdb_delete_local().
+
+Good commit message
+
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
