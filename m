@@ -2,94 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5C2D43C6B8
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 11:44:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D3C343C6C9
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 11:48:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241267AbhJ0JrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 05:47:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34778 "EHLO
+        id S232462AbhJ0JvH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 05:51:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236282AbhJ0JrC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 05:47:02 -0400
-Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0375C061570
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 02:44:36 -0700 (PDT)
-Received: by mail-ot1-x342.google.com with SMTP id d21-20020a9d4f15000000b0054e677e0ac5so2723090otl.11
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 02:44:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=/jfyDf2uGQ0G4PkhWSUViq4lngXtqzf19oHYgswwn6Y=;
-        b=dNx9ZnSHQfuTZOBoLm60Dr/dWw/S1n2ukXzP2zZ+DQfhaWYxhgV9NauZueTL5DIuK5
-         V91Zd2sPAb57BpfusG5HPZz/SPDiDzi5RC4u9X+aM7dpolihjPcWGDZFtaA3Z6m75X4w
-         z9DAuCMjv3KlghQA6puhzC7U+YUZugXY4i40N2IkSNujcEO9AwPM2o2tAq8d7mp2JYUD
-         6t2BNkZA57pMh/6HXq+p6MOeZP1Em3EAHDpG0mR0ujVRANVQ4B2TEDMZL9v4L9usy1K3
-         N1lN0oLTYwiy40tARbOj8yJ6HqiNUO72ZvOaX3Gki/A6OFEMvkZXx4MaxFLEJ3R0FzHh
-         XyzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=/jfyDf2uGQ0G4PkhWSUViq4lngXtqzf19oHYgswwn6Y=;
-        b=5s5Nq4AKuM3H0xmZ/Wy4YLdaxRZAARPmYiOpivwki3UPO3iJw89SYlhULzJWgTZY5B
-         Po9RHuJIiUOyC2vIWQPM2ggzfakbJIRhpiAZxEsx+ek6WPm2fKsdX0xXGvAuPE18/Nth
-         Nsrn/plcRz3g15Bd3KeGAYspT65LUixEPoQteCEM3HO9dClpwHpFPzY/M7WR6G1+PcUE
-         Ij7I6gIrHFbztG3PCnSeRkwZ/KXUcEKWtxBR40c8c8J1Cvt0tyh0MDJhiyeZHOBTicP5
-         Ecrpz9JBgVK+nA8cgsrcGStkF14EBYQWHmAJHjM0e0rM3KWKMJ+pC/6fhJR/z2XN86mP
-         7+Gw==
-X-Gm-Message-State: AOAM5315zVKQK1VAvHwL8oCevfeS7qD7y6p7nMqX0LWMv7pr2fCzGMpR
-        LuhIWNck0gGp33oLhyVzzIPxa+gSNkJMPpgyLPw=
-X-Google-Smtp-Source: ABdhPJwCteXpO2zmTt4LHvuo6mKVuUcTartuODafP80LcnVxyPgdJGgHnT4Q40VurvJO95MTEoBHzo63AIlm/9H3UiM=
-X-Received: by 2002:a9d:6a06:: with SMTP id g6mr24258741otn.347.1635327876144;
- Wed, 27 Oct 2021 02:44:36 -0700 (PDT)
+        with ESMTP id S241271AbhJ0JvH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 05:51:07 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248F2C061745
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 02:48:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=VJxp2t60UDkheB/zRcIKB+dF6EfD/xKILQbhWKoAfmQ=; b=Jo/2YL4XBVDMKNlNla3IrbIEC3
+        RUCZZakUDer+S5VV9WJC32aL8GaF85ypRODuwBKN5xsdUx6BjOVcwuLzG9c/wzJe5yX6hH4qXxOzB
+        pDaL5l7MoDhuHFhtDlU7tCUAErGy9B9/fjhkYqRELDUWPbtqmrtBT9MDd3aNRqupzCE0wweML+q1/
+        IiaL9qQAZ8YR/yiPX+Z7mAjA4Sx8u6VkyRXweWi36/CaonS7zN3n7772IkAgX0KVweZ26qrHSjw7G
+        FBzvkXY8i5wGUeDXgDfaBaIjhIcXl5sh+LVy+QDkduyVaWZyQUpTce3UyUTX6zlt8uK659zhh4iyG
+        gG/jPXeA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55338)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mffXz-0006FF-5J; Wed, 27 Oct 2021 10:48:39 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mffXy-0007dX-7U; Wed, 27 Oct 2021 10:48:38 +0100
+Date:   Wed, 27 Oct 2021 10:48:38 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH net-next 0/3] Convert mvpp2 to phylink supported_interfaces
+Message-ID: <YXkgdrSCEhvY2jLK@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Received: by 2002:a05:6838:bcc2:0:0:0:0 with HTTP; Wed, 27 Oct 2021 02:44:35
- -0700 (PDT)
-Reply-To: ahmadmustafa.7800@gmail.com
-From:   Ahmad Mustafa <delgadoangelo650@gmail.com>
-Date:   Wed, 27 Oct 2021 10:44:35 +0100
-Message-ID: <CAKOM8vohUA80VMKHX7S4D2hLK50krUG5yh7zwXe05+n_MinPLQ@mail.gmail.com>
-Subject: LOANS AND INVESTMENT
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Sir,
+Hi,
 
-Aseel Islamic finance PJSC is private joint stock company that was
-established in 2006 and has built a leading market position for itself
-in the UAE's Islamic finance market which specializes in loan finance
-and investment activities in real estate, hospitality, industrial &
-sustainable technologies, strategic financial investments, specialized
-education, healthcare services, agriculture, manufacturing,
-mining,energy and additional environmentally sustainable projects.
+This patch series converts mvpp2 to use phylinks supported_interfaces
+bitmap to simplify the validate() implementation. The patches:
 
-My name is Mr. Ibn Ahmad Mustafa . Do you have projects that require
-funding? We have finance available for your projects with over 2
-trillion private and corporate investment portfolios.  Aseel Islamic
-finance PJSC is looking for equity partners, entrepreneur, fund
-raisers and portfolio managers who will pay up to 4.5% interest and/or
-part equity position with a 5 to 10 year hold. In 2030, we plan on
-acquiring up to 2 trillion in high-quality, low risk assets and
-investments to capitalize on the current market cycle.
+1) Add the supported interface modes the supported_interfaces bitmap.
+2) Removes the checks for the interface type being supported from
+   the validate callback
+3) Removes the now unnecessary checks and call to
+   phylink_helper_basex_speed() to support switching between
+   1000base-X and 2500base-X for SFPs
+4) Cleans up the resulting validate() code.
 
-Aseel Islamic finance PJSC is acting as a lender and the fund will be
-disbursed on a clear interest rate of 3.5% annually to the equity
-partners and entrepreneurs for their investment projects. We also give
-a 2% commission to brokers, who bring project owners for finance or
-other opportunities.
+(3) becomes possible because when asking the MAC for its complete
+support, we walk all supported interfaces which will include 1000base-X
+and 2500base-X only if the comphy is present.
 
-For further details, kindly send us your business plans or project summary.
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 95 +++++++++++++------------
+ 1 file changed, 50 insertions(+), 45 deletions(-)
 
-Regards,
-
-
-Mr. Ibn Ahmad Mustafa
-International Business Coordinator
-Aseel Islamic Finance PJSC
-Al Mankhool, Dubai C2 Tower,
-Ground floor,P.O 94669 Dubai, UAE
-Abu Dhabi - United Arab Emirates
-Email : ahmadmustafa.7800@gmail.com
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
