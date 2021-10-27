@@ -2,186 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C6B943C0DB
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 05:36:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2D6A43C119
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 06:01:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239132AbhJ0Diu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Oct 2021 23:38:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36776 "EHLO
+        id S230296AbhJ0EDY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 00:03:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239136AbhJ0Dir (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Oct 2021 23:38:47 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 256B3C061570;
-        Tue, 26 Oct 2021 20:36:22 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id s24so1077946plp.0;
-        Tue, 26 Oct 2021 20:36:22 -0700 (PDT)
+        with ESMTP id S229792AbhJ0EDW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 00:03:22 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB0C0C061570;
+        Tue, 26 Oct 2021 21:00:56 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id p14so1694061wrd.10;
+        Tue, 26 Oct 2021 21:00:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=pYPb2efyJzQDBhhqjROUGYTPzR3Jqq7+OMajb/dAad8=;
-        b=BFqWmCbqZlHgNOPOrWFoxIH+MCAyXjsTf1gje85IHA99GeViPO/+n6IvksCATFf3EF
-         WHVMKEoVzoJTWD1I1DEEmI3zyHjVnlR0XanbY+8BE2v5zobYZCOlyznK1Agdxhl6OjXs
-         weJCBEoCKmIii1TcJ7C2UPuWGKgnnXj2uU9inZ485KbllLudfmIhC5Hm3wSW+AiI/W1M
-         hl2SMlOSk7UeVIWUy9omaqj5aUWaBDMOf1ojHGdv2cSewVMumMeccyAJ6R0nwup7r6K3
-         fxO5gKqp/Z44/O04WbksAjVuhjZN8TkYp43ADld5CScJzaDrOnvGP2LKJrSKKMPd6ML+
-         gUpQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QN3bf7EVZjj8Vxa8U2qiACtkoDk0b3oTVtNvD0IyMH4=;
+        b=HWLWW4l20+LV43dd+SCqqo1mtL+3nFtbC1FkZkIzamaSoscyWCCbOeHV8FIkZjTGSH
+         WIoXB657CPLqod3Xww+KqB2mSo1ExHFuuHk+nsf02zsowBUuGyeewTQ4UkrAr21mlHHC
+         VGAalJ+srCTBtLCZz0rT3axveE4uwuy7vVexJzAi2wIjvvVGLvMMQfylyGwwCmoEzRx+
+         hgpAy4JENK2BRlf1drneij6jaMdnl4TQt99JkMvMfzLVJzc3bpVSSizAnfkvxGOwy4F0
+         HLLwnvfw7WGoG7WsqU3A0lYHGnS9IvclFVS4dTNUaR3/7OAFuD/sk+HNB2K6zRed6b9r
+         tM8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=pYPb2efyJzQDBhhqjROUGYTPzR3Jqq7+OMajb/dAad8=;
-        b=nk6tw/vEpaKob5R9/3mL794fZwi54KiyVAvzMnkzOqZj/BweiK7Teu+AunE8BIWd9R
-         E9DvlIQ4W94uUh6kzQnZUMt3TVvOB77KNnS3J82Kq/cfH0UZjxyFNtRmWZRAvBWv9Esi
-         Kk9CZiiTa91YqReuoFxWt9DpP1Dt7EqWwMOL//pObhR2YFMgRBUqkdI1VaoWA5l9chbM
-         uD//WXwoUUHRas688Ffr2mRMYeKs7YlE2gWnZ7/GQdbQqyhZ9qBwn2xrblIf4whbTd1B
-         wTMDzGtNkPcuES2rhz5t94dDZqwMCFnJUGCqXzzSEZ1+MwfAQut5SO3EUBLiyWqPt6WE
-         1n4Q==
-X-Gm-Message-State: AOAM5323xO/2iLD3o0Su/ANJ0AitFBs0AThtSGHObVpWp8ubpjIeZ62j
-        0suzFzV/9PyBCV0xRLF2VhSeVO+V6Cs=
-X-Google-Smtp-Source: ABdhPJxKchfPfShR0g8TsT8phBlwoKhort+IvGCE1nf3z9Uyj6JxGXFfShyH+MH7KTSL1iBbpPPsCw==
-X-Received: by 2002:a17:90b:4c4a:: with SMTP id np10mr3078589pjb.233.1635305781490;
-        Tue, 26 Oct 2021 20:36:21 -0700 (PDT)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id p1sm12080847pfo.143.2021.10.26.20.36.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Oct 2021 20:36:21 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiri Benc <jbenc@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH bpf 4/4] selftests/bpf/xdp_redirect_multi: limit the tests in netns
-Date:   Wed, 27 Oct 2021 11:35:53 +0800
-Message-Id: <20211027033553.962413-5-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211027033553.962413-1-liuhangbin@gmail.com>
-References: <20211027033553.962413-1-liuhangbin@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QN3bf7EVZjj8Vxa8U2qiACtkoDk0b3oTVtNvD0IyMH4=;
+        b=BwvXRu3qhhC9npQeRVDSZnedKlwOkqJh9fx7ZVC9423UGJizfU4TK8tMRIfck50Lns
+         fK9JImLWqHsDl5hJwEo2fb5DzNsl8wAeZiCQgKXmIrjXQw8X9Ax3jouLxGUnW+MkxBJP
+         OJvAFyAYz7T8kpeHH4phOh6ZlByyBF1ilVJTJZip3UtN7YBWxnEIkPh5MtSrs7GBwpwz
+         JicZPu3FjDc5mzL2nNheT7REViVzKiw6UA7d5YPBEq9T0EVJAl+r0vY3CDFjK+3xnDb5
+         +OoZzWFc0Vhv2QElzr3N8H5Qj71vhlOc8/7zPFNLW0/LsO1j3cww5ecoiURelVsWcLbA
+         15eQ==
+X-Gm-Message-State: AOAM533KSam1uVgc9TCtYtxzIGYKYH6O4lK2517/6e/btQYkjIhyGXEE
+        RJRr880xw7p5az29LQye54OtuFIMX7glUjbyRCq8OUL3N40=
+X-Google-Smtp-Source: ABdhPJxylx58M2viUX0dmWWA78axLMA9EdwJZrO1tL224jGqQimMIkpuVlZQYzS+PovKD9KIW18rejj4mfW0tfajSIM=
+X-Received: by 2002:a5d:4210:: with SMTP id n16mr22644326wrq.426.1635307255199;
+ Tue, 26 Oct 2021 21:00:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1634884487.git.lucien.xin@gmail.com> <53026dedd66beeaf18a4570437c4e6c9e760bb90.1634884487.git.lucien.xin@gmail.com>
+ <CAFqZXNs89yGcoXumNwavLRQpYutfnLY-SM2qrHbvpjJxVtiniw@mail.gmail.com>
+ <CADvbK_djVKxjfRaLS0EZRY2mkzWXTMnwvbe-b7cK-T3BR8jzKQ@mail.gmail.com>
+ <CAFqZXNsnEwPcEXB-4O983bxGj5BfZVMB6sor7nZVkT-=uiZ2mw@mail.gmail.com>
+ <CADvbK_eE9VhB2cWzHSk_LNm_VemEt9vm=FMMVYzo5eVH=zEhKw@mail.gmail.com>
+ <CAHC9VhTfVmcLOG3NfgQ3Tjpe769XzPntG24fejzSCvnZt_XZ9A@mail.gmail.com>
+ <CADvbK_dwLCOvS8YzFXcXoDF6F69_sc7voPbxn5Ov4ygBR_5FXw@mail.gmail.com> <CAHC9VhREfztHQ8mqA_WM6NF=jKf0fTFTSRp_D5XhOVxckckwzw@mail.gmail.com>
+In-Reply-To: <CAHC9VhREfztHQ8mqA_WM6NF=jKf0fTFTSRp_D5XhOVxckckwzw@mail.gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Wed, 27 Oct 2021 12:00:43 +0800
+Message-ID: <CADvbK_c0CosUo4mMrSYQs_AA2KbB4MdnX5aS0zS0pJBOJV2vUA@mail.gmail.com>
+Subject: Re: [PATCH net 4/4] security: implement sctp_assoc_established hook
+ in selinux
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Ondrej Mosnacek <omosnace@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        James Morris <jmorris@namei.org>,
+        Linux Security Module list 
+        <linux-security-module@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Richard Haines <richard_c_haines@btinternet.com>,
+        SElinux list <selinux@vger.kernel.org>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As I want to test both DEVMAP and DEVMAP_HASH in XDP multicast redirect,
-I limited DEVMAP max entries to a small value for performace. When the
-test runs after amount of interface creating/deleting tests. The
-interface index will exceed the map max entries and xdp_redirect_multi
-will error out with "Get interfacesInterface index to large".
+On Wed, Oct 27, 2021 at 4:30 AM Paul Moore <paul@paul-moore.com> wrote:
+>
+> On Tue, Oct 26, 2021 at 12:47 AM Xin Long <lucien.xin@gmail.com> wrote:
+> > On Tue, Oct 26, 2021 at 5:51 AM Paul Moore <paul@paul-moore.com> wrote:
+> > > On Mon, Oct 25, 2021 at 10:11 AM Xin Long <lucien.xin@gmail.com> wrote:
+> > > > On Mon, Oct 25, 2021 at 8:08 PM Ondrej Mosnacek <omosnace@redhat.com> wrote:
+> > > >> On Mon, Oct 25, 2021 at 12:51 PM Xin Long <lucien.xin@gmail.com> wrote:
+> > > >> > On Mon, Oct 25, 2021 at 4:17 PM Ondrej Mosnacek <omosnace@redhat.com> wrote:
+> > > >> > > On Fri, Oct 22, 2021 at 8:36 AM Xin Long <lucien.xin@gmail.com> wrote:
+> > > >> > > > Different from selinux_inet_conn_established(), it also gives the
+> > > >> > > > secid to asoc->peer_secid in selinux_sctp_assoc_established(),
+> > > >> > > > as one UDP-type socket may have more than one asocs.
+> > > >> > > >
+> > > >> > > > Note that peer_secid in asoc will save the peer secid for this
+> > > >> > > > asoc connection, and peer_sid in sksec will just keep the peer
+> > > >> > > > secid for the latest connection. So the right use should be do
+> > > >> > > > peeloff for UDP-type socket if there will be multiple asocs in
+> > > >> > > > one socket, so that the peeloff socket has the right label for
+> > > >> > > > its asoc.
+> > > >> > >
+> > > >> > > Hm... this sounds like something we should also try to fix (if
+> > > >> > > possible). In access control we can't trust userspace to do the right
+> > > >> > > thing - receiving from multiple peers on one SOCK_SEQPACKET socket
+> > > >> > > shouldn't cause checking against the wrong peer_sid. But that can be
+> > > >> > > addressed separately. (And maybe it's even already accounted for
+> > > >> > > somehow - I didn't yet look at the code closely.)
+> > >
+> > > There are a couple of things we need to worry about here: the
+> > > per-packet access controls (e.g. can this packet be received by this
+> > > socket?) and the userspace peer label queries (e.g. SO_GETPEERSEC and
+> > > IP_CMSG_PASSSEC).
+> > >
+> > > The per-packet access controls work by checking the individual
+> > > packet's security label against the corresponding sock label on the
+> > > system (sk->sk_security->sid).  Because of this it is important that
+> > > the sock's label is correct.  For unconnected sockets this is fairly
+> > > straightforward as it follows the usual inherit-from-parent[1]
+> > > behavior we see in other areas of SELinux.  For connected stream
+> > > sockets this can be a bit more complicated.  However, since we are
+> > > only discussing the client side things aren't too bad with the
+> > > behavior essentially the same, inherit-from-parent, with the only
+> > > interesting piece worth noting being the sksec->peer_sid
+> > > (sk->sk_security->peer_sid) that we record from the packet passed to
+> > > the LSM/SELinux hook (using selinux_skb_peerlbl_sid()).  The
+> > > sksec->peer_sid is recorded primarily so that the kernel can correctly
+> > > respond to SO_GETPEERSEC requests from userspace; it shouldn't be used
+> > > in any access control decisions.
+> >
+> > Hi, Paul
+> >
+> > Understand now, the issue reported seems caused by when
+> > doing peel-off the peel-off socket gets the uninitialised sid
+> > from 'ep' on the client, though it should be "asoc".
+>
+> Hi Xin Long,
+>
+> Yes, that is my understanding.  I got the impression from the thread
+> that there was some confusion about the different labels and what they
+> were used for in SELinux, I was trying to provide some background in
+> the text above.  If you are already familiar with how things should
+> work you can disregard it :)
+>
+> > > In the case of SCTP, I would expect things to behave similarly: the
+> > > sksec->peer_sid should match the packet label of the traffic which
+> > > acknowledged/accepted the new connection, e.g. the other end of the
+> > > connected socket.  You will have to forgive me some of the details,
+> > > it's been a while since I last looked at the SCTP bits, but I would
+> > > expect that if a client created a new connection and/or spun-off a new
+> > > socket the new socket's sksec->peer_sid would have the same property,
+> > > it would represent the security label of the other end of the
+> > > connection/association.
+> >
+> > In SCTP, a socket doesn't represent a peer connection, it's more an
+> > object binding some addresses and receiving incoming connecting
+> > request, then creates 'asoc' to represent the connection, so asoc->
+> > peer_secid represents the security label of the other end of the
+> > connection/association.
+>
+> As mentioned previously the asoc->peer_secid *should* be the security
+> label of the remote end, so I think we are okay here.  My concern
+> remains the asoc->secid label as I don't believe it is being set to
+> the correct value (more on that below).
+>
+> > After doing peel-off, it makes one asoc 'bind' to one new socket,
+> > and this socket is used for userspace to control this asoc (conection),
+> > so naturally we set sksec->peer_sid to asoc->secid for access control
+> > in socket.
+>
+> The sksec->peer_sid represents the security label of the remote end so
+> it should be set to the asoc->peer_secid and *not* the asoc->secid
+Right, sorry,  it was a copy-paste error, it should've been "asoc->peer_secid".
 
-Fix this issue by limit the tests in netns and specify the ifindex when
-creating interfaces.
+> value.  Yes, they are presently the same value in your patches, but I
+> believe that is a mistake; I believe the asoc->secid value should be
+> set to that of the parent (see the prior inherit-from-parent
+> discussion) which in this case would likely be either the parent
+> association or the client process, I'm not entirely clear on which is
+Yes, I think that's what the current patch does in
+selinux_sctp_assoc_established().
 
-Reported-by: Jiri Benc <jbenc@redhat.com>
-Fixes: d23292476297 ("selftests/bpf: Add xdp_redirect_multi test")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- .../selftests/bpf/test_xdp_redirect_multi.sh  | 23 ++++++++++++-------
- .../selftests/bpf/xdp_redirect_multi.c        |  4 ++--
- 2 files changed, 17 insertions(+), 10 deletions(-)
+> correct in the SCTP case.  The initial SCTP client association would
+> need to take it's label from the parent process so perhaps that is the
+> right answer for all SCTP client associations[2].
+>
+> [1] I would expect server side associations to follow the more
+> complicated selinux_conn_sid() labeling, just as we do for TCP/stream
+> connections today.
+Yes, selinux_conn_sid() is currently called in selinux_sctp_assoc_request()
+for the server side.
 
-diff --git a/tools/testing/selftests/bpf/test_xdp_redirect_multi.sh b/tools/testing/selftests/bpf/test_xdp_redirect_multi.sh
-index 37e347159ab4..bedff7aa7023 100755
---- a/tools/testing/selftests/bpf/test_xdp_redirect_multi.sh
-+++ b/tools/testing/selftests/bpf/test_xdp_redirect_multi.sh
-@@ -2,11 +2,11 @@
- # SPDX-License-Identifier: GPL-2.0
- #
- # Test topology:
--#     - - - - - - - - - - - - - - - - - - - - - - - - -
--#    | veth1         veth2         veth3 |  ... init net
-+#    - - - - - - - - - - - - - - - - - - -
-+#    | veth1         veth2         veth3 |  ns0
- #     - -| - - - - - - | - - - - - - | - -
- #    ---------     ---------     ---------
--#    | veth0 |     | veth0 |     | veth0 |  ...
-+#    | veth0 |     | veth0 |     | veth0 |
- #    ---------     ---------     ---------
- #       ns1           ns2           ns3
- #
-@@ -51,6 +51,7 @@ clean_up()
- 		ip link del veth$i 2> /dev/null
- 		ip netns del ns$i 2> /dev/null
- 	done
-+	ip netns del ns0 2> /dev/null
- }
- 
- # Kselftest framework requirement - SKIP code is 4.
-@@ -78,10 +79,12 @@ setup_ns()
- 		mode="xdpdrv"
- 	fi
- 
-+	ip netns add ns0
- 	for i in $(seq $NUM); do
- 	        ip netns add ns$i
--	        ip link add veth$i type veth peer name veth0 netns ns$i
--		ip link set veth$i up
-+		ip -n ns$i link add veth0 index 2 type veth \
-+			peer name veth$i netns ns0 index $((1 + $i))
-+		ip -n ns0 link set veth$i up
- 		ip -n ns$i link set veth0 up
- 
- 		ip -n ns$i addr add 192.0.2.$i/24 dev veth0
-@@ -92,7 +95,7 @@ setup_ns()
- 			xdp_dummy.o sec xdp_dummy &> /dev/null || \
- 			{ test_fail "Unable to load dummy xdp" && exit 1; }
- 		IFACES="$IFACES veth$i"
--		veth_mac[$i]=$(ip link show veth$i | awk '/link\/ether/ {print $2}')
-+		veth_mac[$i]=$(ip -n ns0 link show veth$i | awk '/link\/ether/ {print $2}')
- 	done
- }
- 
-@@ -177,9 +180,13 @@ do_tests()
- 		xdpgeneric) drv_p="-S";;
- 	esac
- 
--	./xdp_redirect_multi $drv_p $IFACES &> ${LOG_DIR}/xdp_redirect_${mode}.log &
-+	ip netns exec ns0 ./xdp_redirect_multi $drv_p $IFACES &> ${LOG_DIR}/xdp_redirect_${mode}.log &
- 	xdp_pid=$!
- 	sleep 1
-+	if ! ps -p $xdp_pid > /dev/null; then
-+		test_fail "$mode xdp_redirect_multi start failed"
-+		return 1
-+	fi
- 
- 	if [ "$mode" = "xdpegress" ]; then
- 		do_egress_tests $mode
-@@ -190,7 +197,7 @@ do_tests()
- 	kill $xdp_pid
- }
- 
--trap clean_up 0 2 3 6 9
-+trap clean_up EXIT
- 
- check_env
- 
-diff --git a/tools/testing/selftests/bpf/xdp_redirect_multi.c b/tools/testing/selftests/bpf/xdp_redirect_multi.c
-index 3696a8f32c23..f5ffba341c17 100644
---- a/tools/testing/selftests/bpf/xdp_redirect_multi.c
-+++ b/tools/testing/selftests/bpf/xdp_redirect_multi.c
-@@ -129,7 +129,7 @@ int main(int argc, char **argv)
- 		goto err_out;
- 	}
- 
--	printf("Get interfaces");
-+	printf("Get interfaces:");
- 	for (i = 0; i < MAX_IFACE_NUM && argv[optind + i]; i++) {
- 		ifaces[i] = if_nametoindex(argv[optind + i]);
- 		if (!ifaces[i])
-@@ -139,7 +139,7 @@ int main(int argc, char **argv)
- 			goto err_out;
- 		}
- 		if (ifaces[i] > MAX_INDEX_NUM) {
--			printf("Interface index to large\n");
-+			printf(" interface index too large\n");
- 			goto err_out;
- 		}
- 		printf(" %d", ifaces[i]);
--- 
-2.31.1
+>
+> [2] I'm guessing the client associations might also want to follow the
+> setsockcreatecon(3) behavior, see selinux_sockcreate_sid() for more
+> info.
+OK, I think we are on the same page now, I will post v2.
 
+Thanks!
+
+>
+> --
+> paul moore
+> www.paul-moore.com
