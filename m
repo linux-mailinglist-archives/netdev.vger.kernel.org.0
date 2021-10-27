@@ -2,81 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4326243D649
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 00:09:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5DD843D663
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 00:13:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229518AbhJ0WLc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 18:11:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37024 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbhJ0WLc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 18:11:32 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AE49C061570;
-        Wed, 27 Oct 2021 15:09:02 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4HfjWw4rzpz4xbP;
-        Thu, 28 Oct 2021 09:09:00 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1635372541;
-        bh=E9vVZjugBxglNf6mi6b6L+lVqqoYk5z7JFagTw04whQ=;
-        h=Date:From:To:Cc:Subject:From;
-        b=scASQ9Ug6DFtYELD9ZZ2S49iOPriP9YMcrQAt3L2xBRaCOo5Mt+8V535+hXdHZYd0
-         /Qut292kAVwJd5BHAtIfYs8RT7RoTp5wvxmjm2XgZx9zoTCE4m0X+rT/7rXydgmiC1
-         CLPu0zYuK5xAHYq6kRl7Pq4HUNQ2+EKAEqzE8vsn6yhBo+HW6n2D4iIYgQUrAjo/A2
-         iaPzjcZ4kAGUZnewakyhkCo32imuys97NBnj8aCKN5/OyWhK5bklQEr1L8hjCwl6I0
-         Cfz6wGDmEdP3zeOoEniD37zxpywAoeNhhte26AzX5thUWL2ouW9Tig0cWIb7WfG4m3
-         Ww+PDf+KCNmGw==
-Date:   Thu, 28 Oct 2021 09:08:58 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Signed-off-by missing for commit in the net-next tree
-Message-ID: <20211028090858.138ece92@canb.auug.org.au>
+        id S230170AbhJ0WPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 18:15:55 -0400
+Received: from www62.your-server.de ([213.133.104.62]:35308 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230167AbhJ0WPz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 18:15:55 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mfrAh-0007Np-NP; Thu, 28 Oct 2021 00:13:23 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mfrAh-00060c-GK; Thu, 28 Oct 2021 00:13:23 +0200
+Subject: Re: pull-request: bpf 2021-10-26
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        davem@davemloft.net
+Cc:     kuba@kernel.org, ast@kernel.org, andrii.nakryiko@gmail.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+References: <20211026201920.11296-1-daniel@iogearbox.net>
+ <87bl3a9lc5.fsf@toke.dk>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <07334aca-9b58-fdae-0de9-43d44e087d76@iogearbox.net>
+Date:   Thu, 28 Oct 2021 00:13:23 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/hG=c7RxsV1BQlc5BrNzc+qA";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <87bl3a9lc5.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26335/Wed Oct 27 10:28:55 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/hG=c7RxsV1BQlc5BrNzc+qA
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 10/28/21 12:03 AM, Toke Høiland-Jørgensen wrote:
+> Daniel Borkmann <daniel@iogearbox.net> writes:
+> 
+>> The following pull-request contains BPF updates for your *net* tree.
+>>
+>> We've added 12 non-merge commits during the last 7 day(s) which contain
+>> a total of 23 files changed, 118 insertions(+), 98 deletions(-).
+> 
+> Hi Daniel
+> 
+> Any chance we could also get bpf merged into bpf-next? We'd like to use
+> this fix:
+> 
+>> 1) Fix potential race window in BPF tail call compatibility check,
+>> from Toke Høiland-Jørgensen.
 
-Hi all,
+Makes sense! I presume final net tree PR before merge win might go out today
+or tomorrow (Jakub/David?) and would get fast-fwd'ed into net-next after that
+as well, which means we get the current batch for bpf-next out by then. By
+that we'd have mentioned commit in bpf-next after re-sync.
 
-Commit
-
-  8ca9caee851c ("net/mlx5: Lag, Make mlx5_lag_is_multipath() be static inli=
-ne")
-
-is missing a Signed-off-by from its committer.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/hG=c7RxsV1BQlc5BrNzc+qA
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmF5zfoACgkQAVBC80lX
-0Gz0dggAh0vYgmI8g3kbbr6S1C39+SeVfTpwP2iuvEh9wzLSYtXVce3ukR59kqPf
-hMQ0YNAaaVTfDKHj0pEjS4Ie39XBrasZquwsrhjzX3ZW51cziU84Eq2XCLb+Lcw8
-YfAX6Cx6DzF74sllppO9BtHstppzvfyTVaLt6AaHJo3+dek17B6g7eud/O4mFVZO
-J23Vl3NydBa9/8Ybwn93KxPAqKr4wuMu96ef9Gi/5bofYMJkm4ePBHz6Tf8b/9QE
-29gjkAXpTFMLRKC5w0wyeRxQRAaXy3Ha83zc956XIe8mgrPAPpuPwp8qkOI07XLw
-fXPnYB6WonmcOM0neh7kJmxL/DoQtw==
-=HDX9
------END PGP SIGNATURE-----
-
---Sig_/hG=c7RxsV1BQlc5BrNzc+qA--
+> in the next version of the XDP multi-buf submission without creating
+> merge conflicts. Or is there some other way we can achieve this without
+> creating more work for you? :)
+> 
+> -Toke
+> 
