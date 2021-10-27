@@ -2,85 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9A2A43D2CD
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 22:28:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4450543D2D4
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 22:30:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240739AbhJ0UbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 16:31:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42316 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239236AbhJ0UbO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 16:31:14 -0400
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5148C061767
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 13:28:48 -0700 (PDT)
-Received: by mail-io1-xd32.google.com with SMTP id m184so5342953iof.1
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 13:28:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1eWHn/jG+avRrBmFKeL+1zT6EQSwQOpXH8c+wEZwCdI=;
-        b=eqYjUCU+DPOsJ4VO0oHmq55s4tf+B6tFn0ihxt9NWSqR7ecEfk11UN04t+aZw1GBoQ
-         Stt7bJIawXTsNbbIejGqskDjCNlyFyC3hRiJXCfqEbcpGYzwC//tMWnt9T/1eKRsMSY1
-         OSKX4iFu9dGi8lypL8EMM7CSOUCaWkKS2zZ2Q=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1eWHn/jG+avRrBmFKeL+1zT6EQSwQOpXH8c+wEZwCdI=;
-        b=HV53YrLOtw5YJPAOzoy3SDAMtGup0L9qdfS7fLJxx8GdnAGEVfYnfVrRJL9lbOv0pk
-         OzAsRtjZc1DPMaplx6iggJQa87c7wr7EWihD2uZZ/9c3FnUq9NicJVAdBWP+e2UoF6xx
-         fBNW2ADM5SVpU1sqWCwFK1xMazgRDycUohjeZ0aD1QvtJ2ZwZaA3+WB046K1YAHHoh9e
-         NZ+NeoKUrV8Z61CeWs7XHiDp61mBYUH4jHX3n44W+hMx5fhofH0uF0Yjp4hkKgZu0uwR
-         qT8I/erv0quQsYD5lQt/Zb2s/vYPG6ni5T3xONEmxHc7juIS1pFqoI6kY5GM+i1LdfAs
-         4+XQ==
-X-Gm-Message-State: AOAM533ngmiPu4BgXXiFU87/LF/taa6XKxWyJLbIQGDCurYEJUB2VEho
-        QkySeG1RRjbJvuxgWGCZ2TuDeusHRV2dgw==
-X-Google-Smtp-Source: ABdhPJyqqNy9vZHA1zN7jISqipB+tuyoKAYDpjxwiWrRlmWJYR3xLV9oOefmaiFi5GM5YElIqnN9hg==
-X-Received: by 2002:a05:6638:1502:: with SMTP id b2mr31604jat.131.1635366527972;
-        Wed, 27 Oct 2021 13:28:47 -0700 (PDT)
-Received: from shuah-t480s.internal (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id i5sm457383ilj.49.2021.10.27.13.28.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Oct 2021 13:28:47 -0700 (PDT)
-From:   Shuah Khan <skhan@linuxfoundation.org>
-To:     davem@davemloft.net, kuba@kernel.org, shuah@kernel.org
-Cc:     Shuah Khan <skhan@linuxfoundation.org>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] selftests/net: update .gitignore with newly added tests
-Date:   Wed, 27 Oct 2021 14:28:46 -0600
-Message-Id: <20211027202846.26877-1-skhan@linuxfoundation.org>
-X-Mailer: git-send-email 2.30.2
+        id S240884AbhJ0UdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 16:33:16 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:57910 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240753AbhJ0UdM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 16:33:12 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id B615121709;
+        Wed, 27 Oct 2021 20:30:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1635366645; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8PMHUUUWpe6WppkcsifDtO53RongY41spr2obiLuo/g=;
+        b=jK+Ihdf69LZ2NuyzR08vS6DNp2hqsMaP4b6phk3gReALpk2V7sxAAWkSDeu5U5hSLTJ3Jv
+        knTg2MG2icaONnsoXtwYwErnmTfickkEWTjeJrma74a/jQzUTa3ZprgZd4Nxl8tNr4a/rR
+        47zPa6IIqLwBKTylXmncXE7WkP83FyA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1635366645;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8PMHUUUWpe6WppkcsifDtO53RongY41spr2obiLuo/g=;
+        b=LqVD6W5RHvAhJfy1ah+5dtBjsJqqM//PwMCDiRLFKXCw3j1x2BSg39WqxqL5kZi8TIWwzc
+        GKOMp0KsGCywO1Cg==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id A8911A3B83;
+        Wed, 27 Oct 2021 20:30:45 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 89A3F607F2; Wed, 27 Oct 2021 22:30:45 +0200 (CEST)
+Date:   Wed, 27 Oct 2021 22:30:45 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, popadrian1996@gmail.com, andrew@lunn.ch,
+        mlxsw@nvidia.com, moshe@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH ethtool-next 00/14] ethtool: Use memory maps for EEPROM
+ parsing
+Message-ID: <20211027203045.sfauzpf3rarx5iro@lion.mk-sys.cz>
+References: <20211012132525.457323-1-idosch@idosch.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="26xzbmvb4zr6lgti"
+Content-Disposition: inline
+In-Reply-To: <20211012132525.457323-1-idosch@idosch.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update .gitignore with newly added tests:
-	tools/testing/selftests/net/af_unix/test_unix_oob
-	tools/testing/selftests/net/gro
-	tools/testing/selftests/net/ioam6_parser
-	tools/testing/selftests/net/toeplitz
 
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
----
- tools/testing/selftests/net/.gitignore | 4 ++++
- 1 file changed, 4 insertions(+)
+--26xzbmvb4zr6lgti
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
-index 19deb9cdf72f..501550501216 100644
---- a/tools/testing/selftests/net/.gitignore
-+++ b/tools/testing/selftests/net/.gitignore
-@@ -31,3 +31,7 @@ rxtimestamp
- timestamping
- txtimestamp
- so_netns_cookie
-+test_unix_oob
-+gro
-+ioam6_parser
-+toeplitz
--- 
-2.32.0
+On Tue, Oct 12, 2021 at 04:25:11PM +0300, Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
+>=20
+> This patchset prepares ethtool(8) for retrieval and parsing of optional
+> and banked module EEPROM pages, such as the ones present in CMIS. This
+> is done by better integration of the recent 'MODULE_EEPROM_GET' netlink
+> interface into ethtool(8).
 
+I still need to take a closer look at some of the patches but just to be
+sure: the only reason to leave this series for 5.16 cycle is that it's
+rather big and intrusive change (i.e. it does not depend on any kernel
+functionality not present in 5.15), right?
+
+Michal
+
+
+--26xzbmvb4zr6lgti
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmF5tu8ACgkQ538sG/LR
+dpWMLAf/WicWiWcDiJfPckzxvaXSFKlAgQL+Lc7vfOlmyiuZPPqn0luN1DgFfmFa
++2KiU7fEixWrg5rovVaottclYZeHNDWIk5wBoHutAjiFtaRSbinS7TmJoVxa3YZX
+GIXX5y2kh74p6DejO28egFnB03GqCrOdm6fjH+DBRgOC6CmIutaRAHBIpUQS7IbU
+/MsJFmbENdnl0zpJe+wdrQKiX0lSmns0u5YaDAHelJydVap5QosCGDcvI/F/JKLP
+o1BDuWbYF9jw6G72anonCOV6yxhZcUeAK/kW0PJbHT+jGuhkLdjAS77Zf1UDOl8N
+bd3h8it7WJjCFDsHujVpF++ofNsrGQ==
+=iyan
+-----END PGP SIGNATURE-----
+
+--26xzbmvb4zr6lgti--
