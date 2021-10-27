@@ -2,86 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0B0043D5C2
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 23:29:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADD2843D392
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 23:09:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234365AbhJ0Vb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 17:31:28 -0400
-Received: from mga14.intel.com ([192.55.52.115]:40550 "EHLO mga14.intel.com"
+        id S244200AbhJ0VLn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 17:11:43 -0400
+Received: from ink.ssi.bg ([178.16.128.7]:36507 "EHLO ink.ssi.bg"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233715AbhJ0VbR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Oct 2021 17:31:17 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10150"; a="230531568"
-X-IronPort-AV: E=Sophos;i="5.87,187,1631602800"; 
-   d="scan'208";a="230531568"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2021 13:49:37 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,187,1631602800"; 
-   d="scan'208";a="579912633"
-Received: from gupta-dev2.jf.intel.com (HELO gupta-dev2.localdomain) ([10.54.74.119])
-  by fmsmga002.fm.intel.com with ESMTP; 27 Oct 2021 13:49:33 -0700
-Date:   Wed, 27 Oct 2021 13:51:49 -0700
-From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        antonio.gomez.iglesias@intel.com, tony.luck@intel.com,
-        dave.hansen@linux.intel.com, gregkh@linuxfoundation.org
-Subject: [PATCH ebpf] bpf: Disallow unprivileged bpf by default
-Message-ID: <d37b01e70e65dced2659561ed5bc4b2ed1a50711.1635367330.git.pawan.kumar.gupta@linux.intel.com>
+        id S244195AbhJ0VLn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Oct 2021 17:11:43 -0400
+Received: from ja.ssi.bg (unknown [178.16.129.10])
+        by ink.ssi.bg (Postfix) with ESMTPS id E1AE43C0332;
+        Thu, 28 Oct 2021 00:09:12 +0300 (EEST)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.16.1/8.16.1) with ESMTP id 19RL999a042887;
+        Thu, 28 Oct 2021 00:09:10 +0300
+Date:   Thu, 28 Oct 2021 00:09:09 +0300 (EEST)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     yangxingwu <xingwu.yang@gmail.com>
+cc:     Simon Horman <horms@verge.net.au>, netdev@vger.kernel.org,
+        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH] ipvs: Fix reuse connection if RS weight is 0
+In-Reply-To: <CA+7U5Jta_g2vCXiwScVVwLZppWp51TDOB7LxUxeundkPxNZYnA@mail.gmail.com>
+Message-ID: <35e6215-4fb3-5149-a888-67aa6fae958f@ssi.bg>
+References: <20211025115910.2595-1-xingwu.yang@gmail.com> <707b5fb3-6b61-c53-e983-bc1373aa2bf@ssi.bg> <CA+7U5JsSuwqP7eHj1tMHfsb+EemwrhZEJ2b944LFWTroxAnQRQ@mail.gmail.com> <1190ef60-3ad9-119e-5336-1c62522aec81@ssi.bg> <CA+7U5JvvsNejgOifAwDdjddkLHUL30JPXSaDBTwysSL7dhphuA@mail.gmail.com>
+ <CA+7U5Jta_g2vCXiwScVVwLZppWp51TDOB7LxUxeundkPxNZYnA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Disabling unprivileged BPF by default would help prevent unprivileged
-users from creating the conditions required for potential speculative
-execution side-channel attacks on affected hardware as demonstrated by
-[1][2][3].
 
-This will sync mainline with what most distros are currently applying.
-An admin can enable this at runtime if necessary.
+	Hello,
 
-Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+On Wed, 27 Oct 2021, yangxingwu wrote:
 
-[1] https://access.redhat.com/security/cve/cve-2019-7308
-[2] https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-3490
-[3] https://bugzilla.redhat.com/show_bug.cgi?id=1672355#c5
----
- kernel/bpf/Kconfig | 5 +++++
- 1 file changed, 5 insertions(+)
+> what we want is if RS weight is 0, then no new connections should be
+> served even if conn_reuse_mode is 0, just as commit dc7b3eb900aa
+> ("ipvs: Fix reuse connection if real server is
+> dead") trying to do
+> 
+> Pls let me know if there are any other issues of concern
 
-diff --git a/kernel/bpf/Kconfig b/kernel/bpf/Kconfig
-index a82d6de86522..73d446294455 100644
---- a/kernel/bpf/Kconfig
-+++ b/kernel/bpf/Kconfig
-@@ -64,6 +64,7 @@ config BPF_JIT_DEFAULT_ON
- 
- config BPF_UNPRIV_DEFAULT_OFF
- 	bool "Disable unprivileged BPF by default"
-+	default y
- 	depends on BPF_SYSCALL
- 	help
- 	  Disables unprivileged BPF by default by setting the corresponding
-@@ -72,6 +73,10 @@ config BPF_UNPRIV_DEFAULT_OFF
- 	  disable it by setting it to 1 (from which no other transition to
- 	  0 is possible anymore).
- 
-+	  Unprivileged BPF can be used to exploit potential speculative
-+	  execution side-channel vulnerabilities on affected hardware. If you
-+	  are concerned about it, answer Y.
-+
- source "kernel/bpf/preload/Kconfig"
- 
- config BPF_LSM
--- 
-2.31.1
+	My concern is with the behaviour people expect
+from each sysctl var: conn_reuse_mode decides if port reuse
+is considered for rescheduling and expire_nodest_conn
+should have priority only for unavailable servers (nodest means
+No Destination), not in this case.
 
+	We don't know how people use the conn_reuse_mode=0
+mode, one may bind to a local port and try to send multiple
+connections in a row with the hope they will go to same real
+server, i.e. as part from same "session", even while weight=0.
+If they do not want such behaviour (99% of the cases), they
+will use the default conn_reuse_mode=1. OTOH, you have different
+expectations for mode 0, not sure why but you do not want to use
+the default mode=1 which is safer to use. May be the setups
+forget to stay with conn_reuse_mode=1 on kernels 5.9+ and
+set the var to 0 ?
+
+	The problem with mentioned commit dc7b3eb900aa is that
+it breaks FTP and persistent connections while the goal of
+weight=0 is graceful inhibition of the server. We made
+the mistake to add priority for expire_nodest_conn when weight=0.
+This can be fixed with a !cp->control check. We do not want
+expire_nodest_conn to kill every connection during the
+graceful period.
+
+Regards
+
+--
+Julian Anastasov <ja@ssi.bg>
