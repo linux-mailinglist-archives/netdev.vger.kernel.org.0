@@ -2,103 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5F5943C96F
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 14:18:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7FEC43C9D2
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 14:38:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239981AbhJ0MVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 08:21:09 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:33448 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230420AbhJ0MVJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Oct 2021 08:21:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=udb9s9/cYXbcm69eAqcs913SY67o0SZViIAg9zwP/zg=; b=uWfDEfJ0HNrPazm9xfaSJLH8C5
-        50GrenS10dQHmzvNw3AjeeC6WYFcA3dV0beuRKtflgwfgxY/EDq/KugUcsToGNkbgqFpojmFpe98f
-        ZKAPwvN8vNHi3ACE6JPZwWWde3eH4UQ3o0abvFAdWow5BQJbXaRbjDzeqW0pW9RrGFfk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mfht6-00BtZR-8y; Wed, 27 Oct 2021 14:18:36 +0200
-Date:   Wed, 27 Oct 2021 14:18:36 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ariel Elior <aelior@marvell.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Manish Chopra <manishc@marvell.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        Sudarsana Reddy Kalluru <skalluru@marvell.com>,
-        "malin1024@gmail.com" <malin1024@gmail.com>,
-        Shai Malin <smalin@marvell.com>,
-        Omkar Kulkarni <okulkarni@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>
-Subject: Re: [EXT] Re: [PATCH net-next 1/2] bnx2x: Utilize firmware 7.13.20.0
-Message-ID: <YXlDnCZIlVl1Etgs@lunn.ch>
-References: <20211026193717.2657-1-manishc@marvell.com>
- <20211026140759.77dd8818@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <PH0PR18MB465598CDD29377C300C3184CC4859@PH0PR18MB4655.namprd18.prod.outlook.com>
+        id S241935AbhJ0MlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 08:41:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46484 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241931AbhJ0MlH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 08:41:07 -0400
+Received: from andre.telenet-ops.be (andre.telenet-ops.be [IPv6:2a02:1800:120:4::f00:15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B59A2C061570
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 05:38:41 -0700 (PDT)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:441:6c1a:bc30:46e])
+        by andre.telenet-ops.be with bizsmtp
+        id B0ef2600N2hfXWm010efZz; Wed, 27 Oct 2021 14:38:40 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1mfiCV-008TyQ-Jl; Wed, 27 Oct 2021 14:38:39 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1mfiCV-00DsYo-2m; Wed, 27 Oct 2021 14:38:39 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        David Lechner <david@lechnology.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] dt-bindings: net: ti,bluetooth: Document default max-speed
+Date:   Wed, 27 Oct 2021 14:38:37 +0200
+Message-Id: <0c6a08c714aeb6dd96b5a54a45b0b5b1cfb49ad1.1635338283.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH0PR18MB465598CDD29377C300C3184CC4859@PH0PR18MB4655.namprd18.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > ----------------------------------------------------------------------
-> > On Tue, 26 Oct 2021 12:37:16 -0700 Manish Chopra wrote:
-> > > Commit 0050dcf3e848 ("bnx2x: Add FW 7.13.20.0") added a new .bin
-> > > firmware file to linux-firmware.git tree. This new firmware addresses
-> > > few important issues and enhancements as mentioned below -
-> > >
-> > > - Support direct invalidation of FP HSI Ver per function ID, required for
-> > >   invalidating FP HSI Ver prior to each VF start, as there is no VF
-> > > start
-> > > - BRB hardware block parity error detection support for the driver
-> > > - Fix the FCOE underrun flow
-> > > - Fix PSOD during FCoE BFS over the NIC ports after preboot driver
-> > >
-> > > This patch incorporates this new firmware 7.13.20.0 in bnx2x driver.
-> > 
-> > How is this expected to work? Your drivers seems to select a very specific FW
-> > version:
-> > 
-> > 	/* Check FW version */
-> > 	offset = be32_to_cpu(fw_hdr->fw_version.offset);
-> > 	fw_ver = firmware->data + offset;
-> > 	if ((fw_ver[0] != BCM_5710_FW_MAJOR_VERSION) ||
-> > 	    (fw_ver[1] != BCM_5710_FW_MINOR_VERSION) ||
-> > 	    (fw_ver[2] != BCM_5710_FW_REVISION_VERSION) ||
-> > 	    (fw_ver[3] != BCM_5710_FW_ENGINEERING_VERSION)) {
-> > 		BNX2X_ERR("Bad FW version:%d.%d.%d.%d. Should be
-> > %d.%d.%d.%d\n",
-> > 		       fw_ver[0], fw_ver[1], fw_ver[2], fw_ver[3],
-> > 		       BCM_5710_FW_MAJOR_VERSION,
-> > 		       BCM_5710_FW_MINOR_VERSION,
-> > 		       BCM_5710_FW_REVISION_VERSION,
-> > 		       BCM_5710_FW_ENGINEERING_VERSION);
-> > 		return -EINVAL;
-> > 	}
-> > 
-> > so this change has a dependency on user updating their /lib/firmware.
-> > 
-> > Is it really okay to break the systems for people who do not have that FW
-> > version with a stable backport?
-> > 
-> > Greg, do you have general guidance for this or is it subsystem by subsystem?
+Document the default value of max-speed, as used by
+linux/drivers/bluetooth/hci_ll.c.
 
-I have been pushing back on a similar change for the Marvell Prestera
-driver, which also loads the firmware from /lib/firmware and they are
-proposing to break the ABI to the firmware, and not support older
-version.
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ Documentation/devicetree/bindings/net/ti,bluetooth.yaml | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-I don't like this. As Jakub points out, you are going to break systems
-which don't update the firmware and the kernel at the same time. I
-really would prefer you support two versions of the firmware, and
-detect what features it supports to runtime.
+diff --git a/Documentation/devicetree/bindings/net/ti,bluetooth.yaml b/Documentation/devicetree/bindings/net/ti,bluetooth.yaml
+index 9f6102977c9732d2..81616f9fb4935f96 100644
+--- a/Documentation/devicetree/bindings/net/ti,bluetooth.yaml
++++ b/Documentation/devicetree/bindings/net/ti,bluetooth.yaml
+@@ -58,7 +58,8 @@ properties:
+     items:
+       - const: ext_clock
+ 
+-  max-speed: true
++  max-speed:
++    default: 3000000
+ 
+   nvmem-cells:
+     maxItems: 1
+-- 
+2.25.1
 
-	Andrew
