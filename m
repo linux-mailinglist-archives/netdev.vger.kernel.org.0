@@ -2,99 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86A3D43C900
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 13:57:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 580D943C90D
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 13:58:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232956AbhJ0L7v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 07:59:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36876 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232793AbhJ0L7t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 07:59:49 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50BC3C061570;
-        Wed, 27 Oct 2021 04:57:24 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id bp15so5642837lfb.4;
-        Wed, 27 Oct 2021 04:57:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=YXg0m4/fJ//WGjGcJyxQ/if/yQiYorndqx8ywLLIUxc=;
-        b=jThNapv4PN8aFz+XjA3tDVZi4wprRuBhHugJZuBZP/DlIxvP+7fAyNaCpZfMarEbNr
-         32z6q58YY8ApfMWn6WvDE/kcNYwITYRTkN9HyeXEsDEsQTUe74ZXWQHzvkqtfGGj17Qo
-         ynN7dn4s3aT1IyjCygoNmPf4h3n+nJe+wc6ms7nrmnKXEULCUyFAj1iT+7tuuCqedvOG
-         YOG9Fxav3t2/PAu9/eNGwnbEsLMY0Y+hMxJlEUS/winNQX8Y5womyGufSRlz72jTdk4S
-         lRYJkL0mrCi584gmxe06pmVG97mROw8QBmN04nFVOppFqz5rwzzCy/6IidXzwYpfVPtV
-         9ibQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=YXg0m4/fJ//WGjGcJyxQ/if/yQiYorndqx8ywLLIUxc=;
-        b=a7M1yZ/bymPVoeu4/tZzMsCnz7PD521oSI0LYp2SYccmdVjuhKATV5OK+/c1pnKtlB
-         RZJnot2xP+LDnqbJADvtNYl3rcmSzL4FAbEm+U9fLNFjRUJHP3HZu2nJQo2hxTcVdeUI
-         EmIamg//Bajr9XVL6Li/nX4Jqv+zP53L60HtX0o2nNG+jx2vhTSZg4OZBqi4f0uK8rKi
-         myazQ8p6T9AIUSf9/MWOU7/BeimezovIwhnAHOVB2LxFZEO6A9q0AD2ppW0nJdNbVra4
-         DJkzdvWSoh1s+QNANR7xjFtGqWHWVHj/dFdoOaOIaTlTXjrb2OQ6MFB/4sx+RaVqzZwD
-         pIPg==
-X-Gm-Message-State: AOAM530JU7H5srF2MevS5DIw+YXvy6RXbi1IufID2WfKlvWBn/9jH0LT
-        nc1YaRTehRq5+25k4S+bSd0=
-X-Google-Smtp-Source: ABdhPJzG06ZKCx25ZsvM2ShhEKwT6MB3ORkQuYBX2CgoUoilCJl3p64N9h9V/iWAX2ORJiz4HBy9oA==
-X-Received: by 2002:a05:6512:1284:: with SMTP id u4mr2381577lfs.226.1635335842638;
-        Wed, 27 Oct 2021 04:57:22 -0700 (PDT)
-Received: from [192.168.1.11] ([94.103.235.8])
-        by smtp.gmail.com with ESMTPSA id p9sm1118651lfu.121.2021.10.27.04.57.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Oct 2021 04:57:22 -0700 (PDT)
-Message-ID: <e4922538-1a57-1d21-9079-e954d742d844@gmail.com>
-Date:   Wed, 27 Oct 2021 14:57:20 +0300
+        id S231847AbhJ0MAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 08:00:46 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:14868 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236185AbhJ0MAp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 08:00:45 -0400
+Received: from dggeml757-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HfRz82jdBz90Lv;
+        Wed, 27 Oct 2021 19:58:12 +0800 (CST)
+Received: from localhost.localdomain (10.175.104.82) by
+ dggeml757-chm.china.huawei.com (10.1.199.137) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.15; Wed, 27 Oct 2021 19:58:15 +0800
+From:   Ziyang Xuan <william.xuanziyang@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <jgg@nvidia.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net] net: vlan: fix a UAF in vlan_dev_real_dev()
+Date:   Wed, 27 Oct 2021 20:16:06 +0800
+Message-ID: <20211027121606.3300860-1-william.xuanziyang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Subject: Re: [syzbot] WARNING in batadv_v_ogm_free
-Content-Language: en-US
-To:     syzbot <syzbot+b6a62d5cb9fe05a0e3a3@syzkaller.appspotmail.com>,
-        a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
-        sven@narfation.org, sw@simonwunderlich.de,
-        syzkaller-bugs@googlegroups.com
-References: <00000000000010317a05cee52016@google.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <00000000000010317a05cee52016@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggeml757-chm.china.huawei.com (10.1.199.137)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/22/21 02:19, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    2f111a6fd5b5 Merge tag 'ceph-for-5.15-rc7' of git://github..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=121d909f300000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=d95853dad8472c91
-> dashboard link: https://syzkaller.appspot.com/bug?extid=b6a62d5cb9fe05a0e3a3
-> compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.2
-> 
-> Unfortunately, I don't have any reproducer for this issue yet.
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+b6a62d5cb9fe05a0e3a3@syzkaller.appspotmail.com
-> 
+The real_dev of a vlan net_device may be freed after
+unregister_vlan_dev(). Access the real_dev continually by
+vlan_dev_real_dev() will trigger the UAF problem for the
+real_dev like following:
 
-Looks like bug on error handling path in batadv_mesh_init(). Must be 
-fixed by my batman-adv patch.
+==================================================================
+BUG: KASAN: use-after-free in vlan_dev_real_dev+0xf9/0x120
+Call Trace:
+ kasan_report.cold+0x83/0xdf
+ vlan_dev_real_dev+0xf9/0x120
+ is_eth_port_of_netdev_filter.part.0+0xb1/0x2c0
+ is_eth_port_of_netdev_filter+0x28/0x40
+ ib_enum_roce_netdev+0x1a3/0x300
+ ib_enum_all_roce_netdevs+0xc7/0x140
+ netdevice_event_work_handler+0x9d/0x210
+...
 
-#syz fix: net: batman-adv: fix error handling
+Freed by task 9288:
+ kasan_save_stack+0x1b/0x40
+ kasan_set_track+0x1c/0x30
+ kasan_set_free_info+0x20/0x30
+ __kasan_slab_free+0xfc/0x130
+ slab_free_freelist_hook+0xdd/0x240
+ kfree+0xe4/0x690
+ kvfree+0x42/0x50
+ device_release+0x9f/0x240
+ kobject_put+0x1c8/0x530
+ put_device+0x1b/0x30
+ free_netdev+0x370/0x540
+ ppp_destroy_interface+0x313/0x3d0
+...
 
+Set vlan->real_dev to NULL after dev_put(real_dev) in
+unregister_vlan_dev(). Check real_dev is not NULL before
+access it in vlan_dev_real_dev().
 
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: syzbot+e4df4e1389e28972e955@syzkaller.appspotmail.com
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+---
+ net/8021q/vlan.c      | 1 +
+ net/8021q/vlan_core.c | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
+diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
+index 55275ef9a31a..1106da84e725 100644
+--- a/net/8021q/vlan.c
++++ b/net/8021q/vlan.c
+@@ -126,6 +126,7 @@ void unregister_vlan_dev(struct net_device *dev, struct list_head *head)
+ 
+ 	/* Get rid of the vlan's reference to real_dev */
+ 	dev_put(real_dev);
++	vlan->real_dev = NULL;
+ }
+ 
+ int vlan_check_real_dev(struct net_device *real_dev,
+diff --git a/net/8021q/vlan_core.c b/net/8021q/vlan_core.c
+index 59bc13b5f14f..343f34479d8b 100644
+--- a/net/8021q/vlan_core.c
++++ b/net/8021q/vlan_core.c
+@@ -103,7 +103,7 @@ struct net_device *vlan_dev_real_dev(const struct net_device *dev)
+ {
+ 	struct net_device *ret = vlan_dev_priv(dev)->real_dev;
+ 
+-	while (is_vlan_dev(ret))
++	while (ret && is_vlan_dev(ret))
+ 		ret = vlan_dev_priv(ret)->real_dev;
+ 
+ 	return ret;
+-- 
+2.25.1
 
-With regards,
-Pavel Skripkin
