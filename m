@@ -2,174 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68BDD43CB39
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 15:54:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 285E643CB52
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 15:57:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242307AbhJ0N5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 09:57:16 -0400
-Received: from mail-mw2nam10on2080.outbound.protection.outlook.com ([40.107.94.80]:23553
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S242303AbhJ0N5O (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Oct 2021 09:57:14 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ux1wlic/3R8p4r5f1cbVSnJOtRWTJPlHDzUcdYc+qp+EAH9GBMslcNKmP29u+oa9nFXidZIOITQEAtOxIikF1uVIFzRgvF1qOOW3OgWMsAZjwuM6H1ekb0sPGX/UqohcxNNOSfdQnXBJWeMF9JiWlcVoeTj9P50qsV8iqbFjnjRRr2yh675CmZzg2J85twR6SAKnSyC64BAZaBIa46+KU9DzGMpWct6X74D51VpZHf7Xip3ZSWu6q5IiUykA3a1U1szRe9zoibpoM0o0gVin9U1h0qe2yfUaIplBPTOr5uAERV3ZMaIUvKNkiN5PnvhZwFn6FDr9GiEB7gcTlx4C4Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aTiCBd+t8EqWqIv8l2waGzoG4baGX3YkWVnxOmoGZcA=;
- b=Fd46lW72qs/bUcsYGQzRYfiQecCBaStUgb07gdnU1gqL83jqLH5uD4J/XgoiuB7nraPBMywyzC0bKB7TrUP21bPhkEOZUcUJ1EswxVT8EY3IleKTGmmw69ryVOjF0CGwFr9aMxK82wj9mQklwTQ9Gnh84s5lpXaED+hsWxiqzTEba7LWPPsx1kcQAOgWDQv7Dqv7Gc8TOw++1cZv+CJiY+JxaMxTlaGwz80wVEcsEHCJxmRRFaESPOlNKUP7ReJlBsJgdeZ3PbCJon/MEb7/NmdSFE4kSeOT3ETFZkMxSiNLIMFh0EFo8oZZJKxtRn/cN6JgQyQRnJfpdio/MyXZog==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aTiCBd+t8EqWqIv8l2waGzoG4baGX3YkWVnxOmoGZcA=;
- b=knUtXr6C17kyEMKfzcrboga0WmRPMZxZQGdPu4L3lcVHEVx7qmP49dDvdLRmVGCrLoS0QXkKM7yB9FcQuB35nicqrI21L8CP495W7KBXDGvWgNxnp8XPaZrCy5d4UiY04s/N2o6BFWT+4TNOJgid6CtzAdNLQz83pzKYbT1Qp/aCrxe++8R+gPOOsTURjZpd7rPYw3jOISt6cS3+jRFFMEQ4qaxV1ZHoArNiNUFofU7U89DVP+h6yXqiO4FDzUOBOr/IsW5hV9s2L0k/K+QNA7i+sxNbnwRxreAgyOfG8ee3javi6O20nlret59ZC1e900PpWubEmxy201L5JqwREQ==
-Authentication-Results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=nvidia.com;
-Received: from DM4PR12MB5278.namprd12.prod.outlook.com (2603:10b6:5:39e::17)
- by DM4PR12MB5133.namprd12.prod.outlook.com (2603:10b6:5:390::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18; Wed, 27 Oct
- 2021 13:54:47 +0000
-Received: from DM4PR12MB5278.namprd12.prod.outlook.com
- ([fe80::513c:d3d8:9c43:2cea]) by DM4PR12MB5278.namprd12.prod.outlook.com
- ([fe80::513c:d3d8:9c43:2cea%8]) with mapi id 15.20.4628.020; Wed, 27 Oct 2021
- 13:54:47 +0000
-Message-ID: <a9b7d8d2-da03-42f0-bd16-3446cdcaecc8@nvidia.com>
-Date:   Wed, 27 Oct 2021 16:54:39 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.0
-Subject: Re: [PATCH net] net: bridge: fix uninitialized variables when
- BRIDGE_CFM is disabled
-Content-Language: en-US
-To:     Ivan Vecera <ivecera@redhat.com>, netdev@vger.kernel.org
-Cc:     Roopa Prabhu <roopa@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Henrik Bjoernlund <henrik.bjoernlund@microchip.com>,
-        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20211027134926.1412459-1-ivecera@redhat.com>
-From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-In-Reply-To: <20211027134926.1412459-1-ivecera@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AS8P189CA0010.EURP189.PROD.OUTLOOK.COM
- (2603:10a6:20b:31f::9) To DM4PR12MB5278.namprd12.prod.outlook.com
- (2603:10b6:5:39e::17)
+        id S242339AbhJ0N7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 09:59:53 -0400
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:36496 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231838AbhJ0N7p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 09:59:45 -0400
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19RD9TUg016081;
+        Wed, 27 Oct 2021 15:56:41 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : from : to
+ : cc : references : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=SonikwPLivf5Wf37m9QGw9Dbl0nfvPwQE843HNWkcTc=;
+ b=WzTh3e1T+lbbR0asJHNFou5wy8ymDy2S+R6rPJyrqAzstKAMap8J47xdHxMl2RgiS0FA
+ GmPrGi2x3OeVUYtOCqe6mJeZ8Qnqgr3AqxOk450p67gxTAT52rOaRO+ShqQ7sCyKWJnI
+ akk/0WBtQxfWvGvmNBBFHNJxGj2edblZplh16L99+Icve2UKQ3u0Y7rBt6zEBSDWSZG4
+ hjGa2jeJcZtnU6/w30poOeFwKUFpEn8VYHXLg/vCxFZY0lY9ng2HR45n3c8vhiJwnllz
+ Jwmg2Jsob0VeZLHlpEugPKm678F0Rb6n0r6pPAbgzUx5bSgYL/7OoJXo5clDxcl3kg2U lg== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 3by38r22bq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Oct 2021 15:56:41 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 5734910002A;
+        Wed, 27 Oct 2021 15:56:39 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3742D22D168;
+        Wed, 27 Oct 2021 15:56:39 +0200 (CEST)
+Received: from lmecxl0573.lme.st.com (10.75.127.50) by SFHDAG2NODE2.st.com
+ (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 27 Oct
+ 2021 15:56:35 +0200
+Subject: Re: dt-bindings: treewide: Update @st.com email address to
+ @foss.st.com
+From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
+To:     Marc Zyngier <maz@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        <joe@perches.com>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        maxime coquelin <mcoquelin.stm32@gmail.com>,
+        alexandre torgue <alexandre.torgue@foss.st.com>,
+        michael turquette <mturquette@baylibre.com>,
+        stephen boyd <sboyd@kernel.org>,
+        herbert xu <herbert@gondor.apana.org.au>,
+        "david s . miller" <davem@davemloft.net>,
+        david airlie <airlied@linux.ie>,
+        daniel vetter <daniel@ffwll.ch>,
+        thierry reding <thierry.reding@gmail.com>,
+        sam ravnborg <sam@ravnborg.org>,
+        yannick fertre <yannick.fertre@foss.st.com>,
+        "philippe cornu" <philippe.cornu@foss.st.com>,
+        benjamin gaignard <benjamin.gaignard@linaro.org>,
+        vinod koul <vkoul@kernel.org>,
+        ohad ben-cohen <ohad@wizery.com>,
+        bjorn andersson <bjorn.andersson@linaro.org>,
+        baolin wang <baolin.wang7@gmail.com>,
+        jonathan cameron <jic23@kernel.org>,
+        "lars-peter clausen" <lars@metafoo.de>,
+        olivier moysan <olivier.moysan@foss.st.com>,
+        arnaud pouliquen <arnaud.pouliquen@foss.st.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        "Mauro Carvalho Chehab" <mchehab@kernel.org>,
+        Hugues Fruchet <hugues.fruchet@foss.st.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        "Richard Weinberger" <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Matt Mackall <mpm@selenic.com>,
+        "Alessandro Zummo" <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        "Ahmad Fatoum" <a.fatoum@pengutronix.de>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        dillon min <dillon.minfei@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        "Laurent Pinchart" <laurent.pinchart@ideasonboard.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Fabien Dessenne <fabien.dessenne@foss.st.com>,
+        Christophe Roullier <christophe.roullier@foss.st.com>,
+        Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
+        Lionel Debieve <lionel.debieve@foss.st.com>,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>,
+        Pierre-Yves MORDRET <pierre-yves.mordret@foss.st.com>,
+        Ludovic Barre <ludovic.barre@foss.st.com>,
+        Christophe Kerello <christophe.kerello@foss.st.com>,
+        pascal Paillet <p.paillet@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        "Jose Abreu" <joabreu@synopsys.com>,
+        Le Ray <erwan.leray@foss.st.com>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-clk@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <dmaengine@vger.kernel.org>,
+        <linux-remoteproc@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <linux-media@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
+        <netdev@vger.kernel.org>, <linux-phy@lists.infradead.org>,
+        <linux-gpio@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>
+References: <20211020065000.21312-1-patrice.chotard@foss.st.com>
+ <22fb6f19-21eb-dcb5-fa31-bb243d4a7eaf@canonical.com>
+ <878ryoc4dc.wl-maz@kernel.org>
+ <82492eb2-5a5e-39a2-a058-5e2ba75323e0@foss.st.com>
+Message-ID: <865a4055-5c2f-0793-bdce-9f04eac167d2@foss.st.com>
+Date:   Wed, 27 Oct 2021 15:56:35 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Received: from [10.21.241.50] (213.179.129.39) by AS8P189CA0010.EURP189.PROD.OUTLOOK.COM (2603:10a6:20b:31f::9) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18 via Frontend Transport; Wed, 27 Oct 2021 13:54:45 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0bbd3070-1f92-4999-eced-08d9995156bc
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5133:
-X-Microsoft-Antispam-PRVS: <DM4PR12MB5133CA2BB31824332B404F72DF859@DM4PR12MB5133.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WyLUZBDyFw6QGODGx0tDxeCdOmvi+j47ftHKQiBGLfammd+qW6ftSQOG9AiiSiWdqBGdLvgnOS/6qJ4RUhDUP41G7Ho4+vqvGd58iTOqRAn9tW5So+yV5ptnSad3ghPnsFbKdXcZh38+JI5k41aj6fLnuokjCP/Mzpw5sV/5kFByQ+naj4HnwONKefHH9M3gijK8oXHWgzkDAhsEvKZM5sthtvqQ4pbRjtYC0fsVQpupn0j5YxKwfA10tqifKQdFJfsawgtC44QCHNzYBvQIaSEuSdG08FGkXI+dXyJzCPuZYcLuD1CFVQjm4D0//w2Bq8TrQE22aesY5gi+rwZhLL0OBkRH6Eq7sSgqswZM0G7qVFEtIvjxirL6mslYNbY5aHjpXmHc3vacQKysKePMreRbFzL2fVgtwcWYZbipWY5k7n2iva85UlYvyQKjUj9x55oWvyVyb8S33HU1QonjP8x6WDZTAo69z3mZoaBFJG/vvMycVz+68cGS+99EvZlHkUHHfheceF/lTtUg9MkK5wY1Yenlsf8ZF5wjxKAk9IcrCpPGB8ZKgBrxwWxqf75r1T30XWjyc07QEGgdktgr2+0lwNiVxPVi1a7h66vJls94WGVJ//MFy8LtQz4iApt8PYUWazc0sLaHJrgyY0pF1pIZEpnvUTEamz3MunCqzjp8Y209riczemMjH/xTnfE+KcPAibW7sPDUH44CKeVeKhGfMDByskDoubRDEI7olYahrCikRrEoE7KNqhQU3YWd
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5278.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(38100700002)(2616005)(316002)(8676002)(956004)(66556008)(8936002)(53546011)(66946007)(86362001)(16576012)(83380400001)(54906003)(6486002)(26005)(5660300002)(66476007)(508600001)(4326008)(31686004)(36756003)(186003)(6666004)(2906002)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YnFGT2xuUEVHSGZSTkYvcWo5c1FFMTR4QVBtdHVKQUZCYlJZRzV2TUJ6WEI5?=
- =?utf-8?B?T2NZcnE2M3JFTXdqc0lqREZnMWphQkY4ZUlFb1cvNDFRWUFHU3FvcjJPK01C?=
- =?utf-8?B?STBXalpBdlZUeFQ5c20vR0x5b25jS0w2QlhSRFN2b3NwYmZld2RUci9ZbzRM?=
- =?utf-8?B?bjZ1ZUNuV2tQaURaSVhZOUdwR2JNMWN1Mit4WW5KVGtsMnVOYXhFenNCRlk5?=
- =?utf-8?B?QWViTEU4MWVtTGpuR1l3OVo4elVoNDY1blFBL0NRNGpwVEJBNklRNTVHTHox?=
- =?utf-8?B?T2luMWxqcy9WdlRJNWtOa1hOU09VRFRvMmZCUE05MlNWRWsvTjBjbWpUKzhC?=
- =?utf-8?B?T3dnNEwyWnlpVFcrdVNuWTY4aWRiV3g3UG5oQkhka1dCQWVBYmJYZ3pwMk4v?=
- =?utf-8?B?MWdUSCt3YWNyQnp2R0N4dkkyRjMzODFTdjdkTEF3Skkxb2p3bGZLTDBYZmVP?=
- =?utf-8?B?cEJMdmE3dEtCQmlWUVJRdzI4OThveXR5bzdZZVVDS0FlZXBsbDRMTVFoRjdY?=
- =?utf-8?B?TDg2cUxhSjFFa3ZabEpDR3lwOWwraFlyTWh2OGFqOVNuSHRFcU43d3I3YVlx?=
- =?utf-8?B?OS9BcmlUSWQ4NTFiRmkxNDZET1dyd3hWdlY5QkFtc3pTMXY4VExZUUdVcUY0?=
- =?utf-8?B?NXRXekRqRngxYzZEVFVvR1k2czRIREk5Q0o4bFUzTTJmc1pueElsVmFLNHEx?=
- =?utf-8?B?WjVob0dYUlFoWk5GSm1Jdm1Ibk9CUnJPUmdwZnpSNWRkSDcxZTlmeklpd1JF?=
- =?utf-8?B?cnFWbDJKVWtMOTV2UFRoSVlNS0hnLzdmemFIRzRSVHNlMmw2QjZzdk1OY09n?=
- =?utf-8?B?M25HaHpqRDJnaDJhTTBzb0lwYTJaclByTzh0T3pvOCt5TnBZbDRWRE1Qdndo?=
- =?utf-8?B?TlBXdDlQQmZvdGozTmtXWEdRd0cwYld4ckNDdGk4a1N3M09pcmk2b0hCT1dn?=
- =?utf-8?B?aE5VRGpMazBYRWpBUVMvZytsUUhKVWZNcGFlVVhHek02VWkvTGEzZlNPWUtV?=
- =?utf-8?B?bmgrMW52UUJnV2pKMjYrSDNiOWt3ZnhUdjBoQUhaQWNFczNqTklsVzJtUlYy?=
- =?utf-8?B?RGxQN3U0NWUxVEdkRXI3bHBkQUNQMDZZNUtQZ1hxeERtMGZTd21jU0JPcTZK?=
- =?utf-8?B?V3lhL3hMQ2JYRVZxdkFuT3JjTkdnQ0twbzJaNFpIUUpZc0NrUVdyNlkvZXE1?=
- =?utf-8?B?eUxzYXNLNTRibUxkZnFIT0ZiNG9FeXRSbW5vRmgrR0xPWTBOUmZ1Y25mMHJU?=
- =?utf-8?B?OFpmcmpNMENrOHJ0UGptZDV6Ykp1c2JaSGdueUw5TjNhaWV2R1Y3SzV6ZnRu?=
- =?utf-8?B?NTZPQ1dxRVI3dVV2RXk3ZU1tM0tiMGdtZEltdmRiKzNVWk9XTk9DaDBxMkpk?=
- =?utf-8?B?czdXTGVXV3RKNGd1R1BhejFnZnBkcEJaWUpzQVVUV3MvQXFhYWFQUDJjRzJa?=
- =?utf-8?B?TVEzMzJ5WWZDc2Q4NmdHTVQvV1ZlQnpycW9Hd2V2SkFHL0V6UzNYeExFT2Nq?=
- =?utf-8?B?TnROWEd1dlhzcUUybUZObENtNWQ0MFN6RmpNWVpQUjdhSXVwcDNUNmxOL245?=
- =?utf-8?B?ZS94dC9KNmNsYmhuTnV6SzJ4dSt2aWhwMVVzbzlHZWN1UGRybWQ5aGlpeXRS?=
- =?utf-8?B?R3dFSk5GS05TQllmUFF3U3RTSWJza2VnZ2ZmdWtFSC9Ed0JGOHdaMm5GbWtM?=
- =?utf-8?B?b3huaEF6Mk1HNUN0NGdPaWtiS0dIUkNuNHgzamRBTEpkSjNqK3BuNGZuMFQ0?=
- =?utf-8?B?MlJQaVhQalF3NFFKcGhQQUpMdEJSTzM1bm9odllUNm9SRHI2ajBURHJqVkJW?=
- =?utf-8?B?Z0NtUThZWVF1REZEbHk2VHQwRTVEbFk2MG96eEU4aXg5ZXIzTHIxSDg3aXlu?=
- =?utf-8?B?WGRPYXFlSURuejJJMkJhdk53VGFnY0RUVEt1TDliQUR6OFN1RG9LS0paeHBi?=
- =?utf-8?B?TFR0aUNKS3BIai9seituOE1qemQwblo5VXBaSGxDcStQN0xROEhnWVV3QUV1?=
- =?utf-8?B?STBYTmpqblRuZVozb0xiTU13Y0UwTkR2ZXBYdm5mR3JTTC9IdmZ2SDJyRkhL?=
- =?utf-8?B?NFY1SlpSRGNBTXhxeGJHMW0zL2FoY09rUGJZQXhzMlVYWXZhQWRQOGQxbHdl?=
- =?utf-8?B?R0pFSXdIdlEzZnhldTV5THMrMXZCaGxHNlE4VUg5ZzVNaUh2UE43U0hQVVND?=
- =?utf-8?Q?JPKsQ4In15lCsZW1FkbZCzQ=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0bbd3070-1f92-4999-eced-08d9995156bc
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5278.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Oct 2021 13:54:47.7672
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: s1Cg356P2GYdClUxJFWyVESJpnIQgSGNwsLzVsB5QgxW7auJHAJ/nZtUlHiuuc/UDa1PM28PUoxlMblVIfdUCA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5133
+In-Reply-To: <82492eb2-5a5e-39a2-a058-5e2ba75323e0@foss.st.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.75.127.50]
+X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-10-27_04,2021-10-26_01,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27/10/2021 16:49, Ivan Vecera wrote:
-> Function br_get_link_af_size_filtered() calls br_cfm_{,peer}_mep_count()
-> but does not check their return value. When BRIDGE_CFM is not enabled
-> these functions return -EOPNOTSUPP but do not modify count parameter.
-> Calling function then works with uninitialized variables.
+Hi Marc
+
++Joe Perches
+
+On 10/27/21 8:11 AM, Patrice CHOTARD wrote:
+> Hi Marc
 > 
-> Fixes: b6d0425b816e ("bridge: cfm: Netlink Notifications.")
-> Signed-off-by: Ivan Vecera <ivecera@redhat.com>
-> ---
->  net/bridge/br_netlink.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+> On 10/20/21 1:39 PM, Marc Zyngier wrote:
+>> On Wed, 20 Oct 2021 08:45:02 +0100,
+>> Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> wrote:
+>>>
+>>> On 20/10/2021 08:50, patrice.chotard@foss.st.com wrote:
+>>>> From: Patrice Chotard <patrice.chotard@foss.st.com>
+>>>>
+>>>> Not all @st.com email address are concerned, only people who have
+>>>> a specific @foss.st.com email will see their entry updated.
+>>>> For some people, who left the company, remove their email.
+>>>>
+>>>
+>>> Please split simple address change from maintainer updates (removal,
+>>> addition).
+>>>
+>>> Also would be nice to see here explained *why* are you doing this.
+>>
+>> And why this can't be done with a single update to .mailmap, like
+>> anyone else does.
 > 
-> diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-> index 5c6c4305ed23..12d602495ea0 100644
-> --- a/net/bridge/br_netlink.c
-> +++ b/net/bridge/br_netlink.c
-> @@ -126,8 +126,10 @@ static size_t br_get_link_af_size_filtered(const struct net_device *dev,
->  		return vinfo_sz;
->  
->  	/* CFM status info must be added */
-> -	br_cfm_mep_count(br, &num_cfm_mep_infos);
-> -	br_cfm_peer_mep_count(br, &num_cfm_peer_mep_infos);
-> +	if (br_cfm_mep_count(br, &num_cfm_mep_infos) < 0)
-> +		num_cfm_mep_infos = 0;
-> +	if (br_cfm_peer_mep_count(br, &num_cfm_peer_mep_infos) < 0)
-> +		num_cfm_peer_mep_infos = 0;
->  
->  	vinfo_sz += nla_total_size(0);	/* IFLA_BRIDGE_CFM */
->  	/* For each status struct the MEP instance (u32) is added */
+> Thanks for the tips, yes, it will be simpler.
 > 
+> Thanks
+> Patrice
+> 
+>>
+>> 	M.
+>>
 
-Hi,
-Could you please rather update the EOPNOTSUPP helpers to set these infos to 0 before
-returning? Someone else might decide to use them and hit the same bug.
+I made a try by updating .mailmap with adding a new entry with my @foss.st.com email :
 
-E.g.
-static inline int br_cfm_mep_count(struct net_bridge *br, u32 *count)
-{
-	*count = 0;
-        return -EOPNOTSUPP;
-}
+ Pali Rohár <pali@kernel.org> <pali.rohar@gmail.com>
+ Paolo 'Blaisorblade' Giarrusso <blaisorblade@yahoo.it>
++Patrice Chotard <patrice.chotard@foss.st.com> <patrice.chotard@st.com>
+ Patrick Mochel <mochel@digitalimplant.org>
+ Paul Burton <paulburton@kernel.org> <paul.burton@imgtec.com>
 
-We already do the same for br_allowed_ingress, nbp_vlan_add() etc.
+But when running ./scripts/get_maintainer.pl Documentation/devicetree/bindings/arm/sti.yaml, by old email is still displayed
 
-Thanks,
- Nik
+Rob Herring <robh+dt@kernel.org> (maintainer:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS)
+Patrice Chotard <patrice.chotard@st.com> (in file)
+devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS)
+linux-kernel@vger.kernel.org (open list)
 
+By default, the get_maintainer.pl script is using .mailmap file ($email_use_mailmap = 1).
+
+It seems there is an issue with get_maintainer.pl and maintainer name/e-mail found in yaml file ?
+
+Thanks
+Patrice
