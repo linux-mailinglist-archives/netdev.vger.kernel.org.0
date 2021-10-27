@@ -2,90 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29C2A43D30C
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 22:42:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48FE243D32C
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 22:49:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243985AbhJ0UpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 16:45:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45460 "EHLO
+        id S234080AbhJ0UwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 16:52:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241017AbhJ0Uow (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 16:44:52 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B941AC061570;
-        Wed, 27 Oct 2021 13:42:25 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Hfgby4y8Fz4xbr;
-        Thu, 28 Oct 2021 07:42:22 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1635367343;
-        bh=vmDS/GWkMu1yFl4fOJkChcYqAokt1FKesRPIJ1VXgqo=;
-        h=Date:From:To:Cc:Subject:From;
-        b=vI8Ef+XvokvfhFTALu/+MUI7HVGlw/Rwd68tNDj3rQ01LSnm10J9eiQ6v/ysQ4YEv
-         j6+W61wkNbcPbPvuB6iJmGKQXEWiwN+txzSyA+5OTRaN/63kyrerLoJSmeUfPuiKS6
-         hfn2DHKzPTA4YRMvuZJK9QpRdxsq+JkTKgQrLSFVEj81pVB/nSTZI23A3mIbLL/rjF
-         pnAtSRtee4MFTa2iKThLW7CY7tURB6T1SS/KCzZ5RWYB8OkAv0W88foRHMx38+8W7W
-         seclNP5Kl6maq3PmyVSMejBNNPrKeux0Jn0iwmllFySZ4DjPGq9PcTZSQupPJUf16k
-         dyMUhvUhABSaQ==
-Date:   Thu, 28 Oct 2021 07:42:20 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Jie Wang <wangjie125@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Fixes tag needs some work in the net tree
-Message-ID: <20211028074220.7ac95b03@canb.auug.org.au>
+        with ESMTP id S238909AbhJ0UwW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 16:52:22 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF4D3C061570
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 13:49:56 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id c71-20020a1c9a4a000000b0032cdcc8cbafso544740wme.3
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 13:49:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=Z5gHQzYD7PoAYoDzL4RlC0n9kbSf85NznLeRtNS5u38=;
+        b=WNeZQPIeOnh2nBKMVReMamw1f6SKi9kzVuo7PhTSp5ZnkzyDjs1aF9Tcy51jW+HAGr
+         8hkKA8ecwjvaDhjkJtge7VhFylbmeN5cQGH9q4jvUhgHDz5rtwusHHo66ze/PrJJxd1o
+         1hCdbs7lnBqfJ8dunP1mkyzcn1gajj8kXLZjN4j0nC0J19wnQXUv0qzCEOfXS/wV7SeM
+         u4vZeQcGP5vOKf9LquwAy2JIY+2V4vZYL5m93s+W+Vrbw64lCVMXJGd6cS0FAOvJN/ac
+         bHRWnKBAHEeHNQdWeA1TjxVZVHYlabp6EnXhjaKo94WxMomqbYHbhSWN/I+r+BOFPwrn
+         lduA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=Z5gHQzYD7PoAYoDzL4RlC0n9kbSf85NznLeRtNS5u38=;
+        b=L8WhtDF58jASudfj42cdXJmM/5Cu7HMFKd6QNeWXFRc1qaVu/RN1iCTdFwd2jRQyaX
+         v1bwYu9wNRcP+bpyQe0V9WsQo4xslS4wB+WOQ6Xrq4KVWi0qOGe/67z+NKkZtyetkGAd
+         jYK1Ef4aoaopUcBbzQaq1vgSxQEfOHpb2HJ5cmDUefVhAfNvJgv9WBXmbSF2T10N9gUG
+         Rcj/wA3Q1pZp4ekbdsBR1TsZy9+5p9hGSUpU+FCchF8h+ktN06FQmFH/CG1D6ccnH9sa
+         W/d4MuW7VQgUB74PBcH23HotBQ9j/ivRoKyu4GChCyfSqAI4RCdjAKNcsgDswCf1l3ym
+         ENrw==
+X-Gm-Message-State: AOAM533P6SFLWFj4KRCSS0zwEGI8uqiQrfoy7tc+s7SRhxFvF7DgXfvY
+        pX5D3i5I27vdTbqG3z9gfcqM781OjGOvS4HagsA=
+X-Google-Smtp-Source: ABdhPJxflZ6UZzJENaVOuHCjxCV15O4zUomlhb2kgb6/6GoDmfnlEroc3s79HvOOS8jXcUom+pgNrCseyO/Y1ebbhLk=
+X-Received: by 2002:a1c:4b05:: with SMTP id y5mr88750wma.106.1635367794264;
+ Wed, 27 Oct 2021 13:49:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/nZM+.0Lr.zeWxp+ZNqq3=DZ";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Received: by 2002:a05:6000:2ac:0:0:0:0 with HTTP; Wed, 27 Oct 2021 13:49:53
+ -0700 (PDT)
+Reply-To: kenndyjohnson080@gmail.com
+From:   kenndy johnson <chichirich666@gmail.com>
+Date:   Wed, 27 Oct 2021 21:49:53 +0100
+Message-ID: <CAEWe2bbM9vuq80N5Yj4fDo_k34NBgzVmEEV9aAb6nhvesq-nmA@mail.gmail.com>
+Subject: Dear Friend,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/nZM+.0Lr.zeWxp+ZNqq3=DZ
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Dear Friend,
 
-Hi all,
+My name is Mr. kenndy. johnson I am working with one of the UBA
+banks in Burkina Faso. Here in this bank existed a dormant account for
+many years, which belong to one of our late foreign customer. The
+amount in this account stands at $19 million's dollars
 
-In commit
+ US Dollars.
 
-  6754614a787c ("net: hns3: add more string spaces for dumping packets numb=
-er of queue info in debugfs")
+I was very fortunate to come across the deceased customer's security
+file during documentation of old and abandoned customer=E2=80=99s files for=
+ an
+official documentation and audit of the year 2021.
 
-Fixes tag
+I want a foreign account where the bank will transfer this fund. I
+know you would be surprised to read this message, especially from
+someone relatively unknown to you. But, do not worry yourself so much.
+This is a genuine, risk free and legal business transaction. All
+details shall be sent to you as soon as I receive your response.
 
-  Fixes: e44c495d95e ("net: hns3: refactor queue info of debugfs")
+If you are really sure of your sincerity, trustworthiness,
+accountability and confidentiality over this transaction, reply back
+to me through my alternative email address: kenndyjohnson080@gmail.com
+Best regards,
 
-has these problem(s):
-
-  - SHA1 should be at least 12 digits long
-    Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
-    or later) just making sure it is not set (or set to "auto").
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/nZM+.0Lr.zeWxp+ZNqq3=DZ
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmF5uawACgkQAVBC80lX
-0GzLPggAoI5ERsPjk++Pv4yVIY1E/jflslz+1s2UCqPWopyxPMf30VYm+0RyjQ9S
-0hGVWo9DXYNVQH0RQXtcVm5Ldiu1fMTk6KSyI18GAFgcw6Wr+ho4H0m4eSETlzrJ
-L1zrWCczw0cpeKYyfTUFNY0uzGG6rceDLqdBYt+wxMu8+cpIFZcuYJIYYGMyaLe5
-bbX1V0o37tQajk7gqID5SF4NL6/OIRSGOR5ClgUB8fH5cLla1BeOY+zGGubL+5mu
-3qDDkp5idLkQvVAx5CDFhjzgXQ7+YPLoNzoapEN+9hfdYDxSR85xXGvuYMd1G5rb
-quGCPc/J+67Te0MaQ+URcjME95LMEQ==
-=xOe7
------END PGP SIGNATURE-----
-
---Sig_/nZM+.0Lr.zeWxp+ZNqq3=DZ--
+Mr. kenndy johnson,
