@@ -2,181 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D0D743D380
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 23:04:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D10843D30B
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 22:42:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239296AbhJ0VHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 17:07:22 -0400
-Received: from mga01.intel.com ([192.55.52.88]:62213 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235939AbhJ0VHW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Oct 2021 17:07:22 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10150"; a="253817963"
-X-IronPort-AV: E=Sophos;i="5.87,187,1631602800"; 
-   d="scan'208";a="253817963"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2021 13:39:00 -0700
-X-IronPort-AV: E=Sophos;i="5.87,187,1631602800"; 
-   d="scan'208";a="597503559"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.212.216.171])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2021 13:38:59 -0700
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Davide Caratti <dcaratti@redhat.com>, davem@davemloft.net,
-        kuba@kernel.org, matthieu.baerts@tessares.net, pabeni@redhat.com,
-        mptcp@lists.linux.dev, Poorva Sonparote <psonparo@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net] mptcp: fix corrupt receiver key in MPC + data + checksum
-Date:   Wed, 27 Oct 2021 13:38:55 -0700
-Message-Id: <20211027203855.264600-1-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.33.1
+        id S243977AbhJ0Uoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 16:44:55 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:53558 "EHLO
+        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243997AbhJ0Uov (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 16:44:51 -0400
+Received: from usagi.middle.earth (ethbase.usagi.not.afront.org [IPv6:2620:137:e001:0:1897:4108:901b:c660])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id E25DF4F66417C;
+        Wed, 27 Oct 2021 13:42:17 -0700 (PDT)
+Subject: Re: Unsubscription Incident
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Shannon Nelson <snelson@pensando.io>
+Cc:     Slade Watkins <slade@sladewatkins.com>,
+        Benjamin Poirier <benjamin.poirier@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Lijun Pan <lijunp213@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+References: <CAOhMmr7bWv_UgdkFZz89O4=WRfUFhXHH5hHEOBBfBaAR8f4Ygw@mail.gmail.com>
+ <CA+h21hqrX32qBmmdcNiNkp6_QvzsX61msyJ5_g+-FFJazxLgDw@mail.gmail.com>
+ <YXY15jCBCAgB88uT@d3>
+ <CA+pv=HPyCEXvLbqpAgWutmxTmZ8TzHyxf3U3UK_KQ=ePXSigBQ@mail.gmail.com>
+ <61f29617-1334-ea71-bc35-0541b0104607@pensando.io>
+ <20211027123408.0d4f36f2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   John 'Warthog9' Hawley <warthog9@eaglescrag.net>
+Openpgp: preference=signencrypt
+Message-ID: <61e27841-5ceb-1975-ab3b-abdf8973c9f2@eaglescrag.net>
+Date:   Wed, 27 Oct 2021 13:42:17 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211027123408.0d4f36f2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Wed, 27 Oct 2021 13:42:18 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Davide Caratti <dcaratti@redhat.com>
+On 10/27/21 12:34 PM, Jakub Kicinski wrote:
+> On Mon, 25 Oct 2021 11:34:28 -0700 Shannon Nelson wrote:
+>>>> It happened to a bunch of people on gmail:
+>>>> https://lore.kernel.org/netdev/1fd8d0ac-ba8a-4836-59ab-0ed3b0321775@mojatatu.com/t/#u  
+>>> I can at least confirm that this didn't happen to me on my hosted
+>>> Gmail through Google Workspace. Could be wrong, but it seems isolated
+>>> to normal @gmail.com accounts.
+>>>
+>>> Best,
+>>>               -slade  
+>>
+>> Alternatively, I can confirm that my pensando.io address through gmail 
+>> was affected until I re-subscribed.
+> 
+> Did it just work after re-subscribing again? Without cleaning the inbox?
+> John indicated off list that Gmail started returning errors related to
+> quota, no idea what that translates to in reality maybe they added some
+> heuristic on too many emails from one source?
 
-using packetdrill it's possible to observe that the receiver key contains
-random values when clients transmit MP_CAPABLE with data and checksum (as
-specified in RFC8684 §3.1). Fix the layout of mptcp_out_options, to avoid
-using the skb extension copy when writing the MP_CAPABLE sub-option.
+At least for the users I've had anyone mention to me (which for the
+record apparently this happened on the 11th, and people are only
+reaching out now about), the reasons for the unsubscribe was that the
+upstream servers were reporting that the users in question were over
+quota permanently.  We take that hinting at face value, and since the
+server is telling us (basically) that the user isn't going to be
+accepting mail anytime soon, we go ahead and unsubscribe them and clear
+the queue so that the users don't cause unnecessary back log.  Noting,
+this is an automated process that runs and deals with this that runs
+periodically.
 
-Fixes: d7b269083786 ("mptcp: shrink mptcp_out_options struct")
-Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/233
-Reported-by: Poorva Sonparote <psonparo@redhat.com>
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
+Also noting, that there's not a good way to notify individuals when this
+happens because, unsurprisingly, their email providers aren't accepting
+mail from us.
 
-Jakub & David, note that this addresses a regression introduced in
-5.15. The patch has been reviewed for the MPTCP tree and run through
-our CI.
+If folks reach out to postmaster@ I'm more than happy to take a look at
+the 'why' something happened, and I'm happy to re-subscribe folks in the
+backend saving them the back and forth with majorodomo's command system.
 
-Thanks,
+If I had to speculate, something glitched at gmail, a subset of users
+got an odd error code returned (which likely wasn't the correct error
+code for the situation, and noting the number of affected users is
+fairly small given the number of users from gmail that are subscribed).
+ Likely similar to when gmail had that big outage and it reported
+something way off base and as a result every gmail user got unsubscribed
+(and subsequently resubscribed in the backend by me when the outage was
+over).
 
-Mat
-
- include/net/mptcp.h |  4 ++++
- net/mptcp/options.c | 39 ++++++++++++++++++++++++---------------
- 2 files changed, 28 insertions(+), 15 deletions(-)
-
-diff --git a/include/net/mptcp.h b/include/net/mptcp.h
-index 6026bbefbffd..3214848402ec 100644
---- a/include/net/mptcp.h
-+++ b/include/net/mptcp.h
-@@ -69,6 +69,10 @@ struct mptcp_out_options {
- 		struct {
- 			u64 sndr_key;
- 			u64 rcvr_key;
-+			u64 data_seq;
-+			u32 subflow_seq;
-+			u16 data_len;
-+			__sum16 csum;
- 		};
- 		struct {
- 			struct mptcp_addr_info addr;
-diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-index c41273cefc51..f0f22eb4fd5f 100644
---- a/net/mptcp/options.c
-+++ b/net/mptcp/options.c
-@@ -485,11 +485,11 @@ static bool mptcp_established_options_mp(struct sock *sk, struct sk_buff *skb,
- 		mpext = mptcp_get_ext(skb);
- 		data_len = mpext ? mpext->data_len : 0;
- 
--		/* we will check ext_copy.data_len in mptcp_write_options() to
-+		/* we will check ops->data_len in mptcp_write_options() to
- 		 * discriminate between TCPOLEN_MPTCP_MPC_ACK_DATA and
- 		 * TCPOLEN_MPTCP_MPC_ACK
- 		 */
--		opts->ext_copy.data_len = data_len;
-+		opts->data_len = data_len;
- 		opts->suboptions = OPTION_MPTCP_MPC_ACK;
- 		opts->sndr_key = subflow->local_key;
- 		opts->rcvr_key = subflow->remote_key;
-@@ -505,9 +505,9 @@ static bool mptcp_established_options_mp(struct sock *sk, struct sk_buff *skb,
- 			len = TCPOLEN_MPTCP_MPC_ACK_DATA;
- 			if (opts->csum_reqd) {
- 				/* we need to propagate more info to csum the pseudo hdr */
--				opts->ext_copy.data_seq = mpext->data_seq;
--				opts->ext_copy.subflow_seq = mpext->subflow_seq;
--				opts->ext_copy.csum = mpext->csum;
-+				opts->data_seq = mpext->data_seq;
-+				opts->subflow_seq = mpext->subflow_seq;
-+				opts->csum = mpext->csum;
- 				len += TCPOLEN_MPTCP_DSS_CHECKSUM;
- 			}
- 			*size = ALIGN(len, 4);
-@@ -1227,7 +1227,7 @@ static void mptcp_set_rwin(const struct tcp_sock *tp)
- 		WRITE_ONCE(msk->rcv_wnd_sent, ack_seq);
- }
- 
--static u16 mptcp_make_csum(const struct mptcp_ext *mpext)
-+static u16 __mptcp_make_csum(u64 data_seq, u32 subflow_seq, u16 data_len, __sum16 sum)
- {
- 	struct csum_pseudo_header header;
- 	__wsum csum;
-@@ -1237,15 +1237,21 @@ static u16 mptcp_make_csum(const struct mptcp_ext *mpext)
- 	 * always the 64-bit value, irrespective of what length is used in the
- 	 * DSS option itself.
- 	 */
--	header.data_seq = cpu_to_be64(mpext->data_seq);
--	header.subflow_seq = htonl(mpext->subflow_seq);
--	header.data_len = htons(mpext->data_len);
-+	header.data_seq = cpu_to_be64(data_seq);
-+	header.subflow_seq = htonl(subflow_seq);
-+	header.data_len = htons(data_len);
- 	header.csum = 0;
- 
--	csum = csum_partial(&header, sizeof(header), ~csum_unfold(mpext->csum));
-+	csum = csum_partial(&header, sizeof(header), ~csum_unfold(sum));
- 	return (__force u16)csum_fold(csum);
- }
- 
-+static u16 mptcp_make_csum(const struct mptcp_ext *mpext)
-+{
-+	return __mptcp_make_csum(mpext->data_seq, mpext->subflow_seq, mpext->data_len,
-+				 mpext->csum);
-+}
-+
- void mptcp_write_options(__be32 *ptr, const struct tcp_sock *tp,
- 			 struct mptcp_out_options *opts)
- {
-@@ -1337,7 +1343,7 @@ void mptcp_write_options(__be32 *ptr, const struct tcp_sock *tp,
- 			len = TCPOLEN_MPTCP_MPC_SYN;
- 		} else if (OPTION_MPTCP_MPC_SYNACK & opts->suboptions) {
- 			len = TCPOLEN_MPTCP_MPC_SYNACK;
--		} else if (opts->ext_copy.data_len) {
-+		} else if (opts->data_len) {
- 			len = TCPOLEN_MPTCP_MPC_ACK_DATA;
- 			if (opts->csum_reqd)
- 				len += TCPOLEN_MPTCP_DSS_CHECKSUM;
-@@ -1366,14 +1372,17 @@ void mptcp_write_options(__be32 *ptr, const struct tcp_sock *tp,
- 
- 		put_unaligned_be64(opts->rcvr_key, ptr);
- 		ptr += 2;
--		if (!opts->ext_copy.data_len)
-+		if (!opts->data_len)
- 			goto mp_capable_done;
- 
- 		if (opts->csum_reqd) {
--			put_unaligned_be32(opts->ext_copy.data_len << 16 |
--					   mptcp_make_csum(&opts->ext_copy), ptr);
-+			put_unaligned_be32(opts->data_len << 16 |
-+					   __mptcp_make_csum(opts->data_seq,
-+							     opts->subflow_seq,
-+							     opts->data_len,
-+							     opts->csum), ptr);
- 		} else {
--			put_unaligned_be32(opts->ext_copy.data_len << 16 |
-+			put_unaligned_be32(opts->data_len << 16 |
- 					   TCPOPT_NOP << 8 | TCPOPT_NOP, ptr);
- 		}
- 		ptr += 1;
-
-base-commit: afe8ca110cf4c99dee7b31473eacb56b72944df4
--- 
-2.33.1
-
+- John 'Warthog9' Hawley
