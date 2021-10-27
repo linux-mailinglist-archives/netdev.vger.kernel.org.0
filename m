@@ -2,109 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17B7F43C609
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 11:04:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2842043C619
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 11:06:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241175AbhJ0JGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 05:06:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53796 "EHLO
+        id S241113AbhJ0JIo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 05:08:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241167AbhJ0JGU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 05:06:20 -0400
+        with ESMTP id S241169AbhJ0JId (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 05:08:33 -0400
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7751DC061570
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 02:03:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 794AAC0613B9;
+        Wed, 27 Oct 2021 02:06:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=3TgcIBweO7xVl6HKHrs1OzMT/Y39bKCY8oBWIWj+7Kg=; b=SetM8woIpXakNoRShSWf25IdUR
-        s9aY6oIx3n92FtJ5rOjb8GXp5W2mOyi+H8PikvT0vdUuxnMyuNYWbU07NUPm5EkV5GScC2Y8ekqY1
-        rIqeAZNS/qKXo5bL0LC4CrCrvnu8MdyNMtZq527Ah6/uAdDGnmtKsu33duzXPK4JSo7ycwcwboPcL
-        ql+0Q+dRCO63CFKgI+kuEV+VSWsN+v9pPrBxZnjKcsu0hZ/Ag1Gj044tAz/AfRPaIdpXaPIP8bojp
-        snOFnYoB+cyYF/EYudeV+S7SBSqiMQ0hsKHOIpaxvsR8w9J+tc7AOW5rH7A0RNmWPYqoB1rjt8OPM
-        JVc/Ylyw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:34116 helo=rmk-PC.armlinux.org.uk)
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=kRf1Or618GeeWJVpuy0WSn6vEisI4WInWtok/e/T7zU=; b=hOOKi3W+UKXuH3EKrOxoV/8Pzn
+        vQNYH4wXJD00ONUkPZyjHYJ2pqAf4AUGCncM+d9RXWetYAMTU0Ii79n3VAwHs6TqsjSSu1nPXwXIY
+        vgW1S0eUsqrzJu85uGWOhjcIcM+EpT5XiVvAyQKw8eSMn5JxvHS+sLC0UpvdDdMZepYm+oZdxYpC/
+        BLWMoEJ4XCUqc+vYBahHRPfbgZoQsSy2fmL1M0qkYGv9eTLbP/HwNQ4J3DefJ6In0angA47PAiXrt
+        QELUu56VvNOM6ia/BqAuK4SotZ1BtaOeFJikpwPyIGuc2fIdF6/U4VhPL2bB9w5z6KN6OtyPNmmkN
+        1brVH6Gw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55334)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1mfeqf-0006DB-SZ; Wed, 27 Oct 2021 10:03:53 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1mfeqf-001Ts3-FQ; Wed, 27 Oct 2021 10:03:53 +0100
-In-Reply-To: <YXkVzx3AM5neUQQH@shell.armlinux.org.uk>
-References: <YXkVzx3AM5neUQQH@shell.armlinux.org.uk>
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH net-next 3/3] net: mvneta: drop use of
- phylink_helper_basex_speed()
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mfesl-0006DM-CK; Wed, 27 Oct 2021 10:06:03 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mfesk-0007bZ-6c; Wed, 27 Oct 2021 10:06:02 +0100
+Date:   Wed, 27 Oct 2021 10:06:02 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, lgirdwood@gmail.com, broonie@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: Fix unsigned comparison with less than zero
+Message-ID: <YXkWepmP9rC3fQfj@shell.armlinux.org.uk>
+References: <1635325191-101815-1-git-send-email-jiapeng.chong@linux.alibaba.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1mfeqf-001Ts3-FQ@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Wed, 27 Oct 2021 10:03:53 +0100
+In-Reply-To: <1635325191-101815-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that we have a better method to select SFP interface modes, we
-no longer need to use phylink_helper_basex_speed() in a driver's
-validation function, and we can also get rid of our hack to indicate
-both 1000base-X and 2500base-X if the comphy is present to make that
-work. Remove this hack and use of phylink_helper_basex_speed().
+On Wed, Oct 27, 2021 at 04:59:51PM +0800, Jiapeng Chong wrote:
+> Fix the following coccicheck warning:
+> 
+> ./drivers/net/phy/at803x.c:493:5-10: WARNING: Unsigned expression
+> compared with zero: value < 0.
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Fixes: ea13c9ee855c ("drivers: net: phy: at803x: separate wol specific code to wol standard apis")
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- drivers/net/ethernet/marvell/mvneta.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 446cdd496f1b..5a7bdca22a63 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -3823,8 +3823,6 @@ static void mvneta_validate(struct phylink_config *config,
- 			    unsigned long *supported,
- 			    struct phylink_link_state *state)
- {
--	struct net_device *ndev = to_net_dev(config->dev);
--	struct mvneta_port *pp = netdev_priv(ndev);
- 	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
- 
- 	/* We only support QSGMII, SGMII, 802.3z and RGMII modes.
-@@ -3846,11 +3844,12 @@ static void mvneta_validate(struct phylink_config *config,
- 	phylink_set(mask, Pause);
- 
- 	/* Half-duplex at speeds higher than 100Mbit is unsupported */
--	if (pp->comphy || state->interface != PHY_INTERFACE_MODE_2500BASEX) {
-+	if (state->interface != PHY_INTERFACE_MODE_2500BASEX) {
- 		phylink_set(mask, 1000baseT_Full);
- 		phylink_set(mask, 1000baseX_Full);
- 	}
--	if (pp->comphy || state->interface == PHY_INTERFACE_MODE_2500BASEX) {
-+
-+	if (state->interface == PHY_INTERFACE_MODE_2500BASEX) {
- 		phylink_set(mask, 2500baseT_Full);
- 		phylink_set(mask, 2500baseX_Full);
- 	}
-@@ -3865,11 +3864,6 @@ static void mvneta_validate(struct phylink_config *config,
- 
- 	linkmode_and(supported, supported, mask);
- 	linkmode_and(state->advertising, state->advertising, mask);
--
--	/* We can only operate at 2500BaseX or 1000BaseX.  If requested
--	 * to advertise both, only report advertising at 2500BaseX.
--	 */
--	phylink_helper_basex_speed(state);
- }
- 
- static void mvneta_mac_pcs_get_state(struct phylink_config *config,
+Thanks!
+
 -- 
-2.30.2
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
