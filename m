@@ -2,157 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93AD943D688
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 00:25:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C5BA43D689
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 00:25:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229486AbhJ0W1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 18:27:30 -0400
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:36765 "EHLO
-        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229437AbhJ0W1a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 18:27:30 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id BBEA45804BA;
-        Wed, 27 Oct 2021 18:25:03 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Wed, 27 Oct 2021 18:25:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=6HGRn5
-        3Qz8T1YVH1YxLcWRyEaXBqMDadFeaNZY6cscw=; b=CE0yf1vu3vnXgTpvU9u+M2
-        tbmn4BPBfzWvewddbY88GYpE5R9xjBa1JIQUlhnvDp4cUwd9xza2IOr2XWXdhwt0
-        XA1pgxJCizuP4SYPqacvxn7GrxM2yZzDnvTJk2+PotBKVIdMesua9rXHVMVX9gXb
-        WuLxIFRrWSL7j6vaYefZ4Gpq2gfu7WT0GnWLUOJR0Pv9XC/LDKm7CvvulUM9SNHG
-        am0inuz4jg0kXMwQBD0hfIdPEOsNspmGfjiu3hYejjpXeFI3Z9/ofwYHuu34pLWm
-        bZ7w2fZa0gO0JhEeAMDxPZcbXbE1n5/mSPKYVJfIp2Hz2eYAU+AKbt8WfDOybfNA
-        ==
-X-ME-Sender: <xms:vtF5YbCPpwRBImUGIdDHf1Tpiri6GrN1vdZOhyHx_-4-eBKV4epkGQ>
-    <xme:vtF5YRhqpuSHgjM2hRlXyUh2Czh35GRFzRY-uOQcAi1TjSTTg_bP2F1OQfAARDRiv
-    tEFGePPWWIBWz4>
-X-ME-Received: <xmr:vtF5YWkUrXMn5ZuWoQo0hduaEp04FmP5RhCNdrqN2RD7LiSgbCm6jomnKwAK1p_exjAaDLlgxSLMEy0Qheo6CKpDjWN-3g>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvdegtddguddutdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnheptefhffeuhfekgedutedtvdduheegheelheefiefhleegkedtheeihfehfeeu
-    geelnecuffhomhgrihhnpehprhhoohhfphhoihhnthdrtghomhenucevlhhushhtvghruf
-    hiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghh
-    rdhorhhg
-X-ME-Proxy: <xmx:vtF5Ydxyt-S9DXwEEfI5gAUE2r4syrLOnSCGsJuOPRzdOkUzamqUdg>
-    <xmx:vtF5YQRUYRq18s3AEbENjfxPyujeFa9UDQG4arX1dCNQh2ipyw5qRQ>
-    <xmx:vtF5YQb6ghl7Mmrg_FNjkY9Bxgk0jPOk5S2kTE0cV_NKAJIdXY8KZA>
-    <xmx:v9F5YVLvlJdFPSDTwZFKEEC4WU-9RwedkUDxXv6WrjyT8P9xvXr67g>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 27 Oct 2021 18:25:01 -0400 (EDT)
-Date:   Thu, 28 Oct 2021 01:24:58 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Sunil Kovvuri Goutham <sgoutham@marvell.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        sundeep subbaraya <sundeep.lkml@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Hariprasad Kelam <hkelam@marvell.com>,
-        Geethasowjanya Akula <gakula@marvell.com>,
-        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
-        Rakesh Babu Saladi <rsaladi2@marvell.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [EXT] Re: [net-next PATCH 1/2] octeontx2-pf: Add devlink param
- to init and de-init serdes
-Message-ID: <YXnRup1EJaF5Gwua@shredder>
-References: <1635330675-25592-1-git-send-email-sbhatta@marvell.com>
- <1635330675-25592-2-git-send-email-sbhatta@marvell.com>
- <20211027083808.27f39cb0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <PH0PR18MB4671C22DB7C8E5C46647860FA1859@PH0PR18MB4671.namprd18.prod.outlook.com>
- <CALHRZurNzkkma7HGg2xNLz3ECbwT2Hv=QXMeWr7AXCEegHOciw@mail.gmail.com>
- <20211027100857.4d25544c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YXmWb2PZJQhpMfrR@shredder>
- <BY3PR18MB473794E01049EC94156E2858C6859@BY3PR18MB4737.namprd18.prod.outlook.com>
+        id S229499AbhJ0W2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 18:28:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40840 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229437AbhJ0W2A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 18:28:00 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF89C061570
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 15:25:33 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id e65so4380357pgc.5
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 15:25:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=g5Aj8OwFEoaWmvumaibRdluKV/1aiNC4qq0s8gJRc+E=;
+        b=YNECCC1bl3QB36jnQe7lyee7C5q1BfiLe75S3FB+e7jt8lo3L0zx5LFaPtrTYeaSAf
+         qNRHW8R5xdWdGfReppqi2sCrpqQArCHbsa4JHeXSHGTjvcjPEIBoYNBKzf4mdHu4Qb8p
+         pZcRxm2M1aNu/c+5Ow2olP5qjVWFKkgQoX+/N8wYhAVQn7RSXU4DXbbWJYRqukioZ6Zk
+         xnXHE9wuG7JNfxc5AgRvZV3zGiNumqRoas3rRZRIz6Ia6UPrSXikGNgWfqqsYfCb1LKY
+         3tzQg7aeapscKTqXdOLqaw39i+F4bGbto8+4vUS6lrbHeOVmxLp/F8iY2XqWIOKrwlLc
+         X7YQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=g5Aj8OwFEoaWmvumaibRdluKV/1aiNC4qq0s8gJRc+E=;
+        b=ay9E7AzbgnQBfCZSajLkzwhYtoY7ZBvYOMaaqzdOfhgZvuwl4ornki2hnmIkLhFQwt
+         YOFq0i++ThuzXlMlM/Zv9QsMLtXQXwwW9rnx7N5Tus4zjqq+GSjEG8KbiCTfsDq94OQe
+         VSxafgeHIxb7RK/rGJNa9QzGEyb4BwjuwVRXVXjevN5cpbBmgIrR6YrlZi2e7QGODkSE
+         NsisllTxGU/gJDQyVSTY4+qhyzsEsSMax+YBlsyAsfsEC4AN3m2ioTPjUE5BloyaSLcw
+         fnEQSbyV+2XJH4a7Yxfgv+Aa7klNnZACkmGTg0PMOUAS43mmesZeTv+rPNEksPBjxcHX
+         5ILA==
+X-Gm-Message-State: AOAM530N2urhb8aZsVFh5rAOw0DQbGP/0J2OO7p6T19R6ztA+bh2sXmv
+        P5SFQGbAfBfdCt8YfwMgltM=
+X-Google-Smtp-Source: ABdhPJy8TnwliauE6y0rAgnJp7d/3dQMCwlhkX6uAr6v4nY+JgjUdl49FO1/NHVQdDmhv0hTrnzsdA==
+X-Received: by 2002:a63:9554:: with SMTP id t20mr349141pgn.255.1635373532541;
+        Wed, 27 Oct 2021 15:25:32 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id mt16sm683327pjb.22.2021.10.27.15.25.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Oct 2021 15:25:31 -0700 (PDT)
+Subject: Re: [PATCH] qed: avoid spin loops in _qed_mcp_cmd_and_union()
+To:     Caleb Sander <csander@purestorage.com>, netdev@vger.kernel.org
+Cc:     Ariel Elior <aelior@marvell.com>, GR-everest-linux-l2@marvell.com,
+        Joern Engel <joern@purestorage.com>
+References: <20211027214519.606096-1-csander@purestorage.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <d9d4b6d1-d64d-4bfb-17d9-b28153e02b9e@gmail.com>
+Date:   Wed, 27 Oct 2021 15:25:14 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BY3PR18MB473794E01049EC94156E2858C6859@BY3PR18MB4737.namprd18.prod.outlook.com>
+In-Reply-To: <20211027214519.606096-1-csander@purestorage.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 27, 2021 at 06:43:00PM +0000, Sunil Kovvuri Goutham wrote:
+
+
+On 10/27/21 2:45 PM, Caleb Sander wrote:
+> By default, qed_mcp_cmd_and_union() sets max_retries to 500K and
+> usecs to 10, so these loops can together delay up to 5s.
+> We observed thread scheduling delays of over 700ms in production,
+> with stacktraces pointing to this code as the culprit.
 > 
-> > ________________________________
-> > From: Ido Schimmel <idosch@idosch.org>
-> > Sent: Wednesday, October 27, 2021 11:41 PM
-> > To: Jakub Kicinski <kuba@kernel.org>
-> > Cc: sundeep subbaraya <sundeep.lkml@gmail.com>; David Miller <davem@davemloft.net>; netdev@vger.kernel.org <netdev@vger.kernel.org>; Hariprasad Kelam <hkelam@marvell.com>; Geethasowjanya Akula <gakula@marvell.com>; Sunil Kovvuri Goutham <sgoutham@marvell.com>; Subbaraya Sundeep Bhatta <sbhatta@marvell.com>; Rakesh Babu Saladi <rsaladi2@marvell.com>; Saeed Mahameed <saeed@kernel.org>; anthony.l.nguyen@intel.com <anthony.l.nguyen@intel.com>; Jesse Brandeburg <jesse.brandeburg@intel.com>; Andrew Lunn <andrew@lunn.ch>
-> > Subject: Re: [EXT] Re: [net-next PATCH 1/2] octeontx2-pf: Add devlink param to init and de-init serdes
-> >
-> > On Wed, Oct 27, 2021 at 10:08:57AM -0700, Jakub Kicinski wrote:
-> > > On Wed, 27 Oct 2021 22:13:32 +0530 sundeep subbaraya wrote:
-> > > > > On Wed, 27 Oct 2021 16:01:14 +0530 Subbaraya Sundeep wrote:
-> > > > > > From: Rakesh Babu <rsaladi2@marvell.com>
-> > > > > >
-> > > > > > The physical/SerDes link of an netdev interface is not
-> > > > > > toggled on interface bring up and bring down. This is
-> > > > > > because the same link is shared between PFs and its VFs.
-> > > > > > This patch adds devlink param to toggle physical link so
-> > > > > > that it is useful in cases where a physical link needs to
-> > > > > > be re-initialized.
-> > > > >
-> > > > > So it's a reset? Or are there cases where user wants the link
-> > > > > to stay down?
-> > > >
-> > > > There are cases where the user wants the link to stay down and debug.
-> > > > We are adding this to help customers to debug issues wrt physical links.
-> > >
-> > > Intel has a similar thing, they keep adding a ethtool priv flag called
-> > > "link-down-on-close" to all their drivers.
-> >
-> > This is the list I compiled the previous time we discussed it:
-> >
-> > https://urldefense.proofpoint.com/v2/url?u=https-3A__git.kernel.org_pub_scm_linux_kernel_git_torvalds_linux.git_commit_-3Fid-3Dc3880bd159d431d06b687b0b5ab22e24e6ef0070&d=DwIBAg&c=nKjWec2b6R0mOyPaz7xtfQ&r=q3VKxXQKiboRw_F01ggTzHuhwawxR1P9_tMCN2FODU4&m=4xGR8HuIRKUriC93QV4GmQBJ6KVwRgGZ05Syzpq2CAM&s=fvl1aLwL55CWIsG2NT5i3QsP4o_GTEsGhA6Epjz7ZAk&e=
-> > https://urldefense.proofpoint.com/v2/url?u=https-3A__git.kernel.org_pub_scm_linux_kernel_git_torvalds_linux.git_commit_-3Fid-3Dd5ec9e2ce41ac198de2ee18e0e529b7ebbc67408&d=DwIBAg&c=nKjWec2b6R0mOyPaz7xtfQ&r=q3VKxXQKiboRw_F01ggTzHuhwawxR1P9_tMCN2FODU4&m=4xGR8HuIRKUriC93QV4GmQBJ6KVwRgGZ05Syzpq2CAM&s=kH50Qq3h75xREveyWvCUn35wXagtt4uv1QRK0wMBEdk&e=
-> > https://urldefense.proofpoint.com/v2/url?u=https-3A__git.kernel.org_pub_scm_linux_kernel_git_torvalds_linux.git_commit_-3Fid-3Dab4ab73fc1ec6dec548fa36c5e383ef5faa7b4c1&d=DwIBAg&c=nKjWec2b6R0mOyPaz7xtfQ&r=q3VKxXQKiboRw_F01ggTzHuhwawxR1P9_tMCN2FODU4&m=4xGR8HuIRKUriC93QV4GmQBJ6KVwRgGZ05Syzpq2CAM&s=Uc3yY-5HjS7TgRBl4DPLsJ19XiHDD_PvF8hA38K4XwI&e=
-> >
-> > It seems that various drivers default to not shutting down the link upon
-> > ndo_stop(), but some users want to override it. I hit that too as it
-> > breaks ECMP (switch thinks the link is up).
-> >
-> > > Maybe others do this, too.  It's time we added a standard API for
-> > > this.
-> >
-> > The new parameter sounds like a reset, but it can also be achieved by:
-> >
-> > # ethtool --set-priv-flags eth0 link-down-on-close on
-> > # ip link set dev eth0 down
-> > # ip link set dev eth0 up
-> >
-> > Where the first command is replaced by a more standard ethtool API.
+> Add calls to cond_resched() in both loops to yield the CPU if necessary.
 > 
-> The intention here is provide an option to the user to toggle the serdes configuration
-> as and when he wants to.
+> Signed-off-by: Caleb Sander <csander@purestorage.com>
+> Reviewed-by: Joern Engel <joern@purestorage.com>
+> ---
+>  drivers/net/ethernet/qlogic/qed/qed_mcp.c | 12 ++++++++----
+>  1 file changed, 8 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/qlogic/qed/qed_mcp.c b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
+> index 24cd41567..d6944f020 100644
+> --- a/drivers/net/ethernet/qlogic/qed/qed_mcp.c
+> +++ b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
+> @@ -485,10 +485,12 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
+>  
+>  		spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
+>  
+> -		if (QED_MB_FLAGS_IS_SET(p_mb_params, CAN_SLEEP))
+> +		if (QED_MB_FLAGS_IS_SET(p_mb_params, CAN_SLEEP)) {
 
-But why? What is the motivation? The commit message basically says that
-you are adding a param to toggle the physical link because it is useful
-to toggle the physical link.
+I do not know this driver, but apparently, there is this CAN_SLEEP test
+hinting about being able to sleep.
 
-> There is no dependency with logical interface's status.
+>  			msleep(msecs);
+> -		else
+> +		} else {
+> +			cond_resched();
 
-But there is and the commit message explains why you are not doing it as
-part of ndo_{stop,open}(): "because the same link is shared between PFs
-and its VFs"
+Here you might sleep/schedule, while CAN_SLEEP was not set ?
 
-Such constraints also apply to other drivers and you can see that in the
-"link-down-on-close" private flag. I'm also aware of propriety tools to
-toggle device bits which prevent the physical link from going down upon
-ndo_stop().
+>  			udelay(usecs);
 
-> Having a standard API to select bringing down physical interface upon logical interface's close call
-> is a good idea. But this patch is not for that.
 
-IIUC, your default behavior is not to take the physical link down upon
-ndo_stop() and now you want to toggle the link. If you have a standard
-API to change the default behavior, then the commands I showed will
-toggle the link, no?
+I would suggest using usleep_range() instead, because cond_resched()
+can be a NOP under some circumstances.
+
+> +		}
+>  	} while (++cnt < max_retries);
+
+Then perhaps not count against max_retries, but based on total elapsed time ?
+
+>  
+>  	if (cnt >= max_retries) {
+> @@ -517,10 +519,12 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
+>  		 * The spinlock stays locked until the list element is removed.
+>  		 */
+>  
+> -		if (QED_MB_FLAGS_IS_SET(p_mb_params, CAN_SLEEP))
+> +		if (QED_MB_FLAGS_IS_SET(p_mb_params, CAN_SLEEP)) {
+>  			msleep(msecs);
+> -		else
+> +		} else {
+> +			cond_resched();
+>  			udelay(usecs);
+> +		}
+>  
+>  		spin_lock_bh(&p_hwfn->mcp_info->cmd_lock);
+>  
+> 
