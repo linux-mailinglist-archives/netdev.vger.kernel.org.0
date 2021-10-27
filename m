@@ -2,148 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9563643CD90
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 17:31:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C11243CD95
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 17:31:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242770AbhJ0PdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 11:33:25 -0400
-Received: from mail-dm6nam10on2088.outbound.protection.outlook.com ([40.107.93.88]:58849
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S242803AbhJ0PdO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Oct 2021 11:33:14 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K2boB/rkwjbKSwsN4KfsH5EkGzdLqNbR2HiYl7EQr67+vp+xg0T0D/LrJbjRyOL2ef27ozKQr4Uq01Wli39rRVywD9bwOx0FdJIeVgVAg988wOfbWOz+6vfrweNT3OlwnGNjGzt61n2cxkbDS02JMZC2j5+nklqiqQ94QmUtNdyTVMH/fy4HHjrx5FKoH03t1v2obXAyhuJ92MWOoXGkd8/r1u0mA88w9ke2t7w/0DtU8uxr5lvcaPoqkrsMGDZ9yBSyG9lPIcGRPDvmvdbe4RUPxulvT3SSDkQ14gCYQN3wDIWqroutwbwvP+h/Ki/sTMrhR5tA5P01zQQQSzXFkA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Qrrpd3dHjQCrLuNhm+OqaDTrJvrps62u6A8w3gvUPgA=;
- b=ab+snd2U76tqC+HK8BDUD8p03Y8M2s1isl6TtmWgJnnYndKgrjIwHCk7Hc9J2UKEte0Cxforz9+scdXFX36qjuiR09+C/+kX/lQXCcMGewkGx8XDSK8Wn+IIF7ldb/HpjOJCsEiurzwxJGhG3SJYK1fkABilfvmX7r8w/q06bQU/Si/LaRtv/y+0lpH1zKweqkTjMkhiOpHz4WWnpRdE9LnGgzG409SM6IoymytGSSUlJNKXwzpBryRUKbRUtnw9E0yPWyWNUE1KBYG8nCURsH5e/Hh3AoCxAZfv0aYK2mpYLDz1Okprdf81PL31tMBCejewE02uGMGQsaYbN8tf/w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Qrrpd3dHjQCrLuNhm+OqaDTrJvrps62u6A8w3gvUPgA=;
- b=ADjC1u3meXXl96Y6TfFtV2/A1Q8xjhuZFajJhcGPCfmztnqknFRdOaLCtQner93iigMdQX31p42X//b1R7tD2WRYQ81ANG6XYePp0fHx7DTjNVzqltL2DBpY0r6Tt3ILmiZwCEtQg/7F1vvxtV/a+3+0ErWP3JZOrCdOBCSfC3EX+3UipKOKMbiXNMe9vPfDi7AhDmprrlzjXG8T5Q9mtGFuoJOqNzM8SoKMzhx9nGHaV+MwUtyw9tCgpmXWmLZWDTUxCOI0n7RFWZYMJ2Jsl74TClHrxP8WR8Sbe2VBhoNQBYLsLmTnEx4QxBPNDDjiPA5S/4BYIEzIiPJOMXTUiw==
-Received: from BN0PR03CA0033.namprd03.prod.outlook.com (2603:10b6:408:e7::8)
- by MN2PR12MB4830.namprd12.prod.outlook.com (2603:10b6:208:1bc::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18; Wed, 27 Oct
- 2021 15:30:47 +0000
-Received: from BN8NAM11FT029.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:e7:cafe::50) by BN0PR03CA0033.outlook.office365.com
- (2603:10b6:408:e7::8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.14 via Frontend
- Transport; Wed, 27 Oct 2021 15:30:47 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT029.mail.protection.outlook.com (10.13.177.68) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4649.14 via Frontend Transport; Wed, 27 Oct 2021 15:30:47 +0000
-Received: from [172.27.13.210] (172.20.187.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 27 Oct
- 2021 15:30:41 +0000
-Message-ID: <361bad9a-e8bf-f187-358f-95f57d3c1563@nvidia.com>
-Date:   Wed, 27 Oct 2021 18:30:39 +0300
+        id S242801AbhJ0Pde (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 11:33:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58758 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242798AbhJ0Pdd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 11:33:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1635348668;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NlA3nQ1QJzVNgnX+dWY9bZTNzaWdxEwvFkBavyJU+R8=;
+        b=Mt4pHa1lvmKIJsNI079UNC8Ef68dxGt/L0TseyC0Kgf2SkvLZbUBK7lwKVxu6n5IN5t0UW
+        pjPNmILp9zn8A4EoQMSgmc0XBV3f7qfavzYO5DSFUmTrH7d5Fhw8NG14LJvd59l0DLYsEn
+        rSjwNt6G0m7DaYR5qr3hkkkIWQX3srw=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-220-YHRgTFSmPmqUtUcRM4S6jA-1; Wed, 27 Oct 2021 11:31:05 -0400
+X-MC-Unique: YHRgTFSmPmqUtUcRM4S6jA-1
+Received: by mail-wr1-f72.google.com with SMTP id u15-20020a5d514f000000b001687ebddea3so801420wrt.8
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 08:31:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NlA3nQ1QJzVNgnX+dWY9bZTNzaWdxEwvFkBavyJU+R8=;
+        b=nQHCDE8Ao9QXEDYIsGuQ0kfsSn71WYWT2CoJHj1gqc4HnQcTLGohxmP7rr0RqkQ06T
+         /S+NI38lFpJii9XXx1Oz2TYb914jXE8HbnBo5QLyYJyapMjxVWEkCboIuerah1STMPJW
+         QxMy4+fvMmquVMI1WQK/KxyyfQHiDpix2Fl+zlEh8OQ0LzWIrVJWziYt2eFHTXF/jFs+
+         ELMtsu9888UTi7jx1Q4QzN34jhoFsYWq39rQLzx7onSvd6wEPIllEOPTsJrDCXW87R1K
+         qy65nxMqfOzPjctiChVhq5791aAJz8iWo30NUdZSoEozYEMTd8ffzyGKUfSl2mzcNEGF
+         m5AA==
+X-Gm-Message-State: AOAM532q3M2FU/GlPXeZolXb9SqWyl/HAPO7kLLMbg2BWyMEb1d7+tDt
+        XLmwesVJ/OYVUfdKWPP22wjYt6KDzLJtedPgKAefoLZ4OVIeFOZFekjt4NY30/e5yckrFevN9v6
+        CVU7TaA/m3ij+Sh+8
+X-Received: by 2002:a5d:6441:: with SMTP id d1mr36123794wrw.208.1635348664576;
+        Wed, 27 Oct 2021 08:31:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwja2+cAsX5qhyqxBAK7VZupFPj2JJ88axvhWNqQ4Jrw2r9FC4mm7+Txvs4mKv41SaXVzhbog==
+X-Received: by 2002:a5d:6441:: with SMTP id d1mr36123776wrw.208.1635348664436;
+        Wed, 27 Oct 2021 08:31:04 -0700 (PDT)
+Received: from redhat.com ([2a03:c5c0:207e:a543:72f:c4d1:8911:6346])
+        by smtp.gmail.com with ESMTPSA id n11sm198454wrs.14.2021.10.27.08.31.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Oct 2021 08:31:03 -0700 (PDT)
+Date:   Wed, 27 Oct 2021 11:30:59 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, jasowang@redhat.com,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH net-next v2] net: virtio: use eth_hw_addr_set()
+Message-ID: <20211027113033-mutt-send-email-mst@kernel.org>
+References: <20211027152012.3393077-1-kuba@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.1
-Subject: Re: [PATCH V5 mlx5-next 07/13] vfio: Add a macro for
- VFIO_DEVICE_STATE_ERROR
-Content-Language: en-US
-To:     Yishai Hadas <yishaih@nvidia.com>, <alex.williamson@redhat.com>,
-        <bhelgaas@google.com>, <jgg@nvidia.com>, <saeedm@nvidia.com>
-CC:     <linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <kuba@kernel.org>, <leonro@nvidia.com>,
-        <kwankhede@nvidia.com>, <maorg@nvidia.com>,
-        Cornelia Huck <cohuck@redhat.com>
-References: <20211027095658.144468-1-yishaih@nvidia.com>
- <20211027095658.144468-8-yishaih@nvidia.com>
-From:   Max Gurtovoy <mgurtovoy@nvidia.com>
-In-Reply-To: <20211027095658.144468-8-yishaih@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.20.187.6]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a369b1a1-a7d6-492e-b850-08d9995ebfd4
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4830:
-X-Microsoft-Antispam-PRVS: <MN2PR12MB48309B299E4BC4A9E9A281ABDE859@MN2PR12MB4830.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2449;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: q3SZBUfgX0mWxj2vI/PdRmXhYQywICAvvE6dxHlTBqXYukQIPZ3GI6/nxWdQDt+LIUy0JpFThPWGk4qpCk+CMMFiIg95bIhAEiobPTYIBXB6x9yoEchVvorNIuLqk2fQuS5pVzECN4D6zLPbdFdz6BKiXjg7AR1v3KhqnRBhgxuovkRB6DdoAawAEpUB4d4HpREut/eF5+f+JItI80Wxj9YAZRL+H6pNO2Do/9LYe0hKgYwYzIo5JCILxk6WYzeAfqFJs9d7byZDGp6lijrQEOgs29rSe7RR8J1tXQ3z6CnhpNqgYtlqU+LSKqzPLmWULjPTxXsYdzofuKk+Yhk7nayWfDm7SSpfgNTbsvkdQk9V3UdJXNqXOUWePigX9Z+wvA1MBpnaE0QCzp6HMC4QSR/q1DOcOm7frTFWcMImAiiPHta/PjDpe2F9Lzmi5oZitFYUUIoyqznWo9EpPeXXTmLLCJU/Q7eJYnmyabXYUZR0p9/f/nV7c3xt4VomnYgIoLyiUv0gATIn9vH/Xhyn/kmamue9mRwKqyOrbz/R+cL6TVXH/FiBgK+H1ObbCCXB8YCjMLHF0VCEpnz3I6bg0p9iVu7pRKMGA0yccRZyPIcNFnwqdRt2dCf/mZDP+z3+KJVbQlV+ZNBs1OyeMoZ9aEPlWVSTtGLUFRRvzPoD1u8TCMzXjgbSPR9hO45OIv8jxnoAHXwvTxcj/9loEpwino2KeF1at4h94oPbgagGQJI=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(186003)(5660300002)(86362001)(53546011)(508600001)(16526019)(110136005)(70586007)(2906002)(31696002)(26005)(4326008)(8676002)(83380400001)(70206006)(31686004)(316002)(36906005)(426003)(54906003)(47076005)(336012)(36860700001)(7636003)(8936002)(36756003)(2616005)(356005)(82310400003)(16576012)(6636002)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Oct 2021 15:30:47.2261
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a369b1a1-a7d6-492e-b850-08d9995ebfd4
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT029.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4830
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211027152012.3393077-1-kuba@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Oct 27, 2021 at 08:20:12AM -0700, Jakub Kicinski wrote:
+> Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
+> of VLANs...") introduced a rbtree for faster Ethernet address look
+> up. To maintain netdev->dev_addr in this tree we need to make all
+> the writes to it go through appropriate helpers.
+> 
+> Even though the current code uses dev->addr_len the we can switch
+> to eth_hw_addr_set() instead of dev_addr_set(). The netdev is
+> always allocated by alloc_etherdev_mq() and there are at least two
+> places which assume Ethernet address:
+>  - the line below calling eth_hw_addr_random()
+>  - virtnet_set_mac_address() -> eth_commit_mac_addr_change()
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-On 10/27/2021 12:56 PM, Yishai Hadas wrote:
-> Add a macro for VFIO_DEVICE_STATE_ERROR to be used to set/check an error
-> state.
->
-> In addition, update existing macros that include _SAVING | _RESUMING to
-> use it.
->
-> Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
 > ---
->   include/uapi/linux/vfio.h | 8 ++++----
->   1 file changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> index 114ffcefe437..63ab0b9abd94 100644
-> --- a/include/uapi/linux/vfio.h
-> +++ b/include/uapi/linux/vfio.h
-> @@ -609,6 +609,8 @@ struct vfio_device_migration_info {
->   #define VFIO_DEVICE_STATE_RUNNING   (1 << 0)
->   #define VFIO_DEVICE_STATE_SAVING    (1 << 1)
->   #define VFIO_DEVICE_STATE_RESUMING  (1 << 2)
-> +#define VFIO_DEVICE_STATE_ERROR (VFIO_DEVICE_STATE_SAVING | \
-> +				 VFIO_DEVICE_STATE_RESUMING)
->   #define VFIO_DEVICE_STATE_MASK      (VFIO_DEVICE_STATE_RUNNING | \
->   				     VFIO_DEVICE_STATE_SAVING |  \
->   				     VFIO_DEVICE_STATE_RESUMING)
-> @@ -618,12 +620,10 @@ struct vfio_device_migration_info {
->   	(state & VFIO_DEVICE_STATE_MASK) == VFIO_DEVICE_STATE_RESUMING : 1)
->   
->   #define VFIO_DEVICE_STATE_IS_ERROR(state) \
-> -	((state & VFIO_DEVICE_STATE_MASK) == (VFIO_DEVICE_STATE_SAVING | \
-> -					      VFIO_DEVICE_STATE_RESUMING))
-> +	((state & VFIO_DEVICE_STATE_MASK) == (VFIO_DEVICE_STATE_ERROR))
->   
->   #define VFIO_DEVICE_STATE_SET_ERROR(state) \
-> -	((state & ~VFIO_DEVICE_STATE_MASK) | VFIO_DEVICE_STATE_SAVING | \
-> -					     VFIO_DEVICE_STATE_RESUMING)
-> +	((state & ~VFIO_DEVICE_STATE_MASK) | VFIO_DEVICE_STATE_ERROR)
->   
->   	__u32 reserved;
->   	__u64 pending_bytes;
-
-Looks good,
-
-Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-
+> v2: - actually switch to eth_hw_addr_set() not dev_addr_set()
+>     - resize the buffer to ETH_ALEN
+>     - pass ETH_ALEN instead of dev->dev_addr to virtio_cread_bytes()
+> 
+> CC: mst@redhat.com
+> CC: jasowang@redhat.com
+> CC: virtualization@lists.linux-foundation.org
+> ---
+>  drivers/net/virtio_net.c | 10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index c501b5974aee..cc79343cd220 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -3177,12 +3177,16 @@ static int virtnet_probe(struct virtio_device *vdev)
+>  	dev->max_mtu = MAX_MTU;
+>  
+>  	/* Configuration may specify what MAC to use.  Otherwise random. */
+> -	if (virtio_has_feature(vdev, VIRTIO_NET_F_MAC))
+> +	if (virtio_has_feature(vdev, VIRTIO_NET_F_MAC)) {
+> +		u8 addr[ETH_ALEN];
+> +
+>  		virtio_cread_bytes(vdev,
+>  				   offsetof(struct virtio_net_config, mac),
+> -				   dev->dev_addr, dev->addr_len);
+> -	else
+> +				   addr, ETH_ALEN);
+> +		eth_hw_addr_set(dev, addr);
+> +	} else {
+>  		eth_hw_addr_random(dev);
+> +	}
+>  
+>  	/* Set up our device-specific information */
+>  	vi = netdev_priv(dev);
+> -- 
+> 2.31.1
 
