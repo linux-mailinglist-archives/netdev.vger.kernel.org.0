@@ -2,111 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BA3343C6CF
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 11:49:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7296A43C6F1
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 11:56:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241278AbhJ0Jv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 05:51:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35894 "EHLO
+        id S234403AbhJ0J7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 05:59:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241281AbhJ0Jv6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 05:51:58 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62B24C061745
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 02:49:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=JvaH2SVw77ASHoVfBVxhPffjmweA4whlBL9/zPBmh+k=; b=AyIK9ki3pQQ34CtjzAbW5+Avqq
-        MeNYTQgGvja+43PhvsQsthNwhKEADXQ2waok8+JqHeed6dbq+sNmCRnyEbP5VB4tYnfEbOYocgCkq
-        8q14QqOZ38wZlltj+Czq/6IuVclujLnwXxA78KmZJnHjWH9xh76ks2/kJoJjUv/SWDccih5RcRhuY
-        J4/olxEzdCF5DWn0LdPbJd3JBMun6ox5MGN6kgMiyO3om2l8DkkzDt/mwGr03eqAHGah/7OaC7C3w
-        nKsmQIr5VEp2AF5Uu3U+zg3eH4K8ojtvOqzPWOOe6RLQ+zhslRP4pdlnlK3DVGPRvnD2Bk9ldexKh
-        FubhAimQ==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:34478 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1mffYo-0006Ft-D1; Wed, 27 Oct 2021 10:49:30 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1mffYn-001vqm-VV; Wed, 27 Oct 2021 10:49:30 +0100
-In-Reply-To: <YXkgdrSCEhvY2jLK@shell.armlinux.org.uk>
-References: <YXkgdrSCEhvY2jLK@shell.armlinux.org.uk>
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net-next 4/4] net: mvpp2: clean up mvpp2_phylink_validate()
+        with ESMTP id S234324AbhJ0J7D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 05:59:03 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE98CC061570
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 02:56:38 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id t5-20020a17090a4e4500b001a0a284fcc2so4677989pjl.2
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 02:56:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=yOIB1cM1n4AVjkajdRdBpAYqP2G0HC9nHfA5pv+kPpE=;
+        b=XWz7rcrEarXlrp6r98ecQDnkhLrq+CkCiJuiODmv0qTWWXJOwL4ud5taL7zCOKpWEg
+         +8C2N/PBxfbUYomNwg/naTCpw53tnWZCzl4k0GLNKre9e1Yrc90GnuwakUKLNEPGr6/k
+         /j3VqZXQxHZrH3oxiXCh2/vEUjGaj0WOVRSYvyXMsXrDGWm5YqIPTxmzCcw5ilCFgVrM
+         vlRThJMOne2ZBp1pvb82kNfMCLYcTJJMAt/OF0SAu1grlk9ZcyIU+1gfAJWjJ3dsoj+n
+         AK08sT7QQF8PcOTP/Y/AwmtE5MYuBI3KFGlvVLuJu0bqzCbIc6dwQYy2XJrgQZHtcom9
+         bPOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=yOIB1cM1n4AVjkajdRdBpAYqP2G0HC9nHfA5pv+kPpE=;
+        b=6m8vzR2FVBfJkcp/zlYoMWN+Q6RMzP8D3FaZo1TfP9L1NaOWR8WI+46y0s/oAw6pbC
+         r3/7Ld8dTOK7TKUmOAWtayDGhK8t/uC/c1fTjz4DFz9XQVB8+9JQeKC64wBIECNZcC8J
+         9HTpZpIDUFUS1MbnIgQwSkIEaJhya+bKErT2oiS/zFxMrz2VZjD584OfMKTQbMDn/cf3
+         MsSyd1dx/BKNBMdXjswtB9GRnzTZEw+JmEQrFqDQUmXMRQC33IVCYjalMQkWCJamsAGk
+         QljMSp89tlou+Nk4rBTkFWmi3oxTDV+NWd8H5w73EzsTbeJbccJqf2cGObJ8726vPzDr
+         Dilw==
+X-Gm-Message-State: AOAM531fWWW7F+ALLTqn7p6buBPDzP0lZjv0bs/rk/q87po3aRhaYav4
+        5n6rfIo67Vpp5f25d/blmG1MB1heC24zBB9zf2k=
+X-Google-Smtp-Source: ABdhPJxxr2hXCIOHE6JWc2orA5exwYcXPPL8K4Sik8uRiCEZL9QRJuYb2hfmhGsx0Ob8LoLFE3ofLc9Jkgz7bp7IgyA=
+X-Received: by 2002:a17:903:28d:b0:141:52ab:590e with SMTP id
+ j13-20020a170903028d00b0014152ab590emr8542890plr.18.1635328598088; Wed, 27
+ Oct 2021 02:56:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1mffYn-001vqm-VV@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Wed, 27 Oct 2021 10:49:29 +0100
+Received: by 2002:a05:6a10:fd8d:0:0:0:0 with HTTP; Wed, 27 Oct 2021 02:56:37
+ -0700 (PDT)
+Reply-To: justinseydou@gmail.com
+From:   Justin Seydou <whoknowsladyjay@gmail.com>
+Date:   Wed, 27 Oct 2021 10:56:37 +0100
+Message-ID: <CAMhEkO5hQo=_zGUd+OjzODcLwYzivmjbSFkagvS-G+zS-VNC=w@mail.gmail.com>
+Subject: Proposal
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-mvpp2_phylink_validate() no longer needs to check for
-PHY_INTERFACE_MODE_NA as phylink will walk the supported interface
-types to discover the link mode capabilities. Remove these checks.
+Dear friend,
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 17 +++++++----------
- 1 file changed, 7 insertions(+), 10 deletions(-)
+I am Mr. Justin Seydou. I have a mutually beneficial proposal of
+$35millionUSD I want to introduce to you. All documents to execute the
+transaction are valid and available.
+Kindly indicate your interest to enable me explain further.
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index d5904408e3a5..587def69a6f7 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -6280,14 +6280,12 @@ static void mvpp2_phylink_validate(struct phylink_config *config,
- 	switch (state->interface) {
- 	case PHY_INTERFACE_MODE_10GBASER:
- 	case PHY_INTERFACE_MODE_XAUI:
--	case PHY_INTERFACE_MODE_NA:
- 		if (mvpp2_port_supports_xlg(port)) {
- 			phylink_set_10g_modes(mask);
- 			phylink_set(mask, 10000baseKR_Full);
- 		}
--		if (state->interface != PHY_INTERFACE_MODE_NA)
--			break;
--		fallthrough;
-+		break;
-+
- 	case PHY_INTERFACE_MODE_RGMII:
- 	case PHY_INTERFACE_MODE_RGMII_ID:
- 	case PHY_INTERFACE_MODE_RGMII_RXID:
-@@ -6299,19 +6297,18 @@ static void mvpp2_phylink_validate(struct phylink_config *config,
- 		phylink_set(mask, 100baseT_Full);
- 		phylink_set(mask, 1000baseT_Full);
- 		phylink_set(mask, 1000baseX_Full);
--		if (state->interface != PHY_INTERFACE_MODE_NA)
--			break;
--		fallthrough;
-+		break;
-+
- 	case PHY_INTERFACE_MODE_1000BASEX:
- 		phylink_set(mask, 1000baseT_Full);
- 		phylink_set(mask, 1000baseX_Full);
--		if (state->interface != PHY_INTERFACE_MODE_NA)
--			break;
--		fallthrough;
-+		break;
-+
- 	case PHY_INTERFACE_MODE_2500BASEX:
- 		phylink_set(mask, 2500baseT_Full);
- 		phylink_set(mask, 2500baseX_Full);
- 		break;
-+
- 	default:
- 		goto empty_set;
- 	}
--- 
-2.30.2
-
+Justin Seydou.
