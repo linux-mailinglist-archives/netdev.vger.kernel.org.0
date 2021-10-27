@@ -2,83 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23DA743C8AF
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 13:34:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE09843C8DB
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 13:51:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241668AbhJ0LhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 07:37:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59926 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230336AbhJ0LhP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 07:37:15 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66A36C061745;
-        Wed, 27 Oct 2021 04:34:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=vkzTnRsFNQy28hg2qAojgnTTG6uRtg36mAzN67icHy0=; b=G1TJyFRuxR/e28VjSxIRUhSgSs
-        q1j+KIA+7XsorRJQpJXZzUSfguLLOaWeXFZ5ie0oJbBRziZ82XOiCXPs+C9CqmFyM38xiLWFhgK52
-        FcRlco+MIfTAMbDrN0ceMVzEiOBJJtOpxahtFepqFHzTxEymhfyppVGy4XTsDOOdVWtDjtm02hl8h
-        b8dRQzHwFk/yGz1d09hqIXtwiSw3hOXlHsNlf+rNctWEGhVsQMNWe2AxC72ft/Pjy/0T9aSzk3JrY
-        cCCF0VsFfnO7hvzzlKG3flhcC76Jzq2Vot47swa8hZnR/AvXpImWwa4l66QlF0AD4h/iPyeNM+dmp
-        N1weyPCA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55340)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mfhCe-0006Kr-Gs; Wed, 27 Oct 2021 12:34:44 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mfhCc-0007gl-Un; Wed, 27 Oct 2021 12:34:42 +0100
-Date:   Wed, 27 Oct 2021 12:34:42 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build warning after merge of the net-next tree
-Message-ID: <YXk5Uii+pNPaDiSR@shell.armlinux.org.uk>
-References: <20211027220721.5a941815@canb.auug.org.au>
+        id S241727AbhJ0LxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 07:53:22 -0400
+Received: from foss.arm.com ([217.140.110.172]:42440 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240073AbhJ0LxR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Oct 2021 07:53:17 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B9AD31FB;
+        Wed, 27 Oct 2021 04:50:51 -0700 (PDT)
+Received: from C02TD0UTHF1T.local (unknown [10.57.72.240])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 51AF43F73D;
+        Wed, 27 Oct 2021 04:50:47 -0700 (PDT)
+Date:   Wed, 27 Oct 2021 12:50:43 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Tong Tiangen <tongtiangen@huawei.com>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Palmer Dabbelt <palmerdabbelt@google.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next,v3] riscv, bpf: Add BPF exception tables
+Message-ID: <20211027115043.GB54628@C02TD0UTHF1T.local>
+References: <20211027111822.3801679-1-tongtiangen@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211027220721.5a941815@canb.auug.org.au>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <20211027111822.3801679-1-tongtiangen@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 27, 2021 at 10:07:21PM +1100, Stephen Rothwell wrote:
-> Hi all,
+On Wed, Oct 27, 2021 at 11:18:22AM +0000, Tong Tiangen wrote:
+> When a tracing BPF program attempts to read memory without using the
+> bpf_probe_read() helper, the verifier marks the load instruction with
+> the BPF_PROBE_MEM flag. Since the riscv JIT does not currently recognize
+> this flag it falls back to the interpreter.
 > 
-> After merging the net-next tree, today's linux-next build (htmldocs)
-> produced this warning:
+> Add support for BPF_PROBE_MEM, by appending an exception table to the
+> BPF program. If the load instruction causes a data abort, the fixup
+> infrastructure finds the exception table and fixes up the fault, by
+> clearing the destination register and jumping over the faulting
+> instruction.
 > 
-> include/linux/phylink.h:82: warning: Function parameter or member 'DECLARE_PHY_INTERFACE_MASK(supported_interfaces' not described in 'phylink_config'
+> A more generic solution would add a "handler" field to the table entry,
+> like on x86 and s390.
 > 
-> Introduced by commit
-> 
->   38c310eb46f5 ("net: phylink: add MAC phy_interface_t bitmap")
-> 
-> Or maybe this is a problem with the tool ...
+> The same issue in ARM64 is fixed in:
+> commit 800834285361 ("bpf, arm64: Add BPF exception tables")
 
-Hmm. Looks like it is a tooling problem.
+> +#ifdef CONFIG_BPF_JIT
+> +int rv_bpf_fixup_exception(const struct exception_table_entry *ex, struct pt_regs *regs);
+> +#endif
+> +
+>  int fixup_exception(struct pt_regs *regs)
+>  {
+>  	const struct exception_table_entry *fixup;
+>  
+>  	fixup = search_exception_tables(regs->epc);
+> -	if (fixup) {
+> -		regs->epc = fixup->fixup;
+> -		return 1;
+> -	}
+> -	return 0;
+> +	if (!fixup)
+> +		return 0;
+> +
+> +#ifdef CONFIG_BPF_JIT
+> +	if (regs->epc >= BPF_JIT_REGION_START && regs->epc < BPF_JIT_REGION_END)
+> +		return rv_bpf_fixup_exception(fixup, regs);
+> +#endif
+> +
+> +	regs->epc = fixup->fixup;
+> +	return 1;
+>  }
 
- * @supported_interfaces: bitmap describing which PHY_INTERFACE_MODE_xxx
- *                        are supported by the MAC/PCS.
+As a heads-up, on the extable front, both arm64 and x86 are moving to
+having an enumerated "type" field to select the handler:
 
-        DECLARE_PHY_INTERFACE_MASK(supported_interfaces);
+x86:
 
-I'm guessing the tool doesn't use the preprocessed source. I'm not sure
-what the solution to this would be.
+  https://lore.kernel.org/lkml/20210908132525.211958725@linutronix.de/
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+arm64:
+
+  https://lore.kernel.org/linux-arm-kernel/20211019160219.5202-11-mark.rutland@arm.com/
+
+... and going forwards, riscv might want to do likewise.
+
+Thanks,
+Mark.
