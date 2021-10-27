@@ -2,63 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6992E43CF95
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 19:19:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CECF143CF9B
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 19:23:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243235AbhJ0RVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 13:21:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55268 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243231AbhJ0RVt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 13:21:49 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4680C061570
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 10:19:23 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id r12so13480548edt.6
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 10:19:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=NxQiS3QLr5YWVGKlaTCnk1o6HuCeNtiO7lsFo9AwLLc=;
-        b=bCO8x7DbHocGuL6L9DBT1YpnnuCqbjpIXZr5zUChabikdnwdBgkLRfCFJQeBP7gCk0
-         6V+FrgCLsMq5Q7R7ftRrnXnda6fOmv2VuTSGYj7yYlcU7mYeseE1dZyn1MG4/F9HHVq4
-         g7UfQeLU1xE0wS2YXPwnQJkx+6i0C4c2WDHCzsFu+5ZWlydULlNnwOLvpiwl5lqgwY2B
-         Dw6OKCBwELuMbsmHVSNuJYnyijJN5y00w0q/UnWANadwkRp2ohAVvR2vi3wkO+76oqzA
-         QJYLuCBcfR9DFzuYn1I4eJbTs981s+SWpxilp1pxgHM+5A7MK8FOAouuRX6iB58w0c0s
-         gJ2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=NxQiS3QLr5YWVGKlaTCnk1o6HuCeNtiO7lsFo9AwLLc=;
-        b=7x0CqeJgywVidq2VlcNg64JJXgmBL25poP5xFYjsFJMHywhKmyViPFu7QRXvS6uilW
-         pVbOvbwsSjTtUFEABs3O/Yh2VV9/YR5C6bD8sQo+5woQG5Z8icWL5wDymR4W6xi7Bpx8
-         Gv03s6FA50pBWuEqZvHPS10dA5VU/WkbzF531u/3oKll9PnCncH6nPp6OEsqA9voE65T
-         xnp1jYfLUL7a6IhRqsHHWkuxuGOG8147Qf7oTJrnJ6NnNEsZqTAJ5LEXF6n1SVWwBI2s
-         dxNt0TtuW6gAjKGQ32nMRz+Ep4lTb+ygJW17D5qKBRFoGt/9dCITFUulpBjLe6L2F1b1
-         X65A==
-X-Gm-Message-State: AOAM530q9AWW8T63BkQ8rukQuRK6vpf9jSJp8fsyzcT4StUet2kxjhMS
-        D5MrAJYAZ7MVb3SYRYRjcj+StRIaG5YqTB7hpDA=
-X-Google-Smtp-Source: ABdhPJwJrvKrdIcL4417ZJuAxg2W+7zXGfPdyHnvYnjrbiT4+yicyM4o0veoUizzl4c4W/+fwbwa3Ux4GzNg07BA4tc=
-X-Received: by 2002:a17:906:c20e:: with SMTP id d14mr40353496ejz.207.1635355162249;
- Wed, 27 Oct 2021 10:19:22 -0700 (PDT)
+        id S237637AbhJ0RZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 13:25:50 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:34014 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232329AbhJ0RZt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Oct 2021 13:25:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=xYqWqnNTYblorxJSKWICYNXuprkqD63Vt4PUk5Lzeb8=; b=AMVbIQmqzSTQvatVfYwNEWu09n
+        Jgp2AnaAirNSQIxo0sjtKDPHBFV2osLPss77sgQjhAoJFrnqEWz/dTMDxIp/MYP+8adCg5ezAygNY
+        ff2rfKXC04DoiVdD7pnT7V8Uy7CZAb7OeAUHMpL8+nR0GJYDvrwa00lX/0lRUCTQnNpI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mfmdv-00Bv5N-EP; Wed, 27 Oct 2021 19:23:15 +0200
+Date:   Wed, 27 Oct 2021 19:23:15 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, wangjie125@huawei.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lipeng321@huawei.com, chenhao288@hisilicon.com
+Subject: Re: [PATCH net 1/7] net: hns3: fix pause config problem after
+ autoneg disabled
+Message-ID: <YXmLA4AbY83UV00f@lunn.ch>
+References: <20211027121149.45897-1-huangguangbin2@huawei.com>
+ <20211027121149.45897-2-huangguangbin2@huawei.com>
 MIME-Version: 1.0
-Received: by 2002:a17:907:3a14:0:0:0:0 with HTTP; Wed, 27 Oct 2021 10:19:21
- -0700 (PDT)
-Reply-To: alimaanwari48@gmail.com
-From:   Alima Anwari <franmerii42@gmail.com>
-Date:   Wed, 27 Oct 2021 18:19:21 +0100
-Message-ID: <CAOoRhhGKQsjNnKSYBvKSyEasyiMqpVi3KVX+ZbObVjBis7JtWg@mail.gmail.com>
-Subject: Good day
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211027121149.45897-2-huangguangbin2@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Hello dear friend, i'm Alima Anwari from Afghanistan, please reply
-back to me i have urgent issue to share with you . I will be waiting
-for your response.
-Thanks.
-Alima.
+On Wed, Oct 27, 2021 at 08:11:43PM +0800, Guangbin Huang wrote:
+
+The semantics are not too well defined here, the ethtool documentation
+is not too clear. Here is how i interpret it.
+
+> If a TP port is configured by follow steps:
+> 1.ethtool -s ethx autoneg off speed 100 duplex full
+
+So you turn general autoneg off
+
+> 2.ethtool -A ethx rx on tx on
+
+You did not use autoneg off here. Pause autoneg is separate to general
+autoneg. So pause autoneg is still enabled at this point. That means
+you should not directly configure the MAC with the pause
+configuration, you only do that when pause autoneg is off. You can
+consider this as setting how you want pause to be negotiated once
+general autoneg is re-enabled.
+
+> 3.ethtool -s ethx autoneg on(rx&tx negotiated pause results are off)
+
+So you reenable general autoneg. As part of that general autoneg,
+pause will re-renegotiated, and it should you the preferences you set
+in 2, that rx and tx pause can be used. What is actually used depends
+on the link peer. The link_adjust callback from phylib tells you how
+to program the MAC.
+
+> 4.ethtool -s ethx autoneg off speed 100 duplex full
+
+So you turn general autoneg off again. It is unclear how you are
+supposed to program the MAC, but i guess most systems keep with the
+result from the last autoneg.
+
+Looking at your patch, there are suspicious calls to phy_syspend and
+phy_resume. They don't look correct at all, and i'm not aware of any
+other MAC driver doing this. Now, i know the behaviour is not well
+defined here, but i'm not sure your interpretation is valid and how
+others interpret it.
+
+       Andrew
