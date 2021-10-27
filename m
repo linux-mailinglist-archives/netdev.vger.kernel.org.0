@@ -2,206 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 285E643CB52
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 15:57:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A338443CB57
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 15:58:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242339AbhJ0N7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 09:59:53 -0400
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:36496 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231838AbhJ0N7p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 09:59:45 -0400
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19RD9TUg016081;
-        Wed, 27 Oct 2021 15:56:41 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : from : to
- : cc : references : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=SonikwPLivf5Wf37m9QGw9Dbl0nfvPwQE843HNWkcTc=;
- b=WzTh3e1T+lbbR0asJHNFou5wy8ymDy2S+R6rPJyrqAzstKAMap8J47xdHxMl2RgiS0FA
- GmPrGi2x3OeVUYtOCqe6mJeZ8Qnqgr3AqxOk450p67gxTAT52rOaRO+ShqQ7sCyKWJnI
- akk/0WBtQxfWvGvmNBBFHNJxGj2edblZplh16L99+Icve2UKQ3u0Y7rBt6zEBSDWSZG4
- hjGa2jeJcZtnU6/w30poOeFwKUFpEn8VYHXLg/vCxFZY0lY9ng2HR45n3c8vhiJwnllz
- Jwmg2Jsob0VeZLHlpEugPKm678F0Rb6n0r6pPAbgzUx5bSgYL/7OoJXo5clDxcl3kg2U lg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 3by38r22bq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Oct 2021 15:56:41 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 5734910002A;
-        Wed, 27 Oct 2021 15:56:39 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3742D22D168;
-        Wed, 27 Oct 2021 15:56:39 +0200 (CEST)
-Received: from lmecxl0573.lme.st.com (10.75.127.50) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 27 Oct
- 2021 15:56:35 +0200
-Subject: Re: dt-bindings: treewide: Update @st.com email address to
- @foss.st.com
-From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
-To:     Marc Zyngier <maz@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        <joe@perches.com>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        maxime coquelin <mcoquelin.stm32@gmail.com>,
-        alexandre torgue <alexandre.torgue@foss.st.com>,
-        michael turquette <mturquette@baylibre.com>,
-        stephen boyd <sboyd@kernel.org>,
-        herbert xu <herbert@gondor.apana.org.au>,
-        "david s . miller" <davem@davemloft.net>,
-        david airlie <airlied@linux.ie>,
-        daniel vetter <daniel@ffwll.ch>,
-        thierry reding <thierry.reding@gmail.com>,
-        sam ravnborg <sam@ravnborg.org>,
-        yannick fertre <yannick.fertre@foss.st.com>,
-        "philippe cornu" <philippe.cornu@foss.st.com>,
-        benjamin gaignard <benjamin.gaignard@linaro.org>,
-        vinod koul <vkoul@kernel.org>,
-        ohad ben-cohen <ohad@wizery.com>,
-        bjorn andersson <bjorn.andersson@linaro.org>,
-        baolin wang <baolin.wang7@gmail.com>,
-        jonathan cameron <jic23@kernel.org>,
-        "lars-peter clausen" <lars@metafoo.de>,
-        olivier moysan <olivier.moysan@foss.st.com>,
-        arnaud pouliquen <arnaud.pouliquen@foss.st.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        "Mauro Carvalho Chehab" <mchehab@kernel.org>,
-        Hugues Fruchet <hugues.fruchet@foss.st.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        "Richard Weinberger" <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Matt Mackall <mpm@selenic.com>,
-        "Alessandro Zummo" <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        "Ahmad Fatoum" <a.fatoum@pengutronix.de>,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        dillon min <dillon.minfei@gmail.com>,
-        Marek Vasut <marex@denx.de>,
-        "Laurent Pinchart" <laurent.pinchart@ideasonboard.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Fabien Dessenne <fabien.dessenne@foss.st.com>,
-        Christophe Roullier <christophe.roullier@foss.st.com>,
-        Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
-        Lionel Debieve <lionel.debieve@foss.st.com>,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Pierre-Yves MORDRET <pierre-yves.mordret@foss.st.com>,
-        Ludovic Barre <ludovic.barre@foss.st.com>,
-        Christophe Kerello <christophe.kerello@foss.st.com>,
-        pascal Paillet <p.paillet@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        "Jose Abreu" <joabreu@synopsys.com>,
-        Le Ray <erwan.leray@foss.st.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-clk@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <dmaengine@vger.kernel.org>,
-        <linux-remoteproc@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <linux-media@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
-        <netdev@vger.kernel.org>, <linux-phy@lists.infradead.org>,
-        <linux-gpio@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <linux-watchdog@vger.kernel.org>
-References: <20211020065000.21312-1-patrice.chotard@foss.st.com>
- <22fb6f19-21eb-dcb5-fa31-bb243d4a7eaf@canonical.com>
- <878ryoc4dc.wl-maz@kernel.org>
- <82492eb2-5a5e-39a2-a058-5e2ba75323e0@foss.st.com>
-Message-ID: <865a4055-5c2f-0793-bdce-9f04eac167d2@foss.st.com>
-Date:   Wed, 27 Oct 2021 15:56:35 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S242334AbhJ0OAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 10:00:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36656 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242301AbhJ0OAm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 10:00:42 -0400
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA3BC061570;
+        Wed, 27 Oct 2021 06:58:16 -0700 (PDT)
+Received: by mail-ot1-x32d.google.com with SMTP id b4-20020a9d7544000000b00552ab826e3aso3714385otl.4;
+        Wed, 27 Oct 2021 06:58:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NpjjYq+i+w+/T84lJ4rWde13BLSANx5QtAmlVDtp0/w=;
+        b=KIk682iOWFIRhCa79fS/XyH1smXdI0tMrxiVQN4Px9VwDRFcNtUUaRyFtpkDRCmEfo
+         WSeSUQ6aVN6gFYMefnH/LEA7iEhe7oDSKqGPc3+hDLDFmoSinKiExRGBpEuj/1VLblYK
+         1m/Nx0wbttD1CfKAqtWpjg5Rt6/qngWG7aUaZLhvn3mvZ2/LQjYoeY7RiSZLuvyctPZs
+         s/PgwWh5mNEbQ96pVd+Of/aw+FqYot+7CT8/Y7xCOwNQLwiN95n7pNRR7J3lb5eQNKu0
+         rfj9YqDH6DNDAQPcztjy3bTQM6SV36+xUIJu0yLqUBUXgrUtkRYlIvK3hkfeGgbvk40L
+         z+fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NpjjYq+i+w+/T84lJ4rWde13BLSANx5QtAmlVDtp0/w=;
+        b=FMdvO9LhqQGkfRb1FUL7Z94Mc6fp8wLuJDLG79L33GpjetNHxfLmFaimXBOGTU90gf
+         d9MXX6cTl0/ZG93I2/2oI0si1SsBsJOrzTP+qNjfAgvm5wpmc7eih/2p8wLxPGDJTxjb
+         h8nQpzDTp2VKATmYjQmTnBbNC3qliPvWR2za6HnjwJSxpf312nW8sq947689Z/s515tT
+         pfXxHPSINDPiUS9fl6MWu7KdRYq8tqPsogz5VYiaA77k1+YN/d8Ga1WVejwE67qVAdKr
+         ik0MKGAAKPXDBkfnkqm7Yw0nda4TJ3sqQjZ6dsAK+kHiTjdNe28hJA1ithVPApQ/1UlQ
+         UogA==
+X-Gm-Message-State: AOAM532lK3d6iHATETF7eJjpvuznZWg6hMfE9DoMX+sA7snP4Ddyi6rQ
+        1oPtNpI1lGTGJZrGfkGVbVGcoQsltJXeCs0nJlM=
+X-Google-Smtp-Source: ABdhPJzPGTVxdzIIbjaUReyHnDqYO/motk05Esc1zeCYaQW5gaGbUsLX1BMaQFgaefnGFcRlr2Lsinx8x1kcNWmTALM=
+X-Received: by 2002:a05:6830:2647:: with SMTP id f7mr24666156otu.124.1635343096198;
+ Wed, 27 Oct 2021 06:58:16 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <82492eb2-5a5e-39a2-a058-5e2ba75323e0@foss.st.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.75.127.50]
-X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-10-27_04,2021-10-26_01,2020-04-07_01
+References: <20211026131859.59114-1-kerneljasonxing@gmail.com>
+ <CAL+tcoC487AF=HAiNVhKO6kA0yhjT+hmp5DQSdaGBnJEtGgqPA@mail.gmail.com>
+ <CAL+tcoAD+iiEFbvMnaHjg_-42_r7ukxDt8CveYW7pE4arcdKsg@mail.gmail.com>
+ <CAL+tcoAUwEx3ZJ5ysu_+-1eYfuL82JoV0fk7305dSOSo6J80-w@mail.gmail.com>
+ <31e181c7-7268-877a-f061-cdea06c0459e@huawei.com> <CAL+tcoB=zxnZTSnF60vy=wp9YcVxVjshZ87HUZhR4vU_U6Vq7Q@mail.gmail.com>
+In-Reply-To: <CAL+tcoB=zxnZTSnF60vy=wp9YcVxVjshZ87HUZhR4vU_U6Vq7Q@mail.gmail.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Wed, 27 Oct 2021 21:57:40 +0800
+Message-ID: <CAL+tcoBQJ=T7g7Z4j9a1OogonOjiyr_kik8SUwtAH7Gu=b0auQ@mail.gmail.com>
+Subject: Re: [PATCH net] net: gro: set the last skb->next to NULL when it get merged
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     David Miller <davem@davemloft.net>, kuba@kernel.org,
+        alobakin@pm.me, jonathan.lemon@gmail.com,
+        Willem de Bruijn <willemb@google.com>, pabeni@redhat.com,
+        vvs@virtuozzo.com, cong.wang@bytedance.com,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jason Xing <xingwanli@kuaishou.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc
+On Wed, Oct 27, 2021 at 8:54 PM Jason Xing <kerneljasonxing@gmail.com> wrote:
+>
+> On Wed, Oct 27, 2021 at 8:40 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+> >
+> > On 2021/10/27 16:56, Jason Xing wrote:
+> > > On Wed, Oct 27, 2021 at 4:07 PM Jason Xing <kerneljasonxing@gmail.com> wrote:
+> > >>
+> > >> On Wed, Oct 27, 2021 at 3:23 PM Jason Xing <kerneljasonxing@gmail.com> wrote:
+> > >>>
+> > >>> On Tue, Oct 26, 2021 at 9:19 PM <kerneljasonxing@gmail.com> wrote:
+> > >>>>
+> > >>>> From: Jason Xing <xingwanli@kuaishou.com>
+> > >>>>
+> > >>>> Setting the @next of the last skb to NULL to prevent the panic in future
+> > >>>> when someone does something to the last of the gro list but its @next is
+> > >>>> invalid.
+> > >>>>
+> > >>>> For example, without the fix (commit: ece23711dd95), a panic could happen
+> > >>>> with the clsact loaded when skb is redirected and then validated in
+> > >>>> validate_xmit_skb_list() which could access the error addr of the @next
+> > >>>> of the last skb. Thus, "general protection fault" would appear after that.
+> > >>>>
+> > >>>> Signed-off-by: Jason Xing <xingwanli@kuaishou.com>
+> > >>>> ---
+> > >>>>  net/core/skbuff.c | 1 +
+> > >>>>  1 file changed, 1 insertion(+)
+> > >>>>
+> > >>>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > >>>> index 2170bea..7b248f1 100644
+> > >>>> --- a/net/core/skbuff.c
+> > >>>> +++ b/net/core/skbuff.c
+> > >>>> @@ -4396,6 +4396,7 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
+> > >>>>                 skb_shinfo(p)->frag_list = skb;
+> > >>>>         else
+> > >>>>                 NAPI_GRO_CB(p)->last->next = skb;
+> > >>>> +       skb->next = NULL;
+> > >>>>         NAPI_GRO_CB(p)->last = skb;
+> > >>>
+> > >>> Besides, I'm a little bit confused that this operation inserts the
+> > >>> newest skb into the tail of the flow, so the tail of flow is the
+> > >>> newest, head oldest. The patch (commit: 600adc18) introduces the flush
+> > >>> of the oldest when the flow is full to lower the latency, but actually
+> > >>> it fetches the tail of the flow. Do I get something wrong here? I feel
+> > >>
+> > >> I have to update this part. The commit 600adc18 evicts and flushes the
+> > >> oldest flow. But for the current kernel, when
+> > >> "napi->gro_hash[hash].count >= MAX_GRO_SKBS" happens, the
+> > >> gro_flush_oldest() flushes the oldest skb of one certain flow,
+> > >> actually it is the newest skb because it is at the end of the list.
+> >
+> > it seems the below is more matched with the gro_flush_oldest() instead
+> > of the above code block:
+> > https://elixir.bootlin.com/linux/v5.15-rc3/source/net/core/dev.c#L6118
+> >
+>
+> What you said is the @skb->list but not the list between skbs which is
+> connected by skb->next when the new incoming skb needs to get merged.
+> The @skb->list->next/prev is not the same as @skb->next.
+>
+> > >
+> > > I just submitted another patch to explain how it happens, please help
+> > > me review both patches.
+> > >
+> > > Link: https://lore.kernel.org/lkml/20211027084944.4508-1-kerneljasonxing@gmail.com/
+> > >
 
-+Joe Perches
+Emm, I think you're right, Yunsheng. The gro_flush_oldest() fetches
+the list of @skb->list.
+Do you think the tail of skb's next pointer should be set to NULL?
 
-On 10/27/21 8:11 AM, Patrice CHOTARD wrote:
-> Hi Marc
-> 
-> On 10/20/21 1:39 PM, Marc Zyngier wrote:
->> On Wed, 20 Oct 2021 08:45:02 +0100,
->> Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> wrote:
->>>
->>> On 20/10/2021 08:50, patrice.chotard@foss.st.com wrote:
->>>> From: Patrice Chotard <patrice.chotard@foss.st.com>
->>>>
->>>> Not all @st.com email address are concerned, only people who have
->>>> a specific @foss.st.com email will see their entry updated.
->>>> For some people, who left the company, remove their email.
->>>>
->>>
->>> Please split simple address change from maintainer updates (removal,
->>> addition).
->>>
->>> Also would be nice to see here explained *why* are you doing this.
->>
->> And why this can't be done with a single update to .mailmap, like
->> anyone else does.
-> 
-> Thanks for the tips, yes, it will be simpler.
-> 
-> Thanks
-> Patrice
-> 
->>
->> 	M.
->>
+Thanks,
+Jason
 
-I made a try by updating .mailmap with adding a new entry with my @foss.st.com email :
-
- Pali Rohár <pali@kernel.org> <pali.rohar@gmail.com>
- Paolo 'Blaisorblade' Giarrusso <blaisorblade@yahoo.it>
-+Patrice Chotard <patrice.chotard@foss.st.com> <patrice.chotard@st.com>
- Patrick Mochel <mochel@digitalimplant.org>
- Paul Burton <paulburton@kernel.org> <paul.burton@imgtec.com>
-
-But when running ./scripts/get_maintainer.pl Documentation/devicetree/bindings/arm/sti.yaml, by old email is still displayed
-
-Rob Herring <robh+dt@kernel.org> (maintainer:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS)
-Patrice Chotard <patrice.chotard@st.com> (in file)
-devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS)
-linux-kernel@vger.kernel.org (open list)
-
-By default, the get_maintainer.pl script is using .mailmap file ($email_use_mailmap = 1).
-
-It seems there is an issue with get_maintainer.pl and maintainer name/e-mail found in yaml file ?
-
-Thanks
-Patrice
+> > > Thanks again,
+> > > Jason
+> > >
+> > >>
+> > >>> it is really odd.
+> > >>>
+> > >>> Thanks,
+> > >>> Jason
+> > >>>
+> > >>>>         __skb_header_release(skb);
+> > >>>>         lp = p;
+> > >>>> --
+> > >>>> 1.8.3.1
+> > >>>>
+> > > .
+> > >
