@@ -2,76 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B44D43C2C4
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 08:16:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61ECC43C2D1
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 08:19:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232742AbhJ0GTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 02:19:11 -0400
-Received: from out2.migadu.com ([188.165.223.204]:47327 "EHLO out2.migadu.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229887AbhJ0GTJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Oct 2021 02:19:09 -0400
-Message-ID: <a8dfcb9f-8d06-a240-c532-dad0ed724ecb@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1635315403;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ga70GwRUJrfAIkVrc4391j0HrqGrUqS+1GzD0PsqvcE=;
-        b=sBi8QByIKGJ/JufW8ixAMJHVIh9ir8bTqt9meFxrurnjVvRusWsqGdJejMbRVBibgG4zVl
-        PAoFlU+NBvDgMLYoS+a2yVSfXGZVK6EuSrvGECtaLtTJrduKnPEpVdIaBQgcvogKI/HeQ1
-        p66mudfY75qSAoYjkjb5KRSB/Rvy+Io=
-Date:   Wed, 27 Oct 2021 09:16:41 +0300
+        id S238384AbhJ0GVp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 02:21:45 -0400
+Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:40582 "EHLO
+        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238484AbhJ0GVk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 02:21:40 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0Utr.kIF_1635315553;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Utr.kIF_1635315553)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 27 Oct 2021 14:19:14 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 0/3] virtio support cache indirect desc
+Date:   Wed, 27 Oct 2021 14:19:10 +0800
+Message-Id: <20211027061913.76276-1-xuanzhuo@linux.alibaba.com>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
-Subject: Re: [net-next 10/14] net/mlx5: Let user configure io_eq_size param
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Jiri Pirko <jiri@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>,
-        Shay Drory <shayd@nvidia.com>, Parav Pandit <parav@nvidia.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20211025205431.365080-1-saeed@kernel.org>
- <20211025205431.365080-11-saeed@kernel.org>
- <20211026080535.1793e18c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <91f1f7126508db9687e4a0754b5a6d1696d6994c.camel@nvidia.com>
- <20211026101635.7fc1097d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Gal Pressman <gal.pressman@linux.dev>
-In-Reply-To: <20211026101635.7fc1097d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: gal.pressman@linux.dev
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26/10/2021 20:16, Jakub Kicinski wrote:
-> On Tue, 26 Oct 2021 15:54:28 +0000 Saeed Mahameed wrote:
->> On Tue, 2021-10-26 at 08:05 -0700, Jakub Kicinski wrote:
->>> On Mon, 25 Oct 2021 13:54:27 -0700 Saeed Mahameed wrote:  
->>>> From: Shay Drory <shayd@nvidia.com>
->>>>
->>>> Currently, each I/O EQ is taking 128KB of memory. This size
->>>> is not needed in all use cases, and is critical with large scale.
->>>> Hence, allow user to configure the size of I/O EQs.
->>>>
->>>> For example, to reduce I/O EQ size to 64, execute:
->>>> $ devlink resource set pci/0000:00:0b.0 path /io_eq_size/ size 64
->>>> $ devlink dev reload pci/0000:00:0b.0  
->>> This sort of config is needed by more drivers,
->>> we need a standard way of configuring this.
->> We had a debate internally about the same thing, Jiri and I thought
->> that EQ might be a ConnectX only thing (maybe some other vendors have
->> it) but it is not really popular
-> I thought it's a RDMA thing. At least according to grep there's 
-> a handful of non-MLX drivers which have eqs. Are these not actual
-> event queues? (huawei/hinic, ibm/ehea, microsoft/mana, qlogic/qed)
+If the VIRTIO_RING_F_INDIRECT_DESC negotiation succeeds, and the number
+of sgs used for sending packets is greater than 1. We must constantly
+call __kmalloc/kfree to allocate/release desc.
+
+In the case of extremely fast package delivery, the overhead cannot be
+ignored:
+
+  27.46%  [kernel]  [k] virtqueue_add
+  16.66%  [kernel]  [k] detach_buf_split
+  16.51%  [kernel]  [k] virtnet_xsk_xmit
+  14.04%  [kernel]  [k] virtqueue_add_outbuf
+   5.18%  [kernel]  [k] __kmalloc
+   4.08%  [kernel]  [k] kfree
+   2.80%  [kernel]  [k] virtqueue_get_buf_ctx
+   2.22%  [kernel]  [k] xsk_tx_peek_desc
+   2.08%  [kernel]  [k] memset_erms
+   0.83%  [kernel]  [k] virtqueue_kick_prepare
+   0.76%  [kernel]  [k] virtnet_xsk_run
+   0.62%  [kernel]  [k] __free_old_xmit_ptr
+   0.60%  [kernel]  [k] vring_map_one_sg
+   0.53%  [kernel]  [k] native_apic_mem_write
+   0.46%  [kernel]  [k] sg_next
+   0.43%  [kernel]  [k] sg_init_table
+   0.41%  [kernel]  [k] kmalloc_slab
+
+This patch adds a cache function to virtio to cache these allocated indirect
+desc instead of constantly allocating and releasing desc.
 
 
-These are indeed event queues in RDMA, but it's more of an
-implementation detail in each driver, there's no EQ object definition in
-the IB spec AFAIK.
+Xuan Zhuo (3):
+  virtio: cache indirect desc for split
+  virtio: cache indirect desc for packed
+  virtio-net: enable virtio indirect cache
+
+ drivers/net/virtio_net.c     |   4 ++
+ drivers/virtio/virtio.c      |   6 ++
+ drivers/virtio/virtio_ring.c | 120 ++++++++++++++++++++++++++++++-----
+ include/linux/virtio.h       |  10 +++
+ 4 files changed, 123 insertions(+), 17 deletions(-)
+
+--
+2.31.0
 
