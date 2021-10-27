@@ -2,82 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0170643C46B
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 09:54:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2875343C48D
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 10:01:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240658AbhJ0H4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 03:56:42 -0400
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:42755 "EHLO
-        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239074AbhJ0H4l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 03:56:41 -0400
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 14B255803DF;
-        Wed, 27 Oct 2021 03:54:16 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute6.internal (MEProxy); Wed, 27 Oct 2021 03:54:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=+B4yri
-        aR2DbbL2Gg5nDQDVPp+o+z4xOZKJ1vAQ99MHA=; b=FfaZjuDYlneHbi3Gvt7klr
-        4ymRCQyHeQwA9Sk808mlGadPtm1s/PEoiFivLRE3ZkCyoFDV6w5KdVfSq8oKfQHz
-        Lo51RxFPEPkuGK8QoNqR9TWGPS3Jif/zwcY3B5sRJzVuCiWFOiiewdR7qiHeBKLs
-        WHshN9dvae076LQWED9iomyasvYkYww+Jwr54LSajSlYbxoYl8X86Y9894MHQrei
-        8RvWlc+z053euEjGarhtDwNy9JuCniibG8ZCgoxVqXyXmWtWWc/bYNSdK588jfzK
-        O8PPmzW8u08KKEKXqfoE9TEomU99l4SugmJtCKWewF5UjT+FbElm4fhQwheefN3w
-        ==
-X-ME-Sender: <xms:pwV5YXwHQZwuyPwFBWcJmMHTxb5Yhmxaup-W02OZQxEvEHJ7DD2Lpw>
-    <xme:pwV5YfSzr6qrNwTFtB5mQX8qaUubGiou1WKX4Zp8d4knSdAq1lmG1CA5eDGr10PfY
-    M3LdC4ma2aJd-I>
-X-ME-Received: <xmr:pwV5YRUvzfweSPNjhkPNBhRE5bZtG6wC7RK788tprYSHRTcKbNBOXwGuFg2anSQqoof3YISR7lJizHoYA9JdYMNQCXAu2g>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvdefledguddukecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
-    leetnecuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:pwV5YRhW6d3ufpnhrD7tA-O8lKhZOLjvc6IVU38FtBk9ELZJ_rS8fA>
-    <xmx:pwV5YZD8FoqxG-xGmcNpNnvWk2p-NnzioIkQtWTA3tXfBGVed21mhA>
-    <xmx:pwV5YaKFWajmMu8SUgnDBRi8t1nR_x-oAQdnM5YeU5Z0l4_A8p8MKQ>
-    <xmx:qAV5Ydss4EqTe_zswPksJgosedCVKVZ4Ol_Qwnvfw9CrYEOo01V23g>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 27 Oct 2021 03:54:15 -0400 (EDT)
-Date:   Wed, 27 Oct 2021 10:54:11 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jiri Pirko <jiri@nvidia.com>
-Subject: Re: [PATCH net-next 4/8] net: bridge: rename br_fdb_insert to
- br_fdb_add_local
-Message-ID: <YXkFoyPUM0Zx3VD2@shredder>
-References: <20211026142743.1298877-1-vladimir.oltean@nxp.com>
- <20211026142743.1298877-5-vladimir.oltean@nxp.com>
+        id S236941AbhJ0IDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 04:03:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39086 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239125AbhJ0IDU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 04:03:20 -0400
+Received: from forwardcorp1p.mail.yandex.net (forwardcorp1p.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b6:217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2975C061570
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 01:00:54 -0700 (PDT)
+Received: from sas1-ec30c78b6c5b.qloud-c.yandex.net (sas1-ec30c78b6c5b.qloud-c.yandex.net [IPv6:2a02:6b8:c14:2704:0:640:ec30:c78b])
+        by forwardcorp1p.mail.yandex.net (Yandex) with ESMTP id 0E7092E0488;
+        Wed, 27 Oct 2021 11:00:25 +0300 (MSK)
+Received: from sas2-d40aa8807eff.qloud-c.yandex.net (2a02:6b8:c08:b921:0:640:d40a:a880 [2a02:6b8:c08:b921:0:640:d40a:a880])
+        by sas1-ec30c78b6c5b.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id 65MNUFsOMH-0Ku4bob7;
+        Wed, 27 Oct 2021 11:00:24 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1635321624; bh=SjKPiHTyr2bruXtZyCSIfgYu+166CG4ZyN0EBsZc0U0=;
+        h=Cc:Date:Subject:To:From:Message-Id;
+        b=wsW67dgprDffRe2J2nZQRTp8TGjURslr4SmkkrD3RO9suK4OwQfnUNufuXFi25eP6
+         I3e+klkL+18LxE2N7hPFRX0KVFnVFkJ3Y4vkOO02W68cYvuYIHN727aH7sjUQ+ErEE
+         yvtIdPcg6Jvx3/MgdeQdluoGmNxe2o+Sh4cSMF2Y=
+Authentication-Results: sas1-ec30c78b6c5b.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
+Received: from wwfq-osx.yandex.net (dynamic-vpn.dhcp.yndx.net [2a02:6b8:b081:8003::1:9])
+        by sas2-d40aa8807eff.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPS id nW4mSMv1C7-0KxetaOY;
+        Wed, 27 Oct 2021 11:00:20 +0300
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client certificate not present)
+X-Yandex-Fwd: 2
+From:   Alexander Kuznetsov <wwfq@yandex-team.ru>
+To:     netdev@vger.kernel.org
+Cc:     zeil@yandex-team.ru, davem@davemloft.net, ebiederm@xmission.com,
+        dmtrmonakhov@yandex-team.ru
+Subject: [PATCH v2] ipv6: enable net.ipv6.route.max_size sysctl in network namespace
+Date:   Wed, 27 Oct 2021 11:00:08 +0300
+Message-Id: <20211027080008.57044-1-wwfq@yandex-team.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211026142743.1298877-5-vladimir.oltean@nxp.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 26, 2021 at 05:27:39PM +0300, Vladimir Oltean wrote:
-> br_fdb_insert() is a wrapper over fdb_insert() that also takes the
-> bridge hash_lock.
-> 
-> With fdb_insert() being renamed to fdb_add_local(), rename
-> br_fdb_insert() to br_fdb_add_local().
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+We want to increase route cache size in network namespace
+created with user namespace. Currently ipv6 route settings
+are disabled for non-initial network namespaces.
+We can allow this sysctl and it will be safe since
+commit <6126891c6d4f> because route cache account to kmem,
+that is why users from user namespace can not DOS system.
 
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: Alexander Kuznetsov <wwfq@yandex-team.ru>
+Acked-by: Dmitry Yakunin <zeil@yandex-team.ru>
+Acked-by: Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
+---
+ net/ipv6/route.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index dbc2240..5f78325 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -6305,11 +6305,11 @@ static int ipv6_sysctl_rtcache_flush(struct ctl_table *ctl, int write,
+ 
+ static struct ctl_table ipv6_route_table_template[] = {
+ 	{
+-		.procname	=	"flush",
+-		.data		=	&init_net.ipv6.sysctl.flush_delay,
++		.procname	=	"max_size",
++		.data		=	&init_net.ipv6.sysctl.ip6_rt_max_size,
+ 		.maxlen		=	sizeof(int),
+-		.mode		=	0200,
+-		.proc_handler	=	ipv6_sysctl_rtcache_flush
++		.mode		=	0644,
++		.proc_handler	=	proc_dointvec,
+ 	},
+ 	{
+ 		.procname	=	"gc_thresh",
+@@ -6319,11 +6319,11 @@ static struct ctl_table ipv6_route_table_template[] = {
+ 		.proc_handler	=	proc_dointvec,
+ 	},
+ 	{
+-		.procname	=	"max_size",
+-		.data		=	&init_net.ipv6.sysctl.ip6_rt_max_size,
++		.procname	=	"flush",
++		.data		=	&init_net.ipv6.sysctl.flush_delay,
+ 		.maxlen		=	sizeof(int),
+-		.mode		=	0644,
+-		.proc_handler	=	proc_dointvec,
++		.mode		=	0200,
++		.proc_handler	=	ipv6_sysctl_rtcache_flush
+ 	},
+ 	{
+ 		.procname	=	"gc_min_interval",
+@@ -6395,10 +6395,10 @@ struct ctl_table * __net_init ipv6_route_sysctl_init(struct net *net)
+ 			GFP_KERNEL);
+ 
+ 	if (table) {
+-		table[0].data = &net->ipv6.sysctl.flush_delay;
+-		table[0].extra1 = net;
++		table[0].data = &net->ipv6.sysctl.ip6_rt_max_size;
+ 		table[1].data = &net->ipv6.ip6_dst_ops.gc_thresh;
+-		table[2].data = &net->ipv6.sysctl.ip6_rt_max_size;
++		table[2].data = &net->ipv6.sysctl.flush_delay;
++		table[2].extra1 = net;
+ 		table[3].data = &net->ipv6.sysctl.ip6_rt_gc_min_interval;
+ 		table[4].data = &net->ipv6.sysctl.ip6_rt_gc_timeout;
+ 		table[5].data = &net->ipv6.sysctl.ip6_rt_gc_interval;
+@@ -6410,7 +6410,7 @@ struct ctl_table * __net_init ipv6_route_sysctl_init(struct net *net)
+ 
+ 		/* Don't export sysctls to unprivileged users */
+ 		if (net->user_ns != &init_user_ns)
+-			table[0].procname = NULL;
++			table[1].procname = NULL;
+ 	}
+ 
+ 	return table;
+-- 
+2.7.4
+
