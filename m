@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0787B43C001
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 04:35:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B372543C000
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 04:35:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238445AbhJ0ChT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S238546AbhJ0ChT (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 26 Oct 2021 22:37:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58400 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:58404 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238437AbhJ0ChL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Oct 2021 22:37:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D4946610F8;
-        Wed, 27 Oct 2021 02:34:44 +0000 (UTC)
+        id S238445AbhJ0ChM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Oct 2021 22:37:12 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8EA2961106;
+        Wed, 27 Oct 2021 02:34:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1635302085;
-        bh=JpFYLfAJZrWyM2kYKidKhuhJYwvNlf0b8OpcUR/GQ18=;
+        bh=LoyR/Md4S9NWxQtJYcXMK/a4AcKJxiJqQjNA3h6sBRE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YGfacD3prUMO5MR2zRSYjcshBSmfByd1JX2qYxMYqBUAgI1ZbPDH4YUOvjDfnyoWg
-         cMyKGuxLE5/wvhNXglBoyOxwu0lWAhzmAXs01ICiU7HPwl6BZKF6KFwmeTfs5ki81S
-         c1PWsaIcItbjPhiMU+zfGWvLVyS7YKyTEjxYrKyGMj2RGkf0sRSJed2sXD+NNvbA6h
-         zfbOG7hPL5RCSdh2bp8JmG1N+4fuo4iDEcKPfNz3FvfXe0TZIDGiEq7OvohGZVhr/e
-         5qBQ+VDXDTQNXbBI4boJ0BzJ/onQwmbi5nM9OMqAUgTi6yHIStiWB8mww5tOsPw42c
-         rPgi6IOvN57wg==
+        b=TNitkuKe/jHidZNyy2j19cbUbr0UqkObeXKukPTASY5gQO1svZb5dIpZsw5yvS9Os
+         ggaX+9h/NP2hyqQVIB+MP2qnVkhIDgCKaSbV0voMxAXRO52JRvLp2bi9fOCgZobFDu
+         EIcwheNVTtWKGy2hgu7rqE1jw1pdtx6PvKwtrnNphP+VRMKfwV3Km7IYYNJtTKKAUz
+         87nFk18tWzAzOyvtd1cFOqfqLrxPFqsBkeMxBX4NkA3cFGIBF892SRzCVXYoVct80A
+         H7pWJZAd8003PrBFzanqqPRU7PxAleCID4Z+mBT+BECTQ4AOqOkRpR4+Ldm1GpVQJ5
+         2paj9D5YDv/gA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Khalid Manaa <khalidm@nvidia.com>,
+        Ben Ben-Ishay <benishay@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 08/14] net/mlx5e: Add handle SHAMPO cqe support
-Date:   Tue, 26 Oct 2021 19:33:41 -0700
-Message-Id: <20211027023347.699076-9-saeed@kernel.org>
+Subject: [net-next 09/14] net/mlx5e: Add data path for SHAMPO feature
+Date:   Tue, 26 Oct 2021 19:33:42 -0700
+Message-Id: <20211027023347.699076-10-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211027023347.699076-1-saeed@kernel.org>
 References: <20211027023347.699076-1-saeed@kernel.org>
@@ -41,404 +41,275 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Khalid Manaa <khalidm@nvidia.com>
+From: Ben Ben-Ishay <benishay@nvidia.com>
 
-This patch adds the new CQE SHAMPO fields:
-- flush: indicates that we must close the current session and pass the SKB
-         to the network stack.
+The header buffer is used to store the headers of the rx packets.
+The header buffer size deduced from WorkQueue size + restriction
+of max packets per WorkQueueElement.
+This commit adds the functionality for posting/updating memory for
+the header buffer during the posting/updating of WQEs.
 
-- match: indicates that the current packet matches the oppened session,
-         the packet will be merge into the current SKB.
-
-- header_size: the size of the packet headers that written into the headers
-               buffer.
-
-- header_entry_index: the entry index in the headers buffer.
-
-- data_offset: packets data offset in the WQE.
-
-Also new cqe handler is added to handle SHAMPO packets:
-- The new handler uses CQE SHAMPO fields to build the SKB.
-  CQE's Flush and match fields are not used in this patch, packets are not
-  merged in this patch.
-
-Signed-off-by: Khalid Manaa <khalidm@nvidia.com>
+Signed-off-by: Ben Ben-Ishay <benishay@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |   1 +
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 205 +++++++++++++++---
- include/linux/mlx5/device.h                   |  23 +-
- 3 files changed, 194 insertions(+), 35 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en/txrx.h |   6 +
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 183 ++++++++++++++++++
+ 2 files changed, 189 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index 8431cdd8006c..c95b6b65c4de 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -943,6 +943,7 @@ struct mlx5e_priv {
- struct mlx5e_rx_handlers {
- 	mlx5e_fp_handle_rx_cqe handle_rx_cqe;
- 	mlx5e_fp_handle_rx_cqe handle_rx_cqe_mpwqe;
-+	mlx5e_fp_handle_rx_cqe handle_rx_cqe_mpwqe_shampo;
- };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+index 055c3bc23733..4cdf8e5b24c2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+@@ -36,6 +36,7 @@ ktime_t mlx5e_cqe_ts_to_ns(cqe_ts_to_ns func, struct mlx5_clock *clock, u64 cqe_
+ enum mlx5e_icosq_wqe_type {
+ 	MLX5E_ICOSQ_WQE_NOP,
+ 	MLX5E_ICOSQ_WQE_UMR_RX,
++	MLX5E_ICOSQ_WQE_SHAMPO_HD_UMR,
+ #ifdef CONFIG_MLX5_EN_TLS
+ 	MLX5E_ICOSQ_WQE_UMR_TLS,
+ 	MLX5E_ICOSQ_WQE_SET_PSV_TLS,
+@@ -166,6 +167,10 @@ static inline u16 mlx5e_txqsq_get_next_pi(struct mlx5e_txqsq *sq, u16 size)
+ 	return pi;
+ }
  
- extern const struct mlx5e_rx_handlers mlx5e_rx_handlers_nic;
++struct mlx5e_shampo_umr {
++	u16 len;
++};
++
+ struct mlx5e_icosq_wqe_info {
+ 	u8 wqe_type;
+ 	u8 num_wqebbs;
+@@ -175,6 +180,7 @@ struct mlx5e_icosq_wqe_info {
+ 		struct {
+ 			struct mlx5e_rq *rq;
+ 		} umr;
++		struct mlx5e_shampo_umr shampo;
+ #ifdef CONFIG_MLX5_EN_TLS
+ 		struct {
+ 			struct mlx5e_ktls_offload_context_rx *priv_rx;
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 397a4e769076..68759c8fd31e 100644
+index 68759c8fd31e..f52fb184ef7c 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -62,10 +62,12 @@ mlx5e_skb_from_cqe_mpwrq_nonlinear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *w
- 				   u16 cqe_bcnt, u32 head_offset, u32 page_idx);
- static void mlx5e_handle_rx_cqe(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
- static void mlx5e_handle_rx_cqe_mpwrq(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
-+static void mlx5e_handle_rx_cqe_mpwrq_shampo(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
- 
- const struct mlx5e_rx_handlers mlx5e_rx_handlers_nic = {
- 	.handle_rx_cqe       = mlx5e_handle_rx_cqe,
- 	.handle_rx_cqe_mpwqe = mlx5e_handle_rx_cqe_mpwrq,
-+	.handle_rx_cqe_mpwqe_shampo = mlx5e_handle_rx_cqe_mpwrq_shampo,
- };
- 
- static inline bool mlx5e_rx_hw_stamp(struct hwtstamp_config *config)
-@@ -185,8 +187,9 @@ static inline u32 mlx5e_decompress_cqes_cont(struct mlx5e_rq *rq,
- 			mlx5e_read_mini_arr_slot(wq, cqd, cqcc);
- 
- 		mlx5e_decompress_cqe_no_hash(rq, wq, cqcc);
--		INDIRECT_CALL_2(rq->handle_rx_cqe, mlx5e_handle_rx_cqe_mpwrq,
--				mlx5e_handle_rx_cqe, rq, &cqd->title);
-+		INDIRECT_CALL_3(rq->handle_rx_cqe, mlx5e_handle_rx_cqe_mpwrq,
-+				mlx5e_handle_rx_cqe_mpwrq_shampo, mlx5e_handle_rx_cqe,
-+				rq, &cqd->title);
- 	}
- 	mlx5e_cqes_update_owner(wq, cqcc - wq->cc);
- 	wq->cc = cqcc;
-@@ -206,8 +209,9 @@ static inline u32 mlx5e_decompress_cqes_start(struct mlx5e_rq *rq,
- 	mlx5e_read_title_slot(rq, wq, cc);
- 	mlx5e_read_mini_arr_slot(wq, cqd, cc + 1);
- 	mlx5e_decompress_cqe(rq, wq, cc);
--	INDIRECT_CALL_2(rq->handle_rx_cqe, mlx5e_handle_rx_cqe_mpwrq,
--			mlx5e_handle_rx_cqe, rq, &cqd->title);
-+	INDIRECT_CALL_3(rq->handle_rx_cqe, mlx5e_handle_rx_cqe_mpwrq,
-+			mlx5e_handle_rx_cqe_mpwrq_shampo, mlx5e_handle_rx_cqe,
-+			rq, &cqd->title);
- 	cqd->mini_arr_idx++;
- 
- 	return mlx5e_decompress_cqes_cont(rq, wq, 1, budget_rem) - 1;
-@@ -448,13 +452,13 @@ mlx5e_add_skb_frag(struct mlx5e_rq *rq, struct sk_buff *skb,
- static inline void
- mlx5e_copy_skb_header(struct device *pdev, struct sk_buff *skb,
- 		      struct mlx5e_dma_info *dma_info,
--		      int offset_from, u32 headlen)
-+		      int offset_from, int dma_offset, u32 headlen)
- {
- 	const void *from = page_address(dma_info->page) + offset_from;
- 	/* Aligning len to sizeof(long) optimizes memcpy performance */
- 	unsigned int len = ALIGN(headlen, sizeof(long));
- 
--	dma_sync_single_for_cpu(pdev, dma_info->addr + offset_from, len,
-+	dma_sync_single_for_cpu(pdev, dma_info->addr + dma_offset, len,
- 				DMA_FROM_DEVICE);
- 	skb_copy_to_linear_data(skb, from, len);
- }
-@@ -820,8 +824,8 @@ static void mlx5e_lro_update_tcp_hdr(struct mlx5_cqe64 *cqe, struct tcphdr *tcp)
- 
- 	if (tcp_ack) {
- 		tcp->ack                = 1;
--		tcp->ack_seq            = cqe->lro_ack_seq_num;
--		tcp->window             = cqe->lro_tcp_win;
-+		tcp->ack_seq            = cqe->lro.ack_seq_num;
-+		tcp->window             = cqe->lro.tcp_win;
- 	}
+@@ -33,6 +33,7 @@
+ #include <linux/ip.h>
+ #include <linux/ipv6.h>
+ #include <linux/tcp.h>
++#include <linux/bitmap.h>
+ #include <net/ip6_checksum.h>
+ #include <net/page_pool.h>
+ #include <net/inet_ecn.h>
+@@ -498,6 +499,157 @@ static void mlx5e_post_rx_mpwqe(struct mlx5e_rq *rq, u8 n)
+ 	mlx5_wq_ll_update_db_record(wq);
  }
  
-@@ -847,7 +851,7 @@ static void mlx5e_lro_update_hdr(struct sk_buff *skb, struct mlx5_cqe64 *cqe,
- 		tcp = ip_p + sizeof(struct iphdr);
- 		skb_shinfo(skb)->gso_type = SKB_GSO_TCPV4;
- 
--		ipv4->ttl               = cqe->lro_min_ttl;
-+		ipv4->ttl               = cqe->lro.min_ttl;
- 		ipv4->tot_len           = cpu_to_be16(tot_len);
- 		ipv4->check             = 0;
- 		ipv4->check             = ip_fast_csum((unsigned char *)ipv4,
-@@ -867,7 +871,7 @@ static void mlx5e_lro_update_hdr(struct sk_buff *skb, struct mlx5_cqe64 *cqe,
- 		tcp = ip_p + sizeof(struct ipv6hdr);
- 		skb_shinfo(skb)->gso_type = SKB_GSO_TCPV6;
- 
--		ipv6->hop_limit         = cqe->lro_min_ttl;
-+		ipv6->hop_limit         = cqe->lro.min_ttl;
- 		ipv6->payload_len       = cpu_to_be16(payload_len);
- 
- 		mlx5e_lro_update_tcp_hdr(cqe, tcp);
-@@ -1237,7 +1241,8 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe,
- 	}
- 
- 	/* copy header */
--	mlx5e_copy_skb_header(rq->pdev, skb, head_wi->di, head_wi->offset, headlen);
-+	mlx5e_copy_skb_header(rq->pdev, skb, head_wi->di, head_wi->offset, head_wi->offset,
-+			      headlen);
- 	/* skb linear part was allocated with headlen and aligned to long */
- 	skb->tail += headlen;
- 	skb->len  += headlen;
-@@ -1433,6 +1438,30 @@ const struct mlx5e_rx_handlers mlx5e_rx_handlers_rep = {
- };
- #endif
- 
-+static void
-+mlx5e_fill_skb_data(struct sk_buff *skb, struct mlx5e_rq *rq, struct mlx5e_dma_info *di,
-+		    u32 data_bcnt, u32 data_offset)
++/* This function returns the size of the continuous free space inside a bitmap
++ * that starts from first and no longer than len including circular ones.
++ */
++static int bitmap_find_window(unsigned long *bitmap, int len,
++			      int bitmap_size, int first)
 +{
-+	net_prefetchw(skb->data);
++	int next_one, count;
 +
-+	while (data_bcnt) {
-+		u32 pg_consumed_bytes = min_t(u32, PAGE_SIZE - data_offset, data_bcnt);
-+		unsigned int truesize;
-+
-+		if (test_bit(MLX5E_RQ_STATE_SHAMPO, &rq->state))
-+			truesize = pg_consumed_bytes;
-+		else
-+			truesize = ALIGN(pg_consumed_bytes, BIT(rq->mpwqe.log_stride_sz));
-+
-+		mlx5e_add_skb_frag(rq, skb, di, data_offset,
-+				   pg_consumed_bytes, truesize);
-+
-+		data_bcnt -= pg_consumed_bytes;
-+		data_offset = 0;
-+		di++;
-+	}
-+}
-+
- static struct sk_buff *
- mlx5e_skb_from_cqe_mpwrq_nonlinear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
- 				   u16 cqe_bcnt, u32 head_offset, u32 page_idx)
-@@ -1458,20 +1487,9 @@ mlx5e_skb_from_cqe_mpwrq_nonlinear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *w
- 		frag_offset -= PAGE_SIZE;
- 	}
- 
--	while (byte_cnt) {
--		u32 pg_consumed_bytes =
--			min_t(u32, PAGE_SIZE - frag_offset, byte_cnt);
--		unsigned int truesize =
--			ALIGN(pg_consumed_bytes, BIT(rq->mpwqe.log_stride_sz));
--
--		mlx5e_add_skb_frag(rq, skb, di, frag_offset,
--				   pg_consumed_bytes, truesize);
--		byte_cnt -= pg_consumed_bytes;
--		frag_offset = 0;
--		di++;
--	}
-+	mlx5e_fill_skb_data(skb, rq, di, byte_cnt, frag_offset);
- 	/* copy header */
--	mlx5e_copy_skb_header(rq->pdev, skb, head_di, head_offset, headlen);
-+	mlx5e_copy_skb_header(rq->pdev, skb, head_di, head_offset, head_offset, headlen);
- 	/* skb linear part was allocated with headlen and aligned to long */
- 	skb->tail += headlen;
- 	skb->len  += headlen;
-@@ -1525,6 +1543,123 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
- 	return skb;
- }
- 
-+static struct sk_buff *
-+mlx5e_skb_from_cqe_shampo(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
-+			  struct mlx5_cqe64 *cqe, u16 header_index)
-+{
-+	struct mlx5e_dma_info *head = &rq->mpwqe.shampo->info[header_index];
-+	u16 head_offset = head->addr & (PAGE_SIZE - 1);
-+	u16 head_size = cqe->shampo.header_size;
-+	u16 rx_headroom = rq->buff.headroom;
-+	struct sk_buff *skb = NULL;
-+	void *hdr, *data;
-+	u32 frag_size;
-+
-+	hdr		= page_address(head->page) + head_offset;
-+	data		= hdr + rx_headroom;
-+	frag_size	= MLX5_SKB_FRAG_SZ(rx_headroom + head_size);
-+
-+	if (likely(frag_size <= BIT(MLX5E_SHAMPO_LOG_MAX_HEADER_ENTRY_SIZE))) {
-+		/* build SKB around header */
-+		dma_sync_single_range_for_cpu(rq->pdev, head->addr, 0, frag_size, DMA_FROM_DEVICE);
-+		prefetchw(hdr);
-+		prefetch(data);
-+		skb = mlx5e_build_linear_skb(rq, hdr, frag_size, rx_headroom, head_size);
-+
-+		if (unlikely(!skb))
-+			return NULL;
-+
-+		/* queue up for recycling/reuse */
-+		page_ref_inc(head->page);
-+
++	next_one = find_next_bit(bitmap, bitmap_size, first);
++	if (next_one == bitmap_size) {
++		if (bitmap_size - first >= len)
++			return len;
++		next_one = find_next_bit(bitmap, bitmap_size, 0);
++		count = next_one + bitmap_size - first;
 +	} else {
-+		/* allocate SKB and copy header for large header */
-+		skb = napi_alloc_skb(rq->cq.napi,
-+				     ALIGN(head_size, sizeof(long)));
-+		if (unlikely(!skb)) {
-+			rq->stats->buff_alloc_err++;
-+			return NULL;
-+		}
-+
-+		prefetchw(skb->data);
-+		mlx5e_copy_skb_header(rq->pdev, skb, head,
-+				      head_offset + rx_headroom,
-+				      rx_headroom, head_size);
-+		/* skb linear part was allocated with headlen and aligned to long */
-+		skb->tail += head_size;
-+		skb->len  += head_size;
++		count = next_one - first;
 +	}
-+	return skb;
++
++	return min(len, count);
 +}
 +
-+static void
-+mlx5e_free_rx_shampo_hd_entry(struct mlx5e_rq *rq, u16 header_index)
++static void build_klm_umr(struct mlx5e_icosq *sq, struct mlx5e_umr_wqe *umr_wqe,
++			  __be32 key, u16 offset, u16 klm_len, u16 wqe_bbs)
++{
++	memset(umr_wqe, 0, offsetof(struct mlx5e_umr_wqe, inline_klms));
++	umr_wqe->ctrl.opmod_idx_opcode =
++		cpu_to_be32((sq->pc << MLX5_WQE_CTRL_WQE_INDEX_SHIFT) |
++			     MLX5_OPCODE_UMR);
++	umr_wqe->ctrl.umr_mkey = key;
++	umr_wqe->ctrl.qpn_ds = cpu_to_be32((sq->sqn << MLX5_WQE_CTRL_QPN_SHIFT)
++					    | MLX5E_KLM_UMR_DS_CNT(klm_len));
++	umr_wqe->uctrl.flags = MLX5_UMR_TRANSLATION_OFFSET_EN | MLX5_UMR_INLINE;
++	umr_wqe->uctrl.xlt_offset = cpu_to_be16(offset);
++	umr_wqe->uctrl.xlt_octowords = cpu_to_be16(klm_len);
++	umr_wqe->uctrl.mkey_mask     = cpu_to_be64(MLX5_MKEY_MASK_FREE);
++}
++
++static int mlx5e_build_shampo_hd_umr(struct mlx5e_rq *rq,
++				     struct mlx5e_icosq *sq,
++				     u16 klm_entries, u16 index)
 +{
 +	struct mlx5e_shampo_hd *shampo = rq->mpwqe.shampo;
-+	u64 addr = shampo->info[header_index].addr;
++	u16 entries, pi, i, header_offset, err, wqe_bbs, new_entries;
++	u32 lkey = rq->mdev->mlx5e_res.hw_objs.mkey.key;
++	struct page *page = shampo->last_page;
++	u64 addr = shampo->last_addr;
++	struct mlx5e_dma_info *dma_info;
++	struct mlx5e_umr_wqe *umr_wqe;
++	int headroom;
 +
-+	if (((header_index + 1) & (MLX5E_SHAMPO_WQ_HEADER_PER_PAGE - 1)) == 0) {
-+		shampo->info[header_index].addr = ALIGN_DOWN(addr, PAGE_SIZE);
-+		mlx5e_page_release(rq, &shampo->info[header_index], true);
-+	}
-+	bitmap_clear(shampo->bitmap, header_index, 1);
-+}
++	headroom = rq->buff.headroom;
++	new_entries = klm_entries - (shampo->pi & (MLX5_UMR_KLM_ALIGNMENT - 1));
++	entries = ALIGN(klm_entries, MLX5_UMR_KLM_ALIGNMENT);
++	wqe_bbs = MLX5E_KLM_UMR_WQEBBS(entries);
++	pi = mlx5e_icosq_get_next_pi(sq, wqe_bbs);
++	umr_wqe = mlx5_wq_cyc_get_wqe(&sq->wq, pi);
++	build_klm_umr(sq, umr_wqe, shampo->key, index, entries, wqe_bbs);
 +
-+static void mlx5e_handle_rx_cqe_mpwrq_shampo(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
-+{
-+	u16 data_bcnt		= mpwrq_get_cqe_byte_cnt(cqe) - cqe->shampo.header_size;
-+	u16 header_index	= be16_to_cpu(cqe->shampo.header_entry_index);
-+	u32 wqe_offset		= be32_to_cpu(cqe->shampo.data_offset);
-+	u16 cstrides		= mpwrq_get_cqe_consumed_strides(cqe);
-+	u32 data_offset		= wqe_offset & (PAGE_SIZE - 1);
-+	u32 cqe_bcnt		= mpwrq_get_cqe_byte_cnt(cqe);
-+	u16 wqe_id		= be16_to_cpu(cqe->wqe_id);
-+	u32 page_idx		= wqe_offset >> PAGE_SHIFT;
-+	struct mlx5e_rx_wqe_ll *wqe;
-+	struct sk_buff *skb = NULL;
-+	struct mlx5e_dma_info *di;
-+	struct mlx5e_mpw_info *wi;
-+	struct mlx5_wq_ll *wq;
-+
-+	wi = &rq->mpwqe.info[wqe_id];
-+	wi->consumed_strides += cstrides;
-+
-+	if (unlikely(MLX5E_RX_ERR_CQE(cqe))) {
-+		trigger_report(rq, cqe);
-+		rq->stats->wqe_err++;
-+		goto mpwrq_cqe_out;
-+	}
-+
-+	if (unlikely(mpwrq_is_filler_cqe(cqe))) {
-+		struct mlx5e_rq_stats *stats = rq->stats;
-+
-+		stats->mpwqe_filler_cqes++;
-+		stats->mpwqe_filler_strides += cstrides;
-+		goto mpwrq_cqe_out;
-+	}
-+
-+	skb = mlx5e_skb_from_cqe_shampo(rq, wi, cqe, header_index);
-+
-+	if (unlikely(!skb))
-+		goto free_hd_entry;
-+
-+	di = &wi->umr.dma_info[page_idx];
-+	mlx5e_fill_skb_data(skb, rq, di, data_bcnt, data_offset);
-+
-+	mlx5e_complete_rx_cqe(rq, cqe, cqe_bcnt, skb);
-+	napi_gro_receive(rq->cq.napi, skb);
-+free_hd_entry:
-+	mlx5e_free_rx_shampo_hd_entry(rq, header_index);
-+mpwrq_cqe_out:
-+	if (likely(wi->consumed_strides < rq->mpwqe.num_strides))
-+		return;
-+
-+	wq  = &rq->mpwqe.wq;
-+	wqe = mlx5_wq_ll_get_wqe(wq, wqe_id);
-+	mlx5e_free_rx_mpwqe(rq, wi, true);
-+	mlx5_wq_ll_pop(wq, cqe->wqe_id, &wqe->next.next_wqe_index);
-+}
-+
- static void mlx5e_handle_rx_cqe_mpwrq(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
- {
- 	u16 cstrides       = mpwrq_get_cqe_consumed_strides(cqe);
-@@ -1617,8 +1752,9 @@ int mlx5e_poll_rx_cq(struct mlx5e_cq *cq, int budget)
- 
- 		mlx5_cqwq_pop(cqwq);
- 
--		INDIRECT_CALL_2(rq->handle_rx_cqe, mlx5e_handle_rx_cqe_mpwrq,
--				mlx5e_handle_rx_cqe, rq, cqe);
-+		INDIRECT_CALL_3(rq->handle_rx_cqe, mlx5e_handle_rx_cqe_mpwrq,
-+				mlx5e_handle_rx_cqe, mlx5e_handle_rx_cqe_mpwrq_shampo,
-+				rq, cqe);
- 	} while ((++work_done < budget) && (cqe = mlx5_cqwq_get_cqe(cqwq)));
- 
- out:
-@@ -1822,15 +1958,24 @@ int mlx5e_rq_set_handlers(struct mlx5e_rq *rq, struct mlx5e_params *params, bool
- 		rq->post_wqes = mlx5e_post_rx_mpwqes;
- 		rq->dealloc_wqe = mlx5e_dealloc_rx_mpwqe;
- 
--		rq->handle_rx_cqe = priv->profile->rx_handlers->handle_rx_cqe_mpwqe;
- 		if (mlx5_fpga_is_ipsec_device(mdev)) {
- 			netdev_err(netdev, "MPWQE RQ with Innova IPSec offload not supported\n");
- 			return -EINVAL;
- 		}
--		if (!rq->handle_rx_cqe) {
--			netdev_err(netdev, "RX handler of MPWQE RQ is not set\n");
--			return -EINVAL;
-+		if (params->packet_merge.type == MLX5E_PACKET_MERGE_SHAMPO) {
-+			rq->handle_rx_cqe = priv->profile->rx_handlers->handle_rx_cqe_mpwqe_shampo;
-+			if (!rq->handle_rx_cqe) {
-+				netdev_err(netdev, "RX handler of SHAMPO MPWQE RQ is not set\n");
-+				return -EINVAL;
-+			}
++	for (i = 0; i < entries; i++, index++) {
++		dma_info = &shampo->info[index];
++		if (i >= klm_entries || (index < shampo->pi && shampo->pi - index <
++					 MLX5_UMR_KLM_ALIGNMENT))
++			goto update_klm;
++		header_offset = (index & (MLX5E_SHAMPO_WQ_HEADER_PER_PAGE - 1)) <<
++			MLX5E_SHAMPO_LOG_MAX_HEADER_ENTRY_SIZE;
++		if (!(header_offset & (PAGE_SIZE - 1))) {
++			err = mlx5e_page_alloc(rq, dma_info);
++			if (unlikely(err))
++				goto err_unmap;
++			addr = dma_info->addr;
++			page = dma_info->page;
 +		} else {
-+			rq->handle_rx_cqe = priv->profile->rx_handlers->handle_rx_cqe_mpwqe;
-+			if (!rq->handle_rx_cqe) {
-+				netdev_err(netdev, "RX handler of MPWQE RQ is not set\n");
-+				return -EINVAL;
-+			}
- 		}
++			dma_info->addr = addr + header_offset;
++			dma_info->page = page;
++		}
 +
- 		break;
- 	default: /* MLX5_WQ_TYPE_CYCLIC */
- 		rq->wqe.skb_from_cqe = xsk ?
-diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
-index c920e5932368..56bcf95d4ab7 100644
---- a/include/linux/mlx5/device.h
-+++ b/include/linux/mlx5/device.h
-@@ -800,10 +800,23 @@ struct mlx5_cqe64 {
- 	u8		tls_outer_l3_tunneled;
- 	u8		rsvd0;
- 	__be16		wqe_id;
--	u8		lro_tcppsh_abort_dupack;
--	u8		lro_min_ttl;
--	__be16		lro_tcp_win;
--	__be32		lro_ack_seq_num;
-+	union {
-+		struct {
-+			u8	tcppsh_abort_dupack;
-+			u8	min_ttl;
-+			__be16	tcp_win;
-+			__be32	ack_seq_num;
-+		} lro;
-+		struct {
-+			u8	reserved0:1;
-+			u8	match:1;
-+			u8	flush:1;
-+			u8	reserved3:5;
-+			u8	header_size;
-+			__be16	header_entry_index;
-+			__be32	data_offset;
-+		} shampo;
++update_klm:
++		umr_wqe->inline_klms[i].bcount =
++			cpu_to_be32(MLX5E_RX_MAX_HEAD);
++		umr_wqe->inline_klms[i].key    = cpu_to_be32(lkey);
++		umr_wqe->inline_klms[i].va     =
++			cpu_to_be64(dma_info->addr + headroom);
++	}
++
++	sq->db.wqe_info[pi] = (struct mlx5e_icosq_wqe_info) {
++		.wqe_type	= MLX5E_ICOSQ_WQE_SHAMPO_HD_UMR,
++		.num_wqebbs	= wqe_bbs,
++		.shampo.len	= new_entries,
 +	};
- 	__be32		rss_hash_result;
- 	u8		rss_hash_type;
- 	u8		ml_path;
-@@ -873,7 +886,7 @@ static inline u8 get_cqe_opcode(struct mlx5_cqe64 *cqe)
- 
- static inline u8 get_cqe_lro_tcppsh(struct mlx5_cqe64 *cqe)
++
++	shampo->pi = (shampo->pi + new_entries) & (shampo->hd_per_wq - 1);
++	shampo->last_page = page;
++	shampo->last_addr = addr;
++	sq->pc += wqe_bbs;
++	sq->doorbell_cseg = &umr_wqe->ctrl;
++
++	return 0;
++
++err_unmap:
++	while (--i >= 0) {
++		if (--index < 0)
++			index = shampo->hd_per_wq - 1;
++		dma_info = &shampo->info[index];
++		if (!(i & (MLX5E_SHAMPO_WQ_HEADER_PER_PAGE - 1))) {
++			dma_info->addr = ALIGN_DOWN(dma_info->addr, PAGE_SIZE);
++			mlx5e_page_release(rq, dma_info, true);
++		}
++	}
++	rq->stats->buff_alloc_err++;
++	return err;
++}
++
++static int mlx5e_alloc_rx_hd_mpwqe(struct mlx5e_rq *rq)
++{
++	struct mlx5e_shampo_hd *shampo = rq->mpwqe.shampo;
++	u16 klm_entries, num_wqe, index, entries_before;
++	struct mlx5e_icosq *sq = rq->icosq;
++	int i, err, max_klm_entries, len;
++
++	max_klm_entries = MLX5E_MAX_KLM_PER_WQE(rq->mdev);
++	klm_entries = bitmap_find_window(shampo->bitmap,
++					 shampo->hd_per_wqe,
++					 shampo->hd_per_wq, shampo->pi);
++	if (!klm_entries)
++		return 0;
++
++	klm_entries += (shampo->pi & (MLX5_UMR_KLM_ALIGNMENT - 1));
++	index = ALIGN_DOWN(shampo->pi, MLX5_UMR_KLM_ALIGNMENT);
++	entries_before = shampo->hd_per_wq - index;
++
++	if (unlikely(entries_before < klm_entries))
++		num_wqe = DIV_ROUND_UP(entries_before, max_klm_entries) +
++			  DIV_ROUND_UP(klm_entries - entries_before, max_klm_entries);
++	else
++		num_wqe = DIV_ROUND_UP(klm_entries, max_klm_entries);
++
++	for (i = 0; i < num_wqe; i++) {
++		len = (klm_entries > max_klm_entries) ? max_klm_entries :
++							klm_entries;
++		if (unlikely(index + len > shampo->hd_per_wq))
++			len = shampo->hd_per_wq - index;
++		err = mlx5e_build_shampo_hd_umr(rq, sq, len, index);
++		if (unlikely(err))
++			return err;
++		index = (index + len) & (rq->mpwqe.shampo->hd_per_wq - 1);
++		klm_entries -= len;
++	}
++
++	return 0;
++}
++
+ static int mlx5e_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
  {
--	return (cqe->lro_tcppsh_abort_dupack >> 6) & 1;
-+	return (cqe->lro.tcppsh_abort_dupack >> 6) & 1;
+ 	struct mlx5e_mpw_info *wi = &rq->mpwqe.info[ix];
+@@ -518,6 +670,12 @@ static int mlx5e_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
+ 		goto err;
+ 	}
+ 
++	if (test_bit(MLX5E_RQ_STATE_SHAMPO, &rq->state)) {
++		err = mlx5e_alloc_rx_hd_mpwqe(rq);
++		if (unlikely(err))
++			goto err;
++	}
++
+ 	pi = mlx5e_icosq_get_next_pi(sq, MLX5E_UMR_WQEBBS);
+ 	umr_wqe = mlx5_wq_cyc_get_wqe(wq, pi);
+ 	memcpy(umr_wqe, &rq->mpwqe.umr_wqe, offsetof(struct mlx5e_umr_wqe, inline_mtts));
+@@ -671,6 +829,28 @@ void mlx5e_free_icosq_descs(struct mlx5e_icosq *sq)
+ 	sq->cc = sqcc;
  }
  
- static inline u8 get_cqe_l4_hdr_type(struct mlx5_cqe64 *cqe)
++static void mlx5e_handle_shampo_hd_umr(struct mlx5e_shampo_umr umr,
++				       struct mlx5e_icosq *sq)
++{
++	struct mlx5e_channel *c = container_of(sq, struct mlx5e_channel, icosq);
++	struct mlx5e_shampo_hd *shampo;
++	/* assume 1:1 relationship between RQ and icosq */
++	struct mlx5e_rq *rq = &c->rq;
++	int end, from, len = umr.len;
++
++	shampo = rq->mpwqe.shampo;
++	end = shampo->hd_per_wq;
++	from = shampo->ci;
++	if (from + len > shampo->hd_per_wq) {
++		len -= end - from;
++		bitmap_set(shampo->bitmap, from, end - from);
++		from = 0;
++	}
++
++	bitmap_set(shampo->bitmap, from, len);
++	shampo->ci = (shampo->ci + umr.len) & (shampo->hd_per_wq - 1);
++}
++
+ int mlx5e_poll_ico_cq(struct mlx5e_cq *cq)
+ {
+ 	struct mlx5e_icosq *sq = container_of(cq, struct mlx5e_icosq, cq);
+@@ -727,6 +907,9 @@ int mlx5e_poll_ico_cq(struct mlx5e_cq *cq)
+ 				break;
+ 			case MLX5E_ICOSQ_WQE_NOP:
+ 				break;
++			case MLX5E_ICOSQ_WQE_SHAMPO_HD_UMR:
++				mlx5e_handle_shampo_hd_umr(wi->shampo, sq);
++				break;
+ #ifdef CONFIG_MLX5_EN_TLS
+ 			case MLX5E_ICOSQ_WQE_UMR_TLS:
+ 				break;
 -- 
 2.31.1
 
