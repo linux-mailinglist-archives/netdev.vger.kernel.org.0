@@ -2,102 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE5D843D0A0
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 20:23:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 838C843D09A
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 20:22:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243531AbhJ0SZZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 14:25:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41832 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243523AbhJ0SZT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 14:25:19 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F443C0613B9
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 11:22:53 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id c28so3312923qtv.11
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 11:22:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V9N5C8SGb7U5wdMZ58rdvN1GPz0ZxsaF/5pC41Q62sE=;
-        b=FQVRt63dmGzxcOIe6TYyIX4Vu9tje2LGd9fxy8cyXIUBWKQwtlTDLHo7hmIBdrrDgI
-         ETEQ2EZ34R5jo6WeXHhUcp0qigiPu3E8JkuaemsjFQyLD/RQS4u7bHF4Gwj+g3v2PuhP
-         cFjBpa+zovyyDe1er6eRmuezXlUrm3uFS55+Q=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V9N5C8SGb7U5wdMZ58rdvN1GPz0ZxsaF/5pC41Q62sE=;
-        b=oR82p4G7UJ2cY3DJ3DJmUMGRWkugT491XImJcBrxYru9A89JHGIjUDzfSe94FXjPgF
-         cgUhhax/Yw+O1rM3mJMzRg7WJwmxQzsv40xS29HxbJ308ohzWohOKZg6R6B1+r8w3v1u
-         gxzAwdgXcGpNR9ONUn3rVzlLBVRj/r4O5rY7YkeuKCTtrQW/35eeZkRsSbOCHSjZ1pVa
-         y4Nc6tUXdxXBF3nOdA2JfJzEc6RtqkVT8TmXN3hdGx7MTaQ7LbqI6Y6IENa9uOhVafVQ
-         JAy8ymT90h2oclJG/TTa9lUbB9+LXXvU9IzJfylJIg+rQPXlqdlZmo6vlBlCGmLZStKy
-         0OKw==
-X-Gm-Message-State: AOAM531OzUDdifdldMcDCXbP8taTpBaIBI4pPDqzHhVBLgR93fVthwO8
-        2vfDX9N+8Azyqd1rfj4O+dGDRR/HIKDUJg==
-X-Google-Smtp-Source: ABdhPJwo6ibiSs5dePtgVQ5+2cMaJlehlejF4W/26ZqPTRB6g3owDnNhGhrKwG6pQt/rc62UeYY/hQ==
-X-Received: by 2002:a05:622a:118b:: with SMTP id m11mr33571210qtk.67.1635358972197;
-        Wed, 27 Oct 2021 11:22:52 -0700 (PDT)
-Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com. [209.85.219.172])
-        by smtp.gmail.com with ESMTPSA id g12sm474843qtb.3.2021.10.27.11.22.50
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Oct 2021 11:22:51 -0700 (PDT)
-Received: by mail-yb1-f172.google.com with SMTP id m63so8563442ybf.7
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 11:22:50 -0700 (PDT)
-X-Received: by 2002:a25:c344:: with SMTP id t65mr35272097ybf.409.1635358970358;
- Wed, 27 Oct 2021 11:22:50 -0700 (PDT)
+        id S243513AbhJ0SYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 14:24:38 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:28946 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243451AbhJ0SYi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 14:24:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1635358932; x=1666894932;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=kuWU/YLCWUXDiF4ZRT9NfBoavlLB6rHiAr08b0+yyhk=;
+  b=wZ7wWq/VraDB87NZcWyAJr0t/Ne0ZQjBWRlHkRD0XflDk0mPnp571jnf
+   ITZRNqRdjlDxlm075TYjKoh5zN2ztBwVSe3M5Qw9AyT+70wtj0fQq7ooU
+   hNF09W1ruKMqBmXvxctKji22UxgioPhoMSf76uMow3fIqgx2orN3A3DcI
+   DRnl83TnnzNwzKxGkj6burIxnQMLg1ZYD/NxgRAEL4slmBhJ8T3i6rhbB
+   AuKEvxvDAH0j3EF4tinPpQhEDQ9Gv/NCf6Q9TxPFeFA+7FTSBkBBBwK7f
+   JiJs1ItJIWRzpkaEJ/2lZijg5MPLhMkQUl3UTXLWqLhfqfxH3QwbCL1QO
+   g==;
+IronPort-SDR: Z+sSKFpGjHH65vc0CpsNL8NY6Eiff6b7+tzfz+Bh2xxe+mxGWJ7iuHTXEEwB7+V5ClNN7xe3G4
+ eN6kw6NtmCq1+U0DxWf2IhiWqSH6i6Yoe5mO5VZZliH4x6VOCZ/AvRl2wRWefhCuq7sYYQAxs1
+ ZViuOrgRd6HhKTamWZTbHlR2w2DFQCOtTScrRhwruq0mro3GojEzC5uXqM4PoCxRFN5jXLkvXv
+ gOEAKBs4atQGTU9Uh9EeXRseIBu9OL7CI6uVICj2Uu3cXBLIf1Lta+Ksgn7N9FRYPw8nRm1GwL
+ oi2RK5d9ge9xH4S2S3G695fr
+X-IronPort-AV: E=Sophos;i="5.87,187,1631602800"; 
+   d="scan'208";a="149755738"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Oct 2021 11:22:12 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Wed, 27 Oct 2021 11:22:11 -0700
+Received: from validation1-XPS-8900.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Wed, 27 Oct 2021 11:22:11 -0700
+From:   Yuiko Oshino <yuiko.oshino@microchip.com>
+To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
+CC:     <bryan.whitehead@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        "Yuiko Oshino" <yuiko.oshino@microchip.com>
+Subject: [PATCH net] net: ethernet: microchip: lan743x: Fix skb allocation failure
+Date:   Wed, 27 Oct 2021 14:23:02 -0400
+Message-ID: <20211027182302.12010-1-yuiko.oshino@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211027080819.6675-1-johan@kernel.org> <20211027080819.6675-4-johan@kernel.org>
-In-Reply-To: <20211027080819.6675-4-johan@kernel.org>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Wed, 27 Oct 2021 11:22:39 -0700
-X-Gmail-Original-Message-ID: <CA+ASDXMYbP3jQPeOpDDktHgp4X81AH41cgiLFgz-YHVPyZO1sw@mail.gmail.com>
-Message-ID: <CA+ASDXMYbP3jQPeOpDDktHgp4X81AH41cgiLFgz-YHVPyZO1sw@mail.gmail.com>
-Subject: Re: [PATCH v2 3/3] mwifiex: fix division by zero in fw download path
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Amitkumar Karwar <akarwar@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 27, 2021 at 1:12 AM Johan Hovold <johan@kernel.org> wrote:
-> --- a/drivers/net/wireless/marvell/mwifiex/usb.c
-> +++ b/drivers/net/wireless/marvell/mwifiex/usb.c
-> @@ -505,6 +505,22 @@ static int mwifiex_usb_probe(struct usb_interface *intf,
->                 }
->         }
->
-> +       switch (card->usb_boot_state) {
-> +       case USB8XXX_FW_DNLD:
-> +               /* Reject broken descriptors. */
-> +               if (!card->rx_cmd_ep || !card->tx_cmd_ep)
-> +                       return -ENODEV;
+The driver allocates skb during ndo_open with GFP_ATOMIC which has high chance of failure when there are multiple instances.
+GFP_KERNEL is enough while open and use GFP_ATOMIC only from interrupt context.
 
-^^ These two conditions are applicable to USB8XXX_FW_READY too, right?
+Fixes: 23f0703c125b ("lan743x: Add main source files for new lan743x driver")
+Signed-off-by: Yuiko Oshino <yuiko.oshino@microchip.com>
+---
+ drivers/net/ethernet/microchip/lan743x_main.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-> +               if (card->bulk_out_maxpktsize == 0)
-> +                       return -ENODEV;
-> +               break;
-> +       case USB8XXX_FW_READY:
-> +               /* Assume the driver can handle missing endpoints for now. */
-> +               break;
-> +       default:
-> +               WARN_ON(1);
-> +               return -ENODEV;
-> +       }
-> +
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+index 03d02403c19e..fd3e5331922c 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.c
++++ b/drivers/net/ethernet/microchip/lan743x_main.c
+@@ -1934,7 +1934,8 @@ static void lan743x_rx_update_tail(struct lan743x_rx *rx, int index)
+ 				  index);
+ }
+ 
+-static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index)
++static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index,
++					gfp_t gfp)
+ {
+ 	struct net_device *netdev = rx->adapter->netdev;
+ 	struct device *dev = &rx->adapter->pdev->dev;
+@@ -1948,7 +1949,7 @@ static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index)
+ 
+ 	descriptor = &rx->ring_cpu_ptr[index];
+ 	buffer_info = &rx->buffer_info[index];
+-	skb = __netdev_alloc_skb(netdev, buffer_length, GFP_ATOMIC | GFP_DMA);
++	skb = __netdev_alloc_skb(netdev, buffer_length, gfp);
+ 	if (!skb)
+ 		return -ENOMEM;
+ 	dma_ptr = dma_map_single(dev, skb->data, buffer_length, DMA_FROM_DEVICE);
+@@ -2110,7 +2111,8 @@ static int lan743x_rx_process_buffer(struct lan743x_rx *rx)
+ 
+ 	/* save existing skb, allocate new skb and map to dma */
+ 	skb = buffer_info->skb;
+-	if (lan743x_rx_init_ring_element(rx, rx->last_head)) {
++	if (lan743x_rx_init_ring_element(rx, rx->last_head,
++					 GFP_ATOMIC | GFP_DMA)) {
+ 		/* failed to allocate next skb.
+ 		 * Memory is very low.
+ 		 * Drop this packet and reuse buffer.
+@@ -2315,13 +2317,16 @@ static int lan743x_rx_ring_init(struct lan743x_rx *rx)
+ 
+ 	rx->last_head = 0;
+ 	for (index = 0; index < rx->ring_size; index++) {
+-		ret = lan743x_rx_init_ring_element(rx, index);
++		ret = lan743x_rx_init_ring_element(rx, index, GFP_KERNEL);
+ 		if (ret)
+ 			goto cleanup;
+ 	}
+ 	return 0;
+ 
+ cleanup:
++	netif_warn(rx->adapter, ifup, rx->adapter->netdev,
++		   "Error allocating memory for LAN743x\n");
++
+ 	lan743x_rx_ring_cleanup(rx);
+ 	return ret;
+ }
+-- 
+2.25.1
 
-Anyway, looks pretty good, thanks:
-
-Reviewed-by: Brian Norris <briannorris@chromium.org>
