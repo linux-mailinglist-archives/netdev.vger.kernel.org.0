@@ -2,162 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1FB543D7A1
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 01:37:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 876F743D7A9
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 01:41:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229540AbhJ0Xjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 19:39:54 -0400
-Received: from mga11.intel.com ([192.55.52.93]:17497 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229458AbhJ0Xjx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Oct 2021 19:39:53 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10150"; a="227744238"
-X-IronPort-AV: E=Sophos;i="5.87,188,1631602800"; 
-   d="scan'208";a="227744238"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2021 16:37:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,188,1631602800"; 
-   d="scan'208";a="529804966"
-Received: from gupta-dev2.jf.intel.com (HELO gupta-dev2.localdomain) ([10.54.74.119])
-  by orsmga001.jf.intel.com with ESMTP; 27 Oct 2021 16:37:26 -0700
-Date:   Wed, 27 Oct 2021 16:39:43 -0700
-From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        antonio.gomez.iglesias@intel.com, tony.luck@intel.com,
-        dave.hansen@linux.intel.com, gregkh@linuxfoundation.org
-Subject: Re: [PATCH ebpf] bpf: Disallow unprivileged bpf by default
-Message-ID: <20211027233943.kehyrdbibp2d2u4c@gupta-dev2.localdomain>
-References: <d37b01e70e65dced2659561ed5bc4b2ed1a50711.1635367330.git.pawan.kumar.gupta@linux.intel.com>
- <bd4db8da-0d44-1785-5767-1731bdaebef8@iogearbox.net>
+        id S229480AbhJ0Xnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 19:43:51 -0400
+Received: from ale.deltatee.com ([204.191.154.188]:33208 "EHLO
+        ale.deltatee.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229437AbhJ0Xnt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 19:43:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
+        Message-ID:From:References:Cc:To:content-disposition;
+        bh=ymf1DDMEr6x5YUzHDwlxlOA2t7d2RVDPeGl51n7EakU=; b=eyi52UDn5dqKBhdS7ygg9G4AnX
+        JBCYf82oVrxuLjffQ223orxroZMYACAzc771GvAqpIAQBjYHkJkfIIXSXu13GTv9Ch1GeGqoz2i1X
+        KUD3O1BhvEprrPdpOG3RcX7Q5gagqV96FRF8vd2BVemvQCib33PFkUU8/V0FsJVZJaDJWLFekhIwH
+        J5oYD5BM50miP+ru6RavbaY0cxNIanP8H4++QtqtDsV4sU2ftTf+8A4W/uewnhfwrNDkazJRRdLXK
+        an7U7lxmm8hIvSygVFpndkHxi6k2WOtgMrudE7M6QZ4NTeyiYkUHsavPw2MroKxvDfOyZkdEANRYP
+        OdyvWRjg==;
+Received: from s0106a84e3fe8c3f3.cg.shawcable.net ([24.64.144.200] helo=[192.168.0.10])
+        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <logang@deltatee.com>)
+        id 1mfsXe-000p3N-RQ; Wed, 27 Oct 2021 17:41:12 -0600
+To:     Bjorn Helgaas <helgaas@kernel.org>,
+        Dongdong Liu <liudongdong3@huawei.com>
+Cc:     hch@infradead.org, kw@linux.com, leon@kernel.org,
+        linux-pci@vger.kernel.org, rajur@chelsio.com,
+        hverkuil-cisco@xs4all.nl, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20211027231134.GA258571@bhelgaas>
+From:   Logan Gunthorpe <logang@deltatee.com>
+Message-ID: <136155cc-d28c-ef36-c69b-557f7af456be@deltatee.com>
+Date:   Wed, 27 Oct 2021 17:41:07 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-In-Reply-To: <bd4db8da-0d44-1785-5767-1731bdaebef8@iogearbox.net>
+In-Reply-To: <20211027231134.GA258571@bhelgaas>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-CA
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 24.64.144.200
+X-SA-Exim-Rcpt-To: netdev@vger.kernel.org, linux-media@vger.kernel.org, hverkuil-cisco@xs4all.nl, rajur@chelsio.com, linux-pci@vger.kernel.org, leon@kernel.org, kw@linux.com, hch@infradead.org, liudongdong3@huawei.com, helgaas@kernel.org
+X-SA-Exim-Mail-From: logang@deltatee.com
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on ale.deltatee.com
+X-Spam-Level: 
+X-Spam-Status: No, score=-9.7 required=5.0 tests=ALL_TRUSTED,BAYES_00,
+        NICE_REPLY_A autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH V10 6/8] PCI/P2PDMA: Add a 10-Bit Tag check in P2PDMA
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27.10.2021 23:21, Daniel Borkmann wrote:
->Hello Pawan,
->
->On 10/27/21 10:51 PM, Pawan Gupta wrote:
->>Disabling unprivileged BPF by default would help prevent unprivileged
->>users from creating the conditions required for potential speculative
->>execution side-channel attacks on affected hardware as demonstrated by
->>[1][2][3].
->>
->>This will sync mainline with what most distros are currently applying.
->>An admin can enable this at runtime if necessary.
->>
->>Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
->>
->>[1] https://access.redhat.com/security/cve/cve-2019-7308
->>[2] https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-3490
->>[3] https://bugzilla.redhat.com/show_bug.cgi?id=1672355#c5
->
->Some of your above quoted links are just random ?! For example, [2] has really _zero_ to
->do with what you wrote with regards to speculative execution side-channel attacks ...
->
->We recently did a deep dive on our mitigation work we did in BPF here [0]. This also includes
->an appendix with an extract of the main commits related to the different Spectre variants.
->
->I'd suggest to link to that one instead to avoid confusion on what is related and what not.
->
->  [0] https://ebpf.io/summit-2021-slides/eBPF_Summit_2021-Keynote-Daniel_Borkmann-BPF_and_Spectre.pdf
 
-Sure, I will add reference to this presentation.
 
->>---
->>  kernel/bpf/Kconfig | 5 +++++
->>  1 file changed, 5 insertions(+)
->>
->>diff --git a/kernel/bpf/Kconfig b/kernel/bpf/Kconfig
->>index a82d6de86522..73d446294455 100644
->>--- a/kernel/bpf/Kconfig
->>+++ b/kernel/bpf/Kconfig
->>@@ -64,6 +64,7 @@ config BPF_JIT_DEFAULT_ON
->>  config BPF_UNPRIV_DEFAULT_OFF
->>  	bool "Disable unprivileged BPF by default"
->>+	default y
->
->Hm, arm arch has a CPU_SPECTRE Kconfig symbol, see commit c58d237d0852 ("ARM: spectre:
->add Kconfig symbol for CPUs vulnerable to Spectre") that can be selected.
->
->Would be good to generalize it for reuse so archs can select it, and make the above as
->'default y if CPU_SPECTRE'.
+On 2021-10-27 5:11 p.m., Bjorn Helgaas wrote:
+>> @@ -532,6 +577,9 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
+>>  		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
+>>  	}
+>>  done:
+>> +	if (pci_10bit_tags_unsupported(client, provider, verbose))
+>> +		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
+> 
+> I need to be convinced that this check is in the right spot to catch
+> all potential P2PDMA situations.  The pci_p2pmem_find() and
+> pci_p2pdma_distance() interfaces eventually call
+> calc_map_type_and_dist().  But those interfaces don't actually produce
+> DMA bus addresses, and I'm not convinced that all P2PDMA users use
+> them.
+> 
+> nvme *does* use them, but infiniband (rdma_rw_map_sg()) does not, and
+> it calls pci_p2pdma_map_sg().
 
-Thanks for your feedback, I will send a v2 soon. I guess below is how
-you want it to be:
+The rules of the current code is that calc_map_type_and_dist() must be
+called before pci_p2pdma_map_sg(). The calc function caches the mapping
+type in an xarray. If it was not called ahead of time,
+pci_p2pdma_map_type() will return PCI_P2PDMA_MAP_NOT_SUPPORTED, and the
+WARN_ON_ONCE will be hit in
+pci_p2pdma_map_sg_attrs().
 
----
-diff --git a/arch/Kconfig b/arch/Kconfig
-index 8df1c7102643..6aa856d51cb7 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -1091,6 +1091,9 @@ config ARCH_SUPPORTS_RT
-  config CPU_NO_EFFICIENT_FFS
-  	def_bool n
-  
-+config CPU_SPECTRE
-+	bool
-+
-  config HAVE_ARCH_VMAP_STACK
-  	def_bool n
-  	help
-diff --git a/arch/arm/mm/Kconfig b/arch/arm/mm/Kconfig
-index 8355c3895894..44551465fd03 100644
---- a/arch/arm/mm/Kconfig
-+++ b/arch/arm/mm/Kconfig
-@@ -828,9 +828,6 @@ config CPU_BPREDICT_DISABLE
-  	help
-  	  Say Y here to disable branch prediction.  If unsure, say N.
-  
--config CPU_SPECTRE
--	bool
--
-  config HARDEN_BRANCH_PREDICTOR
-  	bool "Harden the branch predictor against aliasing attacks" if EXPERT
-  	depends on CPU_SPECTRE
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index d9830e7e1060..769739da67c6 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -124,6 +124,7 @@ config X86
-  	select CLKEVT_I8253
-  	select CLOCKSOURCE_VALIDATE_LAST_CYCLE
-  	select CLOCKSOURCE_WATCHDOG
-+	select CPU_SPECTRE
-  	select DCACHE_WORD_ACCESS
-  	select EDAC_ATOMIC_SCRUB
-  	select EDAC_SUPPORT
-diff --git a/kernel/bpf/Kconfig b/kernel/bpf/Kconfig
-index a82d6de86522..510a5a73f9a2 100644
---- a/kernel/bpf/Kconfig
-+++ b/kernel/bpf/Kconfig
-@@ -64,6 +64,7 @@ config BPF_JIT_DEFAULT_ON
-  
-  config BPF_UNPRIV_DEFAULT_OFF
-  	bool "Disable unprivileged BPF by default"
-+	default y if CPU_SPECTRE
-  	depends on BPF_SYSCALL
-  	help
-  	  Disables unprivileged BPF by default by setting the corresponding
-@@ -72,6 +73,10 @@ config BPF_UNPRIV_DEFAULT_OFF
-  	  disable it by setting it to 1 (from which no other transition to
-  	  0 is possible anymore).
-  
-+	  Unprivileged BPF can be used to exploit potential speculative
-+	  execution side-channel vulnerabilities on affected hardware. If you
-+	  are concerned about it, answer Y.
-+
-  source "kernel/bpf/preload/Kconfig"
-  
-  config BPF_LSM
+Both NVMe and RDMA (only used in the nvme fabrics code) do the correct
+thing here and we can be sure calc_map_type_and_dist() is called before
+any pages are mapped.
+
+The patch set I'm currently working on will ensure that
+calc_map_type_and_dist() is called before anyone maps a PCI P2PDMA page
+with dma_map_sg*().
+
+> amdgpu_dma_buf_attach() calls pci_p2pdma_distance_many() but I don't
+> know where it sets up P2PDMA transactions.
+
+The amdgpu driver hacked this in before proper support was done, but at
+least it's using pci_p2pdma_distance_many() presumably before trying any
+transfer. Though it's likely broken as it doesn't take into account the
+mapping type and thus I think it always assumes traffic goes through the
+host bridge (seeing it doesn't use pci_p2pdma_map_sg()).
+
+> cxgb4 and qed mention "peer2peer", but I don't know whether they are
+> related; they don't seem to use any pci_p2p.* interfaces.
+
+I'm really not sure what these drivers are doing at all. However, I
+think this is unrelated based on this old patch description[1]:
+
+  Open MPI, Intel MPI and other applications don't support the iWARP
+  requirement that the client side send the first RDMA message. This
+  class of application connection setup is called peer-2-peer. Typically
+  once the connection is setup, _both_ sides want to send data.
+
+  This patch enables supporting peer-2-peer over the chelsio rnic by
+  enforcing this iWARP requirement in the driver itself as part of RDMA
+  connection setup.
+
+Logan
+
+[1] http://lkml.iu.edu/hypermail/linux/kernel/0804.3/1416.html
