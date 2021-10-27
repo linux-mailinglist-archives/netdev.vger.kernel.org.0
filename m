@@ -2,267 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31DCC43D68D
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 00:28:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5465843D6F9
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 00:53:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229700AbhJ0Wat (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 18:30:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41450 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229610AbhJ0Wap (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 18:30:45 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E318CC061745
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 15:28:18 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id z14so6639876wrg.6
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 15:28:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=71spJIGnFrqrdouSR+SowZM1rGrDszQ6QivBGBVwrxM=;
-        b=CTUPmzxFh7u7RgDqN9z2hrXSUAzMpZ6XCCvEeMXFpPcSv0lDRI0BQ3nj28WN0yuQRu
-         GaGFINjc/VD24q9cDUiGeC/cSJsAQ8HTSog1jaDuSD7RcxX6yDsQxvaMmTGZYjAffhcs
-         U9FiUYlL16euw8FAT0quJUzEkoTvec8rQlobr+5LY+euyXSCmXuNekCTtgzZSLbt10RF
-         cYIUH/daPyfEQLth/bFvuvCR/Re+aVNEt776fhMIrgqP+GW7y8v4mJPzLRDO7Wcymper
-         YfWjUdDNsiKM9V5LFXkBti3NoQHs3TIRJYxeK/m/ARe2znjSjhqU0lScULJgLJY3JySL
-         5KOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=71spJIGnFrqrdouSR+SowZM1rGrDszQ6QivBGBVwrxM=;
-        b=PytPQjVTd+/LPn7SeaC7bWWqJCI37QThfkSLxln6Tn6kg8mbl+Huc2lDxIUavDIlG5
-         3A7u3CrZNnLAxiksqD4l9a5xeOhKfeVybS0EPjrERJujnveSfPhXrW7SDuG8w0PHXaAQ
-         ijO3RQev7bLcQ4XppmQ9wO2panSNY78V1yRtd2LvsDGuVkYKkCTPfZYi6vNTzYJBb8pS
-         9vY2U4cO7447PmPLXGIRwGgQHWwQF6DK4Bzd4axAfPvhV4LZcPsRGzQgdlmzb/f1Hd99
-         Kn5HrX9Uckr8XUZOnJUQY64YNQKx2EzGHrt6QUAPetpoXuX3b3kt2NDcIzq7M/rjjQfU
-         EkdQ==
-X-Gm-Message-State: AOAM533/PuNvXGOSK1Ar10tQPwOr86v1r3uAZ41mBSbEMFEAgrtJ486l
-        yO8ZvjyTfiVJYLkwjqCZgUbvlw==
-X-Google-Smtp-Source: ABdhPJyznMWKCylYXdBIPG4173zMZXiUWU+5cGReOY4rcfhKfnB9UIDX8nm/66H3Uau5uvpXFGpTBg==
-X-Received: by 2002:adf:ec88:: with SMTP id z8mr591890wrn.4.1635373697424;
-        Wed, 27 Oct 2021 15:28:17 -0700 (PDT)
-Received: from [192.168.0.162] (188-141-3-169.dynamic.upc.ie. [188.141.3.169])
-        by smtp.gmail.com with ESMTPSA id q1sm916689wmj.20.2021.10.27.15.28.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Oct 2021 15:28:16 -0700 (PDT)
-Message-ID: <9a933103-afbc-3278-3d2e-ade77b0e4b09@linaro.org>
-Date:   Wed, 27 Oct 2021 23:30:18 +0100
+        id S229887AbhJ0Wzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 18:55:42 -0400
+Received: from www62.your-server.de ([213.133.104.62]:39074 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229618AbhJ0Wzm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 18:55:42 -0400
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mfrnC-000CtE-Ho; Thu, 28 Oct 2021 00:53:10 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mfrnC-000D9B-4d; Thu, 28 Oct 2021 00:53:10 +0200
+Subject: Re: [PATCH v16 bpf-next 19/20] net: xdp: introduce bpf_xdp_pointer
+ utility routine
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, shayagr@amazon.com, john.fastabend@gmail.com,
+        dsahern@kernel.org, brouer@redhat.com, echaudro@redhat.com,
+        jasowang@redhat.com, alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com, toke@redhat.com
+References: <cover.1634301224.git.lorenzo@kernel.org>
+ <98e60294b7ba81ca647cffd4d7b87617e9b1e9d9.1634301224.git.lorenzo@kernel.org>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <3d196d1d-69f3-0ff2-1752-f318defbbf33@iogearbox.net>
+Date:   Thu, 28 Oct 2021 00:53:09 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.1
-Subject: Re: [PATCH v2 3/3] wcn36xx: ensure pairing of init_scan/finish_scan
- and start_scan/end_scan
+In-Reply-To: <98e60294b7ba81ca647cffd4d7b87617e9b1e9d9.1634301224.git.lorenzo@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-To:     Benjamin Li <benl@squareup.com>, Kalle Valo <kvalo@codeaurora.org>
-Cc:     Joseph Gates <jgates@squareup.com>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        linux-arm-msm@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eugene Krasnikov <k.eugene.e@gmail.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20211027170306.555535-1-benl@squareup.com>
- <20211027170306.555535-4-benl@squareup.com>
-From:   Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-In-Reply-To: <20211027170306.555535-4-benl@squareup.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26335/Wed Oct 27 10:28:55 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27/10/2021 18:03, Benjamin Li wrote:
-> An SMD capture from the downstream prima driver on WCN3680B shows the
-> following command sequence for connected scans:
-> 
-> - init_scan_req
->      - start_scan_req, channel 1
->      - end_scan_req, channel 1
->      - start_scan_req, channel 2
->      - ...
->      - end_scan_req, channel 3
-> - finish_scan_req
-> - init_scan_req
->      - start_scan_req, channel 4
->      - ...
->      - end_scan_req, channel 6
-> - finish_scan_req
-> - ...
->      - end_scan_req, channel 165
-> - finish_scan_req
-> 
-> Upstream currently never calls wcn36xx_smd_end_scan, and in some cases[1]
-> still sends finish_scan_req twice in a row or before init_scan_req. A
-> typical connected scan looks like this:
-> 
-> - init_scan_req
->      - start_scan_req, channel 1
-> - finish_scan_req
-> - init_scan_req
->      - start_scan_req, channel 2
-> - ...
->      - start_scan_req, channel 165
-> - finish_scan_req
-> - finish_scan_req
-> 
-> This patch cleans up scanning so that init/finish and start/end are always
-> paired together and correctly nested.
-> 
-> - init_scan_req
->      - start_scan_req, channel 1
->      - end_scan_req, channel 1
-> - finish_scan_req
-> - init_scan_req
->      - start_scan_req, channel 2
->      - end_scan_req, channel 2
-> - ...
->      - start_scan_req, channel 165
->      - end_scan_req, channel 165
-> - finish_scan_req
-> 
-> Note that upstream will not do batching of 3 active-probe scans before
-> returning to the operating channel, and this patch does not change that.
-> To match downstream in this aspect, adjust IEEE80211_PROBE_DELAY and/or
-> the 125ms max off-channel time in ieee80211_scan_state_decision.
-> 
-> [1]: commit d195d7aac09b ("wcn36xx: Ensure finish scan is not requested
-> before start scan") addressed one case of finish_scan_req being sent
-> without a preceding init_scan_req (the case of the operating channel
-> coinciding with the first scan channel); two other cases are:
-> 1) if SW scan is started and aborted immediately, without scanning any
->     channels, we send a finish_scan_req without ever sending init_scan_req,
->     and
-> 2) as SW scan logic always returns us to the operating channel before
->     calling wcn36xx_sw_scan_complete, finish_scan_req is always sent twice
->     at the end of a SW scan
-> 
-> Fixes: 8e84c2582169 ("wcn36xx: mac80211 driver for Qualcomm WCN3660/WCN3680 hardware")
-> Signed-off-by: Benjamin Li <benl@squareup.com>
-> ---
->   drivers/net/wireless/ath/wcn36xx/main.c    | 34 +++++++++++++++++-----
->   drivers/net/wireless/ath/wcn36xx/smd.c     |  4 +++
->   drivers/net/wireless/ath/wcn36xx/wcn36xx.h |  1 +
->   3 files changed, 32 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/ath/wcn36xx/main.c b/drivers/net/wireless/ath/wcn36xx/main.c
-> index 18383d0fc0933..37b4016f020c9 100644
-> --- a/drivers/net/wireless/ath/wcn36xx/main.c
-> +++ b/drivers/net/wireless/ath/wcn36xx/main.c
-> @@ -400,6 +400,7 @@ static void wcn36xx_change_opchannel(struct wcn36xx *wcn, int ch)
->   static int wcn36xx_config(struct ieee80211_hw *hw, u32 changed)
->   {
->   	struct wcn36xx *wcn = hw->priv;
-> +	int ret;
->   
->   	wcn36xx_dbg(WCN36XX_DBG_MAC, "mac config changed 0x%08x\n", changed);
->   
-> @@ -415,17 +416,31 @@ static int wcn36xx_config(struct ieee80211_hw *hw, u32 changed)
->   			 * want to receive/transmit regular data packets, then
->   			 * simply stop the scan session and exit PS mode.
->   			 */
-> -			wcn36xx_smd_finish_scan(wcn, HAL_SYS_MODE_SCAN,
-> -						wcn->sw_scan_vif);
-> -			wcn->sw_scan_channel = 0;
-> +			if (wcn->sw_scan_channel)
-> +				wcn36xx_smd_end_scan(wcn, wcn->sw_scan_channel);
-> +			if (wcn->sw_scan_init) {
-> +				wcn36xx_smd_finish_scan(wcn, HAL_SYS_MODE_SCAN,
-> +							wcn->sw_scan_vif);
-> +			}
->   		} else if (wcn->sw_scan) {
->   			/* A scan is ongoing, do not change the operating
->   			 * channel, but start a scan session on the channel.
->   			 */
-> -			wcn36xx_smd_init_scan(wcn, HAL_SYS_MODE_SCAN,
-> -					      wcn->sw_scan_vif);
-> +			if (wcn->sw_scan_channel)
-> +				wcn36xx_smd_end_scan(wcn, wcn->sw_scan_channel);
-> +			if (!wcn->sw_scan_init) {
-> +				/* This can fail if we are unable to notify the
-> +				 * operating channel.
-> +				 */
-> +				ret = wcn36xx_smd_init_scan(wcn,
-> +							    HAL_SYS_MODE_SCAN,
-> +							    wcn->sw_scan_vif);
-> +				if (ret) {
-> +					mutex_unlock(&wcn->conf_mutex);
-> +					return -EIO;
-> +				}
-> +			}
->   			wcn36xx_smd_start_scan(wcn, ch);
-> -			wcn->sw_scan_channel = ch;
->   		} else {
->   			wcn36xx_change_opchannel(wcn, ch);
->   		}
-> @@ -723,7 +738,12 @@ static void wcn36xx_sw_scan_complete(struct ieee80211_hw *hw,
->   	wcn36xx_dbg(WCN36XX_DBG_MAC, "sw_scan_complete");
->   
->   	/* ensure that any scan session is finished */
-> -	wcn36xx_smd_finish_scan(wcn, HAL_SYS_MODE_SCAN, wcn->sw_scan_vif);
-> +	if (wcn->sw_scan_channel)
-> +		wcn36xx_smd_end_scan(wcn, wcn->sw_scan_channel);
-> +	if (wcn->sw_scan_init) {
-> +		wcn36xx_smd_finish_scan(wcn, HAL_SYS_MODE_SCAN,
-> +					wcn->sw_scan_vif);
+On 10/15/21 3:08 PM, Lorenzo Bianconi wrote:
+[...]
+> +static void *bpf_xdp_pointer(struct xdp_buff *xdp, u32 offset,
+> +			     u32 len, void *buf)
+> +{
+> +	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
+> +	u32 size = xdp->data_end - xdp->data;
+> +	void *addr = xdp->data;
+> +	u32 frame_sz = size;
+> +	int i;
+> +
+> +	if (xdp_buff_is_mb(xdp))
+> +		frame_sz += sinfo->xdp_frags_size;
+> +
+> +	if (offset + len > frame_sz)
+> +		return ERR_PTR(-EINVAL);
+
+Given offset is ARG_ANYTHING, the above could overflow. In bpf_skb_*_bytes() we
+guard with offset > 0xffff.
+
+> +	if (offset < size) /* linear area */
+> +		goto out;
+> +
+> +	offset -= size;
+> +	for (i = 0; i < sinfo->nr_frags; i++) { /* paged area */
+> +		u32 frag_size = skb_frag_size(&sinfo->frags[i]);
+> +
+> +		if  (offset < frag_size) {
+> +			addr = skb_frag_address(&sinfo->frags[i]);
+> +			size = frag_size;
+> +			break;
+> +		}
+> +		offset -= frag_size;
 > +	}
->   	wcn->sw_scan = false;
->   	wcn->sw_scan_opchannel = 0;
->   }
-> diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
-> index 3cecc8f9c9647..830341be72673 100644
-> --- a/drivers/net/wireless/ath/wcn36xx/smd.c
-> +++ b/drivers/net/wireless/ath/wcn36xx/smd.c
-> @@ -721,6 +721,7 @@ int wcn36xx_smd_init_scan(struct wcn36xx *wcn, enum wcn36xx_hal_sys_mode mode,
->   		wcn36xx_err("hal_init_scan response failed err=%d\n", ret);
->   		goto out;
->   	}
-> +	wcn->sw_scan_init = true;
->   out:
->   	mutex_unlock(&wcn->hal_mutex);
->   	return ret;
-> @@ -751,6 +752,7 @@ int wcn36xx_smd_start_scan(struct wcn36xx *wcn, u8 scan_channel)
->   		wcn36xx_err("hal_start_scan response failed err=%d\n", ret);
->   		goto out;
->   	}
-> +	wcn->sw_scan_channel = scan_channel;
->   out:
->   	mutex_unlock(&wcn->hal_mutex);
->   	return ret;
-> @@ -781,6 +783,7 @@ int wcn36xx_smd_end_scan(struct wcn36xx *wcn, u8 scan_channel)
->   		wcn36xx_err("hal_end_scan response failed err=%d\n", ret);
->   		goto out;
->   	}
-> +	wcn->sw_scan_channel = 0;
->   out:
->   	mutex_unlock(&wcn->hal_mutex);
->   	return ret;
-> @@ -822,6 +825,7 @@ int wcn36xx_smd_finish_scan(struct wcn36xx *wcn,
->   		wcn36xx_err("hal_finish_scan response failed err=%d\n", ret);
->   		goto out;
->   	}
-> +	wcn->sw_scan_init = false;
->   out:
->   	mutex_unlock(&wcn->hal_mutex);
->   	return ret;
-> diff --git a/drivers/net/wireless/ath/wcn36xx/wcn36xx.h b/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
-> index 1c8d918137da2..fbd0558c2c196 100644
-> --- a/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
-> +++ b/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
-> @@ -248,6 +248,7 @@ struct wcn36xx {
->   	struct cfg80211_scan_request *scan_req;
->   	bool			sw_scan;
->   	u8			sw_scan_opchannel;
-> +	bool			sw_scan_init;
->   	u8			sw_scan_channel;
->   	struct ieee80211_vif	*sw_scan_vif;
->   	struct mutex		scan_lock;
+> +
+> +out:
+> +	if (offset + len < size)
+> +		return addr + offset; /* fast path - no need to copy */
+> +
+> +	if (!buf) /* no copy to the bounce buffer */
+> +		return NULL;
+> +
+> +	/* slow path - we need to copy data into the bounce buffer */
+> +	bpf_xdp_copy_buf(xdp, offset, len, buf, false);
+> +	return buf;
+> +}
+> +
+> +BPF_CALL_4(bpf_xdp_load_bytes, struct xdp_buff *, xdp, u32, offset,
+> +	   void *, buf, u32, len)
+> +{
+> +	void *ptr;
+> +
+> +	ptr = bpf_xdp_pointer(xdp, offset, len, buf);
+> +	if (ptr == ERR_PTR(-EINVAL))
+> +		return -EINVAL;
+
+nit + same below in *_store_bytes(): IS_ERR(ptr) return PTR_ERR(ptr); ? (Or
+should we just return -EFAULT to make it analog to bpf_skb_{load,store}_bytes()?
+Either is okay, imho.)
+
+> +	if (ptr != buf)
+> +		memcpy(buf, ptr, len);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct bpf_func_proto bpf_xdp_load_bytes_proto = {
+> +	.func		= bpf_xdp_load_bytes,
+> +	.gpl_only	= false,
+> +	.ret_type	= RET_INTEGER,
+> +	.arg1_type	= ARG_PTR_TO_CTX,
+> +	.arg2_type	= ARG_ANYTHING,
+> +	.arg3_type	= ARG_PTR_TO_MEM,
+
+ARG_PTR_TO_UNINIT_MEM, or do you need the dst buffer to be initialized?
+
+> +	.arg4_type	= ARG_CONST_SIZE_OR_ZERO,
+
+ARG_CONST_SIZE
+
+> +};
+> +
+> +BPF_CALL_4(bpf_xdp_store_bytes, struct xdp_buff *, xdp, u32, offset,
+> +	   void *, buf, u32, len)
+> +{
+> +	void *ptr;
+> +
+> +	ptr = bpf_xdp_pointer(xdp, offset, len, NULL);
+> +	if (ptr == ERR_PTR(-EINVAL))
+> +		return -EINVAL;
+> +
+> +	if (!ptr)
+> +		bpf_xdp_copy_buf(xdp, offset, len, buf, true);
+> +	else
+> +		memcpy(ptr, buf, len);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct bpf_func_proto bpf_xdp_store_bytes_proto = {
+> +	.func		= bpf_xdp_store_bytes,
+> +	.gpl_only	= false,
+> +	.ret_type	= RET_INTEGER,
+> +	.arg1_type	= ARG_PTR_TO_CTX,
+> +	.arg2_type	= ARG_ANYTHING,
+> +	.arg3_type	= ARG_PTR_TO_MEM,
+> +	.arg4_type	= ARG_CONST_SIZE_OR_ZERO,
+
+ARG_CONST_SIZE, or do you have a use case for bpf_xdp_store_bytes(..., buf, 0)?
+
+> +};
+> +
+>   static int bpf_xdp_mb_increase_tail(struct xdp_buff *xdp, int offset)
+>   {
+>   	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
+> @@ -7619,6 +7749,10 @@ xdp_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>   		return &bpf_xdp_adjust_tail_proto;
+>   	case BPF_FUNC_xdp_get_buff_len:
+>   		return &bpf_xdp_get_buff_len_proto;
+> +	case BPF_FUNC_xdp_load_bytes:
+> +		return &bpf_xdp_load_bytes_proto;
+> +	case BPF_FUNC_xdp_store_bytes:
+> +		return &bpf_xdp_store_bytes_proto;
+>   	case BPF_FUNC_fib_lookup:
+>   		return &bpf_xdp_fib_lookup_proto;
+>   	case BPF_FUNC_check_mtu:
+> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+> index 1cb992ec0cc8..dad1d8c3a4c1 100644
+> --- a/tools/include/uapi/linux/bpf.h
+> +++ b/tools/include/uapi/linux/bpf.h
+> @@ -4920,6 +4920,22 @@ union bpf_attr {
+>    *		Get the total size of a given xdp buff (linear and paged area)
+>    *	Return
+>    *		The total size of a given xdp buffer.
+> + *
+> + * long bpf_xdp_load_bytes(struct xdp_buff *xdp_md, u32 offset, void *buf, u32 len)
+> + *	Description
+> + *		This helper is provided as an easy way to load data from a
+> + *		xdp buffer. It can be used to load *len* bytes from *offset* from
+> + *		the frame associated to *xdp_md*, into the buffer pointed by
+> + *		*buf*.
+> + *	Return
+> + *		0 on success, or a negative error in case of failure.
+> + *
+> + * long bpf_xdp_store_bytes(struct xdp_buff *xdp_md, u32 offset, void *buf, u32 len)
+> + *	Description
+> + *		Store *len* bytes from buffer *buf* into the frame
+> + *		associated to *xdp_md*, at *offset*.
+> + *	Return
+> + *		0 on success, or a negative error in case of failure.
+>    */
+>   #define __BPF_FUNC_MAPPER(FN)		\
+>   	FN(unspec),			\
+> @@ -5101,6 +5117,8 @@ union bpf_attr {
+>   	FN(get_branch_snapshot),	\
+>   	FN(trace_vprintk),		\
+>   	FN(xdp_get_buff_len),		\
+> +	FN(xdp_load_bytes),		\
+> +	FN(xdp_store_bytes),		\
+>   	/* */
+>   
+>   /* integer value in 'imm' field of BPF_CALL instruction selects which helper
 > 
 
-LGTM
-
-Tested-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
