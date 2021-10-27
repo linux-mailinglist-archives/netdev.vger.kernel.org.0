@@ -2,87 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 306AC43CC64
-	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 16:38:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7B0943CC72
+	for <lists+netdev@lfdr.de>; Wed, 27 Oct 2021 16:39:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238872AbhJ0Ok1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 10:40:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46076 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238908AbhJ0Ok0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 10:40:26 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79172C061570;
-        Wed, 27 Oct 2021 07:38:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Content-Type:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-To:Resent-Cc:
-        Resent-Message-ID:In-Reply-To:References;
-        bh=t24zkGGtpZN1OU7jf/ooKPLCofpu4nHbLEvJSrls7Zk=; t=1635345481; x=1636555081; 
-        b=uPMuS7umEWDL+U2NPJ7dBLxkph0xZg+S4yh5MJOTjE+e9QHAvXmHkHUqymyq8Dbkqqe+DrPw1mz
-        7A9LCqLgvQ0veeegcAJQwOI5BNqsTobDMfZIr/ZnI5QY5MX1MbTZA45segJ5B0ZogcRgwmpGsIult
-        dhAvwg+jBzW5hdfJ/2n6xpkN16E55OlfcMow2ulm35v7dymvAWMlw+SBAZf2ZZmXrc8fPY1BIXf/T
-        7cnmg6BMYhdpbMIVSougjv5iJwiACHswLwWbHoeSWX/HhK8iFCcT/36ZVidkj/30v9uRgBFhHoa6q
-        E7jzmnDUPDiuCvxSg9mNfpaAR/I514rjJ0Aw==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1mfk3z-007Yfx-6r;
-        Wed, 27 Oct 2021 16:37:59 +0200
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Subject: pull-request: mac80211 2021-10-27
-Date:   Wed, 27 Oct 2021 16:37:55 +0200
-Message-Id: <20211027143756.91711-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.31.1
+        id S237799AbhJ0Olv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 10:41:51 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33662 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231462AbhJ0Olu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Oct 2021 10:41:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=GE8dI0QyjhW+8qK2l/hMr0UeoLYBgV2bsz3Gdm35mVY=; b=RQDVWQG14uUU9bti//OtaVaVHL
+        X7gHT8DsdHSnCeHJiUMQSfhh6Muf+ZaTZ3+T1PwDnt4CWz/J7UL/p5Y3ikzCXzVQ+U3CX3fB5fUVr
+        qMYVsDvBcSHQ8gXwnBtQz7jbdjqe4y17x1psvihF0Axrgjhq6jBGaIUaOFoqETXlTuYQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mfk5J-00Bu8J-Am; Wed, 27 Oct 2021 16:39:21 +0200
+Date:   Wed, 27 Oct 2021 16:39:21 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        Sudarsana Reddy Kalluru <skalluru@marvell.com>,
+        "malin1024@gmail.com" <malin1024@gmail.com>,
+        Shai Malin <smalin@marvell.com>,
+        Omkar Kulkarni <okulkarni@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>
+Subject: Re: [EXT] Re: [PATCH net-next 1/2] bnx2x: Utilize firmware 7.13.20.0
+Message-ID: <YXlkmb4UvQc6P0pq@lunn.ch>
+References: <20211026193717.2657-1-manishc@marvell.com>
+ <20211026140759.77dd8818@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <PH0PR18MB465598CDD29377C300C3184CC4859@PH0PR18MB4655.namprd18.prod.outlook.com>
+ <20211027070341.159b15fa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211027070341.159b15fa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+> All the patch is doing is changing some offsets. Why can't you just
+> make the offset the driver uses dependent on the FW version?
+> 
+> Would be great if the engineer who wrote the code could answer that.
 
-Two more fixes. Both issues have been around for a while though.
+It is also not clear why the offsets need to change. Why not add the
+new facility at the end, so the offsets don't change?
 
-Please pull and let me know if there's any problem.
-
-Thanks,
-johannes
-
-
-
-The following changes since commit 95a359c9553342d36d408d35331ff0bfce75272f:
-
-  net: ethernet: microchip: lan743x: Fix dma allocation failure by using dma_set_mask_and_coherent (2021-10-24 13:38:56 +0100)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git tags/mac80211-for-net-2021-10-27
-
-for you to fetch changes up to 689a0a9f505f7bffdefe6f17fddb41c8ab6344f6:
-
-  cfg80211: correct bridge/4addr mode check (2021-10-25 15:23:20 +0200)
-
-----------------------------------------------------------------
-Two fixes:
- * bridge vs. 4-addr mode check was wrong
- * management frame registrations locking was
-   wrong, causing list corruption/crashes
-
-----------------------------------------------------------------
-Janusz Dziedzic (1):
-      cfg80211: correct bridge/4addr mode check
-
-Johannes Berg (1):
-      cfg80211: fix management registrations locking
-
- include/net/cfg80211.h |  2 --
- net/wireless/core.c    |  2 +-
- net/wireless/core.h    |  2 ++
- net/wireless/mlme.c    | 26 ++++++++++++++------------
- net/wireless/util.c    | 14 +++++++-------
- 5 files changed, 24 insertions(+), 22 deletions(-)
-
+    Andrew
