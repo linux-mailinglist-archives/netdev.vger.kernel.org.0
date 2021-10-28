@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 187C343D869
+	by mail.lfdr.de (Postfix) with ESMTP id F175243D86C
 	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 03:10:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229685AbhJ1BMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 21:12:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53892 "EHLO mail.kernel.org"
+        id S229775AbhJ1BMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 21:12:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53910 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229505AbhJ1BMe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229614AbhJ1BMe (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 27 Oct 2021 21:12:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id E288C60F6F;
-        Thu, 28 Oct 2021 01:10:07 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0FAA4610EA;
+        Thu, 28 Oct 2021 01:10:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1635383408;
-        bh=mDp1GwgekEy6ztl0VIl6cxvMpngpMPhc8/fK8g+I0Qs=;
+        bh=09eO0wZDntI55W+cJ/zA1jTOTJ0PpNEQU1zaPA1N6DU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TM9Fuegk/I3Z5IdkU8krvqaBC0HldYZR+y/f6JjYKdoLixsq5sx1o8tZp6ES8ACBl
-         4xltjn2kc7DaSbVo9Mac9AhnWfm/+A3/87MZw0g1ikN1FPwlQV/Bj4HG1bjwXoEbNF
-         deL2Y6Ty9qZQeljiD5B7fhDj3lPZMWecOdMDvDs2/om77hsVphfYs0k0pX7jyukvAx
-         ZCWMTK8htlgCC2gUwDbyoPkQqmS7DT2UwXnIZZj1CFaVDLt6w20kRuKfmF/lephBjr
-         VaSm7xW5V/tBYIIOud6wzKfZl82FjKFmHU8l5ZaXepsf0TA7EHknUcp/HMTch1iBHU
-         lu0e0Fta0yg8Q==
+        b=SblHX/hUnfL14q7+i0jVaYArVCWX/SOxhcv0meW3kQMPfOkO68cQ/T6mN/MBJpIiq
+         gjI2UbGcXLL2KZBehsgS8kc1SA1vWrT4SEIPEDeJnzZdeiQIFrO0gmkM/mjMB4htpb
+         5T1t3bqjsCgzUXpi6jN46Hx7Q3PO83M8440JWQyn0w3t8hO2QSrbD5ElsY6GthxzPB
+         eCcNVpwpTJ69lmGTrcjyWTLVZq6ri15ylTPTTqUAoNMrb3yeZYCd0tRKWYdLGqO7+l
+         ImUyC3OZg+zr0vxJHXhNlzCw1D8zGPJXCVWhs+pT0Qx9vjoSpbbpl4qJTA0I413Fr/
+         5nBK/jSZewCYQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id CAE4160972;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EA80660A88;
         Thu, 28 Oct 2021 01:10:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: macb: Fix mdio child node detection
+Subject: Re: [PATCH net-next] net: thunderbolt: use eth_hw_addr_set()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163538340782.2556.11605372054075793094.git-patchwork-notify@kernel.org>
+Message-Id: <163538340795.2556.11827618042244324032.git-patchwork-notify@kernel.org>
 Date:   Thu, 28 Oct 2021 01:10:07 +0000
-References: <20211026173950.353636-1-linux@roeck-us.net>
-In-Reply-To: <20211026173950.353636-1-linux@roeck-us.net>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sean.anderson@seco.com,
-        andrew@lunn.ch
+References: <20211026175547.3198242-1-kuba@kernel.org>
+In-Reply-To: <20211026175547.3198242-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        michael.jamet@intel.com, mika.westerberg@linux.intel.com,
+        YehezkelShB@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -49,19 +48,19 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue, 26 Oct 2021 10:39:50 -0700 you wrote:
-> Commit 4d98bb0d7ec2 ("net: macb: Use mdio child node for MDIO bus if it
-> exists") added code to detect if a 'mdio' child node exists to the macb
-> driver. Ths added code does, however, not actually check if the child node
-> exists, but if the parent node exists. This results in errors such as
+On Tue, 26 Oct 2021 10:55:47 -0700 you wrote:
+> Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
+> of VLANs...") introduced a rbtree for faster Ethernet address look
+> up. To maintain netdev->dev_addr in this tree we need to make all
+> the writes to it go through appropriate helpers.
 > 
-> macb 10090000.ethernet eth0: Could not attach PHY (-19)
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 > 
 > [...]
 
 Here is the summary with links:
-  - net: macb: Fix mdio child node detection
-    https://git.kernel.org/netdev/net-next/c/8db3cbc50748
+  - [net-next] net: thunderbolt: use eth_hw_addr_set()
+    https://git.kernel.org/netdev/net-next/c/5a48585d7ec1
 
 You are awesome, thank you!
 -- 
