@@ -2,71 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01EB343E2EF
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 16:00:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E197543E2FB
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 16:01:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230493AbhJ1OCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 10:02:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46982 "EHLO mail.kernel.org"
+        id S231282AbhJ1OD3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 10:03:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47392 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230401AbhJ1OCg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Oct 2021 10:02:36 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id A59D161108;
-        Thu, 28 Oct 2021 14:00:09 +0000 (UTC)
+        id S230442AbhJ1ODS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Oct 2021 10:03:18 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BF74B610F8;
+        Thu, 28 Oct 2021 14:00:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635429609;
-        bh=xSP6IzfMgUiB9DvJ3+rpm4YvhRDsPk2r5L5Y+8X8dD0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=I+PzAMIrhURdfSmAH7//NEGWDWYQ+D7e+RhsHBnfKvztHKaCKF5dGbYxAoJm1drSc
-         CMwZsJ3py1n6aKhdT5IK3L586Kg827WIi1tvwj1sIzL1BH9db/FSbRz4UllskrMTFz
-         G7HuRF2PsYJxD3dhJ+uX8j9THvleCnLzOtWmblkcHwkTEXn/JTQ91a8bCbC8JliP+q
-         Zh9RMC+eM/L0xKZ5yBgTDFiCnZdl6cINmCHIcyFJUo6cOZq8/5xxzokCW8f+QFdw+v
-         E0PyX3D/aeTLyiMUN8KbHe6nOLL09MbNJVU6ZEY8UFWd6D4F60wwBRMzwZO8RhxWYh
-         05bv+bkbMFzfQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A00E2609CC;
-        Thu, 28 Oct 2021 14:00:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1635429652;
+        bh=befpioNaBoCsU26abS9DdkNYMXPxAUWRWsMO1jqOJXo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=uyXe9ZVLedivH5p6YcQejSc5sgHFh0v2znTJYBaLZ9tRQ7gYrOmgcBoTu2d/pmzo3
+         lFwSeDHXDmA5q3wcAM+GoZQUGsfVje8RFD3pQq/7O6WEIYcgXG+e98Eyi+a9X64EAu
+         F0VJ4PzcuPa4Pl1zzH3ysT7DsKS7yoFcYBhWSxTNC4i6vW5AbQf9vXrZP7yizsRt1F
+         kgPaGdcx+Ci0B/1rd05hnxx5+IMaCQuM21NfMnEhibyKeBFG1eRS3CqcJFBTrTB4I2
+         DsNgrUs/w3x7T4K2vpaMuZWxFPy7XPdrrGXRq8o5YaGBuWm3zST5DozCuyWJprU/N4
+         wIwcobLz84KXQ==
+Date:   Thu, 28 Oct 2021 07:00:50 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Ziyang Xuan <william.xuanziyang@huawei.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net] net: vlan: fix a UAF in vlan_dev_real_dev()
+Message-ID: <20211028070050.6ca7893b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211028114503.GM2744544@nvidia.com>
+References: <20211027121606.3300860-1-william.xuanziyang@huawei.com>
+        <20211027184640.7955767e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20211028114503.GM2744544@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] devlink: Simplify internal devlink params
- implementation
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163542960965.12929.14691319462973764006.git-patchwork-notify@kernel.org>
-Date:   Thu, 28 Oct 2021 14:00:09 +0000
-References: <efec83a9e9479018c324f12c1a99b2a9e3ee29f7.1635427378.git.leonro@nvidia.com>
-In-Reply-To: <efec83a9e9479018c324f12c1a99b2a9e3ee29f7.1635427378.git.leonro@nvidia.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, leonro@nvidia.com,
-        jiri@nvidia.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Thu, 28 Oct 2021 16:23:21 +0300 you wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
+On Thu, 28 Oct 2021 08:45:03 -0300 Jason Gunthorpe wrote:
+> > But will make all the callers of vlan_dev_real_dev() feel like they
+> > should NULL-check the result, which is not necessary.  
 > 
-> Reduce extra indirection from devlink_params_*() API. Such change
-> makes it clear that we can drop devlink->lock from these flows, because
-> everything is executed when the devlink is not registered yet.
+> Isn't it better to reliably return NULL instead of a silent UAF in
+> this edge case? 
+
+I don't know what the best practice is for maintaining sanity of
+unregistered objects.
+
+If there really is a requirement for the real_dev pointer to be sane we
+may want to move the put_device(real_dev) to vlan_dev_free(). There
+should not be any risk of circular dependency but I'm not 100% sure.
+
+> > RDMA must be calling this helper on a vlan which was already
+> > unregistered, can we fix RDMA instead?  
 > 
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> RDMA holds a get on the netdev which prevents unregistration, however
+> unregister_vlan_dev() does:
 > 
-> [...]
+>         unregister_netdevice_queue(dev, head);
+>         dev_put(real_dev);
+> 
+> Which corrupts the still registered vlan device while it is sitting in
+> the queue waiting to unregister. So, it is not true that a registered
+> vlan device always has working vlan_dev_real_dev().
 
-Here is the summary with links:
-  - [net-next] devlink: Simplify internal devlink params implementation
-    https://git.kernel.org/netdev/net-next/c/ee775b56950f
+That's not my reading, unless we have a different definition of
+"registered". The RDMA code in question runs from a workqueue, at the
+time the UNREGISTER notification is generated all objects are still
+alive and no UAF can happen. Past UNREGISTER extra care is needed when
+accessing the object.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Note that unregister_vlan_dev() may queue the unregistration, without
+running it. If it clears real_dev the UNREGISTER notification will no
+longer be able to access real_dev, which used to be completely legal.
