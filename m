@@ -2,86 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B95F043E788
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 19:54:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87FF143E7EC
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 20:02:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230397AbhJ1R4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 13:56:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50700 "EHLO
+        id S230448AbhJ1SEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 14:04:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230473AbhJ1R4Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 13:56:24 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9006C061745
-        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 10:53:56 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id 5so27398531edw.7
-        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 10:53:56 -0700 (PDT)
+        with ESMTP id S230495AbhJ1SEV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 14:04:21 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 357B5C0431A2;
+        Thu, 28 Oct 2021 11:00:31 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id d204so17430570ybb.4;
+        Thu, 28 Oct 2021 11:00:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=WZwJd6pQXuj90DgXnmrq+JdASJsQQ5coXQgD2NBlIMM=;
-        b=qnAz/d7q/TDFqW/0iBgAdTdriYZv2eXb3FJ8w68ffn4ileagqBwP6qLze2/cGcU+aZ
-         A7yPMjQrWkYeriKci7bLmWgXbEpToqxjJAnV66a380uBzgVaK6IHN/aLslSdAAZ7v00R
-         rF+Wtr/ivntMOk9An9/sgAu9UBAB30U6iRNOGtlt67Ku7zZRf+vcjW8neTXIlcVKB5xD
-         CtnwmkQyFm4MJv1aFJXXXFsVDfM3JHqQS/AwQhx3ZwBaHvKpm8bN+FtWVcHaAeQLJRRr
-         BN/W9nIM2ZeKbFInJqKsn+G6+eW/FzmIZaSycxYYiLyxkOEUaYQZso9GtPu9YeKCE/bh
-         6JIg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/UqmxhR8480mrjTDLn3IXeFR7Vq7XPYW3k/R4b/MBdo=;
+        b=VSnElJ0A/9MYWA250j8kXsCaxHxduIHgTlF9Eb/o3RmoI7KBZEMoQqTbCF5oq88TCv
+         CG8hKVkphajrx4B3lQxyNo35F1OPtjLlrm0X3Ruaqbhp8vWhZXgn86j/a+51FOxjw8qb
+         WIu3uxi4DAix3lzCjY29UCMWIH8GBwOK4moufkFPYAbKZCEVKe62fPwilram4ApZph3i
+         E+BqZw6UjbWD420k2RYH5c+ImV6IcBHKXCkcc83Gw0DjP15N/9RdqSwwtjgbO6htmOkv
+         jszttNXZyMquaN+ZCHYIsHch26LXalequYrvgu47DfHAkSAdmjALdRe7gC5UZRKu1CGj
+         H2fA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=WZwJd6pQXuj90DgXnmrq+JdASJsQQ5coXQgD2NBlIMM=;
-        b=E3mv7F88czhaUUtNddW+NzuQks3+2WZogpjbWC4KjgDvmBs/qp5gJ8cjgMZk64woWv
-         fTC+9AdkCpnDk3EeA/CyqHwOnzK0j6XhBP0L8gXVd1Rv2S93UXMgumEZiYNS3xXvX9OB
-         i4nlLnN8J2dG/9ABfHDjJmQYM5e+BxhgRlU/T20k+qw26jc9V/q411Bb93wQHRFk5ozJ
-         X+92sq81Mdkx+HEouxs/S1Cj+L95gzhH9SXfvOJlQZzlpNXhPqHMqgDKQ4A/+GpoF5ev
-         7Lrk4sTCirzfSfega9sSHmMFDRdGp0OkTdhy1NiZJk+GQPlX7o+uZv/+CAYkY+VxOWQo
-         iteg==
-X-Gm-Message-State: AOAM533/yxr4hFpR4fpA3a0ay4jDUkXlyUkld7P284kCLqfpqPerbZ63
-        A38hoHEcRwrZgQ+rm7LyWwhVmqgCLcko9SkBAGc=
-X-Google-Smtp-Source: ABdhPJw+SqyuKCmUM9RzUAvokPuk1wxXii+TxpWHncJRQVnE2vWsCdxjTcaSvV33gxNl544mTAEtoxaWcIBkB99hOLo=
-X-Received: by 2002:a50:e08a:: with SMTP id f10mr8098310edl.319.1635443635320;
- Thu, 28 Oct 2021 10:53:55 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/UqmxhR8480mrjTDLn3IXeFR7Vq7XPYW3k/R4b/MBdo=;
+        b=c0UaTfrsSqO22866eOk4PGIFneV+vg/9D8SLJdflu4gu2PNR4Dq3tWK+EilhboqSwN
+         xF4vybPG8DBy55xig9j5GU4e0ZzhFnoH5ni6sQ/HNxiBzXcTEKhvyoys0FISb8lXHeKJ
+         j186UmioUwsq4fqzxKj8ZuK/0WQhwX+dRhBG6viGRW/toMXzsNccJVKIv4ShhevMsgl7
+         uRO3wwlKn0mqEAd2FHl+uqel2HTPHx0GEASqx4vMqlJnQxQksqiqoQTT6WJNAt7M5DB1
+         YDrOpktJnzXBZqc9vMD2rGPl3XjW72xqcK4bbUt22VWCISCifnesCdQ+4mhe1bljbNJw
+         kxQQ==
+X-Gm-Message-State: AOAM530ZYJUIKqiWlN5vcqZCqvSlMBrz89QWcbjKnRAVnjHVVcDIkpRg
+        /VC8tgx1cFGNunvhBRqlGmkOyhISHIqPPtyoPyFp2b/sXAENgg==
+X-Google-Smtp-Source: ABdhPJyraz2B+xsLtN0q+nN4Bnt7vnk+K8y9wJL9buOASAh9Ff67k7SI8O/Ll8JHVKP3dxxL+nVAG6VvRvzRNcm17X4=
+X-Received: by 2002:a25:cc4c:: with SMTP id l73mr3628202ybf.114.1635444030250;
+ Thu, 28 Oct 2021 11:00:30 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a50:6c8b:0:0:0:0:0 with HTTP; Thu, 28 Oct 2021 10:53:54
- -0700 (PDT)
-Reply-To: jennehkandeh@yahoo.com
-From:   Jenneh Kandeh <efffbi12@gmail.com>
-Date:   Thu, 28 Oct 2021 10:53:54 -0700
-Message-ID: <CANLFAeTT6g5B8Z-Su2bK6Lxt5+VJSJhedN-A0d2QNoPGifSAfw@mail.gmail.com>
-Subject: Re: Regarding Of My Late Father's Fund $10,200,000
-To:     undisclosed-recipients:;
+References: <20211028063501.2239335-1-memxor@gmail.com> <20211028063501.2239335-5-memxor@gmail.com>
+In-Reply-To: <20211028063501.2239335-5-memxor@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 28 Oct 2021 11:00:18 -0700
+Message-ID: <CAEf4Bza=PU3tKLs22_g-tn=-S12mZLLXEyPOzr1TRMC9mRDnZQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 4/8] libbpf: Ensure that BPF syscall fds are
+ never 0, 1, or 2
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Song Liu <songliubraving@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Networking <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-dear,
+On Wed, Oct 27, 2021 at 11:35 PM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
+>
+> Add a simple wrapper for passing an fd and getting a new one >= 3 if it
+> is one of 0, 1, or 2. There are two primary reasons to make this change:
+> First, libbpf relies on the assumption a certain BPF fd is never 0 (e.g.
+> most recently noticed in [0]). Second, Alexei pointed out in [1] that
+> some environments reset stdin, stdout, and stderr if they notice an
+> invalid fd at these numbers. To protect against both these cases, switch
+> all internal BPF syscall wrappers in libbpf to always return an fd >= 3.
+> We only need to modify the syscall wrappers and not other code that
+> assumes a valid fd by doing >= 0, to avoid pointless churn, and because
+> it is still a valid assumption. The cost paid is two additional syscalls
+> if fd is in range [0, 2].
+>
+>   [0]: e31eec77e4ab ("bpf: selftests: Fix fd cleanup in get_branch_snapshot")
+>   [1]: https://lore.kernel.org/bpf/CAADnVQKVKY8o_3aU8Gzke443+uHa-eGoM0h7W4srChMXU1S4Bg@mail.gmail.com
+>
+> Acked-by: Song Liu <songliubraving@fb.com>
+> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> ---
 
-I got your contact through the internet due to serious searching for a
-reliable personality.  I am Jenneh Kandeh from FreeTown Capital of
-Sierra Leone. Time of opposed to the government of President Ahmad
-Tejan Kebbah the ex-leader.
+LGTM, thanks.
 
-Since 21st November, 2005 But I am current residing in Porto-Novo
-Benin due to war of my country, my mother killed on 04/01/2002 for
-Sierra Leone civilian war my father decided to change another
-residence country with me because I am only child for my family bad
-news that my father passed away on 25/11/2018. During the war, My
-father made a lot of money through the illegal sales of Diamonds. To
-the tune of $10,200,000.
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
-This money is currently and secretly kept in ECOWAS security company
-here in Benin, but because of the political turmoil which still exists
-here in Africa, I can not invest the money by myself, hence am
-soliciting your help to help me take these funds into your custody and
-also advise me on how to invest it.
+>  tools/lib/bpf/bpf.c             | 35 +++++++++++++++++++++------------
+>  tools/lib/bpf/libbpf_internal.h | 24 ++++++++++++++++++++++
+>  2 files changed, 46 insertions(+), 13 deletions(-)
+>
 
-And I want to add here that if agreed 35% of the total worth of the
-fund will be yours minus your total expenses incurred during the
-clearing of the fund in
-Porto Novo Benin that 35% is a $3,570,000 I would like to invest on
-heavy duty agricultural equipment and earth moving machines to enable
-me go into a full scale mechanized farming.
-
-l wait to hear from you
+[...]
