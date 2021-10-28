@@ -2,116 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5A6543DDE3
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 11:36:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5198443DDFE
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 11:48:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230160AbhJ1JjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 05:39:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48590 "EHLO
+        id S230114AbhJ1Jut (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 05:50:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230143AbhJ1JjQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 05:39:16 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9F91C061745;
-        Thu, 28 Oct 2021 02:36:49 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id 5so21662727edw.7;
-        Thu, 28 Oct 2021 02:36:49 -0700 (PDT)
+        with ESMTP id S229850AbhJ1Jus (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 05:50:48 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF0FC061745
+        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 02:48:21 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id s13so1909183wrb.3
+        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 02:48:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=heVQdx8kuIp03Ln79hY3i096v+do8vPuzLCHTVsedUA=;
-        b=Vjhw42kql2G9KSW8o3SWp6WhEjqv4/7eh3I35kFSAxpODJIgRbkAG8wuapLDC1m03U
-         hZeOfzNEeSkwlwjDvHpztCrvqGcHENaOIme1U+yG0guaOdRlMO1ptzrFnlX0IpsjKPCp
-         YAgJPoMHK4sVQWlSz2tyO6wVYJleT2JYxH0oYsAsKQJPjxtFqFvjRX4z2vp8Aw1Wmq14
-         /6ZFXwH/o1JE1aX5IGIR7XwvefWZHqxSn63zQwvjt0Bw8N77Eeh37Mt8j261Pj0mRjfO
-         S1JrdokYMv9a++JkUwzWZIHc3bqkPguG+mBRT5MlEW4PNeF3iWwFoCLnfcWVuj7rMBZq
-         y6RA==
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=diHVjz1WhrjX75ZOoRS+Bny9Hg9Bwrniy+m7QlCdwYs=;
+        b=iUfCTIoncygx0YnWQYW+UWjjDHOYYyKRKp2J6jtpkVESAVqxQgSPpUtTt3Zf9iZafM
+         kzn5Y2gHgrLBUYhwCN7KypmNUQQn48S+d+rHRRhn5XIAYxuyyKIQzrOlOTQafFw9v4Te
+         wzwen6ixvOMRfwuAtnFDjIP6Ho5rPVlbFb2tg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=heVQdx8kuIp03Ln79hY3i096v+do8vPuzLCHTVsedUA=;
-        b=AiX18GDtimPMIojSYL1Pd/KRPKkH9v6qV/phpdC6FcEsW8m6G/Cp4jPbx0E5AbsPhm
-         WA5VeXIqFc1IgQWYQKotZNJfjUBPPR06duQ83xWboC9FM62Q/JW9x//JChkzE0G0pOyd
-         nTrN8F7XEpmnVNRJtkuEGK84nBuwRET85nFqXFv4auRDCkwq8aBFsqGDoYZPCWU24xB+
-         d0QRExg1FR2jCcCMo5XcCzHn4LYXmeDNghIXap7EDrR9SvFaiNHi/z2bGL+Y4jrmpiG6
-         4Iydtx0IInTkvaC/rJynyu0208G/XT3cEQuFGZb/kKvf02RkhJdnTynBLrbs4IeX7eJa
-         O7zw==
-X-Gm-Message-State: AOAM533uJB8MZKlCP7uRz9Wp9i6EjjKWNhzej7kJr63Sx79f+o7aWdyn
-        7jcm9S8XCGLNVb5PjqHJnpgQnRd3wd1cQA==
-X-Google-Smtp-Source: ABdhPJxEnhf7Mf7vP9PFD0gqTYsNcP08ImZfC/2eOztLDDUWTZ0cr4rhSyUvgXcV+IfI2AsuXJ8G6w==
-X-Received: by 2002:aa7:cb8a:: with SMTP id r10mr4685187edt.237.1635413808252;
-        Thu, 28 Oct 2021 02:36:48 -0700 (PDT)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id s12sm1379865edc.48.2021.10.28.02.36.47
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=diHVjz1WhrjX75ZOoRS+Bny9Hg9Bwrniy+m7QlCdwYs=;
+        b=AXag0akwZqDIDuGF22zG6VKmp5ogekn68L0aRjLsG7vyxWsnHpNxNKWe9AcNwLv6bh
+         QePVNuBWBrRcCL/euPeM2kwK1ITeKSSYcVQXT/7HPxhlcsqKlxhvvCRx2dD/XTug5rGj
+         SutSTeZLjeOIvUrI4Lpk0k9yq3j+fB/BeaU+OY1MCwy2n3I0MxEL/jokFT6H5gypG2g7
+         6qYR3qepFsR4pMe8xseXNtKbmC2EPg3ut0X7Y2V5AqWsULY+Qs0WRL7xwErCZvDdNIiE
+         Vs8ZElT/pL6HsCxTL/z1QGXbT+H7Z7/1r8gG7o41B5jFi0PWSaO4ZxszOhfu3PunzZsy
+         FKtA==
+X-Gm-Message-State: AOAM531OVKstdHt5b381BhSj1ndf60Z1mSFxLXsv6384K5L/lM6itGuQ
+        US5cVtrTiLmRxT1kUSi1itfZyuRO6cfIUw==
+X-Google-Smtp-Source: ABdhPJxQwK82OCyiLT+soGx28WhlUDexNTS1YVvXDZAP/5uAg03hiJCeldbDzk6Qh2+n0TfSwEycJQ==
+X-Received: by 2002:a5d:4949:: with SMTP id r9mr4140560wrs.439.1635414499634;
+        Thu, 28 Oct 2021 02:48:19 -0700 (PDT)
+Received: from altair.lan (2.f.6.6.b.3.3.0.3.a.d.b.6.0.6.0.f.f.6.2.a.5.a.7.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:7a5a:26ff:606:bda3:33b:66f2])
+        by smtp.googlemail.com with ESMTPSA id i6sm3378029wry.71.2021.10.28.02.48.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Oct 2021 02:36:47 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Subject: [PATCH net 4/4] sctp: return true only for pathmtu update in sctp_transport_pl_toobig
-Date:   Thu, 28 Oct 2021 05:36:04 -0400
-Message-Id: <81d365e3186a0ad69dadf5c316637696b64c7f1d.1635413715.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <cover.1635413715.git.lucien.xin@gmail.com>
-References: <cover.1635413715.git.lucien.xin@gmail.com>
+        Thu, 28 Oct 2021 02:48:19 -0700 (PDT)
+From:   Lorenz Bauer <lmb@cloudflare.com>
+To:     viro@zeniv.linux.org.uk, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     mszeredi@redhat.com, gregkh@linuxfoundation.org,
+        Lorenz Bauer <lmb@cloudflare.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH bpf-next v3 0/4] Support RENAME_EXCHANGE on bpffs
+Date:   Thu, 28 Oct 2021 10:47:20 +0100
+Message-Id: <20211028094724.59043-1-lmb@cloudflare.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sctp_transport_pl_toobig() supposes to return true only if there's
-pathmtu update, so that in sctp_icmp_frag_needed() it would call
-sctp_assoc_sync_pmtu() and sctp_retransmit(). This patch is to fix
-these return places in sctp_transport_pl_toobig().
+Add support for renameat2(RENAME_EXCHANGE) on bpffs. This is useful
+for atomic upgrades of our sk_lookup control plane.
 
-Fixes: 836964083177 ("sctp: do state transition when receiving an icmp TOOBIG packet")
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/sctp/transport.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+v3:
+- Re-use shmem_exchange (Miklos)
 
-diff --git a/net/sctp/transport.c b/net/sctp/transport.c
-index 1f2dfad768d5..133f1719bf1b 100644
---- a/net/sctp/transport.c
-+++ b/net/sctp/transport.c
-@@ -368,6 +368,7 @@ static bool sctp_transport_pl_toobig(struct sctp_transport *t, u32 pmtu)
- 
- 			t->pl.pmtu = SCTP_BASE_PLPMTU;
- 			t->pathmtu = t->pl.pmtu + sctp_transport_pl_hlen(t);
-+			return true;
- 		}
- 	} else if (t->pl.state == SCTP_PL_SEARCH) {
- 		if (pmtu >= SCTP_BASE_PLPMTU && pmtu < t->pl.pmtu) {
-@@ -378,11 +379,10 @@ static bool sctp_transport_pl_toobig(struct sctp_transport *t, u32 pmtu)
- 			t->pl.probe_high = 0;
- 			t->pl.pmtu = SCTP_BASE_PLPMTU;
- 			t->pathmtu = t->pl.pmtu + sctp_transport_pl_hlen(t);
-+			return true;
- 		} else if (pmtu > t->pl.pmtu && pmtu < t->pl.probe_size) {
- 			t->pl.probe_size = pmtu;
- 			t->pl.probe_count = 0;
--
--			return false;
- 		}
- 	} else if (t->pl.state == SCTP_PL_COMPLETE) {
- 		if (pmtu >= SCTP_BASE_PLPMTU && pmtu < t->pl.pmtu) {
-@@ -393,10 +393,11 @@ static bool sctp_transport_pl_toobig(struct sctp_transport *t, u32 pmtu)
- 			t->pl.probe_high = 0;
- 			t->pl.pmtu = SCTP_BASE_PLPMTU;
- 			t->pathmtu = t->pl.pmtu + sctp_transport_pl_hlen(t);
-+			return true;
- 		}
- 	}
- 
--	return true;
-+	return false;
- }
- 
- bool sctp_transport_update_pmtu(struct sctp_transport *t, u32 pmtu)
+v2:
+- Test exchanging a map and a directory (Alexei)
+- Use ASSERT macros (Andrii)
+
+Lorenz Bauer (4):
+  libfs: move shmem_exchange to simple_rename_exchange
+  libfs: support RENAME_EXCHANGE in simple_rename()
+  selftests: bpf: convert test_bpffs to ASSERT macros
+  selftests: bpf: test RENAME_EXCHANGE and RENAME_NOREPLACE on bpffs
+
+ fs/libfs.c                                    | 29 ++++++-
+ include/linux/fs.h                            |  2 +
+ mm/shmem.c                                    | 24 +-----
+ .../selftests/bpf/prog_tests/test_bpffs.c     | 85 ++++++++++++++++---
+ 4 files changed, 105 insertions(+), 35 deletions(-)
+
 -- 
-2.27.0
+2.32.0
 
