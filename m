@@ -2,114 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43F4E43D8B4
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 03:39:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A5EF43D8CA
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 03:43:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229636AbhJ1BmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 21:42:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57380 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229515AbhJ1BmD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Oct 2021 21:42:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 977AF610FD;
-        Thu, 28 Oct 2021 01:39:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635385177;
-        bh=xkFahs+LkXzJAPcyet8YGPQgljBdb8edIwQPk96AQt8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=khnJGAK0vkBGjaXPHgSYpqlFadspAUz907Xz5Wode8aXYNDcTC9Lu8Ppha8szZEmr
-         KcHTBjFw2IWf+VJwejY9Ec0HHRK1LaFaP71vV+ioCfRlzQhAySSATUIC2XqjM7cetn
-         aAb3UpZpo9m5T+nY1PuHuPPtbUyzK9xJjllTEDHIs6G5mFmw/UVv7yRVqxQOVpdZqN
-         9mL3xL7rHK48eMp3Esqgc6keO6S8JgkzRkNygpXlVQh+J8tjT+oB++1BLQ0oVBy/Ay
-         OJLj4x8phftSFNitarwjp7NlFon2tNafb4xoj2Sn5uZbjw69PEr49ySYdxTb+sy3I6
-         mfclWPW3YW0zA==
-Date:   Wed, 27 Oct 2021 20:39:34 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Logan Gunthorpe <logang@deltatee.com>
-Cc:     Dongdong Liu <liudongdong3@huawei.com>, hch@infradead.org,
-        kw@linux.com, leon@kernel.org, linux-pci@vger.kernel.org,
-        rajur@chelsio.com, hverkuil-cisco@xs4all.nl,
-        linux-media@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH V10 6/8] PCI/P2PDMA: Add a 10-Bit Tag check in P2PDMA
-Message-ID: <20211028013934.GA267985@bhelgaas>
+        id S229752AbhJ1Bpz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 21:45:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56622 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229638AbhJ1Bpy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 21:45:54 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A36C061570;
+        Wed, 27 Oct 2021 18:43:28 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id v65so6113407ioe.5;
+        Wed, 27 Oct 2021 18:43:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=q2MWT3ltBpEutemWMnO5IV+Dli3w0cr7Jk2rYKN1WKo=;
+        b=VYaQyXfWM6sOanx3t6qAvPWFfD338jdnTaM7L2F4EXwJrISOsX2ByFuKTHv7xNRkTG
+         7BWciBeSY2irXsWhnWRi6OVqJxQs7/ZO79rLcIDs/aiVFWgHfJlvuVpfUToWcVFBDw49
+         BCfecdSa2WUEjL+TN94OyEqsucM5rEaK9DgGgCJaOCYNRUwXGRjWaKZseUmGso3F9gxw
+         di+uY+S3e+rK3xyX3eI/JiQ9ICTO+6tm+0hZ1D5dbOqVvxb2fQEWj7uSPsf/vcKdxhy1
+         StoSWoyz4zwvhiyUgYfxfRiYrspymffEwoasFZiknT2hQbvSdzCZRqpNBiWlqe1b6cj1
+         mybQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=q2MWT3ltBpEutemWMnO5IV+Dli3w0cr7Jk2rYKN1WKo=;
+        b=5GtjatUqJ3P9/HnNIN95alD9Bu6whWZ9XVH5ktL/d+9Y3X89z5iUXVvwstLkiMjlFh
+         hC0T0712eP4l1p0mDmyu5STkFNR9g/cCuoBFFLCV62gMSpF4zwqp788gqcLN1dTxVywT
+         5qQ9wYhSEAijAef1im6uXAFA2apjq5ewm3Ae2/isLPWeAutvFD1husaS/pkPBIA3dE8t
+         KCkzdsFUsrcoaeDGsP6trlq2ypDDWFRtQshtZogN5AyzuTfZE+Gi5lx4/KsOtzrHyWBD
+         XM9Dr8AC3LgvMDp0hYdRRLA8ifS6PBqYsQJxe3H0MsMQTWMv0yc2NUF2Pksh870R8cOH
+         SO3Q==
+X-Gm-Message-State: AOAM533MCB28MCWGOamJ3U8rP8FlBSMyDsmopkaAF7lQwf9LT/NoZXEn
+        /S17W2MLejSuW/NLZahlp0d1KcSH8CgbVh6cZdQ=
+X-Google-Smtp-Source: ABdhPJwNQClWNir1jhV830HzS4FTBIIlwJORqskR1S8FYGa8OK7RlivKeHpt/M/ZKHGSsheR5GLY1mxrQk02MMgYFuc=
+X-Received: by 2002:a02:cb9c:: with SMTP id u28mr1005721jap.95.1635385408343;
+ Wed, 27 Oct 2021 18:43:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <136155cc-d28c-ef36-c69b-557f7af456be@deltatee.com>
+References: <20211025083315.4752-1-laoar.shao@gmail.com> <20211025083315.4752-13-laoar.shao@gmail.com>
+ <202110251431.F594652F@keescook> <YXmySeDsxxbA7hcq@alley>
+In-Reply-To: <YXmySeDsxxbA7hcq@alley>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Thu, 28 Oct 2021 09:42:52 +0800
+Message-ID: <CALOAHbB4LT8t6g5NseRygGAaAbHzKXfuWzg+TnLeg1tRUuwePg@mail.gmail.com>
+Subject: Re: [PATCH v6 12/12] kernel/kthread: show a warning if kthread's comm
+ is truncated
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Qiang Zhang <qiang.zhang@windriver.com>,
+        robdclark <robdclark@chromium.org>,
+        christian <christian@brauner.io>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        dennis.dalessandro@cornelisnetworks.com,
+        mike.marciniszyn@cornelisnetworks.com, dledford@redhat.com,
+        jgg@ziepe.ca, linux-rdma@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        kbuild test robot <lkp@intel.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 27, 2021 at 05:41:07PM -0600, Logan Gunthorpe wrote:
-> On 2021-10-27 5:11 p.m., Bjorn Helgaas wrote:
-> >> @@ -532,6 +577,9 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
-> >>  		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
-> >>  	}
-> >>  done:
-> >> +	if (pci_10bit_tags_unsupported(client, provider, verbose))
-> >> +		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
-> > 
-> > I need to be convinced that this check is in the right spot to catch
-> > all potential P2PDMA situations.  The pci_p2pmem_find() and
-> > pci_p2pdma_distance() interfaces eventually call
-> > calc_map_type_and_dist().  But those interfaces don't actually produce
-> > DMA bus addresses, and I'm not convinced that all P2PDMA users use
-> > them.
-> > 
-> > nvme *does* use them, but infiniband (rdma_rw_map_sg()) does not, and
-> > it calls pci_p2pdma_map_sg().
-> 
-> The rules of the current code is that calc_map_type_and_dist() must be
-> called before pci_p2pdma_map_sg(). The calc function caches the mapping
-> type in an xarray. If it was not called ahead of time,
-> pci_p2pdma_map_type() will return PCI_P2PDMA_MAP_NOT_SUPPORTED, and the
-> WARN_ON_ONCE will be hit in
-> pci_p2pdma_map_sg_attrs().
+On Thu, Oct 28, 2021 at 4:10 AM Petr Mladek <pmladek@suse.com> wrote:
+>
+> On Mon 2021-10-25 14:35:42, Kees Cook wrote:
+> > On Mon, Oct 25, 2021 at 08:33:15AM +0000, Yafang Shao wrote:
+> > > Show a warning if task comm is truncated. Below is the result
+> > > of my test case:
+> > >
+> > > truncated kthread comm:I-am-a-kthread-with-lon, pid:14 by 6 characters
+> > >
+> > > Suggested-by: Petr Mladek <pmladek@suse.com>
+> > > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> > > Reviewed-by: Kees Cook <keescook@chromium.org>
+> > > Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+> > > Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+> > > Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> > > Cc: Peter Zijlstra <peterz@infradead.org>
+> > > Cc: Steven Rostedt <rostedt@goodmis.org>
+> > > Cc: Al Viro <viro@zeniv.linux.org.uk>
+> > > Cc: Kees Cook <keescook@chromium.org>
+> > > Cc: Petr Mladek <pmladek@suse.com>
+> > > ---
+> > >  kernel/kthread.c | 7 ++++++-
+> > >  1 file changed, 6 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/kernel/kthread.c b/kernel/kthread.c
+> > > index 5b37a8567168..46b924c92078 100644
+> > > --- a/kernel/kthread.c
+> > > +++ b/kernel/kthread.c
+> > > @@ -399,12 +399,17 @@ struct task_struct *__kthread_create_on_node(int (*threadfn)(void *data),
+> > >     if (!IS_ERR(task)) {
+> > >             static const struct sched_param param = { .sched_priority = 0 };
+> > >             char name[TASK_COMM_LEN];
+> > > +           int len;
+> > >
+> > >             /*
+> > >              * task is already visible to other tasks, so updating
+> > >              * COMM must be protected.
+> > >              */
+> > > -           vsnprintf(name, sizeof(name), namefmt, args);
+> > > +           len = vsnprintf(name, sizeof(name), namefmt, args);
+> > > +           if (len >= TASK_COMM_LEN) {
+> >
+> > And since this failure case is slow-path, we could improve the warning
+> > as other had kind of suggested earlier with something like this instead:
+> >
+> >                       char *full_comm;
+> >
+> >                       full_comm = kvasprintf(GFP_KERNEL, namefmt, args);
+>
+> You need to use va_copy()/va_end() if you want to use the same va_args
+> twice.
+>
+> For example, see how kvasprintf() is implemented. It calls
+> vsnprintf() twice and it uses va_copy()/va_end() around the the first call.
+>
 
-Seems like it requires fairly deep analysis to prove all this.  Is
-this something we don't want to put directly in the map path because
-it's a hot path, or it just doesn't fit there in the model, or ...?
+Does it mean that if we want to call vsnprintf() three times, we must
+use va_copy()/va_end() around the first call and the second call ?
+IOW, if we call vsnprintf() multiple times, all the calls except the
+last call should be protected by va_copy()/va_end().
+Actually I don't quite understand why we should do it like this. I
+will try to understand it, and appreciate it if you could explain it
+in detail.
 
-> Both NVMe and RDMA (only used in the nvme fabrics code) do the correct
-> thing here and we can be sure calc_map_type_and_dist() is called before
-> any pages are mapped.
-> 
-> The patch set I'm currently working on will ensure that
-> calc_map_type_and_dist() is called before anyone maps a PCI P2PDMA page
-> with dma_map_sg*().
-> 
-> > amdgpu_dma_buf_attach() calls pci_p2pdma_distance_many() but I don't
-> > know where it sets up P2PDMA transactions.
-> 
-> The amdgpu driver hacked this in before proper support was done, but at
-> least it's using pci_p2pdma_distance_many() presumably before trying any
-> transfer. Though it's likely broken as it doesn't take into account the
-> mapping type and thus I think it always assumes traffic goes through the
-> host bridge (seeing it doesn't use pci_p2pdma_map_sg()).
+BTW,  can we use va_copy()/va_end() in vsnprintf(), then the caller
+doesn't need to care how many times it will call vsnprintf().
 
-What does it mean to go through the host bridge?  Obviously DMA to
-system memory would go through the host bridge, but this seems
-different.  Is this a "between PCI hierarchies" case like to a device
-below a different root port?  I don't know what the tag rules are for
-that.
+> kvasprintf() could also return NULL if there is not enough memory.
 
-> > cxgb4 and qed mention "peer2peer", but I don't know whether they are
-> > related; they don't seem to use any pci_p2p.* interfaces.
-> 
-> I'm really not sure what these drivers are doing at all. However, I
-> think this is unrelated based on this old patch description[1]:
-> 
->   Open MPI, Intel MPI and other applications don't support the iWARP
->   requirement that the client side send the first RDMA message. This
->   class of application connection setup is called peer-2-peer. Typically
->   once the connection is setup, _both_ sides want to send data.
-> 
->   This patch enables supporting peer-2-peer over the chelsio rnic by
->   enforcing this iWARP requirement in the driver itself as part of RDMA
->   connection setup.
+Right. We need to do the NULL check.
 
-Thanks!
+>
+> >                       pr_warn("truncated kthread comm '%s' to '%s' (pid:%d)\n",
+> >                               full_comm, name);
+>
+> BTW: Is this message printed during normal boot? I did not tried the
+> patchset myself.
+>
 
-> Logan
-> 
-> [1] http://lkml.iu.edu/hypermail/linux/kernel/0804.3/1416.html
+Yes, it will be printed at boot time.
+
+> We should add this warning only if there is a good solution how to
+> avoid the truncated names. And we should me sure that the most common
+> kthreads/workqueues do not trigger it. It would be ugly to print many
+> warnings during boot if people could not get rid of them easily.
+>
+
+As we have extended task comm to 24, there's no such warning printed
+for the existing kthreads/workqueues.
+IOW, it will only print for the newly introduced one if it has a long name.
+That means this printing is under control.
+
+> >                       kfree(full_comm);
+> >               }
+> > >             set_task_comm(task, name);
+> > >             /*
+> > >              * root may have changed our (kthreadd's) priority or CPU mask.
+>
+> Best Regards,
+> Petr
+
+
+
+-- 
+Thanks
+Yafang
