@@ -2,90 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B15E043DC17
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 09:33:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6ADF43DC11
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 09:33:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229974AbhJ1Hf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 03:35:59 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:20812 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229809AbhJ1Hfz (ORCPT
+        id S229881AbhJ1Hfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 03:35:55 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:26130 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229626AbhJ1Hfz (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 03:35:55 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1635406409; h=Date: Message-ID: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=F+z+0dB7BGOziQgInGvVCwFNwMPov/p7cow2cb6xehI=;
- b=q1NAeaHJoODnndvln2JqpHTs/5gFfyJFk+S6Pu5RjxoGBdFcOfXeU5hrQQbdvvAHX/b7fFIu
- pMDpUNQxKpMDUMuvTYyP+im4f2gbwH2C5+atmeL2y6YH+3T5PE9o2rTwONnawMpoDrwiVsUL
- IM06CyFvNWxvN/vfJr2LyUKC1UI=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
- 617a523a545d7d365f99cad0 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 28 Oct 2021 07:33:14
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 95E73C43460; Thu, 28 Oct 2021 07:33:13 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.5 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 4C7E0C4338F;
-        Thu, 28 Oct 2021 07:33:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 4C7E0C4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Hfy0t2pkgz1DHpx;
+        Thu, 28 Oct 2021 15:31:26 +0800 (CST)
+Received: from dggpeml500006.china.huawei.com (7.185.36.76) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Thu, 28 Oct 2021 15:33:22 +0800
+Received: from [10.174.178.240] (10.174.178.240) by
+ dggpeml500006.china.huawei.com (7.185.36.76) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Thu, 28 Oct 2021 15:33:21 +0800
+Subject: Re: [PATCH net 2/3] can: j1939: j1939_can_recv(): ignore messages
+ with invalid source address
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+CC:     Robin van der Gracht <robin@protonic.nl>,
+        <linux-kernel@vger.kernel.org>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        <netdev@vger.kernel.org>, "Marc Kleine-Budde" <mkl@pengutronix.de>,
+        <kernel@pengutronix.de>, Oliver Hartkopp <socketcan@hartkopp.net>,
+        Jakub Kicinski <kuba@kernel.org>, <linux-can@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+References: <1634825057-47915-1-git-send-email-zhangchangzhong@huawei.com>
+ <1634825057-47915-3-git-send-email-zhangchangzhong@huawei.com>
+ <20211022102306.GB20681@pengutronix.de>
+ <9c636d7f-70df-18c9-66ed-46eb21f4ffbb@huawei.com>
+ <20211028065144.GE20681@pengutronix.de>
+From:   Zhang Changzhong <zhangchangzhong@huawei.com>
+Message-ID: <ff21f8b9-0fe0-e6be-73d4-18b9f5bfd773@huawei.com>
+Date:   Thu, 28 Oct 2021 15:33:21 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH 1/4] ath10k: fix control-message timeout
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20211025120522.6045-2-johan@kernel.org>
-References: <20211025120522.6045-2-johan@kernel.org>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Herton Ronaldo Krzesinski <herton@canonical.com>,
-        Hin-Tak Leung <htl10@users.sourceforge.net>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Siva Rebbagondla <siva8118@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan@kernel.org>, stable@vger.kernel.org,
-        Erik Stromdahl <erik.stromdahl@gmail.com>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <163540638853.24978.12157539503424520256.kvalo@codeaurora.org>
-Date:   Thu, 28 Oct 2021 07:33:13 +0000 (UTC)
+In-Reply-To: <20211028065144.GE20681@pengutronix.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.178.240]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500006.china.huawei.com (7.185.36.76)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Johan Hovold <johan@kernel.org> wrote:
-
-> USB control-message timeouts are specified in milliseconds and should
-> specifically not vary with CONFIG_HZ.
+On 2021/10/28 14:51, Oleksij Rempel wrote:
+> Hi,
 > 
-> Fixes: 4db66499df91 ("ath10k: add initial USB support")
-> Cc: stable@vger.kernel.org      # 4.14
-> Cc: Erik Stromdahl <erik.stromdahl@gmail.com>
-> Signed-off-by: Johan Hovold <johan@kernel.org>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+> On Mon, Oct 25, 2021 at 03:30:57PM +0800, Zhang Changzhong wrote:
+>> On 2021/10/22 18:23, Oleksij Rempel wrote:
+>>> On Thu, Oct 21, 2021 at 10:04:16PM +0800, Zhang Changzhong wrote:
+>>>> According to SAE-J1939-82 2015 (A.3.6 Row 2), a receiver should never
+>>>> send TP.CM_CTS to the global address, so we can add a check in
+>>>> j1939_can_recv() to drop messages with invalid source address.
+>>>>
+>>>> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+>>>> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+>>>
+>>> NACK. This will break Address Claiming, where first message is SA == 0xff
+>>
+>> I know that 0xfe can be used as a source address, but which message has a source
+>> address of 0xff?
+>>
+>> According to SAE-J1939-81 2017 4.2.2.8：
+>>
+>>   The network address 255, also known as the Global address, is permitted in the
+>>   Destination Address field of the SAE J1939 message identifier but never in the
+>>   Source Address field.
+> 
+> You are right. Thx!
+> 
+> Are you using any testing frameworks?
+> Can you please take a look here:
+> https://github.com/linux-can/can-tests/tree/master/j1939
+> 
+> We are using this scripts for regression testing of some know bugs.
 
-2 patches applied to ath-next branch of ath.git, thanks.
+Great! I'll run these scripts before posting patches.
 
-528613232423 ath10k: fix control-message timeout
-a066d28a7e72 ath6kl: fix control-message timeout
+> 
+>>
+>>>
+>>>> ---
+>>>>  net/can/j1939/main.c | 4 ++++
+>>>>  1 file changed, 4 insertions(+)
+>>>>
+>>>> diff --git a/net/can/j1939/main.c b/net/can/j1939/main.c
+>>>> index 08c8606..4f1e4bb 100644
+>>>> --- a/net/can/j1939/main.c
+>>>> +++ b/net/can/j1939/main.c
+>>>> @@ -75,6 +75,10 @@ static void j1939_can_recv(struct sk_buff *iskb, void *data)
+>>>>  	skcb->addr.pgn = (cf->can_id >> 8) & J1939_PGN_MAX;
+>>>>  	/* set default message type */
+>>>>  	skcb->addr.type = J1939_TP;
+>>>> +	if (!j1939_address_is_valid(skcb->addr.sa))
+>>>> +		/* ignore messages whose sa is broadcast address */
+>>>> +		goto done;
+> 
+> Please add some warning once message here. We wont to know if something bad
+> is happening on the bus.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20211025120522.6045-2-johan@kernel.org/
+Will do. Thanks for your suggestions.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Regards,
+Changzhong
 
+> 
+>>>> +
+>>>>  	if (j1939_pgn_is_pdu1(skcb->addr.pgn)) {
+>>>>  		/* Type 1: with destination address */
+>>>>  		skcb->addr.da = skcb->addr.pgn;
+>>>> -- 
+>>>> 2.9.5
+>>>>
+>>>>
+>>>>
+>>>
+>>
+>>
+> 
+> Regards,
+> Oleksij
+> 
