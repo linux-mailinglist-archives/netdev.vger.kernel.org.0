@@ -2,115 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B37F43D962
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 04:36:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C693143D985
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 04:50:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229775AbhJ1CjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 22:39:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40282 "EHLO
+        id S229778AbhJ1Cwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 22:52:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229534AbhJ1CjO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 22:39:14 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE9BCC061570;
-        Wed, 27 Oct 2021 19:36:48 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id f8so3353310plo.12;
-        Wed, 27 Oct 2021 19:36:48 -0700 (PDT)
+        with ESMTP id S229624AbhJ1Cwj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 22:52:39 -0400
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C920BC061570;
+        Wed, 27 Oct 2021 19:50:12 -0700 (PDT)
+Received: by mail-qv1-xf2a.google.com with SMTP id v10so3138935qvb.10;
+        Wed, 27 Oct 2021 19:50:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CTo9MfxKH55wjLtTMJ/Hiz4KcpnE5YN1Fli+g0csIAI=;
-        b=cmbCEmBFoVPY3oPTrZnlc4Cw0MXrYRaG7wxKL+MZHUSYA5jYkUBa0liCtFkbMvBeUP
-         1IULk061tq/MDo+hfHblPX9gTCWVz1nBppI6qDgqZgoHHsTIY+e4MMs47gR7E9rWA0dp
-         CEAClX0loM0lnpKgNCkXr5r+RbkYMdDAgkjKC0TMjlWYBnu+FCjPY8W4wvRpt3jXP7JC
-         hJC6sp2+xQnlo4Fo4QpcsZyboqbTfEHnkJhZEp1AkfoNNtbEpSMbruoXZnxF835lTwCB
-         WENGO2Q5U93rFzQuiooRDLVjTfeZlwWc/vLj56sqBrCTp8fqVbMhW4rXvH5pOrPLbWJv
-         JGcg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZIj8JUAa/oKHTviYbVQQPi5hTbJg26A4cMkQ91+NOI8=;
+        b=iZ0NK8UU6jtSoNk8YFG/C/0ZrYxJp3ssvBFgVcBvZgrxo9WuTceVxZB2S/SLU1Qvbs
+         BBsbwbXXYm7q0hx5iKdqjKl+pBjARCIP4tXohpNC6DGM9fin60TEzIMXbTDzHbrgFueE
+         KuDGrQ6uuKxSbG2zaJ3MUHSYNwB05x+w5UAkne8B6NFsB4lORD7mjgV1B4d7lQxHQ0ov
+         O2BBsbB0cWHi0i0CXs8wCGY1x/+J4Tfrkb7NdZAl1H37fI+46fQVtT2A+IMm7seG7ul/
+         B1EKUouwzqWkXuYJuIDq31/EtIzFoZkmrsNcJLUqL+8KA3toIRERpwpsM0c4n2YGpjC6
+         Baog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CTo9MfxKH55wjLtTMJ/Hiz4KcpnE5YN1Fli+g0csIAI=;
-        b=ggf0zJsMlmzwhsQpAjt0OJsYcd9vT3oqFbt84pjonlfVHT46jmC9G1s3eBow5MaOr3
-         3oKgouP0fX4gMe/4CazhAR/eZ6WyXw4iSG3Cqt7GDzkVO0rJEjyeaRcVpkfApk1ilNDZ
-         Ou240xuYPiDj91qszmhUu9u3CkRIFC0+2LL4dxIB5T4M9Zlgms+SBozTakhJjwpzmtOC
-         Y1wZI79ljf/jLJ2evYWGu3e8qB4EJTAtVupdxg6g/Ygio0aQDR4sAL4h2d+Yvc42t6Aj
-         Q0pMVlewOKTFX8+QOnkgzGOL5p1ahWe+PQjSChWEvtFlHSgf8jwCKhWCF/QJAZQhx5pM
-         KkDQ==
-X-Gm-Message-State: AOAM530poYScM0k5mIHLcLqyIJ0IUjKRvRBKKBq14lO2tYbTNFZuRFEd
-        uDtZbWrSYfzSdYLh3Ojc+cI=
-X-Google-Smtp-Source: ABdhPJy6GB3GsP2bVUUkb8NLWLqRwVu5sBtlJy3usQqlgXVpcnrbkPnzzIcn/J0oze34el3DI6dEgg==
-X-Received: by 2002:a17:902:7101:b0:140:3e2c:1cbe with SMTP id a1-20020a170902710100b001403e2c1cbemr1194574pll.83.1635388608285;
-        Wed, 27 Oct 2021 19:36:48 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id r14sm949155pgn.91.2021.10.27.19.36.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Oct 2021 19:36:48 -0700 (PDT)
-From:   luo penghao <cgel.zte@gmail.com>
-X-Google-Original-From: luo penghao <luo.penghao@zte.com.cn>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luo penghao <luo.penghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH ipsec-next v2] xfrm: Remove redundant fields and related parentheses
-Date:   Thu, 28 Oct 2021 02:36:39 +0000
-Message-Id: <20211028023639.9914-1-luo.penghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZIj8JUAa/oKHTviYbVQQPi5hTbJg26A4cMkQ91+NOI8=;
+        b=paCHJJm0U8pcLwytA23cnLjR1h157UecK2kWxT4ZIx2+LRzuHSFRZRI9aYlTQ4Apr+
+         uagXXokuLreJGqjqDuHMClzBLaeKkEsranWJH7UqjLvXC1u85TAT0ZhyFQ4MIlvFz+wg
+         8LSqtrtJQ/+e/61jlkfSFycdbSSUIJpis1OCVjJ2E2uWSuZBRvMtRqyu9f2yXamQZq5O
+         F0Y5lKSIYI33K/LmiZm3s+xn0Ji5tKAW45zefrGrrfVYHCl8N6tMAplbqfiBjdvEG7OR
+         qsNFkEEvE4dcY994COfBUYJQdodCpw6Ku3rmOY6W/hyDsRrARAixYnbma7MQdoyqVcWT
+         5sCA==
+X-Gm-Message-State: AOAM530HAkh02g3coHTiSGCBEbzAI5/gQ4rVYs6k7/QQHVKFfqcHm4pA
+        7f7WXp7Md8BNnwq7/FLxwfTSH2VHSprJ/HS8yc+r/9+uhY6R2w==
+X-Google-Smtp-Source: ABdhPJxTREUyUzJXRE21WgWrK4gKtQ6gtBOxN1/R5dXaxto/CWqUoYyxfx4owr3NEBjPv9LNJstmDKe53jL0UbH+NSs=
+X-Received: by 2002:a05:6214:2308:: with SMTP id gc8mr1230271qvb.31.1635389412045;
+ Wed, 27 Oct 2021 19:50:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211025115910.2595-1-xingwu.yang@gmail.com> <707b5fb3-6b61-c53-e983-bc1373aa2bf@ssi.bg>
+ <CA+7U5JsSuwqP7eHj1tMHfsb+EemwrhZEJ2b944LFWTroxAnQRQ@mail.gmail.com>
+ <1190ef60-3ad9-119e-5336-1c62522aec81@ssi.bg> <CA+7U5JvvsNejgOifAwDdjddkLHUL30JPXSaDBTwysSL7dhphuA@mail.gmail.com>
+ <CA+7U5Jta_g2vCXiwScVVwLZppWp51TDOB7LxUxeundkPxNZYnA@mail.gmail.com> <35e6215-4fb3-5149-a888-67aa6fae958f@ssi.bg>
+In-Reply-To: <35e6215-4fb3-5149-a888-67aa6fae958f@ssi.bg>
+From:   yangxingwu <xingwu.yang@gmail.com>
+Date:   Thu, 28 Oct 2021 10:50:00 +0800
+Message-ID: <CA+7U5JuxN1BSneYuiZde_kZRNpPDuT23Wn7_Uyv12yk26tXEzA@mail.gmail.com>
+Subject: Re: [PATCH] ipvs: Fix reuse connection if RS weight is 0
+To:     Julian Anastasov <ja@ssi.bg>
+Cc:     Simon Horman <horms@verge.net.au>, netdev@vger.kernel.org,
+        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-doc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The variable err is not necessary in such places. It should be revmoved
-for the simplicity of the code. This will cause the double parentheses
-to be redundant, and the inner parentheses should be deleted.
+hello
 
-The clang_analyzer complains as follows:
+On Thu, Oct 28, 2021 at 5:09 AM Julian Anastasov <ja@ssi.bg> wrote:
+>
+>
+>         Hello,
+>
+> On Wed, 27 Oct 2021, yangxingwu wrote:
+>
+> > what we want is if RS weight is 0, then no new connections should be
+> > served even if conn_reuse_mode is 0, just as commit dc7b3eb900aa
+> > ("ipvs: Fix reuse connection if real server is
+> > dead") trying to do
+> >
+> > Pls let me know if there are any other issues of concern
+>
+>         My concern is with the behaviour people expect
+> from each sysctl var: conn_reuse_mode decides if port reuse
+> is considered for rescheduling and expire_nodest_conn
+> should have priority only for unavailable servers (nodest means
+> No Destination), not in this case.
+>
+>         We don't know how people use the conn_reuse_mode=0
+> mode, one may bind to a local port and try to send multiple
+> connections in a row with the hope they will go to same real
+> server, i.e. as part from same "session", even while weight=0.
+> If they do not want such behaviour (99% of the cases), they
+> will use the default conn_reuse_mode=1. OTOH, you have different
+> expectations for mode 0, not sure why but you do not want to use
+> the default mode=1 which is safer to use. May be the setups
+> forget to stay with conn_reuse_mode=1 on kernels 5.9+ and
+> set the var to 0 ?
 
-net/xfrm/xfrm_input.c:533: warning:
-net/xfrm/xfrm_input.c:563: warning:
+The problem is we can NOT decide what the customers do, many of them
+run kubernetes with old versions of kube-proxy. And most importantly,
+upgrade to new version is a very long and painful process, that's why
+we want to fix this at the kernel level
 
-Although the value stored to 'err' is used in the enclosing expression,
-the value is never actually read from 'err'.
+>         The problem with mentioned commit dc7b3eb900aa is that
+> it breaks FTP and persistent connections while the goal of
+> weight=0 is graceful inhibition of the server. We made
+> the mistake to add priority for expire_nodest_conn when weight=0.
+> This can be fixed with a !cp->control check. We do not want
+> expire_nodest_conn to kill every connection during the
+> graceful period.
 
-Changes in v2:
+ok, got it, I will try to fix this problem
 
-Modify the title, because v2 removes the brackets.
-Remove extra parentheses.
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: luo penghao <luo.penghao@zte.com.cn>
----
- net/xfrm/xfrm_input.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-index 3df0861..70a8c36 100644
---- a/net/xfrm/xfrm_input.c
-+++ b/net/xfrm/xfrm_input.c
-@@ -530,7 +530,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
- 				goto drop;
- 			}
- 
--			if ((err = xfrm_parse_spi(skb, nexthdr, &spi, &seq)) != 0) {
-+			if (xfrm_parse_spi(skb, nexthdr, &spi, &seq)) {
- 				XFRM_INC_STATS(net, LINUX_MIB_XFRMINHDRERROR);
- 				goto drop;
- 			}
-@@ -560,7 +560,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
- 	}
- 
- 	seq = 0;
--	if (!spi && (err = xfrm_parse_spi(skb, nexthdr, &spi, &seq)) != 0) {
-+	if (!spi && xfrm_parse_spi(skb, nexthdr, &spi, &seq)) {
- 		secpath_reset(skb);
- 		XFRM_INC_STATS(net, LINUX_MIB_XFRMINHDRERROR);
- 		goto drop;
--- 
-2.15.2
-
-
+> Regards
+>
+> --
+> Julian Anastasov <ja@ssi.bg>
