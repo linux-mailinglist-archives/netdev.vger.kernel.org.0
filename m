@@ -2,258 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 918BA43DDB5
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 11:26:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B57943DDDB
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 11:36:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230081AbhJ1J2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 05:28:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43632 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229626AbhJ1J2b (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Oct 2021 05:28:31 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E48F1610CB;
-        Thu, 28 Oct 2021 09:26:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635413164;
-        bh=qPMj5+ibTS+mDVdAFv5psLuDLcC2AQaOow2YgmTIKRM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=m1fj1TEote5YsyoBOJ+yp+JTs+WCMJTeZ5SNQgyrseZ/uej9Ziss1iZzYTgwNPYT7
-         lkhI8v18TPHBjOiCW/zrKQmQQNod4yacX08IpcbqhwY8gC/C7zJ6gvMph/jAAp0u/M
-         RgZUsrYSYN2GyXZRgG8cmg2MDyHqcyIU2atxMeeHZrDZbgzksdayXp2SWN68aL4WGS
-         +YYN5qIiO0i2Z3OPgauf6IWWUUBT31w3HwIqQ3J0iIgWqTyHuCUImsLNxAOO4clS7F
-         nGP/A1CQMK93A7f4Dc81kGp+2kxaM/Y1ItV5YoWdk/jCJQKyhRK51Bi2XDAz/sH7tV
-         tWHpRJwkODjdA==
-Date:   Thu, 28 Oct 2021 11:26:00 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, shayagr@amazon.com, john.fastabend@gmail.com,
-        dsahern@kernel.org, brouer@redhat.com, echaudro@redhat.com,
-        jasowang@redhat.com, alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: Re: [PATCH v16 bpf-next 19/20] net: xdp: introduce bpf_xdp_pointer
- utility routine
-Message-ID: <YXpsqMZ1PYwtO+2W@lore-desk>
-References: <cover.1634301224.git.lorenzo@kernel.org>
- <98e60294b7ba81ca647cffd4d7b87617e9b1e9d9.1634301224.git.lorenzo@kernel.org>
- <3d196d1d-69f3-0ff2-1752-f318defbbf33@iogearbox.net>
+        id S230110AbhJ1JjL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 05:39:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48564 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229850AbhJ1JjL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 05:39:11 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A01C061570;
+        Thu, 28 Oct 2021 02:36:44 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id s1so22270129edd.3;
+        Thu, 28 Oct 2021 02:36:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=erzUkbCpRs7mF8JPNwqvfUrlKic2ZgXPblnwsdv+efU=;
+        b=MLNAvumxitgWuRAjxQ9/9P1koVG/jxp+b6oW6HYvMbH2nOvmkcRY1p9y9xm2JJknq0
+         jf3aYDDd6mO17go3YScwTYBmhIz5V6TCiUTVwHcTMQQuH3uJYELsA4b2t6Ux2XXnQLff
+         jODYPzvqFRICTxDWliVjgZUecMICPopGIFIncfVYMdnjKFyQ0wde6sixpU9SZQrdqOQ2
+         sCyTXOndItzrh0wgB+eo81eklooqHMA1oNp8f3rXJ5ZBI2dADFFremFk+XQ72vo5ctOz
+         OJ7hI4cHDVPdIC5uSl9j/Zdu8aC3ryz/yjEuG4gseyGBok4KJtldT2Q9FRBJEGrl8L8r
+         YWsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=erzUkbCpRs7mF8JPNwqvfUrlKic2ZgXPblnwsdv+efU=;
+        b=st5FUilPOb0o5R9H9BaLpy3uS1Sr+wohpDKFLtPrpHq/tP3Nofn3hYuyllsrSXrsnI
+         qdDbzQ4Xl6OpgdC/VycpO0JymFeAXFZsM3In69X2j17dDmL8P8ZJEs3Zlg4tTKUfH+gQ
+         Z8qR7vJFW7hqmVFsFuLNj9Iov+Pq4RsPrel/dhw631/6YAz2swxgIjFoz7bl6Y7MAyK6
+         5BDofMtpiw9rB2JOR/zMIk0jiPXJ2nYlKmMYvaALJsgngVW0oWHcBq589EcfyfTdd/JP
+         yUSLk0wEJWOUpKYXb+QZQ0kT8RhrqjKmnBLeszKo2pmj+WmFU8lX8bX2L3Xmbef1IQvX
+         McBw==
+X-Gm-Message-State: AOAM532TxdziywyfUNEehOlxjpUOe8cSYmAdTA29fr+d4mi0TAW1B1il
+        a+RTy4xsIV+xqLQlpGjm+hvAx6A4ExcWrg==
+X-Google-Smtp-Source: ABdhPJwbegGbH3srxiy6hE5wkZLO76uMPbTh/63SidwxvB5um/gYvD+6UgLd4zxu75j137TOLDOMKg==
+X-Received: by 2002:a05:6402:270e:: with SMTP id y14mr4567070edd.3.1635413802572;
+        Thu, 28 Oct 2021 02:36:42 -0700 (PDT)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id s12sm1379865edc.48.2021.10.28.02.36.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Oct 2021 02:36:42 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Subject: [PATCH net 0/4] sctp: a couple of fixes for PLPMTUD
+Date:   Thu, 28 Oct 2021 05:36:00 -0400
+Message-Id: <cover.1635413715.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="lhclgtT3vdc2tvZp"
-Content-Disposition: inline
-In-Reply-To: <3d196d1d-69f3-0ff2-1752-f318defbbf33@iogearbox.net>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Four fixes included in this patchset:
 
---lhclgtT3vdc2tvZp
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+  - fix the packet sending in Error state.
+  - fix the timer stop when transport update dst.
+  - fix the outer header len calculation.
+  - fix the return value for toobig processing.
 
-> On 10/15/21 3:08 PM, Lorenzo Bianconi wrote:
-> [...]
-> > +static void *bpf_xdp_pointer(struct xdp_buff *xdp, u32 offset,
-> > +			     u32 len, void *buf)
-> > +{
-> > +	struct skb_shared_info *sinfo =3D xdp_get_shared_info_from_buff(xdp);
-> > +	u32 size =3D xdp->data_end - xdp->data;
-> > +	void *addr =3D xdp->data;
-> > +	u32 frame_sz =3D size;
-> > +	int i;
-> > +
-> > +	if (xdp_buff_is_mb(xdp))
-> > +		frame_sz +=3D sinfo->xdp_frags_size;
-> > +
-> > +	if (offset + len > frame_sz)
-> > +		return ERR_PTR(-EINVAL);
->=20
-> Given offset is ARG_ANYTHING, the above could overflow. In bpf_skb_*_byte=
-s() we
-> guard with offset > 0xffff.
+Xin Long (4):
+  sctp: allow IP fragmentation when PLPMTUD enters Error state
+  sctp: reset probe_timer in sctp_transport_pl_update
+  sctp: subtract sctphdr len in sctp_transport_pl_hlen
+  sctp: return true only for pathmtu update in sctp_transport_pl_toobig
 
-ack, I will fix it in v17
+ include/net/sctp/sctp.h |  7 +++----
+ net/sctp/output.c       | 13 ++++++++-----
+ net/sctp/transport.c    | 11 ++++++-----
+ 3 files changed, 17 insertions(+), 14 deletions(-)
 
->=20
-> > +	if (offset < size) /* linear area */
-> > +		goto out;
-> > +
-> > +	offset -=3D size;
-> > +	for (i =3D 0; i < sinfo->nr_frags; i++) { /* paged area */
-> > +		u32 frag_size =3D skb_frag_size(&sinfo->frags[i]);
-> > +
-> > +		if  (offset < frag_size) {
-> > +			addr =3D skb_frag_address(&sinfo->frags[i]);
-> > +			size =3D frag_size;
-> > +			break;
-> > +		}
-> > +		offset -=3D frag_size;
-> > +	}
-> > +
-> > +out:
-> > +	if (offset + len < size)
-> > +		return addr + offset; /* fast path - no need to copy */
-> > +
-> > +	if (!buf) /* no copy to the bounce buffer */
-> > +		return NULL;
-> > +
-> > +	/* slow path - we need to copy data into the bounce buffer */
-> > +	bpf_xdp_copy_buf(xdp, offset, len, buf, false);
-> > +	return buf;
-> > +}
-> > +
-> > +BPF_CALL_4(bpf_xdp_load_bytes, struct xdp_buff *, xdp, u32, offset,
-> > +	   void *, buf, u32, len)
-> > +{
-> > +	void *ptr;
-> > +
-> > +	ptr =3D bpf_xdp_pointer(xdp, offset, len, buf);
-> > +	if (ptr =3D=3D ERR_PTR(-EINVAL))
-> > +		return -EINVAL;
->=20
-> nit + same below in *_store_bytes(): IS_ERR(ptr) return PTR_ERR(ptr); ? (=
-Or
-> should we just return -EFAULT to make it analog to bpf_skb_{load,store}_b=
-ytes()?
-> Either is okay, imho.)
+-- 
+2.27.0
 
-ack, I will fix it in v17
-
->=20
-> > +	if (ptr !=3D buf)
-> > +		memcpy(buf, ptr, len);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static const struct bpf_func_proto bpf_xdp_load_bytes_proto =3D {
-> > +	.func		=3D bpf_xdp_load_bytes,
-> > +	.gpl_only	=3D false,
-> > +	.ret_type	=3D RET_INTEGER,
-> > +	.arg1_type	=3D ARG_PTR_TO_CTX,
-> > +	.arg2_type	=3D ARG_ANYTHING,
-> > +	.arg3_type	=3D ARG_PTR_TO_MEM,
->=20
-> ARG_PTR_TO_UNINIT_MEM, or do you need the dst buffer to be initialized?
-
-no, I think it is ok, I will fix it in v17.
-
->=20
-> > +	.arg4_type	=3D ARG_CONST_SIZE_OR_ZERO,
->=20
-> ARG_CONST_SIZE
-
-ack, I will fix it in v17
-
->=20
-> > +};
-> > +
-> > +BPF_CALL_4(bpf_xdp_store_bytes, struct xdp_buff *, xdp, u32, offset,
-> > +	   void *, buf, u32, len)
-> > +{
-> > +	void *ptr;
-> > +
-> > +	ptr =3D bpf_xdp_pointer(xdp, offset, len, NULL);
-> > +	if (ptr =3D=3D ERR_PTR(-EINVAL))
-> > +		return -EINVAL;
-> > +
-> > +	if (!ptr)
-> > +		bpf_xdp_copy_buf(xdp, offset, len, buf, true);
-> > +	else
-> > +		memcpy(ptr, buf, len);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static const struct bpf_func_proto bpf_xdp_store_bytes_proto =3D {
-> > +	.func		=3D bpf_xdp_store_bytes,
-> > +	.gpl_only	=3D false,
-> > +	.ret_type	=3D RET_INTEGER,
-> > +	.arg1_type	=3D ARG_PTR_TO_CTX,
-> > +	.arg2_type	=3D ARG_ANYTHING,
-> > +	.arg3_type	=3D ARG_PTR_TO_MEM,
-> > +	.arg4_type	=3D ARG_CONST_SIZE_OR_ZERO,
->=20
-> ARG_CONST_SIZE, or do you have a use case for bpf_xdp_store_bytes(..., bu=
-f, 0)?
-
-ack, I think we do not need it. I will fix it in v17
-
-Regards,
-Lorenzo
-
->=20
-> > +};
-> > +
-> >   static int bpf_xdp_mb_increase_tail(struct xdp_buff *xdp, int offset)
-> >   {
-> >   	struct skb_shared_info *sinfo =3D xdp_get_shared_info_from_buff(xdp);
-> > @@ -7619,6 +7749,10 @@ xdp_func_proto(enum bpf_func_id func_id, const s=
-truct bpf_prog *prog)
-> >   		return &bpf_xdp_adjust_tail_proto;
-> >   	case BPF_FUNC_xdp_get_buff_len:
-> >   		return &bpf_xdp_get_buff_len_proto;
-> > +	case BPF_FUNC_xdp_load_bytes:
-> > +		return &bpf_xdp_load_bytes_proto;
-> > +	case BPF_FUNC_xdp_store_bytes:
-> > +		return &bpf_xdp_store_bytes_proto;
-> >   	case BPF_FUNC_fib_lookup:
-> >   		return &bpf_xdp_fib_lookup_proto;
-> >   	case BPF_FUNC_check_mtu:
-> > diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/=
-bpf.h
-> > index 1cb992ec0cc8..dad1d8c3a4c1 100644
-> > --- a/tools/include/uapi/linux/bpf.h
-> > +++ b/tools/include/uapi/linux/bpf.h
-> > @@ -4920,6 +4920,22 @@ union bpf_attr {
-> >    *		Get the total size of a given xdp buff (linear and paged area)
-> >    *	Return
-> >    *		The total size of a given xdp buffer.
-> > + *
-> > + * long bpf_xdp_load_bytes(struct xdp_buff *xdp_md, u32 offset, void *=
-buf, u32 len)
-> > + *	Description
-> > + *		This helper is provided as an easy way to load data from a
-> > + *		xdp buffer. It can be used to load *len* bytes from *offset* from
-> > + *		the frame associated to *xdp_md*, into the buffer pointed by
-> > + *		*buf*.
-> > + *	Return
-> > + *		0 on success, or a negative error in case of failure.
-> > + *
-> > + * long bpf_xdp_store_bytes(struct xdp_buff *xdp_md, u32 offset, void =
-*buf, u32 len)
-> > + *	Description
-> > + *		Store *len* bytes from buffer *buf* into the frame
-> > + *		associated to *xdp_md*, at *offset*.
-> > + *	Return
-> > + *		0 on success, or a negative error in case of failure.
-> >    */
-> >   #define __BPF_FUNC_MAPPER(FN)		\
-> >   	FN(unspec),			\
-> > @@ -5101,6 +5117,8 @@ union bpf_attr {
-> >   	FN(get_branch_snapshot),	\
-> >   	FN(trace_vprintk),		\
-> >   	FN(xdp_get_buff_len),		\
-> > +	FN(xdp_load_bytes),		\
-> > +	FN(xdp_store_bytes),		\
-> >   	/* */
-> >   /* integer value in 'imm' field of BPF_CALL instruction selects which=
- helper
-> >=20
->=20
-
---lhclgtT3vdc2tvZp
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYXpsqAAKCRA6cBh0uS2t
-rFNxAQCWMR3y/DKVXXA5OQIg7irvdEP9cZvCKYj3TIgfzZOXBgD/b7gp7qX0ytfq
-Yrco9KcQzQdOZwJm+lVZHmZA6j08TAQ=
-=tY3A
------END PGP SIGNATURE-----
-
---lhclgtT3vdc2tvZp--
