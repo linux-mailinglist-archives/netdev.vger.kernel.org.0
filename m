@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4324243E645
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 18:41:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85AB843E648
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 18:41:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230226AbhJ1Qnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 12:43:49 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:16391 "EHLO
+        id S230321AbhJ1Qn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 12:43:57 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:16412 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229846AbhJ1Qnt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 12:43:49 -0400
+        with ESMTP id S229846AbhJ1Qn4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 12:43:56 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1635439282; x=1666975282;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=3DcGoNLDw0nBvHnM5dU5BhrLiLH6Em/sSyzdlwx2xHc=;
-  b=jR9P0amZR+pUP8M3/DCxu8ibYuhdA8I89uXBULV9pT/Zq3ByBP0YXUZR
-   dSCxgtbz48SCSVSbZ8zLfjutoM/CAJiQL3AinUCsv2pGyyjosTPG5PYyX
-   i5QVh0Hq0cWaMfd19QMAzTOr5Tf1BIPyThrmQBtrhyiiSz9c4rxWPYfrv
-   REx88+VFhCngN9hE3+PmyRjQK6A8d12V9Mo69647sx6CTA+IzimGbsYNA
-   OkRdmywouRxagoqlRyx4SHAVMXM+L0KkY5/stf4z8j67HTNGcSJ6Uznht
-   Ab8usIT0JmFfp+mOgwCy69+sqKkYRnpqCM36OBEI/6Q103eO2VL5t6OYD
-   g==;
-IronPort-SDR: pnc7oD4xDzZc7MosiZSbtG0dRNR1LaoHT5TKF/jWW31ni7WsAJbvrcr0aRz8zQqBDU1plBpMdw
- IyRzmdmUiST/ZBjKEYhFthxli0F6C5OwJQ7wfuDZYvfffI8T9z7P3Zagz15F2vkDCFPIXReYi+
- Msh7EcHYmKeijnyEy0uAeA7Wzaoavf+nHFL6jZH5AE7Lizfl/4D/qSHOgfffqo6Dwegt80NT/U
- A633i4AF5/+4XGns9dDKmo0pHN+idcFbsq40HG7EL1f45ps1RyLg7IDz5dVio35RK6tgUNaebU
- JNxEDBjwqCY+Uq2rsKEXIp6P
+  t=1635439289; x=1666975289;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=B3yIueqAaUwco5fsiYMKbMxzLpRWuBO3Of6GX/De5Rk=;
+  b=k0pP7m0g40HDCYn0fJkyr+nM5IyEbPOqXY5gNGwK60t3mUsHhHqrqda+
+   B9enTZ/7b26PRR5C/UhgylXzyuBhKfsWQjxbLsLhNh+LLLiKM1epXCo/z
+   ku/akMN2i9m5oLU+TLduX68h0B81l5G5w8Ng4xht1PI0Uo4EdjDd/FJfs
+   y9pW1/H9avWOaaut15KPmyRbFXy4wkC2M4D0PDJi0Vlx4bKXSslpNk7Fw
+   UoMHihgOHruXfLDypSayFlKOzaw1d4d7LvIJMefKKSMeVj8HquxyFiox0
+   dPX795d6qYv1CCL5eSwgjdBvUxW3gaL/dw4mxVFVGWs1kXITQV0v1C/bE
+   Q==;
+IronPort-SDR: 37ghqgqa2tugdFefwjtpV8OMf20V4eOREhig72u2P3d/jwzyKi8QXnBkpVOIaTG9/ePbZA0qLb
+ /UcxxtwV0e7LUzPVFl3EMMBsCN3PwlKcD425/03CUI9fQIKp2rIgb0K3KjOF9soTBTeCqDmSVh
+ J6AMIDHfsBh6+QJt3HrnGB76WIBkLWlKc2xtqwheqeUvZ0cTYPNxxGY5sXju62yVqyu4h+Ecvi
+ 6DF1YA+mc1atj85M4QCI/8O69PblJzpmbCIeeyHUC0IpH7I/s+Tkxh5H5S+ImbaAT4tdPGJgvO
+ U0KJo5Gi81D5mviUMWZJCTxV
 X-IronPort-AV: E=Sophos;i="5.87,190,1631602800"; 
-   d="scan'208";a="142031693"
+   d="scan'208";a="142031734"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Oct 2021 09:41:21 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Oct 2021 09:41:28 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Thu, 28 Oct 2021 09:41:20 -0700
+ 15.1.2176.14; Thu, 28 Oct 2021 09:41:27 -0700
 Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Thu, 28 Oct 2021 09:41:14 -0700
+ 15.1.2176.14 via Frontend Transport; Thu, 28 Oct 2021 09:41:21 -0700
 From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
 To:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
         <robh+dt@kernel.org>
@@ -48,10 +48,12 @@ CC:     <UNGLinuxDriver@microchip.com>, <Woojung.Huh@microchip.com>,
         <davem@davemloft.net>, <kuba@kernel.org>,
         <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
         <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Subject: [PATCH v5 net-next 00/10] net: dsa: microchip: DSA driver support for LAN937x switch
-Date:   Thu, 28 Oct 2021 22:11:01 +0530
-Message-ID: <20211028164111.521039-1-prasanna.vengateshan@microchip.com>
+Subject: [PATCH v5 net-next 01/10] dt-bindings: net: dsa: dt bindings for microchip lan937x
+Date:   Thu, 28 Oct 2021 22:11:02 +0530
+Message-ID: <20211028164111.521039-2-prasanna.vengateshan@microchip.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20211028164111.521039-1-prasanna.vengateshan@microchip.com>
+References: <20211028164111.521039-1-prasanna.vengateshan@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -59,172 +61,219 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LAN937x is a Multi-Port 100BASE-T1 Ethernet Physical Layer switch  
-compliant with the IEEE 802.3bw-2015 specification. The device  
-provides 100 Mbit/s transmit and receive capability over a single 
-Unshielded Twisted Pair (UTP) cable. LAN937x is successive revision 
-of KSZ series switch. This series of patches provide the DSA driver  
-support for Microchip LAN937X switch and it configures through  
-SPI interface. 
+Documentation in .yaml format and updates to the MAINTAINERS
+Also 'make dt_binding_check' is passed.
 
-This driver shares some of the functions from KSZ common 
-layer. 
+Introduced rx-internal-delay-ps & tx-internal-delay-ps for RGMII
+internal delay along with min/max values. This is to address the
+Vladimir proposal from the previous revision and mdio details
+are added as suggested by Rob.
 
-The LAN937x switch series family consists of following SKUs: 
-
-LAN9370: 
-  - 4 T1 Phys 
-  - 1 RGMII port 
-
-LAN9371: 
-  - 3 T1 Phys & 1 TX Phy 
-  - 2 RGMII ports 
-
-LAN9372: 
-  - 5 T1 Phys & 1 TX Phy 
-  - 2 RGMII ports 
-
-LAN9373: 
-  - 5 T1 Phys 
-  - 2 RGMII & 1 SGMII port 
-
-LAN9374: 
-  - 6 T1 Phys 
-  - 2 RGMII ports 
-
-More support will be added at a later stage.
-
-Changes in v5:
-- microchip,lan937x.yaml: Added mdio properties detail
-- microchip,lan937x.yaml: *-internal-delay-ps added under port node
-- lan937x_dev.c: changed devm_mdiobus_alloc from of_mdiobus_register as suggested
-  by Vladimir
-- lan937x_dev.c: added dev_info for rgmii internal delay & error message to user
-  in case of out of range values
-- lan937x_dev.c: return -EOPNOTSUPP for C45 regnum values for lan937x_sw_mdio_read
-  & write operations
-- return from function with out storing in a variable
-- lan937x_main.c: Added vlan_enable info in vlan_filtering API
-- lan937x_main.c: lan937x_port_vlan_del: removed unintended PVID write
-
-Changes in v4:
-- tag_ksz.c: cpu_to_be16 to  put_unaligned_be16
-- correct spacing in comments
-- tag_ksz.c: NETIF_F_HW_CSUM fix is integrated 
-- lan937x_dev.c: mdio_np is removed from global and handled locally
-- lan937x_dev.c: unused functions removed lan937x_cfg32 & lan937x_port_cfg32
-- lan937x_dev.c: lan937x_is_internal_100BTX_phy_port function name changes
-- lan937x_dev.c: RGMII internal delay handling for MAC. Delay values are
-  retrieved from DTS and updated
-- lan937x_dev.c: corrected mutex operations for few dev variables
-- microchip,lan937x.yaml: introduced rx-internal-delay-ps & 
-  tx-internal-delay-ps for RGMII internal delay
-- lan937x_dev.c: Unnecessary mutex_lock has been removed
-- lan937x_main.c: PHY_INTERFACE_MODE_NA handling for lan937x_phylink_validate
-- lan937x_main.c: PORT_MIRROR_SNIFFER check in right place
-- lan937x_main.c: memset is used instead of writing 0's individually in 
-  lan937x_port_fdb_add function
-- lan937x_main.c: Removed \n from NL_SET_ERR_MSG_MOD calls
-
-Changes in v3: 
-- Removed settings of cnt_ptr to zero and the memset() 
-  added a cleanup patch which moves this into ksz_init_mib_timer().
-- Used ret everywhere instead of rc
-- microchip,lan937x.yaml: Remove mdio compatible
-- microchip_t1.c: Renaming standard phy registers
-- tag_ksz.c: LAN937X_TAIL_TAG_OVERRIDE renaming 
-  LAN937X_TAIL_TAG_BLOCKING_OVERRIDE
-- tag_ksz.c: Changed Ingress and Egress naming convention based on 
-  Host
-- tag_ksz.c: converted to skb_mac_header(skb) from 
-  (is_link_local_ether_addr(hdr->h_dest))
-- lan937x_dev.c: Removed BCAST Storm protection settings since we
-  have Tc commands for them
-- lan937x_dev.c: Flow control setting in lan937x_port_setup function
-- lan937x_dev.c: RGMII internal delay added only for cpu port, 
-- lan937x_dev.c: of_get_compatible_child(node, 
-  "microchip,lan937x-mdio") to of_get_child_by_name(node, "mdio");
-- lan937x_dev.c:lan937x_get_interface API: returned 
-  PHY_INTERFACE_MODE_INTERNAL instead of PHY_INTERFACE_MODE_NA
-- lan937x_main.c: Removed compat interface implementation in 
-  lan937x_config_cpu_port() API & dev_info corrected as well
-- lan937x_main.c: deleted ds->configure_vlan_while_not_filtering 
-  = true
-- lan937x_main.c: Added explanation for lan937x_setup lines
-- lan937x_main.c: FR_MAX_SIZE correction in lan937x_get_max_mtu API 
-- lan937x_main.c: removed lan937x_port_bridge_flags dummy functions
-- lan937x_spi.c - mdiobus_unregister to be added to spi_remove 
-  function
-- lan937x_main.c: phy link layer changes  
-- lan937x_main.c: port mirroring: sniff port selection limiting to
-  one port
-- lan937x_main.c: Changed to global vlan filtering
-- lan937x_main.c: vlan_table array to structure
-- lan937x_main.c -Use extack instead of reporting errors to Console
-- lan937x_main.c - Remove cpu_port addition in vlan_add api
-- lan937x_main.c - removed pvid resetting
-
-Changes in v2:
-- return check for register read/writes
-- dt compatible compatible check is added against chip id value 
-- lan937x_internal_t1_tx_phy_write() is renamed to 
-  lan937x_internal_phy_write()
-- lan937x_is_internal_tx_phy_port is renamed to 
-  lan937x_is_internal_100BTX_phy_port as it is 100Base-Tx phy
-- Return value for lan937x_internal_phy_write() is -EOPNOTSUPP 
-  in case of failures 
-- Return value for lan937x_internal_phy_read() is 0xffff 
-  for non existent phy 
-- cpu_port checking is removed from lan937x_port_stp_state_set()
-- lan937x_phy_link_validate: 100baseT_Full to 100baseT1_Full
-- T1 Phy driver is moved to drivers/net/phy/microchip_t1.c 
-- Tx phy driver support will be added later 
-- Legacy switch checkings in dts file are removed.
-- tag_ksz.c: Re-used ksz9477_rcv for lan937x_rcv 
-- tag_ksz.c: Xmit() & rcv() Comments are corrected w.r.to host
-- net/dsa/Kconfig: Family skew numbers altered in ascending order
-- microchip,lan937x.yaml: eth is replaced with ethernet
-- microchip,lan937x.yaml: spi1 is replaced with spi 
-- microchip,lan937x.yaml: cpu labelling is removed 
-- microchip,lan937x.yaml: port@x value will match the reg value now
-
-Prasanna Vengateshan (10):
-  dt-bindings: net: dsa: dt bindings for microchip lan937x
-  net: dsa: move mib->cnt_ptr reset code to ksz_common.c
-  net: phy: Add support for LAN937x T1 phy driver
-  net: dsa: tag_ksz: add tag handling for Microchip LAN937x
-  net: dsa: microchip: add DSA support for microchip lan937x
-  net: dsa: microchip: add support for phylink management
-  net: dsa: microchip: add support for ethtool port counters
-  net: dsa: microchip: add support for port mirror operations
-  net: dsa: microchip: add support for fdb and mdb management
-  net: dsa: microchip: add support for vlan operations
-
- .../bindings/net/dsa/microchip,lan937x.yaml   |  180 +++
- MAINTAINERS                                   |    1 +
- drivers/net/dsa/microchip/Kconfig             |   12 +
- drivers/net/dsa/microchip/Makefile            |    5 +
- drivers/net/dsa/microchip/ksz8795.c           |    2 -
- drivers/net/dsa/microchip/ksz9477.c           |    3 -
- drivers/net/dsa/microchip/ksz_common.c        |    8 +-
- drivers/net/dsa/microchip/ksz_common.h        |    5 +
- drivers/net/dsa/microchip/lan937x_dev.c       |  730 ++++++++++
- drivers/net/dsa/microchip/lan937x_dev.h       |   80 ++
- drivers/net/dsa/microchip/lan937x_main.c      | 1250 +++++++++++++++++
- drivers/net/dsa/microchip/lan937x_reg.h       |  683 +++++++++
- drivers/net/dsa/microchip/lan937x_spi.c       |  227 +++
- drivers/net/phy/microchip_t1.c                |  350 +++--
- include/net/dsa.h                             |    2 +
- net/dsa/Kconfig                               |    4 +-
- net/dsa/tag_ksz.c                             |   59 +
- 17 files changed, 3513 insertions(+), 88 deletions(-)
+Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+---
+ .../bindings/net/dsa/microchip,lan937x.yaml   | 180 ++++++++++++++++++
+ MAINTAINERS                                   |   1 +
+ 2 files changed, 181 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
- create mode 100644 drivers/net/dsa/microchip/lan937x_dev.c
- create mode 100644 drivers/net/dsa/microchip/lan937x_dev.h
- create mode 100644 drivers/net/dsa/microchip/lan937x_main.c
- create mode 100644 drivers/net/dsa/microchip/lan937x_reg.h
- create mode 100644 drivers/net/dsa/microchip/lan937x_spi.c
 
+diff --git a/Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml b/Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+new file mode 100644
+index 000000000000..0bc16894c8c4
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+@@ -0,0 +1,180 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/dsa/microchip,lan937x.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: LAN937x Ethernet Switch Series Tree Bindings
++
++maintainers:
++  - UNGLinuxDriver@microchip.com
++
++allOf:
++  - $ref: dsa.yaml#
++
++properties:
++  compatible:
++    enum:
++      - microchip,lan9370
++      - microchip,lan9371
++      - microchip,lan9372
++      - microchip,lan9373
++      - microchip,lan9374
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 50000000
++
++  reset-gpios:
++    description: Optional gpio specifier for a reset line
++    maxItems: 1
++
++  mdio:
++    $ref: /schemas/net/mdio.yaml#
++    unevaluatedProperties: false
++
++patternProperties:
++  "^(ethernet-)?ports$":
++    patternProperties:
++      "^(ethernet-)?port@[0-7]+$":
++        allOf:
++          - if:
++              properties:
++                phy-mode:
++                  contains:
++                    enum:
++                      - rgmii
++                      - rgmii-rxid
++                      - rgmii-txid
++                      - rgmii-id
++            then:
++              properties:
++                rx-internal-delay-ps:
++                  $ref: "#/$defs/internal-delay-ps"
++                tx-internal-delay-ps:
++                  $ref: "#/$defs/internal-delay-ps"
++
++required:
++  - compatible
++  - reg
++
++$defs:
++  internal-delay-ps:
++    description: Delay is in pico seconds
++    minimum: 2170
++    maximum: 4000
++    default: 0
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++
++    //Ethernet switch connected via spi to the host
++    ethernet {
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      fixed-link {
++        speed = <1000>;
++        full-duplex;
++      };
++    };
++
++    spi {
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      lan9374: switch@0 {
++        compatible = "microchip,lan9374";
++        reg = <0>;
++
++        spi-max-frequency = <44000000>;
++
++        ethernet-ports {
++          #address-cells = <1>;
++          #size-cells = <0>;
++          port@0 {
++            reg = <0>;
++            label = "lan1";
++            phy-mode = "internal";
++            phy-handle = <&t1phy0>;
++          };
++          port@1 {
++            reg = <1>;
++            label = "lan2";
++            phy-mode = "internal";
++            phy-handle = <&t1phy1>;
++          };
++          port@2 {
++            reg = <2>;
++            label = "lan4";
++            phy-mode = "internal";
++            phy-handle = <&t1phy2>;
++          };
++          port@3 {
++            reg = <3>;
++            label = "lan6";
++            phy-mode = "internal";
++            phy-handle = <&t1phy3>;
++          };
++          port@4 {
++            reg = <4>;
++            phy-mode = "rgmii";
++            ethernet = <&ethernet>;
++            fixed-link {
++              speed = <1000>;
++              full-duplex;
++            };
++          };
++          port@5 {
++            reg = <5>;
++            label = "lan7";
++            phy-mode = "rgmii";
++            fixed-link {
++              speed = <1000>;
++              full-duplex;
++            };
++          };
++          port@6 {
++            reg = <6>;
++            label = "lan5";
++            phy-mode = "internal";
++            phy-handle = <&t1phy4>;
++          };
++          port@7 {
++            reg = <7>;
++            label = "lan3";
++            phy-mode = "internal";
++            phy-handle = <&t1phy5>;
++          };
++        };
++
++        mdio {
++          #address-cells = <1>;
++          #size-cells = <0>;
++
++          t1phy0: ethernet-phy@0{
++            reg = <0x0>;
++          };
++          t1phy1: ethernet-phy@1{
++            reg = <0x1>;
++          };
++          t1phy2: ethernet-phy@2{
++            reg = <0x2>;
++          };
++          t1phy3: ethernet-phy@3{
++            reg = <0x3>;
++          };
++          t1phy4: ethernet-phy@6{
++            reg = <0x6>;
++          };
++          t1phy5: ethernet-phy@7{
++            reg = <0x7>;
++          };
++        };
++      };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 975086c5345d..c95392430f11 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -12300,6 +12300,7 @@ M:	UNGLinuxDriver@microchip.com
+ L:	netdev@vger.kernel.org
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
++F:	Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+ F:	drivers/net/dsa/microchip/*
+ F:	include/linux/platform_data/microchip-ksz.h
+ F:	net/dsa/tag_ksz.c
 -- 
 2.27.0
 
