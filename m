@@ -2,930 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BDE343E2D8
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 15:58:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52F2D43E2DE
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 15:58:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231172AbhJ1OAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 10:00:15 -0400
-Received: from smtp-out2.suse.de ([195.135.220.29]:55960 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230157AbhJ1OAF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 10:00:05 -0400
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 319A41FD53;
-        Thu, 28 Oct 2021 13:57:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1635429457; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bZhUIogvUhM4OyHdt53HdrP9bu3YcWlodcH+de1PVG0=;
-        b=T4sGDUJnR37zyNCNAwMwIlWs2qhQNWJRBMfhZGhZzOW1sruWnJAdOocANEkOtuq9QaNS+7
-        cwsiXtQbSgjYbHIvRn0JySZH3SvZGQq9IUc23hH1+cHKeuSaKzWhlsndI7ZV3I0oLiC2oy
-        vQKfkhkVpOYEsMcwvoc2J3nfi9aDycM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1635429457;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bZhUIogvUhM4OyHdt53HdrP9bu3YcWlodcH+de1PVG0=;
-        b=QcuKrZOTbIBS9sxk7u63IQITy+CH0qe1snFsAfu0ZPXOz1hsX6tUDvZj7/4wbhdSOKlbVF
-        mKdJ7DK9IP7NyYAQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C01D713CFD;
-        Thu, 28 Oct 2021 13:57:36 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id o7ZbK1CsemF4DgAAMHmgww
-        (envelope-from <dkirjanov@suse.de>); Thu, 28 Oct 2021 13:57:36 +0000
-Subject: Re: [PATCH net-next 1/4 v4] amt: add control plane of amt interface
-To:     Taehee Yoo <ap420073@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, dsahern@kernel.org, netdev@vger.kernel.org
-References: <20211026151016.25997-1-ap420073@gmail.com>
- <20211026151016.25997-2-ap420073@gmail.com>
-From:   Denis Kirjanov <dkirjanov@suse.de>
-Message-ID: <f72b897e-7d78-8fa2-185e-affb98342d57@suse.de>
-Date:   Thu, 28 Oct 2021 16:57:36 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S231151AbhJ1OAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 10:00:46 -0400
+Received: from foss.arm.com ([217.140.110.172]:55408 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230480AbhJ1OAi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Oct 2021 10:00:38 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F0BE61FB;
+        Thu, 28 Oct 2021 06:58:10 -0700 (PDT)
+Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0105A3F70D;
+        Thu, 28 Oct 2021 06:58:08 -0700 (PDT)
+Date:   Thu, 28 Oct 2021 14:57:51 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        antonio.gomez.iglesias@intel.com, tony.luck@intel.com,
+        dave.hansen@linux.intel.com, gregkh@linuxfoundation.org
+Subject: Re: [PATCH ebpf v2 2/2] bpf: Make unprivileged bpf depend on
+ CONFIG_CPU_SPECTRE
+Message-ID: <20211028135751.GA41384@lakrids.cambridge.arm.com>
+References: <cover.1635383031.git.pawan.kumar.gupta@linux.intel.com>
+ <882f5c31f48bac75ebaede2a0ec321ec67128229.1635383031.git.pawan.kumar.gupta@linux.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20211026151016.25997-2-ap420073@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: ru
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <882f5c31f48bac75ebaede2a0ec321ec67128229.1635383031.git.pawan.kumar.gupta@linux.intel.com>
+User-Agent: Mutt/1.11.1+11 (2f07cb52) (2018-12-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-10/26/21 6:10 PM, Taehee Yoo пишет:
-> It adds definitions and control plane code for AMT.
-> this is very similar to udp tunneling interfaces such as gtp, vxlan, etc.
-> In the next patch, data plane code will be added.
+On Wed, Oct 27, 2021 at 06:35:44PM -0700, Pawan Gupta wrote:
+> Disabling unprivileged BPF would help prevent unprivileged users from
+> creating the conditions required for potential speculative execution
+> side-channel attacks on affected hardware. A deep dive on such attacks
+> and mitigation is available here [1].
 > 
-> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+> If an architecture selects CONFIG_CPU_SPECTRE, disable unprivileged BPF
+> by default. An admin can enable this at runtime, if necessary.
+> 
+> Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+> 
+> [1] https://ebpf.io/summit-2021-slides/eBPF_Summit_2021-Keynote-Daniel_Borkmann-BPF_and_Spectre.pdf
 > ---
-> v1 -> v2:
->   - Eliminate sparse warnings
->     - Use bool type instead of __be16 for identifying v4/v6 protocol.
+>  kernel/bpf/Kconfig | 5 +++++
+>  1 file changed, 5 insertions(+)
 > 
-> v2 -> v3:
->   - Fix compile warning due to unsed variable.
->   - Add missing spinlock comment.
->   - Update help message of amt in Kconfig.
-> 
-> v3 -> v4:
->   - Split patch.
->   - Fix compile error
-> 
->   MAINTAINERS              |   8 +
->   drivers/net/Kconfig      |  16 ++
->   drivers/net/Makefile     |   1 +
->   drivers/net/amt.c        | 487 +++++++++++++++++++++++++++++++++++++++
->   include/net/amt.h        | 236 +++++++++++++++++++
->   include/uapi/linux/amt.h |  31 +++
->   6 files changed, 779 insertions(+)
->   create mode 100644 drivers/net/amt.c
->   create mode 100644 include/net/amt.h
->   create mode 100644 include/uapi/linux/amt.h
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 975086c5345d..7fc24375e0c8 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -1020,6 +1020,14 @@ S:	Maintained
->   F:	Documentation/devicetree/bindings/iio/light/ams,as73211.yaml
->   F:	drivers/iio/light/as73211.c
->   
-> +AMT (Automatic Multicast Tunneling)
-> +M:	Taehee Yoo <ap420073@gmail.com>
-> +L:	netdev@vger.kernel.org
-> +S:	Maintained
-> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
-> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git
-> +F:	drivers/net/amt.c
-> +
->   ANALOG DEVICES INC AD7192 DRIVER
->   M:	Alexandru Tachici <alexandru.tachici@analog.com>
->   L:	linux-iio@vger.kernel.org
-> diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-> index f37b1c56f7c4..dae126b31cd5 100644
-> --- a/drivers/net/Kconfig
-> +++ b/drivers/net/Kconfig
-> @@ -291,6 +291,22 @@ config GTP
->   	  To compile this drivers as a module, choose M here: the module
->   	  will be called gtp.
->   
-> +config AMT
-> +	tristate "Automatic Multicast Tunneling (AMT)"
-> +	depends on INET && IP_MULTICAST
-> +	select NET_UDP_TUNNEL
-> +	help
-> +	  This allows one to create AMT(Automatic Multicast Tunneling)
-> +	  virtual interfaces that provide multicast tunneling.
-> +	  There are two roles, Gateway, and Relay.
-> +	  Gateway Encapsulates IGMP/MLD traffic from listeners to the Relay.
-> +	  Gateway Decapsulates multicast traffic from the Relay to Listeners.
-> +	  Relay Encapsulates multicast traffic from Sources to Gateway.
-> +	  Relay Decapsulates IGMP/MLD traffic from Gateway.
-> +
-> +	  To compile this drivers as a module, choose M here: the module
-> +	  will be called amt.
-> +
->   config MACSEC
->   	tristate "IEEE 802.1AE MAC-level encryption (MACsec)"
->   	select CRYPTO
-> diff --git a/drivers/net/Makefile b/drivers/net/Makefile
-> index 739838623cf6..50b23e71065f 100644
-> --- a/drivers/net/Makefile
-> +++ b/drivers/net/Makefile
-> @@ -14,6 +14,7 @@ obj-$(CONFIG_WIREGUARD) += wireguard/
->   obj-$(CONFIG_EQUALIZER) += eql.o
->   obj-$(CONFIG_IFB) += ifb.o
->   obj-$(CONFIG_MACSEC) += macsec.o
-> +obj-$(CONFIG_AMT) += amt.o
->   obj-$(CONFIG_MACVLAN) += macvlan.o
->   obj-$(CONFIG_MACVTAP) += macvtap.o
->   obj-$(CONFIG_MII) += mii.o
-> diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-> new file mode 100644
-> index 000000000000..8d4782c66cde
-> --- /dev/null
-> +++ b/drivers/net/amt.c
-> @@ -0,0 +1,487 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
-> +/* Copyright (c) 2021 Taehee Yoo <ap420073@gmail.com> */
-> +
-> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-> +
-> +#include <linux/module.h>
-> +#include <linux/skbuff.h>
-> +#include <linux/udp.h>
-> +#include <linux/jhash.h>
-> +#include <linux/if_tunnel.h>
-> +#include <linux/net.h>
-> +#include <linux/igmp.h>
-> +#include <net/net_namespace.h>
-> +#include <net/protocol.h>
-> +#include <net/ip.h>
-> +#include <net/udp.h>
-> +#include <net/udp_tunnel.h>
-> +#include <net/icmp.h>
-> +#include <net/mld.h>
-> +#include <net/amt.h>
-> +#include <uapi/linux/amt.h>
-> +#include <linux/security.h>
-> +#include <net/gro_cells.h>
-> +#include <net/ipv6.h>
-> +#include <net/protocol.h>
-> +#include <net/if_inet6.h>
-> +#include <net/ndisc.h>
-> +#include <net/addrconf.h>
-> +#include <net/ip6_route.h>
-> +#include <net/inet_common.h>
-> +
-> +static struct workqueue_struct *amt_wq;
-> +
-> +static struct socket *amt_create_sock(struct net *net, __be16 port)
-> +{
-> +	struct udp_port_cfg udp_conf;
-> +	struct socket *sock;
-> +	int err;
-> +
-> +	memset(&udp_conf, 0, sizeof(udp_conf));
-> +	udp_conf.family = AF_INET;
-> +	udp_conf.local_ip.s_addr = htonl(INADDR_ANY);
-> +
-> +	udp_conf.local_udp_port = port;
-> +
-> +	err = udp_sock_create(net, &udp_conf, &sock);
-> +	if (err < 0)
-> +		return ERR_PTR(err);
-> +
-> +	return sock;
-> +}
-> +
-> +static int amt_socket_create(struct amt_dev *amt)
-> +{
-> +	struct udp_tunnel_sock_cfg tunnel_cfg;
-> +	struct socket *sock;
-> +
-> +	sock = amt_create_sock(amt->net, amt->relay_port);
-> +	if (IS_ERR(sock))
-> +		return PTR_ERR(sock);
-> +
-> +	/* Mark socket as an encapsulation socket */
-> +	memset(&tunnel_cfg, 0, sizeof(tunnel_cfg));
-> +	tunnel_cfg.sk_user_data = amt;
-> +	tunnel_cfg.encap_type = 1;
-> +	tunnel_cfg.encap_destroy = NULL;
-> +	setup_udp_tunnel_sock(amt->net, sock, &tunnel_cfg);
-> +
-> +	rcu_assign_pointer(amt->sock, sock);
-> +	return 0;
-> +}
-> +
-> +static int amt_dev_open(struct net_device *dev)
-> +{
-> +	struct amt_dev *amt = netdev_priv(dev);
-> +	int err;
-> +
-> +	amt->ready4 = false;
-> +	amt->ready6 = false;
-> +
-> +	err = amt_socket_create(amt);
-> +	if (err)
-> +		return err;
-> +
-> +	spin_lock_bh(&amt->lock);
-> +	amt->req_cnt = 0;
-> +	get_random_bytes(&amt->key, sizeof(siphash_key_t));
-> +	spin_unlock_bh(&amt->lock);
-> +
-> +	amt->status = AMT_STATUS_INIT;
-> +	return err;
-> +}
-> +
-> +static int amt_dev_stop(struct net_device *dev)
-> +{
-> +	struct amt_dev *amt = netdev_priv(dev);
-> +	struct socket *sock;
-> +
-> +	/* shutdown */
-> +	sock = rtnl_dereference(amt->sock);
-> +	RCU_INIT_POINTER(amt->sock, NULL);
-> +	synchronize_net();
-> +	if (sock)
-> +		udp_tunnel_sock_release(sock);
-> +
-> +	amt->ready4 = false;
-> +	amt->ready6 = false;
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct device_type amt_type = {
-> +	.name = "amt",
-> +};
-> +
-> +static int amt_dev_init(struct net_device *dev)
-> +{
-> +	struct amt_dev *amt = netdev_priv(dev);
-> +	int err;
-> +
-> +	amt->dev = dev;
-> +	dev->tstats = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
-> +	if (!dev->tstats)
-> +		return -ENOMEM;
-> +
-> +	err = gro_cells_init(&amt->gro_cells, dev);
-> +	if (err) {
-> +		free_percpu(dev->tstats);
-> +		return err;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static void amt_dev_uninit(struct net_device *dev)
-> +{
-> +	struct amt_dev *amt = netdev_priv(dev);
-> +
-> +	gro_cells_destroy(&amt->gro_cells);
-> +	free_percpu(dev->tstats);
-> +}
-> +
-> +static int amt_change_mtu(struct net_device *dev, int new_mtu)
-> +{
-> +	if (new_mtu > dev->max_mtu)
-> +		new_mtu = dev->max_mtu;
-> +	else if (new_mtu < dev->min_mtu)
-> +		new_mtu = dev->min_mtu;
-> +
-> +	dev->mtu = new_mtu;
-> +	return 0;
-> +}
-> +
-> +static const struct net_device_ops amt_netdev_ops = {
-> +	.ndo_init               = amt_dev_init,
-> +	.ndo_uninit             = amt_dev_uninit,
-> +	.ndo_open		= amt_dev_open,
-> +	.ndo_stop		= amt_dev_stop,
-> +	.ndo_get_stats64        = dev_get_tstats64,
-> +	.ndo_change_mtu         = amt_change_mtu,
-> +};
-> +
-> +static void amt_link_setup(struct net_device *dev)
-> +{
-> +	dev->netdev_ops         = &amt_netdev_ops;
-> +	dev->needs_free_netdev  = true;
-> +	SET_NETDEV_DEVTYPE(dev, &amt_type);
-> +	dev->min_mtu		= ETH_MIN_MTU;
-> +	dev->max_mtu		= ETH_MAX_MTU;
-> +	dev->type		= ARPHRD_NONE;
-> +	dev->flags		= IFF_POINTOPOINT | IFF_NOARP | IFF_MULTICAST;
-> +	dev->hard_header_len	= 0;
-> +	dev->addr_len		= 0;
-> +	dev->priv_flags		|= IFF_NO_QUEUE;
-> +	dev->features		|= NETIF_F_LLTX;
-> +	dev->features		|= NETIF_F_GSO_SOFTWARE;
-> +	dev->features		|= NETIF_F_NETNS_LOCAL;
-> +	dev->hw_features	|= NETIF_F_SG | NETIF_F_HW_CSUM;
-> +	dev->hw_features	|= NETIF_F_FRAGLIST | NETIF_F_RXCSUM;
-> +	dev->hw_features	|= NETIF_F_GSO_SOFTWARE;
-> +	eth_hw_addr_random(dev);
-> +	eth_zero_addr(dev->broadcast);
-> +	ether_setup(dev);
-> +}
-> +
-> +static const struct nla_policy amt_policy[IFLA_AMT_MAX + 1] = {
-> +	[IFLA_AMT_MODE]		= { .type = NLA_U32 },
-> +	[IFLA_AMT_RELAY_PORT]	= { .type = NLA_U16 },
-> +	[IFLA_AMT_GATEWAY_PORT]	= { .type = NLA_U16 },
-> +	[IFLA_AMT_LINK]		= { .type = NLA_U32 },
-> +	[IFLA_AMT_LOCAL_IP]	= { .len = sizeof_field(struct iphdr, daddr) },
-> +	[IFLA_AMT_REMOTE_IP]	= { .len = sizeof_field(struct iphdr, daddr) },
-> +	[IFLA_AMT_DISCOVERY_IP]	= { .len = sizeof_field(struct iphdr, daddr) },
-> +	[IFLA_AMT_MAX_TUNNELS]	= { .type = NLA_U32 },
-> +};
-> +
-> +static int amt_validate(struct nlattr *tb[], struct nlattr *data[],
-> +			struct netlink_ext_ack *extack)
-> +{
-> +	if (!data)
-> +		return -EINVAL;
-> +
-> +	if (!data[IFLA_AMT_LINK]) {
-> +		NL_SET_ERR_MSG_ATTR(extack, data[IFLA_AMT_LINK],
-> +				    "link interface should not be empty");
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (!data[IFLA_AMT_MODE] ||
-> +	    nla_get_u32(data[IFLA_AMT_MODE]) > AMT_MODE_MAX) {
-> +		NL_SET_ERR_MSG_ATTR(extack, data[IFLA_AMT_MODE],
-> +				    "mode should not be empty");
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (!data[IFLA_AMT_LOCAL_IP]) {
-> +		NL_SET_ERR_MSG_ATTR(extack, data[IFLA_AMT_DISCOVERY_IP],
-> +				    "local should not be empty");
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (!data[IFLA_AMT_DISCOVERY_IP] &&
-> +	    nla_get_u32(data[IFLA_AMT_MODE]) == AMT_MODE_GATEWAY) {
-> +		NL_SET_ERR_MSG_ATTR(extack, data[IFLA_AMT_LOCAL_IP],
-> +				    "discovery should not be empty");
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int amt_newlink(struct net *net, struct net_device *dev,
-> +		       struct nlattr *tb[], struct nlattr *data[],
-> +		       struct netlink_ext_ack *extack)
-> +{
-> +	struct amt_dev *amt = netdev_priv(dev);
-> +	int err;
-> +
-> +	amt->net = net;
-> +	amt->mode = nla_get_u32(data[IFLA_AMT_MODE]);
-> +
-> +	if (data[IFLA_AMT_MAX_TUNNELS])
-> +		amt->max_tunnels = nla_get_u32(data[IFLA_AMT_MAX_TUNNELS]);
-> +	else
-> +		amt->max_tunnels = AMT_MAX_TUNNELS;
-> +
-> +	spin_lock_init(&amt->lock);
-> +	amt->max_groups = AMT_MAX_GROUP;
-> +	amt->max_sources = AMT_MAX_SOURCE;
-> +	amt->hash_buckets = AMT_HSIZE;
-> +	amt->nr_tunnels = 0;
-> +	get_random_bytes(&amt->hash_seed, sizeof(amt->hash_seed));
-> +	amt->stream_dev = dev_get_by_index(net,
-> +					   nla_get_u32(data[IFLA_AMT_LINK]));
-> +	if (!amt->stream_dev) {
-> +		NL_SET_ERR_MSG_ATTR(extack, tb[IFLA_AMT_LINK],
-> +				    "Can't find stream device");
-> +		return -ENODEV;
-> +	}
-> +
-> +	if (amt->stream_dev->type != ARPHRD_ETHER) {
-> +		NL_SET_ERR_MSG_ATTR(extack, tb[IFLA_AMT_LINK],
-> +				    "Invalid stream device type");
-> +		dev_put(amt->stream_dev);
-> +		return -EINVAL;
-> +	}
-> +
-> +	amt->local_ip = nla_get_in_addr(data[IFLA_AMT_LOCAL_IP]);
-> +	if (data[IFLA_AMT_RELAY_PORT])
-> +		amt->relay_port = nla_get_be16(data[IFLA_AMT_RELAY_PORT]);
-> +	else
-> +		amt->relay_port = htons(IANA_AMT_UDP_PORT);
-> +
-> +	if (data[IFLA_AMT_GATEWAY_PORT])
-> +		amt->gw_port = nla_get_be16(data[IFLA_AMT_GATEWAY_PORT]);
-> +	else
-> +		amt->gw_port = htons(IANA_AMT_UDP_PORT);
-> +
-> +	if (!amt->relay_port) {
-> +		NL_SET_ERR_MSG_ATTR(extack, tb[IFLA_AMT_DISCOVERY_IP],
-> +				    "relay port must not be 0");
-		dev_put() here and below
-> +		return -EINVAL;
-> +	}
-> +	if (amt->mode == AMT_MODE_RELAY) {
-> +		amt->qrv = amt->net->ipv4.sysctl_igmp_qrv;
-> +		amt->qri = 10;
-> +		dev->needed_headroom = amt->stream_dev->needed_headroom +
-> +				       AMT_RELAY_HLEN;
-> +		dev->mtu = amt->stream_dev->mtu - AMT_RELAY_HLEN;
-> +		dev->max_mtu = dev->mtu;
-> +		dev->min_mtu = ETH_MIN_MTU + AMT_RELAY_HLEN;
-> +	} else {
-> +		if (!data[IFLA_AMT_DISCOVERY_IP]) {
-> +			NL_SET_ERR_MSG_ATTR(extack, tb[IFLA_AMT_DISCOVERY_IP],
-> +					    "discovery must be set in gateway mode");
-> +			return -EINVAL;
-> +		}
-> +		if (!amt->gw_port) {
-> +			NL_SET_ERR_MSG_ATTR(extack, tb[IFLA_AMT_DISCOVERY_IP],
-> +					    "gateway port must not be 0");
-> +			return -EINVAL;
-> +		}
-> +		amt->remote_ip = 0;
-> +		amt->discovery_ip = nla_get_in_addr(data[IFLA_AMT_DISCOVERY_IP]);
-> +		if (ipv4_is_loopback(amt->discovery_ip) ||
-> +		    ipv4_is_multicast(amt->discovery_ip)) {
-> +			NL_SET_ERR_MSG_ATTR(extack, tb[IFLA_AMT_DISCOVERY_IP],
-> +					    "discovery must be unicast");
-> +			return -EINVAL;
-> +		}
-> +
-> +		dev->needed_headroom = amt->stream_dev->needed_headroom +
-> +				       AMT_GW_HLEN;
-> +		dev->mtu = amt->stream_dev->mtu - AMT_GW_HLEN;
-> +		dev->max_mtu = dev->mtu;
-> +		dev->min_mtu = ETH_MIN_MTU + AMT_GW_HLEN;
-> +	}
-> +	amt->qi = AMT_INIT_QUERY_INTERVAL;
-> +
-> +	err = register_netdevice(dev);
-> +	if (err < 0) {
-> +		netdev_dbg(dev, "failed to register new netdev %d\n", err);
-> +		dev_put(amt->stream_dev);
-> +		return err;
-> +	}
-> +
-> +	err = netdev_upper_dev_link(amt->stream_dev, dev, extack);
-> +	if (err < 0) {
-> +		dev_put(amt->stream_dev);
-> +		unregister_netdevice(dev);
-> +		return err;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static void amt_dellink(struct net_device *dev, struct list_head *head)
-> +{
-> +	struct amt_dev *amt = netdev_priv(dev);
-> +
-> +	unregister_netdevice_queue(dev, head);
-> +	netdev_upper_dev_unlink(amt->stream_dev, dev);
-> +	dev_put(amt->stream_dev);
-> +}
-> +
-> +static size_t amt_get_size(const struct net_device *dev)
-> +{
-> +	return nla_total_size(sizeof(__u32)) + /* IFLA_AMT_MODE */
-> +	       nla_total_size(sizeof(__u16)) + /* IFLA_AMT_RELAY_PORT */
-> +	       nla_total_size(sizeof(__u16)) + /* IFLA_AMT_GATEWAY_PORT */
-> +	       nla_total_size(sizeof(__u32)) + /* IFLA_AMT_LINK */
-> +	       nla_total_size(sizeof(__u32)) + /* IFLA_MAX_TUNNELS */
-> +	       nla_total_size(sizeof(struct iphdr)) + /* IFLA_AMT_DISCOVERY_IP */
-> +	       nla_total_size(sizeof(struct iphdr)) + /* IFLA_AMT_REMOTE_IP */
-> +	       nla_total_size(sizeof(struct iphdr)); /* IFLA_AMT_LOCAL_IP */
-> +}
-> +
-> +static int amt_fill_info(struct sk_buff *skb, const struct net_device *dev)
-> +{
-> +	struct amt_dev *amt = netdev_priv(dev);
-> +
-> +	if (nla_put_u32(skb, IFLA_AMT_MODE, amt->mode))
-> +		goto nla_put_failure;
-> +	if (nla_put_be16(skb, IFLA_AMT_RELAY_PORT, amt->relay_port))
-> +		goto nla_put_failure;
-> +	if (nla_put_be16(skb, IFLA_AMT_GATEWAY_PORT, amt->gw_port))
-> +		goto nla_put_failure;
-> +	if (amt->stream_dev)
-> +		if (nla_put_u32(skb, IFLA_AMT_LINK, amt->stream_dev->ifindex))
-> +			goto nla_put_failure;
-> +	if (nla_put_in_addr(skb, IFLA_AMT_LOCAL_IP, amt->local_ip))
-> +		goto nla_put_failure;
-> +	if (nla_put_in_addr(skb, IFLA_AMT_DISCOVERY_IP, amt->discovery_ip))
-> +		goto nla_put_failure;
-> +	if (amt->remote_ip)
-> +		if (nla_put_in_addr(skb, IFLA_AMT_REMOTE_IP, amt->remote_ip))
-> +			goto nla_put_failure;
-> +
-> +	return 0;
-> +
-> +nla_put_failure:
-> +	return -EMSGSIZE;
-> +}
-> +
-> +static struct rtnl_link_ops amt_link_ops __read_mostly = {
-> +	.kind		= "amt",
-> +	.maxtype	= IFLA_AMT_MAX,
-> +	.policy		= amt_policy,
-> +	.priv_size	= sizeof(struct amt_dev),
-> +	.setup		= amt_link_setup,
-> +	.validate	= amt_validate,
-> +	.newlink	= amt_newlink,
-> +	.dellink	= amt_dellink,
-> +	.get_size       = amt_get_size,
-> +	.fill_info      = amt_fill_info,
-> +};
-> +
-> +static struct net_device *amt_lookup_upper_dev(struct net_device *dev)
-> +{
-> +	struct net_device *upper_dev;
-> +	struct amt_dev *amt;
-> +
-> +	for_each_netdev(dev_net(dev), upper_dev) {
-> +		if (netif_is_amt(upper_dev)) {
-> +			amt = netdev_priv(upper_dev);
-> +			if (amt->stream_dev == dev)
-> +				return upper_dev;
-> +		}
-> +	}
-> +
-> +	return NULL;
-> +}
-> +
-> +static int amt_device_event(struct notifier_block *unused,
-> +			    unsigned long event, void *ptr)
-> +{
-> +	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
-> +	struct net_device *upper_dev;
-> +	struct amt_dev *amt;
-> +	LIST_HEAD(list);
-> +	int new_mtu;
-> +
-> +	upper_dev = amt_lookup_upper_dev(dev);
-> +	if (!upper_dev)
-> +		return NOTIFY_DONE;
-> +	amt = netdev_priv(upper_dev);
-> +
-> +	switch (event) {
-> +	case NETDEV_UNREGISTER:
-> +		amt_dellink(amt->dev, &list);
-> +		unregister_netdevice_many(&list);
-> +		break;
-> +	case NETDEV_CHANGEMTU:
-> +		if (amt->mode == AMT_MODE_RELAY)
-> +			new_mtu = dev->mtu - AMT_RELAY_HLEN;
-> +		else
-> +			new_mtu = dev->mtu - AMT_GW_HLEN;
-> +		amt_change_mtu(amt->dev, new_mtu);
-> +		break;
-> +	}
-> +
-> +	return NOTIFY_DONE;
-> +}
-> +
-> +static struct notifier_block amt_notifier_block __read_mostly = {
-> +	.notifier_call = amt_device_event,
-> +};
-> +
-> +static int __init amt_init(void)
-> +{
-> +	int err;
-> +
-> +	err = register_netdevice_notifier(&amt_notifier_block);
-> +	if (err < 0)
-> +		goto err;
-> +
-> +	err = rtnl_link_register(&amt_link_ops);
-> +	if (err < 0)
-> +		goto unregister_notifier;
-> +
-> +	amt_wq = alloc_workqueue("amt", WQ_UNBOUND, 1);
-> +	if (!amt_wq)
-> +		goto rtnl_unregister;
-> +
-> +	return 0;
-> +
-> +rtnl_unregister:
-> +	rtnl_link_unregister(&amt_link_ops);
-> +unregister_notifier:
-> +	unregister_netdevice_notifier(&amt_notifier_block);
-> +err:
-> +	pr_err("error loading AMT module loaded\n");
-> +	return err;
-> +}
-> +late_initcall(amt_init);
-> +
-> +static void __exit amt_fini(void)
-> +{
-> +	rtnl_link_unregister(&amt_link_ops);
-> +	unregister_netdevice_notifier(&amt_notifier_block);
-> +	destroy_workqueue(amt_wq);
-> +}
-> +module_exit(amt_fini);
-> +
-> +MODULE_LICENSE("GPL");
-> +MODULE_AUTHOR("Taehee Yoo <ap420073@gmail.com>");
-> +MODULE_ALIAS_RTNL_LINK("amt");
-> diff --git a/include/net/amt.h b/include/net/amt.h
-> new file mode 100644
-> index 000000000000..e1520d71d782
-> --- /dev/null
-> +++ b/include/net/amt.h
-> @@ -0,0 +1,236 @@
-> +/* SPDX-License-Identifier: GPL-2.0+ */
-> +/*
-> + * Copyright (c) 2021 Taehee Yoo <ap420073@gmail.com>
-> + */
-> +#ifndef _NET_AMT_H_
-> +#define _NET_AMT_H_
-> +
-> +#include <linux/siphash.h>
-> +#include <linux/workqueue.h>
-> +#include <linux/jhash.h>
-> +
-> +enum amt_msg_type {
-> +	AMT_MSG_DISCOVERY = 1,
-> +	AMT_MSG_ADVERTISEMENT,
-> +	AMT_MSG_REQUEST,
-> +	AMT_MSG_MEMBERSHIP_QUERY,
-> +	AMT_MSG_MEMBERSHIP_UPDATE,
-> +	AMT_MSG_MULTICAST_DATA,
-> +	AMT_MSG_TEATDOWM,
-> +	__AMT_MSG_MAX,
-> +};
-> +
-> +#define AMT_MSG_MAX (__AMT_MSG_MAX - 1)
-> +
-> +enum amt_status {
-> +	AMT_STATUS_INIT,
-> +	AMT_STATUS_SENT_DISCOVERY,
-> +	AMT_STATUS_RECEIVED_DISCOVERY,
-> +	AMT_STATUS_SENT_ADVERTISEMENT,
-> +	AMT_STATUS_RECEIVED_ADVERTISEMENT,
-> +	AMT_STATUS_SENT_REQUEST,
-> +	AMT_STATUS_RECEIVED_REQUEST,
-> +	AMT_STATUS_SENT_QUERY,
-> +	AMT_STATUS_RECEIVED_QUERY,
-> +	AMT_STATUS_SENT_UPDATE,
-> +	AMT_STATUS_RECEIVED_UPDATE,
-> +	__AMT_STATUS_MAX,
-> +};
-> +
-> +#define AMT_STATUS_MAX (__AMT_STATUS_MAX - 1)
-> +
-> +struct amt_header_discovery {
-> +#if defined(__LITTLE_ENDIAN_BITFIELD)
-> +	u32	type:4,
-> +		version:4,
-> +		reserved:24;
-> +#elif defined(__BIG_ENDIAN_BITFIELD)
-> +	u32	version:4,
-> +		type:4,
-> +		reserved:24;
-> +#else
-> +#error  "Please fix <asm/byteorder.h>"
-> +#endif
-> +	__be32	nonce;
-> +} __packed;
-> +
-> +struct amt_header_advertisement {
-> +#if defined(__LITTLE_ENDIAN_BITFIELD)
-> +	u32	type:4,
-> +		version:4,
-> +		reserved:24;
-> +#elif defined(__BIG_ENDIAN_BITFIELD)
-> +	u32	version:4,
-> +		type:4,
-> +		reserved:24;
-> +#else
-> +#error  "Please fix <asm/byteorder.h>"
-> +#endif
-> +	__be32	nonce;
-> +	__be32	ip4;
-> +} __packed;
-> +
-> +struct amt_header_request {
-> +#if defined(__LITTLE_ENDIAN_BITFIELD)
-> +	u32	type:4,
-> +		version:4,
-> +		reserved1:7,
-> +		p:1,
-> +		reserved2:16;
-> +#elif defined(__BIG_ENDIAN_BITFIELD)
-> +	u32	version:4,
-> +		type:4,
-> +		p:1,
-> +		reserved1:7,
-> +		reserved2:16;
-> +#else
-> +#error  "Please fix <asm/byteorder.h>"
-> +#endif
-> +	__be32	nonce;
-> +} __packed;
-> +
-> +struct amt_header_membership_query {
-> +#if defined(__LITTLE_ENDIAN_BITFIELD)
-> +	u64	type:4,
-> +		version:4,
-> +		reserved:6,
-> +		l:1,
-> +		g:1,
-> +		response_mac:48;
-> +#elif defined(__BIG_ENDIAN_BITFIELD)
-> +	u64	version:4,
-> +		type:4,
-> +		g:1,
-> +		l:1,
-> +		reserved:6,
-> +		response_mac:48;
-> +#else
-> +#error  "Please fix <asm/byteorder.h>"
-> +#endif
-> +	__be32	nonce;
-> +} __packed;
-> +
-> +struct amt_header_membership_update {
-> +#if defined(__LITTLE_ENDIAN_BITFIELD)
-> +	u64	type:4,
-> +		version:4,
-> +		reserved:8,
-> +		response_mac:48;
-> +#elif defined(__BIG_ENDIAN_BITFIELD)
-> +	u64	version:4,
-> +		type:4,
-> +		reserved:8,
-> +		response_mac:48;
-> +#else
-> +#error  "Please fix <asm/byteorder.h>"
-> +#endif
-> +	__be32	nonce;
-> +} __packed;
-> +
-> +struct amt_header_mcast_data {
-> +#if defined(__LITTLE_ENDIAN_BITFIELD)
-> +	u16	type:4,
-> +		version:4,
-> +		reserved:8;
-> +#elif defined(__BIG_ENDIAN_BITFIELD)
-> +	u16	version:4,
-> +		type:4,
-> +		reserved:8;
-> +#else
-> +#error  "Please fix <asm/byteorder.h>"
-> +#endif
-> +} __packed;
-> +
-> +struct amt_gw_headers {
-> +	union {
-> +		struct amt_header_discovery discovery;
-> +		struct amt_header_request request;
-> +		struct amt_header_membership_update update;
-> +	};
-> +} __packed;
-> +
-> +struct amt_relay_headers {
-> +	union {
-> +		struct amt_header_advertisement advertisement;
-> +		struct amt_header_membership_query query;
-> +		struct amt_header_mcast_data data;
-> +	};
-> +} __packed;
-> +
-> +struct amt_dev {
-> +	struct net_device       *dev;
-> +	struct net_device       *stream_dev;
-> +	struct net		*net;
-> +	/* Global lock for amt device */
-> +	spinlock_t		lock;
-> +	/* Used only in relay mode */
-> +	struct list_head        tunnel_list;
-> +	struct gro_cells	gro_cells;
-> +
-> +	/* Protected by RTNL */
-> +	struct delayed_work     discovery_wq;
-> +	/* Protected by RTNL */
-> +	struct delayed_work     req_wq;
-> +	/* Protected by RTNL */
-> +	struct delayed_work     secret_wq;
-> +	/* AMT status */
-> +	enum amt_status		status;
-> +	/* Generated key */
-> +	siphash_key_t		key;
-> +	struct socket	  __rcu *sock;
-> +	u32			max_groups;
-> +	u32			max_sources;
-> +	u32			hash_buckets;
-> +	u32			hash_seed;
-> +	/* Default 128 */
-> +	u32                     max_tunnels;
-> +	/* Default 128 */
-> +	u32                     nr_tunnels;
-> +	/* Gateway or Relay mode */
-> +	u32                     mode;
-> +	/* Default 2268 */
-> +	__be16			relay_port;
-> +	/* Default 2268 */
-> +	__be16			gw_port;
-> +	/* Outer local ip */
-> +	__be32			local_ip;
-> +	/* Outer remote ip */
-> +	__be32			remote_ip;
-> +	/* Outer discovery ip */
-> +	__be32			discovery_ip;
-> +	/* Only used in gateway mode */
-> +	__be32			nonce;
-> +	/* Gateway sent request and received query */
-> +	bool			ready4;
-> +	bool			ready6;
-> +	u8			req_cnt;
-> +	u8			qi;
-> +	u64			qrv;
-> +	u64			qri;
-> +	/* Used only in gateway mode */
-> +	u64			mac:48,
-> +				reserved:16;
-> +};
-> +
-> +#define AMT_MAX_GROUP		32
-> +#define AMT_MAX_SOURCE		128
-> +#define AMT_HSIZE_SHIFT		8
-> +#define AMT_HSIZE		(1 << AMT_HSIZE_SHIFT)
-> +
-> +#define AMT_INIT_QUERY_INTERVAL	125
-> +#define IANA_AMT_UDP_PORT	2268
-> +#define AMT_MAX_TUNNELS         128
-> +#define AMT_MAX_REQS		128
-> +#define AMT_GW_HLEN (sizeof(struct iphdr) + \
-> +		     sizeof(struct udphdr) + \
-> +		     sizeof(struct amt_gw_headers))
-> +#define AMT_RELAY_HLEN (sizeof(struct iphdr) + \
-> +		     sizeof(struct udphdr) + \
-> +		     sizeof(struct amt_relay_headers))
-> +
-> +static inline bool netif_is_amt(const struct net_device *dev)
-> +{
-> +	return dev->rtnl_link_ops && !strcmp(dev->rtnl_link_ops->kind, "amt");
-> +}
-> +
-> +#endif /* _NET_AMT_H_ */
-> diff --git a/include/uapi/linux/amt.h b/include/uapi/linux/amt.h
-> new file mode 100644
-> index 000000000000..641ef7f51253
-> --- /dev/null
-> +++ b/include/uapi/linux/amt.h
-> @@ -0,0 +1,31 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note */
-> +/*
-> + * Copyright (c) 2021 Taehee Yoo <ap420073@gmail.com>
-> + */
-> +#ifndef _UAPI_AMT_H_
-> +#define _UAPI_AMT_H_
-> +
-> +enum ifla_amt_mode {
-> +	AMT_MODE_GATEWAY = 0,
-> +	AMT_MODE_RELAY,
-> +	__AMT_MODE_MAX,
-> +};
-> +
-> +#define AMT_MODE_MAX (__AMT_MODE_MAX - 1)
-> +
-> +enum {
-> +	IFLA_AMT_UNSPEC,
-> +	IFLA_AMT_MODE,
-> +	IFLA_AMT_RELAY_PORT,
-> +	IFLA_AMT_GATEWAY_PORT,
-> +	IFLA_AMT_LINK,
-> +	IFLA_AMT_LOCAL_IP,
-> +	IFLA_AMT_REMOTE_IP,
-> +	IFLA_AMT_DISCOVERY_IP,
-> +	IFLA_AMT_MAX_TUNNELS,
-> +	__IFLA_AMT_MAX,
-> +};
-> +
-> +#define IFLA_AMT_MAX (__IFLA_AMT_MAX - 1)
-> +
-> +#endif /* _UAPI_AMT_H_ */
+> diff --git a/kernel/bpf/Kconfig b/kernel/bpf/Kconfig
+> index a82d6de86522..510a5a73f9a2 100644
+> --- a/kernel/bpf/Kconfig
+> +++ b/kernel/bpf/Kconfig
+> @@ -64,6 +64,7 @@ config BPF_JIT_DEFAULT_ON
+>  
+>  config BPF_UNPRIV_DEFAULT_OFF
+>  	bool "Disable unprivileged BPF by default"
+> +	default y if CPU_SPECTRE
+
+Why can't this just be "default y"?
+
+This series makes that the case on x86, and if SW is going to have to
+deal with that we may as well do that everywhere, and say that on all
+architectures we leave it to the sysadmin or kernel builder to optin to
+permitting unprivileged BPF.
+
+If we can change the default for x86 I see no reason we can't change
+this globally, and we avoid tying this to CPU_SPECTRE specifically.
+
+Thanks,
+Mark.
+
+>  	depends on BPF_SYSCALL
+>  	help
+>  	  Disables unprivileged BPF by default by setting the corresponding
+> @@ -72,6 +73,10 @@ config BPF_UNPRIV_DEFAULT_OFF
+>  	  disable it by setting it to 1 (from which no other transition to
+>  	  0 is possible anymore).
+>  
+> +	  Unprivileged BPF can be used to exploit potential speculative
+> +	  execution side-channel vulnerabilities on affected hardware. If you
+> +	  are concerned about it, answer Y.
+> +
+>  source "kernel/bpf/preload/Kconfig"
+>  
+>  config BPF_LSM
+> -- 
+> 2.31.1
 > 
