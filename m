@@ -2,65 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16E0E43DBBF
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 09:14:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B35D343DBDE
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 09:21:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229823AbhJ1HQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 03:16:57 -0400
-Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:55395 "EHLO
-        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229626AbhJ1HQ5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 03:16:57 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R621e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0UtzN78p_1635405268;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0UtzN78p_1635405268)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 28 Oct 2021 15:14:29 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-rdma@vger.kernel.org, jacob.qi@linux.alibaba.com,
-        xuanzhuo@linux.alibaba.com, guwen@linux.alibaba.com,
-        dust.li@linux.alibaba.com
-Subject: [PATCH net v2 2/2] net/smc: Correct spelling mistake to TCPF_SYN_RECV
-Date:   Thu, 28 Oct 2021 15:13:47 +0800
-Message-Id: <20211028071344.11168-3-tonylu@linux.alibaba.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20211028071344.11168-1-tonylu@linux.alibaba.com>
-References: <20211028071344.11168-1-tonylu@linux.alibaba.com>
+        id S229868AbhJ1HXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 03:23:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56026 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229656AbhJ1HXf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Oct 2021 03:23:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 686F560E54;
+        Thu, 28 Oct 2021 07:21:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635405668;
+        bh=e/wyzVfkTV0dR6YteYW1jvF1J3q6I2+0CEvxKq0nxCE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JBkj/hcGqPxgoS4c4hfbNCE/wp/WzptPZxH+uLq1JsS0EkK8xuq2B+BFYT/M9kMdW
+         B4lilA5IPudFk9zJtUWeypRWHZ7ScqjZP4NOuaM9yorU8jk9wi/hIqpxA9d23HhHwP
+         C7RH/AcL97uMfN+5WAwkKf2+85pUtwc5Bcp05lYaO1hCYYYwnk0Q3u9p4ytVX0Kvef
+         mz7WaNfGSLj5r54b82U5boDP+OLa6+8TS2VerEyuxRIwCX5V07bCEvtvTPMSuBTaTY
+         D+D/jKbWRdviY1Qme+7BkNA36znep6njYk5ZeGs1LkQOkpyxmcXDRx0lAn4ZF71B34
+         0ujB0wUI0dsSA==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1mfziT-00023a-77; Thu, 28 Oct 2021 09:20:49 +0200
+Date:   Thu, 28 Oct 2021 09:20:49 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Amitkumar Karwar <akarwar@marvell.com>
+Subject: Re: [PATCH v2 3/3] mwifiex: fix division by zero in fw download path
+Message-ID: <YXpPUdj0wJG2L5ra@hovoldconsulting.com>
+References: <20211027080819.6675-1-johan@kernel.org>
+ <20211027080819.6675-4-johan@kernel.org>
+ <CA+ASDXMYbP3jQPeOpDDktHgp4X81AH41cgiLFgz-YHVPyZO1sw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+ASDXMYbP3jQPeOpDDktHgp4X81AH41cgiLFgz-YHVPyZO1sw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wen Gu <guwen@linux.alibaba.com>
+On Wed, Oct 27, 2021 at 11:22:39AM -0700, Brian Norris wrote:
+> On Wed, Oct 27, 2021 at 1:12 AM Johan Hovold <johan@kernel.org> wrote:
+> > --- a/drivers/net/wireless/marvell/mwifiex/usb.c
+> > +++ b/drivers/net/wireless/marvell/mwifiex/usb.c
+> > @@ -505,6 +505,22 @@ static int mwifiex_usb_probe(struct usb_interface *intf,
+> >                 }
+> >         }
+> >
+> > +       switch (card->usb_boot_state) {
+> > +       case USB8XXX_FW_DNLD:
+> > +               /* Reject broken descriptors. */
+> > +               if (!card->rx_cmd_ep || !card->tx_cmd_ep)
+> > +                       return -ENODEV;
+> 
+> ^^ These two conditions are applicable to USB8XXX_FW_READY too, right?
 
-There should use TCPF_SYN_RECV instead of TCP_SYN_RECV.
+Right, but I didn't want to add an incomplete set of constraints.
 
-Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
-Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
----
+I couldn't find any documentation (e.g. lsusb -v) for what the
+descriptors are supposed to look like, but judging from the code,
+something like
 
-v1->v2:
-- fix wrong email address.
+	if (!card->rx_cmd_ep || !card->tx_cmd_ep)
+		return -ENODEV;
+	if (!card->rx_data_ep || !card->port[0].tx_data_ep)
+		return -ENODEV;
 
----
- net/smc/af_smc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+should do. But I'm not sure about the second tx endpoint,
+card->port[1].tx_data_ep, for which support was added later and which
+the driver appears to be able to manage without.
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index c038efc23ce3..78b663dbfa1f 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -1057,7 +1057,7 @@ static void smc_connect_work(struct work_struct *work)
- 	if (smc->clcsock->sk->sk_err) {
- 		smc->sk.sk_err = smc->clcsock->sk->sk_err;
- 	} else if ((1 << smc->clcsock->sk->sk_state) &
--					(TCPF_SYN_SENT | TCP_SYN_RECV)) {
-+					(TCPF_SYN_SENT | TCPF_SYN_RECV)) {
- 		rc = sk_stream_wait_connect(smc->clcsock->sk, &timeo);
- 		if ((rc == -EPIPE) &&
- 		    ((1 << smc->clcsock->sk->sk_state) &
--- 
-2.19.1.6.gb485710b
+Either way it has nothing to do with the division-by-zero and should be
+added separately.
 
+> > +               if (card->bulk_out_maxpktsize == 0)
+> > +                       return -ENODEV;
+> > +               break;
+> > +       case USB8XXX_FW_READY:
+> > +               /* Assume the driver can handle missing endpoints for now. */
+> > +               break;
+> > +       default:
+> > +               WARN_ON(1);
+> > +               return -ENODEV;
+> > +       }
+
+Johan
