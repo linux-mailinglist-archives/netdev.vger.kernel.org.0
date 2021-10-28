@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3132643DFC0
+	by mail.lfdr.de (Postfix) with ESMTP id C46DB43DFC2
 	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 13:07:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230166AbhJ1LJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 07:09:48 -0400
+        id S230230AbhJ1LJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 07:09:50 -0400
 Received: from mail-bn8nam11on2113.outbound.protection.outlook.com ([40.107.236.113]:43800
         "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230225AbhJ1LJo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Oct 2021 07:09:44 -0400
+        id S230216AbhJ1LJu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Oct 2021 07:09:50 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UQWtRViCWaYRncWQj488+5vnRu849kUnKkqAAVMeKSYYXjXKxaBEiLdhC0PvVfKtrBo2z3rx117MPWAUs0G4ujwjM/zhGguEjV9D/948blOGfeCo6zdm6RpGEFmzkhPbIJ9ltyQyIkjOxh2rjwb/95HunVzjcNA5vggMSO/Fra0x5R3I4JIR17/NqGnc1AfJ7lEEzEMFvUHPoO3oAXjH0Aarx6+ygM7551DdbEtle/wmQpA/mV7JTj6e4xblBxaheEImqs2o1EqMhJ7urJuGdtrVZ9TQYIgHMCrG7Ifk1EiWo2NhrlsvrhEML264RfNTkDg6d2xLcxW0/kY85V/Mwg==
+ b=hehkYJMzWHK+T98CjZV7DXqmhsbr/0MVZanGnAys0CvJIHGnEUI/7PBZlDrDkHkHwnbThWYQlXOQ7QfuQNrUiCVDNq2wh8sIstlN9rQxUHm5/gavcfPRxwta6PbPCP4rX+cNfyH0Nt8SsMDxiOGeNX+G2jcngCsGfXP4oE+AiGXEvlkIboCJvjrfNM4oUxXYDcLlv+f338hnO/zl99tIorPbEVE5no0v7hasJKoWcEM1f0zB/ZX+5BhBuJtR6WyRNJ7Fn4zu4EmyacUR0TyVMMGNfc0XtNw0ovyeCqJGBi3fz8a+RK4PRUc7RG3mQKoPea1upSxX+o8ICUVaR2v9Aw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BD4o+W79tZvEn30aZKKdm3MFBJ/CGhMx+A/vrHGWkrc=;
- b=exE5q0P2364i7hph4A0+s5bggCnjLGysp1JPUOffQu0L7dDM95pry35I5ywF2jd4Smg31COzZwMXpePvxqAbQ52YW8iU7lMZ33bdiIKGOf40sGa082xI1zwOglD+rRLEobyGA70R8EpxY9fkHVYbDP+3etUxQaL7Xazl06DIZCYPC/g+kdYlTUuOeUmt7DYNFY7f39xwZnbOxUUUDG5h3/7WANLBCGE+Aek2fgWovclHCb5BGky0dnuCh5hgI3Y8Uc8CGpfROA3M4y7PDjXhW0AIfiyOQBmo9Oo5viGdQiSwr01BYS6h4wrRqGUlhHvynlxtMWIWVZEEJGZ6IY7oWg==
+ bh=ZgmXNN/J8Y5zBrMApUOnW6EM0EVb5xkPdro/B9YtWXc=;
+ b=k9lXMev3/rF6Iaw+MzO3etd98jXCv93xsrf6HybSuiJDalh2b55dytSJ5nwnf2wBUuCnrIfB6F096zZ3ectw2Dt+u8uvDqDm41vEPpNiSSDw1HkOXbKtTcN4keaIBbTHoVIK7x1aHLu3tVPMGBnFpki4+Snzztp+WSPw0pX3agGO1UBv2FegcBGiPDwyoY+67ZdIPho2Q7ph6xmDO7rkrGEJRedCDNNb70BkYdX7otH3Fj1tJ0UHl2naycVjxkDr9kwdtnDCv3F6Ttcmdmp23kdFte+uO3jMY4xdaEfjiircTrjyB8PaHSBD9kolKrAl+Y2BB6wyYBw0LnTXtEa28g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BD4o+W79tZvEn30aZKKdm3MFBJ/CGhMx+A/vrHGWkrc=;
- b=NLd3bei/uD/pw7WuX+K4K9hneNnAAdz7pRWITNniLIqcCxNx5u+wxS3fwfmv9U0EZLSRrS4Fk4UA6MBhPl7SLX0ejW8d7ZqzPJQzYtaLmgoSBAsnapkk01DshItNurWbRqdOvqVu7p5GwLI9dp2WR3U/D25osjJOnNVbxSFX1eM=
+ bh=ZgmXNN/J8Y5zBrMApUOnW6EM0EVb5xkPdro/B9YtWXc=;
+ b=XYA1naCSZrheO35kVDNvOyfiSa0Oj/zCFeX4Q0VTAUzsTe24uwBccD0Cdbds4yO+QzJdviBnGU90Ial2ivvVDx4d/cgeMkQIX/BHwWhmgPKqUxwfo+EuqlNY4Ipqqmp46fBDWh99sc6FgPncAVc4Rlafyso3YtN36Bm7WEOq04E=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none
  header.from=corigine.com;
@@ -34,11 +34,11 @@ Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by PH0PR13MB4956.namprd13.prod.outlook.com (2603:10b6:510:98::6) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.11; Thu, 28 Oct
- 2021 11:07:15 +0000
+ 2021 11:07:18 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::e1d9:64d0:cb4f:3e90]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::e1d9:64d0:cb4f:3e90%9]) with mapi id 15.20.4669.005; Thu, 28 Oct 2021
- 11:07:15 +0000
+ 11:07:18 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     netdev@vger.kernel.org
 Cc:     Vlad Buslov <vladbu@nvidia.com>,
@@ -50,9 +50,9 @@ Cc:     Vlad Buslov <vladbu@nvidia.com>,
         Louis Peens <louis.peens@corigine.com>,
         oss-drivers@corigine.com, Baowen Zheng <baowen.zheng@corigine.com>,
         Simon Horman <simon.horman@corigine.com>
-Subject: [RFC/PATCH net-next v3 5/8] flow_offload: add process to update action stats from hardware
-Date:   Thu, 28 Oct 2021 13:06:43 +0200
-Message-Id: <20211028110646.13791-6-simon.horman@corigine.com>
+Subject: [RFC/PATCH net-next v3 6/8] net: sched: save full flags for tc action
+Date:   Thu, 28 Oct 2021 13:06:44 +0200
+Message-Id: <20211028110646.13791-7-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20211028110646.13791-1-simon.horman@corigine.com>
 References: <20211028110646.13791-1-simon.horman@corigine.com>
@@ -61,58 +61,58 @@ Content-Type: text/plain
 X-ClientProxiedBy: AM0PR03CA0040.eurprd03.prod.outlook.com (2603:10a6:208::17)
  To PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
 MIME-Version: 1.0
-Received: from momiji.horms.nl (2001:982:756:703:d63d:7eff:fe99:ac9d) by AM0PR03CA0040.eurprd03.prod.outlook.com (2603:10a6:208::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.15 via Frontend Transport; Thu, 28 Oct 2021 11:07:13 +0000
+Received: from momiji.horms.nl (2001:982:756:703:d63d:7eff:fe99:ac9d) by AM0PR03CA0040.eurprd03.prod.outlook.com (2603:10a6:208::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.15 via Frontend Transport; Thu, 28 Oct 2021 11:07:15 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a611a3b7-2338-4959-1bd0-08d99a03198a
+X-MS-Office365-Filtering-Correlation-Id: f0eaa22a-83d7-4e2c-ab4c-08d99a031ae2
 X-MS-TrafficTypeDiagnostic: PH0PR13MB4956:
-X-Microsoft-Antispam-PRVS: <PH0PR13MB495643EB2940F79703A4E9EDE8869@PH0PR13MB4956.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:363;
+X-Microsoft-Antispam-PRVS: <PH0PR13MB49562ADDE91B4954A1102679E8869@PH0PR13MB4956.namprd13.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WZB+kw5xF6+8OyW6BOAy25Z5kkg3AZkG3pfoc3T+wqF5R8WBzDCloIrqq2bqdpqVkiVuRtI7u7ilK2h2aTA999Qlbb3JpHa76bWcxdndBEjDK6OFdZ9Jz0nFrlIYLLLLw+vWRAJORR70lzK1p0Jgs28oSL4ILnuu/gUpJhskFltkTB7MG8ZnhPlRH0fvY9QP/pw47Zlr9PlKiMMvujCEkoar32gqywceDyoVs1X4DeQVa9eYL4urWgaB6Qo4q9lgBpZvL97jVrNB21sY1BlSrCmx9o5gpxGP3d5QnoWKkbzIUbjWGsCNMjuimTG30AAbrPUs/gNbqsb4MhljGa3ixXYuYYE7p4rYWkI0xWAbNqQOREVg/pamLmchDQ7LJljHeiSi1dthRMPAtWlU6uGhcgjWX0DSOnNGrBa3ukE6MsM5PHRdhx38SmiQyImb1Mt4VMA70EjGNIvrBPE8+9WcNlqVZgHWNp/KEcrnE0GWUKOluvpd0uYBgOC6F19XpEtfwzfKBJNWqh8QW43/VT/iMtxxxtxFBk5wbXbnzlCbUhfi+Wmb5ZJmO/e1M04YBhuPYjK8rfPkAyFVHBPnBbg2Bx8A8fZEO4MYKZ2yz5byUY1NrHlZ/MyGUOh2Qq70deAiTMGdJmVy32kw1I6M5kOWyA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(346002)(366004)(376002)(39840400004)(396003)(4326008)(83380400001)(316002)(36756003)(54906003)(44832011)(6512007)(8676002)(2616005)(2906002)(5660300002)(8936002)(6666004)(52116002)(186003)(66476007)(107886003)(66556008)(15650500001)(6916009)(508600001)(6486002)(1076003)(66946007)(6506007)(86362001)(38100700002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: n37ts0mE2e94Q1L4FgKEq6EDt9TTHZgKc6kbwgkAIKz5V8FaSIyAbKLfnbFSLsc2H8xqGv6wzOpS15yNonbdCCl+Hw/jOQD9P7OpINBj8CEuKkgB7noSb8F6y8oh+ZIGJGimwvANepqc9H1AzWygCXpzTtcMxlZy1Ky1qI5mM5U14xVF2rnDeR6W2J8Kpzg617dwuIhFV7VPu3jNQvkkf2B0W0bn+ebPeC6VWNUcmX+EXWkxLaNqWAdMxqvnCAW8VuaJAGtRh5p8oF7lrtNwB3avyuN/QgF2TMLujKO4CbsQE68aA13hpEeffxQTjTk45MxNRKNbTfaEHd73IeFDOZtuFeyEQS4kkfVfg7cn3NCeMmzT2Nf8iaOFUVydur+PtHdErlUI4f3lPn4Pp4E+GSo/1x0BV100rpwENgS/dSoFhkMZ76uGOY8VM5eN3RelgbMxQwAEPpYFyr16wV8Mma5kQLE7HBS1gahDzPKo3nujaHY5AokB0/oxjAgtOnhZyuA2wimKkkRnofC/k5is0CoWwBJZrvSTfnsiyFJlk3cI7o5Y6mM8meNa9o67mi6e9UE7MxjlkEEajdD4Y6pX7BKwX5umFKhqp9oQFMeIUcjTjumzTyb+wo9wRdf+72CLHVbxSd+uE5rjUYA1yBpY2A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(346002)(366004)(376002)(39840400004)(396003)(4326008)(83380400001)(316002)(36756003)(54906003)(44832011)(6512007)(8676002)(2616005)(2906002)(5660300002)(8936002)(6666004)(52116002)(186003)(66476007)(107886003)(66556008)(6916009)(508600001)(6486002)(1076003)(66946007)(6506007)(86362001)(38100700002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?85Pt9C49P4d7z00g1yxb/Zhpar59wzAvhhLziqaekRdfzYVFTqw4sT7RUHop?=
- =?us-ascii?Q?nefhw8B4ucnMgGyTB5zFS0tWKItwqraCmFdMFIncYsaq+TahNXGUiitBXTsY?=
- =?us-ascii?Q?LEbv0Kthn8KLqQ1rpBA2LXmBM5DNBfCPqap8YBEJpw7211hFV0zpNMJjA8tc?=
- =?us-ascii?Q?O9dccPrL3k1RFugSeH6Eop+4EZqfd/euRGx4iasXZJ3M4TQpuZRNIbNy8tHH?=
- =?us-ascii?Q?17c/2sCO57jATXE0RS2wL36A8H6wlDbWyhi0u3psU7IW6D0CE3kP5622q9I1?=
- =?us-ascii?Q?VuVJr3RzKnw1MoQoMLQ/5Aeb0O2bR97p/4rtVmMUJ+enirWXXmI9s5J/CXv2?=
- =?us-ascii?Q?bWQ6AHtESfz2v4RU8Rn5Z1Oi/7CwXwdPWaJDj8Hbx4rUX68BupUumF5AiAeB?=
- =?us-ascii?Q?BbF1sTW5T9Vzzvf/WvpExqKaJ4//ID818/Xao7sjItdif1hMtWBlLTwWxp/9?=
- =?us-ascii?Q?yk/tGG3dhGIhL0ZmmvrY61AjbwegFuh++uuWcTspyArdIi9pBmz3txR9ERlh?=
- =?us-ascii?Q?fuRzAXhPkulxbPwMLbGIFowCT80T31K2M9oyJ9wBh/h1mB/y/BUFRvajcXqo?=
- =?us-ascii?Q?bvbaE+zCG0XeXd3smqHNaSG4IF7OQEKxcVa7gNN3XBvGAtW4GPr0FHyEZHzK?=
- =?us-ascii?Q?AijwEk+CD1oC9mdW4xV0LNRl4bRMqdxsHAgVatiL+ypTF5i80au5lQTdk7L+?=
- =?us-ascii?Q?8mpfWEZKsk1z/uwgt4q6JrFwXptA14pkLXqiAFgS1NMfDxCL24irViXdZQ+S?=
- =?us-ascii?Q?94554F8TBylgcDY+AM8kLLXuDw0FVPVOB42cM7wb/hKRbaBPlg3M7Vh73Dkm?=
- =?us-ascii?Q?xR4dt7Kdh1gwrtH2AkpLmyFMy3SqhJ2yzjvyJ0XQJgYO7+/nvT8hYD9Unpzn?=
- =?us-ascii?Q?9btJBNa35bF7xdpyMJGKB6xqBKUJcFrPwwE4AsQONIJdBrnLQwUy03J5a2UU?=
- =?us-ascii?Q?+9NFG8DF9QPbdRRm9HCV+kY7ShLOauTuDgs8iRyy2Maw2F75+HQkXDVhwIYy?=
- =?us-ascii?Q?6rGE3y6N9M3D/Xt4hl5xYyBICEV2P8IVt3YC3vI3C+IiHGeLhvHi4FE+37Hj?=
- =?us-ascii?Q?+/IgXQadIpPsc860YSt8+/buiDLu56Qwo5G+UJ6zz6MqSxl/d1UFIEwY4Mt4?=
- =?us-ascii?Q?hYrIw/cfhXTNP2yqC4dYcIEvy4MpB0Yf7VD0aBzheavUVlfN3MvyaCb2icEH?=
- =?us-ascii?Q?BVQKOVnm2r1sNDmyczPI5QGer1ge8LUCqLexRCg6nDQKhG/mqQzlBCxNnWVl?=
- =?us-ascii?Q?LeotQnoWUU0HAYM6rURU4qz26Efi6M/DiXw85FBt4PlXx7bc9T9OVL0W36WE?=
- =?us-ascii?Q?J1IU76G+PqfSiu3fKtm9C3VSY3LGWpxfPJajcNUJroWVqUqpclr9TCiDt5Up?=
- =?us-ascii?Q?fHPKUEeHLNBgHGM8agQW3Eltv4hEc5Whsk3yhX/xXEDX8C8jM3hxiN05pB2N?=
- =?us-ascii?Q?WERmSmeMEW7CqSIhyKACDPTCWzsJmcYc3lVK2Bf4oUMti6BiC4zKffrXYC8a?=
- =?us-ascii?Q?ApY78AXpl+rNH3AnFh4d1VNIT+G3RmRFpzKbyYjsxzU44ODHa84QIuMW9cBL?=
- =?us-ascii?Q?iywhyLrZFXm2TGvapQd6FuoEbisCeWxu00VpBuRUSaJSCBL2QiaeTUYys14d?=
- =?us-ascii?Q?BLZQcOH/tPEt2DRrP1Ex4RoN16VgFLJ7DEkXn/N4fHVWI4EsnhfNtp9Wowz5?=
- =?us-ascii?Q?FQGEnaAO2NCflJoiUn9U0cS+J74xJlByC2tQXMZGrmD5CvoHPq0GLZNixq0S?=
- =?us-ascii?Q?FHf+hS2623cZLtqD8pZIVKMf6oYD6gs=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DZqO/GMBB9MqWXNX+I5PZCz7GpNK2MsSwxk7+iKoAqBxgG423ARH0GxnLKMt?=
+ =?us-ascii?Q?cboqQo2pwTcJojRrX5uZjIxIgg7QYPZPLXs9y1wHZe7WVZKzCXmXworiVGQn?=
+ =?us-ascii?Q?TFVJtf4VXXGru0hy1cwE2utD2HnqT5z9rNqrftlbRagpokmnhHlKd53QLE20?=
+ =?us-ascii?Q?qc7U6txTJMliXQsqO41qWhJidkBKUOl6eb7i5yPjaW/iFPErTGHDgNSdXVPF?=
+ =?us-ascii?Q?oQR5SykPJnXvfrF5c0WRX0VSeSHFkuyuLHzwk9qhG5pxPHs6BKC1HyGbpUnx?=
+ =?us-ascii?Q?Ljz8M1iGu3CHAQpIZCpKuKS1ayYpXp5q+W2/Biv12kC25XMnWkCK47WsQmDT?=
+ =?us-ascii?Q?hlvbhi2FhqFYp/IFgmrX/dzmTmDdnkkFRzkWuy3ELR8HqNqG4PJaZ0hjVj3f?=
+ =?us-ascii?Q?/nPKAWATpVmzITMLqnufV62tyHKSJMEpXLxxRx9FKXa9ZB7dhsAvMoXE2WFw?=
+ =?us-ascii?Q?OHP/hMOasIUurCyWpPaa+7yLRE1f1NotUdIX1//2wPqJsTo+U5b1FlaCFmGz?=
+ =?us-ascii?Q?+jaIKzAIRobTu+EriIKfATAv83SSiBOV1ApPR5Yd3o7jGr/+LfzZMNbd8KCt?=
+ =?us-ascii?Q?BV3+4PwdgM9ZNmfWwWJ6p5cKMZ3PiE6Ec0gJWyapEFxAmp00TOqVfprjE4Op?=
+ =?us-ascii?Q?ITCngoxKB6DAJCepVQejEvrxBEdbZqIxKS/l4guSfPRq0h/PDWhkdd5ZLf0m?=
+ =?us-ascii?Q?OF/T4CA81CANnXgKwrXoNgdpfF9h2VBkTZjYkqCuFWOXyKhRgKmuvIP9yK7s?=
+ =?us-ascii?Q?JLhM4rru4qfK9UZR3fLeWQNMDVhg929xHc4nSXFdDoAM50WQiqNfpkVRknE/?=
+ =?us-ascii?Q?peB887lWWZD6JVLhwyyYzaAOKJZJds4A3AghrKbISMNLa92+DuXC1HmvOkRQ?=
+ =?us-ascii?Q?kflk7TNAYysX17VOTFwTyATNRvlV+GOdk7A6cr3Cb9t0/uD/gooa4EtsbyFC?=
+ =?us-ascii?Q?ofZlh48RvlrUUtK3AdF0coizlNdUn6aQWvqx5la3znAYN3ncGW6CR2NSKaPz?=
+ =?us-ascii?Q?cx2LdHPLZKNJzXQiSS2yJjMDxXjti9a8EzHibA5hOOZnDNOJhDiIOmn8/r6l?=
+ =?us-ascii?Q?ZmBJREv4+mGOZ9O2OD9+qGRoSnM2oMRSu5hPedtD1Na2kf1s8FYQImPEWGFU?=
+ =?us-ascii?Q?2Os3pVk/0I6BPlO5TIDGSDYvRMucwF1PAyHXAyJPiIZflpsF24z6rCbuJCST?=
+ =?us-ascii?Q?aOZ8vPFRp5DEznhWCxYMfZiGaV/O0gtlIOlaTe8I8U8yxW7Nj751SSuy51Gh?=
+ =?us-ascii?Q?wlrjKCT1NpDfPgRsDjE1Qwnay5fezqkF36VkCYonBfaSKc6YTVx4y6LG2R4r?=
+ =?us-ascii?Q?NT7x8vpz+Ayotx2xKQ3h83tIzD9lys4fPQTb1v6UI0pOTM0OAxR9KLR0n/ta?=
+ =?us-ascii?Q?RYGrHNoL5RRtdkc0ii0Zr6qohTsJP0HXB/byWqdAsybP68B22hWGCq8ZpxUE?=
+ =?us-ascii?Q?BFjnZ/Mhn0H8jVSduvmesMDtyFpDPvo5IomDS3DLwkJI2ZzXthXVYfk8XMOe?=
+ =?us-ascii?Q?ShjU2KekjPQ0+ZfvtF+GYmCpSe+giltEDtNOd7CZ2v2rHe+nvXglPNFIVx2I?=
+ =?us-ascii?Q?2nMnWW4x0XmXXbPOocXomDt1lqmxnZd+6uHseo0Z6b9MwpYfjhAvukwbDOQ0?=
+ =?us-ascii?Q?h8NPbjoqYhf5XxrlwfPOzKUowkh6nMXWRxozwuI9lrfu3+8rFl5smX5zROuA?=
+ =?us-ascii?Q?ouLmdeBr++382RmMdZUf4f5RZCPVDl208wFD6yvvfJVS4MdAD/gxtuB87Fr6?=
+ =?us-ascii?Q?fK62HlRZwCByjCVOaBm+nyAZ9fg+gpA=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a611a3b7-2338-4959-1bd0-08d99a03198a
+X-MS-Exchange-CrossTenant-Network-Message-Id: f0eaa22a-83d7-4e2c-ab4c-08d99a031ae2
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Oct 2021 11:07:15.4552
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Oct 2021 11:07:17.9374
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vq93Gpns5p7dLrLKurhCzUFvtEesp5wFKFJhzsd1wCpBuBEg9cP0t4/lP035LBzwnIyFaTcDd8zPrIy6GEU0sWjbFZT2SCqMzVJwjAfGv+0=
+X-MS-Exchange-CrossTenant-UserPrincipalName: P8F6l0dP6UUe8lAo9tsidkfd9ts8qyrL/j2ECas6WLX1ORxXNQYw4xXaLZwcHMPB8Y91CVeuRnGF72NN8E6hLL1w+WXF1pT9SnImlTFK2BY=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4956
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -120,120 +120,55 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Baowen Zheng <baowen.zheng@corigine.com>
 
-When collecting stats for actions update them using both
-both hardware and software counters.
+Save full action flags and return user flags when return flags to
+user space.
 
-Stats update process should not in context of preempt_disable.
+Save full action flags to distinguish if the action is created
+independent from classifier.
+
+We made this change mainly for further patch to reoffload tc actions.
 
 Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
 Signed-off-by: Louis Peens <louis.peens@corigine.com>
 Signed-off-by: Simon Horman <simon.horman@corigine.com>
 ---
- include/net/act_api.h |  1 +
- include/net/pkt_cls.h | 18 ++++++++++--------
- net/sched/act_api.c   | 37 +++++++++++++++++++++++++++++++++++++
- 3 files changed, 48 insertions(+), 8 deletions(-)
+ net/sched/act_api.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/act_api.h b/include/net/act_api.h
-index 671208bd27ef..80a9d1e7d805 100644
---- a/include/net/act_api.h
-+++ b/include/net/act_api.h
-@@ -247,6 +247,7 @@ void tcf_action_update_stats(struct tc_action *a, u64 bytes, u64 packets,
- 			     u64 drops, bool hw);
- int tcf_action_copy_stats(struct sk_buff *, struct tc_action *, int);
- int tcf_action_offload_del(struct tc_action *action);
-+int tcf_action_update_hw_stats(struct tc_action *action);
- int tcf_action_check_ctrlact(int action, struct tcf_proto *tp,
- 			     struct tcf_chain **handle,
- 			     struct netlink_ext_ack *newchain);
-diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-index 44ae5182a965..88788b821f76 100644
---- a/include/net/pkt_cls.h
-+++ b/include/net/pkt_cls.h
-@@ -292,18 +292,20 @@ tcf_exts_stats_update(const struct tcf_exts *exts,
- #ifdef CONFIG_NET_CLS_ACT
- 	int i;
- 
--	preempt_disable();
--
- 	for (i = 0; i < exts->nr_actions; i++) {
- 		struct tc_action *a = exts->actions[i];
- 
--		tcf_action_stats_update(a, bytes, packets, drops,
--					lastuse, true);
--		a->used_hw_stats = used_hw_stats;
--		a->used_hw_stats_valid = used_hw_stats_valid;
--	}
-+		/* if stats from hw, just skip */
-+		if (tcf_action_update_hw_stats(a)) {
-+			preempt_disable();
-+			tcf_action_stats_update(a, bytes, packets, drops,
-+						lastuse, true);
-+			preempt_enable();
- 
--	preempt_enable();
-+			a->used_hw_stats = used_hw_stats;
-+			a->used_hw_stats_valid = used_hw_stats_valid;
-+		}
-+	}
- #endif
- }
- 
 diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index 604bf1923bcc..881c7ba4d180 100644
+index 881c7ba4d180..3893ffd91192 100644
 --- a/net/sched/act_api.c
 +++ b/net/sched/act_api.c
-@@ -1238,6 +1238,40 @@ static int tcf_action_offload_add(struct tc_action *action,
- 	return err;
- }
+@@ -513,7 +513,7 @@ int tcf_idr_create(struct tc_action_net *tn, u32 index, struct nlattr *est,
+ 	p->tcfa_tm.install = jiffies;
+ 	p->tcfa_tm.lastuse = jiffies;
+ 	p->tcfa_tm.firstuse = 0;
+-	p->tcfa_flags = flags & TCA_ACT_FLAGS_USER_MASK;
++	p->tcfa_flags = flags;
+ 	if (est) {
+ 		err = gen_new_estimator(&p->tcfa_bstats, p->cpu_bstats,
+ 					&p->tcfa_rate_est,
+@@ -840,6 +840,7 @@ tcf_action_dump_1(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
+ 	int err = -EINVAL;
+ 	unsigned char *b = skb_tail_pointer(skb);
+ 	struct nlattr *nest;
++	u32 flags;
  
-+int tcf_action_update_hw_stats(struct tc_action *action)
-+{
-+	struct flow_offload_action fl_act = {};
-+	int err = 0;
-+
-+	if (!tc_act_in_hw(action))
-+		return -EOPNOTSUPP;
-+
-+	err = flow_action_init(&fl_act, action, FLOW_ACT_STATS, NULL);
-+	if (err)
-+		goto err_out;
-+
-+	err = tcf_action_offload_cmd(&fl_act, NULL, NULL);
-+
-+	if (!err && fl_act.stats.lastused) {
-+		preempt_disable();
-+		tcf_action_stats_update(action, fl_act.stats.bytes,
-+					fl_act.stats.pkts,
-+					fl_act.stats.drops,
-+					fl_act.stats.lastused,
-+					true);
-+		preempt_enable();
-+		action->used_hw_stats = fl_act.stats.used_hw_stats;
-+		action->used_hw_stats_valid = true;
-+		err = 0;
-+	} else {
-+		err = -EOPNOTSUPP;
-+	}
-+
-+err_out:
-+	return err;
-+}
-+EXPORT_SYMBOL(tcf_action_update_hw_stats);
-+
- int tcf_action_offload_del(struct tc_action *action)
- {
- 	struct flow_offload_action fl_act;
-@@ -1362,6 +1396,9 @@ int tcf_action_copy_stats(struct sk_buff *skb, struct tc_action *p,
- 	if (p == NULL)
- 		goto errout;
+ 	if (tcf_action_dump_terse(skb, a, false))
+ 		goto nla_put_failure;
+@@ -854,9 +855,10 @@ tcf_action_dump_1(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
+ 			       a->used_hw_stats, TCA_ACT_HW_STATS_ANY))
+ 		goto nla_put_failure;
  
-+	/* update hw stats for this action */
-+	tcf_action_update_hw_stats(p);
-+
- 	/* compat_mode being true specifies a call that is supposed
- 	 * to add additional backward compatibility statistic TLVs.
- 	 */
+-	if (a->tcfa_flags &&
++	flags = a->tcfa_flags & TCA_ACT_FLAGS_USER_MASK;
++	if (flags &&
+ 	    nla_put_bitfield32(skb, TCA_ACT_FLAGS,
+-			       a->tcfa_flags, a->tcfa_flags))
++			       flags, flags))
+ 		goto nla_put_failure;
+ 
+ 	if (nla_put_u32(skb, TCA_ACT_IN_HW_COUNT, a->in_hw_count))
 -- 
 2.20.1
 
