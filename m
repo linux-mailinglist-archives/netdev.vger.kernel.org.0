@@ -2,117 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FD3D43E80C
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 20:10:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34A5D43E84D
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 20:25:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230496AbhJ1SNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 14:13:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54586 "EHLO
+        id S230491AbhJ1S1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 14:27:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230258AbhJ1SNB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 14:13:01 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A761C061570;
-        Thu, 28 Oct 2021 11:10:34 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id y3so6397973ybf.2;
-        Thu, 28 Oct 2021 11:10:34 -0700 (PDT)
+        with ESMTP id S230325AbhJ1S1d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 14:27:33 -0400
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A706C061570
+        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 11:25:06 -0700 (PDT)
+Received: by mail-io1-xd29.google.com with SMTP id 62so1909702iou.2
+        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 11:25:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PibadPtFXRDa44ZUmOQfsMNDa2MEM73QABZ8NV45MJ8=;
-        b=m2ICJo9qn/Rdn8KjUKxWxzAGQjl54SJUcsmKj+h5j1053QPETpn03RaDqzAyLI2V/Q
-         tRt471H+AlSQEOXO8TcszLQcPvxsJk6p6/UbF+vF2oEiJFMUdruLU//D0A8pNrxS/OPI
-         /4xgOf0lGRfBjDz4s3LcvpI8yQbgm3bXzTXvO2tXMqyxaI6rPWjB2OYEDO1GhUjiFYLu
-         YWWCabsBoSs33FdoVYpN6KoHnDtK2wwt3OmFylCr+QOIA9l/bzn3w+XTgWZ0UFJlvvt0
-         FnDxv292gOfblQAPm3SwBCiIBxlrQGyyTn41L93haC02uH9VdG6gMzdsh1zIMe0eqQNG
-         dbnA==
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RqZ7/5CA1HODzC9Qv9dBD6omMYJNFsXiBGP3IPanlnI=;
+        b=K22kdG/EiRNFHLofNmyuVgeYMt03s9bgzEBYacYOlSZVgW3i/AXdeSvHp9dvPMfzKw
+         E6lTnhg1bzj4i4RdOdyDOqx55kGkw61CfB80DD+eTkJAYq/JXfTjS9n4qf57XwZyTyHA
+         xuJRsIF/D1+ec8gEynuVNMNfOJJlFQZ8nl/LBHdKdmEkQNn4QwyVsx3QST7rq9Q4enii
+         etVUUp6wixaQ204+OmLYDwGI9lLiM1nJNZ/7TQi8liR5tCkzvWT30ssJZ/RU/1EsrLR8
+         l88uDq2WP+ZAwqlOqQJUsjNb/ccXTUAKBk7TXzeuxdEhFsWG6KNSQwqJeEr1PRFtlHJV
+         CFqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PibadPtFXRDa44ZUmOQfsMNDa2MEM73QABZ8NV45MJ8=;
-        b=tKpfZwiR5k+4nR9X3NQYrd9roxROm5rMQNI4UvezSmU4Aiv3zQQzd1ilpgY746vAko
-         P91ZKyR6O9RtXR3FCjebmwOkP2LfKI0KyKqXLxWufdOFBJd+JfP8MiZAxWjUQx7+1qDs
-         0Yz6kwoSonrd/NJWEg48HIlBadmKwBtorFTj6jhe2KW33qiHpDP7Fq2YaNhuFgKCZXly
-         7fuKkFtqO39Wx7dMWxmiqpgZegArsDNfXGru1SukCwwwbekI/y4OuojPb2EKCLLHsLHq
-         WqibzbB/g1uTEkoJRgvLHcJuw7agEfFXsHyf1ssFP+FuWKqCYXaEPk3f0dJ6qTKqu6zk
-         QJGw==
-X-Gm-Message-State: AOAM533twUOYRBKejO4KgNWRQPil9OyJuFzWOQCGPJ1QCsujPtgL8Dyo
-        jjs8toEvLvb4b2kejNZ3JkUUaJ+nRF38l4dRU4s=
-X-Google-Smtp-Source: ABdhPJyrTl/NA+L1Emy0kUxtKXajMu0rlKAmOnm3h+cqY7G0a3QMAR9iv3/So9DBaeK3FLnqgRx6rTG2kd79dOJhiAs=
-X-Received: by 2002:a25:afcd:: with SMTP id d13mr6805131ybj.504.1635444633394;
- Thu, 28 Oct 2021 11:10:33 -0700 (PDT)
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RqZ7/5CA1HODzC9Qv9dBD6omMYJNFsXiBGP3IPanlnI=;
+        b=w3YvqYgmpzf7vcOxQhQuzll1l09DnHh1Um1x8ZwDzwuU8JfrKpgn9WqlOjyoRZEBWh
+         Oab9sXqpF+peNhjHw1wuhIFaEBzD0svkILzaW0BsDv98/Zld9U5Y1amRr/Nf7/OdEhzu
+         jPHG+4n85aymLfJi8zdEG0n+RagxWYU6lkFBXkPXCVqg+3ZmUrdCEryt3xaJF4Qm3z8e
+         x5A5FWCGwm0OBp0r1zkO3fNO9pvVopskXaoCBZWJ6cvxM6XF7BiLWysaAIP2a/s+b4HK
+         YJu6FaJW+ERJUsD+LrZNw9zWcODrETUN087NQeb0icM+bU70x8CIzkZ+MIKfsCwihPMF
+         Rj6w==
+X-Gm-Message-State: AOAM533zoCWTZOGmJHf3GiRwVarDdPhlV0gUAE3uPkfGJALUdm9Ds/3r
+        KTkvRrviUJMpmsYpnLuIDgo=
+X-Google-Smtp-Source: ABdhPJznVQf9Pkv1/U6yrJBipQ+k4h67fILrSU02WAuVQucCeNTjTZDkN63zy9z1qHVgOOf+uAlqLQ==
+X-Received: by 2002:a5d:9149:: with SMTP id y9mr4184274ioq.67.1635445504315;
+        Thu, 28 Oct 2021 11:25:04 -0700 (PDT)
+Received: from localhost (elenagb.nos-oignons.net. [185.233.100.23])
+        by smtp.gmail.com with ESMTPSA id a20sm1996267ila.22.2021.10.28.11.25.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Oct 2021 11:25:03 -0700 (PDT)
+From:   =?UTF-8?q?J=CE=B5an=20Sacren?= <sakiwit@gmail.com>
+To:     manishc@marvell.com, rahulv@marvell.com,
+        GR-Linux-NIC-Dev@marvell.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH net-next] net: netxen: fix code indentation
+Date:   Thu, 28 Oct 2021 12:24:52 -0600
+Message-Id: <20211028182453.9713-1-sakiwit@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20211028063501.2239335-1-memxor@gmail.com> <20211028063501.2239335-2-memxor@gmail.com>
-In-Reply-To: <20211028063501.2239335-2-memxor@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 28 Oct 2021 11:10:22 -0700
-Message-ID: <CAEf4BzZa_vhXB3c8atNcTS6=krQvC25H7K7c3WWZhM=27ro=Wg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 1/8] bpf: Add bpf_kallsyms_lookup_name helper
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 27, 2021 at 11:35 PM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
->
-> This helper allows us to get the address of a kernel symbol from inside
-> a BPF_PROG_TYPE_SYSCALL prog (used by gen_loader), so that we can
-> relocate typeless ksym vars.
->
-> Acked-by: Song Liu <songliubraving@fb.com>
-> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> ---
->  include/linux/bpf.h            |  1 +
->  include/uapi/linux/bpf.h       | 16 ++++++++++++++++
->  kernel/bpf/syscall.c           | 27 +++++++++++++++++++++++++++
->  tools/include/uapi/linux/bpf.h | 16 ++++++++++++++++
->  4 files changed, 60 insertions(+)
->
+From: Jean Sacren <sakiwit@gmail.com>
 
-[...]
+Remove additional character in the source to properly indent if branch.
 
-> +BPF_CALL_4(bpf_kallsyms_lookup_name, const char *, name, int, name_sz, int, flags, u64 *, res)
-> +{
-> +       if (flags)
-> +               return -EINVAL;
-> +
-> +       if (name_sz <= 1 || name[name_sz - 1])
-> +               return -EINVAL;
-> +
-> +       if (!bpf_dump_raw_ok(current_cred()))
-> +               return -EPERM;
-> +
-> +       *res = kallsyms_lookup_name(name);
-> +       return *res ? 0 : -ENOENT;
-> +}
-> +
-> +const struct bpf_func_proto bpf_kallsyms_lookup_name_proto = {
-> +       .func           = bpf_kallsyms_lookup_name,
-> +       .gpl_only       = false,
-> +       .ret_type       = RET_INTEGER,
-> +       .arg1_type      = ARG_PTR_TO_MEM,
-> +       .arg2_type      = ARG_CONST_SIZE,
+Signed-off-by: Jean Sacren <sakiwit@gmail.com>
+---
+ drivers/net/ethernet/qlogic/netxen/netxen_nic_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-can you make it ARG_CONST_SIZE_OR_ZERO? Not because zero makes sense,
-but because it removes the need to prove to the verifier that the size
-(which you can get at runtime) is > 0. Just less unnecessary fussing
-with preventing Clang optimizations.
-
-> +       .arg3_type      = ARG_ANYTHING,
-> +       .arg4_type      = ARG_PTR_TO_LONG,
-> +};
-> +
-
-[...]
+diff --git a/drivers/net/ethernet/qlogic/netxen/netxen_nic_main.c b/drivers/net/ethernet/qlogic/netxen/netxen_nic_main.c
+index 4cfab4434e80..07dd3c3b1771 100644
+--- a/drivers/net/ethernet/qlogic/netxen/netxen_nic_main.c
++++ b/drivers/net/ethernet/qlogic/netxen/netxen_nic_main.c
+@@ -844,7 +844,7 @@ netxen_check_options(struct netxen_adapter *adapter)
+ 	adapter->fw_version = NETXEN_VERSION_CODE(fw_major, fw_minor, fw_build);
+ 
+ 	/* Get FW Mini Coredump template and store it */
+-	 if (NX_IS_REVISION_P3(adapter->ahw.revision_id)) {
++	if (NX_IS_REVISION_P3(adapter->ahw.revision_id)) {
+ 		if (adapter->mdump.md_template == NULL ||
+ 				adapter->fw_version > prev_fw_version) {
+ 			kfree(adapter->mdump.md_template);
