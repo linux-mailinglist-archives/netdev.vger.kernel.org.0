@@ -2,103 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AB4F43E288
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 15:49:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3D1843E2AF
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 15:52:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230441AbhJ1Nvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 09:51:41 -0400
-Received: from foss.arm.com ([217.140.110.172]:55144 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230445AbhJ1NvX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Oct 2021 09:51:23 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BEC811396;
-        Thu, 28 Oct 2021 06:48:56 -0700 (PDT)
-Received: from e121896.Emea.Arm.com (e121896.Emea.Arm.com [10.32.36.26])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id B141D3F70D;
-        Thu, 28 Oct 2021 06:48:52 -0700 (PDT)
-From:   James Clark <james.clark@arm.com>
-To:     acme@kernel.org, linux-perf-users@vger.kernel.org,
-        f.fainelli@gmail.com, irogers@google.com
-Cc:     James Clark <james.clark@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Sumanth Korikkar <sumanthk@linux.ibm.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH 3/3] perf tests: Remove bash constructs from stat_all_pmu.sh
-Date:   Thu, 28 Oct 2021 14:48:27 +0100
-Message-Id: <20211028134828.65774-4-james.clark@arm.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20211028134828.65774-1-james.clark@arm.com>
-References: <20211028134828.65774-1-james.clark@arm.com>
+        id S231139AbhJ1Nyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 09:54:32 -0400
+Received: from mslow1.mail.gandi.net ([217.70.178.240]:35529 "EHLO
+        mslow1.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231151AbhJ1NyW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 09:54:22 -0400
+Received: from relay9-d.mail.gandi.net (unknown [217.70.183.199])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id B6B1FC0124;
+        Thu, 28 Oct 2021 13:51:26 +0000 (UTC)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 1ADA0FF814;
+        Thu, 28 Oct 2021 13:50:59 +0000 (UTC)
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>
+Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/3] Add FDMA support on ocelot switch driver
+Date:   Thu, 28 Oct 2021 15:49:29 +0200
+Message-Id: <20211028134932.658167-1-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The tests were passing but without testing and were printing the
-following:
+This series adds support for the Frame DMA present on the VSC7514
+switch. The FDMA is able to extract and inject packets on the various
+ethernet interfaces present on the switch.
 
-  $ ./perf test -v 90
-  90: perf all PMU test                                               :
-  --- start ---
-  test child forked, pid 51650
-  Testing cpu/branch-instructions/
-  ./tests/shell/stat_all_pmu.sh: 10: [:
-   Performance counter stats for 'true':
+While adding FDMA support, bindings were switched from .txt to .yaml
+and mac address read from device-tree was added to allow be set instead
+of using random mac address.
 
-             137,307      cpu/branch-instructions/
+Clément Léger (3):
+  net: ocelot: add support to get mac from device-tree
+  dt-bindings: net: convert mscc,vsc7514-switch bindings to yaml
+  net: ocelot: add FDMA support
 
-         0.001686672 seconds time elapsed
+ .../bindings/net/mscc,vsc7514-switch.yaml     | 183 ++++
+ .../devicetree/bindings/net/mscc-ocelot.txt   |  83 --
+ drivers/net/ethernet/mscc/Makefile            |   1 +
+ drivers/net/ethernet/mscc/ocelot.h            |   2 +
+ drivers/net/ethernet/mscc/ocelot_fdma.c       | 811 ++++++++++++++++++
+ drivers/net/ethernet/mscc/ocelot_fdma.h       |  60 ++
+ drivers/net/ethernet/mscc/ocelot_net.c        |  30 +-
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c    |  20 +-
+ include/linux/dsa/ocelot.h                    |  40 +-
+ include/soc/mscc/ocelot.h                     |   2 +
+ 10 files changed, 1140 insertions(+), 92 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/mscc-ocelot.txt
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_fdma.c
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_fdma.h
 
-         0.001376000 seconds user
-         0.000000000 seconds sys: unexpected operator
-
-Changing the regexes to a grep works in sh and prints this:
-
-  $ ./perf test -v 90
-  90: perf all PMU test                                               :
-  --- start ---
-  test child forked, pid 60186
-  [...]
-  Testing tlb_flush.stlb_any
-  test child finished with 0
-  ---- end ----
-  perf all PMU test: Ok
-
-Signed-off-by: James Clark <james.clark@arm.com>
----
- tools/perf/tests/shell/stat_all_pmu.sh | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/tools/perf/tests/shell/stat_all_pmu.sh b/tools/perf/tests/shell/stat_all_pmu.sh
-index 2de7fd0394fd..b30dba455f36 100755
---- a/tools/perf/tests/shell/stat_all_pmu.sh
-+++ b/tools/perf/tests/shell/stat_all_pmu.sh
-@@ -7,11 +7,11 @@ set -e
- for p in $(perf list --raw-dump pmu); do
-   echo "Testing $p"
-   result=$(perf stat -e "$p" true 2>&1)
--  if [[ ! "$result" =~ "$p" ]] && [[ ! "$result" =~ "<not supported>" ]]; then
-+  if ! echo "$result" | grep -q "$p" && ! echo "$result" | grep -q "<not supported>" ; then
-     # We failed to see the event and it is supported. Possibly the workload was
-     # too small so retry with something longer.
-     result=$(perf stat -e "$p" perf bench internals synthesize 2>&1)
--    if [[ ! "$result" =~ "$p" ]]; then
-+    if ! echo "$result" | grep -q "$p" ; then
-       echo "Event '$p' not printed in:"
-       echo "$result"
-       exit 1
 -- 
-2.28.0
+2.33.0
 
