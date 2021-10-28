@@ -2,92 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 771D243E84E
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 20:25:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E03643E887
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 20:36:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230495AbhJ1S1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 14:27:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57968 "EHLO
+        id S230410AbhJ1SjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 14:39:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230325AbhJ1S1o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 14:27:44 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AE3DC061570
-        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 11:25:17 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id i14so9294278ioa.13
-        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 11:25:17 -0700 (PDT)
+        with ESMTP id S230293AbhJ1SjH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 14:39:07 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A2FC061570;
+        Thu, 28 Oct 2021 11:36:40 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id y3so6575572ybf.2;
+        Thu, 28 Oct 2021 11:36:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=on9i/3CJlLYGIG+xeoCAoOgzpm0872OBX3UlTMj8Cxg=;
-        b=FQtmkT0oQOPOWEQR/mo8nwgiQ0H0UxjBJtk3fsJG/e46PTRsxwwhJVjNL5HF0WJQ0F
-         maq8O8CPzvZ3RhlZgjTFPNbA8u65eE52AEZyxNn/otCWhXmEiq90/2pAvejFZ6ZY06RC
-         kwW70B4S3IqDuUEb9jtc4ifk9MKUI8RgPZEeWqs4rLhjWO0XuONMkNYhTfcel2E0jxkZ
-         3i5ys1FOZ/lqmpIwvQTjafHV/DhsTLubM8vCPJhLvSmS3v52sKu8nsr6ia//sQHy3haY
-         LIE8ArVCIb404EpA63fl8WWFtPBlCXCFI1UTZYIiO05JQEDv9hXnNDoRUc7LcGwuSQpf
-         Cw4g==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=lri9AX1VH1jItY9Oibi5NyPCDvFeCYHvU+3LAfa1abI=;
+        b=f/9nNiZI2daTtSKn3AWlb2zHbAV/WmTqZnVPjjX/7k+x7SIe2defZYpQq6Prl8HYDK
+         P+yrfKpRxq8D91zrDqT8EMpPILUWC2Dfa/ycTCYMMjzf5oVA917Hx6U8C7GY/YAA7Bhi
+         r6YhqJwa5XgzJqrBEoji3Ik+Aex9Hmb/8DGfdsIL6fV87pEZhx6zP06QQliEL5tZNPEB
+         +OKu1yv8GDtcv5yZVMESkvHCUxy4b/OGzoFP9deK5BrvZg0/LvmIxTw7UqNIOd8bfM5V
+         ZKWb7AH0FG7ywRWSJQMlcyVxk6yzKQBSFRP5KwPZEnH/fE4CSn8kA+KdCw7wtAWgZ3O0
+         R0IA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=on9i/3CJlLYGIG+xeoCAoOgzpm0872OBX3UlTMj8Cxg=;
-        b=W0nY/IZOorQJSmz/70cxilwFWo8P1sJhUJMLE74PGgH16ICxUeygNLWUt+58yxaaP8
-         5L+TiBdhdtyJ/bJtHppv5vkCUoI0Kaa0wTN46uTsIVx+63kEArrFLXvsG853e1vyg85v
-         XYZzP4s83rUMtpzQaP84jrhSbDo37NaNjvvSVLs3Lol3Xnbe/FwlkkLD/3sMhvG06ZVE
-         ZkiFgDQ7ItoQktVWMp0bxph7+sDOSZ9ExnsKKd5jJbpbiIF3GyVQwd4Zlx/DMc7BIuw8
-         7BwVi7v6OxNhc8shCqNqAvoeRDOskNkCSk9fooxM1VnsmwntRqUyIzF3zKaUdRyRkXJ9
-         4//w==
-X-Gm-Message-State: AOAM5334G+xjc9VP7AqBZPDFHQuisJpJ2VHWI1o8rL92kLa4Df84yjM0
-        D0WR6lOi2xEOmiFU2nxOtsY=
-X-Google-Smtp-Source: ABdhPJy48590RXENCIZ8tpxRmCIsRbodoWwNsAInam5ii7wenWVWcZGqtlJ8G9qBiae3wX6jmJ4R+A==
-X-Received: by 2002:a05:6602:2e08:: with SMTP id o8mr4332730iow.10.1635445516548;
-        Thu, 28 Oct 2021 11:25:16 -0700 (PDT)
-Received: from localhost (elenagb.nos-oignons.net. [185.233.100.23])
-        by smtp.gmail.com with ESMTPSA id 7sm2071214ilq.32.2021.10.28.11.25.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Oct 2021 11:25:16 -0700 (PDT)
-From:   =?UTF-8?q?J=CE=B5an=20Sacren?= <sakiwit@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next] net: bareudp: fix duplicate checks of data[] expressions
-Date:   Thu, 28 Oct 2021 12:24:53 -0600
-Message-Id: <20211028182453.9713-2-sakiwit@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=lri9AX1VH1jItY9Oibi5NyPCDvFeCYHvU+3LAfa1abI=;
+        b=N3mBrMqkQ6xD1yFGoupoEl3STM7jGgcAq7MqFIMOwQldV3msVbGusX3Wsr/6LulAXs
+         jY0CT3q4u5f81iARQSu/su3scudZ5f9RH8x8fM/ur2lkMz49Gr/3TeCIfdv2veVVqzT4
+         HxLDG98QEW5kCvV22JBqbifpOSKWz07eM1gw7xFE5jf4OWBJ3M0aUV4tSs1UHkCnOzDo
+         nhmC0w/VhsSJ66prG99G1mN7LaQ+6HRFwOjs9rRemrdlGga5mvLY/IZmGYRSQVnthFY6
+         QMOqkQDkVcM+LtJxjfZ2dEGwvfPGGyUhYkX4EH0gyFag1lDJPa5Crp3dqf7KIlZmhGtf
+         Ho4g==
+X-Gm-Message-State: AOAM532UpxBBSBWOIoy8vRf3DltMoZd3RDvtnALPR5EKde6/hP0QMNfx
+        Fo2WjVrah9vhVZPLi21aPVCyVZ2jcwoNxn15g1o=
+X-Google-Smtp-Source: ABdhPJyYf4XFAuiBXswba+b1b//02i+KVA71x8FErqaLRg2tx7oSGYuH+AMFrlOSb4fTRZDGSkq1eCRmvSqg67kwtfA=
+X-Received: by 2002:a25:cc4c:: with SMTP id l73mr3855884ybf.114.1635446199454;
+ Thu, 28 Oct 2021 11:36:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211027203727.208847-1-mauricio@kinvolk.io> <20211027203727.208847-2-mauricio@kinvolk.io>
+In-Reply-To: <20211027203727.208847-2-mauricio@kinvolk.io>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 28 Oct 2021 11:36:28 -0700
+Message-ID: <CAEf4BzZ2xxSSaLuvV=uLa0trom8_RPx8XR=KxeP5WF+2z3DMBA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] libbpf: Implement btf__save_to_file()
+To:     =?UTF-8?Q?Mauricio_V=C3=A1squez?= <mauricio@kinvolk.io>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
+        Rafael David Tinoco <rafael.tinoco@aquasec.com>,
+        Lorenzo Fontana <lorenzo.fontana@elastic.co>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jean Sacren <sakiwit@gmail.com>
+On Wed, Oct 27, 2021 at 1:37 PM Mauricio V=C3=A1squez <mauricio@kinvolk.io>=
+ wrote:
+>
+> Implement helper function to save the contents of a BTF object to a
+> file.
+>
+> Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
+> Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
+> Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
+> ---
+>  tools/lib/bpf/btf.c      | 22 ++++++++++++++++++++++
+>  tools/lib/bpf/btf.h      |  2 ++
+>  tools/lib/bpf/libbpf.map |  1 +
+>  3 files changed, 25 insertions(+)
+>
+> diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
+> index 0c628c33e23b..087035574dba 100644
+> --- a/tools/lib/bpf/btf.c
+> +++ b/tools/lib/bpf/btf.c
+> @@ -4773,3 +4773,25 @@ int btf_ext_visit_str_offs(struct btf_ext *btf_ext=
+, str_off_visit_fn visit, void
+>
+>         return 0;
+>  }
+> +
+> +int btf__save_to_file(struct btf *btf, const char *path)
 
-Both !data[IFLA_BAREUDP_PORT] and !data[IFLA_BAREUDP_ETHERTYPE] are
-checked.  We should remove the checks of data[IFLA_BAREUDP_PORT] and
-data[IFLA_BAREUDP_ETHERTYPE] that follow since they are always true.
+given we have its loading counterpart as btf__parse_raw(), let's call
+this one btf__save_raw()?
 
-Put both statements together in group and balance the space on both
-sides of '=' sign.
+> +{
+> +       const void *data;
+> +       __u32 data_sz;
+> +       FILE *file;
+> +
+> +       data =3D btf_get_raw_data(btf, &data_sz, btf->swapped_endian);
 
-Signed-off-by: Jean Sacren <sakiwit@gmail.com>
----
- drivers/net/bareudp.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+use btf__raw_data() instead? no need to think about btf->swapped_endian her=
+e
 
-diff --git a/drivers/net/bareudp.c b/drivers/net/bareudp.c
-index 54e321a695ce..edffc3489a12 100644
---- a/drivers/net/bareudp.c
-+++ b/drivers/net/bareudp.c
-@@ -577,11 +577,8 @@ static int bareudp2info(struct nlattr *data[], struct bareudp_conf *conf,
- 		return -EINVAL;
- 	}
- 
--	if (data[IFLA_BAREUDP_PORT])
--		conf->port =  nla_get_u16(data[IFLA_BAREUDP_PORT]);
--
--	if (data[IFLA_BAREUDP_ETHERTYPE])
--		conf->ethertype =  nla_get_u16(data[IFLA_BAREUDP_ETHERTYPE]);
-+	conf->port = nla_get_u16(data[IFLA_BAREUDP_PORT]);
-+	conf->ethertype = nla_get_u16(data[IFLA_BAREUDP_ETHERTYPE]);
- 
- 	if (data[IFLA_BAREUDP_SRCPORT_MIN])
- 		conf->sport_min =  nla_get_u16(data[IFLA_BAREUDP_SRCPORT_MIN]);
+> +       if (!data)
+> +               return -ENOMEM;
+
+please use libbpf_err() helper for returning errors, see other use cases
+
+> +
+> +       file =3D fopen(path, "wb");
+> +       if (!file)
+> +               return -errno;
+> +
+> +       if (fwrite(data, 1, data_sz, file) !=3D data_sz) {
+> +               fclose(file);
+> +               return -EIO;
+
+why not propagating original errno? make sure you save it before
+fclose(), though
+
+
+> +       }
+> +
+> +       return fclose(file);
+
+hm... I'd just do fclose(file) separately and return 0 (because
+success). If file closing fails, there isn't anything that can be done
+(but it also shouldn't fail in any normal situation).
+
+> +}
+> diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
+> index bc005ba3ceec..300ad498c615 100644
+> --- a/tools/lib/bpf/btf.h
+> +++ b/tools/lib/bpf/btf.h
+> @@ -114,6 +114,8 @@ LIBBPF_API struct btf *btf__parse_elf_split(const cha=
+r *path, struct btf *base_b
+>  LIBBPF_API struct btf *btf__parse_raw(const char *path);
+>  LIBBPF_API struct btf *btf__parse_raw_split(const char *path, struct btf=
+ *base_btf);
+>
+> +LIBBPF_API int btf__save_to_file(struct btf *btf, const char *path);
+
+const struct btf? btf__raw_data() (even though it internally modifies
+btf) accepts `const struct btf*`, because this is conceptually
+read-only operation
+
+> +
+>  LIBBPF_API struct btf *btf__load_vmlinux_btf(void);
+>  LIBBPF_API struct btf *btf__load_module_btf(const char *module_name, str=
+uct btf *vmlinux_btf);
+>  LIBBPF_API struct btf *libbpf_find_kernel_btf(void);
+> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+> index 15239c05659c..0e9bed7c9b9e 100644
+> --- a/tools/lib/bpf/libbpf.map
+> +++ b/tools/lib/bpf/libbpf.map
+> @@ -399,4 +399,5 @@ LIBBPF_0.6.0 {
+>                 btf__add_decl_tag;
+>                 btf__raw_data;
+>                 btf__type_cnt;
+> +               btf__save_to_file;
+>  } LIBBPF_0.5.0;
+> --
+> 2.25.1
+>
