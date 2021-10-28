@@ -2,42 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD25643E554
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 17:40:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69C8143E556
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 17:40:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230254AbhJ1Pmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S230297AbhJ1Pmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 28 Oct 2021 11:42:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41216 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:41226 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229946AbhJ1Pmf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230126AbhJ1Pmf (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 28 Oct 2021 11:42:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 4FA91610C8;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 742F4610CF;
         Thu, 28 Oct 2021 15:40:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1635435608;
-        bh=RhNp0ZDgNabWMlYljqrqlsicwJVv4uK8mY93cUQZpvY=;
+        bh=Lo44b0rW1gj+oT6zZVf+WbryFgBd3jrRmWGI9w20vk0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=K9uEFhNkUPDkUy0Vtx9CpQsvF8Mo4SmjgrJ+ilxr7B1meYGp2JudEZD28juKUxGbX
-         wzTr7jNjaBP7g8KAufQwTOSpIApfngWgnn7yJhwtxBxDqO8jzxHu5Zw6QN3Yod5tHG
-         TYJtOZ632qBJXT2EAhBv2MJtW9DPHKBuHcaOv7KfMsmFEUFS3wyW4+lhDtS3Pk58lz
-         ICqAew/G8KIqRQnYzQ5N8zvkdubmywG8+Rdfj7lUksrfm16qDfbM1roSZ1cnvL/BdS
-         ATlfGyj+3nvOtG0U82woWNCpq5rRaQmZuyORrNsvx7Q0oTM922Dn3jv2jiWis2zmM3
-         YcyaBsxhtUYTQ==
+        b=K049cS+VwMaRRMWqyo6i8Wiq705B3V8UFh5iNW/LziHsxZIF1Y0SVddUY2ExcpqAJ
+         E5qe4sq4dgIXZ72XbiiEpFvcb4aHV0gqRUs3jplvi+n5u2OzTiBwr812szl4cmmMk3
+         M73be33VkCclyaeUmtzJp1JE+UA5LeeOQ7tXx1y/jzXQNINStaIvjsU8f0CHsjG76B
+         YK1A1brdbRUpkDRvge3k89kDnOli6gK18nbRqOm+GV6W91G3tS+NeAvz9c/vTGLj6G
+         7+cOZEIbK8lK8WMsGGKmsrTODxgUuvj7wyXA7QudMckyL9rMzq4N5MUMGdjOcseN2N
+         GuXJRPjeJZGKw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3C8F1609CC;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 61F4260A1B;
         Thu, 28 Oct 2021 15:40:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf] riscv, bpf: Fix potential NULL dereference
+Subject: Re: [PATCH net] Revert "net: hns3: fix pause config problem after autoneg
+ disabled"
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163543560824.29178.17218180216053026996.git-patchwork-notify@kernel.org>
+Message-Id: <163543560839.29178.11743093544263683251.git-patchwork-notify@kernel.org>
 Date:   Thu, 28 Oct 2021 15:40:08 +0000
-References: <20211028125115.514587-1-bjorn@kernel.org>
-In-Reply-To: <20211028125115.514587-1-bjorn@kernel.org>
-To:     =?utf-8?b?QmrDtnJuIFTDtnBlbCA8Ympvcm5Aa2VybmVsLm9yZz4=?=@ci.codeaurora.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-riscv@lists.infradead.org
+References: <20211028140624.53149-1-huangguangbin2@huawei.com>
+In-Reply-To: <20211028140624.53149-1-huangguangbin2@huawei.com>
+To:     Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, wangjie125@huawei.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lipeng321@huawei.com, chenhao288@hisilicon.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,21 +49,20 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu, 28 Oct 2021 14:51:15 +0200 you wrote:
-> The bpf_jit_binary_free() function requires a non-NULL argument. When
-> the RISC-V BPF JIT fails to converge in NR_JIT_ITERATIONS steps,
-> jit_data->header will be NULL, which triggers a NULL
-> dereference. Avoid this by checking the argument, prior calling the
-> function.
+On Thu, 28 Oct 2021 22:06:24 +0800 you wrote:
+> This reverts commit 3bda2e5df476417b6d08967e2d84234a59d57b1c.
 > 
-> Fixes: ca6cb5447cec ("riscv, bpf: Factor common RISC-V JIT code")
-> Signed-off-by: Björn Töpel <bjorn@kernel.org>
+> According to discussion with Andrew as follow:
+> https://lore.kernel.org/netdev/09eda9fe-196b-006b-6f01-f54e75715961@huawei.com/
+> 
+> HNS3 driver needs to separate pause autoneg from general autoneg, so revert
+> this incorrect patch.
 > 
 > [...]
 
 Here is the summary with links:
-  - [bpf] riscv, bpf: Fix potential NULL dereference
-    https://git.kernel.org/netdev/net/c/27de809a3d83
+  - [net] Revert "net: hns3: fix pause config problem after autoneg disabled"
+    https://git.kernel.org/netdev/net/c/35392da51b1a
 
 You are awesome, thank you!
 -- 
