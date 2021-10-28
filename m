@@ -2,132 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3BA943F2A3
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 00:21:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2C8743F2CC
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 00:32:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231470AbhJ1WYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 18:24:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55134 "EHLO
+        id S231564AbhJ1Wer (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 18:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231298AbhJ1WYO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 18:24:14 -0400
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 828AFC061570;
-        Thu, 28 Oct 2021 15:21:46 -0700 (PDT)
-Received: by mail-qv1-xf31.google.com with SMTP id s9so2452944qvk.12;
-        Thu, 28 Oct 2021 15:21:46 -0700 (PDT)
+        with ESMTP id S231510AbhJ1Wen (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 18:34:43 -0400
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52350C061745
+        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 15:32:16 -0700 (PDT)
+Received: by mail-il1-x135.google.com with SMTP id l7so8603704iln.8
+        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 15:32:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=/T5F9B07gErRjYPria9st2w4l8wiE8xoQUEOHVZGBvM=;
-        b=cqtX/zRCsu1o1qbVcFQmpDrYQ3+yL++ZD059O9aXErqM7s4r2YYk5G5k6k2MU4WCXU
-         5d9YWkx5fJDDC7hrEIMFECAkWrHvfrIPWk+geI54qxLUqmOAnVK02sc9AJISjJpvooQs
-         0zCZZuh/1T9etRR+mtyGLfqGY/vTqliOfMm36Hb3U+/PWjc+H8oXWfwGDaFpFbs2Sla3
-         u8ym2NCG/EC7t25SqQOUy3lpC//9B96QDlNOatYWD3nDfJZT2JIENAyIzoNuzazZ0g2t
-         VT3fwMoXDjzXR3zxawPSPtCA56kee46tlvy9mcwY2qRL7pmL+i765nXuC+YlA9C9kE5r
-         7IlA==
+        d=squareup.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=L+jfMjHAfLT8+QsPbqGqAjMOjnneHdZRDZAP9vlLKWs=;
+        b=Uny7IrMZoQDiaNcxRaJwH5RbAUEh+rLUNczq9PSrZ4+ozTNt7LbNsZzBwWgL/gsOir
+         0q9J0JU3YL1ILHZ90GuNixStAFiC84639sQI11qgAvlYO3NroCjdW8Vcl+8o6jyLCRVa
+         k/PRLvHzN44GMee8RE8Rr4QyuWDT/21QchKkU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=/T5F9B07gErRjYPria9st2w4l8wiE8xoQUEOHVZGBvM=;
-        b=BQNbapo5Z+vF3qShO4lMIXUvXEfZe6TjaMpsUaTq/NuC8VJAou3WiUboWA9v5w1QT0
-         9v/c3Z839/ZPl8o72wzRmsZKnfvWAmC3LqdLu4NPISCVK4Dup/902JMPFhLWfMmYXzqk
-         aw7YMCOLFq3tXSx2Sl3wF4raNauE51LxlBBRL9q4yIRZr9/xlpju60W7ZVPTOrceYBfZ
-         ew2bBai3yHBhAnADb6yoG/U+2ckAGO8Wiq/YbEvvkaiO03NyOOaPsvvFW/Mm8C0IXdPW
-         j3MfmvXq45qR4pBlOT/00CRRzU1zbLARUNnY/iuePA39L6ULZvrSw9uijsjWRjwxTM6I
-         s2Lg==
-X-Gm-Message-State: AOAM531XxXhmoTgdR1PLckAS6OJC/qcKhJ9o5oh0IaK3U6ig+d79nBQE
-        Ns5ws9b4uKtdIfwxKB1mgLg9tS6PTzLuWQ==
-X-Google-Smtp-Source: ABdhPJxrFWd7ykakPW+atJE2BnfLAVVaBklvxy7ljS6mwW0kjUE7gDDiD31OnzQ/fxQohs1eq6P5kQ==
-X-Received: by 2002:a05:6214:5086:: with SMTP id kk6mr6749178qvb.63.1635459705668;
-        Thu, 28 Oct 2021 15:21:45 -0700 (PDT)
-Received: from 10-18-43-117.dynapool.wireless.nyu.edu (216-165-95-164.natpool.nyu.edu. [216.165.95.164])
-        by smtp.gmail.com with ESMTPSA id c10sm3067773qtd.27.2021.10.28.15.21.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Oct 2021 15:21:45 -0700 (PDT)
-Date:   Thu, 28 Oct 2021 18:21:42 -0400
-From:   Zekun Shen <bruceshenzk@gmail.com>
-To:     bruceshenzk@gmail.com
-Cc:     ath9k-devel@qca.qualcomm.com, Kalle Valo <kvalo@codeaurora.org>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=L+jfMjHAfLT8+QsPbqGqAjMOjnneHdZRDZAP9vlLKWs=;
+        b=g2sPEtPFMI6PBVjg892Bff4LQYNsY6dm48gDHRGJxxL240tPI7iMS6Osegl8AnF9j/
+         74ljcPuaPcsGx3K299adtrUNGPhELVD2ughOZic0obSMDQtJyXMAJZgFMK0l77BCBecT
+         KF628MwCOcEeqaY14Q7qpXdLPkkjQv6uvl/L1c7bF120snDDtuTCkKdjbBkBY6iDN1+Q
+         ag7/nV/BKrHDOon8R1ZilFIg6Bzsj/wAnhpqyHUc5kMN4Io0T+HlsTofYJ8apI/HUvNr
+         2hvqqayBE6rV1cdWzjWI9XxEYvvRGnYG/J8QCBCu8W272EkuwaNHCbVkpY5APfPOsh9H
+         3UYA==
+X-Gm-Message-State: AOAM532lqaosDh4JmEH0pHTLyA4KgsVrqHHtbo7eEen2WgjhTSoOvV9s
+        PR7tDsiFxFPa6/yrrq6M9Dl76Q==
+X-Google-Smtp-Source: ABdhPJy/b2xM34DK4VBgQcTcs0aJO4LH7GHvWhLin/6oQNOQUqhLhCn7G08O8SA3bCFldiQYggMlVQ==
+X-Received: by 2002:a92:ca48:: with SMTP id q8mr5247491ilo.173.1635460335609;
+        Thu, 28 Oct 2021 15:32:15 -0700 (PDT)
+Received: from localhost ([2600:6c50:4d00:cd01::382])
+        by smtp.gmail.com with ESMTPSA id b4sm2153706iot.45.2021.10.28.15.32.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Oct 2021 15:32:15 -0700 (PDT)
+From:   Benjamin Li <benl@squareup.com>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        linux-arm-msm@vger.kernel.org, Benjamin Li <benl@squareup.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, wcn36xx@lists.infradead.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] ath9k: Fix out-of-bound memcpy in ath9k_hif_usb_rx_stream
-Message-ID: <YXsidrRuK6zBJicZ@10-18-43-117.dynapool.wireless.nyu.edu>
+Subject: [PATCH 1/2] wcn36xx: populate band before determining rate on RX
+Date:   Thu, 28 Oct 2021 15:31:29 -0700
+Message-Id: <20211028223131.897548-1-benl@squareup.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Large pkt_len can lead to out-out-bound memcpy. Current
-ath9k_hif_usb_rx_stream allows combining the content of two urb
-inputs to one pkt. The first input can indicate the size of the
-pkt. Any remaining size is saved in hif_dev->rx_remain_len.
-While processing the next input, memcpy is used with rx_remain_len.
+status.band is used in determination of status.rate -- for 5GHz on legacy
+rates there is a linear shift between the BD descriptor's rate field and
+the wcn36xx driver's rate table (wcn_5ghz_rates).
 
-4-byte pkt_len can go up to 0xffff, while a single input is 0x4000
-maximum in size (MAX_RX_BUF_SIZE). Thus, the patch adds a check for
-pkt_len which must not exceed 2 * MAX_RX_BUG_SIZE.
+We have a special clause to populate status.band for hardware scan offload
+frames. However, this block occurs after status.rate is already populated.
+Correctly handle this dependency by moving the band block before the rate
+block.
 
-BUG: KASAN: slab-out-of-bounds in ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
-Read of size 46393 at addr ffff888018798000 by task kworker/0:1/23
+This patch addresses kernel warnings & missing scan results for 5GHz APs
+that send their probe responses at the higher four legacy rates (24-54
+Mbps), when using hardware scan offload:
 
-CPU: 0 PID: 23 Comm: kworker/0:1 Not tainted 5.6.0 #63
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-BIOS rel-1.10.2-0-g5f4c7b1-prebuilt.qemu-project.org 04/01/2014
-Workqueue: events request_firmware_work_func
-Call Trace:
- <IRQ>
- dump_stack+0x76/0xa0
- print_address_description.constprop.0+0x16/0x200
- ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
- ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
- __kasan_report.cold+0x37/0x7c
- ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
- kasan_report+0xe/0x20
- check_memory_region+0x15a/0x1d0
- memcpy+0x20/0x50
- ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
- ? hif_usb_mgmt_cb+0x2d9/0x2d9 [ath9k_htc]
- ? _raw_spin_lock_irqsave+0x7b/0xd0
- ? _raw_spin_trylock_bh+0x120/0x120
- ? __usb_unanchor_urb+0x12f/0x210
- __usb_hcd_giveback_urb+0x1e4/0x380
- usb_giveback_urb_bh+0x241/0x4f0
- ? __hrtimer_run_queues+0x316/0x740
- ? __usb_hcd_giveback_urb+0x380/0x380
- tasklet_action_common.isra.0+0x135/0x330
- __do_softirq+0x18c/0x634
- irq_exit+0x114/0x140
- smp_apic_timer_interrupt+0xde/0x380
- apic_timer_interrupt+0xf/0x20
+  ------------[ cut here ]------------
+  WARNING: CPU: 0 PID: 0 at net/mac80211/rx.c:4532 ieee80211_rx_napi+0x744/0x8d8
+  Modules linked in: wcn36xx [...]
+  CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W         4.19.107-g73909fa #1
+  Hardware name: Square, Inc. T2 (all variants) (DT)
+  Call trace:
+  dump_backtrace+0x0/0x148
+  show_stack+0x14/0x1c
+  dump_stack+0xb8/0xf0
+  __warn+0x2ac/0x2d8
+  warn_slowpath_null+0x44/0x54
+  ieee80211_rx_napi+0x744/0x8d8
+  ieee80211_tasklet_handler+0xa4/0xe0
+  tasklet_action_common+0xe0/0x118
+  tasklet_action+0x20/0x28
+  __do_softirq+0x108/0x1ec
+  irq_exit+0xd4/0xd8
+  __handle_domain_irq+0x84/0xbc
+  gic_handle_irq+0x4c/0xb8
+  el1_irq+0xe8/0x190
+  lpm_cpuidle_enter+0x220/0x260
+  cpuidle_enter_state+0x114/0x1c0
+  cpuidle_enter+0x34/0x48
+  do_idle+0x150/0x268
+  cpu_startup_entry+0x20/0x24
+  rest_init+0xd4/0xe0
+  start_kernel+0x398/0x430
+  ---[ end trace ae28cb759352b403 ]---
 
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Fixes: 8a27ca394782 ("wcn36xx: Correct band/freq reporting on RX")
+Signed-off-by: Benjamin Li <benl@squareup.com>
 ---
- drivers/net/wireless/ath/ath9k/hif_usb.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/wireless/ath/wcn36xx/txrx.c | 37 +++++++++++++------------
+ 1 file changed, 19 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
-index 860da13bf..0681bc5fa 100644
---- a/drivers/net/wireless/ath/ath9k/hif_usb.c
-+++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
-@@ -589,6 +589,12 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
- 			RX_STAT_INC(skb_dropped);
- 			return;
- 		}
-+		if (pkt_len > 2 * MAX_RX_BUF_SIZE) {
-+			dev_err(&hif_dev->udev->dev,
-+				"ath9k_htc: invalid pkt_len (%x)\n", pkt_len);
-+			RX_STAT_INC(skb_dropped);
-+			return;
-+		}
+diff --git a/drivers/net/wireless/ath/wcn36xx/txrx.c b/drivers/net/wireless/ath/wcn36xx/txrx.c
+index 75951ccbc840e..f0a9f069a92a9 100644
+--- a/drivers/net/wireless/ath/wcn36xx/txrx.c
++++ b/drivers/net/wireless/ath/wcn36xx/txrx.c
+@@ -314,8 +314,6 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
+ 	fc = __le16_to_cpu(hdr->frame_control);
+ 	sn = IEEE80211_SEQ_TO_SN(__le16_to_cpu(hdr->seq_ctrl));
  
- 		pad_len = 4 - (pkt_len & 0x3);
- 		if (pad_len == 4)
+-	status.freq = WCN36XX_CENTER_FREQ(wcn);
+-	status.band = WCN36XX_BAND(wcn);
+ 	status.mactime = 10;
+ 	status.signal = -get_rssi0(bd);
+ 	status.antenna = 1;
+@@ -327,6 +325,25 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
+ 
+ 	wcn36xx_dbg(WCN36XX_DBG_RX, "status.flags=%x\n", status.flag);
+ 
++	if (bd->scan_learn) {
++		/* If packet originate from hardware scanning, extract the
++		 * band/channel from bd descriptor.
++		 */
++		u8 hwch = (bd->reserved0 << 4) + bd->rx_ch;
++
++		if (bd->rf_band != 1 && hwch <= sizeof(ab_rx_ch_map) && hwch >= 1) {
++			status.band = NL80211_BAND_5GHZ;
++			status.freq = ieee80211_channel_to_frequency(ab_rx_ch_map[hwch - 1],
++								     status.band);
++		} else {
++			status.band = NL80211_BAND_2GHZ;
++			status.freq = ieee80211_channel_to_frequency(hwch, status.band);
++		}
++	} else {
++		status.band = WCN36XX_BAND(wcn);
++		status.freq = WCN36XX_CENTER_FREQ(wcn);
++	}
++
+ 	if (bd->rate_id < ARRAY_SIZE(wcn36xx_rate_table)) {
+ 		rate = &wcn36xx_rate_table[bd->rate_id];
+ 		status.encoding = rate->encoding;
+@@ -353,22 +370,6 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
+ 	    ieee80211_is_probe_resp(hdr->frame_control))
+ 		status.boottime_ns = ktime_get_boottime_ns();
+ 
+-	if (bd->scan_learn) {
+-		/* If packet originates from hardware scanning, extract the
+-		 * band/channel from bd descriptor.
+-		 */
+-		u8 hwch = (bd->reserved0 << 4) + bd->rx_ch;
+-
+-		if (bd->rf_band != 1 && hwch <= sizeof(ab_rx_ch_map) && hwch >= 1) {
+-			status.band = NL80211_BAND_5GHZ;
+-			status.freq = ieee80211_channel_to_frequency(ab_rx_ch_map[hwch - 1],
+-								     status.band);
+-		} else {
+-			status.band = NL80211_BAND_2GHZ;
+-			status.freq = ieee80211_channel_to_frequency(hwch, status.band);
+-		}
+-	}
+-
+ 	memcpy(IEEE80211_SKB_RXCB(skb), &status, sizeof(status));
+ 
+ 	if (ieee80211_is_beacon(hdr->frame_control)) {
 -- 
 2.25.1
 
