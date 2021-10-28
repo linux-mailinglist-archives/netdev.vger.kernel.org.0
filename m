@@ -2,113 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67B7143DB73
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 08:45:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A84A43DB7F
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 08:48:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229762AbhJ1Grw convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 28 Oct 2021 02:47:52 -0400
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:53967 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229586AbhJ1Grv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 02:47:51 -0400
-Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id 7FC9660014;
-        Thu, 28 Oct 2021 06:45:21 +0000 (UTC)
-Date:   Thu, 28 Oct 2021 08:45:20 +0200
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     David Ahern <dsahern@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thomas.petazzoni@bootlin.com
-Subject: Re: [RFC PATCH net] net: ipconfig: Release the rtnl_lock while
- waiting for carrier
-Message-ID: <20211028084520.4b96f93a@bootlin.com>
-In-Reply-To: <163535070902.935735.6368176213562383450@kwain>
-References: <20211027131953.9270-1-maxime.chevallier@bootlin.com>
-        <163535070902.935735.6368176213562383450@kwain>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        id S229784AbhJ1Gu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 02:50:58 -0400
+Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:47315 "EHLO
+        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229586AbhJ1Gu5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 02:50:57 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0Utyxk-0_1635403708;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0Utyxk-0_1635403708)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 28 Oct 2021 14:48:29 +0800
+Date:   Thu, 28 Oct 2021 14:48:28 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Karsten Graul <kgraul@linux.ibm.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org, jacob.qi@linux.alibaba.com,
+        xuanzhuo@linux.alibaba.com, guwen@linux.alibaba.com,
+        dust.li@linux.alibaba.com
+Subject: Re: [PATCH net 1/4] Revert "net/smc: don't wait for send buffer
+ space when data was already sent"
+Message-ID: <YXpHvKGhPzcNoEtD@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <20211027085208.16048-1-tonylu@linux.alibaba.com>
+ <20211027085208.16048-2-tonylu@linux.alibaba.com>
+ <9bbd05ac-5fa5-7d7a-fe69-e7e072ccd1ab@linux.ibm.com>
+ <20211027080813.238b82ce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <06ae0731-0b9b-a70d-6479-de6fe691e25d@linux.ibm.com>
+ <20211027084710.1f4a4ff1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211027084710.1f4a4ff1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Antoine,
+On Wed, Oct 27, 2021 at 08:47:10AM -0700, Jakub Kicinski wrote:
+> On Wed, 27 Oct 2021 17:38:27 +0200 Karsten Graul wrote:
+> > What we found out was that applications called sendmsg() with large data
+> > buffers using blocking sockets. This led to the described situation, were the
+> > solution was to early return to user space even if not all data were sent yet.
+> > Userspace applications should not have a problem with the fact that sendmsg()
+> > returns a smaller byte count than requested.
+> > 
+> > Reverting this patch would bring back the stalled connection problem.
+> 
+> I'm not sure. The man page for send says:
+> 
+>        When the message does not fit into  the  send  buffer  of  the  socket,
+>        send()  normally blocks, unless the socket has been placed in nonblock‐
+>        ing I/O mode.  In nonblocking mode it would fail with the error  EAGAIN
+>        or  EWOULDBLOCK in this case.
+> 
+> dunno if that's required by POSIX or just a best practice.
 
-On Wed, 27 Oct 2021 18:05:09 +0200
-Antoine Tenart <atenart@kernel.org> wrote:
+The man page describes the common cases about the socket API behavior,
+but depends on the implement.
 
->Hi Maxime,
->
->Quoting Maxime Chevallier (2021-10-27 15:19:53)
->> While waiting for a carrier to come on one of the netdevices, some
->> devices will require to take the rtnl lock at some point to fully
->> initialize all parts of the link.
->> 
->> That's the case for SFP, where the rtnl is taken when a module gets
->> detected. This prevents mounting an NFS rootfs over an SFP link.
->> 
->> This means that while ipconfig waits for carriers to be detected, no SFP
->> modules can be detected in the meantime, it's only detected after
->> ipconfig times out.
->> 
->> This commit releases the rtnl_lock while waiting for the carrier to come
->> up, and re-takes it to check the for the init device and carrier status.
->> 
->> At that point, the rtnl_lock seems to be only protecting
->> ic_is_init_dev().
->> 
->> Fixes: 73970055450e ("sfp: add SFP module support")  
->
->Was this working with SFP modules before?
+For example, the connect(2) implement of TCP, it would never block, but
+also provides EAGAIN errors for UNIX domain sockets.
 
-From what I can tell, no. In that case, does it need a fixes tag ?
-It seems the problem has always been there, and booting an nfsroot
-never worked over SFP links.
+       EAGAIN For nonblocking UNIX domain sockets, the socket is
+              nonblocking, and the connection cannot be completed
+              immediately.  For other socket families, there are
+              insufficient entries in the routing cache.
 
->
->> diff --git a/net/ipv4/ipconfig.c b/net/ipv4/ipconfig.c
->> index 816d8aad5a68..069ae05bd0a5 100644
->> --- a/net/ipv4/ipconfig.c
->> +++ b/net/ipv4/ipconfig.c
->> @@ -278,7 +278,12 @@ static int __init ic_open_devs(void)
->>                         if (ic_is_init_dev(dev) && netif_carrier_ok(dev))
->>                                 goto have_carrier;
->>  
->> +               /* Give a chance to do complex initialization that
->> +                * would require to take the rtnl lock.
->> +                */
->> +               rtnl_unlock();
->>                 msleep(1);
->> +               rtnl_lock();
->>  
->>                 if (time_before(jiffies, next_msg))
->>                         continue;  
->
->The rtnl lock is protecting 'for_each_netdev' and 'dev_change_flags' in
->this function. What could happen in theory is a device gets removed from
->the list or has its flags changed. I don't think that's an issue here.
->
->Instead of releasing the lock while sleeping, you could drop the lock
->before the carrier waiting loop (with a similar comment) and only
->protect the above 'for_each_netdev' loop.
+In my opinion, if we are going to replace TCP with SMC, these userspace
+socket API should behavior as same, and don't break the userspace
+applications like netperf. It could be better to block here when sending
+message without enough buffer.
 
-Nice catch, the effect should be the same but with a much cleaner idea
-of what is being protected.
-
-I'll give it a try and respin, thanks for the review !
-
-Maxime
-
->Antoine
-
-
-
--- 
-Maxime Chevallier, Bootlin
-Embedded Linux and kernel engineering
-https://bootlin.com
+In our benchmarks and E2E tests (Redis, MySQL, etc.), it is acceptable to
+block here. Because the userspace applications usually block in the loop
+until the data send out. If it blocks, the scheduler can handle it.
