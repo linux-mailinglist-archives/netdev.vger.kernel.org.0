@@ -2,126 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F68243E3E8
+	by mail.lfdr.de (Postfix) with ESMTP id D8BDC43E3E9
 	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 16:38:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231150AbhJ1OkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 10:40:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33750 "EHLO
+        id S231184AbhJ1OkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 10:40:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230493AbhJ1OkX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 10:40:23 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD507C061570
-        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 07:37:56 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id 5so25085986edw.7
-        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 07:37:56 -0700 (PDT)
+        with ESMTP id S231132AbhJ1OkY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 10:40:24 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3723BC061745
+        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 07:37:57 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id h7so26298752ede.8
+        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 07:37:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VZDbXMmyolFmx1o5WGp4p2BAx1Dz6AsqqfsWYE0TppQ=;
-        b=kZef92Jp6vMjPikNnLW7QZ9IY91377awUFQ3/w4y6iNHnSh6W38Bui6n83a3p8DRro
-         wMblVTzfyozToEn4kDTqbxPqqadNE3hXZ4bjwAWJqYJkUF+79f3MEzJJ0TiNcZEGWIGi
-         NTLo2ilvBG5ei0jdqeS0BGQpV5tNoJzsP61Wfi/VuOJif5YBxZhYID/YdlkUoISKzpFc
-         ZH1jsy8rHVrqQ+qIpzab16XB8MAghx/gKuoxrpEjVtQImQPbPfUTLt5LyhH4x56jeDKV
-         ase6hLjvPPf9LzVclT9tUNQX9IOLiB0mSG9+mYf6wwUSr1ZQiGZl/UlDxhQ1KeS/TNiM
-         t2Kw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=kaLOI5pYECzKvo/+urqxhhg9PYPQu4oDJi6rLd02fk8=;
+        b=IQj8LxZyvOCURsCt4XI4Uell0chqwPh5nCOspgWJlJZGvzIHjJ3pxLbi7yWZ9SZmwq
+         zwByaev4ety2VWcVO885idO++vT3cLO8jEfn5XOUklswu29JSovc5PrOFD/xl2zhX7y5
+         4qZ3QcgC3olamUrrEFep4eMAOdnkwy3vsXeSzlxQAMeEX/U9oMmJrDRi25APKJMFUPQJ
+         7I8uyKnGeDTX+jEHiv9AtbPEaZLe9FCCuqioN+maZmWbTIR0dau5mZQT3b2I2vwZm2Hd
+         koJPRfvJbTVNH/3unIgVNvRNKyRbVXgGEeFTOX53zvbLWUziKZ3mAVkTjU672n3JwSxb
+         m12A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VZDbXMmyolFmx1o5WGp4p2BAx1Dz6AsqqfsWYE0TppQ=;
-        b=HK0NHuGpLFl5zDsUZ4DvUMZ1o8CM5IyeF1e0V8Gamr64PX+zLVZOKHArh4NyR89Rer
-         8upJJlDc5R5vrbJI6bgxLJFwxVl5tOWtgJ9oW8uPUZEUr18ZtqHt8Fo8eqXpj+a+oq9L
-         JoYgzUWZ/VHSy41LiNLTC/ntrHFGaeGa+mVR6oz4PCG1tniqMU3UbuHMVMt8wIjUIu7F
-         qe9c7ceeiG8CpHFysxFsnFvwNY+w2s3S0Y5mx8D7/wlIIXNP7x1mtyVICxi1hweW+jyV
-         zCrY8121uSKwxVhoazP66+ALyHQaZMiTJHwhENhRFLAEGTItmt3NAuz4ryeOEEvRaQxB
-         8D3Q==
-X-Gm-Message-State: AOAM532+mUsaYesmcm6o3X82AABmU7d/h9zj9tUE8BBSuztpyTEJ3Xxk
-        SYLS/IgE/rd0H9DqlNsF99c=
-X-Google-Smtp-Source: ABdhPJw6s7NgADO8J9iL6+a/Vai8mcCLEdkMmOPeTWO9r4+K6Y8GtqlfGHQwmAsL2miJBHcoCKiF4w==
-X-Received: by 2002:a05:6402:50c7:: with SMTP id h7mr6651903edb.191.1635431875234;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=kaLOI5pYECzKvo/+urqxhhg9PYPQu4oDJi6rLd02fk8=;
+        b=atu32CkZti1nWfevi7DbT5BLUNzAh1Q21/SFv2SZrRARR7bLN2bNzyq4nowlJnldUG
+         ZEriVoeUn45KdmiUeT7XObEN9rCl+2MGEfhvabQoJ/9DPvDuivgHP5R+5XUYab1AK6Ml
+         y2mfi2wsUUO/82A+Wn6VBDdbiGCeIyID8KHwHt4IAPUeju0dhfJcAQw00gQdQuSdyjGQ
+         nQuFHQwQ3iCgUSIdH1ZY+hKa3IIw5BM6MLHCvBGUHPpIaAww0e7ErIQ/R744oU4HFbox
+         /bPdaPpPLFG/ZjAdhjW0BjoYo+Nv/egjWmhpeYZRB+zf/H/YFl3tQ8UoMSxLd0eCKPV4
+         hEOA==
+X-Gm-Message-State: AOAM532ctk8pmQZ7F2yklxWY5HX4vrhZgk3XNjS5NK6vXT0ScSTRdV0J
+        us4orf/MjWgn1ytQUhItEcnOKIiNWjE=
+X-Google-Smtp-Source: ABdhPJz8lFRb/ojGG8pVeHunZek/PGq+OrMC+uvSiiDMz7LHBUhKKl+dM3G8tImDm2dIhppEHcbMCg==
+X-Received: by 2002:a05:6402:1511:: with SMTP id f17mr6628020edw.68.1635431875857;
         Thu, 28 Oct 2021 07:37:55 -0700 (PDT)
 Received: from localhost.localdomain (84-104-224-163.cable.dynamic.v4.ziggo.nl. [84.104.224.163])
-        by smtp.gmail.com with ESMTPSA id di12sm1514501ejc.3.2021.10.28.07.37.54
+        by smtp.gmail.com with ESMTPSA id di12sm1514501ejc.3.2021.10.28.07.37.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Oct 2021 07:37:54 -0700 (PDT)
+        Thu, 28 Oct 2021 07:37:55 -0700 (PDT)
 From:   Ruud Bos <kernel.hbk@gmail.com>
 To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
         intel-wired-lan@lists.osuosl.org
 Cc:     netdev@vger.kernel.org, richardcochran@gmail.com,
         davem@davemloft.net, kuba@kernel.org,
         Ruud Bos <kernel.hbk@gmail.com>
-Subject: [PATCH net-next v2 0/4] igb: support PEROUT and EXTTS PTP pin functions on 82580/i354/i350
-Date:   Thu, 28 Oct 2021 16:34:55 +0200
-Message-Id: <20211028143459.903439-1-kernel.hbk@gmail.com>
+Subject: [PATCH net-next v2 1/4] igb: move SDP config initialization to separate function
+Date:   Thu, 28 Oct 2021 16:34:56 +0200
+Message-Id: <20211028143459.903439-2-kernel.hbk@gmail.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20211028143459.903439-1-kernel.hbk@gmail.com>
+References: <20211028143459.903439-1-kernel.hbk@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The igb driver provides support for PEROUT and EXTTS pin functions that
-allow adapter external use of timing signals. At Hottinger Bruel & Kjaer we
-are using the PEROUT function to feed a PTP corrected 1pps signal into an
-FPGA as cross system synchronized time source.
+Allow reuse of SDP config struct initialization by moving it to a
+separate function.
 
-Support for the PEROUT and EXTTS SDP functions is currently limited to
-i210/i211 based adapters. This patch series enables these functions also
-for 82580/i354/i350 based ones. Because the time registers of these
-adapters do not have the nice split in second rollovers as the i210 has,
-the implementation is slightly more complex compared to the i210
-implementation.
+Signed-off-by: Ruud Bos <kernel.hbk@gmail.com>
+---
+ drivers/net/ethernet/intel/igb/igb_ptp.c | 27 +++++++++++++++++-------
+ 1 file changed, 19 insertions(+), 8 deletions(-)
 
-The PEROUT function has been successfully tested on an i350 based ethernet
-adapter. Using the following user space code excerpt, the driver outputs a
-PTP corrected 1pps signal on the SDP0 pin of an i350:
-
-    struct ptp_pin_desc desc;
-    memset(&desc, 0, sizeof(desc));
-    desc.index = 0;
-    desc.func = PTP_PF_PEROUT;
-    desc.chan = 0;
-    if (ioctl(fd, PTP_PIN_SETFUNC, &desc) == 0) {
-        struct timespec ts;
-        if (clock_gettime(clkid, &ts) == 0) {
-            struct ptp_perout_request rq;
-            memset(&rq, 0, sizeof(rq));
-            rq.index = 0;
-            rq.start.sec = ts.tv_sec + 1;
-            rq.start.nsec = 500000000;
-            rq.period.sec  = 1;
-            rq.period.nsec = 0;
-            if (ioctl(fd, PTP_PEROUT_REQUEST, &rq) == 0) {
-                /* 1pps signal is now available on SDP0 */
-            }
-        }
-    }
-
-The added EXTTS function has not been tested. However, looking at the data
-sheets, the layout of the registers involved match the i210 exactly except
-for the time registers mentioned before. Hence the almost identical
-implementation.
-
-v2:
- - fix PEROUT on SDP2/SDP3
- - rename incorrectly named sdp function argument to tsintr_tt
- - fix white space issue
-
-Ruud Bos (4):
-  igb: move SDP config initialization to separate function
-  igb: move PEROUT and EXTTS isr logic to separate functions
-  igb: support PEROUT on 82580/i354/i350
-  igb: support EXTTS on 82580/i354/i350
-
- drivers/net/ethernet/intel/igb/igb_main.c | 148 +++++++++++++----
- drivers/net/ethernet/intel/igb/igb_ptp.c  | 188 ++++++++++++++++++++--
- 2 files changed, 291 insertions(+), 45 deletions(-)
-
-
-base-commit: 911e3a46fb38669560021537e00222591231f456
+diff --git a/drivers/net/ethernet/intel/igb/igb_ptp.c b/drivers/net/ethernet/intel/igb/igb_ptp.c
+index 0011b15e678c..c78d0c2a5341 100644
+--- a/drivers/net/ethernet/intel/igb/igb_ptp.c
++++ b/drivers/net/ethernet/intel/igb/igb_ptp.c
+@@ -69,6 +69,7 @@
+ #define IGB_NBITS_82580			40
+ 
+ static void igb_ptp_tx_hwtstamp(struct igb_adapter *adapter);
++static void igb_ptp_sdp_init(struct igb_adapter *adapter);
+ 
+ /* SYSTIM read access for the 82576 */
+ static u64 igb_ptp_read_82576(const struct cyclecounter *cc)
+@@ -1192,7 +1193,6 @@ void igb_ptp_init(struct igb_adapter *adapter)
+ {
+ 	struct e1000_hw *hw = &adapter->hw;
+ 	struct net_device *netdev = adapter->netdev;
+-	int i;
+ 
+ 	switch (hw->mac.type) {
+ 	case e1000_82576:
+@@ -1233,13 +1233,7 @@ void igb_ptp_init(struct igb_adapter *adapter)
+ 		break;
+ 	case e1000_i210:
+ 	case e1000_i211:
+-		for (i = 0; i < IGB_N_SDP; i++) {
+-			struct ptp_pin_desc *ppd = &adapter->sdp_config[i];
+-
+-			snprintf(ppd->name, sizeof(ppd->name), "SDP%d", i);
+-			ppd->index = i;
+-			ppd->func = PTP_PF_NONE;
+-		}
++		igb_ptp_sdp_init(adapter);
+ 		snprintf(adapter->ptp_caps.name, 16, "%pm", netdev->dev_addr);
+ 		adapter->ptp_caps.owner = THIS_MODULE;
+ 		adapter->ptp_caps.max_adj = 62499999;
+@@ -1284,6 +1278,23 @@ void igb_ptp_init(struct igb_adapter *adapter)
+ 	}
+ }
+ 
++/**
++ * igb_ptp_sdp_init - utility function which inits the SDP config structs
++ * @adapter: Board private structure.
++ **/
++void igb_ptp_sdp_init(struct igb_adapter *adapter)
++{
++	int i;
++
++	for (i = 0; i < IGB_N_SDP; i++) {
++		struct ptp_pin_desc *ppd = &adapter->sdp_config[i];
++
++		snprintf(ppd->name, sizeof(ppd->name), "SDP%d", i);
++		ppd->index = i;
++		ppd->func = PTP_PF_NONE;
++	}
++}
++
+ /**
+  * igb_ptp_suspend - Disable PTP work items and prepare for suspend
+  * @adapter: Board private structure
 -- 
 2.30.2
 
