@@ -2,365 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD45843E61D
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 18:29:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4324243E645
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 18:41:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230174AbhJ1QcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 12:32:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52210 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229594AbhJ1QcD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Oct 2021 12:32:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 130636103C;
-        Thu, 28 Oct 2021 16:29:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635438576;
-        bh=f5mWwUgfXt3U7aduUw/7LrrDfMIVI+t3AwFS3yz6ZtM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=CZMZy2NbrWSwJUVw6yqNisPqj+hN7A1iSIUrT29fC/J9JiK8ALMwnHjOF7MVW1dv1
-         kT8DWVzntOO8x0wD5yV44hkxG59fp641ldAAICkW0DtNqNA1coqDPc2D/6WuGYOKYv
-         2CM/tMGSI+3mOAS4gao0HF1uMznEKXgGE2QVzJcg/Gmo+uPXd3iz7xu0npwf2ETW+v
-         O9leM3vJGh05WhUMm628MDkHEPzIwiCZSTyKDUt7kQsEsyp2wM/Bhv7/fXVSGHRLfA
-         VxVQAaAtp+QYnfAa2gz9TUGw5BXTWPPZrbJZ3NY/ABGJlbjZgOW1WXwP4p+8FyzsYB
-         SSvx4PugW6lKA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     torvalds@linux-foundation.org
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, daniel@iogearbox.net, toke@toke.dk,
-        johannes@sipsolutions.net, bpf@vger.kernel.org
-Subject: [GIT PULL] Networking for 5.15-rc8
-Date:   Thu, 28 Oct 2021 09:29:12 -0700
-Message-Id: <20211028162912.1660341-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
+        id S230226AbhJ1Qnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 12:43:49 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:16391 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229846AbhJ1Qnt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 12:43:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1635439282; x=1666975282;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=3DcGoNLDw0nBvHnM5dU5BhrLiLH6Em/sSyzdlwx2xHc=;
+  b=jR9P0amZR+pUP8M3/DCxu8ibYuhdA8I89uXBULV9pT/Zq3ByBP0YXUZR
+   dSCxgtbz48SCSVSbZ8zLfjutoM/CAJiQL3AinUCsv2pGyyjosTPG5PYyX
+   i5QVh0Hq0cWaMfd19QMAzTOr5Tf1BIPyThrmQBtrhyiiSz9c4rxWPYfrv
+   REx88+VFhCngN9hE3+PmyRjQK6A8d12V9Mo69647sx6CTA+IzimGbsYNA
+   OkRdmywouRxagoqlRyx4SHAVMXM+L0KkY5/stf4z8j67HTNGcSJ6Uznht
+   Ab8usIT0JmFfp+mOgwCy69+sqKkYRnpqCM36OBEI/6Q103eO2VL5t6OYD
+   g==;
+IronPort-SDR: pnc7oD4xDzZc7MosiZSbtG0dRNR1LaoHT5TKF/jWW31ni7WsAJbvrcr0aRz8zQqBDU1plBpMdw
+ IyRzmdmUiST/ZBjKEYhFthxli0F6C5OwJQ7wfuDZYvfffI8T9z7P3Zagz15F2vkDCFPIXReYi+
+ Msh7EcHYmKeijnyEy0uAeA7Wzaoavf+nHFL6jZH5AE7Lizfl/4D/qSHOgfffqo6Dwegt80NT/U
+ A633i4AF5/+4XGns9dDKmo0pHN+idcFbsq40HG7EL1f45ps1RyLg7IDz5dVio35RK6tgUNaebU
+ JNxEDBjwqCY+Uq2rsKEXIp6P
+X-IronPort-AV: E=Sophos;i="5.87,190,1631602800"; 
+   d="scan'208";a="142031693"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Oct 2021 09:41:21 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Thu, 28 Oct 2021 09:41:20 -0700
+Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Thu, 28 Oct 2021 09:41:14 -0700
+From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+To:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
+        <robh+dt@kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <Woojung.Huh@microchip.com>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
+Subject: [PATCH v5 net-next 00/10] net: dsa: microchip: DSA driver support for LAN937x switch
+Date:   Thu, 28 Oct 2021 22:11:01 +0530
+Message-ID: <20211028164111.521039-1-prasanna.vengateshan@microchip.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Linus!
+LAN937x is a Multi-Port 100BASE-T1 Ethernet Physical Layer switch  
+compliant with the IEEE 802.3bw-2015 specification. The device  
+provides 100 Mbit/s transmit and receive capability over a single 
+Unshielded Twisted Pair (UTP) cable. LAN937x is successive revision 
+of KSZ series switch. This series of patches provide the DSA driver  
+support for Microchip LAN937X switch and it configures through  
+SPI interface. 
+
+This driver shares some of the functions from KSZ common 
+layer. 
+
+The LAN937x switch series family consists of following SKUs: 
+
+LAN9370: 
+  - 4 T1 Phys 
+  - 1 RGMII port 
+
+LAN9371: 
+  - 3 T1 Phys & 1 TX Phy 
+  - 2 RGMII ports 
+
+LAN9372: 
+  - 5 T1 Phys & 1 TX Phy 
+  - 2 RGMII ports 
+
+LAN9373: 
+  - 5 T1 Phys 
+  - 2 RGMII & 1 SGMII port 
+
+LAN9374: 
+  - 6 T1 Phys 
+  - 2 RGMII ports 
+
+More support will be added at a later stage.
+
+Changes in v5:
+- microchip,lan937x.yaml: Added mdio properties detail
+- microchip,lan937x.yaml: *-internal-delay-ps added under port node
+- lan937x_dev.c: changed devm_mdiobus_alloc from of_mdiobus_register as suggested
+  by Vladimir
+- lan937x_dev.c: added dev_info for rgmii internal delay & error message to user
+  in case of out of range values
+- lan937x_dev.c: return -EOPNOTSUPP for C45 regnum values for lan937x_sw_mdio_read
+  & write operations
+- return from function with out storing in a variable
+- lan937x_main.c: Added vlan_enable info in vlan_filtering API
+- lan937x_main.c: lan937x_port_vlan_del: removed unintended PVID write
+
+Changes in v4:
+- tag_ksz.c: cpu_to_be16 to  put_unaligned_be16
+- correct spacing in comments
+- tag_ksz.c: NETIF_F_HW_CSUM fix is integrated 
+- lan937x_dev.c: mdio_np is removed from global and handled locally
+- lan937x_dev.c: unused functions removed lan937x_cfg32 & lan937x_port_cfg32
+- lan937x_dev.c: lan937x_is_internal_100BTX_phy_port function name changes
+- lan937x_dev.c: RGMII internal delay handling for MAC. Delay values are
+  retrieved from DTS and updated
+- lan937x_dev.c: corrected mutex operations for few dev variables
+- microchip,lan937x.yaml: introduced rx-internal-delay-ps & 
+  tx-internal-delay-ps for RGMII internal delay
+- lan937x_dev.c: Unnecessary mutex_lock has been removed
+- lan937x_main.c: PHY_INTERFACE_MODE_NA handling for lan937x_phylink_validate
+- lan937x_main.c: PORT_MIRROR_SNIFFER check in right place
+- lan937x_main.c: memset is used instead of writing 0's individually in 
+  lan937x_port_fdb_add function
+- lan937x_main.c: Removed \n from NL_SET_ERR_MSG_MOD calls
+
+Changes in v3: 
+- Removed settings of cnt_ptr to zero and the memset() 
+  added a cleanup patch which moves this into ksz_init_mib_timer().
+- Used ret everywhere instead of rc
+- microchip,lan937x.yaml: Remove mdio compatible
+- microchip_t1.c: Renaming standard phy registers
+- tag_ksz.c: LAN937X_TAIL_TAG_OVERRIDE renaming 
+  LAN937X_TAIL_TAG_BLOCKING_OVERRIDE
+- tag_ksz.c: Changed Ingress and Egress naming convention based on 
+  Host
+- tag_ksz.c: converted to skb_mac_header(skb) from 
+  (is_link_local_ether_addr(hdr->h_dest))
+- lan937x_dev.c: Removed BCAST Storm protection settings since we
+  have Tc commands for them
+- lan937x_dev.c: Flow control setting in lan937x_port_setup function
+- lan937x_dev.c: RGMII internal delay added only for cpu port, 
+- lan937x_dev.c: of_get_compatible_child(node, 
+  "microchip,lan937x-mdio") to of_get_child_by_name(node, "mdio");
+- lan937x_dev.c:lan937x_get_interface API: returned 
+  PHY_INTERFACE_MODE_INTERNAL instead of PHY_INTERFACE_MODE_NA
+- lan937x_main.c: Removed compat interface implementation in 
+  lan937x_config_cpu_port() API & dev_info corrected as well
+- lan937x_main.c: deleted ds->configure_vlan_while_not_filtering 
+  = true
+- lan937x_main.c: Added explanation for lan937x_setup lines
+- lan937x_main.c: FR_MAX_SIZE correction in lan937x_get_max_mtu API 
+- lan937x_main.c: removed lan937x_port_bridge_flags dummy functions
+- lan937x_spi.c - mdiobus_unregister to be added to spi_remove 
+  function
+- lan937x_main.c: phy link layer changes  
+- lan937x_main.c: port mirroring: sniff port selection limiting to
+  one port
+- lan937x_main.c: Changed to global vlan filtering
+- lan937x_main.c: vlan_table array to structure
+- lan937x_main.c -Use extack instead of reporting errors to Console
+- lan937x_main.c - Remove cpu_port addition in vlan_add api
+- lan937x_main.c - removed pvid resetting
+
+Changes in v2:
+- return check for register read/writes
+- dt compatible compatible check is added against chip id value 
+- lan937x_internal_t1_tx_phy_write() is renamed to 
+  lan937x_internal_phy_write()
+- lan937x_is_internal_tx_phy_port is renamed to 
+  lan937x_is_internal_100BTX_phy_port as it is 100Base-Tx phy
+- Return value for lan937x_internal_phy_write() is -EOPNOTSUPP 
+  in case of failures 
+- Return value for lan937x_internal_phy_read() is 0xffff 
+  for non existent phy 
+- cpu_port checking is removed from lan937x_port_stp_state_set()
+- lan937x_phy_link_validate: 100baseT_Full to 100baseT1_Full
+- T1 Phy driver is moved to drivers/net/phy/microchip_t1.c 
+- Tx phy driver support will be added later 
+- Legacy switch checkings in dts file are removed.
+- tag_ksz.c: Re-used ksz9477_rcv for lan937x_rcv 
+- tag_ksz.c: Xmit() & rcv() Comments are corrected w.r.to host
+- net/dsa/Kconfig: Family skew numbers altered in ascending order
+- microchip,lan937x.yaml: eth is replaced with ethernet
+- microchip,lan937x.yaml: spi1 is replaced with spi 
+- microchip,lan937x.yaml: cpu labelling is removed 
+- microchip,lan937x.yaml: port@x value will match the reg value now
+
+Prasanna Vengateshan (10):
+  dt-bindings: net: dsa: dt bindings for microchip lan937x
+  net: dsa: move mib->cnt_ptr reset code to ksz_common.c
+  net: phy: Add support for LAN937x T1 phy driver
+  net: dsa: tag_ksz: add tag handling for Microchip LAN937x
+  net: dsa: microchip: add DSA support for microchip lan937x
+  net: dsa: microchip: add support for phylink management
+  net: dsa: microchip: add support for ethtool port counters
+  net: dsa: microchip: add support for port mirror operations
+  net: dsa: microchip: add support for fdb and mdb management
+  net: dsa: microchip: add support for vlan operations
+
+ .../bindings/net/dsa/microchip,lan937x.yaml   |  180 +++
+ MAINTAINERS                                   |    1 +
+ drivers/net/dsa/microchip/Kconfig             |   12 +
+ drivers/net/dsa/microchip/Makefile            |    5 +
+ drivers/net/dsa/microchip/ksz8795.c           |    2 -
+ drivers/net/dsa/microchip/ksz9477.c           |    3 -
+ drivers/net/dsa/microchip/ksz_common.c        |    8 +-
+ drivers/net/dsa/microchip/ksz_common.h        |    5 +
+ drivers/net/dsa/microchip/lan937x_dev.c       |  730 ++++++++++
+ drivers/net/dsa/microchip/lan937x_dev.h       |   80 ++
+ drivers/net/dsa/microchip/lan937x_main.c      | 1250 +++++++++++++++++
+ drivers/net/dsa/microchip/lan937x_reg.h       |  683 +++++++++
+ drivers/net/dsa/microchip/lan937x_spi.c       |  227 +++
+ drivers/net/phy/microchip_t1.c                |  350 +++--
+ include/net/dsa.h                             |    2 +
+ net/dsa/Kconfig                               |    4 +-
+ net/dsa/tag_ksz.c                             |   59 +
+ 17 files changed, 3513 insertions(+), 88 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+ create mode 100644 drivers/net/dsa/microchip/lan937x_dev.c
+ create mode 100644 drivers/net/dsa/microchip/lan937x_dev.h
+ create mode 100644 drivers/net/dsa/microchip/lan937x_main.c
+ create mode 100644 drivers/net/dsa/microchip/lan937x_reg.h
+ create mode 100644 drivers/net/dsa/microchip/lan937x_spi.c
+
+-- 
+2.27.0
 
-The diffstat is what it is but we have no known regressions to
-fix for 5.15, nor do any of the changes here call for additional
-testing time.
-
-The following changes since commit 64222515138e43da1fcf288f0289ef1020427b87:
-
-  Merge tag 'drm-fixes-2021-10-22' of git://anongit.freedesktop.org/drm/drm (2021-10-21 19:06:08 -1000)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.15-rc8
-
-for you to fetch changes up to 35392da51b1ab7ba0c63de0a553e2a93c2314266:
-
-  Revert "net: hns3: fix pause config problem after autoneg disabled" (2021-10-28 08:23:03 -0700)
-
-----------------------------------------------------------------
-Networking fixes for 5.15-rc8/final, including fixes from WiFi
-(mac80211), and BPF.
-
-Current release - regressions:
-
- - skb_expand_head: adjust skb->truesize to fix socket memory
-   accounting
-
- - mptcp: fix corrupt receiver key in MPC + data + checksum
-
-Previous releases - regressions:
-
- - multicast: calculate csum of looped-back and forwarded packets
-
- - cgroup: fix memory leak caused by missing cgroup_bpf_offline
-
- - cfg80211: fix management registrations locking, prevent list
-   corruption
-
- - cfg80211: correct false positive in bridge/4addr mode check
-
- - tcp_bpf: fix race in the tcp_bpf_send_verdict resulting in reusing
-   previous verdict
-
-Previous releases - always broken:
-
- - sctp: enhancements for the verification tag, prevent attackers
-   from killing SCTP sessions
-
- - tipc: fix size validations for the MSG_CRYPTO type
-
- - mac80211: mesh: fix HE operation element length check, prevent
-   out of bound access
-
- - tls: fix sign of socket errors, prevent positive error codes
-   being reported from read()/write()
-
- - cfg80211: scan: extend RCU protection in cfg80211_add_nontrans_list()
-
- - implement ->sock_is_readable() for UDP and AF_UNIX, fix poll()
-   for sockets in a BPF sockmap
-
- - bpf: fix potential race in tail call compatibility check resulting
-   in two operations which would make the map incompatible succeeding
-
- - bpf: prevent increasing bpf_jit_limit above max
-
- - bpf: fix error usage of map_fd and fdget() in generic batch update
-
- - phy: ethtool: lock the phy for consistency of results
-
- - prevent infinite while loop in skb_tx_hash() when Tx races with
-   driver reconfiguring the queue <> traffic class mapping
-
- - usbnet: fixes for bad HW conjured by syzbot
-
- - xen: stop tx queues during live migration, prevent UAF
-
- - net-sysfs: initialize uid and gid before calling net_ns_get_ownership
-
- - mlxsw: prevent Rx stalls under memory pressure
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-
-----------------------------------------------------------------
-Alexei Starovoitov (2):
-      Merge branch 'Fix up bpf_jit_limit some more'
-      Merge branch 'sock_map: fix ->poll() and update selftests'
-
-Andrew Lunn (4):
-      phy: phy_ethtool_ksettings_get: Lock the phy for consistency
-      phy: phy_ethtool_ksettings_set: Move after phy_start_aneg
-      phy: phy_start_aneg: Add an unlocked version
-      phy: phy_ethtool_ksettings_set: Lock the PHY while changing settings
-
-Björn Töpel (1):
-      riscv, bpf: Fix potential NULL dereference
-
-Cong Wang (3):
-      net: Rename ->stream_memory_read to ->sock_is_readable
-      skmsg: Extract and reuse sk_msg_is_readable()
-      net: Implement ->sock_is_readable() for UDP and AF_UNIX
-
-Cyril Strejc (1):
-      net: multicast: calculate csum of looped-back and forwarded packets
-
-Daniel Jordan (2):
-      net/tls: Fix flipped sign in tls_err_abort() calls
-      net/tls: Fix flipped sign in async_wait.err assignment
-
-Dave Ertman (1):
-      ice: Respond to a NETDEV_UNREGISTER event for LAG
-
-David S. Miller (5):
-      Merge branch 'ksettings-locking-fixes'
-      Merge branch '100GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue
-      Merge branch 'hns3-fixes'
-      Merge branch 'SMC-fixes'
-      Merge branch 'octeontx2-debugfs-fixes'
-
-Davide Caratti (1):
-      mptcp: fix corrupt receiver key in MPC + data + checksum
-
-Dongli Zhang (2):
-      xen/netfront: stop tx queues during live migration
-      vmxnet3: do not stop tx queues after netif_device_detach()
-
-Florian Westphal (1):
-      fcnal-test: kill hanging ping/nettest binaries on cleanup
-
-Guangbin Huang (5):
-      net: hns3: fix pause config problem after autoneg disabled
-      net: hns3: ignore reset event before initialization process is done
-      net: hns3: expand buffer len for some debugfs command
-      net: hns3: adjust string spaces of some parameters of tx bd info in debugfs
-      Revert "net: hns3: fix pause config problem after autoneg disabled"
-
-Ido Schimmel (1):
-      mlxsw: pci: Recycle received packet upon allocation failure
-
-Jakub Kicinski (4):
-      Merge tag 'mac80211-for-net-2021-10-21' of git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211
-      Merge branch 'sctp-enhancements-for-the-verification-tag'
-      Merge https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf
-      Merge tag 'mac80211-for-net-2021-10-27' of git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211
-
-Janghyub Seo (1):
-      r8169: Add device 10ec:8162 to driver r8169
-
-Janusz Dziedzic (1):
-      cfg80211: correct bridge/4addr mode check
-
-Jie Wang (2):
-      net: hns3: fix data endian problem of some functions of debugfs
-      net: hns3: add more string spaces for dumping packets number of queue info in debugfs
-
-Johan Hovold (1):
-      net: lan78xx: fix division by zero in send path
-
-Johannes Berg (3):
-      mac80211: mesh: fix HE operation element length check
-      cfg80211: scan: fix RCU in cfg80211_add_nontrans_list()
-      cfg80211: fix management registrations locking
-
-Krzysztof Kozlowski (1):
-      nfc: port100: fix using -ERRNO as command type mask
-
-Liu Jian (1):
-      tcp_bpf: Fix one concurrency problem in the tcp_bpf_send_verdict function
-
-Lorenz Bauer (3):
-      bpf: Define bpf_jit_alloc_exec_limit for riscv JIT
-      bpf: Define bpf_jit_alloc_exec_limit for arm64 JIT
-      bpf: Prevent increasing bpf_jit_limit above max
-
-Max VA (1):
-      tipc: fix size validations for the MSG_CRYPTO type
-
-Michael Chan (1):
-      net: Prevent infinite while loop in skb_tx_hash()
-
-Pavel Skripkin (1):
-      net: batman-adv: fix error handling
-
-Quanyang Wang (1):
-      cgroup: Fix memory leak caused by missing cgroup_bpf_offline
-
-Rakesh Babu (1):
-      octeontx2-af: Display all enabled PF VF rsrc_alloc entries.
-
-Rakesh Babu Saladi (1):
-      octeontx2-af: Fix possible null pointer dereference.
-
-Randy Dunlap (1):
-      ptp: Document the PTP_CLK_MAGIC ioctl number
-
-Subbaraya Sundeep (1):
-      octeontx2-af: Check whether ipolicers exists
-
-Tejun Heo (1):
-      bpf: Move BPF_MAP_TYPE for INODE_STORAGE and TASK_STORAGE outside of CONFIG_NET
-
-Toke Høiland-Jørgensen (1):
-      bpf: Fix potential race in tail call compatibility check
-
-Tony Lu (1):
-      net/smc: Fix smc_link->llc_testlink_time overflow
-
-Trevor Woerner (1):
-      net: nxp: lpc_eth.c: avoid hang when bringing interface down
-
-Vadym Kochan (1):
-      MAINTAINERS: please remove myself from the Prestera driver
-
-Vasily Averin (1):
-      skb_expand_head() adjust skb->truesize incorrectly
-
-Wang Hai (1):
-      usbnet: fix error return code in usbnet_probe()
-
-Wen Gu (1):
-      net/smc: Correct spelling mistake to TCPF_SYN_RECV
-
-Xin Long (8):
-      sctp: use init_tag from inithdr for ABORT chunk
-      sctp: fix the processing for INIT chunk
-      sctp: fix the processing for INIT_ACK chunk
-      sctp: fix the processing for COOKIE_ECHO chunk
-      sctp: add vtag check in sctp_sf_violation
-      sctp: add vtag check in sctp_sf_do_8_5_1_E_sa
-      sctp: add vtag check in sctp_sf_ootb
-      net-sysfs: initialize uid and gid before calling net_ns_get_ownership
-
-Xu Kuohai (1):
-      bpf: Fix error usage of map_fd and fdget() in generic_map_update_batch()
-
-Yongxin Liu (1):
-      ice: check whether PTP is initialized in ice_ptp_release()
-
-Yu Xiao (1):
-      nfp: bpf: relax prog rejection for mtu check through max_pkt_offset
-
-Yucong Sun (1):
-      selftests/bpf: Use recv_timeout() instead of retries
-
-Yufeng Mo (1):
-      net: hns3: change hclge/hclgevf workqueue to WQ_UNBOUND mode
-
-Yuiko Oshino (3):
-      net: ethernet: microchip: lan743x: Fix driver crash when lan743x_pm_resume fails
-      net: ethernet: microchip: lan743x: Fix dma allocation failure by using dma_set_mask_and_coherent
-      net: ethernet: microchip: lan743x: Fix skb allocation failure
-
- Documentation/userspace-api/ioctl/ioctl-number.rst |   1 +
- MAINTAINERS                                        |   1 -
- arch/arm64/net/bpf_jit_comp.c                      |   5 +
- arch/riscv/net/bpf_jit_core.c                      |   8 +-
- drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c |  16 +--
- .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c |  30 ++---
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    |  35 +----
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |   1 -
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |   5 +-
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h  |   1 +
- drivers/net/ethernet/intel/ice/ice_lag.c           |  18 +--
- drivers/net/ethernet/intel/ice/ice_ptp.c           |   3 +
- .../ethernet/marvell/octeontx2/af/rvu_debugfs.c    | 148 ++++++++++++++++-----
- .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    |   3 +
- drivers/net/ethernet/mellanox/mlxsw/pci.c          |  25 ++--
- drivers/net/ethernet/microchip/lan743x_main.c      |  35 ++++-
- drivers/net/ethernet/netronome/nfp/bpf/main.c      |  16 ++-
- drivers/net/ethernet/netronome/nfp/bpf/main.h      |   2 +
- drivers/net/ethernet/netronome/nfp/bpf/offload.c   |  17 ++-
- drivers/net/ethernet/nxp/lpc_eth.c                 |   5 +-
- drivers/net/ethernet/realtek/r8169_main.c          |   1 +
- drivers/net/phy/phy.c                              | 140 +++++++++++--------
- drivers/net/usb/lan78xx.c                          |   6 +
- drivers/net/usb/usbnet.c                           |   1 +
- drivers/net/vmxnet3/vmxnet3_drv.c                  |   1 -
- drivers/net/xen-netfront.c                         |   8 ++
- drivers/nfc/port100.c                              |   4 +-
- include/linux/bpf.h                                |   7 +-
- include/linux/bpf_types.h                          |   8 +-
- include/linux/filter.h                             |   1 +
- include/linux/skmsg.h                              |   1 +
- include/net/cfg80211.h                             |   2 -
- include/net/mptcp.h                                |   4 +
- include/net/sock.h                                 |   8 +-
- include/net/tls.h                                  |  11 +-
- include/net/udp.h                                  |   5 +-
- kernel/bpf/arraymap.c                              |   1 +
- kernel/bpf/core.c                                  |  24 ++--
- kernel/bpf/syscall.c                               |  11 +-
- kernel/cgroup/cgroup.c                             |   4 +-
- net/batman-adv/bridge_loop_avoidance.c             |   8 +-
- net/batman-adv/main.c                              |  56 +++++---
- net/batman-adv/network-coding.c                    |   4 +-
- net/batman-adv/translation-table.c                 |   4 +-
- net/core/dev.c                                     |   9 +-
- net/core/net-sysfs.c                               |   4 +-
- net/core/skbuff.c                                  |  36 +++--
- net/core/skmsg.c                                   |  14 ++
- net/core/sock_destructor.h                         |  12 ++
- net/core/sysctl_net_core.c                         |   2 +-
- net/ipv4/tcp.c                                     |   5 +-
- net/ipv4/tcp_bpf.c                                 |  27 ++--
- net/ipv4/udp.c                                     |   3 +
- net/ipv4/udp_bpf.c                                 |   1 +
- net/mac80211/mesh.c                                |   9 +-
- net/mptcp/options.c                                |  39 +++---
- net/sctp/sm_statefuns.c                            | 139 +++++++++++--------
- net/smc/af_smc.c                                   |   2 +-
- net/smc/smc_llc.c                                  |   2 +-
- net/tipc/crypto.c                                  |  32 +++--
- net/tls/tls_main.c                                 |   4 +-
- net/tls/tls_sw.c                                   |  21 ++-
- net/unix/af_unix.c                                 |   4 +
- net/unix/unix_bpf.c                                |   2 +
- net/wireless/core.c                                |   2 +-
- net/wireless/core.h                                |   2 +
- net/wireless/mlme.c                                |  26 ++--
- net/wireless/scan.c                                |   7 +-
- net/wireless/util.c                                |  14 +-
- .../selftests/bpf/prog_tests/sockmap_listen.c      |  75 +++--------
- tools/testing/selftests/net/fcnal-test.sh          |   3 +
- 71 files changed, 738 insertions(+), 453 deletions(-)
- create mode 100644 net/core/sock_destructor.h
