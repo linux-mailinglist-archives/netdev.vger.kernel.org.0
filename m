@@ -2,153 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EE5543E30F
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 16:06:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FE6243E32C
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 16:11:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231132AbhJ1OIm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 10:08:42 -0400
-Received: from mail-eopbgr30083.outbound.protection.outlook.com ([40.107.3.83]:24704
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230240AbhJ1OIm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Oct 2021 10:08:42 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ku7c8is2DNpKPIXxUy86dsVWPXOME+d9naOakZYlEn3ampMBLLXjADC4trs7ldOkfXtU4ThQh5r8DWLkAbCaPK0/+CHNHt96p54VRMleERFgBT7unucXNb3PbqAGjVUnmavlS1Wx1Wu+eVDRH4eCNSTPDn99d/G5FWcGRbJMme4tq3QbbYDTCpuUnO+TSShV5Lvpy9+cHYaEUXiJ3obmUvrJuggAzr5Ccg6gch5k7h/W0cQxIZ718Q9kphx7UyYGbsG6gLVdGbxY2oq4mpliEJxCqf54KeVB5JxEc5HEUZSFUE450HwQ10Rm77rUVE52/2bkS6Vl9/TE3wrdF8jqVg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EYrKveBkRuRi1dLQZyCK/IGx6HfmlMT11IdsqEy4T10=;
- b=Es0jDBiCrJ7bSJxr7+IaJ6lPEMcdprF30NvRpBFa051sGfwRcvyVgsPTykrYEn9lUBKhScPXHA2/HV9Tq26O5cu+70Y3bwuYWFZToZ4JuFfN7MjYQqYbcRYQsKD8hgUywAVjJDTWLCsRoTUjQhdXd5X0Ke5MiVjiYDf27hRWb0y89a9Gx0RM6pgqnO26QzGMhmiQL7C8MiK63gTdZaSSBkhSqLxxxpQ28Idiq6qIOdn56Z62tWzj46u+cakA58I8jcEVk+1ni1ZRPaNbUo/ULFzGjz54IAvqc/NEV72sEtHkjLwXDliZnwg8qW34aGtDMOm/sVxVowkTtJU7+TLwTw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EYrKveBkRuRi1dLQZyCK/IGx6HfmlMT11IdsqEy4T10=;
- b=B02hLE6ANHHbPCpVWK6XBL0cuLWDvydBxkgDiXmcBDfGdzD/OGDxlmh3iLT86GieFlPMLa+a89IMCLc2nLMKMaoVx5P3Q126wn06V/JM61E/+X2xuMMIzhiGOq9W+ASD7UI8tHy4gEJywinxKME1KtebwJ2nZkj7WFKALzCbgA0=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR0401MB2301.eurprd04.prod.outlook.com (2603:10a6:800:2e::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18; Thu, 28 Oct
- 2021 14:06:12 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4628.020; Thu, 28 Oct 2021
- 14:06:12 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/3] net: ocelot: add support to get mac from device-tree
-Thread-Topic: [PATCH 1/3] net: ocelot: add support to get mac from device-tree
-Thread-Index: AQHXzALaBu1tOZHr/E6Z7NAaubhTaKvoceaA
-Date:   Thu, 28 Oct 2021 14:06:12 +0000
-Message-ID: <20211028140611.m7whuwrzqxp2t53f@skbuf>
-References: <20211028134932.658167-1-clement.leger@bootlin.com>
- <20211028134932.658167-2-clement.leger@bootlin.com>
-In-Reply-To: <20211028134932.658167-2-clement.leger@bootlin.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: cff53e08-474f-46c8-00c3-08d99a1c1945
-x-ms-traffictypediagnostic: VI1PR0401MB2301:
-x-microsoft-antispam-prvs: <VI1PR0401MB2301968B73719EA4B4731817E0869@VI1PR0401MB2301.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2399;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: YLPAB+NbJIcIpDGwoWkqAQq9R1rl8uf7YsBzquzGC5RUJJayYWGaCVgYHU9dmumKt0cqWv6km+2a0LSizCqlSCwiZuXeedMgq9XFuXa9OVXbN9u9esYQRqkBB3lo9WYlBtEbv/2oL5XUDG4WFXTKVJCACkIbXVTH+p7d73z51LqZSFFfnkhHJcltEfy0ZBBbdbO2BH7b/Lg7h5CBgPqcEDHVU/8s7UOffjETwDCWqZojRWf8sbb7cVGtMaOv8V8MRqYG9HlcJ5N+EUTKsFyKvQzmX+5Ub9oVU5yq8hHXHLHaVcNpVtOKNkiVZ67bq+Ea4zPrNOMKQoJKa1WI9InOfUdccxdWdWERAeIETeZ2maXrQI5PDXehDEwqU6YBMhJNBq592NNPJtPKOzNtJqihZs2BLAL97vkU4VOUmsEKjHi59EK7ETYE7q8SNLsmWuLwQrmI2QW7WZIzsZN3/tTnaprMUZ2GzTzvJwdWIpNdpY5IcLcqo6Lf62wd5zyN73Nyjsnu+I6AocJdIdlMK9vWyaJ3lq0B21OBis+5qRMVG4jCu198CEXsSlX/RJ5EZfZq9lZu8UAkBKsuc0R55iI27KNt+Rj5vQ7UubARI4GFlikcRPuYSPdcYc0GaMnCkCcvNOCE8cC1FvIJrR+7HnDRvlMT4iYMSOSMCn+da35NFHJwZmWV5iTuVNZ159H5zGIRG1rdmHRs5TXl30M5YG9quA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(6506007)(6486002)(66946007)(8936002)(66574015)(66446008)(71200400001)(54906003)(7416002)(6916009)(2906002)(26005)(38100700002)(6512007)(186003)(64756008)(83380400001)(44832011)(508600001)(316002)(38070700005)(9686003)(76116006)(8676002)(66476007)(66556008)(1076003)(5660300002)(91956017)(86362001)(122000001)(4326008)(4744005)(33716001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?rqL3Sjfw/GALzOltiYsQgJvBjZandhtT4b/avvYg3bGKeSjQ2bA5gmeJCS?=
- =?iso-8859-1?Q?UNPp9nL1i/EJGYs3cmYks7ApDUAjfGFYtNADLxCEZcKVmqh8a5+03L33MG?=
- =?iso-8859-1?Q?TvkE9NV5o/0P1rskO1wWhQqdtdAac2DYsmCjGAGnlNRQgUtvfXXK4neWqF?=
- =?iso-8859-1?Q?jgXVWeIo0XF8QSYSduJcFkNdMvJuGzycZecTWIOQ5H+n3fDmNWWRUmSh/c?=
- =?iso-8859-1?Q?g5G0fvXFxBettEEOGEYeEoSZsYNw4E3P8Pp+fZ+fH9HJbmY5BkRHAwcMfd?=
- =?iso-8859-1?Q?vLzTPZgrgNb89JLTbDNVGwU9HdugCerff1qSPW8CazbPlOYjusXdm9Tnwd?=
- =?iso-8859-1?Q?0Jp/8+xYYGHp7HyJML4arVP1iBVwCvDq1WGIJaPP31fm2Yc77Z41/02I5l?=
- =?iso-8859-1?Q?MHrznuHl1nJqpk8I6jGoZXiOCpWDAQWRybzkUF+GD3x9kuRuIPOqpfjprX?=
- =?iso-8859-1?Q?KW3Md6hBTChktC1/X8bTBEoBqS8nSQcCFEAoxxev20b+XPEltB3DIn9V+W?=
- =?iso-8859-1?Q?QM3y2A0i+PK8BkmOjG/cUGTEZl/ecp9X4zKE5yqInwmn7+IpjmhraeVr5+?=
- =?iso-8859-1?Q?nDwQYx0cswThT30gWUDC3g6uUBG12D/DgQgKTPGpVV2/Ku91qvIpBpKxDs?=
- =?iso-8859-1?Q?TOqUwwWEZ0PMnUkkun16n70KnLMZ3TiWz2SlkvH0LebgkhmMyib1p01ccd?=
- =?iso-8859-1?Q?+NVTp72MYjZc8CAlCrI2fXk3S7ZUYx0msS6/9W8uqhkzt2R2QDN/Mwaf6B?=
- =?iso-8859-1?Q?jP0G+S2SsxcFSSB6l3RDp7z0yAuJ1RJZhiugMY3jmhXTkTDNKRDhyLhZWt?=
- =?iso-8859-1?Q?utXq6TUHDW9w/IbwT3Dyc4f3tATcWlC5gETBJv8aOSdUH7jynVesk5SK6P?=
- =?iso-8859-1?Q?RY73hawhkj+cinMXjN2scQEtbSX2aKSr8S3cCJWP0ZJ6g/o0ew0zGf9VCQ?=
- =?iso-8859-1?Q?IupGsZFTsfhlR7OjNcxj5jA2L0dsJ1vTOA+JIAKDIdRi0KxymKFfz4g0lh?=
- =?iso-8859-1?Q?xgfe/A9x9YHo/VA7/b3aL7FJN0w40pcP22QEtmnW7ICfRR4hh0qE1jtKpR?=
- =?iso-8859-1?Q?WQbn7iKkeUhb0PaX3m9MppEHDhsJpkSU1Z9EfFdclJwBaao2CdhbdttN9b?=
- =?iso-8859-1?Q?9X3CuD2Wf5o3XOGZdZ/E3Um5TMo0j1rpvO1uuDE3Rd+ZrM7C5hmDdHdvbG?=
- =?iso-8859-1?Q?/SpvX7WU7kI0+EpxT9DHtk6K3v/Yx+whvDI2MD0uQ6o1nCmrRaO+i05U72?=
- =?iso-8859-1?Q?IsNX10w/hpIdeo9GIz6T4J2e0taXFJuwCcLrq/RL/vAWaphk6KYQvb/NTf?=
- =?iso-8859-1?Q?yBD9sZY3iL5UBgMSN2DZoxE3J8tEHu8ohfliMGU/1De5MvvZlqhcZzMFrF?=
- =?iso-8859-1?Q?KWK+fjd2CVhFmBAjuoWJr6OrmnsfZHHLNAlaBv3iI411fUDP5OOEM/wuk5?=
- =?iso-8859-1?Q?RAhziIviGBMnVsBPPWZ5FbFGuGZiDV4wQo/0mWSR1/0ojXMnaN9ewk6xRC?=
- =?iso-8859-1?Q?3rBncfpnXQ+l1ig9tgo/77LJwXPx5eFUvMuQ/gQx6ZSrh5qtwGRJOM3JrJ?=
- =?iso-8859-1?Q?sXnGLQ6y9tAZbNRmuFuDH+o5wJqRi2nONf8YNFbnFSiKmsJh2EXhWDOgYt?=
- =?iso-8859-1?Q?zpb8LCEGvdeVVmCjDKHMFz/JRI69OC4IYkHzBmIFyZLziIvJ26heVPPmJ6?=
- =?iso-8859-1?Q?QakCR3LZW8fVAgfDaZcnJRRDmNK3ocX2boKj3m3k?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-ID: <335D6CED69CD424386C1B2A827223C99@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S230376AbhJ1ONU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 10:13:20 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:26132 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230380AbhJ1ONU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 10:13:20 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Hg6qN2QdLz1DHqq;
+        Thu, 28 Oct 2021 22:08:48 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Thu, 28 Oct 2021 22:10:45 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Thu, 28 Oct 2021 22:10:44 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <wangjie125@huawei.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>
+Subject: [PATCH net] Revert "net: hns3: fix pause config problem after autoneg disabled"
+Date:   Thu, 28 Oct 2021 22:06:24 +0800
+Message-ID: <20211028140624.53149-1-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cff53e08-474f-46c8-00c3-08d99a1c1945
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Oct 2021 14:06:12.2040
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: FVLtSm/yGFhqyNDde9RxMGMlDFR1PIXLgna6VW+OWx1iwu3vCwYy8UEtc5aGFw5vWYRss4ppVUWCBCsIReFzDQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2301
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 28, 2021 at 03:49:30PM +0200, Cl=E9ment L=E9ger wrote:
-> Add support to get mac from device-tree using of_get_mac_address.
->=20
-> Signed-off-by: Cl=E9ment L=E9ger <clement.leger@bootlin.com>
-> ---
->  drivers/net/ethernet/mscc/ocelot_vsc7514.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/eth=
-ernet/mscc/ocelot_vsc7514.c
-> index d51f799e4e86..c39118e5b3ee 100644
-> --- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> +++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> @@ -526,7 +526,10 @@ static int ocelot_chip_init(struct ocelot *ocelot, c=
-onst struct ocelot_ops *ops)
-> =20
->  	ocelot_pll5_init(ocelot);
-> =20
-> -	eth_random_addr(ocelot->base_mac);
-> +	ret =3D of_get_mac_address(ocelot->dev->of_node, ocelot->base_mac);
+This reverts commit 3bda2e5df476417b6d08967e2d84234a59d57b1c.
 
-Why not per port? This is pretty strange, I think.
+According to discussion with Andrew as follow:
+https://lore.kernel.org/netdev/09eda9fe-196b-006b-6f01-f54e75715961@huawei.com/
 
-> +	if (ret)
-> +		eth_random_addr(ocelot->base_mac);
-> +
->  	ocelot->base_mac[5] &=3D 0xf0;
-> =20
->  	return 0;
-> --=20
-> 2.33.0
->=
+HNS3 driver needs to separate pause autoneg from general autoneg, so revert
+this incorrect patch.
+
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+---
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h   |  1 -
+ .../ethernet/hisilicon/hns3/hns3_ethtool.c    | 33 +++++--------------
+ .../hisilicon/hns3/hns3pf/hclge_main.c        | 30 -----------------
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_tm.c |  2 +-
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_tm.h |  1 -
+ 5 files changed, 10 insertions(+), 57 deletions(-)
+
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+index da3a593f6a56..d701451596c8 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+@@ -568,7 +568,6 @@ struct hnae3_ae_ops {
+ 			       u32 *auto_neg, u32 *rx_en, u32 *tx_en);
+ 	int (*set_pauseparam)(struct hnae3_handle *handle,
+ 			      u32 auto_neg, u32 rx_en, u32 tx_en);
+-	int (*restore_pauseparam)(struct hnae3_handle *handle);
+ 
+ 	int (*set_autoneg)(struct hnae3_handle *handle, bool enable);
+ 	int (*get_autoneg)(struct hnae3_handle *handle);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index 7d92dd273ed7..5ebd96f6833d 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -824,26 +824,6 @@ static int hns3_check_ksettings_param(const struct net_device *netdev,
+ 	return 0;
+ }
+ 
+-static int hns3_set_phy_link_ksettings(struct net_device *netdev,
+-				       const struct ethtool_link_ksettings *cmd)
+-{
+-	struct hnae3_handle *handle = hns3_get_handle(netdev);
+-	const struct hnae3_ae_ops *ops = handle->ae_algo->ops;
+-	int ret;
+-
+-	if (cmd->base.speed == SPEED_1000 &&
+-	    cmd->base.autoneg == AUTONEG_DISABLE)
+-		return -EINVAL;
+-
+-	if (cmd->base.autoneg == AUTONEG_DISABLE && ops->restore_pauseparam) {
+-		ret = ops->restore_pauseparam(handle);
+-		if (ret)
+-			return ret;
+-	}
+-
+-	return phy_ethtool_ksettings_set(netdev->phydev, cmd);
+-}
+-
+ static int hns3_set_link_ksettings(struct net_device *netdev,
+ 				   const struct ethtool_link_ksettings *cmd)
+ {
+@@ -862,11 +842,16 @@ static int hns3_set_link_ksettings(struct net_device *netdev,
+ 		  cmd->base.autoneg, cmd->base.speed, cmd->base.duplex);
+ 
+ 	/* Only support ksettings_set for netdev with phy attached for now */
+-	if (netdev->phydev)
+-		return hns3_set_phy_link_ksettings(netdev, cmd);
+-	else if (test_bit(HNAE3_DEV_SUPPORT_PHY_IMP_B, ae_dev->caps) &&
+-		 ops->set_phy_link_ksettings)
++	if (netdev->phydev) {
++		if (cmd->base.speed == SPEED_1000 &&
++		    cmd->base.autoneg == AUTONEG_DISABLE)
++			return -EINVAL;
++
++		return phy_ethtool_ksettings_set(netdev->phydev, cmd);
++	} else if (test_bit(HNAE3_DEV_SUPPORT_PHY_IMP_B, ae_dev->caps) &&
++		   ops->set_phy_link_ksettings) {
+ 		return ops->set_phy_link_ksettings(handle, cmd);
++	}
+ 
+ 	if (ae_dev->dev_version < HNAE3_DEVICE_VERSION_V2)
+ 		return -EOPNOTSUPP;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 269e579762b2..d891390d492f 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -10998,35 +10998,6 @@ static int hclge_set_pauseparam(struct hnae3_handle *handle, u32 auto_neg,
+ 	return -EOPNOTSUPP;
+ }
+ 
+-static int hclge_restore_pauseparam(struct hnae3_handle *handle)
+-{
+-	struct hclge_vport *vport = hclge_get_vport(handle);
+-	struct hclge_dev *hdev = vport->back;
+-	u32 auto_neg, rx_pause, tx_pause;
+-	int ret;
+-
+-	hclge_get_pauseparam(handle, &auto_neg, &rx_pause, &tx_pause);
+-	/* when autoneg is disabled, the pause setting of phy has no effect
+-	 * unless the link goes down.
+-	 */
+-	ret = phy_suspend(hdev->hw.mac.phydev);
+-	if (ret)
+-		return ret;
+-
+-	phy_set_asym_pause(hdev->hw.mac.phydev, rx_pause, tx_pause);
+-
+-	ret = phy_resume(hdev->hw.mac.phydev);
+-	if (ret)
+-		return ret;
+-
+-	ret = hclge_mac_pause_setup_hw(hdev);
+-	if (ret)
+-		dev_err(&hdev->pdev->dev,
+-			"restore pauseparam error, ret = %d.\n", ret);
+-
+-	return ret;
+-}
+-
+ static void hclge_get_ksettings_an_result(struct hnae3_handle *handle,
+ 					  u8 *auto_neg, u32 *speed, u8 *duplex)
+ {
+@@ -12990,7 +12961,6 @@ static const struct hnae3_ae_ops hclge_ops = {
+ 	.halt_autoneg = hclge_halt_autoneg,
+ 	.get_pauseparam = hclge_get_pauseparam,
+ 	.set_pauseparam = hclge_set_pauseparam,
+-	.restore_pauseparam = hclge_restore_pauseparam,
+ 	.set_mtu = hclge_set_mtu,
+ 	.reset_queue = hclge_reset_tqp,
+ 	.get_stats = hclge_get_stats,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+index 124791e4bfee..95074e91a846 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+@@ -1435,7 +1435,7 @@ static int hclge_bp_setup_hw(struct hclge_dev *hdev, u8 tc)
+ 	return 0;
+ }
+ 
+-int hclge_mac_pause_setup_hw(struct hclge_dev *hdev)
++static int hclge_mac_pause_setup_hw(struct hclge_dev *hdev)
+ {
+ 	bool tx_en, rx_en;
+ 
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
+index 4b2c3a788980..2ee9b795f71d 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
+@@ -244,7 +244,6 @@ int hclge_tm_get_pri_weight(struct hclge_dev *hdev, u8 pri_id, u8 *weight);
+ int hclge_tm_get_pri_shaper(struct hclge_dev *hdev, u8 pri_id,
+ 			    enum hclge_opcode_type cmd,
+ 			    struct hclge_tm_shaper_para *para);
+-int hclge_mac_pause_setup_hw(struct hclge_dev *hdev);
+ int hclge_tm_get_q_to_qs_map(struct hclge_dev *hdev, u16 q_id, u16 *qset_id);
+ int hclge_tm_get_q_to_tc(struct hclge_dev *hdev, u16 q_id, u8 *tc_id);
+ int hclge_tm_get_pg_to_pri_map(struct hclge_dev *hdev, u8 pg_id,
+-- 
+2.33.0
+
