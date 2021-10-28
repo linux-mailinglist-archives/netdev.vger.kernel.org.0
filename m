@@ -2,86 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76E9E43E3FC
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 16:39:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F2F943E40D
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 16:44:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231273AbhJ1OmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 10:42:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34176 "EHLO
+        id S231211AbhJ1Oqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 10:46:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231252AbhJ1OmB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 10:42:01 -0400
-Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7596EC061570
-        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 07:39:33 -0700 (PDT)
-Received: by mail-qk1-x734.google.com with SMTP id h20so5954238qko.13
-        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 07:39:33 -0700 (PDT)
+        with ESMTP id S230451AbhJ1Oqd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 10:46:33 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1D0C061570
+        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 07:44:06 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id t7so6573686pgl.9
+        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 07:44:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=kPp+tweuD5Z8HFL9XQ5UWhpX1+tJaKn1jgsUrgs44zc=;
-        b=VTqNmkha6trGIhKkVChvahwWLVsO4uXDBlDzZ3+cD9v2rBjlBEwCyrV7LZTNUJQaXs
-         4SoA1TpKx0QE3GRz3HLsihP98NNv6GjM+u07OuNYXO6cIkmmhVafbYbxIt1OoFdkoSB/
-         tfzncVx97EeoF+EbnIH0YnR8b5Bezm3QxPyCGOekJSf9OdNnDGmnHevPIa6R/MKnOjAL
-         Yz/qjyQvZvKVlGPvcxCEXl0ehlYkvv3UaNZzB7ue50ufgHm4omXpVJzovLn3tO/ZN+MQ
-         YGuHpWXvm9JnvknA6mOCMlEyW2VO5tSCqQmCAx5zpaqmtvtNGv0hiWh0Sh+uGrhSwtf4
-         q5Lg==
+        d=purestorage.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=NWGAsPYeLjcm5PERO8zKrtVgrxW4eCdFt7j8ZoVJnc0=;
+        b=Vp+GgUs3dr8p0EWA9uAOpafHIzUrKA1AWdhZnt6PuFXNbwkNGfPb9uq2FnNZCF93pt
+         WMUuErhBtalxfzE778gu97Qe4wn16BIJURogBPd+9QFOTp7h8FPcrW6edEa/GqJElDEc
+         +94ptOZpt5d3V+k1kJwr+qTY1o5F5VQH4Fx3o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=kPp+tweuD5Z8HFL9XQ5UWhpX1+tJaKn1jgsUrgs44zc=;
-        b=naJSCSBcFScu5gtuFfze3GWjA8IsPeCvgJGoWKKJ0O9b/TUceaV9nXbmqKyj36RMdB
-         XRfG5dZH712YPe3nwEfI94ln4xSAxhYd2MxPtGyDxRDx2gELgJG3M82faBbSWbv0n3rO
-         2PBLMvvjhc/EjyT24VDrk32qCZPMwteFOfc6IBqy3htNmbxcngxEJ2o9AE9EkAMTbEw3
-         zYaGu5DM5aRHfh6TNmBuSkqNA8x/ACNDmcpuD4CGw906/1jS/gC8pYGFsrd4S9P7bjOw
-         MDS7S5CzXX+LwWw9wiE2Kt4ErvO9jOB5wYCj+/LIiNfKOMUOovQvU0Iqq7+xcd6lnIJP
-         pNWw==
-X-Gm-Message-State: AOAM530lpXNFFP3oFYbYaGpXktG2mTr2AP+1wLAuQAFAKyAH85Te2juF
-        aC8/IZWuBvBEluAYkrhx/VNEcg==
-X-Google-Smtp-Source: ABdhPJx3Q4csL2Yyu6Px/xkZ4LSOjQMLn+Z2Zc/tUQpfGsgSR5x8a8IXCXPZZ19+iEMVcPRPLCQU4g==
-X-Received: by 2002:a37:8906:: with SMTP id l6mr3944102qkd.210.1635431972733;
-        Thu, 28 Oct 2021 07:39:32 -0700 (PDT)
-Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-33-142-112-185-132.dsl.bell.ca. [142.112.185.132])
-        by smtp.googlemail.com with ESMTPSA id bp40sm2089916qkb.114.2021.10.28.07.39.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Oct 2021 07:39:32 -0700 (PDT)
-Message-ID: <b5518df7-b6d7-d2ab-38fe-2ec4fc1977c8@mojatatu.com>
-Date:   Thu, 28 Oct 2021 10:39:31 -0400
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=NWGAsPYeLjcm5PERO8zKrtVgrxW4eCdFt7j8ZoVJnc0=;
+        b=JXZUxdUIuxLSrSI4hyjJ3Fztw77wHAbK/HPIf3C/jLXHwNU6HCSWLyMWZWmV5LlPVR
+         enFqmd5OaPYCCo36zXKX/z3flxQ7Mg22cUbnkv2S2W2z7dJePWIR52APzN8u6zj4ecjf
+         paYxQL2OyViBqQscgasSjTRAER2+1AYWPCCBrlQbEMR4zR1GT/Bh0fA+nHmzlMlFKkW3
+         sbghnKnW6DZKpQ81tY/3GZerpjA5k9raBHhzG3VcGmLfLbivhIRX4eKbnUwyyiEo+sP1
+         bIP0TIEQoz5HzoZ2idGBiWDXFTnPpq0jKXA7ovYnrlMs7c5Bk4jnU5xj5JrN2kz+GWOw
+         s9tA==
+X-Gm-Message-State: AOAM5303Xsiv9ES9vvAuKCxhgttX6qyICy93VeJHcHvDTCmWa/ggDhjz
+        NRmdPlxRcwVaM1D7IESXPyphcA==
+X-Google-Smtp-Source: ABdhPJyPe/Zo6SrrrzMpSbKfnEilV8486XrmLi6Q6oiHQWGuhtk3+KPA3pyMnSF9vDFv4JdyTeyoLg==
+X-Received: by 2002:a05:6a00:1a46:b0:47c:2de5:4efd with SMTP id h6-20020a056a001a4600b0047c2de54efdmr4857753pfv.12.1635432245758;
+        Thu, 28 Oct 2021 07:44:05 -0700 (PDT)
+Received: from cork (c-73-158-250-94.hsd1.ca.comcast.net. [73.158.250.94])
+        by smtp.gmail.com with ESMTPSA id m15sm3312986pjf.49.2021.10.28.07.44.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Oct 2021 07:44:05 -0700 (PDT)
+Date:   Thu, 28 Oct 2021 07:44:03 -0700
+From:   =?iso-8859-1?Q?J=F6rn?= Engel <joern@purestorage.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        Caleb Sander <csander@purestorage.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com, Tony Brelinski <tony.brelinski@intel.com>
+Subject: Re: [PATCH net-next 1/4] i40e: avoid spin loop in
+ i40e_asq_send_command()
+Message-ID: <YXq3M5XvOkpMgiOg@cork>
+References: <20211025175508.1461435-1-anthony.l.nguyen@intel.com>
+ <20211025175508.1461435-2-anthony.l.nguyen@intel.com>
+ <20211027090103.33e06b78@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YXqOL0PqhujmH+sd@cork>
+ <20211028072607.4db76c84@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.1
-Subject: Re: [RFC/PATCH net-next v3 0/8] allow user to offload tc action to
- net device
-Content-Language: en-US
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-To:     Simon Horman <simon.horman@corigine.com>, netdev@vger.kernel.org
-Cc:     Vlad Buslov <vladbu@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Baowen Zheng <notifications@github.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        oss-drivers@corigine.com
-References: <20211028110646.13791-1-simon.horman@corigine.com>
- <e3d4ac96-1d21-bfdd-36b5-571e7c0e7fa8@mojatatu.com>
-In-Reply-To: <e3d4ac96-1d21-bfdd-36b5-571e7c0e7fa8@mojatatu.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211028072607.4db76c84@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-10-28 10:23, Jamal Hadi Salim wrote:
-[..]
+On Thu, Oct 28, 2021 at 07:26:07AM -0700, Jakub Kicinski wrote:
 > 
-> It will be helpful to display the output of the show commands in the
-> cover letter....
+> The status of the command is re-checked after the loop, sleeping too
+> long should not cause timeouts here.
 
-Also some tdc tests please...
+Fair point.  usleep_range() is likely the correct answer in this case.
 
-cheers,
-jamal
+Jörn
 
+--
+It is the mark of an educated mind to be able to entertain a thought
+without accepting it.
+-- Aristotle
