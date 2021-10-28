@@ -2,143 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11C6243E245
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 15:31:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7121E43E26E
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 15:40:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230354AbhJ1NdQ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 28 Oct 2021 09:33:16 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:55361 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229981AbhJ1NdO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 09:33:14 -0400
-Received: from smtpclient.apple (p4ff9fd51.dip0.t-ipconnect.de [79.249.253.81])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 49BF2CED00;
-        Thu, 28 Oct 2021 15:30:45 +0200 (CEST)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.20.0.1.32\))
-Subject: Re: [PATCH] Bluetooth: Limit duration of Remote Name Resolve
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20211028191805.1.I35b7f3a496f834de6b43a32f94b6160cb1467c94@changeid>
-Date:   Thu, 28 Oct 2021 15:30:44 +0200
-Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <180B4F43-B60A-4326-A463-327645BA8F1B@holtmann.org>
-References: <20211028191805.1.I35b7f3a496f834de6b43a32f94b6160cb1467c94@changeid>
-To:     Archie Pusaka <apusaka@google.com>
-X-Mailer: Apple Mail (2.3693.20.0.1.32)
+        id S230264AbhJ1NnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 09:43:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48276 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230407AbhJ1NnI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 09:43:08 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B9EC061570;
+        Thu, 28 Oct 2021 06:40:40 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id b12so5837477wrh.4;
+        Thu, 28 Oct 2021 06:40:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VKrybnnYHPP8HXbX2K+5aOS9L64qpsW4rKWfv44Odnc=;
+        b=JnsaOnY7zdgkyNs7tnr70Dpp2yTvi6SqKMpfxlQjQe7QFwldmFY0lrKsQejGl2PPRf
+         sBMfqDg1pepmDdSSNWUdgY5sui75Y38FwGTxXe36y2Y6TTQtifS6vTMkqrTbfbndxWPz
+         i3aOWR7wFfIzFmlMGUBfpeuYZ1etVZr5u8UD+c7F/Gd8hFLWLu69kBucaAzmLyQEzc0x
+         RoOwZJXtLCOIdOkk+LzKKNaekb38QVa3tkM/G/D9fV8Hl4O47W72vDdFzM4nq58vT/lx
+         aENf77MzyCb/mnJWCkAdC2jsnyOyuqPOuBD1bpRodZ8SJz0iRnQafyVWnXVUZmOIxDet
+         slXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VKrybnnYHPP8HXbX2K+5aOS9L64qpsW4rKWfv44Odnc=;
+        b=ItdC917LBDorxrgiZMacJKeaak+wpv3I+8naDSL+j0eWgnhrBEZpU0CqMwh4Z14qG4
+         mjqCG7SGgy5KsPkFGuJ9gx/iohipQ4G25wLHU2Q1tzB6BTrYuk0FzxL3EUBUpTwjBqo6
+         +vR2hrUNAD+ekS7djD+OwSIDRiDNhlQPweLOoWxZ+teQfDuTG0xo1m0CAnWXsebU6+v6
+         oADyXSrdOqx5FmHuC1NLtAXqLXn35tGKf161++duF2d7XHzpFl3nP8SB4l6L0D2sACAP
+         pQjZDST/1QRBOvY9xp5aybblV8g0xJZIIPy/1OH4xkTd/mUIXyih52C87pUQE6j2nZjt
+         tZOg==
+X-Gm-Message-State: AOAM532kn9mNEcIpcBM070jBXDdHWeg0KqO6in31sDXUFlCw+ZYImdl9
+        36jJ/sZwy0/YqTbnbSONXx8=
+X-Google-Smtp-Source: ABdhPJxw8BOHKAWzd0j8RoT4Udl4LhMCt1zgnuc/Gh/+ue021GeVSd9wNyNtqt+S8UVGfafiYOrlDA==
+X-Received: by 2002:a5d:6d07:: with SMTP id e7mr5776452wrq.425.1635428439219;
+        Thu, 28 Oct 2021 06:40:39 -0700 (PDT)
+Received: from localhost.localdomain ([188.149.128.194])
+        by smtp.gmail.com with ESMTPSA id s3sm3090519wrm.40.2021.10.28.06.40.37
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 28 Oct 2021 06:40:38 -0700 (PDT)
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        maciej.fijalkowski@intel.com, yhs@fb.com, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org
+Cc:     jonathan.lemon@gmail.com, ciara.loftus@intel.com,
+        bpf@vger.kernel.org
+Subject: [PATCH bpf-next] libbpf: deprecate AF_XDP support
+Date:   Thu, 28 Oct 2021 15:40:03 +0200
+Message-Id: <20211028134003.27160-1-magnus.karlsson@gmail.com>
+X-Mailer: git-send-email 2.29.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Archie,
+From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-> When doing remote name request, we cannot scan. In the normal case it's
-> OK since we can expect it to finish within a short amount of time.
-> However, there is a possibility to scan lots of devices that
-> (1) requires Remote Name Resolve
-> (2) is unresponsive to Remote Name Resolve
-> When this happens, we are stuck to do Remote Name Resolve until all is
-> done before continue scanning.
-> 
-> This patch adds a time limit to stop us spending too long on remote
-> name request. The limit is increased for every iteration where we fail
-> to complete the RNR in order to eventually solve all names.
-> 
-> Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-> Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
-> 
-> ---
-> Hi maintainers, we found one instance where a test device spends ~90
-> seconds to do Remote Name Resolving, hence this patch.
-> I think it's better if we reset the time limit to the default value
-> at some point, but I don't have a good proposal where to do that, so
-> in the end I didn't.
+Deprecate AF_XDP support in libbpf ([0]). This has been moved to
+libxdp as it is a better fit for that library. The AF_XDP support only
+uses the public libbpf functions and can therefore just use libbpf as
+a library from libxdp. The libxdp APIs are exactly the same so it
+should just be linking with libxdp instead of libbpf for the AF_XDP
+functionality. If not, please submit a bug report. Linking with both
+libraries is supported but make sure you link in the correct order so
+that the new functions in libxdp are used instead of the deprecated
+ones in libbpf.
 
-do you have a btmon trace for this as well?
+Libxdp can be found at https://github.com/xdp-project/xdp-tools.
 
-The HCI Remote Name Request is essentially a paging procedure and then a few LMP messages. It is fundamentally a connection request inside BR/EDR and if you have a remote device that has page scan disabled, but inquiry scan enabled, then you get into this funky situation. Sadly, the BR/EDR parts don’t give you any hint on this weird combination. You can't configure BlueZ that way since it is really stupid setup and I remember that GAP doesn’t have this case either, but it can happen. So we might want to check if that is what happens. And of course it needs to be a Bluetooth 2.0 device or a device that doesn’t support Secure Simple Pairing. There is a chance of really bad radio interference, but that is then just bad luck and is only going to happen every once in a blue moon.
+[0] https://github.com/libbpf/libbpf/issues/270
 
-That said, you should receive a Page Timeout in the Remote Name Request Complete event for what you describe. Or you just use HCI Remote Name Request Cancel to abort the paging. If I remember correctly then the setting for Page Timeout is also applied to Remote Name resolving procedure. So we could tweak that value. Actually once we get the “sync” work merged, we could configure different Page Timeout for connection requests and name resolving if that would help. Not sure if this is worth it, since we could as simple just cancel the request.
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+---
+ tools/lib/bpf/xsk.h | 90 ++++++++++++++++++++++++++-------------------
+ 1 file changed, 52 insertions(+), 38 deletions(-)
 
-> include/net/bluetooth/hci_core.h |  5 +++++
-> net/bluetooth/hci_event.c        | 12 ++++++++++++
-> 2 files changed, 17 insertions(+)
-> 
-> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-> index dd8840e70e25..df9ffedf1d29 100644
-> --- a/include/net/bluetooth/hci_core.h
-> +++ b/include/net/bluetooth/hci_core.h
-> @@ -87,6 +87,8 @@ struct discovery_state {
-> 	u8			(*uuids)[16];
-> 	unsigned long		scan_start;
-> 	unsigned long		scan_duration;
-> +	unsigned long		name_resolve_timeout;
-> +	unsigned long		name_resolve_duration;
-> };
-> 
-> #define SUSPEND_NOTIFIER_TIMEOUT	msecs_to_jiffies(2000) /* 2 seconds */
-> @@ -805,6 +807,8 @@ static inline void sco_recv_scodata(struct hci_conn *hcon, struct sk_buff *skb)
-> #define INQUIRY_CACHE_AGE_MAX   (HZ*30)   /* 30 seconds */
-> #define INQUIRY_ENTRY_AGE_MAX   (HZ*60)   /* 60 seconds */
-> 
-> +#define NAME_RESOLVE_INIT_DURATION	5120	/* msec */
-> +
-> static inline void discovery_init(struct hci_dev *hdev)
-> {
-> 	hdev->discovery.state = DISCOVERY_STOPPED;
-> @@ -813,6 +817,7 @@ static inline void discovery_init(struct hci_dev *hdev)
-> 	INIT_LIST_HEAD(&hdev->discovery.resolve);
-> 	hdev->discovery.report_invalid_rssi = true;
-> 	hdev->discovery.rssi = HCI_RSSI_INVALID;
-> +	hdev->discovery.name_resolve_duration = NAME_RESOLVE_INIT_DURATION;
-> }
-> 
-> static inline void hci_discovery_filter_clear(struct hci_dev *hdev)
-> diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-> index 3cba2bbefcd6..104a1308f454 100644
-> --- a/net/bluetooth/hci_event.c
-> +++ b/net/bluetooth/hci_event.c
-> @@ -2086,6 +2086,15 @@ static bool hci_resolve_next_name(struct hci_dev *hdev)
-> 	if (list_empty(&discov->resolve))
-> 		return false;
-> 
-> +	/* We should stop if we already spent too much time resolving names.
-> +	 * However, double the name resolve duration for the next iterations.
-> +	 */
-> +	if (time_after(jiffies, discov->name_resolve_timeout)) {
-> +		bt_dev_dbg(hdev, "Name resolve takes too long, stopping.");
-> +		discov->name_resolve_duration *= 2;
-> +		return false;
-> +	}
-> +
-> 	e = hci_inquiry_cache_lookup_resolve(hdev, BDADDR_ANY, NAME_NEEDED);
-> 	if (!e)
-> 		return false;
-> @@ -2634,6 +2643,9 @@ static void hci_inquiry_complete_evt(struct hci_dev *hdev, struct sk_buff *skb)
-> 	if (e && hci_resolve_name(hdev, e) == 0) {
-> 		e->name_state = NAME_PENDING;
-> 		hci_discovery_set_state(hdev, DISCOVERY_RESOLVING);
-> +
-> +		discov->name_resolve_timeout = jiffies +
-> +				msecs_to_jiffies(discov->name_resolve_duration);
+diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
+index 01c12dca9c10..566f774e4b36 100644
+--- a/tools/lib/bpf/xsk.h
++++ b/tools/lib/bpf/xsk.h
+@@ -23,6 +23,12 @@
+ extern "C" {
+ #endif
+ 
++/* This whole API has been deprecated and moved to libxdp that can be found at
++ * https://github.com/xdp-project/xdp-tools. The APIs are exactly the same so
++ * it should just be linking with libxdp instead of libbpf for this set of
++ * functionality. If not, please submit a bug report on the aforementioned page.
++ */
++
+ /* Load-Acquire Store-Release barriers used by the XDP socket
+  * library. The following macros should *NOT* be considered part of
+  * the xsk.h API, and is subject to change anytime.
+@@ -245,8 +251,10 @@ static inline __u64 xsk_umem__add_offset_to_addr(__u64 addr)
+ 	return xsk_umem__extract_addr(addr) + xsk_umem__extract_offset(addr);
+ }
+ 
+-LIBBPF_API int xsk_umem__fd(const struct xsk_umem *umem);
+-LIBBPF_API int xsk_socket__fd(const struct xsk_socket *xsk);
++LIBBPF_API LIBBPF_DEPRECATED_SINCE(0, 7, "AF_XDP support deprecated and moved to libdxp")
++int xsk_umem__fd(const struct xsk_umem *umem);
++LIBBPF_API LIBBPF_DEPRECATED_SINCE(0, 7, "AF_XDP support deprecated and moved to libdxp")
++int xsk_socket__fd(const struct xsk_socket *xsk);
+ 
+ #define XSK_RING_CONS__DEFAULT_NUM_DESCS      2048
+ #define XSK_RING_PROD__DEFAULT_NUM_DESCS      2048
+@@ -263,10 +271,10 @@ struct xsk_umem_config {
+ 	__u32 flags;
+ };
+ 
+-LIBBPF_API int xsk_setup_xdp_prog(int ifindex,
+-				  int *xsks_map_fd);
+-LIBBPF_API int xsk_socket__update_xskmap(struct xsk_socket *xsk,
+-					 int xsks_map_fd);
++LIBBPF_API LIBBPF_DEPRECATED_SINCE(0, 7, "AF_XDP support deprecated and moved to libdxp")
++int xsk_setup_xdp_prog(int ifindex, int *xsks_map_fd);
++LIBBPF_API LIBBPF_DEPRECATED_SINCE(0, 7, "AF_XDP support deprecated and moved to libdxp")
++int xsk_socket__update_xskmap(struct xsk_socket *xsk, int xsks_map_fd);
+ 
+ /* Flags for the libbpf_flags field. */
+ #define XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD (1 << 0)
+@@ -280,40 +288,46 @@ struct xsk_socket_config {
+ };
+ 
+ /* Set config to NULL to get the default configuration. */
+-LIBBPF_API int xsk_umem__create(struct xsk_umem **umem,
+-				void *umem_area, __u64 size,
+-				struct xsk_ring_prod *fill,
+-				struct xsk_ring_cons *comp,
+-				const struct xsk_umem_config *config);
+-LIBBPF_API int xsk_umem__create_v0_0_2(struct xsk_umem **umem,
+-				       void *umem_area, __u64 size,
+-				       struct xsk_ring_prod *fill,
+-				       struct xsk_ring_cons *comp,
+-				       const struct xsk_umem_config *config);
+-LIBBPF_API int xsk_umem__create_v0_0_4(struct xsk_umem **umem,
+-				       void *umem_area, __u64 size,
+-				       struct xsk_ring_prod *fill,
+-				       struct xsk_ring_cons *comp,
+-				       const struct xsk_umem_config *config);
+-LIBBPF_API int xsk_socket__create(struct xsk_socket **xsk,
+-				  const char *ifname, __u32 queue_id,
+-				  struct xsk_umem *umem,
+-				  struct xsk_ring_cons *rx,
+-				  struct xsk_ring_prod *tx,
+-				  const struct xsk_socket_config *config);
+-LIBBPF_API int
+-xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
+-			  const char *ifname,
+-			  __u32 queue_id, struct xsk_umem *umem,
+-			  struct xsk_ring_cons *rx,
+-			  struct xsk_ring_prod *tx,
+-			  struct xsk_ring_prod *fill,
+-			  struct xsk_ring_cons *comp,
+-			  const struct xsk_socket_config *config);
++LIBBPF_API LIBBPF_DEPRECATED_SINCE(0, 7, "AF_XDP support deprecated and moved to libdxp")
++int xsk_umem__create(struct xsk_umem **umem,
++		     void *umem_area, __u64 size,
++		     struct xsk_ring_prod *fill,
++		     struct xsk_ring_cons *comp,
++		     const struct xsk_umem_config *config);
++LIBBPF_API LIBBPF_DEPRECATED_SINCE(0, 7, "AF_XDP support deprecated and moved to libdxp")
++int xsk_umem__create_v0_0_2(struct xsk_umem **umem,
++			    void *umem_area, __u64 size,
++			    struct xsk_ring_prod *fill,
++			    struct xsk_ring_cons *comp,
++			    const struct xsk_umem_config *config);
++LIBBPF_API LIBBPF_DEPRECATED_SINCE(0, 7, "AF_XDP support deprecated and moved to libdxp")
++int xsk_umem__create_v0_0_4(struct xsk_umem **umem,
++			    void *umem_area, __u64 size,
++			    struct xsk_ring_prod *fill,
++			    struct xsk_ring_cons *comp,
++			    const struct xsk_umem_config *config);
++LIBBPF_API LIBBPF_DEPRECATED_SINCE(0, 7, "AF_XDP support deprecated and moved to libdxp")
++int xsk_socket__create(struct xsk_socket **xsk,
++		       const char *ifname, __u32 queue_id,
++		       struct xsk_umem *umem,
++		       struct xsk_ring_cons *rx,
++		       struct xsk_ring_prod *tx,
++		       const struct xsk_socket_config *config);
++LIBBPF_API LIBBPF_DEPRECATED_SINCE(0, 7, "AF_XDP support deprecated and moved to libdxp")
++int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
++			      const char *ifname,
++			      __u32 queue_id, struct xsk_umem *umem,
++			      struct xsk_ring_cons *rx,
++			      struct xsk_ring_prod *tx,
++			      struct xsk_ring_prod *fill,
++			      struct xsk_ring_cons *comp,
++			      const struct xsk_socket_config *config);
+ 
+ /* Returns 0 for success and -EBUSY if the umem is still in use. */
+-LIBBPF_API int xsk_umem__delete(struct xsk_umem *umem);
+-LIBBPF_API void xsk_socket__delete(struct xsk_socket *xsk);
++LIBBPF_API LIBBPF_DEPRECATED_SINCE(0, 7, "AF_XDP support deprecated and moved to libdxp")
++int xsk_umem__delete(struct xsk_umem *umem);
++LIBBPF_API LIBBPF_DEPRECATED_SINCE(0, 7, "AF_XDP support deprecated and moved to libdxp")
++void xsk_socket__delete(struct xsk_socket *xsk);
+ 
+ #ifdef __cplusplus
+ } /* extern "C" */
 
-So if this is really caused by a device with page scan disabled and inquiry scan enabled, then this fix is just a paper over hole approach. If you have more devices requiring name resolving, you end up penalizing them and make the discovery procedure worse up to the extend that no names are resolved. So I wouldn’t be in favor of this.
-
-What LE scan window/interval is actually working against what configured BR/EDR page timeout here? The discovery procedure is something that a user triggers so we always had that one take higher priority since the user is expecting results. This means any tweaking needs to be considered carefully since it is an immediate user impact if the name is missing.
-
-Is this a LE background scan you are worried about or an LE active scan that runs in parallel during discovery?
-
-Regards
-
-Marcel
+base-commit: 252c765bd764a246a8bd516fabf6d6123df4a24f
+-- 
+2.29.0
 
