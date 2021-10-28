@@ -2,178 +2,273 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEBC843DB3E
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 08:35:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0FCC43DB40
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 08:35:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229891AbhJ1Ghk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 02:37:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35782 "EHLO
+        id S229899AbhJ1Gho (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 02:37:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229769AbhJ1Ghj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 02:37:39 -0400
+        with ESMTP id S229915AbhJ1Ghm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 02:37:42 -0400
 Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33649C061570;
-        Wed, 27 Oct 2021 23:35:13 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id s10-20020a17090a6e4a00b001a5f4da9892so19013pjm.3;
-        Wed, 27 Oct 2021 23:35:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086AAC061767;
+        Wed, 27 Oct 2021 23:35:16 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id q2-20020a17090a2e0200b001a0fd4efd49so4753288pjd.1;
+        Wed, 27 Oct 2021 23:35:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=g40Z1ieSULg3LhXRnp8SpdBkbCADyrSE2qthlKgwJKw=;
-        b=BNXxfDtYrof18QRqAJJmXqe4hwTG0t4slcQg8t79bC9KwPsa0gGmQk7Xg9AfM2eleC
-         5SWtGnt/eqds8B1aMIkfcEl5mjTVTYR+liCf4UVx66Q84XUdf5NDgwJ/6Dmr82L0KSmR
-         LBfsdxNjcaEV9QX5u0JmM4J0LRPhFJkY6F1dtv/GHiTbVDYnd56JDN9+spM1rH3i0Rht
-         8+Gm7bsxQmUZggthkAI37RbC9LUAqPuh23IM/Xrbs0j0acdBzd0VAfELBt8SThOveUHx
-         qhQO2xB52D56/SCVVJwuH+MAdHU0inuc/vkTvyGlOcrKxM9InC0BTuAZKAEsp1/5fFHi
-         o/ZQ==
+        bh=rJhgAD0aJ6BrK0y6oSJnMpFug1HLoXQXHQWvDMmCfag=;
+        b=d6KSouPnypJLNsORDhd4oZJXzoilNzlUEcl5n0umYBR4BwS3X3oRuqKXkrf531SF1U
+         vWk0NEiv6eJTcpd4a9bdUxoqu0bt6Nnx0UFzWQLF3imfjYZ4TIk6qk/F96/FkS9Vl4r1
+         s7HFMgmozEmHpDynla3EeNxbZPaSJ3dDyT81VcPyatW7mWhamc/wLvxoOzXcjxiKBvXK
+         9IN1vPoh9a2naqBt+f5QeHPFWqwe1lB8XFxWCybmRVyFVeSVItBKC25jWgUgnLCXgg8+
+         h6MMU+IqPNHnfE8hrW5fUpTwIMiDl3IAREVPpScapNCHRkZ6xkCnrGOte3obJbuBHDQn
+         Zx8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=g40Z1ieSULg3LhXRnp8SpdBkbCADyrSE2qthlKgwJKw=;
-        b=XD76RuBVA4H27QlhERibsRmZZQn2vgcM6u02l/vhIJl4+biNmWF5WJJvVsk3TpoEoU
-         4G04Dd88V5uHyBqnVu+1ZlnDqpLuf62sxNnn79ifM28/nxsAy9H5qJ7lH42zr75tqKe/
-         HBkjSRHUvLLMjefGCcFjS2X/Nr6ign54cDEUMg0TWSO/konzrJsSdpRKVhvPMCQQstfv
-         /8kAlsmsBnJZwYZPs0Tly1uc1DSpY6fhbTdraXwbe5K6aGv/MUADxqSvZLOxM0kb+TlX
-         pi3AwHaowJ9fZPBF/+5SA/3AA9y3NCJGoX+A9B5xF73b6UVa2GHHa3jTEBP51qtrwp/h
-         S+tA==
-X-Gm-Message-State: AOAM530h97VBwXi9sEd51/WHw/8UkGGOQ0e15is6f20EFYkWOesxBsjY
-        58+JKKC3e3RGatbgT1jXCEYOvLhMh3GPCw==
-X-Google-Smtp-Source: ABdhPJwCIdcA3Hzqmzi1Um35lZ3iv1SuU34g5djNGYcS279lfCH5pkH2x/23MsLyJEFjVLj0jdF3/Q==
-X-Received: by 2002:a17:90a:d245:: with SMTP id o5mr2510920pjw.104.1635402912584;
-        Wed, 27 Oct 2021 23:35:12 -0700 (PDT)
+        bh=rJhgAD0aJ6BrK0y6oSJnMpFug1HLoXQXHQWvDMmCfag=;
+        b=6lGFc2dNro6644uQTtrppkIsa6p3ADB8CJZtwbSaZv0Azh0dG4y68DZLlJ3NJlHYS3
+         ZIVTSSpNCTxI75ug7V+rqV1HhgALKfb6oxsQR503lDBciR7feYSyN8PwZpexxHoVNWsD
+         QFAmn+5gRHrbeNGk9tR1RB6q9+j4PlJS3paLD/C/JYlH9R2KnGmejjJ853oqburv7Sj5
+         4pn6pUW3ZNzG+qTsuKgNvSEFhSvJG2xbK18UB4FRp0HdKccLomHbX8QpfuE0+yMzOjnV
+         IKkHyg/vCfIzvB85+xzo/Gz0x7teLGm3Lum/FZaw4ju4CWghw24tu66pAxPUYxb3PhEV
+         fCgQ==
+X-Gm-Message-State: AOAM531EinijiGfeMiLGYAPk4xf4id9l5NO/Ulsjcm/3iOSpfyd8YNtl
+        16y3Vn6AuytGZyje9PWiN1kl9xpqsw67zg==
+X-Google-Smtp-Source: ABdhPJwklKTFL17Psg+wMXR1L5GIF/htH2m8obp6MLckG+lElbU6yWVRP0fXaUKSr9dqlLqvPjNb9A==
+X-Received: by 2002:a17:90b:1a85:: with SMTP id ng5mr10960970pjb.43.1635402915369;
+        Wed, 27 Oct 2021 23:35:15 -0700 (PDT)
 Received: from localhost ([2405:201:6014:d916:31fc:9e49:a605:b093])
-        by smtp.gmail.com with ESMTPSA id oc12sm1699038pjb.17.2021.10.27.23.35.11
+        by smtp.gmail.com with ESMTPSA id j14sm7194073pjd.53.2021.10.27.23.35.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Oct 2021 23:35:12 -0700 (PDT)
+        Wed, 27 Oct 2021 23:35:15 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+Cc:     Song Liu <songliubraving@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org
-Subject: [PATCH bpf-next v5 3/8] libbpf: Add weak ksym support to gen_loader
-Date:   Thu, 28 Oct 2021 12:04:56 +0530
-Message-Id: <20211028063501.2239335-4-memxor@gmail.com>
+Subject: [PATCH bpf-next v5 4/8] libbpf: Ensure that BPF syscall fds are never 0, 1, or 2
+Date:   Thu, 28 Oct 2021 12:04:57 +0530
+Message-Id: <20211028063501.2239335-5-memxor@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211028063501.2239335-1-memxor@gmail.com>
 References: <20211028063501.2239335-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4419; h=from:subject; bh=rLpw7iMOrxxAu18b1PGXg+GrO/7ONDH0WAwKpGcoBL0=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhekR//sWno3JA26jrNaiR2qssr6vhaNVfGDIhsgxB eBbWcV6JAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYXpEfwAKCRBM4MiGSL8RykdeD/ 0WQPTCHQVVArlHep06qH2O90UA21+FwJjRA+xJj4vMUiNwAMpJj5YYyGl9MERKAbQW0ReB58hxl8Bw vjoQp79BQdrX6SzorukFvD64Agoc5EjW8GT4yRp7KS84LTj7q9PpXO6KedvM9dnY6+8/0DekEzSYKe R0GBT78znGlzA6bPsIxjJHGcMKZ7vMSueAALH8sPzkRJGyMypz4V61OG+6UBG2mmTfKLVTqiH46bnP 7gvYmCFeb0nKF5arTSY0ZejcfUbsfV3rPvdvvV7oeV76WPQwsIom3VsTNiUFgLYZ84ACHfC7MC0SMj xyqIkbesQlqvbNjFpwCFm4ajGA6qPXP2UKDp0g//D56drCA2i4WoHiHExJx+ZR8PMqBrQWJUt/X2kf OxjnyAZTj+4StAjSyYoRfQnoTKhnd7DIKKUzw1TRGBeT+nAi+pvL0chArxorwtnRerRMNbBOvD4A0r eV0D4UAlbHuSqICf7krPo2rGuJBLQAL83tG1qyOHIqiLd/43NfBTQB66ZvjJcM6GMs3b7FVwS/BFXq U2IquUeWwZwddxkimumoGyZqMxsMbO3V/iufTwx1iPRB63yE/vh9/cnJEwD4ggpp/nPjebPpPC7muv 5Jcs0pHnHe4A6nitENXfB3px+MZYHVslvTq2AuzHxBtLoxZhZXhBPoWUFzCg==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6632; h=from:subject; bh=kaAikty7BZzVHLo4b3rme93i/LdaBKbRXmuRQ6seRf0=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhekR/GMbBeRoF4x+f/ANWRj+JFKbmFXfMz7zMihl8 /2iht6CJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYXpEfwAKCRBM4MiGSL8RyhgREA CafMebatEv7sjM5eNE/Ko2nlbGO2vokMT0jtHVUBqBlk8HXNlzrJ6AXZZ/vmFYlm4DlTxpk7b7QYvi EvMkXZbsHcNRNliWgtNqoZhhYXWHdYpepiXYa/E01ujUXzYhphWle6hQXXrrgSNC9a/emjOM4Lu3pB SnUKrFC1pls2NWyU5GbAkpecHM4a/XANinT2a1PuaHpSAQNMwQYRCdXRtywA5AblSMH+//V88z4bHF AcWLIlrcIn3Fm3EekfdR8pFGNfGZPxqpaJ3nUmpmLXJRYC3jrwcdbvxtpg0vRTJpg6Otbft1RkBP4j La8o/at9yOc3RnaurzVGfQEqom6+VeAHEJ8bAMmNJu54Hbg8jbHmNevmAyZK9o3DCzGhuJ0OjtIZth XbGJhIP4ao7MWAttZmJ1Ip5psjlBgMezBgOgBPrnKKG9eP0y1LJ0FFbD86lcWZOu8uDZX258lJ7+5f w4n1Fztfd6H2ePjMq9SKwfKIa2SDR19Qcq+2mVNeukW6M5NaENAN+Wej092WES9Hr/LtDfmOyRWUyo 0ov+q2PGb74SrSFDnUZioKhrOtfddSx38ZXZTfwv+obXKHkkbaNjbCZajrYO08D7wR14aWq/wRdtgu TxXNxvHuze7JtBDBEWS75e6OswuYm8zJfH1bJ9+PmC4PA4BGrB3dwdWE7dGA==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This extends existing ksym relocation code to also support relocating
-weak ksyms. Care needs to be taken to zero out the src_reg (currently
-BPF_PSEUOD_BTF_ID, always set for gen_loader by bpf_object__relocate_data)
-when the BTF ID lookup fails at runtime.  This is not a problem for
-libbpf as it only sets ext->is_set when BTF ID lookup succeeds (and only
-proceeds in case of failure if ext->is_weak, leading to src_reg
-remaining as 0 for weak unresolved ksym).
+Add a simple wrapper for passing an fd and getting a new one >= 3 if it
+is one of 0, 1, or 2. There are two primary reasons to make this change:
+First, libbpf relies on the assumption a certain BPF fd is never 0 (e.g.
+most recently noticed in [0]). Second, Alexei pointed out in [1] that
+some environments reset stdin, stdout, and stderr if they notice an
+invalid fd at these numbers. To protect against both these cases, switch
+all internal BPF syscall wrappers in libbpf to always return an fd >= 3.
+We only need to modify the syscall wrappers and not other code that
+assumes a valid fd by doing >= 0, to avoid pointless churn, and because
+it is still a valid assumption. The cost paid is two additional syscalls
+if fd is in range [0, 2].
 
-A pattern similar to emit_relo_kfunc_btf is followed of first storing
-the default values and then jumping over actual stores in case of an
-error. For src_reg adjustment, we also need to perform it when copying
-the populated instruction, so depending on if copied insn[0].imm is 0 or
-not, we decide to jump over the adjustment.
+  [0]: e31eec77e4ab ("bpf: selftests: Fix fd cleanup in get_branch_snapshot")
+  [1]: https://lore.kernel.org/bpf/CAADnVQKVKY8o_3aU8Gzke443+uHa-eGoM0h7W4srChMXU1S4Bg@mail.gmail.com
 
-We cannot reach that point unless the ksym was weak and resolved and
-zeroed out, as the emit_check_err will cause us to jump to cleanup
-label, so we do not need to recheck whether the ksym is weak before
-doing the adjustment after copying BTF ID and BTF FD.
-
-This is consistent with how libbpf relocates weak ksym. Logging
-statements are added to show the relocation result and aid debugging.
-
+Acked-by: Song Liu <songliubraving@fb.com>
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- tools/lib/bpf/gen_loader.c | 35 ++++++++++++++++++++++++++++++++---
- 1 file changed, 32 insertions(+), 3 deletions(-)
+ tools/lib/bpf/bpf.c             | 35 +++++++++++++++++++++------------
+ tools/lib/bpf/libbpf_internal.h | 24 ++++++++++++++++++++++
+ 2 files changed, 46 insertions(+), 13 deletions(-)
 
-diff --git a/tools/lib/bpf/gen_loader.c b/tools/lib/bpf/gen_loader.c
-index 11172a868180..1c404752e565 100644
---- a/tools/lib/bpf/gen_loader.c
-+++ b/tools/lib/bpf/gen_loader.c
-@@ -13,6 +13,7 @@
- #include "hashmap.h"
- #include "bpf_gen_internal.h"
- #include "skel_internal.h"
-+#include <asm/byteorder.h>
- 
- #define MAX_USED_MAPS	64
- #define MAX_USED_PROGS	32
-@@ -776,12 +777,24 @@ static void emit_relo_ksym_typeless(struct bpf_gen *gen,
- 	emit_ksym_relo_log(gen, relo, kdesc->ref);
+diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+index 7d1741ceaa32..53efbdb1b652 100644
+--- a/tools/lib/bpf/bpf.c
++++ b/tools/lib/bpf/bpf.c
+@@ -65,13 +65,22 @@ static inline int sys_bpf(enum bpf_cmd cmd, union bpf_attr *attr,
+ 	return syscall(__NR_bpf, cmd, attr, size);
  }
  
-+static __u32 src_reg_mask(void)
++static inline int sys_bpf_fd(enum bpf_cmd cmd, union bpf_attr *attr,
++			     unsigned int size)
 +{
-+#if defined(__LITTLE_ENDIAN_BITFIELD)
-+	return 0x0f; /* src_reg,dst_reg,... */
-+#elif defined(__BIG_ENDIAN_BITFIELD)
-+	return 0xf0; /* dst_reg,src_reg,... */
-+#else
-+#error "Unsupported bit endianness, cannot proceed"
-+#endif
++	int fd;
++
++	fd = sys_bpf(cmd, attr, size);
++	return ensure_good_fd(fd);
 +}
 +
- /* Expects:
-  * BPF_REG_8 - pointer to instruction
-  */
- static void emit_relo_ksym_btf(struct bpf_gen *gen, struct ksym_relo_desc *relo, int insn)
+ static inline int sys_bpf_prog_load(union bpf_attr *attr, unsigned int size)
  {
- 	struct ksym_desc *kdesc;
-+	__u32 reg_mask;
+ 	int retries = 5;
+ 	int fd;
  
- 	kdesc = get_ksym_desc(gen, relo);
- 	if (!kdesc)
-@@ -792,19 +805,35 @@ static void emit_relo_ksym_btf(struct bpf_gen *gen, struct ksym_relo_desc *relo,
- 			       kdesc->insn + offsetof(struct bpf_insn, imm));
- 		move_blob2blob(gen, insn + sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm), 4,
- 			       kdesc->insn + sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm));
--		goto log;
-+		emit(gen, BPF_LDX_MEM(BPF_W, BPF_REG_9, BPF_REG_8, offsetof(struct bpf_insn, imm)));
-+		/* jump over src_reg adjustment if imm is not 0 */
-+		emit(gen, BPF_JMP_IMM(BPF_JNE, BPF_REG_9, 0, 3));
-+		goto clear_src_reg;
- 	}
- 	/* remember insn offset, so we can copy BTF ID and FD later */
- 	kdesc->insn = insn;
- 	emit_bpf_find_by_name_kind(gen, relo);
--	emit_check_err(gen);
-+	if (!relo->is_weak)
-+		emit_check_err(gen);
-+	/* set default values as 0 */
-+	emit(gen, BPF_ST_MEM(BPF_W, BPF_REG_8, offsetof(struct bpf_insn, imm), 0));
-+	emit(gen, BPF_ST_MEM(BPF_W, BPF_REG_8, sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm), 0));
-+	/* skip success case stores if ret < 0 */
-+	emit(gen, BPF_JMP_IMM(BPF_JSLT, BPF_REG_7, 0, 4));
- 	/* store btf_id into insn[insn_idx].imm */
- 	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_8, BPF_REG_7, offsetof(struct bpf_insn, imm)));
- 	/* store btf_obj_fd into insn[insn_idx + 1].imm */
- 	emit(gen, BPF_ALU64_IMM(BPF_RSH, BPF_REG_7, 32));
- 	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_8, BPF_REG_7,
- 			      sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm)));
--log:
-+	emit(gen, BPF_JMP_IMM(BPF_JSGE, BPF_REG_7, 0, 3));
-+clear_src_reg:
-+	/* clear bpf_object__relocate_data's src_reg assignment, otherwise we get a verifier failure */
-+	reg_mask = src_reg_mask();
-+	emit(gen, BPF_LDX_MEM(BPF_B, BPF_REG_9, BPF_REG_8, offsetofend(struct bpf_insn, code)));
-+	emit(gen, BPF_ALU32_IMM(BPF_AND, BPF_REG_9, reg_mask));
-+	emit(gen, BPF_STX_MEM(BPF_B, BPF_REG_8, BPF_REG_9, offsetofend(struct bpf_insn, code)));
-+
- 	emit_ksym_relo_log(gen, relo, kdesc->ref);
+ 	do {
+-		fd = sys_bpf(BPF_PROG_LOAD, attr, size);
++		fd = sys_bpf_fd(BPF_PROG_LOAD, attr, size);
+ 	} while (fd < 0 && errno == EAGAIN && retries-- > 0);
+ 
+ 	return fd;
+@@ -103,7 +112,7 @@ int bpf_create_map_xattr(const struct bpf_create_map_attr *create_attr)
+ 	else
+ 		attr.inner_map_fd = create_attr->inner_map_fd;
+ 
+-	fd = sys_bpf(BPF_MAP_CREATE, &attr, sizeof(attr));
++	fd = sys_bpf_fd(BPF_MAP_CREATE, &attr, sizeof(attr));
+ 	return libbpf_err_errno(fd);
  }
  
+@@ -181,7 +190,7 @@ int bpf_create_map_in_map_node(enum bpf_map_type map_type, const char *name,
+ 		attr.numa_node = node;
+ 	}
+ 
+-	fd = sys_bpf(BPF_MAP_CREATE, &attr, sizeof(attr));
++	fd = sys_bpf_fd(BPF_MAP_CREATE, &attr, sizeof(attr));
+ 	return libbpf_err_errno(fd);
+ }
+ 
+@@ -609,7 +618,7 @@ int bpf_obj_get(const char *pathname)
+ 	memset(&attr, 0, sizeof(attr));
+ 	attr.pathname = ptr_to_u64((void *)pathname);
+ 
+-	fd = sys_bpf(BPF_OBJ_GET, &attr, sizeof(attr));
++	fd = sys_bpf_fd(BPF_OBJ_GET, &attr, sizeof(attr));
+ 	return libbpf_err_errno(fd);
+ }
+ 
+@@ -720,7 +729,7 @@ int bpf_link_create(int prog_fd, int target_fd,
+ 		break;
+ 	}
+ proceed:
+-	fd = sys_bpf(BPF_LINK_CREATE, &attr, sizeof(attr));
++	fd = sys_bpf_fd(BPF_LINK_CREATE, &attr, sizeof(attr));
+ 	return libbpf_err_errno(fd);
+ }
+ 
+@@ -763,7 +772,7 @@ int bpf_iter_create(int link_fd)
+ 	memset(&attr, 0, sizeof(attr));
+ 	attr.iter_create.link_fd = link_fd;
+ 
+-	fd = sys_bpf(BPF_ITER_CREATE, &attr, sizeof(attr));
++	fd = sys_bpf_fd(BPF_ITER_CREATE, &attr, sizeof(attr));
+ 	return libbpf_err_errno(fd);
+ }
+ 
+@@ -921,7 +930,7 @@ int bpf_prog_get_fd_by_id(__u32 id)
+ 	memset(&attr, 0, sizeof(attr));
+ 	attr.prog_id = id;
+ 
+-	fd = sys_bpf(BPF_PROG_GET_FD_BY_ID, &attr, sizeof(attr));
++	fd = sys_bpf_fd(BPF_PROG_GET_FD_BY_ID, &attr, sizeof(attr));
+ 	return libbpf_err_errno(fd);
+ }
+ 
+@@ -933,7 +942,7 @@ int bpf_map_get_fd_by_id(__u32 id)
+ 	memset(&attr, 0, sizeof(attr));
+ 	attr.map_id = id;
+ 
+-	fd = sys_bpf(BPF_MAP_GET_FD_BY_ID, &attr, sizeof(attr));
++	fd = sys_bpf_fd(BPF_MAP_GET_FD_BY_ID, &attr, sizeof(attr));
+ 	return libbpf_err_errno(fd);
+ }
+ 
+@@ -945,7 +954,7 @@ int bpf_btf_get_fd_by_id(__u32 id)
+ 	memset(&attr, 0, sizeof(attr));
+ 	attr.btf_id = id;
+ 
+-	fd = sys_bpf(BPF_BTF_GET_FD_BY_ID, &attr, sizeof(attr));
++	fd = sys_bpf_fd(BPF_BTF_GET_FD_BY_ID, &attr, sizeof(attr));
+ 	return libbpf_err_errno(fd);
+ }
+ 
+@@ -957,7 +966,7 @@ int bpf_link_get_fd_by_id(__u32 id)
+ 	memset(&attr, 0, sizeof(attr));
+ 	attr.link_id = id;
+ 
+-	fd = sys_bpf(BPF_LINK_GET_FD_BY_ID, &attr, sizeof(attr));
++	fd = sys_bpf_fd(BPF_LINK_GET_FD_BY_ID, &attr, sizeof(attr));
+ 	return libbpf_err_errno(fd);
+ }
+ 
+@@ -988,7 +997,7 @@ int bpf_raw_tracepoint_open(const char *name, int prog_fd)
+ 	attr.raw_tracepoint.name = ptr_to_u64(name);
+ 	attr.raw_tracepoint.prog_fd = prog_fd;
+ 
+-	fd = sys_bpf(BPF_RAW_TRACEPOINT_OPEN, &attr, sizeof(attr));
++	fd = sys_bpf_fd(BPF_RAW_TRACEPOINT_OPEN, &attr, sizeof(attr));
+ 	return libbpf_err_errno(fd);
+ }
+ 
+@@ -1008,7 +1017,7 @@ int bpf_load_btf(const void *btf, __u32 btf_size, char *log_buf, __u32 log_buf_s
+ 		attr.btf_log_buf = ptr_to_u64(log_buf);
+ 	}
+ 
+-	fd = sys_bpf(BPF_BTF_LOAD, &attr, sizeof(attr));
++	fd = sys_bpf_fd(BPF_BTF_LOAD, &attr, sizeof(attr));
+ 
+ 	if (fd < 0 && !do_log && log_buf && log_buf_size) {
+ 		do_log = true;
+@@ -1050,7 +1059,7 @@ int bpf_enable_stats(enum bpf_stats_type type)
+ 	memset(&attr, 0, sizeof(attr));
+ 	attr.enable_stats.type = type;
+ 
+-	fd = sys_bpf(BPF_ENABLE_STATS, &attr, sizeof(attr));
++	fd = sys_bpf_fd(BPF_ENABLE_STATS, &attr, sizeof(attr));
+ 	return libbpf_err_errno(fd);
+ }
+ 
+diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
+index 13bc7950e304..14f135808f5c 100644
+--- a/tools/lib/bpf/libbpf_internal.h
++++ b/tools/lib/bpf/libbpf_internal.h
+@@ -13,6 +13,8 @@
+ #include <limits.h>
+ #include <errno.h>
+ #include <linux/err.h>
++#include <fcntl.h>
++#include <unistd.h>
+ #include "libbpf_legacy.h"
+ #include "relo_core.h"
+ 
+@@ -468,4 +470,26 @@ static inline bool is_ldimm64_insn(struct bpf_insn *insn)
+ 	return insn->code == (BPF_LD | BPF_IMM | BPF_DW);
+ }
+ 
++/* if fd is stdin, stdout, or stderr, dup to a fd greater than 2
++ * Takes ownership of the fd passed in, and closes it if calling
++ * fcntl(fd, F_DUPFD_CLOEXEC, 3).
++ */
++static inline int ensure_good_fd(int fd)
++{
++	int old_fd = fd, saved_errno;
++
++	if (fd < 0)
++		return fd;
++	if (fd < 3) {
++		fd = fcntl(fd, F_DUPFD_CLOEXEC, 3);
++		saved_errno = errno;
++		close(old_fd);
++		if (fd < 0) {
++			pr_warn("failed to dup FD %d to FD > 2: %d\n", old_fd, -saved_errno);
++			errno = saved_errno;
++		}
++	}
++	return fd;
++}
++
+ #endif /* __LIBBPF_LIBBPF_INTERNAL_H */
 -- 
 2.33.1
 
