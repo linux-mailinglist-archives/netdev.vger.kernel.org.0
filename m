@@ -2,177 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08E1743E0A5
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 14:14:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5DA743E0B1
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 14:18:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230364AbhJ1MQy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 08:16:54 -0400
-Received: from smtp-out2.suse.de ([195.135.220.29]:50278 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230192AbhJ1MQx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 08:16:53 -0400
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id DD4AA1FD53;
-        Thu, 28 Oct 2021 12:14:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1635423265; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=g3E7wkRJp91MKjK1zSRVHtFUse8VULFkLnWAwqt+tOU=;
-        b=h00ymuW0J36OBNpp5TDQG2drxGIjwsWQwk1DtOLEnvbZJHg5OmxlJseSUd1opoL2qjYfln
-        W0uKNXOqaujxpSihFkMFJ8nZ2lgwLuxN4ttxpfJSJZm+IgoFujignT0gXFNBKroaFDgNy+
-        HTPzbS8tY8EJP/DcfXAMohwGxGqkjH8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1635423265;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=g3E7wkRJp91MKjK1zSRVHtFUse8VULFkLnWAwqt+tOU=;
-        b=0rvApIq8a4o3k783acr29655BKyqavq+u45qpDkAy7SZyOslxOt6li+h1mlXlYCDZ8qSuv
-        Hu8pUTgrVmr22+DA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0C44B13CFD;
-        Thu, 28 Oct 2021 12:14:25 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id YoUUACGUemGDXQAAMHmgww
-        (envelope-from <dkirjanov@suse.de>); Thu, 28 Oct 2021 12:14:24 +0000
-Subject: Re: [PATCH] mwifiex: Add quirk to disable deep sleep with certain
- hardware revision
-To:     =?UTF-8?Q?Jonas_Dre=c3=9fler?= <verdre@v0yd.nl>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Tsuchiya Yuto <kitakar@gmail.com>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>
-References: <20211028073729.24408-1-verdre@v0yd.nl>
-From:   Denis Kirjanov <dkirjanov@suse.de>
-Message-ID: <0123bb9b-7c66-9197-94dd-d96e226f439f@suse.de>
-Date:   Thu, 28 Oct 2021 15:14:24 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S229946AbhJ1MUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 08:20:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57402 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229578AbhJ1MUq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 08:20:46 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08987C061570
+        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 05:18:19 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id r4so23416755edi.5
+        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 05:18:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=+AP5pARAzypvJLWByFrroPKKfde+X4p5mj82zuVXrck=;
+        b=Q6stBm/92aOgVO/n47PhENR+5Aw6Vo7xxbxuVJFaxheLevWjTcP5SXXNQ0GaGzSw/j
+         rliHMFw/gk0Wus8uRwoW2zOHouTJaVSfQzwgPdrxzICdDm7FRDyU5XhB5BmbUQ/TNr7d
+         Rr1heBA8iPTk0bP4naRCbaXiVoajv1WFlmdn+o5BFkZzUW+pHdlHCcVOAbT0Fx3nsqFO
+         lxsPNn1NqtxIYvbeWlgoy63SIR9dSKrCAsGLZ7CoBHxbm+LGDJVdmnHcEGw08vCiv2Q2
+         Ksak9oqn/lQGWey9kxV4P/wmh7p7P3oy3GP0Q9up5gJILKqXqF/VOcQpgPLys9YBgWpz
+         U3ew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=+AP5pARAzypvJLWByFrroPKKfde+X4p5mj82zuVXrck=;
+        b=PLRornKKnQO3srvkRdsl03Lq5L/FKG7taaHsVPyMqu/6ysAxsJznP8Pn03UfxstDEE
+         s5rr9rBgncEp+Uo5YsjQgsHSRt7/AJQnGPbsNxckGX+uGZzA0VPVu2aP0hD4PBgQGbX6
+         vaiJc17IQsEp4hHqr0JxODF1GbPRB3NBX3VhVq+bqMFig3VD3QUipPgBtz+c910LyfWA
+         oYUgoHnahKL20cTFEyrPaEI1XBcLCEAB7ZjVAFkG1l83ZYIiB/BVewTWX9eh3ocSV1Y+
+         XQnaRfjtYWUxMK2J8XGI65mNtTgNFzlFYR/AyfMdPHNRgKn3nSKvTH2hnyJPmkG3h3oB
+         Xh3g==
+X-Gm-Message-State: AOAM530BqSTVZRHI4q2lDMn7+4ohnC5Vi+kxy1SS4aePKBgfdHsnCHk0
+        Z1NbR/tWT49aFNhP/KruUMJDXTUrJ3H5iskYRImwuq+P
+X-Google-Smtp-Source: ABdhPJxTBABvz02o4EzZK+6v+w3CQOihpzfcdPg29AYAcKP5RMi3nOe6OeJS3hy6sIyGnkHhObzRmX9Mz9za0w27dIk=
+X-Received: by 2002:a17:907:7f8b:: with SMTP id qk11mr5122270ejc.313.1635423495407;
+ Thu, 28 Oct 2021 05:18:15 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20211028073729.24408-1-verdre@v0yd.nl>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: ru
-Content-Transfer-Encoding: 8bit
+References: <1635330675-25592-1-git-send-email-sbhatta@marvell.com>
+ <1635330675-25592-2-git-send-email-sbhatta@marvell.com> <20211027083808.27f39cb0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <PH0PR18MB4671C22DB7C8E5C46647860FA1859@PH0PR18MB4671.namprd18.prod.outlook.com>
+ <CALHRZurNzkkma7HGg2xNLz3ECbwT2Hv=QXMeWr7AXCEegHOciw@mail.gmail.com>
+ <20211027100857.4d25544c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YXmWb2PZJQhpMfrR@shredder> <BY3PR18MB473794E01049EC94156E2858C6859@BY3PR18MB4737.namprd18.prod.outlook.com>
+ <YXnRup1EJaF5Gwua@shredder>
+In-Reply-To: <YXnRup1EJaF5Gwua@shredder>
+From:   sundeep subbaraya <sundeep.lkml@gmail.com>
+Date:   Thu, 28 Oct 2021 17:48:02 +0530
+Message-ID: <CALHRZuqpaqvunTga+8OK4GSa3oRao-CBxit6UzRvN3a1-T0dhA@mail.gmail.com>
+Subject: Re: [EXT] Re: [net-next PATCH 1/2] octeontx2-pf: Add devlink param to
+ init and de-init serdes
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Hariprasad Kelam <hkelam@marvell.com>,
+        Geethasowjanya Akula <gakula@marvell.com>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
+        Rakesh Babu Saladi <rsaladi2@marvell.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Ido,
 
+On Thu, Oct 28, 2021 at 3:55 AM Ido Schimmel <idosch@idosch.org> wrote:
+>
+> On Wed, Oct 27, 2021 at 06:43:00PM +0000, Sunil Kovvuri Goutham wrote:
+> >
+> > > ________________________________
+> > > From: Ido Schimmel <idosch@idosch.org>
+> > > Sent: Wednesday, October 27, 2021 11:41 PM
+> > > To: Jakub Kicinski <kuba@kernel.org>
+> > > Cc: sundeep subbaraya <sundeep.lkml@gmail.com>; David Miller <davem@d=
+avemloft.net>; netdev@vger.kernel.org <netdev@vger.kernel.org>; Hariprasad =
+Kelam <hkelam@marvell.com>; Geethasowjanya Akula <gakula@marvell.com>; Suni=
+l Kovvuri Goutham <sgoutham@marvell.com>; Subbaraya Sundeep Bhatta <sbhatta=
+@marvell.com>; Rakesh Babu Saladi <rsaladi2@marvell.com>; Saeed Mahameed <s=
+aeed@kernel.org>; anthony.l.nguyen@intel.com <anthony.l.nguyen@intel.com>; =
+Jesse Brandeburg <jesse.brandeburg@intel.com>; Andrew Lunn <andrew@lunn.ch>
+> > > Subject: Re: [EXT] Re: [net-next PATCH 1/2] octeontx2-pf: Add devlink=
+ param to init and de-init serdes
+> > >
+> > > On Wed, Oct 27, 2021 at 10:08:57AM -0700, Jakub Kicinski wrote:
+> > > > On Wed, 27 Oct 2021 22:13:32 +0530 sundeep subbaraya wrote:
+> > > > > > On Wed, 27 Oct 2021 16:01:14 +0530 Subbaraya Sundeep wrote:
+> > > > > > > From: Rakesh Babu <rsaladi2@marvell.com>
+> > > > > > >
+> > > > > > > The physical/SerDes link of an netdev interface is not
+> > > > > > > toggled on interface bring up and bring down. This is
+> > > > > > > because the same link is shared between PFs and its VFs.
+> > > > > > > This patch adds devlink param to toggle physical link so
+> > > > > > > that it is useful in cases where a physical link needs to
+> > > > > > > be re-initialized.
+> > > > > >
+> > > > > > So it's a reset? Or are there cases where user wants the link
+> > > > > > to stay down?
+> > > > >
+> > > > > There are cases where the user wants the link to stay down and de=
+bug.
+> > > > > We are adding this to help customers to debug issues wrt physical=
+ links.
+> > > >
+> > > > Intel has a similar thing, they keep adding a ethtool priv flag cal=
+led
+> > > > "link-down-on-close" to all their drivers.
+> > >
+> > > This is the list I compiled the previous time we discussed it:
+> > >
+> > > https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__git.kernel.org=
+_pub_scm_linux_kernel_git_torvalds_linux.git_commit_-3Fid-3Dc3880bd159d431d=
+06b687b0b5ab22e24e6ef0070&d=3DDwIBAg&c=3DnKjWec2b6R0mOyPaz7xtfQ&r=3Dq3VKxXQ=
+KiboRw_F01ggTzHuhwawxR1P9_tMCN2FODU4&m=3D4xGR8HuIRKUriC93QV4GmQBJ6KVwRgGZ05=
+Syzpq2CAM&s=3Dfvl1aLwL55CWIsG2NT5i3QsP4o_GTEsGhA6Epjz7ZAk&e=3D
+> > > https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__git.kernel.org=
+_pub_scm_linux_kernel_git_torvalds_linux.git_commit_-3Fid-3Dd5ec9e2ce41ac19=
+8de2ee18e0e529b7ebbc67408&d=3DDwIBAg&c=3DnKjWec2b6R0mOyPaz7xtfQ&r=3Dq3VKxXQ=
+KiboRw_F01ggTzHuhwawxR1P9_tMCN2FODU4&m=3D4xGR8HuIRKUriC93QV4GmQBJ6KVwRgGZ05=
+Syzpq2CAM&s=3DkH50Qq3h75xREveyWvCUn35wXagtt4uv1QRK0wMBEdk&e=3D
+> > > https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__git.kernel.org=
+_pub_scm_linux_kernel_git_torvalds_linux.git_commit_-3Fid-3Dab4ab73fc1ec6de=
+c548fa36c5e383ef5faa7b4c1&d=3DDwIBAg&c=3DnKjWec2b6R0mOyPaz7xtfQ&r=3Dq3VKxXQ=
+KiboRw_F01ggTzHuhwawxR1P9_tMCN2FODU4&m=3D4xGR8HuIRKUriC93QV4GmQBJ6KVwRgGZ05=
+Syzpq2CAM&s=3DUc3yY-5HjS7TgRBl4DPLsJ19XiHDD_PvF8hA38K4XwI&e=3D
+> > >
+> > > It seems that various drivers default to not shutting down the link u=
+pon
+> > > ndo_stop(), but some users want to override it. I hit that too as it
+> > > breaks ECMP (switch thinks the link is up).
+> > >
+> > > > Maybe others do this, too.  It's time we added a standard API for
+> > > > this.
+> > >
+> > > The new parameter sounds like a reset, but it can also be achieved by=
+:
+> > >
+> > > # ethtool --set-priv-flags eth0 link-down-on-close on
+> > > # ip link set dev eth0 down
+> > > # ip link set dev eth0 up
+> > >
+> > > Where the first command is replaced by a more standard ethtool API.
+> >
+> > The intention here is provide an option to the user to toggle the serde=
+s configuration
+> > as and when he wants to.
+>
+> But why? What is the motivation? The commit message basically says that
+> you are adding a param to toggle the physical link because it is useful
+> to toggle the physical link.
+>
+> > There is no dependency with logical interface's status.
+>
+> But there is and the commit message explains why you are not doing it as
+> part of ndo_{stop,open}(): "because the same link is shared between PFs
+> and its VFs"
+>
+> Such constraints also apply to other drivers and you can see that in the
+> "link-down-on-close" private flag. I'm also aware of propriety tools to
+> toggle device bits which prevent the physical link from going down upon
+> ndo_stop().
+>
+> > Having a standard API to select bringing down physical interface upon l=
+ogical interface's close call
+> > is a good idea. But this patch is not for that.
+>
+> IIUC, your default behavior is not to take the physical link down upon
+> ndo_stop() and now you want to toggle the link. If you have a standard
+> API to change the default behavior, then the commands I showed will
+> toggle the link, no?
 
-10/28/21 10:37 AM, Jonas Dreßler пишет:
-> The 88W8897 PCIe+USB card in the hardware revision 20 apparently has a
-> hardware issue where the card wakes up from deep sleep randomly and very
-> often, somewhat depending on the card activity, maybe the hardware has a
-> floating wakeup pin or something.
-> 
-> Those continuous wakeups prevent the card from entering host sleep when
-> the computer suspends. And because the host won't answer to events from
-> the card anymore while it's suspended, the firmwares internal
-> powersaving state machine seems to get confused and the card can't sleep
-> anymore at all after that.
-> 
-> Since we can't work around that hardware bug in the firmware, let's
-> get the hardware revision string from the firmware and match it with
-> known bad revisions. Then disable auto deep sleep for those revisions,
-> which makes sure we no longer get those spurious wakeups.
-> 
-> Signed-off-by: Jonas Dreßler <verdre@v0yd.nl>
-> ---
->   drivers/net/wireless/marvell/mwifiex/main.c      | 14 ++++++++++++++
->   drivers/net/wireless/marvell/mwifiex/main.h      |  1 +
->   .../net/wireless/marvell/mwifiex/sta_cmdresp.c   | 16 ++++++++++++++++
->   3 files changed, 31 insertions(+)
-> 
-> diff --git a/drivers/net/wireless/marvell/mwifiex/main.c b/drivers/net/wireless/marvell/mwifiex/main.c
-> index 19b996c6a260..5ab2ad4c7006 100644
-> --- a/drivers/net/wireless/marvell/mwifiex/main.c
-> +++ b/drivers/net/wireless/marvell/mwifiex/main.c
-> @@ -226,6 +226,19 @@ static int mwifiex_process_rx(struct mwifiex_adapter *adapter)
->   	return 0;
->   }
->   
-> +static void maybe_quirk_fw_disable_ds(struct mwifiex_adapter *adapter)
-> +{
-> +	struct mwifiex_private *priv = mwifiex_get_priv(adapter, MWIFIEX_BSS_ROLE_STA);
-> +	struct mwifiex_ver_ext ver_ext;
-> +
-> +	set_bit(MWIFIEX_IS_REQUESTING_FW_VEREXT, &adapter->work_flags);
-> +
-> +	memset(&ver_ext, 0, sizeof(ver_ext));
-> +	ver_ext.version_str_sel = 1;
-> +	mwifiex_send_cmd(priv, HostCmd_CMD_VERSION_EXT,
-> +			 HostCmd_ACT_GEN_GET, 0, &ver_ext, false);
-> +}
-> +
->   /*
->    * The main process.
->    *
-> @@ -356,6 +369,7 @@ int mwifiex_main_process(struct mwifiex_adapter *adapter)
->   			if (adapter->hw_status == MWIFIEX_HW_STATUS_INIT_DONE) {
->   				adapter->hw_status = MWIFIEX_HW_STATUS_READY;
->   				mwifiex_init_fw_complete(adapter);
-> +				maybe_quirk_fw_disable_ds(adapter);
->   			}
->   		}
->   
-> diff --git a/drivers/net/wireless/marvell/mwifiex/main.h b/drivers/net/wireless/marvell/mwifiex/main.h
-> index 90012cbcfd15..1e829d84b1f6 100644
-> --- a/drivers/net/wireless/marvell/mwifiex/main.h
-> +++ b/drivers/net/wireless/marvell/mwifiex/main.h
-> @@ -524,6 +524,7 @@ enum mwifiex_adapter_work_flags {
->   	MWIFIEX_IS_SUSPENDED,
->   	MWIFIEX_IS_HS_CONFIGURED,
->   	MWIFIEX_IS_HS_ENABLING,
-> +	MWIFIEX_IS_REQUESTING_FW_VEREXT,
->   };
->   
->   struct mwifiex_band_config {
-> diff --git a/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c b/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c
-> index 6b5d35d9e69f..8e49ebca1847 100644
-> --- a/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c
-> +++ b/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c
-> @@ -708,6 +708,22 @@ static int mwifiex_ret_ver_ext(struct mwifiex_private *priv,
->   {
->   	struct host_cmd_ds_version_ext *ver_ext = &resp->params.verext;
->   
-> +	if (test_and_clear_bit(MWIFIEX_IS_REQUESTING_FW_VEREXT, &priv->adapter->work_flags)) {
-> +		if (strncmp(ver_ext->version_str, "ChipRev:20, BB:9b(10.00), RF:40(21)", 128) == 0) {
-> +			struct mwifiex_ds_auto_ds auto_ds = {
-> +				.auto_ds = DEEP_SLEEP_OFF,
-> +			};
-> +
-> +			mwifiex_dbg(priv->adapter, MSG,
-> +				    "Bad HW revision detected, disabling deep sleep\n");
-> +
-> +			mwifiex_send_cmd(priv, HostCmd_CMD_802_11_PS_MODE_ENH,
-> +					 DIS_AUTO_PS, BITMAP_AUTO_DS, &auto_ds, false);
-> +		}
-> +
-> +		return 0;
-> +	}
+Actually we also need a case where debugging is required when the
+logical link is
+up (so that packets flow from kernel to SerDes continuously) but the
+physical link
+is down. We will change the commit description since it is giving the
+wrong impression.
+A command to change physical link up/down with no relation to ifconfig
+is needed.
 
-mwifiex_send_cmd() may return an error
-
-> +
->   	if (version_ext) {
->   		version_ext->version_str_sel = ver_ext->version_str_sel;
->   		memcpy(version_ext->version_str, ver_ext->version_str,
-> 
+Thanks,
+Sundeep
