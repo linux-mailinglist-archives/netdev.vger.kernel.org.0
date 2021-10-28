@@ -2,85 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EA0743E3AB
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 16:27:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C93EA43E3F6
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 16:39:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231252AbhJ1O3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 10:29:42 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:14875 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231229AbhJ1O3m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 10:29:42 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Hg7DV4wnGz90QX;
-        Thu, 28 Oct 2021 22:27:06 +0800 (CST)
-Received: from dggpeml500006.china.huawei.com (7.185.36.76) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Thu, 28 Oct 2021 22:27:09 +0800
-Received: from compute.localdomain (10.175.112.70) by
- dggpeml500006.china.huawei.com (7.185.36.76) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Thu, 28 Oct 2021 22:27:08 +0800
-From:   Zhang Changzhong <zhangchangzhong@huawei.com>
-To:     Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        <kernel@pengutronix.de>, Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Zhang Changzhong <zhangchangzhong@huawei.com>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net v2 3/3] can: j1939: j1939_tp_cmd_recv(): check the dst address of TP.CM_BAM
-Date:   Thu, 28 Oct 2021 22:38:27 +0800
-Message-ID: <1635431907-15617-4-git-send-email-zhangchangzhong@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1635431907-15617-1-git-send-email-zhangchangzhong@huawei.com>
-References: <1635431907-15617-1-git-send-email-zhangchangzhong@huawei.com>
+        id S231361AbhJ1OlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 10:41:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56204 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231338AbhJ1Okz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Oct 2021 10:40:55 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1CD5060FC4;
+        Thu, 28 Oct 2021 14:38:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635431908;
+        bh=kPrstnTyZrITONhAWz59+Ws0V6aoLXFaxlZSrZphT1s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qJlOUK9yWpdYog1QmDYKgc/hfyVMq8OyxFdemYP2ReEKku9QbtEr4bjCr5p5zgXdo
+         raQCZF8l+mtMMBR2yMuehecd9h447JuwbrfHpKde3af9JRhVr4waH5SAHshj7nfST2
+         7f6SGMBKHIwmKplemKFdCypMlHhd0CBiNRp8FeGyOuMplEIi/5S1nHxFnooAFjrzk7
+         cTLbzGSTnHeFQV25fqJnLK33sYonMh9uGC/zghFDmfNMwTdGmtXbX5SBo8lgmSPH3c
+         /my70EkQbFPq0nfxmOHrlZ/dUvBB2QHMLtwtU5Ct613onogsM4d0eS/b6FnFZapkMZ
+         Bi7Y4DeJyG6Ww==
+Date:   Thu, 28 Oct 2021 07:38:27 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Karsten Graul <kgraul@linux.ibm.com>
+Cc:     Tony Lu <tonylu@linux.alibaba.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org, jacob.qi@linux.alibaba.com,
+        xuanzhuo@linux.alibaba.com, guwen@linux.alibaba.com,
+        dust.li@linux.alibaba.com
+Subject: Re: [PATCH net 1/4] Revert "net/smc: don't wait for send buffer
+ space when data was already sent"
+Message-ID: <20211028073827.421a68d7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <c6396899-cf99-e695-fc90-3e21e95245ed@linux.ibm.com>
+References: <20211027085208.16048-1-tonylu@linux.alibaba.com>
+        <20211027085208.16048-2-tonylu@linux.alibaba.com>
+        <9bbd05ac-5fa5-7d7a-fe69-e7e072ccd1ab@linux.ibm.com>
+        <20211027080813.238b82ce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <06ae0731-0b9b-a70d-6479-de6fe691e25d@linux.ibm.com>
+        <20211027084710.1f4a4ff1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <c6396899-cf99-e695-fc90-3e21e95245ed@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.70]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500006.china.huawei.com (7.185.36.76)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The TP.CM_BAM message must be sent to the global address [1], so add a
-check to drop TP.CM_BAM sent to a non-global address.
+On Thu, 28 Oct 2021 13:57:55 +0200 Karsten Graul wrote:
+> So how to deal with all of this? Is it an accepted programming error
+> when a user space program gets itself into this kind of situation?
+> Since this problem depends on internal send/recv buffer sizes such a
+> program might work on one system but not on other systems.
 
-Without this patch, the receiver will treat the following packets as
-normal RTS/CTS tranport:
-18EC0102#20090002FF002301
-18EB0102#0100000000000000
-18EB0102#020000FFFFFFFFFF
+It's a gray area so unless someone else has a strong opinion we can
+leave it as is.
 
-[1] SAE-J1939-82 2015 A.3.3 Row 1.
+> At the end the question might be if either such kind of a 'deadlock'
+> is acceptable, or if it is okay to have send() return lesser bytes
+> than requested.
 
-Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
----
- net/can/j1939/transport.c | 5 +++++
- 1 file changed, 5 insertions(+)
+Yeah.. the thing is we have better APIs for applications to ask not to
+block than we do for applications to block. If someone really wants to
+wait for all data to come out for performance reasons they will
+struggle to get that behavior. 
 
-diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
-index 05eb3d0..a271688 100644
---- a/net/can/j1939/transport.c
-+++ b/net/can/j1939/transport.c
-@@ -2023,6 +2023,11 @@ static void j1939_tp_cmd_recv(struct j1939_priv *priv, struct sk_buff *skb)
- 		extd = J1939_ETP;
- 		fallthrough;
- 	case J1939_TP_CMD_BAM:
-+		if (cmd == J1939_TP_CMD_BAM && !j1939_cb_is_broadcast(skcb)) {
-+			netdev_err_once(priv->ndev, "%s: BAM to unicast (%02x), ignoring!\n",
-+					__func__, skcb->addr.sa);
-+			return;
-+		}
- 		fallthrough;
- 	case J1939_TP_CMD_RTS:
- 		if (skcb->addr.type != extd)
--- 
-2.9.5
-
+We also have the small yet pernicious case where the buffer is
+completely full at sendmsg() time, IOW we didn't send a single byte.
+We won't be able to return "partial" results and deadlock. IDK if your
+application can hit this, but it should really use non-blocking send if
+it doesn't want blocking behavior..
