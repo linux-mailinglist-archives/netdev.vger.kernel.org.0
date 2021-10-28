@@ -2,153 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CA1D43DC89
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 09:56:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2321843DCA5
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 10:07:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229877AbhJ1H7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 03:59:15 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:25321 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229626AbhJ1H7O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 03:59:14 -0400
-Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HfySj5lDbzbhNc;
-        Thu, 28 Oct 2021 15:52:05 +0800 (CST)
-Received: from [10.67.103.235] (10.67.103.235) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.15; Thu, 28 Oct 2021 15:56:45 +0800
-Subject: Re: [PATCH V10 6/8] PCI/P2PDMA: Add a 10-Bit Tag check in P2PDMA
-To:     Bjorn Helgaas <helgaas@kernel.org>
-References: <20211027212048.GA252528@bhelgaas>
-CC:     <hch@infradead.org>, <kw@linux.com>, <logang@deltatee.com>,
-        <leon@kernel.org>, <linux-pci@vger.kernel.org>,
-        <rajur@chelsio.com>, <hverkuil-cisco@xs4all.nl>,
-        <linux-media@vger.kernel.org>, <netdev@vger.kernel.org>
-From:   Dongdong Liu <liudongdong3@huawei.com>
-Message-ID: <5773efae-8fb6-bd63-0486-dfcd14d3c8ae@huawei.com>
-Date:   Thu, 28 Oct 2021 15:56:45 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        id S229868AbhJ1IKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 04:10:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56806 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229626AbhJ1IKQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 04:10:16 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90091C061570;
+        Thu, 28 Oct 2021 01:07:49 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id g10so21099142edj.1;
+        Thu, 28 Oct 2021 01:07:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=PQMilxdsobKkZotwzejJFonaMjfKjSknBXqsMZvx0wQ=;
+        b=AgFvAT9zwTDHSJqVCaMM2YgoGVQzzjcy7QBETqPIPji32DGYNI8PEyDIVqA8cJwvif
+         dmN3LV517QGqQqfx+HOix1xqkSSPk4Srl70wIICbhOLQcw/BWxWrsrGrODN1AZq83omx
+         J8w6NnMINGhee0OwIzXhNJQlcGyNoO8BbluvfQojTHRRATW6haxblgkLAHTZK0heCNTL
+         asMRvE7sTKQt+LOdF7mkxNCQZjVVYktDjaK/ib9E7zS+7BHkKgrxLrcByJsfWA9J2Dkj
+         eRDcfSu63in8CUEU5QJIht7nTNeQnFQDBaicKq8DdGg4uWSnJrAXShOCcjktCOAX4keQ
+         V83A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=PQMilxdsobKkZotwzejJFonaMjfKjSknBXqsMZvx0wQ=;
+        b=ddzb1ZB8m8uvv8fSajuAPrMUYxtbeFr9kKpm4PRV4QbqxHqtWCrom7rlH7vYtvGjE+
+         fGQgR7NTRdGjKJgi9EPj+GWLUgpVOX2kWIbQMcClYqstC3uQl2OIGw00hGtWAHxzPme5
+         7gwwtejQ1S0vr54ije9RA3rPlblq2Qw6HURl2E30Qx4vUQf/oUQLTRW85VSeDrIpJA6O
+         TKuoYNQMitwnIF6/oNzbCBdeyxw9g7IRLvxhB2ruPXyFNuwC7YgKGHbV3ky0HJPx76/M
+         Xc8C2HLxZOzBAaABmVl6cwCFCjFTByWKOqFEPABJdMq6Ls7mNW8zvDRWC8K4IQFzB2dY
+         wKSw==
+X-Gm-Message-State: AOAM530mK2ufKisRF4DSIZYArK/VT5JQ4h+dOJI5N5sEl12fd/fD8ATX
+        ludGKkSbc8Vc6oaFHx85Cw+JHms5K4I+t4K20hktXGVpvGo=
+X-Google-Smtp-Source: ABdhPJxP9iHBd7oEN+ZaEwTrOEY8H/DsYWGvPaQrRs80Sbt+ZjOPfv8zkxMu6fMkP9aMIIkj9DaNcJh2b12XhDuFEBY=
+X-Received: by 2002:a17:907:1c9e:: with SMTP id nb30mr3500564ejc.141.1635408468100;
+ Thu, 28 Oct 2021 01:07:48 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20211027212048.GA252528@bhelgaas>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.103.235]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
+References: <20211028073729.24408-1-verdre@v0yd.nl>
+In-Reply-To: <20211028073729.24408-1-verdre@v0yd.nl>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 28 Oct 2021 11:07:11 +0300
+Message-ID: <CAHp75Ve3Rp7AziB8k8ESM41xEV8uNWD21Wh_MPcRqfDcJ0QR-w@mail.gmail.com>
+Subject: Re: [PATCH] mwifiex: Add quirk to disable deep sleep with certain
+ hardware revision
+To:     =?UTF-8?Q?Jonas_Dre=C3=9Fler?= <verdre@v0yd.nl>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Oct 28, 2021 at 10:38 AM Jonas Dre=C3=9Fler <verdre@v0yd.nl> wrote:
+>
+> The 88W8897 PCIe+USB card in the hardware revision 20 apparently has a
+> hardware issue where the card wakes up from deep sleep randomly and very
+> often, somewhat depending on the card activity, maybe the hardware has a
+> floating wakeup pin or something.
+>
+> Those continuous wakeups prevent the card from entering host sleep when
+> the computer suspends. And because the host won't answer to events from
+> the card anymore while it's suspended, the firmwares internal
+> powersaving state machine seems to get confused and the card can't sleep
+
+power saving
+
+> anymore at all after that.
+>
+> Since we can't work around that hardware bug in the firmware, let's
+> get the hardware revision string from the firmware and match it with
+> known bad revisions. Then disable auto deep sleep for those revisions,
+> which makes sure we no longer get those spurious wakeups.
+
+...
+
+> +static void maybe_quirk_fw_disable_ds(struct mwifiex_adapter *adapter)
+> +{
+> +       struct mwifiex_private *priv =3D mwifiex_get_priv(adapter, MWIFIE=
+X_BSS_ROLE_STA);
+> +       struct mwifiex_ver_ext ver_ext;
+
+> +       set_bit(MWIFIEX_IS_REQUESTING_FW_VEREXT, &adapter->work_flags);
+
+This does not bring atomicity to this function.
+You need test_and_set_bit().
+
+Otherwise the bit may very well be cleared already here. And function
+may enter here again.
+
+If this state machine is protected by lock or so, then why not use
+__set_bit() to show this clearly?
+
+> +       memset(&ver_ext, 0, sizeof(ver_ext));
+> +       ver_ext.version_str_sel =3D 1;
+> +       mwifiex_send_cmd(priv, HostCmd_CMD_VERSION_EXT,
+> +                        HostCmd_ACT_GEN_GET, 0, &ver_ext, false);
+> +}
 
 
-On 2021/10/28 5:20, Bjorn Helgaas wrote:
-> On Sat, Oct 09, 2021 at 06:49:36PM +0800, Dongdong Liu wrote:
->> Add a 10-Bit Tag check in the P2PDMA code to ensure that a device with
->> 10-Bit Tag Requester doesn't interact with a device that does not
->> support 10-Bit Tag Completer.
->
-> Shouldn't this also take into account Extended Tags (8 bits)?  I think
-> the only tag size guaranteed to be supported is 5 bits.
-As all PCIe completers are required to support 8-bit tags, seems no need
-to take into account Extended Tags.
->
->> Before that happens, the kernel should emit a warning.
->
-> The warning is nice, but the critical thing is that the P2PDMA mapping
-> should fail so we don't attempt DMA in this situation.  I guess that's
-> sort of what you're saying with "ensure that a device ... doesn't
-> interact with a device ..."
-Yes, that is.
->
->> "echo 0 > /sys/bus/pci/devices/.../10bit_tag" to disable 10-Bit Tag
->> Requester for PF device.
->>
->> "echo 0 > /sys/bus/pci/devices/.../sriov_vf_10bit_tag_ctl" to disable
->> 10-Bit Tag Requester for VF device.
->>
->> Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
->> Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
->> ---
->>  drivers/pci/p2pdma.c | 48 ++++++++++++++++++++++++++++++++++++++++++++
->>  1 file changed, 48 insertions(+)
->>
->> diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
->> index 50cdde3e9a8b..804e390f4c22 100644
->> --- a/drivers/pci/p2pdma.c
->> +++ b/drivers/pci/p2pdma.c
->> @@ -19,6 +19,7 @@
->>  #include <linux/random.h>
->>  #include <linux/seq_buf.h>
->>  #include <linux/xarray.h>
->> +#include "pci.h"
->>
->>  enum pci_p2pdma_map_type {
->>  	PCI_P2PDMA_MAP_UNKNOWN = 0,
->> @@ -410,6 +411,50 @@ static unsigned long map_types_idx(struct pci_dev *client)
->>  		(client->bus->number << 8) | client->devfn;
->>  }
->>
->> +static bool pci_10bit_tags_unsupported(struct pci_dev *a,
->> +				       struct pci_dev *b,
->> +				       bool verbose)
->> +{
->> +	bool req;
->> +	bool comp;
->> +	u16 ctl;
->> +	const char *str = "10bit_tag";
->> +
->> +	if (a->is_virtfn) {
->> +#ifdef CONFIG_PCI_IOV
->> +		req = !!(a->physfn->sriov->ctrl &
->> +			 PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN);
->> +#endif
->> +	} else {
->> +		pcie_capability_read_word(a, PCI_EXP_DEVCTL2, &ctl);
->> +		req = !!(ctl & PCI_EXP_DEVCTL2_10BIT_TAG_REQ_EN);
->> +	}
->> +
->> +	comp = !!(b->devcap2 & PCI_EXP_DEVCAP2_10BIT_TAG_COMP);
->> +	/* 10-bit tags not enabled on requester */
->> +	if (!req)
->> +		return false;
->> +
->> +	 /* Completer can handle anything */
->> +	if (comp)
->> +		return false;
->> +
->> +	if (!verbose)
->> +		return true;
->> +
->> +	pci_warn(a, "cannot be used for peer-to-peer DMA as 10-Bit Tag Requester enable is set for this device, but peer device (%s) does not support the 10-Bit Tag Completer\n",
->> +		 pci_name(b));
->> +
->> +	if (a->is_virtfn)
->> +		str = "sriov_vf_10bit_tag_ctl";
->> +
->> +	pci_warn(a, "to disable 10-Bit Tag Requester for this device, echo 0 > /sys/bus/pci/devices/%s/%s\n",
->> +		 pci_name(a), str);
->> +
->> +	return true;
->> +}
->> +
->>  /*
->>   * Calculate the P2PDMA mapping type and distance between two PCI devices.
->>   *
->> @@ -532,6 +577,9 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
->>  		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
->>  	}
->>  done:
->> +	if (pci_10bit_tags_unsupported(client, provider, verbose))
->> +		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
->> +
->>  	rcu_read_lock();
->>  	p2pdma = rcu_dereference(provider->p2pdma);
->>  	if (p2pdma)
->> --
->> 2.22.0
->>
-> .
->
+--=20
+With Best Regards,
+Andy Shevchenko
