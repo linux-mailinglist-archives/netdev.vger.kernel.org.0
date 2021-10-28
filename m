@@ -2,124 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E0CF43D957
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 04:30:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B37F43D962
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 04:36:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229624AbhJ1CdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 22:33:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:35127 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229534AbhJ1CdP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 22:33:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635388248;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Q3qRktrDZtvaYh1K6rXXgHvHdfmThWB3M78MTr+j2As=;
-        b=gyPK/qTZEYUP8P9a/a+Y/NoIm4+XeG/TKI4Y/6CQVRasbuK6kazRwpeBcW2p5EhxSibcdY
-        v/LJzeaJnczu9dBGO9VlkOp6ZF50rx+fW2ikyOGeu4jpQgD/9Rchhix7w+aAp5Wawl4068
-        yvtD34dtvrZ5+KEEYflaXeF3sNZa/i0=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-18-SNJmWPkwM_GxUK-v8J1Pfw-1; Wed, 27 Oct 2021 22:30:47 -0400
-X-MC-Unique: SNJmWPkwM_GxUK-v8J1Pfw-1
-Received: by mail-lf1-f71.google.com with SMTP id f13-20020a056512228d00b003ffd53671d8so1483277lfu.14
-        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 19:30:47 -0700 (PDT)
+        id S229775AbhJ1CjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 22:39:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40282 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229534AbhJ1CjO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 22:39:14 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE9BCC061570;
+        Wed, 27 Oct 2021 19:36:48 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id f8so3353310plo.12;
+        Wed, 27 Oct 2021 19:36:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CTo9MfxKH55wjLtTMJ/Hiz4KcpnE5YN1Fli+g0csIAI=;
+        b=cmbCEmBFoVPY3oPTrZnlc4Cw0MXrYRaG7wxKL+MZHUSYA5jYkUBa0liCtFkbMvBeUP
+         1IULk061tq/MDo+hfHblPX9gTCWVz1nBppI6qDgqZgoHHsTIY+e4MMs47gR7E9rWA0dp
+         CEAClX0loM0lnpKgNCkXr5r+RbkYMdDAgkjKC0TMjlWYBnu+FCjPY8W4wvRpt3jXP7JC
+         hJC6sp2+xQnlo4Fo4QpcsZyboqbTfEHnkJhZEp1AkfoNNtbEpSMbruoXZnxF835lTwCB
+         WENGO2Q5U93rFzQuiooRDLVjTfeZlwWc/vLj56sqBrCTp8fqVbMhW4rXvH5pOrPLbWJv
+         JGcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Q3qRktrDZtvaYh1K6rXXgHvHdfmThWB3M78MTr+j2As=;
-        b=fevOlT5U2JeO7Rljd61OMX12xKForufn7y2rGmvMSfA3r70A/+0046AZZOgVXuCzFC
-         CDjhvSU7X+tLLqaSfqCtHlJ7XQEA/GBhWxSna7Y9RoTYSjpc9brLG8/uNUdSrTQkD3lG
-         W7yRHkj/eEwdb5GzLzRa/NFK8TAHIRSLFD8+RZZs9pdcIv5b12i+sK/iIPaKYeH0PLNm
-         AqdHMC4vhLTBsIeIOaLNbGAh3O8pG9yUxn0lx7tQEmgpNS8KuKnYOj42EnHOUCggIsqx
-         dBJOgLPDMrKrk4H4GRhqN+cQ0DXfPOEiXlQgmrHBcEQ1uGbdHuxgn7vnJvYbtP/G5iDl
-         Tzkw==
-X-Gm-Message-State: AOAM533NWBkn4ObhVK7NBGxuuNp3ILD2vxWGu/cJFJ9MX/ovqdrtQAu0
-        WI/3enRPYxIgcYgPw9NQYFFCQIL5ipsXXS2InykEgGb9T8KB4/eeCTt60dS1kWx9rXKs72sttQs
-        FjVUaP1RenZcZT4Rw3rylnaqcm55P1H5B
-X-Received: by 2002:a05:6512:1291:: with SMTP id u17mr1462660lfs.84.1635388245922;
-        Wed, 27 Oct 2021 19:30:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwv40ZuZY7bdVdkZG2ijgIgHr8upPl1ETTaDY/LJKvRVhoK0WuC8SyD/3/Y9K6G6AJO+LYjny9BO9rozIKbw2Y=
-X-Received: by 2002:a05:6512:1291:: with SMTP id u17mr1462642lfs.84.1635388245770;
- Wed, 27 Oct 2021 19:30:45 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CTo9MfxKH55wjLtTMJ/Hiz4KcpnE5YN1Fli+g0csIAI=;
+        b=ggf0zJsMlmzwhsQpAjt0OJsYcd9vT3oqFbt84pjonlfVHT46jmC9G1s3eBow5MaOr3
+         3oKgouP0fX4gMe/4CazhAR/eZ6WyXw4iSG3Cqt7GDzkVO0rJEjyeaRcVpkfApk1ilNDZ
+         Ou240xuYPiDj91qszmhUu9u3CkRIFC0+2LL4dxIB5T4M9Zlgms+SBozTakhJjwpzmtOC
+         Y1wZI79ljf/jLJ2evYWGu3e8qB4EJTAtVupdxg6g/Ygio0aQDR4sAL4h2d+Yvc42t6Aj
+         Q0pMVlewOKTFX8+QOnkgzGOL5p1ahWe+PQjSChWEvtFlHSgf8jwCKhWCF/QJAZQhx5pM
+         KkDQ==
+X-Gm-Message-State: AOAM530poYScM0k5mIHLcLqyIJ0IUjKRvRBKKBq14lO2tYbTNFZuRFEd
+        uDtZbWrSYfzSdYLh3Ojc+cI=
+X-Google-Smtp-Source: ABdhPJy6GB3GsP2bVUUkb8NLWLqRwVu5sBtlJy3usQqlgXVpcnrbkPnzzIcn/J0oze34el3DI6dEgg==
+X-Received: by 2002:a17:902:7101:b0:140:3e2c:1cbe with SMTP id a1-20020a170902710100b001403e2c1cbemr1194574pll.83.1635388608285;
+        Wed, 27 Oct 2021 19:36:48 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id r14sm949155pgn.91.2021.10.27.19.36.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Oct 2021 19:36:48 -0700 (PDT)
+From:   luo penghao <cgel.zte@gmail.com>
+X-Google-Original-From: luo penghao <luo.penghao@zte.com.cn>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luo penghao <luo.penghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH ipsec-next v2] xfrm: Remove redundant fields and related parentheses
+Date:   Thu, 28 Oct 2021 02:36:39 +0000
+Message-Id: <20211028023639.9914-1-luo.penghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211027152012.3393077-1-kuba@kernel.org> <20211027113033-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20211027113033-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 28 Oct 2021 10:30:34 +0800
-Message-ID: <CACGkMEtSTf3xiBaUeoyW4B=uTst5B3Ew2yfWe7bcpiLm4FiHYA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] net: virtio: use eth_hw_addr_set()
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, davem <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 27, 2021 at 11:31 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Wed, Oct 27, 2021 at 08:20:12AM -0700, Jakub Kicinski wrote:
-> > Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
-> > of VLANs...") introduced a rbtree for faster Ethernet address look
-> > up. To maintain netdev->dev_addr in this tree we need to make all
-> > the writes to it go through appropriate helpers.
-> >
-> > Even though the current code uses dev->addr_len the we can switch
-> > to eth_hw_addr_set() instead of dev_addr_set(). The netdev is
-> > always allocated by alloc_etherdev_mq() and there are at least two
-> > places which assume Ethernet address:
-> >  - the line below calling eth_hw_addr_random()
-> >  - virtnet_set_mac_address() -> eth_commit_mac_addr_change()
-> >
-> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
->
-> Acked-by: Michael S. Tsirkin <mst@redhat.com>
+The variable err is not necessary in such places. It should be revmoved
+for the simplicity of the code. This will cause the double parentheses
+to be redundant, and the inner parentheses should be deleted.
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+The clang_analyzer complains as follows:
 
->
-> > ---
-> > v2: - actually switch to eth_hw_addr_set() not dev_addr_set()
-> >     - resize the buffer to ETH_ALEN
-> >     - pass ETH_ALEN instead of dev->dev_addr to virtio_cread_bytes()
-> >
-> > CC: mst@redhat.com
-> > CC: jasowang@redhat.com
-> > CC: virtualization@lists.linux-foundation.org
-> > ---
-> >  drivers/net/virtio_net.c | 10 +++++++---
-> >  1 file changed, 7 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index c501b5974aee..cc79343cd220 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -3177,12 +3177,16 @@ static int virtnet_probe(struct virtio_device *vdev)
-> >       dev->max_mtu = MAX_MTU;
-> >
-> >       /* Configuration may specify what MAC to use.  Otherwise random. */
-> > -     if (virtio_has_feature(vdev, VIRTIO_NET_F_MAC))
-> > +     if (virtio_has_feature(vdev, VIRTIO_NET_F_MAC)) {
-> > +             u8 addr[ETH_ALEN];
-> > +
-> >               virtio_cread_bytes(vdev,
-> >                                  offsetof(struct virtio_net_config, mac),
-> > -                                dev->dev_addr, dev->addr_len);
-> > -     else
-> > +                                addr, ETH_ALEN);
-> > +             eth_hw_addr_set(dev, addr);
-> > +     } else {
-> >               eth_hw_addr_random(dev);
-> > +     }
-> >
-> >       /* Set up our device-specific information */
-> >       vi = netdev_priv(dev);
-> > --
-> > 2.31.1
->
+net/xfrm/xfrm_input.c:533: warning:
+net/xfrm/xfrm_input.c:563: warning:
+
+Although the value stored to 'err' is used in the enclosing expression,
+the value is never actually read from 'err'.
+
+Changes in v2:
+
+Modify the title, because v2 removes the brackets.
+Remove extra parentheses.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: luo penghao <luo.penghao@zte.com.cn>
+---
+ net/xfrm/xfrm_input.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
+index 3df0861..70a8c36 100644
+--- a/net/xfrm/xfrm_input.c
++++ b/net/xfrm/xfrm_input.c
+@@ -530,7 +530,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ 				goto drop;
+ 			}
+ 
+-			if ((err = xfrm_parse_spi(skb, nexthdr, &spi, &seq)) != 0) {
++			if (xfrm_parse_spi(skb, nexthdr, &spi, &seq)) {
+ 				XFRM_INC_STATS(net, LINUX_MIB_XFRMINHDRERROR);
+ 				goto drop;
+ 			}
+@@ -560,7 +560,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ 	}
+ 
+ 	seq = 0;
+-	if (!spi && (err = xfrm_parse_spi(skb, nexthdr, &spi, &seq)) != 0) {
++	if (!spi && xfrm_parse_spi(skb, nexthdr, &spi, &seq)) {
+ 		secpath_reset(skb);
+ 		XFRM_INC_STATS(net, LINUX_MIB_XFRMINHDRERROR);
+ 		goto drop;
+-- 
+2.15.2
+
 
