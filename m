@@ -2,69 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4557243E069
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 14:00:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6E4243E097
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 14:13:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230285AbhJ1MCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 08:02:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45722 "EHLO mail.kernel.org"
+        id S230240AbhJ1MQE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 08:16:04 -0400
+Received: from mga01.intel.com ([192.55.52.88]:9811 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230210AbhJ1MCe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Oct 2021 08:02:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id BFCFA61130;
-        Thu, 28 Oct 2021 12:00:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635422407;
-        bh=EFPoOzbSRGaasnO2PlS6EWDHk5rheyoOgN5sDEEmjIk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=V6DdNAf/DkyOqBOEI+X1VQqrrKdKKqMbWDGDDIkm4+L6IDBHVxOnQJoqSgywmKkn4
-         p7M12C2XenLgvqUSLGVdugGcOHU6DFwMU/Y6X4R4lXTXmh/qRzydD6X/MnjuCEBjMn
-         NW5LD931knIhtWMmC2TnZOkKyTZYXdplZs5I4jGpkoZNEdf/yMyPLrLHto4Ut39Y3C
-         z8ZQD1Ns7hg+aw55i2voJDnXUs75ns5LeuVucaYsY0rBxawP6EyxozEYKf1DLc96+t
-         M9CTvHE0Wa0o9oFgvEI3Jc36kfqVT8X/ayQK/Gs+ToA37U7S9kDB635FCa2yTdNIF5
-         ne5Zou5ORYE3w==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AE68060987;
-        Thu, 28 Oct 2021 12:00:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S230135AbhJ1MQA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Oct 2021 08:16:00 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10150"; a="253961430"
+X-IronPort-AV: E=Sophos;i="5.87,189,1631602800"; 
+   d="scan'208";a="253961430"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2021 05:13:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,189,1631602800"; 
+   d="scan'208";a="466106547"
+Received: from unknown (HELO localhost.igk.intel.com) ([10.102.22.231])
+  by orsmga002.jf.intel.com with ESMTP; 28 Oct 2021 05:13:29 -0700
+From:   Maciej Machnikowski <maciej.machnikowski@intel.com>
+To:     maciej.machnikowski@intel.com, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org
+Cc:     richardcochran@gmail.com, abyagowi@fb.com,
+        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kselftest@vger.kernel.org, idosch@idosch.org,
+        mkubecek@suse.cz, saeed@kernel.org, michael.chan@broadcom.com
+Subject: [RFC v6 net-next 0/6] Add RTNL interface for SyncE
+Date:   Thu, 28 Oct 2021 13:58:26 +0200
+Message-Id: <20211028115832.1385376-1-maciej.machnikowski@intel.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 1/1] vmxnet3: do not stop tx queues after
- netif_device_detach()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163542240770.19547.1805813985731436660.git-patchwork-notify@kernel.org>
-Date:   Thu, 28 Oct 2021 12:00:07 +0000
-References: <20211026215031.5157-1-dongli.zhang@oracle.com>
-In-Reply-To: <20211026215031.5157-1-dongli.zhang@oracle.com>
-To:     Dongli Zhang <dongli.zhang@oracle.com>
-Cc:     pv-drivers@vmware.com, netdev@vger.kernel.org, doshir@vmware.com,
-        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Synchronous Ethernet networks use a physical layer clock to syntonize
+the frequency across different network elements.
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+Basic SyncE node defined in the ITU-T G.8264 consist of an Ethernet
+Equipment Clock (EEC) and have the ability to recover synchronization
+from the synchronization inputs - either traffic interfaces or external
+frequency sources.
+The EEC can synchronize its frequency (syntonize) to any of those sources.
+It is also able to select synchronization source through priority tables
+and synchronization status messaging. It also provides neccessary
+filtering and holdover capabilities
 
-On Tue, 26 Oct 2021 14:50:31 -0700 you wrote:
-> The netif_device_detach() conditionally stops all tx queues if the queues
-> are running. There is no need to call netif_tx_stop_all_queues() again.
-> 
-> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
-> ---
-> While I do not have vmware env, I did test with QEMU + vmxnet3.
-> 
-> [...]
+This patch series introduces basic interface for reading the Ethernet
+Equipment Clock (EEC) state on a SyncE capable device. This state gives
+information about the source of the syntonization signal (ether my port,
+or any external one) and the state of EEC. This interface is required\
+to implement Synchronization Status Messaging on upper layers.
 
-Here is the summary with links:
-  - [1/1] vmxnet3: do not stop tx queues after netif_device_detach()
-    https://git.kernel.org/netdev/net/c/9159f102402a
+v2:
+- removed whitespace changes
+- fix issues reported by test robot
+v3:
+- Changed naming from SyncE to EEC
+- Clarify cover letter and commit message for patch 1
+v4:
+- Removed sync_source and pin_idx info
+- Changed one structure to attributes
+- Added EEC_SRC_PORT flag to indicate that the EEC is synchronized
+  to the recovered clock of a port that returns the state
+v5:
+- add EEC source as an optiona attribute
+- implement support for recovered clocks
+- align states returned by EEC to ITU-T G.781
+v6:
+- fix EEC clock state reporting
+- add documentation
+- fix descriptions in code comments
 
-You are awesome, thank you!
+Maciej Machnikowski (6):
+  ice: add support detecting features based on netlist
+  rtnetlink: Add new RTM_GETEECSTATE message to get SyncE status
+  ice: add support for reading SyncE DPLL state
+  rtnetlink: Add support for SyncE recovered clock configuration
+  ice: add support for SyncE recovered clocks
+  docs: net: Add description of SyncE interfaces
+
+ Documentation/networking/synce.rst            |  88 ++++++
+ drivers/net/ethernet/intel/ice/ice.h          |   7 +
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  94 ++++++-
+ drivers/net/ethernet/intel/ice/ice_common.c   | 175 ++++++++++++
+ drivers/net/ethernet/intel/ice/ice_common.h   |  17 +-
+ drivers/net/ethernet/intel/ice/ice_devids.h   |   3 +
+ drivers/net/ethernet/intel/ice/ice_lib.c      |   6 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     | 138 ++++++++++
+ drivers/net/ethernet/intel/ice/ice_ptp.c      |  34 +++
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.c   |  98 +++++++
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.h   |  25 ++
+ drivers/net/ethernet/intel/ice/ice_type.h     |   1 +
+ include/linux/netdevice.h                     |  33 +++
+ include/uapi/linux/if_link.h                  |  57 ++++
+ include/uapi/linux/rtnetlink.h                |  10 +
+ net/core/rtnetlink.c                          | 253 ++++++++++++++++++
+ security/selinux/nlmsgtab.c                   |   6 +-
+ 17 files changed, 1041 insertions(+), 4 deletions(-)
+ create mode 100644 Documentation/networking/synce.rst
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.26.3
 
