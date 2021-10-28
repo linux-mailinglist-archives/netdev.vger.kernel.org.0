@@ -2,157 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1618443E4E3
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 17:18:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C782243E4EF
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 17:20:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230070AbhJ1PVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 11:21:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43298 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229946AbhJ1PVA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 11:21:00 -0400
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1AFCC061570
-        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 08:18:33 -0700 (PDT)
-Received: by mail-ot1-x332.google.com with SMTP id 71-20020a9d034d000000b00553e24ce2b8so4368743otv.7
-        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 08:18:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=XslRbcCtEf6Nfyp1TMSp0icL2Pnffcrdcolgw4C/FmE=;
-        b=IR/MVzt439gw+pLk+Zd8s5mdG/SlLMePUV06CLwIK12o8LM11Ao67UiQ0KbVRXJ14w
-         tQTGcecGr2xYiKDTUlTRE13SvqtCsGXQKMfyNXzrwuLtchiBlfIFZeNdpZuqqi+OESdq
-         TpST9G3+J6mnhcqGzPC74qsD2ifltCSi5u0VX2J7Z/DzycdJF+GUzNu//J668321I11+
-         wllmToQWXtdx6DpM1Jx+riiLePMD974PLpWMgKCzaPxnJrBzcdJqOs+qduTTTrVYL7b4
-         7uyvP/x0/m/1GKmSfTv6tCglEuYEKxdOpo6kGe1WTDHbmaaUr13yJu3IQSHYSGH0gHj7
-         clhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=XslRbcCtEf6Nfyp1TMSp0icL2Pnffcrdcolgw4C/FmE=;
-        b=bNfcMCsgFIgSRCJjkUc85YgQhDdS80aeXAAWpa5i+iwnItC3qIfqF3tuJkeDh8Al/C
-         cNeP5EHFDsqvsAj76CRW9OZYYJh5TQIHx+c5D9LzcyRSkCOPVUK2OL6NrlvQ3UofeN1W
-         maLOj28rkRhu0BjXQHFaT90+SYWp2cSX8HXkjXq7gp2C/4oIO010NZH4/k8efB1QsB5j
-         GdePVcEf88A15onSJ3En/NOAN2UEPLuUvC6V3BJ3jRxOj3Y6C0hc2htDpY1YYFGbkApQ
-         UC0+YF6/tqN4BS53QcgwBRDfD9l3ji3sM6nWUqHgD0YIwsUIM0ObSnXvcBJPtPPNCe8e
-         yuYw==
-X-Gm-Message-State: AOAM532pnlNtyAkP4ePKukvmsDLQtrvki0Q4YUWBVi1WJKVm3ee6NkhI
-        A61Uqxi/C7JfTq9FcdEkMnQtnQzAnp4=
-X-Google-Smtp-Source: ABdhPJx2shToJufck9BjCcCQJ/iSn5N8rVXXPL66qw4+2mvyrMPo9Y0t24lBDzXIvUkRuPmEcDrC4g==
-X-Received: by 2002:a9d:7655:: with SMTP id o21mr3930142otl.126.1635434312899;
-        Thu, 28 Oct 2021 08:18:32 -0700 (PDT)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id m23sm1101614oom.34.2021.10.28.08.18.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Oct 2021 08:18:32 -0700 (PDT)
-Message-ID: <472c8693-80cf-0a62-918e-81004fa8acea@gmail.com>
-Date:   Thu, 28 Oct 2021 09:18:31 -0600
+        id S230225AbhJ1PWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 11:22:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37720 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229946AbhJ1PWe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Oct 2021 11:22:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 2A464600CC;
+        Thu, 28 Oct 2021 15:20:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635434407;
+        bh=N9HATU/RdE4AmqtUtNfUazbOOw/U/4C+n+1rwZWqR3M=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=GmLOdYuLikleKZlcCAx1KQ7yp4LS57v/8nmAZGaUMgVyyD7SLxbVMnB8GdMpqCsUG
+         p6rVIHTxcpQ2MYuSp1NmECD6Dwa/Dpg6BKsvwIRAVs7bM+PzFUrT5zaDsMwgdmmpfF
+         5schoG4i1YxqTqib0Spta33SikleV3l/qzbEHzFtD3H7Wt022wnHT91ZDZYYwaMItU
+         ngCS+xc/+dXT2aEUF9Jhp1oVVwpnbor/Vl6hyOt8gzHWywsRqvdPj0KMXXbzIyrxjO
+         ZcLJ6zOCOB0yyotNpbEAdNbNHeAmptRBHY6l6+CgTDbW1I1K97mGqz4CgRa3KQkkbA
+         s9BkyIwFv5jWw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1A9E060A1B;
+        Thu, 28 Oct 2021 15:20:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.2.1
-Subject: Re: [PATCH iproute2-next v2] ip: add AMT support
-Content-Language: en-US
-To:     Taehee Yoo <ap420073@gmail.com>, stephen@networkplumber.org,
-        netdev@vger.kernel.org
-References: <20211026052808.1779-1-ap420073@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20211026052808.1779-1-ap420073@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v2] net: virtio: use eth_hw_addr_set()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163543440710.20393.2773877623899316813.git-patchwork-notify@kernel.org>
+Date:   Thu, 28 Oct 2021 15:20:07 +0000
+References: <20211027152012.3393077-1-kuba@kernel.org>
+In-Reply-To: <20211027152012.3393077-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, mst@redhat.com,
+        jasowang@redhat.com, virtualization@lists.linux-foundation.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/25/21 11:28 PM, Taehee Yoo wrote:
-> +static void amt_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
-> +{
-> +	if (!tb)
-> +		return;
-> +
-> +	if (tb[IFLA_AMT_MODE]) {
-> +		print_string(PRINT_ANY,
-> +			     "mode",
-> +			     "%s ",
-> +			     modename[rta_getattr_u32(tb[IFLA_AMT_MODE])]);
-> +	}
-> +
-> +	if (tb[IFLA_AMT_GATEWAY_PORT]) {
-> +		print_uint(PRINT_ANY,
-> +			   "gateway_port",
-> +			   "gateway_port %u ",
-> +			   rta_getattr_be16(tb[IFLA_AMT_GATEWAY_PORT]));
-> +	}
-> +
-> +	if (tb[IFLA_AMT_RELAY_PORT]) {
-> +		print_uint(PRINT_ANY,
-> +			   "relay_port",
-> +			   "relay_port %u ",
-> +			   rta_getattr_be16(tb[IFLA_AMT_RELAY_PORT]));
-> +	}
-> +
-> +	if (tb[IFLA_AMT_LOCAL_IP]) {
-> +		__be32 addr = rta_getattr_u32(tb[IFLA_AMT_LOCAL_IP]);
-> +
-> +		if (addr)
-> +			print_string(PRINT_ANY,
-> +				     "local",
-> +				     "local %s ",
-> +				     format_host(AF_INET, 4, &addr));
+Hello:
 
-if you only print the address when it is non-zero, why send it at all?
-ie., kernel side can default to 0 (any address) but that value should
-not be allowed or sent as part of the API. Same with the remote and
-discovery addresses.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-> +	}
-> +
-> +	if (tb[IFLA_AMT_REMOTE_IP]) {
-> +		__be32 addr = rta_getattr_u32(tb[IFLA_AMT_REMOTE_IP]);
-> +
-> +		if (addr)
-> +			print_string(PRINT_ANY,
-> +				     "remote",
-> +				     "remote %s ",
-> +				     format_host(AF_INET, 4, &addr));
-> +	}
-> +
-> +	if (tb[IFLA_AMT_DISCOVERY_IP]) {
-> +		__be32 addr = rta_getattr_u32(tb[IFLA_AMT_DISCOVERY_IP]);
-> +
-> +		if (addr) {
-> +			print_string(PRINT_ANY,
-> +				     "discovery",
-> +				     "discovery %s ",
-> +				     format_host(AF_INET, 4, &addr));
-> +		}
-> +	}
-> +
-> +	if (tb[IFLA_AMT_LINK]) {
-> +		unsigned int link = rta_getattr_u32(tb[IFLA_AMT_LINK]);
-> +
-> +		if (link)
-> +			print_string(PRINT_ANY, "link", "dev %s ",
-> +				     ll_index_to_name(link));
+On Wed, 27 Oct 2021 08:20:12 -0700 you wrote:
+> Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
+> of VLANs...") introduced a rbtree for faster Ethernet address look
+> up. To maintain netdev->dev_addr in this tree we need to make all
+> the writes to it go through appropriate helpers.
+> 
+> Even though the current code uses dev->addr_len the we can switch
+> to eth_hw_addr_set() instead of dev_addr_set(). The netdev is
+> always allocated by alloc_etherdev_mq() and there are at least two
+> places which assume Ethernet address:
+>  - the line below calling eth_hw_addr_random()
+>  - virtnet_set_mac_address() -> eth_commit_mac_addr_change()
+> 
+> [...]
 
-similar argument here: IFLA_AMT_LINK should only be sent if an actual
-link association is configured.
+Here is the summary with links:
+  - [net-next,v2] net: virtio: use eth_hw_addr_set()
+    https://git.kernel.org/netdev/net-next/c/f2edaa4ad5d5
 
-> +	}
-> +
-> +	if (tb[IFLA_AMT_MAX_TUNNELS]) {
-> +		unsigned int tunnels = rta_getattr_u32(tb[IFLA_AMT_MAX_TUNNELS]);
-> +
-> +		if (tunnels)
-> +			print_uint(PRINT_ANY, "max_tunnels", "max_tunnels %u ",
-> +				   rta_getattr_u32(tb[IFLA_AMT_MAX_TUNNELS]));
-
-and here.
-
-> +	}
-> +}
-> +
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
