@@ -2,101 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0BA143E49D
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 17:08:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DCE443E4A0
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 17:09:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231389AbhJ1PLK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 11:11:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:59254 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231224AbhJ1PLI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 11:11:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635433721;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=KGUjOsKlPvctyYo7MwbILT0VMStj53cixSTDxOA1q+Y=;
-        b=fzpeW8QS2eqRg6FEq2jwgxUBuL7EIibJElafzgjZRO3R0kRSR9hXDoysuxvN68uhg6Aq20
-        RS8TkBB+RDQ99bxCGv0vAqX+kHyQffNvmyLqlHB7AnDuseW5o+oxEgrVl57b/auZ5ud/FH
-        R/dRIv8n8qW597/JbgViy6Ly5ZZY9Wg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-569-n-pTxEjBOZScaxp0ncqPDQ-1; Thu, 28 Oct 2021 11:08:35 -0400
-X-MC-Unique: n-pTxEjBOZScaxp0ncqPDQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 621AE802682;
-        Thu, 28 Oct 2021 15:08:27 +0000 (UTC)
-Received: from localhost (unknown [10.39.193.60])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 58A465C1B4;
-        Thu, 28 Oct 2021 15:08:13 +0000 (UTC)
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>
-Cc:     Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
-        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
-        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
- for mlx5 devices
-In-Reply-To: <20211027192345.GJ2744544@nvidia.com>
-Organization: Red Hat GmbH
-References: <87o87isovr.fsf@redhat.com>
- <20211021154729.0e166e67.alex.williamson@redhat.com>
- <20211025122938.GR2744544@nvidia.com>
- <20211025082857.4baa4794.alex.williamson@redhat.com>
- <20211025145646.GX2744544@nvidia.com>
- <20211026084212.36b0142c.alex.williamson@redhat.com>
- <20211026151851.GW2744544@nvidia.com>
- <20211026135046.5190e103.alex.williamson@redhat.com>
- <20211026234300.GA2744544@nvidia.com>
- <20211027130520.33652a49.alex.williamson@redhat.com>
- <20211027192345.GJ2744544@nvidia.com>
-User-Agent: Notmuch/0.32.1 (https://notmuchmail.org)
-Date:   Thu, 28 Oct 2021 17:08:11 +0200
-Message-ID: <87zgqtb31g.fsf@redhat.com>
+        id S231390AbhJ1PMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 11:12:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41184 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230258AbhJ1PMP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 11:12:15 -0400
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F638C061570;
+        Thu, 28 Oct 2021 08:09:48 -0700 (PDT)
+Received: by mail-oi1-x229.google.com with SMTP id y207so8669878oia.11;
+        Thu, 28 Oct 2021 08:09:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=aADjUL3aoYVuhKrrOmc9kzerdnVVqgXoXwAZgyL/N/U=;
+        b=XhbAQtELL3EMSWLYvjyRKjO2fpf7UQsdykJZwmwrectdPQoafcCTXv7f2Tv3Kj1TpH
+         NbPhrBiBvkL+pjmZty2UnaWe+uc+j7oXqnV9SkhO0IEQLuPCGYhA3oua7lXP64wlelgu
+         4RZlopnYPUB/nOGOfC8f9WFATE4fbybuNaZTARKRYwfjeqFgmeZvkUmkWZeruAsge3dD
+         nTiQf2uc0Ywu0d32ZIva1O25nq5SlipgSsk+eM9Aatu3fKSC87lyibiZgfUpjknbnLC+
+         9ra3/2q75DAO20i/xQkAbWLnChpkE794s86Z1qwKYP4sDvL8ejDZIjMpkltf5ojxw0Ti
+         6mjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=aADjUL3aoYVuhKrrOmc9kzerdnVVqgXoXwAZgyL/N/U=;
+        b=SDc5PXnTgKHVmbo83xBzF6RQwr+kKMqklGAz9v8ZrYf9Zf1slC9E1WDrYvxYELZ6B+
+         q0BapwPqNN2GmMFXEWZ/WfLf82dNloXYi4vivO3bw5p6VblKdtmVCosj2MMbeeLFvPsT
+         DXPk1GeznAt4i32InWfPG8uLIHA2FmuAnmNnrRE2va8Upd4e8OvTRNjLdeXXzIi70gZ3
+         McHtAduMAFQ75fuzjqUfbIeU4E7NztYxZBgVWfHK2U6jnT1ZQ7HeunW9jhq+zwtE3E2U
+         e35r7CCc42C5RFLdOhwF7OhNo/gTV3vLW7HL3LYurqXdILc2OE6O1pnxAcRLEqgawCio
+         noOw==
+X-Gm-Message-State: AOAM530s4Z87GwkLI8wpDe8VN/SSLoED37TLrhI++i/okVKvAhnVdiB0
+        aR/gwKmHE9g8geqD16vE2cmcfM4l3yE=
+X-Google-Smtp-Source: ABdhPJzb+xizXUPt5P6p1qkqBpQXPH+lSyzWHcorceIZANn1ZP7Wz97agKdRsJturFMltGumuSh4MQ==
+X-Received: by 2002:a05:6808:23cb:: with SMTP id bq11mr3469368oib.139.1635433787557;
+        Thu, 28 Oct 2021 08:09:47 -0700 (PDT)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id v66sm1149541oib.18.2021.10.28.08.09.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Oct 2021 08:09:47 -0700 (PDT)
+Message-ID: <7e5514de-01ec-060f-cbc3-1b777e134a54@gmail.com>
+Date:   Thu, 28 Oct 2021 09:09:46 -0600
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.2.1
+Subject: Re: [PATCH net-next] neigh: use struct {arp, ndisc}_generic_ops for
+ all case
+Content-Language: en-US
+To:     Yajun Deng <yajun.deng@linux.dev>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20211028122022.14879-1-yajun.deng@linux.dev>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20211028122022.14879-1-yajun.deng@linux.dev>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 27 2021, Jason Gunthorpe <jgg@nvidia.com> wrote:
+On 10/28/21 6:20 AM, Yajun Deng wrote:
+> diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
+> index 922dd73e5740..9ee59c2e419a 100644
+> --- a/net/ipv4/arp.c
+> +++ b/net/ipv4/arp.c
+> @@ -135,14 +135,6 @@ static const struct neigh_ops arp_generic_ops = {
+>  	.connected_output =	neigh_connected_output,
+>  };
+>  
+> -static const struct neigh_ops arp_hh_ops = {
+> -	.family =		AF_INET,
+> -	.solicit =		arp_solicit,
+> -	.error_report =		arp_error_report,
+> -	.output =		neigh_resolve_output,
+> -	.connected_output =	neigh_resolve_output,
+> -};
+> -
 
-> On Wed, Oct 27, 2021 at 01:05:20PM -0600, Alex Williamson wrote:
-
->> We're tossing around solutions that involve extensions, if not
->> changes to the uAPI.  It's Wednesday of rc7.
->
-> The P2P issue is seperate, and as I keep saying, unless you want to
-> block support for any HW that does not have freeze&queice userspace
-> must be aware of this ability and it is logical to design it as an
-> extension from where we are now.
-
-I think the very fact that we're still discussing whether something
-needs to be changed/documented or not already shows that this is nothing
-that should go in right now. Actually, I'd already consider it too late
-even if we agreed now; I would expect a change like this to get at least
-two weeks in linux-next before the merge window.
-
->> > The "don't-break-userspace" is not an absolute prohibition, Linus has
->> > been very clear this limitation is about direct, ideally demonstrable,
->> > breakage to actually deployed software.
->> 
->> And if we introduce an open driver that unblocks QEMU support to become
->> non-experimental, I think that's where we stand.
->
-> Yes, if qemu becomes deployed, but our testing shows qemu support
-> needs a lot of work before it is deployable, so that doesn't seem to
-> be an immediate risk.
-
-Do you have any patches/problem reports you can share?
-
-If you already identified that there is work to be done in QEMU, I think
-that speaks even more for delaying this. What if we notice that uapi
-changes are needed while fixing QEMU?
+neigh_ops are used by net/core/neighbour.c; this change breaks those
+references.
 
