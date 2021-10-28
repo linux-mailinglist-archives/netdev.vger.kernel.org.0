@@ -2,137 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDA2B43E51C
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 17:29:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ED8043E522
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 17:30:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230192AbhJ1Pb2 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 28 Oct 2021 11:31:28 -0400
-Received: from relay11.mail.gandi.net ([217.70.178.231]:39111 "EHLO
-        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230156AbhJ1Pb0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 11:31:26 -0400
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by relay11.mail.gandi.net (Postfix) with ESMTPSA id C1389100006;
-        Thu, 28 Oct 2021 15:28:55 +0000 (UTC)
-Date:   Thu, 28 Oct 2021 17:28:55 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/3] net: ocelot: add support to get mac from
- device-tree
-Message-ID: <20211028172855.0f646cc7@xps-bootlin>
-In-Reply-To: <20211028145142.xjgd3u2xz7kpijtl@skbuf>
-References: <20211028134932.658167-1-clement.leger@bootlin.com>
-        <20211028134932.658167-2-clement.leger@bootlin.com>
-        <20211028140611.m7whuwrzqxp2t53f@skbuf>
-        <20211028161522.6b711bb2@xps-bootlin>
-        <20211028142254.mbm7gczhhb4h5g3n@skbuf>
-        <20211028163825.7ccb1dea@xps-bootlin>
-        <20211028145142.xjgd3u2xz7kpijtl@skbuf>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S230217AbhJ1Pc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 11:32:59 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:36152 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229946AbhJ1Pc6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Oct 2021 11:32:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=qAuFhgBFwzRjU9C9QI6Rl/rsQkR3ooBS4bpMf6vbBo4=; b=lFP4oAypO15El8tNC0JuZDkk61
+        rjFlVA2VNcLE0JBKSGyizz98EwWcW/PVnHcNJvZrh/CCc/kF062/jpFbMxcfs7z7vy8mWzJZDRbAG
+        hTeNQ3zgpLSo2hZkQv8KAe1/HPtvVlOhTG7WAjjxmHELNRIEjGlIkK8f/KBbaFBFBfI8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mg7MK-00C0j0-VO; Thu, 28 Oct 2021 17:30:28 +0200
+Date:   Thu, 28 Oct 2021 17:30:28 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     bage@linutronix.de
+Cc:     Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org
+Subject: Re: [PATCH ethtool 0/2] Fix condition for showing MDI-X status
+Message-ID: <YXrCFKu9EnApypVh@lunn.ch>
+References: <20211027181140.46971-1-bage@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211027181140.46971-1-bage@linutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Thu, 28 Oct 2021 14:51:43 +0000,
-Vladimir Oltean <vladimir.oltean@nxp.com> a écrit :
+Hi Bastian
 
-> On Thu, Oct 28, 2021 at 04:38:25PM +0200, Clément Léger wrote:
-> > Le Thu, 28 Oct 2021 14:22:55 +0000,
-> > Vladimir Oltean <vladimir.oltean@nxp.com> a écrit :
-> >   
-> > > On Thu, Oct 28, 2021 at 04:15:22PM +0200, Clément Léger wrote:  
-> > > > Le Thu, 28 Oct 2021 14:06:12 +0000,
-> > > > Vladimir Oltean <vladimir.oltean@nxp.com> a écrit :
-> > > >     
-> > > > > On Thu, Oct 28, 2021 at 03:49:30PM +0200, Clément Léger
-> > > > > wrote:    
-> > > > > > Add support to get mac from device-tree using
-> > > > > > of_get_mac_address.
-> > > > > > 
-> > > > > > Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-> > > > > > ---
-> > > > > >  drivers/net/ethernet/mscc/ocelot_vsc7514.c | 5 ++++-
-> > > > > >  1 file changed, 4 insertions(+), 1 deletion(-)
-> > > > > > 
-> > > > > > diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> > > > > > b/drivers/net/ethernet/mscc/ocelot_vsc7514.c index
-> > > > > > d51f799e4e86..c39118e5b3ee 100644 ---
-> > > > > > a/drivers/net/ethernet/mscc/ocelot_vsc7514.c +++
-> > > > > > b/drivers/net/ethernet/mscc/ocelot_vsc7514.c @@ -526,7
-> > > > > > +526,10 @@ static int ocelot_chip_init(struct ocelot
-> > > > > > *ocelot, const struct ocelot_ops *ops)
-> > > > > > ocelot_pll5_init(ocelot); 
-> > > > > > -	eth_random_addr(ocelot->base_mac);
-> > > > > > +	ret = of_get_mac_address(ocelot->dev->of_node,
-> > > > > > ocelot->base_mac);      
-> > > > > 
-> > > > > Why not per port? This is pretty strange, I think.    
-> > > > 
-> > > > Hi Vladimir,
-> > > > 
-> > > > Currently, all ports share the same base mac address (5 first
-> > > > bytes). The final mac address per port is computed in
-> > > > ocelot_probe_port by adding the port number as the last byte of
-> > > > the mac_address provided.
-> > > > 
-> > > > Clément    
-> > > 
-> > > Yes, I know that, but that's not my point.
-> > > Every switch port should be pretty much compliant with
-> > > ethernet-controller.yaml, if it could inherit that it would be
-> > > even better. And since mac-address is an ethernet-controller.yaml
-> > > property, it is pretty much non-obvious at all that you put the
-> > > mac-address property directly under the switch, and manually add
-> > > 0, 1, 2, 3 etc to it. My request was to parse the mac-address
-> > > property of each port. Like this:
-> > > 
-> > > base_mac = random;
-> > > 
-> > > for_each_port() {
-> > > 	err = of_get_mac_address(port_dn, &port_mac);
-> > > 	if (err)
-> > > 		port_mac = base_mac + port;
-> > > }  
-> > 
-> > Ok indeed. So I will parse each port for a mac-address property. Do
-> > you also want a fallback to use the switch base mac if not
-> > specified in port or should I keep the use of a default random mac
-> > as the base address anyway ?  
-> 
-> Isn't the pseudocode I posted above explicit enough? Sorry...
-> Keep doing what the driver is doing right now, with an optional
-> mac-address override per port.
-> Why would we read the mac-address property of the switch? Which other
-> switch driver does that? Are there device trees in circulation where
-> this is being done?
+> I found that issue running ethtool on a br53 switch port.
 
-Sorry, guess I'm a bit tired and missed out the base_mac = random...
-Acked for the whole modification requested.
+Is this on the user ports? With copper PHYs? Did you try fixing the
+driver so it actually sets TP?
 
-> 
-> > > > > > +	if (ret)
-> > > > > > +		eth_random_addr(ocelot->base_mac);
-> > > > > > +
-> > > > > >  	ocelot->base_mac[5] &= 0xf0;
-> > > > > >  
-> > > > > >  	return 0;
-> > > > > > -- 
-> > > > > > 2.33.0    
-> > > > >       
-> > >     
->   
+> Despite the enum names, I cannot find documentation on the MDIX fields only
+> being valid for twisted pair ports -- if they are present, they should be
+> valid. But maybe I am mistaken.
 
+I'm not sure that is true. I've never seen an SFP module that can swap
+around the two fibres if they happen to be the wrong way around. And
+it makes no sense for BNC based cheapernet, if that actually still
+exists anywhere.
+
+       Andrew
