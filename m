@@ -2,119 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 876F743D7A9
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 01:41:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B344043D804
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 02:20:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229480AbhJ0Xnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 19:43:51 -0400
-Received: from ale.deltatee.com ([204.191.154.188]:33208 "EHLO
-        ale.deltatee.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbhJ0Xnt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 19:43:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
-        Message-ID:From:References:Cc:To:content-disposition;
-        bh=ymf1DDMEr6x5YUzHDwlxlOA2t7d2RVDPeGl51n7EakU=; b=eyi52UDn5dqKBhdS7ygg9G4AnX
-        JBCYf82oVrxuLjffQ223orxroZMYACAzc771GvAqpIAQBjYHkJkfIIXSXu13GTv9Ch1GeGqoz2i1X
-        KUD3O1BhvEprrPdpOG3RcX7Q5gagqV96FRF8vd2BVemvQCib33PFkUU8/V0FsJVZJaDJWLFekhIwH
-        J5oYD5BM50miP+ru6RavbaY0cxNIanP8H4++QtqtDsV4sU2ftTf+8A4W/uewnhfwrNDkazJRRdLXK
-        an7U7lxmm8hIvSygVFpndkHxi6k2WOtgMrudE7M6QZ4NTeyiYkUHsavPw2MroKxvDfOyZkdEANRYP
-        OdyvWRjg==;
-Received: from s0106a84e3fe8c3f3.cg.shawcable.net ([24.64.144.200] helo=[192.168.0.10])
-        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <logang@deltatee.com>)
-        id 1mfsXe-000p3N-RQ; Wed, 27 Oct 2021 17:41:12 -0600
-To:     Bjorn Helgaas <helgaas@kernel.org>,
-        Dongdong Liu <liudongdong3@huawei.com>
-Cc:     hch@infradead.org, kw@linux.com, leon@kernel.org,
-        linux-pci@vger.kernel.org, rajur@chelsio.com,
-        hverkuil-cisco@xs4all.nl, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20211027231134.GA258571@bhelgaas>
-From:   Logan Gunthorpe <logang@deltatee.com>
-Message-ID: <136155cc-d28c-ef36-c69b-557f7af456be@deltatee.com>
-Date:   Wed, 27 Oct 2021 17:41:07 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S229508AbhJ1AWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 20:22:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38198 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229437AbhJ1AWm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 20:22:42 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 828C5C061570
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 17:20:16 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id y12so18203129eda.4
+        for <netdev@vger.kernel.org>; Wed, 27 Oct 2021 17:20:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=purestorage.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=T8ZZ3tmv2TMLqiT5S3nbq5MlweX+KPvE3IP7/h/cxwk=;
+        b=bl6HKBisMNja9Jt9+gxRawjFPeBttx0yBVhztedSnHE3veIbZm6xjoN++iOMHpyNaC
+         IU4oqs4HbGEYWUutO9zEeNRgQcLpVA4MMygi3/gvO0+fa2xmvNCvPJU+qeznswrtAm7a
+         z3/Si7i+vOOEdqHCO/ZnDMbSdKki0d7qRMFos=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=T8ZZ3tmv2TMLqiT5S3nbq5MlweX+KPvE3IP7/h/cxwk=;
+        b=PIS6j+BZ+roTaBdytpTeCGjTt6tUGIIXoeJm+j99ivbDh1bcQ0NGfcI+cvAC7ExhwR
+         MZMizZxip8liCPZapBz4T7mSl/U9u2qZVrfB5ShnD1NNvS2rIrw5r3/Mx+aP5N2Y/+Ey
+         xmaw6KjSE4+jf8ntaTeEMxVxBJzwD57n7MJRqxVoIgF5a015FCxX8HsI4GCIvY5FNSel
+         9aa/ZTmyxr4mdtaxqlUS71Fc1VC7FLIOvXkQswDxEulVWVqOSqyYmIjSl5sllHEvo65X
+         UTvxyMgyQme8tFpVXp/TcBAB6aiS7lnlMVZzU/2lwsViuHq+PklPgM3q1gFBF93id8XS
+         1RRA==
+X-Gm-Message-State: AOAM5313U91pYygJBfRv8O4NV7SlCaJ7zmorp1edbu5quLr37xoHTILD
+        vj4kRZjAHtajxLQnrgRU644R0g7Li79krjjkIZc4cg==
+X-Google-Smtp-Source: ABdhPJyEbaFYTSWJSKofJ/QwI8c6HvHSJwnMQrHwtk1gYOm26Vrq7Y86Qy+JX/VStRqfNhU/mUnPTWJdLBU+ueZlufw=
+X-Received: by 2002:a17:906:1601:: with SMTP id m1mr1025935ejd.117.1635380415087;
+ Wed, 27 Oct 2021 17:20:15 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20211027231134.GA258571@bhelgaas>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-CA
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 24.64.144.200
-X-SA-Exim-Rcpt-To: netdev@vger.kernel.org, linux-media@vger.kernel.org, hverkuil-cisco@xs4all.nl, rajur@chelsio.com, linux-pci@vger.kernel.org, leon@kernel.org, kw@linux.com, hch@infradead.org, liudongdong3@huawei.com, helgaas@kernel.org
-X-SA-Exim-Mail-From: logang@deltatee.com
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on ale.deltatee.com
-X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=5.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A autolearn=ham autolearn_force=no version=3.4.6
-Subject: Re: [PATCH V10 6/8] PCI/P2PDMA: Add a 10-Bit Tag check in P2PDMA
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+References: <20211027214519.606096-1-csander@purestorage.com> <d9d4b6d1-d64d-4bfb-17d9-b28153e02b9e@gmail.com>
+In-Reply-To: <d9d4b6d1-d64d-4bfb-17d9-b28153e02b9e@gmail.com>
+From:   Caleb Sander <csander@purestorage.com>
+Date:   Wed, 27 Oct 2021 17:20:04 -0700
+Message-ID: <CADUfDZqx6EjOY=JcQuC6hfPjGgTZCk6BcV5_D1Dp+WQJiXmEnQ@mail.gmail.com>
+Subject: Re: [PATCH] qed: avoid spin loops in _qed_mcp_cmd_and_union()
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     netdev@vger.kernel.org, Ariel Elior <aelior@marvell.com>,
+        GR-everest-linux-l2@marvell.com,
+        Joern Engel <joern@purestorage.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> Here you might sleep/schedule, while CAN_SLEEP was not set ?
 
+I also do not know this driver, just trying to fix an observed latency issue.
+As far as I can tell, the CAN_SLEEP flag is set/unset depending on
+which function called qed_mcp_cmd_and_union();
+it does not indicate whether the function is running in atomic context.
+For example, qed_mcp_cmd() calls it without CAN_SLEEP,
+yet qed_mcp_drain() calls msleep() immediately after qed_mcp_cmd().
 
-On 2021-10-27 5:11 p.m., Bjorn Helgaas wrote:
->> @@ -532,6 +577,9 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
->>  		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
->>  	}
->>  done:
->> +	if (pci_10bit_tags_unsupported(client, provider, verbose))
->> +		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
-> 
-> I need to be convinced that this check is in the right spot to catch
-> all potential P2PDMA situations.  The pci_p2pmem_find() and
-> pci_p2pdma_distance() interfaces eventually call
-> calc_map_type_and_dist().  But those interfaces don't actually produce
-> DMA bus addresses, and I'm not convinced that all P2PDMA users use
-> them.
-> 
-> nvme *does* use them, but infiniband (rdma_rw_map_sg()) does not, and
-> it calls pci_p2pdma_map_sg().
+We were concerned that this function might be called in atomic context,
+so we added a WARN_ON_ONCE(in_atomic()). We never saw the warning fire
+during two weeks of testing, so we believe sleeping is possible here.
 
-The rules of the current code is that calc_map_type_and_dist() must be
-called before pci_p2pdma_map_sg(). The calc function caches the mapping
-type in an xarray. If it was not called ahead of time,
-pci_p2pdma_map_type() will return PCI_P2PDMA_MAP_NOT_SUPPORTED, and the
-WARN_ON_ONCE will be hit in
-pci_p2pdma_map_sg_attrs().
+> I would suggest using usleep_range() instead, because cond_resched()
+> can be a NOP under some circumstances.
+> Then perhaps not count against max_retries, but based on total elapsed time ?
 
-Both NVMe and RDMA (only used in the nvme fabrics code) do the correct
-thing here and we can be sure calc_map_type_and_dist() is called before
-any pages are mapped.
+I agree these would both be improvements to the current code.
+I was trying to provide a minimal change that would allow these loops
+to yield the CPU,
+but will happily do this refactoring if the driver authors think it
+would be beneficial.
 
-The patch set I'm currently working on will ensure that
-calc_map_type_and_dist() is called before anyone maps a PCI P2PDMA page
-with dma_map_sg*().
-
-> amdgpu_dma_buf_attach() calls pci_p2pdma_distance_many() but I don't
-> know where it sets up P2PDMA transactions.
-
-The amdgpu driver hacked this in before proper support was done, but at
-least it's using pci_p2pdma_distance_many() presumably before trying any
-transfer. Though it's likely broken as it doesn't take into account the
-mapping type and thus I think it always assumes traffic goes through the
-host bridge (seeing it doesn't use pci_p2pdma_map_sg()).
-
-> cxgb4 and qed mention "peer2peer", but I don't know whether they are
-> related; they don't seem to use any pci_p2p.* interfaces.
-
-I'm really not sure what these drivers are doing at all. However, I
-think this is unrelated based on this old patch description[1]:
-
-  Open MPI, Intel MPI and other applications don't support the iWARP
-  requirement that the client side send the first RDMA message. This
-  class of application connection setup is called peer-2-peer. Typically
-  once the connection is setup, _both_ sides want to send data.
-
-  This patch enables supporting peer-2-peer over the chelsio rnic by
-  enforcing this iWARP requirement in the driver itself as part of RDMA
-  connection setup.
-
-Logan
-
-[1] http://lkml.iu.edu/hypermail/linux/kernel/0804.3/1416.html
+On Wed, Oct 27, 2021 at 3:25 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+>
+>
+> On 10/27/21 2:45 PM, Caleb Sander wrote:
+> > By default, qed_mcp_cmd_and_union() sets max_retries to 500K and
+> > usecs to 10, so these loops can together delay up to 5s.
+> > We observed thread scheduling delays of over 700ms in production,
+> > with stacktraces pointing to this code as the culprit.
+> >
+> > Add calls to cond_resched() in both loops to yield the CPU if necessary.
+> >
+> > Signed-off-by: Caleb Sander <csander@purestorage.com>
+> > Reviewed-by: Joern Engel <joern@purestorage.com>
+> > ---
+> >  drivers/net/ethernet/qlogic/qed/qed_mcp.c | 12 ++++++++----
+> >  1 file changed, 8 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/qlogic/qed/qed_mcp.c b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
+> > index 24cd41567..d6944f020 100644
+> > --- a/drivers/net/ethernet/qlogic/qed/qed_mcp.c
+> > +++ b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
+> > @@ -485,10 +485,12 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
+> >
+> >               spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
+> >
+> > -             if (QED_MB_FLAGS_IS_SET(p_mb_params, CAN_SLEEP))
+> > +             if (QED_MB_FLAGS_IS_SET(p_mb_params, CAN_SLEEP)) {
+>
+> I do not know this driver, but apparently, there is this CAN_SLEEP test
+> hinting about being able to sleep.
+>
+> >                       msleep(msecs);
+> > -             else
+> > +             } else {
+> > +                     cond_resched();
+>
+> Here you might sleep/schedule, while CAN_SLEEP was not set ?
+>
+> >                       udelay(usecs);
+>
+>
+> I would suggest using usleep_range() instead, because cond_resched()
+> can be a NOP under some circumstances.
+>
+> > +             }
+> >       } while (++cnt < max_retries);
+>
+> Then perhaps not count against max_retries, but based on total elapsed time ?
+>
+> >
+> >       if (cnt >= max_retries) {
+> > @@ -517,10 +519,12 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
+> >                * The spinlock stays locked until the list element is removed.
+> >                */
+> >
+> > -             if (QED_MB_FLAGS_IS_SET(p_mb_params, CAN_SLEEP))
+> > +             if (QED_MB_FLAGS_IS_SET(p_mb_params, CAN_SLEEP)) {
+> >                       msleep(msecs);
+> > -             else
+> > +             } else {
+> > +                     cond_resched();
+> >                       udelay(usecs);
+> > +             }
+> >
+> >               spin_lock_bh(&p_hwfn->mcp_info->cmd_lock);
+> >
+> >
