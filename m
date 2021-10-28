@@ -2,123 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2321843DCA5
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 10:07:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7761E43DCF3
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 10:31:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229868AbhJ1IKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 04:10:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56806 "EHLO
+        id S230059AbhJ1IdY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 04:33:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229626AbhJ1IKQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 04:10:16 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90091C061570;
-        Thu, 28 Oct 2021 01:07:49 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id g10so21099142edj.1;
-        Thu, 28 Oct 2021 01:07:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=PQMilxdsobKkZotwzejJFonaMjfKjSknBXqsMZvx0wQ=;
-        b=AgFvAT9zwTDHSJqVCaMM2YgoGVQzzjcy7QBETqPIPji32DGYNI8PEyDIVqA8cJwvif
-         dmN3LV517QGqQqfx+HOix1xqkSSPk4Srl70wIICbhOLQcw/BWxWrsrGrODN1AZq83omx
-         J8w6NnMINGhee0OwIzXhNJQlcGyNoO8BbluvfQojTHRRATW6haxblgkLAHTZK0heCNTL
-         asMRvE7sTKQt+LOdF7mkxNCQZjVVYktDjaK/ib9E7zS+7BHkKgrxLrcByJsfWA9J2Dkj
-         eRDcfSu63in8CUEU5QJIht7nTNeQnFQDBaicKq8DdGg4uWSnJrAXShOCcjktCOAX4keQ
-         V83A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=PQMilxdsobKkZotwzejJFonaMjfKjSknBXqsMZvx0wQ=;
-        b=ddzb1ZB8m8uvv8fSajuAPrMUYxtbeFr9kKpm4PRV4QbqxHqtWCrom7rlH7vYtvGjE+
-         fGQgR7NTRdGjKJgi9EPj+GWLUgpVOX2kWIbQMcClYqstC3uQl2OIGw00hGtWAHxzPme5
-         7gwwtejQ1S0vr54ije9RA3rPlblq2Qw6HURl2E30Qx4vUQf/oUQLTRW85VSeDrIpJA6O
-         TKuoYNQMitwnIF6/oNzbCBdeyxw9g7IRLvxhB2ruPXyFNuwC7YgKGHbV3ky0HJPx76/M
-         Xc8C2HLxZOzBAaABmVl6cwCFCjFTByWKOqFEPABJdMq6Ls7mNW8zvDRWC8K4IQFzB2dY
-         wKSw==
-X-Gm-Message-State: AOAM530mK2ufKisRF4DSIZYArK/VT5JQ4h+dOJI5N5sEl12fd/fD8ATX
-        ludGKkSbc8Vc6oaFHx85Cw+JHms5K4I+t4K20hktXGVpvGo=
-X-Google-Smtp-Source: ABdhPJxP9iHBd7oEN+ZaEwTrOEY8H/DsYWGvPaQrRs80Sbt+ZjOPfv8zkxMu6fMkP9aMIIkj9DaNcJh2b12XhDuFEBY=
-X-Received: by 2002:a17:907:1c9e:: with SMTP id nb30mr3500564ejc.141.1635408468100;
- Thu, 28 Oct 2021 01:07:48 -0700 (PDT)
+        with ESMTP id S229850AbhJ1IdY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 04:33:24 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9150AC061745
+        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 01:30:57 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1mg0oB-00045G-SJ; Thu, 28 Oct 2021 10:30:47 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1mg0oA-0007Qs-Fn; Thu, 28 Oct 2021 10:30:46 +0200
+Date:   Thu, 28 Oct 2021 10:30:46 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Zhang Changzhong <zhangchangzhong@huawei.com>
+Cc:     Robin van der Gracht <robin@protonic.nl>,
+        linux-kernel@vger.kernel.org,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        netdev@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        kernel@pengutronix.de, Oliver Hartkopp <socketcan@hartkopp.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net 2/3] can: j1939: j1939_can_recv(): ignore messages
+ with invalid source address
+Message-ID: <20211028083046.GF20681@pengutronix.de>
+References: <1634825057-47915-1-git-send-email-zhangchangzhong@huawei.com>
+ <1634825057-47915-3-git-send-email-zhangchangzhong@huawei.com>
+ <20211022102306.GB20681@pengutronix.de>
+ <9c636d7f-70df-18c9-66ed-46eb21f4ffbb@huawei.com>
+ <20211028065144.GE20681@pengutronix.de>
+ <ff21f8b9-0fe0-e6be-73d4-18b9f5bfd773@huawei.com>
 MIME-Version: 1.0
-References: <20211028073729.24408-1-verdre@v0yd.nl>
-In-Reply-To: <20211028073729.24408-1-verdre@v0yd.nl>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 28 Oct 2021 11:07:11 +0300
-Message-ID: <CAHp75Ve3Rp7AziB8k8ESM41xEV8uNWD21Wh_MPcRqfDcJ0QR-w@mail.gmail.com>
-Subject: Re: [PATCH] mwifiex: Add quirk to disable deep sleep with certain
- hardware revision
-To:     =?UTF-8?Q?Jonas_Dre=C3=9Fler?= <verdre@v0yd.nl>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ff21f8b9-0fe0-e6be-73d4-18b9f5bfd773@huawei.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 10:29:58 up 252 days, 11:53, 140 users,  load average: 0.15, 0.51,
+ 0.43
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 28, 2021 at 10:38 AM Jonas Dre=C3=9Fler <verdre@v0yd.nl> wrote:
->
-> The 88W8897 PCIe+USB card in the hardware revision 20 apparently has a
-> hardware issue where the card wakes up from deep sleep randomly and very
-> often, somewhat depending on the card activity, maybe the hardware has a
-> floating wakeup pin or something.
->
-> Those continuous wakeups prevent the card from entering host sleep when
-> the computer suspends. And because the host won't answer to events from
-> the card anymore while it's suspended, the firmwares internal
-> powersaving state machine seems to get confused and the card can't sleep
+On Thu, Oct 28, 2021 at 03:33:21PM +0800, Zhang Changzhong wrote:
+> On 2021/10/28 14:51, Oleksij Rempel wrote:
+> > Hi,
+> > 
+> > On Mon, Oct 25, 2021 at 03:30:57PM +0800, Zhang Changzhong wrote:
+> >> On 2021/10/22 18:23, Oleksij Rempel wrote:
+> >>> On Thu, Oct 21, 2021 at 10:04:16PM +0800, Zhang Changzhong wrote:
+> >>>> According to SAE-J1939-82 2015 (A.3.6 Row 2), a receiver should never
+> >>>> send TP.CM_CTS to the global address, so we can add a check in
+> >>>> j1939_can_recv() to drop messages with invalid source address.
+> >>>>
+> >>>> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+> >>>> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+> >>>
+> >>> NACK. This will break Address Claiming, where first message is SA == 0xff
+> >>
+> >> I know that 0xfe can be used as a source address, but which message has a source
+> >> address of 0xff?
+> >>
+> >> According to SAE-J1939-81 2017 4.2.2.8：
+> >>
+> >>   The network address 255, also known as the Global address, is permitted in the
+> >>   Destination Address field of the SAE J1939 message identifier but never in the
+> >>   Source Address field.
+> > 
+> > You are right. Thx!
+> > 
+> > Are you using any testing frameworks?
+> > Can you please take a look here:
+> > https://github.com/linux-can/can-tests/tree/master/j1939
+> > 
+> > We are using this scripts for regression testing of some know bugs.
+> 
+> Great! I'll run these scripts before posting patches.
+ 
+You are welcome to extend this tests :)
 
-power saving
-
-> anymore at all after that.
->
-> Since we can't work around that hardware bug in the firmware, let's
-> get the hardware revision string from the firmware and match it with
-> known bad revisions. Then disable auto deep sleep for those revisions,
-> which makes sure we no longer get those spurious wakeups.
-
-...
-
-> +static void maybe_quirk_fw_disable_ds(struct mwifiex_adapter *adapter)
-> +{
-> +       struct mwifiex_private *priv =3D mwifiex_get_priv(adapter, MWIFIE=
-X_BSS_ROLE_STA);
-> +       struct mwifiex_ver_ext ver_ext;
-
-> +       set_bit(MWIFIEX_IS_REQUESTING_FW_VEREXT, &adapter->work_flags);
-
-This does not bring atomicity to this function.
-You need test_and_set_bit().
-
-Otherwise the bit may very well be cleared already here. And function
-may enter here again.
-
-If this state machine is protected by lock or so, then why not use
-__set_bit() to show this clearly?
-
-> +       memset(&ver_ext, 0, sizeof(ver_ext));
-> +       ver_ext.version_str_sel =3D 1;
-> +       mwifiex_send_cmd(priv, HostCmd_CMD_VERSION_EXT,
-> +                        HostCmd_ACT_GEN_GET, 0, &ver_ext, false);
-> +}
-
-
---=20
-With Best Regards,
-Andy Shevchenko
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
