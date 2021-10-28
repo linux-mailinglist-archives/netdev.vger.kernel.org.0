@@ -2,87 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C85C43E59C
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 17:58:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E770943E5A1
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 17:59:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230270AbhJ1QBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 12:01:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35146 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230230AbhJ1QBQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 12:01:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635436729;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=/ZAZTdtyaSOOs5rc8T6wOKjWpg0v6cCvD+QvTGbgJzM=;
-        b=fncM32Xq+ocAweOHBHZHf8SdQGz5pNTtkeYgl0mmhcPqGLv3bz6/zYvf4TGEhwSGDJiKeO
-        v0BXIF0VwfoyqF+6/tF4Wxez0VThy67CrMYlZ7sj4ldwBNPcPIm0NsvE08X7ml74IIHb8q
-        /nhu29dfTJmN8TQgBnyuqvFBo7lpA7E=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-349-7JO76a4UO0ma4pJGbmmnkg-1; Thu, 28 Oct 2021 11:58:44 -0400
-X-MC-Unique: 7JO76a4UO0ma4pJGbmmnkg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2C2E19126B;
-        Thu, 28 Oct 2021 15:58:42 +0000 (UTC)
-Received: from ceranb.redhat.com (unknown [10.40.193.230])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AE9805DF56;
-        Thu, 28 Oct 2021 15:58:36 +0000 (UTC)
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Henrik Bjoernlund <henrik.bjoernlund@microchip.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        bridge@lists.linux-foundation.org (moderated list:ETHERNET BRIDGE),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net v2] net: bridge: fix uninitialized variables when BRIDGE_CFM is disabled
-Date:   Thu, 28 Oct 2021 17:58:35 +0200
-Message-Id: <20211028155835.2134753-1-ivecera@redhat.com>
+        id S230271AbhJ1QB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 12:01:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52584 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229846AbhJ1QBZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 12:01:25 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2333C061745;
+        Thu, 28 Oct 2021 08:58:58 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id b12so6623712wrh.4;
+        Thu, 28 Oct 2021 08:58:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=IfAjr9+KKKwq3jZHOqs7MUPR8iCNkDuvoFjPyZqntvM=;
+        b=PyfGdX5Xu7vVSY+Hs9BCdjCwI9FiBa1IyJEScsuaJItF9N350/OhCZvPJgDBPbEQwZ
+         ZiKZFknB6xcMCv78U6DdjH13aJ81hsEW+K3KTejH7iyatPL9WxKiXJdI2TKIBsYATgfW
+         vAdkum8G8gQA7Ya1tjmgl5QeQhDymxdZIwQ17UAkuA0vFUkntT7xBe44v5xBoU/VNUjJ
+         wH5JGuD3YmKQHPL2GoBNwIZDTtD7DXSUqZvAgBIy/jRkLIWcqzhnSBvNPz48sT/IN2CJ
+         7aVIvTNc2lnHFU7mj0heub2Lqj9OkEaQC+jHpUPu//rXmdYQVcfh5Z9poCd3AJ7oFIo6
+         FNeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=IfAjr9+KKKwq3jZHOqs7MUPR8iCNkDuvoFjPyZqntvM=;
+        b=oufkhUDOF6JlShdVaNK4KPWC1wCm+2sKu/HIABvlZzkTbRNn5/boMvfVkgSFU1vsHn
+         vjQre+L1HZo0fc2xRLRLlGLyrF/FHcmQa5RNF5c2sPvVRC15EG0vLL9CMoUjxQmvqoLl
+         Vxzqw1ywvt57ke45HQ1WLT0RdAWyYe3sKrSj2jCKW49EK9LA9nJuJHMuGKKLU51+dC+2
+         EGkkSt++mCysjsRXmN7yM73fgdJCvaeXbccaqJNFuAxxQmRiFK7bjShiWz+c3u6V1zHG
+         WnmKGmIPUrt9sXBxxoR0Yp0B9XseHWbHhU6aMLimD1gJF70KjDenCPjzjmrhXjiXdox7
+         diUw==
+X-Gm-Message-State: AOAM530WjTNqgDBCggIKfhlNnOWJRX6OuuRb86hT5zxl5TJI5LxNfRE9
+        Vj/V+pO/HlRg88Z/DnDr6QRpCZ61E4oDBc4ipbQ=
+X-Google-Smtp-Source: ABdhPJwF/tzZNVVcXXVBs376LCifqLS0X4Jx4j7NaP5Bpe1G9itZn7ONH0knEsN4be8DkUsJZbmIMYUWJcWhlPkphpo=
+X-Received: by 2002:a5d:59a7:: with SMTP id p7mr6896008wrr.141.1635436737323;
+ Thu, 28 Oct 2021 08:58:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+References: <20211028132041.516820-1-bjorn@kernel.org> <20211028132041.516820-5-bjorn@kernel.org>
+In-Reply-To: <20211028132041.516820-5-bjorn@kernel.org>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Thu, 28 Oct 2021 17:58:45 +0200
+Message-ID: <CAJ+HfNjfGfO52KQZ23pRJFZL9arSiYQvJcHJS5nwyBDW40inAw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 4/4] selftests/bpf: Fix broken riscv build
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Cc:     linux-riscv <linux-riscv@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Function br_get_link_af_size_filtered() calls br_cfm_{,peer}_mep_count()
-that return a count. When BRIDGE_CFM is not enabled these functions
-simply return -EOPNOTSUPP but do not modify count parameter and
-calling function then works with uninitialized variables.
-Modify these inline functions to return zero in count parameter.
+On Thu, 28 Oct 2021 at 15:20, Bj=C3=B6rn T=C3=B6pel <bjorn@kernel.org> wrot=
+e:
+>
+> This patch is closely related to commit 6016df8fe874 ("selftests/bpf:
+> Fix broken riscv build"). When clang includes the system include
+> directories, but targeting BPF program, __BITS_PER_LONG defaults to
+> 32, unless explicitly set. Workaround this problem, by explicitly
+> setting __BITS_PER_LONG to __riscv_xlen.
+>
+> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn@kernel.org>
+> ---
+>  tools/testing/selftests/bpf/Makefile | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftes=
+ts/bpf/Makefile
+> index ac47cf9760fc..d739e62d0f90 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -277,7 +277,8 @@ $(RESOLVE_BTFIDS): $(HOST_BPFOBJ) | $(HOST_BUILD_DIR)=
+/resolve_btfids        \
+>  define get_sys_includes
+>  $(shell $(1) -v -E - </dev/null 2>&1 \
+>         | sed -n '/<...> search starts here:/,/End of search list./{ s| \=
+(/.*\)|-idirafter \1|p }') \
+> -$(shell $(1) -dM -E - </dev/null | grep '#define __riscv_xlen ' | sed 's=
+/#define /-D/' | sed 's/ /=3D/')
+> +$(shell $(1) -dM -E - </dev/null | grep '__riscv_xlen ' | awk '{printf("=
+-D__riscv_xlen=3D%d -D__BITS_PER_LONG=3D%d", $$3, $$3)}')
+> +
 
-Fixes: b6d0425b816e ("bridge: cfm: Netlink Notifications.")
-Cc: Henrik Bjoernlund <henrik.bjoernlund@microchip.com>
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
----
- net/bridge/br_private.h | 2 ++
- 1 file changed, 2 insertions(+)
+Argh, this messes things up. I'll spin a v2 with the extra NL removed.
 
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 37ca76406f1e..fd5e7e74573c 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -1911,11 +1911,13 @@ static inline int br_cfm_status_fill_info(struct sk_buff *skb,
- 
- static inline int br_cfm_mep_count(struct net_bridge *br, u32 *count)
- {
-+	*count = 0;
- 	return -EOPNOTSUPP;
- }
- 
- static inline int br_cfm_peer_mep_count(struct net_bridge *br, u32 *count)
- {
-+	*count = 0;
- 	return -EOPNOTSUPP;
- }
- #endif
--- 
-2.32.0
+Bj=C3=B6rn
 
+>  endef
+>
+>  # Determine target endianness.
+> --
+> 2.32.0
+>
