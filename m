@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E018843E2EC
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 16:00:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64EFD43E2ED
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 16:00:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230443AbhJ1OCh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 10:02:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46960 "EHLO mail.kernel.org"
+        id S230481AbhJ1OCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 10:02:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46996 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230376AbhJ1OCf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Oct 2021 10:02:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id A678A610F8;
-        Thu, 28 Oct 2021 14:00:08 +0000 (UTC)
+        id S230409AbhJ1OCg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Oct 2021 10:02:36 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id B6EF861139;
+        Thu, 28 Oct 2021 14:00:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635429608;
-        bh=S+O2mCD0Hw4XAeYYCvGnuB3sxqSdebOBqfU8mHTG3uU=;
+        s=k20201202; t=1635429609;
+        bh=IYkK7PP3hjmq0IlYSJS3zCHoO0XyR/VAFc3Npd6eD8s=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=hfEaj1MlOnTiu5wjRJdZg1IQEHutgX/tIuSajIjKZbFe3JU8vMxfCYw5hKdEdzxaV
-         7/4TRZkJQZzyD6yXC5n87jEpli643qcwi39lvVQYB1g75ebTU+ioKQVBptI3VSaxl/
-         2yQ8w8c4c/BDYQOxzLBD0AlNu/imUGUIkF8ssh8EGvs02VLLCuZNST9gPUPH0qwREW
-         8WzUZWeUw3wxfgbJ9wLNv3AMDxJn37DHeudr0LeRLuf0fad/KS23xqJI2h+OPXlpvN
-         hisgU+yqnpmtfk8FZFGPvAYd6a6y33vs/Wnd6fPzow2X4CPEyr5UD94DBNAN/xIMYc
-         qF9CgukRZmpNg==
+        b=bgkcP9QKHC5KQYZH0X+b+7rCw2Sxe1D9rSnHRZQ6rv2QDeI4k9VXbcr1CZyiAm3er
+         /qo4gVaShCZDBcgcnmssJqPJraoduSe38xKxQ0ubq7VLdylIABHiM0ByG/TNXnW2Nc
+         wKK3rhvKV9yUkYHurR+n8yQd+ZfGfJJCrRBybILyXB81p4XWDa2niI1LDYLP+NDU0Y
+         mXDK/MghU6g7zQmHujP4EOYeewLTL7ovka8OQorSbyUzwyD9LKs1z0FZdwD3V4PsAn
+         HDYvvjtmj3fm3kbqVntKELUveLG2HSxXFPzFzwtRIYajksYvxcHGi50m0GU/mss3zv
+         3z8IqytnrRLHg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9997B609CC;
-        Thu, 28 Oct 2021 14:00:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A883260A5A;
+        Thu, 28 Oct 2021 14:00:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net PATCH v3 0/3] RVU Debugfs fix updates.
+Subject: Re: [net-next PATCH v3 0/3] RVU Debugfs updates.
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163542960862.12929.13276854563783815449.git-patchwork-notify@kernel.org>
-Date:   Thu, 28 Oct 2021 14:00:08 +0000
-References: <20211027173234.23559-1-rsaladi2@marvell.com>
-In-Reply-To: <20211027173234.23559-1-rsaladi2@marvell.com>
+Message-Id: <163542960968.12929.3902021796749448464.git-patchwork-notify@kernel.org>
+Date:   Thu, 28 Oct 2021 14:00:09 +0000
+References: <20211027180745.27947-1-rsaladi2@marvell.com>
+In-Reply-To: <20211027180745.27947-1-rsaladi2@marvell.com>
 To:     Rakesh Babu Saladi <rsaladi2@marvell.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, sgoutham@marvell.com,
@@ -45,27 +45,30 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
+This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Wed, 27 Oct 2021 23:02:31 +0530 you wrote:
-> The following patch series consists of the patch fixes done over
-> rvu_debugfs.c and rvu_nix.c files.
+On Wed, 27 Oct 2021 23:37:42 +0530 you wrote:
+> Patch 1: Few minor changes such as spelling mistakes, deleting unwanted
+> characters, etc.
+> Patch 2: Add debugfs dump for lmtst map table
+> Patch 3: Add channel and channel mask in debugfs.
 > 
-> Patch 1: Check and return if ipolicers do not exists.
-> Patch 2: Fix rsrc_alloc to print all enabled PF/VF entries with list of LFs
-> allocated for each functional block.
-> Patch 3: Fix possible null pointer dereference.
+> Changes made from v2 to v3:
+> 1. In patch 1 moved few lines and submitted those changes as a
+> different patch to net branch
+> 2. Patch 2 is left unchanged.
+> 3. Patch 3 is left unchanged.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v3,1/3] octeontx2-af: Check whether ipolicers exists
-    https://git.kernel.org/netdev/net/c/cc45b96e2de7
-  - [net,v3,2/3] octeontx2-af: Display all enabled PF VF rsrc_alloc entries.
-    https://git.kernel.org/netdev/net/c/e77bcdd1f639
-  - [net,v3,3/3] octeontx2-af: Fix possible null pointer dereference.
-    https://git.kernel.org/netdev/net/c/c2d4c543f74c
+  - [net-next,v3,1/3] octeontx2-af: debugfs: Minor changes.
+    https://git.kernel.org/netdev/net-next/c/1910ccf03306
+  - [net-next,v3,2/3] octeontx2-af: cn10k: debugfs for dumping LMTST map table
+    https://git.kernel.org/netdev/net-next/c/0daa55d033b0
+  - [net-next,v3,3/3] octeontx2-af: debugfs: Add channel and channel mask.
+    https://git.kernel.org/netdev/net-next/c/9716a40a0f48
 
 You are awesome, thank you!
 -- 
