@@ -2,100 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C15FF43E279
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 15:45:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAA6043E27D
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 15:48:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230367AbhJ1Nr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 09:47:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:56207 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230267AbhJ1Nr6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 09:47:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635428731;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=f4RVU0fCj6WA9PThqjBMiACWmhqkx1yRyCGqh2MBFEY=;
-        b=NQLzxgpbZYz8T9AtxshwO1ePrO1/HuXzYPJPHpSD+kbY291Nre23JwKa0e6k3y7OVl5Hi/
-        hzCNF8iO0Mmoqrkc+3wuaV15fMzKbqdTiTf6TfkSKYoX+HBqcNCilCvZbZQ4CDHlRu+W58
-        2yxItp13jXoTDstcEn8AMgR0RVKklt8=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-309-4tnmACquP0mkt4xE6R9skQ-1; Thu, 28 Oct 2021 09:45:29 -0400
-X-MC-Unique: 4tnmACquP0mkt4xE6R9skQ-1
-Received: by mail-ed1-f72.google.com with SMTP id c25-20020a056402143900b003dc19782ea8so5707806edx.3
-        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 06:45:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=f4RVU0fCj6WA9PThqjBMiACWmhqkx1yRyCGqh2MBFEY=;
-        b=sL9x/8QiKRa2hrHg+h77vxGBWlSlFf+WsuqvthP8UcUb3Jio5/UTFkO/Tlgnkf2u00
-         tcbqnDpmCENqruiSArHn4oiGiq95e0wC0cFPvgQg+X9vOn8G9cH094JKhcPwy5WdwxGE
-         9y7CJ2BaUy7ebqueU1paUxJ/9Pgle/cb17kt2ZV9MBKfeWLL2wRl3Mu90R+u9bN3yVTy
-         OhZrQLGVsddpFYRjRB1ETUfGkSiM+pSBF4/6ReOKSq4I+XHgkDM5FA7E7pkpmtOhlgaK
-         4Ropow3Q6enc83xycux0J0XAxnmnggKE4pT4cCT+PfHtS/vHzL7JXfVZPmFc7G+jCpxI
-         U9DA==
-X-Gm-Message-State: AOAM530Q8rTKnL2rzXXyeBhtAM085sZE72yBbeaCHx8JM2QNUIz8/Db6
-        ahivZBlb0SgiLQDw4xIRk/mM8tRsFxwdFjC0tayD9b/bjNLSdseTA1fjWbWDCuWfVyH8/Rlh9VL
-        ni6ZTHS5VrrOU7dgv
-X-Received: by 2002:a17:906:c248:: with SMTP id bl8mr5457417ejb.360.1635428725658;
-        Thu, 28 Oct 2021 06:45:25 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwcDI0nkrtjKeJZUtJYosbKl2scjVFZLNXlJd0FYdMFaHC8SXLtHYGFSpOcdLpttH8EW8QTRg==
-X-Received: by 2002:a17:906:c248:: with SMTP id bl8mr5457296ejb.360.1635428724766;
-        Thu, 28 Oct 2021 06:45:24 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id x15sm1695156edr.55.2021.10.28.06.45.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Oct 2021 06:45:24 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 9D564180262; Thu, 28 Oct 2021 15:45:23 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
-        magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        maciej.fijalkowski@intel.com, yhs@fb.com, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org
-Cc:     jonathan.lemon@gmail.com, ciara.loftus@intel.com,
+        id S230282AbhJ1NvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 09:51:10 -0400
+Received: from foss.arm.com ([217.140.110.172]:55078 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229887AbhJ1NvK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Oct 2021 09:51:10 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9FB471FB;
+        Thu, 28 Oct 2021 06:48:42 -0700 (PDT)
+Received: from e121896.Emea.Arm.com (e121896.Emea.Arm.com [10.32.36.26])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 50F523F70D;
+        Thu, 28 Oct 2021 06:48:38 -0700 (PDT)
+From:   James Clark <james.clark@arm.com>
+To:     acme@kernel.org, linux-perf-users@vger.kernel.org,
+        f.fainelli@gmail.com, irogers@google.com
+Cc:     James Clark <james.clark@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Sumanth Korikkar <sumanthk@linux.ibm.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next] libbpf: deprecate AF_XDP support
-In-Reply-To: <20211028134003.27160-1-magnus.karlsson@gmail.com>
-References: <20211028134003.27160-1-magnus.karlsson@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 28 Oct 2021 15:45:23 +0200
-Message-ID: <87tuh18dqk.fsf@toke.dk>
+Subject: [PATCH 0/3] Fix various bash constructs in tests
+Date:   Thu, 28 Oct 2021 14:48:24 +0100
+Message-Id: <20211028134828.65774-1-james.clark@arm.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Magnus Karlsson <magnus.karlsson@gmail.com> writes:
+These tests were either failing or printing warnings on my Ubuntu 18
+and 20 systems. I'm not sure if there is a system where /bin/sh allows
+bash constructs, or perf invokes bash instead of sh, but I saw that
+there have been similar fixes made in the past so I assume this should
+be done.
 
-> From: Magnus Karlsson <magnus.karlsson@intel.com>
->
-> Deprecate AF_XDP support in libbpf ([0]). This has been moved to
-> libxdp as it is a better fit for that library. The AF_XDP support only
-> uses the public libbpf functions and can therefore just use libbpf as
-> a library from libxdp. The libxdp APIs are exactly the same so it
-> should just be linking with libxdp instead of libbpf for the AF_XDP
-> functionality. If not, please submit a bug report. Linking with both
-> libraries is supported but make sure you link in the correct order so
-> that the new functions in libxdp are used instead of the deprecated
-> ones in libbpf.
->
-> Libxdp can be found at https://github.com/xdp-project/xdp-tools.
->
-> [0] https://github.com/libbpf/libbpf/issues/270
->
-> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Adding set -e to the scripts didn't highlight these issues, so I didn't
+do it at this time.
 
-Seems you typoed 'libxdp' as 'libdxp' in the deprecation messages :)
+For stat_bpf_counters.sh, there are further bashisms after the skip,
+but I couldn't get BPF working, so I only fixed it up to that point.
 
-Other than that, though:
-Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+Applies to perf/core 624ff63abfd36
+
+James Clark (3):
+  perf test: Remove bash construct from stat_bpf_counters.sh test
+  perf tests: Remove bash construct from record+zstd_comp_decomp.sh
+  perf tests: Remove bash constructs from stat_all_pmu.sh
+
+ tools/perf/tests/shell/record+zstd_comp_decomp.sh | 2 +-
+ tools/perf/tests/shell/stat_all_pmu.sh            | 4 ++--
+ tools/perf/tests/shell/stat_bpf_counters.sh       | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+-- 
+2.28.0
 
