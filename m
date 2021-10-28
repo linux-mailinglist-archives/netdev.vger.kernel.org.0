@@ -2,92 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FA0743E392
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 16:24:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7756243E39F
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 16:26:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231251AbhJ1O0E convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 28 Oct 2021 10:26:04 -0400
-Received: from relay11.mail.gandi.net ([217.70.178.231]:46711 "EHLO
-        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231282AbhJ1OZz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 10:25:55 -0400
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by relay11.mail.gandi.net (Postfix) with ESMTPSA id 1D99B100006;
-        Thu, 28 Oct 2021 14:23:20 +0000 (UTC)
-Date:   Thu, 28 Oct 2021 16:23:20 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 0/3] Add FDMA support on ocelot switch driver
-Message-ID: <20211028162320.7c07fdf3@xps-bootlin>
-In-Reply-To: <20211028140738.4mozxpgltezu6zsm@skbuf>
-References: <20211028134932.658167-1-clement.leger@bootlin.com>
-        <20211028140738.4mozxpgltezu6zsm@skbuf>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S230451AbhJ1O2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 10:28:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53344 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230401AbhJ1O2g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Oct 2021 10:28:36 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CC29161106;
+        Thu, 28 Oct 2021 14:26:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635431169;
+        bh=IjX5DgVJlY2eHbjw/92CSwAjtLsC3JayE6Mo7emJTp8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rj8Iv0LMQ2FdtTWMSqf10Fhw6opkwkeCedMxuFneCasfDlINGISB5lbRjZrwvxv7s
+         NfXJyq96BqnMZI2F0O6ob+HMmRIPJ8rbTiVzlB7JKY+qh8pt5E9aKYe0zT5G6EoW8E
+         QV2pgSQnd62V2AYZF6ELB1oYbARzwIwbs0OaXLZ6wGSqmtXfGXfPcR5xBg/1KgtBKO
+         wF3y/OwmQkBxvvFUPkPDXXQApKcDN7fBMkX2EJ/wR2tvFX7n8ac4mAj3YJwjgzuT8G
+         7cYDaC33zJEhip20z9RZcR3lingCW5Ga2B66xcvni/477JEToPMOXzp757GWsJpxlN
+         HYpZn+I57DE0w==
+Date:   Thu, 28 Oct 2021 07:26:07 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     =?UTF-8?B?SsO2cm4=?= Engel <joern@purestorage.com>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        Caleb Sander <csander@purestorage.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com, Tony Brelinski <tony.brelinski@intel.com>
+Subject: Re: [PATCH net-next 1/4] i40e: avoid spin loop in
+ i40e_asq_send_command()
+Message-ID: <20211028072607.4db76c84@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YXqOL0PqhujmH+sd@cork>
+References: <20211025175508.1461435-1-anthony.l.nguyen@intel.com>
+        <20211025175508.1461435-2-anthony.l.nguyen@intel.com>
+        <20211027090103.33e06b78@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YXqOL0PqhujmH+sd@cork>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Thu, 28 Oct 2021 14:07:39 +0000,
-Vladimir Oltean <vladimir.oltean@nxp.com> a écrit :
+On Thu, 28 Oct 2021 04:49:03 -0700 J=C3=B6rn Engel wrote:
+> On Wed, Oct 27, 2021 at 09:01:03AM -0700, Jakub Kicinski wrote:
+> > On Mon, 25 Oct 2021 10:55:05 -0700 Tony Nguyen wrote: =20
+> > > +			cond_resched();
+> > >  			udelay(50); =20
+> >=20
+> > Why not switch to usleep_range() if we can sleep here? =20
+>=20
+> Looking at usleep_range() vs. udelay(), I wonder if there is still a
+> hidden reason to prefer udelay().  Basically, if you typically want
+> short delays like the 50=C2=B5s above, going to sleep will often result in
+> much longer delays, 1ms or higher.
 
-> On Thu, Oct 28, 2021 at 03:49:29PM +0200, Clément Léger wrote:
-> > This series adds support for the Frame DMA present on the VSC7514
-> > switch. The FDMA is able to extract and inject packets on the
-> > various ethernet interfaces present on the switch.
-> > 
-> > While adding FDMA support, bindings were switched from .txt to .yaml
-> > and mac address read from device-tree was added to allow be set
-> > instead of using random mac address.
-> > 
-> > Clément Léger (3):
-> >   net: ocelot: add support to get mac from device-tree
-> >   dt-bindings: net: convert mscc,vsc7514-switch bindings to yaml
-> >   net: ocelot: add FDMA support
-> > 
-> >  .../bindings/net/mscc,vsc7514-switch.yaml     | 183 ++++
-> >  .../devicetree/bindings/net/mscc-ocelot.txt   |  83 --
-> >  drivers/net/ethernet/mscc/Makefile            |   1 +
-> >  drivers/net/ethernet/mscc/ocelot.h            |   2 +
-> >  drivers/net/ethernet/mscc/ocelot_fdma.c       | 811
-> > ++++++++++++++++++ drivers/net/ethernet/mscc/ocelot_fdma.h       |
-> > 60 ++ drivers/net/ethernet/mscc/ocelot_net.c        |  30 +-
-> >  drivers/net/ethernet/mscc/ocelot_vsc7514.c    |  20 +-
-> >  include/linux/dsa/ocelot.h                    |  40 +-
-> >  include/soc/mscc/ocelot.h                     |   2 +
-> >  10 files changed, 1140 insertions(+), 92 deletions(-)
-> >  create mode 100644
-> > Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml
-> > delete mode 100644
-> > Documentation/devicetree/bindings/net/mscc-ocelot.txt create mode
-> > 100644 drivers/net/ethernet/mscc/ocelot_fdma.c create mode 100644
-> > drivers/net/ethernet/mscc/ocelot_fdma.h
-> > 
-> > -- 
-> > 2.33.0
-> >  
-> 
-> Oh yes, finally some care and attention for the ocelot switchdev
-> driver. I'll review this soon, but I can't today.
-> Will you be keeping the hardware for some extended period of time, and
-> do you have some other changes planned as well?
+Right, if you call sleep you always yield so another process can kick
+in and consume its scheduler slice before it lets you back in.
 
-Yes I'll keep the hardware for some time but I do not have other
-changes planned yet. Maybe there will be additional changes later but
-nothing sure.
+How much does the FW typically take to respond? If we really care about
+latency 50us already sounds like a pretty coarse granularity.
 
-Clément
+Also if cond_resched() fired doing the delay is probably a waste of
+time:
 
+	if (!cond_resched())
+		usleep/udelay
+
+> I can easily see situations where multiple calls to udelay(50) are
+> fine while multiple calls to usleep_range() will cause timeouts.
+
+The status of the command is re-checked after the loop, sleeping too
+long should not cause timeouts here.
+
+> Is that a known problem and do we have good heuristics when to prefer
+> one over the other?
+
+I'm not aware of any.
