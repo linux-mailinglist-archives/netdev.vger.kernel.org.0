@@ -2,106 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8284043F2E1
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 00:37:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FDB443F2EB
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 00:42:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231442AbhJ1WkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 18:40:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58948 "EHLO
+        id S231382AbhJ1WpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 18:45:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231235AbhJ1WkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 18:40:20 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF8DC061570;
-        Thu, 28 Oct 2021 15:37:52 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id bi29so7466343qkb.5;
-        Thu, 28 Oct 2021 15:37:52 -0700 (PDT)
+        with ESMTP id S231298AbhJ1WpR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 18:45:17 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E8EC061745
+        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 15:42:49 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id e2so13272435ljg.13
+        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 15:42:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=2TZX+xZUa56lC0cQXsab0mkG5bKLwat+shoyNBUWFBM=;
-        b=CwkCn4knFeZ/VA8sErGYHpI/+8iIAPK2EK3yIu1kWy+BNVmjRZW1YVAO8yiScxcRNB
-         j2IkUraytSlmFyF98TMiJVWloDozpfYWFv0g2JClshRj0DsP8a/YCF1U7SFdxsDO1qmG
-         ZI/DJnfis3Z/e8T0J+V3P2/YRJgE4Ft63TnIgDoVtW1PEy55cGSvEyHQ8R1OfdWM3nUX
-         Fbx/oCKsug5WL+Mjvcr3vUplCEER1g//kvTRJ94aToxeWDrZLqiRAtnB0zn0mZj4ygWC
-         iSJUx+G1SFgxwmz8hVfJAKjn9UqNza+iLicu6ybpWf7qvcaylOxTIFTM+KItH1nDCZAy
-         mnFg==
+        d=kinvolk.io; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XaGstqMMf71x3qggRkE+pbmocplZzKlWQ6w/+ovGtQo=;
+        b=e0zj6qMzSCY8ezdR8EFJzUZk8oAyTych659FO/Qgz+QNtykdNQ6ujxTxHOpPQUkVWu
+         lRzSCU83twcHEVSHgvCH6jGroZ6NBpj7g6u0/ZOJobMq/xuTKuDE7aXCdEP6ocox4De3
+         9ZVLTJS6gIdQsoJ8JAMNfMfbBmn7JlL3PlQok=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=2TZX+xZUa56lC0cQXsab0mkG5bKLwat+shoyNBUWFBM=;
-        b=oCL1wGGc/K875jzSrEbMzkua3lDQpALVgaS40ErebCu7z6oqmEOM1K5A7PVPLfBodU
-         vXvKCWfTl3siyT1eVPGNumNql7l94jalU7ANhjWRRula9Sjdk/10cXVR8sp+Sl/aDAoO
-         un+M4iQ8rkX/6i2kesrDl/OieBMcXEqlkTqkQKYoEXqDMslCAqPrlERg4oGHSGs8ukjw
-         DmOYRVTo2nY9PYOAKnpVT3MWVUdQ8eWkk+eDqGsdVoqIzeQV9bOOJthJDeOrN83z89TY
-         IDL++tTd/Uzn65NpIbcJd567I+QMfkrCNrooxva+TZ0H6TpJI1hOYqtuIxpr6D8gUY4V
-         Y6Lw==
-X-Gm-Message-State: AOAM531qB31MLmXHfO6KESumWFkYFyOHDSFKG+yqJrPaT7TjLFG+n5v3
-        U1yZq5uw5zbrgm/5kgquKWRKqxD1OBvuHw==
-X-Google-Smtp-Source: ABdhPJw+6og7gjcR4W0oiWetNJuNLdpGjpr+B16veZHzRPEwz2+XAWNVVc4Mz59i833UfCyrAM7RNg==
-X-Received: by 2002:ae9:dc84:: with SMTP id q126mr6141274qkf.128.1635460671867;
-        Thu, 28 Oct 2021 15:37:51 -0700 (PDT)
-Received: from 10-18-43-117.dynapool.wireless.nyu.edu (216-165-95-164.natpool.nyu.edu. [216.165.95.164])
-        by smtp.gmail.com with ESMTPSA id c8sm3083182qtb.29.2021.10.28.15.37.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Oct 2021 15:37:51 -0700 (PDT)
-Date:   Thu, 28 Oct 2021 18:37:49 -0400
-From:   Zekun Shen <bruceshenzk@gmail.com>
-To:     bruceshenzk@gmail.com
-Cc:     Pontus Fuchs <pontus.fuchs@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ar5523: Fix null-ptr-deref with unexpected
- WDCMSG_TARGET_START reply
-Message-ID: <YXsmPQ3awHFLuAj2@10-18-43-117.dynapool.wireless.nyu.edu>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XaGstqMMf71x3qggRkE+pbmocplZzKlWQ6w/+ovGtQo=;
+        b=EtXMlUZbanA16bt4uW/qaOftVzEBzb7megeWtyODhW0DzLCi2TM+tgnm4BdQN20+vp
+         yvqxDfAczc3iNgNL37pXbKM9CIFFPVFFhmz/08b5miPq0zZM0wwO39bAgDxh546Dg2nz
+         HuONvEtgOJacsOcEq4VntOXPEn4yBiiafvZpvTdnHGlgxxicEV+SoyDy9NKFwdPo9/oL
+         JFK3loCXmOFyUSvYQ1lLfRuIKhGqa0Sy/DZAPecjWsKbJwRayoXiTn/rDMinimszdJGi
+         OIgJ3eudIvqXh1ss9HoEO/zjyErahnl2jes+RWrYScJMDWyECvHQRD3zmusMjznu/TfM
+         2/xQ==
+X-Gm-Message-State: AOAM531aej3QpEPfjRY/my9UeNCNiz5RRgPzTo48nr4jG6xn0bKG/KFE
+        llMRrafgB7LBsBqQd2HuOEtVCLg3PYAzR+JpGBhaEZg/U20=
+X-Google-Smtp-Source: ABdhPJwHWqduDeinUJFlWT0zouUiuKoTqWYQ1gmn135ZD9N2+/daEXQ0a921IPMaRs0hP5zJgTk7GUBrFolwxwGBr3E=
+X-Received: by 2002:a05:651c:230c:: with SMTP id bi12mr7772421ljb.218.1635460968206;
+ Thu, 28 Oct 2021 15:42:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20211027203727.208847-1-mauricio@kinvolk.io> <20211027203727.208847-3-mauricio@kinvolk.io>
+ <CAEf4BzYUXYFKyWVbNmfz9Bjui4UytfQs1Qmc24U+bYZwQtRbcw@mail.gmail.com>
+In-Reply-To: <CAEf4BzYUXYFKyWVbNmfz9Bjui4UytfQs1Qmc24U+bYZwQtRbcw@mail.gmail.com>
+From:   =?UTF-8?Q?Mauricio_V=C3=A1squez_Bernal?= <mauricio@kinvolk.io>
+Date:   Thu, 28 Oct 2021 17:42:37 -0500
+Message-ID: <CAHap4zt1jFM_hMd0mqT+158f3-C8Vn0AtZHH+pK_MxxiUan5zg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/2] libbpf: Implement API for generating BTF for
+ ebpf objects
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
+        Rafael David Tinoco <rafael.tinoco@aquasec.com>,
+        Lorenzo Fontana <lorenzo.fontana@elastic.co>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unexpected WDCMSG_TARGET_START replay can lead to null-ptr-deref
-when ar->tx_cmd->odata is NULL. The patch adds a null check to
-prevent such case.
+> I don't think it's necessary for libbpf to expose all these new APIs.
+> The format of CO-RE relocations and .BTF.ext is open and fixed. You
+> don't really need to simulate full CO-RE relocation logic to figure
+> out which types are necessary. Just go over all .BTF.ext records for
+> CO-RE relocations, parse spec (simple format as well) and see which
+> fields are accessed.
 
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
- ar5523_cmd+0x46a/0x581 [ar5523]
- ar5523_probe.cold+0x1b7/0x18da [ar5523]
- ? ar5523_cmd_rx_cb+0x7a0/0x7a0 [ar5523]
- ? __pm_runtime_set_status+0x54a/0x8f0
- ? _raw_spin_trylock_bh+0x120/0x120
- ? pm_runtime_barrier+0x220/0x220
- ? __pm_runtime_resume+0xb1/0xf0
- usb_probe_interface+0x25b/0x710
- really_probe+0x209/0x5d0
- driver_probe_device+0xc6/0x1b0
- device_driver_attach+0xe2/0x120
+How do you suggest to match the types for the target BTF without
+simulating the CO-RE relocation? Are you suggesting to match them only
+by name? We want to generate the minimal BTF that is needed by a given
+object. Consider that we could generate these files for thousands of
+kernels, size is very important for us. For this reason we chose to
+simulate the relocation generating only the types (and members) that
+are really needed.
 
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
----
- drivers/net/wireless/ath/ar5523/ar5523.c | 4 ++++
- 1 file changed, 4 insertions(+)
+> Either way, this is not libbpf's problem to solve. It's a tooling problem.
 
-diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
-index 49cc4b7ed..1baec4b41 100644
---- a/drivers/net/wireless/ath/ar5523/ar5523.c
-+++ b/drivers/net/wireless/ath/ar5523/ar5523.c
-@@ -153,6 +153,10 @@ static void ar5523_cmd_rx_cb(struct urb *urb)
- 			ar5523_err(ar, "Invalid reply to WDCMSG_TARGET_START");
- 			return;
- 		}
-+		if (!cmd->odata) {
-+			ar5523_err(ar, "Unexpected WDCMSG_TARGET_START reply");
-+			return;
-+		}
- 		memcpy(cmd->odata, hdr + 1, sizeof(u32));
- 		cmd->olen = sizeof(u32);
- 		cmd->res = 0;
--- 
-2.25.1
-
+I agree. When I started working on this I tried to implement it
+without using the libbpf relocation logic, but very soon I realized I
+was  reimplementing the same logic. Another possibility we have
+considered is to expose this relocation logic in the libbpf API,
+however I fear it's too complicated and invasive too...
