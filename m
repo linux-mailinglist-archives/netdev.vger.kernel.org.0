@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CE8043E0A0
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 14:13:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3723543E0A2
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 14:14:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230135AbhJ1MQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 08:16:17 -0400
+        id S230369AbhJ1MQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 08:16:21 -0400
 Received: from mga01.intel.com ([192.55.52.88]:9831 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229835AbhJ1MQO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Oct 2021 08:16:14 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10150"; a="253961477"
+        id S229835AbhJ1MQS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Oct 2021 08:16:18 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10150"; a="253961489"
 X-IronPort-AV: E=Sophos;i="5.87,189,1631602800"; 
-   d="scan'208";a="253961477"
+   d="scan'208";a="253961489"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2021 05:13:47 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2021 05:13:50 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,189,1631602800"; 
-   d="scan'208";a="466106578"
+   d="scan'208";a="466106587"
 Received: from unknown (HELO localhost.igk.intel.com) ([10.102.22.231])
-  by orsmga002.jf.intel.com with ESMTP; 28 Oct 2021 05:13:44 -0700
+  by orsmga002.jf.intel.com with ESMTP; 28 Oct 2021 05:13:47 -0700
 From:   Maciej Machnikowski <maciej.machnikowski@intel.com>
 To:     maciej.machnikowski@intel.com, netdev@vger.kernel.org,
         intel-wired-lan@lists.osuosl.org
@@ -28,9 +28,9 @@ Cc:     richardcochran@gmail.com, abyagowi@fb.com,
         anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
         linux-kselftest@vger.kernel.org, idosch@idosch.org,
         mkubecek@suse.cz, saeed@kernel.org, michael.chan@broadcom.com
-Subject: [RFC v6 net-next 4/6] rtnetlink: Add support for SyncE recovered clock configuration
-Date:   Thu, 28 Oct 2021 13:58:30 +0200
-Message-Id: <20211028115832.1385376-5-maciej.machnikowski@intel.com>
+Subject: [RFC v6 net-next 5/6] ice: add support for SyncE recovered clocks
+Date:   Thu, 28 Oct 2021 13:58:31 +0200
+Message-Id: <20211028115832.1385376-6-maciej.machnikowski@intel.com>
 X-Mailer: git-send-email 2.26.3
 In-Reply-To: <20211028115832.1385376-1-maciej.machnikowski@intel.com>
 References: <20211028115832.1385376-1-maciej.machnikowski@intel.com>
@@ -40,309 +40,328 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for RTNL messages for reading/configuring SyncE recovered
-clocks.
-The messages are:
-RTM_GETRCLKRANGE: Reads the allowed pin index range for the recovered
-		  clock outputs. This can be aligned to PHY outputs or
-		  to EEC inputs, whichever is better for a given
-		  application
-
-RTM_GETRCLKSTATE: Read the state of recovered pins that output recovered
-		  clock from a given port. The message will contain the
-		  number of assigned clocks (IFLA_RCLK_STATE_COUNT) and
-		  a N pin inexes in IFLA_RCLK_STATE_OUT_IDX
-
-RTM_SETRCLKSTATE: Sets the redirection of the recovered clock for
-		  a given pin
+Implement NDO functions for handling SyncE recovered clocks.
 
 Signed-off-by: Maciej Machnikowski <maciej.machnikowski@intel.com>
 ---
- include/linux/netdevice.h      |   9 ++
- include/uapi/linux/if_link.h   |  26 +++++
- include/uapi/linux/rtnetlink.h |   7 ++
- net/core/rtnetlink.c           | 174 +++++++++++++++++++++++++++++++++
- security/selinux/nlmsgtab.c    |   3 +
- 5 files changed, 219 insertions(+)
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   | 53 +++++++++++
+ drivers/net/ethernet/intel/ice/ice_common.c   | 65 +++++++++++++
+ drivers/net/ethernet/intel/ice/ice_common.h   |  6 ++
+ drivers/net/ethernet/intel/ice/ice_main.c     | 91 +++++++++++++++++++
+ include/linux/netdevice.h                     | 11 +++
+ 5 files changed, 226 insertions(+)
 
+diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+index 0e314d6f5cf7..1beb05c038ab 100644
+--- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
++++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+@@ -1279,6 +1279,31 @@ struct ice_aqc_set_mac_lb {
+ 	u8 reserved[15];
+ };
+ 
++/* Set PHY recovered clock output (direct 0x0630) */
++struct ice_aqc_set_phy_rec_clk_out {
++	u8 phy_output;
++	u8 port_num;
++	u8 flags;
++#define ICE_AQC_SET_PHY_REC_CLK_OUT_OUT_EN	BIT(0)
++#define ICE_AQC_SET_PHY_REC_CLK_OUT_CURR_PORT	0xFF
++	u8 rsvd;
++	__le32 freq;
++	u8 rsvd2[6];
++	__le16 node_handle;
++};
++
++/* Get PHY recovered clock output (direct 0x0631) */
++struct ice_aqc_get_phy_rec_clk_out {
++	u8 phy_output;
++	u8 port_num;
++	u8 flags;
++#define ICE_AQC_GET_PHY_REC_CLK_OUT_OUT_EN	BIT(0)
++	u8 rsvd;
++	__le32 freq;
++	u8 rsvd2[6];
++	__le16 node_handle;
++};
++
+ struct ice_aqc_link_topo_params {
+ 	u8 lport_num;
+ 	u8 lport_num_valid;
+@@ -1836,6 +1861,28 @@ struct ice_aqc_get_cgu_dpll_status {
+ 	__le16 node_handle;
+ };
+ 
++/* Read CGU register (direct 0x0C6E) */
++struct ice_aqc_read_cgu_reg {
++	__le16 offset;
++#define ICE_AQC_READ_CGU_REG_MAX_DATA_LEN	16
++	u8 data_len;
++	u8 rsvd[13];
++};
++
++/* Read CGU register response (direct 0x0C6E) */
++struct ice_aqc_read_cgu_reg_resp {
++	u8 data[ICE_AQC_READ_CGU_REG_MAX_DATA_LEN];
++};
++
++/* Write CGU register (direct 0x0C6F) */
++struct ice_aqc_write_cgu_reg {
++	__le16 offset;
++#define ICE_AQC_WRITE_CGU_REG_MAX_DATA_LEN	7
++	u8 data_len;
++	u8 data[ICE_AQC_WRITE_CGU_REG_MAX_DATA_LEN];
++	u8 rsvd[6];
++};
++
+ /* Configure Firmware Logging Command (indirect 0xFF09)
+  * Logging Information Read Response (indirect 0xFF10)
+  * Note: The 0xFF10 command has no input parameters.
+@@ -2031,6 +2078,8 @@ struct ice_aq_desc {
+ 		struct ice_aqc_get_phy_caps get_phy;
+ 		struct ice_aqc_set_phy_cfg set_phy;
+ 		struct ice_aqc_restart_an restart_an;
++		struct ice_aqc_set_phy_rec_clk_out set_phy_rec_clk_out;
++		struct ice_aqc_get_phy_rec_clk_out get_phy_rec_clk_out;
+ 		struct ice_aqc_gpio read_write_gpio;
+ 		struct ice_aqc_sff_eeprom read_write_sff_param;
+ 		struct ice_aqc_set_port_id_led set_port_id_led;
+@@ -2186,6 +2235,8 @@ enum ice_adminq_opc {
+ 	ice_aqc_opc_get_link_status			= 0x0607,
+ 	ice_aqc_opc_set_event_mask			= 0x0613,
+ 	ice_aqc_opc_set_mac_lb				= 0x0620,
++	ice_aqc_opc_set_phy_rec_clk_out			= 0x0630,
++	ice_aqc_opc_get_phy_rec_clk_out			= 0x0631,
+ 	ice_aqc_opc_get_link_topo			= 0x06E0,
+ 	ice_aqc_opc_set_port_id_led			= 0x06E9,
+ 	ice_aqc_opc_set_gpio				= 0x06EC,
+@@ -2236,6 +2287,8 @@ enum ice_adminq_opc {
+ 
+ 	/* 1588/SyncE commands/events */
+ 	ice_aqc_opc_get_cgu_dpll_status			= 0x0C66,
++	ice_aqc_opc_read_cgu_reg			= 0x0C6E,
++	ice_aqc_opc_write_cgu_reg			= 0x0C6F,
+ 
+ 	ice_aqc_opc_driver_shared_params		= 0x0C90,
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index 8f64dc386922..02aa5c1405fd 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -5193,3 +5193,68 @@ bool ice_fw_supports_report_dflt_cfg(struct ice_hw *hw)
+ 	return false;
+ }
+ 
++/**
++ * ice_aq_set_phy_rec_clk_out - set RCLK phy out
++ * @hw: pointer to the HW struct
++ * @phy_output: PHY reference clock output pin
++ * @enable: GPIO state to be applied
++ * @freq: PHY output frequency
++ *
++ * Set CGU reference priority (0x0630)
++ * Return 0 on success or negative value on failure.
++ */
++enum ice_status
++ice_aq_set_phy_rec_clk_out(struct ice_hw *hw, u8 phy_output, bool enable,
++			   u32 *freq)
++{
++	struct ice_aqc_set_phy_rec_clk_out *cmd;
++	struct ice_aq_desc desc;
++	enum ice_status status;
++
++	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_set_phy_rec_clk_out);
++	cmd = &desc.params.set_phy_rec_clk_out;
++	cmd->phy_output = phy_output;
++	cmd->port_num = ICE_AQC_SET_PHY_REC_CLK_OUT_CURR_PORT;
++	cmd->flags = enable & ICE_AQC_SET_PHY_REC_CLK_OUT_OUT_EN;
++	cmd->freq = cpu_to_le32(*freq);
++
++	status = ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
++	if (!status)
++		*freq = le32_to_cpu(cmd->freq);
++
++	return status;
++}
++
++/**
++ * ice_aq_get_phy_rec_clk_out
++ * @hw: pointer to the HW struct
++ * @phy_output: PHY reference clock output pin
++ * @port_num: Port number
++ * @flags: PHY flags
++ * @freq: PHY output frequency
++ *
++ * Get PHY recovered clock output (0x0631)
++ */
++enum ice_status
++ice_aq_get_phy_rec_clk_out(struct ice_hw *hw, u8 phy_output, u8 *port_num,
++			   u8 *flags, u32 *freq)
++{
++	struct ice_aqc_get_phy_rec_clk_out *cmd;
++	struct ice_aq_desc desc;
++	enum ice_status status;
++
++	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_get_phy_rec_clk_out);
++	cmd = &desc.params.get_phy_rec_clk_out;
++	cmd->phy_output = phy_output;
++	cmd->port_num = *port_num;
++
++	status = ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
++	if (!status) {
++		*port_num = cmd->port_num;
++		*flags = cmd->flags;
++		*freq = le32_to_cpu(cmd->freq);
++	}
++
++	return status;
++}
++
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
+index 29fa400cded3..906a9c8b07de 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.h
++++ b/drivers/net/ethernet/intel/ice/ice_common.h
+@@ -166,6 +166,12 @@ ice_ena_vsi_rdma_qset(struct ice_port_info *pi, u16 vsi_handle, u8 tc,
+ enum ice_status
+ ice_aq_get_cgu_dpll_status(struct ice_hw *hw, u8 dpll_num, u8 *ref_state,
+ 			   u16 *dpll_state, u64 *phase_offset, u8 *eec_mode);
++enum ice_status
++ice_aq_set_phy_rec_clk_out(struct ice_hw *hw, u8 phy_output, bool enable,
++			   u32 *freq);
++enum ice_status
++ice_aq_get_phy_rec_clk_out(struct ice_hw *hw, u8 phy_output, u8 *port_num,
++			   u8 *flags, u32 *freq);
+ int
+ ice_dis_vsi_rdma_qset(struct ice_port_info *pi, u16 count, u32 *qset_teid,
+ 		      u16 *q_id);
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index b4c87afeadc3..52919b9f067a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -6172,6 +6172,94 @@ ice_get_eec_src(struct net_device *netdev, u32 *src,
+ 	return 0;
+ }
+ 
++/**
++ * ice_get_rclk_range - get range of recovered clock indices
++ * @netdev: network interface device structure
++ * @min_idx: min rclk index
++ * @max_idx: max rclk index
++ * @extack: netlink extended ack
++ */
++static int
++ice_get_rclk_range(struct net_device *netdev, u32 *min_idx, u32 *max_idx,
++		   struct netlink_ext_ack *extack)
++{
++	struct ice_netdev_priv *np = netdev_priv(netdev);
++	struct ice_vsi *vsi = np->vsi;
++	struct ice_pf *pf = vsi->back;
++
++	if (!ice_is_feature_supported(pf, ICE_F_CGU))
++		return -EOPNOTSUPP;
++
++	*min_idx = REF1P;
++	*max_idx = REF1N;
++
++	return 0;
++}
++
++/**
++ * ice_set_rclk_out - set recovered clock redirection to the output pin
++ * @netdev: network interface device structure
++ * @out_idx: output index
++ * @ena: true will enable redirection, false will disable it
++ * @extack: netlink extended ack
++ */
++static int
++ice_set_rclk_out(struct net_device *netdev, u32 out_idx, bool ena,
++		 struct netlink_ext_ack *extack)
++{
++	struct ice_netdev_priv *np = netdev_priv(netdev);
++	struct ice_vsi *vsi = np->vsi;
++	struct ice_pf *pf = vsi->back;
++	enum ice_status ret;
++	u32 freq;
++
++	if (!ice_is_feature_supported(pf, ICE_F_CGU))
++		return -EOPNOTSUPP;
++
++	if (out_idx < REF1P || out_idx > REF1N)
++		return -EINVAL;
++
++	ret = ice_aq_set_phy_rec_clk_out(&pf->hw, out_idx - REF1P, ena, &freq);
++
++	return ret;
++}
++
++/**
++ * ice_get_rclk_state - Get state of recovered clock pin for a given netdev
++ * @netdev: network interface device structure
++ * @out_idx: output index
++ * @ena: returns true if the pin is enabled
++ * @extack: netlink extended ack
++ */
++static int
++ice_get_rclk_state(struct net_device *netdev, u32 out_idx, bool *ena,
++		   struct netlink_ext_ack *extack)
++{
++	u8 port_num = ICE_AQC_SET_PHY_REC_CLK_OUT_CURR_PORT;
++	struct ice_netdev_priv *np = netdev_priv(netdev);
++	struct ice_vsi *vsi = np->vsi;
++	struct ice_pf *pf = vsi->back;
++	enum ice_status ret;
++	u32 freq;
++	u8 flags;
++
++	if (!ice_is_feature_supported(pf, ICE_F_CGU))
++		return -EOPNOTSUPP;
++
++	if (out_idx < REF1P || out_idx > REF1N)
++		return -EINVAL;
++
++	ret = ice_aq_get_phy_rec_clk_out(&pf->hw, out_idx - REF1P, &port_num,
++					 &flags, &freq);
++
++	if (!ret && (flags & ICE_AQC_GET_PHY_REC_CLK_OUT_OUT_EN))
++		*ena = true;
++	else
++		*ena = false;
++
++	return ret;
++}
++
+ /**
+  * ice_down - Shutdown the connection
+  * @vsi: The VSI being stopped
+@@ -8420,4 +8508,7 @@ static const struct net_device_ops ice_netdev_ops = {
+ 	.ndo_xsk_wakeup = ice_xsk_wakeup,
+ 	.ndo_get_eec_state = ice_get_eec_state,
+ 	.ndo_get_eec_src = ice_get_eec_src,
++	.ndo_get_rclk_range = ice_get_rclk_range,
++	.ndo_set_rclk_out = ice_set_rclk_out,
++	.ndo_get_rclk_state = ice_get_rclk_state,
+ };
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index ef2b381dae0c..708bd8336155 100644
+index 708bd8336155..9faa005506d1 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -1576,6 +1576,15 @@ struct net_device_ops {
- 	int			(*ndo_get_eec_src)(struct net_device *dev,
- 						   u32 *src,
- 						   struct netlink_ext_ack *extack);
-+	int			(*ndo_get_rclk_range)(struct net_device *dev,
-+						      u32 *min_idx, u32 *max_idx,
-+						      struct netlink_ext_ack *extack);
-+	int			(*ndo_set_rclk_out)(struct net_device *dev,
-+						    u32 out_idx, bool ena,
-+						    struct netlink_ext_ack *extack);
-+	int			(*ndo_get_rclk_state)(struct net_device *dev,
-+						      u32 out_idx, bool *ena,
-+						      struct netlink_ext_ack *extack);
- };
- 
- /**
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 8eae80f287e9..e27c153cfba3 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -1304,4 +1304,30 @@ enum {
- 
- #define IFLA_EEC_MAX (__IFLA_EEC_MAX - 1)
- 
-+struct if_rclk_range_msg {
-+	__u32 ifindex;
-+};
-+
-+enum {
-+	IFLA_RCLK_RANGE_UNSPEC,
-+	IFLA_RCLK_RANGE_MIN_PIN,
-+	IFLA_RCLK_RANGE_MAX_PIN,
-+	__IFLA_RCLK_RANGE_MAX,
-+};
-+
-+struct if_set_rclk_msg {
-+	__u32 ifindex;
-+	__u32 out_idx;
-+	__u32 flags;
-+};
-+
-+#define SET_RCLK_FLAGS_ENA	(1U << 0)
-+
-+enum {
-+	IFLA_RCLK_STATE_UNSPEC,
-+	IFLA_RCLK_STATE_OUT_IDX,
-+	IFLA_RCLK_STATE_COUNT,
-+	__IFLA_RCLK_STATE_MAX,
-+};
-+
- #endif /* _UAPI_LINUX_IF_LINK_H */
-diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
-index 1d8662afd6bd..6c0d96d56ec7 100644
---- a/include/uapi/linux/rtnetlink.h
-+++ b/include/uapi/linux/rtnetlink.h
-@@ -185,6 +185,13 @@ enum {
- 	RTM_GETNEXTHOPBUCKET,
- #define RTM_GETNEXTHOPBUCKET	RTM_GETNEXTHOPBUCKET
- 
-+	RTM_GETRCLKRANGE = 120,
-+#define RTM_GETRCLKRANGE	RTM_GETRCLKRANGE
-+	RTM_GETRCLKSTATE = 121,
-+#define RTM_GETRCLKSTATE	RTM_GETRCLKSTATE
-+	RTM_SETRCLKSTATE = 122,
-+#define RTM_SETRCLKSTATE	RTM_SETRCLKSTATE
-+
- 	RTM_GETEECSTATE = 124,
- #define RTM_GETEECSTATE	RTM_GETEECSTATE
- 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 03bc773d0e69..bc1e050f6d38 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -5544,6 +5544,176 @@ static int rtnl_eec_state_get(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	return err;
- }
- 
-+static int rtnl_fill_rclk_range(struct sk_buff *skb, struct net_device *dev,
-+				u32 portid, u32 seq,
-+				struct netlink_callback *cb, int flags,
-+				struct netlink_ext_ack *extack)
-+{
-+	const struct net_device_ops *ops = dev->netdev_ops;
-+	struct if_rclk_range_msg *state_msg;
-+	struct nlmsghdr *nlh;
-+	u32 min_idx, max_idx;
-+	int err;
-+
-+	ASSERT_RTNL();
-+
-+	if (!ops->ndo_get_rclk_range)
-+		return -EOPNOTSUPP;
-+
-+	err = ops->ndo_get_rclk_range(dev, &min_idx, &max_idx, extack);
-+	if (err)
-+		return err;
-+
-+	nlh = nlmsg_put(skb, portid, seq, RTM_GETRCLKRANGE, sizeof(*state_msg),
-+			flags);
-+	if (!nlh)
-+		return -EMSGSIZE;
-+
-+	state_msg = nlmsg_data(nlh);
-+	state_msg->ifindex = dev->ifindex;
-+
-+	if (nla_put_u32(skb, IFLA_RCLK_RANGE_MIN_PIN, min_idx) ||
-+	    nla_put_u32(skb, IFLA_RCLK_RANGE_MAX_PIN, max_idx))
-+		return -EMSGSIZE;
-+
-+	nlmsg_end(skb, nlh);
-+	return 0;
-+}
-+
-+static int rtnl_rclk_range_get(struct sk_buff *skb, struct nlmsghdr *nlh,
-+			       struct netlink_ext_ack *extack)
-+{
-+	struct net *net = sock_net(skb->sk);
-+	struct if_eec_state_msg *state;
-+	struct net_device *dev;
-+	struct sk_buff *nskb;
-+	int err;
-+
-+	state = nlmsg_data(nlh);
-+	dev = __dev_get_by_index(net, state->ifindex);
-+	if (!dev) {
-+		NL_SET_ERR_MSG(extack, "unknown ifindex");
-+		return -ENODEV;
-+	}
-+
-+	nskb = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	if (!nskb)
-+		return -ENOBUFS;
-+
-+	err = rtnl_fill_rclk_range(nskb, dev, NETLINK_CB(skb).portid,
-+				   nlh->nlmsg_seq, NULL, nlh->nlmsg_flags,
-+				   extack);
-+	if (err < 0)
-+		kfree_skb(nskb);
-+	else
-+		err = rtnl_unicast(nskb, net, NETLINK_CB(skb).portid);
-+
-+	return err;
-+}
-+
-+static int rtnl_fill_rclk_state(struct sk_buff *skb, struct net_device *dev,
-+				u32 portid, u32 seq,
-+				struct netlink_callback *cb, int flags,
-+				struct netlink_ext_ack *extack)
-+{
-+	const struct net_device_ops *ops = dev->netdev_ops;
-+	u32 min_idx, max_idx, src_idx, count = 0;
-+	struct if_eec_state_msg *state_msg;
-+	struct nlmsghdr *nlh;
-+	bool ena;
-+	int err;
-+
-+	ASSERT_RTNL();
-+
-+	if (!ops->ndo_get_rclk_state || !ops->ndo_get_rclk_range)
-+		return -EOPNOTSUPP;
-+
-+	err = ops->ndo_get_rclk_range(dev, &min_idx, &max_idx, extack);
-+	if (err)
-+		return err;
-+
-+	nlh = nlmsg_put(skb, portid, seq, RTM_GETRCLKSTATE, sizeof(*state_msg),
-+			flags);
-+	if (!nlh)
-+		return -EMSGSIZE;
-+
-+	state_msg = nlmsg_data(nlh);
-+	state_msg->ifindex = dev->ifindex;
-+
-+	for (src_idx = min_idx; src_idx <= max_idx; src_idx++) {
-+		ops->ndo_get_rclk_state(dev, src_idx, &ena, extack);
-+		if (!ena)
-+			continue;
-+
-+		if (nla_put_u32(skb, IFLA_RCLK_STATE_OUT_IDX, src_idx))
-+			return -EMSGSIZE;
-+		count++;
-+	}
-+
-+	if (nla_put_u32(skb, IFLA_RCLK_STATE_COUNT, count))
-+		return -EMSGSIZE;
-+
-+	nlmsg_end(skb, nlh);
-+	return 0;
-+}
-+
-+static int rtnl_rclk_state_get(struct sk_buff *skb, struct nlmsghdr *nlh,
-+			       struct netlink_ext_ack *extack)
-+{
-+	struct net *net = sock_net(skb->sk);
-+	struct if_eec_state_msg *state;
-+	struct net_device *dev;
-+	struct sk_buff *nskb;
-+	int err;
-+
-+	state = nlmsg_data(nlh);
-+	dev = __dev_get_by_index(net, state->ifindex);
-+	if (!dev) {
-+		NL_SET_ERR_MSG(extack, "unknown ifindex");
-+		return -ENODEV;
-+	}
-+
-+	nskb = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	if (!nskb)
-+		return -ENOBUFS;
-+
-+	err = rtnl_fill_rclk_state(nskb, dev, NETLINK_CB(skb).portid,
-+				   nlh->nlmsg_seq, NULL, nlh->nlmsg_flags,
-+				   extack);
-+	if (err < 0)
-+		kfree_skb(nskb);
-+	else
-+		err = rtnl_unicast(nskb, net, NETLINK_CB(skb).portid);
-+
-+	return err;
-+}
-+
-+static int rtnl_rclk_set(struct sk_buff *skb, struct nlmsghdr *nlh,
-+			 struct netlink_ext_ack *extack)
-+{
-+	struct net *net = sock_net(skb->sk);
-+	struct if_set_rclk_msg *state;
-+	struct net_device *dev;
-+	bool ena;
-+	int err;
-+
-+	state = nlmsg_data(nlh);
-+	dev = __dev_get_by_index(net, state->ifindex);
-+	if (!dev) {
-+		NL_SET_ERR_MSG(extack, "unknown ifindex");
-+		return -ENODEV;
-+	}
-+
-+	if (!dev->netdev_ops->ndo_set_rclk_out)
-+		return -EOPNOTSUPP;
-+
-+	ena = !!(state->flags & SET_RCLK_FLAGS_ENA);
-+	err = dev->netdev_ops->ndo_set_rclk_out(dev, state->out_idx, ena,
-+						extack);
-+
-+	return err;
-+}
-+
- /* Process one rtnetlink message. */
- 
- static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh,
-@@ -5770,5 +5940,9 @@ void __init rtnetlink_init(void)
- 	rtnl_register(PF_UNSPEC, RTM_GETSTATS, rtnl_stats_get, rtnl_stats_dump,
- 		      0);
- 
-+	rtnl_register(PF_UNSPEC, RTM_GETRCLKRANGE, rtnl_rclk_range_get, NULL, 0);
-+	rtnl_register(PF_UNSPEC, RTM_GETRCLKSTATE, rtnl_rclk_state_get, NULL, 0);
-+	rtnl_register(PF_UNSPEC, RTM_SETRCLKSTATE, rtnl_rclk_set, NULL, 0);
-+
- 	rtnl_register(PF_UNSPEC, RTM_GETEECSTATE, rtnl_eec_state_get, NULL, 0);
- }
-diff --git a/security/selinux/nlmsgtab.c b/security/selinux/nlmsgtab.c
-index 2c66e722ea9c..57c7c85edd4d 100644
---- a/security/selinux/nlmsgtab.c
-+++ b/security/selinux/nlmsgtab.c
-@@ -91,6 +91,9 @@ static const struct nlmsg_perm nlmsg_route_perms[] =
- 	{ RTM_NEWNEXTHOPBUCKET,	NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
- 	{ RTM_DELNEXTHOPBUCKET,	NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
- 	{ RTM_GETNEXTHOPBUCKET,	NETLINK_ROUTE_SOCKET__NLMSG_READ  },
-+	{ RTM_GETRCLKRANGE,	NETLINK_ROUTE_SOCKET__NLMSG_READ  },
-+	{ RTM_GETRCLKSTATE,	NETLINK_ROUTE_SOCKET__NLMSG_READ  },
-+	{ RTM_SETRCLKSTATE,	NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
- 	{ RTM_GETEECSTATE,	NETLINK_ROUTE_SOCKET__NLMSG_READ  },
- };
- 
+@@ -1351,6 +1351,17 @@ struct netdev_net_notifier {
+  *			  struct netlink_ext_ack *extack);
+  *	Get the index of the source signal that's currently used as EEC's
+  *	reference
++ * int (*ndo_get_rclk_range)(struct net_device *dev, u32 *min_idx, u32 *max_idx,
++ *			     struct netlink_ext_ack *extack);
++ *	Get range of valid output indices for the set/get Recovered Clock
++ *	functions
++ * int (*ndo_set_rclk_out)(struct net_device *dev, u32 out_idx, bool ena,
++ *			   struct netlink_ext_ack *extack);
++ *	Set the receive clock recovery redirection to a given Recovered Clock
++ *	output.
++ * int (*ndo_get_rclk_state)(struct net_device *dev, u32 out_idx, bool *ena,
++ *			     struct netlink_ext_ack *extack);
++ *	Get current state of the recovered clock to pin mapping.
+  */
+ struct net_device_ops {
+ 	int			(*ndo_init)(struct net_device *dev);
 -- 
 2.26.3
 
