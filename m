@@ -2,105 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C140643E2BE
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 15:56:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3054343E2C4
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 15:57:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230282AbhJ1N6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 09:58:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51838 "EHLO
+        id S230471AbhJ1N7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 09:59:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229887AbhJ1N6j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 09:58:39 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210F7C061570;
-        Thu, 28 Oct 2021 06:56:12 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id t7so6430296pgl.9;
-        Thu, 28 Oct 2021 06:56:12 -0700 (PDT)
+        with ESMTP id S230406AbhJ1N7S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 09:59:18 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC39C061570
+        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 06:56:51 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id n36-20020a17090a5aa700b0019fa884ab85so7979592pji.5
+        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 06:56:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=0CoaWvjFm99cAI5DZScnzMyymg+2oS2Edb8RJJOrKrg=;
-        b=FfbiC19K9I21fUzT8qV52oceVoKCpgsIw1JZRNxMLbVN8SXvIG2/mVXL29PpBOIShE
-         4CJVJsdrlGJNC0RquDfU9/6UwB0z8vPjHB4AqX3YP1439RGykUe5Lcj9zUFiiQCXVmMP
-         SE90JNF1zzKTHqeyHnQ6RsHlxQvIVGSqNPpTLApZKmKYu6CM3NIU3EUVTKGgz09jwb6l
-         yRWQmC32O68CJnqwcDCWiibeahfTg1VYnzcKLbstevsRa8mwV1JIDu0DV7hSu+twdDD9
-         rtBBLuWPWNuMpelOkBufaQSswvXHSHe7gQRne328zOwqak3Sc7AwFCdwgV+3Yyl9BwoR
-         ZAQw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=T5gtyFNSV98fxFw4D4Snvxpenx6sTbrIAms1H1Mh3YE=;
+        b=C0QcO6bGmBP/2PaNBmYwBKlkBkc/BqBwgxjpYI1kgLo2ZpuJwhYYiFMVarRknQ8p3E
+         9bn5hHriyhQG8SOwcMFjI0SxDhPaF/HhnGz3TkXHwTJ+Fk3w9FTFwwYD269ziBZwzidG
+         T5DowlKJWWB2kL75Sli1un+wjrljdrTGxTWX0CsEs37j844ub3W0b0lwtJ1poZv/jXBK
+         7BYNdbBdXGD1yfckupoV+7T51zXSTEchLJ8sWKhmpN2qa1Q8wt6JNi3W4LsB79ICnIK+
+         OILTiLUqPJXEDdxbreTPAJiMahYZu3kVhpmWRS3DvGHudVpFQcqe1Ja6nCofy9aSn4mP
+         U6Dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=0CoaWvjFm99cAI5DZScnzMyymg+2oS2Edb8RJJOrKrg=;
-        b=a19MlNFenJm2ACA6n0qw9LhFcavXqjTOb95KW5oGskiAbnwDwoVfl4i+/BgAT6dV6U
-         GxVFswxWWP548I0koPXT/eS19Ifi2SNAszqR6Z5JdxAcWI4AMncIqhWoOi/TOlWFIS0y
-         bJ0Pu7/+x7icLyEO2eK3h04hwXic96b5L2+NbnvXJ0Yn0f4hXcj+JjkqKL0mfEUEPUQV
-         X5aN1Pff7YO490yJbJRiD2sJ2QEshS5RW0YOcPJwK4i5O3rUjVxNCi19BOwxF4zMciZl
-         MHTuxJqdxN2cSgd/dVChuSc9rKMJDacg3iGGRoBHNJn/vari4k1+Zw+WVCnb0lBPhy7K
-         8UQw==
-X-Gm-Message-State: AOAM531I0JuDHwPrRWBS3XZV4i9SyNaG1E//r7D4ipizPXTnmSKD3o9o
-        UDsjTfoLUvJuY9Q8oa95/9sdghtpV0dsyeolEa8=
-X-Google-Smtp-Source: ABdhPJyfioFjLfVpRZppOC5/a3bwhIwPlQO8tRDLcDAxIg15YJunUs+U4xZ65qA0l+qhiQvcDcAD9FS0PMtAhNwR7QE=
-X-Received: by 2002:a05:6a00:2390:b0:44d:bccd:7bc with SMTP id
- f16-20020a056a00239000b0044dbccd07bcmr4561800pfc.4.1635429371651; Thu, 28 Oct
- 2021 06:56:11 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=T5gtyFNSV98fxFw4D4Snvxpenx6sTbrIAms1H1Mh3YE=;
+        b=KJXatEWIF+8rpTlGTQD7DQ+oD7/tu5elw4ITjoUNAsucdMsTSHGobHzFf0i4uyDe9g
+         HC8wnvwWdppiE/IQ3aviBkR5wCxvu7OIT8z6W2fUEurywVcNsTzaLypSkm4zp7mwl/sf
+         2GWWUgKtpn6bt3XGeMfv2yB19d6QE3HbQ32z5bPLjUkmk7ne05PhYyA/FtdgcwuCIkAx
+         +xnnGTg0CHl5teHHGJ41f7cFHJ3kgrMsp5yhMP4+Q/t0FnXnBlbKuVZDg634ycoE74WB
+         LiV/mBhm0XetdMdK5SVv7m40QSlqC7BBR8NvlB+bieIt5bMHzIx5fBg/pHiyHchsoo31
+         I7pA==
+X-Gm-Message-State: AOAM533hXfi/kxkey9FfpDx2o03rMmif4UBJhjn9F5Vt5Db8auIf91/T
+        3Hbo93NtZkBPkRzIr0/dhUwPR6MUjWM=
+X-Google-Smtp-Source: ABdhPJzaX+NccE5HBcoNYWmWrH3X4tv0dg5/k5W1P8caMIR0CWQK2A9WteqDlJ2jMTsZVR2AdU1yhg==
+X-Received: by 2002:a17:90a:1190:: with SMTP id e16mr4683953pja.209.1635429410459;
+        Thu, 28 Oct 2021 06:56:50 -0700 (PDT)
+Received: from localhost.localdomain ([111.201.149.194])
+        by smtp.gmail.com with ESMTPSA id a10sm2905134pgw.25.2021.10.28.06.56.48
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 28 Oct 2021 06:56:49 -0700 (PDT)
+From:   xiangxia.m.yue@gmail.com
+To:     netdev@vger.kernel.org
+Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH] net: sched: check tc_skip_classify as far as possible
+Date:   Thu, 28 Oct 2021 21:56:44 +0800
+Message-Id: <20211028135644.2258-1-xiangxia.m.yue@gmail.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 MIME-Version: 1.0
-References: <20211028134003.27160-1-magnus.karlsson@gmail.com> <87tuh18dqk.fsf@toke.dk>
-In-Reply-To: <87tuh18dqk.fsf@toke.dk>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Thu, 28 Oct 2021 15:56:00 +0200
-Message-ID: <CAJ8uoz2KXvsRzfm9eih4bEwY5w-91fiBZvtdQ2ONYkDiU=xWFw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: deprecate AF_XDP support
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Ciara Loftus <ciara.loftus@intel.com>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 28, 2021 at 3:45 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> Magnus Karlsson <magnus.karlsson@gmail.com> writes:
->
-> > From: Magnus Karlsson <magnus.karlsson@intel.com>
-> >
-> > Deprecate AF_XDP support in libbpf ([0]). This has been moved to
-> > libxdp as it is a better fit for that library. The AF_XDP support only
-> > uses the public libbpf functions and can therefore just use libbpf as
-> > a library from libxdp. The libxdp APIs are exactly the same so it
-> > should just be linking with libxdp instead of libbpf for the AF_XDP
-> > functionality. If not, please submit a bug report. Linking with both
-> > libraries is supported but make sure you link in the correct order so
-> > that the new functions in libxdp are used instead of the deprecated
-> > ones in libbpf.
-> >
-> > Libxdp can be found at https://github.com/xdp-project/xdp-tools.
-> >
-> > [0] https://github.com/libbpf/libbpf/issues/270
-> >
-> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
->
-> Seems you typoed 'libxdp' as 'libdxp' in the deprecation messages :)
+From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-Ouch! I will spin a v2 for that, but I will wait for others to comment
-first in case there are more things to fix. Thanks for spotting it!
+We look up and then check tc_skip_classify flag in net
+sched layer, even though skb don't want to be classified.
+That case may consume a lot of cpu cycles.
 
-> Other than that, though:
-> Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->
+Install the rules as below:
+$ for id in $(seq 1 100); do
+$ 	tc filter add ... egress prio $id ... action mirred egress redirect dev ifb0
+$ done
+
+netperf:
+$ taskset -c 1 netperf -t TCP_RR -H ip -- -r 32,32
+$ taskset -c 1 netperf -t TCP_STREAM -H ip -- -m 32
+
+Without this patch:
+10662.33 tps
+108.95 Mbit/s
+
+With this patch:
+12434.48 tps
+145.89 Mbit/s
+
+For TCP_RR, there are 16.6% improvement, TCP_STREAM 33.9%.
+
+Cc: Willem de Bruijn <willemb@google.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+---
+ net/core/dev.c      | 3 ++-
+ net/sched/act_api.c | 3 ---
+ 2 files changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index eb61a8821b3a..856ac1fb75b4 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4155,7 +4155,8 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+ #ifdef CONFIG_NET_CLS_ACT
+ 	skb->tc_at_ingress = 0;
+ # ifdef CONFIG_NET_EGRESS
+-	if (static_branch_unlikely(&egress_needed_key)) {
++	if (static_branch_unlikely(&egress_needed_key) &&
++	    !skb_skip_tc_classify(skb)) {
+ 		skb = sch_handle_egress(skb, &rc, dev);
+ 		if (!skb)
+ 			goto out;
+diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+index 7dd3a2dc5fa4..bd66f27178be 100644
+--- a/net/sched/act_api.c
++++ b/net/sched/act_api.c
+@@ -722,9 +722,6 @@ int tcf_action_exec(struct sk_buff *skb, struct tc_action **actions,
+ 	int i;
+ 	int ret = TC_ACT_OK;
+ 
+-	if (skb_skip_tc_classify(skb))
+-		return TC_ACT_OK;
+-
+ restart_act_graph:
+ 	for (i = 0; i < nr_actions; i++) {
+ 		const struct tc_action *a = actions[i];
+-- 
+2.27.0
+
