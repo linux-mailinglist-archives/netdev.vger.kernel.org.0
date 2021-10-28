@@ -2,61 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B60043E74A
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 19:25:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B95F043E788
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 19:54:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231124AbhJ1R16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 13:27:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44154 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230451AbhJ1R14 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Oct 2021 13:27:56 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0DFD2610FF;
-        Thu, 28 Oct 2021 17:25:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635441929;
-        bh=g/bzId7RkrOvfk+SrjHBprnep7MTl4j0MevO9JIXV6E=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Hc7NIXIszy888yfFJM7APFGcE1Xgh+FZAX/HR2Lf5t9YpdPgoowpZvBfsp43Rdnxb
-         hD+QNIjgut0w0GHoEwZdb/3JsCb4kFLZzjDPQ6dBOyJ7c3+uj+Hmvolt+tYSldYAa3
-         NVm7ubexdVEfWvZDC3a5l2FrWJVE8Kvf3ptfSMDGi9qI//x1+8AVSTimEjH0k/YPkA
-         eD40vYpaxPe0qaqgbKaQtA9Jnit/5SS0WGhblUxsXCB4Ifj3H2uPAf19sb/NQaBn/t
-         D+X84vOC45j23McV+ETZnUmQDnGVipw4n/ju230ENxgmCrwSMSzDLAtfMYSt9COzUB
-         j7esaCpkvrKpw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0705360972;
-        Thu, 28 Oct 2021 17:25:29 +0000 (UTC)
-Subject: Re: [GIT PULL] Networking for 5.15-rc8
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20211028162912.1660341-1-kuba@kernel.org>
-References: <20211028162912.1660341-1-kuba@kernel.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20211028162912.1660341-1-kuba@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.15-rc8
-X-PR-Tracked-Commit-Id: 35392da51b1ab7ba0c63de0a553e2a93c2314266
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 411a44c24a561e449b592ff631b7ae321f1eb559
-Message-Id: <163544192902.14282.15783866044630928474.pr-tracker-bot@kernel.org>
-Date:   Thu, 28 Oct 2021 17:25:29 +0000
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, daniel@iogearbox.net, toke@toke.dk,
-        johannes@sipsolutions.net, bpf@vger.kernel.org
+        id S230397AbhJ1R4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 13:56:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50700 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230473AbhJ1R4Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 13:56:24 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9006C061745
+        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 10:53:56 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id 5so27398531edw.7
+        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 10:53:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=WZwJd6pQXuj90DgXnmrq+JdASJsQQ5coXQgD2NBlIMM=;
+        b=qnAz/d7q/TDFqW/0iBgAdTdriYZv2eXb3FJ8w68ffn4ileagqBwP6qLze2/cGcU+aZ
+         A7yPMjQrWkYeriKci7bLmWgXbEpToqxjJAnV66a380uBzgVaK6IHN/aLslSdAAZ7v00R
+         rF+Wtr/ivntMOk9An9/sgAu9UBAB30U6iRNOGtlt67Ku7zZRf+vcjW8neTXIlcVKB5xD
+         CtnwmkQyFm4MJv1aFJXXXFsVDfM3JHqQS/AwQhx3ZwBaHvKpm8bN+FtWVcHaAeQLJRRr
+         BN/W9nIM2ZeKbFInJqKsn+G6+eW/FzmIZaSycxYYiLyxkOEUaYQZso9GtPu9YeKCE/bh
+         6JIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=WZwJd6pQXuj90DgXnmrq+JdASJsQQ5coXQgD2NBlIMM=;
+        b=E3mv7F88czhaUUtNddW+NzuQks3+2WZogpjbWC4KjgDvmBs/qp5gJ8cjgMZk64woWv
+         fTC+9AdkCpnDk3EeA/CyqHwOnzK0j6XhBP0L8gXVd1Rv2S93UXMgumEZiYNS3xXvX9OB
+         i4nlLnN8J2dG/9ABfHDjJmQYM5e+BxhgRlU/T20k+qw26jc9V/q411Bb93wQHRFk5ozJ
+         X+92sq81Mdkx+HEouxs/S1Cj+L95gzhH9SXfvOJlQZzlpNXhPqHMqgDKQ4A/+GpoF5ev
+         7Lrk4sTCirzfSfega9sSHmMFDRdGp0OkTdhy1NiZJk+GQPlX7o+uZv/+CAYkY+VxOWQo
+         iteg==
+X-Gm-Message-State: AOAM533/yxr4hFpR4fpA3a0ay4jDUkXlyUkld7P284kCLqfpqPerbZ63
+        A38hoHEcRwrZgQ+rm7LyWwhVmqgCLcko9SkBAGc=
+X-Google-Smtp-Source: ABdhPJw+SqyuKCmUM9RzUAvokPuk1wxXii+TxpWHncJRQVnE2vWsCdxjTcaSvV33gxNl544mTAEtoxaWcIBkB99hOLo=
+X-Received: by 2002:a50:e08a:: with SMTP id f10mr8098310edl.319.1635443635320;
+ Thu, 28 Oct 2021 10:53:55 -0700 (PDT)
+MIME-Version: 1.0
+Received: by 2002:a50:6c8b:0:0:0:0:0 with HTTP; Thu, 28 Oct 2021 10:53:54
+ -0700 (PDT)
+Reply-To: jennehkandeh@yahoo.com
+From:   Jenneh Kandeh <efffbi12@gmail.com>
+Date:   Thu, 28 Oct 2021 10:53:54 -0700
+Message-ID: <CANLFAeTT6g5B8Z-Su2bK6Lxt5+VJSJhedN-A0d2QNoPGifSAfw@mail.gmail.com>
+Subject: Re: Regarding Of My Late Father's Fund $10,200,000
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Thu, 28 Oct 2021 09:29:12 -0700:
+dear,
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.15-rc8
+I got your contact through the internet due to serious searching for a
+reliable personality.  I am Jenneh Kandeh from FreeTown Capital of
+Sierra Leone. Time of opposed to the government of President Ahmad
+Tejan Kebbah the ex-leader.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/411a44c24a561e449b592ff631b7ae321f1eb559
+Since 21st November, 2005 But I am current residing in Porto-Novo
+Benin due to war of my country, my mother killed on 04/01/2002 for
+Sierra Leone civilian war my father decided to change another
+residence country with me because I am only child for my family bad
+news that my father passed away on 25/11/2018. During the war, My
+father made a lot of money through the illegal sales of Diamonds. To
+the tune of $10,200,000.
 
-Thank you!
+This money is currently and secretly kept in ECOWAS security company
+here in Benin, but because of the political turmoil which still exists
+here in Africa, I can not invest the money by myself, hence am
+soliciting your help to help me take these funds into your custody and
+also advise me on how to invest it.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+And I want to add here that if agreed 35% of the total worth of the
+fund will be yours minus your total expenses incurred during the
+clearing of the fund in
+Porto Novo Benin that 35% is a $3,570,000 I would like to invest on
+heavy duty agricultural equipment and earth moving machines to enable
+me go into a full scale mechanized farming.
+
+l wait to hear from you
