@@ -2,69 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 661AB43E106
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 14:30:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3F6043E149
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 14:52:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230293AbhJ1MdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 08:33:14 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:35644 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229448AbhJ1MdN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Oct 2021 08:33:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=xEBKoPrmRsIIkkMzN6IAirZdQjATcebsXUv59Brc72A=; b=hbPsAgRz/N44KSKUhIjWS+PnUf
-        iyLzSIw6C41F3zhgF9Xk4QINEaFK6cEfV0riqMpxGHrjRzy3Spzyv8o788FQxLKu/MZfC8Bckydrk
-        sMy+rwaoSFHRNTcuXwtvImOGmzkuRlT4riDlmTvZfkcTPQvK61OT8DPlO7D8x3nam7Kg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mg4YJ-00BzVI-Jh; Thu, 28 Oct 2021 14:30:39 +0200
-Date:   Thu, 28 Oct 2021 14:30:39 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "huangguangbin (A)" <huangguangbin2@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, wangjie125@huawei.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lipeng321@huawei.com, chenhao288@hisilicon.com
-Subject: Re: [PATCH net 1/7] net: hns3: fix pause config problem after
- autoneg disabled
-Message-ID: <YXqX7z2GljD6bxTr@lunn.ch>
-References: <20211027121149.45897-1-huangguangbin2@huawei.com>
- <20211027121149.45897-2-huangguangbin2@huawei.com>
- <YXmLA4AbY83UV00f@lunn.ch>
- <09eda9fe-196b-006b-6f01-f54e75715961@huawei.com>
+        id S230179AbhJ1MzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 08:55:15 -0400
+Received: from mail-lj1-f178.google.com ([209.85.208.178]:34810 "EHLO
+        mail-lj1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229578AbhJ1MzP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 08:55:15 -0400
+Received: by mail-lj1-f178.google.com with SMTP id h11so10565855ljk.1;
+        Thu, 28 Oct 2021 05:52:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xrmACLrClol1Ht1AqRT5BlRPbvf71eFZVnNxO5q/rNI=;
+        b=QWhpwM4mY2+NcYr72FKWuy7tTDke5SRPDtEGsazMiaqEd02RZStgJGcGbR/yjAYS8A
+         HkWDjSCSsc3aXKG3+cx3mSLaR5Rb82BVxm78Jp/GOJgIIntMixZVuLF853S/NeGE5fmw
+         bkLmMyEvvZqxbKcM8z134eE3eJbZt7LRhXbdVz4muWkMKqIced412p1jrvMNm5jASjy0
+         1Vbx2suDf1XPxqHxmTZdwiyG3+VWy0SmB1mRaNBDei34CumVKO0/XgP7fpOrcj1h9d1L
+         VcmSscXBd0is/4I30xNI4jgoiM7436fzjN7sqnfhuaK0IubV1gH2soDUou29vI1yZrcl
+         yiTA==
+X-Gm-Message-State: AOAM5313qAK5PIHUZi1ZIMByTRPtubhvEC1IQavANbUpu6404TfpJsjt
+        VHYlj2w9ldonC3SRwLfXgsOA0YzvBRI=
+X-Google-Smtp-Source: ABdhPJyQuQYnh4pcXTg5UYacz2zwAvAPf7Nnyl+A/VS8XnK9ZOgp2IkFx0P7Wfl5aBeow658nwCU2w==
+X-Received: by 2002:a2e:9d88:: with SMTP id c8mr4662425ljj.276.1635425567390;
+        Thu, 28 Oct 2021 05:52:47 -0700 (PDT)
+Received: from kladdkakan.. ([185.213.154.234])
+        by smtp.gmail.com with ESMTPSA id p10sm282150ljm.53.2021.10.28.05.52.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Oct 2021 05:52:46 -0700 (PDT)
+From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>
+To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        linux-riscv@lists.infradead.org
+Subject: [PATCH bpf] riscv, bpf: Fix potential NULL dereference
+Date:   Thu, 28 Oct 2021 14:51:15 +0200
+Message-Id: <20211028125115.514587-1-bjorn@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <09eda9fe-196b-006b-6f01-f54e75715961@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Hi Andrew, thanks very much for your guidance on how to use pause autoneg,
-> it confuses me before because PHY registers actually have no separate setting
-> bit of pause autoneg.
-> 
-> So, summarize what you mean:
-> 1. If pause autoneg is on, driver should always use the autoneg result to program
->    the MAC. Eventhough general autoneg is off now and link state is no changed then
->    driver just needs to keep the last configuration for the MAC, if link state is
->    changed and phy goes down and up then driver needs to program the MAC according
->    to the autoneg result in the link_adjust callback.
-> 2. If pause autoneg is off, driver should directly configure the MAC with tx pause
->    and rx pause. Eventhough general autoneg is on, driver should ignore the autoneg
->    result.
-> 
-> Do I understand right?
+The bpf_jit_binary_free() function requires a non-NULL argument. When
+the RISC-V BPF JIT fails to converge in NR_JIT_ITERATIONS steps,
+jit_data->header will be NULL, which triggers a NULL
+dereference. Avoid this by checking the argument, prior calling the
+function.
 
-Yes, that fits my understanding of ethtool, etc.
+Fixes: ca6cb5447cec ("riscv, bpf: Factor common RISC-V JIT code")
+Signed-off-by: Björn Töpel <bjorn@kernel.org>
+---
+ arch/riscv/net/bpf_jit_core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-phylink tried to clear up some of these problems by fully implementing
-the call within phylink. All the MAC driver needs to provide is a
-method to configure the MAC pause settings. Take a look at
-phylink_ethtool_set_pauseparam() and the commit messages related to
-that.
+diff --git a/arch/riscv/net/bpf_jit_core.c b/arch/riscv/net/bpf_jit_core.c
+index 0fee2cbaaf53..753d85bdfad0 100644
+--- a/arch/riscv/net/bpf_jit_core.c
++++ b/arch/riscv/net/bpf_jit_core.c
+@@ -125,7 +125,8 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 
+ 	if (i == NR_JIT_ITERATIONS) {
+ 		pr_err("bpf-jit: image did not converge in <%d passes!\n", i);
+-		bpf_jit_binary_free(jit_data->header);
++		if (jit_data->header)
++			bpf_jit_binary_free(jit_data->header);
+ 		prog = orig_prog;
+ 		goto out_offset;
+ 	}
 
-	Andrew
+base-commit: 72f898ca0ab85fde6facf78b14d9f67a4a7b32d1
+-- 
+2.32.0
+
