@@ -2,120 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BC6843D859
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 03:02:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1009C43D861
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 03:05:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229752AbhJ1BE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Oct 2021 21:04:27 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:13983 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229532AbhJ1BE1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 21:04:27 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HfnKD3KrdzWtCr;
-        Thu, 28 Oct 2021 09:00:00 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Thu, 28 Oct 2021 09:01:57 +0800
-Received: from [10.174.179.234] (10.174.179.234) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Thu, 28 Oct 2021 09:01:55 +0800
-Subject: Re: [PATCH bpf-next,v3] riscv, bpf: Add BPF exception tables
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-References: <20211027111822.3801679-1-tongtiangen@huawei.com>
- <CAJ+HfNhC=hfFnjVvCf=bw+n1msRjR3gGUyapAmsRDupZ5CusrQ@mail.gmail.com>
- <15487721-b3de-73c7-5ef3-614c6da2f8cd@iogearbox.net>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Palmer Dabbelt <palmerdabbelt@google.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-From:   tongtiangen <tongtiangen@huawei.com>
-Message-ID: <5c38b790-65e9-6ba2-75bd-121d6d51ab34@huawei.com>
-Date:   Thu, 28 Oct 2021 09:01:54 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        id S229641AbhJ1BHZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Oct 2021 21:07:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48084 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229578AbhJ1BHZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Oct 2021 21:07:25 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44CD9C061570;
+        Wed, 27 Oct 2021 18:04:59 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id m14so4357670pfc.9;
+        Wed, 27 Oct 2021 18:04:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=A7pIyp/mzZcVdirChB9cDdj7yKUeOVUCz0p4mNMMkaY=;
+        b=X/lAhn8GZOeQ4m+MrMA1zLpVLDgNZiaGlAM6S5UqJJtoeqiHdEYO0lhhTxRXyuMepx
+         rq8g/zpQPifrMxb6pJF5EJ8OZIMuHc0tAjfNmnm/deHWhCV/o0mLZuQHy4ykn7ZanV7P
+         31pmz9iGFEhd8s/0JanqyAv6vJVJa4WuZi1wxGHCU+m1Ooiuwg6U+Zm9ByFqy/6j2aZn
+         LTKcHqhMaa3ERrQq6q1P9wZIN/9aomcJapWSRoBH2+nflHRBal/LfU6PT3CnUZcMRJIM
+         cfeMIzWGHwh7nTGIgOCKp85Nd8T5Q30zHmO6YsbkKh1lQXf+JQAzCzURf4mHCtzLdCPO
+         WM+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=A7pIyp/mzZcVdirChB9cDdj7yKUeOVUCz0p4mNMMkaY=;
+        b=JIHpcCyuZ0cA4kxjCr67Dzelc5pULJBhChEk9/n1WgeJ1jRF0SPDvmmKn7/qp0ZxYH
+         s8wGv43BIqdENYNVpkdKAXBLFaBPx5G36otUi6GtfBUgLffKFqX8NOgtyHPz5AA/yYcu
+         aQs/Lk4GSKaC78m9o9srto74xKnn+6CABuAqbGibYzagssBoqVsmTxTbbn2Jr6Df+4LM
+         UFcz1GMDZZY94N+vvsxOb2Ow/wjGfdvb3RQF3k1wHTHJHDhhs3otW4o6nimAPK4z8SEZ
+         vSTRvh7xetJh7oYThUEsbJfIP1jaZJub67YlCQVQXxLHAJsggsvUZRVfltDtQO56JTpd
+         TLRQ==
+X-Gm-Message-State: AOAM5330G3KeGxKuHRfeLB20MhnJ6I5KpHKp9e94Fd2FtW/78NuKODXu
+        jLcdR/yTV0XnKxOsL1+6uDA=
+X-Google-Smtp-Source: ABdhPJxyOK2kyNeD+qfB2IEZulTqjHNqK34GcypMAMXxVhQufY29afKBJfPAneNDNzOdwimEQb2fkw==
+X-Received: by 2002:aa7:8a0e:0:b0:47c:1116:3ce with SMTP id m14-20020aa78a0e000000b0047c111603cemr1109275pfa.76.1635383098866;
+        Wed, 27 Oct 2021 18:04:58 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id mu11sm6851611pjb.20.2021.10.27.18.04.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Oct 2021 18:04:58 -0700 (PDT)
+From:   Yang Guang <cgel.zte@gmail.com>
+X-Google-Original-From: Yang Guang <yang.guang5@zte.com.cn>
+To:     ath9k-devel@qca.qualcomm.com, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Yang Guang <yang.guang5@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ath9k_hw: use swap() to make code cleaner
+Date:   Thu, 28 Oct 2021 01:04:51 +0000
+Message-Id: <20211028010451.7754-1-yang.guang5@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <15487721-b3de-73c7-5ef3-614c6da2f8cd@iogearbox.net>
-Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.234]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Using swap() make it more readable.
 
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+---
+ drivers/net/wireless/ath/ath9k/ar9003_calib.c | 14 +++++---------
+ 1 file changed, 5 insertions(+), 9 deletions(-)
 
-On 2021/10/28 7:11, Daniel Borkmann wrote:
-> On 10/27/21 6:55 PM, Björn Töpel wrote:
->> On Wed, 27 Oct 2021 at 13:03, Tong Tiangen <tongtiangen@huawei.com> wrote:
->>>
->>> When a tracing BPF program attempts to read memory without using the
->>> bpf_probe_read() helper, the verifier marks the load instruction with
->>> the BPF_PROBE_MEM flag. Since the riscv JIT does not currently recognize
->>> this flag it falls back to the interpreter.
->>>
->>> Add support for BPF_PROBE_MEM, by appending an exception table to the
->>> BPF program. If the load instruction causes a data abort, the fixup
->>> infrastructure finds the exception table and fixes up the fault, by
->>> clearing the destination register and jumping over the faulting
->>> instruction.
->>>
->>> A more generic solution would add a "handler" field to the table entry,
->>> like on x86 and s390.
->>>
->>> The same issue in ARM64 is fixed in:
->>> commit 800834285361 ("bpf, arm64: Add BPF exception tables")
->>>
->>> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
->>> Tested-by: Pu Lehui <pulehui@huawei.com>
->>> ---
->>> v3:
->>> Modify according to Björn's comments, mainly code optimization.
->>
->> Thank you!
->>
->> I ran this patch against the test_bpf.ko, and selftests/bpf -- no
->> regressions, and after the patch is applied more tests passes. Yay!
->>
->> On a related note. The RISC-V selftests/bpf is in a pretty lousy
->> state. I'll send a cleanup patch for them soonish. E.g.:
->
-> Thanks for testing!
->
->> * RISC-V is missing in bpf_tracing.h (libbpf)
->> * Some programs don't converge in 16 steps, I had to increase it to ~32
->> * The selftest/bpf Makefile needed some RV specific changes
->> * ...a lot of tests still don't pass, and needs to be looked in to
->
-> Sounds good, please ship them. ;)
->
->> Feel free to add:
->>
->> Acked-by: Björn Töpel <bjorn@kernel.org>
->
-> Applied, thanks! Tong, if you have a chance, please follow up with Mark's
-> suggestion to align the extable infra to arm64/x86.
+diff --git a/drivers/net/wireless/ath/ath9k/ar9003_calib.c b/drivers/net/wireless/ath/ath9k/ar9003_calib.c
+index 7e27a06e5df1..dc24da1ff00b 100644
+--- a/drivers/net/wireless/ath/ath9k/ar9003_calib.c
++++ b/drivers/net/wireless/ath/ath9k/ar9003_calib.c
+@@ -1005,24 +1005,20 @@ static void __ar955x_tx_iq_cal_sort(struct ath_hw *ah,
+ 				    int i, int nmeasurement)
+ {
+ 	struct ath_common *common = ath9k_hw_common(ah);
+-	int im, ix, iy, temp;
++	int im, ix, iy;
+ 
+ 	for (im = 0; im < nmeasurement; im++) {
+ 		for (ix = 0; ix < MAXIQCAL - 1; ix++) {
+ 			for (iy = ix + 1; iy <= MAXIQCAL - 1; iy++) {
+ 				if (coeff->mag_coeff[i][im][iy] <
+ 				    coeff->mag_coeff[i][im][ix]) {
+-					temp = coeff->mag_coeff[i][im][ix];
+-					coeff->mag_coeff[i][im][ix] =
+-						coeff->mag_coeff[i][im][iy];
+-					coeff->mag_coeff[i][im][iy] = temp;
++					swap(coeff->mag_coeff[i][im][ix],
++					     coeff->mag_coeff[i][im][iy]);
+ 				}
+ 				if (coeff->phs_coeff[i][im][iy] <
+ 				    coeff->phs_coeff[i][im][ix]) {
+-					temp = coeff->phs_coeff[i][im][ix];
+-					coeff->phs_coeff[i][im][ix] =
+-						coeff->phs_coeff[i][im][iy];
+-					coeff->phs_coeff[i][im][iy] = temp;
++					swap(coeff->phs_coeff[i][im][ix],
++					     coeff->phs_coeff[i][im][iy]);
+ 				}
+ 			}
+ 		}
+-- 
+2.30.2
 
-Thanks, Mark's suggestion is good. I will improve this part if I have the opportunity.
->
-> Thanks,
-> Daniel
-> .
->
