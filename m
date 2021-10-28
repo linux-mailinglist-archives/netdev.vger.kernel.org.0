@@ -2,80 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A88E43E1C4
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 15:14:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20F3843E1E3
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 15:18:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230282AbhJ1NQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 09:16:33 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:13985 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230248AbhJ1NQc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 09:16:32 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Hg5Yx2J4VzWZ1h;
-        Thu, 28 Oct 2021 21:12:05 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Thu, 28 Oct 2021 21:14:02 +0800
-Received: from [10.67.102.67] (10.67.102.67) by kwepemm600016.china.huawei.com
- (7.193.23.20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.15; Thu, 28 Oct
- 2021 21:14:01 +0800
-Subject: Re: [PATCH net 1/7] net: hns3: fix pause config problem after autoneg
- disabled
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <wangjie125@huawei.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <chenhao288@hisilicon.com>
-References: <20211027121149.45897-1-huangguangbin2@huawei.com>
- <20211027121149.45897-2-huangguangbin2@huawei.com> <YXmLA4AbY83UV00f@lunn.ch>
- <09eda9fe-196b-006b-6f01-f54e75715961@huawei.com> <YXqX7z2GljD6bxTr@lunn.ch>
-From:   "huangguangbin (A)" <huangguangbin2@huawei.com>
-Message-ID: <41ed2a6f-b9fc-4806-72d1-1e65f946fe30@huawei.com>
-Date:   Thu, 28 Oct 2021 21:14:01 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S230216AbhJ1NUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 09:20:36 -0400
+Received: from relay12.mail.gandi.net ([217.70.178.232]:53431 "EHLO
+        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229641AbhJ1NUf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 09:20:35 -0400
+Received: (Authenticated sender: maxime.chevallier@bootlin.com)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 37921200021;
+        Thu, 28 Oct 2021 13:18:05 +0000 (UTC)
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     davem@davemloft.net, Russell King <linux@armlinux.org.uk>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Antoine Tenart <atenart@kernel.org>
+Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        thomas.petazzoni@bootlin.com
+Subject: [PATCH net-next v2] net: ipconfig: Release the rtnl_lock while waiting for carrier
+Date:   Thu, 28 Oct 2021 15:18:04 +0200
+Message-Id: <20211028131804.413243-1-maxime.chevallier@bootlin.com>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-In-Reply-To: <YXqX7z2GljD6bxTr@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.102.67]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+While waiting for a carrier to come on one of the netdevices, some
+devices will require to take the rtnl lock at some point to fully
+initialize all parts of the link.
 
+That's the case for SFP, where the rtnl is taken when a module gets
+detected. This prevents mounting an NFS rootfs over an SFP link.
 
-On 2021/10/28 20:30, Andrew Lunn wrote:
->> Hi Andrew, thanks very much for your guidance on how to use pause autoneg,
->> it confuses me before because PHY registers actually have no separate setting
->> bit of pause autoneg.
->>
->> So, summarize what you mean:
->> 1. If pause autoneg is on, driver should always use the autoneg result to program
->>     the MAC. Eventhough general autoneg is off now and link state is no changed then
->>     driver just needs to keep the last configuration for the MAC, if link state is
->>     changed and phy goes down and up then driver needs to program the MAC according
->>     to the autoneg result in the link_adjust callback.
->> 2. If pause autoneg is off, driver should directly configure the MAC with tx pause
->>     and rx pause. Eventhough general autoneg is on, driver should ignore the autoneg
->>     result.
->>
->> Do I understand right?
-> 
-> Yes, that fits my understanding of ethtool, etc.
-> 
-> phylink tried to clear up some of these problems by fully implementing
-> the call within phylink. All the MAC driver needs to provide is a
-> method to configure the MAC pause settings. Take a look at
-> phylink_ethtool_set_pauseparam() and the commit messages related to
-> that.
-> 
-> 	Andrew
-> .
-> 
-Ok, thanks!
+This means that while ipconfig waits for carriers to be detected, no SFP
+modules can be detected in the meantime, it's only detected after
+ipconfig times out.
+
+This commit releases the rtnl_lock while waiting for the carrier to come
+up, and re-takes it to check the for the init device and carrier status.
+
+Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+---
+v2: - Following Antoine's review, release the lock earlier and only
+explicitely protect the for_each_netdev loop
+    - Rebased and targeted the patch towards net-next
+    - Dropped the Fixes tag
+
+ net/ipv4/ipconfig.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/ipconfig.c b/net/ipv4/ipconfig.c
+index 816d8aad5a68..9d41d5d5cd1e 100644
+--- a/net/ipv4/ipconfig.c
++++ b/net/ipv4/ipconfig.c
+@@ -262,6 +262,11 @@ static int __init ic_open_devs(void)
+ 				 dev->name, able, d->xid);
+ 		}
+ 	}
++	/* Devices with a complex topology like SFP ethernet interfaces needs
++	 * the rtnl_lock at init. The carrier wait-loop must therefore run
++	 * without holding it.
++	 */
++	rtnl_unlock();
+ 
+ 	/* no point in waiting if we could not bring up at least one device */
+ 	if (!ic_first_dev)
+@@ -274,9 +279,13 @@ static int __init ic_open_devs(void)
+ 			   msecs_to_jiffies(carrier_timeout * 1000))) {
+ 		int wait, elapsed;
+ 
++		rtnl_lock();
+ 		for_each_netdev(&init_net, dev)
+-			if (ic_is_init_dev(dev) && netif_carrier_ok(dev))
++			if (ic_is_init_dev(dev) && netif_carrier_ok(dev)) {
++				rtnl_unlock();
+ 				goto have_carrier;
++			}
++		rtnl_unlock();
+ 
+ 		msleep(1);
+ 
+@@ -289,7 +298,6 @@ static int __init ic_open_devs(void)
+ 		next_msg = jiffies + msecs_to_jiffies(20000);
+ 	}
+ have_carrier:
+-	rtnl_unlock();
+ 
+ 	*last = NULL;
+ 
+-- 
+2.25.4
+
