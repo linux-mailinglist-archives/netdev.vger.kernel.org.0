@@ -2,66 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAF5043E5B1
-	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 18:01:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC60443E5B5
+	for <lists+netdev@lfdr.de>; Thu, 28 Oct 2021 18:03:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229974AbhJ1QEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 12:04:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53292 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229764AbhJ1QEX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 12:04:23 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13EB1C061570
-        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 09:01:56 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id w1so7990250edd.0
-        for <netdev@vger.kernel.org>; Thu, 28 Oct 2021 09:01:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=5AsGrA4DlL+PCBChvj92hqjB0hfn92LRQaKu0Z47lw0=;
-        b=g+tLZhqEIZMxVcvFP9k/ugo3myabGv6LdGyJMk+Nb0DZnybPtYNEZ8zDDNV+ERdBlr
-         vNu5kytZux3j5f7YZTRpiWFJ+qGKFE8wlJg/hyADSqhsS+o6PIVCXLOlEvfejMlFj6Yb
-         PBQ7tqWvXmlvXjGzl1ViXrMQNGsb0DriEFWIivEzXwshUFoPnFyXl9PuVdEHxS8uotWv
-         C85n4DmUdlr2hoFPeKUVts1y3UPV138LupflNoBzET5SauF9wX6w2o0IeD6LX+mF8iwA
-         94qO/Td6N28nm5IBefqdeGf4fl6XkHqLLi3qsfabi+80CW7xMVpvFhtiWcTNsLMzW10e
-         ksUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=5AsGrA4DlL+PCBChvj92hqjB0hfn92LRQaKu0Z47lw0=;
-        b=YewamCPiX6lX+HYBQawmFH51Lngo39VJ8wzlhI9G/QnjFBdPd6JpbusM9LK/qgekvW
-         e0AKKCKOJie7b9K4GTeKrmK2apDgA6V1VXVfq5PUJEoxsjJ5vNCbaVwdRlWlYhHjxUGa
-         HuOXCtJiTcoC1sJBLuSgf6DhgY8aLENXrqQXE1XISBlF6hEHQedMys/444TCaNw0r95m
-         AIsHRb7CxsMPC4smZwnYoz8H+CB5fbaWrDXGJ4qgwO6CqvH1jHVfNDJnJLFm6COWzlTx
-         nTx1pbqnaN/3Oty5tNMa8AHnksRAeWsl8+Ck/oXAHN40/Q9yevjJjtyGveP71x1ZJ0/m
-         dDHA==
-X-Gm-Message-State: AOAM530qrWF3WxQ3Xsv4leHb2KtmGsKCU6swXpDJlvd5ryo0C7uTT+Rz
-        kP9zu6o9Jue9ayUtqAnLMYdKkUZiG8SQiIVnzug=
-X-Google-Smtp-Source: ABdhPJxK2DWxWZU4NU7uMB2e+/e1TztulBSccPQf5rfeppWUweUaTLZ9W9LCA3TBksPrVjpbvyTvdoUrxCskv9f6KCg=
-X-Received: by 2002:a05:6402:2753:: with SMTP id z19mr7201659edd.340.1635436913602;
- Thu, 28 Oct 2021 09:01:53 -0700 (PDT)
+        id S229755AbhJ1QFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 12:05:47 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:36220 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229565AbhJ1QFr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Oct 2021 12:05:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=JY/7f/3+3T4R1QU9s5VuG3d2oqQFG7r7RdSo3Y5eAOE=; b=nMukhgedRVkTMg9xraKN3Vsv/4
+        va9Y0L3S2ZdGsK+SmxEMH3qei8dokeDiK4QQcP8GHCpGp2moD6/jZNhAzjQNKHTf+RdCVO+knbkoe
+        6lKVw0nJ+3CUYehkKc1SCQe4SQnpdJJ8kqCYv2LtiMLWAkG5qZpbCcPvfKLP3eg5wj5M=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mg7s5-00C0ur-A8; Thu, 28 Oct 2021 18:03:17 +0200
+Date:   Thu, 28 Oct 2021 18:03:17 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Yuiko Oshino <yuiko.oshino@microchip.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        bryan.whitehead@microchip.com, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net] net: ethernet: microchip: lan743x: Increase rx ring
+ size to improve rx performance
+Message-ID: <YXrJxb0LtllPkOse@lunn.ch>
+References: <20211028150315.19270-1-yuiko.oshino@microchip.com>
 MIME-Version: 1.0
-Received: by 2002:a17:907:61a7:0:0:0:0 with HTTP; Thu, 28 Oct 2021 09:01:53
- -0700 (PDT)
-Reply-To: mrsbillchantallawrence2@gmail.com
-From:   MRS BILL CHANTAL LAWRANCE <aamadchantal001@gmail.com>
-Date:   Thu, 28 Oct 2021 09:01:53 -0700
-Message-ID: <CA+svXzhou=6sAkweRiG4TTP9gmHrdeW-iHAxa564K08RiKd07A@mail.gmail.com>
-Subject: Dear Friend
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211028150315.19270-1-yuiko.oshino@microchip.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-dear
+On Thu, Oct 28, 2021 at 11:03:15AM -0400, Yuiko Oshino wrote:
+> Increase the rx ring size (LAN743X_RX_RING_SIZE) to improve rx performance on some platforms.
+> Tested on x86 PC with EVB-LAN7430.
+> The iperf3.7 TCPIP improved from 881 Mbps to 922 Mbps, and UDP improved from 817 Mbps to 936 Mbps.
+> 
+> Fixes: 23f0703c125b ("lan743x: Add main source files for new lan743x driver")
+> Signed-off-by: Yuiko Oshino <yuiko.oshino@microchip.com>
+> ---
+>  drivers/net/ethernet/microchip/lan743x_main.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/microchip/lan743x_main.h b/drivers/net/ethernet/microchip/lan743x_main.h
+> index 34c22eea0124..aaf7aaeaba0c 100644
+> --- a/drivers/net/ethernet/microchip/lan743x_main.h
+> +++ b/drivers/net/ethernet/microchip/lan743x_main.h
+> @@ -831,7 +831,7 @@ struct lan743x_rx_buffer_info {
+>  	unsigned int    buffer_length;
+>  };
+>  
+> -#define LAN743X_RX_RING_SIZE        (65)
 
-You have been compensated with the sum of 5.1 million dollars in this
-united nation the payment will be Issue into ATM visa card and send to
-you from the Santander bank of Spain we need your address passport and
-your whatsapp number.
-Thanks
+65 is interesting. 2^N + 1. So there might be a reason for this?
 
-Mrs. bill Chantal
+> +#define LAN743X_RX_RING_SIZE        (128)
+
+129?
+
+	Andrew
