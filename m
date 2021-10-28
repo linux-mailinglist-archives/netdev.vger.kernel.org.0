@@ -2,193 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B43A43F38B
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 01:38:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AABF43F38E
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 01:42:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231419AbhJ1Xko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 19:40:44 -0400
-Received: from pop3.jakarta.go.id ([103.209.7.13]:8561 "EHLO
-        mail.jakarta.go.id" rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org
-        with ESMTP id S230134AbhJ1Xkn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 19:40:43 -0400
-Authentication-Results: mail.jakarta.go.id; spf=None smtp.pra=ses.nakertrans@jakarta.go.id; spf=PermError smtp.mailfrom=ses.nakertrans@jakarta.go.id; spf=None smtp.helo=postmaster@zmtap2.jakarta.go.id
-Received-SPF: None (mail.jakarta.go.id: no sender authenticity
-  information available from domain of
-  ses.nakertrans@jakarta.go.id) identity=pra;
-  client-ip=10.15.39.86; receiver=mail.jakarta.go.id;
-  envelope-from="ses.nakertrans@jakarta.go.id";
-  x-sender="ses.nakertrans@jakarta.go.id";
-  x-conformance=sidf_compatible
-Received-SPF: PermError (mail.jakarta.go.id: cannot correctly
-  interpret sender authenticity information from domain of
-  ses.nakertrans@jakarta.go.id) identity=mailfrom;
-  client-ip=10.15.39.86; receiver=mail.jakarta.go.id;
-  envelope-from="ses.nakertrans@jakarta.go.id";
-  x-sender="ses.nakertrans@jakarta.go.id";
-  x-conformance=sidf_compatible; x-record-type="v=spf1";
-  x-record-text="v=spf1 a mx ip4:103.209.7.13
-  include:_spf.google.com include:_spf.mail.yahoo.com
-  include:spf.smtpid.jakarta.go.id ~all"
-Received-SPF: None (mail.jakarta.go.id: no sender authenticity
-  information available from domain of
-  postmaster@zmtap2.jakarta.go.id) identity=helo;
-  client-ip=10.15.39.86; receiver=mail.jakarta.go.id;
-  envelope-from="ses.nakertrans@jakarta.go.id";
-  x-sender="postmaster@zmtap2.jakarta.go.id";
-  x-conformance=sidf_compatible
-IronPort-SDR: mlqCi7kD2Ew7Q6rP0POJJpPGEI9jUhd56mdSD8VDlL7xOfKNOCa7WoDCM+c1bqpea+nf/L+QI7
- Y/ac2hL6XX5w==
-IronPort-PHdr: =?us-ascii?q?A9a23=3Acnge6B9rbK0Ixf9uWcG6ngc9DxPP2p3xNw8Rr?=
- =?us-ascii?q?JguiLtUbq3l8JOkPUCMre51ggrvWoPWo+lBl/KQq7rpDHcN+tCHuXMPaoBWX?=
- =?us-ascii?q?hkeoccfnAU6HMfDBkq9LfK5JzciEpF6WUVg0muhNlIdA8PifxvXq3y24yQVH?=
- =?us-ascii?q?0DkOBEzIO32F5TOlc2xzMiw8p7aeRlBwjW6J7J+f12ttQuEkM4QjMN5L7opj?=
- =?us-ascii?q?BvEpnwdY+NN2WZhPk6ehT7u49u55MQl8S1Tsug9/ohPVuP7c8zUVJR+CzIre?=
- =?us-ascii?q?yAw7czv8xvKTgKV+nJaXWJQkxYaSw7CpAr3WJv8qGPzq/Z91S+GPMb3UaFRO?=
- =?us-ascii?q?3zq7qFlTwXtgTsGMDhx+X/ei8h5hqZW6By7oBk3z4nRaYCTfP1wG8GVNcgXX?=
- =?us-ascii?q?ixHV8VcTTBbC4WnR4kGDOMbIe8eoI67pldP5RqyCA+wBf/+nydSjyyTv+Vy2?=
- =?us-ascii?q?OAgHAfamQ04SotW9i2J6o6kcvdMAqivwaLFzCvOdaZT0Db5rorBcRk7vfjKU?=
- =?us-ascii?q?rU2cMaCrCtnXw7DkFiUrpToej2P0eFY+XOW9KxmXOGikXI9ogdqijqmxc42l?=
- =?us-ascii?q?oCPiYVTy1yOpkAbiM4lYMa1TkJ2e4vuC5ZL8SeTNIZsXtkrRXpAui85w6cas?=
- =?us-ascii?q?Ni0e24LxN50onyXI+zCeI+O7BX5Ue+XKjotn3NpdoW0gBOq+FShwOnxPiWt+?=
- =?us-ascii?q?G5HtC9oiMPLrDhN0hXS7o6FQ/h05FuonzmIkQHfuKlPKEYykraTIJk72LM7i?=
- =?us-ascii?q?p4C1CaLVi7whEjslLWbag0/9+6k5v6va6j6ppKaK45/ix3veqUolMulBO0kM?=
- =?us-ascii?q?w8IF2aB/uH02Lrm9Ez/CLJE659+2rLUq9bcLMcWvLKjCglO+oQq6B+lEz7g3?=
- =?us-ascii?q?9NenHVGZFNJdRSbjpT4blTHIfT2F/C60DHO2H9gw/HLOKGkA42YdyCFyeqnJ?=
- =?us-ascii?q?uc7uxAPgBA+xt1e+Z9OX7QIIfa1WEbyvcbEB1k2NEq1z7WCap0124UAVGaIG?=
- =?us-ascii?q?qLcPrnVtArC/e80Ze+FZ4IPpCz0LeMN5ffthGUlkBkSeu+o0dFEDRLwVuQjO?=
- =?us-ascii?q?EifbXf2150aHHxMuAM9Qfb2klSEShZRbnW7Rb41oD48ToOqR9SmJMjlkPmK2?=
- =?us-ascii?q?yG1GYdTb2ZNBwWXEHvmQI6DXu8FdCOYJsIy2ixBT7WqTJUtkA2/rAKvgaQyN?=
- =?us-ascii?q?fLao2dL0PCrnMgw/eDYkgs+sCB5H9jImX/YVHl6xysBDzomlKFn/R4kkgzFi?=
- =?us-ascii?q?/ApxaMeTIc2hbsBUwExMYPQwr5NEMj8HA3GediNRRCtRdDuADc6Ss89zo05e?=
- =?us-ascii?q?F5zXdCrjxSFziOqBLhTnLuOYf58uqPa1HzsK8sv0G7IkrIkk0EnTo1NPG6vn?=
- =?us-ascii?q?LJ2sQfUQY/F21OQk6LgHUgF9AjK8mrLjW+HvUUeUgdzWL/ZVDYQYQ3XoYax4?=
- =?us-ascii?q?ESKVLKoBbk9egJc1c6PLLdLYdz1nDAkDL/iPtrZeWe4h2a3A16B2LqNaIPgf?=
- =?us-ascii?q?2hV0j/aDQAIlAUa/HDOMgZbZG/pu2XFEDlnDk7ieWv+9PV3sCn9TEY3xhuWZ?=
- =?us-ascii?q?gtu0Py09l9dhPCRTe8SwqNRuColrGYRfh711NbXBtyc4gt5KfwEJ4pgpgwWk?=
- =?us-ascii?q?zKH5ERnM5etLr5vnAsbegVz+UHn1BxtFowGns9srX95qWg6Ya+ezl5FcCuVm?=
- =?us-ascii?q?J7qPbiCYHL/51apYq3bwE3E2dCN0qUG6/0it1ylswbvF0ZooBAFm5FFlmCR4?=
- =?us-ascii?q?JnHFl9YSZXqTkM+7AR3vZnIZzU0/9mS13RvOLOou3nN3JQoCKF2r3ToN8caO?=
- =?us-ascii?q?6SCGgjoFsQcDMX7M+0mlW+iaRccNfxT/qo5VytJX/mP26exIO8mkzXgjGgVv?=
- =?us-ascii?q?uiVM2qe8jZ1UrSO3Z8GyuuE102IUHH9gAX52igSsYJNZjgIAmP5xi+iBYIDP?=
- =?us-ascii?q?sVP?=
-IronPort-Data: =?us-ascii?q?A9a23=3Ajd3+P6OVwP5f/IrvrR29ksFynXyQoLVcMsEvi?=
- =?us-ascii?q?/4bfWQNrUp0gzwAz2pLX2GHaPjcYWXyKIskbtyw/UIO757RzN5mGnM5pCpnJ?=
- =?us-ascii?q?55oRWgpJvzCdxutYHnCRiH7ofUOA/w2MrEsF+hpCC+DzvuRGuK59yAljfvYH?=
- =?us-ascii?q?uCU5NPsY0ideyc1EE/Ntjo+w4bVsqYw6TSIK1vlVeHa+qUzC3f5s9JACV/43?=
- =?us-ascii?q?orYwP9ZUFYejxtD1rA2TagjUFYzDBD5BrpHTU26ByOQroW5godW7gsepYxV8?=
- =?us-ascii?q?F81/z91Yj+kuqT+bkQSGPjQNAuHkGZfHaelxBlOzsAw+v9jcqNBLxwGzWXX9?=
- =?us-ascii?q?zxy4IwlWZiYUgoyeKvFm+kHTwNRFTpWP6RF8aXbKD6wtoqSwyUqdlO1maQxU?=
- =?us-ascii?q?htnYeX0/c4yWwmi78cwLj0SWQ+Enea66Ky2UOh+gcJlKsT3VKsZt21swC/xE?=
- =?us-ascii?q?/krW9bATr/M6Nse2y0/7uhIEOzTIdEUaz1ydjzeYhFCJk0QDtQ1lY+AgHTjc?=
- =?us-ascii?q?zBCrFuTqbE85G7I0Qh4zLXFLtvTcc2RWN9b2E2fowru+WnjBRcXZIXH4SSE6?=
- =?us-ascii?q?H2tgu7I2yLnMKoUGaa17fczqEOS3GMSDBwRE1qnydG/h1K+VshbIkoY4S4ps?=
- =?us-ascii?q?bQ/7k2pF/HjXge3oXqFuVgdR7J4FeA97QaWyrfb4i6HAWQNSzdAbJots4kkT?=
- =?us-ascii?q?FQC0FKVgNTzBiZitqGcTWm16LCYpDa7OCxTJmhEdyZsZQ0I+dvquog6pgzIT?=
- =?us-ascii?q?9JqVqCv5vXzFCv3wjaH8XkWmbISicdN2b/T1VbKmCml/8DhUAk04gyRUHjNx?=
- =?us-ascii?q?gV0f5Wpaoql8lvS4/toMoGYSlDHsmJss86T8OUPDteBlQSTR+QJFfen/Z6tN?=
- =?us-ascii?q?jDCjEQpFZ4w3yqq+nqqO45KiBl4KVx1KMccfTL1SFHUuAdYop9PVFOsYLF2Z?=
- =?us-ascii?q?ISwI9otyarpU9LoSpj8aNdJfpV6dAOK+CFvTVCL2WSrm08p+Yk5NImSfc+EE?=
- =?us-ascii?q?20cDeJsyz/eb+EQy74owXAW2mrXQZm9xBOiuZKYaWCSfqwFaXORZ+Q95eWPp?=
- =?us-ascii?q?wC929BSMM+D0FNTWfP/bgHI+IgaIVcNa3YhbbjwptRecuOrPQNgEW0mDLnf2?=
- =?us-ascii?q?9sJfYF/luJNi+jF4lmiU0lRxF34w3PdQS2MZ2piY7S3DL5gpHQyMSsre1iys?=
- =?us-ascii?q?1AlbJyz66IVMYE6eKgP6+VlxPJzSL8LYa2oBPlUUT2B/ikHYoTwsKR9fRKii?=
- =?us-ascii?q?QWJeSS/CBA5coV7RgWP9NLgeg7m8i8mESOxvMc5pPuuzGvzR5cYXAVnStTbc?=
- =?us-ascii?q?viuxXuutH4UlOV1GUXSSvFVdV7w95JgMSvspuA+JcgALhKFyCHy/wCbHVERv?=
- =?us-ascii?q?e3QuKcq+d/AiaeD6Ymze8N4E1YcEnWd5rK/NDPy4WOlyINHV6CGZ1j1Um7o+?=
- =?us-ascii?q?b6zfs1Kxvf1PPoA2lhQ26J6Hqpsi6c5/dTmobJy0Q1iFXnMaBKlENtIJHSb1?=
- =?us-ascii?q?8RVqoVSz7lQtQyxHEyVkvFcNKiMMcXjVkQWIAMjYsyc3Pcdlj7Vq/ovSG386?=
- =?us-ascii?q?TJy9byBF15bFwaFjiVRK7wzPplN6eEspdQX8BeyzB8rOdaLii186G2KJ3AHV?=
- =?us-ascii?q?OMprPkyBoL2lhAszFBJSYPVDCb655bJZc8kGk8nPyGFjqPZhLlAzU7feVIsH?=
- =?us-ascii?q?H7E0e1aw5oU0DhMwUELK13XssXMgPY72xoX/y5fZgJY0BhdyKR4O25mMkRdO?=
- =?us-ascii?q?qyI9jtvg45NRQiEHQxfCQeCvEDzwkkbvHLQSUCkUWuLIndVEeCA4k0EtW5VY?=
- =?us-ascii?q?DlX1K6Rzm/pVjGsctuZ9i0/RghgouDLUtV3/wHFn4apBaytGZQlJz3/g6Koe?=
- =?us-ascii?q?SwIrAfqBesujUvOqe5tuuhqAYX9ODARp6k2F6GF3KodDhuDYmpQKdln8b8WG?=
- =?us-ascii?q?nvfYDio0DSPME2ZZc5HYfDHmWe+BstoDt1CXRi3ymCJtD9zLagBPb5wmPMB+?=
- =?us-ascii?q?9cIdK75JGkA9bCYq1JUXDj4nsTlrH0uX9x2y4A/I4DYbS6LVGOXw3pY81IhZ?=
- =?us-ascii?q?fJsYgKQCeToriWigIhZMdnlFq7vdMl+dF07yuHyvXyWORF79lSbu0XCa8c6C?=
- =?us-ascii?q?gCkJZtEx+PR/mdrXm1Y6u8fkMyK+QO6qchHK9zId8bC3+/QgkeyJBxYZNP9R?=
- =?us-ascii?q?Pwp/Ylgc7fLMIftvr81WnrFkt+OEO9I6a1emQaR3t3fdBFnoMdaZPLR3g=3D?=
- =?us-ascii?q?=3D?=
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AJbE+XajFDgFDuU2Y6o7xNi7MtnBQXugji2?=
- =?us-ascii?q?hC6mlwRA09TyX+rbHWoB17726TtN5yMEtNpTnkAsa9qBznhP1ICOUqTNWftW?=
- =?us-ascii?q?rdyQyVxeNZnO7fKlTbckWUnIM9tZuIGJIObOEYeGIK9/oSlzPIburIuOP3i5?=
- =?us-ascii?q?xA0t2ut0uFkjsFV51d?=
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2HhXgDR+nph/1YnDwpaDw4BASsBCQE?=
- =?us-ascii?q?GAQUFASKBW4E6AgEBAQEBYGGBHwQ8C4Q9jUSDFQOBYIRMQIQ+AgECglOIT4Y?=
- =?us-ascii?q?KgXsBCgEBAQEBAQEBARsTHAQBAQMDgTKDSCWCMB8JA0cBAgQBARMBAQYBAQE?=
- =?us-ascii?q?BAQMDBAICgSCFaA2DU4EIAQEBAQEBAQEBAQEBAQEBAQEBARYCH1JHAQQEAS0?=
- =?us-ascii?q?dAQEnARARASICDRkCIzgHEDQBASSCGEcBgg0DCa1JG3qBMYEBgggBAQaCWYI?=
- =?us-ascii?q?5DYJACYEQKAMBAQEBAQGFdoN3hWKBEIFIA4VThTwUglGSO1SeZ4Fsig+SQ2g?=
- =?us-ascii?q?HKIMNmQ+Fby2DWZIVkTamRJEnhHyBCjwHgXRNeoEXCmVcURcCD5Rch1oCRGg?=
- =?us-ascii?q?4AgYBCgEBAwkBgjqOFIEQgRAB?=
-X-IPAS-Result: =?us-ascii?q?A2HhXgDR+nph/1YnDwpaDw4BASsBCQEGAQUFASKBW4E6A?=
- =?us-ascii?q?gEBAQEBYGGBHwQ8C4Q9jUSDFQOBYIRMQIQ+AgECglOIT4YKgXsBCgEBAQEBA?=
- =?us-ascii?q?QEBARsTHAQBAQMDgTKDSCWCMB8JA0cBAgQBARMBAQYBAQEBAQMDBAICgSCFa?=
- =?us-ascii?q?A2DU4EIAQEBAQEBAQEBAQEBAQEBAQEBARYCH1JHAQQEAS0dAQEnARARASICD?=
- =?us-ascii?q?RkCIzgHEDQBASSCGEcBgg0DCa1JG3qBMYEBgggBAQaCWYI5DYJACYEQKAMBA?=
- =?us-ascii?q?QEBAQGFdoN3hWKBEIFIA4VThTwUglGSO1SeZ4Fsig+SQ2gHKIMNmQ+Fby2DW?=
- =?us-ascii?q?ZIVkTamRJEnhHyBCjwHgXRNeoEXCmVcURcCD5Rch1oCRGg4AgYBCgEBAwkBg?=
- =?us-ascii?q?jqOFIEQgRAB?=
-X-IronPort-AV: E=Sophos;i="5.87,190,1631552400"; 
-   d="scan'208";a="12976294"
-Received: from zmtap2.jakarta.go.id ([10.15.39.86])
-  by mail.jakarta.go.id with ESMTP; 29 Oct 2021 02:38:13 +0700
-Received: from localhost (localhost [127.0.0.1])
-        by zmtap2.jakarta.go.id (Postfix) with ESMTP id ADE0A6276BAF;
-        Fri, 29 Oct 2021 02:38:13 +0700 (WIB)
-Received: from zmtap2.jakarta.go.id ([127.0.0.1])
-        by localhost (zmtap2.jakarta.go.id [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id 6fMVz-6SNBrX; Fri, 29 Oct 2021 02:38:13 +0700 (WIB)
-Received: from localhost (localhost [127.0.0.1])
-        by zmtap2.jakarta.go.id (Postfix) with ESMTP id C0BCC6276BC2;
-        Fri, 29 Oct 2021 02:38:09 +0700 (WIB)
-DKIM-Filter: OpenDKIM Filter v2.10.3 zmtap2.jakarta.go.id C0BCC6276BC2
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jakarta.go.id;
-        s=zimbra-mail; t=1635449890;
-        bh=ket9wQGPBpEx6WIqdSy6e4jzznNT/FBCSFyZOTIJdlo=;
-        h=Date:From:Message-ID:MIME-Version;
-        b=PUHCkQElzR71tjWWkxja9A78GUNVoXNZQbUDAeXdn6/BADLcQy10PDUWT6gB/p61e
-         Nx5pRS2ug+vdszoP5bD61bRUrgYzNXXb/FD8ES15y9iB0IpdQey4UWCnPTQv3bwEef
-         CoWyx6EihaCn5xRGTHdACihxoh4DFNQY18/kv0SfbF7G+10qsOHYdhX68dJky+XzHm
-         U354Rx/0Vo23RmoPkKSWCdDXFfegJ6e559nLyQa+nZX0g0Cp/yjFmYtz2zT12rv9EH
-         IeX5femXU+H3nd3TKU94FW71VZDYfTa5aWyX0IT0wi2kq74pCYEPU3tUuCKZXmbvmr
-         7+F+uSzG1nwsQ==
-X-Virus-Scanned: amavisd-new at 
-Received: from zmtap2.jakarta.go.id ([127.0.0.1])
-        by localhost (zmtap2.jakarta.go.id [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id XgbJ5mdztsgF; Fri, 29 Oct 2021 02:38:09 +0700 (WIB)
-Received: from zmailbox1.jakarta.go.id (zmailbox1.jakarta.go.id [10.15.39.83])
-        by zmtap2.jakarta.go.id (Postfix) with ESMTP id C535E6276BAD;
-        Fri, 29 Oct 2021 02:37:55 +0700 (WIB)
-Date:   Fri, 29 Oct 2021 02:37:55 +0700 (WIB)
-From:   LAPORTE Marie-Josepha <ses.nakertrans@jakarta.go.id>
-Message-ID: <142846264.470748.1635449875763.JavaMail.zimbra@jakarta.go.id>
-Subject: =?utf-8?Q?Tr=C3=A8s_Urgent!?=
+        id S231569AbhJ1Xo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 19:44:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44882 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231629AbhJ1XoT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 19:44:19 -0400
+Received: from mail-vk1-xa2d.google.com (mail-vk1-xa2d.google.com [IPv6:2607:f8b0:4864:20::a2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42D19C061570;
+        Thu, 28 Oct 2021 16:41:52 -0700 (PDT)
+Received: by mail-vk1-xa2d.google.com with SMTP id b125so2980249vkb.9;
+        Thu, 28 Oct 2021 16:41:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=lHyIAqdhwSRafGdxmTq1LL8yu8Med/Bc9fE/yN2WEi4=;
+        b=Ggf+i3OlLdWhwUQ1OL8tTTT8mKTvXNPZ//Glu/oWJCTqD4Tt/b7sCnOq9X3ykS0B2j
+         WWxqsrmyeV5TCeRiptd86ef5l8qL2a5MT1eWEjtl8J1NLsjxxPvI8rrEhTisJuqD2X00
+         O56B/A68n4AIbtLQmZ/go+Oeh7WB4ss4G1RiLF2nQKgeLEfPxQPGzD3nk9p62fehdEJh
+         wQYlZr8/L2yDFUTXLy2P8GpONcGWBmITCFpTVSqq9cYiRNAG98ZOVZqxvwdUZ4I5XArF
+         0s2d55g3r0GpRLptpJjB269QTajCiseI7JuS4AOMy7oQCeC1v2Ejsfzpos39Jf1CKaqg
+         js4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=lHyIAqdhwSRafGdxmTq1LL8yu8Med/Bc9fE/yN2WEi4=;
+        b=v4sry6i6tphUlkrK5JBAwQztEtQtE9JGD/fRWOyjzISn3eOghzGbVY2835tA31nsm5
+         rfonC258tcOWOr7tl35CG84INoykkKTwOfqMnEDdqvBAx/utiuXa5eUrD3JCzlhxjE09
+         4Ba7P94+AajRG0yNTNE8J3I+UBr2yFB/1S6a0sW3VKWKUrT8QzPnyV+Pv5CNdFDck7kU
+         xOWq+14fZpee5mDQfAUaZborOm+tTCqvkygLofr4hL+84QlBAb9NcLEnek6RNp5vin2H
+         uPhSh/kw8uzISjqu88JL7eqRgWPgJCjpEiDsSV3GeKlxHqBYFbOjvHBlhEMS2UkOjv89
+         yM8w==
+X-Gm-Message-State: AOAM530kGx/U3I1/Ry3vzqQOGnXfYerN3IGmidEKFBofZ26P20xrwetb
+        /e32XghdCYE0fvu4q/MdasQEuVj4MTlKjvPdkXU=
+X-Google-Smtp-Source: ABdhPJwd5nR+eLG3z4UrUafUaQEotjFyukNPQ7xa6fn4xisWertrQ6OgjI9OqRCzKroXUmm/JxyH/FKZaCqvalZBeds=
+X-Received: by 2002:ac5:c935:: with SMTP id u21mr8318716vkl.4.1635464511148;
+ Thu, 28 Oct 2021 16:41:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+References: <20211028191805.1.I35b7f3a496f834de6b43a32f94b6160cb1467c94@changeid>
+ <180B4F43-B60A-4326-A463-327645BA8F1B@holtmann.org>
+In-Reply-To: <180B4F43-B60A-4326-A463-327645BA8F1B@holtmann.org>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Thu, 28 Oct 2021 16:41:40 -0700
+Message-ID: <CABBYNZKpcXGD6=RrVRGiAtHM+cfKEOL=-_tER1ow_VPrm6fFhQ@mail.gmail.com>
+Subject: Re: [PATCH] Bluetooth: Limit duration of Remote Name Resolve
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Archie Pusaka <apusaka@google.com>,
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        Miao-chen Chou <mcchou@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Originating-IP: [10.15.39.86]
-X-Mailer: Zimbra 8.8.15_GA_4173 (zclient/8.8.15_GA_4173)
-Thread-Index: az77qWqWv1Eb4iKprc133E7cmw2CMw==
-Thread-Topic: =?utf-8?B?VHLDqHM=?= Urgent!
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bonjour
-Je me nomme Mme Marie-Josepha LAPORTE. Je vous adresse ce message plein d=
-=E2=80=99amertume et de solitude. Apr=C3=A8s le ravage sauvage de la premi=
-=C3=A8re vague li=C3=A9e =C3=A0 la pand=C3=A9mie du coronavirus, j'ai perdu=
- mon mari et ma fille unique. Souffrant moi-m=C3=AAme du cancer du sein en =
-phase terminale et sachant que mes jours sont compt=C3=A9s, je vous contact=
-e dans le but de vous faire un don d'un montant de deux millions d'euros po=
-ur la r=C3=A9alisation des =C5=93uvres de charit=C3=A9.
+Hi Marcel,
 
--Tr=C3=A8s Urgent: Contacter moi a mon l'adresse personnelle et je vous pri=
-e de copier mon adresse pour me r=C3=A9pondre : laporte.mariejosepha@gmail.=
-com.
+On Thu, Oct 28, 2021 at 6:30 AM Marcel Holtmann <marcel@holtmann.org> wrote=
+:
+>
+> Hi Archie,
+>
+> > When doing remote name request, we cannot scan. In the normal case it's
+> > OK since we can expect it to finish within a short amount of time.
+> > However, there is a possibility to scan lots of devices that
+> > (1) requires Remote Name Resolve
+> > (2) is unresponsive to Remote Name Resolve
+> > When this happens, we are stuck to do Remote Name Resolve until all is
+> > done before continue scanning.
+> >
+> > This patch adds a time limit to stop us spending too long on remote
+> > name request. The limit is increased for every iteration where we fail
+> > to complete the RNR in order to eventually solve all names.
+> >
+> > Signed-off-by: Archie Pusaka <apusaka@chromium.org>
+> > Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
+> >
+> > ---
+> > Hi maintainers, we found one instance where a test device spends ~90
+> > seconds to do Remote Name Resolving, hence this patch.
+> > I think it's better if we reset the time limit to the default value
+> > at some point, but I don't have a good proposal where to do that, so
+> > in the end I didn't.
+>
+> do you have a btmon trace for this as well?
+>
+> The HCI Remote Name Request is essentially a paging procedure and then a =
+few LMP messages. It is fundamentally a connection request inside BR/EDR an=
+d if you have a remote device that has page scan disabled, but inquiry scan=
+ enabled, then you get into this funky situation. Sadly, the BR/EDR parts d=
+on=E2=80=99t give you any hint on this weird combination. You can't configu=
+re BlueZ that way since it is really stupid setup and I remember that GAP d=
+oesn=E2=80=99t have this case either, but it can happen. So we might want t=
+o check if that is what happens. And of course it needs to be a Bluetooth 2=
+.0 device or a device that doesn=E2=80=99t support Secure Simple Pairing. T=
+here is a chance of really bad radio interference, but that is then just ba=
+d luck and is only going to happen every once in a blue moon.
 
-Merci
-Mme Josepha LAPORTE
+I wonder what does the remote sets as Page_Scan_Repetition_Mode in the
+Inquiry Result, it seems quite weird that the specs allows such stage
+but it doesn't have a value to represent in the inquiry result, anyway
+I guess changing that now wouldn't really make any different given
+such device is probably never gonna update.
+
+> That said, you should receive a Page Timeout in the Remote Name Request C=
+omplete event for what you describe. Or you just use HCI Remote Name Reques=
+t Cancel to abort the paging. If I remember correctly then the setting for =
+Page Timeout is also applied to Remote Name resolving procedure. So we coul=
+d tweak that value. Actually once we get the =E2=80=9Csync=E2=80=9D work me=
+rged, we could configure different Page Timeout for connection requests and=
+ name resolving if that would help. Not sure if this is worth it, since we =
+could as simple just cancel the request.
+
+If I recall this correctly we used to have something like that back in
+the days the daemon had control over the discovery, the logic was that
+each round of discovery including the name resolving had a fixed time
+e.g. 10 sec, so if not all device found had their name resolved we
+would stop and proceed to the next round that way we avoid this
+problem of devices not resolving and nothing being discovered either.
+Luckily today there might not be many devices around without EIR
+including their names but still I think it would be better to limit
+the amount time we spend resolving names, also it looks like it sets
+NAME_NOT_KNOWN when RNR fails and it never proceeds to request the
+name again so I wonder why would it be waiting ~90 seconds, we don't
+seem to change the page timeout so it should be using the default
+which is 5.12s so I think there is something else at play.
+
+Or perhaps it is finally time to drop legacy name resolution? At this
+point they should be very rare and those keeping some ancient device
+around will just have to deal with the address directly so we can get
+rid of paging devices while discovery which is quite a big burden I'd
+say.
+
+>
+> > include/net/bluetooth/hci_core.h |  5 +++++
+> > net/bluetooth/hci_event.c        | 12 ++++++++++++
+> > 2 files changed, 17 insertions(+)
+> >
+> > diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/h=
+ci_core.h
+> > index dd8840e70e25..df9ffedf1d29 100644
+> > --- a/include/net/bluetooth/hci_core.h
+> > +++ b/include/net/bluetooth/hci_core.h
+> > @@ -87,6 +87,8 @@ struct discovery_state {
+> >       u8                      (*uuids)[16];
+> >       unsigned long           scan_start;
+> >       unsigned long           scan_duration;
+> > +     unsigned long           name_resolve_timeout;
+> > +     unsigned long           name_resolve_duration;
+> > };
+> >
+> > #define SUSPEND_NOTIFIER_TIMEOUT      msecs_to_jiffies(2000) /* 2 secon=
+ds */
+> > @@ -805,6 +807,8 @@ static inline void sco_recv_scodata(struct hci_conn=
+ *hcon, struct sk_buff *skb)
+> > #define INQUIRY_CACHE_AGE_MAX   (HZ*30)   /* 30 seconds */
+> > #define INQUIRY_ENTRY_AGE_MAX   (HZ*60)   /* 60 seconds */
+> >
+> > +#define NAME_RESOLVE_INIT_DURATION   5120    /* msec */
+> > +
+> > static inline void discovery_init(struct hci_dev *hdev)
+> > {
+> >       hdev->discovery.state =3D DISCOVERY_STOPPED;
+> > @@ -813,6 +817,7 @@ static inline void discovery_init(struct hci_dev *h=
+dev)
+> >       INIT_LIST_HEAD(&hdev->discovery.resolve);
+> >       hdev->discovery.report_invalid_rssi =3D true;
+> >       hdev->discovery.rssi =3D HCI_RSSI_INVALID;
+> > +     hdev->discovery.name_resolve_duration =3D NAME_RESOLVE_INIT_DURAT=
+ION;
+> > }
+> >
+> > static inline void hci_discovery_filter_clear(struct hci_dev *hdev)
+> > diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+> > index 3cba2bbefcd6..104a1308f454 100644
+> > --- a/net/bluetooth/hci_event.c
+> > +++ b/net/bluetooth/hci_event.c
+> > @@ -2086,6 +2086,15 @@ static bool hci_resolve_next_name(struct hci_dev=
+ *hdev)
+> >       if (list_empty(&discov->resolve))
+> >               return false;
+> >
+> > +     /* We should stop if we already spent too much time resolving nam=
+es.
+> > +      * However, double the name resolve duration for the next iterati=
+ons.
+> > +      */
+> > +     if (time_after(jiffies, discov->name_resolve_timeout)) {
+> > +             bt_dev_dbg(hdev, "Name resolve takes too long, stopping."=
+);
+> > +             discov->name_resolve_duration *=3D 2;
+> > +             return false;
+> > +     }
+> > +
+> >       e =3D hci_inquiry_cache_lookup_resolve(hdev, BDADDR_ANY, NAME_NEE=
+DED);
+> >       if (!e)
+> >               return false;
+> > @@ -2634,6 +2643,9 @@ static void hci_inquiry_complete_evt(struct hci_d=
+ev *hdev, struct sk_buff *skb)
+> >       if (e && hci_resolve_name(hdev, e) =3D=3D 0) {
+> >               e->name_state =3D NAME_PENDING;
+> >               hci_discovery_set_state(hdev, DISCOVERY_RESOLVING);
+> > +
+> > +             discov->name_resolve_timeout =3D jiffies +
+> > +                             msecs_to_jiffies(discov->name_resolve_dur=
+ation);
+>
+> So if this is really caused by a device with page scan disabled and inqui=
+ry scan enabled, then this fix is just a paper over hole approach. If you h=
+ave more devices requiring name resolving, you end up penalizing them and m=
+ake the discovery procedure worse up to the extend that no names are resolv=
+ed. So I wouldn=E2=80=99t be in favor of this.
+>
+> What LE scan window/interval is actually working against what configured =
+BR/EDR page timeout here? The discovery procedure is something that a user =
+triggers so we always had that one take higher priority since the user is e=
+xpecting results. This means any tweaking needs to be considered carefully =
+since it is an immediate user impact if the name is missing.
+>
+> Is this a LE background scan you are worried about or an LE active scan t=
+hat runs in parallel during discovery?
+>
+> Regards
+>
+> Marcel
+>
+
+
+--=20
+Luiz Augusto von Dentz
