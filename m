@@ -2,240 +2,347 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26D4D4401A3
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 20:01:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D85A4401B7
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 20:09:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230126AbhJ2SDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 14:03:43 -0400
-Received: from mail-dm3nam07on2046.outbound.protection.outlook.com ([40.107.95.46]:14304
-        "EHLO NAM02-DM3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229498AbhJ2SDm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Oct 2021 14:03:42 -0400
+        id S230022AbhJ2SML (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 14:12:11 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:42374 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229498AbhJ2SMK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 14:12:10 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19THwcNn029699;
+        Fri, 29 Oct 2021 11:09:41 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : mime-version; s=facebook;
+ bh=tEx6gHhKuW9BgWNoIf2s3sulVoEP4GxCZ0OCO8fBHao=;
+ b=nZPtur9SzAL1ITmKeeHFSbDe9VyN8X+2F30Vc2+KY65SUc9CK1LxgmHbNnzdrt0y7Cd6
+ nHpvk0sBm+z7ErbUBNDnbR1jBvpMOSZ/CIReZdFd3myiHs9avYCQgXaYjIcUskBoFzfd
+ II1CeGR2x8KHf5c5QOI8mZhS5htdBZJJzgw= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3c03hk84e9-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 29 Oct 2021 11:09:40 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.14; Fri, 29 Oct 2021 11:09:31 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SwL/GIA3ftngI/r9D6V7tQiLRIahGOZ4SvTE82lev/PC90EYK5GMFD0tqh+p96y0FMpW0tUUOZe8uE949pP6HsKEYbHVPiB/1CpIlcRyXTrAwH1Bki0uiPilzY+bJ1KWcZxQdNwcz+3DVEo79qEZd9+WDH7vTYf1OLBystX1ROFZii8+ePNgPuZ6efa7ATWolI9DnGFxAwLV6toISCUS+1KRlEc1Tnd9c2IYJwWmazZOVAFveHPw6Lu6nVyENfh7T9hZnXvPK62sUAGeTu/UpM5MNS7eGRM72v27bPPCthjoYiwMtiF32ZPK6ghWxSMwQq+RlbvP9dGv28nGJrB1gA==
+ b=WdAvwAJmzqnecRhLqYRZg4xooZUJrmTJk4tcMhnYpfvzgPDl3zDZ6RXsLTnKrzX6Vklwz+rtR3XWwOYj0dJ6spSfz6k8fh2C78Hq0sp9qLbm8db55euwZikz3UXSy10rhJl3hCUZ26b9RCFbA9C05bVjPf5vzZqMTC2GAGx3ct2E4orJGISBp7PmAc6ZbNjulTJ8+8XBm3PFBc562psEW6vQPsFFF2MwhfbdEfpDDCLDMSaeNY2Bi0CRjUC2bN8D+kQ8ux33U3/5Na85D7pyvjEkZ7TndHHS8zhollsjBuDm4txzb+kH/EJp5tSrNZg+NPxBVSYuRKeiAIXrWKogvQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dxk8r8+k6mYAux6h6gU3/6EtVgUgoUfUGBFVNGFSwvE=;
- b=Kvf7vZf9Py0NM5Gn7DkWIg4kWucyxgo65lI87b0lmH8S2T0LeNO3Mk9AJSTMBPQ8CUt+S3FlLknCSLFe23zmR1fWYNY+CCldA3s+52QD4U5OZs4Y+5Yp1jZe8ftq7zI7tYBwKz+PYMOGOaicFK1pmLkU3KiqDS0cEQOJyhygz3xpYu6LAQq4GipN95WTGT4Ct2PVEFlaZdsqXRsZCvWicmz4EzurUjFeCz4dq5qDi3nGJWm608mwWBTVv4dT7aC001hbln06gCYcgbCSmaxwJCxNbINS4R+jDYxJNNr8HHoXkZQfNG96nLTVI9Jo0gb7kRNJSOdwotaYYzKUK0KAcA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=mojatatu.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dxk8r8+k6mYAux6h6gU3/6EtVgUgoUfUGBFVNGFSwvE=;
- b=N1HlpCSavjYAIyAIG+Of/L9mmNTgKpewe4Tqu4MFxRL/SOjKtmKwX7X9jG0glXPBi3f1KBJCqeYce/LPaTflDTFetA5OSewH6W4K+uIu1CIIQpIpA/A1O1fIL1DpOaDutCmuw9nd9WnCKYKmDGQRZgqELUIKeFJIQJ5gPb2QrdhD2fEJLWhKt9VFzurDiV1w8qljfbTkIjdkRQ88VkjTbnXHjqabjrmb8ET6qmxgm5syzED29df2lVq92USKXzeJI7J0zQGLn00jfvtmkOUZU6rlfT63F/62gHAGDlNznsRhPQAJM6cFNN7VXN5rJy/DIgk0152a7o4jr6SSe7962Q==
-Received: from BN9P223CA0012.NAMP223.PROD.OUTLOOK.COM (2603:10b6:408:10b::17)
- by BN9PR12MB5290.namprd12.prod.outlook.com (2603:10b6:408:103::14) with
+ bh=tEx6gHhKuW9BgWNoIf2s3sulVoEP4GxCZ0OCO8fBHao=;
+ b=S0fgGLUC6JsBNeiC9Ov+CvzAR1gzocf/JGb+1H5WmdiGfsmwgDzYny+I9cUY66jdF1ElRHVxuSEfhHAbObT/384nydaHNcghUHiCikQZf+oxa+2lED5/zXwd8AWEHzWG5MdnlkpT52xRv3IPpvmlpYjEgcNs/Nd+PPgFBEHtJ65mqtSdwnGdTGEl/pvnZJVKW1Hg0o8X0NjXQ1i+dexqRjgWLBi0AzFtIhQNrAP6paQvgo2zH5UncpSg7F+1c7lruLOtHBZ9JifKdF7mJ+kGYsIJ1evdjms6BhXqD25pmAnnVRG5UcDRF995aDKl203MvTd9NYgo0E3jWsCrfU8pHw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com (2603:10b6:806:1dc::10)
+ by SA1PR15MB5187.namprd15.prod.outlook.com (2603:10b6:806:237::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.15; Fri, 29 Oct
- 2021 18:01:12 +0000
-Received: from BN8NAM11FT036.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:10b:cafe::c7) by BN9P223CA0012.outlook.office365.com
- (2603:10b6:408:10b::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.22 via Frontend
- Transport; Fri, 29 Oct 2021 18:01:12 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; mojatatu.com; dkim=none (message not signed)
- header.d=none;mojatatu.com; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT036.mail.protection.outlook.com (10.13.177.168) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4649.14 via Frontend Transport; Fri, 29 Oct 2021 18:01:11 +0000
-Received: from localhost.localdomain.nvidia.com (172.20.187.5) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1497.18; Fri, 29 Oct 2021 18:01:08 +0000
-References: <20211028110646.13791-1-simon.horman@corigine.com>
- <20211028110646.13791-9-simon.horman@corigine.com>
-User-agent: mu4e 1.4.15; emacs 27.2
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     Simon Horman <simon.horman@corigine.com>
-CC:     <netdev@vger.kernel.org>, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Roi Dayan <roid@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Baowen Zheng <notifications@github.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        <oss-drivers@corigine.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>
-Subject: Re: [RFC/PATCH net-next v3 8/8] flow_offload: validate flags of
- filter and actions
-In-Reply-To: <20211028110646.13791-9-simon.horman@corigine.com>
-Date:   Fri, 29 Oct 2021 21:01:05 +0300
-Message-ID: <ygnhilxfaexq.fsf@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.20.187.5]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 08edf664-7602-42b7-c403-08d99b0617c9
-X-MS-TrafficTypeDiagnostic: BN9PR12MB5290:
-X-Microsoft-Antispam-PRVS: <BN9PR12MB52907F0A7A3D060C2BA4A8FDA0879@BN9PR12MB5290.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EPgJGmGHt4A0asJeaa5NsQ+gkANxz35VBUQIfaKEN0OWs7sikTxcSlvW7FwferzYSX9jvpuEt/KWgsulNvCkgG1ve/FaEFPBdXWI8esAhAajEs9TgeNeWn5jmG6xc4XsTZ3vI5dXNWGhTuypjU20PXjPUqWEH6PGKlmvU1/VaFSO4aJBg56i++5sHiFB/KFIYB6pFntNdwwr56arW/UmBLRrGwqTR4Ky1I9I5yef8ChKI22UKMBiB7PmHP/LX/4qLLK4wFsoVjlx1hM/0PHZ4rD3X8fb4x5ylNnAiT6y9qyACZIWx7ZBmkmdBlkX8Ra9vqPcKnUy05J/3k4IeNcZ8zo2XRsB/OnTfx99uIk3vO+fJHyCTUrf8wDhrEHuh5Bcr5rtlBhY98AtZMhalCV+DqPa0C5ZQQurr2sAV4PAle+nylyaZx5u7DKiSyaJVrE1BfiLqbYv6kr/6taTjRfypvzmqb5cFNEXQ8M91piwAa//fkE7czOQbBo/oFyi2HEf/qQW0wcKWqeU18zdQzPTxO3kuLkbKY/V9fM58xlwQ3Ja+vPAz2KJNvj2rzsQHg1cFgt6MpASRSLmjSXSrrsgeQDUJj16gsXJr81uDhKITdSL2MPrrrsBLrByCDAs6bjKeNdMcCv323dTDU21oHnzUhz89xFGnPc/V0IsYXPj+2zjuZdBqE+uwO2VkzWyHePt8a4zZK2+UIUFgfQ8rLDVViIU9xQHcbZ2TdpACKEN9Qg=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(7696005)(70586007)(2906002)(6916009)(4326008)(508600001)(70206006)(336012)(316002)(16526019)(36906005)(5660300002)(186003)(8676002)(26005)(54906003)(8936002)(36756003)(47076005)(36860700001)(83380400001)(356005)(82310400003)(7636003)(15650500001)(426003)(2616005)(86362001)(6666004)(4226004);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Oct 2021 18:01:11.9124
+ 2021 18:09:29 +0000
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::7d66:9b36:b482:af0f]) by SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::7d66:9b36:b482:af0f%7]) with mapi id 15.20.4628.020; Fri, 29 Oct 2021
+ 18:09:29 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Like Xu <like.xu.linux@gmail.com>
+CC:     Peter Zijlstra <peterz@infradead.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "Andrii Nakryiko" <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "like.xu@linux.intel.com" <like.xu@linux.intel.com>,
+        Andi Kleen <andi@firstfloor.org>,
+        "Liang, Kan" <kan.liang@intel.com>
+Subject: Re: bpf_get_branch_snapshot on qemu-kvm
+Thread-Topic: bpf_get_branch_snapshot on qemu-kvm
+Thread-Index: AQHXtMWNyKWclBi4s0iJww6HNTXDJ6u6n6yAgABLWQCAAAXKgIAAJheAgAAVeoCAAAoigIAAOogAgA0QG4CAACUTgIAADc8AgACwtQCAAQraAIAal6uAgALhm4CAAo3SAA==
+Date:   Fri, 29 Oct 2021 18:09:29 +0000
+Message-ID: <2DD37016-2C6C-4F38-8785-697ABC850D83@fb.com>
+References: <0E5E6FCA-23ED-4CAA-ADEA-967430C62F6F@fb.com>
+ <YVQXT5piFYa/SEY/@hirez.programming.kicks-ass.net>
+ <d75f6a9a-dbb3-c725-c001-ec9bdd55173f@gmail.com>
+ <YVRbX6vBgz+wYzZK@hirez.programming.kicks-ass.net>
+ <C6DF009D-161A-4B17-88AE-3982DD6F22A2@fb.com>
+ <YVSNV/1tFRGWIa6c@hirez.programming.kicks-ass.net>
+ <SJ0PR11MB4814BBE6651FB9F8F05868FBE8A99@SJ0PR11MB4814.namprd11.prod.outlook.com>
+ <0676194C-3ADF-4FF9-8655-2B15D54E72BE@fb.com>
+ <ee2a1209-8572-a147-fdac-1a3d83862022@gmail.com>
+ <7B80A399-1F96-4375-A306-A4142B44FFBF@fb.com>
+ <d46d96ff-02a3-5ea7-a273-2945f4ef17a5@gmail.com>
+ <1EB93A74-804B-4EE2-AECB-38580D40C80D@fb.com>
+ <0fe14e54-4ab3-75da-4bdc-561fe1461071@gmail.com>
+ <A4E23F44-CB25-4B5B-BC65-902E943C63E5@fb.com>
+ <150a7ade-8727-f7c1-cc3a-5ce8cb70804a@gmail.com>
+In-Reply-To: <150a7ade-8727-f7c1-cc3a-5ce8cb70804a@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3654.120.0.1.13)
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 46768b3d-f883-4bd5-9eb0-08d99b074045
+x-ms-traffictypediagnostic: SA1PR15MB5187:
+x-microsoft-antispam-prvs: <SA1PR15MB51872251C9D2B36CB327CC76B3879@SA1PR15MB5187.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:4941;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: F7eyoze42sgN5ves9XA/BDjLxsVpScryIMDBvpwdiYyemEtG6/HS/4bzfuzehZj/xbxhxodGNhoslVrR0rB6A4ngw0+KrN8Z+lQ2V8HEJrc6Q+8XHSH/DNN3+gCwtpeVZdHVvi6ykzyBxHqjdJ9tsdFS1aSNKitqIvr5ZZeiV952g0MAjPu31oeEb9Yq3zIRoOvrLDHZWl2c0DlHsmXk3U2hd6KAq9+2Cl7jHzrJtx/Z8BNf/X6l6EQApywf8z7ilGw5ZPjBC7yPIWVQKid6q71EWd8N+LbnIvpcgPfTin1SPr6tf5fRGUpEAz3VV0jreXtR5vpccPXopzhSWkG7GJsA2fXDHf8odmj4RsRXhCzirBofEcIipCfBDKdib+7Lf0wdrO4qwKFTnCiupsTLacqNHE6H8di4zYr/khiWAu6QFuQCVjJwECyO7Ke/DGawlw+sSXwKB+OnzStRV3tcja5S6cEY/662BAZ8tFA6e3fpGDRzTuFq0cpeUxJ4BVT3LzZHRcd7QWUArRTRgq1hS+viUh2jseofpdxXx/pwI32jJGXzAeX6XN7lNKI5//a6ZAamvJbDh6DKiZQIHAUXAMi4tfiAyHMwFCWv2amgd/8y04njIc3UrMtBui3gjFvSsnR07EvBHmOMwkfQkPP3IKxnKd8PCHnRjHX23qmnCEa/Y2wQcEDs9MoDWcFpz2sBOJoO2KQB3WPcqiddRDOih8SQUToTBskKFPCFnM/12IJZpE26Zjztkp0Le3V9Sfzdv8NzI/jCOwaf2V3q4WAyzH1uL6OAsXmKDTi5CPI2vWO8qD14f+6WhqybTv/ijdwD3mAG9w6zm9vqUUtcxS6xzRjlNhen05hejv8k8sprf8w=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(38070700005)(316002)(54906003)(508600001)(6486002)(71200400001)(2906002)(66946007)(66446008)(64756008)(6512007)(966005)(76116006)(6916009)(6506007)(53546011)(91956017)(66476007)(36756003)(33656002)(66556008)(5660300002)(122000001)(8676002)(4326008)(2616005)(38100700002)(8936002)(83380400001)(86362001)(186003)(21314003)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?km7ZCi5+rlMnY6STma61HLg2VED8nPHpwulJlPr9qgVYhvd7Hj5QVLAdbopR?=
+ =?us-ascii?Q?gvAlzmzT5wMpD41r6mtxUZetEjiId0x5zf2R4bTWuX1+qNNUfw2juBBtw6Ow?=
+ =?us-ascii?Q?AgORjHlaYy74UZOrg3zZLASyUbPop/vfyWrBbRGtQejCWrhiKGa8vcePJ0+m?=
+ =?us-ascii?Q?SSXd97YmnbMKDCsUWXH8aTXyizgDBxO0k9LSkL3aadYibRpnXgsyM+RuiBfK?=
+ =?us-ascii?Q?/5obqe/utcFA8rATaAECy/vtOZgSzO3/YWqiONzwLTZycoRO1to7wreisgX4?=
+ =?us-ascii?Q?/JJsucwWI4silJX9SLbIw+DAvdtiyb4uTb2hhY6br5z0nDPnd6hRtwTd4Qtf?=
+ =?us-ascii?Q?kRpsrLUlYoMgOrAyEkr0p2tTJJrhWFFdNMucXHl6z5D3gOY1Wr4cRsOOgEPF?=
+ =?us-ascii?Q?LpBZKndVB2OUoOQms7KzK5iGYqXGS//7P90gNyhslRLNqMsTPVXjhudtzTkL?=
+ =?us-ascii?Q?fanDcSf8LO1YMDzdZRJFIIOkw0xPDWralS2wNkWJyAq2eg3m8HvRAUKnWo1U?=
+ =?us-ascii?Q?FobBM9NRFc2EliO4b4XY95fRomMDB3eYgvaHtdSdTEQTb4V5VVK06bYAZtsC?=
+ =?us-ascii?Q?NbbQYZQiPlH4ZPHQxbXh2eo97nSuZQ5GO4TRupO52WCf6mVP1jVtd3sN4BCF?=
+ =?us-ascii?Q?ooVHFRBtEC88pc61g8bTeTzn3koGdfDyKgKFp9Tbg2l69JHS03baFTjYAHoP?=
+ =?us-ascii?Q?d7FYmef7sVHaIgiTR3jsdLqVIwBroGIJz1ZE+WHRtVPL+NOGdFbr2bbMbqkV?=
+ =?us-ascii?Q?MX6VDg5/9bgeL7doiuk6BgVFEJoZAf49T8GXgeAovmVdgrjXZlsVFjSOgkwL?=
+ =?us-ascii?Q?oNwUx+WqE2d+Tx2a/YpkbOw6OTsttRfL8WFuvSy+4Mjg7suelM1e4SFxXWpi?=
+ =?us-ascii?Q?xbRSUg0sWpZK3K+phWQFHKcSuJaXdGFSd7P2ZCBoDBwBue3isAwW65vCumdJ?=
+ =?us-ascii?Q?PNPPan26zfAV9WUntBl8wdYb/TotFOJnxaxbJq6ID/R8RJ11nlgFahN3ZE+k?=
+ =?us-ascii?Q?cZ2sTUNpXEA+SVqnmBi37bcM7Nqhqe+AHcMFbVG/eMUaD245s2Lfp7+DJZDl?=
+ =?us-ascii?Q?TzXhuykL264iSaS08zEsVeNdLP5h+SfsKUnax/VkKZCYoHm8Utf8Pe9scSop?=
+ =?us-ascii?Q?m4Sv7t1vYcBtIfxv8/InLAijxr/0YlfxuzDJmYfifx85TvVUAsAsTBONzEIP?=
+ =?us-ascii?Q?eAlFY2H9cl7vW1myvSFqfMMs4j3sJ37Z0nj2ZfM7MlEDAp8ctjtV28+pnIYo?=
+ =?us-ascii?Q?K8ywVlXcYMYWO8KnjdElMh98J1hjODVB8G/pJZLdyqrwz4aP+PDVXUGRX6JM?=
+ =?us-ascii?Q?RD5W46VprhanOLNvBR9QnMe5Sk7I+FJuznsYDZsDOvUxclPauBrAQzHARoBD?=
+ =?us-ascii?Q?MkYcfLrHwS8JF6q3gSgVGnQ4YuFPcH6yPx168eIw3LSyn2vkRrqP3goeuQGe?=
+ =?us-ascii?Q?6bdxpCFjCmHFfw6t7BRkBMWWgRREHtgS3Pw7znkG+Jmvbin03MjaXIxWrazL?=
+ =?us-ascii?Q?O/56qxxBzbZ+vVBzRuMUQr9BglE/sH1PAun3m41uZyNe6fyNJyPTW+rhEWaZ?=
+ =?us-ascii?Q?cKGFYl59iZKap36sg2PgSSnNrylbBavGeCrjSA2OIoHCl1KoVr1t7d+g3DDJ?=
+ =?us-ascii?Q?8e2qIJa9aZE/v7OSAYPbkVJZHCtUloo9FHA/0OL3aJDJIq8NGPHEncg+Lmou?=
+ =?us-ascii?Q?S19Lfw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <82DB46BB0E658E459C5D3AB28B0F8906@namprd15.prod.outlook.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5109.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 46768b3d-f883-4bd5-9eb0-08d99b074045
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Oct 2021 18:09:29.4399
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 08edf664-7602-42b7-c403-08d99b0617c9
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT036.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5290
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: EPOs9E/2j3sWK8sWL5p8jxXlaNq02nDRjqNMUv1BsDRPztF/GugphOtivQQgHGj4eVRthjprmXNgStMpTP2u6Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB5187
+X-OriginatorOrg: fb.com
+X-Proofpoint-ORIG-GUID: VS8UXESMjagU-1J5WDjkWSUNzyxpNI47
+X-Proofpoint-GUID: VS8UXESMjagU-1J5WDjkWSUNzyxpNI47
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-10-29_04,2021-10-29_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ suspectscore=0 phishscore=0 spamscore=0 malwarescore=0 clxscore=1015
+ impostorscore=0 mlxlogscore=999 mlxscore=0 lowpriorityscore=0 adultscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2110290099
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu 28 Oct 2021 at 14:06, Simon Horman <simon.horman@corigine.com> wrote:
-> From: Baowen Zheng <baowen.zheng@corigine.com>
->
-> Add process to validate flags of filter and actions when adding
-> a tc filter.
->
-> We need to prevent adding filter with flags conflicts with its actions.
->
-> Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
-> Signed-off-by: Louis Peens <louis.peens@corigine.com>
-> Signed-off-by: Simon Horman <simon.horman@corigine.com>
-> ---
->  net/sched/cls_api.c      | 26 ++++++++++++++++++++++++++
->  net/sched/cls_flower.c   |  3 ++-
->  net/sched/cls_matchall.c |  4 ++--
->  net/sched/cls_u32.c      |  7 ++++---
->  4 files changed, 34 insertions(+), 6 deletions(-)
->
-> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-> index 351d93988b8b..80647da9713a 100644
-> --- a/net/sched/cls_api.c
-> +++ b/net/sched/cls_api.c
-> @@ -3025,6 +3025,29 @@ void tcf_exts_destroy(struct tcf_exts *exts)
->  }
->  EXPORT_SYMBOL(tcf_exts_destroy);
->  
-> +static bool tcf_exts_validate_actions(const struct tcf_exts *exts, u32 flags)
-> +{
-> +#ifdef CONFIG_NET_CLS_ACT
-> +	bool skip_sw = tc_skip_sw(flags);
-> +	bool skip_hw = tc_skip_hw(flags);
-> +	int i;
-> +
-> +	if (!(skip_sw | skip_hw))
-> +		return true;
-> +
-> +	for (i = 0; i < exts->nr_actions; i++) {
-> +		struct tc_action *a = exts->actions[i];
-> +
-> +		if ((skip_sw && tc_act_skip_hw(a->tcfa_flags)) ||
-> +		    (skip_hw && tc_act_skip_sw(a->tcfa_flags)))
-> +			return false;
-> +	}
-> +	return true;
-> +#else
-> +	return true;
-> +#endif
-> +}
-> +
 
-I know Jamal suggested to have skip_sw for actions, but it complicates
-the code and I'm still not entirely understand why it is necessary.
-After all, action can only get applied to a packet if the packet has
-been matched by some filter and filters already have skip sw/hw
-controls. Forgoing action skip_sw flag would:
 
-- Alleviate the need to validate that filter and action flags are
-compatible. (trying to offload filter that points to existing skip_hw
-action would just fail because the driver wouldn't find the action with
-provided id in its tables)
+> On Oct 27, 2021, at 8:09 PM, Like Xu <like.xu.linux@gmail.com> wrote:
+> 
+> On 26/10/2021 3:09 pm, Song Liu wrote:
+>>> On Oct 9, 2021, at 2:03 AM, Like Xu <like.xu.linux@gmail.com> wrote:
+>>> 
+>>> On 9/10/2021 1:08 am, Song Liu wrote:
+>>>>> On Oct 7, 2021, at 11:36 PM, Like Xu <like.xu.linux@gmail.com> wrote:
+>>>>> 
+>>>>> On 8/10/2021 1:46 pm, Song Liu wrote:
+>>>>>>> On Oct 7, 2021, at 8:34 PM, Like Xu <like.xu.linux@gmail.com> wrote:
+>>>>>>> 
+>>>>>>> On 30/9/2021 4:05 am, Song Liu wrote:
+>>>>>>>> Hi Kan,
+>>>>>>>>> On Sep 29, 2021, at 9:35 AM, Liang, Kan <kan.liang@intel.com> wrote:
+>>>>>>>>> 
+>>>>>>>>>>>> - get confirmation that clearing GLOBAL_CTRL is suffient to supress
+>>>>>>>>>>>>  PEBS, in which case we can simply remove the PEBS_ENABLE clear.
+>>>>>>>>>>> 
+>>>>>>>>>>> How should we confirm this? Can we run some tests for this? Or do we
+>>>>>>>>>>> need hardware experts' input for this?
+>>>>>>>>>> 
+>>>>>>>>>> I'll put it on the list to ask the hardware people when I talk to them next. But
+>>>>>>>>>> maybe Kan or Andi know without asking.
+>>>>>>>>> 
+>>>>>>>>> If the GLOBAL_CTRL is explicitly disabled, the counters do not count anymore.
+>>>>>>>>> It doesn't matter if PEBS is enabled or not.
+>>>>>>>>> 
+>>>>>>>>> See 6c1c07b33eb0 ("perf/x86/intel: Avoid unnecessary PEBS_ENABLE MSR
+>>>>>>>>> access in PMI "). We optimized the PMU handler base on it.
+>>>>>>>> Thanks for these information!
+>>>>>>>> IIUC, all we need is the following on top of bpf-next/master:
+>>>>>>>> diff --git i/arch/x86/events/intel/core.c w/arch/x86/events/intel/core.c
+>>>>>>>> index 1248fc1937f82..d0d357e7d6f21 100644
+>>>>>>>> --- i/arch/x86/events/intel/core.c
+>>>>>>>> +++ w/arch/x86/events/intel/core.c
+>>>>>>>> @@ -2209,7 +2209,6 @@ intel_pmu_snapshot_branch_stack(struct perf_branch_entry *entries, unsigned int
+>>>>>>>>         /* must not have branches... */
+>>>>>>>>         local_irq_save(flags);
+>>>>>>>>         __intel_pmu_disable_all(false); /* we don't care about BTS */
+>>>>>>> 
+>>>>>>> If the value passed in is true, does it affect your use case?
+>>>>>>> 
+>>>>>>>> -       __intel_pmu_pebs_disable_all();
+>>>>>>> 
+>>>>>>> In that case, we can reuse "static __always_inline void intel_pmu_disable_all(void)"
+>>>>>>> regardless of whether PEBS is supported or enabled inside the guest and the host ?
+>>>>>>> 
+>>>>>>>>         __intel_pmu_lbr_disable();
+>>>>>>> 
+>>>>>>> How about using intel_pmu_lbr_disable_all() to cover Arch LBR?
+>>>>>> We are using LBR without PMI, so there isn't any hardware mechanism to
+>>>>>> stop the LBR, we have to stop it in software. There is always a delay
+>>>>>> between the event triggers and the LBR is stopped. In this window,
+>>>>> 
+>>>>> Do you use counters for snapshot branch stack?
+>>>>> 
+>>>>> Can the assumption of "without PMI" be broken sine Intel does have
+>>>>> the hardware mechanism like "freeze LBR on counter overflow
+>>>>> (aka, DEBUGCTLMSR_FREEZE_LBRS_ON_PMI)" ?
+>>>> We are capturing LBR on software events. For example, when a complex syscall,
+>>>> such as sys_bpf() and sys_perf_event_open(), returns -EINVAL, it is not obvious
+>>>> what wen wrong. The branch stack at the return (on a kretprobe or fexit) could
+>>>> give us additional information.
+>>>>> 
+>>>>>> the LBR is still running and old entries are being replaced by new entries.
+>>>>>> We actually need the old entries before the triggering event, so the key
+>>>>>> design goal here is to minimize the number of branch instructions between
+>>>>>> the event triggers and the LBR is stopped.
+>>>>> 
+>>>>> Yes, it makes sense.
+>>>>> 
+>>>>>> Here, both __intel_pmu_disable_all(false) and __intel_pmu_lbr_disable()
+>>>>>> are used to optimize for this goal: the fewer branch instructions the
+>>>>>> better.
+>>>>> 
+>>>>> Is it possible that we have another LBR in-kernel user in addition to the current
+>>>>> BPF-LBR snapshot user, such as another BPF-LBR snapshot user or a LBR perf user ?
+>>>> I think it is OK to have another user. We just need to capture the LBR entries.
+>>>> In fact, we simply enable LBR by opening a perf_event on each CPU. So from the
+>>>> kernel's point of view, the LBR is owned used by "another user".
+>>>>> 
+>>>>> In the intel_pmu_snapshot_[arch]_branch_stack(), what if there is a PMI or NMI handler
+>>>>> to be called before __intel_pmu_lbr_disable(), which means more branch instructions
+>>>>> (assuming we don't use the FREEZE_LBRS_ON_xxx capability)?
+>>>> If we are unlucky and hit an NMI, we may get garbage data. The user will run the
+>>>> test again.
+>>>>> How about try to disable LBR at the earliest possible time, before __intel_pmu_disable_all(false) ?
+>>>> I am not sure which solution is the best here. On bare metal, current version works
+>>>> fine (available in bpf-next tree).
+>>>>> 
+>>>>>> After removing __intel_pmu_pebs_disable_all() from
+>>>>>> intel_pmu_snapshot_branch_stack(), we found quite a few LBR entries in
+>>>>>> extable related code. With these entries, snapshot branch stack is not
+>>>>> 
+>>>>> Are you saying that you still need to call
+>>>>> __intel_pmu_pebs_disable_all() to maintain precision ?
+>>>> I think we don't need pebs_disable_all. In the VM, pebs_disable_all will trigger
+>>>> "unchecked MSR access error" warning. After removing it, the warning message is
+>>>> gone. However, after we remove pebs_disable_all, we still see too many LBR entries
+>>>> are flushed before LBR is stopped. Most of these new entries are in extable code.
+>>>> I guess this is because the VM access these MSR differently.
+>>> 
+>>> Hi Song,
+>>> 
+>>> Thanks for your detailed input. I saw your workaround "if (is_hypervisor())" on the tree.
+>>> 
+>>> Even when the guest supports PEBS, this use case fails and the root cause is still
+>>> playing hide-and-seek with me. Just check with you to see if you get similar results
+>>> when the guest LBR behavior makes the test case fail like this:
+>>> 
+>>> serial_test_get_branch_snapshot:FAIL:find_looptest_in_lbr unexpected find_looptest_in_lbr: actual 0 <= expected 6
+>>> serial_test_get_branch_snapshot:FAIL:check_wasted_entries unexpected check_wasted_entries: actual 32 >= expected 10
+>>> #52 get_branch_snapshot:FAIL
+>>> 
+>>> Also, do you know or rough guess about how extable code relates to the test case ?
+>> Sorry for the delayed response. I finally got some time to look into
+>> this again. After disabling most debug configs, I managed to get it
+>> work in the VM with a simple change as
+> 
+> Yes, most of the contaminated lbr records come from these guest symbols:
+> 
+> intel_pmu_snapshot_branch_stack
+> native_write_msr
+> trace_hardirqs_off
+> lockdep_hardirqs_off
+> __lock_acquire
+> mark_lock
+> migrate_disable
+> rcu_is_watching
+> bpf_get_branch_snapshot
+> __bpf_prog_enter
+> 
+> I think we're fine with the current guest LBR emulation, right?
 
-- Remove the need to add more conditionals into TC software data path in
-patch 4.
+Yes, current result looks good to me. But it does rely on the .config.  
 
-WDYT?
+> 
+>> diff --git i/arch/x86/events/intel/core.c w/arch/x86/events/intel/core.c
+>> index 1248fc1937f82..3887b579297d7 100644
+>> --- i/arch/x86/events/intel/core.c
+>> +++ w/arch/x86/events/intel/core.c
+>> @@ -2209,7 +2209,6 @@ intel_pmu_snapshot_branch_stack(struct perf_branch_entry *entries, unsigned int
+>>         /* must not have branches... */
+>>         local_irq_save(flags);
+>>         __intel_pmu_disable_all(false); /* we don't care about BTS */
+>> -       __intel_pmu_pebs_disable_all();
+>>         __intel_pmu_lbr_disable();
+>>         /*            ... until here */
+>>         return __intel_pmu_snapshot_branch_stack(entries, cnt, flags);
+> 
+> LGTM.
+> 
+>> (of course we also need to remove the is_hypervisor() check.).
+>> But I am not sure whether this is the best fix.
+>> I pushed all the change and debug code I used to
+>> https://git.kernel.org/pub/scm/linux/kernel/git/song/linux.git/log/?h=get_branch_snapshot_in_vm
+>> Could you please take a look at it and share your feedback on this?
+> 
+> How do we inform the user of bpf_get_branch_snapshot in a reasonable way
+> that the lbr data will be inaccurate when using the debug kernel?
+> 
+> Is it better to check for mutual exclusion in code or to use the user documentation
+> to specify this part of the restriction? It affects the user experience.
 
->  int tcf_exts_validate(struct net *net, struct tcf_proto *tp, struct nlattr **tb,
->  		      struct nlattr *rate_tlv, struct tcf_exts *exts,
->  		      u32 flags, struct netlink_ext_ack *extack)
-> @@ -3066,6 +3089,9 @@ int tcf_exts_validate(struct net *net, struct tcf_proto *tp, struct nlattr **tb,
->  				return err;
->  			exts->nr_actions = err;
->  		}
-> +
-> +		if (!tcf_exts_validate_actions(exts, flags))
-> +			return -EINVAL;
->  	}
->  #else
->  	if ((exts->action && tb[exts->action]) ||
-> diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-> index eb6345a027e1..55f89f0e393e 100644
-> --- a/net/sched/cls_flower.c
-> +++ b/net/sched/cls_flower.c
-> @@ -2035,7 +2035,8 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
->  	}
->  
->  	err = fl_set_parms(net, tp, fnew, mask, base, tb, tca[TCA_RATE],
-> -			   tp->chain->tmplt_priv, flags, extack);
-> +			   tp->chain->tmplt_priv, flags | fnew->flags,
-> +			   extack);
+In uapi/linux/bpf.h, we have 
 
-Aren't you or-ing flags from two different ranges (TCA_CLS_FLAGS_* and
-TCA_ACT_FLAGS_*) that map to same bits, or am I missing something? This
-isn't explained in commit message so it is hard for me to understand the
-idea here.
+ * long bpf_get_branch_snapshot(void *entries, u32 size, u64 flags)
+ *      Description
+ *              Get branch trace from hardware engines like Intel LBR. The
+ *              hardware engine is stopped shortly after the helper is
+ *              called. Therefore, the user need to filter branch entries
+ *              based on the actual use case. To capture branch trace
+ *              before the trigger point of the BPF program, the helper
+ *              should be called at the beginning of the BPF program.
 
->  	if (err)
->  		goto errout;
->  
-> diff --git a/net/sched/cls_matchall.c b/net/sched/cls_matchall.c
-> index 24f0046ce0b3..00b76fbc1dce 100644
-> --- a/net/sched/cls_matchall.c
-> +++ b/net/sched/cls_matchall.c
-> @@ -226,8 +226,8 @@ static int mall_change(struct net *net, struct sk_buff *in_skb,
->  		goto err_alloc_percpu;
->  	}
->  
-> -	err = mall_set_parms(net, tp, new, base, tb, tca[TCA_RATE], flags,
-> -			     extack);
-> +	err = mall_set_parms(net, tp, new, base, tb, tca[TCA_RATE],
-> +			     flags | new->flags, extack);
->  	if (err)
->  		goto err_set_parms;
->  
-> diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
-> index 4272814487f0..fc670cc45122 100644
-> --- a/net/sched/cls_u32.c
-> +++ b/net/sched/cls_u32.c
-> @@ -895,7 +895,8 @@ static int u32_change(struct net *net, struct sk_buff *in_skb,
->  			return -ENOMEM;
->  
->  		err = u32_set_parms(net, tp, base, new, tb,
-> -				    tca[TCA_RATE], flags, extack);
-> +				    tca[TCA_RATE], flags | new->flags,
-> +				    extack);
->  
->  		if (err) {
->  			u32_destroy_key(new, false);
-> @@ -1060,8 +1061,8 @@ static int u32_change(struct net *net, struct sk_buff *in_skb,
->  	}
->  #endif
->  
-> -	err = u32_set_parms(net, tp, base, n, tb, tca[TCA_RATE], flags,
-> -			    extack);
-> +	err = u32_set_parms(net, tp, base, n, tb, tca[TCA_RATE],
-> +			    flags | n->flags, extack);
->  	if (err == 0) {
->  		struct tc_u_knode __rcu **ins;
->  		struct tc_u_knode *pins;
+I guess this is enough. 
+
+> 
+>> Specifically, can we fix intel_pmu_snapshot_branch_stack in vm with the
+>> change above?
+> 
+> At least it's a valid fix and we can start from this change.
+
+Thanks! I will send the fix. 
+
+Song
 
