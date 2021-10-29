@@ -2,83 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C607443F715
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 08:20:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CD7343F725
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 08:28:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231948AbhJ2GWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 02:22:43 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:52148 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231774AbhJ2GWm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Oct 2021 02:22:42 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id ADF5420096;
-        Fri, 29 Oct 2021 08:20:12 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id sS0P5Eqv-uMV; Fri, 29 Oct 2021 08:20:12 +0200 (CEST)
-Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 1596620082;
-        Fri, 29 Oct 2021 08:20:12 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout2.secunet.com (Postfix) with ESMTP id 0C6E980004A;
-        Fri, 29 Oct 2021 08:20:12 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Fri, 29 Oct 2021 08:20:11 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Fri, 29 Oct
- 2021 08:20:11 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id A4830318056B; Fri, 29 Oct 2021 08:20:11 +0200 (CEST)
-Date:   Fri, 29 Oct 2021 08:20:11 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     luo penghao <cgel.zte@gmail.com>
-CC:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        luo penghao <luo.penghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH ipsec-next v2] xfrm: Remove redundant fields and related
- parentheses
-Message-ID: <20211029062011.GH3027429@gauss3.secunet.de>
-References: <20211028023639.9914-1-luo.penghao@zte.com.cn>
+        id S232014AbhJ2Gat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 02:30:49 -0400
+Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:42598 "EHLO
+        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231806AbhJ2Gar (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 02:30:47 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R531e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0Uu6U1Vy_1635488894;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Uu6U1Vy_1635488894)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 29 Oct 2021 14:28:14 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH v3 0/3] virtio support cache indirect desc
+Date:   Fri, 29 Oct 2021 14:28:11 +0800
+Message-Id: <20211029062814.76594-1-xuanzhuo@linux.alibaba.com>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20211028023639.9914-1-luo.penghao@zte.com.cn>
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 28, 2021 at 02:36:39AM +0000, luo penghao wrote:
-> The variable err is not necessary in such places. It should be revmoved
-> for the simplicity of the code. This will cause the double parentheses
-> to be redundant, and the inner parentheses should be deleted.
-> 
-> The clang_analyzer complains as follows:
-> 
-> net/xfrm/xfrm_input.c:533: warning:
-> net/xfrm/xfrm_input.c:563: warning:
-> 
-> Although the value stored to 'err' is used in the enclosing expression,
-> the value is never actually read from 'err'.
-> 
-> Changes in v2:
-> 
-> Modify the title, because v2 removes the brackets.
-> Remove extra parentheses.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: luo penghao <luo.penghao@zte.com.cn>
+If the VIRTIO_RING_F_INDIRECT_DESC negotiation succeeds, and the number
+of sgs used for sending packets is greater than 1. We must constantly
+call __kmalloc/kfree to allocate/release desc.
 
-Applied, thanks a lot!
+In the case of extremely fast package delivery, the overhead cannot be
+ignored:
+
+  27.46%  [kernel]  [k] virtqueue_add
+  16.66%  [kernel]  [k] detach_buf_split
+  16.51%  [kernel]  [k] virtnet_xsk_xmit
+  14.04%  [kernel]  [k] virtqueue_add_outbuf
+   5.18%  [kernel]  [k] __kmalloc
+   4.08%  [kernel]  [k] kfree
+   2.80%  [kernel]  [k] virtqueue_get_buf_ctx
+   2.22%  [kernel]  [k] xsk_tx_peek_desc
+   2.08%  [kernel]  [k] memset_erms
+   0.83%  [kernel]  [k] virtqueue_kick_prepare
+   0.76%  [kernel]  [k] virtnet_xsk_run
+   0.62%  [kernel]  [k] __free_old_xmit_ptr
+   0.60%  [kernel]  [k] vring_map_one_sg
+   0.53%  [kernel]  [k] native_apic_mem_write
+   0.46%  [kernel]  [k] sg_next
+   0.43%  [kernel]  [k] sg_init_table
+   0.41%  [kernel]  [k] kmalloc_slab
+
+This patch adds a cache function to virtio to cache these allocated indirect
+desc instead of constantly allocating and releasing desc.
+
+v3:
+  pre-allocate per buffer indirect descriptors array
+
+v2:
+  use struct list_head to cache the desc
+
+*** BLURB HERE ***
+
+Xuan Zhuo (3):
+  virtio: cache indirect desc for split
+  virtio: cache indirect desc for packed
+  virtio-net: enable virtio desc cache
+
+ drivers/net/virtio_net.c     |  11 +++
+ drivers/virtio/virtio.c      |   6 ++
+ drivers/virtio/virtio_ring.c | 131 ++++++++++++++++++++++++++++++-----
+ include/linux/virtio.h       |  14 ++++
+ 4 files changed, 145 insertions(+), 17 deletions(-)
+
+--
+2.31.0
+
