@@ -2,90 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75F18440019
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 18:12:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81039440021
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 18:15:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229732AbhJ2QPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 12:15:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40978 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbhJ2QPC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 12:15:02 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4148C061714
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 09:12:33 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id f3so13839033lfu.12
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 09:12:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kinvolk.io; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=j7zbgZHDKtsXiybM6IPBrydvS6VzArmkgJP+XJA+q3o=;
-        b=N7E7kD7SO6XMgzKiV9CEhACjob4NtxQtBLF8SuPY4D18ZwAmBVd/1my4Ab8wn9N6pE
-         6gkcgBsgGV0197ku+dLvLIqTKHTCRMaAS3mc5v8gXW3PpJATdbOM0u/ZzizYKxVDgdmk
-         95eG0ds7bXEIvgqMytap2F+8tgXIBOgUSPZlY=
+        id S229811AbhJ2QR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 12:17:27 -0400
+Received: from mail-yb1-f172.google.com ([209.85.219.172]:34549 "EHLO
+        mail-yb1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229645AbhJ2QR0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 12:17:26 -0400
+Received: by mail-yb1-f172.google.com with SMTP id o12so25559606ybk.1;
+        Fri, 29 Oct 2021 09:14:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=j7zbgZHDKtsXiybM6IPBrydvS6VzArmkgJP+XJA+q3o=;
-        b=y8v7zQeI955GMzKGYIfINJNFISSiSIRCcroWgm+jEEawM5/+hxQfYEGQMq4vXw6O+T
-         obauT/hA6+5h3qjoZsdTkYPhq6e4Y/9K8KWjlbGkGoUfNEja4zQjFN+DcEN9jn1c/Xul
-         EwTVQjQKPzmT+SOz2xURQUn8rsa9BFSuW69Ru+3iy+uHiU/XMjqDTYEyVg320EzlZGSq
-         20Uz7NFc8LUGhZ8/bEUyqJRe3rhhp7WRWuadTzV39LYmmgTgTQU4n18O1lmaSNX5sGe2
-         6E3qMLbi7GVlpI92LjIR+aoJ2dvUf0dFSjaspgfLJcuoHK9H/5NDV93j76imzwITG5IQ
-         tfhw==
-X-Gm-Message-State: AOAM5303y31M1M7pj70fCoADvnicHb9c7c+uwyst2HRGVzK3wdsYgm3i
-        CM1BiH+WE4Zf7dFt/hv72DK3P3Z5ZOf31bL2GcsWhw==
-X-Google-Smtp-Source: ABdhPJy31SCB2gaQpLv+o80ZkBwICMfuT5eqnX5NT1sHDQqq+eNINFqEwbLugosNMzkqxkmBMH7sZw2LNhttFOP+J60=
-X-Received: by 2002:ac2:4823:: with SMTP id 3mr4268821lft.56.1635523951944;
- Fri, 29 Oct 2021 09:12:31 -0700 (PDT)
+        bh=oKjnW8Wi5ameq9ZMSBh8BH9BlCqJ+OFy7SiHKMqkhbQ=;
+        b=3Zv/kSY/iHuzIByGrAYCn/HIJcq2a1odBHs80ClMHDkuumCRSxCfWq5Rl63Ql9ccxK
+         9DhPTLaNx4X/M+4IVruPfecbNT0UmORQI4WTJ8hvtXGg4Em67Z7pb0Kc+QgZFqXVRA3S
+         TRCI0bZ53xQKyfiLuYqhRe2VUil/Q29tCCQGL0a4PoHZjJEyEBvfltGgKzl1c9r06wqC
+         kI2ZM9JI2+JKi9wmzie53rsvUiApCU2qb21dDhVXtonyskrra//vbcENnVVRLGBTJIrl
+         48Yt5lx+bxdJ5fNC/Vp2GaZSVOK/TRMFiD7qfBpaOQoky/xxGpzOVCdtc4LQW9t0sznM
+         d4vg==
+X-Gm-Message-State: AOAM531F2DRo97uwDGfkF/kzMDZ6XRP1g/+S3OrH9Txf6E0Kk4jVV+Xt
+        38f3j7URXy6SFlu76y9HLeJICqmlDmR0BAQTb81GBCS9sVw=
+X-Google-Smtp-Source: ABdhPJwjI6ho30zLCdGoteZKoFRUeazaC/CJHWBypoQ3wkvjJG7RMribu9cR3x2tON1BJoM5kvJFSRVAbrXIK1je2v0=
+X-Received: by 2002:a25:3b49:: with SMTP id i70mr13534928yba.375.1635524097574;
+ Fri, 29 Oct 2021 09:14:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211027203727.208847-1-mauricio@kinvolk.io> <CAADnVQK2Bm7dDgGc6uHVosuSzi_LT0afXM6Hf3yLXByfftxV1Q@mail.gmail.com>
-In-Reply-To: <CAADnVQK2Bm7dDgGc6uHVosuSzi_LT0afXM6Hf3yLXByfftxV1Q@mail.gmail.com>
-From:   =?UTF-8?Q?Mauricio_V=C3=A1squez_Bernal?= <mauricio@kinvolk.io>
-Date:   Fri, 29 Oct 2021 11:12:20 -0500
-Message-ID: <CAHap4zt7B1Zb56rr55Q8_cy8qdyaZsYcWt7ZHrs3EKr50fsA+A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/2] libbpf: Implement BTF Generator API
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
-        Lorenzo Fontana <lorenzo.fontana@elastic.co>
+References: <20211026121651.1814251-1-mailhol.vincent@wanadoo.fr> <20211029124411.lkmngckiiwotste7@pengutronix.de>
+In-Reply-To: <20211029124411.lkmngckiiwotste7@pengutronix.de>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Sat, 30 Oct 2021 01:14:46 +0900
+Message-ID: <CAMZ6Rq+RH3C3C5=qzZ_CRRF3bnW+oDB7_P_OW3UEp9Ty2GNfbQ@mail.gmail.com>
+Subject: Re: [PATCH v4] can: netlink: report the CAN controller mode supported flags
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-can <linux-can@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Tracing progs will be peeking into task_struct.
-> To describe it in the reduced BTF most of the kernel types would be needed,
+On Fri. 29 Oct 2021 at 21:44, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> On 26.10.2021 21:16:51, Vincent Mailhol wrote:
+> > This patch introduces a method for the user to check both the
+> > supported and the static capabilities. The proposed method reuses the
+> > existing struct can_ctrlmode and thus do not need a new IFLA_CAN_*
+> > entry.
+> >
+> > Currently, the CAN netlink interface provides no easy ways to check
+> > the capabilities of a given controller. The only method from the
+> > command line is to try each CAN_CTRLMODE_* individually to check
+> > whether the netlink interface returns an -EOPNOTSUPP error or not
+> > (alternatively, one may find it easier to directly check the source
+> > code of the driver instead...)
+> >
+> > It appears that can_ctrlmode::mask is only used in one direction: from
+> > the userland to the kernel. So we can just reuse this field in the
+> > other direction (from the kernel to userland). But, because the
+> > semantic is different, we use a union to give this field a proper
+> > name: "supported".
+> >
+> > The union is tagged as packed to prevent any ABI from adding
+> > padding. In fact, any padding added after the union would change the
+> > offset of can_ctrlmode::flags within the structure and thus break the
+> > UAPI backward compatibility. References:
+> >
+> >   - ISO/IEC 9899-1999, section 6.7.2.1 "Structure and union
+> >     specifiers", clause 15: "There may be unnamed padding at the end
+> >     of a structure or union."
+> >
+> >   - The -mstructure-size-boundary=64 ARM option in GCC:
+> >     https://gcc.gnu.org/onlinedocs/gcc/ARM-Options.html
+> >
+> >   - A similar issue which occurred on struct can_frame:
+> >     https://lore.kernel.org/linux-can/212c8bc3-89f9-9c33-ed1b-b50ac04e7532@hartkopp.net
+> >
+> > Below table explains how the two fields can_ctrlmode::supported and
+> > can_ctrlmode::flags, when masked with any of the CAN_CTRLMODE_* bit
+> > flags, allow us to identify both the supported and the static
+> > capabilities:
+> >
+> >  supported &  flags &         Controller capabilities
+> >  CAN_CTRLMODE_*       CAN_CTRLMODE_*
+> >  -----------------------------------------------------------------------
+> >  false                false           Feature not supported (always disabled)
+> >  false                true            Static feature (always enabled)
+> >  true         false           Feature supported but disabled
+> >  true         true            Feature supported and enabled
+>
+> What about forwards and backwards compatibility?
 
-That's the point of our algorithm. If a program is only accessing
-'pid' on 'task_struct' we'll generate a BTF representation of
-task_struct that only contains the 'pid' member with the right offset,
-other members are not included and hence we don't need to carry on all
-those types that are not used by the program.
+Backward compatibility (new kernel, old iproute2) should be OK: the
+kernel will report the value but it will not be consumed.
 
-> Have you considered generating kernel BTF with fields that are accessed
-> by bpf prog only and replacing all other fields with padding ?
+> Using the new ip (or any other user space app) on an old kernel, it
+> looks like enabled features are static features. For example the ip
+> output on a mcp251xfd with enabled CAN-FD, which is _not_ static.
+>
+> |         "linkinfo": {
+> |             "info_kind": "can",
+> |             "info_data": {
+> |                 "ctrlmode": [ "FD" ],
+> |                 "ctrlmode_static": [ "FD" ],
+> |                 "state": "ERROR-ACTIVE",
+> |                 "berr_counter": {
+> |                     "tx": 0,
+> |                     "rx": 0
+> |                 },
 
-Yeah. We're implicitly doing it as described above.
+I missed that, nice catch!
 
-> I think the algo would be quite different from the actual CO-RE logic
-> you're trying to reuse.
+> Is it worth and add a new IFLA_CAN_CTRLMODE_EXT that doesn't pass a
+> struct, but is a NLA_NESTED type?
 
-I'm not 100% sure it's so easy to do without reimplementing much of
-the actual CO-RE logic. We don't want to copy all type members but
-only the ones actually used. So I'm not sure if Andrii's idea of
-performing the matching based only on the type name will work. I'll
-try to get deep into the details and will be back to you soon.
+Adding a new nested entry only for one u32 seemed overkill to
+me. This is why I tried to do the change as tiny as possible.
 
-> If CO-RE matching style is necessary and it's the best approach then please
-> add new logic to bpftool. I'm not sure such api would be
-> useful beyond this particular case to expose as stable libbpf api.
+I would like to use this IFLA_CAN_CTRLMODE_EXT as a last
+resort. I gave it a second thought and I have another idea: we
+could keep the exact same kernel code and just have the userland
+to discard the can_ctrlmode::supported if it is zero. The caveat
+would be that it will be impossible to report the static features
+of a controller which do have ctrlmode_static features but no
+ctrlmode_supported features. Other use cases would be
+supported. As a matter of fact, the two drivers which rely on the
+static features (m_can and rcar_canfd) do also have supported
+modes. So discarding can_ctrlmode::supported when it is zero would
+introduce no issue for all existing drivers. The only remaining
+risk is for the yet to be introduced drivers.
 
-I agree 100%. Our goal is to have this available on bpftool so all the
-community can use it. However it'd be a shame if we can't use some of
-the existing logic in libbpf.
+So if we are ready to accept the limitation that we would not be
+able to report the static features of such hypothetical drivers,
+then we can keep the current patch (maybe add a comment) and
+introduce an if switch in iproute2 to discard zero value.
+
+The probability for such a driver to ever exist is already low. I
+think that this limitation is acceptable.
+
+What do you think?
