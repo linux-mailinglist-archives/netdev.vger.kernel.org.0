@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC2F344047A
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 22:56:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 649C544047B
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 22:56:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230419AbhJ2U7Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 16:59:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58458 "EHLO mail.kernel.org"
+        id S231599AbhJ2U7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 16:59:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58476 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229873AbhJ2U7N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231270AbhJ2U7N (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 29 Oct 2021 16:59:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 37FE3610D2;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A7FFF6108F;
         Fri, 29 Oct 2021 20:56:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635541004;
-        bh=Vvdx1iY9A8pDtChE7B5DnOQkDYVlGZtn+K5xCZnQzeI=;
+        s=k20201202; t=1635541005;
+        bh=MtIvbCI2hLPAdRePWQ6F/MlMWllHCQTbWvn7o/xXCf8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g9Wi8RS9HeO+IquyRMrRkL7MgtX5upg8zK96/XcTuo2DJmieOI2ng8VsA4CXeiAqw
-         9A/InAPV3fGnn4glKVWb9Qqev90hZiGeAeo3lYIuKPRcZpOmDgqUsW+5q99tnjO8+L
-         eYunTF/v+YI9QezjNDKG9Q1nthYx+Yj+vUpODTgbHa5ALKUll6SkfjuWS3HWgGX0Mx
-         kVelXbqkW3qePBRKo4u9hsBxIgoDPvV7UlRNWwLbaEp72EKyQVygYqlusL8/vSUhZM
-         t8HeDh5ETmrvRkm4WU6mOrhO7SxEcupcpqcbcE5CgexhdhlOESCh+VhJc6yw1DBvBr
-         XOs8KzqTn5iQA==
+        b=lkh0PTFJ0YdBX0wwivvSJLBEn/ZBNcEvfT2sAf/S3nANyPFjb++1v0puD13RuGwjL
+         S2GD3oteBiWToMG5UT8+rzbpCVRc6rP9uD3tIpAzwFVxIdVgI7BjkDP1F18jHnY/CL
+         E4DbsJgw7+MtUg0thm650Gm5caRLXH6bjKYfhV1QerNRIbqbNwV5IvFk+3Tmo5W3Kn
+         Px2kAtbg9MDZD5xVuVQdZrBImtc3/BHVqvqAAdXkR+xlYa4p/nq4giFuies2tz5dj+
+         Xj0GF0C5OsHwbnPDdDa/mWBfbEoVomvZpU9iTA7tWfZD6LtNRrDlzsIgAax25gOzEY
+         Xjtbvlg6QVzWQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Raed Salem <raeds@nvidia.com>,
-        Emeel Hakim <ehakim@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Paul Blakey <paulb@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 03/14] net/mlx5e: IPsec: Refactor checksum code in tx data path
-Date:   Fri, 29 Oct 2021 13:56:21 -0700
-Message-Id: <20211029205632.390403-4-saeed@kernel.org>
+Subject: [net-next 04/14] net/mlx5: Allow skipping counter refresh on creation
+Date:   Fri, 29 Oct 2021 13:56:22 -0700
+Message-Id: <20211029205632.390403-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211029205632.390403-1-saeed@kernel.org>
 References: <20211029205632.390403-1-saeed@kernel.org>
@@ -41,113 +41,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Raed Salem <raeds@nvidia.com>
+From: Paul Blakey <paulb@nvidia.com>
 
-Part of code that is related solely to IPsec is always compiled in the
-driver code regardless if the IPsec functionality is enabled or disabled
-in the driver code, this will add unnecessary branch in case IPsec is
-disabled at Tx data path.
+CT creates a counter for each CT rule, and for each such counter,
+fs_counters tries to queue mlx5_fc_stats_work() work again via
+mod_delayed_work(0) call to refresh all counters. This call has a
+large performance impact when reaching high insertion rate and
+accounts for ~8% of the insertion time when using software steering.
 
-Move IPsec related code to IPsec related file such that in case of IPsec
-is disabled and because of unlikely macro the compiler should be able to
-optimize and omit the checksum IPsec code all together from Tx data path
+Allow skipping the refresh of all counters during counter creation.
+Change CT to use this refresh skipping for it's counters.
 
-Signed-off-by: Raed Salem <raeds@nvidia.com>
-Reviewed-by: Emeel Hakim <ehakim@nvidia.com>
+Signed-off-by: Paul Blakey <paulb@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
+Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/en_accel/ipsec_rxtx.h  | 26 +++++++++++++++++++
- .../net/ethernet/mellanox/mlx5/core/en_tx.c   | 20 ++------------
- 2 files changed, 28 insertions(+), 18 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/fs_counters.c  | 14 +++++++++++---
+ include/linux/mlx5/fs.h                            |  4 ++++
+ 3 files changed, 16 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h
-index 5120a59361e6..b98db50c3418 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h
-@@ -127,6 +127,25 @@ mlx5e_ipsec_feature_check(struct sk_buff *skb, netdev_features_t features)
- 	return features & ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+index f44e5de25037..c1c6e74c79c4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+@@ -889,7 +889,7 @@ mlx5_tc_ct_counter_create(struct mlx5_tc_ct_priv *ct_priv)
+ 		return ERR_PTR(-ENOMEM);
+ 
+ 	counter->is_shared = false;
+-	counter->counter = mlx5_fc_create(ct_priv->dev, true);
++	counter->counter = mlx5_fc_create_ex(ct_priv->dev, true);
+ 	if (IS_ERR(counter->counter)) {
+ 		ct_dbg("Failed to create counter for ct entry");
+ 		ret = PTR_ERR(counter->counter);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c
+index 60c9df1bc912..31c99d53faf7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c
+@@ -301,7 +301,7 @@ static struct mlx5_fc *mlx5_fc_acquire(struct mlx5_core_dev *dev, bool aging)
+ 	return mlx5_fc_single_alloc(dev);
  }
  
-+static inline bool
-+mlx5e_ipsec_txwqe_build_eseg_csum(struct mlx5e_txqsq *sq, struct sk_buff *skb,
-+				  struct mlx5_wqe_eth_seg *eseg)
-+{
-+	struct xfrm_offload *xo = xfrm_offload(skb);
-+
-+	if (!mlx5e_ipsec_eseg_meta(eseg))
-+		return false;
-+
-+	eseg->cs_flags = MLX5_ETH_WQE_L3_CSUM;
-+	if (xo->inner_ipproto) {
-+		eseg->cs_flags |= MLX5_ETH_WQE_L4_INNER_CSUM | MLX5_ETH_WQE_L3_INNER_CSUM;
-+	} else if (likely(skb->ip_summed == CHECKSUM_PARTIAL)) {
-+		eseg->cs_flags |= MLX5_ETH_WQE_L4_CSUM;
-+		sq->stats->csum_partial_inner++;
-+	}
-+
-+	return true;
-+}
- #else
- static inline
- void mlx5e_ipsec_offload_handle_rx_skb(struct net_device *netdev,
-@@ -143,6 +162,13 @@ static inline bool mlx5_ipsec_is_rx_flow(struct mlx5_cqe64 *cqe) { return false;
- static inline netdev_features_t
- mlx5e_ipsec_feature_check(struct sk_buff *skb, netdev_features_t features)
- { return features & ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK); }
-+
-+static inline bool
-+mlx5e_ipsec_txwqe_build_eseg_csum(struct mlx5e_txqsq *sq, struct sk_buff *skb,
-+				  struct mlx5_wqe_eth_seg *eseg)
-+{
-+	return false;
-+}
- #endif /* CONFIG_MLX5_EN_IPSEC */
- 
- #endif /* __MLX5E_IPSEC_RXTX_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-index 188994d091c5..7fd33b356cc8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-@@ -38,6 +38,7 @@
- #include "en/txrx.h"
- #include "ipoib/ipoib.h"
- #include "en_accel/en_accel.h"
-+#include "en_accel/ipsec_rxtx.h"
- #include "en/ptp.h"
- 
- static void mlx5e_dma_unmap_wqe_err(struct mlx5e_txqsq *sq, u8 num_dma)
-@@ -213,30 +214,13 @@ static inline void mlx5e_insert_vlan(void *start, struct sk_buff *skb, u16 ihs)
- 	memcpy(&vhdr->h_vlan_encapsulated_proto, skb->data + cpy1_sz, cpy2_sz);
- }
- 
--static void
--ipsec_txwqe_build_eseg_csum(struct mlx5e_txqsq *sq, struct sk_buff *skb,
--			    struct mlx5_wqe_eth_seg *eseg)
--{
--	struct xfrm_offload *xo = xfrm_offload(skb);
--
--	eseg->cs_flags = MLX5_ETH_WQE_L3_CSUM;
--	if (xo->inner_ipproto) {
--		eseg->cs_flags |= MLX5_ETH_WQE_L4_INNER_CSUM | MLX5_ETH_WQE_L3_INNER_CSUM;
--	} else if (likely(skb->ip_summed == CHECKSUM_PARTIAL)) {
--		eseg->cs_flags |= MLX5_ETH_WQE_L4_CSUM;
--		sq->stats->csum_partial_inner++;
--	}
--}
--
- static inline void
- mlx5e_txwqe_build_eseg_csum(struct mlx5e_txqsq *sq, struct sk_buff *skb,
- 			    struct mlx5e_accel_tx_state *accel,
- 			    struct mlx5_wqe_eth_seg *eseg)
+-struct mlx5_fc *mlx5_fc_create(struct mlx5_core_dev *dev, bool aging)
++struct mlx5_fc *mlx5_fc_create_ex(struct mlx5_core_dev *dev, bool aging)
  {
--	if (unlikely(mlx5e_ipsec_eseg_meta(eseg))) {
--		ipsec_txwqe_build_eseg_csum(sq, skb, eseg);
-+	if (unlikely(mlx5e_ipsec_txwqe_build_eseg_csum(sq, skb, eseg)))
- 		return;
--	}
+ 	struct mlx5_fc *counter = mlx5_fc_acquire(dev, aging);
+ 	struct mlx5_fc_stats *fc_stats = &dev->priv.fc_stats;
+@@ -332,8 +332,6 @@ struct mlx5_fc *mlx5_fc_create(struct mlx5_core_dev *dev, bool aging)
+ 			goto err_out_alloc;
  
- 	if (likely(skb->ip_summed == CHECKSUM_PARTIAL)) {
- 		eseg->cs_flags = MLX5_ETH_WQE_L3_CSUM;
+ 		llist_add(&counter->addlist, &fc_stats->addlist);
+-
+-		mod_delayed_work(fc_stats->wq, &fc_stats->work, 0);
+ 	}
+ 
+ 	return counter;
+@@ -342,6 +340,16 @@ struct mlx5_fc *mlx5_fc_create(struct mlx5_core_dev *dev, bool aging)
+ 	mlx5_fc_release(dev, counter);
+ 	return ERR_PTR(err);
+ }
++
++struct mlx5_fc *mlx5_fc_create(struct mlx5_core_dev *dev, bool aging)
++{
++	struct mlx5_fc *counter = mlx5_fc_create_ex(dev, aging);
++	struct mlx5_fc_stats *fc_stats = &dev->priv.fc_stats;
++
++	if (aging)
++		mod_delayed_work(fc_stats->wq, &fc_stats->work, 0);
++	return counter;
++}
+ EXPORT_SYMBOL(mlx5_fc_create);
+ 
+ u32 mlx5_fc_id(struct mlx5_fc *counter)
+diff --git a/include/linux/mlx5/fs.h b/include/linux/mlx5/fs.h
+index a7e1155bc4da..cd2d4c572367 100644
+--- a/include/linux/mlx5/fs.h
++++ b/include/linux/mlx5/fs.h
+@@ -245,6 +245,10 @@ int mlx5_modify_rule_destination(struct mlx5_flow_handle *handler,
+ 				 struct mlx5_flow_destination *old_dest);
+ 
+ struct mlx5_fc *mlx5_fc_create(struct mlx5_core_dev *dev, bool aging);
++
++/* As mlx5_fc_create() but doesn't queue stats refresh thread. */
++struct mlx5_fc *mlx5_fc_create_ex(struct mlx5_core_dev *dev, bool aging);
++
+ void mlx5_fc_destroy(struct mlx5_core_dev *dev, struct mlx5_fc *counter);
+ u64 mlx5_fc_query_lastuse(struct mlx5_fc *counter);
+ void mlx5_fc_query_cached(struct mlx5_fc *counter,
 -- 
 2.31.1
 
