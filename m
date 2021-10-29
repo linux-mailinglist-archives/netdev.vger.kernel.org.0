@@ -2,98 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B985343FAD7
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 12:36:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10B9243FB09
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 12:47:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231738AbhJ2Kiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 06:38:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:51250 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231732AbhJ2Kit (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 06:38:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635503780;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6zTf+kP+TTNJjwaC8Adr///Yv4cYdq6F0Z4nTu/ogXo=;
-        b=UBT1VhUv2hHzpbzRWrKQjXKpMr5j1Spq7kSBBZ94Il9/TpB6nkAnMM+EeMlj8WwvOYigiY
-        lznhYedekIEgTTQWM8tY0GYH+orxpGo84h69n6zCMyvpEJ5ZYrMhwHHw8SGkxygQeBmkjO
-        L5IGRAFFQTzdUcJY2dYxShktI1BgCmw=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-16-XSokmvVGMqql7FuqC886Ow-1; Fri, 29 Oct 2021 06:36:19 -0400
-X-MC-Unique: XSokmvVGMqql7FuqC886Ow-1
-Received: by mail-ed1-f70.google.com with SMTP id q6-20020a056402518600b003dd81fc405eso8819752edd.1
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 03:36:18 -0700 (PDT)
+        id S231815AbhJ2Ktz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 06:49:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50988 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231749AbhJ2Ktz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 06:49:55 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B059DC061570
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 03:47:26 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id i26so14282141ljg.7
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 03:47:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=OpdQDEcUyJr4fP4Vp1JrIgIOXkocq98sr62N51ao6F8=;
+        b=RyMVUMOKbeKX9nWRqNHA0osjQH/mHbLtfetcnaQGKII80jQRIA41gd97NcGhRT/en4
+         M6BlJ+YALxZII89Uiaye6ww+EH1wpGgpAppzaHcZ9YpoRhiTLJLeTOLfD+59EIbpPrKw
+         eJA3F2yLADRbn5Gn9pBFW85N8kMA96u87Ts/6ogRQIlgvDSdvw9eAol9pE5zvyAseGZs
+         aMF02rxCAn7FazH5pT5hOM4ZfeewfOfe25cq+GZJzlHShHMz91G97Cu/akeDWqubh2FE
+         HL63TyA85hcjdkJNnTJwFuIw8jyXeGT9hqcgjhuKrnSdVJCPw2VL0VDjSVcK5IdfrPUp
+         O9wQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=6zTf+kP+TTNJjwaC8Adr///Yv4cYdq6F0Z4nTu/ogXo=;
-        b=02S9cVFXHVX4O8M3YHJyXeteTVFM7EtAG1YPE/COwFOtf7PbIiThtAm1FLm2gCLxMF
-         GBehKYSdZqgJMFv+4J2o5nWgATVGeYvJLxEoMNYN3QVyO8Cq6RmMetYth26wbh2Ws7xF
-         oXFFHV9medBrl8+zR7Ao+4iDB9SyAp7B/Mn5JFqkSsa5PxSK/q1odMqaiVQKOyJGg4Bd
-         6FZRwfYGxlFy7OYtmQnpWl4CkF0PI4z9h4qd89rGCTgxYbE4pLNd/5uZlAIKBXmS8iEn
-         zPX7vXMu+XMDNc+JpIqAIABwYYjNQo+7642fmCu5qfPfbuqONTOCypPboYxAEQMeOi9j
-         Mz5g==
-X-Gm-Message-State: AOAM531se4K67HBLYr4neHy7qzKhxlGfjJW8UNf3acgaiZKL+GzJpHLR
-        JJD+YKDhxLKqjNv3VMo2H0e023rbZ5OtiKmtuJXjcQdMbcaHDgRIN/92y6gCnQZLYMJOetx/YSw
-        YjiHa2ox9qBKs9GgK
-X-Received: by 2002:a17:907:868c:: with SMTP id qa12mr12174750ejc.346.1635503776876;
-        Fri, 29 Oct 2021 03:36:16 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy0vSAUG187MJcKLC8ZiB6qmj2025d/UW8QZOcijvFGVGylan+cJPkDv+Ymiqz0I7USKh4+xg==
-X-Received: by 2002:a17:907:868c:: with SMTP id qa12mr12174639ejc.346.1635503775911;
-        Fri, 29 Oct 2021 03:36:15 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id a9sm3281830edm.31.2021.10.29.03.36.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Oct 2021 03:36:15 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id B1970180262; Fri, 29 Oct 2021 12:36:14 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
-        magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        maciej.fijalkowski@intel.com, yhs@fb.com, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org
-Cc:     jonathan.lemon@gmail.com, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2] libbpf: deprecate AF_XDP support
-In-Reply-To: <20211029090111.4733-1-magnus.karlsson@gmail.com>
-References: <20211029090111.4733-1-magnus.karlsson@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 29 Oct 2021 12:36:14 +0200
-Message-ID: <87mtms86e9.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=OpdQDEcUyJr4fP4Vp1JrIgIOXkocq98sr62N51ao6F8=;
+        b=j/a+BXvzMP0GHn3fKlHx+XmDq9FYEvVKShxrqeZoS9MSLRz23yA/Qd3aVZ9ABxo356
+         qI6YAWoqXabWibF9NjHdGi0UG9/skhlVsGskEjKMJZcV/5cpUhhSAq51/c2bxB2hFkUu
+         H3XKQHkEYFyvpEjGjPS+oFw/U2efUgqJ4BExSokn/QdUDtOvn1spWYg9rZw1BWIf16qK
+         CKnrQ+V/eKXn20pzifdRG9PN84E5eNIW5C3T/Vwl7IlAHVMyqvG4TYrrnGKLjCM0cJlZ
+         hgsTi8nVlKLtvy5U8OfHj0nY6KHu22AK1qIYc+PUwkjbcPc9xouq7ByZ3Z9d/iebnQQH
+         SLsQ==
+X-Gm-Message-State: AOAM533uqCtVSfBqZuzDUTM3g8EF/QPOEW7Bqy+96kIkv1LoH4QesyK+
+        EQnmeHgR3+9Feu61q69FXVaujRdCbk0l0hPGYAw=
+X-Google-Smtp-Source: ABdhPJwQjfjZaCpqKv+7FQrdR8ppI0ikPoSBNbX1Gv/smX0l7Q7PsKeQ1cv663RXMpBhHutK28lVRttEdIGpVbDKzVU=
+X-Received: by 2002:a2e:b0c6:: with SMTP id g6mr10898440ljl.496.1635504444966;
+ Fri, 29 Oct 2021 03:47:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Received: by 2002:ac2:4255:0:0:0:0:0 with HTTP; Fri, 29 Oct 2021 03:47:24
+ -0700 (PDT)
+Reply-To: douglasmomoh007@gmail.com
+From:   "Hon. Douglas Momoh" <legalrightschambersfb01@gmail.com>
+Date:   Fri, 29 Oct 2021 11:47:24 +0100
+Message-ID: <CAEMzxqXz29syf-bYNFboRKsLOpSsDJ=mKtEGuAdv0_Nmpb7pxw@mail.gmail.com>
+Subject: Greeting
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Magnus Karlsson <magnus.karlsson@gmail.com> writes:
+-- 
+A mail was sent to you sometime last week with the expectation of
+having a retune mail from you but to my surprise you never bothered to replied.
+Kindly reply for further explanations.
 
-> From: Magnus Karlsson <magnus.karlsson@intel.com>
->
-> Deprecate AF_XDP support in libbpf ([0]). This has been moved to
-> libxdp as it is a better fit for that library. The AF_XDP support only
-> uses the public libbpf functions and can therefore just use libbpf as
-> a library from libxdp. The libxdp APIs are exactly the same so it
-> should just be linking with libxdp instead of libbpf for the AF_XDP
-> functionality. If not, please submit a bug report. Linking with both
-> libraries is supported but make sure you link in the correct order so
-> that the new functions in libxdp are used instead of the deprecated
-> ones in libbpf.
->
-> Libxdp can be found at https://github.com/xdp-project/xdp-tools.
->
-> [0] https://github.com/libbpf/libbpf/issues/270
->
-> v1 -> v2: Corrected spelling error
->
-> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-
-Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-
+Respectfully yours,
+Hon. Douglas Momoh
