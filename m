@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D9C5440452
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 22:47:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E748440454
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 22:47:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231425AbhJ2Uty (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 16:49:54 -0400
-Received: from mga06.intel.com ([134.134.136.31]:9541 "EHLO mga06.intel.com"
+        id S231561AbhJ2UuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 16:50:07 -0400
+Received: from mga06.intel.com ([134.134.136.31]:9536 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230253AbhJ2Uts (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Oct 2021 16:49:48 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10152"; a="291587513"
+        id S230397AbhJ2Utt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Oct 2021 16:49:49 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10152"; a="291587516"
 X-IronPort-AV: E=Sophos;i="5.87,193,1631602800"; 
-   d="scan'208";a="291587513"
+   d="scan'208";a="291587516"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2021 13:47:18 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,193,1631602800"; 
-   d="scan'208";a="448483292"
+   d="scan'208";a="448483295"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga003.jf.intel.com with ESMTP; 29 Oct 2021 13:47:17 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -26,9 +26,9 @@ To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Marcin Szycik <marcin.szycik@linux.intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
         Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-Subject: [PATCH net-next 2/7] ice: Clear synchronized addrs when adding VFs in switchdev mode
-Date:   Fri, 29 Oct 2021 13:45:35 -0700
-Message-Id: <20211029204540.3390007-3-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 3/7] ice: Hide bus-info in ethtool for PRs in switchdev mode
+Date:   Fri, 29 Oct 2021 13:45:36 -0700
+Message-Id: <20211029204540.3390007-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211029204540.3390007-1-anthony.l.nguyen@intel.com>
 References: <20211029204540.3390007-1-anthony.l.nguyen@intel.com>
@@ -40,56 +40,78 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Marcin Szycik <marcin.szycik@linux.intel.com>
 
-When spawning VFs in switchdev mode, internal filter list of VSIs is
-cleared, which includes MAC rules. However MAC entries stay on netdev's
-multicast list, which causes error message when bringing link up after
-spawning VFs ("Failed to delete MAC filters"). __dev_mc_sync() is
-called and tries to unsync addresses that were already removed
-internally when adding VFs.
+Disable showing bus-info information for port representors in switchdev
+mode. This fixes a bug that caused displaying wrong netdev descriptions in
+lshw tool - one port representor displayed PF branding string, and in turn
+one PF displayed a "generic" description. The bug occurs when many devices
+show the same bus-info in ethtool, which was the case in switchdev mode (PF
+and its port representors displayed the same bus-info). The bug occurs only
+if a port representor netdev appears before PF netdev in /proc/net/dev.
 
-This can be reproduced with:
-1) Load ice driver
-2) Change PF to switchdev mode
-3) Bring PF link up
-4) Bring PF link down
-5) Create a VF on PF
-6) Bring PF link up
+In the examples below:
+ens6fX is PF
+ens6fXvY is VF
+ethX is port representor
+One irrelevant column was removed from output
 
-Added clearing of netdev's multicast (and also unicast) list when
-spawning VFs in switchdev mode, so the state of internal rule list and
-netdev's MAC list is consistent.
+Before:
+$ sudo lshw -c net -businfo
+Bus info          Device      Description
+=========================================
+pci@0000:02:00.0  eth102       Ethernet Controller E810-XXV for SFP
+pci@0000:02:00.1  ens6f1       Ethernet Controller E810-XXV for SFP
+pci@0000:02:01.0  ens6f0v0     Ethernet Adaptive Virtual Function
+pci@0000:02:01.1  ens6f0v1     Ethernet Adaptive Virtual Function
+pci@0000:02:01.2  ens6f0v2     Ethernet Adaptive Virtual Function
+pci@0000:02:00.0  ens6f0       Ethernet interface
 
-Fixes: 1a1c40df2e80 ("ice: set and release switchdev environment")
+Notice that eth102 and ens6f0 have the same bus-info and their descriptions
+are swapped.
+
+After:
+$ sudo lshw -c net -businfo
+Bus info          Device      Description
+=========================================
+pci@0000:02:00.0  ens6f0      Ethernet Controller E810-XXV for SFP
+pci@0000:02:00.1  ens6f1      Ethernet Controller E810-XXV for SFP
+pci@0000:02:01.0  ens6f0v0    Ethernet Adaptive Virtual Function
+pci@0000:02:01.1  ens6f0v1    Ethernet Adaptive Virtual Function
+pci@0000:02:01.2  ens6f0v2    Ethernet Adaptive Virtual Function
+
+Fixes: 7aae80cef7ba ("ice: add port representor ethtool ops and stats")
 Signed-off-by: Marcin Szycik <marcin.szycik@linux.intel.com>
 Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_eswitch.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/ethernet/intel/ice/ice_ethtool.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch.c b/drivers/net/ethernet/intel/ice/ice_eswitch.c
-index 6cb50653b18d..d1d7389b0bff 100644
---- a/drivers/net/ethernet/intel/ice/ice_eswitch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_eswitch.c
-@@ -19,6 +19,7 @@
- static int ice_eswitch_setup_env(struct ice_pf *pf)
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+index cfe96a127ed4..572519e402f4 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+@@ -189,18 +189,19 @@ __ice_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo,
+ 	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
+ 		 "%x.%02x 0x%x %d.%d.%d", nvm->major, nvm->minor,
+ 		 nvm->eetrack, orom->major, orom->build, orom->patch);
+-
+-	strscpy(drvinfo->bus_info, pci_name(pf->pdev),
+-		sizeof(drvinfo->bus_info));
+ }
+ 
+ static void
+ ice_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo)
  {
- 	struct ice_vsi *uplink_vsi = pf->switchdev.uplink_vsi;
-+	struct net_device *uplink_netdev = uplink_vsi->netdev;
- 	struct ice_vsi *ctrl_vsi = pf->switchdev.control_vsi;
- 	struct ice_port_info *pi = pf->hw.port_info;
- 	bool rule_added = false;
-@@ -27,6 +28,11 @@ static int ice_eswitch_setup_env(struct ice_pf *pf)
+ 	struct ice_netdev_priv *np = netdev_priv(netdev);
++	struct ice_pf *pf = np->vsi->back;
  
- 	ice_remove_vsi_fltr(&pf->hw, uplink_vsi->idx);
+ 	__ice_get_drvinfo(netdev, drvinfo, np->vsi);
  
-+	netif_addr_lock_bh(uplink_netdev);
-+	__dev_uc_unsync(uplink_netdev, NULL);
-+	__dev_mc_unsync(uplink_netdev, NULL);
-+	netif_addr_unlock_bh(uplink_netdev);
++	strscpy(drvinfo->bus_info, pci_name(pf->pdev),
++		sizeof(drvinfo->bus_info));
 +
- 	if (ice_vsi_add_vlan(uplink_vsi, 0, ICE_FWD_TO_VSI))
- 		goto err_def_rx;
+ 	drvinfo->n_priv_flags = ICE_PRIV_FLAG_ARRAY_SIZE;
+ }
  
 -- 
 2.31.1
