@@ -2,105 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E83943FD9A
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 15:53:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D1BF43FD9E
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 15:54:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231464AbhJ2N4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 09:56:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37052 "EHLO
+        id S231530AbhJ2N5V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 09:57:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229692AbhJ2N4A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 09:56:00 -0400
-Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D55F1C061570;
-        Fri, 29 Oct 2021 06:53:31 -0700 (PDT)
-Received: by mail-qv1-xf2b.google.com with SMTP id kd16so6375631qvb.0;
-        Fri, 29 Oct 2021 06:53:31 -0700 (PDT)
+        with ESMTP id S231551AbhJ2N5D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 09:57:03 -0400
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF91C061714
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 06:54:26 -0700 (PDT)
+Received: by mail-qk1-x734.google.com with SMTP id h20so9293949qko.13
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 06:54:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Z+CF8McLJtZXo6SHz1nxgycF8ae/xOR5hUS+LP7jGG8=;
-        b=UN0Z0M+dhBwkt6q37PI/52rAjqga+C+ztLmr82Rnux6+JemIk7iBqqZlTOpuQA44kf
-         /ihey/8C7DeRqq3u4bOtR/iow4iYRLK6QIOzy2E0YiZUzPRwSXh+FTrQH+3eQxdLkQki
-         tsJJgLocQLDYzDkzWaEJtNHpXXjZw1bI2mVTjuWLozUFtRIu31vmFk90dW9vLncfRRkF
-         z5+S3uATHVZnnAYYEPiaef5n2uOA0s+69QRMlxdjiG4kl7bk1mHOKRnArPt4P4Q9ZNSj
-         gipG3c4clyWVBlDj5ZScf54k5GvPN4CD0Hwb8c/35NKoS6tQ6659IPSviBT+z7fxLLUG
-         rwzA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rs3HwEFfU6Z7vHqEji5AukCQpCLRjDuimkf+/klAhKw=;
+        b=TVZfA7vrFEB4mNvRxaTXCXkYWCi2a1qg1+yUMupA9iJQhvAF07VWssqGay4ERWsv0w
+         ZPkOnsqr03ft7qJkSztUwsi9SBh49BgjP8gehXxaMBvmNgfZb4av72TxXFbCq0nv0rFe
+         3urpz7ptSjZUBpMVayDvHv97u92PBZn30iLYFgnMMX5MlLtSrbdNLyBASM8z/aymqil1
+         VdlMxzpwVqYEpOTAmlCEM+LypOCFRXN0pNzq4ea/VfJ2nhauby71ykWVQ0+x3o6Q+hzr
+         8twyMGwdrNRwHYxMgGTlqwAFgS0DN29l5yCN7a/pqTR+pmjB+jfNysSI+AKNTEtQF0W4
+         QPsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Z+CF8McLJtZXo6SHz1nxgycF8ae/xOR5hUS+LP7jGG8=;
-        b=KZJHKlD/6QJ3XH8MZ0dIQEN9l5U1ckrTcD8PavyU3rJ64VeMfqW/cio16Vx3QMez3c
-         BGMQdyBOGLo5iUbcOZyf1wcbxDmIURL36bhHUHfiNbLlz65+RWlHgR/TQp2tQYG27j8s
-         Fj85K2d97tDE6hSDF70HwbOBuGPTAn2ueRK/7nV2ktV0biEotXc7l8yVKgtUlTPiBjiq
-         TIH0mag6iLhAnm6wCYRKm8gDSbZ7evl+p3fy8NfqZs/Ow4Pg+SYvO43rRe8q+I5U/nM3
-         hm/hamxspzUb1DzyQ4k/rClTycbmFV4P0JWjLFJhZJDKahG+PqpdV+6pHHVS8qpqJCt3
-         MGkg==
-X-Gm-Message-State: AOAM532AojaSCtlEPS8HYNg6CUip5p/R/e2Nk1+/lekv7cq3EPkcrSBq
-        galaYg+Kw8lNTWLhh1AoZ3w=
-X-Google-Smtp-Source: ABdhPJx6gNizjT3moPdCwjo/KPDiRGAqujQKL/z/JSuLaswrwaTXrXIMdIdAYHKSiSONMNxlBVRKyw==
-X-Received: by 2002:a05:6214:dcf:: with SMTP id 15mr11015072qvt.23.1635515611085;
-        Fri, 29 Oct 2021 06:53:31 -0700 (PDT)
-Received: from Zekuns-MBP-16.fios-router.home (cpe-74-73-56-100.nyc.res.rr.com. [74.73.56.100])
-        by smtp.gmail.com with ESMTPSA id u6sm444100qtc.86.2021.10.29.06.53.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Oct 2021 06:53:30 -0700 (PDT)
-Date:   Fri, 29 Oct 2021 09:53:28 -0400
-From:   Zekun Shen <bruceshenzk@gmail.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Pontus Fuchs <pontus.fuchs@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ar5523: Fix null-ptr-deref with unexpected
- WDCMSG_TARGET_START  =?ISO-8859-1?Q?=20reply=1B?=
-Message-ID: <YXv82KfKCW3eHhE6@Zekuns-MBP-16.fios-router.home>
-References: <YXsmPQ3awHFLuAj2@10-18-43-117.dynapool.wireless.nyu.edu>
- <87tuh0xz9h.fsf@tynnyri.adurom.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rs3HwEFfU6Z7vHqEji5AukCQpCLRjDuimkf+/klAhKw=;
+        b=mu9hVI1JdRScdGrvanqLaydXsW/MzDkpJ/+MXlZ596jvfGLvr+J857I1AlL86CAGTU
+         Q6Ok6eEnRsL81kUkIvEFD4OFwaHqgmekE6EdBo5JLA93aEn5D2aHy6w8nXe9giV0EtY9
+         hcDHBkTX4S/VG0NHHZ4kHCBbhJASzp+XXit97wUJJ1RH45NsPZwBNFFew3bnid1ehurh
+         nWk26c5Vw7wB67nLRmRwoTPWjzUit25UCjMbbhZhsrn6Om/L7eLd2PBkwBq1v3kNiQOL
+         VNBJNYXriLWmXlckWufppLMOlzxTFbyOttH/1dhHj1ZH8Xr5Gy4uBJEa+t/+FrtgIZhT
+         DO+g==
+X-Gm-Message-State: AOAM5339U4gTWs/tQA+03Z1Pw2CBccFiXEuhDXjL3Fn4Xw/Lh/P7ervX
+        Z0DRt/6tjsWZHLfArbMLYiHuX4h1l32HppDvxn6HIA==
+X-Google-Smtp-Source: ABdhPJyKainBW6Wt8LBvlor1PpBhtlQ/5O53RXt6OLpPNE0HojJBa+CuvS3oV/5oT722BHBURoOC3XFG3HnuA25PqtY=
+X-Received: by 2002:a05:620a:1031:: with SMTP id a17mr9035018qkk.339.1635515665715;
+ Fri, 29 Oct 2021 06:54:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87tuh0xz9h.fsf@tynnyri.adurom.net>
+References: <20211028191500.47377-1-asadsa@ifi.uio.no>
+In-Reply-To: <20211028191500.47377-1-asadsa@ifi.uio.no>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Fri, 29 Oct 2021 09:54:09 -0400
+Message-ID: <CADVnQykDUB4DgUaV0rd6-OKafO+F6w=BRfxviuZ_MJLY3xMV+Q@mail.gmail.com>
+Subject: Re: [PATCH net-next] fq_codel: avoid under-utilization with
+ ce_threshold at low link rates
+To:     Asad Sajjad Ahmed <asadsa@ifi.uio.no>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Ingemar Johansson S <ingemar.s.johansson@ericsson.com>,
+        Tom Henderson <tomh@tomh.org>,
+        Bob Briscoe <research@bobbriscoe.net>,
+        Olga Albisser <olga@albisser.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 29, 2021 at 06:53:30AM +0300, Kalle Valo wrote:
-> Zekun Shen <bruceshenzk@gmail.com> writes:
-> 
-> > Unexpected WDCMSG_TARGET_START replay can lead to null-ptr-deref
-> > when ar->tx_cmd->odata is NULL. The patch adds a null check to
-> > prevent such case.
-> >
-> > KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-> >  ar5523_cmd+0x46a/0x581 [ar5523]
-> >  ar5523_probe.cold+0x1b7/0x18da [ar5523]
-> >  ? ar5523_cmd_rx_cb+0x7a0/0x7a0 [ar5523]
-> >  ? __pm_runtime_set_status+0x54a/0x8f0
-> >  ? _raw_spin_trylock_bh+0x120/0x120
-> >  ? pm_runtime_barrier+0x220/0x220
-> >  ? __pm_runtime_resume+0xb1/0xf0
-> >  usb_probe_interface+0x25b/0x710
-> >  really_probe+0x209/0x5d0
-> >  driver_probe_device+0xc6/0x1b0
-> >  device_driver_attach+0xe2/0x120
-> >
-> > Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-> 
-> How did you test this?
-I found the bug using a custome USBFuzz port. It's a research work
-to fuzz USB stack/drivers. I modified it to fuzz ath9k driver only,
-providing hand-crafted usb descriptors to QEMU.
+On Thu, Oct 28, 2021 at 3:15 PM Asad Sajjad Ahmed <asadsa@ifi.uio.no> wrote:
+>
+> Commit "fq_codel: generalise ce_threshold marking for subset of traffic"
+> [1] enables ce_threshold to be used in the Internet, not just in data
+> centres.
+>
+> Because ce_threshold is in time units, it can cause poor utilization at
+> low link rates when it represents <1 packet.
+> E.g., if link rate <12Mb/s ce_threshold=1ms is <1500B packet.
+>
+> So, suppress ECN marking unless the backlog is also > 1 MTU.
+>
+> A similar patch to [1] was tested on an earlier kernel, and a similar
+> one-packet check prevented poor utilization at low link rates [2].
+>
+> [1] commit dfcb63ce1de6 ("fq_codel: generalise ce_threshold marking for subset of traffic")
+>
+> [2] See right hand column of plots at the end of:
+> https://bobbriscoe.net/projects/latency/dctth_journal_draft20190726.pdf
+>
+> Signed-off-by: Asad Sajjad Ahmed <asadsa@ifi.uio.no>
+> Signed-off-by: Olga Albisser <olga@albisser.org>
+> ---
+>  include/net/codel_impl.h | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/include/net/codel_impl.h b/include/net/codel_impl.h
+> index 137d40d8cbeb..4e3e8473e776 100644
+> --- a/include/net/codel_impl.h
+> +++ b/include/net/codel_impl.h
+> @@ -248,7 +248,8 @@ static struct sk_buff *codel_dequeue(void *ctx,
+>                                                     vars->rec_inv_sqrt);
+>         }
+>  end:
+> -       if (skb && codel_time_after(vars->ldelay, params->ce_threshold)) {
+> +       if (skb && codel_time_after(vars->ldelay, params->ce_threshold) &&
+> +           *backlog > params->mtu) {
+>                 bool set_ce = true;
+>
+>                 if (params->ce_threshold_mask) {
+> --
 
-After fixing the code (fourth byte in usb packet) to WDCMSG_TARGET_START, 
-I got the null-ptr-deref bug. I believe the bug is triggerable whenever
-cmd->odata is NULL. After patching, I tested with the same input and no
-longer see the KASAN report.
-> 
-> -- 
-> https://patchwork.kernel.org/project/linux-wireless/list/
-> 
-> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Sounds like a good idea, and looks good to me.
+
+Acked-by: Neal Cardwell <ncardwell@google.com>
+
+Eric, what do you think?
+
+neal
