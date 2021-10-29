@@ -2,292 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ABF644055E
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 00:19:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAC3344055B
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 00:19:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231579AbhJ2WVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 18:21:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39546 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231589AbhJ2WVe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 18:21:34 -0400
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3487BC061570
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 15:19:05 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id s9so4636055qvk.12
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 15:19:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WnUU/isj/uevdtWLb7sKx0+xdJI71Vr5BdggHN8JJSs=;
-        b=gf+dWVXypaBs0wiZx5g9I8uEnqb48h4a3/V83XYtjviSO4YrTe+t3GNKpJrW3cM7E2
-         R5Eg2xcUh1A/oaMJR06PQGLn+dWmbJsdmFm4/yyYUg68Q4OS37vytZvM2dPPg+YIB/EU
-         jR1WtTz80pwBJ1qbk1KLS1KcACPc2wyeBLE+7O9UjCrbrlDAamHegEjTHURvSmItyNBD
-         6BWeXURPTs97dxeLnng9u/hxkgvZFKEDRExoLNMFRGQk0BYMSI8WHQYzJuNzQdYI85DE
-         NBvaR5jR5DeyNcN5AEWcA7MbCV3XqpIpv3Uqh1Sb7pFf+In7CAWCsXI7nADKT93O5Ohc
-         wSwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WnUU/isj/uevdtWLb7sKx0+xdJI71Vr5BdggHN8JJSs=;
-        b=XBR3EmK9nJbvm8ePUOinVzxtsJ06Bggn+15wz+lZew8WhdvoAkZHnyGFkRaUcMeImr
-         5SLLP0fm30uZ3xaSeKlr455dgR9NCxy8gJz8k/l/RU8xL4KJ+DAMVswJVd89YQKf1jbG
-         X6h2sJh61BEVQ3wjKt1abJPhGtEN+mQmIujM00rHzzgtBeI9l28ZaknF2Rte1eEN5fh5
-         2Z3HCvmw5bMc7Yudmcb9iehE0pwK0FL0opBwtdlG6fonhvoiUMI+FqpUELLBRai917kT
-         L6xReNvjzb0PtvOtbhOA7+ZaBoQ1374OwROmPqW32aD4JGqA5zKbmLIwbttqJTgMqoLc
-         g+PA==
-X-Gm-Message-State: AOAM532hjWTDRN37Ouynr65KxdlOlnpZ/w7vnxGPH0/ib7wOADgpBD5C
-        P1Mtz/vQs0PXm7YjgNDXeyiLJmBpJ/M=
-X-Google-Smtp-Source: ABdhPJxtj/HCFJdfZe7/auy9b8viyMcckit45/v8Nz3EOKclrB/Is3VaWmGLCujx1dN69dkx5jZ9Tg==
-X-Received: by 2002:a05:6214:da5:: with SMTP id h5mr14219483qvh.53.1635545944348;
-        Fri, 29 Oct 2021 15:19:04 -0700 (PDT)
-Received: from talalahmad1.nyc.corp.google.com ([2620:0:1003:317:25ce:101f:81db:24e8])
-        by smtp.gmail.com with ESMTPSA id p15sm4931730qti.70.2021.10.29.15.19.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Oct 2021 15:19:04 -0700 (PDT)
-From:   Talal Ahmad <mailtalalahmad@gmail.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     arjunroy@google.com, edumazet@google.com, soheil@google.com,
-        willemb@google.com, Talal Ahmad <talalahmad@google.com>
-Subject: [PATCH net-next 2/2] net: avoid double accounting for pure zerocopy skbs
-Date:   Fri, 29 Oct 2021 18:18:30 -0400
-Message-Id: <20211029221830.3608066-3-mailtalalahmad@gmail.com>
-X-Mailer: git-send-email 2.33.1.1089.g2158813163f-goog
-In-Reply-To: <20211029221830.3608066-1-mailtalalahmad@gmail.com>
-References: <20211029221830.3608066-1-mailtalalahmad@gmail.com>
+        id S231548AbhJ2WVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 18:21:22 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:58326 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231552AbhJ2WVV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 18:21:21 -0400
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19TLgfSQ027100
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 22:18:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=mime-version :
+ content-type : content-transfer-encoding : date : from : to : cc : subject
+ : in-reply-to : references : message-id; s=pp1;
+ bh=qRr5Vp0CpyjQEKvZZ4+AgSKfaGPxHfuLDgPXDEzwMeU=;
+ b=tAd2xsWPYZBT4GiagRQZvvAt6MC8FeBCaGdh6Smok3tpwFPB8/R4pza6K0Ko6I7rb+Gl
+ Uno7Et87CePM8Wkj7B1pf1+wPdZVm3UoJ0FmDX5FspZ9AAiWdgBwlUS2tQlULuxoroCH
+ 00tvgVq4Vy49wJZszYQgKvhS0MRqITxlKWHt4I4XXH8dob9r+JiPkCinrJIeHQHk4LoO
+ cNdFNyr7rGQyp0xjykNOxWYzhiffD+nuZqOikfKn8hsTFxO8x+7Wg94QzcNqIem52acM
+ eo90XZKKKKch00/rA9xvwjBgMKGaNvaFoAcHGHjXb+YEp8aSD1lzEfAtbech8kynOm2p DQ== 
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3c0s408khp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 22:18:52 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 19TMDiqP029153
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 22:18:51 GMT
+Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
+        by ppma02dal.us.ibm.com with ESMTP id 3bx4f9q0be-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 22:18:51 +0000
+Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
+        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 19TMIlKs30409080
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 29 Oct 2021 22:18:47 GMT
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 78E11136051;
+        Fri, 29 Oct 2021 22:18:47 +0000 (GMT)
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 16C8D13604F;
+        Fri, 29 Oct 2021 22:18:46 +0000 (GMT)
+Received: from ltc.linux.ibm.com (unknown [9.10.229.42])
+        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Fri, 29 Oct 2021 22:18:46 +0000 (GMT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Fri, 29 Oct 2021 15:18:46 -0700
+From:   Dany Madden <drt@linux.ibm.com>
+To:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, Brian King <brking@linux.ibm.com>,
+        abdhalee@in.ibm.com, vaish123@in.ibm.com
+Subject: Re: [PATCH net 1/3] ibmvnic: don't stop queue in xmit
+In-Reply-To: <20211029220316.2003519-1-sukadev@linux.ibm.com>
+References: <20211029220316.2003519-1-sukadev@linux.ibm.com>
+Message-ID: <07ba6c096974e74bcfbea9a9f6ecb524@imap.linux.ibm.com>
+X-Sender: drt@linux.ibm.com
+User-Agent: Roundcube Webmail/1.1.12
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 0IKoMOsOZJ4yiML_kTWzWzhITr7ft2_i
+X-Proofpoint-ORIG-GUID: 0IKoMOsOZJ4yiML_kTWzWzhITr7ft2_i
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-10-29_06,2021-10-29_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ clxscore=1011 impostorscore=0 spamscore=0 malwarescore=0
+ lowpriorityscore=0 mlxscore=0 bulkscore=0 adultscore=0 phishscore=0
+ suspectscore=0 mlxlogscore=659 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2110150000 definitions=main-2110290123
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Talal Ahmad <talalahmad@google.com>
+On 2021-10-29 15:03, Sukadev Bhattiprolu wrote:
+> If adapter's resetting bit is on, discard the packet but don't stop the
+> transmit queue - instead leave that to the reset code. With this 
+> change,
+> it is possible that we may get several calls to ibmvnic_xmit() that 
+> simply
+> discard packets and return.
+> 
+> But if we stop the queue here, we might end up doing so just after
+> __ibmvnic_open() started the queues (during a hard/soft reset) and 
+> before
+> the ->resetting bit was cleared. If that happens, there will be no one 
+> to
+> restart queue and transmissions will be blocked indefinitely.
+> 
+> This can cause a TIMEOUT reset and with auto priority failover enabled,
+> an unnecessary FAILOVER reset to less favored backing device and then a
+> FAILOVER back to the most favored backing device. If we hit the window
+> repeatedly, we can get stuck in a loop of TIMEOUT, FAILOVER, FAILOVER
+> resets leaving the adapter unusable for extended periods of time.
+> 
+> Fixes: 7f5b030830fe ("ibmvnic: Free skb's in cases of failure in 
+> transmit")
+> Reported-by: Abdul Haleem <abdhalee@in.ibm.com>
+> Reported-by: Vaishnavi Bhat <vaish123@in.ibm.com>
+> Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 
-Track skbs with only zerocopy data and avoid charging them to kernel
-memory to correctly account the memory utilization for msg_zerocopy.
-All of the data in such skbs is held in user pages which are already
-accounted to user. Before this change, they are charged again in
-kernel in __zerocopy_sg_from_iter. The charging in kernel is
-excessive because data is not being copied into skb frags. This
-excessive charging can lead to kernel going into memory pressure
-state which impacts all sockets in the system adversely. Mark pure
-zerocopy skbs with a SKBFL_PURE_ZEROCOPY flag and remove
-charge/uncharge for data in such skbs.
-
-Initially, an skb is marked pure zerocopy when it is empty and in
-zerocopy path. skb can then change from a pure zerocopy skb to mixed
-data skb (zerocopy and copy data) if it is at tail of write queue and
-there is room available in it and non-zerocopy data is being sent in
-the next sendmsg call. At this time sk_mem_charge is done for the pure
-zerocopied data and the pure zerocopy flag is unmarked. We found that
-this happens very rarely on workloads that pass MSG_ZEROCOPY.
-
-A pure zerocopy skb can later be coalesced into normal skb if they are
-next to each other in queue but this patch prevents coalescing from
-happening. This avoids complexity of charging when skb downgrades from
-pure zerocopy to mixed. This is also rare.
-
-In sk_wmem_free_skb, if it is a pure zerocopy skb, an sk_mem_uncharge
-for SKB_TRUESIZE(MAX_TCP_HEADER) is done for sk_mem_charge in
-tcp_skb_entail for an skb without data.
-
-Testing with the msg_zerocopy.c benchmark between two hosts(100G nics)
-with zerocopy showed that before this patch the 'sock' variable in
-memory.stat for cgroup2 that tracks sum of sk_forward_alloc,
-sk_rmem_alloc and sk_wmem_queued is around 1822720 and with this
-change it is 0. This is due to no charge to sk_forward_alloc for
-zerocopy data and shows memory utilization for kernel is lowered.
-
-Signed-off-by: Talal Ahmad <talalahmad@google.com>
-Acked-by: Arjun Roy <arjunroy@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Signed-off-by: Willem de Bruijn <willemb@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- include/linux/skbuff.h | 19 ++++++++++++++++++-
- include/net/tcp.h      |  8 ++++++--
- net/core/datagram.c    |  3 ++-
- net/core/skbuff.c      |  3 ++-
- net/ipv4/tcp.c         | 22 ++++++++++++++++++++--
- net/ipv4/tcp_output.c  |  7 +++++--
- 6 files changed, 53 insertions(+), 9 deletions(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 0bd6520329f6..10869906cc57 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -454,9 +454,15 @@ enum {
- 	 * all frags to avoid possible bad checksum
- 	 */
- 	SKBFL_SHARED_FRAG = BIT(1),
-+
-+	/* segment contains only zerocopy data and should not be
-+	 * charged to the kernel memory.
-+	 */
-+	SKBFL_PURE_ZEROCOPY = BIT(2),
- };
- 
- #define SKBFL_ZEROCOPY_FRAG	(SKBFL_ZEROCOPY_ENABLE | SKBFL_SHARED_FRAG)
-+#define SKBFL_ALL_ZEROCOPY	(SKBFL_ZEROCOPY_FRAG | SKBFL_PURE_ZEROCOPY)
- 
- /*
-  * The callback notifies userspace to release buffers when skb DMA is done in
-@@ -1464,6 +1470,17 @@ static inline struct ubuf_info *skb_zcopy(struct sk_buff *skb)
- 	return is_zcopy ? skb_uarg(skb) : NULL;
- }
- 
-+static inline bool skb_zcopy_pure(const struct sk_buff *skb)
-+{
-+	return skb_shinfo(skb)->flags & SKBFL_PURE_ZEROCOPY;
-+}
-+
-+static inline bool skb_pure_zcopy_same(const struct sk_buff *skb1,
-+				       const struct sk_buff *skb2)
-+{
-+	return skb_zcopy_pure(skb1) == skb_zcopy_pure(skb2);
-+}
-+
- static inline void net_zcopy_get(struct ubuf_info *uarg)
- {
- 	refcount_inc(&uarg->refcnt);
-@@ -1528,7 +1545,7 @@ static inline void skb_zcopy_clear(struct sk_buff *skb, bool zerocopy_success)
- 		if (!skb_zcopy_is_nouarg(skb))
- 			uarg->callback(skb, uarg, zerocopy_success);
- 
--		skb_shinfo(skb)->flags &= ~SKBFL_ZEROCOPY_FRAG;
-+		skb_shinfo(skb)->flags &= ~SKBFL_ALL_ZEROCOPY;
- 	}
- }
- 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 70972f3ac8fa..af91f370432e 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -293,7 +293,10 @@ static inline bool tcp_out_of_memory(struct sock *sk)
- static inline void tcp_wmem_free_skb(struct sock *sk, struct sk_buff *skb)
- {
- 	sk_wmem_queued_add(sk, -skb->truesize);
--	sk_mem_uncharge(sk, skb->truesize);
-+	if (!skb_zcopy_pure(skb))
-+		sk_mem_uncharge(sk, skb->truesize);
-+	else
-+		sk_mem_uncharge(sk, SKB_TRUESIZE(MAX_TCP_HEADER));
- 	__kfree_skb(skb);
- }
- 
-@@ -974,7 +977,8 @@ static inline bool tcp_skb_can_collapse(const struct sk_buff *to,
- 					const struct sk_buff *from)
- {
- 	return likely(tcp_skb_can_collapse_to(to) &&
--		      mptcp_skb_can_collapse(to, from));
-+		      mptcp_skb_can_collapse(to, from) &&
-+		      skb_pure_zcopy_same(to, from));
- }
- 
- /* Events passed to congestion control interface */
-diff --git a/net/core/datagram.c b/net/core/datagram.c
-index 15ab9ffb27fe..ee290776c661 100644
---- a/net/core/datagram.c
-+++ b/net/core/datagram.c
-@@ -646,7 +646,8 @@ int __zerocopy_sg_from_iter(struct sock *sk, struct sk_buff *skb,
- 		skb->truesize += truesize;
- 		if (sk && sk->sk_type == SOCK_STREAM) {
- 			sk_wmem_queued_add(sk, truesize);
--			sk_mem_charge(sk, truesize);
-+			if (!skb_zcopy_pure(skb))
-+				sk_mem_charge(sk, truesize);
- 		} else {
- 			refcount_add(truesize, &skb->sk->sk_wmem_alloc);
- 		}
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 67a9188d8a49..29e617d8d7fb 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3433,8 +3433,9 @@ static inline void skb_split_no_header(struct sk_buff *skb,
- void skb_split(struct sk_buff *skb, struct sk_buff *skb1, const u32 len)
- {
- 	int pos = skb_headlen(skb);
-+	const int zc_flags = SKBFL_SHARED_FRAG | SKBFL_PURE_ZEROCOPY;
- 
--	skb_shinfo(skb1)->flags |= skb_shinfo(skb)->flags & SKBFL_SHARED_FRAG;
-+	skb_shinfo(skb1)->flags |= skb_shinfo(skb)->flags & zc_flags;
- 	skb_zerocopy_clone(skb1, skb, 0);
- 	if (len < pos)	/* Split line is inside header. */
- 		skb_split_inside_header(skb, skb1, len, pos);
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index bc7f419184aa..2561c14a6e63 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -863,6 +863,7 @@ struct sk_buff *tcp_stream_alloc_skb(struct sock *sk, int size, gfp_t gfp,
- 	if (likely(skb)) {
- 		bool mem_scheduled;
- 
-+		skb->truesize = SKB_TRUESIZE(size + MAX_TCP_HEADER);
- 		if (force_schedule) {
- 			mem_scheduled = true;
- 			sk_forced_mem_schedule(sk, skb->truesize);
-@@ -1319,6 +1320,15 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 
- 			copy = min_t(int, copy, pfrag->size - pfrag->offset);
- 
-+			/* skb changing from pure zc to mixed, must charge zc */
-+			if (unlikely(skb_zcopy_pure(skb))) {
-+				if (!sk_wmem_schedule(sk, skb->data_len))
-+					goto wait_for_space;
-+
-+				sk_mem_charge(sk, skb->data_len);
-+				skb_shinfo(skb)->flags &= ~SKBFL_PURE_ZEROCOPY;
-+			}
-+
- 			if (!sk_wmem_schedule(sk, copy))
- 				goto wait_for_space;
- 
-@@ -1339,8 +1349,16 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 			}
- 			pfrag->offset += copy;
- 		} else {
--			if (!sk_wmem_schedule(sk, copy))
--				goto wait_for_space;
-+			/* First append to a fragless skb builds initial
-+			 * pure zerocopy skb
-+			 */
-+			if (!skb->len)
-+				skb_shinfo(skb)->flags |= SKBFL_PURE_ZEROCOPY;
-+
-+			if (!skb_zcopy_pure(skb)) {
-+				if (!sk_wmem_schedule(sk, copy))
-+					goto wait_for_space;
-+			}
- 
- 			err = skb_zerocopy_iter_stream(sk, skb, msg, copy, uarg);
- 			if (err == -EMSGSIZE || err == -EEXIST) {
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 6fbbf1558033..287b57aadc37 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -1677,7 +1677,8 @@ int tcp_trim_head(struct sock *sk, struct sk_buff *skb, u32 len)
- 	if (delta_truesize) {
- 		skb->truesize	   -= delta_truesize;
- 		sk_wmem_queued_add(sk, -delta_truesize);
--		sk_mem_uncharge(sk, delta_truesize);
-+		if (!skb_zcopy_pure(skb))
-+			sk_mem_uncharge(sk, delta_truesize);
- 	}
- 
- 	/* Any change of skb->len requires recalculation of tso factor. */
-@@ -2295,7 +2296,9 @@ static bool tcp_can_coalesce_send_queue_head(struct sock *sk, int len)
- 		if (len <= skb->len)
- 			break;
- 
--		if (unlikely(TCP_SKB_CB(skb)->eor) || tcp_has_tx_tstamp(skb))
-+		if (unlikely(TCP_SKB_CB(skb)->eor) ||
-+		    tcp_has_tx_tstamp(skb) ||
-+		    !skb_pure_zcopy_same(skb, next))
- 			return false;
- 
- 		len -= skb->len;
--- 
-2.33.1.1089.g2158813163f-goog
-
+Reviewed-by: Dany Madden <drt@linux.ibm.com>
