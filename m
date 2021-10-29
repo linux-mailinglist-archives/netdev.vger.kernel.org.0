@@ -2,472 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F0CD43FBD9
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 13:54:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57B1343FBFE
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 14:05:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231383AbhJ2L4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 07:56:36 -0400
-Received: from mail.loongson.cn ([114.242.206.163]:47462 "EHLO loongson.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231131AbhJ2L4e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Oct 2021 07:56:34 -0400
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9CxhObP4HthfgwiAA--.60215S2;
-        Fri, 29 Oct 2021 19:53:52 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, illusionist.neo@gmail.com,
-        zlim.lnx@gmail.com, naveen.n.rao@linux.ibm.com,
-        luke.r.nels@gmail.com, xi.wang@gmail.com, bjorn@kernel.org,
-        iii@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        udknight@gmail.com, davem@davemloft.net
-Subject: [PATCH bpf-next v3] bpf: Change value of MAX_TAIL_CALL_CNT from 32 to 33
-Date:   Fri, 29 Oct 2021 19:53:50 +0800
-Message-Id: <1635508430-2918-1-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-X-CM-TRANSID: AQAAf9CxhObP4HthfgwiAA--.60215S2
-X-Coremail-Antispam: 1UD129KBjvAXoW3tFy3XF15Cw17Gw47GryfWFg_yoW8Xw1DGo
-        W8tr1v9a1rK34DWF12kwn3GrykJa1xKay8Aa1SgF4ruanFva4ayrW8Zw4DJFyFqa4rGryD
-        Wryfta1UXFsxKFyDn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73VFW2AGmfu7bjvjm3
-        AaLaJ3UjIYCTnIWjp_UUUYh7AC8VAFwI0_Xr0_Wr1l1xkIjI8I6I8E6xAIw20EY4v20xva
-        j40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2
-        x7M28EF7xvwVC0I7IYx2IY67AKxVWUCVW8JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8
-        JVWxJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Cr0_Gr1UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
-        Y2ka0xkIwI1lc2xSY4AK67AK6r4kMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
-        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
-        b7AF67AKxVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
-        vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI
-        42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWI
-        evJa73UjIFyTuYvjfUOyCJDUUUU
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+        id S230252AbhJ2MIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 08:08:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40456 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229692AbhJ2MIA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 08:08:00 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2628EC061570
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 05:05:32 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id z20so38185481edc.13
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 05:05:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=yk7ObfgbV6bHLpvFk8W0bMRko++x+nG1d7mbf7ehRf8=;
+        b=3hSVPH2QcGxHO8zd1Asn6yhjgFGMryxEE14djkGf1sXpAeqs/IBDMfyGQek8YEDkrA
+         gSoIMnICeI5klOOesMYf1c9jZtkR5J5Ksq0OOhNAREATdGBxaJKjFhcfMVjwzi9fK5Ez
+         N3gDfPBRW4ib0AmS5evFJWC60hp4nT3GJVZLZFOGgwRj9XvSv9vNmvuif0Qpkto2qm10
+         COFk70ekyklBXjOUeJKuWtLyOGkyzBV98MUpoOv0xe1BPb4dM2SaTEi3nOs+wyxoVcRA
+         6cEkoA4rvpfJ57rBtlvuEfSADQik+NigfZ9IU24Ci23Yk5Ot1ndXBUPGWfPKbGoqGbP9
+         ER8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=yk7ObfgbV6bHLpvFk8W0bMRko++x+nG1d7mbf7ehRf8=;
+        b=gJBuILzDrIDOFjKNDxQ+yS2LfSkKxNLJW4w2rAl84oTRmq6VoYvTOM0ql1JGsSAFg0
+         MihHCh5KybD/C4BBx9+69Qdcty/eFoZFVAyTSTNtPAv5rgxs1Ec7FGlbc8vRgnVKHG4G
+         v4yOZ7YNGP0a6G9SchsnWBT17Ppjlz4NgvSKjyAO7vk6ZB5zYGacd0dm4Eah4njo2TOp
+         //pvmDdjlXNavqDJ12R7wEXfVUp5yUAoG7TqDr3mVH5ECC8knFbRNkceLti+leuzEEoh
+         jFDVtPYW/jNYsPzRr4I5NQNEIE2w6bp33QaYAALO4a91GLjDlDs9bUWUTZ30dCyMRFhs
+         T5qQ==
+X-Gm-Message-State: AOAM531ei4LNYoAVHnleqLH9K8+SoNvhk/oSKdjVNhAe4xzZZ8ZKBgP7
+        ONs2MpjtJSrDSt6q1UxK5wWgY3eUsKe99Y/1
+X-Google-Smtp-Source: ABdhPJzqsVGG8M75ALYvHymIlvBJufCR2xZqPlg4fpuH4VK41ExJlHZqkb6gHrR9SydS29fh766M8g==
+X-Received: by 2002:a17:907:16a1:: with SMTP id hc33mr12960498ejc.137.1635509130435;
+        Fri, 29 Oct 2021 05:05:30 -0700 (PDT)
+Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id c7sm2877578ejd.91.2021.10.29.05.05.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Oct 2021 05:05:29 -0700 (PDT)
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+To:     netdev@vger.kernel.org
+Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: [PATCH net v2] selftests: net: bridge: update IGMP/MLD membership interval value
+Date:   Fri, 29 Oct 2021 15:05:27 +0300
+Message-Id: <20211029120527.2716884-1-razor@blackwall.org>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <c09158a8-f94c-5e33-db31-59430501e631@nvidia.com>
+References: <c09158a8-f94c-5e33-db31-59430501e631@nvidia.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the current code, the actual max tail call count is 33 which is greater
-than MAX_TAIL_CALL_CNT (defined as 32), the actual limit is not consistent
-with the meaning of MAX_TAIL_CALL_CNT, there is some confusion and need to
-spend some time to think about the reason at the first glance.
+From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-We can see the historical evolution from commit 04fd61ab36ec ("bpf: allow
-bpf programs to tail-call other bpf programs") and commit f9dabe016b63
-("bpf: Undo off-by-one in interpreter tail call count limit").
+When I fixed IGMPv3/MLDv2 to use the bridge's multicast_membership_interval
+value which is chosen by user-space instead of calculating it based on
+multicast_query_interval and multicast_query_response_interval I forgot
+to update the selftests relying on that behaviour. Now we have to
+manually set the expected GMI value to perform the tests correctly and get
+proper results (similar to IGMPv2 behaviour).
 
-In order to avoid changing existing behavior, the actual limit is 33 now,
-this is reasonable.
-
-After commit 874be05f525e ("bpf, tests: Add tail call test suite"), we can
-see there exists failed testcase.
-
-On all archs when CONFIG_BPF_JIT_ALWAYS_ON is not set:
- # echo 0 > /proc/sys/net/core/bpf_jit_enable
- # modprobe test_bpf
- # dmesg | grep -w FAIL
- Tail call error path, max count reached jited:0 ret 34 != 33 FAIL
-
-On some archs:
- # echo 1 > /proc/sys/net/core/bpf_jit_enable
- # modprobe test_bpf
- # dmesg | grep -w FAIL
- Tail call error path, max count reached jited:1 ret 34 != 33 FAIL
-
-Although the above failed testcase has been fixed in commit 18935a72eb25
-("bpf/tests: Fix error in tail call limit tests"), it is still necessary
-to change the value of MAX_TAIL_CALL_CNT from 32 to 33 to make the code
-more readable, then do some small changes of the related code.
-
-With this patch, it does not change the current limit 33, MAX_TAIL_CALL_CNT
-can reflect the actual max tail call count, the related tailcall testcases
-in test_bpf and selftests can work well for the interpreter and the JIT.
-
-Here are the test results on x86_64:
-
- # uname -m
- x86_64
- # echo 0 > /proc/sys/net/core/bpf_jit_enable
- # modprobe test_bpf test_suite=test_tail_calls
- # dmesg | tail -1
- test_bpf: test_tail_calls: Summary: 8 PASSED, 0 FAILED, [0/8 JIT'ed]
- # rmmod test_bpf
- # echo 1 > /proc/sys/net/core/bpf_jit_enable
- # modprobe test_bpf test_suite=test_tail_calls
- # dmesg | tail -1
- test_bpf: test_tail_calls: Summary: 8 PASSED, 0 FAILED, [8/8 JIT'ed]
- # rmmod test_bpf
- # ./test_progs -t tailcalls
- #141 tailcalls:OK
- Summary: 1/11 PASSED, 0 SKIPPED, 0 FAILED
-
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+Fixes: fac3cb82a54a ("net: bridge: mcast: use multicast_membership_interval for IGMPv3")
+Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 ---
- arch/arm/net/bpf_jit_32.c         |  5 +++--
- arch/arm64/net/bpf_jit_comp.c     |  5 +++--
- arch/mips/net/bpf_jit_comp32.c    |  2 +-
- arch/mips/net/bpf_jit_comp64.c    |  2 +-
- arch/powerpc/net/bpf_jit_comp32.c |  4 ++--
- arch/powerpc/net/bpf_jit_comp64.c |  4 ++--
- arch/riscv/net/bpf_jit_comp32.c   |  5 ++---
- arch/riscv/net/bpf_jit_comp64.c   |  4 ++--
- arch/s390/net/bpf_jit_comp.c      |  6 +++---
- arch/sparc/net/bpf_jit_comp_64.c  |  2 +-
- arch/x86/net/bpf_jit_comp.c       | 10 +++++-----
- arch/x86/net/bpf_jit_comp32.c     |  8 ++++----
- include/linux/bpf.h               |  2 +-
- include/uapi/linux/bpf.h          |  2 +-
- kernel/bpf/core.c                 |  3 ++-
- lib/test_bpf.c                    |  4 ++--
- tools/include/uapi/linux/bpf.h    |  2 +-
- 17 files changed, 36 insertions(+), 34 deletions(-)
+v2: set membership_interval in the same command and reset it back to
+default after the test
 
-diff --git a/arch/arm/net/bpf_jit_32.c b/arch/arm/net/bpf_jit_32.c
-index ce75c6b..87c57b2 100644
---- a/arch/arm/net/bpf_jit_32.c
-+++ b/arch/arm/net/bpf_jit_32.c
-@@ -1180,7 +1180,8 @@ static int emit_bpf_tail_call(struct jit_ctx *ctx)
+ .../testing/selftests/net/forwarding/bridge_igmp.sh  | 12 +++++++++---
+ tools/testing/selftests/net/forwarding/bridge_mld.sh | 12 +++++++++---
+ 2 files changed, 18 insertions(+), 6 deletions(-)
+
+diff --git a/tools/testing/selftests/net/forwarding/bridge_igmp.sh b/tools/testing/selftests/net/forwarding/bridge_igmp.sh
+index 675eff45b037..1162836f8f32 100755
+--- a/tools/testing/selftests/net/forwarding/bridge_igmp.sh
++++ b/tools/testing/selftests/net/forwarding/bridge_igmp.sh
+@@ -482,10 +482,15 @@ v3exc_timeout_test()
+ 	local X=("192.0.2.20" "192.0.2.30")
  
- 	/* tmp2[0] = array, tmp2[1] = index */
+ 	# GMI should be 3 seconds
+-	ip link set dev br0 type bridge mcast_query_interval 100 mcast_query_response_interval 100
++	ip link set dev br0 type bridge mcast_query_interval 100 \
++					mcast_query_response_interval 100 \
++					mcast_membership_interval 300
  
--	/* if (tail_call_cnt > MAX_TAIL_CALL_CNT)
-+	/*
-+	 * if (tail_call_cnt == MAX_TAIL_CALL_CNT)
- 	 *	goto out;
- 	 * tail_call_cnt++;
- 	 */
-@@ -1189,7 +1190,7 @@ static int emit_bpf_tail_call(struct jit_ctx *ctx)
- 	tc = arm_bpf_get_reg64(tcc, tmp, ctx);
- 	emit(ARM_CMP_I(tc[0], hi), ctx);
- 	_emit(ARM_COND_EQ, ARM_CMP_I(tc[1], lo), ctx);
--	_emit(ARM_COND_HI, ARM_B(jmp_offset), ctx);
-+	_emit(ARM_COND_EQ, ARM_B(jmp_offset), ctx);
- 	emit(ARM_ADDS_I(tc[1], tc[1], 1), ctx);
- 	emit(ARM_ADC_I(tc[0], tc[0], 0), ctx);
- 	arm_bpf_put_reg64(tcc, tmp, ctx);
-diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
-index 41c23f4..0648121 100644
---- a/arch/arm64/net/bpf_jit_comp.c
-+++ b/arch/arm64/net/bpf_jit_comp.c
-@@ -286,13 +286,14 @@ static int emit_bpf_tail_call(struct jit_ctx *ctx)
- 	emit(A64_CMP(0, r3, tmp), ctx);
- 	emit(A64_B_(A64_COND_CS, jmp_offset), ctx);
- 
--	/* if (tail_call_cnt > MAX_TAIL_CALL_CNT)
-+	/*
-+	 * if (tail_call_cnt == MAX_TAIL_CALL_CNT)
- 	 *     goto out;
- 	 * tail_call_cnt++;
- 	 */
- 	emit_a64_mov_i64(tmp, MAX_TAIL_CALL_CNT, ctx);
- 	emit(A64_CMP(1, tcc, tmp), ctx);
--	emit(A64_B_(A64_COND_HI, jmp_offset), ctx);
-+	emit(A64_B_(A64_COND_EQ, jmp_offset), ctx);
- 	emit(A64_ADD_I(1, tcc, tcc, 1), ctx);
- 
- 	/* prog = array->ptrs[index];
-diff --git a/arch/mips/net/bpf_jit_comp32.c b/arch/mips/net/bpf_jit_comp32.c
-index bd996ed..a7b424f 100644
---- a/arch/mips/net/bpf_jit_comp32.c
-+++ b/arch/mips/net/bpf_jit_comp32.c
-@@ -1382,7 +1382,7 @@ void build_prologue(struct jit_context *ctx)
- 	 * calling function jumps into the prologue after these instructions.
- 	 */
- 	emit(ctx, ori, MIPS_R_T9, MIPS_R_ZERO,
--	     min(MAX_TAIL_CALL_CNT + 1, 0xffff));
-+	     min(MAX_TAIL_CALL_CNT, 0xffff));
- 	emit(ctx, sw, MIPS_R_T9, 0, MIPS_R_SP);
- 
- 	/*
-diff --git a/arch/mips/net/bpf_jit_comp64.c b/arch/mips/net/bpf_jit_comp64.c
-index 815ade7..5ef8778 100644
---- a/arch/mips/net/bpf_jit_comp64.c
-+++ b/arch/mips/net/bpf_jit_comp64.c
-@@ -552,7 +552,7 @@ void build_prologue(struct jit_context *ctx)
- 	 * On a tail call, the calling function jumps into the prologue
- 	 * after this instruction.
- 	 */
--	emit(ctx, addiu, tc, MIPS_R_ZERO, min(MAX_TAIL_CALL_CNT + 1, 0xffff));
-+	emit(ctx, addiu, tc, MIPS_R_ZERO, min(MAX_TAIL_CALL_CNT, 0xffff));
- 
- 	/* === Entry-point for tail calls === */
- 
-diff --git a/arch/powerpc/net/bpf_jit_comp32.c b/arch/powerpc/net/bpf_jit_comp32.c
-index beb12cb..a072005 100644
---- a/arch/powerpc/net/bpf_jit_comp32.c
-+++ b/arch/powerpc/net/bpf_jit_comp32.c
-@@ -221,13 +221,13 @@ static void bpf_jit_emit_tail_call(u32 *image, struct codegen_context *ctx, u32
- 	PPC_BCC(COND_GE, out);
- 
- 	/*
--	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
-+	 * if (tail_call_cnt == MAX_TAIL_CALL_CNT)
- 	 *   goto out;
- 	 */
- 	EMIT(PPC_RAW_CMPLWI(_R0, MAX_TAIL_CALL_CNT));
- 	/* tail_call_cnt++; */
- 	EMIT(PPC_RAW_ADDIC(_R0, _R0, 1));
--	PPC_BCC(COND_GT, out);
-+	PPC_BCC(COND_EQ, out);
- 
- 	/* prog = array->ptrs[index]; */
- 	EMIT(PPC_RAW_RLWINM(_R3, b2p_index, 2, 0, 29));
-diff --git a/arch/powerpc/net/bpf_jit_comp64.c b/arch/powerpc/net/bpf_jit_comp64.c
-index b87a63d..ff03ccc 100644
---- a/arch/powerpc/net/bpf_jit_comp64.c
-+++ b/arch/powerpc/net/bpf_jit_comp64.c
-@@ -227,12 +227,12 @@ static void bpf_jit_emit_tail_call(u32 *image, struct codegen_context *ctx, u32
- 	PPC_BCC(COND_GE, out);
- 
- 	/*
--	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
-+	 * if (tail_call_cnt == MAX_TAIL_CALL_CNT)
- 	 *   goto out;
- 	 */
- 	PPC_BPF_LL(b2p[TMP_REG_1], 1, bpf_jit_stack_tailcallcnt(ctx));
- 	EMIT(PPC_RAW_CMPLWI(b2p[TMP_REG_1], MAX_TAIL_CALL_CNT));
--	PPC_BCC(COND_GT, out);
-+	PPC_BCC(COND_EQ, out);
- 
- 	/*
- 	 * tail_call_cnt++;
-diff --git a/arch/riscv/net/bpf_jit_comp32.c b/arch/riscv/net/bpf_jit_comp32.c
-index e649742..ead9733 100644
---- a/arch/riscv/net/bpf_jit_comp32.c
-+++ b/arch/riscv/net/bpf_jit_comp32.c
-@@ -799,13 +799,12 @@ static int emit_bpf_tail_call(int insn, struct rv_jit_context *ctx)
- 	emit_bcc(BPF_JGE, lo(idx_reg), RV_REG_T1, off, ctx);
- 
- 	/*
--	 * temp_tcc = tcc - 1;
--	 * if (tcc < 0)
-+	 * if (--tcc < 0)
- 	 *   goto out;
- 	 */
- 	emit(rv_addi(RV_REG_T1, RV_REG_TCC, -1), ctx);
- 	off = ninsns_rvoff(tc_ninsn - (ctx->ninsns - start_insn));
--	emit_bcc(BPF_JSLT, RV_REG_TCC, RV_REG_ZERO, off, ctx);
-+	emit_bcc(BPF_JSLT, RV_REG_T1, RV_REG_ZERO, off, ctx);
- 
- 	/*
- 	 * prog = array->ptrs[index];
-diff --git a/arch/riscv/net/bpf_jit_comp64.c b/arch/riscv/net/bpf_jit_comp64.c
-index 2ca345c..1bfaeff 100644
---- a/arch/riscv/net/bpf_jit_comp64.c
-+++ b/arch/riscv/net/bpf_jit_comp64.c
-@@ -327,12 +327,12 @@ static int emit_bpf_tail_call(int insn, struct rv_jit_context *ctx)
- 	off = ninsns_rvoff(tc_ninsn - (ctx->ninsns - start_insn));
- 	emit_branch(BPF_JGE, RV_REG_A2, RV_REG_T1, off, ctx);
- 
--	/* if (TCC-- < 0)
-+	/* if (--TCC < 0)
- 	 *     goto out;
- 	 */
- 	emit_addi(RV_REG_T1, tcc, -1, ctx);
- 	off = ninsns_rvoff(tc_ninsn - (ctx->ninsns - start_insn));
--	emit_branch(BPF_JSLT, tcc, RV_REG_ZERO, off, ctx);
-+	emit_branch(BPF_JSLT, RV_REG_T1, RV_REG_ZERO, off, ctx);
- 
- 	/* prog = array->ptrs[index];
- 	 * if (!prog)
-diff --git a/arch/s390/net/bpf_jit_comp.c b/arch/s390/net/bpf_jit_comp.c
-index 840d859..c04b834 100644
---- a/arch/s390/net/bpf_jit_comp.c
-+++ b/arch/s390/net/bpf_jit_comp.c
-@@ -1369,7 +1369,7 @@ static noinline int bpf_jit_insn(struct bpf_jit *jit, struct bpf_prog *fp,
- 				 jit->prg);
- 
- 		/*
--		 * if (tail_call_cnt++ > MAX_TAIL_CALL_CNT)
-+		 * if (tail_call_cnt++ == MAX_TAIL_CALL_CNT)
- 		 *         goto out;
- 		 */
- 
-@@ -1381,9 +1381,9 @@ static noinline int bpf_jit_insn(struct bpf_jit *jit, struct bpf_prog *fp,
- 		EMIT4_IMM(0xa7080000, REG_W0, 1);
- 		/* laal %w1,%w0,off(%r15) */
- 		EMIT6_DISP_LH(0xeb000000, 0x00fa, REG_W1, REG_W0, REG_15, off);
--		/* clij %w1,MAX_TAIL_CALL_CNT,0x2,out */
-+		/* clij %w1,MAX_TAIL_CALL_CNT-1,0x2,out */
- 		patch_2_clij = jit->prg;
--		EMIT6_PCREL_RIEC(0xec000000, 0x007f, REG_W1, MAX_TAIL_CALL_CNT,
-+		EMIT6_PCREL_RIEC(0xec000000, 0x007f, REG_W1, MAX_TAIL_CALL_CNT - 1,
- 				 2, jit->prg);
- 
- 		/*
-diff --git a/arch/sparc/net/bpf_jit_comp_64.c b/arch/sparc/net/bpf_jit_comp_64.c
-index 9a2f20c..1a0b2bf 100644
---- a/arch/sparc/net/bpf_jit_comp_64.c
-+++ b/arch/sparc/net/bpf_jit_comp_64.c
-@@ -867,7 +867,7 @@ static void emit_tail_call(struct jit_ctx *ctx)
- 	emit(LD32 | IMMED | RS1(SP) | S13(off) | RD(tmp), ctx);
- 	emit_cmpi(tmp, MAX_TAIL_CALL_CNT, ctx);
- #define OFFSET2 13
--	emit_branch(BGU, ctx->idx, ctx->idx + OFFSET2, ctx);
-+	emit_branch(BE, ctx->idx, ctx->idx + OFFSET2, ctx);
- 	emit_nop(ctx);
- 
- 	emit_alu_K(ADD, tmp, 1, ctx);
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index e474718..51905ad 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -402,7 +402,7 @@ static int get_pop_bytes(bool *callee_regs_used)
-  * ... bpf_tail_call(void *ctx, struct bpf_array *array, u64 index) ...
-  *   if (index >= array->map.max_entries)
-  *     goto out;
-- *   if (++tail_call_cnt > MAX_TAIL_CALL_CNT)
-+ *   if (tail_call_cnt++ == MAX_TAIL_CALL_CNT)
-  *     goto out;
-  *   prog = array->ptrs[index];
-  *   if (prog == NULL)
-@@ -452,13 +452,13 @@ static void emit_bpf_tail_call_indirect(u8 **pprog, bool *callee_regs_used,
- 	EMIT2(X86_JBE, OFFSET1);                  /* jbe out */
- 
- 	/*
--	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
-+	 * if (tail_call_cnt++ == MAX_TAIL_CALL_CNT)
- 	 *	goto out;
- 	 */
- 	EMIT2_off32(0x8B, 0x85, tcc_off);         /* mov eax, dword ptr [rbp - tcc_off] */
- 	EMIT3(0x83, 0xF8, MAX_TAIL_CALL_CNT);     /* cmp eax, MAX_TAIL_CALL_CNT */
- #define OFFSET2 (off2 + RETPOLINE_RCX_BPF_JIT_SIZE)
--	EMIT2(X86_JA, OFFSET2);                   /* ja out */
-+	EMIT2(X86_JE, OFFSET2);                   /* je out */
- 	EMIT3(0x83, 0xC0, 0x01);                  /* add eax, 1 */
- 	EMIT2_off32(0x89, 0x85, tcc_off);         /* mov dword ptr [rbp - tcc_off], eax */
- 
-@@ -530,12 +530,12 @@ static void emit_bpf_tail_call_direct(struct bpf_jit_poke_descriptor *poke,
- 	}
- 
- 	/*
--	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
-+	 * if (tail_call_cnt++ == MAX_TAIL_CALL_CNT)
- 	 *	goto out;
- 	 */
- 	EMIT2_off32(0x8B, 0x85, tcc_off);             /* mov eax, dword ptr [rbp - tcc_off] */
- 	EMIT3(0x83, 0xF8, MAX_TAIL_CALL_CNT);         /* cmp eax, MAX_TAIL_CALL_CNT */
--	EMIT2(X86_JA, off1);                          /* ja out */
-+	EMIT2(X86_JE, off1);                          /* je out */
- 	EMIT3(0x83, 0xC0, 0x01);                      /* add eax, 1 */
- 	EMIT2_off32(0x89, 0x85, tcc_off);             /* mov dword ptr [rbp - tcc_off], eax */
- 
-diff --git a/arch/x86/net/bpf_jit_comp32.c b/arch/x86/net/bpf_jit_comp32.c
-index 3bfda5f..e943344 100644
---- a/arch/x86/net/bpf_jit_comp32.c
-+++ b/arch/x86/net/bpf_jit_comp32.c
-@@ -1272,7 +1272,7 @@ static void emit_epilogue(u8 **pprog, u32 stack_depth)
-  * ... bpf_tail_call(void *ctx, struct bpf_array *array, u64 index) ...
-  *   if (index >= array->map.max_entries)
-  *     goto out;
-- *   if (++tail_call_cnt > MAX_TAIL_CALL_CNT)
-+ *   if (tail_call_cnt++ == MAX_TAIL_CALL_CNT)
-  *     goto out;
-  *   prog = array->ptrs[index];
-  *   if (prog == NULL)
-@@ -1307,7 +1307,7 @@ static void emit_bpf_tail_call(u8 **pprog)
- 	EMIT2(IA32_JBE, jmp_label(jmp_label1, 2));
- 
- 	/*
--	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
-+	 * if (tail_call_cnt++ == MAX_TAIL_CALL_CNT)
- 	 *     goto out;
- 	 */
- 	lo = (u32)MAX_TAIL_CALL_CNT;
-@@ -1321,8 +1321,8 @@ static void emit_bpf_tail_call(u8 **pprog)
- 	/* cmp ecx,lo */
- 	EMIT3(0x83, add_1reg(0xF8, IA32_ECX), lo);
- 
--	/* ja out */
--	EMIT2(IA32_JAE, jmp_label(jmp_label1, 2));
-+	/* je out */
-+	EMIT2(IA32_JE, jmp_label(jmp_label1, 2));
- 
- 	/* add eax,0x1 */
- 	EMIT3(0x83, add_1reg(0xC0, IA32_ECX), 0x01);
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 6deebf8..fa2c396 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1052,7 +1052,7 @@ struct bpf_array {
- };
- 
- #define BPF_COMPLEXITY_LIMIT_INSNS      1000000 /* yes. 1M insns */
--#define MAX_TAIL_CALL_CNT 32
-+#define MAX_TAIL_CALL_CNT 33
- 
- #define BPF_F_ACCESS_MASK	(BPF_F_RDONLY |		\
- 				 BPF_F_RDONLY_PROG |	\
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index bd0c9f0..92b558fa2 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -1744,7 +1744,7 @@ union bpf_attr {
-  * 		if the maximum number of tail calls has been reached for this
-  * 		chain of programs. This limit is defined in the kernel by the
-  * 		macro **MAX_TAIL_CALL_CNT** (not accessible to user space),
-- * 		which is currently set to 32.
-+ *		which is currently set to 33.
-  * 	Return
-  * 		0 on success, or a negative error in case of failure.
-  *
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index b6c72af..6d10292 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -1565,7 +1565,8 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
- 
- 		if (unlikely(index >= array->map.max_entries))
- 			goto out;
--		if (unlikely(tail_call_cnt > MAX_TAIL_CALL_CNT))
+ 	v3exclude_prepare $h1 $ALL_MAC $ALL_GROUP
+-	ip link set dev br0 type bridge mcast_query_interval 500 mcast_query_response_interval 500
++	ip link set dev br0 type bridge mcast_query_interval 500 \
++					mcast_query_response_interval 500 \
++					mcast_membership_interval 1500
 +
-+		if (unlikely(tail_call_cnt == MAX_TAIL_CALL_CNT))
- 			goto out;
+ 	$MZ $h1 -c 1 -b $ALL_MAC -B $ALL_GROUP -t ip "proto=2,p=$MZPKT_ALLOW2" -q
+ 	sleep 3
+ 	bridge -j -d -s mdb show dev br0 \
+@@ -517,7 +522,8 @@ v3exc_timeout_test()
+ 	log_test "IGMPv3 group $TEST_GROUP exclude timeout"
  
- 		tail_call_cnt++;
-diff --git a/lib/test_bpf.c b/lib/test_bpf.c
-index adae395..0c5cb2d 100644
---- a/lib/test_bpf.c
-+++ b/lib/test_bpf.c
-@@ -14683,7 +14683,7 @@ static struct tail_call_test tail_call_tests[] = {
- 			BPF_EXIT_INSN(),
- 		},
- 		.flags = FLAG_NEED_STATE | FLAG_RESULT_IN_STATE,
--		.result = (MAX_TAIL_CALL_CNT + 1 + 1) * MAX_TESTRUNS,
-+		.result = (MAX_TAIL_CALL_CNT + 1) * MAX_TESTRUNS,
- 	},
- 	{
- 		"Tail call count preserved across function calls",
-@@ -14705,7 +14705,7 @@ static struct tail_call_test tail_call_tests[] = {
- 		},
- 		.stack_depth = 8,
- 		.flags = FLAG_NEED_STATE | FLAG_RESULT_IN_STATE,
--		.result = (MAX_TAIL_CALL_CNT + 1 + 1) * MAX_TESTRUNS,
-+		.result = (MAX_TAIL_CALL_CNT + 1) * MAX_TESTRUNS,
- 	},
- 	{
- 		"Tail call error path, NULL target",
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index bd0c9f0..92b558fa2 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -1744,7 +1744,7 @@ union bpf_attr {
-  * 		if the maximum number of tail calls has been reached for this
-  * 		chain of programs. This limit is defined in the kernel by the
-  * 		macro **MAX_TAIL_CALL_CNT** (not accessible to user space),
-- * 		which is currently set to 32.
-+ *		which is currently set to 33.
-  * 	Return
-  * 		0 on success, or a negative error in case of failure.
-  *
+ 	ip link set dev br0 type bridge mcast_query_interval 12500 \
+-					mcast_query_response_interval 1000
++					mcast_query_response_interval 1000 \
++					mcast_membership_interval 26000
+ 
+ 	v3cleanup $swp1 $TEST_GROUP
+ }
+diff --git a/tools/testing/selftests/net/forwarding/bridge_mld.sh b/tools/testing/selftests/net/forwarding/bridge_mld.sh
+index ffdcfa87ca2b..e2b9ff773c6b 100755
+--- a/tools/testing/selftests/net/forwarding/bridge_mld.sh
++++ b/tools/testing/selftests/net/forwarding/bridge_mld.sh
+@@ -479,10 +479,15 @@ mldv2exc_timeout_test()
+ 	local X=("2001:db8:1::20" "2001:db8:1::30")
+ 
+ 	# GMI should be 3 seconds
+-	ip link set dev br0 type bridge mcast_query_interval 100 mcast_query_response_interval 100
++	ip link set dev br0 type bridge mcast_query_interval 100 \
++					mcast_query_response_interval 100 \
++					mcast_membership_interval 300
+ 
+ 	mldv2exclude_prepare $h1
+-	ip link set dev br0 type bridge mcast_query_interval 500 mcast_query_response_interval 500
++	ip link set dev br0 type bridge mcast_query_interval 500 \
++					mcast_query_response_interval 500 \
++					mcast_membership_interval 1500
++
+ 	$MZ $h1 -c 1 $MZPKT_ALLOW2 -q
+ 	sleep 3
+ 	bridge -j -d -s mdb show dev br0 \
+@@ -514,7 +519,8 @@ mldv2exc_timeout_test()
+ 	log_test "MLDv2 group $TEST_GROUP exclude timeout"
+ 
+ 	ip link set dev br0 type bridge mcast_query_interval 12500 \
+-					mcast_query_response_interval 1000
++					mcast_query_response_interval 1000 \
++					mcast_membership_interval 26000
+ 
+ 	mldv2cleanup $swp1
+ }
 -- 
-2.1.0
+2.31.1
 
