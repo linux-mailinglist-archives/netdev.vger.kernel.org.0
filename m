@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D40B244047C
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 22:56:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C9DF44047D
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 22:57:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231603AbhJ2U7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 16:59:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58496 "EHLO mail.kernel.org"
+        id S230271AbhJ2U7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 16:59:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58504 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231346AbhJ2U7O (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231458AbhJ2U7O (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 29 Oct 2021 16:59:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2FA6D610E5;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B5E04610CF;
         Fri, 29 Oct 2021 20:56:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635541005;
-        bh=K0BBgQ5SnbD3YeRrf/Y7XvSU9eE5dPn/VxJWM2a5lbQ=;
+        s=k20201202; t=1635541006;
+        bh=lHr+lHs683YsbvumHe8tGggV4FGGP9YyA9UgvxViyy4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vF5fspAiQmAfiMBCFJQKEt6QoMf8kNjf3wsXdz7WTxIToQXRHApzPDR3qc+NHEVKT
-         2j42g9qXNRh44dWfKBxZbjWeHkOLVz2kNlFqNfkpw+qm6SLdbEHEFBbo7B2VTzbUBX
-         4MsFM6tkxGFVMWKmxs5rq4AwUoDkpjBxqcTm6d6BGJmsqumNErPVlv4uuU3M5VzBJT
-         ROoUmbVZey6ggj8JNfTVT+SFlbhUHfiM9/QEQSZ4mpv+aNIz0I0toRdNBiFRJtfhMJ
-         YHDL494JqwjIWGmHTy3e3g15G8DeB9WvyrJYG8Als/q90M1fURegupD68j8ebRWXmN
-         TwEln4j+droDA==
+        b=WjSV4iLiaUnhsa5SBmlgB72HbCeQ33u+ExjC5TIQPcTNrwQGj2uY4DULv5OXU1h7w
+         kfbsTJIt/v+B5QXvrVSj056UdrEzJcoPM5i4puRvHbP8b4O+3rn4opi/lYkz4KjQW7
+         6+jtRKJl3hClq2xrwhOALaSXYcG2B6ITCk3KeNi4DK185Bl0RaHf4yMY/UX1JjX+fX
+         xiAm5NqCk3RJpVwru8LMJ97sT15RrXxG+24nhqFrfc/UO8jQCSFmub9TqofqfkYe+R
+         +ktODPUmMndtWEtHZD6p475DXE3VvR0Y9szlAF87MaQbwfftuGnzqwwjd6b2yh1DkJ
+         tZCcavpecV+/g==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Muhammad Sammar <muhammads@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Yevgeny Kliteynik <kliteyn@nvidia.com>
-Subject: [net-next 05/14] net/mlx5: DR, Add check for unsupported fields in match param
-Date:   Fri, 29 Oct 2021 13:56:23 -0700
-Message-Id: <20211029205632.390403-6-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Ariel Levkovich <lariel@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net-next 06/14] net/mlx5e: Refactor rx handler of represetor device
+Date:   Fri, 29 Oct 2021 13:56:24 -0700
+Message-Id: <20211029205632.390403-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211029205632.390403-1-saeed@kernel.org>
 References: <20211029205632.390403-1-saeed@kernel.org>
@@ -41,511 +40,214 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Muhammad Sammar <muhammads@nvidia.com>
+From: Ariel Levkovich <lariel@nvidia.com>
 
-When a matcher is being built, we "consume" (clear) mask fields one by one,
-and to verify that we do support all the required fields we check if the
-whole mask was consumed, else the matching request includes unsupported
-fields.
+Move the ownership of skb forwarding to network stack to the
+tc update_skb handler as different cases will require different
+handling of the skb.
 
-Signed-off-by: Muhammad Sammar <muhammads@nvidia.com>
+While the tc handler will take care of the various cases and
+properly handle the handover of the skb to the network stack
+and freeing the skb, the main rx handler will be kept clean
+from branches and usage of flags.
+
+Signed-off-by: Ariel Levkovich <lariel@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Reviewed-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 ---
- .../mellanox/mlx5/core/steering/dr_matcher.c  |  28 +-
- .../mellanox/mlx5/core/steering/dr_rule.c     |   2 +-
- .../mellanox/mlx5/core/steering/dr_ste.c      | 272 +++++++++---------
- .../mellanox/mlx5/core/steering/dr_types.h    |   3 +-
- 4 files changed, 172 insertions(+), 133 deletions(-)
+ .../ethernet/mellanox/mlx5/core/en/rep/tc.c   | 41 ++++++++++++-------
+ .../ethernet/mellanox/mlx5/core/en/rep/tc.h   | 13 ++----
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 22 +---------
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   |  1 -
+ 4 files changed, 32 insertions(+), 45 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
-index b5409cc021d3..75c775bee351 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
-@@ -875,9 +875,10 @@ static int dr_matcher_init_fdb(struct mlx5dr_matcher *matcher)
- static int dr_matcher_init(struct mlx5dr_matcher *matcher,
- 			   struct mlx5dr_match_parameters *mask)
- {
-+	struct mlx5dr_match_parameters consumed_mask;
- 	struct mlx5dr_table *tbl = matcher->tbl;
- 	struct mlx5dr_domain *dmn = tbl->dmn;
--	int ret;
-+	int i, ret;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+index 398c6761eeb3..eb960eba6027 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+@@ -19,6 +19,7 @@
+ #include "en/tc_tun.h"
+ #include "lib/port_tun.h"
+ #include "en/tc/sample.h"
++#include "en_accel/ipsec_rxtx.h"
  
- 	if (matcher->match_criteria >= DR_MATCHER_CRITERIA_MAX) {
- 		mlx5dr_err(dmn, "Invalid match criteria attribute\n");
-@@ -889,8 +890,16 @@ static int dr_matcher_init(struct mlx5dr_matcher *matcher,
- 			mlx5dr_err(dmn, "Invalid match size attribute\n");
- 			return -EINVAL;
- 		}
-+
-+		consumed_mask.match_buf = kzalloc(mask->match_sz, GFP_KERNEL);
-+		if (!consumed_mask.match_buf)
-+			return -ENOMEM;
-+
-+		consumed_mask.match_sz = mask->match_sz;
-+		memcpy(consumed_mask.match_buf, mask->match_buf, mask->match_sz);
- 		mlx5dr_ste_copy_param(matcher->match_criteria,
--				      &matcher->mask, mask);
-+				      &matcher->mask, &consumed_mask,
-+				      true);
- 	}
- 
- 	switch (dmn->type) {
-@@ -909,9 +918,22 @@ static int dr_matcher_init(struct mlx5dr_matcher *matcher,
- 		break;
- 	default:
- 		WARN_ON(true);
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto free_consumed_mask;
-+	}
-+
-+	/* Check that all mask data was consumed */
-+	for (i = 0; i < consumed_mask.match_sz; i++) {
-+		if (consumed_mask.match_buf[i]) {
-+			mlx5dr_dbg(dmn, "Match param mask contains unsupported parameters\n");
-+			ret = -EOPNOTSUPP;
-+			goto free_consumed_mask;
-+		}
- 	}
- 
-+	ret =  0;
-+free_consumed_mask:
-+	kfree(consumed_mask.match_buf);
- 	return ret;
+ struct mlx5e_rep_indr_block_priv {
+ 	struct net_device *netdev;
+@@ -652,6 +653,12 @@ static bool mlx5e_restore_skb_chain(struct sk_buff *skb, u32 chain, u32 reg_c1,
+ 	return mlx5e_restore_tunnel(priv, skb, tc_priv, tunnel_id);
  }
  
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-index 323ea138ad99..6a390e981b09 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-@@ -917,7 +917,7 @@ static bool dr_rule_verify(struct mlx5dr_matcher *matcher,
- 		return false;
- 	}
- 
--	mlx5dr_ste_copy_param(matcher->match_criteria, param, value);
-+	mlx5dr_ste_copy_param(matcher->match_criteria, param, value, false);
- 
- 	if (match_criteria & DR_MATCHER_CRITERIA_OUTER) {
- 		s_idx = offsetof(struct mlx5dr_match_param, outer);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
-index 1cdfe4fccc7a..219a5474a8a4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
-@@ -668,101 +668,116 @@ int mlx5dr_ste_build_ste_arr(struct mlx5dr_matcher *matcher,
- 	return 0;
- }
- 
--static void dr_ste_copy_mask_misc(char *mask, struct mlx5dr_match_misc *spec)
--{
--	spec->gre_c_present = MLX5_GET(fte_match_set_misc, mask, gre_c_present);
--	spec->gre_k_present = MLX5_GET(fte_match_set_misc, mask, gre_k_present);
--	spec->gre_s_present = MLX5_GET(fte_match_set_misc, mask, gre_s_present);
--	spec->source_vhca_port = MLX5_GET(fte_match_set_misc, mask, source_vhca_port);
--	spec->source_sqn = MLX5_GET(fte_match_set_misc, mask, source_sqn);
--
--	spec->source_port = MLX5_GET(fte_match_set_misc, mask, source_port);
--	spec->source_eswitch_owner_vhca_id = MLX5_GET(fte_match_set_misc, mask,
--						      source_eswitch_owner_vhca_id);
--
--	spec->outer_second_prio = MLX5_GET(fte_match_set_misc, mask, outer_second_prio);
--	spec->outer_second_cfi = MLX5_GET(fte_match_set_misc, mask, outer_second_cfi);
--	spec->outer_second_vid = MLX5_GET(fte_match_set_misc, mask, outer_second_vid);
--	spec->inner_second_prio = MLX5_GET(fte_match_set_misc, mask, inner_second_prio);
--	spec->inner_second_cfi = MLX5_GET(fte_match_set_misc, mask, inner_second_cfi);
--	spec->inner_second_vid = MLX5_GET(fte_match_set_misc, mask, inner_second_vid);
-+#define IFC_GET_CLR(typ, p, fld, clear) ({ \
-+	void *__p = (p); \
-+	u32 __t = MLX5_GET(typ, __p, fld); \
-+	if (clear) \
-+		MLX5_SET(typ, __p, fld, 0); \
-+	__t; \
-+})
-+
-+#define memcpy_and_clear(to, from, len, clear) ({ \
-+	void *__to = (to), *__from = (from); \
-+	size_t __len = (len); \
-+	memcpy(__to, __from, __len); \
-+	if (clear) \
-+		memset(__from, 0, __len); \
-+})
-+
-+static void dr_ste_copy_mask_misc(char *mask, struct mlx5dr_match_misc *spec, bool clr)
++static void mlx5_rep_tc_post_napi_receive(struct mlx5e_tc_update_priv *tc_priv)
 +{
-+	spec->gre_c_present = IFC_GET_CLR(fte_match_set_misc, mask, gre_c_present, clr);
-+	spec->gre_k_present = IFC_GET_CLR(fte_match_set_misc, mask, gre_k_present, clr);
-+	spec->gre_s_present = IFC_GET_CLR(fte_match_set_misc, mask, gre_s_present, clr);
-+	spec->source_vhca_port = IFC_GET_CLR(fte_match_set_misc, mask, source_vhca_port, clr);
-+	spec->source_sqn = IFC_GET_CLR(fte_match_set_misc, mask, source_sqn, clr);
-+
-+	spec->source_port = IFC_GET_CLR(fte_match_set_misc, mask, source_port, clr);
-+	spec->source_eswitch_owner_vhca_id =
-+		IFC_GET_CLR(fte_match_set_misc, mask, source_eswitch_owner_vhca_id, clr);
-+
-+	spec->outer_second_prio = IFC_GET_CLR(fte_match_set_misc, mask, outer_second_prio, clr);
-+	spec->outer_second_cfi = IFC_GET_CLR(fte_match_set_misc, mask, outer_second_cfi, clr);
-+	spec->outer_second_vid = IFC_GET_CLR(fte_match_set_misc, mask, outer_second_vid, clr);
-+	spec->inner_second_prio = IFC_GET_CLR(fte_match_set_misc, mask, inner_second_prio, clr);
-+	spec->inner_second_cfi = IFC_GET_CLR(fte_match_set_misc, mask, inner_second_cfi, clr);
-+	spec->inner_second_vid = IFC_GET_CLR(fte_match_set_misc, mask, inner_second_vid, clr);
- 
- 	spec->outer_second_cvlan_tag =
--		MLX5_GET(fte_match_set_misc, mask, outer_second_cvlan_tag);
-+		IFC_GET_CLR(fte_match_set_misc, mask, outer_second_cvlan_tag, clr);
- 	spec->inner_second_cvlan_tag =
--		MLX5_GET(fte_match_set_misc, mask, inner_second_cvlan_tag);
-+		IFC_GET_CLR(fte_match_set_misc, mask, inner_second_cvlan_tag, clr);
- 	spec->outer_second_svlan_tag =
--		MLX5_GET(fte_match_set_misc, mask, outer_second_svlan_tag);
-+		IFC_GET_CLR(fte_match_set_misc, mask, outer_second_svlan_tag, clr);
- 	spec->inner_second_svlan_tag =
--		MLX5_GET(fte_match_set_misc, mask, inner_second_svlan_tag);
--
--	spec->gre_protocol = MLX5_GET(fte_match_set_misc, mask, gre_protocol);
-+		IFC_GET_CLR(fte_match_set_misc, mask, inner_second_svlan_tag, clr);
-+	spec->gre_protocol = IFC_GET_CLR(fte_match_set_misc, mask, gre_protocol, clr);
- 
--	spec->gre_key_h = MLX5_GET(fte_match_set_misc, mask, gre_key.nvgre.hi);
--	spec->gre_key_l = MLX5_GET(fte_match_set_misc, mask, gre_key.nvgre.lo);
-+	spec->gre_key_h = IFC_GET_CLR(fte_match_set_misc, mask, gre_key.nvgre.hi, clr);
-+	spec->gre_key_l = IFC_GET_CLR(fte_match_set_misc, mask, gre_key.nvgre.lo, clr);
- 
--	spec->vxlan_vni = MLX5_GET(fte_match_set_misc, mask, vxlan_vni);
-+	spec->vxlan_vni = IFC_GET_CLR(fte_match_set_misc, mask, vxlan_vni, clr);
- 
--	spec->geneve_vni = MLX5_GET(fte_match_set_misc, mask, geneve_vni);
--	spec->geneve_oam = MLX5_GET(fte_match_set_misc, mask, geneve_oam);
-+	spec->geneve_vni = IFC_GET_CLR(fte_match_set_misc, mask, geneve_vni, clr);
-+	spec->geneve_oam = IFC_GET_CLR(fte_match_set_misc, mask, geneve_oam, clr);
- 
- 	spec->outer_ipv6_flow_label =
--		MLX5_GET(fte_match_set_misc, mask, outer_ipv6_flow_label);
-+		IFC_GET_CLR(fte_match_set_misc, mask, outer_ipv6_flow_label, clr);
- 
- 	spec->inner_ipv6_flow_label =
--		MLX5_GET(fte_match_set_misc, mask, inner_ipv6_flow_label);
-+		IFC_GET_CLR(fte_match_set_misc, mask, inner_ipv6_flow_label, clr);
- 
--	spec->geneve_opt_len = MLX5_GET(fte_match_set_misc, mask, geneve_opt_len);
-+	spec->geneve_opt_len = IFC_GET_CLR(fte_match_set_misc, mask, geneve_opt_len, clr);
- 	spec->geneve_protocol_type =
--		MLX5_GET(fte_match_set_misc, mask, geneve_protocol_type);
-+		IFC_GET_CLR(fte_match_set_misc, mask, geneve_protocol_type, clr);
- 
--	spec->bth_dst_qp = MLX5_GET(fte_match_set_misc, mask, bth_dst_qp);
-+	spec->bth_dst_qp = IFC_GET_CLR(fte_match_set_misc, mask, bth_dst_qp, clr);
- }
- 
--static void dr_ste_copy_mask_spec(char *mask, struct mlx5dr_match_spec *spec)
-+static void dr_ste_copy_mask_spec(char *mask, struct mlx5dr_match_spec *spec, bool clr)
- {
- 	__be32 raw_ip[4];
- 
--	spec->smac_47_16 = MLX5_GET(fte_match_set_lyr_2_4, mask, smac_47_16);
-+	spec->smac_47_16 = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, smac_47_16, clr);
- 
--	spec->smac_15_0 = MLX5_GET(fte_match_set_lyr_2_4, mask, smac_15_0);
--	spec->ethertype = MLX5_GET(fte_match_set_lyr_2_4, mask, ethertype);
-+	spec->smac_15_0 = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, smac_15_0, clr);
-+	spec->ethertype = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, ethertype, clr);
- 
--	spec->dmac_47_16 = MLX5_GET(fte_match_set_lyr_2_4, mask, dmac_47_16);
-+	spec->dmac_47_16 = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, dmac_47_16, clr);
- 
--	spec->dmac_15_0 = MLX5_GET(fte_match_set_lyr_2_4, mask, dmac_15_0);
--	spec->first_prio = MLX5_GET(fte_match_set_lyr_2_4, mask, first_prio);
--	spec->first_cfi = MLX5_GET(fte_match_set_lyr_2_4, mask, first_cfi);
--	spec->first_vid = MLX5_GET(fte_match_set_lyr_2_4, mask, first_vid);
-+	spec->dmac_15_0 = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, dmac_15_0, clr);
-+	spec->first_prio = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, first_prio, clr);
-+	spec->first_cfi = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, first_cfi, clr);
-+	spec->first_vid = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, first_vid, clr);
- 
--	spec->ip_protocol = MLX5_GET(fte_match_set_lyr_2_4, mask, ip_protocol);
--	spec->ip_dscp = MLX5_GET(fte_match_set_lyr_2_4, mask, ip_dscp);
--	spec->ip_ecn = MLX5_GET(fte_match_set_lyr_2_4, mask, ip_ecn);
--	spec->cvlan_tag = MLX5_GET(fte_match_set_lyr_2_4, mask, cvlan_tag);
--	spec->svlan_tag = MLX5_GET(fte_match_set_lyr_2_4, mask, svlan_tag);
--	spec->frag = MLX5_GET(fte_match_set_lyr_2_4, mask, frag);
--	spec->ip_version = MLX5_GET(fte_match_set_lyr_2_4, mask, ip_version);
--	spec->tcp_flags = MLX5_GET(fte_match_set_lyr_2_4, mask, tcp_flags);
--	spec->tcp_sport = MLX5_GET(fte_match_set_lyr_2_4, mask, tcp_sport);
--	spec->tcp_dport = MLX5_GET(fte_match_set_lyr_2_4, mask, tcp_dport);
-+	spec->ip_protocol = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, ip_protocol, clr);
-+	spec->ip_dscp = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, ip_dscp, clr);
-+	spec->ip_ecn = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, ip_ecn, clr);
-+	spec->cvlan_tag = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, cvlan_tag, clr);
-+	spec->svlan_tag = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, svlan_tag, clr);
-+	spec->frag = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, frag, clr);
-+	spec->ip_version = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, ip_version, clr);
-+	spec->tcp_flags = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, tcp_flags, clr);
-+	spec->tcp_sport = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, tcp_sport, clr);
-+	spec->tcp_dport = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, tcp_dport, clr);
- 
--	spec->ttl_hoplimit = MLX5_GET(fte_match_set_lyr_2_4, mask, ttl_hoplimit);
-+	spec->ttl_hoplimit = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, ttl_hoplimit, clr);
- 
--	spec->udp_sport = MLX5_GET(fte_match_set_lyr_2_4, mask, udp_sport);
--	spec->udp_dport = MLX5_GET(fte_match_set_lyr_2_4, mask, udp_dport);
-+	spec->udp_sport = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, udp_sport, clr);
-+	spec->udp_dport = IFC_GET_CLR(fte_match_set_lyr_2_4, mask, udp_dport, clr);
- 
--	memcpy(raw_ip, MLX5_ADDR_OF(fte_match_set_lyr_2_4, mask,
--				    src_ipv4_src_ipv6.ipv6_layout.ipv6),
--				    sizeof(raw_ip));
-+	memcpy_and_clear(raw_ip, MLX5_ADDR_OF(fte_match_set_lyr_2_4, mask,
-+					      src_ipv4_src_ipv6.ipv6_layout.ipv6),
-+			 sizeof(raw_ip), clr);
- 
- 	spec->src_ip_127_96 = be32_to_cpu(raw_ip[0]);
- 	spec->src_ip_95_64 = be32_to_cpu(raw_ip[1]);
- 	spec->src_ip_63_32 = be32_to_cpu(raw_ip[2]);
- 	spec->src_ip_31_0 = be32_to_cpu(raw_ip[3]);
- 
--	memcpy(raw_ip, MLX5_ADDR_OF(fte_match_set_lyr_2_4, mask,
--				    dst_ipv4_dst_ipv6.ipv6_layout.ipv6),
--				    sizeof(raw_ip));
-+	memcpy_and_clear(raw_ip, MLX5_ADDR_OF(fte_match_set_lyr_2_4, mask,
-+					      dst_ipv4_dst_ipv6.ipv6_layout.ipv6),
-+			 sizeof(raw_ip), clr);
- 
- 	spec->dst_ip_127_96 = be32_to_cpu(raw_ip[0]);
- 	spec->dst_ip_95_64 = be32_to_cpu(raw_ip[1]);
-@@ -770,104 +785,105 @@ static void dr_ste_copy_mask_spec(char *mask, struct mlx5dr_match_spec *spec)
- 	spec->dst_ip_31_0 = be32_to_cpu(raw_ip[3]);
- }
- 
--static void dr_ste_copy_mask_misc2(char *mask, struct mlx5dr_match_misc2 *spec)
-+static void dr_ste_copy_mask_misc2(char *mask, struct mlx5dr_match_misc2 *spec, bool clr)
- {
- 	spec->outer_first_mpls_label =
--		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls.mpls_label);
-+		IFC_GET_CLR(fte_match_set_misc2, mask, outer_first_mpls.mpls_label, clr);
- 	spec->outer_first_mpls_exp =
--		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls.mpls_exp);
-+		IFC_GET_CLR(fte_match_set_misc2, mask, outer_first_mpls.mpls_exp, clr);
- 	spec->outer_first_mpls_s_bos =
--		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls.mpls_s_bos);
-+		IFC_GET_CLR(fte_match_set_misc2, mask, outer_first_mpls.mpls_s_bos, clr);
- 	spec->outer_first_mpls_ttl =
--		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls.mpls_ttl);
-+		IFC_GET_CLR(fte_match_set_misc2, mask, outer_first_mpls.mpls_ttl, clr);
- 	spec->inner_first_mpls_label =
--		MLX5_GET(fte_match_set_misc2, mask, inner_first_mpls.mpls_label);
-+		IFC_GET_CLR(fte_match_set_misc2, mask, inner_first_mpls.mpls_label, clr);
- 	spec->inner_first_mpls_exp =
--		MLX5_GET(fte_match_set_misc2, mask, inner_first_mpls.mpls_exp);
-+		IFC_GET_CLR(fte_match_set_misc2, mask, inner_first_mpls.mpls_exp, clr);
- 	spec->inner_first_mpls_s_bos =
--		MLX5_GET(fte_match_set_misc2, mask, inner_first_mpls.mpls_s_bos);
-+		IFC_GET_CLR(fte_match_set_misc2, mask, inner_first_mpls.mpls_s_bos, clr);
- 	spec->inner_first_mpls_ttl =
--		MLX5_GET(fte_match_set_misc2, mask, inner_first_mpls.mpls_ttl);
-+		IFC_GET_CLR(fte_match_set_misc2, mask, inner_first_mpls.mpls_ttl, clr);
- 	spec->outer_first_mpls_over_gre_label =
--		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls_over_gre.mpls_label);
-+		IFC_GET_CLR(fte_match_set_misc2, mask, outer_first_mpls_over_gre.mpls_label, clr);
- 	spec->outer_first_mpls_over_gre_exp =
--		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls_over_gre.mpls_exp);
-+		IFC_GET_CLR(fte_match_set_misc2, mask, outer_first_mpls_over_gre.mpls_exp, clr);
- 	spec->outer_first_mpls_over_gre_s_bos =
--		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls_over_gre.mpls_s_bos);
-+		IFC_GET_CLR(fte_match_set_misc2, mask, outer_first_mpls_over_gre.mpls_s_bos, clr);
- 	spec->outer_first_mpls_over_gre_ttl =
--		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls_over_gre.mpls_ttl);
-+		IFC_GET_CLR(fte_match_set_misc2, mask, outer_first_mpls_over_gre.mpls_ttl, clr);
- 	spec->outer_first_mpls_over_udp_label =
--		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls_over_udp.mpls_label);
-+		IFC_GET_CLR(fte_match_set_misc2, mask, outer_first_mpls_over_udp.mpls_label, clr);
- 	spec->outer_first_mpls_over_udp_exp =
--		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls_over_udp.mpls_exp);
-+		IFC_GET_CLR(fte_match_set_misc2, mask, outer_first_mpls_over_udp.mpls_exp, clr);
- 	spec->outer_first_mpls_over_udp_s_bos =
--		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls_over_udp.mpls_s_bos);
-+		IFC_GET_CLR(fte_match_set_misc2, mask, outer_first_mpls_over_udp.mpls_s_bos, clr);
- 	spec->outer_first_mpls_over_udp_ttl =
--		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls_over_udp.mpls_ttl);
--	spec->metadata_reg_c_7 = MLX5_GET(fte_match_set_misc2, mask, metadata_reg_c_7);
--	spec->metadata_reg_c_6 = MLX5_GET(fte_match_set_misc2, mask, metadata_reg_c_6);
--	spec->metadata_reg_c_5 = MLX5_GET(fte_match_set_misc2, mask, metadata_reg_c_5);
--	spec->metadata_reg_c_4 = MLX5_GET(fte_match_set_misc2, mask, metadata_reg_c_4);
--	spec->metadata_reg_c_3 = MLX5_GET(fte_match_set_misc2, mask, metadata_reg_c_3);
--	spec->metadata_reg_c_2 = MLX5_GET(fte_match_set_misc2, mask, metadata_reg_c_2);
--	spec->metadata_reg_c_1 = MLX5_GET(fte_match_set_misc2, mask, metadata_reg_c_1);
--	spec->metadata_reg_c_0 = MLX5_GET(fte_match_set_misc2, mask, metadata_reg_c_0);
--	spec->metadata_reg_a = MLX5_GET(fte_match_set_misc2, mask, metadata_reg_a);
--}
--
--static void dr_ste_copy_mask_misc3(char *mask, struct mlx5dr_match_misc3 *spec)
--{
--	spec->inner_tcp_seq_num = MLX5_GET(fte_match_set_misc3, mask, inner_tcp_seq_num);
--	spec->outer_tcp_seq_num = MLX5_GET(fte_match_set_misc3, mask, outer_tcp_seq_num);
--	spec->inner_tcp_ack_num = MLX5_GET(fte_match_set_misc3, mask, inner_tcp_ack_num);
--	spec->outer_tcp_ack_num = MLX5_GET(fte_match_set_misc3, mask, outer_tcp_ack_num);
-+		IFC_GET_CLR(fte_match_set_misc2, mask, outer_first_mpls_over_udp.mpls_ttl, clr);
-+	spec->metadata_reg_c_7 = IFC_GET_CLR(fte_match_set_misc2, mask, metadata_reg_c_7, clr);
-+	spec->metadata_reg_c_6 = IFC_GET_CLR(fte_match_set_misc2, mask, metadata_reg_c_6, clr);
-+	spec->metadata_reg_c_5 = IFC_GET_CLR(fte_match_set_misc2, mask, metadata_reg_c_5, clr);
-+	spec->metadata_reg_c_4 = IFC_GET_CLR(fte_match_set_misc2, mask, metadata_reg_c_4, clr);
-+	spec->metadata_reg_c_3 = IFC_GET_CLR(fte_match_set_misc2, mask, metadata_reg_c_3, clr);
-+	spec->metadata_reg_c_2 = IFC_GET_CLR(fte_match_set_misc2, mask, metadata_reg_c_2, clr);
-+	spec->metadata_reg_c_1 = IFC_GET_CLR(fte_match_set_misc2, mask, metadata_reg_c_1, clr);
-+	spec->metadata_reg_c_0 = IFC_GET_CLR(fte_match_set_misc2, mask, metadata_reg_c_0, clr);
-+	spec->metadata_reg_a = IFC_GET_CLR(fte_match_set_misc2, mask, metadata_reg_a, clr);
++	if (tc_priv->tun_dev)
++		dev_put(tc_priv->tun_dev);
 +}
 +
-+static void dr_ste_copy_mask_misc3(char *mask, struct mlx5dr_match_misc3 *spec, bool clr)
-+{
-+	spec->inner_tcp_seq_num = IFC_GET_CLR(fte_match_set_misc3, mask, inner_tcp_seq_num, clr);
-+	spec->outer_tcp_seq_num = IFC_GET_CLR(fte_match_set_misc3, mask, outer_tcp_seq_num, clr);
-+	spec->inner_tcp_ack_num = IFC_GET_CLR(fte_match_set_misc3, mask, inner_tcp_ack_num, clr);
-+	spec->outer_tcp_ack_num = IFC_GET_CLR(fte_match_set_misc3, mask, outer_tcp_ack_num, clr);
- 	spec->outer_vxlan_gpe_vni =
--		MLX5_GET(fte_match_set_misc3, mask, outer_vxlan_gpe_vni);
-+		IFC_GET_CLR(fte_match_set_misc3, mask, outer_vxlan_gpe_vni, clr);
- 	spec->outer_vxlan_gpe_next_protocol =
--		MLX5_GET(fte_match_set_misc3, mask, outer_vxlan_gpe_next_protocol);
-+		IFC_GET_CLR(fte_match_set_misc3, mask, outer_vxlan_gpe_next_protocol, clr);
- 	spec->outer_vxlan_gpe_flags =
--		MLX5_GET(fte_match_set_misc3, mask, outer_vxlan_gpe_flags);
--	spec->icmpv4_header_data = MLX5_GET(fte_match_set_misc3, mask, icmp_header_data);
-+		IFC_GET_CLR(fte_match_set_misc3, mask, outer_vxlan_gpe_flags, clr);
-+	spec->icmpv4_header_data = IFC_GET_CLR(fte_match_set_misc3, mask, icmp_header_data, clr);
- 	spec->icmpv6_header_data =
--		MLX5_GET(fte_match_set_misc3, mask, icmpv6_header_data);
--	spec->icmpv4_type = MLX5_GET(fte_match_set_misc3, mask, icmp_type);
--	spec->icmpv4_code = MLX5_GET(fte_match_set_misc3, mask, icmp_code);
--	spec->icmpv6_type = MLX5_GET(fte_match_set_misc3, mask, icmpv6_type);
--	spec->icmpv6_code = MLX5_GET(fte_match_set_misc3, mask, icmpv6_code);
-+		IFC_GET_CLR(fte_match_set_misc3, mask, icmpv6_header_data, clr);
-+	spec->icmpv4_type = IFC_GET_CLR(fte_match_set_misc3, mask, icmp_type, clr);
-+	spec->icmpv4_code = IFC_GET_CLR(fte_match_set_misc3, mask, icmp_code, clr);
-+	spec->icmpv6_type = IFC_GET_CLR(fte_match_set_misc3, mask, icmpv6_type, clr);
-+	spec->icmpv6_code = IFC_GET_CLR(fte_match_set_misc3, mask, icmpv6_code, clr);
- 	spec->geneve_tlv_option_0_data =
--		MLX5_GET(fte_match_set_misc3, mask, geneve_tlv_option_0_data);
--	spec->gtpu_msg_flags = MLX5_GET(fte_match_set_misc3, mask, gtpu_msg_flags);
--	spec->gtpu_msg_type = MLX5_GET(fte_match_set_misc3, mask, gtpu_msg_type);
--	spec->gtpu_teid = MLX5_GET(fte_match_set_misc3, mask, gtpu_teid);
--	spec->gtpu_dw_0 = MLX5_GET(fte_match_set_misc3, mask, gtpu_dw_0);
--	spec->gtpu_dw_2 = MLX5_GET(fte_match_set_misc3, mask, gtpu_dw_2);
-+		IFC_GET_CLR(fte_match_set_misc3, mask, geneve_tlv_option_0_data, clr);
-+	spec->gtpu_teid = IFC_GET_CLR(fte_match_set_misc3, mask, gtpu_teid, clr);
-+	spec->gtpu_msg_flags = IFC_GET_CLR(fte_match_set_misc3, mask, gtpu_msg_flags, clr);
-+	spec->gtpu_msg_type = IFC_GET_CLR(fte_match_set_misc3, mask, gtpu_msg_type, clr);
-+	spec->gtpu_dw_0 = IFC_GET_CLR(fte_match_set_misc3, mask, gtpu_dw_0, clr);
-+	spec->gtpu_dw_2 = IFC_GET_CLR(fte_match_set_misc3, mask, gtpu_dw_2, clr);
- 	spec->gtpu_first_ext_dw_0 =
--		MLX5_GET(fte_match_set_misc3, mask, gtpu_first_ext_dw_0);
-+		IFC_GET_CLR(fte_match_set_misc3, mask, gtpu_first_ext_dw_0, clr);
+ static void mlx5e_restore_skb_sample(struct mlx5e_priv *priv, struct sk_buff *skb,
+ 				     struct mlx5_mapped_obj *mapped_obj,
+ 				     struct mlx5e_tc_update_priv *tc_priv)
+@@ -665,10 +672,10 @@ static void mlx5e_restore_skb_sample(struct mlx5e_priv *priv, struct sk_buff *sk
+ 	mlx5_rep_tc_post_napi_receive(tc_priv);
  }
  
--static void dr_ste_copy_mask_misc4(char *mask, struct mlx5dr_match_misc4 *spec)
-+static void dr_ste_copy_mask_misc4(char *mask, struct mlx5dr_match_misc4 *spec, bool clr)
+-bool mlx5e_rep_tc_update_skb(struct mlx5_cqe64 *cqe,
+-			     struct sk_buff *skb,
+-			     struct mlx5e_tc_update_priv *tc_priv)
++void mlx5e_rep_tc_receive(struct mlx5_cqe64 *cqe, struct mlx5e_rq *rq,
++			  struct sk_buff *skb)
  {
- 	spec->prog_sample_field_id_0 =
--		MLX5_GET(fte_match_set_misc4, mask, prog_sample_field_id_0);
-+		IFC_GET_CLR(fte_match_set_misc4, mask, prog_sample_field_id_0, clr);
- 	spec->prog_sample_field_value_0 =
--		MLX5_GET(fte_match_set_misc4, mask, prog_sample_field_value_0);
-+		IFC_GET_CLR(fte_match_set_misc4, mask, prog_sample_field_value_0, clr);
- 	spec->prog_sample_field_id_1 =
--		MLX5_GET(fte_match_set_misc4, mask, prog_sample_field_id_1);
-+		IFC_GET_CLR(fte_match_set_misc4, mask, prog_sample_field_id_1, clr);
- 	spec->prog_sample_field_value_1 =
--		MLX5_GET(fte_match_set_misc4, mask, prog_sample_field_value_1);
-+		IFC_GET_CLR(fte_match_set_misc4, mask, prog_sample_field_value_1, clr);
- 	spec->prog_sample_field_id_2 =
--		MLX5_GET(fte_match_set_misc4, mask, prog_sample_field_id_2);
-+		IFC_GET_CLR(fte_match_set_misc4, mask, prog_sample_field_id_2, clr);
- 	spec->prog_sample_field_value_2 =
--		MLX5_GET(fte_match_set_misc4, mask, prog_sample_field_value_2);
-+		IFC_GET_CLR(fte_match_set_misc4, mask, prog_sample_field_value_2, clr);
- 	spec->prog_sample_field_id_3 =
--		MLX5_GET(fte_match_set_misc4, mask, prog_sample_field_id_3);
-+		IFC_GET_CLR(fte_match_set_misc4, mask, prog_sample_field_id_3, clr);
- 	spec->prog_sample_field_value_3 =
--		MLX5_GET(fte_match_set_misc4, mask, prog_sample_field_value_3);
-+		IFC_GET_CLR(fte_match_set_misc4, mask, prog_sample_field_value_3, clr);
++	struct mlx5e_tc_update_priv tc_priv = {};
+ 	struct mlx5_mapped_obj mapped_obj;
+ 	struct mlx5_eswitch *esw;
+ 	struct mlx5e_priv *priv;
+@@ -677,7 +684,7 @@ bool mlx5e_rep_tc_update_skb(struct mlx5_cqe64 *cqe,
+ 
+ 	reg_c0 = (be32_to_cpu(cqe->sop_drop_qpn) & MLX5E_TC_FLOW_ID_MASK);
+ 	if (!reg_c0 || reg_c0 == MLX5_FS_DEFAULT_FLOW_TAG)
+-		return true;
++		goto forward;
+ 
+ 	/* If reg_c0 is not equal to the default flow tag then skb->mark
+ 	 * is not supported and must be reset back to 0.
+@@ -691,26 +698,30 @@ bool mlx5e_rep_tc_update_skb(struct mlx5_cqe64 *cqe,
+ 		netdev_dbg(priv->netdev,
+ 			   "Couldn't find mapped object for reg_c0: %d, err: %d\n",
+ 			   reg_c0, err);
+-		return false;
++		goto free_skb;
+ 	}
+ 
+ 	if (mapped_obj.type == MLX5_MAPPED_OBJ_CHAIN) {
+ 		u32 reg_c1 = be32_to_cpu(cqe->ft_metadata);
+ 
+-		return mlx5e_restore_skb_chain(skb, mapped_obj.chain, reg_c1, tc_priv);
++		if (!mlx5e_restore_skb_chain(skb, mapped_obj.chain, reg_c1, &tc_priv) &&
++		    !mlx5_ipsec_is_rx_flow(cqe))
++			goto free_skb;
+ 	} else if (mapped_obj.type == MLX5_MAPPED_OBJ_SAMPLE) {
+-		mlx5e_restore_skb_sample(priv, skb, &mapped_obj, tc_priv);
+-		return false;
++		mlx5e_restore_skb_sample(priv, skb, &mapped_obj, &tc_priv);
++		goto free_skb;
+ 	} else {
+ 		netdev_dbg(priv->netdev, "Invalid mapped object type: %d\n", mapped_obj.type);
+-		return false;
++		goto free_skb;
+ 	}
+ 
+-	return true;
+-}
++forward:
++	napi_gro_receive(rq->cq.napi, skb);
+ 
+-void mlx5_rep_tc_post_napi_receive(struct mlx5e_tc_update_priv *tc_priv)
+-{
+-	if (tc_priv->tun_dev)
+-		dev_put(tc_priv->tun_dev);
++	mlx5_rep_tc_post_napi_receive(&tc_priv);
++
++	return;
++
++free_skb:
++	dev_kfree_skb_any(skb);
  }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.h
+index d0661578467b..0a8334d20b3b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.h
+@@ -36,10 +36,8 @@ void mlx5e_rep_encap_entry_detach(struct mlx5e_priv *priv,
+ int mlx5e_rep_setup_tc(struct net_device *dev, enum tc_setup_type type,
+ 		       void *type_data);
  
- void mlx5dr_ste_copy_param(u8 match_criteria,
- 			   struct mlx5dr_match_param *set_param,
--			   struct mlx5dr_match_parameters *mask)
-+			   struct mlx5dr_match_parameters *mask,
-+			   bool clr)
- {
- 	u8 tail_param[MLX5_ST_SZ_BYTES(fte_match_set_lyr_2_4)] = {};
- 	u8 *data = (u8 *)mask->match_buf;
-@@ -881,7 +897,7 @@ void mlx5dr_ste_copy_param(u8 match_criteria,
- 		} else {
- 			buff = mask->match_buf;
- 		}
--		dr_ste_copy_mask_spec(buff, &set_param->outer);
-+		dr_ste_copy_mask_spec(buff, &set_param->outer, clr);
- 	}
- 	param_location = sizeof(struct mlx5dr_match_spec);
+-bool mlx5e_rep_tc_update_skb(struct mlx5_cqe64 *cqe,
+-			     struct sk_buff *skb,
+-			     struct mlx5e_tc_update_priv *tc_priv);
+-void mlx5_rep_tc_post_napi_receive(struct mlx5e_tc_update_priv *tc_priv);
++void mlx5e_rep_tc_receive(struct mlx5_cqe64 *cqe, struct mlx5e_rq *rq,
++			  struct sk_buff *skb);
  
-@@ -894,7 +910,7 @@ void mlx5dr_ste_copy_param(u8 match_criteria,
- 		} else {
- 			buff = data + param_location;
- 		}
--		dr_ste_copy_mask_misc(buff, &set_param->misc);
-+		dr_ste_copy_mask_misc(buff, &set_param->misc, clr);
- 	}
- 	param_location += sizeof(struct mlx5dr_match_misc);
+ #else /* CONFIG_MLX5_CLS_ACT */
  
-@@ -907,7 +923,7 @@ void mlx5dr_ste_copy_param(u8 match_criteria,
- 		} else {
- 			buff = data + param_location;
- 		}
--		dr_ste_copy_mask_spec(buff, &set_param->inner);
-+		dr_ste_copy_mask_spec(buff, &set_param->inner, clr);
- 	}
- 	param_location += sizeof(struct mlx5dr_match_spec);
+@@ -67,12 +65,9 @@ mlx5e_rep_setup_tc(struct net_device *dev, enum tc_setup_type type,
+ 		   void *type_data) { return -EOPNOTSUPP; }
  
-@@ -920,7 +936,7 @@ void mlx5dr_ste_copy_param(u8 match_criteria,
- 		} else {
- 			buff = data + param_location;
- 		}
--		dr_ste_copy_mask_misc2(buff, &set_param->misc2);
-+		dr_ste_copy_mask_misc2(buff, &set_param->misc2, clr);
- 	}
+ struct mlx5e_tc_update_priv;
+-static inline bool
+-mlx5e_rep_tc_update_skb(struct mlx5_cqe64 *cqe,
+-			struct sk_buff *skb,
+-			struct mlx5e_tc_update_priv *tc_priv) { return true; }
+ static inline void
+-mlx5_rep_tc_post_napi_receive(struct mlx5e_tc_update_priv *tc_priv) {}
++mlx5e_rep_tc_receive(struct mlx5_cqe64 *cqe, struct mlx5e_rq *rq,
++		     struct sk_buff *skb) {}
  
- 	param_location += sizeof(struct mlx5dr_match_misc2);
-@@ -934,7 +950,7 @@ void mlx5dr_ste_copy_param(u8 match_criteria,
- 		} else {
- 			buff = data + param_location;
- 		}
--		dr_ste_copy_mask_misc3(buff, &set_param->misc3);
-+		dr_ste_copy_mask_misc3(buff, &set_param->misc3, clr);
- 	}
+ #endif /* CONFIG_MLX5_CLS_ACT */
  
- 	param_location += sizeof(struct mlx5dr_match_misc3);
-@@ -948,7 +964,7 @@ void mlx5dr_ste_copy_param(u8 match_criteria,
- 		} else {
- 			buff = data + param_location;
- 		}
--		dr_ste_copy_mask_misc4(buff, &set_param->misc4);
-+		dr_ste_copy_mask_misc4(buff, &set_param->misc4, clr);
- 	}
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+index f63c8ff3ef3f..96967b0a2441 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -1660,7 +1660,6 @@ static void mlx5e_handle_rx_cqe_rep(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
+ 	struct mlx5e_priv *priv = netdev_priv(netdev);
+ 	struct mlx5e_rep_priv *rpriv  = priv->ppriv;
+ 	struct mlx5_eswitch_rep *rep = rpriv->rep;
+-	struct mlx5e_tc_update_priv tc_priv = {};
+ 	struct mlx5_wq_cyc *wq = &rq->wqe.wq;
+ 	struct mlx5e_wqe_frag_info *wi;
+ 	struct sk_buff *skb;
+@@ -1696,15 +1695,7 @@ static void mlx5e_handle_rx_cqe_rep(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
+ 	if (rep->vlan && skb_vlan_tag_present(skb))
+ 		skb_vlan_pop(skb);
  
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-index 3f47d2b3b6e6..3028b776da00 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -1230,7 +1230,8 @@ void mlx5dr_ste_set_formatted_ste(struct mlx5dr_ste_ctx *ste_ctx,
- 				  struct mlx5dr_htbl_connect_info *connect_info);
- void mlx5dr_ste_copy_param(u8 match_criteria,
- 			   struct mlx5dr_match_param *set_param,
--			   struct mlx5dr_match_parameters *mask);
-+			   struct mlx5dr_match_parameters *mask,
-+			   bool clear);
+-	if (unlikely(!mlx5_ipsec_is_rx_flow(cqe) &&
+-		     !mlx5e_rep_tc_update_skb(cqe, skb, &tc_priv))) {
+-		dev_kfree_skb_any(skb);
+-		goto free_wqe;
+-	}
+-
+-	napi_gro_receive(rq->cq.napi, skb);
+-
+-	mlx5_rep_tc_post_napi_receive(&tc_priv);
++	mlx5e_rep_tc_receive(cqe, rq, skb);
  
- struct mlx5dr_qp {
- 	struct mlx5_core_dev *mdev;
+ free_wqe:
+ 	mlx5e_free_rx_wqe(rq, wi, true);
+@@ -1721,7 +1712,6 @@ static void mlx5e_handle_rx_cqe_mpwrq_rep(struct mlx5e_rq *rq, struct mlx5_cqe64
+ 	u32 wqe_offset     = stride_ix << rq->mpwqe.log_stride_sz;
+ 	u32 head_offset    = wqe_offset & (PAGE_SIZE - 1);
+ 	u32 page_idx       = wqe_offset >> PAGE_SHIFT;
+-	struct mlx5e_tc_update_priv tc_priv = {};
+ 	struct mlx5e_rx_wqe_ll *wqe;
+ 	struct mlx5_wq_ll *wq;
+ 	struct sk_buff *skb;
+@@ -1754,15 +1744,7 @@ static void mlx5e_handle_rx_cqe_mpwrq_rep(struct mlx5e_rq *rq, struct mlx5_cqe64
+ 
+ 	mlx5e_complete_rx_cqe(rq, cqe, cqe_bcnt, skb);
+ 
+-	if (unlikely(!mlx5_ipsec_is_rx_flow(cqe) &&
+-		     !mlx5e_rep_tc_update_skb(cqe, skb, &tc_priv))) {
+-		dev_kfree_skb_any(skb);
+-		goto mpwrq_cqe_out;
+-	}
+-
+-	napi_gro_receive(rq->cq.napi, skb);
+-
+-	mlx5_rep_tc_post_napi_receive(&tc_priv);
++	mlx5e_rep_tc_receive(cqe, rq, skb);
+ 
+ mpwrq_cqe_out:
+ 	if (likely(wi->consumed_strides < rq->mpwqe.num_strides))
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 3af3da214a5b..f458f7f6b299 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -60,7 +60,6 @@
+ #include "en/mapping.h"
+ #include "en/tc_ct.h"
+ #include "en/mod_hdr.h"
+-#include "en/tc_priv.h"
+ #include "en/tc_tun_encap.h"
+ #include "en/tc/sample.h"
+ #include "lib/devcom.h"
 -- 
 2.31.1
 
