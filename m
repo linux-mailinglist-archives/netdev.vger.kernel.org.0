@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B498343FDDD
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 16:09:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17B0543FDEA
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 16:09:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230495AbhJ2OLm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 10:11:42 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:14880 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229692AbhJ2OLl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 10:11:41 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HgknF4Jz5z90G1;
-        Fri, 29 Oct 2021 22:09:05 +0800 (CST)
+        id S231664AbhJ2OMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 10:12:03 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:26135 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231431AbhJ2OLz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 10:11:55 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Hgkl5003tz1DHg5;
+        Fri, 29 Oct 2021 22:07:12 +0800 (CST)
 Received: from dggema772-chm.china.huawei.com (10.1.198.214) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2308.15; Fri, 29 Oct 2021 22:09:10 +0800
+ 15.1.2308.15; Fri, 29 Oct 2021 22:09:11 +0800
 Received: from huawei.com (10.175.101.6) by dggema772-chm.china.huawei.com
  (10.1.198.214) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.15; Fri, 29
- Oct 2021 22:09:09 +0800
+ Oct 2021 22:09:10 +0800
 From:   Liu Jian <liujian56@huawei.com>
 To:     <john.fastabend@gmail.com>, <daniel@iogearbox.net>,
         <jakub@cloudflare.com>, <lmb@cloudflare.com>,
@@ -31,9 +31,9 @@ To:     <john.fastabend@gmail.com>, <daniel@iogearbox.net>,
         <bpf@vger.kernel.org>, <xiyou.wangcong@gmail.com>,
         <alexei.starovoitov@gmail.com>
 CC:     <liujian56@huawei.com>
-Subject: [PATHC bpf v6 2/3] selftests, bpf: Fix test_txmsg_ingress_parser error
-Date:   Fri, 29 Oct 2021 22:12:15 +0800
-Message-ID: <20211029141216.211899-2-liujian56@huawei.com>
+Subject: [PATHC bpf v6 3/3] selftests, bpf: Add one test for sockmap with strparser
+Date:   Fri, 29 Oct 2021 22:12:16 +0800
+Message-ID: <20211029141216.211899-3-liujian56@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211029141216.211899-1-liujian56@huawei.com>
 References: <20211029141216.211899-1-liujian56@huawei.com>
@@ -47,35 +47,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After "skmsg: lose offset info in sk_psock_skb_ingress", the test case
-with ktls failed. This because ktls parser(tls_read_size) return value
-is 285 not 256.
-
-the case like this:
-	tls_sk1 --> redir_sk --> tls_sk2
-tls_sk1 sent out 512 bytes data, after tls related processing redir_sk
-recved 570 btyes data, and redirect 512 (skb_use_parser) bytes data to
-tls_sk2; but tls_sk2 needs 285 * 2 bytes data, receive timeout occurred.
+Add the test to check sockmap with strparser is working well.
 
 Signed-off-by: Liu Jian <liujian56@huawei.com>
 Acked-by: John Fastabend <john.fastabend@gmail.com>
 ---
- tools/testing/selftests/bpf/test_sockmap.c | 2 ++
- 1 file changed, 2 insertions(+)
+ tools/testing/selftests/bpf/test_sockmap.c | 33 ++++++++++++++++++++--
+ 1 file changed, 30 insertions(+), 3 deletions(-)
 
 diff --git a/tools/testing/selftests/bpf/test_sockmap.c b/tools/testing/selftests/bpf/test_sockmap.c
-index eefd445b96fc..06924917ad77 100644
+index 06924917ad77..1ba7e7346afb 100644
 --- a/tools/testing/selftests/bpf/test_sockmap.c
 +++ b/tools/testing/selftests/bpf/test_sockmap.c
-@@ -1680,6 +1680,8 @@ static void test_txmsg_ingress_parser(int cgrp, struct sockmap_options *opt)
- {
- 	txmsg_pass = 1;
- 	skb_use_parser = 512;
+@@ -139,6 +139,7 @@ struct sockmap_options {
+ 	bool sendpage;
+ 	bool data_test;
+ 	bool drop_expected;
++	bool check_recved_len;
+ 	int iov_count;
+ 	int iov_length;
+ 	int rate;
+@@ -556,8 +557,12 @@ static int msg_loop(int fd, int iov_count, int iov_length, int cnt,
+ 	int err, i, flags = MSG_NOSIGNAL;
+ 	bool drop = opt->drop_expected;
+ 	bool data = opt->data_test;
++	int iov_alloc_length = iov_length;
+ 
+-	err = msg_alloc_iov(&msg, iov_count, iov_length, data, tx);
++	if (!tx && opt->check_recved_len)
++		iov_alloc_length *= 2;
++
++	err = msg_alloc_iov(&msg, iov_count, iov_alloc_length, data, tx);
+ 	if (err)
+ 		goto out_errno;
+ 	if (peek_flag) {
+@@ -665,6 +670,13 @@ static int msg_loop(int fd, int iov_count, int iov_length, int cnt,
+ 
+ 			s->bytes_recvd += recv;
+ 
++			if (opt->check_recved_len && s->bytes_recvd > total_bytes) {
++				errno = EMSGSIZE;
++				fprintf(stderr, "recv failed(), bytes_recvd:%zd, total_bytes:%f\n",
++						s->bytes_recvd, total_bytes);
++				goto out_errno;
++			}
++
+ 			if (data) {
+ 				int chunk_sz = opt->sendpage ?
+ 						iov_length * cnt :
+@@ -744,7 +756,8 @@ static int sendmsg_test(struct sockmap_options *opt)
+ 
+ 	rxpid = fork();
+ 	if (rxpid == 0) {
+-		iov_buf -= (txmsg_pop - txmsg_start_pop + 1);
++		if (txmsg_pop || txmsg_start_pop)
++			iov_buf -= (txmsg_pop - txmsg_start_pop + 1);
+ 		if (opt->drop_expected || txmsg_ktls_skb_drop)
+ 			_exit(0);
+ 
+@@ -1688,6 +1701,19 @@ static void test_txmsg_ingress_parser(int cgrp, struct sockmap_options *opt)
+ 	test_exec(cgrp, opt);
+ }
+ 
++static void test_txmsg_ingress_parser2(int cgrp, struct sockmap_options *opt)
++{
 +	if (ktls == 1)
-+		skb_use_parser = 570;
- 	opt->iov_length = 256;
- 	opt->iov_count = 1;
- 	opt->rate = 2;
++		return;
++	skb_use_parser = 10;
++	opt->iov_length = 20;
++	opt->iov_count = 1;
++	opt->rate = 1;
++	opt->check_recved_len = true;
++	test_exec(cgrp, opt);
++	opt->check_recved_len = false;
++}
++
+ char *map_names[] = {
+ 	"sock_map",
+ 	"sock_map_txmsg",
+@@ -1786,7 +1812,8 @@ struct _test test[] = {
+ 	{"txmsg test pull-data", test_txmsg_pull},
+ 	{"txmsg test pop-data", test_txmsg_pop},
+ 	{"txmsg test push/pop data", test_txmsg_push_pop},
+-	{"txmsg text ingress parser", test_txmsg_ingress_parser},
++	{"txmsg test ingress parser", test_txmsg_ingress_parser},
++	{"txmsg test ingress parser2", test_txmsg_ingress_parser2},
+ };
+ 
+ static int check_whitelist(struct _test *t, struct sockmap_options *opt)
 -- 
 2.17.1
 
