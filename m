@@ -2,93 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AFC443F80E
+	by mail.lfdr.de (Postfix) with ESMTP id 94E0B43F80F
 	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 09:48:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232260AbhJ2HvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 03:51:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38728 "EHLO
+        id S232346AbhJ2HvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 03:51:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232305AbhJ2Huz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 03:50:55 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B0AC061766
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 00:48:27 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id t184so8558861pfd.0
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 00:48:27 -0700 (PDT)
+        with ESMTP id S232297AbhJ2Hu4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 03:50:56 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B8FDC061767
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 00:48:28 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id e65so9145622pgc.5
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 00:48:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=jHSJePyKKQ30fKMWjuOjyY/AotIfRmpQMAH12rKahII=;
-        b=CjMu1py6jEJm3S8FnnRmFxMA7QyJmeZvEoXt11QTAOUQDEVxy2bXYPsYllYVq5OWzZ
-         jnoLTM+hmGSaCNyzF4Qr/rYdZhOhtBAKyKxfHRecn+d+wuSUpTAtXdo7ejWoZFTX3J6e
-         svvleMZ0+PjpBQ9XRLRKyJjVzZtMKn9wNALI8=
+        bh=hXREkqjkimN6Kc88T55pmKTQJTfYqwcIlO4KDZ2pzTQ=;
+        b=K8tYCfmKBySzchEcge9ny+fSVAl+0hZYnPnvaCqv/oaW/w1BLfEAAGzxw0lb0QEb+x
+         CcjzUPNOCwH+gSIs3oEIUHxII3/Qa/hawV0fpgdjpOqwKuhPwvo5d0NAg1CXsxuvA6Or
+         b7VNmdfypOSTvteJYtQY43TS3tr7+MORSRSA8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=jHSJePyKKQ30fKMWjuOjyY/AotIfRmpQMAH12rKahII=;
-        b=WpSfEIE1eASpCc8/oyLeZXoFxLrdlPdja67c88lDNDvyKbrdbyWv94DaIpMGtqXfxf
-         JEi2zb6EaicxBdltKcdB2X5g46Rz7Bkpmgh0BNn+rKvhd5dfyh0oOWyPrer3vQMctO1t
-         nPSqWnVf9vT6HICF8/elTVKDPogEocp1fpTyX9BYKFD60KBgZGdIkmPhSQ9IHCqP+5NQ
-         HU07/I4FjqZ+JneGKBAEq9HAXBkQdYmv+ASEc4kOSrWqxUFJ+dWB9n3MAH6h9yOG5L87
-         WqyK+7zo4qKOnTU8fw9jjWFNu5tQKFoRTsw8vNhqloelqmqwXuJXDGwqAfXblJcWnXc/
-         8WTA==
-X-Gm-Message-State: AOAM530bStv8kCApuKYui/GnDSDiKlcYL12kvmTB/u91bEDsjxk8JQcm
-        bPwsIGj92aGaWd9sKtVnzwoHQ17nrOVTFA==
-X-Google-Smtp-Source: ABdhPJy+J65AR7RNj62BPRj69kabeBVJNPrCrdFj0KC96Rz4OSAzXmpR2tNidFTDSh65rjRwHojfew==
-X-Received: by 2002:a05:6a00:1742:b0:47c:28d:ee2c with SMTP id j2-20020a056a00174200b0047c028dee2cmr9228895pfc.55.1635493706776;
-        Fri, 29 Oct 2021 00:48:26 -0700 (PDT)
+        bh=hXREkqjkimN6Kc88T55pmKTQJTfYqwcIlO4KDZ2pzTQ=;
+        b=BuI98yNYPG9LoTyOuW6+x8vcSpQm4EKY1aA89KWaEB0O7+GiABrx7UFhS12500BVpv
+         6fCpoHE8n4XSslAjNiv5TgVj1w0eYBS7cde9Jh824d0imHdDf0hRO5q2vtpCTc3IMkKr
+         woH2JxCJDJ57DwkDy7Qn7DfC7IKTLh1GvTxl+fI1coJEce1rH58Zux4pUUUYEfLBzxX2
+         Y1StAjwWs+bF7Taz05XpVXSYI361uU92W7JZj7B78/I4+ocRQgsP6yok6bkzYWva7fWx
+         5Z5jf60cLK0+nSl/Dg7t1uUqIkTTGURTiKdbgUc5/NDjPGPqgWdih3tbI2xmkZ+KzWmI
+         ulcA==
+X-Gm-Message-State: AOAM5338pdpWA+m7Dh2/urECYW2FW5zBXK7Zxb9+jVCNecungeWcc58J
+        OMEYl2RV073RCnUHGR5Ydz7xYg==
+X-Google-Smtp-Source: ABdhPJx8FHWfTNfOpR3yQBl0Ift4Wa+rB6j2rwW/gkxiGF0xDMeKCO9slu+UCOJAG/elG1gojWXs3A==
+X-Received: by 2002:a05:6a00:998:b0:47b:e61e:c0f4 with SMTP id u24-20020a056a00099800b0047be61ec0f4mr9328431pfg.31.1635493707931;
+        Fri, 29 Oct 2021 00:48:27 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id s18sm5721186pfc.87.2021.10.29.00.48.25
+        by smtp.gmail.com with ESMTPSA id s18sm5721186pfc.87.2021.10.29.00.48.26
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 29 Oct 2021 00:48:26 -0700 (PDT)
+        Fri, 29 Oct 2021 00:48:27 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
         gospo@broadcom.com, jiri@nvidia.com
-Subject: [PATCH net-next v2 12/19] bnxt_en: Add compression flags information in coredump segment header
-Date:   Fri, 29 Oct 2021 03:47:49 -0400
-Message-Id: <1635493676-10767-13-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 13/19] bnxt_en: Retrieve coredump and crashdump size via FW command
+Date:   Fri, 29 Oct 2021 03:47:50 -0400
+Message-Id: <1635493676-10767-14-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1635493676-10767-1-git-send-email-michael.chan@broadcom.com>
 References: <1635493676-10767-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000075400805cf790dbd"
+        boundary="00000000000085c76405cf790d14"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000075400805cf790dbd
+--00000000000085c76405cf790d14
 
 From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 
-Firmware sets compression flags for each segment, add this information
-while filling segment header.
+Recent firmware provides coredump and crashdump size info via
+DBG_QCFG command. Read the dump sizes from firmware, instead of
+computing in the driver. This patch reduces the time taken
+to collect the dump via ethtool.
 
 Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 31 +++++++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  3 +
+ .../ethernet/broadcom/bnxt/bnxt_coredump.c    | 55 +++++++++++++++++--
+ 3 files changed, 85 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index b4d9374548f8..a5d4dbee7683 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -7480,6 +7480,8 @@ static int __bnxt_hwrm_func_qcaps(struct bnxt *bp)
+ 		bp->fw_cap |= BNXT_FW_CAP_ERR_RECOVER_RELOAD;
+ 	if (!(flags & FUNC_QCAPS_RESP_FLAGS_VLAN_ACCELERATION_TX_DISABLED))
+ 		bp->fw_cap |= BNXT_FW_CAP_VLAN_TX_INSERT;
++	if (flags & FUNC_QCAPS_RESP_FLAGS_DBG_QCAPS_CMD_SUPPORTED)
++		bp->fw_cap |= BNXT_FW_CAP_DBG_QCAPS;
+ 
+ 	flags_ext = le32_to_cpu(resp->flags_ext);
+ 	if (flags_ext & FUNC_QCAPS_RESP_FLAGS_EXT_EXT_HW_STATS_SUPPORTED)
+@@ -7543,6 +7545,32 @@ static int __bnxt_hwrm_func_qcaps(struct bnxt *bp)
+ 	return rc;
+ }
+ 
++static void bnxt_hwrm_dbg_qcaps(struct bnxt *bp)
++{
++	struct hwrm_dbg_qcaps_output *resp;
++	struct hwrm_dbg_qcaps_input *req;
++	int rc;
++
++	bp->fw_dbg_cap = 0;
++	if (!(bp->fw_cap & BNXT_FW_CAP_DBG_QCAPS))
++		return;
++
++	rc = hwrm_req_init(bp, req, HWRM_DBG_QCAPS);
++	if (rc)
++		return;
++
++	req->fid = cpu_to_le16(0xffff);
++	resp = hwrm_req_hold(bp, req);
++	rc = hwrm_req_send(bp, req);
++	if (rc)
++		goto hwrm_dbg_qcaps_exit;
++
++	bp->fw_dbg_cap = le32_to_cpu(resp->flags);
++
++hwrm_dbg_qcaps_exit:
++	hwrm_req_drop(bp, req);
++}
++
+ static int bnxt_hwrm_queue_qportcfg(struct bnxt *bp);
+ 
+ static int bnxt_hwrm_func_qcaps(struct bnxt *bp)
+@@ -7552,6 +7580,9 @@ static int bnxt_hwrm_func_qcaps(struct bnxt *bp)
+ 	rc = __bnxt_hwrm_func_qcaps(bp);
+ 	if (rc)
+ 		return rc;
++
++	bnxt_hwrm_dbg_qcaps(bp);
++
+ 	rc = bnxt_hwrm_queue_qportcfg(bp);
+ 	if (rc) {
+ 		netdev_err(bp->dev, "hwrm query qportcfg failure rc: %d\n", rc);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index bbbc63e882d1..4165fffec886 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -1961,6 +1961,9 @@ struct bnxt {
+ 	#define BNXT_FW_CAP_PTP_PPS			0x10000000
+ 	#define BNXT_FW_CAP_HOT_RESET_IF		0x20000000
+ 	#define BNXT_FW_CAP_RING_MONITOR		0x40000000
++	#define BNXT_FW_CAP_DBG_QCAPS			0x80000000
++
++	u32			fw_dbg_cap;
+ 
+ #define BNXT_NEW_RM(bp)		((bp)->fw_cap & BNXT_FW_CAP_NEW_RM)
+ 	u32			hwrm_spec_code;
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c
-index 3e23fce3771e..05896bf9750d 100644
+index 05896bf9750d..8961a6ffae87 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c
-@@ -178,6 +178,7 @@ bnxt_fill_coredump_seg_hdr(struct bnxt *bp,
- 		seg_hdr->segment_id = (__force __le32)seg_rec->segment_id;
- 		seg_hdr->low_version = seg_rec->version_low;
- 		seg_hdr->high_version = seg_rec->version_hi;
-+		seg_hdr->flags = cpu_to_le32(seg_rec->compress_flags);
- 	} else {
- 		/* For hwrm_ver_get response Component id = 2
- 		 * and Segment id = 0
+@@ -361,13 +361,60 @@ int bnxt_get_coredump(struct bnxt *bp, u16 dump_type, void *buf, u32 *dump_len)
+ 	}
+ }
+ 
++static int bnxt_hwrm_get_dump_len(struct bnxt *bp, u16 dump_type, u32 *dump_len)
++{
++	struct hwrm_dbg_qcfg_output *resp;
++	struct hwrm_dbg_qcfg_input *req;
++	int rc, hdr_len = 0;
++
++	if (!(bp->fw_cap & BNXT_FW_CAP_DBG_QCAPS))
++		return -EOPNOTSUPP;
++
++	if (dump_type == BNXT_DUMP_CRASH &&
++	    !(bp->fw_dbg_cap & DBG_QCAPS_RESP_FLAGS_CRASHDUMP_SOC_DDR))
++		return -EOPNOTSUPP;
++
++	rc = hwrm_req_init(bp, req, HWRM_DBG_QCFG);
++	if (rc)
++		return rc;
++
++	req->fid = cpu_to_le16(0xffff);
++	if (dump_type == BNXT_DUMP_CRASH)
++		req->flags = cpu_to_le16(DBG_QCFG_REQ_FLAGS_CRASHDUMP_SIZE_FOR_DEST_DEST_SOC_DDR);
++
++	resp = hwrm_req_hold(bp, req);
++	rc = hwrm_req_send(bp, req);
++	if (rc)
++		goto get_dump_len_exit;
++
++	if (dump_type == BNXT_DUMP_CRASH) {
++		*dump_len = le32_to_cpu(resp->crashdump_size);
++	} else {
++		/* Driver adds coredump header and "HWRM_VER_GET response"
++		 * segment additionally to coredump.
++		 */
++		hdr_len = sizeof(struct bnxt_coredump_segment_hdr) +
++		sizeof(struct hwrm_ver_get_output) +
++		sizeof(struct bnxt_coredump_record);
++		*dump_len = le32_to_cpu(resp->coredump_size) + hdr_len;
++	}
++	if (*dump_len <= hdr_len)
++		rc = -EINVAL;
++
++get_dump_len_exit:
++	hwrm_req_drop(bp, req);
++	return rc;
++}
++
+ u32 bnxt_get_coredump_length(struct bnxt *bp, u16 dump_type)
+ {
+ 	u32 len = 0;
+ 
+-	if (dump_type == BNXT_DUMP_CRASH)
+-		len = BNXT_CRASH_DUMP_LEN;
+-	else
+-		__bnxt_get_coredump(bp, NULL, &len);
++	if (bnxt_hwrm_get_dump_len(bp, dump_type, &len)) {
++		if (dump_type == BNXT_DUMP_CRASH)
++			len = BNXT_CRASH_DUMP_LEN;
++		else
++			__bnxt_get_coredump(bp, NULL, &len);
++	}
+ 	return len;
+ }
 -- 
 2.18.1
 
 
---00000000000075400805cf790dbd
+--00000000000085c76405cf790d14
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -159,13 +290,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIDxS6BiSfFbyvPMV/PEDX9hu4Yn+sF4R
-mMSCj9fMDh2CMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTAy
-OTA3NDgyN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIMVHJzLqJq8eJgHJ3Q9thA33F+Hekzqb
+yAB3/v11wihMMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTAy
+OTA3NDgyOFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBDkxMtxEH1KYDTf9WaD6YMJ9mdb0Om+rji0V/SN3gRnx1fPIAr
-aRscPutC1iSGUFYscdO0VyEAFQ11COlToeYGa80rz0D1l78WR4btotLKuU+k7RMI9nxNUWjfjsqP
-S3z90ZFM4oRf/8rmyTQTFTUZ6LIk8Uvc2b3ggRdv0XqSO+0Z8YzUxDwHTPDfI/OoLjfhVcmZopH3
-JzN8dEalWq9x3/JXlQaRKmGr99i9f+jNqiMpqOM9/O2x3SCYsIxcfpR5EcxfvX+xUN+rzafcmsPl
-08LOfMRwwYlLVKiU4Fy2KgVmsRoFAeTBbxnJgSUambf6F0cPDGoDtJFbpHr6fJNx
---00000000000075400805cf790dbd--
+ATANBgkqhkiG9w0BAQEFAASCAQDQRZ0D1EsZobX+9oQyyzyFnDbBwxk+nVI1kRI60yECGuYbIKmf
+8BoENikCSjpPmDY32hpa8VLFtiLm0vG3KLVLb1Kbw1EhjK4Lwqkv43/uoOj+Vcs3WBTyanXyt4r6
+dOP7rbXuOTd9CgghiNEhYboEZGYMyXfFfmnZjYOyEvi3L42eUgbMzdfWFZHMn4SQUojC0Ji+JNPq
+KbThM0OEBzSqNABXmuYKlvyBzsxxRGQ/MQvhOojvZUg2xnZin00+F1SK4eSYaHh3J2OsXk0/RMLR
+1ivW7TtW4n0OIZaaFJp3BiisjBJt9j/8i4t65ss4jR4ZhSlVdB73x9hN9DV4pfCf
+--00000000000085c76405cf790d14--
