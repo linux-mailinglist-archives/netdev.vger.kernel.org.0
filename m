@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3350643F521
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 05:02:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24EC243F523
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 05:02:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231598AbhJ2DEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 23:04:31 -0400
-Received: from pi.codeconstruct.com.au ([203.29.241.158]:43078 "EHLO
+        id S231602AbhJ2DEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 23:04:32 -0400
+Received: from pi.codeconstruct.com.au ([203.29.241.158]:43092 "EHLO
         codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231584AbhJ2DEa (ORCPT
+        with ESMTP id S231348AbhJ2DEa (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 23:04:30 -0400
 Received: by codeconstruct.com.au (Postfix, from userid 10000)
-        id 60C9D2028B; Fri, 29 Oct 2021 11:01:53 +0800 (AWST)
+        id CEC8920293; Fri, 29 Oct 2021 11:01:53 +0800 (AWST)
 From:   Jeremy Kerr <jk@codeconstruct.com.au>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Matt Johnston <matt@codeconstruct.com.au>,
         Andrew Jeffery <andrew@aj.id.au>
-Subject: [PATCH net-next v2 1/3] mctp: Return new key from mctp_alloc_local_tag
-Date:   Fri, 29 Oct 2021 11:01:43 +0800
-Message-Id: <20211029030145.633626-2-jk@codeconstruct.com.au>
+Subject: [PATCH net-next v2 2/3] mctp: Add flow extension to skb
+Date:   Fri, 29 Oct 2021 11:01:44 +0800
+Message-Id: <20211029030145.633626-3-jk@codeconstruct.com.au>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211029030145.633626-1-jk@codeconstruct.com.au>
 References: <20211029030145.633626-1-jk@codeconstruct.com.au>
@@ -31,96 +31,143 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In a future change, we will want the key available for future use after
-allocating a new tag. This change returns the key from
-mctp_alloc_local_tag, rather than just key->tag.
+This change adds a new skb extension for MCTP, to represent a
+request/response flow.
+
+The intention is to use this in a later change to allow i2c controllers
+to correctly configure a multiplexer over a flow.
+
+Since we have a cleanup function in the core path (if an extension is
+present), we'll need to make CONFIG_MCTP a bool, rather than a tristate.
+
+Includes a fix for a build warning with clang:
+Reported-by: kernel test robot <lkp@intel.com>
 
 Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
----
- net/mctp/route.c | 28 ++++++++++++++++------------
- 1 file changed, 16 insertions(+), 12 deletions(-)
 
-diff --git a/net/mctp/route.c b/net/mctp/route.c
-index c23ab3547ee5..82cc10a2fb0c 100644
---- a/net/mctp/route.c
-+++ b/net/mctp/route.c
-@@ -532,14 +532,14 @@ static void mctp_reserve_tag(struct net *net, struct mctp_sk_key *key,
- /* Allocate a locally-owned tag value for (saddr, daddr), and reserve
-  * it for the socket msk
-  */
--static int mctp_alloc_local_tag(struct mctp_sock *msk,
--				mctp_eid_t saddr, mctp_eid_t daddr, u8 *tagp)
-+static struct mctp_sk_key *mctp_alloc_local_tag(struct mctp_sock *msk,
-+						mctp_eid_t saddr,
-+						mctp_eid_t daddr, u8 *tagp)
- {
- 	struct net *net = sock_net(&msk->sk);
- 	struct netns_mctp *mns = &net->mctp;
- 	struct mctp_sk_key *key, *tmp;
- 	unsigned long flags;
--	int rc = -EAGAIN;
- 	u8 tagbits;
- 
- 	/* for NULL destination EIDs, we may get a response from any peer */
-@@ -549,7 +549,7 @@ static int mctp_alloc_local_tag(struct mctp_sock *msk,
- 	/* be optimistic, alloc now */
- 	key = mctp_key_alloc(msk, saddr, daddr, 0, GFP_KERNEL);
- 	if (!key)
--		return -ENOMEM;
-+		return ERR_PTR(-ENOMEM);
- 
- 	/* 8 possible tag values */
- 	tagbits = 0xff;
-@@ -591,18 +591,16 @@ static int mctp_alloc_local_tag(struct mctp_sock *msk,
- 		trace_mctp_key_acquire(key);
- 
- 		*tagp = key->tag;
--		/* done with the key in this scope */
--		mctp_key_unref(key);
--		key = NULL;
--		rc = 0;
- 	}
- 
- 	spin_unlock_irqrestore(&mns->keys_lock, flags);
- 
--	if (!tagbits)
-+	if (!tagbits) {
- 		kfree(key);
-+		return ERR_PTR(-EBUSY);
-+	}
- 
--	return rc;
-+	return key;
+---
+v2:
+ - #ifdef CONFIG_MCTP, rather than #if
+ - fix CONFIG_SKB_EXTENSIONS && !CONFIG_MCTP_FLOWS build
+---
+ include/linux/skbuff.h |  3 +++
+ include/net/mctp.h     |  7 +++++++
+ net/core/skbuff.c      | 19 +++++++++++++++++++
+ net/mctp/Kconfig       |  7 ++++++-
+ 4 files changed, 35 insertions(+), 1 deletion(-)
+
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index cb96f1e6460c..0bd6520329f6 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -4243,6 +4243,9 @@ enum skb_ext_id {
+ #endif
+ #if IS_ENABLED(CONFIG_MPTCP)
+ 	SKB_EXT_MPTCP,
++#endif
++#if IS_ENABLED(CONFIG_MCTP_FLOWS)
++	SKB_EXT_MCTP,
+ #endif
+ 	SKB_EXT_NUM, /* must be last */
+ };
+diff --git a/include/net/mctp.h b/include/net/mctp.h
+index 23bec708f4c7..7a5ba801703c 100644
+--- a/include/net/mctp.h
++++ b/include/net/mctp.h
+@@ -189,6 +189,13 @@ static inline struct mctp_skb_cb *mctp_cb(struct sk_buff *skb)
+ 	return (void *)(skb->cb);
  }
  
- /* routing lookups */
-@@ -740,6 +738,7 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
- 	struct mctp_sock *msk = container_of(sk, struct mctp_sock, sk);
- 	struct mctp_skb_cb *cb = mctp_cb(skb);
- 	struct mctp_route tmp_rt;
++/* If CONFIG_MCTP_FLOWS, we may add one of these as a SKB extension,
++ * indicating the flow to the device driver.
++ */
++struct mctp_flow {
 +	struct mctp_sk_key *key;
- 	struct net_device *dev;
- 	struct mctp_hdr *hdr;
- 	unsigned long flags;
-@@ -799,11 +798,16 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
- 		goto out_release;
++};
++
+ /* Route definition.
+  *
+  * These are held in the pernet->mctp.routes list, with RCU protection for
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 74601bbc56ac..b948fd1c6f75 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -70,6 +70,7 @@
+ #include <net/xfrm.h>
+ #include <net/mpls.h>
+ #include <net/mptcp.h>
++#include <net/mctp.h>
+ #include <net/page_pool.h>
  
- 	if (req_tag & MCTP_HDR_FLAG_TO) {
--		rc = mctp_alloc_local_tag(msk, saddr, daddr, &tag);
--		if (rc)
-+		key = mctp_alloc_local_tag(msk, saddr, daddr, &tag);
-+		if (IS_ERR(key)) {
-+			rc = PTR_ERR(key);
- 			goto out_release;
-+		}
-+		/* done with the key in this scope */
-+		mctp_key_unref(key);
- 		tag |= MCTP_HDR_FLAG_TO;
- 	} else {
-+		key = NULL;
- 		tag = req_tag;
- 	}
+ #include <linux/uaccess.h>
+@@ -4430,6 +4431,9 @@ static const u8 skb_ext_type_len[] = {
+ #if IS_ENABLED(CONFIG_MPTCP)
+ 	[SKB_EXT_MPTCP] = SKB_EXT_CHUNKSIZEOF(struct mptcp_ext),
+ #endif
++#if IS_ENABLED(CONFIG_MCTP_FLOWS)
++	[SKB_EXT_MCTP] = SKB_EXT_CHUNKSIZEOF(struct mctp_flow),
++#endif
+ };
  
+ static __always_inline unsigned int skb_ext_total_length(void)
+@@ -4446,6 +4450,9 @@ static __always_inline unsigned int skb_ext_total_length(void)
+ #endif
+ #if IS_ENABLED(CONFIG_MPTCP)
+ 		skb_ext_type_len[SKB_EXT_MPTCP] +
++#endif
++#if IS_ENABLED(CONFIG_MCTP_FLOWS)
++		skb_ext_type_len[SKB_EXT_MCTP] +
+ #endif
+ 		0;
+ }
+@@ -6519,6 +6526,14 @@ static void skb_ext_put_sp(struct sec_path *sp)
+ }
+ #endif
+ 
++#ifdef CONFIG_MCTP_FLOWS
++static void skb_ext_put_mctp(struct mctp_flow *flow)
++{
++	if (flow->key)
++		mctp_key_unref(flow->key);
++}
++#endif
++
+ void __skb_ext_del(struct sk_buff *skb, enum skb_ext_id id)
+ {
+ 	struct skb_ext *ext = skb->extensions;
+@@ -6554,6 +6569,10 @@ void __skb_ext_put(struct skb_ext *ext)
+ 	if (__skb_ext_exist(ext, SKB_EXT_SEC_PATH))
+ 		skb_ext_put_sp(skb_ext_get_ptr(ext, SKB_EXT_SEC_PATH));
+ #endif
++#ifdef CONFIG_MCTP_FLOWS
++	if (__skb_ext_exist(ext, SKB_EXT_MCTP))
++		skb_ext_put_mctp(skb_ext_get_ptr(ext, SKB_EXT_MCTP));
++#endif
+ 
+ 	kmem_cache_free(skbuff_ext_cache, ext);
+ }
+diff --git a/net/mctp/Kconfig b/net/mctp/Kconfig
+index 868c92272cbd..3a5c0e70da77 100644
+--- a/net/mctp/Kconfig
++++ b/net/mctp/Kconfig
+@@ -1,7 +1,7 @@
+ 
+ menuconfig MCTP
+ 	depends on NET
+-	tristate "MCTP core protocol support"
++	bool "MCTP core protocol support"
+ 	help
+ 	  Management Component Transport Protocol (MCTP) is an in-system
+ 	  protocol for communicating between management controllers and
+@@ -16,3 +16,8 @@ config MCTP_TEST
+         bool "MCTP core tests" if !KUNIT_ALL_TESTS
+         depends on MCTP=y && KUNIT=y
+         default KUNIT_ALL_TESTS
++
++config MCTP_FLOWS
++	bool
++	depends on MCTP
++	select SKB_EXTENSIONS
 -- 
 2.33.0
 
