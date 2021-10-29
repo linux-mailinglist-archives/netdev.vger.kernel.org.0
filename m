@@ -2,159 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3ABF43FF78
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 17:28:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BC5943FF9A
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 17:30:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229791AbhJ2PbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 11:31:02 -0400
-Received: from www62.your-server.de ([213.133.104.62]:56324 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229527AbhJ2PbC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 11:31:02 -0400
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mgTnm-000DRl-Hy; Fri, 29 Oct 2021 17:28:18 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mgTnm-00091V-8q; Fri, 29 Oct 2021 17:28:18 +0200
-Subject: Re: [PATCH bpf-next v3 1/4] libfs: move shmem_exchange to
- simple_rename_exchange
-To:     Lorenz Bauer <lmb@cloudflare.com>, viro@zeniv.linux.org.uk,
-        Hugh Dickins <hughd@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     mszeredi@redhat.com, gregkh@linuxfoundation.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org, bpf@vger.kernel.org
-References: <20211028094724.59043-1-lmb@cloudflare.com>
- <20211028094724.59043-2-lmb@cloudflare.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <0c957c87-cfd1-fceb-ce18-54274eee9fc2@iogearbox.net>
-Date:   Fri, 29 Oct 2021 17:28:17 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S229979AbhJ2Pc5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 11:32:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59792 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229662AbhJ2Pc4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 11:32:56 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75C06C061570;
+        Fri, 29 Oct 2021 08:30:28 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id o6-20020a17090a0a0600b001a64b9a11aeso359372pjo.3;
+        Fri, 29 Oct 2021 08:30:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=NIak2Y5FQ2Wjf4P7X8gzcJU94dOFnB5agLKanXkb2MU=;
+        b=VonLltqQY+CqzFXaC7fWfjDqD+2Lersu0M8vMPoboW+ryJRlLf5OsDfV3K/HH3PppW
+         xYqGwX7TpJgUu8VMh89eLXsVvcJSogw35ArfPy37oqH4goNQ1J+nku6J4K/D1vBpR/9W
+         VMbLVFo59Z09TuF+NQtd1QmuDGxRWD8dSY4wIqXqg/7SKUYsXkEkRqfRKqj+XNBAi2qc
+         8jtdDU5CW2jnmdvkeupKSMcvj1NibXpyBM59oWwAmDsU67RW1ZMXdU+sRdIAxavtyTms
+         x2bVFWBlmcpwqpbV9RKrezg6vZYCo0QEdgRpZfOBg95QaC44DYEDytav2DfXAyw0FWQ3
+         7hXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=NIak2Y5FQ2Wjf4P7X8gzcJU94dOFnB5agLKanXkb2MU=;
+        b=owm9+l+NwDN1GhQP36Yivpo3Q5QzBJkzkts9kJWGXg8MaFEeDmkhgxrJBMAPPvFpAB
+         Nq717yZLMQsLDQ3AhJXmxilIsQhQseu4VfbF5dyzVBclpgHOkKB2ACrBs44XZQ6hjtuV
+         HnAOw1vtEQN/aLG4Tugts6aVhpAMkZRE2WaNYcEORjqFWvwLknoxk7+URd+APOJLPxjz
+         08sdDVJGDK0FBlhURm0ET4tBed+u7a+2VUgE0a8V6uChI6p9IpOrSF+wLxSO50vODMaM
+         +8LcpTqq3vTJYvTafNOQsdoAdScrLzJSWfkAOEtMmHbxNnicDX26wLxiZbPJmn3WzNHY
+         CC6g==
+X-Gm-Message-State: AOAM533Aq8ZB6e8vPT4AblwO1cC/xjckzhJOQd/0Jy8Xi1ppVSjZtUs0
+        yvCKc5bxgSPMcrT3fR6nD7irKlfX9pY=
+X-Google-Smtp-Source: ABdhPJyR8O6TcJoaRx+rHzlWxtjHT7cyn8u68xf4QLnyURRfv5wQj7opPBt0X9by/uz16wGcPgryvQ==
+X-Received: by 2002:a17:90b:4d8f:: with SMTP id oj15mr4512687pjb.6.1635521427708;
+        Fri, 29 Oct 2021 08:30:27 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id v12sm6339671pjs.0.2021.10.29.08.30.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Oct 2021 08:30:27 -0700 (PDT)
+Subject: Re: [PATCH] wireguard: queueing: Fix implicit type conversion
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>, jiasheng@iscas.ac.cn
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <1635469664-1708957-1-git-send-email-jiasheng@iscas.ac.cn>
+ <CAHmME9p9EA0qCw2ha_X9HR7NWSt1Zam4+srYHCs=-U4LvQiJdA@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <99a32425-ca42-8d99-1276-efb889300cce@gmail.com>
+Date:   Fri, 29 Oct 2021 08:30:26 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <20211028094724.59043-2-lmb@cloudflare.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <CAHmME9p9EA0qCw2ha_X9HR7NWSt1Zam4+srYHCs=-U4LvQiJdA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26337/Fri Oct 29 10:19:12 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/28/21 11:47 AM, Lorenz Bauer wrote:
-> Move shmem_exchange and make it available to other callers.
-> 
-> Suggested-by: <mszeredi@redhat.com>
 
-nit: Should say proper name, but we can fix it up while applying.
 
-Miklos, does the below look good to you? Would be good to have an ACK from fs
-folks before applying, please take a look if you have a chance. Thanks!
+On 10/29/21 7:27 AM, Jason A. Donenfeld wrote:
+> On Fri, Oct 29, 2021 at 3:08 AM Jiasheng Jiang <jiasheng@iscas.ac.cn> wrote:
+>> It is universally accepted that the implicit type conversion is
+>> terrible.
+> 
+> I'm not so sure about this, but either way, I think this needs a bit
+> more justification and analysis to merge. cpumask_weight returns an
+> unsigned, for example, and is used as a modulo operand later in the
+> function. It looks like nr_cpumask_bits is also unsigned. And so on.
+> So you're really trading one implicit type conversion package for
+> another. If you're swapping these around, why? It can't be because,
+> "it is universally accepted that the implicit type conversion is
+> terrible," since you're adding more of it in a different form. Is your
+> set of implicit type conversions semantically more proper? If so,
+> please describe that. Alternatively, is there a way to harmonize
+> everything into one type? Is there a minimal set of casts that enables
+> that?
+>
 
-> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-> ---
->   fs/libfs.c         | 24 ++++++++++++++++++++++++
->   include/linux/fs.h |  2 ++
->   mm/shmem.c         | 24 +-----------------------
->   3 files changed, 27 insertions(+), 23 deletions(-)
-> 
-> diff --git a/fs/libfs.c b/fs/libfs.c
-> index 51b4de3b3447..1cf144dc9ed2 100644
-> --- a/fs/libfs.c
-> +++ b/fs/libfs.c
-> @@ -448,6 +448,30 @@ int simple_rmdir(struct inode *dir, struct dentry *dentry)
->   }
->   EXPORT_SYMBOL(simple_rmdir);
->   
-> +int simple_rename_exchange(struct inode *old_dir, struct dentry *old_dentry,
-> +			   struct inode *new_dir, struct dentry *new_dentry)
-> +{
-> +	bool old_is_dir = d_is_dir(old_dentry);
-> +	bool new_is_dir = d_is_dir(new_dentry);
-> +
-> +	if (old_dir != new_dir && old_is_dir != new_is_dir) {
-> +		if (old_is_dir) {
-> +			drop_nlink(old_dir);
-> +			inc_nlink(new_dir);
-> +		} else {
-> +			drop_nlink(new_dir);
-> +			inc_nlink(old_dir);
-> +		}
-> +	}
-> +	old_dir->i_ctime = old_dir->i_mtime =
-> +	new_dir->i_ctime = new_dir->i_mtime =
-> +	d_inode(old_dentry)->i_ctime =
-> +	d_inode(new_dentry)->i_ctime = current_time(old_dir);
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(simple_rename_exchange);
-> +
->   int simple_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
->   		  struct dentry *old_dentry, struct inode *new_dir,
->   		  struct dentry *new_dentry, unsigned int flags)
-> diff --git a/include/linux/fs.h b/include/linux/fs.h
-> index e7a633353fd2..333b8af405ce 100644
-> --- a/include/linux/fs.h
-> +++ b/include/linux/fs.h
-> @@ -3383,6 +3383,8 @@ extern int simple_open(struct inode *inode, struct file *file);
->   extern int simple_link(struct dentry *, struct inode *, struct dentry *);
->   extern int simple_unlink(struct inode *, struct dentry *);
->   extern int simple_rmdir(struct inode *, struct dentry *);
-> +extern int simple_rename_exchange(struct inode *old_dir, struct dentry *old_dentry,
-> +				  struct inode *new_dir, struct dentry *new_dentry);
->   extern int simple_rename(struct user_namespace *, struct inode *,
->   			 struct dentry *, struct inode *, struct dentry *,
->   			 unsigned int);
-> diff --git a/mm/shmem.c b/mm/shmem.c
-> index b5860f4a2738..a18dde3d3092 100644
-> --- a/mm/shmem.c
-> +++ b/mm/shmem.c
-> @@ -2945,28 +2945,6 @@ static int shmem_rmdir(struct inode *dir, struct dentry *dentry)
->   	return shmem_unlink(dir, dentry);
->   }
->   
-> -static int shmem_exchange(struct inode *old_dir, struct dentry *old_dentry, struct inode *new_dir, struct dentry *new_dentry)
-> -{
-> -	bool old_is_dir = d_is_dir(old_dentry);
-> -	bool new_is_dir = d_is_dir(new_dentry);
-> -
-> -	if (old_dir != new_dir && old_is_dir != new_is_dir) {
-> -		if (old_is_dir) {
-> -			drop_nlink(old_dir);
-> -			inc_nlink(new_dir);
-> -		} else {
-> -			drop_nlink(new_dir);
-> -			inc_nlink(old_dir);
-> -		}
-> -	}
-> -	old_dir->i_ctime = old_dir->i_mtime =
-> -	new_dir->i_ctime = new_dir->i_mtime =
-> -	d_inode(old_dentry)->i_ctime =
-> -	d_inode(new_dentry)->i_ctime = current_time(old_dir);
-> -
-> -	return 0;
-> -}
-> -
->   static int shmem_whiteout(struct user_namespace *mnt_userns,
->   			  struct inode *old_dir, struct dentry *old_dentry)
->   {
-> @@ -3012,7 +2990,7 @@ static int shmem_rename2(struct user_namespace *mnt_userns,
->   		return -EINVAL;
->   
->   	if (flags & RENAME_EXCHANGE)
-> -		return shmem_exchange(old_dir, old_dentry, new_dir, new_dentry);
-> +		return simple_rename_exchange(old_dir, old_dentry, new_dir, new_dentry);
->   
->   	if (!simple_empty(new_dentry))
->   		return -ENOTEMPTY;
-> 
+I agree with you.
+
+Even standard iterators play/mix with signed/unsigned in plain sight.
+
+extern unsigned int nr_cpu_ids;
+
+unsigned int cpumask_next(int n, const struct cpumask *srcp);
+
+int cpumask_next_wrap(int n, const struct cpumask *mask, int start, bool wrap);
+
+#define for_each_cpu(cpu, mask)				\
+	for ((cpu) = -1;				\
+		(cpu) = cpumask_next((cpu), (mask)),	\
+		(cpu) < nr_cpu_ids;)
 
