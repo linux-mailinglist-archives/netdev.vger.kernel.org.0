@@ -2,188 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B8A343FCB3
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 14:53:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCFE343FCC9
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 14:57:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231458AbhJ2Mzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 08:55:39 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:37814 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231411AbhJ2Mzi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Oct 2021 08:55:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Tf+eFvst+sDmVDewSuH83kOgYhym8Pp3p42wSXNJ1CE=; b=gN+DweX/VDoKVlzDFmerEQN38s
-        T9J7syOeh7Mb+rjLyaSJz6Y3z6Gk9D3MWIeHeFD1+X6Ww1FsKjTMSoz99OH5AqEAYs3MQoGD3fewu
-        uCxIZssVvZ8mBZ7TMBgkvXilHxmufngiIOabTcQLaqXYXukPDczN8OVZYKsxuYSH5WU8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mgRNU-00C65b-G9; Fri, 29 Oct 2021 14:53:00 +0200
-Date:   Fri, 29 Oct 2021 14:53:00 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
-Cc:     kuba@kernel.org, mickeyr@marvell.com, serhiy.pshyk@plvision.eu,
-        taras.chornyi@plvision.eu, Volodymyr Mytnyk <vmytnyk@marvell.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Yevhen Orlov <yevhen.orlov@plvision.eu>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v4] net: marvell: prestera: add firmware v4.0
- support
-Message-ID: <YXvurO1ssFPL15Qu@lunn.ch>
-References: <1635485889-27504-1-git-send-email-volodymyr.mytnyk@plvision.eu>
+        id S230475AbhJ2M7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 08:59:55 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:15857 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231530AbhJ2M7w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 08:59:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1635512243; x=1667048243;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=eErcCp5nrqkkBY15QMynkgRZg1Auy0recZsJkfF3kRg=;
+  b=k8UjyVaxfXzawd57MOSf0lhuVW9UNwTOqA5zXji03LydLd7jPCfRg3V0
+   muU0pTV/2Nj8Y1siJHA4kvxd2hTmTLnlUPDhDBRTDB0BsTdM2+Xf24FP0
+   QhPQmrBDGFJl9R978/78hqHBCPYyQlAcSeeyBlyL3jG6mp/onFNKygUev
+   fVZ4+3BolQg9694IZMV9y5vm0v8nAWwpBlGnnTzUSPGiBix/D4QVNhJ/v
+   XAXeBG2FRUJe97gPoyNWfGoxuG0ttFi8otaQ2VjOrmP3ohILQObMSeAyd
+   2WCdXscA4zFv7OSLf1hgWbZOdoIDxoUJUp3D780+JBzp9orQZjCW0TNvQ
+   w==;
+IronPort-SDR: 6jl70StsjsH0hZyGQv0ZgHLd0zN0mSPv+LfcALjBEGXlsmkgjIwQg1F/KtTjLzkgd5RV613n16
+ 6W4OlzS2t61vYS0SA5tco6RPAjhfb0c70ko15S+h3ubBMG3dyxwtTyDVEQCvQrBBBM44k6Kcs3
+ wQXhmc7/xBYnD0ngR5JrtpBWTPY/ZEcCd2o6d6ZQy+8uLkazm6EXxvx+6TgHhz/J7bJs39mrgC
+ mGDQsQUiIl7ZKHaFOcsir7/rD7YQrsabNURNMuciZAK2okyQqyQJxfN4ionyYIJ6mxuf1vG1xW
+ axj0LJ8EQagveMkviV8A2Yyk
+X-IronPort-AV: E=Sophos;i="5.87,193,1631602800"; 
+   d="scan'208";a="150030381"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Oct 2021 05:57:23 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Fri, 29 Oct 2021 05:57:23 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14 via Frontend Transport; Fri, 29 Oct 2021 05:57:23 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=f1roYTEpUGQryLuTw0E3f2LKSQ03BwSZgMGToHvlS3F2p2pF+RkkDaaVvvYSJgo5yRCNDPqkADdRROq4hnSnPZkTYmaXn0G3PGwhUBB3YEhqPijgJBBCkmB10kSzwbVvrKfu35EpT4u+RdmHClxucV1hQkBvcpvEpoj0+e5ogIJf8Csna3Dgtr+Zjo31rIJktXkt7Ei68gmHP8tS24nf1s8uk4HbObf+OTTc7bJr/YAhKV/LC+NeoWpcHdofpzwDWxB9mrG3q6LFs5sgBrKY1QfBQeaHnosiPSyAQFS96kPly2eLyTtKutg2ayFiawfmdmVqhTNVsd7tOqsFPXOyKQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OSA83EFPOuDqYP1ZGYH8RuMz6g+1WlPWnhNTYPXbc2Q=;
+ b=fKvbdYSfjq/JElTtVdlQ6FJUC9+E8mdZa1OrHVEVPmdYAJXmNZrtMmoQ3LWTS+GG+0ANq6RwFjk7XN32Esodl87wN6leQO8Y93/0JJK+fMoNRa5SgDNZFpmWxcAZJt7yQediN7bdjpefqekn3HDMgGZcBFveH8Y/B4L/9IKo30djr2P61XXlgCr6a7bVomX4HhiPqivRqyFrHfi2CTgWqxvEfYmKMuBmj7FpdAMM1ltAFs2uHt0WfiNDS+B9Sk2JT6R+wVqKVhDzn9b+IFoOFupulxyf/GOKXlMM1iMQVRzLvAeMl2gNMsQTj7jbGZUpQCM/+lvzGGV39HqN/GJ5FQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OSA83EFPOuDqYP1ZGYH8RuMz6g+1WlPWnhNTYPXbc2Q=;
+ b=B+SyQgS6kRtZd77CPzgRC95/Ciypi25r3RA9UcCvlcn0XRgvc3tmlyvdNirwdczWw2zvz9K14ZlDzb6R5ddSzuFnI/rtNtZiXEFhQm46sWvnLblQSW2y+nNfcekSjxvC+ugxBP6QmSJINpt4r3bwS8af7fsR+pbUzfivM3Dx+fQ=
+Received: from CH0PR11MB5561.namprd11.prod.outlook.com (2603:10b6:610:d4::8)
+ by CH0PR11MB5561.namprd11.prod.outlook.com (2603:10b6:610:d4::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.15; Fri, 29 Oct
+ 2021 12:57:18 +0000
+Received: from CH0PR11MB5561.namprd11.prod.outlook.com
+ ([fe80::c096:557e:a1b5:bc5c]) by CH0PR11MB5561.namprd11.prod.outlook.com
+ ([fe80::c096:557e:a1b5:bc5c%7]) with mapi id 15.20.4649.017; Fri, 29 Oct 2021
+ 12:57:18 +0000
+From:   <Yuiko.Oshino@microchip.com>
+To:     <andrew@lunn.ch>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <Bryan.Whitehead@microchip.com>, <UNGLinuxDriver@microchip.com>
+Subject: RE: [PATCH net] net: ethernet: microchip: lan743x: Increase rx ring
+ size to improve rx performance
+Thread-Topic: [PATCH net] net: ethernet: microchip: lan743x: Increase rx ring
+ size to improve rx performance
+Thread-Index: AQHXzAzaB7qTyZBseU2ukQ57dom3rKvokomAgAFd15A=
+Date:   Fri, 29 Oct 2021 12:57:18 +0000
+Message-ID: <CH0PR11MB5561DB4E2AF8C8FA7EE77C0B8E879@CH0PR11MB5561.namprd11.prod.outlook.com>
+References: <20211028150315.19270-1-yuiko.oshino@microchip.com>
+ <YXrJxb0LtllPkOse@lunn.ch>
+In-Reply-To: <YXrJxb0LtllPkOse@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8a6e421c-82ad-47ae-2117-08d99adba3fc
+x-ms-traffictypediagnostic: CH0PR11MB5561:
+x-microsoft-antispam-prvs: <CH0PR11MB5561598795F989BF53E262548E879@CH0PR11MB5561.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: GSo0ytbR6HFqk9+kTlCxur6skW9rBVYiPXcaOM2ucWZIchwftFMfzSLmbo+pOyi4DHB2vIbKsrkcjfRrOzx29iYZWM4F7fXvTTEnOIJ2epvRsrCHSrK+ulKOPsaJazk8v8tn/5O5vqVybIxKf/acKirEOcxmUb79bYZj7uLg247EpD1ZCsopOhbilcGuoFvlr+sEADV3w3APEodzZaglhN8YTkICgBwdOfJ2YAKowodCrT2RwkUyu0AXMBp16YlI7Sybdue+XlPXPpjpaQcU74Lepr913wywYbPLy8DUS40VjlB2CSG1jl1ynpRmYKFNBJmmRIev/VNn2HBMbsywqpihLBZhh6o3ACPNfYq6Dx8DRBiYRHlg/dzWAl6wbNnmjH+weIAqKU+D1UgJZCwSh8J117vPtyAg56nUKjGF/PVjZ6M7ATpdWs++OOQZk+RmOLI5oC88jpIQp0U+0pXHaifYt980ZDmMALr/8f3mYDVDJ+yochIuA3DBRQTmrF6fqdv1XOEX3WxcOQPaaUhy/PQIa9VjImmE5h2lWVrAijLzI6Kf7gZ0BwMIyzdIhTBsZQgAB7ZCRyD4eciU+LWPyszRHo6rwFiD4OMkiYxUVY8RpH/PA3Nsu9P6BPHpCzvvUSQYiglqFD8J1eQgkwKpboPEscQW+xN79iYN/lE5546bNsx2HRFnQlBstke1xAr+afD6F1Wde4OBOluWsvtbYQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR11MB5561.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(6916009)(316002)(66446008)(66476007)(66556008)(66946007)(76116006)(71200400001)(9686003)(64756008)(8936002)(6506007)(83380400001)(186003)(55016002)(26005)(122000001)(7696005)(8676002)(54906003)(107886003)(52536014)(33656002)(38100700002)(5660300002)(38070700005)(4326008)(2906002)(86362001)(508600001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?d50A5SJuHfHU6jzWDOue/B6uIP2OU0f+a2YO1dGWTdHaga6MNOIGsrwz1pDJ?=
+ =?us-ascii?Q?naUgQPa2dZS6nN/xt76Vygqu6uScWGgD46UiGHUds8XP9Gtzskw+jFnspBJ7?=
+ =?us-ascii?Q?fmKh3EIpef6wQf1+bStdhgWIjjxeOxya9i8PkMyUwj/c0d556b63vyffSBZv?=
+ =?us-ascii?Q?U1EJqv6hiZSJatTKNsj1Sotn3+GfMTcLJAQPoR5wluFNmkSGv2az4HARhFwQ?=
+ =?us-ascii?Q?LZTRB8/if11Wq4+SYO3cg5OVCde24axG2e8YyQZx1ZpjFUQUL6IQ6TlK3+iC?=
+ =?us-ascii?Q?+/owz6dq3U3h3qnTESNhtXEgdYVLcpJFoL9rA/5YqwBi+aYq1EkOiHsghKMm?=
+ =?us-ascii?Q?D+qgxCQVdZEnIQLEbJ2aws3T8QBwDPZXBfEFmhRLzRgsyt1YgDURjS8AnbZK?=
+ =?us-ascii?Q?4il8tJRrE2BO/lz8zNMUsf+0BK8v6HWKJ4XNnSDnmtt4ss2gBTuLfIEXLsB9?=
+ =?us-ascii?Q?PtS0TNgTog3FHaZN/kOAG62pN2KVyr5uw7pCO7WbPuzWR2UR0fbojstzSJmn?=
+ =?us-ascii?Q?n8+J1mt3g2yYIynhGkzQsjBFIYQGkLtZCos0ZPPws9/BPRr+cFZx8q6UVv+6?=
+ =?us-ascii?Q?2sxFXbVJAUNSvDqmAtOrQQND16tB6QuIC0Ry5t+qnIc/aLTLoAqY3GRX60IV?=
+ =?us-ascii?Q?D7sVgh1M/aBRVFUMHJzCvASjxg12ga2dbIiV/gMPpdal0a0K8o2gCAseno4R?=
+ =?us-ascii?Q?9Kl/BvHhY3T4ak+JNZi4hWQ58+pZ5wnxkf6TsghZ76GogFJA6tYOrYp+HERk?=
+ =?us-ascii?Q?seP4XNKl6Okfald/J4Jp4pkTE8FFQAfAFplKIQ+0koOwdrxA6kl8zF6sd4WU?=
+ =?us-ascii?Q?Novg9F4FsAGT6VcfmqgDIRBZlru2z9MwmiV08N1dxSlEdpHuoaJFIQ/DIeTu?=
+ =?us-ascii?Q?XGRR/6T1G7pBCK+c6TZ0pb8UIM1GZkmjpNVQ6csl1fj59S182F/+dINFO0t5?=
+ =?us-ascii?Q?zNK0VmnylDTKvax0jM2NFURecvNz1eZFk82llfguVIHY19wmA8RTqRqbpRtH?=
+ =?us-ascii?Q?mLmymnJ+fFhNX+ZRFxZ/GIH/zEnpNYGg0OqISLe0OjsVRVeeGf8663yGAcJj?=
+ =?us-ascii?Q?rJzElHC/0cacOwgh+m7MKPfqmWMIxZZBmEijRDbt/j8Kv7LVMCTl53I06+Pu?=
+ =?us-ascii?Q?aHEEXO/zVvzhH/FSD3WwzArc4Bt1ksgYrPUg98+54f/a/mqj8JnDTSXEifcb?=
+ =?us-ascii?Q?cFEGVUFH7VXa3egBD+L6T5F4PDnHYMn8igKp8LO1qXFU0QetOIzikTz9MJ8/?=
+ =?us-ascii?Q?yqIyLOG7grNeSRp5ER/S3HqeiAkTKybBt3CvWDY+alowJ8pmtpkxfBn8jNju?=
+ =?us-ascii?Q?FjEyxX8pZvyrAijzQGEmuQ4zuqMNM5zaqK7YiqABLXrLP03dE7QqpLunHc7/?=
+ =?us-ascii?Q?cZUJi01lwXROFFhAOUnqL48fYkFdwoK13RKn6ZqI5yoi7fV99pWvIk+8FcYh?=
+ =?us-ascii?Q?v2vK+ShPEKjlp1uRsz79X0q3R61A7DRvD6TYWgf519mafSTA1XWvlMpBvtaP?=
+ =?us-ascii?Q?xuHdVkQFYvxEqfSD84gZkExA+oMbV4nRvhhABFgmUdDFOfS+vUEUbjJW1XZ8?=
+ =?us-ascii?Q?l+7wUBQheMLBEs7jV5dbNkdx7tDyXHrVYqQL2AFCvom235CF3Tudqbk40EhS?=
+ =?us-ascii?Q?qruErpS7JxTTfYU3G9osn9mQCThB3e9GUaXq9g+jCYJEsD9FPUwdeEoyMrGv?=
+ =?us-ascii?Q?OAMxdQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1635485889-27504-1-git-send-email-volodymyr.mytnyk@plvision.eu>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CH0PR11MB5561.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8a6e421c-82ad-47ae-2117-08d99adba3fc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Oct 2021 12:57:18.8046
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: TK/qzpnoMElaFbbSLAMhYnG8i4ghNOjF0ACVOPSgxYbBgsrfTpXO1/s7VSQ3yMYVCKTdiyRzN1Rcy1ssUNddPvv3oueys38090Ye/KJl/IY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB5561
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +struct prestera_msg_event_port_param {
-> +	union {
-> +		struct {
-> +			u8 oper;
-> +			__le32 mode;
-> +			__le32 speed;
-> +			u8 duplex;
-> +			u8 fc;
-> +			u8 fec;
+>-----Original Message-----
+>From: Andrew Lunn <andrew@lunn.ch>
+>Sent: Thursday, October 28, 2021 12:03 PM
+>To: Yuiko Oshino - C18177 <Yuiko.Oshino@microchip.com>
+>Cc: davem@davemloft.net; netdev@vger.kernel.org; Bryan Whitehead - C21958
+><Bryan.Whitehead@microchip.com>; UNGLinuxDriver
+><UNGLinuxDriver@microchip.com>
+>Subject: Re: [PATCH net] net: ethernet: microchip: lan743x: Increase rx ri=
+ng size
+>to improve rx performance
+>
+>EXTERNAL EMAIL: Do not click links or open attachments unless you know the
+>content is safe
+>
+>On Thu, Oct 28, 2021 at 11:03:15AM -0400, Yuiko Oshino wrote:
+>> Increase the rx ring size (LAN743X_RX_RING_SIZE) to improve rx performan=
+ce
+>on some platforms.
+>> Tested on x86 PC with EVB-LAN7430.
+>> The iperf3.7 TCPIP improved from 881 Mbps to 922 Mbps, and UDP improved
+>from 817 Mbps to 936 Mbps.
+>>
+>> Fixes: 23f0703c125b ("lan743x: Add main source files for new lan743x dri=
+ver")
+>> Signed-off-by: Yuiko Oshino <yuiko.oshino@microchip.com>
+>> ---
+>>  drivers/net/ethernet/microchip/lan743x_main.h | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/microchip/lan743x_main.h
+>b/drivers/net/ethernet/microchip/lan743x_main.h
+>> index 34c22eea0124..aaf7aaeaba0c 100644
+>> --- a/drivers/net/ethernet/microchip/lan743x_main.h
+>> +++ b/drivers/net/ethernet/microchip/lan743x_main.h
+>> @@ -831,7 +831,7 @@ struct lan743x_rx_buffer_info {
+>>       unsigned int    buffer_length;
+>>  };
+>>
+>> -#define LAN743X_RX_RING_SIZE        (65)
+>
+>65 is interesting. 2^N + 1. So there might be a reason for this?
 
-Makes more sense to put the 2 le32 first and then the 4 u8s. At the
-moment, the le32 are not word aligned, so the compiler has to issue
-more instructions.
+The original developer wanted to give the hardware a power of 2 usable (whi=
+ch is the ring size -1) number of descriptors, but that is not required by =
+the hardware so for this update we decided to take it back to "rounder" pow=
+er of 2 memory request from the OS.
+>
+>> +#define LAN743X_RX_RING_SIZE        (128)
+>
+>129?
+>
+>        Andrew
 
-
-> +		} __packed mac;
-> +		struct {
-> +			u8 mdix;
-> +			__le64 lmode_bmap;
-> +			u8 fc;
-
-Same here, le64 first, then to two u8.
-
->  union prestera_msg_port_param {
-> -	u8  admin_state;
-> -	u8  oper_state;
-> -	u32 mtu;
-> -	u8  mac[ETH_ALEN];
-> -	u8  accept_frm_type;
-> -	u32 speed;
-> +	u8 admin_state;
-> +	u8 oper_state;
-> +	__le32 mtu;
-
-2 u8 followed by a le32? Swap them.
-
-> +	u8 mac[ETH_ALEN];
-
-You then get the 6 byte MAC and the 2 u8 giving you word alignment.
-
-> +	u8 accept_frm_type;
-> +	__le32 speed;
-
-Swap these two, keeping speed word aligned.
-
->  	u8 learning;
->  	u8 flood;
-
-You have 3 u8 in a row, so move another u8 up to keep word alignment, say type.
-
-> -	u32 link_mode;
-> -	u8  type;
-> -	u8  duplex;
-> -	u8  fec;
-> -	u8  fc;
-> -	struct prestera_msg_port_mdix_param mdix;
-> -	struct prestera_msg_port_autoneg_param autoneg;
-> +	__le32 link_mode;
-> +	u8 type;
-> +	u8 duplex;
-> +	u8 fec;
-> +	u8 fc;
-> +	union {
-
-With type moved up, this whole union becomes unaligned. So you might
-want to explicitly add a reserved byte here. Make sure it is set to
-zero when sent to the firmware, and ignored on receive.
-
-> +		struct {
-> +			u8 admin:1;
-> +			u8 fc;
-> +			u8 ap_enable;
-
-Move these three after the next union, to keep the union aligned.
-
-> +			union {
-> +				struct {
-> +					__le32 mode;
-> +					u8  inband:1;
-> +					__le32 speed;
-
-speed should be second, so it is aligned.
-
-> +					u8  duplex;
-> +					u8  fec;
-> +					u8  fec_supp;
-> +				} __packed reg_mode;
-> +				struct {
-> +					__le32 mode;
-> +					__le32 speed;
-> +					u8  fec;
-> +					u8  fec_supp;
-> +				} __packed ap_modes[PRESTERA_AP_PORT_MAX];
-> +			} __packed;
-> +		} __packed mac;
-> +		struct {
-> +			u8 admin:1;
-> +			u8 adv_enable;
-> +			__le64 modes;
-> +			__le32 mode;
-
-These two le64 come first to keep them aligned.
-
-> +			u8 mdix;
-> +		} __packed phy;
-> +	} __packed link;
-
-
-Hopefully you get the idea. Getting alignment correct will produce
-smaller faster code, especially on architectures where none aligned
-accesses are expensive.
-
-> @@ -475,15 +543,15 @@ static int __prestera_cmd_ret(struct prestera_switch *sw,
->  	struct prestera_device *dev = sw->dev;
->  	int err;
->  
-> -	cmd->type = type;
-> +	cmd->type = __cpu_to_le32(type);
->  
-> -	err = dev->send_req(dev, cmd, clen, ret, rlen, waitms);
-> +	err = dev->send_req(dev, 0, cmd, clen, ret, rlen, waitms);
->  	if (err)
->  		return err;
->  
-> -	if (ret->cmd.type != PRESTERA_CMD_TYPE_ACK)
-> +	if (__le32_to_cpu(ret->cmd.type) != PRESTERA_CMD_TYPE_ACK)
->  		return -EBADE;
-
-Makes more sense to apply the endianness swap to
-PRESTERA_CMD_TYPE_ACK. That can be done at compile time, where as
-swapping ret->cmd.type has to be done a runtime.
-
-
-> -	if (ret->status != PRESTERA_CMD_ACK_OK)
-> +	if (__le32_to_cpu(ret->status) != PRESTERA_CMD_ACK_OK)
->  		return -EINVAL;
-
-So this patch is now doing two different things at once. It is fixing
-your broken endianness support, and it is changing the ABI. Please
-separate these into different patches. Fix the endianness first, then
-change the ABI. That will make it much easier to review.
-
-       Andrew
+Thank you!
+Yuiko
