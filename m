@@ -2,129 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF1C643F810
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 09:48:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBA2A43F814
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 09:49:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232303AbhJ2HvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 03:51:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38742 "EHLO
+        id S232390AbhJ2Hv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 03:51:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232314AbhJ2Hu6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 03:50:58 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16C71C061224
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 00:48:30 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id a26so8472875pfr.11
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 00:48:30 -0700 (PDT)
+        with ESMTP id S232302AbhJ2Hu7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 03:50:59 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B42AC061570
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 00:48:31 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id y1so6279221plk.10
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 00:48:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=vWoG5Q4jP3UKwXSbQcaLEvuIHXInsIHsuUnBgOaqXuo=;
-        b=VikUOt+Gkcb7oMr+6RNMOOmZVW2/095W41UPuCbXYqIIjJD0gbA0QgFNYl8rGNJNvm
-         FIdIAiwH4F9uR/nvM7bxyWso+DASfQw5UxvFyYPq7b8UkSmCVte3s2vUzJyjhb3jRmtl
-         i2vNBFWjnY8EfIfmwSEYPWlQVeMPv/LJeqAuI=
+        bh=ISnE8uk1b5JbBvt5p0DC+XPNab5hr1XzUdMTV1+QmSU=;
+        b=hNw2W/cDbHNYRJWUNnHQ7TozrQvLOoNKiKYNoLuKj9GTRRbnNDYv3frvtbkqEbtAA9
+         L2skiFc3a5nXnn4nX52IofwcfLIl7q6/0gbHvJhjDgxOmcBZjX9QAjsz9HK2DFPqGyKV
+         0nEfvFJXmhdPxCIN3SH6xibabU8+T1F30WQvI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=vWoG5Q4jP3UKwXSbQcaLEvuIHXInsIHsuUnBgOaqXuo=;
-        b=Xyp1eeIT9SlElNYXFaT5C02kIEP7DQ6Ivq8swntMuJ5JDyIygSD2HM/aNYqG5U6vu/
-         VO1N3CnU1HqWS/MQ+p4SMGNHT2wwnAnzJnJIotVjvJclGfynw0WISXFKMl3iCaFD2fHn
-         hfHpAngK3BH4JIVylVAff2njkWZLTkDWz2x3d7tv1u+/tRc/hQVylALOXfQvlusbu9Fd
-         utDicbZ643LKCNEq5XzfdCpRzX8XfRY/bUWGio5YSQiDP5HSK6BJgu0kSfyXEBx+2LRN
-         jnsSg8HSUfwSnhHKP3oVAXr0qkWpkCFkK0iQ3OxDr84eIWPc4n11g/hB5L3aIFwuS8K0
-         KsIQ==
-X-Gm-Message-State: AOAM532mvQTCOmCSL/L1aNmt27huSa3wyFRON9wa0XH9UaFQd7Que0DO
-        RqT9ouRvR81q300dNhKdN4GLc6ITql4Vrw==
-X-Google-Smtp-Source: ABdhPJyCRD8DfYlz36I6IafAE+JxCztsONOt7wDR0Qp4J994fcYM15kptsa+L9YhBucJFaytaou8tw==
-X-Received: by 2002:a05:6a00:10d1:b0:47b:aa9b:1e7a with SMTP id d17-20020a056a0010d100b0047baa9b1e7amr9173217pfu.57.1635493709182;
-        Fri, 29 Oct 2021 00:48:29 -0700 (PDT)
+        bh=ISnE8uk1b5JbBvt5p0DC+XPNab5hr1XzUdMTV1+QmSU=;
+        b=p6hECTDW8pz883+Q0lGoDP25dm8pjRzOV55Y3FgYQq3/XSRm6Tji/E2SNaN1jGyRTS
+         CnaDZsH1B+tyja790P/XrhobsjjH/hXJyAJhbnjSSuJAHB/mEvxYaFEZIMr2jMuz1tfP
+         ntZrZYmXIEevap/LIykSXEoUW1W6jZnOCxT8FkmNbY42RzWlryXrVE7UY1IgDD/451WK
+         kQt/IVSXlCIHesBGYb+pLe5L8jMD1z1ol5E+GIDrI/G5R0rECvSgbPBldKHaGzhf6VXn
+         FRPgvKEGWU03ufYXx9rZCLCan7eFbe5gFIfkpZLXAS/dyOkhEraBFDJh9VKX/VQWVfLm
+         iF/w==
+X-Gm-Message-State: AOAM532oQlaGuMLpZmWGpLnXlFp6cKXg6siMu7PHOn6/Zf13WXc+55Q4
+        Jk2rWuDsbgr61nx1Ap5om7Abww==
+X-Google-Smtp-Source: ABdhPJwRxH7ClZo5GfaJbVsSUEC2G0oroEtiTSwkHrj8cbt5P6lBj7HQlE0hfmD9V9683+wKongVGQ==
+X-Received: by 2002:a17:902:c40f:b0:140:6774:9365 with SMTP id k15-20020a170902c40f00b0014067749365mr8592881plk.67.1635493710298;
+        Fri, 29 Oct 2021 00:48:30 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id s18sm5721186pfc.87.2021.10.29.00.48.28
+        by smtp.gmail.com with ESMTPSA id s18sm5721186pfc.87.2021.10.29.00.48.29
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 29 Oct 2021 00:48:28 -0700 (PDT)
+        Fri, 29 Oct 2021 00:48:29 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
         gospo@broadcom.com, jiri@nvidia.com
-Subject: [PATCH net-next v2 14/19] bnxt_en: extract coredump command line from current task
-Date:   Fri, 29 Oct 2021 03:47:51 -0400
-Message-Id: <1635493676-10767-15-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 15/19] bnxt_en: implement dump callback for fw health reporter
+Date:   Fri, 29 Oct 2021 03:47:52 -0400
+Message-Id: <1635493676-10767-16-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1635493676-10767-1-git-send-email-michael.chan@broadcom.com>
 References: <1635493676-10767-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000009c127f05cf790d9d"
+        boundary="000000000000af7b4c05cf790dea"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000009c127f05cf790d9d
+--000000000000af7b4c05cf790dea
 
 From: Edwin Peer <edwin.peer@broadcom.com>
 
-Tools other than 'ethtool -w' may be used to produce a coredump. For
-devlink health, such dumps could even be driver initiated in response
-to a health event. In these cases, the kernel thread information will
-be placed in the coredump record instead.
+Populate the dump with firmware 'live' coredump data. This includes
+the information stored in NVRAM by the firmware exception handler
+prior to recovery. Thus, the live dump includes the desired crash
+context.
 
-v2: use min_t() instead of min() to fix the mismatched type warning
+Firmware does not support HWRM calls after RESET_NOTIFY, so there is
+no supported way to capture a coredump during the auto dump phase.
+Detect this and abort when called from devlink_health_report().
 
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- .../ethernet/broadcom/bnxt/bnxt_coredump.c    | 26 ++++++++++++++++++-
- 1 file changed, 25 insertions(+), 1 deletion(-)
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 42 +++++++++++++++++++
+ 1 file changed, 42 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c
-index 8961a6ffae87..d3cb2f21946d 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c
-@@ -194,6 +194,30 @@ bnxt_fill_coredump_seg_hdr(struct bnxt *bp,
- 	seg_hdr->instance = cpu_to_le32(instance);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+index 930cbf1ca4e0..106f4249e47b 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -18,6 +18,7 @@
+ #include "bnxt_ethtool.h"
+ #include "bnxt_ulp.h"
+ #include "bnxt_ptp.h"
++#include "bnxt_coredump.h"
+ 
+ static void __bnxt_fw_recover(struct bnxt *bp)
+ {
+@@ -177,6 +178,46 @@ static int bnxt_fw_diagnose(struct devlink_health_reporter *reporter,
+ 	return devlink_fmsg_u32_pair_put(fmsg, "Diagnoses", h->diagnoses);
  }
  
-+static void bnxt_fill_cmdline(struct bnxt_coredump_record *record)
++static int bnxt_fw_dump(struct devlink_health_reporter *reporter,
++			struct devlink_fmsg *fmsg, void *priv_ctx,
++			struct netlink_ext_ack *extack)
 +{
-+	struct mm_struct *mm = current->mm;
-+	int i, len, last = 0;
++	struct bnxt *bp = devlink_health_reporter_priv(reporter);
++	u32 dump_len;
++	void *data;
++	int rc;
 +
-+	if (mm) {
-+		len = min_t(int, mm->arg_end - mm->arg_start,
-+			    sizeof(record->commandline) - 1);
-+		if (len && !copy_from_user(record->commandline,
-+					   (char __user *)mm->arg_start, len)) {
-+			for (i = 0; i < len; i++) {
-+				if (record->commandline[i])
-+					last = i;
-+				else
-+					record->commandline[i] = ' ';
-+			}
-+			record->commandline[last + 1] = 0;
-+			return;
-+		}
++	/* TODO: no firmware dump support in devlink_health_report() context */
++	if (priv_ctx)
++		return -EOPNOTSUPP;
++
++	dump_len = bnxt_get_coredump_length(bp, BNXT_DUMP_LIVE);
++	if (!dump_len)
++		return -EIO;
++
++	data = vmalloc(dump_len);
++	if (!data)
++		return -ENOMEM;
++
++	rc = bnxt_get_coredump(bp, BNXT_DUMP_LIVE, data, &dump_len);
++	if (!rc) {
++		rc = devlink_fmsg_pair_nest_start(fmsg, "core");
++		if (rc)
++			goto exit;
++		rc = devlink_fmsg_binary_pair_put(fmsg, "data", data, dump_len);
++		if (rc)
++			goto exit;
++		rc = devlink_fmsg_u32_pair_put(fmsg, "size", dump_len);
++		if (rc)
++			goto exit;
++		rc = devlink_fmsg_pair_nest_end(fmsg);
 +	}
 +
-+	strscpy(record->commandline, current->comm, TASK_COMM_LEN);
++exit:
++	vfree(data);
++	return rc;
 +}
 +
- static void
- bnxt_fill_coredump_record(struct bnxt *bp, struct bnxt_coredump_record *record,
- 			  time64_t start, s16 start_utc, u16 total_segs,
-@@ -219,7 +243,7 @@ bnxt_fill_coredump_record(struct bnxt *bp, struct bnxt_coredump_record *record,
- 	record->minute = cpu_to_le16(tm.tm_min);
- 	record->second = cpu_to_le16(tm.tm_sec);
- 	record->utc_bias = cpu_to_le16(start_utc);
--	strcpy(record->commandline, "ethtool -w");
-+	bnxt_fill_cmdline(record);
- 	record->total_segments = cpu_to_le32(total_segs);
+ static int bnxt_fw_recover(struct devlink_health_reporter *reporter,
+ 			   void *priv_ctx,
+ 			   struct netlink_ext_ack *extack)
+@@ -195,6 +236,7 @@ static int bnxt_fw_recover(struct devlink_health_reporter *reporter,
+ static const struct devlink_health_reporter_ops bnxt_dl_fw_reporter_ops = {
+ 	.name = "fw",
+ 	.diagnose = bnxt_fw_diagnose,
++	.dump = bnxt_fw_dump,
+ 	.recover = bnxt_fw_recover,
+ };
  
- 	if (sscanf(utsname()->release, "%u.%u", &os_ver_major, &os_ver_minor) != 2)
 -- 
 2.18.1
 
 
---0000000000009c127f05cf790d9d
+--000000000000af7b4c05cf790dea
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -195,13 +220,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIFpS6VKmEka7NSnu2CYriMh/K9RXMKZE
-aF2fD/aTV/Q5MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTAy
-OTA3NDgyOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIGHZegBdG3ZV9EFEyEBaySbvU2daJ4jq
+fVp91cI9MzWyMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTAy
+OTA3NDgzMVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAZYUQUzJVmS/U2uOqSaeqaSvo7n2YANec+YJjYMiQSIOqXcptF
-bgP90Vl+/uDMcKeCcs3MnVX5asWjVME1C20f1yMJtOd1B1xYlqC3CCFSn0WjnRo8A3NB7ofGG/ld
-3c9QBn6wyUknT4U9KBajlItm9pZOLiUkpNVLfghkaAn3i7dglivL3mLXd9zesE/TweAEQwaQ4vqE
-lTX9zCegxgBsJqd8z+2Q6/8MEEpnUkTliQgXmwAlKgnz91JeYzsF71KxuSbvWu3K9gtmGH+BkxzC
-X5CqzORiA4coAnXAf3YLKffFCESlaQWk9vD9+9Ju05GZTAg+x2Xfhb4mySYrWW+f
---0000000000009c127f05cf790d9d--
+ATANBgkqhkiG9w0BAQEFAASCAQDMB0J5n2WF+lKHCivGNIoMtl7CsdgvchWj50eBbGTconJlhiSh
+5KLeDYfSNWKLWM3DGn2U64ppFme03uRPDQv9pmxDu9jbWH+2dqnzKkD0qafbe0QFVqlubdGIPf/0
+fXEKSVuaU3rGzKlYnPL6yA1SxsF70C2pNeObHSex6w/8tij1Jn8qeWmIfL2oshI0U56oUI+BfIja
+ttF26/bugJc7eMyWnHVonOOzSs2Pt8mjbeJAsIwBHDJvoP/jgCvSVsnjAy0OdGKIuKQmB0rF5oVP
+BLgGUcFR0ZE1vgAdpfS8LHTojWElSTHRIHxIUSAKJaWCNv/ly0EsMviOSlrAM9Gx
+--000000000000af7b4c05cf790dea--
