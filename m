@@ -2,108 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C0A34405C8
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 01:29:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 179834405E9
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 01:53:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231515AbhJ2Xbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 19:31:36 -0400
-Received: from www62.your-server.de ([213.133.104.62]:51428 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbhJ2Xbf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 19:31:35 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mgbIy-0003Jv-0R; Sat, 30 Oct 2021 01:29:00 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mgbIx-0007ES-Pp; Sat, 30 Oct 2021 01:28:59 +0200
-Subject: Re: [PATCH bpf-next] bpf: Fix propagation of bounds from 64-bit
- min/max into 32-bit and var_off.
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Yonghong Song <yhs@fb.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
-References: <20211029163102.80290-1-alexei.starovoitov@gmail.com>
- <2d8df23d-175f-3eb8-3ba4-35659664336c@fb.com>
- <CAADnVQLvwGMsawF9s3wDw9Gh_HJpCTkHTS=0MHLLy+VqapLUWQ@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <4c43dc61-d8b8-b179-280f-84bc291583ca@iogearbox.net>
-Date:   Sat, 30 Oct 2021 01:28:59 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S231589AbhJ2Xzh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 19:55:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60102 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231154AbhJ2Xzg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 19:55:36 -0400
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 250A4C061570;
+        Fri, 29 Oct 2021 16:53:07 -0700 (PDT)
+Received: by mail-oi1-x22c.google.com with SMTP id g125so15604180oif.9;
+        Fri, 29 Oct 2021 16:53:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ut6pn5cliGqKJyxhLk39cGyPq9pAH/Drj266MOylggY=;
+        b=QaB65rFyylww/otFLw4EZbF7r6sgxqFL1f9BsRxQVff5RCyCrDpCuO4ulCuDxw31ej
+         piM95O/fr1PFSsz6yzMwtHX04tBY9gk+EiBjUOWGRBwgH3uIlEgfNtL20oBaXs3LtBrv
+         fN5FWr5HqTVReG7b8+WaUpmBNPGmVZPBdNKZa2MVJiKwD3h+RtgKu9f1u3x986YF7yCy
+         z0wkqzr4JJRb6y6vS7vXfjvkpYoH3oJk0ToM7RC1hyaR5q8NWdEmzRrKMpDzLfTRDF7s
+         BxOpdBSn6uv9iW//u2iDPYbPdFVHqvVKG7S2dUus9z0BnU0kjzoZFUgyy2VvUIT5ZBBM
+         Oyig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ut6pn5cliGqKJyxhLk39cGyPq9pAH/Drj266MOylggY=;
+        b=AC4LWqCkvt/2rcqMr2IBcpBPnAi24G4SmcO4JnBqfqMqV0pelTz4oSYVtw5wkjUPtM
+         32KCni7xPovAoi5uYGZy53Y9OnUbnhwIxolpfNYa9qNkMpWcSCG9Qk8/FcrVu0e+td3U
+         QDhMm9Uq4HIqKpwC5/U0oH+5pwua8u9jxmvEGH4Dx+fP+7WGubuXTBSCoK6nomRsmCxw
+         YansCgJ1m3LLoA0/nPiRlJrZIWF72sljB/l2WjxZ+e6w3EsBm0WrhUk2DKsgW+QYoJ0K
+         Okt4yvq2SersInUN0E6sKXl59AZ1c3mV1opFSXjB4vyu0hK24my6JeZtXrNodSiK2vDz
+         dMTQ==
+X-Gm-Message-State: AOAM532IA03LuugxvhhnqvH/FY53XuV7BuYIXG/tqcMSgfINaxxAQ8yH
+        04SC/23nQwRYxlMvXNdybyA=
+X-Google-Smtp-Source: ABdhPJxiqvaeNc1rLviXAkgYuYHSxPzhxNZZNX93sklb3OaJbFGO2MbM0uJQCW11DHJRWxkbA3RsaQ==
+X-Received: by 2002:aca:31c9:: with SMTP id x192mr15849915oix.173.1635551586095;
+        Fri, 29 Oct 2021 16:53:06 -0700 (PDT)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id r131sm2386537oib.27.2021.10.29.16.53.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Oct 2021 16:53:05 -0700 (PDT)
+Message-ID: <9015da81-689a-5ff6-c5ca-55c28dec1867@gmail.com>
+Date:   Fri, 29 Oct 2021 17:53:03 -0600
 MIME-Version: 1.0
-In-Reply-To: <CAADnVQLvwGMsawF9s3wDw9Gh_HJpCTkHTS=0MHLLy+VqapLUWQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.2.1
+Subject: Re: Kernel leaks memory in ip6_dst_cache when suppress_prefix is
+ present in ipv6 routing rules and a `fib` rule is present in ipv6 nftables
+ rules
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26337/Fri Oct 29 10:19:12 2021)
+To:     msizanoen <msizanoen@qtmlabs.xyz>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <e022d597-302d-c061-0830-6ed20aa61e56@qtmlabs.xyz>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <e022d597-302d-c061-0830-6ed20aa61e56@qtmlabs.xyz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/29/21 9:22 PM, Alexei Starovoitov wrote:
-> On Fri, Oct 29, 2021 at 11:29 AM Yonghong Song <yhs@fb.com> wrote:
->> On 10/29/21 9:31 AM, Alexei Starovoitov wrote:
->>> From: Alexei Starovoitov <ast@kernel.org>
->>>
->>> Before this fix:
->>> 166: (b5) if r2 <= 0x1 goto pc+22
->>> from 166 to 189: R2=invP(id=1,umax_value=1,var_off=(0x0; 0xffffffff))
->>>
->>> After this fix:
->>> 166: (b5) if r2 <= 0x1 goto pc+22
->>> from 166 to 189: R2=invP(id=1,umax_value=1,var_off=(0x0; 0x1))
->>>
->>> While processing BPF_JLE the reg_set_min_max() would set true_reg->umax_value = 1
->>> and call __reg_combine_64_into_32(true_reg).
->>>
->>> Without the fix it would not pass the condition:
->>> if (__reg64_bound_u32(reg->umin_value) && __reg64_bound_u32(reg->umax_value))
->>>
->>> since umin_value == 0 at this point.
->>> Before commit 10bf4e83167c the umin was incorrectly ingored.
->>> The commit 10bf4e83167c fixed the correctness issue, but pessimized
->>> propagation of 64-bit min max into 32-bit min max and corresponding var_off.
->>>
->>> Fixes: 10bf4e83167c ("bpf: Fix propagation of 32 bit unsigned bounds from 64 bit bounds")
->>> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
->>
->> See an unrelated nits below.
->>
->> Acked-by: Yonghong Song <yhs@fb.com>
->>
->>> ---
->>>    kernel/bpf/verifier.c                               | 2 +-
->>>    tools/testing/selftests/bpf/verifier/array_access.c | 2 +-
->>>    2 files changed, 2 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
->>> index 3c8aa7df1773..29671ed49ee8 100644
->>> --- a/kernel/bpf/verifier.c
->>> +++ b/kernel/bpf/verifier.c
->>> @@ -1425,7 +1425,7 @@ static bool __reg64_bound_s32(s64 a)
->>
->> We have
->> static bool __reg64_bound_s32(s64 a)
->> {
->>           return a > S32_MIN && a < S32_MAX;
->> }
->>
->> Should we change to
->>          return a >= S32_MIN && a <= S32_MAX
->> ?
+On 10/26/21 8:24 AM, msizanoen wrote:
+> The kernel leaks memory when a `fib` rule is present in ipv6 nftables
+> firewall rules and a suppress_prefix rule
+> is present in the IPv6 routing rules (used by certain tools such as
+> wg-quick). In such scenarios, every incoming
+> packet will leak an allocation in ip6_dst_cache slab cache.
 > 
-> Probably, but I haven't investigated that yet.
+> After some hours of `bpftrace`-ing and source code reading, I tracked
+> down the issue to this commit:
+>     https://github.com/torvalds/linux/commit/ca7a03c4175366a92cee0ccc4fec0038c3266e26
+> 
+> 
+> The problem with that patch is that the generic args->flags always have
+> FIB_LOOKUP_NOREF set[1][2] but the
+> ip6-specific flag RT6_LOOKUP_F_DST_NOREF might not be specified, leading
+> to fib6_rule_suppress not
+> decreasing the refcount when needed. This can be fixed by exposing the
+> protocol-specific flags to the
+> protocol specific `suppress` function, and check the protocol-specific
+> `flags` argument for
+> RT6_LOOKUP_F_DST_NOREF instead of the generic FIB_LOOKUP_NOREF when
+> decreasing the refcount.
+> 
+> How to reproduce:
+> - Add the following nftables rule to a prerouting chain: `meta nfproto
+> ipv6 fib saddr . mark . iif oif missing drop`
 
-Fix looks good to me as well, we should make it consistent if so given it's the same
-logic, but some tests for the S32 would be good if we don't have them yet.
+exact command? I have not played with nftables. Do you have a stack
+trace of where the dst reference is getting taken?
 
-Thanks!
-Daniel
+
+> - Run `sudo ip -6 rule add table main suppress_prefixlength 0`
+> - Watch `sudo slabtop -o | grep ip6_dst_cache` memory usage increase
+> with every incoming ipv6 packet
+> 
+> Example
+> patch:https://gist.github.com/msizanoen1/36a2853467a9bd34fadc5bb3783fde0f
+> 
+> [1]:https://github.com/torvalds/linux/blob/ca7a03c4175366a92cee0ccc4fec0038c3266e26/net/ipv6/fib6_rules.c#L71
+> 
+> [2]:https://github.com/torvalds/linux/blob/ca7a03c4175366a92cee0ccc4fec0038c3266e26/net/ipv6/fib6_rules.c#L99
+> 
+> 
+> 
+
