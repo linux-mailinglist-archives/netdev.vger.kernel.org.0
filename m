@@ -2,128 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C814D43F800
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 09:48:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B5C443F803
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 09:48:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232268AbhJ2Hum (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 03:50:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38648 "EHLO
+        id S232273AbhJ2Huq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 03:50:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232258AbhJ2Hul (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 03:50:41 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E334C061570
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 00:48:13 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id oa12-20020a17090b1bcc00b0019f715462a8so6798891pjb.3
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 00:48:13 -0700 (PDT)
+        with ESMTP id S230247AbhJ2Hum (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 03:50:42 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ABBFC061570
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 00:48:14 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id q187so9190107pgq.2
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 00:48:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=jVORgBAl6/7W81cdtieT4xZGhrazoR70kF+Gz5tCEbs=;
-        b=It/+7lk7oyJrEqYxRhFsE85IToee60atdi7O5xNdczT/xbzwv3yXAOCZDtmXbywCmj
-         OXvImJajtxdrIdXeyGwNS0UI03IrfK44LULIfEKMKv2i50JiOK7wqty0yHRaous5Imjh
-         xbhwqUjoNAKPO5RMpZFpK3BQnOwurEljylWyU=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=1ovZkDJ9NDClPvbcrrtW0v1NdbLyn9mFqov7qXgI32Y=;
+        b=G4JHlE3wH6+7bnpY9Nv4VJa8hIWoPF/0OFbuK9E2X9jtX8boOimHKiR5y5JGm654tx
+         xl45LK7igkZEjWFwgFgboJWcLv+WCA60a/nMV4AqPiX7vJh8kN55BxGTJh80FCIo5eED
+         L9JvbzPIl8n6Z/5k56dIuXCWTlmamyhevMxts=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=jVORgBAl6/7W81cdtieT4xZGhrazoR70kF+Gz5tCEbs=;
-        b=DOZJoxlQdUXOpu9XfYvoDYoIHYnoejPAYvdBXbOVemhtXCo9anHGrYvwmslts5wf/w
-         TET05XmIx5IAZL//HcmKp9xEx9wfMIAwYk09XJg34XCggjxucJDHeyf1pN28WHc4DTFj
-         MUPX+nY2z2pHlLYjQ4BuQvqDi3+f6JCSGV2IWBe/rlbQpp0qDxMZcEtRsNj2jbjnF/BT
-         WhwNtlQ9NJIF+g18i6u5bNcIbAWd6B7WsIEDQy5aW2tns8FoNq85iiOvJpKuqofWMzrO
-         fzkBW0Dz1kZFxxQsXEojh9/+jPDxmOQw/1kNd6xnTRHERMAJLtttHlixn3YfDn3IEpGq
-         1b2A==
-X-Gm-Message-State: AOAM5309EXSJmU0isRD38vlWTaeA5sZ3PxRSh1PmYqqVX+C7/PX8siWf
-        vVSxZSdWa09vg123ijaVftczwA==
-X-Google-Smtp-Source: ABdhPJyvu56u9IQP3aP1bGdyQdRwwdM1GFKoKGrD59vkbbFRYUzDN3/jGHhUHxJUjGkzOkiyZFa2nQ==
-X-Received: by 2002:a17:903:2312:b0:140:26b7:fc01 with SMTP id d18-20020a170903231200b0014026b7fc01mr8287636plh.84.1635493692364;
-        Fri, 29 Oct 2021 00:48:12 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=1ovZkDJ9NDClPvbcrrtW0v1NdbLyn9mFqov7qXgI32Y=;
+        b=nixaeLndQuT3ix0FOLyWDryhnO2ULrpsLB9h/2v8hc4YumsCvczX6JPOWbGFe70fEC
+         0um02gvPnUYweppJxJy/CKh3t5B4KQPlCrj/7P1+TLb8Yii1wtHi5VVCpbTLv5/5gHL4
+         Gr3QYsjnTOQGlsdpUVSRFS0Yrrxi9BHuPn9j4BQCvRm2Ego7cRmsBsTpOv8NxBk3A61e
+         LydWWYo/TfQksX+1MV0bYUOfpg1Z7EIq9WuSNo+7h/ujVKGHXozGPvvrYLgGB/N84ZFp
+         toagBbs0cThn9/FYmOYV+9RXqecQtI1em6390lNvc0jF/3gJnERo6AXxNMzca5QVPMeX
+         GB7Q==
+X-Gm-Message-State: AOAM533+s+QnL+yF3E4mLAYeRZqOR/0IlJ4tG0SOKQ8zFQ8/WByuPhJR
+        LWDZ5LGnFPpjdMfGFBDHcvOfsQ==
+X-Google-Smtp-Source: ABdhPJzW8eY3KO2x0TVPq3ioeaqfUmdfVfmwjz86S6hZx4cCoMxLXWffR2AecCm2I3eSBWNb1s26RA==
+X-Received: by 2002:a63:9316:: with SMTP id b22mr7060991pge.463.1635493693520;
+        Fri, 29 Oct 2021 00:48:13 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id s18sm5721186pfc.87.2021.10.29.00.48.11
+        by smtp.gmail.com with ESMTPSA id s18sm5721186pfc.87.2021.10.29.00.48.12
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 29 Oct 2021 00:48:11 -0700 (PDT)
+        Fri, 29 Oct 2021 00:48:13 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
         gospo@broadcom.com, jiri@nvidia.com
-Subject: [PATCH net-next v2 00/19] bnxt_en: devlink enhancements
-Date:   Fri, 29 Oct 2021 03:47:37 -0400
-Message-Id: <1635493676-10767-1-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 01/19] bnxt_en: refactor printing of device info
+Date:   Fri, 29 Oct 2021 03:47:38 -0400
+Message-Id: <1635493676-10767-2-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1635493676-10767-1-git-send-email-michael.chan@broadcom.com>
+References: <1635493676-10767-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000099ea8905cf790c3f"
+        boundary="000000000000b0159405cf790c28"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000099ea8905cf790c3f
+--000000000000b0159405cf790c28
 
-This patch series implements some devlink enhancements for bnxt_en.
-They include:
+From: Edwin Peer <edwin.peer@broadcom.com>
 
-1. devlink reload to reinitialize driver or to activate new firmware.
-2. Support enable_remote_dev_reset to enable/disable other functions
-resetting the device.
-3. Consolidate and improve the health reporters.
-4. Support live firmware patch.
-5. Provide devlink dev info "fw" version on older firmware.
+The device info logged during probe will be reused by the devlink
+driver_reinit code in a following patch. Extract this logic into
+the new bnxt_print_device_info() function. The board index needs
+to be saved in the driver context so that the board information
+can be retrieved at a later time, outside of the probe function.
 
-v2:
-In patch 3, don't use devlink_reload_disable() and devlink_reload_enable()
-which are no longer available in the latest kernel.  Instead, check that
-the netdev is not in unregistered state before proceeding with reload.
+Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 67 +++++------------------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h | 51 ++++++++++++++++-
+ 2 files changed, 63 insertions(+), 55 deletions(-)
 
-In patch 14, use min_t() instead of min() to fix the mismatched type
-warning.
-
-Edwin Peer (14):
-  bnxt_en: refactor printing of device info
-  bnxt_en: refactor cancellation of resource reservations
-  bnxt_en: implement devlink dev reload driver_reinit
-  bnxt_en: implement devlink dev reload fw_activate
-  bnxt_en: add enable_remote_dev_reset devlink parameter
-  bnxt_en: improve error recovery information messages
-  bnxt_en: remove fw_reset devlink health reporter
-  bnxt_en: consolidate fw devlink health reporters
-  bnxt_en: improve fw diagnose devlink health messages
-  bnxt_en: Refactor coredump functions
-  bnxt_en: move coredump functions into dedicated file
-  bnxt_en: extract coredump command line from current task
-  bnxt_en: implement dump callback for fw health reporter
-  bnxt_en: implement firmware live patching
-
-Michael Chan (2):
-  bnxt_en: Update firmware interface to 1.10.2.63
-  bnxt_en: Update bnxt.rst devlink documentation
-
-Vasundhara Volam (2):
-  bnxt_en: Add compression flags information in coredump segment header
-  bnxt_en: Retrieve coredump and crashdump size via FW command
-
-Vikas Gupta (1):
-  bnxt_en: Provide stored devlink "fw" version on older firmware
-
- Documentation/networking/devlink/bnxt.rst     |   2 +
- drivers/net/ethernet/broadcom/bnxt/Makefile   |   2 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 268 ++++---
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     | 113 ++-
- .../ethernet/broadcom/bnxt/bnxt_coredump.c    | 444 +++++++++++
- .../ethernet/broadcom/bnxt/bnxt_coredump.h    |  51 ++
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 737 ++++++++++++++----
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.h |  24 +-
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 398 +---------
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.h |  46 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h | 155 +++-
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c |   2 -
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h |   3 +
- 13 files changed, 1554 insertions(+), 691 deletions(-)
- create mode 100644 drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 66263aa0d96b..8ff398525488 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -85,55 +85,7 @@ MODULE_DESCRIPTION("Broadcom BCM573xx network driver");
+ 
+ #define BNXT_TX_PUSH_THRESH 164
+ 
+-enum board_idx {
+-	BCM57301,
+-	BCM57302,
+-	BCM57304,
+-	BCM57417_NPAR,
+-	BCM58700,
+-	BCM57311,
+-	BCM57312,
+-	BCM57402,
+-	BCM57404,
+-	BCM57406,
+-	BCM57402_NPAR,
+-	BCM57407,
+-	BCM57412,
+-	BCM57414,
+-	BCM57416,
+-	BCM57417,
+-	BCM57412_NPAR,
+-	BCM57314,
+-	BCM57417_SFP,
+-	BCM57416_SFP,
+-	BCM57404_NPAR,
+-	BCM57406_NPAR,
+-	BCM57407_SFP,
+-	BCM57407_NPAR,
+-	BCM57414_NPAR,
+-	BCM57416_NPAR,
+-	BCM57452,
+-	BCM57454,
+-	BCM5745x_NPAR,
+-	BCM57508,
+-	BCM57504,
+-	BCM57502,
+-	BCM57508_NPAR,
+-	BCM57504_NPAR,
+-	BCM57502_NPAR,
+-	BCM58802,
+-	BCM58804,
+-	BCM58808,
+-	NETXTREME_E_VF,
+-	NETXTREME_C_VF,
+-	NETXTREME_S_VF,
+-	NETXTREME_C_VF_HV,
+-	NETXTREME_E_VF_HV,
+-	NETXTREME_E_P5_VF,
+-	NETXTREME_E_P5_VF_HV,
+-};
+-
+-/* indexed by enum above */
++/* indexed by enum board_idx */
+ static const struct {
+ 	char *name;
+ } board_info[] = {
+@@ -13186,6 +13138,15 @@ static int bnxt_map_db_bar(struct bnxt *bp)
+ 	return 0;
+ }
+ 
++void bnxt_print_device_info(struct bnxt *bp)
++{
++	netdev_info(bp->dev, "%s found at mem %lx, node addr %pM\n",
++		    board_info[bp->board_idx].name,
++		    (long)pci_resource_start(bp->pdev, 0), bp->dev->dev_addr);
++
++	pcie_print_link_status(bp->pdev);
++}
++
+ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ {
+ 	struct net_device *dev;
+@@ -13209,10 +13170,11 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		return -ENOMEM;
+ 
+ 	bp = netdev_priv(dev);
++	bp->board_idx = ent->driver_data;
+ 	bp->msg_enable = BNXT_DEF_MSG_ENABLE;
+ 	bnxt_set_max_func_irqs(bp, max_irqs);
+ 
+-	if (bnxt_vf_pciid(ent->driver_data))
++	if (bnxt_vf_pciid(bp->board_idx))
+ 		bp->flags |= BNXT_FLAG_VF;
+ 
+ 	if (pdev->msix_cap)
+@@ -13382,10 +13344,7 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		devlink_port_type_eth_set(&bp->dl_port, bp->dev);
+ 	bnxt_dl_fw_reporters_create(bp);
+ 
+-	netdev_info(dev, "%s found at mem %lx, node addr %pM\n",
+-		    board_info[ent->driver_data].name,
+-		    (long)pci_resource_start(pdev, 0), dev->dev_addr);
+-	pcie_print_link_status(pdev);
++	bnxt_print_device_info(bp);
+ 
+ 	pci_save_state(pdev);
+ 	return 0;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 19fe6478e9b4..55da89cb62b5 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -1586,6 +1586,54 @@ struct bnxt_fw_reporter_ctx {
+ #define BNXT_FW_RETRY			5
+ #define BNXT_FW_IF_RETRY		10
+ 
++enum board_idx {
++	BCM57301,
++	BCM57302,
++	BCM57304,
++	BCM57417_NPAR,
++	BCM58700,
++	BCM57311,
++	BCM57312,
++	BCM57402,
++	BCM57404,
++	BCM57406,
++	BCM57402_NPAR,
++	BCM57407,
++	BCM57412,
++	BCM57414,
++	BCM57416,
++	BCM57417,
++	BCM57412_NPAR,
++	BCM57314,
++	BCM57417_SFP,
++	BCM57416_SFP,
++	BCM57404_NPAR,
++	BCM57406_NPAR,
++	BCM57407_SFP,
++	BCM57407_NPAR,
++	BCM57414_NPAR,
++	BCM57416_NPAR,
++	BCM57452,
++	BCM57454,
++	BCM5745x_NPAR,
++	BCM57508,
++	BCM57504,
++	BCM57502,
++	BCM57508_NPAR,
++	BCM57504_NPAR,
++	BCM57502_NPAR,
++	BCM58802,
++	BCM58804,
++	BCM58808,
++	NETXTREME_E_VF,
++	NETXTREME_C_VF,
++	NETXTREME_S_VF,
++	NETXTREME_C_VF_HV,
++	NETXTREME_E_VF_HV,
++	NETXTREME_E_P5_VF,
++	NETXTREME_E_P5_VF_HV,
++};
++
+ struct bnxt {
+ 	void __iomem		*bar0;
+ 	void __iomem		*bar1;
+@@ -2049,6 +2097,7 @@ struct bnxt {
+ 	struct list_head	tc_indr_block_list;
+ 	struct dentry		*debugfs_pdev;
+ 	struct device		*hwmon_dev;
++	enum board_idx		board_idx;
+ };
+ 
+ #define BNXT_NUM_RX_RING_STATS			8
+@@ -2219,5 +2268,5 @@ int bnxt_get_port_parent_id(struct net_device *dev,
+ 			    struct netdev_phys_item_id *ppid);
+ void bnxt_dim_work(struct work_struct *work);
+ int bnxt_hwrm_set_ring_coal(struct bnxt *bp, struct bnxt_napi *bnapi);
+-
++void bnxt_print_device_info(struct bnxt *bp);
+ #endif
 -- 
 2.18.1
 
 
---00000000000099ea8905cf790c3f
+--000000000000b0159405cf790c28
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -194,13 +328,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIA7PujUv82gXwi9Tdsg1KkkCW3VcRNaW
-vMRs3d1HVKNeMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTAy
-OTA3NDgxMlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEICAQblpFbSjwuFa0vTQmmvHexXSyaP4X
+aLzgbbZVA+bgMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTAy
+OTA3NDgxNFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCfnIwUV9M229amo8A/Y4yReOZU62P2tjLTrwcUV/YBx/6H3JWh
-1Dp7zHHGrJfIysuBEtwgSyEBvxHInzuYjyJwbnQk+JpRAhee7DYmVZ3VuPVbHN9PrUMKie+4dTWM
-2/FMoNNqYpGIqQWYburdR0L2T0HeFSk0FZnxfo+WwiGgJ6XDV8/kh0uNwM0KAMsH6b1ltZT/dcIB
-qzQrjyq38UxqR2pr3QpcGGI4fnLEBlP+jx91A2hpEOqQJpcnXPhcqLoI28O7guPxKgtEKCbCshNs
-+J7oHxS8Pj4gOVqDALKRipNcEN3HBKwaGLmwrSQqRe2olPZttCF7vGZ7Nn0bAkJm
---00000000000099ea8905cf790c3f--
+ATANBgkqhkiG9w0BAQEFAASCAQClU9tBOy53ejTLysirxBwVI/DUew0xSkEDPRhb9auNxal4CTv9
+ep5iNnjFBlbzyF+0FLR5nppMoIX8VoPEUomH1I/+vSk/pCbhiz1Xi0oRKZhtvi4Fi1r5fRvcGD0s
+OkJOL88i/a2buWnb7wTFzcWlguZWsqtcxlMQWAexJl3n49uJ+uae84+N+ofaaQEQeRnxUWTYY/ZR
+VN/B/i7y+ME4jUQ1aGaDHaEKATBz1meijvfto7Qd5G45mz/tVs+XTvaSmb2kmVLrZqOHbPjxwqh1
+Gzp8mc644xarE+dscRFQsUDJb8ImKmJia95lbXSisKTKqLFN7vGzlYZjYWRoTwqe
+--000000000000b0159405cf790c28--
