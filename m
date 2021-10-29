@@ -2,112 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20E8444053D
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 00:03:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5867944053E
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 00:03:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231397AbhJ2WFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 18:05:52 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:3346 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231173AbhJ2WFv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 18:05:51 -0400
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19TLkcsm020463
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 22:03:22 GMT
+        id S231401AbhJ2WFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 18:05:54 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:19550 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231173AbhJ2WFx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 18:05:53 -0400
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19TLMqeT024988
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 22:03:24 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=TSD3xEcttqMrih7i59FWKu7ia8zBe2whaT3+Rtf7l4Q=;
- b=kPHEsSOB7NEPfRXbZMxDXSxng/kvEZZ3L/nuFu88m/aABY8CFImhE6uPl9Xh1qOfdNS/
- cKYZ9k/GUxE4HXTQL1/psPSWax8OaPJTN8pEk5J6j4dVJTzl+SHG9TkflNYsW3z/ENHp
- BcwdNvHofBmL/V5dNJKsgxbJNHkuLm1LByErNRCXaKmVB5xs0JMRB/gmVjjxPKDT3TGv
- ue8RyxgsE25hlENYc7GRT2V4IwMKpF8Yu237MHhaLVs/fTmY5SEDW/DozGGn+CGuxLqi
- n7V0uIaLwwpYosLXVCSVwWqO3ziI4s5huhEtA2HqQlCv326I/u5qylFtBmCaNjNdK8+A 0g== 
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3c0s5x0ab4-1
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=VdHMLlEDdRZPQ+W7xtmeX7Wv4h4W5Tlq68lrOb4Xb4Q=;
+ b=pgfRh7+AW4VRCXxWvQMBVCnvi8uSl94Oz9f0Hb8YmENBOKoRhdMz4j9WkV8w46Xt8s7/
+ 5OXSlybc06sEOKdJOK5hi59MggG03vAw4jgt3CTZahN8KpoI1pHlehDMmymymQMR3tk0
+ uP9vDFGg+ozcBzuugE99BL1aO031R28S7+gu+v0Y3Xpjg0iPCg4+CzHzd9lvoSSPLZcT
+ RPpPDB2f4ThTSSGvrNqLjKhpZzrmYd9f97WWOcbuiNi+t+cZgWBIjRoXqH9koTPxdS/F
+ 0bZsfZ4XlX2eXI0SKMRLnFc3fFHtyFsX/xhDJ9XJauJaaO4VYAhpsnzhiRgfO1RXE1Gl nQ== 
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3c0rtsgm2v-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 22:03:22 +0000
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 19TLvYtM006799
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 22:03:21 GMT
-Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
-        by ppma03dal.us.ibm.com with ESMTP id 3bx4fpekts-1
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 22:03:24 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 19TLviIC030178
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 22:03:23 GMT
+Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
+        by ppma02dal.us.ibm.com with ESMTP id 3bx4f9ps1q-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 22:03:21 +0000
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 22:03:23 +0000
 Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 19TM3JDA35455426
+        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 19TM3Kqc26542458
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 29 Oct 2021 22:03:19 GMT
+        Fri, 29 Oct 2021 22:03:20 GMT
 Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 12221B206A;
+        by IMSVA (Postfix) with ESMTP id 75C9EB2065;
+        Fri, 29 Oct 2021 22:03:20 +0000 (GMT)
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 71072B2064;
         Fri, 29 Oct 2021 22:03:19 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C708AB2064;
-        Fri, 29 Oct 2021 22:03:17 +0000 (GMT)
 Received: from suka-w540.ibmuc.com (unknown [9.65.240.170])
         by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Fri, 29 Oct 2021 22:03:17 +0000 (GMT)
+        Fri, 29 Oct 2021 22:03:19 +0000 (GMT)
 From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 To:     netdev@vger.kernel.org
 Cc:     Brian King <brking@linux.ibm.com>, Dany Madden <drt@linux.ibm.com>,
         abdhalee@in.ibm.com, vaish123@in.ibm.com
-Subject: [PATCH net 1/3] ibmvnic: don't stop queue in xmit
-Date:   Fri, 29 Oct 2021 15:03:14 -0700
-Message-Id: <20211029220316.2003519-1-sukadev@linux.ibm.com>
+Subject: [PATCH net 2/3] ibmvnic: Process crqs after enabling interrupts
+Date:   Fri, 29 Oct 2021 15:03:15 -0700
+Message-Id: <20211029220316.2003519-2-sukadev@linux.ibm.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20211029220316.2003519-1-sukadev@linux.ibm.com>
+References: <20211029220316.2003519-1-sukadev@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: s5Ogq_vg2HJKVLOpilXs0JAMBymEX6Iw
-X-Proofpoint-ORIG-GUID: s5Ogq_vg2HJKVLOpilXs0JAMBymEX6Iw
+X-Proofpoint-ORIG-GUID: oMWQidJdDnNxoZPm9jCErnrz_KaO6bHQ
+X-Proofpoint-GUID: oMWQidJdDnNxoZPm9jCErnrz_KaO6bHQ
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
  definitions=2021-10-29_06,2021-10-29_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 mlxscore=0
- lowpriorityscore=0 suspectscore=0 mlxlogscore=772 phishscore=0 spamscore=0
- impostorscore=0 priorityscore=1501 clxscore=1015 adultscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
- definitions=main-2110290123
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ suspectscore=0 mlxlogscore=862 phishscore=0 clxscore=1015 malwarescore=0
+ bulkscore=0 spamscore=0 impostorscore=0 priorityscore=1501 adultscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2110290123
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If adapter's resetting bit is on, discard the packet but don't stop the
-transmit queue - instead leave that to the reset code. With this change,
-it is possible that we may get several calls to ibmvnic_xmit() that simply
-discard packets and return.
+Soon after registering a CRQ it is possible that we get a fail over or
+maybe a CRQ_INIT from the VIOS while interrupts were disabled.
 
-But if we stop the queue here, we might end up doing so just after
-__ibmvnic_open() started the queues (during a hard/soft reset) and before
-the ->resetting bit was cleared. If that happens, there will be no one to
-restart queue and transmissions will be blocked indefinitely.
+Look for any such CRQs after enabling interrupts.
 
-This can cause a TIMEOUT reset and with auto priority failover enabled,
-an unnecessary FAILOVER reset to less favored backing device and then a
-FAILOVER back to the most favored backing device. If we hit the window
-repeatedly, we can get stuck in a loop of TIMEOUT, FAILOVER, FAILOVER
-resets leaving the adapter unusable for extended periods of time.
+Otherwise we can intermittently fail to bring up ibmvnic adapters during
+boot, specially in kexec/kdump kernels.
 
-Fixes: 7f5b030830fe ("ibmvnic: Free skb's in cases of failure in transmit")
-Reported-by: Abdul Haleem <abdhalee@in.ibm.com>
+Fixes: 032c5e82847a ("Driver for IBM System i/p VNIC protocol")
 Reported-by: Vaishnavi Bhat <vaish123@in.ibm.com>
 Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 8f17096e614d..a1533979c670 100644
+index a1533979c670..50956f622b11 100644
 --- a/drivers/net/ethernet/ibm/ibmvnic.c
 +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -1914,8 +1914,6 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
- 	ind_bufp = &tx_scrq->ind_buf;
+@@ -5611,6 +5611,9 @@ static int init_crq_queue(struct ibmvnic_adapter *adapter)
+ 	crq->cur = 0;
+ 	spin_lock_init(&crq->lock);
  
- 	if (test_bit(0, &adapter->resetting)) {
--		if (!netif_subqueue_stopped(netdev, skb))
--			netif_stop_subqueue(netdev, queue_num);
- 		dev_kfree_skb_any(skb);
++	/* process any CRQs that were queued before we enabled interrupts */
++	tasklet_schedule(&adapter->tasklet);
++
+ 	return retrc;
  
- 		tx_send_failed++;
+ req_irq_failed:
 -- 
 2.26.2
 
