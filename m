@@ -2,235 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3437343F48F
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 03:48:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49BBC43F4C9
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 04:06:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231383AbhJ2BvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 21:51:05 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:25322 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229950AbhJ2BvF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 21:51:05 -0400
-Received: from dggeme751-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HgQFQ1WbYzbhBT;
-        Fri, 29 Oct 2021 09:43:54 +0800 (CST)
-Received: from k03.huawei.com (10.67.174.111) by
- dggeme751-chm.china.huawei.com (10.3.19.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.15; Fri, 29 Oct 2021 09:48:34 +0800
-From:   He Fengqing <hefengqing@huawei.com>
-To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <tj@kernel.org>, <lizefan.x@bytedance.com>, <hannes@cmpxchg.org>
-CC:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <cgroups@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <john.fastabend@gmail.com>, <kpsingh@kernel.org>
-Subject: [PATCH] cgroup: bpf: Move wrapper for __cgroup_bpf_*() to kernel/bpf/cgroup.c
-Date:   Fri, 29 Oct 2021 02:39:06 +0000
-Message-ID: <20211029023906.245294-1-hefengqing@huawei.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.111]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggeme751-chm.china.huawei.com (10.3.19.97)
-X-CFilter-Loop: Reflected
+        id S231460AbhJ2CJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 22:09:12 -0400
+Received: from smtp25.cstnet.cn ([159.226.251.25]:59566 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231348AbhJ2CJL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Oct 2021 22:09:11 -0400
+Received: from localhost.localdomain (unknown [124.16.138.128])
+        by APP-05 (Coremail) with SMTP id zQCowABXGfYSV3thW+2TBQ--.15439S2;
+        Fri, 29 Oct 2021 10:06:10 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     jeyu@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, nathan@kernel.org,
+        ndesaulniers@google.com
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] module: Fix implicit type conversion
+Date:   Fri, 29 Oct 2021 02:06:09 +0000
+Message-Id: <1635473169-1848729-1-git-send-email-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.7.4
+X-CM-TRANSID: zQCowABXGfYSV3thW+2TBQ--.15439S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrKFy5GFW7WrWrCFW3KF1kuFg_yoWDCwc_Jr
+        1DXrWjgryYvwn29a13Jw4rZryxKw1jgFs09a48WFZxJFyrtr13Aw1vqry3Zrn5WrWrCFn7
+        Xas8Jrnxuw1IgjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb3AFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
+        6F4UJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26F
+        4UJVW0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
+        7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
+        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02
+        628vn2kIc2xKxwCY02Avz4vE14v_Gr1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7
+        v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF
+        1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIx
+        AIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyU
+        JwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCT
+        nIWIevJa73UjIFyTuYvjfUO_MaUUUUU
+X-Originating-IP: [124.16.138.128]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In commit 324bda9e6c5a("bpf: multi program support for cgroup+bpf")
-cgroup_bpf_*() called from kernel/bpf/syscall.c, but now they are only
-used in kernel/bpf/cgroup.c, so move these function to
-kernel/bpf/cgroup.c, like cgroup_bpf_replace().
+The variable 'cpu' is defined as unsigned int.
+However in the for_each_possible_cpu, its values is assigned to -1.
+That doesn't make sense and in the cpumask_next() it is implicitly
+type conversed to int.
+It is universally accepted that the implicit type conversion is
+terrible.
+Also, having the good programming custom will set an example for
+others.
+Thus, it might be better to change the definition of 'cpu' from
+unsigned int to int.
 
-Signed-off-by: He Fengqing <hefengqing@huawei.com>
+Fixes: 10fad5e ("percpu, module: implement and use is_kernel/module_percpu_address()")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 ---
- include/linux/bpf-cgroup.h | 20 --------------
- kernel/bpf/cgroup.c        | 54 +++++++++++++++++++++++++++++++-------
- kernel/cgroup/cgroup.c     | 38 ---------------------------
- 3 files changed, 45 insertions(+), 67 deletions(-)
+ kernel/module.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
-index 2746fd804216..9aad4e3ca29b 100644
---- a/include/linux/bpf-cgroup.h
-+++ b/include/linux/bpf-cgroup.h
-@@ -157,26 +157,6 @@ struct cgroup_bpf {
- int cgroup_bpf_inherit(struct cgroup *cgrp);
- void cgroup_bpf_offline(struct cgroup *cgrp);
- 
--int __cgroup_bpf_attach(struct cgroup *cgrp,
--			struct bpf_prog *prog, struct bpf_prog *replace_prog,
--			struct bpf_cgroup_link *link,
--			enum bpf_attach_type type, u32 flags);
--int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
--			struct bpf_cgroup_link *link,
--			enum bpf_attach_type type);
--int __cgroup_bpf_query(struct cgroup *cgrp, const union bpf_attr *attr,
--		       union bpf_attr __user *uattr);
--
--/* Wrapper for __cgroup_bpf_*() protected by cgroup_mutex */
--int cgroup_bpf_attach(struct cgroup *cgrp,
--		      struct bpf_prog *prog, struct bpf_prog *replace_prog,
--		      struct bpf_cgroup_link *link, enum bpf_attach_type type,
--		      u32 flags);
--int cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
--		      enum bpf_attach_type type);
--int cgroup_bpf_query(struct cgroup *cgrp, const union bpf_attr *attr,
--		     union bpf_attr __user *uattr);
--
- int __cgroup_bpf_run_filter_skb(struct sock *sk,
- 				struct sk_buff *skb,
- 				enum cgroup_bpf_attach_type atype);
-diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-index 03145d45e3d5..2ca643af9a54 100644
---- a/kernel/bpf/cgroup.c
-+++ b/kernel/bpf/cgroup.c
-@@ -430,10 +430,10 @@ static struct bpf_prog_list *find_attach_entry(struct list_head *progs,
-  * Exactly one of @prog or @link can be non-null.
-  * Must be called with cgroup_mutex held.
-  */
--int __cgroup_bpf_attach(struct cgroup *cgrp,
--			struct bpf_prog *prog, struct bpf_prog *replace_prog,
--			struct bpf_cgroup_link *link,
--			enum bpf_attach_type type, u32 flags)
-+static int __cgroup_bpf_attach(struct cgroup *cgrp,
-+			       struct bpf_prog *prog, struct bpf_prog *replace_prog,
-+			       struct bpf_cgroup_link *link,
-+			       enum bpf_attach_type type, u32 flags)
+diff --git a/kernel/module.c b/kernel/module.c
+index 927d46c..f10d611 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -632,7 +632,7 @@ static void percpu_modcopy(struct module *mod,
+ bool __is_module_percpu_address(unsigned long addr, unsigned long *can_addr)
  {
- 	u32 saved_flags = (flags & (BPF_F_ALLOW_OVERRIDE | BPF_F_ALLOW_MULTI));
- 	struct bpf_prog *old_prog = NULL;
-@@ -523,6 +523,20 @@ int __cgroup_bpf_attach(struct cgroup *cgrp,
- 	return err;
- }
+ 	struct module *mod;
+-	unsigned int cpu;
++	int cpu;
  
-+static int cgroup_bpf_attach(struct cgroup *cgrp,
-+			     struct bpf_prog *prog, struct bpf_prog *replace_prog,
-+			     struct bpf_cgroup_link *link,
-+			     enum bpf_attach_type type,
-+			     u32 flags)
-+{
-+	int ret;
-+
-+	mutex_lock(&cgroup_mutex);
-+	ret = __cgroup_bpf_attach(cgrp, prog, replace_prog, link, type, flags);
-+	mutex_unlock(&cgroup_mutex);
-+	return ret;
-+}
-+
- /* Swap updated BPF program for given link in effective program arrays across
-  * all descendant cgroups. This function is guaranteed to succeed.
-  */
-@@ -672,14 +686,14 @@ static struct bpf_prog_list *find_detach_entry(struct list_head *progs,
-  *                         propagate the change to descendants
-  * @cgrp: The cgroup which descendants to traverse
-  * @prog: A program to detach or NULL
-- * @prog: A link to detach or NULL
-+ * @link: A link to detach or NULL
-  * @type: Type of detach operation
-  *
-  * At most one of @prog or @link can be non-NULL.
-  * Must be called with cgroup_mutex held.
-  */
--int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
--			struct bpf_cgroup_link *link, enum bpf_attach_type type)
-+static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
-+			       struct bpf_cgroup_link *link, enum bpf_attach_type type)
- {
- 	enum cgroup_bpf_attach_type atype;
- 	struct bpf_prog *old_prog;
-@@ -730,9 +744,20 @@ int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
- 	return err;
- }
+ 	preempt_disable();
  
-+static int cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
-+			     enum bpf_attach_type type)
-+{
-+	int ret;
-+
-+	mutex_lock(&cgroup_mutex);
-+	ret = __cgroup_bpf_detach(cgrp, prog, NULL, type);
-+	mutex_unlock(&cgroup_mutex);
-+	return ret;
-+}
-+
- /* Must be called with cgroup_mutex held to avoid races. */
--int __cgroup_bpf_query(struct cgroup *cgrp, const union bpf_attr *attr,
--		       union bpf_attr __user *uattr)
-+static int __cgroup_bpf_query(struct cgroup *cgrp, const union bpf_attr *attr,
-+			      union bpf_attr __user *uattr)
- {
- 	__u32 __user *prog_ids = u64_to_user_ptr(attr->query.prog_ids);
- 	enum bpf_attach_type type = attr->query.attach_type;
-@@ -789,6 +814,17 @@ int __cgroup_bpf_query(struct cgroup *cgrp, const union bpf_attr *attr,
- 	return ret;
- }
- 
-+static int cgroup_bpf_query(struct cgroup *cgrp, const union bpf_attr *attr,
-+			    union bpf_attr __user *uattr)
-+{
-+	int ret;
-+
-+	mutex_lock(&cgroup_mutex);
-+	ret = __cgroup_bpf_query(cgrp, attr, uattr);
-+	mutex_unlock(&cgroup_mutex);
-+	return ret;
-+}
-+
- int cgroup_bpf_prog_attach(const union bpf_attr *attr,
- 			   enum bpf_prog_type ptype, struct bpf_prog *prog)
- {
-diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-index 570b0c97392a..ffc2f2b9b68f 100644
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -6623,44 +6623,6 @@ void cgroup_sk_free(struct sock_cgroup_data *skcd)
- 
- #endif	/* CONFIG_SOCK_CGROUP_DATA */
- 
--#ifdef CONFIG_CGROUP_BPF
--int cgroup_bpf_attach(struct cgroup *cgrp,
--		      struct bpf_prog *prog, struct bpf_prog *replace_prog,
--		      struct bpf_cgroup_link *link,
--		      enum bpf_attach_type type,
--		      u32 flags)
--{
--	int ret;
--
--	mutex_lock(&cgroup_mutex);
--	ret = __cgroup_bpf_attach(cgrp, prog, replace_prog, link, type, flags);
--	mutex_unlock(&cgroup_mutex);
--	return ret;
--}
--
--int cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
--		      enum bpf_attach_type type)
--{
--	int ret;
--
--	mutex_lock(&cgroup_mutex);
--	ret = __cgroup_bpf_detach(cgrp, prog, NULL, type);
--	mutex_unlock(&cgroup_mutex);
--	return ret;
--}
--
--int cgroup_bpf_query(struct cgroup *cgrp, const union bpf_attr *attr,
--		     union bpf_attr __user *uattr)
--{
--	int ret;
--
--	mutex_lock(&cgroup_mutex);
--	ret = __cgroup_bpf_query(cgrp, attr, uattr);
--	mutex_unlock(&cgroup_mutex);
--	return ret;
--}
--#endif /* CONFIG_CGROUP_BPF */
--
- #ifdef CONFIG_SYSFS
- static ssize_t show_delegatable_files(struct cftype *files, char *buf,
- 				      ssize_t size, const char *prefix)
 -- 
-2.25.1
+2.7.4
 
