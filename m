@@ -2,108 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BC5943FF9A
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 17:30:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC5A343FF9C
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 17:32:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229979AbhJ2Pc5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 11:32:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59792 "EHLO
+        id S229662AbhJ2Pey (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 11:34:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229662AbhJ2Pc4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 11:32:56 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75C06C061570;
-        Fri, 29 Oct 2021 08:30:28 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id o6-20020a17090a0a0600b001a64b9a11aeso359372pjo.3;
-        Fri, 29 Oct 2021 08:30:28 -0700 (PDT)
+        with ESMTP id S229607AbhJ2Pev (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 11:34:51 -0400
+Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91A8BC061570
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 08:32:22 -0700 (PDT)
+Received: by mail-ua1-x933.google.com with SMTP id i6so4644836uae.6
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 08:32:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=NIak2Y5FQ2Wjf4P7X8gzcJU94dOFnB5agLKanXkb2MU=;
-        b=VonLltqQY+CqzFXaC7fWfjDqD+2Lersu0M8vMPoboW+ryJRlLf5OsDfV3K/HH3PppW
-         xYqGwX7TpJgUu8VMh89eLXsVvcJSogw35ArfPy37oqH4goNQ1J+nku6J4K/D1vBpR/9W
-         VMbLVFo59Z09TuF+NQtd1QmuDGxRWD8dSY4wIqXqg/7SKUYsXkEkRqfRKqj+XNBAi2qc
-         8jtdDU5CW2jnmdvkeupKSMcvj1NibXpyBM59oWwAmDsU67RW1ZMXdU+sRdIAxavtyTms
-         x2bVFWBlmcpwqpbV9RKrezg6vZYCo0QEdgRpZfOBg95QaC44DYEDytav2DfXAyw0FWQ3
-         7hXQ==
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=eWy2dU5vWahlnX9CGe7+FBY4krKs/BHH91QgGclzDb0=;
+        b=Dw67F6u8bfpOfk/QUuEbVFxSnDp2Mqs+7R5mg3ZQzqRBsnvs52x0kTdSHr6CPl/cg2
+         RwJ1hSfNHEKySLRHxnAYoFvxsagQycsYybs0Tc2HqkLl//arEBHOP+zD61DvXoY/G/PZ
+         nwkiV45CinIdkyIZPGXE6Pdqunk0ee0yjO1euioApSO3U0Yjn6KmbboU7nrRWhHmz2bY
+         DFxK1iXaZcPIAcxpzYO0ujU43tDgd5slek9g4nbGsPkoW5D9YlPJ+zJDngW+8oQO6uAR
+         qdRJFUzEXV0dFHSkIu5QEdKrPTDRQ2di0flM9Gwk9tgarSX8NhFBSz/lTN1DWBuvhFC/
+         pZqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=NIak2Y5FQ2Wjf4P7X8gzcJU94dOFnB5agLKanXkb2MU=;
-        b=owm9+l+NwDN1GhQP36Yivpo3Q5QzBJkzkts9kJWGXg8MaFEeDmkhgxrJBMAPPvFpAB
-         Nq717yZLMQsLDQ3AhJXmxilIsQhQseu4VfbF5dyzVBclpgHOkKB2ACrBs44XZQ6hjtuV
-         HnAOw1vtEQN/aLG4Tugts6aVhpAMkZRE2WaNYcEORjqFWvwLknoxk7+URd+APOJLPxjz
-         08sdDVJGDK0FBlhURm0ET4tBed+u7a+2VUgE0a8V6uChI6p9IpOrSF+wLxSO50vODMaM
-         +8LcpTqq3vTJYvTafNOQsdoAdScrLzJSWfkAOEtMmHbxNnicDX26wLxiZbPJmn3WzNHY
-         CC6g==
-X-Gm-Message-State: AOAM533Aq8ZB6e8vPT4AblwO1cC/xjckzhJOQd/0Jy8Xi1ppVSjZtUs0
-        yvCKc5bxgSPMcrT3fR6nD7irKlfX9pY=
-X-Google-Smtp-Source: ABdhPJyR8O6TcJoaRx+rHzlWxtjHT7cyn8u68xf4QLnyURRfv5wQj7opPBt0X9by/uz16wGcPgryvQ==
-X-Received: by 2002:a17:90b:4d8f:: with SMTP id oj15mr4512687pjb.6.1635521427708;
-        Fri, 29 Oct 2021 08:30:27 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id v12sm6339671pjs.0.2021.10.29.08.30.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Oct 2021 08:30:27 -0700 (PDT)
-Subject: Re: [PATCH] wireguard: queueing: Fix implicit type conversion
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>, jiasheng@iscas.ac.cn
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <1635469664-1708957-1-git-send-email-jiasheng@iscas.ac.cn>
- <CAHmME9p9EA0qCw2ha_X9HR7NWSt1Zam4+srYHCs=-U4LvQiJdA@mail.gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <99a32425-ca42-8d99-1276-efb889300cce@gmail.com>
-Date:   Fri, 29 Oct 2021 08:30:26 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=eWy2dU5vWahlnX9CGe7+FBY4krKs/BHH91QgGclzDb0=;
+        b=cBLqGn8tY90vgdZ1bRvNHmvKQOO7G4DIoBQGuh+1ZXWezJYV+pyioDfyw6IeBhWPEK
+         vLybIThmxFxwyDbf6eASy4R9UA7EvDciEkh+dVw6p9N/QtfpI/k3Igv0rx2Fvgr2bCKh
+         ka/51h/CpbkT3wYl9CbsfCTlFm+K7rZIqBk+x0YlzJ/BGV3rJr0tGLkxFrhdLx/R+L0M
+         I1WpynclQ5nttxDtTXELwx1fovxx4JTQLo30uZlT6xmsjD53BF3Oj+gUV+68n5JKyGmA
+         euW+c+rIg4+0lnlgL7HZW0db3HoxNjfQCD7gjvgff3huB9QA8+OP3DtwvqX2j0cCTH0C
+         y7sQ==
+X-Gm-Message-State: AOAM532PvGLN7jceCgDdVEyPM8b9QrwDg31D6lyNQGRNCxdmiT29sksZ
+        0iRKV4bSorIfdb66qu7S0wm3gx/mCzTu/q7Quw==
+X-Google-Smtp-Source: ABdhPJxrWYm8L0jG6G/q8Z+Wjgr2yQoHt2ZJRG/y+yYRKLgy6dOErrMoloMKInAHt1l6anqE3CNQkGLWCMcinml1TQw=
+X-Received: by 2002:ab0:5587:: with SMTP id v7mr12834894uaa.37.1635521536950;
+ Fri, 29 Oct 2021 08:32:16 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAHmME9p9EA0qCw2ha_X9HR7NWSt1Zam4+srYHCs=-U4LvQiJdA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a59:c3cd:0:b0:238:9713:c947 with HTTP; Fri, 29 Oct 2021
+ 08:32:16 -0700 (PDT)
+Reply-To: mrsrosebanneth19@gmail.com
+From:   Mrs Rose Banneth <billconsultantagency226@gmail.com>
+Date:   Fri, 29 Oct 2021 08:32:16 -0700
+Message-ID: <CAPyj0FHi-H8t7kAp-jpXQTKvUx-vZ+u4oZeDeWN3vzay=uuuvA@mail.gmail.com>
+Subject: From Mrs Rose,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Dear friend, I pray you will be fine and safe.
 
+I am Mrs. Rose Banneth a Norway Lady but my late husband is from
+France i live in Burkina Faso, please I want you to take this message
+very serious as I have already lost all my family by Covid.19 and now
+I am quarantine which I don=E2=80=99t also know what will happen to me
+tomorrow, I lost my only two Brothers by Covid.19 last year now it is
+my turn.
 
-On 10/29/21 7:27 AM, Jason A. Donenfeld wrote:
-> On Fri, Oct 29, 2021 at 3:08 AM Jiasheng Jiang <jiasheng@iscas.ac.cn> wrote:
->> It is universally accepted that the implicit type conversion is
->> terrible.
-> 
-> I'm not so sure about this, but either way, I think this needs a bit
-> more justification and analysis to merge. cpumask_weight returns an
-> unsigned, for example, and is used as a modulo operand later in the
-> function. It looks like nr_cpumask_bits is also unsigned. And so on.
-> So you're really trading one implicit type conversion package for
-> another. If you're swapping these around, why? It can't be because,
-> "it is universally accepted that the implicit type conversion is
-> terrible," since you're adding more of it in a different form. Is your
-> set of implicit type conversions semantically more proper? If so,
-> please describe that. Alternatively, is there a way to harmonize
-> everything into one type? Is there a minimal set of casts that enables
-> that?
->
+Are you online? It is a really serious issue because there is
+something I want you to help me do as I don=E2=80=99t want to lost all my
+family money to the bank, my two brothers money is in my care and my
+own money in the bank, please I will like you to help me use this =E2=82=AC=
+8.2
+Million Euro for orphans in your Country, it is what my spirit direct
+me to do, Can you be able to do this for me?
 
-I agree with you.
+On your return to handle this fund I will introduce you to my Nurse to
+follow up with you and the bank.i want you to contact me here my
+private email address mrsrosebanneth19@gmail.com  to know on how the
+fund will be transferred to your bank account or online banking.
 
-Even standard iterators play/mix with signed/unsigned in plain sight.
+I wait for your urgent respond and please this is really serious and
+urgent issue.
 
-extern unsigned int nr_cpu_ids;
-
-unsigned int cpumask_next(int n, const struct cpumask *srcp);
-
-int cpumask_next_wrap(int n, const struct cpumask *mask, int start, bool wrap);
-
-#define for_each_cpu(cpu, mask)				\
-	for ((cpu) = -1;				\
-		(cpu) = cpumask_next((cpu), (mask)),	\
-		(cpu) < nr_cpu_ids;)
-
+Thanks
+My regards,
+Mrs Rose Banneth
+Written from Hospital
