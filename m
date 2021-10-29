@@ -2,178 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60EC843F3DA
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 02:22:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 801F143F3E2
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 02:27:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231267AbhJ2AZQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 20:25:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53872 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230211AbhJ2AZP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 20:25:15 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955DAC061570;
-        Thu, 28 Oct 2021 17:22:47 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id m14so7544708pfc.9;
-        Thu, 28 Oct 2021 17:22:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xrAbEfQZL5emh7FPXsdLj1L8TslvYif5/OdTBKtYpDQ=;
-        b=UzKDFitQdPoAyyDyl6qodM7qh/ebfTMTzqc5S3rT1RkvKDa5IheN9fG49weBgowIl3
-         JRzjFB3XhaZdaG239vLxH7t51Y53eIXszkzhvxrS6Abg4AUaaFc/xT6qohjK/G/vUMB9
-         nrFQFUXW5ik0UlxoN6SO0+tKU6Eebujk4J2eoXpoC+QuknIQiu7b9rz928nQTC+Ts2jz
-         nJyfgv/eTMi6r9XrsYztt/c2C9x7dFhoCWyyMr9gTYvQSzveMigAN84a/pMByCqJxpri
-         RRW6zLPatRodwehDEkThXZ5QwRlJ2y2hFjy8z+c/cNLxf2i0N3Yr2Qh7akbmkS96xv5g
-         fmdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xrAbEfQZL5emh7FPXsdLj1L8TslvYif5/OdTBKtYpDQ=;
-        b=zmLdzZdpA/lhEMY1fQBAUiSVjTXebgSMfWaoIsYYbdw9uxgXB3+2lOw6zyOdJKCTnr
-         BlG5CXbv2u6YJ0mUY1j/ic9BiwWU/XP35RQ23dWl7fPj51MLzyLEO9kj6gLxk6kG8rLd
-         xMRsHbGh2XQWBpG3qPpra8GEBLIvYORZ0F7s8Zt4LKVh4wb213qvno/cJy+HKJZzOJkR
-         V2Gvco1/vy0R9F6l0vQ+1iSPuC4xL794PipoKCsDyQqWE2BO20UwRym+BROhwB7UstxO
-         +fueAG2qv2MI0NAkTSeal89TnorrlGh1BwGYhAkW6Lk2eICK3OTifclVtvui4/poW2Za
-         FfMw==
-X-Gm-Message-State: AOAM530bzdTXwBed7EJohEeeh1lyC9xy3pAypGYoy6URUMcBkjFtwycM
-        YE1dpO76GJ38FvCarY93Jsk=
-X-Google-Smtp-Source: ABdhPJxJ5cMWm94QHhc4CQUf0nNGf14AD7zcF+jed+Qp+aK2fBiVIf7LbfOK2k5F+LjnR1R4JvDqoA==
-X-Received: by 2002:a63:735e:: with SMTP id d30mr5814209pgn.448.1635466966969;
-        Thu, 28 Oct 2021 17:22:46 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:a8c6])
-        by smtp.gmail.com with ESMTPSA id x26sm4528705pff.25.2021.10.28.17.22.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Oct 2021 17:22:46 -0700 (PDT)
-Date:   Thu, 28 Oct 2021 17:22:44 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v5 3/8] libbpf: Add weak ksym support to
- gen_loader
-Message-ID: <20211029002244.3m63qmwrmykarvt6@ast-mbp.dhcp.thefacebook.com>
-References: <20211028063501.2239335-1-memxor@gmail.com>
- <20211028063501.2239335-4-memxor@gmail.com>
-MIME-Version: 1.0
+        id S231217AbhJ2A3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 20:29:54 -0400
+Received: from mail-mw2nam10on2059.outbound.protection.outlook.com ([40.107.94.59]:7878
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230211AbhJ2A3x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Oct 2021 20:29:53 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GEcoh93JIrI6htNYHfyKSC7sOGjcz838GwMZ8o5CYST5Yq7EDsRTJ2rzNDOhCw/M/g8d06j/y8jlU06sJZlZkyw4RLIb/afPJZ9sgaSSQCRmVaItMHwtiV2QVWNhExqbpuboo7rnYTC7QdxnJf4wY8TkFks5yweDqtL+pjgCg2O1LQ4Whi7OLGNACKyzltyrbhmOcZm5uBBnS32THfMfellDXWf5IDya/tfi6KzJv0Mu6rGzxeV4b+xdS7HpvuY7A7SaRMns+3/Rud+fKyyONbpQz83nigDbf/InILVaIB/BRgXSUBJ2QJ4V1EC3oWqOF7+oFnNWIiTNamZQfxNp2A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/Qa7K4SkrX8N7LHTMAbLGfVqPf0OygQZzo4UJC5n4B8=;
+ b=Gd0s6iOiOFDunrCzxai0ZFcSSmb9ryAjb+bDZprO7vMaiRIX0e4IZrtC9bKtSf3lFzpp8l6Se3GRkCIugL8YTrJ8Wzmz/qHCdr0CEyrJJcO1o7bFmAEod78CG7SvAdSPr4+TgUFnKClgH/d1McZdTylifCUTRlO2uoe8vuz1BTwYk9ogNG7KEPhrHXZim6DQA49/C4ayUOSie66SlY27dVUdE2PAR4qxD8WaL2qQZ5H5L7TP31tnrv+WKMK1GyiKZxolvcspsEy2PRZJhJmJs2Kl5hAih1q50P4gkhTmRQlVfRm8PcCQ6MyHeL1m9FqOy4mchoKydEz5+qiCjDbrUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/Qa7K4SkrX8N7LHTMAbLGfVqPf0OygQZzo4UJC5n4B8=;
+ b=c4nSNOTHYcFjQO3Eg4kcV52rkB1XN5Hqebk69L7XR6qKn77O+LpOODpG/QVoRb08r8sQKcuxo/alm499ujeAqzwBp7tqE1ftg9ZaeCkKMP5uMUc7Cxr8fCS9KRJe8rTn9kRS201SzLizqwmxVR/wSh48c48RRar+KEolijtm9lQOyrLEDr0wPifH8BPJ3R+MWuDlR40ePfpJTHapa5pV/Db9CLtLjAleea1/+tjI1H9EGqw8I9MC33nfF/FbeaPuKvhRwHnoXtu4tBkklgvpUeY9bfUkNFmEosO8g7DOtqpx4KNxut/VZNDsgDUHTptHKLuuMC9pNat4wVcW7Tza0g==
+Authentication-Results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5317.namprd12.prod.outlook.com (2603:10b6:208:31f::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.14; Fri, 29 Oct
+ 2021 00:27:24 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::e8af:232:915e:2f95%8]) with mapi id 15.20.4649.015; Fri, 29 Oct 2021
+ 00:27:24 +0000
+Date:   Thu, 28 Oct 2021 21:26:37 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Cornelia Huck <cohuck@redhat.com>
+Cc:     Alex Williamson <alex.williamson@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
+ for mlx5 devices
+Message-ID: <20211029002637.GS2744544@nvidia.com>
+References: <20211025122938.GR2744544@nvidia.com>
+ <20211025082857.4baa4794.alex.williamson@redhat.com>
+ <20211025145646.GX2744544@nvidia.com>
+ <20211026084212.36b0142c.alex.williamson@redhat.com>
+ <20211026151851.GW2744544@nvidia.com>
+ <20211026135046.5190e103.alex.williamson@redhat.com>
+ <20211026234300.GA2744544@nvidia.com>
+ <20211027130520.33652a49.alex.williamson@redhat.com>
+ <20211027192345.GJ2744544@nvidia.com>
+ <87zgqtb31g.fsf@redhat.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211028063501.2239335-4-memxor@gmail.com>
+In-Reply-To: <87zgqtb31g.fsf@redhat.com>
+X-ClientProxiedBy: CH2PR11CA0014.namprd11.prod.outlook.com
+ (2603:10b6:610:54::24) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
+MIME-Version: 1.0
+Received: from mlx.ziepe.ca (206.223.160.26) by CH2PR11CA0014.namprd11.prod.outlook.com (2603:10b6:610:54::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.15 via Frontend Transport; Fri, 29 Oct 2021 00:27:24 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1mgFjB-003C6E-9G; Thu, 28 Oct 2021 21:26:37 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d38c3a8b-db06-4f16-9cd2-08d99a72e0ef
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5317:
+X-Microsoft-Antispam-PRVS: <BL1PR12MB53174D8FF98A09150125202FC2879@BL1PR12MB5317.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: o1fLIsX1Nf9qbYduLkjRkx6qynq1f9rtP3ieiqKGhIvAPVxZa++lfepOKKOqMQQqnxIVDyshw8SPEXp6HgwnCoQTBaxzNg10X0YXmJXz2r8BzxOQVQrZ2BVGYOZPdlcKRF3UPIJd9xAKSOUYo/KuPVOVS40iOuxrph+rjIVJ+96hRueZMXC/Ox9UowpbM3WS4KfKjxc7lcw6eJ8qsIjNtpyo/OfovjxDYnv0wgxi9NPsc3suoQEjfSbfqN1VdoRG/rsADcum15jAo7ZTULK7XCpShTggws7xeDezyW4u0hlIIZhS512UdaCRdud2fgz7F13L3+IO3aN5KBhNh1z6VyXAsS2dWB9c0DC4VtqLPU7ulB6DerGVc0AVWTEKw3VXFdQBrhKt2Z65RLdvFfegeUuDvSfelqi2lqDAZRjLfWrZGsX5IKf6Z1P/zl746od+6BDiMP8k/+g/8UCNVqrNApmjtgHVEb+S8s2UhLszWNicQ5NETa6pxfWmNC+eT1M3ez7Dh8pTTj7pEHoaP2YaJnZ9aVCTDrYKehU+XuReClNxl2v+/gmRLp1BlrGE3Q/GYsibi6U81OTwJvVIOsHU+M9QIVnahAH6uR7RGZRzqQ8FNLCBK32EX0zS9qJfoicgpxn2E7c5w65Rh/G64BxfoQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(9746002)(9786002)(5660300002)(66556008)(1076003)(508600001)(8936002)(66946007)(83380400001)(66476007)(38100700002)(186003)(316002)(8676002)(54906003)(6916009)(2906002)(86362001)(26005)(426003)(33656002)(36756003)(4326008)(2616005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ta9OeTPrcR7cuk3wcbKz2cAJvcTjif5hfFD+4oMdpI+pEfwSDywK00eFguvz?=
+ =?us-ascii?Q?yEDpp5nVUHkfS/6HRgo7x6L2ymbW6JOddFk8f+94WtwqlHG2b/KtCUyWQB7q?=
+ =?us-ascii?Q?1Q/rPJzFKe5Q3Nqzqg+LwGDbWuv3LIMt1Qzb9ACW5vBwrC89QnD6/q7iGdfc?=
+ =?us-ascii?Q?HMjkuAF2/Hb+jRKFffn/NPphCILDFztfkjQ/jSheDDBuRoNddSAWshKhTqsH?=
+ =?us-ascii?Q?wcAoPCdlPhdBe2culUzxttYCpyFx6eYEd1ZHpLm83AIROOl8L/jpSM643l4N?=
+ =?us-ascii?Q?fOgwc7QQ2eyq8PTfGwYLhoSWt85LktQEshBfu3fdbdaAmZ7lkpjEsrOHLpe5?=
+ =?us-ascii?Q?wbc0nWd66OJrJfc1uZgDmiheb1ZtupS9nK8zAz3jnZWmfKGX4v6AZtGPHviy?=
+ =?us-ascii?Q?NLo4fPOguNxAxfxT3BFg69TlRH5Pi6UDHiFZ9MzNZqs0r6s1ZUwKKP7O9DfU?=
+ =?us-ascii?Q?0WCawLKgOQ+wHeHbLmkss22Vj6FmyKYR6b8nO1bZ6MrCaFySXXQmWs/OECdr?=
+ =?us-ascii?Q?ysqyrhGNM2VUmP043uxvkCGZUcIXywGrzJYpaJTgIp4TGdT2ojU0kx+nqDl9?=
+ =?us-ascii?Q?yS61/dKyLEQuX+Rd1yKjhp8LGeBW58cgKrm2U/sOJmf5JG2p5tCX/i5RsSdf?=
+ =?us-ascii?Q?NY9hIaI28sGwqiDoMC2QcxBrL7qkP5NSKcMiIQvMeZVIoFdE1XRfPOZ0qXvr?=
+ =?us-ascii?Q?XmOv1LvQ3U11lnKHwPgAeM07eb6wS66+esQm9o2vzemq4msdj9rw0t6896LQ?=
+ =?us-ascii?Q?14mM9+B9kZPKOb1njzT94zGkU64+XYKt0XzOu+8WDmg5TN8hX2rYVp9ay+Ja?=
+ =?us-ascii?Q?+7V0zBio+ojvltL1JC2a9DbCuyF9bLpn+1sQjnMo8bUajVUmpZBPVmtD2Etz?=
+ =?us-ascii?Q?lIQomECbJIEPlgd/c9FKfVuFug6805H/70DXztD9pPIf4bj7r/XCRtCEunAf?=
+ =?us-ascii?Q?juaC4jcVqlH4JqrFs9YV7zvWzfEToK2hiYMCGfJTyoSQAEFmtIYSUGYa3i+w?=
+ =?us-ascii?Q?pb9+t0MQq/YqsHhgAOhAwlhQIlXvZewX+//2Y2CyXfUb46oXlbNG3JclVYCL?=
+ =?us-ascii?Q?aCn/Wa5328lOkeU3rvpQQn5Eid7mSxdIOdZBxHL55rcbpOuCYHUrPHzsVflK?=
+ =?us-ascii?Q?0inybCFi2Lq/cpagVmd8b/w5aC8e0eA7THSq1UvPHlj+JrbVo2xtN/iWCtqy?=
+ =?us-ascii?Q?AnwSrRyx2exSSxuHO9RlnvYw8heGdqtgZ41y+qC261uB93wbl4NtJy5VpM+Y?=
+ =?us-ascii?Q?WRRjp4G1wqGi90J4RUVES4AF3SM3StxOlRq3Kfvy5B0+1LdTF0QvgOsRRjAN?=
+ =?us-ascii?Q?EGPZDXr6PLSTeQu4kuhkcIgAqf4D/dUacNDcvt8w2yvUip6baLlEWCmI56IW?=
+ =?us-ascii?Q?D92bHRfXEpMGEf9zlzhJgLk6hjXveyGd8UqGX/eEMrNrZXKHoNBqZON5fp3T?=
+ =?us-ascii?Q?VpZY4lM3/Xrh8UR1/ssMKp7OG4kFAdwn+mIpIIEtCtyOm9w09ob89dqjdlO+?=
+ =?us-ascii?Q?XHXFDcyA+DfwfXibl1U+Pds9HCSUZenVLyozN8z9ivqrJ85AQ6czufFYLGMf?=
+ =?us-ascii?Q?155FYRn6SGWQ7w3Fkqs=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d38c3a8b-db06-4f16-9cd2-08d99a72e0ef
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Oct 2021 00:27:24.2087
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Ki+61vKYTYxmKIZ//rAz8eJ4MUuNO8uCRSQI4mqiRUxk9w2759/n/IeSj2QOBIiG
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5317
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 28, 2021 at 12:04:56PM +0530, Kumar Kartikeya Dwivedi wrote:
-> This extends existing ksym relocation code to also support relocating
-> weak ksyms. Care needs to be taken to zero out the src_reg (currently
-> BPF_PSEUOD_BTF_ID, always set for gen_loader by bpf_object__relocate_data)
-> when the BTF ID lookup fails at runtime.  This is not a problem for
-> libbpf as it only sets ext->is_set when BTF ID lookup succeeds (and only
-> proceeds in case of failure if ext->is_weak, leading to src_reg
-> remaining as 0 for weak unresolved ksym).
+On Thu, Oct 28, 2021 at 05:08:11PM +0200, Cornelia Huck wrote:
+
+> that should go in right now. Actually, I'd already consider it too late
+> even if we agreed now; I would expect a change like this to get at least
+> two weeks in linux-next before the merge window.
+
+Usually linux-next is about sorting out integration problems so we
+have an orderly merge window. Nobody is going to test this code just
+because it is in linux-next, it isn't mm or something with coverage
+there.
+
+> > Yes, if qemu becomes deployed, but our testing shows qemu support
+> > needs a lot of work before it is deployable, so that doesn't seem to
+> > be an immediate risk.
 > 
-> A pattern similar to emit_relo_kfunc_btf is followed of first storing
-> the default values and then jumping over actual stores in case of an
-> error. For src_reg adjustment, we also need to perform it when copying
-> the populated instruction, so depending on if copied insn[0].imm is 0 or
-> not, we decide to jump over the adjustment.
-> 
-> We cannot reach that point unless the ksym was weak and resolved and
-> zeroed out, as the emit_check_err will cause us to jump to cleanup
-> label, so we do not need to recheck whether the ksym is weak before
-> doing the adjustment after copying BTF ID and BTF FD.
-> 
-> This is consistent with how libbpf relocates weak ksym. Logging
-> statements are added to show the relocation result and aid debugging.
-> 
-> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> ---
->  tools/lib/bpf/gen_loader.c | 35 ++++++++++++++++++++++++++++++++---
->  1 file changed, 32 insertions(+), 3 deletions(-)
-> 
-> diff --git a/tools/lib/bpf/gen_loader.c b/tools/lib/bpf/gen_loader.c
-> index 11172a868180..1c404752e565 100644
-> --- a/tools/lib/bpf/gen_loader.c
-> +++ b/tools/lib/bpf/gen_loader.c
-> @@ -13,6 +13,7 @@
->  #include "hashmap.h"
->  #include "bpf_gen_internal.h"
->  #include "skel_internal.h"
-> +#include <asm/byteorder.h>
->  
->  #define MAX_USED_MAPS	64
->  #define MAX_USED_PROGS	32
-> @@ -776,12 +777,24 @@ static void emit_relo_ksym_typeless(struct bpf_gen *gen,
->  	emit_ksym_relo_log(gen, relo, kdesc->ref);
->  }
->  
-> +static __u32 src_reg_mask(void)
-> +{
-> +#if defined(__LITTLE_ENDIAN_BITFIELD)
-> +	return 0x0f; /* src_reg,dst_reg,... */
-> +#elif defined(__BIG_ENDIAN_BITFIELD)
-> +	return 0xf0; /* dst_reg,src_reg,... */
-> +#else
-> +#error "Unsupported bit endianness, cannot proceed"
-> +#endif
-> +}
-> +
->  /* Expects:
->   * BPF_REG_8 - pointer to instruction
->   */
->  static void emit_relo_ksym_btf(struct bpf_gen *gen, struct ksym_relo_desc *relo, int insn)
->  {
->  	struct ksym_desc *kdesc;
-> +	__u32 reg_mask;
->  
->  	kdesc = get_ksym_desc(gen, relo);
->  	if (!kdesc)
-> @@ -792,19 +805,35 @@ static void emit_relo_ksym_btf(struct bpf_gen *gen, struct ksym_relo_desc *relo,
->  			       kdesc->insn + offsetof(struct bpf_insn, imm));
->  		move_blob2blob(gen, insn + sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm), 4,
->  			       kdesc->insn + sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm));
-> -		goto log;
-> +		emit(gen, BPF_LDX_MEM(BPF_W, BPF_REG_9, BPF_REG_8, offsetof(struct bpf_insn, imm)));
+> Do you have any patches/problem reports you can share?
 
-Thanks a lot for working on this. I've applied the set.
+Yishai has some stuff, he was doing failure injection testing and
+other interesting things. I think we are hoping to start looking at
+it.
 
-The above load is redundant, right? BPF_REG_0 already has that value
-and could have been used in the JNE below, right?
+> If you already identified that there is work to be done in QEMU, I think
+> that speaks even more for delaying this. What if we notice that uapi
+> changes are needed while fixing QEMU?
 
-> +		/* jump over src_reg adjustment if imm is not 0 */
-> +		emit(gen, BPF_JMP_IMM(BPF_JNE, BPF_REG_9, 0, 3));
-> +		goto clear_src_reg;
+I don't think it is those kinds of bugs.
 
-Is there a test for this part of the code?
-It's only for weak && unresolved && multi referenced ksym, right?
-Or bpf_link_fops2 test_ksyms_weak.c fits this category?
-
->  	}
->  	/* remember insn offset, so we can copy BTF ID and FD later */
->  	kdesc->insn = insn;
->  	emit_bpf_find_by_name_kind(gen, relo);
-> -	emit_check_err(gen);
-> +	if (!relo->is_weak)
-> +		emit_check_err(gen);
-> +	/* set default values as 0 */
-> +	emit(gen, BPF_ST_MEM(BPF_W, BPF_REG_8, offsetof(struct bpf_insn, imm), 0));
-> +	emit(gen, BPF_ST_MEM(BPF_W, BPF_REG_8, sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm), 0));
-> +	/* skip success case stores if ret < 0 */
-> +	emit(gen, BPF_JMP_IMM(BPF_JSLT, BPF_REG_7, 0, 4));
->  	/* store btf_id into insn[insn_idx].imm */
->  	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_8, BPF_REG_7, offsetof(struct bpf_insn, imm)));
->  	/* store btf_obj_fd into insn[insn_idx + 1].imm */
->  	emit(gen, BPF_ALU64_IMM(BPF_RSH, BPF_REG_7, 32));
->  	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_8, BPF_REG_7,
->  			      sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm)));
-
-The double store (first with zeros and then with real values) doesn't look pretty.
-I think an extra jump over two stores would have been cleaner.
+Jason
