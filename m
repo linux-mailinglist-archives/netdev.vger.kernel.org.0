@@ -2,88 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC5A343FF9C
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 17:32:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A255D43FFA9
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 17:35:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229662AbhJ2Pey (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 11:34:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60214 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229607AbhJ2Pev (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 11:34:51 -0400
-Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91A8BC061570
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 08:32:22 -0700 (PDT)
-Received: by mail-ua1-x933.google.com with SMTP id i6so4644836uae.6
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 08:32:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=eWy2dU5vWahlnX9CGe7+FBY4krKs/BHH91QgGclzDb0=;
-        b=Dw67F6u8bfpOfk/QUuEbVFxSnDp2Mqs+7R5mg3ZQzqRBsnvs52x0kTdSHr6CPl/cg2
-         RwJ1hSfNHEKySLRHxnAYoFvxsagQycsYybs0Tc2HqkLl//arEBHOP+zD61DvXoY/G/PZ
-         nwkiV45CinIdkyIZPGXE6Pdqunk0ee0yjO1euioApSO3U0Yjn6KmbboU7nrRWhHmz2bY
-         DFxK1iXaZcPIAcxpzYO0ujU43tDgd5slek9g4nbGsPkoW5D9YlPJ+zJDngW+8oQO6uAR
-         qdRJFUzEXV0dFHSkIu5QEdKrPTDRQ2di0flM9Gwk9tgarSX8NhFBSz/lTN1DWBuvhFC/
-         pZqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=eWy2dU5vWahlnX9CGe7+FBY4krKs/BHH91QgGclzDb0=;
-        b=cBLqGn8tY90vgdZ1bRvNHmvKQOO7G4DIoBQGuh+1ZXWezJYV+pyioDfyw6IeBhWPEK
-         vLybIThmxFxwyDbf6eASy4R9UA7EvDciEkh+dVw6p9N/QtfpI/k3Igv0rx2Fvgr2bCKh
-         ka/51h/CpbkT3wYl9CbsfCTlFm+K7rZIqBk+x0YlzJ/BGV3rJr0tGLkxFrhdLx/R+L0M
-         I1WpynclQ5nttxDtTXELwx1fovxx4JTQLo30uZlT6xmsjD53BF3Oj+gUV+68n5JKyGmA
-         euW+c+rIg4+0lnlgL7HZW0db3HoxNjfQCD7gjvgff3huB9QA8+OP3DtwvqX2j0cCTH0C
-         y7sQ==
-X-Gm-Message-State: AOAM532PvGLN7jceCgDdVEyPM8b9QrwDg31D6lyNQGRNCxdmiT29sksZ
-        0iRKV4bSorIfdb66qu7S0wm3gx/mCzTu/q7Quw==
-X-Google-Smtp-Source: ABdhPJxrWYm8L0jG6G/q8Z+Wjgr2yQoHt2ZJRG/y+yYRKLgy6dOErrMoloMKInAHt1l6anqE3CNQkGLWCMcinml1TQw=
-X-Received: by 2002:ab0:5587:: with SMTP id v7mr12834894uaa.37.1635521536950;
- Fri, 29 Oct 2021 08:32:16 -0700 (PDT)
+        id S229811AbhJ2Phk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 11:37:40 -0400
+Received: from www62.your-server.de ([213.133.104.62]:57318 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229527AbhJ2Phk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 11:37:40 -0400
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mgTuQ-000EDJ-U8; Fri, 29 Oct 2021 17:35:10 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mgTuQ-000DhD-Nv; Fri, 29 Oct 2021 17:35:10 +0200
+Subject: Re: [PATCH] net: sched: check tc_skip_classify as far as possible
+To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20211028135644.2258-1-xiangxia.m.yue@gmail.com>
+ <3b8386fe-b3ff-1ed1-a02b-713b71c8a8d8@iogearbox.net>
+ <CAMDZJNWhZjMe1MSfZYuOWcstzkhjTutxizdzq6S1M9=M_x_VMA@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <d4d45284-7584-6cff-0f43-4d6ac55b5a9a@iogearbox.net>
+Date:   Fri, 29 Oct 2021 17:35:10 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Received: by 2002:a59:c3cd:0:b0:238:9713:c947 with HTTP; Fri, 29 Oct 2021
- 08:32:16 -0700 (PDT)
-Reply-To: mrsrosebanneth19@gmail.com
-From:   Mrs Rose Banneth <billconsultantagency226@gmail.com>
-Date:   Fri, 29 Oct 2021 08:32:16 -0700
-Message-ID: <CAPyj0FHi-H8t7kAp-jpXQTKvUx-vZ+u4oZeDeWN3vzay=uuuvA@mail.gmail.com>
-Subject: From Mrs Rose,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAMDZJNWhZjMe1MSfZYuOWcstzkhjTutxizdzq6S1M9=M_x_VMA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26337/Fri Oct 29 10:19:12 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear friend, I pray you will be fine and safe.
+On 10/29/21 2:04 AM, Tonghao Zhang wrote:
+> On Thu, Oct 28, 2021 at 10:28 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>> On 10/28/21 3:56 PM, xiangxia.m.yue@gmail.com wrote:
+>>> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+>>>
+>>> We look up and then check tc_skip_classify flag in net
+>>> sched layer, even though skb don't want to be classified.
+>>> That case may consume a lot of cpu cycles.
+>>>
+>>> Install the rules as below:
+>>> $ for id in $(seq 1 100); do
+>>> $     tc filter add ... egress prio $id ... action mirred egress redirect dev ifb0
+>>> $ done
+>>
+>> Do you actually have such a case in practice or is this just hypothetical?
+> Hi Daniel, I did some research about this for k8s in production. There
+> are not so many tc prio(~5 different prio).
+> butg in this test, I use the 100 prio.
+> 
+> I reviewed the code, for the tx path, I think we check the
+> tc_skip_classify too later. In the rx path, we check it
+> in __netif_receive_skb_core.
+> 
+>> Asking as this feels rather broken to begin with.
+>>> netperf:
+>>> $ taskset -c 1 netperf -t TCP_RR -H ip -- -r 32,32
+>>> $ taskset -c 1 netperf -t TCP_STREAM -H ip -- -m 32
+>>>
+>>> Without this patch:
+>>> 10662.33 tps
+>>> 108.95 Mbit/s
+>>>
+>>> With this patch:
+>>> 12434.48 tps
+>>> 145.89 Mbit/s
+>>>
+>>> For TCP_RR, there are 16.6% improvement, TCP_STREAM 33.9%.
+>>>
+>>> Cc: Willem de Bruijn <willemb@google.com>
+>>> Cc: Cong Wang <xiyou.wangcong@gmail.com>
+>>> Cc: Jakub Kicinski <kuba@kernel.org>
+>>> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+>>> ---
+>>>    net/core/dev.c      | 3 ++-
+>>>    net/sched/act_api.c | 3 ---
+>>>    2 files changed, 2 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/net/core/dev.c b/net/core/dev.c
+>>> index eb61a8821b3a..856ac1fb75b4 100644
+>>> --- a/net/core/dev.c
+>>> +++ b/net/core/dev.c
+>>> @@ -4155,7 +4155,8 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+>>>    #ifdef CONFIG_NET_CLS_ACT
+>>>        skb->tc_at_ingress = 0;
+>>>    # ifdef CONFIG_NET_EGRESS
+>>> -     if (static_branch_unlikely(&egress_needed_key)) {
+>>> +     if (static_branch_unlikely(&egress_needed_key) &&
+>>> +         !skb_skip_tc_classify(skb)) {
+>>>                skb = sch_handle_egress(skb, &rc, dev);
+>>>                if (!skb)
+>>>                        goto out;
+>>> diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+>>> index 7dd3a2dc5fa4..bd66f27178be 100644
+>>> --- a/net/sched/act_api.c
+>>> +++ b/net/sched/act_api.c
+>>> @@ -722,9 +722,6 @@ int tcf_action_exec(struct sk_buff *skb, struct tc_action **actions,
+>>>        int i;
+>>>        int ret = TC_ACT_OK;
+>>>
+>>> -     if (skb_skip_tc_classify(skb))
+>>> -             return TC_ACT_OK;
+>>> -
+>>
+>> I think this might imply a change in behavior which could have the potential
+>> to break setups in the wild.
+> we may not change this code, i will send v2, if not comment.
 
-I am Mrs. Rose Banneth a Norway Lady but my late husband is from
-France i live in Burkina Faso, please I want you to take this message
-very serious as I have already lost all my family by Covid.19 and now
-I am quarantine which I don=E2=80=99t also know what will happen to me
-tomorrow, I lost my only two Brothers by Covid.19 last year now it is
-my turn.
+Well none of it I'm afraid, the sch_handle_egress() is out for a very long time by
+now and your change could have the potential to break setups in the wild.
 
-Are you online? It is a really serious issue because there is
-something I want you to help me do as I don=E2=80=99t want to lost all my
-family money to the bank, my two brothers money is in my care and my
-own money in the bank, please I will like you to help me use this =E2=82=AC=
-8.2
-Million Euro for orphans in your Country, it is what my spirit direct
-me to do, Can you be able to do this for me?
+>>>    restart_act_graph:
+>>>        for (i = 0; i < nr_actions; i++) {
+>>>                const struct tc_action *a = actions[i];
+>>>
+>>
+> 
+> 
 
-On your return to handle this fund I will introduce you to my Nurse to
-follow up with you and the bank.i want you to contact me here my
-private email address mrsrosebanneth19@gmail.com  to know on how the
-fund will be transferred to your bank account or online banking.
-
-I wait for your urgent respond and please this is really serious and
-urgent issue.
-
-Thanks
-My regards,
-Mrs Rose Banneth
-Written from Hospital
