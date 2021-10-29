@@ -2,84 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BA6243F449
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 03:11:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E57743F442
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 03:08:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231493AbhJ2BOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 21:14:12 -0400
-Received: from smtp100.iad3a.emailsrvr.com ([173.203.187.100]:59413 "EHLO
-        smtp100.iad3a.emailsrvr.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231490AbhJ2BOM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 21:14:12 -0400
-X-Greylist: delayed 532 seconds by postgrey-1.27 at vger.kernel.org; Thu, 28 Oct 2021 21:14:12 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=lynx.com;
-        s=20200402-brzttuan; t=1635469365;
-        bh=jMM+C2LT4KU86ldYN4hpLRQjbvr7iv6JRSnCpYFXPiA=;
-        h=From:Subject:To:Date:From;
-        b=RvZtQBCul4PKfrn4LzVsVM9XpJBJoC36y+V4PBnd4glqO2L2P9tJcC/92cvcNT+Iv
-         TB+VAx0APRg22nVESvYCI+Zxsxai+JH4q6hanxvPKpre2JeHp58WsWKR6VU0eq3YrI
-         6M/RQW/uk34jloyvp87ZQEN3hq7aySxw/is5vP/A=
-X-Auth-ID: cnovikov@lynx.com
-Received: by smtp37.relay.iad3a.emailsrvr.com (Authenticated sender: cnovikov-AT-lynx.com) with ESMTPSA id AC0885A2E;
-        Thu, 28 Oct 2021 21:02:44 -0400 (EDT)
-From:   Cyril Novikov <cnovikov@lynx.com>
-Subject: [PATCH net] ixgbe: set X550 MDIO speed before talking to PHY
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Message-ID: <81be24c4-a7e4-0761-abf4-204f4849b6eb@lynx.com>
-Date:   Thu, 28 Oct 2021 18:03:08 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Classification-ID: df0f361c-6133-4f2f-845e-777970af93a5-1-1
+        id S231387AbhJ2BKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 21:10:36 -0400
+Received: from smtp23.cstnet.cn ([159.226.251.23]:34390 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230211AbhJ2BKf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Oct 2021 21:10:35 -0400
+Received: from localhost.localdomain (unknown [124.16.138.128])
+        by APP-03 (Coremail) with SMTP id rQCowAAnLKhhSXthZAFaBQ--.31789S2;
+        Fri, 29 Oct 2021 09:07:45 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     Jason@zx2c4.com, davem@davemloft.net, kuba@kernel.org
+Cc:     wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] wireguard: queueing: Fix implicit type conversion
+Date:   Fri, 29 Oct 2021 01:07:44 +0000
+Message-Id: <1635469664-1708957-1-git-send-email-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.7.4
+X-CM-TRANSID: rQCowAAnLKhhSXthZAFaBQ--.31789S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrKFyUWFyxJF1rZr4rXr1fJFb_yoWkAwb_Cw
+        n7Wr12gryj9FyI9w13XrWFva4Sgay8X3yxWay8KrZrZw12qrWfX3s5XFyqqr1kG3yfAF17
+        ZF1Dtr1Sv342gjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbckFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
+        Gr1UM28EF7xvwVC2z280aVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVCY1x0267AKxVW8Jr
+        0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
+        6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr
+        0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVWk
+        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
+        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0E
+        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
+        W8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI
+        42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0JUHpB-UUUUU=
+X-Originating-IP: [124.16.138.128]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MDIO bus speed must be initialized before talking to the PHY the first
-time in order to avoid talking to it using a speed that the PHY doesn't
-support.
+The parameter 'cpu' is defined as unsigned int.
+However in the cpumask_next() it is implicitly type conversed
+to int.
+It is universally accepted that the implicit type conversion is
+terrible.
+Also, having the good programming custom will set an example for
+others.
+Thus, it might be better to change the type of 'cpu' from
+unsigned int to int.
 
-This fixes HW initialization error -17 (IXGBE_ERR_PHY_ADDR_INVALID) on
-Denverton CPUs (a.k.a. the Atom C3000 family) on ports with a 10Gb network
-plugged in. On those devices, HLREG0[MDCSPD] resets to 1, which combined
-with the 10Gb network results in a 24MHz MDIO speed, which is apparently
-too fast for the connected PHY. PHY register reads over MDIO bus return
-garbage, leading to initialization failure.
-
-Signed-off-by: Cyril Novikov <cnovikov@lynx.com>
+Fixes: e7096c1 ("net: WireGuard secure network tunnel")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/wireguard/queueing.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Reproduced with Linux kernel 4.19 and 5.15-rc7. Can be reproduced using
-the following setup:
-
-* Use an Atom C3000 family system with at least one X550 LAN on the SoC
-* Disable PXE or other BIOS network initialization if possible
-  (the interface must not be initialized before Linux boots)
-* Connect a live 10Gb Ethernet cable to an X550 port
-* Power cycle (not reset, doesn't always work) the system and boot Linux
-* Observe: ixgbe interfaces w/ 10GbE cables plugged in fail with error -17
-
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
-index 9724ffb16518..e4b50c7781ff 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
-@@ -3405,6 +3405,9 @@ static s32 ixgbe_reset_hw_X550em(struct ixgbe_hw *hw)
- 	/* flush pending Tx transactions */
- 	ixgbe_clear_tx_pending(hw);
+diff --git a/drivers/net/wireguard/queueing.h b/drivers/net/wireguard/queueing.h
+index 4ef2944..64f397f 100644
+--- a/drivers/net/wireguard/queueing.h
++++ b/drivers/net/wireguard/queueing.h
+@@ -106,7 +106,7 @@ static inline void wg_reset_packet(struct sk_buff *skb, bool encapsulating)
  
-+	/* set MDIO speed before talking to the PHY in case it's the 1st time */
-+	ixgbe_set_mdio_speed(hw);
-+
- 	/* PHY ops must be identified and initialized prior to reset */
- 	status = hw->phy.ops.init(hw);
- 	if (status == IXGBE_ERR_SFP_NOT_SUPPORTED ||
+ static inline int wg_cpumask_choose_online(int *stored_cpu, unsigned int id)
+ {
+-	unsigned int cpu = *stored_cpu, cpu_index, i;
++	int cpu = *stored_cpu, cpu_index, i;
+ 
+ 	if (unlikely(cpu == nr_cpumask_bits ||
+ 		     !cpumask_test_cpu(cpu, cpu_online_mask))) {
 -- 
-2.19.1-412.replication
+2.7.4
+
