@@ -2,115 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03E6243FB18
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 12:54:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46D0643FB1C
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 12:55:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231788AbhJ2K43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 06:56:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52450 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231719AbhJ2K42 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 06:56:28 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D2FDC061570
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 03:54:00 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id r4so36655570edi.5
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 03:54:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=b3qSGM0p6y4ZgfnoAyiZzzlY57n4MzHUR7ioYeiIdMs=;
-        b=HR/oSlud9C/7XG9RmGUmGigozqBYikJPozqCKVTuoaq6kIWCJw2MFOpbB3ssr/CRNk
-         WAGbgtsjODRJXLZPoQpy901q8DIa+vjwrw7CQTzFZOWybWWfWoCep1/BLCwFHnf+aXi2
-         LWMGfcjinxI/mS7ORW78vIgo+Opma2ED2kqI+8fDe43NnELBAvzxuoK8gvcv6Y8efMSy
-         FML03VWSWDG0YEoGLLfBbSsmCcDgGlXSbHKqScpet+/ucvFXA12KeZoEN773cPor44Jj
-         /untbboy1Ora7/FEphwWqs8Gs00/xq1x2UtzQonFsyZtY8TDl6FdVtgwPeh+ZCAR08Pd
-         M7Aw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=b3qSGM0p6y4ZgfnoAyiZzzlY57n4MzHUR7ioYeiIdMs=;
-        b=tnvRP5tTdTvl6d6egpttl5K3crIoD4egYTYTPAQ/uvCWim9f/Rx0GzJcPx9TEojXFo
-         ZcrT+4SGNTO9YxR4+DY1t7Aisunu/xJsHmNXzhwXmvgIkYxzJS6/0ZPPNsJzT4rPnC8x
-         ZWdF8PbCRI8pBO97lReSSCR9cNV2H56d/FbbbYOCrdZvg5IEzQxSkCbTbQYM4XiakIKh
-         3tRUR1diDQWQn0g4zBS++m5zpeSoO3LUCE7iHqYYNdTJjvm4Qe7436jsP7pCeHk6LCLA
-         XyYoa3mc6YCYc4C1HuqMZ4sedavUhKeTlCsnCSGRNC9ab98p1jAfyiUyjtMhM9EUkTcN
-         JRIw==
-X-Gm-Message-State: AOAM531ZC7dU9eFDShRdTtT/1XUId/6+FAXk5gmh4OKkE3nOskYRfqSj
-        7rr3rIILZ+M/HSmc7euLT/ONTJuLFT/bhBel
-X-Google-Smtp-Source: ABdhPJxCgRbaze6v8TWXYqiqM8WGL+XAmUxXWSIJc9pWXHzQnpJw2lKHd34kQ2bAR0xOl9O0+2CdUg==
-X-Received: by 2002:a17:906:3a0e:: with SMTP id z14mr13126655eje.55.1635504837085;
-        Fri, 29 Oct 2021 03:53:57 -0700 (PDT)
-Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id he17sm2842640ejc.58.2021.10.29.03.53.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Oct 2021 03:53:56 -0700 (PDT)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH net] selftests: net: bridge: update IGMP/MLD membership interval value
-Date:   Fri, 29 Oct 2021 13:53:43 +0300
-Message-Id: <20211029105343.2705436-1-razor@blackwall.org>
-X-Mailer: git-send-email 2.31.1
+        id S231815AbhJ2K6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 06:58:04 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:30879 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231749AbhJ2K6D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 06:58:03 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HgfNW49jBzbmhX;
+        Fri, 29 Oct 2021 18:50:51 +0800 (CST)
+Received: from dggpeml500025.china.huawei.com (7.185.36.35) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Fri, 29 Oct 2021 18:55:32 +0800
+Received: from [10.174.176.117] (10.174.176.117) by
+ dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Fri, 29 Oct 2021 18:55:31 +0800
+Subject: Re: [PATCH bpf-next v4 0/4] introduce dummy BPF STRUCT_OPS
+To:     Alexei Starovoitov <ast@kernel.org>
+CC:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+References: <20211025064025.2567443-1-houtao1@huawei.com>
+From:   Hou Tao <houtao1@huawei.com>
+Message-ID: <d89d987d-18e1-cd2a-0f29-efd2ff0449bb@huawei.com>
+Date:   Fri, 29 Oct 2021 18:55:31 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211025064025.2567443-1-houtao1@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.174.176.117]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500025.china.huawei.com (7.185.36.35)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@nvidia.com>
+Hi Alexei,
 
-When I fixed IGMPv3/MLDv2 to use the bridge's multicast_membership_interval
-value which is chosen by user-space instead of calculating it based on
-multicast_query_interval and multicast_query_response_interval I forgot
-to update the selftests relying on that behaviour. Now we have to
-manually set the expected GMI value to perform the tests correctly and get
-proper results (similar to IGMPv2 behaviour).
+Could you please consider the patch set for 5.16 ? The whole patch set has
+already been Acked by Martin.
 
-Fixes: fac3cb82a54a ("net: bridge: mcast: use multicast_membership_interval for IGMPv3")
-Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
----
- tools/testing/selftests/net/forwarding/bridge_igmp.sh | 3 +++
- tools/testing/selftests/net/forwarding/bridge_mld.sh  | 3 +++
- 2 files changed, 6 insertions(+)
+Thanks.
 
-diff --git a/tools/testing/selftests/net/forwarding/bridge_igmp.sh b/tools/testing/selftests/net/forwarding/bridge_igmp.sh
-index 675eff45b037..da031892ffd2 100755
---- a/tools/testing/selftests/net/forwarding/bridge_igmp.sh
-+++ b/tools/testing/selftests/net/forwarding/bridge_igmp.sh
-@@ -483,9 +483,12 @@ v3exc_timeout_test()
- 
- 	# GMI should be 3 seconds
- 	ip link set dev br0 type bridge mcast_query_interval 100 mcast_query_response_interval 100
-+	ip link set dev br0 type bridge mcast_membership_interval 300
- 
- 	v3exclude_prepare $h1 $ALL_MAC $ALL_GROUP
- 	ip link set dev br0 type bridge mcast_query_interval 500 mcast_query_response_interval 500
-+	ip link set dev br0 type bridge mcast_membership_interval 1500
-+
- 	$MZ $h1 -c 1 -b $ALL_MAC -B $ALL_GROUP -t ip "proto=2,p=$MZPKT_ALLOW2" -q
- 	sleep 3
- 	bridge -j -d -s mdb show dev br0 \
-diff --git a/tools/testing/selftests/net/forwarding/bridge_mld.sh b/tools/testing/selftests/net/forwarding/bridge_mld.sh
-index ffdcfa87ca2b..96fdaa84606f 100755
---- a/tools/testing/selftests/net/forwarding/bridge_mld.sh
-+++ b/tools/testing/selftests/net/forwarding/bridge_mld.sh
-@@ -480,9 +480,12 @@ mldv2exc_timeout_test()
- 
- 	# GMI should be 3 seconds
- 	ip link set dev br0 type bridge mcast_query_interval 100 mcast_query_response_interval 100
-+	ip link set dev br0 type bridge mcast_membership_interval 300
- 
- 	mldv2exclude_prepare $h1
- 	ip link set dev br0 type bridge mcast_query_interval 500 mcast_query_response_interval 500
-+	ip link set dev br0 type bridge mcast_membership_interval 1500
-+
- 	$MZ $h1 -c 1 $MZPKT_ALLOW2 -q
- 	sleep 3
- 	bridge -j -d -s mdb show dev br0 \
--- 
-2.31.1
+On 10/25/2021 2:40 PM, Hou Tao wrote:
+> Hi,
+>
+> Currently the test of BPF STRUCT_OPS depends on the specific bpf
+> implementation (e.g, tcp_congestion_ops), but it can not cover all
+> basic functionalities (e.g, return value handling), so introduce
+> a dummy BPF STRUCT_OPS for test purpose.
+>
+> Instead of loading a userspace-implemeted bpf_dummy_ops map into
+> kernel and calling the specific function by writing to sysfs provided
+> by bpf_testmode.ko, only loading bpf_dummy_ops related prog into
+> kernel and calling these prog by bpf_prog_test_run(). The latter
+> is more flexible and has no dependency on extra kernel module.
+>
+> Now the return value handling is supported by test_1(...) ops,
+> and passing multiple arguments is supported by test_2(...) ops.
+> If more is needed, test_x(...) ops can be added afterwards.
+>
+> Comments are always welcome.
+> Regards,
+> Hou
+>
+> Change Log:
+> v4:
+>  * add Acked-by tags in patch 1~4
+>  * patch 2: remove unncessary comments and update commit message
+>             accordingly
+>  * patch 4: remove unnecessary nr checking in dummy_ops_init_args()
+>
+> v3: https://www.spinics.net/lists/bpf/msg48303.html
+>  * rebase on bpf-next
+>  * address comments for Martin, mainly include: merge patch 3 &
+>    patch 4 in v2, fix names of btf ctx access check helpers,
+>    handle CONFIG_NET, fix leak in dummy_ops_init_args(), and
+>    simplify bpf_dummy_init()
+>  * patch 4: use a loop to check args in test_dummy_multiple_args()
+>
+> v2: https://www.spinics.net/lists/bpf/msg47948.html
+>  * rebase on bpf-next
+>  * add test_2(...) ops to test the passing of multiple arguments
+>  * a new patch (patch #2) is added to factor out ctx access helpers
+>  * address comments from Martin & Andrii
+>
+> v1: https://www.spinics.net/lists/bpf/msg46787.html
+>
+> RFC: https://www.spinics.net/lists/bpf/msg46117.html
+>
+>
+> Hou Tao (4):
+>   bpf: factor out a helper to prepare trampoline for struct_ops prog
+>   bpf: factor out helpers for ctx access checking
+>   bpf: add dummy BPF STRUCT_OPS for test purpose
+>   selftests/bpf: add test cases for struct_ops prog
+>
+>  include/linux/bpf.h                           |  43 ++++
+>  kernel/bpf/bpf_struct_ops.c                   |  32 ++-
+>  kernel/bpf/bpf_struct_ops_types.h             |   3 +
+>  kernel/trace/bpf_trace.c                      |  16 +-
+>  net/bpf/Makefile                              |   3 +
+>  net/bpf/bpf_dummy_struct_ops.c                | 200 ++++++++++++++++++
+>  net/ipv4/bpf_tcp_ca.c                         |   9 +-
+>  .../selftests/bpf/prog_tests/dummy_st_ops.c   | 115 ++++++++++
+>  .../selftests/bpf/progs/dummy_st_ops.c        |  50 +++++
+>  9 files changed, 439 insertions(+), 32 deletions(-)
+>  create mode 100644 net/bpf/bpf_dummy_struct_ops.c
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/dummy_st_ops.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/dummy_st_ops.c
+>
 
