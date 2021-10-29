@@ -2,139 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17B0543FDEA
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 16:09:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABB1843FE52
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 16:19:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231664AbhJ2OMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 10:12:03 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:26135 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231431AbhJ2OLz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 10:11:55 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Hgkl5003tz1DHg5;
-        Fri, 29 Oct 2021 22:07:12 +0800 (CST)
-Received: from dggema772-chm.china.huawei.com (10.1.198.214) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2308.15; Fri, 29 Oct 2021 22:09:11 +0800
-Received: from huawei.com (10.175.101.6) by dggema772-chm.china.huawei.com
- (10.1.198.214) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.15; Fri, 29
- Oct 2021 22:09:10 +0800
-From:   Liu Jian <liujian56@huawei.com>
-To:     <john.fastabend@gmail.com>, <daniel@iogearbox.net>,
-        <jakub@cloudflare.com>, <lmb@cloudflare.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <ast@kernel.org>,
-        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
-        <yhs@fb.com>, <kpsingh@kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <xiyou.wangcong@gmail.com>,
-        <alexei.starovoitov@gmail.com>
-CC:     <liujian56@huawei.com>
-Subject: [PATHC bpf v6 3/3] selftests, bpf: Add one test for sockmap with strparser
-Date:   Fri, 29 Oct 2021 22:12:16 +0800
-Message-ID: <20211029141216.211899-3-liujian56@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20211029141216.211899-1-liujian56@huawei.com>
-References: <20211029141216.211899-1-liujian56@huawei.com>
+        id S231260AbhJ2OWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 10:22:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43376 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229692AbhJ2OWN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 10:22:13 -0400
+Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5436CC061570
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 07:19:44 -0700 (PDT)
+Received: by mail-ua1-x92f.google.com with SMTP id b17so8300538uas.0
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 07:19:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=La4tP0M+nnhi8waYnrjqdGJjsunXvhEgBrpfo4j3630=;
+        b=Cv08/C1AHqhp5HgXJSWQfVm55wALjktLxdkGvZy8FUqAjMD6DRFlm7yq0oZEJK7G8H
+         TM8RGXTySMgQcavVwR6JRLyVv9ClzA7DJ6fHKsMUsQHaRNnFWthH9zKLMsri6VZJqz3K
+         TLOKbGkOZdCukXTBPbQxZ/lixFnPJowTjmI6YkLxpiqY7FPKJwV1PSszcUXNKneN+v+x
+         gmLWk8KE9ZGrBRjTsCglmLavtFSPBLMyVRuLHSld9LY+XOCFPcuEAI5htqJzRWRWuHqz
+         /ACXpoidTaywdNfzDOxFg3szLuALw3OH3uZedN93cqCiKTW1zj9gHgn/aCfno/y77oWu
+         tFPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=La4tP0M+nnhi8waYnrjqdGJjsunXvhEgBrpfo4j3630=;
+        b=m0O8UvL7DtIa/Eu6IoXZnRVNgrszn7mK5/SWUnPqng4WqylGzS/aR+264DpxGD3q9/
+         YVkkr1oxj9eJAKzO8RdSQl/6RWpuHvc5ilqrzqf6LLf8PGIvyDo5gnJYBNfA5itm5Phv
+         fSk69n5fJczebChojE6jRMYkK4sVa8bSJ0kkwBpM+2JfsbMOu57GIS0pd6ekKdOn04n1
+         aWaoQf/5itgrP/VYCBDFKBj2+Lz7fS6QQjx+b0Bhq/Bcpu0C49UnOCXGEtlUa2H1jBsk
+         a6aP5bxjSttTAJBgDUEbzH/E3JT/aq3yCiZAHJ1i/spg9uUU+FS3or5HCtWDbvzPqNSg
+         GuLQ==
+X-Gm-Message-State: AOAM530JY8j/KxP4C9uy3nu2kD9aLmmRNIghNNMQwuqkkVrE76JRMLXD
+        vRCccWpvVFBmhlip+pW3konEVAg/ZBE=
+X-Google-Smtp-Source: ABdhPJwPasbvmCzPTq2d76RPStKwXO7/g9HtaZvlXpiDTlDM2bHMq4gxoGSchYbPw2poF4qejatssQ==
+X-Received: by 2002:ab0:26d2:: with SMTP id b18mr12104686uap.53.1635517183510;
+        Fri, 29 Oct 2021 07:19:43 -0700 (PDT)
+Received: from mail-vk1-f174.google.com (mail-vk1-f174.google.com. [209.85.221.174])
+        by smtp.gmail.com with ESMTPSA id d128sm943432vsd.20.2021.10.29.07.19.43
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Oct 2021 07:19:43 -0700 (PDT)
+Received: by mail-vk1-f174.google.com with SMTP id h133so4670196vke.10
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 07:19:43 -0700 (PDT)
+X-Received: by 2002:a05:6122:98a:: with SMTP id g10mr11917964vkd.17.1635517182626;
+ Fri, 29 Oct 2021 07:19:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggema772-chm.china.huawei.com (10.1.198.214)
-X-CFilter-Loop: Reflected
+References: <CABcq3pG9GRCYqFDBAJ48H1vpnnX=41u+MhQnayF1ztLH4WX0Fw@mail.gmail.com>
+In-Reply-To: <CABcq3pG9GRCYqFDBAJ48H1vpnnX=41u+MhQnayF1ztLH4WX0Fw@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 29 Oct 2021 10:19:06 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSfytchd3Fk7=VB-6mTHsdjEjkEEHUFXRg_8ZaZkAyxbrg@mail.gmail.com>
+Message-ID: <CA+FuTSfytchd3Fk7=VB-6mTHsdjEjkEEHUFXRg_8ZaZkAyxbrg@mail.gmail.com>
+Subject: Re: VirtioNet L3 protocol patch advice request.
+To:     Andrew Melnichenko <andrew@daynix.com>
+Cc:     davem@davemloft.net, bnemeth@redhat.com,
+        gregkh@linuxfoundation.org, Yan Vugenfirer <yan@daynix.com>,
+        Yuri Benditovich <yuri.benditovich@daynix.com>,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the test to check sockmap with strparser is working well.
+On Fri, Oct 29, 2021 at 6:51 AM Andrew Melnichenko <andrew@daynix.com> wrote:
+>
+> Hi all,
+> Recently I've discovered a patch that added an additional check for the
+> protocol in VirtioNet.
+> (https://www.spinics.net/lists/kernel/msg3866319.html)
+> Currently, that patch breaks UFOv6 support and possible USOv6 support in
+> upcoming patches.
+> The issue is the code next to the patch expects failure of
+> skb_flow_dissect_flow_keys_basic()
+> for IPv6 packets to retry it with protocol IPv6.
+> I'm not sure about the goals of the patch
 
-Signed-off-by: Liu Jian <liujian56@huawei.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
----
- tools/testing/selftests/bpf/test_sockmap.c | 33 ++++++++++++++++++++--
- 1 file changed, 30 insertions(+), 3 deletions(-)
+A well behaved configuration should not enter that code path to begin
+with. GSO packets should also request NEEDS_CSUM, and in normal cases
+skb->protocol is set. But packet sockets allow leaving skb->protocol
+0, in which case this code tries to infer the protocol from the link
+layer header if present and supported, using
+dev_parse_header_protocol.
 
-diff --git a/tools/testing/selftests/bpf/test_sockmap.c b/tools/testing/selftests/bpf/test_sockmap.c
-index 06924917ad77..1ba7e7346afb 100644
---- a/tools/testing/selftests/bpf/test_sockmap.c
-+++ b/tools/testing/selftests/bpf/test_sockmap.c
-@@ -139,6 +139,7 @@ struct sockmap_options {
- 	bool sendpage;
- 	bool data_test;
- 	bool drop_expected;
-+	bool check_recved_len;
- 	int iov_count;
- 	int iov_length;
- 	int rate;
-@@ -556,8 +557,12 @@ static int msg_loop(int fd, int iov_count, int iov_length, int cnt,
- 	int err, i, flags = MSG_NOSIGNAL;
- 	bool drop = opt->drop_expected;
- 	bool data = opt->data_test;
-+	int iov_alloc_length = iov_length;
- 
--	err = msg_alloc_iov(&msg, iov_count, iov_length, data, tx);
-+	if (!tx && opt->check_recved_len)
-+		iov_alloc_length *= 2;
-+
-+	err = msg_alloc_iov(&msg, iov_count, iov_alloc_length, data, tx);
- 	if (err)
- 		goto out_errno;
- 	if (peek_flag) {
-@@ -665,6 +670,13 @@ static int msg_loop(int fd, int iov_count, int iov_length, int cnt,
- 
- 			s->bytes_recvd += recv;
- 
-+			if (opt->check_recved_len && s->bytes_recvd > total_bytes) {
-+				errno = EMSGSIZE;
-+				fprintf(stderr, "recv failed(), bytes_recvd:%zd, total_bytes:%f\n",
-+						s->bytes_recvd, total_bytes);
-+				goto out_errno;
-+			}
-+
- 			if (data) {
- 				int chunk_sz = opt->sendpage ?
- 						iov_length * cnt :
-@@ -744,7 +756,8 @@ static int sendmsg_test(struct sockmap_options *opt)
- 
- 	rxpid = fork();
- 	if (rxpid == 0) {
--		iov_buf -= (txmsg_pop - txmsg_start_pop + 1);
-+		if (txmsg_pop || txmsg_start_pop)
-+			iov_buf -= (txmsg_pop - txmsg_start_pop + 1);
- 		if (opt->drop_expected || txmsg_ktls_skb_drop)
- 			_exit(0);
- 
-@@ -1688,6 +1701,19 @@ static void test_txmsg_ingress_parser(int cgrp, struct sockmap_options *opt)
- 	test_exec(cgrp, opt);
- }
- 
-+static void test_txmsg_ingress_parser2(int cgrp, struct sockmap_options *opt)
-+{
-+	if (ktls == 1)
-+		return;
-+	skb_use_parser = 10;
-+	opt->iov_length = 20;
-+	opt->iov_count = 1;
-+	opt->rate = 1;
-+	opt->check_recved_len = true;
-+	test_exec(cgrp, opt);
-+	opt->check_recved_len = false;
-+}
-+
- char *map_names[] = {
- 	"sock_map",
- 	"sock_map_txmsg",
-@@ -1786,7 +1812,8 @@ struct _test test[] = {
- 	{"txmsg test pull-data", test_txmsg_pull},
- 	{"txmsg test pop-data", test_txmsg_pop},
- 	{"txmsg test push/pop data", test_txmsg_push_pop},
--	{"txmsg text ingress parser", test_txmsg_ingress_parser},
-+	{"txmsg test ingress parser", test_txmsg_ingress_parser},
-+	{"txmsg test ingress parser2", test_txmsg_ingress_parser2},
- };
- 
- static int check_whitelist(struct _test *t, struct sockmap_options *opt)
--- 
-2.17.1
+Commit 924a9bc362a5 ("net: check if protocol extracted by
+virtio_net_hdr_set_proto is correct") added the
+dev_parse_header_protocol check and will drop packets where the GSO
+type (e.g., VIRTIO_NET_HDR_GSO_TCPV4) does not match the network
+protocol as stores in the link layer header (ETH_P_IPV6, or even
+something unrelated like ETH_P_ARP).
 
+You're right that it can drop UFOv6 packets. VIRTIO_NET_HDR_GSO_UDP
+has no separate V4 and V6 variants, so we have to accept both
+protocols. We need to fix that.
+
+This guess in virtio_net_hdr_set_proto
+
+        case VIRTIO_NET_HDR_GSO_UDP:
+                skb->protocol = cpu_to_be16(ETH_P_IP);
+
+might be wrong to assume IPv4 for UFOv6, and then as of that commit
+this check will incorrectly drop the packet
+
+                                virtio_net_hdr_set_proto(skb, hdr);
+                                if (protocol && protocol != skb->protocol)
+                                        return -EINVAL;
+
+> and propose the next solution:
+>
+> static inline int virtio_net_hdr_set_proto(struct sk_buff *skb,
+> >                      const struct virtio_net_hdr *hdr)
+> > {
+> >     __be16 protocol;
+> >
+> >     protocol = dev_parse_header_protocol(skb);
+> >     switch (hdr->gso_type & ~VIRTIO_NET_HDR_GSO_ECN) {
+> >     case VIRTIO_NET_HDR_GSO_TCPV4:
+> >         skb->protocol = cpu_to_be16(ETH_P_IP);
+> >         break;
+> >     case VIRTIO_NET_HDR_GSO_TCPV6:
+> >         skb->protocol = cpu_to_be16(ETH_P_IPV6);
+> >         break;
+> >     case VIRTIO_NET_HDR_GSO_UDP:
+> >     case VIRTIO_NET_HDR_GSO_UDP_L4:
+
+Please use diff to show your changes. Also do not mix bug fixes (that
+go to net) with new features (that go to net-next).
+
+> >         skb->protocol = protocol;
+
+Not exactly, this would just remove the added verification.
+
+We need something like
+
+@@ -89,8 +92,13 @@ static inline int virtio_net_hdr_to_skb(struct sk_buff *skb,
+                                __be16 protocol =
+dev_parse_header_protocol(skb);
+
+                                virtio_net_hdr_set_proto(skb, hdr);
+-                               if (protocol && protocol != skb->protocol)
+-                                       return -EINVAL;
++                               if (protocol && protocol != skb->protocol) {
++                                       if (gso_type ==
+VIRTIO_NET_HDR_GSO_UDP &&
++                                           protocol == cpu_to_be16(ETH_P_IPV6))
++                                               skb->protocol = protocol;
++                                       else
++                                               return -EINVAL;
++                               }
+
+But preferably less ugly. Your suggestion of moving the
+dev_parse_header_protocol step into virtio_net_hdr_to_skb is cleaner.
+But also executes this check in the two other callers that may not
+need it. Need to double check whether that is correct.
