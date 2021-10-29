@@ -2,188 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 666AB43F9B9
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 11:22:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E689F43FA12
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 11:40:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231449AbhJ2JYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 05:24:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59964 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230010AbhJ2JYk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 05:24:40 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D711AC061570
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 02:22:11 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id gn3so6820389pjb.0
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 02:22:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=H27WTWvMmCfTT7VRFQ1oIGC9zOXNStMn1mii9BR9lJ0=;
-        b=fluSYY2IocvR8ZBjkWoUcL5IFeubRAafBzECt55fqK2T4ei0xeGuOQ1N2LF0OqwUei
-         IPfgsJjHCvT1C9tcttKemtL3M4H2dfcAcuZ3F1gdcwJ8J3TuX5YHbuJ5DyLrkwwTq+n5
-         fjhAgqkxUsf0VeFQn5b98knqI1R/mhcLc7xpkRbzggDGgi28eah//oq4sFKf91xyleT6
-         srdR1kHY1fHRvnroOV3jDTmPnxRTYVN748IAOPEYhho3j2CQt3QPjFnSfb0VFVedsQff
-         2m/Se9vgAvLNQ+rMuYkfLY6xVJFGw7MGCKS6n1ta9tYNUxVWzmqP6Bp+LVJ7cu2kxb/9
-         wE5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=H27WTWvMmCfTT7VRFQ1oIGC9zOXNStMn1mii9BR9lJ0=;
-        b=60FM5bSahMWgcFkbNW+b4MdMXV5AlnAwdoavU3x9RW0XQEBGMvBJaLCvo/19qDvM6G
-         t5uuRd3MOHGnU3T2VdR4nTouJX5yNcFpOqhWonfDWdDFW1uNoE9Ja1lROcEXsi70V+Wb
-         DMmm2hm7SdKM/32lLj1VJTpB95gg0uT0KodeL+U1QFXXYQIpW9g+BSqZS3ZwibXWVd0a
-         C91XLs8xgM3wFjaFAnm2y23tqc+/snjeghL+RnYm3VeQ9cW1i3TyNbpjSTcjhOYbYxXv
-         myxO8udnrINo1y2SKwNpIzK+nUH+FQ8wvOgylAcCP5jl1mz09ekBatJ7C114U1m4byAy
-         Gi+g==
-X-Gm-Message-State: AOAM5304lIbUZNoaz+MjF3z6/wnMS1uPO/mMjFkIDCeL6Q2ds2sDkNd/
-        8hXXGmDF3+Tolj9674M+0zI=
-X-Google-Smtp-Source: ABdhPJwdsI7JUhTzNoneNssMag1C7Np89BBBkLHll6MHnp211nXn6g4B+jf14tDOJGhrJUuXlQWflw==
-X-Received: by 2002:a17:90b:1185:: with SMTP id gk5mr1695885pjb.113.1635499331282;
-        Fri, 29 Oct 2021 02:22:11 -0700 (PDT)
-Received: from localhost.localdomain (dali.ht.sfc.keio.ac.jp. [133.27.170.2])
-        by smtp.gmail.com with ESMTPSA id k15sm3808995pff.150.2021.10.29.02.22.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Oct 2021 02:22:10 -0700 (PDT)
-From:   Yoshiki Komachi <komachi.yoshiki@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pravin B Shelar <pshelar@ovn.org>
-Cc:     Yoshiki Komachi <komachi.yoshiki@gmail.com>,
-        netdev@vger.kernel.org, dev@openvswitch.org,
-        toshiaki.makita1@gmail.com
-Subject: [PATCH net] cls_flower: Fix inability to match GRE/IPIP packets
-Date:   Fri, 29 Oct 2021 09:21:41 +0000
-Message-Id: <20211029092141.6924-1-komachi.yoshiki@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S231523AbhJ2Jmw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 05:42:52 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:46428 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229927AbhJ2Jmw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 05:42:52 -0400
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19T8NWlL019754;
+        Fri, 29 Oct 2021 09:40:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=CT9m138E2l4ITQbND8Qn0r0n7mFV+LEpfA2oGT+3OAk=;
+ b=oBShqAsdOPDO0ZQ/+vzcmenLC0Cs31n2inTfMf5x6XtgU811LrUgSQXxbQZfqWwTauRE
+ sflSQs/c/plzo6q8Lb7HaDj+fmZ0j/MtyiGZRr/7VYG9ioxAirzE6DGLre+Paym8hh2H
+ rwTDVmeGXwuyGkn//iQhwgk6b0YnGLQEzPsgoy9UUZdZAJ5Q4Iiq4DjtxJKS+nOxO9KG
+ J41BlWEitDP+/q/Idi5RRc/wTlKTo5hL4hIvpEmeDyOaHM63F+xtWwiUZB8FhpSX6wzc
+ +7MdvF25CU6LAq7j1ExihOloUiQCRRyIZIPSi7fH63RdBuSCANDqiZK2DqwuZliX9VDU Jw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3c0dde9g16-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Oct 2021 09:40:19 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 19T8SB7j000976;
+        Fri, 29 Oct 2021 09:40:19 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3c0dde9g0h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Oct 2021 09:40:19 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 19T9SkTB005383;
+        Fri, 29 Oct 2021 09:40:17 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma03ams.nl.ibm.com with ESMTP id 3bx4etspx7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 29 Oct 2021 09:40:17 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 19T9eEXl63373630
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 29 Oct 2021 09:40:15 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DA49452052;
+        Fri, 29 Oct 2021 09:40:14 +0000 (GMT)
+Received: from [9.145.4.84] (unknown [9.145.4.84])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 5A3AD52050;
+        Fri, 29 Oct 2021 09:40:14 +0000 (GMT)
+Message-ID: <acaf3d5a-219b-3eec-3a65-91d3fdfb21e9@linux.ibm.com>
+Date:   Fri, 29 Oct 2021 11:40:17 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.1
+Subject: Re: [PATCH net 4/4] net/smc: Fix wq mismatch issue caused by smc
+ fallback
+Content-Language: en-US
+To:     Tony Lu <tonylu@linux.alibaba.com>, davem@davemloft.net,
+        kuba@kernel.org, ubraun@linux.ibm.com
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org, jacob.qi@linux.alibaba.com,
+        xuanzhuo@linux.alibaba.com, guwen@linux.alibaba.com,
+        dust.li@linux.alibaba.com
+References: <20211027085208.16048-1-tonylu@linux.alibaba.com>
+ <20211027085208.16048-5-tonylu@linux.alibaba.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <20211027085208.16048-5-tonylu@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: m0qdDClYVbWfw4jOn_P25n3XQPuOU1ur
+X-Proofpoint-ORIG-GUID: TT2rlq-r_YtCjSLHN3Oq4LWQruKF8xIy
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-10-29_02,2021-10-26_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 impostorscore=0
+ adultscore=0 suspectscore=0 spamscore=0 priorityscore=1501 mlxlogscore=999
+ lowpriorityscore=0 phishscore=0 mlxscore=0 malwarescore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
+ definitions=main-2110290053
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a packet of a new flow arrives in openvswitch kernel module, it dissects
-the packet and passes the extracted flow key to ovs-vswtichd daemon. If hw-
-offload configuration is enabled, the daemon creates a new TC flower entry to
-bypass openvswitch kernel module for the flow (TC flower can also offload flows
-to NICs but this time that does not matter).
+On 27/10/2021 10:52, Tony Lu wrote:
+> From: Wen Gu <guwen@linux.alibaba.com>
+> 
+> A socket_wq mismatch issue may occur because of fallback.
+> 
+> When use SMC to replace TCP, applications add an epoll entry into SMC
+> socket's wq, but kernel uses clcsock's wq instead of SMC socket's wq
+> once fallback occurs, which means the application's epoll fd dosen't
+> work anymore.
 
-In this processing flow, I found the following issue in cases of GRE/IPIP
-packets.
+I am not sure if I understand this fix completely, please explain your intentions
+for the changes in more detail.
 
-When ovs_flow_key_extract() in openvswitch module parses a packet of a new
-GRE (or IPIP) flow received on non-tunneling vports, it extracts information
-of the outer IP header for ip_proto/src_ip/dst_ip match keys.
+What I see so far:
+- smc_create() swaps the sk->sk_wq of the clcsocket and the new SMC socket
+  - sets clcsocket sk->sk_wq to smcsocket->wq (why?)
+  - sets smcsocket sk->sk_wq to clcsocket->wq (why?)
+- smc_switch_to_fallback() resets the clcsock sk->sk_wq to clcsocket->wq
+- smc_accept() sets smcsocket sk->sk_wq to clcsocket->wq when it is NOT fallback
+  - but this was already done before in smc_create() ??
+- smc_poll() now always uses clcsocket->wq for the call to sock_poll_wait()
 
-This means ovs-vswitchd creates a TC flower entry with IP protocol/addresses
-match keys whose values are those of the outer IP header. OTOH, TC flower,
-which uses flow_dissector (different parser from openvswitch module), extracts
-information of the inner IP header.
-
-The following flow is an example to describe the issue in more detail.
-
-   <----------- Outer IP -----------------> <---------- Inner IP ---------->
-  +----------+--------------+--------------+----------+----------+----------+
-  | ip_proto | src_ip       | dst_ip       | ip_proto | src_ip   | dst_ip   |
-  | 47 (GRE) | 192.168.10.1 | 192.168.10.2 | 6 (TCP)  | 10.0.0.1 | 10.0.0.2 |
-  +----------+--------------+--------------+----------+----------+----------+
-
-In this case, TC flower entry and extracted information are shown as below:
-
-  - ovs-vswitchd creates TC flower entry with:
-      - ip_proto: 47
-      - src_ip: 192.168.10.1
-      - dst_ip: 192.168.10.2
-
-  - TC flower extracts below for IP header matches:
-      - ip_proto: 6
-      - src_ip: 10.0.0.1
-      - dst_ip: 10.0.0.2
-
-Thus, GRE or IPIP packets never match the TC flower entry, as each
-dissector behaves differently.
-
-IMHO, the behavior of TC flower (flow dissector) does not look correct,
-as ip_proto/src_ip/dst_ip in TC flower match means the outermost IP
-header information except for GRE/IPIP cases. This patch adds a new
-flow_dissector flag FLOW_DISSECTOR_F_STOP_BEFORE_ENCAP which skips
-dissection of the encapsulated inner GRE/IPIP header in TC flower
-classifier.
-
-Signed-off-by: Yoshiki Komachi <komachi.yoshiki@gmail.com>
----
- include/net/flow_dissector.h |  1 +
- net/core/flow_dissector.c    | 15 +++++++++++++++
- net/sched/cls_flower.c       |  3 ++-
- 3 files changed, 18 insertions(+), 1 deletion(-)
-
-diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
-index ffd386ea0dbb..aa33e1092e2c 100644
---- a/include/net/flow_dissector.h
-+++ b/include/net/flow_dissector.h
-@@ -287,6 +287,7 @@ enum flow_dissector_key_id {
- #define FLOW_DISSECTOR_F_PARSE_1ST_FRAG		BIT(0)
- #define FLOW_DISSECTOR_F_STOP_AT_FLOW_LABEL	BIT(1)
- #define FLOW_DISSECTOR_F_STOP_AT_ENCAP		BIT(2)
-+#define FLOW_DISSECTOR_F_STOP_BEFORE_ENCAP	BIT(3)
- 
- struct flow_dissector_key {
- 	enum flow_dissector_key_id key_id;
-diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-index bac0184cf3de..0d4bbf534c7d 100644
---- a/net/core/flow_dissector.c
-+++ b/net/core/flow_dissector.c
-@@ -1307,6 +1307,11 @@ bool __skb_flow_dissect(const struct net *net,
- 
- 	switch (ip_proto) {
- 	case IPPROTO_GRE:
-+		if (flags & FLOW_DISSECTOR_F_STOP_BEFORE_ENCAP) {
-+			fdret = FLOW_DISSECT_RET_OUT_GOOD;
-+			break;
-+		}
-+
- 		fdret = __skb_flow_dissect_gre(skb, key_control, flow_dissector,
- 					       target_container, data,
- 					       &proto, &nhoff, &hlen, flags);
-@@ -1364,6 +1369,11 @@ bool __skb_flow_dissect(const struct net *net,
- 		break;
- 	}
- 	case IPPROTO_IPIP:
-+		if (flags & FLOW_DISSECTOR_F_STOP_BEFORE_ENCAP) {
-+			fdret = FLOW_DISSECT_RET_OUT_GOOD;
-+			break;
-+		}
-+
- 		proto = htons(ETH_P_IP);
- 
- 		key_control->flags |= FLOW_DIS_ENCAPSULATION;
-@@ -1376,6 +1386,11 @@ bool __skb_flow_dissect(const struct net *net,
- 		break;
- 
- 	case IPPROTO_IPV6:
-+		if (flags & FLOW_DISSECTOR_F_STOP_BEFORE_ENCAP) {
-+			fdret = FLOW_DISSECT_RET_OUT_GOOD;
-+			break;
-+		}
-+
- 		proto = htons(ETH_P_IPV6);
- 
- 		key_control->flags |= FLOW_DIS_ENCAPSULATION;
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index eb6345a027e1..aab13ba11767 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -329,7 +329,8 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
- 				    ARRAY_SIZE(fl_ct_info_to_flower_map),
- 				    post_ct);
- 		skb_flow_dissect_hash(skb, &mask->dissector, &skb_key);
--		skb_flow_dissect(skb, &mask->dissector, &skb_key, 0);
-+		skb_flow_dissect(skb, &mask->dissector, &skb_key,
-+				 FLOW_DISSECTOR_F_STOP_BEFORE_ENCAP);
- 
- 		f = fl_mask_lookup(mask, &skb_key);
- 		if (f && !tc_skip_sw(f->flags)) {
--- 
-2.30.1 (Apple Git-130)
-
+In smc_poll() the comment says that now clcsocket->wq is used for poll, whats
+the relation between socket->wq and socket->sk->sk_wq here?
