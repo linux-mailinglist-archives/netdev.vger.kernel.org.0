@@ -2,103 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB9DB43FE7E
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 16:33:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F65043FE8C
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 16:36:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229623AbhJ2Ofi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 10:35:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43042 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229486AbhJ2Ofh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Oct 2021 10:35:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 549AA60FC1;
-        Fri, 29 Oct 2021 14:33:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635517988;
-        bh=fgSuI5rKuSuOKIq2/2tJ97d9GRuTfwvZEzhk7D6Ml4g=;
-        h=In-Reply-To:References:Cc:To:From:Subject:Date:From;
-        b=ZvEXjVYPM2JqCOXSPQwkmWTYlJe8oGXP9cTdZmqC7IHaPpE9+X6nko8XQ/llhpRTt
-         oTdaYM8XAAWJMnU/CNPGk6swXwU3Gk063R6qQewB5OM3DTDh2S+OJ/2DTHFGj4vqTk
-         V5LaxmUSX9UUA0TX9uhPKv30k/j3QqD7jspDFxvBMNN4p8b9YtmIKHg1aedGUP9MM9
-         aHPJzjj2gCZ1wQ4jCfka7C4bMy45vB0g2T2xnxsM99/FxidgzHk2q4OS4uGL3SqsLI
-         uozbjzTo48+VF0bfOMmJlIhiazXU61ZRqr/ru0SRKCa4rJlvc1cv50Nw2gwLzV/bTS
-         czAmkcw9spBTg==
-Content-Type: text/plain; charset="utf-8"
+        id S229571AbhJ2Oia (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 10:38:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47126 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229523AbhJ2Oia (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 10:38:30 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 418FCC061714
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 07:36:01 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id 67so24695469yba.6
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 07:36:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=NWKMZ//AyFWFbpFk6FF66OtPadVuan7a1ybZS8hGNR8=;
+        b=PVKkXlv5tz5OjxD8+aBFbgk53jsO2zCBnP/mnCWgRyMvAvJYLH59I/sLMHR9RRQ6jy
+         27EoHkxcjs6ajxjdMcdb582+X6uCiO71pqhAU/llSKFI3P1LS2ONzOvYJHuI80u3V41z
+         cRmocPfx58QhR9/r37ep4+VbXUEeuLciyiZz0p02J0kfLTZfNo0UuyJzbhP/qUUPBaOR
+         +CHK9FbanRt/U1az8bgkhaKbeV4ikLK4Fe3+d1N652Fc8G/fIahFEc9A3r5vAXRJehR9
+         BFAIooOO+OFKJReqofTESXiRyp3i6gMKOIgs/eu/DVpqKfki06MZrfepbhl7gt7ktQ7H
+         QjiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=NWKMZ//AyFWFbpFk6FF66OtPadVuan7a1ybZS8hGNR8=;
+        b=QKkTrOsNIoNaiw26jFynsm2h170B8M+slotnAiGbk58Fm3lTOkpyFuKBINlAcJOmP5
+         tY9LrZYOsQpy5uPHuQNuI1Uy5ptlQEFfIKhI3KCDCfJo5khs9aRNZt2F395n53tuBqE8
+         OB6z1YWyzvEU+Y1KcEd5RB0wf60Hb0T26emetB+BQEzxk33Gt6QHhl3r6Eg/O6j9C6bP
+         W6EwQDL1fxpl6GmsTPHxBRcXTeKqfJ9/QdyD2raCKhGzzlRLxyTKBD0OHuvdtA7EZvlQ
+         HyxOZ6/ZFAMJEqz3e/yEnWiyfX9iZVevVTSrnm03WXqnOZmUkp/KXz/k2zMOJGkDmerL
+         omrg==
+X-Gm-Message-State: AOAM531txAqWZ8TMRMWCTC8sTNLpNoy5b46lqEuKS66WD0S4cfnRtsPA
+        y44Mg11M4lZ7ouhx6IN8MQsujnNY/z0nnsSO5TY=
+X-Google-Smtp-Source: ABdhPJz/ZbW0HiAiSe+rbGJ1J2r28rVD3dAKDF0hmlgIknwEtQC23rARrJSg9xUJQ84WBUhIpxYS0aQ1Zrxaab2lWOE=
+X-Received: by 2002:a05:6902:1207:: with SMTP id s7mr13623848ybu.211.1635518159827;
+ Fri, 29 Oct 2021 07:35:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20210928125500.167943-1-atenart@kernel.org>
-References: <20210928125500.167943-1-atenart@kernel.org>
-Cc:     pabeni@redhat.com, gregkh@linuxfoundation.org,
-        ebiederm@xmission.com, stephen@networkplumber.org,
-        herbert@gondor.apana.org.au, juri.lelli@redhat.com,
-        netdev@vger.kernel.org, mhocko@suse.com
-To:     davem@davemloft.net, kuba@kernel.org
-From:   Antoine Tenart <atenart@kernel.org>
-Subject: Re: [RFC PATCH net-next 0/9] Userspace spinning on net-sysfs access
-Message-ID: <163551798537.3523.2552384180016058127@kwain>
-Date:   Fri, 29 Oct 2021 16:33:05 +0200
+Received: by 2002:a05:7110:700c:b0:fa:6b8d:fe70 with HTTP; Fri, 29 Oct 2021
+ 07:35:59 -0700 (PDT)
+Reply-To: uchennailobitenone@gmail.com
+From:   uhenna <tochiuju11@gmail.com>
+Date:   Fri, 29 Oct 2021 07:35:59 -0700
+Message-ID: <CA+6axKvWzmRnHfHRdW8Px6t52MZYYD8XSjiY4Hgj66NL0kcNBw@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the approach taken in this thread not going too well[1], what next?
-I think we should discuss other possibilities and gather some ideas.
-Below are some early thoughts, that might not be acceptable.
+Attention Please,
 
-1) Making an rtnl_lock helper that returns when needed
+I am Bar. uchenna ilobi ,  How are you, I hope you are fine and
+healthy? This is to inform you that i have concluded the transaction
+successfully with the help of a new partner from Venezuela and now the
+fund has been transferred to Venezuela into the bank account of the
+new partner.
 
-The idea would be to replace rtnl_trylock/restart_syscall by this
-helper, which would try to grab the rtnl lock and return when needed.
-Something like the following:
+Meanwhile, I have decided to compensate you with the sum of
+US$350,000.00 (thiree Hundred and Fifty Thousand United States
+Dollars) due to your past effort, though you disappointed me along the
+line. But nevertheless I am very happy for the successful ending of
+the transaction without any problem and that is the reason why i have
+decided to compensate you with the sum of US$350,000.00 so that you
+will share the joy with me.
 
-  static rtnl_lock_ifalive(const struct net_device *dev)
-  {
-          while (!rtnl_trylock()) {
-                  if (!dev_isalive(dev))
-                          return -EINVAL;
+I advise you to contact my secretary for Atm Card of US$350.000.00,
+which I kept for you. Contact him now without any delay.
 
-                  /* Special case for queue files */
-                  if (dev->drain_sysfs_queues)
-                          return restart_syscall();
+Name: solomon brandy
 
-                  /* something not to have the CPU spinning */
-          }
-  }
+Email:solomonbrandyfiveone@gmail.com
 
-One way not to have the CPU spinning is to sleep, let's say with
-`usleep_range(500, 1000);` (range to be defined properly). The
-disadvantage is on net device unregistration as we might need to wait
-for all those loops to return first. (It's a trade-off though, we're not
-restarting syscalls over and over in other situations). Or would there
-be something better?
+Kindly reconfirm to him the following below information:
 
-Possible improvements:
-- Add an overall timeout and restart the syscall if we hit it, to have
-  an upper bound.
-- Make it interruptible, check for need_resched, etc.
+Your full name_________________________
+Your address__________________________
+Your country___________________________
+Your age______________________________
+Your occupation________________________
+Your cell Phone number______________________
 
-Note that this approach could work for sysctl files as well; looping
-over all devices in a netns to make the checks.
+Note that if you did not send him the above information complete, he
+will not release the Atm card to you because he has to be sure that it
+is you. Ask him to send you the total sum of ($350.000.00 ) Atm card,
+which I kept for you.
 
-2) Interrupt rtnl_lock when in the unregistration paths
+Best regards,
 
-I'm wondering if using mutex_lock_interruptible in problematic areas
-(sysfs, sysctl), keeping track of their tasks and interrupting them in
-the unregistration paths would work and be acceptable. On paper this
-looks like a solution with not much overhead and not too invasive to
-implement. But is it acceptable? (Are there some side effects we really
-don't want?).
-
-Note that this would need some thinking to make it safe against sysfs
-accesses between the tasks interruption and the sysfs files draining
-(refcount? another lock?).
-
-3) Other ideas?
-
-Also, I'm not sure about the -rt implications of all the above.
-
-Thanks,
-Antoine
-
-[1] https://lore.kernel.org/netdev/163549826664.3523.4140191764737040064@kw=
-ain/
+Mr. uchenna ilobi
