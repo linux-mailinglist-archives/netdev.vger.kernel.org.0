@@ -2,121 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FF2A440321
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 21:25:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12232440366
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 21:40:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231210AbhJ2T2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 15:28:07 -0400
-Received: from ink.ssi.bg ([178.16.128.7]:56431 "EHLO ink.ssi.bg"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230287AbhJ2T2F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Oct 2021 15:28:05 -0400
-Received: from ja.ssi.bg (unknown [178.16.129.10])
-        by ink.ssi.bg (Postfix) with ESMTPS id 81BBD3C09BA;
-        Fri, 29 Oct 2021 22:25:32 +0300 (EEST)
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.16.1/8.16.1) with ESMTP id 19TJPRVa026763;
-        Fri, 29 Oct 2021 22:25:29 +0300
-Date:   Fri, 29 Oct 2021 22:25:27 +0300 (EEST)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     yangxingwu <xingwu.yang@gmail.com>
-cc:     Simon Horman <horms@verge.net.au>, pablo@netfilter.org,
-        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-doc@vger.kernel.org, legend050709@qq.com
-Subject: Re: [PATCH v2] ipvs: Fix reuse connection if RS weight is 0
-In-Reply-To: <20211029032604.5432-1-xingwu.yang@gmail.com>
-Message-ID: <8bdab9e0-3bd4-c37-94e9-ca1f74883356@ssi.bg>
-References: <20211029032604.5432-1-xingwu.yang@gmail.com>
+        id S230216AbhJ2TnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 15:43:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60212 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229979AbhJ2TnS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 15:43:18 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF66AC061714;
+        Fri, 29 Oct 2021 12:40:49 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id q2-20020a17090a2e0200b001a0fd4efd49so7898178pjd.1;
+        Fri, 29 Oct 2021 12:40:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QqraygZVVv+CzliyCMN5Hd0ra7YrWQFASUvrUVbZW3w=;
+        b=NCL3+qQmdtHaq0OCd7yzwyqypQiMnHS0cvZdFmBU9YOsurUs51zowng+rdyckHXEQ2
+         JYYmS6IfZR8jUhzeGzqZmVFXvZQBJMTWEbDVzXUrFVkBmyGs1+SrvrCBXuKyaFG32fZj
+         yJlt01F4zoS/yjnpsmiS2H77TJTzVaGu7sTt/ThH191q/Sr6Gvmjmd0sqUiFvxtky+Ye
+         y4NhX9JjPY0ep2GmPZEHYSkta7amt1Q0vY6eI2dB99znTcvbFd2B4LJsuH3rRj28qnUL
+         3kjEhiGovMAuge1l1XykS5FS9blJ9TZMgjli1hyyVtF3PuQR4t14U/O94vjUCVy6jDLx
+         PSDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QqraygZVVv+CzliyCMN5Hd0ra7YrWQFASUvrUVbZW3w=;
+        b=OAGJ5A7bbSOzT+Ix2FdLk7oHf1ZI38hJAvGiLOZ4pbRR+9QiceM43DfID+7YMGreNd
+         jp2K2iPNPhlzAiR4hEAYEnVhpt0VUqhpvh7m7SzZ8YM47BaYb5U3TIBBl+wLciZHEF+p
+         EsNhUUCRfLoVGcfSNxvAS2j9e/FtBJsM/0lKA/F+PhtoZ9Y1IOEY70gEDrP5WCc2mWKT
+         6EwlHSCrTlY8Kndm0GvBZDLXlstpUbMW1L/z0NWtenFBvmggRY2YIkGIkT8WQiNUjqwv
+         JszJEjfDcTA8C9GWjg9i6tHw9rfYOCqrJeL5lr33hw1LnAjoRZlypa/uKOnfjw6zhsxa
+         UbRQ==
+X-Gm-Message-State: AOAM533MH07OEEIW446qbyXbOUdXckMmQ/MsDYZn+17oVSnGHnd83tVJ
+        48vKSvhZNABH7w0cMybNe5fCebP+bDBpdLUVWaBZGdXV
+X-Google-Smtp-Source: ABdhPJxmYbt1jrESoqsowWksKw9kFaZuOibFTBwmwnTtIkdUrf3SSyQyFCxvfE8584L+n9PK9oLbZW2BBoP2BIeiJKU=
+X-Received: by 2002:a17:902:ea09:b0:13f:ac2:c5ae with SMTP id
+ s9-20020a170902ea0900b0013f0ac2c5aemr11480261plg.3.1635536449455; Fri, 29 Oct
+ 2021 12:40:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20211029172216.88408-1-alexei.starovoitov@gmail.com> <c26c0f63-0ae3-a2d9-6c9c-05705152ae28@fb.com>
+In-Reply-To: <c26c0f63-0ae3-a2d9-6c9c-05705152ae28@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 29 Oct 2021 12:40:38 -0700
+Message-ID: <CAADnVQLHbcb+ZWNO8rvHVmaLYpvAFw5nvu2iuXRu_BDGxC8ebA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: Add a testcase for 64-bit bounds
+ propagation issue.
+To:     Yonghong Song <yhs@fb.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Oct 29, 2021 at 12:00 PM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 10/29/21 10:22 AM, Alexei Starovoitov wrote:
+> > From: Alexei Starovoitov <ast@kernel.org>
+> >
+> > ./test_progs-no_alu32 -vv -t twfw
+> >
+> > Before the fix:
+>
+> It is not clear which "fix" it is. I believe the fix is this one:
+>
+> https://lore.kernel.org/bpf/20211029163102.80290-1-alexei.starovoitov@gmail.com/
+> Put this patch and the "fix" patch in the series will make it
+> clear which kernel patch fixed the issue.
 
-	Hello,
-
-On Fri, 29 Oct 2021, yangxingwu wrote:
-
-> Since commit dc7b3eb900aa ("ipvs: Fix reuse connection if real server is
-> dead"), new connections to dead servers are redistributed immediately to
-> new servers.
-> 
-> Then commit d752c3645717 ("ipvs: allow rescheduling of new connections when
-> port reuse is detected") disable expire_nodest_conn if conn_reuse_mode is
-> 0. And new connection may be distributed to a real server with weight 0.
-
-	Can you better explain in commit message that we are changing 
-expire_nodest_conn to work even for reused connections when
-conn_reuse_mode=0 but without affecting the controlled/persistent
-connections during the grace period while server is with weight=0.
-
-	Even if you target -next trees adding commit d752c3645717
-as Fixes line would be a good idea. Make sure the tree is specified
-after the v3 tag.
-
-> Co-developed-by: Chuanqi Liu <legend050709@qq.com>
-> Signed-off-by: Chuanqi Liu <legend050709@qq.com>
-> Signed-off-by: yangxingwu <xingwu.yang@gmail.com>
-> ---
->  Documentation/networking/ipvs-sysctl.rst | 3 +--
->  net/netfilter/ipvs/ip_vs_core.c          | 7 ++++---
->  2 files changed, 5 insertions(+), 5 deletions(-)
-> 
-> diff --git a/Documentation/networking/ipvs-sysctl.rst b/Documentation/networking/ipvs-sysctl.rst
-> index 2afccc63856e..1cfbf1add2fc 100644
-> --- a/Documentation/networking/ipvs-sysctl.rst
-> +++ b/Documentation/networking/ipvs-sysctl.rst
-> @@ -37,8 +37,7 @@ conn_reuse_mode - INTEGER
->  
->  	0: disable any special handling on port reuse. The new
->  	connection will be delivered to the same real server that was
-> -	servicing the previous connection. This will effectively
-> -	disable expire_nodest_conn.
-> +	servicing the previous connection.
->  
->  	bit 1: enable rescheduling of new connections when it is safe.
->  	That is, whenever expire_nodest_conn and for TCP sockets, when
-> diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
-> index 128690c512df..374f4b0b7080 100644
-> --- a/net/netfilter/ipvs/ip_vs_core.c
-> +++ b/net/netfilter/ipvs/ip_vs_core.c
-> @@ -2042,14 +2042,15 @@ ip_vs_in(struct netns_ipvs *ipvs, unsigned int hooknum, struct sk_buff *skb, int
->  			     ipvs, af, skb, &iph);
->  
->  	conn_reuse_mode = sysctl_conn_reuse_mode(ipvs);
-> -	if (conn_reuse_mode && !iph.fragoffs && is_new_conn(skb, &iph) && cp) {
-> +	if (!iph.fragoffs && is_new_conn(skb, &iph) && cp) {
-
-	It is even better to move the !cp->control check above:
-
-	if (!iph.fragoffs && is_new_conn(skb, &iph) && cp && !cp->control) {
-
-	Then is not needed in is_new_conn_expected() anymore.
-
->  		bool old_ct = false, resched = false;
-
-	And now you can move conn_reuse_mode here:
-
-		int conn_reuse_mode = sysctl_conn_reuse_mode(ipvs);
-
->  		if (unlikely(sysctl_expire_nodest_conn(ipvs)) && cp->dest &&
-> -		    unlikely(!atomic_read(&cp->dest->weight))) {
-> +		    unlikely(!atomic_read(&cp->dest->weight)) && !cp->control) {
->  			resched = true;
->  			old_ct = ip_vs_conn_uses_old_conntrack(cp, skb);
-> -		} else if (is_new_conn_expected(cp, conn_reuse_mode)) {
-> +		} else if (conn_reuse_mode &&
-> +			   is_new_conn_expected(cp, conn_reuse_mode)) {
->  			old_ct = ip_vs_conn_uses_old_conntrack(cp, skb);
->  			if (!atomic_read(&cp->n_control)) {
->  				resched = true;
-> -- 
-> 2.30.2
-
-Regards
-
---
-Julian Anastasov <ja@ssi.bg>
+Right. I should have sent them as a set. Sorry I was in a rush.
