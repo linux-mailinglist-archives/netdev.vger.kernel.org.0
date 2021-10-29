@@ -2,70 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 641E243FCA2
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 14:50:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07A2343FCA0
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 14:50:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231502AbhJ2Mwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 08:52:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56424 "EHLO mail.kernel.org"
+        id S231449AbhJ2Mwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 08:52:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56416 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230492AbhJ2Mwg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229692AbhJ2Mwg (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 29 Oct 2021 08:52:36 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 7EBD66117A;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6D7E461167;
         Fri, 29 Oct 2021 12:50:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1635511808;
-        bh=8A7jVNKhe8n8XuPnA2FudeVKdnsBoqU4jLdS3VqA9qY=;
+        bh=eJ7Ojg3SZPvnTtyOBrG+Fpf2Wkhzf0ymIPhxsRJEZYk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MO+MMIoX1Xef2V56xXg0iplJ3Lsbgv5Khn1yzzgmbbBikRlUPsT3VMA5HcM8hwzcD
-         06up2y94ZXTxsTopa2oqAaxpMcfWjm866Ol/C5S12+CukDJkB+VPUBn1E/pErAV0Y9
-         prOD6k2UO6GaMAwZul1TA5k/w10U+S+WrZ9HF6ioZS/QXKhg0pBCLVHnk9cf1eBUM7
-         SMec7DoQB03j7QfLGbZhmvp1aHxxZ3hN69c4P0LDNymyDeaywSdX2STrJVqYV1+RXf
-         X3xI3mya+Y3luPNdpeznFT+4burC3/lBcEQzNVUEw2EMb1Z72TB6eJIEazeUkhwU53
-         RNsV/ntpNdehA==
+        b=qt7RScTkJ2N5XoR/QhEPvsdU6t5i/jBZ/HRP/adBrOLOu8o6VfV8Zvb5cXL204egP
+         +RLq3OtwTmdnsm9R1HB6KIcUihdK4XU0PsLRcRHbF9QmQxf3uqbB07lYdONK5pOauq
+         yUwYPsEfi0wBwkmlqS4l5YNEspFImX8rj72MeGtYvCs2Plu1ZGy4Hl2By+cTFRwlyg
+         bo4C70HwjaSgILWKBIBXTBM84TsdLQ7L1NGNHriEvH2AE3Rd4cNgHQpkXAI7a1yfon
+         YMWjHRzaz2xAgKFNzOD4jzJPbpdjg6vItP3608MK/Y0qGs6n1GxSwVssA8qfOwp8CV
+         YdUwye93MOifw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 67C0A60AA4;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5E05460A17;
         Fri, 29 Oct 2021 12:50:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] net: bridge: fix uninitialized variables when
- BRIDGE_CFM is disabled
+Subject: Re: [PATCH net 0/2] nfp: fix bugs caused by adaptive coalesce
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163551180842.32606.14897066407826010805.git-patchwork-notify@kernel.org>
+Message-Id: <163551180838.32606.5927261985281379723.git-patchwork-notify@kernel.org>
 Date:   Fri, 29 Oct 2021 12:50:08 +0000
-References: <20211028155835.2134753-1-ivecera@redhat.com>
-In-Reply-To: <20211028155835.2134753-1-ivecera@redhat.com>
-To:     Ivan Vecera <ivecera@redhat.com>
-Cc:     netdev@vger.kernel.org, henrik.bjoernlund@microchip.com,
-        roopa@nvidia.com, nikolay@nvidia.com, davem@davemloft.net,
-        kuba@kernel.org, horatiu.vultur@microchip.com,
-        bridge@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+References: <20211029112903.16806-1-simon.horman@corigine.com>
+In-Reply-To: <20211029112903.16806-1-simon.horman@corigine.com>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        oss-drivers@corigine.com, yinjun.zhang@corigine.com,
+        louis.peens@corigine.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This series was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Thu, 28 Oct 2021 17:58:35 +0200 you wrote:
-> Function br_get_link_af_size_filtered() calls br_cfm_{,peer}_mep_count()
-> that return a count. When BRIDGE_CFM is not enabled these functions
-> simply return -EOPNOTSUPP but do not modify count parameter and
-> calling function then works with uninitialized variables.
-> Modify these inline functions to return zero in count parameter.
+On Fri, 29 Oct 2021 13:29:01 +0200 you wrote:
+> Hi,
 > 
-> Fixes: b6d0425b816e ("bridge: cfm: Netlink Notifications.")
-> Cc: Henrik Bjoernlund <henrik.bjoernlund@microchip.com>
-> Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+> this series contains fixes for two bugs introduced when
+> when adaptive coalesce support was added to the NFP driver in
+> v5.15 by 9d32e4e7e9e1 ("nfp: add support for coalesce adaptive feature")
+> 
+> Yinjun Zhang (2):
+>   nfp: fix NULL pointer access when scheduling dim work
+>   nfp: fix potential deadlock when canceling dim work
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v2] net: bridge: fix uninitialized variables when BRIDGE_CFM is disabled
-    https://git.kernel.org/netdev/net/c/829e050eea69
+  - [net,1/2] nfp: fix NULL pointer access when scheduling dim work
+    https://git.kernel.org/netdev/net/c/f8d384a640dd
+  - [net,2/2] nfp: fix potential deadlock when canceling dim work
+    https://git.kernel.org/netdev/net/c/17e712c6a1ba
 
 You are awesome, thank you!
 -- 
