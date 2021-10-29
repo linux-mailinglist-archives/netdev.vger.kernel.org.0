@@ -2,160 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1784F43F7E8
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 09:35:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 382A643F7F8
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 09:45:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232233AbhJ2HiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 03:38:11 -0400
-Received: from mail-mw2nam12on2051.outbound.protection.outlook.com ([40.107.244.51]:12096
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230247AbhJ2HiK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Oct 2021 03:38:10 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lHMcLhIgV6LFtCPVE1jHLhugqHYiK0DqYtdBFQy9czrAQetl+RSsIkU8Bbhi2sBTXaambl61+8M6h3ZvxjyQuTTbHeH1VN6t6StUG7nRjn2dKHXBssr0V8FWMUZ7oGm4nNyz4NUee2+bzi+HtNbqIwGOKymB2wqWKsfFx7tG2jqr3/tEisYqOcHuIIuSHMOqS9+nn7MBogVn0QxsefULjFLU4vYhwdBkTeAUWy/4mLDLUjX3HYFDFMblqb7Sjna1uzGZgSc97qV9YlxoIclMHJM6HnvdKmZCHaVg8RZ39kz+W5HcYggNH7EI8d0fWkrDMufQWakTP+FQ9Sneejs5SA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AZgQSxteECnfgZlUNpASpRjt/VXjmcHXPuWoFw/b0LE=;
- b=Aorr7ozcNYiaQz5PoKYeRn/Sfpj9GpoW/nm9TNOjoe+zBIuZT7l1OHesAbbiBVUXzAKu+qxtk+dfq07wvNBR/Vq+WjdSp5rphv3AugoTCQm/CrJ0ZSgmMACvokV6WOdeyYs2JQXE7QPcu79uE8M2aBNfjjU4Qva/SWNZhTZH5dTCGCPoOT5F9l4WlRTENw5s6YzHbOOAmMFq+bweSgGGZPmFk7sCguMlqSdDgwJBB3F2N943KmdczvrFs+e3ZC5oA+lD/EvnM1CE5njxb6jHzRLZUMSygQH2aLtoCSn6nYIodY/n6/FINuys60zDgZnPXUp1FoeCZnhdiQ4JnWqZww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AZgQSxteECnfgZlUNpASpRjt/VXjmcHXPuWoFw/b0LE=;
- b=NXjztMU2/kZc/f2SIMT0bkmiGn6hoH71MNfneWevgp+PBizGYXhI5glcLAdKNwfpdWV8wmyVZrFawQ+brjB4FS2JAlObSasTmYflHwi8ojg0DxA7cmL1dk+tIzEHo7wdYlBdnTXFMjP7VQPHW4nVsb6GhYvk6mba5lCvUEFDx4I8Z0ZMMLbxhRExhEf2qWIo/nj+ydCtZyUqtEP0lNG6KGLrNaWuZhsL3dfU9f+EVwTLOdxM+KO8L+GEFpAc0d/oilqZRtbnZ6cjmuq2bBZhbom7ZK4PI5adkRFsRDz2IvqzjDhMwKqlC2KQ5erAb4uRtNrSSNsaBc17KOmnV0m8SA==
-Received: from BN9PR03CA0193.namprd03.prod.outlook.com (2603:10b6:408:f9::18)
- by DM5PR12MB1146.namprd12.prod.outlook.com (2603:10b6:3:73::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18; Fri, 29 Oct
- 2021 07:35:40 +0000
-Received: from BN8NAM11FT038.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:f9:cafe::10) by BN9PR03CA0193.outlook.office365.com
- (2603:10b6:408:f9::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.15 via Frontend
- Transport; Fri, 29 Oct 2021 07:35:40 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; google.com; dkim=none (message not signed)
- header.d=none;google.com; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT038.mail.protection.outlook.com (10.13.176.246) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4649.14 via Frontend Transport; Fri, 29 Oct 2021 07:35:40 +0000
-Received: from [172.27.0.156] (172.20.187.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Fri, 29 Oct
- 2021 07:35:32 +0000
-Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
- for mlx5 devices
-To:     Jason Gunthorpe <jgg@nvidia.com>, Cornelia Huck <cohuck@redhat.com>
-CC:     Alex Williamson <alex.williamson@redhat.com>,
-        <bhelgaas@google.com>, <saeedm@nvidia.com>,
-        <linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <kuba@kernel.org>, <leonro@nvidia.com>,
-        <kwankhede@nvidia.com>, <mgurtovoy@nvidia.com>, <maorg@nvidia.com>,
-        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-References: <20211025122938.GR2744544@nvidia.com>
- <20211025082857.4baa4794.alex.williamson@redhat.com>
- <20211025145646.GX2744544@nvidia.com>
- <20211026084212.36b0142c.alex.williamson@redhat.com>
- <20211026151851.GW2744544@nvidia.com>
- <20211026135046.5190e103.alex.williamson@redhat.com>
- <20211026234300.GA2744544@nvidia.com>
- <20211027130520.33652a49.alex.williamson@redhat.com>
- <20211027192345.GJ2744544@nvidia.com> <87zgqtb31g.fsf@redhat.com>
- <20211029002637.GS2744544@nvidia.com>
-From:   Yishai Hadas <yishaih@nvidia.com>
-Message-ID: <6334b789-e619-9208-38d2-c6ba5429f830@nvidia.com>
-Date:   Fri, 29 Oct 2021 10:35:28 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S232250AbhJ2HsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 03:48:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38056 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230247AbhJ2HsF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 03:48:05 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A40AEC061570;
+        Fri, 29 Oct 2021 00:45:37 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id n67so11489652iod.9;
+        Fri, 29 Oct 2021 00:45:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YvS3OEojn6WlgoM5Pok9+XWG3Yikban/dCaVMqXh6O4=;
+        b=j0ZYEwfg/RFP3vZ0NF45LNbXn0FXnpRrSZKuYBz/v3Ti0BTmeyp9N7VQZHJ0MOpaHc
+         SyOFdeQmIvmzNxRqDvY36MWKL4TN4GyGqlch3Oic3ZzzQtFJzSqAx6Sncn84ySZo0K/U
+         CDVKvtPGDJyopdDodidwBiFnONnN0Y+zPuafOQ6zzwcj0xmqQruYxufDtrGqgVTm197X
+         YD7WbaChlI8ZDicXCuH4XD1MpdTyJ50sTFdy4MOyQqgKK1CXkRLKfxaPvxQqnar8Ew15
+         4rzhCfQnHV9Kq+c95oj4HnQu6n4EutKUy+lqQDB3VSiBsBk12fvwsyMW/u3N12jhBu3l
+         Yg8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YvS3OEojn6WlgoM5Pok9+XWG3Yikban/dCaVMqXh6O4=;
+        b=Dy+L2AIyx8TPFQn9HjDpaganSZ4/9hXjfefaJa5ZQ+Ao0OlHtHnsgU2/ANFCz027DB
+         OzcpXx7w5abhPDzg6FKagaZ0pci1jadnof3uroSqKjOP1qV0ReILwvxbYRmioikToxOR
+         CBwpMeVdB2gIg80oLTSZSHbVGvPX6NH5Ql2YL+sQTzEId9hGtr39ssnZPmNCs8nCQpfl
+         1uNJQ1bRaCyjWOvcE4ovJ5buqaIcRwO2ySeuD6ST7//Wnrw35DabK/wTIfQwCRtRT8Qe
+         run0JpMf41CZOxGtnqbQux9wy8skHBdexwjzlbDkTEJScEvBlt4xjjJ4UCzVax+weyJw
+         jITg==
+X-Gm-Message-State: AOAM530kgGMKBstBxKTuI/V7O59d1ylMJumuc/VM7XjstAdqzehCCevV
+        6DJp11l0OzhHkDqGwo+SFs0Pxb9375Pbo9YkjiI=
+X-Google-Smtp-Source: ABdhPJyETE/qLAF0grfwPy1l00eM4REeeLtmeoBWL6wOt59OXeZvcrCFeFwAw5oh/9q3xbShCHKFcImikiHaH3niayk=
+X-Received: by 2002:a05:6602:27d4:: with SMTP id l20mr6774818ios.94.1635493536891;
+ Fri, 29 Oct 2021 00:45:36 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20211029002637.GS2744544@nvidia.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [172.20.187.5]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: faa445f7-dcef-43be-9689-08d99aaeb54d
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1146:
-X-Microsoft-Antispam-PRVS: <DM5PR12MB114622632BBD2A622714C5D6C3879@DM5PR12MB1146.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: H7knnv0GJqlI0QyEcK90+Uz+EKIzG4Cz7D1Aju1GarWYAI7pSATT+ZTroq2dw5qbQvxmd4AEjC27z2Z5FnS5zfYNuo5sAzvnm1qNSFawbSgGuQsMrxbExF+1ZJzIVQBmBw1bm+UlsvI8d5lNDzID7yE13glQiY4yOcs7AVBOWsevLT3byoMxySKwfqyxjwrh62e9Z8G+sBDhppX5GOEiwzXVJGZiwRFmhTmcWwsa6i+P/OTDoWjjSMzVWji791na2y6x/JZQec1NYoLnuwiYBj37K7s6yBwQZvgFFg49fpnG3EuQQIfwoI2qW+SKgvkXxIcDJgogxO/sTwos/l4L9sFbNXJwVrgAyLIMQ5fUwLiRUr+DN68GQk0KUHUknBoZxlbuopl6OxT5MYT0yDuVyyMw1tGsSWdMfIk/r1kgkOJFTlkrI6RPKxr+LlU633x2ZcAh7kNVALVwvY0o5dpVrh7i7m0jZhYyzRSrlMhOTdw1aRNun5XtJHVy4Wy865Xxv9wJ68Vzqg/IFa6IWIaQYzBYl+MwnMPef0oScczmbDPogVOCXQnPfcsmILs02XH2dvu6iFu54bxXKTxG0+X2F52vkmtf/FmP85v6n6KQrk/GpjiQHCX5XZcOuDtidnhsZTZkiU7YpXkE0FK9ttTU2sLSeLRHcppZ44NY8xja+SLeIDQow/yFVggvZqUZlBa2b2g+YpODKFOEHyASi/KZX7A2pTAtv+leRZM3ioZ3hc0=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(5660300002)(2906002)(31696002)(70586007)(2616005)(426003)(16576012)(31686004)(4326008)(70206006)(53546011)(26005)(7636003)(110136005)(316002)(508600001)(16526019)(36860700001)(356005)(186003)(36756003)(8936002)(47076005)(8676002)(83380400001)(86362001)(6666004)(36906005)(82310400003)(54906003)(336012)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Oct 2021 07:35:40.4634
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: faa445f7-dcef-43be-9689-08d99aaeb54d
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT038.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1146
+References: <20211025083315.4752-1-laoar.shao@gmail.com> <20211025083315.4752-13-laoar.shao@gmail.com>
+ <202110251431.F594652F@keescook> <YXmySeDsxxbA7hcq@alley>
+In-Reply-To: <YXmySeDsxxbA7hcq@alley>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Fri, 29 Oct 2021 15:44:47 +0800
+Message-ID: <CALOAHbDQkfdpW4hktPCcstEAYG6ecEan_b095NeanA7sC1K=-w@mail.gmail.com>
+Subject: Re: [PATCH v6 12/12] kernel/kthread: show a warning if kthread's comm
+ is truncated
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Qiang Zhang <qiang.zhang@windriver.com>,
+        robdclark <robdclark@chromium.org>,
+        christian <christian@brauner.io>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        dennis.dalessandro@cornelisnetworks.com,
+        mike.marciniszyn@cornelisnetworks.com, dledford@redhat.com,
+        jgg@ziepe.ca, linux-rdma@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        kbuild test robot <lkp@intel.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/29/2021 3:26 AM, Jason Gunthorpe wrote:
-> On Thu, Oct 28, 2021 at 05:08:11PM +0200, Cornelia Huck wrote:
+On Thu, Oct 28, 2021 at 4:10 AM Petr Mladek <pmladek@suse.com> wrote:
 >
->> that should go in right now. Actually, I'd already consider it too late
->> even if we agreed now; I would expect a change like this to get at least
->> two weeks in linux-next before the merge window.
-> Usually linux-next is about sorting out integration problems so we
-> have an orderly merge window. Nobody is going to test this code just
-> because it is in linux-next, it isn't mm or something with coverage
-> there.
+> On Mon 2021-10-25 14:35:42, Kees Cook wrote:
+> > On Mon, Oct 25, 2021 at 08:33:15AM +0000, Yafang Shao wrote:
+> > > Show a warning if task comm is truncated. Below is the result
+> > > of my test case:
+> > >
+> > > truncated kthread comm:I-am-a-kthread-with-lon, pid:14 by 6 characters
+> > >
+> > > Suggested-by: Petr Mladek <pmladek@suse.com>
+> > > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> > > Reviewed-by: Kees Cook <keescook@chromium.org>
+> > > Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+> > > Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+> > > Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> > > Cc: Peter Zijlstra <peterz@infradead.org>
+> > > Cc: Steven Rostedt <rostedt@goodmis.org>
+> > > Cc: Al Viro <viro@zeniv.linux.org.uk>
+> > > Cc: Kees Cook <keescook@chromium.org>
+> > > Cc: Petr Mladek <pmladek@suse.com>
+> > > ---
+> > >  kernel/kthread.c | 7 ++++++-
+> > >  1 file changed, 6 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/kernel/kthread.c b/kernel/kthread.c
+> > > index 5b37a8567168..46b924c92078 100644
+> > > --- a/kernel/kthread.c
+> > > +++ b/kernel/kthread.c
+> > > @@ -399,12 +399,17 @@ struct task_struct *__kthread_create_on_node(int (*threadfn)(void *data),
+> > >     if (!IS_ERR(task)) {
+> > >             static const struct sched_param param = { .sched_priority = 0 };
+> > >             char name[TASK_COMM_LEN];
+> > > +           int len;
+> > >
+> > >             /*
+> > >              * task is already visible to other tasks, so updating
+> > >              * COMM must be protected.
+> > >              */
+> > > -           vsnprintf(name, sizeof(name), namefmt, args);
+> > > +           len = vsnprintf(name, sizeof(name), namefmt, args);
+> > > +           if (len >= TASK_COMM_LEN) {
+> >
+> > And since this failure case is slow-path, we could improve the warning
+> > as other had kind of suggested earlier with something like this instead:
+> >
+> >                       char *full_comm;
+> >
+> >                       full_comm = kvasprintf(GFP_KERNEL, namefmt, args);
+>
+> You need to use va_copy()/va_end() if you want to use the same va_args
+> twice.
+>
+
+Now I understand it.
+So the patch will be:
+
+diff --git a/kernel/kthread.c b/kernel/kthread.c
+index 5b37a8567168..c1ff67283725 100644
+--- a/kernel/kthread.c
++++ b/kernel/kthread.c
+@@ -399,12 +399,29 @@ struct task_struct *__kthread_create_on_node(int
+(*threadfn)(void *data),
+        if (!IS_ERR(task)) {
+                static const struct sched_param param = { .sched_priority = 0 };
+                char name[TASK_COMM_LEN];
++               char *full_comm;
++               va_list aq;
++               int len;
+
+                /*
+                 * task is already visible to other tasks, so updating
+                 * COMM must be protected.
+                 */
+-               vsnprintf(name, sizeof(name), namefmt, args);
++               va_copy(aq, args);
++               len = vsnprintf(name, sizeof(name), namefmt, aq);
++               va_end(aq);
++               if (len >= TASK_COMM_LEN) {
++                       full_comm = kvasprintf(GFP_KERNEL, namefmt, args);
++                       if (full_comm) {
++                               pr_warn("truncated kthread comm '%s'
+to '%s' (pid:%d)\n",
++                                       full_comm, name, task->pid);
++                               kfree(full_comm);
++                       } else {
++                               pr_warn("truncated kthread comm '%s'
+(pid:%d) by %d characters\n",
++                                       name, task->pid, len -
+TASK_COMM_LEN + 1);
++
++                       }
++               }
+                set_task_comm(task, name);
+                /*
+                 * root may have changed our (kthreadd's) priority or CPU mask.
+
+That seems a little overkill to me.
+I prefer to keep the v6 as-is.
+
+> For example, see how kvasprintf() is implemented. It calls
+> vsnprintf() twice and it uses va_copy()/va_end() around the the first call.
+>
+> kvasprintf() could also return NULL if there is not enough memory.
+>
+> >                       pr_warn("truncated kthread comm '%s' to '%s' (pid:%d)\n",
+> >                               full_comm, name);
+>
+> BTW: Is this message printed during normal boot? I did not tried the
+> patchset myself.
+>
+> We should add this warning only if there is a good solution how to
+> avoid the truncated names. And we should me sure that the most common
+> kthreads/workqueues do not trigger it. It would be ugly to print many
+> warnings during boot if people could not get rid of them easily.
+>
+> >                       kfree(full_comm);
+> >               }
+> > >             set_task_comm(task, name);
+> > >             /*
+> > >              * root may have changed our (kthreadd's) priority or CPU mask.
+>
+> Best Regards,
+> Petr
 
 
-Right, in addition, the series has been on-list over a month to let 
-people review and comment.
 
-V5 has no specific comment on, I believe that we are in a good state / 
-point to move forward with it.
-
->>> Yes, if qemu becomes deployed, but our testing shows qemu support
->>> needs a lot of work before it is deployable, so that doesn't seem to
->>> be an immediate risk.
->> Do you have any patches/problem reports you can share?
-> Yishai has some stuff, he was doing failure injection testing and
-> other interesting things. I think we are hoping to start looking at
-> it.
-
-
-Correct, I encountered some SF of QEMU upon failure injection / error flows.
-
-For example,
-
-- Unbinding the VF then trying to run savevm.
-
-- Moving the mlx5 device to ERROR state, my expectation was to see some 
-recovery flow from QEMU as of calling the RESET ioctl to let it be 
-running again, however it crashed.
-
-- etc.
-
-Yes, we have some plans to start looking at.
-
->> If you already identified that there is work to be done in QEMU, I think
->> that speaks even more for delaying this. What if we notice that uapi
->> changes are needed while fixing QEMU?
-> I don't think it is those kinds of bugs.
-
-Right, it doesn't seem as uapi changed are required, need to debug and 
-fix QEMU.
-
-Yishai
-
+-- 
+Thanks
+Yafang
