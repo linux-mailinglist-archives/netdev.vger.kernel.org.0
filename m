@@ -2,116 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D1BF43FD9E
+	by mail.lfdr.de (Postfix) with ESMTP id ABA3943FD9F
 	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 15:54:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231530AbhJ2N5V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 09:57:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37288 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231551AbhJ2N5D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 09:57:03 -0400
-Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF91C061714
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 06:54:26 -0700 (PDT)
-Received: by mail-qk1-x734.google.com with SMTP id h20so9293949qko.13
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 06:54:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rs3HwEFfU6Z7vHqEji5AukCQpCLRjDuimkf+/klAhKw=;
-        b=TVZfA7vrFEB4mNvRxaTXCXkYWCi2a1qg1+yUMupA9iJQhvAF07VWssqGay4ERWsv0w
-         ZPkOnsqr03ft7qJkSztUwsi9SBh49BgjP8gehXxaMBvmNgfZb4av72TxXFbCq0nv0rFe
-         3urpz7ptSjZUBpMVayDvHv97u92PBZn30iLYFgnMMX5MlLtSrbdNLyBASM8z/aymqil1
-         VdlMxzpwVqYEpOTAmlCEM+LypOCFRXN0pNzq4ea/VfJ2nhauby71ykWVQ0+x3o6Q+hzr
-         8twyMGwdrNRwHYxMgGTlqwAFgS0DN29l5yCN7a/pqTR+pmjB+jfNysSI+AKNTEtQF0W4
-         QPsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rs3HwEFfU6Z7vHqEji5AukCQpCLRjDuimkf+/klAhKw=;
-        b=mu9hVI1JdRScdGrvanqLaydXsW/MzDkpJ/+MXlZ596jvfGLvr+J857I1AlL86CAGTU
-         Q6Ok6eEnRsL81kUkIvEFD4OFwaHqgmekE6EdBo5JLA93aEn5D2aHy6w8nXe9giV0EtY9
-         hcDHBkTX4S/VG0NHHZ4kHCBbhJASzp+XXit97wUJJ1RH45NsPZwBNFFew3bnid1ehurh
-         nWk26c5Vw7wB67nLRmRwoTPWjzUit25UCjMbbhZhsrn6Om/L7eLd2PBkwBq1v3kNiQOL
-         VNBJNYXriLWmXlckWufppLMOlzxTFbyOttH/1dhHj1ZH8Xr5Gy4uBJEa+t/+FrtgIZhT
-         DO+g==
-X-Gm-Message-State: AOAM5339U4gTWs/tQA+03Z1Pw2CBccFiXEuhDXjL3Fn4Xw/Lh/P7ervX
-        Z0DRt/6tjsWZHLfArbMLYiHuX4h1l32HppDvxn6HIA==
-X-Google-Smtp-Source: ABdhPJyKainBW6Wt8LBvlor1PpBhtlQ/5O53RXt6OLpPNE0HojJBa+CuvS3oV/5oT722BHBURoOC3XFG3HnuA25PqtY=
-X-Received: by 2002:a05:620a:1031:: with SMTP id a17mr9035018qkk.339.1635515665715;
- Fri, 29 Oct 2021 06:54:25 -0700 (PDT)
+        id S231544AbhJ2N5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 09:57:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56262 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231548AbhJ2N5D (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Oct 2021 09:57:03 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A1FB16108F;
+        Fri, 29 Oct 2021 13:54:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635515665;
+        bh=qlcPpg2MIOEebv+ihjRrlmheaAPPkfcf8eJStaF1g+U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cPw7cUyxcZkThUiqKVMPRRfPaK5rFRZq+DcY2dkxHWs5W7dJqukwb1mQ427a8WQ30
+         JaVCTxIAskDTzQD1G0Y4qoB4ZsXQ8tCvj0dd9wkaueCkT5vITNx7qgExV6eTczDrDt
+         CULbPN9VnW7qTRyPvN53T32tMrueAGmY/T+4zr9JaKr1YgSqr8jhaqy7zp/8l2QhNT
+         0s4gJCWM9O8wX0EW/ZtZuiQq0J0QPJSXklksagL2KoH+iHFqKeA/72Y8rjAYSlAjpK
+         eByGTIuoVFwLAlO1d7p76OxPR+o6Zx8wHhoSHTi60ieUzAU5gjWXw3H8NZsapui2UG
+         D2AJJARPhtggA==
+Date:   Fri, 29 Oct 2021 06:54:23 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+Cc:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
+        <robh+dt@kernel.org>, <UNGLinuxDriver@microchip.com>,
+        <Woojung.Huh@microchip.com>, <hkallweit1@gmail.com>,
+        <linux@armlinux.org.uk>, <davem@davemloft.net>,
+        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v6 net-next 07/10] net: dsa: microchip: add support for
+ ethtool port counters
+Message-ID: <20211029065423.493801d4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211029052256.144739-8-prasanna.vengateshan@microchip.com>
+References: <20211029052256.144739-1-prasanna.vengateshan@microchip.com>
+        <20211029052256.144739-8-prasanna.vengateshan@microchip.com>
 MIME-Version: 1.0
-References: <20211028191500.47377-1-asadsa@ifi.uio.no>
-In-Reply-To: <20211028191500.47377-1-asadsa@ifi.uio.no>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Fri, 29 Oct 2021 09:54:09 -0400
-Message-ID: <CADVnQykDUB4DgUaV0rd6-OKafO+F6w=BRfxviuZ_MJLY3xMV+Q@mail.gmail.com>
-Subject: Re: [PATCH net-next] fq_codel: avoid under-utilization with
- ce_threshold at low link rates
-To:     Asad Sajjad Ahmed <asadsa@ifi.uio.no>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Ingemar Johansson S <ingemar.s.johansson@ericsson.com>,
-        Tom Henderson <tomh@tomh.org>,
-        Bob Briscoe <research@bobbriscoe.net>,
-        Olga Albisser <olga@albisser.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 28, 2021 at 3:15 PM Asad Sajjad Ahmed <asadsa@ifi.uio.no> wrote:
->
-> Commit "fq_codel: generalise ce_threshold marking for subset of traffic"
-> [1] enables ce_threshold to be used in the Internet, not just in data
-> centres.
->
-> Because ce_threshold is in time units, it can cause poor utilization at
-> low link rates when it represents <1 packet.
-> E.g., if link rate <12Mb/s ce_threshold=1ms is <1500B packet.
->
-> So, suppress ECN marking unless the backlog is also > 1 MTU.
->
-> A similar patch to [1] was tested on an earlier kernel, and a similar
-> one-packet check prevented poor utilization at low link rates [2].
->
-> [1] commit dfcb63ce1de6 ("fq_codel: generalise ce_threshold marking for subset of traffic")
->
-> [2] See right hand column of plots at the end of:
-> https://bobbriscoe.net/projects/latency/dctth_journal_draft20190726.pdf
->
-> Signed-off-by: Asad Sajjad Ahmed <asadsa@ifi.uio.no>
-> Signed-off-by: Olga Albisser <olga@albisser.org>
-> ---
->  include/net/codel_impl.h | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/include/net/codel_impl.h b/include/net/codel_impl.h
-> index 137d40d8cbeb..4e3e8473e776 100644
-> --- a/include/net/codel_impl.h
-> +++ b/include/net/codel_impl.h
-> @@ -248,7 +248,8 @@ static struct sk_buff *codel_dequeue(void *ctx,
->                                                     vars->rec_inv_sqrt);
->         }
->  end:
-> -       if (skb && codel_time_after(vars->ldelay, params->ce_threshold)) {
-> +       if (skb && codel_time_after(vars->ldelay, params->ce_threshold) &&
-> +           *backlog > params->mtu) {
->                 bool set_ce = true;
->
->                 if (params->ce_threshold_mask) {
-> --
+On Fri, 29 Oct 2021 10:52:53 +0530 Prasanna Vengateshan wrote:
+> Reused the KSZ common APIs for get_ethtool_stats() & get_sset_count()
+> along with relevant lan937x hooks for KSZ common layer and added
+> support for get_strings()
+> 
+> Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
 
-Sounds like a good idea, and looks good to me.
+>  static void lan937x_port_stp_state_set(struct dsa_switch *ds, int port,
+>  				       u8 state)
+>  {
+> @@ -426,6 +441,9 @@ const struct dsa_switch_ops lan937x_switch_ops = {
+>  	.phy_read = lan937x_phy_read16,
+>  	.phy_write = lan937x_phy_write16,
+>  	.port_enable = ksz_enable_port,
+> +	.get_strings = lan937x_get_strings,
+> +	.get_ethtool_stats = ksz_get_ethtool_stats,
+> +	.get_sset_count = ksz_sset_count,
+>  	.port_bridge_join = ksz_port_bridge_join,
+>  	.port_bridge_leave = ksz_port_bridge_leave,
+>  	.port_stp_state_set = lan937x_port_stp_state_set,
 
-Acked-by: Neal Cardwell <ncardwell@google.com>
-
-Eric, what do you think?
-
-neal
+Recent commit 487d3855b641 ("net: dsa: allow reporting of standard
+ethtool stats for slave devices") plumbed thru all the standard stats ops.
+You must report standard stats (get_eth_*_stats and get_stats64) before
+implementing get_ethtool_stats.
