@@ -2,75 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A03B4403EE
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 22:16:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA4A14403F5
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 22:19:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231169AbhJ2USe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 16:18:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40030 "EHLO
+        id S230397AbhJ2UV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 16:21:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230126AbhJ2USd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 16:18:33 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51384C061570
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 13:16:04 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id g10so42093022edj.1
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 13:16:04 -0700 (PDT)
+        with ESMTP id S229458AbhJ2UV4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 16:21:56 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 229D7C061570;
+        Fri, 29 Oct 2021 13:19:27 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id 19so8670533qtt.7;
+        Fri, 29 Oct 2021 13:19:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:sender:in-reply-to:references:from:date:message-id
-         :subject:to;
-        bh=4No1XCyCGsiw9xAW/GRRXowLAJaXLMQgdEe+LUff2rw=;
-        b=DpBA17G0K46SyP2ag+MqE098//g4dWEi/oFZHD4AN9NnYvSYDLOftfnd/NXmYwT7L6
-         thEVX2vGJ6Gg62MXzVZkOqbNeuP6mvbTlkYoTsYCzV/evqu0gUOXu1wiVoeJjMuwqaRG
-         igb28p9e7k1x7z0hsuqhL0W0vRUO2iLd/XhOjm+fZ1iIFuVh0XolC6p+QXAeQsHu/Gdp
-         TuIiK9gB2ue4yzxpCfRXylXQ/ikjD+Q/Uw5jqlErNV5Aup+D7aIz6ctIZqRlzfz8Qsni
-         bSNqTiPWJqp5R63My6zomelty6gQdcCPn7fov19IRtbhyO7pA2NwP5erLsj+FmrYc0wm
-         ek6w==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=V1vZM1rn/vf1mH3nnfwhGs4Yv2g9sjHwncQx+vzOpzI=;
+        b=mzQD1q6deK8up7ZSeFDlymCWC+5xY+rzC6C3Cd8+T//bmebUn5xMmDAnMejgHHWeKT
+         i6a+9TBTaN5PjooepEBqg11b9EDqE0r8nqwgnfRZN4t5ZtbuON+gB6cIsqzTKLcyJDPB
+         djgXvKRwLM7lMZvdIJW6LRUrRcqGvsDNW7PZiNj7Cb7FHAdMnoa64hudAK7FmKFPjvfJ
+         KPoXuwGF8oJrVDme9QGJR08tjVRCMYcadiOjX3PqK/hyAQIn1SjzXT7N5n4iLeOw43jB
+         722htxqBttEwxl4/Z6ssOmdW6B/bBS3D+j/2J/x6Q7rBnsP2PlZWroE2ZzG1Cpf6otyI
+         xP8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:in-reply-to:references:from
-         :date:message-id:subject:to;
-        bh=4No1XCyCGsiw9xAW/GRRXowLAJaXLMQgdEe+LUff2rw=;
-        b=p88lih+2vIFrVPGXTJGlCdFJwQYHG3AHMjOnyznFPIfSvGWsAxnkGrQGYVdX0XBu48
-         IWd9gsAM6HPDp+Q6hn2uSHZ0fGJ0XzwM/cKtzzsZQnao36kSDodu661QyOS9DBs3SrUC
-         gu22n3nnvrLpdtSCClXpO9eRKH+99FV0TH/pyGANJwkMsC+m89nX4EJyTVTq9eqiofTc
-         00kobGEG+yHH1p3ChK61WFVBzlfTuiqauvm5U6YwpyNfgotpbiZPp0jHkvPKCVnvpbvi
-         jNchJQb+54wQ6rbcMXO5vItEUxuTGLY4NicRVKCUJjSOlM0OJM4FBaamj5l1T7od9VxU
-         /5Xg==
-X-Gm-Message-State: AOAM530Ei6iH1OMVW3piSZ+G1ltELsMPnSVgHh9AO/SpeplyZaUD8Fv+
-        Wp1whtvpFS9MrEQPs8a+LB7SLWfKi4YzK3jlNYo=
-X-Google-Smtp-Source: ABdhPJwxCuY9+DgNZYRpE6j1I73MpeqggWUMScQIy2WaqL3VaCYk6VM5DPSkm3VqmzgHYy2k/bgm4+fxZn1mCzB5GYI=
-X-Received: by 2002:a05:6402:27d3:: with SMTP id c19mr17829012ede.70.1635538563020;
- Fri, 29 Oct 2021 13:16:03 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=V1vZM1rn/vf1mH3nnfwhGs4Yv2g9sjHwncQx+vzOpzI=;
+        b=4q4rkMzgZ1ONq5KgrvbR65AjqO1vfcNk2sT8djWqcxN+oi4nsZ6IkIeouBRmVR9y7X
+         h3PXaM74RuNWBZBXCblKlZ6YvePVle+58DLmzPA9WpHZfbAy6lmG5OoVMAHMVQ+yh1xb
+         DGd1NMULnH0/6qZ7gE/WqiSAIJnGvKUwathVglgyzs85lGFBLNPNWvKiv4UYMw+IAPon
+         Lf9922jA/W7/0UKGRASt7btDlTQHRHAvYFvdOmlzY+mBaSSZj0QDL2wxyTp4k7cHCaEM
+         X/6dtsv3qPL75hWHW8xbTko9fFAExxmIuTat8/pjyk1wAT9ZwTr7bFAYfeXv/2pfE3vc
+         LY8A==
+X-Gm-Message-State: AOAM531wPoAp8A5MniiBR0rOuDd4FfQ+1g1YKWh5h8ZdL4mbYQVXwown
+        a3D3ZB2ru9jqmTeERcrXWE8=
+X-Google-Smtp-Source: ABdhPJxiA8ZUQJ4ch2G+XXXE/WIShjgGf+XD5EwZrgYyc4wwaCQKw3Yjyr7rPfTFI1FEcuDDl+sECg==
+X-Received: by 2002:a05:622a:28b:: with SMTP id z11mr926190qtw.193.1635538766259;
+        Fri, 29 Oct 2021 13:19:26 -0700 (PDT)
+Received: from 10-18-43-117.dynapool.wireless.nyu.edu (216-165-95-181.natpool.nyu.edu. [216.165.95.181])
+        by smtp.gmail.com with ESMTPSA id c10sm5072943qtd.27.2021.10.29.13.19.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Oct 2021 13:19:25 -0700 (PDT)
+Date:   Fri, 29 Oct 2021 16:19:23 -0400
+From:   Zekun Shen <bruceshenzk@gmail.com>
+To:     bruceshenzk@gmail.com
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Siva Rebbagondla <siva8118@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, brendandg@nyu.edu
+Subject: [PATCH] rsi_usb: Fix out-of-bounds read in rsi_read_pkt
+Message-ID: <YXxXS4wgu2OsmlVv@10-18-43-117.dynapool.wireless.nyu.edu>
 MIME-Version: 1.0
-Sender: mathieuapekou@gmail.com
-Received: by 2002:a17:907:7fa4:0:0:0:0 with HTTP; Fri, 29 Oct 2021 13:16:02
- -0700 (PDT)
-In-Reply-To: <CAANH6z4xRd8Z7WU-2O8MSBbOOaHbm1RhdPcidxACEb6uBrjuTA@mail.gmail.com>
-References: <CAANH6z72gAZmNJCfRRkL5Ny74zCi+V_aRF7Tpc_AphtrRJJnKA@mail.gmail.com>
- <CAANH6z5XWmG5B_qEumUkMO9-TxQ=f5OCEnrHxMUr5pC=maxBMA@mail.gmail.com>
- <CAANH6z6MJLz+V_su+V0bH=JcQ2+wxfi6+-kpf0vofkGRo1WTng@mail.gmail.com>
- <CAANH6z69LdxStuZXzteKEzN-Gv9cKkgxaVZ96HeJmSd9V-YVJg@mail.gmail.com>
- <CAANH6z64xPoEYM4ghbWARGWJE8uH+PQgGthx1f20tEBjBrD-ig@mail.gmail.com>
- <CAANH6z742pjV0ap9m-vu4npC4BYoRQu6xOW+m9Ypp7KLNtJz8A@mail.gmail.com>
- <CAANH6z4mydtHjB8OfhkBuxXuARqNqfaGRgLYn13tbUSKtgXBhQ@mail.gmail.com>
- <CAANH6z4rQgp5vtz7jQop8qZDAsUgpdF8XLP4hW2ASfa=KhjkoQ@mail.gmail.com>
- <CAANH6z7JuidGvHkqgXveWvAZAGwsgVoWDcuMQqx-L40t-P4gbQ@mail.gmail.com>
- <CAANH6z56Quc8b=SgVSTQC_wTOOih2sv1e8uHspjexeqqOu1UeA@mail.gmail.com>
- <CAANH6z5dNBBgGsX1CDJkHhqqHquNSJmJNOD1nBwhkZoahiaW4Q@mail.gmail.com> <CAANH6z4xRd8Z7WU-2O8MSBbOOaHbm1RhdPcidxACEb6uBrjuTA@mail.gmail.com>
-From:   "Mrs. Rose Guzman Donna" <ebubedikemplc@gmail.com>
-Date:   Fri, 29 Oct 2021 20:16:02 +0000
-X-Google-Sender-Auth: mKkr03HbIIMYKUxoimBm_y4ZmVU
-Message-ID: <CAANH6z5846-z8cNS0YC=FjDR=4HinnAypa89tk7UBGFx4N3OkQ@mail.gmail.com>
-Subject: Fwd: I'm Mrs.Guzman Donna from America
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I am contacting you because, I want to donate a huge amount of money
-to help the  poor people ETC / covid19 victims and to open a charity
-foundation on your behalf in your country is OK?. This involves a lot
-of money Get back to me for more details. R Guzman from America.
+rsi_get_* functions rely on an offset variable from usb
+input. The size of usb input is RSI_MAX_RX_USB_PKT_SIZE(3000),
+while 2-byte offset can be up to 0xFFFF. Thus a large offset
+can cause out-of-bounds read.
+
+The patch adds a bound checking condition when rcv_pkt_len is 0,
+indicating it's USB. It's unclear whether this is triggerable
+from other type of bus. The following check might help in that case.
+offset > rcv_pkt_len - FRAME_DESC_SZ
+
+The bug is trigerrable with conpromised/malfunctioning USB devices.
+I tested the patch with the crashing input and got no more bug report.
+
+Attached is the KASAN report from fuzzing.
+
+BUG: KASAN: slab-out-of-bounds in rsi_read_pkt+0x42e/0x500 [rsi_91x]
+Read of size 2 at addr ffff888019439fdb by task RX-Thread/227
+
+CPU: 0 PID: 227 Comm: RX-Thread Not tainted 5.6.0 #66
+Call Trace:
+ dump_stack+0x76/0xa0
+ print_address_description.constprop.0+0x16/0x200
+ ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ __kasan_report.cold+0x37/0x7c
+ ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ kasan_report+0xe/0x20
+ rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ rsi_usb_rx_thread+0x1b1/0x2fc [rsi_usb]
+ ? rsi_probe+0x16a0/0x16a0 [rsi_usb]
+ ? _raw_spin_lock_irqsave+0x7b/0xd0
+ ? _raw_spin_trylock_bh+0x120/0x120
+ ? __wake_up_common+0x10b/0x520
+ ? rsi_probe+0x16a0/0x16a0 [rsi_usb]
+ kthread+0x2b5/0x3b0
+ ? kthread_create_on_node+0xd0/0xd0
+ ret_from_fork+0x22/0x40
+
+Reported-by: Zekun Shen <bruceshenzk@gmail.com>
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+---
+ drivers/net/wireless/rsi/rsi_91x_main.c | 4 ++++
+ drivers/net/wireless/rsi/rsi_91x_usb.c  | 1 -
+ drivers/net/wireless/rsi/rsi_usb.h      | 2 ++
+ 3 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/rsi/rsi_91x_main.c b/drivers/net/wireless/rsi/rsi_91x_main.c
+index d98483298..61fc27714 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_main.c
++++ b/drivers/net/wireless/rsi/rsi_91x_main.c
+@@ -23,6 +23,7 @@
+ #include "rsi_common.h"
+ #include "rsi_coex.h"
+ #include "rsi_hal.h"
++#include "rsi_usb.h"
+ 
+ u32 rsi_zone_enabled = /* INFO_ZONE |
+ 			INIT_ZONE |
+@@ -168,6 +169,9 @@ int rsi_read_pkt(struct rsi_common *common, u8 *rx_pkt, s32 rcv_pkt_len)
+ 		frame_desc = &rx_pkt[index];
+ 		actual_length = *(u16 *)&frame_desc[0];
+ 		offset = *(u16 *)&frame_desc[2];
++		if (!rcv_pkt_len && offset >
++			RSI_MAX_RX_USB_PKT_SIZE - FRAME_DESC_SZ)
++			goto fail;
+ 
+ 		queueno = rsi_get_queueno(frame_desc, offset);
+ 		length = rsi_get_length(frame_desc, offset);
+diff --git a/drivers/net/wireless/rsi/rsi_91x_usb.c b/drivers/net/wireless/rsi/rsi_91x_usb.c
+index d9e9bf26e..49ae4ae69 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_usb.c
++++ b/drivers/net/wireless/rsi/rsi_91x_usb.c
+@@ -333,7 +333,6 @@ static int rsi_rx_urb_submit(struct rsi_hw *adapter, u8 ep_num, gfp_t mem_flags)
+ 	struct sk_buff *skb;
+ 	u8 dword_align_bytes = 0;
+ 
+-#define RSI_MAX_RX_USB_PKT_SIZE	3000
+ 	skb = dev_alloc_skb(RSI_MAX_RX_USB_PKT_SIZE);
+ 	if (!skb)
+ 		return -ENOMEM;
+diff --git a/drivers/net/wireless/rsi/rsi_usb.h b/drivers/net/wireless/rsi/rsi_usb.h
+index 254d19b66..961851748 100644
+--- a/drivers/net/wireless/rsi/rsi_usb.h
++++ b/drivers/net/wireless/rsi/rsi_usb.h
+@@ -44,6 +44,8 @@
+ #define RSI_USB_BUF_SIZE	     4096
+ #define RSI_USB_CTRL_BUF_SIZE	     0x04
+ 
++#define RSI_MAX_RX_USB_PKT_SIZE	3000
++
+ struct rx_usb_ctrl_block {
+ 	u8 *data;
+ 	struct urb *rx_urb;
+-- 
+2.25.1
+
