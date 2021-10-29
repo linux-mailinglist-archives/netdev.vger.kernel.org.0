@@ -2,233 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7958043FFDC
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 17:51:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27C7143FFE0
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 17:55:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229979AbhJ2PyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 11:54:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52122 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229623AbhJ2PyH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Oct 2021 11:54:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8422B61183;
-        Fri, 29 Oct 2021 15:51:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635522698;
-        bh=fIzygt87+udWjiMz2vPNhcKPFrQ5fKJyEQSYz36HRr4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LV3KZrUuaWKGIIMdNllpdkDpDKx07tMkWZomas2LCSXL+k1wYwOpHBDqgN718WYB/
-         8ipAnnLduOQuvF1NqxK0To2KiEdDVyBuNm8CCXqtt6U5jxTIVozKKom25IqaSp0BF/
-         oRcvdZOdqU5PN6aUaQGMVCunts2lWeet98uFuQRM93XR40E6ZH6j4xnG7j4wzMWlM+
-         5DnJaYtMeFsywVfClrOLjvORYVLP87nvy27gvr3w9atCXUokiLClAjMHqAy0MlWtE8
-         +gF2HhZUijHHmoDYaAvKSNAs0oDXQOF7EZRCrUCMUWNqIF/w7L4h902nUQdoImADeF
-         JmdJJ8OVD/Mbw==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net, willemb@google.com
-Cc:     netdev@vger.kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        shuah@kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH net 2/2] selftests: udp: test for passing SO_MARK as cmsg
-Date:   Fri, 29 Oct 2021 08:51:35 -0700
-Message-Id: <20211029155135.468098-3-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211029155135.468098-1-kuba@kernel.org>
-References: <20211029155135.468098-1-kuba@kernel.org>
+        id S229723AbhJ2P5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 11:57:51 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:34307 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229521AbhJ2P5u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 11:57:50 -0400
+Received: by mail-io1-f71.google.com with SMTP id k20-20020a5d97d4000000b005da6f3b7dc7so6993249ios.1
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 08:55:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=SezFMDowmogmw/7L1HjVF8g+PwUa//5LR2/njSIe2SA=;
+        b=yJdl/NmYc3xzHU2J4qWm8xZpFT/7Ap3sHjyAZmxONs68i499vRKu+fzf8uU1e7wGEn
+         FeZ8ZGBeGg0nMgVBDLhCXvhWIaWO9XF0HC1JFO+P6wyeczccEJEF1L/Vm+QcsvJAMkM1
+         ITM53fE9Fet1mzQ0xAm0njdC7153aH+nDEudKhVI+b+2WBIqsU+g2icQXpnkdXXw/pZS
+         U0M4tM9eFq7HLvhdn/nbnKebfi6bGHpRC1EwUbhtgj+2VlcahudltP2waQP8jzCWfLKh
+         MAfxzYYYWuSbvUO3t5bLQRKR/XO6l2sSd9r4GEAbbf1AEbsKUhn8hKhCiaeoOlzyQRpW
+         zqJQ==
+X-Gm-Message-State: AOAM530ea7x3289OSmvsSJNglDMdRV1ATw+Qq9xbg7sy3euPu1o3HEby
+        FmgNoWs/M8kKP0wQj3bvVY1siCSuLmIdulNXxiYWLmzEl/Ez
+X-Google-Smtp-Source: ABdhPJxOIvBvRRrG/zQChCYkBsnt4hHatJMgoOg4cu9KvOJdUPSS5U4PDrGP/yS236umiHofUXnOU1j2ZeJip73X9Sg8ZrxWAeGA
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6602:29c2:: with SMTP id z2mr8701578ioq.73.1635522921601;
+ Fri, 29 Oct 2021 08:55:21 -0700 (PDT)
+Date:   Fri, 29 Oct 2021 08:55:21 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c3a2af05cf7fda31@google.com>
+Subject: [syzbot] general protection fault in fq_codel_enqueue (3)
+From:   syzbot <syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before fix:
-|  Case IPv6 rejection returned 0, expected 1
-|FAIL - 1/4 cases failed
+Hello,
 
-With the fix:
-| OK
+syzbot found the following issue on:
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
---
-CC: shuah@kernel.org
-CC: linux-kselftest@vger.kernel.org
+HEAD commit:    1fc596a56b33 Merge tag 'trace-v5.15-rc6' of git://git.kern..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1453dc04b00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b160d0631c7a8f26
+dashboard link: https://syzkaller.appspot.com/bug?extid=7a12909485b94426aceb
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=154a0b64b00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=177eec86b00000
+
+Bisection is inconclusive: the issue happens on the oldest tested release.
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=154fc86ab00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=174fc86ab00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=134fc86ab00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
+
+general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+CPU: 1 PID: 6542 Comm: syz-executor965 Not tainted 5.15.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:dequeue_head net/sched/sch_fq_codel.c:120 [inline]
+RIP: 0010:fq_codel_drop net/sched/sch_fq_codel.c:168 [inline]
+RIP: 0010:fq_codel_enqueue+0x83e/0x10c0 net/sched/sch_fq_codel.c:230
+Code: f8 e2 25 fa 45 39 ec 0f 83 cb 00 00 00 e8 1a dc 25 fa 48 8b 44 24 10 80 38 00 0f 85 9a 06 00 00 49 8b 07 48 89 c2 48 c1 ea 03 <42> 80 3c 32 00 0f 85 6e 06 00 00 48 8b 10 48 8d 78 28 49 89 17 48
+RSP: 0018:ffffc90001187310 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff87504776 RDI: 0000000000000003
+RBP: ffffc900011874e0 R08: 0000000000000400 R09: 0000000000000001
+R10: ffffffff875046d6 R11: 0000000000000000 R12: 0000000000000400
+R13: 0000000000000000 R14: dffffc0000000000 R15: ffff888071660000
+FS:  0000555556b21300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f9c09885040 CR3: 0000000021c77000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ dev_qdisc_enqueue+0x40/0x300 net/core/dev.c:3771
+ __dev_xmit_skb net/core/dev.c:3855 [inline]
+ __dev_queue_xmit+0x1f0e/0x36e0 net/core/dev.c:4170
+ __bpf_tx_skb net/core/filter.c:2114 [inline]
+ __bpf_redirect_no_mac net/core/filter.c:2139 [inline]
+ __bpf_redirect+0x5ba/0xd20 net/core/filter.c:2162
+ ____bpf_clone_redirect net/core/filter.c:2429 [inline]
+ bpf_clone_redirect+0x2ae/0x420 net/core/filter.c:2401
+ ___bpf_prog_run+0x3592/0x77d0 kernel/bpf/core.c:1548
+ __bpf_prog_run512+0x91/0xd0 kernel/bpf/core.c:1776
+ bpf_dispatcher_nop_func include/linux/bpf.h:718 [inline]
+ __bpf_prog_run include/linux/filter.h:624 [inline]
+ bpf_prog_run include/linux/filter.h:631 [inline]
+ bpf_test_run+0x37c/0xa20 net/bpf/test_run.c:119
+ bpf_prog_test_run_skb+0xa7c/0x1cb0 net/bpf/test_run.c:662
+ bpf_prog_test_run kernel/bpf/syscall.c:3307 [inline]
+ __sys_bpf+0x2137/0x5df0 kernel/bpf/syscall.c:4605
+ __do_sys_bpf kernel/bpf/syscall.c:4691 [inline]
+ __se_sys_bpf kernel/bpf/syscall.c:4689 [inline]
+ __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:4689
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7fef7c1e24d9
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc95c98158 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fef7c1e24d9
+RDX: 0000000000000048 RSI: 0000000020000140 RDI: 000000000000000a
+RBP: 00007fef7c1a64c0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007fef7c1a6550
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+Modules linked in:
+---[ end trace 0597f54336b28fa4 ]---
+RIP: 0010:dequeue_head net/sched/sch_fq_codel.c:120 [inline]
+RIP: 0010:fq_codel_drop net/sched/sch_fq_codel.c:168 [inline]
+RIP: 0010:fq_codel_enqueue+0x83e/0x10c0 net/sched/sch_fq_codel.c:230
+Code: f8 e2 25 fa 45 39 ec 0f 83 cb 00 00 00 e8 1a dc 25 fa 48 8b 44 24 10 80 38 00 0f 85 9a 06 00 00 49 8b 07 48 89 c2 48 c1 ea 03 <42> 80 3c 32 00 0f 85 6e 06 00 00 48 8b 10 48 8d 78 28 49 89 17 48
+RSP: 0018:ffffc90001187310 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff87504776 RDI: 0000000000000003
+RBP: ffffc900011874e0 R08: 0000000000000400 R09: 0000000000000001
+R10: ffffffff875046d6 R11: 0000000000000000 R12: 0000000000000400
+R13: 0000000000000000 R14: dffffc0000000000 R15: ffff888071660000
+FS:  0000555556b21300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f9c09885040 CR3: 0000000021c77000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	f8                   	clc
+   1:	e2 25                	loop   0x28
+   3:	fa                   	cli
+   4:	45 39 ec             	cmp    %r13d,%r12d
+   7:	0f 83 cb 00 00 00    	jae    0xd8
+   d:	e8 1a dc 25 fa       	callq  0xfa25dc2c
+  12:	48 8b 44 24 10       	mov    0x10(%rsp),%rax
+  17:	80 38 00             	cmpb   $0x0,(%rax)
+  1a:	0f 85 9a 06 00 00    	jne    0x6ba
+  20:	49 8b 07             	mov    (%r15),%rax
+  23:	48 89 c2             	mov    %rax,%rdx
+  26:	48 c1 ea 03          	shr    $0x3,%rdx
+* 2a:	42 80 3c 32 00       	cmpb   $0x0,(%rdx,%r14,1) <-- trapping instruction
+  2f:	0f 85 6e 06 00 00    	jne    0x6a3
+  35:	48 8b 10             	mov    (%rax),%rdx
+  38:	48 8d 78 28          	lea    0x28(%rax),%rdi
+  3c:	49 89 17             	mov    %rdx,(%r15)
+  3f:	48                   	rex.W
+
+
 ---
- tools/testing/selftests/net/.gitignore      |  1 +
- tools/testing/selftests/net/Makefile        |  2 +
- tools/testing/selftests/net/cmsg_so_mark.c  | 67 +++++++++++++++++++++
- tools/testing/selftests/net/cmsg_so_mark.sh | 61 +++++++++++++++++++
- 4 files changed, 131 insertions(+)
- create mode 100644 tools/testing/selftests/net/cmsg_so_mark.c
- create mode 100755 tools/testing/selftests/net/cmsg_so_mark.sh
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
-index 501550501216..7581a7348e1b 100644
---- a/tools/testing/selftests/net/.gitignore
-+++ b/tools/testing/selftests/net/.gitignore
-@@ -35,3 +35,4 @@ test_unix_oob
- gro
- ioam6_parser
- toeplitz
-+cmsg_so_mark
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 492b273743b4..f56b652d5cc6 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -28,6 +28,7 @@ TEST_PROGS += veth.sh
- TEST_PROGS += ioam6.sh
- TEST_PROGS += gro.sh
- TEST_PROGS += gre_gso.sh
-+TEST_PROGS += cmsg_so_mark.sh
- TEST_PROGS_EXTENDED := in_netns.sh
- TEST_GEN_FILES =  socket nettest
- TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
-@@ -44,6 +45,7 @@ TEST_GEN_FILES += gro
- TEST_GEN_PROGS = reuseport_bpf reuseport_bpf_cpu reuseport_bpf_numa
- TEST_GEN_PROGS += reuseport_dualstack reuseaddr_conflict tls
- TEST_GEN_FILES += toeplitz
-+TEST_GEN_FILES += cmsg_so_mark
- 
- TEST_FILES := settings
- 
-diff --git a/tools/testing/selftests/net/cmsg_so_mark.c b/tools/testing/selftests/net/cmsg_so_mark.c
-new file mode 100644
-index 000000000000..27f2804892a7
---- /dev/null
-+++ b/tools/testing/selftests/net/cmsg_so_mark.c
-@@ -0,0 +1,67 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+#include <errno.h>
-+#include <netdb.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <unistd.h>
-+#include <linux/types.h>
-+#include <sys/socket.h>
-+
-+int main(int argc, const char **argv)
-+{
-+	char cbuf[CMSG_SPACE(sizeof(__u32))];
-+	struct addrinfo hints, *ai;
-+	struct cmsghdr *cmsg;
-+	struct iovec iov[1];
-+	struct msghdr msg;
-+	int mark;
-+	int err;
-+	int fd;
-+
-+	if (argc != 4) {
-+		fprintf(stderr, "Usage: %s <dst_ip> <port> <mark>\n", argv[0]);
-+		return 1;
-+	}
-+	mark = atoi(argv[3]);
-+
-+	memset(&hints, 0, sizeof(hints));
-+	hints.ai_family = AF_UNSPEC;
-+	hints.ai_socktype = SOCK_DGRAM;
-+
-+	ai = NULL;
-+	err = getaddrinfo(argv[1], argv[2], &hints, &ai);
-+	if (err) {
-+		fprintf(stderr, "Can't resolve address: %s\n", strerror(errno));
-+		return 1;
-+	}
-+
-+	fd = socket(ai->ai_family, SOCK_DGRAM, IPPROTO_UDP);
-+	if (fd < 0) {
-+		fprintf(stderr, "Can't open socket: %s\n", strerror(errno));
-+		freeaddrinfo(ai);
-+		return 1;
-+	}
-+
-+	iov[0].iov_base = "bla";
-+	iov[0].iov_len = 4;
-+
-+	msg.msg_name = ai->ai_addr;
-+	msg.msg_namelen = ai->ai_addrlen;
-+	msg.msg_iov = iov;
-+	msg.msg_iovlen = 1;
-+	msg.msg_control = cbuf;
-+	msg.msg_controllen = sizeof(cbuf);
-+
-+	cmsg = CMSG_FIRSTHDR(&msg);
-+	cmsg->cmsg_level = SOL_SOCKET;
-+	cmsg->cmsg_type = SO_MARK;
-+	cmsg->cmsg_len = CMSG_LEN(sizeof(__u32));
-+	*(__u32 *)CMSG_DATA(cmsg) = mark;
-+
-+	err = sendmsg(fd, &msg, 0);
-+
-+	close(fd);
-+	freeaddrinfo(ai);
-+	return err != 4;
-+}
-diff --git a/tools/testing/selftests/net/cmsg_so_mark.sh b/tools/testing/selftests/net/cmsg_so_mark.sh
-new file mode 100755
-index 000000000000..19c6aab8d0e9
---- /dev/null
-+++ b/tools/testing/selftests/net/cmsg_so_mark.sh
-@@ -0,0 +1,61 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+NS=ns
-+IP4=172.16.0.1/24
-+TGT4=172.16.0.2
-+IP6=2001:db8:1::1/64
-+TGT6=2001:db8:1::2
-+MARK=1000
-+
-+cleanup()
-+{
-+    ip netns del $NS
-+}
-+
-+trap cleanup EXIT
-+
-+# Namespaces
-+ip netns add $NS
-+
-+# Connectivity
-+ip -netns $NS link add type dummy
-+ip -netns $NS link set dev dummy0 up
-+ip -netns $NS addr add $IP4 dev dummy0
-+ip -netns $NS addr add $IP6 dev dummy0
-+
-+ip -netns $NS rule add fwmark $MARK lookup 300
-+ip -6 -netns $NS rule add fwmark $MARK lookup 300
-+ip -netns $NS route add prohibit any table 300
-+ip -6 -netns $NS route add prohibit any table 300
-+
-+# Test
-+BAD=0
-+TOTAL=0
-+
-+check_result() {
-+    ((TOTAL++))
-+    if [ $1 -ne $2 ]; then
-+	echo "  Case $3 returned $1, expected $2"
-+	((BAD++))
-+    fi
-+}
-+
-+ip netns exec $NS ./cmsg_so_mark $TGT4 1234 $((MARK + 1))
-+check_result $? 0 "IPv4 pass"
-+ip netns exec $NS ./cmsg_so_mark $TGT6 1234 $((MARK + 1))
-+check_result $? 0 "IPv6 pass"
-+
-+ip netns exec $NS ./cmsg_so_mark $TGT4 1234 $MARK
-+check_result $? 1 "IPv4 rejection"
-+ip netns exec $NS ./cmsg_so_mark $TGT6 1234 $MARK
-+check_result $? 1 "IPv6 rejection"
-+
-+# Summary
-+if [ $BAD -ne 0 ]; then
-+    echo "FAIL - $BAD/$TOTAL cases failed"
-+    exit 1
-+else
-+    echo "OK"
-+    exit 0
-+fi
--- 
-2.31.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
