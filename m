@@ -2,70 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07A2343FCA0
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 14:50:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ECDE43FCA4
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 14:50:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231449AbhJ2Mwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 08:52:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56416 "EHLO mail.kernel.org"
+        id S231504AbhJ2Mwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 08:52:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56466 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229692AbhJ2Mwg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Oct 2021 08:52:36 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 6D7E461167;
+        id S230273AbhJ2Mwh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Oct 2021 08:52:37 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id EDF3961181;
         Fri, 29 Oct 2021 12:50:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635511808;
-        bh=eJ7Ojg3SZPvnTtyOBrG+Fpf2Wkhzf0ymIPhxsRJEZYk=;
+        s=k20201202; t=1635511809;
+        bh=HDU40Ij+WZ/aZzBQShPVnJIwCcTEw6CtMHgcR5xH1F0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qt7RScTkJ2N5XoR/QhEPvsdU6t5i/jBZ/HRP/adBrOLOu8o6VfV8Zvb5cXL204egP
-         +RLq3OtwTmdnsm9R1HB6KIcUihdK4XU0PsLRcRHbF9QmQxf3uqbB07lYdONK5pOauq
-         yUwYPsEfi0wBwkmlqS4l5YNEspFImX8rj72MeGtYvCs2Plu1ZGy4Hl2By+cTFRwlyg
-         bo4C70HwjaSgILWKBIBXTBM84TsdLQ7L1NGNHriEvH2AE3Rd4cNgHQpkXAI7a1yfon
-         YMWjHRzaz2xAgKFNzOD4jzJPbpdjg6vItP3608MK/Y0qGs6n1GxSwVssA8qfOwp8CV
-         YdUwye93MOifw==
+        b=CmqioEtbqOT3mrvOLyFthpjtcc/3nO/7lyY0QQIMz2Uwt1FMB6tX1SP6MlnDzKwUd
+         HULMiSrbG957q+1/WvKikj3BF5iEeITAfVFPxkUWt4Q+E99bBYgwbhOMmimpPbaDuT
+         Bf+P6Rl5g0GjtonUqBm5n1VR0FJi3ZjbvpKj/cuJAmpErsdiqRC1jyXNzNdGD3zCvr
+         UzK1wzAu5k4tHYL8cFezYDrmyTON2SBiTqPNL4xOe8Pti/YdDtyODeG+wLD/MLZq3K
+         jfmTYlQYqGbRYUAwvx+cknOixmyNIBSGQNKLH1bweZ40fP6fLATVGTK6omoctKKjvq
+         wDqStHaggaCag==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5E05460A17;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E995160A5A;
         Fri, 29 Oct 2021 12:50:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2] nfp: fix bugs caused by adaptive coalesce
+Subject: Re: [PATCH net-next] net: bareudp: fix duplicate checks of data[]
+ expressions
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163551180838.32606.5927261985281379723.git-patchwork-notify@kernel.org>
+Message-Id: <163551180895.32606.8903887186480447271.git-patchwork-notify@kernel.org>
 Date:   Fri, 29 Oct 2021 12:50:08 +0000
-References: <20211029112903.16806-1-simon.horman@corigine.com>
-In-Reply-To: <20211029112903.16806-1-simon.horman@corigine.com>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        oss-drivers@corigine.com, yinjun.zhang@corigine.com,
-        louis.peens@corigine.com
+References: <20211028182453.9713-2-sakiwit@gmail.com>
+In-Reply-To: <20211028182453.9713-2-sakiwit@gmail.com>
+To:     =?utf-8?q?J=CE=B5an_Sacren_=3Csakiwit=40gmail=2Ecom=3E?=@ci.codeaurora.org
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
+This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 29 Oct 2021 13:29:01 +0200 you wrote:
-> Hi,
+On Thu, 28 Oct 2021 12:24:53 -0600 you wrote:
+> From: Jean Sacren <sakiwit@gmail.com>
 > 
-> this series contains fixes for two bugs introduced when
-> when adaptive coalesce support was added to the NFP driver in
-> v5.15 by 9d32e4e7e9e1 ("nfp: add support for coalesce adaptive feature")
+> Both !data[IFLA_BAREUDP_PORT] and !data[IFLA_BAREUDP_ETHERTYPE] are
+> checked.  We should remove the checks of data[IFLA_BAREUDP_PORT] and
+> data[IFLA_BAREUDP_ETHERTYPE] that follow since they are always true.
 > 
-> Yinjun Zhang (2):
->   nfp: fix NULL pointer access when scheduling dim work
->   nfp: fix potential deadlock when canceling dim work
+> Put both statements together in group and balance the space on both
+> sides of '=' sign.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/2] nfp: fix NULL pointer access when scheduling dim work
-    https://git.kernel.org/netdev/net/c/f8d384a640dd
-  - [net,2/2] nfp: fix potential deadlock when canceling dim work
-    https://git.kernel.org/netdev/net/c/17e712c6a1ba
+  - [net-next] net: bareudp: fix duplicate checks of data[] expressions
+    https://git.kernel.org/netdev/net-next/c/5bd663212f2e
 
 You are awesome, thank you!
 -- 
