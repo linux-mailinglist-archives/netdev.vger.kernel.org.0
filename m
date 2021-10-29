@@ -2,398 +2,459 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82030440549
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 00:06:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FAAA440554
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 00:11:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231428AbhJ2WIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 18:08:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35119 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230381AbhJ2WIz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 18:08:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635545185;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NSheYEDinOsJSVsc4q5gyIjt1AG7FHhaWybb1i8FUxw=;
-        b=c0Yb3oCubwy8ZYPKUYQS95oo2ynf7KAmlUPuw3I3oauoqfPLTpiTg7mkybQ7C8dw01mgNx
-        YI1vqYypW53A+P7F/6e/TFd2d8z63CSpZRzM7xp7sEI0RjBppqaMivljGbDrcUXIr44tOr
-        6+H4kVGKYI0QDqz+Iwhogeia4AnI6HE=
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com
- [209.85.167.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-409-4K0kCU6LO6StG8Nz6S2c8Q-1; Fri, 29 Oct 2021 18:06:24 -0400
-X-MC-Unique: 4K0kCU6LO6StG8Nz6S2c8Q-1
-Received: by mail-oi1-f197.google.com with SMTP id u9-20020a056808000900b0029888aec6fbso5726084oic.6
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 15:06:24 -0700 (PDT)
+        id S231394AbhJ2WNy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 18:13:54 -0400
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:53456
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231173AbhJ2WNy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 18:13:54 -0400
+Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com [209.85.216.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id A38B73F198
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 22:11:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1635545481;
+        bh=rJEl92OkXZ6vzaeh/08Zu3EiMrKJUk52e/INR2VXE/k=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=j6BeAyR4bvRbhK5ganbslaEDf7sPa1nAyg79lToJT9tVrLekrpEip0T5xCmlK6xVh
+         pTaNEfK/YNCtF92t1ibxZ7lYboa/2GbuliVasv1RP8AVKvJqSLCWJFz35vvNEkZn0G
+         XYHmv9aIk2NBRq6cDg2ExKFf3PQ+GxIIGNMMAHIVAT2OGaemO5engDK15sa/Munfyi
+         KpcZzGQMZ3RvwdZLHFzVkaDvX5K9VOeJoBgz/r3oFjotWeWvfpeJoWP0EMq4SuPLsh
+         Sj1U4918HbkvgRpjYcHuCeeVew6FWCzU81DMzo3NJ/CNv/Q1p0TSVl75BaxP5PKyVf
+         f1sySXN05Nnfg==
+Received: by mail-pj1-f70.google.com with SMTP id s10-20020a17090a13ca00b001a211aa215fso5986418pjf.0
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 15:11:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=NSheYEDinOsJSVsc4q5gyIjt1AG7FHhaWybb1i8FUxw=;
-        b=rBeuxqbtGI+JMIuzbsUtVDO8ZHqeI5Loqhv5ESjOken3F9OUwTaxhHqXZR9Gv0NBOL
-         1XMSuYKo7XI/wpFAzuahnM7/kpwK6GnJ5Kq2Ai86t7U9aX+vJTAGPnE1+ZLK+AWR6xHR
-         WiNggn9R5JMUNzojNgpIBUg2qwOyJFy153E0S6JbhDcdxwNupXYlPkn0uJlSo5Hl7Kqw
-         +AXott5ksWcqSDITSweJ/iTtx8xdp9H8pN0In99TZACwve0vyUrxKaalwgODeiurU7OH
-         bdMEXC/GLoehL6J4oxheCfi/OX3708EXDg8ejYbxZx0r9s703iMPJvRUkes6VYjy13HL
-         ImbQ==
-X-Gm-Message-State: AOAM531SWzDdksEh0rRtt0Vegczwrs1KwjqjpEFk76paTbo6/YsGwo9j
-        3SnvigoBo2lkP19hv6HAM94A762nvCnGAi2juYMeeFIs59aWFdqNmaDsyNEuBLALV970X/kyW4n
-        LYWnyVKi/YdQyY8vf
-X-Received: by 2002:aca:1314:: with SMTP id e20mr2964742oii.93.1635545183463;
-        Fri, 29 Oct 2021 15:06:23 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxzgP7OnnCpy3KcioU7A5eIZGb2LAs3XnWl9Hm3c53SKMQFgvHcbx9uZrrnr1MylAEJHM788A==
-X-Received: by 2002:aca:1314:: with SMTP id e20mr2964707oii.93.1635545183089;
-        Fri, 29 Oct 2021 15:06:23 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id r44sm2423156otv.39.2021.10.29.15.06.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Oct 2021 15:06:22 -0700 (PDT)
-Date:   Fri, 29 Oct 2021 16:06:21 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Cornelia Huck <cohuck@redhat.com>,
-        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
-        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
-        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
- for mlx5 devices
-Message-ID: <20211029160621.46ca7b54.alex.williamson@redhat.com>
-In-Reply-To: <20211028234750.GP2744544@nvidia.com>
-References: <20211025122938.GR2744544@nvidia.com>
-        <20211025082857.4baa4794.alex.williamson@redhat.com>
-        <20211025145646.GX2744544@nvidia.com>
-        <20211026084212.36b0142c.alex.williamson@redhat.com>
-        <20211026151851.GW2744544@nvidia.com>
-        <20211026135046.5190e103.alex.williamson@redhat.com>
-        <20211026234300.GA2744544@nvidia.com>
-        <20211027130520.33652a49.alex.williamson@redhat.com>
-        <20211027192345.GJ2744544@nvidia.com>
-        <20211028093035.17ecbc5d.alex.williamson@redhat.com>
-        <20211028234750.GP2744544@nvidia.com>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references
+         :comments:mime-version:content-id:content-transfer-encoding:date
+         :message-id;
+        bh=rJEl92OkXZ6vzaeh/08Zu3EiMrKJUk52e/INR2VXE/k=;
+        b=4uPq6dFNzRyHbrPGUSNp0VS9kmbqcVurQ1F66qtTmAO27MQA63Czv2XethKn2svbIZ
+         wfByL+9XUvcu7OYIqjTEFcDC4B+4RavRIl7AIiziKuMWt5hsn/JV5rqPBo232DTmcfPf
+         l3T/PIILm3BfL79R0rjbFjoAucsWSwhQxl8dK4Y4BcOMCBF24N3MqPX4tFk0G3r/fheq
+         o0QsXQec5FXYrTtjE3YqLbRSgzacq4BBuNh3GVha5kaWwfShX0ZlKxytqJltJJmVAa12
+         S4VFu3xz9LD7t7wTwEEWxOB/4Iwr339l7ifv5UFjCf4bX6UdlZ2h6r+mAUSFb2fCzHM0
+         jAGQ==
+X-Gm-Message-State: AOAM530P5omkYW3IJFxy2qA2F1SZrACczbR7zTOMqnpaMumD3MtDU++q
+        kGXDSPI9oDAiPtuuB/x78nfUXKV0GLOAXOohnQrgqfDXJujm+exjhvY8BfOMTTseJD2cANQ/r7u
+        0E0EkXTfqpNMMUwm49JJOPP7yX4/4P6CZkw==
+X-Received: by 2002:a17:90a:b381:: with SMTP id e1mr22182154pjr.55.1635545480314;
+        Fri, 29 Oct 2021 15:11:20 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwAsY25h4CaQJ9GfGThpECBxAMgtafnfLbq200oicDHgnIOHYcQFl9Nf8RcfP5aiqNUlmdHFg==
+X-Received: by 2002:a17:90a:b381:: with SMTP id e1mr22182121pjr.55.1635545479976;
+        Fri, 29 Oct 2021 15:11:19 -0700 (PDT)
+Received: from famine.localdomain ([50.125.80.157])
+        by smtp.gmail.com with ESMTPSA id mu11sm14273844pjb.20.2021.10.29.15.11.19
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 29 Oct 2021 15:11:19 -0700 (PDT)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 07D865FDFB; Fri, 29 Oct 2021 15:11:18 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id F3B6DA0409;
+        Fri, 29 Oct 2021 15:11:18 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+cc:     netdev@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jonathan Toppins <jtoppins@redhat.com>
+Subject: Re: [Draft PATCH net-next] Bonding: add missed_max option
+In-reply-to: <20211029065529.27367-1-liuhangbin@gmail.com>
+References: <20211029065529.27367-1-liuhangbin@gmail.com>
+Comments: In-reply-to Hangbin Liu <liuhangbin@gmail.com>
+   message dated "Fri, 29 Oct 2021 14:55:29 +0800."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <7319.1635545478.1@famine>
+Content-Transfer-Encoding: quoted-printable
+Date:   Fri, 29 Oct 2021 15:11:18 -0700
+Message-ID: <7320.1635545478@famine>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 28 Oct 2021 20:47:50 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
+Hangbin Liu <liuhangbin@gmail.com> wrote:
 
-> On Thu, Oct 28, 2021 at 09:30:35AM -0600, Alex Williamson wrote:
-> > On Wed, 27 Oct 2021 16:23:45 -0300
-> > Jason Gunthorpe <jgg@nvidia.com> wrote:
-> >   
-> > > On Wed, Oct 27, 2021 at 01:05:20PM -0600, Alex Williamson wrote:
-> > >   
-> > > > > As far as the actual issue, if you hadn't just discovered it now
-> > > > > nobody would have known we have this gap - much like how the very
-> > > > > similar reset issue was present in VFIO for so many years until you
-> > > > > plugged it.    
-> > > > 
-> > > > But the fact that we did discover it is hugely important.  We've
-> > > > identified that the potential use case is significantly limited and
-> > > > that userspace doesn't have a good mechanism to determine when to
-> > > > expose that limitation to the user.      
-> > > 
-> > > Huh?
-> > > 
-> > > We've identified that, depending on device behavior, the kernel may
-> > > need to revoke MMIO access to protect itself from hostile userspace
-> > > triggering TLP Errors or something.
-> > > 
-> > > Well behaved userspace must already stop touching the MMIO on the
-> > > device when !RUNNING - I see no compelling argument against that
-> > > position.  
-> > 
-> > Not touching MMIO is not specified in our uAPI protocol,  
-> 
-> To be frank, not much is specified in the uAPI comment, certainly not
-> a detailed meaning of RUNNING.
-> 
-> > nor is it an obvious assumption to me, nor is it sufficient to
-> > assume well behaved userspace in the implementation of a kernel
-> > interface.  
-> 
-> I view two aspects to !RUNNING:
-> 
->  1) the kernel must protect itself from hostile userspace. This means
->     preventing loss of kernel or device integrity (ie no error TLPs, no
->     crashing/corrupting the device/etc)
-> 
->  2) userspace must follow the rules so that the migration is not
->     corrupted. We want to set the rules in a way that gives the
->     greatest freedom of HW implementation
-> 
-> Regarding 1, I think we all agree on this, and currently we believe
-> mlx5 is meeting this goal as-is.
-> 
-> Regarding 2, I think about possible implementations and come to the
-> conclusion that !RUNNING must mean no MMIO. For several major reasons
-> 
-> - For whatever reason a poor device may become harmed by MMIO during
->   !RUNNING and so we may someday need to revoke MMIO like we do for
->   reset. This implies that segfault on MMIO during !RUNNING
->   is an option we should keep open.
-> 
-> - A simple DMA queue device, kind of like the HNS driver, could
->   implement migration without HW support. Transition to !RUNNING only
->   needs to wait for the device to fully drained the DMA queue.
-> 
->   Any empty DMA queue with no MMIOs means a quiet and migration ready 
->   device.
-> 
->   However, if further MMIOs poke at the device it may resume
->   operating and issue DMAs, which would corrupt the migration.
-> 
-> - We cannot define what MMIO during !RUNNING should even do. What
->   should a write do? What should a read return? The mlx5 version is
->   roughly discard the write and return garbage on read. While this
->   does not corrupt the migration it is also not useful behavior to
->   define.
-> 
-> In several of these case I'm happy if broken userspace harms itself
-> and corrupts the migration. That does not impact the integrity of the
-> kernel, and is just buggy userspace.
-> 
-> > > We've been investigating how the mlx5 HW will behave in corner cases,
-> > > and currently it looks like mlx5 vfio will not generate error TLPs, or
-> > > corrupt the device itself due to MMIO operations when !RUNNING. So the
-> > > driver itself, as written, probably does not currently have a bug
-> > > here, or need changes.  
-> > 
-> > This is a system level observation or is it actually looking at the
-> > bus?  An Unsupported Request on MMIO write won't even generate an AER
-> > on some systems, but others can trigger a fatal error on others.  
-> 
-> At this point this information is a design analysis from the HW
-> people.
-> 
-> > > > We're tossing around solutions that involve extensions, if not
-> > > > changes to the uAPI.  It's Wednesday of rc7.    
-> > > 
-> > > The P2P issue is seperate, and as I keep saying, unless you want to
-> > > block support for any HW that does not have freeze&queice userspace
-> > > must be aware of this ability and it is logical to design it as an
-> > > extension from where we are now.  
-> > 
-> > Is this essentially suggesting that the uAPI be clarified to state
-> > that the base implementation is only applicable to userspace contexts
-> > with a single migratable vfio device instance?    
-> 
-> That is one way to look at it, yes. It is not just a uAPI limitation
-> but a HW limitation as the NDMA state does require direct HW support
-> to continue accepting MMIO/etc but not issue DMA. A simple DMA queue
-> device as I imagine above couldn't implement it.
-> 
-> > Does that need to preemptively include /dev/iommu generically,
-> > ie. anything that could potentially have an IOMMU mapping to the
-> > device?  
-> 
-> Going back to the top, for #1 the kernel must protect its
-> integrity. So, like reset, if we have a driver where revoke is
-> required then the revoke must extend to /dev/iommu as well.
-> 
-> For #2 - it is up to userspace. If userspace plugs the device into
-> /dev/iommu and keeps operating it then the migration can be
-> corrupted. Buggy userspace.
-> 
-> > I agree that it would be easier to add a capability to expose
-> > multi-device compatibility than to try to retrofit one to expose a
-> > restriction.  
-> 
-> Yes, me too. What we have here is a realization that the current
-> interface does not support P2P scenarios. There is a wide universe of
-> applications that don't need P2P.
-> 
-> The realization is that qemu has a bug in that it allows the VM to
-> execute P2P operations which are incompatible with my above definition
-> of !RUNNING. The result is the #2 case: migration corruption.
-> 
-> qemu should protect itself from a VM causing corruption of the
-> migration. Either by only supporting migration with a single VFIO
-> device, or directly blocking P2P scenarios using the IOMMU.
+>Hi,
 >
-> To support P2P will require new kernel support, capability and HW
-> support. Which, in concrete terms, means we need to write a new uAPI
-> spec, update the mlx5 vfio driver, implement qemu patches, and test
-> the full solution.
-> 
-> Right now we are focused on the non-P2P cases, which I think is a
-> reasonable starting limitation.
+>Currently, we use hard code number to verify if we are in the
+>arp_interval timeslice. But some user may want to narrow/extend
+>the verify timeslice. With the similar team option 'missed_max'
+>the uers could change that number based on their own environment.
+>
+>Would you like to help review and see if this is a proper place
+>for `missed_max` and if I missed anything?
+>
+>Thanks
+>
+>Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+>---
+> Documentation/networking/bonding.rst | 10 ++++++++++
+> drivers/net/bonding/bond_main.c      | 17 +++++++++--------
+> drivers/net/bonding/bond_netlink.c   | 15 +++++++++++++++
+> drivers/net/bonding/bond_options.c   | 21 +++++++++++++++++++++
+> drivers/net/bonding/bond_procfs.c    |  2 ++
+> drivers/net/bonding/bond_sysfs.c     | 13 +++++++++++++
+> include/net/bond_options.h           |  1 +
+> include/net/bonding.h                |  1 +
+> include/uapi/linux/if_link.h         |  1 +
+> tools/include/uapi/linux/if_link.h   |  1 +
+> 10 files changed, 74 insertions(+), 8 deletions(-)
+>
+>diff --git a/Documentation/networking/bonding.rst b/Documentation/network=
+ing/bonding.rst
+>index 31cfd7d674a6..41bb5869ff5f 100644
+>--- a/Documentation/networking/bonding.rst
+>+++ b/Documentation/networking/bonding.rst
+>@@ -421,6 +421,16 @@ arp_all_targets
+> 		consider the slave up only when all of the arp_ip_targets
+> 		are reachable
+> =
 
-It's a reasonable starting point iff we know that we need to support
-devices that cannot themselves support a quiescent state.  Otherwise it
-would make sense to go back to work on the uAPI because I suspect the
-implications to userspace are not going to be as simple as "oops, can't
-migrate, there are two devices."  As you say, there's a universe of
-devices that run together that don't care about p2p and QEMU will be
-pressured to support migration of those configurations.
+>+missed_max
+>+
+>+        Maximum number of arp_interval for missed ARP replies.
+>+        If this number is exceeded, link is reported as down.
+>+
+>+        Note a small value means a strict time. e.g. missed_max is 1 mea=
+ns
+>+        the correct arp reply must be recived during the interval.
+>+
+>+        default 3
 
-QEMU currently already supports p2p between assigned devices, which
-means the user or management tool is going to need to choose whether
-they prefer migration or legacy p2p compatibility.  The DMA mapping
-aspects of this get complicated.  Ideally we could skip p2p DMA
-mappings for any individual device that doesn't support this future
-quiescent state, but we don't do mappings based on individual devices,
-we do them based on the container.  There's a least common denominator
-among the devices in a container, but we also support hotplug and we
-can't suddenly decide to tear down p2p mappings because a new device is
-added.  That probably means that we can't automatically enable both p2p
-and migration, even if we initially only have devices that support this
-new quiescent migration state.  We'd need to design the QEMU options
-so we can't have a subset of devices that want p2p and another set that
-want migration.  If we ever want both migration and p2p, QEMU would
-need to reject any device that can't comply.
+	I'd suggest "arp" in the option name to make the scope more
+obvious.
 
-If we're moving forward without an independent quiescent state, the
-uAPI should include clarification specifying that it's the user's
-responsibility to independently prevent DMA to devices while the device
-is !_RUNNING.  Whether that's because DMA to the device is always
-blocked at the IOMMU or a configuration restriction to prevent
-additional devices that could generate DMA is left to the user.
+>+
+> downdelay
+> =
 
-Support would need to be added in the kernel to tear down these
-mappings if there were a scenario where the user failing to prevent DMA
-to the device could cause misbehavior classified under your #1 above,
-harm to host.
+> 	Specifies the time, in milliseconds, to wait before disabling
+>diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_m=
+ain.c
+>index ff8da720a33a..3baae78a7736 100644
+>--- a/drivers/net/bonding/bond_main.c
+>+++ b/drivers/net/bonding/bond_main.c
+>@@ -3129,8 +3129,8 @@ static void bond_loadbalance_arp_mon(struct bonding=
+ *bond)
+> 			 * when the source ip is 0, so don't take the link down
+> 			 * if we don't know our ip yet
+> 			 */
+>-			if (!bond_time_in_interval(bond, trans_start, 2) ||
+>-			    !bond_time_in_interval(bond, slave->last_rx, 2)) {
+>+			if (!bond_time_in_interval(bond, trans_start, bond->params.missed_max=
+) ||
+>+			    !bond_time_in_interval(bond, slave->last_rx, bond->params.missed_=
+max)) {
+> =
 
-> > Like I've indicated, this is not an obvious corollary of the !_RUNNING
-> > state to me.  I'd tend more towards letting userspace do what they want
-> > and only restrict as necessary to protect the host.  For example the
-> > state of the device when !_RUNNING may be changed by external stimuli,
-> > including MMIO and DMA accesses, but the device does not independently
-> > advance state.  
-> 
-> As above this is mixing #1 and #2 - it is fine to allow the device to
-> do whatever as long as it doesn't harm the host - however that doesn't
-> define the conditions userspace must follow to have a successful
-> migration.
-> 
-> > Also, I think we necessarily require config space read-access to
-> > support migration, which begs the question specifically which regions,
-> > if any, are restricted when !_RUNNING?  Could we get away with zapping
-> > mmaps (sigbus on fault) but allowing r/w access?  
-> 
-> Ideally we would define exactly what device operations are allowed
-> during !RUNNING such that the migration will be successful. Operations
-> outside that list should be considered things that could corrupt the
-> migration.
-> 
-> This list should be as narrow as possible to allow the broadest range
-> of HW designs.
+> 				bond_propose_link_state(slave, BOND_LINK_DOWN);
+> 				slave_state_changed =3D 1;
+>@@ -3224,7 +3224,7 @@ static int bond_ab_arp_inspect(struct bonding *bond=
+)
+> =
 
-So we need a proposal of that list.
+> 		/* Backup slave is down if:
+> 		 * - No current_arp_slave AND
+>-		 * - more than 3*delta since last receive AND
+>+		 * - more than missed_max*delta since last receive AND
+> 		 * - the bond has an IP address
+> 		 *
+> 		 * Note: a non-null current_arp_slave indicates
+>@@ -3236,20 +3236,20 @@ static int bond_ab_arp_inspect(struct bonding *bo=
+nd)
+> 		 */
+> 		if (!bond_is_active_slave(slave) &&
+> 		    !rcu_access_pointer(bond->current_arp_slave) &&
+>-		    !bond_time_in_interval(bond, last_rx, 3)) {
+>+		    !bond_time_in_interval(bond, last_rx, bond->params.missed_max)) {
+> 			bond_propose_link_state(slave, BOND_LINK_DOWN);
+> 			commit++;
+> 		}
+> =
 
-> > > Yes, if qemu becomes deployed, but our testing shows qemu support
-> > > needs a lot of work before it is deployable, so that doesn't seem to
-> > > be an immediate risk.  
-> > 
-> > Good news... I guess...  but do we know what other uAPI changes might
-> > be lurking without completing that effort?  
-> 
-> Well, I would say this patch series is approximately the mid point of
-> the project. We are about 60 patches into kernel changes at this
-> point. What is left is approximately:
-> 
->  - fix bugs in qemu so single-device operation is robust
->  - dirty page tracking using the system iommu (via iommufd I suppose?)
->  - dirty page tracking using the device iommu
->  - migration with P2P ongoing: uAPI spec, kernel implementation
->    and qemu implementation
-> 
-> Then we might have a product..
-> 
-> I also know the mlx5 device was designed with knowledge of other
-> operating systems and our team believes the device interface meets all
-> needs.
-> 
-> So, is the uAPI OK? I'd say provisionally yes. It works within its
-> limitations and several vendors have implemented it, even if only two
-> are heading toward in-tree.
-> 
-> Is it clearly specified and covers all scenarios? No..
-> 
-> > > If some fictional HW can be more advanced and can snapshot not freeze,
-> > > that is great, but it doesn't change one bit that mlx5 cannot and will
-> > > not work that way. Since mlx5 must be supported, there is no choice
-> > > but to define the uAPI around its limitations.  
-> > 
-> > But it seems like you've found that mlx5 is resilient to these things
-> > that you're also deeming necessary to restrict.  
-> 
-> Here I am talking about freeze/quiesce as a HW design choice, not the
-> mmio stuff.
->  
-> > > So, I am not left with a clear idea what is still open that you see as
-> > > blocking. Can you summarize?  
-> > 
-> > It seems we have numerous uAPI questions floating around, including
-> > whether the base specification is limited to a single physical device
-> > within the user's IOMMU context, what the !_RUNNING state actually
-> > implies about the device state, expectations around userspace access
-> > to device regions while in this state, and who is responsible for
-> > limiting such access, and uncertainty what other uAPI changes are
-> > necessary as QEMU support is stabilized.  
-> 
-> I think these questions have straightfoward answers. I've tried to
-> explain my view above.
-> 
-> > Why should we rush a driver in just before the merge window and
-> > potentially increase our experimental driver debt load rather than
-> > continue to co-develop kernel and userspace drivers and maybe also
-> > get input from the owners of the existing out-of-tree drivers?  Thanks,  
-> 
-> It is not a big deal to defer things to rc1, though merging a
-> leaf-driver that has been on-list over a month is certainly not
-> rushing either.
+> 		/* Active slave is down if:
+>-		 * - more than 2*delta since transmitting OR
+>-		 * - (more than 2*delta since receive AND
+>+		 * - more than missed_max*delta since transmitting OR
+>+		 * - (more than missed_max*delta since receive AND
+> 		 *    the bond has an IP address)
+> 		 */
+> 		trans_start =3D dev_trans_start(slave->dev);
+> 		if (bond_is_active_slave(slave) &&
+>-		    (!bond_time_in_interval(bond, trans_start, 2) ||
+>-		     !bond_time_in_interval(bond, last_rx, 2))) {
+>+		    (!bond_time_in_interval(bond, trans_start, bond->params.missed_max=
+) ||
+>+		     !bond_time_in_interval(bond, last_rx, bond->params.missed_max))) =
+{
+> 			bond_propose_link_state(slave, BOND_LINK_DOWN);
+> 			commit++;
+> 		}
 
-If "on-list over a month" is meant to imply that it's well vetted, it
-does not.  That's a pretty quick time frame given the uAPI viability
-discussions that it's generated.
- 
-> We are not here doing all this work because we want to co-develop
-> kernel and user space drivers out of tree for ages.
-> 
-> Why to merge it? Because there is still lots of work to do, and to
-> make progress on the next bits require agreeing to the basic stuff
-> first!
-> 
-> So, lets have some actional feedback on what you need to see for an
-> rc1 merging please.
-> 
-> Since there are currently no unaddressed comments on the patches, I
-> assume you want to see more work done, please define it.
+	The above two changes make the backup and active logic both
+switch to using the missed_max value (i.e., both set to the same value),
+when previously these two cases used differing values (2 for active, 3
+for backup).
 
-I'm tending to agree that there's value in moving forward, but there's
-a lot we're defining here that's not in the uAPI, so I'd like to see
-those things become formalized.
+	Historically, these intervals were staggered deliberately; an
+old comment removed by b2220cad583c9b states:
 
-I think this version is defining that it's the user's responsibility to
-prevent external DMA to devices while in the !_RUNNING state.  This
-resolves the condition that we have no means to coordinate quiescing
-multiple devices.  We shouldn't necessarily prescribe a single device
-solution in the uAPI if the same can be equally achieved through
-configuration of DMA mapping.
+			if ((slave !=3D bond->curr_active_slave) &&
+			    (!bond->current_arp_slave) &&
+			    (time_after_eq(jiffies, slave_last_rx(bond, slave) + 3*delta_in_tic=
+ks))) {
+				/* a backup slave has gone down; three times
+				 * the delta allows the current slave to be
+				 * taken out before the backup slave.
 
-I was almost on board with blocking MMIO, especially as p2p is just DMA
-mapping of MMIO, but what about MSI-X?  During _RESUME we must access
-the MSI-X vector table via the SET_IRQS ioctl to configure interrupts.
-Is this exempt because the access occurs in the host?  In any case, it
-requires that the device cannot be absolutely static while !_RUNNING.
-Does (_RESUMING) have different rules than (_SAVING)?
+	I think it would be prudent to insure that having the active and
+backup timeouts set in lockstep does not result in an undesirable change
+of behavior.
 
-So I'm still unclear how the uAPI needs to be updated relative to
-region access.  We need that list of what the user is allowed to
-access, which seems like minimally config space and MSI-X table space,
-but are these implicitly known for vfio-pci devices or do we need
-region flags or capabilities to describe?  We can't generally know the
-disposition of device specific regions relative to this access.  Thanks,
+>@@ -5822,6 +5822,7 @@ static int bond_check_params(struct bond_params *pa=
+rams)
+> 	params->arp_interval =3D arp_interval;
+> 	params->arp_validate =3D arp_validate_value;
+> 	params->arp_all_targets =3D arp_all_targets_value;
+>+	params->missed_max =3D 3;
+> 	params->updelay =3D updelay;
+> 	params->downdelay =3D downdelay;
+> 	params->peer_notif_delay =3D 0;
+>diff --git a/drivers/net/bonding/bond_netlink.c b/drivers/net/bonding/bon=
+d_netlink.c
+>index 5d54e11d18fa..30ccea63228e 100644
+>--- a/drivers/net/bonding/bond_netlink.c
+>+++ b/drivers/net/bonding/bond_netlink.c
+>@@ -110,6 +110,7 @@ static const struct nla_policy bond_policy[IFLA_BOND_=
+MAX + 1] =3D {
+> 					    .len  =3D ETH_ALEN },
+> 	[IFLA_BOND_TLB_DYNAMIC_LB]	=3D { .type =3D NLA_U8 },
+> 	[IFLA_BOND_PEER_NOTIF_DELAY]    =3D { .type =3D NLA_U32 },
+>+	[IFLA_BOND_MISSED_MAX]		=3D { .type =3D NLA_U32 },
+> };
+> =
 
-Alex
+> static const struct nla_policy bond_slave_policy[IFLA_BOND_SLAVE_MAX + 1=
+] =3D {
+>@@ -453,6 +454,15 @@ static int bond_changelink(struct net_device *bond_d=
+ev, struct nlattr *tb[],
+> 			return err;
+> 	}
+> =
 
+>+	if (data[IFLA_BOND_MISSED_MAX]) {
+>+		int missed_max =3D nla_get_u8(data[IFLA_BOND_MISSED_MAX]);
+>+
+>+		bond_opt_initval(&newval, missed_max);
+>+		err =3D __bond_opt_set(bond, BOND_OPT_MISSED_MAX, &newval);
+>+		if (err)
+>+			return err;
+>+	}
+>+
+> 	return 0;
+> }
+> =
+
+>@@ -515,6 +525,7 @@ static size_t bond_get_size(const struct net_device *=
+bond_dev)
+> 		nla_total_size(ETH_ALEN) + /* IFLA_BOND_AD_ACTOR_SYSTEM */
+> 		nla_total_size(sizeof(u8)) + /* IFLA_BOND_TLB_DYNAMIC_LB */
+> 		nla_total_size(sizeof(u32)) +	/* IFLA_BOND_PEER_NOTIF_DELAY */
+>+		nla_total_size(sizeof(u32)) +	/* IFLA_BOND_MISSED_MAX */
+> 		0;
+> }
+> =
+
+>@@ -650,6 +661,10 @@ static int bond_fill_info(struct sk_buff *skb,
+> 		       bond->params.tlb_dynamic_lb))
+> 		goto nla_put_failure;
+> =
+
+>+	if (nla_put_u8(skb, IFLA_BOND_MISSED_MAX,
+>+		       bond->params.missed_max))
+>+		goto nla_put_failure;
+>+
+> 	if (BOND_MODE(bond) =3D=3D BOND_MODE_8023AD) {
+> 		struct ad_info info;
+> =
+
+>diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bon=
+d_options.c
+>index a8fde3bc458f..57772a9da543 100644
+>--- a/drivers/net/bonding/bond_options.c
+>+++ b/drivers/net/bonding/bond_options.c
+>@@ -78,6 +78,8 @@ static int bond_option_ad_actor_system_set(struct bondi=
+ng *bond,
+> 					   const struct bond_opt_value *newval);
+> static int bond_option_ad_user_port_key_set(struct bonding *bond,
+> 					    const struct bond_opt_value *newval);
+>+static int bond_option_missed_max_set(struct bonding *bond,
+>+				      const struct bond_opt_value *newval);
+> =
+
+> =
+
+> static const struct bond_opt_value bond_mode_tbl[] =3D {
+>@@ -270,6 +272,15 @@ static const struct bond_option bond_opts[BOND_OPT_L=
+AST] =3D {
+> 		.values =3D bond_intmax_tbl,
+> 		.set =3D bond_option_arp_interval_set
+> 	},
+>+	[BOND_OPT_MISSED_MAX] =3D {
+>+		.id =3D BOND_OPT_MISSED_MAX,
+>+		.name =3D "missed_max",
+>+		.desc =3D "Maximum number of missed ARP interval",
+>+		.unsuppmodes =3D BIT(BOND_MODE_8023AD) | BIT(BOND_MODE_TLB) |
+>+			       BIT(BOND_MODE_ALB),
+>+		.values =3D bond_intmax_tbl,
+
+	This allows missed_max to be set to 0; is that intended to be a
+valid setting?
+
+	-J
+
+>+		.set =3D bond_option_missed_max_set
+>+	},
+> 	[BOND_OPT_ARP_TARGETS] =3D {
+> 		.id =3D BOND_OPT_ARP_TARGETS,
+> 		.name =3D "arp_ip_target",
+>@@ -1186,6 +1197,16 @@ static int bond_option_arp_all_targets_set(struct =
+bonding *bond,
+> 	return 0;
+> }
+> =
+
+>+static int bond_option_missed_max_set(struct bonding *bond,
+>+				      const struct bond_opt_value *newval)
+>+{
+>+	netdev_dbg(bond->dev, "Setting missed max to %s (%llu)\n",
+>+		   newval->string, newval->value);
+>+	bond->params.missed_max =3D newval->value;
+>+
+>+	return 0;
+>+}
+>+
+> static int bond_option_primary_set(struct bonding *bond,
+> 				   const struct bond_opt_value *newval)
+> {
+>diff --git a/drivers/net/bonding/bond_procfs.c b/drivers/net/bonding/bond=
+_procfs.c
+>index f3e3bfd72556..2ec11af5f0cc 100644
+>--- a/drivers/net/bonding/bond_procfs.c
+>+++ b/drivers/net/bonding/bond_procfs.c
+>@@ -115,6 +115,8 @@ static void bond_info_show_master(struct seq_file *se=
+q)
+> =
+
+> 		seq_printf(seq, "ARP Polling Interval (ms): %d\n",
+> 				bond->params.arp_interval);
+>+		seq_printf(seq, "ARP Missed Max: %u\n",
+>+				bond->params.missed_max);
+> =
+
+> 		seq_printf(seq, "ARP IP target/s (n.n.n.n form):");
+> =
+
+>diff --git a/drivers/net/bonding/bond_sysfs.c b/drivers/net/bonding/bond_=
+sysfs.c
+>index c48b77167fab..04da21f17503 100644
+>--- a/drivers/net/bonding/bond_sysfs.c
+>+++ b/drivers/net/bonding/bond_sysfs.c
+>@@ -303,6 +303,18 @@ static ssize_t bonding_show_arp_targets(struct devic=
+e *d,
+> static DEVICE_ATTR(arp_ip_target, 0644,
+> 		   bonding_show_arp_targets, bonding_sysfs_store_option);
+> =
+
+>+/* Show the arp missed max. */
+>+static ssize_t bonding_show_missed_max(struct device *d,
+>+				       struct device_attribute *attr,
+>+				       char *buf)
+>+{
+>+	struct bonding *bond =3D to_bond(d);
+>+
+>+	return sprintf(buf, "%u\n", bond->params.missed_max);
+>+}
+>+static DEVICE_ATTR(missed_max, 0644,
+>+		   bonding_show_missed_max, bonding_sysfs_store_option);
+>+
+> /* Show the up and down delays. */
+> static ssize_t bonding_show_downdelay(struct device *d,
+> 				      struct device_attribute *attr,
+>@@ -779,6 +791,7 @@ static struct attribute *per_bond_attrs[] =3D {
+> 	&dev_attr_ad_actor_sys_prio.attr,
+> 	&dev_attr_ad_actor_system.attr,
+> 	&dev_attr_ad_user_port_key.attr,
+>+	&dev_attr_missed_max.attr,
+> 	NULL,
+> };
+> =
+
+>diff --git a/include/net/bond_options.h b/include/net/bond_options.h
+>index e64833a674eb..dd75c071f67e 100644
+>--- a/include/net/bond_options.h
+>+++ b/include/net/bond_options.h
+>@@ -65,6 +65,7 @@ enum {
+> 	BOND_OPT_NUM_PEER_NOTIF_ALIAS,
+> 	BOND_OPT_PEER_NOTIF_DELAY,
+> 	BOND_OPT_LACP_ACTIVE,
+>+	BOND_OPT_MISSED_MAX,
+> 	BOND_OPT_LAST
+> };
+> =
+
+>diff --git a/include/net/bonding.h b/include/net/bonding.h
+>index 15e083e18f75..7b0bcddf9f26 100644
+>--- a/include/net/bonding.h
+>+++ b/include/net/bonding.h
+>@@ -124,6 +124,7 @@ struct bond_params {
+> 	int arp_interval;
+> 	int arp_validate;
+> 	int arp_all_targets;
+>+	unsigned int missed_max;
+> 	int use_carrier;
+> 	int fail_over_mac;
+> 	int updelay;
+>diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+>index eebd3894fe89..4ac53b30b6dc 100644
+>--- a/include/uapi/linux/if_link.h
+>+++ b/include/uapi/linux/if_link.h
+>@@ -858,6 +858,7 @@ enum {
+> 	IFLA_BOND_TLB_DYNAMIC_LB,
+> 	IFLA_BOND_PEER_NOTIF_DELAY,
+> 	IFLA_BOND_AD_LACP_ACTIVE,
+>+	IFLA_BOND_MISSED_MAX,
+> 	__IFLA_BOND_MAX,
+> };
+> =
+
+>diff --git a/tools/include/uapi/linux/if_link.h b/tools/include/uapi/linu=
+x/if_link.h
+>index b3610fdd1fee..4772a115231a 100644
+>--- a/tools/include/uapi/linux/if_link.h
+>+++ b/tools/include/uapi/linux/if_link.h
+>@@ -655,6 +655,7 @@ enum {
+> 	IFLA_BOND_TLB_DYNAMIC_LB,
+> 	IFLA_BOND_PEER_NOTIF_DELAY,
+> 	IFLA_BOND_AD_LACP_ACTIVE,
+>+	IFLA_BOND_MISSED_MAX,
+> 	__IFLA_BOND_MAX,
+> };
+> =
+
+>-- =
+
+>2.31.1
+>
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
