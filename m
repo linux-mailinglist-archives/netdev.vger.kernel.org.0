@@ -2,64 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10B9243FB09
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 12:47:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E63643FB11
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 12:51:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231815AbhJ2Ktz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 06:49:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50988 "EHLO
+        id S231864AbhJ2KyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 06:54:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231749AbhJ2Ktz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 06:49:55 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B059DC061570
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 03:47:26 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id i26so14282141ljg.7
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 03:47:26 -0700 (PDT)
+        with ESMTP id S231863AbhJ2KyJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 06:54:09 -0400
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F080C061714
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 03:51:41 -0700 (PDT)
+Received: by mail-ot1-x336.google.com with SMTP id l16-20020a9d6a90000000b0054e7ab56f27so13005755otq.12
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 03:51:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=OpdQDEcUyJr4fP4Vp1JrIgIOXkocq98sr62N51ao6F8=;
-        b=RyMVUMOKbeKX9nWRqNHA0osjQH/mHbLtfetcnaQGKII80jQRIA41gd97NcGhRT/en4
-         M6BlJ+YALxZII89Uiaye6ww+EH1wpGgpAppzaHcZ9YpoRhiTLJLeTOLfD+59EIbpPrKw
-         eJA3F2yLADRbn5Gn9pBFW85N8kMA96u87Ts/6ogRQIlgvDSdvw9eAol9pE5zvyAseGZs
-         aMF02rxCAn7FazH5pT5hOM4ZfeewfOfe25cq+GZJzlHShHMz91G97Cu/akeDWqubh2FE
-         HL63TyA85hcjdkJNnTJwFuIw8jyXeGT9hqcgjhuKrnSdVJCPw2VL0VDjSVcK5IdfrPUp
-         O9wQ==
+        d=daynix-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=kflZes77kLfnlCXKdc+UCQADCH6ZjAkhe/mo65ZE/wM=;
+        b=Gi6eidgdNeD0ClGpAJBadEe5ljRNwtExYShhmhFkuxFIuUXbTrDGhq6UJ0ofV1gE9g
+         OALyfkNEwKdLBX5auNN2UbMKIdRQJwpDvhDUvLFb7njwQsF036lFjz9CZs8vtXAQoUBl
+         feTJrtBAGpo+VZ1BbmPs4uLH6/cUIR3mkoL2WxeQLCTUNiGFAtvS55PrFOurP24qqMz2
+         YSuk72McNxJVNEXcTo5Hr5N47hPjgKbG1bMXgrl+oBEiDZUO0JShrn5/BVxjbwocNrIJ
+         cij6QXGin0whqXRUHwuKGwvoEjTrBdVuzqdcuH1CJqMHXKYL3HJw5E04tz3n3swKRSZE
+         cLNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=OpdQDEcUyJr4fP4Vp1JrIgIOXkocq98sr62N51ao6F8=;
-        b=j/a+BXvzMP0GHn3fKlHx+XmDq9FYEvVKShxrqeZoS9MSLRz23yA/Qd3aVZ9ABxo356
-         qI6YAWoqXabWibF9NjHdGi0UG9/skhlVsGskEjKMJZcV/5cpUhhSAq51/c2bxB2hFkUu
-         H3XKQHkEYFyvpEjGjPS+oFw/U2efUgqJ4BExSokn/QdUDtOvn1spWYg9rZw1BWIf16qK
-         CKnrQ+V/eKXn20pzifdRG9PN84E5eNIW5C3T/Vwl7IlAHVMyqvG4TYrrnGKLjCM0cJlZ
-         hgsTi8nVlKLtvy5U8OfHj0nY6KHu22AK1qIYc+PUwkjbcPc9xouq7ByZ3Z9d/iebnQQH
-         SLsQ==
-X-Gm-Message-State: AOAM533uqCtVSfBqZuzDUTM3g8EF/QPOEW7Bqy+96kIkv1LoH4QesyK+
-        EQnmeHgR3+9Feu61q69FXVaujRdCbk0l0hPGYAw=
-X-Google-Smtp-Source: ABdhPJwQjfjZaCpqKv+7FQrdR8ppI0ikPoSBNbX1Gv/smX0l7Q7PsKeQ1cv663RXMpBhHutK28lVRttEdIGpVbDKzVU=
-X-Received: by 2002:a2e:b0c6:: with SMTP id g6mr10898440ljl.496.1635504444966;
- Fri, 29 Oct 2021 03:47:24 -0700 (PDT)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=kflZes77kLfnlCXKdc+UCQADCH6ZjAkhe/mo65ZE/wM=;
+        b=PCCgjIjo6n1lyXvnYAk2ML7gKG8XtTcCannuvSHBZ8y9+RIozXkTSfso3fkBEetP3B
+         Ep+uJecmGP6ix6I3swhwxHKBrQVc3KYONFg1kM+31BZ3AyEW0KiNGD9WBXzyjdhY0dJZ
+         bElIHGZAeAsVa9G0GOTxbbMhDTO8xFnMghFPKvrueJ4C/uLwNNdeKESgr2IpPsuADfy/
+         8QHqKEZ0HRlpjl2uGcuI7bXiqPqczpX0NWBEYRo8zC+XfQuFHL/9GKk78RvXGN8WQWj0
+         loFZjeKctUeuiUehL//qXnwnADX+oJwOrUy/jVVQMblRi94UI6izftNyi6i2on/KUZxa
+         GVjg==
+X-Gm-Message-State: AOAM533DddPzmWYl4CoBlT4mEwAneyA8An95YvEovR/G7jAPQBiSz/j/
+        x0x6qB0TmuRTsYuDu9P68RU++gwo2tInnxBnxBVH30Pv8iLtQA==
+X-Google-Smtp-Source: ABdhPJzYwFoiV2YSJqvDZsql4f/iae+jbf5XapOqXSoOGN9AUXlM/JlpvfwvQBBljMRPUtOmcCnpd742EQKTT5chJRw=
+X-Received: by 2002:a9d:7f81:: with SMTP id t1mr7800995otp.376.1635504700905;
+ Fri, 29 Oct 2021 03:51:40 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:ac2:4255:0:0:0:0:0 with HTTP; Fri, 29 Oct 2021 03:47:24
- -0700 (PDT)
-Reply-To: douglasmomoh007@gmail.com
-From:   "Hon. Douglas Momoh" <legalrightschambersfb01@gmail.com>
-Date:   Fri, 29 Oct 2021 11:47:24 +0100
-Message-ID: <CAEMzxqXz29syf-bYNFboRKsLOpSsDJ=mKtEGuAdv0_Nmpb7pxw@mail.gmail.com>
-Subject: Greeting
-To:     undisclosed-recipients:;
+From:   Andrew Melnichenko <andrew@daynix.com>
+Date:   Fri, 29 Oct 2021 13:51:30 +0300
+Message-ID: <CABcq3pG9GRCYqFDBAJ48H1vpnnX=41u+MhQnayF1ztLH4WX0Fw@mail.gmail.com>
+Subject: VirtioNet L3 protocol patch advice request.
+To:     davem@davemloft.net, willemb@google.com, bnemeth@redhat.com,
+        gregkh@linuxfoundation.org
+Cc:     Yan Vugenfirer <yan@daynix.com>,
+        Yuri Benditovich <yuri.benditovich@daynix.com>,
+        netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-A mail was sent to you sometime last week with the expectation of
-having a retune mail from you but to my surprise you never bothered to replied.
-Kindly reply for further explanations.
+Hi all,
+Recently I've discovered a patch that added an additional check for the
+protocol in VirtioNet.
+(https://www.spinics.net/lists/kernel/msg3866319.html)
+Currently, that patch breaks UFOv6 support and possible USOv6 support in
+upcoming patches.
+The issue is the code next to the patch expects failure of
+skb_flow_dissect_flow_keys_basic()
+for IPv6 packets to retry it with protocol IPv6.
+I'm not sure about the goals of the patch and propose the next solution:
 
-Respectfully yours,
-Hon. Douglas Momoh
+static inline int virtio_net_hdr_set_proto(struct sk_buff *skb,
+>                      const struct virtio_net_hdr *hdr)
+> {
+>     __be16 protocol;
+>
+>     protocol = dev_parse_header_protocol(skb);
+>     switch (hdr->gso_type & ~VIRTIO_NET_HDR_GSO_ECN) {
+>     case VIRTIO_NET_HDR_GSO_TCPV4:
+>         skb->protocol = cpu_to_be16(ETH_P_IP);
+>         break;
+>     case VIRTIO_NET_HDR_GSO_TCPV6:
+>         skb->protocol = cpu_to_be16(ETH_P_IPV6);
+>         break;
+>     case VIRTIO_NET_HDR_GSO_UDP:
+>     case VIRTIO_NET_HDR_GSO_UDP_L4:
+>         skb->protocol = protocol;
+>     default:
+>         return -EINVAL;
+>     }
+>
+>     return protocol && protocol == skb->protocol ? 0 : -EINVAL;
+> }
+>
+
+And in virtio_net_hdr_to_skb():
+
+            if (!skb->protocol) {
+>                 if(virtio_net_hdr_set_proto(skb, hdr))
+>                     return -EINVAL;
+>             }
+>
+>             if (!skb_flow_dissect_flow_keys_basic(NULL, skb, &keys,
+>                              NULL, 0, 0, 0,
+>                              0)) {
+>                 return -EINVAL;
+>             }
+>
+
+Would such changes suit the goals of the initial patch?
