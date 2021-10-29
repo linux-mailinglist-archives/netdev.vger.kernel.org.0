@@ -2,143 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3258543F46F
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 03:40:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2D9D43F4A3
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 03:51:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231178AbhJ2BnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Oct 2021 21:43:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42780 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229950AbhJ2BnO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 21:43:14 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7ECCC061570;
-        Thu, 28 Oct 2021 18:40:46 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id t5-20020a17090a4e4500b001a0a284fcc2so9376511pjl.2;
-        Thu, 28 Oct 2021 18:40:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YoFHrPI4vQheNaDgbRphVcApKfwEqMeNML0BpANj1Ik=;
-        b=LAguYGWdq3s/gYN1GO03WTKpCqLwpnndyIgDKyvEUc5kjsoA2SeMMRm6buNGGiqY6C
-         hY+w35L+8EQb7Gb10w4J8t1Vo4xu4Rj1I1IOxLoOLr8X8ESpohedoHwQ/NFLANCLKhOZ
-         MQVV6LAbjumnBJ6YZb3EYU79Oqvm2a6yGS1pXm7eH6thw9mtHx3ml1BoPUygSLU5ZrE9
-         Lr9vp3O10SwcifDkyGX3lD8k8B9+R1ATngWNsi0MyjmoyYemLssdfsRT+/yEJg8shZCM
-         qx1UitOPi6to0EOVBm/4lIrseLTwuW3xPbCWQQFhDxQ46fjkG5jVc7GlKNOBLA2Cm0Fg
-         SfLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YoFHrPI4vQheNaDgbRphVcApKfwEqMeNML0BpANj1Ik=;
-        b=T/yHED9+fnAOBGchAcoZ4ZS/EXq5kOBTL3Tjnr1TNsSLKqSJDVmVMcYau4wOrcQRxH
-         +8g9w8txkc9cKf9En0GfeQHMQvEIC7iapDzIEFmxK73Jz6OEWU+kiEvAVcd4N6+n56m5
-         sQalMzho989YspRUJ/GoFH/4m91660CNXQSFigy2unIlBR2UhchP/w0d4s1irGDFeDtr
-         i5yzstRP9/17Nb9dgLZhxxSx9zIs/e9Amj4bIId3WVxrtuNfDqIGG8sb7hxr1VKq+nlm
-         lYLZi3Iq+K6kIe2mYqxS76pMIIbg8tBnkZOEDJr7h3HvSbxCEkgsZ2b0V2rOTHd3OAbM
-         4FVg==
-X-Gm-Message-State: AOAM531nbB7iagallPhCjTu9JCJA4udOyhPyLZKOeeNw8GD7kDer9liI
-        72REZP/6schDYM9Pmp6RBNldpOSAJ4rGrM9xcqY=
-X-Google-Smtp-Source: ABdhPJz5qrgc/SWgIkzxmJIWTPyp85xnFOvc0wdaE1L2J5NDfHNH9ZUwLAFrTDs/rrSIBbh7UFQkXzz0/hWCK+l7pZQ=
-X-Received: by 2002:a17:90b:3148:: with SMTP id ip8mr8250241pjb.62.1635471646161;
- Thu, 28 Oct 2021 18:40:46 -0700 (PDT)
+        id S231506AbhJ2Bxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Oct 2021 21:53:33 -0400
+Received: from gandalf.ozlabs.org ([150.107.74.76]:57019 "EHLO
+        gandalf.ozlabs.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231468AbhJ2Bxc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Oct 2021 21:53:32 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4HgQPd6QCNz4xYy;
+        Fri, 29 Oct 2021 12:51:01 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1635472263;
+        bh=wmANmsRuASHCQHaz7QWRHhQxlaXvm3wDVWXitsA8xxU=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=k7nE+Vbr2pEF9UfeAQQyh6z/iW03s/mt4EHnKSFFZz+hBUwgB7/+sPbL+UUzYvwXL
+         4CYAcfWnYSocPoFgg9P7z6JzggGChqSkAQPC+K32pOqPYoWhLSTFkPL6GjnSr+mnfz
+         mS5crCCfBHTU6SJu4PYXO/lfxwq3ULO/dkgV2gF8VtVR4fDzIGx/FDwuGiiabyOHDn
+         B9RQREbhSyeeLdZQpfW39tNzqBTpCztnGXaF4WqOoWB/opPbpsZOOuCRRLxgkEKwqZ
+         SmNj9iAB1JPPl0zZxl3KqEOVE+9Hz/gyuerIyCTYFzMrPWwEyXdHF3mGoz82LyadCD
+         EFatR9mT4aA1A==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, ast@kernel.org,
+        christophe.leroy@csgroup.eu, Hari Bathini <hbathini@linux.ibm.com>,
+        jniethe5@gmail.com
+Cc:     andrii@kernel.org, bpf@vger.kernel.org, john.fastabend@gmail.com,
+        kafai@fb.com, kpsingh@kernel.org, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org, paulus@samba.org, songliubraving@fb.com,
+        stable@vger.kernel.org, yhs@fb.com
+Subject: Re: [PATCH] powerpc/bpf: fix write protecting JIT code
+In-Reply-To: <c8d7390b-c07c-75cd-e9e9-4b8f0b786cc6@iogearbox.net>
+References: <20211025055649.114728-1-hbathini@linux.ibm.com>
+ <1635142354.46h6w5c2rx.naveen@linux.ibm.com>
+ <c8d7390b-c07c-75cd-e9e9-4b8f0b786cc6@iogearbox.net>
+Date:   Fri, 29 Oct 2021 12:50:57 +1100
+Message-ID: <87zgqs8upq.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-References: <20211012065705.224643-1-liujian56@huawei.com> <20211012065705.224643-2-liujian56@huawei.com>
- <6172d739dfbbe_82a7f2083b@john-XPS-13-9370.notmuch>
-In-Reply-To: <6172d739dfbbe_82a7f2083b@john-XPS-13-9370.notmuch>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 28 Oct 2021 18:40:35 -0700
-Message-ID: <CAADnVQL0GG7Yk20hJ_J5i0X9RFKwU2ma7eFomut4fi3pzNZffw@mail.gmail.com>
-Subject: Re: [PATHC bpf v5 2/3] selftests, bpf: Fix test_txmsg_ingress_parser error
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Liu Jian <liujian56@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Cong Wang <xiyou.wangcong@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 22, 2021 at 8:22 AM John Fastabend <john.fastabend@gmail.com> wrote:
+Daniel Borkmann <daniel@iogearbox.net> writes:
+> On 10/25/21 8:15 AM, Naveen N. Rao wrote:
+>> Hari Bathini wrote:
+>>> Running program with bpf-to-bpf function calls results in data access
+>>> exception (0x300) with the below call trace:
+>>>
+>>> =C2=A0=C2=A0=C2=A0 [c000000000113f28] bpf_int_jit_compile+0x238/0x750 (=
+unreliable)
+>>> =C2=A0=C2=A0=C2=A0 [c00000000037d2f8] bpf_check+0x2008/0x2710
+>>> =C2=A0=C2=A0=C2=A0 [c000000000360050] bpf_prog_load+0xb00/0x13a0
+>>> =C2=A0=C2=A0=C2=A0 [c000000000361d94] __sys_bpf+0x6f4/0x27c0
+>>> =C2=A0=C2=A0=C2=A0 [c000000000363f0c] sys_bpf+0x2c/0x40
+>>> =C2=A0=C2=A0=C2=A0 [c000000000032434] system_call_exception+0x164/0x330
+>>> =C2=A0=C2=A0=C2=A0 [c00000000000c1e8] system_call_vectored_common+0xe8/=
+0x278
+>>>
+>>> as bpf_int_jit_compile() tries writing to write protected JIT code
+>>> location during the extra pass.
+>>>
+>>> Fix it by holding off write protection of JIT code until the extra
+>>> pass, where branch target addresses fixup happens.
+>>>
+>>> Cc: stable@vger.kernel.org
+>>> Fixes: 62e3d4210ac9 ("powerpc/bpf: Write protect JIT code")
+>>> Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
+>>> ---
+>>> =C2=A0arch/powerpc/net/bpf_jit_comp.c | 2 +-
+>>> =C2=A01 file changed, 1 insertion(+), 1 deletion(-)
+>>=20
+>> Thanks for the fix!
+>>=20
+>> Reviewed-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
 >
-> Liu Jian wrote:
-> > After "skmsg: lose offset info in sk_psock_skb_ingress", the test case
-> > with ktls failed. This because ktls parser(tls_read_size) return value
-> > is 285 not 256.
-> >
-> > the case like this:
-> >       tls_sk1 --> redir_sk --> tls_sk2
-> > tls_sk1 sent out 512 bytes data, after tls related processing redir_sk
-> > recved 570 btyes data, and redirect 512 (skb_use_parser) bytes data to
-> > tls_sk2; but tls_sk2 needs 285 * 2 bytes data, receive timeout occurred.
-> >
-> > Signed-off-by: Liu Jian <liujian56@huawei.com>
-> > ---
-> >  tools/testing/selftests/bpf/test_sockmap.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/tools/testing/selftests/bpf/test_sockmap.c b/tools/testing/selftests/bpf/test_sockmap.c
-> > index eefd445b96fc..06924917ad77 100644
-> > --- a/tools/testing/selftests/bpf/test_sockmap.c
-> > +++ b/tools/testing/selftests/bpf/test_sockmap.c
-> > @@ -1680,6 +1680,8 @@ static void test_txmsg_ingress_parser(int cgrp, struct sockmap_options *opt)
-> >  {
-> >       txmsg_pass = 1;
-> >       skb_use_parser = 512;
-> > +     if (ktls == 1)
-> > +             skb_use_parser = 570;
-> >       opt->iov_length = 256;
-> >       opt->iov_count = 1;
-> >       opt->rate = 2;
-> > --
-> > 2.17.1
-> >
->
-> Hi Liu LGTM sorry about the delay there I thought I acked this already, but
-> guess now.
->
-> Acked-by: John Fastabend <john.fastabend@gmail.com>
+> LGTM, I presume this fix will be routed via Michael.
 
-Hmm.
-patch 1 is causing a crash.
+Thanks for reviewing, I've picked it up.
 
-./test_progs -t sockmap
-#124 sockmap_basic:OK
-#125 sockmap_ktls:OK
-[   15.391661] ==================================================================
-[   15.392635] BUG: KASAN: null-ptr-deref in dst_release+0x1d/0x80
-[   15.393337] Write of size 4 at addr 0000000000000042 by task test_progs/1358
-[   15.394144]
-[   15.394326] CPU: 3 PID: 1358 Comm: test_progs Tainted: G
-O      5.15.0-rc3-01147-ge4bcff4e3384 #3617
-[   15.395415] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-[   15.396653] Call Trace:
-[   15.396929]  <IRQ>
-[   15.397163]  dump_stack_lvl+0x44/0x57
-[   15.397569]  ? dst_release+0x1d/0x80
-[   15.397970]  kasan_report.cold.15+0x66/0xdf
-[   15.398430]  ? dst_release+0x1d/0x80
-[   15.398824]  ? sk_psock_verdict_apply+0x149/0x460
-[   15.399341]  kasan_check_range+0x1c1/0x1e0
-[   15.399789]  ? sk_psock_verdict_apply+0x149/0x460
-[   15.400308]  dst_release+0x1d/0x80
-[   15.400679]  skb_release_head_state+0x100/0x170
-[   15.401178]  skb_release_all+0xe/0x50
-[   15.401580]  kfree_skb+0xa1/0x230
-[   15.401957]  sk_psock_verdict_apply+0x149/0x460
-[   15.402450]  ? bpf_sk_redirect_map+0x2b/0x1a0
-[   15.402974]  sk_psock_strp_read+0x239/0x550
-[   15.403452]  __strp_recv+0x4a7/0x1b70
-[   15.403917]  tcp_read_sock+0x1d2/0x760
+> BPF selftests have plenty of BPF-to-BPF calls in there, too bad this was
+> caught so late. :/
+
+Yeah :/
+
+STRICT_KERNEL_RWX is not on by default in all our defconfigs, so that's
+probably why no one caught it.
+
+I used to run the BPF selftests but they stopped building for me a while
+back, I'll see if I can get them going again.
+
+cheers
