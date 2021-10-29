@@ -2,88 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53B8843FC98
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 14:46:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7708243FCA5
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 14:50:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231714AbhJ2Mso (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 08:48:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49842 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231612AbhJ2Msm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 08:48:42 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDF31C061570
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 05:46:13 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1mgRGs-0004zm-FR; Fri, 29 Oct 2021 14:46:10 +0200
-Received: from pengutronix.de (2a03-f580-87bc-d400-e533-710f-3fbf-10c2.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:e533:710f:3fbf:10c2])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 8BE4F6A0A18;
-        Fri, 29 Oct 2021 12:46:09 +0000 (UTC)
-Date:   Fri, 29 Oct 2021 14:46:08 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] can: netlink: report the CAN controller mode
- supported flags
-Message-ID: <20211029124608.u7zbprvojifjpa7j@pengutronix.de>
-References: <20211026121651.1814251-1-mailhol.vincent@wanadoo.fr>
+        id S231509AbhJ2Mwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 08:52:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56470 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231367AbhJ2Mwh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Oct 2021 08:52:37 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 03C3B611C3;
+        Fri, 29 Oct 2021 12:50:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635511809;
+        bh=Ir5AqHPTVA6ls3NhaH39nBMLAS4uAOL+78kKnKyvoec=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=jqB5k2r05gXnDSliXgYSOnBXa7ntBwgPUGbTRFiFMxxOZD11W7HK9PiylBRZ9R7iF
+         nro5Sd7jyDoCF0177dDa7WQYuIJD7EYvGV5TNa6LGhGf+imK7qtR7Gxst3FI7DLKIE
+         QmE3onUIP7Wx7Q/JoXDcPOAhcosaS+d/5Ky8yxQ13wrp5fioAb/ISr2+bTxqIzdUdN
+         g4gzKXg40+4Qk48u4OW6iZAO9cBMb7/Zae3cBOl4zmE3RroqUqi9HvQIoWnAhPRsmb
+         58P3fvxjWVbxz1OvJaNQWG40VkZ2m0luNFHFjQa2K2D4D3bxSPR6AJD6fy/UTEmwMk
+         nehmTRuXWdw+Q==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F2E4A60A17;
+        Fri, 29 Oct 2021 12:50:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="mhl3n4o3vpb4z6wa"
-Content-Disposition: inline
-In-Reply-To: <20211026121651.1814251-1-mailhol.vincent@wanadoo.fr>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] devlink: make all symbols GPL-only
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163551180899.32606.6428806417794966582.git-patchwork-notify@kernel.org>
+Date:   Fri, 29 Oct 2021 12:50:08 +0000
+References: <20211028211913.22862-1-kuba@kernel.org>
+In-Reply-To: <20211028211913.22862-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, jiri@nvidia.com,
+        idosch@idosch.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
---mhl3n4o3vpb4z6wa
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-On 26.10.2021 21:16:51, Vincent Mailhol wrote:
-> Because you already added the series to the testing branch of
-> linux-can-next, I am only resending the last patch. Please let me know
-> if you prefer me to resend the full series.
+On Thu, 28 Oct 2021 14:19:13 -0700 you wrote:
+> devlink_alloc() and devlink_register() are both GPL.
+> A non-GPL module won't get far, so for consistency
+> we can make all symbols GPL without risking any real
+> life breakage.
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> 
+> [...]
 
-I'll include the other patches in my next pull request, no need to
-repost them.
+Here is the summary with links:
+  - [net-next] devlink: make all symbols GPL-only
+    https://git.kernel.org/netdev/net-next/c/c52ef04d5920
 
-regards,
-Marc
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
---mhl3n4o3vpb4z6wa
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmF77Q4ACgkQqclaivrt
-76k86Af9GW+WjXtpH9EV90A3ST+Iw1ADs+bMNcy7Nvc+gru4FeH9UUXjeCeHTj6L
-RzrlzGa1XI49a3Bskya+ACiSZHAjEi+bqpCy2wOQb6suMMc74Syxt+l60Wn2ZK1J
-6zILDS62mNFBqxonwCBLgLZKPAtcZbx2xLylw1tc0tliSaYqG+BmkQUYCMV9dD0q
-zxZK/+g02VVWVqoTyRwbuQ7AOZa7VI5p+OZZROkeW6CFkp6fGZm1XHZPzTnYv0oG
-otBJ2re4zSPuADjTC0Oup/WdgmlqQ+c1DqKkQ0jOv3C+kz5bLNntEqHSYtFPvk2A
-vz0zIBrJX+07QhM4tTnBi7mpTfYy+w==
-=hTMi
------END PGP SIGNATURE-----
-
---mhl3n4o3vpb4z6wa--
