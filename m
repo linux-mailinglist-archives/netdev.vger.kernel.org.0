@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 907F343FC6C
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 14:40:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AD7D43FC6E
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 14:40:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231578AbhJ2Mmj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 08:42:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51514 "EHLO mail.kernel.org"
+        id S231589AbhJ2Mmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 08:42:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51504 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231530AbhJ2Mmh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Oct 2021 08:42:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 854F561184;
+        id S231519AbhJ2Mmg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Oct 2021 08:42:36 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 77F2F61175;
         Fri, 29 Oct 2021 12:40:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1635511208;
-        bh=Fffx43u3g7+ftdon8LgWAfub6my9z//4/ZIVL2l1p9Y=;
+        bh=SyPB6DuAYVSltIJczLWoUIQFn28Qarpiq3i7rTT3rHA=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MytEJzfZ1Tlc6x6WZ0dc1W/+ntB9d042Fw1XHzK3xrioczE0fdwwJ27BlSpX4uM7r
-         Y5fd1fc7ifbFITjcwX4k/dxK3YA6VsD84wpOf3+JHc8hb6rXpcJ3dF1kUewlqIwPmj
-         k6zgvHjIEJPJQsM6ageqWOzB9GLQsB2Lqk63ZBWYlN3y8w955ViVICcujvzwXR/ikS
-         GnmPHpl9fPu7/6qm67tv/FISZeRwjk3/5/Z5B+crcxMk49ZTWKSo481KRjkh9n52Kp
-         QuG1wvrmRNlasNpvl3Z4J7whfxU0eOEap35GjW228N454XDU7cpZf80Jcc7BJFSS4G
-         /jNXaMg2Qnd4w==
+        b=mibKVDM22yDycQE6rTFnl1BZhblJzgVHTKQTq9vho0eAfRPn7dRViWEAso6cAjc+w
+         DMzX26PA55G73hETDyUrbRWyJTKIClRTH5bAyRKqE9LZNRdc4Z2stJqlXfkJMJNT2U
+         0/7kXlb5jzHdsZtNDdoTCEcxp5XM5cJdbFoyOZNBf4PW3w1nr99bppW+esxei6rx+M
+         a9RYaymeF9hlbkpbFM5zlPxAwihjKUuKrG4kRRE/Uc6lSOYN+s/WN/Fg6rO1pHwdHE
+         h/OpeM6zH67GKAFWpBVJIst21+ol4CZ4WWBSJ5L6Tvi+AJGxxAZCsA5FT+vLoiq9/s
+         hHVW//iYesW9A==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 759AE60A5A;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 69F4260A6B;
         Fri, 29 Oct 2021 12:40:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: netxen: fix code indentation
+Subject: Re: [PATCH net-next] net: ethernet: microchip: lan743x: Increase rx ring
+ size to improve rx performance
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163551120847.27055.6001101207379359593.git-patchwork-notify@kernel.org>
+Message-Id: <163551120842.27055.17696599430815824172.git-patchwork-notify@kernel.org>
 Date:   Fri, 29 Oct 2021 12:40:08 +0000
-References: <20211028182453.9713-1-sakiwit@gmail.com>
-In-Reply-To: <20211028182453.9713-1-sakiwit@gmail.com>
-To:     =?utf-8?q?J=CE=B5an_Sacren_=3Csakiwit=40gmail=2Ecom=3E?=@ci.codeaurora.org
-Cc:     manishc@marvell.com, rahulv@marvell.com,
-        GR-Linux-NIC-Dev@marvell.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org
+References: <20211028152105.19467-1-yuiko.oshino@microchip.com>
+In-Reply-To: <20211028152105.19467-1-yuiko.oshino@microchip.com>
+To:     Yuiko Oshino <yuiko.oshino@microchip.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        bryan.whitehead@microchip.com, UNGLinuxDriver@microchip.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,19 +48,19 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Thu, 28 Oct 2021 12:24:52 -0600 you wrote:
-> From: Jean Sacren <sakiwit@gmail.com>
+On Thu, 28 Oct 2021 11:21:05 -0400 you wrote:
+> Increase the rx ring size (LAN743X_RX_RING_SIZE) to improve rx performance on some platforms.
+> Tested on x86 PC with EVB-LAN7430.
+> The iperf3.7 TCPIP improved from 881 Mbps to 922 Mbps, and UDP improved from 817 Mbps to 936 Mbps.
 > 
-> Remove additional character in the source to properly indent if branch.
-> 
-> Signed-off-by: Jean Sacren <sakiwit@gmail.com>
+> Signed-off-by: Yuiko Oshino <yuiko.oshino@microchip.com>
 > ---
->  drivers/net/ethernet/qlogic/netxen/netxen_nic_main.c | 2 +-
+>  drivers/net/ethernet/microchip/lan743x_main.h | 2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
 
 Here is the summary with links:
-  - [net-next] net: netxen: fix code indentation
-    https://git.kernel.org/netdev/net-next/c/c4cb8d0ac714
+  - [net-next] net: ethernet: microchip: lan743x: Increase rx ring size to improve rx performance
+    https://git.kernel.org/netdev/net-next/c/a1f1627540cd
 
 You are awesome, thank you!
 -- 
