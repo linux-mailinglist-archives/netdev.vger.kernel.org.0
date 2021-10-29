@@ -2,202 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AED33440457
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 22:47:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31174440476
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 22:56:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231569AbhJ2UuK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 16:50:10 -0400
-Received: from mga06.intel.com ([134.134.136.31]:9544 "EHLO mga06.intel.com"
+        id S230411AbhJ2U7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 16:59:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58408 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231409AbhJ2Utu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Oct 2021 16:49:50 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10152"; a="291587520"
-X-IronPort-AV: E=Sophos;i="5.87,193,1631602800"; 
-   d="scan'208";a="291587520"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2021 13:47:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,193,1631602800"; 
-   d="scan'208";a="448483307"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga003.jf.intel.com with ESMTP; 29 Oct 2021 13:47:18 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        sassmann@redhat.com,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net-next 7/7] iavf: Fix kernel BUG in free_msi_irqs
-Date:   Fri, 29 Oct 2021 13:45:40 -0700
-Message-Id: <20211029204540.3390007-8-anthony.l.nguyen@intel.com>
+        id S230334AbhJ2U7M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Oct 2021 16:59:12 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id ECB2061056;
+        Fri, 29 Oct 2021 20:56:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635541003;
+        bh=W3ODlFsjIKGUfeCJcduHT4dlu9g9RzqKebrh/AvNZfQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=XnovX32okbZ6oYpif+V4rMiI/9g1bvmkNDn41fbfcjep5aaMYn24VvNKuE3uK5UGM
+         SHRLPXntTaS0P/y8jSDDeLji1PPqHsZcyTdpDSEy32P4UmU+QzAvQ0H7De3Bnexkvn
+         p4XgZUhTtQVRvkcJH/YJwt++/wYCKlEgHNWYnP5PMZgbuWkJZlOYOWD7JtgwMNQI4F
+         Buh3AEl2+Ie3wC5MKCl5QdHnR0orfXn/bimpucl7xYItaL4LMhB75vosVNiSJi7Z/k
+         dMUIHco+EMox22omc4/JgtamYBbtvisJYFJdfBl56M4xazAuxJRaK4ktW/IztesS+F
+         PlgIC5/TdRPZg==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net-next 00/14] mlx5 updates 2021-10-29
+Date:   Fri, 29 Oct 2021 13:56:18 -0700
+Message-Id: <20211029205632.390403-1-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211029204540.3390007-1-anthony.l.nguyen@intel.com>
-References: <20211029204540.3390007-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-Fix driver not freeing VF's traffic irqs, prior to calling
-pci_disable_msix in iavf_remove.
-There were possible 2 erroneous states in which, iavf_close would
-not be called.
-One erroneous state is fixed by allowing netdev to register, when state
-is already running. It was possible for VF adapter to enter state loop
-from running to resetting, where iavf_open would subsequently fail.
-If user would then unload driver/remove VF pci, iavf_close would not be
-called, as the netdev was not registered, leaving traffic pcis still
-allocated.
-Fixed this by breaking loop, allowing netdev to open device when adapter
-state is __IAVF_RUNNING and it is not explicitily downed.
-Other possiblity is entering to iavf_remove from __IAVF_RESETTING state,
-where iavf_close would not free irqs, but just return 0.
-Fixed this by checking for last adapter state and then removing irqs.
+Hi Dave and Jakub,
 
-Kernel panic:
-[ 2773.628585] kernel BUG at drivers/pci/msi.c:375!
-...
-[ 2773.631567] RIP: 0010:free_msi_irqs+0x180/0x1b0
-...
-[ 2773.640939] Call Trace:
-[ 2773.641572]  pci_disable_msix+0xf7/0x120
-[ 2773.642224]  iavf_reset_interrupt_capability.part.41+0x15/0x30 [iavf]
-[ 2773.642897]  iavf_remove+0x12e/0x500 [iavf]
-[ 2773.643578]  pci_device_remove+0x3b/0xc0
-[ 2773.644266]  device_release_driver_internal+0x103/0x1f0
-[ 2773.644948]  pci_stop_bus_device+0x69/0x90
-[ 2773.645576]  pci_stop_and_remove_bus_device+0xe/0x20
-[ 2773.646215]  pci_iov_remove_virtfn+0xba/0x120
-[ 2773.646862]  sriov_disable+0x2f/0xe0
-[ 2773.647531]  ice_free_vfs+0x2f8/0x350 [ice]
-[ 2773.648207]  ice_sriov_configure+0x94/0x960 [ice]
-[ 2773.648883]  ? _kstrtoull+0x3b/0x90
-[ 2773.649560]  sriov_numvfs_store+0x10a/0x190
-[ 2773.650249]  kernfs_fop_write+0x116/0x190
-[ 2773.650948]  vfs_write+0xa5/0x1a0
-[ 2773.651651]  ksys_write+0x4f/0xb0
-[ 2773.652358]  do_syscall_64+0x5b/0x1a0
-[ 2773.653075]  entry_SYSCALL_64_after_hwframe+0x65/0xca
+This pull request provides some misc updates and the support
+for TC offload of OVS internal ports.
 
-Fixes: 22ead37f8af8 ("i40evf: Add longer wait after remove module")
-Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
-This is for net-next as it relies on changes not on net.
+For more information please see tag log below.
 
- drivers/net/ethernet/intel/iavf/iavf.h      | 36 +++++++++++++++++++++
- drivers/net/ethernet/intel/iavf/iavf_main.c | 20 ++++++++++++
- 2 files changed, 56 insertions(+)
+Please pull and let me know if there is any problem.
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-index e0b88ff76466..e6e7c1da47fb 100644
---- a/drivers/net/ethernet/intel/iavf/iavf.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf.h
-@@ -394,6 +394,38 @@ struct iavf_device {
- extern char iavf_driver_name[];
- extern struct workqueue_struct *iavf_wq;
- 
-+static inline const char *iavf_state_str(enum iavf_state_t state)
-+{
-+	switch (state) {
-+	case __IAVF_STARTUP:
-+		return "__IAVF_STARTUP";
-+	case __IAVF_REMOVE:
-+		return "__IAVF_REMOVE";
-+	case __IAVF_INIT_VERSION_CHECK:
-+		return "__IAVF_INIT_VERSION_CHECK";
-+	case __IAVF_INIT_GET_RESOURCES:
-+		return "__IAVF_INIT_GET_RESOURCES";
-+	case __IAVF_INIT_SW:
-+		return "__IAVF_INIT_SW";
-+	case __IAVF_INIT_FAILED:
-+		return "__IAVF_INIT_FAILED";
-+	case __IAVF_RESETTING:
-+		return "__IAVF_RESETTING";
-+	case __IAVF_COMM_FAILED:
-+		return "__IAVF_COMM_FAILED";
-+	case __IAVF_DOWN:
-+		return "__IAVF_DOWN";
-+	case __IAVF_DOWN_PENDING:
-+		return "__IAVF_DOWN_PENDING";
-+	case __IAVF_TESTING:
-+		return "__IAVF_TESTING";
-+	case __IAVF_RUNNING:
-+		return "__IAVF_RUNNING";
-+	default:
-+		return "__IAVF_UNKNOWN_STATE";
-+	}
-+}
-+
- static inline void iavf_change_state(struct iavf_adapter *adapter,
- 				     enum iavf_state_t state)
- {
-@@ -401,6 +433,10 @@ static inline void iavf_change_state(struct iavf_adapter *adapter,
- 		adapter->last_state = adapter->state;
- 		adapter->state = state;
- 	}
-+	dev_dbg(&adapter->pdev->dev,
-+		"state transition from:%s to:%s\n",
-+		iavf_state_str(adapter->last_state),
-+		iavf_state_str(adapter->state));
- }
- 
- int iavf_up(struct iavf_adapter *adapter);
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 469160346438..847d67e32a54 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -3280,6 +3280,13 @@ static int iavf_open(struct net_device *netdev)
- 		goto err_unlock;
- 	}
- 
-+	if (adapter->state == __IAVF_RUNNING &&
-+	    !test_bit(__IAVF_VSI_DOWN, adapter->vsi.state)) {
-+		dev_dbg(&adapter->pdev->dev, "VF is already open.\n");
-+		err = 0;
-+		goto err_unlock;
-+	}
-+
- 	/* allocate transmit descriptors */
- 	err = iavf_setup_all_tx_resources(adapter);
- 	if (err)
-@@ -3915,6 +3922,7 @@ static int __maybe_unused iavf_resume(struct device *dev_d)
- static void iavf_remove(struct pci_dev *pdev)
- {
- 	struct iavf_adapter *adapter = iavf_pdev_to_adapter(pdev);
-+	enum iavf_state_t prev_state = adapter->last_state;
- 	struct net_device *netdev = adapter->netdev;
- 	struct iavf_fdir_fltr *fdir, *fdirtmp;
- 	struct iavf_vlan_filter *vlf, *vlftmp;
-@@ -3953,10 +3961,22 @@ static void iavf_remove(struct pci_dev *pdev)
- 	iavf_change_state(adapter, __IAVF_REMOVE);
- 	adapter->aq_required = 0;
- 	adapter->flags &= ~IAVF_FLAG_REINIT_ITR_NEEDED;
-+
- 	iavf_free_all_tx_resources(adapter);
- 	iavf_free_all_rx_resources(adapter);
- 	iavf_misc_irq_disable(adapter);
- 	iavf_free_misc_irq(adapter);
-+
-+	/* In case we enter iavf_remove from erroneous state, free traffic irqs
-+	 * here, so as to not cause a kernel crash, when calling
-+	 * iavf_reset_interrupt_capability.
-+	 */
-+	if ((adapter->last_state == __IAVF_RESETTING &&
-+	     prev_state != __IAVF_DOWN) ||
-+	    (adapter->last_state == __IAVF_RUNNING &&
-+	     !(netdev->flags & IFF_UP)))
-+		iavf_free_traffic_irqs(adapter);
-+
- 	iavf_reset_interrupt_capability(adapter);
- 	iavf_free_q_vectors(adapter);
- 
--- 
-2.31.1
+Thanks,
+Saeed.
 
+The following changes since commit 28131d896d6d316bc1f6f305d1a9ed6d96c3f2a1:
+
+  Merge tag 'wireless-drivers-next-2021-10-29' of git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next (2021-10-29 08:58:40 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-10-29
+
+for you to fetch changes up to b16eb3c81fe27978afdb2c111908d4d627a88d99:
+
+  net/mlx5: Support internal port as decap route device (2021-10-29 13:53:31 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2021-10-29
+
+1) Minor trivial refactoring and improvements
+2) Check for unsupported parameters fields in SW steering
+3) Support TC offload for OVS internal port, from Ariel, see below.
+
+Ariel Levkovich says:
+
+=====================
+
+Support HW offload of TC rules involving OVS internal port
+device type as the filter device or the destination
+device.
+
+The support is for flows which explicitly use the internal
+port as source or destination device as well as indirect offload
+for flows performing tunnel set or unset via a tunnel device
+and the internal port is the tunnel overlay device.
+
+Since flows with internal port as source port are added
+as egress rules while redirecting to internal port is done
+as an ingress redirect, the series introduces the necessary
+changes in mlx5_core driver to support the new types of flows
+and actions.
+
+=====================
+
+----------------------------------------------------------------
+Ariel Levkovich (9):
+      net/mlx5e: Refactor rx handler of represetor device
+      net/mlx5e: Use generic name for the forwarding dev pointer
+      net/mlx5: E-Switch, Add ovs internal port mapping to metadata support
+      net/mlx5e: Accept action skbedit in the tc actions list
+      net/mlx5e: Offload tc rules that redirect to ovs internal port
+      net/mlx5e: Offload internal port as encap route device
+      net/mlx5e: Add indirect tc offload of ovs internal port
+      net/mlx5e: Term table handling of internal port rules
+      net/mlx5: Support internal port as decap route device
+
+Muhammad Sammar (1):
+      net/mlx5: DR, Add check for unsupported fields in match param
+
+Nathan Chancellor (1):
+      net/mlx5: Add esw assignment back in mlx5e_tc_sample_unoffload()
+
+Paul Blakey (2):
+      net/mlx5: CT: Remove warning of ignore_flow_level support for VFs
+      net/mlx5: Allow skipping counter refresh on creation
+
+Raed Salem (1):
+      net/mlx5e: IPsec: Refactor checksum code in tx data path
+
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/rep/tc.c    | 118 ++++--
+ .../net/ethernet/mellanox/mlx5/core/en/rep/tc.h    |  14 +-
+ .../ethernet/mellanox/mlx5/core/en/tc/int_port.c   | 457 +++++++++++++++++++++
+ .../ethernet/mellanox/mlx5/core/en/tc/int_port.h   |  65 +++
+ .../ethernet/mellanox/mlx5/core/en/tc/post_act.c   |  13 +-
+ .../net/ethernet/mellanox/mlx5/core/en/tc/sample.c |   1 +
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c |  36 +-
+ .../net/ethernet/mellanox/mlx5/core/en/tc_priv.h   |   2 +
+ .../net/ethernet/mellanox/mlx5/core/en/tc_tun.c    |  32 +-
+ .../ethernet/mellanox/mlx5/core/en/tc_tun_encap.c  |  35 ++
+ .../mellanox/mlx5/core/en_accel/ipsec_rxtx.h       |  26 ++
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  13 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |   4 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |  22 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 193 ++++++++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.h    |  11 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tx.c    |  20 +-
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |   8 +
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |  60 ++-
+ .../mellanox/mlx5/core/eswitch_offloads_termtbl.c  |   5 +-
+ .../net/ethernet/mellanox/mlx5/core/fs_counters.c  |  14 +-
+ .../mellanox/mlx5/core/steering/dr_matcher.c       |  28 +-
+ .../ethernet/mellanox/mlx5/core/steering/dr_rule.c |   2 +-
+ .../ethernet/mellanox/mlx5/core/steering/dr_ste.c  | 272 ++++++------
+ .../mellanox/mlx5/core/steering/dr_types.h         |   3 +-
+ include/linux/mlx5/fs.h                            |   4 +
+ 27 files changed, 1193 insertions(+), 267 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/tc/int_port.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/tc/int_port.h
