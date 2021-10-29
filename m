@@ -2,66 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA9D643FC2C
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 14:20:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C79E043FC56
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 14:30:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231418AbhJ2MWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 08:22:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41438 "EHLO mail.kernel.org"
+        id S230492AbhJ2Mch (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 08:32:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47032 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231561AbhJ2MWg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Oct 2021 08:22:36 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 1FB1861166;
-        Fri, 29 Oct 2021 12:20:08 +0000 (UTC)
+        id S230134AbhJ2Mcg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Oct 2021 08:32:36 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1D74D61167;
+        Fri, 29 Oct 2021 12:30:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635510008;
-        bh=+/MiXho13ttFALyUwOJ84SeSmvDVcnhe50qbDQfLPnk=;
+        s=k20201202; t=1635510608;
+        bh=m6qQY9WBE2ArPV4EqNl/MJXTEtCQw1qSPiI+14kq61g=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Yrv4KCFIY0IOhmb4TlUnHFD7MLXU6hGAaFloJ20tQDLNpc7EElB/2NOhFqMw2uISG
-         fX6imeyLnBUOjrSANTbDZV8R00Ri1XZg1CFa1U+yCxB98mlekWMu7lqRml2Yo17ykh
-         lroIvw8GLLpvN7Mu8YamvA7CYFNpSxUOZNYf090E9go5+89UWGPFLw1K/iPfKT1e2i
-         9hYDpVEfAphBDAWjrAngNxvKvI2P7rkgNLs6aI4zaO75zxzcVP8ZHnYFArM5vrFnG7
-         cMJcVBSDGejh9DzSCe25wArBNhji1gc0BQTBJJlD/cah24MwDpqOqHwyymFak1Z6mQ
-         dkae/eaOeJ96Q==
+        b=FSqll8PybjRVlTyuKjgQQDXIzrq+PNlYOZWojwe/m6pBKnBVa/ScGatMO/mPbLhUe
+         pYOPgYfCCZCZi5R2zlikZs6KVDKNWeQOGnNYn0lzXBlcypbJI1/nGZrY8eUyhGqVwZ
+         Tgf1ngvFy7e+QIbQiksMHe/kiYP5gEaUJG6RxX4YLuZvIaZ3EuxqZ55c7OnWH+fYKi
+         0dhIGtdBDSR1FLW/mfFEzve0SHnN3Nrw6fHh2+IYEMCINz8G/x+1DJYjWYvALqrX1s
+         6j12dLQx9bDtdjTiuEbza8Cg5ulEy1ivukbffeDYBNUNkp0R6FFlrtZZUDrqersXYy
+         0NJPrzOKKhJoA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 101D960A1B;
-        Fri, 29 Oct 2021 12:20:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 08D4A60A5A;
+        Fri, 29 Oct 2021 12:30:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] selftests/net: update .gitignore with newly added tests
+Subject: Re: [PATCH net-next 0/3] arch, misc: use eth_hw_addr_set()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163551000806.18872.10622502595024109424.git-patchwork-notify@kernel.org>
-Date:   Fri, 29 Oct 2021 12:20:08 +0000
-References: <20211027202846.26877-1-skhan@linuxfoundation.org>
-In-Reply-To: <20211027202846.26877-1-skhan@linuxfoundation.org>
-To:     Shuah Khan <skhan@linuxfoundation.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, shuah@kernel.org,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Message-Id: <163551060803.23077.12213863082759629082.git-patchwork-notify@kernel.org>
+Date:   Fri, 29 Oct 2021 12:30:08 +0000
+References: <20211029024707.316066-1-kuba@kernel.org>
+In-Reply-To: <20211029024707.316066-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Wed, 27 Oct 2021 14:28:46 -0600 you wrote:
-> Update .gitignore with newly added tests:
-> 	tools/testing/selftests/net/af_unix/test_unix_oob
-> 	tools/testing/selftests/net/gro
-> 	tools/testing/selftests/net/ioam6_parser
-> 	tools/testing/selftests/net/toeplitz
+On Thu, 28 Oct 2021 19:47:04 -0700 you wrote:
+> Convert remaining misc drivers to use helpers to write
+> to netdev->dev_addr.
 > 
-> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+> This is the last set :) :)
+> 
+> Jakub Kicinski (3):
+>   net: sgi-xp: use eth_hw_addr_set()
+>   net: um: use eth_hw_addr_set()
+>   net: xtensa: use eth_hw_addr_set()
 > 
 > [...]
 
 Here is the summary with links:
-  - selftests/net: update .gitignore with newly added tests
-    https://git.kernel.org/netdev/net/c/e300a85db1f1
+  - [net-next,1/3] net: sgi-xp: use eth_hw_addr_set()
+    https://git.kernel.org/netdev/net-next/c/40d5cb400530
+  - [net-next,2/3] net: um: use eth_hw_addr_set()
+    https://git.kernel.org/netdev/net-next/c/ac617341343c
+  - [net-next,3/3] net: xtensa: use eth_hw_addr_set()
+    https://git.kernel.org/netdev/net-next/c/7e1dd824e531
 
 You are awesome, thank you!
 -- 
