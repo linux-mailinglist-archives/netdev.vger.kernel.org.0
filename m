@@ -2,123 +2,449 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 856E443F80C
+	by mail.lfdr.de (Postfix) with ESMTP id D0B9A43F80D
 	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 09:48:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232320AbhJ2HvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 03:51:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38718 "EHLO
+        id S232339AbhJ2HvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 03:51:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232290AbhJ2Hux (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 03:50:53 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD88C061714
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 00:48:25 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id e65so9145513pgc.5
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 00:48:25 -0700 (PDT)
+        with ESMTP id S232295AbhJ2Huz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 03:50:55 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3AF9C061745
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 00:48:26 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id n18so6314909plc.2
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 00:48:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=6jIcDpdO9Ci/8DYhyd0odk7AqIemH//mL6+LpmIKVLM=;
-        b=OMM3M1o4u4S0bT0/KpHTmHDP7GYbobgpJYRzccYvOXA4VLnqKAq5wvfpLYUsigsZxX
-         w2/cjWQnuITo6gM8pbFmwvznZKcSSt4t+Z9/8HxXiH4fnELLsjqncAM/dt/VLueKiHqE
-         yu4+KHLGoZP/TA2VyFASJYAxW9e89qU8cj7gY=
+        bh=hh3qGWEr0NmrRdnnTUJEnmAhJusn5/i3bMERxumQojo=;
+        b=UUMd5yl7qyFOWysJb7qz589t3MO4uui2pl1rAnR3h0Ifd+mJQ3icsOPfF27TRuw2/W
+         JJBHlW8/mcagMXkzdq1lHFlZ1GfX9fVoKOdn1uSKdaiUre9ph3GlLR8RzDrASZzgS06a
+         PlQJwDGkIc9dZbU4RQQKxKSbztXNb5Y6v3lZo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=6jIcDpdO9Ci/8DYhyd0odk7AqIemH//mL6+LpmIKVLM=;
-        b=E1bf/kj8pVk6f4VjN63ZhzNxNom8bWhd7JfJEqhtl8Z4sWKDbG+bP6ErNp6A7KSrev
-         21Y2Nqt2FB43pvLB1twubbFojRzhiogpW1Tlvgdjej2TcDOOgM872NLm3s4FEJ3wStpP
-         mDbLT5fFrgVNBbIQDJZY1SyVn40W/Qupm0P2hmY5+T9eYFtZY7+IqPy/8xJTEx6P4rt3
-         DSRov2AvooIFB+RQQ4UIu7rmGLB4i8MKl9r7edgBzVdjreE4vzI0wBuHtB5JE3o3NbOl
-         Mo/pFW8VSvT+2Pq55BWzA7UEJ4cX4Ugo/zpTtFQRHZEXS0lebIPf/JUqoRb+neTqLAZv
-         /oSg==
-X-Gm-Message-State: AOAM533fec1sBunStlGalVWyUeJNoteDiPz9PgYdkaYJo52l7y+z6vKL
-        yZupyyj7al0ibD26neCDMi/EuQ==
-X-Google-Smtp-Source: ABdhPJzcgz1EXbNyU/CJO7Q12IfcbudoBbCjIUgBcqgilqqad+cSqF3QC1QdSkd7wbos3uvjyF0qtA==
-X-Received: by 2002:a63:ea4e:: with SMTP id l14mr2403911pgk.406.1635493704398;
-        Fri, 29 Oct 2021 00:48:24 -0700 (PDT)
+        bh=hh3qGWEr0NmrRdnnTUJEnmAhJusn5/i3bMERxumQojo=;
+        b=qRQzsKCV/NRRDLf0SPQR1ec2TG9GPfMX7mQTd1gAegFyK7VNjGJfOKChnNVLnQAEvU
+         dIPpdoTKoA734EcZg5tRop9REDEYzqBq8zZiJoIbnK6fyE3J23SgUVIhzwDHXWBrydoh
+         Bt3N4Iz/429KANGW/ln8KXw9QlX+GcEXmArCzOuZZH6nivoC0F5iwbTlvhkSmurwTQEH
+         bxdR2VSvoHjbviBa+ZFUYWw/M3MoBBo0vk9Ym/FgS+dfFhtQj45aKN86JudL2NYXqSAu
+         s4kLBf7eU0CGD4wF9YlnYugxAoGgoPYAo8y7YS2K1/nY9eaU9+5EKZV241qc5tT4ocmw
+         Mw1w==
+X-Gm-Message-State: AOAM533ySmeccmfVtDzBDTPoXpIniuxxAZyXZto+OKTYPBTqXDI1QpQt
+        V9cMLkpy4kpuOVggdVn8s8VfnA==
+X-Google-Smtp-Source: ABdhPJyabtCzh89yniuQsu2mGc3yGMgtVi3VA7HyT/vwpFIo1IVFMmlrio0sY75GGktSHEa3OEFWCw==
+X-Received: by 2002:a17:902:8f8a:b0:13f:9c2c:de84 with SMTP id z10-20020a1709028f8a00b0013f9c2cde84mr8591818plo.66.1635493705669;
+        Fri, 29 Oct 2021 00:48:25 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id s18sm5721186pfc.87.2021.10.29.00.48.23
+        by smtp.gmail.com with ESMTPSA id s18sm5721186pfc.87.2021.10.29.00.48.24
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 29 Oct 2021 00:48:23 -0700 (PDT)
+        Fri, 29 Oct 2021 00:48:25 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
         gospo@broadcom.com, jiri@nvidia.com
-Subject: [PATCH net-next v2 10/19] bnxt_en: Refactor coredump functions
-Date:   Fri, 29 Oct 2021 03:47:47 -0400
-Message-Id: <1635493676-10767-11-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 11/19] bnxt_en: move coredump functions into dedicated file
+Date:   Fri, 29 Oct 2021 03:47:48 -0400
+Message-Id: <1635493676-10767-12-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1635493676-10767-1-git-send-email-michael.chan@broadcom.com>
 References: <1635493676-10767-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000055f39305cf790df8"
+        boundary="00000000000068c0da05cf790d6d"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000055f39305cf790df8
+--00000000000068c0da05cf790d6d
 
 From: Edwin Peer <edwin.peer@broadcom.com>
 
-The coredump functionality will be used by devlink health. Refactor
-these functions that get coredump and coredump length. There is no
-functional change, but the following checkpatch warnings were
-addressed:
-
-  - strscpy is preferred over strlcpy.
-  - sscanf results should be checked, with an additional warning.
+Change bnxt_get_coredump() and bnxt_get_coredump_length() to non-static
+functions.
 
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 48 ++++++++++++-------
- 1 file changed, 31 insertions(+), 17 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/Makefile   |   2 +-
+ .../ethernet/broadcom/bnxt/bnxt_coredump.c    | 372 ++++++++++++++++++
+ .../ethernet/broadcom/bnxt/bnxt_coredump.h    |  51 +++
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 356 -----------------
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.h |  43 --
+ 5 files changed, 424 insertions(+), 400 deletions(-)
+ create mode 100644 drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 15c518024965..fe832f97f905 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -3808,7 +3808,7 @@ bnxt_fill_coredump_record(struct bnxt *bp, struct bnxt_coredump_record *record,
- 	record->low_version = 0;
- 	record->high_version = 1;
- 	record->asic_state = 0;
--	strlcpy(record->system_name, utsname()->nodename,
-+	strscpy(record->system_name, utsname()->nodename,
- 		sizeof(record->system_name));
- 	record->year = cpu_to_le16(tm.tm_year + 1900);
- 	record->month = cpu_to_le16(tm.tm_mon + 1);
-@@ -3820,11 +3820,12 @@ bnxt_fill_coredump_record(struct bnxt *bp, struct bnxt_coredump_record *record,
- 	strcpy(record->commandline, "ethtool -w");
- 	record->total_segments = cpu_to_le32(total_segs);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/Makefile b/drivers/net/ethernet/broadcom/bnxt/Makefile
+index c6ef7ec2c115..2bc2b707d6ee 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/Makefile
++++ b/drivers/net/ethernet/broadcom/bnxt/Makefile
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ obj-$(CONFIG_BNXT) += bnxt_en.o
  
--	sscanf(utsname()->release, "%u.%u", &os_ver_major, &os_ver_minor);
+-bnxt_en-y := bnxt.o bnxt_hwrm.o bnxt_sriov.o bnxt_ethtool.o bnxt_dcb.o bnxt_ulp.o bnxt_xdp.o bnxt_ptp.o bnxt_vfr.o bnxt_devlink.o bnxt_dim.o
++bnxt_en-y := bnxt.o bnxt_hwrm.o bnxt_sriov.o bnxt_ethtool.o bnxt_dcb.o bnxt_ulp.o bnxt_xdp.o bnxt_ptp.o bnxt_vfr.o bnxt_devlink.o bnxt_dim.o bnxt_coredump.o
+ bnxt_en-$(CONFIG_BNXT_FLOWER_OFFLOAD) += bnxt_tc.o
+ bnxt_en-$(CONFIG_DEBUG_FS) += bnxt_debugfs.o
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c
+new file mode 100644
+index 000000000000..3e23fce3771e
+--- /dev/null
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c
+@@ -0,0 +1,372 @@
++/* Broadcom NetXtreme-C/E network driver.
++ *
++ * Copyright (c) 2021 Broadcom Limited
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation.
++ */
++
++#include <linux/types.h>
++#include <linux/errno.h>
++#include <linux/pci.h>
++#include "bnxt_hsi.h"
++#include "bnxt.h"
++#include "bnxt_hwrm.h"
++#include "bnxt_coredump.h"
++
++static int bnxt_hwrm_dbg_dma_data(struct bnxt *bp, void *msg,
++				  struct bnxt_hwrm_dbg_dma_info *info)
++{
++	struct hwrm_dbg_cmn_input *cmn_req = msg;
++	__le16 *seq_ptr = msg + info->seq_off;
++	struct hwrm_dbg_cmn_output *cmn_resp;
++	u16 seq = 0, len, segs_off;
++	dma_addr_t dma_handle;
++	void *dma_buf, *resp;
++	int rc, off = 0;
++
++	dma_buf = hwrm_req_dma_slice(bp, msg, info->dma_len, &dma_handle);
++	if (!dma_buf) {
++		hwrm_req_drop(bp, msg);
++		return -ENOMEM;
++	}
++
++	hwrm_req_timeout(bp, msg, HWRM_COREDUMP_TIMEOUT);
++	cmn_resp = hwrm_req_hold(bp, msg);
++	resp = cmn_resp;
++
++	segs_off = offsetof(struct hwrm_dbg_coredump_list_output,
++			    total_segments);
++	cmn_req->host_dest_addr = cpu_to_le64(dma_handle);
++	cmn_req->host_buf_len = cpu_to_le32(info->dma_len);
++	while (1) {
++		*seq_ptr = cpu_to_le16(seq);
++		rc = hwrm_req_send(bp, msg);
++		if (rc)
++			break;
++
++		len = le16_to_cpu(*((__le16 *)(resp + info->data_len_off)));
++		if (!seq &&
++		    cmn_req->req_type == cpu_to_le16(HWRM_DBG_COREDUMP_LIST)) {
++			info->segs = le16_to_cpu(*((__le16 *)(resp +
++							      segs_off)));
++			if (!info->segs) {
++				rc = -EIO;
++				break;
++			}
++
++			info->dest_buf_size = info->segs *
++					sizeof(struct coredump_segment_record);
++			info->dest_buf = kmalloc(info->dest_buf_size,
++						 GFP_KERNEL);
++			if (!info->dest_buf) {
++				rc = -ENOMEM;
++				break;
++			}
++		}
++
++		if (info->dest_buf) {
++			if ((info->seg_start + off + len) <=
++			    BNXT_COREDUMP_BUF_LEN(info->buf_len)) {
++				memcpy(info->dest_buf + off, dma_buf, len);
++			} else {
++				rc = -ENOBUFS;
++				break;
++			}
++		}
++
++		if (cmn_req->req_type ==
++				cpu_to_le16(HWRM_DBG_COREDUMP_RETRIEVE))
++			info->dest_buf_size += len;
++
++		if (!(cmn_resp->flags & HWRM_DBG_CMN_FLAGS_MORE))
++			break;
++
++		seq++;
++		off += len;
++	}
++	hwrm_req_drop(bp, msg);
++	return rc;
++}
++
++static int bnxt_hwrm_dbg_coredump_list(struct bnxt *bp,
++				       struct bnxt_coredump *coredump)
++{
++	struct bnxt_hwrm_dbg_dma_info info = {NULL};
++	struct hwrm_dbg_coredump_list_input *req;
++	int rc;
++
++	rc = hwrm_req_init(bp, req, HWRM_DBG_COREDUMP_LIST);
++	if (rc)
++		return rc;
++
++	info.dma_len = COREDUMP_LIST_BUF_LEN;
++	info.seq_off = offsetof(struct hwrm_dbg_coredump_list_input, seq_no);
++	info.data_len_off = offsetof(struct hwrm_dbg_coredump_list_output,
++				     data_len);
++
++	rc = bnxt_hwrm_dbg_dma_data(bp, req, &info);
++	if (!rc) {
++		coredump->data = info.dest_buf;
++		coredump->data_size = info.dest_buf_size;
++		coredump->total_segs = info.segs;
++	}
++	return rc;
++}
++
++static int bnxt_hwrm_dbg_coredump_initiate(struct bnxt *bp, u16 component_id,
++					   u16 segment_id)
++{
++	struct hwrm_dbg_coredump_initiate_input *req;
++	int rc;
++
++	rc = hwrm_req_init(bp, req, HWRM_DBG_COREDUMP_INITIATE);
++	if (rc)
++		return rc;
++
++	hwrm_req_timeout(bp, req, HWRM_COREDUMP_TIMEOUT);
++	req->component_id = cpu_to_le16(component_id);
++	req->segment_id = cpu_to_le16(segment_id);
++
++	return hwrm_req_send(bp, req);
++}
++
++static int bnxt_hwrm_dbg_coredump_retrieve(struct bnxt *bp, u16 component_id,
++					   u16 segment_id, u32 *seg_len,
++					   void *buf, u32 buf_len, u32 offset)
++{
++	struct hwrm_dbg_coredump_retrieve_input *req;
++	struct bnxt_hwrm_dbg_dma_info info = {NULL};
++	int rc;
++
++	rc = hwrm_req_init(bp, req, HWRM_DBG_COREDUMP_RETRIEVE);
++	if (rc)
++		return rc;
++
++	req->component_id = cpu_to_le16(component_id);
++	req->segment_id = cpu_to_le16(segment_id);
++
++	info.dma_len = COREDUMP_RETRIEVE_BUF_LEN;
++	info.seq_off = offsetof(struct hwrm_dbg_coredump_retrieve_input,
++				seq_no);
++	info.data_len_off = offsetof(struct hwrm_dbg_coredump_retrieve_output,
++				     data_len);
++	if (buf) {
++		info.dest_buf = buf + offset;
++		info.buf_len = buf_len;
++		info.seg_start = offset;
++	}
++
++	rc = bnxt_hwrm_dbg_dma_data(bp, req, &info);
++	if (!rc)
++		*seg_len = info.dest_buf_size;
++
++	return rc;
++}
++
++static void
++bnxt_fill_coredump_seg_hdr(struct bnxt *bp,
++			   struct bnxt_coredump_segment_hdr *seg_hdr,
++			   struct coredump_segment_record *seg_rec, u32 seg_len,
++			   int status, u32 duration, u32 instance)
++{
++	memset(seg_hdr, 0, sizeof(*seg_hdr));
++	memcpy(seg_hdr->signature, "sEgM", 4);
++	if (seg_rec) {
++		seg_hdr->component_id = (__force __le32)seg_rec->component_id;
++		seg_hdr->segment_id = (__force __le32)seg_rec->segment_id;
++		seg_hdr->low_version = seg_rec->version_low;
++		seg_hdr->high_version = seg_rec->version_hi;
++	} else {
++		/* For hwrm_ver_get response Component id = 2
++		 * and Segment id = 0
++		 */
++		seg_hdr->component_id = cpu_to_le32(2);
++		seg_hdr->segment_id = 0;
++	}
++	seg_hdr->function_id = cpu_to_le16(bp->pdev->devfn);
++	seg_hdr->length = cpu_to_le32(seg_len);
++	seg_hdr->status = cpu_to_le32(status);
++	seg_hdr->duration = cpu_to_le32(duration);
++	seg_hdr->data_offset = cpu_to_le32(sizeof(*seg_hdr));
++	seg_hdr->instance = cpu_to_le32(instance);
++}
++
++static void
++bnxt_fill_coredump_record(struct bnxt *bp, struct bnxt_coredump_record *record,
++			  time64_t start, s16 start_utc, u16 total_segs,
++			  int status)
++{
++	time64_t end = ktime_get_real_seconds();
++	u32 os_ver_major = 0, os_ver_minor = 0;
++	struct tm tm;
++
++	time64_to_tm(start, 0, &tm);
++	memset(record, 0, sizeof(*record));
++	memcpy(record->signature, "cOrE", 4);
++	record->flags = 0;
++	record->low_version = 0;
++	record->high_version = 1;
++	record->asic_state = 0;
++	strscpy(record->system_name, utsname()->nodename,
++		sizeof(record->system_name));
++	record->year = cpu_to_le16(tm.tm_year + 1900);
++	record->month = cpu_to_le16(tm.tm_mon + 1);
++	record->day = cpu_to_le16(tm.tm_mday);
++	record->hour = cpu_to_le16(tm.tm_hour);
++	record->minute = cpu_to_le16(tm.tm_min);
++	record->second = cpu_to_le16(tm.tm_sec);
++	record->utc_bias = cpu_to_le16(start_utc);
++	strcpy(record->commandline, "ethtool -w");
++	record->total_segments = cpu_to_le32(total_segs);
++
 +	if (sscanf(utsname()->release, "%u.%u", &os_ver_major, &os_ver_minor) != 2)
 +		netdev_warn(bp->dev, "Unknown OS release in coredump\n");
- 	record->os_ver_major = cpu_to_le32(os_ver_major);
- 	record->os_ver_minor = cpu_to_le32(os_ver_minor);
- 
--	strlcpy(record->os_name, utsname()->sysname, 32);
++	record->os_ver_major = cpu_to_le32(os_ver_major);
++	record->os_ver_minor = cpu_to_le32(os_ver_minor);
++
 +	strscpy(record->os_name, utsname()->sysname, sizeof(record->os_name));
- 	time64_to_tm(end, 0, &tm);
- 	record->end_year = cpu_to_le16(tm.tm_year + 1900);
- 	record->end_month = cpu_to_le16(tm.tm_mon + 1);
-@@ -3842,7 +3843,7 @@ bnxt_fill_coredump_record(struct bnxt *bp, struct bnxt_coredump_record *record,
- 	record->ioctl_high_version = 0;
- }
- 
--static int bnxt_get_coredump(struct bnxt *bp, void *buf, u32 *dump_len)
++	time64_to_tm(end, 0, &tm);
++	record->end_year = cpu_to_le16(tm.tm_year + 1900);
++	record->end_month = cpu_to_le16(tm.tm_mon + 1);
++	record->end_day = cpu_to_le16(tm.tm_mday);
++	record->end_hour = cpu_to_le16(tm.tm_hour);
++	record->end_minute = cpu_to_le16(tm.tm_min);
++	record->end_second = cpu_to_le16(tm.tm_sec);
++	record->end_utc_bias = cpu_to_le16(sys_tz.tz_minuteswest * 60);
++	record->asic_id1 = cpu_to_le32(bp->chip_num << 16 |
++				       bp->ver_resp.chip_rev << 8 |
++				       bp->ver_resp.chip_metal);
++	record->asic_id2 = 0;
++	record->coredump_status = cpu_to_le32(status);
++	record->ioctl_low_version = 0;
++	record->ioctl_high_version = 0;
++}
++
 +static int __bnxt_get_coredump(struct bnxt *bp, void *buf, u32 *dump_len)
- {
- 	u32 ver_get_resp_len = sizeof(struct hwrm_ver_get_output);
- 	u32 offset = 0, seg_hdr_len, seg_record_len, buf_len = 0;
-@@ -3945,6 +3946,30 @@ static int bnxt_get_coredump(struct bnxt *bp, void *buf, u32 *dump_len)
- 	return rc;
- }
- 
-+static int bnxt_get_coredump(struct bnxt *bp, u16 dump_type, void *buf, u32 *dump_len)
++{
++	u32 ver_get_resp_len = sizeof(struct hwrm_ver_get_output);
++	u32 offset = 0, seg_hdr_len, seg_record_len, buf_len = 0;
++	struct coredump_segment_record *seg_record = NULL;
++	struct bnxt_coredump_segment_hdr seg_hdr;
++	struct bnxt_coredump coredump = {NULL};
++	time64_t start_time;
++	u16 start_utc;
++	int rc = 0, i;
++
++	if (buf)
++		buf_len = *dump_len;
++
++	start_time = ktime_get_real_seconds();
++	start_utc = sys_tz.tz_minuteswest * 60;
++	seg_hdr_len = sizeof(seg_hdr);
++
++	/* First segment should be hwrm_ver_get response */
++	*dump_len = seg_hdr_len + ver_get_resp_len;
++	if (buf) {
++		bnxt_fill_coredump_seg_hdr(bp, &seg_hdr, NULL, ver_get_resp_len,
++					   0, 0, 0);
++		memcpy(buf + offset, &seg_hdr, seg_hdr_len);
++		offset += seg_hdr_len;
++		memcpy(buf + offset, &bp->ver_resp, ver_get_resp_len);
++		offset += ver_get_resp_len;
++	}
++
++	rc = bnxt_hwrm_dbg_coredump_list(bp, &coredump);
++	if (rc) {
++		netdev_err(bp->dev, "Failed to get coredump segment list\n");
++		goto err;
++	}
++
++	*dump_len += seg_hdr_len * coredump.total_segs;
++
++	seg_record = (struct coredump_segment_record *)coredump.data;
++	seg_record_len = sizeof(*seg_record);
++
++	for (i = 0; i < coredump.total_segs; i++) {
++		u16 comp_id = le16_to_cpu(seg_record->component_id);
++		u16 seg_id = le16_to_cpu(seg_record->segment_id);
++		u32 duration = 0, seg_len = 0;
++		unsigned long start, end;
++
++		if (buf && ((offset + seg_hdr_len) >
++			    BNXT_COREDUMP_BUF_LEN(buf_len))) {
++			rc = -ENOBUFS;
++			goto err;
++		}
++
++		start = jiffies;
++
++		rc = bnxt_hwrm_dbg_coredump_initiate(bp, comp_id, seg_id);
++		if (rc) {
++			netdev_err(bp->dev,
++				   "Failed to initiate coredump for seg = %d\n",
++				   seg_record->segment_id);
++			goto next_seg;
++		}
++
++		/* Write segment data into the buffer */
++		rc = bnxt_hwrm_dbg_coredump_retrieve(bp, comp_id, seg_id,
++						     &seg_len, buf, buf_len,
++						     offset + seg_hdr_len);
++		if (rc && rc == -ENOBUFS)
++			goto err;
++		else if (rc)
++			netdev_err(bp->dev,
++				   "Failed to retrieve coredump for seg = %d\n",
++				   seg_record->segment_id);
++
++next_seg:
++		end = jiffies;
++		duration = jiffies_to_msecs(end - start);
++		bnxt_fill_coredump_seg_hdr(bp, &seg_hdr, seg_record, seg_len,
++					   rc, duration, 0);
++
++		if (buf) {
++			/* Write segment header into the buffer */
++			memcpy(buf + offset, &seg_hdr, seg_hdr_len);
++			offset += seg_hdr_len + seg_len;
++		}
++
++		*dump_len += seg_len;
++		seg_record =
++			(struct coredump_segment_record *)((u8 *)seg_record +
++							   seg_record_len);
++	}
++
++err:
++	if (buf)
++		bnxt_fill_coredump_record(bp, buf + offset, start_time,
++					  start_utc, coredump.total_segs + 1,
++					  rc);
++	kfree(coredump.data);
++	*dump_len += sizeof(struct bnxt_coredump_record);
++	if (rc == -ENOBUFS)
++		netdev_err(bp->dev, "Firmware returned large coredump buffer\n");
++	return rc;
++}
++
++int bnxt_get_coredump(struct bnxt *bp, u16 dump_type, void *buf, u32 *dump_len)
 +{
 +	if (dump_type == BNXT_DUMP_CRASH) {
 +#ifdef CONFIG_TEE_BNXT_FW
@@ -131,7 +457,7 @@ index 15c518024965..fe832f97f905 100644
 +	}
 +}
 +
-+static u32 bnxt_get_coredump_length(struct bnxt *bp, u16 dump_type)
++u32 bnxt_get_coredump_length(struct bnxt *bp, u16 dump_type)
 +{
 +	u32 len = 0;
 +
@@ -141,44 +467,499 @@ index 15c518024965..fe832f97f905 100644
 +		__bnxt_get_coredump(bp, NULL, &len);
 +	return len;
 +}
-+
- static int bnxt_set_dump(struct net_device *dev, struct ethtool_dump *dump)
- {
- 	struct bnxt *bp = netdev_priv(dev);
-@@ -3976,10 +4001,7 @@ static int bnxt_get_dump_flag(struct net_device *dev, struct ethtool_dump *dump)
- 			bp->ver_resp.hwrm_fw_rsvd_8b;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.h
+index 09c22f8fe399..b1a1b2fffb19 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.h
+@@ -10,6 +10,10 @@
+ #ifndef BNXT_COREDUMP_H
+ #define BNXT_COREDUMP_H
  
- 	dump->flag = bp->dump_flag;
--	if (bp->dump_flag == BNXT_DUMP_CRASH)
--		dump->len = BNXT_CRASH_DUMP_LEN;
--	else
--		bnxt_get_coredump(bp, NULL, &dump->len);
-+	dump->len = bnxt_get_coredump_length(bp, bp->dump_flag);
++#include <linux/utsname.h>
++#include <linux/time.h>
++#include <linux/rtc.h>
++
+ struct bnxt_coredump_segment_hdr {
+ 	__u8 signature[4];
+ 	__le32 component_id;
+@@ -63,4 +67,51 @@ struct bnxt_coredump_record {
+ 	__u8 ioctl_high_version;
+ 	__le16 rsvd3[313];
+ };
++
++#define BNXT_CRASH_DUMP_LEN	(8 << 20)
++
++#define COREDUMP_LIST_BUF_LEN		2048
++#define COREDUMP_RETRIEVE_BUF_LEN	4096
++
++struct bnxt_coredump {
++	void		*data;
++	int		data_size;
++	u16		total_segs;
++};
++
++#define BNXT_COREDUMP_BUF_LEN(len) ((len) - sizeof(struct bnxt_coredump_record))
++
++struct bnxt_hwrm_dbg_dma_info {
++	void *dest_buf;
++	int dest_buf_size;
++	u16 dma_len;
++	u16 seq_off;
++	u16 data_len_off;
++	u16 segs;
++	u32 seg_start;
++	u32 buf_len;
++};
++
++struct hwrm_dbg_cmn_input {
++	__le16 req_type;
++	__le16 cmpl_ring;
++	__le16 seq_id;
++	__le16 target_id;
++	__le64 resp_addr;
++	__le64 host_dest_addr;
++	__le32 host_buf_len;
++};
++
++struct hwrm_dbg_cmn_output {
++	__le16 error_code;
++	__le16 req_type;
++	__le16 seq_id;
++	__le16 resp_len;
++	u8 flags;
++	#define HWRM_DBG_CMN_FLAGS_MORE	1
++};
++
++int bnxt_get_coredump(struct bnxt *bp, u16 dump_type, void *buf, u32 *dump_len);
++u32 bnxt_get_coredump_length(struct bnxt *bp, u16 dump_type);
++
+ #endif
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index fe832f97f905..bb3f3529987b 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -3614,362 +3614,6 @@ static int bnxt_reset(struct net_device *dev, u32 *flags)
  	return 0;
  }
  
-@@ -3994,15 +4016,7 @@ static int bnxt_get_dump_data(struct net_device *dev, struct ethtool_dump *dump,
- 	memset(buf, 0, dump->len);
- 
- 	dump->flag = bp->dump_flag;
--	if (dump->flag == BNXT_DUMP_CRASH) {
--#ifdef CONFIG_TEE_BNXT_FW
--		return tee_bnxt_copy_coredump(buf, 0, dump->len);
--#endif
--	} else {
--		return bnxt_get_coredump(bp, buf, &dump->len);
+-static int bnxt_hwrm_dbg_dma_data(struct bnxt *bp, void *msg,
+-				  struct bnxt_hwrm_dbg_dma_info *info)
+-{
+-	struct hwrm_dbg_cmn_input *cmn_req = msg;
+-	__le16 *seq_ptr = msg + info->seq_off;
+-	struct hwrm_dbg_cmn_output *cmn_resp;
+-	u16 seq = 0, len, segs_off;
+-	dma_addr_t dma_handle;
+-	void *dma_buf, *resp;
+-	int rc, off = 0;
+-
+-	dma_buf = hwrm_req_dma_slice(bp, msg, info->dma_len, &dma_handle);
+-	if (!dma_buf) {
+-		hwrm_req_drop(bp, msg);
+-		return -ENOMEM;
 -	}
 -
--	return 0;
-+	return bnxt_get_coredump(bp, dump->flag, buf, &dump->len);
- }
+-	hwrm_req_timeout(bp, msg, HWRM_COREDUMP_TIMEOUT);
+-	cmn_resp = hwrm_req_hold(bp, msg);
+-	resp = cmn_resp;
+-
+-	segs_off = offsetof(struct hwrm_dbg_coredump_list_output,
+-			    total_segments);
+-	cmn_req->host_dest_addr = cpu_to_le64(dma_handle);
+-	cmn_req->host_buf_len = cpu_to_le32(info->dma_len);
+-	while (1) {
+-		*seq_ptr = cpu_to_le16(seq);
+-		rc = hwrm_req_send(bp, msg);
+-		if (rc)
+-			break;
+-
+-		len = le16_to_cpu(*((__le16 *)(resp + info->data_len_off)));
+-		if (!seq &&
+-		    cmn_req->req_type == cpu_to_le16(HWRM_DBG_COREDUMP_LIST)) {
+-			info->segs = le16_to_cpu(*((__le16 *)(resp +
+-							      segs_off)));
+-			if (!info->segs) {
+-				rc = -EIO;
+-				break;
+-			}
+-
+-			info->dest_buf_size = info->segs *
+-					sizeof(struct coredump_segment_record);
+-			info->dest_buf = kmalloc(info->dest_buf_size,
+-						 GFP_KERNEL);
+-			if (!info->dest_buf) {
+-				rc = -ENOMEM;
+-				break;
+-			}
+-		}
+-
+-		if (info->dest_buf) {
+-			if ((info->seg_start + off + len) <=
+-			    BNXT_COREDUMP_BUF_LEN(info->buf_len)) {
+-				memcpy(info->dest_buf + off, dma_buf, len);
+-			} else {
+-				rc = -ENOBUFS;
+-				break;
+-			}
+-		}
+-
+-		if (cmn_req->req_type ==
+-				cpu_to_le16(HWRM_DBG_COREDUMP_RETRIEVE))
+-			info->dest_buf_size += len;
+-
+-		if (!(cmn_resp->flags & HWRM_DBG_CMN_FLAGS_MORE))
+-			break;
+-
+-		seq++;
+-		off += len;
+-	}
+-	hwrm_req_drop(bp, msg);
+-	return rc;
+-}
+-
+-static int bnxt_hwrm_dbg_coredump_list(struct bnxt *bp,
+-				       struct bnxt_coredump *coredump)
+-{
+-	struct bnxt_hwrm_dbg_dma_info info = {NULL};
+-	struct hwrm_dbg_coredump_list_input *req;
+-	int rc;
+-
+-	rc = hwrm_req_init(bp, req, HWRM_DBG_COREDUMP_LIST);
+-	if (rc)
+-		return rc;
+-
+-	info.dma_len = COREDUMP_LIST_BUF_LEN;
+-	info.seq_off = offsetof(struct hwrm_dbg_coredump_list_input, seq_no);
+-	info.data_len_off = offsetof(struct hwrm_dbg_coredump_list_output,
+-				     data_len);
+-
+-	rc = bnxt_hwrm_dbg_dma_data(bp, req, &info);
+-	if (!rc) {
+-		coredump->data = info.dest_buf;
+-		coredump->data_size = info.dest_buf_size;
+-		coredump->total_segs = info.segs;
+-	}
+-	return rc;
+-}
+-
+-static int bnxt_hwrm_dbg_coredump_initiate(struct bnxt *bp, u16 component_id,
+-					   u16 segment_id)
+-{
+-	struct hwrm_dbg_coredump_initiate_input *req;
+-	int rc;
+-
+-	rc = hwrm_req_init(bp, req, HWRM_DBG_COREDUMP_INITIATE);
+-	if (rc)
+-		return rc;
+-
+-	hwrm_req_timeout(bp, req, HWRM_COREDUMP_TIMEOUT);
+-	req->component_id = cpu_to_le16(component_id);
+-	req->segment_id = cpu_to_le16(segment_id);
+-
+-	return hwrm_req_send(bp, req);
+-}
+-
+-static int bnxt_hwrm_dbg_coredump_retrieve(struct bnxt *bp, u16 component_id,
+-					   u16 segment_id, u32 *seg_len,
+-					   void *buf, u32 buf_len, u32 offset)
+-{
+-	struct hwrm_dbg_coredump_retrieve_input *req;
+-	struct bnxt_hwrm_dbg_dma_info info = {NULL};
+-	int rc;
+-
+-	rc = hwrm_req_init(bp, req, HWRM_DBG_COREDUMP_RETRIEVE);
+-	if (rc)
+-		return rc;
+-
+-	req->component_id = cpu_to_le16(component_id);
+-	req->segment_id = cpu_to_le16(segment_id);
+-
+-	info.dma_len = COREDUMP_RETRIEVE_BUF_LEN;
+-	info.seq_off = offsetof(struct hwrm_dbg_coredump_retrieve_input,
+-				seq_no);
+-	info.data_len_off = offsetof(struct hwrm_dbg_coredump_retrieve_output,
+-				     data_len);
+-	if (buf) {
+-		info.dest_buf = buf + offset;
+-		info.buf_len = buf_len;
+-		info.seg_start = offset;
+-	}
+-
+-	rc = bnxt_hwrm_dbg_dma_data(bp, req, &info);
+-	if (!rc)
+-		*seg_len = info.dest_buf_size;
+-
+-	return rc;
+-}
+-
+-static void
+-bnxt_fill_coredump_seg_hdr(struct bnxt *bp,
+-			   struct bnxt_coredump_segment_hdr *seg_hdr,
+-			   struct coredump_segment_record *seg_rec, u32 seg_len,
+-			   int status, u32 duration, u32 instance)
+-{
+-	memset(seg_hdr, 0, sizeof(*seg_hdr));
+-	memcpy(seg_hdr->signature, "sEgM", 4);
+-	if (seg_rec) {
+-		seg_hdr->component_id = (__force __le32)seg_rec->component_id;
+-		seg_hdr->segment_id = (__force __le32)seg_rec->segment_id;
+-		seg_hdr->low_version = seg_rec->version_low;
+-		seg_hdr->high_version = seg_rec->version_hi;
+-	} else {
+-		/* For hwrm_ver_get response Component id = 2
+-		 * and Segment id = 0
+-		 */
+-		seg_hdr->component_id = cpu_to_le32(2);
+-		seg_hdr->segment_id = 0;
+-	}
+-	seg_hdr->function_id = cpu_to_le16(bp->pdev->devfn);
+-	seg_hdr->length = cpu_to_le32(seg_len);
+-	seg_hdr->status = cpu_to_le32(status);
+-	seg_hdr->duration = cpu_to_le32(duration);
+-	seg_hdr->data_offset = cpu_to_le32(sizeof(*seg_hdr));
+-	seg_hdr->instance = cpu_to_le32(instance);
+-}
+-
+-static void
+-bnxt_fill_coredump_record(struct bnxt *bp, struct bnxt_coredump_record *record,
+-			  time64_t start, s16 start_utc, u16 total_segs,
+-			  int status)
+-{
+-	time64_t end = ktime_get_real_seconds();
+-	u32 os_ver_major = 0, os_ver_minor = 0;
+-	struct tm tm;
+-
+-	time64_to_tm(start, 0, &tm);
+-	memset(record, 0, sizeof(*record));
+-	memcpy(record->signature, "cOrE", 4);
+-	record->flags = 0;
+-	record->low_version = 0;
+-	record->high_version = 1;
+-	record->asic_state = 0;
+-	strscpy(record->system_name, utsname()->nodename,
+-		sizeof(record->system_name));
+-	record->year = cpu_to_le16(tm.tm_year + 1900);
+-	record->month = cpu_to_le16(tm.tm_mon + 1);
+-	record->day = cpu_to_le16(tm.tm_mday);
+-	record->hour = cpu_to_le16(tm.tm_hour);
+-	record->minute = cpu_to_le16(tm.tm_min);
+-	record->second = cpu_to_le16(tm.tm_sec);
+-	record->utc_bias = cpu_to_le16(start_utc);
+-	strcpy(record->commandline, "ethtool -w");
+-	record->total_segments = cpu_to_le32(total_segs);
+-
+-	if (sscanf(utsname()->release, "%u.%u", &os_ver_major, &os_ver_minor) != 2)
+-		netdev_warn(bp->dev, "Unknown OS release in coredump\n");
+-	record->os_ver_major = cpu_to_le32(os_ver_major);
+-	record->os_ver_minor = cpu_to_le32(os_ver_minor);
+-
+-	strscpy(record->os_name, utsname()->sysname, sizeof(record->os_name));
+-	time64_to_tm(end, 0, &tm);
+-	record->end_year = cpu_to_le16(tm.tm_year + 1900);
+-	record->end_month = cpu_to_le16(tm.tm_mon + 1);
+-	record->end_day = cpu_to_le16(tm.tm_mday);
+-	record->end_hour = cpu_to_le16(tm.tm_hour);
+-	record->end_minute = cpu_to_le16(tm.tm_min);
+-	record->end_second = cpu_to_le16(tm.tm_sec);
+-	record->end_utc_bias = cpu_to_le16(sys_tz.tz_minuteswest * 60);
+-	record->asic_id1 = cpu_to_le32(bp->chip_num << 16 |
+-				       bp->ver_resp.chip_rev << 8 |
+-				       bp->ver_resp.chip_metal);
+-	record->asic_id2 = 0;
+-	record->coredump_status = cpu_to_le32(status);
+-	record->ioctl_low_version = 0;
+-	record->ioctl_high_version = 0;
+-}
+-
+-static int __bnxt_get_coredump(struct bnxt *bp, void *buf, u32 *dump_len)
+-{
+-	u32 ver_get_resp_len = sizeof(struct hwrm_ver_get_output);
+-	u32 offset = 0, seg_hdr_len, seg_record_len, buf_len = 0;
+-	struct coredump_segment_record *seg_record = NULL;
+-	struct bnxt_coredump_segment_hdr seg_hdr;
+-	struct bnxt_coredump coredump = {NULL};
+-	time64_t start_time;
+-	u16 start_utc;
+-	int rc = 0, i;
+-
+-	if (buf)
+-		buf_len = *dump_len;
+-
+-	start_time = ktime_get_real_seconds();
+-	start_utc = sys_tz.tz_minuteswest * 60;
+-	seg_hdr_len = sizeof(seg_hdr);
+-
+-	/* First segment should be hwrm_ver_get response */
+-	*dump_len = seg_hdr_len + ver_get_resp_len;
+-	if (buf) {
+-		bnxt_fill_coredump_seg_hdr(bp, &seg_hdr, NULL, ver_get_resp_len,
+-					   0, 0, 0);
+-		memcpy(buf + offset, &seg_hdr, seg_hdr_len);
+-		offset += seg_hdr_len;
+-		memcpy(buf + offset, &bp->ver_resp, ver_get_resp_len);
+-		offset += ver_get_resp_len;
+-	}
+-
+-	rc = bnxt_hwrm_dbg_coredump_list(bp, &coredump);
+-	if (rc) {
+-		netdev_err(bp->dev, "Failed to get coredump segment list\n");
+-		goto err;
+-	}
+-
+-	*dump_len += seg_hdr_len * coredump.total_segs;
+-
+-	seg_record = (struct coredump_segment_record *)coredump.data;
+-	seg_record_len = sizeof(*seg_record);
+-
+-	for (i = 0; i < coredump.total_segs; i++) {
+-		u16 comp_id = le16_to_cpu(seg_record->component_id);
+-		u16 seg_id = le16_to_cpu(seg_record->segment_id);
+-		u32 duration = 0, seg_len = 0;
+-		unsigned long start, end;
+-
+-		if (buf && ((offset + seg_hdr_len) >
+-			    BNXT_COREDUMP_BUF_LEN(buf_len))) {
+-			rc = -ENOBUFS;
+-			goto err;
+-		}
+-
+-		start = jiffies;
+-
+-		rc = bnxt_hwrm_dbg_coredump_initiate(bp, comp_id, seg_id);
+-		if (rc) {
+-			netdev_err(bp->dev,
+-				   "Failed to initiate coredump for seg = %d\n",
+-				   seg_record->segment_id);
+-			goto next_seg;
+-		}
+-
+-		/* Write segment data into the buffer */
+-		rc = bnxt_hwrm_dbg_coredump_retrieve(bp, comp_id, seg_id,
+-						     &seg_len, buf, buf_len,
+-						     offset + seg_hdr_len);
+-		if (rc && rc == -ENOBUFS)
+-			goto err;
+-		else if (rc)
+-			netdev_err(bp->dev,
+-				   "Failed to retrieve coredump for seg = %d\n",
+-				   seg_record->segment_id);
+-
+-next_seg:
+-		end = jiffies;
+-		duration = jiffies_to_msecs(end - start);
+-		bnxt_fill_coredump_seg_hdr(bp, &seg_hdr, seg_record, seg_len,
+-					   rc, duration, 0);
+-
+-		if (buf) {
+-			/* Write segment header into the buffer */
+-			memcpy(buf + offset, &seg_hdr, seg_hdr_len);
+-			offset += seg_hdr_len + seg_len;
+-		}
+-
+-		*dump_len += seg_len;
+-		seg_record =
+-			(struct coredump_segment_record *)((u8 *)seg_record +
+-							   seg_record_len);
+-	}
+-
+-err:
+-	if (buf)
+-		bnxt_fill_coredump_record(bp, buf + offset, start_time,
+-					  start_utc, coredump.total_segs + 1,
+-					  rc);
+-	kfree(coredump.data);
+-	*dump_len += sizeof(struct bnxt_coredump_record);
+-	if (rc == -ENOBUFS)
+-		netdev_err(bp->dev, "Firmware returned large coredump buffer\n");
+-	return rc;
+-}
+-
+-static int bnxt_get_coredump(struct bnxt *bp, u16 dump_type, void *buf, u32 *dump_len)
+-{
+-	if (dump_type == BNXT_DUMP_CRASH) {
+-#ifdef CONFIG_TEE_BNXT_FW
+-		return tee_bnxt_copy_coredump(buf, 0, *dump_len);
+-#else
+-		return -EOPNOTSUPP;
+-#endif
+-	} else {
+-		return __bnxt_get_coredump(bp, buf, dump_len);
+-	}
+-}
+-
+-static u32 bnxt_get_coredump_length(struct bnxt *bp, u16 dump_type)
+-{
+-	u32 len = 0;
+-
+-	if (dump_type == BNXT_DUMP_CRASH)
+-		len = BNXT_CRASH_DUMP_LEN;
+-	else
+-		__bnxt_get_coredump(bp, NULL, &len);
+-	return len;
+-}
+-
+ static int bnxt_set_dump(struct net_device *dev, struct ethtool_dump *dump)
+ {
+ 	struct bnxt *bp = netdev_priv(dev);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
+index bbf184c63b0a..4f7eaba65dcb 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
+@@ -22,49 +22,6 @@ struct bnxt_led_cfg {
+ 	u8 rsvd;
+ };
  
- static int bnxt_get_ts_info(struct net_device *dev,
+-#define COREDUMP_LIST_BUF_LEN		2048
+-#define COREDUMP_RETRIEVE_BUF_LEN	4096
+-
+-struct bnxt_coredump {
+-	void		*data;
+-	int		data_size;
+-	u16		total_segs;
+-};
+-
+-#define BNXT_COREDUMP_BUF_LEN(len) ((len) - sizeof(struct bnxt_coredump_record))
+-
+-struct bnxt_hwrm_dbg_dma_info {
+-	void *dest_buf;
+-	int dest_buf_size;
+-	u16 dma_len;
+-	u16 seq_off;
+-	u16 data_len_off;
+-	u16 segs;
+-	u32 seg_start;
+-	u32 buf_len;
+-};
+-
+-struct hwrm_dbg_cmn_input {
+-	__le16 req_type;
+-	__le16 cmpl_ring;
+-	__le16 seq_id;
+-	__le16 target_id;
+-	__le64 resp_addr;
+-	__le64 host_dest_addr;
+-	__le32 host_buf_len;
+-};
+-
+-struct hwrm_dbg_cmn_output {
+-	__le16 error_code;
+-	__le16 req_type;
+-	__le16 seq_id;
+-	__le16 resp_len;
+-	u8 flags;
+-	#define HWRM_DBG_CMN_FLAGS_MORE	1
+-};
+-
+-#define BNXT_CRASH_DUMP_LEN	(8 << 20)
+-
+ #define BNXT_LED_DFLT_ENA				\
+ 	(PORT_LED_CFG_REQ_ENABLES_LED0_ID |		\
+ 	 PORT_LED_CFG_REQ_ENABLES_LED0_STATE |		\
 -- 
 2.18.1
 
 
---00000000000055f39305cf790df8
+--00000000000068c0da05cf790d6d
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -249,13 +1030,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIACMwbw2RnXGzJnXdeDJkugya3Th7pQJ
-I9Ohf/0N9iLQMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTAy
-OTA3NDgyNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIAyUNYR8kViYl3Us4xCbVlTJ/dwdqzeL
+Z0fthCLoQNd9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTAy
+OTA3NDgyNlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQC4iNAsv9mnh52xCglW6MZMGp28lHmtkoJreXR17BNAD0nLIjxw
-uYyZDvFH4NNqw8UK0JyMG8n0RiavW2DRGFQQLmxdlq7Mce5WO/BBmHKKDcqOrb1P3pZHtaTiP7YV
-wsuTeDPnSBVADwbBGBhVTYwozCPKLcKP+JapoZBxVrWRCe6OChTmaOLlk4ee/0QBdbWLDU5tCL5p
-j7Av73hHMNLIdRWPwoITTqPDOv3p8ZEBCE0h5AD+ZuRHvPcVGGqczbfwPO2JF3QNlqf4OxYy6SRQ
-OL7QZjkEhL+aPX5G9DTL5juf3Y6wCk3kcPPRKqitOIC870tUJkcS9pE7NSW4fMlU
---00000000000055f39305cf790df8--
+ATANBgkqhkiG9w0BAQEFAASCAQBJZ+mx1thYHTnryWNjLyJaEUUevWDO0wWPO8l3rG+alHLPbHmc
+Va6MgbQqJdujC06QKsjl83o8yY4pn6Lfz0Zf8xy+/iLGnfCy8nx9ZWWtGpgwEu1Mr9mmIGmD/r9L
+fakPqFVQsrbLAHv24gjkJSgn5veBZoeDFjYypz1RGh7CWdTuBOA3+anJIezU9sGLmG5XAA5iN+dx
+iFy7sYr92dFecKuQ7xdn90y0p+GLZNqU7He9/oYPwUQlxa0yYYOKVuzftN51o/DU4QJP48r4mn//
+BRlIGpEwCE/zwTI6+2x4VKm5+sigwedwtw+wNvJjOhwUAxKwZ9FvoQGQ6QhsMyvL
+--00000000000068c0da05cf790d6d--
