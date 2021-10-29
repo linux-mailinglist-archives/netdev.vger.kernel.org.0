@@ -2,152 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2C6543FF61
-	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 17:22:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3ABF43FF78
+	for <lists+netdev@lfdr.de>; Fri, 29 Oct 2021 17:28:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229723AbhJ2PYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 11:24:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57852 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229662AbhJ2PYn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 11:24:43 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0953C061570
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 08:22:14 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id l13so2015494pls.3
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 08:22:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=pC2jgKZOxCsgHzGCq9gvBh4U7AvqPPcICZlnyfd8s14=;
-        b=kCfZ3PogK0bN87+ysocyGB+dmwsTrGVyanrSpIUxhjfyD6y7YMHAt+0FyD2hgOaF8F
-         4uXuSJIWqqW2WZTc8RginHpFXERwNhuI+D43YoNkH1UhOU7Da2/sNun3VfBkcfacuY1x
-         y6PLiUay3qTYKEgpV5SiychTjw8plKnT3KL7cl3GI/+39xDcGobCExfX2LFaL1RRd2bX
-         ovHvrkRuCtt+1smY3t1i9xYe/RCCH7b7+cWdDZvG4DIAab2m4OlpO+mc0G77vRr/q4XC
-         BwSbnf12W4B/tKwv1twvYT3YngQFJzuANebNdVttkRQ7Z8k+WGcyx9GhNw6ostjuy7/d
-         ziwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:to:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=pC2jgKZOxCsgHzGCq9gvBh4U7AvqPPcICZlnyfd8s14=;
-        b=D5m2mpR7qKat0huhpDMZAI2/kpwAK5wjWIdL9mNSOZiJALDznw3Risd/Pd68yW8X4J
-         RuDDTvkplYiFTbFS9L+EUOzoH9LF9VJAPuoveNe57ECncV7aKLtWBqri276OF7wCx3Qq
-         W67LjyFVXP5H4sSOJiagW+lWpEpNy7LUMbx5QDFLmKgGH8gJaw2/wa5/oPOarV3/I3f4
-         A3o/pUhK5bIsMyztYgjR3QlhN/JzzpZ3Bj2EeXCdBgZmSn0a4HkJqaH72IxZJxQFjfHy
-         +mHgY9riKUo4swGy3HkqM+WXoMM25JYU9vyhUTavYVmAWdEx3EUuoC2kq0hClcoAO/nq
-         voaw==
-X-Gm-Message-State: AOAM531NSLd6eaXLm5cXKyO/m7F8pOMdtxErQNXde+2Nqm6C8YK/21bu
-        KrFpVM/J3Hj4RbNT/0uKdqw9Hxu5pxs=
-X-Google-Smtp-Source: ABdhPJz87xGQo8dWLp7z09hMsZZnAChscuMicBgCKVQNQfM4c8ZfaA9QtXPnbMkjtPVPL/b7YdxfBA==
-X-Received: by 2002:a17:902:e8d2:b0:141:6d21:f50b with SMTP id v18-20020a170902e8d200b001416d21f50bmr9914923plg.82.1635520933707;
-        Fri, 29 Oct 2021 08:22:13 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id j126sm7185535pfd.113.2021.10.29.08.22.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Oct 2021 08:22:13 -0700 (PDT)
-To:     Daniel Borkmann <daniel@iogearbox.net>,
+        id S229791AbhJ2PbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 11:31:02 -0400
+Received: from www62.your-server.de ([213.133.104.62]:56324 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229527AbhJ2PbC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 11:31:02 -0400
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mgTnm-000DRl-Hy; Fri, 29 Oct 2021 17:28:18 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mgTnm-00091V-8q; Fri, 29 Oct 2021 17:28:18 +0200
+Subject: Re: [PATCH bpf-next v3 1/4] libfs: move shmem_exchange to
+ simple_rename_exchange
+To:     Lorenz Bauer <lmb@cloudflare.com>, viro@zeniv.linux.org.uk,
+        Hugh Dickins <hughd@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [RFC] should we allow BPF to transmit empty skbs
-Message-ID: <d732c167-4fbd-b60a-1e1b-8e0147fd9a78@gmail.com>
-Date:   Fri, 29 Oct 2021 08:22:12 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     mszeredi@redhat.com, gregkh@linuxfoundation.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <20211028094724.59043-1-lmb@cloudflare.com>
+ <20211028094724.59043-2-lmb@cloudflare.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <0c957c87-cfd1-fceb-ce18-54274eee9fc2@iogearbox.net>
+Date:   Fri, 29 Oct 2021 17:28:17 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20211028094724.59043-2-lmb@cloudflare.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26337/Fri Oct 29 10:19:12 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some layers in tx path do not expect skb being empty (skb->len == 0)
+On 10/28/21 11:47 AM, Lorenz Bauer wrote:
+> Move shmem_exchange and make it available to other callers.
+> 
+> Suggested-by: <mszeredi@redhat.com>
 
-syzbot reported a crash [1] in fq_codel.
+nit: Should say proper name, but we can fix it up while applying.
 
-But I expect many drivers would also crash later.
+Miklos, does the below look good to you? Would be good to have an ACK from fs
+folks before applying, please take a look if you have a chance. Thanks!
 
+> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> ---
+>   fs/libfs.c         | 24 ++++++++++++++++++++++++
+>   include/linux/fs.h |  2 ++
+>   mm/shmem.c         | 24 +-----------------------
+>   3 files changed, 27 insertions(+), 23 deletions(-)
+> 
+> diff --git a/fs/libfs.c b/fs/libfs.c
+> index 51b4de3b3447..1cf144dc9ed2 100644
+> --- a/fs/libfs.c
+> +++ b/fs/libfs.c
+> @@ -448,6 +448,30 @@ int simple_rmdir(struct inode *dir, struct dentry *dentry)
+>   }
+>   EXPORT_SYMBOL(simple_rmdir);
+>   
+> +int simple_rename_exchange(struct inode *old_dir, struct dentry *old_dentry,
+> +			   struct inode *new_dir, struct dentry *new_dentry)
+> +{
+> +	bool old_is_dir = d_is_dir(old_dentry);
+> +	bool new_is_dir = d_is_dir(new_dentry);
+> +
+> +	if (old_dir != new_dir && old_is_dir != new_is_dir) {
+> +		if (old_is_dir) {
+> +			drop_nlink(old_dir);
+> +			inc_nlink(new_dir);
+> +		} else {
+> +			drop_nlink(new_dir);
+> +			inc_nlink(old_dir);
+> +		}
+> +	}
+> +	old_dir->i_ctime = old_dir->i_mtime =
+> +	new_dir->i_ctime = new_dir->i_mtime =
+> +	d_inode(old_dentry)->i_ctime =
+> +	d_inode(new_dentry)->i_ctime = current_time(old_dir);
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(simple_rename_exchange);
+> +
+>   int simple_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
+>   		  struct dentry *old_dentry, struct inode *new_dir,
+>   		  struct dentry *new_dentry, unsigned int flags)
+> diff --git a/include/linux/fs.h b/include/linux/fs.h
+> index e7a633353fd2..333b8af405ce 100644
+> --- a/include/linux/fs.h
+> +++ b/include/linux/fs.h
+> @@ -3383,6 +3383,8 @@ extern int simple_open(struct inode *inode, struct file *file);
+>   extern int simple_link(struct dentry *, struct inode *, struct dentry *);
+>   extern int simple_unlink(struct inode *, struct dentry *);
+>   extern int simple_rmdir(struct inode *, struct dentry *);
+> +extern int simple_rename_exchange(struct inode *old_dir, struct dentry *old_dentry,
+> +				  struct inode *new_dir, struct dentry *new_dentry);
+>   extern int simple_rename(struct user_namespace *, struct inode *,
+>   			 struct dentry *, struct inode *, struct dentry *,
+>   			 unsigned int);
+> diff --git a/mm/shmem.c b/mm/shmem.c
+> index b5860f4a2738..a18dde3d3092 100644
+> --- a/mm/shmem.c
+> +++ b/mm/shmem.c
+> @@ -2945,28 +2945,6 @@ static int shmem_rmdir(struct inode *dir, struct dentry *dentry)
+>   	return shmem_unlink(dir, dentry);
+>   }
+>   
+> -static int shmem_exchange(struct inode *old_dir, struct dentry *old_dentry, struct inode *new_dir, struct dentry *new_dentry)
+> -{
+> -	bool old_is_dir = d_is_dir(old_dentry);
+> -	bool new_is_dir = d_is_dir(new_dentry);
+> -
+> -	if (old_dir != new_dir && old_is_dir != new_is_dir) {
+> -		if (old_is_dir) {
+> -			drop_nlink(old_dir);
+> -			inc_nlink(new_dir);
+> -		} else {
+> -			drop_nlink(new_dir);
+> -			inc_nlink(old_dir);
+> -		}
+> -	}
+> -	old_dir->i_ctime = old_dir->i_mtime =
+> -	new_dir->i_ctime = new_dir->i_mtime =
+> -	d_inode(old_dentry)->i_ctime =
+> -	d_inode(new_dentry)->i_ctime = current_time(old_dir);
+> -
+> -	return 0;
+> -}
+> -
+>   static int shmem_whiteout(struct user_namespace *mnt_userns,
+>   			  struct inode *old_dir, struct dentry *old_dentry)
+>   {
+> @@ -3012,7 +2990,7 @@ static int shmem_rename2(struct user_namespace *mnt_userns,
+>   		return -EINVAL;
+>   
+>   	if (flags & RENAME_EXCHANGE)
+> -		return shmem_exchange(old_dir, old_dentry, new_dir, new_dentry);
+> +		return simple_rename_exchange(old_dir, old_dentry, new_dir, new_dentry);
+>   
+>   	if (!simple_empty(new_dentry))
+>   		return -ENOTEMPTY;
+> 
 
-Sure the immediate fq_codel crash could be 'fixed', but I would rather
-add some sanity checks in net/core/filter.c
-
-Thanks.
-
-diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
-index bb0cd6d3d2c2749d54e26368fb2558beedea85c9..73688b0ec83c473322669ca6a331bf3f3aefb293 100644
---- a/net/sched/sch_fq_codel.c
-+++ b/net/sched/sch_fq_codel.c
-@@ -203,7 +203,14 @@ static int fq_codel_enqueue(struct sk_buff *skb, struct Qdisc *sch,
-        codel_set_enqueue_time(skb);
-        flow = &q->flows[idx];
-        flow_queue_add(flow, skb);
--       q->backlogs[idx] += qdisc_pkt_len(skb);
-+
-+       /* fq_codel_drop() depends on qdisc_pkt_len(skb) being not zero. */
-+       pkt_len = qdisc_pkt_len(skb);
-+       if (unlikely(!pkt_len)) {
-+               pkt_len = 1;
-+               qdisc_skb_cb(skb)->pkt_len = pkt_len;
-+       }
-+       q->backlogs[idx] += pkt_len;
-        qdisc_qstats_backlog_inc(sch, skb);
- 
-        if (list_empty(&flow->flowchain)) {
-@@ -220,8 +227,6 @@ static int fq_codel_enqueue(struct sk_buff *skb, struct Qdisc *sch,
-        prev_backlog = sch->qstats.backlog;
-        prev_qlen = sch->q.qlen;
- 
--       /* save this packet length as it might be dropped by fq_codel_drop() */
--       pkt_len = qdisc_pkt_len(skb);
-        /* fq_codel_drop() is quite expensive, as it performs a linear search
-         * in q->backlogs[] to find a fat flow.
-         * So instead of dropping a single packet, drop half of its backlog
-
-
-[1]
-general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-CPU: 1 PID: 6542 Comm: syz-executor965 Not tainted 5.15.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:dequeue_head net/sched/sch_fq_codel.c:120 [inline]
-RIP: 0010:fq_codel_drop net/sched/sch_fq_codel.c:168 [inline]
-RIP: 0010:fq_codel_enqueue+0x83e/0x10c0 net/sched/sch_fq_codel.c:230
-Code: f8 e2 25 fa 45 39 ec 0f 83 cb 00 00 00 e8 1a dc 25 fa 48 8b 44 24 10 80 38 00 0f 85 9a 06 00 00 49 8b 07 48 89 c2 48 c1 ea 03 <42> 80 3c 32 00 0f 85 6e 06 00 00 48 8b 10 48 8d 78 28 49 89 17 48
-RSP: 0018:ffffc90001187310 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff87504776 RDI: 0000000000000003
-RBP: ffffc900011874e0 R08: 0000000000000400 R09: 0000000000000001
-R10: ffffffff875046d6 R11: 0000000000000000 R12: 0000000000000400
-R13: 0000000000000000 R14: dffffc0000000000 R15: ffff888071660000
-FS:  0000555556b21300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f9c09885040 CR3: 0000000021c77000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- dev_qdisc_enqueue+0x40/0x300 net/core/dev.c:3771
- __dev_xmit_skb net/core/dev.c:3855 [inline]
- __dev_queue_xmit+0x1f0e/0x36e0 net/core/dev.c:4170
- __bpf_tx_skb net/core/filter.c:2114 [inline]
- __bpf_redirect_no_mac net/core/filter.c:2139 [inline]
- __bpf_redirect+0x5ba/0xd20 net/core/filter.c:2162
- ____bpf_clone_redirect net/core/filter.c:2429 [inline]
- bpf_clone_redirect+0x2ae/0x420 net/core/filter.c:2401
- ___bpf_prog_run+0x3592/0x77d0 kernel/bpf/core.c:1548
- __bpf_prog_run512+0x91/0xd0 kernel/bpf/core.c:1776
- bpf_dispatcher_nop_func include/linux/bpf.h:718 [inline]
- __bpf_prog_run include/linux/filter.h:624 [inline]
- bpf_prog_run include/linux/filter.h:631 [inline]
- bpf_test_run+0x37c/0xa20 net/bpf/test_run.c:119
- bpf_prog_test_run_skb+0xa7c/0x1cb0 net/bpf/test_run.c:662
- bpf_prog_test_run kernel/bpf/syscall.c:3307 [inline]
- __sys_bpf+0x2137/0x5df0 kernel/bpf/syscall.c:4605
- __do_sys_bpf kernel/bpf/syscall.c:4691 [inline]
- __se_sys_bpf kernel/bpf/syscall.c:4689 [inline]
- __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:4689
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
