@@ -2,110 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A9CA4407D9
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 09:26:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBA004407EE
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 09:45:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231680AbhJ3H3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 03:29:08 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:37658 "EHLO a.mx.secunet.com"
+        id S231726AbhJ3HsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Oct 2021 03:48:22 -0400
+Received: from ink.ssi.bg ([178.16.128.7]:43737 "EHLO ink.ssi.bg"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231669AbhJ3H3H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 Oct 2021 03:29:07 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id AC05F2049A;
-        Sat, 30 Oct 2021 09:26:36 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id dPad6JC0xS1w; Sat, 30 Oct 2021 09:26:36 +0200 (CEST)
-Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 2AEB12009B;
-        Sat, 30 Oct 2021 09:26:36 +0200 (CEST)
-Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
-        by mailout2.secunet.com (Postfix) with ESMTP id 2193980004A;
-        Sat, 30 Oct 2021 09:26:36 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Sat, 30 Oct 2021 09:26:35 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Sat, 30 Oct
- 2021 09:26:35 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id F1E013182FB0; Sat, 30 Oct 2021 09:26:35 +0200 (CEST)
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH 2/2] xfrm: Remove redundant fields and related parentheses
-Date:   Sat, 30 Oct 2021 09:26:33 +0200
-Message-ID: <20211030072633.4158069-3-steffen.klassert@secunet.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211030072633.4158069-1-steffen.klassert@secunet.com>
-References: <20211030072633.4158069-1-steffen.klassert@secunet.com>
+        id S230365AbhJ3HsW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Oct 2021 03:48:22 -0400
+Received: from ja.ssi.bg (unknown [178.16.129.10])
+        by ink.ssi.bg (Postfix) with ESMTPS id 9941F3C09BA;
+        Sat, 30 Oct 2021 10:45:48 +0300 (EEST)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.16.1/8.16.1) with ESMTP id 19U7jhRk009603;
+        Sat, 30 Oct 2021 10:45:44 +0300
+Date:   Sat, 30 Oct 2021 10:45:43 +0300 (EEST)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     yangxingwu <xingwu.yang@gmail.com>
+cc:     Simon Horman <horms@verge.net.au>, pablo@netfilter.org,
+        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-doc@vger.kernel.org, Chuanqi Liu <legend050709@qq.com>
+Subject: Re: [PATCH nf-next v4] netfilter: ipvs: Fix reuse connection if RS
+ weight is 0
+In-Reply-To: <20211030064049.9992-1-xingwu.yang@gmail.com>
+Message-ID: <e2699ba8-e733-2c71-584a-138746511f4@ssi.bg>
+References: <20211030064049.9992-1-xingwu.yang@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: luo penghao <cgel.zte@gmail.com>
 
-The variable err is not necessary in such places. It should be revmoved
-for the simplicity of the code. This will cause the double parentheses
-to be redundant, and the inner parentheses should be deleted.
+	Hello,
 
-The clang_analyzer complains as follows:
+On Sat, 30 Oct 2021, yangxingwu wrote:
 
-net/xfrm/xfrm_input.c:533: warning:
-net/xfrm/xfrm_input.c:563: warning:
+> We are changing expire_nodest_conn to work even for reused connections when
+> conn_reuse_mode=0 but without affecting the controlled and persistent
+> connections during the graceful termination period while server is with
+> weight=0.
+> 
+> Fixes: d752c3645717 ("ipvs: allow rescheduling of new connections when port
+> reuse is detected")
+> Co-developed-by: Chuanqi Liu <legend050709@qq.com>
+> Signed-off-by: Chuanqi Liu <legend050709@qq.com>
+> Signed-off-by: yangxingwu <xingwu.yang@gmail.com>
 
-Although the value stored to 'err' is used in the enclosing expression,
-the value is never actually read from 'err'.
+	Looks good to me, thanks!
 
-Changes in v2:
+Acked-by: Julian Anastasov <ja@ssi.bg>
 
-Modify the title, because v2 removes the brackets.
-Remove extra parentheses.
+	Simon, Pablo, may be you can change Fixes tag to be
+on one line before applying.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: luo penghao <luo.penghao@zte.com.cn>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
----
- net/xfrm/xfrm_input.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> ---
+>  Documentation/networking/ipvs-sysctl.rst |  3 +--
+>  net/netfilter/ipvs/ip_vs_core.c          | 12 ++++--------
+>  2 files changed, 5 insertions(+), 10 deletions(-)
+> 
+> diff --git a/Documentation/networking/ipvs-sysctl.rst b/Documentation/networking/ipvs-sysctl.rst
+> index 2afccc63856e..1cfbf1add2fc 100644
+> --- a/Documentation/networking/ipvs-sysctl.rst
+> +++ b/Documentation/networking/ipvs-sysctl.rst
+> @@ -37,8 +37,7 @@ conn_reuse_mode - INTEGER
+>  
+>  	0: disable any special handling on port reuse. The new
+>  	connection will be delivered to the same real server that was
+> -	servicing the previous connection. This will effectively
+> -	disable expire_nodest_conn.
+> +	servicing the previous connection.
+>  
+>  	bit 1: enable rescheduling of new connections when it is safe.
+>  	That is, whenever expire_nodest_conn and for TCP sockets, when
+> diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
+> index 128690c512df..ce6ceb55822b 100644
+> --- a/net/netfilter/ipvs/ip_vs_core.c
+> +++ b/net/netfilter/ipvs/ip_vs_core.c
+> @@ -1100,10 +1100,6 @@ static inline bool is_new_conn(const struct sk_buff *skb,
+>  static inline bool is_new_conn_expected(const struct ip_vs_conn *cp,
+>  					int conn_reuse_mode)
+>  {
+> -	/* Controlled (FTP DATA or persistence)? */
+> -	if (cp->control)
+> -		return false;
+> -
+>  	switch (cp->protocol) {
+>  	case IPPROTO_TCP:
+>  		return (cp->state == IP_VS_TCP_S_TIME_WAIT) ||
+> @@ -1964,7 +1960,6 @@ ip_vs_in(struct netns_ipvs *ipvs, unsigned int hooknum, struct sk_buff *skb, int
+>  	struct ip_vs_proto_data *pd;
+>  	struct ip_vs_conn *cp;
+>  	int ret, pkts;
+> -	int conn_reuse_mode;
+>  	struct sock *sk;
+>  
+>  	/* Already marked as IPVS request or reply? */
+> @@ -2041,15 +2036,16 @@ ip_vs_in(struct netns_ipvs *ipvs, unsigned int hooknum, struct sk_buff *skb, int
+>  	cp = INDIRECT_CALL_1(pp->conn_in_get, ip_vs_conn_in_get_proto,
+>  			     ipvs, af, skb, &iph);
+>  
+> -	conn_reuse_mode = sysctl_conn_reuse_mode(ipvs);
+> -	if (conn_reuse_mode && !iph.fragoffs && is_new_conn(skb, &iph) && cp) {
+> +	if (!iph.fragoffs && is_new_conn(skb, &iph) && cp && !cp->control) {
+>  		bool old_ct = false, resched = false;
+> +		int conn_reuse_mode = sysctl_conn_reuse_mode(ipvs);
+>  
+>  		if (unlikely(sysctl_expire_nodest_conn(ipvs)) && cp->dest &&
+>  		    unlikely(!atomic_read(&cp->dest->weight))) {
+>  			resched = true;
+>  			old_ct = ip_vs_conn_uses_old_conntrack(cp, skb);
+> -		} else if (is_new_conn_expected(cp, conn_reuse_mode)) {
+> +		} else if (conn_reuse_mode &&
+> +			   is_new_conn_expected(cp, conn_reuse_mode)) {
+>  			old_ct = ip_vs_conn_uses_old_conntrack(cp, skb);
+>  			if (!atomic_read(&cp->n_control)) {
+>  				resched = true;
+> -- 
+> 2.30.2
 
-diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-index 3df0861d4390..70a8c36f0ba6 100644
---- a/net/xfrm/xfrm_input.c
-+++ b/net/xfrm/xfrm_input.c
-@@ -530,7 +530,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
- 				goto drop;
- 			}
- 
--			if ((err = xfrm_parse_spi(skb, nexthdr, &spi, &seq)) != 0) {
-+			if (xfrm_parse_spi(skb, nexthdr, &spi, &seq)) {
- 				XFRM_INC_STATS(net, LINUX_MIB_XFRMINHDRERROR);
- 				goto drop;
- 			}
-@@ -560,7 +560,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
- 	}
- 
- 	seq = 0;
--	if (!spi && (err = xfrm_parse_spi(skb, nexthdr, &spi, &seq)) != 0) {
-+	if (!spi && xfrm_parse_spi(skb, nexthdr, &spi, &seq)) {
- 		secpath_reset(skb);
- 		XFRM_INC_STATS(net, LINUX_MIB_XFRMINHDRERROR);
- 		goto drop;
--- 
-2.25.1
+Regards
 
+--
+Julian Anastasov <ja@ssi.bg>
