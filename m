@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C132D4409F0
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 17:30:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D329F4409FD
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 17:35:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231950AbhJ3PdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 11:33:15 -0400
-Received: from mail-cusazon11021025.outbound.protection.outlook.com ([52.101.62.25]:18748
+        id S231986AbhJ3PiH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Oct 2021 11:38:07 -0400
+Received: from mail-cusazon11021020.outbound.protection.outlook.com ([52.101.62.20]:41886
         "EHLO na01-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230086AbhJ3PdO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 Oct 2021 11:33:14 -0400
+        id S230086AbhJ3PiG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Oct 2021 11:38:06 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dJm16fdgKNtrClBB/BhRjg/2GtNXHAZIrUdNWUC+suJWOTI+g0yqmoB9KE1WbKAgIddRIYsXVVNcoKCj9UXF86YbPfPNwF66qfyNNCFlVNwU9qJMFgstb4KwKuw5If2f2B08TApa+jXDSsVpHazeKa8WCoGaONFSwrh9Yi9CCnbxuBu0yHEJJS97ZzZWCKw9Gd1HhVsitYf4a8SKoGPsvx51MeBzJ3tcDSAROJcf4SlhZL9kVlv+uz1JNcnjHSnweWnO3sA4G0H46Xq1XaJilfE+5ok0Ms58gQqt06SK7LzQqZal5/9UlCEPhWPJHy49zz+t47rdC+rHSuqbRJLx8g==
+ b=FLn8eWxt86fWWyWUQNAMl49sKlxhxQu/DcJT6sspJ2IxpVto0pGufolY5lLy+hDhSbZgmtvtbTpewrkdfxaJMK7teNmGJQ/brD0T74R7eq/+7evlIcZXZGdlOBc9GUvL/+3jbP8V8TeRCiu1UUwu5HvQhH2J1Pr0sS4L9L1tzUsgtDtTe1b4GlKu/KejHGZ+/XYU6vjf0XmMJ7ukYEOcoq97jDzLldk2U53lnYPpvqcGIl/K69Tz8Jhp0A19CMKr0ubNDSlFq2Pk6hjhyWvR07Py44GuWXAUIVwZxSj4Mrzy0uhlDECWKoYbnoYNEJLtfiaP5tQT2gSVpXHcDEVFWg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sl+2++Qwr1E8eWVcgSPVM2oKPhTAKWIj9SVbwWSQwcI=;
- b=cS/dh61pAR/4FqOKLVJHyrw0EUY3CZm9UWoB4ffojl80MRUQeBXoJ5S9quIkiOz3itxkdmGNxLEUUvt9WI9yXFMJBAzEjRu7e54NiPdOUFsAsQ5clCGnYqp5zLQpKTxqYLfSKL9h7hf/wmtN+UHIlPkth8/a3VuPYykgLa10DHiC0TWmrX558kJwopKym8zMT5TrsWlzT2dQDxq6lDIDurViMLajIwCDGKZj7eRP2W9YrWsOrbwukvzcZnHG++/WZZcpAwaR/OYxxHBVwzh50Ets4dcIDbPegXkvL46ZoBeL5Frd8ade1p89VlZfDhJ90hTFCaj0d8bvDLr/SYapAQ==
+ bh=zMtYmqZZ5x3EsJ5P/sm2fbCbpBm0kcyTz+z2Ds2pGkE=;
+ b=aKDiZRDeNekAVNtI4+GbvshUUxTUSP+NVaSEGYU2b/nYbCitkd9TGrp2C/5NzqHoVvqrKREDUYv7obIhnlrhv14lJxB37RsH2KYfppF7R9bsRK7nf/pQkSr6fOunI0ue9Pn82zAEqLapBUOm4qRMibjekFS1kZPvy4lAG2SxswAFok4wscmOemHwzj6Dfvs05FqSDd5t3DqNpKdhduZQqrBigTZHfTCi/Zs3qUP0UAztrhX/dYkT4HmsXTBJ6Foklirfy52avuCgWJemg0bSyOH8VbHVL74BVMCLDkdQxeGzVvU5Ymo7jEJx+gG99Bif/2guBRTjuaCEjZTCRp64kA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=microsoft.com; dmarc=pass action=none
  header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sl+2++Qwr1E8eWVcgSPVM2oKPhTAKWIj9SVbwWSQwcI=;
- b=ZdkZWqCiqABGuymQ9OfZ4A2gDbf7cAhwWLp9/M1SyJ9KZSTgcgr2WIzP3NJx1V8SrFQhzPo66tRG2lubRdXGP64LFYMxSOKt4RUjuctDGTHztDeyzRcgHQyr3y59ek9/HF0Pm6V/PheBJYu3DVYu1lUZ28jfTa8elgVW5rgECQA=
+ bh=zMtYmqZZ5x3EsJ5P/sm2fbCbpBm0kcyTz+z2Ds2pGkE=;
+ b=jwYDSANmvxg7h68/scCVTEamOBYtLP/jUY0mi4cCBU72cGtBwkBD2SGBSmLtBh94OiXkmz/MhiAG5hVnt+004FChq7ZFG0bXQ0H+8I6Pr/oqGaYy8SZlKeDyLCEJk3TUQhvu+DPYNbDiqkXduXbYnOuGrRIFB0mhIihylaEQ6Bc=
 Received: from BN8PR21MB1284.namprd21.prod.outlook.com (2603:10b6:408:a2::22)
- by BN8PR21MB1234.namprd21.prod.outlook.com (2603:10b6:408:77::30) with
+ by BN8PR21MB1204.namprd21.prod.outlook.com (2603:10b6:408:76::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.0; Sat, 30 Oct
- 2021 15:30:40 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.2; Sat, 30 Oct
+ 2021 15:35:32 +0000
 Received: from BN8PR21MB1284.namprd21.prod.outlook.com
  ([fe80::5962:fbb9:f607:8018]) by BN8PR21MB1284.namprd21.prod.outlook.com
  ([fe80::5962:fbb9:f607:8018%7]) with mapi id 15.20.4669.004; Sat, 30 Oct 2021
- 15:30:40 +0000
+ 15:35:32 +0000
 From:   Haiyang Zhang <haiyangz@microsoft.com>
 To:     Dexuan Cui <decui@microsoft.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
@@ -50,77 +50,75 @@ CC:     KY Srinivasan <kys@microsoft.com>,
         Shachar Raindel <shacharr@microsoft.com>,
         Paul Rosswurm <paulros@microsoft.com>,
         "olaf@aepfle.de" <olaf@aepfle.de>, vkuznets <vkuznets@redhat.com>
-Subject: RE: [PATCH net-next 1/4] net: mana: Fix the netdev_err()'s vPort
- argument in mana_init_port()
-Thread-Topic: [PATCH net-next 1/4] net: mana: Fix the netdev_err()'s vPort
- argument in mana_init_port()
-Thread-Index: AQHXzSi4LzXo/haLVkOIULr1f0GnJKvrq8cQ
-Date:   Sat, 30 Oct 2021 15:30:40 +0000
-Message-ID: <BN8PR21MB1284DB6301CB6D73260103CACA889@BN8PR21MB1284.namprd21.prod.outlook.com>
+Subject: RE: [PATCH net-next 2/4] net: mana: Report OS info to the PF driver
+Thread-Topic: [PATCH net-next 2/4] net: mana: Report OS info to the PF driver
+Thread-Index: AQHXzSi7j12SBr54K0+FgVaU2HF9LKvrq/Ww
+Date:   Sat, 30 Oct 2021 15:35:32 +0000
+Message-ID: <BN8PR21MB128404C264B2E9081C97CF19CA889@BN8PR21MB1284.namprd21.prod.outlook.com>
 References: <20211030005408.13932-1-decui@microsoft.com>
- <20211030005408.13932-2-decui@microsoft.com>
-In-Reply-To: <20211030005408.13932-2-decui@microsoft.com>
+ <20211030005408.13932-3-decui@microsoft.com>
+In-Reply-To: <20211030005408.13932-3-decui@microsoft.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=935e2c5d-858f-4269-8b3c-08a760c9af2d;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-10-30T15:30:20Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=92854149-9044-49ec-a825-aa3732946519;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-10-30T15:30:59Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=microsoft.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: aab484fd-f154-488f-c8b7-08d99bba3ae8
-x-ms-traffictypediagnostic: BN8PR21MB1234:
+x-ms-office365-filtering-correlation-id: 8f3d5c41-d6c5-44f0-a306-08d99bbae90b
+x-ms-traffictypediagnostic: BN8PR21MB1204:
 x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <BN8PR21MB12344E92251BBCED8B8CCCBFCA889@BN8PR21MB1234.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4941;
+x-microsoft-antispam-prvs: <BN8PR21MB1204B8225CFFA0F6C0892F04CA889@BN8PR21MB1204.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ItB/j711t4j2CWEDYYqUUnmwlWjd19VFGEZ+n9j2ZuftvVjM44fVPKv2240Hz7keV0ISghvKs0PVZqG66wRELgwtbkfZb474DGn2VEWlN0U8sNCn2JnKHQGuRYQLVHHxdgTM38WEmI4A+M+WyJ/kjO5QdWJpzI47WOvJSWlQCqGePVGCRPyCaSG36qLtmzed6oDYZuglgRqhpvuNz+zxw7a6kVJEjIPCbAJ2A94Y8liKWBYXRJkE9hd9gZFWA/KlU6QMPBxAMYLG3t66PbIe/a9YMLVLmxQEs8Jzhl84GZKK/DVS2PcE4ctjoJO/5IThMd5ZPKOb7g1UNqqzwtBCovyVqLGB1rVX+XUnxdPVfmz9Mco96Q+vgz1X82dsPyi3jWus20OA9E8iB3Txi81vNERJ1rbGFkhkgjx+IUrlK6WcTbKoNJSJKNhr3G3VgLFsQRi2FZxHl5E/ZWsh+2L6J3DIPo9FcUQdPGU8/3dJHsZ4ZMlk65Nij1ht5soBPppRJwAao+mXz9bX67A/GE2cGW6UQkPz7nqrELI9atXgqyMi5ZZvm2zfZ+xlfl1ivSFS3URb1sjc2INrf3Wa5lMhBU4LoGqye8VQL2Uhl8uHjnCeY8Y3+dWI3OjhOxDf4gkSCYzNfmJZPI7hx8M95HsEIHi2lvGiFiEl4ASOEmoW8lP55DuS3SFiUNrTpm/NMP7wRTkcX4L7m9QPDyar85C55w==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR21MB1284.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(38070700005)(55016002)(71200400001)(8990500004)(2906002)(82960400001)(54906003)(8936002)(186003)(66946007)(66556008)(66476007)(66446008)(64756008)(26005)(9686003)(110136005)(8676002)(76116006)(86362001)(82950400001)(52536014)(508600001)(6506007)(10290500003)(38100700002)(316002)(122000001)(4326008)(7416002)(7696005)(5660300002)(83380400001)(53546011)(33656002);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: gYKU+VhWSdGhRsI89caw67ygWFYowKTsTLroQ1iiIFOPiDB4VVe2tAzr5SurRF4x0nZP4eSRpz0q2JjTfMJVkCH39X2xxQ0lTRf+F+SEVWfOykYVZAHhyq/q/0oVc6/zYpRVM18VL8Z2sXF3ENic+bVdSkGt6weACddnUCXwljwHUTp5ReYCldVE1UzCg3x8KK3Hn0ULp9sBJIKGExe1F68PX0hAo3p43rrDoHmU7hnIBhwOs7Wao7CVH894nI5sTvXkd2qI5oKMUeme4tqoSnmmGCyyEr+mVPC/GtVxbCLCnc8tqXZ4TygW2NSvM2Zxr/0NiVEoNVvnrFz39xbVc4X/TVSGTq4Q7N2Lq4w/ZPfBtTLDfz3bD1UwZcBIvwviqeZBBgGhevC6cYGH5CtoAqGjsWk//tUkICplzdQ3MAVz/I+tJ3ZkbwZMV0upU0rGl6fJQM3k9kn5L87R+Iu6DQA+b3lI2zYgzPFizG1nXxZriBJoRB2aluqJU9FFMr5GQ5GHx9vv6lkjOm9h3KoWa1HZ4bbQ+4xuIU0/sp2eVElheQHJddBRCfv1cCv6fTkarxn23ss0Ik/MPoF+2GGddqxPYbIGDhp3+NMS9HU2E6zaGHNBRejen7EKwb647Pcl/QZ1TLSm/plWmcYML2h7LZmvTFq+UJF3luZgPd6rITKQY+HG8UsMPgqWzjIFbUiHihwVTQawtP9MNOvX0bik6g==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR21MB1284.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(66556008)(8676002)(86362001)(64756008)(66946007)(52536014)(110136005)(9686003)(26005)(83380400001)(66476007)(186003)(55016002)(38070700005)(71200400001)(38100700002)(82950400001)(82960400001)(8936002)(66446008)(508600001)(76116006)(7696005)(8990500004)(5660300002)(33656002)(53546011)(6506007)(7416002)(316002)(2906002)(4326008)(122000001)(54906003)(10290500003);DIR:OUT;SFP:1102;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?rKR/HQfr0lr0rmQxF05GVVyLtyrLeazePzrOBx9GYgwwp7wwfHtJlvFVinkI?=
- =?us-ascii?Q?ahCP4aXKgLJkxQj0y+mPIayt6zQ0CdWbIBgcSl6TMgN8BhDJz/tuoRIuQQJs?=
- =?us-ascii?Q?vjv5+OLhO5GJIVSPxTTa28UVtHkVye2UGFqNieivYg98rmf83AK2lbwwreKg?=
- =?us-ascii?Q?GP/9Vn0QhqD0Gk2TCELRHooLkoGetDl7zEg7M/xV4sJXLlSatGYwteLpgetl?=
- =?us-ascii?Q?sCJp7FG8gTRhprYftIT80jV0Ntd1MRGiLFjBkAQMWdgji24RT7gbfY2tLuJk?=
- =?us-ascii?Q?tcfVd74zqk3X6qb4Liy0RkXKppXMrcr3qSa+DFpG+h59P5MZiTQhBrLIvxAz?=
- =?us-ascii?Q?Y3g4GX2RECoJ2V0yymqqQTKJH5xt/ZCRGiMUV5R8MTwJjD1uztxEHcXV5M1h?=
- =?us-ascii?Q?LHGkVXO2KCRrIYvprbOYpVuRkQyRZW5oXPRjRU2ioREZqJRpxKbwNDIqgmve?=
- =?us-ascii?Q?C2m0qsMQ/I13/5g0Jd55itiTTIYi/5tkgCMoKreNSF10nqIJI6uIG9QdfYst?=
- =?us-ascii?Q?i8uaHN2ubK/aytl+5A79nq15IwTxIE4/DMW5hYgmwbOcCej61TNpmpUbwNGk?=
- =?us-ascii?Q?5WTkAVrchKDOLWff+4PvMHSjsJn0wLX+bn1SbpFf5sSG2VZJXLjACousSgkB?=
- =?us-ascii?Q?CwbU3bDFhyGQb923rBCi3y54Uqq6cH2DDF6HZY91Wwv9UCZnvLoICWLc0f6u?=
- =?us-ascii?Q?tbtdLVMJNmLYgeVwvzxD4MLCqTLAJmHk4dIjlPPYdvOBRLthqRIoPiAj69um?=
- =?us-ascii?Q?Y0pj4JB85lo43raSuzG7H6d/u4N2DZJW67M6Br6ejqKGUw2VSI/EG3hgJtku?=
- =?us-ascii?Q?uWsVVm9hoiRC6Bo2B/C0Ufks9I1yOVqbWLxH/Hjj/HVaV4lQ5INjfh1+pRND?=
- =?us-ascii?Q?Q2HQpIN3hI9He2fpGx2O52dd9y76bRftujZ6T9EfIy+s9TsLx68UnKlfqeW7?=
- =?us-ascii?Q?tbxRR3oOXnU9iwLo+iieHLIuGGJJzeOxwjXyPIdNm1+8jZ/18r0ycuIS840j?=
- =?us-ascii?Q?spSTjpPD2sIdG71w0tvlbbhKvz9EOWj8ys1/lkUz6fSk2Hyt1j5S9kLeTxmz?=
- =?us-ascii?Q?vvP8CWHiNDgD7eW4QtN+scWmWTBnDPmSDvHhanqeeE5yW5PUTKEC0Ih86xiU?=
- =?us-ascii?Q?fNGba6LwZwN3xuRt0CFAo2yRR+hj5ASWw7EQDx181QQng6rnQcPf2jRgHx09?=
- =?us-ascii?Q?JGu8D0M7BTOlDF9Z3Uyu5mCUEIzhjGJmmUhz7eb/ybwPzuYUARnAMg4CjAUN?=
- =?us-ascii?Q?qfulu/lvtL9hWqiw2xoPe5fL1yNExiiBmQsrDOW/iPdtYDwhIbV+OULki9zV?=
- =?us-ascii?Q?M1OPalx/mHDqIlxfoGn6jKdA+fY0ivD/Bs1dVKMGq0v2j8hxH/z4r5Gv0Wbn?=
- =?us-ascii?Q?8dGqapSWcWUylY0iYJctAQ11xuAe8XxMjidUXxglyVr/aCqsN1vvyiwzcIZ0?=
- =?us-ascii?Q?ioCkkwGKsjWIfZqyb2c3gXYx9dUSFw05mMT1JUPdsbdb+DCRyhvaI2pRp8zc?=
- =?us-ascii?Q?1Ol42+/1sC35+027eTJyJnKXv9lyePC5jiGuJKPsEUXkpxnXPEfUzJu7H6hr?=
- =?us-ascii?Q?miAHWFisCL5RRVlSs4/OCvL8TJ1PJ2z1iKsMu0QYtUdX9Z84aM9044Yfe2EF?=
- =?us-ascii?Q?gQ=3D=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?aRDszrBO/Gkeg12XDObKRQuxKZPakEMnjXKp2BoPyQmnUWT/zDECdI78nGTK?=
+ =?us-ascii?Q?40dLx0X8mu4Oi8SRLjDAA7XiEUtCXcdc64mDZPVEwbk2dAKxUqat6hKVfR5z?=
+ =?us-ascii?Q?KyUXCQTMJJV6iE5qcpUU4FK9U1qCibE90P3vh1s7X8BzNEaaaOWjvd+HBtcP?=
+ =?us-ascii?Q?zMh2uiTU+V/2qDO4vdi4uFrmzr0Ngaan1sRBwIWDOLo2+rO8Bat2akoyMOpw?=
+ =?us-ascii?Q?Z8Dsy2qGKh1Ud4F2V6bLy33CSO+fvnwytDidwhk6ly6yjSKaW25ekhXr8iZm?=
+ =?us-ascii?Q?G8rhYKGyt/4cuuOhoNhs4fJNWdJSXaaHyvSEpkDtgAnJhUBIwMPtqtWlqkMy?=
+ =?us-ascii?Q?T/9GAkRp2uPR9zHU3JgseUoZgg41v40/H3Mpsjg0X++yby5Lw2y2z/Qs7BTL?=
+ =?us-ascii?Q?40NTuCohYERibZqgsPLS97OmnOJiol8R6STmPZutVzd74aY/V01qsEZ1Lf+0?=
+ =?us-ascii?Q?W1yJDukYsfvV4ZQ+2WmeUj6Gz2ZyBq/uF8Vw+Js7S8TllJbpSrUmjJtQFOO+?=
+ =?us-ascii?Q?czbu/JjP6lEQ67cS+FSuDu3fO5bFhoJz9oZ+1nXB2npwN6nyduwJ6g/xJyAi?=
+ =?us-ascii?Q?7of5fS2Cyda4/1t0LbnFqwRdOI1D0Efb5Xleo3r4qV99gyWI4DblRYQ23uA1?=
+ =?us-ascii?Q?xlaUMW2Z8MRk6h2GD56GUmavqFwrpZ96qf9hZoK9H1yFgm3fRsHzJrfB/z1S?=
+ =?us-ascii?Q?BtDFpdVwmNMahANkA1UOqnuAKtOPrV/LaH8bXL4Ew9D8RYLyZfXwEExqEUGc?=
+ =?us-ascii?Q?0BGu8y0l2uppUJg1EidDWU3snAVEPa0SDyKblFLAaSGcvmLjKWyqNnsNdv3m?=
+ =?us-ascii?Q?o3ITDMo5aLYfuYh697Ttrqft//uf332QXgVrPWRVFJQ3LN2Z+svfvJGcQTOt?=
+ =?us-ascii?Q?3A53MEiBmv5IevP626ZhL4ZdmJOPxXGJs29RqowXuqxP2FysK1vFUqf6NBW9?=
+ =?us-ascii?Q?0Agf8nuWsbkzghpgayob+R7DE0NhXD8UEBn1nImhSBiHIGwx4BRKI3W3tQDq?=
+ =?us-ascii?Q?86b3dN9hgkaKfx6dHZSqjMv3zgUzCEJJMbOCrhq1RYtKlwDzF7TqOdxQHQyZ?=
+ =?us-ascii?Q?qGzKzceyjm0wyb746JfuWzvRLvVUxwwebH+5igosNIdKGlHSuJtM0TxX1tqv?=
+ =?us-ascii?Q?CHmE2Ys4QZrjJ/idLbacVUqV8glIKL31mu/iR9/Jt8MRvw23nBMrokyopIv7?=
+ =?us-ascii?Q?YKQq25HT8pE8OvtKylO1n3THLYCQV9s56H9cMSOaB4jp2LkHnwdCs1HawVWY?=
+ =?us-ascii?Q?HEOMNYF32aIYUZ+ZWC05IQ6LG0kww6HEY1h3Jb5RBR7KbCNeTzqqW7enzJag?=
+ =?us-ascii?Q?ailjqSaSGswFv3Ap7S7LgG10XXNhzbEgFu8u7Rrr82lY0Pp+5hMrNC90mB1I?=
+ =?us-ascii?Q?QYk54uojPDX9qen81mVQHwQXgwP7pKTxTa7I8SbTdD3cR8iYSCzr2P/HI818?=
+ =?us-ascii?Q?FkUHfN+2f3wh+nCpK+Rni1mF60C3s2mDdSautOu+5ZONx1Dev54VHQeJJv1B?=
+ =?us-ascii?Q?g9tSBJmbF2w7uhE57S+jD0GARzGQfkmBrRvLMitVjDe9sWDg5jsugFo+nk5p?=
+ =?us-ascii?Q?uQCNTVH1JygPIS74dO3LBh5kXL/nF3JvsD+fcTnEj14it/JV/LL2jY6ej4dD?=
+ =?us-ascii?Q?pA=3D=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: microsoft.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: BN8PR21MB1284.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: aab484fd-f154-488f-c8b7-08d99bba3ae8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Oct 2021 15:30:40.2183
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8f3d5c41-d6c5-44f0-a306-08d99bbae90b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Oct 2021 15:35:32.3953
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Glae5ABfnUeW2/3jh6M4Leu9OegmoIHAvCiYMgLqF7Ck9fy5z5aQYEQoBlVxUKyOAe1WAq3vQ4mPJt92S4rL2A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR21MB1234
+X-MS-Exchange-CrossTenant-userprincipalname: 2xqNJddcl3pKem2vf8uDxCGLecvpfEr3ScIy35QOFDhPiwvIb2SuTeKyoaoi1RPg+J4gPTq+6fDQMKHAdBb6yw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR21MB1204
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -137,28 +135,56 @@ X-Mailing-List: netdev@vger.kernel.org
 > hyperv@vger.kernel.org; Shachar Raindel <shacharr@microsoft.com>; Paul
 > Rosswurm <paulros@microsoft.com>; olaf@aepfle.de; vkuznets
 > <vkuznets@redhat.com>; Dexuan Cui <decui@microsoft.com>
-> Subject: [PATCH net-next 1/4] net: mana: Fix the netdev_err()'s vPort
-> argument in mana_init_port()
+> Subject: [PATCH net-next 2/4] net: mana: Report OS info to the PF driver
 >=20
-> Use the correct port index rather than 0.
+> The PF driver might use the OS info for statistical purposes.
 >=20
 > Signed-off-by: Dexuan Cui <decui@microsoft.com>
 > ---
->  drivers/net/ethernet/microsoft/mana/mana_en.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+>  drivers/net/ethernet/microsoft/mana/gdma_main.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
 >=20
-> diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c
-> b/drivers/net/ethernet/microsoft/mana/mana_en.c
-> index 1417d1e72b7b..4ff5a1fc506f 100644
-> --- a/drivers/net/ethernet/microsoft/mana/mana_en.c
-> +++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
-> @@ -1599,7 +1599,8 @@ static int mana_init_port(struct net_device *ndev)
->  	err =3D mana_query_vport_cfg(apc, port_idx, &max_txq, &max_rxq,
->  				   &num_indirect_entries);
->  	if (err) {
-> -		netdev_err(ndev, "Failed to query info for vPort 0\n");
-> +		netdev_err(ndev, "Failed to query info for vPort %d\n",
-> +			   port_idx);
+> diff --git a/drivers/net/ethernet/microsoft/mana/gdma_main.c
+> b/drivers/net/ethernet/microsoft/mana/gdma_main.c
+> index cee75b561f59..8a9ee2885f8c 100644
+> --- a/drivers/net/ethernet/microsoft/mana/gdma_main.c
+> +++ b/drivers/net/ethernet/microsoft/mana/gdma_main.c
+> @@ -3,6 +3,8 @@
+>=20
+>  #include <linux/module.h>
+>  #include <linux/pci.h>
+> +#include <linux/utsname.h>
+> +#include <linux/version.h>
+>=20
+>  #include "mana.h"
+>=20
+> @@ -848,6 +850,15 @@ int mana_gd_verify_vf_version(struct pci_dev *pdev)
+>  	req.gd_drv_cap_flags3 =3D GDMA_DRV_CAP_FLAGS3;
+>  	req.gd_drv_cap_flags4 =3D GDMA_DRV_CAP_FLAGS4;
+>=20
+> +	req.drv_ver =3D 0;	/* Unused*/
+> +	req.os_type =3D 0x10;	/* Linux */
+
+Instead of a magic number, could you define it as a macro?
+
+Other parts look fine.
 
 Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
+
+> +	req.os_ver_major =3D LINUX_VERSION_MAJOR;
+> +	req.os_ver_minor =3D LINUX_VERSION_PATCHLEVEL;
+> +	req.os_ver_build =3D LINUX_VERSION_SUBLEVEL;
+> +	strscpy(req.os_ver_str1, utsname()->sysname,
+> sizeof(req.os_ver_str1));
+> +	strscpy(req.os_ver_str2, utsname()->release,
+> sizeof(req.os_ver_str2));
+> +	strscpy(req.os_ver_str3, utsname()->version,
+> sizeof(req.os_ver_str3));
+> +
+>  	err =3D mana_gd_send_request(gc, sizeof(req), &req, sizeof(resp),
+> &resp);
+>  	if (err || resp.hdr.status) {
+>  		dev_err(gc->dev, "VfVerifyVersionOutput: %d, status=3D0x%x\n",
+> --
+> 2.17.1
 
