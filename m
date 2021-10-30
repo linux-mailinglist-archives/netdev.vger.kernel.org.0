@@ -2,247 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39867440730
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 06:06:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D904E440732
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 06:09:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231449AbhJ3EIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 00:08:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38952 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229810AbhJ3EIs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 Oct 2021 00:08:48 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2EAB261175;
-        Sat, 30 Oct 2021 04:06:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635566779;
-        bh=63PW/frWUZgbS2wQZk7hrhOmDnARx0u4W7PwKUKZZAQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A3GNUE1Ig/+ONK3GkY2oU6jjwBUtVSsnlISpIaNo2ghbqMPHPnLplTvzRO3ituTQ5
-         NU9TDYCJWY6wGvSk08EwTEgn5Q3A5JC7tRWhSRrTOS0Tb7pf4mi/00JNsigcYnL6aa
-         019yPBeid/mvvYR1GFwgUKB2hwyakGlXOm4nn4Q4poLHp4OAIIWo92ry6WxWblMT7l
-         WFhAPEdEIwTTfzUgVvzef8iDAA+TBnWDpWUN0NOOUo4u8aDOfL6IR8y5gl/pUBACJU
-         GRmUd4ox6hm49l5MN4iXLKUQ1kYE1AC+Wdo9ZQarA426APTKZDIoFuV/Qyu+KrhuNi
-         YKKIpk+a59uqg==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, jiri@resnulli.us, leon@kernel.org,
-        mkubecek@suse.cz, andrew@lunn.ch, f.fainelli@gmail.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 4/4] ethtool: don't drop the rtnl_lock half way thru the ioctl
-Date:   Fri, 29 Oct 2021 21:06:11 -0700
-Message-Id: <20211030040611.1751638-5-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211030040611.1751638-1-kuba@kernel.org>
-References: <20211030040611.1751638-1-kuba@kernel.org>
+        id S231449AbhJ3ELv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Oct 2021 00:11:51 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:13993 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229753AbhJ3ELu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Oct 2021 00:11:50 -0400
+Received: from dggeml757-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Hh5NP4NVgzWl5s;
+        Sat, 30 Oct 2021 12:07:17 +0800 (CST)
+Received: from [10.174.179.200] (10.174.179.200) by
+ dggeml757-chm.china.huawei.com (10.1.199.137) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.15; Sat, 30 Oct 2021 12:09:16 +0800
+Subject: Re: [PATCH net] net: vlan: fix a UAF in vlan_dev_real_dev()
+To:     Jason Gunthorpe <jgg@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-rdma@vger.kernel.org>
+References: <20211027121606.3300860-1-william.xuanziyang@huawei.com>
+ <20211027184640.7955767e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20211028114503.GM2744544@nvidia.com>
+ <20211028070050.6ca7893b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <b573b01c-2cc9-4722-6289-f7b9e0a43e19@huawei.com>
+ <20211029121324.GT2744544@nvidia.com>
+ <20211029064610.18daa788@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20211029184752.GI2744544@nvidia.com>
+From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
+Message-ID: <74ea44c7-7bf5-f4cd-c0aa-74e83cdc4448@huawei.com>
+Date:   Sat, 30 Oct 2021 12:09:16 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211029184752.GI2744544@nvidia.com>
+Content-Type: text/plain; charset="gbk"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.179.200]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggeml757-chm.china.huawei.com (10.1.199.137)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-devlink compat code needs to drop rtnl_lock to take
-devlink->lock to ensure correct lock ordering.
+> On Fri, Oct 29, 2021 at 06:46:10AM -0700, Jakub Kicinski wrote:
+>> On Fri, 29 Oct 2021 09:13:24 -0300 Jason Gunthorpe wrote:
+>>> Jakub's path would be to test vlan_dev->reg_state != NETREG_REGISTERED
+>>> in the work queue, but that feels pretty hacky to me as the main point
+>>> of the UNREGISTERING state is to keep the object alive enough that
+>>> those with outstanding gets can compelte their work and release the
+>>> get. Leaving a wrecked object in UNREGISTERING is a bad design.
+>>
+>> That or we should investigate if we could hold the ref for real_dev all
+>> the way until vlan_dev_free().
+> 
 
-This is problematic because we're not strictly guaranteed
-that the netdev will not disappear after we re-lock.
-It may open a possibility of nested ->begin / ->complete
-calls.
+Synchronize test results with the following modification:
 
-Instead of calling into devlink under rtnl_lock take
-a ref on the devlink instance and make the call after
-we've dropped rtnl_lock.
+@@ -123,9 +123,6 @@ void unregister_vlan_dev(struct net_device *dev, struct list_head *head)
+        }
 
-We (continue to) assume that netdevs have an implicit
-reference on the devlink returned from ndo_get_devlink_port
-
-Note that ndo_get_devlink_port will now get called
-under rtnl_lock. That should be fine since none of
-the drivers seem to be taking serious locks inside
-ndo_get_devlink_port.
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- include/net/devlink.h |  4 ++--
- net/core/devlink.c    | 45 +++++++------------------------------------
- net/ethtool/ioctl.c   | 36 ++++++++++++++++++++++++++++++----
- 3 files changed, 41 insertions(+), 44 deletions(-)
-
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 991ce48f77ca..3d6ae9b546b4 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1729,9 +1729,9 @@ devlink_trap_policers_unregister(struct devlink *devlink,
- struct devlink *__must_check devlink_try_get(struct devlink *devlink);
- void devlink_put(struct devlink *devlink);
- 
--void devlink_compat_running_version(struct net_device *dev,
-+void devlink_compat_running_version(struct devlink *devlink,
- 				    char *buf, size_t len);
--int devlink_compat_flash_update(struct net_device *dev, const char *file_name);
-+int devlink_compat_flash_update(struct devlink *devlink, const char *file_name);
- int devlink_compat_phys_port_name_get(struct net_device *dev,
- 				      char *name, size_t len);
- int devlink_compat_switch_id_get(struct net_device *dev,
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 100d87fd3f65..6b5ee862429e 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -11283,55 +11283,28 @@ static struct devlink_port *netdev_to_devlink_port(struct net_device *dev)
- 	return dev->netdev_ops->ndo_get_devlink_port(dev);
+        vlan_vid_del(real_dev, vlan->vlan_proto, vlan_id);
+-
+-       /* Get rid of the vlan's reference to real_dev */
+-       dev_put(real_dev);
  }
- 
--static struct devlink *netdev_to_devlink(struct net_device *dev)
--{
--	struct devlink_port *devlink_port = netdev_to_devlink_port(dev);
--
--	if (!devlink_port)
--		return NULL;
--
--	return devlink_port->devlink;
--}
--
--void devlink_compat_running_version(struct net_device *dev,
-+void devlink_compat_running_version(struct devlink *devlink,
- 				    char *buf, size_t len)
- {
--	struct devlink *devlink;
--
--	dev_hold(dev);
--	rtnl_unlock();
--
--	devlink = netdev_to_devlink(dev);
--	if (!devlink || !devlink->ops->info_get)
--		goto out;
-+	if (!devlink->ops->info_get)
-+		return;
- 
- 	mutex_lock(&devlink->lock);
- 	__devlink_compat_running_version(devlink, buf, len);
- 	mutex_unlock(&devlink->lock);
--
--out:
--	rtnl_lock();
--	dev_put(dev);
- }
- 
--int devlink_compat_flash_update(struct net_device *dev, const char *file_name)
-+int devlink_compat_flash_update(struct devlink *devlink, const char *file_name)
- {
- 	struct devlink_flash_update_params params = {};
--	struct devlink *devlink;
- 	int ret;
- 
--	dev_hold(dev);
--	rtnl_unlock();
--
--	devlink = netdev_to_devlink(dev);
--	if (!devlink || !devlink->ops->flash_update) {
--		ret = -EOPNOTSUPP;
--		goto out;
--	}
-+	if (!devlink->ops->flash_update)
-+		return -EOPNOTSUPP;
- 
- 	ret = request_firmware(&params.fw, file_name, devlink->dev);
- 	if (ret)
--		goto out;
-+		return ret;
- 
- 	mutex_lock(&devlink->lock);
- 	devlink_flash_update_begin_notify(devlink);
-@@ -11341,10 +11314,6 @@ int devlink_compat_flash_update(struct net_device *dev, const char *file_name)
- 
- 	release_firmware(params.fw);
- 
--out:
--	rtnl_lock();
--	dev_put(dev);
--
- 	return ret;
- }
- 
-diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-index 1980e37b6472..65e9bc1058b5 100644
---- a/net/ethtool/ioctl.c
-+++ b/net/ethtool/ioctl.c
-@@ -34,12 +34,27 @@
- 
- /* State held across locks and calls for commands which have devlink fallback */
- struct ethtool_devlink_compat {
-+	struct devlink *devlink;
- 	union {
- 		struct ethtool_flash efl;
- 		struct ethtool_drvinfo info;
- 	};
- };
- 
-+static struct devlink *netdev_to_devlink_get(struct net_device *dev)
-+{
-+	struct devlink_port *devlink_port;
+
+@@ -843,6 +843,9 @@ static void vlan_dev_free(struct net_device *dev)
+
+        free_percpu(vlan->vlan_pcpu_stats);
+        vlan->vlan_pcpu_stats = NULL;
 +
-+	if (!dev->netdev_ops->ndo_get_devlink_port)
-+		return NULL;
-+
-+	devlink_port = dev->netdev_ops->ndo_get_devlink_port(dev);
-+	if (!devlink_port)
-+		return NULL;
-+
-+	return devlink_try_get(devlink_port->devlink);
-+}
-+
- /*
-  * Some useful ethtool_ops methods that're device independent.
-  * If we find that all drivers want to do the same thing here,
-@@ -751,8 +766,8 @@ ethtool_get_drvinfo(struct net_device *dev, struct ethtool_devlink_compat *rsp)
- 		rsp->info.eedump_len = ops->get_eeprom_len(dev);
- 
- 	if (!rsp->info.fw_version[0])
--		devlink_compat_running_version(dev, rsp->info.fw_version,
--					       sizeof(rsp->info.fw_version));
-+		rsp->devlink = netdev_to_devlink_get(dev);
-+
- 	return 0;
++       /* Get rid of the vlan's reference to real_dev */
++       dev_put(vlan->real_dev);
  }
- 
-@@ -2184,8 +2199,10 @@ static int ethtool_set_value(struct net_device *dev, char __user *useraddr,
- static int
- ethtool_flash_device(struct net_device *dev, struct ethtool_devlink_compat *req)
- {
--	if (!dev->ethtool_ops->flash_device)
--		return devlink_compat_flash_update(dev, req->efl.data);
-+	if (!dev->ethtool_ops->flash_device) {
-+		req->devlink = netdev_to_devlink_get(dev);
-+		return 0;
-+	}
- 
- 	return dev->ethtool_ops->flash_device(dev, &req->efl);
- }
-@@ -3027,7 +3044,16 @@ int dev_ethtool(struct net *net, struct ifreq *ifr, void __user *useraddr)
- 		goto exit_free;
- 
- 	switch (ethcmd) {
-+	case ETHTOOL_FLASHDEV:
-+		if (state->devlink)
-+			rc = devlink_compat_flash_update(state->devlink,
-+							 state->efl.data);
-+		break;
- 	case ETHTOOL_GDRVINFO:
-+		if (state->devlink)
-+			devlink_compat_running_version(state->devlink,
-+						       state->info.fw_version,
-+						       sizeof(state->info.fw_version));
- 		if (copy_to_user(useraddr, &state->info, sizeof(state->info))) {
- 			rc = -EFAULT;
- 			goto exit_free;
-@@ -3036,6 +3062,8 @@ int dev_ethtool(struct net *net, struct ifreq *ifr, void __user *useraddr)
- 	}
- 
- exit_free:
-+	if (state->devlink)
-+		devlink_put(state->devlink);
- 	kfree(state);
- 	return rc;
- }
--- 
-2.31.1
 
+It works on the UAF problem. And I have taken kmemleak tests for vlan_dev and real_dev,
+no kmemleak problem and new UAF problem.
+
+So take this modification for this problem?
+
+> The latter is certainly better if it works out, no circular deps, etc.
+> 
+> Thanks,
+> Jason
+> .
+> 
