@@ -2,262 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 200E1440A87
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 19:19:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FFF1440A9C
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 19:29:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230155AbhJ3RVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 13:21:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41982 "EHLO mail.kernel.org"
+        id S229788AbhJ3Rbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Oct 2021 13:31:31 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:39468 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230188AbhJ3RVZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 Oct 2021 13:21:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 86E5361054;
-        Sat, 30 Oct 2021 17:18:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635614334;
-        bh=nmu0gNN8JJDUIp8bVbDpZfefVuHnNU4He4OhPCSNB+c=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VejJovEQtfp+te9qmUEvc06MLt1jBkB1J80HH8UpT2pQfiNQe8pgAyd4CTT/3U4Iv
-         YOZWXUadl9Wiy5t4M/bAW0y4YOK6cFRvnD95BP56dJ8L0I4UaEXIzSPuEyI8+9aNFU
-         McBPgbGjfsrPHWwJ8f3ZkhHndXaUJTAYoI5IEjWnXshD+Im4WdxCD32VFkC85xD69N
-         Pz2jppdHuYzCKdBIb73OEVTobZBV0cpUQdtG0KE9xdNqxlXK/xfbxZp9jyvUIyqP5F
-         WuhWjPQJ3y/p502sF55bF6Eyac7RApugfeDZ7n4+yuHR9BAsPKxTwnVobBucW/wZ9Q
-         jK0GFewIyrX0A==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, jiri@resnulli.us, leon@kernel.org,
-        mkubecek@suse.cz, andrew@lunn.ch, f.fainelli@gmail.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 4/4] ethtool: don't drop the rtnl_lock half way thru the ioctl
-Date:   Sat, 30 Oct 2021 10:18:51 -0700
-Message-Id: <20211030171851.1822583-5-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211030171851.1822583-1-kuba@kernel.org>
-References: <20211030171851.1822583-1-kuba@kernel.org>
+        id S229474AbhJ3Rb2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Oct 2021 13:31:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=qSnpWGGvvjnttitScwTe0AAALZ248QHVMiQQ5+eas2c=; b=lB
+        GQBsFklnv40nc9JAplJ9DVsJ4nZqPkiGPW9E72okFc3f2pIptFcq/T/HSBWWguSuQRmkRxXfB3GXm
+        TOyvi5g0c6pv11bES3/UU7r/ahN7tIlpmy/TZ7X/57dX/R2XeQwiotksxbz9kb+Auki2OZnqmdeJL
+        dba+8GhHt4CFi4w=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mgs9n-00CBlM-OC; Sat, 30 Oct 2021 19:28:39 +0200
+Date:   Sat, 30 Oct 2021 19:28:39 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Cyril Novikov <cnovikov@lynx.com>
+Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: Re: [Intel-wired-lan] [PATCH net] ixgbe: set X550 MDIO speed before
+ talking to PHY
+Message-ID: <YX2Ax364TiC7ngjI@lunn.ch>
+References: <81be24c4-a7e4-0761-abf4-204f4849b6eb@lynx.com>
+ <89af2e39-fe5c-c285-7805-8c7a6a5a2e51@molgen.mpg.de>
+ <df9504c8-bdfd-9cc0-d002-f1e59f57a79b@lynx.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <df9504c8-bdfd-9cc0-d002-f1e59f57a79b@lynx.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-devlink compat code needs to drop rtnl_lock to take
-devlink->lock to ensure correct lock ordering.
+On Fri, Oct 29, 2021 at 04:06:26PM -0700, Cyril Novikov wrote:
+> On 10/28/2021 11:47 PM, Paul Menzel wrote:
+> > Dear Cyril,
+> > 
+> > 
+> > On 29.10.21 03:03, Cyril Novikov wrote:
+> > > The MDIO bus speed must be initialized before talking to the PHY the
+> > > first
+> > > time in order to avoid talking to it using a speed that the PHY doesn't
+> > > support.
+> > > 
+> > > This fixes HW initialization error -17 (IXGBE_ERR_PHY_ADDR_INVALID) on
+> > > Denverton CPUs (a.k.a. the Atom C3000 family) on ports with a 10Gb
+> > > network
+> > > plugged in. On those devices, HLREG0[MDCSPD] resets to 1, which combined
+> > > with the 10Gb network results in a 24MHz MDIO speed, which is apparently
+> > > too fast for the connected PHY. PHY register reads over MDIO bus return
+> > > garbage, leading to initialization failure.
+> > 
+> > Maybe add a Fixes tag?
+> 
+> This is my first patch submission for Linux kernel.
 
-This is problematic because we're not strictly guaranteed
-that the netdev will not disappear after we re-lock.
-It may open a possibility of nested ->begin / ->complete
-calls.
+Welcome to the community.
 
-Instead of calling into devlink under rtnl_lock take
-a ref on the devlink instance and make the call after
-we've dropped rtnl_lock.
+> What I read about the
+> Fixes tag says it identifies a previous commit that had introduced the bug.
+> I have no idea which commit introduced this bug. We saw it in 4.19 which
+> probably means the bug was always there and is not a regression. It's also
+> quite possible the original commit was correct for the hardware existing at
+> that time and it only started behaving incorrectly with new hardware, so it
+> wasn't actually a bug at the time it was submitted. I also don't have the
+> capability or time to bisect this problem.
 
-We (continue to) assume that netdevs have an implicit
-reference on the devlink returned from ndo_get_devlink_port
+From how you describe it, i assume the issue is present for any 10G
+links? git blame suggests:
 
-Note that ndo_get_devlink_port will now get called
-under rtnl_lock. That should be fine since none of
-the drivers seem to be taking serious locks inside
-ndo_get_devlink_port.
+e84db7272798e (Mark Rustad         2016-04-01 12:18:30 -0700 3357) static void ixgbe_set_mdio_speed(struct ixgbe_hw *hw)
+e84db7272798e (Mark Rustad         2016-04-01 12:18:30 -0700 3358) {
+e84db7272798e (Mark Rustad         2016-04-01 12:18:30 -0700 3359)      u32 hlreg0;
+e84db7272798e (Mark Rustad         2016-04-01 12:18:30 -0700 3360) 
+e84db7272798e (Mark Rustad         2016-04-01 12:18:30 -0700 3361)      switch (hw->device_id) {
+e84db7272798e (Mark Rustad         2016-04-01 12:18:30 -0700 3362)      case IXGBE_DEV_ID_X550EM_X_10G_T:
+a83c27e79068c (Don Skidmore        2016-08-17 17:34:07 -0400 3363)      case IXGBE_DEV_ID_X550EM_A_SGMII:
+a83c27e79068c (Don Skidmore        2016-08-17 17:34:07 -0400 3364)      case IXGBE_DEV_ID_X550EM_A_SGMII_L:
+92ed84300718d (Don Skidmore        2016-08-17 20:34:40 -0400 3365)      case IXGBE_DEV_ID_X550EM_A_10G_T:
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- include/net/devlink.h |  8 ++++----
- net/core/devlink.c    | 45 +++++++------------------------------------
- net/ethtool/ioctl.c   | 36 ++++++++++++++++++++++++++++++----
- 3 files changed, 43 insertions(+), 46 deletions(-)
+commit e84db7272798ed8abb2760a3fcd9c6d89abf99a5
+Author: Mark Rustad <mark.d.rustad@intel.com>
+Date:   Fri Apr 1 12:18:30 2016 -0700
 
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 991ce48f77ca..aab3d007c577 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1729,9 +1729,9 @@ devlink_trap_policers_unregister(struct devlink *devlink,
- struct devlink *__must_check devlink_try_get(struct devlink *devlink);
- void devlink_put(struct devlink *devlink);
- 
--void devlink_compat_running_version(struct net_device *dev,
-+void devlink_compat_running_version(struct devlink *devlink,
- 				    char *buf, size_t len);
--int devlink_compat_flash_update(struct net_device *dev, const char *file_name);
-+int devlink_compat_flash_update(struct devlink *devlink, const char *file_name);
- int devlink_compat_phys_port_name_get(struct net_device *dev,
- 				      char *name, size_t len);
- int devlink_compat_switch_id_get(struct net_device *dev,
-@@ -1749,12 +1749,12 @@ static inline void devlink_put(struct devlink *devlink)
- }
- 
- static inline void
--devlink_compat_running_version(struct net_device *dev, char *buf, size_t len)
-+devlink_compat_running_version(struct devlink *devlink, char *buf, size_t len)
- {
- }
- 
- static inline int
--devlink_compat_flash_update(struct net_device *dev, const char *file_name)
-+devlink_compat_flash_update(struct devlink *devlink, const char *file_name)
- {
- 	return -EOPNOTSUPP;
- }
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 100d87fd3f65..6b5ee862429e 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -11283,55 +11283,28 @@ static struct devlink_port *netdev_to_devlink_port(struct net_device *dev)
- 	return dev->netdev_ops->ndo_get_devlink_port(dev);
- }
- 
--static struct devlink *netdev_to_devlink(struct net_device *dev)
--{
--	struct devlink_port *devlink_port = netdev_to_devlink_port(dev);
--
--	if (!devlink_port)
--		return NULL;
--
--	return devlink_port->devlink;
--}
--
--void devlink_compat_running_version(struct net_device *dev,
-+void devlink_compat_running_version(struct devlink *devlink,
- 				    char *buf, size_t len)
- {
--	struct devlink *devlink;
--
--	dev_hold(dev);
--	rtnl_unlock();
--
--	devlink = netdev_to_devlink(dev);
--	if (!devlink || !devlink->ops->info_get)
--		goto out;
-+	if (!devlink->ops->info_get)
-+		return;
- 
- 	mutex_lock(&devlink->lock);
- 	__devlink_compat_running_version(devlink, buf, len);
- 	mutex_unlock(&devlink->lock);
--
--out:
--	rtnl_lock();
--	dev_put(dev);
- }
- 
--int devlink_compat_flash_update(struct net_device *dev, const char *file_name)
-+int devlink_compat_flash_update(struct devlink *devlink, const char *file_name)
- {
- 	struct devlink_flash_update_params params = {};
--	struct devlink *devlink;
- 	int ret;
- 
--	dev_hold(dev);
--	rtnl_unlock();
--
--	devlink = netdev_to_devlink(dev);
--	if (!devlink || !devlink->ops->flash_update) {
--		ret = -EOPNOTSUPP;
--		goto out;
--	}
-+	if (!devlink->ops->flash_update)
-+		return -EOPNOTSUPP;
- 
- 	ret = request_firmware(&params.fw, file_name, devlink->dev);
- 	if (ret)
--		goto out;
-+		return ret;
- 
- 	mutex_lock(&devlink->lock);
- 	devlink_flash_update_begin_notify(devlink);
-@@ -11341,10 +11314,6 @@ int devlink_compat_flash_update(struct net_device *dev, const char *file_name)
- 
- 	release_firmware(params.fw);
- 
--out:
--	rtnl_lock();
--	dev_put(dev);
--
- 	return ret;
- }
- 
-diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-index 1980e37b6472..65e9bc1058b5 100644
---- a/net/ethtool/ioctl.c
-+++ b/net/ethtool/ioctl.c
-@@ -34,12 +34,27 @@
- 
- /* State held across locks and calls for commands which have devlink fallback */
- struct ethtool_devlink_compat {
-+	struct devlink *devlink;
- 	union {
- 		struct ethtool_flash efl;
- 		struct ethtool_drvinfo info;
- 	};
- };
- 
-+static struct devlink *netdev_to_devlink_get(struct net_device *dev)
-+{
-+	struct devlink_port *devlink_port;
-+
-+	if (!dev->netdev_ops->ndo_get_devlink_port)
-+		return NULL;
-+
-+	devlink_port = dev->netdev_ops->ndo_get_devlink_port(dev);
-+	if (!devlink_port)
-+		return NULL;
-+
-+	return devlink_try_get(devlink_port->devlink);
-+}
-+
- /*
-  * Some useful ethtool_ops methods that're device independent.
-  * If we find that all drivers want to do the same thing here,
-@@ -751,8 +766,8 @@ ethtool_get_drvinfo(struct net_device *dev, struct ethtool_devlink_compat *rsp)
- 		rsp->info.eedump_len = ops->get_eeprom_len(dev);
- 
- 	if (!rsp->info.fw_version[0])
--		devlink_compat_running_version(dev, rsp->info.fw_version,
--					       sizeof(rsp->info.fw_version));
-+		rsp->devlink = netdev_to_devlink_get(dev);
-+
- 	return 0;
- }
- 
-@@ -2184,8 +2199,10 @@ static int ethtool_set_value(struct net_device *dev, char __user *useraddr,
- static int
- ethtool_flash_device(struct net_device *dev, struct ethtool_devlink_compat *req)
- {
--	if (!dev->ethtool_ops->flash_device)
--		return devlink_compat_flash_update(dev, req->efl.data);
-+	if (!dev->ethtool_ops->flash_device) {
-+		req->devlink = netdev_to_devlink_get(dev);
-+		return 0;
-+	}
- 
- 	return dev->ethtool_ops->flash_device(dev, &req->efl);
- }
-@@ -3027,7 +3044,16 @@ int dev_ethtool(struct net *net, struct ifreq *ifr, void __user *useraddr)
- 		goto exit_free;
- 
- 	switch (ethcmd) {
-+	case ETHTOOL_FLASHDEV:
-+		if (state->devlink)
-+			rc = devlink_compat_flash_update(state->devlink,
-+							 state->efl.data);
-+		break;
- 	case ETHTOOL_GDRVINFO:
-+		if (state->devlink)
-+			devlink_compat_running_version(state->devlink,
-+						       state->info.fw_version,
-+						       sizeof(state->info.fw_version));
- 		if (copy_to_user(useraddr, &state->info, sizeof(state->info))) {
- 			rc = -EFAULT;
- 			goto exit_free;
-@@ -3036,6 +3062,8 @@ int dev_ethtool(struct net *net, struct ifreq *ifr, void __user *useraddr)
- 	}
- 
- exit_free:
-+	if (state->devlink)
-+		devlink_put(state->devlink);
- 	kfree(state);
- 	return rc;
- }
--- 
-2.31.1
+    ixgbe: Introduce function to control MDIO speed
+    
+    Move code that controls MDIO speed into a new function because
+    there will be more MACs that need the control.
+    
+    Signed-off-by: Mark Rustad <mark.d.rustad@intel.com>
+    Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+    Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 
+So the fixes would be
+
+Fixes: e84db7272798 ("ixgbe: Introduce function to control MDIO speed")
+
+> > > Signed-off-by: Cyril Novikov <cnovikov@lynx.com>
+> > > ---
+> > >   drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c | 3 +++
+> > >   1 file changed, 3 insertions(+)
+> > > 
+> > > Reproduced with Linux kernel 4.19 and 5.15-rc7. Can be reproduced using
+> > > the following setup:
+> > > 
+> > > * Use an Atom C3000 family system with at least one X550 LAN on the SoC
+> > > * Disable PXE or other BIOS network initialization if possible
+> > >    (the interface must not be initialized before Linux boots)
+> > > * Connect a live 10Gb Ethernet cable to an X550 port
+> > > * Power cycle (not reset, doesn't always work) the system and boot Linux
+> > > * Observe: ixgbe interfaces w/ 10GbE cables plugged in fail with
+> > > error -17
+> > 
+> > Why not add that to the commit message?
+> 
+> I wasn't sure if the reproduction scenario belonged to the commit message,
+> and have no problem adding it if you believe it does.
+
+> > 
+> > Is `ixgbe_set_mdio_speed(hw)` at the end of the function then still needed?
+> 
+> The code between the two calls issues a global reset to the MAC and
+> optionally the link, depending on some flags. That may reset the MDIO speed
+> back to the wrong value or, according to the comments in the code, may reset
+> the PHY and result in renegotiation and a different link speed. So, the MDIO
+> speed setting may require an adjustment. Even if it actually doesn't at the
+> moment, doing the second call makes the code robust to future software and
+> hardware changes.
+
+This is useful information to put in the commit message.
+
+When writing commit messages, try to also think from the perspective
+of the person doing the review. What questions are the reviewers
+likely to ask, and can those questions be answered in the commit
+message, rather than having them asked on the list?
+
+Another use case of the commit message is when it turns out a change
+causes a regression. It happens sometimes, and including information
+about how you tested your change can be useful for helping fix the
+regression. It allows whoever is fixing the regression to also test
+your case, or at least something similar.
+
+So in general, more information in the commit messages is better than
+less.
+
+     Andrew
