@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F3614408CA
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 14:40:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F0954408CB
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 14:40:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231926AbhJ3Mme (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 08:42:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55736 "EHLO
+        id S231913AbhJ3Mmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Oct 2021 08:42:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231911AbhJ3Mmc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Oct 2021 08:42:32 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E768C061570
-        for <netdev@vger.kernel.org>; Sat, 30 Oct 2021 05:40:02 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id np13so9090105pjb.4
-        for <netdev@vger.kernel.org>; Sat, 30 Oct 2021 05:40:02 -0700 (PDT)
+        with ESMTP id S230082AbhJ3Mme (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Oct 2021 08:42:34 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6356C061570
+        for <netdev@vger.kernel.org>; Sat, 30 Oct 2021 05:40:04 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id t7so12536607pgl.9
+        for <netdev@vger.kernel.org>; Sat, 30 Oct 2021 05:40:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=0/2jBWoyHHiEo9hmoXq2mQLiU4NoHM0RjOPnhJjylsk=;
-        b=DaGtMTNXMKckzm14qFEf28gG1Wkmt1HjhjYpXXqcRPtKeGsUzbrw2tRyKAgowlNyla
-         WF4iyoualHR+nu7w/37ZKagGqy8966muxk21qoXJOcBZlAN09fcT6H4kXjBIebq5N/kp
-         1sPmDkSkG46C+RK0Q7rhjN4CSI1swYicqn4M+Oxf7ICl4PzIqFg6oDCXJ9pPXLu1hPVL
-         QzbQaPBWibd6hITrBbbNOD5FpLeD3+EYHNMAAvn2kKi2JogNTVsGN8NaPwNO8HWN297a
-         KU5aXuDIIoCtTJX6F61D48Bx4GStN+gawu+HINrvzbJhXfsQwo2qOPHR/bSa+nosEYeR
-         Fykw==
+        bh=AZAFMnX5SlRW/jnyckkkWZVH/PgDnzL7PZfIaL9pmEQ=;
+        b=YLkEpNJPq96zugFDU3gCw6sIXpCOXEEiu7i2gFkQn2eB3xGA7Rz/RtBD/Q7Fi9jh6L
+         MVyIWTmOw15TGgwX/iM7VjvIRo3A9qsHHpIPX+x39AAXrU5g6lhGvqDOYqGPGE3CQlbs
+         2mCnKEnJmlOy2Qp5kNCtPN+HrSrHGjJk9XiSw74IZucGoPDhFfg/JFRXeVeaqAGgvUiT
+         4v+2xE1wOl+f41hhX9ONPI19UEg/Mr4fno53P9KbtWz7qk5QUWv5AUI9lxQd6lwV8tbK
+         fdeMbRnpr9JdDA28BQkge6X1zZvvJ3S7mjP9Rpl1LZVTbdbgZ388RrVd/s/BkyIeACym
+         3Dow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=0/2jBWoyHHiEo9hmoXq2mQLiU4NoHM0RjOPnhJjylsk=;
-        b=zIoKnQu9lvG9m88d2qViawOIBhnZhb7Q6QE7YxKQ6gu+s8mz36CVvwudWL70VZsgKx
-         C2bbOMrPtiqTTc2bxQ+9mPqv+EPtf9ZPJDCcsSzRXwfHLURmIL+rGOi0a01+WuDR/6rr
-         oc7OZJnSIJbae72muScKekmLTblBycYJ8WpVrOv9YnXWnQIChWWqtSMXBiq/qUHn3vS7
-         0TwKTCLvwjEVUHjRGgY13DrnkLyQd4MP5N9ZGv7UF5fdppyloUyuK8qroiC5mYW586bb
-         +eWHAc5o6hKonmCrtKZflsct3KpDZ6CAwRqJsPhpdUnEVVVdcsJ4k7/mo2/yAyvMvnxQ
-         E5mA==
-X-Gm-Message-State: AOAM532x/dXdEXyB/tVad8eXwJ7bNaZV9wLYVISlYMgDB6BjvnNdW1iW
-        f1UfNRzoBmb3Ttfzxm2lCk4=
-X-Google-Smtp-Source: ABdhPJxJ07iCNL8dMhNgQ9A+acIAxAsbqNoOd5INZDsNTv5TBpi3ntH1U71ExmHIphmtp4roHIkyQg==
-X-Received: by 2002:a17:90b:1b49:: with SMTP id nv9mr17472424pjb.134.1635597602044;
-        Sat, 30 Oct 2021 05:40:02 -0700 (PDT)
+        bh=AZAFMnX5SlRW/jnyckkkWZVH/PgDnzL7PZfIaL9pmEQ=;
+        b=nz1u6SdM983JthLJ8h04q1ND1+aPjgT4eCQcqmUzQPJpA+6iyYKNRHSk42z2pbjjGY
+         QURjEoDu/HUBjpiVny8AwSU0UKWq5GfK65gDnxYR8wsrrXh9upgNalsSYqdBR+YlctBY
+         Mxh1MFmKjYLYC0Ov/p+ie2URoN3Ny6WH+1YVZIo9kb47fdMOrFG0qkG72/uBAuC/zb0m
+         AppdTxUuxwduHf0DDd9dzKmL6/qvRsS2EIUe9Zp/Bci2t2X7a5vFl0WAK7L33TKIHQg4
+         upieNOhgBC31Aq3X9/w0r8IXM5Zvn/8hvMmAxtduQvymxfcc1yaB/idZ9KKKk3EIJdsf
+         5i0g==
+X-Gm-Message-State: AOAM533o2Q6fl1uFuz6i3VsOLSjHJYOKWCpYwSP1uLqnNAtMQDlOQc55
+        9QZzLuFhCzUVbRtHGhtOGxw=
+X-Google-Smtp-Source: ABdhPJzH/Bwoi7tkwYtZ2sfR4xNHvXFtvNpC+GCP//uptNK8U+UbH35LGnqT3J/TXQwaXBGtcuQ+Uw==
+X-Received: by 2002:a62:3103:0:b0:47b:ecf2:8b9 with SMTP id x3-20020a623103000000b0047becf208b9mr16931629pfx.42.1635597604375;
+        Sat, 30 Oct 2021 05:40:04 -0700 (PDT)
 Received: from localhost.localdomain ([49.173.165.50])
-        by smtp.gmail.com with ESMTPSA id k73sm7312664pgc.63.2021.10.30.05.39.59
+        by smtp.gmail.com with ESMTPSA id k73sm7312664pgc.63.2021.10.30.05.40.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Oct 2021 05:40:01 -0700 (PDT)
+        Sat, 30 Oct 2021 05:40:03 -0700 (PDT)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, dsahern@kernel.org,
         netdev@vger.kernel.org
 Cc:     dkirjanov@suse.de, ap420073@gmail.com
-Subject: [PATCH net-next v5 4/5] amt: add mld report message handler
-Date:   Sat, 30 Oct 2021 12:39:20 +0000
-Message-Id: <20211030123921.29672-5-ap420073@gmail.com>
+Subject: [PATCH net-next v5 5/5] selftests: add amt interface selftest script
+Date:   Sat, 30 Oct 2021 12:39:21 +0000
+Message-Id: <20211030123921.29672-6-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211030123921.29672-1-ap420073@gmail.com>
 References: <20211030123921.29672-1-ap420073@gmail.com>
@@ -60,682 +60,331 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the previous patch, igmp report handler was added.
-That handler can be used for mld too.
-So, it uses that common code to parse mld report message.
+This is selftest script for amt interface.
+This script includes basic forwarding scenarion and torture scenario.
 
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
-v1 -> v2:
- - Eliminate sparse warnings.
-   - Use bool type instead of __be16 for identifying v4/v6 protocol.
+v5:
+ - Initial patch.
 
-v2 -> v3:
- - Fix compile warning due to unsed variable.
- - Add missing spinlock comment.
- - Update help message of amt in Kconfig.
+ tools/testing/selftests/net/Makefile |   1 +
+ tools/testing/selftests/net/amt.sh   | 284 +++++++++++++++++++++++++++
+ tools/testing/selftests/net/config   |   1 +
+ 3 files changed, 286 insertions(+)
+ create mode 100644 tools/testing/selftests/net/amt.sh
 
-v3 -> v4:
- - Split patch.
-
-v4 -> v5:
- - Refactoring.
-
- drivers/net/amt.c | 446 +++++++++++++++++++++++++++++++++++++++++++++-
- include/net/amt.h |   1 +
- 2 files changed, 440 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-index 1fbb1d3fd67d..cd8126eb32a7 100644
---- a/drivers/net/amt.c
-+++ b/drivers/net/amt.c
-@@ -31,13 +31,10 @@
- 
- static struct workqueue_struct *amt_wq;
- 
--static struct igmpv3_grec igmpv3_zero_grec;
--
- static HLIST_HEAD(source_gc_list);
- /* Lock for source_gc_list */
- static spinlock_t source_gc_lock;
- static struct delayed_work source_gc_wq;
--
- static char *status_str[] = {
- 	"AMT_STATUS_INIT",
- 	"AMT_STATUS_SENT_DISCOVERY",
-@@ -71,6 +68,14 @@ static char *action_str[] = {
- 	"AMT_ACT_STATUS_NONE_NEW",
- };
- 
-+static struct igmpv3_grec igmpv3_zero_grec;
+diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+index 492b273743b4..d27c98a32244 100644
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@ -22,6 +22,7 @@ TEST_PROGS += devlink_port_split.py
+ TEST_PROGS += drop_monitor_tests.sh
+ TEST_PROGS += vrf_route_leaking.sh
+ TEST_PROGS += bareudp.sh
++TEST_PROGS += amt.sh
+ TEST_PROGS += unicast_extensions.sh
+ TEST_PROGS += udpgro_fwd.sh
+ TEST_PROGS += veth.sh
+diff --git a/tools/testing/selftests/net/amt.sh b/tools/testing/selftests/net/amt.sh
+new file mode 100644
+index 000000000000..75528788cb95
+--- /dev/null
++++ b/tools/testing/selftests/net/amt.sh
+@@ -0,0 +1,284 @@
++#!/bin/sh
++# SPDX-License-Identifier: GPL-2.0
 +
-+#if IS_ENABLED(CONFIG_IPV6)
-+#define MLD2_ALL_NODE_INIT { { { 0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x01 } } }
-+static struct in6_addr mld2_all_node = MLD2_ALL_NODE_INIT;
-+static struct mld2_grec mldv2_zero_grec;
-+#endif
++# Author: Taehee Yoo <ap420073@gmail.com>
++#
++# This script evaluates the AMT driver.
++# There are four network-namespaces, LISTENER, SOURCE, GATEWAY, RELAY.
++# The role of LISTENER is to listen multicast traffic.
++# In order to do that, it send IGMP group join message.
++# The role of SOURCE is to send multicast traffic to listener.
++# The role of GATEWAY is to work Gateway role of AMT interface.
++# The role of RELAY is to work Relay role of AMT interface.
++#
++#
++#       +------------------------+
++#       |    LISTENER netns      |
++#       |                        |
++#       |  +------------------+  |
++#       |  |       l_gw       |  |
++#       |  |  192.168.0.2/24  |  |
++#       |  |  2001:db8::2/64  |  |
++#       |  +------------------+  |
++#       |            .           |
++#       +------------------------+
++#                    .
++#                    .
++#       +-----------------------------------------------------+
++#       |            .         GATEWAY netns                  |
++#       |            .                                        |
++#       |+---------------------------------------------------+|
++#       ||           .          br0                          ||
++#       || +------------------+       +------------------+   ||
++#       || |       gw_l       |       |       amtg       |   ||
++#       || |  192.168.0.1/24  |       +--------+---------+   ||
++#       || |  2001:db8::1/64  |                |             ||
++#       || +------------------+                |             ||
++#       |+-------------------------------------|-------------+|
++#       |                                      |              |
++#       |                             +--------+---------+    |
++#       |                             |     gw_relay     |    |
++#       |                             |    10.0.0.1/24   |    |
++#       |                             +------------------+    |
++#       |                                      .              |
++#       +-----------------------------------------------------+
++#                                              .
++#                                              .
++#       +-----------------------------------------------------+
++#       |                       RELAY netns    .              |
++#       |                             +------------------+    |
++#       |                             |     relay_gw     |    |
++#       |                             |    10.0.0.2/24   |    |
++#       |                             +--------+---------+    |
++#       |                                      |              |
++#       |                                      |              |
++#       |  +------------------+       +--------+---------+    |
++#       |  |     relay_src    |       |       amtr       |    |
++#       |  |   172.17.0.1/24  |       +------------------+    |
++#       |  | 2001:db8:3::1/64 |                               |
++#       |  +------------------+                               |
++#       |            .                                        |
++#       |            .                                        |
++#       +-----------------------------------------------------+
++#                    .
++#                    .
++#       +------------------------+
++#       |            .           |
++#       |  +------------------+  |
++#       |  |     src_relay    |  |
++#       |  |   172.17.0.2/24  |  |
++#       |  | 2001:db8:3::2/64 |  |
++#       |  +------------------+  |
++#       |      SOURCE netns      |
++#       +------------------------+
++#==============================================================================
 +
- static struct amt_skb_cb *amt_skb_cb(struct sk_buff *skb)
- {
- 	BUILD_BUG_ON(sizeof(struct amt_skb_cb) + sizeof(struct qdisc_skb_cb) >
-@@ -225,6 +230,13 @@ static void amt_destroy_source(struct amt_source_node *snode)
- 			   "Delete source %pI4 from %pI4\n",
- 			   &snode->source_addr.ip4,
- 			   &gnode->group_addr.ip4);
-+#if IS_ENABLED(CONFIG_IPV6)
-+	} else {
-+		netdev_dbg(snode->gnode->amt->dev,
-+			   "Delete source %pI6 from %pI6\n",
-+			   &snode->source_addr.ip6,
-+			   &gnode->group_addr.ip6);
-+#endif
- 	}
- 
- 	cancel_delayed_work(&snode->source_timer);
-@@ -250,6 +262,11 @@ static void amt_del_group(struct amt_dev *amt, struct amt_group_node *gnode)
- 	if (!gnode->v6)
- 		netdev_dbg(amt->dev, "Leave group %pI4\n",
- 			   &gnode->group_addr.ip4);
-+#if IS_ENABLED(CONFIG_IPV6)
++readonly LISTENER=$(mktemp -u listener-XXXXXXXX)
++readonly GATEWAY=$(mktemp -u gateway-XXXXXXXX)
++readonly RELAY=$(mktemp -u relay-XXXXXXXX)
++readonly SOURCE=$(mktemp -u source-XXXXXXXX)
++ERR=4
++err=0
++
++exit_cleanup()
++{
++	for ns in "$@"; do
++		ip netns delete "${ns}" 2>/dev/null || true
++	done
++
++	exit $ERR
++}
++
++create_namespaces()
++{
++	ip netns add "${LISTENER}" || exit_cleanup
++	ip netns add "${GATEWAY}" || exit_cleanup "${LISTENER}"
++	ip netns add "${RELAY}" || exit_cleanup "${LISTENER}" "${GATEWAY}"
++	ip netns add "${SOURCE}" || exit_cleanup "${LISTENER}" "${GATEWAY}" \
++		"${RELAY}"
++}
++
++# The trap function handler
++#
++exit_cleanup_all()
++{
++	exit_cleanup "${LISTENER}" "${GATEWAY}" "${RELAY}" "${SOURCE}"
++}
++
++setup_interface()
++{
++	for ns in "${LISTENER}" "${GATEWAY}" "${RELAY}" "${SOURCE}"; do
++		ip -netns "${ns}" link set dev lo up
++	done;
++
++	ip link add l_gw type veth peer name gw_l
++	ip link add gw_relay type veth peer name relay_gw
++	ip link add relay_src type veth peer name src_relay
++
++	ip link set l_gw netns "${LISTENER}" up
++	ip link set gw_l netns "${GATEWAY}" up
++	ip link set gw_relay netns "${GATEWAY}" up
++	ip link set relay_gw netns "${RELAY}" up
++	ip link set relay_src netns "${RELAY}" up
++	ip link set src_relay netns "${SOURCE}" up mtu 1400
++
++	ip netns exec "${LISTENER}" ip a a 192.168.0.2/24 dev l_gw
++	ip netns exec "${LISTENER}" ip r a default via 192.168.0.1 dev l_gw
++	ip netns exec "${LISTENER}" ip a a 2001:db8::2/64 dev l_gw
++	ip netns exec "${LISTENER}" ip r a default via 2001:db8::1 dev l_gw
++	ip netns exec "${LISTENER}" ip a a 239.0.0.1/32 dev l_gw autojoin
++	ip netns exec "${LISTENER}" ip a a ff0e::5:6/128 dev l_gw autojoin
++
++	ip netns exec "${GATEWAY}" ip a a 192.168.0.1/24 dev gw_l
++	ip netns exec "${GATEWAY}" ip a a 2001:db8::1/64 dev gw_l
++	ip netns exec "${GATEWAY}" ip a a 10.0.0.1/24 dev gw_relay
++	ip netns exec "${GATEWAY}" ip link add br0 type bridge
++	ip netns exec "${GATEWAY}" ip link set br0 up
++	ip netns exec "${GATEWAY}" ip link set gw_l master br0
++	ip netns exec "${GATEWAY}" ip link set gw_l up
++	ip netns exec "${GATEWAY}" ip link add amtg master br0 type amt \
++		mode gateway local 10.0.0.1 discovery 10.0.0.2 dev gw_relay \
++		gateway_port 2268 relay_port 2268
++	ip netns exec "${RELAY}" ip a a 10.0.0.2/24 dev relay_gw
++	ip netns exec "${RELAY}" ip link add amtr type amt mode relay \
++		local 10.0.0.2 dev relay_gw relay_port 2268 max_tunnels 4
++	ip netns exec "${RELAY}" ip a a 172.17.0.1/24 dev relay_src
++	ip netns exec "${RELAY}" ip a a 2001:db8:3::1/64 dev relay_src
++	ip netns exec "${SOURCE}" ip a a 172.17.0.2/24 dev src_relay
++	ip netns exec "${SOURCE}" ip a a 2001:db8:3::2/64 dev src_relay
++	ip netns exec "${SOURCE}" ip r a default via 172.17.0.1 dev src_relay
++	ip netns exec "${SOURCE}" ip r a default via 2001:db8:3::1 dev src_relay
++	ip netns exec "${RELAY}" ip link set amtr up
++	ip netns exec "${GATEWAY}" ip link set amtg up
++}
++
++setup_sysctl()
++{
++	ip netns exec "${RELAY}" sysctl net.ipv4.ip_forward=1 -w -q
++}
++
++setup_iptables()
++{
++	ip netns exec "${RELAY}" iptables -t mangle -I PREROUTING \
++		-d 239.0.0.1 -j TTL --ttl-set 2
++	ip netns exec "${RELAY}" ip6tables -t mangle -I PREROUTING \
++		-j HL --hl-set 2
++}
++
++setup_mcast_routing()
++{
++	ip netns exec "${RELAY}" smcrouted
++	ip netns exec "${RELAY}" smcroutectl a relay_src \
++		172.17.0.2 239.0.0.1 amtr
++	ip netns exec "${RELAY}" smcroutectl a relay_src \
++		2001:db8:3::2 ff0e::5:6 amtr
++}
++
++test_remote_ip()
++{
++	REMOTE=$(ip netns exec "${GATEWAY}" \
++		ip -d -j link show amtg | jq .[0].linkinfo.info_data.remote)
++	if [ $REMOTE == "\"10.0.0.2\"" ]; then
++		printf "TEST: %-60s  [ OK ]\n" "amt discovery"
 +	else
-+		netdev_dbg(amt->dev, "Leave group %pI6\n",
-+			   &gnode->group_addr.ip6);
-+#endif
- 	for (i = 0; i < amt->hash_buckets; i++)
- 		hlist_for_each_entry_safe(snode, t, &gnode->sources[i], node)
- 			amt_destroy_source(snode);
-@@ -333,6 +350,13 @@ static void amt_act_src(struct amt_tunnel_list *tunnel,
- 			   &snode->source_addr.ip4,
- 			   &gnode->group_addr.ip4,
- 			   action_str[act]);
-+#if IS_ENABLED(CONFIG_IPV6)
++		printf "TEST: %-60s  [FAIL]\n" "amt discovery"
++		ERR=1
++	fi
++}
++
++send_mcast_torture4()
++{
++	ip netns exec "${SOURCE}" bash -c \
++		'cat /dev/urandom | head -c 1G | nc -w 1 -u 239.0.0.1 4001'
++}
++
++
++send_mcast_torture6()
++{
++	ip netns exec "${SOURCE}" bash -c \
++		'cat /dev/urandom | head -c 1G | nc -w 1 -u ff0e::5:6 6001'
++}
++
++check_features()
++{
++        ip link help 2>&1 | grep -q amt
++        if [ $? -ne 0 ]; then
++                echo "Missing amt support in iproute2" >&2
++                exit_cleanup
++        fi
++}
++
++test_ipv4_forward()
++{
++	RESULT4=$(ip netns exec "${LISTENER}" nc -w 1 -l -u 239.0.0.1 4000)
++	if [ "$RESULT4" == "172.17.0.2" ]; then
++		printf "TEST: %-60s  [ OK ]\n" "IPv4 amt multicast forwarding"
++		exit 0
 +	else
-+		netdev_dbg(amt->dev, "Source %pI6 from %pI6 Acted %s\n",
-+			   &snode->source_addr.ip6,
-+			   &gnode->group_addr.ip6,
-+			   action_str[act]);
-+#endif
- }
- 
- static struct amt_source_node *amt_alloc_snode(struct amt_group_node *gnode,
-@@ -471,6 +495,12 @@ static struct amt_group_node *amt_add_group(struct amt_dev *amt,
- 	if (!gnode->v6)
- 		netdev_dbg(amt->dev, "Join group %pI4\n",
- 			   &gnode->group_addr.ip4);
-+#if IS_ENABLED(CONFIG_IPV6)
++		printf "TEST: %-60s  [FAIL]\n" "IPv4 amt multicast forwarding"
++		exit 1
++	fi
++}
++
++test_ipv6_forward()
++{
++	RESULT6=$(ip netns exec "${LISTENER}" nc -w 1 -l -u ff0e::5:6 6000)
++	if [ "$RESULT6" == "2001:db8:3::2" ]; then
++		printf "TEST: %-60s  [ OK ]\n" "IPv6 amt multicast forwarding"
++		exit 0
 +	else
-+		netdev_dbg(amt->dev, "Join group %pI6\n",
-+			   &gnode->group_addr.ip6);
-+#endif
-+
- 	return gnode;
- }
- 
-@@ -778,6 +808,96 @@ static void amt_send_igmp_gq(struct amt_dev *amt,
- 	dev_queue_xmit(skb);
- }
- 
-+#if IS_ENABLED(CONFIG_IPV6)
-+static struct sk_buff *amt_build_mld_gq(struct amt_dev *amt)
-+{
-+	u8 ra[AMT_IP6HDR_OPTS] = { IPPROTO_ICMPV6, 0, IPV6_TLV_ROUTERALERT,
-+				   2, 0, 0, IPV6_TLV_PAD1, IPV6_TLV_PAD1 };
-+	int hlen = LL_RESERVED_SPACE(amt->dev);
-+	int tlen = amt->dev->needed_tailroom;
-+	struct mld2_query *mld2q;
-+	void *csum_start = NULL;
-+	struct ipv6hdr *ip6h;
-+	struct sk_buff *skb;
-+	struct ethhdr *eth;
-+	u32 len;
-+
-+	len = hlen + tlen + sizeof(*ip6h) + sizeof(ra) + sizeof(*mld2q);
-+	skb = netdev_alloc_skb_ip_align(amt->dev, len);
-+	if (!skb)
-+		return NULL;
-+
-+	skb_reserve(skb, hlen);
-+	skb_push(skb, sizeof(*eth));
-+	skb_reset_mac_header(skb);
-+	eth = eth_hdr(skb);
-+	skb->priority = TC_PRIO_CONTROL;
-+	skb->protocol = htons(ETH_P_IPV6);
-+	skb_put_zero(skb, sizeof(*ip6h));
-+	skb_put_data(skb, ra, sizeof(ra));
-+	skb_put_zero(skb, sizeof(*mld2q));
-+	skb_pull(skb, sizeof(*eth));
-+	skb_reset_network_header(skb);
-+	ip6h			= ipv6_hdr(skb);
-+	ip6h->payload_len	= htons(sizeof(ra) + sizeof(*mld2q));
-+	ip6h->nexthdr		= NEXTHDR_HOP;
-+	ip6h->hop_limit		= 1;
-+	ip6h->daddr		= mld2_all_node;
-+	ip6_flow_hdr(ip6h, 0, 0);
-+
-+	if (ipv6_dev_get_saddr(amt->net, amt->dev, &ip6h->daddr, 0,
-+			       &ip6h->saddr)) {
-+		amt->dev->stats.tx_errors++;
-+		kfree_skb(skb);
-+		return NULL;
-+	}
-+
-+	eth->h_proto = htons(ETH_P_IPV6);
-+	ether_addr_copy(eth->h_source, amt->dev->dev_addr);
-+	ipv6_eth_mc_map(&mld2_all_node, eth->h_dest);
-+
-+	skb_pull(skb, sizeof(*ip6h) + sizeof(ra));
-+	skb_reset_transport_header(skb);
-+	mld2q			= (struct mld2_query *)icmp6_hdr(skb);
-+	mld2q->mld2q_mrc	= htons(1);
-+	mld2q->mld2q_type	= ICMPV6_MGM_QUERY;
-+	mld2q->mld2q_code	= 0;
-+	mld2q->mld2q_cksum	= 0;
-+	mld2q->mld2q_resv1	= 0;
-+	mld2q->mld2q_resv2	= 0;
-+	mld2q->mld2q_suppress	= 0;
-+	mld2q->mld2q_qrv	= amt->qrv;
-+	mld2q->mld2q_nsrcs	= 0;
-+	mld2q->mld2q_qqic	= amt->qi;
-+	csum_start		= (void *)mld2q;
-+	mld2q->mld2q_cksum = csum_ipv6_magic(&ip6h->saddr, &ip6h->daddr,
-+					     sizeof(*mld2q),
-+					     IPPROTO_ICMPV6,
-+					     csum_partial(csum_start,
-+							  sizeof(*mld2q), 0));
-+
-+	skb->ip_summed = CHECKSUM_NONE;
-+	skb_push(skb, sizeof(*eth) + sizeof(*ip6h) + sizeof(ra));
-+	return skb;
++		printf "TEST: %-60s  [FAIL]\n" "IPv6 amt multicast forwarding"
++		exit 1
++	fi
 +}
 +
-+static void amt_send_mld_gq(struct amt_dev *amt, struct amt_tunnel_list *tunnel)
++send_mcast4()
 +{
-+	struct sk_buff *skb;
-+
-+	skb = amt_build_mld_gq(amt);
-+	if (!skb)
-+		return;
-+
-+	amt_skb_cb(skb)->tunnel = tunnel;
-+	dev_queue_xmit(skb);
-+}
-+#else
-+static void amt_send_mld_gq(struct amt_dev *amt, struct amt_tunnel_list *tunnel)
-+{
-+}
-+#endif
-+
- static void amt_secret_work(struct work_struct *work)
- {
- 	struct amt_dev *amt = container_of(to_delayed_work(work),
-@@ -1022,6 +1142,10 @@ static netdev_tx_t amt_dev_xmit(struct sk_buff *skb, struct net_device *dev)
- 	struct amt_tunnel_list *tunnel;
- 	struct amt_group_node *gnode;
- 	union amt_addr group = {0,};
-+#if IS_ENABLED(CONFIG_IPV6)
-+	struct ipv6hdr *ip6h;
-+	struct mld_msg *mld;
-+#endif
- 	bool report = false;
- 	struct igmphdr *ih;
- 	bool query = false;
-@@ -1053,6 +1177,31 @@ static netdev_tx_t amt_dev_xmit(struct sk_buff *skb, struct net_device *dev)
- 		}
- 		v6 = false;
- 		group.ip4 = iph->daddr;
-+#if IS_ENABLED(CONFIG_IPV6)
-+	} else if (iph->version == 6) {
-+		ip6h = ipv6_hdr(skb);
-+		if (!ipv6_addr_is_multicast(&ip6h->daddr))
-+			goto free;
-+
-+		if (!ipv6_mc_check_mld(skb)) {
-+			mld = (struct mld_msg *)skb_transport_header(skb);
-+			switch (mld->mld_type) {
-+			case ICMPV6_MGM_REPORT:
-+			case ICMPV6_MLD2_REPORT:
-+				report = true;
-+				break;
-+			case ICMPV6_MGM_QUERY:
-+				query = true;
-+				break;
-+			default:
-+				goto free;
-+			}
-+		} else {
-+			data = true;
-+		}
-+		v6 = true;
-+		group.ip6 = ip6h->daddr;
-+#endif
- 	} else {
- 		dev->stats.tx_errors++;
- 		goto free;
-@@ -1092,12 +1241,19 @@ static netdev_tx_t amt_dev_xmit(struct sk_buff *skb, struct net_device *dev)
- 			hash = amt_group_hash(tunnel, &group);
- 			hlist_for_each_entry_rcu(gnode, &tunnel->groups[hash],
- 						 node) {
--				if (!v6)
-+				if (!v6) {
- 					if (gnode->group_addr.ip4 == iph->daddr)
- 						goto found;
-+#if IS_ENABLED(CONFIG_IPV6)
-+				} else {
-+					if (ipv6_addr_equal(&gnode->group_addr.ip6,
-+							    &ip6h->daddr))
-+						goto found;
-+#endif
-+				}
- 			}
- 			continue;
--found:;
-+found:
- 			amt_send_multicast_data(amt, skb, tunnel, v6);
- 		}
- 	}
-@@ -1187,6 +1343,13 @@ static void amt_cleanup_srcs(struct amt_dev *amt,
- 					   "Add source as OLD %pI4 from %pI4\n",
- 					   &snode->source_addr.ip4,
- 					   &gnode->group_addr.ip4);
-+#if IS_ENABLED(CONFIG_IPV6)
-+			else
-+				netdev_dbg(snode->gnode->amt->dev,
-+					   "Add source as OLD %pI6 from %pI6\n",
-+					   &snode->source_addr.ip6,
-+					   &gnode->group_addr.ip6);
-+#endif
- 		}
- 	}
- }
-@@ -1197,6 +1360,9 @@ static void amt_add_srcs(struct amt_dev *amt, struct amt_tunnel_list *tunnel,
- {
- 	struct igmpv3_grec *igmp_grec;
- 	struct amt_source_node *snode;
-+#if IS_ENABLED(CONFIG_IPV6)
-+	struct mld2_grec *mld_grec;
-+#endif
- 	union amt_addr src = {0,};
- 	u16 nsrcs;
- 	u32 hash;
-@@ -1206,13 +1372,23 @@ static void amt_add_srcs(struct amt_dev *amt, struct amt_tunnel_list *tunnel,
- 		igmp_grec = (struct igmpv3_grec *)grec;
- 		nsrcs = ntohs(igmp_grec->grec_nsrcs);
- 	} else {
--		return;
-+#if IS_ENABLED(CONFIG_IPV6)
-+		mld_grec = (struct mld2_grec *)grec;
-+		nsrcs = ntohs(mld_grec->grec_nsrcs);
-+#else
-+	return;
-+#endif
- 	}
- 	for (i = 0; i < nsrcs; i++) {
- 		if (tunnel->nr_sources >= amt->max_sources)
- 			return;
- 		if (!v6)
- 			src.ip4 = igmp_grec->grec_src[i];
-+#if IS_ENABLED(CONFIG_IPV6)
-+		else
-+			memcpy(&src.ip6, &mld_grec->grec_src[i],
-+			       sizeof(struct in6_addr));
-+#endif
- 		if (amt_lookup_src(tunnel, gnode, AMT_FILTER_ALL, &src))
- 			continue;
- 
-@@ -1228,6 +1404,13 @@ static void amt_add_srcs(struct amt_dev *amt, struct amt_tunnel_list *tunnel,
- 					   "Add source as NEW %pI4 from %pI4\n",
- 					   &snode->source_addr.ip4,
- 					   &gnode->group_addr.ip4);
-+#if IS_ENABLED(CONFIG_IPV6)
-+			else
-+				netdev_dbg(snode->gnode->amt->dev,
-+					   "Add source as NEW %pI6 from %pI6\n",
-+					   &snode->source_addr.ip6,
-+					   &gnode->group_addr.ip6);
-+#endif
- 		}
- 	}
- }
-@@ -1262,6 +1445,9 @@ static void amt_lookup_act_srcs(struct amt_tunnel_list *tunnel,
- 	struct amt_dev *amt = tunnel->amt;
- 	struct amt_source_node *snode;
- 	struct igmpv3_grec *igmp_grec;
-+#if IS_ENABLED(CONFIG_IPV6)
-+	struct mld2_grec *mld_grec;
-+#endif
- 	union amt_addr src = {0,};
- 	struct hlist_node *t;
- 	u16 nsrcs;
-@@ -1271,7 +1457,12 @@ static void amt_lookup_act_srcs(struct amt_tunnel_list *tunnel,
- 		igmp_grec = (struct igmpv3_grec *)grec;
- 		nsrcs = ntohs(igmp_grec->grec_nsrcs);
- 	} else {
--		return;
-+#if IS_ENABLED(CONFIG_IPV6)
-+		mld_grec = (struct mld2_grec *)grec;
-+		nsrcs = ntohs(mld_grec->grec_nsrcs);
-+#else
-+	return;
-+#endif
- 	}
- 
- 	memset(&src, 0, sizeof(union amt_addr));
-@@ -1281,6 +1472,11 @@ static void amt_lookup_act_srcs(struct amt_tunnel_list *tunnel,
- 		for (i = 0; i < nsrcs; i++) {
- 			if (!v6)
- 				src.ip4 = igmp_grec->grec_src[i];
-+#if IS_ENABLED(CONFIG_IPV6)
-+			else
-+				memcpy(&src.ip6, &mld_grec->grec_src[i],
-+				       sizeof(struct in6_addr));
-+#endif
- 			snode = amt_lookup_src(tunnel, gnode, filter, &src);
- 			if (!snode)
- 				continue;
-@@ -1299,6 +1495,11 @@ static void amt_lookup_act_srcs(struct amt_tunnel_list *tunnel,
- 		for (i = 0; i < nsrcs; i++) {
- 			if (!v6)
- 				src.ip4 = igmp_grec->grec_src[i];
-+#if IS_ENABLED(CONFIG_IPV6)
-+			else
-+				memcpy(&src.ip6, &mld_grec->grec_src[i],
-+				       sizeof(struct in6_addr));
-+#endif
- 			snode = amt_lookup_src(tunnel, gnode, filter, &src);
- 			if (!snode)
- 				continue;
-@@ -1315,6 +1516,12 @@ static void amt_lookup_act_srcs(struct amt_tunnel_list *tunnel,
- 				for (j = 0; j < nsrcs; j++) {
- 					if (!v6)
- 						src.ip4 = igmp_grec->grec_src[j];
-+#if IS_ENABLED(CONFIG_IPV6)
-+					else
-+						memcpy(&src.ip6,
-+						       &mld_grec->grec_src[j],
-+						       sizeof(struct in6_addr));
-+#endif
- 					if (amt_addr_equal(&snode->source_addr,
- 							   &src))
- 						goto out_sub;
-@@ -1330,6 +1537,11 @@ out_sub:;
- 		for (i = 0; i < nsrcs; i++) {
- 			if (!v6)
- 				src.ip4 = igmp_grec->grec_src[i];
-+#if IS_ENABLED(CONFIG_IPV6)
-+			else
-+				memcpy(&src.ip6, &mld_grec->grec_src[i],
-+				       sizeof(struct in6_addr));
-+#endif
- 			snode = amt_lookup_src(tunnel, gnode, AMT_FILTER_ALL,
- 					       &src);
- 			if (!snode) {
-@@ -1837,6 +2049,169 @@ static void amt_igmp_report_handler(struct amt_dev *amt, struct sk_buff *skb,
- 	}
- }
- 
-+#if IS_ENABLED(CONFIG_IPV6)
-+/* RFC 3810
-+ * 8.3.2. In the Presence of MLDv1 Multicast Address Listeners
-+ *
-+ * When Multicast Address Compatibility Mode is MLDv2, a router acts
-+ * using the MLDv2 protocol for that multicast address.  When Multicast
-+ * Address Compatibility Mode is MLDv1, a router internally translates
-+ * the following MLDv1 messages for that multicast address to their
-+ * MLDv2 equivalents:
-+ *
-+ * MLDv1 Message                 MLDv2 Equivalent
-+ * --------------                -----------------
-+ * Report                        IS_EX( {} )
-+ * Done                          TO_IN( {} )
-+ */
-+static void amt_mldv1_report_handler(struct amt_dev *amt, struct sk_buff *skb,
-+				     struct amt_tunnel_list *tunnel)
-+{
-+	struct mld_msg *mld = (struct mld_msg *)icmp6_hdr(skb);
-+	struct ipv6hdr *ip6h = ipv6_hdr(skb);
-+	struct amt_group_node *gnode;
-+	union amt_addr group, host;
-+
-+	memcpy(&group.ip6, &mld->mld_mca, sizeof(struct in6_addr));
-+	memcpy(&host.ip6, &ip6h->saddr, sizeof(struct in6_addr));
-+
-+	gnode = amt_lookup_group(tunnel, &group, &host, true);
-+	if (!gnode) {
-+		gnode = amt_add_group(amt, tunnel, &group, &host, true);
-+		if (!IS_ERR(gnode)) {
-+			gnode->filter_mode = MCAST_EXCLUDE;
-+			if (!mod_delayed_work(amt_wq, &gnode->group_timer,
-+					      msecs_to_jiffies(amt_gmi(amt))))
-+				dev_hold(amt->dev);
-+		}
-+	}
++	sleep 2
++	ip netns exec "${SOURCE}" bash -c \
++		'echo 172.17.0.2 | nc -w 1 -u 239.0.0.1 4000' &
 +}
 +
-+/* RFC 3810
-+ * 8.3.2. In the Presence of MLDv1 Multicast Address Listeners
-+ *
-+ * When Multicast Address Compatibility Mode is MLDv2, a router acts
-+ * using the MLDv2 protocol for that multicast address.  When Multicast
-+ * Address Compatibility Mode is MLDv1, a router internally translates
-+ * the following MLDv1 messages for that multicast address to their
-+ * MLDv2 equivalents:
-+ *
-+ * MLDv1 Message                 MLDv2 Equivalent
-+ * --------------                -----------------
-+ * Report                        IS_EX( {} )
-+ * Done                          TO_IN( {} )
-+ */
-+static void amt_mldv1_leave_handler(struct amt_dev *amt, struct sk_buff *skb,
-+				    struct amt_tunnel_list *tunnel)
++send_mcast6()
 +{
-+	struct mld_msg *mld = (struct mld_msg *)icmp6_hdr(skb);
-+	struct iphdr *iph = ip_hdr(skb);
-+	struct amt_group_node *gnode;
-+	union amt_addr group, host;
-+
-+	memcpy(&group.ip6, &mld->mld_mca, sizeof(struct in6_addr));
-+	memset(&host, 0, sizeof(union amt_addr));
-+	host.ip4 = iph->saddr;
-+
-+	gnode = amt_lookup_group(tunnel, &group, &host, true);
-+	if (gnode) {
-+		amt_del_group(amt, gnode);
-+		return;
-+	}
++	sleep 2
++	ip netns exec "${SOURCE}" bash -c \
++		'echo 2001:db8:3::2 | nc -w 1 -u ff0e::5:6 6000' &
 +}
 +
-+static void amt_mldv2_report_handler(struct amt_dev *amt, struct sk_buff *skb,
-+				     struct amt_tunnel_list *tunnel)
-+{
-+	struct mld2_report *mld2r = (struct mld2_report *)icmp6_hdr(skb);
-+	int len = skb_transport_offset(skb) + sizeof(*mld2r);
-+	void *zero_grec = (void *)&mldv2_zero_grec;
-+	struct ipv6hdr *ip6h = ipv6_hdr(skb);
-+	struct amt_group_node *gnode;
-+	union amt_addr group, host;
-+	struct mld2_grec *grec;
-+	u16 nsrcs;
-+	int i;
++check_features
 +
-+	for (i = 0; i < ntohs(mld2r->mld2r_ngrec); i++) {
-+		len += sizeof(*grec);
-+		if (!ipv6_mc_may_pull(skb, len))
-+			break;
++create_namespaces
 +
-+		grec = (void *)(skb->data + len - sizeof(*grec));
-+		nsrcs = ntohs(grec->grec_nsrcs);
++set -e
++trap exit_cleanup_all EXIT
 +
-+		len += nsrcs * sizeof(struct in6_addr);
-+		if (!ipv6_mc_may_pull(skb, len))
-+			break;
-+
-+		memset(&group, 0, sizeof(union amt_addr));
-+		group.ip6 = grec->grec_mca;
-+		memset(&host, 0, sizeof(union amt_addr));
-+		host.ip6 = ip6h->saddr;
-+		gnode = amt_lookup_group(tunnel, &group, &host, true);
-+		if (!gnode) {
-+			gnode = amt_add_group(amt, tunnel, &group, &host,
-+					      ETH_P_IPV6);
-+			if (IS_ERR(gnode))
-+				continue;
-+		}
-+
-+		amt_add_srcs(amt, tunnel, gnode, grec, true);
-+		switch (grec->grec_type) {
-+		case MLD2_MODE_IS_INCLUDE:
-+			amt_mcast_is_in_handler(amt, tunnel, gnode, grec,
-+						zero_grec, true);
-+			break;
-+		case MLD2_MODE_IS_EXCLUDE:
-+			amt_mcast_is_ex_handler(amt, tunnel, gnode, grec,
-+						zero_grec, true);
-+			break;
-+		case MLD2_CHANGE_TO_INCLUDE:
-+			amt_mcast_to_in_handler(amt, tunnel, gnode, grec,
-+						zero_grec, true);
-+			break;
-+		case MLD2_CHANGE_TO_EXCLUDE:
-+			amt_mcast_to_ex_handler(amt, tunnel, gnode, grec,
-+						zero_grec, true);
-+			break;
-+		case MLD2_ALLOW_NEW_SOURCES:
-+			amt_mcast_allow_handler(amt, tunnel, gnode, grec,
-+						zero_grec, true);
-+			break;
-+		case MLD2_BLOCK_OLD_SOURCES:
-+			amt_mcast_block_handler(amt, tunnel, gnode, grec,
-+						zero_grec, true);
-+			break;
-+		default:
-+			break;
-+		}
-+		amt_cleanup_srcs(amt, tunnel, gnode);
-+	}
-+}
-+
-+/* caller held tunnel->lock */
-+static void amt_mld_report_handler(struct amt_dev *amt, struct sk_buff *skb,
-+				   struct amt_tunnel_list *tunnel)
-+{
-+	struct mld_msg *mld = (struct mld_msg *)icmp6_hdr(skb);
-+
-+	switch (mld->mld_type) {
-+	case ICMPV6_MGM_REPORT:
-+		amt_mldv1_report_handler(amt, skb, tunnel);
-+		break;
-+	case ICMPV6_MLD2_REPORT:
-+		amt_mldv2_report_handler(amt, skb, tunnel);
-+		break;
-+	case ICMPV6_MGM_REDUCTION:
-+		amt_mldv1_leave_handler(amt, skb, tunnel);
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+#endif
-+
- static bool amt_advertisement_handler(struct amt_dev *amt, struct sk_buff *skb)
- {
- 	struct amt_header_advertisement *amta;
-@@ -1892,6 +2267,17 @@ static bool amt_multicast_data_handler(struct amt_dev *amt, struct sk_buff *skb)
- 		skb->protocol = htons(ETH_P_IP);
- 		eth->h_proto = htons(ETH_P_IP);
- 		ip_eth_mc_map(iph->daddr, eth->h_dest);
-+#if IS_ENABLED(CONFIG_IPV6)
-+	} else if (iph->version == 6) {
-+		struct ipv6hdr *ip6h;
-+
-+		ip6h = ipv6_hdr(skb);
-+		if (!ipv6_addr_is_multicast(&ip6h->daddr))
-+			return true;
-+		skb->protocol = htons(ETH_P_IPV6);
-+		eth->h_proto = htons(ETH_P_IPV6);
-+		ipv6_eth_mc_map(&ip6h->daddr, eth->h_dest);
-+#endif
- 	} else {
- 		return true;
- 	}
-@@ -1954,6 +2340,30 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
- 		skb->protocol = htons(ETH_P_IP);
- 		eth->h_proto = htons(ETH_P_IP);
- 		ip_eth_mc_map(iph->daddr, eth->h_dest);
-+#if IS_ENABLED(CONFIG_IPV6)
-+	} else if (iph->version == 6) {
-+		struct ipv6hdr *ip6h = ipv6_hdr(skb);
-+		struct mld2_query *mld2q;
-+
-+		if (!ipv6_addr_is_multicast(&ip6h->daddr))
-+			return true;
-+		if (!pskb_may_pull(skb, sizeof(*ip6h) + AMT_IP6HDR_OPTS +
-+				   sizeof(*mld2q)))
-+			return true;
-+
-+		mld2q = skb_pull(skb, sizeof(*ip6h) + AMT_IP6HDR_OPTS);
-+		skb_reset_transport_header(skb);
-+		skb_push(skb, sizeof(*ip6h) + AMT_IP6HDR_OPTS);
-+		spin_lock_bh(&amt->lock);
-+		amt->ready6 = true;
-+		amt->mac = amtmq->response_mac;
-+		amt->req_cnt = 0;
-+		amt->qi = mld2q->mld2q_qqic;
-+		spin_unlock_bh(&amt->lock);
-+		skb->protocol = htons(ETH_P_IPV6);
-+		eth->h_proto = htons(ETH_P_IPV6);
-+		ipv6_eth_mc_map(&ip6h->daddr, eth->h_dest);
-+#endif
- 	} else {
- 		return true;
- 	}
-@@ -2030,6 +2440,26 @@ static bool amt_update_handler(struct amt_dev *amt, struct sk_buff *skb)
- 		skb->protocol = htons(ETH_P_IP);
- 		eth->h_proto = htons(ETH_P_IP);
- 		ip_eth_mc_map(iph->daddr, eth->h_dest);
-+#if IS_ENABLED(CONFIG_IPV6)
-+	} else if (iph->version == 6) {
-+		struct ipv6hdr *ip6h = ipv6_hdr(skb);
-+
-+		if (ipv6_mc_check_mld(skb)) {
-+			netdev_dbg(amt->dev, "Invalid MLD\n");
-+			return true;
-+		}
-+
-+		spin_lock_bh(&tunnel->lock);
-+		amt_mld_report_handler(amt, skb, tunnel);
-+		spin_unlock_bh(&tunnel->lock);
-+
-+		skb_push(skb, sizeof(struct ethhdr));
-+		skb_reset_mac_header(skb);
-+		eth = eth_hdr(skb);
-+		skb->protocol = htons(ETH_P_IPV6);
-+		eth->h_proto = htons(ETH_P_IPV6);
-+		ipv6_eth_mc_map(&ip6h->daddr, eth->h_dest);
-+#endif
- 	} else {
- 		netdev_dbg(amt->dev, "Unsupported Protocol\n");
- 		return true;
-@@ -2229,6 +2659,8 @@ static bool amt_request_handler(struct amt_dev *amt, struct sk_buff *skb)
- 
- 	if (!amtrh->p)
- 		amt_send_igmp_gq(amt, tunnel);
-+	else
-+		amt_send_mld_gq(amt, tunnel);
- 
- 	return false;
- }
-diff --git a/include/net/amt.h b/include/net/amt.h
-index 9581711b4d5c..8c5fe6b9070e 100644
---- a/include/net/amt.h
-+++ b/include/net/amt.h
-@@ -350,6 +350,7 @@ struct amt_dev {
- 
- #define AMT_TOS			0xc0
- #define AMT_IPHDR_OPTS		4
-+#define AMT_IP6HDR_OPTS		8
- #define AMT_GC_INTERVAL		(30 * 1000)
- #define AMT_MAX_GROUP		32
- #define AMT_MAX_SOURCE		128
++setup_interface
++setup_sysctl
++setup_iptables
++setup_mcast_routing
++test_remote_ip
++test_ipv4_forward &
++pid=$!
++send_mcast4
++wait $pid || err=$?
++if [ $err -eq 1 ]; then
++	ERR=1
++fi
++test_ipv6_forward &
++pid=$!
++send_mcast6
++wait $pid || err=$?
++if [ $err -eq 1 ]; then
++	ERR=1
++fi
++send_mcast_torture4
++printf "TEST: %-60s  [ OK ]\n" "IPv4 amt traffic forwarding torture"
++send_mcast_torture6
++printf "TEST: %-60s  [ OK ]\n" "IPv6 amt traffic forwarding torture"
++sleep 5
++if [ "${ERR}" -eq 1 ]; then
++        echo "Some tests failed." >&2
++else
++        ERR=0
++fi
+diff --git a/tools/testing/selftests/net/config b/tools/testing/selftests/net/config
+index 86ab429fe7f3..ead7963b9bf0 100644
+--- a/tools/testing/selftests/net/config
++++ b/tools/testing/selftests/net/config
+@@ -44,3 +44,4 @@ CONFIG_NET_ACT_MIRRED=m
+ CONFIG_BAREUDP=m
+ CONFIG_IPV6_IOAM6_LWTUNNEL=y
+ CONFIG_CRYPTO_SM4=y
++CONFIG_AMT=m
 -- 
 2.17.1
 
