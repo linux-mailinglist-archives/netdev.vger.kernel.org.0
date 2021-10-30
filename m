@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32168440A01
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 17:37:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C744C440A10
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 17:55:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232010AbhJ3Pj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 11:39:29 -0400
-Received: from mail-cusazon11021025.outbound.protection.outlook.com ([52.101.62.25]:27619
+        id S231975AbhJ3P5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Oct 2021 11:57:32 -0400
+Received: from mail-cusazon11021021.outbound.protection.outlook.com ([52.101.62.21]:29440
         "EHLO na01-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230086AbhJ3Pj2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 Oct 2021 11:39:28 -0400
+        id S231830AbhJ3P5b (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Oct 2021 11:57:31 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fdljTS/ADThvRwZf+Qn+B53MFQrI5KR8BZ9SYv8mI3IJpZGwKBX/nmJ1yWnrpUqo3LY8lfQein4fyCO/9vBYnNE6FPxAhU7yjhVQX9UxO8sm9dkePFoN1Hfh6SeIYYle/EWo2AOOMD3OrEAHy9f7BCmyMwBm8UJ8dPpXeOjoDRtHXDpI9gRrr3dSodktZnCuOrV+tOIifc1YeEeLmxZ/t1Z3ZeSAAtaav2wqBvGjTiMBw6mE2z4/s3Y3UlVi8XD1MImW3tiFmEtt3+IQyieK/BfrXZ2trSHGUSGYVi0HfdREFHFzfOiyGb/VRg0s2i/LX/Ex201FB32Kf9E29oKE9A==
+ b=mJsMkJL86qkcP1rpQ8aQ4s1jvtn7w6jDY4GDP6Nf6wbX4guAwfR1JxA58565At+I0//oAKdasEnrGenZsD5aBWik3N0LKvmVYUFGA3gSVyQcKXNqGpBVhbJlcZeo9RKJiKm2twA9cSIAnZOhS0vboSiJfSA3hqUWJs69XvdVOyfcb9A7u+Do8FjKbTTmep5pOpOgcfZa1RLUxOtQmi6GilEHTi8FxtrFZ+VYlvgnfqA+HIHiOdDaFQBQPGmmgy486A2Yb+NPNtYCZEFjLCWpqTvfPUkiL8vd5vDs9Qe/ncDbFRfy4849LIhRrcjHQgapjcYnvJiRvlYtPAVBCzw4Pw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EcqhGJTAcei4yK/OcSatqhTzxOmed3p6YFyIkwHHEsA=;
- b=RAvaroaLP7ssNuEXyjV39MdsyzT/IsrJQDccvVzktCWj9Ht7KgqqTbfG25EVHHFtsVhePgr7ILppPecyL2slNMWU8JHeNQ1RU0+YIkd70D9HDb0H8+G/ebinXhTK0YHIkSC9zPc40bdyWWRX5GM1pP4N/ehglKEY/S//cNHQT1nVQtURY+SaajD9ZVpaQYZZFd7kROnZaeasCUAoXLLOylg3JLV2RL6JTshnvOOyxGNP3B84EW8HPpP9q00wAGMz2eeNfOQNWu6FGLiYyz5So0Z3G4C00jiB6t2Y8XlK9n7xO5dNoV6BdDTUXtkG/0TxsZYtLtwbOoWyWrW8SbOmTQ==
+ bh=rzRNI1jQeDxllXjEF+3CrWUdbiGBezzaj1XMJnKOL10=;
+ b=ZzOh6pXQKd/KeNoS9vd5AJ1uAdqq7LnVErXkQtfzr3avukFe9xG0nf1P6f9ddDvOy6+T5Zsnoa83cPEgCFWaxGAc2hP23wd+OqYyT002PhB75uNQgOHlYwLl7liKQ8i1DEvFgf1N0uVk/GrHglNVK8NLwwnpLFbZ/d18N3UoQnxGbLP9yEQ0Dh2PxKudDXbG7f5s1qlcdfowFsQH3/uZAQytjdD3kG/vlC1xugpef/1eMYx07DjPmIWJfIfaQU0F3AlfIuvBUprrPT5BmDz/oIBo2TbAVrKDg/ykSXLf2KLzV323zQnukqpfWN+VEMHyIdWNEDt8n8Nzi6iF0KZE5w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=microsoft.com; dmarc=pass action=none
  header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EcqhGJTAcei4yK/OcSatqhTzxOmed3p6YFyIkwHHEsA=;
- b=Dgsqm4lAQk96RqT5a12i45r/KloxxpNSD1HreeeBsy6BaJHeyyYNiVnvWpyXIAcoO3kPJASg0yLOmTBLK4GtsyBvGf0d99yXyxRNb/u5fit6iTfhQbFGfRrx2HEVGYDFhaPUVc/3WXsxvTAIUY5+Q/GKCxnaz29caQLxFS2lXk0=
+ bh=rzRNI1jQeDxllXjEF+3CrWUdbiGBezzaj1XMJnKOL10=;
+ b=drrvR88M1admRzinsBx0DJpb8cY6UsmsYdc0me6ASedCgMCfL+G6erJprANiSjd4StWFAnB2KF3vdzHxIt3xI82c9NAooIR4bdB4dhDtxm8sV27DR5Aznyezpfxa5sbAAC3vFCHKpPH1IEW+5PbxLV3mTa9IVvmXMhx91OPkiIc=
 Received: from BN8PR21MB1284.namprd21.prod.outlook.com (2603:10b6:408:a2::22)
- by BN8PR21MB1234.namprd21.prod.outlook.com (2603:10b6:408:77::30) with
+ by BN8PR21MB1153.namprd21.prod.outlook.com (2603:10b6:408:72::32) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.0; Sat, 30 Oct
- 2021 15:36:55 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.6; Sat, 30 Oct
+ 2021 15:54:55 +0000
 Received: from BN8PR21MB1284.namprd21.prod.outlook.com
  ([fe80::5962:fbb9:f607:8018]) by BN8PR21MB1284.namprd21.prod.outlook.com
  ([fe80::5962:fbb9:f607:8018%7]) with mapi id 15.20.4669.004; Sat, 30 Oct 2021
- 15:36:55 +0000
+ 15:54:55 +0000
 From:   Haiyang Zhang <haiyangz@microsoft.com>
 To:     Dexuan Cui <decui@microsoft.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
@@ -50,75 +50,75 @@ CC:     KY Srinivasan <kys@microsoft.com>,
         Shachar Raindel <shacharr@microsoft.com>,
         Paul Rosswurm <paulros@microsoft.com>,
         "olaf@aepfle.de" <olaf@aepfle.de>, vkuznets <vkuznets@redhat.com>
-Subject: RE: [PATCH net-next 3/4] net: mana: Improve the HWC error handling
-Thread-Topic: [PATCH net-next 3/4] net: mana: Improve the HWC error handling
-Thread-Index: AQHXzSi4XYNK32EGdE6DVoKM725FOqvrrVPQ
-Date:   Sat, 30 Oct 2021 15:36:54 +0000
-Message-ID: <BN8PR21MB1284C84F87CF19FA60E52B71CA889@BN8PR21MB1284.namprd21.prod.outlook.com>
+Subject: RE: [PATCH net-next 4/4] net: mana: Support hibernation and kexec
+Thread-Topic: [PATCH net-next 4/4] net: mana: Support hibernation and kexec
+Thread-Index: AQHXzSi5FL+xs47DTkemjnXcBfjf5qvrr5YA
+Date:   Sat, 30 Oct 2021 15:54:55 +0000
+Message-ID: <BN8PR21MB1284785C320EFE09C75286B6CA889@BN8PR21MB1284.namprd21.prod.outlook.com>
 References: <20211030005408.13932-1-decui@microsoft.com>
- <20211030005408.13932-4-decui@microsoft.com>
-In-Reply-To: <20211030005408.13932-4-decui@microsoft.com>
+ <20211030005408.13932-5-decui@microsoft.com>
+In-Reply-To: <20211030005408.13932-5-decui@microsoft.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=500a2d4d-8f11-4aa9-9388-44382762cb65;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-10-30T15:35:52Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=38d1b54a-de51-47ac-a27e-8db573cfb9ed;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-10-30T15:43:58Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=microsoft.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ee7bba06-c1bd-48bf-e444-08d99bbb1a3f
-x-ms-traffictypediagnostic: BN8PR21MB1234:
+x-ms-office365-filtering-correlation-id: 47838998-307f-4ecb-bcb3-08d99bbd9e74
+x-ms-traffictypediagnostic: BN8PR21MB1153:
 x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <BN8PR21MB12348AF435524729100C87A5CA889@BN8PR21MB1234.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3276;
+x-microsoft-antispam-prvs: <BN8PR21MB11535F635B6A98AAD77F3C56CA889@BN8PR21MB1153.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: jD3Xx2FlOZ/sMtd4CA6d/6Lu2GFx4yXPr6W5pxbs/hwar6qsgDlqaqoasgIERqWyAabYVMIByOD3W0V8ul4mNJbhRBRbEIE8WHFO2sDxFU1bwqvEjOMdzsNxR+KorHQdo8z+9u6buppNoWQ+TfbPN3jO08VdvUn00U2eapWtCioY5ryz0h0aHG4Kipdx4idIG1z5bwkSkRBzNM1oNMDvBTDCHEhr1footUG+0GSfbowusoaFClYuZKxyCekoln7BpO/bPKPtKI+veWaOa0dostSgTdZfBNC/znTZN8si4fkpwyd6IbP+8F2AJiqJ4uWjo76wX//kUsWu39Imnk8FM21l9dr7Syks/BQY5Y9flecLZsi2AyshcXZVmkTrOf6axT8v71S/KN44U20g3d0ahev6doSxQ5EsMc2sUJ2K3LW5hPHWw/3cRZwmmwaXiHROu8NQucrPXmn45AT7odNm6LpyKnKqLPwCV/mIxLIxjjhwUOp2j09k/pUH+BLYiyRauf+Eb3L+ReuuvZC94Yzr8IOU4NUcaPfcCJ6ARIwwYzFSQ7Ft0f7bDCO6WG8l2OSxmTusRMbP4WbRsBcdt/3fOQk3EnK60zX+DvgH/+yForJG8aUFJ+s9Ze4U4DigSllahvCIya2k16EoLFdHQUhj2zwmaZc+vov/BU9n02djIQj8BYD3ZNGpkzKQn3iXyyAbXVB0L6OFCkTTmdKJhXHMlQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR21MB1284.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(38070700005)(55016002)(71200400001)(8990500004)(2906002)(82960400001)(54906003)(8936002)(186003)(66946007)(66556008)(66476007)(66446008)(64756008)(26005)(9686003)(110136005)(8676002)(76116006)(86362001)(82950400001)(52536014)(508600001)(6506007)(10290500003)(38100700002)(316002)(122000001)(4326008)(7416002)(7696005)(5660300002)(83380400001)(53546011)(33656002);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: ZC5Z/F3F+2knMQ5xELmyVXDE0hnlUShib9BsgqlTtffHnVB2ec3RXbfD0pK0iTwO6IRlgM26L+DestZNCzh68OMtujfwEf56626vahpkPGWh/QBWcUjQhG40/cBX/gJh9nj5Y8nDcDdK2mEuEf0mYmMr+w4ArD96oFEdrYrUXVJkzrs16gM4cMQpIWeV8wZbkaembZi8Q/8bv45gycTBGxdO3eK/IyK07NYSBVLvPxPzabEuQGEqJm2V639WFrHJHoMgVQ88DnSCymZKaG6nCCpyGvTomwn6YpJuowMPiwrTWVHbT8KhPtsXMrv7AUCqhOF2N8AiOJ7edVe0yqxsQWsSIVpSBwdBATL0bTwZ/S6iXi9LYdR2KCF7K60FkeEubSK/vbisjZgT8A6nH95Fvbf8dbj9Ef4x0UM3N0J2cMEjTIA7T51y3B3XAJmg60bsbJ+hBnLrSLuI+OTbWcfW302lv2Fq3z4rgx7YQpto+wCqblLQUEqhWRCftr//kaahuJtLNsvwsuiaOsE0WNt2+9NDz6Xml0OoHk1IqbSSqmWYjbUWzizUrlHjVSGD3rW3zX5F9JBXU0nVfjB3yhRlxBJYuopKhSr+nDk9Z/C3v9Foj5gkXlwsWEC4h8iqQLQXf6GsomG8buWMPqnwB5tEunE9CqFG+hap2SRFnXYokMkil3ZwijQYkjF79nUtZpLAfttP0tSV3Kp+aLhMDTfQKQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR21MB1284.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(7696005)(82950400001)(55016002)(54906003)(5660300002)(86362001)(52536014)(8990500004)(8676002)(508600001)(316002)(38070700005)(7416002)(82960400001)(71200400001)(8936002)(186003)(26005)(66446008)(66946007)(64756008)(66556008)(38100700002)(83380400001)(66476007)(110136005)(76116006)(6506007)(10290500003)(4326008)(53546011)(9686003)(33656002)(2906002)(122000001);DIR:OUT;SFP:1102;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?uRtmmu7SB2rnULgYcE0pElpZECAuI17gRNswDtEhym/BcY9ZbX5W6AiwAFuy?=
- =?us-ascii?Q?YWxRe/jckEBHyL3YLlQH+kLSFpJL/+jxo7dXQkeuy4rROqE1LH3uBOkyqXwt?=
- =?us-ascii?Q?7mYe71NeqmPRxJI5mDzokHxUJJ5tvL8KJ6Zqd0ji+X8/jJkbFyCsspU+B8mV?=
- =?us-ascii?Q?1KPcg9KvDH2Fyr0mlMsTgwuA2slVCnW5wDOXirt+tMibUTTeEzd6kGFwBm43?=
- =?us-ascii?Q?X9OY7f0ZzAjKJOydZPYkEC1Z9JhJgpZEHC2eZ5MHx74O09DaHZE/gKbXswCM?=
- =?us-ascii?Q?pYtuPy8ZhzN2EJLrHhxX2cbWTXLcl0bta5nhrRSgc9daJIgExf/U2BoQYEQu?=
- =?us-ascii?Q?hveQjONMWArJrzQECxuhSzpjp9SApwfui6d8Cp3OhEHKCJzRId3ltOQKAaVt?=
- =?us-ascii?Q?0lPzztGULmsCrMzFgkWMqXSVD3c8nJU3ShiiecgdjSDhb3F9jQNk00GbrRUY?=
- =?us-ascii?Q?QG/y9S1CRC67Xz0rUFZFh8NeXBCUbnTYqXX93MZ4gG91or1ZWQgbN28OYxRI?=
- =?us-ascii?Q?ESm3erzexe/sGZhSTQRFkebu08rtFqP0fWWzTDYhCUqeXKUg/DBW2p5aTksz?=
- =?us-ascii?Q?FCA4kzccK/oo8LyqvZ2nw9cbJ2PfPnzbg+UEtCvr5vVOZg+uhWJNH8jLPOGq?=
- =?us-ascii?Q?H7fqv9rfdCiMefTOdydcg6B+uzPi1YCflU+vADwqjcqsnHsq9LOZ9h5qzikg?=
- =?us-ascii?Q?iPqgZSq/Sus392E5jZMSz/0awWCEx0UuxwUuSXJtgpf4zpH4LCrJO1l+8FPv?=
- =?us-ascii?Q?HYLe9+C2r/RCwxX7caKIlKUSVkSH2mfjc8YZjxU/mrrCLyuj+OeWYYgfa27e?=
- =?us-ascii?Q?O6ZK0qVGRH1XXejtumt6+0vHgk8UAj0bJS/fUdCxL9Y/BTJgXsaTKMxaoa2P?=
- =?us-ascii?Q?3v5otaXZDvnbuMyLkzyb6dC/misCuvXiiMnjoBSBYeTypOUTm4c9t7xicFlC?=
- =?us-ascii?Q?IFUcGC2oZsk1unSwNmgqYLlgba9CUF8x10GmIvv50SEUnC5DgkDQ4mrLFqds?=
- =?us-ascii?Q?Fh83A/YjsnAtzzyqYTlv78HsULXR271YB2ZtnUIMIJCHZ1SuTmy1FlJUvbRt?=
- =?us-ascii?Q?4HHAULKOpM+er3Ik/QKmDPCFg3POfbYPsvLGMwi6+ABXCgNR7xNULXCmnRQg?=
- =?us-ascii?Q?g3Qz8wrpEM9uLZ8fZGX+74Q3oxqg1AMIHwahQ6MoDXT7bUA+I680m1JP13DT?=
- =?us-ascii?Q?3OOPqRHMySHGeqF7dzm/TnXCXfCnxCrPl3WwpP40hxdJAwUyQaNz55Q2ZmTa?=
- =?us-ascii?Q?6tFw9KNHNGGH3f5z253+XD+C9U826QyaE955VcLSt8Ql8J1pLOiyhi6JdvcN?=
- =?us-ascii?Q?E27m47pEbWtNful+QYdSlp06HmdOK/JujVcmuJ3aNCmq5vdqadjhyiWVO/PE?=
- =?us-ascii?Q?ycshUI4iCBVLKHEnLnbOXFPA5y7pnboXK50VnwERPNB1UPOnp/RD+zSUN/d9?=
- =?us-ascii?Q?TYbbwhsFDlyeqxFS9Vdr7qtz/sfeXZFx/gQuQXY8D+y/xhvoqTIQ5CC8Dn8R?=
- =?us-ascii?Q?ZKSEJFdUu87SJz4CDWVoEudo7aAmK3tO+yVsaUZM+IKUg1ygQVexUiTRd/7/?=
- =?us-ascii?Q?do3BnUQIbdIP/zhmqRoz3YQo5j3QTYVcr2oSy3xNXzv4stRqrWOxSVAvyBRG?=
- =?us-ascii?Q?MA=3D=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ERK3UFp8S+LmaWEXw+CbM+Y/Q3KCX0crYB0Y9G/WlnnTcN6NsmBvVx0RgAvD?=
+ =?us-ascii?Q?HfCWxUDUMxrwHuXEi9EROKtGE6GvLdUDJQ80zgNTtJi9rYSFmNv2BYTB/4ai?=
+ =?us-ascii?Q?Vib3kFcuT8chHHq9mh5qGg7T474mlTeqxGinfQu2DtgoQXq5Oc/agd9NHUnV?=
+ =?us-ascii?Q?ZjIBaedxmW9HK95KaCNh5erWxBWENtgg91JphUlffLnrL+6cfQIjH2prpp/1?=
+ =?us-ascii?Q?AezYpuPY7npbKJkiRr22w4UvURiLfP+I4Kmd2nXR8zAGcYHvmew9KLTlAfVz?=
+ =?us-ascii?Q?2NA0NFrqnGhE7ppw4HQLG3xrt9KcHj4WNsAiGw2SU/0whb2r2zE3Jyz934Yg?=
+ =?us-ascii?Q?HB6KBh9NELuy5Lvp67OqpomhiIzwgiwbsCj5b1IN+rv1NoEMbrAaS5L3h+5h?=
+ =?us-ascii?Q?qinyMuUWY5RCyteEKaiwDVgcPrYI1Qbu6TeSu4O9ZbXZLPRX1+LQ0LPW1TVL?=
+ =?us-ascii?Q?RLBV1o0WWtydrqqAiZzAIRUYLFBdQ+OlzLI3g/zSWWzNXzS+CatUUX2lDgzd?=
+ =?us-ascii?Q?KT6XRI4BYyFSzpBZESVi2VrgyPlHmVRE7At5AdTfPlkNFiQxsDNml0/VAJbq?=
+ =?us-ascii?Q?2huxj60fSCLEr35ofwX+71BAHKs9eBTe5HZYnPZ0Fl9jieu7A0+eqoKsSJWz?=
+ =?us-ascii?Q?4muq5QVx/EXcMuCvRlKamAQH3jGok8jeph5lYS89nVdj1ft5ZsK1XVyCi3gC?=
+ =?us-ascii?Q?2nf17kj46SJEs5q/UQELaf1PXAvx9qEfGEu3dwT9iiCig40DB+7qSzvlCXy1?=
+ =?us-ascii?Q?LRKxswXz2kOyFZhzt71P3QcEnslpluQlgr0FIAmWKzzEM5wLijc/wSIn7xS4?=
+ =?us-ascii?Q?7XUxGSo/moMMSAR3Bo0dCgSOqhXwDGm+GuE3w0DFuDdwHVJrj5bkZ+UHRwJr?=
+ =?us-ascii?Q?EaqZrRjxhJlouqoab8vXJ7zmYHwf4lY8aB+Z02102kP/dF99TjESVhrx4OPf?=
+ =?us-ascii?Q?Ct4VN0sNUzV2bOnT1GeHR+MUYeeijnLGTHT2fkfwLpNKd7U7k0bOa99Drjs4?=
+ =?us-ascii?Q?sC8gOlVC1ENVMqCKMdttZ5XebkKDev3xNUUGulc1yk/47YldeHHRTbQNsf0I?=
+ =?us-ascii?Q?I2u9fvi7sbwPtwsGV9YRW+grYRrgHhbKt+Uxbss7oQl6ZVoWSvYbolg/NdUv?=
+ =?us-ascii?Q?XLxsmlqkEJS1lZOs2ZVvyKirnajB7ctVGaZqR+Q0kegfnFYQv+oxcJ3ogtdu?=
+ =?us-ascii?Q?YZaQHsiUg3NJB4o/Z2uKFCNQoaRJF9av9f9x2Igr3tIyDHa2ptkf8W4zSJyN?=
+ =?us-ascii?Q?bjzHpbNSB5iQtDfinuk9nQHYEUpTeSQt6f9fSGAovrdo/zAjvn7lvk14yoKA?=
+ =?us-ascii?Q?zaH5so7WM6vvq8+90oqju/F4J/gJPe8DzhbTrNlCyCWGjzGK2LhQgMGM7hUa?=
+ =?us-ascii?Q?f8lRHBWppkFKXutoMHjxlvCI5IVyExKREh4H3OLVp8GEckU+yeCJHY1TYeoS?=
+ =?us-ascii?Q?TiFs3ht5EcdBYz8wNytoWmtJiTTlNMhgH1g/QZIxPC1miiTxBlbbEUjCaoIm?=
+ =?us-ascii?Q?rabFMH51ya0MkKVWI+IiyUkG+mEljZ1xnuD+YmTBAZqMmYo3Jjd5XHP2VQvu?=
+ =?us-ascii?Q?NAfdZ5I/lx2T0DjzTxbYRheLy5Z2zpSLPYa4jeyIpAkC4z260Vxpz6FZD3l5?=
+ =?us-ascii?Q?KQ=3D=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: microsoft.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: BN8PR21MB1284.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ee7bba06-c1bd-48bf-e444-08d99bbb1a3f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Oct 2021 15:36:54.9351
+X-MS-Exchange-CrossTenant-Network-Message-Id: 47838998-307f-4ecb-bcb3-08d99bbd9e74
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Oct 2021 15:54:55.7721
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 3wXcxGqvagBLN8QoTFXuWsFbgH8XPujh/4lP5uDVu0eIDDpuWMGQ1nl/x5Lcc+9XhOpoAqMpi9PgJb1DZPa3nw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR21MB1234
+X-MS-Exchange-CrossTenant-userprincipalname: zv9L6CDDIEYqY6KK4FLL8YvxzbrF5Nk9K2IL3OPUCuMYH/z1zxCGk1DYuFGj/7pGUXFPH4YyWDRrpoESMrm52Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR21MB1153
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -135,219 +135,390 @@ X-Mailing-List: netdev@vger.kernel.org
 > hyperv@vger.kernel.org; Shachar Raindel <shacharr@microsoft.com>; Paul
 > Rosswurm <paulros@microsoft.com>; olaf@aepfle.de; vkuznets
 > <vkuznets@redhat.com>; Dexuan Cui <decui@microsoft.com>
-> Subject: [PATCH net-next 3/4] net: mana: Improve the HWC error handling
+> Subject: [PATCH net-next 4/4] net: mana: Support hibernation and kexec
 >=20
-> Currently when the HWC creation fails, the error handling is flawed, e.g.
-> if mana_hwc_create_channel() -> mana_hwc_establish_channel() fails, the
-> resources acquired in mana_hwc_init_queues() is not released.
+> Implement the suspend/resume/shutdown callbacks for hibernation/kexec.
 >=20
-> Enhance mana_hwc_destroy_channel() to do the proper cleanup work and
-> call it accordingly.
+> Add mana_gd_setup() and mana_gd_cleanup() for some common code, and
+> use them in the mand_gd_* callbacks.
+>=20
+> Reuse mana_probe/remove() for the hibernation path.
 >=20
 > Signed-off-by: Dexuan Cui <decui@microsoft.com>
 > ---
->  .../net/ethernet/microsoft/mana/gdma_main.c   |  4 --
->  .../net/ethernet/microsoft/mana/hw_channel.c  | 71 ++++++++-----------
->  2 files changed, 31 insertions(+), 44 deletions(-)
+>  .../net/ethernet/microsoft/mana/gdma_main.c   | 140 +++++++++++++-----
+>  drivers/net/ethernet/microsoft/mana/mana.h    |   4 +-
+>  drivers/net/ethernet/microsoft/mana/mana_en.c |  72 +++++++--
+>  3 files changed, 164 insertions(+), 52 deletions(-)
 >=20
 > diff --git a/drivers/net/ethernet/microsoft/mana/gdma_main.c
 > b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-> index 8a9ee2885f8c..599dfd5e6090 100644
+> index 599dfd5e6090..c96ac81212f7 100644
 > --- a/drivers/net/ethernet/microsoft/mana/gdma_main.c
 > +++ b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-> @@ -1330,8 +1330,6 @@ static int mana_gd_probe(struct pci_dev *pdev,
-> const struct pci_device_id *ent)
->=20
->  clean_up_gdma:
->  	mana_hwc_destroy_channel(gc);
-> -	vfree(gc->cq_table);
-> -	gc->cq_table =3D NULL;
->  remove_irq:
->  	mana_gd_remove_irqs(pdev);
->  unmap_bar:
-> @@ -1354,8 +1352,6 @@ static void mana_gd_remove(struct pci_dev *pdev)
->  	mana_remove(&gc->mana);
->=20
->  	mana_hwc_destroy_channel(gc);
-> -	vfree(gc->cq_table);
-> -	gc->cq_table =3D NULL;
->=20
->  	mana_gd_remove_irqs(pdev);
->=20
-> diff --git a/drivers/net/ethernet/microsoft/mana/hw_channel.c
-> b/drivers/net/ethernet/microsoft/mana/hw_channel.c
-> index c1310ea1c216..851de2b81fa4 100644
-> --- a/drivers/net/ethernet/microsoft/mana/hw_channel.c
-> +++ b/drivers/net/ethernet/microsoft/mana/hw_channel.c
-> @@ -309,9 +309,6 @@ static void mana_hwc_comp_event(void *ctx, struct
-> gdma_queue *q_self)
->=20
->  static void mana_hwc_destroy_cq(struct gdma_context *gc, struct hwc_cq
-> *hwc_cq)  {
-> -	if (!hwc_cq)
-> -		return;
-> -
->  	kfree(hwc_cq->comp_buf);
->=20
->  	if (hwc_cq->gdma_cq)
-> @@ -448,9 +445,6 @@ static void mana_hwc_dealloc_dma_buf(struct
-> hw_channel_context *hwc,  static void mana_hwc_destroy_wq(struct
-> hw_channel_context *hwc,
->  				struct hwc_wq *hwc_wq)
->  {
-> -	if (!hwc_wq)
-> -		return;
-> -
->  	mana_hwc_dealloc_dma_buf(hwc, hwc_wq->msg_buf);
->=20
->  	if (hwc_wq->gdma_wq)
-> @@ -623,6 +617,7 @@ static int mana_hwc_establish_channel(struct
-> gdma_context *gc, u16 *q_depth,
->  	*max_req_msg_size =3D hwc->hwc_init_max_req_msg_size;
->  	*max_resp_msg_size =3D hwc->hwc_init_max_resp_msg_size;
->=20
-> +	/* Both were set in mana_hwc_init_event_handler(). */
->  	if (WARN_ON(cq->id >=3D gc->max_num_cqs))
->  		return -EPROTO;
->=20
-> @@ -638,9 +633,6 @@ static int mana_hwc_establish_channel(struct
-> gdma_context *gc, u16 *q_depth,  static int mana_hwc_init_queues(struct
-> hw_channel_context *hwc, u16 q_depth,
->  				u32 max_req_msg_size, u32 max_resp_msg_size)  {
-> -	struct hwc_wq *hwc_rxq =3D NULL;
-> -	struct hwc_wq *hwc_txq =3D NULL;
-> -	struct hwc_cq *hwc_cq =3D NULL;
->  	int err;
->=20
->  	err =3D mana_hwc_init_inflight_msg(hwc, q_depth); @@ -653,44 +645,32
-> @@ static int mana_hwc_init_queues(struct hw_channel_context *hwc, u16
-> q_depth,
->  	err =3D mana_hwc_create_cq(hwc, q_depth * 2,
->  				 mana_hwc_init_event_handler, hwc,
->  				 mana_hwc_rx_event_handler, hwc,
-> -				 mana_hwc_tx_event_handler, hwc, &hwc_cq);
-> +				 mana_hwc_tx_event_handler, hwc, &hwc->cq);
->  	if (err) {
->  		dev_err(hwc->dev, "Failed to create HWC CQ: %d\n", err);
->  		goto out;
->  	}
-> -	hwc->cq =3D hwc_cq;
->=20
->  	err =3D mana_hwc_create_wq(hwc, GDMA_RQ, q_depth, max_req_msg_size,
-> -				 hwc_cq, &hwc_rxq);
-> +				 hwc->cq, &hwc->rxq);
->  	if (err) {
->  		dev_err(hwc->dev, "Failed to create HWC RQ: %d\n", err);
->  		goto out;
->  	}
-> -	hwc->rxq =3D hwc_rxq;
->=20
->  	err =3D mana_hwc_create_wq(hwc, GDMA_SQ, q_depth, max_resp_msg_size,
-> -				 hwc_cq, &hwc_txq);
-> +				 hwc->cq, &hwc->txq);
->  	if (err) {
->  		dev_err(hwc->dev, "Failed to create HWC SQ: %d\n", err);
->  		goto out;
->  	}
-> -	hwc->txq =3D hwc_txq;
->=20
->  	hwc->num_inflight_msg =3D q_depth;
->  	hwc->max_req_msg_size =3D max_req_msg_size;
->=20
->  	return 0;
->  out:
-> -	if (hwc_txq)
-> -		mana_hwc_destroy_wq(hwc, hwc_txq);
-> -
-> -	if (hwc_rxq)
-> -		mana_hwc_destroy_wq(hwc, hwc_rxq);
-> -
-> -	if (hwc_cq)
-> -		mana_hwc_destroy_cq(hwc->gdma_dev->gdma_context, hwc_cq);
-> -
-> -	mana_gd_free_res_map(&hwc->inflight_msg_res);
-> +	/* mana_hwc_create_channel() will do the cleanup.*/
->  	return err;
+> @@ -1258,6 +1258,52 @@ static void mana_gd_remove_irqs(struct pci_dev
+> *pdev)
+>  	gc->irq_contexts =3D NULL;
 >  }
 >=20
-> @@ -718,6 +698,9 @@ int mana_hwc_create_channel(struct gdma_context *gc)
->  	gd->pdid =3D INVALID_PDID;
->  	gd->doorbell =3D INVALID_DOORBELL;
->=20
-> +	/* mana_hwc_init_queues() only creates the required data structures,
-> +	 * and doesn't touch the HWC device.
-> +	 */
->  	err =3D mana_hwc_init_queues(hwc, HW_CHANNEL_VF_BOOTSTRAP_QUEUE_DEPTH,
->  				   HW_CHANNEL_MAX_REQUEST_SIZE,
->  				   HW_CHANNEL_MAX_RESPONSE_SIZE);
-> @@ -743,42 +726,50 @@ int mana_hwc_create_channel(struct gdma_context
-> *gc)
->=20
->  	return 0;
->  out:
-> -	kfree(hwc);
-> +	mana_hwc_destroy_channel(gc);
->  	return err;
->  }
->=20
->  void mana_hwc_destroy_channel(struct gdma_context *gc)  {
->  	struct hw_channel_context *hwc =3D gc->hwc.driver_data;
-> -	struct hwc_caller_ctx *ctx;
->=20
-> -	mana_smc_teardown_hwc(&gc->shm_channel, false);
-> +	if (!hwc)
-> +		return;
+> +static int mana_gd_setup(struct pci_dev *pdev)
+> +{
+> +	struct gdma_context *gc =3D pci_get_drvdata(pdev);
+> +	int err;
 > +
-> +	/* gc->max_num_cqs is set in mana_hwc_init_event_handler(). If it's
-> +	 * non-zero, the HWC worked and we should tear down the HWC here.
-> +	 */
-> +	if (gc->max_num_cqs > 0) {
-> +		mana_smc_teardown_hwc(&gc->shm_channel, false);
-> +		gc->max_num_cqs =3D 0;
+> +	mana_gd_init_registers(pdev);
+> +	mana_smc_init(&gc->shm_channel, gc->dev, gc->shm_base);
+> +
+> +	err =3D mana_gd_setup_irqs(pdev);
+> +	if (err)
+> +		return err;
+> +
+> +	err =3D mana_hwc_create_channel(gc);
+> +	if (err)
+> +		goto remove_irq;
+> +
+> +	err =3D mana_gd_verify_vf_version(pdev);
+> +	if (err)
+> +		goto destroy_hwc;
+> +
+> +	err =3D mana_gd_query_max_resources(pdev);
+> +	if (err)
+> +		goto destroy_hwc;
+> +
+> +	err =3D mana_gd_detect_devices(pdev);
+> +	if (err)
+> +		goto destroy_hwc;
+> +
+> +	return 0;
+> +
+> +destroy_hwc:
+> +	mana_hwc_destroy_channel(gc);
+> +remove_irq:
+> +	mana_gd_remove_irqs(pdev);
+> +	return err;
+> +}
+> +
+> +static void mana_gd_cleanup(struct pci_dev *pdev)
+> +{
+> +	struct gdma_context *gc =3D pci_get_drvdata(pdev);
+> +
+> +	mana_hwc_destroy_channel(gc);
+> +
+> +	mana_gd_remove_irqs(pdev);
+> +}
+> +
+>  static int mana_gd_probe(struct pci_dev *pdev, const struct
+> pci_device_id *ent)
+>  {
+>  	struct gdma_context *gc;
+> @@ -1287,6 +1333,9 @@ static int mana_gd_probe(struct pci_dev *pdev,
+> const struct pci_device_id *ent)
+>  	if (!gc)
+>  		goto release_region;
+>=20
+> +	mutex_init(&gc->eq_test_event_mutex);
+> +	pci_set_drvdata(pdev, gc);
+> +
+>  	bar0_va =3D pci_iomap(pdev, bar, 0);
+>  	if (!bar0_va)
+>  		goto free_gc;
+> @@ -1294,47 +1343,23 @@ static int mana_gd_probe(struct pci_dev *pdev,
+> const struct pci_device_id *ent)
+>  	gc->bar0_va =3D bar0_va;
+>  	gc->dev =3D &pdev->dev;
+>=20
+> -	pci_set_drvdata(pdev, gc);
+> -
+> -	mana_gd_init_registers(pdev);
+>=20
+> -	mana_smc_init(&gc->shm_channel, gc->dev, gc->shm_base);
+> -
+> -	err =3D mana_gd_setup_irqs(pdev);
+> +	err =3D mana_gd_setup(pdev);
+>  	if (err)
+>  		goto unmap_bar;
+>=20
+> -	mutex_init(&gc->eq_test_event_mutex);
+> -
+> -	err =3D mana_hwc_create_channel(gc);
+> +	err =3D mana_probe(&gc->mana, false);
+>  	if (err)
+> -		goto remove_irq;
+> -
+> -	err =3D mana_gd_verify_vf_version(pdev);
+> -	if (err)
+> -		goto remove_irq;
+> -
+> -	err =3D mana_gd_query_max_resources(pdev);
+> -	if (err)
+> -		goto remove_irq;
+> -
+> -	err =3D mana_gd_detect_devices(pdev);
+> -	if (err)
+> -		goto remove_irq;
+> -
+> -	err =3D mana_probe(&gc->mana);
+> -	if (err)
+> -		goto clean_up_gdma;
+> +		goto cleanup_gd;
+>=20
+>  	return 0;
+>=20
+> -clean_up_gdma:
+> -	mana_hwc_destroy_channel(gc);
+> -remove_irq:
+> -	mana_gd_remove_irqs(pdev);
+> +cleanup_gd:
+> +	mana_gd_cleanup(pdev);
+>  unmap_bar:
+>  	pci_iounmap(pdev, bar0_va);
+>  free_gc:
+> +	pci_set_drvdata(pdev, NULL);
+>  	vfree(gc);
+>  release_region:
+>  	pci_release_regions(pdev);
+> @@ -1349,11 +1374,9 @@ static void mana_gd_remove(struct pci_dev *pdev)
+>  {
+>  	struct gdma_context *gc =3D pci_get_drvdata(pdev);
+>=20
+> -	mana_remove(&gc->mana);
+> +	mana_remove(&gc->mana, false);
+>=20
+> -	mana_hwc_destroy_channel(gc);
+> -
+> -	mana_gd_remove_irqs(pdev);
+> +	mana_gd_cleanup(pdev);
+>=20
+>  	pci_iounmap(pdev, gc->bar0_va);
+>=20
+> @@ -1364,6 +1387,52 @@ static void mana_gd_remove(struct pci_dev *pdev)
+>  	pci_disable_device(pdev);
+>  }
+>=20
+> +/* The 'state' parameter is not used. */
+> +static int mana_gd_suspend(struct pci_dev *pdev, pm_message_t state)
+> +{
+> +	struct gdma_context *gc =3D pci_get_drvdata(pdev);
+> +
+> +	mana_remove(&gc->mana, true);
+> +
+> +	mana_gd_cleanup(pdev);
+> +
+> +	return 0;
+> +}
+> +
+> +/* In case the NIC hardware stops working, the suspend and resume
+> callbacks will
+> + * fail -- if this happens, it's safer to just report an error than try
+> to undo
+> + * what has been done.
+> + */
+> +static int mana_gd_resume(struct pci_dev *pdev)
+> +{
+> +	struct gdma_context *gc =3D pci_get_drvdata(pdev);
+> +	int err;
+> +
+> +	err =3D mana_gd_setup(pdev);
+> +	if (err)
+> +		return err;
+> +
+> +	err =3D mana_probe(&gc->mana, true);
+> +	if (err)
+> +		return err;
+> +
+> +	return 0;
+> +}
+> +
+> +/* Quiesce the device for kexec. This is also called upon
+> reboot/shutdown. */
+> +static void mana_gd_shutdown(struct pci_dev *pdev)
+> +{
+> +	struct gdma_context *gc =3D pci_get_drvdata(pdev);
+> +
+> +	dev_info(&pdev->dev, "Shutdown was calledd\n");
+> +
+> +	mana_remove(&gc->mana, true);
+> +
+> +	mana_gd_cleanup(pdev);
+> +
+> +	pci_disable_device(pdev);
+> +}
+> +
+>  #ifndef PCI_VENDOR_ID_MICROSOFT
+>  #define PCI_VENDOR_ID_MICROSOFT 0x1414
+>  #endif
+> @@ -1378,6 +1447,9 @@ static struct pci_driver mana_driver =3D {
+>  	.id_table	=3D mana_id_table,
+>  	.probe		=3D mana_gd_probe,
+>  	.remove		=3D mana_gd_remove,
+> +	.suspend	=3D mana_gd_suspend,
+> +	.resume		=3D mana_gd_resume,
+> +	.shutdown	=3D mana_gd_shutdown,
+>  };
+>=20
+>  module_pci_driver(mana_driver);
+> diff --git a/drivers/net/ethernet/microsoft/mana/mana.h
+> b/drivers/net/ethernet/microsoft/mana/mana.h
+> index fc98a5ba5ed0..d047ee876f12 100644
+> --- a/drivers/net/ethernet/microsoft/mana/mana.h
+> +++ b/drivers/net/ethernet/microsoft/mana/mana.h
+> @@ -374,8 +374,8 @@ int mana_alloc_queues(struct net_device *ndev);
+>  int mana_attach(struct net_device *ndev);
+>  int mana_detach(struct net_device *ndev, bool from_close);
+>=20
+> -int mana_probe(struct gdma_dev *gd);
+> -void mana_remove(struct gdma_dev *gd);
+> +int mana_probe(struct gdma_dev *gd, bool resuming);
+> +void mana_remove(struct gdma_dev *gd, bool suspending);
+>=20
+>  extern const struct ethtool_ops mana_ethtool_ops;
+>=20
+> diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c
+> b/drivers/net/ethernet/microsoft/mana/mana_en.c
+> index 4ff5a1fc506f..820585d45a61 100644
+> --- a/drivers/net/ethernet/microsoft/mana/mana_en.c
+> +++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
+> @@ -1828,11 +1828,12 @@ static int mana_probe_port(struct mana_context
+> *ac, int port_idx,
+>  	return err;
+>  }
+>=20
+> -int mana_probe(struct gdma_dev *gd)
+> +int mana_probe(struct gdma_dev *gd, bool resuming)
+>  {
+>  	struct gdma_context *gc =3D gd->gdma_context;
+> +	struct mana_context *ac =3D gd->driver_data;
+>  	struct device *dev =3D gc->dev;
+> -	struct mana_context *ac;
+> +	u16 num_ports =3D 0;
+>  	int err;
+>  	int i;
+>=20
+> @@ -1844,44 +1845,70 @@ int mana_probe(struct gdma_dev *gd)
+>  	if (err)
+>  		return err;
+>=20
+> -	ac =3D kzalloc(sizeof(*ac), GFP_KERNEL);
+> -	if (!ac)
+> -		return -ENOMEM;
+> +	if (!resuming) {
+> +		ac =3D kzalloc(sizeof(*ac), GFP_KERNEL);
+> +		if (!ac)
+> +			return -ENOMEM;
+>=20
+> -	ac->gdma_dev =3D gd;
+> -	ac->num_ports =3D 1;
+> -	gd->driver_data =3D ac;
+> +		ac->gdma_dev =3D gd;
+> +		gd->driver_data =3D ac;
 > +	}
 >=20
-> -	ctx =3D hwc->caller_ctx;
-> -	kfree(ctx);
-> +	kfree(hwc->caller_ctx);
->  	hwc->caller_ctx =3D NULL;
+>  	err =3D mana_create_eq(ac);
+>  	if (err)
+>  		goto out;
 >=20
-> -	mana_hwc_destroy_wq(hwc, hwc->txq);
-> -	hwc->txq =3D NULL;
-> +	if (hwc->txq)
-> +		mana_hwc_destroy_wq(hwc, hwc->txq);
+>  	err =3D mana_query_device_cfg(ac, MANA_MAJOR_VERSION,
+> MANA_MINOR_VERSION,
+> -				    MANA_MICRO_VERSION, &ac->num_ports);
+> +				    MANA_MICRO_VERSION, &num_ports);
+>  	if (err)
+>  		goto out;
 >=20
-> -	mana_hwc_destroy_wq(hwc, hwc->rxq);
-> -	hwc->rxq =3D NULL;
-> +	if (hwc->rxq)
-> +		mana_hwc_destroy_wq(hwc, hwc->rxq);
->=20
-> -	mana_hwc_destroy_cq(hwc->gdma_dev->gdma_context, hwc->cq);
-> -	hwc->cq =3D NULL;
-> +	if (hwc->cq)
-> +		mana_hwc_destroy_cq(hwc->gdma_dev->gdma_context, hwc->cq);
->=20
->  	mana_gd_free_res_map(&hwc->inflight_msg_res);
->=20
->  	hwc->num_inflight_msg =3D 0;
->=20
-> -	if (hwc->gdma_dev->pdid !=3D INVALID_PDID) {
-> -		hwc->gdma_dev->doorbell =3D INVALID_DOORBELL;
-> -		hwc->gdma_dev->pdid =3D INVALID_PDID;
-> -	}
-> +	hwc->gdma_dev->doorbell =3D INVALID_DOORBELL;
-> +	hwc->gdma_dev->pdid =3D INVALID_PDID;
->=20
->  	kfree(hwc);
->  	gc->hwc.driver_data =3D NULL;
->  	gc->hwc.gdma_context =3D NULL;
+> +	if (!resuming) {
+> +		ac->num_ports =3D num_ports;
+> +	} else {
+> +		if (ac->num_ports !=3D num_ports) {
+> +			dev_err(dev, "The number of vPorts changed: %d->%d\n",
+> +				ac->num_ports, num_ports);
+> +			err =3D -EPROTO;
+> +			goto out;
+> +		}
+> +	}
 > +
-> +	vfree(gc->cq_table);
-> +	gc->cq_table =3D NULL;
->  }
+> +	if (ac->num_ports =3D=3D 0)
+> +		dev_err(dev, "Failed to detect any vPort\n");
+> +
+>  	if (ac->num_ports > MAX_PORTS_IN_MANA_DEV)
+>  		ac->num_ports =3D MAX_PORTS_IN_MANA_DEV;
 >=20
->  int mana_hwc_send_request(struct hw_channel_context *hwc, u32 req_len,
-> --
-> 2.17.1
+> -	for (i =3D 0; i < ac->num_ports; i++) {
+> -		err =3D mana_probe_port(ac, i, &ac->ports[i]);
+> -		if (err)
+> -			break;
+> +	if (!resuming) {
+> +		for (i =3D 0; i < ac->num_ports; i++) {
+> +			err =3D mana_probe_port(ac, i, &ac->ports[i]);
+> +			if (err)
+> +				break;
+> +		}
+> +	} else {
+> +		for (i =3D 0; i < ac->num_ports; i++) {
+> +			rtnl_lock();
+> +			err =3D mana_attach(ac->ports[i]);
+> +			rtnl_unlock();
+> +			if (err)
+> +				break;
+> +		}
+>  	}
+>  out:
+>  	if (err)
+> -		mana_remove(gd);
+> +		mana_remove(gd, false);
+
+The "goto out" can happen in both resuming true/false cases,
+should the error handling path deal with the two cases
+differently?
+
+
+Other parts look good.
 
 Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
+
+
+>=20
+>  	return err;
+>  }
+>=20
+> -void mana_remove(struct gdma_dev *gd)
+> +void mana_remove(struct gdma_dev *gd, bool suspending)
+>  {
+>  	struct gdma_context *gc =3D gd->gdma_context;
+>  	struct mana_context *ac =3D gd->driver_data;
+>  	struct device *dev =3D gc->dev;
+>  	struct net_device *ndev;
+> +	int err;
+>  	int i;
+>=20
+>  	for (i =3D 0; i < ac->num_ports; i++) {
+> @@ -1897,7 +1924,16 @@ void mana_remove(struct gdma_dev *gd)
+>  		 */
+>  		rtnl_lock();
+>=20
+> -		mana_detach(ndev, false);
+> +		err =3D mana_detach(ndev, false);
+> +		if (err)
+> +			netdev_err(ndev, "Failed to detach vPort %d: %d\n",
+> +				   i, err);
+> +
+> +		if (suspending) {
+> +			/* No need to unregister the ndev. */
+> +			rtnl_unlock();
+> +			continue;
+> +		}
+>=20
+>  		unregister_netdevice(ndev);
+>=20
+> @@ -1910,6 +1946,10 @@ void mana_remove(struct gdma_dev *gd)
+>=20
+>  out:
+>  	mana_gd_deregister_device(gd);
+> +
+> +	if (suspending)
+> +		return;
+> +
+>  	gd->driver_data =3D NULL;
+>  	gd->gdma_context =3D NULL;
+>  	kfree(ac);
+> --
+> 2.17.1
 
