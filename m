@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4830E4409AE
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 16:46:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53AFB4409B1
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 16:46:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231905AbhJ3Osv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 10:48:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54934 "EHLO
+        id S231939AbhJ3Osw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Oct 2021 10:48:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231902AbhJ3Oss (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Oct 2021 10:48:48 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE0FC061570;
-        Sat, 30 Oct 2021 07:46:18 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id ls14-20020a17090b350e00b001a00e2251c8so9422555pjb.4;
-        Sat, 30 Oct 2021 07:46:18 -0700 (PDT)
+        with ESMTP id S231902AbhJ3Osv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Oct 2021 10:48:51 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84BC6C061570;
+        Sat, 30 Oct 2021 07:46:21 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id n23so2102491pgh.8;
+        Sat, 30 Oct 2021 07:46:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=nJ1EclasUk2f68vdVW65qkPNJErhsVSoIUspEZQHebU=;
-        b=F7E3ggFKJ/Um+ROWaPfC8niBnCq054B5g+F/X+gU50VbmSntbdqqKtwwOGSm9f6RVK
-         w2arIUvH0pxiJtXo63kyGHxg8b0DUla3mZoXAAzhfbp3icWQaiDaePjCGI+ulpZVWTXL
-         VZlwqvxKBipPUIefdVG/jxi5zx/vNSIP8az1UqeMB4t0VFRVP9LGlqps2ZGi8R3CUNYV
-         i8eSOgEuAfTO5ZImZvSzSUg2al/3VSzDb6dKgfBJkleqlDluL6jNM1G0K8mz08O2FMJP
-         eSXs+6tzwgoaqGSpwMk/ygHWYh2gwHS4NCzw9OrgGiVKJt1DXmdzIPDg+GVKnqLqcvR9
-         xm6A==
+        bh=xzj3JZ3QmAJDLjL71cYc0mgBwKbbEBtcTkhduwsniY4=;
+        b=QgWMXhjZgbYg8KKCLL1ifUUlrIwboKm/cPFFPIgKg76uo54w8pOpHA2nngLrzqBVg6
+         Dj49AvfddsP1m0f6THSUWbRVieBaYV/NFIYs/Frgv+5dHeL0mcT2CU5VL2k3KULpv4ff
+         kZ3TnmOt/CtkBk63rBow/Ss/b6dGsgdOkBeqEZAP0/a8qJnkE0KZ7Us9w4ahVhMgWqBv
+         80HzEPRHj8V+tv14+2Av5nxnPUs5BHHwrfrdJlyWJgVBE7hA7+p8aBrCOMxsA4gw+HEM
+         QAKn3GxdvYBY+PlSeBTS3k3xG3Ph8cdhr5ghM2xHytMNmI4tVJAb6hjQrdyEipuQZWEa
+         73YA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=nJ1EclasUk2f68vdVW65qkPNJErhsVSoIUspEZQHebU=;
-        b=solSTp7rVa+XGRTgH3FkCUJnMJfr8l09GrVMPje7j3vksGLXEHDFXV2ryZ7E23ju+T
-         Vu29/chqB4zoSMwFyGdYvGl/uOWY4hyye3sJ/BnA+7Bkgl4DUy7kDW+Qy7bjD6t3jxmk
-         1XB536xpGX6gUlvKnXjwU/35ipsvD5BhrRlKBFyz2ys7CNDajoAMOTjmm5kFgfbB5Dro
-         nANXn2CSt6o0aYOP6Psf5cCwiLu6rRbCBe398eZzx5PnAVNT9B2iqkVfAmLUIu830QY1
-         h3erB/jI2W6UVmZmjWBEwQ53IIQSGXRLIBulqll1TW8oYcIB+gEVDpCDPNbl4RVLdb7J
-         a1kg==
-X-Gm-Message-State: AOAM532T6WSZNcq4TzXtI7dfNvptXPEUpWbdfXdSpJoisnTlftmOsFt1
-        gNaFoiCWdJKOOjF1Jt4XcBYXEmo2ScGbPg==
-X-Google-Smtp-Source: ABdhPJwWR4C1NsoJVzURbMsB/C2o38fUUgXUafnZOYXIL7Bz7F8winlYWXev1XptNYI/P2ITdQScfA==
-X-Received: by 2002:a17:90b:4f90:: with SMTP id qe16mr18922156pjb.137.1635605177690;
-        Sat, 30 Oct 2021 07:46:17 -0700 (PDT)
+        bh=xzj3JZ3QmAJDLjL71cYc0mgBwKbbEBtcTkhduwsniY4=;
+        b=uOB+ygd9tBcR0lIZtP73IgPL7M3hRgz2vxyX8e14u1PZGMdZhZkTDsXIt8EOw5yhTV
+         ipPbnaWIakyxvdbuVGHmFRtYigXI3sKP2aSucVxsn2+cHnxR9Ua+xuRVaMAtTGGG1c5A
+         18OgZSH/ID0Ypv0EOf+0Z0BpTNStV1Csm3+T9zptHR6oVbGxWffaxLHymJdH6dZ/0wfl
+         4plzQzwfgJWHBDIb7lzwYoROQADvYG4wsErtWHJ1r/GhUq23WhIoBaVxeWlMLaA1VjF7
+         /bfTBWWMXQvXbKtOFWOMO5SiAcz6T6NyRSxgIMfJ7cyBTqyyI2ZO2RwVlWE9pS7wqdK/
+         XRTw==
+X-Gm-Message-State: AOAM533r2iKWDAR3L6nl9xfe8xzjv4yQcGbuqGGMZTxGoBJP5hIvn6a1
+        jdIucRr9ltpfmva4iYWlxCxl4mPG5LbuKA==
+X-Google-Smtp-Source: ABdhPJwtKQX+80D6Jyv83Y21ScBFklAk7+6vYTJQWlvn1PpUqaiM6+qxca0BT8LqF9Edv069/xjV+A==
+X-Received: by 2002:a05:6a00:15d0:b0:47c:30f0:7fee with SMTP id o16-20020a056a0015d000b0047c30f07feemr17468047pfu.45.1635605180891;
+        Sat, 30 Oct 2021 07:46:20 -0700 (PDT)
 Received: from localhost ([2405:201:6014:d916:31fc:9e49:a605:b093])
-        by smtp.gmail.com with ESMTPSA id h18sm10683638pfh.144.2021.10.30.07.46.16
+        by smtp.gmail.com with ESMTPSA id a10sm8346767pgw.25.2021.10.30.07.46.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Oct 2021 07:46:17 -0700 (PDT)
+        Sat, 30 Oct 2021 07:46:20 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -60,128 +60,188 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
-Subject: [PATCH RFC bpf-next v1 2/6] bpf: Remove DEFINE_KFUNC_BTF_ID_SET
-Date:   Sat, 30 Oct 2021 20:16:05 +0530
-Message-Id: <20211030144609.263572-3-memxor@gmail.com>
+Subject: [PATCH RFC bpf-next v1 3/6] bpf: Extend kfunc with PTR_TO_CTX and PTR_TO_MEM arguments
+Date:   Sat, 30 Oct 2021 20:16:06 +0530
+Message-Id: <20211030144609.263572-4-memxor@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211030144609.263572-1-memxor@gmail.com>
 References: <20211030144609.263572-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3978; h=from:subject; bh=otcOzJv93xMLNCgi/x39IsdQ6Uq9NhaGk9P5BMFsBO8=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhfVoRulEVaqr3G55h6ST7Kf+6WfB0uaNTX6Jeka50 IiKv/FuJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYX1aEQAKCRBM4MiGSL8RyslOD/ wJXbnh1cKbCiinKKu4xdKN2bppQFvoaPmnLI1JyySf0jR2w+j1VY8gObLkoNcAzx7jBQstl6/alp1k OuEd9DljsAjDD4HcliHRq7dvN1PrucFu2BODiopKw6Ny5/XVR+VhwGjXfSBC8J9CAphAiWLs5eYd/4 f32aBHins7IBXzfzcqz8D2WM487zREmUJuVtw9+fPMRCoOZ0YTHDttAieYtpKgZIGi++QRnfnjF3GU Q+wCZJMCz5DPoVt0pdmvxYILEfVUEY2bjW3hXZt8+/5P8q7kvI3vBIu/m+Oa5s28CeOtvycgmA+MDd mWfqjpSWisyTyU4yjx40lgiQ+BcyPFwPJdhwC1cRSnleAq4pSnBL9Xs8hcGV+wuEtts+XjOmnp4M2q OPo9iMGxqkxRxVbTcGDt1v12D23+N2gteJF/M4L6sz9q6hd2Bxj+0NemjRjMOa0bmXpdVNnbmIKpDP 4qBE5joY9aIJca7dwRIGUJjcT0X0XBB/ZHzN2JcFRelV+o6HOgE+gO85+jNaLFqALH1BPeHUyeRvq0 GBvKpd5qhQtuGW7sRPy5tr4Cjiou72l0A64CCNc1oDf+E1Cjzn0NuObqCcluoS0tFefmdstFbudbxa eIHXfu3yobgLZFeV1vVzPrE+BiHjN05UvO9qzT+RQhrm1ylCEkkP5gr5i5oA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6340; h=from:subject; bh=oEvZsgMsBOncGMW6GqXX+B/HA0OEhUGGfzcrnVXiCiw=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhfVoR950gnubdX0pjB3YcqK48hN+VJjkMtRsZC2gI r8YhNqKJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYX1aEQAKCRBM4MiGSL8RyjxaD/ 44tZQDostolgebGDN0bNo0r4rlZR2wmTzWJANfpd02lFa9ylG4tr7X6aNepIyeE94tjyzNrbjsVPcW ZUyZLLcdFs/BYu1gIr0TzOlWu7wEOaa64k44L3dJeCqSjTIEcjYSPyGyJarUNkBnYxUN2wkWmyfY0c YTlWd/WfT4+bYYNaSK9a1E8zGisXOVb+8WJM43AN8RSFZtrNyJTBx7NDRPSiui3pPkXEyhHTsUTta/ eL+RjcoQn28NVoaUjSVXBo8EobdxqxmvvjFMn3mXSMgB0B8Ab72sl+QU+3jaAyevTX1ulTpDLeDRxU G6PnAiqL5w3aLStnO8QDD7ANtPS76pUZy/zBmqojBk274b4nJv6hJztTouQ5pCEOK03LbqzGTZehpN /Jk3ICuczazYu+d6UoAFtAuskvP/d8EDjV46F0m62M8+MyW6dt0bZPad2RjmuU1TwpL65ogXSogULi 6/Ea9038r/5Kc4XzZ/qBOlOjVDlVDLcAbv8LL75PcZ83K8B49wpsSPHVpi6S+nAk/+FR0nGiQOUgmV u9Vzdaga09Ur0jVK19GdUmkRjwH7DlfOO6aWDYr5EzSxKGgZH4pJCbg1tL1wQQO+TcyFyJBgVQNh4s DCw5h0toN+P3ME09OW2RAZs+BveoXnWKzSe6hKKfCmb9g2IzlA6SRYm30FNg==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The only reason to keep it was to initialize list head, but future
-commits will introduce more members that need to be set, which is more
-convenient to do using designated initializer.
+Allow passing PTR_TO_CTX, if the kfunc expects a matching struct type,
+and punt to ptr_to_mem block if reg->type does not fall in one BTF ID
+types. This will be used by future commits to get access to XDP and TC
+PTR_TO_CTX.
 
-Hence, remove the macro, convert users, and initialize list head inside
-register_kfunc_btf_id_set.
+Also add a btf_mod module parameter, so that the kfunc_id's owner module
+can be used in future commit adding reference tracking for
+PTR_TO_BTF_ID.
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- include/linux/btf.h                                   | 4 ----
- kernel/bpf/btf.c                                      | 1 +
- net/ipv4/tcp_bbr.c                                    | 5 ++++-
- net/ipv4/tcp_cubic.c                                  | 5 ++++-
- net/ipv4/tcp_dctcp.c                                  | 5 ++++-
- tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c | 5 ++++-
- 6 files changed, 17 insertions(+), 8 deletions(-)
+ include/linux/bpf.h   |  3 ++-
+ kernel/bpf/btf.c      | 61 +++++++++++++++++++++----------------------
+ kernel/bpf/verifier.c |  4 +--
+ 3 files changed, 34 insertions(+), 34 deletions(-)
 
-diff --git a/include/linux/btf.h b/include/linux/btf.h
-index 203eef993d76..1da108e35042 100644
---- a/include/linux/btf.h
-+++ b/include/linux/btf.h
-@@ -270,10 +270,6 @@ static inline bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist,
- }
- #endif
- 
--#define DEFINE_KFUNC_BTF_ID_SET(set, name)                                     \
--	struct kfunc_btf_id_set name = { LIST_HEAD_INIT(name.list), (set),     \
--					 THIS_MODULE }
--
- extern struct kfunc_btf_id_list bpf_tcp_ca_kfunc_list;
- extern struct kfunc_btf_id_list prog_test_kfunc_list;
- 
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 6deebf8bf78f..f8be80f748fc 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1665,7 +1665,8 @@ int btf_check_subprog_arg_match(struct bpf_verifier_env *env, int subprog,
+ 				struct bpf_reg_state *regs);
+ int btf_check_kfunc_arg_match(struct bpf_verifier_env *env,
+ 			      const struct btf *btf, u32 func_id,
+-			      struct bpf_reg_state *regs);
++			      struct bpf_reg_state *regs,
++			      struct module *btf_mod);
+ int btf_prepare_func_args(struct bpf_verifier_env *env, int subprog,
+ 			  struct bpf_reg_state *reg);
+ int btf_check_type_match(struct bpf_verifier_log *log, const struct bpf_prog *prog,
 diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index be1082270455..1773f91fff10 100644
+index 1773f91fff10..9099ef64b077 100644
 --- a/kernel/bpf/btf.c
 +++ b/kernel/bpf/btf.c
-@@ -6356,6 +6356,7 @@ struct kfunc_btf_id_list {
- void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
- 			       struct kfunc_btf_id_set *s)
+@@ -5566,7 +5566,8 @@ static u32 *reg2btf_ids[__BPF_REG_TYPE_MAX] = {
+ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
+ 				    const struct btf *btf, u32 func_id,
+ 				    struct bpf_reg_state *regs,
+-				    bool ptr_to_mem_ok)
++				    bool ptr_to_mem_ok,
++				    struct module *btf_mod)
  {
-+	INIT_LIST_HEAD(&s->list);
- 	mutex_lock(&l->mutex);
- 	list_add(&s->list, &l->list);
- 	mutex_unlock(&l->mutex);
-diff --git a/net/ipv4/tcp_bbr.c b/net/ipv4/tcp_bbr.c
-index ec5550089b4d..280dada5d1ae 100644
---- a/net/ipv4/tcp_bbr.c
-+++ b/net/ipv4/tcp_bbr.c
-@@ -1169,7 +1169,10 @@ BTF_ID(func, bbr_set_state)
- #endif
- BTF_SET_END(tcp_bbr_kfunc_ids)
+ 	struct bpf_verifier_log *log = &env->log;
+ 	const char *func_name, *ref_tname;
+@@ -5602,8 +5603,10 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
+ 	 * verifier sees.
+ 	 */
+ 	for (i = 0; i < nargs; i++) {
++		const struct btf_type *resolve_ret;
+ 		u32 regno = i + 1;
+ 		struct bpf_reg_state *reg = &regs[regno];
++		u32 type_size;
  
--static DEFINE_KFUNC_BTF_ID_SET(&tcp_bbr_kfunc_ids, tcp_bbr_kfunc_btf_set);
-+static struct kfunc_btf_id_set tcp_bbr_kfunc_btf_set = {
-+	.owner = THIS_MODULE,
-+	.set   = &tcp_bbr_kfunc_ids,
-+};
+ 		t = btf_type_skip_modifiers(btf, args[i].type, NULL);
+ 		if (btf_type_is_scalar(t)) {
+@@ -5621,19 +5624,25 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
  
- static int __init bbr_register(void)
+ 		ref_t = btf_type_skip_modifiers(btf, t->type, &ref_id);
+ 		ref_tname = btf_name_by_offset(btf, ref_t->name_off);
+-		if (btf_is_kernel(btf)) {
++		if (btf_get_prog_ctx_type(log, btf, t,
++					  env->prog->type, i)) {
++			/* If function expects ctx type in BTF check that caller
++			 * is passing PTR_TO_CTX.
++			 */
++			if (reg->type != PTR_TO_CTX) {
++				bpf_log(log,
++					"arg#%d expected pointer to ctx, but got %s\n",
++					i, btf_type_str(t));
++				return -EINVAL;
++			}
++			if (check_ctx_reg(env, reg, regno))
++				return -EINVAL;
++		} else if (btf_is_kernel(btf)) {
+ 			const struct btf_type *reg_ref_t;
+ 			const struct btf *reg_btf;
+ 			const char *reg_ref_tname;
+ 			u32 reg_ref_id;
+ 
+-			if (!btf_type_is_struct(ref_t)) {
+-				bpf_log(log, "kernel function %s args#%d pointer type %s %s is not supported\n",
+-					func_name, i, btf_type_str(ref_t),
+-					ref_tname);
+-				return -EINVAL;
+-			}
+-
+ 			if (reg->type == PTR_TO_BTF_ID) {
+ 				reg_btf = reg->btf;
+ 				reg_ref_id = reg->btf_id;
+@@ -5641,9 +5650,13 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
+ 				reg_btf = btf_vmlinux;
+ 				reg_ref_id = *reg2btf_ids[reg->type];
+ 			} else {
+-				bpf_log(log, "kernel function %s args#%d expected pointer to %s %s but R%d is not a pointer to btf_id\n",
+-					func_name, i,
+-					btf_type_str(ref_t), ref_tname, regno);
++				goto ptr_to_mem;
++			}
++
++			if (!btf_type_is_struct(ref_t)) {
++				bpf_log(log, "kernel function %s args#%d pointer type %s %s is not supported\n",
++					func_name, i, btf_type_str(ref_t),
++					ref_tname);
+ 				return -EINVAL;
+ 			}
+ 
+@@ -5660,23 +5673,8 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
+ 					reg_ref_tname);
+ 				return -EINVAL;
+ 			}
+-		} else if (btf_get_prog_ctx_type(log, btf, t,
+-						 env->prog->type, i)) {
+-			/* If function expects ctx type in BTF check that caller
+-			 * is passing PTR_TO_CTX.
+-			 */
+-			if (reg->type != PTR_TO_CTX) {
+-				bpf_log(log,
+-					"arg#%d expected pointer to ctx, but got %s\n",
+-					i, btf_type_str(t));
+-				return -EINVAL;
+-			}
+-			if (check_ctx_reg(env, reg, regno))
+-				return -EINVAL;
+ 		} else if (ptr_to_mem_ok) {
+-			const struct btf_type *resolve_ret;
+-			u32 type_size;
+-
++ptr_to_mem:
+ 			resolve_ret = btf_resolve_size(btf, ref_t, &type_size);
+ 			if (IS_ERR(resolve_ret)) {
+ 				bpf_log(log,
+@@ -5723,7 +5721,7 @@ int btf_check_subprog_arg_match(struct bpf_verifier_env *env, int subprog,
+ 		return -EINVAL;
+ 
+ 	is_global = prog->aux->func_info_aux[subprog].linkage == BTF_FUNC_GLOBAL;
+-	err = btf_check_func_arg_match(env, btf, btf_id, regs, is_global);
++	err = btf_check_func_arg_match(env, btf, btf_id, regs, is_global, NULL);
+ 
+ 	/* Compiler optimizations can remove arguments from static functions
+ 	 * or mismatched type can be passed into a global function.
+@@ -5736,9 +5734,10 @@ int btf_check_subprog_arg_match(struct bpf_verifier_env *env, int subprog,
+ 
+ int btf_check_kfunc_arg_match(struct bpf_verifier_env *env,
+ 			      const struct btf *btf, u32 func_id,
+-			      struct bpf_reg_state *regs)
++			      struct bpf_reg_state *regs,
++			      struct module *btf_mod)
  {
-diff --git a/net/ipv4/tcp_cubic.c b/net/ipv4/tcp_cubic.c
-index 5e9d9c51164c..70384a8040c5 100644
---- a/net/ipv4/tcp_cubic.c
-+++ b/net/ipv4/tcp_cubic.c
-@@ -497,7 +497,10 @@ BTF_ID(func, cubictcp_acked)
- #endif
- BTF_SET_END(tcp_cubic_kfunc_ids)
+-	return btf_check_func_arg_match(env, btf, func_id, regs, false);
++	return btf_check_func_arg_match(env, btf, func_id, regs, false, btf_mod);
+ }
  
--static DEFINE_KFUNC_BTF_ID_SET(&tcp_cubic_kfunc_ids, tcp_cubic_kfunc_btf_set);
-+static struct kfunc_btf_id_set tcp_cubic_kfunc_btf_set = {
-+	.owner = THIS_MODULE,
-+	.set   = &tcp_cubic_kfunc_ids,
-+};
+ /* Convert BTF of a function into bpf_reg_state if possible
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 3c8aa7df1773..ca4627f81b75 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -6713,8 +6713,8 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn)
+ 	}
  
- static int __init cubictcp_register(void)
- {
-diff --git a/net/ipv4/tcp_dctcp.c b/net/ipv4/tcp_dctcp.c
-index 0d7ab3cc7b61..ac2a47eb89d8 100644
---- a/net/ipv4/tcp_dctcp.c
-+++ b/net/ipv4/tcp_dctcp.c
-@@ -251,7 +251,10 @@ BTF_ID(func, dctcp_state)
- #endif
- BTF_SET_END(tcp_dctcp_kfunc_ids)
+ 	/* Check the arguments */
+-	err = btf_check_kfunc_arg_match(env, desc_btf, func_id, regs);
+-	if (err)
++	err = btf_check_kfunc_arg_match(env, desc_btf, func_id, regs, btf_mod);
++	if (err < 0)
+ 		return err;
  
--static DEFINE_KFUNC_BTF_ID_SET(&tcp_dctcp_kfunc_ids, tcp_dctcp_kfunc_btf_set);
-+static struct kfunc_btf_id_set tcp_dctcp_kfunc_btf_set = {
-+	.owner = THIS_MODULE,
-+	.set   = &tcp_dctcp_kfunc_ids,
-+};
- 
- static int __init dctcp_register(void)
- {
-diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
-index 5d52ea2768df..a437086e1860 100644
---- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
-+++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
-@@ -93,7 +93,10 @@ BTF_SET_START(bpf_testmod_kfunc_ids)
- BTF_ID(func, bpf_testmod_test_mod_kfunc)
- BTF_SET_END(bpf_testmod_kfunc_ids)
- 
--static DEFINE_KFUNC_BTF_ID_SET(&bpf_testmod_kfunc_ids, bpf_testmod_kfunc_btf_set);
-+static struct kfunc_btf_id_set bpf_testmod_kfunc_btf_set = {
-+	.owner = THIS_MODULE,
-+	.set   = &bpf_testmod_kfunc_ids,
-+};
- 
- static int bpf_testmod_init(void)
- {
+ 	for (i = 0; i < CALLER_SAVED_REGS; i++)
 -- 
 2.33.1
 
