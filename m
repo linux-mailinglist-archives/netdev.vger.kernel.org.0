@@ -2,98 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA68F4406A3
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 03:15:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26FAB4406AA
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 03:24:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229829AbhJ3BRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 21:17:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49986 "EHLO
+        id S229836AbhJ3B0e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 21:26:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229656AbhJ3BRv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 21:17:51 -0400
-Received: from mail-ua1-x932.google.com (mail-ua1-x932.google.com [IPv6:2607:f8b0:4864:20::932])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF83DC061570
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 18:15:21 -0700 (PDT)
-Received: by mail-ua1-x932.google.com with SMTP id e2so21306880uax.7
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 18:15:21 -0700 (PDT)
+        with ESMTP id S229656AbhJ3B0d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 21:26:33 -0400
+Received: from mail-vk1-xa2c.google.com (mail-vk1-xa2c.google.com [IPv6:2607:f8b0:4864:20::a2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CDE4C061570
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 18:24:04 -0700 (PDT)
+Received: by mail-vk1-xa2c.google.com with SMTP id g18so69564vkg.6
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 18:24:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=QtE1gN6cjPAeZH9G/XY5cFoN/mhotk4pl2GQpQOelUQ=;
-        b=EIcgFFNfnUbVABuDne8JNO/2vXMSp7LHTF+cuTTskgY1EZ4oCH5dS/nLvcVm9i5Pxq
-         il0x2Qq8crgwF3YQgv+ZKBHiSkq2Fvz5e6VyIUkDXLO5axpsOZQdwFGc5Sga6phd34EK
-         aL5NjNH6dhXqU9cuq2LmD9hnBJvCfPjUnRiMBJUq9079lg+N1jgFio01prLGqKu4Pghx
-         5My1+482IlBIn+1en2FTZd2fGPnvnBNIn0sPIJASRkAnG40y/y8bQPoxVR3W8+VoWzeh
-         wUnKpIbMSw5jFSCGGR8cohJ9iiJGRR3mR+om9AAqo/8tCujZqiBVh39ll4HjS1huGIIB
-         1CzA==
+        bh=0S57ZF6WVRB7//Y6tPEsvLdvXexwUpCl4bhOPVRy37k=;
+        b=M/S26d3uCFQeim/LKhiT3ELf4tAQk8oegQ2dKItoAMHkOBFAPOb4DXEeYeo4H8HmmU
+         HS2ZN+Ni8SuqwXyjZgYusu2axed3DiwHQAP/tiTNFwO0cboj7aUzQS075lX5hteTtZoH
+         Jis9njFg3fpHzbDjPt0oNC7X3dZaozTuUkk7FPaoF+tNfJOzrk/JlsiDt1CaOu4y4rRO
+         MSqhxgFhDQEvscG41hdoXGI7prpUxxIC3yVDRypZtIS3hpcJhjlJRRjWB54l0/QyRcMM
+         Q0lsNBN5sVn4TJfXgr5IVp6mRYVcenttvm2Z/Tx3s0ui4ixWZW4jtz4058QeeWIZCPFL
+         I9RQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=QtE1gN6cjPAeZH9G/XY5cFoN/mhotk4pl2GQpQOelUQ=;
-        b=mareZ92E0GcPCSI3xUJJ6lWMJYcAg7+jscgyqpiWk+NZ0/MXNGHgl3RoEMqWBghk9i
-         Aa/mpj3vahgAWCJgStPgf4YOhQDp2tXSv0b9HLpgmYLvshBjbpjJpwQKKKn3vipBombe
-         9UUGSEjFVjkdWu/L0MNkMOb1tEPqeHeHRWpcXlPdlcsUCPuGS2DtwdEPMSrs5khHMtb/
-         yh/+aX0JkJnO4mNPWXnUN6qWpSaaHNj3hrTmaE6iT4t1w3gu3UC2jVQ/FmMZPHXcKpyP
-         qXJCxZZ0tVq8fjQfPOVsW9qpOvqecAgKNcf7oH0jrm1QnG80GkRFezGDV1ThG6z9WN6x
-         5R1g==
-X-Gm-Message-State: AOAM533ZmU3Sgz/glAtZrkFqeQuk1OK8CsPOhTimvJfTJFvwvGlagjmU
-        6n0ZM0oO7g4Y3ivLs497+f2Vqslm3iY=
-X-Google-Smtp-Source: ABdhPJz33jnJt9Y85PLilIc/HMkIAFEx95zdQx4Lvtv0TvKot8lKm5Wr/K0/Bhp/QjC8PIOukt9Kng==
-X-Received: by 2002:a67:ec8f:: with SMTP id h15mr9791674vsp.42.1635556520967;
-        Fri, 29 Oct 2021 18:15:20 -0700 (PDT)
-Received: from mail-ua1-f53.google.com (mail-ua1-f53.google.com. [209.85.222.53])
-        by smtp.gmail.com with ESMTPSA id g131sm1172008vke.32.2021.10.29.18.15.20
+        bh=0S57ZF6WVRB7//Y6tPEsvLdvXexwUpCl4bhOPVRy37k=;
+        b=zJz8JIuA7Sh9tBCSyyUlhRl4sxuUFzxKravGNbkkqKRx6EWEC5e5Odkd0eGZfJzmYq
+         Mx3b2zP/Ibe3zcN3K326W3jnAzbLf53LP5/nXO4M5DhZJzvzqiXXBfI5tx9oFqTNN3BE
+         bNHsobmuEWr3aBfPjGiT8a6kaq2+shuVhrZO3RMpzcdq7icKQ4pgPjAu19Y1gp+w2Ui1
+         Hn97/Qn4XwOcpX01ekenBSv6VtHPUcp8Qe6FuOJjHPcFO+hWf70D/Mwzbs+5Nv1+os08
+         l/1vIQ9pIhPecmSKMXqV33iXzG9pDYNLb8JmxlBCN9g7//rh96OwgzYGGCtZqUioU6mH
+         SOIg==
+X-Gm-Message-State: AOAM5313ZRLm+AL9OQ7Tib98UeVqMbt86AZOCZIRl1YmVlE6HAAcNr4z
+        AU47sSJZPBB00EZZosDPhIi1qGILU5s=
+X-Google-Smtp-Source: ABdhPJzRCltJIqLzFpUdeRiVzjw4CqBLenSCh7zfmJaeZs9pOU9zYpEfVD5/WsqIx9nqUtzMU+qnBw==
+X-Received: by 2002:a05:6122:513:: with SMTP id x19mr12238986vko.18.1635557043784;
+        Fri, 29 Oct 2021 18:24:03 -0700 (PDT)
+Received: from mail-vk1-f180.google.com (mail-vk1-f180.google.com. [209.85.221.180])
+        by smtp.gmail.com with ESMTPSA id m25sm585132vsl.17.2021.10.29.18.24.03
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Oct 2021 18:15:20 -0700 (PDT)
-Received: by mail-ua1-f53.google.com with SMTP id i6so7113270uae.6
-        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 18:15:20 -0700 (PDT)
-X-Received: by 2002:ab0:15a1:: with SMTP id i30mr4692165uae.122.1635556520211;
- Fri, 29 Oct 2021 18:15:20 -0700 (PDT)
+        Fri, 29 Oct 2021 18:24:03 -0700 (PDT)
+Received: by mail-vk1-f180.google.com with SMTP id b125so4602198vkb.9
+        for <netdev@vger.kernel.org>; Fri, 29 Oct 2021 18:24:03 -0700 (PDT)
+X-Received: by 2002:ac5:c5ad:: with SMTP id f13mr16761405vkl.1.1635557043006;
+ Fri, 29 Oct 2021 18:24:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211029155135.468098-1-kuba@kernel.org> <20211029155135.468098-3-kuba@kernel.org>
- <9ec9011a-d240-e00a-38e2-51f8e2661a3d@gmail.com>
-In-Reply-To: <9ec9011a-d240-e00a-38e2-51f8e2661a3d@gmail.com>
+References: <20211029155135.468098-1-kuba@kernel.org> <20211029155135.468098-2-kuba@kernel.org>
+ <ff189fbe-7b72-44ec-266e-1613930fb8cf@gmail.com>
+In-Reply-To: <ff189fbe-7b72-44ec-266e-1613930fb8cf@gmail.com>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 29 Oct 2021 21:14:43 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSfW04yz42DtnJJZCBZmSjYygFP6_KmorKDYi73Y9Jh-=w@mail.gmail.com>
-Message-ID: <CA+FuTSfW04yz42DtnJJZCBZmSjYygFP6_KmorKDYi73Y9Jh-=w@mail.gmail.com>
-Subject: Re: [PATCH net 2/2] selftests: udp: test for passing SO_MARK as cmsg
+Date:   Fri, 29 Oct 2021 21:23:26 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSf_W3JOk+FTb6x8Y+R8GoejdZgsjxrQAK75fzwm+x0B5Q@mail.gmail.com>
+Message-ID: <CA+FuTSf_W3JOk+FTb6x8Y+R8GoejdZgsjxrQAK75fzwm+x0B5Q@mail.gmail.com>
+Subject: Re: [PATCH net 1/2] udp6: allow SO_MARK ctrl msg to affect routing
 To:     David Ahern <dsahern@gmail.com>
 Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
         netdev@vger.kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, shuah@kernel.org,
-        linux-kselftest@vger.kernel.org
+        dsahern@kernel.org, Xintong Hu <huxintong@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 29, 2021 at 2:24 PM David Ahern <dsahern@gmail.com> wrote:
+On Fri, Oct 29, 2021 at 2:22 PM David Ahern <dsahern@gmail.com> wrote:
 >
 > On 10/29/21 9:51 AM, Jakub Kicinski wrote:
-> > Before fix:
-> > |  Case IPv6 rejection returned 0, expected 1
-> > |FAIL - 1/4 cases failed
+> > Commit c6af0c227a22 ("ip: support SO_MARK cmsg")
+> > added propagation of SO_MARK from cmsg to skb->mark.
+> > For IPv4 and raw sockets the mark also affects route
+> > lookup, but in case of IPv6 the flow info is
+> > initialized before cmsg is parsed.
 > >
-> > With the fix:
-> > | OK
-> >
+> > Fixes: c6af0c227a22 ("ip: support SO_MARK cmsg")
+> > Reported-and-tested-by: Xintong Hu <huxintong@fb.com>
 > > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> > --
-> > CC: shuah@kernel.org
-> > CC: linux-kselftest@vger.kernel.org
 > > ---
-> >  tools/testing/selftests/net/.gitignore      |  1 +
-> >  tools/testing/selftests/net/Makefile        |  2 +
-> >  tools/testing/selftests/net/cmsg_so_mark.c  | 67 +++++++++++++++++++++
-> >  tools/testing/selftests/net/cmsg_so_mark.sh | 61 +++++++++++++++++++
-> >  4 files changed, 131 insertions(+)
-> >  create mode 100644 tools/testing/selftests/net/cmsg_so_mark.c
-> >  create mode 100755 tools/testing/selftests/net/cmsg_so_mark.sh
+> >  net/ipv6/udp.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
 > >
+>
 > Reviewed-by: David Ahern <dsahern@kernel.org>
 
 Reviewed-by: Willem de Bruijn <willemb@google.com>
+
+Thanks!
