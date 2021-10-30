@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6762440AE0
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 20:04:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C876440AE5
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 20:06:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230245AbhJ3SH2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 14:07:28 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:39596 "EHLO vps0.lunn.ch"
+        id S230169AbhJ3SJE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Oct 2021 14:09:04 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:39646 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229474AbhJ3SH1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 Oct 2021 14:07:27 -0400
+        id S229474AbhJ3SJD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Oct 2021 14:09:03 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=frQo4/Vd2v5L/DwlATBoTIoO3QyDedVn1jJwLc9O8F0=; b=wZpkFVbZxBOYZkzpb3V0qfnWLg
-        8mFzTdA1UqPtF60Nfk9+iNZ+iQzuu+T28bFwrP2Au3WQ7G8m4I4ds42RaHoUTKfs2OwtJ8RfP/Fst
-        Jj9/fu/Bst20wmljN2+Cj289kCm5oK9YbnypASH+kl003HTJOEE+i42miNtf1PWO4VO4=;
+        bh=Mbi+N4JCINGOU2rjcKHc60MWlv4IX9XG/n6qKqPywPQ=; b=gQc7Wp4tLHiZ7BHXj1GzPxqnJj
+        Hp8AirOAhETNOSunOg0L4HqeeGEKtdrs9KTyS0saKunvEkuHi7716FPs6ZpzPuxEyI5QPCRugUL6S
+        easf5o8/xBKSk0ccEXuu23dKLsfm9zCXXbgDYNpGzBrPWSPdBWUvyDIFdtwTJe87pavo=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1mgsiL-00CBsJ-Co; Sat, 30 Oct 2021 20:04:21 +0200
-Date:   Sat, 30 Oct 2021 20:04:21 +0200
+        id 1mgsju-00CBtO-W9; Sat, 30 Oct 2021 20:05:58 +0200
+Date:   Sat, 30 Oct 2021 20:05:58 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Guangbin Huang <huangguangbin2@huawei.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, mkubecek@suse.cz,
@@ -40,45 +40,47 @@ Cc:     davem@davemloft.net, kuba@kernel.org, mkubecek@suse.cz,
         gor@linux.ibm.com, johannes@sipsolutions.net,
         netdev@vger.kernel.org, lipeng321@huawei.com,
         chenhao288@hisilicon.com, linux-s390@vger.kernel.org
-Subject: Re: [PATCH V5 net-next 5/6] net: hns3: add support to set/get rx buf
- len via ethtool for hns3 driver
-Message-ID: <YX2JJSQBRFjhmQsx@lunn.ch>
+Subject: Re: [PATCH V5 net-next 6/6] net: hns3: remove the way to set tx
+ spare buf via module parameter
+Message-ID: <YX2JhqOTKOiB/EPO@lunn.ch>
 References: <20211030131001.38739-1-huangguangbin2@huawei.com>
- <20211030131001.38739-6-huangguangbin2@huawei.com>
+ <20211030131001.38739-7-huangguangbin2@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211030131001.38739-6-huangguangbin2@huawei.com>
+In-Reply-To: <20211030131001.38739-7-huangguangbin2@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->  static int hns3_check_ringparam(struct net_device *ndev,
-> -				struct ethtool_ringparam *param)
-> +				struct ethtool_ringparam *param,
-> +				struct kernel_ethtool_ringparam *kernel_param)
->  {
-> +#define RX_BUF_LEN_2K 2048
-> +#define RX_BUF_LEN_4K 4096
-
-include/linux/size.h
-
-#define SZ_2K                           0x00000800
-#define SZ_4K                           0x00001000
-
-
->  	if (hns3_nic_resetting(ndev))
->  		return -EBUSY;
+On Sat, Oct 30, 2021 at 09:10:01PM +0800, Guangbin Huang wrote:
+> From: Hao Chen <chenhao288@hisilicon.com>
+> 
+> The way to set tx spare buf via module parameter is not such
+> convenient as the way to set it via ethtool.
+> 
+> So,remove the way to set tx spare buf via module parameter.
+> 
+> Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+> ---
+>  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 7 +------
+>  1 file changed, 1 insertion(+), 6 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> index 076631d7727d..032547a2ad2f 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> @@ -53,10 +53,6 @@ static int debug = -1;
+>  module_param(debug, int, 0);
+>  MODULE_PARM_DESC(debug, " Network interface message level setting");
 >  
->  	if (param->rx_mini_pending || param->rx_jumbo_pending)
->  		return -EINVAL;
->  
-> +	if (kernel_param->rx_buf_len != RX_BUF_LEN_2K &&
-> +	    kernel_param->rx_buf_len != RX_BUF_LEN_4K) {
-> +		netdev_err(ndev, "Rx buf len only support 2048 and 4096\n");
-> +		return -EINVAL;
+> -static unsigned int tx_spare_buf_size;
+> -module_param(tx_spare_buf_size, uint, 0400);
+> -MODULE_PARM_DESC(tx_spare_buf_size, "Size used to allocate tx spare buffer");
+> -
 
-Same question i asked in the cover note. MTU is 4K, i set rx buf len
-to 2K. What happens? Should there be an EINVAL here?
+This might be considered ABI. By removing it, are you breaking users
+setup?
 
-   Andrew
+	Andrew
