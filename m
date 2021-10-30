@@ -2,72 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15BDB44077A
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 06:40:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E6EA44077B
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 06:40:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231693AbhJ3Emj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 00:42:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42776 "EHLO mail.kernel.org"
+        id S231700AbhJ3Emo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Oct 2021 00:42:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42788 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229606AbhJ3Emh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231664AbhJ3Emh (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 30 Oct 2021 00:42:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0EEF360FC3;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 2423D6103E;
         Sat, 30 Oct 2021 04:40:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1635568808;
-        bh=5HkOSW6rV2rfP532gcX9f3XngSUfFX4caP7tMejWG9s=;
+        bh=ME15JTBtRhbmY8byg9sHjWHJBuhLgAMtuU7FGSHaVyE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=udJ8Brnqbuy6R1Z2RJCXZ/bVOLxWDNIUrQj8M7OkzdGLY7o9t6T160rHD7wnhOP16
-         dvZ2lGsCOoK5x+JHLEMY2mvZo1BuKlmFfgCuB19YqLwcU1ANU3qKjkAJK/fMawMSt8
-         QPIFWkYGDMGHu76E4bzOY5nJ+EKA+hAhvoZ4A7dZG5sKHgUhZFC1abRiZkhdQ7eQw6
-         fepumGUxUmXa6DogSHJnnoCXeTYHSrSlCHGR9hYzmJsiFyvcNIm5cY+fO3VSqnmvX6
-         Ci4Imtt4sMJx+Lu3bpzaPgErCY58R6q2gDhQ7kumwU4N0KOaGq8x8X/TQ2Zxjb3Yae
-         EBBxUI7RrrkYw==
+        b=rQJfIq9TKR855JZDF6cCgDMzMqneiYP2ESwz6kmpuVHyrFNDFV7B716PriAy0mQsV
+         udxzfQ0ORe4U6PDU9U7zCO/Bmb1we1KlC7m4l2JELPxFYqsTrU0MWv7Op82Lij2kxH
+         9TMkb0r0CB7sxu0rdYuoMEIPo2xleeBmj4CqqQ2P6LmYZYnteSizS770SdrQjal6VP
+         M6m7BsLPceuOKTLppbZckNvbLzCkbs8NEyvIfUWiPeWGw58pDYQ1EKDrcHn0hIrMhZ
+         z0Spx/7t4aBqd74MD4x3AyUjYpHZp/5HlQjUVffP1mgwum28NJeCeU53Gk4IDbt5Gj
+         WhFg9SGxMvmQA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E961460A5A;
-        Sat, 30 Oct 2021 04:40:07 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0163C60A47;
+        Sat, 30 Oct 2021 04:40:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3][pull request] 1GbE Intel Wired LAN Driver
- Updates 2021-10-29
+Subject: Re: [PATCH net-next] net: bridge: switchdev: fix shim definition for
+ br_switchdev_mdb_notify
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163556880795.10957.14745592686010390047.git-patchwork-notify@kernel.org>
-Date:   Sat, 30 Oct 2021 04:40:07 +0000
-References: <20211029174101.2970935-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20211029174101.2970935-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sasha.neftin@intel.com, vitaly.lifshits@intel.com
+Message-Id: <163556880800.10957.12949174206170467469.git-patchwork-notify@kernel.org>
+Date:   Sat, 30 Oct 2021 04:40:08 +0000
+References: <20211029223606.3450523-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20211029223606.3450523-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, roopa@nvidia.com,
+        nikolay@nvidia.com, jiri@nvidia.com, idosch@nvidia.com,
+        kuba@kernel.org, lkp@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-On Fri, 29 Oct 2021 10:40:58 -0700 you wrote:
-> This series contains updates to igc driver only.
+On Sat, 30 Oct 2021 01:36:06 +0300 you wrote:
+> br_switchdev_mdb_notify() is conditionally compiled only when
+> CONFIG_NET_SWITCHDEV=y and CONFIG_BRIDGE_IGMP_SNOOPING=y. It is called
+> from br_mdb.c, which is conditionally compiled only when
+> CONFIG_BRIDGE_IGMP_SNOOPING=y.
 > 
-> Sasha removes an unnecessary media type check, adds a new device ID, and
-> changes a device reset to a port reset command.
-> 
-> The following are changes since commit 28131d896d6d316bc1f6f305d1a9ed6d96c3f2a1:
->   Merge tag 'wireless-drivers-next-2021-10-29' of git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next
-> and are available in the git repository at:
->   git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 1GbE
+> The shim definition of br_switchdev_mdb_notify() is therefore needed for
+> the case where CONFIG_NET_SWITCHDEV=n, however we mistakenly put it
+> there for the case where CONFIG_BRIDGE_IGMP_SNOOPING=n. This results in
+> build failures when CONFIG_BRIDGE_IGMP_SNOOPING=y and
+> CONFIG_NET_SWITCHDEV=n.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/3] igc: Remove media type checking on the PHY initialization
-    https://git.kernel.org/netdev/net-next/c/8643d0b6b367
-  - [net-next,2/3] igc: Add new device ID
-    https://git.kernel.org/netdev/net-next/c/8f20571db527
-  - [net-next,3/3] igc: Change Device Reset to Port Reset
-    https://git.kernel.org/netdev/net-next/c/e377a063e2c2
+  - [net-next] net: bridge: switchdev: fix shim definition for br_switchdev_mdb_notify
+    https://git.kernel.org/netdev/net-next/c/ae0393500e3b
 
 You are awesome, thank you!
 -- 
