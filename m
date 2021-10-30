@@ -2,86 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1D8C440B96
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 22:07:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA0C9440B9C
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 22:21:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231278AbhJ3UJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 16:09:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39604 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231142AbhJ3UJx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Oct 2021 16:09:53 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C70E0C061570
-        for <netdev@vger.kernel.org>; Sat, 30 Oct 2021 13:07:22 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id r28so13352723pga.0
-        for <netdev@vger.kernel.org>; Sat, 30 Oct 2021 13:07:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Cyc43r8GdPRIRNRzw0no3zbXsiEelKCLzckzNGDsC6s=;
-        b=b82oDSTzxfv98G672X0/DEzxrahh5Mz/q3bRp6zpJaskF3JiguWUYKdAMpmDihTZqi
-         k/emgjqMl9bbCjn93a5OoB92FemMiqhis6t4Me94ssuoIuBuvphYARMkxGhTEs4STc8B
-         7pQTnl/GnPMo6aA+c6cU8KdZ2H3zZyGxAppFMtcdCT7oQF8QUlZ1WuvmyOkHsBZ3Ko+h
-         3rxZcBVB+HKyGXqJX853j/rzqEv6wl28Aw65iCZfJBwGDo+m5cnSome5PfQgDybVKmZB
-         32ByL0nDZJHwDi1H/2Qsz3akZQyVwihjaxBL3jDRJ2e5tfv/Qs1p49r8NLqVAoUBynAt
-         5yyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Cyc43r8GdPRIRNRzw0no3zbXsiEelKCLzckzNGDsC6s=;
-        b=Lu9rW4HBP2LnHPHy+3kiSnLB0MP1DRcZqFt/kupn24lYl0EG+jH61BBrLflocUkpwV
-         ycQZ4SqMHu4YaiCDKXkPmGyxUx0tF3ob7CoN8Rj8pBXb5JX+iLe4TOVUDWdofaNxLKj0
-         gJQ2mxxriOQNzCLLIibLICMFddL9ZaWbXACqHHaivfbbnma1f7+hudraM5luEQbhEXpy
-         2oYWtkejNuBxu3OX2TLHX5CbI87ZfROZwjG5i3dyBLOja/KEl2ZYa7K0HpraP0B9Pf5d
-         ZX7bEo+efY8FwiWzRWX3zqHcnSyJC8lia13iRmm+ImeUvzit/VCZEN42Hv5QMDh7QoZN
-         3Akw==
-X-Gm-Message-State: AOAM533cJbs8v0my9KXdR24u6w2kwgz1/HgHacUGegXBZGFGOTlXVw4u
-        2lo1CHecQaYcHwVQCxwm0sY7Bg==
-X-Google-Smtp-Source: ABdhPJw1+SO+sO4sXJozBZNr5KL4BvxlQY4xSjZVKQGmgSAXJ5bN1iMCPtgRGu6CS7IXrqyZY6sptw==
-X-Received: by 2002:a63:348d:: with SMTP id b135mr14129383pga.87.1635624441806;
-        Sat, 30 Oct 2021 13:07:21 -0700 (PDT)
-Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
-        by smtp.gmail.com with ESMTPSA id ne7sm5039241pjb.36.2021.10.30.13.07.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Oct 2021 13:07:21 -0700 (PDT)
-Date:   Sat, 30 Oct 2021 13:07:18 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Dexuan Cui <decui@microsoft.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, gustavoars@kernel.org,
-        haiyangz@microsoft.com, netdev@vger.kernel.org, kys@microsoft.com,
-        wei.liu@kernel.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, shacharr@microsoft.com,
-        paulros@microsoft.com, olaf@aepfle.de, vkuznets@redhat.com
-Subject: Re: [PATCH net-next 1/4] net: mana: Fix the netdev_err()'s vPort
- argument in mana_init_port()
-Message-ID: <20211030130718.3471728c@hermes.local>
-In-Reply-To: <20211030005408.13932-2-decui@microsoft.com>
-References: <20211030005408.13932-1-decui@microsoft.com>
-        <20211030005408.13932-2-decui@microsoft.com>
+        id S230470AbhJ3UXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Oct 2021 16:23:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36026 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229782AbhJ3UXg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Oct 2021 16:23:36 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 567CB60F02;
+        Sat, 30 Oct 2021 20:21:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635625265;
+        bh=3c8OLt25LcrKcRxs6A52GMOlDaUrbdKXbNNNRakXibE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=QQSX6+5OY2jIA2u+NRwukHxePNc8ec6L70Cm7ZUJ4MtG0/cV5/V3P196YFQbCuT19
+         GWnx0/jSC6C/UbmtRnpw0Db08tv+oEwYkzGyxT4r008Y412fxzUXUw+/B5MvUdQeuy
+         VRDGoCclPdn4vJRIwOW8a0Q68LTA6IDdJv5WKtvJLb7dKd0kCD+f9UfvZSXizFFOyq
+         eBR8A73v2Xmm9SiS3IRWVhdvlh9EF87pk8evaKUyUoBop3tNy+FOHdQUv/ZoYB+Oix
+         dSHy5GbaGVMS+Wd7zlwqwcnu8fdjjqeSoJ/pdwPTAPI3qZP3Y9k1w2IipzMi1RyPkK
+         6RNlTTWnyFYaQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 0/5] netdevsim: improve separation between device and bus
+Date:   Sat, 30 Oct 2021 13:20:57 -0700
+Message-Id: <20211030202102.2157622-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 29 Oct 2021 17:54:05 -0700
-Dexuan Cui <decui@microsoft.com> wrote:
+VF config falls strangely in between device and bus
+responsibilities today. Because of this bus.c sticks fingers
+directly into struct nsim_dev and we look at nsim_bus_dev
+in many more places than necessary.
 
-> diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
-> index 1417d1e72b7b..4ff5a1fc506f 100644
-> --- a/drivers/net/ethernet/microsoft/mana/mana_en.c
-> +++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
-> @@ -1599,7 +1599,8 @@ static int mana_init_port(struct net_device *ndev)
->  	err = mana_query_vport_cfg(apc, port_idx, &max_txq, &max_rxq,
->  				   &num_indirect_entries);
->  	if (err) {
-> -		netdev_err(ndev, "Failed to query info for vPort 0\n");
-> +		netdev_err(ndev, "Failed to query info for vPort %d\n",
-> +			   port_idx);
+Make bus.c contain pure interface code, and move
+the particulars of the logic (which touch on eswitch,
+devlink reloads etc) to dev.c. Rename the functions
+at the boundary of the interface to make the separation
+clearer.
 
-Shouldn't port_idx have been unsigned or u16?
-It is u16 in mana_port_context.
+Jakub Kicinski (5):
+  netdevsim: take rtnl_lock when assigning num_vfs
+  netdevsim: move vfconfig to nsim_dev
+  netdevsim: move details of vf config to dev
+  netdevsim: move max vf config to dev
+  netdevsim: rename 'driver' entry points
+
+ drivers/net/netdevsim/bus.c       | 155 ++-----------------------
+ drivers/net/netdevsim/dev.c       | 181 ++++++++++++++++++++++++++----
+ drivers/net/netdevsim/netdev.c    |  72 ++++++------
+ drivers/net/netdevsim/netdevsim.h |  55 +++++----
+ 4 files changed, 230 insertions(+), 233 deletions(-)
+
+-- 
+2.31.1
+
