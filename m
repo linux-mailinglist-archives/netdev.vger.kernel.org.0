@@ -2,62 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C86054407B8
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 08:32:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE46B4407BD
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 08:41:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231497AbhJ3GfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 02:35:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33236 "EHLO
+        id S231654AbhJ3Gns (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Oct 2021 02:43:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230130AbhJ3GfD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Oct 2021 02:35:03 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCEBFC061570;
-        Fri, 29 Oct 2021 23:32:32 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id r5so8269238pls.1;
-        Fri, 29 Oct 2021 23:32:32 -0700 (PDT)
+        with ESMTP id S231203AbhJ3Gnr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Oct 2021 02:43:47 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4169C061570;
+        Fri, 29 Oct 2021 23:41:17 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id p40so6454340pfh.8;
+        Fri, 29 Oct 2021 23:41:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
         bh=UjE5rqV9YkEJ/jh/9FOC8oevBVSTtNSrYDvMxA/WymY=;
-        b=LXdRKewdQg7gz7uAcQ2+iJKzay4f9pxTf4NGHvep0QLBcTCcv/NSepkifTzXlGs1Pr
-         rsFfG6CVQTWjxOxhfYYyJ9jlHVlzeRfRzFG434YXDgZqFg16Xx+rnq/duL28dnKspzUz
-         q2BQrAjKWJh15p4mQ6P19shWHkmcjLIu3S6jfnO+TWDPTp0mosWooaMGZoRFIWqqW7EP
-         rwgUi+yq+iXCLD1HLugDZpd50KpM8jezCaXnFj5OoRm2On36yx9E4ewhIbcnO3YTyV8+
-         Lqx4Ke7OBtcV/EKPFzEgGY/WZyNIBUMCjn2ei1WhqnApNUDqUV2TQ9pcQtQRoUy2tMyn
-         y2pA==
+        b=pBVae0l1mAb7sndDjkicYEsznprOmQKXS6Hyvgd6iZ2yGyVr6tGS8rIl/og97/laJF
+         I95LHJeQR4UkLLOE6wiWX+FFRNzkS8SgDHfMXqaxAGyvnlSqDonSTf2w0rid0k2QZG13
+         Ngb6hrFjZqgavSqA5Y/dkSeWL9FazihRDne/PtADOeV6yoUdHn1NHBKrDjnnSaSsWoDD
+         wSLHG9DU9rmfWRyrPGUn8N3gFEGmUaTlpXWwyvYHSscvYYKNhMez5R72CK2rNZWusZ/7
+         nbfuOcmoR7jYCVJj8/egg7T5/HxV5kV173OLVaHQtWKW0crlNL/Q5VnK3AoAJnMpCmWe
+         eEaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
         bh=UjE5rqV9YkEJ/jh/9FOC8oevBVSTtNSrYDvMxA/WymY=;
-        b=g3yATh+W03vbCELiU/apzua51IsrXg6OK18OtbqMSSwc09fN4UlmdrpG1hBM0O4JAS
-         Q839GVh4Fjq3NA4e6lOGi0NPHrTOPLWzAte+YWqQ21310Ovi4WptdN+LauzT7eO6FPhZ
-         Hj1Th5lmCSgmTL2tyJKeG5TEmoTLnftKzv2vKPjkQobEnJr/O1WXIEkqAgya5QaZl3Eh
-         89eYP8dRoy7abeSe01rlzFFMfq1miCVRBGcAG6ASqgZv/t6uvfi/UkNH/B4+UlYvmpb9
-         UvoSZw54b3piZZZo9TE6A5S3kMywhstc+KjokHxFQFS3uET9ldjbhpxz16zKHfQCzZhX
-         knlw==
-X-Gm-Message-State: AOAM531Nx+DPwP3FLI0mhzv1Od6/3zo4tJPOvIdSdxnCCYvZ5DKD16vS
-        KpyYMdSNuE4THm9Q2TarzFk=
-X-Google-Smtp-Source: ABdhPJyaeFzAwevmWOrOrCvzLw5eMTfuOamhEt17zCo+bAW6DQjGPuRh08uRXSsBVKsd8xkxO3XdRQ==
-X-Received: by 2002:a17:902:a3c5:b0:141:9152:80d9 with SMTP id q5-20020a170902a3c500b00141915280d9mr12211669plb.83.1635575552354;
-        Fri, 29 Oct 2021 23:32:32 -0700 (PDT)
+        b=zy9Ro53TIKDsaHoyyc4DeT9DDg7jMMPQRP5xSsl7PdQL9K4QQ+FOk8ahj1vDpPkG01
+         97qJWKmO9sdPD7q6+axx8ICKJdifI73h2W0J6/JmDA3YfdCOcYMwrVRt8HxPC4u2Q+N0
+         wXdSP9ipBSUrSdMsFtox+ZsapkqtMgNmSsZ2NSif9mRh6LH5TZaBWzLtCwZrFNDiZt+y
+         SUhpeK05yuLwD2pUDiO5JkJG0wWNXS3125KN3AaoWTsS4OH4lQ/AABofJL5kZ3iCDMxs
+         gIsaSjsKlhrR/z2UoXMJTsDsaLGyEDCzqXHzTDg0/3OC+BHYGmZ+Llzv4trYErUUzQik
+         bXqg==
+X-Gm-Message-State: AOAM531rHwNQfX6gHV80lP/1GWrK0M9QqxlkuVQZCVtgph05VbM1+NIW
+        RPcJ54riIzOYHJDyQ7cVMDZ/R/ehnzx6Xg==
+X-Google-Smtp-Source: ABdhPJwqDKvgwZIA3uuA5VlUmELO62fbDB6QbdZMewrMV+TPxbxxg3hHIf+YKOlcrPH7lRZsduf3DQ==
+X-Received: by 2002:a05:6a00:248a:b0:47c:f2e:1c3e with SMTP id c10-20020a056a00248a00b0047c0f2e1c3emr15615976pfv.84.1635576077042;
+        Fri, 29 Oct 2021 23:41:17 -0700 (PDT)
 Received: from ubuntu-hirsute.. ([162.219.34.243])
-        by smtp.gmail.com with ESMTPSA id f20sm8476294pfj.108.2021.10.29.23.32.27
+        by smtp.gmail.com with ESMTPSA id k13sm9769973pfc.197.2021.10.29.23.41.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Oct 2021 23:32:31 -0700 (PDT)
+        Fri, 29 Oct 2021 23:41:16 -0700 (PDT)
 From:   yangxingwu <xingwu.yang@gmail.com>
 To:     horms@verge.net.au
 Cc:     ja@ssi.bg, pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
         davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
         coreteam@netfilter.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, corbet@lwn.net, xingwu.yang@gmail.com,
-        legend050709@qq.com
-Subject: [PATCH net-next v3] ipvs: Fix reuse connection if RS weight is 0
-Date:   Sat, 30 Oct 2021 14:31:48 +0800
-Message-Id: <20211030063148.9060-1-xingwu.yang@gmail.com>
+        linux-doc@vger.kernel.org, corbet@lwn.net,
+        yangxingwu <xingwu.yang@gmail.com>,
+        Chuanqi Liu <legend050709@qq.com>
+Subject: [PATCH nf-next v4] netfilter: ipvs: Fix reuse connection if RS weight is 0
+Date:   Sat, 30 Oct 2021 14:40:49 +0800
+Message-Id: <20211030064049.9992-1-xingwu.yang@gmail.com>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
