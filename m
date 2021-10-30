@@ -2,185 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 008F84409A5
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 16:46:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33D594409A8
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 16:46:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230101AbhJ3Osj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 10:48:39 -0400
-Received: from mail-bn8nam12on2067.outbound.protection.outlook.com ([40.107.237.67]:61792
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229993AbhJ3Osi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 Oct 2021 10:48:38 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jLfsM3iXz19C2yTGifKOvks/ZngWyU8XFFz+j4RmAZrGAWbmwvx8s6ejziIBJ4J9uYruKU9ROPCAJN+h5VxZ3rDjlxmlvmS6BC1cIu8Sax+gG8f70OwKK5XR/tixkUzMiQENzGIRKUrOb1g4yFU0dY4CfX8cWtF6LGhv9OM53/iLfskyqJJheGLGEtprAHlY1H1XAyj+ha72TuG+4A0lF2EPDYNMvbD7kVyRQdhgo+DEW46WwAIS7ycpuZMTEUw16qLUqnUMmo3VqctOqFSO6P+Nf9m8ZxhJUZSWXweLP1G8FaA0uGuRaNLhekTY/4SuUmibxnkoLRPhtGGgD0qvSA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VkT9wFaN/GYu89/RlNdj8zYJVx7BVEvF8+pdqd4+OXY=;
- b=OsFW6WZ1RG5cKFeM0kIuh4u4CfvqZEZBaPYweyV1+EKiEO7gfTZrqB+b7kihSPD26vek9LjJcaPKfl5LZr7EH33SZdCUuttHL5JVOY48vLD0C2c3z50W0cs8drGatJPfEPd8lY3zM+96OYdIJMIkJIsi97phL2M0F1OMcydDwNqgyDsbCnL+fwj2eH59Ks61Hin/mi8ccLKtyaqT0GkSuAB2NSQeBE3QHppuTvVdRfe2XcXZYA6uOTPVUfsqszc4v6T8PvfiDPUtEb6txikFu5MeyrEG1wLhotQjQZTrsEkMHRnX4ffgoyI4JKj1Pz1CdSeqkHxrf7idjAP/v+IybQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VkT9wFaN/GYu89/RlNdj8zYJVx7BVEvF8+pdqd4+OXY=;
- b=mj8hzo67KwLXkjBc38cuwfzQ/cYMyQkFwRwdF/v7gUy5aN9oDCIP2SEu9534m/aYdWOBkQsdRzcZisFfVDWWlKotp2P/OqkvuSapCRtL23wJ+4abP53a3zeWSagX0EPUI5HXjqgJpZlqlFtF3Y9CvB2fK/KNN53MsBcSVf/1dkQ3Vzz2bsCXy93jGaDZqnQCgxAiOAP7h98q8lwZ/rCDK8J52gQX4CFbdZCGmFE5qMQj6MSrUNwX2Ze33z08zzUekx14802gn8ITmpgDu0/7+QdDKvqT29zwcPwrHlxjfMmWerG/lIrrv/TSx8Gjbt3rjvgEIW3BuL1r8g1TfzEaiA==
-Received: from BN6PR16CA0040.namprd16.prod.outlook.com (2603:10b6:405:14::26)
- by DM6PR12MB3212.namprd12.prod.outlook.com (2603:10b6:5:186::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18; Sat, 30 Oct
- 2021 14:46:06 +0000
-Received: from BN8NAM11FT054.eop-nam11.prod.protection.outlook.com
- (2603:10b6:405:14:cafe::e1) by BN6PR16CA0040.outlook.office365.com
- (2603:10b6:405:14::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.15 via Frontend
- Transport; Sat, 30 Oct 2021 14:46:06 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT054.mail.protection.outlook.com (10.13.177.102) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4649.14 via Frontend Transport; Sat, 30 Oct 2021 14:46:05 +0000
-Received: from localhost.localdomain.nvidia.com (172.20.187.5) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1497.18; Sat, 30 Oct 2021 14:46:01 +0000
-References: <20211028110646.13791-1-simon.horman@corigine.com>
- <20211028110646.13791-9-simon.horman@corigine.com>
- <ygnhilxfaexq.fsf@nvidia.com>
- <7147daf1-2546-a6b5-a1ba-78dfb4af408a@mojatatu.com>
-User-agent: mu4e 1.4.15; emacs 27.2
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-CC:     Simon Horman <simon.horman@corigine.com>, <netdev@vger.kernel.org>,
-        "Roi Dayan" <roid@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Baowen Zheng <notifications@github.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        <oss-drivers@corigine.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>
-Subject: Re: [RFC/PATCH net-next v3 8/8] flow_offload: validate flags of
- filter and actions
-In-Reply-To: <7147daf1-2546-a6b5-a1ba-78dfb4af408a@mojatatu.com>
-Date:   Sat, 30 Oct 2021 17:45:58 +0300
-Message-ID: <ygnhfssia7vd.fsf@nvidia.com>
+        id S230470AbhJ3Osn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Oct 2021 10:48:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54908 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230143AbhJ3Osm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Oct 2021 10:48:42 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E0CCC061714;
+        Sat, 30 Oct 2021 07:46:12 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id na16-20020a17090b4c1000b0019f5bb661f9so9478164pjb.0;
+        Sat, 30 Oct 2021 07:46:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tc4Uu5doNIsZ4Fi08H6OKtXtfZOclf/dWxReOXLjFqA=;
+        b=YqoanpuOWt251E5mr2RgsMfO94+xTtqegbrBBG33Ajm4JSjJ7+o/mJ/cnf0e0MvO0j
+         gmJmAjYOSmtRzFXO1ILUPzMLqXUu2fJ4w+qH8n2LvEpixP0JieKtAkukcYDgxwwmvgig
+         zYhM2cYF2WAFcjYxXyU/SkYKv/Yj5DWGDMVJHQGBIy6cWHtve7YeIALgYpLbRXgrXBSw
+         bm7eqfCPk6f3XMZStBulOJAuJbaFkR55cLyLRXxbmC0D/9SrFeX1jFLI7XNFbMotHs9L
+         zemUvhzhpMdQ1Ms1yNUhPnTvgclcC0vFxTlZGmxM7pZVTBqFa+0tZ9BBAFI9hyxT57jz
+         z5Og==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tc4Uu5doNIsZ4Fi08H6OKtXtfZOclf/dWxReOXLjFqA=;
+        b=Ewiwm0VqGhAK0Qm2pNHkavMzn0Mv65JXwcTjnrcMskXCaCqN4tmzdqDNPoiVJfkEDM
+         KBplNaycwgIP4qAfuhitZsmaQ9Ce3YzNZ8LLxUo3yto8n1LNcmLcq5J6QjC0v+7TWz8T
+         Y0aGroLbkGtDP18gymHM8mh8y1449NrqrlxGUiITkJLUjuTgtcfsa9tEKEFXkoSQ6Htp
+         z21YCBG47YuJJkWSDxNuCe61AETSIBZlHk8vgPaVR4m31oLl9VlIFsSmwnxMdJDFBFMR
+         B5WdzAzBTdBvIq0am63JGtPIKnqYWvQS+lYNTf+PqUZM5PrGlp+8Du2rwLCLO/8hkE6X
+         O3hA==
+X-Gm-Message-State: AOAM533tYHFdKnrrJUQ0dpw2NWb98Tz4Vkdu/sgF5b8PmbcSiOMnHCnl
+        yfp41f9qtg23t9PK2UGl+4NzujF0X61S6A==
+X-Google-Smtp-Source: ABdhPJyqvmfRL9MbgFncmyU3IPwHcON/knCJIG8MyoqbK27eRbVGoqWJur3rJj0E5TFDllsLg0NQZg==
+X-Received: by 2002:a17:90a:c398:: with SMTP id h24mr4896237pjt.73.1635605171770;
+        Sat, 30 Oct 2021 07:46:11 -0700 (PDT)
+Received: from localhost ([2405:201:6014:d916:31fc:9e49:a605:b093])
+        by smtp.gmail.com with ESMTPSA id g18sm11028029pfj.67.2021.10.30.07.46.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 30 Oct 2021 07:46:11 -0700 (PDT)
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Florian Westphal <fw@strlen.de>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
+Subject: [PATCH RFC bpf-next v1 0/6] Introduce unstable CT lookup helpers
+Date:   Sat, 30 Oct 2021 20:16:03 +0530
+Message-Id: <20211030144609.263572-1-memxor@gmail.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.20.187.5]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6c9cc8a6-dd24-4e7d-2c1f-08d99bb40098
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3212:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB3212EDB7C7653FC6667B3B1BA0889@DM6PR12MB3212.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ThpiaN9azJkPft/zNcWZsmeSsbMtYZOwuQ3XfCd+8572b6m37XQptevXbgqEm9yJsiqSgDFgXRJf0e4dhEzeKSt4JuIaN3XhvUpLRw77yLpeg7ZGc4SGnqaoLavAmYc9q4UqxM03OWMO/5AuwjYrYQgqPotMWbMb2ee8i8/PSu6bQzem2bK3doJcRj6y0/HZ0nZN9HDWiLN/3B0Oan7XJzYxj8mJB2omVEDK4LPnEqmzRB59P7G0EEBwaT5hTwQyYHKiOzlmrUoUh1G/aVaArdX0k6EZrUyK0Y3xQmGt06C4SA70pgX75i2SceVcF1pgXlwpZ8ViweAuGKJvXUJF4C5P7BD2CyDStncvyVjAPRHNEUZYZejo6MSxGzUWga20oSRfAlI7RtNV+V4+jTGDdASEIagT95aluZuutrikYdF6Br66p9EJ/Q0OyF/VGCR/4IE8Jf5XOhUgbTk4SWfYDAIh51VJiSsnvq3hxyC/Vd4naAXVl2/KyNQ4QYdT8+orJnvpccnC5MscEQSK4O8CHiQyGahskyMrcnJyn76nuKjmfdMSSmPoGQatadNYQgd8pheWgijRAiyw35W3L9W1fcrT2IDYJHEGXUS/VkJYupnCnzZ6r+vPiiqLA6/iiq5vu94Xg9Z6Z8lvOber+F9krN0mcRvOiVZkeRSS+5x2h6EAjKIhQYaDXqM8c/DVGKZO09+90ZSL4i9/rOH3jLrvfA==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(426003)(4001150100001)(8936002)(508600001)(4326008)(36756003)(86362001)(36860700001)(7696005)(47076005)(2616005)(54906003)(8676002)(70586007)(83380400001)(356005)(70206006)(186003)(336012)(7636003)(53546011)(316002)(6666004)(15650500001)(6916009)(16526019)(5660300002)(82310400003)(26005)(2906002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2021 14:46:05.4308
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6c9cc8a6-dd24-4e7d-2c1f-08d99bb40098
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT054.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3212
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2265; h=from:subject; bh=VIBX0gIYz4+9tYndzOGxYKZZ0l9v3CqjAG+7q9iefAQ=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhfVoRmLAOuHHjXggYtzohDvWcQBdEuZXEqlwlSRje S1kc0SKJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYX1aEQAKCRBM4MiGSL8RyjDID/ 9iF+916lkrG/GaOh0gErFlnP9M6FY7+WgZkxzsT2gexSb/3XYrtkq1vqzK7mm6mKaugIQV7A3Wjea+ iwRhM50UdopVXYqcemBmwjq6cryxt9lQC2mHdJGU5XDm7VamXKrDFMhA8PwgO3ZGY7+j3NGikhgOcl 8XiS5PSIf/F4XJuGx2D455PGme8SPuqwiEbE8gRJ8l10ZIsAo946+BZw9rIIH8+NjO7Gs3XaIIccgX 7Tw9SwEQUTqYlTrzcp/OxW05MAKGi3Tv/d6rDSdDXqdu03u93PUS81SzjkxlBDMiAj49X2oOdlx0hq f0wphRltc3z3/FYPvDG33rvjQnwqYWCGPEtgC1JC+PfJIj2dvcIWDyNzydl++yb/mCZMEaZhsMyRox 4hPT1ZsWE+EE81GyG36DZpnx0SKU4qPT4lW7AFkodOCT75ES/6k3YKgz+8xGQ3FnRdqnDoC6wMJK1D IPq4PFcXEqFfHHdfDigmZUH8M84bPHwU+Q/SOCBvUU5st7274tu7k2o6uX73LqUpWdTOqMTRATUrkX L/49FVC3bMDTVyktu9rPFb/KjUC3/jOb59QIMkwvWEtrH26pR0BICCTmvsYcB7CjAYhBP1gzFKH6x7 Y1oUVcZjpeEcwNdQYmZAmrsJykTm+OE7KcS0XxAtvTJGRdowgab7njk2Amgw==
+X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat 30 Oct 2021 at 13:54, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
-> On 2021-10-29 14:01, Vlad Buslov wrote:
->> On Thu 28 Oct 2021 at 14:06, Simon Horman <simon.horman@corigine.com> wrote:
->>> From: Baowen Zheng <baowen.zheng@corigine.com>
->>>
->>> Add process to validate flags of filter and actions when adding
->>> a tc filter.
->>>
->>> We need to prevent adding filter with flags conflicts with its actions.
->>>
->>> Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
->>> Signed-off-by: Louis Peens <louis.peens@corigine.com>
->>> Signed-off-by: Simon Horman <simon.horman@corigine.com>
->>> ---
->>>   net/sched/cls_api.c      | 26 ++++++++++++++++++++++++++
->>>   net/sched/cls_flower.c   |  3 ++-
->>>   net/sched/cls_matchall.c |  4 ++--
->>>   net/sched/cls_u32.c      |  7 ++++---
->>>   4 files changed, 34 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
->>> index 351d93988b8b..80647da9713a 100644
->>> --- a/net/sched/cls_api.c
->>> +++ b/net/sched/cls_api.c
->>> @@ -3025,6 +3025,29 @@ void tcf_exts_destroy(struct tcf_exts *exts)
->>>   }
->>>   EXPORT_SYMBOL(tcf_exts_destroy);
->>>   +static bool tcf_exts_validate_actions(const struct tcf_exts *exts, u32
->>> flags)
->>> +{
->>> +#ifdef CONFIG_NET_CLS_ACT
->>> +	bool skip_sw = tc_skip_sw(flags);
->>> +	bool skip_hw = tc_skip_hw(flags);
->>> +	int i;
->>> +
->>> +	if (!(skip_sw | skip_hw))
->>> +		return true;
->>> +
->>> +	for (i = 0; i < exts->nr_actions; i++) {
->>> +		struct tc_action *a = exts->actions[i];
->>> +
->>> +		if ((skip_sw && tc_act_skip_hw(a->tcfa_flags)) ||
->>> +		    (skip_hw && tc_act_skip_sw(a->tcfa_flags)))
->>> +			return false;
->>> +	}
->>> +	return true;
->>> +#else
->>> +	return true;
->>> +#endif
->>> +}
->>> +
->> I know Jamal suggested to have skip_sw for actions, but it complicates
->> the code and I'm still not entirely understand why it is necessary.
->
-> If the hardware can independently accept an action offload then
-> skip_sw per action makes total sense. BTW, my understanding is
+This series adds unstable conntrack lookup helpers using BPF kfunc support.  The
+patch adding the lookup helper is based off of Maxim's recent patch to aid in
+rebasing their series on top of this, all adjusted to work with kfunc support
+[0].
 
-Example configuration that seems bizarre to me is when offloaded shared
-action has skip_sw flag set but filter doesn't. Then behavior of
-classifier that points to such action diverges between hardware and
-software (different lists of actions are applied). We always try to make
-offloaded TC data path behave exactly the same as software and, even
-though here it would be explicit and deliberate, I don't see any
-practical use-case for this.
+This is an RFC series, as I'm unsure whether the reference tracking for
+PTR_TO_BTF_ID will be accepted. If not, we can go back to doing it the typical
+way with PTR_TO_NF_CONN type, guarded with #if IS_ENABLED(CONFIG_NF_CONNTRACK).
 
-> _your_ hardware is capable as such at least for policers ;->
-> And such policers are then shared across filters.
+Also, I want to understand whether it would make sense to introduce
+check_helper_call style bpf_func_proto based argument checking for kfuncs, or
+continue with how it is right now, since it doesn't seem correct that PTR_TO_MEM
+can be passed where PTR_TO_BTF_ID may be expected. Only PTR_TO_CTX is enforced.
 
-True, but why do you need skip_sw action flag for that?
+[0]: https://lore.kernel.org/bpf/20211019144655.3483197-8-maximmi@nvidia.com
 
-> Other than the architectural reason I may have missed something
-> because I dont see much complexity added as a result.
+Kumar Kartikeya Dwivedi (6):
+  bpf: Refactor bpf_check_mod_kfunc_call
+  bpf: Remove DEFINE_KFUNC_BTF_ID_SET
+  bpf: Extend kfunc with PTR_TO_CTX and PTR_TO_MEM arguments
+  bpf: Add reference tracking support to kfunc returned PTR_TO_BTF_ID
+  net: netfilter: Add unstable CT lookup helper for XDP and TC-BPF
+  selftests/bpf: Add referenced PTR_TO_BTF_ID selftest
 
-Well, other part of my email was about how I don't understand what is
-going on in the flags handling code here. This patch and parts of other
-patches in the series would be unnecessary, if we forgo the action
-skip_sw flag. I guess we can just make the code nicer by folding the
-validation into tcf_action_init(), for example.
+ include/linux/bpf.h                           |  29 +-
+ include/linux/btf.h                           |  54 +++-
+ kernel/bpf/btf.c                              | 188 ++++++++++---
+ kernel/bpf/verifier.c                         | 101 ++++++-
+ net/bpf/test_run.c                            |  55 ++++
+ net/core/filter.c                             |  56 ++++
+ net/core/net_namespace.c                      |   1 +
+ net/ipv4/tcp_bbr.c                            |   5 +-
+ net/ipv4/tcp_cubic.c                          |   5 +-
+ net/ipv4/tcp_dctcp.c                          |   5 +-
+ net/netfilter/nf_conntrack_core.c             | 255 ++++++++++++++++++
+ tools/testing/selftests/bpf/Makefile          |   2 +-
+ tools/testing/selftests/bpf/bpf_tcp_helpers.h |   5 +
+ .../selftests/bpf/bpf_testmod/bpf_testmod.c   |   5 +-
+ .../selftests/bpf/prog_tests/kfunc_call.c     |  18 +-
+ .../selftests/bpf/progs/kfunc_call_test.c     |  21 ++
+ 16 files changed, 741 insertions(+), 64 deletions(-)
 
-> Are you more worried about slowing down the update rate?
+-- 
+2.33.1
 
-I don't expect the validation code to significantly impact the update
-rate.
