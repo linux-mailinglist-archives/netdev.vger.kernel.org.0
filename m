@@ -2,85 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C876440AE5
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 20:06:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1D8C440B96
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 22:07:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230169AbhJ3SJE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 14:09:04 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:39646 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229474AbhJ3SJD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 Oct 2021 14:09:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Mbi+N4JCINGOU2rjcKHc60MWlv4IX9XG/n6qKqPywPQ=; b=gQc7Wp4tLHiZ7BHXj1GzPxqnJj
-        Hp8AirOAhETNOSunOg0L4HqeeGEKtdrs9KTyS0saKunvEkuHi7716FPs6ZpzPuxEyI5QPCRugUL6S
-        easf5o8/xBKSk0ccEXuu23dKLsfm9zCXXbgDYNpGzBrPWSPdBWUvyDIFdtwTJe87pavo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mgsju-00CBtO-W9; Sat, 30 Oct 2021 20:05:58 +0200
-Date:   Sat, 30 Oct 2021 20:05:58 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, mkubecek@suse.cz,
-        amitc@mellanox.com, idosch@idosch.org, danieller@nvidia.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        jdike@addtoit.com, richard@nod.at, anton.ivanov@cambridgegreys.com,
-        netanel@amazon.com, akiyano@amazon.com, gtzalik@amazon.com,
-        saeedb@amazon.com, chris.snook@gmail.com,
-        ulli.kroll@googlemail.com, linus.walleij@linaro.org,
-        jeroendb@google.com, csully@google.com, awogbemila@google.com,
-        jdmason@kudzu.us, rain.1986.08.12@gmail.com, zyjzyj2000@gmail.com,
-        kys@microsoft.com, haiyangz@microsoft.com, mst@redhat.com,
-        jasowang@redhat.com, doshir@vmware.com, pv-drivers@vmware.com,
-        jwi@linux.ibm.com, kgraul@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, johannes@sipsolutions.net,
-        netdev@vger.kernel.org, lipeng321@huawei.com,
-        chenhao288@hisilicon.com, linux-s390@vger.kernel.org
-Subject: Re: [PATCH V5 net-next 6/6] net: hns3: remove the way to set tx
- spare buf via module parameter
-Message-ID: <YX2JhqOTKOiB/EPO@lunn.ch>
-References: <20211030131001.38739-1-huangguangbin2@huawei.com>
- <20211030131001.38739-7-huangguangbin2@huawei.com>
+        id S231278AbhJ3UJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Oct 2021 16:09:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39604 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231142AbhJ3UJx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Oct 2021 16:09:53 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C70E0C061570
+        for <netdev@vger.kernel.org>; Sat, 30 Oct 2021 13:07:22 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id r28so13352723pga.0
+        for <netdev@vger.kernel.org>; Sat, 30 Oct 2021 13:07:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Cyc43r8GdPRIRNRzw0no3zbXsiEelKCLzckzNGDsC6s=;
+        b=b82oDSTzxfv98G672X0/DEzxrahh5Mz/q3bRp6zpJaskF3JiguWUYKdAMpmDihTZqi
+         k/emgjqMl9bbCjn93a5OoB92FemMiqhis6t4Me94ssuoIuBuvphYARMkxGhTEs4STc8B
+         7pQTnl/GnPMo6aA+c6cU8KdZ2H3zZyGxAppFMtcdCT7oQF8QUlZ1WuvmyOkHsBZ3Ko+h
+         3rxZcBVB+HKyGXqJX853j/rzqEv6wl28Aw65iCZfJBwGDo+m5cnSome5PfQgDybVKmZB
+         32ByL0nDZJHwDi1H/2Qsz3akZQyVwihjaxBL3jDRJ2e5tfv/Qs1p49r8NLqVAoUBynAt
+         5yyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Cyc43r8GdPRIRNRzw0no3zbXsiEelKCLzckzNGDsC6s=;
+        b=Lu9rW4HBP2LnHPHy+3kiSnLB0MP1DRcZqFt/kupn24lYl0EG+jH61BBrLflocUkpwV
+         ycQZ4SqMHu4YaiCDKXkPmGyxUx0tF3ob7CoN8Rj8pBXb5JX+iLe4TOVUDWdofaNxLKj0
+         gJQ2mxxriOQNzCLLIibLICMFddL9ZaWbXACqHHaivfbbnma1f7+hudraM5luEQbhEXpy
+         2oYWtkejNuBxu3OX2TLHX5CbI87ZfROZwjG5i3dyBLOja/KEl2ZYa7K0HpraP0B9Pf5d
+         ZX7bEo+efY8FwiWzRWX3zqHcnSyJC8lia13iRmm+ImeUvzit/VCZEN42Hv5QMDh7QoZN
+         3Akw==
+X-Gm-Message-State: AOAM533cJbs8v0my9KXdR24u6w2kwgz1/HgHacUGegXBZGFGOTlXVw4u
+        2lo1CHecQaYcHwVQCxwm0sY7Bg==
+X-Google-Smtp-Source: ABdhPJw1+SO+sO4sXJozBZNr5KL4BvxlQY4xSjZVKQGmgSAXJ5bN1iMCPtgRGu6CS7IXrqyZY6sptw==
+X-Received: by 2002:a63:348d:: with SMTP id b135mr14129383pga.87.1635624441806;
+        Sat, 30 Oct 2021 13:07:21 -0700 (PDT)
+Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
+        by smtp.gmail.com with ESMTPSA id ne7sm5039241pjb.36.2021.10.30.13.07.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 30 Oct 2021 13:07:21 -0700 (PDT)
+Date:   Sat, 30 Oct 2021 13:07:18 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Dexuan Cui <decui@microsoft.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, gustavoars@kernel.org,
+        haiyangz@microsoft.com, netdev@vger.kernel.org, kys@microsoft.com,
+        wei.liu@kernel.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, shacharr@microsoft.com,
+        paulros@microsoft.com, olaf@aepfle.de, vkuznets@redhat.com
+Subject: Re: [PATCH net-next 1/4] net: mana: Fix the netdev_err()'s vPort
+ argument in mana_init_port()
+Message-ID: <20211030130718.3471728c@hermes.local>
+In-Reply-To: <20211030005408.13932-2-decui@microsoft.com>
+References: <20211030005408.13932-1-decui@microsoft.com>
+        <20211030005408.13932-2-decui@microsoft.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211030131001.38739-7-huangguangbin2@huawei.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 30, 2021 at 09:10:01PM +0800, Guangbin Huang wrote:
-> From: Hao Chen <chenhao288@hisilicon.com>
-> 
-> The way to set tx spare buf via module parameter is not such
-> convenient as the way to set it via ethtool.
-> 
-> So,remove the way to set tx spare buf via module parameter.
-> 
-> Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
-> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-> ---
->  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 7 +------
->  1 file changed, 1 insertion(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-> index 076631d7727d..032547a2ad2f 100644
-> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-> @@ -53,10 +53,6 @@ static int debug = -1;
->  module_param(debug, int, 0);
->  MODULE_PARM_DESC(debug, " Network interface message level setting");
->  
-> -static unsigned int tx_spare_buf_size;
-> -module_param(tx_spare_buf_size, uint, 0400);
-> -MODULE_PARM_DESC(tx_spare_buf_size, "Size used to allocate tx spare buffer");
-> -
+On Fri, 29 Oct 2021 17:54:05 -0700
+Dexuan Cui <decui@microsoft.com> wrote:
 
-This might be considered ABI. By removing it, are you breaking users
-setup?
+> diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
+> index 1417d1e72b7b..4ff5a1fc506f 100644
+> --- a/drivers/net/ethernet/microsoft/mana/mana_en.c
+> +++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
+> @@ -1599,7 +1599,8 @@ static int mana_init_port(struct net_device *ndev)
+>  	err = mana_query_vport_cfg(apc, port_idx, &max_txq, &max_rxq,
+>  				   &num_indirect_entries);
+>  	if (err) {
+> -		netdev_err(ndev, "Failed to query info for vPort 0\n");
+> +		netdev_err(ndev, "Failed to query info for vPort %d\n",
+> +			   port_idx);
 
-	Andrew
+Shouldn't port_idx have been unsigned or u16?
+It is u16 in mana_port_context.
