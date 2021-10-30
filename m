@@ -2,389 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F0954408CB
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 14:40:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4430F44090E
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 15:14:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231913AbhJ3Mmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 08:42:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55744 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230082AbhJ3Mme (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Oct 2021 08:42:34 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6356C061570
-        for <netdev@vger.kernel.org>; Sat, 30 Oct 2021 05:40:04 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id t7so12536607pgl.9
-        for <netdev@vger.kernel.org>; Sat, 30 Oct 2021 05:40:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=AZAFMnX5SlRW/jnyckkkWZVH/PgDnzL7PZfIaL9pmEQ=;
-        b=YLkEpNJPq96zugFDU3gCw6sIXpCOXEEiu7i2gFkQn2eB3xGA7Rz/RtBD/Q7Fi9jh6L
-         MVyIWTmOw15TGgwX/iM7VjvIRo3A9qsHHpIPX+x39AAXrU5g6lhGvqDOYqGPGE3CQlbs
-         2mCnKEnJmlOy2Qp5kNCtPN+HrSrHGjJk9XiSw74IZucGoPDhFfg/JFRXeVeaqAGgvUiT
-         4v+2xE1wOl+f41hhX9ONPI19UEg/Mr4fno53P9KbtWz7qk5QUWv5AUI9lxQd6lwV8tbK
-         fdeMbRnpr9JdDA28BQkge6X1zZvvJ3S7mjP9Rpl1LZVTbdbgZ388RrVd/s/BkyIeACym
-         3Dow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=AZAFMnX5SlRW/jnyckkkWZVH/PgDnzL7PZfIaL9pmEQ=;
-        b=nz1u6SdM983JthLJ8h04q1ND1+aPjgT4eCQcqmUzQPJpA+6iyYKNRHSk42z2pbjjGY
-         QURjEoDu/HUBjpiVny8AwSU0UKWq5GfK65gDnxYR8wsrrXh9upgNalsSYqdBR+YlctBY
-         Mxh1MFmKjYLYC0Ov/p+ie2URoN3Ny6WH+1YVZIo9kb47fdMOrFG0qkG72/uBAuC/zb0m
-         AppdTxUuxwduHf0DDd9dzKmL6/qvRsS2EIUe9Zp/Bci2t2X7a5vFl0WAK7L33TKIHQg4
-         upieNOhgBC31Aq3X9/w0r8IXM5Zvn/8hvMmAxtduQvymxfcc1yaB/idZ9KKKk3EIJdsf
-         5i0g==
-X-Gm-Message-State: AOAM533o2Q6fl1uFuz6i3VsOLSjHJYOKWCpYwSP1uLqnNAtMQDlOQc55
-        9QZzLuFhCzUVbRtHGhtOGxw=
-X-Google-Smtp-Source: ABdhPJzH/Bwoi7tkwYtZ2sfR4xNHvXFtvNpC+GCP//uptNK8U+UbH35LGnqT3J/TXQwaXBGtcuQ+Uw==
-X-Received: by 2002:a62:3103:0:b0:47b:ecf2:8b9 with SMTP id x3-20020a623103000000b0047becf208b9mr16931629pfx.42.1635597604375;
-        Sat, 30 Oct 2021 05:40:04 -0700 (PDT)
-Received: from localhost.localdomain ([49.173.165.50])
-        by smtp.gmail.com with ESMTPSA id k73sm7312664pgc.63.2021.10.30.05.40.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Oct 2021 05:40:03 -0700 (PDT)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, dsahern@kernel.org,
-        netdev@vger.kernel.org
-Cc:     dkirjanov@suse.de, ap420073@gmail.com
-Subject: [PATCH net-next v5 5/5] selftests: add amt interface selftest script
-Date:   Sat, 30 Oct 2021 12:39:21 +0000
-Message-Id: <20211030123921.29672-6-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20211030123921.29672-1-ap420073@gmail.com>
-References: <20211030123921.29672-1-ap420073@gmail.com>
+        id S231772AbhJ3NRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Oct 2021 09:17:01 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:30882 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229640AbhJ3NRA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Oct 2021 09:17:00 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HhKQH01swzbnHC;
+        Sat, 30 Oct 2021 21:09:43 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Sat, 30 Oct 2021 21:14:24 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Sat, 30 Oct 2021 21:14:22 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <mkubecek@suse.cz>,
+        <andrew@lunn.ch>, <amitc@mellanox.com>, <idosch@idosch.org>,
+        <danieller@nvidia.com>, <jesse.brandeburg@intel.com>,
+        <anthony.l.nguyen@intel.com>, <jdike@addtoit.com>,
+        <richard@nod.at>, <anton.ivanov@cambridgegreys.com>,
+        <netanel@amazon.com>, <akiyano@amazon.com>, <gtzalik@amazon.com>,
+        <saeedb@amazon.com>, <chris.snook@gmail.com>,
+        <ulli.kroll@googlemail.com>, <linus.walleij@linaro.org>,
+        <jeroendb@google.com>, <csully@google.com>,
+        <awogbemila@google.com>, <jdmason@kudzu.us>,
+        <rain.1986.08.12@gmail.com>, <zyjzyj2000@gmail.com>,
+        <kys@microsoft.com>, <haiyangz@microsoft.com>, <mst@redhat.com>,
+        <jasowang@redhat.com>, <doshir@vmware.com>,
+        <pv-drivers@vmware.com>, <jwi@linux.ibm.com>,
+        <kgraul@linux.ibm.com>, <hca@linux.ibm.com>, <gor@linux.ibm.com>,
+        <johannes@sipsolutions.net>
+CC:     <netdev@vger.kernel.org>, <lipeng321@huawei.com>,
+        <chenhao288@hisilicon.com>, <huangguangbin2@huawei.com>,
+        <linux-s390@vger.kernel.org>
+Subject: [PATCH V5 net-next 0/6] ethtool: add support to set/get tx copybreak buf size and rx buf len
+Date:   Sat, 30 Oct 2021 21:09:55 +0800
+Message-ID: <20211030131001.38739-1-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is selftest script for amt interface.
-This script includes basic forwarding scenarion and torture scenario.
+From: Hao Chen <chenhao288@hisilicon.com>
 
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
----
-v5:
- - Initial patch.
+This series add support to set/get tx copybreak buf size and rx buf len via
+ethtool and hns3 driver implements them.
 
- tools/testing/selftests/net/Makefile |   1 +
- tools/testing/selftests/net/amt.sh   | 284 +++++++++++++++++++++++++++
- tools/testing/selftests/net/config   |   1 +
- 3 files changed, 286 insertions(+)
- create mode 100644 tools/testing/selftests/net/amt.sh
+Tx copybreak buf size is used for tx copybreak feature which for small size
+packet or frag. Use ethtool --get-tunable command to get it, and ethtool
+--set-tunable command to set it, examples are as follow:
 
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 492b273743b4..d27c98a32244 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -22,6 +22,7 @@ TEST_PROGS += devlink_port_split.py
- TEST_PROGS += drop_monitor_tests.sh
- TEST_PROGS += vrf_route_leaking.sh
- TEST_PROGS += bareudp.sh
-+TEST_PROGS += amt.sh
- TEST_PROGS += unicast_extensions.sh
- TEST_PROGS += udpgro_fwd.sh
- TEST_PROGS += veth.sh
-diff --git a/tools/testing/selftests/net/amt.sh b/tools/testing/selftests/net/amt.sh
-new file mode 100644
-index 000000000000..75528788cb95
---- /dev/null
-+++ b/tools/testing/selftests/net/amt.sh
-@@ -0,0 +1,284 @@
-+#!/bin/sh
-+# SPDX-License-Identifier: GPL-2.0
-+
-+# Author: Taehee Yoo <ap420073@gmail.com>
-+#
-+# This script evaluates the AMT driver.
-+# There are four network-namespaces, LISTENER, SOURCE, GATEWAY, RELAY.
-+# The role of LISTENER is to listen multicast traffic.
-+# In order to do that, it send IGMP group join message.
-+# The role of SOURCE is to send multicast traffic to listener.
-+# The role of GATEWAY is to work Gateway role of AMT interface.
-+# The role of RELAY is to work Relay role of AMT interface.
-+#
-+#
-+#       +------------------------+
-+#       |    LISTENER netns      |
-+#       |                        |
-+#       |  +------------------+  |
-+#       |  |       l_gw       |  |
-+#       |  |  192.168.0.2/24  |  |
-+#       |  |  2001:db8::2/64  |  |
-+#       |  +------------------+  |
-+#       |            .           |
-+#       +------------------------+
-+#                    .
-+#                    .
-+#       +-----------------------------------------------------+
-+#       |            .         GATEWAY netns                  |
-+#       |            .                                        |
-+#       |+---------------------------------------------------+|
-+#       ||           .          br0                          ||
-+#       || +------------------+       +------------------+   ||
-+#       || |       gw_l       |       |       amtg       |   ||
-+#       || |  192.168.0.1/24  |       +--------+---------+   ||
-+#       || |  2001:db8::1/64  |                |             ||
-+#       || +------------------+                |             ||
-+#       |+-------------------------------------|-------------+|
-+#       |                                      |              |
-+#       |                             +--------+---------+    |
-+#       |                             |     gw_relay     |    |
-+#       |                             |    10.0.0.1/24   |    |
-+#       |                             +------------------+    |
-+#       |                                      .              |
-+#       +-----------------------------------------------------+
-+#                                              .
-+#                                              .
-+#       +-----------------------------------------------------+
-+#       |                       RELAY netns    .              |
-+#       |                             +------------------+    |
-+#       |                             |     relay_gw     |    |
-+#       |                             |    10.0.0.2/24   |    |
-+#       |                             +--------+---------+    |
-+#       |                                      |              |
-+#       |                                      |              |
-+#       |  +------------------+       +--------+---------+    |
-+#       |  |     relay_src    |       |       amtr       |    |
-+#       |  |   172.17.0.1/24  |       +------------------+    |
-+#       |  | 2001:db8:3::1/64 |                               |
-+#       |  +------------------+                               |
-+#       |            .                                        |
-+#       |            .                                        |
-+#       +-----------------------------------------------------+
-+#                    .
-+#                    .
-+#       +------------------------+
-+#       |            .           |
-+#       |  +------------------+  |
-+#       |  |     src_relay    |  |
-+#       |  |   172.17.0.2/24  |  |
-+#       |  | 2001:db8:3::2/64 |  |
-+#       |  +------------------+  |
-+#       |      SOURCE netns      |
-+#       +------------------------+
-+#==============================================================================
-+
-+readonly LISTENER=$(mktemp -u listener-XXXXXXXX)
-+readonly GATEWAY=$(mktemp -u gateway-XXXXXXXX)
-+readonly RELAY=$(mktemp -u relay-XXXXXXXX)
-+readonly SOURCE=$(mktemp -u source-XXXXXXXX)
-+ERR=4
-+err=0
-+
-+exit_cleanup()
-+{
-+	for ns in "$@"; do
-+		ip netns delete "${ns}" 2>/dev/null || true
-+	done
-+
-+	exit $ERR
-+}
-+
-+create_namespaces()
-+{
-+	ip netns add "${LISTENER}" || exit_cleanup
-+	ip netns add "${GATEWAY}" || exit_cleanup "${LISTENER}"
-+	ip netns add "${RELAY}" || exit_cleanup "${LISTENER}" "${GATEWAY}"
-+	ip netns add "${SOURCE}" || exit_cleanup "${LISTENER}" "${GATEWAY}" \
-+		"${RELAY}"
-+}
-+
-+# The trap function handler
-+#
-+exit_cleanup_all()
-+{
-+	exit_cleanup "${LISTENER}" "${GATEWAY}" "${RELAY}" "${SOURCE}"
-+}
-+
-+setup_interface()
-+{
-+	for ns in "${LISTENER}" "${GATEWAY}" "${RELAY}" "${SOURCE}"; do
-+		ip -netns "${ns}" link set dev lo up
-+	done;
-+
-+	ip link add l_gw type veth peer name gw_l
-+	ip link add gw_relay type veth peer name relay_gw
-+	ip link add relay_src type veth peer name src_relay
-+
-+	ip link set l_gw netns "${LISTENER}" up
-+	ip link set gw_l netns "${GATEWAY}" up
-+	ip link set gw_relay netns "${GATEWAY}" up
-+	ip link set relay_gw netns "${RELAY}" up
-+	ip link set relay_src netns "${RELAY}" up
-+	ip link set src_relay netns "${SOURCE}" up mtu 1400
-+
-+	ip netns exec "${LISTENER}" ip a a 192.168.0.2/24 dev l_gw
-+	ip netns exec "${LISTENER}" ip r a default via 192.168.0.1 dev l_gw
-+	ip netns exec "${LISTENER}" ip a a 2001:db8::2/64 dev l_gw
-+	ip netns exec "${LISTENER}" ip r a default via 2001:db8::1 dev l_gw
-+	ip netns exec "${LISTENER}" ip a a 239.0.0.1/32 dev l_gw autojoin
-+	ip netns exec "${LISTENER}" ip a a ff0e::5:6/128 dev l_gw autojoin
-+
-+	ip netns exec "${GATEWAY}" ip a a 192.168.0.1/24 dev gw_l
-+	ip netns exec "${GATEWAY}" ip a a 2001:db8::1/64 dev gw_l
-+	ip netns exec "${GATEWAY}" ip a a 10.0.0.1/24 dev gw_relay
-+	ip netns exec "${GATEWAY}" ip link add br0 type bridge
-+	ip netns exec "${GATEWAY}" ip link set br0 up
-+	ip netns exec "${GATEWAY}" ip link set gw_l master br0
-+	ip netns exec "${GATEWAY}" ip link set gw_l up
-+	ip netns exec "${GATEWAY}" ip link add amtg master br0 type amt \
-+		mode gateway local 10.0.0.1 discovery 10.0.0.2 dev gw_relay \
-+		gateway_port 2268 relay_port 2268
-+	ip netns exec "${RELAY}" ip a a 10.0.0.2/24 dev relay_gw
-+	ip netns exec "${RELAY}" ip link add amtr type amt mode relay \
-+		local 10.0.0.2 dev relay_gw relay_port 2268 max_tunnels 4
-+	ip netns exec "${RELAY}" ip a a 172.17.0.1/24 dev relay_src
-+	ip netns exec "${RELAY}" ip a a 2001:db8:3::1/64 dev relay_src
-+	ip netns exec "${SOURCE}" ip a a 172.17.0.2/24 dev src_relay
-+	ip netns exec "${SOURCE}" ip a a 2001:db8:3::2/64 dev src_relay
-+	ip netns exec "${SOURCE}" ip r a default via 172.17.0.1 dev src_relay
-+	ip netns exec "${SOURCE}" ip r a default via 2001:db8:3::1 dev src_relay
-+	ip netns exec "${RELAY}" ip link set amtr up
-+	ip netns exec "${GATEWAY}" ip link set amtg up
-+}
-+
-+setup_sysctl()
-+{
-+	ip netns exec "${RELAY}" sysctl net.ipv4.ip_forward=1 -w -q
-+}
-+
-+setup_iptables()
-+{
-+	ip netns exec "${RELAY}" iptables -t mangle -I PREROUTING \
-+		-d 239.0.0.1 -j TTL --ttl-set 2
-+	ip netns exec "${RELAY}" ip6tables -t mangle -I PREROUTING \
-+		-j HL --hl-set 2
-+}
-+
-+setup_mcast_routing()
-+{
-+	ip netns exec "${RELAY}" smcrouted
-+	ip netns exec "${RELAY}" smcroutectl a relay_src \
-+		172.17.0.2 239.0.0.1 amtr
-+	ip netns exec "${RELAY}" smcroutectl a relay_src \
-+		2001:db8:3::2 ff0e::5:6 amtr
-+}
-+
-+test_remote_ip()
-+{
-+	REMOTE=$(ip netns exec "${GATEWAY}" \
-+		ip -d -j link show amtg | jq .[0].linkinfo.info_data.remote)
-+	if [ $REMOTE == "\"10.0.0.2\"" ]; then
-+		printf "TEST: %-60s  [ OK ]\n" "amt discovery"
-+	else
-+		printf "TEST: %-60s  [FAIL]\n" "amt discovery"
-+		ERR=1
-+	fi
-+}
-+
-+send_mcast_torture4()
-+{
-+	ip netns exec "${SOURCE}" bash -c \
-+		'cat /dev/urandom | head -c 1G | nc -w 1 -u 239.0.0.1 4001'
-+}
-+
-+
-+send_mcast_torture6()
-+{
-+	ip netns exec "${SOURCE}" bash -c \
-+		'cat /dev/urandom | head -c 1G | nc -w 1 -u ff0e::5:6 6001'
-+}
-+
-+check_features()
-+{
-+        ip link help 2>&1 | grep -q amt
-+        if [ $? -ne 0 ]; then
-+                echo "Missing amt support in iproute2" >&2
-+                exit_cleanup
-+        fi
-+}
-+
-+test_ipv4_forward()
-+{
-+	RESULT4=$(ip netns exec "${LISTENER}" nc -w 1 -l -u 239.0.0.1 4000)
-+	if [ "$RESULT4" == "172.17.0.2" ]; then
-+		printf "TEST: %-60s  [ OK ]\n" "IPv4 amt multicast forwarding"
-+		exit 0
-+	else
-+		printf "TEST: %-60s  [FAIL]\n" "IPv4 amt multicast forwarding"
-+		exit 1
-+	fi
-+}
-+
-+test_ipv6_forward()
-+{
-+	RESULT6=$(ip netns exec "${LISTENER}" nc -w 1 -l -u ff0e::5:6 6000)
-+	if [ "$RESULT6" == "2001:db8:3::2" ]; then
-+		printf "TEST: %-60s  [ OK ]\n" "IPv6 amt multicast forwarding"
-+		exit 0
-+	else
-+		printf "TEST: %-60s  [FAIL]\n" "IPv6 amt multicast forwarding"
-+		exit 1
-+	fi
-+}
-+
-+send_mcast4()
-+{
-+	sleep 2
-+	ip netns exec "${SOURCE}" bash -c \
-+		'echo 172.17.0.2 | nc -w 1 -u 239.0.0.1 4000' &
-+}
-+
-+send_mcast6()
-+{
-+	sleep 2
-+	ip netns exec "${SOURCE}" bash -c \
-+		'echo 2001:db8:3::2 | nc -w 1 -u ff0e::5:6 6000' &
-+}
-+
-+check_features
-+
-+create_namespaces
-+
-+set -e
-+trap exit_cleanup_all EXIT
-+
-+setup_interface
-+setup_sysctl
-+setup_iptables
-+setup_mcast_routing
-+test_remote_ip
-+test_ipv4_forward &
-+pid=$!
-+send_mcast4
-+wait $pid || err=$?
-+if [ $err -eq 1 ]; then
-+	ERR=1
-+fi
-+test_ipv6_forward &
-+pid=$!
-+send_mcast6
-+wait $pid || err=$?
-+if [ $err -eq 1 ]; then
-+	ERR=1
-+fi
-+send_mcast_torture4
-+printf "TEST: %-60s  [ OK ]\n" "IPv4 amt traffic forwarding torture"
-+send_mcast_torture6
-+printf "TEST: %-60s  [ OK ]\n" "IPv6 amt traffic forwarding torture"
-+sleep 5
-+if [ "${ERR}" -eq 1 ]; then
-+        echo "Some tests failed." >&2
-+else
-+        ERR=0
-+fi
-diff --git a/tools/testing/selftests/net/config b/tools/testing/selftests/net/config
-index 86ab429fe7f3..ead7963b9bf0 100644
---- a/tools/testing/selftests/net/config
-+++ b/tools/testing/selftests/net/config
-@@ -44,3 +44,4 @@ CONFIG_NET_ACT_MIRRED=m
- CONFIG_BAREUDP=m
- CONFIG_IPV6_IOAM6_LWTUNNEL=y
- CONFIG_CRYPTO_SM4=y
-+CONFIG_AMT=m
+1. set tx spare buf size to 102400:
+$ ethtool --set-tunable eth1 tx-buf-size 102400
+
+2. get tx spare buf size:
+$ ethtool --get-tunable eth1 tx-buf-size
+tx-buf-size: 102400
+
+Rx buf len is buffer length of each rx BD. Use ethtool -g command to get
+it, and ethtool -G command to set it, examples are as follow:
+
+1. set rx buf len to 4096
+$ ethtool -G eth1 rx-buf-len 4096
+
+2. get rx buf len
+$ ethtool -g eth1
+...
+RX Buf Len:     4096
+
+
+Change log:
+V4 -> V5
+1.Change struct ethtool_ringparam_ext to kernel_ethtool_ringparam.
+2.change "__u32 rx_buf_len" to "u32 rx_buf_len".
+
+V3 -> V4
+1.Fix a few allmodconfig compile warning.
+2.Add more '=' synbol to ethtool-netlink.rst to refine format.
+3.Move definement of struct ethtool_ringparam_ext to include/linux/ethtool.h.
+4.Move related modify of rings_fill_reply() from patch 4/6 to patch 3/6.
+
+V2 -> V3
+1.Remove documentation for tx copybreak buf size, there is description for
+it in userspace ethtool.
+2.Move extending parameters for get/set_ringparam function from patch3/6
+to patch 4/6.
+
+V1 -> V2
+1.Add documentation for rx buf len and tx copybreak buf size.
+2.Extend structure ringparam_ext for extenal ring params.
+3.Change type of ETHTOOL_A_RINGS_RX_BUF_LEN from NLA_U32 to
+  NLA_POLICY_MIN(NLA_U32, 1).
+4.Add supported_ring_params in ethtool_ops to indicate if support external
+  params.
+
+Hao Chen (6):
+  ethtool: add support to set/get tx copybreak buf size via ethtool
+  net: hns3: add support to set/get tx copybreak buf size via ethtool
+    for hns3 driver
+  ethtool: add support to set/get rx buf len via ethtool
+  ethtool: extend ringparam setting/getting API with rx_buf_len
+  net: hns3: add support to set/get rx buf len via ethtool for hns3
+    driver
+  net: hns3: remove the way to set tx spare buf via module parameter
+
+ Documentation/networking/ethtool-netlink.rst  |  10 +-
+ arch/um/drivers/vector_kern.c                 |   4 +-
+ drivers/net/can/c_can/c_can_ethtool.c         |   4 +-
+ drivers/net/ethernet/3com/typhoon.c           |   4 +-
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c |   8 +-
+ drivers/net/ethernet/amd/pcnet32.c            |   8 +-
+ drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c  |  11 +-
+ .../ethernet/aquantia/atlantic/aq_ethtool.c   |   8 +-
+ drivers/net/ethernet/atheros/atlx/atl1.c      |   8 +-
+ drivers/net/ethernet/broadcom/b44.c           |   8 +-
+ drivers/net/ethernet/broadcom/bcm63xx_enet.c  |  25 ++--
+ drivers/net/ethernet/broadcom/bnx2.c          |   8 +-
+ .../ethernet/broadcom/bnx2x/bnx2x_ethtool.c   |   8 +-
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |   8 +-
+ drivers/net/ethernet/broadcom/tg3.c           |  10 +-
+ .../net/ethernet/brocade/bna/bnad_ethtool.c   |   8 +-
+ drivers/net/ethernet/cadence/macb_main.c      |   8 +-
+ .../ethernet/cavium/liquidio/lio_ethtool.c    |  11 +-
+ .../ethernet/cavium/thunder/nicvf_ethtool.c   |   8 +-
+ drivers/net/ethernet/chelsio/cxgb/cxgb2.c     |   8 +-
+ .../net/ethernet/chelsio/cxgb3/cxgb3_main.c   |   8 +-
+ .../ethernet/chelsio/cxgb4/cxgb4_ethtool.c    |   8 +-
+ .../ethernet/chelsio/cxgb4vf/cxgb4vf_main.c   |   8 +-
+ .../net/ethernet/cisco/enic/enic_ethtool.c    |   8 +-
+ drivers/net/ethernet/cortina/gemini.c         |   8 +-
+ .../net/ethernet/emulex/benet/be_ethtool.c    |   4 +-
+ drivers/net/ethernet/ethoc.c                  |   8 +-
+ drivers/net/ethernet/faraday/ftgmac100.c      |  14 ++-
+ .../ethernet/freescale/enetc/enetc_ethtool.c  |   4 +-
+ .../net/ethernet/freescale/gianfar_ethtool.c  |   8 +-
+ .../net/ethernet/freescale/ucc_geth_ethtool.c |   8 +-
+ drivers/net/ethernet/google/gve/gve_ethtool.c |   4 +-
+ .../net/ethernet/hisilicon/hns/hns_ethtool.c  |   6 +-
+ .../net/ethernet/hisilicon/hns3/hns3_enet.c   |  11 +-
+ .../net/ethernet/hisilicon/hns3/hns3_enet.h   |   2 +
+ .../ethernet/hisilicon/hns3/hns3_ethtool.c    | 116 ++++++++++++++++--
+ .../net/ethernet/huawei/hinic/hinic_ethtool.c |   8 +-
+ drivers/net/ethernet/ibm/emac/core.c          |   7 +-
+ drivers/net/ethernet/ibm/ibmvnic.c            |   8 +-
+ drivers/net/ethernet/intel/e100.c             |   8 +-
+ .../net/ethernet/intel/e1000/e1000_ethtool.c  |   8 +-
+ drivers/net/ethernet/intel/e1000e/ethtool.c   |   8 +-
+ .../net/ethernet/intel/fm10k/fm10k_ethtool.c  |   8 +-
+ .../net/ethernet/intel/i40e/i40e_ethtool.c    |   8 +-
+ .../net/ethernet/intel/iavf/iavf_ethtool.c    |  12 +-
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |   8 +-
+ drivers/net/ethernet/intel/igb/igb_ethtool.c  |   8 +-
+ drivers/net/ethernet/intel/igbvf/ethtool.c    |   8 +-
+ drivers/net/ethernet/intel/igc/igc_ethtool.c  |  14 ++-
+ .../net/ethernet/intel/ixgb/ixgb_ethtool.c    |   8 +-
+ .../net/ethernet/intel/ixgbe/ixgbe_ethtool.c  |   8 +-
+ drivers/net/ethernet/intel/ixgbevf/ethtool.c  |   8 +-
+ drivers/net/ethernet/marvell/mv643xx_eth.c    |   8 +-
+ drivers/net/ethernet/marvell/mvneta.c         |  14 ++-
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  14 ++-
+ .../marvell/octeontx2/nic/otx2_ethtool.c      |   8 +-
+ drivers/net/ethernet/marvell/skge.c           |   8 +-
+ drivers/net/ethernet/marvell/sky2.c           |   8 +-
+ .../net/ethernet/mellanox/mlx4/en_ethtool.c   |   8 +-
+ .../ethernet/mellanox/mlx5/core/en_ethtool.c  |   8 +-
+ .../net/ethernet/mellanox/mlx5/core/en_rep.c  |  14 ++-
+ .../mellanox/mlx5/core/ipoib/ethtool.c        |   8 +-
+ .../mellanox/mlxbf_gige/mlxbf_gige_ethtool.c  |   7 +-
+ drivers/net/ethernet/micrel/ksz884x.c         |   6 +-
+ .../net/ethernet/myricom/myri10ge/myri10ge.c  |   4 +-
+ drivers/net/ethernet/neterion/s2io.c          |   7 +-
+ .../ethernet/netronome/nfp/nfp_net_ethtool.c  |   8 +-
+ drivers/net/ethernet/nvidia/forcedeth.c       |  10 +-
+ .../oki-semi/pch_gbe/pch_gbe_ethtool.c        |  12 +-
+ .../net/ethernet/pasemi/pasemi_mac_ethtool.c  |   4 +-
+ .../ethernet/pensando/ionic/ionic_ethtool.c   |   8 +-
+ .../qlogic/netxen/netxen_nic_ethtool.c        |   8 +-
+ .../net/ethernet/qlogic/qede/qede_ethtool.c   |   8 +-
+ .../ethernet/qlogic/qlcnic/qlcnic_ethtool.c   |   8 +-
+ .../net/ethernet/qualcomm/emac/emac-ethtool.c |   8 +-
+ drivers/net/ethernet/qualcomm/qca_debug.c     |   8 +-
+ drivers/net/ethernet/realtek/8139cp.c         |   4 +-
+ drivers/net/ethernet/realtek/r8169_main.c     |   4 +-
+ drivers/net/ethernet/renesas/ravb_main.c      |   8 +-
+ drivers/net/ethernet/renesas/sh_eth.c         |   8 +-
+ drivers/net/ethernet/sfc/ef100_ethtool.c      |   7 +-
+ drivers/net/ethernet/sfc/ethtool.c            |  14 ++-
+ drivers/net/ethernet/sfc/falcon/ethtool.c     |  14 ++-
+ .../ethernet/stmicro/stmmac/stmmac_ethtool.c  |   8 +-
+ drivers/net/ethernet/tehuti/tehuti.c          |  12 +-
+ drivers/net/ethernet/ti/am65-cpsw-ethtool.c   |   7 +-
+ drivers/net/ethernet/ti/cpmac.c               |   8 +-
+ drivers/net/ethernet/ti/cpsw_ethtool.c        |   8 +-
+ drivers/net/ethernet/ti/cpsw_priv.h           |   8 +-
+ .../net/ethernet/toshiba/spider_net_ethtool.c |   4 +-
+ drivers/net/ethernet/xilinx/ll_temac_main.c   |  14 ++-
+ .../net/ethernet/xilinx/xilinx_axienet_main.c |  14 ++-
+ drivers/net/hyperv/netvsc_drv.c               |   8 +-
+ drivers/net/netdevsim/ethtool.c               |   8 +-
+ drivers/net/usb/r8152.c                       |   8 +-
+ drivers/net/virtio_net.c                      |   4 +-
+ drivers/net/vmxnet3/vmxnet3_ethtool.c         |  10 +-
+ drivers/s390/net/qeth_ethtool.c               |   4 +-
+ include/linux/ethtool.h                       |  26 +++-
+ include/uapi/linux/ethtool.h                  |   1 +
+ include/uapi/linux/ethtool_netlink.h          |   1 +
+ net/ethtool/common.c                          |   1 +
+ net/ethtool/ioctl.c                           |  11 +-
+ net/ethtool/netlink.h                         |   2 +-
+ net/ethtool/rings.c                           |  32 ++++-
+ net/mac80211/ethtool.c                        |   8 +-
+ 106 files changed, 772 insertions(+), 235 deletions(-)
+
 -- 
-2.17.1
+2.33.0
 
