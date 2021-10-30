@@ -2,84 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4942E4407CF
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 09:12:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D4924407D8
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 09:26:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231428AbhJ3HPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 03:15:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41802 "EHLO
+        id S231664AbhJ3H2c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Oct 2021 03:28:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231258AbhJ3HPL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Oct 2021 03:15:11 -0400
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0641C061570
-        for <netdev@vger.kernel.org>; Sat, 30 Oct 2021 00:12:41 -0700 (PDT)
-Received: by mail-io1-xd2b.google.com with SMTP id 62so7862765iou.2
-        for <netdev@vger.kernel.org>; Sat, 30 Oct 2021 00:12:41 -0700 (PDT)
+        with ESMTP id S231428AbhJ3H2b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Oct 2021 03:28:31 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1378C061570
+        for <netdev@vger.kernel.org>; Sat, 30 Oct 2021 00:26:01 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id g10so45980182edj.1
+        for <netdev@vger.kernel.org>; Sat, 30 Oct 2021 00:26:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=engleder-embedded-com.20210112.gappssmtp.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=lbih99bbeON+4PajSYKSgiIW7e/4Kt8F5lw/8h1fkfA=;
-        b=4s0eDnWWDQk+HaQRB09lbdlJefl34Q0yu80okoI0GzYxeza8JrxXLlWfBhgMzuaDD6
-         FpCQFfsZar6odEaUHC152SQnnXczyKhQXWp0Ur4EiktrJTJCTQsCw8rauMmjuCnoJLlB
-         4Eb1lYolJD1gOrfFaYAop0CKa3Lzr8avuRDxyDqen4PIlHzCZkgFPYk7Qr6PSaZ+x4k4
-         ponuQl9P9mziBDkQwCvn4B7Jhuj2sAyXvaXUmXyQ8H+qo4IO6Dj08BSn/twLo1Nhd3hJ
-         JCSov40zmpRebUqv21WZFSoWaAddW+JAJZ2VwrHu47/B00rbP/cECawPn8XNmhlVjrC/
-         llMg==
+        bh=q5r3MetsDowDzlDrQbHBAjSf8A77eLJ9cevdDst2Bes=;
+        b=CBTuSOBs1aNfenMAzD8MFkK50xxP7rdWukLPMqMSqBqvAQnuNSEBg4KGdNvm74fs0o
+         KtcAwteTEzaI9OSANRGHlD/bPzN24krVuGPktAlSEcopSb9ZtGtjih37pT2/aTVYP2XX
+         Dy+t828GhIkPrhPcUwJvVoNE7A8WKmXmlz//FJEE0C/cfz3MZFUvwjRER5HVpriKMlTP
+         yQpv9ONMZGPqnid4BsCj05HIgkNKr1re2UZWjnRy8IZTHGY91yiEEmmTqXYp3bkbkTGv
+         SKaiisNPlzB3TNRLJLcdDkNbp4GhyLSJUtRQCmNLi7A/UdvAp2fMqspf7s+Br3s92Bpf
+         agpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=lbih99bbeON+4PajSYKSgiIW7e/4Kt8F5lw/8h1fkfA=;
-        b=g7Ojc3IO02w8OcgkRW2vkZvT2pVf8dk1Ehb3zPhoJZVa68cnonxvJGoRKJpFPSGm1Q
-         Z2ZMv/XyaMaZ3XAbeVLmwF0aqjhvbWef6ZVsQ1Wyb1fMTFTZxicn99qDfHrYr6ZiXGD3
-         oqSFF2k65nOa6vvIyrZTREI11+psZMJ27f52xeNHmk4okP72VFDbK7yrd+BPdMwPjzB0
-         ksDz/og1FZGAKTNq9wXTExKyWAcWfsucOvC6NOOvKnUT4NZvqtvw8vnzo11CDlsD6OL1
-         jQgbc+vFi0NYr2fabsHKeuWzGEGDt3yepY8qWWD5vBNyTHpCNVyePyv96Adg9y6Nrtmi
-         8y+Q==
-X-Gm-Message-State: AOAM532msul9905gRkTZ/zuhgBJeX3aHZrUqOqoRusohBuescmSP3fBd
-        PUn2cSpFT2BiSE89uX/SbcddPjqNUgIONLB9hSzp8n2h2tbwqaEf
-X-Google-Smtp-Source: ABdhPJzg4MO2I/Oe9p+zJwr4OkGpIxCLM7xOkmzPPAiY4vZM57H50Qjx55YdFTK6AlkYWt6WrgjL8fCj3gHzspjv6hI=
-X-Received: by 2002:a02:cb58:: with SMTP id k24mr11842557jap.59.1635577961277;
- Sat, 30 Oct 2021 00:12:41 -0700 (PDT)
+        bh=q5r3MetsDowDzlDrQbHBAjSf8A77eLJ9cevdDst2Bes=;
+        b=jKXXI4qEnNmZaNBTe0DcrdzUg/WvAY7prKvtPBWwRO3vpJ4NZ6ZgJU0NSWpcwBvDkV
+         6scn5nVyqWp9WyC9nrADIVAE8h5mKdLR9xYyNibQiJCknoGgDpgvszpMNLE28aGwq8o0
+         jWrMEwxs5TjaXqOr0aKKm1yFsBA2V4TWJHMY9awx/C+apo5tk9btxTTKARlYgM9hFdI8
+         9EdhG9F/11OlZ0Jn9bbKQOSOSguQ8g81uhKs5ZysyRUNAWuO8juYUXnzpDE16Aj8T8bp
+         IPQ3wYGAKpWttJPARRKWQZw8Iz/Sflogh0r2EYJ9a9zTQ/vtBKzbkKbELedKW7IE2+37
+         TrKA==
+X-Gm-Message-State: AOAM5338i70Jlpt14o6B1j99xblsBBaJBfVLT+n8945HiouK9GfHPxXS
+        qfV7kjljFUtAsVQ7ViGjWlwKkTzjDp2tAyNKLjiQyvCQMjc=
+X-Google-Smtp-Source: ABdhPJyTJXd7uC30ichdsNcvSNqsUXE6YSAo+DrW/K2ljkQ5UzRUmviqZeYsm9nUibj9f8SknRCOGRB1rVGZTnNMEf8=
+X-Received: by 2002:a05:6402:1cc1:: with SMTP id ds1mr21471610edb.386.1635578760313;
+ Sat, 30 Oct 2021 00:26:00 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211029200742.19605-1-gerhard@engleder-embedded.com>
- <20211029200742.19605-4-gerhard@engleder-embedded.com> <20211029212730.4742445b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211029212730.4742445b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-Date:   Sat, 30 Oct 2021 09:12:30 +0200
-Message-ID: <CANr-f5yBuKd0D4xppyRm+PUmLredFuGA=dM_BSQ9VkSPTfX2Lw@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 3/3] tsnep: Add TSN endpoint Ethernet MAC driver
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>, Andrew Lunn <andrew@lunn.ch>,
-        netdev <netdev@vger.kernel.org>
+References: <1635330675-25592-1-git-send-email-sbhatta@marvell.com>
+ <1635330675-25592-2-git-send-email-sbhatta@marvell.com> <20211027083808.27f39cb0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <PH0PR18MB4671C22DB7C8E5C46647860FA1859@PH0PR18MB4671.namprd18.prod.outlook.com>
+ <CALHRZurNzkkma7HGg2xNLz3ECbwT2Hv=QXMeWr7AXCEegHOciw@mail.gmail.com>
+ <20211027100857.4d25544c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YXmWb2PZJQhpMfrR@shredder> <BY3PR18MB473794E01049EC94156E2858C6859@BY3PR18MB4737.namprd18.prod.outlook.com>
+ <YXnRup1EJaF5Gwua@shredder> <CALHRZuqpaqvunTga+8OK4GSa3oRao-CBxit6UzRvN3a1-T0dhA@mail.gmail.com>
+ <YXqq19HxleZd6V9W@shredder>
+In-Reply-To: <YXqq19HxleZd6V9W@shredder>
+From:   sundeep subbaraya <sundeep.lkml@gmail.com>
+Date:   Sat, 30 Oct 2021 12:55:47 +0530
+Message-ID: <CALHRZuoOWu0sEWjuanrYxyAVEUaO4-wea5+mET9UjPyoOrX5NQ@mail.gmail.com>
+Subject: Re: [EXT] Re: [net-next PATCH 1/2] octeontx2-pf: Add devlink param to
+ init and de-init serdes
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Hariprasad Kelam <hkelam@marvell.com>,
+        Geethasowjanya Akula <gakula@marvell.com>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
+        Rakesh Babu Saladi <rsaladi2@marvell.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Andrew Lunn <andrew@lunn.ch>, argeorge@cisco.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 30, 2021 at 6:27 AM Jakub Kicinski <kuba@kernel.org> wrote:
+Hi Ido,
+
+On Thu, Oct 28, 2021 at 7:21 PM Ido Schimmel <idosch@idosch.org> wrote:
 >
-> On Fri, 29 Oct 2021 22:07:42 +0200 Gerhard Engleder wrote:
-> > The TSN endpoint Ethernet MAC is a FPGA based network device for
-> > real-time communication.
-> >
-> > It is integrated as Ethernet controller with ethtool and PTP support.
-> > For real-time communcation TC_SETUP_QDISC_TAPRIO is supported.
-> >
-> > Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+> On Thu, Oct 28, 2021 at 05:48:02PM +0530, sundeep subbaraya wrote:
+> > Actually we also need a case where debugging is required when the
+> > logical link is
+> > up (so that packets flow from kernel to SerDes continuously) but the
+> > physical link
+> > is down.
 >
-> Looks like there is a lot of sparse warnings about endian.
-> Please make sure it builds cleanly with W=1 C=1 and repost.
+> Can you explain the motivation for that? In the past we discussed use
+> cases for forcing the operational state to down while the administrative
+> state is up and couldn't find any.
+>
+To be honest we got this request from a customer to provide a command to modify
+physical link without tying it to a logical link. I have asked for
+more details on how
+they use it.
 
-Thank you for the hint! I have not known sparse until now. I'm now using
-sparse v0.6.4 and I got warnings about missing __iomem and fixed them.
-But there were no endian warnings. I used the following command line:
+> > We will change the commit description since it is giving the
+> > wrong impression.
+> > A command to change physical link up/down with no relation to ifconfig
+> > is needed.
+>
+> So it is obvious that some drivers default to not shutting down the
+> physical link upon admin down, but that some users want to change that.
+> In addition, we have your use case to control the physical link without
+> relation to the logical link. I wonder if it can all be solved with a
+> new ethtool attribute (part of LINKINFO_{SET,GET} ?) that describes the
+> physical link policy and has the following values:
+>
+> * auto: Physical link state is derived from logical link state
+> * up: Physical link state is always up
+> * down: Physical link state is always down
+>
+> IIUC, it should solve your problem and that of the "link-down-on-close"
+> private flag. It also has the added benefit of allowing user space to
+> query the default policy. The expectation is that it would be "auto",
+> but in some scenarios it is "up".
 
-make M=drivers/net/ethernet/engleder/ W=1 C=1
+This looks good. Please note that we need the behavior such that after changing
+the flag a subsequent ifconfig command is not needed by the user.
 
-About endian: I have not considered endian so far, as this driver is used
-only for x86 and arm64. Is that ok?
+auto : in ndo_open, ndo_close check the physical link flag is auto and
+send command
+          to firmware for bringing physical link up/down.
+up: send command to firmware instantaneously for physical link UP
+down: send command to firmware instantaneously for physical link DOWN
 
-Gerhard
+Thanks,
+Sundeep
