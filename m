@@ -2,354 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02EA84405F2
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 01:56:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66990440661
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 02:25:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231569AbhJ2X7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Oct 2021 19:59:15 -0400
-Received: from mga09.intel.com ([134.134.136.24]:55259 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231401AbhJ2X7N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Oct 2021 19:59:13 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10152"; a="230634270"
-X-IronPort-AV: E=Sophos;i="5.87,194,1631602800"; 
-   d="scan'208";a="230634270"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2021 16:56:44 -0700
-X-IronPort-AV: E=Sophos;i="5.87,194,1631602800"; 
-   d="scan'208";a="487759732"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.3.7])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2021 16:56:44 -0700
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
-        kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 2/2] selftests: mptcp: more stable simult_flows tests
-Date:   Fri, 29 Oct 2021 16:55:59 -0700
-Message-Id: <20211029235559.246858-3-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20211029235559.246858-1-mathew.j.martineau@linux.intel.com>
-References: <20211029235559.246858-1-mathew.j.martineau@linux.intel.com>
+        id S231296AbhJ3A2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Oct 2021 20:28:01 -0400
+Received: from hyperium.qtmlabs.xyz ([194.163.182.183]:48544 "EHLO
+        hyperium.qtmlabs.xyz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231169AbhJ3A2B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Oct 2021 20:28:01 -0400
+Received: from dong.kernal.eu (unknown [14.231.159.161])
+        by hyperium.qtmlabs.xyz (Postfix) with ESMTPSA id 50DAC8200D9;
+        Sat, 30 Oct 2021 02:25:25 +0200 (CEST)
+Received: from [192.168.43.218] (unknown [27.78.8.12])
+        by dong.kernal.eu (Postfix) with ESMTPSA id F4065444968D;
+        Sat, 30 Oct 2021 07:25:20 +0700 (+07)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qtmlabs.xyz; s=syka;
+        t=1635553521;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RXSuMwz07aHZP6G/nn5AePXv57cWkkfCv5oImXUZORw=;
+        b=iZHYnZY2YVzR8SwYCTvH38D3bjHxyntBWMsxW3v4ICjEGrS5hroHf8EbmqS8qJZHMairhR
+        ozyrKERb8hjE3lLiuMWBisZ18pW4hNBBxEwba26biZjNUCst1ftrQ+FqLFigroOPOlHRs6
+        SmoU/I0Vtpo1grOyUHCr2CvZQN/xSYakgKUqHDMEezJaKThOTgKTyqdvx171wPMOx2aSMp
+        /pS0mAXPO4JPv9HkrdqI7K4VVW6d2laup9EwNPHg7vfnOEta4cIqNpzjKT6TvqxU8f3Eb+
+        Drt2GkdTf3hsQ7HKswaoBKvQXXDVmn8Oq0+c6dRK7Cow0qP+BW/FcipOwDKIEA==
+Message-ID: <285f536d-17dd-86fa-d8cd-08c3d73f60e2@qtmlabs.xyz>
+Date:   Sat, 30 Oct 2021 07:25:15 +0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.1
+Subject: Re: Kernel leaks memory in ip6_dst_cache when suppress_prefix is
+ present in ipv6 routing rules and a `fib` rule is present in ipv6 nftables
+ rules
+Content-Language: en-US
+To:     David Ahern <dsahern@gmail.com>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <e022d597-302d-c061-0830-6ed20aa61e56@qtmlabs.xyz>
+ <9015da81-689a-5ff6-c5ca-55c28dec1867@gmail.com>
+From:   msizanoen <msizanoen@qtmlabs.xyz>
+In-Reply-To: <9015da81-689a-5ff6-c5ca-55c28dec1867@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+ > exact command? I have not played with nftables.
 
-Currently the simult_flows.sh self-tests are not very stable,
-especially when running on slow VMs.
+sudo nft create table inet test
+sudo nft create chain inet test test_chain '{ type filter hook 
+prerouting priority filter + 10; policy accept; }'
+sudo nft add rule inet test test_chain meta nfproto ipv6 fib saddr . 
+mark . iif oif missing drop
 
-The tests measure runtime for transfers on multiple subflows
-and check that the time is near the theoretical maximum.
+ > Do you have a stack
+ > trace of where the dst reference is getting taken?
 
-The current test infra introduces a bit of jitter in test
-runtime, due to multiple explicit delays. Additionally the
-runtime is measured by the shell script wrapper. On a slow
-VM, the script overhead is measurable and subject to relevant
-jitter.
+         ip6_dst_alloc+5
+         ip6_create_rt_rcu+107
+         ip6_pol_route_lookup+741
+         fib6_rule_action+707
+         fib_rules_lookup+342
+         fib6_rule_lookup+150
+         nft_fib6_eval+354
+         nft_do_chain+339
+         nft_do_chain_inet+123
+         nf_hook_slow+63
+         nf_hook_slow_list+129
+         ip6_sublist_rcv+606
+         ipv6_list_rcv+296
+         __netif_receive_skb_list_core+489
+         netif_receive_skb_list_internal+433
+         napi_complete_done+111
+         virtnet_poll+771
+         __napi_poll+42
+         net_rx_action+547
+         __softirqentry_text_start+208
+         __irq_exit_rcu+199
+         common_interrupt+131
+         asm_common_interrupt+30
+         native_safe_halt+11
+         default_idle+10
+         default_idle_call+53
+         do_idle+487
+         cpu_startup_entry+25
+         secondary_startup_64_no_verify+194
 
-One solution to make the test more stable would be adding more
-slack to the expected time; that could possibly hide real
-regressions. Instead move the measurement inside the command
-doing the transfer, and drop most unneeded sleeps.
+Collected using the following bpftrace script:
 
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- .../selftests/net/mptcp/mptcp_connect.c       | 72 +++++++++++++++----
- .../selftests/net/mptcp/simult_flows.sh       | 36 ++++------
- 2 files changed, 72 insertions(+), 36 deletions(-)
+kretfunc:ip6_dst_alloc { @[(uint64)retval] = kstack(); }
+kfunc:ip6_dst_destroy { delete(@[(uint64)args->dst]); }
 
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_connect.c b/tools/testing/selftests/net/mptcp/mptcp_connect.c
-index 89c4753c2760..95e81d557b08 100644
---- a/tools/testing/selftests/net/mptcp/mptcp_connect.c
-+++ b/tools/testing/selftests/net/mptcp/mptcp_connect.c
-@@ -14,6 +14,7 @@
- #include <strings.h>
- #include <signal.h>
- #include <unistd.h>
-+#include <time.h>
- 
- #include <sys/poll.h>
- #include <sys/sendfile.h>
-@@ -64,6 +65,7 @@ static int cfg_sndbuf;
- static int cfg_rcvbuf;
- static bool cfg_join;
- static bool cfg_remove;
-+static unsigned int cfg_time;
- static unsigned int cfg_do_w;
- static int cfg_wait;
- static uint32_t cfg_mark;
-@@ -78,9 +80,10 @@ static struct cfg_cmsg_types cfg_cmsg_types;
- static void die_usage(void)
- {
- 	fprintf(stderr, "Usage: mptcp_connect [-6] [-u] [-s MPTCP|TCP] [-p port] [-m mode]"
--		"[-l] [-w sec] connect_address\n");
-+		"[-l] [-w sec] [-t num] [-T num] connect_address\n");
- 	fprintf(stderr, "\t-6 use ipv6\n");
- 	fprintf(stderr, "\t-t num -- set poll timeout to num\n");
-+	fprintf(stderr, "\t-T num -- set expected runtime to num ms\n");
- 	fprintf(stderr, "\t-S num -- set SO_SNDBUF to num\n");
- 	fprintf(stderr, "\t-R num -- set SO_RCVBUF to num\n");
- 	fprintf(stderr, "\t-p num -- use port num\n");
-@@ -448,7 +451,7 @@ static void set_nonblock(int fd)
- 	fcntl(fd, F_SETFL, flags | O_NONBLOCK);
- }
- 
--static int copyfd_io_poll(int infd, int peerfd, int outfd)
-+static int copyfd_io_poll(int infd, int peerfd, int outfd, bool *in_closed_after_out)
- {
- 	struct pollfd fds = {
- 		.fd = peerfd,
-@@ -487,9 +490,11 @@ static int copyfd_io_poll(int infd, int peerfd, int outfd)
- 				 */
- 				fds.events &= ~POLLIN;
- 
--				if ((fds.events & POLLOUT) == 0)
-+				if ((fds.events & POLLOUT) == 0) {
-+					*in_closed_after_out = true;
- 					/* and nothing more to send */
- 					break;
-+				}
- 
- 			/* Else, still have data to transmit */
- 			} else if (len < 0) {
-@@ -547,7 +552,7 @@ static int copyfd_io_poll(int infd, int peerfd, int outfd)
- 	}
- 
- 	/* leave some time for late join/announce */
--	if (cfg_join || cfg_remove)
-+	if (cfg_remove)
- 		usleep(cfg_wait);
- 
- 	close(peerfd);
-@@ -646,7 +651,7 @@ static int do_sendfile(int infd, int outfd, unsigned int count)
- }
- 
- static int copyfd_io_mmap(int infd, int peerfd, int outfd,
--			  unsigned int size)
-+			  unsigned int size, bool *in_closed_after_out)
- {
- 	int err;
- 
-@@ -664,13 +669,14 @@ static int copyfd_io_mmap(int infd, int peerfd, int outfd,
- 		shutdown(peerfd, SHUT_WR);
- 
- 		err = do_recvfile(peerfd, outfd);
-+		*in_closed_after_out = true;
- 	}
- 
- 	return err;
- }
- 
- static int copyfd_io_sendfile(int infd, int peerfd, int outfd,
--			      unsigned int size)
-+			      unsigned int size, bool *in_closed_after_out)
- {
- 	int err;
- 
-@@ -685,6 +691,7 @@ static int copyfd_io_sendfile(int infd, int peerfd, int outfd,
- 		if (err)
- 			return err;
- 		err = do_recvfile(peerfd, outfd);
-+		*in_closed_after_out = true;
- 	}
- 
- 	return err;
-@@ -692,27 +699,62 @@ static int copyfd_io_sendfile(int infd, int peerfd, int outfd,
- 
- static int copyfd_io(int infd, int peerfd, int outfd)
- {
-+	bool in_closed_after_out = false;
-+	struct timespec start, end;
- 	int file_size;
-+	int ret;
-+
-+	if (cfg_time && (clock_gettime(CLOCK_MONOTONIC, &start) < 0))
-+		xerror("can not fetch start time %d", errno);
- 
- 	switch (cfg_mode) {
- 	case CFG_MODE_POLL:
--		return copyfd_io_poll(infd, peerfd, outfd);
-+		ret = copyfd_io_poll(infd, peerfd, outfd, &in_closed_after_out);
-+		break;
-+
- 	case CFG_MODE_MMAP:
- 		file_size = get_infd_size(infd);
- 		if (file_size < 0)
- 			return file_size;
--		return copyfd_io_mmap(infd, peerfd, outfd, file_size);
-+		ret = copyfd_io_mmap(infd, peerfd, outfd, file_size, &in_closed_after_out);
-+		break;
-+
- 	case CFG_MODE_SENDFILE:
- 		file_size = get_infd_size(infd);
- 		if (file_size < 0)
- 			return file_size;
--		return copyfd_io_sendfile(infd, peerfd, outfd, file_size);
-+		ret = copyfd_io_sendfile(infd, peerfd, outfd, file_size, &in_closed_after_out);
-+		break;
-+
-+	default:
-+		fprintf(stderr, "Invalid mode %d\n", cfg_mode);
-+
-+		die_usage();
-+		return 1;
- 	}
- 
--	fprintf(stderr, "Invalid mode %d\n", cfg_mode);
-+	if (ret)
-+		return ret;
- 
--	die_usage();
--	return 1;
-+	if (cfg_time) {
-+		unsigned int delta_ms;
-+
-+		if (clock_gettime(CLOCK_MONOTONIC, &end) < 0)
-+			xerror("can not fetch end time %d", errno);
-+		delta_ms = (end.tv_sec - start.tv_sec) * 1000 + (end.tv_nsec - start.tv_nsec) / 1000000;
-+		if (delta_ms > cfg_time) {
-+			xerror("transfer slower than expected! runtime %d ms, expected %d ms",
-+			       delta_ms, cfg_time);
-+		}
-+
-+		/* show the runtime only if this end shutdown(wr) before receiving the EOF,
-+		 * (that is, if this end got the longer runtime)
-+		 */
-+		if (in_closed_after_out)
-+			fprintf(stderr, "%d", delta_ms);
-+	}
-+
-+	return 0;
- }
- 
- static void check_sockaddr(int pf, struct sockaddr_storage *ss,
-@@ -1005,12 +1047,11 @@ static void parse_opts(int argc, char **argv)
- {
- 	int c;
- 
--	while ((c = getopt(argc, argv, "6jr:lp:s:hut:m:S:R:w:M:P:c:")) != -1) {
-+	while ((c = getopt(argc, argv, "6jr:lp:s:hut:T:m:S:R:w:M:P:c:")) != -1) {
- 		switch (c) {
- 		case 'j':
- 			cfg_join = true;
- 			cfg_mode = CFG_MODE_POLL;
--			cfg_wait = 400000;
- 			break;
- 		case 'r':
- 			cfg_remove = true;
-@@ -1043,6 +1084,9 @@ static void parse_opts(int argc, char **argv)
- 			if (poll_timeout <= 0)
- 				poll_timeout = -1;
- 			break;
-+		case 'T':
-+			cfg_time = atoi(optarg);
-+			break;
- 		case 'm':
- 			cfg_mode = parse_mode(optarg);
- 			break;
-diff --git a/tools/testing/selftests/net/mptcp/simult_flows.sh b/tools/testing/selftests/net/mptcp/simult_flows.sh
-index 910d8126af8f..f441ff7904fc 100755
---- a/tools/testing/selftests/net/mptcp/simult_flows.sh
-+++ b/tools/testing/selftests/net/mptcp/simult_flows.sh
-@@ -51,7 +51,7 @@ setup()
- 	sout=$(mktemp)
- 	cout=$(mktemp)
- 	capout=$(mktemp)
--	size=$((2048 * 4096))
-+	size=$((2 * 2048 * 4096))
- 	dd if=/dev/zero of=$small bs=4096 count=20 >/dev/null 2>&1
- 	dd if=/dev/zero of=$large bs=4096 count=$((size / 4096)) >/dev/null 2>&1
- 
-@@ -161,17 +161,15 @@ do_transfer()
- 
- 	timeout ${timeout_test} \
- 		ip netns exec ${ns3} \
--			./mptcp_connect -jt ${timeout_poll} -l -p $port \
-+			./mptcp_connect -jt ${timeout_poll} -l -p $port -T $time \
- 				0.0.0.0 < "$sin" > "$sout" &
- 	local spid=$!
- 
- 	wait_local_port_listen "${ns3}" "${port}"
- 
--	local start
--	start=$(date +%s%3N)
- 	timeout ${timeout_test} \
- 		ip netns exec ${ns1} \
--			./mptcp_connect -jt ${timeout_poll} -p $port \
-+			./mptcp_connect -jt ${timeout_poll} -p $port -T $time \
- 				10.0.3.3 < "$cin" > "$cout" &
- 	local cpid=$!
- 
-@@ -180,27 +178,20 @@ do_transfer()
- 	wait $spid
- 	local rets=$?
- 
--	local stop
--	stop=$(date +%s%3N)
--
- 	if $capture; then
- 		sleep 1
- 		kill ${cappid_listener}
- 		kill ${cappid_connector}
- 	fi
- 
--	local duration
--	duration=$((stop-start))
--
- 	cmp $sin $cout > /dev/null 2>&1
- 	local cmps=$?
- 	cmp $cin $sout > /dev/null 2>&1
- 	local cmpc=$?
- 
--	printf "%16s" "$duration max $max_time "
-+	printf "%-16s" " max $max_time "
- 	if [ $retc -eq 0 ] && [ $rets -eq 0 ] && \
--	   [ $cmpc -eq 0 ] && [ $cmps -eq 0 ] && \
--	   [ $duration -lt $max_time ]; then
-+	   [ $cmpc -eq 0 ] && [ $cmps -eq 0 ]; then
- 		echo "[ OK ]"
- 		cat "$capout"
- 		return 0
-@@ -244,23 +235,24 @@ run_test()
- 	tc -n $ns2 qdisc add dev ns2eth1 root netem rate ${rate1}mbit $delay1
- 	tc -n $ns2 qdisc add dev ns2eth2 root netem rate ${rate2}mbit $delay2
- 
--	# time is measure in ms
--	local time=$((size * 8 * 1000 / (( $rate1 + $rate2) * 1024 *1024) ))
-+	# time is measured in ms, account for transfer size, affegated link speed
-+	# and header overhead (10%)
-+	local time=$((size * 8 * 1000 * 10 / (( $rate1 + $rate2) * 1024 *1024 * 9) ))
- 
- 	# mptcp_connect will do some sleeps to allow the mp_join handshake
--	# completion
--	time=$((time + 1350))
-+	# completion (see mptcp_connect): 200ms on each side, add some slack
-+	time=$((time + 450))
- 
--	printf "%-50s" "$msg"
--	do_transfer $small $large $((time * 11 / 10))
-+	printf "%-60s" "$msg"
-+	do_transfer $small $large $time
- 	lret=$?
- 	if [ $lret -ne 0 ]; then
- 		ret=$lret
- 		[ $bail -eq 0 ] || exit $ret
- 	fi
- 
--	printf "%-50s" "$msg - reverse direction"
--	do_transfer $large $small $((time * 11 / 10))
-+	printf "%-60s" "$msg - reverse direction"
-+	do_transfer $large $small $time
- 	lret=$?
- 	if [ $lret -ne 0 ]; then
- 		ret=$lret
--- 
-2.33.1
-
+On 10/30/21 06:53, David Ahern wrote:
+> On 10/26/21 8:24 AM, msizanoen wrote:
+>> The kernel leaks memory when a `fib` rule is present in ipv6 nftables
+>> firewall rules and a suppress_prefix rule
+>> is present in the IPv6 routing rules (used by certain tools such as
+>> wg-quick). In such scenarios, every incoming
+>> packet will leak an allocation in ip6_dst_cache slab cache.
+>>
+>> After some hours of `bpftrace`-ing and source code reading, I tracked
+>> down the issue to this commit:
+>>      https://github.com/torvalds/linux/commit/ca7a03c4175366a92cee0ccc4fec0038c3266e26
+>>
+>>
+>> The problem with that patch is that the generic args->flags always have
+>> FIB_LOOKUP_NOREF set[1][2] but the
+>> ip6-specific flag RT6_LOOKUP_F_DST_NOREF might not be specified, leading
+>> to fib6_rule_suppress not
+>> decreasing the refcount when needed. This can be fixed by exposing the
+>> protocol-specific flags to the
+>> protocol specific `suppress` function, and check the protocol-specific
+>> `flags` argument for
+>> RT6_LOOKUP_F_DST_NOREF instead of the generic FIB_LOOKUP_NOREF when
+>> decreasing the refcount.
+>>
+>> How to reproduce:
+>> - Add the following nftables rule to a prerouting chain: `meta nfproto
+>> ipv6 fib saddr . mark . iif oif missing drop`
+> exact command? I have not played with nftables. Do you have a stack
+> trace of where the dst reference is getting taken?
+>
+>
+>> - Run `sudo ip -6 rule add table main suppress_prefixlength 0`
+>> - Watch `sudo slabtop -o | grep ip6_dst_cache` memory usage increase
+>> with every incoming ipv6 packet
+>>
+>> Example
+>> patch:https://gist.github.com/msizanoen1/36a2853467a9bd34fadc5bb3783fde0f
+>>
+>> [1]:https://github.com/torvalds/linux/blob/ca7a03c4175366a92cee0ccc4fec0038c3266e26/net/ipv6/fib6_rules.c#L71
+>>
+>> [2]:https://github.com/torvalds/linux/blob/ca7a03c4175366a92cee0ccc4fec0038c3266e26/net/ipv6/fib6_rules.c#L99
+>>
+>>
+>>
