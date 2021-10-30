@@ -2,200 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC32C4409DB
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 17:12:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C132D4409F0
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 17:30:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231902AbhJ3PPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 11:15:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60630 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229993AbhJ3PPE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Oct 2021 11:15:04 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F298C061570;
-        Sat, 30 Oct 2021 08:12:34 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id i5so8787945pla.5;
-        Sat, 30 Oct 2021 08:12:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=tTGq8KHTwwJt1uiIn7bWEIdIOueKlVOZQsVf1i576Zg=;
-        b=MeBGm+G1aD5v/IthLS62HoLdLiUgocfNH4Sa7Fs79dcuYSFTOgjbjdqB+tdwiqXyjP
-         YjI13nImpBS6MqZUqAuMg1jY4LF6rgxu5/T7tccdOiPJUZHnEVSlKvXGJrN6e5l/+z4v
-         fc8Sm+2dZXyw+Bp3nQMCxCMT18UExoYSizAJZtUYuEc9VTNexS9anf/nB3P3xZy2IMNP
-         oF/KaOIQbI7ZUnfGqWZ1oWqxMHAYcEp7ulyUOwyWIXX9vrczRSh7Jey4Yrj/GYgZXySx
-         tc/Nac0xiw9kxHqlSGObOJrLQh1zHWoBTRRpwY7eExVjwjVS49e+hdnK5BS6JxKS23Mh
-         AZcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tTGq8KHTwwJt1uiIn7bWEIdIOueKlVOZQsVf1i576Zg=;
-        b=2x3ufzFUzKF2OP3dazD3t6e/GpqVhQSHuM7u/vPeCU/D4Cdyb0gm1n+sStNJotyo+4
-         wBVpbzicuKmbibJyqsbR5Vmmn66GeZKoHw5f7dx/1vknq0LvItsMzpP1jS/z0ENoex+W
-         jAoGYO9aFybHcnFZ7AMzLZN++4UxcWq5gbDViK2Ch2+HBIfp5fDJBtSzaTlNFHZssBMC
-         ql9O1wZXnoTSEmgJA1coPgFyzIl4SLXsgL+Ar66HB92FQ+gC3Apql/jd7MK/OUerqWX+
-         7UHqejCmm5KQnsjw2SeNUrD3CTWNunrJy8OW6L1nIsk2eOiTysDrV+YBa/QRvzzemBFz
-         o81Q==
-X-Gm-Message-State: AOAM533Gct45LBQmRlcydu+F/7PgXur1avKe/+Q1piojmN4Y6S+2NRRX
-        eZyTDpPqlAUjZtyUf5Ny/YM=
-X-Google-Smtp-Source: ABdhPJzOX7ozeg9k2RS3uxvBdhCvhQG0qwbNkHMYIzFI6zZw2XK0tApdOVruTQzmRmYprRAy5MALsQ==
-X-Received: by 2002:a17:90b:4c88:: with SMTP id my8mr18145660pjb.49.1635606753999;
-        Sat, 30 Oct 2021 08:12:33 -0700 (PDT)
-Received: from localhost ([2405:201:6014:d916:31fc:9e49:a605:b093])
-        by smtp.gmail.com with ESMTPSA id 145sm2842590pfx.87.2021.10.30.08.12.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Oct 2021 08:12:33 -0700 (PDT)
-Date:   Sat, 30 Oct 2021 20:42:30 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v5 3/8] libbpf: Add weak ksym support to
- gen_loader
-Message-ID: <20211030151230.bkp7gvuugcjw7q6g@apollo.localdomain>
-References: <20211028063501.2239335-1-memxor@gmail.com>
- <20211028063501.2239335-4-memxor@gmail.com>
- <20211029002244.3m63qmwrmykarvt6@ast-mbp.dhcp.thefacebook.com>
+        id S231950AbhJ3PdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Oct 2021 11:33:15 -0400
+Received: from mail-cusazon11021025.outbound.protection.outlook.com ([52.101.62.25]:18748
+        "EHLO na01-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230086AbhJ3PdO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Oct 2021 11:33:14 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dJm16fdgKNtrClBB/BhRjg/2GtNXHAZIrUdNWUC+suJWOTI+g0yqmoB9KE1WbKAgIddRIYsXVVNcoKCj9UXF86YbPfPNwF66qfyNNCFlVNwU9qJMFgstb4KwKuw5If2f2B08TApa+jXDSsVpHazeKa8WCoGaONFSwrh9Yi9CCnbxuBu0yHEJJS97ZzZWCKw9Gd1HhVsitYf4a8SKoGPsvx51MeBzJ3tcDSAROJcf4SlhZL9kVlv+uz1JNcnjHSnweWnO3sA4G0H46Xq1XaJilfE+5ok0Ms58gQqt06SK7LzQqZal5/9UlCEPhWPJHy49zz+t47rdC+rHSuqbRJLx8g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=sl+2++Qwr1E8eWVcgSPVM2oKPhTAKWIj9SVbwWSQwcI=;
+ b=cS/dh61pAR/4FqOKLVJHyrw0EUY3CZm9UWoB4ffojl80MRUQeBXoJ5S9quIkiOz3itxkdmGNxLEUUvt9WI9yXFMJBAzEjRu7e54NiPdOUFsAsQ5clCGnYqp5zLQpKTxqYLfSKL9h7hf/wmtN+UHIlPkth8/a3VuPYykgLa10DHiC0TWmrX558kJwopKym8zMT5TrsWlzT2dQDxq6lDIDurViMLajIwCDGKZj7eRP2W9YrWsOrbwukvzcZnHG++/WZZcpAwaR/OYxxHBVwzh50Ets4dcIDbPegXkvL46ZoBeL5Frd8ade1p89VlZfDhJ90hTFCaj0d8bvDLr/SYapAQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sl+2++Qwr1E8eWVcgSPVM2oKPhTAKWIj9SVbwWSQwcI=;
+ b=ZdkZWqCiqABGuymQ9OfZ4A2gDbf7cAhwWLp9/M1SyJ9KZSTgcgr2WIzP3NJx1V8SrFQhzPo66tRG2lubRdXGP64LFYMxSOKt4RUjuctDGTHztDeyzRcgHQyr3y59ek9/HF0Pm6V/PheBJYu3DVYu1lUZ28jfTa8elgVW5rgECQA=
+Received: from BN8PR21MB1284.namprd21.prod.outlook.com (2603:10b6:408:a2::22)
+ by BN8PR21MB1234.namprd21.prod.outlook.com (2603:10b6:408:77::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.0; Sat, 30 Oct
+ 2021 15:30:40 +0000
+Received: from BN8PR21MB1284.namprd21.prod.outlook.com
+ ([fe80::5962:fbb9:f607:8018]) by BN8PR21MB1284.namprd21.prod.outlook.com
+ ([fe80::5962:fbb9:f607:8018%7]) with mapi id 15.20.4669.004; Sat, 30 Oct 2021
+ 15:30:40 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     Dexuan Cui <decui@microsoft.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "gustavoars@kernel.org" <gustavoars@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     KY Srinivasan <kys@microsoft.com>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        Shachar Raindel <shacharr@microsoft.com>,
+        Paul Rosswurm <paulros@microsoft.com>,
+        "olaf@aepfle.de" <olaf@aepfle.de>, vkuznets <vkuznets@redhat.com>
+Subject: RE: [PATCH net-next 1/4] net: mana: Fix the netdev_err()'s vPort
+ argument in mana_init_port()
+Thread-Topic: [PATCH net-next 1/4] net: mana: Fix the netdev_err()'s vPort
+ argument in mana_init_port()
+Thread-Index: AQHXzSi4LzXo/haLVkOIULr1f0GnJKvrq8cQ
+Date:   Sat, 30 Oct 2021 15:30:40 +0000
+Message-ID: <BN8PR21MB1284DB6301CB6D73260103CACA889@BN8PR21MB1284.namprd21.prod.outlook.com>
+References: <20211030005408.13932-1-decui@microsoft.com>
+ <20211030005408.13932-2-decui@microsoft.com>
+In-Reply-To: <20211030005408.13932-2-decui@microsoft.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=935e2c5d-858f-4269-8b3c-08a760c9af2d;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-10-30T15:30:20Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: aab484fd-f154-488f-c8b7-08d99bba3ae8
+x-ms-traffictypediagnostic: BN8PR21MB1234:
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <BN8PR21MB12344E92251BBCED8B8CCCBFCA889@BN8PR21MB1234.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4941;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ItB/j711t4j2CWEDYYqUUnmwlWjd19VFGEZ+n9j2ZuftvVjM44fVPKv2240Hz7keV0ISghvKs0PVZqG66wRELgwtbkfZb474DGn2VEWlN0U8sNCn2JnKHQGuRYQLVHHxdgTM38WEmI4A+M+WyJ/kjO5QdWJpzI47WOvJSWlQCqGePVGCRPyCaSG36qLtmzed6oDYZuglgRqhpvuNz+zxw7a6kVJEjIPCbAJ2A94Y8liKWBYXRJkE9hd9gZFWA/KlU6QMPBxAMYLG3t66PbIe/a9YMLVLmxQEs8Jzhl84GZKK/DVS2PcE4ctjoJO/5IThMd5ZPKOb7g1UNqqzwtBCovyVqLGB1rVX+XUnxdPVfmz9Mco96Q+vgz1X82dsPyi3jWus20OA9E8iB3Txi81vNERJ1rbGFkhkgjx+IUrlK6WcTbKoNJSJKNhr3G3VgLFsQRi2FZxHl5E/ZWsh+2L6J3DIPo9FcUQdPGU8/3dJHsZ4ZMlk65Nij1ht5soBPppRJwAao+mXz9bX67A/GE2cGW6UQkPz7nqrELI9atXgqyMi5ZZvm2zfZ+xlfl1ivSFS3URb1sjc2INrf3Wa5lMhBU4LoGqye8VQL2Uhl8uHjnCeY8Y3+dWI3OjhOxDf4gkSCYzNfmJZPI7hx8M95HsEIHi2lvGiFiEl4ASOEmoW8lP55DuS3SFiUNrTpm/NMP7wRTkcX4L7m9QPDyar85C55w==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR21MB1284.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(38070700005)(55016002)(71200400001)(8990500004)(2906002)(82960400001)(54906003)(8936002)(186003)(66946007)(66556008)(66476007)(66446008)(64756008)(26005)(9686003)(110136005)(8676002)(76116006)(86362001)(82950400001)(52536014)(508600001)(6506007)(10290500003)(38100700002)(316002)(122000001)(4326008)(7416002)(7696005)(5660300002)(83380400001)(53546011)(33656002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?rKR/HQfr0lr0rmQxF05GVVyLtyrLeazePzrOBx9GYgwwp7wwfHtJlvFVinkI?=
+ =?us-ascii?Q?ahCP4aXKgLJkxQj0y+mPIayt6zQ0CdWbIBgcSl6TMgN8BhDJz/tuoRIuQQJs?=
+ =?us-ascii?Q?vjv5+OLhO5GJIVSPxTTa28UVtHkVye2UGFqNieivYg98rmf83AK2lbwwreKg?=
+ =?us-ascii?Q?GP/9Vn0QhqD0Gk2TCELRHooLkoGetDl7zEg7M/xV4sJXLlSatGYwteLpgetl?=
+ =?us-ascii?Q?sCJp7FG8gTRhprYftIT80jV0Ntd1MRGiLFjBkAQMWdgji24RT7gbfY2tLuJk?=
+ =?us-ascii?Q?tcfVd74zqk3X6qb4Liy0RkXKppXMrcr3qSa+DFpG+h59P5MZiTQhBrLIvxAz?=
+ =?us-ascii?Q?Y3g4GX2RECoJ2V0yymqqQTKJH5xt/ZCRGiMUV5R8MTwJjD1uztxEHcXV5M1h?=
+ =?us-ascii?Q?LHGkVXO2KCRrIYvprbOYpVuRkQyRZW5oXPRjRU2ioREZqJRpxKbwNDIqgmve?=
+ =?us-ascii?Q?C2m0qsMQ/I13/5g0Jd55itiTTIYi/5tkgCMoKreNSF10nqIJI6uIG9QdfYst?=
+ =?us-ascii?Q?i8uaHN2ubK/aytl+5A79nq15IwTxIE4/DMW5hYgmwbOcCej61TNpmpUbwNGk?=
+ =?us-ascii?Q?5WTkAVrchKDOLWff+4PvMHSjsJn0wLX+bn1SbpFf5sSG2VZJXLjACousSgkB?=
+ =?us-ascii?Q?CwbU3bDFhyGQb923rBCi3y54Uqq6cH2DDF6HZY91Wwv9UCZnvLoICWLc0f6u?=
+ =?us-ascii?Q?tbtdLVMJNmLYgeVwvzxD4MLCqTLAJmHk4dIjlPPYdvOBRLthqRIoPiAj69um?=
+ =?us-ascii?Q?Y0pj4JB85lo43raSuzG7H6d/u4N2DZJW67M6Br6ejqKGUw2VSI/EG3hgJtku?=
+ =?us-ascii?Q?uWsVVm9hoiRC6Bo2B/C0Ufks9I1yOVqbWLxH/Hjj/HVaV4lQ5INjfh1+pRND?=
+ =?us-ascii?Q?Q2HQpIN3hI9He2fpGx2O52dd9y76bRftujZ6T9EfIy+s9TsLx68UnKlfqeW7?=
+ =?us-ascii?Q?tbxRR3oOXnU9iwLo+iieHLIuGGJJzeOxwjXyPIdNm1+8jZ/18r0ycuIS840j?=
+ =?us-ascii?Q?spSTjpPD2sIdG71w0tvlbbhKvz9EOWj8ys1/lkUz6fSk2Hyt1j5S9kLeTxmz?=
+ =?us-ascii?Q?vvP8CWHiNDgD7eW4QtN+scWmWTBnDPmSDvHhanqeeE5yW5PUTKEC0Ih86xiU?=
+ =?us-ascii?Q?fNGba6LwZwN3xuRt0CFAo2yRR+hj5ASWw7EQDx181QQng6rnQcPf2jRgHx09?=
+ =?us-ascii?Q?JGu8D0M7BTOlDF9Z3Uyu5mCUEIzhjGJmmUhz7eb/ybwPzuYUARnAMg4CjAUN?=
+ =?us-ascii?Q?qfulu/lvtL9hWqiw2xoPe5fL1yNExiiBmQsrDOW/iPdtYDwhIbV+OULki9zV?=
+ =?us-ascii?Q?M1OPalx/mHDqIlxfoGn6jKdA+fY0ivD/Bs1dVKMGq0v2j8hxH/z4r5Gv0Wbn?=
+ =?us-ascii?Q?8dGqapSWcWUylY0iYJctAQ11xuAe8XxMjidUXxglyVr/aCqsN1vvyiwzcIZ0?=
+ =?us-ascii?Q?ioCkkwGKsjWIfZqyb2c3gXYx9dUSFw05mMT1JUPdsbdb+DCRyhvaI2pRp8zc?=
+ =?us-ascii?Q?1Ol42+/1sC35+027eTJyJnKXv9lyePC5jiGuJKPsEUXkpxnXPEfUzJu7H6hr?=
+ =?us-ascii?Q?miAHWFisCL5RRVlSs4/OCvL8TJ1PJ2z1iKsMu0QYtUdX9Z84aM9044Yfe2EF?=
+ =?us-ascii?Q?gQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211029002244.3m63qmwrmykarvt6@ast-mbp.dhcp.thefacebook.com>
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR21MB1284.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: aab484fd-f154-488f-c8b7-08d99bba3ae8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Oct 2021 15:30:40.2183
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Glae5ABfnUeW2/3jh6M4Leu9OegmoIHAvCiYMgLqF7Ck9fy5z5aQYEQoBlVxUKyOAe1WAq3vQ4mPJt92S4rL2A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR21MB1234
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 29, 2021 at 05:52:44AM IST, Alexei Starovoitov wrote:
-> On Thu, Oct 28, 2021 at 12:04:56PM +0530, Kumar Kartikeya Dwivedi wrote:
-> > This extends existing ksym relocation code to also support relocating
-> > weak ksyms. Care needs to be taken to zero out the src_reg (currently
-> > BPF_PSEUOD_BTF_ID, always set for gen_loader by bpf_object__relocate_data)
-> > when the BTF ID lookup fails at runtime.  This is not a problem for
-> > libbpf as it only sets ext->is_set when BTF ID lookup succeeds (and only
-> > proceeds in case of failure if ext->is_weak, leading to src_reg
-> > remaining as 0 for weak unresolved ksym).
-> >
-> > A pattern similar to emit_relo_kfunc_btf is followed of first storing
-> > the default values and then jumping over actual stores in case of an
-> > error. For src_reg adjustment, we also need to perform it when copying
-> > the populated instruction, so depending on if copied insn[0].imm is 0 or
-> > not, we decide to jump over the adjustment.
-> >
-> > We cannot reach that point unless the ksym was weak and resolved and
-> > zeroed out, as the emit_check_err will cause us to jump to cleanup
-> > label, so we do not need to recheck whether the ksym is weak before
-> > doing the adjustment after copying BTF ID and BTF FD.
-> >
-> > This is consistent with how libbpf relocates weak ksym. Logging
-> > statements are added to show the relocation result and aid debugging.
-> >
-> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > ---
-> >  tools/lib/bpf/gen_loader.c | 35 ++++++++++++++++++++++++++++++++---
-> >  1 file changed, 32 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/tools/lib/bpf/gen_loader.c b/tools/lib/bpf/gen_loader.c
-> > index 11172a868180..1c404752e565 100644
-> > --- a/tools/lib/bpf/gen_loader.c
-> > +++ b/tools/lib/bpf/gen_loader.c
-> > @@ -13,6 +13,7 @@
-> >  #include "hashmap.h"
-> >  #include "bpf_gen_internal.h"
-> >  #include "skel_internal.h"
-> > +#include <asm/byteorder.h>
-> >
-> >  #define MAX_USED_MAPS	64
-> >  #define MAX_USED_PROGS	32
-> > @@ -776,12 +777,24 @@ static void emit_relo_ksym_typeless(struct bpf_gen *gen,
-> >  	emit_ksym_relo_log(gen, relo, kdesc->ref);
-> >  }
-> >
-> > +static __u32 src_reg_mask(void)
-> > +{
-> > +#if defined(__LITTLE_ENDIAN_BITFIELD)
-> > +	return 0x0f; /* src_reg,dst_reg,... */
-> > +#elif defined(__BIG_ENDIAN_BITFIELD)
-> > +	return 0xf0; /* dst_reg,src_reg,... */
-> > +#else
-> > +#error "Unsupported bit endianness, cannot proceed"
-> > +#endif
-> > +}
-> > +
-> >  /* Expects:
-> >   * BPF_REG_8 - pointer to instruction
-> >   */
-> >  static void emit_relo_ksym_btf(struct bpf_gen *gen, struct ksym_relo_desc *relo, int insn)
-> >  {
-> >  	struct ksym_desc *kdesc;
-> > +	__u32 reg_mask;
-> >
-> >  	kdesc = get_ksym_desc(gen, relo);
-> >  	if (!kdesc)
-> > @@ -792,19 +805,35 @@ static void emit_relo_ksym_btf(struct bpf_gen *gen, struct ksym_relo_desc *relo,
-> >  			       kdesc->insn + offsetof(struct bpf_insn, imm));
-> >  		move_blob2blob(gen, insn + sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm), 4,
-> >  			       kdesc->insn + sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm));
-> > -		goto log;
-> > +		emit(gen, BPF_LDX_MEM(BPF_W, BPF_REG_9, BPF_REG_8, offsetof(struct bpf_insn, imm)));
->
-> Thanks a lot for working on this. I've applied the set.
->
-> The above load is redundant, right? BPF_REG_0 already has that value
-> and could have been used in the JNE below, right?
->
 
-Hm, true, we could certainly avoid another load here.
 
-> > +		/* jump over src_reg adjustment if imm is not 0 */
-> > +		emit(gen, BPF_JMP_IMM(BPF_JNE, BPF_REG_9, 0, 3));
-> > +		goto clear_src_reg;
->
-> Is there a test for this part of the code?
-> It's only for weak && unresolved && multi referenced ksym, right?
+> -----Original Message-----
+> From: Dexuan Cui <decui@microsoft.com>
+> Sent: Friday, October 29, 2021 8:54 PM
+> To: davem@davemloft.net; kuba@kernel.org; gustavoars@kernel.org; Haiyang
+> Zhang <haiyangz@microsoft.com>; netdev@vger.kernel.org
+> Cc: KY Srinivasan <kys@microsoft.com>; stephen@networkplumber.org;
+> wei.liu@kernel.org; linux-kernel@vger.kernel.org; linux-
+> hyperv@vger.kernel.org; Shachar Raindel <shacharr@microsoft.com>; Paul
+> Rosswurm <paulros@microsoft.com>; olaf@aepfle.de; vkuznets
+> <vkuznets@redhat.com>; Dexuan Cui <decui@microsoft.com>
+> Subject: [PATCH net-next 1/4] net: mana: Fix the netdev_err()'s vPort
+> argument in mana_init_port()
+>=20
+> Use the correct port index rather than 0.
+>=20
+> Signed-off-by: Dexuan Cui <decui@microsoft.com>
+> ---
+>  drivers/net/ethernet/microsoft/mana/mana_en.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c
+> b/drivers/net/ethernet/microsoft/mana/mana_en.c
+> index 1417d1e72b7b..4ff5a1fc506f 100644
+> --- a/drivers/net/ethernet/microsoft/mana/mana_en.c
+> +++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
+> @@ -1599,7 +1599,8 @@ static int mana_init_port(struct net_device *ndev)
+>  	err =3D mana_query_vport_cfg(apc, port_idx, &max_txq, &max_rxq,
+>  				   &num_indirect_entries);
+>  	if (err) {
+> -		netdev_err(ndev, "Failed to query info for vPort 0\n");
+> +		netdev_err(ndev, "Failed to query info for vPort %d\n",
+> +			   port_idx);
 
-Correct.
+Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
 
-> Or bpf_link_fops2 test_ksyms_weak.c fits this category?
->
-
-Yes, the result of relocation is as follows (t=0 means typed, w=1 means weak):
-find_by_name_kind(bpf_link_fops2,14) r=-2
-var t=0 w=1 (bpf_link_fops2:count=1): imm[0]: 0, imm[1]: 0
-var t=0 w=1 (bpf_link_fops2:count=1): insn.reg r=1
-// goto clear_src_reg happens for this one
-var t=0 w=1 (bpf_link_fops2:count=2): imm[0]: 0, imm[1]: 0
-var t=0 w=1 (bpf_link_fops2:count=2): insn.reg r=1
-
-> >  	}
-> >  	/* remember insn offset, so we can copy BTF ID and FD later */
-> >  	kdesc->insn = insn;
-> >  	emit_bpf_find_by_name_kind(gen, relo);
-> > -	emit_check_err(gen);
-> > +	if (!relo->is_weak)
-> > +		emit_check_err(gen);
-> > +	/* set default values as 0 */
-> > +	emit(gen, BPF_ST_MEM(BPF_W, BPF_REG_8, offsetof(struct bpf_insn, imm), 0));
-> > +	emit(gen, BPF_ST_MEM(BPF_W, BPF_REG_8, sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm), 0));
-> > +	/* skip success case stores if ret < 0 */
-> > +	emit(gen, BPF_JMP_IMM(BPF_JSLT, BPF_REG_7, 0, 4));
-> >  	/* store btf_id into insn[insn_idx].imm */
-> >  	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_8, BPF_REG_7, offsetof(struct bpf_insn, imm)));
-> >  	/* store btf_obj_fd into insn[insn_idx + 1].imm */
-> >  	emit(gen, BPF_ALU64_IMM(BPF_RSH, BPF_REG_7, 32));
-> >  	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_8, BPF_REG_7,
-> >  			      sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm)));
->
-> The double store (first with zeros and then with real values) doesn't look pretty.
-> I think an extra jump over two stores would have been cleaner.
-
-I will address all your (and Andrii's) points in another patch.
-
---
-Kartikeya
