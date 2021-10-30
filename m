@@ -2,101 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C49B440914
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 15:14:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F224644092F
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 15:51:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231843AbhJ3NRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 09:17:07 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:30884 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229758AbhJ3NRE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Oct 2021 09:17:04 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HhKQQ4NrWzbnNd;
-        Sat, 30 Oct 2021 21:09:50 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Sat, 30 Oct 2021 21:14:31 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Sat, 30 Oct 2021 21:14:30 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <mkubecek@suse.cz>,
-        <andrew@lunn.ch>, <amitc@mellanox.com>, <idosch@idosch.org>,
-        <danieller@nvidia.com>, <jesse.brandeburg@intel.com>,
-        <anthony.l.nguyen@intel.com>, <jdike@addtoit.com>,
-        <richard@nod.at>, <anton.ivanov@cambridgegreys.com>,
-        <netanel@amazon.com>, <akiyano@amazon.com>, <gtzalik@amazon.com>,
-        <saeedb@amazon.com>, <chris.snook@gmail.com>,
-        <ulli.kroll@googlemail.com>, <linus.walleij@linaro.org>,
-        <jeroendb@google.com>, <csully@google.com>,
-        <awogbemila@google.com>, <jdmason@kudzu.us>,
-        <rain.1986.08.12@gmail.com>, <zyjzyj2000@gmail.com>,
-        <kys@microsoft.com>, <haiyangz@microsoft.com>, <mst@redhat.com>,
-        <jasowang@redhat.com>, <doshir@vmware.com>,
-        <pv-drivers@vmware.com>, <jwi@linux.ibm.com>,
-        <kgraul@linux.ibm.com>, <hca@linux.ibm.com>, <gor@linux.ibm.com>,
-        <johannes@sipsolutions.net>
-CC:     <netdev@vger.kernel.org>, <lipeng321@huawei.com>,
-        <chenhao288@hisilicon.com>, <huangguangbin2@huawei.com>,
-        <linux-s390@vger.kernel.org>
-Subject: [PATCH V5 net-next 6/6] net: hns3: remove the way to set tx spare buf via module parameter
-Date:   Sat, 30 Oct 2021 21:10:01 +0800
-Message-ID: <20211030131001.38739-7-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211030131001.38739-1-huangguangbin2@huawei.com>
-References: <20211030131001.38739-1-huangguangbin2@huawei.com>
+        id S230148AbhJ3NyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Oct 2021 09:54:04 -0400
+Received: from ink.ssi.bg ([178.16.128.7]:38749 "EHLO ink.ssi.bg"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230005AbhJ3NyE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Oct 2021 09:54:04 -0400
+Received: from ja.ssi.bg (unknown [178.16.129.10])
+        by ink.ssi.bg (Postfix) with ESMTPS id 43BC33C09BA;
+        Sat, 30 Oct 2021 16:51:29 +0300 (EEST)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.16.1/8.16.1) with ESMTP id 19UDpOQX008896;
+        Sat, 30 Oct 2021 16:51:26 +0300
+Date:   Sat, 30 Oct 2021 16:51:24 +0300 (EEST)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     yangxingwu <xingwu.yang@gmail.com>
+cc:     Simon Horman <horms@verge.net.au>, pablo@netfilter.org,
+        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-doc@vger.kernel.org, Chuanqi Liu <legend050709@qq.com>
+Subject: Re: [PATCH nf-next v4] netfilter: ipvs: Fix reuse connection if RS
+ weight is 0
+In-Reply-To: <e2699ba8-e733-2c71-584a-138746511f4@ssi.bg>
+Message-ID: <3fa86627-969-cf6-9de0-25721c9f3964@ssi.bg>
+References: <20211030064049.9992-1-xingwu.yang@gmail.com> <e2699ba8-e733-2c71-584a-138746511f4@ssi.bg>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hao Chen <chenhao288@hisilicon.com>
 
-The way to set tx spare buf via module parameter is not such
-convenient as the way to set it via ethtool.
+	Hello,
 
-So,remove the way to set tx spare buf via module parameter.
+On Sat, 30 Oct 2021, Julian Anastasov wrote:
 
-Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+> On Sat, 30 Oct 2021, yangxingwu wrote:
+> 
+> > We are changing expire_nodest_conn to work even for reused connections when
+> > conn_reuse_mode=0 but without affecting the controlled and persistent
+> > connections during the graceful termination period while server is with
+> > weight=0.
+> > 
+> > Fixes: d752c3645717 ("ipvs: allow rescheduling of new connections when port
+> > reuse is detected")
+> > Co-developed-by: Chuanqi Liu <legend050709@qq.com>
+> > Signed-off-by: Chuanqi Liu <legend050709@qq.com>
+> > Signed-off-by: yangxingwu <xingwu.yang@gmail.com>
+> 
+> 	Looks good to me, thanks!
+> 
+> Acked-by: Julian Anastasov <ja@ssi.bg>
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 076631d7727d..032547a2ad2f 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -53,10 +53,6 @@ static int debug = -1;
- module_param(debug, int, 0);
- MODULE_PARM_DESC(debug, " Network interface message level setting");
- 
--static unsigned int tx_spare_buf_size;
--module_param(tx_spare_buf_size, uint, 0400);
--MODULE_PARM_DESC(tx_spare_buf_size, "Size used to allocate tx spare buffer");
--
- static unsigned int tx_sgl = 1;
- module_param(tx_sgl, uint, 0600);
- MODULE_PARM_DESC(tx_sgl, "Minimum number of frags when using dma_map_sg() to optimize the IOMMU mapping");
-@@ -1041,8 +1037,7 @@ static void hns3_init_tx_spare_buffer(struct hns3_enet_ring *ring)
- 	dma_addr_t dma;
- 	int order;
- 
--	alloc_size = tx_spare_buf_size ? tx_spare_buf_size :
--		     ring->tqp->handle->kinfo.tx_spare_buf_size;
-+	alloc_size = ring->tqp->handle->kinfo.tx_spare_buf_size;
- 	if (!alloc_size)
- 		return;
- 
--- 
-2.33.0
+NACK for v4.
 
+	May be we should not include the !cp->control changes
+in this patch, it is better to reschedule as it was done
+before, the new connection will get the needed real server
+depending on the rules in ip_vs_check_template().
+
+	So, please send v5 with cp->control changes removed,
+updated commit message and Fixes tag without line wrap.
+
+> 	Simon, Pablo, may be you can change Fixes tag to be
+> on one line before applying.
+> 
+> > ---
+> >  Documentation/networking/ipvs-sysctl.rst |  3 +--
+> >  net/netfilter/ipvs/ip_vs_core.c          | 12 ++++--------
+> >  2 files changed, 5 insertions(+), 10 deletions(-)
+> > 
+> > diff --git a/Documentation/networking/ipvs-sysctl.rst b/Documentation/networking/ipvs-sysctl.rst
+> > index 2afccc63856e..1cfbf1add2fc 100644
+> > --- a/Documentation/networking/ipvs-sysctl.rst
+> > +++ b/Documentation/networking/ipvs-sysctl.rst
+> > @@ -37,8 +37,7 @@ conn_reuse_mode - INTEGER
+> >  
+> >  	0: disable any special handling on port reuse. The new
+> >  	connection will be delivered to the same real server that was
+> > -	servicing the previous connection. This will effectively
+> > -	disable expire_nodest_conn.
+> > +	servicing the previous connection.
+> >  
+> >  	bit 1: enable rescheduling of new connections when it is safe.
+> >  	That is, whenever expire_nodest_conn and for TCP sockets, when
+> > diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
+> > index 128690c512df..ce6ceb55822b 100644
+> > --- a/net/netfilter/ipvs/ip_vs_core.c
+> > +++ b/net/netfilter/ipvs/ip_vs_core.c
+> > @@ -1100,10 +1100,6 @@ static inline bool is_new_conn(const struct sk_buff *skb,
+> >  static inline bool is_new_conn_expected(const struct ip_vs_conn *cp,
+> >  					int conn_reuse_mode)
+> >  {
+> > -	/* Controlled (FTP DATA or persistence)? */
+> > -	if (cp->control)
+> > -		return false;
+> > -
+> >  	switch (cp->protocol) {
+> >  	case IPPROTO_TCP:
+> >  		return (cp->state == IP_VS_TCP_S_TIME_WAIT) ||
+> > @@ -1964,7 +1960,6 @@ ip_vs_in(struct netns_ipvs *ipvs, unsigned int hooknum, struct sk_buff *skb, int
+> >  	struct ip_vs_proto_data *pd;
+> >  	struct ip_vs_conn *cp;
+> >  	int ret, pkts;
+> > -	int conn_reuse_mode;
+> >  	struct sock *sk;
+> >  
+> >  	/* Already marked as IPVS request or reply? */
+> > @@ -2041,15 +2036,16 @@ ip_vs_in(struct netns_ipvs *ipvs, unsigned int hooknum, struct sk_buff *skb, int
+> >  	cp = INDIRECT_CALL_1(pp->conn_in_get, ip_vs_conn_in_get_proto,
+> >  			     ipvs, af, skb, &iph);
+> >  
+> > -	conn_reuse_mode = sysctl_conn_reuse_mode(ipvs);
+> > -	if (conn_reuse_mode && !iph.fragoffs && is_new_conn(skb, &iph) && cp) {
+> > +	if (!iph.fragoffs && is_new_conn(skb, &iph) && cp && !cp->control) {
+> >  		bool old_ct = false, resched = false;
+> > +		int conn_reuse_mode = sysctl_conn_reuse_mode(ipvs);
+> >  
+> >  		if (unlikely(sysctl_expire_nodest_conn(ipvs)) && cp->dest &&
+> >  		    unlikely(!atomic_read(&cp->dest->weight))) {
+> >  			resched = true;
+> >  			old_ct = ip_vs_conn_uses_old_conntrack(cp, skb);
+> > -		} else if (is_new_conn_expected(cp, conn_reuse_mode)) {
+> > +		} else if (conn_reuse_mode &&
+> > +			   is_new_conn_expected(cp, conn_reuse_mode)) {
+> >  			old_ct = ip_vs_conn_uses_old_conntrack(cp, skb);
+> >  			if (!atomic_read(&cp->n_control)) {
+> >  				resched = true;
+> > -- 
+> > 2.30.2
+
+Regards
+
+--
+Julian Anastasov <ja@ssi.bg>
