@@ -2,73 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AF0144072E
+	by mail.lfdr.de (Postfix) with ESMTP id E414844072F
 	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 06:06:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230402AbhJ3EIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 00:08:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38896 "EHLO mail.kernel.org"
+        id S231253AbhJ3EIu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Oct 2021 00:08:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38910 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229606AbhJ3EIs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229753AbhJ3EIs (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 30 Oct 2021 00:08:48 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 68A6B60187;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D53646101E;
         Sat, 30 Oct 2021 04:06:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635566777;
-        bh=63Sww3kyz2psfkmpu02ZAIufTQzGJvko/2vSo4ng9aM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=N0R9o5Ao1OOYpqB8AM/XqbSF7hfGm4SzaWWw4WoDuxnGKkkuvmsVO4z1/btNmMJNG
-         krbm4dOJ2XqbKZwfCsw92h82xhHHJsKH2BHcB3b6IrXaSYvlSfSRUL5OyhV2cZzCni
-         ct4GjRxNx5VQ76wL7XC90ylta56d+4RRGCkLgpLdI6Kn4IbXNdD/AdvfNI9yMFK612
-         nAhDkSqj+IhQRnTfRFHiVWRZsvB+HHwLZWHsHW14TyNE/A0hfaI+SkmKA+Pn+cxc5m
-         e2N7ULsuwbng7I8zBHHQPp6Hq1TLb/9atRbGO+5wFtLODH588d0yQqblzaFc2c/Zpg
-         ofBerSm5PM9Pw==
+        s=k20201202; t=1635566778;
+        bh=p46eIFq6HKnyMSsWUTbgjKLtvp+4VBdj642xvaUlp+o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rA28hUF783GBLKO7KgL/mSb0XkChkEOxhABxN5gqRvUpVXnBfP60CGANuxGTKIrgZ
+         i2z23vPjJUaVymoSuf0UyLZZ+PlNnktqk1zYDDLPvK33on4EZySNeycH3iOz8Q5Fik
+         lIm/wH2WHWN41746A0OPTHTSDU3KSpJIUwxD/gpNkn89H8JHP5DBWj7K3+AcGqwZU9
+         Sf8olWNGBdCcv8aRZnIezdikrjE/wqoofSS3kPo+yCw+jOQfnb7EnjlwajuisZ1716
+         8PLXLSMqRtYVLxeN1uZuXOmhD/b258nszUDGelayTnYw2UpPLtR5VupU3qLikA5sE0
+         9Ox8Ce4IpDh9Q==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, jiri@resnulli.us, leon@kernel.org,
         mkubecek@suse.cz, andrew@lunn.ch, f.fainelli@gmail.com,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 0/4] improve ethtool/rtnl vs devlink locking
-Date:   Fri, 29 Oct 2021 21:06:07 -0700
-Message-Id: <20211030040611.1751638-1-kuba@kernel.org>
+Subject: [PATCH net-next 1/4] ethtool: push the rtnl_lock into dev_ethtool()
+Date:   Fri, 29 Oct 2021 21:06:08 -0700
+Message-Id: <20211030040611.1751638-2-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20211030040611.1751638-1-kuba@kernel.org>
+References: <20211030040611.1751638-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-During ethtool netlink development we decided to move some of
-the commmands to devlink. Since we don't want drivers to implement
-both devlink and ethtool version of the commands ethtool ioctl
-falls back to calling devlink. Unfortunately devlink locks must
-be taken before rtnl_lock. This results in a questionable
-dev_hold() / rtnl_unlock() / devlink / rtnl_lock() / dev_put()
-pattern.
+Don't take the lock in net/core/dev_ioctl.c,
+we'll have things to do outside rtnl_lock soon.
 
-This method "works" but it working depends on drivers in question
-not doing much in ethtool_ops->begin / complete, and on the netdev
-not having needs_free_netdev set.
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ net/core/dev_ioctl.c |  2 --
+ net/ethtool/ioctl.c  | 14 +++++++++++++-
+ 2 files changed, 13 insertions(+), 3 deletions(-)
 
-Since commit 437ebfd90a25 ("devlink: Count struct devlink consumers")
-we can hold a reference on a devlink instance and prevent it from
-going away (sort of like netdev with dev_hold()). We can use this
-to create a more natural reference nesting where we get a ref on
-the devlink instance and make the devlink call entirely outside
-of the rtnl_lock section.
-
-Jakub Kicinski (4):
-  ethtool: push the rtnl_lock into dev_ethtool()
-  ethtool: handle info/flash data copying outside rtnl_lock
-  devlink: expose get/put functions
-  ethtool: don't drop the rtnl_lock half way thru the ioctl
-
- include/net/devlink.h |  16 ++++-
- net/core/dev_ioctl.c  |   2 -
- net/core/devlink.c    |  53 ++++-----------
- net/ethtool/ioctl.c   | 148 ++++++++++++++++++++++++++++++------------
- 4 files changed, 134 insertions(+), 85 deletions(-)
-
+diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
+index 0e87237fd871..cbab5fec64b1 100644
+--- a/net/core/dev_ioctl.c
++++ b/net/core/dev_ioctl.c
+@@ -518,9 +518,7 @@ int dev_ioctl(struct net *net, unsigned int cmd, struct ifreq *ifr,
+ 
+ 	case SIOCETHTOOL:
+ 		dev_load(net, ifr->ifr_name);
+-		rtnl_lock();
+ 		ret = dev_ethtool(net, ifr, data);
+-		rtnl_unlock();
+ 		if (colon)
+ 			*colon = ':';
+ 		return ret;
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 44430b6ab843..52bfc5b82ec3 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -2700,7 +2700,8 @@ static int ethtool_set_fecparam(struct net_device *dev, void __user *useraddr)
+ 
+ /* The main entry point in this file.  Called from net/core/dev_ioctl.c */
+ 
+-int dev_ethtool(struct net *net, struct ifreq *ifr, void __user *useraddr)
++static int
++__dev_ethtool(struct net *net, struct ifreq *ifr, void __user *useraddr)
+ {
+ 	struct net_device *dev = __dev_get_by_name(net, ifr->ifr_name);
+ 	u32 ethcmd, sub_cmd;
+@@ -3000,6 +3001,17 @@ int dev_ethtool(struct net *net, struct ifreq *ifr, void __user *useraddr)
+ 	return rc;
+ }
+ 
++int dev_ethtool(struct net *net, struct ifreq *ifr, void __user *useraddr)
++{
++	int rc;
++
++	rtnl_lock();
++	rc = __dev_ethtool(net, ifr, useraddr);
++	rtnl_unlock();
++
++	return rc;
++}
++
+ struct ethtool_rx_flow_key {
+ 	struct flow_dissector_key_basic			basic;
+ 	union {
 -- 
 2.31.1
 
