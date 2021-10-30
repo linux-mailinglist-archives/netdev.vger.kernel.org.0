@@ -2,398 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5E2B440969
-	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 16:09:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 008F84409A5
+	for <lists+netdev@lfdr.de>; Sat, 30 Oct 2021 16:46:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229879AbhJ3OLm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 10:11:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46782 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229822AbhJ3OLm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Oct 2021 10:11:42 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A267C061570
-        for <netdev@vger.kernel.org>; Sat, 30 Oct 2021 07:09:12 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id q187so12751143pgq.2
-        for <netdev@vger.kernel.org>; Sat, 30 Oct 2021 07:09:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=tAfCyiK1YbF14uJH2Z5edlPGZhRV6Z11Yc6Km7BBUHo=;
-        b=ncDKRLnGgUAq7ED7TeOXhiZtS2I8Bm2aROcD/1ct7GvYIQE5lOK+RcPTJxvVajhltW
-         KL8O/tzj62Cu4TB7ha/UXI9QIqo2aSaZFpMV17DyRh55YeKROelYludCwRdGBygd6vfG
-         UrSJZcPnT43vrx/hQVR5Udwgae3I7+rPs0SCzajmZ+VYE7Md5eCTXB9tgx4IhNxEyhV3
-         13xPHgS9GHgysZAjL/GYMkjjyY+wrpnh5ZdtHjo4Od5ThHP/8UgRUARs/JHEK5IAC5rS
-         b0NqZutHZa7o23LnBeVsom5YR3JLyMrn9NmPvCvqT2DQzUI4EXohcSmaqMwNhUQFAxjS
-         f3tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=tAfCyiK1YbF14uJH2Z5edlPGZhRV6Z11Yc6Km7BBUHo=;
-        b=Qo/vM4COPvcOAgJpV9fMzq9IQrgQ9oPt4TldcAY7YbgdlwCsQUwcVOGkgjbLvzP+h7
-         fL+88VCk9FGlC6ajFHuzjKzEFHPR71WhKqFV7bxnPvhaduJVfyupaiwItHLRyJi1cZBd
-         egLC8jFHzmxkA0zgYR3Q8LfTJu/EiHGqKw0VAaId3acZ4fL97ilB4HsEhonPF9iR/FCq
-         En2gBNkO25FktNC3cm7FWhk0kbKQ6Zc7NvyJC7YzYfivYxMQ5yqqMxfEkY9/y67kirdt
-         fSOARAcR7WxTCxhcIqGVznPkfIVplvtgwYxp+g0yTTj+oqNOqS3L2LIwymb+3Z037B9o
-         jEfQ==
-X-Gm-Message-State: AOAM532Cy+YnBCs46dc73qdaSaN59GUIsWyjCVXjSa+gcnKNi8qZzjpO
-        YszIXEjDcpYbN0bcLCr+Zro=
-X-Google-Smtp-Source: ABdhPJxLwGoC0MjP2LCNA8xyWn/l8A9aPkfjgDH0/GXIfFfvFNoz9NldqlO6v7k1P3B0qtn3yA9a5w==
-X-Received: by 2002:a05:6a00:801:b0:47d:9dc8:5751 with SMTP id m1-20020a056a00080100b0047d9dc85751mr17438405pfk.32.1635602951523;
-        Sat, 30 Oct 2021 07:09:11 -0700 (PDT)
-Received: from localhost.localdomain ([49.173.165.50])
-        by smtp.gmail.com with ESMTPSA id nn2sm14159742pjb.34.2021.10.30.07.09.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Oct 2021 07:09:10 -0700 (PDT)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     stephen@networkplumber.org, dsahern@gmail.com,
-        netdev@vger.kernel.org
-Cc:     ap420073@gmail.com
-Subject: [PATCH iproute-next v3] ip: add AMT support
-Date:   Sat, 30 Oct 2021 14:08:58 +0000
-Message-Id: <20211030140858.16788-1-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S230101AbhJ3Osj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Oct 2021 10:48:39 -0400
+Received: from mail-bn8nam12on2067.outbound.protection.outlook.com ([40.107.237.67]:61792
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229993AbhJ3Osi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Oct 2021 10:48:38 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jLfsM3iXz19C2yTGifKOvks/ZngWyU8XFFz+j4RmAZrGAWbmwvx8s6ejziIBJ4J9uYruKU9ROPCAJN+h5VxZ3rDjlxmlvmS6BC1cIu8Sax+gG8f70OwKK5XR/tixkUzMiQENzGIRKUrOb1g4yFU0dY4CfX8cWtF6LGhv9OM53/iLfskyqJJheGLGEtprAHlY1H1XAyj+ha72TuG+4A0lF2EPDYNMvbD7kVyRQdhgo+DEW46WwAIS7ycpuZMTEUw16qLUqnUMmo3VqctOqFSO6P+Nf9m8ZxhJUZSWXweLP1G8FaA0uGuRaNLhekTY/4SuUmibxnkoLRPhtGGgD0qvSA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VkT9wFaN/GYu89/RlNdj8zYJVx7BVEvF8+pdqd4+OXY=;
+ b=OsFW6WZ1RG5cKFeM0kIuh4u4CfvqZEZBaPYweyV1+EKiEO7gfTZrqB+b7kihSPD26vek9LjJcaPKfl5LZr7EH33SZdCUuttHL5JVOY48vLD0C2c3z50W0cs8drGatJPfEPd8lY3zM+96OYdIJMIkJIsi97phL2M0F1OMcydDwNqgyDsbCnL+fwj2eH59Ks61Hin/mi8ccLKtyaqT0GkSuAB2NSQeBE3QHppuTvVdRfe2XcXZYA6uOTPVUfsqszc4v6T8PvfiDPUtEb6txikFu5MeyrEG1wLhotQjQZTrsEkMHRnX4ffgoyI4JKj1Pz1CdSeqkHxrf7idjAP/v+IybQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=nvidia.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VkT9wFaN/GYu89/RlNdj8zYJVx7BVEvF8+pdqd4+OXY=;
+ b=mj8hzo67KwLXkjBc38cuwfzQ/cYMyQkFwRwdF/v7gUy5aN9oDCIP2SEu9534m/aYdWOBkQsdRzcZisFfVDWWlKotp2P/OqkvuSapCRtL23wJ+4abP53a3zeWSagX0EPUI5HXjqgJpZlqlFtF3Y9CvB2fK/KNN53MsBcSVf/1dkQ3Vzz2bsCXy93jGaDZqnQCgxAiOAP7h98q8lwZ/rCDK8J52gQX4CFbdZCGmFE5qMQj6MSrUNwX2Ze33z08zzUekx14802gn8ITmpgDu0/7+QdDKvqT29zwcPwrHlxjfMmWerG/lIrrv/TSx8Gjbt3rjvgEIW3BuL1r8g1TfzEaiA==
+Received: from BN6PR16CA0040.namprd16.prod.outlook.com (2603:10b6:405:14::26)
+ by DM6PR12MB3212.namprd12.prod.outlook.com (2603:10b6:5:186::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4628.18; Sat, 30 Oct
+ 2021 14:46:06 +0000
+Received: from BN8NAM11FT054.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:405:14:cafe::e1) by BN6PR16CA0040.outlook.office365.com
+ (2603:10b6:405:14::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.15 via Frontend
+ Transport; Sat, 30 Oct 2021 14:46:06 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ BN8NAM11FT054.mail.protection.outlook.com (10.13.177.102) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4649.14 via Frontend Transport; Sat, 30 Oct 2021 14:46:05 +0000
+Received: from localhost.localdomain.nvidia.com (172.20.187.5) by
+ HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.18; Sat, 30 Oct 2021 14:46:01 +0000
+References: <20211028110646.13791-1-simon.horman@corigine.com>
+ <20211028110646.13791-9-simon.horman@corigine.com>
+ <ygnhilxfaexq.fsf@nvidia.com>
+ <7147daf1-2546-a6b5-a1ba-78dfb4af408a@mojatatu.com>
+User-agent: mu4e 1.4.15; emacs 27.2
+From:   Vlad Buslov <vladbu@nvidia.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+CC:     Simon Horman <simon.horman@corigine.com>, <netdev@vger.kernel.org>,
+        "Roi Dayan" <roid@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Baowen Zheng <notifications@github.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        <oss-drivers@corigine.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>
+Subject: Re: [RFC/PATCH net-next v3 8/8] flow_offload: validate flags of
+ filter and actions
+In-Reply-To: <7147daf1-2546-a6b5-a1ba-78dfb4af408a@mojatatu.com>
+Date:   Sat, 30 Oct 2021 17:45:58 +0300
+Message-ID: <ygnhfssia7vd.fsf@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [172.20.187.5]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6c9cc8a6-dd24-4e7d-2c1f-08d99bb40098
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3212:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB3212EDB7C7653FC6667B3B1BA0889@DM6PR12MB3212.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ThpiaN9azJkPft/zNcWZsmeSsbMtYZOwuQ3XfCd+8572b6m37XQptevXbgqEm9yJsiqSgDFgXRJf0e4dhEzeKSt4JuIaN3XhvUpLRw77yLpeg7ZGc4SGnqaoLavAmYc9q4UqxM03OWMO/5AuwjYrYQgqPotMWbMb2ee8i8/PSu6bQzem2bK3doJcRj6y0/HZ0nZN9HDWiLN/3B0Oan7XJzYxj8mJB2omVEDK4LPnEqmzRB59P7G0EEBwaT5hTwQyYHKiOzlmrUoUh1G/aVaArdX0k6EZrUyK0Y3xQmGt06C4SA70pgX75i2SceVcF1pgXlwpZ8ViweAuGKJvXUJF4C5P7BD2CyDStncvyVjAPRHNEUZYZejo6MSxGzUWga20oSRfAlI7RtNV+V4+jTGDdASEIagT95aluZuutrikYdF6Br66p9EJ/Q0OyF/VGCR/4IE8Jf5XOhUgbTk4SWfYDAIh51VJiSsnvq3hxyC/Vd4naAXVl2/KyNQ4QYdT8+orJnvpccnC5MscEQSK4O8CHiQyGahskyMrcnJyn76nuKjmfdMSSmPoGQatadNYQgd8pheWgijRAiyw35W3L9W1fcrT2IDYJHEGXUS/VkJYupnCnzZ6r+vPiiqLA6/iiq5vu94Xg9Z6Z8lvOber+F9krN0mcRvOiVZkeRSS+5x2h6EAjKIhQYaDXqM8c/DVGKZO09+90ZSL4i9/rOH3jLrvfA==
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(426003)(4001150100001)(8936002)(508600001)(4326008)(36756003)(86362001)(36860700001)(7696005)(47076005)(2616005)(54906003)(8676002)(70586007)(83380400001)(356005)(70206006)(186003)(336012)(7636003)(53546011)(316002)(6666004)(15650500001)(6916009)(16526019)(5660300002)(82310400003)(26005)(2906002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2021 14:46:05.4308
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6c9cc8a6-dd24-4e7d-2c1f-08d99bb40098
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT054.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3212
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add basic support for Automatic Multicast Tunneling (AMT) network devices.
+On Sat 30 Oct 2021 at 13:54, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+> On 2021-10-29 14:01, Vlad Buslov wrote:
+>> On Thu 28 Oct 2021 at 14:06, Simon Horman <simon.horman@corigine.com> wrote:
+>>> From: Baowen Zheng <baowen.zheng@corigine.com>
+>>>
+>>> Add process to validate flags of filter and actions when adding
+>>> a tc filter.
+>>>
+>>> We need to prevent adding filter with flags conflicts with its actions.
+>>>
+>>> Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
+>>> Signed-off-by: Louis Peens <louis.peens@corigine.com>
+>>> Signed-off-by: Simon Horman <simon.horman@corigine.com>
+>>> ---
+>>>   net/sched/cls_api.c      | 26 ++++++++++++++++++++++++++
+>>>   net/sched/cls_flower.c   |  3 ++-
+>>>   net/sched/cls_matchall.c |  4 ++--
+>>>   net/sched/cls_u32.c      |  7 ++++---
+>>>   4 files changed, 34 insertions(+), 6 deletions(-)
+>>>
+>>> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+>>> index 351d93988b8b..80647da9713a 100644
+>>> --- a/net/sched/cls_api.c
+>>> +++ b/net/sched/cls_api.c
+>>> @@ -3025,6 +3025,29 @@ void tcf_exts_destroy(struct tcf_exts *exts)
+>>>   }
+>>>   EXPORT_SYMBOL(tcf_exts_destroy);
+>>>   +static bool tcf_exts_validate_actions(const struct tcf_exts *exts, u32
+>>> flags)
+>>> +{
+>>> +#ifdef CONFIG_NET_CLS_ACT
+>>> +	bool skip_sw = tc_skip_sw(flags);
+>>> +	bool skip_hw = tc_skip_hw(flags);
+>>> +	int i;
+>>> +
+>>> +	if (!(skip_sw | skip_hw))
+>>> +		return true;
+>>> +
+>>> +	for (i = 0; i < exts->nr_actions; i++) {
+>>> +		struct tc_action *a = exts->actions[i];
+>>> +
+>>> +		if ((skip_sw && tc_act_skip_hw(a->tcfa_flags)) ||
+>>> +		    (skip_hw && tc_act_skip_sw(a->tcfa_flags)))
+>>> +			return false;
+>>> +	}
+>>> +	return true;
+>>> +#else
+>>> +	return true;
+>>> +#endif
+>>> +}
+>>> +
+>> I know Jamal suggested to have skip_sw for actions, but it complicates
+>> the code and I'm still not entirely understand why it is necessary.
+>
+> If the hardware can independently accept an action offload then
+> skip_sw per action makes total sense. BTW, my understanding is
 
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
----
-v1 -> v2:
- - Remove unnecessary check
- - Use strcmp() instead of matches().
-v2 -> v3:
- - Remove unnecessary check
+Example configuration that seems bizarre to me is when offloaded shared
+action has skip_sw flag set but filter doesn't. Then behavior of
+classifier that points to such action diverges between hardware and
+software (different lists of actions are applied). We always try to make
+offloaded TC data path behave exactly the same as software and, even
+though here it would be explicit and deliberate, I don't see any
+practical use-case for this.
 
- ip/Makefile           |   3 +-
- ip/ip.c               |   4 +-
- ip/iplink.c           |   2 +-
- ip/iplink_amt.c       | 200 ++++++++++++++++++++++++++++++++++++++++++
- man/man8/ip-link.8.in |  46 ++++++++++
- 5 files changed, 251 insertions(+), 4 deletions(-)
- create mode 100644 ip/iplink_amt.c
+> _your_ hardware is capable as such at least for policers ;->
+> And such policers are then shared across filters.
 
-diff --git a/ip/Makefile b/ip/Makefile
-index bcc5f816..2a7a51c3 100644
---- a/ip/Makefile
-+++ b/ip/Makefile
-@@ -11,7 +11,8 @@ IPOBJ=ip.o ipaddress.o ipaddrlabel.o iproute.o iprule.o ipnetns.o \
-     iplink_bridge.o iplink_bridge_slave.o ipfou.o iplink_ipvlan.o \
-     iplink_geneve.o iplink_vrf.o iproute_lwtunnel.o ipmacsec.o ipila.o \
-     ipvrf.o iplink_xstats.o ipseg6.o iplink_netdevsim.o iplink_rmnet.o \
--    ipnexthop.o ipmptcp.o iplink_bareudp.o iplink_wwan.o ipioam6.o
-+    ipnexthop.o ipmptcp.o iplink_bareudp.o iplink_wwan.o ipioam6.o \
-+    iplink_amt.o
- 
- RTMONOBJ=rtmon.o
- 
-diff --git a/ip/ip.c b/ip/ip.c
-index b07a5c7d..c784f819 100644
---- a/ip/ip.c
-+++ b/ip/ip.c
-@@ -64,8 +64,8 @@ static void usage(void)
- 	fprintf(stderr,
- 		"Usage: ip [ OPTIONS ] OBJECT { COMMAND | help }\n"
- 		"       ip [ -force ] -batch filename\n"
--		"where  OBJECT := { address | addrlabel | fou | help | ila | ioam | l2tp | link |\n"
--		"                   macsec | maddress | monitor | mptcp | mroute | mrule |\n"
-+		"where  OBJECT := { address | addrlabel | amt | fou | help | ila | ioam | l2tp |\n"
-+		"                   link | macsec | maddress | monitor | mptcp | mroute | mrule |\n"
- 		"                   neighbor | neighbour | netconf | netns | nexthop | ntable |\n"
- 		"                   ntbl | route | rule | sr | tap | tcpmetrics |\n"
- 		"                   token | tunnel | tuntap | vrf | xfrm }\n"
-diff --git a/ip/iplink.c b/ip/iplink.c
-index 4e74512e..a3ea775d 100644
---- a/ip/iplink.c
-+++ b/ip/iplink.c
-@@ -50,7 +50,7 @@ void iplink_types_usage(void)
- {
- 	/* Remember to add new entry here if new type is added. */
- 	fprintf(stderr,
--		"TYPE := { bareudp | bond | bond_slave | bridge | bridge_slave |\n"
-+		"TYPE := { amt | bareudp | bond | bond_slave | bridge | bridge_slave |\n"
- 		"          dummy | erspan | geneve | gre | gretap | ifb |\n"
- 		"          ip6erspan | ip6gre | ip6gretap | ip6tnl |\n"
- 		"          ipip | ipoib | ipvlan | ipvtap |\n"
-diff --git a/ip/iplink_amt.c b/ip/iplink_amt.c
-new file mode 100644
-index 00000000..48e079f8
---- /dev/null
-+++ b/ip/iplink_amt.c
-@@ -0,0 +1,200 @@
-+/*
-+ * iplink_amt.c	AMT device support
-+ *
-+ *		This program is free software; you can redistribute it and/or
-+ *		modify it under the terms of the GNU General Public License
-+ *		as published by the Free Software Foundation; either version
-+ *		2 of the License, or (at your option) any later version.
-+ *
-+ * Authors:	Taehee Yoo <ap420073@gmail.com>
-+ */
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <net/if.h>
-+#include <linux/ip.h>
-+#include <linux/if_link.h>
-+#include <arpa/inet.h>
-+#include <linux/amt.h>
-+
-+#include "rt_names.h"
-+#include "utils.h"
-+#include "ip_common.h"
-+
-+#define AMT_ATTRSET(attrs, type) (((attrs) & (1L << (type))) != 0)
-+
-+static void print_usage(FILE *f)
-+{
-+	fprintf(f,
-+		"Usage: ... amt\n"
-+		"               [ discovery IP_ADDRESS ]\n"
-+		"               [ mode MODE ]\n"
-+		"               [ local ADDR ]\n"
-+		"               [ dev PHYS_DEV ]\n"
-+		"               [ relay_port PORT ]\n"
-+		"               [ gateway_port PORT ]\n"
-+		"               [ max_tunnels NUMBER ]\n"
-+		"\n"
-+		"Where: ADDR	:= { IP_ADDRESS }\n"
-+		"       MODE	:= { gateway | relay }\n"
-+		);
-+}
-+
-+static char *modename[] = {"gateway", "relay"};
-+
-+static void usage(void)
-+{
-+	print_usage(stderr);
-+}
-+
-+static void check_duparg(__u64 *attrs, int type, const char *key,
-+		const char *argv)
-+{
-+	if (!AMT_ATTRSET(*attrs, type)) {
-+		*attrs |= (1L << type);
-+		return;
-+	}
-+	duparg2(key, argv);
-+}
-+
-+static int amt_parse_opt(struct link_util *lu, int argc, char **argv,
-+			 struct nlmsghdr *n)
-+{
-+	unsigned int mode, max_tunnels;
-+	inet_prefix saddr, daddr;
-+	__u64 attrs = 0;
-+	__u16 port;
-+
-+	saddr.family = daddr.family = AF_UNSPEC;
-+
-+	inet_prefix_reset(&saddr);
-+	inet_prefix_reset(&daddr);
-+
-+	while (argc > 0) {
-+		if (strcmp(*argv, "mode") == 0) {
-+			NEXT_ARG();
-+			if (strcmp(*argv, "gateway") == 0) {
-+				mode = 0;
-+			} else if (strcmp(*argv, "relay") == 0) {
-+				mode = 1;
-+			} else {
-+				usage();
-+				return -1;
-+			}
-+			addattr32(n, 1024, IFLA_AMT_MODE, mode);
-+		} else if (strcmp(*argv, "relay_port") == 0) {
-+			NEXT_ARG();
-+			if (get_u16(&port, *argv, 0))
-+				invarg("relay_port", *argv);
-+			addattr16(n, 1024, IFLA_AMT_RELAY_PORT, htons(port));
-+		} else if (strcmp(*argv, "gateway_port") == 0) {
-+			NEXT_ARG();
-+			if (get_u16(&port, *argv, 0))
-+				invarg("gateway_port", *argv);
-+			addattr16(n, 1024, IFLA_AMT_GATEWAY_PORT, htons(port));
-+		} else if (strcmp(*argv, "max_tunnels") == 0) {
-+			NEXT_ARG();
-+			if (get_u32(&max_tunnels, *argv, 0))
-+				invarg("max_tunnels", *argv);
-+			addattr32(n, 1024, IFLA_AMT_MAX_TUNNELS, max_tunnels);
-+		} else if (strcmp(*argv, "dev") == 0) {
-+			unsigned int link;
-+
-+			NEXT_ARG();
-+			link = ll_name_to_index(*argv);
-+			if (!link)
-+				exit(nodev(*argv));
-+			addattr32(n, 1024, IFLA_AMT_LINK, link);
-+		} else if (strcmp(*argv, "local") == 0) {
-+			NEXT_ARG();
-+			check_duparg(&attrs, IFLA_AMT_LOCAL_IP, "local", *argv);
-+			get_addr(&saddr, *argv, daddr.family);
-+
-+			if (is_addrtype_inet(&saddr))
-+				addattr_l(n, 1024, IFLA_AMT_LOCAL_IP,
-+					  saddr.data, saddr.bytelen);
-+		} else if (strcmp(*argv, "discovery") == 0) {
-+			NEXT_ARG();
-+			check_duparg(&attrs, IFLA_AMT_DISCOVERY_IP,
-+				     "discovery", *argv);
-+			get_addr(&daddr, *argv, daddr.family);
-+			if (is_addrtype_inet(&daddr))
-+				addattr_l(n, 1024, IFLA_AMT_DISCOVERY_IP,
-+					  daddr.data, daddr.bytelen);
-+		} else if (strcmp(*argv, "help") == 0) {
-+			usage();
-+			return -1;
-+		} else {
-+			fprintf(stderr, "amt: unknown command \"%s\"?\n", *argv);
-+			usage();
-+			return -1;
-+		}
-+		argc--, argv++;
-+	}
-+
-+	return 0;
-+}
-+
-+static void amt_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
-+{
-+	if (!tb)
-+		return;
-+
-+	if (tb[IFLA_AMT_MODE])
-+		print_string(PRINT_ANY, "mode", "%s ",
-+			     modename[rta_getattr_u32(tb[IFLA_AMT_MODE])]);
-+
-+	if (tb[IFLA_AMT_GATEWAY_PORT])
-+		print_uint(PRINT_ANY, "gateway_port", "gateway_port %u ",
-+			   rta_getattr_be16(tb[IFLA_AMT_GATEWAY_PORT]));
-+
-+	if (tb[IFLA_AMT_RELAY_PORT])
-+		print_uint(PRINT_ANY, "relay_port", "relay_port %u ",
-+			   rta_getattr_be16(tb[IFLA_AMT_RELAY_PORT]));
-+
-+	if (tb[IFLA_AMT_LOCAL_IP]) {
-+		__be32 addr = rta_getattr_u32(tb[IFLA_AMT_LOCAL_IP]);
-+
-+		print_string(PRINT_ANY, "local", "local %s ",
-+			     format_host(AF_INET, 4, &addr));
-+	}
-+
-+	if (tb[IFLA_AMT_REMOTE_IP]) {
-+		__be32 addr = rta_getattr_u32(tb[IFLA_AMT_REMOTE_IP]);
-+
-+		print_string(PRINT_ANY, "remote", "remote %s ",
-+			     format_host(AF_INET, 4, &addr));
-+	}
-+
-+	if (tb[IFLA_AMT_DISCOVERY_IP]) {
-+		__be32 addr = rta_getattr_u32(tb[IFLA_AMT_DISCOVERY_IP]);
-+
-+		print_string(PRINT_ANY, "discovery", "discovery %s ",
-+			     format_host(AF_INET, 4, &addr));
-+	}
-+
-+	if (tb[IFLA_AMT_LINK]) {
-+		unsigned int link = rta_getattr_u32(tb[IFLA_AMT_LINK]);
-+
-+		print_string(PRINT_ANY, "link", "dev %s ",
-+			     ll_index_to_name(link));
-+	}
-+
-+	if (tb[IFLA_AMT_MAX_TUNNELS])
-+		print_uint(PRINT_ANY, "max_tunnels", "max_tunnels %u ",
-+			   rta_getattr_u32(tb[IFLA_AMT_MAX_TUNNELS]));
-+}
-+
-+static void amt_print_help(struct link_util *lu, int argc, char **argv, FILE *f)
-+{
-+	print_usage(f);
-+}
-+
-+struct link_util amt_link_util = {
-+	.id		= "amt",
-+	.maxattr	= IFLA_AMT_MAX,
-+	.parse_opt	= amt_parse_opt,
-+	.print_opt	= amt_print_opt,
-+	.print_help	= amt_print_help,
-+};
-diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
-index c0cbb5e8..1d67c9a4 100644
---- a/man/man8/ip-link.8.in
-+++ b/man/man8/ip-link.8.in
-@@ -198,6 +198,7 @@ ip-link \- network device configuration
- 
- .ti -8
- .IR TYPE " := [ "
-+.BR amt " | "
- .BR bridge " | "
- .BR bond " | "
- .BR can " | "
-@@ -364,6 +365,9 @@ Link types:
- .BR bareudp
- - Bare UDP L3 encapsulation support
- .sp
-+.BR amt
-+- Automatic Multicast Tunneling (AMT)
-+.sp
- .BR macsec
- - Interface for IEEE 802.1AE MAC Security (MACsec)
- .sp
-@@ -1344,6 +1348,48 @@ When
- is "ipv4", this allows the tunnel to also handle IPv6. This option is disabled
- by default.
- 
-+.TP
-+AMT Type Support
-+For a link of type
-+.I AMT
-+the following additional arguments are supported:
-+
-+.BI "ip link add " DEVICE
-+.BI type " AMT " discovery " IPADDR " mode " { " gateway " | " relay " } "
-+.BI local " IPADDR " dev " PHYS_DEV " [
-+.BI relay_port " PORT " ]
-+[
-+.BI gateway_port " PORT " ]
-+[
-+.BI max_tunnels " NUMBER "
-+]
-+
-+.in +8
-+.sp
-+.BI discovery " IPADDR"
-+- specifies the unicast discovery IP address to use to find remote IP address.
-+
-+.BR mode " { " gateway " | " relay " } "
-+- specifies the role of AMT, Gateway or Relay
-+
-+.BI local " IPADDR "
-+- specifies the source IP address to use in outgoing packets.
-+
-+.BI dev " PHYS_DEV "
-+- specifies the underlying physical interface from which transform traffic
-+is sent and received.
-+
-+.BI relay_port " PORT "
-+- specifies the UDP Relay port to communicate to the Relay.
-+
-+.BI gateway_port " PORT "
-+- specifies the UDP Gateway port to communicate to the Gateway.
-+
-+.BI max_tunnels " NUMBER "
-+- specifies the maximum number of tunnels.
-+
-+.in -8
-+
- .TP
- MACVLAN and MACVTAP Type Support
- For a link of type
--- 
-2.17.1
+True, but why do you need skip_sw action flag for that?
 
+> Other than the architectural reason I may have missed something
+> because I dont see much complexity added as a result.
+
+Well, other part of my email was about how I don't understand what is
+going on in the flags handling code here. This patch and parts of other
+patches in the series would be unnecessary, if we forgo the action
+skip_sw flag. I guess we can just make the code nicer by folding the
+validation into tcf_action_init(), for example.
+
+> Are you more worried about slowing down the update rate?
+
+I don't expect the validation code to significantly impact the update
+rate.
