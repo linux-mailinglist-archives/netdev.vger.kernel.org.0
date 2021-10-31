@@ -2,170 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4826844106B
-	for <lists+netdev@lfdr.de>; Sun, 31 Oct 2021 20:18:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6ECA441082
+	for <lists+netdev@lfdr.de>; Sun, 31 Oct 2021 20:41:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230501AbhJaTV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Oct 2021 15:21:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38506 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230041AbhJaTV1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 31 Oct 2021 15:21:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4404060E90;
-        Sun, 31 Oct 2021 19:18:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635707935;
-        bh=f0CNKowKnu0Y0hiZPNL/Xt4UG4lZmb6ehucdY8vg27Y=;
-        h=From:To:Cc:Subject:Date:From;
-        b=KLhwvol/qTGHkqgaYhWhBmgSeNeYqCYfYGZkxd4MIQ01WsczxY8u7G0dz1LCrie5S
-         Oz4cNcOUN5bquC/vAbsZbbZDOwm93wWQldoheXP3uQ+fhodlJORFAUtoXrJybnyjD+
-         DGtUVlJSHLvwAaHu+eM4HAu7TVbbQp1R4qGAvAdPszhue9v92GVPyWHZSHYvgFjnwv
-         ddMEnP8C+/xyuiAAAHnLJeY8pa9R7EuDd+7cNYQPEyQz/vu6nWOyS32QTa3TPyHAhN
-         l431NTL17tO5EK6IROTl+uRG+GKpSPxoExynYNuKoj150QiUMo0LAio+dnIASzhMaC
-         vnsFmrGKwtrEQ==
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-To:     netdev@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
-Cc:     =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net-next] dt-bindings: ethernet-controller: support multiple PHY connection types
-Date:   Sun, 31 Oct 2021 20:18:49 +0100
-Message-Id: <20211031191849.15583-1-kabel@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        id S231283AbhJaTnj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Oct 2021 15:43:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33296 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230064AbhJaTnj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Oct 2021 15:43:39 -0400
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00094C061570
+        for <netdev@vger.kernel.org>; Sun, 31 Oct 2021 12:41:06 -0700 (PDT)
+Received: by mail-il1-x136.google.com with SMTP id f10so11875645ilu.5
+        for <netdev@vger.kernel.org>; Sun, 31 Oct 2021 12:41:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=tUREh5LHd66l0OLGq8t2Df8ogS/efOJa+e+gKKpOSzs=;
+        b=YVQ8ATqPbzx3r236TDe5h8S8/hbELrCy0eejyBnDtPxDG8pKzxSXlyfVsk7CNTk3mJ
+         VzpqzghhPrqlUJK/ejvnrVg4vjmRJ5PWCNyzEfwYSsf/Lk2ALHnm0W3L4H4kWBX+2VpK
+         3CIid+BM4MG7vmLpMWg98z856wq3Yxx4OVXB9hLqRaGxCdgzW2U/qjmEBP/d4CGZpAWt
+         Kjght+EK+YImwpSgO85XX2pU4jwbrOg9kM2ytWfD7frmDoIXGebpJ2ukWzYSA2MoUSur
+         LNkjiIJxQnFfbzuun5Q0oc1JMDVXXNczcAxkozgFwgt4vBEa5mJYv977JwCk++kMN5bX
+         mHjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=tUREh5LHd66l0OLGq8t2Df8ogS/efOJa+e+gKKpOSzs=;
+        b=1LXRzhcFSOGfmljkPX4YQr25jx9xZVGUaYV2SiKHPYW/w3BFmG5/AxcfwkWGQ3hFGJ
+         jvVX7+V5x+Tu8AeblFArcwq4uKTvp58lOtS+q0ZTQsMDfN4LOccswsqH1vq+s4OY39DT
+         0Vu5KT6wu8jCJJjI8hOr2i00ReuxwX/8p/UTI2IWIrk1QIrX+TN5/mrCApfUdssv7Nof
+         4iOtsAEnZRxOyzQQFgPeCGJcq0J++phmTU5utXrqRKObox9r8qN0cGg1ToAfRODok9/L
+         ffmBUrvhaBju8uSKE00F2aU3fWfpz8ao3TxmB4Hs7uZqDUVJLS/t/4guRvRVE71AnFMV
+         fEBw==
+X-Gm-Message-State: AOAM533JZbfvQywr9ciu4J1kxZx7xKArUT1Zm0u8QAUklJsxiALLMdJH
+        xdV2ejfKan8891GiDTdHOqDLDw==
+X-Google-Smtp-Source: ABdhPJy7kO9AYFBRAJ1fgLQ4Fc5NqLK2w2cnUbQ5IfYE3VUCGF/k9+9Fv/6TW82wDVqy4Erqr9Sx9Q==
+X-Received: by 2002:a05:6e02:1c8a:: with SMTP id w10mr17322578ill.193.1635709266435;
+        Sun, 31 Oct 2021 12:41:06 -0700 (PDT)
+Received: from [192.168.1.116] ([66.219.217.159])
+        by smtp.gmail.com with ESMTPSA id a20sm6906987ila.22.2021.10.31.12.41.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 31 Oct 2021 12:41:06 -0700 (PDT)
+Subject: Re: [syzbot] WARNING: ODEBUG bug in __put_task_struct
+To:     syzbot <syzbot+30a60157d4ef222fd5e2@syzkaller.appspotmail.com>,
+        akpm@linux-foundation.org, andrii@kernel.org,
+        asml.silence@gmail.com, ast@kernel.org, bpf@vger.kernel.org,
+        christian@brauner.io, daniel@iogearbox.net, david@redhat.com,
+        ebiederm@xmission.com, io-uring@vger.kernel.org,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        npiggin@gmail.com, peterz@infradead.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, xiaoguang.wang@linux.alibaba.com,
+        yhs@fb.com
+References: <000000000000bb843a05cfa99111@google.com>
+From:   Jens Axboe <axboe@kernel.dk>
+Message-ID: <bd03422b-4a19-c518-f550-13cd7be243fc@kernel.dk>
+Date:   Sun, 31 Oct 2021 13:41:04 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <000000000000bb843a05cfa99111@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sometimes, an ethernet PHY may communicate with ethernet controller with
-different PHY connection types, and the software should be able to choose
-between them.
+On 10/31/21 11:41 AM, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    bdcc9f6a5682 Add linux-next specific files for 20211029
+> git tree:       linux-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1413226ab00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=cea91ee10b0cd274
+> dashboard link: https://syzkaller.appspot.com/bug?extid=30a60157d4ef222fd5e2
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=121ba3e2b00000
+> 
+> The issue was bisected to:
+> 
+> commit 34ced75ca1f63fac6148497971212583aa0f7a87
+> Author: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
+> Date:   Mon Oct 25 05:38:48 2021 +0000
+> 
+>     io_uring: reduce frequent add_wait_queue() overhead for multi-shot poll request
 
-Existing example is one SerDes lane capable of `1000base-x`,
-`2500base-x` and `sgmii` when connecting Marvell switches with Marvell
-ethernet controller. Currently we mention only one of these modes in
-device-tree, and software assumes the other modes are also supported,
-since they use the same SerDes lanes. But a board may be able to support
-`1000base-x` and not support `2500base-x`, for example due to the higher
-frequency not working correctly on a particular board.
+This was dropped from the tree last week:
 
-Another example is the Marvell 88X3310 PHY, which supports connecting
-the MAC with the PHY with `xaui` and `rxaui`. The MAC may also support
-both modes, but it is possible that a particular board doesn't have
-these modes wired (since they use multiple SerDes lanes).
+#syz invalid
 
-In order for the kernel to know which modes are supported on the board,
-we need to be able to specify them all in the device-tree.
-
-Change the property `phy-connection-type` of an ethernet controller to
-be an array of the enumerated strings, with at least one item defined,
-if the property is mentioned.
-
-Signed-off-by: Marek Behún <kabel@kernel.org>
----
- .../bindings/net/ethernet-controller.yaml     | 88 ++++++++++---------
- 1 file changed, 45 insertions(+), 43 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-index b0933a8c295a..05a02fdc7ca9 100644
---- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-+++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-@@ -56,49 +56,51 @@ properties:
-     description:
-       Specifies interface type between the Ethernet device and a physical
-       layer (PHY) device.
--    enum:
--      # There is not a standard bus between the MAC and the PHY,
--      # something proprietary is being used to embed the PHY in the
--      # MAC.
--      - internal
--      - mii
--      - gmii
--      - sgmii
--      - qsgmii
--      - tbi
--      - rev-mii
--      - rmii
--      - rev-rmii
--
--      # RX and TX delays are added by the MAC when required
--      - rgmii
--
--      # RGMII with internal RX and TX delays provided by the PHY,
--      # the MAC should not add the RX or TX delays in this case
--      - rgmii-id
--
--      # RGMII with internal RX delay provided by the PHY, the MAC
--      # should not add an RX delay in this case
--      - rgmii-rxid
--
--      # RGMII with internal TX delay provided by the PHY, the MAC
--      # should not add an TX delay in this case
--      - rgmii-txid
--      - rtbi
--      - smii
--      - xgmii
--      - trgmii
--      - 1000base-x
--      - 2500base-x
--      - 5gbase-r
--      - rxaui
--      - xaui
--
--      # 10GBASE-KR, XFI, SFI
--      - 10gbase-kr
--      - usxgmii
--      - 10gbase-r
--      - 25gbase-r
-+    minItems: 1
-+    items:
-+      enum:
-+        # There is not a standard bus between the MAC and the PHY,
-+        # something proprietary is being used to embed the PHY in the
-+        # MAC.
-+        - internal
-+        - mii
-+        - gmii
-+        - sgmii
-+        - qsgmii
-+        - tbi
-+        - rev-mii
-+        - rmii
-+        - rev-rmii
-+
-+        # RX and TX delays are added by the MAC when required
-+        - rgmii
-+
-+        # RGMII with internal RX and TX delays provided by the PHY,
-+        # the MAC should not add the RX or TX delays in this case
-+        - rgmii-id
-+
-+        # RGMII with internal RX delay provided by the PHY, the MAC
-+        # should not add an RX delay in this case
-+        - rgmii-rxid
-+
-+        # RGMII with internal TX delay provided by the PHY, the MAC
-+        # should not add an TX delay in this case
-+        - rgmii-txid
-+        - rtbi
-+        - smii
-+        - xgmii
-+        - trgmii
-+        - 1000base-x
-+        - 2500base-x
-+        - 5gbase-r
-+        - rxaui
-+        - xaui
-+
-+        # 10GBASE-KR, XFI, SFI
-+        - 10gbase-kr
-+        - usxgmii
-+        - 10gbase-r
-+        - 25gbase-r
- 
-   phy-mode:
-     $ref: "#/properties/phy-connection-type"
 -- 
-2.32.0
+Jens Axboe
 
