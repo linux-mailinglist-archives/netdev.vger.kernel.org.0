@@ -2,66 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EE60440EC7
-	for <lists+netdev@lfdr.de>; Sun, 31 Oct 2021 15:16:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CFFB440ECB
+	for <lists+netdev@lfdr.de>; Sun, 31 Oct 2021 15:19:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229974AbhJaOSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Oct 2021 10:18:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47452 "EHLO
+        id S229685AbhJaOW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Oct 2021 10:22:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229681AbhJaOSy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Oct 2021 10:18:54 -0400
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C004C061570
-        for <netdev@vger.kernel.org>; Sun, 31 Oct 2021 07:16:23 -0700 (PDT)
-Received: by mail-qt1-x835.google.com with SMTP id v17so13714830qtp.1
-        for <netdev@vger.kernel.org>; Sun, 31 Oct 2021 07:16:23 -0700 (PDT)
+        with ESMTP id S229660AbhJaOW0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Oct 2021 10:22:26 -0400
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9B4C061570
+        for <netdev@vger.kernel.org>; Sun, 31 Oct 2021 07:19:55 -0700 (PDT)
+Received: by mail-qv1-xf35.google.com with SMTP id bu11so1766106qvb.0
+        for <netdev@vger.kernel.org>; Sun, 31 Oct 2021 07:19:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=Z/AonHYgIyTnhUgXhUYt7rvkbbUxEPLmY9JAL7YXwgw=;
-        b=fwlz7TRzOSzCAbznk0z2EpTtI6V+nfb4PJwxk2jhmSWZmN9FQ5Yzw+/kGZ0sH1IUSO
-         16o9lKhYzXoLnd3GmOl1rd2oPe0in64wayLdKTSaLtB9uThZHwxcC3PHZWCiUUUad5z6
-         U0HvmUyHmQQ9CjLiivl+/Li+w0vfUYG5+ygMqHeWbKWUVwRuhRWqrbJpQedbTStLDrd5
-         jX1ZBXtDtdwLag0kRTzdbPukWlXMVVFXpxceDjwxCMEk0oreBq/LyB3IAdFALE6woEB6
-         Kahf1A8JIDqoB8+O1zuvzxgGxQmi01Q1wWmubTWecNgm0UBAva+v+zOC9W9A/CFXuoY6
-         Kh+w==
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=gJ+Yv2QFWmckkfdIiof2II8KoZuBAzmaaRASWU3VJFQ=;
+        b=6oFxJXCRRl+crTsVApePE81JLvByppsU2cjs7KkV0OBXcds01yuYecjBP1yvGVLbT3
+         a/+lwhNEHsaoZRBsk68vMXC5Myab9PV+BzsD6eUMYPGM4pmr0/2E2ygFKvBq/tpE76y9
+         5in3Nfbebx1XOE7TyQvorVtDo9P/lOE+Cka0VbXND0uxpF9ltvhAyitbEUMtVvAoB6p1
+         Q3OcW/e9yoQLniFlXeVU9HOSlC3IscXPcgC0VB4qMAiJrwa4jgDdIQOAcho9EiNleA1r
+         I2kUK/A+GZDd5CM9W+8kERaScuvqNHFvQa82XWUMv77G65lYVYzwcpV8Raox0cdoigN+
+         GY5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=Z/AonHYgIyTnhUgXhUYt7rvkbbUxEPLmY9JAL7YXwgw=;
-        b=nNfo854hDZvzAfkVKTri/i9wXH2qZpsKk6oyP6t8qdjQsEv6DGmy8Nky0DtvVa31It
-         Tf4/mUSwhGjJki6fQ2MUSNP8+xdt/DzGmX7D6LEMzNpDnL8tJbngc3i7LoJDLhgWwCd1
-         eeM28VwZGZTKehbdhFWls0EfClQG/6FBDWqQzK1w4CtcZFGoPpN470PmxbjHUQlt50oh
-         axED9OiA+8zmNM3mXn45KV+40bPoBsXR/5uWI8QZJ07vWfUTFSgjDjG+RWwd7OTIrN1r
-         fnD8RLDDEf4xWb/e0+5hxfOCEmoa9l5746umu9INVW1DFy9XAHekmWoxfJDPkGKJBuwG
-         nngg==
-X-Gm-Message-State: AOAM5335QDRjtNBUqyrlao3NgORfqZTO91lihnXhYgidMpyjXkCHeosu
-        a18xzb/LSWmXwLialdWwzyf7q0dPc/94C7G8vTc=
-X-Google-Smtp-Source: ABdhPJwEXPCbvTHm0RVU5sx9focP20l0GsjDeUzVT4BO5jzwl+L5xBljgxjQNCw4xSuLUgmEbYG7TIRSJKmi/XA0aZE=
-X-Received: by 2002:ac8:4e84:: with SMTP id 4mr24160996qtp.123.1635689781773;
- Sun, 31 Oct 2021 07:16:21 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=gJ+Yv2QFWmckkfdIiof2II8KoZuBAzmaaRASWU3VJFQ=;
+        b=WgaZgjLe6oIuC7eKtChNj/MoqMipWBC2eMIdFOY5tU8XqI4C1cXKCLtuD1936GQoWc
+         i9vzMJSyx+aDcsens3WNMQlmBz9sYXe8a4J0zOgv/GkAvaMAGNQsK5amWpkcJewZU5tT
+         CNzvATlUVL4kPpLSXp71ob+qI/DnubU4iK8PbF3XdQOPdo7rRAqepyT1e1e+q83/GxYe
+         q9yE4eQcm5J1aFyABKw+a8NqTe3O5kTjAiYbo/jUPe3VES7j+C+zErXFy7p8Ry/IeFsV
+         SPa0dWDvnXaTKOI9mj3XYZeVAOe7QbKBT1PHyS+ZmTn2DvaDNs6mz8r5lBNbViw53wLS
+         OQCw==
+X-Gm-Message-State: AOAM531oaiQfyLYrM4/GE2sncWTPy0rkb5zZGIsYhDS8/YmJWXuwCVXW
+        7EBjvUg7GDAVwpHLLMUIpNjxmw==
+X-Google-Smtp-Source: ABdhPJyHsTZ8Qtk59ZcM51eSRBY9M4qm6sk+LmdQHq1r7jxtXXXisTDIZcs6YK7Sag6w33BSnGkPIw==
+X-Received: by 2002:a05:6214:cce:: with SMTP id 14mr23111239qvx.49.1635689994188;
+        Sun, 31 Oct 2021 07:19:54 -0700 (PDT)
+Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-33-142-112-185-132.dsl.bell.ca. [142.112.185.132])
+        by smtp.googlemail.com with ESMTPSA id a11sm2588963qtx.9.2021.10.31.07.19.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 31 Oct 2021 07:19:53 -0700 (PDT)
+Message-ID: <09480c67-32eb-03d6-4f71-95387263bd3e@mojatatu.com>
+Date:   Sun, 31 Oct 2021 10:19:52 -0400
 MIME-Version: 1.0
-Received: by 2002:a05:6214:c45:0:0:0:0 with HTTP; Sun, 31 Oct 2021 07:16:21
- -0700 (PDT)
-Reply-To: lisa.williams0044@yahoo.com
-From:   Lisa Williams <mrtariqzubair5@gmail.com>
-Date:   Sun, 31 Oct 2021 06:16:21 -0800
-Message-ID: <CAB9dDYh7AWU+y=pJ=zK2Re-PiNKdmcRryJ+mD4vDxh7Woj6cXg@mail.gmail.com>
-Subject: Hi Dear,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.1
+Subject: Re: [RFC/PATCH net-next v3 0/8] allow user to offload tc action to
+ net device
+Content-Language: en-US
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+To:     Dave Taht <dave.taht@gmail.com>, Oz Shlomo <ozsh@nvidia.com>
+Cc:     Simon Horman <simon.horman@corigine.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Vlad Buslov <vladbu@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Baowen Zheng <notifications@github.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        oss-drivers@corigine.com, Yossi Kuperman <yossiku@nvidia.com>
+References: <20211028110646.13791-1-simon.horman@corigine.com>
+ <b409b190-8427-2b6b-ff17-508d81175e4d@nvidia.com>
+ <CAA93jw4VphJ17yoV1S6aDRg2=W7hg=02Yr3XcX_aEBTzAt0ezw@mail.gmail.com>
+ <4247ecd8-e4ca-0c35-5c0f-1124a043080f@mojatatu.com>
+In-Reply-To: <4247ecd8-e4ca-0c35-5c0f-1124a043080f@mojatatu.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dear,
+On 2021-10-31 10:14, Jamal Hadi Salim wrote:
 
-My name is Lisa  Williams, I am from the United States of America, Its
-my pleasure to contact you for new and special friendship  I will be
-glad to see your reply for us to know each other better and exchange
-pictures.
+> BTW, Some mellanox NICs offload HTB. See for example:
+             ^^^^^^^^
 
-Yours
-Lisa
+Sorry, to be politically correct s/mellanox/Nvidia ;->
+
+cheers,
+jamal
