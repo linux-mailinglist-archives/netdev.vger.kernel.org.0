@@ -2,55 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02258440D7A
-	for <lists+netdev@lfdr.de>; Sun, 31 Oct 2021 08:55:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10A90440DAD
+	for <lists+netdev@lfdr.de>; Sun, 31 Oct 2021 10:45:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229660AbhJaH5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Oct 2021 03:57:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34608 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229525AbhJaH5r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 31 Oct 2021 03:57:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0DF7660ED5;
-        Sun, 31 Oct 2021 07:55:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635666915;
-        bh=6iAWdQYQqFwEhSa/Y0iLzLe6WINGFi0gcWJq1XuQqRk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uaNQdiNIR+2m6bsAyaXdMn9r8lKLMvZvQW5NgIeykunZSeWI1PHdYMHisWZNoPp2v
-         lr5mDE//CGyZUwbH8BA7q+KBRPZ4bIAO3Ovd68dHUgfF/2XynNzXWoHtzd+qZ77eNM
-         lW6E7v25XTkmINN5vOAP55kCmjDZL43OF8N8gJKYmxGt7V6gsOBNRtvNdPfENZwV7C
-         /ElCQYZx2pIxLrVh/P3kMsCEqiH1n8GB5+zUbAVKxKvBK1WaHBGxGx1iFjFhskjAwb
-         5858zM3si9IwjcdblM/ZRtpqJAr7rrobpm/3ceB0b40sSajUpbItF1k6ISeDgUBLCV
-         kScnteTSmqWXQ==
-Date:   Sun, 31 Oct 2021 09:55:11 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] netdevsim: remove max_vfs dentry
-Message-ID: <YX5L31YA+7JRBKon@unreal>
-References: <20211028211753.22612-1-kuba@kernel.org>
+        id S229939AbhJaJsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Oct 2021 05:48:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45478 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229638AbhJaJsL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Oct 2021 05:48:11 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3FCBC061570
+        for <netdev@vger.kernel.org>; Sun, 31 Oct 2021 02:45:39 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id z20so54502486edc.13
+        for <netdev@vger.kernel.org>; Sun, 31 Oct 2021 02:45:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=0KvQkxFdmSckOXJpLXZtURzOqfI2/nRXk2vwKc98xhg=;
+        b=Fys0AjDDPxcD65pxyWqc8EQKh/Bq+V4lddgMpR+Udb6ZDy7Czsh95F57ytwL1ynDYS
+         w4d1vVnluZNu0rMCW8QNdBxiPCRLjH7gcMNiaJra0Lg8HIG7lgCPcPYwDjI5Bc8TgqEx
+         0i59u/0WVi/jZhZoV+WZFZ2hfNjnz530hNwlzGqsaalPUAZ0tgs7OvwqwxtHm9S4x6bO
+         PG02CH5K2gZw3QSjxEZDOxqge8My31MT2c8u/KUKLDwwe9x9+s+CqW30orS0diNdU1SS
+         cvVhFMvhbL4FBhNBFsEPY61Qm7fxWGmEPMCICYhGCjQfZxGYSw2A0fLIPX0JFwDVc/3D
+         wpDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=0KvQkxFdmSckOXJpLXZtURzOqfI2/nRXk2vwKc98xhg=;
+        b=RJPKX7w8MBz/mZbH+/KRHmgE9thgyhK/yIdkLgbSZOG+l8GnAYvUGdlgC45md9v3kw
+         q8YWHLeZNQnK8jTstmiUjpw2YLWNkyyhhdYqwZV9KJA7M06xN9A7hTDseZFSPE1vnmEO
+         3w0ov+GeU6Yg3lNOGiiiViucpR/y2E1XDx5NqDffQ7P1XgTGYugwYq+AZTqQsdNiSpp4
+         R0l3vvLJvYuWcjIwBGyGRR0w/ovVIVRqejqYgvDoEGpOFtBXVJ6xt9KNQZYZCQloSeDm
+         vqnRXLVME0vU6tc2UdJRPO8md/hqkiECfQ/JY1SvvID66uREQCVO95mJwQXoYIjp21tM
+         hpkw==
+X-Gm-Message-State: AOAM532pm+68UuZhpUv63r0588kk8AKOqbVrJXSzjSzWPERlRxVxtuwz
+        +q5TY9zlXT6yX1Hw1EbZKI/rYCtp9qvNpJNQe3Y=
+X-Google-Smtp-Source: ABdhPJxZHa1PropNg7i8qGq2bdIIhuZrvoKYud42oHKBGKHatl9G+hDbv16bHLMG/tUakqENwAAbRDSVKXuVj0hA8m0=
+X-Received: by 2002:a05:6402:510b:: with SMTP id m11mr3287442edd.215.1635673538434;
+ Sun, 31 Oct 2021 02:45:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211028211753.22612-1-kuba@kernel.org>
+Received: by 2002:ab4:a332:0:0:0:0:0 with HTTP; Sun, 31 Oct 2021 02:45:38
+ -0700 (PDT)
+Reply-To: enzocarranza99@gmail.com
+From:   ENZO CARRANZA <jacobbarney57@gmail.com>
+Date:   Sun, 31 Oct 2021 12:45:38 +0300
+Message-ID: <CALM1g1OAgrwjhMa7ism3oYtGu6NnqYhxjYSXkX_uQcG6X8NGfA@mail.gmail.com>
+Subject: My Regards
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 28, 2021 at 02:17:53PM -0700, Jakub Kicinski wrote:
-> Commit d395381909a3 ("netdevsim: Add max_vfs to bus_dev")
-> added this file and saved the dentry for no apparent reason.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  drivers/net/netdevsim/dev.c       | 8 +++-----
->  drivers/net/netdevsim/netdevsim.h | 1 -
->  2 files changed, 3 insertions(+), 6 deletions(-)
+From : Mr. Enzo Carranza
+Fax: +34 932 71 56 35
+Email: enzocarranza99@gmail.com
 
-I think that "debugfs_create_file("ipsec", 0400, ..." can be cleaned
-too. It is connected to ddir, which is removed recursively.
 
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Dear Friend,
+I had no choice but to approach you via this method because I have
+a BUSINESS PROPOSAL that will interest you and will be of mutual benefit to us.
 
-Thanks
+Kindly get back to me so I can give you the full details.
+Thank you.
+
+Kind regards
+Mr. Enzo Carranza
+Financial Management Consultant.
