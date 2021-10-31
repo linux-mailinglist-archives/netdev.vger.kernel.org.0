@@ -2,109 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20094440C71
-	for <lists+netdev@lfdr.de>; Sun, 31 Oct 2021 02:30:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 722D2440C8C
+	for <lists+netdev@lfdr.de>; Sun, 31 Oct 2021 03:43:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230121AbhJaBaH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 21:30:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51798 "EHLO
+        id S231168AbhJaCp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Oct 2021 22:45:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229752AbhJaBaG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Oct 2021 21:30:06 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50E0C061570
-        for <netdev@vger.kernel.org>; Sat, 30 Oct 2021 18:27:35 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id g10so51515090edj.1
-        for <netdev@vger.kernel.org>; Sat, 30 Oct 2021 18:27:35 -0700 (PDT)
+        with ESMTP id S229752AbhJaCp0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Oct 2021 22:45:26 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0706DC061570;
+        Sat, 30 Oct 2021 19:42:55 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id t40so12916202qtc.6;
+        Sat, 30 Oct 2021 19:42:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sOELj/m7NAU1C7Zu3tFSaClvYw1ytr1Z7vBCXwXc184=;
-        b=dj9ox8kCAYl/ktAD9BvtZrrRR0ziAjZ8AxLtURefd8APBXTa8SU7RmF25jMN2FfSRT
-         mgQFwe/aSmLXy6lYOI5GABvZul4gnh3HvWeth7wWVvc4DsJXGyV39iZNCq5cNOIefrf/
-         AKNHxB/ZPgMV2mdmdXE+luFiZNNLM0ns9BUY9kIMNzbHxQBq4hdKfKtbaNABqN0uUqIS
-         cT3mD1thHD/QNmUDgQsv2MvDC6iFKmC/L9JzfnQil7POnK1gqy67DampkzmpOepsAb1k
-         jRslaS9tCOYpNa++3m0wAJAzNOrlIoOM2dE9nY/Ml5rg8o9ch7DP4l15hVbZESfJUgtW
-         aL0Q==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=4pTpNp+ctrU1VcOo9RHb5FHn9UkMoYaGEFwbc7czNlw=;
+        b=HI2oJgy7m5eV+XVozD3/C005/TKCpmoqYD90457YhJWPYqG4yxZOjMOHFjoeKPFmqC
+         XAlf1bQtsxs9YakyjiarZSgI/gJpbY9A95wjfpVZP60vR2z9EHB3C/7dU5uD1YeIJ7ax
+         WnU/EmOUPGg6EF5+c1SW3/q+NEIleSppP9tnUlqir6x3ljUnRz670+1ieKI3jv2pQKOv
+         jF2wfY++7sNeVcOVo+28L0FNlQ/AVzPpzfHmrJXYIlK16KEuvRJU8MTWRf09muFurjyg
+         813NbrzbI/SoNJLjkg9BVihrQTzvDT20id+OdmqD6K0vu/QDdQN6lSQpFguBavfPREgN
+         zABQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sOELj/m7NAU1C7Zu3tFSaClvYw1ytr1Z7vBCXwXc184=;
-        b=QUOq6BkmjrJHA061J5QJcIVRiHUVuyLIf9ExazoapG/JY44yOSmdDXHxNTc8duLfMB
-         B0ts0ju+XDUniKvtl5RvuSf98IZxbtFwxQIREq6FRMhaU7MuIFYGZN5nKdaQk1trtMU0
-         WDVAvIzP0wbGlQ6sBSMHo2ARm+uMxDbJ9oYSxoDUv1MqrnJtIH+Zklspze4NhXxQPfQa
-         z/LV6st4/o8vKAg/g3seAW7LW1l1ENSTwwmyz1+kgKUFl6uVnQm1P4nViP2JF1SL6b/N
-         QQZ2rIRG2VfZ0SeecFGYX13bz6ZR+aHcgU6gDuTeKrt5Cz+4m8uyHnbHU8UHmBAFlI3L
-         mBXg==
-X-Gm-Message-State: AOAM532BCNJ2l/deG6b1WqE555iiLAGM6YUeUVdRBGvo1lZN9ynJut54
-        RTQBk9hXVx+QsdmJjIA9bhgf9caXDvQmGw==
-X-Google-Smtp-Source: ABdhPJyOC1QXZSBU+KsK0DL6A+ChKSTNG/HcECwW0fMc7UhujF7/piLdqeHhk49O30QxVotOzRk3fA==
-X-Received: by 2002:a17:906:a041:: with SMTP id bg1mr25349321ejb.470.1635643654256;
-        Sat, 30 Oct 2021 18:27:34 -0700 (PDT)
-Received: from localhost (tor-exit-34.for-privacy.net. [185.220.101.34])
-        by smtp.gmail.com with ESMTPSA id m14sm2035096edv.9.2021.10.30.18.27.33
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=4pTpNp+ctrU1VcOo9RHb5FHn9UkMoYaGEFwbc7czNlw=;
+        b=3cu4PbUWmZha1Rf2+Fs1adszd2VwWH7QulnHDH+GDs72iXFRvuef4mGvStILlkMn73
+         pVPeWra9NbxkFU8LBHA85zXp9yVuGqc2h9tdaphRjd//eyUkcrNIE1pKmFAkWkA0ak1X
+         oaC9SmWRgCXr+NXJDwVdpZWPLruBD7L3oYbxsj5sj5e+QZJCoblhRTrie1uXnzsPjRJU
+         4lbBTt25VMdCFiw6xkUbQ1DQ8ZqzT5HC6V1Wd5Hjugu5J/DU0+wdnb8YbiImas4fF0OI
+         jcN+I1W+bNNKUeCO1q7aHgfTlr+XcdnmZ+VQQDB7xs8u6ZTdpeB/sEw9ja7u6ihqgPdX
+         NoLQ==
+X-Gm-Message-State: AOAM532+pq5ySIUIS9wKNe2cjxrjpZYXMJ+ADeS3xNDVFzfmwtcPKNPC
+        45/Iu0fHnz+YJ63C18UXnVk=
+X-Google-Smtp-Source: ABdhPJxetHAF/mKwh0e6XS/DQKI2r+ozbBPRlT3Sd2LEbpSrdmeBVMlbAgPHhvmsXm39F3v0zN2Bcw==
+X-Received: by 2002:ac8:5990:: with SMTP id e16mr21171559qte.38.1635648173944;
+        Sat, 30 Oct 2021 19:42:53 -0700 (PDT)
+Received: from Zekuns-MBP-16.fios-router.home (cpe-74-73-56-100.nyc.res.rr.com. [74.73.56.100])
+        by smtp.gmail.com with ESMTPSA id i12sm4116907qtx.1.2021.10.30.19.42.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Oct 2021 18:27:33 -0700 (PDT)
-From:   =?UTF-8?q?J=CE=B5an=20Sacren?= <sakiwit@gmail.com>
-To:     doshir@vmware.com, pv-drivers@vmware.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next] net: vmxnet3: remove multiple false checks in vmxnet3_ethtool.c
-Date:   Sat, 30 Oct 2021 19:27:28 -0600
-Message-Id: <20211031012728.8325-1-sakiwit@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        Sat, 30 Oct 2021 19:42:53 -0700 (PDT)
+Date:   Sat, 30 Oct 2021 22:42:50 -0400
+From:   Zekun Shen <bruceshenzk@gmail.com>
+To:     bruceshenzk@gmail.com
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, brendandg@nyu.edu
+Subject: [PATCH] mwifiex_usb: Fix skb_over_panic in mwifiex_usb_recv
+Message-ID: <YX4CqjfRcTa6bVL+@Zekuns-MBP-16.fios-router.home>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jean Sacren <sakiwit@gmail.com>
+Currently, with an unknown recv_type, mwifiex_usb_recv
+just return -1 without restoring the skb. Next time
+mwifiex_usb_rx_complete is invoked with the same skb,
+calling skb_put causes skb_over_panic.
 
-In one if branch, (ec->rx_coalesce_usecs != 0) is checked.  When it is
-checked again in two more places, it is always false and has no effect
-on the whole check expression.  We should remove it in both places.
+The bug is triggerable with a compromised/malfunctioning
+usb device. After applying the patch, skb_over_panic
+no longer shows up with the same input.
 
-In another if branch, (ec->use_adaptive_rx_coalesce != 0) is checked.
-When it is checked again, it is always false.  We should remove the
-entire branch with it.
+Attached is the panic report from fuzzing.
+skbuff: skb_over_panic: text:000000003bf1b5fa
+ len:2048 put:4 head:00000000dd6a115b data:000000000a9445d8
+ tail:0x844 end:0x840 dev:<NULL>
+kernel BUG at net/core/skbuff.c:109!
+invalid opcode: 0000 [#1] SMP KASAN NOPTI
+CPU: 0 PID: 198 Comm: in:imklog Not tainted 5.6.0 #60
+RIP: 0010:skb_panic+0x15f/0x161
+Call Trace:
+ <IRQ>
+ ? mwifiex_usb_rx_complete+0x26b/0xfcd [mwifiex_usb]
+ skb_put.cold+0x24/0x24
+ mwifiex_usb_rx_complete+0x26b/0xfcd [mwifiex_usb]
+ __usb_hcd_giveback_urb+0x1e4/0x380
+ usb_giveback_urb_bh+0x241/0x4f0
+ ? __hrtimer_run_queues+0x316/0x740
+ ? __usb_hcd_giveback_urb+0x380/0x380
+ tasklet_action_common.isra.0+0x135/0x330
+ __do_softirq+0x18c/0x634
+ irq_exit+0x114/0x140
+ smp_apic_timer_interrupt+0xde/0x380
+ apic_timer_interrupt+0xf/0x20
+ </IRQ>
 
-In addition we might as well let C precedence dictate by getting rid of
-two pairs of parentheses in the neighboring lines in order to keep
-expressions on both sides of '||' in balance with checkpatch warning
-silenced.
-
-Signed-off-by: Jean Sacren <sakiwit@gmail.com>
+Reported-by: Zekun Shen <bruceshenzk@gmail.com>
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
 ---
- drivers/net/vmxnet3/vmxnet3_ethtool.c | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+ drivers/net/wireless/marvell/mwifiex/usb.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
-index 5dd8360b21a0..16f3a2057b90 100644
---- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
-+++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
-@@ -1134,9 +1134,8 @@ static int vmxnet3_set_coalesce(struct net_device *netdev,
- 	}
- 
- 	if (ec->use_adaptive_rx_coalesce != 0) {
--		if ((ec->rx_coalesce_usecs != 0) ||
--		    (ec->tx_max_coalesced_frames != 0) ||
--		    (ec->rx_max_coalesced_frames != 0)) {
-+		if (ec->tx_max_coalesced_frames != 0 ||
-+		    ec->rx_max_coalesced_frames != 0) {
- 			return -EINVAL;
+diff --git a/drivers/net/wireless/marvell/mwifiex/usb.c b/drivers/net/wireless/marvell/mwifiex/usb.c
+index 426e39d4c..6d81e8786 100644
+--- a/drivers/net/wireless/marvell/mwifiex/usb.c
++++ b/drivers/net/wireless/marvell/mwifiex/usb.c
+@@ -130,7 +130,8 @@ static int mwifiex_usb_recv(struct mwifiex_adapter *adapter,
+ 		default:
+ 			mwifiex_dbg(adapter, ERROR,
+ 				    "unknown recv_type %#x\n", recv_type);
+-			return -1;
++			ret = -1;
++			goto exit_restore_skb;
  		}
- 		memset(adapter->coal_conf, 0, sizeof(*adapter->coal_conf));
-@@ -1146,11 +1145,6 @@ static int vmxnet3_set_coalesce(struct net_device *netdev,
- 
- 	if ((ec->tx_max_coalesced_frames != 0) ||
- 	    (ec->rx_max_coalesced_frames != 0)) {
--		if ((ec->rx_coalesce_usecs != 0) ||
--		    (ec->use_adaptive_rx_coalesce != 0)) {
--			return -EINVAL;
--		}
--
- 		if ((ec->tx_max_coalesced_frames >
- 		    VMXNET3_COAL_STATIC_MAX_DEPTH) ||
- 		    (ec->rx_max_coalesced_frames >
+ 		break;
+ 	case MWIFIEX_USB_EP_DATA:
+-- 
+2.25.1
+
