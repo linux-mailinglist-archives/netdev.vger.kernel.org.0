@@ -2,335 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 551FB440FC5
-	for <lists+netdev@lfdr.de>; Sun, 31 Oct 2021 18:36:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B121440FCC
+	for <lists+netdev@lfdr.de>; Sun, 31 Oct 2021 18:40:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229887AbhJaRie (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Oct 2021 13:38:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54198 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229732AbhJaRid (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 31 Oct 2021 13:38:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4529760E9C;
-        Sun, 31 Oct 2021 17:36:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635701762;
-        bh=7hOW7hCyrNsepgPyCQ8+mXyL7BlIpMFgqEpeTvD1Q1w=;
-        h=From:To:Cc:Subject:Date:From;
-        b=VvQrUUSfxXwAukSqirBjD7GklNxzQPFsavf0GRlErLKNpFtlWadgqMd0IxHS0F8vQ
-         TP4RRvprwdG4jk3GxkPkKqiVh9dJard5W5lTKAzL6xDecOJ4N1dMrPvc/acxBk7XlQ
-         5al/QAPGaiJpF5acAIivFNeBmWMhAiGKb4OkxA2AO9p4be6AxriVU3wnBEmDJsykwX
-         kJvvko/g1WDJhnNvWz5SWLESZGcEHNHBAT8lTPNUGo61hfqsrHnNpGlmE2bwC/tcYB
-         eKfR1aACFX2m4LHoWjuIsixXjCZ1XflYKqWr52o5kykkfKfdeRNQ1NYiOgOkivhRKx
-         4uuXbx04tMyvA==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        idosch@idosch.org, edwin.peer@broadcom.com
-Subject: [PATCH net-next] devlink: Require devlink lock during device reload
-Date:   Sun, 31 Oct 2021 19:35:56 +0200
-Message-Id: <9716f9a13e217a0a163b745b6e92e02d40973d2c.1635701665.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.31.1
+        id S230281AbhJaRnD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Oct 2021 13:43:03 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:33338 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230169AbhJaRnA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Oct 2021 13:43:00 -0400
+Received: by mail-io1-f70.google.com with SMTP id f19-20020a6b6213000000b005ddc4ce4deeso11128254iog.0
+        for <netdev@vger.kernel.org>; Sun, 31 Oct 2021 10:40:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=7M1VeV5Puogy1Aa38S5xLZtrD8M6xbycaErzb+ZqLJk=;
+        b=HmCDTPdXnKO+dae62b55oCc4y50014rFhe1SeP2NNcZdNGfZ9bmReoCQ255qTL0i83
+         XTNeRUBRsKLL4kPywUxTkSnfq4lDnru6HZ1EKX6S3fnYwIr1Js6XtJNUeY0iOb20ICLx
+         WukldlvQ3MwdR/YP/NzuakDbKSLemrFHjNSyamYKw1oF1+cJrEbFcyU2wNzM+AE1gmmD
+         BfosqOaeekcDnMKpLSb775Oql+PyssQF4u9Hs+sT27OFwvRYCHGpY7bsNChgw8w131NH
+         Coqx48nqsBAO8QsCHZNhWmWsH5nbNMUAp1Kh0OXcZzoC4qAcwzkDOD6Ntght8GKnpNpN
+         b1oA==
+X-Gm-Message-State: AOAM530vnHZftbKiuqHaPYeSk4k+enLBtSmNNhZsgwSdN6vBD4RGhTZ1
+        N+XRZMXi057uW7uAJHZXCCimQmQiu5gartQ2OOLyjBG/UuhN
+X-Google-Smtp-Source: ABdhPJxl9h4UvTixmRZjoZ4XRQXq8YzoiNVLBOoyjHr4IJkAOBDsUCqLLrO70nd8cxZTyidaqz7J8lqO/6HYRQB6zWVb6MrwRB+c
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a92:cb4e:: with SMTP id f14mr15507720ilq.109.1635702025869;
+ Sun, 31 Oct 2021 10:40:25 -0700 (PDT)
+Date:   Sun, 31 Oct 2021 10:40:25 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000035de5905cfa98e03@google.com>
+Subject: [syzbot] KASAN: slab-out-of-bounds Read in hci_le_meta_evt (2)
+From:   syzbot <syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        luiz.dentz@gmail.com, marcel@holtmann.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+Hello,
 
-Devlink reload was implemented as a special command which does _SET_
-operation, but doesn't take devlink->lock, while recursive devlink
-calls that were part of .reload_up()/.reload_down() sequence took it.
+syzbot found the following issue on:
 
-This fragile flow was possible due to holding a big devlink lock
-(devlink_mutex), which effectively stopped all devlink activities,
-even unrelated to reloaded devlink.
+HEAD commit:    119c85055d86 Merge tag 'powerpc-5.15-6' of git://git.kerne..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1453e1f4b00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=6362530af157355b
+dashboard link: https://syzkaller.appspot.com/bug?extid=e3fcb9c4f3c2a931dc40
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1128465cb00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1431dfe2b00000
 
-So let's make sure that devlink reload behaves as other commands and
-use special nested locking primitives with a depth of 1. Such change
-opens us to a venue of removing devlink_mutex completely, while keeping
-devlink locking complexity in devlink.c.
+Bisection is inconclusive: the issue happens on the oldest tested release.
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10f27096b00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=12f27096b00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=14f27096b00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
+
+Bluetooth: hci0: unknown advertising packet type: 0x90
+Bluetooth: hci0: Dropping invalid advertising data
+==================================================================
+BUG: KASAN: slab-out-of-bounds in hci_le_adv_report_evt net/bluetooth/hci_event.c:5783 [inline]
+BUG: KASAN: slab-out-of-bounds in hci_le_meta_evt+0x3e27/0x46d0 net/bluetooth/hci_event.c:6104
+Read of size 1 at addr ffff888079314e03 by task kworker/u5:2/6459
+
+CPU: 1 PID: 6459 Comm: kworker/u5:2 Not tainted 5.15.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: hci0 hci_rx_work
+Call Trace:
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0x6c/0x2d6 mm/kasan/report.c:256
+ __kasan_report mm/kasan/report.c:442 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+ hci_le_adv_report_evt net/bluetooth/hci_event.c:5783 [inline]
+ hci_le_meta_evt+0x3e27/0x46d0 net/bluetooth/hci_event.c:6104
+ hci_event_packet+0x5d9/0x7cf0 net/bluetooth/hci_event.c:6445
+ hci_rx_work+0x4fa/0xd30 net/bluetooth/hci_core.c:5136
+ process_one_work+0x9bf/0x16b0 kernel/workqueue.c:2297
+ worker_thread+0x658/0x11f0 kernel/workqueue.c:2444
+ kthread+0x3e5/0x4d0 kernel/kthread.c:319
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+
+Allocated by task 6453:
+ kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:46 [inline]
+ set_alloc_info mm/kasan/common.c:434 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:513 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:472 [inline]
+ __kasan_kmalloc+0xa1/0xd0 mm/kasan/common.c:522
+ kmalloc_reserve net/core/skbuff.c:356 [inline]
+ __alloc_skb+0xde/0x340 net/core/skbuff.c:427
+ alloc_skb include/linux/skbuff.h:1116 [inline]
+ bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
+ vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
+ vhci_write+0xbd/0x450 drivers/bluetooth/hci_vhci.c:285
+ call_write_iter include/linux/fs.h:2163 [inline]
+ new_sync_write+0x429/0x660 fs/read_write.c:507
+ vfs_write+0x7cf/0xae0 fs/read_write.c:594
+ ksys_write+0x12d/0x250 fs/read_write.c:647
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+The buggy address belongs to the object at ffff888079314c00
+ which belongs to the cache kmalloc-512 of size 512
+The buggy address is located 3 bytes to the right of
+ 512-byte region [ffff888079314c00, ffff888079314e00)
+The buggy address belongs to the page:
+page:ffffea0001e4c500 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x79314
+flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000000200 ffffea00005ef948 ffffea0000768f08 ffff888010c40600
+raw: 0000000000000000 ffff888079314000 0000000100000004 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0x2420c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_COMP|__GFP_THISNODE), pid 1, ts 20947704734, free_ts 20947079890
+ prep_new_page mm/page_alloc.c:2426 [inline]
+ get_page_from_freelist+0xa72/0x2f80 mm/page_alloc.c:4155
+ __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5381
+ __alloc_pages_node include/linux/gfp.h:570 [inline]
+ kmem_getpages mm/slab.c:1377 [inline]
+ cache_grow_begin+0x75/0x460 mm/slab.c:2593
+ cache_alloc_refill+0x27f/0x380 mm/slab.c:2965
+ ____cache_alloc mm/slab.c:3048 [inline]
+ ____cache_alloc mm/slab.c:3031 [inline]
+ __do_cache_alloc mm/slab.c:3275 [inline]
+ slab_alloc mm/slab.c:3316 [inline]
+ kmem_cache_alloc_trace+0x38c/0x480 mm/slab.c:3573
+ kmalloc include/linux/slab.h:591 [inline]
+ kzalloc include/linux/slab.h:721 [inline]
+ kernfs_fop_open+0x2c5/0xd40 fs/kernfs/file.c:628
+ do_dentry_open+0x4c8/0x11d0 fs/open.c:822
+ do_open fs/namei.c:3428 [inline]
+ path_openat+0x1c9a/0x2740 fs/namei.c:3561
+ do_filp_open+0x1aa/0x400 fs/namei.c:3588
+ do_sys_openat2+0x16d/0x4d0 fs/open.c:1200
+ do_sys_open fs/open.c:1216 [inline]
+ __do_sys_open fs/open.c:1224 [inline]
+ __se_sys_open fs/open.c:1220 [inline]
+ __x64_sys_open+0x119/0x1c0 fs/open.c:1220
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1340 [inline]
+ free_pcp_prepare+0x2c5/0x780 mm/page_alloc.c:1391
+ free_unref_page_prepare mm/page_alloc.c:3317 [inline]
+ free_unref_page+0x19/0x690 mm/page_alloc.c:3396
+ selinux_genfs_get_sid security/selinux/hooks.c:1378 [inline]
+ inode_doinit_with_dentry+0x868/0x12e0 security/selinux/hooks.c:1573
+ selinux_d_instantiate+0x23/0x30 security/selinux/hooks.c:6448
+ security_d_instantiate+0x50/0xe0 security/security.c:2039
+ d_splice_alias+0x8c/0xc60 fs/dcache.c:3064
+ kernfs_iop_lookup+0x22d/0x2c0 fs/kernfs/dir.c:1137
+ lookup_open.isra.0+0x69f/0x13d0 fs/namei.c:3260
+ open_last_lookups fs/namei.c:3352 [inline]
+ path_openat+0x9a5/0x2740 fs/namei.c:3558
+ do_filp_open+0x1aa/0x400 fs/namei.c:3588
+ do_sys_openat2+0x16d/0x4d0 fs/open.c:1200
+ do_sys_open fs/open.c:1216 [inline]
+ __do_sys_open fs/open.c:1224 [inline]
+ __se_sys_open fs/open.c:1220 [inline]
+ __x64_sys_open+0x119/0x1c0 fs/open.c:1220
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Memory state around the buggy address:
+ ffff888079314d00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff888079314d80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff888079314e00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+                   ^
+ ffff888079314e80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff888079314f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+==================================================================
+
+
 ---
- net/core/devlink.c | 58 ++++++++++++++++++++++++----------------------
- 1 file changed, 30 insertions(+), 28 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 2d8abe88c673..e46f8ad43c20 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -8734,7 +8734,6 @@ static const struct genl_small_ops devlink_nl_ops[] = {
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = devlink_nl_cmd_reload,
- 		.flags = GENL_ADMIN_PERM,
--		.internal_flags = DEVLINK_NL_FLAG_NO_LOCK,
- 	},
- 	{
- 		.cmd = DEVLINK_CMD_PARAM_GET,
-@@ -9219,7 +9218,7 @@ int devlink_port_register(struct devlink *devlink,
- 			  struct devlink_port *devlink_port,
- 			  unsigned int port_index)
- {
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	if (devlink_port_index_exists(devlink, port_index)) {
- 		mutex_unlock(&devlink->lock);
- 		return -EEXIST;
-@@ -9253,7 +9252,7 @@ void devlink_port_unregister(struct devlink_port *devlink_port)
- 
- 	devlink_port_type_warn_cancel(devlink_port);
- 	devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_DEL);
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	list_del(&devlink_port->list);
- 	mutex_unlock(&devlink->lock);
- 	WARN_ON(!list_empty(&devlink_port->reporter_list));
-@@ -9501,7 +9500,7 @@ devlink_rate_leaf_create(struct devlink_port *devlink_port, void *priv)
- 	if (!devlink_rate)
- 		return -ENOMEM;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	WARN_ON(devlink_port->devlink_rate);
- 	devlink_rate->type = DEVLINK_RATE_TYPE_LEAF;
- 	devlink_rate->devlink = devlink;
-@@ -9531,7 +9530,7 @@ void devlink_rate_leaf_destroy(struct devlink_port *devlink_port)
- 	if (!devlink_rate)
- 		return;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	devlink_rate_notify(devlink_rate, DEVLINK_CMD_RATE_DEL);
- 	if (devlink_rate->parent)
- 		refcount_dec(&devlink_rate->parent->refcnt);
-@@ -9557,7 +9556,7 @@ void devlink_rate_nodes_destroy(struct devlink *devlink)
- 	static struct devlink_rate *devlink_rate, *tmp;
- 	const struct devlink_ops *ops = devlink->ops;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	list_for_each_entry(devlink_rate, &devlink->rate_list, list) {
- 		if (!devlink_rate->parent)
- 			continue;
-@@ -9656,7 +9655,7 @@ int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
- 	struct devlink_sb *devlink_sb;
- 	int err = 0;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	if (devlink_sb_index_exists(devlink, sb_index)) {
- 		err = -EEXIST;
- 		goto unlock;
-@@ -9684,7 +9683,7 @@ void devlink_sb_unregister(struct devlink *devlink, unsigned int sb_index)
- {
- 	struct devlink_sb *devlink_sb;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	devlink_sb = devlink_sb_get_by_index(devlink, sb_index);
- 	WARN_ON(!devlink_sb);
- 	list_del(&devlink_sb->list);
-@@ -9704,7 +9703,7 @@ EXPORT_SYMBOL_GPL(devlink_sb_unregister);
- int devlink_dpipe_headers_register(struct devlink *devlink,
- 				   struct devlink_dpipe_headers *dpipe_headers)
- {
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	devlink->dpipe_headers = dpipe_headers;
- 	mutex_unlock(&devlink->lock);
- 	return 0;
-@@ -9720,7 +9719,7 @@ EXPORT_SYMBOL_GPL(devlink_dpipe_headers_register);
-  */
- void devlink_dpipe_headers_unregister(struct devlink *devlink)
- {
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	devlink->dpipe_headers = NULL;
- 	mutex_unlock(&devlink->lock);
- }
-@@ -9814,7 +9813,7 @@ void devlink_dpipe_table_unregister(struct devlink *devlink,
- {
- 	struct devlink_dpipe_table *table;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
- 					 table_name, devlink);
- 	if (!table)
-@@ -9856,7 +9855,7 @@ int devlink_resource_register(struct devlink *devlink,
- 
- 	top_hierarchy = parent_resource_id == DEVLINK_RESOURCE_ID_PARENT_TOP;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	resource = devlink_resource_find(devlink, NULL, resource_id);
- 	if (resource) {
- 		err = -EINVAL;
-@@ -9919,7 +9918,7 @@ void devlink_resources_unregister(struct devlink *devlink,
- 		resource_list = &devlink->resource_list;
- 
- 	if (!resource)
--		mutex_lock(&devlink->lock);
-+		mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 
- 	list_for_each_entry_safe(child_resource, tmp, resource_list, list) {
- 		devlink_resources_unregister(devlink, child_resource);
-@@ -9946,7 +9945,7 @@ int devlink_resource_size_get(struct devlink *devlink,
- 	struct devlink_resource *resource;
- 	int err = 0;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	resource = devlink_resource_find(devlink, NULL, resource_id);
- 	if (!resource) {
- 		err = -EINVAL;
-@@ -9975,7 +9974,7 @@ int devlink_dpipe_table_resource_set(struct devlink *devlink,
- 	struct devlink_dpipe_table *table;
- 	int err = 0;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
- 					 table_name, devlink);
- 	if (!table) {
-@@ -10006,7 +10005,7 @@ void devlink_resource_occ_get_register(struct devlink *devlink,
- {
- 	struct devlink_resource *resource;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	resource = devlink_resource_find(devlink, NULL, resource_id);
- 	if (WARN_ON(!resource))
- 		goto out;
-@@ -10030,7 +10029,7 @@ void devlink_resource_occ_get_unregister(struct devlink *devlink,
- {
- 	struct devlink_resource *resource;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	resource = devlink_resource_find(devlink, NULL, resource_id);
- 	if (WARN_ON(!resource))
- 		goto out;
-@@ -10278,7 +10277,7 @@ devlink_region_create(struct devlink *devlink,
- 	if (WARN_ON(!ops) || WARN_ON(!ops->destructor))
- 		return ERR_PTR(-EINVAL);
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 
- 	if (devlink_region_get_by_name(devlink, ops->name)) {
- 		err = -EEXIST;
-@@ -10369,7 +10368,7 @@ void devlink_region_destroy(struct devlink_region *region)
- 	struct devlink *devlink = region->devlink;
- 	struct devlink_snapshot *snapshot, *ts;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 
- 	/* Free all snapshots of region */
- 	list_for_each_entry_safe(snapshot, ts, &region->snapshot_list, list)
-@@ -10402,7 +10401,7 @@ int devlink_region_snapshot_id_get(struct devlink *devlink, u32 *id)
- {
- 	int err;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	err = __devlink_region_snapshot_id_get(devlink, id);
- 	mutex_unlock(&devlink->lock);
- 
-@@ -10422,7 +10421,7 @@ EXPORT_SYMBOL_GPL(devlink_region_snapshot_id_get);
-  */
- void devlink_region_snapshot_id_put(struct devlink *devlink, u32 id)
- {
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	__devlink_snapshot_id_decrement(devlink, id);
- 	mutex_unlock(&devlink->lock);
- }
-@@ -10446,7 +10445,7 @@ int devlink_region_snapshot_create(struct devlink_region *region,
- 	struct devlink *devlink = region->devlink;
- 	int err;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	err = __devlink_region_snapshot_create(region, data, snapshot_id);
- 	mutex_unlock(&devlink->lock);
- 
-@@ -10831,7 +10830,7 @@ int devlink_traps_register(struct devlink *devlink,
- 	if (!devlink->ops->trap_init || !devlink->ops->trap_action_set)
- 		return -EINVAL;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	for (i = 0; i < traps_count; i++) {
- 		const struct devlink_trap *trap = &traps[i];
- 
-@@ -10868,7 +10867,7 @@ void devlink_traps_unregister(struct devlink *devlink,
- {
- 	int i;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	/* Make sure we do not have any packets in-flight while unregistering
- 	 * traps by disabling all of them and waiting for a grace period.
- 	 */
-@@ -11049,7 +11048,7 @@ int devlink_trap_groups_register(struct devlink *devlink,
- {
- 	int i, err;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	for (i = 0; i < groups_count; i++) {
- 		const struct devlink_trap_group *group = &groups[i];
- 
-@@ -11086,7 +11085,7 @@ void devlink_trap_groups_unregister(struct devlink *devlink,
- {
- 	int i;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	for (i = groups_count - 1; i >= 0; i--)
- 		devlink_trap_group_unregister(devlink, &groups[i]);
- 	mutex_unlock(&devlink->lock);
-@@ -11189,7 +11188,7 @@ devlink_trap_policers_register(struct devlink *devlink,
- {
- 	int i, err;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	for (i = 0; i < policers_count; i++) {
- 		const struct devlink_trap_policer *policer = &policers[i];
- 
-@@ -11230,7 +11229,7 @@ devlink_trap_policers_unregister(struct devlink *devlink,
- {
- 	int i;
- 
--	mutex_lock(&devlink->lock);
-+	mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
- 	for (i = policers_count - 1; i >= 0; i--)
- 		devlink_trap_policer_unregister(devlink, &policers[i]);
- 	mutex_unlock(&devlink->lock);
-@@ -11400,6 +11399,8 @@ static void __net_exit devlink_pernet_pre_exit(struct net *net)
- 		if (!net_eq(devlink_net(devlink), net))
- 			goto retry;
- 
-+		mutex_lock_nested(&devlink->lock, SINGLE_DEPTH_NESTING);
-+
- 		WARN_ON(!(devlink->features & DEVLINK_F_RELOAD));
- 		err = devlink_reload(devlink, &init_net,
- 				     DEVLINK_RELOAD_ACTION_DRIVER_REINIT,
-@@ -11407,6 +11408,7 @@ static void __net_exit devlink_pernet_pre_exit(struct net *net)
- 				     &actions_performed, NULL);
- 		if (err && err != -EOPNOTSUPP)
- 			pr_warn("Failed to reload devlink instance into init_net\n");
-+		mutex_unlock(&devlink->lock);
- retry:
- 		devlink_put(devlink);
- 	}
--- 
-2.31.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
