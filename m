@@ -2,138 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6F76440EAD
-	for <lists+netdev@lfdr.de>; Sun, 31 Oct 2021 14:30:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80A3E440EB1
+	for <lists+netdev@lfdr.de>; Sun, 31 Oct 2021 14:40:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230262AbhJaNdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Oct 2021 09:33:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37638 "EHLO
+        id S229798AbhJaNmu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Oct 2021 09:42:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229662AbhJaNdV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Oct 2021 09:33:21 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BCD8C061570
-        for <netdev@vger.kernel.org>; Sun, 31 Oct 2021 06:30:49 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id o12so2876723qtv.4
-        for <netdev@vger.kernel.org>; Sun, 31 Oct 2021 06:30:49 -0700 (PDT)
+        with ESMTP id S229594AbhJaNmt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Oct 2021 09:42:49 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C3C2C061570
+        for <netdev@vger.kernel.org>; Sun, 31 Oct 2021 06:40:18 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id bq14so2738165qkb.1
+        for <netdev@vger.kernel.org>; Sun, 31 Oct 2021 06:40:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=So1bL0UEa6GDc6fo1EpsF+WgQxYK4sxvh//Ool56LaI=;
-        b=W3gwlrjIPop6JTq1nzbnGESzqOA9sFEZC7gD18Sdw9rsgirbs5ViP7esoUR93YvycP
-         QdwacRhljAIT7WtH3QKd5yJkr/nPLeUuTI+ZE+KMvy9JWJqU+P1vOuxslEN0ISzaaGUV
-         AvlbFK1+RKiMmKaXeD1wSrl1feaMqb18TnvjR6TfII0XEtSufPYm9nIAdBDpeNj/eLgj
-         oSIDcxlNl0p13CXZ4yQS8moZt5lVoC1gYx3aHRv5d7wB5aEx0iUGS+iBWkdx2V4FEouN
-         j3hHV+AKCeZIp2VrhviioVuk9eKnuJ7UflRvGHMsOUV+682QeY6oI142htnKXHFt/0rn
-         aPJQ==
+        bh=0vKOcpsgo0AUN0CmEYGcLIeEZ0oSg1/GfMh8jB3vgvg=;
+        b=WI2P7rCGu5PyYtJB0rv2L6uQhIWO66l6fforhV6ep7kAbUS/6jnOQi9IFRTJ/Rw7Dp
+         HTUvRgm0O6ryXWFdE5Qv4x7Dssu2/hNUKQ6WxVaLfhWO/pkA33A3B/fDa0mDkQOWKN1L
+         hUvzOWZn2TUa5gPHe1LnCAWinPIRB0slfptAYYhcgpKp+78S3Sb8bL6pgPQLM/oyVgNy
+         kr5otqQFRxTyJl9L1N03qFADECXVAG6LVTI4PSwY7E/JmIu3mc/nnBOAPPqIgHmXGaMY
+         Mm4SWFp+MtUFbEUrGFrkXcvIBA+8/HAEf5VLog9ZnClOV72/S21b7pwen7qVw4zIgdPu
+         nnjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=So1bL0UEa6GDc6fo1EpsF+WgQxYK4sxvh//Ool56LaI=;
-        b=id89KQ6gSURq19jN2VCcdqg4bpGf4z+YApFUX+LduPu3EadGSHZdAZL3zB5hBgF36E
-         RKyw39tCFtApJgGWZLxjLKkYJyuMLnSpYQzEQVcOEWRYnn7Ck7GYS9gPwmBr/v1I3xdQ
-         IP8wIlvV30mV99rwsiQEx+7CGt16TSkpWsU39S0PvAOq6ZELTjkFJbCLd2/6J7l9Imz7
-         XA/hAxnGC4rpHzbQT/JeuOYpKU6vilPJQDPKpIiksTfB8HDVhLntH9YjfB0GKmvTIISn
-         m4D+xJ6mh4DPCZOccvI2ZW3c39TXX9yzZCUhdLaP+ZrAM5qua1AJQ5SxdZs/dmbh6E6n
-         T2ig==
-X-Gm-Message-State: AOAM533IzIT4WHdNz7JOzP8/VhxGRoJPYKKwtEneVaOFw+/X1jXhKiaJ
-        dDuztxjGAO/S4iuUiCbxH7I7zw==
-X-Google-Smtp-Source: ABdhPJyT0VI7ZtojSJX3y5u/B5sduO5CnfoCCMUyCs9CrRiC1e1w7YPPOOjamxkiBzdAyLzcvi0xLw==
-X-Received: by 2002:ac8:11:: with SMTP id a17mr23025893qtg.276.1635687048535;
-        Sun, 31 Oct 2021 06:30:48 -0700 (PDT)
+        bh=0vKOcpsgo0AUN0CmEYGcLIeEZ0oSg1/GfMh8jB3vgvg=;
+        b=zxcpXv4d6CkOosQm7nLyusBC+0LyxFJeho2KLpEUi9WH0Y4ZPWhD0trOmfKID0Y2qs
+         +4fTz6QnKJdfi/2LHUw/jT8xjjcelF9cwQFXIYWE5MHdKenWt5o9aGsieSiEHzbuvgtb
+         gPsf1KJDDlyQ1GUxFc1Zvlq7q9HZrWGApUs+k//KIzrAagwJsPB9Ur2kkgRYwpS6Mbj0
+         166PLfexrzL+7WMfz6I76pKu2ozD8r+U8UCjp+y7ttc3u7T+S+6Du6fUtCFwp8aLFfHr
+         +jOF1rfNb/7zdyHmqEVBM5Z9ABv4WbSV8YneTY5m8iseqRPq9hIEgtgdhGZjHlbWWlz+
+         jFmw==
+X-Gm-Message-State: AOAM533l0HN3qBJDMAbqEaoiCX6QKjM7skI6EdcGjpUG4EvNfmX45EVT
+        YcIaKWe9T1OGyZQ22tzrMF0kFA==
+X-Google-Smtp-Source: ABdhPJz2DKJgiNmlyA1U1Zn9S218ZZPkjcv7FMO6FijYOUm7RZFlHzkgUDUUj75zcj4rghqqOK1Ukw==
+X-Received: by 2002:a05:620a:1999:: with SMTP id bm25mr18508319qkb.40.1635687617447;
+        Sun, 31 Oct 2021 06:40:17 -0700 (PDT)
 Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-33-142-112-185-132.dsl.bell.ca. [142.112.185.132])
-        by smtp.googlemail.com with ESMTPSA id n3sm5333366qkp.112.2021.10.31.06.30.47
+        by smtp.googlemail.com with ESMTPSA id h19sm8733263qtb.18.2021.10.31.06.40.16
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 31 Oct 2021 06:30:47 -0700 (PDT)
-Message-ID: <d16042e3-bc1e-0a2b-043d-bbb62b1e68d7@mojatatu.com>
-Date:   Sun, 31 Oct 2021 09:30:46 -0400
+        Sun, 31 Oct 2021 06:40:17 -0700 (PDT)
+Message-ID: <cf86b2ab-ec3a-b249-b380-968c0a3ef67d@mojatatu.com>
+Date:   Sun, 31 Oct 2021 09:40:15 -0400
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.2.1
-Subject: Re: [RFC/PATCH net-next v3 8/8] flow_offload: validate flags of
- filter and actions
+Subject: Re: [RFC/PATCH net-next v3 0/8] allow user to offload tc action to
+ net device
 Content-Language: en-US
-To:     Baowen Zheng <baowen.zheng@corigine.com>,
-        Vlad Buslov <vladbu@nvidia.com>
-Cc:     Simon Horman <simon.horman@corigine.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Roi Dayan <roid@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+To:     Oz Shlomo <ozsh@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        netdev@vger.kernel.org
+Cc:     Vlad Buslov <vladbu@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
         Baowen Zheng <notifications@github.com>,
         Louis Peens <louis.peens@corigine.com>,
-        oss-drivers <oss-drivers@corigine.com>
+        oss-drivers@corigine.com
 References: <20211028110646.13791-1-simon.horman@corigine.com>
- <20211028110646.13791-9-simon.horman@corigine.com>
- <ygnhilxfaexq.fsf@nvidia.com>
- <7147daf1-2546-a6b5-a1ba-78dfb4af408a@mojatatu.com>
- <ygnhfssia7vd.fsf@nvidia.com>
- <DM5PR1301MB21722A85B19EE97EFE27A5BBE7899@DM5PR1301MB2172.namprd13.prod.outlook.com>
+ <b409b190-8427-2b6b-ff17-508d81175e4d@nvidia.com>
 From:   Jamal Hadi Salim <jhs@mojatatu.com>
-In-Reply-To: <DM5PR1301MB21722A85B19EE97EFE27A5BBE7899@DM5PR1301MB2172.namprd13.prod.outlook.com>
+In-Reply-To: <b409b190-8427-2b6b-ff17-508d81175e4d@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-10-30 22:27, Baowen Zheng wrote:
-> Thanks for your review, after some considerarion, I think I understand what you are meaning.
+On 2021-10-31 05:50, Oz Shlomo wrote:
+> 
+> 
+> On 10/28/2021 2:06 PM, Simon Horman wrote:
+>> Baowen Zheng says:
+>>
+>> Allow use of flow_indr_dev_register/flow_indr_dev_setup_offload to 
+>> offload
+>> tc actions independent of flows.
+>>
+>> The motivation for this work is to prepare for using TC police action
+>> instances to provide hardware offload of OVS metering feature - which 
+>> calls
+>> for policers that may be used by multiple flows and whose lifecycle is
+>> independent of any flows that use them.
+>>
+>> This patch includes basic changes to offload drivers to return EOPNOTSUPP
+>> if this feature is used - it is not yet supported by any driver.
+>>
+>> Tc cli command to offload and quote an action:
+>>
+>> tc qdisc del dev $DEV ingress && sleep 1 || true
+>> tc actions delete action police index 99 || true
+>>
+>> tc qdisc add dev $DEV ingress
+>> tc qdisc show dev $DEV ingress
+>>
+>> tc actions add action police index 99 rate 1mbit burst 100k skip_sw
+>> tc actions list action police
+>>
+>> tc filter add dev $DEV protocol ip parent ffff:
+>> flower ip_proto tcp action police index 99
+>> tc -s -d filter show dev $DEV protocol ip parent ffff:
+>> tc filter add dev $DEV protocol ipv6 parent ffff:
+>> flower skip_sw ip_proto tcp action police index 99
+>> tc -s -d filter show dev $DEV protocol ipv6 parent ffff:
+>> tc actions list action police
+>>
+>> tc qdisc del dev $DEV ingress && sleep 1
+>> tc actions delete action police index 99
+>> tc actions list action police
+>>
+> 
+> Actions are also (implicitly) instantiated when filters are created.
+> In the following example the mirred action instance (created by the 
+> first filter) is shared by the second filter:
+> 
+> tc filter add dev $DEV1 proto ip parent ffff: flower \
+>      ip_proto tcp action mirred egress redirect dev $DEV3
+> 
+> tc filter add dev $DEV2 proto ip parent ffff: flower \
+>      ip_proto tcp action mirred index 1
+> 
 > 
 
-[..]
-
->>>> I know Jamal suggested to have skip_sw for actions, but it complicates
->>>> the code and I'm still not entirely understand why it is necessary.
->>>
->>> If the hardware can independently accept an action offload then
->>> skip_sw per action makes total sense. BTW, my understanding is
->>
->> Example configuration that seems bizarre to me is when offloaded shared
->> action has skip_sw flag set but filter doesn't. Then behavior of
->> classifier that points to such action diverges between hardware and
->> software (different lists of actions are applied). We always try to make
->> offloaded TC data path behave exactly the same as software and, even
->> though here it would be explicit and deliberate, I don't see any
->> practical use-case for this.
-> We add the skip_sw to keep compatible with the filter flags and give the user an
-> option to specify if the action should run in software. I understand what you mean,
-> maybe our example is not proper, we need to prevent the filter to run in software if the
-> actions it applies is skip_sw, so we need to add more validation to check about this.
-> Also I think your suggestion makes full sense if there is no use case to specify the action
-> should not run in sw and indeed it will make our implement more simple if we omit the
-> skip_sw option.
-> Jamal, WDYT?
-
-
-Let me use an example to illustrate my concern:
-
-#add a policer offload it
-tc actions add action police skip_sw rate ... index 20
-#now add filter1 which is offloaded
-tc filter add dev $DEV1 proto ip parent ffff: flower \
-     skip_sw ip_proto tcp action police index 20
-#add filter2 likewise offloaded
-tc filter add dev $DEV1 proto ip parent ffff: flower \
-     skip_sw ip_proto udp action police index 20
-
-All good so far...
-#Now add a filter3 which is s/w only
-tc filter add dev $DEV1 proto ip parent ffff: flower \
-     skip_hw ip_proto icmp action police index 20
-
-filter3 should not be allowed.
-
-If we had added the policer without skip_sw and without
-skip_hw then i think filter3 should have been legal
-(we just need to account for stats in_hw vs in_sw).
-
-Not sure if that makes sense (and addresses Vlad's earlier
-comment).
-
+I sure hope this is supported. At least the discussions so far
+are a nod in that direction...
+I know there is hardware that is not capable of achieving this
+(little CPE type devices) but lets not make that the common case.
 
 cheers,
 jamal
