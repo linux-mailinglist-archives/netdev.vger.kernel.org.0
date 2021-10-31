@@ -2,43 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D563E440FD7
-	for <lists+netdev@lfdr.de>; Sun, 31 Oct 2021 18:41:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E808440FD9
+	for <lists+netdev@lfdr.de>; Sun, 31 Oct 2021 18:41:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230505AbhJaRn7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Oct 2021 13:43:59 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:47719 "EHLO
+        id S230417AbhJaRoA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Oct 2021 13:44:00 -0400
+Received: from mail-il1-f198.google.com ([209.85.166.198]:34450 "EHLO
         mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230219AbhJaRn4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Oct 2021 13:43:56 -0400
-Received: by mail-il1-f198.google.com with SMTP id g10-20020a92cdaa000000b00260fbb604easo4359126ild.14
+        with ESMTP id S230400AbhJaRn5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Oct 2021 13:43:57 -0400
+Received: by mail-il1-f198.google.com with SMTP id j8-20020a056e02154800b0025ac677b446so8689650ilu.1
         for <netdev@vger.kernel.org>; Sun, 31 Oct 2021 10:41:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=XZIexutBcQl4+tfwI5ceaURTk9hVCO5nBeCW0ejq1+c=;
-        b=Wv+ZDLy3kZw6umkSTpy7RAlb8ahUHnePGxFaRRui/rsqX/QB7zy9PiPQ11v7quiPzk
-         RhhsLM4gV/wIgIsXIb6RizyIdTJOGfDMomgajGcxu4N6IHuglmdfiv7wFQUmIn+n/J/D
-         eaHe6FM+PLnCawurDEQC8W4V0uN9ES9J/lz7YPVXKk69GbwAeNgP362asf0jYDCtsLkv
-         1utBdhHlyIlr5L5wfV8O4+SaJawTNRVGesNhzEH4K7zB0cObwrVMohguWpxwBgqBmmuI
-         6JpXe2m3nf/wM4XsqkB2WyCA+zwrctZVkUDJYDZEWXr3GSu4+OhIgeSU+8iiiNSQji6G
-         VCgg==
-X-Gm-Message-State: AOAM533NHz0O7hc5jlSbthENPPtlt3ZcyookfQ/zwBp5k4oeanFfVEOD
-        kdmKDucupXr34fuVpLbamtr0C8Z9kSlKVLaexFwAgGou4QMX
-X-Google-Smtp-Source: ABdhPJwPz9+jO4xrI2cjDlEWJ666m9x8lq5Dmb+29JHkXh493otH1nbQ8sRlcpFYnfdkGmCOtV2TjYgMqTnv7WbBVgl0dH+wnUUG
+        bh=xn2VPDHyczbj/6eKQO8PUyqqrb+LWwudCU/o8kfDPBk=;
+        b=Xpm8JS4PsifAH6svXSIy7o82fmP7DQCC8UKZtSSENMw4/jaPiK0Zb/OrDHm514R8jX
+         2+scAu0tD9Fu/yAgI8bpjT0/GOtB5k6r0ce69ZSUYc6pGxB0Juhss0t/5WRnVkvHBmA4
+         h+sJUtTRQqxrsc5cac07gn4b7So1xDmOT3gIrv+5/ovg/RksEPGD33HWomFuVG2w30rV
+         BsGB7029bgoiabofjHx4CKvMWcPeD6TVNFBgHljoX8klssAMsKPJ+VQIMIVSQ1i5xMVo
+         GiEeCI9kgw1DVXL7qPrMCudJM7UKBvNH5xr/XtT59gzEigxsZ6FPm95L+VbAKgq9cRw6
+         DvOQ==
+X-Gm-Message-State: AOAM5334gTKlAUpbPSakgM4880EWdn4F6zT8O8YphHKFoVs9A/PC8tGh
+        JweJWRoqJ379HPgQuYOfmeRCIhrBzhwLeBhy722HLhEmLWLk
+X-Google-Smtp-Source: ABdhPJxzQ2/toHlxMzf91rZ11FY4t4Ldv56Gktj2rsE+yPXKuvRJLqItCNXBMFIe7y99njaaRL8IkQJ4qY1jSne6PrAIvE367T4s
 MIME-Version: 1.0
-X-Received: by 2002:a02:b807:: with SMTP id o7mr5718395jam.43.1635702084795;
+X-Received: by 2002:a92:c74a:: with SMTP id y10mr9962613ilp.122.1635702084959;
  Sun, 31 Oct 2021 10:41:24 -0700 (PDT)
 Date:   Sun, 31 Oct 2021 10:41:24 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b902e505cfa99115@google.com>
-Subject: [syzbot] WARNING in carl9170_usb_init_device/usb_submit_urb
-From:   syzbot <syzbot+e394db78ae0b0032cb4d@syzkaller.appspotmail.com>
-To:     chunkeey@googlemail.com, davem@davemloft.net, kuba@kernel.org,
-        kvalo@codeaurora.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
+Message-ID: <000000000000bb843a05cfa99111@google.com>
+Subject: [syzbot] WARNING: ODEBUG bug in __put_task_struct
+From:   syzbot <syzbot+30a60157d4ef222fd5e2@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, andrii@kernel.org,
+        asml.silence@gmail.com, ast@kernel.org, axboe@kernel.dk,
+        bpf@vger.kernel.org, christian@brauner.io, daniel@iogearbox.net,
+        david@redhat.com, ebiederm@xmission.com, io-uring@vger.kernel.org,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        npiggin@gmail.com, peterz@infradead.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, xiaoguang.wang@linux.alibaba.com,
+        yhs@fb.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -48,53 +53,68 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    1fc596a56b33 Merge tag 'trace-v5.15-rc6' of git://git.kern..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=100b3d64b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e24661dcff16e3ec
-dashboard link: https://syzkaller.appspot.com/bug?extid=e394db78ae0b0032cb4d
-compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=152ebd9ab00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=170d4408b00000
+HEAD commit:    bdcc9f6a5682 Add linux-next specific files for 20211029
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1413226ab00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=cea91ee10b0cd274
+dashboard link: https://syzkaller.appspot.com/bug?extid=30a60157d4ef222fd5e2
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=121ba3e2b00000
+
+The issue was bisected to:
+
+commit 34ced75ca1f63fac6148497971212583aa0f7a87
+Author: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
+Date:   Mon Oct 25 05:38:48 2021 +0000
+
+    io_uring: reduce frequent add_wait_queue() overhead for multi-shot poll request
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11d8286ab00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=13d8286ab00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=15d8286ab00000
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+e394db78ae0b0032cb4d@syzkaller.appspotmail.com
+Reported-by: syzbot+30a60157d4ef222fd5e2@syzkaller.appspotmail.com
+Fixes: 34ced75ca1f6 ("io_uring: reduce frequent add_wait_queue() overhead for multi-shot poll request")
 
-usb 1-1: device descriptor read/64, error -71
-usb 1-1: reset high-speed USB device number 2 using dummy_hcd
-usb 1-1: Using ep0 maxpacket: 8
-usb 1-1: driver   API: 1.9.9 2016-02-15 [1-1]
-usb 1-1: firmware API: 1.9.6 2012-07-07
 ------------[ cut here ]------------
-usb 1-1: BOGUS urb xfer, pipe 1 != type 3
-WARNING: CPU: 0 PID: 1053 at drivers/usb/core/urb.c:503 usb_submit_urb+0xcd2/0x1970 drivers/usb/core/urb.c:502
+ODEBUG: free active (active state 1) object type: rcu_head hint: 0x0
+WARNING: CPU: 0 PID: 6915 at lib/debugobjects.c:505 debug_print_object+0x16e/0x250 lib/debugobjects.c:505
 Modules linked in:
-CPU: 0 PID: 1053 Comm: kworker/0:2 Not tainted 5.15.0-rc7-syzkaller #0
+CPU: 0 PID: 6915 Comm: kworker/0:1 Not tainted 5.15.0-rc7-next-20211029-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events request_firmware_work_func
-RIP: 0010:usb_submit_urb+0xcd2/0x1970 drivers/usb/core/urb.c:502
-Code: d8 48 c1 e8 03 42 8a 04 20 84 c0 0f 85 89 09 00 00 44 8b 03 48 c7 c7 c0 2c 04 8b 4c 89 fe 4c 89 f2 89 e9 31 c0 e8 5e c7 6f fb <0f> 0b 4c 8b 7c 24 10 4c 8b 64 24 38 8b 5c 24 28 45 89 e6 4c 89 f7
-RSP: 0018:ffffc900045bfa20 EFLAGS: 00010246
-RAX: c0488d4b2013c100 RBX: ffffffff8b042a08 RCX: ffff88801c0eb900
-RDX: 0000000000000000 RSI: 0000000080000000 RDI: 0000000000000000
-RBP: 0000000000000001 R08: ffffffff81695fe2 R09: ffffed10173857a8
-R10: ffffed10173857a8 R11: 0000000000000000 R12: dffffc0000000000
-R13: ffff888014de4400 R14: ffff888012bb16b8 R15: ffffffff8b04cc80
+Workqueue: events io_fallback_req_func
+RIP: 0010:debug_print_object+0x16e/0x250 lib/debugobjects.c:505
+Code: ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 af 00 00 00 48 8b 14 dd 00 4f bf 89 4c 89 ee 48 c7 c7 00 43 bf 89 e8 88 45 2e 05 <0f> 0b 83 05 05 c1 9f 09 01 48 83 c4 18 5b 5d 41 5c 41 5d 41 5e c3
+RSP: 0018:ffffc900033a7a98 EFLAGS: 00010286
+RAX: 0000000000000000 RBX: 0000000000000003 RCX: 0000000000000000
+RDX: ffff88801a799d40 RSI: ffffffff815f3788 RDI: fffff52000674f45
+RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff815ed55e R11: 0000000000000000 R12: ffffffff896d62a0
+R13: ffffffff89bf4940 R14: 0000000000000000 R15: dffffc0000000000
 FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fffa69fe690 CR3: 0000000071447000 CR4: 00000000003506f0
+CR2: 00007fff9fb60898 CR3: 000000000b48e000 CR4: 00000000003506f0
 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
- carl9170_usb_send_rx_irq_urb drivers/net/wireless/ath/carl9170/usb.c:504 [inline]
- carl9170_usb_init_device+0x243/0x880 drivers/net/wireless/ath/carl9170/usb.c:939
- carl9170_usb_firmware_finish drivers/net/wireless/ath/carl9170/usb.c:999 [inline]
- carl9170_usb_firmware_step2+0xa5/0x260 drivers/net/wireless/ath/carl9170/usb.c:1028
- request_firmware_work_func+0x19b/0x270 drivers/base/firmware_loader/main.c:1081
- process_one_work+0x853/0x1140 kernel/workqueue.c:2297
- worker_thread+0xac1/0x1320 kernel/workqueue.c:2444
- kthread+0x453/0x480 kernel/kthread.c:319
- ret_from_fork+0x1f/0x30
+ <TASK>
+ __debug_check_no_obj_freed lib/debugobjects.c:992 [inline]
+ debug_check_no_obj_freed+0x301/0x420 lib/debugobjects.c:1023
+ slab_free_hook mm/slub.c:1698 [inline]
+ slab_free_freelist_hook+0xeb/0x1c0 mm/slub.c:1749
+ slab_free mm/slub.c:3513 [inline]
+ kmem_cache_free+0x92/0x5e0 mm/slub.c:3529
+ __put_task_struct+0x277/0x400 kernel/fork.c:810
+ put_task_struct_many include/linux/sched/task.h:120 [inline]
+ io_put_task fs/io_uring.c:1773 [inline]
+ __io_free_req+0x2a3/0x3c5 fs/io_uring.c:2037
+ io_fallback_req_func+0xf9/0x1ae fs/io_uring.c:1335
+ process_one_work+0x9b2/0x1690 kernel/workqueue.c:2298
+ worker_thread+0x658/0x11f0 kernel/workqueue.c:2445
+ kthread+0x405/0x4f0 kernel/kthread.c:327
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
 
 
 ---
@@ -104,5 +124,6 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this issue. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 syzbot can test patches for this issue, for details see:
 https://goo.gl/tpsmEJ#testing-patches
