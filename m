@@ -2,219 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64BCD4410D6
-	for <lists+netdev@lfdr.de>; Sun, 31 Oct 2021 21:50:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C695A441139
+	for <lists+netdev@lfdr.de>; Sun, 31 Oct 2021 23:30:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230185AbhJaUwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Oct 2021 16:52:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48236 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229946AbhJaUwk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Oct 2021 16:52:40 -0400
-Received: from mail-ua1-x936.google.com (mail-ua1-x936.google.com [IPv6:2607:f8b0:4864:20::936])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F16C061714
-        for <netdev@vger.kernel.org>; Sun, 31 Oct 2021 13:50:08 -0700 (PDT)
-Received: by mail-ua1-x936.google.com with SMTP id i6so14194547uae.6
-        for <netdev@vger.kernel.org>; Sun, 31 Oct 2021 13:50:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=o3kb3n2uvpNbEEtpHgpMOT5Og6qfgXaZxIj7JmsnUWI=;
-        b=NwH1siHD+gv61qN+rtwmI69GhmPfQebri78WdArHWVXP33Exf1e4eHo8yHTRd+Psm8
-         aC6qoox1VfTPjjQkaSv0xK02px06Ud4ksY7QKqxQ9kNN3O1T/SN8iCIqFxnEXw4FjiOM
-         keTkbzKJcldI6l4R0pfUrUTVx9gYY8YDGFl2bT2jA5zox2Q6LdnIEadDZApBLqbBwf+9
-         QqLvRUVM3RAtqoBBdt3dPDjlVriCoA24EAsrVxTRavtulczVOEXDobLlUbRYpBNvxMqm
-         7F5KgbT1ie3u5QnSLKIoMiZZLhTrFhK1kcVmGN4DLVB55YKJdJQ+8B7V2qR1HZL04wQB
-         uX4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=o3kb3n2uvpNbEEtpHgpMOT5Og6qfgXaZxIj7JmsnUWI=;
-        b=72Ge1quGkCpSfxREiAGVYXaI1jfOH4/l4KsL4VNS8q0QVnlMm/ygr5xu1iXYcLU4nx
-         6V14ukbjncZol5ncmz4Ge7IJeF1pM4x61PUFNAztKeaFpNCB5Lt6qS/Epv0lhvt1RwD+
-         Ly2S0Yt4jG0bupHAldYrxAdT/mNM9jf0MaSCDLg7eIrFWCF7iINVRh6KlCQRUTWmuPwD
-         rSE3BCqcjNwfVtuvB6UCO1lJNc265l1CSVwmjJFmJt9TKOdDRRRjq24mtz0fEh76Gd/B
-         CmUzNd2k0xJ7aKP6bysr5SkVeVJ/mAzeOVPWDw2uF4K8Af0flZH+xAmhEGuj2TefD9E9
-         +ggg==
-X-Gm-Message-State: AOAM531VfJ2N+n7/dU7WqyCHf2ZSxS1+MMGRoSC6tp4Xl+Bd9jCW/4YH
-        jRGapDSrH4tYlQJSqxUQaK+4N4FdeCY=
-X-Google-Smtp-Source: ABdhPJwGqo/sZHTtu2eHpgfBEWMBXkPWZkH4kfAcNEPF3nub9fZNriffqsIFC4WVpW2QmNwnBh6wmg==
-X-Received: by 2002:a05:6102:a4a:: with SMTP id i10mr3394295vss.54.1635713407239;
-        Sun, 31 Oct 2021 13:50:07 -0700 (PDT)
-Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com. [209.85.222.52])
-        by smtp.gmail.com with ESMTPSA id u15sm1901485vkp.8.2021.10.31.13.50.06
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 31 Oct 2021 13:50:06 -0700 (PDT)
-Received: by mail-ua1-f52.google.com with SMTP id b3so4701462uam.1
-        for <netdev@vger.kernel.org>; Sun, 31 Oct 2021 13:50:06 -0700 (PDT)
-X-Received: by 2002:a67:facc:: with SMTP id g12mr3716567vsq.22.1635713406223;
- Sun, 31 Oct 2021 13:50:06 -0700 (PDT)
+        id S230395AbhJaWcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Oct 2021 18:32:41 -0400
+Received: from mail-ssdrsserver2.hostinginterface.eu ([185.185.85.90]:43287
+        "EHLO mail-ssdrsserver2.hostinginterface.eu" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230309AbhJaWcj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Oct 2021 18:32:39 -0400
+X-Greylist: delayed 2345 seconds by postgrey-1.27 at vger.kernel.org; Sun, 31 Oct 2021 18:32:38 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=bobbriscoe.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=c4B6FH9wNTqPIXLv/fXuwhhE1Kmx6zZ5pCpnAenFzPs=; b=uDUKSJ2W6aChl7kNKjVVgyikQg
+        D2pmbHLbIzxlA/iqpmJzhmEWQrS6eCXQVNa4AsrbMSVHc5hthH4bHNSV0U3S0g6S2fALx3O110dgh
+        OMxMhqKD5SvSW0TuL/08yIpUO4VJqE/qzMcBJT2uFpbHXWFBEjiLVKyCWlYIKNZ7MvT7dCbJkJQDu
+        Zp0pRhfkckjMEjZLdRLA3jg9ZsnwfSkw+cSHPcawokNIzT3z+wrtgwJj4GsHvTBRYtsZHpkO7gqEJ
+        9vTnyRTYuSav/cciT+1SPZcr7ClPADN2xtLlAijK6MqA1AwTnM6GN6iiHHhpwIkSufY1ujP9NfHiI
+        y6/slnkg==;
+Received: from 67.153.238.178.in-addr.arpa ([178.238.153.67]:52906 helo=[192.168.1.11])
+        by ssdrsserver2.hostinginterface.eu with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <research@bobbriscoe.net>)
+        id 1mhIjE-0007vu-Hd; Sun, 31 Oct 2021 21:51:00 +0000
+Subject: Re: [PATCH net-next] fq_codel: avoid under-utilization with
+ ce_threshold at low link rates
+To:     Eric Dumazet <edumazet@google.com>,
+        Neal Cardwell <ncardwell@google.com>
+Cc:     Asad Sajjad Ahmed <asadsa@ifi.uio.no>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Ingemar Johansson S <ingemar.s.johansson@ericsson.com>,
+        Tom Henderson <tomh@tomh.org>,
+        Olga Albisser <olga@albisser.org>
+References: <20211028191500.47377-1-asadsa@ifi.uio.no>
+ <CADVnQykDUB4DgUaV0rd6-OKafO+F6w=BRfxviuZ_MJLY3xMV+Q@mail.gmail.com>
+ <CANn89iLcTNHCudo-9=RLR1N3o1T0QgVvbedwXeTaFFo5RdMzkg@mail.gmail.com>
+From:   Bob Briscoe <research@bobbriscoe.net>
+Message-ID: <70dec481-1573-b63d-fd61-2e018535d0fa@bobbriscoe.net>
+Date:   Sun, 31 Oct 2021 21:50:56 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-References: <CABcq3pG9GRCYqFDBAJ48H1vpnnX=41u+MhQnayF1ztLH4WX0Fw@mail.gmail.com>
- <CA+FuTSfytchd3Fk7=VB-6mTHsdjEjkEEHUFXRg_8ZaZkAyxbrg@mail.gmail.com>
-In-Reply-To: <CA+FuTSfytchd3Fk7=VB-6mTHsdjEjkEEHUFXRg_8ZaZkAyxbrg@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sun, 31 Oct 2021 16:49:29 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSc2XKqWzMoRk3eNp502XQ9rdXBoAmHBcxoHsecamD1bVg@mail.gmail.com>
-Message-ID: <CA+FuTSc2XKqWzMoRk3eNp502XQ9rdXBoAmHBcxoHsecamD1bVg@mail.gmail.com>
-Subject: Re: VirtioNet L3 protocol patch advice request.
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Andrew Melnichenko <andrew@daynix.com>, davem@davemloft.net,
-        bnemeth@redhat.com, gregkh@linuxfoundation.org,
-        Yan Vugenfirer <yan@daynix.com>,
-        Yuri Benditovich <yuri.benditovich@daynix.com>,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CANn89iLcTNHCudo-9=RLR1N3o1T0QgVvbedwXeTaFFo5RdMzkg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - ssdrsserver2.hostinginterface.eu
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - bobbriscoe.net
+X-Get-Message-Sender-Via: ssdrsserver2.hostinginterface.eu: authenticated_id: in@bobbriscoe.net
+X-Authenticated-Sender: ssdrsserver2.hostinginterface.eu: in@bobbriscoe.net
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 29, 2021 at 10:19 AM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Fri, Oct 29, 2021 at 6:51 AM Andrew Melnichenko <andrew@daynix.com> wrote:
-> >
-> > Hi all,
-> > Recently I've discovered a patch that added an additional check for the
-> > protocol in VirtioNet.
-> > (https://www.spinics.net/lists/kernel/msg3866319.html)
-> > Currently, that patch breaks UFOv6 support and possible USOv6 support in
-> > upcoming patches.
-> > The issue is the code next to the patch expects failure of
-> > skb_flow_dissect_flow_keys_basic()
-> > for IPv6 packets to retry it with protocol IPv6.
-> > I'm not sure about the goals of the patch
->
-> A well behaved configuration should not enter that code path to begin
-> with. GSO packets should also request NEEDS_CSUM, and in normal cases
-> skb->protocol is set. But packet sockets allow leaving skb->protocol
-> 0, in which case this code tries to infer the protocol from the link
-> layer header if present and supported, using
-> dev_parse_header_protocol.
->
-> Commit 924a9bc362a5 ("net: check if protocol extracted by
-> virtio_net_hdr_set_proto is correct") added the
-> dev_parse_header_protocol check and will drop packets where the GSO
-> type (e.g., VIRTIO_NET_HDR_GSO_TCPV4) does not match the network
-> protocol as stores in the link layer header (ETH_P_IPV6, or even
-> something unrelated like ETH_P_ARP).
->
-> You're right that it can drop UFOv6 packets. VIRTIO_NET_HDR_GSO_UDP
-> has no separate V4 and V6 variants, so we have to accept both
-> protocols. We need to fix that.
->
-> This guess in virtio_net_hdr_set_proto
->
->         case VIRTIO_NET_HDR_GSO_UDP:
->                 skb->protocol = cpu_to_be16(ETH_P_IP);
->
-> might be wrong to assume IPv4 for UFOv6, and then as of that commit
-> this check will incorrectly drop the packet
->
->                                 virtio_net_hdr_set_proto(skb, hdr);
->                                 if (protocol && protocol != skb->protocol)
->                                         return -EINVAL;
->
-> > and propose the next solution:
-> >
-> > static inline int virtio_net_hdr_set_proto(struct sk_buff *skb,
-> > >                      const struct virtio_net_hdr *hdr)
-> > > {
-> > >     __be16 protocol;
-> > >
-> > >     protocol = dev_parse_header_protocol(skb);
-> > >     switch (hdr->gso_type & ~VIRTIO_NET_HDR_GSO_ECN) {
-> > >     case VIRTIO_NET_HDR_GSO_TCPV4:
-> > >         skb->protocol = cpu_to_be16(ETH_P_IP);
-> > >         break;
-> > >     case VIRTIO_NET_HDR_GSO_TCPV6:
-> > >         skb->protocol = cpu_to_be16(ETH_P_IPV6);
-> > >         break;
-> > >     case VIRTIO_NET_HDR_GSO_UDP:
-> > >     case VIRTIO_NET_HDR_GSO_UDP_L4:
->
-> Please use diff to show your changes. Also do not mix bug fixes (that
-> go to net) with new features (that go to net-next).
->
-> > >         skb->protocol = protocol;
->
-> Not exactly, this would just remove the added verification.
->
-> We need something like
->
-> @@ -89,8 +92,13 @@ static inline int virtio_net_hdr_to_skb(struct sk_buff *skb,
->                                 __be16 protocol =
-> dev_parse_header_protocol(skb);
->
->                                 virtio_net_hdr_set_proto(skb, hdr);
-> -                               if (protocol && protocol != skb->protocol)
-> -                                       return -EINVAL;
-> +                               if (protocol && protocol != skb->protocol) {
-> +                                       if (gso_type ==
-> VIRTIO_NET_HDR_GSO_UDP &&
-> +                                           protocol == cpu_to_be16(ETH_P_IPV6))
-> +                                               skb->protocol = protocol;
-> +                                       else
-> +                                               return -EINVAL;
-> +                               }
->
-> But preferably less ugly. Your suggestion of moving the
-> dev_parse_header_protocol step into virtio_net_hdr_to_skb is cleaner.
-> But also executes this check in the two other callers that may not
-> need it. Need to double check whether that is correct.
+Eric,
 
-If the protocol can be inferred from ll_type, that should take
-precedence over inferring from gso_type.
+On 29/10/2021 15:53, Eric Dumazet wrote:
+> On Fri, Oct 29, 2021 at 6:54 AM Neal Cardwell <ncardwell@google.com> wrote:
+>> On Thu, Oct 28, 2021 at 3:15 PM Asad Sajjad Ahmed <asadsa@ifi.uio.no> wrote:
+>>> Commit "fq_codel: generalise ce_threshold marking for subset of traffic"
+>>> [1] enables ce_threshold to be used in the Internet, not just in data
+>>> centres.
+>>>
+>>> Because ce_threshold is in time units, it can cause poor utilization at
+>>> low link rates when it represents <1 packet.
+>>> E.g., if link rate <12Mb/s ce_threshold=1ms is <1500B packet.
+>>>
+>>> So, suppress ECN marking unless the backlog is also > 1 MTU.
+>>>
+>>> A similar patch to [1] was tested on an earlier kernel, and a similar
+>>> one-packet check prevented poor utilization at low link rates [2].
+>>>
+>>> [1] commit dfcb63ce1de6 ("fq_codel: generalise ce_threshold marking for subset of traffic")
+>>>
+>>> [2] See right hand column of plots at the end of:
+>>> https://bobbriscoe.net/projects/latency/dctth_journal_draft20190726.pdf
+>>>
+>>> Signed-off-by: Asad Sajjad Ahmed <asadsa@ifi.uio.no>
+>>> Signed-off-by: Olga Albisser <olga@albisser.org>
+>>> ---
+>>>   include/net/codel_impl.h | 3 ++-
+>>>   1 file changed, 2 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/include/net/codel_impl.h b/include/net/codel_impl.h
+>>> index 137d40d8cbeb..4e3e8473e776 100644
+>>> --- a/include/net/codel_impl.h
+>>> +++ b/include/net/codel_impl.h
+>>> @@ -248,7 +248,8 @@ static struct sk_buff *codel_dequeue(void *ctx,
+>>>                                                      vars->rec_inv_sqrt);
+>>>          }
+>>>   end:
+>>> -       if (skb && codel_time_after(vars->ldelay, params->ce_threshold)) {
+>>> +       if (skb && codel_time_after(vars->ldelay, params->ce_threshold) &&
+>>> +           *backlog > params->mtu) {
+> I think this idea would apply to codel quite well.  (This helper is
+> common to codel and fq_codel)
+>
+> But with fq_codel my thoughts are:
+>
+> *backlog is the backlog of the qdisc, not the backlog for the flow,
 
-For packet sockets, tpacket_snd does call dev_parse_header_protocol
-before virtio_net_hdr_to_skb. But packet_snd calls it after.
+[BB] Ah. Hadn't appreciated that. Thanks.
 
-Does the following solve your bug?
+We were modelling this on a check of (*backlog <= params->mtu) in 
+codel_should_drop(), which I thought was similarly checking for low link 
+rate in fq_codel and codel. But didn't do our homework properly...
 
-"
-@@ -3001,6 +3001,8 @@ static int packet_snd(struct socket *sock,
-struct msghdr *msg, size_t len)
-        skb->mark = sockc.mark;
-        skb->tstamp = sockc.transmit_time;
+> and it includes the packet currently being removed from the queue.
+>
+> Setting ce_threshold to 1ms while the link rate is 12Mbs sounds
+> misconfiguration to me.
 
-+       packet_parse_headers(skb, sock);
-+
-        if (has_vnet_hdr) {
-                err = virtio_net_hdr_to_skb(skb, &vnet_hdr, vio_le());
-                if (err)
-@@ -3009,8 +3011,6 @@ static int packet_snd(struct socket *sock,
-struct msghdr *msg, size_t len)
-                virtio_net_hdr_set_proto(skb, &vnet_hdr);
-        }
+[BB] The idea was meant to be that you don't have to know the drain rate 
+of the queue. This additional check was meant to suppress marking
+     if (ldelay > ce_threshold) && !(qlen > 1).
 
--       packet_parse_headers(skb, sock);
--
-"
+ce_threshold = 1ms was only an example, nonetheless we had tested that 
+config down to 4Mb/s with two flows. We AND'd ce_threshold with a check 
+for qlen >1 packet and we still got >95% link utilization, as shown in 
+the plots referenced via [2], e.g. Fig 4. But checking qlen would have 
+disrupted the code somewhat, so we had hoped to be able to add a check 
+of the /queue/'s backlog instead, thinking it was conveniently already 
+available.
 
-If the protocol is set, virtio_net_hdr_to_skb should not try to
-overwrite it, but check that the values match:
+[2] See right hand column of plots at the end of:
+https://bobbriscoe.net/projects/latency/dctth_journal_draft20190726.pdf
 
-+static inline bool virtio_net_hdr_check_gso_proto(struct sk_buff *skb,
-+                                                 const struct
-virtio_net_hdr *hdr)
-+{
-+       u8 gso_type = hdr->gso_type & ~VIRTIO_NET_HDR_GSO_ECN;
-+
-+       switch (skb->protocol) {
-+       case htons(ETH_P_IP):
-+               return (gso_type == VIRTIO_NET_HDR_GSO_TCPV4 ||
-+                       gso_type == VIRTIO_NET_HDR_GSO_UDP);
-+       case htons(ETH_P_IPV6):
-+               return (gso_type == VIRTIO_NET_HDR_GSO_TCPV6 ||
-+                       gso_type == VIRTIO_NET_HDR_GSO_UDP);
-+       default:
-+               return false;
-+       }
-+}
+We were conscious that this could have suppressed marking of a queue of 
+more than one small packet, as long as ldelay also exceeded 
+ce_threshold, but we figured that would do no great harm.
 
-This can be called on any packet entering virtio_net_hdr_to_skb.
+> Even if this flow has to transmit one tiny packet every minute, it
+> will get CE mark
+> just because at least one packet from an elephant flow is currently
+> being sent to the wire.
+>
+> BQL won't prevent that at least one packet is being processed while
+> the tiny packet
+> is coming into fq_codel qdisc.
 
-But such larger change should go to net-next.
+[BB] Yes, now we understand it's the backlog of the whole qdisc, this 
+isn't the behaviour we intended.
+
+> vars->ldelay = now - skb_time_func(skb);
+>
+> For tight ce_threshold, vars->ldelay would need to be replaced by
+>
+> now - (time of first codel_dequeue() after this skb has been queued).
+> This seems a bit hard to implement cheaply.
+
+[BB] We'll think whether we can do the qlen check less disruptively.
+
+
+Bob
+
+>
+>
+>
+>
+>>>                  bool set_ce = true;
+>>>
+>>>                  if (params->ce_threshold_mask) {
+>>> --
+>> Sounds like a good idea, and looks good to me.
+>>
+>> Acked-by: Neal Cardwell <ncardwell@google.com>
+>>
+>> Eric, what do you think?
+>>
+>> neal
+
+-- 
+________________________________________________________________
+Bob Briscoe                               http://bobbriscoe.net/
+
