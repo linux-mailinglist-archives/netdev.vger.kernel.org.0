@@ -2,125 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 722D2440C8C
-	for <lists+netdev@lfdr.de>; Sun, 31 Oct 2021 03:43:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B220D440CC2
+	for <lists+netdev@lfdr.de>; Sun, 31 Oct 2021 06:03:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231168AbhJaCp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Oct 2021 22:45:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39650 "EHLO
+        id S229673AbhJaFCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Oct 2021 01:02:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229752AbhJaCp0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Oct 2021 22:45:26 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0706DC061570;
-        Sat, 30 Oct 2021 19:42:55 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id t40so12916202qtc.6;
-        Sat, 30 Oct 2021 19:42:54 -0700 (PDT)
+        with ESMTP id S229628AbhJaFCk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Oct 2021 01:02:40 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E38C061714
+        for <netdev@vger.kernel.org>; Sat, 30 Oct 2021 22:00:09 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id f3so21466375lfu.12
+        for <netdev@vger.kernel.org>; Sat, 30 Oct 2021 22:00:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=4pTpNp+ctrU1VcOo9RHb5FHn9UkMoYaGEFwbc7czNlw=;
-        b=HI2oJgy7m5eV+XVozD3/C005/TKCpmoqYD90457YhJWPYqG4yxZOjMOHFjoeKPFmqC
-         XAlf1bQtsxs9YakyjiarZSgI/gJpbY9A95wjfpVZP60vR2z9EHB3C/7dU5uD1YeIJ7ax
-         WnU/EmOUPGg6EF5+c1SW3/q+NEIleSppP9tnUlqir6x3ljUnRz670+1ieKI3jv2pQKOv
-         jF2wfY++7sNeVcOVo+28L0FNlQ/AVzPpzfHmrJXYIlK16KEuvRJU8MTWRf09muFurjyg
-         813NbrzbI/SoNJLjkg9BVihrQTzvDT20id+OdmqD6K0vu/QDdQN6lSQpFguBavfPREgN
-         zABQ==
+        d=daynix-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lVy/fH24QPthS6HWBiNCLxZd58wLIhBCTESTMr1diy8=;
+        b=GIqiP/e/0airkBt7AVVY9zwAqH+XFDnesnpw99ouddGWsttfIktj4aAfI9gEGXK9Mf
+         IjUUcCwzBLka6YrTwoDQwnX+Sv4M5h86v4FbXS4pyxv7OW5d2c0MB+usBFsCg2VKoFFf
+         a0IoU76Nm1UoIBaNYnjUN6hBfnNC9DAZldpovLf/WvQ1TPARBxfejVE+ogZJ8DcrCQg/
+         ZDqLVhXkzk9SWmyB0eWrxcAqdDpz6iBZ61N1XUkXnDU/vGfpmtIckAaF7GuM8wjoM9US
+         3pJLpff//y9JOx4cmV9NlSGe2Hhfu6m6I1h9kulySyK5GLhqixFRduT6YIGeh9+nmYGL
+         BTEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=4pTpNp+ctrU1VcOo9RHb5FHn9UkMoYaGEFwbc7czNlw=;
-        b=3cu4PbUWmZha1Rf2+Fs1adszd2VwWH7QulnHDH+GDs72iXFRvuef4mGvStILlkMn73
-         pVPeWra9NbxkFU8LBHA85zXp9yVuGqc2h9tdaphRjd//eyUkcrNIE1pKmFAkWkA0ak1X
-         oaC9SmWRgCXr+NXJDwVdpZWPLruBD7L3oYbxsj5sj5e+QZJCoblhRTrie1uXnzsPjRJU
-         4lbBTt25VMdCFiw6xkUbQ1DQ8ZqzT5HC6V1Wd5Hjugu5J/DU0+wdnb8YbiImas4fF0OI
-         jcN+I1W+bNNKUeCO1q7aHgfTlr+XcdnmZ+VQQDB7xs8u6ZTdpeB/sEw9ja7u6ihqgPdX
-         NoLQ==
-X-Gm-Message-State: AOAM532+pq5ySIUIS9wKNe2cjxrjpZYXMJ+ADeS3xNDVFzfmwtcPKNPC
-        45/Iu0fHnz+YJ63C18UXnVk=
-X-Google-Smtp-Source: ABdhPJxetHAF/mKwh0e6XS/DQKI2r+ozbBPRlT3Sd2LEbpSrdmeBVMlbAgPHhvmsXm39F3v0zN2Bcw==
-X-Received: by 2002:ac8:5990:: with SMTP id e16mr21171559qte.38.1635648173944;
-        Sat, 30 Oct 2021 19:42:53 -0700 (PDT)
-Received: from Zekuns-MBP-16.fios-router.home (cpe-74-73-56-100.nyc.res.rr.com. [74.73.56.100])
-        by smtp.gmail.com with ESMTPSA id i12sm4116907qtx.1.2021.10.30.19.42.52
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lVy/fH24QPthS6HWBiNCLxZd58wLIhBCTESTMr1diy8=;
+        b=WrgDkkFlyLVJTTYlhsgTmeIxkn2J3zeGeZJ+B57fNr1/UPh3hc65EGRDCCxwwZCjAF
+         UpxcPimHpenu3Qs/y08/81EaI6va/3EsFJzB9sYYmOI/MdxrhH8D2UpukyI8LYzXXyqO
+         5ZUALeLSikyL45iIJrrk0vnR6WuMj0gW4Y6eGJsUH4PRIVQzvUh4aRTNrVwAz7An7aoR
+         PqjnBrkq845SE1PbjCg7mgAiK7ufxFi1Xzi0n9b/BE7z7QBAdliteYFm1JScruEAm+Wa
+         FgF/TZPpkPPGNZ9UDoP1PacgVe+wLAidcYEh94CM7f6JB6VSB9NvEns17yulFtTfuXMF
+         XfSw==
+X-Gm-Message-State: AOAM530VMNkXFrwan9KfH/Z09P7lCaJyCeKgYDm/i/zc0G7JZ9+LaEnB
+        XZu5mW51ejExUxqT1Tvq7zfjuQ==
+X-Google-Smtp-Source: ABdhPJyKTkZQH3l/LPlaLkLV/r+BpuZCIeqJk+kdJFxDS+cI9MUR+ouY31Lbxo7K5bbon3ujFVQhIg==
+X-Received: by 2002:a05:6512:260e:: with SMTP id bt14mr20820988lfb.129.1635656407162;
+        Sat, 30 Oct 2021 22:00:07 -0700 (PDT)
+Received: from navi.cosmonova.net.ua ([95.67.24.131])
+        by smtp.gmail.com with ESMTPSA id v26sm444766lfo.125.2021.10.30.22.00.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Oct 2021 19:42:53 -0700 (PDT)
-Date:   Sat, 30 Oct 2021 22:42:50 -0400
-From:   Zekun Shen <bruceshenzk@gmail.com>
-To:     bruceshenzk@gmail.com
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, brendandg@nyu.edu
-Subject: [PATCH] mwifiex_usb: Fix skb_over_panic in mwifiex_usb_recv
-Message-ID: <YX4CqjfRcTa6bVL+@Zekuns-MBP-16.fios-router.home>
+        Sat, 30 Oct 2021 22:00:06 -0700 (PDT)
+From:   Andrew Melnychenko <andrew@daynix.com>
+To:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yuri.benditovich@daynix.com,
+        yan@daynix.com
+Subject: [RFC PATCH 0/4] Added RSS support.
+Date:   Sun, 31 Oct 2021 06:59:55 +0200
+Message-Id: <20211031045959.143001-1-andrew@daynix.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, with an unknown recv_type, mwifiex_usb_recv
-just return -1 without restoring the skb. Next time
-mwifiex_usb_rx_complete is invoked with the same skb,
-calling skb_put causes skb_over_panic.
+This series of RFC patches for comments and additional proposals.
 
-The bug is triggerable with a compromised/malfunctioning
-usb device. After applying the patch, skb_over_panic
-no longer shows up with the same input.
+Virtio-net supports "hardware" RSS with toeplitz key.
+Also, it allows receiving calculated hash in vheader
+that may be used with RPS.
+Added ethtools callbacks to manipulate RSS.
 
-Attached is the panic report from fuzzing.
-skbuff: skb_over_panic: text:000000003bf1b5fa
- len:2048 put:4 head:00000000dd6a115b data:000000000a9445d8
- tail:0x844 end:0x840 dev:<NULL>
-kernel BUG at net/core/skbuff.c:109!
-invalid opcode: 0000 [#1] SMP KASAN NOPTI
-CPU: 0 PID: 198 Comm: in:imklog Not tainted 5.6.0 #60
-RIP: 0010:skb_panic+0x15f/0x161
-Call Trace:
- <IRQ>
- ? mwifiex_usb_rx_complete+0x26b/0xfcd [mwifiex_usb]
- skb_put.cold+0x24/0x24
- mwifiex_usb_rx_complete+0x26b/0xfcd [mwifiex_usb]
- __usb_hcd_giveback_urb+0x1e4/0x380
- usb_giveback_urb_bh+0x241/0x4f0
- ? __hrtimer_run_queues+0x316/0x740
- ? __usb_hcd_giveback_urb+0x380/0x380
- tasklet_action_common.isra.0+0x135/0x330
- __do_softirq+0x18c/0x634
- irq_exit+0x114/0x140
- smp_apic_timer_interrupt+0xde/0x380
- apic_timer_interrupt+0xf/0x20
- </IRQ>
+Technically hash calculation may be set only for
+SRC+DST and SRC+DST+PORTSRC+PORTDST hashflows.
+The completely disabling hash calculation for TCP or UDP
+would disable hash calculation for IP.
 
-Reported-by: Zekun Shen <bruceshenzk@gmail.com>
-Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
----
- drivers/net/wireless/marvell/mwifiex/usb.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+RSS/RXHASH is disabled by default.
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/usb.c b/drivers/net/wireless/marvell/mwifiex/usb.c
-index 426e39d4c..6d81e8786 100644
---- a/drivers/net/wireless/marvell/mwifiex/usb.c
-+++ b/drivers/net/wireless/marvell/mwifiex/usb.c
-@@ -130,7 +130,8 @@ static int mwifiex_usb_recv(struct mwifiex_adapter *adapter,
- 		default:
- 			mwifiex_dbg(adapter, ERROR,
- 				    "unknown recv_type %#x\n", recv_type);
--			return -1;
-+			ret = -1;
-+			goto exit_restore_skb;
- 		}
- 		break;
- 	case MWIFIEX_USB_EP_DATA:
+Changes since rfc:
+* code refactored
+* patches reformatted
+* added feature validation
+
+Andrew Melnychenko (4):
+  drivers/net/virtio_net: Fixed vheader to use v1.
+  drivers/net/virtio_net: Changed mergeable buffer length calculation.
+  drivers/net/virtio_net: Added basic RSS support.
+  drivers/net/virtio_net: Added RSS hash report control.
+
+ drivers/net/virtio_net.c | 405 +++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 390 insertions(+), 15 deletions(-)
+
 -- 
-2.25.1
+2.33.1
 
