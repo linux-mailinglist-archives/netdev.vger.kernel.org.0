@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9329E44138F
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 07:06:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5B93441389
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 07:06:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231613AbhKAGIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 02:08:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55252 "EHLO
+        id S231904AbhKAGIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 02:08:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231486AbhKAGHi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 02:07:38 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D41DC06120E;
-        Sun, 31 Oct 2021 23:04:48 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id q187so16345025pgq.2;
-        Sun, 31 Oct 2021 23:04:48 -0700 (PDT)
+        with ESMTP id S231532AbhKAGHj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 02:07:39 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004BBC061210;
+        Sun, 31 Oct 2021 23:04:50 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id y4so1005212pfa.5;
+        Sun, 31 Oct 2021 23:04:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=2AOLQynizUK/9ub+MV3+x/PqsjWBik6Y2qklqSq5kvM=;
-        b=l0EIvzonzcNlCGT6TjXsysXA3uAstk65U4vdn7q433mY6i9VaZO0ffvw4f0T7ELy+H
-         v5u+ZBM7SAyqPzYBN8O3x3hA2xIUlUhwyCu+BC5V53HvycjI8Hi1umyK7IQJacmk7i6o
-         khFyYXCW5nWroZrXjJsWFekl96dq67dFeaypF802J/p4iwuZyg6Sdmu4rhSJT2qJi5Xn
-         00XpVbToRKPbkrTugqQahtpW6uED5b5mo1TqnqCLLEU/0vh43M+JEmJ14r4WejDOBaEu
-         +jeAFO9mXb76Vk4n5De0pRxb2KCQFi3+BU1G2dJDHO+QI+K2i7tRGETK7bbMtOtDZjJV
-         Xahg==
+        bh=d7LTw3kPVa/zFmJb8s8WHpppDtuC/dCZbGEz654o0Z0=;
+        b=H/Nt6ip1DACtHq57o9Mdyh3bCgZ2fAcALeHvM0Gv+XQbwcYyRHXWzojtO6xw8zIvFg
+         of7ARcpuxOICZBLLWsgHgEjiLZ0NGPmGsuSOqYNFLvMqSv4w8r/p8nLl5pblmv9MgEXK
+         21ou7ksmzx/LPZaw79nrvSnwPYYF223o7/HBbYq0pHxF7nGPcAxZCCl6cOjOw/p4oGNc
+         VxIcq8UNpcJv+RFjFLhBnY8fbD5NrNaZXXYN5J97DSOc3G3PRDERiKp/Ha/Guhftz0eU
+         E9yXRyZQp5jPEOXF7gKMmJZHCv2oeodhDAX0AAFrN+gmh4zIDj2PfHr03avz0ORhIkM/
+         aw+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=2AOLQynizUK/9ub+MV3+x/PqsjWBik6Y2qklqSq5kvM=;
-        b=7TDhLvw507GCM14b7tNxqC1cWY3cs4ODkGLJYvBQjiso4MeLSyR4wUsb2v++OqdhQd
-         +CI5b6GPE7yrORxCCU8cl+TpGbGoz4T+hRb3N2BllWiDIo1waMVWG5t81wXtwz1a2kdZ
-         9tWI2HJy3vJHAF67PTIh6Mm4lv5ICfPJMiW6d9lxSn9M+bAdHjyvHtnsIcLPPf/U4Q7J
-         UTWXj32nBWuPsuXLBdRfBDJNoLaelRAB09tWks2SaM4kmfeIqIxqu0KzWG8Eqe2QxaAb
-         MYjxhKwujd7SP7tiIEt9NXM/jLkcANhjztlLk1pBWXbn8Wwod5R1Q+hWbwk+uwSXA2Wz
-         /cDA==
-X-Gm-Message-State: AOAM530MQHR+Fie1l5v6z0lVc6GT2ZabVV9h7hGTzTr82TuHSsiWfOhg
-        8+uCBt1VOPmf+hBNXHUj2L0=
-X-Google-Smtp-Source: ABdhPJyam8xih1Z6tKYYGpuiGMnnmxuj4/L4ZJpVlE3q5S3rpYWdBTOmUb41H+/yZOg+DA2kjkENOw==
-X-Received: by 2002:a63:8f4a:: with SMTP id r10mr20105733pgn.337.1635746688077;
-        Sun, 31 Oct 2021 23:04:48 -0700 (PDT)
+        bh=d7LTw3kPVa/zFmJb8s8WHpppDtuC/dCZbGEz654o0Z0=;
+        b=bssYcQhuHz2agv7qxG/Q1CWChUxVZ4uOAvVo5e0rYO8mMcfHQ7lZphu6jqJFip7o8y
+         3MJ0ckdAAJpz4UqyY5B1yd7heJ8E9tflktCWPApGPmH8893WCFeGEN4lMQgtXe/m4jSO
+         4tarRIwNfB5+tcr3az3AHgCylm0quUiBee74uRj9r3zauqDpoRwcSIebf18aB5KU0263
+         aApFEQAwfo8i+6wbSgyulrlM8dbFu1PtPYgmRwsZgJZ0qG/cspA7brQoY1Du6qawtSpM
+         OmNgY0mm0TiUSCKjWepuszxLfDje5kL3rLxhCov14ZkHPKy3XPiJPnYMiB02WJVYjspP
+         YUKA==
+X-Gm-Message-State: AOAM533LaemEc4aqaTd6HJlE31rubWkyIAEmG0VxeazcGO2JlbG40RHF
+        3659EmGUBf6TcGHmSo5tKpU=
+X-Google-Smtp-Source: ABdhPJxHtNbH9HB5n5DPJRDQzLHf3MgJ9R6ynW9CWqOunCISp1/PBfsWZl/KKejsKvsqjLu1N78mrQ==
+X-Received: by 2002:a63:7e05:: with SMTP id z5mr20295506pgc.354.1635746690496;
+        Sun, 31 Oct 2021 23:04:50 -0700 (PDT)
 Received: from localhost.localdomain ([144.202.123.152])
-        by smtp.gmail.com with ESMTPSA id g8sm3277586pfc.65.2021.10.31.23.04.45
+        by smtp.gmail.com with ESMTPSA id g8sm3277586pfc.65.2021.10.31.23.04.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 Oct 2021 23:04:47 -0700 (PDT)
+        Sun, 31 Oct 2021 23:04:49 -0700 (PDT)
 From:   Yafang Shao <laoar.shao@gmail.com>
 To:     akpm@linux-foundation.org, keescook@chromium.org,
         rostedt@goodmis.org, mathieu.desnoyers@efficios.com,
@@ -66,11 +66,10 @@ Cc:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org, oliver.sang@intel.com, lkp@intel.com,
         Yafang Shao <laoar.shao@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
         Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Subject: [PATCH v7 08/11] tools/perf/test: make perf test adopt to task comm size change
-Date:   Mon,  1 Nov 2021 06:04:16 +0000
-Message-Id: <20211101060419.4682-9-laoar.shao@gmail.com>
+Subject: [PATCH v7 09/11] tools/testing/selftests/bpf: make it adopt to task comm size change
+Date:   Mon,  1 Nov 2021 06:04:17 +0000
+Message-Id: <20211101060419.4682-10-laoar.shao@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20211101060419.4682-1-laoar.shao@gmail.com>
 References: <20211101060419.4682-1-laoar.shao@gmail.com>
@@ -80,47 +79,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-kernel test robot reported a perf-test failure after I extended task comm
-size from 16 to 24. The failure as follows,
+The hard-coded 16 is used in various bpf progs. These progs get task
+comm either via bpf_get_current_comm() or prctl() or
+bpf_core_read_str(), all of which can work well even if the task comm size
+is changed.
 
-2021-10-13 18:00:46 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-317419b91ef4eff4e2f046088201e4dc4065caa0/tools/perf/perf test 15
-15: Parse sched tracepoints fields                                  : FAILED!
+In these BPF programs, one thing to be improved is the
+sched:sched_switch tracepoint args. As the tracepoint args are derived
+from the kernel, we'd better make it same with the kernel. So the macro
+TASK_COMM_LEN is converted to type enum, then all the BPF programs can
+get it through BTF.
 
-The reason is perf-test requires a fixed-size task comm. If we extend
-task comm size to 24, it will not equil with the required size 16 in perf
-test.
+The BPF program which wants to use TASK_COMM_LEN should include the header
+vmlinux.h. Regarding the test_stacktrace_map and test_tracepoint, as the
+type defined in linux/bpf.h are also defined in vmlinux.h, so we don't
+need to include linux/bpf.h again.
 
-After some analyzation, I found perf itself can adopt to the size
-change, for example, below is the output of perf-sched after I extend
-comm size to 24 -
-
-task    614 (            kthreadd:        84), nr_events: 1
-task    615 (             systemd:       843), nr_events: 1
-task    616 (     networkd-dispat:      1026), nr_events: 1
-task    617 (             systemd:       846), nr_events: 1
-
-$ cat /proc/843/comm
-networkd-dispatcher
-
-The task comm can be displayed correctly as expected.
-
-Replace old hard-coded 16 with the new one can fix the warning, but we'd
-better make the test accept both old and new sizes, then it can be
-backward compatibility.
-
-After this patch, the perf-test succeeds no matter task comm is 16 or
-24 -
-
-15: Parse sched tracepoints fields                                  : Ok
-
-This patch is a preparation for the followup patch.
-
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Suggested-by: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
 Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
 Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-Cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc: Peter Zijlstra <peterz@infradead.org>
 Cc: Steven Rostedt <rostedt@goodmis.org>
@@ -128,104 +105,83 @@ Cc: Al Viro <viro@zeniv.linux.org.uk>
 Cc: Kees Cook <keescook@chromium.org>
 Cc: Petr Mladek <pmladek@suse.com>
 ---
- tools/include/linux/sched.h       | 11 +++++++++++
- tools/perf/tests/evsel-tp-sched.c | 26 ++++++++++++++++++++------
- 2 files changed, 31 insertions(+), 6 deletions(-)
- create mode 100644 tools/include/linux/sched.h
+ include/linux/sched.h                                   | 9 +++++++--
+ tools/testing/selftests/bpf/progs/test_stacktrace_map.c | 6 +++---
+ tools/testing/selftests/bpf/progs/test_tracepoint.c     | 6 +++---
+ 3 files changed, 13 insertions(+), 8 deletions(-)
 
-diff --git a/tools/include/linux/sched.h b/tools/include/linux/sched.h
-new file mode 100644
-index 000000000000..0d575afd7f43
---- /dev/null
-+++ b/tools/include/linux/sched.h
-@@ -0,0 +1,11 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _TOOLS_LINUX_SCHED_H
-+#define _TOOLS_LINUX_SCHED_H
-+
-+/* Keep both length for backward compatibility */
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index b9c85c52fed0..09ac13e54549 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -274,8 +274,13 @@ struct task_group;
+ 
+ #define get_current_state()	READ_ONCE(current->__state)
+ 
+-/* Task command name length: */
+-#define TASK_COMM_LEN			16
++/*
++ * Define the task command name length as enum, then it can be visible to
++ * BPF programs.
++ */
 +enum {
-+	TASK_COMM_LEN_16 = 16,
-+	TASK_COMM_LEN = 24,
++	TASK_COMM_LEN = 16,
 +};
-+
-+#endif  /* _TOOLS_LINUX_SCHED_H */
-diff --git a/tools/perf/tests/evsel-tp-sched.c b/tools/perf/tests/evsel-tp-sched.c
-index f9e34bd26cf3..029f2a8c8e51 100644
---- a/tools/perf/tests/evsel-tp-sched.c
-+++ b/tools/perf/tests/evsel-tp-sched.c
-@@ -1,11 +1,13 @@
+ 
+ extern void scheduler_tick(void);
+ 
+diff --git a/tools/testing/selftests/bpf/progs/test_stacktrace_map.c b/tools/testing/selftests/bpf/progs/test_stacktrace_map.c
+index 00ed48672620..e9b602a6dc1b 100644
+--- a/tools/testing/selftests/bpf/progs/test_stacktrace_map.c
++++ b/tools/testing/selftests/bpf/progs/test_stacktrace_map.c
+@@ -1,7 +1,7 @@
  // SPDX-License-Identifier: GPL-2.0
- #include <linux/err.h>
-+#include <linux/sched.h>
- #include <traceevent/event-parse.h>
- #include "evsel.h"
- #include "tests.h"
- #include "debug.h"
+ // Copyright (c) 2018 Facebook
  
--static int evsel__test_field(struct evsel *evsel, const char *name, int size, bool should_be_signed)
-+static int evsel__test_field_alt(struct evsel *evsel, const char *name,
-+				 int size, int alternate_size, bool should_be_signed)
- {
- 	struct tep_format_field *field = evsel__field(evsel, name);
- 	int is_signed;
-@@ -23,15 +25,24 @@ static int evsel__test_field(struct evsel *evsel, const char *name, int size, bo
- 		ret = -1;
- 	}
+-#include <linux/bpf.h>
++#include <vmlinux.h>
+ #include <bpf/bpf_helpers.h>
  
--	if (field->size != size) {
--		pr_debug("%s: \"%s\" size (%d) should be %d!\n",
-+	if (field->size != size && field->size != alternate_size) {
-+		pr_debug("%s: \"%s\" size (%d) should be %d",
- 			 evsel->name, name, field->size, size);
-+		if (alternate_size > 0)
-+			pr_debug(" or %d", alternate_size);
-+		pr_debug("!\n");
- 		ret = -1;
- 	}
+ #ifndef PERF_MAX_STACK_DEPTH
+@@ -41,11 +41,11 @@ struct {
+ /* taken from /sys/kernel/debug/tracing/events/sched/sched_switch/format */
+ struct sched_switch_args {
+ 	unsigned long long pad;
+-	char prev_comm[16];
++	char prev_comm[TASK_COMM_LEN];
+ 	int prev_pid;
+ 	int prev_prio;
+ 	long long prev_state;
+-	char next_comm[16];
++	char next_comm[TASK_COMM_LEN];
+ 	int next_pid;
+ 	int next_prio;
+ };
+diff --git a/tools/testing/selftests/bpf/progs/test_tracepoint.c b/tools/testing/selftests/bpf/progs/test_tracepoint.c
+index 4b825ee122cf..f21982681e28 100644
+--- a/tools/testing/selftests/bpf/progs/test_tracepoint.c
++++ b/tools/testing/selftests/bpf/progs/test_tracepoint.c
+@@ -1,17 +1,17 @@
+ // SPDX-License-Identifier: GPL-2.0
+ // Copyright (c) 2017 Facebook
  
- 	return ret;
- }
+-#include <linux/bpf.h>
++#include <vmlinux.h>
+ #include <bpf/bpf_helpers.h>
  
-+static int evsel__test_field(struct evsel *evsel, const char *name,
-+			     int size, bool should_be_signed)
-+{
-+	return evsel__test_field_alt(evsel, name, size, -1, should_be_signed);
-+}
-+
- int test__perf_evsel__tp_sched_test(struct test *test __maybe_unused, int subtest __maybe_unused)
- {
- 	struct evsel *evsel = evsel__newtp("sched", "sched_switch");
-@@ -42,7 +53,8 @@ int test__perf_evsel__tp_sched_test(struct test *test __maybe_unused, int subtes
- 		return -1;
- 	}
- 
--	if (evsel__test_field(evsel, "prev_comm", 16, false))
-+	if (evsel__test_field_alt(evsel, "prev_comm", TASK_COMM_LEN_16,
-+				  TASK_COMM_LEN, false))
- 		ret = -1;
- 
- 	if (evsel__test_field(evsel, "prev_pid", 4, true))
-@@ -54,7 +66,8 @@ int test__perf_evsel__tp_sched_test(struct test *test __maybe_unused, int subtes
- 	if (evsel__test_field(evsel, "prev_state", sizeof(long), true))
- 		ret = -1;
- 
--	if (evsel__test_field(evsel, "next_comm", 16, false))
-+	if (evsel__test_field_alt(evsel, "next_comm", TASK_COMM_LEN_16,
-+				  TASK_COMM_LEN, false))
- 		ret = -1;
- 
- 	if (evsel__test_field(evsel, "next_pid", 4, true))
-@@ -72,7 +85,8 @@ int test__perf_evsel__tp_sched_test(struct test *test __maybe_unused, int subtes
- 		return -1;
- 	}
- 
--	if (evsel__test_field(evsel, "comm", 16, false))
-+	if (evsel__test_field_alt(evsel, "comm", TASK_COMM_LEN_16,
-+				  TASK_COMM_LEN, false))
- 		ret = -1;
- 
- 	if (evsel__test_field(evsel, "pid", 4, true))
+ /* taken from /sys/kernel/debug/tracing/events/sched/sched_switch/format */
+ struct sched_switch_args {
+ 	unsigned long long pad;
+-	char prev_comm[16];
++	char prev_comm[TASK_COMM_LEN];
+ 	int prev_pid;
+ 	int prev_prio;
+ 	long long prev_state;
+-	char next_comm[16];
++	char next_comm[TASK_COMM_LEN];
+ 	int next_pid;
+ 	int next_prio;
+ };
 -- 
 2.17.1
 
