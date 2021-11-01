@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03E99441E7A
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 17:36:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE956441E80
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 17:36:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233085AbhKAQio (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 12:38:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57108 "EHLO
+        id S233102AbhKAQir (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 12:38:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232958AbhKAQi1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 12:38:27 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A95AFC061714;
-        Mon,  1 Nov 2021 09:35:53 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id 5so65289447edw.7;
-        Mon, 01 Nov 2021 09:35:53 -0700 (PDT)
+        with ESMTP id S232992AbhKAQi3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 12:38:29 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53FF3C061203;
+        Mon,  1 Nov 2021 09:35:55 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id f4so8055137edx.12;
+        Mon, 01 Nov 2021 09:35:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=56BuTMB6g9k3mAvUc51SvALwHgGDBx+PjlfjufE7zbw=;
-        b=QU2JuGG/pcDFNHQQnzSEExGJa029OpDtXNWdxhh7z7iKuyDuW5jfWmC8ALZOZXYG3m
-         bBxCE8+q29+IodMPT1rs4VwI7cmyXtY4V56VFAHVTPrghEXqxrtFkC5hVqjqE4/ke2m7
-         jTseTK7ng7ItOMkrzqZ5DX/wh0B+AqGEKVg0U9GZSez7EDsj7MM1T34oYyVudVZgyVLK
-         OThjcDdhacd6nIo4ztculwfkBwyVAPMzqrwEElLFqisvCqSTP0ZUqTpq+x+QfpPwbc1F
-         zR8bg+cOmfbqaJhFF6IVTf3d+SMwGctzoD60z+TSIw4MAa/x62ILhvomm/Lq8Rl3edCz
-         Kaow==
+        bh=JI8YrRsfLzLwAqOBlEu7dUg/mczyENBF75WDCisqFVU=;
+        b=pbv7QoTag2cmAvXVblwBn18Cgf+xfKjy7Xl/FoTaHX4YyJgJs1J0YcafkeG/rPc2y6
+         zTT9KqzW0JFWSy5YJrSYC7At5G1fvuGAdwrXVokZSNJs1w2w0Y0orh2V8yI5QtQsD6Wh
+         3S2SghGPcXMwhkqBg6wp9J3IEMDJb5yVe0ZqkpcEcxbdqZ2ESWHVpublgcM7tULnOaDU
+         rgec3ORjb2pjaTlkU5P//e+y91IH8F8LW+GmNei8JAy5YEWm2DWy9QuR8ZuoPdYakAwP
+         geKGQUECeqdYBb1nzXXj7n/+akG9QUzRey+jGseDzzDUCiu6nSpvt3i/XT/xjqLj44Xe
+         og/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=56BuTMB6g9k3mAvUc51SvALwHgGDBx+PjlfjufE7zbw=;
-        b=EwIFxwluDxpgjdlZQmnJ3ivNTaq3xtj27z+81Rz9yc9QHBUBRrT1y2jlhi9RwdAr0u
-         ucWQSLKAHuhccdp+Fhz0OvWA7+9c+3aDx5IvEXe4SGEvZTU2YGbdzygK/ILJCzLdLfiZ
-         TI5nt3D9TCSf6G97HspfPqgLX0UekefedQZY7OUkMpDEP/9vKJvM6Mrg6ZV0IAWlfySY
-         PmUeiR59hn6gFxiLhhVqxXfrgM2CqtGfwKGI01ulWFfwf5eu1vRmxNsY3Xo3TtV8s0+g
-         LoxFlg4BCZMHsLZsHzE0OGdd7zdWWR4T7Uf31agPjAAVDinM9Bvc97UZ2UmNKPECQQ5u
-         ciSw==
-X-Gm-Message-State: AOAM5338sexlCRRePVDHfBnaxCxoBvhKx5Cjew4bStJjvv4/t2XzzIM1
-        uSizgtmt480X5bIZK9NaDDZEAyPQq4w+2J8i
-X-Google-Smtp-Source: ABdhPJycUriEuQce6zZS3UWh5wegL4fbz47X7Q/XFVCt0k5YNhcoxP08RXKy6sNBrtXhtibJfpeYbw==
-X-Received: by 2002:a17:907:3ac5:: with SMTP id fi5mr15818757ejc.568.1635784552271;
-        Mon, 01 Nov 2021 09:35:52 -0700 (PDT)
+        bh=JI8YrRsfLzLwAqOBlEu7dUg/mczyENBF75WDCisqFVU=;
+        b=2YIjm9b0W9qiowdsn1RsLcslGOivwqQJSBttysBYIL7Z8PN4fiIE6r1FTLGeQtyi8B
+         PQt+dSYv9Rpcn04Qyt8+HjxnfCbu1lH+koj7Ni8KfFcT2KzN3SWYZ8AXAbgc3ly+JgM9
+         os0eyzNl3qF4Dft/7t3Cuy7+I+e5uKtBmxI9LWCDuG8IaqdFOVPC7qOo4WA2Zi2a95aA
+         t/hfhjPb67TDJ2amIhXDtUmwZMD4DJNqm2VIpneh4F9f8HtmfNJ9f+RTFn1+loRe0D0Q
+         N9+ZBmUcOsL3yQtP2p8nVXZfESArCmYP8Z1cnivbrudkhqJJgf5e5eGXHE5Iy45U9Vpe
+         JD6A==
+X-Gm-Message-State: AOAM532HE+0Q0oiyPwWorWaRmH41HUXiyTSzEdF58w58ZRqFHjtBJvNu
+        mkXo21EB1izRvn/WTtmQVPotWFtiC2Le7q0w
+X-Google-Smtp-Source: ABdhPJzAii23DhSguYlO7T2uZC4CVcK37lU5rR4cy4U4tlxSrtjx02py3lzoPfo+gI972MGDNwGCXw==
+X-Received: by 2002:a17:907:9690:: with SMTP id hd16mr5862862ejc.297.1635784553937;
+        Mon, 01 Nov 2021 09:35:53 -0700 (PDT)
 Received: from ponky.lan ([2a04:241e:501:3870:f5f:2085:7f25:17c])
-        by smtp.gmail.com with ESMTPSA id f25sm4124583edv.90.2021.11.01.09.35.50
+        by smtp.gmail.com with ESMTPSA id f25sm4124583edv.90.2021.11.01.09.35.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Nov 2021 09:35:51 -0700 (PDT)
+        Mon, 01 Nov 2021 09:35:53 -0700 (PDT)
 From:   Leonard Crestez <cdleonard@gmail.com>
 To:     David Ahern <dsahern@kernel.org>, Shuah Khan <shuah@kernel.org>,
         Dmitry Safonov <0x7f454c46@gmail.com>,
@@ -64,9 +64,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
         linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 14/25] tcp: ipv4: Add AO signing for skb-less replies
-Date:   Mon,  1 Nov 2021 18:34:49 +0200
-Message-Id: <a8ffb032745955b97c840a06d698da1e69463a11.1635784253.git.cdleonard@gmail.com>
+Subject: [PATCH v2 15/25] selftests: tcp_authopt: Implement SNE in python
+Date:   Mon,  1 Nov 2021 18:34:50 +0200
+Message-Id: <ce875c2c65a2bdc181bd2a4b38d5dee45d49ab66.1635784253.git.cdleonard@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1635784253.git.cdleonard@gmail.com>
 References: <cover.1635784253.git.cdleonard@gmail.com>
@@ -76,190 +76,241 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The code in tcp_v4_send_ack and tcp_v4_send_reset does not allocate a
-full skb so special handling is required for tcp-authopt handling.
+Add implementation and tests for Sequence Number Extension.
+
+One implementation is based on an IETF draft:
+https://datatracker.ietf.org/doc/draft-touch-sne/
+
+The linux implementation is simpler and doesn't require additional
+flags, it just relies on standard before/after macros.
 
 Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
 ---
- net/ipv4/tcp_ipv4.c | 82 +++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 79 insertions(+), 3 deletions(-)
+ .../tcp_authopt/tcp_authopt_test/sne_alg.py   | 111 ++++++++++++++++++
+ .../tcp_authopt_test/test_sne_alg.py          |  96 +++++++++++++++
+ 2 files changed, 207 insertions(+)
+ create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/sne_alg.py
+ create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/test_sne_alg.py
 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index da43567c3753..21971f5fa40e 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -644,10 +644,50 @@ void tcp_v4_send_check(struct sock *sk, struct sk_buff *skb)
- 
- 	__tcp_v4_send_check(skb, inet->inet_saddr, inet->inet_daddr);
- }
- EXPORT_SYMBOL(tcp_v4_send_check);
- 
-+#ifdef CONFIG_TCP_AUTHOPT
-+/** tcp_v4_authopt_handle_reply - Insert TCPOPT_AUTHOPT if required
-+ *
-+ * returns number of bytes (always aligned to 4) or zero
-+ */
-+static int tcp_v4_authopt_handle_reply(const struct sock *sk,
-+				       struct sk_buff *skb,
-+				       __be32 *optptr,
-+				       struct tcphdr *th)
-+{
-+	struct tcp_authopt_info *info;
-+	struct tcp_authopt_key_info *key_info;
-+	u8 rnextkeyid;
+diff --git a/tools/testing/selftests/tcp_authopt/tcp_authopt_test/sne_alg.py b/tools/testing/selftests/tcp_authopt/tcp_authopt_test/sne_alg.py
+new file mode 100644
+index 000000000000..252356dc87a4
+--- /dev/null
++++ b/tools/testing/selftests/tcp_authopt/tcp_authopt_test/sne_alg.py
+@@ -0,0 +1,111 @@
++# SPDX-License-Identifier: GPL-2.0
++"""Python implementation of SNE algorithms"""
 +
-+	if (sk->sk_state == TCP_TIME_WAIT)
-+		info = tcp_twsk(sk)->tw_authopt_info;
-+	else
-+		info = tcp_sk(sk)->authopt_info;
-+	if (!info)
-+		return 0;
-+	key_info = __tcp_authopt_select_key(sk, info, sk, &rnextkeyid);
-+	if (!key_info)
-+		return 0;
-+	*optptr = htonl((TCPOPT_AUTHOPT << 24) |
-+			(TCPOLEN_AUTHOPT_OUTPUT << 16) |
-+			(key_info->send_id << 8) |
-+			(rnextkeyid));
-+	/* must update doff before signature computation */
-+	th->doff += TCPOLEN_AUTHOPT_OUTPUT / 4;
-+	tcp_v4_authopt_hash_reply((char *)(optptr + 1),
-+				  info,
-+				  key_info,
-+				  ip_hdr(skb)->daddr,
-+				  ip_hdr(skb)->saddr,
-+				  th);
 +
-+	return TCPOLEN_AUTHOPT_OUTPUT;
-+}
-+#endif
++def distance(x, y):
++    if x < y:
++        return y - x
++    else:
++        return x - y
 +
- /*
-  *	This routine will send an RST to the other tcp.
-  *
-  *	Someone asks: why I NEVER use socket parameters (TOS, TTL etc.)
-  *		      for reset.
-@@ -659,10 +699,12 @@ EXPORT_SYMBOL(tcp_v4_send_check);
-  *	Exception: precedence violation. We do not implement it in any case.
-  */
- 
- #ifdef CONFIG_TCP_MD5SIG
- #define OPTION_BYTES TCPOLEN_MD5SIG_ALIGNED
-+#elif defined(OPTION_BYTES_TCP_AUTHOPT)
-+#define OPTION_BYTES TCPOLEN_AUTHOPT_OUTPUT
- #else
- #define OPTION_BYTES sizeof(__be32)
- #endif
- 
- static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
-@@ -712,12 +754,29 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
- 	memset(&arg, 0, sizeof(arg));
- 	arg.iov[0].iov_base = (unsigned char *)&rep;
- 	arg.iov[0].iov_len  = sizeof(rep.th);
- 
- 	net = sk ? sock_net(sk) : dev_net(skb_dst(skb)->dev);
--#ifdef CONFIG_TCP_MD5SIG
-+#if defined(CONFIG_TCP_MD5SIG) || defined(CONFIG_TCP_AUTHOPT)
- 	rcu_read_lock();
-+#endif
-+#ifdef CONFIG_TCP_AUTHOPT
-+	/* Unlike TCP-MD5 the signatures for TCP-AO depend on initial sequence
-+	 * numbers so we can only handle established and time-wait sockets.
-+	 */
-+	if (static_branch_unlikely(&tcp_authopt_needed) && sk &&
-+	    sk->sk_state != TCP_NEW_SYN_RECV &&
-+	    sk->sk_state != TCP_LISTEN) {
-+		int tcp_authopt_ret = tcp_v4_authopt_handle_reply(sk, skb, rep.opt, &rep.th);
 +
-+		if (tcp_authopt_ret) {
-+			arg.iov[0].iov_len += tcp_authopt_ret;
-+			goto skip_md5sig;
-+		}
-+	}
-+#endif
-+#ifdef CONFIG_TCP_MD5SIG
- 	hash_location = tcp_parse_md5sig_option(th);
- 	if (sk && sk_fullsock(sk)) {
- 		const union tcp_md5_addr *addr;
- 		int l3index;
- 
-@@ -755,11 +814,10 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
- 		addr = (union tcp_md5_addr *)&ip_hdr(skb)->saddr;
- 		key = tcp_md5_do_lookup(sk1, l3index, addr, AF_INET);
- 		if (!key)
- 			goto out;
- 
--
- 		genhash = tcp_v4_md5_hash_skb(newhash, key, NULL, skb);
- 		if (genhash || memcmp(hash_location, newhash, 16) != 0)
- 			goto out;
- 
- 	}
-@@ -775,10 +833,13 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
- 
- 		tcp_v4_md5_hash_hdr((__u8 *) &rep.opt[1],
- 				     key, ip_hdr(skb)->saddr,
- 				     ip_hdr(skb)->daddr, &rep.th);
- 	}
-+#endif
-+#ifdef CONFIG_TCP_AUTHOPT
-+skip_md5sig:
- #endif
- 	/* Can't co-exist with TCPMD5, hence check rep.opt[0] */
- 	if (rep.opt[0] == 0) {
- 		__be32 mrst = mptcp_reset_option(skb);
- 
-@@ -828,12 +889,14 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
- 	ctl_sk->sk_mark = 0;
- 	__TCP_INC_STATS(net, TCP_MIB_OUTSEGS);
- 	__TCP_INC_STATS(net, TCP_MIB_OUTRSTS);
- 	local_bh_enable();
- 
--#ifdef CONFIG_TCP_MD5SIG
-+#if defined(CONFIG_TCP_MD5SIG)
- out:
-+#endif
-+#if defined(CONFIG_TCP_MD5SIG) || defined(CONFIG_TCP_AUTHOPT)
- 	rcu_read_unlock();
- #endif
- }
- 
- /* The code following below sending ACKs in SYN-RECV and TIME-WAIT states
-@@ -850,10 +913,12 @@ static void tcp_v4_send_ack(const struct sock *sk,
- 	struct {
- 		struct tcphdr th;
- 		__be32 opt[(TCPOLEN_TSTAMP_ALIGNED >> 2)
- #ifdef CONFIG_TCP_MD5SIG
- 			   + (TCPOLEN_MD5SIG_ALIGNED >> 2)
-+#elif defined(CONFIG_TCP_AUTHOPT)
-+			   + (TCPOLEN_AUTHOPT_OUTPUT >> 2)
- #endif
- 			];
- 	} rep;
- 	struct net *net = sock_net(sk);
- 	struct ip_reply_arg arg;
-@@ -881,10 +946,21 @@ static void tcp_v4_send_ack(const struct sock *sk,
- 	rep.th.seq     = htonl(seq);
- 	rep.th.ack_seq = htonl(ack);
- 	rep.th.ack     = 1;
- 	rep.th.window  = htons(win);
- 
-+#ifdef CONFIG_TCP_AUTHOPT
-+	if (static_branch_unlikely(&tcp_authopt_needed)) {
-+		int aoret, offset = (tsecr) ? 3 : 0;
++class SequenceNumberExtender:
++    """Based on https://datatracker.ietf.org/doc/draft-touch-sne/"""
 +
-+		aoret = tcp_v4_authopt_handle_reply(sk, skb, &rep.opt[offset], &rep.th);
-+		if (aoret) {
-+			arg.iov[0].iov_len += aoret;
-+			key = NULL;
-+		}
-+	}
-+#endif
- #ifdef CONFIG_TCP_MD5SIG
- 	if (key) {
- 		int offset = (tsecr) ? 3 : 0;
- 
- 		rep.opt[offset++] = htonl((TCPOPT_NOP << 24) |
++    sne: int = 0
++    sne_flag: int = 1
++    prev_seq: int = 0
++
++    def calc(self, seq):
++        """Update internal state and return SNE for certain SEQ"""
++        # use current SNE to start
++        result = self.sne
++
++        # both in same SNE range?
++        if distance(seq, self.prev_seq) < 0x80000000:
++            # jumps fwd over N/2?
++            if seq >= 0x80000000 and self.prev_seq < 0x80000000:
++                self.sne_flag = 0
++            # move prev forward if needed
++            self.prev_seq = max(seq, self.prev_seq)
++        # both in diff SNE ranges?
++        else:
++            # jumps forward over zero?
++            if seq < 0x80000000:
++                # update prev
++                self.prev_seq = seq
++                # first jump over zero? (wrap)
++                if self.sne_flag == 0:
++                    # set flag so we increment once
++                    self.sne_flag = 1
++                    # increment window
++                    self.sne = self.sne + 1
++                    # use updated SNE value
++                    result = self.sne
++            # jump backward over zero?
++            else:
++                # use pre-rollover SNE value
++                result = self.sne - 1
++
++        return result
++
++
++class SequenceNumberExtenderRFC:
++    """Based on sample code in original RFC5925 document"""
++
++    sne: int = 0
++    sne_flag: int = 1
++    prev_seq: int = 0
++
++    def calc(self, seq):
++        """Update internal state and return SNE for certain SEQ"""
++        # set the flag when the SEG.SEQ first rolls over
++        if self.sne_flag == 0 and self.prev_seq > 0x7FFFFFFF and seq < 0x7FFFFFFF:
++            self.sne = self.sne + 1
++            self.sne_flag = 1
++        # decide which SNE to use after incremented
++        if self.sne_flag and seq > 0x7FFFFFFF:
++            # use the pre-increment value
++            sne = self.sne - 1
++        else:
++            # use the current value
++            sne = self.sne
++        # reset the flag in the *middle* of the window
++        if self.prev_seq < 0x7FFFFFFF and seq > 0x7FFFFFFF:
++            self.sne_flag = 0
++        # save the current SEQ for the next time through the code
++        self.prev_seq = seq
++
++        return sne
++
++
++def tcp_seq_before(a, b) -> bool:
++    return ((a - b) & 0xFFFFFFFF) > 0x80000000
++
++
++def tcp_seq_after(a, b) -> bool:
++    return tcp_seq_before(a, b)
++
++
++class SequenceNumberExtenderLinux:
++    """Based on linux implementation and with no extra flags"""
++
++    sne: int = 0
++    prev_seq: int = 0
++
++    def reset(self, seq, sne=0):
++        self.prev_seq = seq
++        self.sne = sne
++
++    def calc(self, seq, update=True):
++        sne = self.sne
++        if tcp_seq_before(seq, self.prev_seq):
++            if seq > self.prev_seq:
++                sne -= 1
++        else:
++            if seq < self.prev_seq:
++                sne += 1
++        if update and tcp_seq_before(self.prev_seq, seq):
++            self.prev_seq = seq
++            self.sne = sne
++        return sne
+diff --git a/tools/testing/selftests/tcp_authopt/tcp_authopt_test/test_sne_alg.py b/tools/testing/selftests/tcp_authopt/tcp_authopt_test/test_sne_alg.py
+new file mode 100644
+index 000000000000..9b74873cff4a
+--- /dev/null
++++ b/tools/testing/selftests/tcp_authopt/tcp_authopt_test/test_sne_alg.py
+@@ -0,0 +1,96 @@
++# SPDX-License-Identifier: GPL-2.0
++"""Test SNE algorithm implementations"""
++
++import logging
++
++import pytest
++
++from .sne_alg import (
++    SequenceNumberExtender,
++    SequenceNumberExtenderLinux,
++    SequenceNumberExtenderRFC,
++)
++
++logger = logging.getLogger(__name__)
++
++
++# Data from https://datatracker.ietf.org/doc/draft-touch-sne/
++_SNE_TEST_DATA = [
++    (0x00000000, 0x00000000),
++    (0x00000000, 0x30000000),
++    (0x00000000, 0x90000000),
++    (0x00000000, 0x70000000),
++    (0x00000000, 0xA0000000),
++    (0x00000001, 0x00000001),
++    (0x00000000, 0xE0000000),
++    (0x00000001, 0x00000000),
++    (0x00000001, 0x7FFFFFFF),
++    (0x00000001, 0x00000000),
++    (0x00000001, 0x50000000),
++    (0x00000001, 0x80000000),
++    (0x00000001, 0x00000001),
++    (0x00000001, 0x40000000),
++    (0x00000001, 0x90000000),
++    (0x00000001, 0xB0000000),
++    (0x00000002, 0x0FFFFFFF),
++    (0x00000002, 0x20000000),
++    (0x00000002, 0x90000000),
++    (0x00000002, 0x70000000),
++    (0x00000002, 0xA0000000),
++    (0x00000003, 0x00004000),
++    (0x00000002, 0xD0000000),
++    (0x00000003, 0x20000000),
++    (0x00000003, 0x90000000),
++    (0x00000003, 0x70000000),
++    (0x00000003, 0xA0000000),
++    (0x00000004, 0x00004000),
++    (0x00000003, 0xD0000000),
++]
++
++
++# Easier test data with small jumps <= 0x30000000
++SNE_DATA_EASY = [
++    (0x00000000, 0x00000000),
++    (0x00000000, 0x30000000),
++    (0x00000000, 0x60000000),
++    (0x00000000, 0x80000000),
++    (0x00000000, 0x90000000),
++    (0x00000000, 0xC0000000),
++    (0x00000000, 0xF0000000),
++    (0x00000001, 0x10000000),
++    (0x00000000, 0xF0030000),
++    (0x00000001, 0x00030000),
++    (0x00000001, 0x10030000),
++]
++
++
++def check_sne_alg(alg, data):
++    for sne, seq in data:
++        observed_sne = alg.calc(seq)
++        logger.info(
++            "seq %08x expected sne %08x observed sne %08x", seq, sne, observed_sne
++        )
++        assert observed_sne == sne
++
++
++def test_sne_alg():
++    check_sne_alg(SequenceNumberExtender(), _SNE_TEST_DATA)
++
++
++def test_sne_alg_easy():
++    check_sne_alg(SequenceNumberExtender(), SNE_DATA_EASY)
++
++
++@pytest.mark.xfail
++def test_sne_alg_rfc():
++    check_sne_alg(SequenceNumberExtenderRFC(), _SNE_TEST_DATA)
++
++
++@pytest.mark.xfail
++def test_sne_alg_rfc_easy():
++    check_sne_alg(SequenceNumberExtenderRFC(), SNE_DATA_EASY)
++
++
++def test_sne_alg_linux():
++    check_sne_alg(SequenceNumberExtenderLinux(), _SNE_TEST_DATA)
++    check_sne_alg(SequenceNumberExtenderLinux(), SNE_DATA_EASY)
 -- 
 2.25.1
 
