@@ -2,90 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E58D044229B
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 22:25:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6E534422BB
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 22:34:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231613AbhKAV1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 17:27:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38040 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230526AbhKAV1m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 17:27:42 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31E6BC061714;
-        Mon,  1 Nov 2021 14:25:09 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id x5so8515167pgk.11;
-        Mon, 01 Nov 2021 14:25:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+E7meb6AM3Up3QgOQ21XHUsiWwwWzfkf0vIwdCxOKxs=;
-        b=a7kBtimU8uOuU++ibPOj46yFdPczMO/8F2W0Iqd8QqCjv6b0yUaa/ZdZUF/ZWqmJ6s
-         nIlFfgWPQ6uNbc7QmwU7J/V1FIHZck1YXFEFcgOuH2r86SrXriV/gB1geESjvtzg9fUe
-         ybGtTyC5TPWUOIoCUed18/thGQ0JpWA57agtHfjFl+NRlawE746M573fdAPdpmIgVAAt
-         YRpTnBZ0bvEaI8IPJxsSXt3ty7eD1prJD8POQpcZVbpkl43tNT9A24F87OPLvjFCeLdC
-         A8HnXf5aQUWU4EVt9yaGgH+omQ6GlxkZMkWqPmlEcaRovXfNhESZEBJ5Hzd2JyK0gOTJ
-         URJw==
+        id S232004AbhKAVgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 17:36:45 -0400
+Received: from mail-ot1-f50.google.com ([209.85.210.50]:45746 "EHLO
+        mail-ot1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229712AbhKAVgo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 17:36:44 -0400
+Received: by mail-ot1-f50.google.com with SMTP id l16-20020a9d6a90000000b0054e7ab56f27so27163750otq.12;
+        Mon, 01 Nov 2021 14:34:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+E7meb6AM3Up3QgOQ21XHUsiWwwWzfkf0vIwdCxOKxs=;
-        b=iBLRs4k3aG0Um7dVUQSNBq9PEfVWdeGYJ9dnd8cJhZIT+JkqwJud/Py01xl4POcUqI
-         v8cAbCPcBWrtMy9kOeNvrn10WzGbydQo3wJmL1sJAYDUKQTgwoDeXYaHoLxaW3vElPe3
-         6vc50t0blR1cVgEI0Qr4UDiTeeca9T19oMbGy+W0ewq3mRibF8uxtZVp0t2A6x64ZYOy
-         uNc2JWaBISefJ9ilJlOHJlShbGlkEsuAz9gT9t6ubb2UBEY4gO4VAqDLRhjxqo6GYjyS
-         eRZ3PuX2+mfmCtyKVFKnQTqKGxXqALO64STNeYoK9SxzIBFS3TaXgAWcm/iYNzZVLpNs
-         hYXw==
-X-Gm-Message-State: AOAM5327qVCjqBi+h0NqywG2VUJvZNZQ9k9kXx/0xuYgv4Q1AgDEH7U1
-        OEQjOlcwOTVeCe4VrHV6ehahuNEUux+Lutwg5Ow=
-X-Google-Smtp-Source: ABdhPJwlbzsn5pZrwPu6J1tIK5VojJ7VQNmlVgEyBePXSaYtHAgjbNERb2FWQcffcSp3hmBixHd6WqcncUDWvvGDQ/4=
-X-Received: by 2002:a63:374c:: with SMTP id g12mr23874315pgn.35.1635801908608;
- Mon, 01 Nov 2021 14:25:08 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Z8yRxOz3s2WTsVm7FQuknGf83woeCl9finIZOSk+7SE=;
+        b=lervt4SKIGc5TaCaJxl/a8grxRiwyfw7e8ImIgR84oWywAMBRhlSfTgaIJO9/NWapE
+         YEa89Tu1XMwnkXfE0kYt4gEPjsnZVVwIOlexM9zbataKwl5mpEtOIM3mmwoJlVhG+nEI
+         teVgXl1uPDAFYhBGSGD8tIQQJwwutu0l9cGMNRckPlFTvj+eBwHVTHgCnyDOhwmVpaC6
+         4DnNrmzA2sdsgAUD4MHJ80nY7yz/igDgYbqN0J6nO8uqTL0op+ABnhFVt7OEYacGwd01
+         UuuoBDm38uT+r8YZONhqiLl6Pqry0QZ3MNtEynQvMrmQFwQFItGLZY2TLvH/y3MDe5kH
+         SBaA==
+X-Gm-Message-State: AOAM533xw6zepw0NfehHT5MDfvSIGagTbLw//zYMXrIb3ZIzGXTO6mSp
+        IGhtlS+IUwIVYtI3pbC492UpT1EdhQ==
+X-Google-Smtp-Source: ABdhPJxNLLoF3dWU4T+Pq+CWqVsnicIHqD56pH0I6Am5juc1pJTriQ+v+d37Rybq9UHIRIC3sR5K5A==
+X-Received: by 2002:a9d:1c8f:: with SMTP id l15mr8501691ota.337.1635802450905;
+        Mon, 01 Nov 2021 14:34:10 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id m23sm4394890oom.34.2021.11.01.14.34.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Nov 2021 14:34:10 -0700 (PDT)
+Received: (nullmailer pid 1104793 invoked by uid 1000);
+        Mon, 01 Nov 2021 21:34:09 -0000
+Date:   Mon, 1 Nov 2021 16:34:09 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     devicetree@vger.kernel.org, David Lechner <david@lechnology.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH] dt-bindings: net: ti,bluetooth: Document default
+ max-speed
+Message-ID: <YYBdUWHe0Rkh1TIq@robh.at.kernel.org>
+References: <0c6a08c714aeb6dd96b5a54a45b0b5b1cfb49ad1.1635338283.git.geert+renesas@glider.be>
 MIME-Version: 1.0
-References: <20211031171353.4092388-1-eric.dumazet@gmail.com>
- <c735d5a9-cf60-13ba-83eb-86cbcd25685e@fb.com> <CANn89iLY7etQxhQa06ea2FThr6FyR=CNnQcig65H4NhE3fu0FQ@mail.gmail.com>
-In-Reply-To: <CANn89iLY7etQxhQa06ea2FThr6FyR=CNnQcig65H4NhE3fu0FQ@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 1 Nov 2021 14:24:57 -0700
-Message-ID: <CAADnVQLLKF_44QabyEZ0xbj+LxSssT9_gd3ydjL036E4+erG9Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: add missing map_delete_elem method to bloom
- filter map
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Yonghong Song <yhs@fb.com>, Eric Dumazet <eric.dumazet@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Joanne Koong <joannekoong@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0c6a08c714aeb6dd96b5a54a45b0b5b1cfb49ad1.1635338283.git.geert+renesas@glider.be>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 1, 2021 at 9:32 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Sun, Oct 31, 2021 at 9:01 PM Yonghong Song <yhs@fb.com> wrote:
-> >
-> >
-> >
-> > LGTM with a suggestion below.
-> >
-> > Acked-by: Yonghong Song <yhs@fb.com>
-> >
->
-> > There is a pending patch
-> > https://lore.kernel.org/bpf/20211029224909.1721024-2-joannekoong@fb.com/T/#u
-> > to rename say lookup_elem to bloom_map_lookup_elem.
-> > I think we should change
-> > this delete_elem to bloom_map_delete_elem as well.
-> >
->
-> Thanks for letting me know.
-> I can rebase my patch after yours is merged, no worries.
+On Wed, 27 Oct 2021 14:38:37 +0200, Geert Uytterhoeven wrote:
+> Document the default value of max-speed, as used by
+> linux/drivers/bluetooth/hci_ll.c.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  Documentation/devicetree/bindings/net/ti,bluetooth.yaml | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
 
-I rebased and patched it manually while applying.
-Thanks!
+Applied, thanks!
