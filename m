@@ -2,158 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D4F6442274
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 22:16:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E58D044229B
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 22:25:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229501AbhKAVSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 17:18:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45618 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229933AbhKAVSr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Nov 2021 17:18:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EC76C60E54;
-        Mon,  1 Nov 2021 21:16:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635801374;
-        bh=S2Fz5G4zQlodXAvHxYUhqOdzfLGDL0sqeERFTMbKS3c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JLcHEvINf1PZ6aXSNaU2VRNBB0pxJenCEd9nAkAYs3nxWFgHFpuevfm8f5xCtaN+f
-         vOUuzECfRbNoPTQo9PfBBsnu6L8YFC3GSoEr+/fP/8jHmI5oQkiTbsNXSZ5lyO++an
-         Mdq2nwiF22AEh/XavXU9nhdfceLdp923ZHwD5FqEVBAiAB5/ZR/OV0pPmnMnDVfL05
-         l4tJjZCQnPdQLQNv5ZHd8B4r7hRRMqn4yhneZrbuaF3OEdVMtTa3EdB1Mqsi66b65O
-         TqNrvhrIhN01XLwq7DyJDZfsXlR1tGMXAvB/k4dAYEL6Vx/aiAmv3TIz0OWI7pBRFB
-         BS3IWQRdI9gNg==
-Date:   Mon, 1 Nov 2021 14:16:13 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     idosch@idosch.org, edwin.peer@broadcom.com, jiri@resnulli.us,
-        netdev@vger.kernel.org
-Subject: Re: [RFC 0/5] devlink: add an explicit locking API
-Message-ID: <20211101141613.3373b7f4@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <YYAzn+mtrGp/As74@unreal>
-References: <20211030231254.2477599-1-kuba@kernel.org>
-        <YX5Efghyxu5g8kzY@unreal>
-        <20211101073259.33406da3@kicinski-fedora-PC1C0HJN>
-        <YYAzn+mtrGp/As74@unreal>
+        id S231613AbhKAV1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 17:27:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38040 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230526AbhKAV1m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 17:27:42 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31E6BC061714;
+        Mon,  1 Nov 2021 14:25:09 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id x5so8515167pgk.11;
+        Mon, 01 Nov 2021 14:25:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+E7meb6AM3Up3QgOQ21XHUsiWwwWzfkf0vIwdCxOKxs=;
+        b=a7kBtimU8uOuU++ibPOj46yFdPczMO/8F2W0Iqd8QqCjv6b0yUaa/ZdZUF/ZWqmJ6s
+         nIlFfgWPQ6uNbc7QmwU7J/V1FIHZck1YXFEFcgOuH2r86SrXriV/gB1geESjvtzg9fUe
+         ybGtTyC5TPWUOIoCUed18/thGQ0JpWA57agtHfjFl+NRlawE746M573fdAPdpmIgVAAt
+         YRpTnBZ0bvEaI8IPJxsSXt3ty7eD1prJD8POQpcZVbpkl43tNT9A24F87OPLvjFCeLdC
+         A8HnXf5aQUWU4EVt9yaGgH+omQ6GlxkZMkWqPmlEcaRovXfNhESZEBJ5Hzd2JyK0gOTJ
+         URJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+E7meb6AM3Up3QgOQ21XHUsiWwwWzfkf0vIwdCxOKxs=;
+        b=iBLRs4k3aG0Um7dVUQSNBq9PEfVWdeGYJ9dnd8cJhZIT+JkqwJud/Py01xl4POcUqI
+         v8cAbCPcBWrtMy9kOeNvrn10WzGbydQo3wJmL1sJAYDUKQTgwoDeXYaHoLxaW3vElPe3
+         6vc50t0blR1cVgEI0Qr4UDiTeeca9T19oMbGy+W0ewq3mRibF8uxtZVp0t2A6x64ZYOy
+         uNc2JWaBISefJ9ilJlOHJlShbGlkEsuAz9gT9t6ubb2UBEY4gO4VAqDLRhjxqo6GYjyS
+         eRZ3PuX2+mfmCtyKVFKnQTqKGxXqALO64STNeYoK9SxzIBFS3TaXgAWcm/iYNzZVLpNs
+         hYXw==
+X-Gm-Message-State: AOAM5327qVCjqBi+h0NqywG2VUJvZNZQ9k9kXx/0xuYgv4Q1AgDEH7U1
+        OEQjOlcwOTVeCe4VrHV6ehahuNEUux+Lutwg5Ow=
+X-Google-Smtp-Source: ABdhPJwlbzsn5pZrwPu6J1tIK5VojJ7VQNmlVgEyBePXSaYtHAgjbNERb2FWQcffcSp3hmBixHd6WqcncUDWvvGDQ/4=
+X-Received: by 2002:a63:374c:: with SMTP id g12mr23874315pgn.35.1635801908608;
+ Mon, 01 Nov 2021 14:25:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20211031171353.4092388-1-eric.dumazet@gmail.com>
+ <c735d5a9-cf60-13ba-83eb-86cbcd25685e@fb.com> <CANn89iLY7etQxhQa06ea2FThr6FyR=CNnQcig65H4NhE3fu0FQ@mail.gmail.com>
+In-Reply-To: <CANn89iLY7etQxhQa06ea2FThr6FyR=CNnQcig65H4NhE3fu0FQ@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 1 Nov 2021 14:24:57 -0700
+Message-ID: <CAADnVQLLKF_44QabyEZ0xbj+LxSssT9_gd3ydjL036E4+erG9Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: add missing map_delete_elem method to bloom
+ filter map
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Yonghong Song <yhs@fb.com>, Eric Dumazet <eric.dumazet@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Joanne Koong <joannekoong@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 1 Nov 2021 20:36:15 +0200 Leon Romanovsky wrote:
-> > How is RW semaphore going to solve the problem that ops are unlocked
-> > and have to take the instance lock from within to add/remove ports?  
-> 
-> This is three step process, but mainly it is first step. We need to make
-> sure that functions that can re-entry will use nested locks.
-> 
-> Steps:
-> 1. Use proper locking API that supports nesting:
-> https://lore.kernel.org/netdev/YYABqfFy%2F%2Fg5Gdis@nanopsycho/T/#mf9dc5cac2013abe413545bbe4a09cc231ae209a4
+On Mon, Nov 1, 2021 at 9:32 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Sun, Oct 31, 2021 at 9:01 PM Yonghong Song <yhs@fb.com> wrote:
+> >
+> >
+> >
+> > LGTM with a suggestion below.
+> >
+> > Acked-by: Yonghong Song <yhs@fb.com>
+> >
+>
+> > There is a pending patch
+> > https://lore.kernel.org/bpf/20211029224909.1721024-2-joannekoong@fb.com/T/#u
+> > to rename say lookup_elem to bloom_map_lookup_elem.
+> > I think we should change
+> > this delete_elem to bloom_map_delete_elem as well.
+> >
+>
+> Thanks for letting me know.
+> I can rebase my patch after yours is merged, no worries.
 
-Whether we provide the an unlocked API or allow lock nesting 
-on the driver API is not that important to me.
-
-> 2. Convert devlink->lock to be RW semaphore:
-> commit 4506dd3a90a82a0b6bde238f507907747ab88407
-> Author: Leon Romanovsky <leon@kernel.org>
-> Date:   Sun Oct 24 16:54:16 2021 +0300
-> 
->     devlink: Convert devlink lock to be RW semaphore
-> 
->     This is naive conversion of devlink->lock to RW semaphore, so we will be
->     able to differentiate commands that require exclusive access vs. parallel
->     ready-to-run ones.
-> 
->     All "set" commands that used devlink->lock are converted to write lock,
->     while all "get" commands are marked with read lock.
-> 
-> @@ -578,8 +584,12 @@ static int devlink_nl_pre_doit(const struct genl_ops *ops,
->                 mutex_unlock(&devlink_mutex);
->                 return PTR_ERR(devlink);
->         }
-> -       if (~ops->internal_flags & DEVLINK_NL_FLAG_NO_LOCK)
-> -               mutex_lock(&devlink->lock);
-> +
-> +       if (~ops->internal_flags & DEVLINK_NL_FLAG_SHARED_ACCESS)
-> +               down_write(&devlink->rwsem);
-> +       else
-> +               down_read(&devlink->rwsem);
-> +
-
-IIUC the RW sem thing is an optimization, it's besides the point.
-
-> 3. Drop devlink_mutex:
-> commit 3177af9971c4cd95f9633aeb9b0434687da62fd0
-> Author: Leon Romanovsky <leon@kernel.org>
-> Date:   Sun Oct 31 16:05:40 2021 +0200
-> 
->     devlink: Use xarray locking mechanism instead big devlink lock
-> 
->     The conversion to XArray together with devlink reference counting
->     allows us reuse the following locking pattern:
->      xa_lock()
->       xa_for_each() {
->        devlink_try_get()
->        xa_unlock()
->        ....
->        xa_lock()
->      }
-> 
->     This pattern gives us a way to run any commands between xa_unlock() and
->     xa_lock() without big devlink mutex, while making sure that devlink instance
->     won't be released.
-
-Yup, I think this part we agree on.
-
-> Steps 2 and 3 were not posted due to merge window and my desire to get
-> mileage in our regression.
-
-:)
-
-> > > Please, let's not give up on standalone devlink implementation without
-> > > drivers need to know internal devlink details. It is hard to do but possible.  
-> > 
-> > We may just disagree on this one. Please answer my question above -
-> > so far IDK how you're going to fix the problem of re-reg'ing subobjects
-> > from the reload path.
-> > 
-> > My experience writing drivers is that it was painfully unclear what 
-> > the devlink locking rules are. Sounds like you'd make them even more
-> > complicated.  
-> 
-> How? I have only one rule:
->  * Driver author should be aware that between devlink_register() and
->    devlink_unregister(), users can send netlink commands.
-> 
-> In your solution, driver authors will need to follow whole devlink
-> how-to-use book.
-
-Only if they need refs. If you don't the API is the same as yours.
-
-IOW you don't provide an API for advanced use cases at all. You force
-the drivers to implement their own reference counting and locking. 
-I want them to just rely on devlink as a framework.
-
-How many driver locks do you have in netdevsim after conversion?
-All 3? How do you add a port to the instance from sysfs without a
-AB / BA deadlock between the port lock and the devlink lock if the
-driver can't take the devlink lock? Are you still going to need the 
-"in_reload" wart?
-
-> > This RFC makes the rules simple - all devlink ops are locked.
-> > 
-> > For the convenience of the drivers they can also take the instance lock
-> > whenever they want to prevent ops from being called. Experience with
-> > rtnl_lock teaches us that this is very useful for drivers.  
-> 
-> Strange, I see completely opposite picture in the git log with so much
-> changes that have Fixes line and add/remove/mention rtnl_lock. Maybe it
-> is useful, but almost all if not all drivers full of fixes of rtnl_lock
-> usage. I don't want same for the devlink.
-
-If you don't provide a locking API to the drivers you'll have to fix 2x
-the bugs, and each of them subtly different. At least maintainers know
-what rtnl_lock rules are.
+I rebased and patched it manually while applying.
+Thanks!
