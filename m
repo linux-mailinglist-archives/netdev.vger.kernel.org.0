@@ -2,1099 +2,491 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C99CA4415D0
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 10:04:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FEBF4415DD
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 10:10:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231443AbhKAJHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 05:07:14 -0400
-Received: from pi.codeconstruct.com.au ([203.29.241.158]:44176 "EHLO
-        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231697AbhKAJHK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 05:07:10 -0400
-Received: by codeconstruct.com.au (Postfix, from userid 10001)
-        id 98755202FC; Mon,  1 Nov 2021 17:04:35 +0800 (AWST)
-From:   Matt Johnston <matt@codeconstruct.com.au>
-Cc:     Zev Weiss <zev@bewilderbeest.net>, Wolfram Sang <wsa@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        linux-i2c@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 6/6] mctp i2c: MCTP I2C binding driver
-Date:   Mon,  1 Nov 2021 17:04:05 +0800
-Message-Id: <20211101090405.1405987-7-matt@codeconstruct.com.au>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211101090405.1405987-1-matt@codeconstruct.com.au>
-References: <20211101090405.1405987-1-matt@codeconstruct.com.au>
+        id S231386AbhKAJMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 05:12:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40772 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230520AbhKAJMw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 05:12:52 -0400
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96335C061714
+        for <netdev@vger.kernel.org>; Mon,  1 Nov 2021 02:10:18 -0700 (PDT)
+Received: by mail-qk1-x734.google.com with SMTP id br39so2714034qkb.8
+        for <netdev@vger.kernel.org>; Mon, 01 Nov 2021 02:10:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=lU5FkDlivtlF5flf0taFNWL+nXiIg/ssg0S9vk7s7cw=;
+        b=ZeqTinktf5uMNYN19wLOgvuTOZYmEnr/Qc5sHJfqan13nQEBpZamPJY275rWhpk7u3
+         dvO2rTTQnO4chmZOzQe9thQ8rcLcvNRd4chcQqNzQpOYZdW9yeMuulsdtX1fV2B12BdB
+         Lb90+lBM9TEHofgfGHfDqwZoN//FBfG0nRHcg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=lU5FkDlivtlF5flf0taFNWL+nXiIg/ssg0S9vk7s7cw=;
+        b=lkEEkFVe7kTfsImfvlFI+Tk0db4aTpxxcrqqtpru9l96Qcun2rH0EUfjCpamaV44WB
+         gUW6VusXO1c6Ww9E28sC2ZQFBt21hvtI88fOAUcQyoCWY03xAOBnC0B+x17t5qpK0RNh
+         /dwcjlhiiTjExPrVX5ZCCZIaXq2X3ZSQh91jy54veLtcoTUjBy6qEArI6CSJFl4Ogq5u
+         mstI7UvHBKVNR/ReMlZOGVG/Gi2QMeaVlIlP7Gj4uS/G1xGUXCOCefC6pwDX7XZJ/j0Q
+         Y4GV/YZ+XzEYNPtp+0AhrgEKBY17crarI2u7MI9WKkKlKY3yFYt4R3aLfwzZApoh55XW
+         YflQ==
+X-Gm-Message-State: AOAM530PiDWE3+pip6CMu8YKLwZ6cv+X4dh7S76wYTtkfcDaB8+Zg41x
+        Eoqek7Gh/fHoKrQhjt/OTeDupgoFmw2V5pa/4kYMyA==
+X-Google-Smtp-Source: ABdhPJzrlNfvL0UZE1mkP0sgqpwt2eDExM0wvYcrgDpKkHRfAx0MeJthZzymuGKlM5f+Dxa37gcIp0+5YjSOo559tWs=
+X-Received: by 2002:a37:b7c2:: with SMTP id h185mr22210929qkf.311.1635757817509;
+ Mon, 01 Nov 2021 02:10:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+References: <0a1d6421-b618-9fea-9787-330a18311ec0@bursov.com>
+ <CAMet4B4iJjQK6yX+XBD2CtH3B30oqECUAYDj3ZE3ysdJVu8O4w@mail.gmail.com>
+ <CALs4sv2YVu0euy5-stBNuES3Bf2SR7MtiD0TJDfGmTLAiUONSA@mail.gmail.com>
+ <02400c1a-e626-d6c3-ecfd-3b9e9e4b6988@bursov.com> <CALs4sv3XOTBKCxaUieYosMdXuuqiuHT5Gbhz8oixGv2XGw4+Ug@mail.gmail.com>
+ <a5c6e92f-cc59-0214-56f6-66632c5e59c2@bursov.com> <CALs4sv2PWbijor=7aU4oh=yipYo2OMD79wMqEGfj3c4Lw9uycA@mail.gmail.com>
+ <ae4bd2c2-6e88-2b1c-c47d-7510ef6a8010@bursov.com> <CALs4sv2mq5=FehCcxPveCbCMNT1aw=8LhqZ4g3=GXhKw8hsrmA@mail.gmail.com>
+ <be0e1e7d-272e-7f32-9626-ed4724d7fd9a@bursov.com>
+In-Reply-To: <be0e1e7d-272e-7f32-9626-ed4724d7fd9a@bursov.com>
+From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
+Date:   Mon, 1 Nov 2021 14:40:05 +0530
+Message-ID: <CALs4sv0uo7+RQ0hNmNC=3tD8gk=MS4chygeiuzf4Ve9iiKt9uA@mail.gmail.com>
+Subject: Re: tg3 RX packet re-order in queue 0 with RSS
+To:     Vitaly Bursov <vitaly@bursov.com>
+Cc:     Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        Michael Chan <mchan@broadcom.com>,
+        Linux Netdev List <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Provides MCTP network transport over an I2C bus, as specified in
-DMTF DSP0237. All messages between nodes are sent as SMBus Block Writes.
+On Mon, Nov 1, 2021 at 1:50 PM Vitaly Bursov <vitaly@bursov.com> wrote:
+>
+>
+>
+> 01.11.2021 09:06, Pavan Chebbi wrote:
+> > On Fri, Oct 29, 2021 at 9:15 PM Vitaly Bursov <vitaly@bursov.com> wrote=
+:
+> >>
+> >>
+> >>
+> >> 29.10.2021 08:04, Pavan Chebbi =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
+> >>> 90On Thu, Oct 28, 2021 at 9:11 PM Vitaly Bursov <vitaly@bursov.com> w=
+rote:
+> >>>>
+> >>>>
+> >>>> 28.10.2021 10:33, Pavan Chebbi wrote:
+> >>>>> On Wed, Oct 27, 2021 at 4:02 PM Vitaly Bursov <vitaly@bursov.com> w=
+rote:
+> >>>>>>
+> >>>>>>
+> >>>>>> 27.10.2021 12:30, Pavan Chebbi wrote:
+> >>>>>>> On Wed, Sep 22, 2021 at 12:10 PM Siva Reddy Kallam
+> >>>>>>> <siva.kallam@broadcom.com> wrote:
+> >>>>>>>>
+> >>>>>>>> Thank you for reporting this. Pavan(cc'd) from Broadcom looking =
+into this issue.
+> >>>>>>>> We will provide our feedback very soon on this.
+> >>>>>>>>
+> >>>>>>>> On Mon, Sep 20, 2021 at 6:59 PM Vitaly Bursov <vitaly@bursov.com=
+> wrote:
+> >>>>>>>>>
+> >>>>>>>>> Hi,
+> >>>>>>>>>
+> >>>>>>>>> We found a occassional and random (sometimes happens, sometimes=
+ not)
+> >>>>>>>>> packet re-order when NIC is involved in UDP multicast reception=
+, which
+> >>>>>>>>> is sensitive to a packet re-order. Network capture with tcpdump
+> >>>>>>>>> sometimes shows the packet re-order, sometimes not (e.g. no re-=
+order on
+> >>>>>>>>> a host, re-order in a container at the same time). In a pcap fi=
+le
+> >>>>>>>>> re-ordered packets have a correct timestamp - delayed packet ha=
+d a more
+> >>>>>>>>> earlier timestamp compared to a previous packet:
+> >>>>>>>>>          1.00s packet1
+> >>>>>>>>>          1.20s packet3
+> >>>>>>>>>          1.10s packet2
+> >>>>>>>>>          1.30s packet4
+> >>>>>>>>>
+> >>>>>>>>> There's about 300Mbps of traffic on this NIC, and server is bus=
+y
+> >>>>>>>>> (hyper-threading enabled, about 50% overall idle) with its
+> >>>>>>>>> computational application work.
+> >>>>>>>>>
+> >>>>>>>>> NIC is HPE's 4-port 331i adapter - BCM5719, in a default ring a=
+nd
+> >>>>>>>>> coalescing configuration, 1 TX queue, 4 RX queues.
+> >>>>>>>>>
+> >>>>>>>>> After further investigation, I believe that there are two separ=
+ate
+> >>>>>>>>> issues in tg3.c driver. Issues can be reproduced with iperf3, a=
+nd
+> >>>>>>>>> unicast UDP.
+> >>>>>>>>>
+> >>>>>>>>> Here are the details of how I understand this behavior.
+> >>>>>>>>>
+> >>>>>>>>> 1. Packet re-order.
+> >>>>>>>>>
+> >>>>>>>>> Driver calls napi_schedule(&tnapi->napi) when handling the inte=
+rrupt,
+> >>>>>>>>> however, sometimes it calls napi_schedule(&tp->napi[1].napi), w=
+hich
+> >>>>>>>>> handles RX queue 0 too:
+> >>>>>>>>>
+> >>>>>>>>>          https://github.com/torvalds/linux/blob/master/drivers/=
+net/ethernet/broadcom/tg3.c#L6802-L7007
+> >>>>>>>>>
+> >>>>>>>>>          static int tg3_rx(struct tg3_napi *tnapi, int budget)
+> >>>>>>>>>          {
+> >>>>>>>>>                  struct tg3 *tp =3D tnapi->tp;
+> >>>>>>>>>
+> >>>>>>>>>                  ...
+> >>>>>>>>>
+> >>>>>>>>>                  /* Refill RX ring(s). */
+> >>>>>>>>>                  if (!tg3_flag(tp, ENABLE_RSS)) {
+> >>>>>>>>>                          ....
+> >>>>>>>>>                  } else if (work_mask) {
+> >>>>>>>>>                          ...
+> >>>>>>>>>
+> >>>>>>>>>                          if (tnapi !=3D &tp->napi[1]) {
+> >>>>>>>>>                                  tp->rx_refill =3D true;
+> >>>>>>>>>                                  napi_schedule(&tp->napi[1].nap=
+i);
+> >>>>>>>>>                          }
+> >>>>>>>>>                  }
+> >>>>>>>>>                  ...
+> >>>>>>>>>          }
+> >>>>>>>>>
+> >>>>>>>>>      From napi_schedule() code, it should schedure RX 0 traffic=
+ handling on
+> >>>>>>>>> a current CPU, which handles queues RX1-3 right now.
+> >>>>>>>>>
+> >>>>>>>>> At least two traffic flows are required - one on RX queue 0, an=
+d the
+> >>>>>>>>> other on any other queue (1-3). Re-ordering may happend only on=
+ flow
+> >>>>>>>>> from queue 0, the second flow will work fine.
+> >>>>>>>>>
+> >>>>>>>>> No idea how to fix this.
+> >>>>>>>
+> >>>>>>> In the case of RSS the actual rings for RX are from 1 to 4.
+> >>>>>>> The napi of those rings are indeed processing the packets.
+> >>>>>>> The explicit napi_schedule of napi[1] is only re-filling rx BD
+> >>>>>>> producer ring because it is shared with return rings for 1-4.
+> >>>>>>> I tried to repro this but I am not seeing the issue. If you are
+> >>>>>>> receiving packets on RX 0 then the RSS must have been disabled.
+> >>>>>>> Can you please check?
+> >>>>>>>
+> >>>>>>
+> >>>>>> # ethtool -i enp2s0f0
+> >>>>>> driver: tg3
+> >>>>>> version: 3.137
+> >>>>>> firmware-version: 5719-v1.46 NCSI v1.5.18.0
+> >>>>>> expansion-rom-version:
+> >>>>>> bus-info: 0000:02:00.0
+> >>>>>> supports-statistics: yes
+> >>>>>> supports-test: yes
+> >>>>>> supports-eeprom-access: yes
+> >>>>>> supports-register-dump: yes
+> >>>>>> supports-priv-flags: no
+> >>>>>>
+> >>>>>> # ethtool -l enp2s0f0
+> >>>>>> Channel parameters for enp2s0f0:
+> >>>>>> Pre-set maximums:
+> >>>>>> RX:             4
+> >>>>>> TX:             4
+> >>>>>> Other:          0
+> >>>>>> Combined:       0
+> >>>>>> Current hardware settings:
+> >>>>>> RX:             4
+> >>>>>> TX:             1
+> >>>>>> Other:          0
+> >>>>>> Combined:       0
+> >>>>>>
+> >>>>>> # ethtool -x enp2s0f0
+> >>>>>> RX flow hash indirection table for enp2s0f0 with 4 RX ring(s):
+> >>>>>>         0:      0     1     2     3     0     1     2     3
+> >>>>>>         8:      0     1     2     3     0     1     2     3
+> >>>>>>        16:      0     1     2     3     0     1     2     3
+> >>>>>>        24:      0     1     2     3     0     1     2     3
+> >>>>>>        32:      0     1     2     3     0     1     2     3
+> >>>>>>        40:      0     1     2     3     0     1     2     3
+> >>>>>>        48:      0     1     2     3     0     1     2     3
+> >>>>>>        56:      0     1     2     3     0     1     2     3
+> >>>>>>        64:      0     1     2     3     0     1     2     3
+> >>>>>>        72:      0     1     2     3     0     1     2     3
+> >>>>>>        80:      0     1     2     3     0     1     2     3
+> >>>>>>        88:      0     1     2     3     0     1     2     3
+> >>>>>>        96:      0     1     2     3     0     1     2     3
+> >>>>>>       104:      0     1     2     3     0     1     2     3
+> >>>>>>       112:      0     1     2     3     0     1     2     3
+> >>>>>>       120:      0     1     2     3     0     1     2     3
+> >>>>>> RSS hash key:
+> >>>>>> Operation not supported
+> >>>>>> RSS hash function:
+> >>>>>>         toeplitz: on
+> >>>>>>         xor: off
+> >>>>>>         crc32: off
+> >>>>>>
+> >>>>>> In /proc/interrupts there are enp2s0f0-tx-0, enp2s0f0-rx-1,
+> >>>>>> enp2s0f0-rx-2, enp2s0f0-rx-3, enp2s0f0-rx-4 interrupts, all on
+> >>>>>> different CPU cores. Kernel also has "threadirqs" enabled in
+> >>>>>> command line, I didn't check if this parameter affects the issue.
+> >>>>>>
+> >>>>>> Yes, some things start with 0, and others with 1, sorry for a conf=
+usion
+> >>>>>> in terminology, what I meant:
+> >>>>>>      - There are 4 RX rings/queues, I counted starting from 0, so:=
+ 0..3.
+> >>>>>>        RX0 is the first queue/ring that actually receives the traf=
+fic.
+> >>>>>>        RX0 is handled by enp2s0f0-rx-1 interrupt.
+> >>>>>>      - These are related to (tp->napi[i]), but i is in 1..4, so th=
+e first
+> >>>>>>        receiving queue relates to tp->napi[1], the second relates =
+to
+> >>>>>>        tp->napi[2], and so on. Correct?
+> >>>>>>
+> >>>>>> Suppose, tg3_rx() is called for tp->napi[2], this function most li=
+kely
+> >>>>>> calls napi_gro_receive(&tnapi->napi, skb) to further process packe=
+ts in
+> >>>>>> tp->napi[2]. And, under some conditions (RSS and work_mask), it ca=
+lls
+> >>>>>> napi_schedule(&tp->napi[1].napi), which schedules tp->napi[1] work
+> >>>>>> on a currect CPU, which is designated for tp->napi[2], but not for
+> >>>>>> tp->napi[1]. Correct?
+> >>>>>>
+> >>>>>> I don't understand what napi_schedule(&tp->napi[1].napi) does for =
+the
+> >>>>>> NIC or driver, "re-filling rx BD producer ring" sounds important. =
+I
+> >>>>>> suspect something will break badly if I simply remove it without
+> >>>>>> replacing with something more elaborate. I guess along with re-fil=
+ling
+> >>>>>> rx BD producer ring it also can process incoming packets. Is it po=
+ssible?
+> >>>>>>
+> >>>>>
+> >>>>> Yes, napi[1] work may be called on the napi[2]'s CPU but it general=
+ly
+> >>>>> won't process
+> >>>>> any rx packets because the producer index of napi[1] has not change=
+d. If the
+> >>>>> producer count did change, then we get a poll from the ISR for napi=
+[1]
+> >>>>> to process
+> >>>>> packets. So it is mostly used to re-fill rx buffers when called
+> >>>>> explicitly. However
+> >>>>> there could be a small window where the prod index is incremented b=
+ut the ISR
+> >>>>> is not fired yet. It may process some small no of packets. But I do=
+n't
+> >>>>> think this
+> >>>>> should lead to a reorder problem.
+> >>>>>
+> >>>>
+> >>>> I tried to reproduce without using bridge and veth interfaces, and i=
+t seems
+> >>>> like it's not reproducible, so traffic forwarding via a bridge inter=
+face may
+> >>>> be necessary. It also does not happen if traffic load is low, but mo=
+derate
+> >>>> load is enough - e.g. two 100 Mbps streams with 130-byte packets. It=
+'s easier
+> >>>> to reproduce with a higher load.
+> >>>>
+> >>>> With about the same setup as in an original message (bridge + veth 2
+> >>>> network namespaces), irqbalance daemon stopped, if traffic flows via
+> >>>> enp2s0f0-rx-2 and enp2s0f0-rx-4, there's no reordering. enp2s0f0-rx-=
+1
+> >>>> still gets some interrupts, but at a much lower rate compared to 2 a=
+nd
+> >>>> 4.
+> >>>>
+> >>>> namespace 1:
+> >>>>      # iperf3 -u -c server_ip -p 5000 -R -b 300M -t 300 -l 130
+> >>>>      - - - - - - - - - - - - - - - - - - - - - - - - -
+> >>>>      [ ID] Interval           Transfer     Bandwidth       Jitter   =
+ Lost/Total Datagrams
+> >>>>      [  4]   0.00-300.00 sec  6.72 GBytes   192 Mbits/sec  0.008 ms =
+ 3805/55508325 (0.0069%)
+> >>>>      [  4] Sent 55508325 datagrams
+> >>>>
+> >>>>      iperf Done.
+> >>>>
+> >>>> namespace 2:
+> >>>>      # iperf3 -u -c server_ip -p 5001 -R -b 300M -t 300 -l 130
+> >>>>      - - - - - - - - - - - - - - - - - - - - - - - - -
+> >>>>      [ ID] Interval           Transfer     Bandwidth       Jitter   =
+ Lost/Total Datagrams
+> >>>>      [  4]   0.00-300.00 sec  6.83 GBytes   196 Mbits/sec  0.005 ms =
+ 3873/56414001 (0.0069%)
+> >>>>      [  4] Sent 56414001 datagrams
+> >>>>
+> >>>>      iperf Done.
+> >>>>
+> >>>>
+> >>>> With the same configuration but different IP address so that instead=
+ of
+> >>>> enp2s0f0-rx-4 enp2s0f0-rx-1 would be used, there is a reordering.
+> >>>>
+> >>>>
+> >>>> namespace 1 (client IP was changed):
+> >>>>      # iperf3 -u -c server_ip -p 5000 -R -b 300M -t 300 -l 130
+> >>>>      - - - - - - - - - - - - - - - - - - - - - - - - -
+> >>>>      [ ID] Interval           Transfer     Bandwidth       Jitter   =
+ Lost/Total Datagrams
+> >>>>      [  4]   0.00-300.00 sec  6.32 GBytes   181 Mbits/sec  0.007 ms =
+ 8506/52172059 (0.016%)
+> >>>>      [  4] Sent 52172059 datagrams
+> >>>>      [SUM]  0.0-300.0 sec  2452 datagrams received out-of-order
+> >>>>
+> >>>>      iperf Done.
+> >>>>
+> >>>> namespace 2:
+> >>>>      # iperf3 -u -c server_ip -p 5001 -R -b 300M -t 300 -l 130
+> >>>>      - - - - - - - - - - - - - - - - - - - - - - - - -
+> >>>>      [ ID] Interval           Transfer     Bandwidth       Jitter   =
+ Lost/Total Datagrams
+> >>>>      [  4]   0.00-300.00 sec  6.59 GBytes   189 Mbits/sec  0.006 ms =
+ 6302/54463973 (0.012%)
+> >>>>      [  4] Sent 54463973 datagrams
+> >>>>
+> >>>>      iperf Done.
+> >>>>
+> >>>> Swapping IP addresses in these namespaces also changes the namespace=
+ exhibiting the issue,
+> >>>> it's following the IP address.
+> >>>>
+> >>>>
+> >>>> Is there something I could check to confirm that this behavior is or=
+ is not
+> >>>> related to napi_schedule(&tp->napi[1].napi) call?
+> >>>
+> >>> in the function tg3_msi_1shot() you could store the cpu assigned to
+> >>> tnapi1 (inside the struct tg3_napi)
+> >>> and then in tg3_poll_work() you can add another check after
+> >>>           if (*(tnapi->rx_rcb_prod_idx) !=3D tnapi->rx_rcb_ptr)
+> >>> something like
+> >>> if (tnapi =3D=3D &tp->napi[1] && tnapi->assigned_cpu =3D=3D smp_proce=
+ssor_id())
+> >>> only then execute tg3_rx()
+> >>>
+> >>> This may stop tnapi 1 from reading rx pkts on the current CPU from
+> >>> which refill is called.
+> >>>
+> >>
+> >> Didn't work for me, perhaps I did something wrong - if tg3_rx() is not=
+ called,
+> >> there's an infinite loop, and after I added "work_done =3D budget;", i=
+t still doesn't
+> >> work - traffic does not flow.
+> >>
+> >
+> > I think the easiest way is to modify the tg3_rx() calling condition
+> > like below inside
+> > tg3_poll_work() :
+> >
+> > if (*(tnapi->rx_rcb_prod_idx) !=3D tnapi->rx_rcb_ptr) {
+> >          if (tnapi !=3D &tp->napi[1] || (tnapi =3D=3D &tp->napi[1] &&
+> > !tp->rx_refill)) {
+> >                          work_done +=3D tg3_rx(tnapi, budget - work_don=
+e);
+> >          }
+> > }
+> >
+> > This will prevent reading rx packets when napi[1] is scheduled only for=
+ refill.
+> > Can you see if this works?
+> >
+>
+> It doesn't hang and can receive the traffic with this change, but I don't=
+ see
+> a difference. I'm suspectig that tg3_poll_work() is called again, maybe i=
+n tg3_poll_msix(),
+> and refill happens first, and then packets are processed anyway.
+>
 
-Each I2C bus to be used for MCTP is flagged in devicetree by a
-'mctp-controller' property on the bus node. Each flagged bus gets a
-mctpi2cX net device created based on the bus number. A
-'mctp-i2c-controller' I2C client needs to be added under the adapter. In
-an I2C mux situation the mctp-i2c-controller node must be attached only
-to the root I2C bus. The I2C client will handle incoming I2C slave block
-write data for subordinate busses as well as its own bus.
+OK I see it now. Let me try this out myself. Will get back on this.
+However, can you see with your debug prints if there is any correlation
+between the time and number of prints where napi 1 is reading packets
+on unassigned CPU to the time and number of packets you received
+out of order up the stack? Do they match with each other? If not, we may be
+incorrectly suspecting napi1 here.
 
-In configurations without devicetree a driver instance can be attached
-to a bus using the I2C slave new_device mechanism.
-
-The MCTP core will hold/release the MCTP I2C device while responses
-are pending (a 6 second timeout or once a socket is closed, response
-received etc). While held the MCTP I2C driver will lock the I2C bus so
-that the correct I2C mux remains selected while responses are received.
-
-(Ideally we would just lock the mux to keep the current bus selected for
-the response rather than a full I2C bus lock, but that isn't exposed in
-the I2C mux API)
-
-This driver requires I2C adapters that allow 255 byte transfers
-(SMBus 3.0) as the specification requires a minimum MTU of 68 bytes.
-
-Signed-off-by: Matt Johnston <matt@codeconstruct.com.au>
-Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
----
- drivers/net/mctp/Kconfig    |  12 +
- drivers/net/mctp/Makefile   |   1 +
- drivers/net/mctp/mctp-i2c.c | 982 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 995 insertions(+)
- create mode 100644 drivers/net/mctp/mctp-i2c.c
-
-diff --git a/drivers/net/mctp/Kconfig b/drivers/net/mctp/Kconfig
-index d8f966cedc89..a468ba7c2f0b 100644
---- a/drivers/net/mctp/Kconfig
-+++ b/drivers/net/mctp/Kconfig
-@@ -3,6 +3,18 @@ if MCTP
- 
- menu "MCTP Device Drivers"
- 
-+config MCTP_TRANSPORT_I2C
-+	tristate "MCTP SMBus/I2C transport"
-+	# i2c-mux is optional, but we must build as a module if i2c-mux is a module
-+	depends on !I2C_MUX || I2C_MUX=y || m
-+	depends on I2C
-+	depends on I2C_SLAVE
-+	select MCTP_FLOWS
-+	help
-+	  Provides a driver to access MCTP devices over SMBus/I2C transport,
-+	  from DMTF specification DSP0237. A MCTP protocol network device is
-+	  created for each I2C bus that has been assigned a mctp-i2c device.
-+
- endmenu
- 
- endif
-diff --git a/drivers/net/mctp/Makefile b/drivers/net/mctp/Makefile
-index e69de29bb2d1..73dc411986a6 100644
---- a/drivers/net/mctp/Makefile
-+++ b/drivers/net/mctp/Makefile
-@@ -0,0 +1 @@
-+obj-$(CONFIG_MCTP_TRANSPORT_I2C) += mctp-i2c.o
-diff --git a/drivers/net/mctp/mctp-i2c.c b/drivers/net/mctp/mctp-i2c.c
-new file mode 100644
-index 000000000000..ed213b4765a1
---- /dev/null
-+++ b/drivers/net/mctp/mctp-i2c.c
-@@ -0,0 +1,982 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Management Controller Transport Protocol (MCTP)
-+ *
-+ * Copyright (c) 2021 Code Construct
-+ * Copyright (c) 2021 Google
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/netdevice.h>
-+#include <linux/i2c.h>
-+#include <linux/i2c-mux.h>
-+#include <linux/if_arp.h>
-+#include <net/mctp.h>
-+#include <net/mctpdevice.h>
-+
-+/* SMBus 3.0 allows 255 data bytes (plus PEC), but the
-+ * first byte is taken for source slave address.
-+ */
-+#define MCTP_I2C_MAXBLOCK 255
-+#define MCTP_I2C_MAXMTU (MCTP_I2C_MAXBLOCK - 1)
-+#define MCTP_I2C_MINMTU (64 + 4)
-+/* Allow space for address, command, byte_count, databytes, PEC */
-+#define MCTP_I2C_RXBUFSZ (3 + MCTP_I2C_MAXBLOCK + 1)
-+#define MCTP_I2C_MINLEN 8
-+#define MCTP_I2C_COMMANDCODE 0x0f
-+#define MCTP_I2C_TX_WORK_LEN 100
-+// sufficient for 64kB at min mtu
-+#define MCTP_I2C_TX_QUEUE_LEN 1100
-+
-+#define MCTP_I2C_OF_PROP "mctp-controller"
-+
-+enum {
-+	MCTP_I2C_FLOW_STATE_NEW = 0,
-+	MCTP_I2C_FLOW_STATE_ACTIVE,
-+};
-+
-+static struct {
-+	/* lock protects clients and also prevents adding/removing adapters
-+	 * during mctp_i2c_client probe/remove.
-+	 */
-+	struct mutex lock;
-+	// list of struct mctp_i2c_client
-+	struct list_head clients;
-+} mi_driver_state;
-+
-+struct mctp_i2c_client;
-+
-+// The netdev structure. One of these per I2C adapter.
-+struct mctp_i2c_dev {
-+	struct net_device *ndev;
-+	struct i2c_adapter *adapter;
-+	struct mctp_i2c_client *client;
-+	struct list_head list; // for mctp_i2c_client.devs
-+
-+	size_t pos;
-+	u8 buffer[MCTP_I2C_RXBUFSZ];
-+
-+	struct task_struct *tx_thread;
-+	wait_queue_head_t tx_wq;
-+	struct sk_buff_head tx_queue;
-+
-+	// a fake entry in our tx queue to perform an unlock operation
-+	struct sk_buff unlock_marker;
-+
-+	spinlock_t flow_lock; // protects i2c_lock_count and release_count
-+	int i2c_lock_count;
-+	int release_count;
-+};
-+
-+/* The i2c client structure. One per hardware i2c bus at the top of the
-+ * mux tree, shared by multiple netdevs
-+ */
-+struct mctp_i2c_client {
-+	struct i2c_client *client;
-+	u8 lladdr;
-+
-+	struct mctp_i2c_dev *sel;
-+	struct list_head devs;
-+	spinlock_t curr_lock; // protects sel
-+
-+	struct list_head list; // for mi_driver_state.clients
-+};
-+
-+// Header on the wire
-+struct mctp_i2c_hdr {
-+	u8 dest_slave;
-+	u8 command;
-+	u8 byte_count;
-+	u8 source_slave;
-+};
-+
-+static int mctp_i2c_recv(struct mctp_i2c_dev *midev);
-+static int mctp_i2c_slave_cb(struct i2c_client *client,
-+			     enum i2c_slave_event event, u8 *val);
-+
-+static struct i2c_adapter *mux_root_adapter(struct i2c_adapter *adap)
-+{
-+#if IS_ENABLED(CONFIG_I2C_MUX)
-+	return i2c_root_adapter(&adap->dev);
-+#else
-+	/* In non-mux config all i2c adapters are root adapters */
-+	return adap;
-+#endif
-+}
-+
-+static ssize_t mctp_current_mux_show(struct device *dev,
-+				     struct device_attribute *attr, char *buf)
-+{
-+	struct mctp_i2c_client *mcli = i2c_get_clientdata(to_i2c_client(dev));
-+	struct net_device *ndev = NULL;
-+	unsigned long flags;
-+	ssize_t l;
-+
-+	spin_lock_irqsave(&mcli->curr_lock, flags);
-+	if (mcli->sel) {
-+		ndev = mcli->sel->ndev;
-+		dev_hold(ndev);
-+	}
-+	spin_unlock_irqrestore(&mcli->curr_lock, flags);
-+	l = scnprintf(buf, PAGE_SIZE, "%s\n", ndev ? ndev->name : "(none)");
-+	if (ndev)
-+		dev_put(ndev);
-+	return l;
-+}
-+static DEVICE_ATTR_RO(mctp_current_mux);
-+
-+/* Creates a new i2c slave device attached to the root adapter.
-+ * Sets up the slave callback.
-+ * Must be called with a client on a root adapter.
-+ */
-+static struct mctp_i2c_client *mctp_i2c_new_client(struct i2c_client *client)
-+{
-+	struct mctp_i2c_client *mcli = NULL;
-+	struct i2c_adapter *root = NULL;
-+	int rc;
-+
-+	if (client->flags & I2C_CLIENT_TEN) {
-+		dev_err(&client->dev, "%s failed, MCTP requires a 7-bit I2C address, addr=0x%x",
-+			__func__, client->addr);
-+		rc = -EINVAL;
-+		goto err;
-+	}
-+
-+	root = mux_root_adapter(client->adapter);
-+	if (!root) {
-+		dev_err(&client->dev, "%s failed to find root adapter\n", __func__);
-+		rc = -ENOENT;
-+		goto err;
-+	}
-+	if (root != client->adapter) {
-+		dev_err(&client->dev,
-+			"A mctp-i2c-controller client cannot be placed on an I2C mux adapter.\n"
-+			" It should be placed on the mux tree root adapter\n"
-+			" then set mctp-controller property on adapters to attach\n");
-+		rc = -EINVAL;
-+		goto err;
-+	}
-+
-+	mcli = kzalloc(sizeof(*mcli), GFP_KERNEL);
-+	if (!mcli) {
-+		rc = -ENOMEM;
-+		goto err;
-+	}
-+	spin_lock_init(&mcli->curr_lock);
-+	INIT_LIST_HEAD(&mcli->devs);
-+	INIT_LIST_HEAD(&mcli->list);
-+	mcli->lladdr = client->addr & 0xff;
-+	mcli->client = client;
-+	i2c_set_clientdata(client, mcli);
-+
-+	rc = i2c_slave_register(mcli->client, mctp_i2c_slave_cb);
-+	if (rc) {
-+		dev_err(&client->dev, "%s i2c register failed %d\n", __func__, rc);
-+		mcli->client = NULL;
-+		i2c_set_clientdata(client, NULL);
-+		goto err;
-+	}
-+
-+	rc = device_create_file(&client->dev, &dev_attr_mctp_current_mux);
-+	if (rc) {
-+		dev_err(&client->dev, "%s adding sysfs \"%s\" failed %d\n", __func__,
-+			dev_attr_mctp_current_mux.attr.name, rc);
-+		// continue anyway
-+	}
-+
-+	return mcli;
-+err:
-+	if (mcli) {
-+		if (mcli->client) {
-+			device_remove_file(&mcli->client->dev, &dev_attr_mctp_current_mux);
-+			i2c_unregister_device(mcli->client);
-+		}
-+		kfree(mcli);
-+	}
-+	return ERR_PTR(rc);
-+}
-+
-+static void mctp_i2c_free_client(struct mctp_i2c_client *mcli)
-+{
-+	int rc;
-+
-+	WARN_ON(!mutex_is_locked(&mi_driver_state.lock));
-+	WARN_ON(!list_empty(&mcli->devs));
-+	WARN_ON(mcli->sel); // sanity check, no locking
-+
-+	device_remove_file(&mcli->client->dev, &dev_attr_mctp_current_mux);
-+	rc = i2c_slave_unregister(mcli->client);
-+	// leak if it fails, we can't propagate errors upwards
-+	if (rc)
-+		dev_err(&mcli->client->dev, "%s i2c unregister failed %d\n", __func__, rc);
-+	else
-+		kfree(mcli);
-+}
-+
-+/* Switch the mctp i2c device to receive responses.
-+ * Call with curr_lock held
-+ */
-+static void __mctp_i2c_device_select(struct mctp_i2c_client *mcli,
-+				     struct mctp_i2c_dev *midev)
-+{
-+	assert_spin_locked(&mcli->curr_lock);
-+	if (midev)
-+		dev_hold(midev->ndev);
-+	if (mcli->sel)
-+		dev_put(mcli->sel->ndev);
-+	mcli->sel = midev;
-+}
-+
-+// Switch the mctp i2c device to receive responses
-+static void mctp_i2c_device_select(struct mctp_i2c_client *mcli,
-+				   struct mctp_i2c_dev *midev)
-+{
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&mcli->curr_lock, flags);
-+	__mctp_i2c_device_select(mcli, midev);
-+	spin_unlock_irqrestore(&mcli->curr_lock, flags);
-+}
-+
-+static int mctp_i2c_slave_cb(struct i2c_client *client,
-+			     enum i2c_slave_event event, u8 *val)
-+{
-+	struct mctp_i2c_client *mcli = i2c_get_clientdata(client);
-+	struct mctp_i2c_dev *midev = NULL;
-+	unsigned long flags;
-+	int rc = 0;
-+
-+	spin_lock_irqsave(&mcli->curr_lock, flags);
-+	midev = mcli->sel;
-+	if (midev)
-+		dev_hold(midev->ndev);
-+	spin_unlock_irqrestore(&mcli->curr_lock, flags);
-+
-+	if (!midev)
-+		return 0;
-+
-+	switch (event) {
-+	case I2C_SLAVE_WRITE_RECEIVED:
-+		if (midev->pos < MCTP_I2C_RXBUFSZ) {
-+			midev->buffer[midev->pos] = *val;
-+			midev->pos++;
-+		} else {
-+			midev->ndev->stats.rx_over_errors++;
-+		}
-+
-+		break;
-+	case I2C_SLAVE_WRITE_REQUESTED:
-+		/* dest_slave as first byte */
-+		midev->buffer[0] = mcli->lladdr << 1;
-+		midev->pos = 1;
-+		break;
-+	case I2C_SLAVE_STOP:
-+		rc = mctp_i2c_recv(midev);
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	dev_put(midev->ndev);
-+	return rc;
-+}
-+
-+// Processes incoming data that has been accumulated by the slave cb
-+static int mctp_i2c_recv(struct mctp_i2c_dev *midev)
-+{
-+	struct net_device *ndev = midev->ndev;
-+	struct mctp_i2c_hdr *hdr;
-+	struct mctp_skb_cb *cb;
-+	struct sk_buff *skb;
-+	u8 pec, calc_pec;
-+	size_t recvlen;
-+
-+	/* + 1 for the PEC */
-+	if (midev->pos < MCTP_I2C_MINLEN + 1) {
-+		ndev->stats.rx_length_errors++;
-+		return -EINVAL;
-+	}
-+	recvlen = midev->pos - 1;
-+
-+	hdr = (void *)midev->buffer;
-+	if (hdr->command != MCTP_I2C_COMMANDCODE) {
-+		ndev->stats.rx_dropped++;
-+		return -EINVAL;
-+	}
-+
-+	pec = midev->buffer[midev->pos - 1];
-+	calc_pec = i2c_smbus_pec(0, midev->buffer, recvlen);
-+	if (pec != calc_pec) {
-+		ndev->stats.rx_crc_errors++;
-+		return -EINVAL;
-+	}
-+
-+	skb = netdev_alloc_skb(ndev, recvlen);
-+	if (!skb) {
-+		ndev->stats.rx_dropped++;
-+		return -ENOMEM;
-+	}
-+
-+	skb->protocol = htons(ETH_P_MCTP);
-+	skb_put_data(skb, midev->buffer, recvlen);
-+	skb_reset_mac_header(skb);
-+	skb_pull(skb, sizeof(struct mctp_i2c_hdr));
-+	skb_reset_network_header(skb);
-+
-+	cb = __mctp_cb(skb);
-+	cb->halen = 1;
-+	cb->haddr[0] = hdr->source_slave;
-+
-+	if (netif_rx(skb) == NET_RX_SUCCESS) {
-+		ndev->stats.rx_packets++;
-+		ndev->stats.rx_bytes += skb->len;
-+	} else {
-+		ndev->stats.rx_dropped++;
-+	}
-+	return 0;
-+}
-+
-+enum mctp_i2c_flow_state {
-+	MCTP_I2C_TX_FLOW_INVALID,
-+	MCTP_I2C_TX_FLOW_NONE,
-+	MCTP_I2C_TX_FLOW_NEW,
-+	MCTP_I2C_TX_FLOW_EXISTING,
-+};
-+
-+static enum mctp_i2c_flow_state
-+mctp_i2c_get_tx_flow_state(struct mctp_i2c_dev *midev, struct sk_buff *skb)
-+{
-+	enum mctp_i2c_flow_state state;
-+	struct mctp_sk_key *key;
-+	struct mctp_flow *flow;
-+	unsigned long flags;
-+
-+	flow = skb_ext_find(skb, SKB_EXT_MCTP);
-+	if (!flow)
-+		return MCTP_I2C_TX_FLOW_NONE;
-+
-+	key = flow->key;
-+	if (!key)
-+		return MCTP_I2C_TX_FLOW_NONE;
-+
-+	spin_lock_irqsave(&key->lock, flags);
-+	/* if the key is present but invalid, we're unlikely to be able
-+	 * to handle the flow at all; just drop now
-+	 */
-+	if (!key->valid) {
-+		state = MCTP_I2C_TX_FLOW_INVALID;
-+
-+	} else if (key->dev_flow_state == MCTP_I2C_FLOW_STATE_NEW) {
-+		key->dev_flow_state = MCTP_I2C_FLOW_STATE_ACTIVE;
-+		state = MCTP_I2C_TX_FLOW_NEW;
-+	} else {
-+		state = MCTP_I2C_TX_FLOW_EXISTING;
-+	}
-+
-+	spin_unlock_irqrestore(&key->lock, flags);
-+
-+	return state;
-+}
-+
-+/* We're not contending with ourselves here; we only need to exclude other
-+ * i2c clients from using the bus. refcounts are simply to prevent
-+ * recursive locking.
-+ */
-+static void mctp_i2c_lock_nest(struct mctp_i2c_dev *midev)
-+{
-+	unsigned long flags;
-+	bool lock;
-+
-+	spin_lock_irqsave(&midev->flow_lock, flags);
-+	lock = midev->i2c_lock_count == 0;
-+	midev->i2c_lock_count++;
-+	spin_unlock_irqrestore(&midev->flow_lock, flags);
-+
-+	if (lock)
-+		i2c_lock_bus(midev->adapter, I2C_LOCK_SEGMENT);
-+}
-+
-+static void mctp_i2c_unlock_nest(struct mctp_i2c_dev *midev)
-+{
-+	unsigned long flags;
-+	bool unlock;
-+
-+	spin_lock_irqsave(&midev->flow_lock, flags);
-+	if (!WARN_ONCE(midev->i2c_lock_count == 0, "lock count underflow!"))
-+		midev->i2c_lock_count--;
-+	unlock = midev->i2c_lock_count == 0;
-+	spin_unlock_irqrestore(&midev->flow_lock, flags);
-+
-+	if (unlock)
-+		i2c_unlock_bus(midev->adapter, I2C_LOCK_SEGMENT);
-+}
-+
-+static void mctp_i2c_xmit(struct mctp_i2c_dev *midev, struct sk_buff *skb)
-+{
-+	struct net_device_stats *stats = &midev->ndev->stats;
-+	enum mctp_i2c_flow_state fs;
-+	union i2c_smbus_data *data;
-+	struct mctp_i2c_hdr *hdr;
-+	unsigned int len;
-+	u16 daddr;
-+	int rc;
-+
-+	fs = mctp_i2c_get_tx_flow_state(midev, skb);
-+
-+	len = skb->len;
-+	hdr = (void *)skb_mac_header(skb);
-+	data = (void *)&hdr->byte_count;
-+	daddr = hdr->dest_slave >> 1;
-+
-+	switch (fs) {
-+	case MCTP_I2C_TX_FLOW_NONE:
-+		/* no flow: full lock & unlock */
-+		mctp_i2c_lock_nest(midev);
-+		mctp_i2c_device_select(midev->client, midev);
-+		rc = __i2c_smbus_xfer(midev->adapter, daddr, I2C_CLIENT_PEC,
-+				      I2C_SMBUS_WRITE, hdr->command,
-+				      I2C_SMBUS_BLOCK_DATA, data);
-+		mctp_i2c_unlock_nest(midev);
-+		break;
-+
-+	case MCTP_I2C_TX_FLOW_NEW:
-+		/* new flow: lock, tx, but don't unlock; that will happen
-+		 * on flow release
-+		 */
-+		mctp_i2c_lock_nest(midev);
-+		mctp_i2c_device_select(midev->client, midev);
-+		fallthrough;
-+
-+	case MCTP_I2C_TX_FLOW_EXISTING:
-+		/* existing flow: we already have the lock; just tx */
-+		rc = __i2c_smbus_xfer(midev->adapter, daddr, I2C_CLIENT_PEC,
-+				      I2C_SMBUS_WRITE, hdr->command,
-+				      I2C_SMBUS_BLOCK_DATA, data);
-+		break;
-+
-+	case MCTP_I2C_TX_FLOW_INVALID:
-+		return;
-+	}
-+
-+	if (rc) {
-+		dev_warn_ratelimited(&midev->adapter->dev,
-+				     "%s i2c_smbus_xfer failed %d", __func__, rc);
-+		stats->tx_errors++;
-+	} else {
-+		stats->tx_bytes += len;
-+		stats->tx_packets++;
-+	}
-+}
-+
-+static void mctp_i2c_flow_release(struct mctp_i2c_dev *midev)
-+{
-+	unsigned long flags;
-+	bool unlock;
-+
-+	spin_lock_irqsave(&midev->flow_lock, flags);
-+	if (midev->release_count > midev->i2c_lock_count) {
-+		WARN_ONCE(1, "release count overflow");
-+		midev->release_count = midev->i2c_lock_count;
-+	}
-+
-+	midev->i2c_lock_count -= midev->release_count;
-+	unlock = midev->i2c_lock_count == 0 && midev->release_count > 0;
-+	midev->release_count = 0;
-+	spin_unlock_irqrestore(&midev->flow_lock, flags);
-+
-+	if (unlock)
-+		i2c_unlock_bus(midev->adapter, I2C_LOCK_SEGMENT);
-+}
-+
-+static int mctp_i2c_header_create(struct sk_buff *skb, struct net_device *dev,
-+				  unsigned short type, const void *daddr,
-+	   const void *saddr, unsigned int len)
-+{
-+	struct mctp_i2c_hdr *hdr;
-+	struct mctp_hdr *mhdr;
-+	u8 lldst, llsrc;
-+
-+	lldst = *((u8 *)daddr);
-+	llsrc = *((u8 *)saddr);
-+
-+	skb_push(skb, sizeof(struct mctp_i2c_hdr));
-+	skb_reset_mac_header(skb);
-+	hdr = (void *)skb_mac_header(skb);
-+	mhdr = mctp_hdr(skb);
-+	hdr->dest_slave = (lldst << 1) & 0xff;
-+	hdr->command = MCTP_I2C_COMMANDCODE;
-+	hdr->byte_count = len + 1;
-+	if (hdr->byte_count > MCTP_I2C_MAXBLOCK)
-+		return -EMSGSIZE;
-+	hdr->source_slave = ((llsrc << 1) & 0xff) | 0x01;
-+	mhdr->ver = 0x01;
-+
-+	return 0;
-+}
-+
-+static int mctp_i2c_tx_thread(void *data)
-+{
-+	struct mctp_i2c_dev *midev = data;
-+	struct sk_buff *skb;
-+	unsigned long flags;
-+
-+	for (;;) {
-+		if (kthread_should_stop())
-+			break;
-+
-+		spin_lock_irqsave(&midev->tx_queue.lock, flags);
-+		skb = __skb_dequeue(&midev->tx_queue);
-+		if (netif_queue_stopped(midev->ndev))
-+			netif_wake_queue(midev->ndev);
-+		spin_unlock_irqrestore(&midev->tx_queue.lock, flags);
-+
-+		if (skb == &midev->unlock_marker) {
-+			mctp_i2c_flow_release(midev);
-+
-+		} else if (skb) {
-+			mctp_i2c_xmit(midev, skb);
-+			kfree_skb(skb);
-+
-+		} else {
-+			wait_event(midev->tx_wq,
-+				   !skb_queue_empty(&midev->tx_queue) ||
-+				   kthread_should_stop());
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static netdev_tx_t mctp_i2c_start_xmit(struct sk_buff *skb,
-+				       struct net_device *dev)
-+{
-+	struct mctp_i2c_dev *midev = netdev_priv(dev);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&midev->tx_queue.lock, flags);
-+	if (skb_queue_len(&midev->tx_queue) >= MCTP_I2C_TX_WORK_LEN) {
-+		netif_stop_queue(dev);
-+		spin_unlock_irqrestore(&midev->tx_queue.lock, flags);
-+		netdev_err(dev, "BUG! Tx Ring full when queue awake!\n");
-+		return NETDEV_TX_BUSY;
-+	}
-+
-+	__skb_queue_tail(&midev->tx_queue, skb);
-+	if (skb_queue_len(&midev->tx_queue) == MCTP_I2C_TX_WORK_LEN)
-+		netif_stop_queue(dev);
-+	spin_unlock_irqrestore(&midev->tx_queue.lock, flags);
-+
-+	wake_up(&midev->tx_wq);
-+	return NETDEV_TX_OK;
-+}
-+
-+static void mctp_i2c_release_flow(struct mctp_dev *mdev,
-+				  struct mctp_sk_key *key)
-+
-+{
-+	struct mctp_i2c_dev *midev = netdev_priv(mdev->dev);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&midev->flow_lock, flags);
-+	midev->release_count++;
-+	spin_unlock_irqrestore(&midev->flow_lock, flags);
-+
-+	/* Ensure we have a release operation queued, through the fake
-+	 * marker skb
-+	 */
-+	spin_lock(&midev->tx_queue.lock);
-+	if (!midev->unlock_marker.next)
-+		__skb_queue_tail(&midev->tx_queue, &midev->unlock_marker);
-+	spin_unlock(&midev->tx_queue.lock);
-+
-+	wake_up(&midev->tx_wq);
-+}
-+
-+static const struct net_device_ops mctp_i2c_ops = {
-+	.ndo_start_xmit = mctp_i2c_start_xmit,
-+};
-+
-+static const struct header_ops mctp_i2c_headops = {
-+	.create = mctp_i2c_header_create,
-+};
-+
-+static const struct mctp_netdev_ops mctp_i2c_mctp_ops = {
-+	.release_flow = mctp_i2c_release_flow,
-+};
-+
-+static void mctp_i2c_net_setup(struct net_device *dev)
-+{
-+	dev->type = ARPHRD_MCTP;
-+
-+	dev->mtu = MCTP_I2C_MAXMTU;
-+	dev->min_mtu = MCTP_I2C_MINMTU;
-+	dev->max_mtu = MCTP_I2C_MAXMTU;
-+	dev->tx_queue_len = MCTP_I2C_TX_QUEUE_LEN;
-+
-+	dev->hard_header_len = sizeof(struct mctp_i2c_hdr);
-+	dev->addr_len = 1;
-+
-+	dev->netdev_ops		= &mctp_i2c_ops;
-+	dev->header_ops		= &mctp_i2c_headops;
-+	dev->needs_free_netdev  = true;
-+}
-+
-+static int mctp_i2c_add_netdev(struct mctp_i2c_client *mcli,
-+			       struct i2c_adapter *adap)
-+{
-+	unsigned long flags;
-+	struct mctp_i2c_dev *midev = NULL;
-+	struct net_device *ndev = NULL;
-+	struct i2c_adapter *root;
-+	char namebuf[30];
-+	int rc;
-+
-+	root = mux_root_adapter(adap);
-+	if (root != mcli->client->adapter) {
-+		dev_err(&mcli->client->dev,
-+			"I2C adapter %s is not a child bus of %s",
-+			mcli->client->adapter->name, root->name);
-+		return -EINVAL;
-+	}
-+
-+	WARN_ON(!mutex_is_locked(&mi_driver_state.lock));
-+	snprintf(namebuf, sizeof(namebuf), "mctpi2c%d", adap->nr);
-+	ndev = alloc_netdev(sizeof(*midev), namebuf, NET_NAME_ENUM, mctp_i2c_net_setup);
-+	if (!ndev) {
-+		dev_err(&mcli->client->dev, "%s alloc netdev failed\n", __func__);
-+		rc = -ENOMEM;
-+		goto err;
-+	}
-+	dev_net_set(ndev, current->nsproxy->net_ns);
-+	SET_NETDEV_DEV(ndev, &adap->dev);
-+	ndev->dev_addr = &mcli->lladdr;
-+
-+	midev = netdev_priv(ndev);
-+	skb_queue_head_init(&midev->tx_queue);
-+	INIT_LIST_HEAD(&midev->list);
-+	midev->adapter = adap;
-+	midev->client = mcli;
-+	spin_lock_init(&midev->flow_lock);
-+	midev->i2c_lock_count = 0;
-+	midev->release_count = 0;
-+	/* Hold references */
-+	get_device(&midev->adapter->dev);
-+	get_device(&midev->client->client->dev);
-+	midev->ndev = ndev;
-+	init_waitqueue_head(&midev->tx_wq);
-+	midev->tx_thread = kthread_create(mctp_i2c_tx_thread, midev,
-+					  "%s/tx", namebuf);
-+	if (IS_ERR_OR_NULL(midev->tx_thread)) {
-+		rc = -ENOMEM;
-+		goto err_free;
-+	}
-+
-+	rc = mctp_register_netdev(ndev, &mctp_i2c_mctp_ops);
-+	if (rc) {
-+		dev_err(&mcli->client->dev,
-+			"%s register netdev \"%s\" failed %d\n", __func__,
-+			ndev->name, rc);
-+		goto err_stop_kthread;
-+	}
-+	spin_lock_irqsave(&mcli->curr_lock, flags);
-+	list_add(&midev->list, &mcli->devs);
-+	// Select a device by default
-+	if (!mcli->sel)
-+		__mctp_i2c_device_select(mcli, midev);
-+	spin_unlock_irqrestore(&mcli->curr_lock, flags);
-+
-+	wake_up_process(midev->tx_thread);
-+
-+	return 0;
-+
-+err_stop_kthread:
-+	kthread_stop(midev->tx_thread);
-+
-+err_free:
-+	free_netdev(ndev);
-+
-+err:
-+	return rc;
-+}
-+
-+// Removes and unregisters a mctp-i2c netdev
-+static void mctp_i2c_free_netdev(struct mctp_i2c_dev *midev)
-+{
-+	struct mctp_i2c_client *mcli = midev->client;
-+	unsigned long flags;
-+
-+	netif_stop_queue(midev->ndev);
-+	kthread_stop(midev->tx_thread);
-+	skb_queue_purge(&midev->tx_queue);
-+
-+	/* Release references, used only for TX which has stopped */
-+	put_device(&midev->adapter->dev);
-+	put_device(&mcli->client->dev);
-+
-+	/* Remove it from the parent mcli */
-+	spin_lock_irqsave(&mcli->curr_lock, flags);
-+	list_del(&midev->list);
-+	if (mcli->sel == midev) {
-+		struct mctp_i2c_dev *first;
-+
-+		first = list_first_entry_or_null(&mcli->devs, struct mctp_i2c_dev, list);
-+		__mctp_i2c_device_select(mcli, first);
-+	}
-+	spin_unlock_irqrestore(&mcli->curr_lock, flags);
-+
-+	/* Remove netdev. mctp_i2c_slave_cb() takes a dev_hold() so removing
-+	 * it now is safe. unregister_netdev() frees ndev and midev.
-+	 */
-+	mctp_unregister_netdev(midev->ndev);
-+}
-+
-+// Removes any netdev for adap. mcli is the parent root i2c client
-+static void mctp_i2c_remove_netdev(struct mctp_i2c_client *mcli,
-+				   struct i2c_adapter *adap)
-+{
-+	unsigned long flags;
-+	struct mctp_i2c_dev *midev = NULL, *m = NULL;
-+
-+	WARN_ON(!mutex_is_locked(&mi_driver_state.lock));
-+	spin_lock_irqsave(&mcli->curr_lock, flags);
-+	// list size is limited by number of MCTP netdevs on a single hardware bus
-+	list_for_each_entry(m, &mcli->devs, list)
-+		if (m->adapter == adap) {
-+			midev = m;
-+			break;
-+		}
-+	spin_unlock_irqrestore(&mcli->curr_lock, flags);
-+
-+	if (midev)
-+		mctp_i2c_free_netdev(midev);
-+}
-+
-+/* Determines whether a device is an i2c adapter.
-+ * Optionally returns the root i2c_adapter
-+ */
-+static struct i2c_adapter *mctp_i2c_get_adapter(struct device *dev,
-+						struct i2c_adapter **ret_root)
-+{
-+	struct i2c_adapter *root, *adap;
-+
-+	if (dev->type != &i2c_adapter_type)
-+		return NULL;
-+	adap = to_i2c_adapter(dev);
-+	root = mux_root_adapter(adap);
-+	WARN_ONCE(!root, "%s failed to find root adapter for %s\n",
-+		  __func__, dev_name(dev));
-+	if (!root)
-+		return NULL;
-+	if (ret_root)
-+		*ret_root = root;
-+	return adap;
-+}
-+
-+/* Determines whether a device is an i2c adapter with the "mctp-controller"
-+ * devicetree property set. If adap is not an OF node, returns match_no_of
-+ */
-+static bool mctp_i2c_adapter_match(struct i2c_adapter *adap, bool match_no_of)
-+{
-+	if (!adap->dev.of_node)
-+		return match_no_of;
-+	return of_property_read_bool(adap->dev.of_node, MCTP_I2C_OF_PROP);
-+}
-+
-+/* Called for each existing i2c device (adapter or client) when a
-+ * new mctp-i2c client is probed.
-+ */
-+static int mctp_i2c_client_try_attach(struct device *dev, void *data)
-+{
-+	struct i2c_adapter *adap = NULL, *root = NULL;
-+	struct mctp_i2c_client *mcli = data;
-+
-+	adap = mctp_i2c_get_adapter(dev, &root);
-+	if (!adap)
-+		return 0;
-+	if (mcli->client->adapter != root)
-+		return 0;
-+	// Must either have mctp-controller property on the adapter, or
-+	// be a root adapter if it's non-devicetree
-+	if (!mctp_i2c_adapter_match(adap, adap == root))
-+		return 0;
-+
-+	return mctp_i2c_add_netdev(mcli, adap);
-+}
-+
-+static void mctp_i2c_notify_add(struct device *dev)
-+{
-+	struct mctp_i2c_client *mcli = NULL, *m = NULL;
-+	struct i2c_adapter *root = NULL, *adap = NULL;
-+	int rc;
-+
-+	adap = mctp_i2c_get_adapter(dev, &root);
-+	if (!adap)
-+		return;
-+	// Check for mctp-controller property on the adapter
-+	if (!mctp_i2c_adapter_match(adap, false))
-+		return;
-+
-+	/* Find an existing mcli for adap's root */
-+	mutex_lock(&mi_driver_state.lock);
-+	list_for_each_entry(m, &mi_driver_state.clients, list) {
-+		if (m->client->adapter == root) {
-+			mcli = m;
-+			break;
-+		}
-+	}
-+
-+	if (mcli) {
-+		rc = mctp_i2c_add_netdev(mcli, adap);
-+		if (rc)
-+			dev_warn(dev, "%s Failed adding mctp-i2c device",
-+				 __func__);
-+	}
-+	mutex_unlock(&mi_driver_state.lock);
-+}
-+
-+static void mctp_i2c_notify_del(struct device *dev)
-+{
-+	struct i2c_adapter *root = NULL, *adap = NULL;
-+	struct mctp_i2c_client *mcli = NULL;
-+
-+	adap = mctp_i2c_get_adapter(dev, &root);
-+	if (!adap)
-+		return;
-+
-+	mutex_lock(&mi_driver_state.lock);
-+	list_for_each_entry(mcli, &mi_driver_state.clients, list) {
-+		if (mcli->client->adapter == root) {
-+			mctp_i2c_remove_netdev(mcli, adap);
-+			break;
-+		}
-+	}
-+	mutex_unlock(&mi_driver_state.lock);
-+}
-+
-+static int mctp_i2c_probe(struct i2c_client *client)
-+{
-+	struct mctp_i2c_client *mcli = NULL;
-+	int rc;
-+
-+	/* Check for >32 byte block support required for MCTP */
-+	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_V3_BLOCK)) {
-+		dev_err(&client->dev,
-+			"%s failed, I2C bus driver does not support 255 byte block transfer\n",
-+			__func__);
-+		return -EOPNOTSUPP;
-+	}
-+
-+	mutex_lock(&mi_driver_state.lock);
-+	mcli = mctp_i2c_new_client(client);
-+	if (IS_ERR(mcli)) {
-+		rc = PTR_ERR(mcli);
-+		mcli = NULL;
-+		goto out;
-+	} else {
-+		list_add(&mcli->list, &mi_driver_state.clients);
-+	}
-+
-+	// Add a netdev for adapters that have a 'mctp-controller' property
-+	i2c_for_each_dev(mcli, mctp_i2c_client_try_attach);
-+	rc = 0;
-+out:
-+	mutex_unlock(&mi_driver_state.lock);
-+	return rc;
-+}
-+
-+static int mctp_i2c_remove(struct i2c_client *client)
-+{
-+	struct mctp_i2c_client *mcli = i2c_get_clientdata(client);
-+	struct mctp_i2c_dev *midev = NULL, *tmp = NULL;
-+
-+	mutex_lock(&mi_driver_state.lock);
-+	list_del(&mcli->list);
-+	// Remove all child adapter netdevs
-+	list_for_each_entry_safe(midev, tmp, &mcli->devs, list)
-+		mctp_i2c_free_netdev(midev);
-+
-+	mctp_i2c_free_client(mcli);
-+	mutex_unlock(&mi_driver_state.lock);
-+	// Callers ignore return code
-+	return 0;
-+}
-+
-+/* We look for a 'mctp-controller' property on I2C busses as they are
-+ * added/deleted, creating/removing netdevs as required.
-+ */
-+static int mctp_i2c_notifier_call(struct notifier_block *nb,
-+				  unsigned long action, void *data)
-+{
-+	struct device *dev = data;
-+
-+	switch (action) {
-+	case BUS_NOTIFY_ADD_DEVICE:
-+		mctp_i2c_notify_add(dev);
-+		break;
-+	case BUS_NOTIFY_DEL_DEVICE:
-+		mctp_i2c_notify_del(dev);
-+		break;
-+	}
-+	return NOTIFY_DONE;
-+}
-+
-+static struct notifier_block mctp_i2c_notifier = {
-+	.notifier_call = mctp_i2c_notifier_call,
-+};
-+
-+static const struct i2c_device_id mctp_i2c_id[] = {
-+	{ "mctp-i2c", 0 },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(i2c, mctp_i2c_id);
-+
-+static const struct of_device_id mctp_i2c_of_match[] = {
-+	{ .compatible = "mctp-i2c-controller" },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, mctp_i2c_of_match);
-+
-+static struct i2c_driver mctp_i2c_driver = {
-+	.driver = {
-+		.name = "mctp-i2c",
-+		.of_match_table = mctp_i2c_of_match,
-+	},
-+	.probe_new = mctp_i2c_probe,
-+	.remove = mctp_i2c_remove,
-+	.id_table = mctp_i2c_id,
-+};
-+
-+static __init int mctp_i2c_init(void)
-+{
-+	int rc;
-+
-+	INIT_LIST_HEAD(&mi_driver_state.clients);
-+	mutex_init(&mi_driver_state.lock);
-+	pr_info("MCTP SMBus/I2C transport driver\n");
-+	rc = i2c_add_driver(&mctp_i2c_driver);
-+	if (rc)
-+		return rc;
-+	rc = bus_register_notifier(&i2c_bus_type, &mctp_i2c_notifier);
-+	if (rc) {
-+		i2c_del_driver(&mctp_i2c_driver);
-+		return rc;
-+	}
-+	return 0;
-+}
-+
-+static __exit void mctp_i2c_exit(void)
-+{
-+	int rc;
-+
-+	rc = bus_unregister_notifier(&i2c_bus_type, &mctp_i2c_notifier);
-+	if (rc)
-+		pr_warn("%s Could not unregister notifier, %d", __func__, rc);
-+	i2c_del_driver(&mctp_i2c_driver);
-+}
-+
-+module_init(mctp_i2c_init);
-+module_exit(mctp_i2c_exit);
-+
-+MODULE_DESCRIPTION("MCTP SMBus/I2C device");
-+MODULE_LICENSE("GPL v2");
-+MODULE_AUTHOR("Matt Johnston <matt@codeconstruct.com.au>");
--- 
-2.32.0
-
+> +static int tg3_cc;
+> +module_param(tg3_cc, int, 0644);
+> +MODULE_PARM_DESC(tg3_cc, "cpu check");
+> +
+> ...
+> +               if (tnapi->assigned_cpu !=3D smp_processor_id())
+> +                       net_dbg_ratelimited("tg3 refill %d budget %d napi=
+ %ld cpu %d %d",
+> +                           tp->rx_refill, budget,
+> +                           tnapi - tp->napi, tnapi->assigned_cpu, smp_pr=
+ocessor_id());
+>                 napi_gro_receive(&tnapi->napi, skb);
+>
+> ...
+> +        if (*(tnapi->rx_rcb_prod_idx) !=3D tnapi->rx_rcb_ptr) {
+> +                if (tnapi !=3D &tp->napi[1] || (tnapi =3D=3D &tp->napi[1=
+] && !tp->rx_refill) || (tg3_cc =3D=3D 0)) {
+> +                        work_done +=3D tg3_rx(tnapi, budget - work_done)=
+;
+> +                }
+> +        }
+>
+> with tg3_cc set to 1:
+>
+> [212915.661886] net_ratelimit: 650710 callbacks suppressed
+> [212915.661889] tg3 refill 0 budget 64 napi 1 cpu 0 3
+> [212915.661890] tg3 refill 0 budget 63 napi 1 cpu 0 3
+> [212915.661891] tg3 refill 0 budget 62 napi 1 cpu 0 3
+> [212915.661892] tg3 refill 0 budget 61 napi 1 cpu 0 3
+> [212915.661893] tg3 refill 0 budget 60 napi 1 cpu 0 3
+> [212915.661915] tg3 refill 0 budget 64 napi 1 cpu 0 3
+> [212915.661916] tg3 refill 0 budget 63 napi 1 cpu 0 3
+> [212915.661917] tg3 refill 0 budget 62 napi 1 cpu 0 3
+> [212915.661918] tg3 refill 0 budget 61 napi 1 cpu 0 3
+> [212915.661919] tg3 refill 0 budget 60 napi 1 cpu 0 3
+> [212920.665912] net_ratelimit: 251117 callbacks suppressed
+> [212920.665914] tg3 refill 0 budget 64 napi 1 cpu 0 3
+> [212920.665915] tg3 refill 0 budget 63 napi 1 cpu 0 3
+> [212920.665917] tg3 refill 0 budget 62 napi 1 cpu 0 3
+> [212920.665918] tg3 refill 0 budget 61 napi 1 cpu 0 3
+> [212920.665919] tg3 refill 0 budget 60 napi 1 cpu 0 3
+> [212920.665932] tg3 refill 0 budget 64 napi 1 cpu 0 3
+> [212920.665933] tg3 refill 0 budget 63 napi 1 cpu 0 3
+> [212920.665935] tg3 refill 0 budget 62 napi 1 cpu 0 3
+> [212920.665936] tg3 refill 0 budget 61 napi 1 cpu 0 3
+> [212920.665937] tg3 refill 0 budget 60 napi 1 cpu 0 3
+>
+> and with tg3_cc set to 0:
+>
+> [213686.689867] tg3 refill 1 budget 64 napi 1 cpu 0 3
+> [213686.689869] tg3 refill 1 budget 63 napi 1 cpu 0 3
+> [213686.689870] tg3 refill 1 budget 62 napi 1 cpu 0 3
+> [213686.689871] tg3 refill 1 budget 61 napi 1 cpu 0 3
+> [213686.689872] tg3 refill 1 budget 60 napi 1 cpu 0 3
+> [213686.689890] tg3 refill 0 budget 64 napi 1 cpu 0 3
+> [213686.689891] tg3 refill 0 budget 63 napi 1 cpu 0 3
+> [213686.689892] tg3 refill 0 budget 62 napi 1 cpu 0 3
+> [213686.689893] tg3 refill 0 budget 61 napi 1 cpu 0 3
+>
+> affinity:
+> echo 1 > /proc/irq/106/smp_affinity  # enp2s0f0-rx-1
+> echo 2 > /proc/irq/107/smp_affinity  # enp2s0f0-rx-2
+> echo 4 > /proc/irq/108/smp_affinity  # enp2s0f0-rx-3
+> echo 8 > /proc/irq/109/smp_affinity  # enp2s0f0-rx-4
+>
+> --
+> Thanks
+> Vitalii
+>
