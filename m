@@ -2,178 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D22E44220C
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 21:54:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9DBB442210
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 21:54:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231286AbhKAU5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 16:57:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58710 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229501AbhKAU5S (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Nov 2021 16:57:18 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 787966052B;
-        Mon,  1 Nov 2021 20:54:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635800084;
-        bh=iJ+MBPjtmkOQFrq08Qfx6r4mlodxysE1veodnx84o+0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=deUHehsU4umCnCq0ONUcJfkuH8yLhAhFh2kGnNjSBvKQaf+Uf7E3WAijgi3akurJi
-         okqVkIqLbxQPWCjf83GklJb2urjaDq+CDmCLDJ7rxmkxhItEkvZzPd6FTZ74j2vO1R
-         oRTJJ57bNCMPUi1ghIh/6fnbeIkTSjMrfY8AYDU66phwfHCs4CeNYbWUYGPLzHVm2A
-         GXj2s4VpAR3HoszbTa2vKe5XTRsljc9vQ7G0QCSo55LU9umDO7XiRMrqYsUN6DUbr3
-         IKGSPKfJfinSRIKJIN+nZ9fI0Sg7GSw6NGyOTjCobrdIApPrvENaRmXe2tnDanmbNd
-         mjotnnw3XRQVA==
-Date:   Mon, 1 Nov 2021 15:54:42 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Dongdong Liu <liudongdong3@huawei.com>
-Cc:     hch@infradead.org, kw@linux.com, logang@deltatee.com,
-        leon@kernel.org, linux-pci@vger.kernel.org, rajur@chelsio.com,
-        hverkuil-cisco@xs4all.nl, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH V11 4/8] PCI/sysfs: Add a tags sysfs file for PCIe
- Endpoint devices
-Message-ID: <20211101205442.GA546492@bhelgaas>
+        id S231365AbhKAU5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 16:57:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59176 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229501AbhKAU5Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 16:57:24 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04D97C061764;
+        Mon,  1 Nov 2021 13:54:50 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id b4so11184112pgh.10;
+        Mon, 01 Nov 2021 13:54:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=pZqr5rTlcaug9563wNJYd77L6h7Hk2gF965+CXNB47w=;
+        b=Ni5w9wTyiPsaYcO7fKFpzBdoI1bm1lqTRPi/F3tDeEc9LRFV4vfZj0qxXTCUmeCbLA
+         X5/63FZkBpzBJWmg+ArJLti1r/FFv1BawCzOKfDmg5CgkL9mm0/sL61K1UJBa32+u/v3
+         HMifwPe2araTOCO8kjvrX1A/FhYW0AlqfwaqmXEKn23xVf+k41Ty+TKhXuN1N2ATRoqh
+         gODj2DgLpz6M2pO0REWlcfr6KahTMab1YX67/x7OWsZxZzZPBrJNYbKcdsJ8sTxnUW5Z
+         O2s2z8E13iE0kN/1SAc1xgFjPfVjj5T/Z5NOkAl+E1dszJzBkuMoRxYOceOfnJQayiq7
+         1iaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=pZqr5rTlcaug9563wNJYd77L6h7Hk2gF965+CXNB47w=;
+        b=UG1f2sR3yDmq+ptw1IeoFzVpronyGmxiU31HvKs5LKkhsyZYWsPSBf+CD9P9quMNVl
+         vt0++5Nx2Gl0AVmuxdbmNsSqKSTFzwdRSplMo+Ac+RGFeSgQJq41swQHQ65k8EaD08I/
+         VCLZS6VRK51EWdYwmzSGdMSSfLCFuZd0rWoN/1KH60otO/psdQPfD7ApLG0SKfs0myO5
+         wuV6RkJYJpMcMUgmtTNJ7BsZEtHX4gVFmTI/mkvjEBesIhPzMXfcbKwCmYv9E4AZcJze
+         E52cxBKT7YSJxXYb4Oo9KjrAglWF2uX8so5JTjQ0OIDMYgDiITngXrexT9xMeS2XmL/4
+         X0bg==
+X-Gm-Message-State: AOAM530bmg6kshv8aKfQCSoJ+icLhWmoIKjV1eCelsKQxLxhQ0kGw2Xj
+        KT3pMTvJCJuR+Zoed1qoUwa30UuWrqc=
+X-Google-Smtp-Source: ABdhPJyRqX1y8LIgmxGmLlN6ZqygsWwwckwgCo2+I1Hp5UFPHWWYdV0jTemV/m/Gw5TCgObqByhAQw==
+X-Received: by 2002:a05:6a00:244e:b0:47b:7dbf:e23d with SMTP id d14-20020a056a00244e00b0047b7dbfe23dmr31701851pfj.34.1635800089195;
+        Mon, 01 Nov 2021 13:54:49 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id o19sm11358069pfu.56.2021.11.01.13.54.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 01 Nov 2021 13:54:48 -0700 (PDT)
+Subject: Re: [PATCH v2 11/25] tcp: authopt: Implement Sequence Number
+ Extension
+To:     Leonard Crestez <cdleonard@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Ivan Delalande <colona@arista.com>,
+        Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <cover.1635784253.git.cdleonard@gmail.com>
+ <6097ec24d87efc55962a1bfac9441132f0fc4206.1635784253.git.cdleonard@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <07987e29-87a0-9a09-bdf0-b5e385d9c55f@gmail.com>
+Date:   Mon, 1 Nov 2021 13:54:46 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211030135348.61364-5-liudongdong3@huawei.com>
+In-Reply-To: <6097ec24d87efc55962a1bfac9441132f0fc4206.1635784253.git.cdleonard@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 30, 2021 at 09:53:44PM +0800, Dongdong Liu wrote:
-> PCIe spec 5.0 r1.0 section 2.2.6.2 says:
-> 
->   If an Endpoint supports sending Requests to other Endpoints (as
->   opposed to host memory), the Endpoint must not send 10-Bit Tag
->   Requests to another given Endpoint unless an implementation-specific
->   mechanism determines that the Endpoint supports 10-Bit Tag Completer
->   capability.
-> 
-> Add a tags sysfs file, write 0 to disable 10-Bit Tag Requester
-> when the driver does not bind the device. The typical use case is for
-> p2pdma when the peer device does not support 10-Bit Tag Completer.
-> Write 10 to enable 10-Bit Tag Requester when RC supports 10-Bit Tag
-> Completer capability. The typical use case is for host memory targeted
-> by DMA Requests. The tags file content indicate current status of Tags
-> Enable.
-> 
-> PCIe r5.0, sec 2.2.6.2 says:
-> 
->   Receivers/Completers must handle 8-bit Tag values correctly regardless
->   of the setting of their Extended Tag Field Enable bit (see Section
->   7.5.3.4).
-> 
-> Add this comment in pci_configure_extended_tags(). As all PCIe completers
-> are required to support 8-bit tags, so we do not use tags sysfs file
-> to manage 8-bit tags.
 
-> +What:		/sys/bus/pci/devices/.../tags
-> +Date:		September 2021
-> +Contact:	Dongdong Liu <liudongdong3@huawei.com>
-> +Description:
-> +		The file will be visible when the device supports 10-Bit Tag
-> +		Requester. The file is readable, the value indicate current
-> +		status of Tags Enable(5-Bit, 8-Bit, 10-Bit).
-> +
-> +		The file is also writable, The values accepted are:
-> +		* > 0 - this number will be reported as tags bit to be
-> +			enabled. current only 10 is accepted
-> +		* < 0 - not valid
-> +		* = 0 - disable 10-Bit Tag, use Extended Tags(8-Bit or 5-Bit)
-> +
-> +		write 0 to disable 10-Bit Tag Requester when the driver does
-> +		not bind the device. The typical use case is for p2pdma when
-> +		the peer device does not support 10-Bit Tag Completer.
-> +
-> +		Write 10 to enable 10-Bit Tag Requester when RC supports 10-Bit
-> +		Tag Completer capability. The typical use case is for host
-> +		memory targeted by DMA Requests.
 
-1) I think I would rename this from "tags" to "tag_bits".  A file
-   named "tags" that contains 8 suggests that we can use 8 tags, but
-   in fact, we can use 256 tags.
+On 11/1/21 9:34 AM, Leonard Crestez wrote:
+> Add a compute_sne function which finds the value of SNE for a certain
+> SEQ given an already known "recent" SNE/SEQ. This is implemented using
+> the standard tcp before/after macro and will work for SEQ values that
+> are without 2^31 of the SEQ for which we know the SNE.
 
-2) This controls tag size the requester will use.  The current knobs
-   in the hardware allow 5, 8, or 10 bits.
-
-   "0" to disable 10-bit tags without specifying whether we should use
-   5- or 8-bit tags doesn't seem right.  All completers are *supposed*
-   to support 8-bit, but we've tripped over a few that don't.
-
-   I don't think we currently have a run-time (or even a boot-time)
-   way to disable 8-bit tags; all we have is the quirk_no_ext_tags()
-   quirk.  But if we ever wanted to *add* that, maybe we would want:
-
-      5 - use 5-bit tags
-      8 - use 8-bit tags
-     10 - use 10-bit tags
-
-   Maybe we just say "0" is invalid, since there's no obvious way to
-   map this?
-
-> +static ssize_t tags_show(struct device *dev,
-> +			 struct device_attribute *attr,
-> +			 char *buf)
+>  }
+> +void __tcp_authopt_update_rcv_sne(struct tcp_sock *tp, struct tcp_authopt_info *info, u32 seq);
+> +static inline void tcp_authopt_update_rcv_sne(struct tcp_sock *tp, u32 seq)
 > +{
-> + ...
-
-> +	if (ctl & PCI_EXP_DEVCTL2_10BIT_TAG_REQ_EN)
-> +		return sysfs_emit(buf, "%s\n", "10-Bit");
+> +	struct tcp_authopt_info *info;
 > +
-> +	ret = pcie_capability_read_word(pdev, PCI_EXP_DEVCTL, &ctl);
-> +	if (ret)
-> +		return -EINVAL;
-> +
-> +	if (ctl & PCI_EXP_DEVCTL_EXT_TAG)
-> +		return sysfs_emit(buf, "%s\n", "8-Bit");
-> +
-> +	return sysfs_emit(buf, "%s\n", "5-Bit");
-
-Since I prefer the "tag_bits" name, my preference would be bare
-numbers here: "10", "8", "5".
-
-Both comments apply to the sriov files, too.
-
-> +static umode_t pcie_dev_tags_attrs_is_visible(struct kobject *kobj,
-> +					      struct attribute *a, int n)
-> +{
-> +	struct device *dev = kobj_to_dev(kobj);
-> +	struct pci_dev *pdev = to_pci_dev(dev);
-> +
-> +	if (pdev->is_virtfn)
-> +		return 0;
-> +
-> +	if (pci_pcie_type(pdev) != PCI_EXP_TYPE_ENDPOINT)
-> +		return 0;
-> +
-> +	if (!(pdev->devcap2 & PCI_EXP_DEVCAP2_10BIT_TAG_REQ))
-> +		return 0;
-
-Makes sense for now that the file is only visible if a requester
-supports 10-bit tags.  If we ever wanted to extend this to control 5-
-vs 8-bit tags, we could make it visible in more cases then.
-
-> +
-> +	return a->mode;
+> +	if (static_branch_unlikely(&tcp_authopt_needed)) {
+> +		rcu_read_lock();
+> +		info = rcu_dereference(tp->authopt_info);
+> +		if (info)
+> +			__tcp_authopt_update_rcv_sne(tp, info, seq);
+> +		rcu_read_unlock();
+> +	}
 > +}
+> +void __tcp_authopt_update_snd_sne(struct tcp_sock *tp, struct tcp_authopt_info *info, u32 seq);
+> +static inline void tcp_authopt_update_snd_sne(struct tcp_sock *tp, u32 seq)
+> +{
+> +	struct tcp_authopt_info *info;
+> +
+> +	if (static_branch_unlikely(&tcp_authopt_needed)) {
+> +		rcu_read_lock();
+> +		info = rcu_dereference(tp->authopt_info);
+> +		if (info)
+> +			__tcp_authopt_update_snd_sne(tp, info, seq);
+> +		rcu_read_unlock();
+> +	}
+> +}
+>
 
-> @@ -2075,6 +2089,12 @@ int pci_configure_extended_tags(struct pci_dev *dev, void *ign)
->  		return 0;
->  	}
->  
-> +	/*
-> +	 * PCIe r5.0, sec 2.2.6.2 says "Receivers/Completers must handle 8-bit
-> +	 * Tag values correctly regardless of the setting of their Extended Tag
-> +	 * Field Enable bit (see Section 7.5.3.4)", so it is safe to enable
-> +	 * Extented Tags.
+I would think callers of these helpers own socket lock,
+so no rcu_read_lock()/unlock() should be needed.
 
-s/Extented/Extended/
+Perhaps instead
+rcu_dereference_protected(tp->authopt_info, lockdep_sock_is_held(sk)); 
 
-> +	 */
->  	if (!(ctl & PCI_EXP_DEVCTL_EXT_TAG)) {
->  		pci_info(dev, "enabling Extended Tags\n");
->  		pcie_capability_set_word(dev, PCI_EXP_DEVCTL,
-> -- 
-> 2.22.0
-> 
+
