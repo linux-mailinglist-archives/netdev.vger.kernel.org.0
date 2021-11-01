@@ -2,132 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EACF441207
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 03:04:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85A4044122C
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 03:29:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230303AbhKACHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Oct 2021 22:07:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59668 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230191AbhKACHJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Oct 2021 22:07:09 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E23C061714;
-        Sun, 31 Oct 2021 19:04:36 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id o14so475297plg.5;
-        Sun, 31 Oct 2021 19:04:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=f50QsgXF5clJv/Hog1ViBB6J+DOPMeugFSp10hvavv0=;
-        b=Hoh5xAKungIThBxu6j2oiGq7W3N0Eq/1S7d7K5m3ZdR3Anspb5HbevIPJBuBQ8jrGv
-         01IumQs8GDCNY4GSRAh8dYWwfLNRhxfkwauOq7ZAvR9qQjUnmeyWZZkN4kpqx8H6sVhs
-         F6damnZOzNzCawHSjRMayB86BiRyRMtZw70taYZOJQjocfmbaVJ6L6H6t9iC44wg5HoT
-         WCiqV5ExZWm19c5q7QWgjQO7Wbf1h43WbajTf55vZxWHVttq/8Qm0uAiN8GMoM0BZjwG
-         P5ryOkSN85magx63Lgy9YNwiim6AkNkmY5DNvNM8OMnTkTOmrSuAcJcpXZ0pH+rLS1KF
-         0fLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=f50QsgXF5clJv/Hog1ViBB6J+DOPMeugFSp10hvavv0=;
-        b=0mFwuaT0J3zsnapUSXs/LCKLP/OIdvp3LzH/aCjHk49ObKhYn6JAzNrYtpionavY5M
-         F+1StCLph2TF4G1xZizFEGmHcnWrc4rB4t29N9yrgxnTtwNzdN5gldyzgx2kN227A8nQ
-         PAVWJG+LTvWO05RApN3zT6l0AX4+w4XyHYTPtNZFtNAHDDOCb2POHJRJC/h1ofqEuTxa
-         klnarOa2GyvWKhvqt5LdgJ2Ja6W9du+bV8SJK5mOHyjqBSLRUKQNQ7ROIpeJPBMrv6aS
-         wBSOuX7rpGjbDeNMvebCOF5SEtpPj0utWwLkM3CyWwif/+6W3/rCRlegKcgwjHavSBDB
-         jU0Q==
-X-Gm-Message-State: AOAM533RzaiCSikyPPfpgGsU3HTprnIZfFcD4+spJawT4NUmmbF9A73t
-        QjJMINzitIx65s6r4i0YcSZnQ1iSHSYOkg==
-X-Google-Smtp-Source: ABdhPJxBa7TkwRx2JBjiSaoJDpcjqsrJPpRm8pQmXQfl6/uUAzNJNkw5HDl8hDPKFArBqqPDUi5S3A==
-X-Received: by 2002:a17:90a:5b0d:: with SMTP id o13mr36196993pji.117.1635732276208;
-        Sun, 31 Oct 2021 19:04:36 -0700 (PDT)
-Received: from ubuntu-hirsute.. ([154.86.159.245])
-        by smtp.gmail.com with ESMTPSA id n7sm12938315pfd.37.2021.10.31.19.04.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 Oct 2021 19:04:35 -0700 (PDT)
-From:   yangxingwu <xingwu.yang@gmail.com>
-To:     horms@verge.net.au
-Cc:     ja@ssi.bg, pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, corbet@lwn.net,
-        yangxingwu <xingwu.yang@gmail.com>,
-        Chuanqi Liu <legend050709@qq.com>
-Subject: [PATCH nf-next v5] netfilter: ipvs: Fix reuse connection if RS weight is 0
-Date:   Mon,  1 Nov 2021 10:04:16 +0800
-Message-Id: <20211101020416.31402-1-xingwu.yang@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        id S230289AbhKACcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Oct 2021 22:32:24 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:40626 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230222AbhKACcX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 31 Oct 2021 22:32:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=7XPXEQCQ6leie1HGblPIuhdU07mkYja0dNEYlWTJYME=; b=XNCbVJEB+wpTFPYkNvMPzYQMDh
+        5VM/wUW3zKIAaYBlXIowzsKYdCvMkkw82/hIJlcRqPi4LanfpWzgmPkYDpFb63Po3UmFvJrlZeE0V
+        c7WxGa87FgmvMNmDOukuxGKmrjfQYkeUkL1Tf6jYl/ktqB0D64YmCQ2Jiv0ix05NOSsE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mhN4k-00CGdD-3f; Mon, 01 Nov 2021 03:29:30 +0100
+Date:   Mon, 1 Nov 2021 03:29:30 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jian Shen <shenjian15@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, ecree.xilinx@gmail.com,
+        hkallweit1@gmail.com, alexandr.lobakin@intel.com, saeed@kernel.org,
+        netdev@vger.kernel.org, linuxarm@openeuler.org
+Subject: Re: [RFCv3 PATCH net-next] net: extend netdev_features_t
+Message-ID: <YX9RCqTOAHtiGD3n@lunn.ch>
+References: <20211101010535.32575-1-shenjian15@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211101010535.32575-1-shenjian15@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We are changing expire_nodest_conn to work even for reused connections when
-conn_reuse_mode=0, just as what was done with commit dc7b3eb900aa ("ipvs:
-Fix reuse connection if real server is dead").
+> +#define HNS3_DEFAULT_ACTIVE_FEATURES   \
+> +	(NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_VLAN_CTAG_TX |  \
+> +	NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_RXCSUM | NETIF_F_SG |  \
+> +	NETIF_F_GSO | NETIF_F_GRO | NETIF_F_TSO | NETIF_F_TSO6 | \
+> +	NETIF_F_GSO_GRE | NETIF_F_GSO_GRE_CSUM | NETIF_F_SCTP_CRC \
+> +	NETIF_F_GSO_UDP_TUNNEL | NETIF_F_FRAGLIST)
 
-For controlled and persistent connections, the new connection will get the
-needed real server depending on the rules in ip_vs_check_template().
+This is a problem, it only works for the existing 64 bit values, but
+not for the values added afterwards. I would suggest you change this
+into an array of u8 bit values. That scales to 256 feature flags. And
+when that overflows, we can change from an array of u8 to u16, without
+any major API changes.
 
-Fixes: d752c3645717 ("ipvs: allow rescheduling of new connections when port reuse is detected")
-Co-developed-by: Chuanqi Liu <legend050709@qq.com>
-Signed-off-by: Chuanqi Liu <legend050709@qq.com>
-Signed-off-by: yangxingwu <xingwu.yang@gmail.com>
----
- Documentation/networking/ipvs-sysctl.rst | 3 +--
- net/netfilter/ipvs/ip_vs_core.c          | 8 ++++----
- 2 files changed, 5 insertions(+), 6 deletions(-)
+>  static int hns3_alloc_buffer(struct hns3_enet_ring *ring,
+> diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
+> index 16f778887e14..9b3ab11e19c8 100644
+> --- a/include/linux/netdev_features.h
+> +++ b/include/linux/netdev_features.h
+> @@ -101,12 +101,12 @@ enum {
+>  
+>  typedef struct {
+>  	DECLARE_BITMAP(bits, NETDEV_FEATURE_COUNT);
+> -} netdev_features_t; 
+> +} netdev_features_t;
 
-diff --git a/Documentation/networking/ipvs-sysctl.rst b/Documentation/networking/ipvs-sysctl.rst
-index 2afccc63856e..1cfbf1add2fc 100644
---- a/Documentation/networking/ipvs-sysctl.rst
-+++ b/Documentation/networking/ipvs-sysctl.rst
-@@ -37,8 +37,7 @@ conn_reuse_mode - INTEGER
- 
- 	0: disable any special handling on port reuse. The new
- 	connection will be delivered to the same real server that was
--	servicing the previous connection. This will effectively
--	disable expire_nodest_conn.
-+	servicing the previous connection.
- 
- 	bit 1: enable rescheduling of new connections when it is safe.
- 	That is, whenever expire_nodest_conn and for TCP sockets, when
-diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
-index 128690c512df..f9d65d2c8da8 100644
---- a/net/netfilter/ipvs/ip_vs_core.c
-+++ b/net/netfilter/ipvs/ip_vs_core.c
-@@ -1964,7 +1964,6 @@ ip_vs_in(struct netns_ipvs *ipvs, unsigned int hooknum, struct sk_buff *skb, int
- 	struct ip_vs_proto_data *pd;
- 	struct ip_vs_conn *cp;
- 	int ret, pkts;
--	int conn_reuse_mode;
- 	struct sock *sk;
- 
- 	/* Already marked as IPVS request or reply? */
-@@ -2041,15 +2040,16 @@ ip_vs_in(struct netns_ipvs *ipvs, unsigned int hooknum, struct sk_buff *skb, int
- 	cp = INDIRECT_CALL_1(pp->conn_in_get, ip_vs_conn_in_get_proto,
- 			     ipvs, af, skb, &iph);
- 
--	conn_reuse_mode = sysctl_conn_reuse_mode(ipvs);
--	if (conn_reuse_mode && !iph.fragoffs && is_new_conn(skb, &iph) && cp) {
-+	if (!iph.fragoffs && is_new_conn(skb, &iph) && cp) {
- 		bool old_ct = false, resched = false;
-+		int conn_reuse_mode = sysctl_conn_reuse_mode(ipvs);
- 
- 		if (unlikely(sysctl_expire_nodest_conn(ipvs)) && cp->dest &&
- 		    unlikely(!atomic_read(&cp->dest->weight))) {
- 			resched = true;
- 			old_ct = ip_vs_conn_uses_old_conntrack(cp, skb);
--		} else if (is_new_conn_expected(cp, conn_reuse_mode)) {
-+		} else if (conn_reuse_mode &&
-+			   is_new_conn_expected(cp, conn_reuse_mode)) {
- 			old_ct = ip_vs_conn_uses_old_conntrack(cp, skb);
- 			if (!atomic_read(&cp->n_control)) {
- 				resched = true;
--- 
-2.30.2
+That hunk looks odd.
 
+>  
+>  #define NETDEV_FEATURE_DWORDS	DIV_ROUND_UP(NETDEV_FEATURE_COUNT, 64)
+>  
+>  /* copy'n'paste compression ;) */
+> -#define __NETIF_F_BIT(bit)	((netdev_features_t)1 << (bit))
+> +#define __NETIF_F_BIT(bit)	((u64)1 << (bit))
+
+You need to get away from this representation. It does not scale.
+
+At the end of this conversion, either all NETIF_F_* macros need to be
+gone, or they need to be aliases for NETIF_F_*_BIT. 
+
+> -static inline void netdev_feature_zero(netdev_features_t *dst)
+> +static inline void netdev_features_zero(netdev_features_t *dst)
+>  {
+>  	bitmap_zero(dst->bits, NETDEV_FEATURE_COUNT);
+>  }
+>  
+> -static inline void netdev_feature_fill(netdev_features_t *dst)
+> +static inline void netdev_features_fill(netdev_features_t *dst)
+>  {
+>  	bitmap_fill(dst->bits, NETDEV_FEATURE_COUNT);
+>  }
+
+I'm wondering that the value here is? What do we gain by added the s.
+These changes cause a lot of churn in the users of these functions.
+
+>  
+> -static inline void netdev_feature_and(netdev_features_t *dst,
+> -				      const netdev_features_t a,
+> -				      const netdev_features_t b)
+> +static inline netdev_features_t netdev_features_and(netdev_features_t a,
+> +						    netdev_features_t b)
+>  {
+> -	bitmap_and(dst->bits, a.bits, b.bits, NETDEV_FEATURE_COUNT);
+> +	netdev_features_t dst;
+> +
+> +	bitmap_and(dst.bits, a.bits, b.bits, NETDEV_FEATURE_COUNT);
+> +	return dst;
+>  }
+
+The implementation needs to change, but do we need to change the
+function signature? Why remove dst as a parameter?
+
+It can be good to deliberately break the API so the compiler tells us
+when we fail to update something. But do we actually need that here?
+The API is nicely abstract, so i don't think a breaking change is
+required.
+
+> +/* only be used for the first 64 bits features */
+> +static inline void netdev_features_set_bits(u64 bits, netdev_features_t *src)
+
+Do we really want this special feature which only works for some
+values? Does it clearly explode at compile time when used for bits
+above 64?
+
+>  {
+> -	return (addr & __NETIF_F_BIT(nr)) > 0;
+> +	netdev_features_t tmp;
+> +
+> +	bitmap_from_u64(tmp.bits, bits);
+> +	*src = netdev_features_or(*src, tmp);
+>  }
+
+> +static inline void netdev_set_active_features(struct net_device *netdev,
+> +					      netdev_features_t src)
+> +{
+> +	netdev->features = src;
+> +}
+
+_active_ is new here? 
+
+> +static inline void netdev_set_hw_features(struct net_device *netdev,
+> +					  netdev_features_t src)
+> +{
+> +	netdev->hw_features = src;
+> +}
+
+Here _hw_ makes sense. But i think we need some sort of
+consistency. Either drop the _active_ from the function name, or
+rename the netdev field active_features. 
+
+       Andrew
