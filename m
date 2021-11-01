@@ -2,60 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A891441BE0
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 14:44:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAFB4441BF7
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 14:50:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231868AbhKANrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 09:47:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57018 "EHLO mail.kernel.org"
+        id S231906AbhKANwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 09:52:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60982 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231741AbhKANrP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Nov 2021 09:47:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BA67260E78;
-        Mon,  1 Nov 2021 13:44:41 +0000 (UTC)
+        id S231366AbhKANwk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Nov 2021 09:52:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9E6C960FE8;
+        Mon,  1 Nov 2021 13:50:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635774282;
-        bh=clWuDRj3uVxUbKZo8iDmWH75rZ/vuidgMGdP2dabqFQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PhbhNvJHyEy7TIOYaBVWAczHRStJqUJQvFkw24+NaH4uskhvbvYQNWj224cJJ89ch
-         3aiPEbji8NcRkWPtLinZaTBEgw1gEnZePjM0wVo2c+QwYjWl36FStCIfomLPHF+kPB
-         tQwKIPwOXYmF7Rc/OAhBJPagOl5Gps9aAj0DLM/NKqiqFCU7DZKl5PqmFtXchD/un6
-         ya5Ujw8Z25qwGHyutv/oR/xx3WizRSKDlFkPsGGOPO4dnOrsGmuLAu00fyjhCtb0gL
-         d97SYDwhNL66V4wFfnFmFRxU20yPKZEOeZs8w1zY6eUfu1e3ZUdKdWABdbJcJmb1u/
-         AJbtJJ9et5FfQ==
-Date:   Mon, 1 Nov 2021 06:44:40 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, jiri@resnulli.us,
-        mkubecek@suse.cz, andrew@lunn.ch, f.fainelli@gmail.com
-Subject: Re: [PATCH net-next v2 3/4] devlink: expose get/put functions
-Message-ID: <20211101064440.57a587bf@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <YX43wGPh5+TcXR81@unreal>
-References: <20211030171851.1822583-1-kuba@kernel.org>
-        <20211030171851.1822583-4-kuba@kernel.org>
-        <YX43wGPh5+TcXR81@unreal>
+        s=k20201202; t=1635774607;
+        bh=y1crDa6gBtxW7kRDjE1D2YEflH5VMy/OoGBTkRYvQG4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=IZ55QwxmLhZieMGb+vRJfxwJDk8/7d6LEaxOhSQyjuAgvpaVVkjk0HBgVuZXE7/bu
+         e5uRqk7TkUjLUFUwIJk0FvB3bKVVz+NR5+lIAPGCVpZrNbWnAvf5U4vGZw0ihybux8
+         enC2gVzXZEgOxY5zogb4SlG9Jpu3vPYdY9lwELM9OIDFQq9VH+52HcHdGIQXZS1bdb
+         HVzhjHcAqnSlD0xvoXRzJrbDUU3V9zVgwIjYUSKgv7m3YbuNZEp69w8HOKW+5I2Ddf
+         PGuDStV2hDWfmaI0E/eo8ExxsiPPTljiS96VX5YRjQIP22NJ6FomZMnYu8rbLGTgPF
+         hnkrL5e2TYfmQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8D66C60A94;
+        Mon,  1 Nov 2021 13:50:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/3] Tracepoints for SMC
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163577460757.13123.13168194829580546848.git-patchwork-notify@kernel.org>
+Date:   Mon, 01 Nov 2021 13:50:07 +0000
+References: <20211101073912.60410-1-tonylu@linux.alibaba.com>
+In-Reply-To: <20211101073912.60410-1-tonylu@linux.alibaba.com>
+To:     Tony Lu <tonylu@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, kuba@kernel.org, davem@davemloft.net,
+        guwen@linux.alibaba.com, dust.li@linux.alibaba.com,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 31 Oct 2021 08:29:20 +0200 Leon Romanovsky wrote:
-> I really like this series, but your latest netdevsim RFC made me worry.
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Mon,  1 Nov 2021 15:39:10 +0800 you wrote:
+> This patch set introduces tracepoints for SMC, including the tracepoints
+> basic code. The tracepoitns would help us to track SMC's behaviors by
+> automatic tools, or other BPF tools, and zero overhead if not enabled.
 > 
-> It is important to make sure that these devlink_put() and devlink_get()
-> calls will be out-of-reach from the drivers. Only core code should use
-> them.
+> Compared with kprobe and other dymatic tools, the tracepoints are
+> considered as stable API, and less overhead for tracing with easy-to-use
+> API.
+> 
+> [...]
 
-get/put symbols are not exported so I think we should be safe
-from driver misuse at this point. If we ever export them we 
-should add a 
+Here is the summary with links:
+  - [net-next,1/3] net/smc: Introduce tracepoint for fallback
+    https://git.kernel.org/netdev/net-next/c/482626086820
+  - [net-next,2/3] net/smc: Introduce tracepoints for tx and rx msg
+    https://git.kernel.org/netdev/net-next/c/aff3083f10bf
+  - [net-next,3/3] net/smc: Introduce tracepoint for smcr link down
+    https://git.kernel.org/netdev/net-next/c/a3a0e81b6fd5
 
-  WARN_ON(!(devlink->lock_flags & DEVLINK_LOCK_USE_REF));
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-> Can you please add it as a comment above these functions?
 
-Will do if the RFC sinks.
-
-> At least for now, till we discuss your RFC.
