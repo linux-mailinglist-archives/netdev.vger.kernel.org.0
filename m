@@ -2,146 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AA1A44244A
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 00:47:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBD0A44244F
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 00:47:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231666AbhKAXto (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 19:49:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41968 "EHLO
+        id S231735AbhKAXuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 19:50:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231392AbhKAXtn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 19:49:43 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AABF5C061764
-        for <netdev@vger.kernel.org>; Mon,  1 Nov 2021 16:47:09 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id p18so9855978plf.13
-        for <netdev@vger.kernel.org>; Mon, 01 Nov 2021 16:47:09 -0700 (PDT)
+        with ESMTP id S230396AbhKAXuB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 19:50:01 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAD17C061714;
+        Mon,  1 Nov 2021 16:47:27 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id t127so48522313ybf.13;
+        Mon, 01 Nov 2021 16:47:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UzYhPRxfN72kUqnxzFAI5MAMDQEz6/F2C3soDyRpS2c=;
-        b=WDl2XKPNursO5FZzbRDwLHcIfpZ+Vu+U11YkFDaM++Viknk/D/DPwMh++Iz/gmRHmr
-         QcxGpNIkzllLtn7PvlIarxOPBy1l0oghI6w21Ikz2uhxfzuHS/hiP6JvrliZiG61jC1B
-         kQBlYSXIfFwfCW3mY3v9YKnqXKpYAYJVGDqrchje54NBVxdrCJDULX07rXV7LNDUtkJJ
-         2y9cT5ACPCuPU/JXUo3uF8avTaaUqeZmrkSkYFQR0d7n7kZxtWdM0ZqTnWEK8WXQhb7k
-         tyZEHtPL7Mw1jbI6fmyy0ShR/Y4RWX9/F8VdH+Oh0g4XqKX1uuf6mD3cLnOqTgzxuKYk
-         iWpA==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Sf1MOARYDjP4TdzVuSLyJGMCk0C2bT96cLtb/iSHOvE=;
+        b=SmRguYNmZ65IXjC5kS7UQZRTfWQSdxG3tt0NMqEE3jWrUYTo0GxWeERHGJGqffLMhO
+         mUpNaR7C7soFG4z0owyxtBpWpkIIwvI7NmZ1X9AdSpHW94bF9X0F2JYuleAt/1sHg0L/
+         5zrYaqQwj0Suq5S5VsmoV1AZdC6+4yP/fsMOSEXMRg6e4wm0lhJ2QLDw5Gk9S7qwsRw+
+         4Ge1C6z+tXJAZUZgehS4GLqH1/7jQ+JcX7YrRez6DqCs2zac2rP50sEIyn+lO7WeZt0c
+         XBXE/edBJBpIPW+IBzEvHdctfSqV5hvPkoQfNas342hISax3YHARRiHhQ7FBsPBgRiOl
+         mZFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UzYhPRxfN72kUqnxzFAI5MAMDQEz6/F2C3soDyRpS2c=;
-        b=vDUrDdc6sbGiWHSBPEBIhQ4XpnhZlTENdG+Du5MLFhfGnTLfzC3MTU7z9XxyZVH0f9
-         b+sw/aVJvdjSoN2taxao3OjTiSPeXarVepKJ7Hxvd+VuCIr9klVcRjQKvaZwrpIGjcG5
-         Hc/Auo9j7MHblKo17leUOSgOlCbRGfqlXGMoB458HxGE2jYb2mnhuOen6TnQn1VbDLJf
-         4CrRIszAlGi2aoKzwLo8npzfHn9FB68Vj+UGh+TW3ntEwnSM5UJWnQKy/tkZH3FVuyb8
-         y2p0xkWihuf3fCuoHM5BDUULiCz/YBQUpX9rS20HpIcNEjBboamqaEO7xmSikMT/HUIM
-         VOOQ==
-X-Gm-Message-State: AOAM533mY2GMFXEf9dmEX6HkCgQ+1GVvd0uROrMncCNWjZu/bpt3jlTL
-        nZV90vsfPKQy/2XtccyZBBAqKj87jp01xg==
-X-Google-Smtp-Source: ABdhPJzGDWpofgaoUfufpelsxEna0/8OrBK0EZ/+wkP7TpMBYCTx6kMQuzbOjv/+xJpb6W5ssdsEQg==
-X-Received: by 2002:a17:90a:5b0d:: with SMTP id o13mr2477894pji.117.1635810428735;
-        Mon, 01 Nov 2021 16:47:08 -0700 (PDT)
-Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
-        by smtp.gmail.com with ESMTPSA id b6sm14393429pfv.204.2021.11.01.16.47.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Nov 2021 16:47:08 -0700 (PDT)
-Date:   Mon, 1 Nov 2021 16:47:05 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-Subject: [ANNOUNCE] iproute2 5.15
-Message-ID: <20211101164705.6f4f2e41@hermes.local>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Sf1MOARYDjP4TdzVuSLyJGMCk0C2bT96cLtb/iSHOvE=;
+        b=My1n7WexEEoJyWD0Ge/ODEjUZvs1Jnmp9d4kfbwVKWLOP9p795tdQvBGZTDovLK9Um
+         ZSC1ZAX+MOxq2P37ETL6qyHv9dn7n8gy77QrXNPVm0V8MF23sydr4L7+6jCBmE1RkQmA
+         5jdV4TMyuihtQfoDuxRoJnRawc4Tx6nF4OvrKlOM3O5+LYQAwLTp9MSJ8gg80YlYQx63
+         vNsMthPCXzPetfHUx+KuQUAlh1kF2BTrtk35zQrprwZkfjmGH5s3+j+eXNQ78eelLokx
+         41lXtJ4o/zAAsqWuOpIjS+okT6xfPfKvlw+8WAdWCk7OJ9ubYxs9FVJiZu7yBlXnY+8N
+         SNZg==
+X-Gm-Message-State: AOAM531vNQDgGTCBKyxAn6ybAGcEa6eQ+RGhH2LOM21ESFkZt2CB2Fcg
+        66MNT14asz07ghieh1ghnV/jS7CGpdJoQo55MMOqKgH95w4=
+X-Google-Smtp-Source: ABdhPJxxytkF+I+xIYE57g7IWWkQCLnoV8y619WwaJHG8gGGeHV30HWL8AmkKNk7EfNuLQNSutDI8kZo20T/HYQbqVA=
+X-Received: by 2002:a25:d010:: with SMTP id h16mr25598551ybg.225.1635810447094;
+ Mon, 01 Nov 2021 16:47:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20211101060419.4682-1-laoar.shao@gmail.com> <20211101060419.4682-10-laoar.shao@gmail.com>
+In-Reply-To: <20211101060419.4682-10-laoar.shao@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 1 Nov 2021 16:47:15 -0700
+Message-ID: <CAEf4BzafYdKmkJ_2sDMWibhWCZBPt=XLJwEAOgJDgnoYEvv4aA@mail.gmail.com>
+Subject: Re: [PATCH v7 09/11] tools/testing/selftests/bpf: make it adopt to
+ task comm size change
+To:     Yafang Shao <laoar.shao@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Peter Ziljstra <peterz@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Qiang Zhang <qiang.zhang@windriver.com>,
+        robdclark <robdclark@chromium.org>,
+        Christian Brauner <christian@brauner.io>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        dennis.dalessandro@cornelisnetworks.com,
+        mike.marciniszyn@cornelisnetworks.com,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>, linux-rdma@vger.kernel.org,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        kbuild test robot <lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Iproute2 trick or treat edition. As usual many small bug fixes and
-a few new features such as IOAM.
+On Sun, Oct 31, 2021 at 11:04 PM Yafang Shao <laoar.shao@gmail.com> wrote:
+>
+> The hard-coded 16 is used in various bpf progs. These progs get task
+> comm either via bpf_get_current_comm() or prctl() or
+> bpf_core_read_str(), all of which can work well even if the task comm size
+> is changed.
+>
+> In these BPF programs, one thing to be improved is the
+> sched:sched_switch tracepoint args. As the tracepoint args are derived
+> from the kernel, we'd better make it same with the kernel. So the macro
+> TASK_COMM_LEN is converted to type enum, then all the BPF programs can
+> get it through BTF.
+>
+> The BPF program which wants to use TASK_COMM_LEN should include the header
+> vmlinux.h. Regarding the test_stacktrace_map and test_tracepoint, as the
+> type defined in linux/bpf.h are also defined in vmlinux.h, so we don't
+> need to include linux/bpf.h again.
+>
+> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+> Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+> Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Steven Rostedt <rostedt@goodmis.org>
+> Cc: Al Viro <viro@zeniv.linux.org.uk>
+> Cc: Kees Cook <keescook@chromium.org>
+> Cc: Petr Mladek <pmladek@suse.com>
+> ---
 
-As always, it is recommended to always use the latest iproute2.
-The latest code will always run on older kernels (and vice versa);
-this is possible because of the kernel API/ABI guarantees.
-Except for rare cases, iproute2 does not do maintenance releases
-and there is no long term stable version.
+LGTM, thanks.
 
-Download:
-    https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-5.15.0.tar.gz
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
-Repository for current release
-    https://github.com/shemminger/iproute2.git
-    git://git.kernel.org/pub/scm/network/iproute2/iproute2.git
+>  include/linux/sched.h                                   | 9 +++++++--
+>  tools/testing/selftests/bpf/progs/test_stacktrace_map.c | 6 +++---
+>  tools/testing/selftests/bpf/progs/test_tracepoint.c     | 6 +++---
+>  3 files changed, 13 insertions(+), 8 deletions(-)
+>
 
-And future release (net-next):
-    git://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git
-
-Contributions:
-
-Andrea Claudi (1):
-      lib: bpf_legacy: fix bpffs mount when /sys/fs/bpf exists
-
-Antoine Tenart (4):
-      man: devlink-port: fix the devlink port add synopsis
-      man: devlink-port: fix style
-      man: devlink-port: remove extra .br
-      man: devlink-port: fix pfnum for devlink port add
-
-David Ahern (3):
-      Update kernel headers
-      Import ioam6 uapi headers
-      Update kernel headers
-
-David Marchand (1):
-      iptuntap: fix multi-queue flag display
-
-Davide Caratti (1):
-      mptcp: unbreak JSON endpoint list
-
-Frank Villaro-Dixon (1):
-      cmd: use spaces instead of tabs for usage indentation
-
-Gokul Sivakumar (1):
-      ipneigh: add support to print brief output of neigh cache in tabular format
-
-Hangbin Liu (1):
-      ip/bond: add lacp active support
-
-Ilya Dmitrichenko (1):
-      ip/tunnel: always print all known attributes
-
-Justin Iurman (4):
-      Add, show, link, remove IOAM namespaces and schemas
-      New IOAM6 encap type for routes
-      IOAM man8
-      ipioam6: use print_nl instead of print_null
-
-Luca Boccassi (2):
-      tree-wide: fix some typos found by Lintian
-      configure: restore backward compatibility
-
-Neta Ostrovsky (1):
-      rdma: Fix SRQ resource tracking information json
-
-Nikolay Aleksandrov (1):
-      man: ip-link: remove double of
-
-Paul Chaignon (1):
-      lib/bpf: fix map-in-map creation without prepopulation
-
-Peilin Ye (1):
-      tc/skbmod: Introduce SKBMOD_F_ECN option
-
-Puneet Sharma (1):
-      tc/f_flower: fix port range parsing
-
-Stephen Hemminger (5):
-      uapi: update headers from 5.15 merge
-      ip: remove leftovers from IPX and DECnet
-      uapi: updates from 5.15-rc1
-      uapi: pickup fix for xfrm ABI breakage
-      v5.15.0
-
+[...]
