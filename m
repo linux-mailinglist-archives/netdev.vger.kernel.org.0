@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67F0344137F
+	by mail.lfdr.de (Postfix) with ESMTP id B02EA441380
 	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 07:05:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231749AbhKAGH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 02:07:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55338 "EHLO
+        id S231305AbhKAGH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 02:07:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230307AbhKAGHd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 02:07:33 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6897C06120B;
-        Sun, 31 Oct 2021 23:04:43 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id 75so16328164pga.3;
-        Sun, 31 Oct 2021 23:04:43 -0700 (PDT)
+        with ESMTP id S231393AbhKAGHe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 02:07:34 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E1E7C06120C;
+        Sun, 31 Oct 2021 23:04:46 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id k4so1069630plx.8;
+        Sun, 31 Oct 2021 23:04:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=CZbW1Aleg8hcQ6oriKfCOVzwEMQjjmsZLoOFChfxiOE=;
-        b=hLIVcr6CSGMn7q+duUxCWW0eGrpmQBAmB6Wq4FCLbLyQvr2Upd8TZDDWhXwETwIru5
-         gVsFVTteDomWNPaucmxRqkCCuS8WRWbKXTXFS4O738YFeGYfE7jLWgBhWcP5Wyl3Ixx1
-         e9YODtfNTOnD4iIYhMk9WCAiID1UqwO6uuIqcXKNmu7EhFjFVJ/VFfeT8r6Dr1npBbY7
-         zyuY/z7kwCaKGMOzNmsXif+LtjafxWuoctWRkorVboIJqLwC2HTMPIEGJO5cyPXEJAeh
-         sgohILu4rfKSjNpvEjhK4xvo6H+wsmaaOY6Ipo4srFpfRbzLHJNYJVKU90aLM7DlOEJ/
-         4Qrw==
+        bh=UnbvpW9WGZPPHsD461H5NLpgI+BcZRpk9Uvkg/7/FsI=;
+        b=mBgEqR2cuqWgG4wbE+Ee9nl7PI0oPuF//CHOFEk3rqDKH5Wv+2P8q+SgcLACl7Eu1S
+         DYIBVewqg0Hdo0Z9cjB8Sc4otEiDDpzHVGJDzdQm/23So6LaXX9kNiFXBxpugZ7V+xVS
+         0csKWuVOGikNjqyzPgk+VenqX+qZTV7bDJrecXDWyeYudRBWBkdXOMGaT3EtG6yamLnt
+         oT+8TiedZHp3qG2ml51vaYf8orZUmG0H45pcDpUssVRSPBh7l6VY8IyPdChDJul82kv5
+         Ev7EY/jQQfLSgW8XNit4lnKgN4T8Rq4bUuBwJvyrwIhPyecKtKCfMJM4hdXsmzwSwxCL
+         KqcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=CZbW1Aleg8hcQ6oriKfCOVzwEMQjjmsZLoOFChfxiOE=;
-        b=uwrfkDDJuATNgmtGsB8YLWZ2e20Hg1M+FUgUeoLyPC4LRzN+vM/No+LykePhwvGpDF
-         m9pk49EyFROd3T+k4z89+ZCR3PQ5kpcv7zkQnbMBbVPJUr8xhATBGZd6hSHEaWYo0Aix
-         a/KsgUPXv4XwjyDbHU/2C6rYe+7AVVgl8ebGJjuSAKRtThzKykEuZvRAz0MNODoqCd/3
-         +i99jy0FqWiOK3NdCjCZr/o10Xyq5SX+mA+ZvzHBVl3Ip0DVBFr5ceIWsOhbP6mHOXQa
-         r9q1uTnWaL6Hw63A+v2Dcf6Qdw/m3AaChis8bGUuJycoYzJSWcNRYcMG033iQk3HMa4n
-         2Alg==
-X-Gm-Message-State: AOAM532r06wRdBecCggO9q/ygmu7Sl1r6cSheTAWn1WnI+sjyLYnODWJ
-        7TWof55FHSV/URUY2gzErLQ=
-X-Google-Smtp-Source: ABdhPJy5ahFUxXTC3lwrjdq2rffkJFK0bqTnEW/fg2sOG/fpUs8BcRn22EW5Z/8v2ha5HNBZ374p9Q==
-X-Received: by 2002:a62:e510:0:b0:44c:e06e:80dd with SMTP id n16-20020a62e510000000b0044ce06e80ddmr27033507pff.48.1635746683498;
-        Sun, 31 Oct 2021 23:04:43 -0700 (PDT)
+        bh=UnbvpW9WGZPPHsD461H5NLpgI+BcZRpk9Uvkg/7/FsI=;
+        b=X6fkjcpe6mzh8qOKc3DsZ7Cu7SMm9wxGkzruf7WvtS83k69P424BXLWq2/2HOp1y0f
+         kSHXyOM/H5NtS7l/xvtBCYJ/zLFFuQeLp3y7wyOuf4vk4DjDwI69jahyyC9o5LDVvjgU
+         NpD4Afvqw5KEG0Q/2LAHGugWO8XgAu4l6R4Z8yM3UpVEtvt8qkGrxnLxWoM6duT3/lo2
+         yFilMrXsUGXAGtyKd4GB8jIKTxHfQUo8UanW4mg/pbuzlKrlIgLnRc+iv4/Dk1n2y7N+
+         353FKnIoJJ1Ete1q684kk0JqayGyUq3sqZ+c3t6BSfmewYQug+dix2zOuQ6buBu5GCXG
+         XRPQ==
+X-Gm-Message-State: AOAM530TZMlNX+EOfKyPjS7WU8YfP2HK6fuO8TW/tcYaBsDUzlQ9OKmj
+        e/hZ1GTahlL/P1iBDVZV66I=
+X-Google-Smtp-Source: ABdhPJzGCvt5iEpyM474KY6O62Zlsfcvpf7wrXcYqDsBGf7Az/ne89nFa22e0UxYm86jwgxdTn2BTA==
+X-Received: by 2002:a17:902:bd01:b0:141:6232:6f89 with SMTP id p1-20020a170902bd0100b0014162326f89mr23251730pls.12.1635746685828;
+        Sun, 31 Oct 2021 23:04:45 -0700 (PDT)
 Received: from localhost.localdomain ([144.202.123.152])
-        by smtp.gmail.com with ESMTPSA id g8sm3277586pfc.65.2021.10.31.23.04.41
+        by smtp.gmail.com with ESMTPSA id g8sm3277586pfc.65.2021.10.31.23.04.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 Oct 2021 23:04:43 -0700 (PDT)
+        Sun, 31 Oct 2021 23:04:45 -0700 (PDT)
 From:   Yafang Shao <laoar.shao@gmail.com>
 To:     akpm@linux-foundation.org, keescook@chromium.org,
         rostedt@goodmis.org, mathieu.desnoyers@efficios.com,
@@ -68,9 +68,9 @@ Cc:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         Yafang Shao <laoar.shao@gmail.com>,
         Alexei Starovoitov <alexei.starovoitov@gmail.com>,
         Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Subject: [PATCH v7 06/11] samples/bpf/test_overhead_kprobe_kern: make it adopt to task comm size change
-Date:   Mon,  1 Nov 2021 06:04:14 +0000
-Message-Id: <20211101060419.4682-7-laoar.shao@gmail.com>
+Subject: [PATCH v7 07/11] tools/bpf/bpftool/skeleton: make it adopt to task comm size change
+Date:   Mon,  1 Nov 2021 06:04:15 +0000
+Message-Id: <20211101060419.4682-8-laoar.shao@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20211101060419.4682-1-laoar.shao@gmail.com>
 References: <20211101060419.4682-1-laoar.shao@gmail.com>
@@ -81,12 +81,9 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 bpf_probe_read_kernel_str() will add a nul terminator to the dst, then
-we don't care about if the dst size is big enough. This patch also
-replaces the hard-coded 16 with TASK_COMM_LEN to make it adopt to task
-comm size change.
+we don't care about if the dst size is big enough.
 
 Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
 Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
 Cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
@@ -97,87 +94,24 @@ Cc: Al Viro <viro@zeniv.linux.org.uk>
 Cc: Kees Cook <keescook@chromium.org>
 Cc: Petr Mladek <pmladek@suse.com>
 ---
- samples/bpf/offwaketime_kern.c          |  4 ++--
- samples/bpf/test_overhead_kprobe_kern.c | 11 ++++++-----
- samples/bpf/test_overhead_tp_kern.c     |  5 +++--
- 3 files changed, 11 insertions(+), 9 deletions(-)
+ tools/bpf/bpftool/skeleton/pid_iter.bpf.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/samples/bpf/offwaketime_kern.c b/samples/bpf/offwaketime_kern.c
-index 4866afd054da..eb4d94742e6b 100644
---- a/samples/bpf/offwaketime_kern.c
-+++ b/samples/bpf/offwaketime_kern.c
-@@ -113,11 +113,11 @@ static inline int update_counts(void *ctx, u32 pid, u64 delta)
- /* taken from /sys/kernel/debug/tracing/events/sched/sched_switch/format */
- struct sched_switch_args {
- 	unsigned long long pad;
--	char prev_comm[16];
-+	char prev_comm[TASK_COMM_LEN];
- 	int prev_pid;
- 	int prev_prio;
- 	long long prev_state;
--	char next_comm[16];
-+	char next_comm[TASK_COMM_LEN];
- 	int next_pid;
- 	int next_prio;
- };
-diff --git a/samples/bpf/test_overhead_kprobe_kern.c b/samples/bpf/test_overhead_kprobe_kern.c
-index f6d593e47037..8fdd2c9c56b2 100644
---- a/samples/bpf/test_overhead_kprobe_kern.c
-+++ b/samples/bpf/test_overhead_kprobe_kern.c
-@@ -6,6 +6,7 @@
-  */
- #include <linux/version.h>
- #include <linux/ptrace.h>
-+#include <linux/sched.h>
- #include <uapi/linux/bpf.h>
- #include <bpf/bpf_helpers.h>
- #include <bpf/bpf_tracing.h>
-@@ -22,17 +23,17 @@ int prog(struct pt_regs *ctx)
- {
- 	struct signal_struct *signal;
- 	struct task_struct *tsk;
--	char oldcomm[16] = {};
--	char newcomm[16] = {};
-+	char oldcomm[TASK_COMM_LEN] = {};
-+	char newcomm[TASK_COMM_LEN] = {};
- 	u16 oom_score_adj;
- 	u32 pid;
+diff --git a/tools/bpf/bpftool/skeleton/pid_iter.bpf.c b/tools/bpf/bpftool/skeleton/pid_iter.bpf.c
+index d9b420972934..f70702fcb224 100644
+--- a/tools/bpf/bpftool/skeleton/pid_iter.bpf.c
++++ b/tools/bpf/bpftool/skeleton/pid_iter.bpf.c
+@@ -71,8 +71,8 @@ int iter(struct bpf_iter__task_file *ctx)
  
- 	tsk = (void *)PT_REGS_PARM1(ctx);
+ 	e.pid = task->tgid;
+ 	e.id = get_obj_id(file->private_data, obj_type);
+-	bpf_probe_read_kernel(&e.comm, sizeof(e.comm),
+-			      task->group_leader->comm);
++	bpf_probe_read_kernel_str(&e.comm, sizeof(e.comm),
++				  task->group_leader->comm);
+ 	bpf_seq_write(ctx->meta->seq, &e, sizeof(e));
  
- 	pid = _(tsk->pid);
--	bpf_probe_read_kernel(oldcomm, sizeof(oldcomm), &tsk->comm);
--	bpf_probe_read_kernel(newcomm, sizeof(newcomm),
--			      (void *)PT_REGS_PARM2(ctx));
-+	bpf_probe_read_kernel_str(oldcomm, sizeof(oldcomm), &tsk->comm);
-+	bpf_probe_read_kernel_str(newcomm, sizeof(newcomm),
-+				  (void *)PT_REGS_PARM2(ctx));
- 	signal = _(tsk->signal);
- 	oom_score_adj = _(signal->oom_score_adj);
  	return 0;
-diff --git a/samples/bpf/test_overhead_tp_kern.c b/samples/bpf/test_overhead_tp_kern.c
-index eaa32693f8fc..80edadacb692 100644
---- a/samples/bpf/test_overhead_tp_kern.c
-+++ b/samples/bpf/test_overhead_tp_kern.c
-@@ -4,6 +4,7 @@
-  * modify it under the terms of version 2 of the GNU General Public
-  * License as published by the Free Software Foundation.
-  */
-+#include <linux/sched.h>
- #include <uapi/linux/bpf.h>
- #include <bpf/bpf_helpers.h>
- 
-@@ -11,8 +12,8 @@
- struct task_rename {
- 	__u64 pad;
- 	__u32 pid;
--	char oldcomm[16];
--	char newcomm[16];
-+	char oldcomm[TASK_COMM_LEN];
-+	char newcomm[TASK_COMM_LEN];
- 	__u16 oom_score_adj;
- };
- SEC("tracepoint/task/task_rename")
 -- 
 2.17.1
 
