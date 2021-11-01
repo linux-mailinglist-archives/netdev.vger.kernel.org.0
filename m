@@ -2,225 +2,436 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 900EF441979
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 11:08:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D3054419AF
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 11:17:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232100AbhKAKKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 06:10:44 -0400
-Received: from mail-dm6nam10on2131.outbound.protection.outlook.com ([40.107.93.131]:9504
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232191AbhKAKKY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Nov 2021 06:10:24 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hE2HDbholVPzLuB3/lNMcssruPqEq96GGspGmMV/SakbsLGc6jFl4JvH+zSDjOn2D/x6WGochGA6wKeq7EStE6W+MoV8gm8xmgoO4qHO8FYa2yHKO4u3Ifv4WFNsHQYhhWt/8b+UcTkfIusAb4/F9gTzcyyyx64YLHBlDLCjtKVwCeOsA/3us+N5dR++o+9vM8MpwIT//cMbBAvBz3VXxQpKM/D3Ghv+DOdwcTOEXrPe8WYPozUu/rLVv1o9De2grFvCam9fKWuVgv4CfTrOrYm0c3dgorMycANPbyn3+rQ7A0EqtOVwnQTod9wHreZGXNf2sHGJtb6DkNvcevRa3w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uwk9peLGy7PFzif7keOSz2ppgWv8YM0qmjdsWwglEwk=;
- b=BGst5U+AakTY6q8wL5XcjE0crj+TcId90ecBA/boiOYVHCEM8kRZ1Yr2wf4xBCkVyk9vxg2sCmVba8KJ+nKJChb1dcIPJTHsOe0nrFUfUtb+XC9x6+jWwG1WY7fZVDYqz/Z1r0xtyZqNDl+PqWruIAenC86UhuHZqHpT2/28ArgXqom/oon4INEjoJ0rTynsUsjzwA45BNBcz8ismlAZN/omtnky785hdW/8LuxvgIKj3Mvw8aa/HIgsPun3kTXzLEv7fZ6+nxRCckZEcfYrUQ6snyFnC8Itq54o1wE4hsPBFtV6d6qGLWX0RsU/dJ8VFgwim2QsPd41J8Rvy45OLg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uwk9peLGy7PFzif7keOSz2ppgWv8YM0qmjdsWwglEwk=;
- b=ABt1VokBmcTGiBq2jVJKiNGO7xzZgYV4FgH8NPe5cMFAtSZoI4puPnqb7jZYXEknfE5/qur7HoGeArYVPayeuq0q8Q7zSfo9g0Y/xeg3ku6Q/fp836xy5CwN5X0Bz1BLu/puVMpEIKT4V5mcA5jRBFY+nREVuKy3Frcgk2tKLv0=
-Received: from DM5PR1301MB2172.namprd13.prod.outlook.com (2603:10b6:4:2d::21)
- by DM6PR13MB4538.namprd13.prod.outlook.com (2603:10b6:5:76::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.9; Mon, 1 Nov
- 2021 10:07:50 +0000
-Received: from DM5PR1301MB2172.namprd13.prod.outlook.com
- ([fe80::54dd:e9ff:2a5b:35e]) by DM5PR1301MB2172.namprd13.prod.outlook.com
- ([fe80::54dd:e9ff:2a5b:35e%5]) with mapi id 15.20.4669.009; Mon, 1 Nov 2021
- 10:07:50 +0000
-From:   Baowen Zheng <baowen.zheng@corigine.com>
-To:     Vlad Buslov <vladbu@nvidia.com>,
-        Simon Horman <simon.horman@corigine.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Roi Dayan <roid@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Baowen Zheng <notifications@github.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        oss-drivers <oss-drivers@corigine.com>
-Subject: RE: [RFC/PATCH net-next v3 5/8] flow_offload: add process to update
- action stats from hardware
-Thread-Topic: [RFC/PATCH net-next v3 5/8] flow_offload: add process to update
- action stats from hardware
-Thread-Index: AQHXy+v3GkGmPf7/Wk6HXpPjilqCdKvqOCMAgAQ++7A=
-Date:   Mon, 1 Nov 2021 10:07:50 +0000
-Message-ID: <DM5PR1301MB2172C3781B8A963F6A165DE7E78A9@DM5PR1301MB2172.namprd13.prod.outlook.com>
-References: <20211028110646.13791-1-simon.horman@corigine.com>
- <20211028110646.13791-6-simon.horman@corigine.com>
- <ygnho877ah8n.fsf@nvidia.com>
-In-Reply-To: <ygnho877ah8n.fsf@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: nvidia.com; dkim=none (message not signed)
- header.d=none;nvidia.com; dmarc=none action=none header.from=corigine.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5332e5d1-5f0c-4d75-8417-08d99d1f7642
-x-ms-traffictypediagnostic: DM6PR13MB4538:
-x-microsoft-antispam-prvs: <DM6PR13MB45381074198FF0422411282FE78A9@DM6PR13MB4538.namprd13.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: AyMZNnrf5MYZIj/RdiZx7S39xg9QMiPaoN7M542vnsRn74XgYlszu+tDoq33rD09yq+QC3SUKQzXmk7PQkPDZlK7upkBnZHVnFHgswduZp78pBT8pjIsO9aWCapVncQobSofYlsmtHV3d87Hf/3LNs5e3XAFo3IVAiC2BMbPhzAApuZMbHXLv7PMj2PQAfwy1YueHGaLZ9joWQKWqFXWd47Q0ngQy23RFwql2j7aw19AZRbn9GBKT0ygzNOcFzs0Ppb5MbSsGI+uYKnDTSqHViwUtzwmroOUZSw/xEJ6c3OUt+PYLPXDvZRjpiltTLoTfehjJ6xaHQevTUdmUT9gTzZBNLAJEVEoUA5RM5rqiGU0b2SWglHS+6SiHmTqAjKmrkZDrbTOFzThM1Xg8XveenftPYYm3NQ2ldB3y1tctam3mHt2hFeWdb2purA7k7N02jDmW8mtGZ70yMJ2sVDx+M+U9vzJbNKqfWihGZqF/pCuCg7ZDcPIFVkk2o9v4Y3T943p1WaJdQlF0CiBmajLsu3msHdG20ZQeK7BHhfKd9tKWKi2eGiZfLI4reQnTm9ddiY9db/xNaGV9qg5joLXri5m/ba0FQgJU2kB6URx29xXyITihc4m6ef6F04NM6gbSpIo8vhf+1l4TQpkaziV5QVeXRIMLGhxd5fRrGed3+OA73eea/cxixQt0GuTR+VUbsWROWT1LpIDFWfXyfpXEg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR1301MB2172.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(366004)(39830400003)(346002)(396003)(376002)(64756008)(66446008)(38100700002)(33656002)(76116006)(38070700005)(122000001)(6636002)(186003)(66476007)(66556008)(508600001)(26005)(66946007)(2906002)(52536014)(316002)(107886003)(83380400001)(110136005)(15650500001)(54906003)(71200400001)(5660300002)(86362001)(6506007)(4326008)(7696005)(9686003)(55016002)(44832011)(8676002)(8936002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?MWZDbm1JM3pVSW5HMmMwblFMb1lTRHNJbkcvTXBZTHQrTEhuOFRBa2EwWUsw?=
- =?utf-8?B?eWRYQngycWZhK0JXTkxsaVJTU1RNbjZ0bHUzekQ3dVJxejE2WkNRQTdvcFUx?=
- =?utf-8?B?ZFNmM1Nxa0dIMHZ0T1gwQTlpMjZ6RFc4dFR5ZUtmWDg2RmU0d0QrY1lrNWxr?=
- =?utf-8?B?M291WnNnTFo4SiswK2pOUm5CcWdld3MwY3hvRnFSNjdidnZvZk4zSlUwZktl?=
- =?utf-8?B?Qm10OUx1N1hBZ0FCWjVBVGRmTFhlMEJGS3kyYUhnSkNWVmdaM1NOOUsvdTRh?=
- =?utf-8?B?NmV5SWViWEtLODFIajBHNzZZenVzSGJJZ0pxeSswa1pEamI5aEVZUERFOHZC?=
- =?utf-8?B?OXIrTnA5Yk95YlNBUzhwNWZrYU1mN1lWTnp4RmM4WUhZWGYyNkZ1R1NzRmRu?=
- =?utf-8?B?RjdTYXlFUC96cXdTYVF5cWV0b09PNHVEM0V3Nk80ZFVqV09YQXBtOHRvNVNE?=
- =?utf-8?B?QXpxdEJDWEt0T0F2QnovdWQwcEUvK1lqZHB3WUE4aGdzYVFXVXg0M245Zkgv?=
- =?utf-8?B?WTNuTEhLRmp5dGZtYUJJc3NQSGs0MFZ0cUpFS0wvTURHMkNtR2RMOCtCSDcy?=
- =?utf-8?B?dHZIOVljekVmaDVPS0lJTWNJTFAvR0xpaDJMQ0gvMEY2dnRCRmpXRXdHL2Jt?=
- =?utf-8?B?MUU1K05WZWNCS05JQlhIRFpOWjl3c0NKeEVENG4wU0svajFNVlF6cmE5eGVz?=
- =?utf-8?B?dFZBRVgwNmhadUh3eUNGZ202ZHBKekx5SzRQWllMWE1GYVZlUHZERllsZVJM?=
- =?utf-8?B?YTdBOGYxRXB1SjMyM2dsVnhkVUpuNDU1SWdBaWlxQkw0Zk9UZGZWeE1RNnRY?=
- =?utf-8?B?VjQyYnUzZVJpUmdhTk55K0NaUDRvWWpNM0hrSGZTbHQxZWZOdzlLZkF4K2Fr?=
- =?utf-8?B?aS8razNoc2FQUW5NbG40M3NJOGxMdjB0VHFOcTBBSWF5MDNlTGxNUit2U0F0?=
- =?utf-8?B?NXp4cWJCOGcrMGZYcGlzdkdqNnU4SUVIMEIrdGdFeGlTYnl4T0pHdlB5NS8y?=
- =?utf-8?B?eTZQZFZsTml5bGJ4TiszZCtVZ1ZheGlUVG9NT1JtR2pBenVLdEFqNnlpeGdq?=
- =?utf-8?B?U09pMUFMRTIzTythaTM5akVBSjdsMnFPWnhQMkwrSkVvN3lpcnR3UlpONHdu?=
- =?utf-8?B?UC9zM1l5WDJJLzNYNzB1QzQ4d1VmWjVqTmQ5OEl6L0M2TWVyK3dsY0ZJWTRp?=
- =?utf-8?B?U090SDFDSmhPbFlIZ1l3Z3dFN3hEeWY1RlVKKy9rQjBMOFRYK0tvczFtNEV4?=
- =?utf-8?B?ZlJhZTVJclN2cnNYaXlwWmdySk8yWVhrb3VYeXpwRTJSWWIzMzVKRDZoVFY0?=
- =?utf-8?B?Z2tDYTBVL2tiMUlyYUxpdFJxUlVrY2VSTGRPYkdYbmVIbG9Od1RKdU1La25t?=
- =?utf-8?B?OHZMQlpuVUEvZysxSWxhVmVpdTNLWmh1SzY5YncxRmltRzA5VDhORml6RXFG?=
- =?utf-8?B?STlhaGMrOWtZVHpvb1hYTzFtYUtKdFlGQUQrSTcvYStpbFhVbThkUzlCNlgw?=
- =?utf-8?B?NUhpMWF6aDBLSy93bUdxZjJISGpJMlBWVFZEMUJwZzAwbVdIc2l4ZWJKVW5n?=
- =?utf-8?B?TWU1VzRTYUJjem8vdFo1cDlXclAxNTdjbVpPSWJVdmIzM1hrazVWZGZwR3Nu?=
- =?utf-8?B?ZmxVUmFLQXN5aXAxbDdyUld6WnVQbmhHckNUM1c3bDI3Lzc1bDBFUkwzb3ZV?=
- =?utf-8?B?SlVaMG1xSDRJbWJQcVRHTzlrVitJZmc3NnN1Z0daU1dra0NEMTh5djF4OFVp?=
- =?utf-8?B?VlFHdWJoblArNzZMMlVLdmIrLy8rRXJqbFFjWGNsMkc4TXNnWlNuZ3BidGlZ?=
- =?utf-8?B?bEVOUmMzQSsvSnEyYzJ3QjJZN3lNN0RSNlZDQlJsRXlOOWJXbXZnY2ZDaTFv?=
- =?utf-8?B?U2kyOUlqSGUzOG5LYXBnT2VDMkFOUytuTTFMWGtNd2t2ZE1aUzYyenlYaEdU?=
- =?utf-8?B?aFZ6b3lOV3ZIU0V4Tm5rLzVlTVc0RmFMVUlocG9IRjlsWUhIdXZFMmNIbW9R?=
- =?utf-8?B?RTA0ZTVTamI1Q3h0Q2tlOEJsSzBPbm5RTmU5SjQybSt3eC9ZOXRsZ3V5c04r?=
- =?utf-8?B?b2pxTUxSaE42MmRTWWVSamZqeUwvcWd1S1IxdXcrL0FtYTFYemVSZlYwaXVm?=
- =?utf-8?B?RmVNWTFaQnhJMFdGMlM1b1R3alBEWm5GZ2JZalAvTGtPZnY5LzFnZ1hHNGM3?=
- =?utf-8?B?Y0J3TVNURXR4NkREQllQN2JJTWljb0lGd3hrKzNWM2o0dFd3SFJXcDRtQWQ0?=
- =?utf-8?B?bXBrazZsS1MxdXdsbDQ3U2luek5nPT0=?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S231673AbhKAKTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 06:19:39 -0400
+Received: from sender11-of-o53.zoho.eu ([31.186.226.239]:21893 "EHLO
+        sender11-of-o53.zoho.eu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231981AbhKAKTi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 06:19:38 -0400
+ARC-Seal: i=1; a=rsa-sha256; t=1635761823; cv=none; 
+        d=zohomail.eu; s=zohoarc; 
+        b=TSk6neWVjPGRtNGb19/Rs6MuzRhO5Vdp66oOMNEnwKruvDnC2qweh4ogCBjaCIjgayOJqVRfrN1ZzQ/f9xwqx70q7ZNi37SHI8emQ8uphz+CLOqCZR2el3Etq/IQBT6T3xC8bo6sHaIt32fnju0W3X5Uu0c+R2V/MUd/F3pp2s4=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.eu; s=zohoarc; 
+        t=1635761823; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=CCZQ+HLKZjS9R1tctjaW45x9LRWkNjtyVur3PjsOq9g=; 
+        b=Vt/VDBait3FyPWnQGGnTJPKJvaCbkgMNLwFYXrp+mX+4oz7g+HfPYfZoVlsv3bjYDrJXBF3OgqIt3dVmt9GVya1cHZYJ4l0oI49J6TJDKxDv7kBR3PkGfAL5HRyOlIV+1raU75r59PqUpmqxLE/fyQDoGlf3SKeH3iRotW4x1KE=
+ARC-Authentication-Results: i=1; mx.zohomail.eu;
+        dkim=pass  header.i=bursov.com;
+        spf=pass  smtp.mailfrom=vitaly@bursov.com;
+        dmarc=pass header.from=<vitaly@bursov.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1635761823;
+        s=zoho; d=bursov.com; i=vitaly@bursov.com;
+        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+        bh=CCZQ+HLKZjS9R1tctjaW45x9LRWkNjtyVur3PjsOq9g=;
+        b=n4JVfFG2TaSRI5KNmj3VWQxvJvj+4aDFTgsSlw+NSCqc2HvLesMnZzfqabNIrUqU
+        F0gnF22/J0kkAdFZ42RVMjK6JRuEn/seeCnEuLPLMCjzHPdc3t5uO7XWIWWyN0rnJdT
+        lKkQ5mBqnixLW1WZ8nabZXT78kS/BYRk5cjIsznk=
+Received: from [192.168.11.99] (31.133.98.254 [31.133.98.254]) by mx.zoho.eu
+        with SMTPS id 1635761821630653.6996148352924; Mon, 1 Nov 2021 11:17:01 +0100 (CET)
+Subject: Re: tg3 RX packet re-order in queue 0 with RSS
+To:     Pavan Chebbi <pavan.chebbi@broadcom.com>
+Cc:     Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        Michael Chan <mchan@broadcom.com>,
+        Linux Netdev List <netdev@vger.kernel.org>
+References: <0a1d6421-b618-9fea-9787-330a18311ec0@bursov.com>
+ <CAMet4B4iJjQK6yX+XBD2CtH3B30oqECUAYDj3ZE3ysdJVu8O4w@mail.gmail.com>
+ <CALs4sv2YVu0euy5-stBNuES3Bf2SR7MtiD0TJDfGmTLAiUONSA@mail.gmail.com>
+ <02400c1a-e626-d6c3-ecfd-3b9e9e4b6988@bursov.com>
+ <CALs4sv3XOTBKCxaUieYosMdXuuqiuHT5Gbhz8oixGv2XGw4+Ug@mail.gmail.com>
+ <a5c6e92f-cc59-0214-56f6-66632c5e59c2@bursov.com>
+ <CALs4sv2PWbijor=7aU4oh=yipYo2OMD79wMqEGfj3c4Lw9uycA@mail.gmail.com>
+ <ae4bd2c2-6e88-2b1c-c47d-7510ef6a8010@bursov.com>
+ <CALs4sv2mq5=FehCcxPveCbCMNT1aw=8LhqZ4g3=GXhKw8hsrmA@mail.gmail.com>
+ <be0e1e7d-272e-7f32-9626-ed4724d7fd9a@bursov.com>
+ <CALs4sv0uo7+RQ0hNmNC=3tD8gk=MS4chygeiuzf4Ve9iiKt9uA@mail.gmail.com>
+From:   Vitaly Bursov <vitaly@bursov.com>
+Message-ID: <ca16d60c-6853-f80f-99f0-0511b8ac1ef6@bursov.com>
+Date:   Mon, 1 Nov 2021 12:17:00 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR1301MB2172.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5332e5d1-5f0c-4d75-8417-08d99d1f7642
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Nov 2021 10:07:50.2623
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: HH4pl1HSDD0rCfTp8orxHqX6tmXfjlbD5uMNv0VZc/8sGjxIS8NTOG5HXnIqv9d/8fcmo75Y5l/7095rfGYjGwzsTKqP1yOgLq4uImP6btA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB4538
+In-Reply-To: <CALs4sv0uo7+RQ0hNmNC=3tD8gk=MS4chygeiuzf4Ve9iiKt9uA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: ru-RU
+Content-Transfer-Encoding: quoted-printable
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gT2N0b2JlciAzMCwgMjAyMSAxOjExIEFNLCBWbGFkIEJ1c2xvdiA8dmxhZGJ1QG52aWRpYS5j
-b20+IHdyb3RlOg0KPk9uIFRodSAyOCBPY3QgMjAyMSBhdCAxNDowNiwgU2ltb24gSG9ybWFuIDxz
-aW1vbi5ob3JtYW5AY29yaWdpbmUuY29tPg0KPndyb3RlOg0KPj4gRnJvbTogQmFvd2VuIFpoZW5n
-IDxiYW93ZW4uemhlbmdAY29yaWdpbmUuY29tPg0KPj4NCj4+IFdoZW4gY29sbGVjdGluZyBzdGF0
-cyBmb3IgYWN0aW9ucyB1cGRhdGUgdGhlbSB1c2luZyBib3RoIGJvdGggaGFyZHdhcmUNCj4+IGFu
-ZCBzb2Z0d2FyZSBjb3VudGVycy4NCj4+DQo+PiBTdGF0cyB1cGRhdGUgcHJvY2VzcyBzaG91bGQg
-bm90IGluIGNvbnRleHQgb2YgcHJlZW1wdF9kaXNhYmxlLg0KPg0KPkkgdGhpbmsgeW91IGFyZSBt
-aXNzaW5nIGEgd29yZCBoZXJlLg0KVGhhbmtzLCB3ZSB3aWxsIGZpeCBpdCBpbiBuZXh0IHBhdGNo
-Lg0KPj4NCj4+IFNpZ25lZC1vZmYtYnk6IEJhb3dlbiBaaGVuZyA8YmFvd2VuLnpoZW5nQGNvcmln
-aW5lLmNvbT4NCj4+IFNpZ25lZC1vZmYtYnk6IExvdWlzIFBlZW5zIDxsb3Vpcy5wZWVuc0Bjb3Jp
-Z2luZS5jb20+DQo+PiBTaWduZWQtb2ZmLWJ5OiBTaW1vbiBIb3JtYW4gPHNpbW9uLmhvcm1hbkBj
-b3JpZ2luZS5jb20+DQo+PiAtLS0NCj4+ICBpbmNsdWRlL25ldC9hY3RfYXBpLmggfCAgMSArDQo+
-PiAgaW5jbHVkZS9uZXQvcGt0X2Nscy5oIHwgMTggKysrKysrKysrKy0tLS0tLS0tDQo+PiAgbmV0
-L3NjaGVkL2FjdF9hcGkuYyAgIHwgMzcgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKw0KPj4gIDMgZmlsZXMgY2hhbmdlZCwgNDggaW5zZXJ0aW9ucygrKSwgOCBkZWxldGlvbnMo
-LSkNCj4+DQo+PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9uZXQvYWN0X2FwaS5oIGIvaW5jbHVkZS9u
-ZXQvYWN0X2FwaS5oIGluZGV4DQo+PiA2NzEyMDhiZDI3ZWYuLjgwYTlkMWU3ZDgwNSAxMDA2NDQN
-Cj4+IC0tLSBhL2luY2x1ZGUvbmV0L2FjdF9hcGkuaA0KPj4gKysrIGIvaW5jbHVkZS9uZXQvYWN0
-X2FwaS5oDQo+PiBAQCAtMjQ3LDYgKzI0Nyw3IEBAIHZvaWQgdGNmX2FjdGlvbl91cGRhdGVfc3Rh
-dHMoc3RydWN0IHRjX2FjdGlvbiAqYSwNCj51NjQgYnl0ZXMsIHU2NCBwYWNrZXRzLA0KPj4gIAkJ
-CSAgICAgdTY0IGRyb3BzLCBib29sIGh3KTsNCj4+ICBpbnQgdGNmX2FjdGlvbl9jb3B5X3N0YXRz
-KHN0cnVjdCBza19idWZmICosIHN0cnVjdCB0Y19hY3Rpb24gKiwgaW50KTsNCj4+IGludCB0Y2Zf
-YWN0aW9uX29mZmxvYWRfZGVsKHN0cnVjdCB0Y19hY3Rpb24gKmFjdGlvbik7DQo+PiAraW50IHRj
-Zl9hY3Rpb25fdXBkYXRlX2h3X3N0YXRzKHN0cnVjdCB0Y19hY3Rpb24gKmFjdGlvbik7DQo+PiAg
-aW50IHRjZl9hY3Rpb25fY2hlY2tfY3RybGFjdChpbnQgYWN0aW9uLCBzdHJ1Y3QgdGNmX3Byb3Rv
-ICp0cCwNCj4+ICAJCQkgICAgIHN0cnVjdCB0Y2ZfY2hhaW4gKipoYW5kbGUsDQo+PiAgCQkJICAg
-ICBzdHJ1Y3QgbmV0bGlua19leHRfYWNrICpuZXdjaGFpbik7IGRpZmYgLS1naXQNCj4+IGEvaW5j
-bHVkZS9uZXQvcGt0X2Nscy5oIGIvaW5jbHVkZS9uZXQvcGt0X2Nscy5oIGluZGV4DQo+PiA0NGFl
-NTE4MmE5NjUuLjg4Nzg4YjgyMWY3NiAxMDA2NDQNCj4+IC0tLSBhL2luY2x1ZGUvbmV0L3BrdF9j
-bHMuaA0KPj4gKysrIGIvaW5jbHVkZS9uZXQvcGt0X2Nscy5oDQo+PiBAQCAtMjkyLDE4ICsyOTIs
-MjAgQEAgdGNmX2V4dHNfc3RhdHNfdXBkYXRlKGNvbnN0IHN0cnVjdCB0Y2ZfZXh0cw0KPj4gKmV4
-dHMsICAjaWZkZWYgQ09ORklHX05FVF9DTFNfQUNUDQo+PiAgCWludCBpOw0KPj4NCj4+IC0JcHJl
-ZW1wdF9kaXNhYmxlKCk7DQo+PiAtDQo+PiAgCWZvciAoaSA9IDA7IGkgPCBleHRzLT5ucl9hY3Rp
-b25zOyBpKyspIHsNCj4+ICAJCXN0cnVjdCB0Y19hY3Rpb24gKmEgPSBleHRzLT5hY3Rpb25zW2ld
-Ow0KPj4NCj4+IC0JCXRjZl9hY3Rpb25fc3RhdHNfdXBkYXRlKGEsIGJ5dGVzLCBwYWNrZXRzLCBk
-cm9wcywNCj4+IC0JCQkJCWxhc3R1c2UsIHRydWUpOw0KPj4gLQkJYS0+dXNlZF9od19zdGF0cyA9
-IHVzZWRfaHdfc3RhdHM7DQo+PiAtCQlhLT51c2VkX2h3X3N0YXRzX3ZhbGlkID0gdXNlZF9od19z
-dGF0c192YWxpZDsNCj4+IC0JfQ0KPj4gKwkJLyogaWYgc3RhdHMgZnJvbSBodywganVzdCBza2lw
-ICovDQo+PiArCQlpZiAodGNmX2FjdGlvbl91cGRhdGVfaHdfc3RhdHMoYSkpIHsNCj4+ICsJCQlw
-cmVlbXB0X2Rpc2FibGUoKTsNCj4+ICsJCQl0Y2ZfYWN0aW9uX3N0YXRzX3VwZGF0ZShhLCBieXRl
-cywgcGFja2V0cywgZHJvcHMsDQo+PiArCQkJCQkJbGFzdHVzZSwgdHJ1ZSk7DQo+PiArCQkJcHJl
-ZW1wdF9lbmFibGUoKTsNCj4+DQo+PiAtCXByZWVtcHRfZW5hYmxlKCk7DQo+PiArCQkJYS0+dXNl
-ZF9od19zdGF0cyA9IHVzZWRfaHdfc3RhdHM7DQo+PiArCQkJYS0+dXNlZF9od19zdGF0c192YWxp
-ZCA9IHVzZWRfaHdfc3RhdHNfdmFsaWQ7DQo+PiArCQl9DQo+PiArCX0NCj4+ICAjZW5kaWYNCj4+
-ICB9DQo+Pg0KPj4gZGlmZiAtLWdpdCBhL25ldC9zY2hlZC9hY3RfYXBpLmMgYi9uZXQvc2NoZWQv
-YWN0X2FwaS5jIGluZGV4DQo+PiA2MDRiZjE5MjNiY2MuLjg4MWM3YmE0ZDE4MCAxMDA2NDQNCj4+
-IC0tLSBhL25ldC9zY2hlZC9hY3RfYXBpLmMNCj4+ICsrKyBiL25ldC9zY2hlZC9hY3RfYXBpLmMN
-Cj4+IEBAIC0xMjM4LDYgKzEyMzgsNDAgQEAgc3RhdGljIGludCB0Y2ZfYWN0aW9uX29mZmxvYWRf
-YWRkKHN0cnVjdCB0Y19hY3Rpb24NCj4qYWN0aW9uLA0KPj4gIAlyZXR1cm4gZXJyOw0KPj4gIH0N
-Cj4+DQo+PiAraW50IHRjZl9hY3Rpb25fdXBkYXRlX2h3X3N0YXRzKHN0cnVjdCB0Y19hY3Rpb24g
-KmFjdGlvbikgew0KPj4gKwlzdHJ1Y3QgZmxvd19vZmZsb2FkX2FjdGlvbiBmbF9hY3QgPSB7fTsN
-Cj4+ICsJaW50IGVyciA9IDA7DQo+PiArDQo+PiArCWlmICghdGNfYWN0X2luX2h3KGFjdGlvbikp
-DQo+PiArCQlyZXR1cm4gLUVPUE5PVFNVUFA7DQo+PiArDQo+PiArCWVyciA9IGZsb3dfYWN0aW9u
-X2luaXQoJmZsX2FjdCwgYWN0aW9uLCBGTE9XX0FDVF9TVEFUUywgTlVMTCk7DQo+PiArCWlmIChl
-cnIpDQo+PiArCQlnb3RvIGVycl9vdXQ7DQo+PiArDQo+PiArCWVyciA9IHRjZl9hY3Rpb25fb2Zm
-bG9hZF9jbWQoJmZsX2FjdCwgTlVMTCwgTlVMTCk7DQo+PiArDQo+PiArCWlmICghZXJyICYmIGZs
-X2FjdC5zdGF0cy5sYXN0dXNlZCkgew0KPj4gKwkJcHJlZW1wdF9kaXNhYmxlKCk7DQo+PiArCQl0
-Y2ZfYWN0aW9uX3N0YXRzX3VwZGF0ZShhY3Rpb24sIGZsX2FjdC5zdGF0cy5ieXRlcywNCj4+ICsJ
-CQkJCWZsX2FjdC5zdGF0cy5wa3RzLA0KPj4gKwkJCQkJZmxfYWN0LnN0YXRzLmRyb3BzLA0KPj4g
-KwkJCQkJZmxfYWN0LnN0YXRzLmxhc3R1c2VkLA0KPj4gKwkJCQkJdHJ1ZSk7DQo+PiArCQlwcmVl
-bXB0X2VuYWJsZSgpOw0KPj4gKwkJYWN0aW9uLT51c2VkX2h3X3N0YXRzID0gZmxfYWN0LnN0YXRz
-LnVzZWRfaHdfc3RhdHM7DQo+PiArCQlhY3Rpb24tPnVzZWRfaHdfc3RhdHNfdmFsaWQgPSB0cnVl
-Ow0KPj4gKwkJZXJyID0gMDsNCj4NCj5FcnJvciBoYW5kbGluZyBoZXJlIGlzIHNsaWdodGx5IGNv
-bnZvbHV0ZWQuIFRoaXMgbGluZSBhc3NpZ25zIGVycj0wIHRoaXJkIHRpbWUgKGl0IGlzDQo+aW5p
-dGlhbGl6ZWQgd2l0aCB6ZXJvIGFuZCB0aGVuIHdlIGNhbiBvbmx5IGdldCBoZXJlIGlmIHJlc3Vs
-dCBvZg0KPnRjZl9hY3Rpb25fb2ZmbG9hZF9jbWQoKSBhc3NpZ25lZCAnZXJyJyB0byB6ZXJvIGFn
-YWluKS4NCj5Db25zaWRlcmluZyB0aGF0IGVycm9yIGhhbmRsZXIgaW4gdGhpcyBmdW5jdGlvbiBp
-cyBlbXB0eSB3ZSBjYW4ganVzdCByZXR1cm4NCj5lcnJvcnMgZGlyZWN0bHkgYXMgc29vbiBhcyB0
-aGV5IGhhcHBlbiBhbmQgcmV0dXJuIHplcm8gYXQgdGhlIGVuZCBvZiB0aGUNCj5mdW5jdGlvbi4N
-Cj4NClRoYW5rcywgd2Ugd2lsbCBjaGFuZ2UgYXMgeW91ciBzdWdnZXN0aW9uLg0KPj4gKwl9IGVs
-c2Ugew0KPj4gKwkJZXJyID0gLUVPUE5PVFNVUFA7DQo+DQo+SG1tIHRoZSBjb2RlIGNhbiByZXR1
-cm4gZXJyb3IgaGVyZSB3aGVuIHRjZl9hY3Rpb25fb2ZmbG9hZF9jbWQoKQ0KPnN1Y2NlZWRlZCBi
-dXQgJ2xhc3R1c2VkJyBpcyB6ZXJvLiBTdWNoIGJlaGF2aW9yIHdpbGwgY2F1c2UNCj50Y2ZfZXh0
-c19zdGF0c191cGRhdGUoKSB0byB1cGRhdGUgYWN0aW9uIHdpdGggZmlsdGVyIGNvdW50ZXIgdmFs
-dWVzLiBJcyB0aGlzIHRoZQ0KPmRlc2lyZWQgYmVoYXZpb3Igd2hlbiwgZm9yIGV4YW1wbGUsIGlu
-IGZpbHRlciBhY3Rpb24gbGlzdCB0aGVyZSBpcyBhbmQgYWN0aW9uIHRoYXQNCj5jYW4gZHJvcCBw
-YWNrZXRzIGZvbGxvd2VkIGJ5IHNvbWUgc2hhcmVkIGFjdGlvbj8gSW4gc3VjaCBjYXNlICdsYXN0
-dXNlZCcgY2FuDQo+YmUgemVybyBpZiBhbGwgcGFja2V0cyB0aGF0IGZpbHRlciBtYXRjaGVkIHdl
-cmUgZHJvcHBlZCBieSBwcmV2aW91cyBhY3Rpb24gYW5kDQo+c2hhcmVkIGFjdGlvbiB3aWxsIGJl
-IGFzc2lnbmVkIHdpdGggZmlsdGVyIGNvdW50ZXIgdmFsdWUgdGhhdCBpbmNsdWRlcyBkcm9wcGVk
-DQo+cGFja2V0cy9ieXRlcy4NCj4NClRoYW5rcywgd2Ugd2lsbCBjb25zaWRlciBpZiBpdCBtYWtl
-IHNlbnNlIHRvIG9ubHkganVkZ2UgcmV0dXJuIHZhbHVlIGVyciBmcm9tIHRjZl9hY3Rpb25fb2Zm
-bG9hZF9jbWQuDQo+PiArCX0NCj4+ICsNCj4+ICtlcnJfb3V0Og0KPj4gKwlyZXR1cm4gZXJyOw0K
-Pj4gK30NCj4+ICtFWFBPUlRfU1lNQk9MKHRjZl9hY3Rpb25fdXBkYXRlX2h3X3N0YXRzKTsNCj4+
-ICsNCj4+ICBpbnQgdGNmX2FjdGlvbl9vZmZsb2FkX2RlbChzdHJ1Y3QgdGNfYWN0aW9uICphY3Rp
-b24pICB7DQo+PiAgCXN0cnVjdCBmbG93X29mZmxvYWRfYWN0aW9uIGZsX2FjdDsNCj4+IEBAIC0x
-MzYyLDYgKzEzOTYsOSBAQCBpbnQgdGNmX2FjdGlvbl9jb3B5X3N0YXRzKHN0cnVjdCBza19idWZm
-ICpza2IsDQo+c3RydWN0IHRjX2FjdGlvbiAqcCwNCj4+ICAJaWYgKHAgPT0gTlVMTCkNCj4+ICAJ
-CWdvdG8gZXJyb3V0Ow0KPj4NCj4+ICsJLyogdXBkYXRlIGh3IHN0YXRzIGZvciB0aGlzIGFjdGlv
-biAqLw0KPj4gKwl0Y2ZfYWN0aW9uX3VwZGF0ZV9od19zdGF0cyhwKTsNCj4+ICsNCj4+ICAJLyog
-Y29tcGF0X21vZGUgYmVpbmcgdHJ1ZSBzcGVjaWZpZXMgYSBjYWxsIHRoYXQgaXMgc3VwcG9zZWQN
-Cj4+ICAJICogdG8gYWRkIGFkZGl0aW9uYWwgYmFja3dhcmQgY29tcGF0aWJpbGl0eSBzdGF0aXN0
-aWMgVExWcy4NCj4+ICAJICovDQoNCg==
+
+
+01.11.2021 11:10, Pavan Chebbi wrote:
+> On Mon, Nov 1, 2021 at 1:50 PM Vitaly Bursov <vitaly@bursov.com> wrote:
+>>
+>>
+>>
+>> 01.11.2021 09:06, Pavan Chebbi wrote:
+>>> On Fri, Oct 29, 2021 at 9:15 PM Vitaly Bursov <vitaly@bursov.com> wrote=
+:
+>>>>
+>>>>
+>>>>
+>>>> 29.10.2021 08:04, Pavan Chebbi =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
+>>>>> 90On Thu, Oct 28, 2021 at 9:11 PM Vitaly Bursov <vitaly@bursov.com> w=
+rote:
+>>>>>>
+>>>>>>
+>>>>>> 28.10.2021 10:33, Pavan Chebbi wrote:
+>>>>>>> On Wed, Oct 27, 2021 at 4:02 PM Vitaly Bursov <vitaly@bursov.com> w=
+rote:
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> 27.10.2021 12:30, Pavan Chebbi wrote:
+>>>>>>>>> On Wed, Sep 22, 2021 at 12:10 PM Siva Reddy Kallam
+>>>>>>>>> <siva.kallam@broadcom.com> wrote:
+>>>>>>>>>>
+>>>>>>>>>> Thank you for reporting this. Pavan(cc'd) from Broadcom looking =
+into this issue.
+>>>>>>>>>> We will provide our feedback very soon on this.
+>>>>>>>>>>
+>>>>>>>>>> On Mon, Sep 20, 2021 at 6:59 PM Vitaly Bursov <vitaly@bursov.com=
+> wrote:
+>>>>>>>>>>>
+>>>>>>>>>>> Hi,
+>>>>>>>>>>>
+>>>>>>>>>>> We found a occassional and random (sometimes happens, sometimes=
+ not)
+>>>>>>>>>>> packet re-order when NIC is involved in UDP multicast reception=
+, which
+>>>>>>>>>>> is sensitive to a packet re-order. Network capture with tcpdump
+>>>>>>>>>>> sometimes shows the packet re-order, sometimes not (e.g. no re-=
+order on
+>>>>>>>>>>> a host, re-order in a container at the same time). In a pcap fi=
+le
+>>>>>>>>>>> re-ordered packets have a correct timestamp - delayed packet ha=
+d a more
+>>>>>>>>>>> earlier timestamp compared to a previous packet:
+>>>>>>>>>>>           1.00s packet1
+>>>>>>>>>>>           1.20s packet3
+>>>>>>>>>>>           1.10s packet2
+>>>>>>>>>>>           1.30s packet4
+>>>>>>>>>>>
+>>>>>>>>>>> There's about 300Mbps of traffic on this NIC, and server is bus=
+y
+>>>>>>>>>>> (hyper-threading enabled, about 50% overall idle) with its
+>>>>>>>>>>> computational application work.
+>>>>>>>>>>>
+>>>>>>>>>>> NIC is HPE's 4-port 331i adapter - BCM5719, in a default ring a=
+nd
+>>>>>>>>>>> coalescing configuration, 1 TX queue, 4 RX queues.
+>>>>>>>>>>>
+>>>>>>>>>>> After further investigation, I believe that there are two separ=
+ate
+>>>>>>>>>>> issues in tg3.c driver. Issues can be reproduced with iperf3, a=
+nd
+>>>>>>>>>>> unicast UDP.
+>>>>>>>>>>>
+>>>>>>>>>>> Here are the details of how I understand this behavior.
+>>>>>>>>>>>
+>>>>>>>>>>> 1. Packet re-order.
+>>>>>>>>>>>
+>>>>>>>>>>> Driver calls napi_schedule(&tnapi->napi) when handling the inte=
+rrupt,
+>>>>>>>>>>> however, sometimes it calls napi_schedule(&tp->napi[1].napi), w=
+hich
+>>>>>>>>>>> handles RX queue 0 too:
+>>>>>>>>>>>
+>>>>>>>>>>>           https://github.com/torvalds/linux/blob/master/drivers=
+/net/ethernet/broadcom/tg3.c#L6802-L7007
+>>>>>>>>>>>
+>>>>>>>>>>>           static int tg3_rx(struct tg3_napi *tnapi, int budget)
+>>>>>>>>>>>           {
+>>>>>>>>>>>                   struct tg3 *tp =3D tnapi->tp;
+>>>>>>>>>>>
+>>>>>>>>>>>                   ...
+>>>>>>>>>>>
+>>>>>>>>>>>                   /* Refill RX ring(s). */
+>>>>>>>>>>>                   if (!tg3_flag(tp, ENABLE_RSS)) {
+>>>>>>>>>>>                           ....
+>>>>>>>>>>>                   } else if (work_mask) {
+>>>>>>>>>>>                           ...
+>>>>>>>>>>>
+>>>>>>>>>>>                           if (tnapi !=3D &tp->napi[1]) {
+>>>>>>>>>>>                                   tp->rx_refill =3D true;
+>>>>>>>>>>>                                   napi_schedule(&tp->napi[1].na=
+pi);
+>>>>>>>>>>>                           }
+>>>>>>>>>>>                   }
+>>>>>>>>>>>                   ...
+>>>>>>>>>>>           }
+>>>>>>>>>>>
+>>>>>>>>>>>       From napi_schedule() code, it should schedure RX 0 traffi=
+c handling on
+>>>>>>>>>>> a current CPU, which handles queues RX1-3 right now.
+>>>>>>>>>>>
+>>>>>>>>>>> At least two traffic flows are required - one on RX queue 0, an=
+d the
+>>>>>>>>>>> other on any other queue (1-3). Re-ordering may happend only on=
+ flow
+>>>>>>>>>>> from queue 0, the second flow will work fine.
+>>>>>>>>>>>
+>>>>>>>>>>> No idea how to fix this.
+>>>>>>>>>
+>>>>>>>>> In the case of RSS the actual rings for RX are from 1 to 4.
+>>>>>>>>> The napi of those rings are indeed processing the packets.
+>>>>>>>>> The explicit napi_schedule of napi[1] is only re-filling rx BD
+>>>>>>>>> producer ring because it is shared with return rings for 1-4.
+>>>>>>>>> I tried to repro this but I am not seeing the issue. If you are
+>>>>>>>>> receiving packets on RX 0 then the RSS must have been disabled.
+>>>>>>>>> Can you please check?
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> # ethtool -i enp2s0f0
+>>>>>>>> driver: tg3
+>>>>>>>> version: 3.137
+>>>>>>>> firmware-version: 5719-v1.46 NCSI v1.5.18.0
+>>>>>>>> expansion-rom-version:
+>>>>>>>> bus-info: 0000:02:00.0
+>>>>>>>> supports-statistics: yes
+>>>>>>>> supports-test: yes
+>>>>>>>> supports-eeprom-access: yes
+>>>>>>>> supports-register-dump: yes
+>>>>>>>> supports-priv-flags: no
+>>>>>>>>
+>>>>>>>> # ethtool -l enp2s0f0
+>>>>>>>> Channel parameters for enp2s0f0:
+>>>>>>>> Pre-set maximums:
+>>>>>>>> RX:             4
+>>>>>>>> TX:             4
+>>>>>>>> Other:          0
+>>>>>>>> Combined:       0
+>>>>>>>> Current hardware settings:
+>>>>>>>> RX:             4
+>>>>>>>> TX:             1
+>>>>>>>> Other:          0
+>>>>>>>> Combined:       0
+>>>>>>>>
+>>>>>>>> # ethtool -x enp2s0f0
+>>>>>>>> RX flow hash indirection table for enp2s0f0 with 4 RX ring(s):
+>>>>>>>>          0:      0     1     2     3     0     1     2     3
+>>>>>>>>          8:      0     1     2     3     0     1     2     3
+>>>>>>>>         16:      0     1     2     3     0     1     2     3
+>>>>>>>>         24:      0     1     2     3     0     1     2     3
+>>>>>>>>         32:      0     1     2     3     0     1     2     3
+>>>>>>>>         40:      0     1     2     3     0     1     2     3
+>>>>>>>>         48:      0     1     2     3     0     1     2     3
+>>>>>>>>         56:      0     1     2     3     0     1     2     3
+>>>>>>>>         64:      0     1     2     3     0     1     2     3
+>>>>>>>>         72:      0     1     2     3     0     1     2     3
+>>>>>>>>         80:      0     1     2     3     0     1     2     3
+>>>>>>>>         88:      0     1     2     3     0     1     2     3
+>>>>>>>>         96:      0     1     2     3     0     1     2     3
+>>>>>>>>        104:      0     1     2     3     0     1     2     3
+>>>>>>>>        112:      0     1     2     3     0     1     2     3
+>>>>>>>>        120:      0     1     2     3     0     1     2     3
+>>>>>>>> RSS hash key:
+>>>>>>>> Operation not supported
+>>>>>>>> RSS hash function:
+>>>>>>>>          toeplitz: on
+>>>>>>>>          xor: off
+>>>>>>>>          crc32: off
+>>>>>>>>
+>>>>>>>> In /proc/interrupts there are enp2s0f0-tx-0, enp2s0f0-rx-1,
+>>>>>>>> enp2s0f0-rx-2, enp2s0f0-rx-3, enp2s0f0-rx-4 interrupts, all on
+>>>>>>>> different CPU cores. Kernel also has "threadirqs" enabled in
+>>>>>>>> command line, I didn't check if this parameter affects the issue.
+>>>>>>>>
+>>>>>>>> Yes, some things start with 0, and others with 1, sorry for a conf=
+usion
+>>>>>>>> in terminology, what I meant:
+>>>>>>>>       - There are 4 RX rings/queues, I counted starting from 0, so=
+: 0..3.
+>>>>>>>>         RX0 is the first queue/ring that actually receives the tra=
+ffic.
+>>>>>>>>         RX0 is handled by enp2s0f0-rx-1 interrupt.
+>>>>>>>>       - These are related to (tp->napi[i]), but i is in 1..4, so t=
+he first
+>>>>>>>>         receiving queue relates to tp->napi[1], the second relates=
+ to
+>>>>>>>>         tp->napi[2], and so on. Correct?
+>>>>>>>>
+>>>>>>>> Suppose, tg3_rx() is called for tp->napi[2], this function most li=
+kely
+>>>>>>>> calls napi_gro_receive(&tnapi->napi, skb) to further process packe=
+ts in
+>>>>>>>> tp->napi[2]. And, under some conditions (RSS and work_mask), it ca=
+lls
+>>>>>>>> napi_schedule(&tp->napi[1].napi), which schedules tp->napi[1] work
+>>>>>>>> on a currect CPU, which is designated for tp->napi[2], but not for
+>>>>>>>> tp->napi[1]. Correct?
+>>>>>>>>
+>>>>>>>> I don't understand what napi_schedule(&tp->napi[1].napi) does for =
+the
+>>>>>>>> NIC or driver, "re-filling rx BD producer ring" sounds important. =
+I
+>>>>>>>> suspect something will break badly if I simply remove it without
+>>>>>>>> replacing with something more elaborate. I guess along with re-fil=
+ling
+>>>>>>>> rx BD producer ring it also can process incoming packets. Is it po=
+ssible?
+>>>>>>>>
+>>>>>>>
+>>>>>>> Yes, napi[1] work may be called on the napi[2]'s CPU but it general=
+ly
+>>>>>>> won't process
+>>>>>>> any rx packets because the producer index of napi[1] has not change=
+d. If the
+>>>>>>> producer count did change, then we get a poll from the ISR for napi=
+[1]
+>>>>>>> to process
+>>>>>>> packets. So it is mostly used to re-fill rx buffers when called
+>>>>>>> explicitly. However
+>>>>>>> there could be a small window where the prod index is incremented b=
+ut the ISR
+>>>>>>> is not fired yet. It may process some small no of packets. But I do=
+n't
+>>>>>>> think this
+>>>>>>> should lead to a reorder problem.
+>>>>>>>
+>>>>>>
+>>>>>> I tried to reproduce without using bridge and veth interfaces, and i=
+t seems
+>>>>>> like it's not reproducible, so traffic forwarding via a bridge inter=
+face may
+>>>>>> be necessary. It also does not happen if traffic load is low, but mo=
+derate
+>>>>>> load is enough - e.g. two 100 Mbps streams with 130-byte packets. It=
+'s easier
+>>>>>> to reproduce with a higher load.
+>>>>>>
+>>>>>> With about the same setup as in an original message (bridge + veth 2
+>>>>>> network namespaces), irqbalance daemon stopped, if traffic flows via
+>>>>>> enp2s0f0-rx-2 and enp2s0f0-rx-4, there's no reordering. enp2s0f0-rx-=
+1
+>>>>>> still gets some interrupts, but at a much lower rate compared to 2 a=
+nd
+>>>>>> 4.
+>>>>>>
+>>>>>> namespace 1:
+>>>>>>       # iperf3 -u -c server_ip -p 5000 -R -b 300M -t 300 -l 130
+>>>>>>       - - - - - - - - - - - - - - - - - - - - - - - - -
+>>>>>>       [ ID] Interval           Transfer     Bandwidth       Jitter  =
+  Lost/Total Datagrams
+>>>>>>       [  4]   0.00-300.00 sec  6.72 GBytes   192 Mbits/sec  0.008 ms=
+  3805/55508325 (0.0069%)
+>>>>>>       [  4] Sent 55508325 datagrams
+>>>>>>
+>>>>>>       iperf Done.
+>>>>>>
+>>>>>> namespace 2:
+>>>>>>       # iperf3 -u -c server_ip -p 5001 -R -b 300M -t 300 -l 130
+>>>>>>       - - - - - - - - - - - - - - - - - - - - - - - - -
+>>>>>>       [ ID] Interval           Transfer     Bandwidth       Jitter  =
+  Lost/Total Datagrams
+>>>>>>       [  4]   0.00-300.00 sec  6.83 GBytes   196 Mbits/sec  0.005 ms=
+  3873/56414001 (0.0069%)
+>>>>>>       [  4] Sent 56414001 datagrams
+>>>>>>
+>>>>>>       iperf Done.
+>>>>>>
+>>>>>>
+>>>>>> With the same configuration but different IP address so that instead=
+ of
+>>>>>> enp2s0f0-rx-4 enp2s0f0-rx-1 would be used, there is a reordering.
+>>>>>>
+>>>>>>
+>>>>>> namespace 1 (client IP was changed):
+>>>>>>       # iperf3 -u -c server_ip -p 5000 -R -b 300M -t 300 -l 130
+>>>>>>       - - - - - - - - - - - - - - - - - - - - - - - - -
+>>>>>>       [ ID] Interval           Transfer     Bandwidth       Jitter  =
+  Lost/Total Datagrams
+>>>>>>       [  4]   0.00-300.00 sec  6.32 GBytes   181 Mbits/sec  0.007 ms=
+  8506/52172059 (0.016%)
+>>>>>>       [  4] Sent 52172059 datagrams
+>>>>>>       [SUM]  0.0-300.0 sec  2452 datagrams received out-of-order
+>>>>>>
+>>>>>>       iperf Done.
+>>>>>>
+>>>>>> namespace 2:
+>>>>>>       # iperf3 -u -c server_ip -p 5001 -R -b 300M -t 300 -l 130
+>>>>>>       - - - - - - - - - - - - - - - - - - - - - - - - -
+>>>>>>       [ ID] Interval           Transfer     Bandwidth       Jitter  =
+  Lost/Total Datagrams
+>>>>>>       [  4]   0.00-300.00 sec  6.59 GBytes   189 Mbits/sec  0.006 ms=
+  6302/54463973 (0.012%)
+>>>>>>       [  4] Sent 54463973 datagrams
+>>>>>>
+>>>>>>       iperf Done.
+>>>>>>
+>>>>>> Swapping IP addresses in these namespaces also changes the namespace=
+ exhibiting the issue,
+>>>>>> it's following the IP address.
+>>>>>>
+>>>>>>
+>>>>>> Is there something I could check to confirm that this behavior is or=
+ is not
+>>>>>> related to napi_schedule(&tp->napi[1].napi) call?
+>>>>>
+>>>>> in the function tg3_msi_1shot() you could store the cpu assigned to
+>>>>> tnapi1 (inside the struct tg3_napi)
+>>>>> and then in tg3_poll_work() you can add another check after
+>>>>>            if (*(tnapi->rx_rcb_prod_idx) !=3D tnapi->rx_rcb_ptr)
+>>>>> something like
+>>>>> if (tnapi =3D=3D &tp->napi[1] && tnapi->assigned_cpu =3D=3D smp_proce=
+ssor_id())
+>>>>> only then execute tg3_rx()
+>>>>>
+>>>>> This may stop tnapi 1 from reading rx pkts on the current CPU from
+>>>>> which refill is called.
+>>>>>
+>>>>
+>>>> Didn't work for me, perhaps I did something wrong - if tg3_rx() is not=
+ called,
+>>>> there's an infinite loop, and after I added "work_done =3D budget;", i=
+t still doesn't
+>>>> work - traffic does not flow.
+>>>>
+>>>
+>>> I think the easiest way is to modify the tg3_rx() calling condition
+>>> like below inside
+>>> tg3_poll_work() :
+>>>
+>>> if (*(tnapi->rx_rcb_prod_idx) !=3D tnapi->rx_rcb_ptr) {
+>>>           if (tnapi !=3D &tp->napi[1] || (tnapi =3D=3D &tp->napi[1] &&
+>>> !tp->rx_refill)) {
+>>>                           work_done +=3D tg3_rx(tnapi, budget - work_do=
+ne);
+>>>           }
+>>> }
+>>>
+>>> This will prevent reading rx packets when napi[1] is scheduled only for=
+ refill.
+>>> Can you see if this works?
+>>>
+>>
+>> It doesn't hang and can receive the traffic with this change, but I don'=
+t see
+>> a difference. I'm suspectig that tg3_poll_work() is called again, maybe =
+in tg3_poll_msix(),
+>> and refill happens first, and then packets are processed anyway.
+>>
+>=20
+> OK I see it now. Let me try this out myself. Will get back on this.
+> However, can you see with your debug prints if there is any correlation
+> between the time and number of prints where napi 1 is reading packets
+> on unassigned CPU to the time and number of packets you received
+> out of order up the stack? Do they match with each other? If not, we may =
+be
+> incorrectly suspecting napi1 here.
+>=20
+
+No corellation that I can see - reordered packets are received sometimes -
+10000 in 300 seconds in this test, but napi messages are logged and
+rate-limited at about 100000 per second. If bandwidth is very low, then
+there are no messages and no reordering. Not sure if I can isolate these
+events specifically.
+
+--=20
+Thanks
+Vitalii
+
