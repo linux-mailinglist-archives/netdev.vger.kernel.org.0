@@ -2,348 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88A23441EF0
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 18:02:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5B70441F2E
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 18:25:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232708AbhKARE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 13:04:26 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:41498 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232422AbhKAREX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 13:04:23 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 1A1H1gw6020803;
-        Mon, 1 Nov 2021 12:01:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1635786102;
-        bh=2m8UtgDpuq4u4SgX1ET4vzFLFQ2SyLZSQfW5XQKRKEg=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=Jko/ZnRnlns6yqGdHb+Q28YweAu/YH8dqqllhbcx5uHgRd7CXKq9knnpPVCzzw15u
-         9y5CReiDNe4aH/bgYext1YPKPJlDiaqc8bBk54zjKen8ku6BbjRtYBAxbKVPmygdKe
-         IR8tTBk6mPFxppnBTAR1d5BN6ZBWTS3eL1gxfrwU=
-Received: from DLEE102.ent.ti.com (dlee102.ent.ti.com [157.170.170.32])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 1A1H1geC050512
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 1 Nov 2021 12:01:42 -0500
-Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 1
- Nov 2021 12:01:42 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 1 Nov 2021 12:01:42 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 1A1H1fFU052789;
-        Mon, 1 Nov 2021 12:01:41 -0500
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        <linux-omap@vger.kernel.org>, Tony Lindgren <tony@atomide.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next v2 3/3] net: ethernet: ti: cpsw_new: enable bc/mc storm prevention support
-Date:   Mon, 1 Nov 2021 19:01:22 +0200
-Message-ID: <20211101170122.19160-4-grygorii.strashko@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20211101170122.19160-1-grygorii.strashko@ti.com>
-References: <20211101170122.19160-1-grygorii.strashko@ti.com>
+        id S229617AbhKAR1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 13:27:44 -0400
+Received: from mail-dm6nam08on2053.outbound.protection.outlook.com ([40.107.102.53]:5280
+        "EHLO NAM04-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229541AbhKAR1o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Nov 2021 13:27:44 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iI0L6RsOJwmVc/0DcevPTPPlWjgTGT9gdgt08dIO1puWJs/j6pAXG29bdX0+E1+Eezkdpr7vw8oWbX3USMYgtJYHmR3neaiPFnqq4QVXxJIhytEdETylm1d3eFh681ZMhaV3PmyUQaWdbHZAHo8frP/1tA+sG4YdBw3P+aw4xShWjt/Lo/Sv99EbKs1ZYHqeCHOlyLFIH2YU7TcdRfBZ9akkTgo4y2glt6wzigpE1MqmRnh5EoHjw/9jry3jCtfpByus7byUNzffIhq9OegtXtWh0F5HxEuWwLYS+mqrB6K8MPcveuLwDt2HQVBqPHKFPnYv9vQVEOjIvhOc+ceyUQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=hmECHQ8iL4dyEwfonnNzoPFSRW4FoqsUBfFvifXoCv8=;
+ b=ctRXsMO+cSE9yoHx5vk1eHMPsm+iasiDRN+VdCYkg9i8BxEc4xPDgysDFe9hKO1I6nloMRXDyimfnz+hKRlKygTfLQL9w9DNtQuZkLWgdVHwgmnsOth1XDAgZUBk/lVPM6otX979MspoFFGPYLx4v0j1F+O6W7ngI3/QbiroA17DHDVnJhMTLaSN7vl4mgY0TVaqyh9zkxlmUhs7VKDauFFl1kW5kmOpir2osyHP2lBgJEquH99uK67Dhg02JGbaVf2U31j68h1hCQvPvw6zAT7UIgXOwxJ1vERPZ6oqNlb9m6xoB5dYYuR/+gI0gq5REyS4Z+06dsXzk9qVc1AZQQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hmECHQ8iL4dyEwfonnNzoPFSRW4FoqsUBfFvifXoCv8=;
+ b=ioHlsCrw8gmYJls3hYi7oLzbyOQeLNVCAlBrJ7rBVUKbvezO4qI2O+D/7lns5cJajSX6ksgXuzD42XZBJOAWGlhHUhaPnzBKU4Wwg0RqaOd0kqjeySSn4QQA2VoUKkdvyTcDrPtRb/EGRQQU0dghAFHORTxV0IhtLIUCmUHQit6Uli7Cp83ppf6iSuTKNHxeP84anhwS4cXhUc3093ySGCq9j/gBNy/7m6HWiIkIkMPWJRVCHY5p2TVaP74YUBRk07g9WmCDxARyh7/nXvEJ6x/O8PkDgoaz5Qvc9+NZDKD17qyk3Zeaox2nCAl6l7C/KhS+aM7SH6iPZIVkaOMc2Q==
+Authentication-Results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL0PR12MB5537.namprd12.prod.outlook.com (2603:10b6:208:1cc::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.15; Mon, 1 Nov
+ 2021 17:25:08 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::e8af:232:915e:2f95%8]) with mapi id 15.20.4649.019; Mon, 1 Nov 2021
+ 17:25:08 +0000
+Date:   Mon, 1 Nov 2021 14:25:06 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Alex Williamson <alex.williamson@redhat.com>,
+        Shameerali Kolothum Thodi 
+        <shameerali.kolothum.thodi@huawei.com>
+Cc:     Cornelia Huck <cohuck@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
+ for mlx5 devices
+Message-ID: <20211101172506.GC2744544@nvidia.com>
+References: <20211025145646.GX2744544@nvidia.com>
+ <20211026084212.36b0142c.alex.williamson@redhat.com>
+ <20211026151851.GW2744544@nvidia.com>
+ <20211026135046.5190e103.alex.williamson@redhat.com>
+ <20211026234300.GA2744544@nvidia.com>
+ <20211027130520.33652a49.alex.williamson@redhat.com>
+ <20211027192345.GJ2744544@nvidia.com>
+ <20211028093035.17ecbc5d.alex.williamson@redhat.com>
+ <20211028234750.GP2744544@nvidia.com>
+ <20211029160621.46ca7b54.alex.williamson@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211029160621.46ca7b54.alex.williamson@redhat.com>
+X-ClientProxiedBy: MN2PR19CA0002.namprd19.prod.outlook.com
+ (2603:10b6:208:178::15) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Received: from mlx.ziepe.ca (142.162.113.129) by MN2PR19CA0002.namprd19.prod.outlook.com (2603:10b6:208:178::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.15 via Frontend Transport; Mon, 1 Nov 2021 17:25:07 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1mhb3S-004YZo-SY; Mon, 01 Nov 2021 14:25:06 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1294a654-9f4a-4a72-e58c-08d99d5c8d1c
+X-MS-TrafficTypeDiagnostic: BL0PR12MB5537:
+X-Microsoft-Antispam-PRVS: <BL0PR12MB55371AC10E04EE5799DC21D8C28A9@BL0PR12MB5537.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: W9eLefxY/Gq5eInS4cpMinZIRYagMAGF4BSdDlF1S8QYp7JslqMauI7hXFp6uzfgsOzunGmaMLyKdSaZwiVdiDW92GjGO8L/2+YnF2nEZbNzx00CdVnRZEGRAKbi/Ob2UYki8rRCzOd8ltsF5ksgSQqO7dKyf1dYT75rSoOkPdnEHNDrCobUBoO5kCpvyQ5Y5L3n2mNte5VcXogdqhsNAXmlHooXDrOJFu3mR/y959/n+vi8UERVYgpP5zj7r6Dp/yi1IANRXmP1pRS5eewvb0Z9IEeUvMICcmEvO3AFOBwJXbWly5li7fMCdxIfezpoD0+kYdjnN0rgC8NtZJBtw84zzjqF8vWvt2s0EW4amWlffr7ItkyQwT5HNwTOKRwFXDdIuxvhrLU5jLDY8IjuH5blgbxWF/+P7T8JmEsN48gQTwvn0migC2L0Sfyh2q3YTsdyRtOH1u/Vp9v+5YvhoQu2QB3DEng+jsNCVnq4wXCT/0NDwza2RRWEB4KJDZKmTXiSjhJLg1vgqT0ABlU+psUYIPIZ0ZW1jaMgW39CCajsqM0/DNCzcBDn64xr9fuHNIDR3zp9XZz1FJ8t80wJrGUCZqZAGqdABTt4q5bSzrxySaP/xizPwdNOr29gmlQG1IUSlQoX111sxFDIyUNzlA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(110136005)(5660300002)(54906003)(83380400001)(316002)(36756003)(86362001)(4326008)(2906002)(508600001)(33656002)(8936002)(66946007)(186003)(26005)(9786002)(9746002)(66556008)(66476007)(38100700002)(8676002)(2616005)(426003)(1076003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vVXVuskqU1ST42BimKQ1lLEMQkPNscaEt++b7uXh0JeHBpq9mT/phMDznlNM?=
+ =?us-ascii?Q?G5wZy3s08rvyVqzJgC6WsMe70dS8yygjDIA3OT9sT1VLNspKHYoPdVjGDftq?=
+ =?us-ascii?Q?FIL7YrpwhrSdB6HEAVvpaMhERGL0+gvfgB4dtWyoLzgPopgA9q6dhmklbYaO?=
+ =?us-ascii?Q?tLSjd6/z1Ue3F4HMbdwKiiUA0HjrLlt2ssTEkOLjM54wYsjKHFBl9IGO1JtZ?=
+ =?us-ascii?Q?5JVKiAMIFdm7iNFnjVH97JUYPDP4fyxVo9zaD+DNV8EGsPaPDz5EFXRMrptY?=
+ =?us-ascii?Q?hMYR2jEapsdNNMe15XGwEOzpeMn41fU91O1EmtTHxyUKrl0BiqfyEKUnImIi?=
+ =?us-ascii?Q?dRRzsVMxzR2sia0iQrN/LvqAnVqiHVzlTIp78Y5bQR1FZxCb0CQgY7BpV0Yi?=
+ =?us-ascii?Q?BFdCP0KrMdTTdnPyARJANa1pcCJSryT/bnVCBLBWs9yReFrqdHon2ZTp0HTm?=
+ =?us-ascii?Q?qjydfpAAgTFXQ3+R0FFBiHe68r7POmVyIoDjXJj2akyvDyXj9JJ8+7LB98JQ?=
+ =?us-ascii?Q?3wGuRQXJL85AWW8tSFnbLs+29v26xAixSLj+TMrgR7SfGh1dfXVZCbarBiPq?=
+ =?us-ascii?Q?lzNw9kxUUJMGGxmN5t4Sp2glOyrwvUmWfCUNoRTlpBH3OBKyFyTo67N7DjL7?=
+ =?us-ascii?Q?b5ttWh2he8S2iP9zq8B2dH4IWnkRKY5x57kozEdfltKaaoDh83Jy56/Cbvhs?=
+ =?us-ascii?Q?/nunFWKQXrswr4QsQf6+YZ+pz34KbYz+OB01rKmuqztuAN3MQ7q8e5zf0/S9?=
+ =?us-ascii?Q?nsSdzJROu07QaMvK56Ubi5Go7jMhUZM1QrNme22lVKpTBvfhzimlLp7EyahM?=
+ =?us-ascii?Q?ikJgfqeKvMI7nfqazwojIHbxQkQ3tIGXjEtLYjQo7SXVzLgd3hrjmjydiK6A?=
+ =?us-ascii?Q?zxPENWSBmsbEGBjZagMeyikYf1h9MokprBWQB2mzAK0QnrJ7P7+t8JOvqSl9?=
+ =?us-ascii?Q?89xbXuXd2Yip1t0WGzfLBMi8tSTX0hk8gmGTJJuBFS4X/67FOVlWoczdqV4N?=
+ =?us-ascii?Q?hYYsS/CK4+o5YfRLWLHJtGolWCvK91R0gwesSRLeyxrSNncBz05QTX0Yo1pc?=
+ =?us-ascii?Q?Wc+ZNBg7c9Xv800YXaJ1ccFFokRBvatXEDWsk/fDPfa/uIpRfcwTxvPc/tUS?=
+ =?us-ascii?Q?f7mLAnZa+f4Xy2P1JF8wyKW7AOvl3D9s50AMWUoKD9zU2eA1fLmfKI1B9aZ3?=
+ =?us-ascii?Q?+dSgFOQoeITvg2fApNJkYcYdF13nEyDrP83FOhxP/UtR5vN1egwUOLeU5m5y?=
+ =?us-ascii?Q?v6vdeSkiERXpkc53+PUsyfA0fO/zd1E5QHDaUtvrqc+3WLzVd1eVzw7+vnTg?=
+ =?us-ascii?Q?HcwSAqJAltk0YkzSNerLs4hFKWo9zHy3RGqGO2lMg3Niq+cf2gJLYCR36AW9?=
+ =?us-ascii?Q?+k7Lwqgj5LSqRDS8HvwinlptlBOqliq76SvRFRQ6/g22bCOH5LPuyfX2u+yB?=
+ =?us-ascii?Q?EOEZb8r3HTFCBcUlDv7HCPrTWWnmx9Fdh1mpAep6RYdN83DbOzX5smmMrroZ?=
+ =?us-ascii?Q?c+mJ4Jh+vLudaNWfjJnM6wA/oeWLedCvndMyINtbKBtRhqv/MPbraW25VZjP?=
+ =?us-ascii?Q?K3mXb2Vp9Kk3WSiV+qw=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1294a654-9f4a-4a72-e58c-08d99d5c8d1c
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Nov 2021 17:25:08.3980
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uyxNHBQ0OwDEAIoF1+hGO1tatVJCsQQsNCXvIFCzku1h9dE9Ex2hldCnIVQKXpgF
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB5537
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch enables support for ingress broadcast(BC)/multicast(MC) packets
-rate limiting in TI CPSW switchdev driver (the corresponding ALE support
-was added in previous patch) by implementing HW offload for simple
-tc-flower with policer action with matches on dst_mac:
- - ff:ff:ff:ff:ff:ff has to be used for BC packets rate limiting (exact
-   match)
- - 01:00:00:00:00:00 fixed value has to be used for MC packets rate
-   limiting (exact match)
+On Fri, Oct 29, 2021 at 04:06:21PM -0600, Alex Williamson wrote:
 
-The CPSW supports MC/BC packets rate limiting in packets/sec and affects
-all ingress MC/BC packets and serves as BC/MC storm prevention feature.
+> > Right now we are focused on the non-P2P cases, which I think is a
+> > reasonable starting limitation.
+> 
+> It's a reasonable starting point iff we know that we need to support
+> devices that cannot themselves support a quiescent state.  Otherwise it
+> would make sense to go back to work on the uAPI because I suspect the
+> implications to userspace are not going to be as simple as "oops, can't
+> migrate, there are two devices."  As you say, there's a universe of
+> devices that run together that don't care about p2p and QEMU will be
+> pressured to support migration of those configurations.
 
-Examples:
-- BC rate limit to 1000pps:
-  tc qdisc add dev eth0 clsact
-  tc filter add dev eth0 ingress flower skip_sw dst_mac ff:ff:ff:ff:ff:ff \
-  action police pkts_rate 1000 pkts_burst 1
+I agree with this, but I also think what I saw in the proposed hns
+driver suggests it's HW cannot do quiescent, if so this is the first
+counter-example to the notion it is a universal ability?
 
-- MC rate limit to 20000pps:
-  tc qdisc add dev eth0 clsact
-  tc filter add dev eth0 ingress flower skip_sw dst_mac 01:00:00:00:00:00 \
-  action police pkts_rate 10000 pkts_burst 1
+hns people: Can you put your device in a state where it is operating,
+able to accept and respond to MMIO, and yet guarentees it generates no
+DMA transactions?
 
-  pkts_burst - not used.
+> want migration.  If we ever want both migration and p2p, QEMU would
+> need to reject any device that can't comply.
 
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
----
- drivers/net/ethernet/ti/cpsw_new.c  |   4 +-
- drivers/net/ethernet/ti/cpsw_priv.c | 170 ++++++++++++++++++++++++++++
- drivers/net/ethernet/ti/cpsw_priv.h |   8 ++
- 3 files changed, 181 insertions(+), 1 deletion(-)
+Yes, it looks like a complicated task on the qemu side to get this
+resolved
 
-diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
-index 279e261e4720..662c46d568f9 100644
---- a/drivers/net/ethernet/ti/cpsw_new.c
-+++ b/drivers/net/ethernet/ti/cpsw_new.c
-@@ -498,6 +498,8 @@ static void cpsw_restore(struct cpsw_priv *priv)
- 
- 	/* restore CBS offload */
- 	cpsw_cbs_resume(&cpsw->slaves[priv->emac_port - 1], priv);
-+
-+	cpsw_qos_clsflower_resume(priv);
- }
- 
- static void cpsw_init_stp_ale_entry(struct cpsw_common *cpsw)
-@@ -1407,7 +1409,7 @@ static int cpsw_create_ports(struct cpsw_common *cpsw)
- 		cpsw->slaves[i].ndev = ndev;
- 
- 		ndev->features |= NETIF_F_HW_VLAN_CTAG_FILTER |
--				  NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_NETNS_LOCAL;
-+				  NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_NETNS_LOCAL | NETIF_F_HW_TC;
- 
- 		ndev->netdev_ops = &cpsw_netdev_ops;
- 		ndev->ethtool_ops = &cpsw_ethtool_ops;
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
-index ecc2a6b7e28f..aea79a18e976 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.c
-+++ b/drivers/net/ethernet/ti/cpsw_priv.c
-@@ -502,6 +502,7 @@ int cpsw_init_common(struct cpsw_common *cpsw, void __iomem *ss_regs,
- 	ale_params.ale_ageout		= ale_ageout;
- 	ale_params.ale_ports		= CPSW_ALE_PORTS_NUM;
- 	ale_params.dev_id		= "cpsw";
-+	ale_params.bus_freq		= cpsw->bus_freq_mhz * 1000000;
- 
- 	cpsw->ale = cpsw_ale_create(&ale_params);
- 	if (IS_ERR(cpsw->ale)) {
-@@ -1046,6 +1047,8 @@ static int cpsw_set_mqprio(struct net_device *ndev, void *type_data)
- 	return 0;
- }
- 
-+static int cpsw_qos_setup_tc_block(struct net_device *ndev, struct flow_block_offload *f);
-+
- int cpsw_ndo_setup_tc(struct net_device *ndev, enum tc_setup_type type,
- 		      void *type_data)
- {
-@@ -1056,6 +1059,9 @@ int cpsw_ndo_setup_tc(struct net_device *ndev, enum tc_setup_type type,
- 	case TC_SETUP_QDISC_MQPRIO:
- 		return cpsw_set_mqprio(ndev, type_data);
- 
-+	case TC_SETUP_BLOCK:
-+		return cpsw_qos_setup_tc_block(ndev, type_data);
-+
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-@@ -1379,3 +1385,167 @@ int cpsw_run_xdp(struct cpsw_priv *priv, int ch, struct xdp_buff *xdp,
- 	page_pool_recycle_direct(cpsw->page_pool[ch], page);
- 	return ret;
- }
-+
-+static int cpsw_qos_clsflower_add_policer(struct cpsw_priv *priv,
-+					  struct netlink_ext_ack *extack,
-+					  struct flow_cls_offload *cls,
-+					  u64 rate_pkt_ps)
-+{
-+	struct flow_rule *rule = flow_cls_offload_flow_rule(cls);
-+	struct flow_dissector *dissector = rule->match.dissector;
-+	u8 mc_mac[] = {0x01, 0x00, 0x00, 0x00, 0x00, 0x00};
-+	struct flow_match_eth_addrs match;
-+	u32 port_id;
-+	int ret;
-+
-+	if (dissector->used_keys &
-+	    ~(BIT(FLOW_DISSECTOR_KEY_BASIC) |
-+	      BIT(FLOW_DISSECTOR_KEY_CONTROL) |
-+	      BIT(FLOW_DISSECTOR_KEY_ETH_ADDRS))) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Unsupported keys used");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ETH_ADDRS)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Not matching on eth address");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	flow_rule_match_eth_addrs(rule, &match);
-+
-+	if (!is_zero_ether_addr(match.key->src)) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Matching on source MAC not supported");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	port_id = cpsw_slave_index(priv->cpsw, priv) + 1;
-+
-+	if (is_broadcast_ether_addr(match.key->dst)) {
-+		ret = cpsw_ale_rx_ratelimit_bc(priv->cpsw->ale, port_id, rate_pkt_ps);
-+		if (ret)
-+			return ret;
-+
-+		priv->ale_bc_ratelimit.cookie = cls->cookie;
-+		priv->ale_bc_ratelimit.rate_packet_ps = rate_pkt_ps;
-+	}
-+
-+	if (ether_addr_equal(match.key->dst, mc_mac)) {
-+		ret = cpsw_ale_rx_ratelimit_mc(priv->cpsw->ale, port_id, rate_pkt_ps);
-+		if (ret)
-+			return ret;
-+
-+		priv->ale_mc_ratelimit.cookie = cls->cookie;
-+		priv->ale_mc_ratelimit.rate_packet_ps = rate_pkt_ps;
-+	}
-+
-+	return 0;
-+}
-+
-+static int cpsw_qos_configure_clsflower(struct cpsw_priv *priv, struct flow_cls_offload *cls)
-+{
-+	struct flow_rule *rule = flow_cls_offload_flow_rule(cls);
-+	struct netlink_ext_ack *extack = cls->common.extack;
-+	const struct flow_action_entry *act;
-+	int i;
-+
-+	flow_action_for_each(i, act, &rule->action) {
-+		switch (act->id) {
-+		case FLOW_ACTION_POLICE:
-+			if (act->police.rate_bytes_ps) {
-+				NL_SET_ERR_MSG_MOD(extack,
-+						   "QoS offload not support bytes per second");
-+				return -EOPNOTSUPP;
-+			}
-+
-+			return cpsw_qos_clsflower_add_policer(priv, extack, cls,
-+							      act->police.rate_pkt_ps);
-+		default:
-+			NL_SET_ERR_MSG_MOD(extack, "Action not supported");
-+			return -EOPNOTSUPP;
-+		}
-+	}
-+	return -EOPNOTSUPP;
-+}
-+
-+static int cpsw_qos_delete_clsflower(struct cpsw_priv *priv, struct flow_cls_offload *cls)
-+{
-+	u32 port_id = cpsw_slave_index(priv->cpsw, priv) + 1;
-+
-+	if (cls->cookie == priv->ale_bc_ratelimit.cookie) {
-+		priv->ale_bc_ratelimit.cookie = 0;
-+		priv->ale_bc_ratelimit.rate_packet_ps = 0;
-+		cpsw_ale_rx_ratelimit_bc(priv->cpsw->ale, port_id, 0);
-+	}
-+
-+	if (cls->cookie == priv->ale_mc_ratelimit.cookie) {
-+		priv->ale_mc_ratelimit.cookie = 0;
-+		priv->ale_mc_ratelimit.rate_packet_ps = 0;
-+		cpsw_ale_rx_ratelimit_mc(priv->cpsw->ale, port_id, 0);
-+	}
-+
-+	return 0;
-+}
-+
-+static int cpsw_qos_setup_tc_clsflower(struct cpsw_priv *priv, struct flow_cls_offload *cls_flower)
-+{
-+	switch (cls_flower->command) {
-+	case FLOW_CLS_REPLACE:
-+		return cpsw_qos_configure_clsflower(priv, cls_flower);
-+	case FLOW_CLS_DESTROY:
-+		return cpsw_qos_delete_clsflower(priv, cls_flower);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static int cpsw_qos_setup_tc_block_cb(enum tc_setup_type type, void *type_data, void *cb_priv)
-+{
-+	struct cpsw_priv *priv = cb_priv;
-+	int ret;
-+
-+	if (!tc_cls_can_offload_and_chain0(priv->ndev, type_data))
-+		return -EOPNOTSUPP;
-+
-+	ret = pm_runtime_get_sync(priv->dev);
-+	if (ret < 0) {
-+		pm_runtime_put_noidle(priv->dev);
-+		return ret;
-+	}
-+
-+	switch (type) {
-+	case TC_SETUP_CLSFLOWER:
-+		ret = cpsw_qos_setup_tc_clsflower(priv, type_data);
-+		break;
-+	default:
-+		ret = -EOPNOTSUPP;
-+	}
-+
-+	pm_runtime_put(priv->dev);
-+	return ret;
-+}
-+
-+static LIST_HEAD(cpsw_qos_block_cb_list);
-+
-+static int cpsw_qos_setup_tc_block(struct net_device *ndev, struct flow_block_offload *f)
-+{
-+	struct cpsw_priv *priv = netdev_priv(ndev);
-+
-+	return flow_block_cb_setup_simple(f, &cpsw_qos_block_cb_list,
-+					  cpsw_qos_setup_tc_block_cb,
-+					  priv, priv, true);
-+}
-+
-+void cpsw_qos_clsflower_resume(struct cpsw_priv *priv)
-+{
-+	u32 port_id = cpsw_slave_index(priv->cpsw, priv) + 1;
-+
-+	if (priv->ale_bc_ratelimit.cookie)
-+		cpsw_ale_rx_ratelimit_bc(priv->cpsw->ale, port_id,
-+					 priv->ale_bc_ratelimit.rate_packet_ps);
-+
-+	if (priv->ale_mc_ratelimit.cookie)
-+		cpsw_ale_rx_ratelimit_mc(priv->cpsw->ale, port_id,
-+					 priv->ale_mc_ratelimit.rate_packet_ps);
-+}
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.h b/drivers/net/ethernet/ti/cpsw_priv.h
-index 435668ee542d..595a5e97af69 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.h
-+++ b/drivers/net/ethernet/ti/cpsw_priv.h
-@@ -362,6 +362,11 @@ struct cpsw_common {
- 	u8 base_mac[ETH_ALEN];
- };
- 
-+struct cpsw_ale_ratelimit {
-+	unsigned long cookie;
-+	u64 rate_packet_ps;
-+};
-+
- struct cpsw_priv {
- 	struct net_device		*ndev;
- 	struct device			*dev;
-@@ -382,6 +387,8 @@ struct cpsw_priv {
- 	struct cpsw_common *cpsw;
- 	int offload_fwd_mark;
- 	u32 tx_packet_min;
-+	struct cpsw_ale_ratelimit ale_bc_ratelimit;
-+	struct cpsw_ale_ratelimit ale_mc_ratelimit;
- };
- 
- #define ndev_to_cpsw(ndev) (((struct cpsw_priv *)netdev_priv(ndev))->cpsw)
-@@ -460,6 +467,7 @@ int cpsw_ndo_setup_tc(struct net_device *ndev, enum tc_setup_type type,
- bool cpsw_shp_is_off(struct cpsw_priv *priv);
- void cpsw_cbs_resume(struct cpsw_slave *slave, struct cpsw_priv *priv);
- void cpsw_mqprio_resume(struct cpsw_slave *slave, struct cpsw_priv *priv);
-+void cpsw_qos_clsflower_resume(struct cpsw_priv *priv);
- 
- /* ethtool */
- u32 cpsw_get_msglevel(struct net_device *ndev);
--- 
-2.17.1
+> > It is not a big deal to defer things to rc1, though merging a
+> > leaf-driver that has been on-list over a month is certainly not
+> > rushing either.
+> 
+> If "on-list over a month" is meant to imply that it's well vetted, it
+> does not.  That's a pretty quick time frame given the uAPI viability
+> discussions that it's generated.
 
+I only said rushed :)
+  
+> I'm tending to agree that there's value in moving forward, but there's
+> a lot we're defining here that's not in the uAPI, so I'd like to see
+> those things become formalized.
+
+Ok, lets come up with a documentation patch then to define !RUNNING as
+I outlined and start to come up with the allowed list of actions..
+
+I think I would like to have a proper rst file for documenting the
+uapi as well.
+
+> I think this version is defining that it's the user's responsibility to
+> prevent external DMA to devices while in the !_RUNNING state.  This
+> resolves the condition that we have no means to coordinate quiescing
+> multiple devices.  We shouldn't necessarily prescribe a single device
+> solution in the uAPI if the same can be equally achieved through
+> configuration of DMA mapping.
+
+I'm not sure what this means?
+ 
+> I was almost on board with blocking MMIO, especially as p2p is just DMA
+> mapping of MMIO, but what about MSI-X?  During _RESUME we must access
+> the MSI-X vector table via the SET_IRQS ioctl to configure interrupts.
+> Is this exempt because the access occurs in the host?  
+
+s/in the host/in the kernel/ SET_IRQS is a kernel ioctl that uses the
+core MSIX code to do the mmio, so it would not be impacted by MMIO
+zap.
+
+Looks like you've already marked these points with the
+vfio_pci_memory_lock_and_enable(), so a zap for migration would have
+to be a little different than a zap for reset.
+
+Still, this is something that needs clear definition, I would expect
+the SET_IRQS to happen after resuming clears but before running sets
+to give maximum HW flexibility and symmetry with saving.
+
+And we should really define clearly what a device is supposed to do
+with the interrupt vectors during migration. Obviously there are races
+here.
+
+> In any case, it requires that the device cannot be absolutely static
+> while !_RUNNING.  Does (_RESUMING) have different rules than
+> (_SAVING)?
+
+I'd prever to avoid all device touches during both resuming and
+saving, and do them during !RUNNING
+
+> So I'm still unclear how the uAPI needs to be updated relative to
+> region access.  We need that list of what the user is allowed to
+> access, which seems like minimally config space and MSI-X table space,
+> but are these implicitly known for vfio-pci devices or do we need
+> region flags or capabilities to describe?  We can't generally know the
+> disposition of device specific regions relative to this access.  Thanks,
+
+I'd prefer to be general and have the spec forbid
+everything. Specifying things like VFIO_DEVICE_SET_IRQS1 covers all the
+bus types.
+
+Other bus types should get spec updates before any other bus type
+driver is merged.
+
+Thanks,
+Jason
