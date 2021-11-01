@@ -2,68 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 148D6441FF4
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 19:22:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F777441FF2
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 19:22:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231952AbhKASYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 14:24:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44504 "EHLO mail.kernel.org"
+        id S231903AbhKASYg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 14:24:36 -0400
+Received: from ink.ssi.bg ([178.16.128.7]:37455 "EHLO ink.ssi.bg"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231983AbhKASYh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Nov 2021 14:24:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8905660F45;
-        Mon,  1 Nov 2021 18:11:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635790289;
-        bh=m9p1N+GEBGnzb6Je5a17red2Fr7vkekxGIBw+pL7VoA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=r4U0qDKzMQ9Fq+zYWEQJY81dUcXu/9vDexC4oukHPk0yTb3gqXqnZnH4mJ5Nv8vkL
-         HYEi447dtDBGK8BXD+otA+GFiAzQup8iz3qZMdp+8EW8OpkKJP+u2RaPj4dR0VRj0A
-         RHQ7jdjbICOipXvRRw2C1l00oFPAHhTc64nzYPS+MmO3D7XoP2tQG+NBrjhthNqsFA
-         gNPz70dSNgFwxvAfJOkf6PIdH7vgDLwdUAuFTjkVk3yIdB6yMdbgdoIVskHzTDGFvD
-         RW/Wb7G38s+auM2Ukp2HIWfhQHwVrfJj4e0Oayhbl0NQcoxdotrSurkn+Qp/8djGKn
-         q0ke6VknzbAiw==
-Date:   Mon, 1 Nov 2021 20:11:25 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, jiri@resnulli.us,
-        mkubecek@suse.cz, andrew@lunn.ch, f.fainelli@gmail.com
-Subject: Re: [PATCH net-next v2 3/4] devlink: expose get/put functions
-Message-ID: <YYAtzVqgbkfjsx5E@unreal>
-References: <20211030171851.1822583-1-kuba@kernel.org>
- <20211030171851.1822583-4-kuba@kernel.org>
- <YX43wGPh5+TcXR81@unreal>
- <20211101064440.57a587bf@kicinski-fedora-PC1C0HJN>
+        id S231916AbhKASYe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Nov 2021 14:24:34 -0400
+Received: from ja.ssi.bg (unknown [178.16.129.10])
+        by ink.ssi.bg (Postfix) with ESMTPS id 8B0DA3C0332;
+        Mon,  1 Nov 2021 20:21:56 +0200 (EET)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.16.1/8.16.1) with ESMTP id 1A1ILsOa006822;
+        Mon, 1 Nov 2021 20:21:54 +0200
+Date:   Mon, 1 Nov 2021 20:21:54 +0200 (EET)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     yangxingwu <xingwu.yang@gmail.com>
+cc:     Simon Horman <horms@verge.net.au>, pablo@netfilter.org,
+        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-doc@vger.kernel.org, Chuanqi Liu <legend050709@qq.com>
+Subject: Re: [PATCH nf-next v5] netfilter: ipvs: Fix reuse connection if RS
+ weight is 0
+In-Reply-To: <20211101020416.31402-1-xingwu.yang@gmail.com>
+Message-ID: <ae67eb7b-a25f-57d3-195f-cdbd9247ef5b@ssi.bg>
+References: <20211101020416.31402-1-xingwu.yang@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211101064440.57a587bf@kicinski-fedora-PC1C0HJN>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 01, 2021 at 06:44:40AM -0700, Jakub Kicinski wrote:
-> On Sun, 31 Oct 2021 08:29:20 +0200 Leon Romanovsky wrote:
-> > I really like this series, but your latest netdevsim RFC made me worry.
-> > 
-> > It is important to make sure that these devlink_put() and devlink_get()
-> > calls will be out-of-reach from the drivers. Only core code should use
-> > them.
-> 
-> get/put symbols are not exported so I think we should be safe
-> from driver misuse at this point. If we ever export them we 
-> should add a 
-> 
->   WARN_ON(!(devlink->lock_flags & DEVLINK_LOCK_USE_REF));
 
-Right, for now we are safe.
+	Hello,
 
-> 
-> > Can you please add it as a comment above these functions?
-> 
-> Will do if the RFC sinks.
+On Mon, 1 Nov 2021, yangxingwu wrote:
 
-I have a solution at hand that doesn't require exporting get/put interfaces.
-
+> We are changing expire_nodest_conn to work even for reused connections when
+> conn_reuse_mode=0, just as what was done with commit dc7b3eb900aa ("ipvs:
+> Fix reuse connection if real server is dead").
 > 
-> > At least for now, till we discuss your RFC.
+> For controlled and persistent connections, the new connection will get the
+> needed real server depending on the rules in ip_vs_check_template().
+> 
+> Fixes: d752c3645717 ("ipvs: allow rescheduling of new connections when port reuse is detected")
+> Co-developed-by: Chuanqi Liu <legend050709@qq.com>
+> Signed-off-by: Chuanqi Liu <legend050709@qq.com>
+> Signed-off-by: yangxingwu <xingwu.yang@gmail.com>
+
+	Looks good to me, thanks!
+
+Acked-by: Julian Anastasov <ja@ssi.bg>
+
+> ---
+>  Documentation/networking/ipvs-sysctl.rst | 3 +--
+>  net/netfilter/ipvs/ip_vs_core.c          | 8 ++++----
+>  2 files changed, 5 insertions(+), 6 deletions(-)
+> 
+> diff --git a/Documentation/networking/ipvs-sysctl.rst b/Documentation/networking/ipvs-sysctl.rst
+> index 2afccc63856e..1cfbf1add2fc 100644
+> --- a/Documentation/networking/ipvs-sysctl.rst
+> +++ b/Documentation/networking/ipvs-sysctl.rst
+> @@ -37,8 +37,7 @@ conn_reuse_mode - INTEGER
+>  
+>  	0: disable any special handling on port reuse. The new
+>  	connection will be delivered to the same real server that was
+> -	servicing the previous connection. This will effectively
+> -	disable expire_nodest_conn.
+> +	servicing the previous connection.
+>  
+>  	bit 1: enable rescheduling of new connections when it is safe.
+>  	That is, whenever expire_nodest_conn and for TCP sockets, when
+> diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
+> index 128690c512df..f9d65d2c8da8 100644
+> --- a/net/netfilter/ipvs/ip_vs_core.c
+> +++ b/net/netfilter/ipvs/ip_vs_core.c
+> @@ -1964,7 +1964,6 @@ ip_vs_in(struct netns_ipvs *ipvs, unsigned int hooknum, struct sk_buff *skb, int
+>  	struct ip_vs_proto_data *pd;
+>  	struct ip_vs_conn *cp;
+>  	int ret, pkts;
+> -	int conn_reuse_mode;
+>  	struct sock *sk;
+>  
+>  	/* Already marked as IPVS request or reply? */
+> @@ -2041,15 +2040,16 @@ ip_vs_in(struct netns_ipvs *ipvs, unsigned int hooknum, struct sk_buff *skb, int
+>  	cp = INDIRECT_CALL_1(pp->conn_in_get, ip_vs_conn_in_get_proto,
+>  			     ipvs, af, skb, &iph);
+>  
+> -	conn_reuse_mode = sysctl_conn_reuse_mode(ipvs);
+> -	if (conn_reuse_mode && !iph.fragoffs && is_new_conn(skb, &iph) && cp) {
+> +	if (!iph.fragoffs && is_new_conn(skb, &iph) && cp) {
+>  		bool old_ct = false, resched = false;
+> +		int conn_reuse_mode = sysctl_conn_reuse_mode(ipvs);
+>  
+>  		if (unlikely(sysctl_expire_nodest_conn(ipvs)) && cp->dest &&
+>  		    unlikely(!atomic_read(&cp->dest->weight))) {
+>  			resched = true;
+>  			old_ct = ip_vs_conn_uses_old_conntrack(cp, skb);
+> -		} else if (is_new_conn_expected(cp, conn_reuse_mode)) {
+> +		} else if (conn_reuse_mode &&
+> +			   is_new_conn_expected(cp, conn_reuse_mode)) {
+>  			old_ct = ip_vs_conn_uses_old_conntrack(cp, skb);
+>  			if (!atomic_read(&cp->n_control)) {
+>  				resched = true;
+> -- 
+> 2.30.2
+
+Regards
+
+--
+Julian Anastasov <ja@ssi.bg>
