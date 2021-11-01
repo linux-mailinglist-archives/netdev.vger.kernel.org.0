@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C83F4412AB
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 05:06:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 214A04412AD
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 05:06:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229506AbhKAEJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 00:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57874 "EHLO
+        id S229592AbhKAEJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 00:09:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229560AbhKAEJC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 00:09:02 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C0B3C061714;
-        Sun, 31 Oct 2021 21:06:30 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id nh10-20020a17090b364a00b001a69adad5ebso301904pjb.2;
-        Sun, 31 Oct 2021 21:06:30 -0700 (PDT)
+        with ESMTP id S229502AbhKAEJG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 00:09:06 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A171C061714;
+        Sun, 31 Oct 2021 21:06:34 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id y1so10712622plk.10;
+        Sun, 31 Oct 2021 21:06:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=a6qQ3h1Ch302HJfYHQZAmeh/lV7bJkSJ8DTpxUDtbRQ=;
-        b=NROFMPdiJLI8UUTddBHWLZ4FLx2tkV5X6db5lQK80QV8z0JonCgjR84wihx8P+Iaax
-         93+69bCdfyiKXqrsTed2UZ8+1dMkBJfGxt7MuH3DUcjgClZcGe+IZVuMFdDyVul5A31e
-         ZEfDnKP1PgXhGM5yl4YkU1IDeIluwvPpqph2RP9nAEwHmh5T5TCnpsIi82676k04WSvS
-         0b9EeR2c/E2YjDyfjTyPtdz2SD17I/GVYaP76dNWS1f5JC23G4AyZ5NephOTzqu9C2/F
-         gEabOLj0euP21+B8e/muS55sBK+yWJQLFZDmqDcnG8ZyXsKGPEyQpRgGabJg2r3Yjmej
-         RTLg==
+        bh=1n2x0oKAPYz3pWFJUDMqbyMzMmahNoyv8knA3ovY2+0=;
+        b=ENhldhyeUbonWGisZV/5SMaNyLDMmOSngXjmCQxIlcMZeCgmhQJ+0Zq5DdHG/LYM80
+         PvpQxKpmB6jCFwp3+pEnuRrTGi69UwdxjewuCeZXSjtdbcUQBHJuEZcwGfsxYBfFSlc6
+         CT5Efm+IcnaX3gekiGlSn8sifrmYmWeumK0XwCzb5hEVpGrjYPWmdBHL7Zlvh+yjSQOV
+         YMxFbMpuMIveVlE0mPbRcs86wCQVmffIIOa+Zx6urhzlAQ4C5VjDlas94e1ZK0Ad4lxK
+         zQrtvufpTwb8yoR4U29GH/7vip/thpZlsxZEEiXhEjIEq+81Ot9byUhUGy/oofObxP2c
+         5czA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=a6qQ3h1Ch302HJfYHQZAmeh/lV7bJkSJ8DTpxUDtbRQ=;
-        b=veS6epXZYMrLrBJVPxkvszBO4ja5iMHS8PzJ6WxvoJvnvBpxvowiSKyfQ3zS6k7CwL
-         VPLWNoRDXvL+drRg3wN/nXRSDhY7h0038KmYVKBp6QmQhUAqM07t6ALnndkz/VL1VN+t
-         AfB5dVWouUZp5DN6yWM+bYjGpMfdVHhBcFJMjoV0cEW9h+g86WrT61nQjg6fsaJNpUBN
-         tRCLu/RohXN1qatRJCFYJgIFuLwFoHrahkO99f2hwkv8RcvJOsGKz64krVD3Sk1aT86i
-         6f3juONdIW06frpFfVLh1nVcKR4NQ49P9nSKLL6l7+AGxVO93GvfNwfnI2ziZlYKsCHT
-         +s6Q==
-X-Gm-Message-State: AOAM532pCEk8Q0tAMpAGgqkWo1Ma4EQqKdhJ41IhKBW+VPoO7xrwlKgk
-        nJDCNeBeUrD09kUExx+jfY+A2DgFZ7Q=
-X-Google-Smtp-Source: ABdhPJxgiivyLXTriUKIk4IGO2MI2JoC8J3Ev+9eV08gP36+p6KDKUzmag4eha52pwUFGEUfETBSeA==
-X-Received: by 2002:a17:90b:1a85:: with SMTP id ng5mr35858952pjb.43.1635739589501;
-        Sun, 31 Oct 2021 21:06:29 -0700 (PDT)
+        bh=1n2x0oKAPYz3pWFJUDMqbyMzMmahNoyv8knA3ovY2+0=;
+        b=WXcL0xtfh+paCOf6wi9tlxywfZqSY98vOUvaZ5nccIrJt1FhpuyrTC91+3AYpqgsxg
+         ZIwXxCLum4Z4UnVZG+ga7TyoQAlAstIwvyV2SBAmPMH8nWBbN3DSjoLgd43IHbTVYpk+
+         JDcu124GqxI+SVs4rjYwF7OhwTKpgS3I8z9FCA0IHwOB8SnA0tw8nsh91JCpOYdcc5Jo
+         gEd50cM80DHzaCWbeX5sG6qWJHXt4JLYVX24w+dFKa3ELDkQUupDbiFvHSWBHbqz3z/P
+         g8RKYZHKRqkCR3j8X0CtQaOUrEnHndBfOAjpRvOvss99tUcHUg9mvDjQ5t4YPoDxLGGw
+         c92Q==
+X-Gm-Message-State: AOAM532y5kUtby/KZw3IrwYMI1eQW9RWgWH/XcnX1rdz4IPxHAyuIkqa
+        KWcvldnZsRtJq9wmPeKxjE5QgppFYxU=
+X-Google-Smtp-Source: ABdhPJxR20u0UVX1wC91AY0JtGlMHI3FhLqCI31K7gBzGQlwW5MEB91Ym7dLKNQfA8C/gMFj0mVzyA==
+X-Received: by 2002:a17:90b:3b88:: with SMTP id pc8mr26387139pjb.93.1635739593496;
+        Sun, 31 Oct 2021 21:06:33 -0700 (PDT)
 Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id v13sm11132231pgt.7.2021.10.31.21.06.26
+        by smtp.gmail.com with ESMTPSA id v13sm11132231pgt.7.2021.10.31.21.06.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 Oct 2021 21:06:29 -0700 (PDT)
+        Sun, 31 Oct 2021 21:06:33 -0700 (PDT)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S . Miller" <davem@davemloft.net>,
@@ -56,9 +56,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         linux-kselftest@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net 2/5] kselftests/net: add missed setup_loopback.sh/setup_veth.sh to Makefile
-Date:   Mon,  1 Nov 2021 12:06:06 +0800
-Message-Id: <20211101040609.127729-3-liuhangbin@gmail.com>
+Subject: [PATCH net 3/5] kselftests/net: add missed SRv6 tests
+Date:   Mon,  1 Nov 2021 12:06:07 +0800
+Message-Id: <20211101040609.127729-4-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211101040609.127729-1-liuhangbin@gmail.com>
 References: <20211101040609.127729-1-liuhangbin@gmail.com>
@@ -68,33 +68,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When generating the selftests to another folder, the include file
-setup_loopback.sh/setup_veth.sh for gro.sh/gre_gro.sh are missing as
-they are not in Makefile, e.g.
+When generating the selftests to another folder, the SRv6 tests are
+missing as they are not in Makefile, e.g.
 
   make -C tools/testing/selftests/ install \
       TARGETS="net" INSTALL_PATH=/tmp/kselftests
 
-Fixes: 7d1575014a63 ("selftests/net: GRO coalesce test")
-Fixes: 9af771d2ec04 ("selftests/net: allow GRO coalesce test on veth")
+Fixes: 03a0b567a03d ("selftests: seg6: add selftest for SRv6 End.DT46 Behavior")
+Fixes: 2195444e09b4 ("selftests: add selftest for the SRv6 End.DT4 behavior")
+Fixes: 2bc035538e16 ("selftests: add selftest for the SRv6 End.DT6 (VRF) behavior")
 Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- tools/testing/selftests/net/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/net/Makefile | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 9b1c2dfe1253..63ee01c1437b 100644
+index 63ee01c1437b..8a6264da5276 100644
 --- a/tools/testing/selftests/net/Makefile
 +++ b/tools/testing/selftests/net/Makefile
-@@ -28,7 +28,7 @@ TEST_PROGS += veth.sh
+@@ -28,6 +28,9 @@ TEST_PROGS += veth.sh
  TEST_PROGS += ioam6.sh
  TEST_PROGS += gro.sh
  TEST_PROGS += gre_gso.sh
--TEST_PROGS_EXTENDED := in_netns.sh
-+TEST_PROGS_EXTENDED := in_netns.sh setup_loopback.sh setup_veth.sh
++TEST_PROGS += srv6_end_dt46_l3vpn_test.sh
++TEST_PROGS += srv6_end_dt4_l3vpn_test.sh
++TEST_PROGS += srv6_end_dt6_l3vpn_test.sh
+ TEST_PROGS_EXTENDED := in_netns.sh setup_loopback.sh setup_veth.sh
  TEST_GEN_FILES =  socket nettest
  TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
- TEST_GEN_FILES += tcp_mmap tcp_inq psock_snd txring_overwrite
 -- 
 2.31.1
 
