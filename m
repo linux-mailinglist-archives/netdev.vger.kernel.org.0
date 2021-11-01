@@ -2,246 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16F46441C9B
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 15:28:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B065C441CB2
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 15:33:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231874AbhKAOaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 10:30:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56360 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229826AbhKAOal (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 10:30:41 -0400
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A291C061714
-        for <netdev@vger.kernel.org>; Mon,  1 Nov 2021 07:28:08 -0700 (PDT)
-Received: by mail-il1-x134.google.com with SMTP id y17so18621440ilb.9
-        for <netdev@vger.kernel.org>; Mon, 01 Nov 2021 07:28:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=edUuJZFTNuaLy0fr6ZPjhwkCOd8kPZE6F724He9EJJQ=;
-        b=LsJSQciuZuF6pt86wp2GkIZEaAuxN7jY+x1oTbEsOu+nWA+wuxditwYV/aletelk5Y
-         QyaPmmni9DVHPVmx0vHabIfQjevm07EyptoWxrLD339vxa9k42971nNTzSF9R58AuqWp
-         mI8W6tcg30/isYotTSqVdrWXPMb+LElmj8AdaeXNZLBeuUdDUAMShQn7J7xvxgUTRrkm
-         f+VRXuQVQWNBisBP2TU1X9nIl9/A/64nwMflwB84UQYvDHi/4txNSqAN3vN+t7RAmF/0
-         f3wRwdHCBHlLL4gCEcXKRBKx+sk45X7bGkS7+TFabsfiq3joEkr+yyZrTAfUHyKxdtBu
-         Hrnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=edUuJZFTNuaLy0fr6ZPjhwkCOd8kPZE6F724He9EJJQ=;
-        b=uao57YQBs1jc8QL+u26l74ZHctVSSPTOqTLuHEnnmOF4zbEj6ylzQmZ0mjakxwvqKd
-         i+YNxIJ/vwi8x0c92ycnwNUtMyXeO5jLj1aYKUowrEgUdUDRvaaoIgdAU1Iz/AHBul7U
-         6E0/UlhyRcDlXnH1TB5G/eEADXFriWb9eennTxLBLuxdeWowp3Xc1yRr40xiZA6BixMb
-         /UgcluyFS8QuXW+8flSXyPAd6hlCagcLf1GydbvlKx6X0AnsxvqThWWhH+3WxpXOFPE6
-         UsGarr7wYK1StmeyZYA25XMMNF6CtXHkyjpO9RzuE+MLVZRpJTiW7/itYyjabVCE3DaR
-         6CjA==
-X-Gm-Message-State: AOAM532Z5BOmp/eZ4pzY6xdujpGwsqrYxlOQrwEzo0ueEYFlPdb2fpHZ
-        Cu68x6JCI7K0pGC1ieaHuKdimqBT3LELvqGCzP8=
-X-Google-Smtp-Source: ABdhPJyNfOfJ5eP4HThicpJ9lmr44XDeFdPCp8GjweUJ6HJoMMxboiHipW1YP5xkXyxgsMNUiZjKjVxBUN5U9ZVhFfc=
-X-Received: by 2002:a05:6e02:2149:: with SMTP id d9mr7590790ilv.221.1635776887044;
- Mon, 01 Nov 2021 07:28:07 -0700 (PDT)
+        id S231878AbhKAOfk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 10:35:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43422 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232564AbhKAOff (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Nov 2021 10:35:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0426B60ED5;
+        Mon,  1 Nov 2021 14:33:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635777181;
+        bh=K056Zi+JlMWxWEkjDSHyn6f9NWs2DaCZjiQpH08tnZs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lUGvN8yyYK6HSQX2ZmeoaEoXnHRPvLEth55nHxXzpsndTltmuRTYuxbG3MFrphD0i
+         hl0uDw/7dMfDknz6rmKybqFiS1mb0jWrDpvUVsDvgRMCsReWTQ43izDWPafQPYziL9
+         9ET0GiGchaTgVke/VRpdMlnOCybfJhgGAvvm2YVxqxp2apGEp1hirrDaZ383Oc4/D0
+         ZYrMVb9OCtdTx6LXS1vw/M7N2wmTr8j8d5DmyO2hmotmn2uSkJuPxaVtOjHbsD52SC
+         E9iCF0sOGXBQIiZYNeh8P1wngTaEjryx9BHPXr+X2S4y0i+sjy1BKPrTCJLCkCBLx4
+         e3+DWN4txJc6Q==
+Date:   Mon, 1 Nov 2021 07:32:59 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     idosch@idosch.org, edwin.peer@broadcom.com, jiri@resnulli.us,
+        netdev@vger.kernel.org
+Subject: Re: [RFC 0/5] devlink: add an explicit locking API
+Message-ID: <20211101073259.33406da3@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <YX5Efghyxu5g8kzY@unreal>
+References: <20211030231254.2477599-1-kuba@kernel.org>
+        <YX5Efghyxu5g8kzY@unreal>
 MIME-Version: 1.0
-References: <20211028110646.13791-1-simon.horman@corigine.com>
- <b409b190-8427-2b6b-ff17-508d81175e4d@nvidia.com> <CAA93jw4VphJ17yoV1S6aDRg2=W7hg=02Yr3XcX_aEBTzAt0ezw@mail.gmail.com>
- <4247ecd8-e4ca-0c35-5c0f-1124a043080f@mojatatu.com>
-In-Reply-To: <4247ecd8-e4ca-0c35-5c0f-1124a043080f@mojatatu.com>
-From:   Dave Taht <dave.taht@gmail.com>
-Date:   Mon, 1 Nov 2021 07:27:50 -0700
-Message-ID: <CAA93jw5Ou+d7j6jeFz6oJqcuh=WM8URPoY-v-9U4evGB_V=mvg@mail.gmail.com>
-Subject: Re: [RFC/PATCH net-next v3 0/8] allow user to offload tc action to
- net device
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     Oz Shlomo <ozsh@nvidia.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Vlad Buslov <vladbu@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Baowen Zheng <notifications@github.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        oss-drivers@corigine.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 31, 2021 at 7:14 AM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
->
-> On 2021-10-31 08:03, Dave Taht wrote:
-> [..]
->
-> >
-> > Just as an on-going grump: It has been my hope that policing as a
-> > technique would have died a horrible death by now. Seeing it come back
-> > as an "easy to offload" operation here - fresh from the 1990s! does
-> > not mean it's a good idea, and I'd rather like it if we were finding
-> > ways to
-> > offload newer things that work better, such as modern aqm, fair
-> > queuing, and shaping technologies that are in pie, fq_codel, and cake.
-> >
-> > policing leads to bursty loss, especially at higher rates, BBR has a
-> > specific mode designed to defeat it, and I ripped it out of
-> > wondershaper
-> > long ago for very good reasons:
-> > https://www.bufferbloat.net/projects/bloat/wiki/Wondershaper_Must_Die/
-> >
-> > I did a long time ago start working on a better policing idea based on
-> > some good aqm ideas like AFD, but dropped it figuring that policing
-> > was going to vanish
-> > from the planet. It's baaaaaack.
->
-> A lot of enthusiasm for fq_codel in that link ;->
+On Sun, 31 Oct 2021 09:23:42 +0200 Leon Romanovsky wrote:
+> On Sat, Oct 30, 2021 at 04:12:49PM -0700, Jakub Kicinski wrote:
+> > This implements what I think is the right direction for devlink
+> > API overhaul. It's an early RFC/PoC because the body of code is
+> > rather large so I'd appreciate feedback early... The patches are
+> > very roughly split, the point of the posting is primarily to prove
+> > that from the driver side the conversion is an net improvement
+> > in complexity.
+> > 
+> > IMO the problems with devlink locking are caused by two things:
+> > 
+> >  (1) driver has no way to block devlink calls like it does in case
+> >      of netedev / rtnl_lock, note that for devlink each driver has
+> >      it's own lock so contention is not an issue;
+> >      
+> >  (2) sometimes devlink calls into the driver without holding its lock
+> >      - for operations which may need the driver to call devlink (port
+> >      splitting, switch config, reload etc.), the circular dependency
+> >      is there, the driver can't solve this problem.
+> > 
+> > This set "fixes" the ordering by allowing the driver to participate
+> > in locking. The lock order remains:
+> > 
+> >   device_lock -> [devlink_mutex] -> devlink instance -> rtnl_lock
+> > 
+> > but now driver can take devlink lock itself, and _ALL_ devlink ops
+> > are locked.
+> > 
+> > The expectation is that driver will take the devlink instance lock
+> > on its probe and remove paths, hence protecting all configuration
+> > paths with the devlink instance lock.
+> > 
+> > This is clearly demonstrated by the netdevsim conversion. All entry
+> > points to driver config are protected by devlink instance lock, so
+> > the driver switches to the "I'm already holding the devlink lock" API
+> > when calling devlink. All driver locks and trickery is removed.
+> > 
+> > The part which is slightly more challanging is quiescing async entry
+> > points which need to be closed on the devlink reload path (workqueue,
+> > debugfs etc.) and which also take devlink instance lock. For that we
+> > need to be able to take refs on the devlink instance and let them
+> > clean up after themselves rather than waiting synchronously.
+> > 
+> > That last part is not 100% finished in this patch set - it works but
+> > we need the driver to take devlink_mutex (the global lock) from its
+> > probe/remove path. I hope this is good enough for an RFC, the problem
+> > is easily solved by protecting the devlink XArray with something else
+> > than devlink_mutex and/or not holding devlink_mutex around each op
+> > (so that there is no ordering between the global and instance locks).
+> > Speaking of not holding devlink_mutex around each op this patch set
+> > also opens the path for parallel ops to different devlink instances
+> > which is currently impossible because all user space calls take
+> > devlink_mutex...  
+> 
+> No, please no.
+> 
+> This RFC goes against everything that I tried to make before.
 
-Wrote that in 2013. It's not every day you solve tcp global synchronization=
-,
-achieve a queue depth of 5ms no matter the rate, develop something that
-has zero latency for sparse packets, only shoots at the fat flows, drops fr=
-om
-head so there's always an immediate signal of congestion from the packet
-just behind, makes opus's PLC and simpler forms of FEC "just work", and
-requires near zero configuration.
+Yup, that we agree on :) I think the reload makes your approach 
+a dead end.
 
-The plots at the end made a very convincing case for abandoning policing.
+> It pushes complexity from the devlink core code to the drivers by
+> hiding bugs in the drivers. The average driver author doesn't know
+> locking well and won't be able to use devlink reference counting
+> correctly. 
+> 
+> Already your netdevsim conversion shows that it is hard to do and for
+> complex drivers it will be a nightmare to convert and maintain.
 
-> Root cause for burstiness is typically due to large transient queues
-> (which are sometimes not under your admin control) and of course if
-> you use a policer and dont have your double leaky buckets set properly
-> to compensate for both short and long term rates you will have bursts
-> of drops with the policer.
+IDK, the code is very idiomatic for the kernel. Most drivers should not
+have to use the ref counts, and I'll provide good enough docs to understand
+how to use it.
 
-I would really like to see a good configuration guide for policing at
-multiple real-world bandwidths and at real-world workloads.
+In fact drivers which don't implement currently unlocked ops require no
+changes between you API and this one.
 
-> It would be the same with shaper as well
-> if the packet burst shows up when the queue is full.
+I think "complex core, simple drivers" is the right trade off. With
+this set it is now and order of magnitude easier to reason about
+netdevsim's locking.
 
-Queues are shock absorbers as Van always says. We do drop packets
-still, on the rx ring. The default queue depth of codel is 32MB. It takes
-a really really really large burst to overwhelm that.
+> At the end (long run), we will find ourselves with a maze of completely
+> random devlink_get and devlink_lock, exactly like we have now with RTNL
+> lock, which people add/delete based on their testing if to judge by the
+> commit messages.
+> 
+> Regarding devlink_mutex, I'm on the path to removing it, this is why
+> XArray and reference counting was used in the first place.
 
-I wonder where all the userspace wireguard vpns are dropping packets nowday=
-s.
+devlink_mutex is the only thing protecting the "unlocked" calls right
+now, you'd be placing a lot of implicit expectations about driver's
+internal locking if you do that.
 
-> Intuitively it would feel, for non-work conserving approaches,
-> delaying a packet (as in shaping) is better than dropping (as in
+> Our current complexity is due to the situation that devlink_reload doesn't
+> behave like any other _set_ commands, where it supposed to take devlink->lock
+> internally. 
+> 
+> Please give me (testing) time and I'll post a full solution that separates
+> _get_ from _set_ commands by changing devlink->lock to be RW semaphore.
+> Together with logic to understand that we are in devlink_reload will
+> give us a solution that won't require changing drivers and won't push
+> locking burden on them.
 
-It's shaping + flow queueing that's the win, if you are going to
-queue. It gets all
-the flows statistically multiplexed and in flow balance orders of
-magnitude faster
-than a policer could. (flow queuing is different from classic fair queuing)
+How is RW semaphore going to solve the problem that ops are unlocked
+and have to take the instance lock from within to add/remove ports?
 
-The tiny flows pass through untouched at zero delay also.
+> Please, let's not give up on standalone devlink implementation without
+> drivers need to know internal devlink details. It is hard to do but possible.
 
-At the time, I was considering applying a codel-like technique to policing =
--
-I'd called it "bobbie", where once you exceed the rate, a virtual clock mov=
-es
-forward as to how long you would have delayed packet delivery if you were
-queueing and then starts shooting at packets once your burst tolerance is
-exceeded until
+We may just disagree on this one. Please answer my question above -
+so far IDK how you're going to fix the problem of re-reg'ing subobjects
+from the reload path.
 
-But inbound fq+shaping did wonders faster, and selfishly I didn't feel
-like abandoning
-floating point to work with in the kernel.
+My experience writing drivers is that it was painfully unclear what 
+the devlink locking rules are. Sounds like you'd make them even more
+complicated.
 
-That said, it's taken breaking the qdisc lock and xpf to make inbound
-shaping scale
-decently (see: https://github.com/rchac/LibreQoS#how-do-cake-and-fq_codel-w=
-ork )
+This RFC makes the rules simple - all devlink ops are locked.
 
-> policing) - but i have not a study which scientifically proves it.
-> Any pointers in that regard?
+For the convenience of the drivers they can also take the instance lock
+whenever they want to prevent ops from being called. Experience with
+rtnl_lock teaches us that this is very useful for drivers.
 
-Neither do I. Matt Mathis has ranted about it, and certainly the workaround=
-s
-in BBRv1 to defeat others desperate attempts to control their bandwidth wit=
-h
-a policer is obvious from their data.
+Accessible lock + refs is how driver core works.
 
-If there really is a resurgence of interest in policing, a good paper
-would compare
-a classic 3 color policer to bobbie, and to shaping vs a vs BBR and cubic.
+Let me sketch out the driver facing documentation here.
 
-I'm low on students at the moment...
+---->8------
 
-> TCP would recover either way (either detecting sequence gaps or RTO).
+Devlink locking guide
+=====================
 
-Yes, it does. But policing is often devastating to voip and videoconferenci=
-ng
-traffic.
+Basic locking
+-------------
 
-> In Linux kernel level i am not sure i see much difference in either
-> since we actually feedback an indicator to TCP to indicate a local
-> drop (as opposed to guessing when it is dropped in the network)
-> and the TCP code is smart enough to utilize that knowledge.
+After calling devlink_register() and until devlink_unregister() is
+called the devlink instance is "live" and any callback can be invoked.
+If you want to prevent devlink from calling the driver take the
+instance lock (devlink_lock()), you will need to call the locked
+version of devlink API (prefixed with '__devlink') while holding the
+lock.
 
-There is an extremely long and difficult conversation I'd had over
-the differences between sch_fq and fq_codel and the differences
-between a server and a router, for real world applications over here:
+All devlink callbacks (including health callbacks) are locked so locked
+devlink API needs to be used from within them.
 
-https://github.com/systemd/systemd/issues/9725#issuecomment-413369212
+Note that devlink locks are per-instance (like device_lock but unlike
+rtnl_lock).
 
-> For hardware offload there is no such feedback for either of those
-> two approaches (so no difference with drop in the blackhole).
+Reference use
+-------------
 
-Yes, now you've built a *router* and lost the local control loop.
-TSQ, sch_fq's pacing, and other host optimizations no longer work.
+Advanced use of devlink may require taking references on the instance.
+The primary use for this is to avoid deadlocks between reload/remove
+paths and async works which need to take the devlink instance lock.
 
-I encourage more folk to regularly take packet
-captures of the end results of offloads vs a vs network latency.
+devlink_get() takes a reference on the instance and should only be
+called when the driver is sure to already have some references.
 
-Look! MORE BANDWIDTH for a single flow! Wait! There's
-600ms of latency and new flows can't even get started!
+The reference alone does _not_ prevent devlink instance from getting
+unregistered so you probably want to check if devlink_is_alive() before
+using that ref.
 
->
-> As to "policer must die" - not possible i am afraid;-> I mean there
-> has to be strong evidence that it is a bad idea and besides that
-> _a lot of hardware_ supports it;-> Ergo, we have to support it as well.
+For example a use with a workqueue may look like this:
 
-I agree that supporting hardware features is good. I merely wish that
-certain other software features were making it into modern hardware.
+```
+/* schedule work from a path which knows devlink is alive */
+void sched_my_work()
+{
+	devlink_get(devlink);
+	if (!schedule_work(priv->some_work))
+		/* it was already scheduled */
+		devlink_put(devlink);
 
-I'm encouraged by this work in p4, at least.
+}
 
-https://arxiv.org/pdf/2010.04528.pdf
+void work_fn()
+{
+	devlink_lock(devlink);
+	if (devlink_is_alive(devlink))
+		perform_the_task();
+	devlink_lock(devlink);
 
-> Note: RED for example has been proven almost impossible to configure
-> properly but we still support it and there's a good set of hardware
-> offload support for it. For RED - and i should say the policer as well -
-> if you configure properly, _it works_.
+	/* give up our reference */
+	devlink_put(devlink);
+}
+```
 
-I have no idea how often RED is used nowadays. The *only* requests
-for offloading it Ive heard is for configuring it as a brick wall ecn marki=
-ng
-tool, which does indeed work for dctcp.
-
-The hope was with pie, being similar in construction, would end up
-implemented in hardware, however it's so far turned out that codel
-was easier to implement in hw and more effective.
->
->
-> BTW, Some mellanox NICs offload HTB. See for example:
-> https://legacy.netdevconf.info/0x14/session.html?talk-hierarchical-QoS-ha=
-rdware-offload
-
-Yes. Too bad they then attach it to fifos. I'd so love to help a
-hardware company
-willing to do the work to put modern algorithms in hw...
-
-> cheers,
-> jamal
-
-I note that although I've enjoyed ranting, I don't actually have any
-objections to this
-particular patch.
---
-I tried to build a better future, a few times:
-https://wayforward.archive.org/?site=3Dhttps%3A%2F%2Fwww.icei.org
-
-Dave T=C3=A4ht CEO, TekLibre, LLC
+If you want to use devlink references from a context which does not take
+a reference on the driver module (e.g. workqueue) - make sure to set
+.owner of devlink_ops to THIS_MODULE.
