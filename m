@@ -2,63 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F8BB442170
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 21:11:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3ED84421AB
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 21:29:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230333AbhKAUNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 16:13:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49278 "EHLO
+        id S229896AbhKAUcZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 16:32:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229966AbhKAUNV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 16:13:21 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7656C061714
-        for <netdev@vger.kernel.org>; Mon,  1 Nov 2021 13:10:46 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id w15so68336621edc.9
-        for <netdev@vger.kernel.org>; Mon, 01 Nov 2021 13:10:46 -0700 (PDT)
+        with ESMTP id S229560AbhKAUcY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 16:32:24 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03806C061714
+        for <netdev@vger.kernel.org>; Mon,  1 Nov 2021 13:29:50 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id v17so29846487wrv.9
+        for <netdev@vger.kernel.org>; Mon, 01 Nov 2021 13:29:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=GDfMgbthSI1oXv6bXVFL9A8aOMVOq5lnonjqu7+MiZ0=;
-        b=dXD3C+mz+UTkenGNmhdoh0f+TxqlXRH1bUArHuwwxPiLiS4twdtVE2fnFWQtlfMzUD
-         Dc8L5of9G37ig7Z7x2J19DdMrD91RJkxodKnNmYstFCCC2jYBG5399HiGy0ZyuLjubzC
-         WW9IYLJIckh+LS1Ehs3G3JwdcT1Z3Bm58Al/hbE9bakdunJFmCsNVeZBwKZufYGOEZ4u
-         TFvTcO51zNr8fyE7c5EpBNCzxZ4xRt2tOO0Xhi+M4p7dVDwZVhlT1Jsjo2AraiD2Enew
-         j/pkjti3l9x33jNEF8N+YsNgD9d2B7zldjdgpojF/mOv2jYJSoJ5AM4iJm3Tcv5fMUL+
-         J6Gg==
+        d=engleder-embedded-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GevA1FIiFY3B9dq0O+D14rARZ0fGaF4OuQb3r18RqDo=;
+        b=nL8rQZC04mSnuieiY+DAspcNzuqnQDlgke8Lg8B2f8DepyrdWHnvQF4XiL07Di3HxN
+         VOt4PlDvNEZyCp1FMRSIbVKKiTH1lNndRTIak9CYZ7z3XsdsdrqzGgiRgtoMibJzALAV
+         jC5wgpKcb1wndGG4GKiGarxHUl/2tKV0XGqHBTbhWKzPDA4PrXlk8TfS84pzoZFIYUgp
+         3ZYtHSxe26sqqeiGB7bAOEQBBLKPYQkCRmrnyRfsEwqUieFmw/v8bJ2MIZ7NA5siRq9t
+         pxeXlV0X3RqFknIMxAr8vipIx6f9QS9Lll6F247Y6n2q6WcojQDMbgaflCZQ243bn7md
+         vShg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=GDfMgbthSI1oXv6bXVFL9A8aOMVOq5lnonjqu7+MiZ0=;
-        b=6mSnWfn37Asy6+PijWeIBu0tLqC0WNgF6qtNsk686KNKmO7zw3/BJiWgz+4dmhcQbQ
-         nj1PJfGbgKHGM9W9oy9i+F7mh5p/oDfXyfYKXn4fncrNu7q+ewkDqldnWavHONXUOaI5
-         YjdJ/9GpwUN/hDCBKpvrSZX2QnPgFxmU6cUeRWSIHIy6gdArVb1Ya+Ckz7goZ5rXs/r2
-         1h60cuyspA/dq32DP9jjM0E9nnsnlM4VNJ0VUg0O62yl6X59y6RBHw0WqpTCe03s3yhA
-         vV04TK6zH3vM3AI37QcvVAC30hK4UkgIsiEroq/JVMmTRwd9fvk4pkLoB1OTFtc+EtNz
-         n7ew==
-X-Gm-Message-State: AOAM531xk3CsFf4aaf0HZR5RgtWPeukAZhoeBzRT5W71ltQTu1TgKjDZ
-        bEp9xOPEWkrx/CFPzk8M6sFtPZwjX9ONrylvfH0=
-X-Google-Smtp-Source: ABdhPJzVuoyn8PhLiDJ/EGx/KA1EfhSqAiw+yjBPpWnA1DYpJdC0TdPLXfPjtWvJ5nOZsFsYTZjv9TTGx44Keth7e44=
-X-Received: by 2002:aa7:cf8d:: with SMTP id z13mr8998851edx.5.1635797445200;
- Mon, 01 Nov 2021 13:10:45 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GevA1FIiFY3B9dq0O+D14rARZ0fGaF4OuQb3r18RqDo=;
+        b=FqY1HIhWVBtrVrR2DTQfrY5V6juA6rNbfpsUy2VwURzuLhjVRlVfm/fO1q6U04VEdn
+         tZHte1KGJv4ipMQST8UttgwrUxcqJ6eEa/qcPwYbM/uMCTRa7HQH9AjLWIE7M/we7c4Y
+         0ADZ1v1xbL8SRZfqlVZ096/mZiaWyQiNtVMWbCHi5ZM5tkG7HLerXjEccz+cKpqYiM68
+         cO3ybQrqjaCOsHEQRH7+I3+EDUMeTv4oEVDpg6doEPDHndSH0YEX90y17GnmJTid6wrS
+         FhkXDPmuX0q7M42nLbQFTWr00rxld4epLKJOKzX0UplZoF9VX8NsSeTpdhjVddpKJc7P
+         haYQ==
+X-Gm-Message-State: AOAM533Siw15CvhNH5DEywSsSDC6TxKNSoTJqXlNAlyz9LG/4gQRvVvI
+        jgvHzVZYGoxsR4P43mV17/L5Cauq2lzOKHUOibNbWNNtu26T9g==
+X-Google-Smtp-Source: ABdhPJw3J5xaxk24NAFMRmVytgNsc1zYLMARV0JPUlE8nu7N5Bwg+xFWlmpEVJz1yRYfe/MIqBpb/Af2hi5S5TTFACw=
+X-Received: by 2002:adf:8bc4:: with SMTP id w4mr40168899wra.36.1635798589470;
+ Mon, 01 Nov 2021 13:29:49 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a7c:8ed2:0:b0:129:478e:a1e6 with HTTP; Mon, 1 Nov 2021
- 13:10:44 -0700 (PDT)
-Reply-To: evelyngaby76@gmail.com
-From:   Evelyn Gaby <gae01100223@gmail.com>
-Date:   Mon, 1 Nov 2021 20:10:44 +0000
-Message-ID: <CA+-Cv72FJGNmF4NeZSFQ_RBRfJkYJE7xNN7y6sdqXbVC2oTtJQ@mail.gmail.com>
-Subject: Hello Dear
-To:     undisclosed-recipients:;
+References: <20211029200742.19605-1-gerhard@engleder-embedded.com>
+ <20211029200742.19605-4-gerhard@engleder-embedded.com> <20211029212730.4742445b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CANr-f5yBuKd0D4xppyRm+PUmLredFuGA=dM_BSQ9VkSPTfX2Lw@mail.gmail.com> <YX/igyj2u/Aen9za@lunn.ch>
+In-Reply-To: <YX/igyj2u/Aen9za@lunn.ch>
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+Date:   Mon, 1 Nov 2021 21:29:37 +0100
+Message-ID: <CANr-f5z-Mg9GbegqFPrk-uHExmXvh8Xq4N_S0UzNbdEVBf9+HQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 3/3] tsnep: Add TSN endpoint Ethernet MAC driver
+To:     Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>, netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-.
-I will like to disclose something very important to you,
-get back to me for more details please.
+> > About endian: I have not considered endian so far, as this driver is used
+> > only for x86 and arm64. Is that ok?
+>
+> In most cases, there is little you need to do, so long as you use the
+> correct methods to access the bus. PCI registers are always little
+> endian for example, so easy to handle. Memory mapped structures are
+> where you need to be careful, your receive and transmit descriptors.
+> You need to use the correct __le32 or __be32 annotation, and then
+> sparse will warn you if you access them without the needed conversion.
 
-Regards.
-Mrs Evelyn Gaby.
+Thanks! Now I get those warnings. I'll fix them.
+
+Gerhard
