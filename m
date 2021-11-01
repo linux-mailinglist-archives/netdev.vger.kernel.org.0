@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6649E44126F
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 04:42:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C44DB441274
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 04:44:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230289AbhKADpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Oct 2021 23:45:08 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:15322 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230222AbhKADpD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Oct 2021 23:45:03 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HjJkg1mRcz90cS;
-        Mon,  1 Nov 2021 11:42:19 +0800 (CST)
+        id S230393AbhKADqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Oct 2021 23:46:35 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:26217 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230233AbhKADqe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Oct 2021 23:46:34 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4HjJkw5k47z8ttn;
+        Mon,  1 Nov 2021 11:42:32 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
  dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Mon, 1 Nov 2021 11:42:19 +0800
+ 15.1.2308.15; Mon, 1 Nov 2021 11:43:43 +0800
 Received: from [10.67.102.67] (10.67.102.67) by kwepemm600016.china.huawei.com
  (7.193.23.20) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.15; Mon, 1 Nov
- 2021 11:42:18 +0800
-Subject: Re: [PATCH V5 net-next 0/6] ethtool: add support to set/get tx
- copybreak buf size and rx buf len
+ 2021 11:43:41 +0800
+Subject: Re: [PATCH V5 net-next 6/6] net: hns3: remove the way to set tx spare
+ buf via module parameter
 To:     Andrew Lunn <andrew@lunn.ch>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <mkubecek@suse.cz>,
         <amitc@mellanox.com>, <idosch@idosch.org>, <danieller@nvidia.com>,
@@ -43,18 +43,18 @@ CC:     <davem@davemloft.net>, <kuba@kernel.org>, <mkubecek@suse.cz>,
         <lipeng321@huawei.com>, <chenhao288@hisilicon.com>,
         <linux-s390@vger.kernel.org>
 References: <20211030131001.38739-1-huangguangbin2@huawei.com>
- <YX2H3yN2tJXKt+ai@lunn.ch>
+ <20211030131001.38739-7-huangguangbin2@huawei.com> <YX2JhqOTKOiB/EPO@lunn.ch>
 From:   "huangguangbin (A)" <huangguangbin2@huawei.com>
-Message-ID: <f4937fea-4693-e534-38db-e8c64158ce55@huawei.com>
-Date:   Mon, 1 Nov 2021 11:42:18 +0800
+Message-ID: <84f977be-d2df-0927-fb43-c7afae373bd1@huawei.com>
+Date:   Mon, 1 Nov 2021 11:43:41 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <YX2H3yN2tJXKt+ai@lunn.ch>
+In-Reply-To: <YX2JhqOTKOiB/EPO@lunn.ch>
 Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [10.67.102.67]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
  kwepemm600016.china.huawei.com (7.193.23.20)
 X-CFilter-Loop: Reflected
 Precedence: bulk
@@ -63,27 +63,39 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 2021/10/31 1:58, Andrew Lunn wrote:
->> Rx buf len is buffer length of each rx BD. Use ethtool -g command to get
->> it, and ethtool -G command to set it, examples are as follow:
+On 2021/10/31 2:05, Andrew Lunn wrote:
+> On Sat, Oct 30, 2021 at 09:10:01PM +0800, Guangbin Huang wrote:
+>> From: Hao Chen <chenhao288@hisilicon.com>
 >>
->> 1. set rx buf len to 4096
->> $ ethtool -G eth1 rx-buf-len 4096
+>> The way to set tx spare buf via module parameter is not such
+>> convenient as the way to set it via ethtool.
 >>
->> 2. get rx buf len
->> $ ethtool -g eth1
->> ...
->> RX Buf Len:     4096
+>> So,remove the way to set tx spare buf via module parameter.
+>>
+>> Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+>> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+>> ---
+>>   drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 7 +------
+>>   1 file changed, 1 insertion(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+>> index 076631d7727d..032547a2ad2f 100644
+>> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+>> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+>> @@ -53,10 +53,6 @@ static int debug = -1;
+>>   module_param(debug, int, 0);
+>>   MODULE_PARM_DESC(debug, " Network interface message level setting");
+>>   
+>> -static unsigned int tx_spare_buf_size;
+>> -module_param(tx_spare_buf_size, uint, 0400);
+>> -MODULE_PARM_DESC(tx_spare_buf_size, "Size used to allocate tx spare buffer");
+>> -
 > 
-> How does this interact with MTU? If i have an MTU of 1500, and i set
-> the rx-buf-len to 1000, can i expect all frames to the discarded?
-> Should the core return -EINVAL? Or do you think some hardware will
-> simply allocate two buffers and scatter/gather over them? Which
-> implies that drivers which cannot SG must check if the rx-buf-len is
-> less than the MTU and return -EINVAL?
+> This might be considered ABI. By removing it, are you breaking users
+> setup?
 > 
->       Andrew
+> 	Andrew
 > .
 > 
-Yes, hns3 driver supports scatter/gather for this situation, it's necessary
-for driver which cannot support SG to check if rx buf len is less than mtu.
+Yes, patch 1/6 and 2/6 add support for ethtool to set tx spare(copybreak) buf size,
+so remove the way to set it by module parameter.
