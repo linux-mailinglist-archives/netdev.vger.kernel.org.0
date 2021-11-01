@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBD0A44244F
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 00:47:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7746B442454
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 00:47:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231735AbhKAXuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 19:50:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42044 "EHLO
+        id S231844AbhKAXu3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 19:50:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230396AbhKAXuB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 19:50:01 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAD17C061714;
-        Mon,  1 Nov 2021 16:47:27 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id t127so48522313ybf.13;
-        Mon, 01 Nov 2021 16:47:27 -0700 (PDT)
+        with ESMTP id S230396AbhKAXu2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 19:50:28 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A2F1C061714;
+        Mon,  1 Nov 2021 16:47:54 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id s186so24478328yba.12;
+        Mon, 01 Nov 2021 16:47:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Sf1MOARYDjP4TdzVuSLyJGMCk0C2bT96cLtb/iSHOvE=;
-        b=SmRguYNmZ65IXjC5kS7UQZRTfWQSdxG3tt0NMqEE3jWrUYTo0GxWeERHGJGqffLMhO
-         mUpNaR7C7soFG4z0owyxtBpWpkIIwvI7NmZ1X9AdSpHW94bF9X0F2JYuleAt/1sHg0L/
-         5zrYaqQwj0Suq5S5VsmoV1AZdC6+4yP/fsMOSEXMRg6e4wm0lhJ2QLDw5Gk9S7qwsRw+
-         4Ge1C6z+tXJAZUZgehS4GLqH1/7jQ+JcX7YrRez6DqCs2zac2rP50sEIyn+lO7WeZt0c
-         XBXE/edBJBpIPW+IBzEvHdctfSqV5hvPkoQfNas342hISax3YHARRiHhQ7FBsPBgRiOl
-         mZFg==
+        bh=FBiWAJTIxuy3ItLyF6ugs0XoTouSN2poKfACp6muzeU=;
+        b=HCef1svqJC9lBUd5duB92ijfUT5eRbFNY6HLDjzlGkQUpwd60ln2Wij+gYdq8HNT9T
+         sb7V/QqQxkFbgg982LjzFs8ml9FFZk/VwylwQitcHEk08wHHwWErIPES2L+IDqUT3gBs
+         9LplQea12M5qpyTMK0urKPM5EltKdsjjKMojrOiTpguMMSwlVUUdB5ciBBci5taDIEoi
+         gWw1gjoaTVb+SEzW3GXoQJOCZg6hgC+dJOcj9hMlcXLT01W/1I3LjcXSj948Zw0diw4N
+         dAB65Fn6kTT9lrlp64cjArjG4I3qD4Mr5tlryjf3IYHj8ngu42fTN0rGTfyeOBDJKIi7
+         blOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Sf1MOARYDjP4TdzVuSLyJGMCk0C2bT96cLtb/iSHOvE=;
-        b=My1n7WexEEoJyWD0Ge/ODEjUZvs1Jnmp9d4kfbwVKWLOP9p795tdQvBGZTDovLK9Um
-         ZSC1ZAX+MOxq2P37ETL6qyHv9dn7n8gy77QrXNPVm0V8MF23sydr4L7+6jCBmE1RkQmA
-         5jdV4TMyuihtQfoDuxRoJnRawc4Tx6nF4OvrKlOM3O5+LYQAwLTp9MSJ8gg80YlYQx63
-         vNsMthPCXzPetfHUx+KuQUAlh1kF2BTrtk35zQrprwZkfjmGH5s3+j+eXNQ78eelLokx
-         41lXtJ4o/zAAsqWuOpIjS+okT6xfPfKvlw+8WAdWCk7OJ9ubYxs9FVJiZu7yBlXnY+8N
-         SNZg==
-X-Gm-Message-State: AOAM531vNQDgGTCBKyxAn6ybAGcEa6eQ+RGhH2LOM21ESFkZt2CB2Fcg
-        66MNT14asz07ghieh1ghnV/jS7CGpdJoQo55MMOqKgH95w4=
-X-Google-Smtp-Source: ABdhPJxxytkF+I+xIYE57g7IWWkQCLnoV8y619WwaJHG8gGGeHV30HWL8AmkKNk7EfNuLQNSutDI8kZo20T/HYQbqVA=
-X-Received: by 2002:a25:d010:: with SMTP id h16mr25598551ybg.225.1635810447094;
- Mon, 01 Nov 2021 16:47:27 -0700 (PDT)
+        bh=FBiWAJTIxuy3ItLyF6ugs0XoTouSN2poKfACp6muzeU=;
+        b=F1RJEf7hBNXOUthUkb5DSQWmzAjn1kxDrF3XG2XGbWQmDXWrwj/DKOkfSJFIDzTDO3
+         IItzHZ5QWmwYTXDUVbo2+yZhcpXN3WYf638tbMR9VsT7f8RDUWfKJqGyLqDnHYXPwdfX
+         lcBxFGHTzj2ai0GABB1nsKVENyI/ZWZ2l+Y+zJAte4hYwgRNV/OhpuVLvzoI7DvtgI/z
+         wVTykXhyR70inLvqgWRrTrABgnRySMsTS5xCJm2q2QUVd+7RU1adXW7ME5RSQaIYzcWM
+         7c4umi0P/U5AMOkhtQPUkxv2im1nOokjy+iVp58r0ijQSEC7V4KP2UY9GbSowVLD5nkN
+         1TMA==
+X-Gm-Message-State: AOAM531jpYI3lTENfWieYy5POWh+LxBU8bctDB/vfHq8ZiQRFxd9BkmO
+        DFG7cCSCwetd9d5/EgiuU8hoEvzsAvg6PjBsh/o=
+X-Google-Smtp-Source: ABdhPJxlpHGgK7He7Tl6X9dpvDabko/7ti4gevdzxJpVQ8OpaApql1I6fxpzu3nMALBQpSWeYKjJVGmJI9w8ZqNn9aA=
+X-Received: by 2002:a25:cc4c:: with SMTP id l73mr33871640ybf.114.1635810473549;
+ Mon, 01 Nov 2021 16:47:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211101060419.4682-1-laoar.shao@gmail.com> <20211101060419.4682-10-laoar.shao@gmail.com>
-In-Reply-To: <20211101060419.4682-10-laoar.shao@gmail.com>
+References: <20211101060419.4682-1-laoar.shao@gmail.com> <20211101060419.4682-8-laoar.shao@gmail.com>
+In-Reply-To: <20211101060419.4682-8-laoar.shao@gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 1 Nov 2021 16:47:15 -0700
-Message-ID: <CAEf4BzafYdKmkJ_2sDMWibhWCZBPt=XLJwEAOgJDgnoYEvv4aA@mail.gmail.com>
-Subject: Re: [PATCH v7 09/11] tools/testing/selftests/bpf: make it adopt to
+Date:   Mon, 1 Nov 2021 16:47:42 -0700
+Message-ID: <CAEf4BzYEWxb+cm-cyBFMtA4mBfRfhp9dypfV+7K=wR01XYudzg@mail.gmail.com>
+Subject: Re: [PATCH v7 07/11] tools/bpf/bpftool/skeleton: make it adopt to
  task comm size change
 To:     Yafang Shao <laoar.shao@gmail.com>
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
@@ -86,7 +86,8 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Linux Memory Management List <linux-mm@kvack.org>,
         open list <linux-kernel@vger.kernel.org>,
         kernel test robot <oliver.sang@intel.com>,
-        kbuild test robot <lkp@intel.com>
+        kbuild test robot <lkp@intel.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -94,25 +95,13 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Sun, Oct 31, 2021 at 11:04 PM Yafang Shao <laoar.shao@gmail.com> wrote:
 >
-> The hard-coded 16 is used in various bpf progs. These progs get task
-> comm either via bpf_get_current_comm() or prctl() or
-> bpf_core_read_str(), all of which can work well even if the task comm size
-> is changed.
->
-> In these BPF programs, one thing to be improved is the
-> sched:sched_switch tracepoint args. As the tracepoint args are derived
-> from the kernel, we'd better make it same with the kernel. So the macro
-> TASK_COMM_LEN is converted to type enum, then all the BPF programs can
-> get it through BTF.
->
-> The BPF program which wants to use TASK_COMM_LEN should include the header
-> vmlinux.h. Regarding the test_stacktrace_map and test_tracepoint, as the
-> type defined in linux/bpf.h are also defined in vmlinux.h, so we don't
-> need to include linux/bpf.h again.
+> bpf_probe_read_kernel_str() will add a nul terminator to the dst, then
+> we don't care about if the dst size is big enough.
 >
 > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
 > Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 > Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+> Cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
 > Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
 > Cc: Peter Zijlstra <peterz@infradead.org>
 > Cc: Steven Rostedt <rostedt@goodmis.org>
@@ -121,14 +110,28 @@ On Sun, Oct 31, 2021 at 11:04 PM Yafang Shao <laoar.shao@gmail.com> wrote:
 > Cc: Petr Mladek <pmladek@suse.com>
 > ---
 
-LGTM, thanks.
+LGTM.
 
 Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
->  include/linux/sched.h                                   | 9 +++++++--
->  tools/testing/selftests/bpf/progs/test_stacktrace_map.c | 6 +++---
->  tools/testing/selftests/bpf/progs/test_tracepoint.c     | 6 +++---
->  3 files changed, 13 insertions(+), 8 deletions(-)
+>  tools/bpf/bpftool/skeleton/pid_iter.bpf.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 >
-
-[...]
+> diff --git a/tools/bpf/bpftool/skeleton/pid_iter.bpf.c b/tools/bpf/bpftool/skeleton/pid_iter.bpf.c
+> index d9b420972934..f70702fcb224 100644
+> --- a/tools/bpf/bpftool/skeleton/pid_iter.bpf.c
+> +++ b/tools/bpf/bpftool/skeleton/pid_iter.bpf.c
+> @@ -71,8 +71,8 @@ int iter(struct bpf_iter__task_file *ctx)
+>
+>         e.pid = task->tgid;
+>         e.id = get_obj_id(file->private_data, obj_type);
+> -       bpf_probe_read_kernel(&e.comm, sizeof(e.comm),
+> -                             task->group_leader->comm);
+> +       bpf_probe_read_kernel_str(&e.comm, sizeof(e.comm),
+> +                                 task->group_leader->comm);
+>         bpf_seq_write(ctx->meta->seq, &e, sizeof(e));
+>
+>         return 0;
+> --
+> 2.17.1
+>
