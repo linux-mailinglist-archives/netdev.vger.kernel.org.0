@@ -2,218 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43815441290
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 04:57:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E710D44129F
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 05:01:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231195AbhKAD7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Oct 2021 23:59:53 -0400
-Received: from mga04.intel.com ([192.55.52.120]:6376 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230501AbhKAD7m (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 31 Oct 2021 23:59:42 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10154"; a="229669212"
-X-IronPort-AV: E=Sophos;i="5.87,198,1631602800"; 
-   d="scan'208";a="229669212"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2021 20:57:07 -0700
-X-IronPort-AV: E=Sophos;i="5.87,198,1631602800"; 
-   d="scan'208";a="467133062"
-Received: from rmarti10-desk.jf.intel.com ([134.134.150.146])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2021 20:57:06 -0700
-From:   Ricardo Martinez <ricardo.martinez@linux.intel.com>
-To:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        andriy.shevchenko@linux.intel.com, dinesh.sharma@intel.com,
-        eliot.lee@intel.com, mika.westerberg@linux.intel.com,
-        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
-        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
-        sreehari.kancharla@intel.com, suresh.nagaraj@intel.com,
-        Ricardo Martinez <ricardo.martinez@linux.intel.com>
-Subject: [PATCH v2 14/14] net: wwan: t7xx: Add maintainers and documentation
-Date:   Sun, 31 Oct 2021 20:56:35 -0700
-Message-Id: <20211101035635.26999-15-ricardo.martinez@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20211101035635.26999-1-ricardo.martinez@linux.intel.com>
-References: <20211101035635.26999-1-ricardo.martinez@linux.intel.com>
+        id S229530AbhKAEDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 00:03:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56708 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229468AbhKAEDu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 00:03:50 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC22C061714;
+        Sun, 31 Oct 2021 21:01:17 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id o14so1727507pfu.10;
+        Sun, 31 Oct 2021 21:01:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=j1zj81YWFTCZDWmrdom1kjokPFz9peyCsLfXqGwKeAM=;
+        b=oEXgbZE9MHRoqaP8v3ANr6PRFNf293gF+YOPtvpe51oK0zkfO4HvXRp+/o3kEjQhfw
+         QZV+/4H8kYbKEnoRBNn45OFYS9sAdhCClHzuOV3J7YXgAN+Z18pkVgCqCjRVE2v+SPMu
+         cdiYvBzs8tdXVpvVbN/UaP/HPIPrY/apU4kGgyX2epjG0BstHdoAxNAM4V4iumXO+AUm
+         /JJJhrUVhwSKa62zb/TejxjvYTBFkwi6r7rBWD5bVFAdVpZu3vPaZJzkjX3i/SYg7tPQ
+         GR8iOV3KKGoJR9zS20atQ46TCZLj+K9DA+6S+l4Qa85eL10vrhLbKsFPbiKNG9imIlaa
+         WYjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=j1zj81YWFTCZDWmrdom1kjokPFz9peyCsLfXqGwKeAM=;
+        b=AuGC+ocrxoGJ83D1Ow8D+ARo3MBHsTdWdCWNsk3l5mZZwzcawFn9iXjB6fGrXNf5NY
+         /LSEMtzZyvypBHTpi1+u/v6LCOHyXLSox1Jd2XYrWyiX/STTUilHaJ9Q8T/QI/8NsUfE
+         tmCHmB+Nso1p8y7lXpny9KB/KYz5lfAIC7B6wraXZDFLDtcZP06czc7uMsj6P7y3OKcb
+         TQdLc7w7uCDoFJ2mgBRuAYcTcX7uBFaAhL3w5P2KhneXIpbtjld2i0uXx+w0mtVMS1O1
+         XwNR82fJnWOfzkz4oZMGcYjGfsWETm7tYXb/KsNXb6aKOHR3Z4zPks2EqKjZx/2k3hrh
+         yBRg==
+X-Gm-Message-State: AOAM5306DAvS2zGYvceEYgZXdJ47dVjw45QI4XB5Kh28qrQKW7n+Cr6d
+        wkfVh+/6NjOkfryCFacgyfk=
+X-Google-Smtp-Source: ABdhPJx3viV9qB1TaG/SmbmbPFCaZuGtMQWOEaiqw5HZpi1nO9LoS6YyMIJVdscQCooQtte/iK3Haw==
+X-Received: by 2002:a63:e216:: with SMTP id q22mr19590520pgh.3.1635739277100;
+        Sun, 31 Oct 2021 21:01:17 -0700 (PDT)
+Received: from localhost.localdomain ([94.177.118.117])
+        by smtp.gmail.com with ESMTPSA id a20sm13387682pff.57.2021.10.31.21.01.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 31 Oct 2021 21:01:16 -0700 (PDT)
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+To:     Marek Lindner <mareklindner@neomailbox.ch>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Antonio Quartulli <a@unstable.cc>,
+        Sven Eckelmann <sven@narfation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
+        Antonio Quartulli <antonio@open-mesh.com>,
+        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: batman-adv: fix warning in batadv_v_ogm_free
+Date:   Mon,  1 Nov 2021 12:01:02 +0800
+Message-Id: <20211101040103.388646-1-mudongliangabcd@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds maintainers and documentation for MediaTek t7xx 5G WWAN modem
-device driver.
+If batadv_v_ogm_init encounters a memory failure, the fields ogm_wq,
+ogm_buff_mutex and etc. are not initialized. Then the control flow goes
+to batadv_v_ogm_free due to the error handling code. As a result, the
+API invocation "cancel_delayed_work_sync" and "mutex_lock" will cause
+many issues. The crashing stack trace is as follows:
 
-Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+Call Trace:
+ __cancel_work_timer+0x1c9/0x280 kernel/workqueue.c:3170
+ batadv_v_ogm_free+0x1d/0x50 net/batman-adv/bat_v_ogm.c:1076
+ batadv_mesh_free+0x35/0xa0 net/batman-adv/main.c:244
+ batadv_mesh_init+0x22a/0x240 net/batman-adv/main.c:226
+ batadv_softif_init_late+0x1ad/0x240 net/batman-adv/soft-interface.c:804
+ register_netdevice+0x15d/0x810 net/core/dev.c:10229
+
+Fixes: a8d23cbbf6c9 ("batman-adv: Avoid free/alloc race when handling OGM2 buffer")
+Fixes: 0da0035942d4 ("batman-adv: OGMv2 - add basic infrastructure")
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
 ---
- .../networking/device_drivers/wwan/index.rst  |   1 +
- .../networking/device_drivers/wwan/t7xx.rst   | 120 ++++++++++++++++++
- MAINTAINERS                                   |  11 ++
- 3 files changed, 132 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/wwan/t7xx.rst
+ net/batman-adv/bat_v_ogm.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/networking/device_drivers/wwan/index.rst b/Documentation/networking/device_drivers/wwan/index.rst
-index 1cb8c7371401..370d8264d5dc 100644
---- a/Documentation/networking/device_drivers/wwan/index.rst
-+++ b/Documentation/networking/device_drivers/wwan/index.rst
-@@ -9,6 +9,7 @@ Contents:
-    :maxdepth: 2
+diff --git a/net/batman-adv/bat_v_ogm.c b/net/batman-adv/bat_v_ogm.c
+index 1d750f3cb2e4..2f3ecbcec58d 100644
+--- a/net/batman-adv/bat_v_ogm.c
++++ b/net/batman-adv/bat_v_ogm.c
+@@ -1044,6 +1044,13 @@ int batadv_v_ogm_init(struct batadv_priv *bat_priv)
+ 	unsigned char *ogm_buff;
+ 	u32 random_seqno;
  
-    iosm
-+   t7xx
++	/* randomize initial seqno to avoid collision */
++	get_random_bytes(&random_seqno, sizeof(random_seqno));
++	atomic_set(&bat_priv->bat_v.ogm_seqno, random_seqno);
++	INIT_DELAYED_WORK(&bat_priv->bat_v.ogm_wq, batadv_v_ogm_send);
++
++	mutex_init(&bat_priv->bat_v.ogm_buff_mutex);
++
+ 	bat_priv->bat_v.ogm_buff_len = BATADV_OGM2_HLEN;
+ 	ogm_buff = kzalloc(bat_priv->bat_v.ogm_buff_len, GFP_ATOMIC);
+ 	if (!ogm_buff)
+@@ -1057,13 +1064,6 @@ int batadv_v_ogm_init(struct batadv_priv *bat_priv)
+ 	ogm_packet->flags = BATADV_NO_FLAGS;
+ 	ogm_packet->throughput = htonl(BATADV_THROUGHPUT_MAX_VALUE);
  
- .. only::  subproject and html
+-	/* randomize initial seqno to avoid collision */
+-	get_random_bytes(&random_seqno, sizeof(random_seqno));
+-	atomic_set(&bat_priv->bat_v.ogm_seqno, random_seqno);
+-	INIT_DELAYED_WORK(&bat_priv->bat_v.ogm_wq, batadv_v_ogm_send);
+-
+-	mutex_init(&bat_priv->bat_v.ogm_buff_mutex);
+-
+ 	return 0;
+ }
  
-diff --git a/Documentation/networking/device_drivers/wwan/t7xx.rst b/Documentation/networking/device_drivers/wwan/t7xx.rst
-new file mode 100644
-index 000000000000..dd5b731957ca
---- /dev/null
-+++ b/Documentation/networking/device_drivers/wwan/t7xx.rst
-@@ -0,0 +1,120 @@
-+.. SPDX-License-Identifier: GPL-2.0-only
-+
-+.. Copyright (C) 2020-21 Intel Corporation
-+
-+.. _t7xx_driver_doc:
-+
-+============================================
-+t7xx driver for MTK PCIe based T700 5G modem
-+============================================
-+The t7xx driver is a WWAN PCIe host driver developed for linux or Chrome OS platforms
-+for data exchange over PCIe interface between Host platform & MediaTek's T700 5G modem.
-+The driver exposes an interface conforming to the MBIM protocol [1]. Any front end
-+application (e.g. Modem Manager) could easily manage the MBIM interface to enable
-+data communication towards WWAN. The driver also provides an interface to interact
-+with the MediaTek's modem via AT commands.
-+
-+Basic usage
-+===========
-+MBIM & AT functions are inactive when unmanaged. The t7xx driver provides
-+WWAN port userspace interfaces representing MBIM & AT control channels and does
-+not play any role in managing their functionality. It is the job of a userspace
-+application to detect port enumeration and enable MBIM & AT functionalities.
-+
-+Examples of few such userspace applications are:
-+
-+- mbimcli (included with the libmbim [2] library), and
-+- Modem Manager [3]
-+
-+Management Applications to carry out below required actions for establishing
-+MBIM IP session:
-+
-+- open the MBIM control channel
-+- configure network connection settings
-+- connect to network
-+- configure IP network interface
-+
-+Management Applications to carry out below required actions for send an AT
-+command and receive response:
-+
-+- open the AT control channel using a UART tool or a special user tool
-+
-+Management application development
-+==================================
-+The driver and userspace interfaces are described below. The MBIM protocol is
-+described in [1] Mobile Broadband Interface Model v1.0 Errata-1.
-+
-+MBIM control channel userspace ABI
-+----------------------------------
-+
-+/dev/wwan0mbim0 character device
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+The driver exposes an MBIM interface to the MBIM function by implementing
-+MBIM WWAN Port. The userspace end of the control channel pipe is a
-+/dev/wwan0mbim0 character device. Application shall use this interface for
-+MBIM protocol communication.
-+
-+Fragmentation
-+~~~~~~~~~~~~~
-+The userspace application is responsible for all control message fragmentation
-+and defragmentation as per MBIM specification.
-+
-+/dev/wwan0mbim0 write()
-+~~~~~~~~~~~~~~~~~~~~~~~
-+The MBIM control messages from the management application must not exceed the
-+negotiated control message size.
-+
-+/dev/wwan0mbim0 read()
-+~~~~~~~~~~~~~~~~~~~~~~
-+The management application must accept control messages of up the negotiated
-+control message size.
-+
-+MBIM data channel userspace ABI
-+-------------------------------
-+
-+wwan0-X network device
-+~~~~~~~~~~~~~~~~~~~~~~
-+The t7xx driver exposes IP link interface "wwan0-X" of type "wwan" for IP
-+traffic. Iproute network utility is used for creating "wwan0-X" network
-+interface and for associating it with MBIM IP session.
-+
-+The userspace management application is responsible for creating new IP link
-+prior to establishing MBIM IP session where the SessionId is greater than 0.
-+
-+For example, creating new IP link for a MBIM IP session with SessionId 1:
-+
-+  ip link add dev wwan0-1 parentdev wwan0 type wwan linkid 1
-+
-+The driver will automatically map the "wwan0-1" network device to MBIM IP
-+session 1.
-+
-+AT port userspace ABI
-+----------------------------------
-+
-+/dev/wwan0at0 character device
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+The driver exposes an AT port by implementing AT WWAN Port.
-+The userspace end of the control port is a /dev/wwan0at0 character
-+device. Application shall use this interface to issue AT commands.
-+
-+The MediaTek's T700 modem supports the 3GPP TS 27.007 [4] specification.
-+
-+References
-+==========
-+[1] *MBIM (Mobile Broadband Interface Model) Errata-1*
-+
-+- https://www.usb.org/document-library/
-+
-+[2] *libmbim "a glib-based library for talking to WWAN modems and devices which
-+speak the Mobile Interface Broadband Model (MBIM) protocol"*
-+
-+- http://www.freedesktop.org/wiki/Software/libmbim/
-+
-+[3] *Modem Manager "a DBus-activated daemon which controls mobile broadband
-+(2G/3G/4G/5G) devices and connections"*
-+
-+- http://www.freedesktop.org/wiki/Software/ModemManager/
-+
-+[4] *Specification # 27.007 - 3GPP*
-+
-+- https://www.3gpp.org/DynaReport/27007.htm
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 5f87f622ac18..d419bed48aa0 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12066,6 +12066,17 @@ S:	Maintained
- F:	drivers/net/dsa/mt7530.*
- F:	net/dsa/tag_mtk.c
- 
-+MEDIATEK T7XX 5G WWAN MODEM DRIVER
-+M:	Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
-+M:	Intel Corporation <linuxwwan@intel.com>
-+R:	Chiranjeevi Rapolu <chiranjeevi.rapolu@linux.intel.com>
-+R:	Liu Haijun <haijun.liu@mediatek.com>
-+R:	M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-+R:	Ricardo Martinez <ricardo.martinez@linux.intel.com>
-+L:	netdev@vger.kernel.org
-+S:	Supported
-+F:	drivers/net/wwan/t7xx/
-+
- MEDIATEK USB3 DRD IP DRIVER
- M:	Chunfeng Yun <chunfeng.yun@mediatek.com>
- L:	linux-usb@vger.kernel.org
 -- 
-2.17.1
+2.25.1
 
