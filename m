@@ -2,46 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CE96441BCD
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 14:37:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9E57441BC9
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 14:37:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232157AbhKANjk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 09:39:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55006 "EHLO mail.kernel.org"
+        id S232006AbhKANji (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 09:39:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55008 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231808AbhKANjh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231867AbhKANjh (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 1 Nov 2021 09:39:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 7832260551;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7C2AD610A2;
         Mon,  1 Nov 2021 13:30:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1635773408;
-        bh=pU2uZMzV1TvCBXUD2HwPGw/VKj+D2lRq2c8eBnoIqQI=;
+        bh=Iz6auN8gbtJOpyYFD4BZiDgoen1ATD6b9AkJq/feGnk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=T2rgRJqfFZyYlYdz0lTsiZprOf39I0DPbaBGo8TuMP2pqIxxBuHVXwTCQIaJJZjSC
-         d920+lyfgW4N+jvXecU1Bzi5U2UscAD8DSSeyF0q5kE0Y805M+dIgI6zIcJjgbieFg
-         h8Tq3KJonG9UjVUWkhkMax0ds4xfqLYAbQc89apeEL45dEDpInAJ7ZXV7aSzG08sCK
-         bApLTL+dw/vAfkqZNqkl9Zvmj6BLiryOoPCebCiYnclF6/IQKAZfgaWSmK037UTPMz
-         vzrQ+erIFrqBjQSvl8URj/vV0BWTyiNI2J9aKw2bzW1caoGg/2aRi09A7hfcBjzj2o
-         K+eaSOaxXuZMA==
+        b=HIHPQh+vPsNoZYqMB4paoNJEOKIgKqTrxOGvjqLwcldECX8akpem4xcC7dybTR8XL
+         kWzJ60SWkfW139S6vOwVEO0eUTeDV7HC0n5y5eMp3MVj56nbcMOtLRAn2lQVS4ZplS
+         tuYItw6IWPX3cvBC0OZIa3jkBwfTTFX2y9GW8lD6VJq69LbNkJGumLHZrAKCz1H/2a
+         hc9uAbuvAVMOa/54RkyW9MBJpPJxfgMIpTdjD0xNlO9M4MYf7wtWUUab2CuKND3Y7Q
+         W7BSTDyygS1G5Xb7dHJlKqPfIU/h0ng5wBkpnVaQdx7W37Ecs7DN7QLScNma59J0tF
+         GTO75l2A79oaw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6E1C660A0F;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 64C5F60A94;
         Mon,  1 Nov 2021 13:30:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/4] net: mana: some misc patches
+Subject: Re: [PATCH net-next v2 0/4] improve ethtool/rtnl vs devlink locking
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163577340844.3113.9934423294901348328.git-patchwork-notify@kernel.org>
+Message-Id: <163577340840.3113.1602919922827934638.git-patchwork-notify@kernel.org>
 Date:   Mon, 01 Nov 2021 13:30:08 +0000
-References: <20211030005408.13932-1-decui@microsoft.com>
-In-Reply-To: <20211030005408.13932-1-decui@microsoft.com>
-To:     Dexuan Cui <decui@microsoft.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, gustavoars@kernel.org,
-        haiyangz@microsoft.com, netdev@vger.kernel.org, kys@microsoft.com,
-        stephen@networkplumber.org, wei.liu@kernel.org,
-        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        shacharr@microsoft.com, paulros@microsoft.com, olaf@aepfle.de,
-        vkuznets@redhat.com
+References: <20211030171851.1822583-1-kuba@kernel.org>
+In-Reply-To: <20211030171851.1822583-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, jiri@resnulli.us,
+        leon@kernel.org, mkubecek@suse.cz, andrew@lunn.ch,
+        f.fainelli@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -51,25 +48,26 @@ Hello:
 This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 29 Oct 2021 17:54:04 -0700 you wrote:
-> Hi all,
-> 
-> Patch 1 is a small fix.
-> 
-> Patch 2 reports OS info to the PF driver.
-> Before the patch, the req fields were all zeros.
+On Sat, 30 Oct 2021 10:18:47 -0700 you wrote:
+> During ethtool netlink development we decided to move some of
+> the commmands to devlink. Since we don't want drivers to implement
+> both devlink and ethtool version of the commands ethtool ioctl
+> falls back to calling devlink. Unfortunately devlink locks must
+> be taken before rtnl_lock. This results in a questionable
+> dev_hold() / rtnl_unlock() / devlink / rtnl_lock() / dev_put()
+> pattern.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/4] net: mana: Fix the netdev_err()'s vPort argument in mana_init_port()
-    https://git.kernel.org/netdev/net-next/c/6c7ea69653e4
-  - [net-next,2/4] net: mana: Report OS info to the PF driver
-    https://git.kernel.org/netdev/net-next/c/3c37f3573508
-  - [net-next,3/4] net: mana: Improve the HWC error handling
-    https://git.kernel.org/netdev/net-next/c/62ea8b77ed3b
-  - [net-next,4/4] net: mana: Support hibernation and kexec
-    https://git.kernel.org/netdev/net-next/c/635096a86edb
+  - [net-next,v2,1/4] ethtool: push the rtnl_lock into dev_ethtool()
+    https://git.kernel.org/netdev/net-next/c/f49deaa64af1
+  - [net-next,v2,2/4] ethtool: handle info/flash data copying outside rtnl_lock
+    https://git.kernel.org/netdev/net-next/c/095cfcfe13e5
+  - [net-next,v2,3/4] devlink: expose get/put functions
+    https://git.kernel.org/netdev/net-next/c/46db1b77cd4f
+  - [net-next,v2,4/4] ethtool: don't drop the rtnl_lock half way thru the ioctl
+    https://git.kernel.org/netdev/net-next/c/1af0a0948e28
 
 You are awesome, thank you!
 -- 
