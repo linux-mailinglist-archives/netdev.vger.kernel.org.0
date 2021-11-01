@@ -2,203 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 494B9441AEF
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 12:55:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB256441AF3
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 12:57:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232198AbhKAL5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 07:57:36 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:37194 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231749AbhKAL5f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 07:57:35 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 1A1BseA2060740;
-        Mon, 1 Nov 2021 06:54:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1635767680;
-        bh=2dgNY8wPpf6OE6HI1zV7ejQY5Hf4/jtI8BNRxMVKOyc=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=v72f+4WARDXc6dw9gcw7IoxovuPSfbUlOAivkvJDHjNrLHhiOgTjgxu9A7JrtiR0X
-         pjZ/gh8fvybblfe0Qia1JpR7jNa+KU6JJCDoHOSatyGQWo+IuRELSalVcIwK+hsLVE
-         mG9bfDlBAD1c5vkB209Fx5POeyhswjhDPH9dNTwo=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 1A1Bse0h127590
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 1 Nov 2021 06:54:40 -0500
-Received: from DLEE104.ent.ti.com (157.170.170.34) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 1
- Nov 2021 06:54:40 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE104.ent.ti.com
- (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 1 Nov 2021 06:54:40 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 1A1Bsa17006715;
-        Mon, 1 Nov 2021 06:54:37 -0500
-Subject: Re: [PATCH] net: davinci_emac: Fix interrupt pacing disable
-To:     Maxim Kiselev <bigunclemax@gmail.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Yufeng Mo <moyufeng@huawei.com>,
-        Michael Walle <michael@walle.cc>, Sriram <srk@ti.com>,
-        <linux-omap@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20211101092134.3357661-1-bigunclemax@gmail.com>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <717f9769-aac5-d005-e15a-a6a2ff61bb69@ti.com>
-Date:   Mon, 1 Nov 2021 13:54:25 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S232302AbhKAMAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 08:00:17 -0400
+Received: from foss.arm.com ([217.140.110.172]:39158 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231693AbhKAMAQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Nov 2021 08:00:16 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 54F23D6E;
+        Mon,  1 Nov 2021 04:57:43 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.81.163])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 153A13F5A1;
+        Mon,  1 Nov 2021 04:57:39 -0700 (PDT)
+Date:   Mon, 1 Nov 2021 11:57:29 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        antonio.gomez.iglesias@intel.com, tony.luck@intel.com,
+        dave.hansen@linux.intel.com, gregkh@linuxfoundation.org,
+        linux@armlinux.org.uk
+Subject: Re: [PATCH ebpf v3] bpf: Disallow unprivileged bpf by default
+Message-ID: <YX/WKa4qYamp1ml9@FVFF77S0Q05N>
+References: <0ace9ce3f97656d5f62d11093ad7ee81190c3c25.1635535215.git.pawan.kumar.gupta@linux.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20211101092134.3357661-1-bigunclemax@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0ace9ce3f97656d5f62d11093ad7ee81190c3c25.1635535215.git.pawan.kumar.gupta@linux.intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Oct 29, 2021 at 12:43:54PM -0700, Pawan Gupta wrote:
+> Disabling unprivileged BPF would help prevent unprivileged users from
+> creating the conditions required for potential speculative execution
+> side-channel attacks on affected hardware. A deep dive on such attacks
+> and mitigation is available here [1].
+> 
+> Sync with what many distros are currently applying, disable unprivileged
+> BPF by default. An admin can enable this at runtime, if necessary.
+> 
+> [1] https://ebpf.io/summit-2021-slides/eBPF_Summit_2021-Keynote-Daniel_Borkmann-BPF_and_Spectre.pdf
+> 
+> Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 
+FWIW:
 
-On 01/11/2021 11:21, Maxim Kiselev wrote:
-> This patch allows to use 0 for `coal->rx_coalesce_usecs` param to
-> disable rx irq coalescing.
-> 
-> Previously we could enable rx irq coalescing via ethtool
-> (For ex: `ethtool -C eth0 rx-usecs 2000`) but we couldn't disable
-> it because this part rejects 0 value:
-> 
->         if (!coal->rx_coalesce_usecs)
->                 return -EINVAL;
-> 
-> Fixes: 84da2658a619 ("TI DaVinci EMAC : Implement interrupt pacing
-> functionality.")
-> 
-> Signed-off-by: Maxim Kiselev <bigunclemax@gmail.com>
+Acked-by: Mark Rutland <mark.rutland@arm.com>
+
+Mark.
+
 > ---
->   drivers/net/ethernet/ti/davinci_emac.c | 77 ++++++++++++++------------
->   1 file changed, 41 insertions(+), 36 deletions(-)
+> v3:
+> - Drop the conditional default for CONFIG_BPF_UNPRIV_DEFAULT_OFF until
+>   we have an arch generic way to determine arch-common spectre type bugs.
+>   [Mark Rutland, Daniel Borkmann].
+> - Also drop the patch to Generalize ARM's CONFIG_CPU_SPECTRE.
+> - Minor changes to commit message.
 > 
-> diff --git a/drivers/net/ethernet/ti/davinci_emac.c b/drivers/net/ethernet/ti/davinci_emac.c
-> index e8291d8488391..a3a02c4e5eb68 100644
-> --- a/drivers/net/ethernet/ti/davinci_emac.c
-> +++ b/drivers/net/ethernet/ti/davinci_emac.c
-> @@ -417,46 +417,47 @@ static int emac_set_coalesce(struct net_device *ndev,
->   			     struct netlink_ext_ack *extack)
->   {
->   	struct emac_priv *priv = netdev_priv(ndev);
-> -	u32 int_ctrl, num_interrupts = 0;
-> +	u32 int_ctrl = 0, num_interrupts = 0;
->   	u32 prescale = 0, addnl_dvdr = 1, coal_intvl = 0;
->   
-> -	if (!coal->rx_coalesce_usecs)
-> -		return -EINVAL;
-> -
->   	coal_intvl = coal->rx_coalesce_usecs;
-
-Wouldn't be more simple if you just handle !coal->rx_coalesce_usecs here and exit?
-it seems you can just write 0 t0 INTCTRL.
-
->   
->   	switch (priv->version) {
->   	case EMAC_VERSION_2:
-> -		int_ctrl =  emac_ctrl_read(EMAC_DM646X_CMINTCTRL);
-> -		prescale = priv->bus_freq_mhz * 4;
-> -
-> -		if (coal_intvl < EMAC_DM646X_CMINTMIN_INTVL)
-> -			coal_intvl = EMAC_DM646X_CMINTMIN_INTVL;
-> -
-> -		if (coal_intvl > EMAC_DM646X_CMINTMAX_INTVL) {
-> -			/*
-> -			 * Interrupt pacer works with 4us Pulse, we can
-> -			 * throttle further by dilating the 4us pulse.
-> -			 */
-> -			addnl_dvdr = EMAC_DM646X_INTPRESCALE_MASK / prescale;
-> -
-> -			if (addnl_dvdr > 1) {
-> -				prescale *= addnl_dvdr;
-> -				if (coal_intvl > (EMAC_DM646X_CMINTMAX_INTVL
-> -							* addnl_dvdr))
-> -					coal_intvl = (EMAC_DM646X_CMINTMAX_INTVL
-> -							* addnl_dvdr);
-> -			} else {
-> -				addnl_dvdr = 1;
-> -				coal_intvl = EMAC_DM646X_CMINTMAX_INTVL;
-> +		if (coal->rx_coalesce_usecs) {
-> +			int_ctrl =  emac_ctrl_read(EMAC_DM646X_CMINTCTRL);
-> +			prescale = priv->bus_freq_mhz * 4;
-> +
-> +			if (coal_intvl < EMAC_DM646X_CMINTMIN_INTVL)
-> +				coal_intvl = EMAC_DM646X_CMINTMIN_INTVL;
-> +
-> +			if (coal_intvl > EMAC_DM646X_CMINTMAX_INTVL) {
-> +				/*
-> +				 * Interrupt pacer works with 4us Pulse, we can
-> +				 * throttle further by dilating the 4us pulse.
-> +				 */
-> +				addnl_dvdr =
-> +					EMAC_DM646X_INTPRESCALE_MASK / prescale;
-> +
-> +				if (addnl_dvdr > 1) {
-> +					prescale *= addnl_dvdr;
-> +					if (coal_intvl > (EMAC_DM646X_CMINTMAX_INTVL
-> +								* addnl_dvdr))
-> +						coal_intvl = (EMAC_DM646X_CMINTMAX_INTVL
-> +								* addnl_dvdr);
-> +				} else {
-> +					addnl_dvdr = 1;
-> +					coal_intvl = EMAC_DM646X_CMINTMAX_INTVL;
-> +				}
->   			}
-> -		}
->   
-> -		num_interrupts = (1000 * addnl_dvdr) / coal_intvl;
-> +			num_interrupts = (1000 * addnl_dvdr) / coal_intvl;
-> +
-> +			int_ctrl |= EMAC_DM646X_INTPACEEN;
-> +			int_ctrl &= (~EMAC_DM646X_INTPRESCALE_MASK);
-> +			int_ctrl |= (prescale & EMAC_DM646X_INTPRESCALE_MASK);
-> +		}
->   
-> -		int_ctrl |= EMAC_DM646X_INTPACEEN;
-> -		int_ctrl &= (~EMAC_DM646X_INTPRESCALE_MASK);
-> -		int_ctrl |= (prescale & EMAC_DM646X_INTPRESCALE_MASK);
->   		emac_ctrl_write(EMAC_DM646X_CMINTCTRL, int_ctrl);
->   
->   		emac_ctrl_write(EMAC_DM646X_CMRXINTMAX, num_interrupts);
-> @@ -466,17 +467,21 @@ static int emac_set_coalesce(struct net_device *ndev,
->   	default:
->   		int_ctrl = emac_ctrl_read(EMAC_CTRL_EWINTTCNT);
->   		int_ctrl &= (~EMAC_DM644X_EWINTCNT_MASK);
-> -		prescale = coal_intvl * priv->bus_freq_mhz;
-> -		if (prescale > EMAC_DM644X_EWINTCNT_MASK) {
-> -			prescale = EMAC_DM644X_EWINTCNT_MASK;
-> -			coal_intvl = prescale / priv->bus_freq_mhz;
-> +
-> +		if (coal->rx_coalesce_usecs) {
-> +			prescale = coal_intvl * priv->bus_freq_mhz;
-> +			if (prescale > EMAC_DM644X_EWINTCNT_MASK) {
-> +				prescale = EMAC_DM644X_EWINTCNT_MASK;
-> +				coal_intvl = prescale / priv->bus_freq_mhz;
-> +			}
->   		}
-> +
->   		emac_ctrl_write(EMAC_CTRL_EWINTTCNT, (int_ctrl | prescale));
->   
->   		break;
->   	}
->   
-> -	printk(KERN_INFO"Set coalesce to %d usecs.\n", coal_intvl);
-> +	netdev_info(ndev, "Set coalesce to %d usecs.\n", coal_intvl);
->   	priv->coal_intvl = coal_intvl;
->   
->   	return 0;
+> v2: https://lore.kernel.org/lkml/cover.1635383031.git.pawan.kumar.gupta@linux.intel.com/
+> - Generalize ARM's CONFIG_CPU_SPECTRE to be available for all architectures.
+> - Make CONFIG_BPF_UNPRIV_DEFAULT_OFF depend on CONFIG_CPU_SPECTRE.
+> - Updated commit message to reflect the dependency on CONFIG_CPU_SPECTRE.
+> - Add reference to BPF spectre presentation in commit message.
 > 
-
--- 
-Best regards,
-grygorii
+> v1: https://lore.kernel.org/all/d37b01e70e65dced2659561ed5bc4b2ed1a50711.1635367330.git.pawan.kumar.gupta@linux.intel.com/
+> 
+>  kernel/bpf/Kconfig | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/kernel/bpf/Kconfig b/kernel/bpf/Kconfig
+> index a82d6de86522..73d446294455 100644
+> --- a/kernel/bpf/Kconfig
+> +++ b/kernel/bpf/Kconfig
+> @@ -64,6 +64,7 @@ config BPF_JIT_DEFAULT_ON
+>  
+>  config BPF_UNPRIV_DEFAULT_OFF
+>  	bool "Disable unprivileged BPF by default"
+> +	default y
+>  	depends on BPF_SYSCALL
+>  	help
+>  	  Disables unprivileged BPF by default by setting the corresponding
+> @@ -72,6 +73,10 @@ config BPF_UNPRIV_DEFAULT_OFF
+>  	  disable it by setting it to 1 (from which no other transition to
+>  	  0 is possible anymore).
+>  
+> +	  Unprivileged BPF can be used to exploit potential speculative
+> +	  execution side-channel vulnerabilities on affected hardware. If you
+> +	  are concerned about it, answer Y.
+> +
+>  source "kernel/bpf/preload/Kconfig"
+>  
+>  config BPF_LSM
+> -- 
+> 2.31.1
+> 
