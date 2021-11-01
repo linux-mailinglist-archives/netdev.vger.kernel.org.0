@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 284E84422F6
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 22:59:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ADA04422FB
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 23:01:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232213AbhKAWCH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 18:02:07 -0400
-Received: from www62.your-server.de ([213.133.104.62]:56708 "EHLO
+        id S231357AbhKAWEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 18:04:10 -0400
+Received: from www62.your-server.de ([213.133.104.62]:57028 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230460AbhKAWCH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 18:02:07 -0400
+        with ESMTP id S231189AbhKAWEJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 18:04:09 -0400
 Received: from sslproxy05.your-server.de ([78.46.172.2])
         by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92.3)
         (envelope-from <daniel@iogearbox.net>)
-        id 1mhfKv-000DWv-Kp; Mon, 01 Nov 2021 22:59:25 +0100
+        id 1mhfMx-000Df9-4a; Mon, 01 Nov 2021 23:01:31 +0100
 Received: from [85.1.206.226] (helo=linux.home)
         by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <daniel@iogearbox.net>)
-        id 1mhfKv-000OVr-FI; Mon, 01 Nov 2021 22:59:25 +0100
-Subject: Re: [PATCH bpf-next v2 2/2] bpf: disallow BPF_LOG_KERNEL log level
- for sys(BPF_BTF_LOAD)
+        id 1mhfMw-000VWU-Uf; Mon, 01 Nov 2021 23:01:30 +0100
+Subject: Re: [PATCH bpf-next v2 1/2] bpf: clean-up bpf_verifier_vlog() for
+ BPF_LOG_KERNEL log level
 To:     Hou Tao <houtao1@huawei.com>, Alexei Starovoitov <ast@kernel.org>
 Cc:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
         Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
         bpf@vger.kernel.org
 References: <20211029135321.94065-1-houtao1@huawei.com>
- <20211029135321.94065-3-houtao1@huawei.com>
+ <20211029135321.94065-2-houtao1@huawei.com>
 From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <50a07acf-a9e9-13b1-11c8-fae221acf495@iogearbox.net>
-Date:   Mon, 1 Nov 2021 22:59:25 +0100
+Message-ID: <ebdd6730-1dfc-1889-eae9-00211bd82803@iogearbox.net>
+Date:   Mon, 1 Nov 2021 23:01:30 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20211029135321.94065-3-houtao1@huawei.com>
+In-Reply-To: <20211029135321.94065-2-houtao1@huawei.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -46,74 +46,53 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 10/29/21 3:53 PM, Hou Tao wrote:
-> BPF_LOG_KERNEL is only used internally, so disallow bpf_btf_load()
-> to set log level as BPF_LOG_KERNEL. The same checking has already
-> been done in bpf_check(), so factor out a helper to check the
-> validity of log attributes and use it in both places.
+> An extra newline will output for bpf_log() with BPF_LOG_KERNEL level
+> as shown below:
+> 
+> [   52.095704] BPF:The function test_3 has 12 arguments. Too many.
+> [   52.095704]
+> [   52.096896] Error in parsing func ptr test_3 in struct bpf_dummy_ops
+> 
+> Now all bpf_log() are ended by newline, but not all btf_verifier_log()
+> are ended by newline, so checking whether or not the log message
+> has the trailing newline and adding a newline if not.
+> 
+> Also there is no need to calculate the left userspace buffer size
+> for kernel log output and to truncate the output by '\0' which
+> has already been done by vscnprintf(), so only do these for
+> userspace log output.
 > 
 > Signed-off-by: Hou Tao <houtao1@huawei.com>
 > ---
->   include/linux/bpf_verifier.h | 6 ++++++
->   kernel/bpf/btf.c             | 3 +--
->   kernel/bpf/verifier.c        | 6 +++---
->   3 files changed, 10 insertions(+), 5 deletions(-)
+>   kernel/bpf/verifier.c | 10 ++++++----
+>   1 file changed, 6 insertions(+), 4 deletions(-)
 > 
-> diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
-> index c8a78e830fca..b36a0da8d5cf 100644
-> --- a/include/linux/bpf_verifier.h
-> +++ b/include/linux/bpf_verifier.h
-> @@ -396,6 +396,12 @@ static inline bool bpf_verifier_log_needed(const struct bpf_verifier_log *log)
->   		 log->level == BPF_LOG_KERNEL);
->   }
->   
-> +static inline bool bpf_verifier_log_attr_valid(const struct bpf_verifier_log *log)
-> +{
-> +	return (log->len_total >= 128 && log->len_total <= UINT_MAX >> 2 &&
-> +		log->level && log->ubuf && !(log->level & ~BPF_LOG_MASK));
-
-nit: No surrounding () needed.
-
-This should probably also get a Fixes tag wrt BPF_LOG_KERNEL exposure?
-
-Is there a need to bump log->len_total for BTF so significantly?
-
-> +}
-> +
->   #define BPF_MAX_SUBPROGS 256
->   
->   struct bpf_subprog_info {
-> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> index dbc3ad07e21b..ea8874eaedac 100644
-> --- a/kernel/bpf/btf.c
-> +++ b/kernel/bpf/btf.c
-> @@ -4460,8 +4460,7 @@ static struct btf *btf_parse(bpfptr_t btf_data, u32 btf_data_size,
->   		log->len_total = log_size;
->   
->   		/* log attributes have to be sane */
-> -		if (log->len_total < 128 || log->len_total > UINT_MAX >> 8 ||
-> -		    !log->level || !log->ubuf) {
-> +		if (!bpf_verifier_log_attr_valid(log)) {
->   			err = -EINVAL;
->   			goto errout;
->   		}
 > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 22f0d2292c2c..47ad91cea7e9 100644
+> index 3c8aa7df1773..22f0d2292c2c 100644
 > --- a/kernel/bpf/verifier.c
 > +++ b/kernel/bpf/verifier.c
-> @@ -13935,11 +13935,11 @@ int bpf_check(struct bpf_prog **prog, union bpf_attr *attr, bpfptr_t uattr)
->   		log->ubuf = (char __user *) (unsigned long) attr->log_buf;
->   		log->len_total = attr->log_size;
+> @@ -299,13 +299,15 @@ void bpf_verifier_vlog(struct bpf_verifier_log *log, const char *fmt,
+>   	WARN_ONCE(n >= BPF_VERIFIER_TMP_LOG_SIZE - 1,
+>   		  "verifier log line truncated - local buffer too short\n");
 >   
-> -		ret = -EINVAL;
->   		/* log attributes have to be sane */
-> -		if (log->len_total < 128 || log->len_total > UINT_MAX >> 2 ||
-> -		    !log->level || !log->ubuf || log->level & ~BPF_LOG_MASK)
-> +		if (!bpf_verifier_log_attr_valid(log)) {
-> +			ret = -EINVAL;
->   			goto err_unlock;
-> +		}
+> -	n = min(log->len_total - log->len_used - 1, n);
+> -	log->kbuf[n] = '\0';
+> -
+>   	if (log->level == BPF_LOG_KERNEL) {
+> -		pr_err("BPF:%s\n", log->kbuf);
+> +		bool newline = n > 0 && log->kbuf[n - 1] == '\n';
+> +
+> +		pr_err("BPF:%s%s", log->kbuf, newline ? "" : "\n");
+
+nit: Given you change this anyway, is there a reason not to go with "BPF: %s%s" instead?
+
+>   		return;
 >   	}
->   
->   	if (IS_ERR(btf_vmlinux)) {
+> +
+> +	n = min(log->len_total - log->len_used - 1, n);
+> +	log->kbuf[n] = '\0';
+>   	if (!copy_to_user(log->ubuf + log->len_used, log->kbuf, n + 1))
+>   		log->len_used += n;
+>   	else
 > 
 
