@@ -2,212 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05827442009
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 19:29:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D726344201D
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 19:36:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231990AbhKAScO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 14:32:14 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:50866 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231916AbhKAScM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 14:32:12 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 1A1ITCNu043565;
-        Mon, 1 Nov 2021 13:29:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1635791352;
-        bh=i4SlabNeux/CJimAkQl7wJwhqnLKCYcOWMS9od/vzeY=;
-        h=From:To:CC:Subject:Date;
-        b=OVy0MGH0qJpsuETkkV0b4+dyA01znzuE02NmtzVacbw/BAmdLk49ftD1qqBQmVBim
-         8BTHCRKLBfkxXIjpgGMo/SqTuHqOCFilHhD49wHXEe/wjjPmbyJN3Go9mLuJyhkHNr
-         6BIDmRaxT8KPEkwf8NKLeC+67DS1Szccd0sL4RFM=
-Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 1A1ITCnZ000738
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 1 Nov 2021 13:29:12 -0500
-Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 1
- Nov 2021 13:29:12 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 1 Nov 2021 13:29:12 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 1A1ITBl3073637;
-        Mon, 1 Nov 2021 13:29:11 -0500
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>
-CC:     <linux-kernel@vger.kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [RFC PATCH] net: phy/mdio: enable mmd indirect access through phy_mii_ioctl()
-Date:   Mon, 1 Nov 2021 20:28:59 +0200
-Message-ID: <20211101182859.24073-1-grygorii.strashko@ti.com>
-X-Mailer: git-send-email 2.17.1
+        id S231916AbhKASiy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 14:38:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48138 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232017AbhKASix (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Nov 2021 14:38:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1A9D36052B;
+        Mon,  1 Nov 2021 18:36:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635791779;
+        bh=R1qzPsgpKZb/Xjdaeze2S85DhORZXoELOghs+Sp/nKc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hL4iwaZZ2rsH7I4DKsCuYuGGy/Sq3vENk1sdx+EIqxBOwiEtWlyqhtOpWMaHrlNUO
+         qC7gfvcUSGzMpV97S9cF8U4E0YYvouF7kbEgAJ/iQEspQeWXwCECiookbZcQVY8iKw
+         SQrVwux80c+/+kCpVl/ykWau1hg0ZK8TUOVYSmVJE0Lwx8OgVKW6I3RXAS+mYQCAOx
+         whGeO2ZXCec6RoydKmV3lVSFPM4LuxfugWj5JEbIKdWP3ylncVDKGU9Yuronz8jkzg
+         ePK4RtaA8b4XwsTUynQJyMI72/CKP4XohdmPk/NSh3iOGF9YXoz+HNbb7axQAwdtKE
+         E472dBxmc1xSg==
+Date:   Mon, 1 Nov 2021 20:36:15 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     idosch@idosch.org, edwin.peer@broadcom.com, jiri@resnulli.us,
+        netdev@vger.kernel.org
+Subject: Re: [RFC 0/5] devlink: add an explicit locking API
+Message-ID: <YYAzn+mtrGp/As74@unreal>
+References: <20211030231254.2477599-1-kuba@kernel.org>
+ <YX5Efghyxu5g8kzY@unreal>
+ <20211101073259.33406da3@kicinski-fedora-PC1C0HJN>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211101073259.33406da3@kicinski-fedora-PC1C0HJN>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch enables access to C22 PHY MMD address space through
-phy_mii_ioctl() SIOCGMIIREG/SIOCSMIIREG IOCTLs. It checks if R/W request is
-received with C45 flag enabled while MDIO bus doesn't support C45 and, in
-this case, tries to treat prtad as PHY MMD selector and use MMD API.
+On Mon, Nov 01, 2021 at 07:32:59AM -0700, Jakub Kicinski wrote:
+> On Sun, 31 Oct 2021 09:23:42 +0200 Leon Romanovsky wrote:
+> > On Sat, Oct 30, 2021 at 04:12:49PM -0700, Jakub Kicinski wrote:
+> > > This implements what I think is the right direction for devlink
+> > > API overhaul. It's an early RFC/PoC because the body of code is
+> > > rather large so I'd appreciate feedback early... The patches are
+> > > very roughly split, the point of the posting is primarily to prove
+> > > that from the driver side the conversion is an net improvement
+> > > in complexity.
+> > > 
+> > > IMO the problems with devlink locking are caused by two things:
+> > > 
+> > >  (1) driver has no way to block devlink calls like it does in case
+> > >      of netedev / rtnl_lock, note that for devlink each driver has
+> > >      it's own lock so contention is not an issue;
+> > >      
+> > >  (2) sometimes devlink calls into the driver without holding its lock
+> > >      - for operations which may need the driver to call devlink (port
+> > >      splitting, switch config, reload etc.), the circular dependency
+> > >      is there, the driver can't solve this problem.
+> > > 
+> > > This set "fixes" the ordering by allowing the driver to participate
+> > > in locking. The lock order remains:
+> > > 
+> > >   device_lock -> [devlink_mutex] -> devlink instance -> rtnl_lock
+> > > 
+> > > but now driver can take devlink lock itself, and _ALL_ devlink ops
+> > > are locked.
+> > > 
+> > > The expectation is that driver will take the devlink instance lock
+> > > on its probe and remove paths, hence protecting all configuration
+> > > paths with the devlink instance lock.
+> > > 
+> > > This is clearly demonstrated by the netdevsim conversion. All entry
+> > > points to driver config are protected by devlink instance lock, so
+> > > the driver switches to the "I'm already holding the devlink lock" API
+> > > when calling devlink. All driver locks and trickery is removed.
+> > > 
+> > > The part which is slightly more challanging is quiescing async entry
+> > > points which need to be closed on the devlink reload path (workqueue,
+> > > debugfs etc.) and which also take devlink instance lock. For that we
+> > > need to be able to take refs on the devlink instance and let them
+> > > clean up after themselves rather than waiting synchronously.
+> > > 
+> > > That last part is not 100% finished in this patch set - it works but
+> > > we need the driver to take devlink_mutex (the global lock) from its
+> > > probe/remove path. I hope this is good enough for an RFC, the problem
+> > > is easily solved by protecting the devlink XArray with something else
+> > > than devlink_mutex and/or not holding devlink_mutex around each op
+> > > (so that there is no ordering between the global and instance locks).
+> > > Speaking of not holding devlink_mutex around each op this patch set
+> > > also opens the path for parallel ops to different devlink instances
+> > > which is currently impossible because all user space calls take
+> > > devlink_mutex...  
+> > 
+> > No, please no.
 
-With this change it's possible to r/w PHY MMD registers with phytool, for
-example, before:
+<...>
 
-  phytool read eth0/0x1f:0/0x32
-  0xffea
+> How is RW semaphore going to solve the problem that ops are unlocked
+> and have to take the instance lock from within to add/remove ports?
 
-after:
-  phytool read eth0/0x1f:0/0x32
-  0x00d1
+This is three step process, but mainly it is first step. We need to make
+sure that functions that can re-entry will use nested locks.
 
-This feature is very useful for various PHY issues debugging (now it's
-required to modify phy code to collect MMD regs dump).
+Steps:
+1. Use proper locking API that supports nesting:
+https://lore.kernel.org/netdev/YYABqfFy%2F%2Fg5Gdis@nanopsycho/T/#mf9dc5cac2013abe413545bbe4a09cc231ae209a4
+2. Convert devlink->lock to be RW semaphore:
+commit 4506dd3a90a82a0b6bde238f507907747ab88407
+Author: Leon Romanovsky <leon@kernel.org>
+Date:   Sun Oct 24 16:54:16 2021 +0300
 
-The patch is marked as RFC as it possible that I've missed something and
-such feature already present in Kernel, but I just can't find it. 
-It also doesn't cover phylink.
+    devlink: Convert devlink lock to be RW semaphore
 
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
----
- drivers/net/phy/phy-core.c | 32 ++++++++++++++++++++++++--------
- drivers/net/phy/phy.c      | 29 ++++++++++++++++++++++++++---
- include/linux/phy.h        |  2 ++
- 3 files changed, 52 insertions(+), 11 deletions(-)
+    This is naive conversion of devlink->lock to RW semaphore, so we will be
+    able to differentiate commands that require exclusive access vs. parallel
+    ready-to-run ones.
 
-diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
-index 2870c33b8975..2c83a121a5fa 100644
---- a/drivers/net/phy/phy-core.c
-+++ b/drivers/net/phy/phy-core.c
-@@ -457,6 +457,28 @@ static void mmd_phy_indirect(struct mii_bus *bus, int phy_addr, int devad,
- 			devad | MII_MMD_CTRL_NOINCR);
- }
- 
-+int __mmd_phy_read(struct mii_bus *bus, int phy_addr, int devad, u32 regnum)
-+{
-+	int retval;
-+
-+	mmd_phy_indirect(bus, phy_addr, devad, regnum);
-+
-+	/* Read the content of the MMD's selected register */
-+	retval = __mdiobus_read(bus, phy_addr, MII_MMD_DATA);
-+
-+	return retval;
-+}
-+
-+int __mmd_phy_write(struct mii_bus *bus, int phy_addr, int devad, u32 regnum, u16 val)
-+{
-+	mmd_phy_indirect(bus, phy_addr, devad, regnum);
-+
-+	/* Write the data into MMD's selected register */
-+	__mdiobus_write(bus, phy_addr, MII_MMD_DATA, val);
-+
-+	return 0;
-+}
-+
- /**
-  * __phy_read_mmd - Convenience function for reading a register
-  * from an MMD on a given PHY.
-@@ -482,10 +504,7 @@ int __phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum)
- 		struct mii_bus *bus = phydev->mdio.bus;
- 		int phy_addr = phydev->mdio.addr;
- 
--		mmd_phy_indirect(bus, phy_addr, devad, regnum);
--
--		/* Read the content of the MMD's selected register */
--		val = __mdiobus_read(bus, phy_addr, MII_MMD_DATA);
-+		val = __mmd_phy_read(bus, phy_addr, devad, regnum);
- 	}
- 	return val;
- }
-@@ -538,10 +557,7 @@ int __phy_write_mmd(struct phy_device *phydev, int devad, u32 regnum, u16 val)
- 		struct mii_bus *bus = phydev->mdio.bus;
- 		int phy_addr = phydev->mdio.addr;
- 
--		mmd_phy_indirect(bus, phy_addr, devad, regnum);
--
--		/* Write the data into MMD's selected register */
--		__mdiobus_write(bus, phy_addr, MII_MMD_DATA, val);
-+		__mmd_phy_write(bus, phy_addr, devad, regnum, val);
- 
- 		ret = 0;
- 	}
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index a3bfb156c83d..212ec5954b95 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -300,8 +300,19 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
- 			prtad = mii_data->phy_id;
- 			devad = mii_data->reg_num;
- 		}
--		mii_data->val_out = mdiobus_read(phydev->mdio.bus, prtad,
--						 devad);
-+		if (mdio_phy_id_is_c45(mii_data->phy_id) &&
-+		    phydev->mdio.bus->probe_capabilities <= MDIOBUS_C22) {
-+			phy_lock_mdio_bus(phydev);
-+
-+			mii_data->val_out = __mmd_phy_read(phydev->mdio.bus,
-+							   mdio_phy_id_devad(mii_data->phy_id),
-+							   prtad,
-+							   mii_data->reg_num);
-+
-+			phy_unlock_mdio_bus(phydev);
-+		} else {
-+			mii_data->val_out = mdiobus_read(phydev->mdio.bus, prtad, devad);
-+		}
- 		return 0;
- 
- 	case SIOCSMIIREG:
-@@ -351,7 +362,19 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
- 			}
- 		}
- 
--		mdiobus_write(phydev->mdio.bus, prtad, devad, val);
-+		if (mdio_phy_id_is_c45(mii_data->phy_id) &&
-+		    phydev->mdio.bus->probe_capabilities <= MDIOBUS_C22) {
-+			phy_lock_mdio_bus(phydev);
-+
-+			__mmd_phy_write(phydev->mdio.bus, mdio_phy_id_devad(mii_data->phy_id),
-+					prtad,
-+					mii_data->reg_num,
-+					val);
-+
-+			phy_unlock_mdio_bus(phydev);
-+		} else {
-+			mdiobus_write(phydev->mdio.bus, prtad, devad, val);
-+		}
- 
- 		if (prtad == phydev->mdio.addr &&
- 		    devad == MII_BMCR &&
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 96e43fbb2dd8..f6032c1708e6 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -1114,12 +1114,14 @@ int phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum);
-  * from an MMD on a given PHY.
-  */
- int __phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum);
-+int __mmd_phy_read(struct mii_bus *bus, int phy_addr, int devad, u32 regnum);
- 
- /*
-  * phy_write_mmd - Convenience function for writing a register
-  * on an MMD on a given PHY.
-  */
- int phy_write_mmd(struct phy_device *phydev, int devad, u32 regnum, u16 val);
-+int __mmd_phy_write(struct mii_bus *bus, int phy_addr, int devad, u32 regnum, u16 val);
- 
- /*
-  * __phy_write_mmd - Convenience function for writing a register
--- 
-2.17.1
+    All "set" commands that used devlink->lock are converted to write lock,
+    while all "get" commands are marked with read lock.
 
+@@ -578,8 +584,12 @@ static int devlink_nl_pre_doit(const struct genl_ops *ops,
+                mutex_unlock(&devlink_mutex);
+                return PTR_ERR(devlink);
+        }
+-       if (~ops->internal_flags & DEVLINK_NL_FLAG_NO_LOCK)
+-               mutex_lock(&devlink->lock);
++
++       if (~ops->internal_flags & DEVLINK_NL_FLAG_SHARED_ACCESS)
++               down_write(&devlink->rwsem);
++       else
++               down_read(&devlink->rwsem);
++
+
+3. Drop devlink_mutex:
+commit 3177af9971c4cd95f9633aeb9b0434687da62fd0
+Author: Leon Romanovsky <leon@kernel.org>
+Date:   Sun Oct 31 16:05:40 2021 +0200
+
+    devlink: Use xarray locking mechanism instead big devlink lock
+
+    The conversion to XArray together with devlink reference counting
+    allows us reuse the following locking pattern:
+     xa_lock()
+      xa_for_each() {
+       devlink_try_get()
+       xa_unlock()
+       ....
+       xa_lock()
+     }
+
+    This pattern gives us a way to run any commands between xa_unlock() and
+    xa_lock() without big devlink mutex, while making sure that devlink instance
+    won't be released.
+
+
+Steps 2 and 3 were not posted due to merge window and my desire to get
+mileage in our regression.
+
+> 
+> > Please, let's not give up on standalone devlink implementation without
+> > drivers need to know internal devlink details. It is hard to do but possible.
+> 
+> We may just disagree on this one. Please answer my question above -
+> so far IDK how you're going to fix the problem of re-reg'ing subobjects
+> from the reload path.
+> 
+> My experience writing drivers is that it was painfully unclear what 
+> the devlink locking rules are. Sounds like you'd make them even more
+> complicated.
+
+How? I have only one rule:
+ * Driver author should be aware that between devlink_register() and
+   devlink_unregister(), users can send netlink commands.
+
+In your solution, driver authors will need to follow whole devlink
+how-to-use book.
+
+> 
+> This RFC makes the rules simple - all devlink ops are locked.
+> 
+> For the convenience of the drivers they can also take the instance lock
+> whenever they want to prevent ops from being called. Experience with
+> rtnl_lock teaches us that this is very useful for drivers.
+
+Strange, I see completely opposite picture in the git log with so much
+changes that have Fixes line and add/remove/mention rtnl_lock. Maybe it
+is useful, but almost all if not all drivers full of fixes of rtnl_lock
+usage. I don't want same for the devlink.
+
+Thanks
