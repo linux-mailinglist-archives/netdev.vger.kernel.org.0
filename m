@@ -2,81 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E71364414DD
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 09:06:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF69844151D
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 09:12:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231778AbhKAIIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 04:08:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54090 "EHLO
+        id S231745AbhKAIO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 04:14:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231651AbhKAIIg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 04:08:36 -0400
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B05FBC06120E
-        for <netdev@vger.kernel.org>; Mon,  1 Nov 2021 01:06:01 -0700 (PDT)
-Received: by mail-lf1-x144.google.com with SMTP id bi35so34731272lfb.9
-        for <netdev@vger.kernel.org>; Mon, 01 Nov 2021 01:06:01 -0700 (PDT)
+        with ESMTP id S231841AbhKAIOT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 04:14:19 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C5DEC061203;
+        Mon,  1 Nov 2021 01:11:46 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id g10so61396807edj.1;
+        Mon, 01 Nov 2021 01:11:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=J/sLAHxRh6EjJh2rcjPDJLzA40VXjb4DP54UXQAr8IU=;
-        b=jTwGY7UqyQ8YIhJUDjrqZPtk3LzrWCAUOAMDPLz5M7CqLBHqNsFTo9C861qV1B25Xf
-         r5L553Wxmro5Ww3I0Kz3a52AwkmZqFToii6+0ZOhpUkOfcb53PnNGE9m6Sqik3zmhZwo
-         n/R9HTp53zn5NI3DbL08muEwIh9gH7g9lDe2tstM5tUGQD80ibC8oJ7RZsh0jabUj80l
-         TjW7jDszyj0LgBKofuNs3yAxUhi8ze1MSxaF3AEB8qSt1N3bygNegk5wBFiWacOIsTYm
-         giGQNkRW+M+En5ZqEkyuSVwtFALtbKc66CUkcVFPmwMgTZmFkWlfrtrQ91sQ12FB43ir
-         IgcA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Yb6wWrUbG7viwzKLb+1mNEqFRnMxKsiQ/RoGbQMQPPI=;
+        b=Hq1x1YFpGyGQ2qsQwEZSRbX0ksnJwrTlqtAZcHnn1WlTd32QEqTUbbVAHLPPyY7Fhp
+         /9QJDDovb7J5tyqpJC8iWD155fi7hThKAVDza+/Ky7TR3g/RlygG2toNMowubwmbW6TX
+         kRuxF750VZsT2y3PbEJlkmGtbWMY5JOowZaXIb9MKjpN0D9PPDCgwcLiE1ev7zUiKMuS
+         azkpLpbrvZe8mk+eBMD0d+HGCesTTqJVcn7xlld83YcFK+nT2O1yXDHScY0rbF4GiKgm
+         TpriSTwLu69Pa5dT074fOkYgiE2aGtGYqs8TEsO9lvktAH1tePN0uh0JrS4uO4HW0rtz
+         NFqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=J/sLAHxRh6EjJh2rcjPDJLzA40VXjb4DP54UXQAr8IU=;
-        b=C+rMPhsd05h9eBuyZRUVw1lZ5TY4d/DhMahL6UsY4ETlJtcf64iLCrpf8HJY3EBK31
-         wc7Aofkpub8+9jkPJlinkD+nWYRcEc9DJdP18R5fBxvnoIHENS7/f3cVcOnqdlYdte0E
-         CTAT3rZWf7j65fqljyesNhbywAH2iDdBVoi0YYGVahEUSVeS3v2AjBagNCUI+1Velgp+
-         zVDEZDCfegGtcSOi2640wnAi0TpmHTOH3jCDOQN3TYDyb0pi4WMTd8Scd6xb69sUlb6P
-         8rZWpPMecqPkU0ll1D1Q88vRlLwoYCaMw9P/XCiKDo+ljgPxe2sffQ4GDBfPG9EGdK1y
-         EE+Q==
-X-Gm-Message-State: AOAM532Kv3L6unAm84dkM1UpLxh8H+iUfLy51v/f2REY7lN9JbJOIPYg
-        nwO/bWniyw+POiUd84MgY8fFxv5vf6rv0zUHFB0=
-X-Google-Smtp-Source: ABdhPJxmqEVdpxtX6Hrcfxe4l+hmj7ibNqiYjCRoHEGQmkHQsxyv4j0y0ocCVsmwYp4ABnpO0ho1EyHAGzTI8DbI2zw=
-X-Received: by 2002:a05:6512:3696:: with SMTP id d22mr7627111lfs.659.1635753959932;
- Mon, 01 Nov 2021 01:05:59 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Yb6wWrUbG7viwzKLb+1mNEqFRnMxKsiQ/RoGbQMQPPI=;
+        b=lOAQCvL+7sqJc90QwDhcEKLlvNP/fv1ge8FCN7C5j8/P08WShdVqzPhUbEmOL9NYyc
+         3dhtV6BC8dvdfVwB8pOSSZFRn7Sd3rGJ/YH3RPFhw7cJ/Xf1hmHD6PCKfnuwQNdJ3vew
+         jj6nIGe2VpMJtcN2H4iJTXItaEfcpF9HZIYEAxPeC2qhVT7yCH35U2onL2Hov1raBpCD
+         ZhPB4mqzxrDfMEK5YR+It5EYpr+dNDv63QDmC8p2e4lG/fk6D7OieIGQJ8aBscvYU3Xq
+         FN1CnXLJGA+MuALONayTu7tKzoYsd3v1SjqM5FpQV5Ij+rDX94KanyNxfWkaoOMu0uTg
+         QVlQ==
+X-Gm-Message-State: AOAM533nSUYLksVlsXA4DG1zgiNry2STEO+DaBkUMyVP+UuiuYz4JsZ9
+        rAH49a1KLVEmCSCSjaZKHKnDu/shlNK/m91Nt10=
+X-Google-Smtp-Source: ABdhPJwNhVh/tYLsqn4p6XyUPSYAYem5Kg5yeGGvbKvzWmOHpDpy6n7G8yoBWYI7//3lGluZv9dqDNflYGBTN/aC65k=
+X-Received: by 2002:a17:906:6dd2:: with SMTP id j18mr34607249ejt.468.1635754304577;
+ Mon, 01 Nov 2021 01:11:44 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a05:6512:304b:0:0:0:0 with HTTP; Mon, 1 Nov 2021 01:05:59
- -0700 (PDT)
-Reply-To: aisha.7d@yahoo.com
-From:   Aisha AG <rbx17058@gmail.com>
-Date:   Mon, 1 Nov 2021 00:05:59 -0800
-Message-ID: <CA+KbyychNgycp0rGBpdptJEdAFJQQCku4iDOhYe4CxitYXaueA@mail.gmail.com>
-Subject: Hello Dear,
-To:     undisclosed-recipients:;
+References: <20211101040103.388646-1-mudongliangabcd@gmail.com> <3170956.dbteMgFBTL@ripper>
+In-Reply-To: <3170956.dbteMgFBTL@ripper>
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+Date:   Mon, 1 Nov 2021 16:11:18 +0800
+Message-ID: <CAD-N9QUFFchS=rWjy1GN14CKM+9NXE0C4tnR7zS3h-jZR_T9wA@mail.gmail.com>
+Subject: Re: [PATCH] net: batman-adv: fix warning in batadv_v_ogm_free
+To:     Sven Eckelmann <sven@narfation.org>
+Cc:     Marek Lindner <mareklindner@neomailbox.ch>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Antonio Quartulli <a@unstable.cc>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Antonio Quartulli <antonio@open-mesh.com>,
+        b.a.t.m.a.n@lists.open-mesh.org,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
+On Mon, Nov 1, 2021 at 3:46 PM Sven Eckelmann <sven@narfation.org> wrote:
+>
+> On Monday, 1 November 2021 05:01:02 CET Dongliang Mu wrote:
+> > Call Trace:
+> >  __cancel_work_timer+0x1c9/0x280 kernel/workqueue.c:3170
+> >  batadv_v_ogm_free+0x1d/0x50 net/batman-adv/bat_v_ogm.c:1076
+> >  batadv_mesh_free+0x35/0xa0 net/batman-adv/main.c:244
+> >  batadv_mesh_init+0x22a/0x240 net/batman-adv/main.c:226
+> >  batadv_softif_init_late+0x1ad/0x240 net/batman-adv/soft-interface.c:804
+> >  register_netdevice+0x15d/0x810 net/core/dev.c:10229
+>
+> This is definitely not a backtrace of the current code and its error handling.
+> Please check the current code [1] and explain the situation against this
+> version.
 
-Hello Dear,
+Yes, you're right. The error handling code in the upstream is not
+prone to this bug.
 
-I came across your e-mail contact prior to a private search while in
-need of your assistance. I am Aisha Al-Qaddafi, the only biological
-Daughter of Former President of Libya Col.Muammar Al-Qaddafi.
-Am a Widow and a single Mother with three Children.
+My local syzkaller instance is fuzzing on 5.14-rc5
 
-I have investment funds worth Twenty Seven Million Five Hundred
-Thousand United State Dollar $27.500.000.00, and i need a trusted
-investment Manager/Partner because of my current refugee status,
-however, I am interested in you for investment project assistance in
-your country,may be from there,we can build business relationship
-in the nearest future.
 
-I am willing to negotiate an investment/business profit sharing ratio
-with you based on the future investment earning profits.
-
-If you are willing to handle this project on my behalf kindly reply
-urgently to enable me to provide you more information about the
-investment funds.
-Best Regards
-Mrs Aisha Al-Qaddafi.
+>
+> Kind regards,
+>         Sven
+>
+> [1] https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/net/batman-adv/main.c?id=ae0393500e3b0139210749d52d22b29002c20e16#n237
