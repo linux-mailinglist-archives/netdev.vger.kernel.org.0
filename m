@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A9D2441361
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 07:04:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5C56441365
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 07:04:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230384AbhKAGHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 02:07:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55200 "EHLO
+        id S231192AbhKAGHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 02:07:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230096AbhKAGHF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 02:07:05 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3937FC061714;
-        Sun, 31 Oct 2021 23:04:32 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id y14-20020a17090a2b4e00b001a5824f4918so8469706pjc.4;
-        Sun, 31 Oct 2021 23:04:32 -0700 (PDT)
+        with ESMTP id S230307AbhKAGHH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 02:07:07 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA0CC061714;
+        Sun, 31 Oct 2021 23:04:34 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id n11-20020a17090a2bcb00b001a1e7a0a6a6so15307312pje.0;
+        Sun, 31 Oct 2021 23:04:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=jvb/C5XEaJIeXrLXfpoEk1LkH8WdHTYd7IpTBiq7fdU=;
-        b=QzDoHhHVbtF/bMpHfWbGSlGfWhrLJ3uom/bYNboWDxPau83NZSUbxcsyS3VC0UFwNm
-         IYFWwZxp+p4qvZ5D2tK0osULt9fSRrn39+6+qRP+w8MHRqyPsENAX3Qbce93XloeW0b7
-         bhZt0u3DwNeykH6ljwHZncNhJdpGAHRDhJ+vIJ5DBB7n6lBWqcVSVnF3oo2IyGW0E2kq
-         JGcTLy1m5V0sKMiuH0G7VtSf8DXS60yNBtgOiW7rsb0a+93/1HmKSOD1N4EI+UEMmIzY
-         d2ig8smuUy3ycMA8HdA6saon+W6X9JZ04Wu2GeG9I6XPzrEbZl3+/fmY4uZ51gpf30GP
-         lfVA==
+        bh=HfuDNEiJT3BfJis8gojDnNsP87rFWM/LtilUesqMR5U=;
+        b=hPb9/J7ocOjTulc4EreHCv8ZMiDH7pY0cCDo/lAIUe0tnuOnhIo5NHHug7nWuJhrNC
+         6vtVwF5uYsRSCf7RfEpnZD/J0nqa25t6NpDZ053/nVgcg1n+PRqGI40eSjB5C9FL96df
+         4D6KcJrwmQXgwdK4zJJfcYP3RS9yKvQgt8/ZkbbVP3+ilc93odwkhmd3O0NAarTD5WDq
+         ZnoJsc4bZN1D3V6Fo82j0RR5+FKeHn+QsNLQHdHfs84ZO8yuGicC3Jn5/yvYglIqpHXU
+         8obAblxVypVdciBUpGDBoPUuxBiOWFZ1wv+VfYR44yyHma+mcUd73KOAlrLzu1v57TYJ
+         aR1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=jvb/C5XEaJIeXrLXfpoEk1LkH8WdHTYd7IpTBiq7fdU=;
-        b=plSWlPFiegA4DXLYdGmQ8H80+yBa1zLZs5rjg3FgYMVG7uI/I22dj0ai88yHMtoafA
-         OvjuS3vqLgDqYGJPmI8DsvvOr+qnQRRTSYI7+DfNYDu7TwTOu5zYOQW3bS3q3mxGY3cp
-         SzRB/gBgwgW88o24spqvA4dmT+cgq4ojjfUPfSKi9xeXKgthMBRiUNoWbVAX3RJmOuj5
-         UMXE/M8LnTCjCScjI9vCzRstnG/4HQxwoCEfT7ODUa6A7PIvhMuD0Ldd/V3cEtyUSk2X
-         aHtujJJntasDmcvHeMKOJXgeQRBwAcxeRvLGngS0BoNpgr9iehD8T2HUKQrkuczkOjC8
-         fsLA==
-X-Gm-Message-State: AOAM532768AUKzgzYetxW2Z0V7SgcOKFGlJFScaVAf7Ixfx7NmWJCcpV
-        iw+cK9IeclNM6PvuJGC3HzI=
-X-Google-Smtp-Source: ABdhPJz8UISjP4gb7nXyp0XisjyBJXUE5NhjaTe21LGX2ejW8wzAuI9dQOwUx1G/kySMdPO2jta5Ag==
-X-Received: by 2002:a17:90b:30c6:: with SMTP id hi6mr16797530pjb.201.1635746671810;
-        Sun, 31 Oct 2021 23:04:31 -0700 (PDT)
+        bh=HfuDNEiJT3BfJis8gojDnNsP87rFWM/LtilUesqMR5U=;
+        b=wZyWVoWw4PhVZ+2VZgjbKAF9ueAIkgMjaZ/ia3GkczKcsPn/joaBsz57Nm86VECdkl
+         mMTZovq8QS7EodoaxmWtaC4oJb/bOPTaXt43e/Gb55dvx/VpOiwoa+oaKMQ6v4Mh+lfB
+         XSqescdex1xM7Q4qEXNVIQ/wmhO1p4L9GB2E7DRF8q0tZ5rbVZa4YQpSNxC3MZW3Skk4
+         LEqyTBppSaGuSFkkHxwMRkgFw4/KU2PPTPt1b5KKJi4NRPAJHx5AFXCB5TmxlmH0JLcD
+         jYGzqVXVKD8PDvV5y4LpZAmViiQjx3g1d2ulVPTiVhBTQbB7iI/CFMf9ZwZm9tK56Wkz
+         aNzw==
+X-Gm-Message-State: AOAM53312Ytsh/DmQKyAvMT94Ll6Xq+linlZCAXn3nQIw63AvGWe/18T
+        kfkFYC7PhRuD7Sr1FAzDxRw=
+X-Google-Smtp-Source: ABdhPJzGByODALzastMQt6vIF+ynjmZShKqwIA1uQ394MFzxHKuVJACVDnLYpsoO/05vk972q4vbYA==
+X-Received: by 2002:a17:90b:30e:: with SMTP id ay14mr15464050pjb.60.1635746674092;
+        Sun, 31 Oct 2021 23:04:34 -0700 (PDT)
 Received: from localhost.localdomain ([144.202.123.152])
-        by smtp.gmail.com with ESMTPSA id g8sm3277586pfc.65.2021.10.31.23.04.29
+        by smtp.gmail.com with ESMTPSA id g8sm3277586pfc.65.2021.10.31.23.04.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 Oct 2021 23:04:31 -0700 (PDT)
+        Sun, 31 Oct 2021 23:04:33 -0700 (PDT)
 From:   Yafang Shao <laoar.shao@gmail.com>
 To:     akpm@linux-foundation.org, keescook@chromium.org,
         rostedt@goodmis.org, mathieu.desnoyers@efficios.com,
@@ -68,9 +68,9 @@ Cc:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         Yafang Shao <laoar.shao@gmail.com>,
         Alexei Starovoitov <alexei.starovoitov@gmail.com>,
         Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Subject: [PATCH v7 01/11] fs/exec: make __set_task_comm always set a nul terminated string
-Date:   Mon,  1 Nov 2021 06:04:09 +0000
-Message-Id: <20211101060419.4682-2-laoar.shao@gmail.com>
+Subject: [PATCH v7 02/11] fs/exec: make __get_task_comm always get a nul terminated string
+Date:   Mon,  1 Nov 2021 06:04:10 +0000
+Message-Id: <20211101060419.4682-3-laoar.shao@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20211101060419.4682-1-laoar.shao@gmail.com>
 References: <20211101060419.4682-1-laoar.shao@gmail.com>
@@ -80,8 +80,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make sure the string set to task comm is always nul terminated.
+If the dest buffer size is smaller than sizeof(tsk->comm), the buffer
+will be without null ternimator, that may cause problem. We can make sure
+the buffer size not smaller than comm at the callsite to avoid that
+problem, but there may be callsite that we can't easily change.
 
+Using strscpy_pad() instead of strncpy() in __get_task_comm() can make
+the string always nul ternimated.
+
+Suggested-by: Kees Cook <keescook@chromium.org>
+Suggested-by: Steven Rostedt <rostedt@goodmis.org>
 Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
 Reviewed-by: Kees Cook <keescook@chromium.org>
 Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
@@ -94,21 +102,22 @@ Cc: Al Viro <viro@zeniv.linux.org.uk>
 Cc: Kees Cook <keescook@chromium.org>
 Cc: Petr Mladek <pmladek@suse.com>
 ---
- fs/exec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/exec.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/fs/exec.c b/fs/exec.c
-index a098c133d8d7..404156b5b314 100644
+index 404156b5b314..013b707d995d 100644
 --- a/fs/exec.c
 +++ b/fs/exec.c
-@@ -1224,7 +1224,7 @@ void __set_task_comm(struct task_struct *tsk, const char *buf, bool exec)
+@@ -1209,7 +1209,8 @@ static int unshare_sighand(struct task_struct *me)
+ char *__get_task_comm(char *buf, size_t buf_size, struct task_struct *tsk)
  {
  	task_lock(tsk);
- 	trace_task_rename(tsk, buf);
--	strlcpy(tsk->comm, buf, sizeof(tsk->comm));
-+	strscpy_pad(tsk->comm, buf, sizeof(tsk->comm));
+-	strncpy(buf, tsk->comm, buf_size);
++	/* Always NUL terminated and zero-padded */
++	strscpy_pad(buf, tsk->comm, buf_size);
  	task_unlock(tsk);
- 	perf_event_comm(tsk, exec);
+ 	return buf;
  }
 -- 
 2.17.1
