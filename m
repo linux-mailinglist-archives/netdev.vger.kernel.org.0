@@ -2,68 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CB5B44233D
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 23:15:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB3C8442339
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 23:15:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232226AbhKAWS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 18:18:26 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:59198 "EHLO
+        id S230015AbhKAWSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 18:18:24 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:59202 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231855AbhKAWSO (ORCPT
+        with ESMTP id S232176AbhKAWSO (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 18:18:14 -0400
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id EA91663F4E;
-        Mon,  1 Nov 2021 23:13:45 +0100 (CET)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 0637A63F55;
+        Mon,  1 Nov 2021 23:13:46 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 0/2] Netfilter/IPVS fixes for net
-Date:   Mon,  1 Nov 2021 23:15:26 +0100
-Message-Id: <20211101221528.236114-1-pablo@netfilter.org>
+Subject: [PATCH net 1/2] netfilter: nfnetlink_queue: fix OOB when mac header was cleared
+Date:   Mon,  1 Nov 2021 23:15:27 +0100
+Message-Id: <20211101221528.236114-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20211101221528.236114-1-pablo@netfilter.org>
+References: <20211101221528.236114-1-pablo@netfilter.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Florian Westphal <fw@strlen.de>
 
-The following patchset contains Netfilter/IPVS fixes for net:
+On 64bit platforms the MAC header is set to 0xffff on allocation and
+also when a helper like skb_unset_mac_header() is called.
 
-1) Fix mac address UAF reported by KASAN in nfnetlink_queue,
-   from Florian Westphal.
+dev_parse_header may call skb_mac_header() which assumes valid mac offset:
 
-2) Autoload genetlink IPVS on demand, from Thomas Weissschuh.
+ BUG: KASAN: use-after-free in eth_header_parse+0x75/0x90
+ Read of size 6 at addr ffff8881075a5c05 by task nf-queue/1364
+ Call Trace:
+  memcpy+0x20/0x60
+  eth_header_parse+0x75/0x90
+  __nfqnl_enqueue_packet+0x1a61/0x3380
+  __nf_queue+0x597/0x1300
+  nf_queue+0xf/0x40
+  nf_hook_slow+0xed/0x190
+  nf_hook+0x184/0x440
+  ip_output+0x1c0/0x2a0
+  nf_reinject+0x26f/0x700
+  nfqnl_recv_verdict+0xa16/0x18b0
+  nfnetlink_rcv_msg+0x506/0xe70
 
-Please, pull these changes from:
+The existing code only works if the skb has a mac header.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
-
-Thanks.
-
-----------------------------------------------------------------
-
-The following changes since commit 64222515138e43da1fcf288f0289ef1020427b87:
-
-  Merge tag 'drm-fixes-2021-10-22' of git://anongit.freedesktop.org/drm/drm (2021-10-21 19:06:08 -1000)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
-
-for you to fetch changes up to 2199f562730dd1382946e0a2532afc38cd444129:
-
-  ipvs: autoload ipvs on genl access (2021-10-22 14:10:17 +0200)
-
-----------------------------------------------------------------
-Florian Westphal (1):
-      netfilter: nfnetlink_queue: fix OOB when mac header was cleared
-
-Thomas Weißschuh (1):
-      ipvs: autoload ipvs on genl access
-
- net/netfilter/ipvs/ip_vs_ctl.c  | 2 ++
+Fixes: 2c38de4c1f8da7 ("netfilter: fix looped (broad|multi)cast's MAC handling")
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
  net/netfilter/nfnetlink_queue.c | 2 +-
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
+index 4c3fbaaeb103..4acc4b8e9fe5 100644
+--- a/net/netfilter/nfnetlink_queue.c
++++ b/net/netfilter/nfnetlink_queue.c
+@@ -560,7 +560,7 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
+ 		goto nla_put_failure;
+ 
+ 	if (indev && entskb->dev &&
+-	    entskb->mac_header != entskb->network_header) {
++	    skb_mac_header_was_set(entskb)) {
+ 		struct nfqnl_msg_packet_hw phw;
+ 		int len;
+ 
+-- 
+2.30.2
+
