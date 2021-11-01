@@ -2,194 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D65E441CB9
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 15:35:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 434E3441C8C
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 15:23:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232005AbhKAOht (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 10:37:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58050 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229826AbhKAOhs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 10:37:48 -0400
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBDC7C061714;
-        Mon,  1 Nov 2021 07:35:14 -0700 (PDT)
-Received: by mail-io1-xd33.google.com with SMTP id i14so21707190ioa.13;
-        Mon, 01 Nov 2021 07:35:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/dxlHLhVVeQz41NT3FXktHwc6LNqxwx1mOX2k57ETQc=;
-        b=H/1G8uLzOKFUO52ObvxuuCuV2l4rLb4ppcpv63LC7y0Tk4dE973BG8DiuIgTiz+kLZ
-         bpyTdkposK7jsR+F92tk48sbrLWZlxQmSwWgg+FTp8yGpCNho0MmcjII02ryAAYVxBgv
-         X6yFut/50QTG4V3DM6A+ST2FkB09I5Xws9xJ0FRh68XEdS1mUzmdBat2YFQTVNv+4qjs
-         iLLEx1qRt5E2fiPqF7c/BqIwMW5d8svEQl08Guopq4so8w/JOi93ZHwv4T0+34xN2ewR
-         Fx/qIl+wkLAkfRBznYLmPTxdSvF+NCPooq2tubC5/sOiwajiOM3/qG0yGmIRqpwhwqo6
-         /BEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/dxlHLhVVeQz41NT3FXktHwc6LNqxwx1mOX2k57ETQc=;
-        b=4iSBKOQr0a1xWj2dZnXm2Cy91WtE/q4voUhbu8DCJ0cAJ959Y000xkrySJnUe47w/D
-         lOHdIgCtV79cLOFJAAcVFhaVGQS9Wh6Zt9eXK5qXnS9X5aTd8n2j1W4z56OQdZrQb5Op
-         Fcb3HssV6/uBM7AUM/8K7wzGfUm9Ssg4kKK9Gum+Ebtp51kiJ50KZwcxE5TcdOBft63K
-         VARt1jkGHu2StDlJ9266Afu6UpD7XILelEDzCXqOiUV5Bxcud5CcQfknlo0FAkYQJVKr
-         2uxbVnDYXj8w6Gh8KkQJ/JBjg7t27EXIZTUehtV9XNUMpFDLPbAANH9VQc3Dr5ev3Gqg
-         Lwfw==
-X-Gm-Message-State: AOAM5329l2oHn0x1am9R45dhTZFOD9Pimy/pieuClhlMwc1RWwp5/oPT
-        mlcR3Gk+cKsBASKyoEWPqyN45uNeTqk0drceFqX5RWlT6CCH2iMOkzU=
-X-Google-Smtp-Source: ABdhPJxML5PM3L1wF90f7Vr07fhP4LkRyBWT2Nd3AJz21DOOUbOnidR2/cTzlniPaknpj0TIA3BSov/kzpbs+lx1tXY=
-X-Received: by 2002:a05:6602:2f0a:: with SMTP id q10mr4985724iow.202.1635777314146;
- Mon, 01 Nov 2021 07:35:14 -0700 (PDT)
+        id S232174AbhKAOZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 10:25:54 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:15329 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229826AbhKAOZw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 10:25:52 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HjZxv4HhTz90jL;
+        Mon,  1 Nov 2021 22:22:59 +0800 (CST)
+Received: from kwepeml500002.china.huawei.com (7.221.188.128) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Mon, 1 Nov 2021 22:23:06 +0800
+Received: from compute.localdomain (10.175.112.70) by
+ kwepeml500002.china.huawei.com (7.221.188.128) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Mon, 1 Nov 2021 22:23:05 +0800
+From:   Huang Guobin <huangguobin4@huawei.com>
+To:     <j.vosburgh@gmail.com>, <vfalico@gmail.com>, <andy@greyhouse.net>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next] bonding: Fix a use-after-free problem when bond_sysfs_slave_add() failed
+Date:   Mon, 1 Nov 2021 22:34:33 +0800
+Message-ID: <1635777273-46028-1-git-send-email-huangguobin4@huawei.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-References: <20211101060419.4682-1-laoar.shao@gmail.com> <YX/0h7j/nDwoBA+J@alley>
-In-Reply-To: <YX/0h7j/nDwoBA+J@alley>
-From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Mon, 1 Nov 2021 22:34:30 +0800
-Message-ID: <CALOAHbA61RyGVzG8SVcNG=0rdqnUCt4AxCKmtuxRnbS_SH=+MQ@mail.gmail.com>
-Subject: Re: [PATCH v7 00/11] extend task comm from 16 to 24
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Qiang Zhang <qiang.zhang@windriver.com>,
-        robdclark <robdclark@chromium.org>,
-        christian <christian@brauner.io>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        dennis.dalessandro@cornelisnetworks.com,
-        mike.marciniszyn@cornelisnetworks.com, dledford@redhat.com,
-        jgg@ziepe.ca, linux-rdma@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel test robot <oliver.sang@intel.com>,
-        kbuild test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.70]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepeml500002.china.huawei.com (7.221.188.128)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 1, 2021 at 10:07 PM Petr Mladek <pmladek@suse.com> wrote:
->
-> On Mon 2021-11-01 06:04:08, Yafang Shao wrote:
-> > There're many truncated kthreads in the kernel, which may make trouble
-> > for the user, for example, the user can't get detailed device
-> > information from the task comm.
-> >
-> > This patchset tries to improve this problem fundamentally by extending
-> > the task comm size from 16 to 24, which is a very simple way.
-> >
-> > In order to do that, we have to do some cleanups first.
-> >
-> > 1. Make the copy of task comm always safe no matter what the task
-> >    comm size is. For example,
-> >
-> >       Unsafe                 Safe
-> >       strlcpy                strscpy_pad
-> >       strncpy                strscpy_pad
-> >       bpf_probe_read_kernel  bpf_probe_read_kernel_str
-> >                              bpf_core_read_str
-> >                              bpf_get_current_comm
-> >                              perf_event__prepare_comm
-> >                              prctl(2)
-> >
-> >    After this step, the comm size change won't make any trouble to the
-> >    kernel or the in-tree tools for example perf, BPF programs.
-> >
-> > 2. Cleanup some old hard-coded 16
-> >    Actually we don't need to convert all of them to TASK_COMM_LEN or
-> >    TASK_COMM_LEN_16, what we really care about is if the convert can
-> >    make the code more reasonable or easier to understand. For
-> >    example, some in-tree tools read the comm from sched:sched_switch
-> >    tracepoint, as it is derived from the kernel, we'd better make them
-> >    consistent with the kernel.
->
-> The above changes make sense even if we do not extend comm[] array in
-> task_struct.
->
->
-> > 3. Extend the task comm size from 16 to 24
-> >    task_struct is growing rather regularly by 8 bytes. This size change
-> >    should be acceptable. We used to think about extending the size for
-> >    CONFIG_BASE_FULL only, but that would be a burden for maintenance
-> >    and introduce code complexity.
-> >
-> > 4. Print a warning if the kthread comm is still truncated.
-> >
-> > 5. What will happen to the out-of-tree tools after this change?
-> >    If the tool get task comm through kernel API, for example prctl(2),
-> >    bpf_get_current_comm() and etc, then it doesn't matter how large the
-> >    user buffer is, because it will always get a string with a nul
-> >    terminator. While if it gets the task comm through direct string copy,
-> >    the user tool must make sure the copied string has a nul terminator
-> >    itself. As TASK_COMM_LEN is not exposed to userspace, there's no
-> >    reason that it must require a fixed-size task comm.
->
-> The amount of code that has to be updated is really high. I am pretty
-> sure that there are more potential buffer overflows left.
->
-> You did not commented on the concerns in the thread
-> https://lore.kernel.org/all/CAADnVQKm0Ljj-w5PbkAu1ugLFnZRRPt-Vk-J7AhXxDD5xVompA@mail.gmail.com/
->
+When I do fuzz test for bonding device interface, I got the following
+use-after-free Calltrace:
 
-I thought Steven[1] and  Kees[2] have already clearly explained why we
-do it like that, so I didn't give any more words on it.
+==================================================================
+BUG: KASAN: use-after-free in bond_enslave+0x1521/0x24f0
+Read of size 8 at addr ffff88825bc11c00 by task ifenslave/7365
 
-[1]. https://lore.kernel.org/all/20211025170503.59830a43@gandalf.local.home/
-[2]. https://lore.kernel.org/all/202110251406.56F87A3522@keescook/
+CPU: 5 PID: 7365 Comm: ifenslave Tainted: G            E     5.15.0-rc1+ #13
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1 04/01/2014
+Call Trace:
+ dump_stack_lvl+0x6c/0x8b
+ print_address_description.constprop.0+0x48/0x70
+ kasan_report.cold+0x82/0xdb
+ __asan_load8+0x69/0x90
+ bond_enslave+0x1521/0x24f0
+ bond_do_ioctl+0x3e0/0x450
+ dev_ifsioc+0x2ba/0x970
+ dev_ioctl+0x112/0x710
+ sock_do_ioctl+0x118/0x1b0
+ sock_ioctl+0x2e0/0x490
+ __x64_sys_ioctl+0x118/0x150
+ do_syscall_64+0x35/0xb0
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f19159cf577
+Code: b3 66 90 48 8b 05 11 89 2c 00 64 c7 00 26 00 00 00 48 c7 c0 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 b8 10 00 00 00 0f 05 <48> 3d 01 f0 ff ff 78
+RSP: 002b:00007ffeb3083c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007ffeb3084bca RCX: 00007f19159cf577
+RDX: 00007ffeb3083ce0 RSI: 0000000000008990 RDI: 0000000000000003
+RBP: 00007ffeb3084bc4 R08: 0000000000000040 R09: 0000000000000000
+R10: 00007ffeb3084bc0 R11: 0000000000000246 R12: 00007ffeb3083ce0
+R13: 0000000000000000 R14: 0000000000000000 R15: 00007ffeb3083cb0
 
-> Several people suggested to use a more conservative approach.
+Allocated by task 7365:
+ kasan_save_stack+0x23/0x50
+ __kasan_kmalloc+0x83/0xa0
+ kmem_cache_alloc_trace+0x22e/0x470
+ bond_enslave+0x2e1/0x24f0
+ bond_do_ioctl+0x3e0/0x450
+ dev_ifsioc+0x2ba/0x970
+ dev_ioctl+0x112/0x710
+ sock_do_ioctl+0x118/0x1b0
+ sock_ioctl+0x2e0/0x490
+ __x64_sys_ioctl+0x118/0x150
+ do_syscall_64+0x35/0xb0
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Yes, they are Al[3] and Alexei[4].
+Freed by task 7365:
+ kasan_save_stack+0x23/0x50
+ kasan_set_track+0x20/0x30
+ kasan_set_free_info+0x24/0x40
+ __kasan_slab_free+0xf2/0x130
+ kfree+0xd1/0x5c0
+ slave_kobj_release+0x61/0x90
+ kobject_put+0x102/0x180
+ bond_sysfs_slave_add+0x7a/0xa0
+ bond_enslave+0x11b6/0x24f0
+ bond_do_ioctl+0x3e0/0x450
+ dev_ifsioc+0x2ba/0x970
+ dev_ioctl+0x112/0x710
+ sock_do_ioctl+0x118/0x1b0
+ sock_ioctl+0x2e0/0x490
+ __x64_sys_ioctl+0x118/0x150
+ do_syscall_64+0x35/0xb0
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-[3]. https://lore.kernel.org/lkml/YVkmaSUxbg%2FJtBHb@zeniv-ca.linux.org.uk/
-[4]. https://lore.kernel.org/all/CAADnVQKm0Ljj-w5PbkAu1ugLFnZRRPt-Vk-J7AhXxDD5xVompA@mail.gmail.com/
+Last potentially related work creation:
+ kasan_save_stack+0x23/0x50
+ kasan_record_aux_stack+0xb7/0xd0
+ insert_work+0x43/0x190
+ __queue_work+0x2e3/0x970
+ delayed_work_timer_fn+0x3e/0x50
+ call_timer_fn+0x148/0x470
+ run_timer_softirq+0x8a8/0xc50
+ __do_softirq+0x107/0x55f
 
-> I mean
-> to keep comm[16] as is and add a new pointer to the full name. The buffer
-> for the long name might be dynamically allocated only when needed.
->
+Second to last potentially related work creation:
+ kasan_save_stack+0x23/0x50
+ kasan_record_aux_stack+0xb7/0xd0
+ insert_work+0x43/0x190
+ __queue_work+0x2e3/0x970
+ __queue_delayed_work+0x130/0x180
+ queue_delayed_work_on+0xa7/0xb0
+ bond_enslave+0xe25/0x24f0
+ bond_do_ioctl+0x3e0/0x450
+ dev_ifsioc+0x2ba/0x970
+ dev_ioctl+0x112/0x710
+ sock_do_ioctl+0x118/0x1b0
+ sock_ioctl+0x2e0/0x490
+ __x64_sys_ioctl+0x118/0x150
+ do_syscall_64+0x35/0xb0
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-That would add a new allocation in the fork() for the threads with a long name.
-I'm not sure if it is worth it.
+The buggy address belongs to the object at ffff88825bc11c00
+ which belongs to the cache kmalloc-1k of size 1024
+The buggy address is located 0 bytes inside of
+ 1024-byte region [ffff88825bc11c00, ffff88825bc12000)
+The buggy address belongs to the page:
+page:ffffea00096f0400 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x25bc10
+head:ffffea00096f0400 order:3 compound_mapcount:0 compound_pincount:0
+flags: 0x57ff00000010200(slab|head|node=1|zone=2|lastcpupid=0x7ff)
+raw: 057ff00000010200 ffffea0009a71c08 ffff888240001968 ffff88810004dbc0
+raw: 0000000000000000 00000000000a000a 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
 
-> The pointer might be either in task_struct or struct kthread. It might
-> be used the same way as the full name stored by workqueue kthreads.
->
+Memory state around the buggy address:
+ ffff88825bc11b00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff88825bc11b80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff88825bc11c00: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                   ^
+ ffff88825bc11c80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88825bc11d00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
-If we decide to do it like that, I think we'd better add it in
-task_struct, then it will work for all tasks.
+Put new_slave in bond_sysfs_slave_add() will cause use-after-free problems
+when new_slave is accessed in the subsequent error handling process. Since
+new_slave will be put in the subsequent error handling process, remove the
+unnecessary put to fix it.
+In addition, when sysfs_create_file() fails, if some files have been crea-
+ted successfully, we need to call sysfs_remove_file() to remove them.
 
-> The advantage of the separate pointer:
->
->    + would work for names longer than 32
->    + will not open security holes in code
->
+Fixes: 7afcaec49696 (bonding: use kobject_put instead of _del after kobject_add)
+Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
+---
+ drivers/net/bonding/bond_sysfs_slave.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-Yes, those are the advantages.  And the disadvantage of it is:
-
- - new allocation in fork()
-
-
+diff --git a/drivers/net/bonding/bond_sysfs_slave.c b/drivers/net/bonding/bond_sysfs_slave.c
+index fd07561..d1a5b3f 100644
+--- a/drivers/net/bonding/bond_sysfs_slave.c
++++ b/drivers/net/bonding/bond_sysfs_slave.c
+@@ -137,18 +137,23 @@ static ssize_t slave_show(struct kobject *kobj,
+ 
+ int bond_sysfs_slave_add(struct slave *slave)
+ {
+-	const struct slave_attribute **a;
++	const struct slave_attribute **a, **b;
+ 	int err;
+ 
+ 	for (a = slave_attrs; *a; ++a) {
+ 		err = sysfs_create_file(&slave->kobj, &((*a)->attr));
+ 		if (err) {
+-			kobject_put(&slave->kobj);
+-			return err;
++			goto err_remove_file;
+ 		}
+ 	}
+ 
+ 	return 0;
++
++err_remove_file:
++	for (b = slave_attrs; b < a; ++b)
++		sysfs_remove_file(&slave->kobj, &((*b)->attr));
++
++	return err;
+ }
+ 
+ void bond_sysfs_slave_del(struct slave *slave)
 -- 
-Thanks
-Yafang
+1.8.3.1
+
