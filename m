@@ -2,85 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39012441DB4
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 17:06:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58AC7441E00
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 17:20:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232635AbhKAQJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 12:09:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37154 "EHLO mail.kernel.org"
+        id S232708AbhKAQWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 12:22:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44576 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230517AbhKAQJS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Nov 2021 12:09:18 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4D66A610FC;
-        Mon,  1 Nov 2021 16:06:39 +0000 (UTC)
-Date:   Mon, 1 Nov 2021 12:06:36 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Yafang Shao <laoar.shao@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Qiang Zhang <qiang.zhang@windriver.com>,
-        robdclark <robdclark@chromium.org>,
-        christian <christian@brauner.io>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        dennis.dalessandro@cornelisnetworks.com,
-        mike.marciniszyn@cornelisnetworks.com, dledford@redhat.com,
-        jgg@ziepe.ca, linux-rdma@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel test robot <oliver.sang@intel.com>,
-        kbuild test robot <lkp@intel.com>
-Subject: Re: [PATCH v7 00/11] extend task comm from 16 to 24
-Message-ID: <20211101120636.3cfc5afa@gandalf.local.home>
-In-Reply-To: <YYAPhE9uX7OYTlpv@alley>
-References: <20211101060419.4682-1-laoar.shao@gmail.com>
-        <YX/0h7j/nDwoBA+J@alley>
-        <CALOAHbA61RyGVzG8SVcNG=0rdqnUCt4AxCKmtuxRnbS_SH=+MQ@mail.gmail.com>
-        <YYAPhE9uX7OYTlpv@alley>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S232693AbhKAQWm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Nov 2021 12:22:42 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id C560961175;
+        Mon,  1 Nov 2021 16:20:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635783608;
+        bh=OptXrCd0FiA/UfuAuNlM5eF1pJvaE/59/NVDLUdYUP0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=s477AHQmBaS8z5fxwFA+Vn5weBwTLeDaSsy+v9rb3Roc/Le6vQdbgWDEo1em+kk72
+         3VAH5Kioosn2PRj8DQmoQsupOQnJZDvEtNnFwAEPdtbFEOVhT7nDPc8RshspxNOSxW
+         l73rG8MwrKG5xsnqFz7dZDfL9ffHP3nBtxz8EXCXRbAyHy9r6Yr68x9/lwDYTAmqXk
+         Em3C0q9Y1v/7qa8HpdSrt7VOgerNyMPJusy4YKn/KkIghWX8ZqWVTyeehEl6IXShxe
+         Av+eos/FiMz25O5KJqUIUhl15Jr9RHKE9JogewTG5+yq6MMtwDcW2YoigX2lProtZC
+         9+8eH82y0LEjg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B8EEA60BD0;
+        Mon,  1 Nov 2021 16:20:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATHC bpf v6 1/3] skmsg: lose offset info in sk_psock_skb_ingress
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163578360875.18867.1488273405731214405.git-patchwork-notify@kernel.org>
+Date:   Mon, 01 Nov 2021 16:20:08 +0000
+References: <20211029141216.211899-1-liujian56@huawei.com>
+In-Reply-To: <20211029141216.211899-1-liujian56@huawei.com>
+To:     Liu Jian <liujian56@huawei.com>
+Cc:     john.fastabend@gmail.com, daniel@iogearbox.net,
+        jakub@cloudflare.com, lmb@cloudflare.com, davem@davemloft.net,
+        kuba@kernel.org, ast@kernel.org, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        xiyou.wangcong@gmail.com, alexei.starovoitov@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 1 Nov 2021 17:02:12 +0100
-Petr Mladek <pmladek@suse.com> wrote:
+Hello:
 
-> > I thought Steven[1] and  Kees[2] have already clearly explained why we
-> > do it like that, so I didn't give any more words on it.
-> > 
-> > [1]. https://lore.kernel.org/all/20211025170503.59830a43@gandalf.local.home/  
+This series was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
+
+On Fri, 29 Oct 2021 22:12:14 +0800 you wrote:
+> If sockmap enable strparser, there are lose offset info in
+> sk_psock_skb_ingress. If the length determined by parse_msg function
+> is not skb->len, the skb will be converted to sk_msg multiple times,
+> and userspace app will get the data multiple times.
 > 
-> Steven was against switching task->comm[16] into a dynamically
-> allocated pointer. But he was not against storing longer names
-> separately.
+> Fix this by get the offset and length from strp_msg.
+> And as Cong suggestion, add one bit in skb->_sk_redir to distinguish
+> enable or disable strparser.
+> 
+> [...]
 
-Just to be clear. I was recommending that the comm[16] would still behave
-like it does today. Where it is truncated. But if the name is longer, it
-could be stored in a separate location if the caller wanted to know the
-full name.
+Here is the summary with links:
+  - [PATHC,bpf,v6,1/3] skmsg: lose offset info in sk_psock_skb_ingress
+    https://git.kernel.org/bpf/bpf-next/c/7303524e04af
+  - [PATHC,bpf,v6,2/3] selftests, bpf: Fix test_txmsg_ingress_parser error
+    https://git.kernel.org/bpf/bpf-next/c/b556c3fd4676
+  - [PATHC,bpf,v6,3/3] selftests, bpf: Add one test for sockmap with strparser
+    https://git.kernel.org/bpf/bpf-next/c/d69672147faa
 
--- Steve
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
