@@ -2,190 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CA024415DF
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 10:11:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07A6D4417CC
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 10:38:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231284AbhKAJNl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 05:13:41 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:30889 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230520AbhKAJNl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 05:13:41 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HjRwZ1rtpzcZyr;
-        Mon,  1 Nov 2021 17:06:22 +0800 (CST)
-Received: from dggpeml500022.china.huawei.com (7.185.36.66) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Mon, 1 Nov 2021 17:11:05 +0800
-Received: from [10.67.103.87] (10.67.103.87) by dggpeml500022.china.huawei.com
- (7.185.36.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.15; Mon, 1 Nov
- 2021 17:11:04 +0800
-Subject: Re: [RFCv3 PATCH net-next] net: extend netdev_features_t
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <ecree.xilinx@gmail.com>,
-        <hkallweit1@gmail.com>, <alexandr.lobakin@intel.com>,
-        <saeed@kernel.org>, <netdev@vger.kernel.org>,
-        <linuxarm@openeuler.org>
-References: <20211101010535.32575-1-shenjian15@huawei.com>
- <YX9RCqTOAHtiGD3n@lunn.ch>
-From:   "shenjian (K)" <shenjian15@huawei.com>
-Message-ID: <0c45431b-ad76-87c6-c498-f19584ae6840@huawei.com>
-Date:   Mon, 1 Nov 2021 17:11:04 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.5.2
+        id S231960AbhKAJkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 05:40:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46716 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232511AbhKAJiH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 05:38:07 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B5B4C0431A9;
+        Mon,  1 Nov 2021 02:22:27 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id k22so6793613ljk.5;
+        Mon, 01 Nov 2021 02:22:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qWSEirly4n64mZ55Ypk7HFX/ooed9xF0zO6hXUeUyg4=;
+        b=SC/QIDLuGFPfgiy3NDa5sleLCWa3tpyd6dJMzvpin43aKorTe1D32C/vlmCfqts9Ky
+         fZmy4gNcQ/29WGa6Suul76Odk/aSv46cbeVi06jdef/qzNmHDlIHzH0vvMyOPdBhvcvt
+         1ZpzgonYBH0q+IPhJsR0ycI9CuxVTpbclpRcRly1hc9T34WrebQFhsucl7tTsCPDaV3a
+         LrAcRBBSBcM2bPqmBEML7sJ7MqEqblv3y4cRX/Ee3Hr2e63eFj2PdVhSKkZthe6qhgVs
+         QWNQevuKa6XJlBqDwZJlvSp5anjU31pbSp39YMkNRwcJgD664Cy6cZ8oZ7huYA1Yncua
+         AFxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qWSEirly4n64mZ55Ypk7HFX/ooed9xF0zO6hXUeUyg4=;
+        b=VueoV9UJm0z3xxG5zueMit7Uf5fyBmscXzbXH89K/YuFm7fioDWRs0IGceLMwwgmkd
+         dXzI/dA6YqR2QuT7S8RH6w0dE8vklAJ5cKeMEE+7JNoqNfrCPe9ZiWauFQElHo1Ixs3E
+         VXwE9vbSBjJcFXYwF9f/M9QxC17urE2Fy+cdagamYi0uJ+64Yd7ras+rQKTrdQOWGc/A
+         t96ekxVAYtizaW47EmFjmcUdAxcO/0KwmbDER8JSzYdaVCpLprAmF2ldeT1admKME+Fe
+         dd9AUbEU7cssB1jqvv4ZmixdfPNn9UKb5qosehyL578wJ7QCtGG+iadga0I5eD77gfuD
+         USQw==
+X-Gm-Message-State: AOAM533BiQ2Bo2BSE3xJIL4PLa73GWfe2PVotUnM3z9jnHqOCs92XxEK
+        1evWtwEKgCszbFQqpeb5Clk=
+X-Google-Smtp-Source: ABdhPJyn8AEyu8HmFDn8qiACtk6rC9fX9Whk3T7aVlj+l0fnlqtJFkO2HVtBT7Nx9oOU14FtOLWV8g==
+X-Received: by 2002:a2e:89c6:: with SMTP id c6mr30980418ljk.25.1635758545791;
+        Mon, 01 Nov 2021 02:22:25 -0700 (PDT)
+Received: from localhost.localdomain (pool-95-83-120-25.ptcomm.ru. [95.83.120.25])
+        by smtp.googlemail.com with ESMTPSA id d19sm1363985lfv.74.2021.11.01.02.22.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Nov 2021 02:22:25 -0700 (PDT)
+From:   Maxim Kiselev <bigunclemax@gmail.com>
+Cc:     Maxim Kiselev <bigunclemax@gmail.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Yufeng Mo <moyufeng@huawei.com>,
+        Michael Walle <michael@walle.cc>, Sriram <srk@ti.com>,
+        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: davinci_emac: Fix interrupt pacing disable
+Date:   Mon,  1 Nov 2021 12:21:32 +0300
+Message-Id: <20211101092134.3357661-1-bigunclemax@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <YX9RCqTOAHtiGD3n@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.103.87]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500022.china.huawei.com (7.185.36.66)
-X-CFilter-Loop: Reflected
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+This patch allows to use 0 for `coal->rx_coalesce_usecs` param to
+disable rx irq coalescing.
 
-     Thanks for your comments!
+Previously we could enable rx irq coalescing via ethtool
+(For ex: `ethtool -C eth0 rx-usecs 2000`) but we couldn't disable
+it because this part rejects 0 value:
 
+       if (!coal->rx_coalesce_usecs)
+               return -EINVAL;
 
-在 2021/11/1 10:29, Andrew Lunn 写道:
->> +#define HNS3_DEFAULT_ACTIVE_FEATURES   \
->> +	(NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_VLAN_CTAG_TX |  \
->> +	NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_RXCSUM | NETIF_F_SG |  \
->> +	NETIF_F_GSO | NETIF_F_GRO | NETIF_F_TSO | NETIF_F_TSO6 | \
->> +	NETIF_F_GSO_GRE | NETIF_F_GSO_GRE_CSUM | NETIF_F_SCTP_CRC \
->> +	NETIF_F_GSO_UDP_TUNNEL | NETIF_F_FRAGLIST)
-> This is a problem, it only works for the existing 64 bit values, but
-> not for the values added afterwards. I would suggest you change this
-> into an array of u8 bit values. That scales to 256 feature flags. And
-> when that overflows, we can change from an array of u8 to u16, without
-> any major API changes.
-OK, I will change it like features_init() in drivers/net/phy/phy_device.c
+Fixes: 84da2658a619 ("TI DaVinci EMAC : Implement interrupt pacing
+functionality.")
 
-I used this at fist until I add helpers for handling existing 64 bits.
+Signed-off-by: Maxim Kiselev <bigunclemax@gmail.com>
+---
+ drivers/net/ethernet/ti/davinci_emac.c | 77 ++++++++++++++------------
+ 1 file changed, 41 insertions(+), 36 deletions(-)
 
->>   static int hns3_alloc_buffer(struct hns3_enet_ring *ring,
->> diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
->> index 16f778887e14..9b3ab11e19c8 100644
->> --- a/include/linux/netdev_features.h
->> +++ b/include/linux/netdev_features.h
->> @@ -101,12 +101,12 @@ enum {
->>   
->>   typedef struct {
->>   	DECLARE_BITMAP(bits, NETDEV_FEATURE_COUNT);
->> -} netdev_features_t;
->> +} netdev_features_t;
-> That hunk looks odd.
-Yes, but it can be return directly, so we don't have to change
-the prototype of functions which return netdev_features_t,
-like  ndo_features_check.
-
->>   
->>   #define NETDEV_FEATURE_DWORDS	DIV_ROUND_UP(NETDEV_FEATURE_COUNT, 64)
->>   
->>   /* copy'n'paste compression ;) */
->> -#define __NETIF_F_BIT(bit)	((netdev_features_t)1 << (bit))
->> +#define __NETIF_F_BIT(bit)	((u64)1 << (bit))
-> You need to get away from this representation. It does not scale.
->
-> At the end of this conversion, either all NETIF_F_* macros need to be
-> gone, or they need to be aliases for NETIF_F_*_BIT.
-
-I kept them for I use helpers for handling existing 64 bit.
-
-
->> -static inline void netdev_feature_zero(netdev_features_t *dst)
->> +static inline void netdev_features_zero(netdev_features_t *dst)
->>   {
->>   	bitmap_zero(dst->bits, NETDEV_FEATURE_COUNT);
->>   }
->>   
->> -static inline void netdev_feature_fill(netdev_features_t *dst)
->> +static inline void netdev_features_fill(netdev_features_t *dst)
->>   {
->>   	bitmap_fill(dst->bits, NETDEV_FEATURE_COUNT);
->>   }
-> I'm wondering that the value here is? What do we gain by added the s.
-> These changes cause a lot of churn in the users of these functions.
-This function is used to expression like below:
-
-"lowerdev_features &= (features | ~NETIF_F_LRO);"  in drivers/net/macvlan.c
-
-
->>   
->> -static inline void netdev_feature_and(netdev_features_t *dst,
->> -				      const netdev_features_t a,
->> -				      const netdev_features_t b)
->> +static inline netdev_features_t netdev_features_and(netdev_features_t a,
->> +						    netdev_features_t b)
->>   {
->> -	bitmap_and(dst->bits, a.bits, b.bits, NETDEV_FEATURE_COUNT);
->> +	netdev_features_t dst;
->> +
->> +	bitmap_and(dst.bits, a.bits, b.bits, NETDEV_FEATURE_COUNT);
->> +	return dst;
->>   }
-> The implementation needs to change, but do we need to change the
-> function signature? Why remove dst as a parameter?
->
-> It can be good to deliberately break the API so the compiler tells us
-> when we fail to update something. But do we actually need that here?
-> The API is nicely abstract, so i don't think a breaking change is
-> required.
-
-Yes, not quite necessary. The original motivation is "netdev_features_t"
-can be return directly, and more  close to "A = B & C".
-I will change it to keep the style as bitmap_and.
-
->> +/* only be used for the first 64 bits features */
->> +static inline void netdev_features_set_bits(u64 bits, netdev_features_t *src)
-> Do we really want this special feature which only works for some
-> values? Does it clearly explode at compile time when used for bits
-> above 64?
-These special helpers for existing 64 bits are defined to reduce the work
-of defining features groups, and peoples may get used to for using
-featureA |  featureB | featureC.
-
-The main problem  is the compiler can't report error when mistake passing
-NETIF_F_XXX_BIT to   netdev_features_set_bits.
-
-So the solution is removing these helpers and the NETIF_F_XXX macroes ?
-
->>   {
->> -	return (addr & __NETIF_F_BIT(nr)) > 0;
->> +	netdev_features_t tmp;
->> +
->> +	bitmap_from_u64(tmp.bits, bits);
->> +	*src = netdev_features_or(*src, tmp);
->>   }
->> +static inline void netdev_set_active_features(struct net_device *netdev,
->> +					      netdev_features_t src)
->> +{
->> +	netdev->features = src;
->> +}
-> _active_ is new here?
-_active is used to differentiate "netdev_active_features_xxx" with 
-"netdev_features_xxx"
-
-
->> +static inline void netdev_set_hw_features(struct net_device *netdev,
->> +					  netdev_features_t src)
->> +{
->> +	netdev->hw_features = src;
->> +}
-> Here _hw_ makes sense. But i think we need some sort of
-> consistency. Either drop the _active_ from the function name, or
-> rename the netdev field active_features.
->
->         Andrew
-> .
-  I prefered to rename the netdev field active_features .
-
-
-Jian
->
+diff --git a/drivers/net/ethernet/ti/davinci_emac.c b/drivers/net/ethernet/ti/davinci_emac.c
+index e8291d8488391..a3a02c4e5eb68 100644
+--- a/drivers/net/ethernet/ti/davinci_emac.c
++++ b/drivers/net/ethernet/ti/davinci_emac.c
+@@ -417,46 +417,47 @@ static int emac_set_coalesce(struct net_device *ndev,
+ 			     struct netlink_ext_ack *extack)
+ {
+ 	struct emac_priv *priv = netdev_priv(ndev);
+-	u32 int_ctrl, num_interrupts = 0;
++	u32 int_ctrl = 0, num_interrupts = 0;
+ 	u32 prescale = 0, addnl_dvdr = 1, coal_intvl = 0;
+ 
+-	if (!coal->rx_coalesce_usecs)
+-		return -EINVAL;
+-
+ 	coal_intvl = coal->rx_coalesce_usecs;
+ 
+ 	switch (priv->version) {
+ 	case EMAC_VERSION_2:
+-		int_ctrl =  emac_ctrl_read(EMAC_DM646X_CMINTCTRL);
+-		prescale = priv->bus_freq_mhz * 4;
+-
+-		if (coal_intvl < EMAC_DM646X_CMINTMIN_INTVL)
+-			coal_intvl = EMAC_DM646X_CMINTMIN_INTVL;
+-
+-		if (coal_intvl > EMAC_DM646X_CMINTMAX_INTVL) {
+-			/*
+-			 * Interrupt pacer works with 4us Pulse, we can
+-			 * throttle further by dilating the 4us pulse.
+-			 */
+-			addnl_dvdr = EMAC_DM646X_INTPRESCALE_MASK / prescale;
+-
+-			if (addnl_dvdr > 1) {
+-				prescale *= addnl_dvdr;
+-				if (coal_intvl > (EMAC_DM646X_CMINTMAX_INTVL
+-							* addnl_dvdr))
+-					coal_intvl = (EMAC_DM646X_CMINTMAX_INTVL
+-							* addnl_dvdr);
+-			} else {
+-				addnl_dvdr = 1;
+-				coal_intvl = EMAC_DM646X_CMINTMAX_INTVL;
++		if (coal->rx_coalesce_usecs) {
++			int_ctrl =  emac_ctrl_read(EMAC_DM646X_CMINTCTRL);
++			prescale = priv->bus_freq_mhz * 4;
++
++			if (coal_intvl < EMAC_DM646X_CMINTMIN_INTVL)
++				coal_intvl = EMAC_DM646X_CMINTMIN_INTVL;
++
++			if (coal_intvl > EMAC_DM646X_CMINTMAX_INTVL) {
++				/*
++				 * Interrupt pacer works with 4us Pulse, we can
++				 * throttle further by dilating the 4us pulse.
++				 */
++				addnl_dvdr =
++					EMAC_DM646X_INTPRESCALE_MASK / prescale;
++
++				if (addnl_dvdr > 1) {
++					prescale *= addnl_dvdr;
++					if (coal_intvl > (EMAC_DM646X_CMINTMAX_INTVL
++								* addnl_dvdr))
++						coal_intvl = (EMAC_DM646X_CMINTMAX_INTVL
++								* addnl_dvdr);
++				} else {
++					addnl_dvdr = 1;
++					coal_intvl = EMAC_DM646X_CMINTMAX_INTVL;
++				}
+ 			}
+-		}
+ 
+-		num_interrupts = (1000 * addnl_dvdr) / coal_intvl;
++			num_interrupts = (1000 * addnl_dvdr) / coal_intvl;
++
++			int_ctrl |= EMAC_DM646X_INTPACEEN;
++			int_ctrl &= (~EMAC_DM646X_INTPRESCALE_MASK);
++			int_ctrl |= (prescale & EMAC_DM646X_INTPRESCALE_MASK);
++		}
+ 
+-		int_ctrl |= EMAC_DM646X_INTPACEEN;
+-		int_ctrl &= (~EMAC_DM646X_INTPRESCALE_MASK);
+-		int_ctrl |= (prescale & EMAC_DM646X_INTPRESCALE_MASK);
+ 		emac_ctrl_write(EMAC_DM646X_CMINTCTRL, int_ctrl);
+ 
+ 		emac_ctrl_write(EMAC_DM646X_CMRXINTMAX, num_interrupts);
+@@ -466,17 +467,21 @@ static int emac_set_coalesce(struct net_device *ndev,
+ 	default:
+ 		int_ctrl = emac_ctrl_read(EMAC_CTRL_EWINTTCNT);
+ 		int_ctrl &= (~EMAC_DM644X_EWINTCNT_MASK);
+-		prescale = coal_intvl * priv->bus_freq_mhz;
+-		if (prescale > EMAC_DM644X_EWINTCNT_MASK) {
+-			prescale = EMAC_DM644X_EWINTCNT_MASK;
+-			coal_intvl = prescale / priv->bus_freq_mhz;
++
++		if (coal->rx_coalesce_usecs) {
++			prescale = coal_intvl * priv->bus_freq_mhz;
++			if (prescale > EMAC_DM644X_EWINTCNT_MASK) {
++				prescale = EMAC_DM644X_EWINTCNT_MASK;
++				coal_intvl = prescale / priv->bus_freq_mhz;
++			}
+ 		}
++
+ 		emac_ctrl_write(EMAC_CTRL_EWINTTCNT, (int_ctrl | prescale));
+ 
+ 		break;
+ 	}
+ 
+-	printk(KERN_INFO"Set coalesce to %d usecs.\n", coal_intvl);
++	netdev_info(ndev, "Set coalesce to %d usecs.\n", coal_intvl);
+ 	priv->coal_intvl = coal_intvl;
+ 
+ 	return 0;
+-- 
+2.30.2
 
