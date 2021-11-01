@@ -2,116 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F777441FF2
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 19:22:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05827442009
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 19:29:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231903AbhKASYg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 14:24:36 -0400
-Received: from ink.ssi.bg ([178.16.128.7]:37455 "EHLO ink.ssi.bg"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231916AbhKASYe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Nov 2021 14:24:34 -0400
-Received: from ja.ssi.bg (unknown [178.16.129.10])
-        by ink.ssi.bg (Postfix) with ESMTPS id 8B0DA3C0332;
-        Mon,  1 Nov 2021 20:21:56 +0200 (EET)
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.16.1/8.16.1) with ESMTP id 1A1ILsOa006822;
-        Mon, 1 Nov 2021 20:21:54 +0200
-Date:   Mon, 1 Nov 2021 20:21:54 +0200 (EET)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     yangxingwu <xingwu.yang@gmail.com>
-cc:     Simon Horman <horms@verge.net.au>, pablo@netfilter.org,
-        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-doc@vger.kernel.org, Chuanqi Liu <legend050709@qq.com>
-Subject: Re: [PATCH nf-next v5] netfilter: ipvs: Fix reuse connection if RS
- weight is 0
-In-Reply-To: <20211101020416.31402-1-xingwu.yang@gmail.com>
-Message-ID: <ae67eb7b-a25f-57d3-195f-cdbd9247ef5b@ssi.bg>
-References: <20211101020416.31402-1-xingwu.yang@gmail.com>
+        id S231990AbhKAScO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 14:32:14 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:50866 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231916AbhKAScM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 14:32:12 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 1A1ITCNu043565;
+        Mon, 1 Nov 2021 13:29:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1635791352;
+        bh=i4SlabNeux/CJimAkQl7wJwhqnLKCYcOWMS9od/vzeY=;
+        h=From:To:CC:Subject:Date;
+        b=OVy0MGH0qJpsuETkkV0b4+dyA01znzuE02NmtzVacbw/BAmdLk49ftD1qqBQmVBim
+         8BTHCRKLBfkxXIjpgGMo/SqTuHqOCFilHhD49wHXEe/wjjPmbyJN3Go9mLuJyhkHNr
+         6BIDmRaxT8KPEkwf8NKLeC+67DS1Szccd0sL4RFM=
+Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 1A1ITCnZ000738
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 1 Nov 2021 13:29:12 -0500
+Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 1
+ Nov 2021 13:29:12 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 1 Nov 2021 13:29:12 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 1A1ITBl3073637;
+        Mon, 1 Nov 2021 13:29:11 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>
+CC:     <linux-kernel@vger.kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [RFC PATCH] net: phy/mdio: enable mmd indirect access through phy_mii_ioctl()
+Date:   Mon, 1 Nov 2021 20:28:59 +0200
+Message-ID: <20211101182859.24073-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch enables access to C22 PHY MMD address space through
+phy_mii_ioctl() SIOCGMIIREG/SIOCSMIIREG IOCTLs. It checks if R/W request is
+received with C45 flag enabled while MDIO bus doesn't support C45 and, in
+this case, tries to treat prtad as PHY MMD selector and use MMD API.
 
-	Hello,
+With this change it's possible to r/w PHY MMD registers with phytool, for
+example, before:
 
-On Mon, 1 Nov 2021, yangxingwu wrote:
+  phytool read eth0/0x1f:0/0x32
+  0xffea
 
-> We are changing expire_nodest_conn to work even for reused connections when
-> conn_reuse_mode=0, just as what was done with commit dc7b3eb900aa ("ipvs:
-> Fix reuse connection if real server is dead").
-> 
-> For controlled and persistent connections, the new connection will get the
-> needed real server depending on the rules in ip_vs_check_template().
-> 
-> Fixes: d752c3645717 ("ipvs: allow rescheduling of new connections when port reuse is detected")
-> Co-developed-by: Chuanqi Liu <legend050709@qq.com>
-> Signed-off-by: Chuanqi Liu <legend050709@qq.com>
-> Signed-off-by: yangxingwu <xingwu.yang@gmail.com>
+after:
+  phytool read eth0/0x1f:0/0x32
+  0x00d1
 
-	Looks good to me, thanks!
+This feature is very useful for various PHY issues debugging (now it's
+required to modify phy code to collect MMD regs dump).
 
-Acked-by: Julian Anastasov <ja@ssi.bg>
+The patch is marked as RFC as it possible that I've missed something and
+such feature already present in Kernel, but I just can't find it. 
+It also doesn't cover phylink.
 
-> ---
->  Documentation/networking/ipvs-sysctl.rst | 3 +--
->  net/netfilter/ipvs/ip_vs_core.c          | 8 ++++----
->  2 files changed, 5 insertions(+), 6 deletions(-)
-> 
-> diff --git a/Documentation/networking/ipvs-sysctl.rst b/Documentation/networking/ipvs-sysctl.rst
-> index 2afccc63856e..1cfbf1add2fc 100644
-> --- a/Documentation/networking/ipvs-sysctl.rst
-> +++ b/Documentation/networking/ipvs-sysctl.rst
-> @@ -37,8 +37,7 @@ conn_reuse_mode - INTEGER
->  
->  	0: disable any special handling on port reuse. The new
->  	connection will be delivered to the same real server that was
-> -	servicing the previous connection. This will effectively
-> -	disable expire_nodest_conn.
-> +	servicing the previous connection.
->  
->  	bit 1: enable rescheduling of new connections when it is safe.
->  	That is, whenever expire_nodest_conn and for TCP sockets, when
-> diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
-> index 128690c512df..f9d65d2c8da8 100644
-> --- a/net/netfilter/ipvs/ip_vs_core.c
-> +++ b/net/netfilter/ipvs/ip_vs_core.c
-> @@ -1964,7 +1964,6 @@ ip_vs_in(struct netns_ipvs *ipvs, unsigned int hooknum, struct sk_buff *skb, int
->  	struct ip_vs_proto_data *pd;
->  	struct ip_vs_conn *cp;
->  	int ret, pkts;
-> -	int conn_reuse_mode;
->  	struct sock *sk;
->  
->  	/* Already marked as IPVS request or reply? */
-> @@ -2041,15 +2040,16 @@ ip_vs_in(struct netns_ipvs *ipvs, unsigned int hooknum, struct sk_buff *skb, int
->  	cp = INDIRECT_CALL_1(pp->conn_in_get, ip_vs_conn_in_get_proto,
->  			     ipvs, af, skb, &iph);
->  
-> -	conn_reuse_mode = sysctl_conn_reuse_mode(ipvs);
-> -	if (conn_reuse_mode && !iph.fragoffs && is_new_conn(skb, &iph) && cp) {
-> +	if (!iph.fragoffs && is_new_conn(skb, &iph) && cp) {
->  		bool old_ct = false, resched = false;
-> +		int conn_reuse_mode = sysctl_conn_reuse_mode(ipvs);
->  
->  		if (unlikely(sysctl_expire_nodest_conn(ipvs)) && cp->dest &&
->  		    unlikely(!atomic_read(&cp->dest->weight))) {
->  			resched = true;
->  			old_ct = ip_vs_conn_uses_old_conntrack(cp, skb);
-> -		} else if (is_new_conn_expected(cp, conn_reuse_mode)) {
-> +		} else if (conn_reuse_mode &&
-> +			   is_new_conn_expected(cp, conn_reuse_mode)) {
->  			old_ct = ip_vs_conn_uses_old_conntrack(cp, skb);
->  			if (!atomic_read(&cp->n_control)) {
->  				resched = true;
-> -- 
-> 2.30.2
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+---
+ drivers/net/phy/phy-core.c | 32 ++++++++++++++++++++++++--------
+ drivers/net/phy/phy.c      | 29 ++++++++++++++++++++++++++---
+ include/linux/phy.h        |  2 ++
+ 3 files changed, 52 insertions(+), 11 deletions(-)
 
-Regards
+diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
+index 2870c33b8975..2c83a121a5fa 100644
+--- a/drivers/net/phy/phy-core.c
++++ b/drivers/net/phy/phy-core.c
+@@ -457,6 +457,28 @@ static void mmd_phy_indirect(struct mii_bus *bus, int phy_addr, int devad,
+ 			devad | MII_MMD_CTRL_NOINCR);
+ }
+ 
++int __mmd_phy_read(struct mii_bus *bus, int phy_addr, int devad, u32 regnum)
++{
++	int retval;
++
++	mmd_phy_indirect(bus, phy_addr, devad, regnum);
++
++	/* Read the content of the MMD's selected register */
++	retval = __mdiobus_read(bus, phy_addr, MII_MMD_DATA);
++
++	return retval;
++}
++
++int __mmd_phy_write(struct mii_bus *bus, int phy_addr, int devad, u32 regnum, u16 val)
++{
++	mmd_phy_indirect(bus, phy_addr, devad, regnum);
++
++	/* Write the data into MMD's selected register */
++	__mdiobus_write(bus, phy_addr, MII_MMD_DATA, val);
++
++	return 0;
++}
++
+ /**
+  * __phy_read_mmd - Convenience function for reading a register
+  * from an MMD on a given PHY.
+@@ -482,10 +504,7 @@ int __phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum)
+ 		struct mii_bus *bus = phydev->mdio.bus;
+ 		int phy_addr = phydev->mdio.addr;
+ 
+-		mmd_phy_indirect(bus, phy_addr, devad, regnum);
+-
+-		/* Read the content of the MMD's selected register */
+-		val = __mdiobus_read(bus, phy_addr, MII_MMD_DATA);
++		val = __mmd_phy_read(bus, phy_addr, devad, regnum);
+ 	}
+ 	return val;
+ }
+@@ -538,10 +557,7 @@ int __phy_write_mmd(struct phy_device *phydev, int devad, u32 regnum, u16 val)
+ 		struct mii_bus *bus = phydev->mdio.bus;
+ 		int phy_addr = phydev->mdio.addr;
+ 
+-		mmd_phy_indirect(bus, phy_addr, devad, regnum);
+-
+-		/* Write the data into MMD's selected register */
+-		__mdiobus_write(bus, phy_addr, MII_MMD_DATA, val);
++		__mmd_phy_write(bus, phy_addr, devad, regnum, val);
+ 
+ 		ret = 0;
+ 	}
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index a3bfb156c83d..212ec5954b95 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -300,8 +300,19 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
+ 			prtad = mii_data->phy_id;
+ 			devad = mii_data->reg_num;
+ 		}
+-		mii_data->val_out = mdiobus_read(phydev->mdio.bus, prtad,
+-						 devad);
++		if (mdio_phy_id_is_c45(mii_data->phy_id) &&
++		    phydev->mdio.bus->probe_capabilities <= MDIOBUS_C22) {
++			phy_lock_mdio_bus(phydev);
++
++			mii_data->val_out = __mmd_phy_read(phydev->mdio.bus,
++							   mdio_phy_id_devad(mii_data->phy_id),
++							   prtad,
++							   mii_data->reg_num);
++
++			phy_unlock_mdio_bus(phydev);
++		} else {
++			mii_data->val_out = mdiobus_read(phydev->mdio.bus, prtad, devad);
++		}
+ 		return 0;
+ 
+ 	case SIOCSMIIREG:
+@@ -351,7 +362,19 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
+ 			}
+ 		}
+ 
+-		mdiobus_write(phydev->mdio.bus, prtad, devad, val);
++		if (mdio_phy_id_is_c45(mii_data->phy_id) &&
++		    phydev->mdio.bus->probe_capabilities <= MDIOBUS_C22) {
++			phy_lock_mdio_bus(phydev);
++
++			__mmd_phy_write(phydev->mdio.bus, mdio_phy_id_devad(mii_data->phy_id),
++					prtad,
++					mii_data->reg_num,
++					val);
++
++			phy_unlock_mdio_bus(phydev);
++		} else {
++			mdiobus_write(phydev->mdio.bus, prtad, devad, val);
++		}
+ 
+ 		if (prtad == phydev->mdio.addr &&
+ 		    devad == MII_BMCR &&
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 96e43fbb2dd8..f6032c1708e6 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1114,12 +1114,14 @@ int phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum);
+  * from an MMD on a given PHY.
+  */
+ int __phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum);
++int __mmd_phy_read(struct mii_bus *bus, int phy_addr, int devad, u32 regnum);
+ 
+ /*
+  * phy_write_mmd - Convenience function for writing a register
+  * on an MMD on a given PHY.
+  */
+ int phy_write_mmd(struct phy_device *phydev, int devad, u32 regnum, u16 val);
++int __mmd_phy_write(struct mii_bus *bus, int phy_addr, int devad, u32 regnum, u16 val);
+ 
+ /*
+  * __phy_write_mmd - Convenience function for writing a register
+-- 
+2.17.1
 
---
-Julian Anastasov <ja@ssi.bg>
