@@ -2,125 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2285441D64
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 16:24:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52B3C441D8C
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 16:45:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232390AbhKAP1D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 11:27:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41076 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231362AbhKAP1C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 11:27:02 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ABBFC061714;
-        Mon,  1 Nov 2021 08:24:29 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id x27so37039926lfu.5;
-        Mon, 01 Nov 2021 08:24:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eZYI9uvVCBQKgTkq4oCfUYzQKc9GNXcLcsMzBPkU+Jo=;
-        b=Ff8Uyco99hJdLYLNs92twSEltGW3VCt6x4imDGEVsjD9YsLYlRI3ipQRGX3pdTLiIW
-         ac9yHLcnnIg1RmgEEOSCfscFaDuWRQIxiG9IpfBbNVcEc/5Cn73WmX/4moJIPO1Yzdq6
-         A7xPFs0Nql1o6GYgkzoAl3JvfeorDTdd7hNr3GXCqmtUmKNY1LGeGOOETA0Z9rQTrcVa
-         gpaltMVZlfJv8HEInOP83QlqQec97LZpn7bsT0NXk3YMcFk/yTcS/D/3hgeqdVvgNbq4
-         +0AvL5Of5lUSRycpbQHaDzYNsqgL1zOWHBlJHV/xR08q0nCLrHQh57ogkycd0GWkY0ek
-         t/aA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eZYI9uvVCBQKgTkq4oCfUYzQKc9GNXcLcsMzBPkU+Jo=;
-        b=Ln3bXKacRGuRbHKFwoUUvApC1qwHbvE9a2QgiGZJpGTXQQWrWe4bZZ8uu8hySKZW+h
-         B9cb+pACWEGATUov8G6ruvKg210MA3z63HJmX2/NEQMX9qNlaJZ3KCUCFGWDzqTuHEcT
-         C1NO0jd6y+77OXh1XWLan60NQSL7G2P5wS2j7TWdLVwIwRIi+9LzcdFHyh3AFX0Dc2nk
-         u6NWbDDFyt+jdsp5f3k0IGHHVSi2Z/bCN2gt0XKQm5Qm1isFnApTXcm9YquXoIY6t3SA
-         7A1QRNiA30GcaxQm5dmgkHOQxrgpaJH//JzzGtgankunt/Huypapd6stRRsasRGNnncb
-         AgRw==
-X-Gm-Message-State: AOAM532dTQZMobYZeuVs94XC16yAA6BPSQci6/ZijGnivXWx1j3k2kgm
-        NUsD5qBXg5g08W3vfTmpJ2g=
-X-Google-Smtp-Source: ABdhPJzHP4sMx5IKHpr2iQftrF/pxi/OdPIm1znDmR/jbsswl1m/wNyEPz+g6A4TqWqsYls7c/ZCPQ==
-X-Received: by 2002:a05:6512:2609:: with SMTP id bt9mr28820959lfb.202.1635780267466;
-        Mon, 01 Nov 2021 08:24:27 -0700 (PDT)
-Received: from localhost.localdomain ([185.6.236.169])
-        by smtp.googlemail.com with ESMTPSA id t12sm1436052lfc.55.2021.11.01.08.24.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Nov 2021 08:24:26 -0700 (PDT)
-From:   Maxim Kiselev <bigunclemax@gmail.com>
-Cc:     Maxim Kiselev <bigunclemax@gmail.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Colin Ian King <colin.king@canonical.com>,
-        Yufeng Mo <moyufeng@huawei.com>,
-        Michael Walle <michael@walle.cc>, Sriram <srk@ti.com>,
-        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] net: davinci_emac: Fix interrupt pacing disable
-Date:   Mon,  1 Nov 2021 18:23:41 +0300
-Message-Id: <20211101152343.4193233-1-bigunclemax@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        id S232619AbhKAPrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 11:47:32 -0400
+Received: from www62.your-server.de ([213.133.104.62]:41768 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229658AbhKAPrc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 11:47:32 -0400
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mhZUS-000Eo3-QG; Mon, 01 Nov 2021 16:44:52 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mhZUS-0002JX-DH; Mon, 01 Nov 2021 16:44:52 +0100
+Subject: Re: [PATCH bpf-next v3] bpf: Change value of MAX_TAIL_CALL_CNT from
+ 32 to 33
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, illusionist.neo@gmail.com,
+        zlim.lnx@gmail.com, naveen.n.rao@linux.ibm.com,
+        luke.r.nels@gmail.com, xi.wang@gmail.com, bjorn@kernel.org,
+        iii@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        udknight@gmail.com, davem@davemloft.net
+References: <1635508430-2918-1-git-send-email-yangtiezhu@loongson.cn>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <f80b4756-8e74-6ee8-c367-30f8d2771bfb@iogearbox.net>
+Date:   Mon, 1 Nov 2021 16:44:51 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+In-Reply-To: <1635508430-2918-1-git-send-email-yangtiezhu@loongson.cn>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26340/Mon Nov  1 09:21:46 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch allows to use 0 for `coal->rx_coalesce_usecs` param to
-disable rx irq coalescing.
+On 10/29/21 1:53 PM, Tiezhu Yang wrote:
+[...]
+> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> index b6c72af..6d10292 100644
+> --- a/kernel/bpf/core.c
+> +++ b/kernel/bpf/core.c
+> @@ -1565,7 +1565,8 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
+>   
+>   		if (unlikely(index >= array->map.max_entries))
+>   			goto out;
+> -		if (unlikely(tail_call_cnt > MAX_TAIL_CALL_CNT))
+> +
+> +		if (unlikely(tail_call_cnt == MAX_TAIL_CALL_CNT))
+>   			goto out;
+>   
 
-Previously we could enable rx irq coalescing via ethtool
-(For ex: `ethtool -C eth0 rx-usecs 2000`) but we couldn't disable
-it because this part rejects 0 value:
-
-       if (!coal->rx_coalesce_usecs)
-               return -EINVAL;
-
-Fixes: 84da2658a619 ("TI DaVinci EMAC : Implement interrupt pacing
-functionality.")
-
-Signed-off-by: Maxim Kiselev <bigunclemax@gmail.com>
-Reviewed-by: Grygorii Strashko <grygorii.strashko@ti.com>
----
-Changes v1 -> v2 (after review of Grygorii Strashko):
-
- - Simplify !coal->rx_coalesce_usecs handler
-
----
- drivers/net/ethernet/ti/davinci_emac.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/ti/davinci_emac.c b/drivers/net/ethernet/ti/davinci_emac.c
-index e8291d8488391..d243ca5dfde00 100644
---- a/drivers/net/ethernet/ti/davinci_emac.c
-+++ b/drivers/net/ethernet/ti/davinci_emac.c
-@@ -420,8 +420,20 @@ static int emac_set_coalesce(struct net_device *ndev,
- 	u32 int_ctrl, num_interrupts = 0;
- 	u32 prescale = 0, addnl_dvdr = 1, coal_intvl = 0;
- 
--	if (!coal->rx_coalesce_usecs)
--		return -EINVAL;
-+	if (!coal->rx_coalesce_usecs) {
-+		priv->coal_intvl = 0;
-+
-+		switch (priv->version) {
-+		case EMAC_VERSION_2:
-+			emac_ctrl_write(EMAC_DM646X_CMINTCTRL, 0);
-+			break;
-+		default:
-+			emac_ctrl_write(EMAC_CTRL_EWINTTCNT, 0);
-+			break;
-+		}
-+
-+		return 0;
-+	}
- 
- 	coal_intvl = coal->rx_coalesce_usecs;
- 
--- 
-2.30.2
-
+Why making it less robust by going with == rather than >= ?
