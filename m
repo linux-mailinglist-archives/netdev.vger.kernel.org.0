@@ -2,133 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 180A24420F4
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 20:36:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EABEA4420E0
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 20:34:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230451AbhKATiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 15:38:52 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:28556 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229727AbhKATiv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 15:38:51 -0400
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1A1H08gA006473;
-        Mon, 1 Nov 2021 19:35:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=kXePD+qqqYTgoF8z1fx/eiS4ZCl18A8ptJ5MKVYftE0=;
- b=Nu7mN6fVUx34eNDoJgvHqY1BeAqTq2xGcqudAaeoCvnu5lRzffN8kOOOubclR7UyicEa
- gCRFmBHIXOUCcWvSiDvPwoGxi1U+MFuK8jyWAQh5oRwRAKUuVkRydyzg1A30vw9X0+qV
- 9l4dcB0ZvDqt6dbCkkDpb/TtjCe0+O2LxID92w3nYRM3OELYMBg05nRriCnlC9p4nd7G
- Rn0i6MN80T46Gs7Oy5oPG2WUsWefFj3sAxIeAwRouH8TUki0FFDfbC4bkLIwPpKKrwvE
- n+44LkGkUgEOqlbpVw7ouc5WIBIyf5gaE0mAbTvZ2h0eRT7fD1RWJUo6hOBh0o6UdQbF QQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3c2ht3pcug-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 01 Nov 2021 19:35:50 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1A1JVadf005819;
-        Mon, 1 Nov 2021 19:35:49 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3c2ht3pcta-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 01 Nov 2021 19:35:49 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1A1JMeXh010962;
-        Mon, 1 Nov 2021 19:30:46 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma01fra.de.ibm.com with ESMTP id 3c0wp9m3hx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 01 Nov 2021 19:30:46 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1A1JOP0m63635914
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 1 Nov 2021 19:24:25 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 65FD352054;
-        Mon,  1 Nov 2021 19:30:44 +0000 (GMT)
-Received: from [9.171.58.152] (unknown [9.171.58.152])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 3BC9B5204E;
-        Mon,  1 Nov 2021 19:30:43 +0000 (GMT)
-Message-ID: <d6cd47b1-3b46-fc44-3a8d-b2444af527e6@linux.ibm.com>
-Date:   Mon, 1 Nov 2021 20:30:42 +0100
+        id S229727AbhKATgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 15:36:42 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:41864 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229511AbhKATgk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Nov 2021 15:36:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=8x/WQ9gVs8Xb1wXlf+BUiBeF7va4QTCMKiyuXcRdSQI=; b=44Veb7J9Vn7x0tAwe5nqK3s0HM
+        nr9tWRakPFkXJxDEzEd/mYy41LSNOW/zPk9ztkmxd5uAb0JvX8j5fF6OQl8p5fskKeJTAqMPL08On
+        kcIOtq2x4Nwv0v/fRFNxUqaFCrpBKQtgI+TVhfTcAmj1hRolo9lYyLsaIBa0x2VXreSo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mhd42-00CKZd-Ps; Mon, 01 Nov 2021 20:33:50 +0100
+Date:   Mon, 1 Nov 2021 20:33:50 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-kernel@vger.kernel.org, Vignesh Raghavendra <vigneshr@ti.com>
+Subject: Re: [RFC PATCH] net: phy/mdio: enable mmd indirect access through
+ phy_mii_ioctl()
+Message-ID: <YYBBHsFEwGdPJw3b@lunn.ch>
+References: <20211101182859.24073-1-grygorii.strashko@ti.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Subject: Re: [PATCH -next] bonding: Fix a use-after-free problem when
- bond_sysfs_slave_add() failed
-Content-Language: en-US
-To:     Huang Guobin <huangguobin4@huawei.com>, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1635777273-46028-1-git-send-email-huangguobin4@huawei.com>
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-In-Reply-To: <1635777273-46028-1-git-send-email-huangguobin4@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: rwpKu5KL9-f1RaFHV_KnVsb53ENLew8u
-X-Proofpoint-GUID: r7mjF3b7DU9HfBwWvSSov86N6XVq2qWN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-11-01_07,2021-11-01_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- priorityscore=1501 mlxscore=0 lowpriorityscore=0 malwarescore=0
- adultscore=0 phishscore=0 bulkscore=0 spamscore=0 suspectscore=0
- mlxlogscore=999 clxscore=1011 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2110150000 definitions=main-2111010104
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211101182859.24073-1-grygorii.strashko@ti.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01.11.21 15:34, Huang Guobin wrote:
-> When I do fuzz test for bonding device interface, I got the following
-> use-after-free Calltrace:
-> 
+On Mon, Nov 01, 2021 at 08:28:59PM +0200, Grygorii Strashko wrote:
+> This patch enables access to C22 PHY MMD address space through
 
-[...]
+I'm not sure the terminology is correct here. I think it actually
+enables access to C45 address space, making use of C45 over C22.
 
-> Fixes: 7afcaec49696 (bonding: use kobject_put instead of _del after kobject_add)
-> Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
-> ---
->  drivers/net/bonding/bond_sysfs_slave.c | 11 ++++++++---
->  1 file changed, 8 insertions(+), 3 deletions(-)
+> phy_mii_ioctl() SIOCGMIIREG/SIOCSMIIREG IOCTLs. It checks if R/W request is
+> received with C45 flag enabled while MDIO bus doesn't support C45 and, in
+> this case, tries to treat prtad as PHY MMD selector and use MMD API.
 > 
-> diff --git a/drivers/net/bonding/bond_sysfs_slave.c b/drivers/net/bonding/bond_sysfs_slave.c
-> index fd07561..d1a5b3f 100644
-> --- a/drivers/net/bonding/bond_sysfs_slave.c
-> +++ b/drivers/net/bonding/bond_sysfs_slave.c
-> @@ -137,18 +137,23 @@ static ssize_t slave_show(struct kobject *kobj,
->  
->  int bond_sysfs_slave_add(struct slave *slave)
->  {
-> -	const struct slave_attribute **a;
-> +	const struct slave_attribute **a, **b;
->  	int err;
->  
->  	for (a = slave_attrs; *a; ++a) {
->  		err = sysfs_create_file(&slave->kobj, &((*a)->attr));
->  		if (err) {
-> -			kobject_put(&slave->kobj);
-> -			return err;
-> +			goto err_remove_file;
+> With this change it's possible to r/w PHY MMD registers with phytool, for
+> example, before:
+> 
+>   phytool read eth0/0x1f:0/0x32
+>   0xffea
+> 
+> after:
+>   phytool read eth0/0x1f:0/0x32
+>   0x00d1
+> @@ -300,8 +300,19 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
+>  			prtad = mii_data->phy_id;
+>  			devad = mii_data->reg_num;
 >  		}
->  	}
->  
->  	return 0;
+> -		mii_data->val_out = mdiobus_read(phydev->mdio.bus, prtad,
+> -						 devad);
+> +		if (mdio_phy_id_is_c45(mii_data->phy_id) &&
+> +		    phydev->mdio.bus->probe_capabilities <= MDIOBUS_C22) {
+> +			phy_lock_mdio_bus(phydev);
 > +
-> +err_remove_file:
-> +	for (b = slave_attrs; b < a; ++b)
-> +		sysfs_remove_file(&slave->kobj, &((*b)->attr));
+> +			mii_data->val_out = __mmd_phy_read(phydev->mdio.bus,
+> +							   mdio_phy_id_devad(mii_data->phy_id),
+> +							   prtad,
+> +							   mii_data->reg_num);
 > +
-> +	return err;
->  }
->  
+> +			phy_unlock_mdio_bus(phydev);
+> +		} else {
+> +			mii_data->val_out = mdiobus_read(phydev->mdio.bus, prtad, devad);
+> +		}
 
-This looks like a candidate for sysfs_create_files(), no?
+The layering look wrong here. You are trying to perform MDIO bus
+operation here, so it seems odd to perform __mmd_phy_read(). I wonder
+if it would be cleaner to move C45 over C22 down into the mdiobus_
+level API?
 
->  void bond_sysfs_slave_del(struct slave *slave)
-> 
-
+      Andrew
