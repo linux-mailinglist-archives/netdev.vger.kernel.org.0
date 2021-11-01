@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9E57441BC9
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 14:37:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64675441BDB
+	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 14:40:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232006AbhKANji (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 09:39:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55008 "EHLO mail.kernel.org"
+        id S232289AbhKANmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 09:42:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55672 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231867AbhKANjh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Nov 2021 09:39:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 7C2AD610A2;
-        Mon,  1 Nov 2021 13:30:08 +0000 (UTC)
+        id S232323AbhKANml (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Nov 2021 09:42:41 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id A9C3161051;
+        Mon,  1 Nov 2021 13:40:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635773408;
-        bh=Iz6auN8gbtJOpyYFD4BZiDgoen1ATD6b9AkJq/feGnk=;
+        s=k20201202; t=1635774008;
+        bh=cQmBYeNBc2IM8+16lz28v3iVZb2qnxjRj1wy6vfXPno=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HIHPQh+vPsNoZYqMB4paoNJEOKIgKqTrxOGvjqLwcldECX8akpem4xcC7dybTR8XL
-         kWzJ60SWkfW139S6vOwVEO0eUTeDV7HC0n5y5eMp3MVj56nbcMOtLRAn2lQVS4ZplS
-         tuYItw6IWPX3cvBC0OZIa3jkBwfTTFX2y9GW8lD6VJq69LbNkJGumLHZrAKCz1H/2a
-         hc9uAbuvAVMOa/54RkyW9MBJpPJxfgMIpTdjD0xNlO9M4MYf7wtWUUab2CuKND3Y7Q
-         W7BSTDyygS1G5Xb7dHJlKqPfIU/h0ng5wBkpnVaQdx7W37Ecs7DN7QLScNma59J0tF
-         GTO75l2A79oaw==
+        b=kHOmdnuluCFGl6SGbVZUg2rjP7gJqzHOnJ3cuprSItznccVzy8c2C9zr3GnYzGVE5
+         modt5th23xqRE1ToLj3jlw9Xn3eHZ2+7dIKcPX3OgszL3C9nN6d7zd6AkKlKfhpuGg
+         kIedmnibExMtKDdc45S5tpe4KWE3oMq1Ek1qoeAoeBEhrELyweLws39N+L0kwfaQbH
+         lbfKexy/a0efGKBsC7Ajk0FzNEzykauBNEDKfzq7z8DwCXheCIeuXb4lmWUmU+w7mA
+         FYfY8rvuRtg+iQnc8/a2Yc/6Awxv66FNDagiwhjg6RNcV57hcuchpS1q5hUyC4Qbdb
+         sNCucqKnlSOUA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 64C5F60A94;
-        Mon,  1 Nov 2021 13:30:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9914C60A94;
+        Mon,  1 Nov 2021 13:40:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/4] improve ethtool/rtnl vs devlink locking
+Subject: Re: [PATCH net-next v2 0/5] netdevsim: improve separation between device
+ and bus
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163577340840.3113.1602919922827934638.git-patchwork-notify@kernel.org>
-Date:   Mon, 01 Nov 2021 13:30:08 +0000
-References: <20211030171851.1822583-1-kuba@kernel.org>
-In-Reply-To: <20211030171851.1822583-1-kuba@kernel.org>
+Message-Id: <163577400862.7648.12142216089187411154.git-patchwork-notify@kernel.org>
+Date:   Mon, 01 Nov 2021 13:40:08 +0000
+References: <20211030231505.2478149-1-kuba@kernel.org>
+In-Reply-To: <20211030231505.2478149-1-kuba@kernel.org>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, jiri@resnulli.us,
-        leon@kernel.org, mkubecek@suse.cz, andrew@lunn.ch,
-        f.fainelli@gmail.com
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,26 +47,31 @@ Hello:
 This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Sat, 30 Oct 2021 10:18:47 -0700 you wrote:
-> During ethtool netlink development we decided to move some of
-> the commmands to devlink. Since we don't want drivers to implement
-> both devlink and ethtool version of the commands ethtool ioctl
-> falls back to calling devlink. Unfortunately devlink locks must
-> be taken before rtnl_lock. This results in a questionable
-> dev_hold() / rtnl_unlock() / devlink / rtnl_lock() / dev_put()
-> pattern.
+On Sat, 30 Oct 2021 16:15:00 -0700 you wrote:
+> VF config falls strangely in between device and bus
+> responsibilities today. Because of this bus.c sticks fingers
+> directly into struct nsim_dev and we look at nsim_bus_dev
+> in many more places than necessary.
+> 
+> Make bus.c contain pure interface code, and move
+> the particulars of the logic (which touch on eswitch,
+> devlink reloads etc) to dev.c. Rename the functions
+> at the boundary of the interface to make the separation
+> clearer.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v2,1/4] ethtool: push the rtnl_lock into dev_ethtool()
-    https://git.kernel.org/netdev/net-next/c/f49deaa64af1
-  - [net-next,v2,2/4] ethtool: handle info/flash data copying outside rtnl_lock
-    https://git.kernel.org/netdev/net-next/c/095cfcfe13e5
-  - [net-next,v2,3/4] devlink: expose get/put functions
-    https://git.kernel.org/netdev/net-next/c/46db1b77cd4f
-  - [net-next,v2,4/4] ethtool: don't drop the rtnl_lock half way thru the ioctl
-    https://git.kernel.org/netdev/net-next/c/1af0a0948e28
+  - [net-next,v2,1/5] netdevsim: take rtnl_lock when assigning num_vfs
+    https://git.kernel.org/netdev/net-next/c/26c37d89f61d
+  - [net-next,v2,2/5] netdevsim: move vfconfig to nsim_dev
+    https://git.kernel.org/netdev/net-next/c/5e388f3dc38c
+  - [net-next,v2,3/5] netdevsim: move details of vf config to dev
+    https://git.kernel.org/netdev/net-next/c/1c401078bcf3
+  - [net-next,v2,4/5] netdevsim: move max vf config to dev
+    https://git.kernel.org/netdev/net-next/c/a3353ec32554
+  - [net-next,v2,5/5] netdevsim: rename 'driver' entry points
+    https://git.kernel.org/netdev/net-next/c/a66f64b80815
 
 You are awesome, thank you!
 -- 
