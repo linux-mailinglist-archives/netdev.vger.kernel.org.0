@@ -2,100 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B766442376
-	for <lists+netdev@lfdr.de>; Mon,  1 Nov 2021 23:33:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D54F4423AB
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 00:02:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232227AbhKAWfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 18:35:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40532 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230407AbhKAWfu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Nov 2021 18:35:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E128560E9C;
-        Mon,  1 Nov 2021 22:33:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635805996;
-        bh=QSOg14zJ7564Ds7UcOROZkmDP61KqIEGNfcLXTYnNLQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=DCLP8hScJ+WV4gOKF9pHgDcWWXFzpv0cTrjMrwIymdEl4iDuyaJ17V0J6lAOvDSbp
-         ZUL0MPXxqmm0SQqMBWI5YlLCYxBeOmlNp76LL8YWNB2Oa7oAiFf2CQvttCh7B2Tlig
-         4Hp4SHTQoe7dyrkTnNufBt1klwAomJk1j5A6rROFjNB0LWVcFjVd0ygckPW2C3nb/k
-         yEBqnEi6Y8XotE5WKsX7ppBsYvZTkvbFnCDR9WxywOzJpy2n7S6sOHR3ZgRwEh2Yfc
-         EdgB2aZTeuLY99ZNVcMDPdLH2p/4OWO6U03bS3T8ptkR6+grjbbiaw4IpKrSHmzAVw
-         1+8D9HrhethBA==
-Date:   Mon, 1 Nov 2021 17:33:14 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Dongdong Liu <liudongdong3@huawei.com>
-Cc:     hch@infradead.org, logang@deltatee.com, leon@kernel.org,
-        linux-pci@vger.kernel.org, rajur@chelsio.com,
-        hverkuil-cisco@xs4all.nl, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH V11 7/8] PCI: Enable 10-Bit Tag support for PCIe Endpoint
- device
-Message-ID: <20211101223314.GA557567@bhelgaas>
+        id S232359AbhKAXF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 19:05:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229618AbhKAXF1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 19:05:27 -0400
+Received: from mail-ua1-x936.google.com (mail-ua1-x936.google.com [IPv6:2607:f8b0:4864:20::936])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 634F4C061714
+        for <netdev@vger.kernel.org>; Mon,  1 Nov 2021 16:02:53 -0700 (PDT)
+Received: by mail-ua1-x936.google.com with SMTP id b3so10942377uam.1
+        for <netdev@vger.kernel.org>; Mon, 01 Nov 2021 16:02:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ri3QvIoL0Xe7eiVrSIf1ef7CY78Kkt5tzf6nCUl2RkQ=;
+        b=Whh3qBjhddGxX0QnCft+XUHDm0GqNYRpD+93dmFtJPjjuzlMFhcnRbIHZSSh0PsAFA
+         OZlnoBgSS7jpmeFNjcMfJ4zaWwuO9R9zf4vWssNMDvdv460Nyp8BSmJYucW/mhI5nWln
+         XW7Hoazqpi3OpoEkcMCxmioVHZ3HnGLhtQ+f0rPLM5Sc7vx5Ltq6tiGWF4+RmQjAJkcD
+         TO7FLuUL0kE+H3GPq79HdQOemT7j3xODQr4sQmWlW3gRgKtUrcuIarYNoyKM3QtW76FR
+         BiMC9kPmBlrQH2P/23FBeHOcq2RS2LY9+zBNM24BxKwi0oXXr04ub0puxBIadjMqN8jN
+         b3Xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ri3QvIoL0Xe7eiVrSIf1ef7CY78Kkt5tzf6nCUl2RkQ=;
+        b=ak954ZaNHofU61Y+JByGR8JlPlo32eAhgk6J88rdePuAErHAOPUV85QUE7AHokPBqd
+         cNjhZAyTcoSziV3xsngE0oBjWvOn4+VkKDOBjZfmA5EkW6pVjGOPsk1QxZxVKOl23Bnu
+         e+85EqS2PAye67b105FzPWmpW3n2D4POr5mqS+IA3b6xGHBGwcq5bsipjmsZACvutjxW
+         fsasdxU33lKUjPLh0BqY6+QaIdK4iwJzaHEf3wnwlLKKkLKnnRc9rgw2p0JqfaVdrAYa
+         c0MUit5bCkyM+og+1D0z8clOIhu9ldWxP0VBGRKaR/GhQEsb1L+x1arb4kqx7qMukXKd
+         DZFQ==
+X-Gm-Message-State: AOAM533ddlGF2J6cEv05D+qMYliuwvkHDFXbliJad5AmB72W0IjGCrCu
+        TNno9X+FhTA0zveXal3TXGtVSoN4EDQ=
+X-Google-Smtp-Source: ABdhPJw2iKUfFGYj5XshWqp1HlDU/Tx4+f+dVagdPlKqd8UKv5hgEUhMChb3vuWnqg0l0LsOQszV1g==
+X-Received: by 2002:ab0:3d07:: with SMTP id f7mr10728764uax.11.1635807772539;
+        Mon, 01 Nov 2021 16:02:52 -0700 (PDT)
+Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com. [209.85.222.46])
+        by smtp.gmail.com with ESMTPSA id j133sm2266980vke.47.2021.11.01.16.02.51
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 01 Nov 2021 16:02:51 -0700 (PDT)
+Received: by mail-ua1-f46.google.com with SMTP id e2so34625288uax.7
+        for <netdev@vger.kernel.org>; Mon, 01 Nov 2021 16:02:51 -0700 (PDT)
+X-Received: by 2002:a05:6102:1612:: with SMTP id cu18mr27229906vsb.49.1635807771319;
+ Mon, 01 Nov 2021 16:02:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211101220239.GA554641@bhelgaas>
+References: <20211101040609.127729-1-liuhangbin@gmail.com> <20211101040609.127729-5-liuhangbin@gmail.com>
+In-Reply-To: <20211101040609.127729-5-liuhangbin@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 1 Nov 2021 19:02:14 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSesPTGL7B9MOGgb_9Xni9ni_1pDeS+Dm9=vUu1j6GT_qg@mail.gmail.com>
+Message-ID: <CA+FuTSesPTGL7B9MOGgb_9Xni9ni_1pDeS+Dm9=vUu1j6GT_qg@mail.gmail.com>
+Subject: Re: [PATCH net 4/5] kselftests/net: add missed toeplitz.sh/toeplitz_client.sh
+ to Makefile
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>,
+        Coco Li <lixiaoyan@google.com>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Paolo Abeni <pabeni@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 01, 2021 at 05:02:41PM -0500, Bjorn Helgaas wrote:
-> On Sat, Oct 30, 2021 at 09:53:47PM +0800, Dongdong Liu wrote:
-> > 10-Bit Tag capability, introduced in PCIe-4.0 increases the total Tag
-> > field size from 8 bits to 10 bits.
-> > 
-> > PCIe spec 5.0 r1.0 section 2.2.6.2 "Considerations for Implementing
-> > 10-Bit Tag Capabilities" Implementation Note:
-> > 
-> >   For platforms where the RC supports 10-Bit Tag Completer capability,
-> >   it is highly recommended for platform firmware or operating software
-> >   that configures PCIe hierarchies to Set the 10-Bit Tag Requester Enable
-> >   bit automatically in Endpoints with 10-Bit Tag Requester capability.
-> >   This enables the important class of 10-Bit Tag capable adapters that
-> >   send Memory Read Requests only to host memory.
-> > 
-> > It's safe to enable 10-bit tags for all devices below a Root Port that
-> > supports them. Switches that lack 10-Bit Tag Completer capability are
-> > still able to forward NPRs and Completions carrying 10-Bit Tags correctly,
-> > since the two new Tag bits are in TLP Header bits that were formerly
-> > Reserved.
-> 
-> Side note: the reason we want to do this to increase performance by
-> allowing more outstanding requests.  Do you have any benchmarking that
-> we can mention here to show that this is actually a benefit?  I don't
-> doubt that it is, but I assume you've measured it and it would be nice
-> to advertise it.
+On Mon, Nov 1, 2021 at 12:06 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
+>
+> When generating the selftests to another folder, the toeplitz.sh
+> and toeplitz_client.sh are missing as they are not in Makefile, e.g.
+>
+>   make -C tools/testing/selftests/ install \
+>       TARGETS="net" INSTALL_PATH=/tmp/kselftests
+>
+> Fixes: 5ebfb4cc3048 ("selftests/net: toeplitz test")
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> ---
+>  tools/testing/selftests/net/Makefile | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+> index 8a6264da5276..514bbed80e68 100644
+> --- a/tools/testing/selftests/net/Makefile
+> +++ b/tools/testing/selftests/net/Makefile
+> @@ -31,7 +31,9 @@ TEST_PROGS += gre_gso.sh
+>  TEST_PROGS += srv6_end_dt46_l3vpn_test.sh
+>  TEST_PROGS += srv6_end_dt4_l3vpn_test.sh
+>  TEST_PROGS += srv6_end_dt6_l3vpn_test.sh
+> +TEST_PROGS += toeplitz.sh
+>  TEST_PROGS_EXTENDED := in_netns.sh setup_loopback.sh setup_veth.sh
+> +TEST_PROGS_EXTENDED += toeplitz_client.sh
 
-Hmmm.  I did a quick Google search looking for "nvme pcie 10-bit tags"
-hoping to find some performance info, but what I *actually* found was
-several reports of 10-bit tags causing breakage:
+Thanks for adding the files. They are indeed missing.
 
-  https://www.reddit.com/r/MSI_Gaming/comments/exjvzg/x570_apro_7c37vh72beta_version_has_anyone_tryed_it/
-  https://rog.asus.com/forum/showthread.php?115064-Beware-of-agesa-1-0-0-4B-bios-not-good!/page2
-  https://forum-en.msi.com/index.php?threads/sound-blaster-z-has-weird-behaviour-after-updating-bios-x570-gaming-edge-wifi.325223/page-2
-  https://gearspace.com/board/electronic-music-instruments-and-electronic-music-production/1317189-h8000fw-firewire-facts-2020-must-read.html
-  https://www.soundonsound.com/forum/viewtopic.php?t=69651&start=12
-  https://forum.rme-audio.de/viewtopic.php?id=30307
-
-This is a big problem for me.
-
-Some of these might be a broken BIOS that turns on 10-bit tags when
-the completer doesn't support them.  I didn't try to debug them to
-that level.  But the last thing I want is to enable 10-bit by default
-and cause boot issues or sound card issues or whatever.
-
-I'm pretty sure this is a show-stopper for wedging this into v5.16 at
-this late date.  It's conceivable we could still do it if everything
-defaulted to "off" and we had a knob whereby users could turn it on
-via boot param or sysfs.
-
-In any case, we (by which I'm afraid I mean "you" :)) need to
-investigate the problem reports, figure out whether we will see
-similar problems, and fix them before merging if we can.
-
-Thanks to Krzysztof for pointing out the potential for issues like
-this.
-
-Bjorn
+But they are not intended to be run from kselftests, as this tests nic
+hardware features. So both files should be under TEST_PROGS_EXTENDED?
