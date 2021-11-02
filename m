@@ -2,71 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BD5944318B
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 16:24:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25C364431B0
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 16:27:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234347AbhKBP1W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 11:27:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52480 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231721AbhKBP1V (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Nov 2021 11:27:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 5DBF860EB4;
-        Tue,  2 Nov 2021 15:24:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635866686;
-        bh=UkpnBxxnc0JtmGTSu3z4d5IPFChohRwK9zXw9/D5//8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=T6WbKjGe62eEw6373Iq4w0EneZg+7aRMclMiisVu0hogNu0JoLBGx+3VdiagZgyKG
-         SOD27nwjRd0PLh21NZCJX4nR0rVrXoHd8NqnD1adeglqgyqas9qyIakWDCzqNAj9UE
-         aiWa1X1PnhwoS54+iBtAHdK+T228ML5UQU1/06tsSvrnMYnor0rfvqzOyvbYRUd+LE
-         PpIEwprPxsQvTOr1RAVcMPDytvCsuJzRcHfXZBSIFTobUa/vsmx6fyqo0NSSiciTF8
-         dSVYzjmwToGcvqMhriwpUSv3QzRpjWQvXLxqQn50NNon/0hC0ZFjgpXH3QKq4l/Iwi
-         6zI0R0i/lcMeg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4F83160BE4;
-        Tue,  2 Nov 2021 15:24:46 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S234589AbhKBP30 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 11:29:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55236 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234598AbhKBP3Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 11:29:25 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D93FCC06120B
+        for <netdev@vger.kernel.org>; Tue,  2 Nov 2021 08:26:49 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id x19so11396254ljm.11
+        for <netdev@vger.kernel.org>; Tue, 02 Nov 2021 08:26:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=fxVnPZH6b6L2I7aYk+0v0By0qTM5ney7UTSCmiLQK+A=;
+        b=x5JmB/0OUUm0n3pUNm0d3bDFVZ9zoYTwmC68+WhMKiYCDd8J6meh19KGHZHjteCmGj
+         Gb+poFRw+Q5O4+zzJh7M1JgxVnp1aEyWS9A6EwcLLgY1LpLfVZUgGn2Yl2smq1KttslG
+         jPUkrYMvywbQCMzI5XmPp3b7So9dWZKEff10PaYosjnRDQLTQFGGPrDw8wBORG8lCbKW
+         055tT1pMfjVah6HOGuwIlD2rt3+wAoJcH5D10pnUSYQaFdjeh/fCItdq489Cn5qMhSnu
+         pXYuysYzaAZvTPJAXCBoDBvy2nCrHmK0DLmb5ukSGYKQGQKHUnB+TYuHVt5IerDWDAHS
+         SkwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=fxVnPZH6b6L2I7aYk+0v0By0qTM5ney7UTSCmiLQK+A=;
+        b=nmBjPyl3vRO3xoiuVlBlwhM4/3IXPAGOsre4AGctsgS6kR7WJoyn4lPUcOe4kXm0c2
+         QRqKfDRYU6cwG0Bbdj8QWu3PE6SR272y7vzmn985fIf3LOafpzngecRbY0+m1/BWylI5
+         gMdjw/bKeq0MXn0WD3sScOJIXoCYaW85Z5Q6nbLbrnMJJ4Itu1apZgD14ThF3j+mwRwp
+         jNwJU4BmwBkSl1a6xIFIYtVB5S3TMjRvEhgE7XEJ9F9dneb9upvajGFT+ixEr37Cek3x
+         O9y4c8akvdEzxQg5oCyQ70RYP5qiONsSTVJnm6T+NXbkp5DVYKgtg3vlLbdwmk1ONskE
+         O7Ww==
+X-Gm-Message-State: AOAM531k5NeRL812j+xhLnlS7GxdqSLQX4uYYlmtIlfMYEQLZkW8VAQP
+        0F55ofTs1tCixEbKEIW6NHvXkqFshhu4FA==
+X-Google-Smtp-Source: ABdhPJywD1fXGsmUvzlGsbwzhNq/8e0eLaGhh844IKPxeN7lhccCNTjpZy9biEo0Bug7ay78GS+QVg==
+X-Received: by 2002:a2e:7210:: with SMTP id n16mr29186843ljc.155.1635866807510;
+        Tue, 02 Nov 2021 08:26:47 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id c1sm1844823ljr.111.2021.11.02.08.26.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Nov 2021 08:26:46 -0700 (PDT)
+Subject: Re: [PATCH v1 01/15] dt-bindings: add pwrseq device tree bindings
+To:     Rob Herring <robh@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>,
+        ath10k@lists.infradead.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+References: <20211006035407.1147909-1-dmitry.baryshkov@linaro.org>
+ <20211006035407.1147909-2-dmitry.baryshkov@linaro.org>
+ <YXf6TbV2IpPbB/0Y@robh.at.kernel.org>
+ <37b26090-945f-1e17-f6ab-52552a4b6d89@linaro.org>
+ <CAL_JsqLAnJqZ95_bf6_fFmPJFMjuy43UfP2UxzEmFMNnG_t-Ug@mail.gmail.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Message-ID: <31792ef1-20b0-b801-23b7-29f303b91def@linaro.org>
+Date:   Tue, 2 Nov 2021 18:26:45 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [GIT PULL] Networking for 5.16
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163586668632.17300.4029101870051803664.git-patchwork-notify@kernel.org>
-Date:   Tue, 02 Nov 2021 15:24:46 +0000
-References: <20211102054237.3307077-1-kuba@kernel.org>
-In-Reply-To: <20211102054237.3307077-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        keescook@chromium.org, kvalo@codeaurora.org,
-        miriam.rachel.korenblit@intel.com
+In-Reply-To: <CAL_JsqLAnJqZ95_bf6_fFmPJFMjuy43UfP2UxzEmFMNnG_t-Ug@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This pull request was applied to netdev/net.git (master)
-by Linus Torvalds <torvalds@linux-foundation.org>:
-
-On Mon,  1 Nov 2021 22:42:36 -0700 you wrote:
-> Hi Linus!
+On 28/10/2021 00:53, Rob Herring wrote:
+> On Tue, Oct 26, 2021 at 9:42 AM Dmitry Baryshkov
+> <dmitry.baryshkov@linaro.org> wrote:
+>>
+>> On 26/10/2021 15:53, Rob Herring wrote:
+>>> On Wed, Oct 06, 2021 at 06:53:53AM +0300, Dmitry Baryshkov wrote:
+>>>> Add device tree bindings for the new power sequencer subsystem.
+>>>> Consumers would reference pwrseq nodes using "foo-pwrseq" properties.
+>>>> Providers would use '#pwrseq-cells' property to declare the amount of
+>>>> cells in the pwrseq specifier.
+>>>
+>>> Please use get_maintainers.pl.
+>>>
+>>> This is not a pattern I want to encourage, so NAK on a common binding.
+>>
+>>
+>> Could you please spend a few more words, describing what is not
+>> encouraged? The whole foo-subsys/#subsys-cells structure?
 > 
-> Networking changes for the 5.16 merge window.
+> No, that's generally how common provider/consumer style bindings work.
 > 
-> We have a small conflict/adjacent change between our:
+>> Or just specifying the common binding?
 > 
->   dc52fac37c87 ("iwlwifi: mvm: Support new TX_RSP and COMPRESSED_BA_RES versions")
+> If we could do it again, I would not have mmc pwrseq binding. The
+> properties belong in the device's node. So don't generalize the mmc
+> pwrseq binding.
 > 
-> [...]
+> It's a kernel problem if the firmware says there's a device on a
+> 'discoverable' bus and the kernel can't discover it. I know you have
+> the added complication of a device with 2 interfaces, but please,
+> let's solve one problem at a time.
 
-Here is the summary with links:
-  - [GIT,PULL] Networking for 5.16
-    https://git.kernel.org/netdev/net/c/fc02cb2b37fe
+The PCI bus handling is a separate topic for now (as you have seen from 
+the clearly WIP patches targeting just testing of qca6390's wifi part).
 
-You are awesome, thank you!
+For me there are three parts of the device:
+- power regulator / device embedded power domain.
+- WiFi
+- Bluetooth
+
+With the power regulator being a complex and a bit nasty beast. It has 
+several regulators beneath, which have to be powered up in a proper way.
+Next platforms might bring additional requirements common to both WiFi 
+and BT parts (like having additional clocks, etc). It is externally 
+controlled (after providing power to it you have to tell, which part of 
+the chip is required by pulling up the WiFi and/or BT enable GPIOs.
+
+Having to duplicate this information in BT and WiFi cases results in 
+non-aligned bindings (with WiFi and BT parts using different set of 
+properties and different property names) and non-algined drivers (so the 
+result of the powerup would depend on the order of drivers probing).
+
+So far I still suppose that having a single separate entity controlling 
+the powerup of such chips is the right thing to do.
+
+I'd prefer to use the power-domain bindings (as the idea seems to be 
+aligned here), but as the power-domain is used for the in-chip power 
+domains, we had to invent the pwrseq name.
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+With best wishes
+Dmitry
