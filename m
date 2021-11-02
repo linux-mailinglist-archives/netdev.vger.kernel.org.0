@@ -2,184 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52B7E44321D
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 16:54:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1880C443222
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 16:56:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234689AbhKBP5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 11:57:01 -0400
-Received: from mail-mw2nam12on2088.outbound.protection.outlook.com ([40.107.244.88]:41440
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        id S232991AbhKBP6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 11:58:50 -0400
+Received: from mail-bn8nam12on2087.outbound.protection.outlook.com ([40.107.237.87]:45665
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234673AbhKBP47 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Nov 2021 11:56:59 -0400
+        id S231361AbhKBP6t (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Nov 2021 11:58:49 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TP8/R10QaAPPLnMl8i3TmC6QPe6ubthG9QU2w1yXCwtJosX8u7MFL1hhD/7vbxeo5w50D1JVKJsVUwumJfvCEf0aedLFJwF8saYAVJxOx2vrflfmDeGufuRUY2ejF0gc+GpHh7H+HisbeeVSVhBMhBNPrEvCSbPYmm1//2GqvOp3EFC0AfUvIzeGipMdqz7uGWoP8zl9AGUERDf4kiuhJLrDXfxjsgDpbgxb8f9rACRwMGuj9DXmstuve/bRYVJT7XZOoJM1PpSU5VUn8cXfqT4RMVBmWiji4i73B9ycYYSl9s5OEjUR/e+ja+eJdQ68nUWEzX9UN+U1YinPXD5PAw==
+ b=ITMbhIE00hfoQ/awovVpniZbGdkEIX7v9ybUp9HBF4KOFpE5uUPsKsGbk8TXLfGc6W8BnMY4Mtdye7/7/UgpjA7kV658GsfJgoNsHc74jZeSLOlDieP/ts24hE+2yuU8j9AFt6CFxF6ZR+J7eZ4C1zs+7nJDMZAzVqV/7Igcq3ynMcZ0Ayk1g2z9Fad3WdkVyOFXSHUehkilRRnFjIi6SqH76aaZJNXN0OZgmJxKTjqfIOIBlYfWTD3RL2kBFT4M5aBWvuVdajYm2wIzPQnPQMZaLZ9KK3arGwxniOcF9NDrcIxRwAoWTUnVgJXXAB/x9UoCoLPVkRAWIB72cSIHUQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6bq2QYmvwuPYUkW9nzNm/0U6nrqUEF42Htl6S1Da4Ak=;
- b=KNL9usYm64Hu+luRGxy5NCLuEyCLrITVmE5/fdqol5eOQkMS9eZxibcjt7CqnUFdow4NsrYXXgJdKYHl+z86hUWRurdaGdeS5tjdSLi6z419d6ThVt0guESxa1VLqJIKL9id4AZHAEE7yh9CRZwfD7epppBGiYD7q5abpdEIf4GaX7U02V2VdE7THYaXvKcEDI/n/U8HF4MXfkToEOJBmk59QamqCSxX06kEtudZBDG9yVBbmbQBWR1oJjrfuHJnbMxHT76pO1hLcRgpNP0UhQhHZSoE90GdiHylrNA2YMXsF4KgpXpd/lkNXiz3v66TyAZL0A9uzAyd7tjnB6nmPA==
+ bh=X6KoGp/hBHbfdFcbAEzVBZ9BGX0Di94+pkT1fjdjBa8=;
+ b=GzvAe97JUvhSBJH8OoeqqdeLVEYOa1vCdaKb2nAz6ps6A7/uQTcU4i66tbvwe4RnBr9Wh95dUaSmZbbDfDfGwqAM3RFg9Z86/yYIuowjbJAQ54SP0bYdylnS3KbDh2E31F4/Sb8kivIPkbVwPKdsvLngk6TIUWtxPmuo32cEaSQhd+vM2G/sh3LxJpl9fzcW+v/y5g+lxea4Wf7Rp6bdMSh0pNp9XW1HmAb5WKDNJYNU1/hbzU8IiRFkZlCi9e9lTIj3DzpH0mBffpUPT9lKL0cugCVceBjJBfVSxF/t8yrYfuIwsoMorafENCghZ69tl1tTpKXNiw4e+y3eRCU+Og==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6bq2QYmvwuPYUkW9nzNm/0U6nrqUEF42Htl6S1Da4Ak=;
- b=CIsVra0G9NoBDy+gZZ1Sw30eEaYP+bVzT2U8EixhV33tRXnVS2drWyLAVp8Tr+SB+WhqJHJosCXMgi5J9/BvHg/tfKLEycVAKeAqz9pqr9Yaj/ZYpaDmmSpP1reFr9TMDcB/jDqnCq9vGIVMR+MiK3kykb9IPg6BB0KPtm4dpBiykso2bOzMQ2GQS+BDpia1uQhg+BHlltJyGpmX1uwiXrvKTyq7rd1LPdS28/jXqesh59ul+YOAgbG2ALn6dGTgw9RM3DGVW191vYYA8hw+ScYEYnr8Adgo8WlUshMV8Xbq/ScQbMgTjmdoE9952+7tfDa6/QXeopq9zfDETZnRdQ==
+ bh=X6KoGp/hBHbfdFcbAEzVBZ9BGX0Di94+pkT1fjdjBa8=;
+ b=Oh6XzIcUEn9JhPqrXx5Pm/f3c3SIdxxuo6Yf35IupJiA+tJDZqhvS2TwaOhscgzXNAEZkUV5ndmrRfRYMUc8tLPK8doaZdqLV0Eg34BTA/15ABTeR3snI9m/kyJfBH737UIJ3MO3Hr1iU85NX/ErDR5Wztm0I9KZ3aNz7t0FMZv2Do87d6/CdUPH1YX36S6SzE04l7mpiaH1QvgQM1AHgQLrhsQRFNLBg7hDa7C2qfJ9QStZ8hh5qqtAhyNu3CSPijv22GuStd1BNCSYvE9zlNJ4YyCiBylUt2lUd8rsXIUlebW+FKzmPJZye2aWQvD4kfxILnjzlwlYSsRAOW52/Q==
 Authentication-Results: redhat.com; dkim=none (message not signed)
  header.d=none;redhat.com; dmarc=none action=none header.from=nvidia.com;
 Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5061.namprd12.prod.outlook.com (2603:10b6:208:310::13) with
+ by BL1PR12MB5048.namprd12.prod.outlook.com (2603:10b6:208:30a::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.14; Tue, 2 Nov
- 2021 15:54:21 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.10; Tue, 2 Nov
+ 2021 15:56:12 +0000
 Received: from BL0PR12MB5506.namprd12.prod.outlook.com
  ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
  ([fe80::e8af:232:915e:2f95%8]) with mapi id 15.20.4649.020; Tue, 2 Nov 2021
- 15:54:21 +0000
-Date:   Tue, 2 Nov 2021 12:54:20 -0300
+ 15:56:12 +0000
+Date:   Tue, 2 Nov 2021 12:56:11 -0300
 From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
-        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
-        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
- for mlx5 devices
-Message-ID: <20211102155420.GK2744544@nvidia.com>
-References: <20211026151851.GW2744544@nvidia.com>
- <20211026135046.5190e103.alex.williamson@redhat.com>
- <20211026234300.GA2744544@nvidia.com>
- <20211027130520.33652a49.alex.williamson@redhat.com>
- <20211027192345.GJ2744544@nvidia.com>
- <20211028093035.17ecbc5d.alex.williamson@redhat.com>
- <20211028234750.GP2744544@nvidia.com>
- <20211029160621.46ca7b54.alex.williamson@redhat.com>
- <20211101172506.GC2744544@nvidia.com>
- <20211102085651.28e0203c.alex.williamson@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst <mst@redhat.com>, linux-kernel <linux-kernel@vger.kernel.org>,
+        kvm <kvm@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        Maxime Coquelin <maxime.coquelin@redhat.com>,
+        "Liang, Cunming" <cunming.liang@intel.com>, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, Xiao W Wang <xiao.w.wang@intel.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        eperezma <eperezma@redhat.com>, Cindy Lu <lulu@redhat.com>,
+        Parav Pandit <parav@mellanox.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Ariel Adam <aadam@redhat.com>, jiri@mellanox.com,
+        shahafs@mellanox.com, Harpreet Singh Anand <hanand@xilinx.com>,
+        mhabets@solarflare.com, Gautam Dawar <gdawar@xilinx.com>,
+        Saugat Mitra <saugatm@xilinx.com>, vmireyno@marvell.com,
+        zhangweining@ruijie.com.cn, Tiwei Bie <tiwei.bie@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH V9 7/9] vhost: introduce vDPA-based backend
+Message-ID: <20211102155611.GL2744544@nvidia.com>
+References: <20200326140125.19794-1-jasowang@redhat.com>
+ <20200326140125.19794-8-jasowang@redhat.com>
+ <20211101141133.GA1073864@nvidia.com>
+ <CACGkMEtbs3u7J7krpkusfqczTU00+6o_YtZjD8htC=+Un9cNew@mail.gmail.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211102085651.28e0203c.alex.williamson@redhat.com>
-X-ClientProxiedBy: BLAPR03CA0048.namprd03.prod.outlook.com
- (2603:10b6:208:32d::23) To BL0PR12MB5506.namprd12.prod.outlook.com
+In-Reply-To: <CACGkMEtbs3u7J7krpkusfqczTU00+6o_YtZjD8htC=+Un9cNew@mail.gmail.com>
+X-ClientProxiedBy: BL1P222CA0017.NAMP222.PROD.OUTLOOK.COM
+ (2603:10b6:208:2c7::22) To BL0PR12MB5506.namprd12.prod.outlook.com
  (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
-Received: from mlx.ziepe.ca (142.162.113.129) by BLAPR03CA0048.namprd03.prod.outlook.com (2603:10b6:208:32d::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.15 via Frontend Transport; Tue, 2 Nov 2021 15:54:21 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1mhw7A-005A2P-FG; Tue, 02 Nov 2021 12:54:20 -0300
+Received: from mlx.ziepe.ca (142.162.113.129) by BL1P222CA0017.NAMP222.PROD.OUTLOOK.COM (2603:10b6:208:2c7::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.15 via Frontend Transport; Tue, 2 Nov 2021 15:56:11 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1mhw8x-005A4d-0n; Tue, 02 Nov 2021 12:56:11 -0300
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3b5f8967-7a9c-4bda-c2b3-08d99e190915
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5061:
-X-Microsoft-Antispam-PRVS: <BL1PR12MB50618C7C9ABDF20853B74C9BC28B9@BL1PR12MB5061.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Office365-Filtering-Correlation-Id: c323e2b8-e9f8-41c9-4c6f-08d99e194adc
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5048:
+X-Microsoft-Antispam-PRVS: <BL1PR12MB50486612D34EB9C04EA42D29C28B9@BL1PR12MB5048.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mW4o1ZWjU4SsejLdk3oIGGvS7j5/xVSiVBMbLWn9WFBnf0CpWGBClERwZTPdPqvG7U0opb6HYeMFmQBM7LJNk8JpZjXkrSBxV6Zk9QF5fX/NDR5xEUkt8Hocldx29ZU23i5ZZO2Zi5tHaSNF5OI6LpJctVSfVxXLXSNG9vNcLYWfiiB7LVOSltDjAeHnT17Fy7hDb9HA9rwfRJOLGPJ2jVolXP/VpTFavwgAalbatsA0gybJZ2kUjJqrS1nuYXndypexKKyWaCgOEZ6lkd0/KjvpBde4bNQL3iA2/A6F3pg0lJgxIBj+KAsmQbGIvkQKbtq//S9n/pc9MuSxhQIn6kFWKrlT1LbEcmyce4yjm5B0jf7ZGL7D30vM7SPL98b6d4WudKbJUgr6H4r168mouPQQh3Q0oxQGi4CdkBptttPrvQk1ZyH1Cxvx4uXWmUVIOVGTuoAO+4+7DyA8hiILocUYMm7hKVIhesP9Sh7o3dCHCak84cbNaHWmpz7rC8NQ1FgYNZpTXmc7ilx7kPR/fPzzZHXNETyru6nEqKcoyMC5L2cnT+eH3VtFae47bFJaMPFOmJdEvHYdFBJke4k7sjSlclZc6np7QJtSG2aMT10WiTt0vZFLdNWHGkRwICxMWob7r7S4GxsJXfEUNgh2nQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(5660300002)(8676002)(508600001)(36756003)(4326008)(1076003)(9746002)(9786002)(26005)(38100700002)(186003)(66556008)(66476007)(66946007)(83380400001)(33656002)(86362001)(2906002)(2616005)(8936002)(6916009)(316002)(426003)(54906003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 8o4bYjOAPa/gca6QDIzMqQf835BZ9+tiMwNjzvoHJAvi3HT/4m+HMrZOoy+9UAkmTlkMFM2NlaqZl3DV43GLxEk/8X+RsoU8LKvO+cHqkGF6ckloldMQuPmF93BFw0MKTF7az6PU2BmkrillKsi82t2YV9kur2W1EjN2GbLuwaTemGnEfARis8iPzZXY97+VDvzjgPWHD2u9MGy/fpdo5nOAaEo+Efos1z8f6taLIzEFdVVTkNhtO9cYvxprKE+wqMTHqIz+9GS27BzlT1sefjMb1+6KXOX7GP8xrJIeyr+7mIHNBvJ3WL6U1w51vB/2qWS2QoFuy8YlQlaFCq6YznmBoMOcMYqZ/iYHzF5gmcLT2hxnvcaQEKg2Z2bYTiTE4SZaC05U0H5xiG41s0iUWiNk3ZNaZMX0DoaxEOm9EaI+lmonVdEx6qPBfphoc68mPB8a2Jnra2LsWdYzy8XqGhSh7B9zVJdwkHmq1A8wt97ByTbXV6aT1Mug/z28SNsJ+T0T9w5TnT/23GzP+Uwh8WokiO/OMZMQt1CvzDyHuAMN+lB+oCScd3IPqOnLE841tZxBWHvpdtW7vPynhyw4C5602l3SAQoMrqNxV2M8xMhPDHJio7L0v1a4TVidX7DKuKgLa56E7z8/yQxxj3TZ5w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(4326008)(9786002)(6916009)(426003)(2906002)(53546011)(38100700002)(33656002)(7416002)(66556008)(66476007)(2616005)(8936002)(66946007)(83380400001)(9746002)(54906003)(5660300002)(186003)(86362001)(36756003)(8676002)(508600001)(26005)(316002)(1076003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0a1jLPIzXxmM+f1nuZU8i86X6aPbF3HLGAbo1AoK+zfCV1BaoYQW3p032rfd?=
- =?us-ascii?Q?D/T51GXpVqhzV9C6A1qStEhFGHUAKhAXmM1eIB2AFU/RGCThPgKy0IG3n984?=
- =?us-ascii?Q?ifgs0XPvmJ09IC9tRyJYYfNnebnIJ8MjC2614ik94U2i4QvU4VDnziLzhLkA?=
- =?us-ascii?Q?o6JJDD/wFCCIrJtipQ4Xtyv6h/94iSukJ4kXMtMXVjHicCBYDShwAbvEn2d9?=
- =?us-ascii?Q?oEmIVSVzcYFat+k6U1BHgywyFARtj5Bki+/tyKNU7JMb1JTu0/2UoGECCvh6?=
- =?us-ascii?Q?my3i9iZwH68VwWVwce90ibVo+ZqvpwQ2RgAhUvmYe4UnvjtDVPRotn3tN3tF?=
- =?us-ascii?Q?cmP2ojtEfRg/kQdrKde5lwxLdlwPIHgjR6PuC3iQPJjLnpGdhcRiG/7z79e2?=
- =?us-ascii?Q?nZowOArDorc1RIJMutvgp3EnLUy/cOUoAKKC1mtnRk1X+Ym8KtUvfoMgJQNO?=
- =?us-ascii?Q?JtLZHtIhXrfnlAFJTMFOssbcz6XLwknbdhdpu9gUAtXKqzQkCnJWSwSDmBOI?=
- =?us-ascii?Q?l/QT0Ebg6dH13+78/RQMTyR4jR9a4CeXLwK0El4zrXxTyVLujt5zXiygm8vR?=
- =?us-ascii?Q?tyhCNMaz/vIHFz/7PnVlRcsnRmZ5f664Xk4ExIp/9VdYTa5Hwj3oDSkY91RJ?=
- =?us-ascii?Q?hXw5HJOLUd5lODxbnc6MOi0u7ToR2U8YnWlFMGqEwAXCmGvFMADCAj4EcHNA?=
- =?us-ascii?Q?RGfdeHdxc1AdfVQDI0rW2Mo3AN+UYXmDgZziqcTtjDSEjoNB8kL+yWiJNaEa?=
- =?us-ascii?Q?6W84KVy68TC0vZPBWm6mU9PTqOR3KGtwu2XKbT2vx0EjOQ8exHooWKvO7kF0?=
- =?us-ascii?Q?A0Fksio2iA9vhNwDB7cui50vtFmhbLQuyZrDT3cp+tKh6b44Iq9/8uHTEZZe?=
- =?us-ascii?Q?+n3zttsco9t0ZCvkkcnUEl/f/U1m03wRbpzknR9v0lT4SZzQcd+yaj3Np20F?=
- =?us-ascii?Q?lV5f/l4KPmg1zbtdRm67YVGwIsg7VwDvDmgUGP6fdgqXB7vsdbFNBYWM4Oms?=
- =?us-ascii?Q?PZoEsGMC0eGa0LQoGNs/zAhBl2OYTwxVGtYDu8Q7/Ork3qfOLKbi3NiREl+k?=
- =?us-ascii?Q?9ysvgaD/kuIibEPz+nHnolncBgEXKiLwCYKdR6RhLKv+nwyu2tCvac4wqZFt?=
- =?us-ascii?Q?rEXcHNFa94AG7fg3kHF80J7dUnlRUQa5mC0W+qlcpa688aOKEQhJpt1LBjc9?=
- =?us-ascii?Q?Atn0M3xxEOb3O8n4VxMK0cdMOzShtvFz995YIPaUEgKGyG+C7Z9+Z0XykDzY?=
- =?us-ascii?Q?cYX2Bh2RpdXhxKX7DhJYHLJ7Xno0zNM4h223zGTzBBMmddG4Cq8t8rNV38ro?=
- =?us-ascii?Q?WFUPIOzLIWA9PdFAkZsjYo+6fXj2H3Kd3jHN7yQSpwa2tH/JEXywsGIWcVc0?=
- =?us-ascii?Q?7vfuOELgsHNhPi2ACaBR6m2Pi11jPtN/lnxYGsU7WhpQ/zVPAvRHX4D/Obut?=
- =?us-ascii?Q?TP5vL3oQ220V0Muz/9PoVQP3VgczcI5saI9YdepwbEpLVVTFIIIB1v50dy1+?=
- =?us-ascii?Q?/xoKCFR30jmsAEVHiXZYH/1oX5ZvFFKUrj+HO0i4TjTb+nWLWFuB8QU0E3P5?=
- =?us-ascii?Q?HGrsPDdgU52n/YH1IvM=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?qWpYtq6/4s2+sDXSL5zpD/reDVXYgKMkq5KQ9iLlyYHGTVhiknFir1tLQeg0?=
+ =?us-ascii?Q?jPnr12uWGNcttQ+YdsN9yR0AYA/1udZviDMLAjQTEfVJ3505AUfWZzKuLFMn?=
+ =?us-ascii?Q?wQ7lifUe+sjCr3CVCV+7RMwJ5+BVeIIrvNnVBTq9QNw5r0i0F6Poo5/HRR6C?=
+ =?us-ascii?Q?Nb1hZtNa+0XvBtC+GEb9b8CURzYH5mzcdBdI5N2o7qfhBj+SkJXcIRnhVOhw?=
+ =?us-ascii?Q?jwfsVzo7qmfmNsIDnrpvyQRzwusnuxgIHIq5cZTE+7JkbNjk845/W8+hTIbg?=
+ =?us-ascii?Q?ZhEuwR2USTBzqh/4LJvAW9/8/01CQYS4eUJ9gVqfTzvhyuJh+CxQYBtA5rmj?=
+ =?us-ascii?Q?P1lmtZBQn7TwYryuFMkp+2AYhoAsUq5DAVUIriCVjJoOo7E2ykX4a3MQAM3X?=
+ =?us-ascii?Q?2qpfxPMuyFf70ZDMEQvREUYk/vvR6IFMP/pfIgPN5YCuE0DwVG2jnE+iUEtC?=
+ =?us-ascii?Q?omiobs0r3GxoFF9HiTeTugL0LfIT3QvbmGFHKJ2q99h6Im+XwXCA5kzar1H7?=
+ =?us-ascii?Q?iB6WSKNVrtDJcqSOWCVQhL4jIWOvg7zfmKI80wGMFrDHgCrN+xosqnpOO1d0?=
+ =?us-ascii?Q?RX2HtHe36plyWMpQejQdyoJkkgDMfGCPc6JB9acY+SCVLFb1TQz1pNWsQVnc?=
+ =?us-ascii?Q?t7IpBYpVtf+HRJ/cpj7GjTWiYs5Rl8NzLNgafex19xtLlt66nVDFcQFRUmmf?=
+ =?us-ascii?Q?u6Fa+tqBCeoH2ETrEcyzA/uZ8ewfkT/U+DB94ShzAaGvD/73V1yHEV4B3E9a?=
+ =?us-ascii?Q?bHm2NX3DE7//fvuO2W+qNP8mLkz5T+YAQLgXz1kI0Sh89T7FyRZuwts8rbqY?=
+ =?us-ascii?Q?PBwNAtW5HTYy1Ww4OEjVgBKtA2maUDTwIfmM+uTv/EJ+2Vhyb4KjFje33QWO?=
+ =?us-ascii?Q?apxexMFNoYYUAs/hVtk11zMARyuObUcCpZ1oQi/2FciY/pVbq2YaU+b94J11?=
+ =?us-ascii?Q?ysjJ1hJDZt06T0hgMqFQvn5X7e8Jn1Go7JHAP9EIapSeU43I2IrThp/Y512+?=
+ =?us-ascii?Q?/Ly+LDPmTDqYJsiGnfeE8bxOBxLivkSQ+Nha+lhsCuErNONtcC44fhfKZ1FI?=
+ =?us-ascii?Q?61JKmfBprt+HOds4XMsMeTvEkCBJWWmEBuiDWxsPRexN5Es+HcqIIKkv3g1n?=
+ =?us-ascii?Q?vhq+9MatCGB66q4b4yrC7ayKVHHMllBjpGbewGZNLK+ABJZlz4EtrIVzmtLD?=
+ =?us-ascii?Q?BuM4Ki/5kKLr/NKjZQT02DqGRQUiVIlKnF+wLj3NuAOCISVmaQViYd/JOFhY?=
+ =?us-ascii?Q?4oJJeHVgvlyro0+SKkJok+bVg9q8btxlB6swZaWzT2+cV73BQH4YOXBBZHd1?=
+ =?us-ascii?Q?MDMy0TmMEFFP9oXlZb3dwDLO2fjqdYwpwVS5mdQT0zQp23tJRqLT9zgQEORI?=
+ =?us-ascii?Q?f3qPpW4o3onGqYtXoA9pxA4z+Yn/lAbRvAYOprl9xkoaYpVh7su1w+iUDAY2?=
+ =?us-ascii?Q?IoXBrkSLN0NvGRUyA4GDuXGasUbm/rtTHfvSaJhOypi76lnAJanAPvBnNmI8?=
+ =?us-ascii?Q?yA6OcwUJIERJzG0t1/N+x+hOuQLGCZTQn8YaiZZpgDzy14vUn/8qzzvRvJ+P?=
+ =?us-ascii?Q?2brzgt9Y2qrg1SvdAoI=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3b5f8967-7a9c-4bda-c2b3-08d99e190915
+X-MS-Exchange-CrossTenant-Network-Message-Id: c323e2b8-e9f8-41c9-4c6f-08d99e194adc
 X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2021 15:54:21.5897
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2021 15:56:11.9865
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DPrIQAduIydczq9Xkp+PVnmeQq6S3kvsPnmrPdO3qZbQJIo5ECfSTkp8cwlURr8B
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5061
+X-MS-Exchange-CrossTenant-UserPrincipalName: b79plKkiZN30Wh+tBRHRpPiCI0fM9Kelu4TE48Wey/RnLPLAxw6Nd7GdEmlaZkVZ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5048
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 02, 2021 at 08:56:51AM -0600, Alex Williamson wrote:
-
-> > Still, this is something that needs clear definition, I would expect
-> > the SET_IRQS to happen after resuming clears but before running sets
-> > to give maximum HW flexibility and symmetry with saving.
+On Tue, Nov 02, 2021 at 11:52:20AM +0800, Jason Wang wrote:
+> On Mon, Nov 1, 2021 at 10:11 PM Jason Gunthorpe <jgg@nvidia.com> wrote:
+> >
+> > On Thu, Mar 26, 2020 at 10:01:23PM +0800, Jason Wang wrote:
+> > > From: Tiwei Bie <tiwei.bie@intel.com>
+> > >
+> > > This patch introduces a vDPA-based vhost backend. This backend is
+> > > built on top of the same interface defined in virtio-vDPA and provides
+> > > a generic vhost interface for userspace to accelerate the virtio
+> > > devices in guest.
+> > >
+> > > This backend is implemented as a vDPA device driver on top of the same
+> > > ops used in virtio-vDPA. It will create char device entry named
+> > > vhost-vdpa-$index for userspace to use. Userspace can use vhost ioctls
+> > > on top of this char device to setup the backend.
+> > >
+> > > Vhost ioctls are extended to make it type agnostic and behave like a
+> > > virtio device, this help to eliminate type specific API like what
+> > > vhost_net/scsi/vsock did:
+> > >
+> > > - VHOST_VDPA_GET_DEVICE_ID: get the virtio device ID which is defined
+> > >   by virtio specification to differ from different type of devices
+> > > - VHOST_VDPA_GET_VRING_NUM: get the maximum size of virtqueue
+> > >   supported by the vDPA device
+> > > - VHSOT_VDPA_SET/GET_STATUS: set and get virtio status of vDPA device
+> > > - VHOST_VDPA_SET/GET_CONFIG: access virtio config space
+> > > - VHOST_VDPA_SET_VRING_ENABLE: enable a specific virtqueue
+> > >
+> > > For memory mapping, IOTLB API is mandated for vhost-vDPA which means
+> > > userspace drivers are required to use
+> > > VHOST_IOTLB_UPDATE/VHOST_IOTLB_INVALIDATE to add or remove mapping for
+> > > a specific userspace memory region.
+> > >
+> > > The vhost-vDPA API is designed to be type agnostic, but it allows net
+> > > device only in current stage. Due to the lacking of control virtqueue
+> > > support, some features were filter out by vhost-vdpa.
+> > >
+> > > We will enable more features and devices in the near future.
+> >
+> > [..]
+> >
+> > > +static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
+> > > +{
+> > > +     struct vdpa_device *vdpa = v->vdpa;
+> > > +     const struct vdpa_config_ops *ops = vdpa->config;
+> > > +     struct device *dma_dev = vdpa_get_dma_dev(vdpa);
+> > > +     struct bus_type *bus;
+> > > +     int ret;
+> > > +
+> > > +     /* Device want to do DMA by itself */
+> > > +     if (ops->set_map || ops->dma_map)
+> > > +             return 0;
+> > > +
+> > > +     bus = dma_dev->bus;
+> > > +     if (!bus)
+> > > +             return -EFAULT;
+> > > +
+> > > +     if (!iommu_capable(bus, IOMMU_CAP_CACHE_COHERENCY))
+> > > +             return -ENOTSUPP;
+> > > +
+> > > +     v->domain = iommu_domain_alloc(bus);
+> > > +     if (!v->domain)
+> > > +             return -EIO;
+> > > +
+> > > +     ret = iommu_attach_device(v->domain, dma_dev);
+> > > +     if (ret)
+> > > +             goto err_attach;
+> > >
+> >
+> > I've been looking at the security of iommu_attach_device() users, and
+> > I wonder if this is safe?
+> >
+> > The security question is if userspace is able to control the DMA
+> > address the devices uses? Eg if any of the cpu to device ring's are in
+> > userspace memory?
+> >
+> > For instance if userspace can tell the device to send a packet from an
+> > arbitrary user controlled address.
 > 
-> There's no requirement that the device enters a null state (!_RESUMING
-> | !_SAVING | !_RUNNING), the uAPI even species the flows as _RESUMING
-> transitioning to _RUNNING.  
+> The map is validated via pin_user_pages() which guarantees that the
+> address is not arbitrary and must belong to userspace?
 
-If the device saves the MSI-X state inside it's migration data (as
-apparently would be convenient for other OSs) then when RESUMING
-clears and the migration data is de-serialized the device will
-overwrite the MSI-X data.
+That controls what gets put into the IOMMU, it doesn't restrict what
+DMA the device itself can issue.
 
-Since Linux as an OS wants to control the MSI-X it needs to load it
-after RESUMING, but before RUNNING.
-
-> There's no point at which we can do SET_IRQS other than in the
-> _RESUMING state.  Generally SET_IRQS ioctls are coordinated with the
-> guest driver based on actions to the device, we can't be mucking
-> with IRQs while the device is presumed running and already
-> generating interrupt conditions.
-
-We need to do it in state 000
-
-ie resume should go 
-
-  000 -> 100 -> 000 -> 001
-
-With SET_IRQS and any other fixing done during the 2nd 000, after the
-migration data has been loaded into the device.
-
-> > And we should really define clearly what a device is supposed to do
-> > with the interrupt vectors during migration. Obviously there are races
-> > here.
-> 
-> The device should not be generating interrupts while !_RUNNING, pending
-> interrupts should be held until the device is _RUNNING.  To me this
-> means the sequence must be that INTx/MSI/MSI-X are restored while in
-> the !_RUNNING state.
-
-Yes
-
-> > > In any case, it requires that the device cannot be absolutely static
-> > > while !_RUNNING.  Does (_RESUMING) have different rules than
-> > > (_SAVING)?  
-> > 
-> > I'd prever to avoid all device touches during both resuming and
-> > saving, and do them during !RUNNING
-> 
-> There's no such state required by the uAPI.
-
-The uAPI comment does not define when to do the SET_IRQS, it seems
-this has been missed.
-
-We really should fix it, unless you feel strongly that the
-experimental API in qemu shouldn't be changed.
+Upon investigating more it seems the answer is that
+iommu_attach_device() requires devices to be in singleton groups, so
+there is no leakage from rouge DMA
 
 Jason
