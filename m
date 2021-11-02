@@ -2,134 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBBB844256A
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 03:03:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C1F7442578
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 03:10:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229491AbhKBCGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 22:06:09 -0400
-Received: from mail-eopbgr1310109.outbound.protection.outlook.com ([40.107.131.109]:50048
-        "EHLO APC01-SG2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229458AbhKBCGI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Nov 2021 22:06:08 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BbrmA0tquhr4/RXV/tuGiYqm92py/JS6dXYjXEEMjHNX+KcjaDFQ7MZ5gaERTuoktWKCq9hmKghHJkwMnCtUOg+FUIjDxW39bX5gfagMSuapUZFdO50lJmlnGXbPPTpQ800EHJdlPkVSzCSMtgsS85SCjhV6J/K343FOZ2AhmrChXtsAdbnXh/AYzhp2eHe6z3t7xEf7C5LT+xDmkQ1708r9kdYreb/z/svAOZEkhQK+inJ6s85X06M51AnRGdPfxTB4VgTkRGFTsX8d4yQEnALWOAjS+gvll99gwn53n8IC1K/wHtFYlZGVTEtAEwOtsr8jxFE/CqNutWYIJl/rpA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=029kk31Ba58OHDXIrLOhSqxWX8qxcJEDNi6/updQWzU=;
- b=kNJWSt+s4joLisi0Ed9+Hh4hoS0XWekoE1riSc29ABidqwNSnc4g2hQ31I1ZCKkbJt9HAU0jQ8UVkJ89586QXqncf0crEJwr0d/cHJN2r1y3BTMgD/WinUDgTa/BeS3BDA7LqUnutD25d5Wsa2SuYpGjxljDZppWsJcsg7wTt2b8CT1tRoy7wjWNqxViNWCXVgRbJoH7DdQFdrhUbEkUvNmFuQmy79MxykOO4tXrDvO4sUMd29Leq3M3oPZMDn2SPiDaSAnx+9mwSbPyneWB0Q0q49MqbQ+u8VyHVFfeYBjQ+7ivE3K8PpEUOCpb30lRg+HlNgjXQNVp1ijV1HBHyQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=029kk31Ba58OHDXIrLOhSqxWX8qxcJEDNi6/updQWzU=;
- b=h20u+dU/pzo/NPAZ8emb0f9nk7GzTMTPqr6+yc+bGnMQDtbRHv4BEcawnBbq075QLrq/xS4V09Gg4aw/uAEJW2EGoevPePoNKboFCBVq5nRl9B34Jb6qSZtj5Gd1TWA5/8/iTZWLvg/kpOP7/BDdEt7PaBdYhJShjf3+QnYxI3M=
-Authentication-Results: broadcom.com; dkim=none (message not signed)
- header.d=none;broadcom.com; dmarc=none action=none header.from=vivo.com;
-Received: from SG2PR06MB3367.apcprd06.prod.outlook.com (2603:1096:4:78::19) by
- SG2PR06MB2459.apcprd06.prod.outlook.com (2603:1096:4:66::18) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4649.15; Tue, 2 Nov 2021 02:03:29 +0000
-Received: from SG2PR06MB3367.apcprd06.prod.outlook.com
- ([fe80::fc12:4e1b:cc77:6c0]) by SG2PR06MB3367.apcprd06.prod.outlook.com
- ([fe80::fc12:4e1b:cc77:6c0%6]) with mapi id 15.20.4649.019; Tue, 2 Nov 2021
- 02:03:28 +0000
-From:   Wan Jiabing <wanjiabing@vivo.com>
-To:     Michael Chan <michael.chan@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     jiabing.wan@qq.com, Wan Jiabing <wanjiabing@vivo.com>
-Subject: [PATCH] bnxt_en: avoid newline at end of message in NL_SET_ERR_MSG_MOD
-Date:   Mon,  1 Nov 2021 22:03:12 -0400
-Message-Id: <20211102020312.16567-1-wanjiabing@vivo.com>
-X-Mailer: git-send-email 2.20.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR02CA0123.apcprd02.prod.outlook.com
- (2603:1096:4:188::22) To SG2PR06MB3367.apcprd06.prod.outlook.com
- (2603:1096:4:78::19)
+        id S229510AbhKBCNa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 22:13:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45198 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229458AbhKBCNa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 22:13:30 -0400
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E76CEC061714;
+        Mon,  1 Nov 2021 19:10:55 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id bk22so11656385qkb.6;
+        Mon, 01 Nov 2021 19:10:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FCErorh1OD8co7JK7IKyoKFC4gg1Jidiv0Vg9N7U25s=;
+        b=PbBG86CwC/c6+MDLy+G/4bORNzn0WtIUNX/PwsuYQiBSM3XhHeOaOPiQAANC3LrLwM
+         PgbX6hOGwVpBqpEQkaFgCgYc3TTcEfNhEoR76tAqWdefuRog9/Kl1We0iHog9h3tkNaR
+         yUefUeSpn5W1Jhjeed+ykRU6wD5fdYsXRYSrNgGqNoU4PC+K4RyrBh+Ydji1P+qQzDl7
+         q6UyRAVj74zzCfojG3wjP1CcRYkJWcT/e4N/y4fo8p5q/FrSCe5kT0VEqQXKyq/NTFO4
+         lyK5IyglD7TdYbB8b2mBO5XpbuaJy6LCOdUcDEmiSst3fSaF+5dyEAfoK9esGtsxU3ZF
+         mLLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FCErorh1OD8co7JK7IKyoKFC4gg1Jidiv0Vg9N7U25s=;
+        b=H4aQsDZ3bq1ivAKQ2SVDN0j0FDnLd7KOGJvNLxGolqqDgMBSAE7YQZ0ChZ5BWhokR8
+         phPtttWLC0/VwQGDEJnzfkACzfh2fbgvb6lYcl38q86dURlLLhHm/OS/cJwDXEmaDzPm
+         zNl/jXwUZ3bGSMD7JLF/JbXaspLL7IZEsRFOZD1tEl6ql34u/MJjRYU7qMx/R6ZOcQw/
+         b3YKly0Vs+TZ1e6MB4K7tPKdoi/UlBRM2DsUwXrB1lD42tc4Uf9kOY3Hx6Y4afWAPgxw
+         fplehY5t77ubGyxZY7zzAzoaRE/153boK6JNUSCJJRxjvyAoI1Vma4X8e38uZZnGa5/m
+         vY4g==
+X-Gm-Message-State: AOAM531qTDlqCxWSy3QZBYbhZHb+s4Jz5UP1HMlPNdGCIpVMqXQvho9Y
+        OrAaSfBxvuD3sQEz5uk3G3BLxV/CZlIv7PbXnQ9eWwFv
+X-Google-Smtp-Source: ABdhPJwn0p2NjRzvNNq9O2e6BHd6q2v1tLF5/02UsbOnLEnf+EaDvA5qfYafeVkdSDwvw860S8/ci7Ar/c6pEctMokg=
+X-Received: by 2002:a05:620a:c53:: with SMTP id u19mr26529059qki.304.1635819054871;
+ Mon, 01 Nov 2021 19:10:54 -0700 (PDT)
 MIME-Version: 1.0
-Received: from localhost.localdomain (218.213.202.190) by SG2PR02CA0123.apcprd02.prod.outlook.com (2603:1096:4:188::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.15 via Frontend Transport; Tue, 2 Nov 2021 02:03:27 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: adf0e9dd-d48f-457f-739b-08d99da4f610
-X-MS-TrafficTypeDiagnostic: SG2PR06MB2459:
-X-Microsoft-Antispam-PRVS: <SG2PR06MB245921658319EE126B10E85EAB8B9@SG2PR06MB2459.apcprd06.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1417;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: p8PqZq0slbBKy+YLforbmwoeWwLvVqGVHKuHTaAWi6W8aIICgH9t6h2oWdYgzv8Jhnu2hdqMYJC6tQbtkBQuy3mb5jLCNs0jhAkc/PwV7dAdIcPfH+bqQPq9MVVsYO62s+C4t/zOLligaXHxODRlDp9SLoQSn0EEXIubce+gcvr8MyqJznrO6smXl0a973D5t3RntbZVbHypVCxRbFy2AW+q+mn+3Ueh4X02nfaMXhUueDmEZTB0kUbidQua/Jdz5voMwAqslFt4YXfQXEVppzVIcuNRu8jcVacuOM9Ufb8oWw0YUHLUngP9iig4AyVxOnrxfvRbz6NW/u5yQRSUP9mT7pjIzBMV1bx66N9wfTfic+rgoSVaSAuVRE51Peo9nUDU3PmOTy8sThmAoC9rOyTY0KqHXBvBTftVCQnPHFcjzpSV3bC5BNSNStqKhO2h188U34Y4+JCmTV176JfKPNbGg5YkC5w5WOYHTXV7TgDsBmRd0+3gyMM0xSa+vgFH+bbrXIPgJq7aqzsHAddc8RrqPZ1Xxr+QAvAeGhPcrgmQ8MCDqSIaQwQVOGlBAMk2vPxSSt0c1YvI3lMVS8mlz74/ylAwzz3DPDZPAZJvl/molUCqsuuxq4CtWWagoC2vllBThIM0fy5LzuoPyks/diOxMtBC9O3/EW/rwHgTK0c93AfEmKZLybFqYTJzMGQQoeStVL7sBDCjbBkL2HBhAQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3367.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(86362001)(5660300002)(36756003)(508600001)(15650500001)(110136005)(52116002)(1076003)(4744005)(4326008)(83380400001)(38350700002)(38100700002)(6666004)(107886003)(8676002)(2906002)(6512007)(316002)(2616005)(186003)(66476007)(66556008)(6486002)(26005)(8936002)(66946007)(956004)(6506007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tEE2tU/F1a4ehVFwik2fnnmWncD9u2TEcVBC+GZltdAfymManO/+axwF/Qt6?=
- =?us-ascii?Q?7318GTtTzFxYQ35snnfLJopAd6U2gyAxUdj81MiQPqyWEBhXyBPMIkGLwJm7?=
- =?us-ascii?Q?octvdIVwTW3N6xzwVMar28VPvl+iewCbpaecbalvjKqurDPhC4HX1LMQmZlO?=
- =?us-ascii?Q?ALwQOlxSwkTSDZmMysxOEGsydZoh2qQXrsDXVSvf/P1ZNiryKpm3blVYOSyP?=
- =?us-ascii?Q?huMNqijDKpH2CWBRWCiFBO8EU7LT8kGMDXaQpgS2rlKH0aLgBXr+vY21hV6R?=
- =?us-ascii?Q?e4QZld0mJEnCQz+CMYVVx9kM67+in8bVjFbI/Hrt99LOhipQH75khHfAIEHi?=
- =?us-ascii?Q?zIc22Y33J+G4FyW43lJvwDGndyH8p3ZxAzpMuTa5i0FtwyNrNQ2sjwL52pdJ?=
- =?us-ascii?Q?bbZ3phUsnECZVZWWV+QeWTzx3gGw2vVFAQAC3eQlOvyLbjBpf5emqrOAkJ9/?=
- =?us-ascii?Q?maGwdSp1+4UBvfX7o3MzISFXDlZrDdz3pjY+Ne4DpFZJztOi1Dy0qkt3EWxV?=
- =?us-ascii?Q?1WNjff3qYuhan33216rK5aZiJseP0H5SNKrlXyVrDI+N7r4G4Oy7AM9lUFN+?=
- =?us-ascii?Q?s6RQMelIGcmY17RMPkZokVIO7pI2/szvo7XtteYynMvF+s1v8x/z2yiRqdMG?=
- =?us-ascii?Q?0tqKvSOi+t+sgfxO+RzejgjPETq3DGvcwt+/bs4lSAa5S161FN/B9MoXS//k?=
- =?us-ascii?Q?zBHwd2CrWpdtrpqFYbnkVAlKNJzdHlvkokvsP5ycCCVvsPGDtdxjY3jLnWTz?=
- =?us-ascii?Q?mfi+A/eVPU69Ap7lq5Khgn9hdQ08NHAU1kmGLSDRCyxID8KDkOjMsdijMB5p?=
- =?us-ascii?Q?coXK2+UXiAczkFlhnIXgPHiKoEZp3/34NpqqdtVFS0WwGsd9tyjyKSJSFeH5?=
- =?us-ascii?Q?IWfNzbdyxN7cmlD74spwDRsRivS8g1WY97Cn9MaTsXNChEfZ+ZQFQrC6iRRE?=
- =?us-ascii?Q?5B57ZlyU/IcHssoi1LoVddFooypAczT2lhR/YhUxVLstUVQFyUBmFibM7b4j?=
- =?us-ascii?Q?ApeHAeP8DjR6FQc+e64J+6Jq1fGedWzKXQJTUplt1jbc6WAPCzQPtQSArvRR?=
- =?us-ascii?Q?ATQvCnCqL8enqae90tW5WvBppCRqncQCwwWK12hfkTaS16hhsmy/znuEdZjs?=
- =?us-ascii?Q?iu0TP29aiZPlGLIPQ5c+oKrElAEKNf5jpyrzkmKWAdlsEQVzARFM/5nDfYo6?=
- =?us-ascii?Q?fsJ1Zh6TVuRMlvjAP29Tfugmq1CeXWfoJ7EBtLnfXleedOBHGsta96ub9QQ6?=
- =?us-ascii?Q?VvLP8S3r8aa+w3DPbFgK4P3F9XCnOXjNw39pGR6qko/53cpEisgi7HqfXAPE?=
- =?us-ascii?Q?qoT3L9lqzlZbWZo968w4S4he1OnOedQ8lB21ahn0t9ekYzIgQPAQRZz87ASa?=
- =?us-ascii?Q?FJG8LU10ppSrj/0DTWCQX48XF600MaBaiF+g61/CtSFQplaocdg3EkWSbaZr?=
- =?us-ascii?Q?Yh7410yolP/EYdciE4cOCW9e7448/axfEoUfRW2U2PWS3O9P+aClFW6Dojta?=
- =?us-ascii?Q?arcB4esfNiSGSuLa9m/knNiGFOktotJy+57mLziaQebFiH6APDbFSGjhsm8I?=
- =?us-ascii?Q?unNhxS/rhOplp4XoLPVYzitkVk9VDkgmLCOxnz39fqxl9B//XL0VteKkn6JW?=
- =?us-ascii?Q?k9vmmEI8QGKF2Xe4AMV1IyQ=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: adf0e9dd-d48f-457f-739b-08d99da4f610
-X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3367.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2021 02:03:28.3563
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cz20yu12Sc3L6aB3wgmhjUx2p6l1dBCsv+fKnWRYu0r2fJ5UAr+6jmNAM9+Kxp7MU8VSAieHH1sL6yo5RYbFgQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR06MB2459
+References: <20211101020416.31402-1-xingwu.yang@gmail.com> <ae67eb7b-a25f-57d3-195f-cdbd9247ef5b@ssi.bg>
+In-Reply-To: <ae67eb7b-a25f-57d3-195f-cdbd9247ef5b@ssi.bg>
+From:   yangxingwu <xingwu.yang@gmail.com>
+Date:   Tue, 2 Nov 2021 10:10:43 +0800
+Message-ID: <CA+7U5JtY-K4P2L9V8N8TeA9cUJDd67YRLR-PKWaHEL9WnybEfw@mail.gmail.com>
+Subject: Re: [PATCH nf-next v5] netfilter: ipvs: Fix reuse connection if RS
+ weight is 0
+To:     Julian Anastasov <ja@ssi.bg>
+Cc:     Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-doc@vger.kernel.org, Chuanqi Liu <legend050709@qq.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix following coccicheck warning:
-./drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c:446:8-56: WARNING
-avoid newline at end of message in NL_SET_ERR_MSG_MOD.
+Julian,
 
-Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+thanks for your help
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index ce790e9b45c3..5c464ea73576 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -443,7 +443,7 @@ static int bnxt_dl_reload_down(struct devlink *dl, bool netns_change,
- 	case DEVLINK_RELOAD_ACTION_DRIVER_REINIT: {
- 		if (BNXT_PF(bp) && bp->pf.active_vfs) {
- 			NL_SET_ERR_MSG_MOD(extack,
--					   "reload is unsupported when VFs are allocated\n");
-+					   "reload is unsupported when VFs are allocated");
- 			return -EOPNOTSUPP;
- 		}
- 		rtnl_lock();
--- 
-2.20.1
+A big problem has been fixed :)
 
+On Tue, Nov 2, 2021 at 2:21 AM Julian Anastasov <ja@ssi.bg> wrote:
+>
+>
+>         Hello,
+>
+> On Mon, 1 Nov 2021, yangxingwu wrote:
+>
+> > We are changing expire_nodest_conn to work even for reused connections when
+> > conn_reuse_mode=0, just as what was done with commit dc7b3eb900aa ("ipvs:
+> > Fix reuse connection if real server is dead").
+> >
+> > For controlled and persistent connections, the new connection will get the
+> > needed real server depending on the rules in ip_vs_check_template().
+> >
+> > Fixes: d752c3645717 ("ipvs: allow rescheduling of new connections when port reuse is detected")
+> > Co-developed-by: Chuanqi Liu <legend050709@qq.com>
+> > Signed-off-by: Chuanqi Liu <legend050709@qq.com>
+> > Signed-off-by: yangxingwu <xingwu.yang@gmail.com>
+>
+>         Looks good to me, thanks!
+>
+> Acked-by: Julian Anastasov <ja@ssi.bg>
+>
+> > ---
+> >  Documentation/networking/ipvs-sysctl.rst | 3 +--
+> >  net/netfilter/ipvs/ip_vs_core.c          | 8 ++++----
+> >  2 files changed, 5 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/Documentation/networking/ipvs-sysctl.rst b/Documentation/networking/ipvs-sysctl.rst
+> > index 2afccc63856e..1cfbf1add2fc 100644
+> > --- a/Documentation/networking/ipvs-sysctl.rst
+> > +++ b/Documentation/networking/ipvs-sysctl.rst
+> > @@ -37,8 +37,7 @@ conn_reuse_mode - INTEGER
+> >
+> >       0: disable any special handling on port reuse. The new
+> >       connection will be delivered to the same real server that was
+> > -     servicing the previous connection. This will effectively
+> > -     disable expire_nodest_conn.
+> > +     servicing the previous connection.
+> >
+> >       bit 1: enable rescheduling of new connections when it is safe.
+> >       That is, whenever expire_nodest_conn and for TCP sockets, when
+> > diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
+> > index 128690c512df..f9d65d2c8da8 100644
+> > --- a/net/netfilter/ipvs/ip_vs_core.c
+> > +++ b/net/netfilter/ipvs/ip_vs_core.c
+> > @@ -1964,7 +1964,6 @@ ip_vs_in(struct netns_ipvs *ipvs, unsigned int hooknum, struct sk_buff *skb, int
+> >       struct ip_vs_proto_data *pd;
+> >       struct ip_vs_conn *cp;
+> >       int ret, pkts;
+> > -     int conn_reuse_mode;
+> >       struct sock *sk;
+> >
+> >       /* Already marked as IPVS request or reply? */
+> > @@ -2041,15 +2040,16 @@ ip_vs_in(struct netns_ipvs *ipvs, unsigned int hooknum, struct sk_buff *skb, int
+> >       cp = INDIRECT_CALL_1(pp->conn_in_get, ip_vs_conn_in_get_proto,
+> >                            ipvs, af, skb, &iph);
+> >
+> > -     conn_reuse_mode = sysctl_conn_reuse_mode(ipvs);
+> > -     if (conn_reuse_mode && !iph.fragoffs && is_new_conn(skb, &iph) && cp) {
+> > +     if (!iph.fragoffs && is_new_conn(skb, &iph) && cp) {
+> >               bool old_ct = false, resched = false;
+> > +             int conn_reuse_mode = sysctl_conn_reuse_mode(ipvs);
+> >
+> >               if (unlikely(sysctl_expire_nodest_conn(ipvs)) && cp->dest &&
+> >                   unlikely(!atomic_read(&cp->dest->weight))) {
+> >                       resched = true;
+> >                       old_ct = ip_vs_conn_uses_old_conntrack(cp, skb);
+> > -             } else if (is_new_conn_expected(cp, conn_reuse_mode)) {
+> > +             } else if (conn_reuse_mode &&
+> > +                        is_new_conn_expected(cp, conn_reuse_mode)) {
+> >                       old_ct = ip_vs_conn_uses_old_conntrack(cp, skb);
+> >                       if (!atomic_read(&cp->n_control)) {
+> >                               resched = true;
+> > --
+> > 2.30.2
+>
+> Regards
+>
+> --
+> Julian Anastasov <ja@ssi.bg>
