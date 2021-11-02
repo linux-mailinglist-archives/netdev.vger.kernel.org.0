@@ -2,381 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D03B443236
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 17:00:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CF924432BF
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 17:32:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234344AbhKBQCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 12:02:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35736 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233684AbhKBQCf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Nov 2021 12:02:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 890676112D;
-        Tue,  2 Nov 2021 16:00:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635868800;
-        bh=5LtcTdqX9mOYiQzmb/gGeVgreS304xKY2ruZiwu+Dww=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iPmLn8UyCgNAIJm1TZYktCCcYiLVoBx6CVE37DP7RkPEyCAwFT4vgq+WsRbmrJrAf
-         DObj7j7bsMw5hHyGWkjBzv9Iuq5f5CFPkigdxmMwtlYWqcu7N+rud2PaiUZgfWX/Co
-         sEmKF8D6azr//Xa9Q4wAkwARKSGfJBD5TBzZ1idEvishOZSa6rBi0jEh/7l/3BNX6S
-         LwMyw6zIBt9vAtOa68RDKCOBTlv93i7m1n789cbRcLDTiI3JMTi4dnGNnV7qZ9AH5j
-         HVKfkX3Jz+t/TdxZdSU6PtgDJynlYZJUFFIXH8wxg0ajN03Zx2e87crBtShjzVnUCC
-         N8WJSdbABC0Ng==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
-        Maor Dickman <maord@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next v2 7/7] net/mlx5e: TC, Remove redundant action stack var
-Date:   Tue,  2 Nov 2021 08:59:48 -0700
-Message-Id: <20211102155948.1143487-8-saeed@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211102155948.1143487-1-saeed@kernel.org>
-References: <20211102155948.1143487-1-saeed@kernel.org>
+        id S234872AbhKBQeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 12:34:21 -0400
+Received: from mail-bn8nam11on2072.outbound.protection.outlook.com ([40.107.236.72]:63860
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S234822AbhKBQL2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Nov 2021 12:11:28 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oaYoMuPtiaaP3z6ngN+nA5PjK1E/GkiSmO9f/zIz2NSFVEd7OzHhkfdTl4nN1y4CqSM4HjaIon0O3YXVRqzTvO/U9Anmczj+Gtmf+TdQWzs5cyFotW8JEVCvqXIk/MfaY7m19CIHV+IW8t1zoCZZFq8V9/p7suRUbMJr/SY/quox9W+hpYj8gWZ7V2nrEUDijeQV1kFUiUnwx0s24jreWvm3hA9oQeWFtB2MjqEczMCJmPkZkqOG/D/xjXQzn2iTwuTmZbM/ra0PqbLi6LtoIJBmmtRTbVR9BQ/oYJCzdpDvx7sO/KiwB4mx2Bb/7HGaQK3QB+79mmZFKFsn6fPK7w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yykBHC4q0MPUQ5d4AJVAKx99BrdZfKtzQEz3WFu0NY8=;
+ b=kA2WrfsesCzvYM865lWk3lu+uzh/uk3rG9PfmPeWcNpUlqgHMOl7cFiYT9zt+1/Hh7HJg03tFKVvSs9NjcoQGTYLWI2AejtUSGwbKAlo1SRULs3bZgmBK/L2zgqEPBf2z87KfeJ7bGeB08FgxlMwvdN3BiXmWSuPrx46fo+U4OxBe6zX4hLS//c5hPiW42hXglKl+ycG7GK5AtADFViiRynE14KaNDz33q9ChAeYZvohr6Xbtu7karDNsx0fuCr13RNyTVOSbPxMqBJXhIm1U5WdFZraMpemogkU3C8Fs/XEj0RdTJhVVVui5jZOy7OAigWNbeGXlpaEfBO6/J6rcg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yykBHC4q0MPUQ5d4AJVAKx99BrdZfKtzQEz3WFu0NY8=;
+ b=TZM/80Q2VUVZWgoGOUhVjwIAvPk//JPknxo5FZhMSjl+kqLMjA60U785Mcm1v4PkgXtADbNnrP1eG/xbUd/fWf0856XIiNVXOhqAkxdHCxlj36m8dNA5fnjn3DgnOk7Ch+VKYbEtv7TQFHCZvBU5w9fcvtjtwW8Q52HFy3O3VRllSor05a/HxRG+Qm0xIbEoL5bj1VuC8OD69/TjVRX+ZX2vfxTn432qhvnmR346Ey58K6tUM0hRupds5zKB3MFnNjbUQYm3HeVG4Xr3AxrpEq7SAmOl3BDBobANSCIQAMFgVtdIuKYXB9H7PkJqB+1dPz4TXBbJUc7SjY9X3cW2NA==
+Received: from BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
+ by BY5PR12MB4212.namprd12.prod.outlook.com (2603:10b6:a03:202::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.10; Tue, 2 Nov
+ 2021 16:08:52 +0000
+Received: from BY5PR12MB4209.namprd12.prod.outlook.com
+ ([fe80::b9dc:e444:3941:e034]) by BY5PR12MB4209.namprd12.prod.outlook.com
+ ([fe80::b9dc:e444:3941:e034%7]) with mapi id 15.20.4669.010; Tue, 2 Nov 2021
+ 16:08:52 +0000
+From:   Saeed Mahameed <saeedm@nvidia.com>
+To:     "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "mkubecek@suse.cz" <mkubecek@suse.cz>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>
+Subject: Re: [PATCH net] ethtool: fix ethtool msg len calculation for pause
+ stats
+Thread-Topic: [PATCH net] ethtool: fix ethtool msg len calculation for pause
+ stats
+Thread-Index: AQHXz6EZjp05BCw+C0ei8dTnJmF0uavwaJeA
+Date:   Tue, 2 Nov 2021 16:08:52 +0000
+Message-ID: <502b2fdb44dfb579eaa00ca912b836eb8075e367.camel@nvidia.com>
+References: <20211102042120.3595389-1-kuba@kernel.org>
+In-Reply-To: <20211102042120.3595389-1-kuba@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.40.4 (3.40.4-2.fc34) 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9e0409c0-1490-464a-755e-08d99e1b102b
+x-ms-traffictypediagnostic: BY5PR12MB4212:
+x-microsoft-antispam-prvs: <BY5PR12MB4212AE2D8A46A1B8D59FCCD9B38B9@BY5PR12MB4212.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: SYLfswlz+UoJR0y83wBb1lLWkTA00SbJddrqOk5elcbz/8TvYrdDeGkA7Ft7IQbbx+Ls7YdVe0SA6oxvVaslHaChrAHd95SIHIvb+dWYWSPiHSFdq0+MSdovVlCHWleyKfw2JdRl88MNc1vu7lxQSaKaF6mHDhD9a2BjFy5+FB30X3tajnJIL+ohv6GhKhJZKTzjWmGK/vEmqhj63o17lcZ3UhcSPmnswRBUn09chen+yQwZK4cPIeuxHdivsUkCcHKQoWHAt8lksVdDx0+SEuPqs7wPCfhsTIN9+4B8HdVMe/v+O+JgARKpqEtCrVVu4gXzed0SuolORgQKnFCZ2CF4fDK4+bQyt0sIL9GiydraGrwGe61u6yINju1s045ti5QvvHMcLB6tsrLMvJkglzr01T/DKKgUzhOpWfRSmygFfPrf/1Bu43+jWDw3V82FbFhwOF/+b6UUkLx75atBshN71y9TgMj33AZvffuJrEacoqfcX3piOWgrWCl04jKmVbs9+sjAscMjy0HjYu9z0DAnw7g5pLrafGj6yr8n4YwHXaRDFr8+Wb9lLUGNPoJnt2RrxRvLJo9nGMbzdM8s85KClep0gMbNXHzBZ8TpFGRNpXBFtPz7x4x29peoP0S3MGRQQ9rnA5nhd0gG65K1MdTl+YBL+HCuPOV0FwGM6Nu4f+8dL2KiKzHPb70m8yNkZnV+aPX+AHLtTWMlT3ksnQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(122000001)(38100700002)(110136005)(66556008)(66446008)(64756008)(66476007)(54906003)(6512007)(66946007)(38070700005)(86362001)(8936002)(8676002)(316002)(4326008)(186003)(508600001)(83380400001)(2616005)(5660300002)(6506007)(71200400001)(76116006)(6486002)(36756003)(26005)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?QnNqK2tiNXpwRHdRcGtmQTdMVy93RHovZUx6NS8wS3Y0Q2pGV2hGalZZWjhs?=
+ =?utf-8?B?QnlRS3Y2Qmlkc0ZzNmVoSWtzemIvK3hrQjJpZlNFdHlJZmx4TjhBZlZ0TWJQ?=
+ =?utf-8?B?cGh0QTlqeDA1M0VYZEJVT0EwcXRXVVlIbG9aT3BwbERrckxDVWVQUUd4UFZX?=
+ =?utf-8?B?YmRSajBnOU1RVUI3STN0RS91NTBnVHdtV3V2WThzYy9jempnR0lMM2hQR3Vj?=
+ =?utf-8?B?OUc2cklaOGtBd0ovaXMzWGJ5UGxYbnNGV1ptU0doa3FKdXREM0Z1OHdrckJT?=
+ =?utf-8?B?TWRXUUdJSitJMDhiNzdlK1hzRklVSlhvRWRld1ZjeWMrUVRhYWY4T0I3eURu?=
+ =?utf-8?B?MkZLZEhPL25uTjJrVW5Ub1dUWncxRUVzYTBFOUF4dXNZclJjczVjdDQ0eFhU?=
+ =?utf-8?B?UnJNYXJFaXdnalR5dGIwemt6OVFLQ1F6WnE3dmN0S2FySFkrcUdnc2laSUtP?=
+ =?utf-8?B?WnUxcXdGVDhWMTIvVXBGSEpqRHowcVo5NmRxNEQ4N0J5NjFhb0w2eGRzSE5P?=
+ =?utf-8?B?SHFpYVVzdFRWWC9lOHY2NFphOUtxb01YK1dibSszdzY0T2k4MnNzOTU5cWRW?=
+ =?utf-8?B?V1BoYTh0VCtkU2NFd3IxUHBwY2dQZkhRQmxDclZLenJBM2Z6bk5xNXBzM2Zo?=
+ =?utf-8?B?U3FkN1U4VlVPR21YanBzbUdqdXgxMk1LNWxCY2xOcWRuanZDN0k5YThiMmhJ?=
+ =?utf-8?B?empWVXBvL2RkTW9CVkQxeXB0UEpxNW12bnpPQWwreUlFSzVDUUlUdmtvSGlZ?=
+ =?utf-8?B?MjBWc05pdjNjMWUwdXgrYWlxNjl5a0NuZ1plVzRjOHJIOVZ2Tm5Udk5jYkJO?=
+ =?utf-8?B?c2NPcVBTbDYzQlVvSEdhVEZWNFlKemF3QVpUMmU5MzBtTldqRStaSGN5RzEz?=
+ =?utf-8?B?QjRwZ1IxeDlKb0p2WWh5Ukw1UElTalBOZm4xWGd2bFlyM2FnbURoejJnSGNr?=
+ =?utf-8?B?eXFGdzZSZFBrcUpRR2pxMC90V0JqQUR3N0syQXF5V3kyT3c0bXg0UWl3UVM4?=
+ =?utf-8?B?ZDhlU2w3bEhiL0d5ZUJDckdYVjZnNnBzY0JVRHFnRHY2SE8vMVR3RFpQQ0pR?=
+ =?utf-8?B?OEN1TEIvR3ltWE9rQXNsek1jREY5Q29hWUxLeUpiYnZmV1EzUkhRenJ1NVdr?=
+ =?utf-8?B?cnE3dlE2VS9iR0ozRGlQSkhsalNDNG1KcEFnVlZscmpsOXcyY05sNGlIRTZu?=
+ =?utf-8?B?VnFVQkhtV2NvZXpqT0NvQUVjTVF5YnNCQ1FLZEhvRmhEYmtoRTIvdzNtWjFn?=
+ =?utf-8?B?QVFvVmY0bnZDY2ZFUjFFYVgzTWFhTHFTeVNsTG1adXRjVXRVMENKT3BHY0dE?=
+ =?utf-8?B?Uk1mUWs3cDVWb1owZzFhUEF0endmd2hlYmEyNmVEbWh3RDFUTGhSekE5T2xU?=
+ =?utf-8?B?NDJ1QUhQMnMwMTR1eXFNVWtIZjMvdjlzR0JrTFQzWDlBaE9zOHpYMitCQ3lZ?=
+ =?utf-8?B?VEpSRjl6UEQxQnhINFBVSUI2UnNsZktZQnNvay9lTDdRR3hGRmRjdGcwZ1RZ?=
+ =?utf-8?B?SXE4N01zcEkyQzBZOHhHODRGNGU5cjBoTXI2RDdxWUZJOU1aeHBOMmJ4b2lx?=
+ =?utf-8?B?cTh5Y0dFSjVXRXgyNnF3L2Y5OUtDcUZnaFNxL245VzJKNk94Zitpc3ZRS3dC?=
+ =?utf-8?B?SlMyekhyZG9UaXNKazZQNXpEakhRczh6dDRwbndsVTRxTXQySEp5TlEvUUd4?=
+ =?utf-8?B?eHlINVN0RGUrc3hEK3g3aHZCeVQ1UHFpOWRkanc4c2J1cDNSNE5TMURoYjNv?=
+ =?utf-8?B?Rmxqd1EvQnAwbllsM2JUdVJtajhZRFVyZW9jdlpwUlkrNkloN0thV3g2MnFj?=
+ =?utf-8?B?cDNQejRFcUd3SEg4TGp1Slc5dmVwbkNOZVcwbEZoVlZBR3g3RGZxSWxKdzJO?=
+ =?utf-8?B?VGV4OVlCQUR2bFR2QlcwaFdqRERNNGJzZEUwZGhPMFV0ZUx2VEx2THA0cDVo?=
+ =?utf-8?B?V3dKMWZ3VG1sWFRmQWxSSUthSHFUdTg3d1pHeEJDaG5jczdCbVJ4VHltVjNs?=
+ =?utf-8?B?RkNWcVJaVms1ZFBDME9UMUFIbzQwZTc3czJacGszeGtxT09xMkcxTnNzR3hu?=
+ =?utf-8?B?WkxqOFpHb0U3ZDMxUkhwL095YkI0ZnB6OEY2MWtuak1ZTXR2cEJrd0N0NG5S?=
+ =?utf-8?B?K2d6NWdOOGpCWDRaZGZ0NW01SldvVC91dnRWQ3h0L0cxNW1QQi9ENjdBUEY1?=
+ =?utf-8?Q?oCXuJWfqtBfHZqvnXMYRwmt6FwXQ+ZEED5qZx3bJhrcy?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <DF651EA22F014743823045458C63D844@namprd12.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4209.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9e0409c0-1490-464a-755e-08d99e1b102b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Nov 2021 16:08:52.1179
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 3sNiVS6dGNYGEn4Jhbh5C+s5ly52RAc/QtE8CZkCheeS0uIo7AZ/gumJKZauWYW2JudrVH29+ApyuykllMphHg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4212
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
-
-Remove the action stack var from parse tc fdb actions
-and prase tc nic actions, use the flow attr action var directly.
-
-Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Maor Dickman <maord@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../mellanox/mlx5/core/en/tc_tun_encap.c      |  2 +-
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 89 +++++++++----------
- .../net/ethernet/mellanox/mlx5/core/en_tc.h   |  1 -
- 3 files changed, 42 insertions(+), 50 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-index 660cca73c36c..9111b6971ee6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-@@ -28,7 +28,7 @@ static int mlx5e_set_int_port_tunnel(struct mlx5e_priv *priv,
- 
- 	err = mlx5e_set_fwd_to_int_port_actions(priv, attr, e->route_dev_ifindex,
- 						MLX5E_TC_INT_PORT_EGRESS,
--						&attr->action, out_index);
-+						out_index);
- 
- out:
- 	if (route_dev)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index aa4da8d1e252..e2bb7f8a0833 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -3452,7 +3452,6 @@ parse_tc_nic_actions(struct mlx5e_priv *priv,
- 	struct pedit_headers_action hdrs[2] = {};
- 	const struct flow_action_entry *act;
- 	struct mlx5_nic_flow_attr *nic_attr;
--	u32 action = 0;
- 	int err, i;
- 
- 	if (!flow_action_has_entries(flow_action)) {
-@@ -3473,12 +3472,12 @@ parse_tc_nic_actions(struct mlx5e_priv *priv,
- 	flow_action_for_each(i, act, flow_action) {
- 		switch (act->id) {
- 		case FLOW_ACTION_ACCEPT:
--			action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
--				  MLX5_FLOW_CONTEXT_ACTION_COUNT;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
-+					MLX5_FLOW_CONTEXT_ACTION_COUNT;
- 			break;
- 		case FLOW_ACTION_DROP:
--			action |= MLX5_FLOW_CONTEXT_ACTION_DROP |
--				  MLX5_FLOW_CONTEXT_ACTION_COUNT;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_DROP |
-+					MLX5_FLOW_CONTEXT_ACTION_COUNT;
- 			break;
- 		case FLOW_ACTION_MANGLE:
- 		case FLOW_ACTION_ADD:
-@@ -3487,19 +3486,19 @@ parse_tc_nic_actions(struct mlx5e_priv *priv,
- 			if (err)
- 				return err;
- 
--			action |= MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
- 			break;
- 		case FLOW_ACTION_VLAN_MANGLE:
- 			err = add_vlan_rewrite_action(priv,
- 						      MLX5_FLOW_NAMESPACE_KERNEL,
- 						      act, parse_attr, hdrs,
--						      &action, extack);
-+						      &attr->action, extack);
- 			if (err)
- 				return err;
- 
- 			break;
- 		case FLOW_ACTION_CSUM:
--			if (csum_offload_supported(priv, action,
-+			if (csum_offload_supported(priv, attr->action,
- 						   act->csum_flags,
- 						   extack))
- 				break;
-@@ -3512,8 +3511,8 @@ parse_tc_nic_actions(struct mlx5e_priv *priv,
- 			    same_hw_devs(priv, netdev_priv(peer_dev))) {
- 				parse_attr->mirred_ifindex[0] = peer_dev->ifindex;
- 				flow_flag_set(flow, HAIRPIN);
--				action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
--					  MLX5_FLOW_CONTEXT_ACTION_COUNT;
-+				attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
-+						MLX5_FLOW_CONTEXT_ACTION_COUNT;
- 			} else {
- 				NL_SET_ERR_MSG_MOD(extack,
- 						   "device is not on same HW, can't offload");
-@@ -3533,17 +3532,17 @@ parse_tc_nic_actions(struct mlx5e_priv *priv,
- 			}
- 
- 			nic_attr->flow_tag = mark;
--			action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
- 			}
- 			break;
- 		case FLOW_ACTION_GOTO:
--			err = validate_goto_chain(priv, flow, act, action,
-+			err = validate_goto_chain(priv, flow, act, attr->action,
- 						  extack);
- 			if (err)
- 				return err;
- 
--			action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
--				  MLX5_FLOW_CONTEXT_ACTION_COUNT;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
-+					MLX5_FLOW_CONTEXT_ACTION_COUNT;
- 			attr->dest_chain = act->chain_index;
- 			break;
- 		case FLOW_ACTION_CT:
-@@ -3560,8 +3559,6 @@ parse_tc_nic_actions(struct mlx5e_priv *priv,
- 		}
- 	}
- 
--	attr->action = action;
--
- 	if (attr->dest_chain && parse_attr->mirred_ifindex[0]) {
- 		NL_SET_ERR_MSG(extack, "Mirroring goto chain rules isn't supported");
- 		return -EOPNOTSUPP;
-@@ -3827,7 +3824,6 @@ int mlx5e_set_fwd_to_int_port_actions(struct mlx5e_priv *priv,
- 				      struct mlx5_flow_attr *attr,
- 				      int ifindex,
- 				      enum mlx5e_tc_int_port_type type,
--				      u32 *action,
- 				      int out_index)
- {
- 	struct mlx5_esw_flow_attr *esw_attr = attr->esw_attr;
-@@ -3851,7 +3847,7 @@ int mlx5e_set_fwd_to_int_port_actions(struct mlx5e_priv *priv,
- 		return err;
- 	}
- 
--	*action |= MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
-+	attr->action |= MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
- 
- 	esw_attr->dest_int_port = dest_int_port;
- 	esw_attr->dests[out_index].flags |= MLX5_ESW_DEST_CHAIN_WITH_SRC_PORT_CHANGE;
-@@ -3879,7 +3875,6 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 	const struct flow_action_entry *act;
- 	struct mlx5_esw_flow_attr *esw_attr;
- 	bool encap = false, decap = false;
--	u32 action = attr->action;
- 	int err, i, if_count = 0;
- 	bool ptype_host = false;
- 	bool mpls_push = false;
-@@ -3901,8 +3896,8 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 	flow_action_for_each(i, act, flow_action) {
- 		switch (act->id) {
- 		case FLOW_ACTION_ACCEPT:
--			action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
--				MLX5_FLOW_CONTEXT_ACTION_COUNT;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
-+					MLX5_FLOW_CONTEXT_ACTION_COUNT;
- 			attr->flags |= MLX5_ESW_ATTR_FLAG_ACCEPT;
- 			break;
- 		case FLOW_ACTION_PTYPE:
-@@ -3915,8 +3910,8 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 			ptype_host = true;
- 			break;
- 		case FLOW_ACTION_DROP:
--			action |= MLX5_FLOW_CONTEXT_ACTION_DROP |
--				  MLX5_FLOW_CONTEXT_ACTION_COUNT;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_DROP |
-+					MLX5_FLOW_CONTEXT_ACTION_COUNT;
- 			break;
- 		case FLOW_ACTION_TRAP:
- 			if (!flow_offload_has_one_action(flow_action)) {
-@@ -3924,8 +3919,8 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 						   "action trap is supported as a sole action only");
- 				return -EOPNOTSUPP;
- 			}
--			action |= (MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
--				   MLX5_FLOW_CONTEXT_ACTION_COUNT);
-+			attr->action |= (MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
-+					 MLX5_FLOW_CONTEXT_ACTION_COUNT);
- 			attr->flags |= MLX5_ESW_ATTR_FLAG_SLOW_PATH;
- 			break;
- 		case FLOW_ACTION_MPLS_PUSH:
-@@ -3956,7 +3951,7 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 			}
- 
- 			parse_attr->eth.h_proto = act->mpls_pop.proto;
--			action |= MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT;
- 			flow_flag_set(flow, L3_TO_L2_DECAP);
- 			break;
- 		case FLOW_ACTION_MANGLE:
-@@ -3967,12 +3962,12 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 				return err;
- 
- 			if (!flow_flag_test(flow, L3_TO_L2_DECAP)) {
--				action |= MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
-+				attr->action |= MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
- 				esw_attr->split_count = esw_attr->out_count;
- 			}
- 			break;
- 		case FLOW_ACTION_CSUM:
--			if (csum_offload_supported(priv, action,
-+			if (csum_offload_supported(priv, attr->action,
- 						   act->csum_flags, extack))
- 				break;
- 
-@@ -4008,12 +4003,12 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 				return -EOPNOTSUPP;
- 			}
- 
--			action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
- 				  MLX5_FLOW_CONTEXT_ACTION_COUNT;
- 
- 			err = mlx5e_set_fwd_to_int_port_actions(priv, attr, out_dev->ifindex,
- 								MLX5E_TC_INT_PORT_INGRESS,
--								&action, esw_attr->out_count);
-+								esw_attr->out_count);
- 			if (err)
- 				return err;
- 
-@@ -4058,8 +4053,8 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 				return -EOPNOTSUPP;
- 			}
- 
--			action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
--				  MLX5_FLOW_CONTEXT_ACTION_COUNT;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
-+					MLX5_FLOW_CONTEXT_ACTION_COUNT;
- 			if (encap) {
- 				parse_attr->mirred_ifindex[esw_attr->out_count] =
- 					out_dev->ifindex;
-@@ -4095,14 +4090,14 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 				if (is_vlan_dev(out_dev)) {
- 					err = add_vlan_push_action(priv, attr,
- 								   &out_dev,
--								   &action, extack);
-+								   &attr->action, extack);
- 					if (err)
- 						return err;
- 				}
- 
- 				if (is_vlan_dev(parse_attr->filter_dev)) {
- 					err = add_vlan_pop_action(priv, attr,
--								  &action, extack);
-+								  &attr->action, extack);
- 					if (err)
- 						return err;
- 				}
-@@ -4135,7 +4130,6 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 				err = mlx5e_set_fwd_to_int_port_actions(priv, attr,
- 									out_dev->ifindex,
- 									MLX5E_TC_INT_PORT_EGRESS,
--									&action,
- 									esw_attr->out_count);
- 				if (err)
- 					return err;
-@@ -4173,15 +4167,16 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 		case FLOW_ACTION_VLAN_PUSH:
- 		case FLOW_ACTION_VLAN_POP:
- 			if (act->id == FLOW_ACTION_VLAN_PUSH &&
--			    (action & MLX5_FLOW_CONTEXT_ACTION_VLAN_POP)) {
-+			    (attr->action & MLX5_FLOW_CONTEXT_ACTION_VLAN_POP)) {
- 				/* Replace vlan pop+push with vlan modify */
--				action &= ~MLX5_FLOW_CONTEXT_ACTION_VLAN_POP;
-+				attr->action &= ~MLX5_FLOW_CONTEXT_ACTION_VLAN_POP;
- 				err = add_vlan_rewrite_action(priv,
- 							      MLX5_FLOW_NAMESPACE_FDB,
- 							      act, parse_attr, hdrs,
--							      &action, extack);
-+							      &attr->action, extack);
- 			} else {
--				err = parse_tc_vlan_action(priv, act, esw_attr, &action, extack);
-+				err = parse_tc_vlan_action(priv, act, esw_attr, &attr->action,
-+							   extack);
- 			}
- 			if (err)
- 				return err;
-@@ -4192,7 +4187,7 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 			err = add_vlan_rewrite_action(priv,
- 						      MLX5_FLOW_NAMESPACE_FDB,
- 						      act, parse_attr, hdrs,
--						      &action, extack);
-+						      &attr->action, extack);
- 			if (err)
- 				return err;
- 
-@@ -4202,13 +4197,13 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 			decap = true;
- 			break;
- 		case FLOW_ACTION_GOTO:
--			err = validate_goto_chain(priv, flow, act, action,
-+			err = validate_goto_chain(priv, flow, act, attr->action,
- 						  extack);
- 			if (err)
- 				return err;
- 
--			action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
--				  MLX5_FLOW_CONTEXT_ACTION_COUNT;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
-+					MLX5_FLOW_CONTEXT_ACTION_COUNT;
- 			attr->dest_chain = act->chain_index;
- 			break;
- 		case FLOW_ACTION_CT:
-@@ -4253,19 +4248,17 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 	attr->ip_version = mlx5e_tc_get_ip_version(&parse_attr->spec, true);
- 
- 	if (MLX5_CAP_GEN(esw->dev, prio_tag_required) &&
--	    action & MLX5_FLOW_CONTEXT_ACTION_VLAN_POP) {
-+	    attr->action & MLX5_FLOW_CONTEXT_ACTION_VLAN_POP) {
- 		/* For prio tag mode, replace vlan pop with rewrite vlan prio
- 		 * tag rewrite.
- 		 */
--		action &= ~MLX5_FLOW_CONTEXT_ACTION_VLAN_POP;
-+		attr->action &= ~MLX5_FLOW_CONTEXT_ACTION_VLAN_POP;
- 		err = add_vlan_prio_tag_rewrite_action(priv, parse_attr, hdrs,
--						       &action, extack);
-+						       &attr->action, extack);
- 		if (err)
- 			return err;
- 	}
- 
--	attr->action = action;
--
- 	err = actions_prepare_mod_hdr_actions(priv, flow, attr, hdrs, extack);
- 	if (err)
- 		return err;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-index eb042f0f5a41..3a470ec78c0b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-@@ -285,7 +285,6 @@ int mlx5e_set_fwd_to_int_port_actions(struct mlx5e_priv *priv,
- 				      struct mlx5_flow_attr *attr,
- 				      int ifindex,
- 				      enum mlx5e_tc_int_port_type type,
--				      u32 *action,
- 				      int out_index);
- #else /* CONFIG_MLX5_CLS_ACT */
- static inline int  mlx5e_tc_nic_init(struct mlx5e_priv *priv) { return 0; }
--- 
-2.31.1
-
+T24gTW9uLCAyMDIxLTExLTAxIGF0IDIxOjIxIC0wNzAwLCBKYWt1YiBLaWNpbnNraSB3cm90ZToN
+Cj4gRVRIVE9PTF9BX1BBVVNFX1NUQVRfTUFYIGlzIHRoZSBNQVggYXR0cmlidXRlIGlkLA0KPiBz
+byB3ZSBuZWVkIHRvIHN1YnRyYWN0IG5vbi1zdGF0cyBhbmQgYWRkIG9uZSB0bw0KPiBnZXQgYSBj
+b3VudCAoSU9XIC0yKzEgPT0gLTEpLg0KPiANCj4gT3RoZXJ3aXNlIHdlJ2xsIHNlZToNCj4gDQo+
+IMKgIGV0aG5sIGNtZCAyMTogY2FsY3VsYXRlZCByZXBseSBsZW5ndGggNDAsIGJ1dCBjb25zdW1l
+ZCA1Mg0KPiANCj4gRml4ZXM6IDlhMjdhMzMwMjdmMiAoImV0aHRvb2w6IGFkZCBzdGFuZGFyZCBw
+YXVzZSBzdGF0cyIpDQo+IFNpZ25lZC1vZmYtYnk6IEpha3ViIEtpY2luc2tpIDxrdWJhQGtlcm5l
+bC5vcmc+DQoNClJldmlld2VkLWJ5OiBTYWVlZCBNYWhhbWVlZCA8c2FlZWRtQG52aWRpYS5jb20+
+DQoNCj4gLS0tDQo+IMKgbmV0L2V0aHRvb2wvcGF1c2UuYyB8IDIgKy0NCj4gwqAxIGZpbGUgY2hh
+bmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9u
+ZXQvZXRodG9vbC9wYXVzZS5jIGIvbmV0L2V0aHRvb2wvcGF1c2UuYw0KPiBpbmRleCA5MDA5ZjQx
+MjE1MWUuLmM5MTcxMjM0MTMwYiAxMDA2NDQNCj4gLS0tIGEvbmV0L2V0aHRvb2wvcGF1c2UuYw0K
+PiArKysgYi9uZXQvZXRodG9vbC9wYXVzZS5jDQo+IEBAIC01Nyw3ICs1Nyw3IEBAIHN0YXRpYyBp
+bnQgcGF1c2VfcmVwbHlfc2l6ZShjb25zdCBzdHJ1Y3QNCj4gZXRobmxfcmVxX2luZm8gKnJlcV9i
+YXNlLA0KPiDCoMKgwqDCoMKgwqDCoMKgaWYgKHJlcV9iYXNlLT5mbGFncyAmIEVUSFRPT0xfRkxB
+R19TVEFUUykNCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBuICs9IG5sYV90b3Rh
+bF9zaXplKDApICvCoMKgwqDCoMKgwqDCoMKgLyogX1BBVVNFX1NUQVRTICovDQo+IMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoG5sYV90b3RhbF9zaXplXzY0
+Yml0KHNpemVvZih1NjQpKSAqDQo+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoChFVEhUT09MX0FfUEFVU0VfU1RBVF9NQVggLSAy
+KTsNCj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgKEVUSFRPT0xfQV9QQVVTRV9TVEFUX01BWCAtIDEpOw0KDQpNYXliZSBmb3Ig
+bmV0LW5leHQgd2UgY2FuIGltcHJvdmUgcmVhZGFiaWxpdHkgaGVyZS4NCkp1c3QgYnkgc3Rhcmlu
+ZyBhdCB0aGVzZSBsaW5lcywgeW91J2QgdGhpbmsgdGhhdCB0aGlzIHNob3VsZCd2ZSBiZWVuDQoo
+RVRIVE9PTF9BX1BBVVNFX1NUQVRfTUFYICsgMSksIG9yIGV2ZW4gYmV0dGVyLCBqdXN0DQooRVRI
+VE9PTF9BX1BBVVNFX1NUQVRfQ05UKSAvKiBDb3VudCBvZiBvbmx5IHN0YXRzICovDQoNCm1heWJl
+IHdlIG5lZWQgdG8gc2VwYXJhdGUgc3RhdHMgZnJvbSBub24tc3RhdHMsIG9yIGRlZmluZQ0KRVRI
+VE9PTF9BX1BBVVNFX1NUQVRfQ05UIHdoZXJlIGl0IG5lZWRzIHRvIGJlIGRlZmluZWQuDQoNCg==
