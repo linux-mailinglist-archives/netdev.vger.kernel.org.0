@@ -2,162 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAB0B443629
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 19:58:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9403B44364D
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 20:13:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229990AbhKBTAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 15:00:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48996 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229764AbhKBTAh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 15:00:37 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B661C061714
-        for <netdev@vger.kernel.org>; Tue,  2 Nov 2021 11:58:02 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id d3so30300wrh.8
-        for <netdev@vger.kernel.org>; Tue, 02 Nov 2021 11:58:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=47dg4wDUBrwuePyaPcYFC2VKfaiVAGlUW1ptBmkxq6g=;
-        b=Ci6/T+hRM/12osLnmdWVxnK1W5ShBdR7uIkeCS0VJy5jDPW1Q7llEVF74CxSIhs+PM
-         zSlUHWfHzc2QKJbemfarZFtSR9D72CeZFQfpx4IOa5bxlpGQzjBtOn308e+tb0B7U5Pc
-         vJ1IjRurjhL9hCpVqIJXZHiY9jdqvoJVw84MxZ3oQIEaD/XlpTfmConzUtSHf4NbKQlo
-         3q7SfckqFpb3laXYrX+1qzbokTlrIbgmkE+GcbfD6gfVxsKrH3AvidnDGqjEYcs+8VXD
-         knbFaBlzhpl6T+JCexAYlHTE6Nw+CQqNH8fsXhS+gstwwTpQ2ntyc9pMHRyy5wiQ1PP4
-         eA/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=47dg4wDUBrwuePyaPcYFC2VKfaiVAGlUW1ptBmkxq6g=;
-        b=1jUAobbgwJcaPsLDRQFSkUZsD1+QOdeEK/IdL7HxOaySerR12iFBG6pO5RHULbBZjW
-         46xGl/R4mak+HsZLxosKUezQuwov1ZBlCfmoiQMFzeG4cyhzlYRHcPzvbJJo4Q3bfUza
-         sqpBRk5iZeoLLy8lvSKKutJaPYMV19js12IXD02XBaSxLm2++jS2Djr5nmH9t+0x6/OF
-         1qT5MTMv3vM0tGiRZKc/DQtv8VG4cOjMktZndlOK4Ci+bwHVgZjfwJ5LlL+jXsSmDG/8
-         F23KuyGd7UYCPQsFSooB+TyB9MH2GqFhzHp0LXkkcWCBaExCPeD0xHkoeseyOPcu48K3
-         xgTA==
-X-Gm-Message-State: AOAM530tu7dkqeVRgN3JKu/DPI8hEr3prbqqId62sfekT0tBxhKNNjHB
-        uP9BPxdCXTORgatTxFQSbG4x9W/wa629G9pJUYBZnQ==
-X-Google-Smtp-Source: ABdhPJxGhv1Nqjq5h2hVcPi8AykmeTcMpWKPrLb8qguQwQJh+588fgc8q/dK9c0v66hXjknwMrsWalOVQjufdUx4qsk=
-X-Received: by 2002:a5d:5850:: with SMTP id i16mr24120984wrf.197.1635879480844;
- Tue, 02 Nov 2021 11:58:00 -0700 (PDT)
+        id S229844AbhKBTPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 15:15:46 -0400
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:37258 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229530AbhKBTPp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 15:15:45 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 1A2JCiXa068572;
+        Tue, 2 Nov 2021 14:12:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1635880364;
+        bh=SBcWv8IuDwt6CEmB+nJa+eEEs/ZFYCeP0/GIllCBAl0=;
+        h=Subject:From:To:CC:References:Date:In-Reply-To;
+        b=Z+PsH0b6GnQkVbZwTdBqydxoGFHS7bP92iZpmRi9BHz6QnLEQn/xbxt+flAu3wvQ8
+         uC6FOANWeZKw4oK/KQCZJYCX0DCvRUdHC2Gnl5uSQMZwgf9lNv10Ednu84BOICDB2f
+         kpcVaUsKRppyRBas0dd6rjJBsBzMERPP3gdhGM5k=
+Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 1A2JCixM101261
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 2 Nov 2021 14:12:44 -0500
+Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 2
+ Nov 2021 14:12:43 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 2 Nov 2021 14:12:43 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 1A2JCfm2059686;
+        Tue, 2 Nov 2021 14:12:42 -0500
+Subject: Re: [RFC PATCH] net: phy/mdio: enable mmd indirect access through
+ phy_mii_ioctl()
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        <linux-kernel@vger.kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>
+References: <20211101182859.24073-1-grygorii.strashko@ti.com>
+ <YYBBHsFEwGdPJw3b@lunn.ch> <YYBF3IZoSN6/O6AL@shell.armlinux.org.uk>
+ <YYCLJnY52MoYfxD8@lunn.ch> <YYExmHYW49jOjfOt@shell.armlinux.org.uk>
+ <bc9df441-49bf-5c8a-891c-cc3f0db00aba@ti.com>
+ <YYF4ZQHqc1jJsE/+@shell.armlinux.org.uk>
+ <e18f17bd-9e77-d3ef-cc1e-30adccb7cdd5@ti.com>
+Message-ID: <828e2d69-be15-fe69-48d8-9cfc29c4e76e@ti.com>
+Date:   Tue, 2 Nov 2021 21:12:29 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-References: <863fdf13-b1f4-f429-d8ac-269f9ceaa747@gmail.com> <20211102183235.14679-1-hmukos@yandex-team.ru>
-In-Reply-To: <20211102183235.14679-1-hmukos@yandex-team.ru>
-From:   Yuchung Cheng <ycheng@google.com>
-Date:   Tue, 2 Nov 2021 11:57:22 -0700
-Message-ID: <CAK6E8=df3ZCt=tBDZHs8OEXWvnWpihxBr0x2+WP+smE+DXB9qQ@mail.gmail.com>
-Subject: Re: [PATCH v2] tcp: Use BPF timeout setting for SYN ACK RTO
-To:     Akhmat Karakotov <hmukos@yandex-team.ru>
-Cc:     eric.dumazet@gmail.com, brakmo@fb.com, mitradir@yandex-team.ru,
-        ncardwell@google.com, netdev@vger.kernel.org, zeil@yandex-team.ru
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <e18f17bd-9e77-d3ef-cc1e-30adccb7cdd5@ti.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 2, 2021 at 11:33 AM Akhmat Karakotov <hmukos@yandex-team.ru> wrote:
->
-> When setting RTO through BPF program, some SYN ACK packets were unaffected
-> and continued to use TCP_TIMEOUT_INIT constant. This patch adds timeout
-> option to struct request_sock. Option is initialized with TCP_TIMEOUT_INIT
-> and is reassigned through BPF using tcp_timeout_init call. SYN ACK
-> retransmits now use newly added timeout option.
->
-> Signed-off-by: Akhmat Karakotov <hmukos@yandex-team.ru>
-> ---
->  include/net/request_sock.h      | 2 ++
->  net/ipv4/inet_connection_sock.c | 2 +-
->  net/ipv4/tcp_input.c            | 8 +++++---
->  net/ipv4/tcp_minisocks.c        | 4 ++--
->  4 files changed, 10 insertions(+), 6 deletions(-)
->
-> diff --git a/include/net/request_sock.h b/include/net/request_sock.h
-> index 29e41ff3ec93..144c39db9898 100644
-> --- a/include/net/request_sock.h
-> +++ b/include/net/request_sock.h
-> @@ -70,6 +70,7 @@ struct request_sock {
->         struct saved_syn                *saved_syn;
->         u32                             secid;
->         u32                             peer_secid;
-> +       u32                             timeout;
->  };
->
->  static inline struct request_sock *inet_reqsk(const struct sock *sk)
-> @@ -104,6 +105,7 @@ reqsk_alloc(const struct request_sock_ops *ops, struct sock *sk_listener,
->         sk_node_init(&req_to_sk(req)->sk_node);
->         sk_tx_queue_clear(req_to_sk(req));
->         req->saved_syn = NULL;
-> +       req->timeout = 0;
-why not just set to TCP_TIMEOUT_INIT to avoid setting it again in
-inet_reqsk_alloc?
 
->         req->num_timeout = 0;
->         req->num_retrans = 0;
->         req->sk = NULL;
-> diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-> index 0d477c816309..c43cc1f22092 100644
-> --- a/net/ipv4/inet_connection_sock.c
-> +++ b/net/ipv4/inet_connection_sock.c
-> @@ -870,7 +870,7 @@ static void reqsk_timer_handler(struct timer_list *t)
->
->                 if (req->num_timeout++ == 0)
->                         atomic_dec(&queue->young);
-> -               timeo = min(TCP_TIMEOUT_INIT << req->num_timeout, TCP_RTO_MAX);
-> +               timeo = min(req->timeout << req->num_timeout, TCP_RTO_MAX);
->                 mod_timer(&req->rsk_timer, jiffies + timeo);
->
->                 if (!nreq)
-> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> index 3f7bd7ae7d7a..5c181dc4e96f 100644
-> --- a/net/ipv4/tcp_input.c
-> +++ b/net/ipv4/tcp_input.c
-> @@ -6706,6 +6706,7 @@ struct request_sock *inet_reqsk_alloc(const struct request_sock_ops *ops,
->                 ireq->ireq_state = TCP_NEW_SYN_RECV;
->                 write_pnet(&ireq->ireq_net, sock_net(sk_listener));
->                 ireq->ireq_family = sk_listener->sk_family;
-> +               req->timeout = TCP_TIMEOUT_INIT;
->         }
->
->         return req;
-> @@ -6922,9 +6923,10 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
->                 sock_put(fastopen_sk);
->         } else {
->                 tcp_rsk(req)->tfo_listener = false;
-> -               if (!want_cookie)
-> -                       inet_csk_reqsk_queue_hash_add(sk, req,
-> -                               tcp_timeout_init((struct sock *)req));
-> +               if (!want_cookie) {
-> +                       req->timeout = tcp_timeout_init((struct sock *)req);
-> +                       inet_csk_reqsk_queue_hash_add(sk, req, req->timeout);
-> +               }
->                 af_ops->send_synack(sk, dst, &fl, req, &foc,
->                                     !want_cookie ? TCP_SYNACK_NORMAL :
->                                                    TCP_SYNACK_COOKIE,
-> diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-> index 0a4f3f16140a..9724c9c6d331 100644
-> --- a/net/ipv4/tcp_minisocks.c
-> +++ b/net/ipv4/tcp_minisocks.c
-> @@ -590,7 +590,7 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
->                          * it can be estimated (approximately)
->                          * from another data.
->                          */
-> -                       tmp_opt.ts_recent_stamp = ktime_get_seconds() - ((TCP_TIMEOUT_INIT/HZ)<<req->num_timeout);
-> +                       tmp_opt.ts_recent_stamp = ktime_get_seconds() - (req->timeout << req->num_timeout) / HZ;
->                         paws_reject = tcp_paws_reject(&tmp_opt, th->rst);
->                 }
->         }
-> @@ -629,7 +629,7 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
->                     !inet_rtx_syn_ack(sk, req)) {
->                         unsigned long expires = jiffies;
->
-> -                       expires += min(TCP_TIMEOUT_INIT << req->num_timeout,
-> +                       expires += min(req->timeout << req->num_timeout,
->                                        TCP_RTO_MAX);
->                         if (!fastopen)
->                                 mod_timer_pending(&req->rsk_timer, expires);
-> --
-> 2.17.1
->
+
+On 02/11/2021 20:37, Grygorii Strashko wrote:
+> Hi Russell, Andrew,
+> 
+> Thanks a lot for you comments.
+> 
+> On 02/11/2021 19:41, Russell King (Oracle) wrote:
+>> On Tue, Nov 02, 2021 at 07:19:46PM +0200, Grygorii Strashko wrote:
+>>> It would require MDIO bus lock, which is not a solution,
+>>> or some sort of batch processing, like for mmd:
+>>>   w reg1 val1
+>>>   w reg2 val2
+>>>   w reg1 val3
+>>>   r reg2
+>>>
+>>> What Kernel interface do you have in mind?
+>>
+>> That is roughly what I was thinking, but Andrew has basically said no
+>> to it.
+>>
+>>> Sry, but I have to note that demand for this become terribly high, min two pings in months
+>>
+>> Feel free to continue demanding it, but it seems that at least two of
+>> the phylib maintainers are in agreement that providing generic
+>> emulation of C45 accesses in kernel space is just not going to happen.
+>>
+> 
+> not ready to give up.
+> 
+> One more idea how about mdiobus_get_phy(), so we can search for PHY and
+> if present try to use proper API phy_read/phy_write_mmd?
+> 
+> 
+
+smth like below
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index a3bfb156c83d..8ebe59b5647d 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -285,6 +285,7 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
+         u16 val = mii_data->val_in;
+         bool change_autoneg = false;
+         int prtad, devad;
++       struct phy_device *phydev_rq = phydev;
+  
+         switch (cmd) {
+         case SIOCGMIIPHY:
+@@ -300,8 +301,18 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
+                         prtad = mii_data->phy_id;
+                         devad = mii_data->reg_num;
+                 }
+-               mii_data->val_out = mdiobus_read(phydev->mdio.bus, prtad,
+-                                                devad);
++
++               if (prtad != phydev->mdio.addr)
++                       phydev_rq = mdiobus_get_phy(phydev->mdio.bus, prtad);
++
++               if (!phydev_rq) {
++                       mii_data->val_out = mdiobus_read(phydev->mdio.bus, prtad, devad);
++               } else if (mdio_phy_id_is_c45(mii_data->phy_id) && !phydev->is_c45) {
++                       mii_data->val_out = phy_read_mmd(phydev_rq, mdio_phy_id_devad(mii_data->phy_id), mii_data->reg_num);
++               } else {
++                       mii_data->val_out = phy_read(phydev_rq, mii_data->reg_num);
++               }
++
+                 return 0;
+  
+         case SIOCSMIIREG:
+
+-- 
+Best regards,
+grygorii
