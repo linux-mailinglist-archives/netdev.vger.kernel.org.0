@@ -2,825 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23F4644333D
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 17:40:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52B7E44321D
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 16:54:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234712AbhKBQm7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 12:42:59 -0400
-Received: from mga18.intel.com ([134.134.136.126]:49962 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231579AbhKBQm7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Nov 2021 12:42:59 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10156"; a="218210509"
-X-IronPort-AV: E=Sophos;i="5.87,203,1631602800"; 
-   d="scan'208";a="218210509"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2021 08:46:58 -0700
-X-IronPort-AV: E=Sophos;i="5.87,203,1631602800"; 
-   d="scan'208";a="667164066"
-Received: from smile.fi.intel.com ([10.237.72.184])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2021 08:46:52 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1mhvzf-0033E0-QA;
-        Tue, 02 Nov 2021 17:46:35 +0200
-Date:   Tue, 2 Nov 2021 17:46:35 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        mika.westerberg@linux.intel.com, moises.veleta@intel.com,
-        pierre-louis.bossart@intel.com, muralidharan.sethuraman@intel.com,
-        Soumya.Prakash.Mishra@intel.com, sreehari.kancharla@intel.com,
-        suresh.nagaraj@intel.com
-Subject: Re: [PATCH v2 03/14] net: wwan: t7xx: Add core components
-Message-ID: <YYFdW5IWdbyKVF/u@smile.fi.intel.com>
-References: <20211101035635.26999-1-ricardo.martinez@linux.intel.com>
- <20211101035635.26999-4-ricardo.martinez@linux.intel.com>
-MIME-Version: 1.0
+        id S234689AbhKBP5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 11:57:01 -0400
+Received: from mail-mw2nam12on2088.outbound.protection.outlook.com ([40.107.244.88]:41440
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S234673AbhKBP47 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Nov 2021 11:56:59 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TP8/R10QaAPPLnMl8i3TmC6QPe6ubthG9QU2w1yXCwtJosX8u7MFL1hhD/7vbxeo5w50D1JVKJsVUwumJfvCEf0aedLFJwF8saYAVJxOx2vrflfmDeGufuRUY2ejF0gc+GpHh7H+HisbeeVSVhBMhBNPrEvCSbPYmm1//2GqvOp3EFC0AfUvIzeGipMdqz7uGWoP8zl9AGUERDf4kiuhJLrDXfxjsgDpbgxb8f9rACRwMGuj9DXmstuve/bRYVJT7XZOoJM1PpSU5VUn8cXfqT4RMVBmWiji4i73B9ycYYSl9s5OEjUR/e+ja+eJdQ68nUWEzX9UN+U1YinPXD5PAw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6bq2QYmvwuPYUkW9nzNm/0U6nrqUEF42Htl6S1Da4Ak=;
+ b=KNL9usYm64Hu+luRGxy5NCLuEyCLrITVmE5/fdqol5eOQkMS9eZxibcjt7CqnUFdow4NsrYXXgJdKYHl+z86hUWRurdaGdeS5tjdSLi6z419d6ThVt0guESxa1VLqJIKL9id4AZHAEE7yh9CRZwfD7epppBGiYD7q5abpdEIf4GaX7U02V2VdE7THYaXvKcEDI/n/U8HF4MXfkToEOJBmk59QamqCSxX06kEtudZBDG9yVBbmbQBWR1oJjrfuHJnbMxHT76pO1hLcRgpNP0UhQhHZSoE90GdiHylrNA2YMXsF4KgpXpd/lkNXiz3v66TyAZL0A9uzAyd7tjnB6nmPA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6bq2QYmvwuPYUkW9nzNm/0U6nrqUEF42Htl6S1Da4Ak=;
+ b=CIsVra0G9NoBDy+gZZ1Sw30eEaYP+bVzT2U8EixhV33tRXnVS2drWyLAVp8Tr+SB+WhqJHJosCXMgi5J9/BvHg/tfKLEycVAKeAqz9pqr9Yaj/ZYpaDmmSpP1reFr9TMDcB/jDqnCq9vGIVMR+MiK3kykb9IPg6BB0KPtm4dpBiykso2bOzMQ2GQS+BDpia1uQhg+BHlltJyGpmX1uwiXrvKTyq7rd1LPdS28/jXqesh59ul+YOAgbG2ALn6dGTgw9RM3DGVW191vYYA8hw+ScYEYnr8Adgo8WlUshMV8Xbq/ScQbMgTjmdoE9952+7tfDa6/QXeopq9zfDETZnRdQ==
+Authentication-Results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5061.namprd12.prod.outlook.com (2603:10b6:208:310::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.14; Tue, 2 Nov
+ 2021 15:54:21 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::e8af:232:915e:2f95%8]) with mapi id 15.20.4649.020; Tue, 2 Nov 2021
+ 15:54:21 +0000
+Date:   Tue, 2 Nov 2021 12:54:20 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
+ for mlx5 devices
+Message-ID: <20211102155420.GK2744544@nvidia.com>
+References: <20211026151851.GW2744544@nvidia.com>
+ <20211026135046.5190e103.alex.williamson@redhat.com>
+ <20211026234300.GA2744544@nvidia.com>
+ <20211027130520.33652a49.alex.williamson@redhat.com>
+ <20211027192345.GJ2744544@nvidia.com>
+ <20211028093035.17ecbc5d.alex.williamson@redhat.com>
+ <20211028234750.GP2744544@nvidia.com>
+ <20211029160621.46ca7b54.alex.williamson@redhat.com>
+ <20211101172506.GC2744544@nvidia.com>
+ <20211102085651.28e0203c.alex.williamson@redhat.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211101035635.26999-4-ricardo.martinez@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20211102085651.28e0203c.alex.williamson@redhat.com>
+X-ClientProxiedBy: BLAPR03CA0048.namprd03.prod.outlook.com
+ (2603:10b6:208:32d::23) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
+MIME-Version: 1.0
+Received: from mlx.ziepe.ca (142.162.113.129) by BLAPR03CA0048.namprd03.prod.outlook.com (2603:10b6:208:32d::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.15 via Frontend Transport; Tue, 2 Nov 2021 15:54:21 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1mhw7A-005A2P-FG; Tue, 02 Nov 2021 12:54:20 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3b5f8967-7a9c-4bda-c2b3-08d99e190915
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5061:
+X-Microsoft-Antispam-PRVS: <BL1PR12MB50618C7C9ABDF20853B74C9BC28B9@BL1PR12MB5061.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: mW4o1ZWjU4SsejLdk3oIGGvS7j5/xVSiVBMbLWn9WFBnf0CpWGBClERwZTPdPqvG7U0opb6HYeMFmQBM7LJNk8JpZjXkrSBxV6Zk9QF5fX/NDR5xEUkt8Hocldx29ZU23i5ZZO2Zi5tHaSNF5OI6LpJctVSfVxXLXSNG9vNcLYWfiiB7LVOSltDjAeHnT17Fy7hDb9HA9rwfRJOLGPJ2jVolXP/VpTFavwgAalbatsA0gybJZ2kUjJqrS1nuYXndypexKKyWaCgOEZ6lkd0/KjvpBde4bNQL3iA2/A6F3pg0lJgxIBj+KAsmQbGIvkQKbtq//S9n/pc9MuSxhQIn6kFWKrlT1LbEcmyce4yjm5B0jf7ZGL7D30vM7SPL98b6d4WudKbJUgr6H4r168mouPQQh3Q0oxQGi4CdkBptttPrvQk1ZyH1Cxvx4uXWmUVIOVGTuoAO+4+7DyA8hiILocUYMm7hKVIhesP9Sh7o3dCHCak84cbNaHWmpz7rC8NQ1FgYNZpTXmc7ilx7kPR/fPzzZHXNETyru6nEqKcoyMC5L2cnT+eH3VtFae47bFJaMPFOmJdEvHYdFBJke4k7sjSlclZc6np7QJtSG2aMT10WiTt0vZFLdNWHGkRwICxMWob7r7S4GxsJXfEUNgh2nQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(5660300002)(8676002)(508600001)(36756003)(4326008)(1076003)(9746002)(9786002)(26005)(38100700002)(186003)(66556008)(66476007)(66946007)(83380400001)(33656002)(86362001)(2906002)(2616005)(8936002)(6916009)(316002)(426003)(54906003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0a1jLPIzXxmM+f1nuZU8i86X6aPbF3HLGAbo1AoK+zfCV1BaoYQW3p032rfd?=
+ =?us-ascii?Q?D/T51GXpVqhzV9C6A1qStEhFGHUAKhAXmM1eIB2AFU/RGCThPgKy0IG3n984?=
+ =?us-ascii?Q?ifgs0XPvmJ09IC9tRyJYYfNnebnIJ8MjC2614ik94U2i4QvU4VDnziLzhLkA?=
+ =?us-ascii?Q?o6JJDD/wFCCIrJtipQ4Xtyv6h/94iSukJ4kXMtMXVjHicCBYDShwAbvEn2d9?=
+ =?us-ascii?Q?oEmIVSVzcYFat+k6U1BHgywyFARtj5Bki+/tyKNU7JMb1JTu0/2UoGECCvh6?=
+ =?us-ascii?Q?my3i9iZwH68VwWVwce90ibVo+ZqvpwQ2RgAhUvmYe4UnvjtDVPRotn3tN3tF?=
+ =?us-ascii?Q?cmP2ojtEfRg/kQdrKde5lwxLdlwPIHgjR6PuC3iQPJjLnpGdhcRiG/7z79e2?=
+ =?us-ascii?Q?nZowOArDorc1RIJMutvgp3EnLUy/cOUoAKKC1mtnRk1X+Ym8KtUvfoMgJQNO?=
+ =?us-ascii?Q?JtLZHtIhXrfnlAFJTMFOssbcz6XLwknbdhdpu9gUAtXKqzQkCnJWSwSDmBOI?=
+ =?us-ascii?Q?l/QT0Ebg6dH13+78/RQMTyR4jR9a4CeXLwK0El4zrXxTyVLujt5zXiygm8vR?=
+ =?us-ascii?Q?tyhCNMaz/vIHFz/7PnVlRcsnRmZ5f664Xk4ExIp/9VdYTa5Hwj3oDSkY91RJ?=
+ =?us-ascii?Q?hXw5HJOLUd5lODxbnc6MOi0u7ToR2U8YnWlFMGqEwAXCmGvFMADCAj4EcHNA?=
+ =?us-ascii?Q?RGfdeHdxc1AdfVQDI0rW2Mo3AN+UYXmDgZziqcTtjDSEjoNB8kL+yWiJNaEa?=
+ =?us-ascii?Q?6W84KVy68TC0vZPBWm6mU9PTqOR3KGtwu2XKbT2vx0EjOQ8exHooWKvO7kF0?=
+ =?us-ascii?Q?A0Fksio2iA9vhNwDB7cui50vtFmhbLQuyZrDT3cp+tKh6b44Iq9/8uHTEZZe?=
+ =?us-ascii?Q?+n3zttsco9t0ZCvkkcnUEl/f/U1m03wRbpzknR9v0lT4SZzQcd+yaj3Np20F?=
+ =?us-ascii?Q?lV5f/l4KPmg1zbtdRm67YVGwIsg7VwDvDmgUGP6fdgqXB7vsdbFNBYWM4Oms?=
+ =?us-ascii?Q?PZoEsGMC0eGa0LQoGNs/zAhBl2OYTwxVGtYDu8Q7/Ork3qfOLKbi3NiREl+k?=
+ =?us-ascii?Q?9ysvgaD/kuIibEPz+nHnolncBgEXKiLwCYKdR6RhLKv+nwyu2tCvac4wqZFt?=
+ =?us-ascii?Q?rEXcHNFa94AG7fg3kHF80J7dUnlRUQa5mC0W+qlcpa688aOKEQhJpt1LBjc9?=
+ =?us-ascii?Q?Atn0M3xxEOb3O8n4VxMK0cdMOzShtvFz995YIPaUEgKGyG+C7Z9+Z0XykDzY?=
+ =?us-ascii?Q?cYX2Bh2RpdXhxKX7DhJYHLJ7Xno0zNM4h223zGTzBBMmddG4Cq8t8rNV38ro?=
+ =?us-ascii?Q?WFUPIOzLIWA9PdFAkZsjYo+6fXj2H3Kd3jHN7yQSpwa2tH/JEXywsGIWcVc0?=
+ =?us-ascii?Q?7vfuOELgsHNhPi2ACaBR6m2Pi11jPtN/lnxYGsU7WhpQ/zVPAvRHX4D/Obut?=
+ =?us-ascii?Q?TP5vL3oQ220V0Muz/9PoVQP3VgczcI5saI9YdepwbEpLVVTFIIIB1v50dy1+?=
+ =?us-ascii?Q?/xoKCFR30jmsAEVHiXZYH/1oX5ZvFFKUrj+HO0i4TjTb+nWLWFuB8QU0E3P5?=
+ =?us-ascii?Q?HGrsPDdgU52n/YH1IvM=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3b5f8967-7a9c-4bda-c2b3-08d99e190915
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2021 15:54:21.5897
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: DPrIQAduIydczq9Xkp+PVnmeQq6S3kvsPnmrPdO3qZbQJIo5ECfSTkp8cwlURr8B
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5061
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 31, 2021 at 08:56:24PM -0700, Ricardo Martinez wrote:
-> From: Haijun Lio <haijun.liu@mediatek.com>
+On Tue, Nov 02, 2021 at 08:56:51AM -0600, Alex Williamson wrote:
+
+> > Still, this is something that needs clear definition, I would expect
+> > the SET_IRQS to happen after resuming clears but before running sets
+> > to give maximum HW flexibility and symmetry with saving.
 > 
-> Registers the t7xx device driver with the kernel. Setup all the core
-> components: PCIe layer, Modem Host Cross Core Interface (MHCCIF),
-> modem control operations, modem state machine, and build
-> infrastructure.
+> There's no requirement that the device enters a null state (!_RESUMING
+> | !_SAVING | !_RUNNING), the uAPI even species the flows as _RESUMING
+> transitioning to _RUNNING.  
+
+If the device saves the MSI-X state inside it's migration data (as
+apparently would be convenient for other OSs) then when RESUMING
+clears and the migration data is de-serialized the device will
+overwrite the MSI-X data.
+
+Since Linux as an OS wants to control the MSI-X it needs to load it
+after RESUMING, but before RUNNING.
+
+> There's no point at which we can do SET_IRQS other than in the
+> _RESUMING state.  Generally SET_IRQS ioctls are coordinated with the
+> guest driver based on actions to the device, we can't be mucking
+> with IRQs while the device is presumed running and already
+> generating interrupt conditions.
+
+We need to do it in state 000
+
+ie resume should go 
+
+  000 -> 100 -> 000 -> 001
+
+With SET_IRQS and any other fixing done during the 2nd 000, after the
+migration data has been loaded into the device.
+
+> > And we should really define clearly what a device is supposed to do
+> > with the interrupt vectors during migration. Obviously there are races
+> > here.
 > 
-> * PCIe layer code implements driver probe and removal.
-> * MHCCIF provides interrupt channels to communicate events
->   such as handshake, PM and port enumeration.
-> * Modem control implements the entry point for modem init,
->   reset and exit.
-> * The modem status monitor is a state machine used by modem control
->   to complete initialization and stop. It is used also to propagate
->   exception events reported by other components.
-
-I will assume that the comments given against previous patch will be applied
-to this and the rest of the patches where it makes sense or appropriate.
-
-Below only new comments.
-
-...
-
-> +config MTK_T7XX
-> +	tristate "MediaTek PCIe 5G WWAN modem T7XX device"
-
-T77xx is easier to read by human beings.
-
-> +	depends on PCI
-
-...
-
-> +struct ccci_header {
-> +	/* do not assume data[1] is data length in rx */
-
-To understand this comment you need to elaborate the content of the header.
-
-> +	u32 data[2];
-> +	u32 status;
-> +	u32 reserved;
-> +};
-
-...
-
-> +#define CCCI_HEADER_NO_DATA	0xffffffff
-
-Is this internal value to Linux or something which is given by hardware?
-
-...
-
-> +/* Modem exception check identification number */
-> +#define MD_EX_CHK_ID		0x45584350
-> +/* Modem exception check acknowledge identification number */
-> +#define MD_EX_CHK_ACK_ID	0x45524543
-
-To me both looks like fourcc. Can you add their ASCII values into comments?
-
-...
-
-> +	/* Use 1*4 bits to avoid low power bits*/
-
-What does "1*4 bits" mean?
-
-> +	iowrite32(L1_1_DISABLE_BIT(1) | L1_2_DISABLE_BIT(1),
-> +		  IREG_BASE(mtk_dev) + DIS_ASPM_LOWPWR_SET_0);
-
-...
-
-> +int mtk_pci_mhccif_isr(struct mtk_pci_dev *mtk_dev)
-> +{
-> +	struct md_sys_info *md_info;
-> +	struct ccci_fsm_ctl *ctl;
-> +	struct mtk_modem *md;
-> +	unsigned int int_sta;
-> +	unsigned long flags;
-> +	u32 mask;
-> +
-> +	md = mtk_dev->md;
-> +	ctl = fsm_get_entry();
-> +	if (!ctl) {
-
-> +		dev_err(&mtk_dev->pdev->dev,
-> +			"process MHCCIF interrupt before modem monitor was initialized\n");
-
-Can this potentially flood the logs? If so, needs to be rate limited.
-
-> +		return -EINVAL;
-> +	}
-
-> +	md_info = md->md_info;
-
-> +	spin_lock_irqsave(&md_info->exp_spinlock, flags);
-
-Can it be called outside of IRQ context?
-
-> +	int_sta = get_interrupt_status(mtk_dev);
-> +	md_info->exp_id |= int_sta;
-> +
-> +	if (md_info->exp_id & D2H_INT_PORT_ENUM) {
-> +		md_info->exp_id &= ~D2H_INT_PORT_ENUM;
-> +		if (ctl->curr_state == CCCI_FSM_INIT ||
-> +		    ctl->curr_state == CCCI_FSM_PRE_START ||
-> +		    ctl->curr_state == CCCI_FSM_STOPPED)
-> +			ccci_fsm_recv_md_interrupt(MD_IRQ_PORT_ENUM);
-> +	}
-> +
-> +	if (md_info->exp_id & D2H_INT_EXCEPTION_INIT) {
-> +		if (ctl->md_state == MD_STATE_INVALID ||
-> +		    ctl->md_state == MD_STATE_WAITING_FOR_HS1 ||
-> +		    ctl->md_state == MD_STATE_WAITING_FOR_HS2 ||
-> +		    ctl->md_state == MD_STATE_READY) {
-> +			md_info->exp_id &= ~D2H_INT_EXCEPTION_INIT;
-> +			ccci_fsm_recv_md_interrupt(MD_IRQ_CCIF_EX);
-> +		}
-> +	} else if (ctl->md_state == MD_STATE_WAITING_FOR_HS1) {
-> +		/* start handshake if MD not assert */
-> +		mask = mhccif_mask_get(mtk_dev);
-> +		if ((md_info->exp_id & D2H_INT_ASYNC_MD_HK) && !(mask & D2H_INT_ASYNC_MD_HK)) {
-> +			md_info->exp_id &= ~D2H_INT_ASYNC_MD_HK;
-> +			queue_work(md->handshake_wq, &md->handshake_work);
-> +		}
-> +	}
-> +
-> +	spin_unlock_irqrestore(&md_info->exp_spinlock, flags);
-> +
-> +	return 0;
-> +}
-
-...
-
-> +static int mtk_acpi_reset(struct mtk_pci_dev *mtk_dev, char *fn_name)
-> +{
-> +#ifdef CONFIG_ACPI
-> +	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
-> +	acpi_status acpi_ret;
-> +	struct device *dev;
-> +	acpi_handle handle;
-> +
-> +	dev = &mtk_dev->pdev->dev;
-
-> +	if (acpi_disabled) {
-> +		dev_err(dev, "acpi function isn't enabled\n");
-> +		return -EFAULT;
-> +	}
-
-Why this check?
-
-> +	handle = ACPI_HANDLE(dev);
-> +	if (!handle) {
-> +		dev_err(dev, "acpi handle isn't found\n");
-
-acpi --> ACPI
-
-> +		return -EFAULT;
-> +	}
-> +
-> +	if (!acpi_has_method(handle, fn_name)) {
-> +		dev_err(dev, "%s method isn't found\n", fn_name);
-> +		return -EFAULT;
-> +	}
-> +
-> +	acpi_ret = acpi_evaluate_object(handle, fn_name, NULL, &buffer);
-> +	if (ACPI_FAILURE(acpi_ret)) {
-> +		dev_err(dev, "%s method fail: %s\n", fn_name, acpi_format_exception(acpi_ret));
-> +		return -EFAULT;
-> +	}
-> +#endif
-> +	return 0;
-> +}
-
-...
-
-> +	msleep(RGU_RESET_DELAY_US);
-
-DELAY in microseconds while msleep() takes milliseconds.
-Something is wrong here.
-
-Also, delays such as 10ms+ should be explained. Esp. when they are
-in the threaded IRQ handler.
-
-...
-
-> +void mtk_md_exception_handshake(struct mtk_modem *md)
-> +{
-> +	struct mtk_pci_dev *mtk_dev;
-
-	struct device *dev = &mtk_dev->pdev->dev;
-
-will help a lot to make below code cleaner.
-
-> +	int ret;
-
-> +	mtk_dev = md->mtk_dev;
-> +	md_exception(md, HIF_EX_INIT);
-> +	ret = wait_hif_ex_hk_event(md, D2H_INT_EXCEPTION_INIT_DONE);
-> +
-> +	if (ret)
-> +		dev_err(&mtk_dev->pdev->dev, "EX CCIF HS timeout, RCH 0x%lx\n",
-> +			D2H_INT_EXCEPTION_INIT_DONE);
-> +
-> +	md_exception(md, HIF_EX_INIT_DONE);
-> +	ret = wait_hif_ex_hk_event(md, D2H_INT_EXCEPTION_CLEARQ_DONE);
-> +	if (ret)
-> +		dev_err(&mtk_dev->pdev->dev, "EX CCIF HS timeout, RCH 0x%lx\n",
-> +			D2H_INT_EXCEPTION_CLEARQ_DONE);
-> +
-> +	md_exception(md, HIF_EX_CLEARQ_DONE);
-> +	ret = wait_hif_ex_hk_event(md, D2H_INT_EXCEPTION_ALLQ_RESET);
-> +	if (ret)
-> +		dev_err(&mtk_dev->pdev->dev, "EX CCIF HS timeout, RCH 0x%lx\n",
-> +			D2H_INT_EXCEPTION_ALLQ_RESET);
-> +
-> +	md_exception(md, HIF_EX_ALLQ_RESET);
-> +}
-
-...
-
-> +err_fsm_init:
-> +	ccci_fsm_uninit();
-> +err_alloc:
-> +	destroy_workqueue(md->handshake_wq);
-
-Labels should explain what will be done when goto, and not what was done.
-
-...
-
-> +/* Modem feature query identification number */
-> +#define MD_FEATURE_QUERY_ID	0x49434343
-
-All fourcc:s should be represented as ASCII in the comments.
-
-...
-
-> +#ifndef __T7XX_MONITOR_H__
-> +#define __T7XX_MONITOR_H__
-
-> +#include <linux/sched.h>
-
-Who is the user of this?
-
-...
-
-> +static int mtk_request_irq(struct pci_dev *pdev)
-> +{
-> +	struct mtk_pci_dev *mtk_dev;
-> +	int ret, i;
-> +
-> +	mtk_dev = pci_get_drvdata(pdev);
-> +
-> +	for (i = 0; i < EXT_INT_NUM; i++) {
-> +		const char *irq_descr;
-> +		int irq_vec;
-> +
-> +		if (!mtk_dev->intr_handler[i])
-> +			continue;
-> +
-> +		irq_descr = devm_kasprintf(&pdev->dev, GFP_KERNEL, "%s_%d",
-> +					   dev_driver_string(&pdev->dev), i);
-> +		if (!irq_descr)
-
-Resource leak is here.
-
-> +			return -ENOMEM;
-> +
-> +		irq_vec = pci_irq_vector(pdev, i);
-> +		ret = request_threaded_irq(irq_vec, mtk_dev->intr_handler[i],
-> +					   mtk_dev->intr_thread[i], 0, irq_descr,
-> +					   mtk_dev->callback_param[i]);
-> +		if (ret) {
-> +			dev_err(&pdev->dev, "Failed to request_irq: %d, int: %d, ret: %d\n",
-> +				irq_vec, i, ret);
-> +			while (i--) {
-> +				if (!mtk_dev->intr_handler[i])
-> +					continue;
-> +
-> +				free_irq(pci_irq_vector(pdev, i), mtk_dev->callback_param[i]);
-> +			}
-> +
-> +			return ret;
-> +		}
-> +	}
-> +
-> +	return 0;
-> +}
-
-...
-
-> +	ret = pci_alloc_irq_vectors(mtk_dev->pdev, EXT_INT_NUM, EXT_INT_NUM, PCI_IRQ_MSIX);
-> +	if (ret < 0) {
-> +		dev_err(&mtk_dev->pdev->dev, "Failed to allocate MSI-X entry, errno: %d\n", ret);
-
-', errno' is redundant.
-
-> +		return ret;
-> +	}
-> +
-> +	ret = mtk_request_irq(mtk_dev->pdev);
-> +	if (ret) {
-> +		pci_free_irq_vectors(mtk_dev->pdev);
-> +		return ret;
-> +	}
-> +
-> +	/* Set MSIX merge config */
-> +	mtk_pcie_mac_msix_cfg(mtk_dev, EXT_INT_NUM);
-> +	return 0;
-> +}
-
-...
-
-> +	ret = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
-
-This API is absoleted, use corresponding DMA API directly.
-On top of that, 64-bit setting never fail...
-
-> +	if (ret) {
-
-> +		ret = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
-> +		if (ret) {
-> +			dev_err(&pdev->dev, "Could not set PCI DMA mask, err: %d\n", ret);
-> +			return ret;
-> +		}
-
-...so this attempt is almost a dead code.
-
-> +	}
-
-...
-
-> +	ret = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
-> +	if (ret) {
-> +		ret = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
-> +		if (ret) {
-> +			dev_err(&pdev->dev, "Could not set consistent PCI DMA mask, err: %d\n",
-> +				ret);
-> +			return ret;
-> +		}
-> +	}
-
-Ditto.
-
-...
-
-> +	mtk_pcie_mac_set_int(mtk_dev, MHCCIF_INT);
-> +	mtk_pcie_mac_interrupts_en(mtk_dev);
-
-> +	pci_set_master(pdev);
-
-It's too late for this call. Are you sure it's needed here? Why?
-
-> +
-> +	return 0;
-
-...
-
-> +err:
-
-Meaningless label name. Try your best to make it better.
-
-> +	ccci_skb_pool_free(&mtk_dev->pools);
-
-Does it free IRQ handlers? If so, the function naming is not good enough.
-
-> +	return ret;
-
-...
-
-> +static int __init mtk_pci_init(void)
-> +{
-> +	return pci_register_driver(&mtk_pci_driver);
-> +}
-> +module_init(mtk_pci_init);
-> +
-> +static void __exit mtk_pci_cleanup(void)
-> +{
-> +	pci_unregister_driver(&mtk_pci_driver);
-> +}
-> +module_exit(mtk_pci_cleanup);
-
-NIH module_pci_driver().
-
-...
-
-> + * @pdev: pci device
-
-pci --> PCI
-
-...
-
-> +#include <linux/io-64-nonatomic-lo-hi.h>
-
-> +#include <linux/msi.h>
-
-Wondering what the APIs you are using from there.
-
-...
-
-> +	for (i = 0; i < ATR_TABLE_NUM_PER_ATR; i++) {
-> +		offset = (ATR_PORT_OFFSET * port) + (ATR_TABLE_OFFSET * i);
-
-Too many parentheses.
-
-> +		/* Disable table by SRC_ADDR */
-> +		reg = pbase + ATR_PCIE_WIN0_T0_ATR_PARAM_SRC_ADDR + offset;
-> +		iowrite64(0, reg);
-> +	}
-
-...
-
-> +		pos = ffs(lower_32_bits(cfg->size));
-> +		if (!pos)
-> +			pos = ffs(upper_32_bits(cfg->size)) + 32;
-
-NIH __ffs64() ?
-
-...
-
-> +static void mtk_pcie_mac_enable_disable_int(struct mtk_pci_dev *mtk_dev, bool enable)
-> +{
-> +	u32 value;
-> +
-> +	value = ioread32(IREG_BASE(mtk_dev) + ISTAT_HST_CTRL);
-
-Either add...
-
-> +	if (enable)
-> +		value &= ~ISTAT_HST_CTRL_DIS;
-> +	else
-> +		value |= ISTAT_HST_CTRL_DIS;
-
-> +
-
-...or remove blank line for the sake of consistency.
-
-> +	iowrite32(value, IREG_BASE(mtk_dev) + ISTAT_HST_CTRL);
-> +}
-
-...
-
-> +#include <linux/bitops.h>
-
-Who is the user of this?
-
-...
-
-> +#ifndef __T7XX_REG_H__
-> +#define __T7XX_REG_H__
-> +
-> +#include <linux/bits.h>
-
-...
-
-> +#define EXP_BAR0				0x0c
-> +#define EXP_BAR2				0x04
-> +#define EXP_BAR4				0x0c
-
-BAR0 and BAR4 have the same value. Either explain or fix accordingly.
-
-...
-
-> +#define MSIX_MSK_SET_ALL			GENMASK(31, 24)
-
-Missed blank line ?
-
-> +enum pcie_int {
-> +	DPMAIF_INT = 0,
-> +	CLDMA0_INT,
-> +	CLDMA1_INT,
-> +	CLDMA2_INT,
-> +	MHCCIF_INT,
-> +	DPMAIF2_INT,
-> +	SAP_RGU_INT,
-> +	CLDMA3_INT,
-> +};
-
-...
-
-> +static struct sk_buff *alloc_skb_from_pool(struct skb_pools *pools, size_t size)
-> +{
-> +	if (size > MTK_SKB_4K)
-> +		return ccci_skb_dequeue(pools->reload_work_queue, &pools->skb_pool_64k);
-> +	else if (size > MTK_SKB_16)
-> +		return ccci_skb_dequeue(pools->reload_work_queue, &pools->skb_pool_4k);
-> +	else if (size > 0)
-> +		return ccci_skb_dequeue(pools->reload_work_queue, &pools->skb_pool_16);
-
-Redundant 'else'. Recommend to read again our internal Wiki about typical
-issues with the code.
-
-> +	return NULL;
-> +}
-
-...
-
-> +static struct sk_buff *alloc_skb_from_kernel(size_t size, gfp_t gfp_mask)
-> +{
-> +	if (size > MTK_SKB_4K)
-> +		return __dev_alloc_skb(MTK_SKB_64K, gfp_mask);
-> +	else if (size > MTK_SKB_1_5K)
-> +		return __dev_alloc_skb(MTK_SKB_4K, gfp_mask);
-> +	else if (size > MTK_SKB_16)
-> +		return __dev_alloc_skb(MTK_SKB_1_5K, gfp_mask);
-> +	else if (size > 0)
-> +		return __dev_alloc_skb(MTK_SKB_16, gfp_mask);
-
-Ditto.
-
-> +	return NULL;
-> +}
-
-...
-
-> +		for (i = 0; i < queue->max_len; i++) {
-> +			struct sk_buff *skb;
-> +
-> +			skb = alloc_skb_from_kernel(skb_size, GFP_KERNEL);
-
-> +
-
-Redundant.
-
-> +			if (!skb) {
-> +				while ((skb = skb_dequeue(&queue->skb_list)))
-> +					dev_kfree_skb_any(skb);
-> +				return -ENOMEM;
-> +			}
-> +
-> +			skb_queue_tail(&queue->skb_list, skb);
-> +		}
-
-...
-
-> +/**
-> + * ccci_alloc_skb_from_pool() - allocate memory for skb from pre-allocated pools
-> + * @pools: skb pools
-> + * @size: allocation size
-> + * @blocking : true for blocking operation
-
-Extra white space.
-
-Again, revisit _all_ comments in your series and make them consistent in _all_
-possible aspects (style, grammar, ...).
-
-> + *
-> + * Returns pointer to skb on success, NULL on failure.
-> + */
-
-...
-
-> +	if (blocking) {
-
-> +		might_sleep();
-
-might_sleep_if() at the top of the function?
-
-> +		skb = alloc_skb_from_kernel(size, GFP_KERNEL);
-> +	} else {
-> +		for (count = 0; count < ALLOC_SKB_RETRY; count++) {
-> +			skb = alloc_skb_from_kernel(size, GFP_ATOMIC);
-> +			if (skb)
-> +				return skb;
-> +		}
-> +	}
-
-...
-
-> +	while (queue->skb_list.qlen < SKB_64K_POOL_SIZE) {
-> +		skb = alloc_skb_from_kernel(MTK_SKB_64K, GFP_KERNEL);
-> +		if (skb)
-> +			skb_queue_tail(&queue->skb_list, skb);
-> +	}
-
-May it become an infinite loop?
-
-...
-
-> +	while (queue->skb_list.qlen < SKB_4K_POOL_SIZE) {
-> +		skb = alloc_skb_from_kernel(MTK_SKB_4K, GFP_KERNEL);
-> +		if (skb)
-> +			skb_queue_tail(&queue->skb_list, skb);
-> +	}
-
-Ditto.
-
-...
-
-> +	while (queue->skb_list.qlen < SKB_16_POOL_SIZE) {
-> +		skb = alloc_skb_from_kernel(MTK_SKB_16, GFP_KERNEL);
-> +		if (skb)
-> +			skb_queue_tail(&queue->skb_list, skb);
-> +	}
-
-Ditto.
-
-...
-
-> +	pools->reload_work_queue = alloc_workqueue("pool_reload_work",
-> +						   WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_HIGHPRI,
-> +						   1);
-
-	... wqflags = WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_HIGHPRI;
-
-	pools->reload_work_queue = alloc_workqueue("pool_reload_work", wqflags, 1);
-
-> +	if (!pools->reload_work_queue) {
-> +		ret = -ENOMEM;
-> +		goto err_wq;
-> +	}
-
-...
-
-> +	list_for_each_entry_safe(notifier_cur, notifier_next,
-> +				 &ctl->notifier_list, entry) {
-
-Out of a sudden this is two lines...
-
-> +		if (notifier_cur == notifier)
-> +			list_del(&notifier->entry);
-> +	}
-
-...
-
-> +			if (!list_empty(&ctl->event_queue)) {
-> +				event = list_first_entry(&ctl->event_queue,
-> +							 struct ccci_fsm_event, entry);
-
-	event = list_first_entry_or_null();
-	if (event) {
-
-> +				if (event->event_id == CCCI_EVENT_MD_EX) {
-> +					fsm_finish_event(ctl, event);
-> +				} else if (event->event_id == CCCI_EVENT_MD_EX_REC_OK) {
-> +					rec_ok = true;
-> +					fsm_finish_event(ctl, event);
-> +				}
-> +			}
-
-...
-
-> +			if (!list_empty(&ctl->event_queue)) {
-> +				event = list_first_entry(&ctl->event_queue,
-> +							 struct ccci_fsm_event, entry);
-> +				if (event->event_id == CCCI_EVENT_MD_EX_PASS)
-> +					fsm_finish_event(ctl, event);
-> +			}
-
-Ditto
-
-...
-
-> +	if (!atomic_read(&ctl->md->rgu_irq_asserted)) {
-
-It may be set exactly here, what's the point in atomicity of the above check?
-
-> +		/* disable DRM before FLDR */
-> +		mhccif_h2d_swint_trigger(mtk_dev, H2D_CH_DRM_DISABLE_AP);
-> +		msleep(FSM_DRM_DISABLE_DELAY_MS);
-> +		/* try FLDR first */
-> +		err = mtk_acpi_fldr_func(mtk_dev);
-> +		if (err)
-> +			mhccif_h2d_swint_trigger(mtk_dev, H2D_CH_DEVICE_RESET);
-> +	}
-
-...
-
-> +	wait_event_interruptible_timeout(ctl->async_hk_wq,
-> +					 atomic_read(&md->core_md.ready) ||
-> +					 atomic_read(&ctl->exp_flg), HZ * 60);
-
-Are you sure you understand what you are doing with the atomics?
-
-> +	if (atomic_read(&ctl->exp_flg))
-> +		dev_err(dev, "MD exception is captured during handshake\n");
-> +
-> +	if (!atomic_read(&md->core_md.ready)) {
-> +		dev_err(dev, "MD handshake timeout\n");
-> +		fsm_routine_exception(ctl, NULL, EXCEPTION_HS_TIMEOUT);
-> +	} else {
-> +		fsm_routine_ready(ctl);
-> +	}
-
-...
-
-> +	read_poll_timeout(ioread32, dev_status, (dev_status & MISC_STAGE_MASK) == LINUX_STAGE,
-> +			  20000, 2000000, false, IREG_BASE(md->mtk_dev) + PCIE_MISC_DEV_STATUS);
-
-Why ignoring an error is fine here?
-
-...
-
-> +	cmd = kmalloc(sizeof(*cmd),
-> +		      (in_irq() || in_softirq() || irqs_disabled()) ? GFP_ATOMIC : GFP_KERNEL);
-
-Hmm...
-
-> +	if (!cmd)
-> +		return -ENOMEM;
-
-> +	if (in_irq() || irqs_disabled())
-> +		flag &= ~FSM_CMD_FLAG_WAITING_TO_COMPLETE;
-
-Even more hmm...
-
-> +	if (flag & FSM_CMD_FLAG_WAITING_TO_COMPLETE) {
-> +		wait_event(cmd->complete_wq, cmd->result != FSM_CMD_RESULT_PENDING);
-
-Is it okay in IRQ context?
-
-> +		if (cmd->result != FSM_CMD_RESULT_OK)
-> +			result = -EINVAL;
-
-> +		spin_lock_irqsave(&ctl->cmd_complete_lock, flags);
-> +		kfree(cmd);
-> +		spin_unlock_irqrestore(&ctl->cmd_complete_lock, flags);
-
-While this is under spin lock?
-
-> +	}
-
-...
-
-> +enum md_state ccci_fsm_get_md_state(void)
-> +{
-> +	struct ccci_fsm_ctl *ctl;
-> +
-> +	ctl = ccci_fsm_entry;
-> +	if (ctl)
-> +		return ctl->md_state;
-> +	else
-> +		return MD_STATE_INVALID;
-> +}
-> +
-> +unsigned int ccci_fsm_get_current_state(void)
-> +{
-> +	struct ccci_fsm_ctl *ctl;
-> +
-> +	ctl = ccci_fsm_entry;
-> +	if (ctl)
-> +		return ctl->curr_state;
-> +	else
-> +		return CCCI_FSM_STOPPED;
-> +}
-
-Redundant 'else' everywhere.
-
-...
-
-> +int ccci_fsm_init(struct mtk_modem *md)
-> +{
-> +	struct ccci_fsm_ctl *ctl;
-
-	struct device *dev = &md->mtk_dev->pdev->dev;
-
-...
-
-> +	ctl->fsm_thread = kthread_run(fsm_main_thread, ctl, "ccci_fsm");
-> +	if (IS_ERR(ctl->fsm_thread)) {
-> +		dev_err(&md->mtk_dev->pdev->dev, "failed to start monitor thread\n");
-
-> +		return PTR_ERR(ctl->fsm_thread);
-> +	}
-> +
-> +	return 0;
-
-	return PTR_ERR_OR_ZERO(...);
-
-> +}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+> The device should not be generating interrupts while !_RUNNING, pending
+> interrupts should be held until the device is _RUNNING.  To me this
+> means the sequence must be that INTx/MSI/MSI-X are restored while in
+> the !_RUNNING state.
+
+Yes
+
+> > > In any case, it requires that the device cannot be absolutely static
+> > > while !_RUNNING.  Does (_RESUMING) have different rules than
+> > > (_SAVING)?  
+> > 
+> > I'd prever to avoid all device touches during both resuming and
+> > saving, and do them during !RUNNING
+> 
+> There's no such state required by the uAPI.
+
+The uAPI comment does not define when to do the SET_IRQS, it seems
+this has been missed.
+
+We really should fix it, unless you feel strongly that the
+experimental API in qemu shouldn't be changed.
+
+Jason
