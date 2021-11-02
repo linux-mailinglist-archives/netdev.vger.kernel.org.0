@@ -2,216 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E7984430FA
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 15:57:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF77C443103
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 15:58:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234413AbhKBPAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 11:00:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33142 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234902AbhKBO7a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 10:59:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635865015;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rXNQNfiHB/PeLRGP+7hDt0wdDNq5SSU2T+fjB5p1Png=;
-        b=FvpT7EMOtsB2wiPdILPFevnGy4q+TbqosSBoR/SvD3V8i04vm3SbNuyps0bpsb4ppJi1vr
-        n37NkNtBW+yo1qxsojxouSKBon8OWuXuKTYmYnulMVNEsPZ+VItBlqIr+IJ4jxMDZqvbmB
-        +cBTKWl+DQRyiNoK/fl+vQTIevuecjA=
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
- [209.85.210.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-521-mnARhqzwN-K-S-0PrZ7RHw-1; Tue, 02 Nov 2021 10:56:54 -0400
-X-MC-Unique: mnARhqzwN-K-S-0PrZ7RHw-1
-Received: by mail-ot1-f69.google.com with SMTP id 93-20020a9d0866000000b00553d3cbf050so10535812oty.14
-        for <netdev@vger.kernel.org>; Tue, 02 Nov 2021 07:56:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=rXNQNfiHB/PeLRGP+7hDt0wdDNq5SSU2T+fjB5p1Png=;
-        b=DdRk4GxJiwrAwjlGEcncR9V2sT6BdoZ/ZCIeamyB4R5GeZLQUIliIVcKc6N3RGtdIm
-         QGrUEngoS1pjQuYGir6VZobZ4qoFTu/mJnKJU/TVWs8nQFne7fQ+rx+qu28WFB7t/1pZ
-         j8eJZo6MsHtvcXSgIV/6PjTHocNAB5sNfjbJkdnMr7vbQ3VZhtSaSvSanUJBi1CZmc8v
-         Lw4TB3uVW14s//vIkWlrNfvuLMBwLemHBnjEFMz1+w/UXKOmJuVyCRhXAvaGU4FjE5MU
-         OvJIZeE4xTa4Wt+eNfHmi7mtLIYG/SdzaCzCIF+0iJ6aFWq/8XSB3PlMNJz22RH/neRi
-         aUlw==
-X-Gm-Message-State: AOAM530OMYBlGP9SgApqtuddfFhFQY9RW1+I0BpfJrWtqHqN2art5+ct
-        LlIJLIYQJcqAokvZHZR5KL3nFHjFLQ+fV6fjMFU3my7hfy8wiDlCua4XDyHJ83o52urpIjPeeyI
-        x7n3fUzSG2gB3gBXb
-X-Received: by 2002:a9d:2909:: with SMTP id d9mr16105612otb.187.1635865013960;
-        Tue, 02 Nov 2021 07:56:53 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJytw8wBjugPRoTH1oiXe4YvuMOLPdBjoz6aqSXNqQjkKkVHyT46/WIQqNFRBpB6ufxkPoDYvQ==
-X-Received: by 2002:a9d:2909:: with SMTP id d9mr16105590otb.187.1635865013678;
-        Tue, 02 Nov 2021 07:56:53 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id d24sm2423495otq.5.2021.11.02.07.56.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Nov 2021 07:56:53 -0700 (PDT)
-Date:   Tue, 2 Nov 2021 08:56:51 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
-        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
-        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
- for mlx5 devices
-Message-ID: <20211102085651.28e0203c.alex.williamson@redhat.com>
-In-Reply-To: <20211101172506.GC2744544@nvidia.com>
-References: <20211025145646.GX2744544@nvidia.com>
-        <20211026084212.36b0142c.alex.williamson@redhat.com>
-        <20211026151851.GW2744544@nvidia.com>
-        <20211026135046.5190e103.alex.williamson@redhat.com>
-        <20211026234300.GA2744544@nvidia.com>
-        <20211027130520.33652a49.alex.williamson@redhat.com>
-        <20211027192345.GJ2744544@nvidia.com>
-        <20211028093035.17ecbc5d.alex.williamson@redhat.com>
-        <20211028234750.GP2744544@nvidia.com>
-        <20211029160621.46ca7b54.alex.williamson@redhat.com>
-        <20211101172506.GC2744544@nvidia.com>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        id S233490AbhKBPBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 11:01:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48644 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233487AbhKBPBM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 11:01:12 -0400
+Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDED3C061714;
+        Tue,  2 Nov 2021 07:58:37 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id D5208C022; Tue,  2 Nov 2021 15:58:35 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1635865115; bh=rSQJMUu/Sf6moJ2SUGd9pxO0TmpP6niHHHxwBJHGIfo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DuQRAi024wq8Z+7KnDA7YPWNYoEd5mHmS6bzQF667QbQZ5x6Ef9uzDCG4Y8iJhf3Z
+         ca+Tw9ABAtgqZ1p4UnCCDqi9M42dLqp0azDFvEzV3XcP1ct9to2Bf2XHuqzXlb9d11
+         FdkIGlezPLD/HAgKRdKvAsLtri2GAESS1dlBgOtuaIiTUsrYYo7zdDlUbzti8luehH
+         7TbTQCq9/43RCWPSpoOLwWo46RdhJR33ktsyOuYTI6XiOT9B5FND5FPYF38NWywq4n
+         gfdYqa3ngAcQDPZSlR/U0BGmNyDRpoIiqk6Gkj42fXk6cBsK+iaiT96DOUecWjcIPY
+         eQaBGQtvT58hA==
+X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on nautica.notk.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
+        autolearn=unavailable version=3.3.2
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 7A857C009;
+        Tue,  2 Nov 2021 15:58:30 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1635865112; bh=rSQJMUu/Sf6moJ2SUGd9pxO0TmpP6niHHHxwBJHGIfo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=35bAd15JzTIWvbg+dc/k7SeRIfdoy2bZtmjilRkhlwMZA/1ajeEQHh/W1dBho1C4b
+         xANvENZz9S4XjWhYnW3W6QeRohSgLnkMdNrWMO6HB6vbVZnGUWpeOzrMG12oaGXuAx
+         W/vBsTNMg8RdzazfyrUGDy9MvWJ8E4q+W8hi8UgldrDstB5Lv4XOYrxuYJpkES+nmj
+         LmK6jrLpElbpS1f2wctew4gOLbdwpE7Ogu6OmxXXWEII0uFeqexd96r3x2yxUitJ0J
+         5f4yZ5n9LTYT0IvoKu1ES+H8NO5T8KJq5PmIehNUSYr5tqcfCoA/y+/p3lGWhnAaqf
+         K5pHT6vWCYrPA==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id bb0e0d0d;
+        Tue, 2 Nov 2021 14:58:27 +0000 (UTC)
+Date:   Tue, 2 Nov 2021 23:58:12 +0900
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Thomas =?utf-8?Q?Wei=C3=9Fschuh?= <linux@weissschuh.net>
+Cc:     Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net/9p: autoload transport modules
+Message-ID: <YYFSBKXNPyIIFo7J@codewreck.org>
+References: <20211017134611.4330-1-linux@weissschuh.net>
+ <YYEYMt543Hg+Hxzy@codewreck.org>
+ <922a4843-c7b0-4cdc-b2a6-33bf089766e4@t-8ch.de>
+ <YYEmOcEf5fjDyM67@codewreck.org>
+ <ddf6b6c9-1d9b-4378-b2ee-b7ac4a622010@t-8ch.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ddf6b6c9-1d9b-4378-b2ee-b7ac4a622010@t-8ch.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 1 Nov 2021 14:25:06 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> On Fri, Oct 29, 2021 at 04:06:21PM -0600, Alex Williamson wrote:
-> 
-> > > Right now we are focused on the non-P2P cases, which I think is a
-> > > reasonable starting limitation.  
+Thomas Weißschuh wrote on Tue, Nov 02, 2021 at 03:49:32PM +0100:
+> > I guess it wouldn't hurt to have 9p-tcp 9p-unix and 9p-fd aliases to the
+> > 9pnet module, but iirc these transports were more closely tied to the
+> > rest of 9pnet than the rest so it might take a while to do and I don't
+> > have much time for this right now...
+> > I'd rather not prepare for something I'll likely never get onto, so
+> > let's do this if there is progress.
 > > 
-> > It's a reasonable starting point iff we know that we need to support
-> > devices that cannot themselves support a quiescent state.  Otherwise it
-> > would make sense to go back to work on the uAPI because I suspect the
-> > implications to userspace are not going to be as simple as "oops, can't
-> > migrate, there are two devices."  As you say, there's a universe of
-> > devices that run together that don't care about p2p and QEMU will be
-> > pressured to support migration of those configurations.  
+> > Of course if you'd like to have a look that'd be more than welcome :-)
 > 
-> I agree with this, but I also think what I saw in the proposed hns
-> driver suggests it's HW cannot do quiescent, if so this is the first
-> counter-example to the notion it is a universal ability?
+> If you are still testing anyways, you could also try the attached patch.
+> (It requires the autload patch)
 > 
-> hns people: Can you put your device in a state where it is operating,
-> able to accept and respond to MMIO, and yet guarentees it generates no
-> DMA transactions?
-> 
-> > want migration.  If we ever want both migration and p2p, QEMU would
-> > need to reject any device that can't comply.  
-> 
-> Yes, it looks like a complicated task on the qemu side to get this
-> resolved
-> 
-> > > It is not a big deal to defer things to rc1, though merging a
-> > > leaf-driver that has been on-list over a month is certainly not
-> > > rushing either.  
-> > 
-> > If "on-list over a month" is meant to imply that it's well vetted, it
-> > does not.  That's a pretty quick time frame given the uAPI viability
-> > discussions that it's generated.  
-> 
-> I only said rushed :)
+> It builds fine and I see no reason for it not to work.
 
-To push forward regardless of unresolved questions is rushing
-regardless of how long it's been on-list.
+Thanks! I'll give it a spin.
 
-> > I'm tending to agree that there's value in moving forward, but there's
-> > a lot we're defining here that's not in the uAPI, so I'd like to see
-> > those things become formalized.  
-> 
-> Ok, lets come up with a documentation patch then to define !RUNNING as
-> I outlined and start to come up with the allowed list of actions..
-> 
-> I think I would like to have a proper rst file for documenting the
-> uapi as well.
-> 
-> > I think this version is defining that it's the user's responsibility to
-> > prevent external DMA to devices while in the !_RUNNING state.  This
-> > resolves the condition that we have no means to coordinate quiescing
-> > multiple devices.  We shouldn't necessarily prescribe a single device
-> > solution in the uAPI if the same can be equally achieved through
-> > configuration of DMA mapping.  
-> 
-> I'm not sure what this means?
 
-I'm just trying to avoid the uAPI calling out a single-device
-restriction if there are other ways that userspace can quiesce external
-DMA outside of the uAPI, such as by limiting p2p DMA mappings at the
-IOMMU, ie. define the userspace requirements but don't dictate a
-specific solution.
+I was actually just testing the autoload one and I can't get it to work
+on my minimal VM, I guess there's a problem with the usermodhelper call
+to load module..
 
-> > I was almost on board with blocking MMIO, especially as p2p is just DMA
-> > mapping of MMIO, but what about MSI-X?  During _RESUME we must access
-> > the MSI-X vector table via the SET_IRQS ioctl to configure interrupts.
-> > Is this exempt because the access occurs in the host?    
-> 
-> s/in the host/in the kernel/ SET_IRQS is a kernel ioctl that uses the
-> core MSIX code to do the mmio, so it would not be impacted by MMIO
-> zap.
+with 9p/9pnet loaded,
+running "mount -t 9p -o trans=virtio tmp /mnt"
+request_module("9p-%s", "virtio") returns -2 (ENOENT)
 
-AIUI, "zap" is just the proposed userspace manifestation that the
-device cannot accept MMIO writes while !_RUNNING, but these writes must
-occur in that state.
+Looking at the code it should be running "modprobe -q -- 9p-virtio"
+which finds the module just fine, hence my supposition usermodhelper is
+not setup correctly
 
-> Looks like you've already marked these points with the
-> vfio_pci_memory_lock_and_enable(), so a zap for migration would have
-> to be a little different than a zap for reset.
-> 
-> Still, this is something that needs clear definition, I would expect
-> the SET_IRQS to happen after resuming clears but before running sets
-> to give maximum HW flexibility and symmetry with saving.
+Do you happen to know what I need to do for it?
 
-There's no requirement that the device enters a null state (!_RESUMING
-| !_SAVING | !_RUNNING), the uAPI even species the flows as _RESUMING
-transitioning to _RUNNING.  There's no point at which we can do
-SET_IRQS other than in the _RESUMING state.  Generally SET_IRQS
-ioctls are coordinated with the guest driver based on actions to the
-device, we can't be mucking with IRQs while the device is presumed
-running and already generating interrupt conditions.
+I've run out of time for today but will look tomorrow if you don't know.
 
-> And we should really define clearly what a device is supposed to do
-> with the interrupt vectors during migration. Obviously there are races
-> here.
+(And since it doesn't apparently work out of the box on these minimal
+VMs I think I'll want the trans_fd module split to sit in linux-next
+for a bit longer than a few days, so will be next merge window)
 
-The device should not be generating interrupts while !_RUNNING, pending
-interrupts should be held until the device is _RUNNING.  To me this
-means the sequence must be that INTx/MSI/MSI-X are restored while in
-the !_RUNNING state.
 
-> > In any case, it requires that the device cannot be absolutely static
-> > while !_RUNNING.  Does (_RESUMING) have different rules than
-> > (_SAVING)?  
-> 
-> I'd prever to avoid all device touches during both resuming and
-> saving, and do them during !RUNNING
-
-There's no such state required by the uAPI.
-
-> > So I'm still unclear how the uAPI needs to be updated relative to
-> > region access.  We need that list of what the user is allowed to
-> > access, which seems like minimally config space and MSI-X table space,
-> > but are these implicitly known for vfio-pci devices or do we need
-> > region flags or capabilities to describe?  We can't generally know the
-> > disposition of device specific regions relative to this access.  Thanks,  
-> 
-> I'd prefer to be general and have the spec forbid
-> everything. Specifying things like VFIO_DEVICE_SET_IRQS1 covers all the
-> bus types.
-
-AFAICT, SET_IRQS while _RESUMING is a requirement, as is some degree of
-access to config space.  It seems you're proposing a new required null
-state which is contradictory to the existing uAPI.  Thanks,
-
-Alex
-
+Thanks,
+-- 
+Dominique
