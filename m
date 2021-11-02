@@ -2,195 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D14E4430C9
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 15:49:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 637F24430A4
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 15:41:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232941AbhKBOwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 10:52:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46540 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232981AbhKBOwN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 10:52:13 -0400
-Received: from todd.t-8ch.de (todd.t-8ch.de [IPv6:2a01:4f8:c010:41de::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B00C061714;
-        Tue,  2 Nov 2021 07:49:36 -0700 (PDT)
-Date:   Tue, 2 Nov 2021 15:49:32 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=weissschuh.net;
-        s=mail; t=1635864573;
-        bh=ZGMvUOgROs39Y2IRIABQgQtjLMkOhIgv7EWo6kdBvL4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WtoiCs3Ok0L6ElJs1cv+gVEIMDUM6+ZcXvWMRUR/2708Hh8iZYYUswLpgbAM/oU3P
-         5Nbv3nAUsr/mOdTy0Pf1QOjg01OL0FzDJzHewkqfzbqVX2nIAvb05Uu6ycf8lat9uZ
-         RHoBDMnEBpynIWVofT6yXipDAoq9UFbhcOGCg7xc=
-From:   Thomas =?utf-8?Q?Wei=C3=9Fschuh?= <linux@weissschuh.net>
-To:     Dominique Martinet <asmadeus@codewreck.org>
-Cc:     Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/9p: autoload transport modules
-Message-ID: <ddf6b6c9-1d9b-4378-b2ee-b7ac4a622010@t-8ch.de>
-References: <20211017134611.4330-1-linux@weissschuh.net>
- <YYEYMt543Hg+Hxzy@codewreck.org>
- <922a4843-c7b0-4cdc-b2a6-33bf089766e4@t-8ch.de>
- <YYEmOcEf5fjDyM67@codewreck.org>
+        id S230447AbhKBOng (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 10:43:36 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:15347 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229557AbhKBOnf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 10:43:35 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HkCHx5rkPz900w;
+        Tue,  2 Nov 2021 22:40:45 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Tue, 2 Nov 2021 22:40:54 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Tue, 2 Nov 2021 22:40:52 +0800
+From:   Tong Tiangen <tongtiangen@huawei.com>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Palmer Dabbelt <palmerdabbelt@google.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, <bjorn.topel@gmail.com>
+CC:     <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        Tong Tiangen <tongtiangen@huawei.com>
+Subject: [PATCH bpf-next] riscv, bpf: fix some compiler error
+Date:   Tue, 2 Nov 2021 14:56:42 +0000
+Message-ID: <20211102145642.724820-1-tongtiangen@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="2rCd6YTQfhfeI0Ff"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YYEmOcEf5fjDyM67@codewreck.org>
-Jabber-ID: thomas@t-8ch.de
-X-Accept: text/plain, text/html;q=0.2, text/*;q=0.1
-X-Accept-Language: en-us, en;q=0.8, de-de;q=0.7, de;q=0.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch fix two compile errors:
+1. when CONFIG_BPF_JIT and CONFIG_ARCH_32I is open, There is the following
+compiler error:
+  error: undefined symbol: rv_bpf_fixup_exception
 
---2rCd6YTQfhfeI0Ff
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+2. when CONFIG_BPF_JIT and CONFIG_ARCH_64I is open, There is the following
+compiler error (W=1):
+  error: no previous prototype for 'rv_bpf_fixup_exception'
 
-On 2021-11-02 20:51+0900, Dominique Martinet wrote:
-> Thomas Weißschuh wrote on Tue, Nov 02, 2021 at 11:59:32AM +0100:
-> > On 2021-11-02 19:51+0900, Dominique Martinet wrote:
-> > > Sorry for the late reply
-> > > 
-> > > Thomas Weißschuh wrote on Sun, Oct 17, 2021 at 03:46:11PM +0200:
-> > > > Automatically load transport modules based on the trans= parameter
-> > > > passed to mount.
-> > > > The removes the requirement for the user to know which module to use.
-> > > 
-> > > This looks good to me, I'll test this briefly on differnet config (=y,
-> > > =m) and submit to Linus this week for the next cycle.
-> > 
-> > Thanks. Could you also fix up the typo in the commit message when applying?
-> > ("The removes" -> "This removes")
-> 
-> Sure, done -- I hadn't even noticed it..
-> 
-> > > Makes me wonder why trans_fd is included in 9pnet and not in a 9pnet-fd
-> > > or 9pnet-tcp module but that'll be for another time...
-> > 
-> > To prepare for the moment when those transport modules are split into their own
-> > module(s), we could already add MODULE_ALIAS_9P() calls to net/9p/trans_fd.c.
-> 
-> I guess it wouldn't hurt to have 9p-tcp 9p-unix and 9p-fd aliases to the
-> 9pnet module, but iirc these transports were more closely tied to the
-> rest of 9pnet than the rest so it might take a while to do and I don't
-> have much time for this right now...
-> I'd rather not prepare for something I'll likely never get onto, so
-> let's do this if there is progress.
-> 
-> Of course if you'd like to have a look that'd be more than welcome :-)
+In this patch, asm/extable.h is introduced,  the rv_bpf_fixup_exception
+function declaration is added to this file. in addition, the definition of
+exception_table_entry is moved from asm-generic/extable.h to this file.
 
-If you are still testing anyways, you could also try the attached patch.
-(It requires the autload patch)
+Fixes: 252c765bd764 ("riscv, bpf: Add BPF exception tables")
+Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+---
+ arch/riscv/include/asm/Kbuild    |  1 -
+ arch/riscv/include/asm/extable.h | 49 ++++++++++++++++++++++++++++++++
+ arch/riscv/include/asm/uaccess.h | 13 ---------
+ arch/riscv/mm/extable.c          |  8 +-----
+ 4 files changed, 50 insertions(+), 21 deletions(-)
+ create mode 100644 arch/riscv/include/asm/extable.h
 
-It builds fine and I see no reason for it not to work.
-
-Thomas
-
---2rCd6YTQfhfeI0Ff
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: attachment; filename="9p-transport-fd-module.patch"
-
-diff --git a/include/net/9p/9p.h b/include/net/9p/9p.h
-index 03614de86942..f420f8cb378d 100644
---- a/include/net/9p/9p.h
-+++ b/include/net/9p/9p.h
-@@ -553,6 +553,4 @@ struct p9_fcall {
- int p9_errstr2errno(char *errstr, int len);
- 
- int p9_error_init(void);
--int p9_trans_fd_init(void);
--void p9_trans_fd_exit(void);
- #endif /* NET_9P_H */
-diff --git a/net/9p/Makefile b/net/9p/Makefile
-index aa0a5641e5d0..b7d2ea495f65 100644
---- a/net/9p/Makefile
-+++ b/net/9p/Makefile
-@@ -1,5 +1,6 @@
+diff --git a/arch/riscv/include/asm/Kbuild b/arch/riscv/include/asm/Kbuild
+index 445ccc97305a..57b86fd9916c 100644
+--- a/arch/riscv/include/asm/Kbuild
++++ b/arch/riscv/include/asm/Kbuild
+@@ -1,6 +1,5 @@
  # SPDX-License-Identifier: GPL-2.0
- obj-$(CONFIG_NET_9P) := 9pnet.o
-+obj-$(CONFIG_NET_9P) += 9pnet_fd.o
- obj-$(CONFIG_NET_9P_XEN) += 9pnet_xen.o
- obj-$(CONFIG_NET_9P_VIRTIO) += 9pnet_virtio.o
- obj-$(CONFIG_NET_9P_RDMA) += 9pnet_rdma.o
-@@ -9,9 +10,11 @@ obj-$(CONFIG_NET_9P_RDMA) += 9pnet_rdma.o
- 	client.o \
- 	error.o \
- 	protocol.o \
--	trans_fd.o \
- 	trans_common.o \
- 
-+9pnet_fd-objs := \
-+	trans_fd.o \
+ generic-y += early_ioremap.h
+-generic-y += extable.h
+ generic-y += flat.h
+ generic-y += kvm_para.h
+ generic-y += user.h
+diff --git a/arch/riscv/include/asm/extable.h b/arch/riscv/include/asm/extable.h
+new file mode 100644
+index 000000000000..aa0332b053fb
+--- /dev/null
++++ b/arch/riscv/include/asm/extable.h
+@@ -0,0 +1,49 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __ASM_EXTABLE_H
++#define __ASM_EXTABLE_H
 +
- 9pnet_virtio-objs := \
- 	trans_virtio.o \
- 
-diff --git a/net/9p/mod.c b/net/9p/mod.c
-index 5126566850bd..dee263f8e361 100644
---- a/net/9p/mod.c
-+++ b/net/9p/mod.c
-@@ -164,7 +164,6 @@ static int __init init_p9(void)
- 
- 	p9_error_init();
- 	pr_info("Installing 9P2000 support\n");
--	p9_trans_fd_init();
- 
- 	return ret;
++/*
++ * The exception table consists of pairs of addresses: the first is the
++ * address of an instruction that is allowed to fault, and the second is
++ * the address at which the program should continue.  No registers are
++ * modified, so it is entirely up to the continuation code to figure out
++ * what to do.
++ *
++ * All the routines below use bits of fixup code that are out of line
++ * with the main instruction path.  This means when everything is well,
++ * we don't even have to jump over them.  Further, they do not intrude
++ * on our cache or tlb entries.
++ */
++struct exception_table_entry {
++	unsigned long insn, fixup;
++};
++
++struct pt_regs;
++int fixup_exception(struct pt_regs *regs);
++
++#if defined(CONFIG_MMU)
++static inline bool rv_in_bpf_jit(struct pt_regs *regs)
++{
++	if (!IS_ENABLED(CONFIG_BPF_JIT) || !IS_ENABLED(CONFIG_64BIT))
++		return false;
++
++	return regs->epc >= BPF_JIT_REGION_START && regs->epc < BPF_JIT_REGION_END;
++}
++#else
++static inline bool rv_in_bpf_jit(struct pt_regs *regs)
++{
++	return false;
++}
++#endif
++
++#if defined(CONFIG_BPF_JIT) && defined(CONFIG_64BIT)
++int rv_bpf_fixup_exception(const struct exception_table_entry *ex, struct pt_regs *regs);
++#else
++static inline int rv_bpf_fixup_exception(const struct exception_table_entry *ex,
++					 struct pt_regs *regs)
++{
++	return 0;
++}
++#endif
++
++#endif
+diff --git a/arch/riscv/include/asm/uaccess.h b/arch/riscv/include/asm/uaccess.h
+index f314ff44c48d..96ea91dc0e9c 100644
+--- a/arch/riscv/include/asm/uaccess.h
++++ b/arch/riscv/include/asm/uaccess.h
+@@ -56,19 +56,6 @@ static inline int __access_ok(unsigned long addr, unsigned long size)
+ 	return size <= TASK_SIZE && addr <= TASK_SIZE - size;
  }
-@@ -178,7 +177,6 @@ static void __exit exit_p9(void)
+ 
+-/*
+- * The exception table consists of pairs of addresses: the first is the
+- * address of an instruction that is allowed to fault, and the second is
+- * the address at which the program should continue.  No registers are
+- * modified, so it is entirely up to the continuation code to figure out
+- * what to do.
+- *
+- * All the routines below use bits of fixup code that are out of line
+- * with the main instruction path.  This means when everything is well,
+- * we don't even have to jump over them.  Further, they do not intrude
+- * on our cache or tlb entries.
+- */
+-
+ #define __LSW	0
+ #define __MSW	1
+ 
+diff --git a/arch/riscv/mm/extable.c b/arch/riscv/mm/extable.c
+index 18bf338303b6..264f465db5bb 100644
+--- a/arch/riscv/mm/extable.c
++++ b/arch/riscv/mm/extable.c
+@@ -11,10 +11,6 @@
+ #include <linux/module.h>
+ #include <linux/uaccess.h>
+ 
+-#ifdef CONFIG_BPF_JIT
+-int rv_bpf_fixup_exception(const struct exception_table_entry *ex, struct pt_regs *regs);
+-#endif
+-
+ int fixup_exception(struct pt_regs *regs)
  {
- 	pr_info("Unloading 9P2000 support\n");
+ 	const struct exception_table_entry *fixup;
+@@ -23,10 +19,8 @@ int fixup_exception(struct pt_regs *regs)
+ 	if (!fixup)
+ 		return 0;
  
--	p9_trans_fd_exit();
- 	p9_client_exit();
- }
+-#ifdef CONFIG_BPF_JIT
+-	if (regs->epc >= BPF_JIT_REGION_START && regs->epc < BPF_JIT_REGION_END)
++	if (rv_in_bpf_jit(regs))
+ 		return rv_bpf_fixup_exception(fixup, regs);
+-#endif
  
-diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
-index 007bbcc68010..ff95bdf8baa5 100644
---- a/net/9p/trans_fd.c
-+++ b/net/9p/trans_fd.c
-@@ -1092,6 +1092,7 @@ static struct p9_trans_module p9_tcp_trans = {
- 	.show_options = p9_fd_show_options,
- 	.owner = THIS_MODULE,
- };
-+MODULE_ALIAS_9P("tcp");
- 
- static struct p9_trans_module p9_unix_trans = {
- 	.name = "unix",
-@@ -1105,6 +1106,7 @@ static struct p9_trans_module p9_unix_trans = {
- 	.show_options = p9_fd_show_options,
- 	.owner = THIS_MODULE,
- };
-+MODULE_ALIAS_9P("unix");
- 
- static struct p9_trans_module p9_fd_trans = {
- 	.name = "fd",
-@@ -1118,6 +1120,7 @@ static struct p9_trans_module p9_fd_trans = {
- 	.show_options = p9_fd_show_options,
- 	.owner = THIS_MODULE,
- };
-+MODULE_ALIAS_9P("fd");
- 
- /**
-  * p9_poll_workfn - poll worker thread
-@@ -1167,3 +1170,10 @@ void p9_trans_fd_exit(void)
- 	v9fs_unregister_trans(&p9_unix_trans);
- 	v9fs_unregister_trans(&p9_fd_trans);
- }
-+
-+module_init(p9_trans_fd_init);
-+module_exit(p9_trans_fd_exit);
-+
-+MODULE_AUTHOR("Eric Van Hensbergen <ericvh@gmail.com>");
-+MODULE_DESCRIPTION("Filedescriptor Transport for 9P");
-+MODULE_LICENSE("GPL");
+ 	regs->epc = fixup->fixup;
+ 	return 1;
+-- 
+2.25.1
 
---2rCd6YTQfhfeI0Ff--
