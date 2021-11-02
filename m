@@ -2,86 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FE29443804
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 22:46:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02D6F443832
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 23:03:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231254AbhKBVtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 17:49:23 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:44002 "EHLO vps0.lunn.ch"
+        id S231728AbhKBWFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 18:05:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32786 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230382AbhKBVtX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Nov 2021 17:49:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=g5PjRPGooZX9QLmvsUQz9bR1LIK1fGNbet4Pw/YnfcA=; b=gH3tlkPPy29T0EWrbCXzqKHcQJ
-        PeCvulc+CZDyNFCkRWsTfvEeohEBC6jXgwQH5ExkEtKUVtGRquiiYYoCsUlnKbRJ5cADLduFrP8Ic
-        MxioaURJFaVUIw8xky+TXasu0/lKP3oF+Nea8nQtyOY92NoRhxUyer2llaFm/U4iw0mU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mi1c6-00CRRZ-K9; Tue, 02 Nov 2021 22:46:38 +0100
-Date:   Tue, 2 Nov 2021 22:46:38 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org, Vignesh Raghavendra <vigneshr@ti.com>
-Subject: Re: [RFC PATCH] net: phy/mdio: enable mmd indirect access through
- phy_mii_ioctl()
-Message-ID: <YYGxvomL/0tiPzvV@lunn.ch>
-References: <20211101182859.24073-1-grygorii.strashko@ti.com>
- <YYBBHsFEwGdPJw3b@lunn.ch>
- <YYBF3IZoSN6/O6AL@shell.armlinux.org.uk>
- <YYCLJnY52MoYfxD8@lunn.ch>
- <YYExmHYW49jOjfOt@shell.armlinux.org.uk>
- <bc9df441-49bf-5c8a-891c-cc3f0db00aba@ti.com>
- <YYF4ZQHqc1jJsE/+@shell.armlinux.org.uk>
- <e18f17bd-9e77-d3ef-cc1e-30adccb7cdd5@ti.com>
- <828e2d69-be15-fe69-48d8-9cfc29c4e76e@ti.com>
+        id S231994AbhKBWFQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Nov 2021 18:05:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4A5FC60F5A;
+        Tue,  2 Nov 2021 22:02:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635890561;
+        bh=FsAT/ij5gcUCRgrQBdQVwz573g8DBWikwc/ijGzLfz8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=OyN1VrtgpOFDjnHKoV0d28XzJrK/WkjQ48AIIzcHUE8CmRdwp6qQA2EHtNcFiD97S
+         0PmnFHrXvbfjcDtzu1227j1qHu8iL4WZ+RmW/uJM7dbCa0tVZ/6mL8L1iG+3aRrTNE
+         w8PHEzTI958TTBJXaAQWc7rXDJdRGYsV/297sSR2pxBxBl/PWwCnRfY7E3UaEzoOtt
+         fCAFMWYYzmpteYqKzJBG1pAx856TC1380AerxHOrtupiuqGv2Bz6BsXg04iNc9d5vd
+         10TN9snBecXRvR2R2UIyk4+zgZ68+p1pgMJHAT+2ATdpqZDwE4/wSamC2cg9QuRH5b
+         C0pEYAXahqEBQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, saeedm@nvidia.com, mkubecek@suse.cz,
+        andrew@lunn.ch, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net v2] ethtool: fix ethtool msg len calculation for pause stats
+Date:   Tue,  2 Nov 2021 15:02:36 -0700
+Message-Id: <20211102220236.3803742-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <828e2d69-be15-fe69-48d8-9cfc29c4e76e@ti.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> @@ -300,8 +301,18 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
->                         prtad = mii_data->phy_id;
->                         devad = mii_data->reg_num;
->                 }
-> -               mii_data->val_out = mdiobus_read(phydev->mdio.bus, prtad,
-> -                                                devad);
-> +
-> +               if (prtad != phydev->mdio.addr)
-> +                       phydev_rq = mdiobus_get_phy(phydev->mdio.bus, prtad);
-> +
-> +               if (!phydev_rq) {
-> +                       mii_data->val_out = mdiobus_read(phydev->mdio.bus, prtad, devad);
-> +               } else if (mdio_phy_id_is_c45(mii_data->phy_id) && !phydev->is_c45) {
-> +                       mii_data->val_out = phy_read_mmd(phydev_rq, mdio_phy_id_devad(mii_data->phy_id), mii_data->reg_num);
-> +               } else {
-> +                       mii_data->val_out = phy_read(phydev_rq, mii_data->reg_num);
-> +               }
-> +
+ETHTOOL_A_PAUSE_STAT_MAX is the MAX attribute id,
+so we need to subtract non-stats and add one to
+get a count (IOW -2+1 == -1).
 
-One thing i don't like about this is you have little idea what it has
-actually done.
+Otherwise we'll see:
 
-If you pass a C45 address, i expect a C45 access. If i pass a C22 i
-expect a C22 access.
+  ethnl cmd 21: calculated reply length 40, but consumed 52
 
-What i find interesting is that you and the other resent requester are
-using the same user space tool. If you implement C45 over C22 in that
-tool, you get your solution, and it will work for older kernels as
-well. Also, given the diverse implementations of this IOTCL, it
-probably works for more drivers than just those using phy_mii_ioctl().
+Fixes: 9a27a33027f2 ("ethtool: add standard pause stats")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+v2: add a define
 
-	 Andrew
+ include/linux/ethtool_netlink.h      | 3 +++
+ include/uapi/linux/ethtool_netlink.h | 4 +++-
+ net/ethtool/pause.c                  | 3 +--
+ 3 files changed, 7 insertions(+), 3 deletions(-)
 
-	
+diff --git a/include/linux/ethtool_netlink.h b/include/linux/ethtool_netlink.h
+index 1e7bf78cb382..aba348d58ff6 100644
+--- a/include/linux/ethtool_netlink.h
++++ b/include/linux/ethtool_netlink.h
+@@ -10,6 +10,9 @@
+ #define __ETHTOOL_LINK_MODE_MASK_NWORDS \
+ 	DIV_ROUND_UP(__ETHTOOL_LINK_MODE_MASK_NBITS, 32)
+ 
++#define ETHTOOL_PAUSE_STAT_CNT	(__ETHTOOL_A_PAUSE_STAT_CNT -		\
++				 ETHTOOL_A_PAUSE_STAT_TX_FRAMES)
++
+ enum ethtool_multicast_groups {
+ 	ETHNL_MCGRP_MONITOR,
+ };
+diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
+index ca5fbb59fa42..999777d32dcf 100644
+--- a/include/uapi/linux/ethtool_netlink.h
++++ b/include/uapi/linux/ethtool_netlink.h
+@@ -411,7 +411,9 @@ enum {
+ 	ETHTOOL_A_PAUSE_STAT_TX_FRAMES,
+ 	ETHTOOL_A_PAUSE_STAT_RX_FRAMES,
+ 
+-	/* add new constants above here */
++	/* add new constants above here
++	 * adjust ETHTOOL_PAUSE_STAT_CNT if adding non-stats!
++	 */
+ 	__ETHTOOL_A_PAUSE_STAT_CNT,
+ 	ETHTOOL_A_PAUSE_STAT_MAX = (__ETHTOOL_A_PAUSE_STAT_CNT - 1)
+ };
+diff --git a/net/ethtool/pause.c b/net/ethtool/pause.c
+index 9009f412151e..ee1e5806bc93 100644
+--- a/net/ethtool/pause.c
++++ b/net/ethtool/pause.c
+@@ -56,8 +56,7 @@ static int pause_reply_size(const struct ethnl_req_info *req_base,
+ 
+ 	if (req_base->flags & ETHTOOL_FLAG_STATS)
+ 		n += nla_total_size(0) +	/* _PAUSE_STATS */
+-			nla_total_size_64bit(sizeof(u64)) *
+-				(ETHTOOL_A_PAUSE_STAT_MAX - 2);
++		     nla_total_size_64bit(sizeof(u64)) * ETHTOOL_PAUSE_STAT_CNT;
+ 	return n;
+ }
+ 
+-- 
+2.31.1
+
