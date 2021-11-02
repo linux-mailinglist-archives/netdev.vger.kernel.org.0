@@ -2,78 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D93DD442CBD
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 12:36:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA766442D26
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 12:49:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231267AbhKBLjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 07:39:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49180 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231219AbhKBLjT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Nov 2021 07:39:19 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9EEA460E0C;
-        Tue,  2 Nov 2021 11:36:41 +0000 (UTC)
-Date:   Tue, 2 Nov 2021 12:36:37 +0100
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Miklos Szeredi <miklos@szeredi.hu>
-Cc:     Lorenz Bauer <lmb@cloudflare.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Miklos Szeredi <mszeredi@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        network dev <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Christian Brauner <christian@brauner.io>
-Subject: Re: [PATCH bpf-next v3 2/4] libfs: support RENAME_EXCHANGE in
- simple_rename()
-Message-ID: <20211102113637.qfystxmvzmr6yqhq@wittgenstein>
-References: <20211028094724.59043-1-lmb@cloudflare.com>
- <20211028094724.59043-3-lmb@cloudflare.com>
- <CAJfpegvPrQBnYO3XNcCHODBBCXm6uH73zOWXs+sfn=3LQmMyww@mail.gmail.com>
- <7988de27-1718-60c1-ec03-9343d2cc460f@iogearbox.net>
+        id S230305AbhKBLwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 07:52:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33560 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229778AbhKBLwb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 07:52:31 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A132CC061714
+        for <netdev@vger.kernel.org>; Tue,  2 Nov 2021 04:49:56 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id o8so3133210edc.3
+        for <netdev@vger.kernel.org>; Tue, 02 Nov 2021 04:49:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=NGvfx2Yp8NeYjcLZpVAUSqNQbJA3NqlsdrCxKqayquk=;
+        b=t9rV82w2sdfOrAwQpC6iGwusW4OVXTQo5iqxIy1H8+uCgSql7RzdWkt8NMSrjuniY1
+         GTRDcZGQsrla6OH82/G9fkG/AxcUvyDC/RyHNkBLw6sQC1Hf/eRjlMwV25AM8jq9i1/a
+         T1oWQ1pqjQMvKlZhksP95bz51vzckpasmBZyAei5lbHLtzuRvt6xm1mgWGHPLyrDH2Kl
+         tvR8c9Ln5v5HYRqGOH4YH/6ygBSWRCn1g+UfR/o77p9B1ww9uAnEhyNWPeDwzvwEhBHz
+         2TVuOY8hcJwPtxd+Uzxv+4i8WmFIoqZCJzLxzDKVFlYDmmqI1RdLP4CMovS1AzTNoHgr
+         Ebzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NGvfx2Yp8NeYjcLZpVAUSqNQbJA3NqlsdrCxKqayquk=;
+        b=XZa9edPrKhmuGO6vQszl0PVaDFGdm+h42JSxc29LJh/FAavVe19AvFLQtFYfKvyIwZ
+         dc4llMN0pcEcu/HTYEFpTKtCInpj+w1hJHIk3choCrzwiaSLk5Q15/pbnF9eePBmm/1N
+         FSTX3LmyJ+51iGJwbisGStJrb50rEZEX+QAeLUPqLu97WirChJ2BLJk2zJ5YcCcwzy9N
+         MGFwtD8vWn491tSKyyD1qo8FSp2xOoqcMT7Y31/IOaa73Vh8op5TpytWhMo38lafL0mW
+         UDASqOL9Av2BgpfihE7ckDDd4GULzO2vRGcirPlI4cqqi/NNHIFL0Acm2Wk/IsBdS5Ph
+         XbUQ==
+X-Gm-Message-State: AOAM5339MGdzbmSxEuC/cM5XFCfttavtzBPO5DNLOSTUgT4k9kT+jAZW
+        4QJDz9Qq0gm2bohs9ToyKBINeg==
+X-Google-Smtp-Source: ABdhPJzKIPJRB2hu8RjZzTW1mJh4a2lz4FbM9mlaaiU6173xiAlvzaO0EkwbcXCnJVdMMqR7Z6wIbQ==
+X-Received: by 2002:a17:907:961a:: with SMTP id gb26mr44101888ejc.527.1635853795220;
+        Tue, 02 Nov 2021 04:49:55 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id gt18sm1047284ejc.46.2021.11.02.04.49.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Nov 2021 04:49:54 -0700 (PDT)
+Date:   Tue, 2 Nov 2021 12:49:53 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next 0/5] Code movement to br_switchdev.c
+Message-ID: <YYEl4QS6iYSJtzJP@nanopsycho>
+References: <20211027162119.2496321-1-vladimir.oltean@nxp.com>
+ <YYACSc+qv2jMzg/B@nanopsycho>
+ <20211102111159.f5rxiqxnramrnerh@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7988de27-1718-60c1-ec03-9343d2cc460f@iogearbox.net>
+In-Reply-To: <20211102111159.f5rxiqxnramrnerh@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 02, 2021 at 11:11:02AM +0100, Daniel Borkmann wrote:
-> On 11/2/21 10:25 AM, Miklos Szeredi wrote:
-> > On Thu, 28 Oct 2021 at 11:48, Lorenz Bauer <lmb@cloudflare.com> wrote:
-> > > 
-> > > Allow atomic exchange via RENAME_EXCHANGE when using simple_rename.
-> > > This affects binderfs, ramfs, hubetlbfs and bpffs.
-> > 
-> > Ramfs and hugetlbfs are generic enough; those seem safe.
-> > 
-> > Binderfs: I have no idea what this does; binderfs_rename() should
+Tue, Nov 02, 2021 at 12:11:59PM CET, vladimir.oltean@nxp.com wrote:
+>On Mon, Nov 01, 2021 at 04:05:45PM +0100, Jiri Pirko wrote:
+>> Wed, Oct 27, 2021 at 06:21:14PM CEST, vladimir.oltean@nxp.com wrote:
+>> >This is one more refactoring patch set for the Linux bridge, where more
+>> >logic that is specific to switchdev is moved into br_switchdev.c, which
+>> >is compiled out when CONFIG_NET_SWITCHDEV is disabled.
+>> 
+>> Looks good.
+>> 
+>> While you are at it, don't you plan to also move switchdev.c into
+>> br_switchdev.c and eventually rename to br_offload.c ?
+>> 
+>> Switchdev is about bridge offloading only anyway.
+>
+>You mean I should effectively make switchdev part of the bridge?
 
-Fwiw, allows dynamic creation and removal of Android binder ipc
-devices. Each mount is a separate instance and it's mountable inside
-unprivileged containers. Since Android 12 default how binder devices are
-managed. Also makes it possibe to run Android in unprivileged
-containers.
+Yes.
 
-> > probably error out on RENAME_EXCHANGE for now, or an explicit ack from
-> > the maintainers.
-> 
-> Thanks for the review, Miklos! Adding Christian to Cc wrt binderfs ... full context
-> for all patches: https://lore.kernel.org/bpf/20211028094724.59043-1-lmb@cloudflare.com/
-
-Yep, I saw that. Seems good.
-
-> probably error out on RENAME_EXCHANGE for now, or an explicit ack from
-> the maintainers.
-
-I don't think there is any issue in allowing binderfs to support this.
-Binderfs files are always device nodes. Allowing them to be atomically
-renamed shouldn't be a problem. So:
-
-Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
-
-Christian
+>See commit 957e2235e526 ("net: make switchdev_bridge_port_{,unoffload}
+>loosely coupled with the bridge").
