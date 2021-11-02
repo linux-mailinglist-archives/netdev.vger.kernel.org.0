@@ -2,139 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD8C74437CA
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 22:26:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 681E84437DD
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 22:33:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231240AbhKBV3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 17:29:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53948 "EHLO
+        id S230441AbhKBVgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 17:36:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229981AbhKBV3L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 17:29:11 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34877C061714
-        for <netdev@vger.kernel.org>; Tue,  2 Nov 2021 14:26:34 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id t11so432366ljh.6
-        for <netdev@vger.kernel.org>; Tue, 02 Nov 2021 14:26:34 -0700 (PDT)
+        with ESMTP id S229981AbhKBVf7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 17:35:59 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41641C061714;
+        Tue,  2 Nov 2021 14:33:24 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id x5so520506pgk.11;
+        Tue, 02 Nov 2021 14:33:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kinvolk.io; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uItLnRAHYLiuQK2hAUmCgUVAWaO1VnqxXTT3rliPgA4=;
-        b=EJfjUG9jNAqK6Mhsu6Sln2orQ6XxNP9jqs8EeMgAQErKLvSFeByKLPQG2kXGwd3ENJ
-         WiSL00Gq3hVfGwYdXhTSyutrAezjbzgH6LmVgkjV1N7V4QGn2kqjXY+rdcSd+Hnx65Lq
-         kaZxaByFmMAOQpQRLSA5au8gP03veeoVZaUBs=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QnSteGxAFHSw1ZyOWwG9tukkuQKGwDiAkMIV0ek4uDo=;
+        b=Kin2jlsMX4gpoVmUfOPt/XW13fjmopXT/rM65RZcYhlPJI61ISceEKfyVVfnQ6SxQX
+         UAAH3+aMVtIsYWEM5Wvpdmvw5H5kDkLj8M0DPPcqwRzIpdHemB2CSGgq83p4YUogSIeO
+         jPEs1EY5fL5gCVZvpQbMntikyNclY5rlBJKIJAaI7SHOyFHV6AgWFnnbOAzfjhMQVHD2
+         WD/HYzwxjzNOd0CMnIPfzZx14Eg7F8rdtDGiXMrwpWWz8JXw38g3kkWPRQS1IuQ6gu3N
+         L6leUAErreyjV0wtwmgsuMT/tHpSbudBRiGH+/YsErgY537mBNgQGhDYxtOwQAG14f7u
+         viqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uItLnRAHYLiuQK2hAUmCgUVAWaO1VnqxXTT3rliPgA4=;
-        b=C92V4gD2Q07qmuShyVsRbQxUh2uJ8TyiBo6Uei8LGWLUXuowEb20xMqcK9jwrRxTU9
-         f9Sm6iFmnOwEuTXS1SOXuuNgT08otkd5Ksv1exKKOouTdzOX7eO4/EIjWslZ9ePzGvqs
-         UCRoVhNRHqkqyWmwury05foVMfv+56T8mpDPp9YADnT+8Rz1pWrqy6GNKxZz7X2rNow7
-         lkbkTTQ6s9a5H8eYE3Opuk7O9CGmnoPwxJ7ooS6pPnk+d0kiB3AWIpf+Yw/9nT3clPjU
-         eBHfnHh7LMSsX1r7Qp2Mh5uMauPLdlnluJB4PWMjYHsLEMxiy679svzc+3ikSFyzkk4H
-         i9XA==
-X-Gm-Message-State: AOAM531LudWDRd4VJVs62xhScFkr8JxIWoqBFplvyuGmvvXBY8odqJjI
-        tBqlSw/HUk4BqneK+KUw1GWYBtX11HNl/Q7VKSfN3A==
-X-Google-Smtp-Source: ABdhPJwqux2jIRpOea05LMTtwMbunx5/Ds/j15vbbzBK3iM9otzu74Tkaoi6rq6wsTBJSnC0fFPk6Q9VoiXKq7kR0vM=
-X-Received: by 2002:a2e:9c14:: with SMTP id s20mr5354526lji.266.1635888392226;
- Tue, 02 Nov 2021 14:26:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QnSteGxAFHSw1ZyOWwG9tukkuQKGwDiAkMIV0ek4uDo=;
+        b=DGiHSyGuz5gUN2BAjsDfN4TNc4RzqbcQDkbf7ZbNI3jRnUu8mK0MsK0zxR/21+cU8n
+         YVZZS6DMHTBSqi5VY6x+YNAvqIS207Sq0KP6iKD0TLjQy8FOnO1DHOwxIfSDp3i9bQQv
+         qyHoUDt4/FT0IR4WTvaJ/P9K6B5NooEe+j1k6Nd7GhD+ETf8YDY9gr1Ex+ENviuLT80b
+         LkRapldyXXv0pWb1KItmyGONo8LgO8I1+ZyqnGwSSLZ7ycCUoIyYGFAPEBlgU0MBFfEo
+         +iVju+19hc8l8rVgdBZoLNIgK5Hhfn+DlzHjzVO7FnzeFvdR7DMIQshwVbB6UDgrsYr5
+         +f6w==
+X-Gm-Message-State: AOAM530ytxdW2ApM9JKlERnBTFAU05VNfMoQz22FV1dSoj+FBp3mfbEm
+        wWPiHKLfvJJZ3DKWj2ViLQXJsnNJBOY=
+X-Google-Smtp-Source: ABdhPJy92RTup1wxM5v8pp5TcmFinXved9BFyDbed4Kp7lbdwOLVTqTDK/l0eANYuUJdjoKVf8UcwQ==
+X-Received: by 2002:a63:5c13:: with SMTP id q19mr14927067pgb.350.1635888803630;
+        Tue, 02 Nov 2021 14:33:23 -0700 (PDT)
+Received: from localhost.localdomain (c-71-56-157-77.hsd1.or.comcast.net. [71.56.157.77])
+        by smtp.gmail.com with ESMTPSA id c21sm107979pfv.119.2021.11.02.14.33.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Nov 2021 14:33:23 -0700 (PDT)
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: pull request: bluetooth 2021-11-02
+Date:   Tue,  2 Nov 2021 14:33:21 -0700
+Message-Id: <20211102213321.18680-1-luiz.dentz@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20211027203727.208847-1-mauricio@kinvolk.io> <CAADnVQK2Bm7dDgGc6uHVosuSzi_LT0afXM6Hf3yLXByfftxV1Q@mail.gmail.com>
- <CAHap4zt7B1Zb56rr55Q8_cy8qdyaZsYcWt7ZHrs3EKr50fsA+A@mail.gmail.com> <CAEf4BzbDBGEnztzEcXmCFMNyzTjJ3pY41ahzieu9yJ+EDHU0dg@mail.gmail.com>
-In-Reply-To: <CAEf4BzbDBGEnztzEcXmCFMNyzTjJ3pY41ahzieu9yJ+EDHU0dg@mail.gmail.com>
-From:   =?UTF-8?Q?Mauricio_V=C3=A1squez_Bernal?= <mauricio@kinvolk.io>
-Date:   Tue, 2 Nov 2021 16:26:21 -0500
-Message-ID: <CAHap4zutG7KXywstCHcTbATN8iVCKuN84ZHxLfdsXDJS9sDmEA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/2] libbpf: Implement BTF Generator API
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
-        Lorenzo Fontana <lorenzo.fontana@elastic.co>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Part #2 absolutely doesn't belong in libbpf. Libbpf exposes enough BTF
-> constructing APIs to implement this in any application, bpftool or
-> otherwise. It's also a relatively straightforward problem: mark used
-> types and fields, create a copy of BTF with only those types and
-> fields.
+The following changes since commit d0f1c248b4ff71cada1b9e4ed61a1992cd94c3df:
 
-Totally agree.
+  Merge tag 'for-net-next-2021-10-01' of git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next (2021-10-05 07:41:16 -0700)
 
-> The last point is important, because to solve the problem 1b (exposing
-> CO-RE relo info), the best way to minimize public API commitments is
-> to (optionally, probably) request libbpf to record its CO-RE relo
-> decisions. Here's what I propose, specifically:
->   1. Add something like "bool record_core_relo_info" (awful name,
-> don't use it) in bpf_object_open_opts.
->   2. If it is set to true, libbpf will keep a "log" of CO-RE
-> relocation decisions, recording stuff like program name, instruction
-> index, local spec (i.e., root_type_id, spec string, relo kind, maybe
-> something else), target spec (kernel type_id, kernel spec string, also
-> module ID, if it's not vmlinux BTF). We can also record relocated
-> value (i.e., field offset, actual enum value, true/false for
-> existence, etc). All these are stable concepts, so I'd feel more
-> comfortable exposing them, compared to stuff like bpf_core_accessor
-> and other internal details.
->   3. The memory for all that will be managed by libbpf for simplicity
-> of an API, and we'll expose accessors to get those arrays (at object
-> level or per-program level is TBD).
->   4. This info will be available after the prepare() step and will be
-> discarded either at create_maps() or load().
+are available in the Git repository at:
 
-I like all this proposal. It fits very well with the BTFGen use case.
+  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git tags/for-net-next-2021-11-02
 
-Regarding the information to expose, IIUC that'd be slight versions of
-struct bpf_core_relo_res and struct bpf_core_spec. I think we could
-expose the following structures and a function to get it (please
-ignore the naming for now):
+for you to fetch changes up to 258f56d11bbbf39df5bc5faf0119d28be528f27d:
 
-```
-/* reduced version of struct bpf_core_spec */
-struct bpf_core_spec_pub {
-const struct btf *btf;
-__u32 root_type_id;
-enum bpf_core_relo_kind kind;
-/* raw, low-level spec: 1-to-1 with accessor spec string */ --> we can
-also use access_str_off and let the user parse it
-int raw_spec[BPF_CORE_SPEC_MAX_LEN];
-/* raw spec length */
-int raw_len;
-};
+  Bluetooth: aosp: Support AOSP Bluetooth Quality Report (2021-11-02 19:37:52 +0100)
 
-struct bpf_core_relo_pub {
-const char *prog_name; --> if we expose it by program then it's not needed.
-int insn_idx;
+----------------------------------------------------------------
+bluetooth-next pull request for net-next:
 
-bool poison; --> allows the user to understand if the relocation
-succeeded or not.
+ - Add support for AOSP Bluetooth Quality Report
+ - Rework of HCI command execution serialization
 
-/* new field offset for field based core relos */
-__u32 new_offset;
+----------------------------------------------------------------
+Archie Pusaka (1):
+      Bluetooth: Fix removing adv when processing cmd complete
 
-// TODO: fields for type and enum-based relos
+Brian Gix (13):
+      Bluetooth: hci_sync: Convert MGMT_OP_SET_FAST_CONNECTABLE
+      Bluetooth: hci_sync: Enable synch'd set_bredr
+      Bluetooth: hci_sync: Convert MGMT_OP_GET_CONN_INFO
+      Bluetooth: hci_sync: Convert MGMT_OP_SET_SECURE_CONN
+      Bluetooth: hci_sync: Convert MGMT_OP_GET_CLOCK_INFO
+      Bluetooth: hci_sync: Convert MGMT_OP_SET_LE
+      Bluetooth: hci_sync: Convert MGMT_OP_READ_LOCAL_OOB_DATA
+      Bluetooth: hci_sync: Convert MGMT_OP_READ_LOCAL_OOB_EXT_DATA
+      Bluetooth: hci_sync: Convert MGMT_OP_SET_LOCAL_NAME
+      Bluetooth: hci_sync: Convert MGMT_OP_SET_PHY_CONFIGURATION
+      Bluetooth: hci_sync: Convert MGMT_OP_SET_ADVERTISING
+      Bluetooth: hci_sync: Convert adv_expire
+      Bluetooth: hci_sync: Convert MGMT_OP_SSP
 
-struct bpf_core_spec_pub local_spec, targ_spec; --> BTFGen only needs
-targ_spec, I suppose local spec would be useful for other use cases.
-};
+David Yang (1):
+      Bluetooth: btusb: Fix application of sizeof to pointer
 
-LIBBPF_API struct bpf_core_relo_pub *bpf_program__core_relos(struct
-bpf_program *prog);
-```
+Johan Hovold (1):
+      Bluetooth: bfusb: fix division by zero in send path
 
-I don't have strong opinions about exposing it by object or by
-program. Both cases should work the same for BTFGen.
+Joseph Hwang (2):
+      Bluetooth: Add struct of reading AOSP vendor capabilities
+      Bluetooth: aosp: Support AOSP Bluetooth Quality Report
 
-Does it make sense to you?
+Kiran K (2):
+      Bluetooth: Read codec capabilities only if supported
+      Bluetooth: btintel: Fix bdaddress comparison with garbage value
 
-Btw, I'm probably not the right person to give opinions about this API
-splitment. I'd be happy to have other opinions here and to make this
-change once we agree on a path forward.
+Kyle Copperfield (1):
+      Bluetooth: btsdio: Do not bind to non-removable BCM4345 and BCM43455
+
+Luiz Augusto von Dentz (16):
+      Bluetooth: hci_vhci: Fix calling hci_{suspend,resume}_dev
+      Bluetooth: Fix handling of SUSPEND_DISCONNECTING
+      Bluetooth: L2CAP: Fix not initializing sk_peer_pid
+      Bluetooth: vhci: Add support for setting msft_opcode and aosp_capable
+      Bluetooth: vhci: Fix checking of msft_opcode
+      Bluetooth: hci_sync: Make use of hci_cmd_sync_queue set 1
+      Bluetooth: hci_sync: Make use of hci_cmd_sync_queue set 2
+      Bluetooth: hci_sync: Make use of hci_cmd_sync_queue set 3
+      Bluetooth: hci_sync: Enable advertising when LL privacy is enabled
+      Bluetooth: hci_sync: Rework background scan
+      Bluetooth: hci_sync: Convert MGMT_SET_POWERED
+      Bluetooth: hci_sync: Convert MGMT_OP_START_DISCOVERY
+      Bluetooth: hci_sync: Rework init stages
+      Bluetooth: hci_sync: Rework hci_suspend_notifier
+      Bluetooth: hci_sync: Fix missing static warnings
+      Bluetooth: hci_sync: Fix not setting adv set duration
+
+Marcel Holtmann (1):
+      Bluetooth: Add helper for serialized HCI command execution
+
+Mark-YW.Chen (1):
+      Bluetooth: btusb: fix memory leak in btusb_mtk_submit_wmt_recv_urb()
+
+Mark-yw Chen (1):
+      Bluetooth: btmtksdio: transmit packet according to status TX_EMPTY
+
+Nguyen Dinh Phi (1):
+      Bluetooth: hci_sock: purge socket queues in the destruct() callback
+
+Paul Cercueil (1):
+      Bluetooth: hci_bcm: Remove duplicated entry in OF table
+
+Sean Wang (9):
+      Bluetooth: mediatek: add BT_MTK module
+      Bluetooth: btmtksido: rely on BT_MTK module
+      Bluetooth: btmtksdio: add .set_bdaddr support
+      Bluetooth: btmtksdio: explicitly set WHISR as write-1-clear
+      Bluetooth: btmtksdio: move interrupt service to work
+      Bluetooth: btmtksdio: update register CSDIOCSR operation
+      Bluetooth: btmtksdio: use register CRPLR to read packet length
+      mmc: add MT7921 SDIO identifiers for MediaTek Bluetooth devices
+      Bluetooth: btmtksdio: add MT7921s Bluetooth support
+
+Soenke Huster (1):
+      Bluetooth: virtio_bt: fix memory leak in virtbt_rx_handle()
+
+Tedd Ho-Jeong An (2):
+      Bluetooth: hci_vhci: Fix to set the force_wakeup value
+      Bluetooth: mgmt: Fix Experimental Feature Changed event
+
+Tim Jiang (1):
+      Bluetooth: btusb: Add support using different nvm for variant WCN6855 controller
+
+Wang Hai (1):
+      Bluetooth: cmtp: fix possible panic when cmtp_init_sockets() fails
+
+Wei Yongjun (2):
+      Bluetooth: Fix debugfs entry leak in hci_register_dev()
+      Bluetooth: Fix memory leak of hci device
+
+ drivers/bluetooth/Kconfig         |    6 +
+ drivers/bluetooth/Makefile        |    1 +
+ drivers/bluetooth/bfusb.c         |    3 +
+ drivers/bluetooth/btintel.c       |   22 +-
+ drivers/bluetooth/btmtk.c         |  289 +++
+ drivers/bluetooth/btmtk.h         |  111 +
+ drivers/bluetooth/btmtksdio.c     |  496 ++--
+ drivers/bluetooth/btsdio.c        |    2 +
+ drivers/bluetooth/btusb.c         |  389 +--
+ drivers/bluetooth/hci_bcm.c       |    1 -
+ drivers/bluetooth/hci_vhci.c      |  120 +-
+ drivers/bluetooth/virtio_bt.c     |    3 +
+ include/linux/mmc/sdio_ids.h      |    1 +
+ include/net/bluetooth/bluetooth.h |    2 +
+ include/net/bluetooth/hci_core.h  |   22 +-
+ include/net/bluetooth/hci_sync.h  |   97 +
+ net/bluetooth/Makefile            |    2 +-
+ net/bluetooth/aosp.c              |  168 +-
+ net/bluetooth/aosp.h              |   13 +
+ net/bluetooth/cmtp/core.c         |    4 +-
+ net/bluetooth/hci_codec.c         |   18 +-
+ net/bluetooth/hci_conn.c          |   20 +-
+ net/bluetooth/hci_core.c          | 1334 +----------
+ net/bluetooth/hci_event.c         |  159 +-
+ net/bluetooth/hci_request.c       |  338 +--
+ net/bluetooth/hci_request.h       |   10 +
+ net/bluetooth/hci_sock.c          |   11 +-
+ net/bluetooth/hci_sync.c          | 4799 +++++++++++++++++++++++++++++++++++++
+ net/bluetooth/hci_sysfs.c         |    2 +
+ net/bluetooth/l2cap_sock.c        |   19 +
+ net/bluetooth/mgmt.c              | 2086 ++++++++--------
+ net/bluetooth/mgmt_util.c         |   15 +-
+ net/bluetooth/mgmt_util.h         |    4 +
+ net/bluetooth/msft.c              |  511 ++--
+ net/bluetooth/msft.h              |   15 +-
+ 35 files changed, 7472 insertions(+), 3621 deletions(-)
+ create mode 100644 drivers/bluetooth/btmtk.c
+ create mode 100644 drivers/bluetooth/btmtk.h
+ create mode 100644 include/net/bluetooth/hci_sync.h
+ create mode 100644 net/bluetooth/hci_sync.c
