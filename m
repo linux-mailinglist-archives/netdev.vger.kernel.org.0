@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C279443231
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 17:00:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C192D44322F
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 17:00:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233362AbhKBQCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 12:02:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35666 "EHLO mail.kernel.org"
+        id S232135AbhKBQCe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 12:02:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35670 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231721AbhKBQCd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231725AbhKBQCd (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 2 Nov 2021 12:02:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BD6C761101;
-        Tue,  2 Nov 2021 15:59:57 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3080E6113D;
+        Tue,  2 Nov 2021 15:59:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1635868798;
-        bh=6bTo0FeB5kZNxr3stpY/j0YKazkG71zR6qgI8gCXAMg=;
+        bh=M2smWHRLdmS4ErIGSkeDd6DY7l2hTg+wQjLaQytJMvc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LdqmCmf8mO5CQmVVqEYAfkR1YaR6MMQFpqdRg2VQwJbaYy/xONvjKT61SGTqI9xYz
-         JHaTnz9gF2cO8ApjHngigX9PFOKTr7W7VkZ72M4XuDDyTMXDW0zPMYHq6Vp3uHUUX6
-         /ecNiBAw+QhSpyVVedQp0I57c1iPqRoDAFYixsUN0bG/hvSR2W9YNpYyH9QLNlaw3X
-         CovBLTCPMIkI9YrUavP088460RVN4HthaFgOlZOdFPH86IMNNkz/cq87I9suxoUMXQ
-         5KzFDCRJAYer2yhtGFFkx5wOgimWi4c+017aR6YE0HozYtJotHfDIx5PaAYkR+VXPG
-         mOOVl0LoMfkQA==
+        b=UWxnfhgtpB0cFLtqRjIQUiU99dbb2vCIgSNUB8HGrXvhTiBqIt4/oRQT7GL36fSdA
+         ZPb32A6s0xthM8qLkSm3j/dEs9/sXuL9phHkkBpd22nf8j3CtAW6eZnNnf4gl5wpBr
+         ZmumnICrbFuFV/fzvPEEcfT2pUKT04DpgoApRB1dWemcSZZnhaqp1ovARhNvj63GWE
+         so7WSVIpBpCWrzuq1OtOqGpwtkz61dUuJ2KAKP6gdjnrRV5I/uxkct+L4yiVngACAN
+         3g8ecN3E81jDeDmVWD5ehPxhZ0rJ6YbOW74deshs97KLWvvsuS4gZJKt3NDo695x9o
+         05fzuVguumfgg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: [net-next v2 1/7] net/mlx5e: Support ethtool cq mode
-Date:   Tue,  2 Nov 2021 08:59:42 -0700
-Message-Id: <20211102155948.1143487-2-saeed@kernel.org>
+        Moshe Shemesh <moshe@nvidia.com>
+Subject: [net-next v2 2/7] net/mlx5: Print more info on pci error handlers
+Date:   Tue,  2 Nov 2021 08:59:43 -0700
+Message-Id: <20211102155948.1143487-3-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211102155948.1143487-1-saeed@kernel.org>
 References: <20211102155948.1143487-1-saeed@kernel.org>
@@ -42,197 +42,125 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Saeed Mahameed <saeedm@nvidia.com>
 
-Add support for ethtool coalesce cq mode set and get.
+In case mlx5_pci_err_detected was called with state equals to
+pci_channel_io_perm_failure, the driver will never come back up.
+
+It is nice to know why the driver went to zombie land, so print some
+useful information on pci err handlers.
 
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |  7 ++-
- .../ethernet/mellanox/mlx5/core/en_ethtool.c  | 49 ++++++++++++++++---
- .../net/ethernet/mellanox/mlx5/core/en_rep.c  |  4 +-
- .../mellanox/mlx5/core/ipoib/ethtool.c        |  4 +-
- 4 files changed, 52 insertions(+), 12 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/main.c    | 51 ++++++++++++++-----
+ 1 file changed, 37 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index f0ac6b0d9653..48b12ee44b8d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -1148,9 +1148,12 @@ void mlx5e_ethtool_get_channels(struct mlx5e_priv *priv,
- int mlx5e_ethtool_set_channels(struct mlx5e_priv *priv,
- 			       struct ethtool_channels *ch);
- int mlx5e_ethtool_get_coalesce(struct mlx5e_priv *priv,
--			       struct ethtool_coalesce *coal);
-+			       struct ethtool_coalesce *coal,
-+			       struct kernel_ethtool_coalesce *kernel_coal);
- int mlx5e_ethtool_set_coalesce(struct mlx5e_priv *priv,
--			       struct ethtool_coalesce *coal);
-+			       struct ethtool_coalesce *coal,
-+			       struct kernel_ethtool_coalesce *kernel_coal,
-+			       struct netlink_ext_ack *extack);
- int mlx5e_ethtool_get_link_ksettings(struct mlx5e_priv *priv,
- 				     struct ethtool_link_ksettings *link_ksettings);
- int mlx5e_ethtool_set_link_ksettings(struct mlx5e_priv *priv,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-index c2ea5fad48dd..45bdfcb3dcc7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-@@ -511,7 +511,8 @@ static int mlx5e_set_channels(struct net_device *dev,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index a92a92a52346..d9361546d5e4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1604,12 +1604,28 @@ static void remove_one(struct pci_dev *pdev)
+ 	mlx5_devlink_free(devlink);
  }
  
- int mlx5e_ethtool_get_coalesce(struct mlx5e_priv *priv,
--			       struct ethtool_coalesce *coal)
-+			       struct ethtool_coalesce *coal,
-+			       struct kernel_ethtool_coalesce *kernel_coal)
- {
- 	struct dim_cq_moder *rx_moder, *tx_moder;
- 
-@@ -528,6 +529,11 @@ int mlx5e_ethtool_get_coalesce(struct mlx5e_priv *priv,
- 	coal->tx_max_coalesced_frames	= tx_moder->pkts;
- 	coal->use_adaptive_tx_coalesce	= priv->channels.params.tx_dim_enabled;
- 
-+	kernel_coal->use_cqe_mode_rx =
-+		MLX5E_GET_PFLAG(&priv->channels.params, MLX5E_PFLAG_RX_CQE_BASED_MODER);
-+	kernel_coal->use_cqe_mode_tx =
-+		MLX5E_GET_PFLAG(&priv->channels.params, MLX5E_PFLAG_TX_CQE_BASED_MODER);
++#define mlx5_pci_trace(dev, fmt, ...) ({ \
++	struct mlx5_core_dev *__dev = (dev); \
++	mlx5_core_info(__dev, "%s Device state = %d health sensors: %d pci_status: %d. " fmt, \
++		       __func__, __dev->state, mlx5_health_check_fatal_sensors(__dev), \
++		       __dev->pci_status, ##__VA_ARGS__); \
++})
 +
- 	return 0;
- }
- 
-@@ -538,7 +544,7 @@ static int mlx5e_get_coalesce(struct net_device *netdev,
- {
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
- 
--	return mlx5e_ethtool_get_coalesce(priv, coal);
-+	return mlx5e_ethtool_get_coalesce(priv, coal, kernel_coal);
- }
- 
- #define MLX5E_MAX_COAL_TIME		MLX5_MAX_CQ_PERIOD
-@@ -578,14 +584,26 @@ mlx5e_set_priv_channels_rx_coalesce(struct mlx5e_priv *priv, struct ethtool_coal
- 	}
- }
- 
-+/* convert a boolean value of cq_mode to mlx5 period mode
-+ * true  : MLX5_CQ_PERIOD_MODE_START_FROM_CQE
-+ * false : MLX5_CQ_PERIOD_MODE_START_FROM_EQE
-+ */
-+static int cqe_mode_to_period_mode(bool val)
++static const char *result2str(enum pci_ers_result result)
 +{
-+	return val ? MLX5_CQ_PERIOD_MODE_START_FROM_CQE : MLX5_CQ_PERIOD_MODE_START_FROM_EQE;
++	return  result == PCI_ERS_RESULT_NEED_RESET ? "need reset" :
++		result == PCI_ERS_RESULT_DISCONNECT ? "disconnect" :
++		result == PCI_ERS_RESULT_RECOVERED  ? "recovered" :
++		"unknown";
 +}
 +
- int mlx5e_ethtool_set_coalesce(struct mlx5e_priv *priv,
--			       struct ethtool_coalesce *coal)
-+			       struct ethtool_coalesce *coal,
-+			       struct kernel_ethtool_coalesce *kernel_coal,
-+			       struct netlink_ext_ack *extack)
+ static pci_ers_result_t mlx5_pci_err_detected(struct pci_dev *pdev,
+ 					      pci_channel_state_t state)
  {
- 	struct dim_cq_moder *rx_moder, *tx_moder;
- 	struct mlx5_core_dev *mdev = priv->mdev;
- 	struct mlx5e_params new_params;
- 	bool reset_rx, reset_tx;
- 	bool reset = true;
-+	u8 cq_period_mode;
- 	int err = 0;
+ 	struct mlx5_core_dev *dev = pci_get_drvdata(pdev);
++	enum pci_ers_result res;
  
- 	if (!MLX5_CAP_GEN(mdev, cq_moderation))
-@@ -605,6 +623,12 @@ int mlx5e_ethtool_set_coalesce(struct mlx5e_priv *priv,
- 		return -ERANGE;
+-	mlx5_core_info(dev, "%s was called\n", __func__);
++	mlx5_pci_trace(dev, "Enter, pci channel state = %d\n", state);
+ 
+ 	mlx5_enter_error_state(dev, false);
+ 	mlx5_error_sw_reset(dev);
+@@ -1617,8 +1633,11 @@ static pci_ers_result_t mlx5_pci_err_detected(struct pci_dev *pdev,
+ 	mlx5_drain_health_wq(dev);
+ 	mlx5_pci_disable_device(dev);
+ 
+-	return state == pci_channel_io_perm_failure ?
++	res = state == pci_channel_io_perm_failure ?
+ 		PCI_ERS_RESULT_DISCONNECT : PCI_ERS_RESULT_NEED_RESET;
++
++	mlx5_pci_trace(dev, "Exit, result = %d, %s\n",  res, result2str(res));
++	return res;
+ }
+ 
+ /* wait for the device to show vital signs by waiting
+@@ -1652,28 +1671,34 @@ static int wait_vital(struct pci_dev *pdev)
+ 
+ static pci_ers_result_t mlx5_pci_slot_reset(struct pci_dev *pdev)
+ {
++	enum pci_ers_result res = PCI_ERS_RESULT_DISCONNECT;
+ 	struct mlx5_core_dev *dev = pci_get_drvdata(pdev);
+ 	int err;
+ 
+-	mlx5_core_info(dev, "%s was called\n", __func__);
++	mlx5_pci_trace(dev, "Enter\n");
+ 
+ 	err = mlx5_pci_enable_device(dev);
+ 	if (err) {
+ 		mlx5_core_err(dev, "%s: mlx5_pci_enable_device failed with error code: %d\n",
+ 			      __func__, err);
+-		return PCI_ERS_RESULT_DISCONNECT;
++		goto out;
  	}
  
-+	if ((kernel_coal->use_cqe_mode_rx || kernel_coal->use_cqe_mode_tx) &&
-+	    !MLX5_CAP_GEN(priv->mdev, cq_period_start_from_cqe)) {
-+		NL_SET_ERR_MSG_MOD(extack, "cqe_mode_rx/tx is not supported on this device");
-+		return -EOPNOTSUPP;
-+	}
+ 	pci_set_master(pdev);
+ 	pci_restore_state(pdev);
+ 	pci_save_state(pdev);
+ 
+-	if (wait_vital(pdev)) {
+-		mlx5_core_err(dev, "%s: wait_vital timed out\n", __func__);
+-		return PCI_ERS_RESULT_DISCONNECT;
++	err = wait_vital(pdev);
++	if (err) {
++		mlx5_core_err(dev, "%s: wait vital failed with error code: %d\n",
++			      __func__, err);
++		goto out;
+ 	}
+ 
+-	return PCI_ERS_RESULT_RECOVERED;
++	res = PCI_ERS_RESULT_RECOVERED;
++out:
++	mlx5_pci_trace(dev, "Exit, err = %d, result = %d, %s\n", err, res, result2str(res));
++	return res;
+ }
+ 
+ static void mlx5_pci_resume(struct pci_dev *pdev)
+@@ -1681,14 +1706,12 @@ static void mlx5_pci_resume(struct pci_dev *pdev)
+ 	struct mlx5_core_dev *dev = pci_get_drvdata(pdev);
+ 	int err;
+ 
+-	mlx5_core_info(dev, "%s was called\n", __func__);
++	mlx5_pci_trace(dev, "Enter, loading driver..\n");
+ 
+ 	err = mlx5_load_one(dev);
+-	if (err)
+-		mlx5_core_err(dev, "%s: mlx5_load_one failed with error code: %d\n",
+-			      __func__, err);
+-	else
+-		mlx5_core_info(dev, "%s: device recovered\n", __func__);
 +
- 	mutex_lock(&priv->state_lock);
- 	new_params = priv->channels.params;
- 
-@@ -621,6 +645,18 @@ int mlx5e_ethtool_set_coalesce(struct mlx5e_priv *priv,
- 	reset_rx = !!coal->use_adaptive_rx_coalesce != priv->channels.params.rx_dim_enabled;
- 	reset_tx = !!coal->use_adaptive_tx_coalesce != priv->channels.params.tx_dim_enabled;
- 
-+	cq_period_mode = cqe_mode_to_period_mode(kernel_coal->use_cqe_mode_rx);
-+	if (cq_period_mode != rx_moder->cq_period_mode) {
-+		mlx5e_set_rx_cq_mode_params(&new_params, cq_period_mode);
-+		reset_rx = true;
-+	}
-+
-+	cq_period_mode = cqe_mode_to_period_mode(kernel_coal->use_cqe_mode_tx);
-+	if (cq_period_mode != tx_moder->cq_period_mode) {
-+		mlx5e_set_tx_cq_mode_params(&new_params, cq_period_mode);
-+		reset_tx = true;
-+	}
-+
- 	if (reset_rx) {
- 		u8 mode = MLX5E_GET_PFLAG(&new_params,
- 					  MLX5E_PFLAG_RX_CQE_BASED_MODER);
-@@ -656,9 +692,9 @@ static int mlx5e_set_coalesce(struct net_device *netdev,
- 			      struct kernel_ethtool_coalesce *kernel_coal,
- 			      struct netlink_ext_ack *extack)
- {
--	struct mlx5e_priv *priv    = netdev_priv(netdev);
-+	struct mlx5e_priv *priv = netdev_priv(netdev);
- 
--	return mlx5e_ethtool_set_coalesce(priv, coal);
-+	return mlx5e_ethtool_set_coalesce(priv, coal, kernel_coal, extack);
++	mlx5_pci_trace(dev, "Done, err = %d, device %s\n", err,
++		       !err ? "recovered" : "Failed");
  }
  
- static void ptys2ethtool_supported_link(struct mlx5_core_dev *mdev,
-@@ -2358,7 +2394,8 @@ static void mlx5e_get_rmon_stats(struct net_device *netdev,
- const struct ethtool_ops mlx5e_ethtool_ops = {
- 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
- 				     ETHTOOL_COALESCE_MAX_FRAMES |
--				     ETHTOOL_COALESCE_USE_ADAPTIVE,
-+				     ETHTOOL_COALESCE_USE_ADAPTIVE |
-+				     ETHTOOL_COALESCE_USE_CQE,
- 	.get_drvinfo       = mlx5e_get_drvinfo,
- 	.get_link          = ethtool_op_get_link,
- 	.get_link_ext_state  = mlx5e_get_link_ext_state,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index e58a9ec42553..8c81aeba07db 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -258,7 +258,7 @@ static int mlx5e_rep_get_coalesce(struct net_device *netdev,
- {
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
- 
--	return mlx5e_ethtool_get_coalesce(priv, coal);
-+	return mlx5e_ethtool_get_coalesce(priv, coal, kernel_coal);
- }
- 
- static int mlx5e_rep_set_coalesce(struct net_device *netdev,
-@@ -268,7 +268,7 @@ static int mlx5e_rep_set_coalesce(struct net_device *netdev,
- {
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
- 
--	return mlx5e_ethtool_set_coalesce(priv, coal);
-+	return mlx5e_ethtool_set_coalesce(priv, coal, kernel_coal, extack);
- }
- 
- static u32 mlx5e_rep_get_rxfh_key_size(struct net_device *netdev)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
-index 962d41418ce7..f23e33ac9c6b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
-@@ -105,7 +105,7 @@ static int mlx5i_set_coalesce(struct net_device *netdev,
- {
- 	struct mlx5e_priv *priv = mlx5i_epriv(netdev);
- 
--	return mlx5e_ethtool_set_coalesce(priv, coal);
-+	return mlx5e_ethtool_set_coalesce(priv, coal, kernel_coal, extack);
- }
- 
- static int mlx5i_get_coalesce(struct net_device *netdev,
-@@ -115,7 +115,7 @@ static int mlx5i_get_coalesce(struct net_device *netdev,
- {
- 	struct mlx5e_priv *priv = mlx5i_epriv(netdev);
- 
--	return mlx5e_ethtool_get_coalesce(priv, coal);
-+	return mlx5e_ethtool_get_coalesce(priv, coal, kernel_coal);
- }
- 
- static int mlx5i_get_ts_info(struct net_device *netdev,
+ static const struct pci_error_handlers mlx5_err_handler = {
 -- 
 2.31.1
 
