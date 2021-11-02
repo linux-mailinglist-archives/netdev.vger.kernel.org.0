@@ -2,107 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DF8D44397E
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 00:18:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A5E3443985
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 00:20:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231755AbhKBXUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 19:20:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50904 "EHLO
+        id S231230AbhKBXWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 19:22:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230331AbhKBXUv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 19:20:51 -0400
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C11DC061714;
-        Tue,  2 Nov 2021 16:18:16 -0700 (PDT)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id 0B831C01E; Wed,  3 Nov 2021 00:18:13 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1635895093; bh=1pTmdyOEPgOjYARloB4mWE8fy1Eol4wLWmFLu9HJ9HY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PB3sJX7ee1PdTCz/uu2NiiQ5Ep6Om8viNgcQyRp5Bw1NHkVQC3QvADAN87adnHVv/
-         L5UDX4ChOrPPPgUVqe8+0WbVA4ub7X2PF3jtObKevy/RklsI62y7Gum4eNoiuIWsee
-         Bc3iOp2djV75QpLPu2Rn+tA8xJPcR282XBfc1GS7dRfaHO1FTWE7K6+L3uYuv+9sJA
-         AF/kFO6rsSHV05EmVUVAXiFG0+dPsVXBvu8cKfxaSnS9GZBuTOOLAYEs5l6SvyqZYH
-         5Marh2R2lDncDhLaiBY0UtGF4wMjrVS3I01Ut6Dr+VNH5Pyngku84CHJztxvokLYw8
-         ldVPSI3ULNQGg==
-X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on nautica.notk.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
-        autolearn=unavailable version=3.3.2
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 17F70C009;
-        Wed,  3 Nov 2021 00:18:09 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1635895092; bh=1pTmdyOEPgOjYARloB4mWE8fy1Eol4wLWmFLu9HJ9HY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GfFvZOVHKaTCacEuOTpM+PDYMG1MHeEe72nG3gegKvRY75jnQ54IW59FrxLe2Ov0B
-         rsb0Wd9/9Lowe8bULCnn/s8zQZH3aprHJXIZKcIEeOLV2dVVCkuuQlujwhu74Ok/Ib
-         fA1Pj8iqPimUgFcTLlzFddFPN+tn3MXdgYSC7Dh6qfKsl5g8HKlzrs8RdF2yOCwjZ0
-         744cjEWMXff+9KW72Hrt2Ak+ON6JCsil4LFudzQjUzTwDXaSPsqdw3ONbyy1+Cr0lP
-         QYumJNUDypC/+OmHRbNTK/PxZQampBJEDUMUQ97vo5D0IkYpaBZOJnQuXAQ03aMBJt
-         k7otCdrpvKy2w==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 42328f3f;
-        Tue, 2 Nov 2021 23:18:06 +0000 (UTC)
-Date:   Wed, 3 Nov 2021 08:17:51 +0900
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Thomas =?utf-8?Q?Wei=C3=9Fschuh?= <linux@weissschuh.net>
-Cc:     Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/9p: autoload transport modules
-Message-ID: <YYHHHy0qJGlpGEaQ@codewreck.org>
-References: <20211017134611.4330-1-linux@weissschuh.net>
- <YYEYMt543Hg+Hxzy@codewreck.org>
- <922a4843-c7b0-4cdc-b2a6-33bf089766e4@t-8ch.de>
- <YYEmOcEf5fjDyM67@codewreck.org>
- <ddf6b6c9-1d9b-4378-b2ee-b7ac4a622010@t-8ch.de>
- <YYFSBKXNPyIIFo7J@codewreck.org>
- <3e8fcaff-6a2e-4546-87c9-a58146e02e88@t-8ch.de>
+        with ESMTP id S231825AbhKBXVn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 19:21:43 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5143AC06120D;
+        Tue,  2 Nov 2021 16:19:08 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id x66so443628pfx.13;
+        Tue, 02 Nov 2021 16:19:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=x3KYIl2RmfZiFMPLreQReW0AtYCyiKE94y/hBMKiNfs=;
+        b=KGVjZzKwiROgE8HWH+kQG+OxDlcR9JfCDPLvYJS4KSOi/9kY6SymRnksTVV0LmDzYw
+         g2MPztKtUF7jihnaZERfeQKXQ8r6w+V8pryGKWHmNRRahibqey2u/x72gdmobbPHQ7o8
+         JjxK9Dw02bDux7XLHz0T2HsIKANy5FCxhpuC8JvZE0Hhce9HupFoJgv/ZnhN27scVERR
+         oVYDbWXw9EP3RhJ7wCq9566WoyQDAyDWuLMU9gpZq7SOWoFYCnawX5Kt8SIU/RqQCKSb
+         k3gZ5Hksp0YwNTLtJJV863AyshElwJp/0UyzePADZi7rqtkyvuZ0lCxf8B2y2VS7djvv
+         OIUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=x3KYIl2RmfZiFMPLreQReW0AtYCyiKE94y/hBMKiNfs=;
+        b=7rk/34Gj881dUdzlp2F+8yXrU2IbYpiRU8cYqxdAwa0EULTES7wEydiOY1JD4pHMx3
+         sYwqlicZ4KH1FmnL5CAjKVL/h5Og87RPE4y2zSaNKE+7oymd0AhvPen2dd7kmws5kfsX
+         kLXqft2QhUaurA6VCcIIskLuSLKU0a57dkTGv2CSAYPr26s1VzPEKX/NnZLdcYmaChe9
+         2kgWR9FX6YUbTXLfyD0u/bAsDykv1n/PXtHk8UaSZjdJvfKPGl2mzxDUHwFgSDBfWbIy
+         CbpcxTA0rNYELvOxy7hu04vX6Uu5hiZ5IM0UwWxW1zANFVU7ZS/VvEgMwsjk8A6YI7LG
+         ehHQ==
+X-Gm-Message-State: AOAM532x73CdLwksgM/3vc7o2To28JfBVYeeU2hw3ZcljiB1MpxeeSwE
+        /COrMBk/vaBpyYmYimjSgJk=
+X-Google-Smtp-Source: ABdhPJxg5YoLmT0R43lqEDsSFk0Vktwr2XYbl2ZgPIMiiJulmETALee6zpv5jlo4ANoT08SRtpkK8Q==
+X-Received: by 2002:a05:6a00:2405:b0:3e1:9f65:9703 with SMTP id z5-20020a056a00240500b003e19f659703mr40674356pfh.6.1635895147855;
+        Tue, 02 Nov 2021 16:19:07 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:9df1])
+        by smtp.gmail.com with ESMTPSA id ip8sm3929418pjb.9.2021.11.02.16.19.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Nov 2021 16:19:07 -0700 (PDT)
+Date:   Tue, 2 Nov 2021 16:19:05 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>, bpf@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
+Subject: Re: [PATCH RFC bpf-next v1 5/6] net: netfilter: Add unstable CT
+ lookup helper for XDP and TC-BPF
+Message-ID: <20211102231905.5q6jdddyrobny63b@ast-mbp.dhcp.thefacebook.com>
+References: <20211030144609.263572-1-memxor@gmail.com>
+ <20211030144609.263572-6-memxor@gmail.com>
+ <20211031191045.GA19266@breakpoint.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <3e8fcaff-6a2e-4546-87c9-a58146e02e88@t-8ch.de>
+In-Reply-To: <20211031191045.GA19266@breakpoint.cc>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thomas Weißschuh wrote on Tue, Nov 02, 2021 at 04:32:21PM +0100:
-> > with 9p/9pnet loaded,
-> > running "mount -t 9p -o trans=virtio tmp /mnt"
-> > request_module("9p-%s", "virtio") returns -2 (ENOENT)
+On Sun, Oct 31, 2021 at 08:10:45PM +0100, Florian Westphal wrote:
 > 
-> Can you retry without 9p/9pnet loaded and see if they are loaded by the mount
-> process?
-> The same autoloading functionality exists for filesystems using
-> request_module("fs-%s") in fs/filesystems.c
-> If that also doesn't work it would indicate an issue with the kernel setup in general.
+> Depending on meaning of "unstable helper" this
+> is ok and can be changed in incompatible way later.
 
-Right, that also didn't work, which matches modprobe not being called
-correctly
-
-
-> > Looking at the code it should be running "modprobe -q -- 9p-virtio"
-> > which finds the module just fine, hence my supposition usermodhelper is
-> > not setup correctly
-> > 
-> > Do you happen to know what I need to do for it?
-> 
-> What is the value of CONFIG_MODPROBE_PATH?
-> And the contents of /proc/sys/kernel/modprobe?
-
-aha, these two were indeed different from where my modprobe is so it is
-a setup problem -- I might have been a little rash with this initrd
-setup and modprobe ended up in /bin with path here in /sbin...
-
-Thanks for the pointer, I saw the code setup an environment with a
-full-blown PATH so didn't think of checking if this kind of setting
-existed!
-All looks in order then :)
-
--- 
-Dominique
+"unstable helper" means that it's not part of uapi.
+All kfuncs are like that. They can and will change.
+bpf progs that call them would have to adjust.
+Just like bpf progs that read kernel data and walk kernel types.
