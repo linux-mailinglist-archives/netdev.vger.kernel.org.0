@@ -2,194 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FA8144291A
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 09:08:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8156244291B
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 09:10:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230324AbhKBILS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 04:11:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38754 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229497AbhKBILR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Nov 2021 04:11:17 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7F11560F70;
-        Tue,  2 Nov 2021 08:08:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635840523;
-        bh=pAPXvElC0JcDLoV+Ua2Li9xLpANMB96BNbqg3PWOw2M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YgvRCMT7SRFacMXy+k+M8W5LRtN5MXdYzxB5rHQu+v7gRoj4Y5ThLpaYcVNJJQBQm
-         Lo+h0n34gn6hrba1N4kBv+j6BMv9iebGTD++/aOaIU23mSnARZK80zm6tC3Sk4e0FD
-         z66k/dcsqjQNm8rB7kBXVxcXmJ/fPEoABpN+64Y76siC3wgUduXyI7zLpX0ESIVZ3K
-         CfU10G1Kw+MNSCUhTR3bsbeqpiNDUy35S0MescKQKxeuALQfAJvTzay6WIockCUAra
-         w9JKLdwUt96wJLaM6iyn4TvUBrofyQ2gBBwg/LGJ7cFlER7a/xkH1hxt5b/i291Nj3
-         lsjze9cpqOk7w==
-Date:   Tue, 2 Nov 2021 10:08:39 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     idosch@idosch.org, edwin.peer@broadcom.com, jiri@resnulli.us,
-        netdev@vger.kernel.org
-Subject: Re: [RFC 0/5] devlink: add an explicit locking API
-Message-ID: <YYDyBxNzJSpKXosy@unreal>
-References: <20211030231254.2477599-1-kuba@kernel.org>
- <YX5Efghyxu5g8kzY@unreal>
- <20211101073259.33406da3@kicinski-fedora-PC1C0HJN>
- <YYAzn+mtrGp/As74@unreal>
- <20211101141613.3373b7f4@kicinski-fedora-PC1C0HJN>
+        id S229852AbhKBIN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 04:13:26 -0400
+Received: from spam.zju.edu.cn ([61.164.42.155]:60706 "EHLO zju.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229497AbhKBINM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Nov 2021 04:13:12 -0400
+Received: from localhost.localdomain (unknown [222.205.7.222])
+        by mail-app2 (Coremail) with SMTP id by_KCgA3q_Z18oBhxp9fAA--.22102S4;
+        Tue, 02 Nov 2021 16:10:29 +0800 (CST)
+From:   Lin Ma <linma@zju.edu.cn>
+To:     krzysztof.kozlowski@canonical.com
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lin Ma <linma@zju.edu.cn>
+Subject: [PATCH] NFC: add necessary privilege flags in netlink layer
+Date:   Tue,  2 Nov 2021 16:10:21 +0800
+Message-Id: <20211102081021.32237-1-linma@zju.edu.cn>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211101141613.3373b7f4@kicinski-fedora-PC1C0HJN>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: by_KCgA3q_Z18oBhxp9fAA--.22102S4
+X-Coremail-Antispam: 1UD129KBjvJXoWxGF4fWF45uryfCw4xKryfJFb_yoW5tF1xpw
+        1UCFyktFy8Wr1vqan3Za4qgFWSyr13Ar9rXFn2grW3Xa4rtw1UZF93CFyFqFs5WFyvqF9r
+        Zw48JFsakFyrAwUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUv01xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW0oVCq3wA2z4x0Y4vEx4A2
+        jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52
+        x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUGVWU
+        XwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI4
+        8JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_GFyl42xK82IYc2Ij64vIr41l
+        42xK82IY6x8ErcxFaVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I
+        8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWU
+        twCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x
+        0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_
+        Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUb
+        qQ6JUUUUU==
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 01, 2021 at 02:16:13PM -0700, Jakub Kicinski wrote:
-> On Mon, 1 Nov 2021 20:36:15 +0200 Leon Romanovsky wrote:
-> > > How is RW semaphore going to solve the problem that ops are unlocked
-> > > and have to take the instance lock from within to add/remove ports?  
-> > 
-> > This is three step process, but mainly it is first step. We need to make
-> > sure that functions that can re-entry will use nested locks.
-> > 
-> > Steps:
-> > 1. Use proper locking API that supports nesting:
-> > https://lore.kernel.org/netdev/YYABqfFy%2F%2Fg5Gdis@nanopsycho/T/#mf9dc5cac2013abe413545bbe4a09cc231ae209a4
-> 
-> Whether we provide the an unlocked API or allow lock nesting 
-> on the driver API is not that important to me.
+The CAP_NET_ADMIN checks are needed to prevent attackers faking a
+device under NCIUARTSETDRIVER and exploit privileged commands.
 
-Thanks
+This patch add GENL_ADMIN_PERM flags in genl_ops to fulfill the check.
+Except for commands like NFC_CMD_GET_DEVICE, NFC_CMD_GET_TARGET,
+NFC_CMD_LLC_GET_PARAMS, and NFC_CMD_GET_SE, which are mainly information-
+read operations.
 
-> 
-> > 2. Convert devlink->lock to be RW semaphore:
-> > commit 4506dd3a90a82a0b6bde238f507907747ab88407
-> > Author: Leon Romanovsky <leon@kernel.org>
-> > Date:   Sun Oct 24 16:54:16 2021 +0300
-> > 
-> >     devlink: Convert devlink lock to be RW semaphore
-> > 
-> >     This is naive conversion of devlink->lock to RW semaphore, so we will be
-> >     able to differentiate commands that require exclusive access vs. parallel
-> >     ready-to-run ones.
-> > 
-> >     All "set" commands that used devlink->lock are converted to write lock,
-> >     while all "get" commands are marked with read lock.
-> > 
-> > @@ -578,8 +584,12 @@ static int devlink_nl_pre_doit(const struct genl_ops *ops,
-> >                 mutex_unlock(&devlink_mutex);
-> >                 return PTR_ERR(devlink);
-> >         }
-> > -       if (~ops->internal_flags & DEVLINK_NL_FLAG_NO_LOCK)
-> > -               mutex_lock(&devlink->lock);
-> > +
-> > +       if (~ops->internal_flags & DEVLINK_NL_FLAG_SHARED_ACCESS)
-> > +               down_write(&devlink->rwsem);
-> > +       else
-> > +               down_read(&devlink->rwsem);
-> > +
-> 
-> IIUC the RW sem thing is an optimization, it's besides the point.
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+---
+ net/nfc/netlink.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-I need RW as a way to ensure "exclusive" access during _set_ operation.
-It is not an optimization, but simple way to understand if parallel
-access is possible at this specific point of time.
+diff --git a/net/nfc/netlink.c b/net/nfc/netlink.c
+index 49089c50872e..334f63c9529e 100644
+--- a/net/nfc/netlink.c
++++ b/net/nfc/netlink.c
+@@ -1664,31 +1664,37 @@ static const struct genl_ops nfc_genl_ops[] = {
+ 		.cmd = NFC_CMD_DEV_UP,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = nfc_genl_dev_up,
++		.flags = GENL_ADMIN_PERM,
+ 	},
+ 	{
+ 		.cmd = NFC_CMD_DEV_DOWN,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = nfc_genl_dev_down,
++		.flags = GENL_ADMIN_PERM,
+ 	},
+ 	{
+ 		.cmd = NFC_CMD_START_POLL,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = nfc_genl_start_poll,
++		.flags = GENL_ADMIN_PERM,
+ 	},
+ 	{
+ 		.cmd = NFC_CMD_STOP_POLL,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = nfc_genl_stop_poll,
++		.flags = GENL_ADMIN_PERM,
+ 	},
+ 	{
+ 		.cmd = NFC_CMD_DEP_LINK_UP,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = nfc_genl_dep_link_up,
++		.flags = GENL_ADMIN_PERM,
+ 	},
+ 	{
+ 		.cmd = NFC_CMD_DEP_LINK_DOWN,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = nfc_genl_dep_link_down,
++		.flags = GENL_ADMIN_PERM,
+ 	},
+ 	{
+ 		.cmd = NFC_CMD_GET_TARGET,
+@@ -1706,26 +1712,31 @@ static const struct genl_ops nfc_genl_ops[] = {
+ 		.cmd = NFC_CMD_LLC_SET_PARAMS,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = nfc_genl_llc_set_params,
++		.flags = GENL_ADMIN_PERM,
+ 	},
+ 	{
+ 		.cmd = NFC_CMD_LLC_SDREQ,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = nfc_genl_llc_sdreq,
++		.flags = GENL_ADMIN_PERM,
+ 	},
+ 	{
+ 		.cmd = NFC_CMD_FW_DOWNLOAD,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = nfc_genl_fw_download,
++		.flags = GENL_ADMIN_PERM,
+ 	},
+ 	{
+ 		.cmd = NFC_CMD_ENABLE_SE,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = nfc_genl_enable_se,
++		.flags = GENL_ADMIN_PERM,
+ 	},
+ 	{
+ 		.cmd = NFC_CMD_DISABLE_SE,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = nfc_genl_disable_se,
++		.flags = GENL_ADMIN_PERM,
+ 	},
+ 	{
+ 		.cmd = NFC_CMD_GET_SE,
+@@ -1737,21 +1748,25 @@ static const struct genl_ops nfc_genl_ops[] = {
+ 		.cmd = NFC_CMD_SE_IO,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = nfc_genl_se_io,
++		.flags = GENL_ADMIN_PERM,
+ 	},
+ 	{
+ 		.cmd = NFC_CMD_ACTIVATE_TARGET,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = nfc_genl_activate_target,
++		.flags = GENL_ADMIN_PERM,
+ 	},
+ 	{
+ 		.cmd = NFC_CMD_VENDOR,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = nfc_genl_vendor_cmd,
++		.flags = GENL_ADMIN_PERM,
+ 	},
+ 	{
+ 		.cmd = NFC_CMD_DEACTIVATE_TARGET,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = nfc_genl_deactivate_target,
++		.flags = GENL_ADMIN_PERM,
+ 	},
+ };
+ 
+-- 
+2.33.1
 
-> 
-> > 3. Drop devlink_mutex:
-> > commit 3177af9971c4cd95f9633aeb9b0434687da62fd0
-> > Author: Leon Romanovsky <leon@kernel.org>
-> > Date:   Sun Oct 31 16:05:40 2021 +0200
-> > 
-> >     devlink: Use xarray locking mechanism instead big devlink lock
-> > 
-> >     The conversion to XArray together with devlink reference counting
-> >     allows us reuse the following locking pattern:
-> >      xa_lock()
-> >       xa_for_each() {
-> >        devlink_try_get()
-> >        xa_unlock()
-> >        ....
-> >        xa_lock()
-> >      }
-> > 
-> >     This pattern gives us a way to run any commands between xa_unlock() and
-> >     xa_lock() without big devlink mutex, while making sure that devlink instance
-> >     won't be released.
-> 
-> Yup, I think this part we agree on.
-> 
-> > Steps 2 and 3 were not posted due to merge window and my desire to get
-> > mileage in our regression.
-> 
-> :)
-> 
-> > > > Please, let's not give up on standalone devlink implementation without
-> > > > drivers need to know internal devlink details. It is hard to do but possible.  
-> > > 
-> > > We may just disagree on this one. Please answer my question above -
-> > > so far IDK how you're going to fix the problem of re-reg'ing subobjects
-> > > from the reload path.
-> > > 
-> > > My experience writing drivers is that it was painfully unclear what 
-> > > the devlink locking rules are. Sounds like you'd make them even more
-> > > complicated.  
-> > 
-> > How? I have only one rule:
-> >  * Driver author should be aware that between devlink_register() and
-> >    devlink_unregister(), users can send netlink commands.
-> > 
-> > In your solution, driver authors will need to follow whole devlink
-> > how-to-use book.
-> 
-> Only if they need refs. If you don't the API is the same as yours.
-> 
-> IOW you don't provide an API for advanced use cases at all. You force
-> the drivers to implement their own reference counting and locking. 
-
-The complex drivers already do it anyway, because they need to reference
-counting their own structures to make sure that the lifetime of these
-structures meats their model.
-
-> I want them to just rely on devlink as a framework.
-
-And I don't :). For me devlink is a way to configure device, not manage
-lifetime of driver specific data structures.
-
-> 
-> How many driver locks do you have in netdevsim after conversion?
-> All 3? How do you add a port to the instance from sysfs without a
-> AB / BA deadlock between the port lock and the devlink lock if the
-> driver can't take the devlink lock? Are you still going to need the 
-> "in_reload" wart?
-
-I don't know yet, because as you wrote before netdevsim is for
-prototyping and such ABBA deadlock doesn't exist in real devices.
-
-My current focus is real devices for now.
-
-Maybe the solution will be to go away from sysfs completely. We will see.
-
-> 
-> > > This RFC makes the rules simple - all devlink ops are locked.
-> > > 
-> > > For the convenience of the drivers they can also take the instance lock
-> > > whenever they want to prevent ops from being called. Experience with
-> > > rtnl_lock teaches us that this is very useful for drivers.  
-> > 
-> > Strange, I see completely opposite picture in the git log with so much
-> > changes that have Fixes line and add/remove/mention rtnl_lock. Maybe it
-> > is useful, but almost all if not all drivers full of fixes of rtnl_lock
-> > usage. I don't want same for the devlink.
-> 
-> If you don't provide a locking API to the drivers you'll have to fix 2x
-> the bugs, and each of them subtly different. At least maintainers know
-> what rtnl_lock rules are.
-
-I clearly remember this patch and the sentence "...in
-some devices' resume function(igb_resum,igc_resume) they calls rtnl_lock()
-again". The word "... some ..." hints to me that maintainers have different
-opinion on how to use rtnl_lock.
-
-https://lore.kernel.org/netdev/20210809032809.1224002-1-acelan.kao@canonical.com/
-
-Thanks
