@@ -2,112 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF77C443103
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 15:58:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEFF6443149
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 16:10:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233490AbhKBPBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 11:01:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48644 "EHLO
+        id S234186AbhKBPNB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 11:13:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233487AbhKBPBM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 11:01:12 -0400
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDED3C061714;
-        Tue,  2 Nov 2021 07:58:37 -0700 (PDT)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id D5208C022; Tue,  2 Nov 2021 15:58:35 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1635865115; bh=rSQJMUu/Sf6moJ2SUGd9pxO0TmpP6niHHHxwBJHGIfo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DuQRAi024wq8Z+7KnDA7YPWNYoEd5mHmS6bzQF667QbQZ5x6Ef9uzDCG4Y8iJhf3Z
-         ca+Tw9ABAtgqZ1p4UnCCDqi9M42dLqp0azDFvEzV3XcP1ct9to2Bf2XHuqzXlb9d11
-         FdkIGlezPLD/HAgKRdKvAsLtri2GAESS1dlBgOtuaIiTUsrYYo7zdDlUbzti8luehH
-         7TbTQCq9/43RCWPSpoOLwWo46RdhJR33ktsyOuYTI6XiOT9B5FND5FPYF38NWywq4n
-         gfdYqa3ngAcQDPZSlR/U0BGmNyDRpoIiqk6Gkj42fXk6cBsK+iaiT96DOUecWjcIPY
-         eQaBGQtvT58hA==
-X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on nautica.notk.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
-        autolearn=unavailable version=3.3.2
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 7A857C009;
-        Tue,  2 Nov 2021 15:58:30 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1635865112; bh=rSQJMUu/Sf6moJ2SUGd9pxO0TmpP6niHHHxwBJHGIfo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=35bAd15JzTIWvbg+dc/k7SeRIfdoy2bZtmjilRkhlwMZA/1ajeEQHh/W1dBho1C4b
-         xANvENZz9S4XjWhYnW3W6QeRohSgLnkMdNrWMO6HB6vbVZnGUWpeOzrMG12oaGXuAx
-         W/vBsTNMg8RdzazfyrUGDy9MvWJ8E4q+W8hi8UgldrDstB5Lv4XOYrxuYJpkES+nmj
-         LmK6jrLpElbpS1f2wctew4gOLbdwpE7Ogu6OmxXXWEII0uFeqexd96r3x2yxUitJ0J
-         5f4yZ5n9LTYT0IvoKu1ES+H8NO5T8KJq5PmIehNUSYr5tqcfCoA/y+/p3lGWhnAaqf
-         K5pHT6vWCYrPA==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id bb0e0d0d;
-        Tue, 2 Nov 2021 14:58:27 +0000 (UTC)
-Date:   Tue, 2 Nov 2021 23:58:12 +0900
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Thomas =?utf-8?Q?Wei=C3=9Fschuh?= <linux@weissschuh.net>
-Cc:     Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/9p: autoload transport modules
-Message-ID: <YYFSBKXNPyIIFo7J@codewreck.org>
-References: <20211017134611.4330-1-linux@weissschuh.net>
- <YYEYMt543Hg+Hxzy@codewreck.org>
- <922a4843-c7b0-4cdc-b2a6-33bf089766e4@t-8ch.de>
- <YYEmOcEf5fjDyM67@codewreck.org>
- <ddf6b6c9-1d9b-4378-b2ee-b7ac4a622010@t-8ch.de>
+        with ESMTP id S232707AbhKBPM4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 11:12:56 -0400
+Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A92EFC061714
+        for <netdev@vger.kernel.org>; Tue,  2 Nov 2021 08:10:21 -0700 (PDT)
+Received: by mail-ua1-x931.google.com with SMTP id i6so24317149uae.6
+        for <netdev@vger.kernel.org>; Tue, 02 Nov 2021 08:10:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5qc+0ImKvujrx420tDdh73T5aJXncmnoefjmMnw9HL8=;
+        b=kE7ANGhNFYhBqNyhiLO26HqcZ5qo6r8X0OijlOefYHHdqp2tCixK6pX+n4qRnOSvx0
+         tr7YfVKOsi3SJ+pxQE8TitxN41tolTo8YfFc3PPfAkX0Wl0J79CdVhUr8sMyf09zdJ0j
+         VE4G19VhSi69izxT2UVvvsmoJK5rxZ3DXjbNXGM2Za6XqAwIAvrjADMgSlQXB9k0jGqG
+         sd/NfINk2krv6ODyOlVrn/ubI+n1kNjhJ/KfEZ9S49GSlMhX8/X6QpiIQg8oPZ5BOnlZ
+         FSj7ZenhfZlwOCnxzm/q4yAXs8GssdPOiEPDzmrZs4HJx9kxogiri2YHMd4xL8BiVK0c
+         2apg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5qc+0ImKvujrx420tDdh73T5aJXncmnoefjmMnw9HL8=;
+        b=6fFxFc0sDcGwcpTfEarPOZOp7lfZgEcVT4tLu4mwJLl9n0tbYFPjy9w/1CXfRo5cJ7
+         cV4ZlVP74vAju8GuygGQ0MRlw9jX85byhcFVcYmhqz0gGncE3kKI3vvNROvAuMx5SohT
+         r7TsFeMy7pczIPQFcohG+53OzneuQIBr+rvkdH77+9rM+6A72X8S8vngOgaLy03py0u4
+         w1TTIKWwaRqjvGF5S6Va1fD4D4gr+sCbvuz0r8zLK0Pmi1KlZLJHyEpa8XnZI6Z16twK
+         jBsCDhh36Otuf8aAT2xsjIEjzxDQsPqXpaQwkAnUpYZXrwxM+Wn4Ap52ar4FgcKmQnoC
+         9bSA==
+X-Gm-Message-State: AOAM533Vhccb3PNB0XInJsNAXFSyElK5huVHWf6GkjW/KbV+Gz7jUiVo
+        LYwjqe7kCYiAe+pubKuxdBH0mnbyxDA=
+X-Google-Smtp-Source: ABdhPJx2v2lgG3pgdj9AJU7uTUXzs6BX0juhpOR6S8OGBGiHInsZCpawPvVmgZvdR2PeLh4t3SfcHw==
+X-Received: by 2002:a67:ab48:: with SMTP id k8mr41401698vsh.30.1635865820886;
+        Tue, 02 Nov 2021 08:10:20 -0700 (PDT)
+Received: from mail-ua1-f50.google.com (mail-ua1-f50.google.com. [209.85.222.50])
+        by smtp.gmail.com with ESMTPSA id p69sm2533046uap.1.2021.11.02.08.10.20
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Nov 2021 08:10:20 -0700 (PDT)
+Received: by mail-ua1-f50.google.com with SMTP id b17so28444023uas.0
+        for <netdev@vger.kernel.org>; Tue, 02 Nov 2021 08:10:20 -0700 (PDT)
+X-Received: by 2002:ab0:15a1:: with SMTP id i30mr26858363uae.122.1635865819917;
+ Tue, 02 Nov 2021 08:10:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ddf6b6c9-1d9b-4378-b2ee-b7ac4a622010@t-8ch.de>
+References: <20211102013636.177411-1-liuhangbin@gmail.com> <20211102013636.177411-6-liuhangbin@gmail.com>
+In-Reply-To: <20211102013636.177411-6-liuhangbin@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 2 Nov 2021 11:09:43 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSeS2s7czeAASfz9qep06gdUKVHD8bhiqtEOS1w82-JR7Q@mail.gmail.com>
+Message-ID: <CA+FuTSeS2s7czeAASfz9qep06gdUKVHD8bhiqtEOS1w82-JR7Q@mail.gmail.com>
+Subject: Re: [PATCHv2 net 5/5] kselftests/net: add missed toeplitz.sh/toeplitz_client.sh
+ to Makefile
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>,
+        Coco Li <lixiaoyan@google.com>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Paolo Abeni <pabeni@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        linux-kselftest@vger.kernel.org,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thomas Weißschuh wrote on Tue, Nov 02, 2021 at 03:49:32PM +0100:
-> > I guess it wouldn't hurt to have 9p-tcp 9p-unix and 9p-fd aliases to the
-> > 9pnet module, but iirc these transports were more closely tied to the
-> > rest of 9pnet than the rest so it might take a while to do and I don't
-> > have much time for this right now...
-> > I'd rather not prepare for something I'll likely never get onto, so
-> > let's do this if there is progress.
-> > 
-> > Of course if you'd like to have a look that'd be more than welcome :-)
-> 
-> If you are still testing anyways, you could also try the attached patch.
-> (It requires the autload patch)
-> 
-> It builds fine and I see no reason for it not to work.
+On Mon, Nov 1, 2021 at 9:37 PM Hangbin Liu <liuhangbin@gmail.com> wrote:
+>
+> When generating the selftests to another folder, the toeplitz.sh
+> and toeplitz_client.sh are missing as they are not in Makefile, e.g.
+>
+>   make -C tools/testing/selftests/ install \
+>       TARGETS="net" INSTALL_PATH=/tmp/kselftests
+>
+> Making them under TEST_PROGS_EXTENDED as they test NIC hardware features
+> and are not intended to be run from kselftests.
+>
+> Fixes: 5ebfb4cc3048 ("selftests/net: toeplitz test")
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 
-Thanks! I'll give it a spin.
+Reviewed-by: Willem de Bruijn <willemb@google.com>
 
-
-I was actually just testing the autoload one and I can't get it to work
-on my minimal VM, I guess there's a problem with the usermodhelper call
-to load module..
-
-with 9p/9pnet loaded,
-running "mount -t 9p -o trans=virtio tmp /mnt"
-request_module("9p-%s", "virtio") returns -2 (ENOENT)
-
-Looking at the code it should be running "modprobe -q -- 9p-virtio"
-which finds the module just fine, hence my supposition usermodhelper is
-not setup correctly
-
-Do you happen to know what I need to do for it?
-
-I've run out of time for today but will look tomorrow if you don't know.
-
-(And since it doesn't apparently work out of the box on these minimal
-VMs I think I'll want the trans_fd module split to sit in linux-next
-for a bit longer than a few days, so will be next merge window)
-
-
-Thanks,
--- 
-Dominique
+The same might apply to the icmp and vrf tests? I am not familiar with those.
