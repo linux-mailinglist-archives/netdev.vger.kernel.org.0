@@ -2,140 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA374442F4F
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 14:48:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CA2F442F57
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 14:48:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230208AbhKBNuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 09:50:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60414 "EHLO
+        id S230483AbhKBNvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 09:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbhKBNun (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 09:50:43 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE26C061714;
-        Tue,  2 Nov 2021 06:48:08 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4HkB796FKqz4xbd;
-        Wed,  3 Nov 2021 00:48:05 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1635860886;
-        bh=BXsWrBorknGmHfDZYTQq6a8lqYf7TkEi2iiyehPn3Q4=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=LY2Qlq49JuSlQEWtKEO0vu6ZSVqEzq2uEGfLAJfHz94UdsNi5LaKp1eXCtoQ8p51Z
-         8CyEccP/WN2VLSRPzFYzfqdw+YEsW4zPPKbIpXN1JpBNREdwoqdYDhDVbgtXSiAcCE
-         1o6qP3TuH5bR4AzwJCPjAnKqT/tTcg8EMJLW8GV7wy3pdJhDeENInI8nS4K08Y+3Yu
-         l1yZBjRtup3I9D/TIimuMz+fWP8UaMptjzPaiT4mV+ZuKlbChiIcQv5sO/1AqVVWxS
-         scxhuLolZpHNsYFN0etrP/QORG0pFm4znGV5JvnwtFSMXnzz78eUJXkHj/P4T7URHG
-         PVnmDdxc2HxUw==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, ast@kernel.org,
-        christophe.leroy@csgroup.eu,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Hari Bathini <hbathini@linux.ibm.com>, jniethe5@gmail.com
-Cc:     andrii@kernel.org, bpf@vger.kernel.org, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@kernel.org, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org, paulus@samba.org, songliubraving@fb.com,
-        stable@vger.kernel.org, yhs@fb.com
-Subject: Re: [PATCH] powerpc/bpf: fix write protecting JIT code
-In-Reply-To: <1635854227.x13v13l6az.naveen@linux.ibm.com>
-References: <20211025055649.114728-1-hbathini@linux.ibm.com>
- <1635142354.46h6w5c2rx.naveen@linux.ibm.com>
- <c8d7390b-c07c-75cd-e9e9-4b8f0b786cc6@iogearbox.net>
- <87zgqs8upq.fsf@mpe.ellerman.id.au>
- <1635854227.x13v13l6az.naveen@linux.ibm.com>
-Date:   Wed, 03 Nov 2021 00:48:03 +1100
-Message-ID: <87h7cu8y98.fsf@mpe.ellerman.id.au>
+        with ESMTP id S229530AbhKBNvV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 09:51:21 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D1DC061714;
+        Tue,  2 Nov 2021 06:48:46 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id bj20so8380332qkb.11;
+        Tue, 02 Nov 2021 06:48:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Wu+GXwP0q8/l280sPfS5y2dnw2tDTjbgcZxPcts0nWA=;
+        b=YcR3IuaAtTNd5UTAQgUBmbub0s9rZKVwSQhTU6bWJJuuGdsbgVWzNuC9hWKqyxfIx3
+         99mns3eEXlEacdvGFsKoPPJhXuggFk/5dE5jXNf97+xm8eN7len5sSHHLvp3lWncIqzh
+         nqpTbP+Mq8ng1LNy3wXdOjEpj+jjzNB2OP/wuFZPk0/GaFXjhxctxfJRVTWOEq2Zc+SW
+         DNyX54rGB6MewKL70f5/ukEdoSGntFVl195Te6GLkxv8TwgbyAW3u4004JSdT9R69nCM
+         R+qKublTKycWSta+kv7uhK7PGTiFSv2r4mma2kG4TFzwKpMJAYoo/7RA//x4Akoe3VkM
+         BmPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Wu+GXwP0q8/l280sPfS5y2dnw2tDTjbgcZxPcts0nWA=;
+        b=DQfoPoBAdpWQMso9xSRciPzgV4/MGb3Q5u+TnYEsDVADmO5xkmlNKOELVnXPNfb4wx
+         XA50A8sjv5V8arZ2RVkdQX3ZU+jGcMyF9XnKjWaK6lNl7kvruTKphf55bi3SqcB+InF+
+         gPADjVLdfSfChfMDAe/rHor3evr9+cuSKV6pwwKaIICP6oiDcZIkH7xR5qg/xKQEJrqc
+         UaCQfq7yoydGj11Ihf1sUbCDgZD8J8wX7Nv9/Ntzm2O7GTage5F5yhz8qXMaoqvfCnYl
+         SLmtcb+oQStw/tGJTOjbv2w/Ov5InGrgZCsPLoOMu6tGKOnzrjQAloCZ1lwNfAVV82Mg
+         eniQ==
+X-Gm-Message-State: AOAM530KDw9E+aJKX8vnOWR0jOxVEie91h1xnFX7JKVYmGUkLkNS06Tq
+        TkFnco6aLwNhVa5Qn/MQ1HWkIBVCwdjG6cbsbOI=
+X-Google-Smtp-Source: ABdhPJzdAcu/rqsJAHYEDYHQWB2i5R24SjAWs9ovT6Ku6QrCQM5eY4Gm09bilSgO5SNhaLL7ebVPVXMe4LoGH0IsBkk=
+X-Received: by 2002:a05:620a:40d6:: with SMTP id g22mr29784297qko.104.1635860925969;
+ Tue, 02 Nov 2021 06:48:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <20211101060419.4682-1-laoar.shao@gmail.com> <YX/0h7j/nDwoBA+J@alley>
+ <CALOAHbA61RyGVzG8SVcNG=0rdqnUCt4AxCKmtuxRnbS_SH=+MQ@mail.gmail.com>
+ <YYAPhE9uX7OYTlpv@alley> <CALOAHbAx55AUo3bm8ZepZSZnw7A08cvKPdPyNTf=E_tPqmw5hw@mail.gmail.com>
+ <20211101211845.20ff5b2e@gandalf.local.home> <CALOAHbCgaJ83qZVj6qt8tgJBd4ojuLfgSp2Ce7CgzQYshM-amQ@mail.gmail.com>
+ <YYDvHv76tJtJht8b@alley>
+In-Reply-To: <YYDvHv76tJtJht8b@alley>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Tue, 2 Nov 2021 21:48:10 +0800
+Message-ID: <CALOAHbBA4xjoebNcO2422wa34bgui_=PriPNfJdx2_CstoKQqg@mail.gmail.com>
+Subject: Re: [PATCH v7 00/11] extend task comm from 16 to 24
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Qiang Zhang <qiang.zhang@windriver.com>,
+        robdclark <robdclark@chromium.org>,
+        christian <christian@brauner.io>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        dennis.dalessandro@cornelisnetworks.com,
+        mike.marciniszyn@cornelisnetworks.com, dledford@redhat.com,
+        jgg@ziepe.ca, linux-rdma@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        kbuild test robot <lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Naveen N. Rao" <naveen.n.rao@linux.ibm.com> writes:
-> Michael Ellerman wrote:
->> Daniel Borkmann <daniel@iogearbox.net> writes:
->>> On 10/25/21 8:15 AM, Naveen N. Rao wrote:
->>>> Hari Bathini wrote:
->>>>> Running program with bpf-to-bpf function calls results in data access
->>>>> exception (0x300) with the below call trace:
->>>>>
->>>>> =C2=A0=C2=A0=C2=A0 [c000000000113f28] bpf_int_jit_compile+0x238/0x750=
- (unreliable)
->>>>> =C2=A0=C2=A0=C2=A0 [c00000000037d2f8] bpf_check+0x2008/0x2710
->>>>> =C2=A0=C2=A0=C2=A0 [c000000000360050] bpf_prog_load+0xb00/0x13a0
->>>>> =C2=A0=C2=A0=C2=A0 [c000000000361d94] __sys_bpf+0x6f4/0x27c0
->>>>> =C2=A0=C2=A0=C2=A0 [c000000000363f0c] sys_bpf+0x2c/0x40
->>>>> =C2=A0=C2=A0=C2=A0 [c000000000032434] system_call_exception+0x164/0x3=
-30
->>>>> =C2=A0=C2=A0=C2=A0 [c00000000000c1e8] system_call_vectored_common+0xe=
-8/0x278
->>>>>
->>>>> as bpf_int_jit_compile() tries writing to write protected JIT code
->>>>> location during the extra pass.
->>>>>
->>>>> Fix it by holding off write protection of JIT code until the extra
->>>>> pass, where branch target addresses fixup happens.
->>>>>
->>>>> Cc: stable@vger.kernel.org
->>>>> Fixes: 62e3d4210ac9 ("powerpc/bpf: Write protect JIT code")
->>>>> Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
->>>>> ---
->>>>> =C2=A0arch/powerpc/net/bpf_jit_comp.c | 2 +-
->>>>> =C2=A01 file changed, 1 insertion(+), 1 deletion(-)
->>>>=20
->>>> Thanks for the fix!
->>>>=20
->>>> Reviewed-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
->>>
->>> LGTM, I presume this fix will be routed via Michael.
->>=20
->> Thanks for reviewing, I've picked it up.
->>=20
->>> BPF selftests have plenty of BPF-to-BPF calls in there, too bad this was
->>> caught so late. :/
->>=20
->> Yeah :/
->>=20
->> STRICT_KERNEL_RWX is not on by default in all our defconfigs, so that's
->> probably why no one caught it.
+On Tue, Nov 2, 2021 at 3:56 PM Petr Mladek <pmladek@suse.com> wrote:
 >
-> Yeah, sorry - we should have caught this sooner.
+> On Tue 2021-11-02 09:26:35, Yafang Shao wrote:
+> > On Tue, Nov 2, 2021 at 9:18 AM Steven Rostedt <rostedt@goodmis.org> wrote:
+> > > On Tue, 2 Nov 2021 09:09:50 +0800
+> > > Yafang Shao <laoar.shao@gmail.com> wrote:
+> > > >      Now we only care about kthread, so we can put the pointer into a
+> > > > kthread specific struct.
+> > > >      For example in the struct kthread, or in kthread->data (which may
+> > > > conflict with workqueue).
+> > >
+> > > No, add a new field to the structure. "full_name" or something like that.
+> > > I'm guessing it should be NULL if the name fits in TASK_COMM_LEN and
+> > > allocated if the name had to be truncated.
+> > >
+> > > Do not overload data with this. That will just make things confusing.
+> > > There's not that many kthreads, where an addition of an 8 byte pointer is
+> > > going to cause issues.
+> >
+> > Sure, I will add a new field named "full_name", which only be
+> > allocated if the kthread's comm is truncated.
 >
->>=20
->> I used to run the BPF selftests but they stopped building for me a while
->> back, I'll see if I can get them going again.
+> The plan looks good to me.
 >
-> Ravi had started looking into getting the selftests working well before=20
-> he left. I will take a look at this.
+> One more thing. It should obsolete the workqueue-specific solution.
+> It would be great to clean up the workqueue code as the next step.
+>
 
-Thanks.
+Agreed. The worker comm can be replaced by the new kthread full_name.
+I will do it in the next step.
 
-I got them building with something like:
-
- - turning on DEBUG_INFO and DEBUG_INFO_BTF and rebuilding vmlinux
- - grabbing clang 13 from:=20
-   https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.0/cl=
-ang+llvm-13.0.0-powerpc64le-linux-ubuntu-18.04.tar.xz
- - PATH=3D$HOME/clang+llvm-13.0.0-powerpc64le-linux-ubuntu-18.04/bin/:$PATH
- - apt install:
-   - libelf-dev
-   - dwarves
-   - python-docutils
-   - libcap-dev
-
-
-The DEBUG_INFO requirement is a bit of a pain for me. I generally don't
-build with that enabled, because the resulting kernels are stupidly
-large. I'm not sure if that's a hard requirement, or if the vmlinux has
-to match the running kernel exactly?
-
-There is logic in tools/testing/bpf/Makefile to use VMLINUX_H instead of
-extracting the BTF from the vmlinux (line 247), but AFAICS that's
-unreachable since 1a3449c19407 ("selftests/bpf: Clarify build error if
-no vmlinux"), which makes it a hard error to not have a VMLINUX_BTF.
-
-cheers
+-- 
+Thanks
+Yafang
