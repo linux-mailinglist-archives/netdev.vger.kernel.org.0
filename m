@@ -2,91 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48128442FD0
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 15:08:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DCC4442F61
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 14:50:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230518AbhKBOLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 10:11:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36880 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230483AbhKBOLK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 10:11:10 -0400
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 693E9C061714;
-        Tue,  2 Nov 2021 07:08:35 -0700 (PDT)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id 084D5C009; Tue,  2 Nov 2021 15:08:33 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on nautica.notk.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
-        autolearn=unavailable version=3.3.2
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 433CEC009;
-        Tue,  2 Nov 2021 15:08:28 +0100 (CET)
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 4a9f868c;
-        Tue, 2 Nov 2021 13:46:12 +0000 (UTC)
-From:   Dominique Martinet <dominique.martinet@atmark-techno.com>
-To:     v9fs-developer@lists.sourceforge.net
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>
-Subject: [PATCH 4/4] 9p p9mode2perm: remove useless strlcpy and check sscanf return code
-Date:   Tue,  2 Nov 2021 22:46:08 +0900
-Message-Id: <20211102134608.1588018-5-dominique.martinet@atmark-techno.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211102134608.1588018-1-dominique.martinet@atmark-techno.com>
-References: <20211102134608.1588018-1-dominique.martinet@atmark-techno.com>
+        id S231194AbhKBNxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 09:53:31 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:15344 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230286AbhKBNx3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 09:53:29 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HkBB63xnsz90ky;
+        Tue,  2 Nov 2021 21:50:38 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Tue, 2 Nov 2021 21:50:39 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Tue, 2 Nov 2021 21:50:37 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <mkubecek@suse.cz>,
+        <andrew@lunn.ch>, <amitc@mellanox.com>, <idosch@idosch.org>,
+        <danieller@nvidia.com>, <jesse.brandeburg@intel.com>,
+        <anthony.l.nguyen@intel.com>, <jdike@addtoit.com>,
+        <richard@nod.at>, <anton.ivanov@cambridgegreys.com>,
+        <netanel@amazon.com>, <akiyano@amazon.com>, <gtzalik@amazon.com>,
+        <saeedb@amazon.com>, <chris.snook@gmail.com>,
+        <ulli.kroll@googlemail.com>, <linus.walleij@linaro.org>,
+        <jeroendb@google.com>, <csully@google.com>,
+        <awogbemila@google.com>, <jdmason@kudzu.us>,
+        <rain.1986.08.12@gmail.com>, <zyjzyj2000@gmail.com>,
+        <kys@microsoft.com>, <haiyangz@microsoft.com>, <mst@redhat.com>,
+        <jasowang@redhat.com>, <doshir@vmware.com>,
+        <pv-drivers@vmware.com>, <jwi@linux.ibm.com>,
+        <kgraul@linux.ibm.com>, <hca@linux.ibm.com>, <gor@linux.ibm.com>,
+        <johannes@sipsolutions.net>
+CC:     <netdev@vger.kernel.org>, <lipeng321@huawei.com>,
+        <chenhao288@hisilicon.com>, <huangguangbin2@huawei.com>,
+        <linux-s390@vger.kernel.org>
+Subject: [PATCH V6 net-next 1/6] ethtool: add support to set/get tx copybreak buf size via ethtool
+Date:   Tue, 2 Nov 2021 21:46:08 +0800
+Message-ID: <20211102134613.30367-2-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20211102134613.30367-1-huangguangbin2@huawei.com>
+References: <20211102134613.30367-1-huangguangbin2@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dominique Martinet <asmadeus@codewreck.org>
+From: Hao Chen <chenhao288@hisilicon.com>
 
-This is also a checkpatch warning fix but this one might have implications
-so keeping it separate
+Add support for ethtool to set/get tx copybreak buf size.
 
-Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- fs/9p/vfs_inode.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ include/uapi/linux/ethtool.h | 1 +
+ net/ethtool/common.c         | 1 +
+ net/ethtool/ioctl.c          | 1 +
+ 3 files changed, 3 insertions(+)
 
-diff --git a/fs/9p/vfs_inode.c b/fs/9p/vfs_inode.c
-index 139dfee23b98..328c338ff304 100644
---- a/fs/9p/vfs_inode.c
-+++ b/fs/9p/vfs_inode.c
-@@ -109,7 +109,7 @@ static int p9mode2perm(struct v9fs_session_info *v9ses,
- static umode_t p9mode2unixmode(struct v9fs_session_info *v9ses,
- 			       struct p9_wstat *stat, dev_t *rdev)
- {
--	int res;
-+	int res, r;
- 	u32 mode = stat->mode;
+diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+index a2223b685451..7bc4b8def12c 100644
+--- a/include/uapi/linux/ethtool.h
++++ b/include/uapi/linux/ethtool.h
+@@ -231,6 +231,7 @@ enum tunable_id {
+ 	ETHTOOL_RX_COPYBREAK,
+ 	ETHTOOL_TX_COPYBREAK,
+ 	ETHTOOL_PFC_PREVENTION_TOUT, /* timeout in msecs */
++	ETHTOOL_TX_COPYBREAK_BUF_SIZE,
+ 	/*
+ 	 * Add your fresh new tunable attribute above and remember to update
+ 	 * tunable_strings[] in net/ethtool/common.c
+diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+index c63e0739dc6a..0c5210015911 100644
+--- a/net/ethtool/common.c
++++ b/net/ethtool/common.c
+@@ -89,6 +89,7 @@ tunable_strings[__ETHTOOL_TUNABLE_COUNT][ETH_GSTRING_LEN] = {
+ 	[ETHTOOL_RX_COPYBREAK]	= "rx-copybreak",
+ 	[ETHTOOL_TX_COPYBREAK]	= "tx-copybreak",
+ 	[ETHTOOL_PFC_PREVENTION_TOUT] = "pfc-prevention-tout",
++	[ETHTOOL_TX_COPYBREAK_BUF_SIZE] = "tx-copybreak-buf-size",
+ };
  
- 	*rdev = 0;
-@@ -127,11 +127,16 @@ static umode_t p9mode2unixmode(struct v9fs_session_info *v9ses,
- 		res |= S_IFIFO;
- 	else if ((mode & P9_DMDEVICE) && (v9fs_proto_dotu(v9ses))
- 		 && (v9ses->nodev == 0)) {
--		char type = 0, ext[32];
-+		char type = 0;
- 		int major = -1, minor = -1;
- 
--		strlcpy(ext, stat->extension, sizeof(ext));
--		sscanf(ext, "%c %i %i", &type, &major, &minor);
-+		r = sscanf(stat->extension, "%c %i %i", &type, &major, &minor);
-+		if (r != 3) {
-+			p9_debug(P9_DEBUG_ERROR,
-+				 "invalid device string, umode will be bogus: %s\n",
-+				 stat->extension);
-+			return res;
-+		}
- 		switch (type) {
- 		case 'c':
- 			res |= S_IFCHR;
+ const char
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 44430b6ab843..3dc81edf5ca5 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -2382,6 +2382,7 @@ static int ethtool_tunable_valid(const struct ethtool_tunable *tuna)
+ 	switch (tuna->id) {
+ 	case ETHTOOL_RX_COPYBREAK:
+ 	case ETHTOOL_TX_COPYBREAK:
++	case ETHTOOL_TX_COPYBREAK_BUF_SIZE:
+ 		if (tuna->len != sizeof(u32) ||
+ 		    tuna->type_id != ETHTOOL_TUNABLE_U32)
+ 			return -EINVAL;
 -- 
-2.31.1
+2.33.0
 
