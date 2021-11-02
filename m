@@ -2,173 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22B0D44294D
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 09:24:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A7C24429AE
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 09:41:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230497AbhKBI1R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 04:27:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43484 "EHLO
+        id S231165AbhKBIng (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 04:43:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbhKBI1N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 04:27:13 -0400
-Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F72AC061764
-        for <netdev@vger.kernel.org>; Tue,  2 Nov 2021 01:24:38 -0700 (PDT)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:5050:fce2:2424:248f])
-        by laurent.telenet-ops.be with bizsmtp
-        id DLQb2600B0xGf5L01LQbSu; Tue, 02 Nov 2021 09:24:36 +0100
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1mhp5v-009fdO-5X; Tue, 02 Nov 2021 09:24:35 +0100
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1mhp5u-00G21O-N2; Tue, 02 Nov 2021 09:24:34 +0100
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-To:     Taras Chornyi <tchornyi@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Volodymyr Mytnyk <vmytnyk@marvell.com>,
-        Yevhen Orlov <yevhen.orlov@plvision.eu>,
-        Vadym Kochan <vkochan@marvell.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH] [-next] net: marvell: prestera: Add explicit padding
-Date:   Tue,  2 Nov 2021 09:24:33 +0100
-Message-Id: <20211102082433.3820514-1-geert@linux-m68k.org>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229577AbhKBInf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 04:43:35 -0400
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 386DEC061764
+        for <netdev@vger.kernel.org>; Tue,  2 Nov 2021 01:41:01 -0700 (PDT)
+Received: by mail-oi1-x22d.google.com with SMTP id y11so638849oih.7
+        for <netdev@vger.kernel.org>; Tue, 02 Nov 2021 01:41:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=E8uts31KP1x8Vwf2R26LKxne8Xd07z9YxFVKxZRVcaM=;
+        b=Dxtiz28ltW1Att3Q8CC+m+np4BTD/7U1Oa//7aYrDjKyyLizB2L7Ail53JQKs6WF4V
+         l2a2tC9CDYgFumK/41aZnGHy3bOhpTsOFIUcCwTmAbF97Q5zzENjE5WQYbE1U69VHtGM
+         pWjRckFfIWdjU+kuMWkcONV6DSTFUWMZaFcebDYgyEv2nXcXod6YSDLHtWHQ4zVjgrHG
+         pSlu+HhBKFNcQMDYL0aMlKDbsryKmj21X62/Q2WBEcHxqmLZQnSqpltOFT4FJOoah84L
+         pmYhCrSH1PWVtFmHG5Xn5cbvrRraTP1mi+wx4Qv24LDy/IgltOAfcZJtfxk+0m0PzSCw
+         0suA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=E8uts31KP1x8Vwf2R26LKxne8Xd07z9YxFVKxZRVcaM=;
+        b=zdGrz9KxM+TfdpYnXO/BR0UNJpEkeSSiJJSwZIxgFT5UJvUOWrFzr3shZuIGvkjTZE
+         TL+YX2jDKsJf+tCHyCk1S62KA/BfNNTaszuTEh6m7w/0XSwoZR2ktG934p7hwbuOFkX0
+         EkcM9eTFDBIsW3Ss+BJ5iflSHEaFnpBZMb3Kj7KI/jHXJZpgen2IaUGhOtcMAYSDHUmQ
+         fi5Zry22cB3lbpsrvsVaEIgqyxtgo+Ng4L7Ey0MHQG94APzfzKh+5a7Ya3Hp84z2UnD3
+         YizlfEen7z9ltmG4vhSTLVVZs2axZMZmJXAZdfVGd8gwiTGZIwXrXPYZSURTVcpldgF+
+         2lbQ==
+X-Gm-Message-State: AOAM531U+fqhJL251jIBF4g8y3RnTbUbonE5Ky1xaibFXlrNw68igh/j
+        wxr+6TRYJmEXcrmQnjZYAq7NmsWdoKyJBt7kSVZpPtH1d4Q70A==
+X-Google-Smtp-Source: ABdhPJyz6AmF2GK+V2NPE5KnY0oEb21zSKH+4ZIAJ7AH+wUDvM96bmGWCqoE/QCRsgvAPIS3Jt2rzBBjXeUQh6dMTms=
+X-Received: by 2002:a05:6808:6ce:: with SMTP id m14mr3718570oih.134.1635842460236;
+ Tue, 02 Nov 2021 01:41:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20211102004555.1359210-1-eric.dumazet@gmail.com>
+In-Reply-To: <20211102004555.1359210-1-eric.dumazet@gmail.com>
+From:   Marco Elver <elver@google.com>
+Date:   Tue, 2 Nov 2021 09:40:48 +0100
+Message-ID: <CANpmjNM0iTZjrsxCam6JJ_gjJP+bXMfaVsw6Vfd56oD6d1rV0w@mail.gmail.com>
+Subject: Re: [PATCH net] net: add and use skb_unclone_keeptruesize() helper
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On m68k:
+On Tue, 2 Nov 2021 at 01:46, Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> From: Eric Dumazet <edumazet@google.com>
+>
+> While commit 097b9146c0e2 ("net: fix up truesize of cloned
+> skb in skb_prepare_for_shift()") fixed immediate issues found
+> when KFENCE was enabled/tested, there are still similar issues,
+> when tcp_trim_head() hits KFENCE while the master skb
+> is cloned.
+>
+> This happens under heavy networking TX workloads,
+> when the TX completion might be delayed after incoming ACK.
+>
+> This patch fixes the WARNING in sk_stream_kill_queues
+> when sk->sk_mem_queued/sk->sk_forward_alloc are not zero.
+>
+> Fixes: d3fb45f370d9 ("mm, kfence: insert KFENCE hooks for SLAB")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Marco Elver <elver@google.com>
 
-    In function ‘prestera_hw_build_tests’,
-	inlined from ‘prestera_hw_switch_init’ at drivers/net/ethernet/marvell/prestera/prestera_hw.c:788:2:
-    ././include/linux/compiler_types.h:335:38: error: call to ‘__compiletime_assert_345’ declared with attribute error: BUILD_BUG_ON failed: sizeof(struct prestera_msg_switch_attr_req) != 16
-    ...
+Acked-by: Marco Elver <elver@google.com>
 
-The driver assumes structure members are naturally aligned, but does not
-add explicit padding, thus breaking architectures where integral values
-are not always naturally aligned (e.g. on m68k, __alignof(int) is 2, not
-4).
+Thanks.
 
-Fixes: bb5dbf2cc64d5cfa ("net: marvell: prestera: add firmware v4.0 support")
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
----
-Compile-tested only.
-
-BTW, I sincerely doubt the use of __packed on structs like:
-
-    union prestera_msg_switch_param {
-	    u8 mac[ETH_ALEN];
-	    __le32 ageing_timeout_ms;
-    } __packed;
-
-This struct is only used as a member in another struct, where it is
-be naturally aligned anyway.
-
-Some of the other __packed attributes look fishy to me, too.
----
- drivers/net/ethernet/marvell/prestera/prestera_hw.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.c b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-index 41ba17cb29657392..4f5f52dcdd9d2814 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-@@ -189,6 +189,7 @@ struct prestera_msg_switch_attr_req {
- 	struct prestera_msg_cmd cmd;
- 	__le32 attr;
- 	union prestera_msg_switch_param param;
-+	u8 pad[2];
- };
- 
- struct prestera_msg_switch_init_resp {
-@@ -313,6 +314,7 @@ struct prestera_msg_port_info_resp {
- 	__le32 hw_id;
- 	__le32 dev_id;
- 	__le16 fp_id;
-+	u8 pad[2];
- };
- 
- struct prestera_msg_vlan_req {
-@@ -345,11 +347,13 @@ struct prestera_msg_bridge_req {
- 	__le32 port;
- 	__le32 dev;
- 	__le16 bridge;
-+	u8 pad[2];
- };
- 
- struct prestera_msg_bridge_resp {
- 	struct prestera_msg_ret ret;
- 	__le16 bridge;
-+	u8 pad[2];
- };
- 
- struct prestera_msg_acl_action {
-@@ -408,16 +412,19 @@ struct prestera_msg_acl_ruleset_bind_req {
- 	__le32 port;
- 	__le32 dev;
- 	__le16 ruleset_id;
-+	u8 pad[2];
- };
- 
- struct prestera_msg_acl_ruleset_req {
- 	struct prestera_msg_cmd cmd;
- 	__le16 id;
-+	u8 pad[2];
- };
- 
- struct prestera_msg_acl_ruleset_resp {
- 	struct prestera_msg_ret ret;
- 	__le16 id;
-+	u8 pad[2];
- };
- 
- struct prestera_msg_span_req {
-@@ -425,11 +432,13 @@ struct prestera_msg_span_req {
- 	__le32 port;
- 	__le32 dev;
- 	u8 id;
-+	u8 pad[3];
- };
- 
- struct prestera_msg_span_resp {
- 	struct prestera_msg_ret ret;
- 	u8 id;
-+	u8 pad[3];
- };
- 
- struct prestera_msg_stp_req {
-@@ -443,6 +452,7 @@ struct prestera_msg_stp_req {
- struct prestera_msg_rxtx_req {
- 	struct prestera_msg_cmd cmd;
- 	u8 use_sdma;
-+	u8 pad[3];
- };
- 
- struct prestera_msg_rxtx_resp {
-@@ -455,12 +465,14 @@ struct prestera_msg_lag_req {
- 	__le32 port;
- 	__le32 dev;
- 	__le16 lag_id;
-+	u8 pad[2];
- };
- 
- struct prestera_msg_cpu_code_counter_req {
- 	struct prestera_msg_cmd cmd;
- 	u8 counter_type;
- 	u8 code;
-+	u8 pad[2];
- };
- 
- struct mvsw_msg_cpu_code_counter_ret {
--- 
-2.25.1
-
+> ---
+>  include/linux/skbuff.h | 16 ++++++++++++++++
+>  net/core/skbuff.c      | 14 +-------------
+>  net/ipv4/tcp_output.c  |  6 +++---
+>  3 files changed, 20 insertions(+), 16 deletions(-)
+>
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 841e2f0f5240ba9e210bb9a3fc1cbedc2162b2a8..b8c273af2910c780dcfbc8f18fc05e115089010b 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -1671,6 +1671,22 @@ static inline int skb_unclone(struct sk_buff *skb, gfp_t pri)
+>         return 0;
+>  }
+>
+> +/* This variant of skb_unclone() makes sure skb->truesize is not changed */
+> +static inline int skb_unclone_keeptruesize(struct sk_buff *skb, gfp_t pri)
+> +{
+> +       might_sleep_if(gfpflags_allow_blocking(pri));
+> +
+> +       if (skb_cloned(skb)) {
+> +               unsigned int save = skb->truesize;
+> +               int res;
+> +
+> +               res = pskb_expand_head(skb, 0, 0, pri);
+> +               skb->truesize = save;
+> +               return res;
+> +       }
+> +       return 0;
+> +}
+> +
+>  /**
+>   *     skb_header_cloned - is the header a clone
+>   *     @skb: buffer to check
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index fe9358437380c826d6438efe939afc4b38135cff..38d7dee4bbe9e96a811ff9cfca33429b5f7dbff1 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -3449,19 +3449,7 @@ EXPORT_SYMBOL(skb_split);
+>   */
+>  static int skb_prepare_for_shift(struct sk_buff *skb)
+>  {
+> -       int ret = 0;
+> -
+> -       if (skb_cloned(skb)) {
+> -               /* Save and restore truesize: pskb_expand_head() may reallocate
+> -                * memory where ksize(kmalloc(S)) != ksize(kmalloc(S)), but we
+> -                * cannot change truesize at this point.
+> -                */
+> -               unsigned int save_truesize = skb->truesize;
+> -
+> -               ret = pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
+> -               skb->truesize = save_truesize;
+> -       }
+> -       return ret;
+> +       return skb_unclone_keeptruesize(skb, GFP_ATOMIC);
+>  }
+>
+>  /**
+> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+> index 6d72f3ea48c4ef0d193ec804653e4d4321f3f20a..0492f6942778db21f855216bf4387682fb37091e 100644
+> --- a/net/ipv4/tcp_output.c
+> +++ b/net/ipv4/tcp_output.c
+> @@ -1562,7 +1562,7 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp_queue,
+>                 return -ENOMEM;
+>         }
+>
+> -       if (skb_unclone(skb, gfp))
+> +       if (skb_unclone_keeptruesize(skb, gfp))
+>                 return -ENOMEM;
+>
+>         /* Get a new skb... force flag on. */
+> @@ -1672,7 +1672,7 @@ int tcp_trim_head(struct sock *sk, struct sk_buff *skb, u32 len)
+>  {
+>         u32 delta_truesize;
+>
+> -       if (skb_unclone(skb, GFP_ATOMIC))
+> +       if (skb_unclone_keeptruesize(skb, GFP_ATOMIC))
+>                 return -ENOMEM;
+>
+>         delta_truesize = __pskb_trim_head(skb, len);
+> @@ -3184,7 +3184,7 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
+>                                  cur_mss, GFP_ATOMIC))
+>                         return -ENOMEM; /* We'll try again later. */
+>         } else {
+> -               if (skb_unclone(skb, GFP_ATOMIC))
+> +               if (skb_unclone_keeptruesize(skb, GFP_ATOMIC))
+>                         return -ENOMEM;
+>
+>                 diff = tcp_skb_pcount(skb);
+> --
+> 2.33.1.1089.g2158813163f-goog
+>
