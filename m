@@ -2,135 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C40FA442A26
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 10:14:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 779BD442A36
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 10:17:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230140AbhKBJRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 05:17:00 -0400
-Received: from mail-eopbgr1320101.outbound.protection.outlook.com ([40.107.132.101]:31908
-        "EHLO APC01-PU1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229577AbhKBJQw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Nov 2021 05:16:52 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XxcZYuyLbRTGN7xDqeaNQy0evpozKjONgPZBI0GLTc6noSr2YIuLCneI6Ec8eySuPxeVh8tK+NKbhmHORzhJtfdgQX317CXlg8fHY3qbuLwAhVQkbY3mCeHlyrhYirJiQ4SDFcgryOzTq9w3kQsxjW1Q4WJUd0ITZqdAx3+WlwfgnCqPi0pXBifyfisPn8EslgyfAxgWhNJPBBV6RmsEOSUdlGRcTQw3rsmAEFJACAVT6RbCR9Dlq6v8P7o/96YEgw9lfApxio+V230TwSysi0LB/nsWDoGrP70YAOiR4D6Yf+qzLfOxVTsCLHJ9XjPjDPQ9jIl67R//O2veMvfaIw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qYLD7k7Y+hPxwQi3/mW+nUUQ34K2rw+XEXmFd2DCowU=;
- b=EkCXVUNCMJGab8EYxEkX//FBpRD6+5SJ2LmffB1yjwb+tDPYjfAT0CP1nMHRKD2BrmCY+qlGusbvDAad4vwZNnu0QsScQNSnW52XzKV+gs7nDRfphC5vID038bjo2ykie+MuRKZRd+sAwff8yMJT4fpWqkBZGd0MYD7xt2WqWWGos6ROXLzuh1dW3Ln2vwtku1WGzhtELfyn/TOdwQz4a0ivDDvw1XVki7ilBk1BdwZUGdxTKklMJuUbNPj9l3muiQw9EaEsnfXwBI79/AGc/DFZe8I3MQepn73R4qeiEgCj5DzlKVbJdXiRK/QxdlMkKl5x7QfP7o45Bt+i1yo9KQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qYLD7k7Y+hPxwQi3/mW+nUUQ34K2rw+XEXmFd2DCowU=;
- b=NYJocV58oHGBVe50NCi2rKsIByYPiPWA0kbsbjBaICgWCB156kFdYChJ8pfLUnvpCw+gqud8JePslB1ZhXLWO6JN2fSLgiAdJmmeKQ7r7f/M2zLHEheKtftH79SpVC3pLV74lXvtsG1nkReco2z2TAQzdsUzbDIhYoIR1U/ncpg=
-Authentication-Results: netfilter.org; dkim=none (message not signed)
- header.d=none;netfilter.org; dmarc=none action=none header.from=vivo.com;
-Received: from SG2PR06MB3367.apcprd06.prod.outlook.com (2603:1096:4:78::19) by
- SG2PR06MB2459.apcprd06.prod.outlook.com (2603:1096:4:66::18) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4649.15; Tue, 2 Nov 2021 09:14:11 +0000
-Received: from SG2PR06MB3367.apcprd06.prod.outlook.com
- ([fe80::fc12:4e1b:cc77:6c0]) by SG2PR06MB3367.apcprd06.prod.outlook.com
- ([fe80::fc12:4e1b:cc77:6c0%6]) with mapi id 15.20.4649.019; Tue, 2 Nov 2021
- 09:14:11 +0000
-From:   Wan Jiabing <wanjiabing@vivo.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     jiabing.wan@qq.com, Wan Jiabing <wanjiabing@vivo.com>
-Subject: [PATCH] netfilter: nft_payload: Remove duplicated include in nft_payload.c
-Date:   Tue,  2 Nov 2021 05:13:55 -0400
-Message-Id: <20211102091355.21577-1-wanjiabing@vivo.com>
-X-Mailer: git-send-email 2.20.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR02CA0205.apcprd02.prod.outlook.com
- (2603:1096:201:20::17) To SG2PR06MB3367.apcprd06.prod.outlook.com
- (2603:1096:4:78::19)
+        id S230109AbhKBJTq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 05:19:46 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:17628 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229778AbhKBJTq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 05:19:46 -0400
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1A28F9Jc005079;
+        Tue, 2 Nov 2021 09:17:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=FLd5RSjJr+xZynLCe23tKIMeeec5tHEOiik/P5NvSFU=;
+ b=bhgWZlXHJXwNsFAa+JCx/E2RmF6Hfq0+dm57TaWp3BrL4FXX4tLRTrxt99H484HNhYUB
+ /9VtypeteqAtnSXyh34FgOM6EcLtbbmbBHLLHJNCJQ3SHWBjwzfASRWqw1tvH/yBnAXt
+ HRrlN/XDy8y6qI9kVynLGZI/T7nvCnaUcdD7a2pEDHzXQhVgsjffT8hkcICip+I1/l2/
+ OeIk7ez+Qn3k4UWRyY4viMCsKplH2w4MdQHPzEWaBJcdUUYegCYg/dgndMyFZhakRFcv
+ TK4JFyMJZALGCuQWRt2mOyJhDEGOeT1ySwo1Q+UDfPv7ueuu8zb6j1POPsJfEktmETWo lg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3c2p6sx4jy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 02 Nov 2021 09:17:10 +0000
+Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1A29FQMK023777;
+        Tue, 2 Nov 2021 09:17:09 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3c2p6sx4j0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 02 Nov 2021 09:17:09 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1A29DQKc029695;
+        Tue, 2 Nov 2021 09:17:07 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma03ams.nl.ibm.com with ESMTP id 3c0wp9hhk2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 02 Nov 2021 09:17:07 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1A29H4wg3867248
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 2 Nov 2021 09:17:04 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5BEE84C040;
+        Tue,  2 Nov 2021 09:17:04 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D14684C04E;
+        Tue,  2 Nov 2021 09:17:03 +0000 (GMT)
+Received: from [9.145.173.195] (unknown [9.145.173.195])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue,  2 Nov 2021 09:17:03 +0000 (GMT)
+Message-ID: <ca2a567b-915e-c4e1-96cf-2c03ff74aad5@linux.ibm.com>
+Date:   Tue, 2 Nov 2021 10:17:15 +0100
 MIME-Version: 1.0
-Received: from localhost.localdomain (218.213.202.190) by HK2PR02CA0205.apcprd02.prod.outlook.com (2603:1096:201:20::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.14 via Frontend Transport; Tue, 2 Nov 2021 09:14:09 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: db303546-ca65-4396-bbcd-08d99de121a3
-X-MS-TrafficTypeDiagnostic: SG2PR06MB2459:
-X-Microsoft-Antispam-PRVS: <SG2PR06MB2459D31D248358FE2819F216AB8B9@SG2PR06MB2459.apcprd06.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:296;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gXHCtJWHoBAES3EqSodmTcZT7VMUYAKfhO+krVMMXG25dfv0AIhhJYVW8RQqivgdvDfZ/NWBzw+BCOdvUkmNFZO1gDxyBQHCrWuKYOQbGzAhevZ1i4nrP5A7Bt9CyJPU4/PMIPtKtZGxr6JgkPruEHXnLrf9ftUWAWsOY9AUQUA00KJz4IdRI8UTy5DVEvtfx8KdwEZRZihjo1SQ8lni3xYLnL4AAUfoJAg2fTtL9TZzpcEwcw29NXcEvO9710rEbrmIzb/ARM5hyinjkWxQVuW8VUjiKj/F3U4IPr3F7hNmDydt3B5hGLl84MEMnq8Y3LZhMNA5CJo4ewXK1X01kfhxjpbAxYKOscb7Ck74V4SrKofjQgjr96xymDFzaLP1m8qxQA9zkeeXslyJi4HKQNRsMHzu8yOIl7ykqh88Ymg9wu9NIya9FJ1SlFOQf40SaTw672MeMc/BAmmKn7tVTNEYwShQBcXCFbWxqCL34of+U7bmq8KkwjN6H1vatx6SCe1fjSF1FiYbO+CzWDQYplSOi9c5I3fAYwK9WtuVoHG86HZQr3FHMyvRbp1mUdVbwVVt9e06E9/CYtaBFRNT4Nl1TDfuhW87hBDLvp0v/ra6hs8MGM1RFOn7eVNY8QXajB3XRVzMRFCQzyQyrf46iAvZL7jbm9eejxlZ5uP0JqFekjHtdRKCoq/s/f6qOH+5G7JQ4vco8+Ex9EE+17zDcw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3367.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(86362001)(5660300002)(110136005)(36756003)(1076003)(7416002)(52116002)(6666004)(4744005)(4326008)(83380400001)(38350700002)(38100700002)(107886003)(508600001)(2616005)(6512007)(316002)(186003)(6486002)(26005)(2906002)(66476007)(66556008)(8676002)(66946007)(956004)(6506007)(8936002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?a4Yru7TQKqO8hp4IjDuLunGbL4RGoAmdLYgWiTRV0DnfOS9fy90X0MVz1Zco?=
- =?us-ascii?Q?vF5tAc4KTihci6o2w0dINR2xqx/4E9/lDkG3+vEHDBsK2IV5/rdSoFLCYehm?=
- =?us-ascii?Q?TrUrlBvspKGx7KGllLYEyHhLpnR3gmjyfnduampZYcsShVEtwwwS3/JRYme9?=
- =?us-ascii?Q?sTu9C4urh+J5y7vav7yWK/HM8rfDlw6SK9YC2g+4Bdq7ry208QIziJfNnFMS?=
- =?us-ascii?Q?/rTh61wIX7uDjGZYqnh9UIi5OAyxR3b2MklaX0BBcnEC3tLyEq0qHIo1N2C1?=
- =?us-ascii?Q?Ok/qgRyTvP10dsqUKvhFI2LVWrT5xP3T5VjmP9DCECCgT0LR0zuoLQm4qCYK?=
- =?us-ascii?Q?dfOTr6pG1yGHWIqgjF4DQIye7QBfuuh1DQNYPDpGqDaM+g8FCIIc3Aj8SgXD?=
- =?us-ascii?Q?AAEPXdz75tUpA7X+eeo9EFmi2KbdwmqS4OzRR300Qk05/FBq4/FNu4jAc6rr?=
- =?us-ascii?Q?QnGyup0FLtYlMKO0YGlxnL2Em5D6B3YZ4eC/maw8qXL1oS8DxQQ9g2gaZt5x?=
- =?us-ascii?Q?W/FFQI+B5kyToE9nSvb52FTryc7YLULIfu/jO/sTMjmEQwFD/QIR7WMsFoal?=
- =?us-ascii?Q?D1YYIcnpEUcLVZeVcy3tC8QCPESigWSoKmSS3EGOOSIw43jKsnctRNHKgVYW?=
- =?us-ascii?Q?3ihLJAfieVnSTbM0pR/4+z7Mdp1BPULCwjHU6QyXttyqA550o93huB2psNbn?=
- =?us-ascii?Q?VfNfcbZB+HLOvwTO0aYlZajwelKwY28pbdr1/4PfeMC7u/fV8WOUULbu7L5s?=
- =?us-ascii?Q?akrXmD5jfD6OBc1KiZ42zajtbAhOoVmkYC05n0HDDgZzMg54EQ1b+WiLVZJ/?=
- =?us-ascii?Q?llBgGkvI7ZnjWlLTCAbJXArwx5mKbGP1FdupA88WwP5bb2eKQKTu58DJZMxK?=
- =?us-ascii?Q?TGY/kU24hJ8g786Ut2uZEQ9uwV5eEFbRWNTXxxJ/mzEv2YK4iX+ipFibemhg?=
- =?us-ascii?Q?JhZHCdbmOkRy3cu56TOzcx0DnU4RrwxZCxwWqu0o2bq4wBqroeNqFxGNiHUl?=
- =?us-ascii?Q?URtHgA+SOXfTMv+IZoZyBltIYJSurzcFtSioOIjzRD22rmokIO3ucn7LPADq?=
- =?us-ascii?Q?KYKYMuRF6JfnlUNGQpWWGaaxBLllCaM0k8TyM7LQcoO5zcAyr1XbJdWIpiHV?=
- =?us-ascii?Q?5lpuxGYfCbjUrJZ50/dOkW/HzAJRQO48oMzHhgTewULHsBVT6NXlajZepWbh?=
- =?us-ascii?Q?CAvEfTrJZURPYsDhdYNnrIfsWT0BuEwA5RLn7tvsCzIJ3JvuaBCIoIk3nWtr?=
- =?us-ascii?Q?9EZNHMxjByHSSaHy0Jj86+b9UFkTmr9RSNm0tnaApVxUSr1yBXX8uBRLZqPz?=
- =?us-ascii?Q?qD+7KmMKagtjNz7GGfIb5e+kvlQgK0vfuQebFaqLv7AF/WFS4Fwndy7foxaf?=
- =?us-ascii?Q?jREF13IikcCnTzLRChJ7VmmprBcdH6g6BxfGOtWNBf3MJSMAR5iOmSlpWGSr?=
- =?us-ascii?Q?0a5eG6ybqK/MUVh5kFp/MtfuKIdxkEOFVfyyfOrMItDhC+HDR+r8/YErV5l5?=
- =?us-ascii?Q?UKLm8ohyH9JGZU4UxzzC61J5OMYBakQFXQERTMzck+5pndXf2EOcD6Sg6X7/?=
- =?us-ascii?Q?QiIJqvQM3hO68YnAZYcurnu4eBdyHSBgVbMB2A4mD94vfax0EWNQ26vQlnkL?=
- =?us-ascii?Q?GEna+UjaSeb7vV8BDJPZ7fo=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: db303546-ca65-4396-bbcd-08d99de121a3
-X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3367.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2021 09:14:11.0405
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zjXQw6FW/FdCulYFkvU/hPAA3BvVDQzLA4yB1Kq31rw8J7fDQeg9plzL1LF26a3LV7kzku9JVjpAWj18XGm7xA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR06MB2459
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.1
+Subject: Re: [PATCH net 1/4] Revert "net/smc: don't wait for send buffer space
+ when data was already sent"
+Content-Language: en-US
+To:     Tony Lu <tonylu@linux.alibaba.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        jacob.qi@linux.alibaba.com, xuanzhuo@linux.alibaba.com,
+        guwen@linux.alibaba.com, dust.li@linux.alibaba.com
+References: <20211027085208.16048-1-tonylu@linux.alibaba.com>
+ <20211027085208.16048-2-tonylu@linux.alibaba.com>
+ <9bbd05ac-5fa5-7d7a-fe69-e7e072ccd1ab@linux.ibm.com>
+ <20211027080813.238b82ce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <06ae0731-0b9b-a70d-6479-de6fe691e25d@linux.ibm.com>
+ <20211027084710.1f4a4ff1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <c6396899-cf99-e695-fc90-3e21e95245ed@linux.ibm.com>
+ <20211028073827.421a68d7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YX+RaKfBVzFokQON@TonyMac-Alibaba>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <YX+RaKfBVzFokQON@TonyMac-Alibaba>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: gdLXfumuGudqut9m5qBjztAK6_wSqbgW
+X-Proofpoint-ORIG-GUID: RV9iiQqApjuwfFhtlbFGtbFGeHltl2Tk
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-11-02_06,2021-11-01_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 clxscore=1015
+ malwarescore=0 priorityscore=1501 lowpriorityscore=0 mlxlogscore=999
+ suspectscore=0 bulkscore=0 impostorscore=0 phishscore=0 mlxscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2111020054
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix following checkincludes.pl warning:
-./net/netfilter/nft_payload.c: linux/ip.h is included more than once.
+On 01/11/2021 08:04, Tony Lu wrote:
+> On Thu, Oct 28, 2021 at 07:38:27AM -0700, Jakub Kicinski wrote:
+>> On Thu, 28 Oct 2021 13:57:55 +0200 Karsten Graul wrote:
+>>> So how to deal with all of this? Is it an accepted programming error
+>>> when a user space program gets itself into this kind of situation?
+>>> Since this problem depends on internal send/recv buffer sizes such a
+>>> program might work on one system but not on other systems.
+>>
+>> It's a gray area so unless someone else has a strong opinion we can
+>> leave it as is.
+> 
+> Things might be different. IMHO, the key point of this problem is to
+> implement the "standard" POSIX socket API, or TCP-socket compatible API.
+> 
+>>> At the end the question might be if either such kind of a 'deadlock'
+>>> is acceptable, or if it is okay to have send() return lesser bytes
+>>> than requested.
+>>
+>> Yeah.. the thing is we have better APIs for applications to ask not to
+>> block than we do for applications to block. If someone really wants to
+>> wait for all data to come out for performance reasons they will
+>> struggle to get that behavior. 
+> 
+> IMO, it is better to do something to unify this behavior. Some
+> applications like netperf would be broken, and the people who want to use
+> SMC to run basic benchmark, would be confused about this, and its
+> compatibility with TCP. Maybe we could:
+> 1) correct the behavior of netperf to check the rc as we discussed.
+> 2) "copy" the behavior of TCP, and try to compatiable with TCP, though
+> it is a gray area.
 
-Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
----
- net/netfilter/nft_payload.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
-index cbfe4e4a4ad7..bd689938a2e0 100644
---- a/net/netfilter/nft_payload.c
-+++ b/net/netfilter/nft_payload.c
-@@ -22,7 +22,6 @@
- #include <linux/icmpv6.h>
- #include <linux/ip.h>
- #include <linux/ipv6.h>
--#include <linux/ip.h>
- #include <net/sctp/checksum.h>
- 
- static bool nft_payload_rebuild_vlan_hdr(const struct sk_buff *skb, int mac_off,
--- 
-2.20.1
-
+I have a strong opinion here, so when the question is if the user either
+encounters a deadlock or if send() returns lesser bytes than requested,
+I prefer the latter behavior.
+The second case is much easier to debug for users, they can do something
+to handle the problem (loop around send()), and this case can even be detected
+using strace. But the deadlock case is nearly not debuggable by users and there
+is nothing to prevent it when the workload pattern runs into this situation
+(except to not use blocking sends).
