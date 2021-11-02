@@ -2,166 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 690E044347B
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 18:20:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51B05443479
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 18:20:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231912AbhKBRWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 13:22:48 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:52068 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230382AbhKBRWq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 13:22:46 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 1A2HK1ZT063923;
-        Tue, 2 Nov 2021 12:20:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1635873601;
-        bh=W0BspqfN9In7mDTJLDkzgni27xHQbtRyJscHEUeFFl0=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=rlly9oHzItNBRZXVI/pOb8up1WRAlmd3KbQePSp0mUAYY4h92WuyxGzukNel38HTQ
-         gmH0cKBcDqiv0d1RK1mBBeXe0FG60xM30IvWjjbEOLqRkN7PizSnlBrJq8cBx/aM5S
-         /GwkoB5Sqbv8BCR63nKLOe0cEbLSZlSyIW+ZJPyU=
-Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 1A2HJw6u095148
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 2 Nov 2021 12:20:01 -0500
-Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 2
- Nov 2021 12:20:00 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 2 Nov 2021 12:20:00 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 1A2HJwmO125534;
-        Tue, 2 Nov 2021 12:19:58 -0500
-Subject: Re: [RFC PATCH] net: phy/mdio: enable mmd indirect access through
- phy_mii_ioctl()
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>
-CC:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        id S230369AbhKBRWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 13:22:38 -0400
+Received: from mail-eopbgr70040.outbound.protection.outlook.com ([40.107.7.40]:19591
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229684AbhKBRWi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Nov 2021 13:22:38 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=f6GEDCn+eP6lD1CtYU0p1SbQ8P03pnVYTmuryX8dMNtb+OOcBZasPfw/qP7lkLptYmX+g9fhVzcSZpkJQs4oE/YLYHF6C616HWuYtUEqufLuRo2WiAo9dIjZEU6n/mFXkEz16xrc/v/wFVMAxU3Gry/pgHVNXSygJeyw8vw9NhXacWKZVRHynoqBGKvzwkI4eH0a4r7SKQk4Fmi6HJsjyaQPqqDNq70JOsUG4Wen3m+EDDnxUZFRmZXKLNG3CGVnvuhA5By8L9Okfy9kUJBOzCdksC0fLsNs4estBVLjlz+pjdtFadwi+3lNxkn9ON2QSrsdK9g7H0oGNKWUeqFDmw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=WaIjLofn0Oj3u0aeT5ttMmZL2s1HsVzu0O2I91T567c=;
+ b=nU2sKDSTgAh3461WOZkfOHroZkKZ3thTZ6eApIIryzCurvE13RT79Zg6tMmTrcxgH5Cm28nNJguO85p2g4c7gq9vZQ1vuG/m9UWQRjo/WamhIlyoXATrZrBs1pk3qHaBwJ4/AkXATij7hKhr+yWotE8EZmUYcHFH2RDGbnc/ATfCPfP70NVrC7W4Suc2B9D2CVB71gaj2dRwObJb1OCrZxD9a+9FhRgdscqr94rArrSnXGw9eAxthZocSCbQD10L8RKwQW4MjxbGcp7Is0BPGTueWkIxQbVl+ZKMeKTG547dNGLPjbT1WJ2FAMV2gJ86wLe+XYCgX5fm+xypaRFKQg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WaIjLofn0Oj3u0aeT5ttMmZL2s1HsVzu0O2I91T567c=;
+ b=qfjqWVwZKRyTDOuRKSuFahjMKk6RbORch2Hmr0cCg+RnRGT4/8wQBFI0to5jliTG65oUvPQqelVWrS5shP/bzABOGPDpJvb7YlDsg2U7Vw9ME0/uvUXp/nnjU93tgrtH/WkIL2p6Ztpl7pQZh0b693HLwG6MGD7+MGvip5ITeyY=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB6269.eurprd04.prod.outlook.com (2603:10a6:803:fa::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.18; Tue, 2 Nov
+ 2021 17:20:00 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4649.020; Tue, 2 Nov 2021
+ 17:20:00 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Jiri Pirko <jiri@resnulli.us>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        <linux-kernel@vger.kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-References: <20211101182859.24073-1-grygorii.strashko@ti.com>
- <YYBBHsFEwGdPJw3b@lunn.ch> <YYBF3IZoSN6/O6AL@shell.armlinux.org.uk>
- <YYCLJnY52MoYfxD8@lunn.ch> <YYExmHYW49jOjfOt@shell.armlinux.org.uk>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <bc9df441-49bf-5c8a-891c-cc3f0db00aba@ti.com>
-Date:   Tue, 2 Nov 2021 19:19:46 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
-MIME-Version: 1.0
-In-Reply-To: <YYExmHYW49jOjfOt@shell.armlinux.org.uk>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+        "David S. Miller" <davem@davemloft.net>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next 0/5] Code movement to br_switchdev.c
+Thread-Topic: [PATCH net-next 0/5] Code movement to br_switchdev.c
+Thread-Index: AQHXy06ynOa6d3fRmEa0KFrEH+B4EKvuzUaAgAFRBYCAAAqWgIAAA2oAgABUOoCAAASYAA==
+Date:   Tue, 2 Nov 2021 17:20:00 +0000
+Message-ID: <20211102172000.byrxnde5fg3p4wqg@skbuf>
+References: <20211027162119.2496321-1-vladimir.oltean@nxp.com>
+ <YYACSc+qv2jMzg/B@nanopsycho> <20211102111159.f5rxiqxnramrnerh@skbuf>
+ <YYEl4QS6iYSJtzJP@nanopsycho> <20211102120206.ak2j7dnhx6clvd46@skbuf>
+ <YYFvZRCo4Ac4/Zll@lunn.ch>
+In-Reply-To: <YYFvZRCo4Ac4/Zll@lunn.ch>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9519dcb6-6a1b-424d-261a-08d99e250078
+x-ms-traffictypediagnostic: VI1PR04MB6269:
+x-microsoft-antispam-prvs: <VI1PR04MB6269E0EB4FE316ACB37BC467E08B9@VI1PR04MB6269.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: uy9sdJQe8z0Ycgpz/qtWjp12oV9VyJoRikPWhvZw68eleRjftnwl+PekmPaaUdSd52FDfVRPlGxaMtD7XZJ0Sy7n3B9bpbZ70uOJjb6OGV+MVLOVAOlXeHp+kDUMYnLHUzinpEV7c8R1WljQAYjWj2ooUxRawtpLpmeccg+vaKsHgIFlmToXTNrmLauxHYyvqNyibSb9CdE1GXlZoIxfWbl/FfaWPBldcY+2o7PJTi9WswTMxaP3y9nDSZIyGUIywQmhRtE3gnjtRSL+5dnvsLbbax+YqOHbQPhaPHd9QXjf1dDzmATEJa8U/OK4FReBJ+GDvMXx2OOyQr6MUslDHeUN1+pyl9HoASGEAYqdv4ncK9j//v8B0tQUTDkwRpx0Sg8zyfhVs2dOVr3YiFGGS6hzySiwhnzvBzVQCXWHBtKMiXvmmXrvzAM/y0XJi79rlctHRGK4DmMNro+bL/ytT+cXQpJylLZY5MSoZBs7KJDc/qzB47GBEjZupklHbUpnnR/WyT+6go1VN3LZKJGf3hP3Yd8MO8XcXsdps2JvnL+3ikxPShtDa8qHt0RErpHMzlAKPF0ZcvRpjJbfbosUjoPR7BybAFeFJmdq27Gn6ja4saq43YHgPT3cyqAqwgNLqzzEqSG2kQcrIFN4zZyZdkorZySMMNTG/ZpGGuo4vu15XLxb5+y6d/ZxB9oFrKl9XnCPwzhIZBXofM810QeItg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(5660300002)(8936002)(2906002)(66476007)(64756008)(66446008)(66556008)(26005)(44832011)(186003)(508600001)(91956017)(76116006)(8676002)(6506007)(6486002)(1076003)(6916009)(66946007)(54906003)(122000001)(83380400001)(33716001)(71200400001)(4326008)(6512007)(9686003)(316002)(38100700002)(86362001)(38070700005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?mHuMi3jKcnuKy80Zhsn2i93ZtysNU878k26JawcW+8kCymBXrWVhIjhtfnE4?=
+ =?us-ascii?Q?x3rGE50pMgdlJeZSRnolSUDDSO/YVYTG8OC3aiR8RRqaiIDqLQQrkCjN4L1m?=
+ =?us-ascii?Q?T//ILdTZLNxR+rpjnphmn5ra4IVBxUChi54stSBIrT+1sIl0ACmdxfs9vEmg?=
+ =?us-ascii?Q?4ehiwRxJhIXvb2SGPgwyNixmGHZ0dl7xUHW7TN50khtWS9yv6eNk6jWLQFeR?=
+ =?us-ascii?Q?VpW1r9oEBarv2oskrxdkp7jyD9aYgg0OqWVbBCvsmRcUW0p8Ma/GI+InqJG0?=
+ =?us-ascii?Q?C6vvbGypbwyWzhS0ltxOl+FZAnGeuYzBX2gyPhQQn2ICZypesfTPphMpyjKP?=
+ =?us-ascii?Q?dFBPkT+rzioZO7P1nczKDcESQD7XSO+D6Zj7qsCNacwMrVZVr2tkbRDVOvMy?=
+ =?us-ascii?Q?JfK9pXSpqT6kS2XVIZGOp8y2pvaarVQxO+G84Iba4j7sifj/8hoY6BdXImDN?=
+ =?us-ascii?Q?lULuDtv8qjNj+LsuOt62zTJXhxFiUP463sf11LNyExWV+WNc4SMzyxiK4vwg?=
+ =?us-ascii?Q?IV4wxOpyhqJOH9LZCurA7ro1tPGS0hFkNrVMziHZrt1ExMv1rJDVGA16RJnN?=
+ =?us-ascii?Q?mHSg/W9T4AJxd/IylZ4c4f8F2EfgICxWn9pGAPE2IxpbZvB2hTYvhjuu0rEr?=
+ =?us-ascii?Q?WUnYVGWu8btJTAiE7Nfe7qlgDtg2DWnVUde7bfGwdozSggT0q934GAj3mISA?=
+ =?us-ascii?Q?9sYdQTNshfExXo3FQu4JLrqhblyJl+dCsKSHCcX4+rp8mMfH1WE3nyIwDihO?=
+ =?us-ascii?Q?nTOwJq7DCJ0luwTFchFW0EmTiW+Y6SfOTBr1CXPX+Mv6LODqFevXDRbH3WN4?=
+ =?us-ascii?Q?Pu0IIlfCTsg/f3iWwQsuSwI3Gzn4TWO6Opwa2zrXSrBCHi60bQWhWODDoRsI?=
+ =?us-ascii?Q?0wHEGROzxuFyoTOZDnTDmm6UlU8Fm1kDd+QtJUZGGdweFeIXGhNidx1FM2Z1?=
+ =?us-ascii?Q?LwfezDT0tOXFCdIoXGw9KT/KWz5mBMR9yQAdLDFxi3bZ/bKHU1MCTVQb1Qwg?=
+ =?us-ascii?Q?df00CY6cv+8uiegirJKGnpeS72luGPMoAwvLMiitagKOqhTdDHnCc5CqjB7R?=
+ =?us-ascii?Q?2XRl9im3cr9JKfDB7Zeyv95IXOgB2rbIqiIfA1nwm5b+Fw7W4mu4iS9HIAOZ?=
+ =?us-ascii?Q?mtEAxVSQ55chPYtDBxm7lN96Ii+0YJdoN5ZVEd0seeVzTDBWV6H9Fk0k7l/D?=
+ =?us-ascii?Q?9fv1gQjL8XgjGWrBGqxe8GcVdF/+8WsSp+emK8c286skXD3IfjuYDu50FSde?=
+ =?us-ascii?Q?dmFi/wf0LizmL34qopZy+PyeA32KVPDcyvfSXRzHaT+SZR2FXivQDhtoF3cv?=
+ =?us-ascii?Q?nYsc/L9t6EilFiD4hkwpG9hDDvDNM/HcbG9sA4uIsYRvxNGHAt99RxSwr3Iu?=
+ =?us-ascii?Q?Gg5u0FP34k6zu0VXl4ivFMvuuCXjZ0R4O2Zi3alN8b7OSSCfnOHVNZrIXzxS?=
+ =?us-ascii?Q?9e8Ebsyv3vFT/sv5NTCjr/ZJMDZqyqXbuN/uio9uOCusEov5kfK0Y0cdl2Zc?=
+ =?us-ascii?Q?VC+Xc4R/tzmKvc8LuvRXxzXgVZGv8eRjpdDa6XyYJhkwdRD4RqldvhLeCHzd?=
+ =?us-ascii?Q?gKIjEBgAaxRT4RurNs5qaWxeTvxZMjKkaBnD+oEBHnWsuI+Iwij8fnARCAe0?=
+ =?us-ascii?Q?whPA2CklxEQtpXl16nEyY2E=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3647A4C94BFA3D4F9992C32926256434@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9519dcb6-6a1b-424d-261a-08d99e250078
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Nov 2021 17:20:00.7868
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: YqTFApV5TiYZoT3YBGA68Y76G/tYyhakCPcBHHNpT1jXKO/7N1cJCLFdQeaGLAp5OtlMBG3oZ8XPIW5abIAQog==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6269
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Nov 02, 2021 at 06:03:33PM +0100, Andrew Lunn wrote:
+> On Tue, Nov 02, 2021 at 12:02:06PM +0000, Vladimir Oltean wrote:
+> > On Tue, Nov 02, 2021 at 12:49:53PM +0100, Jiri Pirko wrote:
+> > > Tue, Nov 02, 2021 at 12:11:59PM CET, vladimir.oltean@nxp.com wrote:
+> > > >On Mon, Nov 01, 2021 at 04:05:45PM +0100, Jiri Pirko wrote:
+> > > >> Wed, Oct 27, 2021 at 06:21:14PM CEST, vladimir.oltean@nxp.com wrot=
+e:
+> > > >> >This is one more refactoring patch set for the Linux bridge, wher=
+e more
+> > > >> >logic that is specific to switchdev is moved into br_switchdev.c,=
+ which
+> > > >> >is compiled out when CONFIG_NET_SWITCHDEV is disabled.
+> > > >>=20
+> > > >> Looks good.
+> > > >>=20
+> > > >> While you are at it, don't you plan to also move switchdev.c into
+> > > >> br_switchdev.c and eventually rename to br_offload.c ?
+> > > >>=20
+> > > >> Switchdev is about bridge offloading only anyway.
+> > > >
+> > > >You mean I should effectively make switchdev part of the bridge?
+> > >=20
+> > > Yes.
+> >=20
+> > Ok, have you actually seen the commit message linked below? Basically i=
+t
+> > says that there are drivers that depend on switchdev.c being this
+> > neutral third party, forwarding events on notifier chains back and fort=
+h
+> > between the bridge and the drivers. If we make switchdev.c part of the
+> > bridge, then drivers can no longer be compiled without bridge support.
+>=20
+> This is something i test every so often, building without the
+> bridge. The simplest DSA drivers just provide a 'port multiplexor', no
+> offload at all. You can put IP addresses on the interfaces and
+> software route between them etc.
+>=20
+> So i would prefer this use case does not break.
 
-
-On 02/11/2021 14:39, Russell King (Oracle) wrote:
-> On Tue, Nov 02, 2021 at 01:49:42AM +0100, Andrew Lunn wrote:
->>> The use of the indirect registers is specific to PHYs, and we already
->>> know that various PHYs don't support indirect access, and some emulate
->>> access to the EEE registers - both of which are handled at the PHY
->>> driver level.
->>
->> That is actually an interesting point. Should the ioctl call actually
->> use the PHY driver read_mmd and write_mmd? Or should it go direct to
->> the bus? realtek uses MII_MMD_DATA for something to do with suspend,
->> and hence it uses genphy_write_mmd_unsupported(), or it has its own
->> function emulating MMD operations.
->>
->> So maybe the ioctl handler actually needs to use __phy_read_mmd() if
->> there is a phy at the address, rather than go direct to the bus?
->>
->> Or maybe we should just say no, you should do this all from userspace,
->> by implementing C45 over C22 in userspace, the ioctl allows that, the
->> kernel does not need to be involved.
-> 
-> Yes and no. There's a problem accessing anything that involves some kind
-> of indirect or paged access with the current API - you can only do one
-> access under the bus lock at a time, which makes the whole thing
-> unreliable. We've accepted that unreliability on the grounds that this
-> interface is for debugging only, so if it does go wrong, you get to keep
-> all the pieces!
-
-Right, MMD indirect access is 4 MDIO bus transactions.
-
-> 
-> The paged access case is really no different from the indirect C45 case.
-> They're both exactly the same type of indirect access, just using
-> different registers.
-> 
-> That said, the MII ioctls are designed to be a bus level thing - you can
-> address anything on the MII bus with them. Pushing the ioctl up to the
-> PHY layer means we need to find the right phy device to operate on.
-
-The phy_read_mmd/__phy_read_mmd() was the first thing i considered, but
-rejected exactly because of the possibility to access any MDIO device
-through this ioctls.
-
-in general, it can be called with check (mii->phy_id = pl->phydev->mdio.addr)
-
-> What
-> if we attempt a C45 access at an address that there isn't a phy device?
-> 
-> For example, what would be the effect of trying a C45 indirect access to
-> a DSA switch?
-
-in case, C22/C22 MMD It will fail to read, seems no issues, and phytool will
-just return 0xfffb.
-
-First, there seems was previous attempt to do the same [1].
-
-Also, there is some historical ... mess in this area :(
-There are:
-
-- generic_mii_ioctl() - 33 users (2005, it's older), uses struct mii_if_info
-
-- mdio_mii_ioctl() - 7 users (2009), uses struct mdio_if_info
-
-- phy_mii_ioctl() - 29 users, including phylink (2005), need PHY to get MDIO bus
-
-- phy_do_ioctl()->phy_mii_ioctl() - 10 users (2020)
-
-- phy_do_ioctl_running()->phy_mii_ioctl() - 22 users (2020)
-
-- phylink_mii_ioctl() (also calls phy_mii_ioctl(), but only for SIOCSHWTSTAMP) - 9 users, including DSA (2017)
-   need PHY to get MDIO bus, also uses PHY for c45 detection, but any phy_id can be passed.
-
-- SIOCSMIIREG custom implementation - 32 users
-
-
-> 
-> Personally, my feeling would be that if we want to solve this, we need
-> to solve this properly - we need to revise the interface so it's
-> possible to request the kernel to perform a group of MII operations, so
-> that userspace can safely access any paged/indirect register. With that
-> solved, there will be no issue with requiring userspace to know what
-> it's doing with indirect C45 accesses.
-> 
-
-It would require MDIO bus lock, which is not a solution,
-or some sort of batch processing, like for mmd:
-  w reg1 val1
-  w reg2 val2
-  w reg1 val3
-  r reg2
-
-What Kernel interface do you have in mind?
-
-Sry, but I have to note that demand for this become terribly high, min two pings in months
-
-[1] https://www.spinics.net/lists/netdev/msg653629.html
-
--- 
-Best regards,
-grygorii
+I should have formulated it more carefully. That use case is not broken.
+What would break would be the ability to compile drivers (in this case DSA)
+as built-in if the bridge is a module.=
