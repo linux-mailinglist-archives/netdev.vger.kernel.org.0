@@ -2,125 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A802144250A
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 02:18:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A925442510
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 02:20:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231475AbhKBBV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 21:21:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53166 "EHLO mail.kernel.org"
+        id S231620AbhKBBWl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 21:22:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53432 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229510AbhKBBVZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Nov 2021 21:21:25 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DF35F61051;
-        Tue,  2 Nov 2021 01:18:47 +0000 (UTC)
-Date:   Mon, 1 Nov 2021 21:18:45 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Qiang Zhang <qiang.zhang@windriver.com>,
-        robdclark <robdclark@chromium.org>,
-        christian <christian@brauner.io>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        dennis.dalessandro@cornelisnetworks.com,
-        mike.marciniszyn@cornelisnetworks.com, dledford@redhat.com,
-        jgg@ziepe.ca, linux-rdma@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel test robot <oliver.sang@intel.com>,
-        kbuild test robot <lkp@intel.com>
-Subject: Re: [PATCH v7 00/11] extend task comm from 16 to 24
-Message-ID: <20211101211845.20ff5b2e@gandalf.local.home>
-In-Reply-To: <CALOAHbAx55AUo3bm8ZepZSZnw7A08cvKPdPyNTf=E_tPqmw5hw@mail.gmail.com>
-References: <20211101060419.4682-1-laoar.shao@gmail.com>
-        <YX/0h7j/nDwoBA+J@alley>
-        <CALOAHbA61RyGVzG8SVcNG=0rdqnUCt4AxCKmtuxRnbS_SH=+MQ@mail.gmail.com>
-        <YYAPhE9uX7OYTlpv@alley>
-        <CALOAHbAx55AUo3bm8ZepZSZnw7A08cvKPdPyNTf=E_tPqmw5hw@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S230511AbhKBBWk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Nov 2021 21:22:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id D1889610A2;
+        Tue,  2 Nov 2021 01:20:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635816006;
+        bh=7ygTD1Mm21sW96aUbajwM3zn19p5y604kj6kGRqhAXI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=NeR5lZcy0en4juTCM7gVKbTsY/Q5+g6gaKDV1KYjwIAko2Da1+Ns8+gQCjasS2Uos
+         4LLkGG04J3EW49y5FNQ1m4mb2aW4eOug7GWXtFCuOp2/PPphgFQxh7KJT1DYx4xA4c
+         i/kWGB6u2qjnDVSclVojwsTpg36Rnoyzoz2LnFmApdYcIwd5z9E3cFRxNuDTAolNpF
+         FteuSp8hNF055pfPQihP5GfUugTLFmZkLr0SGFcvd0VOMuIPkY4N3Nih07Qf/bsqub
+         wWcOCcZGb6KiDzHygqdrYmr9XiuMpXQQl7CY5nqefMzKTaFeS6+za2IUb9XH/7O7Jp
+         WUU2okv6DLjyA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C5CA860BD0;
+        Tue,  2 Nov 2021 01:20:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCHv3 bpf-next] kbuild: Unify options for BTF generation for
+ vmlinux and modules
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163581600680.29215.13986498417182964591.git-patchwork-notify@kernel.org>
+Date:   Tue, 02 Nov 2021 01:20:06 +0000
+References: <20211029125729.70002-1-jolsa@kernel.org>
+In-Reply-To: <20211029125729.70002-1-jolsa@kernel.org>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        masahiroy@kernel.org, michal.lkml@markovi.net,
+        ndesaulniers@google.com, lkp@intel.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kbuild@vger.kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@chromium.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2 Nov 2021 09:09:50 +0800
-Yafang Shao <laoar.shao@gmail.com> wrote:
+Hello:
 
-> So if no one against, I will do it in two steps,
+This patch was applied to bpf/bpf-next.git (master)
+by Andrii Nakryiko <andrii@kernel.org>:
+
+On Fri, 29 Oct 2021 14:57:29 +0200 you wrote:
+> Using new PAHOLE_FLAGS variable to pass extra arguments to
+> pahole for both vmlinux and modules BTF data generation.
 > 
-> 1. Send the task comm cleanups in a separate patchset named "task comm cleanups"
->     This patchset includes patch #1, #2, #4,  #5, #6, #7 and #9.
->     Cleaning them up can make it less error prone, and it will be
-> helpful if we want to extend task comm in the future :)
-
-Agreed.
-
+> Adding new scripts/pahole-flags.sh script that detect and
+> prints pahole options.
 > 
-> 2.  Keep the current comm[16] as-is and introduce a separate pointer
-> to store kthread's long name
-
-I'm OK with this. Hopefully more would chime in too.
-
->      Now we only care about kthread, so we can put the pointer into a
-> kthread specific struct.
->      For example in the struct kthread, or in kthread->data (which may
-> conflict with workqueue).
-
-No, add a new field to the structure. "full_name" or something like that.
-I'm guessing it should be NULL if the name fits in TASK_COMM_LEN and
-allocated if the name had to be truncated.
-
-Do not overload data with this. That will just make things confusing.
-There's not that many kthreads, where an addition of an 8 byte pointer is
-going to cause issues.
-
+> [ fixed issues found by kernel test robot ]
+> Cc: kernel test robot <lkp@intel.com>
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > 
->      And then dynamically allocate a longer name if it is truncated,
-> for example,
->      __kthread_create_on_node
->          len = vsnprintf(name, sizeof(name), namefmt, args);
->          if (len >= TASK_COMM_LEN) {
->              /* create a longer name */
+> [...]
 
-And make sure you have it fail the kthread allocation if it fails to
-allocate.
+Here is the summary with links:
+  - [PATCHv3,bpf-next] kbuild: Unify options for BTF generation for vmlinux and modules
+    https://git.kernel.org/bpf/bpf-next/c/9741e07ece7c
 
->          }
-> 
->      And then we modify proc_task_name(), so the user can get
-> kthread's longer name via /proc/[pid]/comm.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Agreed.
 
-> 
->      And then free the allocated memory when the kthread is destroyed.
-
-Correct.
-
-Thanks,
-
--- Steve
