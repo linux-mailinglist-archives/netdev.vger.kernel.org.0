@@ -2,196 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 637F24430A4
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 15:41:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E7984430FA
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 15:57:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230447AbhKBOng (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 10:43:36 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:15347 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbhKBOnf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 10:43:35 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HkCHx5rkPz900w;
-        Tue,  2 Nov 2021 22:40:45 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Tue, 2 Nov 2021 22:40:54 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Tue, 2 Nov 2021 22:40:52 +0800
-From:   Tong Tiangen <tongtiangen@huawei.com>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Palmer Dabbelt <palmerdabbelt@google.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, <bjorn.topel@gmail.com>
-CC:     <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        Tong Tiangen <tongtiangen@huawei.com>
-Subject: [PATCH bpf-next] riscv, bpf: fix some compiler error
-Date:   Tue, 2 Nov 2021 14:56:42 +0000
-Message-ID: <20211102145642.724820-1-tongtiangen@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S234413AbhKBPAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 11:00:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33142 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234902AbhKBO7a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 10:59:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1635865015;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rXNQNfiHB/PeLRGP+7hDt0wdDNq5SSU2T+fjB5p1Png=;
+        b=FvpT7EMOtsB2wiPdILPFevnGy4q+TbqosSBoR/SvD3V8i04vm3SbNuyps0bpsb4ppJi1vr
+        n37NkNtBW+yo1qxsojxouSKBon8OWuXuKTYmYnulMVNEsPZ+VItBlqIr+IJ4jxMDZqvbmB
+        +cBTKWl+DQRyiNoK/fl+vQTIevuecjA=
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
+ [209.85.210.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-521-mnARhqzwN-K-S-0PrZ7RHw-1; Tue, 02 Nov 2021 10:56:54 -0400
+X-MC-Unique: mnARhqzwN-K-S-0PrZ7RHw-1
+Received: by mail-ot1-f69.google.com with SMTP id 93-20020a9d0866000000b00553d3cbf050so10535812oty.14
+        for <netdev@vger.kernel.org>; Tue, 02 Nov 2021 07:56:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=rXNQNfiHB/PeLRGP+7hDt0wdDNq5SSU2T+fjB5p1Png=;
+        b=DdRk4GxJiwrAwjlGEcncR9V2sT6BdoZ/ZCIeamyB4R5GeZLQUIliIVcKc6N3RGtdIm
+         QGrUEngoS1pjQuYGir6VZobZ4qoFTu/mJnKJU/TVWs8nQFne7fQ+rx+qu28WFB7t/1pZ
+         j8eJZo6MsHtvcXSgIV/6PjTHocNAB5sNfjbJkdnMr7vbQ3VZhtSaSvSanUJBi1CZmc8v
+         Lw4TB3uVW14s//vIkWlrNfvuLMBwLemHBnjEFMz1+w/UXKOmJuVyCRhXAvaGU4FjE5MU
+         OvJIZeE4xTa4Wt+eNfHmi7mtLIYG/SdzaCzCIF+0iJ6aFWq/8XSB3PlMNJz22RH/neRi
+         aUlw==
+X-Gm-Message-State: AOAM530OMYBlGP9SgApqtuddfFhFQY9RW1+I0BpfJrWtqHqN2art5+ct
+        LlIJLIYQJcqAokvZHZR5KL3nFHjFLQ+fV6fjMFU3my7hfy8wiDlCua4XDyHJ83o52urpIjPeeyI
+        x7n3fUzSG2gB3gBXb
+X-Received: by 2002:a9d:2909:: with SMTP id d9mr16105612otb.187.1635865013960;
+        Tue, 02 Nov 2021 07:56:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJytw8wBjugPRoTH1oiXe4YvuMOLPdBjoz6aqSXNqQjkKkVHyT46/WIQqNFRBpB6ufxkPoDYvQ==
+X-Received: by 2002:a9d:2909:: with SMTP id d9mr16105590otb.187.1635865013678;
+        Tue, 02 Nov 2021 07:56:53 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id d24sm2423495otq.5.2021.11.02.07.56.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Nov 2021 07:56:53 -0700 (PDT)
+Date:   Tue, 2 Nov 2021 08:56:51 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
+ for mlx5 devices
+Message-ID: <20211102085651.28e0203c.alex.williamson@redhat.com>
+In-Reply-To: <20211101172506.GC2744544@nvidia.com>
+References: <20211025145646.GX2744544@nvidia.com>
+        <20211026084212.36b0142c.alex.williamson@redhat.com>
+        <20211026151851.GW2744544@nvidia.com>
+        <20211026135046.5190e103.alex.williamson@redhat.com>
+        <20211026234300.GA2744544@nvidia.com>
+        <20211027130520.33652a49.alex.williamson@redhat.com>
+        <20211027192345.GJ2744544@nvidia.com>
+        <20211028093035.17ecbc5d.alex.williamson@redhat.com>
+        <20211028234750.GP2744544@nvidia.com>
+        <20211029160621.46ca7b54.alex.williamson@redhat.com>
+        <20211101172506.GC2744544@nvidia.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fix two compile errors:
-1. when CONFIG_BPF_JIT and CONFIG_ARCH_32I is open, There is the following
-compiler error:
-  error: undefined symbol: rv_bpf_fixup_exception
+On Mon, 1 Nov 2021 14:25:06 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-2. when CONFIG_BPF_JIT and CONFIG_ARCH_64I is open, There is the following
-compiler error (W=1):
-  error: no previous prototype for 'rv_bpf_fixup_exception'
+> On Fri, Oct 29, 2021 at 04:06:21PM -0600, Alex Williamson wrote:
+> 
+> > > Right now we are focused on the non-P2P cases, which I think is a
+> > > reasonable starting limitation.  
+> > 
+> > It's a reasonable starting point iff we know that we need to support
+> > devices that cannot themselves support a quiescent state.  Otherwise it
+> > would make sense to go back to work on the uAPI because I suspect the
+> > implications to userspace are not going to be as simple as "oops, can't
+> > migrate, there are two devices."  As you say, there's a universe of
+> > devices that run together that don't care about p2p and QEMU will be
+> > pressured to support migration of those configurations.  
+> 
+> I agree with this, but I also think what I saw in the proposed hns
+> driver suggests it's HW cannot do quiescent, if so this is the first
+> counter-example to the notion it is a universal ability?
+> 
+> hns people: Can you put your device in a state where it is operating,
+> able to accept and respond to MMIO, and yet guarentees it generates no
+> DMA transactions?
+> 
+> > want migration.  If we ever want both migration and p2p, QEMU would
+> > need to reject any device that can't comply.  
+> 
+> Yes, it looks like a complicated task on the qemu side to get this
+> resolved
+> 
+> > > It is not a big deal to defer things to rc1, though merging a
+> > > leaf-driver that has been on-list over a month is certainly not
+> > > rushing either.  
+> > 
+> > If "on-list over a month" is meant to imply that it's well vetted, it
+> > does not.  That's a pretty quick time frame given the uAPI viability
+> > discussions that it's generated.  
+> 
+> I only said rushed :)
 
-In this patch, asm/extable.h is introduced,  the rv_bpf_fixup_exception
-function declaration is added to this file. in addition, the definition of
-exception_table_entry is moved from asm-generic/extable.h to this file.
+To push forward regardless of unresolved questions is rushing
+regardless of how long it's been on-list.
 
-Fixes: 252c765bd764 ("riscv, bpf: Add BPF exception tables")
-Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
----
- arch/riscv/include/asm/Kbuild    |  1 -
- arch/riscv/include/asm/extable.h | 49 ++++++++++++++++++++++++++++++++
- arch/riscv/include/asm/uaccess.h | 13 ---------
- arch/riscv/mm/extable.c          |  8 +-----
- 4 files changed, 50 insertions(+), 21 deletions(-)
- create mode 100644 arch/riscv/include/asm/extable.h
+> > I'm tending to agree that there's value in moving forward, but there's
+> > a lot we're defining here that's not in the uAPI, so I'd like to see
+> > those things become formalized.  
+> 
+> Ok, lets come up with a documentation patch then to define !RUNNING as
+> I outlined and start to come up with the allowed list of actions..
+> 
+> I think I would like to have a proper rst file for documenting the
+> uapi as well.
+> 
+> > I think this version is defining that it's the user's responsibility to
+> > prevent external DMA to devices while in the !_RUNNING state.  This
+> > resolves the condition that we have no means to coordinate quiescing
+> > multiple devices.  We shouldn't necessarily prescribe a single device
+> > solution in the uAPI if the same can be equally achieved through
+> > configuration of DMA mapping.  
+> 
+> I'm not sure what this means?
 
-diff --git a/arch/riscv/include/asm/Kbuild b/arch/riscv/include/asm/Kbuild
-index 445ccc97305a..57b86fd9916c 100644
---- a/arch/riscv/include/asm/Kbuild
-+++ b/arch/riscv/include/asm/Kbuild
-@@ -1,6 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
- generic-y += early_ioremap.h
--generic-y += extable.h
- generic-y += flat.h
- generic-y += kvm_para.h
- generic-y += user.h
-diff --git a/arch/riscv/include/asm/extable.h b/arch/riscv/include/asm/extable.h
-new file mode 100644
-index 000000000000..aa0332b053fb
---- /dev/null
-+++ b/arch/riscv/include/asm/extable.h
-@@ -0,0 +1,49 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __ASM_EXTABLE_H
-+#define __ASM_EXTABLE_H
-+
-+/*
-+ * The exception table consists of pairs of addresses: the first is the
-+ * address of an instruction that is allowed to fault, and the second is
-+ * the address at which the program should continue.  No registers are
-+ * modified, so it is entirely up to the continuation code to figure out
-+ * what to do.
-+ *
-+ * All the routines below use bits of fixup code that are out of line
-+ * with the main instruction path.  This means when everything is well,
-+ * we don't even have to jump over them.  Further, they do not intrude
-+ * on our cache or tlb entries.
-+ */
-+struct exception_table_entry {
-+	unsigned long insn, fixup;
-+};
-+
-+struct pt_regs;
-+int fixup_exception(struct pt_regs *regs);
-+
-+#if defined(CONFIG_MMU)
-+static inline bool rv_in_bpf_jit(struct pt_regs *regs)
-+{
-+	if (!IS_ENABLED(CONFIG_BPF_JIT) || !IS_ENABLED(CONFIG_64BIT))
-+		return false;
-+
-+	return regs->epc >= BPF_JIT_REGION_START && regs->epc < BPF_JIT_REGION_END;
-+}
-+#else
-+static inline bool rv_in_bpf_jit(struct pt_regs *regs)
-+{
-+	return false;
-+}
-+#endif
-+
-+#if defined(CONFIG_BPF_JIT) && defined(CONFIG_64BIT)
-+int rv_bpf_fixup_exception(const struct exception_table_entry *ex, struct pt_regs *regs);
-+#else
-+static inline int rv_bpf_fixup_exception(const struct exception_table_entry *ex,
-+					 struct pt_regs *regs)
-+{
-+	return 0;
-+}
-+#endif
-+
-+#endif
-diff --git a/arch/riscv/include/asm/uaccess.h b/arch/riscv/include/asm/uaccess.h
-index f314ff44c48d..96ea91dc0e9c 100644
---- a/arch/riscv/include/asm/uaccess.h
-+++ b/arch/riscv/include/asm/uaccess.h
-@@ -56,19 +56,6 @@ static inline int __access_ok(unsigned long addr, unsigned long size)
- 	return size <= TASK_SIZE && addr <= TASK_SIZE - size;
- }
- 
--/*
-- * The exception table consists of pairs of addresses: the first is the
-- * address of an instruction that is allowed to fault, and the second is
-- * the address at which the program should continue.  No registers are
-- * modified, so it is entirely up to the continuation code to figure out
-- * what to do.
-- *
-- * All the routines below use bits of fixup code that are out of line
-- * with the main instruction path.  This means when everything is well,
-- * we don't even have to jump over them.  Further, they do not intrude
-- * on our cache or tlb entries.
-- */
--
- #define __LSW	0
- #define __MSW	1
- 
-diff --git a/arch/riscv/mm/extable.c b/arch/riscv/mm/extable.c
-index 18bf338303b6..264f465db5bb 100644
---- a/arch/riscv/mm/extable.c
-+++ b/arch/riscv/mm/extable.c
-@@ -11,10 +11,6 @@
- #include <linux/module.h>
- #include <linux/uaccess.h>
- 
--#ifdef CONFIG_BPF_JIT
--int rv_bpf_fixup_exception(const struct exception_table_entry *ex, struct pt_regs *regs);
--#endif
--
- int fixup_exception(struct pt_regs *regs)
- {
- 	const struct exception_table_entry *fixup;
-@@ -23,10 +19,8 @@ int fixup_exception(struct pt_regs *regs)
- 	if (!fixup)
- 		return 0;
- 
--#ifdef CONFIG_BPF_JIT
--	if (regs->epc >= BPF_JIT_REGION_START && regs->epc < BPF_JIT_REGION_END)
-+	if (rv_in_bpf_jit(regs))
- 		return rv_bpf_fixup_exception(fixup, regs);
--#endif
- 
- 	regs->epc = fixup->fixup;
- 	return 1;
--- 
-2.25.1
+I'm just trying to avoid the uAPI calling out a single-device
+restriction if there are other ways that userspace can quiesce external
+DMA outside of the uAPI, such as by limiting p2p DMA mappings at the
+IOMMU, ie. define the userspace requirements but don't dictate a
+specific solution.
+
+> > I was almost on board with blocking MMIO, especially as p2p is just DMA
+> > mapping of MMIO, but what about MSI-X?  During _RESUME we must access
+> > the MSI-X vector table via the SET_IRQS ioctl to configure interrupts.
+> > Is this exempt because the access occurs in the host?    
+> 
+> s/in the host/in the kernel/ SET_IRQS is a kernel ioctl that uses the
+> core MSIX code to do the mmio, so it would not be impacted by MMIO
+> zap.
+
+AIUI, "zap" is just the proposed userspace manifestation that the
+device cannot accept MMIO writes while !_RUNNING, but these writes must
+occur in that state.
+
+> Looks like you've already marked these points with the
+> vfio_pci_memory_lock_and_enable(), so a zap for migration would have
+> to be a little different than a zap for reset.
+> 
+> Still, this is something that needs clear definition, I would expect
+> the SET_IRQS to happen after resuming clears but before running sets
+> to give maximum HW flexibility and symmetry with saving.
+
+There's no requirement that the device enters a null state (!_RESUMING
+| !_SAVING | !_RUNNING), the uAPI even species the flows as _RESUMING
+transitioning to _RUNNING.  There's no point at which we can do
+SET_IRQS other than in the _RESUMING state.  Generally SET_IRQS
+ioctls are coordinated with the guest driver based on actions to the
+device, we can't be mucking with IRQs while the device is presumed
+running and already generating interrupt conditions.
+
+> And we should really define clearly what a device is supposed to do
+> with the interrupt vectors during migration. Obviously there are races
+> here.
+
+The device should not be generating interrupts while !_RUNNING, pending
+interrupts should be held until the device is _RUNNING.  To me this
+means the sequence must be that INTx/MSI/MSI-X are restored while in
+the !_RUNNING state.
+
+> > In any case, it requires that the device cannot be absolutely static
+> > while !_RUNNING.  Does (_RESUMING) have different rules than
+> > (_SAVING)?  
+> 
+> I'd prever to avoid all device touches during both resuming and
+> saving, and do them during !RUNNING
+
+There's no such state required by the uAPI.
+
+> > So I'm still unclear how the uAPI needs to be updated relative to
+> > region access.  We need that list of what the user is allowed to
+> > access, which seems like minimally config space and MSI-X table space,
+> > but are these implicitly known for vfio-pci devices or do we need
+> > region flags or capabilities to describe?  We can't generally know the
+> > disposition of device specific regions relative to this access.  Thanks,  
+> 
+> I'd prefer to be general and have the spec forbid
+> everything. Specifying things like VFIO_DEVICE_SET_IRQS1 covers all the
+> bus types.
+
+AFAICT, SET_IRQS while _RESUMING is a requirement, as is some degree of
+access to config space.  It seems you're proposing a new required null
+state which is contradictory to the existing uAPI.  Thanks,
+
+Alex
 
