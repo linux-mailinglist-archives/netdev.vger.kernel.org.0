@@ -2,101 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD9F6442F65
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 14:51:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA374442F4F
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 14:48:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230175AbhKBNxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 09:53:46 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:27165 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbhKBNxo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 09:53:44 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4HkB8w57gSzSh4m;
-        Tue,  2 Nov 2021 21:49:36 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Tue, 2 Nov 2021 21:50:44 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Tue, 2 Nov 2021 21:50:43 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <mkubecek@suse.cz>,
-        <andrew@lunn.ch>, <amitc@mellanox.com>, <idosch@idosch.org>,
-        <danieller@nvidia.com>, <jesse.brandeburg@intel.com>,
-        <anthony.l.nguyen@intel.com>, <jdike@addtoit.com>,
-        <richard@nod.at>, <anton.ivanov@cambridgegreys.com>,
-        <netanel@amazon.com>, <akiyano@amazon.com>, <gtzalik@amazon.com>,
-        <saeedb@amazon.com>, <chris.snook@gmail.com>,
-        <ulli.kroll@googlemail.com>, <linus.walleij@linaro.org>,
-        <jeroendb@google.com>, <csully@google.com>,
-        <awogbemila@google.com>, <jdmason@kudzu.us>,
-        <rain.1986.08.12@gmail.com>, <zyjzyj2000@gmail.com>,
-        <kys@microsoft.com>, <haiyangz@microsoft.com>, <mst@redhat.com>,
-        <jasowang@redhat.com>, <doshir@vmware.com>,
-        <pv-drivers@vmware.com>, <jwi@linux.ibm.com>,
-        <kgraul@linux.ibm.com>, <hca@linux.ibm.com>, <gor@linux.ibm.com>,
-        <johannes@sipsolutions.net>
-CC:     <netdev@vger.kernel.org>, <lipeng321@huawei.com>,
-        <chenhao288@hisilicon.com>, <huangguangbin2@huawei.com>,
-        <linux-s390@vger.kernel.org>
-Subject: [PATCH V6 net-next 6/6] net: hns3: remove the way to set tx spare buf via module parameter
-Date:   Tue, 2 Nov 2021 21:46:13 +0800
-Message-ID: <20211102134613.30367-7-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211102134613.30367-1-huangguangbin2@huawei.com>
-References: <20211102134613.30367-1-huangguangbin2@huawei.com>
+        id S230208AbhKBNuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 09:50:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60414 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229530AbhKBNun (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 09:50:43 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE26C061714;
+        Tue,  2 Nov 2021 06:48:08 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4HkB796FKqz4xbd;
+        Wed,  3 Nov 2021 00:48:05 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1635860886;
+        bh=BXsWrBorknGmHfDZYTQq6a8lqYf7TkEi2iiyehPn3Q4=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=LY2Qlq49JuSlQEWtKEO0vu6ZSVqEzq2uEGfLAJfHz94UdsNi5LaKp1eXCtoQ8p51Z
+         8CyEccP/WN2VLSRPzFYzfqdw+YEsW4zPPKbIpXN1JpBNREdwoqdYDhDVbgtXSiAcCE
+         1o6qP3TuH5bR4AzwJCPjAnKqT/tTcg8EMJLW8GV7wy3pdJhDeENInI8nS4K08Y+3Yu
+         l1yZBjRtup3I9D/TIimuMz+fWP8UaMptjzPaiT4mV+ZuKlbChiIcQv5sO/1AqVVWxS
+         scxhuLolZpHNsYFN0etrP/QORG0pFm4znGV5JvnwtFSMXnzz78eUJXkHj/P4T7URHG
+         PVnmDdxc2HxUw==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, ast@kernel.org,
+        christophe.leroy@csgroup.eu,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Hari Bathini <hbathini@linux.ibm.com>, jniethe5@gmail.com
+Cc:     andrii@kernel.org, bpf@vger.kernel.org, john.fastabend@gmail.com,
+        kafai@fb.com, kpsingh@kernel.org, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org, paulus@samba.org, songliubraving@fb.com,
+        stable@vger.kernel.org, yhs@fb.com
+Subject: Re: [PATCH] powerpc/bpf: fix write protecting JIT code
+In-Reply-To: <1635854227.x13v13l6az.naveen@linux.ibm.com>
+References: <20211025055649.114728-1-hbathini@linux.ibm.com>
+ <1635142354.46h6w5c2rx.naveen@linux.ibm.com>
+ <c8d7390b-c07c-75cd-e9e9-4b8f0b786cc6@iogearbox.net>
+ <87zgqs8upq.fsf@mpe.ellerman.id.au>
+ <1635854227.x13v13l6az.naveen@linux.ibm.com>
+Date:   Wed, 03 Nov 2021 00:48:03 +1100
+Message-ID: <87h7cu8y98.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hao Chen <chenhao288@hisilicon.com>
+"Naveen N. Rao" <naveen.n.rao@linux.ibm.com> writes:
+> Michael Ellerman wrote:
+>> Daniel Borkmann <daniel@iogearbox.net> writes:
+>>> On 10/25/21 8:15 AM, Naveen N. Rao wrote:
+>>>> Hari Bathini wrote:
+>>>>> Running program with bpf-to-bpf function calls results in data access
+>>>>> exception (0x300) with the below call trace:
+>>>>>
+>>>>> =C2=A0=C2=A0=C2=A0 [c000000000113f28] bpf_int_jit_compile+0x238/0x750=
+ (unreliable)
+>>>>> =C2=A0=C2=A0=C2=A0 [c00000000037d2f8] bpf_check+0x2008/0x2710
+>>>>> =C2=A0=C2=A0=C2=A0 [c000000000360050] bpf_prog_load+0xb00/0x13a0
+>>>>> =C2=A0=C2=A0=C2=A0 [c000000000361d94] __sys_bpf+0x6f4/0x27c0
+>>>>> =C2=A0=C2=A0=C2=A0 [c000000000363f0c] sys_bpf+0x2c/0x40
+>>>>> =C2=A0=C2=A0=C2=A0 [c000000000032434] system_call_exception+0x164/0x3=
+30
+>>>>> =C2=A0=C2=A0=C2=A0 [c00000000000c1e8] system_call_vectored_common+0xe=
+8/0x278
+>>>>>
+>>>>> as bpf_int_jit_compile() tries writing to write protected JIT code
+>>>>> location during the extra pass.
+>>>>>
+>>>>> Fix it by holding off write protection of JIT code until the extra
+>>>>> pass, where branch target addresses fixup happens.
+>>>>>
+>>>>> Cc: stable@vger.kernel.org
+>>>>> Fixes: 62e3d4210ac9 ("powerpc/bpf: Write protect JIT code")
+>>>>> Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
+>>>>> ---
+>>>>> =C2=A0arch/powerpc/net/bpf_jit_comp.c | 2 +-
+>>>>> =C2=A01 file changed, 1 insertion(+), 1 deletion(-)
+>>>>=20
+>>>> Thanks for the fix!
+>>>>=20
+>>>> Reviewed-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+>>>
+>>> LGTM, I presume this fix will be routed via Michael.
+>>=20
+>> Thanks for reviewing, I've picked it up.
+>>=20
+>>> BPF selftests have plenty of BPF-to-BPF calls in there, too bad this was
+>>> caught so late. :/
+>>=20
+>> Yeah :/
+>>=20
+>> STRICT_KERNEL_RWX is not on by default in all our defconfigs, so that's
+>> probably why no one caught it.
+>
+> Yeah, sorry - we should have caught this sooner.
+>
+>>=20
+>> I used to run the BPF selftests but they stopped building for me a while
+>> back, I'll see if I can get them going again.
+>
+> Ravi had started looking into getting the selftests working well before=20
+> he left. I will take a look at this.
 
-The way to set tx spare buf via module parameter is not such
-convenient as the way to set it via ethtool.
+Thanks.
 
-So,remove the way to set tx spare buf via module parameter.
+I got them building with something like:
 
-Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ - turning on DEBUG_INFO and DEBUG_INFO_BTF and rebuilding vmlinux
+ - grabbing clang 13 from:=20
+   https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.0/cl=
+ang+llvm-13.0.0-powerpc64le-linux-ubuntu-18.04.tar.xz
+ - PATH=3D$HOME/clang+llvm-13.0.0-powerpc64le-linux-ubuntu-18.04/bin/:$PATH
+ - apt install:
+   - libelf-dev
+   - dwarves
+   - python-docutils
+   - libcap-dev
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 076631d7727d..032547a2ad2f 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -53,10 +53,6 @@ static int debug = -1;
- module_param(debug, int, 0);
- MODULE_PARM_DESC(debug, " Network interface message level setting");
- 
--static unsigned int tx_spare_buf_size;
--module_param(tx_spare_buf_size, uint, 0400);
--MODULE_PARM_DESC(tx_spare_buf_size, "Size used to allocate tx spare buffer");
--
- static unsigned int tx_sgl = 1;
- module_param(tx_sgl, uint, 0600);
- MODULE_PARM_DESC(tx_sgl, "Minimum number of frags when using dma_map_sg() to optimize the IOMMU mapping");
-@@ -1041,8 +1037,7 @@ static void hns3_init_tx_spare_buffer(struct hns3_enet_ring *ring)
- 	dma_addr_t dma;
- 	int order;
- 
--	alloc_size = tx_spare_buf_size ? tx_spare_buf_size :
--		     ring->tqp->handle->kinfo.tx_spare_buf_size;
-+	alloc_size = ring->tqp->handle->kinfo.tx_spare_buf_size;
- 	if (!alloc_size)
- 		return;
- 
--- 
-2.33.0
 
+The DEBUG_INFO requirement is a bit of a pain for me. I generally don't
+build with that enabled, because the resulting kernels are stupidly
+large. I'm not sure if that's a hard requirement, or if the vmlinux has
+to match the running kernel exactly?
+
+There is logic in tools/testing/bpf/Makefile to use VMLINUX_H instead of
+extracting the BTF from the vmlinux (line 247), but AFAICS that's
+unreachable since 1a3449c19407 ("selftests/bpf: Clarify build error if
+no vmlinux"), which makes it a hard error to not have a VMLINUX_BTF.
+
+cheers
