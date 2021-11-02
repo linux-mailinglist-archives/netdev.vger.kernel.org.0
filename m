@@ -2,232 +2,297 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 592F64426E8
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 06:54:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F9DD442715
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 07:24:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229526AbhKBF4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 01:56:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37394 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbhKBF4q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 01:56:46 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA825C061714;
-        Mon,  1 Nov 2021 22:54:11 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id d204so50326920ybb.4;
-        Mon, 01 Nov 2021 22:54:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=9ySVuFK0TUNLUpsat+v5CZsvbUu+2ZZ0PyyAsEqYDoc=;
-        b=dIALiRg3XhutinWU+YWQGjbVKdrUhnQA18YA9GVgv63TT5LW7m05o7nQ2C98RpQkER
-         SiHp1sUo20pyUT0k1BNgPA4nn9rYMQYo7X/hTO1ZMzfruYmM6l46JE3kjHglctAYP1EW
-         8phRaQWjs0cvbe+xjTUeG6+SFr3n99VwxIh/oi8KDFb3i89Q8APwsbOXGhG1GGHbW7Vg
-         7kCZ/p2c3jYXryJTxhEbqojz6X4LrDq94h7Or7I1Ki35SHykNZrJrezChow4bQBVnQev
-         pcn+pGY9mTenFBr3lIlbrDOY7JGSXfhvCMFCQOO2uCBjJ1mlSxHqUzh4UjQGKWA78PHR
-         j6zw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=9ySVuFK0TUNLUpsat+v5CZsvbUu+2ZZ0PyyAsEqYDoc=;
-        b=UFdzCUO2JC7/xOQvih7utDT2pv7Q01FE1vMCzIr9DAQwlY3nNR+xGs6b+Z+GApXX5d
-         EfoJT9kb0i7Q4NIUa4qJ71GSTTbJmSeX3O8xMe6iTtTyNzFlS4lSfTRTXqnI3rT8u7cr
-         yKeJste8OIsNfmoS2VVVQ9t3uKq09n386WDKAVXqG4MWp77qPI5T6ExV01LXCx1B33Kq
-         be8TBrcS2dQKqrlV8EG843IibeEoP5wf6nj6/eWP+ivvjrgyOQXtyikt60rusMjM7zgA
-         UVkABuGUgTY/WsHVaZefriJg6W/giZwKCqG99Ew8ezJW5hJAsqQmqRzy0AHHjtNgQpIM
-         E1Ag==
-X-Gm-Message-State: AOAM530UZVR95hq4CI4pIVcvnejU0k2Oim25ysxw+npzYBehrC/JBeKM
-        7uFaBiM6xXUIuJ0FwIwput2PsHLIinb2BK1ZtTcf2O46XqI=
-X-Google-Smtp-Source: ABdhPJxmma9VRJ+afFLEzg5b8QSqRLFUQQ66+b4e31JlgQx4elyGDPLCX8Efj6WQkVbx8wiiJvxpo4LBizbK+Y0h6h0=
-X-Received: by 2002:a25:afcf:: with SMTP id d15mr34383938ybj.433.1635832450764;
- Mon, 01 Nov 2021 22:54:10 -0700 (PDT)
+        id S229571AbhKBG1D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 02:27:03 -0400
+Received: from mga12.intel.com ([192.55.52.136]:29681 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229497AbhKBG1C (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Nov 2021 02:27:02 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10155"; a="211246090"
+X-IronPort-AV: E=Sophos;i="5.87,201,1631602800"; 
+   d="scan'208";a="211246090"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2021 23:24:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,201,1631602800"; 
+   d="scan'208";a="599336172"
+Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
+  by orsmga004.jf.intel.com with ESMTP; 01 Nov 2021 23:24:25 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Mon, 1 Nov 2021 23:24:25 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12 via Frontend Transport; Mon, 1 Nov 2021 23:24:25 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.104)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.12; Mon, 1 Nov 2021 23:24:25 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=c6R72oEbl1Jfj2EPkD+HbFKQjBy5NjCo4Jn83bXpJYeKj4pfPyUVFpGnDb/C4SIRCk9gYh1iBhMmlD35dQ3ue+m5tHj/8yB+/ddrJjz6GoLJ9UsoYMLk//YLODT1uijVBX2wBkHw8vkfDRy+Id8U38pWuvE+676RScldagCOANjEjLLAAb/5u5ar8pLc6WnzDjOYlizTJik9ZTq+VTLatIgDTRpoNBWhAz2GerXMxtx8bzeVTXjE6XlUZoS/jg/7Tsbh4meLArlAbPS/8lKCZASGL+I98jE3c4g6/iTn5LyTjbWoma7JK5ERh1585IM3pFcGNu0uAuM/Jvafs9GsTw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8L3jJwGD/3Lz25TpM8uL+hO2oFUOFqnE5v9d1JFlEPA=;
+ b=Npu7toI4juidaDFJGjLxdwQJGbiEtmvYaaCnP05mqHWoVWSJsHOEVRacYf0kQRT0O2d3pSol/CKXngmehG3lRTQAzel6aYniPzYq4rGkt+lflpFOe07bsXxzROEFh17K9xWF8I/HwCxhnFhYQBzR4400CMEOII3Mq2YmGKrapds1twX+sHvpVf1UgAkV+svYMiJeXiOlgi9Ci3Apj5JGrSNbeqSL3MHLIJH4sge5DzWo5sYI2Rk3EPcU5jmuZqFngQmWf8V3XdYGq8al2l97zs7lyxUXFkN0ueVd5C+GJycSGKWISfAYoOrw1/vehyOzVJWd4nkvCe3h9eIggaDxPw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8L3jJwGD/3Lz25TpM8uL+hO2oFUOFqnE5v9d1JFlEPA=;
+ b=bVTTWyK+D/EWGHScmPoeZX/dYxrD6/6Dowj21PCemwe8NDYTdyYOYBiKanLSuBwb+S48l26+y0JCs8h20sRvkzJ/u0XxwfLy1P5wy04PUVvtZjP+0OAOkKw6wL3X3MuAZ6o3TOPo+gjXuhZjW0jFEQqNDokcCgC+x78tl3JNYvs=
+Authentication-Results: canonical.com; dkim=none (message not signed)
+ header.d=none;canonical.com; dmarc=none action=none header.from=intel.com;
+Received: from CO1PR11MB4787.namprd11.prod.outlook.com (2603:10b6:303:6e::10)
+ by MW3PR11MB4668.namprd11.prod.outlook.com (2603:10b6:303:54::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.15; Tue, 2 Nov
+ 2021 06:24:17 +0000
+Received: from CO1PR11MB4787.namprd11.prod.outlook.com
+ ([fe80::cced:992a:9015:3b8d]) by CO1PR11MB4787.namprd11.prod.outlook.com
+ ([fe80::cced:992a:9015:3b8d%7]) with mapi id 15.20.4649.020; Tue, 2 Nov 2021
+ 06:24:17 +0000
+Message-ID: <49c5e91a-8e02-2a76-db5d-5f15df3c485f@intel.com>
+Date:   Tue, 2 Nov 2021 08:24:08 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.2.1
+Subject: Re: [PATCH v2] e1000e: Add a delay to let ME unconfigure s0ix when
+ DPG_EXIT_DONE is already flagged
+Content-Language: en-US
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+CC:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        AceLan Kao <acelan.kao@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Dima Ruinskiy" <dima.ruinskiy@intel.com>,
+        "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Kraus, NechamaX" <nechamax.kraus@linux.intel.com>,
+        "Fuxbrumer, Devora" <devora.fuxbrumer@intel.com>,
+        "Avivi, Amir" <amir.avivi@intel.com>,
+        "Neftin, Sasha" <sasha.neftin@intel.com>
+References: <20211026065112.1366205-1-kai.heng.feng@canonical.com>
+ <04ed8307-ab1f-59d6-4454-c759ce4a453b@intel.com>
+ <CAAd53p69k-2PVw5RpJOAbe=oBh11U_UqzsyMjxHFbo7xqNBDsQ@mail.gmail.com>
+ <f6a4d53a-3ec8-b5cd-9b6c-b14c69d20248@intel.com>
+ <CAAd53p67dehgizx1h0ro40YRmKNsbv3Ve=2987kyMUKs7=LOpA@mail.gmail.com>
+From:   Sasha Neftin <sasha.neftin@intel.com>
+In-Reply-To: <CAAd53p67dehgizx1h0ro40YRmKNsbv3Ve=2987kyMUKs7=LOpA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM6PR0202CA0072.eurprd02.prod.outlook.com
+ (2603:10a6:20b:3a::49) To CO1PR11MB4787.namprd11.prod.outlook.com
+ (2603:10b6:303:6e::10)
 MIME-Version: 1.0
-References: <20211027203727.208847-1-mauricio@kinvolk.io> <CAADnVQK2Bm7dDgGc6uHVosuSzi_LT0afXM6Hf3yLXByfftxV1Q@mail.gmail.com>
- <CAHap4zt7B1Zb56rr55Q8_cy8qdyaZsYcWt7ZHrs3EKr50fsA+A@mail.gmail.com>
-In-Reply-To: <CAHap4zt7B1Zb56rr55Q8_cy8qdyaZsYcWt7ZHrs3EKr50fsA+A@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 1 Nov 2021 22:53:59 -0700
-Message-ID: <CAEf4BzbDBGEnztzEcXmCFMNyzTjJ3pY41ahzieu9yJ+EDHU0dg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/2] libbpf: Implement BTF Generator API
-To:     =?UTF-8?Q?Mauricio_V=C3=A1squez_Bernal?= <mauricio@kinvolk.io>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
-        Lorenzo Fontana <lorenzo.fontana@elastic.co>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Received: from [10.185.169.41] (134.191.232.48) by AM6PR0202CA0072.eurprd02.prod.outlook.com (2603:10a6:20b:3a::49) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.14 via Frontend Transport; Tue, 2 Nov 2021 06:24:13 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 504902c6-fab0-4453-f023-08d99dc965c9
+X-MS-TrafficTypeDiagnostic: MW3PR11MB4668:
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-Microsoft-Antispam-PRVS: <MW3PR11MB4668E25549AE20B6DF937AAF978B9@MW3PR11MB4668.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5O6EGTc/wklx9wV+V/vUvSrUqecoDF3ISrmrsFFIYzJSQ1j+vGrbTZEv9Ojy5Rmu8P+74aYD8cMfWEWupt3rCmQCVFB8v7fps918sL49t5tq74Tx33NIBmu1XKFLqKnaaZbyrSKP2VsdAB7g4hLNdbEOo09/4niDAzPSnLrQx2xSlTMXkSYrrw2I00Ff2Yzde8XPKl1TTIqnQWzzCsjKYMl0GeHH1ARPQnPONZ2DvMtGKZrwFhGxVgIOuk/qQWi7p4y79zzZmwkNvlNMNI5VwIFlI0b08YmtqmvlYGCS+/rT28eo16Hgy0xfmKXFq/q3kRhV/hP4cXoK/vItLF/nkOpDOQwJ9Jef5VSznCpSnwieoMHtk0iwzQWl7dvgdfk+3s+JmAouEj+AfnKZxGA03UMdfWDdJbzHoAjs3A5ZQcmzh5aTVCIUj70O6tT1znxj+ycyVKBhQrK9cjxyIXrqQzWft8Et9D4H2xqG2ZnuFLyjHKUmM0l59TKP1c//zHGT9D5FCoI7tcIQwwI2iEObr7tbm1JwbhCHmBr34U5WHLIP2ytQD3eDcCjCiV7Vbu6Ws249olIZOXpeB+dwW07vkXwt/2bApzloSsTG3mVXcP3xjAFZCehpQNf7n1igthqux0d4Fm/lVUVTlKCTzwpbf2JKrdZ0owh7uOIEf/NQ2pO8xhDPY/6+zkyHpvtAZg1g6T5JkZjGtID36Ii7MbirVGGcn6hdDMfORfKGiHKDKjwv3Kntk3v3V+siJ7uDaHPrc1m+nXjjfjiOqd2nRUFAvZ6bj6ixExhOZz1+sBjTssdj0Unxx43ivL5bfcGgeHsLwGS9pkcv3ZgVuaogrKdFj8aBsqQ1fzYPa8jdu0ISOLE=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4787.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(44832011)(5660300002)(82960400001)(186003)(4326008)(2616005)(956004)(38100700002)(66556008)(66476007)(83380400001)(6916009)(2906002)(6666004)(53546011)(66946007)(36756003)(86362001)(31686004)(16576012)(26005)(31696002)(8676002)(8936002)(54906003)(316002)(966005)(508600001)(6486002)(32563001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?clk2WUZHS1hmK3dVdEg1T0Ftdi93S21qQjZzeVc0S0x3NkZMeXRzdlo0YUtX?=
+ =?utf-8?B?S1kzRVF0dUZKQzFlR2QyWEFKbzRYMUZKUTczSG1zSFgyZlVUNDRhQmp3aFR3?=
+ =?utf-8?B?c1JmOEtCMVp2R3M5Q2lwV3JuNmlwa2M5eHVSam1zWEdPRVZxTlZDR3lsdFFZ?=
+ =?utf-8?B?MGNkU3R1RkNFaFFIb1hlNmlFbTJkUUxtVytWUXpOVXlRQ3RmZllIWlNzR280?=
+ =?utf-8?B?dUtQSVlpcTNSUFFZNytCTnpJTHl6RlM2K0xNaFh2L3dFTkI2TzI0b1Y1RnJM?=
+ =?utf-8?B?VmdkNUdPNFlVQnpmSzgwVzJITktjYXJXeEY0ekhGcHZxS2huWW1TdUhjL25H?=
+ =?utf-8?B?TmVENURxckhCVVNiN01xSWZjU1lxbU1LQ3RiUjl3QW5sK0ZzK0tIUXBPUWJ2?=
+ =?utf-8?B?eEJtT09BY2pTeFBwSXdoZnJpbVVaRUVjYzhVdzZqT2dyMlVwR1pWbTUveGZ4?=
+ =?utf-8?B?bmVUbVZzVk5NUTlsMnlJcWZYNzBJVVlSMjA0bHMwQmY3eGhrY2ZMUHlWUE00?=
+ =?utf-8?B?RVNQUmJHQ0NXdzY3ckhKMnBET2JIYXVwaDBBbDFodmpmblJkdmVjWnBydGdZ?=
+ =?utf-8?B?L1h3WmpxaHduM0RTMTEyQ2Z6T2F1RXd5Ry9kK2UwYzczNml6d2RUMVRVNEVl?=
+ =?utf-8?B?ODBGeXhZcDJNSWljeGZwSXFRaklQVkxsZzBWZ2dsMlFXMVZzR1c2cUxiaVd3?=
+ =?utf-8?B?Nk5FQWdGRzFGNlNXVGZKamExOXRITnhVcTUyTTdFbFJIMTIrUFNSeWRzN3hk?=
+ =?utf-8?B?Q0tkMUszZWkxdVpFK2cvdThNK203WkNPWjJTVTFMSTF1WUNEejFYbVJvSjJq?=
+ =?utf-8?B?MGJOQUN2QUZBUHd1UWhVNEdIcWY4M045ZHhrQU5sTDRWMWZMSEMreHcyb1N4?=
+ =?utf-8?B?b3RSbU1zdk5KcSthanVyTko0S1BGZEZlZGgzWGw0TXdHT0I3TW51NUpuY1E0?=
+ =?utf-8?B?Y0VFbXVVWUFrRHpmNElrcFZYT2t5dEZ0KzRFZ1lOczVTNlZzK3JrUVFIN0o5?=
+ =?utf-8?B?N284cTRLaGwyeSt2YkUrQTJBMjNUY0h3Yy9NNmVRZGtTbCs1VVBFbU9iUVlv?=
+ =?utf-8?B?SnNmdi85QTR1cXNVb1E5S1lsVFpCZk1RT0FRbVVSRU92Vi8yZ2NBYm4zYy9B?=
+ =?utf-8?B?ZVlJTGFacWVkdmJsK005bWRUb01jRC91YzVKUTlZUU1neGZIK2ZiMUZWdzFE?=
+ =?utf-8?B?QkZXRzBZTk5xZWhnZXk1VkJWbms0bU4zcXRWTWJjZitPZDV3YjZiWjZWc01J?=
+ =?utf-8?B?ZW5vRDNCZjFMelU3RFRMRXoycFhCenNOdUNUZ1lsVVZJZHNzbHA3THgyS2VZ?=
+ =?utf-8?B?R2hWQVl3aFIxeWwySEVxUzk1aWVmMm9ycjhXaVBxQ3cwZjU0ZjlzWENGSGRE?=
+ =?utf-8?B?QVEvTG8xcm1RQ0VuVmxyYjlEQUU4WTk1SHFOUFBmV3c5M1dHU21US2tmWFNI?=
+ =?utf-8?B?TllLazJEbFpDUW1adGZwNTR5V2hBK0trdnpwZHE1dWgxV0xqUEo5UFRMYkl4?=
+ =?utf-8?B?bWF2R0FhaEtua0pwM3h5RkdMQVRjQlNNVHk2TFlNaUVXVGl0MFBnUXRtMEFV?=
+ =?utf-8?B?U3JySi9QMnJsbEhJYm4yWVR6UkZzWWR0c05hRG9nVnpYQ0FuT0hLb0RHdFRp?=
+ =?utf-8?B?dlZvNlBIYmEreFlQR3FSbXN4OTZ5WWNRR1lKczdkbDAra3hncytoVDgzSmV4?=
+ =?utf-8?B?NTNZbWI3QkFGcEhHQ0hvVU9EdnBLOC9sTE8waWpCRVhwN3hzV0lZWEZVWFNx?=
+ =?utf-8?B?dEZuWUxCTzdRa3F2VUN0SGJUMkZlQ0U1M0d6MHcwRms2V1JMWFhRTFhCUlgv?=
+ =?utf-8?B?WEhEdEYxNnBQYk90bTM1d0N3Rm82bVgvUEhIeExBb0xIa2gxdTVwbXNGWXdD?=
+ =?utf-8?B?N0xWQ1VBYlI5UjlyelBBS1JWZEFBb3pQSk5HZGZHYnM2ektCNEZNL2oxVzBy?=
+ =?utf-8?B?SDMzWWtwY2FiOVRzU3hQbmFIbHVUaUdBOTNOVGxVd2taU3lRYThWYVFla29u?=
+ =?utf-8?B?Q3ZXcWFpaGtBaWlBTGJMSmxnTTF2eThWVWN2dVNDd0pWbmN3L1hPbXlDaldR?=
+ =?utf-8?B?ZW9KVExBTXpzcFZrb0hXRXpyYkZTYW5WSkxKcCsxNk80OC9CRkd3b3B3VW1Y?=
+ =?utf-8?B?S1NkQkVaZHIyT0dLSjUyTzlHMjdlM3MvSXpRT1pOSytsV3V2QnB6YkdmZldQ?=
+ =?utf-8?Q?IIRJvXlC337dcbQ1mLViG18=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 504902c6-fab0-4453-f023-08d99dc965c9
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4787.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2021 06:24:17.4462
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dJK+7IL65emrOyhyuHfJr8vEha97usTjwcutLcnfs3ujjpbMPJy2gtkcYoeYmq4IIqWX/1E3abUJW64VDlKCbw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4668
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 29, 2021 at 9:12 AM Mauricio V=C3=A1squez Bernal
-<mauricio@kinvolk.io> wrote:
->
-> > Tracing progs will be peeking into task_struct.
-> > To describe it in the reduced BTF most of the kernel types would be nee=
-ded,
->
-> That's the point of our algorithm. If a program is only accessing
-> 'pid' on 'task_struct' we'll generate a BTF representation of
-> task_struct that only contains the 'pid' member with the right offset,
-> other members are not included and hence we don't need to carry on all
-> those types that are not used by the program.
->
-> > Have you considered generating kernel BTF with fields that are accessed
-> > by bpf prog only and replacing all other fields with padding ?
->
-> Yeah. We're implicitly doing it as described above.
->
-> > I think the algo would be quite different from the actual CO-RE logic
-> > you're trying to reuse.
->
-> I'm not 100% sure it's so easy to do without reimplementing much of
-> the actual CO-RE logic. We don't want to copy all type members but
-> only the ones actually used. So I'm not sure if Andrii's idea of
-> performing the matching based only on the type name will work. I'll
-> try to get deep into the details and will be back to you soon.
+On 11/2/2021 05:27, Kai-Heng Feng wrote:
+> On Fri, Oct 29, 2021 at 5:14 PM Sasha Neftin <sasha.neftin@intel.com> wrote:
+>>
+>> On 10/27/2021 01:50, Kai-Heng Feng wrote:
+>>> On Tue, Oct 26, 2021 at 4:48 PM Sasha Neftin <sasha.neftin@intel.com> wrote:
+>>>>
+>>>> On 10/26/2021 09:51, Kai-Heng Feng wrote:
+>>>>> On some ADL platforms, DPG_EXIT_DONE is always flagged so e1000e resume
+>>>>> polling logic doesn't wait until ME really unconfigures s0ix.
+>>>>>
+>>>>> So check DPG_EXIT_DONE before issuing EXIT_DPG, and if it's already
+>>>>> flagged, wait for 1 second to let ME unconfigure s0ix.
+>>>>>
+>>>>> Fixes: 3e55d231716e ("e1000e: Add handshake with the CSME to support S0ix")
+>>>>> Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=214821
+>>>>> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+>>>>> ---
+>>>>> v2:
+>>>>>     Add missing "Fixes:" tag
+>>>>>
+>>>>>     drivers/net/ethernet/intel/e1000e/netdev.c | 7 +++++++
+>>>>>     1 file changed, 7 insertions(+)
+>>>>>
+>>>>> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+>>>>> index 44e2dc8328a22..cd81ba00a6bc9 100644
+>>>>> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
+>>>>> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+>>>>> @@ -6493,14 +6493,21 @@ static void e1000e_s0ix_exit_flow(struct e1000_adapter *adapter)
+>>>>>         u32 mac_data;
+>>>>>         u16 phy_data;
+>>>>>         u32 i = 0;
+>>>>> +     bool dpg_exit_done;
+>>>>>
+>>>>>         if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID) {
+>>>>> +             dpg_exit_done = er32(EXFWSM) & E1000_EXFWSM_DPG_EXIT_DONE;
+>>>>>                 /* Request ME unconfigure the device from S0ix */
+>>>>>                 mac_data = er32(H2ME);
+>>>>>                 mac_data &= ~E1000_H2ME_START_DPG;
+>>>>>                 mac_data |= E1000_H2ME_EXIT_DPG;
+>>>>>                 ew32(H2ME, mac_data);
+>>>>>
+>>>>> +             if (dpg_exit_done) {
+>>>>> +                     e_warn("DPG_EXIT_DONE is already flagged. This is a firmware bug\n");
+>>>>> +                     msleep(1000);
+>>>>> +             }
+>>>> Thanks for working on the enablement.
+>>>> The delay approach is fragile. We need to work with CSME folks to
+>>>> understand why _DPG_EXIT_DONE indication is wrong on some ADL platforms.
+>>>> Could you provide CSME/BIOS version? dmidecode -t 0 and cat
+>>>> /sys/class/mei/mei0/fw_ver
+>>>
+>>> $ sudo dmidecode -t 0
+>>> # dmidecode 3.2
+>>> Getting SMBIOS data from sysfs.
+>>> SMBIOS 3.4 present.
+>>> # SMBIOS implementations newer than version 3.2.0 are not
+>>> # fully supported by this version of dmidecode.
+>>>
+>>> Handle 0x0001, DMI type 0, 26 bytes
+>>> BIOS Information
+>>>           Vendor: Dell Inc.
+>>>           Version: 0.12.68
+>>>           Release Date: 10/01/2021
+>>>           ROM Size: 48 MB
+>>>           Characteristics:
+>>>                   PCI is supported
+>>>                   PNP is supported
+>>>                   BIOS is upgradeable
+>>>                   BIOS shadowing is allowed
+>>>                   Boot from CD is supported
+>>>                   Selectable boot is supported
+>>>                   EDD is supported
+>>>                   Print screen service is supported (int 5h)
+>>>                   8042 keyboard services are supported (int 9h)
+>>>                   Serial services are supported (int 14h)
+>>>                   Printer services are supported (int 17h)
+>>>                   ACPI is supported
+>>>                   USB legacy is supported
+>>>                   BIOS boot specification is supported
+>>>                   Function key-initiated network boot is supported
+>>>                   Targeted content distribution is supported
+>>>                   UEFI is supported
+>>>           BIOS Revision: 0.12
+>>>
+>>> $ cat /sys/class/mei/mei0/fw_ver
+>>> 0:16.0.15.1518
+>>> 0:16.0.15.1518
+>>> 0:16.0.15.1518
+>>>
+>> Thank you Kai-Heng. The _DPG_EXIT_DONE bit indication comes from the
+>> EXFWSM register controlled by the CSME. We have only read access.  I
+>> realized that this indication was set to 1 even before our request to
+>> unconfigure the s0ix settings from the CSME. I am wondering. Does after
+>> a ~ 1s delay (or less, or more) _DPG_EXIT_DONE indication eventually
+>> change by CSME to 0? (is it consistently)
+> 
+> Never. It's consistently being 1.
+no. On my TGL platform is cleared by CSME:
+[Sun Oct 31 08:54:40 2021] s0ix exit: EXFWSM register: 0x00000000
+[Sun Oct 31 08:54:40 2021] s0ix exit (right after sent H2ME): EXFWSM 
+register: 0x00000000
+[Sun Oct 31 08:54:40 2021] s0ix exit(after polling): EXFWSM register: 
+0x00000001
+[Sun Oct 31 08:54:40 2021] e1000e 0000:00:1f.6 enp0s31f6: DPG_EXIT_DONE 
+cleared after 130 msec
+> 
+> Right now we are seeing the same issue on TGL, so I wonder if it's
+> better to just revert the CSME series?
+no. We need to investigate it and understand what is CSME state we hit. 
+Meanwhile few options:
+1. use privilege flags to disable s0ix flow for problematic system 
+(power will increased)
+ethtool --set-priv-flags enp0s31f6 s0ix-enabled off
+ethtool --show-priv-flags enp0s31f6
+Private flags for enp0s31f6:
+s0ix-enabled: off
+2. delay as you suggested - less preferable I though
+3. I would like to suggest (need to check it) in case the DPG_EXIT_DONE 
+is 1 (and polling will be exit immediately) - let's perform enforce 
+settings to the CSME, before write request to CSME unconfigure the 
+device from s0ix :
 
-No, now that I understand what exactly you are doing, it won't work.
+if (er32(EXFWSM) & E1000_EXFWSM_DPG_EXIT_DONE)
+	mac_data |= E1000_H2ME_ENFORCE_SETTINGS;
 
-But ok, I gave it quite a bit of thought and tried to find a good
-compromise between completely exposing all the libbpf internals as
-public APIs (which is a huge price I'm not willing to accept) and
-actually allowing you to achieve your goal (which I think is worthy to
-achieve).
+I will update Bugzilla: 
+https://bugzilla.kernel.org/show_bug.cgi?id=214821 with this information.
 
-But first. https://github.com/aquasecurity/btfhub/tree/main/tools is
-awesome. Great work explaining a lot at exactly the right level of
-technical details. It would be great if you published it as a
-dedicated blog post, maybe splitting the more general information from
-the BTF minimization problem. Both are useful, but it's too long for
-one article. Great job, really!
-
-Now, to the problem at hand. And sorry for a long reply, but there is
-quite a bit of things to unpack.
-
-I see this overall problem as two distinct problems:
-  1. Knowing which fields and types libbpf is using from kernel BTF.
-Basically, observe CO-RE logic from outside.
-  2. Knowing information from #1, minimize BTF.
-
-Part #2 absolutely doesn't belong in libbpf. Libbpf exposes enough BTF
-constructing APIs to implement this in any application, bpftool or
-otherwise. It's also a relatively straightforward problem: mark used
-types and fields, create a copy of BTF with only those types and
-fields.
-
-So let's talk about #1, because I agree that it's extremely painful to
-have to reimplement most of CO-RE logic just for getting the list of
-types and fields. Here we have two sub-problems (assuming we let
-libbpf do CO-RE relocation logic for us):
-  a) perform CO-RE relocations but don't create BPF maps and load BPF
-programs. Dry-run of sorts.
-  b) exposing calculated relocation information.
-
-First, 1a. The problem right now is that CO-RE relocations (and
-relocations in general) happen in the same bpf_object__load() phase
-and it's not possible to do them without creating maps and
-subsequently loading BPF programs first. This is very suboptimal. I've
-actually been thinking in the background how to improve that
-situation, because even with the recent bpf_program__insns() API,
-added a few days ago, you still have to load the BPF program to be
-able to clone the BPF program, and so I wanted to solve that for a
-long while now.
-
-So how about we split bpf_object__load() phase into two:
-bpf_object__prepare() and bpf_object__load(). prepare() will do all
-the preparations (subprogs, ELF relos, also almost complete BPF map
-relos, but not quite; I'll get to this), basically everything that
-load does today short of actually creating maps and progs. load() then
-will ensure that bpf_object__prepare() was called (i.e., user can do
-just prepare(), prepare() + load() explicitly, or load() which will
-call prepare() implicitly).
-
-The biggest problem I see right now is what we do about BPF map
-relocations. I propose to perform map relocations but substitute map's
-internal index (so that if someone dumps prog instructions after
-prepare(), it's still meaningful, even if not yet validatable by
-verifier). After maps are actually created, we can do another quick
-pass over just RELO_DATA and replace map_idx with map's fd.
-
-It feels like we should split load further into two steps: creating
-and pinning maps (+ finalizing FDs in instructions) and actually
-loading programs. Again, with the same implicit calling of prepare and
-map creation steps if the user only calls bpf_object__load(). For ease
-of use and backwards compatibility.
-
-So basically, the most granular set of steps would be:
-  1. bpf_object__open()
-  2. bpf_object__prepare() (or bpf_object__relocate(), naming is hard)
-  3. bpf_object__create_maps();
-  4. bpf_object__load().
-
-But the old and trusty bpf_object__open() + bpf_object__load() will
-work just as well, with load() doing steps #2-#4 automatically, if
-necessary.
-
-So what does that split gives us. Few things:
-  - it's possible to "simulate" almost all libbpf logic without
-changing the state of the system (no maps or progs created). Yet you
-still validate that kconfig externs, per-cpu externs, CO-RE relos, map
-relos, etc, all that works.
-  - libbpf can store extra information between steps 1, 2, 3, and 4,
-but after step #4 all that extra information can be discarded and
-cleaned up. So advanced users will get access to stuff like
-bpf_program__insns() and CO-RE information, but most users won't have
-to pay for that because it will be freed after bpf_object__load(). So
-in this case, bpf_program__insns() could (should?) be discarded after
-actual load, because if you care about instructions, you can do steps
-#1-#3, grab instructions and copy them, if necessary. Then proceed to
-#4 (or not) and free the memory.
-
-The last point is important, because to solve the problem 1b (exposing
-CO-RE relo info), the best way to minimize public API commitments is
-to (optionally, probably) request libbpf to record its CO-RE relo
-decisions. Here's what I propose, specifically:
-  1. Add something like "bool record_core_relo_info" (awful name,
-don't use it) in bpf_object_open_opts.
-  2. If it is set to true, libbpf will keep a "log" of CO-RE
-relocation decisions, recording stuff like program name, instruction
-index, local spec (i.e., root_type_id, spec string, relo kind, maybe
-something else), target spec (kernel type_id, kernel spec string, also
-module ID, if it's not vmlinux BTF). We can also record relocated
-value (i.e., field offset, actual enum value, true/false for
-existence, etc). All these are stable concepts, so I'd feel more
-comfortable exposing them, compared to stuff like bpf_core_accessor
-and other internal details.
-  3. The memory for all that will be managed by libbpf for simplicity
-of an API, and we'll expose accessors to get those arrays (at object
-level or per-program level is TBD).
-  4. This info will be available after the prepare() step and will be
-discarded either at create_maps() or load().
-
-I think that solves problem #1 completely (at least for BTFGen case)
-and actually provides more useful information. E.g., if someone wants
-to track CO-RE resolution logic for some other reason, they should
-have pretty full information (BTFGen doesn't need all of that).
-
-It also doesn't feel like too much complication to libbpf internals
-(even though we'll need to be very careful with BPF map relos and
-double-checking that we haven't missed any other critical part of the
-process). And for most users there is no change in API or behavior.
-And given this gives us a "framework" for more sustainable libbpf
-"observability", I think it's a justified price to pay, overall.
-
-I still need to sleep on this, but this feels like a bit cleaner way
-forward. Thoughts are welcome.
-
->
-> > If CO-RE matching style is necessary and it's the best approach then pl=
-ease
-> > add new logic to bpftool. I'm not sure such api would be
-> > useful beyond this particular case to expose as stable libbpf api.
->
-> I agree 100%. Our goal is to have this available on bpftool so all the
-> community can use it. However it'd be a shame if we can't use some of
-> the existing logic in libbpf.
+I also will need some another information regards SMB state in this case.
+> 
+> Kai-Heng
+> 
+>>>>>                 /* Poll up to 2.5 seconds for ME to unconfigure DPG.
+>>>>>                  * If this takes more than 1 second, show a warning indicating a
+>>>>>                  * firmware bug
+>>>>>
+>>
