@@ -2,123 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64954442C5D
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 12:19:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CA23442C88
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 12:27:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229924AbhKBLWD convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 2 Nov 2021 07:22:03 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:27097 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbhKBLWD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 07:22:03 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Hk6nB4Z0gz1DHmR;
-        Tue,  2 Nov 2021 19:17:18 +0800 (CST)
-Received: from kwepemm000015.china.huawei.com (7.193.23.180) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Tue, 2 Nov 2021 19:19:22 +0800
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- kwepemm000015.china.huawei.com (7.193.23.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Tue, 2 Nov 2021 19:19:21 +0800
-Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
- lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
- 15.01.2308.015; Tue, 2 Nov 2021 11:19:18 +0000
-From:   Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>
-CC:     Cornelia Huck <cohuck@redhat.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "saeedm@nvidia.com" <saeedm@nvidia.com>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "leonro@nvidia.com" <leonro@nvidia.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "mgurtovoy@nvidia.com" <mgurtovoy@nvidia.com>,
-        "maorg@nvidia.com" <maorg@nvidia.com>,
-        "Dr. David Alan Gilbert" <dgilbert@redhat.com>,
-        liulongfang <liulongfang@huawei.com>,
-        "Zengtao (B)" <prime.zeng@hisilicon.com>
-Subject: RE: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
- for mlx5 devices
-Thread-Topic: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
- for mlx5 devices
-Thread-Index: AQHXxNiJ5sEZ2IosYUWOFwYUAR8/1avamBEAgAALEACAABqtAIAAIxaAgACddACAAIzwAIAAI2+AgAAjt4CAANCrAIAAzO+AgAWtdwCAACFWgIAAB8UAgAGOQwCAAAo+gIAAS/kAgABA4gCAAUTBAIAABSWAgAFRMICAAIruAIABdfqAgAR5LQCAAPvA4A==
-Date:   Tue, 2 Nov 2021 11:19:18 +0000
-Message-ID: <d3a4eefb5b3c43ef9b151583f5c8a9ba@huawei.com>
-References: <20211025145646.GX2744544@nvidia.com>
- <20211026084212.36b0142c.alex.williamson@redhat.com>
- <20211026151851.GW2744544@nvidia.com>
- <20211026135046.5190e103.alex.williamson@redhat.com>
- <20211026234300.GA2744544@nvidia.com>
- <20211027130520.33652a49.alex.williamson@redhat.com>
- <20211027192345.GJ2744544@nvidia.com>
- <20211028093035.17ecbc5d.alex.williamson@redhat.com>
- <20211028234750.GP2744544@nvidia.com>
- <20211029160621.46ca7b54.alex.williamson@redhat.com>
- <20211101172506.GC2744544@nvidia.com>
-In-Reply-To: <20211101172506.GC2744544@nvidia.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.47.87.75]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+        id S230442AbhKBLa1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 07:30:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56650 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229924AbhKBLaZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 07:30:25 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CAE6C061764
+        for <netdev@vger.kernel.org>; Tue,  2 Nov 2021 04:27:51 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id l28-20020a25b31c000000b005c27dd4987bso3032822ybj.18
+        for <netdev@vger.kernel.org>; Tue, 02 Nov 2021 04:27:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=5sNj/QMNumolMMKBSDqH1xGPUsCbMl4BcAinNLIbYXg=;
+        b=VcO4Edxounpwoi+o3qO80QAHh3/I9FHDEEh2AYQDpy3BjUxtS6wbaU7yV+FC2T6bUA
+         r/mEmzTMWXobeOCey3elwWdyP/W9dAvytqbEbMeBaykIb6Zpzz73sjPcgkocA0mVzR9h
+         O8LXHV03WuWqYlxwu4HuyJpl6UMozUM1MGRmMOvNuPgZTtiiiwbuX8EuixDIu8uKa2em
+         Lkm+E9Qv/N7phZYkwrMnUrrGmrM4rX8bt1GcB1JFE43+Y4s5K60vfqsJSl8eahy4e2SJ
+         LY/AynJERtWfXG3STizwLCao8yQCVXJDqPHOrJxXf5z29N8rkaNgRDCd22+6oR2VA0AX
+         bldA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=5sNj/QMNumolMMKBSDqH1xGPUsCbMl4BcAinNLIbYXg=;
+        b=XRyJNsR7LcFbWdAchUzXUsRV3tEh2oqUGJzjsHnfeSCaZ2yYDIaIdnnyK3x/4uHn3j
+         11L1j/0R6jkH1vo7L8gFXxVZoNxVGi47I4oLAoGkHFdG9bJt+R6D9lOBTReFb3jY0OCB
+         CApOP9lggLbRTz6zWKnyqKtQmdEKzL7BsDp5rG5BfjJUZCxC7r34usXQ6MKjx3Gdsohq
+         V0hmfbOjxjm+Ho8omI6XDvzsf5AU9w5/62yjkVDxGsSK+J/MT2mZFg0NMNnhnYaAHWNz
+         iHVXiUDj/OBy5W3ZzzhivQwprfW0aZp37dsfzTx/giIfiemQyzLd8xYiYzKX86HtFleb
+         KjaA==
+X-Gm-Message-State: AOAM53132L35tk/ZSxy7uA/Vru25NQOjxrRr1kcbQmUe/4z38X1CCNCQ
+        hLQx7OBg8p1gROqUeHbC06mB+I8Mvi6c
+X-Google-Smtp-Source: ABdhPJyyBzQNUjoWuSZ3gyw7veG9oOSrnNzZtUmfTxbYxxCAoNEAILEzxY31ZTBCTXC7pnCkdJW78OTX/qIW
+X-Received: from apusaka-p920.tpe.corp.google.com ([2401:fa00:1:10:e184:a33f:252b:7530])
+ (user=apusaka job=sendgmr) by 2002:a25:ada5:: with SMTP id
+ z37mr7407492ybi.93.1635852470289; Tue, 02 Nov 2021 04:27:50 -0700 (PDT)
+Date:   Tue,  2 Nov 2021 19:27:44 +0800
+Message-Id: <20211102192742.1.I3ba1a76d72da5a813cf6e6f219838c9ef28c5eaa@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.33.1.1089.g2158813163f-goog
+Subject: [PATCH] Bluetooth: Fix receiving HCI_LE_Advertising_Set_Terminated event
+From:   Archie Pusaka <apusaka@google.com>
+To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>
+Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        Alain Michaud <alainm@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Archie Pusaka <apusaka@chromium.org>
 
+This event is received when the controller stops advertising,
+specifically for these three reasons:
+(a) Connection is successfully created (success).
+(b) Timeout is reached (error).
+(c) Number of advertising events is reached (error).
+(*) This event is NOT generated when the host stops the advertisement.
+Refer to the BT spec ver 5.3 vol 4 part E sec 7.7.65.18. Note that the
+section was revised from BT spec ver 5.0 vol 2 part E sec 7.7.65.18
+which was ambiguous about (*).
 
-> -----Original Message-----
-> From: Jason Gunthorpe [mailto:jgg@nvidia.com]
-> Sent: 01 November 2021 17:25
-> To: Alex Williamson <alex.williamson@redhat.com>; Shameerali Kolothum
-> Thodi <shameerali.kolothum.thodi@huawei.com>
-> Cc: Cornelia Huck <cohuck@redhat.com>; Yishai Hadas <yishaih@nvidia.com>;
-> bhelgaas@google.com; saeedm@nvidia.com; linux-pci@vger.kernel.org;
-> kvm@vger.kernel.org; netdev@vger.kernel.org; kuba@kernel.org;
-> leonro@nvidia.com; kwankhede@nvidia.com; mgurtovoy@nvidia.com;
-> maorg@nvidia.com; Dr. David Alan Gilbert <dgilbert@redhat.com>
-> Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
-> for mlx5 devices
-> 
-> On Fri, Oct 29, 2021 at 04:06:21PM -0600, Alex Williamson wrote:
-> 
-> > > Right now we are focused on the non-P2P cases, which I think is a
-> > > reasonable starting limitation.
-> >
-> > It's a reasonable starting point iff we know that we need to support
-> > devices that cannot themselves support a quiescent state.  Otherwise it
-> > would make sense to go back to work on the uAPI because I suspect the
-> > implications to userspace are not going to be as simple as "oops, can't
-> > migrate, there are two devices."  As you say, there's a universe of
-> > devices that run together that don't care about p2p and QEMU will be
-> > pressured to support migration of those configurations.
-> 
-> I agree with this, but I also think what I saw in the proposed hns
-> driver suggests it's HW cannot do quiescent, if so this is the first
-> counter-example to the notion it is a universal ability?
-> 
-> hns people: Can you put your device in a state where it is operating,
-> able to accept and respond to MMIO, and yet guarentees it generates no
-> DMA transactions?
+Some chips (e.g. RTL8822CE) send this event when the host stops the
+advertisement with status = HCI_ERROR_CANCELLED_BY_HOST (due to (*)
+above). This is treated as an error and the advertisement will be
+removed and userspace will be informed via MGMT event.
 
-AFAIK, I am afraid we cannot guarantee that as per our current implementation.
-At present in !RUNNING state we are putting the device in to a PAUSE state so it
-will complete the current request and keep the remaining ones in queue. But it can
-still receive a new request which will trigger the PAUSE state exit and resume the
-operation.
+On suspend, we are supposed to temporarily disable advertisements,
+and continue advertising on resume. However, due to the behavior
+above, the advertisements are removed instead.
 
-So I guess, it is possible to corrupt the migration if user space misbehaves.
+This patch returns early if HCI_ERROR_CANCELLED_BY_HOST is received.
 
-Thanks,
-Shameer
+Additionally, this patch also clear HCI_LE_ADV if there are no more
+advertising instances after receiving other errors.
+
+Signed-off-by: Archie Pusaka <apusaka@chromium.org>
+Reviewed-by: Alain Michaud <alainm@chromium.org>
+
+---
+
+ include/net/bluetooth/hci.h |  1 +
+ net/bluetooth/hci_event.c   | 12 ++++++++++++
+ 2 files changed, 13 insertions(+)
+
+diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+index 63065bc01b76..84db6b275231 100644
+--- a/include/net/bluetooth/hci.h
++++ b/include/net/bluetooth/hci.h
+@@ -566,6 +566,7 @@ enum {
+ #define HCI_ERROR_INVALID_LL_PARAMS	0x1e
+ #define HCI_ERROR_UNSPECIFIED		0x1f
+ #define HCI_ERROR_ADVERTISING_TIMEOUT	0x3c
++#define HCI_ERROR_CANCELLED_BY_HOST	0x44
+ 
+ /* Flow control modes */
+ #define HCI_FLOW_CTL_MODE_PACKET_BASED	0x00
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index d4b75a6cfeee..150b50677790 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -5538,6 +5538,14 @@ static void hci_le_ext_adv_term_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 
+ 	adv = hci_find_adv_instance(hdev, ev->handle);
+ 
++	/* Some chips (e.g. RTL8822CE) emit HCI_ERROR_CANCELLED_BY_HOST. This
++	 * event is being fired as a result of a hci_cp_le_set_ext_adv_enable
++	 * disable request, which will have its own callback and cleanup via
++	 * the hci_cc_le_set_ext_adv_enable path.
++	 */
++	if (ev->status == HCI_ERROR_CANCELLED_BY_HOST)
++		return;
++
+ 	if (ev->status) {
+ 		if (!adv)
+ 			return;
+@@ -5546,6 +5554,10 @@ static void hci_le_ext_adv_term_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 		hci_remove_adv_instance(hdev, ev->handle);
+ 		mgmt_advertising_removed(NULL, hdev, ev->handle);
+ 
++		/* If we are no longer advertising, clear HCI_LE_ADV */
++		if (list_empty(&hdev->adv_instances))
++			hci_dev_clear_flag(hdev, HCI_LE_ADV);
++
+ 		return;
+ 	}
+ 
+-- 
+2.33.1.1089.g2158813163f-goog
 
