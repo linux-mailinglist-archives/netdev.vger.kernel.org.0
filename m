@@ -2,102 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02D6F443832
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 23:03:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 721F9443838
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 23:06:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231728AbhKBWFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 18:05:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:32786 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231994AbhKBWFQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Nov 2021 18:05:16 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4A5FC60F5A;
-        Tue,  2 Nov 2021 22:02:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635890561;
-        bh=FsAT/ij5gcUCRgrQBdQVwz573g8DBWikwc/ijGzLfz8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=OyN1VrtgpOFDjnHKoV0d28XzJrK/WkjQ48AIIzcHUE8CmRdwp6qQA2EHtNcFiD97S
-         0PmnFHrXvbfjcDtzu1227j1qHu8iL4WZ+RmW/uJM7dbCa0tVZ/6mL8L1iG+3aRrTNE
-         w8PHEzTI958TTBJXaAQWc7rXDJdRGYsV/297sSR2pxBxBl/PWwCnRfY7E3UaEzoOtt
-         fCAFMWYYzmpteYqKzJBG1pAx856TC1380AerxHOrtupiuqGv2Bz6BsXg04iNc9d5vd
-         10TN9snBecXRvR2R2UIyk4+zgZ68+p1pgMJHAT+2ATdpqZDwE4/wSamC2cg9QuRH5b
-         C0pEYAXahqEBQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, saeedm@nvidia.com, mkubecek@suse.cz,
-        andrew@lunn.ch, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net v2] ethtool: fix ethtool msg len calculation for pause stats
-Date:   Tue,  2 Nov 2021 15:02:36 -0700
-Message-Id: <20211102220236.3803742-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
+        id S230435AbhKBWJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 18:09:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34832 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229672AbhKBWJK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 18:09:10 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDFA9C061714
+        for <netdev@vger.kernel.org>; Tue,  2 Nov 2021 15:06:34 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id 127so356501pfu.1
+        for <netdev@vger.kernel.org>; Tue, 02 Nov 2021 15:06:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=1yikQeqtiI0JZsCV4SFX8wbhKVZf5bHfeYArTFQzeRA=;
+        b=aUazuI9sb6aaLyNMKJk1Bt7BOttNMoadxHivs7ZSsH46qDCaTwBEgXcC+V6vbnQPso
+         ObBXhVQaI2ThZ21G/SKQr3LItrWPfE9uKkKtnBWw+ibH0Hz0jEJpkpWUkfKaxMne5Sdi
+         82ZtXOtbAArebOVqqKHqWZ5SrAxoL1JeGG1RY596F/pO3q/Cl9fyG8kTEDsepHaNVCuV
+         qt0yLYHSCctvTg549q5O3/2J/6HDqgdsmIonJnUAAOHthmK4La4EKEz1pwzSdVsTglSy
+         pcx0tmaIvMp+kDt8CfBVOtD8C/eFCoy19FWT6ph1a6lIYnic51PZ/Q6g951nZuqpgnO1
+         1wpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1yikQeqtiI0JZsCV4SFX8wbhKVZf5bHfeYArTFQzeRA=;
+        b=J8YfBFJIHUrwSyMzvs9+hgJcBVQKMeuSUFKMpLDIjKOO8t4ba5HX4aba8Oh9a9LrtZ
+         NfQFGG/zaqTTh1CTy5EwHFTtBTBl1Ex/GGDLLX+uDBg/JIt8S3gzjtuXrPyihniAni+d
+         wxm4/Zn59VZRe884CcqbZ34ky8NCIxTSV9awYKGsdloW1MmWFQlTbYbrLGTuX8BRyJEQ
+         AY2bACj8XIS6PocQ0OO6VGLcDos8t/5Ppx5/CTegQziDFhWIRiOeVcxoFk8r6XJoi6Gn
+         evTHAIImyf2lyuETraV207zMao5Pr6b72PV8iihkiuJ6RogB+CGULXjum8kgd9Jkz8GQ
+         XqbQ==
+X-Gm-Message-State: AOAM532O/X0uGR1eFRmeAx1Df/o4VZcYCa5kaVlhPmBdoVrRxGJL3IpO
+        C8xJGYc7/xqyoUj6v8h9ISY=
+X-Google-Smtp-Source: ABdhPJzF2jSWezpPiNQLRM+9qqzXqkJFePdl/Zb/HfghE8AYvda5JwsNs1ap/eceULuYFJTeN98n+Q==
+X-Received: by 2002:aa7:8d88:0:b0:47b:d965:fbb2 with SMTP id i8-20020aa78d88000000b0047bd965fbb2mr40443590pfr.16.1635890794553;
+        Tue, 02 Nov 2021 15:06:34 -0700 (PDT)
+Received: from ?IPv6:2620:15c:2c1:200:222a:b43d:7197:aca3? ([2620:15c:2c1:200:222a:b43d:7197:aca3])
+        by smtp.gmail.com with ESMTPSA id h3sm3429303pjz.43.2021.11.02.15.06.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Nov 2021 15:06:33 -0700 (PDT)
+Subject: Re: [PATCH v2] tcp: Use BPF timeout setting for SYN ACK RTO
+To:     Akhmat Karakotov <hmukos@yandex-team.ru>, eric.dumazet@gmail.com
+Cc:     brakmo@fb.com, mitradir@yandex-team.ru, ncardwell@google.com,
+        netdev@vger.kernel.org, ycheng@google.com, zeil@yandex-team.ru
+References: <863fdf13-b1f4-f429-d8ac-269f9ceaa747@gmail.com>
+ <20211102183235.14679-1-hmukos@yandex-team.ru>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <eb593fea-b5a5-c871-a762-a48127e91f75@gmail.com>
+Date:   Tue, 2 Nov 2021 15:06:31 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211102183235.14679-1-hmukos@yandex-team.ru>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ETHTOOL_A_PAUSE_STAT_MAX is the MAX attribute id,
-so we need to subtract non-stats and add one to
-get a count (IOW -2+1 == -1).
 
-Otherwise we'll see:
 
-  ethnl cmd 21: calculated reply length 40, but consumed 52
+On 11/2/21 11:32 AM, Akhmat Karakotov wrote:
+> When setting RTO through BPF program, some SYN ACK packets were unaffected
+> and continued to use TCP_TIMEOUT_INIT constant. This patch adds timeout
+> option to struct request_sock. Option is initialized with TCP_TIMEOUT_INIT
+> and is reassigned through BPF using tcp_timeout_init call. SYN ACK
+> retransmits now use newly added timeout option.
+> 
+> Signed-off-by: Akhmat Karakotov <hmukos@yandex-team.ru>
+> ---
+>  include/net/request_sock.h      | 2 ++
+>  net/ipv4/inet_connection_sock.c | 2 +-
+>  net/ipv4/tcp_input.c            | 8 +++++---
+>  net/ipv4/tcp_minisocks.c        | 4 ++--
+>  4 files changed, 10 insertions(+), 6 deletions(-)
+> 
+> diff --git a/include/net/request_sock.h b/include/net/request_sock.h
+> index 29e41ff3ec93..144c39db9898 100644
+> --- a/include/net/request_sock.h
+> +++ b/include/net/request_sock.h
+> @@ -70,6 +70,7 @@ struct request_sock {
+>  	struct saved_syn		*saved_syn;
+>  	u32				secid;
+>  	u32				peer_secid;
+> +	u32				timeout;
+>  };
+>  
+>  static inline struct request_sock *inet_reqsk(const struct sock *sk)
+> @@ -104,6 +105,7 @@ reqsk_alloc(const struct request_sock_ops *ops, struct sock *sk_listener,
+>  	sk_node_init(&req_to_sk(req)->sk_node);
+>  	sk_tx_queue_clear(req_to_sk(req));
+>  	req->saved_syn = NULL;
+> +	req->timeout = 0;
+>  	req->num_timeout = 0;
+>  	req->num_retrans = 0;
+>  	req->sk = NULL;
+> diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+> index 0d477c816309..c43cc1f22092 100644
+> --- a/net/ipv4/inet_connection_sock.c
+> +++ b/net/ipv4/inet_connection_sock.c
+> @@ -870,7 +870,7 @@ static void reqsk_timer_handler(struct timer_list *t)
+>  
+>  		if (req->num_timeout++ == 0)
+>  			atomic_dec(&queue->young);
+> -		timeo = min(TCP_TIMEOUT_INIT << req->num_timeout, TCP_RTO_MAX);
+> +		timeo = min(req->timeout << req->num_timeout, TCP_RTO_MAX);
 
-Fixes: 9a27a33027f2 ("ethtool: add standard pause stats")
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-v2: add a define
+I wonder how much time it will take to syzbot to trigger an overflow here and
+other parts.
 
- include/linux/ethtool_netlink.h      | 3 +++
- include/uapi/linux/ethtool_netlink.h | 4 +++-
- net/ethtool/pause.c                  | 3 +--
- 3 files changed, 7 insertions(+), 3 deletions(-)
+(Not sure BPF_SOCK_OPS_TIMEOUT_INIT has any sanity checks)
 
-diff --git a/include/linux/ethtool_netlink.h b/include/linux/ethtool_netlink.h
-index 1e7bf78cb382..aba348d58ff6 100644
---- a/include/linux/ethtool_netlink.h
-+++ b/include/linux/ethtool_netlink.h
-@@ -10,6 +10,9 @@
- #define __ETHTOOL_LINK_MODE_MASK_NWORDS \
- 	DIV_ROUND_UP(__ETHTOOL_LINK_MODE_MASK_NBITS, 32)
- 
-+#define ETHTOOL_PAUSE_STAT_CNT	(__ETHTOOL_A_PAUSE_STAT_CNT -		\
-+				 ETHTOOL_A_PAUSE_STAT_TX_FRAMES)
-+
- enum ethtool_multicast_groups {
- 	ETHNL_MCGRP_MONITOR,
- };
-diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
-index ca5fbb59fa42..999777d32dcf 100644
---- a/include/uapi/linux/ethtool_netlink.h
-+++ b/include/uapi/linux/ethtool_netlink.h
-@@ -411,7 +411,9 @@ enum {
- 	ETHTOOL_A_PAUSE_STAT_TX_FRAMES,
- 	ETHTOOL_A_PAUSE_STAT_RX_FRAMES,
- 
--	/* add new constants above here */
-+	/* add new constants above here
-+	 * adjust ETHTOOL_PAUSE_STAT_CNT if adding non-stats!
-+	 */
- 	__ETHTOOL_A_PAUSE_STAT_CNT,
- 	ETHTOOL_A_PAUSE_STAT_MAX = (__ETHTOOL_A_PAUSE_STAT_CNT - 1)
- };
-diff --git a/net/ethtool/pause.c b/net/ethtool/pause.c
-index 9009f412151e..ee1e5806bc93 100644
---- a/net/ethtool/pause.c
-+++ b/net/ethtool/pause.c
-@@ -56,8 +56,7 @@ static int pause_reply_size(const struct ethnl_req_info *req_base,
- 
- 	if (req_base->flags & ETHTOOL_FLAG_STATS)
- 		n += nla_total_size(0) +	/* _PAUSE_STATS */
--			nla_total_size_64bit(sizeof(u64)) *
--				(ETHTOOL_A_PAUSE_STAT_MAX - 2);
-+		     nla_total_size_64bit(sizeof(u64)) * ETHTOOL_PAUSE_STAT_CNT;
- 	return n;
- }
- 
--- 
-2.31.1
+Maybe take the opportunity of this patch to use wider type
+
+     timeo = min_t(unsigned long,
+                   (unsigned long)req->timeout << req->num_timeout,
+                   TCP_RTO_MAX);
+
+Overall, your patch looks good to me, thanks.
 
