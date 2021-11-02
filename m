@@ -2,314 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 028F64424C2
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 01:29:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56C124424DF
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 01:48:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229670AbhKBAcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 20:32:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36230 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231857AbhKBAby (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Nov 2021 20:31:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 17571610A3;
-        Tue,  2 Nov 2021 00:29:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635812960;
-        bh=HMpCX0iHY0hGWOBEuC1GVTf/1GGU7zDaZS1B8bj9BAM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XFTR9SCIwqhcJUQi8wN6yZV0iP3uQiiiIi7EH7dEavEYOBko4DjzrMvNM8cGr4jL5
-         5zT4JmQ9vonY0kH3x3397QbSF9SxhyeotwpeHKNXden8Bd7wNnoGpJS4mos84soxLa
-         418wGNxm6IjEl6ogB2BOqbakmEuAFl45G7LY8wFoJiay9u/buDi4u5kmVq+XX9xMqF
-         0WDcxxBlWhx53FNUxiPy9KBeDU7fBLQbsDkpRKkXxEAh/q04pQA8R9CORgouKgZ+qe
-         eZWjJrYUnWLZhIOdABRwD4FPYZo4Ze2127SHbSKopQEH3g/05MYHp0tLUuPbBYw1V9
-         mLdtcOIDyDysA==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
+        id S231543AbhKBAso (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 20:48:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54926 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229480AbhKBAsn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 20:48:43 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFBFC061714
+        for <netdev@vger.kernel.org>; Mon,  1 Nov 2021 17:46:10 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id p18so10030489plf.13
+        for <netdev@vger.kernel.org>; Mon, 01 Nov 2021 17:46:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wh2Ik3ygotj11b5Z3MXbyTyFD1dNW9or1sCT0f1xlW4=;
+        b=ZyyHE2o9Ft5i0ePce7Qwg5vl+Bu34pax16/wVZjFw5LiUC7dzFQjD3iQ65t7G9DzPN
+         9dKpPfYueUwLvrIrDTp35t27AZz3qTelFoGXLqyBW+EKInRgMgavNrpt85U0c90ldrFS
+         wD32nGqzb1R/F8jAxAK+1kcelj7C/f3+ennQnd6I323bmrniYJW/JBsRWOt6waabh/np
+         Vw7i5zfyCVbxdDevf3AIcolf24ac2+542q1HFe3W2Qbqz1eWwigpJZ09TXu5dkHqlIUs
+         JpL3AAMzzeVYyU9Mq3rQCQ57Mw+FBaxQET065teqR5dJiXpJUGDtVSNxo9QWyjzN4ETa
+         bWyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wh2Ik3ygotj11b5Z3MXbyTyFD1dNW9or1sCT0f1xlW4=;
+        b=hKpptmbyVycluMT4qxIvQmr+/bv5B2TdAf2AFHDFs1bgPmnw2a3Z5aZeOApyNaPWF5
+         DC7XrZQkZlTosqNi/NHZogUwqSl2KIcWkgpXAsytvil0IDOdX5ijHIW9U2aYLd9bpxDR
+         YoQtdQJEHEi4gyjAeGP2BRfAR/sZ28SGjTYQ3+19WCNMudXV6S+aE4fS3EWPD0DE+JbM
+         xeIrcEUaHGo0vveKYdZSU3gSRGFFVF2UxSsfKGmndRG0pj6UDMKk/RY2cFtY94j3tzUd
+         V1hC/ZG1JEAw4K4zKpjA5KNA5n1WR79ILJXjadmkbCdznDHb++EhS+jG/RtJt9L766YP
+         s74w==
+X-Gm-Message-State: AOAM530B9O7MYjD0HlBw3D9iZs8/qQJnl0uU59Yf51ubaYf6t82EB1LW
+        lJCMtzGfW+TGS30ObmzkhEE=
+X-Google-Smtp-Source: ABdhPJxkdv+iAwKs9MXJZOH7kAlQHt3xKgheDTz1Vx87hUqKE8oh9QguLdxzgRmudDkydNV3wKrLCA==
+X-Received: by 2002:a17:902:bcc4:b0:141:bfc4:ada with SMTP id o4-20020a170902bcc400b00141bfc40adamr17850280pls.20.1635813969633;
+        Mon, 01 Nov 2021 17:46:09 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:2901:8b5a:1727:6bfb])
+        by smtp.gmail.com with ESMTPSA id t7sm17080490pfj.217.2021.11.01.17.46.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Nov 2021 17:46:09 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
-        Maor Dickman <maord@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 7/7] net/mlx5e: TC, Remove redundant action stack var
-Date:   Mon,  1 Nov 2021 17:29:14 -0700
-Message-Id: <20211102002914.1052888-8-saeed@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211102002914.1052888-1-saeed@kernel.org>
-References: <20211102002914.1052888-1-saeed@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Marco Elver <elver@google.com>
+Subject: [PATCH net] net: add and use skb_unclone_keeptruesize() helper
+Date:   Mon,  1 Nov 2021 17:45:55 -0700
+Message-Id: <20211102004555.1359210-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.33.1.1089.g2158813163f-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+From: Eric Dumazet <edumazet@google.com>
 
-Remove the action stack var from parse tc fdb actions
-and prase tc nic actions, use the flow attr action var directly.
+While commit 097b9146c0e2 ("net: fix up truesize of cloned
+skb in skb_prepare_for_shift()") fixed immediate issues found
+when KFENCE was enabled/tested, there are still similar issues,
+when tcp_trim_head() hits KFENCE while the master skb
+is cloned.
 
-Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Maor Dickman <maord@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+This happens under heavy networking TX workloads,
+when the TX completion might be delayed after incoming ACK.
+
+This patch fixes the WARNING in sk_stream_kill_queues
+when sk->sk_mem_queued/sk->sk_forward_alloc are not zero.
+
+Fixes: d3fb45f370d9 ("mm, kfence: insert KFENCE hooks for SLAB")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Marco Elver <elver@google.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 81 +++++++++----------
- 1 file changed, 38 insertions(+), 43 deletions(-)
+ include/linux/skbuff.h | 16 ++++++++++++++++
+ net/core/skbuff.c      | 14 +-------------
+ net/ipv4/tcp_output.c  |  6 +++---
+ 3 files changed, 20 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index aa4da8d1e252..f14d87d103eb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -3452,7 +3452,6 @@ parse_tc_nic_actions(struct mlx5e_priv *priv,
- 	struct pedit_headers_action hdrs[2] = {};
- 	const struct flow_action_entry *act;
- 	struct mlx5_nic_flow_attr *nic_attr;
--	u32 action = 0;
- 	int err, i;
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 841e2f0f5240ba9e210bb9a3fc1cbedc2162b2a8..b8c273af2910c780dcfbc8f18fc05e115089010b 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -1671,6 +1671,22 @@ static inline int skb_unclone(struct sk_buff *skb, gfp_t pri)
+ 	return 0;
+ }
  
- 	if (!flow_action_has_entries(flow_action)) {
-@@ -3473,12 +3472,12 @@ parse_tc_nic_actions(struct mlx5e_priv *priv,
- 	flow_action_for_each(i, act, flow_action) {
- 		switch (act->id) {
- 		case FLOW_ACTION_ACCEPT:
--			action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
--				  MLX5_FLOW_CONTEXT_ACTION_COUNT;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
-+					MLX5_FLOW_CONTEXT_ACTION_COUNT;
- 			break;
- 		case FLOW_ACTION_DROP:
--			action |= MLX5_FLOW_CONTEXT_ACTION_DROP |
--				  MLX5_FLOW_CONTEXT_ACTION_COUNT;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_DROP |
-+					MLX5_FLOW_CONTEXT_ACTION_COUNT;
- 			break;
- 		case FLOW_ACTION_MANGLE:
- 		case FLOW_ACTION_ADD:
-@@ -3487,19 +3486,19 @@ parse_tc_nic_actions(struct mlx5e_priv *priv,
- 			if (err)
- 				return err;
++/* This variant of skb_unclone() makes sure skb->truesize is not changed */
++static inline int skb_unclone_keeptruesize(struct sk_buff *skb, gfp_t pri)
++{
++	might_sleep_if(gfpflags_allow_blocking(pri));
++
++	if (skb_cloned(skb)) {
++		unsigned int save = skb->truesize;
++		int res;
++
++		res = pskb_expand_head(skb, 0, 0, pri);
++		skb->truesize = save;
++		return res;
++	}
++	return 0;
++}
++
+ /**
+  *	skb_header_cloned - is the header a clone
+  *	@skb: buffer to check
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index fe9358437380c826d6438efe939afc4b38135cff..38d7dee4bbe9e96a811ff9cfca33429b5f7dbff1 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -3449,19 +3449,7 @@ EXPORT_SYMBOL(skb_split);
+  */
+ static int skb_prepare_for_shift(struct sk_buff *skb)
+ {
+-	int ret = 0;
+-
+-	if (skb_cloned(skb)) {
+-		/* Save and restore truesize: pskb_expand_head() may reallocate
+-		 * memory where ksize(kmalloc(S)) != ksize(kmalloc(S)), but we
+-		 * cannot change truesize at this point.
+-		 */
+-		unsigned int save_truesize = skb->truesize;
+-
+-		ret = pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
+-		skb->truesize = save_truesize;
+-	}
+-	return ret;
++	return skb_unclone_keeptruesize(skb, GFP_ATOMIC);
+ }
  
--			action |= MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
- 			break;
- 		case FLOW_ACTION_VLAN_MANGLE:
- 			err = add_vlan_rewrite_action(priv,
- 						      MLX5_FLOW_NAMESPACE_KERNEL,
- 						      act, parse_attr, hdrs,
--						      &action, extack);
-+						      &attr->action, extack);
- 			if (err)
- 				return err;
- 
- 			break;
- 		case FLOW_ACTION_CSUM:
--			if (csum_offload_supported(priv, action,
-+			if (csum_offload_supported(priv, attr->action,
- 						   act->csum_flags,
- 						   extack))
- 				break;
-@@ -3512,8 +3511,8 @@ parse_tc_nic_actions(struct mlx5e_priv *priv,
- 			    same_hw_devs(priv, netdev_priv(peer_dev))) {
- 				parse_attr->mirred_ifindex[0] = peer_dev->ifindex;
- 				flow_flag_set(flow, HAIRPIN);
--				action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
--					  MLX5_FLOW_CONTEXT_ACTION_COUNT;
-+				attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
-+						MLX5_FLOW_CONTEXT_ACTION_COUNT;
- 			} else {
- 				NL_SET_ERR_MSG_MOD(extack,
- 						   "device is not on same HW, can't offload");
-@@ -3533,17 +3532,17 @@ parse_tc_nic_actions(struct mlx5e_priv *priv,
- 			}
- 
- 			nic_attr->flow_tag = mark;
--			action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
- 			}
- 			break;
- 		case FLOW_ACTION_GOTO:
--			err = validate_goto_chain(priv, flow, act, action,
-+			err = validate_goto_chain(priv, flow, act, attr->action,
- 						  extack);
- 			if (err)
- 				return err;
- 
--			action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
--				  MLX5_FLOW_CONTEXT_ACTION_COUNT;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
-+					MLX5_FLOW_CONTEXT_ACTION_COUNT;
- 			attr->dest_chain = act->chain_index;
- 			break;
- 		case FLOW_ACTION_CT:
-@@ -3560,8 +3559,6 @@ parse_tc_nic_actions(struct mlx5e_priv *priv,
- 		}
+ /**
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 6d72f3ea48c4ef0d193ec804653e4d4321f3f20a..0492f6942778db21f855216bf4387682fb37091e 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -1562,7 +1562,7 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp_queue,
+ 		return -ENOMEM;
  	}
  
--	attr->action = action;
--
- 	if (attr->dest_chain && parse_attr->mirred_ifindex[0]) {
- 		NL_SET_ERR_MSG(extack, "Mirroring goto chain rules isn't supported");
- 		return -EOPNOTSUPP;
-@@ -3879,7 +3876,6 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 	const struct flow_action_entry *act;
- 	struct mlx5_esw_flow_attr *esw_attr;
- 	bool encap = false, decap = false;
--	u32 action = attr->action;
- 	int err, i, if_count = 0;
- 	bool ptype_host = false;
- 	bool mpls_push = false;
-@@ -3901,8 +3897,8 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 	flow_action_for_each(i, act, flow_action) {
- 		switch (act->id) {
- 		case FLOW_ACTION_ACCEPT:
--			action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
--				MLX5_FLOW_CONTEXT_ACTION_COUNT;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
-+					MLX5_FLOW_CONTEXT_ACTION_COUNT;
- 			attr->flags |= MLX5_ESW_ATTR_FLAG_ACCEPT;
- 			break;
- 		case FLOW_ACTION_PTYPE:
-@@ -3915,8 +3911,8 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 			ptype_host = true;
- 			break;
- 		case FLOW_ACTION_DROP:
--			action |= MLX5_FLOW_CONTEXT_ACTION_DROP |
--				  MLX5_FLOW_CONTEXT_ACTION_COUNT;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_DROP |
-+					MLX5_FLOW_CONTEXT_ACTION_COUNT;
- 			break;
- 		case FLOW_ACTION_TRAP:
- 			if (!flow_offload_has_one_action(flow_action)) {
-@@ -3924,8 +3920,8 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 						   "action trap is supported as a sole action only");
- 				return -EOPNOTSUPP;
- 			}
--			action |= (MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
--				   MLX5_FLOW_CONTEXT_ACTION_COUNT);
-+			attr->action |= (MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
-+					 MLX5_FLOW_CONTEXT_ACTION_COUNT);
- 			attr->flags |= MLX5_ESW_ATTR_FLAG_SLOW_PATH;
- 			break;
- 		case FLOW_ACTION_MPLS_PUSH:
-@@ -3956,7 +3952,7 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 			}
+-	if (skb_unclone(skb, gfp))
++	if (skb_unclone_keeptruesize(skb, gfp))
+ 		return -ENOMEM;
  
- 			parse_attr->eth.h_proto = act->mpls_pop.proto;
--			action |= MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT;
- 			flow_flag_set(flow, L3_TO_L2_DECAP);
- 			break;
- 		case FLOW_ACTION_MANGLE:
-@@ -3967,12 +3963,12 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 				return err;
+ 	/* Get a new skb... force flag on. */
+@@ -1672,7 +1672,7 @@ int tcp_trim_head(struct sock *sk, struct sk_buff *skb, u32 len)
+ {
+ 	u32 delta_truesize;
  
- 			if (!flow_flag_test(flow, L3_TO_L2_DECAP)) {
--				action |= MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
-+				attr->action |= MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
- 				esw_attr->split_count = esw_attr->out_count;
- 			}
- 			break;
- 		case FLOW_ACTION_CSUM:
--			if (csum_offload_supported(priv, action,
-+			if (csum_offload_supported(priv, attr->action,
- 						   act->csum_flags, extack))
- 				break;
+-	if (skb_unclone(skb, GFP_ATOMIC))
++	if (skb_unclone_keeptruesize(skb, GFP_ATOMIC))
+ 		return -ENOMEM;
  
-@@ -4058,8 +4054,8 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 				return -EOPNOTSUPP;
- 			}
+ 	delta_truesize = __pskb_trim_head(skb, len);
+@@ -3184,7 +3184,7 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
+ 				 cur_mss, GFP_ATOMIC))
+ 			return -ENOMEM; /* We'll try again later. */
+ 	} else {
+-		if (skb_unclone(skb, GFP_ATOMIC))
++		if (skb_unclone_keeptruesize(skb, GFP_ATOMIC))
+ 			return -ENOMEM;
  
--			action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
--				  MLX5_FLOW_CONTEXT_ACTION_COUNT;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
-+					MLX5_FLOW_CONTEXT_ACTION_COUNT;
- 			if (encap) {
- 				parse_attr->mirred_ifindex[esw_attr->out_count] =
- 					out_dev->ifindex;
-@@ -4095,14 +4091,14 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 				if (is_vlan_dev(out_dev)) {
- 					err = add_vlan_push_action(priv, attr,
- 								   &out_dev,
--								   &action, extack);
-+								   &attr->action, extack);
- 					if (err)
- 						return err;
- 				}
- 
- 				if (is_vlan_dev(parse_attr->filter_dev)) {
- 					err = add_vlan_pop_action(priv, attr,
--								  &action, extack);
-+								  &attr->action, extack);
- 					if (err)
- 						return err;
- 				}
-@@ -4173,15 +4169,16 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 		case FLOW_ACTION_VLAN_PUSH:
- 		case FLOW_ACTION_VLAN_POP:
- 			if (act->id == FLOW_ACTION_VLAN_PUSH &&
--			    (action & MLX5_FLOW_CONTEXT_ACTION_VLAN_POP)) {
-+			    (attr->action & MLX5_FLOW_CONTEXT_ACTION_VLAN_POP)) {
- 				/* Replace vlan pop+push with vlan modify */
--				action &= ~MLX5_FLOW_CONTEXT_ACTION_VLAN_POP;
-+				attr->action &= ~MLX5_FLOW_CONTEXT_ACTION_VLAN_POP;
- 				err = add_vlan_rewrite_action(priv,
- 							      MLX5_FLOW_NAMESPACE_FDB,
- 							      act, parse_attr, hdrs,
--							      &action, extack);
-+							      &attr->action, extack);
- 			} else {
--				err = parse_tc_vlan_action(priv, act, esw_attr, &action, extack);
-+				err = parse_tc_vlan_action(priv, act, esw_attr, &attr->action,
-+							   extack);
- 			}
- 			if (err)
- 				return err;
-@@ -4192,7 +4189,7 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 			err = add_vlan_rewrite_action(priv,
- 						      MLX5_FLOW_NAMESPACE_FDB,
- 						      act, parse_attr, hdrs,
--						      &action, extack);
-+						      &attr->action, extack);
- 			if (err)
- 				return err;
- 
-@@ -4202,13 +4199,13 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 			decap = true;
- 			break;
- 		case FLOW_ACTION_GOTO:
--			err = validate_goto_chain(priv, flow, act, action,
-+			err = validate_goto_chain(priv, flow, act, attr->action,
- 						  extack);
- 			if (err)
- 				return err;
- 
--			action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
--				  MLX5_FLOW_CONTEXT_ACTION_COUNT;
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
-+					MLX5_FLOW_CONTEXT_ACTION_COUNT;
- 			attr->dest_chain = act->chain_index;
- 			break;
- 		case FLOW_ACTION_CT:
-@@ -4253,19 +4250,17 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 	attr->ip_version = mlx5e_tc_get_ip_version(&parse_attr->spec, true);
- 
- 	if (MLX5_CAP_GEN(esw->dev, prio_tag_required) &&
--	    action & MLX5_FLOW_CONTEXT_ACTION_VLAN_POP) {
-+	    attr->action & MLX5_FLOW_CONTEXT_ACTION_VLAN_POP) {
- 		/* For prio tag mode, replace vlan pop with rewrite vlan prio
- 		 * tag rewrite.
- 		 */
--		action &= ~MLX5_FLOW_CONTEXT_ACTION_VLAN_POP;
-+		attr->action &= ~MLX5_FLOW_CONTEXT_ACTION_VLAN_POP;
- 		err = add_vlan_prio_tag_rewrite_action(priv, parse_attr, hdrs,
--						       &action, extack);
-+						       &attr->action, extack);
- 		if (err)
- 			return err;
- 	}
- 
--	attr->action = action;
--
- 	err = actions_prepare_mod_hdr_actions(priv, flow, attr, hdrs, extack);
- 	if (err)
- 		return err;
+ 		diff = tcp_skb_pcount(skb);
 -- 
-2.31.1
+2.33.1.1089.g2158813163f-goog
 
