@@ -2,35 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFFC44424BB
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 01:29:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EF424424BC
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 01:29:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230465AbhKBAbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 20:31:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36118 "EHLO mail.kernel.org"
+        id S231348AbhKBAbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 20:31:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36124 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229480AbhKBAbv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229497AbhKBAbv (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 1 Nov 2021 20:31:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CA21160FD9;
-        Tue,  2 Nov 2021 00:29:16 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 383746102A;
+        Tue,  2 Nov 2021 00:29:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1635812957;
-        bh=SIlMqwbmvxY0QbnRASFkDKGPhfa0ClCHR/MIfUA/r8E=;
-        h=From:To:Cc:Subject:Date:From;
-        b=X9/UozQ08Ij9Sj081Lce2GVXeRIF8WI3FNGHVvF5kMLYPnUczQuXr5pQr0OWX2L6Y
-         R2jbQ8mS2hcZfjRHIk4HY8JpSJbKn9g8WzcLjsfHE1FRSn+X4QovFOeF/e6LW67N/a
-         PxvRqbLsGhVtTLoc6H3pHYF13ckl0F89XWOxy5sExWYlwDC/w+aJD0C/PjtRX9Pdro
-         tho7WWou8l9K78pHXdnwy4KuvQX1JhZ//5UvRVu1W73LmymiKmibw9ebuLlXnNvAih
-         uh9NLnHItIrJ2k4ZAuDPHPIcpil0Xrgg0DyJKLS73J89Uy3bWxhKdbY6ew7T3bSoie
-         TYlizCIH/9g9A==
+        bh=j6Yk5ujKmF1odEuCaWr7KX2apqr79fK0EAkAGi9zr4g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JCAYNC6mFtU/hOkgJEbbk5wUIw00WQTVj/mnQZbKcMvIj7TkHH9MOngYi1aj3b9Wf
+         25Bbq3YfXRnnxW4g7fVeagL1z6R2n5rHX+xLKov1wvv9duGbK33We9uB5uhaxnsfMJ
+         8Adho3W20AXWZ9kYiH0j7+UzlwCSVU+wXMScNcyVHX7rDb9rZ/mD4i9rFcIzipzZr8
+         bTi87XCmdd1kiuWnItQfE4zPeAyCsIC35wfNE0UX/3HCohzn0geV8URTCfXaOvVyPM
+         MNPW66Z4NZkHj744yHDgD1INurHPAfZxi/9z5biq8OGiWm3+cEJoZ41T7zXPiqDzGs
+         XaIrNOurpCcYQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [pull request][net-next 0/7] mlx5 updates 2021-11-01
-Date:   Mon,  1 Nov 2021 17:29:07 -0700
-Message-Id: <20211102002914.1052888-1-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [net-next 1/7] net/mlx5e: Support ethtool cq mode
+Date:   Mon,  1 Nov 2021 17:29:08 -0700
+Message-Id: <20211102002914.1052888-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20211102002914.1052888-1-saeed@kernel.org>
+References: <20211102002914.1052888-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -39,63 +42,197 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Saeed Mahameed <saeedm@nvidia.com>
 
-Hi Dave, Jakub,
+Add support for ethtool coalesce cq mode set and get.
 
-This small pull request includes few updates to mlx5 driver,
-Mainly:
-1) Support ethtool cq mode
-2) Static allocation of mod header object for the common case
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |  7 ++-
+ .../ethernet/mellanox/mlx5/core/en_ethtool.c  | 49 ++++++++++++++++---
+ .../net/ethernet/mellanox/mlx5/core/en_rep.c  |  4 +-
+ .../mellanox/mlx5/core/ipoib/ethtool.c        |  4 +-
+ 4 files changed, 52 insertions(+), 12 deletions(-)
 
-Please pull and let me know if there is any problem.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+index f0ac6b0d9653..48b12ee44b8d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+@@ -1148,9 +1148,12 @@ void mlx5e_ethtool_get_channels(struct mlx5e_priv *priv,
+ int mlx5e_ethtool_set_channels(struct mlx5e_priv *priv,
+ 			       struct ethtool_channels *ch);
+ int mlx5e_ethtool_get_coalesce(struct mlx5e_priv *priv,
+-			       struct ethtool_coalesce *coal);
++			       struct ethtool_coalesce *coal,
++			       struct kernel_ethtool_coalesce *kernel_coal);
+ int mlx5e_ethtool_set_coalesce(struct mlx5e_priv *priv,
+-			       struct ethtool_coalesce *coal);
++			       struct ethtool_coalesce *coal,
++			       struct kernel_ethtool_coalesce *kernel_coal,
++			       struct netlink_ext_ack *extack);
+ int mlx5e_ethtool_get_link_ksettings(struct mlx5e_priv *priv,
+ 				     struct ethtool_link_ksettings *link_ksettings);
+ int mlx5e_ethtool_set_link_ksettings(struct mlx5e_priv *priv,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+index c2ea5fad48dd..8a74fb4a8c52 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+@@ -511,7 +511,8 @@ static int mlx5e_set_channels(struct net_device *dev,
+ }
+ 
+ int mlx5e_ethtool_get_coalesce(struct mlx5e_priv *priv,
+-			       struct ethtool_coalesce *coal)
++			       struct ethtool_coalesce *coal,
++			       struct kernel_ethtool_coalesce *kernel_coal)
+ {
+ 	struct dim_cq_moder *rx_moder, *tx_moder;
+ 
+@@ -528,6 +529,11 @@ int mlx5e_ethtool_get_coalesce(struct mlx5e_priv *priv,
+ 	coal->tx_max_coalesced_frames	= tx_moder->pkts;
+ 	coal->use_adaptive_tx_coalesce	= priv->channels.params.tx_dim_enabled;
+ 
++	kernel_coal->use_cqe_mode_rx =
++		MLX5E_GET_PFLAG(&priv->channels.params, MLX5E_PFLAG_RX_CQE_BASED_MODER);
++	kernel_coal->use_cqe_mode_tx =
++		MLX5E_GET_PFLAG(&priv->channels.params, MLX5E_PFLAG_TX_CQE_BASED_MODER);
++
+ 	return 0;
+ }
+ 
+@@ -538,7 +544,7 @@ static int mlx5e_get_coalesce(struct net_device *netdev,
+ {
+ 	struct mlx5e_priv *priv = netdev_priv(netdev);
+ 
+-	return mlx5e_ethtool_get_coalesce(priv, coal);
++	return mlx5e_ethtool_get_coalesce(priv, coal, kernel_coal);
+ }
+ 
+ #define MLX5E_MAX_COAL_TIME		MLX5_MAX_CQ_PERIOD
+@@ -578,14 +584,26 @@ mlx5e_set_priv_channels_rx_coalesce(struct mlx5e_priv *priv, struct ethtool_coal
+ 	}
+ }
+ 
++/* convert a boolean value of cq_mode to mlx5 period mode
++ * true  : MLX5_CQ_PERIOD_MODE_START_FROM_CQE
++ * false : MLX5_CQ_PERIOD_MODE_START_FROM_EQE
++ */
++static int cqe_mode_to_period_mode(bool val)
++{
++	return val ? MLX5_CQ_PERIOD_MODE_START_FROM_CQE : MLX5_CQ_PERIOD_MODE_START_FROM_EQE;
++}
++
+ int mlx5e_ethtool_set_coalesce(struct mlx5e_priv *priv,
+-			       struct ethtool_coalesce *coal)
++			       struct ethtool_coalesce *coal,
++			       struct kernel_ethtool_coalesce *kernel_coal,
++			       struct netlink_ext_ack *extack)
+ {
+ 	struct dim_cq_moder *rx_moder, *tx_moder;
+ 	struct mlx5_core_dev *mdev = priv->mdev;
+ 	struct mlx5e_params new_params;
+ 	bool reset_rx, reset_tx;
+ 	bool reset = true;
++	u8 cq_period_mode;
+ 	int err = 0;
+ 
+ 	if (!MLX5_CAP_GEN(mdev, cq_moderation))
+@@ -605,6 +623,12 @@ int mlx5e_ethtool_set_coalesce(struct mlx5e_priv *priv,
+ 		return -ERANGE;
+ 	}
+ 
++	if ((kernel_coal->use_cqe_mode_rx || kernel_coal->use_cqe_mode_tx) &&
++	    !MLX5_CAP_GEN(priv->mdev, cq_period_start_from_cqe)) {
++		NL_SET_ERR_MSG_MOD(extack, "cqe_mode_rx/tx is not supported on this device");
++		return -EOPNOTSUPP;
++	}
++
+ 	mutex_lock(&priv->state_lock);
+ 	new_params = priv->channels.params;
+ 
+@@ -621,6 +645,18 @@ int mlx5e_ethtool_set_coalesce(struct mlx5e_priv *priv,
+ 	reset_rx = !!coal->use_adaptive_rx_coalesce != priv->channels.params.rx_dim_enabled;
+ 	reset_tx = !!coal->use_adaptive_tx_coalesce != priv->channels.params.tx_dim_enabled;
+ 
++	cq_period_mode = cqe_mode_to_period_mode(kernel_coal->use_cqe_mode_rx);
++	if (cq_period_mode != rx_moder->cq_period_mode) {
++		mlx5e_set_rx_cq_mode_params(&new_params, cq_period_mode);
++		reset_rx = true;
++	}
++
++	cq_period_mode = cqe_mode_to_period_mode(kernel_coal->use_cqe_mode_tx);
++	if (cq_period_mode != tx_moder->cq_period_mode) {
++		mlx5e_set_tx_cq_mode_params(&new_params, cq_period_mode);
++		reset_tx = true;
++	}
++
+ 	if (reset_rx) {
+ 		u8 mode = MLX5E_GET_PFLAG(&new_params,
+ 					  MLX5E_PFLAG_RX_CQE_BASED_MODER);
+@@ -656,9 +692,9 @@ static int mlx5e_set_coalesce(struct net_device *netdev,
+ 			      struct kernel_ethtool_coalesce *kernel_coal,
+ 			      struct netlink_ext_ack *extack)
+ {
+-	struct mlx5e_priv *priv    = netdev_priv(netdev);
++	struct mlx5e_priv *priv = netdev_priv(netdev);
+ 
+-	return mlx5e_ethtool_set_coalesce(priv, coal);
++	return mlx5e_ethtool_set_coalesce(priv, coal, kernel_coal, extack);
+ }
+ 
+ static void ptys2ethtool_supported_link(struct mlx5_core_dev *mdev,
+@@ -2358,7 +2394,8 @@ static void mlx5e_get_rmon_stats(struct net_device *netdev,
+ const struct ethtool_ops mlx5e_ethtool_ops = {
+ 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+ 				     ETHTOOL_COALESCE_MAX_FRAMES |
+-				     ETHTOOL_COALESCE_USE_ADAPTIVE,
++				     ETHTOOL_COALESCE_USE_ADAPTIVE|
++				     ETHTOOL_COALESCE_USE_CQE,
+ 	.get_drvinfo       = mlx5e_get_drvinfo,
+ 	.get_link          = ethtool_op_get_link,
+ 	.get_link_ext_state  = mlx5e_get_link_ext_state,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+index e58a9ec42553..8c81aeba07db 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+@@ -258,7 +258,7 @@ static int mlx5e_rep_get_coalesce(struct net_device *netdev,
+ {
+ 	struct mlx5e_priv *priv = netdev_priv(netdev);
+ 
+-	return mlx5e_ethtool_get_coalesce(priv, coal);
++	return mlx5e_ethtool_get_coalesce(priv, coal, kernel_coal);
+ }
+ 
+ static int mlx5e_rep_set_coalesce(struct net_device *netdev,
+@@ -268,7 +268,7 @@ static int mlx5e_rep_set_coalesce(struct net_device *netdev,
+ {
+ 	struct mlx5e_priv *priv = netdev_priv(netdev);
+ 
+-	return mlx5e_ethtool_set_coalesce(priv, coal);
++	return mlx5e_ethtool_set_coalesce(priv, coal, kernel_coal, extack);
+ }
+ 
+ static u32 mlx5e_rep_get_rxfh_key_size(struct net_device *netdev)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
+index 962d41418ce7..f23e33ac9c6b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
+@@ -105,7 +105,7 @@ static int mlx5i_set_coalesce(struct net_device *netdev,
+ {
+ 	struct mlx5e_priv *priv = mlx5i_epriv(netdev);
+ 
+-	return mlx5e_ethtool_set_coalesce(priv, coal);
++	return mlx5e_ethtool_set_coalesce(priv, coal, kernel_coal, extack);
+ }
+ 
+ static int mlx5i_get_coalesce(struct net_device *netdev,
+@@ -115,7 +115,7 @@ static int mlx5i_get_coalesce(struct net_device *netdev,
+ {
+ 	struct mlx5e_priv *priv = mlx5i_epriv(netdev);
+ 
+-	return mlx5e_ethtool_get_coalesce(priv, coal);
++	return mlx5e_ethtool_get_coalesce(priv, coal, kernel_coal);
+ }
+ 
+ static int mlx5i_get_ts_info(struct net_device *netdev,
+-- 
+2.31.1
 
-Thanks,
-Saeed.
-
-The following changes since commit 047304d0bfa5be2ace106974f87eec51e0832cd0:
-
-  netdevsim: fix uninit value in nsim_drv_configure_vfs() (2021-11-01 16:29:56 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-11-01
-
-for you to fetch changes up to 3ba1deb30012c7f6eee3b2719bd7144230da10bd:
-
-  net/mlx5e: TC, Remove redundant action stack var (2021-11-01 17:25:41 -0700)
-
-----------------------------------------------------------------
-mlx5-updates-2021-11-01
-
-Small updates for mlx5 driver:
-
-1) Support ethtool cq mode
-2) Static allocation of mod header object for the common case
-3) minor code improvements
-
-----------------------------------------------------------------
-Paul Blakey (2):
-      net/mlx5e: Refactor mod header management API
-      net/mlx5: CT: Allow static allocation of mod headers
-
-Roi Dayan (3):
-      net/mlx5e: TC, Destroy nic flow counter if exists
-      net/mlx5e: TC, Move kfree() calls after destroying all resources
-      net/mlx5e: TC, Remove redundant action stack var
-
-Saeed Mahameed (2):
-      net/mlx5e: Support ethtool cq mode
-      net/mlx5: Print more info on pci error handlers
-
- drivers/net/ethernet/mellanox/mlx5/core/en.h       |   7 +-
- .../net/ethernet/mellanox/mlx5/core/en/mod_hdr.c   |  58 +++++++
- .../net/ethernet/mellanox/mlx5/core/en/mod_hdr.h   |  26 +++
- .../net/ethernet/mellanox/mlx5/core/en/tc/sample.c |   5 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c |  34 ++--
- .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  49 +++++-
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |   4 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 183 +++++++--------------
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.h    |   5 -
- .../ethernet/mellanox/mlx5/core/esw/indir_table.c  |   5 +-
- .../ethernet/mellanox/mlx5/core/ipoib/ethtool.c    |   4 +-
- drivers/net/ethernet/mellanox/mlx5/core/main.c     |  51 ++++--
- 12 files changed, 255 insertions(+), 176 deletions(-)
