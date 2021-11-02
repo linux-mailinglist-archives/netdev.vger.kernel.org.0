@@ -2,65 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 153B3443650
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 20:13:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14D7D44366F
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 20:21:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230344AbhKBTQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 15:16:03 -0400
-Received: from forwardcorp1p.mail.yandex.net ([77.88.29.217]:55262 "EHLO
-        forwardcorp1p.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230333AbhKBTQD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 15:16:03 -0400
-Received: from myt5-23f0be3aa648.qloud-c.yandex.net (myt5-23f0be3aa648.qloud-c.yandex.net [IPv6:2a02:6b8:c12:3e29:0:640:23f0:be3a])
-        by forwardcorp1p.mail.yandex.net (Yandex) with ESMTP id B2C022E0A31;
-        Tue,  2 Nov 2021 22:13:26 +0300 (MSK)
-Received: from 2a02:6b8:c12:3e23:0:640:132c:43df (2a02:6b8:c12:3e23:0:640:132c:43df [2a02:6b8:c12:3e23:0:640:132c:43df])
-        by myt5-23f0be3aa648.qloud-c.yandex.net (mxbackcorp/Yandex) with HTTP id 5DTeCP0tsiE1-DOt494NH;
-        Tue, 02 Nov 2021 22:13:26 +0300
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1635880406; bh=Qq8ATDHGj8KgmpFHH/C7yKm52x8qjKo1Z3uIrZcjJck=;
-        h=Message-Id:Date:Cc:Subject:To:From;
-        b=eWCt6l8oL6QeuadPJuPGlaA2/kR0HvF5EBU7Hzgk6GD2lsWl8GXx/i9zYwYYWdCbW
-         Jti24OfUIKcWoCO6DS1e/IlH64a2Ky+fc3Cz2AJwhwV7iZLUEuply8n2+E6l5E8QMR
-         yXS/7nUZM0LDSDk0o+QnWSQe5g+xrBmHD5qf7qZA=
-Authentication-Results: myt5-23f0be3aa648.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: by myt5-132c43df2a33.qloud-c.yandex.net with HTTP;
-        Tue, 02 Nov 2021 22:13:24 +0300
-From:   =?utf-8?B?0JDRhdC80LDRgiDQmtCw0YDQsNC60L7RgtC+0LI=?= 
-        <hmukos@yandex-team.ru>
-To:     Yuchung Cheng <ycheng@google.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Lawrence Brakmo <brakmo@fb.com>,
-        Alexander Azimov <mitradir@yandex-team.ru>,
-        Neal Cardwell <ncardwell@google.com>, netdev@vger.kernel.org,
-        zeil@yandex-team.ru
-Subject: Re: [PATCH v2] tcp: Use BPF timeout setting for SYN ACK RTO
+        id S230429AbhKBTYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 15:24:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54266 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230411AbhKBTYZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 15:24:25 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8EBBC06120A
+        for <netdev@vger.kernel.org>; Tue,  2 Nov 2021 12:21:49 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id p4so179300qkk.0
+        for <netdev@vger.kernel.org>; Tue, 02 Nov 2021 12:21:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WBuZwnr+5bcLsCP355FoQ/4BAq59hOrIy0vTMjfrBb8=;
+        b=ALlpwX4Ukti+ianWKoWCIEQelRKQDPprVmMyF7bY3MLoaTiwrVTK5iB5Dj/dZaHq3W
+         KZV8OTzfuS/or+8PvImBgX4G6dn8bORZKLQieLhsR0VakaYdhiVDHPhqE0DAc6DgI3YP
+         qOUG2tDX/JOnvl9Fs5gLfeQrOTTSOwWxomvDyz5A1EYf5j/a4RtkxXLXKZ7lUnzZknTT
+         5KOSyYc907dONlMc0xlMGtReevrX7GYR1ReSD+XzKCg7O/fxvgDH2qzJ+0nVPEV/GhfQ
+         soNobREkXIq9xmUImY+ilfq91wSTK1/k0Vy+HjHldzm/1iR0gqxelWZNN2L5Z0Kc/FGn
+         z0VA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WBuZwnr+5bcLsCP355FoQ/4BAq59hOrIy0vTMjfrBb8=;
+        b=YfNw5L997RwPJsJwUJxdAfbIdgLeSpAaSLe0otMMmLzZIJvWuIOK75S/agNitalBXM
+         uRVM/3DzJkOv8APBiqreHkKRC1hg/m2LfUcDj8GXeR+qZJWUbNeVj9UEEq91sSzzk9xW
+         0WkryHYYkXSVS0LHpsU0xDcAHEqtDajb3tlMCI2NjWm+IkXkjYiUniScpH3jH4mDeSY4
+         Mb7s4wAE2gWYVC+/aIkp/5RTKnobGY3rfNq6lFuVFXjK+ih4A7HxRMLYA6TM969kdB4E
+         3Olj7Dg7xBJflXNkXx4TWy5YCp0S6e3GKREmudXq7PX5bA2BKT/auK4oH8oj+nk7j6lY
+         ACmA==
+X-Gm-Message-State: AOAM533xCa+G4jivWrYwj2yjpWnWt2e7T/iwbM1orY1DYxlgC46USGqA
+        FVGEoCju/9Fk/Iu3W77z0MF7g/C0KgKllB1MfXfEDA==
+X-Google-Smtp-Source: ABdhPJyx7G/CA9C9oGEYGtlGn8S6R1B/EfiFUabVqEtFBOelrmJNlKgnzA8B8ZHYEjdpYUSsc60JjgULOPpcaJ5ICwM=
+X-Received: by 2002:ae9:edc6:: with SMTP id c189mr30616528qkg.183.1635880908773;
+ Tue, 02 Nov 2021 12:21:48 -0700 (PDT)
 MIME-Version: 1.0
-X-Mailer: Yamail [ http://yandex.ru ] 5.0
-Date:   Tue, 02 Nov 2021 22:13:24 +0300
-Message-Id: <5C1E4FAF-7A28-40F2-8E67-4B352ED5F45E@yandex-team.ru>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain
+References: <cover.1635784253.git.cdleonard@gmail.com> <6097ec24d87efc55962a1bfac9441132f0fc4206.1635784253.git.cdleonard@gmail.com>
+ <CA+HUmGgMAU235hMtTgucVb1GX_Ru83bngHg8-Jvy2g6BA7djsg@mail.gmail.com> <876f0df1-894a-49bb-07dc-1b1137479f3f@gmail.com>
+In-Reply-To: <876f0df1-894a-49bb-07dc-1b1137479f3f@gmail.com>
+From:   Francesco Ruggeri <fruggeri@arista.com>
+Date:   Tue, 2 Nov 2021 12:21:38 -0700
+Message-ID: <CA+HUmGguspEHZpH-WB4Qi9+xVpz3x3z3KqQVoQmhEJsn-w2q1w@mail.gmail.com>
+Subject: Re: [PATCH v2 11/25] tcp: authopt: Implement Sequence Number Extension
+To:     Leonard Crestez <cdleonard@gmail.com>
+Cc:     David Ahern <dsahern@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Ivan Delalande <colona@arista.com>,
+        Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Nov 2, 2021, at 21:57, Yuchung Cheng <ycheng@google.com> wrote:
+On Tue, Nov 2, 2021 at 3:03 AM Leonard Crestez <cdleonard@gmail.com> wrote:
 >
->> static inline struct request_sock *inet_reqsk(const struct sock *sk)
->> @@ -104,6 +105,7 @@ reqsk_alloc(const struct request_sock_ops *ops, struct sock *sk_listener,
->> sk_node_init(&req_to_sk(req)->sk_node);
->> sk_tx_queue_clear(req_to_sk(req));
->> req->saved_syn = NULL;
->> + req->timeout = 0;
+> On 11/1/21 9:22 PM, Francesco Ruggeri wrote:
+> >> +/* Compute SNE for a specific packet (by seq). */
+> >> +static int compute_packet_sne(struct sock *sk, struct tcp_authopt_info *info,
+> >> +                             u32 seq, bool input, __be32 *sne)
+> >> +{
+> >> +       u32 rcv_nxt, snd_nxt;
+> >> +
+> >> +       // We can't use normal SNE computation before reaching TCP_ESTABLISHED
+> >> +       // For TCP_SYN_SENT the dst_isn field is initialized only after we
+> >> +       // validate the remote SYN/ACK
+> >> +       // For TCP_NEW_SYN_RECV there is no tcp_authopt_info at all
+> >> +       if (sk->sk_state == TCP_SYN_SENT ||
+> >> +           sk->sk_state == TCP_NEW_SYN_RECV ||
+> >> +           sk->sk_state == TCP_LISTEN)
+> >> +               return 0;
+> >> +
+> >
+> > In case of TCP_NEW_SYN_RECV, if our SYNACK had sequence number
+> > 0xffffffff, we will receive an ACK sequence number of 0, which
+> > should have sne = 1.
+> >
+> > In a somewhat similar corner case, when we receive a SYNACK to
+> > our SYN in tcp_rcv_synsent_state_process, if the SYNACK has
+> > sequence number 0xffffffff, we set tp->rcv_nxt to 0, and we
+> > should set sne to 1.
+> >
+> > There may be more similar corner cases related to a wraparound
+> > during the handshake.
+> >
+> > Since as you pointed out all we need is "recent" valid <sne, seq>
+> > pairs as reference, rather than relying on rcv_sne being paired
+> > with tp->rcv_nxt (and similarly for snd_sne and tp->snd_nxt),
+> > would it be easier to maintain reference <sne, seq> pairs for send
+> > and receive in tcp_authopt_info, appropriately handle the different
+> > handshake cases and initialize the pairs, and only then track them
+> > in tcp_rcv_nxt_update and tcp_rcv_snd_update?
 >
-> why not just set to TCP_TIMEOUT_INIT to avoid setting it again in
-> inet_reqsk_alloc?
+> For TCP_NEW_SYN_RECV there is no struct tcp_authopt_info, only a request
+> minisock. I think those are deliberately kept small save resources on
+> SYN floods so I'd rather not increase their size.
+>
+> For all the handshake cases we can just rely on SNE=0 for ISN and we
+> already need to keep track of ISNs because they're part of the signature.
 >
 
-I tried, however net/request_sock.h does not include net/tcp.h and
-after trying to include it I got lots of errors. So I thought that
-request_sock is not supposed to know anything about TCP. If I'm
-wrong than what would be the best way to reference this constant?
-Should I just redefine it in net/request_sock.h?
+Exactly. But the current code, when setting rcv_sne and snd_sne,
+always compares the sequence number with the <info->rcv_sne, tp->rcv_nxt>
+(or <info->snd_sne, tp->snd_nxt>) pair, where info->rcv_sne and
+info->snd_sne are initialized to 0 at the time of info creation.
+In other words, the code assumes that rcv_sne always corresponds to
+tp->rcv_nxt, and snd_sne to tp->snd_nxt. But that may not be true
+when info is created, on account of rollovers during a handshake.
+So it is not just a matter of what to use for SNE before info is
+created and used, but also how SNEs are initialized in info.
+That is why I was suggesting of saving valid <sne, seq> pairs
+(initialized with <0, ISN>) in tcp_authopt_info rather than just SNEs,
+and then always compare seq to those pairs if info is available.
+The pairs could then be updated in tcp_rcv_nxt_update and
+tcp_snd_una_update.
+
+Regards,
+Francesco
