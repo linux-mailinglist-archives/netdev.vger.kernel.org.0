@@ -2,109 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2A78442566
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 02:58:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBBB844256A
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 03:03:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229505AbhKBCBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 22:01:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42562 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbhKBCBV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 22:01:21 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BAB7C061714
-        for <netdev@vger.kernel.org>; Mon,  1 Nov 2021 18:58:47 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id w1so16549147edd.10
-        for <netdev@vger.kernel.org>; Mon, 01 Nov 2021 18:58:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9cUMma5cR/MsGOgp4rjPk+nm035wfIaBl1frtYaNkZc=;
-        b=llEfmuM4nRR1QKJB6nIurCXTaLafEC/hX3gb+jgv1J39nMUhjPPOqR2Tyju1poRhP4
-         9m3n78nJZ+ox/w/SaBxqVS/0mso4quP+l/TCCh0ULFQ02aJOyIPLoPLlt4Vz5As1b/PK
-         I8+npEpBJePt+eSS0D8rsa4PCp7cK4ZQfulZVpMpw+Y6SDkGn2LHrUW/EMejIJlKiLxo
-         UICI8V7lXd0nPnMqsPy/gGotxukmlok1fcCFO/+YHUVIvU/aA1mOQwm7HpW39L3I5PM5
-         NT1LOTP1Svzr2SVhEb16G3TGDNsoitd847MhePq7uwMF1Ijs71QJOLMMpTQSSnLgxXkA
-         iF0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9cUMma5cR/MsGOgp4rjPk+nm035wfIaBl1frtYaNkZc=;
-        b=66caqR8Mdmfcc2LEnGDZrC7QejCW5HKXmhVnMbgStWmWqEufbKrStmbx/aDBVJTsBR
-         HL9UUgVINp/S7MRpUfLRCTt7/RPJeHW3lGMI7V6P6Y/ENiZdcC2syVuY8SaXMHI5/zNY
-         ddT0FXZuaBwOutIkzJQR8RgZKZENThgTQKQgMNbU/DsjoJDLNMG4n+BT/Qeks+eH6rm8
-         U7twaKgKCoOKSzTMdSCvg1njk/gn/AKu1yr73vwPqDar5lEFwHT06AV+G55EvNMyTsNZ
-         VmjcM3ZN30NOFtumdk9YBuKqWHl0hfkpaYdXWFX4TDZ4jZyhv+9KoUxeJYMV+DFTbHw1
-         G4rQ==
-X-Gm-Message-State: AOAM533NPkRjDC5NQY1odOWU9HSnbZPJdnhtyZmX1Is5OJdwgrfhclXf
-        tHeMJ6CD8B/Vnba48eYU/60UlNG/a8yYeO2viMmmMzUzXQjs3g==
-X-Google-Smtp-Source: ABdhPJyXVld1VN7kHjkFO8ELsA5LQXrD+37NRZOOltUIw8NdZp8MmdD50+cL81UPOZ+DYrYRupT8NPb/LHLV9qMzTkg=
-X-Received: by 2002:a17:907:96a3:: with SMTP id hd35mr40299413ejc.222.1635818325575;
- Mon, 01 Nov 2021 18:58:45 -0700 (PDT)
+        id S229491AbhKBCGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 22:06:09 -0400
+Received: from mail-eopbgr1310109.outbound.protection.outlook.com ([40.107.131.109]:50048
+        "EHLO APC01-SG2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229458AbhKBCGI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Nov 2021 22:06:08 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BbrmA0tquhr4/RXV/tuGiYqm92py/JS6dXYjXEEMjHNX+KcjaDFQ7MZ5gaERTuoktWKCq9hmKghHJkwMnCtUOg+FUIjDxW39bX5gfagMSuapUZFdO50lJmlnGXbPPTpQ800EHJdlPkVSzCSMtgsS85SCjhV6J/K343FOZ2AhmrChXtsAdbnXh/AYzhp2eHe6z3t7xEf7C5LT+xDmkQ1708r9kdYreb/z/svAOZEkhQK+inJ6s85X06M51AnRGdPfxTB4VgTkRGFTsX8d4yQEnALWOAjS+gvll99gwn53n8IC1K/wHtFYlZGVTEtAEwOtsr8jxFE/CqNutWYIJl/rpA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=029kk31Ba58OHDXIrLOhSqxWX8qxcJEDNi6/updQWzU=;
+ b=kNJWSt+s4joLisi0Ed9+Hh4hoS0XWekoE1riSc29ABidqwNSnc4g2hQ31I1ZCKkbJt9HAU0jQ8UVkJ89586QXqncf0crEJwr0d/cHJN2r1y3BTMgD/WinUDgTa/BeS3BDA7LqUnutD25d5Wsa2SuYpGjxljDZppWsJcsg7wTt2b8CT1tRoy7wjWNqxViNWCXVgRbJoH7DdQFdrhUbEkUvNmFuQmy79MxykOO4tXrDvO4sUMd29Leq3M3oPZMDn2SPiDaSAnx+9mwSbPyneWB0Q0q49MqbQ+u8VyHVFfeYBjQ+7ivE3K8PpEUOCpb30lRg+HlNgjXQNVp1ijV1HBHyQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=029kk31Ba58OHDXIrLOhSqxWX8qxcJEDNi6/updQWzU=;
+ b=h20u+dU/pzo/NPAZ8emb0f9nk7GzTMTPqr6+yc+bGnMQDtbRHv4BEcawnBbq075QLrq/xS4V09Gg4aw/uAEJW2EGoevPePoNKboFCBVq5nRl9B34Jb6qSZtj5Gd1TWA5/8/iTZWLvg/kpOP7/BDdEt7PaBdYhJShjf3+QnYxI3M=
+Authentication-Results: broadcom.com; dkim=none (message not signed)
+ header.d=none;broadcom.com; dmarc=none action=none header.from=vivo.com;
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com (2603:1096:4:78::19) by
+ SG2PR06MB2459.apcprd06.prod.outlook.com (2603:1096:4:66::18) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4649.15; Tue, 2 Nov 2021 02:03:29 +0000
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::fc12:4e1b:cc77:6c0]) by SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::fc12:4e1b:cc77:6c0%6]) with mapi id 15.20.4649.019; Tue, 2 Nov 2021
+ 02:03:28 +0000
+From:   Wan Jiabing <wanjiabing@vivo.com>
+To:     Michael Chan <michael.chan@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     jiabing.wan@qq.com, Wan Jiabing <wanjiabing@vivo.com>
+Subject: [PATCH] bnxt_en: avoid newline at end of message in NL_SET_ERR_MSG_MOD
+Date:   Mon,  1 Nov 2021 22:03:12 -0400
+Message-Id: <20211102020312.16567-1-wanjiabing@vivo.com>
+X-Mailer: git-send-email 2.20.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR02CA0123.apcprd02.prod.outlook.com
+ (2603:1096:4:188::22) To SG2PR06MB3367.apcprd06.prod.outlook.com
+ (2603:1096:4:78::19)
 MIME-Version: 1.0
-References: <20211029015431.32516-1-xiangxia.m.yue@gmail.com> <9deda78a-a9a2-6b0b-634d-07c5b77282a8@iogearbox.net>
-In-Reply-To: <9deda78a-a9a2-6b0b-634d-07c5b77282a8@iogearbox.net>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Tue, 2 Nov 2021 09:58:09 +0800
-Message-ID: <CAMDZJNWOvRgaWE38WfBOmKuWyaysNB6OYaQNQeLNNJPw1AVDWQ@mail.gmail.com>
-Subject: Re: [PATCH] net: core: set skb useful vars in __bpf_tx_skb
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Received: from localhost.localdomain (218.213.202.190) by SG2PR02CA0123.apcprd02.prod.outlook.com (2603:1096:4:188::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.15 via Frontend Transport; Tue, 2 Nov 2021 02:03:27 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: adf0e9dd-d48f-457f-739b-08d99da4f610
+X-MS-TrafficTypeDiagnostic: SG2PR06MB2459:
+X-Microsoft-Antispam-PRVS: <SG2PR06MB245921658319EE126B10E85EAB8B9@SG2PR06MB2459.apcprd06.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1417;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: p8PqZq0slbBKy+YLforbmwoeWwLvVqGVHKuHTaAWi6W8aIICgH9t6h2oWdYgzv8Jhnu2hdqMYJC6tQbtkBQuy3mb5jLCNs0jhAkc/PwV7dAdIcPfH+bqQPq9MVVsYO62s+C4t/zOLligaXHxODRlDp9SLoQSn0EEXIubce+gcvr8MyqJznrO6smXl0a973D5t3RntbZVbHypVCxRbFy2AW+q+mn+3Ueh4X02nfaMXhUueDmEZTB0kUbidQua/Jdz5voMwAqslFt4YXfQXEVppzVIcuNRu8jcVacuOM9Ufb8oWw0YUHLUngP9iig4AyVxOnrxfvRbz6NW/u5yQRSUP9mT7pjIzBMV1bx66N9wfTfic+rgoSVaSAuVRE51Peo9nUDU3PmOTy8sThmAoC9rOyTY0KqHXBvBTftVCQnPHFcjzpSV3bC5BNSNStqKhO2h188U34Y4+JCmTV176JfKPNbGg5YkC5w5WOYHTXV7TgDsBmRd0+3gyMM0xSa+vgFH+bbrXIPgJq7aqzsHAddc8RrqPZ1Xxr+QAvAeGhPcrgmQ8MCDqSIaQwQVOGlBAMk2vPxSSt0c1YvI3lMVS8mlz74/ylAwzz3DPDZPAZJvl/molUCqsuuxq4CtWWagoC2vllBThIM0fy5LzuoPyks/diOxMtBC9O3/EW/rwHgTK0c93AfEmKZLybFqYTJzMGQQoeStVL7sBDCjbBkL2HBhAQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3367.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(86362001)(5660300002)(36756003)(508600001)(15650500001)(110136005)(52116002)(1076003)(4744005)(4326008)(83380400001)(38350700002)(38100700002)(6666004)(107886003)(8676002)(2906002)(6512007)(316002)(2616005)(186003)(66476007)(66556008)(6486002)(26005)(8936002)(66946007)(956004)(6506007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tEE2tU/F1a4ehVFwik2fnnmWncD9u2TEcVBC+GZltdAfymManO/+axwF/Qt6?=
+ =?us-ascii?Q?7318GTtTzFxYQ35snnfLJopAd6U2gyAxUdj81MiQPqyWEBhXyBPMIkGLwJm7?=
+ =?us-ascii?Q?octvdIVwTW3N6xzwVMar28VPvl+iewCbpaecbalvjKqurDPhC4HX1LMQmZlO?=
+ =?us-ascii?Q?ALwQOlxSwkTSDZmMysxOEGsydZoh2qQXrsDXVSvf/P1ZNiryKpm3blVYOSyP?=
+ =?us-ascii?Q?huMNqijDKpH2CWBRWCiFBO8EU7LT8kGMDXaQpgS2rlKH0aLgBXr+vY21hV6R?=
+ =?us-ascii?Q?e4QZld0mJEnCQz+CMYVVx9kM67+in8bVjFbI/Hrt99LOhipQH75khHfAIEHi?=
+ =?us-ascii?Q?zIc22Y33J+G4FyW43lJvwDGndyH8p3ZxAzpMuTa5i0FtwyNrNQ2sjwL52pdJ?=
+ =?us-ascii?Q?bbZ3phUsnECZVZWWV+QeWTzx3gGw2vVFAQAC3eQlOvyLbjBpf5emqrOAkJ9/?=
+ =?us-ascii?Q?maGwdSp1+4UBvfX7o3MzISFXDlZrDdz3pjY+Ne4DpFZJztOi1Dy0qkt3EWxV?=
+ =?us-ascii?Q?1WNjff3qYuhan33216rK5aZiJseP0H5SNKrlXyVrDI+N7r4G4Oy7AM9lUFN+?=
+ =?us-ascii?Q?s6RQMelIGcmY17RMPkZokVIO7pI2/szvo7XtteYynMvF+s1v8x/z2yiRqdMG?=
+ =?us-ascii?Q?0tqKvSOi+t+sgfxO+RzejgjPETq3DGvcwt+/bs4lSAa5S161FN/B9MoXS//k?=
+ =?us-ascii?Q?zBHwd2CrWpdtrpqFYbnkVAlKNJzdHlvkokvsP5ycCCVvsPGDtdxjY3jLnWTz?=
+ =?us-ascii?Q?mfi+A/eVPU69Ap7lq5Khgn9hdQ08NHAU1kmGLSDRCyxID8KDkOjMsdijMB5p?=
+ =?us-ascii?Q?coXK2+UXiAczkFlhnIXgPHiKoEZp3/34NpqqdtVFS0WwGsd9tyjyKSJSFeH5?=
+ =?us-ascii?Q?IWfNzbdyxN7cmlD74spwDRsRivS8g1WY97Cn9MaTsXNChEfZ+ZQFQrC6iRRE?=
+ =?us-ascii?Q?5B57ZlyU/IcHssoi1LoVddFooypAczT2lhR/YhUxVLstUVQFyUBmFibM7b4j?=
+ =?us-ascii?Q?ApeHAeP8DjR6FQc+e64J+6Jq1fGedWzKXQJTUplt1jbc6WAPCzQPtQSArvRR?=
+ =?us-ascii?Q?ATQvCnCqL8enqae90tW5WvBppCRqncQCwwWK12hfkTaS16hhsmy/znuEdZjs?=
+ =?us-ascii?Q?iu0TP29aiZPlGLIPQ5c+oKrElAEKNf5jpyrzkmKWAdlsEQVzARFM/5nDfYo6?=
+ =?us-ascii?Q?fsJ1Zh6TVuRMlvjAP29Tfugmq1CeXWfoJ7EBtLnfXleedOBHGsta96ub9QQ6?=
+ =?us-ascii?Q?VvLP8S3r8aa+w3DPbFgK4P3F9XCnOXjNw39pGR6qko/53cpEisgi7HqfXAPE?=
+ =?us-ascii?Q?qoT3L9lqzlZbWZo968w4S4he1OnOedQ8lB21ahn0t9ekYzIgQPAQRZz87ASa?=
+ =?us-ascii?Q?FJG8LU10ppSrj/0DTWCQX48XF600MaBaiF+g61/CtSFQplaocdg3EkWSbaZr?=
+ =?us-ascii?Q?Yh7410yolP/EYdciE4cOCW9e7448/axfEoUfRW2U2PWS3O9P+aClFW6Dojta?=
+ =?us-ascii?Q?arcB4esfNiSGSuLa9m/knNiGFOktotJy+57mLziaQebFiH6APDbFSGjhsm8I?=
+ =?us-ascii?Q?unNhxS/rhOplp4XoLPVYzitkVk9VDkgmLCOxnz39fqxl9B//XL0VteKkn6JW?=
+ =?us-ascii?Q?k9vmmEI8QGKF2Xe4AMV1IyQ=3D?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: adf0e9dd-d48f-457f-739b-08d99da4f610
+X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3367.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2021 02:03:28.3563
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: cz20yu12Sc3L6aB3wgmhjUx2p6l1dBCsv+fKnWRYu0r2fJ5UAr+6jmNAM9+Kxp7MU8VSAieHH1sL6yo5RYbFgQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR06MB2459
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 2, 2021 at 5:46 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 10/29/21 3:54 AM, xiangxia.m.yue@gmail.com wrote:
-> [...]
-> > diff --git a/net/core/filter.c b/net/core/filter.c
-> > index 4bace37a6a44..2dbff0944768 100644
-> > --- a/net/core/filter.c
-> > +++ b/net/core/filter.c
-> > @@ -2107,9 +2107,19 @@ static inline int __bpf_tx_skb(struct net_device *dev, struct sk_buff *skb)
-> >               return -ENETDOWN;
-> >       }
-> >
-> > -     skb->dev = dev;
-> > +     /* The target netdevice (e.g. ifb) may use the:
-> > +      * - skb_iif
-> > +      * - redirected
-> > +      * - from_ingress
-> > +      */
-> > +     skb->skb_iif = skb->dev->ifindex;
->
-> This doesn't look right to me to set it unconditionally in tx path, isn't ifb_ri_tasklet()
-> setting skb->skb_iif in this case (or __netif_receive_skb_core() in main rx path)?
-Hi
-the act_mirred set the skb->skb_iif, redirected and from_ingress. and
-__netif_receive_skb_core also set skb->skb_iif.
-so we can use the act_mirred to ifb in ingress or egress path.
-For ingress, when we use the bpf_redirct to ifb, we should set
-redirected, and from_ingress.
-For egress, when we use the bpf_redirct to ifb, we should skb_iif ,
-set redirected, and from_ingress.
+Fix following coccicheck warning:
+./drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c:446:8-56: WARNING
+avoid newline at end of message in NL_SET_ERR_MSG_MOD.
 
-> Also, I would suggest to add a proper BPF selftest which outlines the issue you're solving
-> in here.
-Ok, thanks.
-> > +#ifdef CONFIG_NET_CLS_ACT
-> > +     skb_set_redirected(skb, skb->tc_at_ingress);
-> > +#else
-> >       skb->tstamp = 0;
-> > +#endif
-> >
-> > +     skb->dev = dev;
-> >       dev_xmit_recursion_inc();
-> >       ret = dev_queue_xmit(skb);
-> >       dev_xmit_recursion_dec();
-> >
->
+Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+index ce790e9b45c3..5c464ea73576 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -443,7 +443,7 @@ static int bnxt_dl_reload_down(struct devlink *dl, bool netns_change,
+ 	case DEVLINK_RELOAD_ACTION_DRIVER_REINIT: {
+ 		if (BNXT_PF(bp) && bp->pf.active_vfs) {
+ 			NL_SET_ERR_MSG_MOD(extack,
+-					   "reload is unsupported when VFs are allocated\n");
++					   "reload is unsupported when VFs are allocated");
+ 			return -EOPNOTSUPP;
+ 		}
+ 		rtnl_lock();
 -- 
-Best regards, Tonghao
+2.20.1
+
