@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8D82442585
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 03:15:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E8C0442580
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 03:15:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229931AbhKBCR0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Nov 2021 22:17:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46044 "EHLO
+        id S229799AbhKBCRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Nov 2021 22:17:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbhKBCRX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 22:17:23 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EBFBC061714;
-        Mon,  1 Nov 2021 19:14:49 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id y1so13600269plk.10;
-        Mon, 01 Nov 2021 19:14:49 -0700 (PDT)
+        with ESMTP id S229702AbhKBCRY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Nov 2021 22:17:24 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D07EC061714;
+        Mon,  1 Nov 2021 19:14:50 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id p18so10309858plf.13;
+        Mon, 01 Nov 2021 19:14:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=n3iM6toE0BIl0nwK2d7kUxN8Y6KLsF/QyO7hct74M6U=;
-        b=atU253/wEHO8xkOZY24KbBAIQULd9LCYfAK+qerzfNh2DsRAuFrZxs/O0M5PHwpX2K
-         yITcx1Eyt/NfvG5RG/u1Ww+cwBrD614DrZfpjLymTpdXRdeL+Y6qAwk4gQAxXcv+fH8f
-         p7e28TH0hmWouRzPgheXj7zsprcuzH+1JH7AOEBlPDNBCGnq3ZTWwmVawxaxkM0SgLDE
-         fJhswN1lNV/7LY6tXEw/7hWw55ejGKLHCkr5hRa9F7S4BErJhb90Yv4s9EtrDOTE7ftv
-         nfsmJcvezWmLFgkmijBE7Az76Wn9CHKjPLr46pM3Vc0EgMHV16aGrLO5NO77sS/7+yCI
-         9Lrw==
+        bh=7m4qvg/KmWRogURZVeoJWaji5c98J68mkI0Sglgv//U=;
+        b=WgY33ytjLb87b27YOg8pYK7mQKjrzU+NkNtfuL97vfTeUfiPiLaSQbQuxpV/UiC7f9
+         bDeuq/jnAmbQqLvQOgNQr++ZvGcnVSTbMIQ/ZmDdgdae4GnIyh5Rj22PzWph4nwJyosa
+         R2Db+N09wsoxZNUF2z4W7sO0sOEyj6vpqCGGAuKV/fDpm5xPWDgZZ2un96nb5Fq+qGj8
+         03PKnIh/bnhOQETKiaADREJhadP2nv0TePgb8I2lCt+WNdKVwqOR3p1b5fmyRFI57r8O
+         nTt/UceTXR82GYnUp2F7RyqlDVEUvLfEWctrhcyUIJOnAF5vQqyuQHP1KhNEWjesmUgx
+         wR/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=n3iM6toE0BIl0nwK2d7kUxN8Y6KLsF/QyO7hct74M6U=;
-        b=YyB0ugnuLvoUw/g8ISDHu+8JTeAY4htMWL+qqYpGzmy0OIejgjXKm1CdEEarzv8CyG
-         Tb/pCoGxU5kWuD9KLye7kJus0C7e+xO39s1G6Bp1oz0pHV2X84Oc6cAgjkugsIinwpC+
-         soQDD5G1ySNS2RWS0UGrAfJ3cZ3Y+N+XlnrYYI9ACdiGOlwkun3W3VH7ftZEOQkTdorW
-         JUBRDYL7E6iovfZ7qq+gFNP+qinQHl86xsRnMo6b4u3V0U7bMAXSEjO1iaQTDhV+i7cq
-         vYHd9+QLSiy2JcRyMEAxwGHl2SXhYZS1nJ6wVWahZVFTdbFS4hQdr7ggFHKAAwKTvTzv
-         Nffw==
-X-Gm-Message-State: AOAM530tVjq6FAX1EkAmkDmsLwnURBDvXHG4FFbxmgUH4czqSTI9Cq/8
-        4EacGr8kE/USDlPYakly9Q==
-X-Google-Smtp-Source: ABdhPJwlveRQxGPLKnmoR1IUUGZL85BZnzJHKEFW5pczjqb+o9aQm5H6GT4lyicqIdjgRVHw/7mooA==
-X-Received: by 2002:a17:903:30cd:b0:141:c6dd:4d03 with SMTP id s13-20020a17090330cd00b00141c6dd4d03mr16385969plc.16.1635819289206;
+        bh=7m4qvg/KmWRogURZVeoJWaji5c98J68mkI0Sglgv//U=;
+        b=e9qAOMrA4rpCZ2x4SfYg9yyV5+LoWe/xs9BHv5N+0x2r0q4iBZooLkXjk1xIkiHkZg
+         rwC9X9KqCJvUXqE9052NqokqcaE6V+pAjBIWizfsp9ABVY5wWed1CtDtwXq7WhVMd6Nm
+         RVzzxXgtLakkmw00Y9VWknuH8Kam+5MFC3n9gX0Qy4ellqxqteiZ39yDFHrxSF77uqAK
+         IJt66BUZvp41MR0KZst4sIneykRp9YJoipySaSvR8WCrVWMEca2IhVgyV+G3pfa659DX
+         0KnSh/GHFtmaaYTBhFDXHHKwH1Pr+YprI+Iy8+kem1RoHi2JguuSdBan0JygDb5cNaXv
+         63rg==
+X-Gm-Message-State: AOAM533T8hsZQ0bdbsd4LQIDqJfvui413dInSiBsvb1ZHGBDeQCWqNF6
+        4tJACsORbKJbcbyae/r3DQ==
+X-Google-Smtp-Source: ABdhPJzr9VZqcMqoVEPpDjWanNECw5jO7FsrcxKEikAfJWYPbsnuSva+fKJ7bgJaRmois39+OVp2sQ==
+X-Received: by 2002:a17:90b:4a89:: with SMTP id lp9mr3175444pjb.6.1635819289648;
         Mon, 01 Nov 2021 19:14:49 -0700 (PDT)
 Received: from jevburton2.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id j6sm14051446pgf.60.2021.11.01.19.14.48
+        by smtp.gmail.com with ESMTPSA id j6sm14051446pgf.60.2021.11.01.19.14.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Nov 2021 19:14:48 -0700 (PDT)
+        Mon, 01 Nov 2021 19:14:49 -0700 (PDT)
 From:   Joe Burton <jevburton.kernel@gmail.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -59,9 +59,9 @@ To:     Alexei Starovoitov <ast@kernel.org>,
 Cc:     Petar Penkov <ppenkov@google.com>,
         Stanislav Fomichev <sdf@google.com>,
         Joe Burton <jevburton@google.com>
-Subject: [RFC PATCH v3 1/3] bpf: Add map tracing functions and call sites
-Date:   Tue,  2 Nov 2021 02:14:30 +0000
-Message-Id: <20211102021432.2807760-2-jevburton.kernel@gmail.com>
+Subject: [RFC PATCH v3 2/3] bpf: Add selftests
+Date:   Tue,  2 Nov 2021 02:14:31 +0000
+Message-Id: <20211102021432.2807760-3-jevburton.kernel@gmail.com>
 X-Mailer: git-send-email 2.33.1.1089.g2158813163f-goog
 In-Reply-To: <20211102021432.2807760-1-jevburton.kernel@gmail.com>
 References: <20211102021432.2807760-1-jevburton.kernel@gmail.com>
@@ -73,211 +73,308 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Joe Burton <jevburton@google.com>
 
-Add two functions that fentry/fexit/fmod_ret programs can attach to:
-	bpf_map_trace_update_elem
-	bpf_map_trace_delete_elem
-These functions have the same arguments as
-bpf_map_{update,delete}_elem.
-
-Invoke these functions from the following map types:
-	BPF_MAP_TYPE_ARRAY
-	BPF_MAP_TYPE_PERCPU_ARRAY
-	BPF_MAP_TYPE_HASH
-	BPF_MAP_TYPE_PERCPU_HASH
-	BPF_MAP_TYPE_LRU_HASH
-	BPF_MAP_TYPE_LRU_PERCPU_HASH
-
-The only guarantee about these functions is that they are invoked
-before the corresponding action occurs. Other conditions may prevent
-the corresponding action from occurring after the function is invoked.
+Add selftests verifying that each supported map type is traced.
 
 Signed-off-by: Joe Burton <jevburton@google.com>
 ---
- kernel/bpf/Makefile    |  2 +-
- kernel/bpf/arraymap.c  |  6 ++++++
- kernel/bpf/hashtab.c   | 25 +++++++++++++++++++++++++
- kernel/bpf/map_trace.c | 25 +++++++++++++++++++++++++
- kernel/bpf/map_trace.h | 18 ++++++++++++++++++
- 5 files changed, 75 insertions(+), 1 deletion(-)
- create mode 100644 kernel/bpf/map_trace.c
- create mode 100644 kernel/bpf/map_trace.h
+ .../selftests/bpf/prog_tests/map_trace.c      | 166 ++++++++++++++++++
+ .../selftests/bpf/progs/bpf_map_trace.c       |  95 ++++++++++
+ .../bpf/progs/bpf_map_trace_common.h          |  12 ++
+ 3 files changed, 273 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/map_trace.c
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_map_trace.c
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_map_trace_common.h
 
-diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
-index cf6ca339f3cd..03ab5c058e73 100644
---- a/kernel/bpf/Makefile
-+++ b/kernel/bpf/Makefile
-@@ -9,7 +9,7 @@ CFLAGS_core.o += $(call cc-disable-warning, override-init) $(cflags-nogcse-yy)
- obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o tnum.o bpf_iter.o map_iter.o task_iter.o prog_iter.o
- obj-$(CONFIG_BPF_SYSCALL) += hashtab.o arraymap.o percpu_freelist.o bpf_lru_list.o lpm_trie.o map_in_map.o bloom_filter.o
- obj-$(CONFIG_BPF_SYSCALL) += local_storage.o queue_stack_maps.o ringbuf.o
--obj-$(CONFIG_BPF_SYSCALL) += bpf_local_storage.o bpf_task_storage.o
-+obj-$(CONFIG_BPF_SYSCALL) += bpf_local_storage.o bpf_task_storage.o map_trace.o
- obj-${CONFIG_BPF_LSM}	  += bpf_inode_storage.o
- obj-$(CONFIG_BPF_SYSCALL) += disasm.o
- obj-$(CONFIG_BPF_JIT) += trampoline.o
-diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
-index 5e1ccfae916b..a0b4f1769e17 100644
---- a/kernel/bpf/arraymap.c
-+++ b/kernel/bpf/arraymap.c
-@@ -13,6 +13,7 @@
- #include <linux/rcupdate_trace.h>
- 
- #include "map_in_map.h"
-+#include "map_trace.h"
- 
- #define ARRAY_CREATE_FLAG_MASK \
- 	(BPF_F_NUMA_NODE | BPF_F_MMAPABLE | BPF_F_ACCESS_MASK | \
-@@ -300,6 +301,7 @@ static int array_map_update_elem(struct bpf_map *map, void *key, void *value,
- 	struct bpf_array *array = container_of(map, struct bpf_array, map);
- 	u32 index = *(u32 *)key;
- 	char *val;
-+	int err;
- 
- 	if (unlikely((map_flags & ~BPF_F_LOCK) > BPF_EXIST))
- 		/* unknown flags */
-@@ -317,6 +319,10 @@ static int array_map_update_elem(struct bpf_map *map, void *key, void *value,
- 		     !map_value_has_spin_lock(map)))
- 		return -EINVAL;
- 
-+	err = bpf_map_trace_update_elem(map, key, value, map_flags);
-+	if (unlikely(err))
-+		return err;
-+
- 	if (array->map.map_type == BPF_MAP_TYPE_PERCPU_ARRAY) {
- 		memcpy(this_cpu_ptr(array->pptrs[index & array->index_mask]),
- 		       value, map->value_size);
-diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-index d29af9988f37..c1816a615d82 100644
---- a/kernel/bpf/hashtab.c
-+++ b/kernel/bpf/hashtab.c
-@@ -13,6 +13,7 @@
- #include "percpu_freelist.h"
- #include "bpf_lru_list.h"
- #include "map_in_map.h"
-+#include "map_trace.h"
- 
- #define HTAB_CREATE_FLAG_MASK						\
- 	(BPF_F_NO_PREALLOC | BPF_F_NO_COMMON_LRU | BPF_F_NUMA_NODE |	\
-@@ -1041,6 +1042,10 @@ static int htab_map_update_elem(struct bpf_map *map, void *key, void *value,
- 	b = __select_bucket(htab, hash);
- 	head = &b->head;
- 
-+	ret = bpf_map_trace_update_elem(map, key, value, map_flags);
-+	if (unlikely(ret))
-+		return ret;
-+
- 	if (unlikely(map_flags & BPF_F_LOCK)) {
- 		if (unlikely(!map_value_has_spin_lock(map)))
- 			return -EINVAL;
-@@ -1133,6 +1138,10 @@ static int htab_lru_map_update_elem(struct bpf_map *map, void *key, void *value,
- 		/* unknown flags */
- 		return -EINVAL;
- 
-+	ret = bpf_map_trace_update_elem(map, key, value, map_flags);
-+	if (unlikely(ret))
-+		return ret;
-+
- 	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held() &&
- 		     !rcu_read_lock_bh_held());
- 
-@@ -1201,6 +1210,10 @@ static int __htab_percpu_map_update_elem(struct bpf_map *map, void *key,
- 		/* unknown flags */
- 		return -EINVAL;
- 
-+	ret = bpf_map_trace_update_elem(map, key, value, map_flags);
-+	if (unlikely(ret))
-+		return ret;
-+
- 	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held() &&
- 		     !rcu_read_lock_bh_held());
- 
-@@ -1256,6 +1269,10 @@ static int __htab_lru_percpu_map_update_elem(struct bpf_map *map, void *key,
- 		/* unknown flags */
- 		return -EINVAL;
- 
-+	ret = bpf_map_trace_update_elem(map, key, value, map_flags);
-+	if (unlikely(ret))
-+		return ret;
-+
- 	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held() &&
- 		     !rcu_read_lock_bh_held());
- 
-@@ -1334,6 +1351,10 @@ static int htab_map_delete_elem(struct bpf_map *map, void *key)
- 	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held() &&
- 		     !rcu_read_lock_bh_held());
- 
-+	ret = bpf_map_trace_delete_elem(map, key);
-+	if (unlikely(ret))
-+		return ret;
-+
- 	key_size = map->key_size;
- 
- 	hash = htab_map_hash(key, key_size, htab->hashrnd);
-@@ -1370,6 +1391,10 @@ static int htab_lru_map_delete_elem(struct bpf_map *map, void *key)
- 	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held() &&
- 		     !rcu_read_lock_bh_held());
- 
-+	ret = bpf_map_trace_delete_elem(map, key);
-+	if (unlikely(ret))
-+		return ret;
-+
- 	key_size = map->key_size;
- 
- 	hash = htab_map_hash(key, key_size, htab->hashrnd);
-diff --git a/kernel/bpf/map_trace.c b/kernel/bpf/map_trace.c
+diff --git a/tools/testing/selftests/bpf/prog_tests/map_trace.c b/tools/testing/selftests/bpf/prog_tests/map_trace.c
 new file mode 100644
-index 000000000000..661b433f1451
+index 000000000000..4b54a8e3769a
 --- /dev/null
-+++ b/kernel/bpf/map_trace.c
-@@ -0,0 +1,25 @@
-+// SPDX-License-Identifier: GPL-2.0-only
++++ b/tools/testing/selftests/bpf/prog_tests/map_trace.c
+@@ -0,0 +1,166 @@
++// SPDX-License-Identifier: GPL-2.0
 +/* Copyright (c) 2021 Google */
-+#include "map_trace.h"
++#include <test_progs.h>
 +
-+noinline int bpf_map_trace_update_elem(struct bpf_map *map, void *key,
-+				       void *value, u64 map_flags)
++#include "bpf_map_trace.skel.h"
++#include "progs/bpf_map_trace_common.h"
++
++#include <sys/mount.h>
++#include <sys/stat.h>
++
++enum BoolOrErr {
++	TRUE = 0,
++	FALSE = 1,
++	ERROR = 2,
++};
++
++enum BoolOrErr percpu_key_is_set(struct bpf_map *map, uint32_t map_key)
 +{
-+	/*
-+	 * Noop side effect prevents call site from being optimized out.
-+	 */
-+	asm("");
-+	return 0;
-+}
-+ALLOW_ERROR_INJECTION(bpf_map_trace_update_elem, ERRNO);
++	int num_cpus = libbpf_num_possible_cpus();
++	uint64_t *percpu_map_val = NULL;
++	int map_fd = bpf_map__fd(map);
++	enum BoolOrErr ret = ERROR;
++	int err;
++	int i;
 +
-+noinline int bpf_map_trace_delete_elem(struct bpf_map *map, void *key)
++	if (!ASSERT_GE(num_cpus, 1, "get number of cpus"))
++		goto out;
++
++	percpu_map_val = malloc(sizeof(*percpu_map_val) * num_cpus);
++	if (!ASSERT_NEQ(percpu_map_val, NULL, "allocate percpu map array"))
++		goto out;
++
++	err = bpf_map_lookup_elem(map_fd, &map_key, percpu_map_val);
++	if (!ASSERT_EQ(err, 0, "map lookup update_elem"))
++		goto out;
++
++	ret = FALSE;
++	for (i = 0; i < num_cpus; i++)
++		if (percpu_map_val[i] != 0)
++			ret = TRUE;
++
++out:
++	if (percpu_map_val != NULL)
++		free(percpu_map_val);
++
++	return ret;
++}
++
++enum BoolOrErr key_is_set(struct bpf_map *map, uint32_t map_key)
 +{
-+	/*
-+	 * Noop side effect prevents call site from being optimized out.
-+	 */
-+	asm("");
-+	return 0;
-+}
-+ALLOW_ERROR_INJECTION(bpf_map_trace_delete_elem, ERRNO);
++	int map_fd = bpf_map__fd(map);
++	uint32_t map_val;
++	int rc;
 +
-diff --git a/kernel/bpf/map_trace.h b/kernel/bpf/map_trace.h
++	rc = bpf_map_lookup_elem(map_fd, &map_key, &map_val);
++	if (!ASSERT_EQ(rc, 0, "array map lookup update_elem"))
++		return ERROR;
++
++	return (map_val == 0 ? FALSE : TRUE);
++}
++
++void verify_map_contents(struct bpf_map_trace *skel)
++{
++	enum BoolOrErr rc_or_err;
++	struct bpf_map *map;
++
++	map = skel->maps.array_map;
++	rc_or_err = key_is_set(map, ACCESS_LOC__TRACE_UPDATE);
++	if (!ASSERT_EQ(rc_or_err, TRUE, "array map updates are traced"))
++		return;
++	rc_or_err = key_is_set(map, ACCESS_LOC__TRACE_DELETE);
++	if (!ASSERT_EQ(rc_or_err, FALSE, "array map deletions are not traced"))
++		return;
++
++	map = skel->maps.percpu_array_map;
++	rc_or_err = percpu_key_is_set(map, ACCESS_LOC__TRACE_UPDATE);
++	if (!ASSERT_EQ(rc_or_err, TRUE, "percpu array map updates are traced"))
++		return;
++	rc_or_err = percpu_key_is_set(map, ACCESS_LOC__TRACE_DELETE);
++	if (!ASSERT_EQ(rc_or_err, FALSE,
++		       "percpu array map deletions are not traced"))
++		return;
++
++	map = skel->maps.hash_map;
++	rc_or_err = key_is_set(map, ACCESS_LOC__TRACE_UPDATE);
++	if (!ASSERT_EQ(rc_or_err, TRUE, "hash map updates are traced"))
++		return;
++	rc_or_err = key_is_set(map, ACCESS_LOC__TRACE_DELETE);
++	if (!ASSERT_EQ(rc_or_err, TRUE, "hash map deletions are traced"))
++		return;
++
++	map = skel->maps.percpu_hash_map;
++	rc_or_err = percpu_key_is_set(map, ACCESS_LOC__TRACE_UPDATE);
++	if (!ASSERT_EQ(rc_or_err, TRUE, "percpu hash map updates are traced"))
++		return;
++	rc_or_err = percpu_key_is_set(map, ACCESS_LOC__TRACE_DELETE);
++	if (!ASSERT_EQ(rc_or_err, TRUE,
++		       "percpu hash map deletions are traced"))
++		return;
++
++	map = skel->maps.lru_hash_map;
++	rc_or_err = key_is_set(map, ACCESS_LOC__TRACE_UPDATE);
++	if (!ASSERT_EQ(rc_or_err, TRUE, "lru_hash map updates are traced"))
++		return;
++	rc_or_err = key_is_set(map, ACCESS_LOC__TRACE_DELETE);
++	if (!ASSERT_EQ(rc_or_err, TRUE, "lru_hash map deletions are traced"))
++		return;
++
++	map = skel->maps.percpu_lru_hash_map;
++	rc_or_err = percpu_key_is_set(map, ACCESS_LOC__TRACE_UPDATE);
++	if (!ASSERT_EQ(rc_or_err, TRUE,
++		       "percpu lru hash map updates are traced"))
++		return;
++	rc_or_err = percpu_key_is_set(map, ACCESS_LOC__TRACE_DELETE);
++	if (!ASSERT_EQ(rc_or_err, TRUE,
++		       "percpu lru hash map deletions are traced"))
++		return;
++}
++
++void map_trace_test(void)
++{
++	struct bpf_map_trace *skel;
++	ssize_t bytes_written;
++	char write_buf = 'a';
++	int write_fd = -1;
++	int rc;
++
++	/*
++	 * Load and attach programs.
++	 */
++	skel = bpf_map_trace__open_and_load();
++	if (!ASSERT_NEQ(skel, NULL, "open/load skeleton"))
++		return;
++
++	rc = bpf_map_trace__attach(skel);
++	if (!ASSERT_EQ(rc, 0, "attach skeleton"))
++		goto out;
++
++	/*
++	 * Invoke core BPF program.
++	 */
++	write_fd = open("/tmp/map_trace_test_file", O_CREAT | O_WRONLY);
++	if (!ASSERT_GE(rc, 0, "open tmp file for writing"))
++		goto out;
++
++	bytes_written = write(write_fd, &write_buf, sizeof(write_buf));
++	if (!ASSERT_EQ(bytes_written, sizeof(write_buf), "write to tmp file"))
++		return;
++
++	/*
++	 * Verify that tracing programs were invoked as expected.
++	 */
++	verify_map_contents(skel);
++
++out:
++	if (skel)
++		bpf_map_trace__destroy(skel);
++	if (write_fd != -1)
++		close(write_fd);
++}
++
++void test_map_trace(void)
++{
++	map_trace_test();
++}
++
+diff --git a/tools/testing/selftests/bpf/progs/bpf_map_trace.c b/tools/testing/selftests/bpf/progs/bpf_map_trace.c
 new file mode 100644
-index 000000000000..12356a2e1f9f
+index 000000000000..6135cd86b521
 --- /dev/null
-+++ b/kernel/bpf/map_trace.h
-@@ -0,0 +1,18 @@
-+// SPDX-License-Identifier: GPL-2.0-only
++++ b/tools/testing/selftests/bpf/progs/bpf_map_trace.c
+@@ -0,0 +1,95 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2021 Google */
++#include "vmlinux.h"
++
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++#include <errno.h>
++#include <string.h>
++
++#include "bpf_map_trace_common.h"
++
++#define DECLARE_MAP(name, map_type) \
++		struct { \
++			__uint(type, map_type); \
++			__uint(max_entries, __ACCESS_LOC__MAX); \
++			__type(key, u32); \
++			__type(value, u32); \
++		} name SEC(".maps")
++
++DECLARE_MAP(array_map, BPF_MAP_TYPE_ARRAY);
++DECLARE_MAP(percpu_array_map, BPF_MAP_TYPE_PERCPU_ARRAY);
++DECLARE_MAP(hash_map, BPF_MAP_TYPE_HASH);
++DECLARE_MAP(percpu_hash_map, BPF_MAP_TYPE_PERCPU_HASH);
++DECLARE_MAP(lru_hash_map, BPF_MAP_TYPE_LRU_HASH);
++DECLARE_MAP(percpu_lru_hash_map, BPF_MAP_TYPE_LRU_PERCPU_HASH);
++
++static inline void __log_location(void *map,
++				  enum MapAccessLocations location)
++{
++	u32 key = location;
++	u32 val = 1;
++
++	bpf_map_update_elem(map, &key, &val, /*flags=*/0);
++}
++
++static inline void log_location(struct bpf_map *map,
++				enum MapAccessLocations location)
++{
++	if (map == &array_map)
++		__log_location(&array_map, location);
++	if (map == &percpu_array_map)
++		__log_location(&percpu_array_map, location);
++	if (map == &hash_map)
++		__log_location(&hash_map, location);
++	if (map == &percpu_hash_map)
++		__log_location(&percpu_hash_map, location);
++	if (map == &lru_hash_map)
++		__log_location(&lru_hash_map, location);
++	if (map == &percpu_lru_hash_map)
++		__log_location(&percpu_lru_hash_map, location);
++}
++
++SEC("fentry/bpf_map_trace_update_elem")
++int BPF_PROG(fentry__bpf_map_trace_update_elem,
++	     struct bpf_map *map, void *key,
++	     void *value, u64 map_flags)
++{
++	log_location(map, ACCESS_LOC__TRACE_UPDATE);
++	return 0;
++}
++
++SEC("fentry/bpf_map_trace_delete_elem")
++int BPF_PROG(fentry__bpf_map_trace_delete_elem,
++	     struct bpf_map *map, void *key)
++{
++	log_location(map, ACCESS_LOC__TRACE_DELETE);
++	return 0;
++}
++
++static inline void do_map_accesses(void *map)
++{
++	u32 key = ACCESS_LOC__APP;
++	u32 val = 1;
++
++	bpf_map_update_elem(map, &key, &val, /*flags=*/0);
++	bpf_map_delete_elem(map, &key);
++}
++
++SEC("fentry/__x64_sys_write")
++int BPF_PROG(fentry__x64_sys_write, struct pt_regs *regs, int ret)
++{
++	/*
++	 * Trigger an update and a delete for every map type under test.
++	 * We want to verify that bpf_map_trace_{update,delete}_elem() fire
++	 * for each map type.
++	 */
++	do_map_accesses(&array_map);
++	do_map_accesses(&percpu_array_map);
++	do_map_accesses(&hash_map);
++	do_map_accesses(&percpu_hash_map);
++	do_map_accesses(&lru_hash_map);
++	do_map_accesses(&percpu_lru_hash_map);
++	return 0;
++}
++
+diff --git a/tools/testing/selftests/bpf/progs/bpf_map_trace_common.h b/tools/testing/selftests/bpf/progs/bpf_map_trace_common.h
+new file mode 100644
+index 000000000000..3aac75953508
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/bpf_map_trace_common.h
+@@ -0,0 +1,12 @@
++// SPDX-License-Identifier: GPL-2.0
 +/* Copyright (c) 2021 Google */
 +#pragma once
 +
-+#include <linux/bpf.h>
++enum MapAccessLocations {
++	ACCESS_LOC__APP,
++	ACCESS_LOC__TRACE_UPDATE,
++	ACCESS_LOC__TRACE_DELETE,
 +
-+/*
-+ * Map tracing hooks. They are called from some, but not all, bpf map types.
-+ * For those map types which call them, the only guarantee is that they are
-+ * called before the corresponding action (bpf_map_update_elem, etc.) takes
-+ * effect. Thus an fmod_ret program may use these hooks to prevent a map from
-+ * being mutated via the corresponding helpers.
-+ */
-+noinline int bpf_map_trace_update_elem(struct bpf_map *map, void *key,
-+				       void *value, u64 map_flags);
-+
-+noinline int bpf_map_trace_delete_elem(struct bpf_map *map, void *key);
++	__ACCESS_LOC__MAX,
++};
 +
 -- 
 2.33.1.1089.g2158813163f-goog
