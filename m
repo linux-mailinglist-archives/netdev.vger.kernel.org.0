@@ -2,211 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4018A442909
-	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 09:00:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FA8144291A
+	for <lists+netdev@lfdr.de>; Tue,  2 Nov 2021 09:08:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231283AbhKBICc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 04:02:32 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:27422 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230353AbhKBICX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 04:02:23 -0400
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1A265OI4031734;
-        Tue, 2 Nov 2021 07:59:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=OF+anmzgpqz6my5ltu5jjDFekadtOeguseVlb1jtWkk=;
- b=DsSCNn3dw9QQ+IagiLffTGee4cdzuOhald5KoLRw+tbdxlaK/DGalBs4XSO9SN7+aZGJ
- 9jDERxfbFvAkE1cp08rswcuMSRGEOGCg/35oIkZo24lH5xmn9m5+3K5LAXz5blOJeGmH
- 4OGLuciMFqh240iSPvEHMVpnpBm+rj/26U2TfkKQrPBJ37/wno2sEz1Y0CKPOQ2EN2Vc
- ZjWrCv2m22r+EfVUelyYY89shRKj2ebiOvttMKhjdEjTUpw4d711aTNfaTLMFOWcIxsp
- vJCEPR+0DSgtTO1punQqgFOzwTGYT4hGLGMZU5GrO+WXm9L/KDv9WNYxlS+NYLH1xMjD oA== 
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3c2rd02165-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 02 Nov 2021 07:59:46 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1A27viec003343;
-        Tue, 2 Nov 2021 07:59:43 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma02fra.de.ibm.com with ESMTP id 3c0wp9qkey-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 02 Nov 2021 07:59:43 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1A27rKGh64356760
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 2 Nov 2021 07:53:20 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0C653AE055;
-        Tue,  2 Nov 2021 07:59:41 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 81B66AE056;
-        Tue,  2 Nov 2021 07:59:40 +0000 (GMT)
-Received: from [9.171.61.66] (unknown [9.171.61.66])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue,  2 Nov 2021 07:59:40 +0000 (GMT)
-Message-ID: <d3454aa3-a502-d02d-be4e-e6393eed026b@linux.ibm.com>
-Date:   Tue, 2 Nov 2021 08:59:39 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Subject: Re: [PATCH -next] bonding: Fix a use-after-free problem when
- bond_sysfs_slave_add() failed
-Content-Language: en-US
-To:     huangguobin <huangguobin4@huawei.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <1635777273-46028-1-git-send-email-huangguobin4@huawei.com>
- <d6cd47b1-3b46-fc44-3a8d-b2444af527e6@linux.ibm.com>
- <5c02fbac130941a1a8578965975116b5@huawei.com>
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-In-Reply-To: <5c02fbac130941a1a8578965975116b5@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: _U_-_Okz7Q1wGGehoI3fMKmNsFL8S3Bn
-X-Proofpoint-GUID: _U_-_Okz7Q1wGGehoI3fMKmNsFL8S3Bn
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        id S230324AbhKBILS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 04:11:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38754 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229497AbhKBILR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Nov 2021 04:11:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7F11560F70;
+        Tue,  2 Nov 2021 08:08:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635840523;
+        bh=pAPXvElC0JcDLoV+Ua2Li9xLpANMB96BNbqg3PWOw2M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YgvRCMT7SRFacMXy+k+M8W5LRtN5MXdYzxB5rHQu+v7gRoj4Y5ThLpaYcVNJJQBQm
+         Lo+h0n34gn6hrba1N4kBv+j6BMv9iebGTD++/aOaIU23mSnARZK80zm6tC3Sk4e0FD
+         z66k/dcsqjQNm8rB7kBXVxcXmJ/fPEoABpN+64Y76siC3wgUduXyI7zLpX0ESIVZ3K
+         CfU10G1Kw+MNSCUhTR3bsbeqpiNDUy35S0MescKQKxeuALQfAJvTzay6WIockCUAra
+         w9JKLdwUt96wJLaM6iyn4TvUBrofyQ2gBBwg/LGJ7cFlER7a/xkH1hxt5b/i291Nj3
+         lsjze9cpqOk7w==
+Date:   Tue, 2 Nov 2021 10:08:39 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     idosch@idosch.org, edwin.peer@broadcom.com, jiri@resnulli.us,
+        netdev@vger.kernel.org
+Subject: Re: [RFC 0/5] devlink: add an explicit locking API
+Message-ID: <YYDyBxNzJSpKXosy@unreal>
+References: <20211030231254.2477599-1-kuba@kernel.org>
+ <YX5Efghyxu5g8kzY@unreal>
+ <20211101073259.33406da3@kicinski-fedora-PC1C0HJN>
+ <YYAzn+mtrGp/As74@unreal>
+ <20211101141613.3373b7f4@kicinski-fedora-PC1C0HJN>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-11-02_06,2021-11-01_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
- adultscore=0 suspectscore=0 malwarescore=0 bulkscore=0 phishscore=0
- mlxlogscore=999 lowpriorityscore=0 impostorscore=0 spamscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2111020044
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211101141613.3373b7f4@kicinski-fedora-PC1C0HJN>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02.11.21 03:55, huangguobin wrote:
-> I think bond_sysfs_slave_del should not be used in the error handling process, because bond_sysfs_slave_del will traverse all slave_attrs and release them. When sysfs_create_file fails, only some attributes may be created successfully.
-
-[please don't top-post]
-
-The suggestion was to use sysfs_create_files(), which would handle such rollback
-internally. There was no mention of using bond_sysfs_slave_del().
-
-ie. something like the following (untested):
-
-diff --git a/drivers/net/bonding/bond_sysfs_slave.c b/drivers/net/bonding/bond_sysfs_slave.c
-index fd07561da034..a1fd4bc0b0d2 100644
---- a/drivers/net/bonding/bond_sysfs_slave.c
-+++ b/drivers/net/bonding/bond_sysfs_slave.c
-@@ -108,15 +108,15 @@ static ssize_t ad_partner_oper_port_state_show(struct slave *slave, char *buf)
- }
- static SLAVE_ATTR_RO(ad_partner_oper_port_state);
- 
--static const struct slave_attribute *slave_attrs[] = {
--       &slave_attr_state,
--       &slave_attr_mii_status,
--       &slave_attr_link_failure_count,
--       &slave_attr_perm_hwaddr,
--       &slave_attr_queue_id,
--       &slave_attr_ad_aggregator_id,
--       &slave_attr_ad_actor_oper_port_state,
--       &slave_attr_ad_partner_oper_port_state,
-+static const struct attribute *slave_attrs[] = {
-+       &slave_attr_state.attr,
-+       &slave_attr_mii_status.attr,
-+       &slave_attr_link_failure_count.attr,
-+       &slave_attr_perm_hwaddr.attr,
-+       &slave_attr_queue_id.attr,
-+       &slave_attr_ad_aggregator_id.attr,
-+       &slave_attr_ad_actor_oper_port_state.attr,
-+       &slave_attr_ad_partner_oper_port_state.attr,
-        NULL
- };
- 
-@@ -137,24 +137,16 @@ const struct sysfs_ops slave_sysfs_ops = {
- 
- int bond_sysfs_slave_add(struct slave *slave)
- {
--       const struct slave_attribute **a;
-        int err;
- 
--       for (a = slave_attrs; *a; ++a) {
--               err = sysfs_create_file(&slave->kobj, &((*a)->attr));
--               if (err) {
--                       kobject_put(&slave->kobj);
--                       return err;
--               }
--       }
-+       err = sysfs_create_files(&slave->kobj, slave_attrs);
-+       if (err)
-+               kobject_put(&slave->kobj);
- 
--       return 0;
-+       return err;
- }
- 
- void bond_sysfs_slave_del(struct slave *slave)
- {
--       const struct slave_attribute **a;
--
--       for (a = slave_attrs; *a; ++a)
--               sysfs_remove_file(&slave->kobj, &((*a)->attr));
-+       sysfs_remove_files(&slave->kobj, slave_attrs);
- }
-
-
-> -----Original Message-----
-> From: Julian Wiedmann [mailto:jwi@linux.ibm.com] 
-> Sent: Tuesday, November 2, 2021 3:31 AM
-> To: huangguobin <huangguobin4@huawei.com>; j.vosburgh@gmail.com; vfalico@gmail.com; andy@greyhouse.net; davem@davemloft.net; kuba@kernel.org
-> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH -next] bonding: Fix a use-after-free problem when bond_sysfs_slave_add() failed
+On Mon, Nov 01, 2021 at 02:16:13PM -0700, Jakub Kicinski wrote:
+> On Mon, 1 Nov 2021 20:36:15 +0200 Leon Romanovsky wrote:
+> > > How is RW semaphore going to solve the problem that ops are unlocked
+> > > and have to take the instance lock from within to add/remove ports?  
+> > 
+> > This is three step process, but mainly it is first step. We need to make
+> > sure that functions that can re-entry will use nested locks.
+> > 
+> > Steps:
+> > 1. Use proper locking API that supports nesting:
+> > https://lore.kernel.org/netdev/YYABqfFy%2F%2Fg5Gdis@nanopsycho/T/#mf9dc5cac2013abe413545bbe4a09cc231ae209a4
 > 
-> On 01.11.21 15:34, Huang Guobin wrote:
->> When I do fuzz test for bonding device interface, I got the following 
->> use-after-free Calltrace:
->>
-> 
-> [...]
-> 
->> Fixes: 7afcaec49696 (bonding: use kobject_put instead of _del after 
->> kobject_add)
->> Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
->> ---
->>  drivers/net/bonding/bond_sysfs_slave.c | 11 ++++++++---
->>  1 file changed, 8 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/net/bonding/bond_sysfs_slave.c 
->> b/drivers/net/bonding/bond_sysfs_slave.c
->> index fd07561..d1a5b3f 100644
->> --- a/drivers/net/bonding/bond_sysfs_slave.c
->> +++ b/drivers/net/bonding/bond_sysfs_slave.c
->> @@ -137,18 +137,23 @@ static ssize_t slave_show(struct kobject *kobj,
->>  
->>  int bond_sysfs_slave_add(struct slave *slave)  {
->> -	const struct slave_attribute **a;
->> +	const struct slave_attribute **a, **b;
->>  	int err;
->>  
->>  	for (a = slave_attrs; *a; ++a) {
->>  		err = sysfs_create_file(&slave->kobj, &((*a)->attr));
->>  		if (err) {
->> -			kobject_put(&slave->kobj);
->> -			return err;
->> +			goto err_remove_file;
->>  		}
->>  	}
->>  
->>  	return 0;
->> +
->> +err_remove_file:
->> +	for (b = slave_attrs; b < a; ++b)
->> +		sysfs_remove_file(&slave->kobj, &((*b)->attr));
->> +
->> +	return err;
->>  }
->>  
-> 
-> This looks like a candidate for sysfs_create_files(), no?
-> 
->>  void bond_sysfs_slave_del(struct slave *slave)
->>
-> 
+> Whether we provide the an unlocked API or allow lock nesting 
+> on the driver API is not that important to me.
 
+Thanks
+
+> 
+> > 2. Convert devlink->lock to be RW semaphore:
+> > commit 4506dd3a90a82a0b6bde238f507907747ab88407
+> > Author: Leon Romanovsky <leon@kernel.org>
+> > Date:   Sun Oct 24 16:54:16 2021 +0300
+> > 
+> >     devlink: Convert devlink lock to be RW semaphore
+> > 
+> >     This is naive conversion of devlink->lock to RW semaphore, so we will be
+> >     able to differentiate commands that require exclusive access vs. parallel
+> >     ready-to-run ones.
+> > 
+> >     All "set" commands that used devlink->lock are converted to write lock,
+> >     while all "get" commands are marked with read lock.
+> > 
+> > @@ -578,8 +584,12 @@ static int devlink_nl_pre_doit(const struct genl_ops *ops,
+> >                 mutex_unlock(&devlink_mutex);
+> >                 return PTR_ERR(devlink);
+> >         }
+> > -       if (~ops->internal_flags & DEVLINK_NL_FLAG_NO_LOCK)
+> > -               mutex_lock(&devlink->lock);
+> > +
+> > +       if (~ops->internal_flags & DEVLINK_NL_FLAG_SHARED_ACCESS)
+> > +               down_write(&devlink->rwsem);
+> > +       else
+> > +               down_read(&devlink->rwsem);
+> > +
+> 
+> IIUC the RW sem thing is an optimization, it's besides the point.
+
+I need RW as a way to ensure "exclusive" access during _set_ operation.
+It is not an optimization, but simple way to understand if parallel
+access is possible at this specific point of time.
+
+> 
+> > 3. Drop devlink_mutex:
+> > commit 3177af9971c4cd95f9633aeb9b0434687da62fd0
+> > Author: Leon Romanovsky <leon@kernel.org>
+> > Date:   Sun Oct 31 16:05:40 2021 +0200
+> > 
+> >     devlink: Use xarray locking mechanism instead big devlink lock
+> > 
+> >     The conversion to XArray together with devlink reference counting
+> >     allows us reuse the following locking pattern:
+> >      xa_lock()
+> >       xa_for_each() {
+> >        devlink_try_get()
+> >        xa_unlock()
+> >        ....
+> >        xa_lock()
+> >      }
+> > 
+> >     This pattern gives us a way to run any commands between xa_unlock() and
+> >     xa_lock() without big devlink mutex, while making sure that devlink instance
+> >     won't be released.
+> 
+> Yup, I think this part we agree on.
+> 
+> > Steps 2 and 3 were not posted due to merge window and my desire to get
+> > mileage in our regression.
+> 
+> :)
+> 
+> > > > Please, let's not give up on standalone devlink implementation without
+> > > > drivers need to know internal devlink details. It is hard to do but possible.  
+> > > 
+> > > We may just disagree on this one. Please answer my question above -
+> > > so far IDK how you're going to fix the problem of re-reg'ing subobjects
+> > > from the reload path.
+> > > 
+> > > My experience writing drivers is that it was painfully unclear what 
+> > > the devlink locking rules are. Sounds like you'd make them even more
+> > > complicated.  
+> > 
+> > How? I have only one rule:
+> >  * Driver author should be aware that between devlink_register() and
+> >    devlink_unregister(), users can send netlink commands.
+> > 
+> > In your solution, driver authors will need to follow whole devlink
+> > how-to-use book.
+> 
+> Only if they need refs. If you don't the API is the same as yours.
+> 
+> IOW you don't provide an API for advanced use cases at all. You force
+> the drivers to implement their own reference counting and locking. 
+
+The complex drivers already do it anyway, because they need to reference
+counting their own structures to make sure that the lifetime of these
+structures meats their model.
+
+> I want them to just rely on devlink as a framework.
+
+And I don't :). For me devlink is a way to configure device, not manage
+lifetime of driver specific data structures.
+
+> 
+> How many driver locks do you have in netdevsim after conversion?
+> All 3? How do you add a port to the instance from sysfs without a
+> AB / BA deadlock between the port lock and the devlink lock if the
+> driver can't take the devlink lock? Are you still going to need the 
+> "in_reload" wart?
+
+I don't know yet, because as you wrote before netdevsim is for
+prototyping and such ABBA deadlock doesn't exist in real devices.
+
+My current focus is real devices for now.
+
+Maybe the solution will be to go away from sysfs completely. We will see.
+
+> 
+> > > This RFC makes the rules simple - all devlink ops are locked.
+> > > 
+> > > For the convenience of the drivers they can also take the instance lock
+> > > whenever they want to prevent ops from being called. Experience with
+> > > rtnl_lock teaches us that this is very useful for drivers.  
+> > 
+> > Strange, I see completely opposite picture in the git log with so much
+> > changes that have Fixes line and add/remove/mention rtnl_lock. Maybe it
+> > is useful, but almost all if not all drivers full of fixes of rtnl_lock
+> > usage. I don't want same for the devlink.
+> 
+> If you don't provide a locking API to the drivers you'll have to fix 2x
+> the bugs, and each of them subtly different. At least maintainers know
+> what rtnl_lock rules are.
+
+I clearly remember this patch and the sentence "...in
+some devices' resume function(igb_resum,igc_resume) they calls rtnl_lock()
+again". The word "... some ..." hints to me that maintainers have different
+opinion on how to use rtnl_lock.
+
+https://lore.kernel.org/netdev/20210809032809.1224002-1-acelan.kao@canonical.com/
+
+Thanks
