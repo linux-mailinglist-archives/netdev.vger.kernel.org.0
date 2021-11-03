@@ -2,107 +2,298 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B050A443B8D
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 03:45:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CCB2443BA4
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 03:59:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231451AbhKCCsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 22:48:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40814 "EHLO
+        id S229650AbhKCDB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 23:01:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231467AbhKCCsG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 22:48:06 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC0EAC061714;
-        Tue,  2 Nov 2021 19:45:30 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id u11so1535601plf.3;
-        Tue, 02 Nov 2021 19:45:30 -0700 (PDT)
+        with ESMTP id S229462AbhKCDB1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 23:01:27 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B89CC061714
+        for <netdev@vger.kernel.org>; Tue,  2 Nov 2021 19:58:52 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id br39so1007761qkb.8
+        for <netdev@vger.kernel.org>; Tue, 02 Nov 2021 19:58:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Nw9KVnT8PMeXUXo9bUvbg5RLD/BnH9iNLwogddXnvZs=;
-        b=CqpI7Xxs3cFAfQqnKOtLWaMRsTzjEhmQzrwN3vnK7wbjNn1exvesf9HrmNX/lrLSQ4
-         KCpKwAaM1mZlQ7qQliggfOqqBZUw/lY2OOfOsIxgvtxaOswdnnUhgvds0ykksLp+nlEF
-         YNI35OU4IiuP+0Vy03A2qUorrCKlfgoCDhdVY/hP5OXJ8Q2oFjrC4ep4qQ4r88Z9wtrL
-         b3RIPyxhHTKHf1FiQkuiDvcE/Bryd/Tb8eY/W0uExzZJd+q8pbH9tsV19zNqaM43OQOO
-         nrcU5dQWaoxIwNMMXqkl41C1oc8wxc5BWIV+rF6OMfDTYtqR9nTPazw6OMlhmMQTnY9f
-         FcrA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hvc97CWNYGzRO3GV3LbHfpZeb1EI4pa7CBFt27X2j0E=;
+        b=cPLu0AaQS1AHNgnjHlps1H6XUj0nXOjMrrpOzTA2SNQSzSTPiTw8HniTksV6dtQq0W
+         KWmlrd6xt/3s9OiqOWQkzCI9/UC6cCd8swubkpe9i4HnyPKOZheyK6whAIwnPAwWnx3p
+         Q+5El8QM8nODPO9ZtnQBvseUUJAyKi9zCSEKKOef+cPTjFxBz8V3c0+H47ljFApVfWPf
+         uJfahrpIBxMd2LDOnXhCTezWPoIzVK/xiO9DHMuZ/zLkk0X+FSG2ckq07eGmJKy99bzL
+         dr1HmDPbV7Dsaz6UbvkZcTHTN2fzUBDpceWkL0w8hWuF2vmtAz8fNEixJMaJqWXWA6nL
+         Z/cQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Nw9KVnT8PMeXUXo9bUvbg5RLD/BnH9iNLwogddXnvZs=;
-        b=Hr44WBwQtCxPmNiFo1RKBcsc1PcKNEd+9mPGz5elbns87MxueOv3qOlzhceNFTVfKS
-         1aGSI7nhYoItlCkV0jRS5HFuwCXciWHzKU7HJVHi5SyqPHwkBPhHDcAxiYMloeE9AnUr
-         Tj+MAohtbVF4aqE/4vtjmk9H6DCtIqaoFx3gBdvWxefO+IMELyOqNN63RcMakpPzrP1s
-         WRtZdFLcG7rupMo/6Jj3lF8sVmbfjkpLfw/vKgK8ZBS7KMUPmKwJsm1spBfDlgJ31Xgt
-         1zimP176XRSeqCKJLC5cJ2Ra+GhoywCCuFtdBpcF2v0RHRh5XayS0CtlTBHIk8CjnHEX
-         Swvg==
-X-Gm-Message-State: AOAM533eF5iX5y7DbqM2jy3jlgnR5IK+Lqejot8rqeEpevT3yEOXFbop
-        5a8mATwVd9BaTjooA2aR/l+rkKgG/EU=
-X-Google-Smtp-Source: ABdhPJzgLcmwsJXkgDkNGZqPRe19LIl+StSnlgNbDIEWdPeaSjASJQGmFD5CdzG9W9VOpqMrhvoXTQ==
-X-Received: by 2002:a17:902:c713:b0:141:bc54:f32c with SMTP id p19-20020a170902c71300b00141bc54f32cmr26113768plp.82.1635907530119;
-        Tue, 02 Nov 2021 19:45:30 -0700 (PDT)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id t13sm348088pgn.94.2021.11.02.19.45.26
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hvc97CWNYGzRO3GV3LbHfpZeb1EI4pa7CBFt27X2j0E=;
+        b=U2BKpBUWz+helhQksl3ivvH6RajUsFFXgxxhzzKZTlgd33JJz+PYXhSsxygq1rIIft
+         IfZ+0X/yD/hPNTXMCSwA2MEO9Gz56CgV7xEaiytzxz1i9GEpCfyIjwS4Q8cCkA+dazZL
+         y47bRTJ36OdnmNgYEEyu9Qnmjr3naqWKy/BswVPGTshWtG9wVFJWZnu9K1VPmEcy6hFp
+         Pt/C3rgSZEi2h/Own/8SWAZ2sPGfhYY+vu18zJcieaIPhk2HQ3A49eeYOXD4tQQBIEJo
+         sasbEoBCtOtfSR5flIADVTfwsh4FOsUS/2n7mTrrFXhkZrmYpD7U3ehoDEbWEUKwufIE
+         y04g==
+X-Gm-Message-State: AOAM530+8K5Hb1S0Y9pwVYgv9lFL4u24rbcto6zMfU8aE00FGZ6iterY
+        WgiAP3LpBf4w194ZTHU0hvQ=
+X-Google-Smtp-Source: ABdhPJyFKdjNUljwzNpIyiSm+AeNLbTyE62NsQct1vrVzZvMohP8hZu+udeZrIUopXpWsP5pYxv2VQ==
+X-Received: by 2002:a05:620a:29c1:: with SMTP id s1mr17239945qkp.108.1635908331124;
+        Tue, 02 Nov 2021 19:58:51 -0700 (PDT)
+Received: from talalahmad1.nyc.corp.google.com ([2620:0:1003:317:b735:c0dc:2c19:c76c])
+        by smtp.gmail.com with ESMTPSA id ay12sm675844qkb.35.2021.11.02.19.58.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Nov 2021 19:45:29 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Andrea Mayer <andrea.mayer@uniroma2.it>,
-        Coco Li <lixiaoyan@google.com>,
-        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
-        Paolo Abeni <pabeni@redhat.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        linux-kselftest@vger.kernel.org,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Willem de Bruijn <willemb@google.com>
-Subject: [PATCHv3 net 5/5] kselftests/net: add missed toeplitz.sh/toeplitz_client.sh to Makefile
-Date:   Wed,  3 Nov 2021 10:44:59 +0800
-Message-Id: <20211103024459.224690-6-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211103024459.224690-1-liuhangbin@gmail.com>
-References: <20211103024459.224690-1-liuhangbin@gmail.com>
+        Tue, 02 Nov 2021 19:58:50 -0700 (PDT)
+From:   Talal Ahmad <mailtalalahmad@gmail.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     arjunroy@google.com, edumazet@google.com, soheil@google.com,
+        willemb@google.com, dsahern@kernel.org, yoshfuji@linux-ipv6.org,
+        kuba@kernel.org, cong.wang@bytedance.com, haokexin@gmail.com,
+        jonathan.lemon@gmail.com, alobakin@pm.me, pabeni@redhat.com,
+        ilias.apalodimas@linaro.org, memxor@gmail.com, elver@google.com,
+        nogikh@google.com, vvs@virtuozzo.com,
+        Talal Ahmad <talalahmad@google.com>
+Subject: [PATCH net-next v3] net: avoid double accounting for pure zerocopy skbs
+Date:   Tue,  2 Nov 2021 22:58:44 -0400
+Message-Id: <20211103025844.2579722-1-mailtalalahmad@gmail.com>
+X-Mailer: git-send-email 2.33.1.1089.g2158813163f-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When generating the selftests to another folder, the toeplitz.sh
-and toeplitz_client.sh are missing as they are not in Makefile, e.g.
+From: Talal Ahmad <talalahmad@google.com>
 
-  make -C tools/testing/selftests/ install \
-      TARGETS="net" INSTALL_PATH=/tmp/kselftests
+Track skbs containing only zerocopy data and avoid charging them to
+kernel memory to correctly account the memory utilization for
+msg_zerocopy. All of the data in such skbs is held in user pages which
+are already accounted to user. Before this change, they are charged
+again in kernel in __zerocopy_sg_from_iter. The charging in kernel is
+excessive because data is not being copied into skb frags. This
+excessive charging can lead to kernel going into memory pressure
+state which impacts all sockets in the system adversely. Mark pure
+zerocopy skbs with a SKBFL_PURE_ZEROCOPY flag and remove
+charge/uncharge for data in such skbs.
 
-Making them under TEST_PROGS_EXTENDED as they test NIC hardware features
-and are not intended to be run from kselftests.
+Initially, an skb is marked pure zerocopy when it is empty and in
+zerocopy path. skb can then change from a pure zerocopy skb to mixed
+data skb (zerocopy and copy data) if it is at tail of write queue and
+there is room available in it and non-zerocopy data is being sent in
+the next sendmsg call. At this time sk_mem_charge is done for the pure
+zerocopied data and the pure zerocopy flag is unmarked. We found that
+this happens very rarely on workloads that pass MSG_ZEROCOPY.
 
-Fixes: 5ebfb4cc3048 ("selftests/net: toeplitz test")
-Reviewed-by: Willem de Bruijn <willemb@google.com>
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
---
-v3: no update
-v2: move the tests under TEST_PROGS_EXTENDED as Willem suggested.
+A pure zerocopy skb can later be coalesced into normal skb if they are
+next to each other in queue but this patch prevents coalescing from
+happening. This avoids complexity of charging when skb downgrades from
+pure zerocopy to mixed. This is also rare.
+
+In sk_wmem_free_skb, if it is a pure zerocopy skb, an sk_mem_uncharge
+for SKB_TRUESIZE(skb_end_offset(skb)) is done for sk_mem_charge in
+tcp_skb_entail for an skb without data.
+
+Testing with the msg_zerocopy.c benchmark between two hosts(100G nics)
+with zerocopy showed that before this patch the 'sock' variable in
+memory.stat for cgroup2 that tracks sum of sk_forward_alloc,
+sk_rmem_alloc and sk_wmem_queued is around 1822720 and with this
+change it is 0. This is due to no charge to sk_forward_alloc for
+zerocopy data and shows memory utilization for kernel is lowered.
+
+With this commit we don't see the warning we saw in previous commit
+which resulted in commit 84882cf72cd774cf16fd338bdbf00f69ac9f9194.
+
+Signed-off-by: Talal Ahmad <talalahmad@google.com>
+Acked-by: Arjun Roy <arjunroy@google.com>
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- tools/testing/selftests/net/Makefile | 1 +
- 1 file changed, 1 insertion(+)
+ include/linux/skbuff.h | 19 ++++++++++++++++++-
+ include/net/tcp.h      |  8 ++++++--
+ net/core/datagram.c    |  3 ++-
+ net/core/skbuff.c      |  3 ++-
+ net/ipv4/tcp.c         | 22 ++++++++++++++++++++--
+ net/ipv4/tcp_output.c  |  7 +++++--
+ 6 files changed, 53 insertions(+), 9 deletions(-)
 
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 218a24f0567e..7615f29831eb 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -35,6 +35,7 @@ TEST_PROGS += srv6_end_dt4_l3vpn_test.sh
- TEST_PROGS += srv6_end_dt6_l3vpn_test.sh
- TEST_PROGS += vrf_strict_mode_test.sh
- TEST_PROGS_EXTENDED := in_netns.sh setup_loopback.sh setup_veth.sh
-+TEST_PROGS_EXTENDED += toeplitz_client.sh toeplitz.sh
- TEST_GEN_FILES =  socket nettest
- TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
- TEST_GEN_FILES += tcp_mmap tcp_inq psock_snd txring_overwrite
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 0bd6520329f6..10869906cc57 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -454,9 +454,15 @@ enum {
+ 	 * all frags to avoid possible bad checksum
+ 	 */
+ 	SKBFL_SHARED_FRAG = BIT(1),
++
++	/* segment contains only zerocopy data and should not be
++	 * charged to the kernel memory.
++	 */
++	SKBFL_PURE_ZEROCOPY = BIT(2),
+ };
+ 
+ #define SKBFL_ZEROCOPY_FRAG	(SKBFL_ZEROCOPY_ENABLE | SKBFL_SHARED_FRAG)
++#define SKBFL_ALL_ZEROCOPY	(SKBFL_ZEROCOPY_FRAG | SKBFL_PURE_ZEROCOPY)
+ 
+ /*
+  * The callback notifies userspace to release buffers when skb DMA is done in
+@@ -1464,6 +1470,17 @@ static inline struct ubuf_info *skb_zcopy(struct sk_buff *skb)
+ 	return is_zcopy ? skb_uarg(skb) : NULL;
+ }
+ 
++static inline bool skb_zcopy_pure(const struct sk_buff *skb)
++{
++	return skb_shinfo(skb)->flags & SKBFL_PURE_ZEROCOPY;
++}
++
++static inline bool skb_pure_zcopy_same(const struct sk_buff *skb1,
++				       const struct sk_buff *skb2)
++{
++	return skb_zcopy_pure(skb1) == skb_zcopy_pure(skb2);
++}
++
+ static inline void net_zcopy_get(struct ubuf_info *uarg)
+ {
+ 	refcount_inc(&uarg->refcnt);
+@@ -1528,7 +1545,7 @@ static inline void skb_zcopy_clear(struct sk_buff *skb, bool zerocopy_success)
+ 		if (!skb_zcopy_is_nouarg(skb))
+ 			uarg->callback(skb, uarg, zerocopy_success);
+ 
+-		skb_shinfo(skb)->flags &= ~SKBFL_ZEROCOPY_FRAG;
++		skb_shinfo(skb)->flags &= ~SKBFL_ALL_ZEROCOPY;
+ 	}
+ }
+ 
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 70972f3ac8fa..4da22b41bde6 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -293,7 +293,10 @@ static inline bool tcp_out_of_memory(struct sock *sk)
+ static inline void tcp_wmem_free_skb(struct sock *sk, struct sk_buff *skb)
+ {
+ 	sk_wmem_queued_add(sk, -skb->truesize);
+-	sk_mem_uncharge(sk, skb->truesize);
++	if (!skb_zcopy_pure(skb))
++		sk_mem_uncharge(sk, skb->truesize);
++	else
++		sk_mem_uncharge(sk, SKB_TRUESIZE(skb_end_offset(skb)));
+ 	__kfree_skb(skb);
+ }
+ 
+@@ -974,7 +977,8 @@ static inline bool tcp_skb_can_collapse(const struct sk_buff *to,
+ 					const struct sk_buff *from)
+ {
+ 	return likely(tcp_skb_can_collapse_to(to) &&
+-		      mptcp_skb_can_collapse(to, from));
++		      mptcp_skb_can_collapse(to, from) &&
++		      skb_pure_zcopy_same(to, from));
+ }
+ 
+ /* Events passed to congestion control interface */
+diff --git a/net/core/datagram.c b/net/core/datagram.c
+index 15ab9ffb27fe..ee290776c661 100644
+--- a/net/core/datagram.c
++++ b/net/core/datagram.c
+@@ -646,7 +646,8 @@ int __zerocopy_sg_from_iter(struct sock *sk, struct sk_buff *skb,
+ 		skb->truesize += truesize;
+ 		if (sk && sk->sk_type == SOCK_STREAM) {
+ 			sk_wmem_queued_add(sk, truesize);
+-			sk_mem_charge(sk, truesize);
++			if (!skb_zcopy_pure(skb))
++				sk_mem_charge(sk, truesize);
+ 		} else {
+ 			refcount_add(truesize, &skb->sk->sk_wmem_alloc);
+ 		}
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 67a9188d8a49..29e617d8d7fb 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -3433,8 +3433,9 @@ static inline void skb_split_no_header(struct sk_buff *skb,
+ void skb_split(struct sk_buff *skb, struct sk_buff *skb1, const u32 len)
+ {
+ 	int pos = skb_headlen(skb);
++	const int zc_flags = SKBFL_SHARED_FRAG | SKBFL_PURE_ZEROCOPY;
+ 
+-	skb_shinfo(skb1)->flags |= skb_shinfo(skb)->flags & SKBFL_SHARED_FRAG;
++	skb_shinfo(skb1)->flags |= skb_shinfo(skb)->flags & zc_flags;
+ 	skb_zerocopy_clone(skb1, skb, 0);
+ 	if (len < pos)	/* Split line is inside header. */
+ 		skb_split_inside_header(skb, skb1, len, pos);
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index bc7f419184aa..b461ae573afc 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -863,6 +863,7 @@ struct sk_buff *tcp_stream_alloc_skb(struct sock *sk, int size, gfp_t gfp,
+ 	if (likely(skb)) {
+ 		bool mem_scheduled;
+ 
++		skb->truesize = SKB_TRUESIZE(skb_end_offset(skb));
+ 		if (force_schedule) {
+ 			mem_scheduled = true;
+ 			sk_forced_mem_schedule(sk, skb->truesize);
+@@ -1319,6 +1320,15 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 
+ 			copy = min_t(int, copy, pfrag->size - pfrag->offset);
+ 
++			/* skb changing from pure zc to mixed, must charge zc */
++			if (unlikely(skb_zcopy_pure(skb))) {
++				if (!sk_wmem_schedule(sk, skb->data_len))
++					goto wait_for_space;
++
++				sk_mem_charge(sk, skb->data_len);
++				skb_shinfo(skb)->flags &= ~SKBFL_PURE_ZEROCOPY;
++			}
++
+ 			if (!sk_wmem_schedule(sk, copy))
+ 				goto wait_for_space;
+ 
+@@ -1339,8 +1349,16 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 			}
+ 			pfrag->offset += copy;
+ 		} else {
+-			if (!sk_wmem_schedule(sk, copy))
+-				goto wait_for_space;
++			/* First append to a fragless skb builds initial
++			 * pure zerocopy skb
++			 */
++			if (!skb->len)
++				skb_shinfo(skb)->flags |= SKBFL_PURE_ZEROCOPY;
++
++			if (!skb_zcopy_pure(skb)) {
++				if (!sk_wmem_schedule(sk, copy))
++					goto wait_for_space;
++			}
+ 
+ 			err = skb_zerocopy_iter_stream(sk, skb, msg, copy, uarg);
+ 			if (err == -EMSGSIZE || err == -EEXIST) {
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 6fbbf1558033..287b57aadc37 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -1677,7 +1677,8 @@ int tcp_trim_head(struct sock *sk, struct sk_buff *skb, u32 len)
+ 	if (delta_truesize) {
+ 		skb->truesize	   -= delta_truesize;
+ 		sk_wmem_queued_add(sk, -delta_truesize);
+-		sk_mem_uncharge(sk, delta_truesize);
++		if (!skb_zcopy_pure(skb))
++			sk_mem_uncharge(sk, delta_truesize);
+ 	}
+ 
+ 	/* Any change of skb->len requires recalculation of tso factor. */
+@@ -2295,7 +2296,9 @@ static bool tcp_can_coalesce_send_queue_head(struct sock *sk, int len)
+ 		if (len <= skb->len)
+ 			break;
+ 
+-		if (unlikely(TCP_SKB_CB(skb)->eor) || tcp_has_tx_tstamp(skb))
++		if (unlikely(TCP_SKB_CB(skb)->eor) ||
++		    tcp_has_tx_tstamp(skb) ||
++		    !skb_pure_zcopy_same(skb, next))
+ 			return false;
+ 
+ 		len -= skb->len;
 -- 
-2.31.1
+2.33.1.1089.g2158813163f-goog
 
