@@ -2,84 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 788E5443E3A
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 09:15:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D93C2443E4D
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 09:22:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231629AbhKCISI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 04:18:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57144 "EHLO
+        id S231396AbhKCIYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 04:24:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230352AbhKCISH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 04:18:07 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84CCFC061714
-        for <netdev@vger.kernel.org>; Wed,  3 Nov 2021 01:15:31 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id i79so1451231ioa.13
-        for <netdev@vger.kernel.org>; Wed, 03 Nov 2021 01:15:31 -0700 (PDT)
+        with ESMTP id S230025AbhKCIYi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 04:24:38 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 992ABC061714;
+        Wed,  3 Nov 2021 01:22:02 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id t5-20020a17090a4e4500b001a0a284fcc2so873067pjl.2;
+        Wed, 03 Nov 2021 01:22:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=4WBb55Nvj9a5aWc53C0Lx3Zw5ORu825eRaNjZkYrKyc=;
-        b=EzOr0Kt15pLcCrmPFO8U+qlouRwMQsZEE2bTf+6hvAPrI8MvtHc6FWW7jFgPB6LXwC
-         pcbTJ+096e59zqbmHXDdNGF9gkZa/4k4IYftrteQ1/0GFKs/i7mMNI6FFUVYbroCWh67
-         4WD2XSTDo2o+4U+9LInSGgPLtS2bPI9JOAn0ytyWDVbd19nYZWnfRKheMlnKCDakv3Y0
-         onCxf4HDCZiXsa0FqIQ86ua7XSm1TVOVM/8niHg3I9tXR1ONG722Hng6/s19qzkvOZAX
-         4+ltl6/3t4gXknKPXt7/5Ig060C83/mD08SGS5Gm5OqVuAx8Q9uxOD2htPxMi8/5SGfa
-         FAFg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=a/GNLPALkwGhXSrYcUSU/+LJnWVp6grMHuVzBxpcEmw=;
+        b=bTmBb2iy82QYSSSNyvZQcNqDGtebZN8kR2NEI/H0GSud9PT7S4pYNpyoZqKfmTDOmK
+         8pRRrYDimrVU7dQeMMHq1otsJE+n2rOFO4kaz2qo6N8r3J+odIFAL1Xs7j8c0tAkDIB4
+         ORddHNoDsfMpGEvvjQMqJilDJ1k02hYIc+IVWBTEd16sX4KCysfvozxebPj1iWEvKsB7
+         zusKhMbyrFqrsLe64syE95i0flXXS+z1FcttIQp6tAICI2F9htV7TIE5hKRRKFPO9/BW
+         W9UwgO1QzaMGfafnrwIDL08ICa1T1FsH6BUgeM8rp4sxd2UaBY/cIeaQmOa83v7Vbx7q
+         WZHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=4WBb55Nvj9a5aWc53C0Lx3Zw5ORu825eRaNjZkYrKyc=;
-        b=PV/ghYKdEyQskDHNcWG5K9oSFau/4Vtu+M7bRTRN242IwgNwe8pzGJcYBpiBI+VTv6
-         eszJhxtw1b7cB3mk/RWT1BYbd2SlJbnfRps/4IXZ9QfoDsz39u+Euoo5SP8XVgdyyImn
-         Mde351tVDhobVFzk7ZDJog8iNNq0HJzKot0/Dr2Wa3zQO0il/1v+cl6IveC2QObid907
-         nq/gJgcVYSqPet7u+7CapRi4gEQDZgEotFjywMvZpB53WWUXJ5WRmOynNrq8lyvm/3HQ
-         KX3Te3tA6yxGNA0sedouWRzCESDmzCVoU72cpbbrBiv6CrydklW2vC6+Yc6WdrBHQFSp
-         eOew==
-X-Gm-Message-State: AOAM5324GpvxU6SY/HhL9DcpodLJHTOmgBcQGp1BHPKHRxlzrBjoMgfM
-        UYoDUXBwd08pe0jR62AQ/uqE24tXyKJpn/Cctrc=
-X-Google-Smtp-Source: ABdhPJz9Ik/jnq1ByuTQHzKGd5GDkalina0aMjaEA8BtM0me35kXOT8w0bHEmKN0JWMw7XFv8tdi0tEsdnf3mFYDNkw=
-X-Received: by 2002:a05:6602:27d0:: with SMTP id l16mr7075936ios.56.1635927330989;
- Wed, 03 Nov 2021 01:15:30 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=a/GNLPALkwGhXSrYcUSU/+LJnWVp6grMHuVzBxpcEmw=;
+        b=vS53GFysl0AaxycItka+g2y12DJxjf7yLxWiPjv/tDtAnief/5aENEKLR1GaTkUJWs
+         r24T1LwoFZOOMoh8Z+lrb9/9Z3mfzaRA1d+Lg5dILijHf7nNpi7tek68P2UNuxS6zUFE
+         b1dqLPmkV/pPdxM7Sc/p1M64DEqWvVmldT/fTr9IRMsMN8qQBTg/DLTPAqy5GJIz7fLA
+         p2eDMPCJ80G2RQH/lo67Yo2GeUr7cZAXeJzUfPLt0AdTPsfsdWuznOyi3BjKbZY0XJH/
+         SgkNgZt5T+th34Xmc40e1zk6Bq3bNbeJB4gQ/s/Rw8IRTofFyp1Hdi6ARPUtjq57gp4X
+         j1jA==
+X-Gm-Message-State: AOAM531XffrIDozmT0zf8ONxHZLzFno/QM5xj+t8S5+k1ea8WGIH5814
+        Tt5eKMCYM+uvaoPJunlWw3UgN7nsM6g=
+X-Google-Smtp-Source: ABdhPJzPMtLcFImQ1WrmTVNQjxgRPBpZUmaGBHr5bpkdBoJrfpU8aJcHGUNg4Nt/Fd3kKdsEN0/v2Q==
+X-Received: by 2002:a17:902:c713:b0:141:bbb2:1ec7 with SMTP id p19-20020a170902c71300b00141bbb21ec7mr27591643plp.57.1635927721847;
+        Wed, 03 Nov 2021 01:22:01 -0700 (PDT)
+Received: from kakao-entui-MacBookPro.local ([203.246.171.161])
+        by smtp.gmail.com with ESMTPSA id b1sm1246891pfv.110.2021.11.03.01.21.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Nov 2021 01:22:01 -0700 (PDT)
+Subject: Re: [PATCH] amt: Remove duplicate include
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1635911107-63759-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+Message-ID: <5c97b741-35d6-86bf-1007-8051a913b709@gmail.com>
+Date:   Wed, 3 Nov 2021 17:21:58 +0900
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-Received: by 2002:a05:6602:2c47:0:0:0:0 with HTTP; Wed, 3 Nov 2021 01:15:30
- -0700 (PDT)
-Reply-To: pt6382601@gmail.com
-From:   FRANK ASTRID <bobwhite4477@gmail.com>
-Date:   Wed, 3 Nov 2021 09:15:30 +0100
-Message-ID: <CAAgNC3bqU+wHHk-mu6zSP35ptO7nP9vXeb-vmr8e6LfwC5AWgA@mail.gmail.com>
-Subject: Legal Admin:
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1635911107-63759-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: ko
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Congratulations!!!! This is to Inform you that your Name and Details
-were forwarded to us from the office of the Presidential Task Force on
-Foreign Debt Payment regarding Your Lottery, Contract,
-Inheritance/Compensation Payment Valued at $10.500,000.00 (US$10.5m).
-It have been Approved for Immediate Payment either by Swift Wire
-Transfer OR ATM  Credit Card Delivery to your Home Address OR
-Diplomatic Cash Delivery to your Country. Please Choose Your
-Choice/Method of Payment & Re-confirm the following, Your full details
-for Payment
+Hi Jiapeng,
 
-1) Your: Full Name===================
+On 2021. 11. 3. 오후 12:45, Jiapeng Chong wrote:
+> Clean up the following includecheck warning:
+> 
+> ./drivers/net/amt.c: net/protocol.h is included more than once.
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> ---
+>   drivers/net/amt.c | 1 -
+>   1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/net/amt.c b/drivers/net/amt.c
+> index 60a7053..6697f8b 100644
+> --- a/drivers/net/amt.c
+> +++ b/drivers/net/amt.c
+> @@ -12,7 +12,6 @@
+>   #include <linux/igmp.h>
+>   #include <linux/workqueue.h>
+>   #include <net/net_namespace.h>
+> -#include <net/protocol.h>
+>   #include <net/ip.h>
+>   #include <net/udp.h>
+>   #include <net/udp_tunnel.h>
+> 
 
-2) Your: Full Address================
+target repo is "net-next".
 
-3) Your: contact telephone and fax number;=====
-
-4) Your: Age and Profession;=========
-
-5) Your:Copy of any valid form of your Identification;===
-
-6) Your:Marital status===========
-
-Thank you for your anticipated co-operation.
-TREAT AS URGENT.
-Dr. Frank Astrid
-(Head, Funds Release Supervisor)
+Reviewed-by: Taehee Yoo <ap420073@gmail.com>
