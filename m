@@ -2,84 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD2844447BA
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 18:50:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D1954447DB
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 19:04:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230261AbhKCRwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 13:52:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48532 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230132AbhKCRwa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 13:52:30 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81DC2C061714;
-        Wed,  3 Nov 2021 10:49:53 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id gb13-20020a17090b060d00b001a674e2c4a8so1992244pjb.4;
-        Wed, 03 Nov 2021 10:49:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pPvNZoulhiJWCQBU4zryUvX6Xw6xIu9z8BZ3Chcznm4=;
-        b=gpawBxrRZngZIixIRKHyKRtR1WgFW2ojfyMQDjsOpC++wIjSzRyaFaP07qFWvCBVJ0
-         w09HXzjMctEV21CwOW+TWEmzuLPyuECfp/2c3weqPltbM7e8pPWEndEWoH1sz98pgGmO
-         n91iedxHJRVjnDnHWHDDzE9HrvdRIE1pqK3S5sp5r7WnPybj1jPUE7oShKghf2atpZAD
-         e/dKIQYxtlNE0dbUHKNLv9tka4BMpgnwDUlWJow8DjcvYfcwo6J9g3HjxcRBgfbcNxl+
-         8mXCQ+OzVlIGbvhdMn2GxBXVqP0amXRmZYcmGmzUIFmBs2dr4m74viUPzcOd0fIffcMq
-         YFYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pPvNZoulhiJWCQBU4zryUvX6Xw6xIu9z8BZ3Chcznm4=;
-        b=MtpNFDYShZ0+68eQNEAJPtbI9CpfO1qExhaJQz9cwlLLhizWOykS0YNZfsTYc1Ajw0
-         6GuXX4iqxhYrKI5Jgu2EJl/NhWW5EYWGGKDnfDV73n/Tp9bgC4ZNn+FH2IPY0KlLDKaR
-         PB2FdHnW05NBG2hcijKWYZbRGHeVGdqGCDwjBBHuLUN9IvsIa+MuhbCcKRsMOed139lo
-         8SfpvHpg4vQAxRe3SybpzORJZQ+BBXcvvhWqcjj4tNEe/CqNJ4wMZsJYKjUYrVZrlThU
-         j74z5Vbo9EAn8pw+X0iYz3sLV7uQ9bw9orZlKAXi8lRg8VlUsjHmFWiJzkl4NOUT6G49
-         AS3w==
-X-Gm-Message-State: AOAM530UMw2+PZWmB9lOa0ZNZHUgM0gVw/faa7MTCe3yvkhreWMEhZBR
-        /6cr+jYu1b0jRfaQPy48lkWRk7WuW8gWd+LEA2XP8uSD
-X-Google-Smtp-Source: ABdhPJwBy+n5eAeWFPR11/hBk/8XrZoz5ZTgXkU5n3+s8oDYIi2gp06Pm/KfcDO30PcR3yJ+Vddht3b6BoYbg92it8s=
-X-Received: by 2002:a17:90a:6b0d:: with SMTP id v13mr16206841pjj.138.1635961792997;
- Wed, 03 Nov 2021 10:49:52 -0700 (PDT)
+        id S230156AbhKCSGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 14:06:44 -0400
+Received: from mga03.intel.com ([134.134.136.65]:9730 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229558AbhKCSGn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Nov 2021 14:06:43 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10157"; a="231512207"
+X-IronPort-AV: E=Sophos;i="5.87,206,1631602800"; 
+   d="scan'208";a="231512207"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2021 11:03:56 -0700
+X-IronPort-AV: E=Sophos;i="5.87,206,1631602800"; 
+   d="scan'208";a="667620843"
+Received: from smile.fi.intel.com ([10.237.72.184])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2021 11:03:52 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1miKbp-003Kje-6e;
+        Wed, 03 Nov 2021 20:03:37 +0200
+Date:   Wed, 3 Nov 2021 20:03:36 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Jonas =?iso-8859-1?Q?Dre=DFler?= <verdre@v0yd.nl>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Subject: Re: [PATCH v3 2/2] mwifiex: Add quirk to disable deep sleep with
+ certain hardware revision
+Message-ID: <YYLO+A2Psg9wloN9@smile.fi.intel.com>
+References: <YYLJG1y8owwehew+@smile.fi.intel.com>
+ <20211103174527.GA701082@bhelgaas>
 MIME-Version: 1.0
-References: <20211102021432.2807760-1-jevburton.kernel@gmail.com>
- <20211103001245.muyte7exph23tmco@ast-mbp.dhcp.thefacebook.com>
- <fcec81dd-3bb9-7dcf-139d-847538b6ad20@fb.com> <CAN22DihwJ7YDFSPk+8CCs0RcSWvZOpNV=D1u+42XabztS6hcKQ@mail.gmail.com>
-In-Reply-To: <CAN22DihwJ7YDFSPk+8CCs0RcSWvZOpNV=D1u+42XabztS6hcKQ@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 3 Nov 2021 10:49:41 -0700
-Message-ID: <CAADnVQJ_ger=Tjn=9SuUTES6Tt5k_G0M+6T_ELzFtw_cSVs83A@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 0/3] Introduce BPF map tracing capability
-To:     Joe Burton <jevburton.kernel@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Petar Penkov <ppenkov@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Joe Burton <jevburton@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211103174527.GA701082@bhelgaas>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 3, 2021 at 10:45 AM Joe Burton <jevburton.kernel@gmail.com> wrote:
->
-> Sort of - I hit issues when defining the function in the same
-> compilation unit as the call site. For example:
->
->   static noinline int bpf_array_map_trace_update(struct bpf_map *map,
->                 void *key, void *value, u64 map_flags)
+On Wed, Nov 03, 2021 at 12:45:27PM -0500, Bjorn Helgaas wrote:
+> On Wed, Nov 03, 2021 at 07:38:35PM +0200, Andy Shevchenko wrote:
+> > On Wed, Nov 03, 2021 at 06:10:55PM +0100, Jonas Dreßler wrote:
+> 
+> > > +	if (mwifiex_send_cmd(priv, HostCmd_CMD_VERSION_EXT,
+> > > +			     HostCmd_ACT_GEN_GET, 0, &ver_ext, false)) {
+> > > +		mwifiex_dbg(priv->adapter, MSG,
+> > > +			    "Checking hardware revision failed.\n");
+> > > +	}
+> > 
+> > Checkpatch won't warn you if string literal even > 100. So move it to one line
+> > and drop curly braces. Ditto for the case(s) below.
+> 
+> I don't understand the advantage of making this one line.  I *do*
+> understand the advantage of joining a single string so grep can find
+> it more easily.  But that does make the code a little bit uglier, and
+> in a case like this, you don't get the benefit of better grepping, so
+> I don't see the point.
 
-Not quite :)
-You've had this issue because of 'static noinline'.
-Just 'noinline' would not have such issues even in the same file.
+Then disregard my comment. I've no hard feelings about it :-)
 
-Reminder: please don't top post and trim your replies.
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
