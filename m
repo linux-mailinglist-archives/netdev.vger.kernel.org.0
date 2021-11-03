@@ -2,78 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F3FB4448BF
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 20:09:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2BF04448C1
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 20:10:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230500AbhKCTMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 15:12:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:42075 "EHLO
+        id S231359AbhKCTM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 15:12:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:32982 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229697AbhKCTMW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 15:12:22 -0400
+        by vger.kernel.org with ESMTP id S231328AbhKCTM2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 15:12:28 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635966584;
+        s=mimecast20190719; t=1635966591;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=K3iqx2sQ8T8FfrcXU/i5/Azps3cwJXhaoIE9HPwPWOw=;
-        b=Cv495KPzXRtjCRDZDB/csaR7DQfl9GpVn0x4EpZJWdoLMJJpbyid2LQtzGNg8+bJfvjx0g
-        ntmfa/ojkztH7UEZRe6ZiMMVMjJIuSWy6bck+cGphsUFn8cMRLGE6ZQYekyf90wAgXfWcI
-        YnylsJqvKGPJLgIgcrZzFNUVw6mCFiU=
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3lMr97fopCxmpE4witKD/zPj5v2lkBheBS1YBuwtyBM=;
+        b=czBSAOqdi4poZy00DOi2nCfycnJeLuiFEsssHV0+mp2paZ0/2RFCX6kMNJ8XNZh46keDSc
+        gscrFFCLviCoflugbmsaBsia8vtr6A9YJkw+NavTYnnsZA48bugWbOCtmrhRGrW1u+stg0
+        jo7dhI+H5X7bRGBkjWAj1p6mFKJZHyA=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-435-gqBBPnk7O5eiRaOE52GNdQ-1; Wed, 03 Nov 2021 15:09:43 -0400
-X-MC-Unique: gqBBPnk7O5eiRaOE52GNdQ-1
+ us-mta-148-hcDSzjewOD-fZhKWWHymFQ-1; Wed, 03 Nov 2021 15:09:47 -0400
+X-MC-Unique: hcDSzjewOD-fZhKWWHymFQ-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CB56BBAF80;
-        Wed,  3 Nov 2021 19:09:41 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 198578799ED;
+        Wed,  3 Nov 2021 19:09:46 +0000 (UTC)
 Received: from asgard.redhat.com (unknown [10.36.110.5])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id BCA18197FC;
-        Wed,  3 Nov 2021 19:09:39 +0000 (UTC)
-Date:   Wed, 3 Nov 2021 20:09:36 +0100
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 46236197FC;
+        Wed,  3 Nov 2021 19:09:43 +0000 (UTC)
+Date:   Wed, 3 Nov 2021 20:09:42 +0100
 From:   Eugene Syromiatnikov <esyr@redhat.com>
 To:     Jeremy Kerr <jk@codeconstruct.com.au>,
         Matt Johnston <matt@codeconstruct.com.au>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 0/2] MCTP sockaddr padding check/initialisation
- fixup
-Message-ID: <cover.1635965993.git.esyr@redhat.com>
+Subject: [PATCH net-next v2 1/2] mctp: handle the struct sockaddr_mctp
+ padding fields
+Message-ID: <af7f3b660edf8dbcd77bcf158d7763dd0254fc91.1635965993.git.esyr@redhat.com>
+References: <cover.1635965993.git.esyr@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <cover.1635965993.git.esyr@redhat.com>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+In order to have the padding fields actually usable in the future,
+there have to be checks that user space doesn't supply non-zero garbage
+there.  It is also worth setting these padding fields to zero, unless
+it is known that they have been already zeroed.
 
-This pair of patches introduces checks for padding fields of struct
-sockaddr_mctp/sockaddr_mctp_ext to ease their re-use for possible
-extensions in the future;  as well as zeroing of these fields
-in the respective sockaddr filling routines.  While the first commit
-is definitely an ABI breakage, it is proposed in hopes that the change
-is made soon enough (the interface appeared only in Linux 5.15)
-to avoid affecting any existing user space.
+Cc: stable@vger.kernel.org # v5.15
+Fixes: 5a20dd46b8b84593 ("mctp: Be explicit about struct sockaddr_mctp padding")
+Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
+---
+ net/mctp/af_mctp.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-Eugene Syromiatnikov (2):
-  mctp: handle the struct sockaddr_mctp padding fields
-  mctp: handle the struct sockaddr_mctp_ext padding field
-
- net/mctp/af_mctp.c | 24 +++++++++++++++++++++++-
- 1 file changed, 23 insertions(+), 1 deletion(-)
-
---
-v2:
- - Fixed the style of logical continuations, as noted by Jakub Kicinski.
- - Changed "Complements:" to "Fixes:" in commit messages, as it seems
-   that it is the only commit message tag checkpatch.pl recognises.
-
-v1: https://lore.kernel.org/netdev/cover.1635788968.git.esyr@redhat.com/
+diff --git a/net/mctp/af_mctp.c b/net/mctp/af_mctp.c
+index d344b02..bc88159 100644
+--- a/net/mctp/af_mctp.c
++++ b/net/mctp/af_mctp.c
+@@ -33,6 +33,12 @@ static int mctp_release(struct socket *sock)
+ 	return 0;
+ }
+ 
++/* Generic sockaddr checks, padding checks only so far */
++static bool mctp_sockaddr_is_ok(const struct sockaddr_mctp *addr)
++{
++	return !addr->__smctp_pad0 && !addr->__smctp_pad1;
++}
++
+ static int mctp_bind(struct socket *sock, struct sockaddr *addr, int addrlen)
+ {
+ 	struct sock *sk = sock->sk;
+@@ -52,6 +58,9 @@ static int mctp_bind(struct socket *sock, struct sockaddr *addr, int addrlen)
+ 	/* it's a valid sockaddr for MCTP, cast and do protocol checks */
+ 	smctp = (struct sockaddr_mctp *)addr;
+ 
++	if (!mctp_sockaddr_is_ok(smctp))
++		return -EINVAL;
++
+ 	lock_sock(sk);
+ 
+ 	/* TODO: allow rebind */
+@@ -87,6 +96,8 @@ static int mctp_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 			return -EINVAL;
+ 		if (addr->smctp_family != AF_MCTP)
+ 			return -EINVAL;
++		if (!mctp_sockaddr_is_ok(addr))
++			return -EINVAL;
+ 		if (addr->smctp_tag & ~(MCTP_TAG_MASK | MCTP_TAG_OWNER))
+ 			return -EINVAL;
+ 
+@@ -198,11 +209,13 @@ static int mctp_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 
+ 		addr = msg->msg_name;
+ 		addr->smctp_family = AF_MCTP;
++		addr->__smctp_pad0 = 0;
+ 		addr->smctp_network = cb->net;
+ 		addr->smctp_addr.s_addr = hdr->src;
+ 		addr->smctp_type = type;
+ 		addr->smctp_tag = hdr->flags_seq_tag &
+ 					(MCTP_HDR_TAG_MASK | MCTP_HDR_FLAG_TO);
++		addr->__smctp_pad1 = 0;
+ 		msg->msg_namelen = sizeof(*addr);
+ 
+ 		if (msk->addr_ext) {
 -- 
 2.1.4
 
