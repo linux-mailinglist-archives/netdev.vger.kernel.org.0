@@ -2,128 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED596443B73
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 03:39:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCEFB443B7A
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 03:43:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231360AbhKCCma (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 22:42:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39542 "EHLO
+        id S231365AbhKCCpf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 22:45:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231340AbhKCCm3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 22:42:29 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D428C061714;
-        Tue,  2 Nov 2021 19:39:54 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id w29-20020a056830411d00b0055abaca9349so1529670ott.13;
-        Tue, 02 Nov 2021 19:39:54 -0700 (PDT)
+        with ESMTP id S231359AbhKCCpe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 22:45:34 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70831C061205;
+        Tue,  2 Nov 2021 19:42:58 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id t11so1453277plq.11;
+        Tue, 02 Nov 2021 19:42:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=xvmUh+kq0qTw+qHqGvn2Q3Zzs548+5cTf9/0rb+MLBg=;
-        b=J20RSSX8JCBK5BS5hTCLpLsYV8WHE2ZeTA8iSflgoS8iGa17seKc8DdIt6mpWT3qtX
-         5s4O6TEPY/KAZ7pwTLRyprD5mrxQ2etlcuPjxIH50HjPw5ASImHvkdt+LptDJSoihK6M
-         +KPkR/peMqvzrxhoSyu62snNPf1NUKh2n3TG8WYURCiPx9kP5XgWp7uozwjqtjezrxXC
-         iy5ukKJi809VPxDd1sF4FOgoYjsqCNoy/p3j4tAUWcl/4H/nyj+TBjcVFC5bcULuUOWn
-         rGB6zNonvoixk53xlXieUtklibMCzCiS8aaWKb4l8OMS/aDZbR2wvOsGK+acFa4xQYO8
-         CVUQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=45coi7Ih4CCb0SGaI6BKbm4uGXPIoQsr5bED3veX7DE=;
+        b=Ry6uy/domHLypn6avbjpw9PjUebXIUXSRX9ZgtAcsfcLeL8ZLcIwfJD+twl0/bDCI3
+         ZywdOsoCUM5TwV3oc00Vqvpi8I2HMDclEBR0aVyr/KqMIteamjivFwyu+7SPPsj8cpTE
+         LoCTDAegvgNkczk2p4zhdDtXuNM9Gli1a96M6/YCy5bSoW8yzuslw3hppeRv3hHx9q+A
+         d2jPKiP9s+H4tL+p19nOO115LZoBHtP2KIxRN/PkVzNFvioLuRehhLYDTBzToth3ihAH
+         k9VrJMXki7udNoEJjofSKxj5odVRNKb2kg62LVchqCZtHITsqz4OkSIzoSLuLNKcVjJL
+         OFtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=xvmUh+kq0qTw+qHqGvn2Q3Zzs548+5cTf9/0rb+MLBg=;
-        b=u9diKYsNpIBqCYLVqu1M7eyj/cXUMIgpfrLO0g3tt4EKDgz3ed8W3F+dzoSg0rVGXv
-         DvinfDfLXhoNWNUHVQsRpcErfsgc/kwN4oyMzGz6Z5fARb9TBy6F6VTa/82zDprXc7Ka
-         14R0ZRron1eNYuKRMxUfOCBVVTtYuvD5B0jzRAjtPebETHIvSF7seNqID6JDHv+m4LMH
-         auDL037ayIaW8HxJ65kzbyYDMTinYprIsY7chJbcnYZnqTBcAZYR7MKp2TPh0tOsGDGm
-         S/2gCJzkZq5KlkjAQSTA6jSNbI++rAaePBLSGyPU8DdTtMvua4YUCUakuL4wC0S+cCPI
-         TxAw==
-X-Gm-Message-State: AOAM532ZHdyNOeWuvkvqLRJgBp8NBqrTmfXfLQO4v3wWHsF9UGSCzrN9
-        BKpoj4lHDPWwZsPsayJOC5g=
-X-Google-Smtp-Source: ABdhPJz4tKMQ1MjNEIG7ggL1zNJpch1g4/PBFmNyxqIjP4oWUPpngevfdi8k5NcR3AKhb6kaSbEAeA==
-X-Received: by 2002:a9d:4c11:: with SMTP id l17mr3801606otf.289.1635907193676;
-        Tue, 02 Nov 2021 19:39:53 -0700 (PDT)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id 64sm210982otm.37.2021.11.02.19.39.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Nov 2021 19:39:53 -0700 (PDT)
-Message-ID: <019e96b5-4047-6458-0cfa-c9ef8f0d0470@gmail.com>
-Date:   Tue, 2 Nov 2021 20:39:51 -0600
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=45coi7Ih4CCb0SGaI6BKbm4uGXPIoQsr5bED3veX7DE=;
+        b=L1SgmfznOUc/+jw4IfifmeTvSxUg0ID5GmT7f7MchiL2u1y/12CTddRywQKZWOv0PP
+         DNppKRtD0PY+5cnv2LPxw5WtBDOMenzXdugWr8959GsKEOzpE0qcUsiKIVGB29Uhe7c3
+         xrRipULb9tRmyIZIP+eAjtDT2ukStpJa2lSZbcuv8aQtU53FRVTAkQHgoic5tS/Uksze
+         lZfb+vNvwiST3mlT48iqQmIaGChhfKvM61cHIvslff2Q7L5hKV5xcLH2Zq5/CJCtsZKp
+         Ug4ZaMnr1GK6mBa190LTvJ3WHuY/rU9YIFfI6yrB3W5zSVx8/ABuDO18FeIaqQTfTUNu
+         06kg==
+X-Gm-Message-State: AOAM531W6BPhfgsBLz6HdvwKNRpP0xIdRRNUghynqwKrymA2cIpV1qPU
+        az/3xF+b3nlCuVtuC/h9lslWQyZlwIg=
+X-Google-Smtp-Source: ABdhPJxC2WtxuL1nKnY+zvOVECgekSKubOOgGoHPN5cWWJxr32+dTU4lb8Yqrqgm0XDt+ZZNqdYONg==
+X-Received: by 2002:a17:903:234b:b0:141:bdfa:e9be with SMTP id c11-20020a170903234b00b00141bdfae9bemr25952939plh.36.1635907377965;
+        Tue, 02 Nov 2021 19:42:57 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id s22sm464148pfe.76.2021.11.02.19.42.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Nov 2021 19:42:57 -0700 (PDT)
+Date:   Wed, 3 Nov 2021 10:42:51 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>,
+        Coco Li <lixiaoyan@google.com>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCHv2 net 5/5] kselftests/net: add missed
+ toeplitz.sh/toeplitz_client.sh to Makefile
+Message-ID: <YYH3K1zJmissyL7F@Laptop-X1>
+References: <20211102013636.177411-1-liuhangbin@gmail.com>
+ <20211102013636.177411-6-liuhangbin@gmail.com>
+ <CA+FuTSeS2s7czeAASfz9qep06gdUKVHD8bhiqtEOS1w82-JR7Q@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.2.1
-Subject: Re: [PATCH v2 09/25] tcp: authopt: Disable via sysctl by default
-Content-Language: en-US
-To:     Leonard Crestez <cdleonard@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Christoph Paasch <cpaasch@apple.com>,
-        Ivan Delalande <colona@arista.com>,
-        Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1635784253.git.cdleonard@gmail.com>
- <137399b962131c278acbfa5446a3b6d59aa0547b.1635784253.git.cdleonard@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <137399b962131c278acbfa5446a3b6d59aa0547b.1635784253.git.cdleonard@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+FuTSeS2s7czeAASfz9qep06gdUKVHD8bhiqtEOS1w82-JR7Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/1/21 10:34 AM, Leonard Crestez wrote:
-> diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-> index 97eb54774924..cc34de6e4817 100644
-> --- a/net/ipv4/sysctl_net_ipv4.c
-> +++ b/net/ipv4/sysctl_net_ipv4.c
-> @@ -17,10 +17,11 @@
->  #include <net/udp.h>
->  #include <net/cipso_ipv4.h>
->  #include <net/ping.h>
->  #include <net/protocol.h>
->  #include <net/netevent.h>
-> +#include <net/tcp_authopt.h>
->  
->  static int two = 2;
->  static int three __maybe_unused = 3;
->  static int four = 4;
->  static int thousand = 1000;
-> @@ -583,10 +584,19 @@ static struct ctl_table ipv4_table[] = {
->  		.mode		= 0644,
->  		.proc_handler	= proc_douintvec_minmax,
->  		.extra1		= &sysctl_fib_sync_mem_min,
->  		.extra2		= &sysctl_fib_sync_mem_max,
->  	},
-> +#ifdef CONFIG_TCP_AUTHOPT
-> +	{
-> +		.procname	= "tcp_authopt",
-> +		.data		= &sysctl_tcp_authopt,
-> +		.maxlen		= sizeof(int),
-> +		.mode		= 0644,
-> +		.proc_handler	= proc_dointvec,
+On Tue, Nov 02, 2021 at 11:09:43AM -0400, Willem de Bruijn wrote:
+> On Mon, Nov 1, 2021 at 9:37 PM Hangbin Liu <liuhangbin@gmail.com> wrote:
+> >
+> > When generating the selftests to another folder, the toeplitz.sh
+> > and toeplitz_client.sh are missing as they are not in Makefile, e.g.
+> >
+> >   make -C tools/testing/selftests/ install \
+> >       TARGETS="net" INSTALL_PATH=/tmp/kselftests
+> >
+> > Making them under TEST_PROGS_EXTENDED as they test NIC hardware features
+> > and are not intended to be run from kselftests.
+> >
+> > Fixes: 5ebfb4cc3048 ("selftests/net: toeplitz test")
+> > Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> 
+> Reviewed-by: Willem de Bruijn <willemb@google.com>
 
-Just add it to the namespace set, and this could be a u8 (try to plug a
-hole if possible) with min/max specified:
+Thanks for the review.
+> 
+> The same might apply to the icmp and vrf tests? I am not familiar with those.
 
-                .maxlen         = sizeof(u8),
-                .mode           = 0644,
-                .extra1         = SYSCTL_ZERO,
-                .extra2         = SYSCTL_ONE
+icmp and vrf are running for selftests. They should be added to TEST_PROGS.
 
-
-see icmp_echo_enable_probe as an example. And if you are not going to
-clean up when toggled off, you need a handler that tells the user it can
-not be disabled by erroring out on attempts to disable it.
-
+Thanks
+Hangbin
