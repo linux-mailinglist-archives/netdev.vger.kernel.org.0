@@ -2,188 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11EFC443F72
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 10:32:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E9C4443F6D
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 10:31:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231975AbhKCJeu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 05:34:50 -0400
-Received: from mail-eopbgr60104.outbound.protection.outlook.com ([40.107.6.104]:45186
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231958AbhKCJeq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Nov 2021 05:34:46 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=O9ZwB644Vr7BviHAqnFw1wXBdWGR/GiNLABANSG182Y001UJ+G7iCoVhluGFFotiiELx6uuHdyQdls5LUwqGEiYllgKvUOwTJnA3pVYmw+3k2AYMdvaLqhCGIbfkfcSwHcmDT67m+WyrvfneswOxD13nfXG7oiW257jkzAsPP5LNPDfHyx6+32/euRQ/uztn9u96bQOK1LzWHboLz5IuI8KfGKAR45cIlFQepDXLqTyZ2vLgi6v8r5I88eYWQkh9ZjuFI3MYhsfIDBr9monlVVS0+vH3PIwzVEwXbWb57mBueoJVKZ1ZHL5dryukB6E++fKCCp5l4NzS3VB70v1wPg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yIiJQnqS/ggm1at6dZ+0R+8eOTsjL7Jx5G23LYlNBiM=;
- b=W/XRVeogN4gQ8gaOQ8FuMJT5Z+WQbs0F2ZO/SEVQnSbtHyjQq0rTUQ0reRKsXInMbFkAHLmNcW4SMB/jovoAd8dNm2BAUEMFD7JD/QfKTmFdkcxY1TPV/fYqMo/H6bUqPn+kPGblk/w3+NhLp7W+R/GKY3JW0m0RACmPztDkFdRfiwQ6eaqyQq9JY0HOADW5+RQEckOHdCPcxxGITGlroD+aggVNmyk/O6rfwHDq29dbeBfAqqDkyfM7sEnz/TEQsY9eVp3BNKnbI4dx4r9T3K5XVxnVPC1Lp5IMsE5YTHWNHFAAupcCcctwJUpyoDkzlt/ZcFLrrRI/mJusl4nPcQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yIiJQnqS/ggm1at6dZ+0R+8eOTsjL7Jx5G23LYlNBiM=;
- b=h9bsXqtQs1Y5vhlSNRJbolZUztjGEoBbyLde4nM6gP+WbOzpdc7Is6zXIKf8b+weVbv/RsRTVCfgbLJO8hBTX43gTImESoUQjuRORqHCkg5VKQsPc3zHcdDP31WijByCSFLHY/3FXZnvLUFwwx2p1tPDEDX9MUJAOhML5OMpZ5I=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=plvision.eu;
-Received: from VI1P190MB0734.EURP190.PROD.OUTLOOK.COM (2603:10a6:800:123::23)
- by VE1P190MB0861.EURP190.PROD.OUTLOOK.COM (2603:10a6:800:1ab::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.10; Wed, 3 Nov
- 2021 09:32:03 +0000
-Received: from VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
- ([fe80::a1aa:fd40:3626:d67f]) by VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
- ([fe80::a1aa:fd40:3626:d67f%5]) with mapi id 15.20.4649.019; Wed, 3 Nov 2021
- 09:32:03 +0000
-From:   Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
-To:     netdev@vger.kernel.org
-Cc:     mickeyr@marvell.com, serhiy.pshyk@plvision.eu,
-        taras.chornyi@plvision.eu, Volodymyr Mytnyk <vmytnyk@marvell.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paul Blakey <paulb@mellanox.com>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net v2 RESEND] netfilter: fix conntrack flows stuck issue on cleanup.
-Date:   Wed,  3 Nov 2021 11:31:36 +0200
-Message-Id: <1635931896-27539-1-git-send-email-volodymyr.mytnyk@plvision.eu>
-X-Mailer: git-send-email 2.7.4
-Content-Type: text/plain
-X-ClientProxiedBy: FR3P281CA0021.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:1c::11) To VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:800:123::23)
-MIME-Version: 1.0
-Received: from vmytnykub.x.ow.s (217.20.186.93) by FR3P281CA0021.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:1c::11) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.4669.4 via Frontend Transport; Wed, 3 Nov 2021 09:32:02 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 57b6bc04-efa9-47a8-835f-08d99eaccb40
-X-MS-TrafficTypeDiagnostic: VE1P190MB0861:
-X-Microsoft-Antispam-PRVS: <VE1P190MB08616E0E978236DDE18A80A28F8C9@VE1P190MB0861.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: UffpunvAXbLF4IrADqeuUdc2lh26dJSjhDlXP62iEjd5B5sa8W1xanSoCvnuwNZgo6sEzmbnAUtud+jTpERmkrPIUUhnD2MeENu02x7MLiTUuBYsKM8dzoTX69x3Meb+76MTM32ZQP7B2WEeJA89Ks6jIVzlB6sYrAt0RHc7vjnpwPHzoyWFcnlldmW/D5ENhg0I1WHhasfc63gsT/eenJcfI5QbL//aTHdK10sUrf7XI+mdOFc9O4zGxJFHt5UrL0SskrGDLCsaYp4e2PBYNhEsCCf67gPxJNuVFezaejJER1UuJ7OIqauzb/SK2T4H0o5b4SoaaZr1bL/pAEg6uxrBmJtnhR0y6MD3zXK4hQlhkaD8bq8uBa7EwFeoy/ALxv1+iHe0eskAIwNNFYbREr8sDHEiY/sidv6GIujF1mLSyiAqAyesnqcB/FOypzZgCfU9rVUq6Z0TBUvB/6/RS8XNbZeCzCrPCUJ4kfkgMWHh+mW9Ikjp+Q+MU/jgXZjXADaGTogJ/ZFMWmdOQGfP4IkXxc+D2CfuIBC4+8v/t+bJafqMRvtdRBzzaBBpU2/GcAgYmW1h5fOnp+bRQXBVvn3EtAKrc9omrxPLeSjuDduOJrqIDDN9W3N1/Lmtd+zMZyU/Ldvh8k4evRJU05K7QhXew80FVFZxS8pAy/yTP7vZ4rhWFVRt7Wpa+zG/55wM/00+lxbL7+ERKsdy0Y8m9A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P190MB0734.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(396003)(376002)(346002)(136003)(39830400003)(366004)(6512007)(8936002)(38350700002)(38100700002)(508600001)(7416002)(956004)(2616005)(316002)(26005)(4326008)(83380400001)(5660300002)(52116002)(54906003)(8676002)(44832011)(36756003)(66476007)(66556008)(6486002)(6666004)(6506007)(86362001)(66946007)(186003)(2906002)(6916009);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NeqNhA4jb2AuyqQutj1q8xttJDFEyJNOJ+ZcDWIfNFh490S/TWaas26CJ3Hp?=
- =?us-ascii?Q?QA93ZjbUXghU9GONb1bySKV9+HihTQD/X3UffxkwZ06EBxLIwgmDH00kltcn?=
- =?us-ascii?Q?r4HkyZEqxY+Dw3hxbhiy0gFPIXKdBy8rICnWqdFy0LP03qpyzFDsHuydscq3?=
- =?us-ascii?Q?MsiUTf8J1kT6rCLX+i9g93DXyfPCCK6YFRNP8FtXBRXkpzxZwoRV2ODrsBH6?=
- =?us-ascii?Q?j3qmrVUgAKpfOq3IPk/Ck+C2CsB0HoRB1xr9+D0d04w2Oqp1Vn6SxrgbaN5t?=
- =?us-ascii?Q?aGLe/h9C0mj8bfsMulMeF9avC0SQk03PV4EA34IXwToIpl3kE64ijdclKIGF?=
- =?us-ascii?Q?Z/qLr6J93Bm9xkx++A8rFI9pTZJbXZ+LXUhDGLaDQX1f2MdwM0wBQFhK+V//?=
- =?us-ascii?Q?LOfIlBymzpjFXSvR6MgKVallf2gKx93cA2E9ljxXos4b1durQtVGQnrxkQTq?=
- =?us-ascii?Q?0SNbYIiUP0ayrZZKksUqOIB+PHg8Js7X6xZMOKorp3FHUARFaQrbzQRgFEvP?=
- =?us-ascii?Q?GWp959WvyiQIRxkiP0nd7F1i3TW6ijFovZNK1Xd+cZdgGVgII2Ua3AzWmpGf?=
- =?us-ascii?Q?BsmprGYI5n8LO6Haxwy59BgLoC6W3LqCvCqJuuyH+EuPuFCWhmFRWhiHPyDW?=
- =?us-ascii?Q?QsT0AwiUtCCdGpJT/vl4KomrOvI0TXKaVfnO3Bb+DmsYmgrYw2EzRRhs8naE?=
- =?us-ascii?Q?259oBamHDYvX19iAspwfgbAJ8bOhWR8TZdFdVu78O0Lr1wiJzaqwUzX2joDj?=
- =?us-ascii?Q?3HCI00zVSxZcMaevWJOWMprRLJGEnnZ2YPiJXYxrXGaO6p5jtI2HYNNsWarP?=
- =?us-ascii?Q?JH1l4rLEgeSqp0E3hP3sk11p9VaDzy94GlVIHi41BbcFtq/YAnskHJfIgNHK?=
- =?us-ascii?Q?lcHj1L0kaM3S3WCedpZi0E/K9DGmeANChnqlNATnDyKU08EFIYsdE2b3kVak?=
- =?us-ascii?Q?uvU7C5PJhLUJf3++dEWOuFRnEvzCG6zzTMnZeZKMOkVqk1+KKkPLXPT4vjhI?=
- =?us-ascii?Q?nlbFtxjtwMEaVpqYvO9duq/uOKCluo0JVZiN75w0WnbVJoUs4q4k9hoR1wO0?=
- =?us-ascii?Q?79PdNWsByZu0op58fwaLLojQFallr+ZHNSdFvxVOSNNOhV3Id+n/zcj485P4?=
- =?us-ascii?Q?hlfTKyhSkYiNhZVnoKzf2FvebDQ9sJ+XdIUb3Xn/IUcsaz8RiQ1AX5HO2SeC?=
- =?us-ascii?Q?2Qlcm+1GBu3p/ZKaI5txWY0YnOZaBnj/6j6BwLkRCxT04RvzsoLOLHhzhPVl?=
- =?us-ascii?Q?8o0j6xQvM42Y2O4dCC2o6zs0qa39laqk0hgVzPN3hlbBrw3s5a4slJIln0aM?=
- =?us-ascii?Q?JPUlOfroSviL0q9stEdzY6nPSreBQvLIUJkYUJNnfp1R1XygDFziqHn/zbN8?=
- =?us-ascii?Q?hGE3sIdFKz9DJvOleZhjknPYpHrdtf7gQ+I/gDiT5EBHwgphpz66rhkMYoWk?=
- =?us-ascii?Q?J30gnDq9YS32vhZacSbZLOZKoxPaSuR3KYd7R32TPtnhCFBmjKCqCN0dwtNv?=
- =?us-ascii?Q?uWJERerAZPjxfSYgVt/qfEXTu1z3ejfIYQqSWmtX75dYu9z9M1lobWtEkXP8?=
- =?us-ascii?Q?v0wWOQIaKBGDTKA5hoIagCyasTZcVOrF5vFwKHqcyy9/qE1DTPGI91HcZyL9?=
- =?us-ascii?Q?QJMowS090X8H8OZ3rQK29XrwojC5GE7cZE8Ltz8IlnynEW6Cv+ZpEF981fnf?=
- =?us-ascii?Q?G1A6vg=3D=3D?=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 57b6bc04-efa9-47a8-835f-08d99eaccb40
-X-MS-Exchange-CrossTenant-AuthSource: VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2021 09:32:03.3880
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Ktmor4PNXceS5aOwfnC4Zx5fQL1/ARVGexNa6IgUA8CGzxEqIYFDUjBiwyFUAu9NcZhjbu9TH+37NP5PBgUkEeWHNqf9kHJ9TEDORGulRRI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1P190MB0861
+        id S231749AbhKCJe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 05:34:28 -0400
+Received: from forwardcorp1p.mail.yandex.net ([77.88.29.217]:42930 "EHLO
+        forwardcorp1p.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231557AbhKCJeZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 05:34:25 -0400
+Received: from vla1-a78d115f8d22.qloud-c.yandex.net (vla1-a78d115f8d22.qloud-c.yandex.net [IPv6:2a02:6b8:c0d:2906:0:640:a78d:115f])
+        by forwardcorp1p.mail.yandex.net (Yandex) with ESMTP id 9EAB52E12BA;
+        Wed,  3 Nov 2021 12:31:47 +0300 (MSK)
+Received: from myt6-10e59078d438.qloud-c.yandex.net (myt6-10e59078d438.qloud-c.yandex.net [2a02:6b8:c12:5209:0:640:10e5:9078])
+        by vla1-a78d115f8d22.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id Lxni3nO4jR-VlsK9jgH;
+        Wed, 03 Nov 2021 12:31:47 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1635931907; bh=Wy62eNarQSPSDhZUi1wiHxRoPKoktl0nYMELkrVh7T8=;
+        h=Message-Id:References:Date:Subject:Cc:To:In-Reply-To:From;
+        b=BGXbMVtOPw+ZEkCLfo8V/1WyrTjEi4zVycugDEpmx3n1RB82sW+3HaxcPsJ+czH4z
+         Nuyz1aEgw9d8we+dqyx+N4H5cBzhO7J+hVAMIOmlBRCps4Ko4TMsudwtS4cShennMc
+         6q661ffZIcmTeFrKOjJX/Zu7BEZ2TaV6C52O24Ck=
+Authentication-Results: vla1-a78d115f8d22.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
+Received: from smtpclient.apple (dynamic-vpn.dhcp.yndx.net [2a02:6b8:b081:a405::1:3c])
+        by myt6-10e59078d438.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPS id ZV8EAAaoCv-VkxuQmh1;
+        Wed, 03 Nov 2021 12:31:47 +0300
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client certificate not present)
+X-Yandex-Fwd: 2
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.100.0.2.22\))
+Subject: Re: [PATCH v2] tcp: Use BPF timeout setting for SYN ACK RTO
+From:   Akhmat Karakotov <hmukos@yandex-team.ru>
+In-Reply-To: <20211102231737.nt6o7jehcm7qzjbx@kafai-mbp.dhcp.thefacebook.com>
+Date:   Wed, 3 Nov 2021 12:31:46 +0300
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Lawrence Brakmo <brakmo@fb.com>,
+        Alexander Azimov <mitradir@yandex-team.ru>,
+        ncardwell@google.com, netdev@vger.kernel.org, ycheng@google.com,
+        zeil@yandex-team.ru
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <81A927CB-03C7-409C-BE3F-B37D24DA4FE0@yandex-team.ru>
+References: <863fdf13-b1f4-f429-d8ac-269f9ceaa747@gmail.com>
+ <20211102183235.14679-1-hmukos@yandex-team.ru>
+ <eb593fea-b5a5-c871-a762-a48127e91f75@gmail.com>
+ <20211102231737.nt6o7jehcm7qzjbx@kafai-mbp.dhcp.thefacebook.com>
+To:     Martin KaFai Lau <kafai@fb.com>
+X-Mailer: Apple Mail (2.3654.100.0.2.22)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Volodymyr Mytnyk <vmytnyk@marvell.com>
-
-On busy system with big number (few thousands) of HW offloaded flows, it
-is possible to hit the situation, where some of the conntack flows are
-stuck in conntrack table (as offloaded) and cannot be removed by user.
-
-This behaviour happens if user has configured conntack using tc sub-system,
-offloaded those flows for HW and then deleted tc configuration from Linux
-system by deleting the tc qdiscs.
-
-When qdiscs are removed, the nf_flow_table_free() is called to do the
-cleanup of HW offloaded flows in conntrack table.
-
-...
-process_one_work
-  tcf_ct_flow_table_cleanup_work()
-    nf_flow_table_free()
-
-The nf_flow_table_free() does the following things:
-
-  1. cancels gc workqueue
-  2. marks all flows as teardown
-  3. executes nf_flow_offload_gc_step() once for each flow to
-     trigger correct teardown flow procedure (e.g., allocate
-     work to delete the HW flow and marks the flow as "dying").
-  4. waits for all scheduled flow offload works to be finished.
-  5. executes nf_flow_offload_gc_step() once for each flow to
-     trigger the deleting of flows.
-
-Root cause:
-
-In step 3, nf_flow_offload_gc_step() expects to move flow to "dying"
-state by using nf_flow_offload_del() and deletes the flow in next
-nf_flow_offload_gc_step() iteration. But, if flow is in "pending" state
-for some reason (e.g., reading HW stats), it will not be moved to
-"dying" state as expected by nf_flow_offload_gc_step() and will not
-be marked as "dead" for delition.
-
-In step 5, nf_flow_offload_gc_step() assumes that all flows marked
-as "dead" and will be deleted by this call, but this is not true since
-the state was not set diring previous nf_flow_offload_gc_step()
-call.
-
-It issue causes some of the flows to get stuck in connection tracking
-system or not release properly.
-
-To fix this problem, add nf_flow_table_offload_flush() call between 2 & 3
-step, to make sure no other flow offload works will be in "pending" state
-during step 3.
-
-Fixes: 0f34f30a1be8 ("netfilter: flowtable: Fix missing flush hardware on table free")
-Signed-off-by: Volodymyr Mytnyk <vmytnyk@marvell.com>
----
- net/netfilter/nf_flow_table_core.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-index 87a7388b6c89..17593f49413b 100644
---- a/net/netfilter/nf_flow_table_core.c
-+++ b/net/netfilter/nf_flow_table_core.c
-@@ -637,6 +637,8 @@ void nf_flow_table_free(struct nf_flowtable *flow_table)
- 
- 	cancel_delayed_work_sync(&flow_table->gc_work);
- 	nf_flow_table_iterate(flow_table, nf_flow_table_do_cleanup, NULL);
-+	/* wait for all 'pending' flows to be finished */
-+	nf_flow_table_offload_flush(flow_table);
- 	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, flow_table);
- 	nf_flow_table_offload_flush(flow_table);
- 	if (nf_flowtable_hw_offload(flow_table))
--- 
-2.7.4
-
+> On Nov 3, 2021, at 02:17, Martin KaFai Lau <kafai@fb.com> wrote:
+>=20
+> On Tue, Nov 02, 2021 at 03:06:31PM -0700, Eric Dumazet wrote:
+>>=20
+>>=20
+>> On 11/2/21 11:32 AM, Akhmat Karakotov wrote:
+>>> When setting RTO through BPF program, some SYN ACK packets were =
+unaffected
+>>> and continued to use TCP_TIMEOUT_INIT constant. This patch adds =
+timeout
+>>> option to struct request_sock. Option is initialized with =
+TCP_TIMEOUT_INIT
+>>> and is reassigned through BPF using tcp_timeout_init call. SYN ACK
+>>> retransmits now use newly added timeout option.
+>>>=20
+>>> Signed-off-by: Akhmat Karakotov <hmukos@yandex-team.ru>
+>>> ---
+>>> include/net/request_sock.h      | 2 ++
+>>> net/ipv4/inet_connection_sock.c | 2 +-
+>>> net/ipv4/tcp_input.c            | 8 +++++---
+>>> net/ipv4/tcp_minisocks.c        | 4 ++--
+>>> 4 files changed, 10 insertions(+), 6 deletions(-)
+>>>=20
+>>> diff --git a/include/net/request_sock.h b/include/net/request_sock.h
+>>> index 29e41ff3ec93..144c39db9898 100644
+>>> --- a/include/net/request_sock.h
+>>> +++ b/include/net/request_sock.h
+>>> @@ -70,6 +70,7 @@ struct request_sock {
+>>> 	struct saved_syn		*saved_syn;
+>>> 	u32				secid;
+>>> 	u32				peer_secid;
+>>> +	u32				timeout;
+>>> };
+>>>=20
+>>> static inline struct request_sock *inet_reqsk(const struct sock *sk)
+>>> @@ -104,6 +105,7 @@ reqsk_alloc(const struct request_sock_ops *ops, =
+struct sock *sk_listener,
+>>> 	sk_node_init(&req_to_sk(req)->sk_node);
+>>> 	sk_tx_queue_clear(req_to_sk(req));
+>>> 	req->saved_syn =3D NULL;
+>>> +	req->timeout =3D 0;
+>>> 	req->num_timeout =3D 0;
+>>> 	req->num_retrans =3D 0;
+>>> 	req->sk =3D NULL;
+>>> diff --git a/net/ipv4/inet_connection_sock.c =
+b/net/ipv4/inet_connection_sock.c
+>>> index 0d477c816309..c43cc1f22092 100644
+>>> --- a/net/ipv4/inet_connection_sock.c
+>>> +++ b/net/ipv4/inet_connection_sock.c
+>>> @@ -870,7 +870,7 @@ static void reqsk_timer_handler(struct =
+timer_list *t)
+>>>=20
+>>> 		if (req->num_timeout++ =3D=3D 0)
+>>> 			atomic_dec(&queue->young);
+>>> -		timeo =3D min(TCP_TIMEOUT_INIT << req->num_timeout, =
+TCP_RTO_MAX);
+>>> +		timeo =3D min(req->timeout << req->num_timeout, =
+TCP_RTO_MAX);
+>>=20
+>> I wonder how much time it will take to syzbot to trigger an overflow =
+here and
+>> other parts.
+>>=20
+>> (Not sure BPF_SOCK_OPS_TIMEOUT_INIT has any sanity checks)
+> Not now.  It probably makes sense to take this chance to bound
+> it by TCP_RTO_MAX.
+Where do you suggest to bound to TCP_RTO_MAX? In tcp_timeout_init?=
