@@ -2,93 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7BF2444334
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 15:16:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAFF3444333
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 15:16:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231816AbhKCOSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 10:18:44 -0400
-Received: from mga17.intel.com ([192.55.52.151]:54837 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231131AbhKCOSn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Nov 2021 10:18:43 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10156"; a="212253588"
-X-IronPort-AV: E=Sophos;i="5.87,206,1631602800"; 
-   d="scan'208";a="212253588"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2021 07:16:07 -0700
-X-IronPort-AV: E=Sophos;i="5.87,206,1631602800"; 
-   d="scan'208";a="450079125"
-Received: from smile.fi.intel.com ([10.237.72.184])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2021 07:16:03 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1miH3L-003HQz-Ib;
-        Wed, 03 Nov 2021 16:15:47 +0200
-Date:   Wed, 3 Nov 2021 16:15:47 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonas =?iso-8859-1?Q?Dre=DFler?= <verdre@v0yd.nl>
-Cc:     Brian Norris <briannorris@chromium.org>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Subject: Re: [PATCH] mwifiex: Add quirk to disable deep sleep with certain
- hardware revision
-Message-ID: <YYKZkz3EFfdENhoZ@smile.fi.intel.com>
-References: <20211028073729.24408-1-verdre@v0yd.nl>
- <CA+ASDXOrad3b=b8+vwuF6m3+ZcigVaoJySpDXXZOnC3O8CJBSw@mail.gmail.com>
- <cc7432f4-824a-abe2-e304-5ba019ac8c89@v0yd.nl>
- <b2aaf6f7-9f22-926a-963b-cfd0d4fca31d@v0yd.nl>
+        id S231386AbhKCOSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 10:18:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55192 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231131AbhKCOSl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 10:18:41 -0400
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87D82C061714
+        for <netdev@vger.kernel.org>; Wed,  3 Nov 2021 07:16:04 -0700 (PDT)
+Received: by mail-qv1-xf2d.google.com with SMTP id i13so3060188qvm.1
+        for <netdev@vger.kernel.org>; Wed, 03 Nov 2021 07:16:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=96NMyOf7Xc+DLK0TeMLRjGLyxB8JUgSNfA9KpevCXFM=;
+        b=2esqIm8LdDCm0oXUovnNfFFULcE1T5xrMfP5djibtkrUmV7LTc1epBfHTXJengLlw4
+         O11150f+huMAMKpIddon7EEoOB9YdOdm392B9T22/zkbqN09fur4pYCCJsF217gTm3fI
+         0e13IT3+pSHtTmelCQs2tNMYKe7eMEP15Y2wlGDeVM2BBbdQTJnrMGmVpAQ8kOIXcd2u
+         6e3ZF31E7aZ2ZjPh+cRN4FBXnRXvHrIOXfwRmDOsZz6Ttfas9IlF7w+AnArJa79MCpSf
+         X1GSB6htRaSL5K8sXj4Z9UBdwx8R8WwT/ubFB8iB0O0vmPEhs8aMpYQtsXqcR3SyKqs0
+         Ax2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=96NMyOf7Xc+DLK0TeMLRjGLyxB8JUgSNfA9KpevCXFM=;
+        b=3uLlgvNkUrgWf99hVx563fG3/zbk0OmXiHz+sdWtMs2EGoeiH9hsY0e5yK0YdNZ3eW
+         GkZbG8Mj52A7qE3Bi/TkK53YeSS26TZnbZ/bDNKla9QJ0EExwmuDACy+eU3Xd4S2qX4m
+         wo3Acd8W3t8R3wMHt2crILzH1Hvik4zLZVVx9SoP74DYHfUatoMungJffUt4OaBIOMj3
+         LWBE6bjnF2flRh+oILd08GxYjBNlITkF3u33Sf0ji/4x/lehQeAj7Jh7iYXbBtSTcJu0
+         x0Mq9JJ7F1OJ7X49SK9ipOAyrCfJRoZtTQQyHLuolILthKrePBH5mcpJ3YBx8So7PWlY
+         3uWA==
+X-Gm-Message-State: AOAM530f0GLa7qMecWzIVPdCj8tAKFTVNCTKjZtr1PJFqdBYhe5w4D83
+        bNn+TXujl/fD+ZXEM94KLxMxcQ==
+X-Google-Smtp-Source: ABdhPJyn9Mry059NLfcxfyEQpunCO67H6HDqogAM1i5w3rNfHtpHskMH1Hzv1qEmCYuVG/fxUK5f8Q==
+X-Received: by 2002:a05:6214:ccc:: with SMTP id 12mr7128051qvx.8.1635948963768;
+        Wed, 03 Nov 2021 07:16:03 -0700 (PDT)
+Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-33-142-112-185-132.dsl.bell.ca. [142.112.185.132])
+        by smtp.googlemail.com with ESMTPSA id p16sm1059009qtx.92.2021.11.03.07.16.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Nov 2021 07:16:03 -0700 (PDT)
+Message-ID: <cd624f2b-a693-84eb-d3f4-81d869caad93@mojatatu.com>
+Date:   Wed, 3 Nov 2021 10:16:02 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <b2aaf6f7-9f22-926a-963b-cfd0d4fca31d@v0yd.nl>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.1
+Subject: Re: [RFC/PATCH net-next v3 8/8] flow_offload: validate flags of
+ filter and actions
+Content-Language: en-US
+To:     Baowen Zheng <baowen.zheng@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Vlad Buslov <vladbu@nvidia.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Roi Dayan <roid@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Baowen Zheng <notifications@github.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        oss-drivers <oss-drivers@corigine.com>,
+        Oz Shlomo <ozsh@nvidia.com>
+References: <20211028110646.13791-1-simon.horman@corigine.com>
+ <20211028110646.13791-9-simon.horman@corigine.com>
+ <ygnhilxfaexq.fsf@nvidia.com>
+ <7147daf1-2546-a6b5-a1ba-78dfb4af408a@mojatatu.com>
+ <ygnhfssia7vd.fsf@nvidia.com>
+ <DM5PR1301MB21722A85B19EE97EFE27A5BBE7899@DM5PR1301MB2172.namprd13.prod.outlook.com>
+ <d16042e3-bc1e-0a2b-043d-bbb62b1e68d7@mojatatu.com>
+ <DM5PR1301MB21728931E03CFE4FA45C5DD3E78A9@DM5PR1301MB2172.namprd13.prod.outlook.com>
+ <ygnhcznk9vgl.fsf@nvidia.com> <20211102123957.GA7266@corigine.com>
+ <DM5PR1301MB2172F4949E810BDE380AF800E78C9@DM5PR1301MB2172.namprd13.prod.outlook.com>
+ <428057ce-ccbc-3878-71aa-d5926f11248c@mojatatu.com>
+ <DM5PR1301MB2172AD191B6A370C39641E3FE78C9@DM5PR1301MB2172.namprd13.prod.outlook.com>
+ <66f350c5-1fd7-6132-3791-390454c97256@mojatatu.com>
+ <10dae364-b649-92f8-11b0-f3628a6f550a@mojatatu.com>
+ <DM5PR1301MB2172BFF79D57D28F34DC6A0AE78C9@DM5PR1301MB2172.namprd13.prod.outlook.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+In-Reply-To: <DM5PR1301MB2172BFF79D57D28F34DC6A0AE78C9@DM5PR1301MB2172.namprd13.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 03, 2021 at 02:37:53PM +0100, Jonas Dreßler wrote:
-> On 11/3/21 13:25, Jonas Dreßler wrote:
+On 2021-11-03 10:03, Baowen Zheng wrote:
+> Thanks for your reply.
+> On November 3, 2021 9:34 PM, Jamal Hadi Salim wrote:
+>> On 2021-11-03 08:33, Jamal Hadi Salim wrote:
+>>> On 2021-11-03 07:30, Baowen Zheng wrote:
+>>>> On November 3, 2021 6:14 PM, Jamal Hadi Salim wrote:
 
-...
 
-> > > > +               if (strncmp(ver_ext->version_str, "ChipRev:20, BB:9b(10.00), RF:40(21)", 128) == 0) {
-> > > 
-> > > Rather than memorize the 128-size array here, maybe use
-> > > sizeof(ver_ext->version_str) ?
-> > 
-> > Sounds like a good idea, yeah.
+[..]
+
+> Sorry for more clarification about another case that Vlad mentioned:
+> #add a policer action with skip_hw
+> tc actions add action police skip_hw rate ... index 20
+> #Now add a  filter5 which has no flag
+> tc filter add dev $DEV1 proto ip parent ffff: flower \
+>         ip_proto icmp action police index 20
+> I think the filter5 could be legal, since it will not run in hardware.
+> Driver will check failed when try to offload this filter. So the filter5 will only run in software.
+> WDYT?
 > 
-> Nevermind, the reason I did this was for consistency in the
-> function, right underneath in the same function it also assumes
-> a fixed size of 128 characters, so I'd rather use the same
-> length.
-> 
-> > 		memcpy(version_ext->version_str, ver_ext->version_str,
-> > 		       sizeof(char) * 128);
 
-Besides sizeof(char)...
+I think this one also has ambiguity. If the filter doesnt specify 
+skip_sw or skip_hw it will run both in s/w and h/w. I am worried if
+that looks suprising to someone debugging after because in h/w
+there is filter 5 but no policer but in s/w twin we have filter 5
+and policer index 20.
+It could be design intent, but in my opinion we have priorities
+to resolve such ambiguities in policies.
 
-> > 		memcpy(priv->version_str, ver_ext->version_str, 128);
-> 
-> Might be a good idea to #define it as MWIFIEX_VERSION_STR_LENGTH
-> in fw.h though...
+If we use the rule which says the flags have to match exactly then we
+can simplify resolving any ambiguity - which will make it illegal, no?
 
-...I think you simply need a precursor patch that changes this
-to sizeof() / #define approach.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+cheers,
+jamal
