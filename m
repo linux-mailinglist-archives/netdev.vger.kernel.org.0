@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAD2F443F49
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 10:21:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAA95443F4C
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 10:21:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232103AbhKCJXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 05:23:16 -0400
-Received: from relay11.mail.gandi.net ([217.70.178.231]:49427 "EHLO
+        id S232163AbhKCJXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 05:23:17 -0400
+Received: from relay11.mail.gandi.net ([217.70.178.231]:43141 "EHLO
         relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231721AbhKCJXG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 05:23:06 -0400
+        with ESMTP id S232100AbhKCJXH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 05:23:07 -0400
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by relay11.mail.gandi.net (Postfix) with ESMTPSA id 8DCCD10000A;
-        Wed,  3 Nov 2021 09:20:28 +0000 (UTC)
+        by relay11.mail.gandi.net (Postfix) with ESMTPSA id 9A87F100003;
+        Wed,  3 Nov 2021 09:20:29 +0000 (UTC)
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -26,9 +26,9 @@ Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v2 3/6] net: ocelot: pre-compute injection frame header content
-Date:   Wed,  3 Nov 2021 10:19:40 +0100
-Message-Id: <20211103091943.3878621-4-clement.leger@bootlin.com>
+Subject: [PATCH v2 4/6] net: ocelot: add support for ndo_change_mtu
+Date:   Wed,  3 Nov 2021 10:19:41 +0100
+Message-Id: <20211103091943.3878621-5-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211103091943.3878621-1-clement.leger@bootlin.com>
 References: <20211103091943.3878621-1-clement.leger@bootlin.com>
@@ -39,99 +39,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IFH preparation can take quite some time on slow processors (up to 5% in
-a iperf3 test for instance). In order to reduce the cost of this
-preparation, pre-compute IFH since most of the parameters are fixed per
-port. Only rew_op and vlan tag will be set when sending if different
-than 0. This allows to remove entirely the calls to packing() with basic
-usage. In the same time, export this function that will be used by FDMA.
+This commit adds support for changing MTU for the ocelot register based
+interface. For ocelot, JUMBO frame size can be set up to 25000 bytes
+but has been set to 9000 which is a saner value and allow for maximum
+gain of performances. Frames larger than 9000 bytes do not yield
+a noticeable improvement.
 
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- drivers/net/ethernet/mscc/ocelot.c | 23 ++++++++++++++++++-----
- include/soc/mscc/ocelot.h          |  5 +++++
- 2 files changed, 23 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.h     |  2 ++
+ drivers/net/ethernet/mscc/ocelot_net.c | 14 ++++++++++++++
+ 2 files changed, 16 insertions(+)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index e6c18b598d5c..97693772595b 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1076,20 +1076,29 @@ bool ocelot_can_inject(struct ocelot *ocelot, int grp)
+diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
+index e43da09b8f91..ba0dec7dd64f 100644
+--- a/drivers/net/ethernet/mscc/ocelot.h
++++ b/drivers/net/ethernet/mscc/ocelot.h
+@@ -32,6 +32,8 @@
+ 
+ #define OCELOT_PTP_QUEUE_SZ	128
+ 
++#define OCELOT_JUMBO_MTU	9000
++
+ struct ocelot_port_tc {
+ 	bool block_shared;
+ 	unsigned long offload_cnt;
+diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
+index d76def435b23..5916492fd6d0 100644
+--- a/drivers/net/ethernet/mscc/ocelot_net.c
++++ b/drivers/net/ethernet/mscc/ocelot_net.c
+@@ -482,6 +482,18 @@ static netdev_tx_t ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	return NETDEV_TX_OK;
  }
- EXPORT_SYMBOL(ocelot_can_inject);
  
-+void ocelot_ifh_port_set(void *ifh, struct ocelot_port *port, u32 rew_op,
-+			 u32 vlan_tag)
++static int ocelot_change_mtu(struct net_device *dev, int new_mtu)
 +{
-+	memcpy(ifh, port->ifh, OCELOT_TAG_LEN);
++	struct ocelot_port_private *priv = netdev_priv(dev);
++	struct ocelot_port *ocelot_port = &priv->port;
++	struct ocelot *ocelot = ocelot_port->ocelot;
 +
-+	if (vlan_tag)
-+		ocelot_ifh_set_vlan_tci(ifh, vlan_tag);
-+	if (rew_op)
-+		ocelot_ifh_set_rew_op(ifh, rew_op);
++	ocelot_port_set_maxlen(ocelot, priv->chip_port, new_mtu);
++	WRITE_ONCE(dev->mtu, new_mtu);
++
++	return 0;
 +}
-+EXPORT_SYMBOL(ocelot_ifh_port_set);
 +
- void ocelot_port_inject_frame(struct ocelot *ocelot, int port, int grp,
- 			      u32 rew_op, struct sk_buff *skb)
- {
-+	struct ocelot_port *port_s = ocelot->ports[port];
- 	u32 ifh[OCELOT_TAG_LEN / 4] = {0};
- 	unsigned int i, count, last;
+ enum ocelot_action_type {
+ 	OCELOT_MACT_LEARN,
+ 	OCELOT_MACT_FORGET,
+@@ -768,6 +780,7 @@ static const struct net_device_ops ocelot_port_netdev_ops = {
+ 	.ndo_open			= ocelot_port_open,
+ 	.ndo_stop			= ocelot_port_stop,
+ 	.ndo_start_xmit			= ocelot_port_xmit,
++	.ndo_change_mtu			= ocelot_change_mtu,
+ 	.ndo_set_rx_mode		= ocelot_set_rx_mode,
+ 	.ndo_set_mac_address		= ocelot_port_set_mac_address,
+ 	.ndo_get_stats64		= ocelot_get_stats64,
+@@ -1699,6 +1712,7 @@ int ocelot_probe_port(struct ocelot *ocelot, int port, struct regmap *target,
  
- 	ocelot_write_rix(ocelot, QS_INJ_CTRL_GAP_SIZE(1) |
- 			 QS_INJ_CTRL_SOF, QS_INJ_CTRL, grp);
+ 	dev->netdev_ops = &ocelot_port_netdev_ops;
+ 	dev->ethtool_ops = &ocelot_ethtool_ops;
++	dev->max_mtu = OCELOT_JUMBO_MTU;
  
--	ocelot_ifh_set_bypass(ifh, 1);
--	ocelot_ifh_set_dest(ifh, BIT_ULL(port));
--	ocelot_ifh_set_tag_type(ifh, IFH_TAG_TYPE_C);
--	ocelot_ifh_set_vlan_tci(ifh, skb_vlan_tag_get(skb));
--	ocelot_ifh_set_rew_op(ifh, rew_op);
-+	ocelot_ifh_port_set(ifh, port_s, rew_op, skb_vlan_tag_get(skb));
- 
- 	for (i = 0; i < OCELOT_TAG_LEN / 4; i++)
- 		ocelot_write_rix(ocelot, ifh[i], QS_INJ_WR, grp);
-@@ -2128,6 +2137,10 @@ void ocelot_init_port(struct ocelot *ocelot, int port)
- 
- 	skb_queue_head_init(&ocelot_port->tx_skbs);
- 
-+	ocelot_ifh_set_bypass(ocelot_port->ifh, 1);
-+	ocelot_ifh_set_dest(ocelot_port->ifh, BIT_ULL(port));
-+	ocelot_ifh_set_tag_type(ocelot_port->ifh, IFH_TAG_TYPE_C);
-+
- 	/* Basic L2 initialization */
- 
- 	/* Set MAC IFG Gaps
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index fef3a36b0210..b3381c90ff3e 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -6,6 +6,7 @@
- #define _SOC_MSCC_OCELOT_H
- 
- #include <linux/ptp_clock_kernel.h>
-+#include <linux/dsa/ocelot.h>
- #include <linux/net_tstamp.h>
- #include <linux/if_vlan.h>
- #include <linux/regmap.h>
-@@ -623,6 +624,8 @@ struct ocelot_port {
- 
- 	struct net_device		*bridge;
- 	u8				stp_state;
-+
-+	u8				ifh[OCELOT_TAG_LEN];
- };
- 
- struct ocelot {
-@@ -754,6 +757,8 @@ void __ocelot_target_write_ix(struct ocelot *ocelot, enum ocelot_target target,
- bool ocelot_can_inject(struct ocelot *ocelot, int grp);
- void ocelot_port_inject_frame(struct ocelot *ocelot, int port, int grp,
- 			      u32 rew_op, struct sk_buff *skb);
-+void ocelot_ifh_port_set(void *ifh, struct ocelot_port *port, u32 rew_op,
-+			 u32 vlan_tag);
- int ocelot_xtr_poll_frame(struct ocelot *ocelot, int grp, struct sk_buff **skb);
- void ocelot_drain_cpu_queue(struct ocelot *ocelot, int grp);
- 
+ 	dev->hw_features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_RXFCS |
+ 		NETIF_F_HW_TC;
 -- 
 2.33.0
 
