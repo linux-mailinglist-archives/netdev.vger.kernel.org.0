@@ -2,174 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF891443CB0
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 06:26:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F18B443CBC
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 06:33:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230076AbhKCF2w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 01:28:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47468 "EHLO
+        id S230382AbhKCFgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 01:36:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbhKCF2u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 01:28:50 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B6CC061714;
-        Tue,  2 Nov 2021 22:26:13 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id v7so3802108ybq.0;
-        Tue, 02 Nov 2021 22:26:13 -0700 (PDT)
+        with ESMTP id S229650AbhKCFf7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 01:35:59 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDDC8C061714
+        for <netdev@vger.kernel.org>; Tue,  2 Nov 2021 22:33:23 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id b15-20020a25ae8f000000b005c20f367790so2634968ybj.2
+        for <netdev@vger.kernel.org>; Tue, 02 Nov 2021 22:33:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=V1GdT6iYRhMl0O3PwXIC9/pxYDVMZJJQxm9Rz3StFos=;
-        b=VncHJlvodE/soRLjdPpvkK440ZKU5LHYlcSvZZiGWLZ60vKSYNosCoqawM/5y/58W3
-         NccfsJ9ect2eUu6/udebs7itiYb9U67TqUjx0qJXu2yh+NEzRVnobsac4M+6s7MdwL5a
-         xD5K2Vs7p8vsg7i3QMeGvQ1VFl070t0HzJkagVqUbwjmNlOkKEDD5dpTpqwWWpYsXE5A
-         0pb+U73FUCvLSvS1NDQmpztR/i7OrK+uw8qRSShFacJ9s2n1od3AAeo93KelUyh+bewQ
-         QASu+lndgsAG5M3GkUsnU8NaWrFN8aJ+HbBrV3/WkKx13Qq7P6qSuucz4xHOKfDwqWJ1
-         ybBQ==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=xs0T0WVw07avkfyokmmkdCQmH6GIfXLpMlnt8tnR1gM=;
+        b=YEa6S5jxUvaRXnXk6KYLcnE93FShL1ZE72b/FVSD34hL3j8YB4vC9QiWItu9YAS+yS
+         mcQiPv56PH0TVoAgfZkApROCJVL1O2RrJah4Y2uVt1YD5Ye/dh8I16FxdTrhPxvDVJAN
+         VNs6s47NqqPhQPUzNkvteUFgRZ1Tw4bYYkSIs8CP8X/AqGsOjypIuc+Sq4MgsY2owWGp
+         csYCpv1qhV81L+6UZWFZE9uNElVtHXpk/Wnk/7DVf5yfVE+/FjY8o1+5eC56sRu+AaAi
+         1UBI9Ic8EBg7b5HstspzA4GHwZVEI3/fAmz2jVGRyp2zGB1cB8pUEeHdPstvegT33AGS
+         uLuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=V1GdT6iYRhMl0O3PwXIC9/pxYDVMZJJQxm9Rz3StFos=;
-        b=JyG3gy9sV64pHHWIB/RW2URQs5aqWSahFQBu/4XE1nKNdaAuFE9VSboJZJVVQGG0T5
-         +DOUqlwmgaXJSmL8YY8X7oQ0D/0P3OHIP3KhkWdJDn+0QUTTZag9IvFdI7TUL/ml+2QF
-         ReOWz7h83EBD65zWOa1bHAoIuK5tW1iCi4bIBCfIojL71yeuiSroPNJUrkiTXyj2FRJb
-         +M8vwFCtuENPWvSUl4Joec1Oo9ew617frgKvEYH7yuTG8P7Uq/UDpv7mU6bcr+mqgYbF
-         7ZRpLb0zN9Nu82ipvcgTzQY2Mk+iDt0EDOaJBu9N7XTVmjawZ+f7bmt17aBVDPH290UI
-         I+6Q==
-X-Gm-Message-State: AOAM533RnvN+mUcjwWCTk9gfdhQJ5XPaq0iVFnkB84PFGZJblxGca98P
-        yfC8OsqyrVjmaPJyy8bKuWVRC3X7JIvVc7UhuQs=
-X-Google-Smtp-Source: ABdhPJxAFLoqpFfsskTCrDrH8/bPFaby51xitvLdDIzA5GeYAglji5m9CvpHMRNyBsrANEnCO1Y6YWa1xZmVhWDrOOA=
-X-Received: by 2002:a25:afcd:: with SMTP id d13mr45794415ybj.504.1635917172631;
- Tue, 02 Nov 2021 22:26:12 -0700 (PDT)
-MIME-Version: 1.0
-References: <20211027203727.208847-1-mauricio@kinvolk.io> <CAADnVQK2Bm7dDgGc6uHVosuSzi_LT0afXM6Hf3yLXByfftxV1Q@mail.gmail.com>
- <CAHap4zt7B1Zb56rr55Q8_cy8qdyaZsYcWt7ZHrs3EKr50fsA+A@mail.gmail.com>
- <CAEf4BzbDBGEnztzEcXmCFMNyzTjJ3pY41ahzieu9yJ+EDHU0dg@mail.gmail.com> <CAHap4zutG7KXywstCHcTbATN8iVCKuN84ZHxLfdsXDJS9sDmEA@mail.gmail.com>
-In-Reply-To: <CAHap4zutG7KXywstCHcTbATN8iVCKuN84ZHxLfdsXDJS9sDmEA@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 2 Nov 2021 22:26:01 -0700
-Message-ID: <CAEf4BzbALXu7ucrVcNdT38od5fU2Cd9qMncbXGJGe-KG1NOdNw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/2] libbpf: Implement BTF Generator API
-To:     =?UTF-8?Q?Mauricio_V=C3=A1squez_Bernal?= <mauricio@kinvolk.io>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
-        Lorenzo Fontana <lorenzo.fontana@elastic.co>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=xs0T0WVw07avkfyokmmkdCQmH6GIfXLpMlnt8tnR1gM=;
+        b=LQi84R6dsBTuqJN8g+UV/qxKyqORt2vSxJYj9g2uOLjr8E9hUz2AYFHBb0ePrstqsW
+         /yEed24mCYWrQ91rJQ+C5wDDz63Bq4E5+ebOCnTDK6F1YH4JjkHXy8moaHdmpno2Q2dh
+         rdrN17DI09YPz9MZpX/t1sTZTM22aO+sdsHlhksCKN2w3EQXH7aNRMOK0tZH3oyyFRS1
+         SFm0zZdDoXIB24RA18c8qztEbqfBUqpVXDM+EpeXmKhn5e+d4rJZnsfmk4bGpkj/E+BN
+         3h6FEn9fpbIk4Hl477Y/bSPZM8zMelOEEYmvp/+eRugHClOzPs1bk/HF+u6OcED3QjTh
+         dfVA==
+X-Gm-Message-State: AOAM532KPKhHk7OtiRBM4og2x6UFmRahSwaOcdLejybPDy/KOsap4fBV
+        Mgf0owCSj8Oppo1Qn4Mw6i7sUJeCa7Vd
+X-Google-Smtp-Source: ABdhPJwSvjB5cPYxJxzN/oBjy/POAcp2ZMLNYY9yCfCgcipAK6CWpatsZlfm0N6cRGHW3xDfEvyYuIQ7KhpX
+X-Received: from apusaka-p920.tpe.corp.google.com ([2401:fa00:1:10:7af7:a937:5810:b542])
+ (user=apusaka job=sendgmr) by 2002:a25:d6c6:: with SMTP id
+ n189mr22646041ybg.272.1635917602348; Tue, 02 Nov 2021 22:33:22 -0700 (PDT)
+Date:   Wed,  3 Nov 2021 13:33:14 +0800
+Message-Id: <20211103133225.v2.1.I3ba1a76d72da5a813cf6e6f219838c9ef28c5eaa@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.33.1.1089.g2158813163f-goog
+Subject: [PATCH v2 1/2] Bluetooth: Ignore HCI_ERROR_CANCELLED_BY_HOST on adv
+ set terminated event
+From:   Archie Pusaka <apusaka@google.com>
+To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>
+Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 2, 2021 at 2:26 PM Mauricio V=C3=A1squez Bernal
-<mauricio@kinvolk.io> wrote:
->
-> > Part #2 absolutely doesn't belong in libbpf. Libbpf exposes enough BTF
-> > constructing APIs to implement this in any application, bpftool or
-> > otherwise. It's also a relatively straightforward problem: mark used
-> > types and fields, create a copy of BTF with only those types and
-> > fields.
->
-> Totally agree.
->
-> > The last point is important, because to solve the problem 1b (exposing
-> > CO-RE relo info), the best way to minimize public API commitments is
-> > to (optionally, probably) request libbpf to record its CO-RE relo
-> > decisions. Here's what I propose, specifically:
-> >   1. Add something like "bool record_core_relo_info" (awful name,
-> > don't use it) in bpf_object_open_opts.
-> >   2. If it is set to true, libbpf will keep a "log" of CO-RE
-> > relocation decisions, recording stuff like program name, instruction
-> > index, local spec (i.e., root_type_id, spec string, relo kind, maybe
-> > something else), target spec (kernel type_id, kernel spec string, also
-> > module ID, if it's not vmlinux BTF). We can also record relocated
-> > value (i.e., field offset, actual enum value, true/false for
-> > existence, etc). All these are stable concepts, so I'd feel more
-> > comfortable exposing them, compared to stuff like bpf_core_accessor
-> > and other internal details.
-> >   3. The memory for all that will be managed by libbpf for simplicity
-> > of an API, and we'll expose accessors to get those arrays (at object
-> > level or per-program level is TBD).
-> >   4. This info will be available after the prepare() step and will be
-> > discarded either at create_maps() or load().
->
-> I like all this proposal. It fits very well with the BTFGen use case.
->
-> Regarding the information to expose, IIUC that'd be slight versions of
-> struct bpf_core_relo_res and struct bpf_core_spec. I think we could
-> expose the following structures and a function to get it (please
-> ignore the naming for now):
->
-> ```
-> /* reduced version of struct bpf_core_spec */
-> struct bpf_core_spec_pub {
-> const struct btf *btf;
-> __u32 root_type_id;
-> enum bpf_core_relo_kind kind;
-> /* raw, low-level spec: 1-to-1 with accessor spec string */ --> we can
-> also use access_str_off and let the user parse it
-> int raw_spec[BPF_CORE_SPEC_MAX_LEN];
+From: Archie Pusaka <apusaka@chromium.org>
 
-string might be a more "extensible" way, but we'll need to construct
-that string for each relocation
+This event is received when the controller stops advertising,
+specifically for these three reasons:
+(a) Connection is successfully created (success).
+(b) Timeout is reached (error).
+(c) Number of advertising events is reached (error).
+(*) This event is NOT generated when the host stops the advertisement.
+Refer to the BT spec ver 5.3 vol 4 part E sec 7.7.65.18. Note that the
+section was revised from BT spec ver 5.0 vol 2 part E sec 7.7.65.18
+which was ambiguous about (*).
 
-> /* raw spec length */
-> int raw_len;
+Some chips (e.g. RTL8822CE) send this event when the host stops the
+advertisement with status = HCI_ERROR_CANCELLED_BY_HOST (due to (*)
+above). This is treated as an error and the advertisement will be
+removed and userspace will be informed via MGMT event.
 
-using string would eliminate the need for this
+On suspend, we are supposed to temporarily disable advertisements,
+and continue advertising on resume. However, due to the behavior
+above, the advertisements are removed instead.
 
-> };
->
-> struct bpf_core_relo_pub {
-> const char *prog_name; --> if we expose it by program then it's not neede=
-d.
+This patch returns early if HCI_ERROR_CANCELLED_BY_HOST is received.
 
-yep, not sure about per-program yet, but that's minor
+Btmon snippet of the unexpected behavior:
+@ MGMT Command: Remove Advertising (0x003f) plen 1
+        Instance: 1
+< HCI Command: LE Set Extended Advertising Enable (0x08|0x0039) plen 6
+        Extended advertising: Disabled (0x00)
+        Number of sets: 1 (0x01)
+        Entry 0
+          Handle: 0x01
+          Duration: 0 ms (0x00)
+          Max ext adv events: 0
+> HCI Event: LE Meta Event (0x3e) plen 6
+      LE Advertising Set Terminated (0x12)
+        Status: Operation Cancelled by Host (0x44)
+        Handle: 1
+        Connection handle: 0
+        Number of completed extended advertising events: 5
+> HCI Event: Command Complete (0x0e) plen 4
+      LE Set Extended Advertising Enable (0x08|0x0039) ncmd 2
+        Status: Success (0x00)
 
-> int insn_idx;
->
-> bool poison; --> allows the user to understand if the relocation
-> succeeded or not.
->
-> /* new field offset for field based core relos */
-> __u32 new_offset;
->
-> // TODO: fields for type and enum-based relos
+Signed-off-by: Archie Pusaka <apusaka@chromium.org>
 
-isn't it always just u64 new_value for all types of relos? We can also
-expose old_value just for completeness
+---
 
->
-> struct bpf_core_spec_pub local_spec, targ_spec; --> BTFGen only needs
-> targ_spec, I suppose local spec would be useful for other use cases.
+Changes in v2:
+* Split clearing HCI_LE_ADV into its own patch
+* Reword comments
 
-targ_spec doesn't seem necessary given we have root_type_id, relo
-kind, access_string (or raw_spec). What am I missing?
+ include/net/bluetooth/hci.h |  1 +
+ net/bluetooth/hci_event.c   | 12 ++++++++++++
+ 2 files changed, 13 insertions(+)
 
+diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+index 63065bc01b76..84db6b275231 100644
+--- a/include/net/bluetooth/hci.h
++++ b/include/net/bluetooth/hci.h
+@@ -566,6 +566,7 @@ enum {
+ #define HCI_ERROR_INVALID_LL_PARAMS	0x1e
+ #define HCI_ERROR_UNSPECIFIED		0x1f
+ #define HCI_ERROR_ADVERTISING_TIMEOUT	0x3c
++#define HCI_ERROR_CANCELLED_BY_HOST	0x44
+ 
+ /* Flow control modes */
+ #define HCI_FLOW_CTL_MODE_PACKET_BASED	0x00
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index d4b75a6cfeee..7d875927c48b 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -5538,6 +5538,18 @@ static void hci_le_ext_adv_term_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 
+ 	adv = hci_find_adv_instance(hdev, ev->handle);
+ 
++	/* The Bluetooth Core 5.3 specification clearly states that this event
++	 * shall not be sent when the Host disables the advertising set. So in
++	 * case of HCI_ERROR_CANCELLED_BY_HOST, just ignore the event.
++	 *
++	 * When the Host disables an advertising set, all cleanup is done via
++	 * its command callback and not needed to be duplicated here.
++	 */
++	if (ev->status == HCI_ERROR_CANCELLED_BY_HOST) {
++		bt_dev_warn_ratelimited(hdev, "Unexpected advertising set terminated event");
++		return;
++	}
++
+ 	if (ev->status) {
+ 		if (!adv)
+ 			return;
+-- 
+2.33.1.1089.g2158813163f-goog
 
-> };
->
-> LIBBPF_API struct bpf_core_relo_pub *bpf_program__core_relos(struct
-> bpf_program *prog);
-
-need also size of this array and it should be const struct *, but
-yeah, something like this
-
-> ```
->
-> I don't have strong opinions about exposing it by object or by
-> program. Both cases should work the same for BTFGen.
->
-> Does it make sense to you?
-
-Yeah, more or less.
-
->
-> Btw, I'm probably not the right person to give opinions about this API
-> splitment. I'd be happy to have other opinions here and to make this
-> change once we agree on a path forward.
