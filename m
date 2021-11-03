@@ -2,141 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9BBB444324
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 15:12:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7BF2444334
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 15:16:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231131AbhKCOOy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 10:14:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37186 "EHLO mail.kernel.org"
+        id S231816AbhKCOSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 10:18:44 -0400
+Received: from mga17.intel.com ([192.55.52.151]:54837 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230472AbhKCOOy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Nov 2021 10:14:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A186E6052B;
-        Wed,  3 Nov 2021 14:12:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635948737;
-        bh=V49DQ5LaEFPh9YTOPwCOLFLDFof55V0qlxfd8Xu9WtA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=m3Fyx5O57eMjqjPO9Hq78WJ75o59N/h7Ym3j6pjCaG4Zb63oxMHDR0dsqpw3y/ZiI
-         DrLczYKgFhS8klwFcIcvCerELkbvIcfCMZfRvTy/vOmBGYsajgsoJZ6a60Ag6wVnB6
-         Fpu14m2yPJVDFeU0JKhaYWUqRsopMskLTX/SdWqsvz+PkI3/hWZByeEUhWTr89Wh7I
-         T70kEyNuuaAnQzRBjxmQMTeITGsKtcgEyPT8mT2s7G3IrcKhDVtMnwHHtrM0lQgACK
-         jwctoliO2ebsV0xSFri/m1lCEPeLsgDm2MCmkV2nb9UDnsU/Cylk3eLdfZ0skYxuEE
-         rhG2zyOyUp1kg==
-Date:   Wed, 3 Nov 2021 07:12:16 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     idosch@idosch.org, edwin.peer@broadcom.com, jiri@resnulli.us,
-        netdev@vger.kernel.org
-Subject: Re: [RFC 0/5] devlink: add an explicit locking API
-Message-ID: <20211103071216.20704a2e@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <YYI46W0OtHcjB06r@unreal>
-References: <20211030231254.2477599-1-kuba@kernel.org>
-        <YX5Efghyxu5g8kzY@unreal>
-        <20211101073259.33406da3@kicinski-fedora-PC1C0HJN>
-        <YYAzn+mtrGp/As74@unreal>
-        <20211101141613.3373b7f4@kicinski-fedora-PC1C0HJN>
-        <YYDyBxNzJSpKXosy@unreal>
-        <20211102081412.6d4e2275@kicinski-fedora-PC1C0HJN>
-        <YYF//p5mDQ2/reOD@unreal>
-        <20211102170530.49f8ab4e@kicinski-fedora-PC1C0HJN>
-        <YYI46W0OtHcjB06r@unreal>
+        id S231131AbhKCOSn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Nov 2021 10:18:43 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10156"; a="212253588"
+X-IronPort-AV: E=Sophos;i="5.87,206,1631602800"; 
+   d="scan'208";a="212253588"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2021 07:16:07 -0700
+X-IronPort-AV: E=Sophos;i="5.87,206,1631602800"; 
+   d="scan'208";a="450079125"
+Received: from smile.fi.intel.com ([10.237.72.184])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2021 07:16:03 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1miH3L-003HQz-Ib;
+        Wed, 03 Nov 2021 16:15:47 +0200
+Date:   Wed, 3 Nov 2021 16:15:47 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonas =?iso-8859-1?Q?Dre=DFler?= <verdre@v0yd.nl>
+Cc:     Brian Norris <briannorris@chromium.org>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Subject: Re: [PATCH] mwifiex: Add quirk to disable deep sleep with certain
+ hardware revision
+Message-ID: <YYKZkz3EFfdENhoZ@smile.fi.intel.com>
+References: <20211028073729.24408-1-verdre@v0yd.nl>
+ <CA+ASDXOrad3b=b8+vwuF6m3+ZcigVaoJySpDXXZOnC3O8CJBSw@mail.gmail.com>
+ <cc7432f4-824a-abe2-e304-5ba019ac8c89@v0yd.nl>
+ <b2aaf6f7-9f22-926a-963b-cfd0d4fca31d@v0yd.nl>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b2aaf6f7-9f22-926a-963b-cfd0d4fca31d@v0yd.nl>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 3 Nov 2021 09:23:21 +0200 Leon Romanovsky wrote:
-> > > I'm doubt about. It maybe easy to tell in reload flow, but it is much
-> > > harder inside eswitch mode change (as an example).  
-> > 
-> > Hm, interesting counter example, why is eswitch mode change harder?
-> > From devlink side they should be locked the same, and I take the
-> > devlink lock on all driver callbacks (probe, remove, sriov).  
-> 
-> I chose it as an example, because I see calls to eswitch enable/disable
-> in so many driver paths that I can't tell for sure which API to use and
-> if I need to take devlink lock or not inside the driver.
+On Wed, Nov 03, 2021 at 02:37:53PM +0100, Jonas Dreßler wrote:
+> On 11/3/21 13:25, Jonas Dreßler wrote:
 
-Really? Certainly not the case for nfp and bnxt. The two paths that
-care are devlink mode setting callback (already locked), and sriov
-config for spawning the right ports (I recommend all PCI callbacks 
-take the devlink lock).
+...
 
-> We also have other troublesome paths, like PCI recovery and health recovery
-> which need some sort of protection.
-
-PCI recovery should take the devlink lock like any PCI callback.
-Health callbacks are locked in my RFC.
-
-> It can be seen as an example that bringing devlink locking complexity to
-> the real HW drivers won't be as good as it is for netdevsim.
-
-I don't see that. Again, do whatever you want for mlx5, but don't stop
-others from creating shared infra.
-
-> > > You need to stop everything when _set_ command is called. One way is to
-> > > require for all netlink devlink calls to have lock, another solution is
-> > > to use RW semaphore. This is why it is not optimization, but an implementation.
-> > > Parallel "reads" are nice bonus.  
-> > 
-> > Sorry I still don't understand. Why is devlink instance lock not
-> > enough? Are you saying parallel get is a hard requirement for the
-> > rework?  
-> 
-> Let's try to use the following example:
-> terminal A:                                  | terminal B:
->                                              |
->  while [ true ]                              | while [ true ]
->    devlink sb pool show pci/0000:00:09.0     |   devlink dev eswitch set pci/0000:00:09.0 mode switchdev
->                                              |   devlink dev eswitch set pci/0000:00:09.0 mode legacy
-> 
-> In current implementation without global devlink_mutex, it works ok,
-> because every devlink command takes that global mutex and only one
-> command runs at the same time. Plus no parallel access is allowed in
-> rtneltink level.
-> 
-> So imagine that we allow parallel access without requiring devlink->lock
-> for all .doit() and .dumpit() and continue rely on DEVLINK_NL_FLAG_NO_LOCK
-> flag. In this case, terminal A will access driver without any protection
-> while terminal B continues to use devlink->lock.
-> 
-> For this case, we need RW semaphore, terminal A will take read lock,
-> terminal B will take write lock.
-> 
-> So unless you want to require that all devlink calls will have
-> devlink->lock, which I think is wrong, we need RW semaphore.
-
-Oh! I don't know how many times I said already that all callbacks should
-take the instance lock.  Let me try one more time - all callbacks should
-take the instance lock.
-
-> > > I would say that you are ignoring that most of such drivers don't add
-> > > new functionality.  
-> > 
-> > You lost me again. You don't disagree that ability to lock out higher
-> > layers is useful for drivers but... ?  
-> 
-> I disagree, but our views are so different here that nothing good will
-> come out of arguing.
-
-You can't disagree with facts. 
-
-If I'm counting right there are ~80 Ethernet drivers which take
-rtnl_lock. Do you really think they would all do that if it was easier
-to implement their own locking? Or that they are all buggy?
-
-> > > Anyway, I got your point, please give me time to see what I can do.
+> > > > +               if (strncmp(ver_ext->version_str, "ChipRev:20, BB:9b(10.00), RF:40(21)", 128) == 0) {
 > > > 
-> > > In case, we will adopt your model, will you convert all drivers?  
+> > > Rather than memorize the 128-size array here, maybe use
+> > > sizeof(ver_ext->version_str) ?
 > > 
-> > Yes, sure. The way this RFC is done it should be possible to land 
-> > it without any driver changes and then go driver by driver. I find
-> > that approach much more manageable.  
+> > Sounds like a good idea, yeah.
 > 
-> I still believe that we can do everything inside devlink.c without
-> touching drivers at all.
+> Nevermind, the reason I did this was for consistency in the
+> function, right underneath in the same function it also assumes
+> a fixed size of 128 characters, so I'd rather use the same
+> length.
+> 
+> > 		memcpy(version_ext->version_str, ver_ext->version_str,
+> > 		       sizeof(char) * 128);
 
-?? The git history says you have been touching the drivers quite a bit.
+Besides sizeof(char)...
+
+> > 		memcpy(priv->version_str, ver_ext->version_str, 128);
+> 
+> Might be a good idea to #define it as MWIFIEX_VERSION_STR_LENGTH
+> in fw.h though...
+
+...I think you simply need a precursor patch that changes this
+to sizeof() / #define approach.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
