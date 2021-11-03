@@ -2,183 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F51B444398
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 15:30:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02E824443A1
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 15:32:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232199AbhKCOcz convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 3 Nov 2021 10:32:55 -0400
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:44921 "EHLO
-        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232126AbhKCOct (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 10:32:49 -0400
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 77CEB1BF210;
-        Wed,  3 Nov 2021 14:30:08 +0000 (UTC)
-Date:   Wed, 3 Nov 2021 15:30:07 +0100
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        id S231716AbhKCOev (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 10:34:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58992 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231551AbhKCOev (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 10:34:51 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5666C061714
+        for <netdev@vger.kernel.org>; Wed,  3 Nov 2021 07:32:14 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id y14-20020a17090a2b4e00b001a5824f4918so1524623pjc.4
+        for <netdev@vger.kernel.org>; Wed, 03 Nov 2021 07:32:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=P5Xv2oiwNU4bnfBjalF2uJboqEeK464uF9/JBROIcw0=;
+        b=IdDYnRJ6GVU8+3gEVhNSKqiTlD7SZ5CoOFviFUxZqnIsA3lwz5dAaT7vqdoKpcGsI1
+         yN1CfRM9GfPXy3PGy5oglV6L6hco78r2xOIqS+ElQ1suLBxaZWepoHeJVZyAmYA5bTOf
+         c72k8WZQbbVEEWPifqaXy0+dSeCiiPg3Xz9MpkphZHZDIAGUUix3K0o5QFpyjV9KLZ8M
+         1Tg+tXrm/Oo4T0JoN/IcPFtnL/pbkPQC4w3qw2Ggv0gXrwhOhor0tUrDcQzBirb8XumN
+         lw5mM2Eo5UsUTk/sW4yJhFDR/UyQSZMkw7zFSji56uQdbf0O6yTvb1FLeKIaABB2hUiv
+         ncVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=P5Xv2oiwNU4bnfBjalF2uJboqEeK464uF9/JBROIcw0=;
+        b=sLd9af2W1eROzCiAa4fIvRb9yoJhaMILxGo4VguGl+a4SB/CeTC0YWkYy9x44EECRr
+         QnbjvNTx9lYrVvQ+eVGmcrP/1hpozeNxBISdJIrYv2IlcGFv96G3wdypuUL59l2mpfEh
+         c28g4PUrfokrVOKz+p37wq2RTeLkh3rT/hs9AetrEzD4Uwt2RzuPOHWWvK4iYbhuZpyV
+         Tb7aY3JL9HrV6e43zE31q/RR2IJWn1Xl2xP/+zfuBqaDtuJxTbIIpXS6ux3wVPQX6zWH
+         SGrbxQLoKObdbqU0J7lpmzZd9V1mOIo9YjrnRcuWNL2+8JGPAHf3UNHpdqGLp9ITc5oX
+         Bg2g==
+X-Gm-Message-State: AOAM530mnGTi4cyoJcWhmXqTjMtCnv1hJ+ogvBilLNqYrjDK5kCLKgc6
+        2keyOlnh352UYWE42GnSZ2KHQirkb+BhOw==
+X-Google-Smtp-Source: ABdhPJy9FnCP6XNNyVp3Xb2uwBtvy72zCrQK8SNlV2N8M6CywWiuMz0zH92MikPSCjCRwdAd7llXDA==
+X-Received: by 2002:a17:902:784c:b0:138:f4e5:9df8 with SMTP id e12-20020a170902784c00b00138f4e59df8mr38735141pln.14.1635949934127;
+        Wed, 03 Nov 2021 07:32:14 -0700 (PDT)
+Received: from localhost.localdomain ([111.201.149.194])
+        by smtp.gmail.com with ESMTPSA id u10sm2594141pfh.49.2021.11.03.07.32.11
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 03 Nov 2021 07:32:13 -0700 (PDT)
+From:   xiangxia.m.yue@gmail.com
+To:     netdev@vger.kernel.org
+Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v2 6/6] net: ocelot: add jumbo frame support for FDMA
-Message-ID: <20211103153007.405509c0@fixe.home>
-In-Reply-To: <20211103124319.e7th7khpsybs7zjd@skbuf>
-References: <20211103091943.3878621-1-clement.leger@bootlin.com>
-        <20211103091943.3878621-7-clement.leger@bootlin.com>
-        <20211103124319.e7th7khpsybs7zjd@skbuf>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: [PATCH v2] net: sched: check tc_skip_classify as far as possible
+Date:   Wed,  3 Nov 2021 22:32:08 +0800
+Message-Id: <20211103143208.41282-1-xiangxia.m.yue@gmail.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Wed, 3 Nov 2021 12:43:20 +0000,
-Vladimir Oltean <vladimir.oltean@nxp.com> a écrit :
+From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-> On Wed, Nov 03, 2021 at 10:19:43AM +0100, Clément Léger wrote:
-> > When using the FDMA, using jumbo frames can lead to a large performance
-> > improvement. When changing the MTU, the RX buffer size must be
-> > increased to be large enough to receive jumbo frame. Since the FDMA is
-> > shared amongst all interfaces, all the ports must be down before
-> > changing the MTU. Buffers are sized to accept the maximum MTU supported
-> > by each port.
-> > 
-> > Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-> > ---  
-> 
-> Instead of draining buffers and refilling with a different size, which
-> impacts the user experience, can you not just use scatter/gather RX
-> processing for frames larger than the fixed buffer size, like a normal
-> driver would?
+We look up and then check tc_skip_classify flag in net
+sched layer, even though skb don't want to be classified.
+That case may consume a lot of cpu cycles.
 
-I could do that yes but I'm not sure it will improve the FDMA
-performance that much then. I will check.
+Install the rules as below:
+$ for id in $(seq 1 100); do
+$       tc filter add ... egress prio $id ... action mirred egress redirect dev ifb0
+$ done
 
-> 
-> >  drivers/net/ethernet/mscc/ocelot_fdma.c | 61 +++++++++++++++++++++++++
-> >  drivers/net/ethernet/mscc/ocelot_fdma.h |  1 +
-> >  drivers/net/ethernet/mscc/ocelot_net.c  |  7 +++
-> >  3 files changed, 69 insertions(+)
-> > 
-> > diff --git a/drivers/net/ethernet/mscc/ocelot_fdma.c b/drivers/net/ethernet/mscc/ocelot_fdma.c
-> > index d8cdf022bbee..bee1a310caa6 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot_fdma.c
-> > +++ b/drivers/net/ethernet/mscc/ocelot_fdma.c
-> > @@ -530,6 +530,67 @@ static void fdma_free_skbs_list(struct ocelot_fdma *fdma,
-> >  	}
-> >  }
-> >  
-> > +int ocelot_fdma_change_mtu(struct net_device *dev, int new_mtu)
-> > +{
-> > +	struct ocelot_port_private *priv = netdev_priv(dev);
-> > +	struct ocelot_port *port = &priv->port;
-> > +	struct ocelot *ocelot = port->ocelot;
-> > +	struct ocelot_fdma *fdma = ocelot->fdma;
-> > +	struct ocelot_fdma_dcb *dcb, *dcb_temp;
-> > +	struct list_head tmp = LIST_HEAD_INIT(tmp);
-> > +	size_t old_rx_buf_size = fdma->rx_buf_size;
-> > +	bool all_ports_down = true;
-> > +	u8 port_num;
-> > +
-> > +	/* The FDMA RX list is shared amongst all the port, get the max MTU from
-> > +	 * all of them
-> > +	 */
-> > +	for (port_num = 0; port_num < ocelot->num_phys_ports; port_num++) {
-> > +		port = ocelot->ports[port_num];
-> > +		if (!port)
-> > +			continue;
-> > +
-> > +		priv = container_of(port, struct ocelot_port_private, port);
-> > +
-> > +		if (READ_ONCE(priv->dev->mtu) > new_mtu)
-> > +			new_mtu = READ_ONCE(priv->dev->mtu);
-> > +
-> > +		/* All ports must be down to change the RX buffer length */
-> > +		if (netif_running(priv->dev))
-> > +			all_ports_down = false;
-> > +	}
-> > +
-> > +	fdma->rx_buf_size = fdma_rx_compute_buffer_size(new_mtu);
-> > +	if (fdma->rx_buf_size == old_rx_buf_size)
-> > +		return 0;
-> > +
-> > +	if (!all_ports_down)
-> > +		return -EBUSY;
-> > +
-> > +	priv = netdev_priv(dev);
-> > +
-> > +	fdma_stop_channel(fdma, MSCC_FDMA_INJ_CHAN);
-> > +
-> > +	/* Discard all pending RX software and hardware descriptor */
-> > +	fdma_free_skbs_list(fdma, &fdma->rx_hw, DMA_FROM_DEVICE);
-> > +	fdma_free_skbs_list(fdma, &fdma->rx_sw, DMA_FROM_DEVICE);
-> > +
-> > +	/* Move all DCBs to a temporary list that will be injected in sw list */
-> > +	if (!list_empty(&fdma->rx_hw))
-> > +		list_splice_tail_init(&fdma->rx_hw, &tmp);
-> > +	if (!list_empty(&fdma->rx_sw))
-> > +		list_splice_tail_init(&fdma->rx_sw, &tmp);
-> > +
-> > +	list_for_each_entry_safe(dcb, dcb_temp, &tmp, node) {
-> > +		list_del(&dcb->node);
-> > +		ocelot_fdma_rx_add_dcb_sw(fdma, dcb);
-> > +	}
-> > +
-> > +	ocelot_fdma_rx_refill(fdma);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> >  static int fdma_init_tx(struct ocelot_fdma *fdma)
-> >  {
-> >  	int i;
-> > diff --git a/drivers/net/ethernet/mscc/ocelot_fdma.h b/drivers/net/ethernet/mscc/ocelot_fdma.h
-> > index 6c5c5872abf5..74514a0b291a 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot_fdma.h
-> > +++ b/drivers/net/ethernet/mscc/ocelot_fdma.h
-> > @@ -55,5 +55,6 @@ int ocelot_fdma_start(struct ocelot_fdma *fdma);
-> >  int ocelot_fdma_stop(struct ocelot_fdma *fdma);
-> >  int ocelot_fdma_inject_frame(struct ocelot_fdma *fdma, int port, u32 rew_op,
-> >  			     struct sk_buff *skb, struct net_device *dev);
-> > +int ocelot_fdma_change_mtu(struct net_device *dev, int new_mtu);
-> >  
-> >  #endif
-> > diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-> > index 3971b810c5b4..d5e88d7b15c7 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot_net.c
-> > +++ b/drivers/net/ethernet/mscc/ocelot_net.c
-> > @@ -492,6 +492,13 @@ static int ocelot_change_mtu(struct net_device *dev, int new_mtu)
-> >  	struct ocelot_port_private *priv = netdev_priv(dev);
-> >  	struct ocelot_port *ocelot_port = &priv->port;
-> >  	struct ocelot *ocelot = ocelot_port->ocelot;
-> > +	int ret;
-> > +
-> > +	if (ocelot->fdma) {
-> > +		ret = ocelot_fdma_change_mtu(dev, new_mtu);
-> > +		if (ret)
-> > +			return ret;
-> > +	}
-> >  
-> >  	ocelot_port_set_maxlen(ocelot, priv->chip_port, new_mtu);
-> >  	WRITE_ONCE(dev->mtu, new_mtu);
-> > -- 
-> > 2.33.0
->   
+netperf:
+$ taskset -c 1 netperf -t TCP_RR -H ip -- -r 32,32
+$ taskset -c 1 netperf -t TCP_STREAM -H ip -- -m 32
 
+Before: 10662.33 tps, 108.95 Mbit/s
+After:  12434.48 tps, 145.89 Mbit/s
 
+For TCP_RR, there are 16.6% improvement, TCP_STREAM 33.9%.
 
+Cc: Willem de Bruijn <willemb@google.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+---
+v2: don't delete skb_skip_tc_classify in act_api 
+---
+ net/core/dev.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index edeb811c454e..fc29a429e9ad 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3940,6 +3940,9 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
+ 	if (!miniq)
+ 		return skb;
+ 
++	if (skb_skip_tc_classify(skb))
++		return skb;
++
+ 	/* qdisc_skb_cb(skb)->pkt_len was already set by the caller. */
+ 	qdisc_skb_cb(skb)->mru = 0;
+ 	qdisc_skb_cb(skb)->post_ct = false;
 -- 
-Clément Léger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+2.27.0
+
