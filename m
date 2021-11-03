@@ -2,127 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A4564448DF
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 20:19:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 665464448F8
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 20:31:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230404AbhKCTWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 15:22:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40566 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230500AbhKCTWV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 15:22:21 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88761C061714
-        for <netdev@vger.kernel.org>; Wed,  3 Nov 2021 12:19:44 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id f4so12868065edx.12
-        for <netdev@vger.kernel.org>; Wed, 03 Nov 2021 12:19:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=sP0bfXF/8PCJjdeW6fxK7ZV4OnUFgv5gfhjqtRsLygw=;
-        b=AVHg1pWWXoNhb2Zrv5jOJY2jhpbdSIHBeGRjeVTUbtX/hca5J9xiPRlZe1fXC9jAUX
-         at1s72AfRmheBwFhJCJZZVl1TosQ65h5xT7LypG40C00pmvKdFMuKINp0UjSpHM1u/S0
-         YQf1PDSZroqnllginx+SROQYTy1uBDBPL65Gbylgr35+ZNCJSjV9TSOruS7CBbPRU+x+
-         wn5d2zQ4G3IEVOkyMBcq6szv4c44FCF7Hujh1uTy8ybowu38rEhWArpp1qskkfuTLB85
-         vN/Ry2agQE3vFB4cnktfpuAtW7QTG03H+e/uyWhQITyd82Lsw2vfdi5GYeIJLhj3/ld1
-         GmmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sP0bfXF/8PCJjdeW6fxK7ZV4OnUFgv5gfhjqtRsLygw=;
-        b=ZCZiuDKsaRXcn1aiVodg19tRgMZdPWSRYq1nHayT3Y5JchuifJj5MrMuCMrscYHCoR
-         5QVDKeN+puUcxfb4hRx0OyMmVI+WCEI6/loWflmYf9xoMbwotdELy3A4UDOROUhBBD7Q
-         Px9Cl2pyp2Fhg9h/yQU3Krm7Oe/C6VuPexDv6fCBk6+3P3hIrIJwgUzZ93sUe15n66qy
-         QDkLsARAmm1BNZEJLbUNGz4seva8Djl4y1YyoyPfrPHkHdvG/vztCwksNA6oUZOIwMW/
-         4VoYEZAzkKHiszh7uHmyBPSjmPnFP4XBynIPJJevjtsJ9ar2Z/6lpfBCqnwx8Sn4A0ha
-         GNpg==
-X-Gm-Message-State: AOAM530eJkghTuCALvr5J/bKQvEwUYBJ0ISwA9tcWwmVf+7TYvyPBJhd
-        +ASDrgeXP1hqfVC6bV7hYqupog==
-X-Google-Smtp-Source: ABdhPJw6Y0MtXhhzP4UwLL27/jVpfnjgS+i0zKA0CmK+YjNd3PguLoW6Hfo7/Lf+VpMs84alrnOTNw==
-X-Received: by 2002:a17:907:3d94:: with SMTP id he20mr26408312ejc.75.1635967183074;
-        Wed, 03 Nov 2021 12:19:43 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id c19sm2111478ede.16.2021.11.03.12.19.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Nov 2021 12:19:42 -0700 (PDT)
-Date:   Wed, 3 Nov 2021 20:19:41 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     leon@kernel.org, idosch@idosch.org, edwin.peer@broadcom.com,
-        netdev@vger.kernel.org
-Subject: Re: [RFC 0/5] devlink: add an explicit locking API
-Message-ID: <YYLgzVXO6IYoQkW9@nanopsycho>
-References: <20211030231254.2477599-1-kuba@kernel.org>
- <YYJQZIJPdy3WnQ1S@nanopsycho>
- <20211103075231.0a53330c@kicinski-fedora-PC1C0HJN>
+        id S230441AbhKCTdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 15:33:44 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45642 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229697AbhKCTdn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Nov 2021 15:33:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=cDxZEgsBvG6iig5CDrhw19H0EN2SLZIC0/Kvs9EyApA=; b=gmj0V+SP7kqiQv7v5WyFuUgR2i
+        u2SrW66hYSLro8AtOX4Q8eBA91/DmHcrq58DDst+cyJr5hJkIYBzo6uAxrkXrChrZHQBkNjsPOqom
+        uQc38i7Bzau6+1adeo4bAjPmOaSqnuDjtX3yCgtnhhDxiQv3nS7OaBlybSqsSjYIQ0fE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1miLyD-00CX8c-Dv; Wed, 03 Nov 2021 20:30:49 +0100
+Date:   Wed, 3 Nov 2021 20:30:49 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Wells Lu =?utf-8?B?5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Wells Lu <wellslutw@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>
+Subject: Re: [PATCH 2/2] net: ethernet: Add driver for Sunplus SP7021
+Message-ID: <YYLjaYCQHzqBzN1l@lunn.ch>
+References: <cover.1635936610.git.wells.lu@sunplus.com>
+ <650ec751dd782071dd56af5e36c0d509b0c66d7f.1635936610.git.wells.lu@sunplus.com>
+ <d0217eed-a8b7-8eb9-7d50-4bf69cd38e03@infradead.org>
+ <159ab76ac7114da983332aadc6056c08@sphcmbx02.sunplus.com.tw>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211103075231.0a53330c@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <159ab76ac7114da983332aadc6056c08@sphcmbx02.sunplus.com.tw>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Nov 03, 2021 at 03:52:31PM CET, kuba@kernel.org wrote:
->On Wed, 3 Nov 2021 10:03:32 +0100 Jiri Pirko wrote:
->> Hi Jakub.
->> 
->> I took my time to read this thread and talked with Leon as well.
->> My original intention of locking in devlink was to maintain the locking
->> inside devlink.c to avoid the rtnl_lock-scenario.
->> 
->> However, I always feared that eventually we'll get to the point,
->> when it won't be possible to maintain any longer. I think may be it.
->
->Indeed, the two things I think we can avoid from rtnl_lock pitfalls 
->is that lock should be per-instance and that we should not wait for
->all refs to be gone at unregister time.
->
->Both are rather trivial to achieve with devlink.
->
->> In general, I like your approach. It is very clean and explicit. The
->> driver knows what to do, in which context it is and it can behave
->> accordingly. In theory or course, but the reality of drivers code tells
->> us often something different :)
->
->Right. I'll convert a few more drivers but the real test will be
->seeing if potential races are gone - hard to measure.
->
->> One small thing I don't fully undestand is the "opt-out" scenario which
->> makes things a bit tangled. But perhaps you can explain it a bit more.
->
->Do you mean the .lock_flags? That's a transitional thing so that people
->can convert drivers callback by callback to make prettier patch sets. 
->I may collapse all those flags into one, remains to be seen how useful
->it is when I create proper patches. This RFC is more of a code dump.
->
->The whole opt-out is to create the entire new API at once, and then
->convert drivers one-by-one (or allow the maintainers who care to do 
->it themselves). I find that easier and more friendly than slicing 
->the API and drivers multiple times.
->
->Long story short I expect the opt-out would be gone by the time 5.17
->merge window rolls around.
+> config NET_VENDOR_SUNPLUS
+> 	bool "Sunplus devices"
+> 	default y
+> 	depends on ARCH_SUNPLUS
 
-Okay, got it.
+Does it actually depend on ARCH_SUNPLUS? What do you make use of?
 
+Ideally, you want it to also build with COMPILE_TEST, so that the
+driver gets build by 0-day and all the other build bots.
 
->
->> Leon claims that he thinks that he would be able to solve the locking
->> scheme leaving all locking internal to devlink.c. I suggest to give
->> him a week or 2 to present the solution. If he is not successful, lets
->> continue on your approach.
->> 
->> What do you think?
->
->I do worry a little bit that our goals differ. Seems like Leon wants to
->fix devlink for devlink and I want drivers to be able to lean on it.
->
->But I'm not attached to the exact approach or code, so as long as
->nobody is attached to theirs more RFCs can only help.
->
->Please be courteous and send as RFCs, tho.
+> 	---help---
+> 	  If you have a network (Ethernet) card belonging to this
+> 	  class, say Y here.
+> 
+> 	  Note that the answer to this question doesn't directly
+> 	  affect the kernel: saying N will just cause the configurator
+> 	  to skip all the questions about Sunplus cards. If you say Y,
+> 	  you will be asked for your specific card in the following
+> 	  questions.
+> 
+> if NET_VENDOR_SUNPLUS
+> 
+> config SP7021_EMAC
+> 	tristate "Sunplus Dual 10M/100M Ethernet (with L2 switch) devices"
+> 	depends on ETHERNET && SOC_SP7021
 
-Makes sense. Thanks!
+Does it actually depend on SOC_SP7021 to build?
+
+     Andrew
