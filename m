@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8966F444393
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 15:30:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABBDD444395
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 15:30:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232009AbhKCOcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S232081AbhKCOcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 3 Nov 2021 10:32:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42594 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:42614 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230472AbhKCOco (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231572AbhKCOco (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 3 Nov 2021 10:32:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 9BFBB6103C;
+Received: by mail.kernel.org (Postfix) with ESMTPS id B3637610EA;
         Wed,  3 Nov 2021 14:30:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1635949807;
-        bh=v+l+N51Oa8tbmQcIRXMufkeRZwwktJml8WL3XC3wStA=;
+        bh=U6oZiDXnzpVV8shO8jA0CWDHcZZgaJaPrcU8jO43zyQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rvA+GycreYVBktKtIBmsRD8V5ifu2/MDTr9mu2wkyyF79UJd6KXNRlpy6o4SXaUOC
-         QucBqC6kUpeHNMqmOlkwls/LZ18dPM57SAms9EKdnNjZIHQBijD07g6aACheAbUZ0o
-         e7vErknU6zrhDsgy5Grt3BrpbssN9WIwbinw7Yy/bHfAJZ+FzYzb/qxYxJdCSKnRF1
-         wsOixer7h32Y64UIByCKRLz+aZg806Nbazx/Zm7LQfziheQxF6vgtTEdXAL57UKB3E
-         NXIN13xHOhhlQoqm3zjN78GOmoJPqQK35ouxaPP7QaVmgMsM5IsL8niS4V9bjEmAgm
-         DaY6mLr4Frr8A==
+        b=qXOMXMsoqUbJ+77sutkKcd4zs6swPH8djcS5qFS//RbqQpucsHqSPmzEFUoXO59kN
+         KuuAUbEvQIzEIw1IFZVDJAdH8kq/Cn909Y4S94TCbJOG0SB7uKwhLE9uHPZQdaP8eW
+         VLCMVMgws2/ijOrWmX1IT6t32jP5tMY9hDh492t1ZykbGTNsLF1u/UdtzFlxCid93v
+         83amvBwsUyvkoOzKT5xNSZSl5jJ+M1vDmcNUyoRVXSFOkxKB907eq5g/oyQI9REFGm
+         ciYZwOZK8jcNshH/s2neZVnxiloD9dFjnJrmymtHFzWaJZ29zP8uZ7rnmNRxKvpWE9
+         yAGpVR2hF5VnA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 92A9A609CF;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A872160A2E;
         Wed,  3 Nov 2021 14:30:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: dsa: felix: fix broken VLAN-tagged PTP under
- VLAN-aware bridge
+Subject: Re: [net PATCH] net: dsa: qca8k: make sure PAD0 MAC06 exchange is
+ disabled
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163594980759.8310.12802815876396371831.git-patchwork-notify@kernel.org>
+Message-Id: <163594980768.8310.7991708894405990412.git-patchwork-notify@kernel.org>
 Date:   Wed, 03 Nov 2021 14:30:07 +0000
-References: <20211102193122.686272-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20211102193122.686272-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, xiaoliang.yang_1@nxp.com, po.liu@nxp.com,
-        yangbo.lu@nxp.com
+References: <20211102183041.27429-1-ansuelsmth@gmail.com>
+In-Reply-To: <20211102183041.27429-1-ansuelsmth@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -49,21 +49,22 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Tue,  2 Nov 2021 21:31:22 +0200 you wrote:
-> Normally it is expected that the dsa_device_ops :: rcv() method finishes
-> parsing the DSA tag and consumes it, then never looks at it again.
+On Tue,  2 Nov 2021 19:30:41 +0100 you wrote:
+> Some device set MAC06 exchange in the bootloader. This cause some
+> problem as we don't support this strange mode and we just set the port6
+> as the primary CPU port. With MAC06 exchange, PAD0 reg configure port6
+> instead of port0. Add an extra check and explicitly disable MAC06 exchange
+> to correctly configure the port PAD config.
 > 
-> But commit c0bcf537667c ("net: dsa: ocelot: add hardware timestamping
-> support for Felix") added support for RX timestamping in a very
-> unconventional way. On this switch, a partial timestamp is available in
-> the DSA header, but the driver got away with not parsing that timestamp
-> right away, but instead delayed that parsing for a little longer:
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> Fixes: 3fcf734aa482 ("net: dsa: qca8k: add support for cpu port 6")
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] net: dsa: felix: fix broken VLAN-tagged PTP under VLAN-aware bridge
-    https://git.kernel.org/netdev/net/c/92f62485b371
+  - [net] net: dsa: qca8k: make sure PAD0 MAC06 exchange is disabled
+    https://git.kernel.org/netdev/net/c/5f15d392dcb4
 
 You are awesome, thank you!
 -- 
