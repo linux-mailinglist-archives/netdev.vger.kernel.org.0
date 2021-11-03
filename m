@@ -2,107 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BCFE44441E
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 15:59:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE4ED444421
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 16:00:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231440AbhKCPCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 11:02:14 -0400
-Received: from www62.your-server.de ([213.133.104.62]:36724 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231304AbhKCPCN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 11:02:13 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1miHjk-000EH6-Kv; Wed, 03 Nov 2021 15:59:36 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1miHjk-000GTT-GA; Wed, 03 Nov 2021 15:59:36 +0100
-Subject: Re: [PATCH v2] net: sched: check tc_skip_classify as far as possible
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        xiangxia.m.yue@gmail.com
-Cc:     netdev@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20211103143208.41282-1-xiangxia.m.yue@gmail.com>
- <CA+FuTSftumQMYg8fcCW3C-A0CKZC=6GYDrR3UXjaS1gNJx=5TA@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <b0c3fa7e-2e00-b4fd-d31a-54e7173be12a@iogearbox.net>
-Date:   Wed, 3 Nov 2021 15:59:36 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S231450AbhKCPCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 11:02:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49642 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231304AbhKCPCs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Nov 2021 11:02:48 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 80D0E61076;
+        Wed,  3 Nov 2021 15:00:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635951611;
+        bh=jWCMYuWajVvJ5x7/F1+deHeYv6zzi2sK+QhqwCuRmQQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=VGhewqwgfQ4yiq9+n6njXVU8BoLwRF+blPVwYEQz8bPlKh2JryogoIY8dWN2XgXLK
+         qSvK2iHB7kJlBR8NC8X72fnizpPuRHLUmZmhKbqAabaycRX5SmmWjAdHY4j2Ng18zD
+         7gFjdz7eu+Qvp9Hm54zRtyksNpXlfdeg0lcu//oaOzDo6nawoNg0KvB+6i1jXAk6uK
+         8Php8+d3CFNEdPUz/xRNZYWlG7bTx4scusf57uYOEe9+ttDUdNOZOW7xiC876eBvyi
+         A1am66n1j2eP3//KFtGyTd3tlyyfskguC6VaphLLeMf4s1wzk2W2bouVeq3H9AO1ek
+         +nbFF55h5oYIg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6F0A56095B;
+        Wed,  3 Nov 2021 15:00:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <CA+FuTSftumQMYg8fcCW3C-A0CKZC=6GYDrR3UXjaS1gNJx=5TA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26342/Wed Nov  3 09:22:37 2021)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next v3 0/4] Support RENAME_EXCHANGE on bpffs
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163595161144.22644.942879656026929279.git-patchwork-notify@kernel.org>
+Date:   Wed, 03 Nov 2021 15:00:11 +0000
+References: <20211028094724.59043-1-lmb@cloudflare.com>
+In-Reply-To: <20211028094724.59043-1-lmb@cloudflare.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     viro@zeniv.linux.org.uk, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, mszeredi@redhat.com, gregkh@linuxfoundation.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/3/21 3:47 PM, Willem de Bruijn wrote:
-> On Wed, Nov 3, 2021 at 10:32 AM <xiangxia.m.yue@gmail.com> wrote:
->>
->> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
->>
->> We look up and then check tc_skip_classify flag in net
->> sched layer, even though skb don't want to be classified.
->> That case may consume a lot of cpu cycles.
->>
->> Install the rules as below:
->> $ for id in $(seq 1 100); do
->> $       tc filter add ... egress prio $id ... action mirred egress redirect dev ifb0
->> $ done
->>
->> netperf:
->> $ taskset -c 1 netperf -t TCP_RR -H ip -- -r 32,32
->> $ taskset -c 1 netperf -t TCP_STREAM -H ip -- -m 32
->>
->> Before: 10662.33 tps, 108.95 Mbit/s
->> After:  12434.48 tps, 145.89 Mbit/s
->>
->> For TCP_RR, there are 16.6% improvement, TCP_STREAM 33.9%.
->>
->> Cc: Willem de Bruijn <willemb@google.com>
->> Cc: Cong Wang <xiyou.wangcong@gmail.com>
->> Cc: Jakub Kicinski <kuba@kernel.org>
->> Cc: Daniel Borkmann <daniel@iogearbox.net>
->> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
->> ---
->> v2: don't delete skb_skip_tc_classify in act_api
->> ---
->>   net/core/dev.c | 3 +++
->>   1 file changed, 3 insertions(+)
->>
->> diff --git a/net/core/dev.c b/net/core/dev.c
->> index edeb811c454e..fc29a429e9ad 100644
->> --- a/net/core/dev.c
->> +++ b/net/core/dev.c
->> @@ -3940,6 +3940,9 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
->>          if (!miniq)
->>                  return skb;
->>
->> +       if (skb_skip_tc_classify(skb))
->> +               return skb;
->> +
-> 
-> This bit and test exist to make sure that packets redirected through
-> the ifb device are redirected only once.
-> 
-> I was afraid that on second loop, this will also short-circuit other
-> unrelated tc classifiers and actions that should take place.
-> 
-> The name and the variable comment make clear that the intention is
-> indeed to bypass all classification.
-> 
-> However, the current implementation acts at tcf_action_exec. So it
-> does not stop processing by fused classifier-action objects, notably tc_bpf.
-> 
-> So I agree both that this seems to follow the original intent, but also
-> has the chance to break existing production configurations.
+Hello:
 
-Agree, I share your concern.
+This series was applied to bpf/bpf.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
+
+On Thu, 28 Oct 2021 10:47:20 +0100 you wrote:
+> Add support for renameat2(RENAME_EXCHANGE) on bpffs. This is useful
+> for atomic upgrades of our sk_lookup control plane.
+> 
+> v3:
+> - Re-use shmem_exchange (Miklos)
+> 
+> v2:
+> - Test exchanging a map and a directory (Alexei)
+> - Use ASSERT macros (Andrii)
+> 
+> [...]
+
+Here is the summary with links:
+  - [bpf-next,v3,1/4] libfs: move shmem_exchange to simple_rename_exchange
+    https://git.kernel.org/bpf/bpf/c/6429e46304ac
+  - [bpf-next,v3,2/4] libfs: support RENAME_EXCHANGE in simple_rename()
+    https://git.kernel.org/bpf/bpf/c/3871cb8cf741
+  - [bpf-next,v3,3/4] selftests: bpf: convert test_bpffs to ASSERT macros
+    https://git.kernel.org/bpf/bpf/c/9fc23c22e574
+  - [bpf-next,v3,4/4] selftests: bpf: test RENAME_EXCHANGE and RENAME_NOREPLACE on bpffs
+    https://git.kernel.org/bpf/bpf/c/7e5ad817ec29
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
