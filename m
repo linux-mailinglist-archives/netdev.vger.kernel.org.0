@@ -2,161 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E991443B7E
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 03:44:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D84FE443B82
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 03:45:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231166AbhKCCrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 22:47:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40564 "EHLO
+        id S231325AbhKCCrp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 22:47:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbhKCCrH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 22:47:07 -0400
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC69C061714;
-        Tue,  2 Nov 2021 19:44:32 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id l15so1698032oie.8;
-        Tue, 02 Nov 2021 19:44:32 -0700 (PDT)
+        with ESMTP id S230232AbhKCCrp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 22:47:45 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB546C061714;
+        Tue,  2 Nov 2021 19:45:09 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id b4so1069594pgh.10;
+        Tue, 02 Nov 2021 19:45:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=cL6u9895NSZTZOeZgFQofwNy409f1x1M+KuZz4xRj4U=;
-        b=mxG1TktwRrsKRDbub3sFNRLnMExnCSubzzZ2/QIruPaEIwG9PdVLRov/5VNr6X8BD0
-         Wr/OwRzSiSjRfmW5gwiX6x3RlgL2IhHZTNGnY4UesP7cbtLAkCzqpuGli2XdFkio2CTM
-         A85yyX0R3LMsVdkawvt4BbZLDaUSMPV/vQ5sdvIrEKguEcztckHEZigOyualJ/W/1eTQ
-         7wp7VRCEb/wgvpEMtz8t6Ow1Mws1Q/t37aZLHhUcANp/J+43I7NdQoWkXufOvHmPfKBe
-         dhRKtd6VCVe4ixstfyia+BBKk2FWUonbW1JQgTzJXvspBNf7JsBoWerDjJ/x2kgtLdWx
-         2c7A==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xm3pFLJwHvJiS3bF97GIVP/+VZCNRpTK7zsKq+SCmyY=;
+        b=HSo3jYVjRs/FTLbvMkxLXW3X9SBTx/wfZO/RtNhBVdgpOVVRKSmwFjb8/mdwfGLPBS
+         4a7i7PALa4x8GGToyDrqC59dJvURwYTB8WcomwOVfmJXOvGP/uzFTZ+aba33HQRkVm5J
+         yXNNzlZt6JQlpllUb6SlKZDhIuyv/XKiddvXnvAneMjEU2lpXk2HrgYlgGikMynQCONW
+         G9IwK4WScjgRN08Ri0wnzAZQuyMJoOL5Xh9VWEJaaiahuFJF2ltTYgy2XajtSpD8xj3b
+         wpjweEdPiAytM6TWsVuabPdjc3usP5KjDccK5CHwRdK5doVEHRyCipAd1TvBXSzrPrXm
+         5EgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=cL6u9895NSZTZOeZgFQofwNy409f1x1M+KuZz4xRj4U=;
-        b=klZm5hyzfQfp3RYe73kUUQKU7GDMLp0ay6xqeKuwBMvzSlMqoXTkzcLUn8++nABliG
-         2VzexC6NTley6qHIx+I8UTLhUwST0YJyex6CqeSWtbsu9rBmqkdHoOD0CL6aTSWP3h1X
-         nWV9moFAhau5iNFzdwjC/svUo6xelpVDm2/b5qld9rCoQVW7H1GiQk2tXWyXUzSMAg2k
-         70kiWQbjuPbc+NZmPd/ag/xO/Rk+vy0scYYapIgtu7q/kevb8bXsgvxfLcFJ5zh77/pA
-         dNIXtPq1faJBm/lKPvsPKffwnPJe1Zpn3eI5+gjIBg47hmbQ4/2QqCrOJExq/IQ45roB
-         gtXA==
-X-Gm-Message-State: AOAM53219gGew0ufETlj8/PnTqFRBHktqjRxH4hsiFkA2VtnPNwYkypK
-        BsBMzxDOP2DbtKPYP0fE0is=
-X-Google-Smtp-Source: ABdhPJzISGebWubSHi3AkRuopPQ2C+KWhyezGClxf6GuEATRD33F95in2Di213SnjnQWU7PlWk1HSA==
-X-Received: by 2002:aca:b9c5:: with SMTP id j188mr8298845oif.104.1635907471267;
-        Tue, 02 Nov 2021 19:44:31 -0700 (PDT)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id k26sm214615otp.42.2021.11.02.19.44.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Nov 2021 19:44:30 -0700 (PDT)
-Message-ID: <37c1a2c7-3bfa-d36d-075f-a0065b8a05c1@gmail.com>
-Date:   Tue, 2 Nov 2021 20:44:28 -0600
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.2.1
-Subject: Re: [PATCH v2 12/25] tcp: ipv6: Add AO signing for
- tcp_v6_send_response
-Content-Language: en-US
-To:     Leonard Crestez <cdleonard@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        bh=xm3pFLJwHvJiS3bF97GIVP/+VZCNRpTK7zsKq+SCmyY=;
+        b=lwQ1U7RrXAq+kb8hhUEtVxLWyvNcc3oyubOBA9u5m6PZxa/qViqRKU/xiBINcoDOEA
+         JpNIiCYqhmC6U4yZEmnRrRVGmqvsI+CDe8CMoWdVlLLYknDYEThayY0dZvdsPRA1E9G5
+         TxiDhtd80VXl/arhVeER1pAU9r+9yKSyj/HOcUGRbvxCozgenj1CP9FSr6roNo3Ui4yD
+         WrhpZ248Oo/2fUuk0uuQnTV09JS7Q+0NxIpZAjmTPvTdWTDqqaiKwWPl9W6rMLzGmQXi
+         N2Kmd7uTP8RHKXRZcyAYzQVk1AkMMktEgyn8Yd2WjZ+AXib/DoK+jfLOA+1pbKj2Dpr4
+         bKLA==
+X-Gm-Message-State: AOAM5330Fef3GVUZDvUTy86l3QW2zESkdun2skcpzwolfaGHXMFVQ9gx
+        w75dcp5yieLD2KQ7Wtgg1kkuTQCqpJU=
+X-Google-Smtp-Source: ABdhPJxJFppNjdPwhOrbc3CHFlDQY7cfTBGFDCvEmPZ8Rlk3fBsCdypcFP2uP+l1r5IY2oMoYZoqeg==
+X-Received: by 2002:a63:d756:: with SMTP id w22mr26505711pgi.281.1635907509259;
+        Tue, 02 Nov 2021 19:45:09 -0700 (PDT)
+Received: from Laptop-X1.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id t13sm348088pgn.94.2021.11.02.19.45.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Nov 2021 19:45:08 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>,
+        Coco Li <lixiaoyan@google.com>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Paolo Abeni <pabeni@redhat.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        linux-kselftest@vger.kernel.org,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Christoph Paasch <cpaasch@apple.com>,
-        Ivan Delalande <colona@arista.com>,
-        Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1635784253.git.cdleonard@gmail.com>
- <f9ff27ecc4aabd8ed89d5dfe5195c9cda1e7dc9f.1635784253.git.cdleonard@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <f9ff27ecc4aabd8ed89d5dfe5195c9cda1e7dc9f.1635784253.git.cdleonard@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCHv3 net 0/5] kselftests/net: add missed tests to Makefile
+Date:   Wed,  3 Nov 2021 10:44:54 +0800
+Message-Id: <20211103024459.224690-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.31.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/1/21 10:34 AM, Leonard Crestez wrote:
-> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> index 96a29caf56c7..68f9545e4347 100644
-> --- a/net/ipv6/tcp_ipv6.c
-> +++ b/net/ipv6/tcp_ipv6.c
-> @@ -902,13 +902,37 @@ static void tcp_v6_send_response(const struct sock *sk, struct sk_buff *skb, u32
->  	struct sock *ctl_sk = net->ipv6.tcp_sk;
->  	unsigned int tot_len = sizeof(struct tcphdr);
->  	__be32 mrst = 0, *topt;
->  	struct dst_entry *dst;
->  	__u32 mark = 0;
-> +#ifdef CONFIG_TCP_AUTHOPT
-> +	struct tcp_authopt_info *authopt_info = NULL;
-> +	struct tcp_authopt_key_info *authopt_key_info = NULL;
-> +	u8 authopt_rnextkeyid;
-> +#endif
->  
->  	if (tsecr)
->  		tot_len += TCPOLEN_TSTAMP_ALIGNED;
-> +#ifdef CONFIG_TCP_AUTHOPT
+When generating the selftest to another folder, some tests are missing
+as they are not added in Makefile. e.g.
 
-I realize MD5 is done this way, but new code can always strive to be
-better. Put this and the one below in helpers such that this logic is in
-the authopt.h file and the intrusion here is a one liner that either
-compiles in or out based on the config setting.
+  make -C tools/testing/selftests/ install \
+      TARGETS="net" INSTALL_PATH=/tmp/kselftests
 
-> +	/* Key lookup before SKB allocation */
-> +	if (static_branch_unlikely(&tcp_authopt_needed) && sk) {
-> +		if (sk->sk_state == TCP_TIME_WAIT)
-> +			authopt_info = tcp_twsk(sk)->tw_authopt_info;
-> +		else
-> +			authopt_info = rcu_dereference(tcp_sk(sk)->authopt_info);
-> +
-> +		if (authopt_info) {
-> +			authopt_key_info = __tcp_authopt_select_key(sk, authopt_info, sk,
-> +								    &authopt_rnextkeyid);
-> +			if (authopt_key_info) {
-> +				tot_len += TCPOLEN_AUTHOPT_OUTPUT;
-> +				/* Don't use MD5 */
-> +				key = NULL;
-> +			}
-> +		}
-> +	}
-> +#endif
->  #ifdef CONFIG_TCP_MD5SIG
->  	if (key)
->  		tot_len += TCPOLEN_MD5SIG_ALIGNED;
->  #endif
->  
-> @@ -961,10 +985,24 @@ static void tcp_v6_send_response(const struct sock *sk, struct sk_buff *skb, u32
->  		tcp_v6_md5_hash_hdr((__u8 *)topt, key,
->  				    &ipv6_hdr(skb)->saddr,
->  				    &ipv6_hdr(skb)->daddr, t1);
->  	}
->  #endif
-> +#ifdef CONFIG_TCP_AUTHOPT
-> +	/* Compute the TCP-AO mac. Unlike in the ipv4 case we have a real SKB */
-> +	if (static_branch_unlikely(&tcp_authopt_needed) && authopt_key_info) {
-> +		*topt++ = htonl((TCPOPT_AUTHOPT << 24) |
-> +				(TCPOLEN_AUTHOPT_OUTPUT << 16) |
-> +				(authopt_key_info->send_id << 8) |
-> +				(authopt_rnextkeyid));
-> +		tcp_authopt_hash((char *)topt,
-> +				 authopt_key_info,
-> +				 authopt_info,
-> +				 (struct sock *)sk,
-> +				 buff);
-> +	}
-> +#endif
->  
->  	memset(&fl6, 0, sizeof(fl6));
->  	fl6.daddr = ipv6_hdr(skb)->saddr;
->  	fl6.saddr = ipv6_hdr(skb)->daddr;
->  	fl6.flowlabel = label;
-> 
+These pathset add them separately to make the Fixes tags less. It would
+also make the stable tree or downstream backport easier.
+
+If you think there is no need to add the Fixes tag for this minor issue.
+I can repost a new patch and merge all the fixes together.
+
+Thanks
+
+v3: no update, just rebase to latest net tree.
+v2: move toeplitz.sh/toeplitz_client.sh under TEST_PROGS_EXTENDED.
+
+Hangbin Liu (5):
+  kselftests/net: add missed icmp.sh test to Makefile
+  kselftests/net: add missed setup_loopback.sh/setup_veth.sh to Makefile
+  kselftests/net: add missed SRv6 tests
+  kselftests/net: add missed vrf_strict_mode_test.sh test to Makefile
+  kselftests/net: add missed toeplitz.sh/toeplitz_client.sh to Makefile
+
+ tools/testing/selftests/net/Makefile | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+-- 
+2.31.1
 
