@@ -2,470 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A47404444BF
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 16:40:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B09C4444D4
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 16:44:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231651AbhKCPnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 11:43:23 -0400
-Received: from mga09.intel.com ([134.134.136.24]:48394 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229587AbhKCPnX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Nov 2021 11:43:23 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10156"; a="231374187"
-X-IronPort-AV: E=Sophos;i="5.87,206,1631602800"; 
-   d="scan'208";a="231374187"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2021 08:38:54 -0700
-X-IronPort-AV: E=Sophos;i="5.87,206,1631602800"; 
-   d="scan'208";a="468145484"
-Received: from smile.fi.intel.com ([10.237.72.184])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2021 08:38:49 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1miILR-003Itu-09;
-        Wed, 03 Nov 2021 17:38:33 +0200
-Date:   Wed, 3 Nov 2021 17:38:32 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        mika.westerberg@linux.intel.com, moises.veleta@intel.com,
-        pierre-louis.bossart@intel.com, muralidharan.sethuraman@intel.com,
-        Soumya.Prakash.Mishra@intel.com, sreehari.kancharla@intel.com,
-        suresh.nagaraj@intel.com
-Subject: Re: [PATCH v2 04/14] net: wwan: t7xx: Add port proxy infrastructure
-Message-ID: <YYKs+DHYRHYFEYEN@smile.fi.intel.com>
-References: <20211101035635.26999-1-ricardo.martinez@linux.intel.com>
- <20211101035635.26999-5-ricardo.martinez@linux.intel.com>
+        id S229587AbhKCPqv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 11:46:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:52516 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231843AbhKCPqv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 11:46:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1635954254;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tZiz8bgd2IYdJNUZ4cuGa9YeyGcuozlOPlontcI7tiE=;
+        b=QDe6SMLBD/t7dIlkpPUBoSkYKJXXpPleyONAuxSCI4S0VoVTMS6XNBoDHeoejAyY1zRlqv
+        DfMGcsyDMVX73PYccvZGLJNRSDxN9aByk54xrKKW73hhGeDeYh7B7N613bHECMVLcxyYwC
+        YNqNiHNt2b6IiYURgOA62PKyyuYHsaE=
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com
+ [209.85.167.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-595-Fl2XIVPpPPilLzB6Dyi_WQ-1; Wed, 03 Nov 2021 11:44:13 -0400
+X-MC-Unique: Fl2XIVPpPPilLzB6Dyi_WQ-1
+Received: by mail-oi1-f200.google.com with SMTP id y138-20020aca4b90000000b002a7ac5412c3so1647331oia.23
+        for <netdev@vger.kernel.org>; Wed, 03 Nov 2021 08:44:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=tZiz8bgd2IYdJNUZ4cuGa9YeyGcuozlOPlontcI7tiE=;
+        b=NCRWZ+OXgA+yGAaVUH3j6V3RR/AFp/99SPg8e+qqIwlsYaKKmSYMZHKGME1hgDmycT
+         GbS0e2FZAVLFFVW3lT8gbEInMa44T1Vi5x8ZePXSKYmQeqBdjXBpyRQNn5qmPyjdKcxl
+         JO8HXa7fH5aeDR+GZIY5ixZYiXYWxNzxF8Z1OZjh2+i14HI24PiTA/VQwfWXliydiRAA
+         Km8nvxfwwWxppnn/jESfB1fJuohts+iEfSGWPcNRwDnUUUNS4qk8T4cBfe5XLgyAwY8p
+         3p8QYXbIDR1k3C1rQc10vSVIjs0hU+sFP8Owx7qz/f2NMnvLCAR+BsFRa2Zhn/DaH3nq
+         fPEA==
+X-Gm-Message-State: AOAM532v4lIYW/ZjprazGOfpOxojCA0o0L5zbbYKTEyTqn0p1Q04ZSpB
+        BqAzWieFRyLhXzbQ+cHtkGw5kU5LmVWj4j4XlVx31XY99GgFgsj79xQzhHvCor35dXD+3cgTYRe
+        /nn1Z2g7AKYlbsSGK
+X-Received: by 2002:a05:6808:11c6:: with SMTP id p6mr11357421oiv.158.1635954252492;
+        Wed, 03 Nov 2021 08:44:12 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwqdNIwBbBjQaA0dktrX5jxvW3JQ5HKlh4yDvBgx+shkcepd/rNrVD0/YfjSkdaBx5uxUfMqQ==
+X-Received: by 2002:a05:6808:11c6:: with SMTP id p6mr11357391oiv.158.1635954252228;
+        Wed, 03 Nov 2021 08:44:12 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id r13sm583837oot.41.2021.11.03.08.44.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Nov 2021 08:44:11 -0700 (PDT)
+Date:   Wed, 3 Nov 2021 09:44:09 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
+ for mlx5 devices
+Message-ID: <20211103094409.3ea180ab.alex.williamson@redhat.com>
+In-Reply-To: <20211103120955.GK2744544@nvidia.com>
+References: <20211027192345.GJ2744544@nvidia.com>
+        <20211028093035.17ecbc5d.alex.williamson@redhat.com>
+        <20211028234750.GP2744544@nvidia.com>
+        <20211029160621.46ca7b54.alex.williamson@redhat.com>
+        <20211101172506.GC2744544@nvidia.com>
+        <20211102085651.28e0203c.alex.williamson@redhat.com>
+        <20211102155420.GK2744544@nvidia.com>
+        <20211102102236.711dc6b5.alex.williamson@redhat.com>
+        <20211102163610.GG2744544@nvidia.com>
+        <20211102141547.6f1b0bb3.alex.williamson@redhat.com>
+        <20211103120955.GK2744544@nvidia.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211101035635.26999-5-ricardo.martinez@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 31, 2021 at 08:56:25PM -0700, Ricardo Martinez wrote:
-> From: Haijun Lio <haijun.liu@mediatek.com>
+On Wed, 3 Nov 2021 09:09:55 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
+
+> On Tue, Nov 02, 2021 at 02:15:47PM -0600, Alex Williamson wrote:
+> > On Tue, 2 Nov 2021 13:36:10 -0300
+> > Jason Gunthorpe <jgg@nvidia.com> wrote:
+> >   
+> > > On Tue, Nov 02, 2021 at 10:22:36AM -0600, Alex Williamson wrote:
+> > >   
+> > > > > > There's no point at which we can do SET_IRQS other than in the
+> > > > > > _RESUMING state.  Generally SET_IRQS ioctls are coordinated with the
+> > > > > > guest driver based on actions to the device, we can't be mucking
+> > > > > > with IRQs while the device is presumed running and already
+> > > > > > generating interrupt conditions.      
+> > > > > 
+> > > > > We need to do it in state 000
+> > > > > 
+> > > > > ie resume should go 
+> > > > > 
+> > > > >   000 -> 100 -> 000 -> 001
+> > > > > 
+> > > > > With SET_IRQS and any other fixing done during the 2nd 000, after the
+> > > > > migration data has been loaded into the device.    
+> > > > 
+> > > > Again, this is not how QEMU works today.    
+> > > 
+> > > I know, I think it is a poor choice to carve out certain changes to
+> > > the device that must be preserved across loading the migration state.
+> > >   
+> > > > > The uAPI comment does not define when to do the SET_IRQS, it seems
+> > > > > this has been missed.
+> > > > > 
+> > > > > We really should fix it, unless you feel strongly that the
+> > > > > experimental API in qemu shouldn't be changed.    
+> > > > 
+> > > > I think the QEMU implementation fills in some details of how the uAPI
+> > > > is expected to work.    
+> > > 
+> > > Well, we already know QEMU has problems, like the P2P thing. Is this a
+> > > bug, or a preferred limitation as designed?
+> > >   
+> > > > MSI/X is expected to be restored while _RESUMING based on the
+> > > > config space of the device, there is no intermediate step between
+> > > > _RESUMING and _RUNNING.  Introducing such a requirement precludes
+> > > > the option of a post-copy implementation of (_RESUMING | _RUNNING).    
+> > > 
+> > > Not precluded, a new state bit would be required to implement some
+> > > future post-copy.
+> > > 
+> > > 0000 -> 1100 -> 1000 -> 1001 -> 0001
+> > > 
+> > > Instead of overloading the meaning of RUNNING.
+> > > 
+> > > I think this is cleaner anyhow.
+> > > 
+> > > (though I don't know how we'd structure the save side to get two
+> > > bitstreams)  
+> > 
+> > The way this is supposed to work is that the device migration stream
+> > contains the device internal state.  QEMU is then responsible for
+> > restoring the external state of the device, including the DMA mappings,
+> > interrupts, and config space.  It's not possible for the migration
+> > driver to reestablish these things.  So there is a necessary division
+> > of device state between QEMU and the migration driver.
+> > 
+> > If we don't think the uAPI includes the necessary states, doesn't
+> > sufficiently define the states, and we're not following the existing
+> > QEMU implementation as the guide for the intentions of the uAPI spec,
+> > then what exactly is the proposed mlx5 migration driver implementing
+> > and why would we even considering including it at this point?  Thanks,  
 > 
-> Port-proxy provides a common interface to interact with different types
-> of ports. Ports export their configuration via `struct t7xx_port` and
-> operate as defined by `struct port_ops`.
-
-Same here, assuming that the comments from the previous patches are applied
-here as well, only unique are given.
-
-...
-
-> -	if (stage == HIF_EX_CLEARQ_DONE)
-> +	if (stage == HIF_EX_CLEARQ_DONE) {
->  		/* give DHL time to flush data.
->  		 * this is an empirical value that assure
->  		 * that DHL have enough time to flush all the date.
->  		 */
->  		msleep(PORT_RESET_DELAY_US);
-
-> +	}
-
-These curly brackets should be part of previous patch. Try to minimize
-(ideally avoid) ping-pong style of changes in the same series.
-
-...
-
-> +#define CCCI_MAX_CH_ID		0xff /* RX channel ID should NOT be >= this!! */
-
-I haven't got the details behind the comment. Is the Rx channel ID predefined
-somewhere? If so, use static_assert() instead of this comment.
-
-...
-
-> +enum ccci_ch {
-> +	/* to MD */
-> +	CCCI_CONTROL_RX = 0x2000,
-> +	CCCI_CONTROL_TX = 0x2001,
-> +	CCCI_SYSTEM_RX = 0x2002,
-> +	CCCI_SYSTEM_TX = 0x2003,
-> +	CCCI_UART1_RX = 0x2006,		/* META */
-> +	CCCI_UART1_RX_ACK = 0x2007,
-> +	CCCI_UART1_TX = 0x2008,
-> +	CCCI_UART1_TX_ACK = 0x2009,
-> +	CCCI_UART2_RX = 0x200a,		/* AT */
-> +	CCCI_UART2_RX_ACK = 0x200b,
-> +	CCCI_UART2_TX = 0x200c,
-> +	CCCI_UART2_TX_ACK = 0x200d,
-> +	CCCI_MD_LOG_RX = 0x202a,	/* MD logging */
-> +	CCCI_MD_LOG_TX = 0x202b,
-> +	CCCI_LB_IT_RX = 0x203e,		/* loop back test */
-> +	CCCI_LB_IT_TX = 0x203f,
-> +	CCCI_STATUS_RX = 0x2043,	/* status polling */
-> +	CCCI_STATUS_TX = 0x2044,
-> +	CCCI_MIPC_RX = 0x20ce,		/* MIPC */
-> +	CCCI_MIPC_TX = 0x20cf,
-> +	CCCI_MBIM_RX = 0x20d0,
-> +	CCCI_MBIM_TX = 0x20d1,
-> +	CCCI_DSS0_RX = 0x20d2,
-> +	CCCI_DSS0_TX = 0x20d3,
-> +	CCCI_DSS1_RX = 0x20d4,
-> +	CCCI_DSS1_TX = 0x20d5,
-> +	CCCI_DSS2_RX = 0x20d6,
-> +	CCCI_DSS2_TX = 0x20d7,
-> +	CCCI_DSS3_RX = 0x20d8,
-> +	CCCI_DSS3_TX = 0x20d9,
-> +	CCCI_DSS4_RX = 0x20da,
-> +	CCCI_DSS4_TX = 0x20db,
-> +	CCCI_DSS5_RX = 0x20dc,
-> +	CCCI_DSS5_TX = 0x20dd,
-> +	CCCI_DSS6_RX = 0x20de,
-> +	CCCI_DSS6_TX = 0x20df,
-> +	CCCI_DSS7_RX = 0x20e0,
-> +	CCCI_DSS7_TX = 0x20e1,
-
-> +	CCCI_MAX_CH_NUM,
-
-Not sure about meaning of this and even needfulness. It's obvious you don't
-care about actual value here.
-
-> +	CCCI_MONITOR_CH_ID = GENMASK(31, 28), /* for MD init */
-> +	CCCI_INVALID_CH_ID = GENMASK(15, 0),
-> +};
-
-...
-
-> +#define MTK_DEV_NAME				"MTK_WWAN_M80"
-
-DEV?
-
-...
-
-> +/* port->minor is configured in-sequence, but when we use it in code
-> + * it should be unique among all ports for addressing.
-> + */
-> +#define TTY_IPC_MINOR_BASE			100
-> +#define TTY_PORT_MINOR_BASE			250
-> +#define TTY_PORT_MINOR_INVALID			-1
-
-Why it's not automatically allocated?
-
-...
-
-> +static struct t7xx_port md_ccci_ports[] = {
-> +	{0, 0, 0, 0, 0, 0, ID_CLDMA1, 0, &dummy_port_ops, 0xff, "dummy_port",},
-
-Use C99 initializers.
-
-> +};
-
-...
-
-> +	nlh = nlmsg_put(nl_skb, 0, 1, NLMSG_DONE, len, 0);
-> +	if (!nlh) {
-
-> +		dev_err(port->dev, "could not release netlink\n");
-
-I'm wondering why you are not using net_err() / netdev_err() / netif_err()
-where it's appropriate.
-
-> +		nlmsg_free(nl_skb);
-> +		return -EFAULT;
-> +	}
-
-...
-
-> +	return netlink_broadcast(pprox->netlink_sock, nl_skb,
-> +				 0, grp, GFP_KERNEL);
-
-One line?
-
-...
-
-> +static int port_netlink_init(void)
-> +{
-> +	port_prox->netlink_sock = netlink_kernel_create(&init_net, PORT_NOTIFY_PROTOCOL, NULL);
-> +
-> +	if (!port_prox->netlink_sock) {
-> +		dev_err(port_prox->dev, "failed to create netlink socket\n");
-> +		return -ENOMEM;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static void port_netlink_uninit(void)
-> +{
-> +	if (port_prox->netlink_sock) {
-
-if (!->netlink_sock) ?
-
-> +		netlink_kernel_release(port_prox->netlink_sock);
-> +		port_prox->netlink_sock = NULL;
-> +	}
-> +}
-
-...
-
-> +static struct t7xx_port *proxy_get_port(int minor, enum ccci_ch ch)
-> +{
-> +	struct t7xx_port *port;
-> +	int i;
-> +
-> +	if (!port_prox)
-> +		return NULL;
-> +
-> +	for_each_proxy_port(i, port, port_prox) {
-> +		if (minor >= 0 && port->minor == minor)
-> +			return port;
-> +
-> +		if (ch != CCCI_INVALID_CH_ID && (port->rx_ch == ch || port->tx_ch == ch))
-> +			return port;
-> +	}
-> +
-> +	return NULL;
-> +}
-> +
-> +struct t7xx_port *port_proxy_get_port(int major, int minor)
-> +{
-> +	if (port_prox && port_prox->major == major)
-> +		return proxy_get_port(minor, CCCI_INVALID_CH_ID);
-> +
-> +	return NULL;
-> +}
-
-Looking into the second one I would definitely refactor the first one
-
-
-static struct t7xx_port *do_proxy_get_port(int minor, enum ccci_ch ch)
-{
-	struct t7xx_port *port;
-	int i;
-
-	for_each_proxy_port(i, port, port_prox) {
-		if (minor >= 0 && port->minor == minor)
-			return port;
-
-		if (ch != CCCI_INVALID_CH_ID && (port->rx_ch == ch || port->tx_ch == ch))
-			return port;
-	}
-
-	return NULL;
-}
-
-// If it's even needed at all... Perhaps you may move NULL check to the (single?) caller
-static struct t7xx_port *proxy_get_port(int minor, enum ccci_ch ch)
-{
-	if (port_prox)
-		return do_proxy_get_port(minor, ch);
-
-	return NULL;
-}
-
-struct t7xx_port *port_proxy_get_port(int major, int minor)
-{
-	if (port_prox && port_prox->major == major)
-		return do_proxy_get_port(minor, CCCI_INVALID_CH_ID);
-
-	return NULL;
-}
-
-
-> +static inline struct t7xx_port *port_get_by_ch(enum ccci_ch ch)
-> +{
-> +	return proxy_get_port(TTY_PORT_MINOR_INVALID, ch);
-> +}
-
-...
-
-> +	ccci_h = (struct ccci_header *)skb->data;
-
-Do you need casting?
-
-...
-
-> +	if (port->flags & PORT_F_USER_HEADER) { /* header provide by user */
-
-Is it proper English in the comment?
-
-> +		/* CCCI_MON_CH should fall in here, as header must be
-> +		 * send to md_init.
-> +		 */
-> +		if (ccci_h->data[0] == CCCI_HEADER_NO_DATA) {
-> +			if (skb->len > sizeof(struct ccci_header)) {
-> +				dev_err_ratelimited(port->dev,
-> +						    "recv unexpected data for %s, skb->len=%d\n",
-> +						    port->name, skb->len);
-> +				skb_trim(skb, sizeof(struct ccci_header));
-> +			}
-> +		}
-> +	} else {
-> +		/* remove CCCI header */
-> +		skb_pull(skb, sizeof(struct ccci_header));
-> +	}
-
-...
-
-> +int port_proxy_send_skb(struct t7xx_port *port, struct sk_buff *skb, bool from_pool)
-> +{
-> +	struct ccci_header *ccci_h;
-> +	unsigned char tx_qno;
-> +	int ret;
-> +
-> +	ccci_h = (struct ccci_header *)(skb->data);
-> +	tx_qno = port_get_queue_no(port);
-> +	port_proxy_set_seq_num(port, (struct ccci_header *)ccci_h);
-> +	ret = cldma_send_skb(port->path_id, tx_qno, skb, from_pool, true);
-> +	if (ret) {
-> +		dev_err(port->dev, "failed to send skb, error: %d\n", ret);
-> +	} else {
-> +		/* Record the port seq_num after the data is sent to HIF.
-> +		 * Only bits 0-14 are used, thus negating overflow.
-> +		 */
-> +		port->seq_nums[MTK_OUT]++;
-> +	}
-> +
-> +	return ret;
-
-The density of the characters is a bit high. Why not refactor this?
-
-	...blank line here...
-	ret = cldma_send_skb(port->path_id, tx_qno, skb, from_pool, true);
-	if (ret) {
-		dev_err(port->dev, "failed to send skb, error: %d\n", ret);
-		return ret;
-	}
-
-	...
-
-> +}
-
-...
-
-> +	port_list = &port_prox->rx_ch_ports[channel & CCCI_CH_ID_MASK];
-> +	list_for_each_entry(port, port_list, entry) {
-> +		if (queue->hif_id != port->path_id || channel != port->rx_ch)
-> +			continue;
-> +
-> +		/* Multi-cast is not supported, because one port may be freed
-> +		 * and can modify this request before another port can process it.
-> +		 * However we still can use req->state to achieve some kind of
-> +		 * multi-cast if needed.
-> +		 */
-> +		if (port->ops->recv_skb) {
-> +			seq_num = port_check_rx_seq_num(port, ccci_h);
-> +			ret = port->ops->recv_skb(port, skb);
-> +			/* If the packet is stored to RX buffer
-> +			 * successfully or drop, the sequence
-> +			 * num will be updated.
-> +			 */
-> +			if (ret == -ENOBUFS)
-
-Why you don't need to free SKB here?
-
-> +				return ret;
-> +
-> +			port->seq_nums[MTK_IN] = seq_num;
-> +		}
-> +
-> +		break;
-> +	}
-> +
-> +err_exit:
-> +	if (ret < 0) {
-> +		struct skb_pools *pools;
-> +
-> +		pools = &queue->md->mtk_dev->pools;
-> +		ccci_free_skb(pools, skb);
-> +		return -ENETDOWN;
-> +	}
-> +
-> +	return 0;
-
-Why not simply split this to
-
-	return 0;
-
-// pay attention to the label naming
-err_free_skb:
-	ccci_free_skb(&queue->md->mtk_dev->pools, skb);
-	return -ENETDOWN;
-
-I suspect that this may be part of something bigger which is comming,
-so try to minimize both weirdness here and additional shuffling
-somewhere else in that case.
-
-...
-
-> +	for_each_proxy_port(i, port, port_prox)
-> +		if (port->ops->md_state_notify)
-> +			port->ops->md_state_notify(port, state);
-
-Perhaps {} ?
-
-...
-
-> +	for_each_proxy_port(i, port, port_prox)
-> +		if (!strncmp(port->name, port_name, strlen(port->name)))
-> +			return port;
-
-Ditto.
-
-...
-
-> +	switch (state) {
-> +	case MTK_PORT_STATE_ENABLE:
-> +		snprintf(msg, PORT_NETLINK_MSG_MAX_PAYLOAD, "enable %s", port->name);
-
-sizeof(msg) is much shorter and flexible.
-
-> +		break;
-> +
-> +	case MTK_PORT_STATE_DISABLE:
-> +		snprintf(msg, PORT_NETLINK_MSG_MAX_PAYLOAD, "disable %s", port->name);
-> +		break;
-> +
-> +	default:
-> +		snprintf(msg, PORT_NETLINK_MSG_MAX_PAYLOAD, "invalid operation");
-> +		break;
-> +	}
-
-...
-
-> +struct ctrl_msg_header {
-> +	u32			ctrl_msg_id;
-> +	u32			reserved;
-> +	u32			data_length;
-> +	u8			data[0];
-
-We don't allow VLAs.
-
-> +};
-> +
-> +struct port_msg {
-> +	u32			head_pattern;
-> +	u32			info;
-> +	u32			tail_pattern;
-> +	u8			data[0]; /* port set info */
-
-Ditto.
-
-> +};
-
-...
-
-> -				if (event->event_id == CCCI_EVENT_MD_EX_PASS)
-> +				if (event->event_id == CCCI_EVENT_MD_EX_PASS) {
-> +					pass = true;
->  					fsm_finish_event(ctl, event);
-> +				}
-
-Make curly braces to go to the previous patch despite checkpatch warnings.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+> The driver posting follows the undocumented behaviors of QEMU
+
+In one email I read that QEMU clearly should not be performing SET_IRQS
+while the device is _RESUMING (which it does) and we need to require an
+interim state before the device becomes _RUNNING to poke at the device
+(which QEMU doesn't do and the uAPI doesn't require), and the next I
+read that we should proceed with some useful quanta of work despite
+that we clearly don't intend to retain much of the protocol of the
+current uAPI long term...
+
+> You asked that these all be documented, evaluated and formalized as a
+> precondition to merging it.
+> 
+> So, what do you want? A critical review of the uAPI design or
+> documenting whatever behvaior is coded in qemu?
+
+Too much is in flux and we're only getting breadcrumbs of the changes
+to come.  It's becoming more evident that we're likely to sufficiently
+modify the uAPI to the point where I'd probably suggest a new "v2"
+subtype for the region.
+
+> A critical review suggest SET_IRQ should not happen during RESUMING,
+> but mlx5 today doesn't care either way.
+
+But if it can't happening during _RESUMING and once the device is
+_RUNNING it's too late, then we're demanding an interim state that is
+not required by the existing protocol.  We're redefining that existing
+operations on the device while in _RESUMING cannot occur in that device
+state.  That's more than uAPI clarification.  Thanks,
+
+Alex
 
