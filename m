@@ -2,111 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12FFD4449ED
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 21:58:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C8FE444A15
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 22:08:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231230AbhKCVBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 17:01:14 -0400
-Received: from mout-p-201.mailbox.org ([80.241.56.171]:10690 "EHLO
-        mout-p-201.mailbox.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230172AbhKCVBO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 17:01:14 -0400
-Received: from smtp202.mailbox.org (smtp202.mailbox.org [80.241.60.245])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4HkzdR6K5VzQlYP;
-        Wed,  3 Nov 2021 21:58:35 +0100 (CET)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-From:   =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>
-To:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-Subject: [PATCH] mwifiex: Ignore BTCOEX events from the 88W8897 firmware
-Date:   Wed,  3 Nov 2021 21:58:27 +0100
-Message-Id: <20211103205827.14559-1-verdre@v0yd.nl>
+        id S231130AbhKCVLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 17:11:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37000 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231265AbhKCVLR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 17:11:17 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74B5CC061714
+        for <netdev@vger.kernel.org>; Wed,  3 Nov 2021 14:08:40 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id d72-20020a1c1d4b000000b00331140f3dc8so2828425wmd.1
+        for <netdev@vger.kernel.org>; Wed, 03 Nov 2021 14:08:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
+         :subject:content-transfer-encoding;
+        bh=WqZqYInOPtFj1d1NPtRF1AXpHyZvEqxfW7F8QKAEvD8=;
+        b=bflSdyeeU5XoP2TpH/sPJmepkwQxLdPDEaR3lmNlBJR4aQS4Zb7gStCUY7BVDgAcym
+         W5DqSFcUB2QAnvvNUuzbqsMsgc0hBzVgzTgOkxRUtzA+6SG6yQZWohYY/GNPPaVLn5BX
+         1MdakJLx76oAKD3/KtuZFbyhY8GCETObUwUs3NytH23dqgpjZhkJJVJMRYS6PY773O6j
+         /Z1p7t2J7XudbwJMrId6F2WunNuSDGESoJUOLOwoJSrkvvNBno5xAc/8lzv5zflPxtMp
+         hoof4FP3CQdANDOGPuuJs2AtazF7pCY+RhbTO8IJuRykw4N483Cl41CyfXoa5prM6uFl
+         6+1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:from:subject:content-transfer-encoding;
+        bh=WqZqYInOPtFj1d1NPtRF1AXpHyZvEqxfW7F8QKAEvD8=;
+        b=M6iBUhKMCvwt9CIBaKZZ8JTRjIGWuKpaHvE0W2auZLTQkq5QDD4Ay6Gn6b3gr/gK7q
+         hYSg6GcW0jHyg7VCghSXA75sFAdpZ+GqUD626KvnOndY6Z1pe1fbS8XhbYnm+JG7/nfK
+         bu5JcdYY7QsPigIFWUR8UXFIyb3Tzf8nsmmPxwcF1q5m+c2h0alRmkmljvSB5nze/euU
+         JTGZZZSh8ULRUVdSR6/L/kiHzKZK9AV/3rjHDhB3h1wRzqTRTdw+jrTNv/EwiXvPsb8i
+         HFloohUqurCG7KEjPxlu5ipB/DNeNUKShamMduEi9Y/CGUkIsFV1tu6q41b7J1hvrGTX
+         8nyQ==
+X-Gm-Message-State: AOAM532Xx09j844ookfApHR5HMxlRIx8wGCDrA2+drdSZXhhBCXUY1JC
+        xuJPfK2MDYr/HedpNUrYFDewWVtKf2c=
+X-Google-Smtp-Source: ABdhPJwpJG4w7gWdMny3DfH9KpdTEQV9vAXcY+iFlfZe4Kp7Cj4lYBIDA4o1K2eaZxg8fPQxfVq4Sg==
+X-Received: by 2002:a7b:c005:: with SMTP id c5mr18199383wmb.150.1635973719052;
+        Wed, 03 Nov 2021 14:08:39 -0700 (PDT)
+Received: from ?IPV6:2003:ea:8f1a:f00:304e:d540:1893:d784? (p200300ea8f1a0f00304ed5401893d784.dip0.t-ipconnect.de. [2003:ea:8f1a:f00:304e:d540:1893:d784])
+        by smtp.googlemail.com with ESMTPSA id t127sm6926086wma.9.2021.11.03.14.08.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Nov 2021 14:08:38 -0700 (PDT)
+Message-ID: <7b8b9456-a93f-abbc-1dc5-a2c2542f932c@gmail.com>
+Date:   Wed, 3 Nov 2021 22:08:28 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.1
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Zhang Changzhong <zhangchangzhong@huawei.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net] net: phy: fix duplex out of sync problem while changing
+ settings
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: B71D826B
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The firmware of the 88W8897 PCIe+USB card sends those events very
-unreliably, sometimes bluetooth together with 2.4ghz-wifi is used and no
-COEX event comes in, and sometimes bluetooth is disabled but the
-coexistance mode doesn't get disabled.
+As reported by Zhang there's a small issue if in forced mode the duplex
+mode changes with the link staying up [0]. In this case the MAC isn't
+notified about the change.
 
-This means we sometimes end up capping the rx/tx window size while
-bluetooth is not enabled anymore, artifically limiting wifi speeds even
-though bluetooth is not being used.
+The proposed patch relies on the phylib state machine and ignores the
+fact that there are drivers that uses phylib but not the phylib state
+machine. So let's don't change the behavior for such drivers and fix
+it w/o re-adding state PHY_FORCING for the case that phylib state
+machine is used.
 
-Since we can't fix the firmware, let's just ignore those events on the
-88W8897 device. From some Wireshark capture sessions it seems that the
-Windows driver also doesn't change the rx/tx window sizes when bluetooth
-gets enabled or disabled, so this is fairly consistent with the Windows
-driver.
+[0] https://lore.kernel.org/netdev/a5c26ffd-4ee4-a5e6-4103-873208ce0dc5@huawei.com/T/
 
-Signed-off-by: Jonas Dreßler <verdre@v0yd.nl>
+Fixes: 2bd229df5e2e ("net: phy: remove state PHY_FORCING")
+Reported-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+Tested-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/wireless/marvell/mwifiex/main.h      | 2 ++
- drivers/net/wireless/marvell/mwifiex/pcie.c      | 3 +++
- drivers/net/wireless/marvell/mwifiex/sta_event.c | 3 +++
- 3 files changed, 8 insertions(+)
+ drivers/net/phy/phy.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/main.h b/drivers/net/wireless/marvell/mwifiex/main.h
-index 90012cbcfd15..486315691851 100644
---- a/drivers/net/wireless/marvell/mwifiex/main.h
-+++ b/drivers/net/wireless/marvell/mwifiex/main.h
-@@ -1055,6 +1055,8 @@ struct mwifiex_adapter {
- 	void *devdump_data;
- 	int devdump_len;
- 	struct timer_list devdump_timer;
-+
-+	bool ignore_btcoex_events;
- };
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index a3bfb156c..beb2b66da 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -815,7 +815,12 @@ int phy_ethtool_ksettings_set(struct phy_device *phydev,
+ 	phydev->mdix_ctrl = cmd->base.eth_tp_mdix_ctrl;
  
- void mwifiex_process_tx_queue(struct mwifiex_adapter *adapter);
-diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
-index c3f5583ea70d..d5fb29400bad 100644
---- a/drivers/net/wireless/marvell/mwifiex/pcie.c
-+++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
-@@ -3152,6 +3152,9 @@ static int mwifiex_init_pcie(struct mwifiex_adapter *adapter)
- 	if (ret)
- 		goto err_alloc_buffers;
+ 	/* Restart the PHY */
+-	_phy_start_aneg(phydev);
++	if (phy_is_started(phydev)) {
++		phydev->state = PHY_UP;
++		phy_trigger_machine(phydev);
++	} else {
++		_phy_start_aneg(phydev);
++	}
  
-+	if (pdev->device == PCIE_DEVICE_ID_MARVELL_88W8897)
-+		adapter->ignore_btcoex_events = true;
-+
+ 	mutex_unlock(&phydev->lock);
  	return 0;
- 
- err_alloc_buffers:
-diff --git a/drivers/net/wireless/marvell/mwifiex/sta_event.c b/drivers/net/wireless/marvell/mwifiex/sta_event.c
-index 68c63268e2e6..80e5d44bad9d 100644
---- a/drivers/net/wireless/marvell/mwifiex/sta_event.c
-+++ b/drivers/net/wireless/marvell/mwifiex/sta_event.c
-@@ -1058,6 +1058,9 @@ int mwifiex_process_sta_event(struct mwifiex_private *priv)
- 		break;
- 	case EVENT_BT_COEX_WLAN_PARA_CHANGE:
- 		dev_dbg(adapter->dev, "EVENT: BT coex wlan param update\n");
-+		if (adapter->ignore_btcoex_events)
-+			break;
-+
- 		mwifiex_bt_coex_wlan_param_update_event(priv,
- 							adapter->event_skb);
- 		break;
 -- 
 2.33.1
 
