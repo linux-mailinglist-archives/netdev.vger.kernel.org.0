@@ -2,202 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3B6D4447DE
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 19:04:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0EE84447EF
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 19:08:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231130AbhKCSGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 14:06:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29581 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230382AbhKCSGw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 14:06:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635962655;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ErzL4VuHaD4f7PaUIMhaeJLVvgQwTuoWvGf4q52DOQU=;
-        b=KOVe5iEywj3ZoNVQD5PJUXWbT4eUapvP3tQCOIPNexTPIwVYgBFyekIqrvdg3y+yHDvsYv
-        5ZHVBmKXuQ33DsIGhNuefbPBw+FFNyxyQn2P0zC/+lILq108PjWA6DKL5PEdTD+yMF0H2k
-        22V677mvzVM2r3SjQpAHHABlBvFPfEA=
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
- [209.85.161.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-395-d9X3EKEFMiyQMLOi0CRnaw-1; Wed, 03 Nov 2021 14:04:14 -0400
-X-MC-Unique: d9X3EKEFMiyQMLOi0CRnaw-1
-Received: by mail-oo1-f72.google.com with SMTP id i1-20020a4a9001000000b002a9c41e0eabso1337916oog.3
-        for <netdev@vger.kernel.org>; Wed, 03 Nov 2021 11:04:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=ErzL4VuHaD4f7PaUIMhaeJLVvgQwTuoWvGf4q52DOQU=;
-        b=vEILMWvl3cPeZZ9ba3rEzZUDAG+x8cbomQeqFpQEp8HFyCRcxygStucgVe/9xbuKSw
-         5iRYHOk58t6RvRiD+bmoPU1+lxAvWhkKgEPDXtyD7pCYZ5JTx4hWpTlBa+edcazug+sY
-         NYswKZfquz2yHZ0XsBjJEjL3nVOoUR2dSePMiwj7pB/XxiZGDAo0fV599VBxUaf/eozN
-         3iNTw/kY9PWRJVzWlaza22X0toRpLTrNFnK1HL+wF7K9gSRGgAXLsVhynGV1HlrgGHzZ
-         j1E9BVsvRBTxV0PYjNcXRxk9cZNcfvtgCs5l7mdHrTJbMRHjCLhjPHFMlw1maZDgFr5Y
-         A8+w==
-X-Gm-Message-State: AOAM530UIJISQl4eWdA5NksrVAyh4KZ7TEPhrxBUDqpglaHUXGs7/ajR
-        cNvY7Py/peJz2DK0UOTsOQJQtII9h2oB6bQPuqNiDuDrFqqir9MQc5hw57iTqY3nx3yfZZG5YEG
-        0S4chqtEpERyTRIjL
-X-Received: by 2002:aca:3a06:: with SMTP id h6mr11821862oia.22.1635962653821;
-        Wed, 03 Nov 2021 11:04:13 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxMH2unmxL14Rka6aUDt8tPHbTQoAknsmdn15KQ74qkvHHD3LOwNuVSnf44YSHKyYZBOE8nTw==
-X-Received: by 2002:aca:3a06:: with SMTP id h6mr11821823oia.22.1635962653506;
-        Wed, 03 Nov 2021 11:04:13 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id t12sm806805oiw.39.2021.11.03.11.04.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Nov 2021 11:04:13 -0700 (PDT)
-Date:   Wed, 3 Nov 2021 12:04:11 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
-        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
-        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
- for mlx5 devices
-Message-ID: <20211103120411.3a470501.alex.williamson@redhat.com>
-In-Reply-To: <20211103161019.GR2744544@nvidia.com>
-References: <20211028234750.GP2744544@nvidia.com>
-        <20211029160621.46ca7b54.alex.williamson@redhat.com>
-        <20211101172506.GC2744544@nvidia.com>
-        <20211102085651.28e0203c.alex.williamson@redhat.com>
-        <20211102155420.GK2744544@nvidia.com>
-        <20211102102236.711dc6b5.alex.williamson@redhat.com>
-        <20211102163610.GG2744544@nvidia.com>
-        <20211102141547.6f1b0bb3.alex.williamson@redhat.com>
-        <20211103120955.GK2744544@nvidia.com>
-        <20211103094409.3ea180ab.alex.williamson@redhat.com>
-        <20211103161019.GR2744544@nvidia.com>
-Organization: Red Hat
+        id S230210AbhKCSLY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 14:11:24 -0400
+Received: from mswedge2.sunplus.com ([60.248.182.106]:54896 "EHLO
+        mg.sunplus.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S229558AbhKCSLY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 14:11:24 -0400
+X-MailGates: (flag:3,DYNAMIC,RELAY,NOHOST:PASS)(compute_score:DELIVER,40
+        ,3)
+Received: from 172.17.9.202
+        by mg02.sunplus.com with MailGates ESMTP Server V5.0(53146:0:AUTH_RELAY)
+        (envelope-from <wells.lu@sunplus.com>); Thu, 04 Nov 2021 02:08:29 +0800 (CST)
+Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
+ sphcmbx01.sunplus.com.tw (172.17.9.202) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.23; Thu, 4 Nov 2021 02:08:28 +0800
+Received: from sphcmbx02.sunplus.com.tw ([::1]) by sphcmbx02.sunplus.com.tw
+ ([fe80::f8bb:bd77:a854:5b9e%14]) with mapi id 15.00.1497.023; Thu, 4 Nov 2021
+ 02:08:29 +0800
+From:   =?utf-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
+To:     Randy Dunlap <rdunlap@infradead.org>,
+        Wells Lu <wellslutw@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>
+Subject: RE: [PATCH 2/2] net: ethernet: Add driver for Sunplus SP7021
+Thread-Topic: [PATCH 2/2] net: ethernet: Add driver for Sunplus SP7021
+Thread-Index: AQHX0KKBcebTINBXKk6D/f7Frpi9sKvxbhgAgAClKgA=
+Date:   Wed, 3 Nov 2021 18:08:29 +0000
+Message-ID: <159ab76ac7114da983332aadc6056c08@sphcmbx02.sunplus.com.tw>
+References: <cover.1635936610.git.wells.lu@sunplus.com>
+ <650ec751dd782071dd56af5e36c0d509b0c66d7f.1635936610.git.wells.lu@sunplus.com>
+ <d0217eed-a8b7-8eb9-7d50-4bf69cd38e03@infradead.org>
+In-Reply-To: <d0217eed-a8b7-8eb9-7d50-4bf69cd38e03@infradead.org>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [172.25.108.39]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 3 Nov 2021 13:10:19 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> On Wed, Nov 03, 2021 at 09:44:09AM -0600, Alex Williamson wrote:
-> 
-> > In one email I read that QEMU clearly should not be performing SET_IRQS
-> > while the device is _RESUMING (which it does) and we need to require an
-> > interim state before the device becomes _RUNNING to poke at the device
-> > (which QEMU doesn't do and the uAPI doesn't require), and the next I
-> > read that we should proceed with some useful quanta of work despite
-> > that we clearly don't intend to retain much of the protocol of the
-> > current uAPI long term...  
-> 
-> mlx5 implements the protocol as is today, in a way that is compatible
-> with today's qemu. Qemu has various problems like the P2P issue we
-> talked about, but it is something working.
-> 
-> If you want to do a full re-review of the protocol and make changes,
-> then fine, let's do that, but everything should be on the table, and
-> changing qemu shouldn't be a blocker.
-
-I don't think changing QEMU is a blocker, but QEMU should be seen as
-the closest thing we currently have to a reference user implementation
-against the uAPI and therefore may define de facto behaviors that are
-not sufficiently clear in the uAPI.  So if we see issues with the QEMU
-implementation, that's a reflection on gaps and disagreements in the
-uAPI itself.  If we think we need new device states and protocols to
-handle the issues being raised, we need plans to incrementally add
-those to the uAPI, otherwise we should halt and reevaluate the existing
-uAPI for a full overhaul.
-
-We agreed that it's easier to add a feature than a restriction in a
-uAPI, so how do we resolve that some future device may require a new
-state in order to apply the SET_IRQS configuration?  Existing userspace
-would fail with such a device.
-
-> In one email you are are saying we need to document and decide things
-> as a pre-condition to move the driver forward, and then in the next
-> email you say whatever qemu does is the specification, and can't
-> change it.
-
-I don't think I ever said we can't change it.  I'm being presented with
-new information, new requirements, new protocols that existing QEMU
-code does not follow.  We can change QEMU, but as I noted before we're
-getting dangerously close to having a formal, non-experimental user
-while we're poking holes in the uAPI and we need to consider how the
-uAPI extends to fill those holes and remains backwards compatible to
-the current implementation.
-
-> Part of this messy discussion is my fault as I've been a little
-> unclear in mixing my "community view" of how the protocol should be
-> designed to maximize future HW support and then switching to topics
-> that have direct relevance to mlx5 itself.
-
-Better sooner than later to evaluate the limitations and compatibility
-issues against what we think is reasonable hardware behavior with
-respect to migration states and transitions.
-
-> I want to see devices like hns be supportable and, from experience,
-> I'm very skeptical about placing HW design restrictions into a
-> uAPI. So I don't like those things.
-> 
-> However, mlx5's HW is robust and more functional than hns, and doesn't
-> care which way things are decided.
-
-Regardless, the issues are already out on the table.  We want migration
-for mlx5, but we also want it to be as reasonably close to what we
-think can support any device designed for this use case.  You seem to
-have far more visibility into that than I do.
-
-> > Too much is in flux and we're only getting breadcrumbs of the
-> > changes to come.  
-> 
-> We have no intention to go in and change the uapi after merging beyond
-> solving the P2P issue.
-
-Then I'm confused where we're at with the notion that we shouldn't be
-calling SET_IRQS while in the _RESUMING state.
-
-> Since we now have confirmation that hns cannot do P2P I see no issue
-> to keep the current design as the non-p2p baseline that hns will
-> implement and the P2P upgrade should be designed separately.
-> 
-> > It's becoming more evident that we're likely to sufficiently modify
-> > the uAPI to the point where I'd probably suggest a new "v2" subtype
-> > for the region.  
-> 
-> I don't think this is evident. It is really your/community choice what
-> to do in VFIO.
-> 
-> If vfio sticks with the uAPI "as is" then it places additional
-> requirements on future HW designs.
-> 
-> If you want to relax these requirements before stabilizing the uAPI,
-> then we need to make those changes now.
-> 
-> It is your decision. I don't know of any upcoming HW designs that have
-> a problem with any of the choices.
-
-If we're going to move forward with the existing uAPI, then we're going
-to need to start factoring compatibility into our discussions of
-missing states and protocols.  For example, requiring that the device
-is "quiesced" when the _RUNNING bit is cleared and "frozen" when
-pending_bytes is read has certain compatibility advantages versus
-defining a new state bit.  Likewise, it might be fair to define that
-userspace should not touch device MMIO during _RESUMING until after the
-last bit of the device migration stream has been written, and then it's
-free to touch MMIO before transitioning directly to the _RUNNING state.
-
-IOW, we at least need to entertain methods to achieve the
-clarifications were trying for within the existing uAPI rather than
-toss out new device states and protocols at every turn for the sake of
-API purity.  The rate at which we're proposing new states and required
-transitions without a plan for the uAPI is not where I want to be for
-adding the driver that could lock us in to a supported uAPI.  Thanks,
-
-Alex
-
+PiANCj4gSGktLQ0KPiANCj4gT24gMTEvMy8yMSA0OjAyIEFNLCBXZWxscyBMdSB3cm90ZToNCj4g
+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvc3VucGx1cy9LY29uZmlnDQo+ID4g
+Yi9kcml2ZXJzL25ldC9ldGhlcm5ldC9zdW5wbHVzL0tjb25maWcNCj4gPiBuZXcgZmlsZSBtb2Rl
+IDEwMDY0NA0KPiA+IGluZGV4IDAwMDAwMDAuLmE5ZTNhNGMNCj4gPiAtLS0gL2Rldi9udWxsDQo+
+ID4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvc3VucGx1cy9LY29uZmlnDQo+ID4gQEAgLTAs
+MCArMSwyMCBAQA0KPiA+ICsjIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiBHUEwtMi4wDQo+ID4g
+KyMNCj4gPiArIyBTdW5wbHVzIEV0aGVybmV0IGRldmljZSBjb25maWd1cmF0aW9uICMNCj4gPiAr
+DQo+ID4gK2NvbmZpZyBORVRfVkVORE9SX1NVTlBMVVMNCj4gPiArCXRyaXN0YXRlICJTdW5wbHVz
+IER1YWwgMTBNLzEwME0gRXRoZXJuZXQgKHdpdGggTDIgc3dpdGNoKSBkZXZpY2VzIg0KPiA+ICsJ
+ZGVwZW5kcyBvbiBFVEhFUk5FVCAmJiBTT0NfU1A3MDIxDQo+ID4gKwlzZWxlY3QgUEhZTElCDQo+
+ID4gKwlzZWxlY3QgUElOQ1RSTF9TUFBDVEwNCj4gPiArCXNlbGVjdCBDT01NT05fQ0xLX1NQNzAy
+MQ0KPiA+ICsJc2VsZWN0IFJFU0VUX1NVTlBMVVMNCj4gPiArCXNlbGVjdCBOVk1FTV9TVU5QTFVT
+X09DT1RQDQo+ID4gKwloZWxwDQo+ID4gKwkgIElmIHlvdSBoYXZlIFN1bnBsdXMgZHVhbCAxME0v
+MTAwTSBFdGhlcm5ldCAod2l0aCBMMiBzd2l0Y2gpDQo+ID4gKwkgIGRldmljZXMsIHNheSBZLg0K
+PiA+ICsJICBUaGUgbmV0d29yayBkZXZpY2Ugc3VwcG9ydHMgZHVhbCAxME0vMTAwTSBFdGhlcm5l
+dCBpbnRlcmZhY2VzLA0KPiA+ICsJICBvciBvbmUgMTAvMTAwTSBFdGhlcm5ldCBpbnRlcmZhY2Ug
+d2l0aCB0d28gTEFOIHBvcnRzLg0KPiA+ICsJICBUbyBjb21waWxlIHRoaXMgZHJpdmVyIGFzIGEg
+bW9kdWxlLCBjaG9vc2UgTSBoZXJlLiAgVGhlIG1vZHVsZQ0KPiA+ICsJICB3aWxsIGJlIGNhbGxl
+ZCBzcF9sMnN3Lg0KPiANCj4gUGxlYXNlIHVzZSBORVRfVkVORE9SX1NVTlBMVVMgaW4gdGhlIHNh
+bWUgd2F5IHRoYXQgb3RoZXINCj4gTkVUX1ZFTkRPUl93eXh6IGtjb25maWcgc3ltYm9scyBhcmUg
+dXNlZC4gSXQgc2hvdWxkIGp1c3QgZW5hYmxlIG9yDQo+IGRpc2FibGUgYW55IHNwZWNpZmljIGRl
+dmljZSBkcml2ZXJzIHVuZGVyIGl0Lg0KPiANCj4gDQo+IC0tDQo+IH5SYW5keQ0KDQpJIGxvb2tl
+ZCB1cCBLY29uZmlnIGZpbGUgb2Ygb3RoZXIgdmVuZG9ycywgYnV0IG5vdCBzdXJlIHdoYXQgSSBz
+aG91bGQgZG8uDQpEbyBJIG5lZWQgdG8gbW9kaWZ5IEtjb25maWcgZmlsZSBpbiB0aGUgZm9ybSBh
+cyBzaG93biBiZWxvdz8NCg0KIyBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIuMA0KIw0K
+IyBTdW5wbHVzIGRldmljZSBjb25maWd1cmF0aW9uDQojDQoNCmNvbmZpZyBORVRfVkVORE9SX1NV
+TlBMVVMNCglib29sICJTdW5wbHVzIGRldmljZXMiDQoJZGVmYXVsdCB5DQoJZGVwZW5kcyBvbiBB
+UkNIX1NVTlBMVVMNCgktLS1oZWxwLS0tDQoJICBJZiB5b3UgaGF2ZSBhIG5ldHdvcmsgKEV0aGVy
+bmV0KSBjYXJkIGJlbG9uZ2luZyB0byB0aGlzDQoJICBjbGFzcywgc2F5IFkgaGVyZS4NCg0KCSAg
+Tm90ZSB0aGF0IHRoZSBhbnN3ZXIgdG8gdGhpcyBxdWVzdGlvbiBkb2Vzbid0IGRpcmVjdGx5DQoJ
+ICBhZmZlY3QgdGhlIGtlcm5lbDogc2F5aW5nIE4gd2lsbCBqdXN0IGNhdXNlIHRoZSBjb25maWd1
+cmF0b3INCgkgIHRvIHNraXAgYWxsIHRoZSBxdWVzdGlvbnMgYWJvdXQgU3VucGx1cyBjYXJkcy4g
+SWYgeW91IHNheSBZLA0KCSAgeW91IHdpbGwgYmUgYXNrZWQgZm9yIHlvdXIgc3BlY2lmaWMgY2Fy
+ZCBpbiB0aGUgZm9sbG93aW5nDQoJICBxdWVzdGlvbnMuDQoNCmlmIE5FVF9WRU5ET1JfU1VOUExV
+Uw0KDQpjb25maWcgU1A3MDIxX0VNQUMNCgl0cmlzdGF0ZSAiU3VucGx1cyBEdWFsIDEwTS8xMDBN
+IEV0aGVybmV0ICh3aXRoIEwyIHN3aXRjaCkgZGV2aWNlcyINCglkZXBlbmRzIG9uIEVUSEVSTkVU
+ICYmIFNPQ19TUDcwMjENCglzZWxlY3QgUEhZTElCDQoJc2VsZWN0IFBJTkNUUkxfU1BQQ1RMDQoJ
+c2VsZWN0IENPTU1PTl9DTEtfU1A3MDIxDQoJc2VsZWN0IFJFU0VUX1NVTlBMVVMNCglzZWxlY3Qg
+TlZNRU1fU1VOUExVU19PQ09UUA0KCWhlbHANCgkgIElmIHlvdSBoYXZlIFN1bnBsdXMgZHVhbCAx
+ME0vMTAwTSBFdGhlcm5ldCAod2l0aCBMMiBzd2l0Y2gpDQoJICBkZXZpY2VzLCBzYXkgWS4NCgkg
+IFRoZSBuZXR3b3JrIGRldmljZSBzdXBwb3J0cyBkdWFsIDEwTS8xMDBNIEV0aGVybmV0IGludGVy
+ZmFjZXMsDQoJICBvciBvbmUgMTAvMTAwTSBFdGhlcm5ldCBpbnRlcmZhY2Ugd2l0aCB0d28gTEFO
+IHBvcnRzLg0KCSAgVG8gY29tcGlsZSB0aGlzIGRyaXZlciBhcyBhIG1vZHVsZSwgY2hvb3NlIE0g
+aGVyZS4gIFRoZSBtb2R1bGUNCgkgIHdpbGwgYmUgY2FsbGVkIHNwX2wyc3cuDQoNCmVuZGlmICMg
+TkVUX1ZFTkRPUl9TVU5QTFVTDQoNCkJlc3QgcmVnYXJkcywNCldlbGxzDQo=
