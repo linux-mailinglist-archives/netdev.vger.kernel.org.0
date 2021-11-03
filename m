@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EB6E444508
+	by mail.lfdr.de (Postfix) with ESMTP id D758C44450A
 	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 16:56:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232484AbhKCP6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 11:58:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49906 "EHLO
+        id S232559AbhKCP6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 11:58:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232455AbhKCP6k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 11:58:40 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35175C061203
-        for <netdev@vger.kernel.org>; Wed,  3 Nov 2021 08:56:04 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id om14so1580938pjb.5
-        for <netdev@vger.kernel.org>; Wed, 03 Nov 2021 08:56:04 -0700 (PDT)
+        with ESMTP id S232487AbhKCP6o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 11:58:44 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C3DC061205
+        for <netdev@vger.kernel.org>; Wed,  3 Nov 2021 08:56:07 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id f5so2718978pgc.12
+        for <netdev@vger.kernel.org>; Wed, 03 Nov 2021 08:56:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=squareup.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=L+jfMjHAfLT8+QsPbqGqAjMOjnneHdZRDZAP9vlLKWs=;
-        b=APE5d29OKg3XZkvdJPkb3uexiv1BsBwSJbO131ab53c2JxYtBNm49UYHJMBtofssVt
-         IUqsCLF2lJLEdCL7ZZZRu0DNIyd7rvL//DTZJ7+qd1V3EnA/8S3kismCOw/oyHVeinbL
-         6Jx9bRqXjztyyaHF1eqSS+4FXiv4ZnGszy+iQ=
+        bh=fRKGePYlOmiVuBckenaZg2lvZOcrPTPvFy6IKWhuraA=;
+        b=YLEp/Xoz4W2xV+OI2S15NnYwPElTYeS0SpIQ8yv97vYxKejLqOInKtY/oAP/4+D8If
+         YqCq0B7Gm73oeuYX2C0270HXK+PLZp3RO2ZzViWeul/g1R166dSvbJlwbpuzaU+4oEVj
+         K/W6oadXhKmmyRx6f+L4tXrDa22NUqfA9mBAo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=L+jfMjHAfLT8+QsPbqGqAjMOjnneHdZRDZAP9vlLKWs=;
-        b=DUmIBh2u/APWRPH7Msyf2nUG9FzKPfLJBm9WZXBca7TA/JaIvhrCbN+PlE5SeoPRb1
-         dtFTdxk7wzTcM8Txi9ESwDXey/bJenoOHjDOF1MEPryYZF26lTjC1ppqBMUGJ49EWo7t
-         RmdtaPmW+x83Mbmqvz4a0ROJMDyBvrqBPbUTzmxiEZO15rrqZSoN9Dnl+RPhaZL799zd
-         ygfL1LbGlV33/QqSxb0PNWgsohoxYO2/vCbeEp/PMpxw/zzlhTN/CpDykt80HkjbvtLX
-         v54vdXZY8kch1ToTLZPD6PBaKUqVpxCYzGN4/iHWapcmS9lDfR5mcpDu6iUrPWoCKCKa
-         mBkw==
-X-Gm-Message-State: AOAM5321f7TB0Q4bM27Z1jnTdBq4zJ4tmhs6UKGj/KhL4Tbn87RwbA1T
-        l4pVgYnGJOt3JctpqwDhFiFRwQ==
-X-Google-Smtp-Source: ABdhPJz7O8C0sDEUoeEHfwecXles9n6Zt7x1jPruCdqEr7HxlyrVJwawHTWxuYD1Lm2lkTzAssJIDA==
-X-Received: by 2002:a17:90a:d317:: with SMTP id p23mr15533993pju.196.1635954963571;
-        Wed, 03 Nov 2021 08:56:03 -0700 (PDT)
+        bh=fRKGePYlOmiVuBckenaZg2lvZOcrPTPvFy6IKWhuraA=;
+        b=aMlYxGCfqYxO8wOIbbyJfjKWobYJbHG63AAbCu2B/hFIr1pJgg2sgdYmPdqbKpTTSK
+         2YdeC4+tWbHKgPbnBmd2RHNtPEn+FGP8DxGTu+SfpGL2/hXPQLjoiblKz0DbDqs/EHaZ
+         dOr3CB3VqwV1WHDzQG1z98WAP6uP5rQIgGIoZiis4b/RnlvOI+h/DkJj8LbhKbCMW579
+         zcbmj972gz6X3N+qu79NOepWs12khEv/mIMmjD72HEtrkEXxwDR8kMSjkqVbKWZV2iNl
+         RlJJFGVfbt/rvdm/2zLV8ErKGFx5MPqh+X5iR5bwVnU65N3BvyP/dSOuQGQADPzM3Hot
+         BRmw==
+X-Gm-Message-State: AOAM531cJpq7W3Jjdgko9CkQa4tDRnF4ac94p92U5ATxBSf4USM3YZRo
+        3x2PzAliiMPnxkpHCZ7s0MjNJg==
+X-Google-Smtp-Source: ABdhPJzZXUKnwm5tW5gImvnc6h54z0C6R5vHG6hKRJ120aAOl/5rSmHIVJZ0BQ68n5YA2oGHIXJoSg==
+X-Received: by 2002:a63:4d20:: with SMTP id a32mr33303288pgb.247.1635954967135;
+        Wed, 03 Nov 2021 08:56:07 -0700 (PDT)
 Received: from localhost ([2600:6c50:4d00:d401:aa7a:1484:c7d0:ae82])
-        by smtp.gmail.com with ESMTPSA id b2sm2261379pgh.33.2021.11.03.08.56.02
+        by smtp.gmail.com with ESMTPSA id h11sm3174517pfc.131.2021.11.03.08.56.05
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Nov 2021 08:56:02 -0700 (PDT)
+        Wed, 03 Nov 2021 08:56:06 -0700 (PDT)
 From:   Benjamin Li <benl@squareup.com>
 To:     Kalle Valo <kvalo@codeaurora.org>
 Cc:     Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
@@ -53,9 +53,9 @@ Cc:     Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
         Jakub Kicinski <kuba@kernel.org>, wcn36xx@lists.infradead.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/2] wcn36xx: populate band before determining rate on RX
-Date:   Wed,  3 Nov 2021 08:55:41 -0700
-Message-Id: <20211103155543.1037604-2-benl@squareup.com>
+Subject: [PATCH v2 2/2] wcn36xx: fix RX BD rate mapping for 5GHz legacy rates
+Date:   Wed,  3 Nov 2021 08:55:42 -0700
+Message-Id: <20211103155543.1037604-3-benl@squareup.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211103155543.1037604-1-benl@squareup.com>
 References: <20211103155543.1037604-1-benl@squareup.com>
@@ -65,116 +65,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-status.band is used in determination of status.rate -- for 5GHz on legacy
-rates there is a linear shift between the BD descriptor's rate field and
-the wcn36xx driver's rate table (wcn_5ghz_rates).
+The linear mapping between the BD rate field and the driver's 5GHz
+legacy rates table (wcn_5ghz_rates) does not only apply for the latter
+four rates -- it applies to all eight rates.
 
-We have a special clause to populate status.band for hardware scan offload
-frames. However, this block occurs after status.rate is already populated.
-Correctly handle this dependency by moving the band block before the rate
-block.
-
-This patch addresses kernel warnings & missing scan results for 5GHz APs
-that send their probe responses at the higher four legacy rates (24-54
-Mbps), when using hardware scan offload:
-
-  ------------[ cut here ]------------
-  WARNING: CPU: 0 PID: 0 at net/mac80211/rx.c:4532 ieee80211_rx_napi+0x744/0x8d8
-  Modules linked in: wcn36xx [...]
-  CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W         4.19.107-g73909fa #1
-  Hardware name: Square, Inc. T2 (all variants) (DT)
-  Call trace:
-  dump_backtrace+0x0/0x148
-  show_stack+0x14/0x1c
-  dump_stack+0xb8/0xf0
-  __warn+0x2ac/0x2d8
-  warn_slowpath_null+0x44/0x54
-  ieee80211_rx_napi+0x744/0x8d8
-  ieee80211_tasklet_handler+0xa4/0xe0
-  tasklet_action_common+0xe0/0x118
-  tasklet_action+0x20/0x28
-  __do_softirq+0x108/0x1ec
-  irq_exit+0xd4/0xd8
-  __handle_domain_irq+0x84/0xbc
-  gic_handle_irq+0x4c/0xb8
-  el1_irq+0xe8/0x190
-  lpm_cpuidle_enter+0x220/0x260
-  cpuidle_enter_state+0x114/0x1c0
-  cpuidle_enter+0x34/0x48
-  do_idle+0x150/0x268
-  cpu_startup_entry+0x20/0x24
-  rest_init+0xd4/0xe0
-  start_kernel+0x398/0x430
-  ---[ end trace ae28cb759352b403 ]---
-
-Fixes: 8a27ca394782 ("wcn36xx: Correct band/freq reporting on RX")
+Fixes: 6ea131acea98 ("wcn36xx: Fix warning due to bad rate_idx")
 Signed-off-by: Benjamin Li <benl@squareup.com>
 ---
- drivers/net/wireless/ath/wcn36xx/txrx.c | 37 +++++++++++++------------
- 1 file changed, 19 insertions(+), 18 deletions(-)
+ drivers/net/wireless/ath/wcn36xx/txrx.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
 diff --git a/drivers/net/wireless/ath/wcn36xx/txrx.c b/drivers/net/wireless/ath/wcn36xx/txrx.c
-index 75951ccbc840e..f0a9f069a92a9 100644
+index f0a9f069a92a9..fce3a6a98f596 100644
 --- a/drivers/net/wireless/ath/wcn36xx/txrx.c
 +++ b/drivers/net/wireless/ath/wcn36xx/txrx.c
-@@ -314,8 +314,6 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
- 	fc = __le16_to_cpu(hdr->frame_control);
- 	sn = IEEE80211_SEQ_TO_SN(__le16_to_cpu(hdr->seq_ctrl));
+@@ -272,7 +272,6 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
+ 	const struct wcn36xx_rate *rate;
+ 	struct ieee80211_hdr *hdr;
+ 	struct wcn36xx_rx_bd *bd;
+-	struct ieee80211_supported_band *sband;
+ 	u16 fc, sn;
  
--	status.freq = WCN36XX_CENTER_FREQ(wcn);
--	status.band = WCN36XX_BAND(wcn);
- 	status.mactime = 10;
- 	status.signal = -get_rssi0(bd);
- 	status.antenna = 1;
-@@ -327,6 +325,25 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
+ 	/*
+@@ -350,12 +349,10 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
+ 		status.enc_flags = rate->encoding_flags;
+ 		status.bw = rate->bw;
+ 		status.rate_idx = rate->mcs_or_legacy_index;
+-		sband = wcn->hw->wiphy->bands[status.band];
+ 		status.nss = 1;
  
- 	wcn36xx_dbg(WCN36XX_DBG_RX, "status.flags=%x\n", status.flag);
- 
-+	if (bd->scan_learn) {
-+		/* If packet originate from hardware scanning, extract the
-+		 * band/channel from bd descriptor.
-+		 */
-+		u8 hwch = (bd->reserved0 << 4) + bd->rx_ch;
-+
-+		if (bd->rf_band != 1 && hwch <= sizeof(ab_rx_ch_map) && hwch >= 1) {
-+			status.band = NL80211_BAND_5GHZ;
-+			status.freq = ieee80211_channel_to_frequency(ab_rx_ch_map[hwch - 1],
-+								     status.band);
-+		} else {
-+			status.band = NL80211_BAND_2GHZ;
-+			status.freq = ieee80211_channel_to_frequency(hwch, status.band);
-+		}
-+	} else {
-+		status.band = WCN36XX_BAND(wcn);
-+		status.freq = WCN36XX_CENTER_FREQ(wcn);
-+	}
-+
- 	if (bd->rate_id < ARRAY_SIZE(wcn36xx_rate_table)) {
- 		rate = &wcn36xx_rate_table[bd->rate_id];
- 		status.encoding = rate->encoding;
-@@ -353,22 +370,6 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
- 	    ieee80211_is_probe_resp(hdr->frame_control))
- 		status.boottime_ns = ktime_get_boottime_ns();
- 
--	if (bd->scan_learn) {
--		/* If packet originates from hardware scanning, extract the
--		 * band/channel from bd descriptor.
--		 */
--		u8 hwch = (bd->reserved0 << 4) + bd->rx_ch;
--
--		if (bd->rf_band != 1 && hwch <= sizeof(ab_rx_ch_map) && hwch >= 1) {
--			status.band = NL80211_BAND_5GHZ;
--			status.freq = ieee80211_channel_to_frequency(ab_rx_ch_map[hwch - 1],
--								     status.band);
--		} else {
--			status.band = NL80211_BAND_2GHZ;
--			status.freq = ieee80211_channel_to_frequency(hwch, status.band);
--		}
--	}
--
- 	memcpy(IEEE80211_SKB_RXCB(skb), &status, sizeof(status));
- 
- 	if (ieee80211_is_beacon(hdr->frame_control)) {
+ 		if (status.band == NL80211_BAND_5GHZ &&
+-		    status.encoding == RX_ENC_LEGACY &&
+-		    status.rate_idx >= sband->n_bitrates) {
++		    status.encoding == RX_ENC_LEGACY) {
+ 			/* no dsss rates in 5Ghz rates table */
+ 			status.rate_idx -= 4;
+ 		}
 -- 
 2.25.1
 
