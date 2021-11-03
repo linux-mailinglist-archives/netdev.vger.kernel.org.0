@@ -2,86 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E06794447B6
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 18:49:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD2844447BA
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 18:50:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230036AbhKCRv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 13:51:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48402 "EHLO
+        id S230261AbhKCRwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 13:52:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229888AbhKCRvz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 13:51:55 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18DBFC061714
-        for <netdev@vger.kernel.org>; Wed,  3 Nov 2021 10:49:19 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id q74so8246580ybq.11
-        for <netdev@vger.kernel.org>; Wed, 03 Nov 2021 10:49:19 -0700 (PDT)
+        with ESMTP id S230132AbhKCRwa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 13:52:30 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81DC2C061714;
+        Wed,  3 Nov 2021 10:49:53 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id gb13-20020a17090b060d00b001a674e2c4a8so1992244pjb.4;
+        Wed, 03 Nov 2021 10:49:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=KAKbOau+k2F74lkTBilcg5L9iEPlB8yy1KK479B4eb8=;
-        b=QsM5ikBd1YX+swRfHlg2I5SAsuYihr+YI/MI9VLQtMZGurxoqp0e+QO0F62vVzj3BT
-         Ff9qkgwTrxV4/ilM+U5Di+LbqC/GIZdCCUxh0q0GNH7/Zjz28MciqBRxmAtV8IgiUMD0
-         PyPTxpH3vNg+9j9e8hwvV8LohVwkIZSXHY8jkQf9HfMDeAfDdVXPJN1zlidGNFMpPibl
-         r5eKw1BnUMwBBhuJSd1/WY9AgKIO1xmQZsR4kKwxnmzUFcRL1KR5S9Lr65pkmqnHteqB
-         AhHG4uS3zoo8Jmq1j151qg4Whe6GrKREwLmbm8WLTs7vqlaKyDKkWVLUbEuTWyTa8PkO
-         2X5A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pPvNZoulhiJWCQBU4zryUvX6Xw6xIu9z8BZ3Chcznm4=;
+        b=gpawBxrRZngZIixIRKHyKRtR1WgFW2ojfyMQDjsOpC++wIjSzRyaFaP07qFWvCBVJ0
+         w09HXzjMctEV21CwOW+TWEmzuLPyuECfp/2c3weqPltbM7e8pPWEndEWoH1sz98pgGmO
+         n91iedxHJRVjnDnHWHDDzE9HrvdRIE1pqK3S5sp5r7WnPybj1jPUE7oShKghf2atpZAD
+         e/dKIQYxtlNE0dbUHKNLv9tka4BMpgnwDUlWJow8DjcvYfcwo6J9g3HjxcRBgfbcNxl+
+         8mXCQ+OzVlIGbvhdMn2GxBXVqP0amXRmZYcmGmzUIFmBs2dr4m74viUPzcOd0fIffcMq
+         YFYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=KAKbOau+k2F74lkTBilcg5L9iEPlB8yy1KK479B4eb8=;
-        b=iThebNmrvpMxc4PgdAPKsLpbVSrjB/LCkXHrib5eEhnGEkMzjrr+a5v9OBstxxH0y/
-         jpBxzlBsSJteC5yiBxYqSm40a+DFZrPQusml3ETNw1ChYK0og/LZAh+rRiyuDDRCphTO
-         7exVJIwIvqT4JzNU2UWvejWLMMh8lRKnDDL0WTGxalXiZs1bzZ+Axw4B6Vv3lAru5xST
-         i7ejeflo67pqkqZLk9BSuDqq4roJl6Eq9K2J+pCG/4HsWkewI4WNvRyvpOPS2CVOVIwI
-         Z3w0jCFEke/UTXf+qu8+1DfJGbPg0/obZl2nhJrefEFw4BYmJtNFY2/9JBhQiUjLuncm
-         JZvg==
-X-Gm-Message-State: AOAM5329/HJE39F0YT8AA8/JZ3Op0KSzWO/+pGNfyalZnIqBL2RzBADb
-        hKJrG7T4KJOftcuZb+arwmQtC4F7LdExz+nIj8U=
-X-Google-Smtp-Source: ABdhPJzhsQ8atcLXg2PvAU2hPtvHFtFX/0VYNSQBMXkm7MYBoXSkkCkE6WNqo+TuWv7OPu/PcMbsFxCEJ9zMELl1xs8=
-X-Received: by 2002:a25:5c6:: with SMTP id 189mr21538719ybf.124.1635961757227;
- Wed, 03 Nov 2021 10:49:17 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pPvNZoulhiJWCQBU4zryUvX6Xw6xIu9z8BZ3Chcznm4=;
+        b=MtpNFDYShZ0+68eQNEAJPtbI9CpfO1qExhaJQz9cwlLLhizWOykS0YNZfsTYc1Ajw0
+         6GuXX4iqxhYrKI5Jgu2EJl/NhWW5EYWGGKDnfDV73n/Tp9bgC4ZNn+FH2IPY0KlLDKaR
+         PB2FdHnW05NBG2hcijKWYZbRGHeVGdqGCDwjBBHuLUN9IvsIa+MuhbCcKRsMOed139lo
+         8SfpvHpg4vQAxRe3SybpzORJZQ+BBXcvvhWqcjj4tNEe/CqNJ4wMZsJYKjUYrVZrlThU
+         j74z5Vbo9EAn8pw+X0iYz3sLV7uQ9bw9orZlKAXi8lRg8VlUsjHmFWiJzkl4NOUT6G49
+         AS3w==
+X-Gm-Message-State: AOAM530UMw2+PZWmB9lOa0ZNZHUgM0gVw/faa7MTCe3yvkhreWMEhZBR
+        /6cr+jYu1b0jRfaQPy48lkWRk7WuW8gWd+LEA2XP8uSD
+X-Google-Smtp-Source: ABdhPJwBy+n5eAeWFPR11/hBk/8XrZoz5ZTgXkU5n3+s8oDYIi2gp06Pm/KfcDO30PcR3yJ+Vddht3b6BoYbg92it8s=
+X-Received: by 2002:a17:90a:6b0d:: with SMTP id v13mr16206841pjj.138.1635961792997;
+ Wed, 03 Nov 2021 10:49:52 -0700 (PDT)
 MIME-Version: 1.0
-Sender: mrrnra.kabore@gmail.com
-Received: by 2002:a05:7000:bc06:0:0:0:0 with HTTP; Wed, 3 Nov 2021 10:49:16
- -0700 (PDT)
-From:   Anderson Theresa <ndersontheresa.24@gmail.com>
-Date:   Wed, 3 Nov 2021 10:49:16 -0700
-X-Google-Sender-Auth: BooIjtjlyUISUOSKSOhBThzCT8c
-Message-ID: <CAObd1co7h7-fanpOvxZT694BxvXNp_jFCvFWseSC1t3Y6RpFDA@mail.gmail.com>
-Subject: Re: Greetings My Dear,
-To:     undisclosed-recipients:;
+References: <20211102021432.2807760-1-jevburton.kernel@gmail.com>
+ <20211103001245.muyte7exph23tmco@ast-mbp.dhcp.thefacebook.com>
+ <fcec81dd-3bb9-7dcf-139d-847538b6ad20@fb.com> <CAN22DihwJ7YDFSPk+8CCs0RcSWvZOpNV=D1u+42XabztS6hcKQ@mail.gmail.com>
+In-Reply-To: <CAN22DihwJ7YDFSPk+8CCs0RcSWvZOpNV=D1u+42XabztS6hcKQ@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 3 Nov 2021 10:49:41 -0700
+Message-ID: <CAADnVQJ_ger=Tjn=9SuUTES6Tt5k_G0M+6T_ELzFtw_cSVs83A@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 0/3] Introduce BPF map tracing capability
+To:     Joe Burton <jevburton.kernel@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Petar Penkov <ppenkov@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Joe Burton <jevburton@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings,
+On Wed, Nov 3, 2021 at 10:45 AM Joe Burton <jevburton.kernel@gmail.com> wrote:
+>
+> Sort of - I hit issues when defining the function in the same
+> compilation unit as the call site. For example:
+>
+>   static noinline int bpf_array_map_trace_update(struct bpf_map *map,
+>                 void *key, void *value, u64 map_flags)
 
-I sent this mail praying it will find you in a good condition, since I
-myself am in a very critical health condition in which I sleep every
-night without knowing if I may be alive to see the next day. I am
-mrs.anderson theresa, a widow suffering from a long time illness. I
-have some funds I inherited from my late husband, the sum of
-($11,000,000.00, Eleven Million Dollars) my Doctor told me recently
-that I have serious sickness which is a cancer problem. What disturbs
-me most is my stroke sickness. Having known my condition, I decided to
-donate this fund to a good person that will utilize it the way I am
-going to instruct herein. I need a very honest God.
+Not quite :)
+You've had this issue because of 'static noinline'.
+Just 'noinline' would not have such issues even in the same file.
 
-fearing a person who can claim this money and use it for Charity
-works, for orphanages, widows and also build schools for less
-privileges that will be named after my late husband if possible and to
-promote the word of God and the effort that the house of God is
-maintained. I do not want a situation where this money will be used in
-an ungodly manner. That's why I' making this decision. I'm not afraid
-of death so I know where I'm going. I accept this decision because I
-do not have any child who will inherit this money after I die. Please
-I want your sincere and urgent answer to know if you will be able to
-execute this project, and I will give you more information on how the
-fund will be transferred to your bank account. I am waiting for your
-reply.
-
-May God Bless you,
-mrs.anderson theresa.
+Reminder: please don't top post and trim your replies.
