@@ -2,262 +2,477 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 008CC443FA1
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 10:50:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40B8C443FA8
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 10:54:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231949AbhKCJxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 05:53:23 -0400
-Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:19520 "EHLO
-        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230097AbhKCJxR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 05:53:17 -0400
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1A39jNBc001867;
-        Wed, 3 Nov 2021 09:49:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : content-type :
- mime-version; s=corp-2021-07-09;
- bh=PmaE9TWkSMPOx8p0OiHjtrQfRXGyvONNCgsAEfhasss=;
- b=YLQe8PY/wGMqaTCCtw4u91JaWJtbepM8lSIPSfMS1BCKRLWT/VlSUSaoDNU5p6a6v5DA
- VXxpP1GhnE1fyVd1yRjjot9bGIAzby1VCurxd7aLS6GwFYUNP6S5teD25KrHIVw/k3K/
- uDiHyrYoug5IPBu1oGUJ7oynuF2KXaY6HA5ekUu8CP1UOEmd5dzpKdP3O4LcWzMPpC9V
- A2G5K1yiBGAnvGLjLXx7zbSCCQAuQMWel/AxXYeJqEWvXOpmFR1flSzgq05ta0ueamku
- 3U+J/LatdV1S5BPI/D96ReM4hqlWTqA/eRTJamF9nP4PzGmMaJaqcC+H9OMZF2GNnFO3 Qw== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3c3mt58xhp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 03 Nov 2021 09:49:52 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 1A39juGs029532;
-        Wed, 3 Nov 2021 09:49:51 GMT
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2174.outbound.protection.outlook.com [104.47.58.174])
-        by aserp3020.oracle.com with ESMTP id 3c0wv604tc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 03 Nov 2021 09:49:51 +0000
+        id S231557AbhKCJ5E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 05:57:04 -0400
+Received: from mail-eopbgr60114.outbound.protection.outlook.com ([40.107.6.114]:34625
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231278AbhKCJ5E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Nov 2021 05:57:04 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Uwk5X5NP81pt3ehWhyU14BdqkSvv3CIHXw3UlM43XCWS0dIBUY4P/prArBHZYdjX1GKqqulkCyI5NB986yXPKYQvgXMa9mOPRmxUnuNhfGR8Z+Xgs8DgkH14OdsaIB7VHuoWyW6S3Ecj71EGqIL1mPxttfsydaSWaACAi79viM7fTSa6Gebd0bLt0KFRVkzrDhQxCcG+CuvbY3t6LMaBjh5iEt5/WxrLNscdYiJCbw47Q6pFhSaRWsSJ1AibI5CG59EcltcE0bmeBi1fshEjWaIh1JKmWfOB/P4fmjdCYJUYZqw17xVY9xCMMH8+sQiWSLGko+Q4TOIno9XtG7g1fQ==
+ b=jOKWp3vf150tDm5fOMkGcK3ge5QSucNerxkfR1EC4YNQwt9zfu9NWV1HXJd9uAvHkmLPZEpzNsVUirVxrA6SNYouCipUEvhAxiZNnnhjQ04PPZnIZneiq2UnK5r1MW+55HqXMqwrYvAcFwyMopJnXqk12+g9bhH20eZVSR/OwxJOaWH1kd/aznW1NNSEy5VupwA7rc0IZ/4umHNRFe/QzfKdnexQhcfRR78bX1zVCbgkOFGXl6EGo51z4NLQ7T5k3HKN5IThd8/p/CZTGQsyPqeV+GJtTB5U/NgkS75SoGvmaKFE1C8IsFyh64KC6JsrAHPYE4SOyUzuKztrGAVX4A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PmaE9TWkSMPOx8p0OiHjtrQfRXGyvONNCgsAEfhasss=;
- b=AHL3whcO+kaBoMl+EwxNgZmqrIxv3dtBQ0SlzbRh639id1Rd9cILVesaKZ+cMttRNzrTmjRmzxB2Uond7nli6azsa0tzBrl/L2wHI5GKmuZZlmtp6i0eokGbpgU0lUEyoPzj6KE5NgNJzcBBbK1eie5TF6mB9AP6IVkABlDmZShweV+7/t1DkJidnArXNwY2SrC9uD9FWDssOfz/v5KE2TBZnK3gaEYk+a9ADYn0Cq1wtuSLAzLkJXL65wsxUBnDBoGgkagVqbGbOVWbnNhBvEzKxKAXTq4lXvNhE+y5hsxTwfcji1qHkjlKH26fFUVWQq5vak1woYBGwYuoFI5pHQ==
+ bh=Ai6sJfCCtMa1Oks0OWWRNRgu2G1ZESKsoootkyTHlaQ=;
+ b=VVi5MdoGQFg1Zj5ksYdTWjxC+IpQinD9a9ITR9w1EhUYCgenZ8RwO+gVQg7DW2Wekbb3injmnobR75BGLn3D0ZDKQ2ebkw3pJQKwnwpmEXl7RmgS89oSZWOxORlp9vR38gRh2FwAJtXYLda9EXGxAw+kfp6uzwxCzAMoCji5UZ20DJL/EAFdN/mWFHP46eKvI2+SBsEvE2w/Q9TCDPLml0ARdB4IJUZBelezsYQ0gV8B+wQ6Koxik30wSV8DlvgcyIaCs46CFgqEKIF2piHKfYsy1Iy+vBOd47bzE4sUdWN35EgmZWWTK9SK+33tYma39Devl00+xFWlXl7GxVW5+g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PmaE9TWkSMPOx8p0OiHjtrQfRXGyvONNCgsAEfhasss=;
- b=RDocs0SaE79rs+wgR5FIKc3qiLJD+lpFPYGT/JT6MutMrxlJKiG/ollRFidoS8PYrOvteIDCyYS7JXGNTg6hjlYKTPgeFb2neSss874h7bu/oxIDuJjTKEwsridRg+pJyvlJaCbdqSZ1l/Qj5lKe6Xn6buEq+jQaYkZZnQdZlws=
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=oracle.com;
-Received: from DS7PR10MB5278.namprd10.prod.outlook.com (2603:10b6:5:3a5::9) by
- DM6PR10MB2490.namprd10.prod.outlook.com (2603:10b6:5:ae::15) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4649.17; Wed, 3 Nov 2021 09:49:49 +0000
-Received: from DS7PR10MB5278.namprd10.prod.outlook.com
- ([fe80::6c17:986b:dd58:431d]) by DS7PR10MB5278.namprd10.prod.outlook.com
- ([fe80::6c17:986b:dd58:431d%7]) with mapi id 15.20.4649.018; Wed, 3 Nov 2021
- 09:49:49 +0000
-From:   Alan Maguire <alan.maguire@oracle.com>
-To:     ardb@kernel.org, catalin.marinas@arm.com, will@kernel.org,
-        daniel@iogearbox.net, ast@kernel.org
-Cc:     zlim.lnx@gmail.com, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, andreyknvl@gmail.com,
-        vincenzo.frascino@arm.com, mark.rutland@arm.com,
-        samitolvanen@google.com, joey.gouly@arm.com, maz@kernel.org,
-        daizhiyuan@phytium.com.cn, jthierry@redhat.com,
-        tiantao6@hisilicon.com, pcc@google.com, akpm@linux-foundation.org,
-        rppt@kernel.org, Jisheng.Zhang@synaptics.com,
-        liu.hailong6@zte.com.cn, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Alan Maguire <alan.maguire@oracle.com>
-Subject: [PATCH bpf-next 2/2] selftests/bpf: add exception handling selftests for tp_bpf program
-Date:   Wed,  3 Nov 2021 09:49:29 +0000
-Message-Id: <1635932969-13149-3-git-send-email-alan.maguire@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1635932969-13149-1-git-send-email-alan.maguire@oracle.com>
-References: <1635932969-13149-1-git-send-email-alan.maguire@oracle.com>
+ bh=Ai6sJfCCtMa1Oks0OWWRNRgu2G1ZESKsoootkyTHlaQ=;
+ b=h7CWg34PuDCzBZyQT0Okjb0l25WrTWZU1KQOLxhKy6E6vPgL06OxupLWbjZ9ij8B1rQO2+Ql4IovyzvvJe+0+UVtKsQUwy8NmWoErPFOg1JAOXzd5BIsJzkXjZi4V3oCZNiZEhQYN2auauLOiNRViAKA+q0gSScCwMuNPBCQsHY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=plvision.eu;
+Received: from VI1P190MB0734.EURP190.PROD.OUTLOOK.COM (2603:10a6:800:123::23)
+ by VI1P190MB0477.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:3a::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.15; Wed, 3 Nov
+ 2021 09:54:23 +0000
+Received: from VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
+ ([fe80::a1aa:fd40:3626:d67f]) by VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
+ ([fe80::a1aa:fd40:3626:d67f%5]) with mapi id 15.20.4649.019; Wed, 3 Nov 2021
+ 09:54:23 +0000
+From:   Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
+To:     kuba@kernel.org, andrew@lunn.ch
+Cc:     mickeyr@marvell.com, serhiy.pshyk@plvision.eu,
+        taras.chornyi@plvision.eu, Volodymyr Mytnyk <vmytnyk@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net v2] net: marvell: prestera: fix hw structure laid out
+Date:   Wed,  3 Nov 2021 11:54:04 +0200
+Message-Id: <1635933244-6553-1-git-send-email-volodymyr.mytnyk@plvision.eu>
+X-Mailer: git-send-email 2.7.4
 Content-Type: text/plain
-X-ClientProxiedBy: AM3PR07CA0089.eurprd07.prod.outlook.com
- (2603:10a6:207:6::23) To DS7PR10MB5278.namprd10.prod.outlook.com
- (2603:10b6:5:3a5::9)
+X-ClientProxiedBy: FR0P281CA0087.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:1e::12) To VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:800:123::23)
 MIME-Version: 1.0
-Received: from localhost.uk.oracle.com (138.3.204.46) by AM3PR07CA0089.eurprd07.prod.outlook.com (2603:10a6:207:6::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.4 via Frontend Transport; Wed, 3 Nov 2021 09:49:44 +0000
+Received: from vmytnykub.x.ow.s (217.20.186.93) by FR0P281CA0087.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:1e::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.4690.4 via Frontend Transport; Wed, 3 Nov 2021 09:54:22 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a624aba9-91d4-4eec-6acb-08d99eaf468c
-X-MS-TrafficTypeDiagnostic: DM6PR10MB2490:
-X-Microsoft-Antispam-PRVS: <DM6PR10MB249039B3EFC07413A4ADDE52EF8C9@DM6PR10MB2490.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-MS-Office365-Filtering-Correlation-Id: cd8cceab-1ead-4c59-116e-08d99eafea36
+X-MS-TrafficTypeDiagnostic: VI1P190MB0477:
+X-Microsoft-Antispam-PRVS: <VI1P190MB04771436898C30DE9983CBA98F8C9@VI1P190MB0477.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:411;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: d98Ibjwvb1UITU67vBkqwBhRta9Y0BMV56bQY5d1nCXAOjHWJUB6y7lVxQKE9CyW10607O8NQ+67+GP0BNtnrYUKjoRG5nwnF0DEhqp9hatRsL77jE3eyoVNPkvWkP42BkrV+JHQmKV3TdTd2JRkMUtaUc9LltLa0Qj9mXu6Xnuv1dcjBFmP2z6NeBrOtsEk5NLikZS+33fK3bzicZON5myW/Bnj+aV19CzlXM/qmq5mmlfSTJOWVtDeKBxWxUI1nam+/yANc5o0BWFgEHBtWTXFqDIJPIag2QY3tUehp+L/j0N1aRfQ0yXu5c+pVyCf0eDWS2wzWrRhbjHB0K9qLXJt9sLnrHNqp2bE543GYbkUkhQVtQKY4CZLrCuflPS3scEKaeKW52ZpG1zjBagapvj4iuAQVy/NSX3Z5U76Rhx5LzD2xT3wt2y5wzDBqwO/9F3eAl957SVDstOE1237i+3z3BvxlrhO4MTP6sqVog0Id/Wj0RXDi6c03SyfJCdhvv3uaJecbRWUErsibbqJenoF7tb78O6FCFvz+OgBrmjOWS5hpY2ilX8ANANCTXYKWmdqoAdfi6xNwqUtt8mrvFy1F9MFZPRN50B/MYhLvrBATQJhG6LyJljHNpVr1696/Yc374jozf8xB6CyTldPj+Vt0WVfbBMV4cJyaPQkrIv2+qyNWIBcGwVVqHc2aUqpv0LJMg30vUb5Bm80V6xrBQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR10MB5278.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(316002)(36756003)(2906002)(66556008)(26005)(86362001)(8676002)(508600001)(83380400001)(6666004)(7416002)(8936002)(7406005)(38350700002)(956004)(2616005)(186003)(44832011)(107886003)(6486002)(38100700002)(66476007)(7696005)(66946007)(4326008)(52116002)(5660300002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: jBOqlRGq6YHqerXcJs7TdZilSlKxLhl9RiDkpvZve7+J0+gd+/gqNIbKWPND6CnwR3d9YT2xaSo1Lh9PQd2Jf13+f9nFVAhwNQ1USgLpdjH5cd/g7qcuO0wWzqmayAEvdg14H2BQi3o0NYbXaC7WsDrV/fwY3vyFm45LJo1WxZ7WAF1TOdc21dJV634Rr8st3awNjt0Kc0W1oWu9d2IO6CyJkPFghPorn0ISam8zXmNPDnobFBA45yIyFaFSORwoVw7by15epUKgEcZLCmqFq8IQQkOKTtHhaN/sikzE5mCrZ0IS/cFUM/HuF2dGkDLd8YucLokL5wI1C9lJ49/OQ/ZYz6TyUONMCQvceo8vGJGf4T5kk/MxYc7qWG2aut2A8lY5V6bNqvphqV5RMTcj2Lbyk0N14s/x1zkiktmG0maIspeLenpTf/ldouE13WHj02yRg/1RuwU6P4XGSntu5nC4P4HqnkG1qLIyNaFQ5L+k6GpTT+8cfch/dvG9pQbhe6X45irk/95X9CzFgdMbh6lfc3yYMuZzCIxmruSe+grGl3B5/3F+fJ5T2ljpSA9qkbWhA876DhiWmnt1YZ5SRIxcaXe3lZ1JeG6cXqttg6E5q6LkahXhY+TPAumutylynWBNlZvyS5/jyV4+OZHZAsFnmg17Kaz2XUBbweDVyU9uuUUDqIRm3153ubxbqlNJg6+QRnRt7KFEem2xbCkylQVGRcglxrEm2T9EdfHiyHGFZhkazZaBXiv38Bs/j4vepptST0J8XTtWi7OkC2vecvuCBvH72uYJt6cRUzhyDbQ=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P190MB0734.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(376002)(39830400003)(346002)(366004)(396003)(136003)(2616005)(4326008)(956004)(8936002)(5660300002)(66574015)(966005)(6512007)(83380400001)(38100700002)(66556008)(6506007)(52116002)(38350700002)(36756003)(186003)(26005)(54906003)(2906002)(316002)(6486002)(8676002)(6666004)(508600001)(66946007)(66476007)(44832011)(86362001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?dL0Lm8pbDUTwCfPSmODCl92EP6qHV/FD88gEotLPBlr/jC+Af7bMbk5xqy38?=
- =?us-ascii?Q?mlGj3R9LQdsBpwMXMKO5fteC3HyAiYBbygwYWdVSxt5CVO94YNcx2REDS1ot?=
- =?us-ascii?Q?coAXBvSZpHFA3pVIFsmqAbkH7p06zMHhDwiU0lviDQQNCBpzqYqJC8j3iUsT?=
- =?us-ascii?Q?STAKLFhQVZdmQpDnBgrDx48ESSCwoQoQ3sET3s7wKGxewFWE9q0Ms79e2O83?=
- =?us-ascii?Q?E3WIfSuOobJtT1h9Btrp3ugY9COx9LJ8S8kSoVIhMTrjKqcARulcyLulH5Vq?=
- =?us-ascii?Q?HVN2cl1d2n3f6vfSvLAo7xSBY5UvH6aQEghiVpdrg4EhRyOZUKRN/kmWgk99?=
- =?us-ascii?Q?GhbRVIRL9oLS82mw8eK1R6tORFhyQvCSbBO2pC2B/nk7d5DLhNwMESTvF2Op?=
- =?us-ascii?Q?Nh6Num6s4iSCWBd1KvQMqPVRTsrhmvF6aL03IfSj4tnuGsadeyWBiuV2FTTo?=
- =?us-ascii?Q?IBparsfIpliuraexo0FEnH1vUQcJwHuUx9wf19J6nguKQh0DsSrn4jP4tbVJ?=
- =?us-ascii?Q?w9GmMgSr6bhbmzTiELuBqtxPrBoQf2QMrnG7RyZzdLTHhAFQp5gj1pi3ARyY?=
- =?us-ascii?Q?HvXZQd5Ppn/w98u9tgd6yz8unXmojScafS/k3rpkqX1X9e756QxBtSS71/j8?=
- =?us-ascii?Q?BMZFyOACiDOi7gNI+Ot6C51lWnzaVyVyfQCau2Z5vGFnXb+gz8ob/6Y7tsWm?=
- =?us-ascii?Q?Tb/5rLmdwtJwUhjRW6R+hs2g3c2Shkud+Akj2AKpkAsp+++9Z9X7R531RAPX?=
- =?us-ascii?Q?bW0Gl8jMtnt5ZA5IycWneaCDwunHhGqhj84VuIX7FpTgOAKtsALcd7Io5oR/?=
- =?us-ascii?Q?InKHN01+JvmCpuHEDqGtVFt4To9KFyiy2gy26KQ6m9tyOba+3oBZU2WQozHA?=
- =?us-ascii?Q?xhHY1eXPoJCrHhErVvDnJCO5Gkh1caSTMFUT1ZisXveOUw2JxyH+i7h3Dlif?=
- =?us-ascii?Q?3cidOPF2kDADHCVCymlp25F5NSRku/KgrPhaTROBzVacLjPrLRnNP8DafKtr?=
- =?us-ascii?Q?tG5MLS/7doasrZRoYpfPW7aKF8de4+K4jXcoznfcfpK4/FCypVgC+2pjIRyP?=
- =?us-ascii?Q?ISye+Zmmd6BPMUxUzHMn1w7W0ONnY/q/Frk/fk9wPxdw4tewjK3K2FEU9DEX?=
- =?us-ascii?Q?IXmQGLDMjDVK3t05oPvjg9hLrl5AyffrJdzQw1SLYv2a5WGqq/PcWpewIEH3?=
- =?us-ascii?Q?UlFvHJxc3OIfpGsHfLyc3NnRy7HY8GBfeosekPayJj9vlnGHSl22iHZyoTkZ?=
- =?us-ascii?Q?R/dB2rbOq6uRrqIk4yZt0ZQc2aRauEW3c6WlE9rOoB7dsJIu96vHRkzd1Fpc?=
- =?us-ascii?Q?hOAAQhyMMpCF8hqdE/MpbTgjpQe2ZPX/nhzlv8ZzhNXl2OxU/z1wu1ym4XtP?=
- =?us-ascii?Q?56NVbmGoICw4745z/t21hLOQnrnl1xGf4J91WWyw0rOVP9rPzUL50J5TxaBb?=
- =?us-ascii?Q?rzUiiBRp4ljFLtSTmA+8cKlm9/GLe7A4DV7tMNnLXA+UgBzv8+0vLQS8e/Vl?=
- =?us-ascii?Q?r2/kzHhz+sxYy39HZoTy9M72VIBAlxEoZlEJrb1GLtC23xMs5wRqUUfbBFMV?=
- =?us-ascii?Q?A8mm7rTjGlSE78WGC+2R4IbUPvK83ld+EN41cqf2+Fu86dlayPNQaQdXrEJ4?=
- =?us-ascii?Q?rrqPfJaHZ7sBE9sfnR5vr5M=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a624aba9-91d4-4eec-6acb-08d99eaf468c
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR10MB5278.namprd10.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6WJiTPnSsXqwX77Z2wg3nfdxBrzZylenAD3DfAjLCuxOZPcyEJFPk+/2jtR8?=
+ =?us-ascii?Q?0mfQLWAwz+dYcjDZ0zVsPKlb6QFLoTOH16pn+QzDk2PhF6Zbx9dp3vYRnpC5?=
+ =?us-ascii?Q?Od9GCuh5TPFcUEhlVMhOp5vXyf+GFARpEECxfqimq8dImChokfNqUAElGsBm?=
+ =?us-ascii?Q?exJIRjb1TdeXsgz47487Hk3mrL9ufcDnh6i6mcr8fjgPsKAGMDuMeXbNiG0D?=
+ =?us-ascii?Q?BJWVx+/kIMr4mZCc3opn/PJk5FV/h655YZuz6MJWEN8AsZP2rf/6/Uq91/FW?=
+ =?us-ascii?Q?p6ss7V1TBUomJCgE5XqIuSuffN526/5AKEpvnd6JgqtC2zfzH6PMDnRH6CS/?=
+ =?us-ascii?Q?81ZCUzTwST86fI3dvsg+lsqZyn/AX4DhPPa8ZB7D2UkmJJo5TCL9lJ8GEklw?=
+ =?us-ascii?Q?Eg88cV5zJ/D87xi9uaujRBIt5/C+SXgOLFC49ZjHVYvs66WDUFtXlh0VILiw?=
+ =?us-ascii?Q?TqHuWYtmyH5VebWqxaH4cs+SGj3WEpwUdR5qvETIJeiBIqnYFlsdFezPfKSp?=
+ =?us-ascii?Q?RKhx8nJ5CRpfJdeNkilNL8tJZXoctSatOaML9uBa4Zj/0O1iwhSOZKGC9ift?=
+ =?us-ascii?Q?MEXu9Aaa/wCEwUvymtyLUBIYZGD14S2ETt0BUCrVYFbn7+K5eWjribraFxAN?=
+ =?us-ascii?Q?Ic1h895YBC54RquEKJZL2lAQTRP5DP5mj7FT9W8JzAYTk7NaVyvgl0VwnNQl?=
+ =?us-ascii?Q?j8mCSJto2bfye4U0fXAmKH7ng8dEZaffYdF+GC3mld0iRw46oLBrjVSlW/0k?=
+ =?us-ascii?Q?U0ODRD8o69HPlgntPzYDnDWHOolSs8pSC7CoWCwSxo3nMUXryyIW76MtXz+c?=
+ =?us-ascii?Q?sM7XoB+sQ21lYWPlf7iE/nDNAg+a2dnLeTdBeT7JR7fa1K8x2xqwBs0Ssafg?=
+ =?us-ascii?Q?ygo2+ZQcmwxgWULXqZW3r/AdND7aDuq6mYAoXBYECJEDhLikS6V+bj/G+a1v?=
+ =?us-ascii?Q?HQ2+BmfI+RLQ1G0YceBSEBbIfLliqcQPovSdx8/I3BK4CKiNKxQ3V0yf8AoT?=
+ =?us-ascii?Q?qDFXQN2VFdlFRToNC8dW49TXnQn9TVOTyC/Oe3U0ktOu6lVUtQTE/uvSuGRt?=
+ =?us-ascii?Q?Q2qmnO0vhu6/I/5mD5WOzTZhm5FTpCWUcae6/R3llNI1PW5RCZ3NL09KHWIf?=
+ =?us-ascii?Q?aFFg3wrTa05x3+qwF4QVtkXFsmqymbiYyKDG7rVHAZ92Fe4T9H+KEpxlcwSQ?=
+ =?us-ascii?Q?zXj0jZL/AGVc7xD+5stKjTFOEheXwtXLxINumwCGFsaCULqi+K0FjxY9UjN3?=
+ =?us-ascii?Q?q2rRteBltEM60k7KhLv4FbKgl0z1hRTFQmvvyNhVz2ZdERzwunrt93RjEkcD?=
+ =?us-ascii?Q?330HF0vSRLDAHwqRiO15OiWkk9e9qWIusPqRKDVisAf7LidT3Mdel+Lh1E6+?=
+ =?us-ascii?Q?xPwZnhoSXpcDTqesa9SBJQ4UMa33bsC4Ygx7kewj5wRs/eLcwTkLfhxbaFCt?=
+ =?us-ascii?Q?7TFkQ/f3b2/Q1v7nNPlQeSgHOddtrm6K4d+PnnTSI3AtWKyirxEaPYcCMS2F?=
+ =?us-ascii?Q?ZAyVAJRxaV8sOTFCG5jEkZiaBQtnOIw0TyUYJhxshtIabToLNxXFMY0RIobx?=
+ =?us-ascii?Q?hGsmP7dTTWpA5WcCuO6h5gK416lJbJPG34khtdb1Sh7ER9Ltb5brpj5Oy+uR?=
+ =?us-ascii?Q?VL7A+FKfz6ni5xsA18NF2WBKjaQbCrOZ+OHq6KkKaeTqfpOAezEJspF1qPRk?=
+ =?us-ascii?Q?tKOOiQ=3D=3D?=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: cd8cceab-1ead-4c59-116e-08d99eafea36
+X-MS-Exchange-CrossTenant-AuthSource: VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2021 09:49:49.2436
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2021 09:54:23.7305
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qeKx8dezlbsR8PAd8yuRwKP+AuMPJ3GcDNvlztxFAAENU0Z31J2ctHZrZFoWshFBMlmcZuR5Nz2byOjB8dheJQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB2490
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10156 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 phishscore=0 malwarescore=0
- mlxscore=0 suspectscore=0 mlxlogscore=999 adultscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
- definitions=main-2111030055
-X-Proofpoint-ORIG-GUID: Sg-vJPoLRvC8oyn5yzt-B-MIo9Ce3Y9s
-X-Proofpoint-GUID: Sg-vJPoLRvC8oyn5yzt-B-MIo9Ce3Y9s
+X-MS-Exchange-CrossTenant-UserPrincipalName: McI+bL52aqGW8J6nOM7doPnY/iLp7jJcrPyWeHlNxwncLnXsB1XhnugI6jW1UlZYxlhwgYC7DRIow7ihRtSnbQYC+O8B5oT56QeT+clxKzo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1P190MB0477
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Exception handling is triggered in BPF tracing programs when
-a NULL pointer is dereferenced; the exception handler zeroes the
-target register and execution of the BPF program progresses.
+From: Volodymyr Mytnyk <vmytnyk@marvell.com>
 
-To test exception handling then, we need to trigger a NULL pointer
-dereference for a field which should never be zero; if it is, the
-only explanation is the exception handler ran.  The skb->sk is
-the NULL pointer chosen (for a ping received for 127.0.0.1 there
-is no associated socket), and the sk_sndbuf size is chosen as the
-"should never be 0" field.  Test verifies sk is NULL and sk_sndbuf
-is zero.
+- fix structure laid out discussed in:
+    [PATCH net-next v4] net: marvell: prestera: add firmware v4.0 support
+    https://www.spinics.net/lists/kernel/msg4127689.html
 
-Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
+- fix review comments discussed in:
+    [PATCH] [-next] net: marvell: prestera: Add explicit padding
+    https://www.spinics.net/lists/kernel/msg4130293.html
+
+- fix patchwork issues
+- rebase on net master
+
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: bb5dbf2cc64d ("net: marvell: prestera: add firmware v4.0 support")
+Signed-off-by: Volodymyr Mytnyk <vmytnyk@marvell.com>
 ---
- tools/testing/selftests/bpf/prog_tests/exhandler.c | 45 ++++++++++++++++++++++
- tools/testing/selftests/bpf/progs/exhandler_kern.c | 35 +++++++++++++++++
- 2 files changed, 80 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/exhandler.c
- create mode 100644 tools/testing/selftests/bpf/progs/exhandler_kern.c
+ .../ethernet/marvell/prestera/prestera_ethtool.c   |   3 +-
+ .../net/ethernet/marvell/prestera/prestera_hw.c    | 129 +++++++++++----------
+ .../net/ethernet/marvell/prestera/prestera_main.c  |   6 +-
+ .../net/ethernet/marvell/prestera/prestera_pci.c   |   3 +-
+ 4 files changed, 75 insertions(+), 66 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/exhandler.c b/tools/testing/selftests/bpf/prog_tests/exhandler.c
-new file mode 100644
-index 0000000..5999498
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/exhandler.c
-@@ -0,0 +1,45 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021, Oracle and/or its affiliates. */
-+
-+#include <test_progs.h>
-+
-+/* Test that verifies exception handling is working; ping to localhost
-+ * will result in a receive with a NULL skb->sk; our BPF program
-+ * then dereferences the an sk field which shouldn't be 0, and if we
-+ * see 0 we can conclude the exception handler ran when we attempted to
-+ * dereference the NULL sk and zeroed the destination register.
-+ */
-+#include "exhandler_kern.skel.h"
-+
-+#define SYSTEM(...)    \
-+	(env.verbosity >= VERBOSE_VERY ?        \
-+	 system(__VA_ARGS__) : system(__VA_ARGS__ " >/dev/null 2>&1"))
-+
-+void test_exhandler(void)
-+{
-+	struct exhandler_kern *skel;
-+	struct exhandler_kern__bss *bss;
-+	int err = 0, duration = 0;
-+
-+	skel = exhandler_kern__open_and_load();
-+	if (CHECK(!skel, "skel_load", "skeleton failed: %d\n", err))
-+		goto cleanup;
-+
-+	bss = skel->bss;
-+
-+	err = exhandler_kern__attach(skel);
-+	if (CHECK(err, "attach", "attach failed: %d\n", err))
-+		goto cleanup;
-+
-+	if (CHECK(SYSTEM("ping -c 1 127.0.0.1"),
-+		  "ping localhost",
-+		  "ping localhost failed\n"))
-+		goto cleanup;
-+
-+	if (CHECK(bss->exception_triggered == 0,
-+		  "verify exceptions were triggered",
-+		  "no exceptions were triggered\n"))
-+		goto cleanup;
-+cleanup:
-+	exhandler_kern__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/exhandler_kern.c b/tools/testing/selftests/bpf/progs/exhandler_kern.c
-new file mode 100644
-index 0000000..4049450
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/exhandler_kern.c
-@@ -0,0 +1,35 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021, Oracle and/or its affiliates. */
-+
-+#include "vmlinux.h"
-+
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+#include <bpf/bpf_core_read.h>
-+
-+char _license[] SEC("license") = "GPL";
-+
-+unsigned int exception_triggered;
-+
-+/* TRACE_EVENT(netif_rx,
-+ *         TP_PROTO(struct sk_buff *skb),
-+ */
-+SEC("tp_btf/netif_rx")
-+int BPF_PROG(trace_netif_rx, struct sk_buff *skb)
-+{
-+	struct sock *sk;
-+	int sndbuf;
-+
-+	/* To verify we hit an exception we dereference skb->sk->sk_sndbuf;
-+	 * sndbuf size should never be zero, so if it is we know the exception
-+	 * handler triggered and zeroed the destination register.
-+	 */
-+	__builtin_preserve_access_index(({
-+		sk = skb->sk;
-+		sndbuf = sk->sk_sndbuf;
-+	}));
-+
-+	if (!sk && !sndbuf)
-+		exception_triggered++;
-+	return 0;
-+}
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_ethtool.c b/drivers/net/ethernet/marvell/prestera/prestera_ethtool.c
+index 6011454dba71..40d5b89573bb 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_ethtool.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_ethtool.c
+@@ -499,7 +499,8 @@ static void prestera_port_mdix_get(struct ethtool_link_ksettings *ecmd,
+ {
+ 	struct prestera_port_phy_state *state = &port->state_phy;
+ 
+-	if (prestera_hw_port_phy_mode_get(port, &state->mdix, NULL, NULL, NULL)) {
++	if (prestera_hw_port_phy_mode_get(port,
++					  &state->mdix, NULL, NULL, NULL)) {
+ 		netdev_warn(port->dev, "MDIX params get failed");
+ 		state->mdix = ETH_TP_MDI_INVALID;
+ 	}
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.c b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
+index 4f5f52dcdd9d..fb0f17c9352f 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_hw.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
+@@ -180,109 +180,113 @@ struct prestera_msg_common_resp {
+ 	struct prestera_msg_ret ret;
+ };
+ 
+-union prestera_msg_switch_param {
+-	u8 mac[ETH_ALEN];
+-	__le32 ageing_timeout_ms;
+-} __packed;
+-
+ struct prestera_msg_switch_attr_req {
+ 	struct prestera_msg_cmd cmd;
+ 	__le32 attr;
+-	union prestera_msg_switch_param param;
+-	u8 pad[2];
++	union {
++		__le32 ageing_timeout_ms;
++		struct {
++			u8 mac[ETH_ALEN];
++			u8 __pad[2];
++		};
++	} param;
+ };
+ 
+ struct prestera_msg_switch_init_resp {
+ 	struct prestera_msg_ret ret;
+ 	__le32 port_count;
+ 	__le32 mtu_max;
+-	u8  switch_id;
+-	u8  lag_max;
+-	u8  lag_member_max;
+ 	__le32 size_tbl_router_nexthop;
+-} __packed __aligned(4);
++	u8 switch_id;
++	u8 lag_max;
++	u8 lag_member_max;
++};
+ 
+ struct prestera_msg_event_port_param {
+ 	union {
+ 		struct {
+-			u8 oper;
+ 			__le32 mode;
+ 			__le32 speed;
++			u8 oper;
+ 			u8 duplex;
+ 			u8 fc;
+ 			u8 fec;
+-		} __packed mac;
++		} mac;
+ 		struct {
+-			u8 mdix;
+ 			__le64 lmode_bmap;
++			u8 mdix;
+ 			u8 fc;
++			u8 __pad[2];
+ 		} __packed phy;
+ 	} __packed;
+-} __packed __aligned(4);
++} __packed;
+ 
+ struct prestera_msg_port_cap_param {
+ 	__le64 link_mode;
+-	u8  type;
+-	u8  fec;
+-	u8  fc;
+-	u8  transceiver;
+-};
++	u8 type;
++	u8 fec;
++	u8 fc;
++	u8 transceiver;
++} __packed;
+ 
+ struct prestera_msg_port_flood_param {
+ 	u8 type;
+ 	u8 enable;
+-};
++	u8 __pad[2];
++} __packed;
+ 
+ union prestera_msg_port_param {
++	__le32 mtu;
++	__le32 speed;
++	__le32 link_mode;
+ 	u8 admin_state;
+ 	u8 oper_state;
+-	__le32 mtu;
+ 	u8 mac[ETH_ALEN];
+ 	u8 accept_frm_type;
+-	__le32 speed;
+ 	u8 learning;
+ 	u8 flood;
+-	__le32 link_mode;
+ 	u8 type;
+ 	u8 duplex;
+ 	u8 fec;
+ 	u8 fc;
+-
+ 	union {
+ 		struct {
+-			u8 admin:1;
++			u8 admin;
+ 			u8 fc;
+ 			u8 ap_enable;
++			u8 __reserved;
+ 			union {
+ 				struct {
+ 					__le32 mode;
+-					u8  inband:1;
+ 					__le32 speed;
+-					u8  duplex;
+-					u8  fec;
+-					u8  fec_supp;
+-				} __packed reg_mode;
++					u8 inband;
++					u8 duplex;
++					u8 fec;
++					u8 fec_supp;
++				} reg_mode;
+ 				struct {
+ 					__le32 mode;
+ 					__le32 speed;
+-					u8  fec;
+-					u8  fec_supp;
+-				} __packed ap_modes[PRESTERA_AP_PORT_MAX];
+-			} __packed;
+-		} __packed mac;
++					u8 fec;
++					u8 fec_supp;
++					u8 __pad[2];
++				} ap_modes[PRESTERA_AP_PORT_MAX];
++			};
++		} mac;
+ 		struct {
+-			u8 admin:1;
+-			u8 adv_enable;
+ 			__le64 modes;
+ 			__le32 mode;
++			u8 admin;
++			u8 adv_enable;
+ 			u8 mdix;
+-		} __packed phy;
++			u8 __pad;
++		} phy;
+ 	} __packed link;
+ 
+ 	struct prestera_msg_port_cap_param cap;
+ 	struct prestera_msg_port_flood_param flood_ext;
+ 	struct prestera_msg_event_port_param link_evt;
+-} __packed;
++};
+ 
+ struct prestera_msg_port_attr_req {
+ 	struct prestera_msg_cmd cmd;
+@@ -290,14 +294,12 @@ struct prestera_msg_port_attr_req {
+ 	__le32 port;
+ 	__le32 dev;
+ 	union prestera_msg_port_param param;
+-} __packed __aligned(4);
+-
++};
+ 
+ struct prestera_msg_port_attr_resp {
+ 	struct prestera_msg_ret ret;
+ 	union prestera_msg_port_param param;
+-} __packed __aligned(4);
+-
++};
+ 
+ struct prestera_msg_port_stats_resp {
+ 	struct prestera_msg_ret ret;
+@@ -322,13 +324,13 @@ struct prestera_msg_vlan_req {
+ 	__le32 port;
+ 	__le32 dev;
+ 	__le16 vid;
+-	u8  is_member;
+-	u8  is_tagged;
++	u8 is_member;
++	u8 is_tagged;
+ };
+ 
+ struct prestera_msg_fdb_req {
+ 	struct prestera_msg_cmd cmd;
+-	u8 dest_type;
++	__le32 flush_mode;
+ 	union {
+ 		struct {
+ 			__le32 port;
+@@ -336,11 +338,12 @@ struct prestera_msg_fdb_req {
+ 		};
+ 		__le16 lag_id;
+ 	} dest;
+-	u8  mac[ETH_ALEN];
+ 	__le16 vid;
+-	u8  dynamic;
+-	__le32 flush_mode;
+-} __packed __aligned(4);
++	u8 dest_type;
++	u8 dynamic;
++	u8 mac[ETH_ALEN];
++	u8 __pad[2];
++};
+ 
+ struct prestera_msg_bridge_req {
+ 	struct prestera_msg_cmd cmd;
+@@ -383,7 +386,7 @@ struct prestera_msg_acl_match {
+ 		struct {
+ 			u8 key[ETH_ALEN];
+ 			u8 mask[ETH_ALEN];
+-		} __packed mac;
++		} mac;
+ 	} keymask;
+ };
+ 
+@@ -446,7 +449,8 @@ struct prestera_msg_stp_req {
+ 	__le32 port;
+ 	__le32 dev;
+ 	__le16 vid;
+-	u8  state;
++	u8 state;
++	u8 __pad;
+ };
+ 
+ struct prestera_msg_rxtx_req {
+@@ -497,21 +501,21 @@ union prestera_msg_event_fdb_param {
+ 
+ struct prestera_msg_event_fdb {
+ 	struct prestera_msg_event id;
+-	u8 dest_type;
++	__le32 vid;
+ 	union {
+ 		__le32 port_id;
+ 		__le16 lag_id;
+ 	} dest;
+-	__le32 vid;
+ 	union prestera_msg_event_fdb_param param;
+-} __packed __aligned(4);
++	u8 dest_type;
++};
+ 
+-static inline void prestera_hw_build_tests(void)
++static void prestera_hw_build_tests(void)
+ {
+ 	/* check requests */
+ 	BUILD_BUG_ON(sizeof(struct prestera_msg_common_req) != 4);
+ 	BUILD_BUG_ON(sizeof(struct prestera_msg_switch_attr_req) != 16);
+-	BUILD_BUG_ON(sizeof(struct prestera_msg_port_attr_req) != 120);
++	BUILD_BUG_ON(sizeof(struct prestera_msg_port_attr_req) != 140);
+ 	BUILD_BUG_ON(sizeof(struct prestera_msg_port_info_req) != 8);
+ 	BUILD_BUG_ON(sizeof(struct prestera_msg_vlan_req) != 16);
+ 	BUILD_BUG_ON(sizeof(struct prestera_msg_fdb_req) != 28);
+@@ -528,7 +532,7 @@ static inline void prestera_hw_build_tests(void)
+ 	/* check responses */
+ 	BUILD_BUG_ON(sizeof(struct prestera_msg_common_resp) != 8);
+ 	BUILD_BUG_ON(sizeof(struct prestera_msg_switch_init_resp) != 24);
+-	BUILD_BUG_ON(sizeof(struct prestera_msg_port_attr_resp) != 112);
++	BUILD_BUG_ON(sizeof(struct prestera_msg_port_attr_resp) != 132);
+ 	BUILD_BUG_ON(sizeof(struct prestera_msg_port_stats_resp) != 248);
+ 	BUILD_BUG_ON(sizeof(struct prestera_msg_port_info_resp) != 20);
+ 	BUILD_BUG_ON(sizeof(struct prestera_msg_bridge_resp) != 12);
+@@ -561,9 +565,9 @@ static int __prestera_cmd_ret(struct prestera_switch *sw,
+ 	if (err)
+ 		return err;
+ 
+-	if (__le32_to_cpu(ret->cmd.type) != PRESTERA_CMD_TYPE_ACK)
++	if (ret->cmd.type != __cpu_to_le32(PRESTERA_CMD_TYPE_ACK))
+ 		return -EBADE;
+-	if (__le32_to_cpu(ret->status) != PRESTERA_CMD_ACK_OK)
++	if (ret->status != __cpu_to_le32(PRESTERA_CMD_ACK_OK))
+ 		return -EINVAL;
+ 
+ 	return 0;
+@@ -1356,7 +1360,8 @@ int prestera_hw_port_speed_get(const struct prestera_port *port, u32 *speed)
+ int prestera_hw_port_autoneg_restart(struct prestera_port *port)
+ {
+ 	struct prestera_msg_port_attr_req req = {
+-		.attr = __cpu_to_le32(PRESTERA_CMD_PORT_ATTR_PHY_AUTONEG_RESTART),
++		.attr =
++		    __cpu_to_le32(PRESTERA_CMD_PORT_ATTR_PHY_AUTONEG_RESTART),
+ 		.port = __cpu_to_le32(port->hw_id),
+ 		.dev = __cpu_to_le32(port->dev_id),
+ 	};
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+index 625b40149fac..4369a3ffad45 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+@@ -405,7 +405,8 @@ static int prestera_port_create(struct prestera_switch *sw, u32 id)
+ 
+ 	err = prestera_port_cfg_mac_write(port, &cfg_mac);
+ 	if (err) {
+-		dev_err(prestera_dev(sw), "Failed to set port(%u) mac mode\n", id);
++		dev_err(prestera_dev(sw),
++			"Failed to set port(%u) mac mode\n", id);
+ 		goto err_port_init;
+ 	}
+ 
+@@ -418,7 +419,8 @@ static int prestera_port_create(struct prestera_switch *sw, u32 id)
+ 						    false, 0, 0,
+ 						    port->cfg_phy.mdix);
+ 		if (err) {
+-			dev_err(prestera_dev(sw), "Failed to set port(%u) phy mode\n", id);
++			dev_err(prestera_dev(sw),
++				"Failed to set port(%u) phy mode\n", id);
+ 			goto err_port_init;
+ 		}
+ 	}
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_pci.c b/drivers/net/ethernet/marvell/prestera/prestera_pci.c
+index 5d4d410b07c8..461259b3655a 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_pci.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_pci.c
+@@ -411,7 +411,8 @@ static int prestera_fw_cmd_send(struct prestera_fw *fw, int qid,
+ 		goto cmd_exit;
+ 	}
+ 
+-	memcpy_fromio(out_msg, prestera_fw_cmdq_buf(fw, qid) + in_size, ret_size);
++	memcpy_fromio(out_msg,
++		      prestera_fw_cmdq_buf(fw, qid) + in_size, ret_size);
+ 
+ cmd_exit:
+ 	prestera_fw_write(fw, PRESTERA_CMDQ_REQ_CTL_REG(qid),
 -- 
-1.8.3.1
+2.7.4
 
