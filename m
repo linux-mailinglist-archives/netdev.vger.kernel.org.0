@@ -2,70 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66AE8443A93
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 01:48:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51D4B443A9B
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 01:50:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231335AbhKCAvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 20:51:04 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:44280 "EHLO vps0.lunn.ch"
+        id S232134AbhKCAwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 20:52:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50864 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229804AbhKCAvE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Nov 2021 20:51:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=wTFL8pY/W5Ahb3rFJh/TyoCP20ECF5bOXb8LXpxR4as=; b=ylTqxp7WFU60eR/EYU5es9nNgz
-        PY3BPj7hl0NJp6z0u4g0l0cWFyeHiRmMjw1UhmXOePy/sayofDBK6aoeposJkZchXcH6ZhriqUroY
-        mp0R/x2Mho+3XtHijH+e6JxTw8D5yQ4II6020eX0cw/517hMK/Mh1e9lBklhnt91HUHY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mi4Rv-00CSC2-Ac; Wed, 03 Nov 2021 01:48:19 +0100
-Date:   Wed, 3 Nov 2021 01:48:19 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Cyril Novikov <cnovikov@lynx.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: Re: [PATCH v2 net] ixgbe: set X550 MDIO speed before talking to PHY
-Message-ID: <YYHcUxOA5jvrRtEs@lunn.ch>
-References: <896681e4-fcd7-3187-8e59-75ce0896ebd3@lynx.com>
+        id S231231AbhKCAwn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Nov 2021 20:52:43 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id AD7D461053;
+        Wed,  3 Nov 2021 00:50:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635900607;
+        bh=pXanHivoSA8pDTg1iXcxBAp0o1QlewgFg7cjw7Gf+DY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ayN71bU+bPsE/t+exgdaEkbk+rTw4szcTD0mPf2tEx/LJALA+ZkuCwPztSARC+h4/
+         TaSYRNjCfVBQi7vsQtL4kpRmsbNWHkOj0OCriHAp+X+NORZ2mHi5HEtrrboNmaGnyS
+         RV88MscdtCkVwZZULZeKaOG306UufpQ2a7+rfTSU859hta111676cIRage7n/XNFuB
+         S3E4vjQcEeYbhiV0pu5HIZ/0VxOKk6gfnu45SD2n75EdrLOqQXr4IifOku8MnSIxP+
+         qmpTcCW2WmFtowGFc70q33BMI/B+FwOxxn9kjdHeFYeKT+A/p7MafTLM0fCsU+vSec
+         clBMFgEYxzyAA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A471760AA2;
+        Wed,  3 Nov 2021 00:50:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <896681e4-fcd7-3187-8e59-75ce0896ebd3@lynx.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [net-next] net: phy: microchip_t1: add lan87xx_config_rgmii_delay for
+ lan87xx phy
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163590060766.14144.12452755554911235374.git-patchwork-notify@kernel.org>
+Date:   Wed, 03 Nov 2021 00:50:07 +0000
+References: <20211101162119.29275-1-yuiko.oshino@microchip.com>
+In-Reply-To: <20211101162119.29275-1-yuiko.oshino@microchip.com>
+To:     Yuiko Oshino <yuiko.oshino@microchip.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        nisar.sayed@microchip.com, UNGLinuxDriver@microchip.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 01, 2021 at 06:39:36PM -0700, Cyril Novikov wrote:
-> The MDIO bus speed must be initialized before talking to the PHY the first
-> time in order to avoid talking to it using a speed that the PHY doesn't
-> support.
-> 
-> This fixes HW initialization error -17 (IXGBE_ERR_PHY_ADDR_INVALID) on
-> Denverton CPUs (a.k.a. the Atom C3000 family) on ports with a 10Gb network
-> plugged in. On those devices, HLREG0[MDCSPD] resets to 1, which combined
-> with the 10Gb network results in a 24MHz MDIO speed, which is apparently
-> too fast for the connected PHY. PHY register reads over MDIO bus return
-> garbage, leading to initialization failure.
-> 
-> Reproduced with Linux kernel 4.19 and 5.15-rc7. Can be reproduced using
-> the following setup:
-> 
-> * Use an Atom C3000 family system with at least one X552 LAN on the SoC
-> * Disable PXE or other BIOS network initialization if possible
->   (the interface must not be initialized before Linux boots)
-> * Connect a live 10Gb Ethernet cable to an X550 port
-> * Power cycle (not reset, doesn't always work) the system and boot Linux
-> * Observe: ixgbe interfaces w/ 10GbE cables plugged in fail with error -17
-> 
-> Signed-off-by: Cyril Novikov <cnovikov@lynx.com>
-> Fixes: e84db7272798 ("ixgbe: Introduce function to control MDIO speed")
+Hello:
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-    Andrew
+On Mon, 1 Nov 2021 12:21:19 -0400 you wrote:
+> Add a function to initialize phy rgmii delay according to phydev->interface.
+> 
+> Signed-off-by: Yuiko Oshino <yuiko.oshino@microchip.com>
+> ---
+>  drivers/net/phy/microchip_t1.c | 44 +++++++++++++++++++++++++++++++++-
+>  1 file changed, 43 insertions(+), 1 deletion(-)
+
+Here is the summary with links:
+  - [net-next] net: phy: microchip_t1: add lan87xx_config_rgmii_delay for lan87xx phy
+    https://git.kernel.org/netdev/net/c/26499499cae6
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
