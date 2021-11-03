@@ -2,105 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D758C44450A
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 16:56:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0B7D444532
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 17:03:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232559AbhKCP6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 11:58:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49934 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232487AbhKCP6o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 11:58:44 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C3DC061205
-        for <netdev@vger.kernel.org>; Wed,  3 Nov 2021 08:56:07 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id f5so2718978pgc.12
-        for <netdev@vger.kernel.org>; Wed, 03 Nov 2021 08:56:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=squareup.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=fRKGePYlOmiVuBckenaZg2lvZOcrPTPvFy6IKWhuraA=;
-        b=YLEp/Xoz4W2xV+OI2S15NnYwPElTYeS0SpIQ8yv97vYxKejLqOInKtY/oAP/4+D8If
-         YqCq0B7Gm73oeuYX2C0270HXK+PLZp3RO2ZzViWeul/g1R166dSvbJlwbpuzaU+4oEVj
-         K/W6oadXhKmmyRx6f+L4tXrDa22NUqfA9mBAo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=fRKGePYlOmiVuBckenaZg2lvZOcrPTPvFy6IKWhuraA=;
-        b=aMlYxGCfqYxO8wOIbbyJfjKWobYJbHG63AAbCu2B/hFIr1pJgg2sgdYmPdqbKpTTSK
-         2YdeC4+tWbHKgPbnBmd2RHNtPEn+FGP8DxGTu+SfpGL2/hXPQLjoiblKz0DbDqs/EHaZ
-         dOr3CB3VqwV1WHDzQG1z98WAP6uP5rQIgGIoZiis4b/RnlvOI+h/DkJj8LbhKbCMW579
-         zcbmj972gz6X3N+qu79NOepWs12khEv/mIMmjD72HEtrkEXxwDR8kMSjkqVbKWZV2iNl
-         RlJJFGVfbt/rvdm/2zLV8ErKGFx5MPqh+X5iR5bwVnU65N3BvyP/dSOuQGQADPzM3Hot
-         BRmw==
-X-Gm-Message-State: AOAM531cJpq7W3Jjdgko9CkQa4tDRnF4ac94p92U5ATxBSf4USM3YZRo
-        3x2PzAliiMPnxkpHCZ7s0MjNJg==
-X-Google-Smtp-Source: ABdhPJzZXUKnwm5tW5gImvnc6h54z0C6R5vHG6hKRJ120aAOl/5rSmHIVJZ0BQ68n5YA2oGHIXJoSg==
-X-Received: by 2002:a63:4d20:: with SMTP id a32mr33303288pgb.247.1635954967135;
-        Wed, 03 Nov 2021 08:56:07 -0700 (PDT)
-Received: from localhost ([2600:6c50:4d00:d401:aa7a:1484:c7d0:ae82])
-        by smtp.gmail.com with ESMTPSA id h11sm3174517pfc.131.2021.11.03.08.56.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Nov 2021 08:56:06 -0700 (PDT)
-From:   Benjamin Li <benl@squareup.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        linux-arm-msm@vger.kernel.org, Benjamin Li <benl@squareup.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] wcn36xx: fix RX BD rate mapping for 5GHz legacy rates
-Date:   Wed,  3 Nov 2021 08:55:42 -0700
-Message-Id: <20211103155543.1037604-3-benl@squareup.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211103155543.1037604-1-benl@squareup.com>
-References: <20211103155543.1037604-1-benl@squareup.com>
+        id S232698AbhKCQFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 12:05:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44072 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232680AbhKCQFd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Nov 2021 12:05:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8DFE960E05;
+        Wed,  3 Nov 2021 16:02:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635955376;
+        bh=tEGgvNz6cxzVUhJzFow/0yapB19/ypbw7LaC/6uVyE4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=bjW9qM9wEiLtJMPpjhsbwkH7p4lpeKeQ8HOOTkXvw8KTOOheJs+rm1re5qkg8FPig
+         7yP9KlATTOHI8OZhr5KVq0il9NeBNBAcMRsRQRNliqn4Ag/zVahaEDh9Y1HBZo9gfm
+         ydZHuPb1z62piFnzRwL95OhWc5/Ww7YYSPrIl/3qPJ7YdIrUttQljcEC2V0fCkR8e7
+         TTPy+kdFRiHAhlGjPN36IpZTHajpgnutKSMUtd+pqk2NPBKDXRShih7JHMRhxRpNGI
+         aLX5pz1DWeNyKvRh44JZu4Ykw91YgDgbwHytwzVFAMSq7QgfgX/tgrT64A3iokwdn6
+         P4s8dKZykRW4w==
+Date:   Wed, 3 Nov 2021 11:02:55 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Dongdong Liu <liudongdong3@huawei.com>
+Cc:     hch@infradead.org, logang@deltatee.com, leon@kernel.org,
+        linux-pci@vger.kernel.org, rajur@chelsio.com,
+        hverkuil-cisco@xs4all.nl, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH V11 7/8] PCI: Enable 10-Bit Tag support for PCIe Endpoint
+ device
+Message-ID: <20211103160255.GA687132@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <26f8758e-c85d-291b-1c34-5184aa6862aa@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The linear mapping between the BD rate field and the driver's 5GHz
-legacy rates table (wcn_5ghz_rates) does not only apply for the latter
-four rates -- it applies to all eight rates.
+On Wed, Nov 03, 2021 at 06:05:34PM +0800, Dongdong Liu wrote:
+> On 2021/11/2 6:33, Bjorn Helgaas wrote:
+> > On Mon, Nov 01, 2021 at 05:02:41PM -0500, Bjorn Helgaas wrote:
+> > > On Sat, Oct 30, 2021 at 09:53:47PM +0800, Dongdong Liu wrote:
+> > > > 10-Bit Tag capability, introduced in PCIe-4.0 increases the total Tag
+> > > > field size from 8 bits to 10 bits.
+> > > > 
+> > > > PCIe spec 5.0 r1.0 section 2.2.6.2 "Considerations for Implementing
+> > > > 10-Bit Tag Capabilities" Implementation Note:
+> > > > 
+> > > >   For platforms where the RC supports 10-Bit Tag Completer capability,
+> > > >   it is highly recommended for platform firmware or operating software
+> > > >   that configures PCIe hierarchies to Set the 10-Bit Tag Requester Enable
+> > > >   bit automatically in Endpoints with 10-Bit Tag Requester capability.
+> > > >   This enables the important class of 10-Bit Tag capable adapters that
+> > > >   send Memory Read Requests only to host memory.
+> > > > 
+> > > > It's safe to enable 10-bit tags for all devices below a Root Port that
+> > > > supports them. Switches that lack 10-Bit Tag Completer capability are
+> > > > still able to forward NPRs and Completions carrying 10-Bit Tags correctly,
+> > > > since the two new Tag bits are in TLP Header bits that were formerly
+> > > > Reserved.
+> > > 
+> > > Side note: the reason we want to do this to increase performance by
+> > > allowing more outstanding requests.  Do you have any benchmarking that
+> > > we can mention here to show that this is actually a benefit?  I don't
+> > > doubt that it is, but I assume you've measured it and it would be nice
+> > > to advertise it.
+> > 
+> > Hmmm.  I did a quick Google search looking for "nvme pcie 10-bit tags"
+> > hoping to find some performance info, but what I *actually* found was
+> > several reports of 10-bit tags causing breakage:
+> > 
+> >   https://www.reddit.com/r/MSI_Gaming/comments/exjvzg/x570_apro_7c37vh72beta_version_has_anyone_tryed_it/
+> >   https://rog.asus.com/forum/showthread.php?115064-Beware-of-agesa-1-0-0-4B-bios-not-good!/page2
+> >   https://forum-en.msi.com/index.php?threads/sound-blaster-z-has-weird-behaviour-after-updating-bios-x570-gaming-edge-wifi.325223/page-2
+> >   https://gearspace.com/board/electronic-music-instruments-and-electronic-music-production/1317189-h8000fw-firewire-facts-2020-must-read.html
+> >   https://www.soundonsound.com/forum/viewtopic.php?t=69651&start=12
+> >   https://forum.rme-audio.de/viewtopic.php?id=30307
+> > 
+> > This is a big problem for me.
+> > 
+> > Some of these might be a broken BIOS that turns on 10-bit tags
+> > when the completer doesn't support them.  I didn't try to debug
+> > them to that level.  But the last thing I want is to enable 10-bit
+> > by default and cause boot issues or sound card issues or whatever.
+>
+> It seems a BIOS software bug, as it turned on (as default) a 10-Bit
+> Tag Field for RP, but the card (non-Gen4 card) does not support
+> 10-Bit Completer.
 
-Fixes: 6ea131acea98 ("wcn36xx: Fix warning due to bad rate_idx")
-Signed-off-by: Benjamin Li <benl@squareup.com>
----
- drivers/net/wireless/ath/wcn36xx/txrx.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+It doesn't matter *where* the problem is.  If we change Linux to
+*expose* a BIOS bug, that's just as much of a problem as if the bug
+were in Linux.  Users are not equipped to diagnose or fix problems
+like that.
 
-diff --git a/drivers/net/wireless/ath/wcn36xx/txrx.c b/drivers/net/wireless/ath/wcn36xx/txrx.c
-index f0a9f069a92a9..fce3a6a98f596 100644
---- a/drivers/net/wireless/ath/wcn36xx/txrx.c
-+++ b/drivers/net/wireless/ath/wcn36xx/txrx.c
-@@ -272,7 +272,6 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
- 	const struct wcn36xx_rate *rate;
- 	struct ieee80211_hdr *hdr;
- 	struct wcn36xx_rx_bd *bd;
--	struct ieee80211_supported_band *sband;
- 	u16 fc, sn;
- 
- 	/*
-@@ -350,12 +349,10 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
- 		status.enc_flags = rate->encoding_flags;
- 		status.bw = rate->bw;
- 		status.rate_idx = rate->mcs_or_legacy_index;
--		sband = wcn->hw->wiphy->bands[status.band];
- 		status.nss = 1;
- 
- 		if (status.band == NL80211_BAND_5GHZ &&
--		    status.encoding == RX_ENC_LEGACY &&
--		    status.rate_idx >= sband->n_bitrates) {
-+		    status.encoding == RX_ENC_LEGACY) {
- 			/* no dsss rates in 5Ghz rates table */
- 			status.rate_idx -= 4;
- 		}
--- 
-2.25.1
+> This patch we enable 10-Bit Tag Requester for EP when RC supports
+> 10-Bit Tag Completer capability. So it shuld be worked ok.
 
+That's true as long as the RC supports 10-bit tags correctly when it
+advertises support for them.  It "should" work :)
+
+But it does remind me that if the RC doesn't support 10-bit tags, but
+we use sysfs to enable 10-bit tags for a reqester that intends to use
+P2PDMA to a peer that *does* support them, I don't think there's
+any check in the DMA API that prevents the driver from setting up DMA
+to the RC in addition to the peer.
+
+> But I still think default to "on" will be better,
+> Current we enable 10-Bit Tag, in the future PCIe 6.0 maybe need to use
+> 14-Bit tags to get good performance.
+
+Maybe we can default to "on" based on BIOS date or something.  Older
+systems that want the benefit can use the param to enable it, and if
+there's a problem, the cause will be obvious ("we booted with
+'pci=tag-bits=10' and things broke").
+
+If we enable 10-bit tags by default on systems from 2022 or newer, we
+shouldn't break any existing systems, and we have a chance to discover
+any problems and add quirk if necessary.
+
+> > In any case, we (by which I'm afraid I mean "you" :)) need to
+> > investigate the problem reports, figure out whether we will see
+> > similar problems, and fix them before merging if we can.
+>
+> We have tested a PCIe 5.0 network card on FPGA with 10-Bit tag worked
+> ok. I have not got the performance data as FPGA is slow.
+
+10-bit tag support appeared in the spec four years ago (PCIe r4.0, in
+September, 2017).  Surely there is production hardware that supports
+this and could demonstrate a benefit from this.
+
+We need a commit log that says "enabling 10-bit tags allows more
+outstanding transactions, which improves performance of adapters like
+X by Y% on these workloads," not a log that says "we think enabling
+10-bit tags is safe, but users with non-compliant hardware may see new
+PCIe errors or even non-bootable systems, and they should use boot
+param X to work around this."
+
+> Current we enable 10-Bit Tag Requester for EP when RC supports
+> 10-Bit Tag Completer capability. It should be worked ok except
+> hardware bugs, we also provide boot param to disable 10-Bit Tag if
+> the hardware really have a bug or can do some quirks as 8-bit tag
+> has done if we have known the hardware.
+
+The problem is that turning it on by default means systems with
+hardware defects *used* to work but now they mysteriously *stop*
+working.  Yes, a boot param can work around that, but it's just
+not an acceptable user experience.  Maybe there are no such defects.
+I dunno.
+
+Bjorn
