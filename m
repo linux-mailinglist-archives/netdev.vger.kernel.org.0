@@ -2,154 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9912444283
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 14:36:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7AEC44428C
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 14:38:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231748AbhKCNil (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 09:38:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45968 "EHLO
+        id S231958AbhKCNkl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 09:40:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231131AbhKCNil (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 09:38:41 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D39AC061714;
-        Wed,  3 Nov 2021 06:36:04 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id c71-20020a1c9a4a000000b0032cdcc8cbafso1864683wme.3;
-        Wed, 03 Nov 2021 06:36:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=9Uvh5caEZPaBGsYkz+RB5PR1cX52FmrRW0kzG11c76w=;
-        b=qI/UsZ2Mq1UosSHGW96E1Ln6Ohj4iHO3r5lBIvPiiNnSxIBIgcvQTvfRZyeI4uu4O/
-         HYbGeRhksts0ElYrEG0INKEe7aXhGIbNRoa+5SfNLfBRpFlXkAKGayX0LZ63aqDWcpJu
-         dosgFRYQhPioiFxg3dKiHepeHKdbG2JsP/JMlRyX4UEPlfgB3nyfKFkz67tWL42Oz4Lq
-         haeTteOxmjvqdt2T96vQoPKq68khNWceoi3kbQKOgXwGPz4h2E6HMJQpKmhk4bbm2avI
-         AoSD57sN9RO2aPG2Vw102MrdVN2OMUIaMVVTVHFMc1zAox6M/EelPvrtB3rZV8jRItpA
-         XAtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=9Uvh5caEZPaBGsYkz+RB5PR1cX52FmrRW0kzG11c76w=;
-        b=X4e65o8V2tH7oqGNHwlB5oSAQ3w28WKc6w75n35cYKxoj6huTDF1QSHoG5D4Qo9VKc
-         pJvGcRh7o4GqXSfhQorQPhObNGrmoITKMOQs6zaTqxaRs1ZWe96IOtvYkiYeugHRIrtp
-         I2tByDP9cWGQHm12v+XttRw4dGGIVC/PsehTCDua/WEnV6ni6tVOHPETLTKuQpSRFCws
-         TuRkDr3hZiqcfftyC2aKP8N9MmTQ7vEnCGmTVDqi/lPtPiAkxm36u6x/mONQ6mC2bFnE
-         DjXOrbUxxtc3qKaMicg1Ysqhph/g+ZtHvmPzfeu4sJUWdYqDBPkqQk4FNLQ6uwaNwiyD
-         /mPw==
-X-Gm-Message-State: AOAM530x/MKUsSp2biNvnKvyNPOV3wXRFefQPuOn1qEgnBC7dSXw8M6b
-        x0yHhEExRwgQPJvPzq/esXBLlXlfwWwdd4sV72A=
-X-Google-Smtp-Source: ABdhPJyk9Vedichm0HF4wrXK3I6wCZMF2YAnKWK9qhd5b6mRw8h4ORBTyVOJ9T9BtxHsr3rVBwd+WcJuTZ2OQtcKxVM=
-X-Received: by 2002:a1c:740e:: with SMTP id p14mr15144147wmc.109.1635946563010;
- Wed, 03 Nov 2021 06:36:03 -0700 (PDT)
+        with ESMTP id S231178AbhKCNkk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 09:40:40 -0400
+Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050::465:201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93408C061714;
+        Wed,  3 Nov 2021 06:38:03 -0700 (PDT)
+Received: from smtp102.mailbox.org (smtp102.mailbox.org [80.241.60.233])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4Hkns40jk3zQjdM;
+        Wed,  3 Nov 2021 14:38:00 +0100 (CET)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+Message-ID: <b2aaf6f7-9f22-926a-963b-cfd0d4fca31d@v0yd.nl>
+Date:   Wed, 3 Nov 2021 14:37:53 +0100
 MIME-Version: 1.0
-References: <20211103115453.397209-1-bjorn@kernel.org> <f98b15c9-bd06-267e-e404-ae4f607d8740@iogearbox.net>
-In-Reply-To: <f98b15c9-bd06-267e-e404-ae4f607d8740@iogearbox.net>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Wed, 3 Nov 2021 14:35:50 +0100
-Message-ID: <CAJ+HfNg9Ko93D1M5En8wv4f-7j_by=OwnewRDiM+xQ0EZLw06w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] riscv, bpf: Fix RV32 broken build, and silence
- RV64 warning
-To:     Daniel Borkmann <daniel@iogearbox.net>, jszhang@kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Tong Tiangen <tongtiangen@huawei.com>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH] mwifiex: Add quirk to disable deep sleep with certain
+ hardware revision
+Content-Language: en-US
+From:   =?UTF-8?Q?Jonas_Dre=c3=9fler?= <verdre@v0yd.nl>
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>
+References: <20211028073729.24408-1-verdre@v0yd.nl>
+ <CA+ASDXOrad3b=b8+vwuF6m3+ZcigVaoJySpDXXZOnC3O8CJBSw@mail.gmail.com>
+ <cc7432f4-824a-abe2-e304-5ba019ac8c89@v0yd.nl>
+In-Reply-To: <cc7432f4-824a-abe2-e304-5ba019ac8c89@v0yd.nl>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Queue-Id: 7D3831329
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 3 Nov 2021 at 14:15, Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 11/3/21 12:54 PM, Bj=C3=B6rn T=C3=B6pel wrote:
-> > Commit 252c765bd764 ("riscv, bpf: Add BPF exception tables") only
-> > addressed RV64, and broke the RV32 build [1]. Fix by gating the excepti=
-on
-> > tables code with CONFIG_ARCH_RV64I.
-> >
-> > Further, silence a "-Wmissing-prototypes" warning [2] in the RV64 BPF
-> > JIT.
-> >
-> > [1] https://lore.kernel.org/llvm/202111020610.9oy9Rr0G-lkp@intel.com/
-> > [2] https://lore.kernel.org/llvm/202110290334.2zdMyRq4-lkp@intel.com/
-> >
-> > Fixes: 252c765bd764 ("riscv, bpf: Add BPF exception tables")
-> > Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn@kernel.org>
-> > ---
-> > Tong/Daniel: The RV32 build has been broken since Thursday. I'll try
-> > to fast-track a bit, and commit a quick-fix for it. Hope that's OK
-> > with you, Tong!
-> >
-> > I've verified the build on my machine using riscv32 GCC 9.3.0 and
-> > riscv64 GCC 11.2.0.
->
-> Thanks for the fix Bjorn!
->
-> > arch/riscv/mm/extable.c         | 4 ++--
-> >   arch/riscv/net/bpf_jit_comp64.c | 2 ++
-> >   2 files changed, 4 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/arch/riscv/mm/extable.c b/arch/riscv/mm/extable.c
-> > index 18bf338303b6..ddb7d3b99e89 100644
-> > --- a/arch/riscv/mm/extable.c
-> > +++ b/arch/riscv/mm/extable.c
-> > @@ -11,7 +11,7 @@
-> >   #include <linux/module.h>
-> >   #include <linux/uaccess.h>
-> >
-> > -#ifdef CONFIG_BPF_JIT
-> > +#if defined(CONFIG_BPF_JIT) && defined(CONFIG_ARCH_RV64I)
-> >   int rv_bpf_fixup_exception(const struct exception_table_entry *ex, st=
-ruct pt_regs *regs);
-> >   #endif
-> >
-> > @@ -23,7 +23,7 @@ int fixup_exception(struct pt_regs *regs)
-> >       if (!fixup)
-> >               return 0;
-> >
-> > -#ifdef CONFIG_BPF_JIT
-> > +#if defined(CONFIG_BPF_JIT) && defined(CONFIG_ARCH_RV64I)
-> >       if (regs->epc >=3D BPF_JIT_REGION_START && regs->epc < BPF_JIT_RE=
-GION_END)
-> >               return rv_bpf_fixup_exception(fixup, regs);
-> >   #endif
-> > diff --git a/arch/riscv/net/bpf_jit_comp64.c b/arch/riscv/net/bpf_jit_c=
-omp64.c
-> > index 2ca345c7b0bf..f2a779c7e225 100644
-> > --- a/arch/riscv/net/bpf_jit_comp64.c
-> > +++ b/arch/riscv/net/bpf_jit_comp64.c
-> > @@ -459,6 +459,8 @@ static int emit_call(bool fixed, u64 addr, struct r=
-v_jit_context *ctx)
-> >   #define BPF_FIXUP_OFFSET_MASK   GENMASK(26, 0)
-> >   #define BPF_FIXUP_REG_MASK      GENMASK(31, 27)
-> >
-> > +int rv_bpf_fixup_exception(const struct exception_table_entry *ex,
-> > +                             struct pt_regs *regs);
->
-> I'm okay to take this as a quick fix, but if its not too much hassle, cou=
-ld we add a
-> arch/riscv/include/asm/extable.h in similar fashion like arm64 or x86 whe=
-re we move
-> the ex_handler_bpf() signature there, did you have a chance to check?
->
+On 11/3/21 13:25, Jonas Dreßler wrote:
+> 
+>>
+>>> --- a/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c
+>>> +++ b/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c
+>>> @@ -708,6 +708,22 @@ static int mwifiex_ret_ver_ext(struct mwifiex_private *priv,
+>>>   {
+>>>          struct host_cmd_ds_version_ext *ver_ext = &resp->params.verext;
+>>>
+>>> +       if (test_and_clear_bit(MWIFIEX_IS_REQUESTING_FW_VEREXT, &priv->adapter->work_flags)) {
+>>> +               if (strncmp(ver_ext->version_str, "ChipRev:20, BB:9b(10.00), RF:40(21)", 128) == 0) {
+>>
+>> Rather than memorize the 128-size array here, maybe use
+>> sizeof(ver_ext->version_str) ?
+> 
+> Sounds like a good idea, yeah.
 
-OK! I've not looked into it yet!
+Nevermind, the reason I did this was for consistency in the
+function, right underneath in the same function it also assumes
+a fixed size of 128 characters, so I'd rather use the same
+length.
 
-There's a patch out from Jisheng on the RV list, which is starting
-some consolidation work [1].
+>		memcpy(version_ext->version_str, ver_ext->version_str,
+>		       sizeof(char) * 128);
+>		memcpy(priv->version_str, ver_ext->version_str, 128);
 
-@Jisheng What do you think about adding type/handlers [2,3] as
-arm64/x86 recently did, to your series?
-
-
-Bj=C3=B6rn
-
-[1] https://lore.kernel.org/linux-riscv/20211022001957.1eba8f04@xhacker/
-[2] https://lore.kernel.org/linux-arm-kernel/20211019160219.5202-11-mark.ru=
-tland@arm.com/
-[3] https://lore.kernel.org/lkml/20210908132525.211958725@linutronix.de/
+Might be a good idea to #define it as MWIFIEX_VERSION_STR_LENGTH
+in fw.h though...
