@@ -2,141 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C133443FD4
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 11:05:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A8F1443FDD
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 11:13:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231958AbhKCKIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 06:08:13 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:30911 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231792AbhKCKIM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 06:08:12 -0400
-Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Hkj2V1QRRzcb3Q;
-        Wed,  3 Nov 2021 18:00:50 +0800 (CST)
-Received: from [10.67.103.235] (10.67.103.235) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.15; Wed, 3 Nov 2021 18:05:34 +0800
-Subject: Re: [PATCH V11 7/8] PCI: Enable 10-Bit Tag support for PCIe Endpoint
- device
-To:     Bjorn Helgaas <helgaas@kernel.org>
-References: <20211101223314.GA557567@bhelgaas>
-CC:     <hch@infradead.org>, <logang@deltatee.com>, <leon@kernel.org>,
-        <linux-pci@vger.kernel.org>, <rajur@chelsio.com>,
-        <hverkuil-cisco@xs4all.nl>, <linux-media@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-From:   Dongdong Liu <liudongdong3@huawei.com>
-Message-ID: <26f8758e-c85d-291b-1c34-5184aa6862aa@huawei.com>
-Date:   Wed, 3 Nov 2021 18:05:34 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        id S231344AbhKCKQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 06:16:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56246 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231278AbhKCKQc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 06:16:32 -0400
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F234AC061714
+        for <netdev@vger.kernel.org>; Wed,  3 Nov 2021 03:13:55 -0700 (PDT)
+Received: by mail-qv1-xf35.google.com with SMTP id j9so2448824qvm.10
+        for <netdev@vger.kernel.org>; Wed, 03 Nov 2021 03:13:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=8bs+WoVIfqfMEybZ2ykdFz5yPEomc/Sd27NrojyxX8g=;
+        b=GzV+gpGLVD9Srfo4kSxCfnNl5MnSTzW8AsEOTMusJjdEVDwbYUZE+YRj1f9ymv2VAd
+         UrV6114DLFfO5Wp3d/7McmMr5k+luWn1s1vj+oTFL4Rs4AkJQQFrSsnMvbEiOSYvHOgF
+         rMLH2XHrsTsMxSlkGZjhsncmfef6BtxZz0HhIw3+uQZ2XZdJXqPdSbqK2s3SaMem4FHx
+         V9K6SwQTK66GIlyUmnqSL2Cir9/4+Tog3m8ksjDD0N5tEXiwLLyDDNBrL/ANDZYc30/J
+         F2fVg1RlhclWkDCM4sma8gOGemByOF2UrN4W7hRBZzTZrvoJB2Il/u+QbTrThNUOCdQN
+         ujjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8bs+WoVIfqfMEybZ2ykdFz5yPEomc/Sd27NrojyxX8g=;
+        b=E3/LLzUNK9ozLFLS1gMhhXH5ztzgu4ISHECZ1UcWIExyMms0Sw5MsKqS0xeIP7ScIv
+         It1cBTYwMhYhwbES80+FNnzPyCvkxwFm7gAL7KrA0DtUI4ajRSB86t5f4IMX/1JPYvEf
+         fXg9KnB86EZWiL1gGlB1YmPhHOVBLY+vkvOik/ht2SZeRLomuwrYiYKScvI8gYP1Oeh4
+         ilLk7bjqtfCTulLQIGB0+ejN/Z2/m2OeiiTtXe0dWLJjFgX65KMGqSInHFofx7+y+tVl
+         2SQGDI9EB/PLQBTMtiuPt8M4Z5VSM3rlz6JULa2PRTWKNie9ZTiuJSDa0wk+L10QX5hA
+         3bYA==
+X-Gm-Message-State: AOAM531dk7daF4zrps+kWjiyyDMlkLrsZ2qGaQ5Zzp62j0hsHGaU+JFP
+        Hgp8ua3UCKmjYNbW94zcI7dhWA==
+X-Google-Smtp-Source: ABdhPJww4bhr+PHELJ8jPm3IzD7+vVkfkBEJh+7ruJ5tVskw8TuWe0xYlF87q5EyZjBivFk7vPlmQg==
+X-Received: by 2002:a05:6214:27e1:: with SMTP id jt1mr347250qvb.34.1635934435047;
+        Wed, 03 Nov 2021 03:13:55 -0700 (PDT)
+Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-33-142-112-185-132.dsl.bell.ca. [142.112.185.132])
+        by smtp.googlemail.com with ESMTPSA id y8sm1329637qtx.0.2021.11.03.03.13.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Nov 2021 03:13:53 -0700 (PDT)
+Message-ID: <428057ce-ccbc-3878-71aa-d5926f11248c@mojatatu.com>
+Date:   Wed, 3 Nov 2021 06:13:44 -0400
 MIME-Version: 1.0
-In-Reply-To: <20211101223314.GA557567@bhelgaas>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.1
+Subject: Re: [RFC/PATCH net-next v3 8/8] flow_offload: validate flags of
+ filter and actions
+Content-Language: en-US
+To:     Baowen Zheng <baowen.zheng@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Vlad Buslov <vladbu@nvidia.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Roi Dayan <roid@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Baowen Zheng <notifications@github.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        oss-drivers <oss-drivers@corigine.com>,
+        Oz Shlomo <ozsh@nvidia.com>
+References: <20211028110646.13791-1-simon.horman@corigine.com>
+ <20211028110646.13791-9-simon.horman@corigine.com>
+ <ygnhilxfaexq.fsf@nvidia.com>
+ <7147daf1-2546-a6b5-a1ba-78dfb4af408a@mojatatu.com>
+ <ygnhfssia7vd.fsf@nvidia.com>
+ <DM5PR1301MB21722A85B19EE97EFE27A5BBE7899@DM5PR1301MB2172.namprd13.prod.outlook.com>
+ <d16042e3-bc1e-0a2b-043d-bbb62b1e68d7@mojatatu.com>
+ <DM5PR1301MB21728931E03CFE4FA45C5DD3E78A9@DM5PR1301MB2172.namprd13.prod.outlook.com>
+ <ygnhcznk9vgl.fsf@nvidia.com> <20211102123957.GA7266@corigine.com>
+ <DM5PR1301MB2172F4949E810BDE380AF800E78C9@DM5PR1301MB2172.namprd13.prod.outlook.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+In-Reply-To: <DM5PR1301MB2172F4949E810BDE380AF800E78C9@DM5PR1301MB2172.namprd13.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.103.235]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2021-11-03 03:57, Baowen Zheng wrote:
+> On November 2, 2021 8:40 PM, Simon Horman wrote:
+>> On Mon, Nov 01, 2021 at 09:38:34AM +0200, Vlad Buslov wrote:
+>>> On Mon 01 Nov 2021 at 05:29, Baowen Zheng
 
-
-On 2021/11/2 6:33, Bjorn Helgaas wrote:
-> On Mon, Nov 01, 2021 at 05:02:41PM -0500, Bjorn Helgaas wrote:
->> On Sat, Oct 30, 2021 at 09:53:47PM +0800, Dongdong Liu wrote:
->>> 10-Bit Tag capability, introduced in PCIe-4.0 increases the total Tag
->>> field size from 8 bits to 10 bits.
+[..]
 >>>
->>> PCIe spec 5.0 r1.0 section 2.2.6.2 "Considerations for Implementing
->>> 10-Bit Tag Capabilities" Implementation Note:
->>>
->>>   For platforms where the RC supports 10-Bit Tag Completer capability,
->>>   it is highly recommended for platform firmware or operating software
->>>   that configures PCIe hierarchies to Set the 10-Bit Tag Requester Enable
->>>   bit automatically in Endpoints with 10-Bit Tag Requester capability.
->>>   This enables the important class of 10-Bit Tag capable adapters that
->>>   send Memory Read Requests only to host memory.
->>>
->>> It's safe to enable 10-bit tags for all devices below a Root Port that
->>> supports them. Switches that lack 10-Bit Tag Completer capability are
->>> still able to forward NPRs and Completions carrying 10-Bit Tags correctly,
->>> since the two new Tag bits are in TLP Header bits that were formerly
->>> Reserved.
+>>> My suggestion was to forgo the skip_sw flag for shared action offload
+>>> and, consecutively, remove the validation code, not to add even more
+>>> checks. I still don't see a practical case where skip_sw shared action
+>>> is useful. But I don't have any strong feelings about this flag, so if
+>>> Jamal thinks it is necessary, then fine by me.
 >>
->> Side note: the reason we want to do this to increase performance by
->> allowing more outstanding requests.  Do you have any benchmarking that
->> we can mention here to show that this is actually a benefit?  I don't
->> doubt that it is, but I assume you've measured it and it would be nice
->> to advertise it.
->
-> Hmmm.  I did a quick Google search looking for "nvme pcie 10-bit tags"
-> hoping to find some performance info, but what I *actually* found was
-> several reports of 10-bit tags causing breakage:
->
->   https://www.reddit.com/r/MSI_Gaming/comments/exjvzg/x570_apro_7c37vh72beta_version_has_anyone_tryed_it/
->   https://rog.asus.com/forum/showthread.php?115064-Beware-of-agesa-1-0-0-4B-bios-not-good!/page2
->   https://forum-en.msi.com/index.php?threads/sound-blaster-z-has-weird-behaviour-after-updating-bios-x570-gaming-edge-wifi.325223/page-2
->   https://gearspace.com/board/electronic-music-instruments-and-electronic-music-production/1317189-h8000fw-firewire-facts-2020-must-read.html
->   https://www.soundonsound.com/forum/viewtopic.php?t=69651&start=12
->   https://forum.rme-audio.de/viewtopic.php?id=30307
->
-> This is a big problem for me.
->
-> Some of these might be a broken BIOS that turns on 10-bit tags when
-> the completer doesn't support them.  I didn't try to debug them to
-> that level.  But the last thing I want is to enable 10-bit by default
-> and cause boot issues or sound card issues or whatever.
-It seems a BIOS software bug, as it turned on(as default) a 10-Bit Tag
-Field for RP, but the card(non-Gen4 card) does not support 10-Bit Completer.
+>> FWIIW, my feelings are the same as Vlad's.
+>>
+>> I think these flags add complexity that would be nice to avoid.
+>> But if Jamal thinks its necessary, then including the flags implementation is
+>> fine by me.
+> Thanks Simon. Jamal, do you think it is necessary to keep the skip_sw flag for user to specify
+> the action should not run in software?
+> 
 
-This patch we enable 10-Bit Tag Requester for EP when RC supports
-10-Bit Tag Completer capability. So it shuld be worked ok.
+Just catching up with discussion...
+IMO, we need the flag. Oz indicated with requirement to be able to
+identify the action with an index. So if a specific action is added
+for skip_sw (as standalone or alongside a filter) then it cant be
+used for skip_hw. To illustrate using extended example:
 
-The below is one of the link. other links seems the same issue.
-https://forum.rme-audio.de/viewtopic.php?id=30307
-"Re: AMD Ryzen X570 chipset problems
-So for those running into similar problems I found out that in most
-recent BIOS AMD turned on(as default) a 10-bit Tag Field, which is only
-available on PCI-e Gen4 devices. So your BIOS get stuck on startup if
-inserted a non-Gen4 card like my firewire card.
+#filter 1, skip_sw
+tc filter add dev $DEV1 proto ip parent ffff: flower \
+     skip_sw ip_proto tcp action police blah index 10
 
-So you need to find that feature in your BIOS and turn it off and set
-the PCI compatibility on Gen3 for the slot your card is in.
+#filter 2, skip_hw
+tc filter add dev $DEV1 proto ip parent ffff: flower \
+     skip_hw ip_proto udp action police index 10
 
-Hope this helps others running in to similar troubles."
->
-> I'm pretty sure this is a show-stopper for wedging this into v5.16 at
-> this late date.  It's conceivable we could still do it if everything
-> defaulted to "off" and we had a knob whereby users could turn it on
-> via boot param or sysfs.
-Maybe we can merge this patchset later into v5.17.
+Filter2 should be illegal.
+And when i dump the actions as so:
+tc actions ls action police
 
-But I still think default to "on" will be better,
-Current we enable 10-Bit Tag, in the future PCIe 6.0 maybe need to use
-14-Bit tags to get good performance.
->
-> In any case, we (by which I'm afraid I mean "you" :)) need to
-> investigate the problem reports, figure out whether we will see
-> similar problems, and fix them before merging if we can.
-We have tested a PCIe 5.0 network card on FPGA with 10-Bit tag worked
-ok. I have not got the performance data as FPGA is slow.
+For debugability, I should see index 10 clearly marked with
+the flag as skip_sw
 
-Current we enable 10-Bit Tag Requester for EP when RC supports
-10-Bit Tag Completer capability. It shoud be worked ok except hardware
-bugs, we also provide boot param to diasble 10-Bit Tag if the hardware
-really have a bug or can do some quirks as 8-bit tag has done if we
-have known the hardware.
+The other example i gave earlier which showed the sharing
+of actions:
 
-Thanks,
-Dongdong.
->
-> Thanks to Krzysztof for pointing out the potential for issues like
-> this.
->
-> Bjorn
-> .
->
+#add a policer action and offload it
+tc actions add action police skip_sw rate ... index 20
+#now add filter1 which is offloaded using offloaded policer
+tc filter add dev $DEV1 proto ip parent ffff: flower \
+     skip_sw ip_proto tcp action police index 20
+#add filter2 likewise offloaded
+tc filter add dev $DEV1 proto ip parent ffff: flower \
+     skip_sw ip_proto udp action police index 20
+
+All good and filter 1 and 2 are sharing policer instance with
+index 20.
+
+#Now add a filter3 which is s/w only
+tc filter add dev $DEV1 proto ip parent ffff: flower \
+     skip_hw ip_proto icmp action police index 20
+
+filter3 should not be allowed.
+
+cheers,
+jamal
