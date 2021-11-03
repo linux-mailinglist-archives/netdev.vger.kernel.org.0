@@ -2,105 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57255444260
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 14:26:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FFFF44426A
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 14:30:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231958AbhKCN25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 09:28:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43732 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231816AbhKCN24 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 09:28:56 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA61C061714
-        for <netdev@vger.kernel.org>; Wed,  3 Nov 2021 06:26:20 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1miGHI-0002Ee-AK; Wed, 03 Nov 2021 14:26:08 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1miGHH-0005GD-Vr; Wed, 03 Nov 2021 14:26:07 +0100
-Date:   Wed, 3 Nov 2021 14:26:07 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Zhang Changzhong <zhangchangzhong@huawei.com>
-Cc:     Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v2 3/3] can: j1939: j1939_tp_cmd_recv(): check the
- dst address of TP.CM_BAM
-Message-ID: <20211103132607.GM20681@pengutronix.de>
-References: <1635431907-15617-1-git-send-email-zhangchangzhong@huawei.com>
- <1635431907-15617-4-git-send-email-zhangchangzhong@huawei.com>
+        id S231131AbhKCNch (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 09:32:37 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:27172 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230152AbhKCNcg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 09:32:36 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Hknf00NcwzTgDr;
+        Wed,  3 Nov 2021 21:28:24 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Wed, 3 Nov 2021 21:29:53 +0800
+Received: from [10.174.179.234] (10.174.179.234) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Wed, 3 Nov 2021 21:29:52 +0800
+Subject: Re: [PATCH bpf-next] riscv, bpf: Fix RV32 broken build, and silence
+ RV64 warning
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        <ast@kernel.org>, <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+References: <20211103115453.397209-1-bjorn@kernel.org>
+ <f98b15c9-bd06-267e-e404-ae4f607d8740@iogearbox.net>
+CC:     <luke.r.nels@gmail.com>, <xi.wang@gmail.com>,
+        <linux-riscv@lists.infradead.org>
+From:   tongtiangen <tongtiangen@huawei.com>
+Message-ID: <993a1ca1-dc66-e749-bc69-a439dffb0534@huawei.com>
+Date:   Wed, 3 Nov 2021 21:29:51 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1635431907-15617-4-git-send-email-zhangchangzhong@huawei.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 14:24:54 up 258 days, 16:48, 133 users,  load average: 0.03, 0.17,
- 0.25
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <f98b15c9-bd06-267e-e404-ae4f607d8740@iogearbox.net>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.234]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 28, 2021 at 10:38:27PM +0800, Zhang Changzhong wrote:
-> The TP.CM_BAM message must be sent to the global address [1], so add a
-> check to drop TP.CM_BAM sent to a non-global address.
-> 
-> Without this patch, the receiver will treat the following packets as
-> normal RTS/CTS tranport:
-> 18EC0102#20090002FF002301
-> 18EB0102#0100000000000000
-> 18EB0102#020000FFFFFFFFFF
-> 
-> [1] SAE-J1939-82 2015 A.3.3 Row 1.
-> 
-> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
 
-Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-> ---
->  net/can/j1939/transport.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
-> index 05eb3d0..a271688 100644
-> --- a/net/can/j1939/transport.c
-> +++ b/net/can/j1939/transport.c
-> @@ -2023,6 +2023,11 @@ static void j1939_tp_cmd_recv(struct j1939_priv *priv, struct sk_buff *skb)
->  		extd = J1939_ETP;
->  		fallthrough;
->  	case J1939_TP_CMD_BAM:
-> +		if (cmd == J1939_TP_CMD_BAM && !j1939_cb_is_broadcast(skcb)) {
-> +			netdev_err_once(priv->ndev, "%s: BAM to unicast (%02x), ignoring!\n",
-> +					__func__, skcb->addr.sa);
-> +			return;
-> +		}
->  		fallthrough;
->  	case J1939_TP_CMD_RTS:
->  		if (skcb->addr.type != extd)
-> -- 
-> 2.9.5
-> 
-> 
+On 2021/11/3 21:15, Daniel Borkmann wrote:
+> On 11/3/21 12:54 PM, Björn Töpel wrote:
+>> Commit 252c765bd764 ("riscv, bpf: Add BPF exception tables") only
+>> addressed RV64, and broke the RV32 build [1]. Fix by gating the exception
+>> tables code with CONFIG_ARCH_RV64I.
+>>
+>> Further, silence a "-Wmissing-prototypes" warning [2] in the RV64 BPF
+>> JIT.
+>>
+>> [1] https://lore.kernel.org/llvm/202111020610.9oy9Rr0G-lkp@intel.com/
+>> [2] https://lore.kernel.org/llvm/202110290334.2zdMyRq4-lkp@intel.com/
+>>
+>> Fixes: 252c765bd764 ("riscv, bpf: Add BPF exception tables")
+>> Signed-off-by: Björn Töpel <bjorn@kernel.org>
+>> ---
+>> Tong/Daniel: The RV32 build has been broken since Thursday. I'll try
+>> to fast-track a bit, and commit a quick-fix for it. Hope that's OK
+>> with you, Tong!
+>>
+>> I've verified the build on my machine using riscv32 GCC 9.3.0 and
+>> riscv64 GCC 11.2.0.
+>
+> Thanks for the fix Bjorn!
+>
+>> arch/riscv/mm/extable.c         | 4 ++--
+>>   arch/riscv/net/bpf_jit_comp64.c | 2 ++
+>>   2 files changed, 4 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/arch/riscv/mm/extable.c b/arch/riscv/mm/extable.c
+>> index 18bf338303b6..ddb7d3b99e89 100644
+>> --- a/arch/riscv/mm/extable.c
+>> +++ b/arch/riscv/mm/extable.c
+>> @@ -11,7 +11,7 @@
+>>   #include <linux/module.h>
+>>   #include <linux/uaccess.h>
+>>   -#ifdef CONFIG_BPF_JIT
+>> +#if defined(CONFIG_BPF_JIT) && defined(CONFIG_ARCH_RV64I)
+>>   int rv_bpf_fixup_exception(const struct exception_table_entry *ex, struct pt_regs *regs);
+>>   #endif
+>>   @@ -23,7 +23,7 @@ int fixup_exception(struct pt_regs *regs)
+>>       if (!fixup)
+>>           return 0;
+>>   -#ifdef CONFIG_BPF_JIT
+>> +#if defined(CONFIG_BPF_JIT) && defined(CONFIG_ARCH_RV64I)
+>>       if (regs->epc >= BPF_JIT_REGION_START && regs->epc < BPF_JIT_REGION_END)
+>>           return rv_bpf_fixup_exception(fixup, regs);
+>>   #endif
+>> diff --git a/arch/riscv/net/bpf_jit_comp64.c b/arch/riscv/net/bpf_jit_comp64.c
+>> index 2ca345c7b0bf..f2a779c7e225 100644
+>> --- a/arch/riscv/net/bpf_jit_comp64.c
+>> +++ b/arch/riscv/net/bpf_jit_comp64.c
+>> @@ -459,6 +459,8 @@ static int emit_call(bool fixed, u64 addr, struct rv_jit_context *ctx)
+>>   #define BPF_FIXUP_OFFSET_MASK   GENMASK(26, 0)
+>>   #define BPF_FIXUP_REG_MASK      GENMASK(31, 27)
+>>   +int rv_bpf_fixup_exception(const struct exception_table_entry *ex,
+>> +                struct pt_regs *regs);
+>
+> I'm okay to take this as a quick fix, but if its not too much hassle, could we add a
+> arch/riscv/include/asm/extable.h in similar fashion like arm64 or x86 where we move
+> the ex_handler_bpf() signature there, did you have a chance to check?
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Hi Daniel:
+On the question of whether to add asm/extable.h, I have an in-depth discussion with Björn, both schemes are OK.
+
+This patch is the scheme of adding a header file:
+https://lore.kernel.org/bpf/20211102145642.724820-1-tongtiangen@huawei.com/
+
+Reviewed-by: Tong Tiangen <tongtiangen@huawei.com>
+
+Thanks.
+
+>
+>>   int rv_bpf_fixup_exception(const struct exception_table_entry *ex,
+>>                   struct pt_regs *regs)
+>>   {
+>>
+>> base-commit: cc0356d6a02e064387c16a83cb96fe43ef33181e
+>>
+>
+> Thanks,
+> Daniel
+> .
+>
