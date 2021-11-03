@@ -2,120 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91606444AC3
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 23:18:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D5CB444ACD
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 23:19:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230108AbhKCWUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 18:20:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52272 "EHLO
+        id S231144AbhKCWVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 18:21:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229893AbhKCWUq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 18:20:46 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42F0DC061714;
-        Wed,  3 Nov 2021 15:18:09 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id ee33so14641338edb.8;
-        Wed, 03 Nov 2021 15:18:09 -0700 (PDT)
+        with ESMTP id S230314AbhKCWVn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 18:21:43 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36A8DC061714;
+        Wed,  3 Nov 2021 15:19:06 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id r4so14053003edi.5;
+        Wed, 03 Nov 2021 15:19:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6qQFV7RXtddF0nmlPt11j5xt+H9zmuBSYEfn1/N592w=;
-        b=V0Htz9cA5KHeehKruq/rPjj9QxBinjLOodBq4SRNfn4hlSJMQvbcm+1edQM6U4CkS7
-         m0e7ZCLiGD5YBh5IZbrw/m5qsbRM7Uopf5OOuhg8JbZgE5bkmSJaCtSFMa01ygQ0il2J
-         aoKTLxuEteQ2sXCbfxn3yvkOLXmb0j6/4YA8uPIswAinoFONeaZuepODccqHWodNkW3+
-         W0k6hBpN8yxk6C2R9dtQcvaoMNKbyH9iAvexqFfrLesBKhlRyQni9n2uZkZoIbwvBUl7
-         FAJMy03p0RtBzvucl6jQET9CY0qoRkhvOBZuGvjHJzyYtaTs1FEUZ+qxPXNzxRnxGqbf
-         jQqA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=iN+fjjjE8vfKjzIBRU3snyLmptIrvKiwZXEyF/BTJnw=;
+        b=ax33eDurqbRoL9UjcGlbrlGR8fopzR4Ls4sBXY5QqgvahEAnZS4gohngzmi+qqKrkq
+         5ucrry5sbSAfNL0OEAM7VW9A1FfPlVpgPBvZpvInz7RQtySSvFBBb+McaLn6sxrmUltv
+         tSlqGpXkApuE3iZq//IEq/Dplyu/2JoJlA5/qblQev1at7q90lP3GN04mQRdJVOLng3i
+         FbV4DZWsD1uVZcVCdxPHXzxRs88Y8LdI/eW9hUiaPGtlILjkvv0Eb3LG1hh+2NDy5rpB
+         IZKZWzdbrtTLw3tTwoZnZspCJoGRebGAbD4Wyn6TameJxFTMMGR+PpUrSq+vjeDUHIFh
+         84xQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=6qQFV7RXtddF0nmlPt11j5xt+H9zmuBSYEfn1/N592w=;
-        b=5mXplALFI4uBudpVxDnH2OEIRwh3nji4vetrMf4pnUSCtAYB/eS+E/npiQnYP9byQp
-         QY17nicvmiN8Ya67TKeqQEVFwyfvBEnlGLb0L5e2DbJMhBeGBRI9g3lQr09Hy6OV4JcT
-         suC9d+DGIuAW9cEoLE3K8V4zOav3ZeyQL2E/sVI6osqTuB6wtEuiqyckBjyastw752yT
-         KMoDRwAu8/keRDWPjmkuK42eqn94AwNSNliLAiOahh1Ck4gF96Et0/7B/bgdK1nLcnT8
-         /RifRJCn7NKeBBw97tDHhxnJOcORtaseKLqB/QDFFtof9uChULmZB/umfqre552svdq0
-         TMvQ==
-X-Gm-Message-State: AOAM531hD5BQnpvlWTTQGzbkAS9kOmbTfUiqGWFp89JdsezdIvL3W+Ds
-        1p5Hesc708S8g3zqakRvWS0=
-X-Google-Smtp-Source: ABdhPJyqJWdwBMj6EHJ5vK5Q9Uai7ptMBRKb4VzrebE6Wsie+VsjHCTKuCpWG/IopEwaHbZc4yIx9A==
-X-Received: by 2002:a17:906:57c2:: with SMTP id u2mr5826978ejr.8.1635977887802;
-        Wed, 03 Nov 2021 15:18:07 -0700 (PDT)
-Received: from localhost.localdomain ([2a04:241e:501:3800:dd98:1fb5:16b3:cb28])
-        by smtp.gmail.com with ESMTPSA id ak17sm1717265ejc.10.2021.11.03.15.18.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Nov 2021 15:18:07 -0700 (PDT)
-From:   Leonard Crestez <cdleonard@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>
-Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
+        bh=iN+fjjjE8vfKjzIBRU3snyLmptIrvKiwZXEyF/BTJnw=;
+        b=jW9S2R2QxJgGZQqZNa9NU3Knsn5R4QydDPe9uYQG35q/T9XxxdaT5VAix+HVT9eJ9N
+         JKGWFD86jt3E/1c9bIhqVzqOCYh2gmmDc7LoFVq0Yriwjvq4t3LmWsnQPtt81yuv5RmF
+         lOH27ucucbJyLn03T0CInJ68xQNg85BmL1C4rovsQ2LPl85ZAhTOMlb+8UXioyvRsMGc
+         UE82KZfzzZjWqXeSn9ePltQx+g+BACn7C3ARkh1B7JJrcuh9lVC8kI/4I3JI1KXG8frn
+         NGnBwSZyZS+gmr4nZmvDNNOwmbO2coK3qwLodEaU1lka+Ei2sLmEgg3Fl0GVRohj12pC
+         D/Mg==
+X-Gm-Message-State: AOAM530UmARiMU18VmkeEB71arovXdUdg0G3/bJ/v9VeeVncsTQyW95Y
+        a+yzuNTgcFrHCLEBdyVSOmU=
+X-Google-Smtp-Source: ABdhPJymCRkGj29o6X4rs34L4JYjl2N6jdyeOvhAAxYeQrmw34HklIKuSjbW01YvXpz1LWEQWtH9Bw==
+X-Received: by 2002:a50:fb15:: with SMTP id d21mr56598633edq.85.1635977944889;
+        Wed, 03 Nov 2021 15:19:04 -0700 (PDT)
+Received: from ?IPv6:2a04:241e:501:3800:dd98:1fb5:16b3:cb28? ([2a04:241e:501:3800:dd98:1fb5:16b3:cb28])
+        by smtp.gmail.com with ESMTPSA id e13sm1694067eje.95.2021.11.03.15.19.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Nov 2021 15:19:04 -0700 (PDT)
+Subject: Re: [PATCH v2 07/25] tcp: Use BIT() for OPTION_* constants
+To:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Neal Cardwell <ncardwell@google.com>,
         Yuchung Cheng <ycheng@google.com>,
-        Enke Chen <enchen@paloaltonetworks.com>,
-        Wei Wang <weiwan@google.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] tcp: Use BIT() for OPTION_* constants
-Date:   Thu,  4 Nov 2021 00:17:51 +0200
-Message-Id: <cde3385c115ddf64fe14725f57d88a2a089f23e1.1635977622.git.cdleonard@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Ivan Delalande <colona@arista.com>,
+        Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        Dmitry Safonov <0x7f454c46@gmail.com>
+References: <cover.1635784253.git.cdleonard@gmail.com>
+ <dc9dca0006fa1b586da44dcd54e29eb4300fe773.1635784253.git.cdleonard@gmail.com>
+ <79ab8aae-8a61-b279-a702-15f24b406044@gmail.com>
+From:   Leonard Crestez <cdleonard@gmail.com>
+Message-ID: <6f07bab3-0c6f-84a6-870a-0f5e68a746f4@gmail.com>
+Date:   Thu, 4 Nov 2021 00:19:02 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <79ab8aae-8a61-b279-a702-15f24b406044@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extending these flags using the existing (1 << x) pattern triggers
-complaints from checkpatch. Instead of ignoring checkpatch modify the
-existing values to use BIT(x) style in a separate commit.
+On 11/3/21 4:31 AM, David Ahern wrote:
+> On 11/1/21 10:34 AM, Leonard Crestez wrote:
+>> Extending these flags using the existing (1 << x) pattern triggers
+>> complaints from checkpatch.
+>>
+>> Instead of ignoring checkpatch modify the existing values to use BIT(x)
+>> style in a separate commit.
+>>
+>> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
+>> ---
+>>   net/ipv4/tcp_output.c | 14 +++++++-------
+>>   1 file changed, 7 insertions(+), 7 deletions(-)
+>>
+> 
+> This one could be sent outside of this patch set since you are not
+> adding new values. Patch sets > 20 are generally frowned upon; sending
+> this one separately helps get the number down.
 
-Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
+In the past I've seen maintainers pick small cleanups and fixes from 
+longer series that otherwise need further discussion.
 
----
-This was split away from a longer series implementing RFC5925
-Authentication Option for TCP.
+Not sure if this practice is also common for netdev so I posted this 
+patch separately.
 
-Link: https://lore.kernel.org/netdev/dc9dca0006fa1b586da44dcd54e29eb4300fe773.1635784253.git.cdleonard@gmail.com/
-
- net/ipv4/tcp_output.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
-
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 6867e5db3e35..96f16386f50e 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -406,17 +406,17 @@ static void tcp_init_nondata_skb(struct sk_buff *skb, u32 seq, u8 flags)
- static inline bool tcp_urg_mode(const struct tcp_sock *tp)
- {
- 	return tp->snd_una != tp->snd_up;
- }
- 
--#define OPTION_SACK_ADVERTISE	(1 << 0)
--#define OPTION_TS		(1 << 1)
--#define OPTION_MD5		(1 << 2)
--#define OPTION_WSCALE		(1 << 3)
--#define OPTION_FAST_OPEN_COOKIE	(1 << 8)
--#define OPTION_SMC		(1 << 9)
--#define OPTION_MPTCP		(1 << 10)
-+#define OPTION_SACK_ADVERTISE	BIT(0)
-+#define OPTION_TS		BIT(1)
-+#define OPTION_MD5		BIT(2)
-+#define OPTION_WSCALE		BIT(3)
-+#define OPTION_FAST_OPEN_COOKIE	BIT(8)
-+#define OPTION_SMC		BIT(9)
-+#define OPTION_MPTCP		BIT(10)
- 
- static void smc_options_write(__be32 *ptr, u16 *options)
- {
- #if IS_ENABLED(CONFIG_SMC)
- 	if (static_branch_unlikely(&tcp_have_smc)) {
-
-base-commit: d4a07dc5ac34528f292a4f328cf3c65aba312e1b
--- 
-2.25.1
-
+--
+Regards,
+Leonard
