@@ -2,154 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0B7D444532
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 17:03:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1041244457A
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 17:10:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232698AbhKCQFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 12:05:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44072 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232680AbhKCQFd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Nov 2021 12:05:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8DFE960E05;
-        Wed,  3 Nov 2021 16:02:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635955376;
-        bh=tEGgvNz6cxzVUhJzFow/0yapB19/ypbw7LaC/6uVyE4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=bjW9qM9wEiLtJMPpjhsbwkH7p4lpeKeQ8HOOTkXvw8KTOOheJs+rm1re5qkg8FPig
-         7yP9KlATTOHI8OZhr5KVq0il9NeBNBAcMRsRQRNliqn4Ag/zVahaEDh9Y1HBZo9gfm
-         ydZHuPb1z62piFnzRwL95OhWc5/Ww7YYSPrIl/3qPJ7YdIrUttQljcEC2V0fCkR8e7
-         TTPy+kdFRiHAhlGjPN36IpZTHajpgnutKSMUtd+pqk2NPBKDXRShih7JHMRhxRpNGI
-         aLX5pz1DWeNyKvRh44JZu4Ykw91YgDgbwHytwzVFAMSq7QgfgX/tgrT64A3iokwdn6
-         P4s8dKZykRW4w==
-Date:   Wed, 3 Nov 2021 11:02:55 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Dongdong Liu <liudongdong3@huawei.com>
-Cc:     hch@infradead.org, logang@deltatee.com, leon@kernel.org,
-        linux-pci@vger.kernel.org, rajur@chelsio.com,
-        hverkuil-cisco@xs4all.nl, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH V11 7/8] PCI: Enable 10-Bit Tag support for PCIe Endpoint
- device
-Message-ID: <20211103160255.GA687132@bhelgaas>
-MIME-Version: 1.0
+        id S232733AbhKCQM7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 12:12:59 -0400
+Received: from mail-dm6nam10on2046.outbound.protection.outlook.com ([40.107.93.46]:58177
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232101AbhKCQM6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Nov 2021 12:12:58 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hdJ31c4bJ/toVCEhGPaYN0EysWP39+YzsgqJq9AZmWsl2Xhzcbr+ijhkA9sPOtBMMutVQeVJql5Xvz4s/n6EUnLvhN6AVObvyVaHU44QLEJL8xZy7JegJLIbW8CR/CwQHu8LK1hQ423eP2vxJ1LwNxA1xcR33iktoKxbdr0My+qHb9Vw0SG6SMuAdqMEw8Vig7xg4DrKoqnz5+A5+MJQ3dTDIrV37u4AiplE690EhDY+VnODW6Pxa450SQqa/XF/Iofxg1kLs1zOrjmXbfJ01MzWp94F9Wiqd7cgPo+USyUlrEjBgavWoIKqtvAYFduo8Mq8Is82B9P5taHm4bSGSw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RjSRzzFjsRolrZ6FQgQpoZRwHp0flUA/rWniyDxljBQ=;
+ b=nsyW3iz+4rrPybyDMb7xFaWbi6gsDD2TDHy7t0gHYVDsk+DcRcgTQAY5fJLg/W0qobq1e2C4CwgLVSnRKbQxcB1plgrfaKOhWofJNSDnB2K74wjfmH5qg8nHUCUbEdulIAKY0RnzE44z3nHvt4+yyYPfWgZRTtFCoTYRnTAuFri1BhFOpbzBxz1HptneMy613qo185lujtDisBqOyFq3nWd8XTCIhd25edbEahtpTtVKOgmZ/TIVJcDp1JF+ubyL3kywnX0PTByWVRu7M+hymzqkp/xLcjqM79n9fon4xqHzB3EK20tPLMtY7RXMIVsfU5UzRs8Mez5nbnkBHxnTaQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RjSRzzFjsRolrZ6FQgQpoZRwHp0flUA/rWniyDxljBQ=;
+ b=WSn/gy2MPl1WL1FFVd9/I228HnXQ4C0cNYQ/pvG+MA6shTq3bxbShT8vZrxu21AIgHFTLJ71ud1a0a0CjxIz2+iYAM37UHt8Uody9DzCYfCy+6sWktV3exgjuHuI9uiz5U3ThSgYCcFxTNQBvkKM2upmaHF2aOO/8fi9aJW27jo2QlWOyMvXbOEh+HwhB4jkDGQQcLPCXhyimspivoVa8e+t6t+ZgMEYFck295xoYd6SSJEaDFRwZrjmitgL+buh1fUXa2XtvsGyvlN0iy2Y+C4SKcOHrsgBOC2u0L/RaYwP+w8zg4qj5j9oKLcNqpuoMWgiWzRfLKHOB7kqfy4xgA==
+Authentication-Results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB5520.namprd12.prod.outlook.com (2603:10b6:5:208::9) by
+ DM4PR12MB5390.namprd12.prod.outlook.com (2603:10b6:5:39a::12) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4649.15; Wed, 3 Nov 2021 16:10:20 +0000
+Received: from DM6PR12MB5520.namprd12.prod.outlook.com
+ ([fe80::8817:6826:b654:6944]) by DM6PR12MB5520.namprd12.prod.outlook.com
+ ([fe80::8817:6826:b654:6944%6]) with mapi id 15.20.4649.020; Wed, 3 Nov 2021
+ 16:10:20 +0000
+Date:   Wed, 3 Nov 2021 13:10:19 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+Subject: Re: [PATCH V2 mlx5-next 12/14] vfio/mlx5: Implement vfio_pci driver
+ for mlx5 devices
+Message-ID: <20211103161019.GR2744544@nvidia.com>
+References: <20211028234750.GP2744544@nvidia.com>
+ <20211029160621.46ca7b54.alex.williamson@redhat.com>
+ <20211101172506.GC2744544@nvidia.com>
+ <20211102085651.28e0203c.alex.williamson@redhat.com>
+ <20211102155420.GK2744544@nvidia.com>
+ <20211102102236.711dc6b5.alex.williamson@redhat.com>
+ <20211102163610.GG2744544@nvidia.com>
+ <20211102141547.6f1b0bb3.alex.williamson@redhat.com>
+ <20211103120955.GK2744544@nvidia.com>
+ <20211103094409.3ea180ab.alex.williamson@redhat.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <26f8758e-c85d-291b-1c34-5184aa6862aa@huawei.com>
+In-Reply-To: <20211103094409.3ea180ab.alex.williamson@redhat.com>
+X-ClientProxiedBy: BL1PR13CA0084.namprd13.prod.outlook.com
+ (2603:10b6:208:2b8::29) To DM6PR12MB5520.namprd12.prod.outlook.com
+ (2603:10b6:5:208::9)
+MIME-Version: 1.0
+Received: from mlx.ziepe.ca (142.162.113.129) by BL1PR13CA0084.namprd13.prod.outlook.com (2603:10b6:208:2b8::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.5 via Frontend Transport; Wed, 3 Nov 2021 16:10:20 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1miIqB-005gSG-61; Wed, 03 Nov 2021 13:10:19 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 78cc9c0a-9b3a-4b89-87e6-08d99ee46efc
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5390:
+X-Microsoft-Antispam-PRVS: <DM4PR12MB53909C5B572EACA25AF94CF0C28C9@DM4PR12MB5390.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: wiZjJwRO4mOGfpjoeU7EV0I93CHnKIUVvsMonuT/OzT0o2HOyEoR100zG9SDpeNh73Kr/ntujhUUKPlHeWbe99WQEh54PqMrxt10bxzfPGi8oZqiqx6AiGzR8/WYeMLpss3Bqk2WEBSlhAwR0ns8/S6Oq7iwCJaAf8oMOdpJCuWyCQR0ests42k5ld9aGwsVOOiMYXyMKdf62puQILIA5H+siGOb4mKkm/3oT8ILvLD+X0aBDGEN2QJmIoPq9z4Rjhw6daHzfTeDhKzRh+aOyiDXi5RxuAN2kSKzIzahuHS4MX+T1JNPpGlvd++tFxFTBM7bNSVGCG8IhUsMIj4GZYRxtSuMxyQt3iAkeEeQWgQQFmOv/FTNZYPl2k5gL/eqk5mqK3StzHa2eVqb39SoguYTw2WeHPLreU4Hl0YLnZtRA0x4kXaHExTe9KEaGW9xP3h0Dkf+oDykWc6Cq70cOgl0CPrGVKVXKUKyCDdlUFqk8KypMow9DrUub03a/NNMm3Bb+LRVLfhCYbXKKx4iR+z9E7kbiZciwn3wuDi8FldckAgI7PLs+SEjAEGm5azALb7d0wHUoIWizEeP+q9F6XrzzDbK5cK7ro2Udpf3k9nDEh5yBGmVUJhTTz4Ob3qUDU3enN9cfJ1QsCQYlfhJsw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB5520.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(426003)(508600001)(9746002)(1076003)(9786002)(66476007)(33656002)(86362001)(66556008)(8936002)(4326008)(66946007)(6916009)(26005)(54906003)(5660300002)(316002)(36756003)(186003)(2616005)(8676002)(2906002)(38100700002)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pduU4yFYHuNjFXlw7kiN1zCjK0AsaHFNMBYZ7CPjw1t77GUanfsaTef58LtO?=
+ =?us-ascii?Q?/NrRGQ1+a8dGEw57nlTL9xtztujn2e3N/jb0QueGVPuGGfKYO27XWOCS/kN0?=
+ =?us-ascii?Q?6kdaQHS5FUriYsTuZXv2r5yjAA7UKkYQajeqcBsF1P8gIylDQlJmyigXnviK?=
+ =?us-ascii?Q?tNs1EodrqXHA/+KUtMh1o40p2ojccDRBsJwz6K7u9ZO+Da5kxA00EI8MOKy9?=
+ =?us-ascii?Q?eazsJMPlcBXXsjmA21/VE901TAZVf473MgPtB8O6c1vcA0dJs3bevf/HK7dr?=
+ =?us-ascii?Q?JhsIMdTAkumA4r2q0as5uUDj/4LMki1M5okb5XlcMCi19UsNOcf+DjbERoDW?=
+ =?us-ascii?Q?BZRXDHuBjDsFJJ3SXLNHRznbgNfzspQb72WuwWy3oewlxkbeVRX4a9qN8aQj?=
+ =?us-ascii?Q?0Z7WyBC8wZq6YzpgKhL5LHiJR/Zl2pwta3jh3c1BddTTKLJlvzyfHtSZSQUy?=
+ =?us-ascii?Q?QmmwW0W3rXvxaofZiCNEIDMKRExUzDdTZeou01KnklsQl6+lOdIhiA1qx9mU?=
+ =?us-ascii?Q?Yg2pl5F//5A0/MrDXDURPPItXBnqgy63JpWXQfKlAokSxFac08+rvOwNk91P?=
+ =?us-ascii?Q?EF+39lI7YZW7JqH5VT9PBLLzaKgTkq5qUscwSmQJoaeWz8G9CJWcFMsOL49o?=
+ =?us-ascii?Q?DDQ1nQiCXgi5eUf3A0jpaLLGL8S9pja/mGJP87WUu+Lojp1VejE982HVVVoF?=
+ =?us-ascii?Q?wdErtH+LJoOzD65gkPm7kL6NcKRYCh17rLkD2b9PeML70T0YAvRGylRC0/ag?=
+ =?us-ascii?Q?BETQBw3laMlMJNEbWEhH/6ssNWI9eucHiOIDwtViwVDJsO/d2o837abxUyuo?=
+ =?us-ascii?Q?M/+JUcOT+33EXDB3u7IOtybRyQ53TStmLNxjAG5BkYKl+5BebYGfwXUZqbN/?=
+ =?us-ascii?Q?GlSvmYxZ0HM8WLOzYuaVIiUlhxg/4HmeOgWyd/FGHotuGoSY2O8TY/3857Pq?=
+ =?us-ascii?Q?yNssoRHtj9qTCbMWARdi9JZzfy+iyeqJ1ORiuyEnZp50oHLZtPerXkIKiIaE?=
+ =?us-ascii?Q?AJuk2Z+2QAuymhEw3sTB5UL9+D6GRiHed5fbFlOynKKaqMmKYoaYzwrDV5O9?=
+ =?us-ascii?Q?RhOllnOiOf71i4XzRno3TrWAkWY8nwMpQ5Ptu6EgzJLlBrsqSTQ4AvmC5tUw?=
+ =?us-ascii?Q?JGQO45qdxy3RGmgM5mcv33/P8jDFXonMsjsREzzF/7oWu8pdtttvAaaLKzCb?=
+ =?us-ascii?Q?fkQn8qC3lChScnd47QA1P90do3fQQZ1QsoCcZkb2EsBxFA3KH/Oi4Gzu8XMr?=
+ =?us-ascii?Q?5GAoHtsdoXaWPoVYL3LPMxkkvl7pLOU0RZULxfxcpkcMf4kZJnQsNzRTIQ5H?=
+ =?us-ascii?Q?Qh4ZBcuTyaSI2Qme5KdOkPZ03a+G6fQf1jC9SJkG4QQUPnuUjOqqHX2+9pXE?=
+ =?us-ascii?Q?AtlJqsxdZDIDbD6HmGHkELFmYES3yBiq1F5BAJr1m9Oc0VcdyPG5E1PYZ6uF?=
+ =?us-ascii?Q?mrGGpMAnSQwPocV4vIY/pFbuaErEyr+u6PogX0zv18JwinFyeQWa4AldH2Uu?=
+ =?us-ascii?Q?Q/gQSqKEmucLlfbGytwAed2C8vmu6abwEtWQn/oSHGZ8IV8lc4ZNI4ZGM7gG?=
+ =?us-ascii?Q?sxYq7Up/sNIiAeWNBx8=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 78cc9c0a-9b3a-4b89-87e6-08d99ee46efc
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB5520.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2021 16:10:20.4736
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: k4B/hlEeNXpoYjVToltE/rj2hhcxX9np+Ael78rrbLD2JWtzlaTh+rO2iaFSkxm5
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5390
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 03, 2021 at 06:05:34PM +0800, Dongdong Liu wrote:
-> On 2021/11/2 6:33, Bjorn Helgaas wrote:
-> > On Mon, Nov 01, 2021 at 05:02:41PM -0500, Bjorn Helgaas wrote:
-> > > On Sat, Oct 30, 2021 at 09:53:47PM +0800, Dongdong Liu wrote:
-> > > > 10-Bit Tag capability, introduced in PCIe-4.0 increases the total Tag
-> > > > field size from 8 bits to 10 bits.
-> > > > 
-> > > > PCIe spec 5.0 r1.0 section 2.2.6.2 "Considerations for Implementing
-> > > > 10-Bit Tag Capabilities" Implementation Note:
-> > > > 
-> > > >   For platforms where the RC supports 10-Bit Tag Completer capability,
-> > > >   it is highly recommended for platform firmware or operating software
-> > > >   that configures PCIe hierarchies to Set the 10-Bit Tag Requester Enable
-> > > >   bit automatically in Endpoints with 10-Bit Tag Requester capability.
-> > > >   This enables the important class of 10-Bit Tag capable adapters that
-> > > >   send Memory Read Requests only to host memory.
-> > > > 
-> > > > It's safe to enable 10-bit tags for all devices below a Root Port that
-> > > > supports them. Switches that lack 10-Bit Tag Completer capability are
-> > > > still able to forward NPRs and Completions carrying 10-Bit Tags correctly,
-> > > > since the two new Tag bits are in TLP Header bits that were formerly
-> > > > Reserved.
-> > > 
-> > > Side note: the reason we want to do this to increase performance by
-> > > allowing more outstanding requests.  Do you have any benchmarking that
-> > > we can mention here to show that this is actually a benefit?  I don't
-> > > doubt that it is, but I assume you've measured it and it would be nice
-> > > to advertise it.
-> > 
-> > Hmmm.  I did a quick Google search looking for "nvme pcie 10-bit tags"
-> > hoping to find some performance info, but what I *actually* found was
-> > several reports of 10-bit tags causing breakage:
-> > 
-> >   https://www.reddit.com/r/MSI_Gaming/comments/exjvzg/x570_apro_7c37vh72beta_version_has_anyone_tryed_it/
-> >   https://rog.asus.com/forum/showthread.php?115064-Beware-of-agesa-1-0-0-4B-bios-not-good!/page2
-> >   https://forum-en.msi.com/index.php?threads/sound-blaster-z-has-weird-behaviour-after-updating-bios-x570-gaming-edge-wifi.325223/page-2
-> >   https://gearspace.com/board/electronic-music-instruments-and-electronic-music-production/1317189-h8000fw-firewire-facts-2020-must-read.html
-> >   https://www.soundonsound.com/forum/viewtopic.php?t=69651&start=12
-> >   https://forum.rme-audio.de/viewtopic.php?id=30307
-> > 
-> > This is a big problem for me.
-> > 
-> > Some of these might be a broken BIOS that turns on 10-bit tags
-> > when the completer doesn't support them.  I didn't try to debug
-> > them to that level.  But the last thing I want is to enable 10-bit
-> > by default and cause boot issues or sound card issues or whatever.
->
-> It seems a BIOS software bug, as it turned on (as default) a 10-Bit
-> Tag Field for RP, but the card (non-Gen4 card) does not support
-> 10-Bit Completer.
+On Wed, Nov 03, 2021 at 09:44:09AM -0600, Alex Williamson wrote:
 
-It doesn't matter *where* the problem is.  If we change Linux to
-*expose* a BIOS bug, that's just as much of a problem as if the bug
-were in Linux.  Users are not equipped to diagnose or fix problems
-like that.
+> In one email I read that QEMU clearly should not be performing SET_IRQS
+> while the device is _RESUMING (which it does) and we need to require an
+> interim state before the device becomes _RUNNING to poke at the device
+> (which QEMU doesn't do and the uAPI doesn't require), and the next I
+> read that we should proceed with some useful quanta of work despite
+> that we clearly don't intend to retain much of the protocol of the
+> current uAPI long term...
 
-> This patch we enable 10-Bit Tag Requester for EP when RC supports
-> 10-Bit Tag Completer capability. So it shuld be worked ok.
+mlx5 implements the protocol as is today, in a way that is compatible
+with today's qemu. Qemu has various problems like the P2P issue we
+talked about, but it is something working.
 
-That's true as long as the RC supports 10-bit tags correctly when it
-advertises support for them.  It "should" work :)
+If you want to do a full re-review of the protocol and make changes,
+then fine, let's do that, but everything should be on the table, and
+changing qemu shouldn't be a blocker.
 
-But it does remind me that if the RC doesn't support 10-bit tags, but
-we use sysfs to enable 10-bit tags for a reqester that intends to use
-P2PDMA to a peer that *does* support them, I don't think there's
-any check in the DMA API that prevents the driver from setting up DMA
-to the RC in addition to the peer.
+In one email you are are saying we need to document and decide things
+as a pre-condition to move the driver forward, and then in the next
+email you say whatever qemu does is the specification, and can't
+change it.
 
-> But I still think default to "on" will be better,
-> Current we enable 10-Bit Tag, in the future PCIe 6.0 maybe need to use
-> 14-Bit tags to get good performance.
+Part of this messy discussion is my fault as I've been a little
+unclear in mixing my "community view" of how the protocol should be
+designed to maximize future HW support and then switching to topics
+that have direct relevance to mlx5 itself.
 
-Maybe we can default to "on" based on BIOS date or something.  Older
-systems that want the benefit can use the param to enable it, and if
-there's a problem, the cause will be obvious ("we booted with
-'pci=tag-bits=10' and things broke").
+I want to see devices like hns be supportable and, from experience,
+I'm very skeptical about placing HW design restrictions into a
+uAPI. So I don't like those things.
 
-If we enable 10-bit tags by default on systems from 2022 or newer, we
-shouldn't break any existing systems, and we have a chance to discover
-any problems and add quirk if necessary.
+However, mlx5's HW is robust and more functional than hns, and doesn't
+care which way things are decided.
 
-> > In any case, we (by which I'm afraid I mean "you" :)) need to
-> > investigate the problem reports, figure out whether we will see
-> > similar problems, and fix them before merging if we can.
->
-> We have tested a PCIe 5.0 network card on FPGA with 10-Bit tag worked
-> ok. I have not got the performance data as FPGA is slow.
+> Too much is in flux and we're only getting breadcrumbs of the
+> changes to come.
 
-10-bit tag support appeared in the spec four years ago (PCIe r4.0, in
-September, 2017).  Surely there is production hardware that supports
-this and could demonstrate a benefit from this.
+We have no intention to go in and change the uapi after merging beyond
+solving the P2P issue.
 
-We need a commit log that says "enabling 10-bit tags allows more
-outstanding transactions, which improves performance of adapters like
-X by Y% on these workloads," not a log that says "we think enabling
-10-bit tags is safe, but users with non-compliant hardware may see new
-PCIe errors or even non-bootable systems, and they should use boot
-param X to work around this."
+Since we now have confirmation that hns cannot do P2P I see no issue
+to keep the current design as the non-p2p baseline that hns will
+implement and the P2P upgrade should be designed separately.
 
-> Current we enable 10-Bit Tag Requester for EP when RC supports
-> 10-Bit Tag Completer capability. It should be worked ok except
-> hardware bugs, we also provide boot param to disable 10-Bit Tag if
-> the hardware really have a bug or can do some quirks as 8-bit tag
-> has done if we have known the hardware.
+> It's becoming more evident that we're likely to sufficiently modify
+> the uAPI to the point where I'd probably suggest a new "v2" subtype
+> for the region.
 
-The problem is that turning it on by default means systems with
-hardware defects *used* to work but now they mysteriously *stop*
-working.  Yes, a boot param can work around that, but it's just
-not an acceptable user experience.  Maybe there are no such defects.
-I dunno.
+I don't think this is evident. It is really your/community choice what
+to do in VFIO.
 
-Bjorn
+If vfio sticks with the uAPI "as is" then it places additional
+requirements on future HW designs.
+
+If you want to relax these requirements before stabilizing the uAPI,
+then we need to make those changes now.
+
+It is your decision. I don't know of any upcoming HW designs that have
+a problem with any of the choices.
+
+Thanks,
+Jason
