@@ -2,143 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8299F443ED6
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 10:02:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69F1A443EF0
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 10:03:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231338AbhKCJE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 05:04:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39712 "EHLO
+        id S231970AbhKCJGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 05:06:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231240AbhKCJEz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 05:04:55 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E3D5C061714
-        for <netdev@vger.kernel.org>; Wed,  3 Nov 2021 02:02:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=JztgPq5o90byWCXP7gYIHF1PitbiH86DG04Jnh/bxNY=; b=xm8FlpfTykLY6bdFyhLV8SpNuS
-        DewEDZ083Sgb0zPFx2Nl34a/HjrGQxYnWSQezCyCTMx66iEy0XfWyHPmU2DbvfhaO2KPwjQw2tOwY
-        QCnWZybRAWrD8aP9Y+XbDD+9/AH4F704nDZDMxczmiom4KMb52AZyISSQcCVGSDn+zawh0tKupn0G
-        qmWkiLIFVX5ERlKK12AARIzGsVaBfM4kW40BEosz0qKVLv+wsR4DsUnaimTiKHcvyE0u3I0CdfYm0
-        eXfhPBNmx32+qM6aOiKdHTUcW+2mz8wFT8lOpPtIU3BxYvwD2gixeMR+0KmSNPQeqyLdrDtW+GxWB
-        LlkJLFAg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55456)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1miC9w-0004nT-A9; Wed, 03 Nov 2021 09:02:16 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1miC9u-0006G4-VY; Wed, 03 Nov 2021 09:02:14 +0000
-Date:   Wed, 3 Nov 2021 09:02:14 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Radhey Shyam Pandey <radheys@xilinx.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Michal Simek <michals@xilinx.com>,
-        Harini Katakam <harinik@xilinx.com>
-Subject: Re: mdio: separate gpio-reset property per child phy usecase
-Message-ID: <YYJQFt0mDpcOcxGd@shell.armlinux.org.uk>
-References: <SA1PR02MB85605C26380A9D8F4D1FB2AAC7859@SA1PR02MB8560.namprd02.prod.outlook.com>
- <64248ee1-55dd-b1bd-6c4e-0a272d230e8e@gmail.com>
- <SA1PR02MB8560936DB193279B2F2C5721C78C9@SA1PR02MB8560.namprd02.prod.outlook.com>
+        with ESMTP id S232103AbhKCJGL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 05:06:11 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA6FC06120E
+        for <netdev@vger.kernel.org>; Wed,  3 Nov 2021 02:03:35 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id d13so2402933wrf.11
+        for <netdev@vger.kernel.org>; Wed, 03 Nov 2021 02:03:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=TCZ6vuIwBVtolWK4u3x1TuVxt+i5182IFwC3rZUAjSo=;
+        b=i4zHTHIxpvCxmJgClz+Dh9DJEHDFkd+lXWnxtTfJ8IS3SQdtpkUEhtknD8ZN2MGpg+
+         vFm+RttB2UnRa/BRei1pFHlp92QdaOQeO4krZZ82jmVkJe1jTmv2WQoaR9btKUUOTnlq
+         bZLR7889SNZzIh7MEz04qtviTtI7rqG1jlJmAJQB9CQ+NVm8Q+9EXVkeet5RJqKgzcy0
+         wsxkumXGvTqMfWzxLI78iji9wVOxBKgL4ADeHXpNwcXYIZ2x0tolmI2XNL48tSQwm7cJ
+         oxcSV2wUhsTQMuOkJV7Uv1DwTBAILepag3c93y0Tud1LAD2gaBRdmqiNBVbJuuejhXQc
+         AkKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TCZ6vuIwBVtolWK4u3x1TuVxt+i5182IFwC3rZUAjSo=;
+        b=A/Q9UUvW7z7d+/MRoaO8CyLaQLomIpSM+8yeAbe28FqvLXq1pJma2cuagbA/02CNme
+         +EIXwrzhoNrnNGeU/0XO/ViyEdbqQVD4Th3tPedLypULIAuMAPyC42VRZSUqzWwB2F73
+         s/nIUEMcKHy0iAZhmzBxYUwY4X2VyS1aL4RtPDduZx8GZxspLpfXkqsQNv5vZcvxu7uW
+         Y0GPohqZaMGNMNjzdT+525rkJfkG8u7vCjVrZxGaeUdX1q9XR/EfN84kIuNljxq+quey
+         EaXR9ESZQMKAcApjiUs4xnt3BhUNWyTa39mnCoSK0Vm3OcpVhH258Y7zpdQgUEDg02Wz
+         iZFw==
+X-Gm-Message-State: AOAM5338YLbD8NloLg6G0yBky0M1jiT3A+s8OgkDGNpZfFDlMXakqqjs
+        dJ1Edf3icNq7eX2VFx620gvSxA==
+X-Google-Smtp-Source: ABdhPJwR2lgtyYyo/tvWCUm3EGllxLQPSX9U62yNIMjEZb7ciwChkcxMIx+LC/kizzJc6i6MzBpdEg==
+X-Received: by 2002:adf:ce03:: with SMTP id p3mr44463742wrn.145.1635930213874;
+        Wed, 03 Nov 2021 02:03:33 -0700 (PDT)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id o1sm1412426wrn.63.2021.11.03.02.03.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Nov 2021 02:03:33 -0700 (PDT)
+Date:   Wed, 3 Nov 2021 10:03:32 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     leon@kernel.org, idosch@idosch.org, edwin.peer@broadcom.com,
+        netdev@vger.kernel.org
+Subject: Re: [RFC 0/5] devlink: add an explicit locking API
+Message-ID: <YYJQZIJPdy3WnQ1S@nanopsycho>
+References: <20211030231254.2477599-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <SA1PR02MB8560936DB193279B2F2C5721C78C9@SA1PR02MB8560.namprd02.prod.outlook.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <20211030231254.2477599-1-kuba@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 03, 2021 at 08:50:30AM +0000, Radhey Shyam Pandey wrote:
-> > -----Original Message-----
-> > From: Florian Fainelli <f.fainelli@gmail.com>
-> > Sent: Wednesday, October 27, 2021 10:48 PM
-> > To: Radhey Shyam Pandey <radheys@xilinx.com>; netdev@vger.kernel.org;
-> > Andrew Lunn <andrew@lunn.ch>; Heiner Kallweit <hkallweit1@gmail.com>;
-> > Russell King <linux@armlinux.org.uk>
-> > Cc: Michal Simek <michals@xilinx.com>; Harini Katakam <harinik@xilinx.com>
-> > Subject: Re: mdio: separate gpio-reset property per child phy usecase
-> > 
-> > +PHY library maintainers,
-> > 
-> > On 10/27/21 5:58 AM, Radhey Shyam Pandey wrote:
-> > > Hi all,
-> > >
-> > > In a xilinx internal board we have shared GEM MDIO configuration with
-> > > TI DP83867 phy and for proper phy detection both PHYs need prior
-> > > separate GPIO-reset.
-> > >
-> > > Description:
-> > > There are two GEM ethernet IPs instances GEM0 and GEM1. GEM0 and GEM1
-> > > used shared MDIO driven by GEM1.
-> > >
-> > > TI PHYs need prior reset (RESET_B) for PHY detection at defined address.
-> > > However with current framework limitation " one reset line per PHY
-> > > present on the MDIO bus" the other PHY get detected at incorrect
-> > > address and later having child PHY node reset property will also not help.
-> > >
-> > > In order to fix this one possible solution is to allow reset-gpios
-> > > property to have PHY reset GPIO tuple for each phy. If this approach
-> > > looks fine we can make changes and send out a RFC.
-> > 
-> > I don't think your proposed solution would work because there is no way to
-> > disambiguate which 'reset-gpios' property applies to which PHY, unless you use
-> > a 'reset-gpio-names' property which encodes the phy address in there. But
-> > even doing so, if the 'reset-gpios' property is placed within the MDIO controller
-> > node then it applies within its scope which is the MDIO controller. The other
-> > reason why it is wrong is because the MDIO bus itself may need multiple resets
-> > to be toggled to be put in a functional state. This is probably uncommon for
-> > MDIO, but it is not for other types of peripherals with complex asynchronous
-> > reset circuits (the things you love to hate).
-> > 
-> > The MDIO bus layer supports something like this which is much more accurate
-> > in describing the reset GPIOs pertaining to each PHY device:
-> > 
-> > 	mdio {
-> > 		..
-> > 		phy0: ethernet-phy@0 {
-> > 			reg = <0>;
-> > 			reset-gpios = <&slg7xl45106 5 GPIO_ACTIVE_HIGH>;
-> > 		};
-> > 		phy1: ethernet-phy@8 {
-> > 			reg = <8>;
-> > 			reset-gpios = <&slg7xl45106 6 GPIO_ACTIVE_HIGH>;
-> > 		};
-> > 	};
-> > 
-> > The code that will parse that property is in drivers/net/phy/mdio_bus.c under
-> > mdiobus_register_gpiod()/mdiobus_register_reset() and then
-> > mdio_device_reset() called by phy_device_reset() will pulse the per-PHY device
-> > reset line/GPIO.
-> > 
-> > Are you saying that you tried that and this did not work somehow? Can you
-> > describe in more details how the timing of the reset pulsing affects the way
-> > each TI PHY is going to gets its MDIO address assigned?
-> 
-> Yes, having reset-gpios in PHY node is not working.  Just to highlight - We are
-> using external strap configuration for PHY Address configuration. The strap
-> pin configuration is set by sw stack at a later stage. PHY address on 
-> power on is configured based on sampled values at strap pins which is not
-> PHY address mentioned in DT. (It could be any PHY Address depending on
-> strap pins default input). For PHY detect to happen at proper PHY Address
-> we have call PHY reset (RESET_B) after strap pins are configured otherwise 
-> probe (of_mdiobus_phy_device_register) fails and we see below error:
-> 
-> mdio_bus ff0c0000.ethernet-ffffffff: MDIO device at address 8 is missing.
+Sun, Oct 31, 2021 at 01:12:49AM CEST, kuba@kernel.org wrote:
+>This implements what I think is the right direction for devlink
+>API overhaul. It's an early RFC/PoC because the body of code is
+>rather large so I'd appreciate feedback early... The patches are
+>very roughly split, the point of the posting is primarily to prove
+>that from the driver side the conversion is an net improvement
+>in complexity.
+>
+>IMO the problems with devlink locking are caused by two things:
+>
+> (1) driver has no way to block devlink calls like it does in case
+>     of netedev / rtnl_lock, note that for devlink each driver has
+>     it's own lock so contention is not an issue;
+>     
+> (2) sometimes devlink calls into the driver without holding its lock
+>     - for operations which may need the driver to call devlink (port
+>     splitting, switch config, reload etc.), the circular dependency
+>     is there, the driver can't solve this problem.
+>
+>This set "fixes" the ordering by allowing the driver to participate
+>in locking. The lock order remains:
+>
+>  device_lock -> [devlink_mutex] -> devlink instance -> rtnl_lock
+>
+>but now driver can take devlink lock itself, and _ALL_ devlink ops
+>are locked.
+>
+>The expectation is that driver will take the devlink instance lock
+>on its probe and remove paths, hence protecting all configuration
+>paths with the devlink instance lock.
+>
+>This is clearly demonstrated by the netdevsim conversion. All entry
+>points to driver config are protected by devlink instance lock, so
+>the driver switches to the "I'm already holding the devlink lock" API
+>when calling devlink. All driver locks and trickery is removed.
+>
+>The part which is slightly more challanging is quiescing async entry
+>points which need to be closed on the devlink reload path (workqueue,
+>debugfs etc.) and which also take devlink instance lock. For that we
+>need to be able to take refs on the devlink instance and let them
+>clean up after themselves rather than waiting synchronously.
+>
+>That last part is not 100% finished in this patch set - it works but
+>we need the driver to take devlink_mutex (the global lock) from its
+>probe/remove path. I hope this is good enough for an RFC, the problem
+>is easily solved by protecting the devlink XArray with something else
+>than devlink_mutex and/or not holding devlink_mutex around each op
+>(so that there is no ordering between the global and instance locks).
+>Speaking of not holding devlink_mutex around each op this patch set
+>also opens the path for parallel ops to different devlink instances
+>which is currently impossible because all user space calls take
+>devlink_mutex...
+>
+>The patches are on top of the cleanups I posted earlier.
 
-This is a well-known problem with placing resets in the PHY node. In
-this case, you must add a compatible property as well that matches
-"ethernet-phy-id[a-f0-9]{4}\\.[a-f0-9]{4}" so that phylib knows the
-contents of the ID registers.
+Hi Jakub.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+I took my time to read this thread and talked with Leon as well.
+My original intention of locking in devlink was to maintain the locking
+inside devlink.c to avoid the rtnl_lock-scenario.
+
+However, I always feared that eventually we'll get to the point,
+when it won't be possible to maintain any longer. I think may be it.
+
+In general, I like your approach. It is very clean and explicit. The
+driver knows what to do, in which context it is and it can behave
+accordingly. In theory or course, but the reality of drivers code tells
+us often something different :)
+
+One small thing I don't fully undestand is the "opt-out" scenario which
+makes things a bit tangled. But perhaps you can explain it a bit more.
+
+Leon claims that he thinks that he would be able to solve the locking
+scheme leaving all locking internal to devlink.c. I suggest to give
+him a week or 2 to present the solution. If he is not successful, lets
+continue on your approach.
+
+What do you think?
+
+Thanks!
+
+>
+>Jakub Kicinski (5):
+>  devlink: add unlocked APIs
+>  devlink: add API for explicit locking
+>  devlink: allow locking of all ops
+>  netdevsim: minor code move
+>  netdevsim: use devlink locking
+>
+> drivers/net/netdevsim/bus.c       |  19 -
+> drivers/net/netdevsim/dev.c       | 450 ++++++++-------
+> drivers/net/netdevsim/fib.c       |  62 +--
+> drivers/net/netdevsim/netdevsim.h |   5 -
+> include/net/devlink.h             |  88 +++
+> net/core/devlink.c                | 875 +++++++++++++++++++++---------
+> 6 files changed, 996 insertions(+), 503 deletions(-)
+>
+>-- 
+>2.31.1
+>
