@@ -2,23 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C76A44490F
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 20:38:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CE0C444917
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 20:38:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231265AbhKCTlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 15:41:09 -0400
-Received: from todd.t-8ch.de ([159.69.126.157]:55531 "EHLO todd.t-8ch.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230441AbhKCTlH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Nov 2021 15:41:07 -0400
+        id S231335AbhKCTlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 15:41:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44788 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229918AbhKCTlI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 15:41:08 -0400
+Received: from todd.t-8ch.de (todd.t-8ch.de [IPv6:2a01:4f8:c010:41de::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51BA6C061714;
+        Wed,  3 Nov 2021 12:38:31 -0700 (PDT)
 From:   =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=weissschuh.net;
         s=mail; t=1635968309;
-        bh=R/4AG9vLH5gheMs6GHXMBsH1IwvhwsPI0SJ8kMELE9U=;
+        bh=1lvpZBMnAiuoh4ysYuD5bGBkS7W06lh/Tvn7af7xom4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sA+3LazFHbb2drW5DJ9iQnl4eWVgM0XsJF3P5woPPasdkd9cZYA1LHi8WQJ7L0Zog
-         S3DVJ2BXAH4hL3NYr1M10MgAcdnkQs11cuq6iXAOUxwjySWJbS7M+Xi+JLALEPwwME
-         z6xfjt9R4MotGtI/jR1aI4B4VWxSz4nfyBG/0Q1I=
+        b=V0vse0iZPtrez5azQFc4VRg+v50Qjlu533fDW9EO24pn6RadYpzudPv2eBVRKdhBv
+         Ldmwe1uopJf2M5qCpN5zOFHyqBvRTBZIC06gXi0mrxvak4Nsq+tf5C6DqwETqbFWL9
+         0+JoW1z7UT/7goMsweC24PQaCICTYUDx7BHpP5IA=
 To:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
 Cc:     =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>,
         Dominique Martinet <asmadeus@codewreck.org>,
@@ -28,9 +31,9 @@ Cc:     =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Stefano Stabellini <stefano@aporeto.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/4] net/9p: autoload transport modules
-Date:   Wed,  3 Nov 2021 20:38:20 +0100
-Message-Id: <20211103193823.111007-2-linux@weissschuh.net>
+Subject: [PATCH v2 2/4] 9p/trans_fd: split into dedicated module
+Date:   Wed,  3 Nov 2021 20:38:21 +0100
+Message-Id: <20211103193823.111007-3-linux@weissschuh.net>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211103193823.111007-1-linux@weissschuh.net>
 References: <20211103193823.111007-1-linux@weissschuh.net>
@@ -41,136 +44,146 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Automatically load transport modules based on the trans= parameter
-passed to mount.
-This removes the requirement for the user to know which module to use.
+This allows these transports only to be used when needed.
 
 Signed-off-by: Thomas Weißschuh <linux@weissschuh.net>
 ---
- include/net/9p/transport.h |  8 +++++++-
- net/9p/mod.c               | 30 ++++++++++++++++++++++++------
- net/9p/trans_rdma.c        |  1 +
- net/9p/trans_virtio.c      |  1 +
- net/9p/trans_xen.c         |  1 +
- 5 files changed, 34 insertions(+), 7 deletions(-)
+ include/net/9p/9p.h |  2 --
+ net/9p/Kconfig      |  7 +++++++
+ net/9p/Makefile     |  5 ++++-
+ net/9p/mod.c        |  2 --
+ net/9p/trans_fd.c   | 14 ++++++++++++--
+ 5 files changed, 23 insertions(+), 7 deletions(-)
 
-diff --git a/include/net/9p/transport.h b/include/net/9p/transport.h
-index 3eb4261b2958..b9a009534f99 100644
---- a/include/net/9p/transport.h
-+++ b/include/net/9p/transport.h
-@@ -11,6 +11,8 @@
- #ifndef NET_9P_TRANSPORT_H
- #define NET_9P_TRANSPORT_H
+diff --git a/include/net/9p/9p.h b/include/net/9p/9p.h
+index 03614de86942..f420f8cb378d 100644
+--- a/include/net/9p/9p.h
++++ b/include/net/9p/9p.h
+@@ -553,6 +553,4 @@ struct p9_fcall {
+ int p9_errstr2errno(char *errstr, int len);
  
-+#include <linux/module.h>
-+
- #define P9_DEF_MIN_RESVPORT	(665U)
- #define P9_DEF_MAX_RESVPORT	(1023U)
+ int p9_error_init(void);
+-int p9_trans_fd_init(void);
+-void p9_trans_fd_exit(void);
+ #endif /* NET_9P_H */
+diff --git a/net/9p/Kconfig b/net/9p/Kconfig
+index 64468c49791f..af601129f1bb 100644
+--- a/net/9p/Kconfig
++++ b/net/9p/Kconfig
+@@ -15,6 +15,13 @@ menuconfig NET_9P
  
-@@ -52,7 +54,11 @@ struct p9_trans_module {
+ if NET_9P
  
- void v9fs_register_trans(struct p9_trans_module *m);
- void v9fs_unregister_trans(struct p9_trans_module *m);
--struct p9_trans_module *v9fs_get_trans_by_name(char *s);
-+struct p9_trans_module *v9fs_get_trans_by_name(const char *s);
- struct p9_trans_module *v9fs_get_default_trans(void);
- void v9fs_put_trans(struct p9_trans_module *m);
++config NET_9P_FD
++	depends on VIRTIO
++	tristate "9P FD Transport"
++	help
++	  This builds support for transports over TCP, Unix sockets and
++	  filedescriptors.
 +
-+#define MODULE_ALIAS_9P(transport) \
-+	MODULE_ALIAS("9p-" transport)
+ config NET_9P_VIRTIO
+ 	depends on VIRTIO
+ 	tristate "9P Virtio Transport"
+diff --git a/net/9p/Makefile b/net/9p/Makefile
+index aa0a5641e5d0..1df9b344c30b 100644
+--- a/net/9p/Makefile
++++ b/net/9p/Makefile
+@@ -1,5 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+ obj-$(CONFIG_NET_9P) := 9pnet.o
++obj-$(CONFIG_NET_9P_FD) += 9pnet_fd.o
+ obj-$(CONFIG_NET_9P_XEN) += 9pnet_xen.o
+ obj-$(CONFIG_NET_9P_VIRTIO) += 9pnet_virtio.o
+ obj-$(CONFIG_NET_9P_RDMA) += 9pnet_rdma.o
+@@ -9,9 +10,11 @@ obj-$(CONFIG_NET_9P_RDMA) += 9pnet_rdma.o
+ 	client.o \
+ 	error.o \
+ 	protocol.o \
+-	trans_fd.o \
+ 	trans_common.o \
+ 
++9pnet_fd-objs := \
++	trans_fd.o \
 +
- #endif /* NET_9P_TRANSPORT_H */
+ 9pnet_virtio-objs := \
+ 	trans_virtio.o \
+ 
 diff --git a/net/9p/mod.c b/net/9p/mod.c
-index 5126566850bd..c95416c1d1a2 100644
+index c95416c1d1a2..8f1d067b272e 100644
 --- a/net/9p/mod.c
 +++ b/net/9p/mod.c
-@@ -12,6 +12,7 @@
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+@@ -182,7 +182,6 @@ static int __init init_p9(void)
  
- #include <linux/module.h>
-+#include <linux/kmod.h>
- #include <linux/errno.h>
- #include <linux/sched.h>
- #include <linux/moduleparam.h>
-@@ -87,12 +88,7 @@ void v9fs_unregister_trans(struct p9_trans_module *m)
+ 	p9_error_init();
+ 	pr_info("Installing 9P2000 support\n");
+-	p9_trans_fd_init();
+ 
+ 	return ret;
  }
- EXPORT_SYMBOL(v9fs_unregister_trans);
- 
--/**
-- * v9fs_get_trans_by_name - get transport with the matching name
-- * @s: string identifying transport
-- *
-- */
--struct p9_trans_module *v9fs_get_trans_by_name(char *s)
-+static struct p9_trans_module *_p9_get_trans_by_name(const char *s)
+@@ -196,7 +195,6 @@ static void __exit exit_p9(void)
  {
- 	struct p9_trans_module *t, *found = NULL;
+ 	pr_info("Unloading 9P2000 support\n");
  
-@@ -106,6 +102,28 @@ struct p9_trans_module *v9fs_get_trans_by_name(char *s)
- 		}
- 
- 	spin_unlock(&v9fs_trans_lock);
-+
-+	return found;
-+}
-+
-+/**
-+ * v9fs_get_trans_by_name - get transport with the matching name
-+ * @s: string identifying transport
-+ *
-+ */
-+struct p9_trans_module *v9fs_get_trans_by_name(const char *s)
-+{
-+	struct p9_trans_module *found = NULL;
-+
-+	found = _p9_get_trans_by_name(s);
-+
-+#ifdef CONFIG_MODULES
-+	if (!found) {
-+		request_module("9p-%s", s);
-+		found = _p9_get_trans_by_name(s);
-+	}
-+#endif
-+
- 	return found;
+-	p9_trans_fd_exit();
+ 	p9_client_exit();
  }
- EXPORT_SYMBOL(v9fs_get_trans_by_name);
-diff --git a/net/9p/trans_rdma.c b/net/9p/trans_rdma.c
-index af0a8a6cd3fd..480fd27760d7 100644
---- a/net/9p/trans_rdma.c
-+++ b/net/9p/trans_rdma.c
-@@ -767,6 +767,7 @@ static void __exit p9_trans_rdma_exit(void)
  
- module_init(p9_trans_rdma_init);
- module_exit(p9_trans_rdma_exit);
-+MODULE_ALIAS_9P("rdma");
+diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+index 007bbcc68010..e3f4a7a5c845 100644
+--- a/net/9p/trans_fd.c
++++ b/net/9p/trans_fd.c
+@@ -1092,6 +1092,7 @@ static struct p9_trans_module p9_tcp_trans = {
+ 	.show_options = p9_fd_show_options,
+ 	.owner = THIS_MODULE,
+ };
++MODULE_ALIAS_9P("tcp");
  
- MODULE_AUTHOR("Tom Tucker <tom@opengridcomputing.com>");
- MODULE_DESCRIPTION("RDMA Transport for 9P");
-diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
-index 490a4c900339..bd5a89c4960d 100644
---- a/net/9p/trans_virtio.c
-+++ b/net/9p/trans_virtio.c
-@@ -794,6 +794,7 @@ static void __exit p9_virtio_cleanup(void)
+ static struct p9_trans_module p9_unix_trans = {
+ 	.name = "unix",
+@@ -1105,6 +1106,7 @@ static struct p9_trans_module p9_unix_trans = {
+ 	.show_options = p9_fd_show_options,
+ 	.owner = THIS_MODULE,
+ };
++MODULE_ALIAS_9P("unix");
  
- module_init(p9_virtio_init);
- module_exit(p9_virtio_cleanup);
-+MODULE_ALIAS_9P("virtio");
+ static struct p9_trans_module p9_fd_trans = {
+ 	.name = "fd",
+@@ -1118,6 +1120,7 @@ static struct p9_trans_module p9_fd_trans = {
+ 	.show_options = p9_fd_show_options,
+ 	.owner = THIS_MODULE,
+ };
++MODULE_ALIAS_9P("fd");
  
- MODULE_DEVICE_TABLE(virtio, id_table);
- MODULE_AUTHOR("Eric Van Hensbergen <ericvh@gmail.com>");
-diff --git a/net/9p/trans_xen.c b/net/9p/trans_xen.c
-index 3ec1a51a6944..e264dcee019a 100644
---- a/net/9p/trans_xen.c
-+++ b/net/9p/trans_xen.c
-@@ -552,6 +552,7 @@ static int p9_trans_xen_init(void)
- 	return rc;
+ /**
+  * p9_poll_workfn - poll worker thread
+@@ -1151,7 +1154,7 @@ static void p9_poll_workfn(struct work_struct *work)
+ 	p9_debug(P9_DEBUG_TRANS, "finish\n");
  }
- module_init(p9_trans_xen_init);
-+MODULE_ALIAS_9P("xen");
  
- static void p9_trans_xen_exit(void)
+-int p9_trans_fd_init(void)
++static int __init p9_trans_fd_init(void)
  {
+ 	v9fs_register_trans(&p9_tcp_trans);
+ 	v9fs_register_trans(&p9_unix_trans);
+@@ -1160,10 +1163,17 @@ int p9_trans_fd_init(void)
+ 	return 0;
+ }
+ 
+-void p9_trans_fd_exit(void)
++static void __exit p9_trans_fd_exit(void)
+ {
+ 	flush_work(&p9_poll_work);
+ 	v9fs_unregister_trans(&p9_tcp_trans);
+ 	v9fs_unregister_trans(&p9_unix_trans);
+ 	v9fs_unregister_trans(&p9_fd_trans);
+ }
++
++module_init(p9_trans_fd_init);
++module_exit(p9_trans_fd_exit);
++
++MODULE_AUTHOR("Eric Van Hensbergen <ericvh@gmail.com>");
++MODULE_DESCRIPTION("Filedescriptor Transport for 9P");
++MODULE_LICENSE("GPL");
 -- 
 2.33.1
 
