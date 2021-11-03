@@ -2,124 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57B5E443A38
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 01:05:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92C52443A53
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 01:13:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230251AbhKCAIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Nov 2021 20:08:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60292 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229934AbhKCAIJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Nov 2021 20:08:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CE31361051;
-        Wed,  3 Nov 2021 00:05:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1635897933;
-        bh=Bnssn3LqCZ80eifiUOFqHIVqphIW0K5AHUtTlX1DdB8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dpI3xFG8Dk/g8Gn6usp2MiLlvsy5JQJ31haxWp19/7pYiYqZQaoAmKDPoSLlBWGhl
-         6suhiqLHJyIbma78c3w/5C05k9vhQ0DCZuFUADnBvpC95c0lY159fbwQkngqHOY9jm
-         QJyTn5JgaGzH+XRxG4AhKlHGyPaEFIIVrxJe5rJFXm7Bp/b5x5uUTyS860TRP2ro29
-         UPhTeDNtIfgZbDAZxFjItkTv1QUZUxptzYKfZgC350vRWsmqCU7+2X3z/hAZnezSoX
-         HdGiCIl714nckU+2JURQxBWG21/OVUeRBFp21oLgZfsuyqU9OIMbUCmfEn8UoJgitb
-         cDKumOeSzoVgQ==
-Date:   Tue, 2 Nov 2021 17:05:30 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     idosch@idosch.org, edwin.peer@broadcom.com, jiri@resnulli.us,
-        netdev@vger.kernel.org
-Subject: Re: [RFC 0/5] devlink: add an explicit locking API
-Message-ID: <20211102170530.49f8ab4e@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <YYF//p5mDQ2/reOD@unreal>
-References: <20211030231254.2477599-1-kuba@kernel.org>
-        <YX5Efghyxu5g8kzY@unreal>
-        <20211101073259.33406da3@kicinski-fedora-PC1C0HJN>
-        <YYAzn+mtrGp/As74@unreal>
-        <20211101141613.3373b7f4@kicinski-fedora-PC1C0HJN>
-        <YYDyBxNzJSpKXosy@unreal>
-        <20211102081412.6d4e2275@kicinski-fedora-PC1C0HJN>
-        <YYF//p5mDQ2/reOD@unreal>
+        id S232357AbhKCAPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Nov 2021 20:15:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34916 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233226AbhKCAPY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Nov 2021 20:15:24 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C07BC061714;
+        Tue,  2 Nov 2021 17:12:49 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id b4so791423pgh.10;
+        Tue, 02 Nov 2021 17:12:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=sVponJRFQk6xcvhX2MIVmWhLebQPmXI4+qFJ5f+Bhmg=;
+        b=PgYcbMUvhevtKd+t1TTrND9SDCMrv8fIFo1H2XWkFbhXQnPJCZ+OY43VKfXsOvcx82
+         kN0qwQHGR6C0Zx6gk4blvMi8IhaHOqcV4/FYgaaMRHDZftuL3aaIzIbw73wfvkIdv9ex
+         nGt0Pi+0uEKR0/wmYspxR+Y+GyWzUaVNsQPgmPBEYW/ZS7HRBPW9G7Nge+M0f24AcY43
+         IZubGm7HB7Vd+iy13n9eOVbsk8wxT0nArxyrNCUKpG2hVL3Jot/QI1HZvNySyA5YD3QT
+         Jshf1yx+LhDVhxbBRqV3d8Exg4bawEJKMIMnEKkWW9NVpLJpefIXVvEkPye/+oBhJ1DZ
+         2biw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sVponJRFQk6xcvhX2MIVmWhLebQPmXI4+qFJ5f+Bhmg=;
+        b=Pf6o/4jPtsGrLBKCnpBtbLdLKKdWPBdVRuHgmfVIyJI2aIfDSHOaZnmIW9ZSFx95xW
+         5JMoSerHoZiDbtc/tgWKdhMyxexkFbN/P3wFJUmoCokEgQj2alFOm7gbCZFn5/0Hek9c
+         lt4vqHG5ESNpdKmgxfHVkeTPe5ZlYDv+QJER9AVFm0EcBQusoePzCVDCIvqngWL6+LC4
+         1yq+nXGoCWggXitntopaTZGjEaDcUvphzV3svP5gwzzMKE08H1amWsZ62hWigNya1VrX
+         Wq8gsKp3n9S4Ax7+1U4ZcbuCenUWPkIueCCafNuydCJTonG9Sx1rb3Wz/COe5ILnUVkY
+         KsZQ==
+X-Gm-Message-State: AOAM530X9ArHGA4b4aEt7Lg4Dymae+8R9G7cgrb5o8YQscnlcQUIVS42
+        prLjZWDEyWY2M9R8zvlMPZA=
+X-Google-Smtp-Source: ABdhPJweXm1x9FcIlmiWgH7VbqI6S7ngxwuPu04X4F4/FqlpFWYg1CDxzy10sDN2pniI43Fcui4EIg==
+X-Received: by 2002:aa7:9208:0:b0:44d:3044:baf0 with SMTP id 8-20020aa79208000000b0044d3044baf0mr39862209pfo.73.1635898368541;
+        Tue, 02 Nov 2021 17:12:48 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:9df1])
+        by smtp.gmail.com with ESMTPSA id t4sm295995pfj.13.2021.11.02.17.12.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Nov 2021 17:12:48 -0700 (PDT)
+Date:   Tue, 2 Nov 2021 17:12:45 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Joe Burton <jevburton.kernel@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Petar Penkov <ppenkov@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Joe Burton <jevburton@google.com>
+Subject: Re: [RFC PATCH v3 0/3] Introduce BPF map tracing capability
+Message-ID: <20211103001245.muyte7exph23tmco@ast-mbp.dhcp.thefacebook.com>
+References: <20211102021432.2807760-1-jevburton.kernel@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211102021432.2807760-1-jevburton.kernel@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2 Nov 2021 20:14:22 +0200 Leon Romanovsky wrote:
-> > > Thanks =20
-> >=20
-> > Not sure what you're thanking for. I still prefer two explicit APIs.
-> > Allowing nesting is not really necessary here. Callers know whether
-> > they hold the lock or not. =20
->=20
-> I'm doubt about. It maybe easy to tell in reload flow, but it is much
-> harder inside eswitch mode change (as an example).
+On Tue, Nov 02, 2021 at 02:14:29AM +0000, Joe Burton wrote:
+> From: Joe Burton <jevburton@google.com>
+> 
+> This is the third version of a patch series implementing map tracing.
+> 
+> Map tracing enables executing BPF programs upon BPF map updates. This
+> might be useful to perform upgrades of stateful programs; e.g., tracing
+> programs can propagate changes to maps that occur during an upgrade
+> operation.
+> 
+> This version uses trampoline hooks to provide the capability.
+> fentry/fexit/fmod_ret programs can attach to two new functions:
+>         int bpf_map_trace_update_elem(struct bpf_map* map, void* key,
+>                 void* val, u32 flags);
+>         int bpf_map_trace_delete_elem(struct bpf_map* map, void* key);
+> 
+> These hooks work as intended for the following map types:
+>         BPF_MAP_TYPE_ARRAY
+>         BPF_MAP_TYPE_PERCPU_ARRAY
+>         BPF_MAP_TYPE_HASH
+>         BPF_MAP_TYPE_PERCPU_HASH
+>         BPF_MAP_TYPE_LRU_HASH
+>         BPF_MAP_TYPE_LRU_PERCPU_HASH
+> 
+> The only guarantee about the semantics of these hooks is that they execute
+> before the operation takes place. We cannot call them with locks held
+> because the hooked program might try to acquire the same locks. Thus they
+> may be invoked in situations where the traced map is not ultimately
+> updated.
+> 
+> The original proposal suggested exposing a function for each
+> (map type) x (access type). The problem I encountered is that e.g.
+> percpu hashtables use a custom function for some access types
+> (htab_percpu_map_update_elem) but a common function for others
+> (htab_map_delete_elem). Thus a userspace application would have to
+> maintain a unique list of functions to attach to for each map type;
+> moreover, this list could change across kernel versions. Map tracing is
+> easier to use with fewer functions, at the cost of tracing programs
+> being triggered more times.
 
-Hm, interesting counter example, why is eswitch mode change harder?
-=46rom devlink side they should be locked the same, and I take the
-devlink lock on all driver callbacks (probe, remove, sriov).
+Good point about htab_percpu.
+The patches look good to me.
+Few minor bits:
+- pls don't use #pragma once.
+  There was a discussion not too long ago about it and the conclusion
+  was that let's not use it.
+  It slipped into few selftest/bpf, but let's not introduce more users.
+- noinline is not needed in prototype.
+- bpf_probe_read is deprecated. Pls use bpf_probe_read_kernel.
 
-> > > I need RW as a way to ensure "exclusive" access during _set_ operatio=
-n.
-> > > It is not an optimization, but simple way to understand if parallel
-> > > access is possible at this specific point of time. =20
-> >=20
-> > How is this not an optimization to allow parallel "reads"? =20
->=20
-> You need to stop everything when _set_ command is called. One way is to
-> require for all netlink devlink calls to have lock, another solution is
-> to use RW semaphore. This is why it is not optimization, but an implement=
-ation.
-> Parallel "reads" are nice bonus.
+and thanks for detailed patch 3.
 
-Sorry I still don't understand. Why is devlink instance lock not
-enough? Are you saying parallel get is a hard requirement for the
-rework?
+> To prevent the compiler from optimizing out the calls to my tracing
+> functions, I use the asm("") trick described in gcc's
+> __attribute__((noinline)) documentation. Experimentally, this trick
+> works with clang as well.
 
-> > > I don't know yet, because as you wrote before netdevsim is for
-> > > prototyping and such ABBA deadlock doesn't exist in real devices.
-> > >=20
-> > > My current focus is real devices for now. =20
-> >=20
-> > I wrote it with nfp in mind as well. It has a delayed work which needs
-> > to take the port lock. Sadly I don't have any nfps handy and I didn't
-> > want to post an untested patch. =20
->=20
-> Do you remember why was port configuration implemented with delayed work?
+I think noinline is enough. I don't think you need that asm in there.
 
-IIRC it was because of the FW API for link info, all ports would get
-accessed at once so we used a work which would lock out devlink port
-splitting and update state of all ports.
+In parallel let's figure out how to do:
+SEC("fentry/bpf_map_trace_update_elem")
+int BPF_PROG(copy_on_write__update,
+             struct bpf_map *map,
+             struct allow_reads_key__old *key,
+             void *value, u64 map_flags)
 
-Link state has to be read under rtnl_lock, yet port splitting needs=20
-to take rtnl_lock to register new netdevs so there was no prettier=20
-way to solve this.
+It kinda sucks that bpf_probe_read_kernel is necessary to read key/values.
+It would be much nicer to be able to specify the exact struct for the key and
+access it directly.
+The verifier does this already for map iterator.
+It's 'void *' on the kernel side while iterator prog can cast this pointer
+to specific 'struct key *' and access it directly.
+See bpf_iter_reg->ctx_arg_info and btf_ctx_access().
 
-> > > I clearly remember this patch and the sentence "...in
-> > > some devices' resume function(igb_resum,igc_resume) they calls rtnl_l=
-ock()
-> > > again". The word "... some ..." hints to me that maintainers have dif=
-ferent
-> > > opinion on how to use rtnl_lock.
-> > >=20
-> > > https://lore.kernel.org/netdev/20210809032809.1224002-1-acelan.kao@ca=
-nonical.com/ =20
-> >=20
-> > Yes, using rtnl_lock for PM is certainly a bad idea, and I'm not sure
-> > why Intel does it. There are 10s of drivers which take rtnl_lock
-> > correctly and it greatly simplifies their lives. =20
->=20
-> I would say that you are ignoring that most of such drivers don't add
-> new functionality.
+For fentry into bpf_map_trace_update_elem it's a bit more challenging,
+since it will be called for all maps and there is no way to statically
+check that specific_map->key_size is within prog->aux->max_rdonly_access.
 
-You lost me again. You don't disagree that ability to lock out higher
-layers is useful for drivers but... ?
-
-> Anyway, I got your point, please give me time to see what I can do.
->=20
-> In case, we will adopt your model, will you convert all drivers?
-
-Yes, sure. The way this RFC is done it should be possible to land=20
-it without any driver changes and then go driver by driver. I find
-that approach much more manageable.
+May be we can do a dynamic cast helper (simlar to those that cast sockets)
+that will check for key_size at run-time?
+Another alternative is to allow 'void *' -> PTR_TO_BTF_ID conversion
+and let inlined probe_read do the job.
