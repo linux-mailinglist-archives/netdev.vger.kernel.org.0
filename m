@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04D90444317
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 15:10:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B854C44431A
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 15:10:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231517AbhKCOMp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 10:12:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36348 "EHLO mail.kernel.org"
+        id S231869AbhKCOMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 10:12:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36352 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230527AbhKCOMo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231131AbhKCOMo (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 3 Nov 2021 10:12:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 19EA5610FD;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 32D4E6113E;
         Wed,  3 Nov 2021 14:10:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1635948608;
-        bh=BBg/FnAjGaRt92WhYyr7ILk51DRhyJHZCYUUgze85xg=;
+        bh=kn+4TsjHiThzYZ8w0WNWCTaQhG8XzIsqFBqetlc2WeU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=iPA/TA7h5bZbeH+o6q4jXKpcXePojLy/PlS87HDrfUt0Ovf/BCQ21xVFG4mm7jCbk
-         srI5W+tql+jSOlZzW3oOJgibBSpHLS9MnFf0PQQPc+EJRQR8w370+IjHQl5GEf8czJ
-         JiGR0METeE7IwDrqroMKqYZmwK56yDbRcJJZdy7xV8SqiSDAm5I4oKTIVjbf/QubPx
-         HXvchZ2jZJShxENTz14396YfLqCXoQZCZ+8/JXizTlx0AiiYoi3hw5X4NCbuSuCuE+
-         +imG5Xlinllt8ofa0AROqasiVm6DoYsfw1f4ebB6STHnXQgJQrjRH76+MiKc9Cg6kq
-         Z2KhQL6giHs9w==
+        b=WwT0VnL1vN7MbPW9t6QAh3vSxF4QbTnbqk5dfDcBZ3X5whmTHUSMOV0DIYF1B+cd0
+         P5te43W0ExVl4BrVh1bT3+vmdUpFB9zdaBkQXEnUB02STnAEI049orL3yMn43BPwZx
+         cEnHyfOUZIxMJfhkq+A7imnwMQn8UAB6s/2gKXTNaeIbUXB9VY9rvgxIlNfFKUlXK4
+         EPYs79smYZp/g4yx+gVVo8lQj4S9Ng+nKrhZzLIcWvGcP+/bIuN8ZDZ5vnl4cc8ZQ3
+         mXO7Nh0tcMr3jz+z0Ce7uFWBhIP5sR/pY8D62w+vfBmiu5x5tNo37MHsHHMhj5zdf8
+         YpKrQH+CQEX0A==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0E06C60176;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1C2D060A4E;
         Wed,  3 Nov 2021 14:10:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: udp6: replace __UDP_INC_STATS() with
- __UDP6_INC_STATS()
+Subject: Re: [PATCH net v2] ethtool: fix ethtool msg len calculation for pause
+ stats
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163594860805.30241.17271851271113294575.git-patchwork-notify@kernel.org>
+Message-Id: <163594860810.30241.5195872083246136745.git-patchwork-notify@kernel.org>
 Date:   Wed, 03 Nov 2021 14:10:08 +0000
-References: <20211103082843.521796-1-imagedong@tencent.com>
-In-Reply-To: <20211103082843.521796-1-imagedong@tencent.com>
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     yoshfuji@linux-ipv6.org, davem@davemloft.net, dsahern@kernel.org,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, imagedong@tencent.com
+References: <20211102220236.3803742-1-kuba@kernel.org>
+In-Reply-To: <20211102220236.3803742-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, saeedm@nvidia.com,
+        mkubecek@suse.cz, andrew@lunn.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -49,20 +48,20 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Wed,  3 Nov 2021 16:28:43 +0800 you wrote:
-> From: Menglong Dong <imagedong@tencent.com>
+On Tue,  2 Nov 2021 15:02:36 -0700 you wrote:
+> ETHTOOL_A_PAUSE_STAT_MAX is the MAX attribute id,
+> so we need to subtract non-stats and add one to
+> get a count (IOW -2+1 == -1).
 > 
-> __UDP_INC_STATS() is used in udpv6_queue_rcv_one_skb() when encap_rcv()
-> fails. __UDP6_INC_STATS() should be used here, so replace it with
-> __UDP6_INC_STATS().
+> Otherwise we'll see:
 > 
-> Signed-off-by: Menglong Dong <imagedong@tencent.com>
+>   ethnl cmd 21: calculated reply length 40, but consumed 52
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: udp6: replace __UDP_INC_STATS() with __UDP6_INC_STATS()
-    https://git.kernel.org/netdev/net/c/250962e46846
+  - [net,v2] ethtool: fix ethtool msg len calculation for pause stats
+    https://git.kernel.org/netdev/net/c/1aabe578dd86
 
 You are awesome, thank you!
 -- 
