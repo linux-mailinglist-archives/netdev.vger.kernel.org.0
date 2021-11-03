@@ -2,237 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2B55444291
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 14:38:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D53714442A4
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 14:50:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232012AbhKCNlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 09:41:05 -0400
-Received: from mail-dm6nam11on2115.outbound.protection.outlook.com ([40.107.223.115]:10784
-        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        id S231607AbhKCNxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 09:53:14 -0400
+Received: from mail-dm6nam12on2045.outbound.protection.outlook.com ([40.107.243.45]:1632
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232058AbhKCNlE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Nov 2021 09:41:04 -0400
+        id S230213AbhKCNxN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Nov 2021 09:53:13 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NXFNIrKfBs62jF4Yc2EXEU3zLsvojD3ADuDm/Vo+Q2EysRqIcE2IJhXYVydZRDhPDUEZ1g2VuzwfgGrcsuJmrMD3w+NTDkdGyum1UvRUcix1QRHK9V4m/mojpWTRgqlChIYevGgDWy8/u7Q5AJ7F0I0zUBnvWBjHVyBnQgCJF7P6MkiO6esL32SSuxFyvRby+NaXdonfrVsLaqY2jmb1uw7fO4HNlPL2WRUhg95sKxpX6LZCfyOFd0cPlv5afGe77CB5/xd7yvY2JG0H6/HOMdar+PtaahC/qCYkg3w/MrPtgNpE8EM0RztRAO+MaAiI7qCwwBoF9QY4LgSM6f7ziQ==
+ b=SNlWEqQMx+z4m5RyZeS1wPux5iWXrgweFlUKDXe8dtWgT40+QpjluJjMTg7Pf9lZTQTHCqmgIJB/i00d715Upmm4Y7SED2fKFcua2waVMV3N3z+LVveP86fEC3Gdd1MNyXtk1d0PaWuA7IXcKIVXykGjSSS6q62k+A2zpjoK9dN6n3G9iYneCfGTWLMdrkxsvag99nxJ1VSFGzvllJnW77tMjkFtiViDOZNseVVWOvkLAssF34Vco6emcV4u0nFOB4pDRnZZR/VyaVrAuqVOhEu8S4BT+fTfRFf4HlxU7WGWvPET5sBcJyHCWPZiR+0/O8XI/3S3uqw8LsKsfrmf6A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fBk13yK3xV5thK3Z1sjIFfGXVdLqs1iRYOtTRNo4h68=;
- b=XI9OCbalD3rQ5dfhntIoG840mW6HCx78X00IaHVRijHNzP8zKhhfoBpjigSfgfBAvNmepYQ+Kf7oeY+kOVH8NlrLdBiiRxHya94MMK/N7pCdysqYnjrRRXDc9f7DTgLUW7bmd9NybV/tbEs0LV0B3OkWOBxl0b4ba+jNpvRtSckxpAKgFioh5qmNp0UnWB3mmXJFClILuww9wGIemR6NUzpNfw/KdDlokHmJgGm9iKPUwPtuqXEY0nXo/mLrKSGPG8MNX13SxO8fSMAqgvbwa75sPv/uH0cOy0ViFBYHZdjJqszm/Euyo81KikVxaZ01H7j45lK7RDJRMBdpYBKfSw==
+ bh=mupIFXEBwFVzCwd6cniSSK023vRGtqMXuFb4gS2t9fg=;
+ b=Rwo17wSSewEF3JyrH/D2pu+lvnL5cZRKD84pJdMcFk/ORD9W8lFocsztCAtiw/oV7z3rn8eIAyEVI4OM2Z9A/7Pamc5/aVmqmEOGXEiJ8yK/34YrWUSo2EIWOlAksDnUWjuSsd4LiDOnR2HdMpkOeH/O5A27K0T5I1Nzw6KXuWD+x5sfBW77JVAqPx3rhFKqsu1z++HBwWt90Cbs7ocOKJRfuOBwqZ2C1fFTsuus+jNDar2dStiF+I9H7sQ3CTudsLdLrajVjz51K/rWsyamdHwZ4F+r7W5zG64uCgfGGB3ys/IBeEkMknNO9f025pnBLAmwAc3r/QQYcobG2XVrPQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fBk13yK3xV5thK3Z1sjIFfGXVdLqs1iRYOtTRNo4h68=;
- b=Vq7b09l0xS5ha0klB4tIxaxOm5/+ZAcIldOMHQ9c0cLsrhTnbhSuBNrcaAbymUC7moKewrmJteLQ6SlMw1unSHYmq9vN2CrRyWrKCi4qUT1WW16aDafSNYPYMrKKxzPpwXGvlRptNqbKt+1PKiJQc9uWMYPTy9hLAQsKmioNX/c=
-Authentication-Results: mojatatu.com; dkim=none (message not signed)
- header.d=none;mojatatu.com; dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB5668.namprd13.prod.outlook.com (2603:10b6:510:113::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.13; Wed, 3 Nov
- 2021 13:38:25 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::e1d9:64d0:cb4f:3e90]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::e1d9:64d0:cb4f:3e90%9]) with mapi id 15.20.4690.005; Wed, 3 Nov 2021
- 13:38:25 +0000
-Date:   Wed, 3 Nov 2021 14:38:17 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     Baowen Zheng <baowen.zheng@corigine.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Roi Dayan <roid@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Baowen Zheng <notifications@github.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        oss-drivers <oss-drivers@corigine.com>,
-        Oz Shlomo <ozsh@nvidia.com>
-Subject: Re: [RFC/PATCH net-next v3 8/8] flow_offload: validate flags of
- filter and actions
-Message-ID: <20211103133817.GB6555@corigine.com>
-References: <DM5PR1301MB21722A85B19EE97EFE27A5BBE7899@DM5PR1301MB2172.namprd13.prod.outlook.com>
- <d16042e3-bc1e-0a2b-043d-bbb62b1e68d7@mojatatu.com>
- <DM5PR1301MB21728931E03CFE4FA45C5DD3E78A9@DM5PR1301MB2172.namprd13.prod.outlook.com>
- <ygnhcznk9vgl.fsf@nvidia.com>
- <20211102123957.GA7266@corigine.com>
- <DM5PR1301MB2172F4949E810BDE380AF800E78C9@DM5PR1301MB2172.namprd13.prod.outlook.com>
- <428057ce-ccbc-3878-71aa-d5926f11248c@mojatatu.com>
- <DM5PR1301MB2172AD191B6A370C39641E3FE78C9@DM5PR1301MB2172.namprd13.prod.outlook.com>
- <66f350c5-1fd7-6132-3791-390454c97256@mojatatu.com>
- <10dae364-b649-92f8-11b0-f3628a6f550a@mojatatu.com>
-Content-Type: text/plain; charset=utf-8
+ bh=mupIFXEBwFVzCwd6cniSSK023vRGtqMXuFb4gS2t9fg=;
+ b=JQAPcltSwGtMeLOB1TKexWdr93y5MiHE/8T1xQzqbTv4u8ToiqIKNXOGH6yDecYnRSwjiUTp3wqMgHYODgpb1HZC1yX2HyPPY+gk56a0kpIxfB6n7uXL4tDpJJIu775NjuhPCd2l6E62CKWYL2l1RSLcChPyQPzVRHGw0l2w61pJTtTwFdGhvr/dA4+TicV/S6qy3qOz61m5E3qvBszkHjwDg2p+QolrUNcoCli+Lzv6pGMQU2miGn0hijtjCWGQA3rll6aarI/zXLtGCDDvNZt1DHr7n5y9xulH33LDfWThdQ7I/SVPC/OBXE5Q4+siKOCEeRPZTJN91/wc9xaUGw==
+Authentication-Results: huawei.com; dkim=none (message not signed)
+ header.d=none;huawei.com; dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB5520.namprd12.prod.outlook.com (2603:10b6:5:208::9) by
+ DM8PR12MB5397.namprd12.prod.outlook.com (2603:10b6:8:38::6) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4649.14; Wed, 3 Nov 2021 13:50:36 +0000
+Received: from DM6PR12MB5520.namprd12.prod.outlook.com
+ ([fe80::8817:6826:b654:6944]) by DM6PR12MB5520.namprd12.prod.outlook.com
+ ([fe80::8817:6826:b654:6944%6]) with mapi id 15.20.4649.020; Wed, 3 Nov 2021
+ 13:50:36 +0000
+Date:   Wed, 3 Nov 2021 10:50:34 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Ziyang Xuan <william.xuanziyang@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v2] net: vlan: fix a UAF in vlan_dev_real_dev()
+Message-ID: <20211103135034.GP2744544@nvidia.com>
+References: <20211102021218.955277-1-william.xuanziyang@huawei.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <10dae364-b649-92f8-11b0-f3628a6f550a@mojatatu.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: AM0PR06CA0083.eurprd06.prod.outlook.com
- (2603:10a6:208:fa::24) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+In-Reply-To: <20211102021218.955277-1-william.xuanziyang@huawei.com>
+X-ClientProxiedBy: MN2PR20CA0065.namprd20.prod.outlook.com
+ (2603:10b6:208:235::34) To DM6PR12MB5520.namprd12.prod.outlook.com
+ (2603:10b6:5:208::9)
 MIME-Version: 1.0
-Received: from corigine.com (80.113.23.202) by AM0PR06CA0083.eurprd06.prod.outlook.com (2603:10a6:208:fa::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.11 via Frontend Transport; Wed, 3 Nov 2021 13:38:23 +0000
+Received: from mlx.ziepe.ca (142.162.113.129) by MN2PR20CA0065.namprd20.prod.outlook.com (2603:10b6:208:235::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4669.11 via Frontend Transport; Wed, 3 Nov 2021 13:50:36 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1miGew-005e7T-Lp; Wed, 03 Nov 2021 10:50:34 -0300
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ac15600f-3aaa-48f5-5adf-08d99ecf35ee
-X-MS-TrafficTypeDiagnostic: PH0PR13MB5668:
-X-Microsoft-Antispam-PRVS: <PH0PR13MB56681F8B1F1490E9FFB8A200E88C9@PH0PR13MB5668.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:411;
+X-MS-Office365-Filtering-Correlation-Id: 73e6de8a-760f-4444-95b9-08d99ed0e9ad
+X-MS-TrafficTypeDiagnostic: DM8PR12MB5397:
+X-Microsoft-Antispam-PRVS: <DM8PR12MB5397A816BDB8E1F0A6592D6BC28C9@DM8PR12MB5397.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2449;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GWTUeqCbwVtWPiBOJGFNA2O31vXF4QGDTzZXmKNmN9PwyrLOaYtiIoeYa+Uj9dl5v5eSLwwkAB7ZxM1PEg8cDNUca6Z8I+kAMoLc5bvAmH4JY4BFigyxuaYJxym3E/netELYfBdncytXMZTg8kb4yiTLKLnOZpWsM9LrHr5RYNQ9AvCeQfyMjxBRig5KKgF77zyJ2kKGViPriK7QJSibD2K7HU6ptLc+zdY4gvIgib+jGagUqJe/+hc3xKawXXjFGsyT7gsSh3IWBr93D0sMexFjiQQhJmHXEt+nqbFYm3+Oq38D6n0msRJKNnEKBmPZAZJdeKjJMwpGrbLOoCKees5XxovKst/I713WZF+g4FlcPynUK29DECRAF0FHt7omncR0Yj9ww+ChNrHtdiVcHaPl7tvkrx8HJqNoS70z7pKNhuNV302QSvoGxPVJknEN3lbbuVSvZE0Ma54OfpPDJKBWgy/fdcl47Cg642IFQiDuvCx3H76TQeWt7Le0huOBxsWY5lSRl4eOi/3F1Bzzw91tvYE8T7B1imkaujuKNBMaKAr9Lf+hn/PVCQd/hzB7/05+oh7D/dZy4u1/NMeU+CYgTMUkqaoEvjnu8/NTYQLxxuBCXYAuPHuJsB5zPRShsjLgdeW7ogkjpERCZoUchwXCHrCmyjEO+XutIbRQh7Qvo3cZArhbIEAx9CVWIoPWpPKt0ergaQi0R9beuIiJaw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(366004)(39840400004)(396003)(376002)(346002)(5660300002)(6666004)(8936002)(26005)(2616005)(38100700002)(2906002)(38350700002)(8886007)(956004)(66476007)(86362001)(66556008)(316002)(1076003)(54906003)(33656002)(66946007)(8676002)(55016002)(53546011)(7696005)(186003)(52116002)(6916009)(36756003)(44832011)(508600001)(4326008);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: JTMCBDc46FDtTNd9RIzYzXebl0Wu81IsDbIWJ2l/IGasnnPTiLRWAZrMWinH9/Rtl0szO1JOOigNzYQvuwSwNoFXC2OOXExp3druC0VQ9ct6+39UsZhrx5VZ3WCy628D/76UB2dXGzGf4nsbjaARdILtKUdaEFz2WIUX5KPQbd4UAa5fYuSOynmSdqFB6wtKg0ZDKNtbJ/aOx5GUazMGI64/exmRtoaDnaFo3jvHajVY03YXxvfdG+22qeoVKw7KRI7ZRVk1+uHg+XEDkVV/qSP6BCmhkIDc2UOw/kAQBaPEQIkbI8wJhGRTGGwpTJRoqvIe0dOFt1+vE64q+U38jfLW8xjo1XPWLmkWWM6G8a+/WtVupFhX/s2W1WPoEefYx8vycH7PymneahsWg6Zk7jOK1B303nF/VvcFAbCpEgzmwpq7ZNx/8vu7FK29U6Qodufc1Oj9QJtuK9sazCYlTrm4kv2nu+L8cvMWqizWEVjZOmgIHm36rYjCfoCiCLDLGDKh53yWgklHzwh0iv5HFgGs5D1bLDGOasLqwcl5ljXdhh8Uz4y0FNNSP6QcQarayCixj7fI+/r2L33vDGdqsmAuDHoWWvx6/Rgg3U1yyW6L+CxhPsedFEMeXmwPh64vn5h+2E2+K4rICl0ALFYI9g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB5520.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(66556008)(66476007)(26005)(4326008)(66946007)(2906002)(9786002)(1076003)(38100700002)(9746002)(508600001)(83380400001)(186003)(8676002)(86362001)(2616005)(5660300002)(33656002)(316002)(6916009)(426003)(36756003)(8936002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YnFseC9JU1BjR0tlRE9pbVFTa1dnL0VibW9iNjUrZHNHSmM0V2ZhSjdTN0or?=
- =?utf-8?B?a29hQTZqUXRVVHYyV1JHQ1d5eGxUVVRTZUN5VlYySVNXVWp4S2xDdWpxcnJi?=
- =?utf-8?B?dFFDWUl3aDVsd1ZNNnkxOWhlcG11N291SkZPRWM5eVl0NFd1blYvRkxVTjJP?=
- =?utf-8?B?aTdTWjN0VGdhdGcwRVllNHk1bzg3dS96MUlRTVh5TjU3YzlySzhjUTVmWHZX?=
- =?utf-8?B?OVI5NGtsMjhzSWtoL2diek5scnc3cEVReGhhUUY3YWFLZUl2OXFPUTNsMWp2?=
- =?utf-8?B?R1dKakZHbnQ1UUN4UDR1SlBzL1IxbDVSWDAzS25WVG15cUZEMkhoWDl3bXBP?=
- =?utf-8?B?Z0dDYmxKemFlRkhBcjJKMTgzKzFRM2ZIdWZQN3FJd204QTdHSHRGcXdHZlV6?=
- =?utf-8?B?N1ZhV0VHQUxNYzYyL2twYnR0U2p6NFhaY0xndk9HUitYT25WWkZtQTZxMHNt?=
- =?utf-8?B?SUtHYTZUYjJUTVBORm1wS1JmcnE3SHI4dTFVQnRJZ3AxTGpNZkJLOXhxaHZR?=
- =?utf-8?B?UE4yY3dFT0FOZUJYa2FLTEozdjV3bm5WQmhmTWRYcU55MS9wa2hwMDZMM29N?=
- =?utf-8?B?U0ZUSmlGUThqMnBkM0JMVHBvd1NlVDk4elcycndZWTRob2FybHcyTGttYVg2?=
- =?utf-8?B?RUlycTN5QzlZd3RDc0JEMSsxcEQwNDdQWUp0OXJ6UlBOM1paNXVXcG5ya3FH?=
- =?utf-8?B?S0ZJRVNxRkQzUE9LN05WR0R1MTcwNm9LMmNVQjZqUTZESklDYjBCQUJrSm5L?=
- =?utf-8?B?VHVxL3FpUVg2dnhLbzRZanpGRDVaTEM5dWdZaEJWZTlRYkdiTVdQSXZMcDBS?=
- =?utf-8?B?TDNtWGhGL1MvTnNzY0QwVk5ya0RRRzhFWndseEZSWlRCRkFGMyt2dDFENEo1?=
- =?utf-8?B?Tld6ZldJeHpsZUtXbmhvSUs0ekdiUmFuQkFKNW5KZ0svcFBhcjdBM05zSVEv?=
- =?utf-8?B?QythWjdIQUxvdXl4eGRuSW1Kbng3K0FDcmhKWFI3L2xndGJLeEpwZ3A5ZUxo?=
- =?utf-8?B?SmdTNEFmQmorazc4bitjaS93SGk1YVZXaE5QQ0xPUmFrN016elhqcUExZnE5?=
- =?utf-8?B?U3RobHVnLzNYaEJkbDVMT2hvYjYwTnlmZ2ozd1Q5WmVOR3V4T3c2c1RFV25P?=
- =?utf-8?B?d09aaU5OWU5qamtCNlRGZ0hDRTNqNmZpWHA5MGZnUkQ4S1daSCsrQ0s5U2NF?=
- =?utf-8?B?NVlUdC9NdHN5R3R4WkIybnM4WTdpdE9ucjRzdCtzL1ZQa01XRk5LaDJtUjNz?=
- =?utf-8?B?OW5seHZ6bVhyTXVKZWNsOXNRRzk5VEZWUittUkhNTXR3eE9yQksvS1BZVzlR?=
- =?utf-8?B?bGRiWjdacHdrZ2s3YVJEL3FiM0llaFljZzVYZHRrNkF0a1BsKzNlU0Z2TXNm?=
- =?utf-8?B?d0tYV3A4bjlHamVzeGs1RFBFUDNjQ2d6Rk5QUTNlTkVSckttbThUcnVta1A1?=
- =?utf-8?B?VktLazB3cDlzdVVIdTk4YXNObFhtTUlLQVhBZEhGeloraFUxdnpYejVMcUs3?=
- =?utf-8?B?ek1UK1ZuQ2dDa1dZMjhYdWhGUmxJVFA0OGRPQ0k4VTJWOWlsZlZjTXF4VWhI?=
- =?utf-8?B?YVRub1V3MDh4bmoza2h6b05CK2w2dEhsY0xXekNhdTNHUG5aQUI0Q05Wd3g4?=
- =?utf-8?B?Q0JEbkkxNlFJTVBhajhmWXBYRTVCVnV4Mm1sQVdlUTloN1BrNHVZOVM4M1A3?=
- =?utf-8?B?YWx1MUg1TlpEcHBFNnNaWlMvcHJtaXlRL3FHeXNHOTA2YzdBZzh6RWRkVW9s?=
- =?utf-8?B?M1J5YkFCa3FDWGd4R2RHT1B5Zkt3R0V0MGNtZlpVQ3NyenphcDFpZTByb3B2?=
- =?utf-8?B?M3VNWW1rYXVIaFZ5YVhxcHl1aFYvVUZqVlFZM3pSQkZMZytCcmFKbkhHY25M?=
- =?utf-8?B?cFJNWkRBdktIaWdGSENYdmRsckk0SFAwZ1JyVFA4ajE0UVpUOGJIZm53NEl5?=
- =?utf-8?B?TFlIZUNhSzBrbjNGbVc0cDh1VHFaT1I4aXNUajdYSE5Rcm5uZnl1S01vZ2Rj?=
- =?utf-8?B?cXExTDJsYm8zZEZkU0QyRS84MFZLVmY3YmFRWnZEaXdYZFpscEM5S0kvcUIw?=
- =?utf-8?B?Y3V4bWN0MCtxaU5EaDgyUjU0K3FsQmRzOXdBeE9nS0YrUk81aiszSVJwcjVm?=
- =?utf-8?B?VURpQVZJZERTYlV3OUVKbS9GWGlDdnFVWnA5SWZBNlcxa1RlNWtPdEtXRzZI?=
- =?utf-8?B?S0VXWTNidXVUemdvZkdvQmFnbVc1aFBQaHN4bHNlb0l4WHhoakRwS0JUWnlw?=
- =?utf-8?Q?FDUMCpY/j46bQqOCU+8Lw2gkfvA6SS07Feo7kVciKU=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ac15600f-3aaa-48f5-5adf-08d99ecf35ee
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Y0PxJDl4bU2l709sLszryBO0z6gEEYzSx1XFX2WgpcBuC4ktCPgmqFHfe9GE?=
+ =?us-ascii?Q?EUDxGCYfHHa24C0maeo9f3fj2fELCblaXBII9mdb8yWngOlaFvNwVSyEnFqr?=
+ =?us-ascii?Q?z3lJpUZ69g4+Gja4noRpWCXewxRd/tkPcDIu4jB99ZzWG7t8JLgHGD9RqYor?=
+ =?us-ascii?Q?MjrxCe0I4KJhd1Hxi7azUuahszsHST4xeV7IFMDVGOZZSyoUGIVw78ZKKNhe?=
+ =?us-ascii?Q?Zj4n1Sxras46hYB709TxzrspTqamtlzxbGts9gQok0krcn89d9rpDS31ISvU?=
+ =?us-ascii?Q?E4TfVH4HqfFW2yPXkTEFnmZODTPegdcfJSM2zwtfR9tzLtPnNN45/Sm4z/ai?=
+ =?us-ascii?Q?NZS4SQI+hFriLnysSR6Rxq6mJ9VhjOt15t37wdpEiSvi/4gLee+Uyc0TfBlQ?=
+ =?us-ascii?Q?4aYA3vzSNaqn4jNmk0gi8WoEcblmCJBgPHp+R2Nzs0RqLNc66EJoEhCk07XW?=
+ =?us-ascii?Q?HHK4Kd/zuY7zmd8gyKfyu6/hhjqWJ57zW6Ill5BYgBPp3UySIokmy7omU3I8?=
+ =?us-ascii?Q?LAQ7XULqBg/YFbNtznScl46m4ATETaXoFtfl2nm//aid7qHD0JrOodr2Hjdc?=
+ =?us-ascii?Q?luOWyU7AaTvVqplwcGdw1adhdylWLx5sGnLiFz2GZr1TXj38mrOCdqpjN98G?=
+ =?us-ascii?Q?5KklcAMtE6SPDN+W8Y3PlgLniUPrUe9R0HJAvnN4cTlEVUrVzQ7g+EZWXXp/?=
+ =?us-ascii?Q?2DI+9ZA3h0xZvyrdFONWKat/PtTs5UwAMod5fM3rV0/6CbOY1oMM26rCE8np?=
+ =?us-ascii?Q?IWjCXP2j4PdahkKRKHJLcS4fnWHaTJfa6KKV+H2G0Ap2jhC9LkINS1WwKNF7?=
+ =?us-ascii?Q?FfHknQVOmGARWQUBPFbwnXTQKdl1zi9jqX6xmJb20QIhIKu2+WEaOuv0I+80?=
+ =?us-ascii?Q?z7Ror5jdX5CD9lxekX1RkK2/W3MtKOnTTmfPLjIefGBm0RGo+nJF9echvCqF?=
+ =?us-ascii?Q?G2th01VvM8ASVzA1B5+flgwb1TxC/hvqOQvfhF8GZlCeqcw1nvJN7CaAuQ3i?=
+ =?us-ascii?Q?5x80Xac9IovAs5pQEROKJcgRh8VAYksfuYzqiwQIy7+YJJSV1K81A2nEP8cg?=
+ =?us-ascii?Q?R2ICXzeXeSa7l+CSe48eJ6pp2jAiqGBfKZC5j0Rhi1AlQpgW08vopYDdSYRB?=
+ =?us-ascii?Q?M4WOCHBf1JuQo9KneQl4KqvxOWM+kqRk2oYz7teYd7jrHiw6UWBIXbEcffj3?=
+ =?us-ascii?Q?I/9IH7mShhWz8L6VnqLydPdJ8Snw+eZlZq9pR3k4KrVD9t0aginjdMWCLu4r?=
+ =?us-ascii?Q?YG79orfPqbB2zzL5iYBasTffGYDO1oUe9mjuw8S3ZNASGOr2fXQi71g0Qu+G?=
+ =?us-ascii?Q?5xBohsmHBTQtqAZQxXTV6iRoTvJ8nUp/CAm8gyul7TxlR1HN5fcbl03AGpyM?=
+ =?us-ascii?Q?M6AGZV+m45ptXwB509ZF+CubqXuArvSNSupuzvAmnyiIapnWaVfnUScrgi7y?=
+ =?us-ascii?Q?f7ZQrpLlCy8C4ZyNMSCiajzLm/k9599N/POsK1S0Xiws6XjHP6edb8rxwHP/?=
+ =?us-ascii?Q?1VwKE4Q/fb5MD1E8c/hOHPOqc1ZP9nGQnLPCEte7b8ZkOSEqo8YZ6zyfQhcG?=
+ =?us-ascii?Q?gV1ZH7+8TDqa2ctOm4o=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 73e6de8a-760f-4444-95b9-08d99ed0e9ad
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB5520.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2021 13:38:25.2416
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2021 13:50:36.2341
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5K0NZ10LuwzyThTjt8bo8y63EibsosbtV4AP8g7ythizGxxAk2uJxc9Oz7kIUGolm+x04sGg/2ug1afTOBUY1sG6YFPqK/HsWe5MzzBdkTA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB5668
+X-MS-Exchange-CrossTenant-UserPrincipalName: vuwsXz7d1iqga+y4HCNGI92RAumwFLTGakb6D4bLHHJRS2bPZo6bnTTqVEKD0OBZ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5397
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 03, 2021 at 09:33:52AM -0400, Jamal Hadi Salim wrote:
-> On 2021-11-03 08:33, Jamal Hadi Salim wrote:
-> > On 2021-11-03 07:30, Baowen Zheng wrote:
-> > > On November 3, 2021 6:14 PM, Jamal Hadi Salim wrote:
-> > > > On 2021-11-03 03:57, Baowen Zheng wrote:
-> > > > > On November 2, 2021 8:40 PM, Simon Horman wrote:
-> > > > > > On Mon, Nov 01, 2021 at 09:38:34AM +0200, Vlad Buslov wrote:
-> > > > > > > On Mon 01 Nov 2021 at 05:29, Baowen Zheng
-> > > > 
-> > > > [..]
-> > > > > > > 
-> > > > > > > My suggestion was to forgo the skip_sw flag for shared action
-> > > > > > > offload and, consecutively, remove the validation code, not to add
-> > > > > > > even more checks. I still don't see a practical case where skip_sw
-> > > > > > > shared action is useful. But I don't have any strong feelings about
-> > > > > > > this flag, so if Jamal thinks it is necessary, then fine by me.
-> > > > > > 
-> > > > > > FWIIW, my feelings are the same as Vlad's.
-> > > > > > 
-> > > > > > I think these flags add complexity that would be nice to avoid.
-> > > > > > But if Jamal thinks its necessary, then including the flags
-> > > > > > implementation is fine by me.
-> > > > > Thanks Simon. Jamal, do you think it is necessary to keep the skip_sw
-> > > > > flag for user to specify the action should not run in software?
-> > > > > 
-> > > > 
-> > > > Just catching up with discussion...
-> > > > IMO, we need the flag. Oz indicated with requirement to be able
-> > > > to identify
-> > > > the action with an index. So if a specific action is added for
-> > > > skip_sw (as
-> > > > standalone or alongside a filter) then it cant be used for
-> > > > skip_hw. To illustrate
-> > > > using extended example:
-> > > > 
-> > > > #filter 1, skip_sw
-> > > > tc filter add dev $DEV1 proto ip parent ffff: flower \
-> > > >      skip_sw ip_proto tcp action police blah index 10
-> > > > 
-> > > > #filter 2, skip_hw
-> > > > tc filter add dev $DEV1 proto ip parent ffff: flower \
-> > > >      skip_hw ip_proto udp action police index 10
-> > > > 
-> > > > Filter2 should be illegal.
-> > > > And when i dump the actions as so:
-> > > > tc actions ls action police
-> > > > 
-> > > > For debugability, I should see index 10 clearly marked with the
-> > > > flag as skip_sw
-> > > > 
-> > > > The other example i gave earlier which showed the sharing of actions:
-> > > > 
-> > > > #add a policer action and offload it
-> > > > tc actions add action police skip_sw rate ... index 20 #now add
-> > > > filter1 which is
-> > > > offloaded using offloaded policer tc filter add dev $DEV1 proto
-> > > > ip parent ffff:
-> > > > flower \
-> > > >      skip_sw ip_proto tcp action police index 20 #add filter2
-> > > > likewise offloaded
-> > > > tc filter add dev $DEV1 proto ip parent ffff: flower \
-> > > >      skip_sw ip_proto udp action police index 20
-> > > > 
-> > > > All good and filter 1 and 2 are sharing policer instance with index 20.
-> > > > 
-> > > > #Now add a filter3 which is s/w only
-> > > > tc filter add dev $DEV1 proto ip parent ffff: flower \
-> > > >      skip_hw ip_proto icmp action police index 20
-> > > > 
-> > > > filter3 should not be allowed.
-> > > I think the use cases you mentioned above are clear for us. For the case:
-> > > 
-> > > #add a policer action and offload it
-> > > tc actions add action police skip_sw rate ... index 20
-> > > #Now add a filter4 which has no flag
-> > > tc filter add dev $DEV1 proto ip parent ffff: flower \
-> > >       ip_proto icmp action police index 20
-> > > 
-> > > Is filter4 legal?
-> > 
-> > Yes it is _based on current semantics_.
-> > The reason is when adding a filter and specifying neither
-> > skip_sw nor skip_hw it defaults to allowing both.
-> > i.e is the same as skip_sw|skip_hw. You will need to have
-> > counters for both s/w and h/w (which i think is taken care of today).
-> > 
-> > 
+On Tue, Nov 02, 2021 at 10:12:18AM +0800, Ziyang Xuan wrote:
+> The real_dev of a vlan net_device may be freed after
+> unregister_vlan_dev(). Access the real_dev continually by
+> vlan_dev_real_dev() will trigger the UAF problem for the
+> real_dev like following:
 > 
-> Apologies, i will like to take this one back. Couldnt stop thinking
-> about it while sipping coffee;->
-> To be safe that should be illegal. The flags have to match _exactly_
-> for both  action and filter to make any sense. i.e in the above case
-> they are not.
+> ==================================================================
+> BUG: KASAN: use-after-free in vlan_dev_real_dev+0xf9/0x120
+> Call Trace:
+>  kasan_report.cold+0x83/0xdf
+>  vlan_dev_real_dev+0xf9/0x120
+>  is_eth_port_of_netdev_filter.part.0+0xb1/0x2c0
+>  is_eth_port_of_netdev_filter+0x28/0x40
+>  ib_enum_roce_netdev+0x1a3/0x300
+>  ib_enum_all_roce_netdevs+0xc7/0x140
+>  netdevice_event_work_handler+0x9d/0x210
+> ...
+> 
+> Freed by task 9288:
+>  kasan_save_stack+0x1b/0x40
+>  kasan_set_track+0x1c/0x30
+>  kasan_set_free_info+0x20/0x30
+>  __kasan_slab_free+0xfc/0x130
+>  slab_free_freelist_hook+0xdd/0x240
+>  kfree+0xe4/0x690
+>  kvfree+0x42/0x50
+>  device_release+0x9f/0x240
+>  kobject_put+0x1c8/0x530
+>  put_device+0x1b/0x30
+>  free_netdev+0x370/0x540
+>  ppp_destroy_interface+0x313/0x3d0
+> ...
+> 
+> Move the put_device(real_dev) to vlan_dev_free(). Ensure
+> real_dev not be freed before vlan_dev unregistered.
+> 
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Reported-by: syzbot+e4df4e1389e28972e955@syzkaller.appspotmail.com
+> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+> ---
+>  net/8021q/vlan.c     | 3 ---
+>  net/8021q/vlan_dev.c | 3 +++
+>  2 files changed, 3 insertions(+), 3 deletions(-)
 
-I could be wrong, but I would have thought that in this case the flow
-is legal but is only added to hw (because the action doesn't exist in sw).
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-But if you prefer to make it illegal I guess that is ok too.
+(though I can't tell either if there is a possiblecircular dep problem
+in some oddball case)
+
+Jason
