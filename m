@@ -2,152 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A8F1443FDD
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 11:13:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB19D443FE1
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 11:14:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231344AbhKCKQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 06:16:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56246 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231278AbhKCKQc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 06:16:32 -0400
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F234AC061714
-        for <netdev@vger.kernel.org>; Wed,  3 Nov 2021 03:13:55 -0700 (PDT)
-Received: by mail-qv1-xf35.google.com with SMTP id j9so2448824qvm.10
-        for <netdev@vger.kernel.org>; Wed, 03 Nov 2021 03:13:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=8bs+WoVIfqfMEybZ2ykdFz5yPEomc/Sd27NrojyxX8g=;
-        b=GzV+gpGLVD9Srfo4kSxCfnNl5MnSTzW8AsEOTMusJjdEVDwbYUZE+YRj1f9ymv2VAd
-         UrV6114DLFfO5Wp3d/7McmMr5k+luWn1s1vj+oTFL4Rs4AkJQQFrSsnMvbEiOSYvHOgF
-         rMLH2XHrsTsMxSlkGZjhsncmfef6BtxZz0HhIw3+uQZ2XZdJXqPdSbqK2s3SaMem4FHx
-         V9K6SwQTK66GIlyUmnqSL2Cir9/4+Tog3m8ksjDD0N5tEXiwLLyDDNBrL/ANDZYc30/J
-         F2fVg1RlhclWkDCM4sma8gOGemByOF2UrN4W7hRBZzTZrvoJB2Il/u+QbTrThNUOCdQN
-         ujjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=8bs+WoVIfqfMEybZ2ykdFz5yPEomc/Sd27NrojyxX8g=;
-        b=E3/LLzUNK9ozLFLS1gMhhXH5ztzgu4ISHECZ1UcWIExyMms0Sw5MsKqS0xeIP7ScIv
-         It1cBTYwMhYhwbES80+FNnzPyCvkxwFm7gAL7KrA0DtUI4ajRSB86t5f4IMX/1JPYvEf
-         fXg9KnB86EZWiL1gGlB1YmPhHOVBLY+vkvOik/ht2SZeRLomuwrYiYKScvI8gYP1Oeh4
-         ilLk7bjqtfCTulLQIGB0+ejN/Z2/m2OeiiTtXe0dWLJjFgX65KMGqSInHFofx7+y+tVl
-         2SQGDI9EB/PLQBTMtiuPt8M4Z5VSM3rlz6JULa2PRTWKNie9ZTiuJSDa0wk+L10QX5hA
-         3bYA==
-X-Gm-Message-State: AOAM531dk7daF4zrps+kWjiyyDMlkLrsZ2qGaQ5Zzp62j0hsHGaU+JFP
-        Hgp8ua3UCKmjYNbW94zcI7dhWA==
-X-Google-Smtp-Source: ABdhPJww4bhr+PHELJ8jPm3IzD7+vVkfkBEJh+7ruJ5tVskw8TuWe0xYlF87q5EyZjBivFk7vPlmQg==
-X-Received: by 2002:a05:6214:27e1:: with SMTP id jt1mr347250qvb.34.1635934435047;
-        Wed, 03 Nov 2021 03:13:55 -0700 (PDT)
-Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-33-142-112-185-132.dsl.bell.ca. [142.112.185.132])
-        by smtp.googlemail.com with ESMTPSA id y8sm1329637qtx.0.2021.11.03.03.13.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Nov 2021 03:13:53 -0700 (PDT)
-Message-ID: <428057ce-ccbc-3878-71aa-d5926f11248c@mojatatu.com>
-Date:   Wed, 3 Nov 2021 06:13:44 -0400
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.1
-Subject: Re: [RFC/PATCH net-next v3 8/8] flow_offload: validate flags of
- filter and actions
+        id S231910AbhKCKRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 06:17:31 -0400
+Received: from mx0b-0014ca01.pphosted.com ([208.86.201.193]:13410 "EHLO
+        mx0a-0014ca01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231948AbhKCKRa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 06:17:30 -0400
+Received: from pps.filterd (m0042333.ppops.net [127.0.0.1])
+        by mx0b-0014ca01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1A36hL0c030576;
+        Wed, 3 Nov 2021 03:14:36 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=proofpoint;
+ bh=NnK+KHkgI7mRmywv+L2MfJNh3KtrG5tenO9kLryPJgI=;
+ b=H5ndscO8o4IntRHdfYPUuxVFqZ/k3RbUYYA1u7VQzNMcDbUPtsrNfNGrwu6+E6wQjSuB
+ PCv1QEzSsfq8JFLTO+9+ypi4xfcMfCOzmR/FbhqDr/m/Pqb5pr0T9VVeS1O6VAMGI4GM
+ kw7kjadef721jcoaK3WwDe8/l03wHalM0AD/SzRcMezLz4hNtRoj1weh0CO1bayXX5SN
+ bKwGnWLJzmwsnye33kIyZMLdUVv9AlrALLaesJOC/O++4zq/8rz6XcNo+Ba2MUl0CMXr
+ zUoSCbeilWqkK5bOoKyPhRcQJC39eBLKPmS/WHlFC+XfO4AlaPKmT1+r2khSQPeaIiLi 1w== 
+Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2170.outbound.protection.outlook.com [104.47.56.170])
+        by mx0b-0014ca01.pphosted.com (PPS) with ESMTPS id 3c3dcra9mf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 03 Nov 2021 03:14:36 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dS5zYpz0g6u5Jn0QxxfgSlWtJCEqiJ54cSWe1AcILCatVDeoH9Vn1l7/RN3rX3Epi9zhnDdqHONloF1RpBELF4ggCEKkaxYKoIp+MpB+bY3bmh/wjGWBhAn3cZ/aAcSQu9dMuSeVEGMnRvWAP5kNKBu5Aom4ZbNiCdub9ykP2CRC8SfdytDOiXXH+6sEOdENEZ/5sPN3pXldowuub1QBGHpRUFwipVinabY9FZfazpCgDmchLFFIqR5+qYUwXf786SQFZCZ2sZadnj787kdLLdw4J2xPQmg0DmyWTiO4vCCcfZVelK1xTdN/QuwYVNsyf3vLZOw+r6m7Q0wEjkDqwA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NnK+KHkgI7mRmywv+L2MfJNh3KtrG5tenO9kLryPJgI=;
+ b=Z3snQGLj5GfoSK7teKdqAyehV45feh7HCPJkKtshPVLpj1b4bZ4RlF1joNiQrZOEWD91WlHoOYv2KQnNaoXCBSo96HkLIhhmfFU2Xq1CKRjVbolbvTtfmZf5ONtGDTJEJUegCZmfNWFUz36Sje9pknQ4fTsF4b3KCQ+2m2kq+Y92ISQ/x5ATJYMcC9kY2+2cmZrqHNx1SMKPq1bVQztJIYPiwlOxC1zH65GTvnUzCycqYsUpWLyu9Cd/vgBxzrJ0asUgi/X5xZgxXsDpr2SE2KmxAQ46r+LnFrZFXpVWtKI4/rd1H37iJdb9lLP74q3usE82XMVavksOXNIr98U6EA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=cadence.com; dmarc=pass action=none header.from=cadence.com;
+ dkim=pass header.d=cadence.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NnK+KHkgI7mRmywv+L2MfJNh3KtrG5tenO9kLryPJgI=;
+ b=m2NS7Bw9TLbzbKx6ia8zwiNTXVA57Ote7Ocbc4qtAZJrJhbabzows7GHYahXy2Svwq5NHKPBbp+x+713Gpto+ckGsaDxLOv0O6YLZeb7anfgaLrJcU3OgE6bo3FTjDb1fk8J8Jl92OqU9crndJ+yrzUqqwVZHUlmtuR1vLV1/XA=
+Received: from CY4PR07MB2757.namprd07.prod.outlook.com (2603:10b6:903:22::20)
+ by CY4PR07MB3046.namprd07.prod.outlook.com (2603:10b6:903:d2::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.15; Wed, 3 Nov
+ 2021 10:14:34 +0000
+Received: from CY4PR07MB2757.namprd07.prod.outlook.com
+ ([fe80::18cb:253e:25e5:3928]) by CY4PR07MB2757.namprd07.prod.outlook.com
+ ([fe80::18cb:253e:25e5:3928%5]) with mapi id 15.20.4649.020; Wed, 3 Nov 2021
+ 10:14:33 +0000
+From:   Parshuram Raju Thombare <pthombar@cadence.com>
+To:     Sean Anderson <sean.anderson@seco.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Milind Parab <mparab@cadence.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>
+Subject: RE: [net-next PATCH v5] net: macb: Fix several edge cases in validate
+Thread-Topic: [net-next PATCH v5] net: macb: Fix several edge cases in
+ validate
+Thread-Index: AQHXzzHzuFgiQnQIfUGJCp+Cz9BARavxkoyg
+Date:   Wed, 3 Nov 2021 10:14:33 +0000
+Message-ID: <CY4PR07MB27576B46D37E39F9F1789A31C18C9@CY4PR07MB2757.namprd07.prod.outlook.com>
+References: <20211101150422.2811030-1-sean.anderson@seco.com>
+In-Reply-To: <20211101150422.2811030-1-sean.anderson@seco.com>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Baowen Zheng <baowen.zheng@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Vlad Buslov <vladbu@nvidia.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Roi Dayan <roid@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Baowen Zheng <notifications@github.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        oss-drivers <oss-drivers@corigine.com>,
-        Oz Shlomo <ozsh@nvidia.com>
-References: <20211028110646.13791-1-simon.horman@corigine.com>
- <20211028110646.13791-9-simon.horman@corigine.com>
- <ygnhilxfaexq.fsf@nvidia.com>
- <7147daf1-2546-a6b5-a1ba-78dfb4af408a@mojatatu.com>
- <ygnhfssia7vd.fsf@nvidia.com>
- <DM5PR1301MB21722A85B19EE97EFE27A5BBE7899@DM5PR1301MB2172.namprd13.prod.outlook.com>
- <d16042e3-bc1e-0a2b-043d-bbb62b1e68d7@mojatatu.com>
- <DM5PR1301MB21728931E03CFE4FA45C5DD3E78A9@DM5PR1301MB2172.namprd13.prod.outlook.com>
- <ygnhcznk9vgl.fsf@nvidia.com> <20211102123957.GA7266@corigine.com>
- <DM5PR1301MB2172F4949E810BDE380AF800E78C9@DM5PR1301MB2172.namprd13.prod.outlook.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-In-Reply-To: <DM5PR1301MB2172F4949E810BDE380AF800E78C9@DM5PR1301MB2172.namprd13.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-dg-ref: PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNccHRob21iYXJcYXBwZGF0YVxyb2FtaW5nXDA5ZDg0OWI2LTMyZDMtNGE0MC04NWVlLTZiODRiYTI5ZTM1Ylxtc2dzXG1zZy1kNGJmM2ZmNi0zYzhlLTExZWMtODY0ZC0xMDY1MzBlZjIyZjVcYW1lLXRlc3RcZDRiZjNmZjctM2M4ZS0xMWVjLTg2NGQtMTA2NTMwZWYyMmY1Ym9keS50eHQiIHN6PSIxMDc0IiB0PSIxMzI4MDQwODA3MDQ0MDE0NTciIGg9IlNoZm1VejY0R1dvdXRGSjlHQlUxRXdoNDBxbz0iIGlkPSIiIGJsPSIwIiBibz0iMSIvPjwvbWV0YT4=
+x-dg-rorf: true
+authentication-results: seco.com; dkim=none (message not signed)
+ header.d=none;seco.com; dmarc=none action=none header.from=cadence.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 564e4036-aff9-4ec8-3235-08d99eb2bb8f
+x-ms-traffictypediagnostic: CY4PR07MB3046:
+x-microsoft-antispam-prvs: <CY4PR07MB30467EC0447467A9B2716037C18C9@CY4PR07MB3046.namprd07.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: xKD8cRMf38N5VPob68ZSY+qDD3AUh+fwfiWmnuDnjB/wkXYecHlvBzdyOGL2FUCinA91iJJUdv0bMvcSr0xeOa4+JQPpeduAEAZMExO7iJK3nLU0PeJPyBOCyhy4wEijL6sKcO7ZKbBDpOCbSC0SYu2yGNGwEWb1VLuNt+lG0FCP1JjkntbFGSQf3SIoM8v3w6RAHjhjzVawCylp0HGa2LDUk1EIaaNmt27iiF6A3l+qvqSYrtr0yCVEzbcZ/oEnSpu/+THEyhlPX2T37rLxnvtpX/DwrU7E2jKiI3CkVsSotwcM6LJOmxNylOO/zb+WudjAUiVQjBe0PnznAZn5uTLPFiArh40GNlSW37jmaT8aVquzETEJQiBmm1EfIOfrYSOvDUlTTWA1lKHqAA4J4yPFdcC/XVHCUBEoc3ihRUgGjZVEHfRaCX3M2qkWBbJ9SDntQj4BzJsCrjXMT6feACeUPO8U6iypRB280uSJR9aIDGG/sQDXrq+6IwnlmAnFEsqrVzsk6p/Kku95dUn0HkEtpEAcA6uONmoRe3EbLuVrkv+acqDkOVSK4kzuT+73It8mvkZ9sFVRb2rMT+ZAAZKuGR+XHzw7GwMRWxzOw2DQWrUK24wrU2ExYg2tfHAeEja4Kb3PGDf/bXXkOWgEHu9q/bQswp5+Bbi/0Woq9ILXzA2+vWc0fzL1+ZKqgfouel2ib4VhPWEgOPjrl6RUs3vEkOtZ65QGeAsmoHFqX/PfXKTdzGJG6L5TFAM1gN0o
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR07MB2757.namprd07.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(36092001)(6506007)(110136005)(54906003)(52536014)(7696005)(8936002)(4326008)(316002)(8676002)(5660300002)(4744005)(71200400001)(38100700002)(76116006)(64756008)(33656002)(38070700005)(2906002)(66556008)(66476007)(66446008)(26005)(9686003)(66946007)(508600001)(55016002)(86362001)(186003)(122000001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?SOA9tyxj7VcPJOx5CkMgejHr1CHOZ5/jMuZ9uqfK+G0c/ekGqDuPAKYyLEVQ?=
+ =?us-ascii?Q?pphSy+w1/+CBBrivs8pdItZEGLPB9diF4sJ0NHsgpqmuP3rBqkoehvgFrKdF?=
+ =?us-ascii?Q?gao6dIfVXJ4pp6Xd3navLOyKkbsDxP2LAB2uWDK9rO267fXR8LNzSVxxLAfF?=
+ =?us-ascii?Q?UrQX/LJMI6g6FEPpxcWvP2C4gJ2aNoHrS/Z2esjwmUHweLuRAtjov15C0Ul5?=
+ =?us-ascii?Q?lE2L8hYDzvmTDzFFJ5DC8lUfsn0SFo96TuapZcIIsf72QjvImhIjpfOSz5rH?=
+ =?us-ascii?Q?0kplCRcJvwbsLloeHjGlsGO9sUJhJcq+6sWULAAK1K5pIkQYAEnSDo0HObpR?=
+ =?us-ascii?Q?Atq6NbKeTk01HLc+IrJsyMnWzFYqvz6lfHnIHaUnnmuXwTvehgqr5ElHutPW?=
+ =?us-ascii?Q?FlFfjh8Cf0pY2xa67NA+Td1kpXXVK49YQiP678z9AEbsLhwDcmct63/suNtD?=
+ =?us-ascii?Q?XcCQ53t0xvYIFN1Ve7wZ6iM6zNH9+6V5Gj/wqNjqiNQ3KMQ6spbXi90mrGlO?=
+ =?us-ascii?Q?gPqZvvVbc9kr+KDfbRWpV4IOznN1Xs4/tHxlyiTHLnjrfbLRkXBGw2EQjDfS?=
+ =?us-ascii?Q?zuQuE2BYVlzf3kMvOD1Pj4nHQ6n64fO4ceUqU+5vFRqgsKBhoT0hLy7VSh4R?=
+ =?us-ascii?Q?zYRXZLqRTHc+iWWPxwsyElQ+Gw6aLdfyMIpLi6r+SxdTtR8fiI2J0WuW8hBt?=
+ =?us-ascii?Q?hIN9261JM9MIfqkXE4LbTDJGEmbvJHPEBaLhkmgSrbxpudCc0FPP8TxpIyvk?=
+ =?us-ascii?Q?R0yk55YHPAj/tWu+U4jybzg3cJ90IVA5a3GmhMTXYVLlsaRiQGk3n4gKPcF7?=
+ =?us-ascii?Q?MVSKxyWpg1zxQa+63O780Jj5imnOhRJEg28qCfBpw4oGkfFQZTBKG98XRvET?=
+ =?us-ascii?Q?4aBQA/c333o/8xjN6KgqSrqpdzeIrZxVpaCuX5dnGYbX8t0iPDKVYO7XumFD?=
+ =?us-ascii?Q?Z+qU7MEA3UuL0bE1O5K8I8cowU60ESG6ClM1wf7LziNyLyQ9XGkrOZrX0ZoC?=
+ =?us-ascii?Q?Dn6qBxAdrLSMnT1W1xvublJaBU942BdsRSAQeUcRQQLtETF61xSscYhNPFmE?=
+ =?us-ascii?Q?RL/MhiRavT7m6Y+AEInbbduNsVXAXnnlNPePqW3hlELMAy7ic4tnYpmjq72F?=
+ =?us-ascii?Q?MdxMCB4gyRxTXBo3gTped1Wq2mbe2aS6nSVttspFLwqwIVrjx7St+SaOZkaJ?=
+ =?us-ascii?Q?2IjQflvgEkarrTifoO2+IJxGyblO1bDQxQY/p5XZIDi+ktAz/mcw42G9ZA0A?=
+ =?us-ascii?Q?omTuZ1zwgZqg0D48eTHXmHSbbSiS87SvfpDSepaiyr0C3yJr/hpUcFVGR5A1?=
+ =?us-ascii?Q?fSgi1Kx/brlSuMjnemMkv1N9E8FofhC/zBXUPYLszccyXeu+r+faeEK5V0hq?=
+ =?us-ascii?Q?UejhS9rRqWiNNqu3Fm0pYTuZu/axO8zYBUlyF77WFMjqAu4F3M14COeKyrcw?=
+ =?us-ascii?Q?b+DHkxG0/1hPkftN97IAq2+flTM4ujN93Za2VHn9U0s3QzhaDMJQJJyhgxtN?=
+ =?us-ascii?Q?oJPQ0kTDpF1DYMg6aKmQVp6WpDxGAGESnD+eXPzTaWRgXI4m67K7fnuxWHLY?=
+ =?us-ascii?Q?ETQOdxOCM6+Fd2ZQxdpcQl5M9UPSZ/1xvS0RahSzmvfiO0rJ+rni0qdKWgyh?=
+ =?us-ascii?Q?Yw8MeqDtsyTihj2+JkcfWzvKuERwUsRkF2geS8LWH73aGdZZ6lRTPolTuCJz?=
+ =?us-ascii?Q?bywK1g=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: cadence.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CY4PR07MB2757.namprd07.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 564e4036-aff9-4ec8-3235-08d99eb2bb8f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Nov 2021 10:14:33.6607
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: d36035c5-6ce6-4662-a3dc-e762e61ae4c9
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: /eADPKBuQUXMmwk5aOCFmrXkNLk3B7JMEPIkCt5rP0YbA4zNVQ1NjN7cHuBfnbTdxiPA2k29OXGah5SdhCZC3tHvQQnVZUAOcNoRtPT8i0A=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR07MB3046
+X-Proofpoint-ORIG-GUID: 6ULl5Rrg9BGkir45XMw9QmT9TvmwbKv_
+X-Proofpoint-GUID: 6ULl5Rrg9BGkir45XMw9QmT9TvmwbKv_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-11-03_03,2021-11-03_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_check_notspam policy=outbound_check score=0 mlxlogscore=350
+ adultscore=0 lowpriorityscore=0 phishscore=0 suspectscore=0 clxscore=1011
+ spamscore=0 malwarescore=0 bulkscore=0 impostorscore=0 priorityscore=1501
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2111030058
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-11-03 03:57, Baowen Zheng wrote:
-> On November 2, 2021 8:40 PM, Simon Horman wrote:
->> On Mon, Nov 01, 2021 at 09:38:34AM +0200, Vlad Buslov wrote:
->>> On Mon 01 Nov 2021 at 05:29, Baowen Zheng
+Hi Sean,
 
-[..]
->>>
->>> My suggestion was to forgo the skip_sw flag for shared action offload
->>> and, consecutively, remove the validation code, not to add even more
->>> checks. I still don't see a practical case where skip_sw shared action
->>> is useful. But I don't have any strong feelings about this flag, so if
->>> Jamal thinks it is necessary, then fine by me.
->>
->> FWIIW, my feelings are the same as Vlad's.
->>
->> I think these flags add complexity that would be nice to avoid.
->> But if Jamal thinks its necessary, then including the flags implementation is
->> fine by me.
-> Thanks Simon. Jamal, do you think it is necessary to keep the skip_sw flag for user to specify
-> the action should not run in software?
-> 
+Thanks for this improvement.
 
-Just catching up with discussion...
-IMO, we need the flag. Oz indicated with requirement to be able to
-identify the action with an index. So if a specific action is added
-for skip_sw (as standalone or alongside a filter) then it cant be
-used for skip_hw. To illustrate using extended example:
+>+	if (!macb_is_gem(bp) ||
+>+	    (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE)) {
+>+		have_1g =3D true;
+>+		if (bp->caps & MACB_CAPS_PCS)
+>+			have_sgmii =3D true;
+>+		if (bp->caps & MACB_CAPS_HIGH_SPEED)
+>+			have_10g =3D true;
 
-#filter 1, skip_sw
-tc filter add dev $DEV1 proto ip parent ffff: flower \
-     skip_sw ip_proto tcp action police blah index 10
+As I understand, MACB_CAPS_GIGABIT_MODE_AVAILABLE is used as a quirk in con=
+figs
+to prevent giga bit operation support, Nicolas should have more information=
+ about this.
 
-#filter 2, skip_hw
-tc filter add dev $DEV1 proto ip parent ffff: flower \
-     skip_hw ip_proto udp action police index 10
+macb_is_gem() tells whether giga bit operations is supported by HW, MACB_CA=
+PS_PCS indicate
+whether PCS is included in the design (needed for SGMII and 10G operation),=
+ MACB_CAPS_HIGH_SPEED
+indicate if design supports 10G operation.
 
-Filter2 should be illegal.
-And when i dump the actions as so:
-tc actions ls action police
+I believe this should be
 
-For debugability, I should see index 10 clearly marked with
-the flag as skip_sw
+>+	if (macb_is_gem(bp) &&
+>+	    (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE)) {
+>+		have_1g =3D true;
+>+		if (bp->caps & MACB_CAPS_PCS)
+>+			have_sgmii =3D true;
+>+		if (bp->caps & MACB_CAPS_HIGH_SPEED)
+>+			have_10g =3D true;
 
-The other example i gave earlier which showed the sharing
-of actions:
-
-#add a policer action and offload it
-tc actions add action police skip_sw rate ... index 20
-#now add filter1 which is offloaded using offloaded policer
-tc filter add dev $DEV1 proto ip parent ffff: flower \
-     skip_sw ip_proto tcp action police index 20
-#add filter2 likewise offloaded
-tc filter add dev $DEV1 proto ip parent ffff: flower \
-     skip_sw ip_proto udp action police index 20
-
-All good and filter 1 and 2 are sharing policer instance with
-index 20.
-
-#Now add a filter3 which is s/w only
-tc filter add dev $DEV1 proto ip parent ffff: flower \
-     skip_hw ip_proto icmp action police index 20
-
-filter3 should not be allowed.
-
-cheers,
-jamal
+Regards,
+Parshuram Thombare
