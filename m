@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2BF04448C1
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 20:10:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DB504448C4
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 20:10:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231359AbhKCTM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 15:12:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:32982 "EHLO
+        id S231474AbhKCTMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 15:12:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:24512 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231328AbhKCTM2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 15:12:28 -0400
+        by vger.kernel.org with ESMTP id S230353AbhKCTMc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 15:12:32 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1635966591;
+        s=mimecast20190719; t=1635966595;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=3lMr97fopCxmpE4witKD/zPj5v2lkBheBS1YBuwtyBM=;
-        b=czBSAOqdi4poZy00DOi2nCfycnJeLuiFEsssHV0+mp2paZ0/2RFCX6kMNJ8XNZh46keDSc
-        gscrFFCLviCoflugbmsaBsia8vtr6A9YJkw+NavTYnnsZA48bugWbOCtmrhRGrW1u+stg0
-        jo7dhI+H5X7bRGBkjWAj1p6mFKJZHyA=
+        bh=Iy8BcW2yEN81eZ9A3QB8U2rJKIihcJ4l+Ba/l49vmfg=;
+        b=cOGpaOHrzdFZHmFatfQ5KwWEsyglJnKVB7owqdGO0aRBJb3wlHxsLcXd4LFZgZ14rIxHsa
+        jy6TJVtZx/feUROOJy1W++PLOO4GeLZU5NeexPUXsHgjBvVK5O3ITJhNCC/fRxg2YlrN/p
+        iRWfKH7V2hu4yTmWumyMLYWqv/B4U3g=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-148-hcDSzjewOD-fZhKWWHymFQ-1; Wed, 03 Nov 2021 15:09:47 -0400
-X-MC-Unique: hcDSzjewOD-fZhKWWHymFQ-1
+ us-mta-482-x9HWEJP8M26GlRngDfDrxA-1; Wed, 03 Nov 2021 15:09:52 -0400
+X-MC-Unique: x9HWEJP8M26GlRngDfDrxA-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 198578799ED;
-        Wed,  3 Nov 2021 19:09:46 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E14958799F1;
+        Wed,  3 Nov 2021 19:09:50 +0000 (UTC)
 Received: from asgard.redhat.com (unknown [10.36.110.5])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 46236197FC;
-        Wed,  3 Nov 2021 19:09:43 +0000 (UTC)
-Date:   Wed, 3 Nov 2021 20:09:42 +0100
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id B5733197FC;
+        Wed,  3 Nov 2021 19:09:48 +0000 (UTC)
+Date:   Wed, 3 Nov 2021 20:09:46 +0100
 From:   Eugene Syromiatnikov <esyr@redhat.com>
 To:     Jeremy Kerr <jk@codeconstruct.com.au>,
         Matt Johnston <matt@codeconstruct.com.au>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 1/2] mctp: handle the struct sockaddr_mctp
- padding fields
-Message-ID: <af7f3b660edf8dbcd77bcf158d7763dd0254fc91.1635965993.git.esyr@redhat.com>
+Subject: [PATCH net-next v2 2/2] mctp: handle the struct sockaddr_mctp_ext
+ padding field
+Message-ID: <09f02206829d8595b8c2794686c9b7bdb007fe8a.1635965993.git.esyr@redhat.com>
 References: <cover.1635965993.git.esyr@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -53,68 +53,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to have the padding fields actually usable in the future,
-there have to be checks that user space doesn't supply non-zero garbage
-there.  It is also worth setting these padding fields to zero, unless
-it is known that they have been already zeroed.
+struct sockaddr_mctp_ext.__smctp_paddin0 has to be checked for being set
+to zero, otherwise it cannot be utilised in the future.
 
-Cc: stable@vger.kernel.org # v5.15
-Fixes: 5a20dd46b8b84593 ("mctp: Be explicit about struct sockaddr_mctp padding")
+Fixes: 99ce45d5e7dbde39 ("mctp: Implement extended addressing")
 Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
 ---
- net/mctp/af_mctp.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ net/mctp/af_mctp.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/net/mctp/af_mctp.c b/net/mctp/af_mctp.c
-index d344b02..bc88159 100644
+index bc88159..871cf62 100644
 --- a/net/mctp/af_mctp.c
 +++ b/net/mctp/af_mctp.c
-@@ -33,6 +33,12 @@ static int mctp_release(struct socket *sock)
- 	return 0;
+@@ -39,6 +39,13 @@ static bool mctp_sockaddr_is_ok(const struct sockaddr_mctp *addr)
+ 	return !addr->__smctp_pad0 && !addr->__smctp_pad1;
  }
  
-+/* Generic sockaddr checks, padding checks only so far */
-+static bool mctp_sockaddr_is_ok(const struct sockaddr_mctp *addr)
++static bool mctp_sockaddr_ext_is_ok(const struct sockaddr_mctp_ext *addr)
 +{
-+	return !addr->__smctp_pad0 && !addr->__smctp_pad1;
++	return !addr->__smctp_pad0[0] &&
++	       !addr->__smctp_pad0[1] &&
++	       !addr->__smctp_pad0[2];
 +}
 +
  static int mctp_bind(struct socket *sock, struct sockaddr *addr, int addrlen)
  {
  	struct sock *sk = sock->sk;
-@@ -52,6 +58,9 @@ static int mctp_bind(struct socket *sock, struct sockaddr *addr, int addrlen)
- 	/* it's a valid sockaddr for MCTP, cast and do protocol checks */
- 	smctp = (struct sockaddr_mctp *)addr;
+@@ -135,7 +142,8 @@ static int mctp_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 		DECLARE_SOCKADDR(struct sockaddr_mctp_ext *,
+ 				 extaddr, msg->msg_name);
  
-+	if (!mctp_sockaddr_is_ok(smctp))
-+		return -EINVAL;
-+
- 	lock_sock(sk);
- 
- 	/* TODO: allow rebind */
-@@ -87,6 +96,8 @@ static int mctp_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 			return -EINVAL;
- 		if (addr->smctp_family != AF_MCTP)
- 			return -EINVAL;
-+		if (!mctp_sockaddr_is_ok(addr))
-+			return -EINVAL;
- 		if (addr->smctp_tag & ~(MCTP_TAG_MASK | MCTP_TAG_OWNER))
- 			return -EINVAL;
- 
-@@ -198,11 +209,13 @@ static int mctp_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 
- 		addr = msg->msg_name;
- 		addr->smctp_family = AF_MCTP;
-+		addr->__smctp_pad0 = 0;
- 		addr->smctp_network = cb->net;
- 		addr->smctp_addr.s_addr = hdr->src;
- 		addr->smctp_type = type;
- 		addr->smctp_tag = hdr->flags_seq_tag &
- 					(MCTP_HDR_TAG_MASK | MCTP_HDR_FLAG_TO);
-+		addr->__smctp_pad1 = 0;
- 		msg->msg_namelen = sizeof(*addr);
- 
- 		if (msk->addr_ext) {
+-		if (extaddr->smctp_halen > sizeof(cb->haddr)) {
++		if (!mctp_sockaddr_ext_is_ok(extaddr) ||
++		    extaddr->smctp_halen > sizeof(cb->haddr)) {
+ 			rc = -EINVAL;
+ 			goto err_free;
+ 		}
+@@ -224,6 +232,7 @@ static int mctp_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 			msg->msg_namelen = sizeof(*ae);
+ 			ae->smctp_ifindex = cb->ifindex;
+ 			ae->smctp_halen = cb->halen;
++			memset(ae->__smctp_pad0, 0x0, sizeof(ae->__smctp_pad0));
+ 			memset(ae->smctp_haddr, 0x0, sizeof(ae->smctp_haddr));
+ 			memcpy(ae->smctp_haddr, cb->haddr, cb->halen);
+ 		}
 -- 
 2.1.4
 
