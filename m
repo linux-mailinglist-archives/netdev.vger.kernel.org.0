@@ -2,177 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C3724449B1
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 21:46:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9D534449B8
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 21:47:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230210AbhKCUtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 16:49:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60190 "EHLO
+        id S231211AbhKCUub (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 16:50:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229893AbhKCUtW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 16:49:22 -0400
-Received: from forwardcorp1p.mail.yandex.net (forwardcorp1p.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b6:217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D868C061714
-        for <netdev@vger.kernel.org>; Wed,  3 Nov 2021 13:46:45 -0700 (PDT)
-Received: from sas1-4cbebe29391b.qloud-c.yandex.net (sas1-4cbebe29391b.qloud-c.yandex.net [IPv6:2a02:6b8:c08:789:0:640:4cbe:be29])
-        by forwardcorp1p.mail.yandex.net (Yandex) with ESMTP id 5EEFC2E0987;
-        Wed,  3 Nov 2021 23:46:42 +0300 (MSK)
-Received: from sas2-d40aa8807eff.qloud-c.yandex.net (sas2-d40aa8807eff.qloud-c.yandex.net [2a02:6b8:c08:b921:0:640:d40a:a880])
-        by sas1-4cbebe29391b.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id SEY8qv6D5p-kfsmQsTl;
-        Wed, 03 Nov 2021 23:46:42 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1635972402; bh=2saM1SLMg62oQ9h0nPX6kAAcOYxB6ipoyclbZFHpUUw=;
-        h=References:Date:Subject:To:From:Message-Id:In-Reply-To:Cc;
-        b=z0BkZkM9UvnQhtvqKiZ1GYxFyORLdk9ItzMr2uCVs531JyZoxw77Bkq7EGzYpQhEu
-         rrBneIuoIMixMZ9tFMRoZVb+JDy+YYegfiQDv0HugNC9ngnLDIa4C3ZvW8jKT68NlK
-         qlwSUuZxXI/1hoZNNlVHFJubK/2AncfVCdobO5eE=
-Authentication-Results: sas1-4cbebe29391b.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: from vmhmukos.sas.yp-c.yandex.net (vmhmukos.sas.yp-c.yandex.net [2a02:6b8:c07:895:0:696:abd4:0])
-        by sas2-d40aa8807eff.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPS id StBunK46Sv-kfxmWHEs;
-        Wed, 03 Nov 2021 23:46:41 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-X-Yandex-Fwd: 2
-From:   Akhmat Karakotov <hmukos@yandex-team.ru>
-To:     kafai@fb.com
-Cc:     brakmo@fb.com, eric.dumazet@gmail.com, hmukos@yandex-team.ru,
-        mitradir@yandex-team.ru, ncardwell@google.com,
-        netdev@vger.kernel.org, ycheng@google.com, zeil@yandex-team.ru
-Subject: [PATCH v3] tcp: Use BPF timeout setting for SYN ACK RTO
-Date:   Wed,  3 Nov 2021 23:46:07 +0300
-Message-Id: <20211103204607.21491-1-hmukos@yandex-team.ru>
-In-Reply-To: <20211025121253.8643-1-hmukos@yandex-team.ru>
-References: <20211025121253.8643-1-hmukos@yandex-team.ru>
+        with ESMTP id S229893AbhKCUub (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 16:50:31 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 999CCC061714;
+        Wed,  3 Nov 2021 13:47:54 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id b203so952615iof.10;
+        Wed, 03 Nov 2021 13:47:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=s+D5J+j6it2JpPiaH3R8HMv4EBy4UoNJvK16ZPtx1Ek=;
+        b=B+IHWJrq5yAOEwcYx/PMqkBtA4of7jWp5FVAGJXe90jxZwBROwKhuFM0MNZzYznL70
+         4N58XcmeTr4UTPP3IhbptLSvJsC4MCuOGSV5TAC5NZkZ+SkeMBUHOCyMsNtBgfiCfUyL
+         lshhoMOyHtGgYoYK4DgqWpSmbll7Ea3OkIJNdxQQkpNSuN6567PUEj/+6ikFSRBFbzQa
+         bhNHD+KHqKQfx8EH3JQ0NySh04lIkobF8fLlZhtzEvnRRY8DxGFJstlJ+jJhEKIkzhsa
+         rLGX5GjCfbQeqdcLK1iBtRluo679cAFD34Q80Pltg5vm8arHlXq1eYk3ny1M2XpODWul
+         zRyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=s+D5J+j6it2JpPiaH3R8HMv4EBy4UoNJvK16ZPtx1Ek=;
+        b=Ey0Ni8OueR704NTwUQgYcv86Mi1ZmT3hk4LD6m61dig/dLpbcBjy9mYWf/X5GI9Fff
+         PC4CL/b6z9gI5BSHL1+VsbKtL2LkLxp278zwOidlcebKUMeBI5DVqTSMYYcdhZNe75Yn
+         K5oDmx1UcuCVCkT2Z0P3fdhjyt0FU1IH7JbbW/3uaKZX1qPyaazl5pSk9UnPArciq10m
+         B5+miWUnGtkxwiD4gOmZPAaMSQR2crfWPCrUVEA9LYIpbvDimRkX0PCH4g36/pbOgTC8
+         FjI9wUOA4fjSJNbVptreCgwHl4R1NlfFRmHCqO16F29UgjbaltIueVWO2LsYCmfAXPed
+         Mi8w==
+X-Gm-Message-State: AOAM532kRsNxXg52KiJRuqs0QYUWKnkJ7J1ZDjcHSkEwG4einUf3jLJ0
+        bzpPTkqR4tEDHLdU9EFy7whOTrOOZKss7w==
+X-Google-Smtp-Source: ABdhPJzhhciojUeY9B3Pef/8/xJYPNQbQB9l7hyZHKgzcFtRsXil1N0HcB0Kxgqq3JgxcW/ttztG1Q==
+X-Received: by 2002:a02:270c:: with SMTP id g12mr590064jaa.75.1635972473739;
+        Wed, 03 Nov 2021 13:47:53 -0700 (PDT)
+Received: from john.lan ([172.243.151.11])
+        by smtp.gmail.com with ESMTPSA id y11sm1507612ior.4.2021.11.03.13.47.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Nov 2021 13:47:53 -0700 (PDT)
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     daniel@iogearbox.net, joamaki@gmail.com, xiyou.wangcong@gmail.com,
+        jakub@cloudflare.com, john.fastabend@gmail.com
+Subject: [PATCH bpf v2 0/5] bpf, sockmap: fixes stress testing and regression
+Date:   Wed,  3 Nov 2021 13:47:31 -0700
+Message-Id: <20211103204736.248403-1-john.fastabend@gmail.com>
+X-Mailer: git-send-email 2.33.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When setting RTO through BPF program, some SYN ACK packets were unaffected
-and continued to use TCP_TIMEOUT_INIT constant. This patch adds timeout
-option to struct request_sock. Option is initialized with TCP_TIMEOUT_INIT
-and is reassigned through BPF using tcp_timeout_init call. SYN ACK
-retransmits now use newly added timeout option.
+Attached are 5 patches that fix issues we found by either stress testing
+or updating our CI to LTS kernels.
 
-Signed-off-by: Akhmat Karakotov <hmukos@yandex-team.ru>
----
- include/net/request_sock.h      |  2 ++
- include/net/tcp.h               |  2 +-
- net/ipv4/inet_connection_sock.c |  4 +++-
- net/ipv4/tcp_input.c            |  8 +++++---
- net/ipv4/tcp_minisocks.c        | 12 +++++++++---
- 5 files changed, 20 insertions(+), 8 deletions(-)
+Thanks to Jussi for all the hard work tracking down issues and getting
+stress testing/CI running.
 
-diff --git a/include/net/request_sock.h b/include/net/request_sock.h
-index 29e41ff3ec93..144c39db9898 100644
---- a/include/net/request_sock.h
-+++ b/include/net/request_sock.h
-@@ -70,6 +70,7 @@ struct request_sock {
- 	struct saved_syn		*saved_syn;
- 	u32				secid;
- 	u32				peer_secid;
-+	u32				timeout;
- };
- 
- static inline struct request_sock *inet_reqsk(const struct sock *sk)
-@@ -104,6 +105,7 @@ reqsk_alloc(const struct request_sock_ops *ops, struct sock *sk_listener,
- 	sk_node_init(&req_to_sk(req)->sk_node);
- 	sk_tx_queue_clear(req_to_sk(req));
- 	req->saved_syn = NULL;
-+	req->timeout = 0;
- 	req->num_timeout = 0;
- 	req->num_retrans = 0;
- 	req->sk = NULL;
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 3166dc15d7d6..e328d6735e38 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -2323,7 +2323,7 @@ static inline u32 tcp_timeout_init(struct sock *sk)
- 
- 	if (timeout <= 0)
- 		timeout = TCP_TIMEOUT_INIT;
--	return timeout;
-+	return min_t(int, timeout, TCP_RTO_MAX);
- }
- 
- static inline u32 tcp_rwnd_init_bpf(struct sock *sk)
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index 0d477c816309..cdf16285e193 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -870,7 +870,9 @@ static void reqsk_timer_handler(struct timer_list *t)
- 
- 		if (req->num_timeout++ == 0)
- 			atomic_dec(&queue->young);
--		timeo = min(TCP_TIMEOUT_INIT << req->num_timeout, TCP_RTO_MAX);
-+		timeo = min_t(unsigned long,
-+			      (unsigned long)req->timeout << req->num_timeout,
-+			      TCP_RTO_MAX);
- 		mod_timer(&req->rsk_timer, jiffies + timeo);
- 
- 		if (!nreq)
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 3f7bd7ae7d7a..5c181dc4e96f 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -6706,6 +6706,7 @@ struct request_sock *inet_reqsk_alloc(const struct request_sock_ops *ops,
- 		ireq->ireq_state = TCP_NEW_SYN_RECV;
- 		write_pnet(&ireq->ireq_net, sock_net(sk_listener));
- 		ireq->ireq_family = sk_listener->sk_family;
-+		req->timeout = TCP_TIMEOUT_INIT;
- 	}
- 
- 	return req;
-@@ -6922,9 +6923,10 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
- 		sock_put(fastopen_sk);
- 	} else {
- 		tcp_rsk(req)->tfo_listener = false;
--		if (!want_cookie)
--			inet_csk_reqsk_queue_hash_add(sk, req,
--				tcp_timeout_init((struct sock *)req));
-+		if (!want_cookie) {
-+			req->timeout = tcp_timeout_init((struct sock *)req);
-+			inet_csk_reqsk_queue_hash_add(sk, req, req->timeout);
-+		}
- 		af_ops->send_synack(sk, dst, &fl, req, &foc,
- 				    !want_cookie ? TCP_SYNACK_NORMAL :
- 						   TCP_SYNACK_COOKIE,
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index 0a4f3f16140a..9ebcd554f601 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -583,6 +583,8 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
- 		tcp_parse_options(sock_net(sk), skb, &tmp_opt, 0, NULL);
- 
- 		if (tmp_opt.saw_tstamp) {
-+			unsigned long timeo;
-+
- 			tmp_opt.ts_recent = req->ts_recent;
- 			if (tmp_opt.rcv_tsecr)
- 				tmp_opt.rcv_tsecr -= tcp_rsk(req)->ts_off;
-@@ -590,7 +592,10 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
- 			 * it can be estimated (approximately)
- 			 * from another data.
- 			 */
--			tmp_opt.ts_recent_stamp = ktime_get_seconds() - ((TCP_TIMEOUT_INIT/HZ)<<req->num_timeout);
-+			timeo = min_t(unsigned long,
-+				      (unsigned long)req->timeout << req->num_timeout,
-+				      TCP_RTO_MAX);
-+			tmp_opt.ts_recent_stamp = ktime_get_seconds() - timeo / HZ;
- 			paws_reject = tcp_paws_reject(&tmp_opt, th->rst);
- 		}
- 	}
-@@ -629,8 +634,9 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
- 		    !inet_rtx_syn_ack(sk, req)) {
- 			unsigned long expires = jiffies;
- 
--			expires += min(TCP_TIMEOUT_INIT << req->num_timeout,
--				       TCP_RTO_MAX);
-+			expires += min_t(unsigned long,
-+					 (unsigned long)req->timeout << req->num_timeout,
-+					 TCP_RTO_MAX);
- 			if (!fastopen)
- 				mod_timer_pending(&req->rsk_timer, expires);
- 			else
+First patch was suggested by Jakub to ensure sockets in CLOSE state
+were safe from helper side.
+
+Next two patches are issues discovered by Jussi after writing a stess
+testing tool.
+
+The last two fix an issue noticed while reviewing patches and xlated
+code paths also discovered by Jussi.
+
+v2: Add an initial patch to make sockmap helpers safe with CLOSE
+    sockets in sockmap
+    Added Jussi's tested-by line he tested the original patch series.
+
+John Fastabend (4):
+  bpf, sockmap: Use stricter sk state checks in sk_lookup_assign
+  bpf, sockmap: Remove unhash handler for BPF sockmap usage
+  bpf, sockmap: Fix race in ingress receive verdict with redirect to
+    self
+  bpf: sockmap, strparser, and tls are reusing qdisc_skb_cb and
+    colliding
+
+Jussi Maki (1):
+  bpf, sockmap: sk_skb data_end access incorrect when src_reg = dst_reg
+
+ include/linux/skmsg.h     | 12 ++++++++
+ include/net/strparser.h   | 20 +++++++++++-
+ net/core/filter.c         | 64 ++++++++++++++++++++++++++++++++++-----
+ net/core/sock_map.c       |  6 ----
+ net/ipv4/tcp_bpf.c        | 48 ++++++++++++++++++++++++++++-
+ net/strparser/strparser.c | 10 +-----
+ 6 files changed, 135 insertions(+), 25 deletions(-)
+
 -- 
-2.17.1
+2.33.0
 
