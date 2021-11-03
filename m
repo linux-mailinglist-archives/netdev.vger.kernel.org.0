@@ -2,152 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93443444983
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 21:26:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 389F94449A6
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 21:43:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230421AbhKCU2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 16:28:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55574 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231420AbhKCU2w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 16:28:52 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45887C061208;
-        Wed,  3 Nov 2021 13:26:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:
-        Subject:Sender:Reply-To:Cc:Content-ID:Content-Description;
-        bh=k3I/nJavgx6XiiROVgxCaTtXsXUugWiGTr0ZFK/7s6k=; b=OyrJd/sPOFafUSCoJeCGPd0mgc
-        oCUb/DEEwSd+WUrC1HSo/PvXCke7ooNDhZSuoOstA+2eRs1+w7itOz7XXe774dOKg+/dRiOCvud7l
-        ZMvCLMtz4xPKPAy77jtMWS2wGAW1RFlVCFz5oNddBW8E+bVgi8QN9PvBFK7/bGX0VkMzug5AxVFFZ
-        xScE/DjpFFdyC6iVb3ifwKw/dvaXbx88e0BLxLEndnE3sIpAV2JCh5Tter03PfDJ/Ouhn+uTYD4HE
-        d1pNI35RarMTOKrPeoeMvT2kIrRAn9DjPj3E565QkxiSQC4GWA6A80vtxfvuie/A0Rx2GwBKN1LUq
-        TiLfnd+Q==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1miMpp-006UsQ-6I; Wed, 03 Nov 2021 20:26:13 +0000
-Subject: Re: [PATCH 2/2] net: ethernet: Add driver for Sunplus SP7021
-To:     =?UTF-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>,
-        Wells Lu <wellslutw@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>
-References: <cover.1635936610.git.wells.lu@sunplus.com>
- <650ec751dd782071dd56af5e36c0d509b0c66d7f.1635936610.git.wells.lu@sunplus.com>
- <d0217eed-a8b7-8eb9-7d50-4bf69cd38e03@infradead.org>
- <159ab76ac7114da983332aadc6056c08@sphcmbx02.sunplus.com.tw>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <07456b90-a83c-b1b9-20d4-b70a746148a5@infradead.org>
-Date:   Wed, 3 Nov 2021 13:26:12 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S229697AbhKCUqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 16:46:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:30448 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230172AbhKCUqT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 16:46:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1635972222;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=ycJtGdUUCpH0aUUTnC/bRRS7vczLyB6170Uz115xpB0=;
+        b=HVjglvIEB3P/432ebdGv18Bn7j4PcJJZbb8l0Ygxhah7kT1ri8T20h4Gj63LAw8T4bAe4s
+        AWXgKG/KqJeb/J7XpfrgdkBH2CMYNqEQZh5OA06Bgvfk2z26KvI8QMZWX/PJkXOF5xMG+0
+        Uwt/rHTK0B677QSQEYzCQwnz7ezACkM=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-66-RlHbO_I8NZqONcBe4XYPnQ-1; Wed, 03 Nov 2021 16:43:39 -0400
+X-MC-Unique: RlHbO_I8NZqONcBe4XYPnQ-1
+Received: by mail-wr1-f71.google.com with SMTP id v18-20020a5d5912000000b001815910d2c0so626190wrd.1
+        for <netdev@vger.kernel.org>; Wed, 03 Nov 2021 13:43:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=ycJtGdUUCpH0aUUTnC/bRRS7vczLyB6170Uz115xpB0=;
+        b=oyBxr0jLGk+tW0oLJkQ7jkyJgWRaGBUiQDQdiXdGKPDDHvx4FnVAzdddW9r9IWEWDA
+         zM9viquLHbO4XSoAEKe+jxB/kplFEkTiR70gFRCMwpSsPiqV29Hm/n64Lsd2DDwPZlnI
+         TlSofnEfp7+sxHA8QCeraXSvWvacJUQhNCiYRLW1jLNC08ceXJsESDnlk321YMAilpar
+         n4VgIsEeszImT6CWcrnSQ/mycnr76A6r8Ln1Vj6j8uIYcFhsNvP+IBqk609k1i4KopCz
+         zHLo214xvxBODI0DxmXhHxOrgo9TdTu+ZRKI2L/0Q3vZCpJULpGss0RR2n0PVriSs9kh
+         qCFQ==
+X-Gm-Message-State: AOAM532+k1ZwWl3txY3vm8iWQS10fYjdSEaFtpF2qqrP0iRS/ao25Iz1
+        Jo6pn7zxJ6F0XrZrfeGCSbc+CIc/DrG76TDMaHl4L4ADjYNqCHwiqU7nN0ZT/cjdzVdZVSA8Dow
+        ha4p6xg9MzTbHUTl1
+X-Received: by 2002:a7b:c8d5:: with SMTP id f21mr16301046wml.146.1635972217920;
+        Wed, 03 Nov 2021 13:43:37 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyAOxXMQNUWbZpukHMPxGSMFHowFfE8y2JMN+RYHabViAVvjlT9WYHd7lkudlHiVcf5NGesSg==
+X-Received: by 2002:a7b:c8d5:: with SMTP id f21mr16300998wml.146.1635972217669;
+        Wed, 03 Nov 2021 13:43:37 -0700 (PDT)
+Received: from redhat.com ([2.55.17.31])
+        by smtp.gmail.com with ESMTPSA id z11sm2978466wrt.58.2021.11.03.13.43.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Nov 2021 13:43:37 -0700 (PDT)
+Date:   Wed, 3 Nov 2021 16:43:32 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        amit@kernel.org, arnd@arndb.de, boqun.feng@gmail.com,
+        colin.i.king@gmail.com, colin.i.king@googlemail.com,
+        corentin.noel@collabora.com, elic@nvidia.com,
+        gustavoars@kernel.org, jasowang@redhat.com, jie.deng@intel.com,
+        lkp@intel.com, lvivier@redhat.com, mgurtovoy@nvidia.com,
+        mst@redhat.com, pankaj.gupta@ionos.com,
+        pankaj.gupta.linux@gmail.com, parav@nvidia.com, paulmck@kernel.org,
+        pbonzini@redhat.com, peterz@infradead.org, sgarzare@redhat.com,
+        stefanha@redhat.com, tglx@linutronix.de, viresh.kumar@linaro.org,
+        wuzongyong@linux.alibaba.com, xuanzhuo@linux.alibaba.com,
+        ye.guojin@zte.com.cn, zealci@zte.com.cn
+Subject: [GIT PULL] vhost,virtio,vhost: fixes,features
+Message-ID: <20211103164332-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <159ab76ac7114da983332aadc6056c08@sphcmbx02.sunplus.com.tw>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mutt-Fcc: =sent
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/3/21 11:08 AM, Wells Lu 呂芳騰 wrote:
->>
->> Hi--
->>
->> On 11/3/21 4:02 AM, Wells Lu wrote:
->>> diff --git a/drivers/net/ethernet/sunplus/Kconfig
->>> b/drivers/net/ethernet/sunplus/Kconfig
->>> new file mode 100644
->>> index 0000000..a9e3a4c
->>> --- /dev/null
->>> +++ b/drivers/net/ethernet/sunplus/Kconfig
->>> @@ -0,0 +1,20 @@
->>> +# SPDX-License-Identifier: GPL-2.0
->>> +#
->>> +# Sunplus Ethernet device configuration #
->>> +
->>> +config NET_VENDOR_SUNPLUS
->>> +	tristate "Sunplus Dual 10M/100M Ethernet (with L2 switch) devices"
->>> +	depends on ETHERNET && SOC_SP7021
->>> +	select PHYLIB
->>> +	select PINCTRL_SPPCTL
->>> +	select COMMON_CLK_SP7021
->>> +	select RESET_SUNPLUS
->>> +	select NVMEM_SUNPLUS_OCOTP
->>> +	help
->>> +	  If you have Sunplus dual 10M/100M Ethernet (with L2 switch)
->>> +	  devices, say Y.
->>> +	  The network device supports dual 10M/100M Ethernet interfaces,
->>> +	  or one 10/100M Ethernet interface with two LAN ports.
->>> +	  To compile this driver as a module, choose M here.  The module
->>> +	  will be called sp_l2sw.
->>
->> Please use NET_VENDOR_SUNPLUS in the same way that other
->> NET_VENDOR_wyxz kconfig symbols are used. It should just enable or
->> disable any specific device drivers under it.
->>
->>
->> --
->> ~Randy
-> 
-> I looked up Kconfig file of other vendors, but not sure what I should do.
-> Do I need to modify Kconfig file in the form as shown below?
+The following changes since commit 8bb7eca972ad531c9b149c0a51ab43a417385813:
 
-Hi,
+  Linux 5.15 (2021-10-31 13:53:10 -0700)
 
-Yes, this is the correct general idea, but also consider
-Andrew's comments.
+are available in the Git repository at:
 
-Thanks.
+  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
 
-> # SPDX-License-Identifier: GPL-2.0
-> #
-> # Sunplus device configuration
-> #
-> 
-> config NET_VENDOR_SUNPLUS
-> 	bool "Sunplus devices"
-> 	default y
-> 	depends on ARCH_SUNPLUS
-> 	---help---
-> 	  If you have a network (Ethernet) card belonging to this
-> 	  class, say Y here.
-> 
-> 	  Note that the answer to this question doesn't directly
-> 	  affect the kernel: saying N will just cause the configurator
-> 	  to skip all the questions about Sunplus cards. If you say Y,
-> 	  you will be asked for your specific card in the following
-> 	  questions.
-> 
-> if NET_VENDOR_SUNPLUS
-> 
-> config SP7021_EMAC
-> 	tristate "Sunplus Dual 10M/100M Ethernet (with L2 switch) devices"
-> 	depends on ETHERNET && SOC_SP7021
-> 	select PHYLIB
-> 	select PINCTRL_SPPCTL
-> 	select COMMON_CLK_SP7021
-> 	select RESET_SUNPLUS
-> 	select NVMEM_SUNPLUS_OCOTP
-> 	help
-> 	  If you have Sunplus dual 10M/100M Ethernet (with L2 switch)
-> 	  devices, say Y.
-> 	  The network device supports dual 10M/100M Ethernet interfaces,
-> 	  or one 10/100M Ethernet interface with two LAN ports.
-> 	  To compile this driver as a module, choose M here.  The module
-> 	  will be called sp_l2sw.
-> 
-> endif # NET_VENDOR_SUNPLUS
-> 
-> Best regards,
-> Wells
-> 
+for you to fetch changes up to 540061ac79f0302ae91e44e6cd216cbaa3af1757:
 
+  vdpa/mlx5: Forward only packets with allowed MAC address (2021-11-01 05:26:49 -0400)
 
--- 
-~Randy
+----------------------------------------------------------------
+vhost,virtio,vhost: fixes,features
+
+Hardening work by Jason
+vdpa driver for Alibaba ENI
+Performance tweaks for virtio blk
+virtio rng rework using an internal buffer
+mac/mtu programming for mlx5 vdpa
+Misc fixes, cleanups
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+----------------------------------------------------------------
+Colin Ian King (1):
+      virtio_blk: Fix spelling mistake: "advertisted" -> "advertised"
+
+Eli Cohen (5):
+      vdpa/mlx5: Remove mtu field from vdpa net device
+      vdpa/mlx5: Rename control VQ workqueue to vdpa wq
+      vdpa/mlx5: Propagate link status from device to vdpa driver
+      vdpa/mlx5: Support configuration of MAC
+      vdpa/mlx5: Forward only packets with allowed MAC address
+
+Gustavo A. R. Silva (1):
+      ALSA: virtio: Replace zero-length array with flexible-array member
+
+Jason Wang (10):
+      virtio-blk: validate num_queues during probe
+      virtio_console: validate max_nr_ports before trying to use it
+      virtio_config: introduce a new .enable_cbs method
+      virtio_pci: harden MSI-X interrupts
+      virtio-pci: harden INTX interrupts
+      virtio_ring: fix typos in vring_desc_extra
+      virtio_ring: validate used buffer length
+      virtio-net: don't let virtio core to validate used length
+      virtio-blk: don't let virtio core to validate used length
+      virtio-scsi: don't let virtio core to validate used buffer length
+
+Laurent Vivier (4):
+      hwrng: virtio - add an internal buffer
+      hwrng: virtio - don't wait on cleanup
+      hwrng: virtio - don't waste entropy
+      hwrng: virtio - always add a pending request
+
+Max Gurtovoy (2):
+      virtio-blk: avoid preallocating big SGL for data
+      virtio-blk: add num_request_queues module parameter
+
+Michael S. Tsirkin (3):
+      virtio_net: clarify tailroom logic
+      virtio_blk: allow 0 as num_request_queues
+      virtio_blk: correct types for status handling
+
+Pankaj Gupta (1):
+      virtio-pmem: add myself as virtio-pmem maintainer
+
+Parav Pandit (6):
+      vdpa: Introduce and use vdpa device get, set config helpers
+      vdpa: Introduce query of device config layout
+      vdpa: Use kernel coding style for structure comments
+      vdpa: Enable user to set mac and mtu of vdpa device
+      vdpa_sim_net: Enable user to set mac address and mtu
+      vdpa/mlx5: Fix clearing of VIRTIO_NET_F_MAC feature bit
+
+Viresh Kumar (1):
+      i2c: virtio: Add support for zero-length requests
+
+Wu Zongyong (8):
+      virtio-pci: introduce legacy device module
+      vdpa: fix typo
+      vp_vdpa: add vq irq offloading support
+      vdpa: add new callback get_vq_num_min in vdpa_config_ops
+      vdpa: min vq num of vdpa device cannot be greater than max vq num
+      virtio_vdpa: setup correct vq size with callbacks get_vq_num_{max,min}
+      vdpa: add new attribute VDPA_ATTR_DEV_MIN_VQ_SIZE
+      eni_vdpa: add vDPA driver for Alibaba ENI
+
+Xuan Zhuo (2):
+      virtio_ring: make virtqueue_add_indirect_packed prettier
+      virtio_ring: check desc == NULL when using indirect with packed
+
+Ye Guojin (1):
+      virtio-blk: fixup coccinelle warnings
+
+ MAINTAINERS                            |   7 +
+ drivers/block/Kconfig                  |   1 +
+ drivers/block/virtio_blk.c             | 178 +++++++----
+ drivers/char/hw_random/virtio-rng.c    |  84 +++--
+ drivers/char/virtio_console.c          |   9 +
+ drivers/i2c/busses/i2c-virtio.c        |  56 ++--
+ drivers/net/virtio_net.c               |   4 +-
+ drivers/scsi/virtio_scsi.c             |   1 +
+ drivers/vdpa/Kconfig                   |   8 +
+ drivers/vdpa/Makefile                  |   1 +
+ drivers/vdpa/alibaba/Makefile          |   3 +
+ drivers/vdpa/alibaba/eni_vdpa.c        | 553 +++++++++++++++++++++++++++++++++
+ drivers/vdpa/ifcvf/ifcvf_main.c        |   3 +-
+ drivers/vdpa/mlx5/core/mlx5_vdpa.h     |   2 +-
+ drivers/vdpa/mlx5/net/mlx5_vnet.c      | 202 ++++++++++--
+ drivers/vdpa/vdpa.c                    | 261 +++++++++++++++-
+ drivers/vdpa/vdpa_sim/vdpa_sim_blk.c   |   3 +-
+ drivers/vdpa/vdpa_sim/vdpa_sim_net.c   |  38 ++-
+ drivers/vdpa/vdpa_user/vduse_dev.c     |   3 +-
+ drivers/vdpa/virtio_pci/vp_vdpa.c      |  12 +
+ drivers/vhost/vdpa.c                   |   3 +-
+ drivers/virtio/Kconfig                 |  10 +
+ drivers/virtio/Makefile                |   1 +
+ drivers/virtio/virtio_pci_common.c     |  58 +++-
+ drivers/virtio/virtio_pci_common.h     |  16 +-
+ drivers/virtio/virtio_pci_legacy.c     | 106 ++-----
+ drivers/virtio/virtio_pci_legacy_dev.c | 220 +++++++++++++
+ drivers/virtio/virtio_pci_modern.c     |   6 +-
+ drivers/virtio/virtio_ring.c           |  90 +++++-
+ drivers/virtio/virtio_vdpa.c           |  19 +-
+ include/linux/vdpa.h                   |  53 ++--
+ include/linux/virtio.h                 |   2 +
+ include/linux/virtio_config.h          |   6 +
+ include/linux/virtio_pci_legacy.h      |  42 +++
+ include/uapi/linux/vdpa.h              |   7 +
+ include/uapi/linux/virtio_i2c.h        |   6 +
+ sound/virtio/virtio_pcm_msg.c          |   5 +-
+ 37 files changed, 1781 insertions(+), 298 deletions(-)
+ create mode 100644 drivers/vdpa/alibaba/Makefile
+ create mode 100644 drivers/vdpa/alibaba/eni_vdpa.c
+ create mode 100644 drivers/virtio/virtio_pci_legacy_dev.c
+ create mode 100644 include/linux/virtio_pci_legacy.h
+
