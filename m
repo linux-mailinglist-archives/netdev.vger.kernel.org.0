@@ -2,213 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 137084445D2
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 17:21:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEE1F44460C
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 17:38:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232729AbhKCQXt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 12:23:49 -0400
-Received: from mga12.intel.com ([192.55.52.136]:47032 "EHLO mga12.intel.com"
+        id S232830AbhKCQlV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 12:41:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41392 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232644AbhKCQXs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Nov 2021 12:23:48 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10157"; a="211590307"
-X-IronPort-AV: E=Sophos;i="5.87,206,1631602800"; 
-   d="scan'208";a="211590307"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2021 09:21:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,206,1631602800"; 
-   d="scan'208";a="497645568"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga007.fm.intel.com with ESMTP; 03 Nov 2021 09:21:11 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net v2 5/5] ice: Fix race conditions between virtchnl handling and VF ndo ops
-Date:   Wed,  3 Nov 2021 09:19:35 -0700
-Message-Id: <20211103161935.2997369-6-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211103161935.2997369-1-anthony.l.nguyen@intel.com>
-References: <20211103161935.2997369-1-anthony.l.nguyen@intel.com>
+        id S229894AbhKCQlV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Nov 2021 12:41:21 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 51C076103B;
+        Wed,  3 Nov 2021 16:38:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1635957524;
+        bh=LTvKT4L16N9jCnuM9BZtU78iuPa4pEylaVkfbD7/bds=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mBcW9ImrTOCGdoNgCSP+E0Gtz5DWSwJzwHYyue20scqQeAUyjVbiJ9wuLai8JSU8R
+         d9wy4e89GPbdNhKlfz4kh9NqZAXw23Izjcm77bjPxivAJA1ZJdpE0c6/pp913UFC7B
+         rTT3bCmyTKqcBDVaVmvEDrA+qHxrjpyTKk1+xQVhlOS7lnmGV0M7JqktKMNolutQQ9
+         QFCzi7B4VkXZuEc2/OJPd2suzv9qQUcRCd4wI+YuOSIr4JQLE4+IB+d1oZ0LKFkuRY
+         oL66WaxEqyyNoyWy+uH+QADGSFyzrVodQIWPqJ7o6ZCUasxg4J/SevcGBUJrKpBvoQ
+         Onvs7DyM5DEFA==
+Date:   Wed, 3 Nov 2021 09:38:43 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: Is it ok for switch TCAMs to depend on the bridge state?
+Message-ID: <20211103093843.200fc421@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20211102110352.ac4kqrwqvk37wjg7@skbuf>
+References: <20211102110352.ac4kqrwqvk37wjg7@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Brett Creeley <brett.creeley@intel.com>
+On Tue, 2 Nov 2021 11:03:53 +0000 Vladimir Oltean wrote:
+> I don't have a clear picture in my mind about what is wrong. An airplane
+> viewer might argue that the TCAM should be completely separate from the
+> bridging service, but I'm not completely sure that this can be achieved
+> in the aforementioned case with VLAN rewriting on ingress and on egress,
+> it would seem more natural for these features to operate on the
+> classified VLAN (which again, depends on VLAN awareness being turned on).
+> Alternatively, one might argue that the deletion of a bridge interface
+> should be vetoed, and so should the removal of a port from a bridge.
+> But that is quite complicated, and doesn't answer questions such as
+> "what should you do when you reboot".
+> Alternatively, one might say that letting the user remove TCAM
+> dependencies from the bridging service is fine, but the driver should
+> have a way to also unoffload the tc-flower keys as long as the
+> requirements are not satisfied. I think this is also difficult to
+> implement.
 
-The VF can be configured via the PF's ndo ops at the same time the PF is
-receiving/handling virtchnl messages. This has many issues, with
-one of them being the ndo op could be actively resetting a VF (i.e.
-resetting it to the default state and deleting/re-adding the VF's VSI)
-while a virtchnl message is being handled. The following error was seen
-because a VF ndo op was used to change a VF's trust setting while the
-VIRTCHNL_OP_CONFIG_VSI_QUEUES was ongoing:
+Some random thoughts which may be completely nonsensical.
 
-[35274.192484] ice 0000:88:00.0: Failed to set LAN Tx queue context, error: ICE_ERR_PARAM
-[35274.193074] ice 0000:88:00.0: VF 0 failed opcode 6, retval: -5
-[35274.193640] iavf 0000:88:01.0: PF returned error -5 (IAVF_ERR_PARAM) to our request 6
+I thought we do have a way of indicating that flower rules are no
+longer offloaded because tunnel rules need neigh to be resolved, 
+but looking at the code it seems we only report some semblance of
+offload status as part of stats.
 
-Fix this by making sure the virtchnl handling and VF ndo ops that
-trigger VF resets cannot run concurrently. This is done by adding a
-struct mutex cfg_lock to each VF structure. For VF ndo ops, the mutex
-will be locked around the critical operations and VFR. Since the ndo ops
-will trigger a VFR, the virtchnl thread will use mutex_trylock(). This
-is done because if any other thread (i.e. VF ndo op) has the mutex, then
-that means the current VF message being handled is no longer valid, so
-just ignore it.
-
-This issue can be seen using the following commands:
-
-for i in {0..50}; do
-        rmmod ice
-        modprobe ice
-
-        sleep 1
-
-        echo 1 > /sys/class/net/ens785f0/device/sriov_numvfs
-        echo 1 > /sys/class/net/ens785f1/device/sriov_numvfs
-
-        ip link set ens785f1 vf 0 trust on
-        ip link set ens785f0 vf 0 trust on
-
-        sleep 2
-
-        echo 0 > /sys/class/net/ens785f0/device/sriov_numvfs
-        echo 0 > /sys/class/net/ens785f1/device/sriov_numvfs
-        sleep 1
-        echo 1 > /sys/class/net/ens785f0/device/sriov_numvfs
-        echo 1 > /sys/class/net/ens785f1/device/sriov_numvfs
-
-        ip link set ens785f1 vf 0 trust on
-        ip link set ens785f0 vf 0 trust on
-done
-
-Fixes: 7c710869d64e ("ice: Add handlers for VF netdevice operations")
-Signed-off-by: Brett Creeley <brett.creeley@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 25 +++++++++++++++++++
- .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |  5 ++++
- 2 files changed, 30 insertions(+)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index 3f727df3b6fb..217ff5e9a6f1 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -650,6 +650,8 @@ void ice_free_vfs(struct ice_pf *pf)
- 			set_bit(ICE_VF_STATE_DIS, pf->vf[i].vf_states);
- 			ice_free_vf_res(&pf->vf[i]);
- 		}
-+
-+		mutex_destroy(&pf->vf[i].cfg_lock);
- 	}
- 
- 	if (ice_sriov_free_msix_res(pf))
-@@ -1946,6 +1948,8 @@ static void ice_set_dflt_settings_vfs(struct ice_pf *pf)
- 		ice_vf_fdir_init(vf);
- 
- 		ice_vc_set_dflt_vf_ops(&vf->vc_ops);
-+
-+		mutex_init(&vf->cfg_lock);
- 	}
- }
- 
-@@ -4135,6 +4139,8 @@ ice_set_vf_port_vlan(struct net_device *netdev, int vf_id, u16 vlan_id, u8 qos,
- 		return 0;
- 	}
- 
-+	mutex_lock(&vf->cfg_lock);
-+
- 	vf->port_vlan_info = vlanprio;
- 
- 	if (vf->port_vlan_info)
-@@ -4144,6 +4150,7 @@ ice_set_vf_port_vlan(struct net_device *netdev, int vf_id, u16 vlan_id, u8 qos,
- 		dev_info(dev, "Clearing port VLAN on VF %d\n", vf_id);
- 
- 	ice_vc_reset_vf(vf);
-+	mutex_unlock(&vf->cfg_lock);
- 
- 	return 0;
- }
-@@ -4683,6 +4690,15 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
- 		return;
- 	}
- 
-+	/* VF is being configured in another context that triggers a VFR, so no
-+	 * need to process this message
-+	 */
-+	if (!mutex_trylock(&vf->cfg_lock)) {
-+		dev_info(dev, "VF %u is being configured in another context that will trigger a VFR, so there is no need to handle this message\n",
-+			 vf->vf_id);
-+		return;
-+	}
-+
- 	switch (v_opcode) {
- 	case VIRTCHNL_OP_VERSION:
- 		err = ops->get_ver_msg(vf, msg);
-@@ -4771,6 +4787,8 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
- 		dev_info(dev, "PF failed to honor VF %d, opcode %d, error %d\n",
- 			 vf_id, v_opcode, err);
- 	}
-+
-+	mutex_unlock(&vf->cfg_lock);
- }
- 
- /**
-@@ -4886,6 +4904,8 @@ int ice_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac)
- 		return -EINVAL;
- 	}
- 
-+	mutex_lock(&vf->cfg_lock);
-+
- 	/* VF is notified of its new MAC via the PF's response to the
- 	 * VIRTCHNL_OP_GET_VF_RESOURCES message after the VF has been reset
- 	 */
-@@ -4904,6 +4924,7 @@ int ice_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac)
- 	}
- 
- 	ice_vc_reset_vf(vf);
-+	mutex_unlock(&vf->cfg_lock);
- 	return 0;
- }
- 
-@@ -4938,11 +4959,15 @@ int ice_set_vf_trust(struct net_device *netdev, int vf_id, bool trusted)
- 	if (trusted == vf->trusted)
- 		return 0;
- 
-+	mutex_lock(&vf->cfg_lock);
-+
- 	vf->trusted = trusted;
- 	ice_vc_reset_vf(vf);
- 	dev_info(ice_pf_to_dev(pf), "VF %u is now %strusted\n",
- 		 vf_id, trusted ? "" : "un");
- 
-+	mutex_unlock(&vf->cfg_lock);
-+
- 	return 0;
- }
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-index 5ff93a08f54c..7e28ecbbe7af 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-@@ -100,6 +100,11 @@ struct ice_vc_vf_ops {
- struct ice_vf {
- 	struct ice_pf *pf;
- 
-+	/* Used during virtchnl message handling and NDO ops against the VF
-+	 * that will trigger a VFR
-+	 */
-+	struct mutex cfg_lock;
-+
- 	u16 vf_id;			/* VF ID in the PF space */
- 	u16 lan_vsi_idx;		/* index into PF struct */
- 	u16 ctrl_vsi_idx;
--- 
-2.31.1
-
+For port removal maybe we can add a callback just for vetoing in case
+the operation originates from user space?
