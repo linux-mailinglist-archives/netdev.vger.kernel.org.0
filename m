@@ -2,151 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79E504446DA
-	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 18:17:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B401B4446F4
+	for <lists+netdev@lfdr.de>; Wed,  3 Nov 2021 18:21:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230500AbhKCRTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Nov 2021 13:19:37 -0400
-Received: from kirsty.vergenet.net ([202.4.237.240]:35546 "EHLO
-        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229587AbhKCRTg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 13:19:36 -0400
-Received: from madeliefje.horms.nl (ip-80-113-23-202.ip.prioritytelecom.net [80.113.23.202])
-        by kirsty.vergenet.net (Postfix) with ESMTPA id 7104C25AD6B;
-        Thu,  4 Nov 2021 04:16:57 +1100 (AEDT)
-Received: by madeliefje.horms.nl (Postfix, from userid 7100)
-        id 4F72D27B0; Wed,  3 Nov 2021 18:16:55 +0100 (CET)
-Date:   Wed, 3 Nov 2021 18:16:55 +0100
-From:   Simon Horman <horms@verge.net.au>
-To:     yangxingwu <xingwu.yang@gmail.com>
-Cc:     Julian Anastasov <ja@ssi.bg>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-doc@vger.kernel.org, Chuanqi Liu <legend050709@qq.com>
-Subject: Re: [PATCH nf-next v5] netfilter: ipvs: Fix reuse connection if RS
- weight is 0
-Message-ID: <20211103171652.GA12763@vergenet.net>
-References: <20211101020416.31402-1-xingwu.yang@gmail.com>
- <ae67eb7b-a25f-57d3-195f-cdbd9247ef5b@ssi.bg>
- <CA+7U5Jumj_MwMZBmDTCvWLnvmfX28d==dbkLTq+6cOz+32GCvw@mail.gmail.com>
+        id S231474AbhKCRXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Nov 2021 13:23:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41856 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231371AbhKCRXl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Nov 2021 13:23:41 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E5E4C061714
+        for <netdev@vger.kernel.org>; Wed,  3 Nov 2021 10:21:05 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id h24so691372pjq.2
+        for <netdev@vger.kernel.org>; Wed, 03 Nov 2021 10:21:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=Ez66n9LK5JSiVUxv2um/dQt/nZzmzprL+/z4JZ4EeV0=;
+        b=PUgCtyjG+vFbL9ovC4Q2UNdd7zn61Q3ZrcKGVcERO5ME3MC+F40IFKsKpSNaFGPVgC
+         a1ohf6nn0jC4dq9XP5wzPOMlZq0mPGJK1U4o5f8oOco/kGvS4fyssGqJcAZGevQwbO6+
+         2icZkmpD8ACeCBP9gHtwGYept5pWTAftnLO+0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Ez66n9LK5JSiVUxv2um/dQt/nZzmzprL+/z4JZ4EeV0=;
+        b=GkRNgyXiNZ4qLX2BpsgZYG7tW7EIjdqcJL3JTQim3oQC+7dTcN+wkUhrT2zL9+yhGF
+         p5+6eR77/ZZ26g/B4LjM+/Ugrzvmw8/AZeuU8XCCfpUXHAex95fBIB9gtqkQwjhtDXxi
+         ddqp4Z7m3Hau/Y0EpUutEnLTlIqAT4/kG3regKc8z9U4vcI0mOezutDtAhRpHjTx3x4b
+         Fc/kFu0GOHDFXFQN3j7u8PAZHI9uoSGFaqJ/REJnS04yhF8gGjQZhbM7E4bsViJzHzKf
+         8R0ZZw/gixUc5DKggK/BvPZbofyrmILxopXwvtojhyFduJMFLS+rIGRJeHJmFZFOutGr
+         buUw==
+X-Gm-Message-State: AOAM533Nwcf1JheTOnAi0BuxZsPw/1AJpax/35Gmy7Ib3vvqTOXIPAO8
+        fbbmYux3oRxmyF4+/NfGI7eCaA==
+X-Google-Smtp-Source: ABdhPJz8Bb5eOQliSMGFdLYIGmLvUuFE+uiIi+hWqTOovtZg4jZhuJDUB02SYkeY57Lbhi/NmsFTxw==
+X-Received: by 2002:a17:902:e5ce:b0:142:780:78db with SMTP id u14-20020a170902e5ce00b00142078078dbmr12506491plf.12.1635960064880;
+        Wed, 03 Nov 2021 10:21:04 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:c80d:e9d8:d115:daf])
+        by smtp.gmail.com with ESMTPSA id h11sm3325256pfc.131.2021.11.03.10.21.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Nov 2021 10:21:03 -0700 (PDT)
+Date:   Wed, 3 Nov 2021 10:21:01 -0700
+From:   Brian Norris <briannorris@chromium.org>
+To:     Jonas =?iso-8859-1?Q?Dre=DFler?= <verdre@v0yd.nl>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Subject: Re: [PATCH] mwifiex: Add quirk to disable deep sleep with certain
+ hardware revision
+Message-ID: <YYLE/QFd+qeSlwU9@google.com>
+References: <20211028073729.24408-1-verdre@v0yd.nl>
+ <CA+ASDXOrad3b=b8+vwuF6m3+ZcigVaoJySpDXXZOnC3O8CJBSw@mail.gmail.com>
+ <cc7432f4-824a-abe2-e304-5ba019ac8c89@v0yd.nl>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <CA+7U5Jumj_MwMZBmDTCvWLnvmfX28d==dbkLTq+6cOz+32GCvw@mail.gmail.com>
-Organisation: Horms Solutions BV
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <cc7432f4-824a-abe2-e304-5ba019ac8c89@v0yd.nl>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 03, 2021 at 07:40:46PM +0800, yangxingwu wrote:
-> hello Simon
+On Wed, Nov 03, 2021 at 01:25:44PM +0100, Jonas Dreßler wrote:
+> The issue only appeared for some community members using Surface devices,
+> happening on the Surface Book 2 of one person, but not on the Surface Book
+> 2 of another person. When investigating we were poking around in the dark
+> for a long time and almost gave up until we found that those two devices
+> had different hardware revisions of the same wifi card installed (ChipRev
+> 20 vs 21).
 > 
-> I delete the "This will effectively disable expire_nodest_conn" section
-> from doc, and the others remain untouched. The following is how it looks
-> like after modification:
-> 
-> 0: disable any special handling on port reuse. The new
-> connection will be delivered to the same real server that was
-> servicing the previous connection.
-> 
-> Simon, pls help to check if it's necessary to replace servicing with
-> service.
+> So it seems pretty clear that with revision 21 they fixed some hardware
+> bug that causes those spurious wakeups.
 
-Sorry, my mistake. No need to replace servicing with service.
+Seems reasonable, thanks for the thorough handling!
 
-> And I will move the conn_reuse_mode line above the bool line
-> 
-> On Tue, Nov 2, 2021 at 2:21 AM Julian Anastasov <ja@ssi.bg> wrote:
-> 
-> >
-> >         Hello,
-> >
-> > On Mon, 1 Nov 2021, yangxingwu wrote:
-> >
-> > > We are changing expire_nodest_conn to work even for reused connections
-> > when
-> > > conn_reuse_mode=0, just as what was done with commit dc7b3eb900aa ("ipvs:
-> > > Fix reuse connection if real server is dead").
-> > >
-> > > For controlled and persistent connections, the new connection will get
-> > the
-> > > needed real server depending on the rules in ip_vs_check_template().
-> > >
-> > > Fixes: d752c3645717 ("ipvs: allow rescheduling of new connections when
-> > port reuse is detected")
-> > > Co-developed-by: Chuanqi Liu <legend050709@qq.com>
-> > > Signed-off-by: Chuanqi Liu <legend050709@qq.com>
-> > > Signed-off-by: yangxingwu <xingwu.yang@gmail.com>
-> >
-> >         Looks good to me, thanks!
-> >
-> > Acked-by: Julian Anastasov <ja@ssi.bg>
-> >
-> > > ---
-> > >  Documentation/networking/ipvs-sysctl.rst | 3 +--
-> > >  net/netfilter/ipvs/ip_vs_core.c          | 8 ++++----
-> > >  2 files changed, 5 insertions(+), 6 deletions(-)
-> > >
-> > > diff --git a/Documentation/networking/ipvs-sysctl.rst
-> > b/Documentation/networking/ipvs-sysctl.rst
-> > > index 2afccc63856e..1cfbf1add2fc 100644
-> > > --- a/Documentation/networking/ipvs-sysctl.rst
-> > > +++ b/Documentation/networking/ipvs-sysctl.rst
-> > > @@ -37,8 +37,7 @@ conn_reuse_mode - INTEGER
-> > >
-> > >       0: disable any special handling on port reuse. The new
-> > >       connection will be delivered to the same real server that was
-> > > -     servicing the previous connection. This will effectively
-> > > -     disable expire_nodest_conn.
-> > > +     servicing the previous connection.
-> > >
-> > >       bit 1: enable rescheduling of new connections when it is safe.
-> > >       That is, whenever expire_nodest_conn and for TCP sockets, when
-> > > diff --git a/net/netfilter/ipvs/ip_vs_core.c
-> > b/net/netfilter/ipvs/ip_vs_core.c
-> > > index 128690c512df..f9d65d2c8da8 100644
-> > > --- a/net/netfilter/ipvs/ip_vs_core.c
-> > > +++ b/net/netfilter/ipvs/ip_vs_core.c
-> > > @@ -1964,7 +1964,6 @@ ip_vs_in(struct netns_ipvs *ipvs, unsigned int
-> > hooknum, struct sk_buff *skb, int
-> > >       struct ip_vs_proto_data *pd;
-> > >       struct ip_vs_conn *cp;
-> > >       int ret, pkts;
-> > > -     int conn_reuse_mode;
-> > >       struct sock *sk;
-> > >
-> > >       /* Already marked as IPVS request or reply? */
-> > > @@ -2041,15 +2040,16 @@ ip_vs_in(struct netns_ipvs *ipvs, unsigned int
-> > hooknum, struct sk_buff *skb, int
-> > >       cp = INDIRECT_CALL_1(pp->conn_in_get, ip_vs_conn_in_get_proto,
-> > >                            ipvs, af, skb, &iph);
-> > >
-> > > -     conn_reuse_mode = sysctl_conn_reuse_mode(ipvs);
-> > > -     if (conn_reuse_mode && !iph.fragoffs && is_new_conn(skb, &iph) &&
-> > cp) {
-> > > +     if (!iph.fragoffs && is_new_conn(skb, &iph) && cp) {
-> > >               bool old_ct = false, resched = false;
-> > > +             int conn_reuse_mode = sysctl_conn_reuse_mode(ipvs);
-> > >
-> > >               if (unlikely(sysctl_expire_nodest_conn(ipvs)) && cp->dest
-> > &&
-> > >                   unlikely(!atomic_read(&cp->dest->weight))) {
-> > >                       resched = true;
-> > >                       old_ct = ip_vs_conn_uses_old_conntrack(cp, skb);
-> > > -             } else if (is_new_conn_expected(cp, conn_reuse_mode)) {
-> > > +             } else if (conn_reuse_mode &&
-> > > +                        is_new_conn_expected(cp, conn_reuse_mode)) {
-> > >                       old_ct = ip_vs_conn_uses_old_conntrack(cp, skb);
-> > >                       if (!atomic_read(&cp->n_control)) {
-> > >                               resched = true;
-> > > --
-> > > 2.30.2
-> >
-> > Regards
-> >
-> > --
-> > Julian Anastasov <ja@ssi.bg>
-> >
+> FWIW, obviously a proper workaround for this would have to be implemented
+> in the firmware.
+
+Yeah, but you only get those if you're a paying customer apparently :(
+
+I wonder if the original OEM got firmware fixes, but because they don't
+use Linux, nobody bothered to roll those into the linux-firmware repo.
+
+Brian
